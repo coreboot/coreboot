@@ -7,7 +7,7 @@ static int kbd_empty_input_buffer(void)
 {
 	unsigned long timeout;
 	for(timeout = 1000000; timeout && (inb(0x64) & 0x02); timeout--) {
-		post_code(0);
+		post_code(POST_KBD_EMPTY_INPUT_BUFFER);
 	}
 	return !!timeout;
 }
@@ -16,7 +16,7 @@ static int kbd_empty_output_buffer(void)
 {
 	unsigned long timeout;
 	for(timeout = 1000000; timeout && ((inb(0x64) & 0x01) == 0); timeout--) {
-		post_code(0);
+		post_code(POST_KBD_EMPTY_OUTPUT_BUFFER);
 	}
 	return !!timeout;
 }

@@ -46,13 +46,13 @@ int stage2(void)
 	/* TODO: Add comment. */
 	void show_all_devs(void);
 
-	post_code(0x20);
+	post_code(POST_STAGE2_BEGIN);
 	dev_init();
 
 	/* Phase 1 was console init and making printk work. Both functions are
 	 * now performed by stage 1 code. Phase 1 is now without purpose.
 	 */
-	post_code(0x30);
+	post_code(POST_STAGE2_PHASE1_START);
 	dev_phase1();
 	show_all_devs();
 
@@ -60,34 +60,34 @@ int stage2(void)
 	 * done. This is for ANYTHING that might have to happen before
 	 * device enumeration but that needs a printk.
 	 */
-	post_code(0x40);
+	post_code(POST_STAGE2_PHASE2_START);
 	dev_phase2();
 	show_all_devs();
 
 	/* Walk physical devices and add any dynamic devices to the
 	 * device tree.
 	 */
-	post_code(0x30);
+	post_code(POST_STAGE2_PHASE3_START);
 	dev_root_phase3();
 	show_all_devs();
 
 	/* Compute and assign the bus resources. */
-	post_code(0x40);
+	post_code(POST_STAGE2_PHASE4_START);
 	dev_phase4();
 	show_all_devs();
 
 	/* Now actually enable devices on the bus. */
-	post_code(0x50);
+	post_code(POST_STAGE2_PHASE5_START);
 	dev_root_phase5();
 	show_all_devs();
 
 	/* Initialize devices on the bus. */
-	post_code(0x60);
+	post_code(POST_STAGE2_PHASE6_START);
 	dev_phase6();
 	show_all_devs();
 
 	/* TODO: Add comment. */
-	post_code(0x70);
+	post_code(POST_STAGE2_WRITE_TABLES);
 	write_tables();
 	show_all_devs();
 

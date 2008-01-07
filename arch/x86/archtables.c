@@ -77,7 +77,7 @@ struct lb_memory *arch_write_tables(void)
 	low_table_start = 0;
 	low_table_end = 16;
 
-	post_code(0x9a);
+	post_code(POST_STAGE2_ARCH_WRITE_TABLES_ENTER);
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
 //	rom_table_end = write_pirq_routing_table(rom_table_end);
@@ -92,7 +92,7 @@ struct lb_memory *arch_write_tables(void)
 //	rom_table_end = (rom_table_end+1023) & ~1023;
 
 	/* copy the smp block to address 0 */
-	post_code(0x96);
+	post_code(POST_STAGE2_ARCH_WRITE_TABLES_MIDDLE);
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 //	new_low_table_end = write_smp_table(low_table_end);

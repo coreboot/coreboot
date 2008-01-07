@@ -698,16 +698,16 @@ void dev_phase1(void)
 {
 	struct device *dev;
 
-	post_code(0x31);
+	post_code(POST_STAGE2_PHASE1_ENTER);
 	printk(BIOS_DEBUG, "Phase 1: Very early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->phase1_set_device_operations) {
 			dev->ops->phase1_set_device_operations(dev);
 		}
 	}
-	post_code(0x3e);
+	post_code(POST_STAGE2_PHASE1_DONE);
 	printk(BIOS_DEBUG, "Phase 1: done\n");
-	post_code(0x3f);
+	post_code(POST_STAGE2_PHASE1_EXIT);
 }
 
 /**
@@ -721,7 +721,7 @@ void dev_phase2(void)
 {
 	struct device *dev;
 
-	post_code(0x41);
+	post_code(POST_STAGE2_PHASE2_ENTER);
 	printk(BIOS_DEBUG, "Phase 2: Early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
@@ -734,9 +734,9 @@ void dev_phase2(void)
 		printk(BIOS_SPEW, "\n");
 	}
 
-	post_code(0x4e);
+	post_code(POST_STAGE2_PHASE2_DONE);
 	printk(BIOS_DEBUG, "Phase 2: Done.\n");
-	post_code(0x4f);
+	post_code(POST_STAGE2_PHASE2_EXIT);
 }
 
 /** 
@@ -754,7 +754,7 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 {
 	unsigned int new_max;
 	int do_phase3;
-	post_code(0x42);
+	post_code(POST_STAGE2_PHASE3_SCAN_ENTER);
 	if (!busdevice || !busdevice->enabled ||
 	    !busdevice->ops || !busdevice->ops->phase3_scan) {
 		printk(BIOS_INFO, "%s: %s: busdevice %p enabled %d ops %p\n",
@@ -786,7 +786,7 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 			}
 		}
 	}
-	post_code(0x4e);
+	post_code(POST_STAGE2_PHASE3_SCAN_EXIT);
 	printk(BIOS_INFO, "%s: returning %d\n", __FUNCTION__, max);
 	return new_max;
 }
@@ -825,7 +825,7 @@ void dev_root_phase3(void)
 	if (root->ops && root->ops->phase3_enable_scan) {
 		root->ops->phase3_enable_scan(root);
 	}
-	post_code(0x41);
+	post_code(POST_STAGE2_PHASE3_MIDDLE);
 	if (!root->ops) {
 		printk(BIOS_ERR,
 		       "dev_root_phase3 missing 'ops' initialization\nPhase 3: Failed.\n");

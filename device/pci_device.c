@@ -1096,7 +1096,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	       __func__, old_devices, bus->dev, bus->dev->dtsname);
 	bus->children = 0;
 
-	post_code(0x24);
+	post_code(POST_STAGE2_PCISCANBUS_ENTER);
 	printk(BIOS_SPEW, "PCI: scan devfn 0x%x to 0x%x\n", min_devfn,
 	       max_devfn);
 	/* Probe all devices/functions on this bus with some optimization for
@@ -1129,7 +1129,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		}
 	}
 	printk(BIOS_SPEW, "PCI: Done for loop\n");
-	post_code(0x25);
+	post_code(POST_STAGE2_PCISCANBUS_DONEFORLOOP);
 
 	/* Die if any leftover static devices are are found.  
 	 * There's probably a problem in the Config.lb.
@@ -1155,7 +1155,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	 * Return how far we've got finding sub-buses.
 	 */
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus returning with max=%03x\n", max);
-	post_code(0x55);
+	post_code(POST_STAGE2_PCISCANBUS_EXIT);
 	return max;
 }
 

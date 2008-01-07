@@ -88,5 +88,5 @@ void pci_set_method(struct device * dev)
 {
 	printk(BIOS_INFO, "Finding PCI configuration type.\n");
 	dev->ops->ops_pci_bus = pci_check_direct();
-	post_code(0x5f);
+	post_code(POST_STAGE2_PHASE2_PCI_SET_METHOD);
 }

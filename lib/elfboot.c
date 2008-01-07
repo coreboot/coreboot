@@ -146,7 +146,7 @@ int elfload(struct lb_memory *mem, unsigned char *header, unsigned long header_s
 	//boot_successful();
 
 	printk(BIOS_DEBUG, "Jumping to boot code at %p\n", entry);
-	post_code(0xfe);
+	post_code(POST_ELFBOOT_JUMPING_TO_BOOTCODE);
 
 	/* Jump to kernel */
 	/* most of the time, jmp_to_elf_entry is just a call. But this hook gives us 
@@ -169,7 +169,7 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 
 	result = 0;
 	printk(BIOS_INFO, "ELF loader started.\n");
-	post_code(0xf8);
+	post_code(POST_ELFBOOT_LOADER_STARTED);
 
 	/* Scan for an elf header */
 	header_offset = -1;
@@ -209,7 +209,7 @@ int elfboot_mem(struct lb_memory *mem, void *where, int size)
 
 		printk(BIOS_ERR, "Cannot load ELF image\n");
 
-		post_code(0xff);
+		post_code(POST_ELFBOOT_LOADER_IMAGE_FAILED);
 	}
 	return 0;
 }	

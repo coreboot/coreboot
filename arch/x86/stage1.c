@@ -41,13 +41,13 @@ void disable_car(void);
 static void stop_ap(void)
 {
 	// nothing yet
-	post_code(0xf0);
+	post_code(POST_STAGE1_STOP_AP);
 }
 
 static void enable_rom(void)
 {
 	// nothing here yet
-	post_code(0xf2);
+	post_code(POST_STAGE1_ENABLE_ROM);
 }
 
 
@@ -90,7 +90,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	mem->map[0].type = LB_MEM_RAM;
 
 
-	post_code(0x02);
+	post_code(POST_STAGE1_MAIN);
 
 	// before we do anything, we want to stop if we dont run
 	// on the bootstrap processor.

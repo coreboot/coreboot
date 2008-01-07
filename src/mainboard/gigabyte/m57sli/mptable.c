@@ -98,46 +98,60 @@ void *smp_write_config_table(void *v)
                 }
 	}
   
-/*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
-*/	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_mcp55, 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_mcp55, 0x1);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid_mcp55, 0x2);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x3, apicid_mcp55, 0x3);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x4, apicid_mcp55, 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x6, apicid_mcp55, 0x6);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x7, apicid_mcp55, 0x7);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x8, apicid_mcp55, 0x8);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xc, apicid_mcp55, 0xc);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xd, apicid_mcp55, 0xd);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xe, apicid_mcp55, 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid_mcp55, 0xf);
+	/*I/O Ints:	     Type	Trigger    Polarity	                  Bus ID   IRQ	APIC ID	      PIN# */	
+	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_mcp55, 0x0);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+1)<<2)|1, apicid_mcp55, 0xa);
+/* ISA ints are edge-triggered, and usually originate from the ISA bus,
+ * or its remainings.
+ */
+#define ISA_INT(intr, pin)\
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, (intr), apicid_mcp55, (pin))
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+2)<<2)|0, apicid_mcp55, 0x16); // 22
+	ISA_INT(1,1);
+	ISA_INT(0,2);
+	ISA_INT(3,3);
+	ISA_INT(4,4);
+	ISA_INT(6,6);
+	ISA_INT(7,7);
+	ISA_INT(8,8);
+	ISA_INT(12,12);
+	ISA_INT(13,13);
+	ISA_INT(14,14);
+	ISA_INT(15,15);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+2)<<2)|1, apicid_mcp55, 0x17); // 23
+/* PCI interrupts are level triggered, and are
+ * associated with a specific bus/device/function tuple.
+ */
+#define PCI_INT(bus, dev, fn, pin)					\
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,\
+			 bus_mcp55[bus], (((dev)<<2)|(fn)), apicid_mcp55, (pin))
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+6)<<2)|1, apicid_mcp55, 0x17); // 23
+        PCI_INT(0,sbdn+1,1, 10); /* SMBus */
+        PCI_INT(0,sbdn+2,0, 22); /* USB */
+        PCI_INT(0,sbdn+2,1, 23); /* USB */
+        PCI_INT(0,sbdn+6,1, 23); /* HD Audio */
+        PCI_INT(0,sbdn+5,0, 20); /* SATA */
+        PCI_INT(0,sbdn+5,1, 23); /* SATA */
+        PCI_INT(0,sbdn+5,2, 21); /* SATA */
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+5)<<2)|0, apicid_mcp55, 0x14); // 20
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+5)<<2)|1, apicid_mcp55, 0x17); // 23
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+5)<<2)|2, apicid_mcp55, 0x15); // 21
+        PCI_INT(0,sbdn+8,0, 22); /* GBit Ether */
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[0], ((sbdn+8)<<2)|0, apicid_mcp55, 0x16); // 22
-
+	/* The PCIe slots, each on its own bus */
 	for(j=7; j>=2; j--) {
 		if(!bus_mcp55[j]) continue;
-	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[j], (0x00<<2)|i, apicid_mcp55, 0x10 + (1+j+i)%4);
+	        for(i=0;i<4;i++) { /* map all functions */
+        	        PCI_INT(j,0,i, 16+(1+j+i)%4);
         	}
 	}
 
-	for(j=0; j<2; j++) 
-	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[1], ((0x07+j)<<2)|i, apicid_mcp55, 0x10 + (3+i+j)%4);
+	/* On bus 1: the physical PCI bus slots...  */
+	for(j=0; j<2; j++) /* on a Rev 1.x board, they are devs 7 and 8 */
+	        for(i=0;i<4;i++) { /* map all functions */
+        	        PCI_INT(1,7+j,i, 16+(3+i+j)%4);
 	        }
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_mcp55[1], ((0x0a)<<2)|0, apicid_mcp55, 0x12);
+	/* ... and OB FireWire */
+	PCI_INT(1,0x0a,0, 18);
+
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
 	smp_write_intsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);

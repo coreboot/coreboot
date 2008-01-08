@@ -158,8 +158,8 @@ clear_fixed_var_mtrr_out:
  * windowoffset is the 32k-aligned window into CAR size
  */
 .macro simplemask carsize, windowoffset
-	simplemask_helper (((\carsize - \windowoffset) / 0x1000) - 4), %eax
-	simplemask_helper (((\carsize - \windowoffset) / 0x1000)), %edx
+	extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
+	extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
 .endm
 
 #if CacheSize > 0x10000

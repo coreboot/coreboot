@@ -100,44 +100,52 @@ void *smp_write_config_table(void *v)
                 }
 	}
 
-/*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#
-*/	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_sis966, 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid_sis966, 0x1);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid_sis966, 0x2);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x3, apicid_sis966, 0x3);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x4, apicid_sis966, 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x6, apicid_sis966, 0x6);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x7, apicid_sis966, 0x7);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x8, apicid_sis966, 0x8);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xc, apicid_sis966, 0xc);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xd, apicid_sis966, 0xd);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xe, apicid_sis966, 0xe);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0xf, apicid_sis966, 0xf);
+	/* I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
+	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_sis966, 0x0);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+1)<<2)|1, apicid_sis966, 0xa);
+/* ISA ints are edge-triggered, and usually originate from the ISA bus,
+ * or its remainings.
+ */
+#define ISA_INT(intr, pin)\
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, (intr), apicid_sis966,(pin))
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+2)<<2)|0, apicid_sis966, 0x16); // 22
+	ISA_INT(0x1, 0x1);
+	ISA_INT(0x0, 0x2);
+	ISA_INT(0x3, 0x3);
+	ISA_INT(0x4, 0x4);
+	ISA_INT(0x6, 0x6);
+	ISA_INT(0x7, 0x7);
+	ISA_INT(0x8, 0x8);
+	ISA_INT(0xc, 0xc);
+	ISA_INT(0xd, 0xd);
+	ISA_INT(0xe, 0xe);
+	ISA_INT(0xf, 0xf);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+2)<<2)|1, apicid_sis966, 0x17); // 23
+/* PCI interrupts are level triggered, and are
+ * associated with a specific bus/device/function tuple.
+ */
+#define PCI_INT(bus, dev, fn, pin)					\
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[bus], (((dev)<<2)|(fn)), apicid_sis966, (pin))
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+6)<<2)|1, apicid_sis966, 0x17); // 23
-
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+5)<<2)|0, apicid_sis966, 0x14); // 20
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+5)<<2)|1, apicid_sis966, 0x17); // 23
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+5)<<2)|2, apicid_sis966, 0x15); // 21
-
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[0], ((sbdn+8)<<2)|0, apicid_sis966, 0x16); // 22
+        PCI_INT(0, sbdn+1, 1, 0xa);
+        PCI_INT(0, sbdn+2, 0, 0x16); // 22
+        PCI_INT(0, sbdn+2, 1, 0x17); // 23
+        PCI_INT(0, sbdn+6, 1, 0x17); // 23
+        PCI_INT(0, sbdn+5, 0, 0x14); // 20
+        PCI_INT(0, sbdn+5, 1, 0x17); // 23
+        PCI_INT(0, sbdn+5, 2, 0x15); // 21
+        PCI_INT(0, sbdn+8, 0, 0x16); // 22
 
 	for(j=7; j>=2; j--) {
 		if(!bus_sis966[j]) continue;
 	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[j], (0x00<<2)|i, apicid_sis966, 0x10 + (2+j+i+4-sbdn%4)%4);
+        	        PCI_INT(j, 0x00, i, 0x10 + (2+j+i+4-sbdn%4)%4);
         	}
 	}
 
 	for(j=0; j<2; j++)
 	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sis966[1], ((0x06+j)<<2)|i, apicid_sis966, 0x10 + (2+i+j)%4);
+        	        PCI_INT(1, 0x06+j, i, 0x10 + (2+i+j)%4);
 	        }
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/

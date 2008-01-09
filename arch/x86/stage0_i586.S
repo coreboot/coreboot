@@ -301,36 +301,57 @@ clear_fixed_var_mtrr:
         jmp     clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
-#if CacheSize == 0x10000 
-        /* enable caching for 64K using fixed mtrr */
+/* 0x06 is the WB IO type for a given 4k segment.
+ * segs is the number of 4k segments in the area of the particular
+ *   register we want to use for CAR.
+ * reg is the register where the IO type should be stored.
+ */
+.macro extractmask segs, reg
+.if \segs <= 0
+	/* The xorl here is superfluous because at the point of first execution
+	 * of this macro, %eax and %edx are cleared. Later invocations of this
+	 * macro will have a monotonically increasing segs parameter.
+	 */
+	xorl \reg, \reg
+.elseif \segs == 1
+	movl $0x06000000, \reg
+.elseif \segs == 2
+	movl $0x06060000, \reg
+.elseif \segs == 3
+	movl $0x06060600, \reg
+.elseif \segs >= 4
+	movl $0x06060606, \reg
+.endif
+.endm
+
+/* size is the cache size in bytes we want to use for CAR.
+ * windowoffset is the 32k-aligned window into CAR size
+ */
+.macro simplemask carsize, windowoffset
+	extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
+	extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
+.endm
+
+#if CacheSize > 0x10000
+#error Invalid CAR size, must be at most 64k.
+#endif
+#if CacheSize < 0x1000
+#error Invalid CAR size, must be at least 4k. This is a processor limitation.
+#endif
+#if (CacheSize & (0x1000 - 1))
+#error Invalid CAR size, is not a multiple of 4k. This is a processor limitation.
+#endif
+
+#if CacheSize > 0x8000 
+        /* enable caching for 32K-64K using fixed mtrr */
         movl    $0x268, %ecx  /* fix4k_c0000*/
-        movl    $0x06060606, %eax /* WB IO type */
-	movl    %eax, %edx
+	simplemask CacheSize, 0x8000
         wrmsr
-	movl	$0x269, %ecx
-	wrmsr
 #endif
 
-#if CacheSize == 0x8000
-        /* enable caching for 32K using fixed mtrr */
+        /* enable caching for 0-32K using fixed mtrr */
         movl    $0x269, %ecx  /* fix4k_c8000*/
-        movl    $0x06060606, %eax /* WB IO type */
-	movl    %eax, %edx
-	wrmsr
-#endif
-
-        /* enable caching for 16K/8K/4K using fixed mtrr */
-        movl    $0x269, %ecx  /* fix4k_cc000*/
-#if CacheSize == 0x4000
-        movl    $0x06060606, %edx /* WB IO type */
-#endif
-#if CacheSize == 0x2000
-        movl    $0x06060000, %edx /* WB IO type */
-#endif
-#if CacheSize == 0x1000
-        movl    $0x06000000, %edx /* WB IO type */
-#endif
-	xorl    %eax, %eax
+	simplemask CacheSize, 0
 	wrmsr
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)

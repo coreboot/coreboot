@@ -52,6 +52,8 @@ struct flashchip flashchips[] = {
 	 probe_29f002,	erase_29f002, 	write_29f002},
 	{"MX25L4005",	MX_ID,		MX_25L4005,	512, 256,
 	 probe_spi,	generic_spi_chip_erase_c7,	generic_spi_chip_write},
+	{"MX25L8005",	MX_ID,		MX_25L8005,	1024, 256,
+	 probe_spi,	generic_spi_chip_erase_c7,	generic_spi_chip_write},
 	{"SST25VF040B",	SST_ID,		SST_25VF040B,	512,	256,
 	probe_spi,	generic_spi_chip_erase_c7,	generic_spi_chip_write},
 	{"SST25VF016B",	SST_ID,		SST_25VF016B,	2048,	256,

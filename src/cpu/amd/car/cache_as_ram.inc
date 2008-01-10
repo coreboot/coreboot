@@ -2,6 +2,7 @@
  * This file is part of the LinuxBIOS project.
  *
  * Copyright (C) 2005-2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,82 +121,70 @@ clear_fixed_var_mtrr:
 	jmp		clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
-#if CacheSize == 0x10000
-	/* enable caching for 64K using fixed mtrr */
-	movl	$0x268, %ecx  /* fix4k_c0000*/
- #if CAR_FAM10 == 1
-	movl	$0x1e1e1e1e, %edx /* WB MEM type */
- #else
-	movl	$0x06060606, %edx /* WB IO type */
- #endif
+/* 0x06 is the WB IO type for a given 4k segment.
+ * 0x1e is the MEM IO type for a given 4k segment (K10 and above).
+ * segs is the number of 4k segments in the area of the particular
+ *   register we want to use for CAR.
+ * reg is the register where the IO type should be stored.
+ */
+.macro extractmask segs, reg
+.if \segs <= 0
+	/* The xorl here is superfluous because at the point of first execution
+	 * of this macro, %eax and %edx are cleared. Later invocations of this
+	 * macro will have a monotonically increasing segs parameter.
+	 */
+	xorl \reg, \reg
+#if CAR_FAM10 == 1
+.elseif \segs == 1
+	movl $0x1e000000, \reg /* WB MEM type */
+.elseif \segs == 2
+	movl $0x1e1e0000, \reg /* WB MEM type */
+.elseif \segs == 3
+	movl $0x1e1e1e00, \reg /* WB MEM type */
+.elseif \segs >= 4
+	movl $0x1e1e1e1e, \reg /* WB MEM type */
+#else
+.elseif \segs == 1
+	movl $0x06000000, \reg /* WB IO type */
+.elseif \segs == 2
+	movl $0x06060000, \reg /* WB IO type */
+.elseif \segs == 3
+	movl $0x06060600, \reg /* WB IO type */
+.elseif \segs >= 4
+	movl $0x06060606, \reg /* WB IO type */
+#endif
+.endif
+.endm
 
-	movl	%edx, %eax
-	wrmsr
-	movl	$0x269, %ecx
-	wrmsr
+/* size is the cache size in bytes we want to use for CAR.
+ * windowoffset is the 32k-aligned window into CAR size
+ */
+.macro simplemask carsize, windowoffset
+	extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
+	extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
+.endm
+
+#if CacheSize > 0x10000
+#error Invalid CAR size, must be at most 64k.
+#endif
+#if CacheSize < 0x1000
+#error Invalid CAR size, must be at least 4k. This is a processor limitation.
+#endif
+#if (CacheSize & (0x1000 - 1))
+#error Invalid CAR size, is not a multiple of 4k. This is a processor limitation.
 #endif
 
-#if CacheSize == 0xc000
-	/* enable caching for 16K using fixed mtrr */
-	movl	$0x268, %ecx  /* fix4k_c4000*/
- #if CAR_FAM10 == 1
-	movl	$0x1e1e1e1e, %edx /* WB MEM type */
- #else
-	movl	$0x06060606, %edx /* WB IO type */
- #endif
-	xorl	%eax, %eax
-	wrmsr
-	/* enable caching for 32K using fixed mtrr */
-	movl	$0x269, %ecx  /* fix4k_c8000*/
- #if CAR_FAM10 == 1
-	movl	$0x1e1e1e1e, %edx /* WB MEM type */
- #else
-	movl	$0x06060606, %edx /* WB IO type */
- #endif
-	movl	%edx, %eax
-	wrmsr
+#if CacheSize > 0x8000 
+        /* enable caching for 32K-64K using fixed mtrr */
+        movl    $0x268, %ecx  /* fix4k_c0000*/
+	simplemask CacheSize, 0x8000
+        wrmsr
 #endif
 
-
-#if CacheSize == 0x8000
-	/* enable caching for 32K using fixed mtrr */
-	movl	$0x269, %ecx  /* fix4k_c8000*/
- #if CAR_FAM10 == 1
-	movl	$0x1e1e1e1e, %edx /* WB MEM type */
- #else
-	movl	$0x06060606, %edx /* WB IO type */
- #endif
-	movl	%edx, %eax
+        /* enable caching for 0-32K using fixed mtrr */
+        movl    $0x269, %ecx  /* fix4k_c8000*/
+	simplemask CacheSize, 0
 	wrmsr
-#endif
-
-#if CacheSize < 0x8000
-	/* enable caching for 16K/8K/4K using fixed mtrr */
-	movl	$0x269, %ecx  /* fix4k_cc000*/
- #if CacheSize == 0x4000
-  #if CAR_FAM10 == 1
-	movl	$0x1e1e1e1e, %edx /* WB MEM type */
-  #else
-	movl	$0x06060606, %edx /* WB IO type */
-  #endif
- #endif
- #if CacheSize == 0x2000
-  #if CAR_FAM10 == 1
-	movl	$0x1e1e0000, %edx /* WB MEM type */
-  #else
-	movl	$0x06060000, %edx /* WB IO type */
-  #endif
- #endif
- #if CacheSize == 0x1000
-  #if CAR_FAM10 == 1
-	movl	$0x1e000000, %edx /* WB MEM type */
-  #else
-	movl	$0x06000000, %edx /* WB IO type */
-  #endif
- #endif
-	xorl	%eax, %eax
-	wrmsr
-#endif
 
 	/* enable memory access for first MBs using top_mem */
 	movl	$TOP_MEM, %ecx

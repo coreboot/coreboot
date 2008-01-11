@@ -53,4 +53,25 @@ fi
 export PYTHONPATH=$config_dir
 $PYTHON $config_py $config_lb $lbpath
 
+# now start checking for distro-specific breakage. 
+## This check is for the no stack protector mess.
+EXTRA_CFLAGS=
+
+if [ -z "$CC" ]; then
+       CC=gcc
+fi
+
+$CC -fno-stack-protector -S -xc /dev/null -o .$$.tmp
+
+if [ $? -eq 0 ]; then
+       EXTRA_CFLAGS=-fno-stack-protector
+fi
+
+rm -rf .$$.tmp
+
+for i in $build_dir/Makefile.settings $build_dir/*/Makefile.settings
+do
+	echo CFLAGS+=$EXTRA_CFLAGS >>$i
+done
+
 exit $?

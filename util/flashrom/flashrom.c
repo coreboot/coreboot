@@ -206,7 +206,7 @@ void usage(const char *name)
 	     "   -f | --force:                   force write without checking image\n"
 	     "   -l | --layout <file.layout>:    read rom layout from file\n"
 	     "   -i | --image <name>:            only flash image name from flash layout\n"
-	     "\n" " If no file is specified, then all that happens\n"
+            "\n" " If no file is specified, then all that happens"
 	     " is that flash info is dumped.\n\n");
 	exit(1);
 }

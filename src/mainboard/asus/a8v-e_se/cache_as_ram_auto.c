@@ -79,6 +79,7 @@ unsigned int get_sbdn(unsigned bus);
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, W83627EHG_GPIO_SUSLED)
+#define ACPI_DEV PNP_DEV(0x2e, W83627EHG_ACPI)
 #define RTC_DEV PNP_DEV(0x2e, W83627EHG_RTC)
 
 static void memreset_setup(void)
@@ -153,13 +154,8 @@ unsigned int get_sbdn(unsigned bus)
 	return (dev >> 15) & 0x1f;
 }
 
-#if USE_FALLBACK_IMAGE == 1
 
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-//        unsigned last_boot_normal_x = last_boot_normal();
-//FIXME
-	unsigned last_boot_normal_x = 1;
+void sio_init(void) {
 	u8 reg;
 
 	pnp_enter_ext_func_mode(SERIAL_DEV);
@@ -174,18 +170,40 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 
+	pnp_enter_ext_func_mode(ACPI_DEV);
+	pnp_set_logical_device(ACPI_DEV);
+	reg = pnp_read_config(ACPI_DEV, 0xe6);
+	/* Set the delay rising time from PWROK_LP to PWROK_ST to 300 - 600ms, and 0 to vice versa */ 
+	pnp_write_config(ACPI_DEV, 0xe6, (reg & 0xf0));
+	/* 1 Use external suspend clock source 32.768KHz. Undocumented?? */
+	reg = pnp_read_config(ACPI_DEV, 0xe4);
+	pnp_write_config(ACPI_DEV, 0xe4, (reg | 0x10));
+	pnp_exit_ext_func_mode(ACPI_DEV);
+
 	pnp_enter_ext_func_mode(GPIO_DEV);
 	pnp_set_logical_device(GPIO_DEV);
-	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	// 1101110  0=output 1=input
-	pnp_write_config(GPIO_DEV, 0xe1, 0x1);	//set output val
-	pnp_write_config(GPIO_DEV, 0xe2, 0x0);	//no inversion
-	pnp_write_config(GPIO_DEV, 0xe3, 0x3);	//0000 0011 0=output 1=input
-	pnp_write_config(GPIO_DEV, 0xe4, 0xa4);	//set output val
-	pnp_write_config(GPIO_DEV, 0xe5, 0x0);	//no inversion
-	pnp_write_config(GPIO_DEV, 0x30, 0x9);	//Enable GPIO 2 & GPIO 5
 	pnp_exit_ext_func_mode(GPIO_DEV);
 
+	/* set memory voltage to 2.75V, vcore offset + 100mV, 1.5V Chipset voltage */
+	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	/* 1101110  0=output 1=input */
+	pnp_write_config(GPIO_DEV, 0xe1, 0x1);	/* set output val */
+	pnp_write_config(GPIO_DEV, 0xe2, 0x0);	/* no inversion */
+	pnp_write_config(GPIO_DEV, 0xe3, 0x3);	/* 0000 0011 0=output 1=input */
+	pnp_write_config(GPIO_DEV, 0xe4, 0xa4);	/* set output val  1010 0100 */
+	pnp_write_config(GPIO_DEV, 0xe5, 0x0);	/* no inversion */
+	pnp_write_config(GPIO_DEV, 0x30, 0x9);	/* Enable GPIO 2 & GPIO 5 */
+	pnp_exit_ext_func_mode(GPIO_DEV);
+}
 
+#if USE_FALLBACK_IMAGE == 1
+
+void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
+{
+//        unsigned last_boot_normal_x = last_boot_normal();
+//FIXME
+	unsigned last_boot_normal_x = 1;
+
+	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
@@ -258,34 +276,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	    (DCACHE_RAM_BASE + DCACHE_RAM_SIZE -
 	     DCACHE_RAM_GLOBAL_VAR_SIZE);
 	char *p;
-	u8 reg;
 
-	pnp_enter_ext_func_mode(SERIAL_DEV);
-	reg = pnp_read_config(SERIAL_DEV, 0x24);
-	pnp_write_config(SERIAL_DEV, 0x24, (reg & ~0x40));	/* we have 24MHz input */
-
-	reg = pnp_read_config(SERIAL_DEV, 0x2A);
-	pnp_write_config(SERIAL_DEV, 0x2A, (reg | 1));	/* we have GPIO for KB/MS PIN */
-
-	reg = pnp_read_config(SERIAL_DEV, 0x2C);
-	pnp_write_config(SERIAL_DEV, 0x2C, (reg | 0xf0));	/* we have all RESTOUT and even some reserved bits too */
-
-	pnp_exit_ext_func_mode(SERIAL_DEV);
-
-	pnp_enter_ext_func_mode(GPIO_DEV);
-	pnp_set_logical_device(GPIO_DEV);
-	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	// 1101110  0=output 1=input
-	pnp_write_config(GPIO_DEV, 0xe1, 0x1);	//set output val
-	pnp_write_config(GPIO_DEV, 0xe2, 0x0);	//no inversion
-	pnp_write_config(GPIO_DEV, 0xe3, 0x3);	//0000 0011 0=output 1=input
-	pnp_write_config(GPIO_DEV, 0xe4, 0xa4);	//set output val
-	//0x10 seems to control something with SGD VIA
-
-	pnp_write_config(GPIO_DEV, 0xe5, 0x0);	//no inversion
-	pnp_write_config(GPIO_DEV, 0x30, 0x9);	//Enable GPIO 2 & GPIO 5
-	pnp_exit_ext_func_mode(GPIO_DEV);
-
-
+	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();

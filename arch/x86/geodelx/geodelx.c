@@ -187,6 +187,8 @@ void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo)
 		/* Use SWFLAGS to remember: "we've already been here". */
 		msr_glcp_sys_pll.lo |= (1 << RSTPLL_LOWER_SWFLAGS_SHIFT);
 
+		printk(BIOS_INFO, "Resetting the processor after PLL "
+		       "configuration for the changes to take effect\n");
 		/* "Reset the chip" value */
 		msr_glcp_sys_pll.lo |= RSTPPL_LOWER_CHIP_RESET_SET;
 		wrmsr(GLCP_SYS_RSTPLL, msr_glcp_sys_pll);

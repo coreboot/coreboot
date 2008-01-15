@@ -449,3 +449,8 @@ void probe_idregs_nsc(uint16_t port)
 
 	dump_superio("NSC", reg_table, port, id);
 }
+
+void print_nsc_chips(void)
+{
+	print_vendor_chips("NSC", reg_table);
+}

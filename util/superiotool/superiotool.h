@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007 Carl-Daniel Hailfinger
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2008 Robinson P. Tryon <bishop.robinson@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +30,9 @@
 #include <getopt.h>
 #include <sys/io.h>
 
-#define USAGE "Usage: superiotool [-d] [-V] [-v] [-h]\n\n\
+#define USAGE "Usage: superiotool [-d] [-l] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O register contents\n\
+  -l | --list-supported  Show the list of supported Super I/O chips\n\
   -V | --verbose         Verbose mode\n\
   -v | --version         Show the superiotool version\n\
   -h | --help            Show a short help text\n\n\
@@ -80,24 +82,32 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 void dump_superio(const char *name, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id);
 void probing_for(const char *vendor, const char *info, uint16_t port);
+void print_vendor_chips(const char *vendor,
+			const struct superio_registers reg_table[]);
 
 /* ali.c */
 void probe_idregs_ali(uint16_t port);
+void print_ali_chips(void);
 
 /* fintek.c */
 void probe_idregs_fintek(uint16_t port);
+void print_fintek_chips(void);
 
 /* ite.c */
 void probe_idregs_ite(uint16_t port);
+void print_ite_chips(void);
 
 /* nsc.c */
 void probe_idregs_nsc(uint16_t port);
+void print_nsc_chips(void);
 
 /* smsc.c */
 void probe_idregs_smsc(uint16_t port);
+void print_smsc_chips(void);
 
 /* winbond.c */
 void probe_idregs_winbond(uint16_t port);
+void print_winbond_chips(void);
 
 /** Table of which config ports to probe for each Super I/O family. */
 static const struct {
@@ -110,6 +120,19 @@ static const struct {
 	{probe_idregs_nsc,	{0x2e, 0x4e, EOT}},
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x162e, 0x164e, 0x3f0, 0x370, EOT}},
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
+};
+
+
+/** Table of functions to print out supported Super I/O chips. */
+static const struct {
+	void (*print_list) (void);
+} vendor_print_functions[] = {
+	{print_ali_chips},
+	{print_fintek_chips},
+	{print_ite_chips},
+	{print_nsc_chips},
+	{print_smsc_chips},
+	{print_winbond_chips},
 };
 
 #endif

@@ -4,6 +4,7 @@
  * Copyright (C) 2006 Ronald Minnich <rminnich@gmail.com>
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2007 Carl-Daniel Hailfinger
+ * Copyright (C) 2008 Robinson P. Tryon <bishop.robinson@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,6 +162,41 @@ void probing_for(const char *vendor, const char *info, uint16_t port)
 	       vendor, info, port);
 }
 
+/** Print a list of all supported chips from the given vendor. */
+void print_vendor_chips(const char *vendor,
+			const struct superio_registers reg_table[])
+{
+	int i;
+
+	for (i = 0; reg_table[i].superio_id != EOT; i++) {
+		printf("%s %s", vendor, reg_table[i].name);
+
+		/* Unless the ldn is empty, assume this chip has a dump. */
+		if (reg_table[i].ldn[0].ldn != EOT)
+			printf(" (dump available)");
+
+		printf("\n");
+	}
+
+	/* If we printed any chips for this vendor, put in a blank line. */
+	if (i != 0)
+		printf("\n");
+}
+
+/** Print a list of all chips supported by superiotool. */
+void print_list_of_supported_chips(void)
+{
+	int i;
+
+	printf("Supported Super I/O chips:\n\n");
+
+	for (i = 0; i < ARRAY_SIZE(vendor_print_functions); i++)
+		vendor_print_functions[i].print_list();
+
+	printf("See <http://coreboot.org/Superiotool#Supported_devices> "
+	       "for more information.\n");
+}
+
 static void print_version(void)
 {
 	printf("superiotool r%s\n", SUPERIOTOOL_VERSION);
@@ -172,17 +208,22 @@ int main(int argc, char *argv[])
 
 	static const struct option long_options[] = {
 		{"dump",		no_argument, NULL, 'd'},
+		{"list-supported",	no_argument, NULL, 'l'},
 		{"verbose",		no_argument, NULL, 'V'},
 		{"version",		no_argument, NULL, 'v'},
 		{"help",		no_argument, NULL, 'h'},
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "dVvh",
+	while ((opt = getopt_long(argc, argv, "dlVvh",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
 			dump = 1;
+			break;
+		case 'l':
+			print_list_of_supported_chips();
+			exit(0);
 			break;
 		case 'V':
 			verbose = 1;

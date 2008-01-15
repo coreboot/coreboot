@@ -1,8 +1,8 @@
-.TH SUPERIOTOOL 8 "October 11, 2007"
+.TH SUPERIOTOOL 8 "January 13, 2008"
 .SH NAME
 superiotool \- Super I/O detection tool
 .SH SYNOPSIS
-.B superiotool \fR[\fB\-dVvh\fR] 
+.B superiotool \fR[\fB\-dlVvh\fR] 
 .SH DESCRIPTION
 .B superiotool
 is a GPL'd user-space utility which can
@@ -71,6 +71,16 @@ register),
 which can mean several things. It's recommended to consult the datasheet for
 detailed information about the
 .BR MM " fields."
+.TP
+.B "\-l, \-\-list-supported"
+List all Super I/O chips recognized by
+.BR superiotool ". The phrase"
+.BR (dump available)
+following a chip name indicates that
+.B superiotool
+supports the
+.B --dump
+option for this chip.
 .TP
 .B "\-V, \-\-verbose"
 Enable verbose mode. This option can be used together with the

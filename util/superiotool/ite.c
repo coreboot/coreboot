@@ -380,3 +380,8 @@ void probe_idregs_ite(uint16_t port)
 	probe_idregs_ite_helper("(init=0x87,0x87) ", port);
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
+
+void print_ite_chips(void)
+{
+	print_vendor_chips("ITE", reg_table);
+}

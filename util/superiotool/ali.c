@@ -99,3 +99,8 @@ void probe_idregs_ali(uint16_t port)
 
 	exit_conf_mode_ali(port);
 }
+
+void print_ali_chips(void)
+{
+	print_vendor_chips("ALi", reg_table);
+}

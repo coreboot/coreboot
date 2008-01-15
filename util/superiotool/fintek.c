@@ -99,3 +99,8 @@ void probe_idregs_fintek(uint16_t port)
 
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }
+
+void print_fintek_chips(void)
+{
+	print_vendor_chips("Fintek", reg_table);
+}

@@ -88,21 +88,6 @@ static struct device *new_device(void)
 }
 
 /**
- * Initialization tasks for the device tree code. 
- * 
- * At present, merely sets up last_dev_p, which used to be done by
- * Fucking Magic (FM) in the config tool.
- */
-void dev_init(void)
-{
-	struct device *dev;
-
-	for (dev = all_devices; dev; dev = dev->next) {
-		last_dev_p = &dev->next;
-	}
-}
-
-/**
  * The default constructor, which simply sets the ops pointer.
  * 
  * Initialize device->ops of a newly allocated device structure.
@@ -146,6 +131,30 @@ struct constructor *find_constructor(struct device_id *id)
 	}
 
 	return NULL;
+}
+
+/**
+ * Initialization tasks for the device tree code. 
+ * 
+ * Sets up last_dev_p, which used to be done by
+ * Fucking Magic (FM) in the config tool. Also, for each of the 
+ * devices, tries to find the constructor, and from there, the ops, 
+ * for the device. 
+ */
+void dev_init(void)
+{
+	struct device *dev;
+	struct constructor *c;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		c = find_constructor(&dev->id);
+		/* note the difference from the constructor function below. 
+		 * we are not allocating the device here, just setting the ops. 
+		 */
+		if (c)
+			dev->ops = c->ops;
+		last_dev_p = &dev->next;
+	}
 }
 
 /**
@@ -725,6 +734,9 @@ void dev_phase2(void)
 	printk(BIOS_DEBUG, "Phase 2: Early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
+		printk(BIOS_SPEW, "%s: ops %p ops->phase2_setup_scan_bus %p\n",
+			__FUNCTION__, dev->ops, 
+			dev->ops? dev->ops->phase2_setup_scan_bus : "None");
 		if (dev->ops && dev->ops->phase2_setup_scan_bus) {
 			printk(BIOS_SPEW,
 			       "Calling phase2 phase2_setup_scan_bus...");

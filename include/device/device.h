@@ -185,9 +185,11 @@ struct device {
 	struct device *	next;		/* chain of all devices */
 
 	struct device_path path;
+	struct device_id id;
 	char 		dtsname[MAX_DTSNAME_SIZE];	/* the name from the dts */
-	unsigned 	vendor;
-	unsigned 	device;
+	/* XXX remove this soon */
+	unsigned 	device, vendor;
+	/* XXX */
 	u16 status;
 	u8 revision;
 	u8 cache_line;

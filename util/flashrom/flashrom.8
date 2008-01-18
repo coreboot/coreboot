@@ -1,6 +1,6 @@
-.TH FLASHROM 8 "October 18, 2007"
+.TH FLASHROM 8 "January 18, 2008"
 .SH NAME
-flashrom \- a universal flash programming utility
+flashrom \- a universal BIOS/ROM/flash programming utility
 .SH SYNOPSIS
 .B flashrom \fR[\fB\-rwvEVfh\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
          [\fB-m\fR vendor:part] [\fB-l\fR file.layout] [\fB-i\fR image_name] [file]
@@ -8,33 +8,37 @@ flashrom \- a universal flash programming utility
 .B flashrom
 is a universal flash programming utility for DIP, PLCC, or SPI flash ROM
 chips. It can be used to flash BIOS/coreboot/firmware images, for example.
+
+(see
+.B http://coreboot.org
+for details on coreboot)
 .SH OPTIONS
 If no file is specified, then all that happens
 is that flash info is dumped and the flash chip is set to writable.
 .TP
 .B "\-r, \-\-read"
-Read flash ROM contents an save them into the given file.
+Read flash ROM contents and save them into the given file.
 .TP
 .B "\-w, \-\-write"
-Write file into flash (default when file is specified).
+Write file into flash ROM (default when file is specified).
 .TP
 .B "\-v, \-\-verify"
 Verify the flash ROM contents against the given file.
 .TP
 .B "\-E, \-\-erase"
-Erase the flash device.
+Erase the flash ROM device.
 .TP
 .B "\-V, \-\-verbose"
 More verbose output.
 .TP
 .B "\-c, \-\-chip" <chipname>
-Probe only for specified flash chip.
+Probe only for specified flash ROM chip.
 .TP
 .B "\-s, \-\-estart" <addr>
-Exclude start position. (obsolete)
+Exclude start position (obsolete).
 .TP
 .B "\-e, \-\-eend" <addr> 
-Exclude end postion. (obsolete)
+Exclude end postion (obsolete).
 .TP
 .B "\-m, \-\-mainboard" <vendor:part>
 Override mainboard settings. This option is needed for some mainboards,
@@ -63,12 +67,13 @@ Show a help text and exit.
 .\".B "\-\-version"
 .\"Show version information and exit.
 .SH BUGS
-Please report any bugs at http://tracker.coreboot.org/trac/coreboot/,
-or on the coreboot mailing list (http://www.coreboot.org/Mailinglist).
+Please report any bugs at
+.BR http://tracker.coreboot.org/trac/coreboot/newticket ","
+or on the coreboot mailing list
+.RB "(" http://coreboot.org/Mailinglist ")."
 .SH LICENCE
 .B flashrom
 is covered by the GNU General Public License (GPL), version 2 or later.
-.\" .SH SEE ALSO
 .SH COPYRIGHT
 2000 Silicon Integrated System Corporation
 .br
@@ -87,4 +92,4 @@ Niki W. Waibel <niki.waibel@gmx.net>
 some others 
 .PP
 This manual page was written by Uwe Hermann <uwe@hermann-uwe.de>.
-It is licensed under the terms of the GNU GPL (v2 or later).
+It is licensed under the terms of the GNU GPL (version 2 or later).

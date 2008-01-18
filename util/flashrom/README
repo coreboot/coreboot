@@ -2,7 +2,11 @@
 Flashrom README
 -------------------------------------------------------------------------------
 
-This is the universal (coreboot) flash utility.
+Flashrom is a universal flash programming utility for DIP, PLCC, or SPI
+flash ROM chips. It can be used to flash BIOS/coreboot/firmware images.
+
+(see http://coreboot.org for details on coreboot)
+
 
 Build Requirements
 ------------------
@@ -64,7 +68,7 @@ no coreboot table is found:
 ROM Layout Support
 ------------------
 
-Flashrom supports ROM layouts. This allows to flash certain parts of
+Flashrom supports ROM layouts. This allows you to flash certain parts of
 the flash chip only. A ROM layout file looks like follows:
 
   00000000:00008fff gfxrom
@@ -94,7 +98,7 @@ ROM layout and the ROM image in one file (cpio, zip or something?).
 Disk on Chip support
 --------------------
 
-Disk on Chip support is currently disabled since it is considered unstable. 
+Disk on Chip support is currently disabled since it is considered unstable.
 Change CFLAGS in the Makefile to enable it: Remove -DDISABLE_DOC from CFLAGS.
 
 

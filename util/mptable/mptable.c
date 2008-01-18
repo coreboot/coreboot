@@ -83,7 +83,7 @@ static const char rcsid[] =
 
 #define MAXPNSTR		132
 
-#define LINUXBIOS_MP_TABLE      0
+#define COREBOOT_MP_TABLE      0
 
 enum busTypes {
     CBUS = 1,
@@ -299,7 +299,7 @@ int	dmesg = 0;
 int	grope = 0;
 int	verbose = 0;
 int 	noisy = 0;
-/* preamble to the mptable. This is fixed for all linuxbioses */
+/* preamble to the mptable. This is fixed for all coreboots */
  
 char *preamble[] = {
 "#include <arch/smp/mpspec.h>",
@@ -422,7 +422,7 @@ main( int argc, char *argv[] )
     if (verbose) puts( SEP_LINE2 );
 
     printf( "/* generatred by MPTable, version %d.%d.%d*/\n", VMAJOR, VMINOR, VDELTA );
-    printf("/* as modified by RGM for LinuxBIOS */\n");
+    printf("/* as modified by RGM for coreboot */\n");
     write_code(preamble);
 
     /* Ron hates getopt() */
@@ -536,7 +536,7 @@ apic_probe( vm_offset_t* paddr, int* where )
     target = 0;
     segment = 0;
     if ( verbose )
-        printf( " searching for LinuxBIOS MP table  @ 0x%08x (%dK)\n",
+        printf( " searching for coreboot MP table  @ 0x%08x (%dK)\n",
 	        target, segment );
     seekEntry( target );
     readEntry( buffer, ONE_KBYTE );

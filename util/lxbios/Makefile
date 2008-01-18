@@ -7,7 +7,7 @@ LDFLAGS =
 OBJS = common.o compute_ip_checksum.o hexdump.o cmos_lowlevel.o \
        reg_expr.o layout.o layout_file.o lbtable.o cmos_ops.o input_file.o \
        opts.o lxbios.o
-HEADERS = common.h ip_checksum.h linuxbios_tables.h hexdump.h \
+HEADERS = common.h ip_checksum.h coreboot_tables.h hexdump.h \
           cmos_lowlevel.h reg_expr.h layout.h layout_file.h lbtable.h \
           cmos_ops.h input_file.h opts.h
 

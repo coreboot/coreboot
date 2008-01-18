@@ -33,7 +33,7 @@
 #define LXBIOS_LAYOUT_FILE_H
 
 #include "common.h"
-#include "linuxbios_tables.h"
+#include "coreboot_tables.h"
 
 void set_layout_filename (const char filename[]);
 void get_layout_from_file (void);

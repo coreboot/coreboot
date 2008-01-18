@@ -31,7 +31,7 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include "flash.h"
-#include "linuxbios_tables.h"
+#include "coreboot_tables.h"
 
 char *lb_part = NULL, *lb_vendor = NULL;
 

@@ -33,7 +33,7 @@
 #define LXBIOS_LAYOUT_H
 
 #include "common.h"
-#include "linuxbios_tables.h"
+#include "coreboot_tables.h"
 
 #define LAYOUT_ENTRY_OVERLAP (LAYOUT_RESULT_START + 0)
 #define LAYOUT_ENTRY_BAD_LENGTH (LAYOUT_RESULT_START + 1)

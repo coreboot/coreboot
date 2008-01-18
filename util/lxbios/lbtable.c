@@ -32,7 +32,7 @@
 
 #include <sys/mman.h>
 #include "common.h"
-#include "linuxbios_tables.h"
+#include "coreboot_tables.h"
 #include "ip_checksum.h"
 #include "lbtable.h"
 #include "layout.h"

@@ -46,7 +46,7 @@ int show_id(uint8_t *bios, int size)
 		return 0;
 	}
 
-	printf_debug("LinuxBIOS last image size "
+	printf_debug("coreboot last image size "
 		     "(not ROM size) is %d bytes.\n", *walk);
 
 	walk--;
@@ -57,7 +57,7 @@ int show_id(uint8_t *bios, int size)
 	printf_debug("Mainboard ID: %s\n", mainboard_part);
 
 	/*
-	 * If lb_vendor is not set, the linuxbios table was
+	 * If lb_vendor is not set, the coreboot table was
 	 * not found. Nor was -mVENDOR:PART specified
 	 */
 

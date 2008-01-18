@@ -350,7 +350,7 @@ int main(int argc, char *argv[])
 	/* We look at the lbtable first to see if we need a
 	 * mainboard specific flash enable sequence.
 	 */
-	linuxbios_init();
+	coreboot_init();
 
 	/* try to enable it. Failure IS an option, since not all motherboards
 	 * really need this to be done, etc., etc.

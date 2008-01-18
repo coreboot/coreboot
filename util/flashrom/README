@@ -2,7 +2,7 @@
 Flashrom README
 -------------------------------------------------------------------------------
 
-This is the universal (LinuxBIOS) flash utility.
+This is the universal (coreboot) flash utility.
 
 Build Requirements
 ------------------
@@ -38,17 +38,17 @@ Usage
  is that flash info is dumped and the flash chip is set to writable.
 
 
-LinuxBIOS Table and Mainboard Identification
+coreboot Table and Mainboard Identification
 --------------------------------------------
 
-Flashrom reads the LinuxBIOS table to determine the current mainboard
-(parse DMI as well in future?). If no LinuxBIOS table could be read
+Flashrom reads the coreboot table to determine the current mainboard
+(parse DMI as well in future?). If no coreboot table could be read
 or if you want to override these values, you can specify -m, e.g.:
 
   flashrom -w --mainboard AGAMI:ARUMA agami_aruma.rom
 
 The following boards require the specification of the board name, if
-no LinuxBIOS table is found:
+no coreboot table is found:
 
 * IWILL DK8-HTX: use -m iwill:dk8_htx
 * Agami Aruma: use -m AGAMI:ARUMA

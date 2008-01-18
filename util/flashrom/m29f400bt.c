@@ -174,7 +174,7 @@ int write_m29f400bt(struct flashchip *flash, uint8_t *buf)
 	return 0;
 }
 
-int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf)
+int write_coreboot_m29f400bt(struct flashchip *flash, uint8_t *buf)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 

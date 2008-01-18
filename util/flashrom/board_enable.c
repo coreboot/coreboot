@@ -148,7 +148,7 @@ static int w83627thf_gpio4_4_raise_4e(const char *name)
 /**
  * Suited for VIAs EPIA M and MII, and maybe other CLE266 based EPIAs.
  *
- * We don't need to do this when using LinuxBIOS, GPIO15 is never lowered there.
+ * We don't need to do this when using coreboot, GPIO15 is never lowered there.
  */
 static int board_via_epia_m(const char *name)
 {
@@ -368,7 +368,7 @@ struct board_pciid_enable {
 	uint16_t second_card_vendor;
 	uint16_t second_card_device;
 
-	/* The vendor / part name from the LinuxBIOS table. */
+	/* The vendor / part name from the coreboot table. */
 	const char *lb_vendor;
 	const char *lb_part;
 
@@ -407,10 +407,10 @@ struct board_pciid_enable board_pciid_enables[] = {
 };
 
 /**
- * Match boards on LinuxBIOS table gathered vendor and part name.
+ * Match boards on coreboot table gathered vendor and part name.
  * Require main PCI IDs to match too as extra safety.
  */
-static struct board_pciid_enable *board_match_linuxbios_name(const char *vendor, const char *part)
+static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, const char *part)
 {
 	struct board_pciid_enable *board = board_pciid_enables;
 
@@ -478,7 +478,7 @@ int board_flash_enable(const char *vendor, const char *part)
 	int ret = 0;
 
 	if (vendor && part)
-		board = board_match_linuxbios_name(vendor, part);
+		board = board_match_coreboot_name(vendor, part);
 
 	if (!board)
 		board = board_match_pci_card_ids();

@@ -286,7 +286,7 @@ int find_romentry(char *name);
 int handle_romentries(uint8_t *buffer, uint8_t *content);
 
 /* lbtable.c */
-int linuxbios_init(void);
+int coreboot_init(void);
 extern char *lb_part, *lb_vendor;
 
 /* spi.c */
@@ -329,7 +329,7 @@ int erase_m29f400bt(struct flashchip *flash);
 int block_erase_m29f400bt(volatile uint8_t *bios,
 				 volatile uint8_t *dst);
 int write_m29f400bt(struct flashchip *flash, uint8_t *buf);
-int write_linuxbios_m29f400bt(struct flashchip *flash, uint8_t *buf);
+int write_coreboot_m29f400bt(struct flashchip *flash, uint8_t *buf);
 void toggle_ready_m29f400bt(volatile uint8_t *dst);
 void data_polling_m29f400bt(volatile uint8_t *dst, uint8_t data);
 void protect_m29f400bt(volatile uint8_t *bios);

@@ -7,7 +7,7 @@ flashrom \- a universal flash programming utility
 .SH DESCRIPTION
 .B flashrom
 is a universal flash programming utility for DIP, PLCC, or SPI flash ROM
-chips. It can be used to flash BIOS/LinuxBIOS/firmware images, for example.
+chips. It can be used to flash BIOS/coreboot/firmware images, for example.
 .SH OPTIONS
 If no file is specified, then all that happens
 is that flash info is dumped and the flash chip is set to writable.
@@ -46,8 +46,8 @@ README for a list.
 Force write without checking whether the ROM image file is really meant
 to be used on this board.
 .sp
-Note: This check only works while LinuxBIOS is running, and only for those
-boards where the LinuxBIOS code supports it.
+Note: This check only works while coreboot is running, and only for those
+boards where the coreboot code supports it.
 .TP
 .B "\-l, \-\-layout" <layout.file>
 Read ROM layout from file.
@@ -63,8 +63,8 @@ Show a help text and exit.
 .\".B "\-\-version"
 .\"Show version information and exit.
 .SH BUGS
-Please report any bugs at http://tracker.linuxbios.org/trac/LinuxBIOS/,
-or on the LinuxBIOS mailing list (http://linuxbios.org/Mailinglist).
+Please report any bugs at http://tracker.coreboot.org/trac/coreboot/,
+or on the coreboot mailing list (http://www.coreboot.org/Mailinglist).
 .SH LICENCE
 .B flashrom
 is covered by the GNU General Public License (GPL), version 2 or later.

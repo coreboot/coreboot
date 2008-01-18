@@ -124,7 +124,7 @@ static struct lb_header *find_lb_table(void *base, unsigned long start,
 				head->table_checksum);
 			continue;
 		}
-		fprintf(stdout, "Found LinuxBIOS table at 0x%08lx.\n", addr);
+		fprintf(stdout, "Found coreboot table at 0x%08lx.\n", addr);
 		return head;
 
 	};
@@ -181,7 +181,7 @@ static void search_lb_records(struct lb_record *rec, struct lb_record *last,
 	}
 }
 
-int linuxbios_init(void)
+int coreboot_init(void)
 {
 	uint8_t *low_1MB;
 	struct lb_header *lb_table;
@@ -201,16 +201,16 @@ int linuxbios_init(void)
 	if (lb_table) {
 		unsigned long addr;
 		addr = ((char *)lb_table) - ((char *)low_1MB);
-		printf_debug("LinuxBIOS table found at %p.\n", lb_table);
+		printf_debug("Coreboot table found at %p.\n", lb_table);
 		rec = (struct lb_record *)(((char *)lb_table) + lb_table->header_bytes);
 		last = (struct lb_record *)(((char *)rec) + lb_table->table_bytes);
-		printf_debug("LinuxBIOS header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
+		printf_debug("Coreboot header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
 		     lb_table->header_bytes, lb_table->header_checksum,
 		     lb_table->table_bytes, lb_table->table_checksum,
 		     lb_table->table_entries);
 		search_lb_records(rec, last, addr + lb_table->header_bytes);
 	} else {
-		printf("No LinuxBIOS table found.\n");
+		printf("No coreboot table found.\n");
 		return -1;
 	}
 

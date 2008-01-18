@@ -1,9 +1,9 @@
-#ifndef LINUXBIOS_TABLES_H
-#define LINUXBIOS_TABLES_H
+#ifndef COREBOOT_TABLES_H
+#define COREBOOT_TABLES_H
 
 #include <stdint.h>
 
-/* The linuxbios table information is for conveying information
+/* The coreboot table information is for conveying information
  * from the firmware to the loaded OS image.  Primarily this
  * is expected to be information that cannot be discovered by
  * other means, such as quering the hardware directly.
@@ -31,12 +31,12 @@
  * table entries and be backwards compatible, but it is not required.
  */
 
-/* Since LinuxBIOS is usually compiled 32bit, gcc will align 64bit 
- * types to 32bit boundaries. If the LinuxBIOS table is dumped on a 
+/* Since coreboot is usually compiled 32bit, gcc will align 64bit 
+ * types to 32bit boundaries. If the coreboot table is dumped on a 
  * 64bit system, a uint64_t would be aligned to 64bit boundaries, 
  * breaking the table format.
  *
- * lb_uint64 will keep 64bit LinuxBIOS table values aligned to 32bit
+ * lb_uint64 will keep 64bit coreboot table values aligned to 32bit
  * to ensure compatibility. They can be accessed with the two functions
  * below: unpack_lb64() and pack_lb64()
  *
@@ -207,4 +207,4 @@ struct cmos_checksum {
 #define CHECKSUM_PCBIOS	1
 };
 
-#endif				/* LINUXBIOS_TABLES_H */
+#endif				/* COREBOOT_TABLES_H */

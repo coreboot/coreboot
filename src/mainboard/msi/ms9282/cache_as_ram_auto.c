@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2006 AMD
  * Written by Yinghai Lu <yinghailu@amd.com> for AMD.

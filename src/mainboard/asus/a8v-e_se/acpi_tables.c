@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  * written by Stefan Reinauer <stepan@openbios.org>
  * ACPI FADT, FACS, and DSDT table support added by 
  *

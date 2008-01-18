@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Minimalist ACPI DSDT table for EPIA-M / MII
  * (C) Copyright 2004 Nick Barker <Nick.Barker9@btinternet.com>

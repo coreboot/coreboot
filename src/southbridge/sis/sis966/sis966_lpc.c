@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2003 Linux Networx
  * Copyright (C) 2003 SuSE Linux AG

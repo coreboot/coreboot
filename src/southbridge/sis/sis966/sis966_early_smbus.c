@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Silicon Integrated Systems Corp. (SiS)
  * Written by Morgan Tsai <my_tsai@sis.com> for SiS.

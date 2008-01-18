@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2005 Tyan Computer
  * (Written by Yinghai Lu <yinghailu@gmail.com> for Tyan Computer>

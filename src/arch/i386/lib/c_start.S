@@ -251,8 +251,8 @@ gdtaddr:
 
 	 .data
 
-	/* This is the gdt for GCC part of LinuxBIOS.
-	 * It is different from the gdt in ROMCC/ASM part of LinuxBIOS
+	/* This is the gdt for GCC part of coreboot.
+	 * It is different from the gdt in ROMCC/ASM part of coreboot
 	 * which is defined in entry32.inc */
 gdt:
 	/* selgdt 0, unused */

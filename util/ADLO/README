@@ -4,7 +4,7 @@ $Id: README,v 1.1 2002/11/25 02:07:53 rminnich Exp $
 
 ADLO
 
-	A project to combine LinuxBIOS and BOCHS BIOS to add support 
+	A project to combine coreboot and BOCHS BIOS to add support 
 	for booting legacy applications, such as Microsoft Windows.
 
 ==========================================
@@ -12,13 +12,13 @@ ADLO
 Boot Overvew:
 	
 	ADLO requires an boot loader with ELF support.
-	In our case it is either LinuxBIOS or EtherBOOT.
+	In our case it is either coreboot or EtherBOOT.
 
 	Sample execution paths:
 
-LinuxBIOS -> ADLO -> LILO -> LINUX
+coreboot -> ADLO -> LILO -> LINUX
 
-LinuxBIOS -> EtherBOOT -> ADLO -> LILO -> LINUX
+coreboot -> EtherBOOT -> ADLO -> LILO -> LINUX
 
 	Then it can start any real mode application.
 	In our case it could be LILO or GRUB, but
@@ -56,7 +56,7 @@ mainteance routines
 			select device to boot
 			set memory for Int15/EAX=E820
 			enable LBA
-			copy LinuxBIOS table [TODO]
+			copy coreboot table [TODO]
 		-shadow : 
 			enable/write/read
 		-copy:
@@ -177,11 +177,11 @@ Program Headers:
 Environment overview
 
 ADLO is an ELF file and thus can be loaded either directly from 1)
-LinuxBIOS, or 2) via EtherBOOT, or 3) via EtherBOOT+ AA patch for FS
+coreboot, or 2) via EtherBOOT, or 3) via EtherBOOT+ AA patch for FS
 support.
 
 1)
-Both LinuxBIOS and ADLO are on the same EEPROM chip. From end-user 
+Both coreboot and ADLO are on the same EEPROM chip. From end-user 
 viewpoint it is probably the most similar to the bios classic.
 (computer boots up and just loads whatever is in MBR).
 
@@ -201,15 +201,15 @@ Before ADLO starts.
 	ADLO requires an boot loader with ELF support.
 	In our case it is:
 
-	-LinuxBIOS
-	-LinuxBIOS and EtherBOOT
-	-LinuxBIOS and EtherBOOT + AA polled I/O patch (w/ FS support).
+	-coreboot
+	-coreboot and EtherBOOT
+	-coreboot and EtherBOOT + AA polled I/O patch (w/ FS support).
 
-	As little as LinuxBIOS only is required to get ADLO
+	As little as coreboot only is required to get ADLO
 	up and running.
 
 	For development purposes it is recommended full set of
-	LinuxBIOS + EtherBOOT and boot via DHCP/TFTP.
+	coreboot + EtherBOOT and boot via DHCP/TFTP.
 	
 ------------------------------------------
 

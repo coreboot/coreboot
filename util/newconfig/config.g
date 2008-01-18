@@ -200,7 +200,7 @@ def safe_open(file, mode):
 # -----------------------------------------------------------------------------
 
 class romimage:
-	"""A rom image is the ultimate goal of linuxbios"""
+	"""A rom image is the ultimate goal of coreboot"""
 	def __init__ (self, name):
 		# name of this rom image
 		self.name = name
@@ -1995,7 +1995,7 @@ def writeimagemakefile(image):
 	writemakefileheader(file, makefilepath)
 
 	# main rule
-	file.write("\nall: linuxbios.rom\n\n")
+	file.write("\nall: coreboot.rom\n\n")
 	file.write(".PHONY: all\n\n")
 	#file.write("include cpuflags\n")
 	# Putting "include cpuflags" in the Makefile has the problem that the
@@ -2122,7 +2122,7 @@ def writeimagemakefile(image):
 	for genfile in ['Makefile',
 			'nsuperio.c',
 			'static.c',
-			'LinuxBIOSDoc.config' ]:
+			'corebootDoc.config' ]:
 		file.write("GENERATED += %s\n" % genfile)
 	file.write("GENERATED += %s\n" % image.getincludefilename())
 
@@ -2156,9 +2156,9 @@ def writemakefile(path):
 	file.write("\n\n")	
 	file.write("include Makefile.settings\n\n")
 	for i, o in romimages.items():
-		file.write("%s/linuxbios.rom:\n" % o.getname())
+		file.write("%s/coreboot.rom:\n" % o.getname())
 		file.write("\tif (cd %s; \\\n" % o.getname())
-		file.write("\t\tmake linuxbios.rom)\\\n")
+		file.write("\t\tmake coreboot.rom)\\\n")
 		file.write("\tthen true; else exit 1; fi;\n\n")
 	file.write("clean: ")
 	for i in romimages.keys():
@@ -2171,11 +2171,11 @@ def writemakefile(path):
 	for i in buildroms:
 		file.write("%s:" % i.name)
 		for j in i.roms:
-			file.write(" %s/linuxbios.rom " % j)
+			file.write(" %s/coreboot.rom " % j)
 		file.write("\n")
 		file.write("\t cat ")
 		for j in i.roms:
-			file.write(" %s/linuxbios.rom " % j)
+			file.write(" %s/coreboot.rom " % j)
 		file.write("> %s\n\n" %i.name)
 
 
@@ -2183,7 +2183,7 @@ def writemakefile(path):
 	for i in romimages.keys():
 		file.write(" %s-clean" % i)
 	for i, o in romimages.items():
-		file.write(" %s/linuxbios.rom" % o.getname())
+		file.write(" %s/coreboot.rom" % o.getname())
 	file.write("\n\n")
 
 	writemakefilefooter(file, makefilepath)
@@ -2304,7 +2304,7 @@ def verifyparse():
 if __name__=='__main__':
 	from sys import argv
 	if (len(argv) < 3):
-		fatal("Args: <file> <path to linuxbios>")
+		fatal("Args: <file> <path to coreboot>")
 
 	top_config_file = os.path.abspath(sys.argv[1])
 

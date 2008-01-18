@@ -42,7 +42,7 @@ uses HEAP_SIZE
 uses MAINBOARD
 uses MAINBOARD_VENDOR
 uses MAINBOARD_PART_NUMBER
-uses LINUXBIOS_EXTRA_VERSION
+uses COREBOOT_EXTRA_VERSION
 uses CROSS_COMPILE
 uses CC
 uses HOSTCC
@@ -89,7 +89,7 @@ default CONFIG_FS_ISO9660=1
 default CONFIG_FS_FAT=1
 default AUTOBOOT_CMDLINE="hdc1:/vmlinuz"
 
-# LinuxBIOS must fit into 128KB
+# coreboot must fit into 128KB
 default ROM_IMAGE_SIZE=131072
 default ROM_SIZE={ROM_IMAGE_SIZE+PAYLOAD_SIZE}
 default PAYLOAD_SIZE=262144
@@ -108,11 +108,11 @@ default _RESET=_ROMBASE+0x100
 ## Exception vectors (other than reset vector)
 default _EXCEPTION_VECTORS=_RESET+0x100
 
-## Start of linuxBIOS in the boot rom
+## Start of coreboot in the boot rom
 ## = _RESET + exeception vector table size
 default _ROMSTART=_RESET+0x3100
 
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 default _RAMBASE=0x00100000
 default _RAMSTART=0x00100000
 

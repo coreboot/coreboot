@@ -8,7 +8,7 @@ mainboard ibm/e325
 #
 ###
 ### Compute the start location and size size of
-### The linuxBIOS bootloader.
+### The coreboot bootloader.
 ###
 
 #
@@ -16,7 +16,7 @@ mainboard ibm/e325
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x20000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+	option COREBOOT_EXTRA_VERSION=".0Normal"
 #	payload ../../filo.elf
 	payload ../../../payloads/filo.elf
 end
@@ -24,11 +24,11 @@ end
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x20000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 #	payload ../../filo.elf
 	payload ../../../payloads/filo.elf
 # use this to test a build if you don't have the etherboot
 #	payload /etc/hosts
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

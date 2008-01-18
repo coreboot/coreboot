@@ -1,9 +1,9 @@
-INPUT(linuxbios_apc.rom)
+INPUT(coreboot_apc.rom)
 SECTIONS
 {
         .apcrom . : {
                 _apcrom = .;
-                linuxbios_apc.rom(*)
+                coreboot_apc.rom(*)
                 _eapcrom = .;
         }
         _iseg_apc = DCACHE_RAM_BASE;

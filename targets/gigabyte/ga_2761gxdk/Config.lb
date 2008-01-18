@@ -31,7 +31,7 @@ romimage "normal"
         option USE_FAILOVER_IMAGE=0
         option ROM_IMAGE_SIZE=0x20000
         option XIP_ROM_SIZE=0x40000
-        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
+        option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
         payload ../../../../payloads/filo_uda1.elf
 end
 
@@ -40,7 +40,7 @@ romimage "fallback"
         option USE_FALLBACK_IMAGE=1
         option ROM_IMAGE_SIZE=0x20000
         option XIP_ROM_SIZE=0x40000
-        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+        option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
         payload ../../../../payloads/filo_uda1.elf
 end
 
@@ -49,8 +49,8 @@ romimage "failover"
         option USE_FALLBACK_IMAGE=0
         option ROM_IMAGE_SIZE=FAILOVER_SIZE
         option XIP_ROM_SIZE=FAILOVER_SIZE
-        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
+        option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
 end
 
-#       buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
-        buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback" "failover"
+#       buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+        buildrom ./coreboot.rom ROM_SIZE "normal" "fallback" "failover"

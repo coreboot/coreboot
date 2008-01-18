@@ -394,7 +394,7 @@ extern void jmp_to_elf_entry(void *entry, unsigned long buffer);
 struct lb_memory;
 extern int elfboot(struct lb_memory *mem);
 
-#define FIRMWARE_TYPE "LinuxBIOS"
+#define FIRMWARE_TYPE "coreboot"
 #define BOOTLOADER "elfboot"
 #define BOOTLOADER_VERSION "1.3"
 

@@ -1,5 +1,5 @@
 /*
-	2005.12 yhlu add linuxbios_ram cross the vga font buffer handling
+	2005.12 yhlu add coreboot_ram cross the vga font buffer handling
 */
 
 #include <console/console.h>

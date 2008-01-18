@@ -21,7 +21,7 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
         "wrmsr\n\t"
 #endif
 
-        /* disable fixed mtrr from now on, it will be enabled by linuxbios_ram again*/
+        /* disable fixed mtrr from now on, it will be enabled by coreboot_ram again*/
         "movl    $0xC0010010, %ecx\n\t"
 //        "movl    $SYSCFG_MSR, %ecx\n\t"
         "rdmsr\n\t"

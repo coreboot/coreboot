@@ -206,14 +206,14 @@ u32 CALLCONV AmdRotateLeft(u32 value, u8 size, u32 count)
 
 void CALLCONV AmdPCIRead(SBDFO loc, u32 *Value)
 {
-	/* Use LinuxBIOS PCI functions */
+	/* Use coreboot PCI functions */
 	*Value = pci_read_config32((loc & 0xFFFFF000), SBDFO_OFF(loc));
 }
 
 
 void CALLCONV AmdPCIWrite(SBDFO loc, u32 *Value)
 {
-	/* Use LinuxBIOS PCI functions */
+	/* Use coreboot PCI functions */
 	pci_write_config32((loc & 0xFFFFF000), SBDFO_OFF(loc), *Value);
 }
 

@@ -7,7 +7,7 @@
  *				: heap
  *				: stack
  *	_ROMBASE
- *				: linuxbios text 
+ *				: coreboot text 
  *				: readonly text
  */
 /*

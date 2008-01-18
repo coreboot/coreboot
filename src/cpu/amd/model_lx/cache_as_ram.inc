@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define	LX_STACK_BASE		DCACHE_RAM_BASE		/* this is where the DCache will be mapped and be used as stack, It would be cool if it was the same base as LinuxBIOS normal stack */
+#define	LX_STACK_BASE		DCACHE_RAM_BASE		/* this is where the DCache will be mapped and be used as stack, It would be cool if it was the same base as coreboot normal stack */
 #define	LX_STACK_END		LX_STACK_BASE+(DCACHE_RAM_SIZE-1)
 
 #define	LX_NUM_CACHELINES	0x080	/* there are 128lines per way */
@@ -213,7 +213,7 @@ __main:
 
 	cld				/* clear direction flag */
 
-	/* copy linuxBIOS from it's initial load location to
+	/* copy coreboot from it's initial load location to
 	 * the location it is compiled to run at.
 	 * Normally this is copying from FLASH ROM to RAM.
 	 */
@@ -363,8 +363,8 @@ crt_console_tx_string:
 
 #if defined(CONSOLE_DEBUG_TX_STRING) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
 .section ".rom.data"
-str_copying_to_ram:  .string "Copying LinuxBIOS to ram.\r\n"
-str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"
+str_copying_to_ram:  .string "Copying coreboot to ram.\r\n"
+str_pre_main:        .string "Jumping to coreboot.\r\n"
 .previous
 
 #endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */

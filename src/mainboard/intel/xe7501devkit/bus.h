@@ -1,7 +1,7 @@
 #ifndef XE7501DEVKIT_BUS_H_INCLUDED
 #define XE7501DEVKIT_BUS_H_INCLUDED
 
-// These were determined by seeing how LinuxBIOS enumerates the various
+// These were determined by seeing how coreboot enumerates the various
 // PCI (and PCI-like) buses on the board.
 
 #define PCI_BUS_CHIPSET		0

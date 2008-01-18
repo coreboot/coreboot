@@ -185,7 +185,7 @@ static void bcm5785_early_setup(void)
         byte |= (1<<0); // SATA enable
         pci_write_config8(dev, 0x84, byte);
 
-// wdt and cf9 for later in linuxbios_ram to call hard_reset
+// wdt and cf9 for later in coreboot_ram to call hard_reset
         bcm5785_enable_wdt_port_cf9();
 
         bcm5785_enable_msg();

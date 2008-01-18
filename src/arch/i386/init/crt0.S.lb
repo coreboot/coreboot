@@ -16,7 +16,7 @@
  *
  * - Converted to gas assembly, and refitted to work with etherboot.
  *   Eric Biederman 20 Aug 2002
- * - Merged the nrv2b decompressor into crt0.base of LinuxBIOS
+ * - Merged the nrv2b decompressor into crt0.base of coreboot
  *   Eric Biederman 26 Sept 2002
  */
 
@@ -65,7 +65,7 @@ __main:
 
 	cld				/* clear direction flag */
 	
-	/* copy linuxBIOS from it's initial load location to 
+	/* copy coreboot from it's initial load location to 
 	 * the location it is compiled to run at.
 	 * Normally this is copying from FLASH ROM to RAM.
 	 */
@@ -215,8 +215,8 @@ crt_console_tx_string:
 
 #if defined(CONSOLE_DEBUG_TX_STRING) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
 .section ".rom.data"
-str_copying_to_ram:  .string "Copying LinuxBIOS to RAM.\r\n"
-str_pre_main:        .string "Jumping to LinuxBIOS.\r\n"
+str_copying_to_ram:  .string "Copying coreboot to RAM.\r\n"
+str_pre_main:        .string "Jumping to coreboot.\r\n"
 .previous
 
 #endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */

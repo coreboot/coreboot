@@ -1,5 +1,5 @@
 /*
- * Initial LinuxBIOS ACPI Support - headers and defines.
+ * coreboot ACPI Support - headers and defines.
  * 
  * written by Stefan Reinauer <stepan@openbios.org>
  * (C) 2004 SUSE LINUX AG

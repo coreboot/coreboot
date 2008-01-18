@@ -2,5 +2,5 @@
 TYANMB=s2885
 cd "$TYANMB"
 make
-cat ./normal/linuxbios.rom ./fallback/linuxbios.rom > $TYANMB"_linuxbios.rom"
-cp -f $TYANMB"_linuxbios.rom" /home/yhlu/
+cat ./normal/coreboot.rom ./fallback/coreboot.rom > $TYANMB"_coreboot.rom"
+cp -f $TYANMB"_coreboot.rom" /home/yhlu/

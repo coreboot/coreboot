@@ -1358,7 +1358,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl) {
 }
 
 
-	/* I have finally seen ram bad enough to cause LinuxBIOS
+	/* I have finally seen ram bad enough to cause coreboot
 	 * to die in mysterious ways, before booting up far
 	 * enough to run a memory tester.  This code attempts
 	 * to catch this blatantly bad ram, with a spot check.

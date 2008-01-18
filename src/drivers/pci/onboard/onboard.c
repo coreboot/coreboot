@@ -24,8 +24,8 @@
 	in your MB targets Config.lb, afer romimage "normal"
 	3. create you vgabios.bin under normal bios and put that in dir that targets Config residues.
 		# dd if=/dev/mem of=atix.rom skip=1536 count=96
-	4. after build linuxbios.rom
-		# cat ../atix.rom ./normal/linuxbios.rom ./fallback/linuxbios.rom > linuxbios.rom
+	4. after build coreboot.rom
+		# cat ../atix.rom ./normal/coreboot.rom ./fallback/coreboot.rom > coreboot.rom
 	or use nsxv to build you image
 		# time ./nsxv s2850
 
@@ -52,8 +52,8 @@ eval make &> "$LBROOT/x_m.txt"
                 tail -n 15 "$LBROOT/x_m.txt"
                 exit
         fi
-cat ../atix.rom ./normal/linuxbios.rom ./fallback/linuxbios.rom > "$LBROOT/rom/"$MBMODEL"_linuxbios.rom"
-cp -f "$LBROOT/rom/"$MBMODEL"_linuxbios.rom" /home/yhlu/
+cat ../atix.rom ./normal/coreboot.rom ./fallback/coreboot.rom > "$LBROOT/rom/"$MBMODEL"_coreboot.rom"
+cp -f "$LBROOT/rom/"$MBMODEL"_coreboot.rom" /home/yhlu/
 
 date
 

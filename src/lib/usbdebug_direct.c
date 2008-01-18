@@ -5,7 +5,7 @@
  *	modify it under the terms of the GNU General Public License version
  *	2 as published by the Free Software Foundation.
  *
- *	2006.12.10 yhlu moved it to LinuxBIOS and use struct instead
+ *	2006.12.10 yhlu moved it to corbeoot and use struct instead
  */
 #ifndef __ROMCC__
 #include <console/console.h>

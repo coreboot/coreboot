@@ -45,7 +45,7 @@
 #include <x86emu/regs.h>
 #include "debug.h"
 #include "prim_ops.h"
-#ifdef LINUXBIOS_VERSION
+#ifdef COREBOOT_VERSION
 #include "arch/io.h"
 #else
 #include <sys/io.h>

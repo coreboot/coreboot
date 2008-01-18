@@ -1,6 +1,6 @@
 #######################################################
 #
-# Main options file for LinuxBIOS
+# Main options file for coreboot
 #
 # Each option used by a part must be defined in
 # this file. The format for options is:
@@ -96,62 +96,62 @@ define OBJCOPY
 	export always
 	comment "Objcopy command"
 end
-define LINUXBIOS_VERSION
+define COREBOOT_VERSION
 	default "2.0.0"
 	export always
 	format "\"%s\""
-	comment "LinuxBIOS version"
+	comment "coreboot version"
 end
-define LINUXBIOS_EXTRA_VERSION
+define COREBOOT_EXTRA_VERSION
         default ""
         export used
 	format "\"%s\""
-        comment "LinuxBIOS extra version"
+        comment "coreboot extra version"
 end
-define LINUXBIOS_BUILD
+define COREBOOT_BUILD
 	default "$(shell date)"
 	export always
 	format "\"%s\""
 	comment "Build date"
 end
-define LINUXBIOS_COMPILE_TIME
+define COREBOOT_COMPILE_TIME
 	default "$(shell date +%T)"
 	export always
 	format "\"%s\""
 	comment "Build time"
 end
-define LINUXBIOS_COMPILE_BY
+define COREBOOT_COMPILE_BY
 	default "$(shell whoami)"
 	export always
 	format "\"%s\""
 	comment "Who build this image"
 end
-define LINUXBIOS_COMPILE_HOST
+define COREBOOT_COMPILE_HOST
 	default "$(shell hostname)"
 	export always
 	format "\"%s\""
 	comment "Build host"
 end
 
-define LINUXBIOS_COMPILE_DOMAIN
+define COREBOOT_COMPILE_DOMAIN
 	default "$(shell dnsdomainname)"
 	export always
 	format "\"%s\""
 	comment "Build domain name"
 end
-define LINUXBIOS_COMPILER
+define COREBOOT_COMPILER
 	default "$(shell $(CC) $(CFLAGS) -v 2>&1 | tail -n 1)"
 	export always
 	format "\"%s\""
 	comment "Build compiler"
 end
-define LINUXBIOS_LINKER
+define COREBOOT_LINKER
 	default "$(shell  $(CC) -Wl,--version 2>&1 | grep version | tail -n 1)"
 	export always
 	format "\"%s\""
 	comment "Build linker"
 end
-define LINUXBIOS_ASSEMBLER
+define COREBOOT_ASSEMBLER
 	default "$(shell  touch dummy.s ; $(CC) -c -Wa,-v dummy.s 2>&1; rm -f dummy.s dummy.o )"
 	export always
 	format "\"%s\""
@@ -242,13 +242,13 @@ define _ROMBASE
 	default {PAYLOAD_SIZE}
 	format "0x%x"
 	export always
-	comment "Base address of LinuxBIOS in ROM"
+	comment "Base address of coreboot in ROM"
 end
 define _ROMSTART
 	default none
 	format "0x%x"
 	export used
-	comment "Start address of LinuxBIOS in ROM"
+	comment "Start address of coreboot in ROM"
 end
 define _RESET
 	default {_ROMBASE}
@@ -278,13 +278,13 @@ define _RAMBASE
 	default none
 	format "0x%x"
 	export always
-	comment "Base address of LinuxBIOS in RAM"
+	comment "Base address of coreboot in RAM"
 end
 define _RAMSTART
 	default none
 	format "0x%x"
 	export used
-	comment "Start address of LinuxBIOS in RAM"
+	comment "Start address of coreboot in RAM"
 end
 define USE_DCACHE_RAM
 	default 0
@@ -317,7 +317,7 @@ end
 define CONFIG_AP_CODE_IN_CAR
         default 0
         export always
-        comment "will copy linuxbios_apc to AP cache ane execute in AP"
+        comment "will copy coreboot_apc to AP cache ane execute in AP"
 end
 define MEM_TRAIN_SEQ
         default 0
@@ -333,13 +333,13 @@ define XIP_ROM_BASE
 	default 0
 	format "0x%x"
 	export used
-	comment "Start address of area to cache during LinuxBIOS execution directly from ROM"
+	comment "Start address of area to cache during coreboot execution directly from ROM"
 end
 define XIP_ROM_SIZE
 	default 0
 	format "0x%x"
 	export used
-	comment "Size of area to cache during LinuxBIOS execution directly from ROM"
+	comment "Size of area to cache during coreboot execution directly from ROM"
 end
 define CONFIG_COMPRESS
 	default 1
@@ -377,13 +377,13 @@ define LB_CKS_RANGE_START
 	default 49
 	format "%d"
 	export always
-	comment "First CMOS byte to use for LinuxBIOS options"
+	comment "First CMOS byte to use for coreboot options"
 end
 define LB_CKS_RANGE_END
 	default 125
 	format "%d"
 	export always
-	comment "Last CMOS byte to use for LinuxBIOS options"
+	comment "Last CMOS byte to use for coreboot options"
 end
 define LB_CKS_LOC
 	default 126

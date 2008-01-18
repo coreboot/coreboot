@@ -29,7 +29,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 	 */
 	flush_dcache();
 
-	/* On ppc we don't currently support loading over LinuxBIOS.
+	/* On ppc we don't currently support loading over coreboot.
 	 * So ignore the buffer.
 	 */
 

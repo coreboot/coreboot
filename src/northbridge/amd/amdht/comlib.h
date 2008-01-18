@@ -26,7 +26,7 @@
 
 #include "porting.h"
 
-/* include LinuxBIOS pci functions */
+/* include coreboot pci functions */
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 

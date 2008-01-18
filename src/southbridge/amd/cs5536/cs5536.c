@@ -511,7 +511,7 @@ void chipsetinit(void)
 
 	post_code(P80_CHIPSET_INIT);
 
-	/* we hope NEVER to be in linuxbios when S3 resumes
+	/* we hope NEVER to be in coreboot when S3 resumes
 	   if (! IsS3Resume()) */
 	{
 		struct acpiinit *aci = acpi_init_table;

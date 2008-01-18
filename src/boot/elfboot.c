@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* Maximum physical address we can use for the linuxBIOS bounce buffer.
+/* Maximum physical address we can use for the coreboot bounce buffer.
  */
 #ifndef MAX_ADDR
 #define MAX_ADDR -1UL
@@ -88,16 +88,16 @@ int verify_ip_checksum(
  * a machine, and implementing general relocation is hard.
  *
  * The solution:
- * - Allocate a buffer twice the size of the linuxBIOS image.
- * - Anything that would overwrite linuxBIOS copy into the lower half of
+ * - Allocate a buffer twice the size of the coreboot image.
+ * - Anything that would overwrite coreboot copy into the lower half of
  *   the buffer. 
- * - After loading an ELF image copy linuxBIOS to the upper half of the
+ * - After loading an ELF image copy coreboot to the upper half of the
  *   buffer.
  * - Then jump to the loaded image.
  * 
  * Benefits:
  * - Nearly arbitrary standalone executables can be loaded.
- * - LinuxBIOS is preserved, so it can be returned to.
+ * - Coreboot is preserved, so it can be returned to.
  * - The implementation is still relatively simple,
  *   and much simpler then the general case implemented in kexec.
  * 
@@ -110,7 +110,7 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 	unsigned long buffer;
 	int i;
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
-	/* Double linuxBIOS size so I have somewhere to place a copy to return to */
+	/* Double coreboot size so I have somewhere to place a copy to return to */
 	lb_size = lb_size + lb_size;
 	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	buffer = 0;
@@ -251,7 +251,7 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 
 static void relocate_segment(unsigned long buffer, struct segment *seg)
 {
-	/* Modify all segments that want to load onto linuxBIOS
+	/* Modify all segments that want to load onto coreboot
 	 * to load onto the bounce buffer instead.
 	 */
 	unsigned long lb_start = (unsigned long)&_ram_seg;
@@ -264,7 +264,7 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 	start = seg->s_addr;
 	middle = start + seg->s_filesz;
 	end = start + seg->s_memsz;
-	/* I don't conflict with linuxBIOS so get out of here */
+	/* I don't conflict with coreboot so get out of here */
 	if ((end <= lb_start) || (start >= lb_end))
 		return;
 
@@ -272,7 +272,7 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 		start, middle, end);
 
 	/* Slice off a piece at the beginning
-	 * that doesn't conflict with linuxBIOS.
+	 * that doesn't conflict with coreboot.
 	 */
 	if (start < lb_start) {
 		struct segment *new;
@@ -311,7 +311,7 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 	}
 	
 	/* Slice off a piece at the end 
-	 * that doesn't conflict with linuxBIOS 
+	 * that doesn't conflict with coreboot 
 	 */
 	if (end > lb_end) {
 		unsigned long len = lb_end - start;
@@ -545,7 +545,7 @@ int elfload(struct lb_memory *mem,
 	struct verify_callback *cb_chain;
 	unsigned long bounce_buffer;
 
-	/* Find a bounce buffer so I can load to linuxBIOS's current location */
+	/* Find a bounce buffer so I can load to coreboot's current location */
 	bounce_buffer = get_bounce_buffer(mem);
 	if (!bounce_buffer) {
 		printk_err("Could not find a bounce buffer...\n");

@@ -104,16 +104,16 @@ void lb_strings(struct lb_header *header)
 		uint32_t tag;
 		const uint8_t *string;
 	} strings[] = {
-		{ LB_TAG_VERSION,        linuxbios_version,        },
-		{ LB_TAG_EXTRA_VERSION,  linuxbios_extra_version,  },
-		{ LB_TAG_BUILD,          linuxbios_build,          },
-		{ LB_TAG_COMPILE_TIME,   linuxbios_compile_time,   },
-		{ LB_TAG_COMPILE_BY,     linuxbios_compile_by,     },
-		{ LB_TAG_COMPILE_HOST,   linuxbios_compile_host,   },
-		{ LB_TAG_COMPILE_DOMAIN, linuxbios_compile_domain, },
-		{ LB_TAG_COMPILER,       linuxbios_compiler,       },
-		{ LB_TAG_LINKER,         linuxbios_linker,         },
-		{ LB_TAG_ASSEMBLER,      linuxbios_assembler,      },
+		{ LB_TAG_VERSION,        coreboot_version,        },
+		{ LB_TAG_EXTRA_VERSION,  coreboot_extra_version,  },
+		{ LB_TAG_BUILD,          coreboot_build,          },
+		{ LB_TAG_COMPILE_TIME,   coreboot_compile_time,   },
+		{ LB_TAG_COMPILE_BY,     coreboot_compile_by,     },
+		{ LB_TAG_COMPILE_HOST,   coreboot_compile_host,   },
+		{ LB_TAG_COMPILE_DOMAIN, coreboot_compile_domain, },
+		{ LB_TAG_COMPILER,       coreboot_compiler,       },
+		{ LB_TAG_LINKER,         coreboot_linker,         },
+		{ LB_TAG_ASSEMBLER,      coreboot_assembler,      },
 	};
 	unsigned int i;
 	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
@@ -183,7 +183,7 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk_debug("Wrote linuxbios table at: %p - %p  checksum %lx\n",
+	printk_debug("Wrote coreboot table at: %p - %p  checksum %lx\n",
 		head, rec, head->table_checksum);
 	return (unsigned long)rec;
 }
@@ -297,8 +297,8 @@ static void lb_add_memory_range(struct lb_memory *mem,
 	lb_cleanup_memory_ranges(mem);
 }
 
-/* Routines to extract part so the linuxBIOS table or 
- * information from the linuxBIOS table after we have written it.
+/* Routines to extract part so the coreboot table or 
+ * information from the coreboot table after we have written it.
  * Currently get_lb_mem relies on a global we can change the
  * implementaiton.
  */
@@ -330,7 +330,7 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	return mem;
 }
 
-unsigned long write_linuxbios_table( 
+unsigned long write_coreboot_table( 
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end)
 {
@@ -363,9 +363,9 @@ unsigned long write_linuxbios_table(
 
 	/* Note:
 	 * I assume that there is always memory at immediately after
-	 * the low_table_end.  This means that after I setup the linuxbios table.
+	 * the low_table_end.  This means that after I setup the coreboot table.
 	 * I can trivially fixup the reserved memory ranges to hold the correct
-	 * size of the linuxbios table.
+	 * size of the coreboot table.
 	 */
 
 	/* Record our motheboard */

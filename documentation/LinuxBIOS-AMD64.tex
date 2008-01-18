@@ -374,7 +374,7 @@ path to a static elf binary (i.e Linux kernel or etherboot)
 romimage "normal"
         option USE_FALLBACK_IMAGE=0
         option ROM_IMAGE_SIZE=0x10000
-        option LINUXBIOS_EXTRA_VERSION=".0Normal"
+        option COREBOOT_EXTRA_VERSION=".0Normal"
         mainboard amd/solo
         payload /suse/stepan/tg3ide_
         disk.zelf
@@ -471,7 +471,7 @@ Set to \texttt{1} to build a fallback image. Defaults to \texttt{0}
 
 Default image size. Defaults to \texttt{65535} bytes.
 
-\item \begin{verbatim}LINUXBIOS_EXTRA_VERSION\end{verbatim}
+\item \begin{verbatim}COREBOOT_EXTRA_VERSION\end{verbatim}
 
 LinuxBIOS extra version. This option has an empty string as default. Set
 to any string to add an extra version string to your LinuxBIOS build.

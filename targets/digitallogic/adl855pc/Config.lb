@@ -9,15 +9,15 @@ option MAXIMUM_CONSOLE_LOGLEVEL=10
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+	option COREBOOT_EXTRA_VERSION=".0Normal"
 	payload /etc/hosts
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload /etc/hosts
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

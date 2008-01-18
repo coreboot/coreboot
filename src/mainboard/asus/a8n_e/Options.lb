@@ -59,7 +59,7 @@ uses MAINBOARD_VENDOR
 uses MAINBOARD
 uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-uses LINUXBIOS_EXTRA_VERSION
+uses COREBOOT_EXTRA_VERSION
 uses _RAMBASE
 uses CONFIG_GDB_STUB
 uses CROSS_COMPILE
@@ -127,7 +127,7 @@ default HAVE_FALLBACK_BOOT=1
 default HAVE_FAILOVER_BOOT=1
 
 ##
-## Build code to reset the motherboard from linuxBIOS
+## Build code to reset the motherboard from coreboot
 ##
 default HAVE_HARD_RESET=1
 
@@ -149,7 +149,7 @@ default HAVE_MP_TABLE=1
 default HAVE_OPTION_TABLE=1
 
 ##
-## Move the default LinuxBIOS cmos range off of AMD RTC registers
+## Move the default coreboot cmos range off of AMD RTC registers
 ##
 default LB_CKS_RANGE_START=49
 default LB_CKS_RANGE_END=122
@@ -223,10 +223,10 @@ default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x10f1
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2891
 
 ###
-### LinuxBIOS layout values
+### coreboot layout values
 ###
 
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+## ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
 default ROM_IMAGE_SIZE = (64*1024)
 #65536
 
@@ -247,7 +247,7 @@ default HEAP_SIZE=0x4000
 default USE_OPTION_TABLE = (!USE_FALLBACK_IMAGE) && (!USE_FAILOVER_IMAGE )
 
 ##
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 ##
 default _RAMBASE=0x00004000
 
@@ -296,7 +296,7 @@ default TTYS0_BASE=0x3f8
 default TTYS0_LCS=0x3
 
 ##
-### Select the linuxBIOS loglevel
+### Select the coreboot loglevel
 ##
 ## EMERG      1   system is unusable               
 ## ALERT      2   action must be taken immediately 

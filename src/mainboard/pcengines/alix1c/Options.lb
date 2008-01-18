@@ -30,7 +30,7 @@ uses IRQ_SLOT_COUNT
 uses MAINBOARD
 uses MAINBOARD_VENDOR
 uses MAINBOARD_PART_NUMBER
-uses LINUXBIOS_EXTRA_VERSION
+uses COREBOOT_EXTRA_VERSION
 uses ARCH
 uses FALLBACK_SIZE
 uses STACK_SIZE
@@ -90,7 +90,7 @@ default HAVE_FALLBACK_BOOT=1
 default HAVE_MP_TABLE=0
 
 ##
-## Build code to reset the motherboard from linuxBIOS
+## Build code to reset the motherboard from coreboot
 ##
 default HAVE_HARD_RESET=0
 
@@ -111,10 +111,10 @@ default IRQ_SLOT_COUNT=5
 default HAVE_OPTION_TABLE=0
 
 ###
-### LinuxBIOS layout values
+### coreboot layout values
 ###
 
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+## ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
 default ROM_IMAGE_SIZE = 65536
 default FALLBACK_SIZE = 131072
 
@@ -177,7 +177,7 @@ default TTYS0_BASE=0x3f8
 default TTYS0_LCS=0x3
 
 ##
-### Select the linuxBIOS loglevel
+### Select the coreboot loglevel
 ##
 ## EMERG      1   system is unusable               
 ## ALERT      2   action must be taken immediately 

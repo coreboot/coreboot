@@ -75,7 +75,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	 Set default values for CPU registers
 	======================================================================*/
 
-	/* NOTE : For LinuxBIOS, we don't need to set mtrr enables here because
+	/* NOTE : For coreboot, we don't need to set mtrr enables here because
 	they are still enable from cache_as_ram.inc */
 
 	addr = 0x250;
@@ -88,7 +88,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	/*======================================================================
 	  Set variable MTRR values
 	 ======================================================================*/
-	/* NOTE: for LinuxBIOS change from 0x200 to 0x204: LinuxBIOS is using
+	/* NOTE: for coreboot change from 0x200 to 0x204: coreboot is using
 		0x200, 0x201 for [1M, CONFIG_TOP_MEM)
 		0x202, 0x203 for ROM Caching
 		 */

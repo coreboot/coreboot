@@ -36,7 +36,7 @@ static void pci_domain_read_resources(device_t dev)
 /*
  * pci_domain_set_resources creates memory resources describing the
  * fixed memory on the system. This is not actually used anywhere
- * except when the linuxbios table is generated.
+ * except when the coreboot table is generated.
  */
 static void pci_domain_set_resources(device_t dev)
 {

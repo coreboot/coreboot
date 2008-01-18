@@ -2,7 +2,7 @@
  * Copyright (C) 2003 by SONE Takeshi <ts1@tsn.or.jp> and others.
  * This program is licensed under the terms of GNU General Public License.
  *
- * Modified for LinuxBIOS by Greg Watson <gwatson@lanl.gov>
+ * Modified for coreboot by Greg Watson <gwatson@lanl.gov>
  */
 
 #include <console/console.h>

@@ -1,5 +1,5 @@
 /*
- * LinuxBIOS ACPI Table support
+ * coreboot ACPI Table support
  * written by Stefan Reinauer <stepan@openbios.org>
  * ACPI FADT, FACS, and DSDT table support added by 
  * Nick Barker <nick.barker9@btinternet.com>, and those portions

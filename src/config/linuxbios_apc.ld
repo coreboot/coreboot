@@ -15,7 +15,7 @@
 /*
  *	Written by Johan Rydberg, based on work by Daniel Kahlin.
  *      Rewritten by Eric Biederman
- *  2005.12 yhlu add linuxbios_ram cross the vga font buffer handling
+ *  2005.12 yhlu add coreboot_ram cross the vga font buffer handling
  *  2006.05 yhlu tailed it to use it for AP code in cache
  */
 /*
@@ -85,12 +85,12 @@ SECTIONS
         }
         _eheap = .;
 	/* The ram segment
- 	 * This is all address of the memory resident copy of linuxBIOS.
+ 	 * This is all address of the memory resident copy of coreboot.
 	 */
 	_ram_seg = _text; 
 	_eram_seg = _eheap;
 
-	_bogus = ASSERT( ( _eram_seg <= ((DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE))) , "linuxbios_apc is too big");
+	_bogus = ASSERT( ( _eram_seg <= ((DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE))) , "coreboot_apc is too big");
 
 	/DISCARD/ : {
 		*(.comment)

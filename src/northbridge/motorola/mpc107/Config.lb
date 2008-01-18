@@ -1,5 +1,5 @@
 #
-# Objects linked with linuxbios
+# Objects linked with coreboot
 #
 
 config chip.h

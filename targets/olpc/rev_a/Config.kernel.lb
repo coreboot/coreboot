@@ -9,7 +9,7 @@ option FALLBACK_SIZE=ROM_SIZE
 #romimage "normal"
 #	option USE_FALLBACK_IMAGE=0
 #	option ROM_IMAGE_SIZE=0x10000
-#	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+#	option COREBOOT_EXTRA_VERSION=".0Normal"
 ##	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 ##	payload ../../../../tg3--ide_disk.zelf	
 ##	payload ../../../../../lnxieepro100.ebi
@@ -21,7 +21,7 @@ option FALLBACK_SIZE=ROM_SIZE
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 #	payload ../../../../../lnxieepro100.ebia
@@ -31,5 +31,5 @@ romimage "fallback"
 	payload /tmp/olpc
 end
 
-buildrom ./linuxbios.rom ROM_SIZE  "fallback"
-#buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE  "fallback"
+#buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

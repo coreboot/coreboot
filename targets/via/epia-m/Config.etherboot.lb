@@ -17,17 +17,17 @@ option HAVE_FALLBACK_BOOT=1
 
 ###
 ### Compute the location and size of where this firmware image
-### (linuxBIOS plus bootloader) will live in the boot rom chip.
+### (coreboot plus bootloader) will live in the boot rom chip.
 ###
 option FALLBACK_SIZE=131072
 
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 option _RAMBASE=0x00004000
 
 #
 ###
 ### Compute the start location and size size of
-### The linuxBIOS bootloader.
+### The coreboot bootloader.
 ###
 
 #
@@ -36,7 +36,7 @@ option _RAMBASE=0x00004000
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+	option COREBOOT_EXTRA_VERSION=".0Normal"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 	payload ../../../../../lnxieepro100.ebi
@@ -45,10 +45,10 @@ end
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 	payload ../../../../../lnxieepro100.ebi
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

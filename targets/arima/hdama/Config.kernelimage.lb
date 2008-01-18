@@ -48,7 +48,7 @@ uses MAINBOARD
 uses CONFIG_CHIP_CONFIGURE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
-uses LINUXBIOS_EXTRA_VERSION
+uses COREBOOT_EXTRA_VERSION
 
 option CONFIG_CHIP_CONFIGURE=1
 
@@ -73,17 +73,17 @@ option HAVE_FALLBACK_BOOT=1
 
 ###
 ### Compute the location and size of where this firmware image
-### (linuxBIOS plus bootloader) will live in the boot rom chip.
+### (coreboot plus bootloader) will live in the boot rom chip.
 ###
 option FALLBACK_SIZE=ROM_SIZE
 
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 option _RAMBASE=0x00004000
 
 #
 ###
 ### Compute the start location and size size of
-### The linuxBIOS bootloader.
+### The coreboot bootloader.
 ###
 
 #
@@ -92,7 +92,7 @@ romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
 #	option ROM_SECTION_SIZE=0x100000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	mainboard arima/hdama
 #	payload ../../../../tg3--ide_disk.zelf
 	payload ../../../../opteron_phase1_p4_noapic

@@ -7,52 +7,52 @@
 #error  MAINBOARD_PART_NUMBER not defined
 #endif
 
-#ifndef LINUXBIOS_VERSION
-#error  LINUXBIOS_VERSION not defined
+#ifndef COREBOOT_VERSION
+#error  COREBOOT_VERSION not defined
 #endif
-#ifndef LINUXBIOS_BUILD
-#error  LINUXBIOS_BUILD not defined
-#endif
-
-#ifndef LINUXBIOS_COMPILE_TIME
-#error  LINUXBIOS_COMPILE_TIME not defined
-#endif
-#ifndef LINUXBIOS_COMPILE_BY
-#error  LINUXBIOS_COMPILE_BY not defined
-#endif
-#ifndef LINUXBIOS_COMPILE_HOST
-#error  LINUXBIOS_COMPILE_HOST not defined
+#ifndef COREBOOT_BUILD
+#error  COREBOOT_BUILD not defined
 #endif
 
-#ifndef LINUXBIOS_COMPILER
-#error  LINUXBIOS_COMPILER not defined
+#ifndef COREBOOT_COMPILE_TIME
+#error  COREBOOT_COMPILE_TIME not defined
 #endif
-#ifndef LINUXBIOS_LINKER
-#error  LINUXBIOS_LINKER not defined
+#ifndef COREBOOT_COMPILE_BY
+#error  COREBOOT_COMPILE_BY not defined
 #endif
-#ifndef LINUXBIOS_ASSEMBLER
-#error  LINUXBIOS_ASSEMBLER not defined
+#ifndef COREBOOT_COMPILE_HOST
+#error  COREBOOT_COMPILE_HOST not defined
+#endif
+
+#ifndef COREBOOT_COMPILER
+#error  COREBOOT_COMPILER not defined
+#endif
+#ifndef COREBOOT_LINKER
+#error  COREBOOT_LINKER not defined
+#endif
+#ifndef COREBOOT_ASSEMBLER
+#error  COREBOOT_ASSEMBLER not defined
 #endif
 
 
-#ifndef  LINUXBIOS_EXTRA_VERSION
-#define LINUXBIOS_EXTRA_VERSION ""
+#ifndef  COREBOOT_EXTRA_VERSION
+#define COREBOOT_EXTRA_VERSION ""
 #endif
 
 const char mainboard_vendor[] = MAINBOARD_VENDOR;
 const char mainboard_part_number[] = MAINBOARD_PART_NUMBER;
 
-const char linuxbios_version[] = LINUXBIOS_VERSION;
-const char linuxbios_extra_version[] = LINUXBIOS_EXTRA_VERSION;
-const char linuxbios_build[] = LINUXBIOS_BUILD;
+const char coreboot_version[] = COREBOOT_VERSION;
+const char coreboot_extra_version[] = COREBOOT_EXTRA_VERSION;
+const char coreboot_build[] = COREBOOT_BUILD;
 
-const char linuxbios_compile_time[]   = LINUXBIOS_COMPILE_TIME;
-const char linuxbios_compile_by[]     = LINUXBIOS_COMPILE_BY;
-const char linuxbios_compile_host[]   = LINUXBIOS_COMPILE_HOST;
-const char linuxbios_compile_domain[] = LINUXBIOS_COMPILE_DOMAIN;
-const char linuxbios_compiler[]       = LINUXBIOS_COMPILER;
-const char linuxbios_linker[]         = LINUXBIOS_LINKER;
-const char linuxbios_assembler[]      = LINUXBIOS_ASSEMBLER;
+const char coreboot_compile_time[]   = COREBOOT_COMPILE_TIME;
+const char coreboot_compile_by[]     = COREBOOT_COMPILE_BY;
+const char coreboot_compile_host[]   = COREBOOT_COMPILE_HOST;
+const char coreboot_compile_domain[] = COREBOOT_COMPILE_DOMAIN;
+const char coreboot_compiler[]       = COREBOOT_COMPILER;
+const char coreboot_linker[]         = COREBOOT_LINKER;
+const char coreboot_assembler[]      = COREBOOT_ASSEMBLER;
 
 
 

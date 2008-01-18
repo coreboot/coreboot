@@ -1,4 +1,4 @@
-1) Are you familar with LinuxBIOS?
+1) Are you familar with coreboot?
 
 	no : abort
 	yes: go to next step.
@@ -41,7 +41,7 @@
 
 	make
 
-9) use the resulting elf "payload" file with LinuxBIOS as you would
+9) use the resulting elf "payload" file with coreboot as you would
    have used any other elf file. For example put it on the same
-   EERPOM as LinuxBIOS is, or use EtherBOOT to load the payload
+   EERPOM as coreboot is, or use EtherBOOT to load the payload
    file from hdd or network.

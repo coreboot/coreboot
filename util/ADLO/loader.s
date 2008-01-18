@@ -9,7 +9,7 @@ nop
 ;*****************************************************
 ; A) setup GDT, so that we do not depend on program 
 ; that loaded us for GDT. 
-; Ex: LinuxBIOS and EtherBOOT use different GDT's.
+; Ex: coreboot and EtherBOOT use different GDT's.
 
 ;-----------------------------------------------------
 ; 0)
@@ -90,7 +90,7 @@ rep
 nop
 nop
 ;*****************************************************
-; X) copy -- LinuxBIOS table into safe place.
+; X) copy -- coreboot table into safe place.
 
 	;; TODO.
 	;; Q1 :	 what is the size of table.
@@ -188,7 +188,7 @@ out  0x71, al
 ;     119mb = 0x77 00 00 00 
 ;     (this is for 128mb of ram)
 ;     (FIXME: this value is currently hard coded)
-;     (it should be being passed from LinuxBIOS )
+;     (it should be being passed from coreboot )
 
 ; for WinFast  6300
 ; 07 70 = 0770

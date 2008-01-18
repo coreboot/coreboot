@@ -18,8 +18,8 @@ write_tables(void)
 	low_table_start = 0;
 	low_table_end = 16;
 
-	/* The linuxbios table must be in 0-4K or 960K-1M */
-	write_linuxbios_table(
+	/* The coreboot table must be in 0-4K or 960K-1M */
+	write_coreboot_table(
 		low_table_start, low_table_end,
 		rom_table_start, rom_table_end);
 

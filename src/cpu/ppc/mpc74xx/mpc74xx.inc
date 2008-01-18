@@ -19,7 +19,7 @@
 
 /*
  * The aim of this code is to bring the machine from power-on to the point 
- * where we can jump to the the main LinuxBIOS entry point hardwaremain()
+ * where we can jump to the the main coreboot entry point hardwaremain()
  * which is written in C.
  *
  * At power-on, we have no RAM, a memory-mapped I/O space, and we are executing
@@ -79,7 +79,7 @@
 	isync
 
 	/*
-	 * Clear segment registers (LinuxBIOS doesn't use these)
+	 * Clear segment registers (coreboot doesn't use these)
 	 */
 	mtsr    0, r0
 	isync

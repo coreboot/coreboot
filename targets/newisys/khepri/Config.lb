@@ -25,20 +25,20 @@ option HAVE_FALLBACK_BOOT=1
 
 option FALLBACK_SIZE=131072
 
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 option _RAMBASE=0x00004000
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x20000
-	option LINUXBIOS_EXTRA_VERSION="-Khepri-Normal"
+	option COREBOOT_EXTRA_VERSION="-Khepri-Normal"
 	payload ../../../payloads/tg3--ide_disk.zelf
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x20000
-	option LINUXBIOS_EXTRA_VERSION="-Khepri-Fallback"
+	option COREBOOT_EXTRA_VERSION="-Khepri-Fallback"
 	payload ../../../payloads/tg3--ide_disk.zelf
 end
 

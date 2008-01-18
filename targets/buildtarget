@@ -3,7 +3,7 @@ PYTHON=python
 # Target build script
 
 if [ $# -lt 1 ]; then
-	echo "usage: buildtarget target [path-to-linuxbios]"
+	echo "usage: buildtarget target [path-to-coreboot]"
 	exit 1
 fi
 
@@ -44,7 +44,7 @@ if [ ! -d $build_dir ] ; then
 	mkdir -p $build_dir
 fi
 if [ ! -f $config_py ]; then
-	echo "No linuxbios config script found. Rebuilding it.."
+	echo "No coreboot config script found. Rebuilding it.."
 	$PYTHON $yapps2_py $config_g $config_py
 fi
 

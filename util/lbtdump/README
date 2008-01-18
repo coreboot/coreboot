@@ -1,7 +1,7 @@
 
-lbtdump is a utility to dump the LinuxBIOS table
+lbtdump is a utility to dump the coreboot table
 to a human readable form.
 
 This needs to be run as root (or setuid) on a system
-running LinuxBIOS.
+running coreboot.
 

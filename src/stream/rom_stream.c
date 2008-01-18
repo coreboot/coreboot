@@ -84,7 +84,7 @@ int stream_init(void)
 		dest = (CONFIG_LB_MEM_TOPK<<10);
 	}
 #endif
-        if((dest < (unsigned char *) 0xf0000) && ((dest+olen)> (unsigned char *)0xf0000)) { //linuxbios tables etc
+        if((dest < (unsigned char *) 0xf0000) && ((dest+olen)> (unsigned char *)0xf0000)) { // coreboot tables etc
 	  dest = (unsigned char *) (CONFIG_LB_MEM_TOPK<<10);
         }
 #endif

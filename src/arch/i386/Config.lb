@@ -22,12 +22,12 @@ else
 end
 
 makerule all
-	depends	"linuxbios.rom"
+	depends	"coreboot.rom"
 end
 
 makerule floppy 
 	depends	"all" 
-	action	"mcopy -o linuxbios.rom a:"
+	action	"mcopy -o coreboot.rom a:"
 end
 
 makerule nrv2b 
@@ -55,7 +55,7 @@ end
 # this one example shows the mess that has occurred. People are now mixing
 # conditional if in the make style with if in the config language style. 
 # The -1 is linux standard. 
-# I don't much like it but it is the mode nowadays. So linuxbios will change
+# I don't much like it but it is the mode nowadays. So coreboot will change
 # what a mess. -- RGM
 # catch the case where there is no compression
 makedefine PAYLOAD-1:=payload
@@ -70,16 +70,16 @@ if CONFIG_PRECOMPRESSED_PAYLOAD
 end
 
 if USE_FAILOVER_IMAGE
-	makedefine LINUXBIOS_APC:=
-	makedefine LINUXBIOS_RAM_ROM:=
+	makedefine COREBOOT_APC:=
+	makedefine COREBOOT_RAM_ROM:=
 
-	makerule linuxbios.rom 
-		depends	"linuxbios.strip" 
+	makerule coreboot.rom 
+		depends	"coreboot.strip" 
 		action "cp $< $@"
 	end
 else
-	makerule linuxbios.rom 
-		depends	"linuxbios.strip buildrom $(PAYLOAD-1)" 
+	makerule coreboot.rom 
+		depends	"coreboot.strip buildrom $(PAYLOAD-1)" 
 		action "./buildrom $< $@ $(PAYLOAD-1) $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
 	end
 end
@@ -98,10 +98,10 @@ if CONFIG_USE_INIT
 	        action  "$(OBJCOPY) --rename-section .text=.init.text --rename-section .data=.init.data --rename-section .rodata=.init.rodata --rename-section .rodata.str1.1=.init.rodata.str1.1 init.pre.o init.o"
 	end
 
-        makerule linuxbios   
-		depends	"crt0.o init.o $(LINUXBIOS_APC) $(LINUXBIOS_RAM_ROM) ldscript.ld"
+        makerule coreboot   
+		depends	"crt0.o init.o $(COREBOOT_APC) $(COREBOOT_RAM_ROM) ldscript.ld"
 		action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o init.o"
-		action	"$(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map"
+		action	"$(CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
         end
 
 end

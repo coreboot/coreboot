@@ -28,7 +28,7 @@ static inline void smbus_delay(void)
 	outb(0x80, 0x80);
 }
 
-// See http://openbios.org/pipermail/linuxbios/2004-September/009077.html
+// See http://www.coreboot.org/pipermail/linuxbios/2004-September/009077.html
 // for a description of this function.
 static int smbus_wait_until_active(void)
 {

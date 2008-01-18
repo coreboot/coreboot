@@ -28,7 +28,7 @@
 	256 Mb 266Mhz 2 Bank (i.e. double sided)
 	512 Mb 266Mhz 2 Bank (i.e. double sided)
 */
-/* ported and enhanced from assembler level code in Linuxbios v1 */
+/* ported and enhanced from assembler level code in coreboot v1 */
 
 #include <cpu/x86/mtrr.h>
 #include "raminit.h"

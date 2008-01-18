@@ -2003,7 +2003,7 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 		train_ram(nodeid, sysinfo, sysinfox);
 	#else
 		/* Can copy dqs_timing to ap cache and run from cache?
-		* we need linuxbios_ap_car.rom? and treat it as linuxbios_ram.rom for ap ?
+		* we need coreboot_ap_car.rom? and treat it as coreboot_ram.rom for ap ?
 		*/
 		copy_and_run_ap_code_in_car(retcall);
 		// will go back by jump

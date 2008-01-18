@@ -43,7 +43,7 @@ romimage "normal"
         ## Board has fixed size RAM
         option EMBEDDED_RAM_SIZE=64*1024*1024
 
-        ## LinuxBIOS C code runs at this location in RAM
+        ## Coreboot C code runs at this location in RAM
         option _RAMBASE=0x00100000
 
         ##
@@ -70,12 +70,12 @@ romimage "normal"
 	## Exception vectors
 	option _EXCEPTION_VECTORS=_ROMBASE+0x100
 
-	## linuxBIOS ROM start address
+	## coreboot ROM start address
 	option _ROMSTART=0xfff03000
 
-	## linuxBIOS C code runs at this location in RAM
+	## coreboot C code runs at this location in RAM
 	option _RAMBASE=0x00100000
 
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal"
+buildrom ./coreboot.rom ROM_SIZE "normal"

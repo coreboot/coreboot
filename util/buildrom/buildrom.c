@@ -20,7 +20,7 @@
 void usage()
 {
 	fprintf(stderr, "Usage: buildrom <input> <output> <payload> ");
-	fprintf(stderr, " <linuxbios-size> <total-size>\n");
+	fprintf(stderr, " <coreboot-size> <total-size>\n");
 	exit(1);
 }
 
@@ -57,22 +57,22 @@ int main(int argc, char *argv[])
 	if (fstat(infd, &inbuf) < 0)
 		fatal("stat of infile");
 	if (inbuf.st_size > size) {
-		fprintf(stderr, "linuxbios image is %d bytes; only %d allowed\n",
+		fprintf(stderr, "coreboot image is %d bytes; only %d allowed\n",
 			(int)inbuf.st_size, size);
-		fatal("Linuxbios input file larger than allowed size!\n");
+		fatal("Coreboot input file larger than allowed size!\n");
 	}
 
 	if (fstat(payloadfd, &payloadbuf) < 0)
 		fatal("stat of infile");
 	if (payloadbuf.st_size > (romsize - size)){
-		fprintf(stderr, "ERROR: payload (%d) + linuxbios (%d) - Size is %d bytes larger than ROM size (%d).\n", 
+		fprintf(stderr, "ERROR: payload (%d) + coreboot (%d) - Size is %d bytes larger than ROM size (%d).\n", 
 				payloadbuf.st_size, size, 
 				payloadbuf.st_size+size-romsize,
 				romsize);
 		exit(1);
 	}
 
-	printf("Payload: %d LinuxBIOS: %d ROM size: %d Left space: %d\n",
+	printf("Payload: %d coreboot: %d ROM size: %d Left space: %d\n",
 			payloadbuf.st_size, size, romsize,
 			romsize-payloadbuf.st_size-size);
 

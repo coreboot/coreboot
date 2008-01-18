@@ -1,4 +1,4 @@
-/* For starting linuxBIOS in protected mode */
+/* For starting coreboot in protected mode */
 
 #include <arch/rom_segs.h>
 
@@ -8,8 +8,8 @@
 	.align	4
 .globl gdtptr
 
-	/* This is the gdt for ROMCC/ASM part of LinuxBIOS.
-	 * It is different from the gdt in GCC part of LinuxBIOS
+	/* This is the gdt for ROMCC/ASM part of coreboot.
+	 * It is different from the gdt in GCC part of coreboot
 	 * which is defined in c_start.S */
 gdt:
 gdtptr:

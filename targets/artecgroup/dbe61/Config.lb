@@ -9,7 +9,7 @@ option CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
 option CONFIG_COMPRESSED_PAYLOAD_LZMA=0
 
-## ROM_SIZE is the total number of bytes allocated for LinuxBIOS use
+## ROM_SIZE is the total number of bytes allocated for coreboot use
 ## (normal AND fallback images and payloads).
 ## leave 36k for vsa and 32K for video ROM
 #option ROM_SIZE = 1024*256 - 36*1024 - 32 * 1024
@@ -17,7 +17,7 @@ option CONFIG_COMPRESSED_PAYLOAD_LZMA=0
 #No VGA for now
 option ROM_SIZE = 1024*512 - 36*1024
 
-# ROM_IMAGE_SIZE is the maximum number of bytes allowed for a LinuxBIOS image,
+# ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
 ## not including any payload.
 option ROM_IMAGE_SIZE=64*1024
 
@@ -27,7 +27,7 @@ option DEFAULT_CONSOLE_LOGLEVEL = 11
 option MAXIMUM_CONSOLE_LOGLEVEL = 11
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload ../payload.elf
 end
 

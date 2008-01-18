@@ -6,7 +6,7 @@ DEVELOPER/HACKING/DESIGN
 	the bochs mainline.
 
 	thus when designing an patch for rombios.c both needs of 
-	linuxbios as well as bochs needed to be taken into 
+	coreboot as well as bochs needed to be taken into 
 	consideration.
 
 - there are motherboard specific code in loader.s. until this issue

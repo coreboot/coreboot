@@ -2,6 +2,6 @@
 TYANMB=s2850
 cd "$TYANMB"
 make
-cat ../atix.rom ./normal/linuxbios.rom ./fallback/linuxbios.rom > $TYANMB"_linuxbios.rom"
-#cat ./normal/linuxbios.rom ./fallback/linuxbios.rom > $TYANMB"_linuxbios.rom"
-#cp -f $TYANMB"_linuxbios.rom" /home/yhlu/
+cat ../atix.rom ./normal/coreboot.rom ./fallback/coreboot.rom > $TYANMB"_coreboot.rom"
+#cat ./normal/coreboot.rom ./fallback/coreboot.rom > $TYANMB"_coreboot.rom"
+#cp -f $TYANMB"_coreboot.rom" /home/yhlu/

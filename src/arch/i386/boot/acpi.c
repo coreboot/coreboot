@@ -1,5 +1,5 @@
 /*
- * LinuxBIOS ACPI Table support
+ * coreboot ACPI Table support
  * written by Stefan Reinauer <stepan@openbios.org>
  *  (C) 2004 SUSE LINUX AG
  *  (C) 2005 Stefan Reinauer

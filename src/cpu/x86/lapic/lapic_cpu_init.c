@@ -1,5 +1,5 @@
 /*
-	2005.12 yhlu add linuxbios_ram cross the vga font buffer handling
+	2005.12 yhlu add coreboot_ram cross the vga font buffer handling
 	2005.12 yhlu add _RAMBASE above 1M support for SMP
 */
 
@@ -191,7 +191,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	return 1;
 }
 
-/* Number of cpus that are currently running in linuxbios */
+/* Number of cpus that are currently running in coreboot */
 static atomic_t active_cpus = ATOMIC_INIT(1);
 
 /* start_cpu_lock covers last_cpu_index and secondary_stack.

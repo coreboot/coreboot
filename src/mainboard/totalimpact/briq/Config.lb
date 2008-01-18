@@ -46,4 +46,4 @@ end
 ## Build the objects we have code for in this directory.
 ##
 
-addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
+addaction coreboot.a "$(CROSS_COMPILE)ranlib coreboot.a"

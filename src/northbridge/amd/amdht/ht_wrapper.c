@@ -124,7 +124,7 @@ void getAmdTopolist(u8 ***p)
 /**
  * void amd_ht_init(struct sys_info *sysinfo)
  *
- *  AMD HT init LinuxBIOS wrapper
+ *  AMD HT init coreboot wrapper
  *
  */
 void amd_ht_init(struct sys_info *sysinfo)

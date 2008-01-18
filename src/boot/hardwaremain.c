@@ -22,7 +22,7 @@ it with the version available from LANL.
 
 
 /*
- * C Bootstrap code for the LinuxBIOS
+ * C Bootstrap code for the coreboot
  */
 
 
@@ -38,9 +38,9 @@ it with the version available from LANL.
 #include <boot/elf.h>
 
 /**
- * @brief Main function of the DRAM part of LinuxBIOS.
+ * @brief Main function of the DRAM part of coreboot.
  *
- * LinuxBIOS is divided into Pre-DRAM part and DRAM part. 
+ * Coreboot is divided into Pre-DRAM part and DRAM part. 
  *
  * 
  * Device Enumeration:
@@ -57,8 +57,8 @@ void hardwaremain(int boot_complete)
 	
 	post_code(0x39);
 
-	printk_notice("LinuxBIOS-%s%s %s %s...\n", 
-		      linuxbios_version, linuxbios_extra_version, linuxbios_build,
+	printk_notice("coreboot-%s%s %s %s...\n", 
+		      coreboot_version, coreboot_extra_version, coreboot_build,
 		      (boot_complete)?"rebooting":"booting");
 
 	post_code(0x40);

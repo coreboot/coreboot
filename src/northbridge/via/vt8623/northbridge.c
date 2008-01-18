@@ -158,7 +158,7 @@ static void vga_init(device_t dev)
 
 #else
 
-	/* code to make vga init run in real mode - does work but against the current Linuxbios philosophy */
+	/* code to make vga init run in real mode - does work but against the current coreboot philosophy */
 	printk_debug("INSTALL REAL-MODE IDT\n");
         setup_realmode_idt();
         printk_debug("DO THE VGA BIOS\n");
@@ -293,7 +293,7 @@ static void pci_domain_set_resources(device_t dev)
 			/* these are ENDING addresses, not sizes. 
 			 * if there is memory in this slot, then reg will be > rambits.
 			 * So we just take the max, that gives us total. 
-			 * We take the highest one to cover for once and future linuxbios
+			 * We take the highest one to cover for once and future coreboot
 			 * bugs. We warn about bugs.
 			 */
 			if (reg > rambits)

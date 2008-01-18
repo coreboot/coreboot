@@ -44,7 +44,7 @@ uses STACK_SIZE HEAP_SIZE
 uses MAINBOARD
 uses MAINBOARD_VENDOR
 uses MAINBOARD_PART_NUMBER
-uses LINUXBIOS_EXTRA_VERSION
+uses COREBOOT_EXTRA_VERSION
 uses CROSS_COMPILE
 uses CC
 uses HOSTCC
@@ -106,7 +106,7 @@ default ROM_SIZE=1048576
 ## Board has fixed size RAM
 default EMBEDDED_RAM_SIZE=64*1024*1024
 
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 default _RAMBASE=0x00100000
 
 ##
@@ -133,10 +133,10 @@ default _RESET=0xfffffffc
 ## Exception vectors
 default _EXCEPTION_VECTORS=_ROMBASE+0x100
 
-## linuxBIOS ROM start address
+## coreboot ROM start address
 default _ROMSTART=0xfff03000
 
-## linuxBIOS C code runs at this location in RAM
+## coreboot C code runs at this location in RAM
 default _RAMBASE=0x00100000
 
 ### End Options.lb

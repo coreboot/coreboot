@@ -3,7 +3,7 @@
  *
  * Benjamin Herrenschmidt <benh@kernel.crashing.org>
  *
- *   move to LinuxBIOS by LYH yhlu@tyan.com
+ *   move to coreboot by LYH yhlu@tyan.com
  */
 
 #if 0

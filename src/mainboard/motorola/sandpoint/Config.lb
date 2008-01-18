@@ -26,5 +26,5 @@ arch ppc end
 dir nvram
 dir flash
 
-addaction linuxbios.a "$(CROSS_COMPILE)ranlib linuxbios.a"
+addaction coreboot.a "$(CROSS_COMPILE)ranlib coreboot.a"
 makedefine CFLAGS += -g

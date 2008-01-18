@@ -189,7 +189,7 @@ void cache_as_ram_main(void)
 	 * etc.  The stack might be used to return etc.  That means we
 	 * care about what is in the stack.  If we are smart we set
 	 * the CAR stack to the same location as the rest of
-	 * LinuxBIOS. If that is the case we can just do a wbinvd.
+	 * coreboot. If that is the case we can just do a wbinvd.
 	 * The stack will be written into real RAM that is now setup
 	 * and we continue like nothing happened.  If the stack is
 	 * located somewhere other than where LB would like it, you

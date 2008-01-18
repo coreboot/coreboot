@@ -448,7 +448,7 @@ static void show_boot_splash_16(u32 swidth, u32 sheight, u32 pitch,void *base)
 #endif
 
 /**
- * LinuxBIOS management part
+ * coreboot management part
  * @param[in] dev Info about the PCI device to initialise
  */
 static void cs5530_vga_init(device_t dev)

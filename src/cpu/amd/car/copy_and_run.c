@@ -23,7 +23,7 @@ static void copy_and_run(void)
 	uint8_t *src, *dst; 
         unsigned long ilen, olen;
 
-	print_debug("Copying LinuxBIOS to RAM.\r\n");
+	print_debug("Copying coreboot to RAM.\r\n");
 
 #if !CONFIG_COMPRESS 
 	__asm__ volatile (
@@ -55,7 +55,7 @@ static void copy_and_run(void)
 
 	print_debug_cp_run("linxbios_ram.bin   length = ", olen);
 
-	print_debug("Jumping to LinuxBIOS.\r\n");
+	print_debug("Jumping to coreboot.\r\n");
 
         __asm__ volatile (
                 "xorl %ebp, %ebp\n\t" /* cpu_reset for hardwaremain dummy */
@@ -73,7 +73,7 @@ static void copy_and_run_ap_code_in_car(unsigned ret_addr)
         uint8_t *src, *dst;
         unsigned long ilen, olen;
 
-//        print_debug("Copying LinuxBIOS AP code to CAR.\r\n");
+//        print_debug("Copying coreboot AP code to CAR.\r\n");
 
 #if !CONFIG_COMPRESS
         __asm__ volatile (
@@ -105,7 +105,7 @@ static void copy_and_run_ap_code_in_car(unsigned ret_addr)
 
 //        print_debug_cp_run("linxbios_apc.bin   length = ", olen);
 
-//        print_debug("Jumping to LinuxBIOS AP code in CAR.\r\n");
+//        print_debug("Jumping to coreboot AP code in CAR.\r\n");
 
         __asm__ volatile (
                 "movl %0, %%ebp\n\t" /* cpu_reset for hardwaremain dummy */

@@ -5,18 +5,18 @@
 extern const char mainboard_vendor[];
 extern const char mainboard_part_number[];
 
-/* LinuxBIOS Version */
-extern const char linuxbios_version[];
-extern const char linuxbios_extra_version[];
-extern const char linuxbios_build[];
+/* coreboot Version */
+extern const char coreboot_version[];
+extern const char coreboot_extra_version[];
+extern const char coreboot_build[];
 
-/* When LinuxBIOS was compiled */
-extern const char linuxbios_compile_time[];
-extern const char linuxbios_compile_by[];
-extern const char linuxbios_compile_host[];
-extern const char linuxbios_compile_domain[];
-extern const char linuxbios_compiler[];
-extern const char linuxbios_linker[];
-extern const char linuxbios_assembler[];
+/* When coreboot was compiled */
+extern const char coreboot_compile_time[];
+extern const char coreboot_compile_by[];
+extern const char coreboot_compile_host[];
+extern const char coreboot_compile_domain[];
+extern const char coreboot_compiler[];
+extern const char coreboot_linker[];
+extern const char coreboot_assembler[];
 
 #endif /* VERSION_H */

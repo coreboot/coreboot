@@ -1,7 +1,7 @@
 ldscript init/ldscript.lb
 
-makerule linuxbios.rom 
-	depends	"linuxbios" 
+makerule coreboot.rom 
+	depends	"coreboot" 
 	action	"cp $< $@"
 end
 

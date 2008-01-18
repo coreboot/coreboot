@@ -57,18 +57,18 @@ option MAINBOARD_VENDOR="IWILL"
 #
 ###
 ### Compute the location and size of where this firmware image
-### (linuxBIOS plus bootloader) will live in the boot rom chip.
+### (coreboot plus bootloader) will live in the boot rom chip.
 ###
 #option FALLBACK_SIZE=524288
 #option FALLBACK_SIZE=98304
 option FALLBACK_SIZE=131072
 
-## ROM_IMAGE_SIZE is the amount of space to allow linuxBIOS to occupy.
+## ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
 option ROM_IMAGE_SIZE=65536
  
 
 ###
-### Compute where this copy of linuxBIOS will start in the boot rom
+### Compute where this copy of coreboot will start in the boot rom
 ###
 #
 ###
@@ -80,7 +80,7 @@ option CONFIG_CONSOLE_SERIAL8250=1
 option TTYS0_BAUD=115200
 
 ##
-### Select the linuxBIOS loglevel
+### Select the coreboot loglevel
 ##
 ## EMERG      1   system is unusable
 ## ALERT      2   action must be taken immediately
@@ -101,7 +101,7 @@ option MAXIMUM_CONSOLE_LOGLEVEL=7
 
 #
 
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 option _RAMBASE=0x004000
 
 ##
@@ -117,7 +117,7 @@ option HEAP_SIZE=0xe000
 #
 ###
 ### Compute the start location and size size of
-### The linuxBIOS bootloader.
+### The coreboot bootloader.
 ###
 option CONFIG_ROM_PAYLOAD     = 1
 
@@ -128,7 +128,7 @@ romimage "normal"
 #        option ROM_SIZE = 512*1024-48*1024
 #	48K for SCSI FW and 48K for ATI ROM
 #	option ROM_SIZE = 512*1024-48*1024-48*1024
-        option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
+        option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_SECTION_SIZE  = (ROM_SIZE - FALLBACK_SIZE)
 	option ROM_SECTION_OFFSET= 0
@@ -147,7 +147,7 @@ romimage "normal"
 end
 
 romimage "fallback" 
-	option LINUXBIOS_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 	option USE_FALLBACK_IMAGE=1
 	option ROM_SECTION_SIZE  = FALLBACK_SIZE
 	option ROM_SECTION_OFFSET= (ROM_SIZE - FALLBACK_SIZE)
@@ -164,4 +164,4 @@ romimage "fallback"
 #	payload /usr/src/filo-0.4.2/filo.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

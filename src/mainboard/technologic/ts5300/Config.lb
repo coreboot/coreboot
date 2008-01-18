@@ -1,6 +1,6 @@
 ##
 ## Compute the location and size of where this firmware image
-## (linuxBIOS plus bootloader) will live in the boot rom chip.
+## (coreboot plus bootloader) will live in the boot rom chip.
 ##
 default ROM_SIZE = 128 * 1024 
 default FALLBACK_SIZE = 0x10000
@@ -14,18 +14,18 @@ end
 
 ##
 ## Compute the start location and size size of
-## The linuxBIOS bootloader.
+## The coreboot bootloader.
 ##
 default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
 default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 
 ##
-## Compute where this copy of linuxBIOS will start in the boot rom
+## Compute where this copy of coreboot will start in the boot rom
 ##
 default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
 
 ##
-## Compute a range of ROM that can cached to speed up linuxBIOS,
+## Compute a range of ROM that can cached to speed up coreboot,
 ## execution speed.
 ##
 ## XIP_ROM_SIZE must be a power of 2.
@@ -71,7 +71,7 @@ makerule ./auto.inc
 end
 
 ##
-## Build our 16 bit and 32 bit linuxBIOS entry code
+## Build our 16 bit and 32 bit coreboot entry code
 ##
 mainboardinit cpu/x86/16bit/entry16.inc
 mainboardinit cpu/x86/32bit/entry32.inc
@@ -79,7 +79,7 @@ ldscript /cpu/x86/16bit/entry16.lds
 ldscript /cpu/x86/32bit/entry32.lds
 
 ##
-## Build our reset vector (This is where linuxBIOS is entered)
+## Build our reset vector (This is where coreboot is entered)
 ##
 if USE_FALLBACK_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc 
@@ -99,7 +99,7 @@ mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
 
 ###
-### This is the early phase of linuxBIOS startup 
+### This is the early phase of coreboot startup 
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###

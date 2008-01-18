@@ -106,7 +106,7 @@ def main():
 	input = prepInput(input)
 	output = parseInput(input)
 	
-	print "mkOptionList.py: LinuxBIOS option list generator"
+	print "mkOptionList.py: coreboot option list generator"
 	print " input file : ", inFilename
 	print " output file: ", outFilename
 	

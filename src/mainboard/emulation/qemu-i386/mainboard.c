@@ -10,7 +10,7 @@ void vga_enable_console();
 
 static void vga_init(device_t dev)
 {
-	/* code to make vga init run in real mode - does work but against the current Linuxbios philosophy */
+	/* code to make vga init run in real mode - does work but against the current coreboot philosophy */
 	printk_debug("INSTALL REAL-MODE IDT\n");
         setup_realmode_idt();
         printk_debug("DO THE VGA BIOS\n");

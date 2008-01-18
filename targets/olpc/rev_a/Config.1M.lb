@@ -3,7 +3,7 @@
 target rev_a_1M
 mainboard olpc/rev_a
 
-# Don't let LinuxBIOS compress the payload
+# Don't let coreboot compress the payload
 # option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
 #option CONFIG_PRECOMPRESSED_PAYLOAD=1
 
@@ -16,8 +16,8 @@ option MAXIMUM_CONSOLE_LOGLEVEL = 11
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=32*1024
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload /tmp/olpcpayload.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE  "fallback"
+buildrom ./coreboot.rom ROM_SIZE  "fallback"

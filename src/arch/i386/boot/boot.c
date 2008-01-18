@@ -113,8 +113,8 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	addl	12(%%esp), %%eax\n\t"
 		"	addl	 8(%%esp), %%eax\n\t"
 		"	movl	%%eax, 20(%%esp)\n\t"
-		/* Place a copy of linuxBIOS in it's new location */
-		/* Move ``longs'' the linuxBIOS size is 4 byte aligned */
+		/* Place a copy of coreboot in it's new location */
+		/* Move ``longs'' the coreboot size is 4 byte aligned */
 		"	movl	12(%%esp), %%edi\n\t"
 		"	addl	 8(%%esp), %%edi\n\t"
 		"	movl	16(%%esp), %%esi\n\t"
@@ -122,16 +122,16 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	shrl	$2, %%ecx\n\t"
 		"	rep	movsl\n\t"
 
-		/* Adjust the stack pointer to point into the new linuxBIOS image */
+		/* Adjust the stack pointer to point into the new coreboot image */
 		"	addl	20(%%esp), %%esp\n\t"
-		/* Adjust the instruction pointer to point into the new linuxBIOS image */
+		/* Adjust the instruction pointer to point into the new coreboot image */
 		"	movl	$1f, %%eax\n\t"
 		"	addl	20(%%esp), %%eax\n\t"
 		"	jmp	*%%eax\n\t"
 		"1:	\n\t"
 
-		/* Copy the linuxBIOS bounce buffer over linuxBIOS */
-		/* Move ``longs'' the linuxBIOS size is 4 byte aligned */
+		/* Copy the coreboot bounce buffer over coreboot */
+		/* Move ``longs'' the coreboot size is 4 byte aligned */
 		"	movl	16(%%esp), %%edi\n\t"
 		"	movl	12(%%esp), %%esi\n\t"
 		"	movl	 8(%%esp), %%ecx\n\t"
@@ -147,8 +147,8 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	cli	\n\t"
 		"	cld	\n\t"
 
-		/* Copy the saved copy of linuxBIOS where linuxBIOS runs */
-		/* Move ``longs'' the linuxBIOS size is 4 byte aligned */
+		/* Copy the saved copy of coreboot where coreboot runs */
+		/* Move ``longs'' the coreboot size is 4 byte aligned */
 		"	movl	16(%%esp), %%edi\n\t"
 		"	movl	12(%%esp), %%esi\n\t"
 		"	addl	 8(%%esp), %%esi\n\t"
@@ -156,10 +156,10 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	shrl	$2, %%ecx\n\t"
 		"	rep	movsl\n\t"
 
-		/* Adjust the stack pointer to point into the old linuxBIOS image */
+		/* Adjust the stack pointer to point into the old coreboot image */
 		"	subl	20(%%esp), %%esp\n\t"
 
-		/* Adjust the instruction pointer to point into the old linuxBIOS image */
+		/* Adjust the instruction pointer to point into the old coreboot image */
 		"	movl	$1f, %%eax\n\t"
 		"	subl	20(%%esp), %%eax\n\t"
 		"	jmp	*%%eax\n\t"

@@ -84,7 +84,7 @@ static inline int log2f(int value)
 
 typedef unsigned device_t; /* pci and pci_mmio need to have different ways to have dev */
 
-/* FIXME: We need to make the LinuxBIOS to run at 64bit mode, So when read/write memory above 4G, 
+/* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G, 
  * We don't need to set %fs, and %gs anymore
  * Before that We need to use %gs, and leave %fs to other RAM access
  */

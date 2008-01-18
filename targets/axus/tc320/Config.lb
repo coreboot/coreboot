@@ -18,7 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-## See also: http://linuxbios.org/AXUS_WINTERM_Build_Tutorial
+## See also: http://coreboot.org/AXUS_WINTERM_Build_Tutorial
 
 target tc320
 mainboard axus/tc320
@@ -38,14 +38,14 @@ option MAXIMUM_CONSOLE_LOGLEVEL = 6
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE = 0
-	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
+	option COREBOOT_EXTRA_VERSION = ".0Normal"
 	payload ../../../../../../../images/etherboot.elf
 end
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1
-	option LINUXBIOS_EXTRA_VERSION = ".0Fallback"
+	option COREBOOT_EXTRA_VERSION = ".0Fallback"
 	payload ../../../../../../../images/etherboot.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

@@ -15,7 +15,7 @@ static void copy_and_run(unsigned cpu_reset)
 	unsigned long dst_len;
         unsigned long ilen, olen;
 
-	print_debug("Copying LinuxBIOS to RAM.\r\n");
+	print_debug("Copying coreboot to RAM.\r\n");
 
 #if !CONFIG_COMPRESS 
 	__asm__ volatile (
@@ -53,7 +53,7 @@ static void copy_and_run(unsigned cpu_reset)
 #else
 	print_debug("linxbios_ram.bin length = "); print_debug_hex32(olen); print_debug("\r\n");
 #endif
-	print_debug("Jumping to LinuxBIOS.\r\n");
+	print_debug("Jumping to coreboot.\r\n");
 
 	if(cpu_reset == 1 ) {
 		__asm__ volatile (

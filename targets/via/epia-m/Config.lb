@@ -19,11 +19,11 @@ option CONFIG_COMPRESSED_PAYLOAD_NRV2B=0
 
 ###
 ### Compute the location and size of where this firmware image
-### (linuxBIOS plus bootloader) will live in the boot rom chip.
+### (coreboot plus bootloader) will live in the boot rom chip.
 ###
 option FALLBACK_SIZE=131072
 
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 option _RAMBASE=0x00004000
 
 #
@@ -33,7 +33,7 @@ romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 #option ROM_IMAGE_SIZE=128*1024
 	option ROM_IMAGE_SIZE=64*1024
-	option LINUXBIOS_EXTRA_VERSION=".0-Normal"
+	option COREBOOT_EXTRA_VERSION=".0-Normal"
 	payload $(HOME)/svn/payload.elf
 end
 
@@ -41,8 +41,8 @@ romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
 	#option ROM_IMAGE_SIZE=128*1024
 	option ROM_IMAGE_SIZE=60*1024
-	option LINUXBIOS_EXTRA_VERSION=".0-Fallback"
+	option COREBOOT_EXTRA_VERSION=".0-Fallback"
 	payload $(HOME)/svn/payload.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

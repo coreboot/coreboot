@@ -59,7 +59,7 @@ uses MAINBOARD_VENDOR
 uses MAINBOARD
 uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-uses LINUXBIOS_EXTRA_VERSION
+uses COREBOOT_EXTRA_VERSION
 uses _RAMBASE
 uses TTYS0_BAUD
 uses TTYS0_BASE
@@ -121,7 +121,7 @@ default APIC_ID_OFFSET = 0x10
 default LIFT_BSP_APIC_ID = 1
 default CONFIG_CHIP_NAME = 1
 
-# Move the default LinuxBIOS CMOS range off of AMD RTC registers.
+# Move the default coreboot CMOS range off of AMD RTC registers.
 default LB_CKS_RANGE_START = 49
 default LB_CKS_RANGE_END = 122
 default LB_CKS_LOC = 123

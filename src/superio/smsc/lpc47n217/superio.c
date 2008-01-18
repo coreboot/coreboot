@@ -22,7 +22,7 @@
  */
 
 /* RAM-based driver for SMSC LPC47N217 Super I/O chip. */
-/* Based on LinuxBIOS code for SMSC 47B397. */
+/* Based on coreboot code for SMSC 47B397. */
 
 #include <arch/io.h>
 #include <device/device.h>

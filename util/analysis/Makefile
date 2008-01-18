@@ -1,4 +1,4 @@
-#  LinuxBIOS codebase analysis tool
+#  Coreboot codebase analysis tool
 #
 #  This makefile collects source usage information for all working targets.
 #
@@ -38,7 +38,7 @@ analysis: analysis.dat
 analysis.dat: analysis.txt
 	@ echo Writing gnuplot data file \($@\).
 	@ echo -e > $@ "# gnuplot dataset auto-generated $(shell date)" \
-	"\nset title \"LinuxBIOS Codebase Analysis\"" \
+	"\nset title \"Coreboot Codebase Analysis\"" \
 	"\nset style data boxes" \
 	"\nset style fill solid .5" \
 	$(foreach target, $(TARGETS), "\n"set label \"$(target)\" at $(words $(labels))$(eval labels += $(target)),-145 rotate front) \

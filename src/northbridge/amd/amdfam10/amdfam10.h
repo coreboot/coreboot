@@ -1019,7 +1019,7 @@ struct nodes_info_t {
 	u32 up_planes; // down planes will be [up_planes, planes)
 } __attribute__((packed));
 
-/* be careful with the alignment of sysinfo, bacause sysinfo may be shared by linuxbios_car and linuxbios_ram stage. and linuxbios_ram may be running at 64bit later.*/
+/* be careful with the alignment of sysinfo, bacause sysinfo may be shared by coreboot_car and coreboot_ram stage. and coreboot_ram may be running at 64bit later.*/
 #if CONFIG_AMDMCT == 0
 
 //#define MEM_CS_COPY 1

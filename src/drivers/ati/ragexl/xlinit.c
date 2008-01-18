@@ -7,7 +7,7 @@
  *         	stevel@mvista.com or source@mvista.com
  *  Copyright (C) 2004 Tyan Computer.
  *  Auther: Yinghai Lu   yhlu@tyan.com
- *	   move to LinuxBIOS
+ *	   move to coreboot
  * This code is distributed without warranty under the GPL v2 (see COPYING) *
  */
 #include <delay.h>

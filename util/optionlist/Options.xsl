@@ -43,11 +43,11 @@
 <xsl:template match="/">
 <html>
 <head>
-<title>LinuxBIOS Options</title>
+<title>Coreboot Options</title>
 </head>
 <body>
-<h2>LinuxBIOS Options</h2>
-<p>This is an automatically generated list of LinuxBIOS compile time
+<h2>Coreboot Options</h2>
+<p>This is an automatically generated list of coreboot compile time
 options. Created at <xsl:value-of select="//creationdate"/>.</p>
 <table border="1">
 <tr bgcolor="#0975a7">

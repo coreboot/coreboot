@@ -4,7 +4,7 @@
  *
  * Written by Benjamin Herrenschmidt.
  *  
- * Move to LinuxBIOS by LYH  yhlu@tyan.com
+ * Move to coreboot by LYH  yhlu@tyan.com
  *
  */
 

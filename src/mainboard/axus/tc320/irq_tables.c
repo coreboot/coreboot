@@ -24,7 +24,7 @@
  * It was not possible to read back the PIRQ table. There was no BIOS to ask
  * for it, only a bootloader for an embedded OS.
  * But with the method described here:
- *    http://linuxbios.org/Creating_Valid_IRQ_Tables
+ *    http://coreboot.org/Creating_Valid_IRQ_Tables
  * it was possible to detect the physical IRQ routing on this board.
  *
  * This is the physical routing on this board:

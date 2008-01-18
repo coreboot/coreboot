@@ -1,4 +1,4 @@
-// IOAPIC addresses determined by LinuxBIOS enumeration. 
+// IOAPIC addresses determined by coreboot enumeration. 
 // Someday add functions to get APIC IDs and versions from the chips themselves.
 	
 #define IOAPIC_ICH3				2

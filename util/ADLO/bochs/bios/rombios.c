@@ -144,7 +144,7 @@
 //#define BX_PCIBIOS       1
 #define BX_APM           0
 
-#define LINUXBIOS	1
+#define COREBOOT	1
 
 #define BX_USE_ATADRV    1
 //#define BX_ELTORITO_BOOT 1
@@ -1633,12 +1633,12 @@ ASM_END
 //--------------------------------------------------------------------------
 // keyboard_init
 //--------------------------------------------------------------------------
-// this file is based on LinuxBIOS implementation of keyboard.c
+// this file is based on coreboot implementation of keyboard.c
 // could convert to #asm to gain space
   void
 keyboard_init()
 {
-#ifndef LINUXBIOS 
+#ifndef COREBOOT 
     Bit16u max;
 
     /* ------------------- Flush buffers ------------------------*/

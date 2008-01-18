@@ -18,7 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-## See also: http://www.linuxbios.org/BCOM_WINNET100_Build_Tutorial
+## See also: http://www.coreboot.org/BCOM_WINNET100_Build_Tutorial
 
 target winnet100
 mainboard bcom/winnet100
@@ -39,15 +39,15 @@ option MAXIMUM_CONSOLE_LOGLEVEL = 6
 romimage "normal"
 	option USE_FALLBACK_IMAGE = 0
 	option ROM_IMAGE_SIZE = 64 * 1024
-	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
+	option COREBOOT_EXTRA_VERSION = ".0Normal"
 	payload ../../../../../../../images/etherboot.elf
 end
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1
 	option ROM_IMAGE_SIZE = 64 * 1024
-	option LINUXBIOS_EXTRA_VERSION = ".0Fallback"
+	option COREBOOT_EXTRA_VERSION = ".0Fallback"
 	payload ../../../../../../../images/etherboot.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

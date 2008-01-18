@@ -38,14 +38,14 @@ option CONFIG_PCI_ROM_RUN = 1
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE = 0
-	option LINUXBIOS_EXTRA_VERSION = ".0Normal"
+	option COREBOOT_EXTRA_VERSION = ".0Normal"
 	payload /tmp/filo.elf
 end
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1
-	option LINUXBIOS_EXTRA_VERSION = ".0Fallback"
+	option COREBOOT_EXTRA_VERSION = ".0Fallback"
 	payload /tmp/filo.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

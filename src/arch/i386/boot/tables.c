@@ -23,7 +23,7 @@ struct gdtarg {
 
 // Copy GDT to new location and reload it
 // 2003-07 by SONE Takeshi
-// Ported from Etherboot to LinuxBIOS 2005-08 by Steve Magnani
+// Ported from Etherboot to coreboot 2005-08 by Steve Magnani
 void move_gdt(unsigned long newgdt)
 {
 	uint16_t num_gdt_bytes = &gdt_end - &gdt;
@@ -58,7 +58,7 @@ struct lb_memory *write_tables(void)
 
 	/* Write ACPI tables */
 	/* write them in the rom area because DSDT can be large (8K on epia-m) which
-	 * pushes linuxbios table out of first 4K if set up in low table area 
+	 * pushes coreboot table out of first 4K if set up in low table area 
 	 */
 	rom_table_end = write_acpi_tables(rom_table_end);
 	rom_table_end = (rom_table_end+1023) & ~1023;
@@ -105,8 +105,8 @@ struct lb_memory *write_tables(void)
 	move_gdt(low_table_end);
 	low_table_end += &gdt_end - &gdt;
 
-	/* The linuxbios table must be in 0-4K or 960K-1M */
-	write_linuxbios_table(low_table_start, low_table_end,
+	/* The coreboot table must be in 0-4K or 960K-1M */
+	write_coreboot_table(low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);
 
 	return get_lb_mem();

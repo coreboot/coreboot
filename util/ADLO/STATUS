@@ -128,7 +128,7 @@ fix int15 memory functions. (E820, etc)
 fix bios to properly handle reboot
 
 setup PIRQ table for P6STMT mbo.
-	have it extract from linuxbios somehow..
+	have it extract from coreboot somehow..
 		find it in ram and copy...
 
 hack gcc to support 16 bit real mode.

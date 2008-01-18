@@ -104,7 +104,7 @@ static void post_cache_as_ram(void)
         // wait for ap memory to trained
 //        wait_all_core0_mem_trained(sysinfox); // moved to lapic_init_cpus.c
 #endif
-        /*copy and execute linuxbios_ram */
+        /*copy and execute coreboot_ram */
         copy_and_run();
         /* We will not return */
 

@@ -19,19 +19,19 @@ static void __console_tx_byte(unsigned char byte)
 
 #endif /* CONFIG_USE_PRINTK_IN_CAR */
 
-#ifndef LINUXBIOS_EXTRA_VERSION
-#define LINUXBIOS_EXTRA_VERSION ""
+#ifndef COREBOOT_EXTRA_VERSION
+#define COREBOOT_EXTRA_VERSION ""
 #endif
 
 
 static void console_init(void)
 {
 	static const char console_test[] = 
-		"\r\n\r\nLinuxBIOS-"
-		LINUXBIOS_VERSION
-		LINUXBIOS_EXTRA_VERSION
+		"\r\n\r\ncoreboot-"
+		COREBOOT_VERSION
+		COREBOOT_EXTRA_VERSION
 		" "
-		LINUXBIOS_BUILD
+		COREBOOT_BUILD
 		" starting...\r\n";
 	print_info(console_test);
 }

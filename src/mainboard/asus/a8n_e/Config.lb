@@ -23,7 +23,7 @@
 
 ##
 ## Compute the location and size of where this firmware image
-## (linuxBIOS plus bootloader) will live in the boot rom chip.
+## (coreboot plus bootloader) will live in the boot rom chip.
 ##
 if USE_FAILOVER_IMAGE
 	default ROM_SECTION_SIZE   = FAILOVER_SIZE
@@ -39,18 +39,18 @@ else
 end
 
 ##
-## Compute the start location and size size of the LinuxBIOS bootloader.
+## Compute the start location and size size of the coreboot bootloader.
 ##
 default PAYLOAD_SIZE = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
 default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 
 ##
-## Compute where this copy of LinuxBIOS will start in the boot ROM.
+## Compute where this copy of coreboot will start in the boot ROM.
 ##
 default _ROMBASE = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
 
 ##
-## Compute a range of ROM that can be cached to speed up LinuxBIOS
+## Compute a range of ROM that can be cached to speed up coreboot
 ## execution speed.
 ##
 ## XIP_ROM_SIZE must be a power of 2 (here 64 Kbyte)
@@ -106,7 +106,7 @@ if USE_DCACHE_RAM
 end
 
 ##
-## Build our 16 bit and 32 bit LinuxBIOS entry code.
+## Build our 16 bit and 32 bit coreboot entry code.
 ##
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
@@ -130,7 +130,7 @@ if USE_DCACHE_RAM
 end
 
 ##
-## Build our reset vector (this is where LinuxBIOS is entered).
+## Build our reset vector (this is where coreboot is entered).
 ##
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
@@ -186,7 +186,7 @@ end
 
 
 ###
-### This is the early phase of LinuxBIOS startup.
+### This is the early phase of coreboot startup.
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###

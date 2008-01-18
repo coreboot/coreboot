@@ -7,7 +7,7 @@
  *				: heap
  *				: stack
  *	_ROMBASE
- *				: linuxbios text 
+ *				: coreboot text 
  *				: readonly text
  */
 /*
@@ -32,14 +32,14 @@ ENTRY(_start)
 */
 
 TARGET(binary)
-INPUT(linuxbios_ram.rom)
+INPUT(coreboot_ram.rom)
 SECTIONS
 {
 	. = _ROMBASE;
 
 	.ram . : {
 		_ram = . ;
-		linuxbios_ram.rom(*)
+		coreboot_ram.rom(*)
 		_eram = . ;
 	}
 

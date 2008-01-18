@@ -5,7 +5,7 @@
  *	_RESET			: reset vector (may be at top of ROM)
  *	_EXCEPTIONS_VECTORS	: exception table
  *
- *	_ROMSTART 		: linuxbios text 
+ *	_ROMSTART 		: coreboot text 
  *				: payload text
  *
  *	_RAMBASE		: address to copy payload
@@ -26,7 +26,7 @@ OUTPUT_FORMAT("elf32-powerpc")
 ENTRY(_start)
 
 TARGET(binary)
-INPUT(linuxbios_ram.rom)
+INPUT(coreboot_ram.rom)
 SECTIONS
 {
 	/* 
@@ -54,7 +54,7 @@ SECTIONS
 	}
 
 	/*
-	 * Absolute location of LinuxBIOS initialization code in ROM.
+	 * Absolute location of coreboot initialization code in ROM.
 	 */
 	. = _ROMSTART;
 	.rom . : {
@@ -63,7 +63,7 @@ SECTIONS
 		*(.text);
 		*(.rom.data);
 		*(.rodata);
-		*(EXCLUDE_FILE(linuxbios_ram.rom) .data);
+		*(EXCLUDE_FILE(coreboot_ram.rom) .data);
 		. = ALIGN(16);
 		_erom = .;
 	}
@@ -71,16 +71,16 @@ SECTIONS
 	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
 	
 	/*
-	 * Ram is the LinuxBIOS code that runs from RAM.
+	 * Ram is the coreboot code that runs from RAM.
 	 */
 	.ram . : {
 		_ram = . ;
-		linuxbios_ram.rom(*)
+		coreboot_ram.rom(*)
 		_eram = . ;
 	}
 
 	/*
-	 * Absolute location of where LinuxBIOS will be relocated in RAM.
+	 * Absolute location of where coreboot will be relocated in RAM.
 	 */
 	_iseg = _RAMBASE;
 	_eiseg = _iseg + SIZEOF(.ram);

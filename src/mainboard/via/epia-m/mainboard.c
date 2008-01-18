@@ -13,7 +13,7 @@ static void vga_fixup(void) {
         // we do this right here because:
         // - all the hardware is working, and some VGA bioses seem to need
         //   that
-        // - we need page 0 below for linuxbios tables.
+        // - we need page 0 below for coreboot tables.
 
         printk_debug("INSTALL REAL-MODE IDT\n");
         setup_realmode_idt();

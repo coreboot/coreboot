@@ -18,7 +18,7 @@
  * MA 02110-1301 USA
  */
 /* (C) Copyright 2005 Nick Barker <nick.barker@btinternet.com
-   brought into line with the current architecture of LinuxBios */ 
+   brought into line with the current architecture of coreboot */ 
 
 
 #include <arch/io.h>

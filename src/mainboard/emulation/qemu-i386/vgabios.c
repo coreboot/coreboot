@@ -64,7 +64,7 @@
  *--------------------------------------------------------------------*/
 
 /* Modified to be a self sufficient plug in so that it can be used 
-   without reliance on other parts of core Linuxbios 
+   without reliance on other parts of core coreboot 
    (C) 2005 Nick.Barker9@btinternet.com
 
   Used initially for epia-m where there are problems getting the bios
@@ -398,10 +398,10 @@ struct realidt {
 // that simplifies a lot of things ...
 // we'll just push all the registers on the stack as longwords, 
 // and pop to protected mode. 
-// second, since this only ever runs as part of linuxbios, 
+// second, since this only ever runs as part of coreboot, 
 // we know all the segment register values -- so we don't save any.
 // keep the handler that calls things small. It can do a call to 
-// more complex code in linuxbios itself. This helps a lot as we don't
+// more complex code in coreboot itself. This helps a lot as we don't
 // have to do address fixup in this little stub, and calls are absolute
 // so the handler is relocatable.
 void handler(void)

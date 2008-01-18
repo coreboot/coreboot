@@ -25,7 +25,7 @@
             indent="yes" />
 
 <xsl:template match="/">
-This is an automatically generated list of '''LinuxBIOS compile-time options'''.
+This is an automatically generated list of '''coreboot compile-time options'''.
 
 Last update: <xsl:value-of select="//creationdate"/>.
 

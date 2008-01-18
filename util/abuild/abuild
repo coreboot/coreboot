@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-#  LinuxBIOS autobuild
+#  coreboot autobuild
 #
-#  This script builds LinuxBIOS images for all available targets.
+#  This script builds coreboot images for all available targets.
 #
 #  (C) 2004 by Stefan Reinauer <stepan@openbios.org>
 #  (C) 2006 by coresystems GmbH <info@coresystems.de>
@@ -18,7 +18,7 @@ ABUILD_DATE="October 24, 2006"
 ABUILD_VERSION="0.4"
 
 # Where shall we place all the build trees?
-TARGET=$( pwd )/linuxbios-builds
+TARGET=$( pwd )/coreboot-builds
 XMLFILE=$( pwd )/abuild.xml
 
 # path to payload. Should be more generic
@@ -27,7 +27,7 @@ PAYLOAD=/dev/null
 # Lines of error context to be printed in FAILURE case
 CONTEXT=5
 
-TESTSUBMISSION="http://qa.linuxbios.org/deployment/send.php"
+TESTSUBMISSION="http://qa.coreboot.org/deployment/send.php"
 
 # One might want to adjust these in case of cross compiling
 MAKE="make"
@@ -143,25 +143,25 @@ EOF
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x17000
-	option LINUXBIOS_EXTRA_VERSION=".0-normal"
+	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x17000
-	option LINUXBIOS_EXTRA_VERSION=".0-fallback"
+	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
 EOF
 		else
 			cat <<EOF
 romimage "only"
-	option LINUXBIOS_EXTRA_VERSION=".0"
+	option COREBOOT_EXTRA_VERSION=".0"
 	payload __PAYLOAD__
 end
-buildrom ./linuxbios.rom ROM_SIZE "only"
+buildrom ./coreboot.rom ROM_SIZE "only"
 EOF
 		fi 
 		) > $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
@@ -403,7 +403,7 @@ function test_target
 	fi
 
 	# image does not exist. we silently skip the patch.
-	if [ ! -r "$TARGET/${VENDOR}_${MAINBOARD}/linuxbios.rom" ]; then
+	if [ ! -r "$TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom" ]; then
 		return 0
 	fi
 
@@ -422,9 +422,9 @@ function test_target
 
 	printf "Submitting image for board $VENDOR $MAINBOARD to test system...\n"
 
-	curl -f -F "romfile=@$TARGET/${VENDOR}_${MAINBOARD}/linuxbios.rom" \
+	curl -f -F "romfile=@$TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom" \
 		-F "mode=abuild" -F "mainboard=${VENDOR}_${MAINBOARD}" -F "submit=Upload" \
-        	"http://qa.linuxbios.org/deployment/send.php"
+        	"http://qa.coreboot.org/deployment/send.php"
 
 	printf "\n"
 	return 0
@@ -447,7 +447,7 @@ function myhelp
 	printf "    [-x|--xml]			  write xml log file \n"
 	printf "                                  (defaults to $XMLFILE)\n"
 	printf "    [-T|--test]			  submit image(s) to automated test system\n"
-	printf "    [lbroot]			  absolute path to LinuxBIOS sources\n"
+	printf "    [lbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $LBROOT)\n\n"
 }
 
@@ -455,10 +455,10 @@ function myversion
 {
 	cat << EOF
 
-LinuxBIOS autobuild v$ABUILD_VERSION ($ABUILD_DATE)
+coreboot autobuild v$ABUILD_VERSION ($ABUILD_DATE)
 
 Copyright (C) 2004 by Stefan Reinauer <stepan@openbios.org>
-Copyright (C) 2006 by coresystems GmbH <info@coresystems.de>
+Copyright (C) 2006-2008 by coresystems GmbH <info@coresystems.de>
 
 This program is free software; you may redistribute it under the terms
 of the GNU General Public License. This program has absolutely no

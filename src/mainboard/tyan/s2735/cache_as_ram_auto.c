@@ -259,7 +259,7 @@ cpu_reset_x:
                 print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\r\n");
 #endif
 	
-		/*copy and execute linuxbios_ram */
+		/*copy and execute coreboot_ram */
 		copy_and_run(new_cpu_reset);
 		/* We will not return */
 	}

@@ -15,7 +15,7 @@
 /*
  *	Written by Johan Rydberg, based on work by Daniel Kahlin.
  *      Rewritten by Eric Biederman
- *  2005.12 yhlu add linuxbios_ram cross the vga font buffer handling
+ *  2005.12 yhlu add coreboot_ram cross the vga font buffer handling
  */
 /*
  *	We use ELF as output format. So that we can
@@ -57,7 +57,7 @@ SECTIONS
 		/*
 		 * kevinh/Ispiri - Added an align, because the objcopy tool
 		 * incorrectly converts sections that are not long word aligned.
-		 * This breaksthe linuxbios.strip target.
+		 * This breaks the coreboot.strip target.
 		 */
 		 . = ALIGN(4);
 
@@ -104,7 +104,7 @@ SECTIONS
         }
         _eheap = .;
 	/* The ram segment
- 	 * This is all address of the memory resident copy of linuxBIOS.
+ 	 * This is all address of the memory resident copy of coreboot.
 	 */
 	_ram_seg = _text; 
 	_eram_seg = _eheap;

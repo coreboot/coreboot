@@ -12,7 +12,7 @@ option ROM_SIZE=512*1024-36*1024
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x20000
-	option LINUXBIOS_EXTRA_VERSION=".0Normal"
+	option COREBOOT_EXTRA_VERSION=".0Normal"
 	payload ../../../payloads/filo.elf
 #	payload /etc/hosts
 end
@@ -20,9 +20,9 @@ end
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x20000
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload ../../../payloads/filo.elf
 #	payload /etc/hosts
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

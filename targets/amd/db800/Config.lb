@@ -42,7 +42,7 @@ option MAXIMUM_CONSOLE_LOGLEVEL = 11
 romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=64*1024
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload ../payload.elf
 end
 

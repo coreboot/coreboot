@@ -1,25 +1,25 @@
 .TH ABUILD 1 "October 24, 2006"
 .SH NAME
-abuild \- build LinuxBIOS images for all available targets
+abuild \- build coreboot images for all available targets
 .SH SYNOPSIS
 .B abuild
 \fR[\fB\-abxVh\fR] [\fB\-t\fR vendor/board] [\fB\-p\fR dir]
 [LBROOT]
 .SH DESCRIPTION
 .B abuild
-is a utility used to easily build LinuxBIOS images for all available targets.
+is a utility used to easily build coreboot images for all available targets.
 .SH OPTIONS
 The
 .B "[LBROOT]"
 parameter tells
 .B abuild
-where the root directory of the LinuxBIOS build tree resides. Per default
+where the root directory of the coreboot build tree resides. Per default
 this is
 .B "../.."
 as the
 .B abuild
 script resides in
-.BR "[LBROOT]/utils/abuild" .
+.BR "[CBROOT]/utils/abuild" .
 .TP
 .B "\-a, \-\-all"
 Build previously succeeded ports as well.
@@ -45,7 +45,7 @@ and will be created in the current directory.
 .B "\-T, \-\-test"
 Submit generated image(s) to the automated test system.
 The results of the tests will be made available at 
-.B http://qa.linuxbios.org/log_manual.php
+.B http://qa.coreboot.org/log_manual.php
 .TP
 .B "\-v, \-\-verbose"
 More verbose output.
@@ -56,7 +56,7 @@ Show a help text and exit.
 .B "\-V, \-\-version"
 Show version information and exit.
 .SH BUGS
-Please report any bugs at http://tracker.linuxbios.org/.
+Please report any bugs at http://tracker.coreboot.org/.
 .SH LICENCE
 .B abuild
 is covered by the GNU General Public License (GPL), version 2 or later.

@@ -39,9 +39,9 @@ option MAXIMUM_CONSOLE_LOGLEVEL = 8
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=64*1024
-	option LINUXBIOS_EXTRA_VERSION=".0Fallback"
-	payload /opt/linuxbios-SVN/filo.elf
+	option COREBOOT_EXTRA_VERSION=".0Fallback"
+	payload /opt/coreboot-SVN/filo.elf
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "fallback"
+buildrom ./coreboot.rom ROM_SIZE "fallback"
 #"normal" 

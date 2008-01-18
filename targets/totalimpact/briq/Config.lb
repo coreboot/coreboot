@@ -42,11 +42,11 @@ romimage "normal"
 	## Exception vectors (other than reset vector)
 	option _EXCEPTION_VECTORS=_RESET+0x100
 
-	## Start of linuxBIOS in the boot rom
+	## Start of coreboot in the boot rom
 	## = _RESET + exeception vector table size
 	option _ROMSTART=_RESET+0x3100
 
-	## LinuxBIOS C code runs at this location in RAM
+	## Coreboot C code runs at this location in RAM
 	option _RAMBASE=0x00100000
 	option _RAMSTART=0x00100000
 
@@ -55,4 +55,4 @@ romimage "normal"
 
 end
 
-buildrom ./linuxbios.rom ROM_SIZE "normal"
+buildrom ./coreboot.rom ROM_SIZE "normal"

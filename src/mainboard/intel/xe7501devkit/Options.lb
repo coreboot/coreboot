@@ -55,7 +55,7 @@ uses USE_FALLBACK_IMAGE
 uses ROM_SIZE
 uses ROM_IMAGE_SIZE
 uses FALLBACK_SIZE
-uses LINUXBIOS_EXTRA_VERSION
+uses COREBOOT_EXTRA_VERSION
 
 ## These are defined in mainboard Config.lb, don't add here
 uses ROM_SECTION_SIZE
@@ -143,7 +143,7 @@ default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x8086
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2480
 
 ###
-### LinuxBIOS layout values
+### coreboot layout values
 ###
 
 ##
@@ -162,7 +162,7 @@ default HEAP_SIZE=0x4000
 default USE_OPTION_TABLE = 0
 
 ##
-## LinuxBIOS C code runs at this location in RAM
+## Coreboot C code runs at this location in RAM
 ##
 default _RAMBASE=0x00004000
 
@@ -211,7 +211,7 @@ default TTYS0_BASE=0x3f8
 default TTYS0_LCS=0x3
 
 ##
-### Select the linuxBIOS loglevel
+### Select the coreboot loglevel
 ##
 ## EMERG      1   system is unusable               
 ## ALERT      2   action must be taken immediately 

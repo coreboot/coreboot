@@ -83,7 +83,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 /* The next two tables are used by our DSDT and are freely defined
  * here. This construct is used because the bus numbers containing 
- * the 8131 bridges may vary so that we need to pass LinuxBIOS 
+ * the 8131 bridges may vary so that we need to pass coreboot 
  * knowledge into the DSDT
  */
 typedef struct lnxc_busses {
@@ -96,7 +96,7 @@ typedef struct acpi_lnxb {
 	acpi_lnxb_busses_t busses[5];
 } acpi_lnxb_t;
 
-/* special linuxbios acpi table */
+/* special coreboot acpi table */
 void acpi_create_lnxb(acpi_lnxb_t *lnxb)
 {
 	device_t dev;

@@ -1,10 +1,10 @@
-#ifndef LINUXBIOS_TABLE_H
-#define LINUXBIOS_TABLE_H
+#ifndef COREBOOT_TABLE_H
+#define COREBOOT_TABLE_H
 
 #include <boot/linuxbios_tables.h>
 
-/* This file holds function prototypes for building the linuxbios table. */
-unsigned long write_linuxbios_table(
+/* This file holds function prototypes for building the coreboot table. */
+unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end);
 
@@ -19,11 +19,11 @@ void lb_memory_range(struct lb_memory *mem,
 struct lb_mainboard *lb_mainboard(struct lb_header *header);
 unsigned long lb_table_fini(struct lb_header *header);
 
-/* Routines to extract part so the linuxBIOS table or information
- * from the linuxBIOS table.
+/* Routines to extract part so the coreboot table or information
+ * from the coreboot table.
  */
 struct lb_memory *get_lb_mem(void);
 
 extern struct cmos_option_table option_table;
 
-#endif /* LINUXBIOS_TABLE_H */
+#endif /* COREBOOT_TABLE_H */

@@ -94,7 +94,7 @@ struct lb_header *find_lb_table(void *base, unsigned long start, unsigned long e
 				head->table_checksum);
 			continue;
 		}
-		fprintf(stdout, "Found LinuxBIOS table at: %08lx\n", addr);
+		fprintf(stdout, "Found coreboot table at: %08lx\n", addr);
 		return head;
 
 	};
@@ -303,7 +303,7 @@ void print_lb_table(struct lb_header *head, unsigned long addr)
 	rec  = (struct lb_record *)(((char *)head) + head->header_bytes);
 	last = (struct lb_record *)(((char *)rec) + head->table_bytes);
 
-	printf("LinuxBIOS header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
+	printf("Coreboot header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
 		head->header_bytes, head->header_checksum,
 		head->table_bytes, head->table_checksum, head->table_entries);
 	print_lb_records(rec, last, addr + head->header_bytes);

@@ -8,8 +8,8 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing LinuxBIOS
- *  parameters and displaying information from the LinuxBIOS table.
+ *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  parameters and displaying information from the coreboot table.
  *  For details, see <http://www.llnl.gov/linux/lxbios/>.
  *
  *  Please also read the file DISCLAIMER which is included in this software
@@ -154,7 +154,7 @@ int prepare_cmos_write (const cmos_entry_t *e, const char value_str[],
 /****************************************************************************
  * cmos_checksum_read
  *
- * Read the checksum for the LinuxBIOS parameters stored in CMOS and return
+ * Read the checksum for the coreboot parameters stored in CMOS and return
  * this value.
  ****************************************************************************/
 uint16_t cmos_checksum_read (void)
@@ -169,7 +169,7 @@ uint16_t cmos_checksum_read (void)
 /****************************************************************************
  * cmos_checksum_write
  *
- * Set the checksum for the LinuxBIOS parameters stored in CMOS to
+ * Set the checksum for the coreboot parameters stored in CMOS to
  * 'checksum'.
  ****************************************************************************/
 void cmos_checksum_write (uint16_t checksum)
@@ -185,7 +185,7 @@ void cmos_checksum_write (uint16_t checksum)
 /****************************************************************************
  * cmos_checksum_compute
  *
- * Compute a checksum for the LinuxBIOS parameter values currently stored in
+ * Compute a checksum for the coreboot parameter values currently stored in
  * CMOS and return this checksum.
  ****************************************************************************/
 uint16_t cmos_checksum_compute (void)
@@ -202,7 +202,7 @@ uint16_t cmos_checksum_compute (void)
 /****************************************************************************
  * cmos_checksum_verify
  *
- * Verify that the LinuxBIOS CMOS checksum is valid.  If checksum is not
+ * Verify that the coreboot CMOS checksum is valid.  If checksum is not
  * valid then print warning message and exit.
  ****************************************************************************/
 void cmos_checksum_verify (void)
@@ -214,7 +214,7 @@ void cmos_checksum_verify (void)
    set_iopl(0);
 
    if (computed != actual)
-    { fprintf(stderr, "%s: Warning: LinuxBIOS CMOS checksum is bad.\n",
+    { fprintf(stderr, "%s: Warning: Coreboot CMOS checksum is bad.\n",
               prog_name);
       exit(1);
     }

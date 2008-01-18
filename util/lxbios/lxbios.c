@@ -8,8 +8,8 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing LinuxBIOS
- *  parameters and displaying information from the LinuxBIOS table.
+ *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  parameters and displaying information from the coreboot table.
  *  For details, see <http://www.llnl.gov/linux/lxbios/>.
  *
  *  Please also read the file DISCLAIMER which is included in this software
@@ -136,7 +136,7 @@ static void op_show_usage (void)
  *
  * -l [ARG]
  *
- * If ARG is present, show LinuxBIOS table information specified by ARG.
+ * If ARG is present, show coreboot table information specified by ARG.
  * Else show all possible values for ARG.
  ****************************************************************************/
 static void op_lbtable_show_info (void)
@@ -153,7 +153,7 @@ static void op_lbtable_show_info (void)
  *
  * -d
  *
- * Do low-level dump of LinuxBIOS table.
+ * Do low-level dump of coreboot table.
  ****************************************************************************/
 static void op_lbtable_dump (void)
  { get_lbtable();
@@ -268,7 +268,7 @@ static void op_cmos_set_params_file (void)
  *
  * -c [VALUE]
  *
- * If VALUE is present, set LinuxBIOS CMOS checksum to VALUE.  Else show
+ * If VALUE is present, set coreboot CMOS checksum to VALUE.  Else show
  * checksum value.
  ****************************************************************************/
 static void op_cmos_checksum (void)
@@ -516,7 +516,7 @@ static void set_one_param (const char name[], const char value[])
       case CMOS_OP_NEGATIVE_INT:
          fprintf(stderr,
                  "%s: This program does not support assignment of negative "
-                 "numbers to LinuxBIOS parameters.", prog_name);
+                 "numbers to coreboot parameters.", prog_name);
          goto fail;
 
       case CMOS_OP_INVALID_INT:
@@ -525,7 +525,7 @@ static void set_one_param (const char name[], const char value[])
 
       case CMOS_OP_RESERVED:
          fprintf(stderr,
-                 "%s: Can not modify reserved LinuxBIOS parameter %s.",
+                 "%s: Can not modify reserved coreboot parameter %s.",
                  prog_name, name);
          goto fail;
 
@@ -537,34 +537,34 @@ static void set_one_param (const char name[], const char value[])
 
       case CMOS_OP_NO_MATCHING_ENUM:
          fprintf(stderr,
-                 "%s: LinuxBIOS parameter %s has no matching enums.",
+                 "%s: coreboot parameter %s has no matching enums.",
                  prog_name, name);
          goto fail;
 
       case CMOS_AREA_OUT_OF_RANGE:
          fprintf(stderr,
                  "%s: The CMOS area specified by the layout info for "
-                 "LinuxBIOS parameter %s is out of range.", prog_name, name);
+                 "coreboot parameter %s is out of range.", prog_name, name);
          goto fail;
 
       case CMOS_AREA_OVERLAPS_RTC:
          fprintf(stderr,
                  "%s: The CMOS area specified by the layout info for "
-                 "LinuxBIOS parameter %s overlaps the realtime clock area.",
+                 "coreboot parameter %s overlaps the realtime clock area.",
                  prog_name, name);
          goto fail;
 
       case CMOS_AREA_TOO_WIDE:
          fprintf(stderr,
                  "%s: The CMOS area specified by the layout info for "
-                 "LinuxBIOS parameter %s is too wide.",
+                 "coreboot parameter %s is too wide.",
                  prog_name, name);
          goto fail;
 
       default:
          fprintf(stderr,
                  "%s: Unknown error encountered while attempting to modify "
-                 "LinuxBIOS parameter %s.", prog_name, name);
+                 "coreboot parameter %s.", prog_name, name);
          goto fail;
     }
 
@@ -583,7 +583,7 @@ fail:
 /****************************************************************************
  * set_params
  *
- * Set LinuxBIOS parameters according to the contents of file 'f'.
+ * Set coreboot parameters according to the contents of file 'f'.
  ****************************************************************************/
 static void set_params (FILE *f)
  { /* First process the input file.  Then perform writes only if there were
@@ -649,26 +649,26 @@ static int list_cmos_entry (const cmos_entry_t *e, int show_name)
          BUG();
 
       case CMOS_AREA_OUT_OF_RANGE:
-         fprintf(stderr, "%s: Can not read LinuxBIOS parameter %s because "
+         fprintf(stderr, "%s: Can not read coreboot parameter %s because "
                  "layout info specifies out of range CMOS area.\n", prog_name,
                  e->name);
          return 1;
 
       case CMOS_AREA_OVERLAPS_RTC:
-         fprintf(stderr, "%s: Can not read LinuxBIOS parameter %s because "
+         fprintf(stderr, "%s: Can not read coreboot parameter %s because "
                  "layout info specifies CMOS area that overlaps realtime "
                  "clock area.\n", prog_name, e->name);
          return 1;
 
       case CMOS_AREA_TOO_WIDE:
-         fprintf(stderr, "%s: Can not read LinuxBIOS parameter %s because "
+         fprintf(stderr, "%s: Can not read coreboot parameter %s because "
                  "layout info specifies CMOS area that is too wide.\n",
                  prog_name, e->name);
          return 1;
 
       default:
          fprintf(stderr, "%s: Unknown error encountered while attempting to "
-                 "read LinuxBIOS parameter %s\n", prog_name, e->name);
+                 "read coreboot parameter %s\n", prog_name, e->name);
          return 1;
     }
 

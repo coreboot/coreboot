@@ -8,8 +8,8 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing LinuxBIOS
- *  parameters and displaying information from the LinuxBIOS table.
+ *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  parameters and displaying information from the coreboot table.
  *  For details, see <http://www.llnl.gov/linux/lxbios/>.
  *
  *  Please also read the file DISCLAIMER which is included in this software
@@ -56,7 +56,7 @@ static const char blank_or_comment_regex[] =
 const char assignment_regex[] =
    /* optional whitespace */
    "^[[:space:]]*"
-   /* followed by a LinuxBIOS parameter name */
+   /* followed by a coreboot parameter name */
    "([^[:space:]]+)"
    /* followed by optional whitespace */
    "[[:space:]]*"
@@ -120,7 +120,7 @@ cmos_write_t * process_input_file (FILE *f)
       name = &line[match[1].rm_so];
       value = &line[match[2].rm_so];
 
-      /* now look up the LinuxBIOS parameter name */
+      /* now look up the coreboot parameter name */
       if (is_checksum_name(name) || (e = find_cmos_entry(name)) == NULL)
        { fprintf(stderr, "%s: Error on line %d of input file: CMOS parameter "
                  "%s not found.\n", prog_name, line_num, name);
@@ -224,7 +224,7 @@ static unsigned long long try_prepare_cmos_write (const cmos_entry_t *e,
       case CMOS_OP_NEGATIVE_INT:
          fprintf(stderr, "%s: Error on line %d of input file: This program "
                  "does not support assignment of negative numbers to "
-                 "LinuxBIOS parameters.", prog_name, line_num);
+                 "coreboot parameters.", prog_name, line_num);
          break;
 
       case CMOS_OP_INVALID_INT:
@@ -234,7 +234,7 @@ static unsigned long long try_prepare_cmos_write (const cmos_entry_t *e,
 
       case CMOS_OP_RESERVED:
          fprintf(stderr, "%s: Error on line %d of input file: Can not modify "
-                 "reserved LinuxBIOS parameter %s.", prog_name, line_num,
+                 "reserved coreboot parameter %s.", prog_name, line_num,
                  e->name);
          break;
 
@@ -245,32 +245,32 @@ static unsigned long long try_prepare_cmos_write (const cmos_entry_t *e,
          break;
 
       case CMOS_OP_NO_MATCHING_ENUM:
-         fprintf(stderr, "%s: LinuxBIOS parameter %s has no matching enums.",
+         fprintf(stderr, "%s: coreboot parameter %s has no matching enums.",
                  prog_name, e->name);
          break;
 
       case CMOS_AREA_OUT_OF_RANGE:
          fprintf(stderr, "%s: The CMOS area specified by the layout info for "
-                 "LinuxBIOS parameter %s is out of range.", prog_name,
+                 "coreboot parameter %s is out of range.", prog_name,
                  e->name);
          break;
 
       case CMOS_AREA_OVERLAPS_RTC:
          fprintf(stderr, "%s: The CMOS area specified by the layout info for "
-                 "LinuxBIOS parameter %s overlaps the realtime clock area.",
+                 "coreboot parameter %s overlaps the realtime clock area.",
                  prog_name, e->name);
          break;
 
       case CMOS_AREA_TOO_WIDE:
          fprintf(stderr, "%s: The CMOS area specified by the layout info for "
-                 "LinuxBIOS parameter %s is too wide.",
+                 "coreboot parameter %s is too wide.",
                  prog_name, e->name);
          break;
 
       default:
          fprintf(stderr,
                  "%s: Unknown error encountered while attempting to modify "
-                 "LinuxBIOS parameter %s.", prog_name, e->name);
+                 "coreboot parameter %s.", prog_name, e->name);
          break;
     }
 

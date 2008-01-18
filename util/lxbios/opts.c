@@ -8,8 +8,8 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing LinuxBIOS
- *  parameters and displaying information from the LinuxBIOS table.
+ *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  parameters and displaying information from the coreboot table.
  *  For details, see <http://www.llnl.gov/linux/lxbios/>.
  *
  *  Please also read the file DISCLAIMER which is included in this software

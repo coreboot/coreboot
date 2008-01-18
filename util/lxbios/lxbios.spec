@@ -6,7 +6,7 @@ Name:    lxbios
 Version: 2.0.1
 Release: 0
 
-Summary: LinuxBIOS utility program
+Summary: coreboot utility program
 Group:   System Environment/Base
 License: GPL
 Provides: lxbios
@@ -16,15 +16,15 @@ BuildRoot: %{_tmppath}/%{name}-%{version}
 Source0: %{name}-%{version}.tgz
 
 %description
-lxbios is a utility for reading/writing LinuxBIOS parameters and displaying
-information from the LinuxBIOS table.
+lxbios is a utility for reading/writing coreboot parameters and displaying
+information from the coreboot table.
 
-At boot time, LinuxBIOS places a table (known as the LinuxBIOS table) in low
+At boot time, coreboot places a table (known as the coreboot table) in low
 physical memory.  The contents of this table are preserved even after
-LinuxBIOS transfers control to the kernel and the kernel initializes itself.
-The LinuxBIOS table contains various system information such as the type of
+coreboot transfers control to the kernel and the kernel initializes itself.
+The coreboot table contains various system information such as the type of
 mainboard in use.  It also specifies locations in the CMOS (nonvolatile RAM)
-where the LinuxBIOS parameters are stored.
+where the coreboot parameters are stored.
 
 %prep
 %setup -n %{name}-%{version}

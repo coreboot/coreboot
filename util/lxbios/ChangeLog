@@ -54,7 +54,7 @@ Wed Nov 30 16:30:00 PST 2005  David S. Peterson (dsp@llnl.gov)
 
 	* Merge patch from Stefan Reinauer <stepan@openbios.org> that makes
 	  lxbios recognize the LB_TAG_OPTION_CHECKSUM entry placed in the
-	  LinuxBIOS table by newer versions of LinuxBIOS.
+	  coreboot table by newer versions of LinuxBIOS.
 
 	* Tweak formatting of code to facilitate merging future patches.
 
@@ -121,11 +121,11 @@ Fri Nov  8 17:00:00 PST 2002  David S. Peterson (dsp@llnl.gov)
 
 	Version 1.1.0.
 
-	* Added -l option for displaying entries from LinuxBIOS table.
+	* Added -l option for displaying entries from coreboot table.
 
-	* Added -d option for low-level dump of LinuxBIOS table.
+	* Added -d option for low-level dump of coreboot table.
 
-	* Improved code that searches for LinuxBIOS table.
+	* Improved code that searches for coreboot table.
 
 Wed Nov  6 09:30:00 PST 2002  David S. Peterson (dsp@llnl.gov)
 

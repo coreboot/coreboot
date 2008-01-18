@@ -8,8 +8,8 @@
 .\"  UCRL-CODE-2003-012
 .\"  All rights reserved.
 .\"
-.\"  This file is part of lxbios, a utility for reading/writing LinuxBIOS
-.\"  parameters and displaying information from the LinuxBIOS table.
+.\"  This file is part of lxbios, a utility for reading/writing coreboot
+.\"  parameters and displaying information from the coreboot table.
 .\"  For details, see <http://www.llnl.gov/linux/lxbios/>.
 .\"
 .\"  Please also read the file DISCLAIMER which is included in this software
@@ -28,9 +28,9 @@
 .\"  with this program; if not, write to the Free Software Foundation, Inc.,
 .\"  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 .\"***************************************************************************/
-.TH LXBIOS 1 "December 2005" Linux
+.TH LXBIOS 1 "January 2008" Linux
 .SH NAME
-lxbios \- read/write LinuxBIOS-related information
+lxbios \- read/write coreboot-related information
 .SH SYNOPSIS
 .B "lxbios [OPTS] [-n] -r NAME"
 .br
@@ -65,22 +65,22 @@ lxbios \- read/write LinuxBIOS-related information
 .B "lxbios [OPTS] -h"
 .SH DESCRIPTION
 .B "lxbios"
-is a utility for reading/writing LinuxBIOS parameters and displaying
-information from the LinuxBIOS table.
+is a utility for reading/writing coreboot parameters and displaying
+information from the coreboot table.
 
-The LinuxBIOS table resides in low physical memory.  It is created at boot
-time by LinuxBIOS, and contains various system information such as the type
+The coreboot table resides in low physical memory.  It is created at boot
+time by coreboot, and contains various system information such as the type
 of mainboard in use.  It specifies locations in the CMOS (nonvolatile RAM)
-where the LinuxBIOS parameters are stored.
+where the coreboot parameters are stored.
 
-This program is intended for x86-based systems that use LinuxBIOS.  For
-information about LinuxBIOS, see
+This program is intended for (x86-based) systems that use coreboot.  For
+information about coreboot, see
 .br
-http://www.linuxbios.org/.
+http://www.coreboot.org/.
 .SH PARAMETERS
 .TP
 .B "[-n] -r NAME"
-Show the value of the LinuxBIOS parameter given by
+Show the value of the coreboot parameter given by
 .B "NAME."
 If
 .B "-n"
@@ -92,16 +92,16 @@ Show all possible values for parameter given by
 .B "NAME."
 .TP
 .B "-a"
-Show the names and values for all LinuxBIOS parameters.
+Show the names and values for all coreboot parameters.
 .TP
 .B "-w NAME=VALUE"
 Assign
 .B "VALUE"
-to LinuxBIOS parameter given by
+to coreboot parameter given by
 .B "NAME."
 .TP
 .B "-p INPUT_FILE"
-Assign values to LinuxBIOS parameters according to the contents of
+Assign values to coreboot parameters according to the contents of
 .B "INPUT_FILE."
 The format of this file is described below.
 .TP
@@ -114,20 +114,20 @@ input.
 .B "-c [VALUE]"
 If
 .B "VALUE"
-is present then set the CMOS checksum for the LinuxBIOS parameters to
+is present then set the CMOS checksum for the coreboot parameters to
 .B "VALUE." 
 Otherwise, show the checksum value.
 .TP
 .B "-l [ARG]"
 If
 .B "ARG"
-is present then show information from the LinuxBIOS table as specified by
+is present then show information from the coreboot table as specified by
 .B "ARG."
 Otherwise show all possible values for
 .B "ARG."
 .TP
 .B "-d"
-Do a low-level dump of the LinuxBIOS table.
+Do a low-level dump of the coreboot table.
 .TP
 .B "-Y"
 Write CMOS layout information to standard output.  If redirected to a file,
@@ -185,16 +185,16 @@ option tells lxbios to obtain CMOS layout information from the contents of
 Likewise, the
 .B "'-t'"
 option tells lxbios to obtain CMOS layout information from the CMOS option
-table (contained within the LinuxBIOS table).  If neither option is
+table (contained within the coreboot table).  If neither option is
 specified, the CMOS option table is used by default.
 .B "LAYOUT_FILE"
 follows the format of the
 .B "cmos.layout"
-files provided by LinuxBIOS.
+files provided by coreboot.
 
-If the LinuxBIOS installed on your system was built without specifying
+If the coreboot installed on your system was built without specifying
 .B "HAVE_OPTION_TABLE,"
-then the LinuxBIOS table will not contain a CMOS option table.  In this case,
+then the coreboot table will not contain a CMOS option table.  In this case,
 the
 .B "'-y LAYOUT_FILE'"
 option must be used.
@@ -226,7 +226,7 @@ assignment is constructed as follows:
 
 Here,
 .B "NAME"
-is the name of a LinuxBIOS parameter and
+is the name of a coreboot parameter and
 .B "VALUE"
 is the value that will be assigned to
 .B "NAME."

@@ -9,8 +9,8 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing LinuxBIOS
- *  parameters and displaying information from the LinuxBIOS table.
+ *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  parameters and displaying information from the coreboot table.
  *  For details, see <http://www.llnl.gov/linux/lxbios/>.
  *
  *  Please also read the file DISCLAIMER which is included in this software
@@ -41,7 +41,7 @@
 
 typedef void (*lbtable_print_fn_t) (const struct lb_record *rec);
 
-/* This structure represents an item in the LinuxBIOS table that may be
+/* This structure represents an item in the coreboot table that may be
  * displayed using the -l option.
  */
 typedef struct
@@ -97,39 +97,39 @@ static const char mainboard_desc[] =
 "    This shows information about your mainboard.\n";
 
 static const char version_desc[] =
-"    This shows LinuxBIOS version information.\n";
+"    This shows coreboot version information.\n";
 
 static const char extra_version_desc[] =
-"    This shows extra LinuxBIOS version information.\n";
+"    This shows extra coreboot version information.\n";
 
 static const char build_desc[] =
-"    This shows LinuxBIOS build information.\n";
+"    This shows coreboot build information.\n";
 
 static const char compile_time_desc[] =
-"    This shows when LinuxBIOS was compiled.\n";
+"    This shows when coreboot was compiled.\n";
 
 static const char compile_by_desc[] =
-"    This shows who compiled LinuxBIOS.\n";
+"    This shows who compiled coreboot.\n";
 
 static const char compile_host_desc[] =
-"    This shows the name of the machine that compiled LinuxBIOS.\n";
+"    This shows the name of the machine that compiled coreboot.\n";
 
 static const char compile_domain_desc[] =
-"    This shows the domain name of the machine that compiled LinuxBIOS.\n";
+"    This shows the domain name of the machine that compiled coreboot.\n";
 
 static const char compiler_desc[] =
-"    This shows the name of the compiler used to build LinuxBIOS.\n";
+"    This shows the name of the compiler used to build coreboot.\n";
 
 static const char linker_desc[] =
-"    This shows the name of the linker used to build LinuxBIOS.\n";
+"    This shows the name of the linker used to build coreboot.\n";
 
 static const char assembler_desc[] =
-"    This shows the name of the assembler used to build LinuxBIOS.\n";
+"    This shows the name of the assembler used to build coreboot.\n";
 
 static const char cmos_opt_table_desc[] =
 "    This does a low-level dump of the CMOS option table.  The table "
 "contains\n"
-"    information about the layout of the values that LinuxBIOS stores in\n"
+"    information about the layout of the values that coreboot stores in\n"
 "    nonvolatile RAM.\n";
 
 static const char option_checksum_desc[] =
@@ -138,23 +138,23 @@ static const char option_checksum_desc[] =
 "    calculated.\n";
 
 static const char generic_nofound_msg[] =
-"%s: Item %s not found in LinuxBIOS table.\n";
+"%s: Item %s not found in coreboot table.\n";
 
 static const char nofound_msg_cmos_opt_table[] =
-"%s: Item %s not found in LinuxBIOS table.  Apparently, the "
-"LinuxBIOS installed on this system was built without specifying "
+"%s: Item %s not found in coreboot table.  Apparently, the "
+"coreboot installed on this system was built without specifying "
 "HAVE_OPTION_TABLE.\n";
 
 static const char nofound_msg_option_checksum[] =
-"%s: Item %s not found in LinuxBIOS table. Apparently, you are "
-"using LinuxBIOS v1.\n";
+"%s: Item %s not found in coreboot table. Apparently, you are "
+"using coreboot v1.\n";
 
-/* This is the number of items from the LinuxBIOS table that may be displayed
+/* This is the number of items from the coreboot table that may be displayed
  * using the -l option.
  */
 #define NUM_LBTABLE_CHOICES 14
 
-/* These represent the various items from the LinuxBIOS table that may be
+/* These represent the various items from the coreboot table that may be
  * displayed using the -l option.
  */
 static const lbtable_choice_t lbtable_choices[NUM_LBTABLE_CHOICES] =
@@ -216,9 +216,9 @@ static const lbtable_choice_t lbtable_choices[NUM_LBTABLE_CHOICES] =
    }
  };
 
-/* The LinuxBIOS table resides in low physical memory, which we access using
+/* The coreboot table resides in low physical memory, which we access using
  * /dev/mem.  These are ranges of physical memory that should be scanned for a
- * LinuxBIOS table.
+ * coreboot table.
  */
 
 #define NUM_MEM_RANGES 2
@@ -231,7 +231,7 @@ static const mem_range_t mem_ranges[NUM_MEM_RANGES] =
 /* This is the number of bytes of physical memory to map, starting at physical
  * address 0.  This value must be large enough to contain all memory ranges
  * specified in mem_ranges above plus the maximum possible size of the
- * LinuxBIOS table (since the start of the table could potentially occur at
+ * coreboot table (since the start of the table could potentially occur at
  * the end of the last memory range).
  */
 static const size_t BYTES_TO_MAP = (1024 * 1024);
@@ -241,10 +241,10 @@ static const size_t BYTES_TO_MAP = (1024 * 1024);
  */
 static const void *low_phys_mem;
 
-/* Pointer to LinuxBIOS table. */
+/* Pointer to coreboot table. */
 static const struct lb_header *lbtable = NULL;
 
-/* The CMOS option table is located within the LinuxBIOS table.  It tells us
+/* The CMOS option table is located within the coreboot table.  It tells us
  * where the CMOS parameters are located in the nonvolatile RAM.
  */
 static const struct cmos_option_table *cmos_table = NULL;
@@ -277,7 +277,7 @@ static const hexdump_format_t format =
 /****************************************************************************
  * get_lbtable
  *
- * Find the LinuxBIOS table and set global variable lbtable to point to it.
+ * Find the coreboot table and set global variable lbtable to point to it.
  ****************************************************************************/
 void get_lbtable (void)
  { int fd, i, bad_header_count, bad_table_count, bad_headers, bad_tables;
@@ -285,7 +285,7 @@ void get_lbtable (void)
    if (lbtable != NULL)
       return;
 
-   /* The LinuxBIOS table is located in low physical memory, which may be
+   /* The coreboot table is located in low physical memory, which may be
     * conveniently accessed by calling mmap() on /dev/mem.
     */
 
@@ -318,7 +318,7 @@ void get_lbtable (void)
     }
 
    fprintf(stderr,
-           "%s: LinuxBIOS table not found.  LinuxBIOS does not appear to\n"
+           "%s: coreboot table not found.  coreboot does not appear to\n"
            "        be installed on this system.  Scanning for the table "
            "produced the\n"
            "        following results:\n\n"
@@ -333,7 +333,7 @@ void get_lbtable (void)
 /****************************************************************************
  * get_layout_from_cmos_table
  *
- * Find the CMOS table which is stored within the LinuxBIOS table and set the
+ * Find the CMOS table which is stored within the coreboot table and set the
  * global variable cmos_table to point to it.
  ****************************************************************************/
 void get_layout_from_cmos_table (void)
@@ -345,8 +345,8 @@ void get_layout_from_cmos_table (void)
 
    if ((cmos_table) == NULL)
     { fprintf(stderr,
-              "%s: CMOS option table not found in LinuxBIOS table.  "
-              "Apparently, the LinuxBIOS installed on this system was "
+              "%s: CMOS option table not found in coreboot table.  "
+              "Apparently, the coreboot installed on this system was "
               "built without specifying HAVE_OPTION_TABLE.\n",
               prog_name);
       exit(1);
@@ -359,7 +359,7 @@ void get_layout_from_cmos_table (void)
 /****************************************************************************
  * dump_lbtable
  *
- * Do a low-level dump of the LinuxBIOS table.
+ * Do a low-level dump of the coreboot table.
  ****************************************************************************/
 void dump_lbtable (void)
  { const char *p, *data;
@@ -367,7 +367,7 @@ void dump_lbtable (void)
    const struct lb_record *lbrec;
 
    p = ((const char *) lbtable) + lbtable->header_bytes;
-   printf("LinuxBIOS table at physical address 0x%lx:\n"
+   printf("Coreboot table at physical address 0x%lx:\n"
           "    signature:       0x%x (ASCII: %c%c%c%c)\n"
           "    header_bytes:    0x%x (decimal: %d)\n"
           "    header_checksum: 0x%x (decimal: %d)\n"
@@ -389,7 +389,7 @@ void dump_lbtable (void)
     }
 
    if (lbtable->table_bytes == 0)
-    { printf("The LinuxBIOS table is empty!!!\n");
+    { printf("The coreboot table is empty!!!\n");
       return;
     }
 
@@ -418,7 +418,7 @@ void dump_lbtable (void)
 /****************************************************************************
  * list_lbtable_choices
  *
- * List names and informational blurbs for items from the LinuxBIOS table
+ * List names and informational blurbs for items from the coreboot table
  * that may be displayed using the -l option.
  ****************************************************************************/
 void list_lbtable_choices (void)
@@ -438,7 +438,7 @@ void list_lbtable_choices (void)
 /****************************************************************************
  * list_lbtable_item
  *
- * Show the LinuxBIOS table item specified by 'item'.
+ * Show the coreboot table item specified by 'item'.
  ****************************************************************************/
 void list_lbtable_item (const char item[])
  { int i;
@@ -450,7 +450,7 @@ void list_lbtable_item (const char item[])
     }
 
    if (i == NUM_LBTABLE_CHOICES)
-    { fprintf(stderr, "%s: Invalid LinuxBIOS table item %s.\n", prog_name,
+    { fprintf(stderr, "%s: Invalid coreboot table item %s.\n", prog_name,
               item);
       exit(1);
     }
@@ -467,7 +467,7 @@ void list_lbtable_item (const char item[])
 /****************************************************************************
  * lbtable_scan
  *
- * Scan the chunk of memory specified by 'start' and 'end' for a LinuxBIOS
+ * Scan the chunk of memory specified by 'start' and 'end' for a coreboot
  * table.  The first 4 bytes of the table are marked by the signature
  * { 'L', 'B', 'I', 'O' }.  'start' and 'end' indicate the addresses of the
  * first and last bytes of the chunk of memory to be scanned.  For instance,
@@ -476,7 +476,7 @@ void list_lbtable_item (const char item[])
  * virtual addresses in the address space of the current process.  They
  * represent a chunk of memory obtained by calling mmap() on /dev/mem.
  *
- * If a LinuxBIOS table is found, return a pointer to it.  Otherwise return
+ * If a coreboot table is found, return a pointer to it.  Otherwise return
  * NULL.  On return, *bad_header_count and *bad_table_count are set as
  * follows:
  *
@@ -609,7 +609,7 @@ static void get_cmos_checksum_info (void)
    checksum = (struct cmos_checksum *) find_lbrec(LB_TAG_OPTION_CHECKSUM);
 
    if (checksum != NULL)
-    { /* We are lucky.  The LinuxBIOS table hints us to the checksum.
+    { /* We are lucky.  The coreboot table hints us to the checksum.
        * We might have to check the type field here though.
        */
       layout.summed_area_start = checksum->range_start;
@@ -789,7 +789,7 @@ static void try_add_cmos_table_entry (cmos_entry_t *cmos_entry)
 /****************************************************************************
  * find_lbrec
  *
- * Find the record in the LinuxBIOS table that matches 'tag'.  Return pointer
+ * Find the record in the coreboot table that matches 'tag'.  Return pointer
  * to record on success or NULL if record not found.
  ****************************************************************************/
 static const struct lb_record * find_lbrec (uint32_t tag)
@@ -814,7 +814,7 @@ static const struct lb_record * find_lbrec (uint32_t tag)
 /****************************************************************************
  * lbrec_tag_to_str
  *
- * Return a pointer to the string representation of the given LinuxBIOS table
+ * Return a pointer to the string representation of the given coreboot table
  * tag.
  ****************************************************************************/
 static const char * lbrec_tag_to_str (uint32_t tag)
@@ -986,7 +986,7 @@ static const struct lb_record * next_cmos_rec (const struct lb_record *last,
 /****************************************************************************
  * memory_print_fn
  *
- * Display function for 'memory' item of LinuxBIOS table.
+ * Display function for 'memory' item of coreboot table.
  ****************************************************************************/
 static void memory_print_fn (const struct lb_record *rec)
  { char start_str[19], end_str[19], size_str[19];
@@ -1046,7 +1046,7 @@ static void memory_print_fn (const struct lb_record *rec)
 /****************************************************************************
  * mainboard_print_fn
  *
- * Display function for 'mainboard' item of LinuxBIOS table.
+ * Display function for 'mainboard' item of coreboot table.
  ****************************************************************************/
 static void mainboard_print_fn (const struct lb_record *rec)
  { const struct lb_mainboard *p;
@@ -1061,7 +1061,7 @@ static void mainboard_print_fn (const struct lb_record *rec)
 /****************************************************************************
  * cmos_opt_table_print_fn
  *
- * Display function for 'cmos_opt_table' item of LinuxBIOS table.
+ * Display function for 'cmos_opt_table' item of coreboot table.
  ****************************************************************************/
 static void cmos_opt_table_print_fn (const struct lb_record *rec)
  {
@@ -1223,7 +1223,7 @@ static void print_unknown_record (const struct lb_record *cmos_item)
 /****************************************************************************
  * option_checksum_print_fn
  *
- * Display function for 'option_checksum' item of LinuxBIOS table.
+ * Display function for 'option_checksum' item of coreboot table.
  ****************************************************************************/
 static void option_checksum_print_fn (const struct lb_record *rec)
  { struct cmos_checksum *p;
@@ -1238,7 +1238,7 @@ static void option_checksum_print_fn (const struct lb_record *rec)
 /****************************************************************************
  * string_print_fn
  *
- * Display function for a generic item of LinuxBIOS table that simply
+ * Display function for a generic item of coreboot table that simply
  * consists of a string.
  ****************************************************************************/
 static void string_print_fn (const struct lb_record *rec)

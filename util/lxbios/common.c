@@ -8,8 +8,8 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing LinuxBIOS
- *  parameters and displaying information from the LinuxBIOS table.
+ *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  parameters and displaying information from the coreboot table.
  *  For details, see <http://www.llnl.gov/linux/lxbios/>.
  *
  *  Please also read the file DISCLAIMER which is included in this software
@@ -74,8 +74,8 @@ void out_of_memory (void)
 void usage (FILE *outfile)
  { fprintf(outfile,
            "Usage: %s [-y LAYOUT_FILE | -t] PARAMETER ...\n\n"
-           "       Read/write LinuxBIOS parameters or show info from "
-           "LinuxBIOS table.\n\n"
+           "       Read/write coreboot parameters or show info from "
+           "coreboot table.\n\n"
            "       -y LAYOUT_FILE: Use CMOS layout specified by "
            "LAYOUT_FILE.\n"
            "       -t:             Use CMOS layout specified by CMOS option "
@@ -92,9 +92,9 @@ void usage (FILE *outfile)
            "standard input.\n"
            "       -c [VALUE]:     Show CMOS checksum or set checksum to "
            "VALUE.\n"
-           "       -l [ARG]:       Show LinuxBIOS table info for ARG, or "
+           "       -l [ARG]:       Show coreboot table info for ARG, or "
            "all ARG choices.\n"
-           "       -d:             Show low-level dump of LinuxBIOS table.\n"
+           "       -d:             Show low-level dump of coreboot table.\n"
            "       -Y:             Show CMOS layout info.\n"
            "       -b OUTPUT_FILE: Dump CMOS memory contents to file.\n"
            "       -B INPUT_FILE:  Write file contents to CMOS memory.\n"

@@ -44,8 +44,8 @@ makerule coreboot_ram.o
 end
 
 makerule coreboot_ram
-	depends	"coreboot_ram.o $(TOP)/src/config/linuxbios_ram.ld ldoptions" 
-	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_ram.ld coreboot_ram.o"
+	depends	"coreboot_ram.o $(TOP)/src/config/coreboot_ram.ld ldoptions" 
+	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_ram.ld coreboot_ram.o"
 	action 	"$(CROSS_COMPILE)nm -n coreboot_ram | sort > coreboot_ram.map"
 end
 
@@ -87,8 +87,8 @@ if CONFIG_AP_CODE_IN_CAR
 	end
 
 	makerule coreboot_apc
-		depends "coreboot_apc.o $(TOP)/src/config/linuxbios_apc.ld ldoptions"
-		action  "$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/linuxbios_apc.ld coreboot_apc.o"
+		depends "coreboot_apc.o $(TOP)/src/config/coreboot_apc.ld ldoptions"
+		action  "$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_apc.ld coreboot_apc.o"
 		action  "$(CROSS_COMPILE)nm -n coreboot_apc | sort > coreboot_apc.map"
 	end
 
@@ -174,7 +174,7 @@ makerule ./romcc
 end
 
 makerule build_opt_tbl   
-	depends	"$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/linuxbios_tables.h Makefile.settings Makefile"
+	depends	"$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/coreboot_tables.h Makefile.settings Makefile"
 	action	"$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
 end
 

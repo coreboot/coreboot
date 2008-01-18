@@ -4,12 +4,12 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
-#include <boot/linuxbios_tables.h>
+#include <boot/coreboot_tables.h>
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
 #include <string.h>
-#include "linuxbios_table.h"
+#include "coreboot_table.h"
 
 // Global Descriptor Table, defined in c_start.S
 extern uint8_t gdt;

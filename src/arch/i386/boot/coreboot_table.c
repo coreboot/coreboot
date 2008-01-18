@@ -1,7 +1,7 @@
 #include <console/console.h>
 #include <ip_checksum.h>
-#include <boot/linuxbios_tables.h>
-#include "linuxbios_table.h"
+#include <boot/coreboot_tables.h>
+#include "coreboot_table.h"
 #include <string.h>
 #include <version.h>
 #include <device/device.h>

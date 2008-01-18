@@ -1,8 +1,8 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
-#include <boot/linuxbios_tables.h>
-#include "linuxbios_table.h"
+#include <boot/coreboot_tables.h>
+#include "coreboot_table.h"
 
 struct lb_memory *
 write_tables(void)

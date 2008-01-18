@@ -7,7 +7,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/mman.h>
-#include "../../src/include/boot/linuxbios_tables.h"
+#include "../../src/include/boot/coreboot_tables.h"
 
 void print_lb_records(struct lb_record *rec, struct lb_record *last, unsigned long addr);
 

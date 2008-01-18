@@ -1,7 +1,7 @@
 #ifndef COREBOOT_TABLE_H
 #define COREBOOT_TABLE_H
 
-#include <boot/linuxbios_tables.h>
+#include <boot/coreboot_tables.h>
 
 struct mem_range;
 

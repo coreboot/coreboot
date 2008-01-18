@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include "../../src/include/pc80/mc146818rtc.h"
-#include "../../src/include/boot/linuxbios_tables.h"
+#include "../../src/include/boot/coreboot_tables.h"
 
 #define CMOS_IMAGE_BUFFER_SIZE 128
 #define INPUT_LINE_MAX 256

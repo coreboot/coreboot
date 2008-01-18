@@ -2,7 +2,7 @@
 #include <part/fallback_boot.h>
 #include <boot/elf.h>
 #include <boot/elf_boot.h>
-#include <boot/linuxbios_tables.h>
+#include <boot/coreboot_tables.h>
 #include <ip_checksum.h>
 #include <stream/read_bytes.h>
 #include <stdint.h>

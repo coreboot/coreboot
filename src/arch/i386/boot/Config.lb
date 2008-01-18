@@ -2,7 +2,7 @@ uses HAVE_PIRQ_TABLE
 uses HAVE_ACPI_TABLES
 
 object boot.o
-object linuxbios_table.o
+object coreboot_table.o
 object tables.o
 if HAVE_PIRQ_TABLE
 object pirq_routing.o 

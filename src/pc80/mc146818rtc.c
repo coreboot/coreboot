@@ -1,7 +1,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <pc80/mc146818rtc.h>
-#include <boot/linuxbios_tables.h>
+#include <boot/coreboot_tables.h>
 #include <string.h>
 
 #define CMOS_READ(addr) ({ \

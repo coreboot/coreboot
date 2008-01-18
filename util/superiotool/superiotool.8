@@ -1,4 +1,4 @@
-.TH SUPERIOTOOL 8 "January 13, 2008"
+.TH SUPERIOTOOL 8 "January 18, 2008"
 .SH NAME
 superiotool \- Super I/O detection tool
 .SH SYNOPSIS
@@ -17,9 +17,10 @@ is a GPL'd user-space utility which can
 It is mainly used for coreboot development purposes (see coreboot.org
 for details on coreboot), but it may also be useful for other things.
 .PP
-The list of supported Super I/O chips is available at:
-.br
-.B http://coreboot.org/Superiotool#Supported_devices
+The list of supported Super I/O chips is available at
+.BR http://coreboot.org/Superiotool#Supported_devices ","
+but it can also be viewed by running
+.BR "superiotool -l" "."
 .SH OPTIONS
 If no command line option is specified,
 .B superiotool
@@ -35,7 +36,7 @@ supports the
 .B "\-\-dump"
 option for this chip). The output will look something like this:
 .sp
-.B "$ ./superiotool -d"
+.B "$ superiotool -d"
 .br
 Found SMSC FDC37N769 (id=0x28, rev=0x01) at 0x3f0
 .br
@@ -75,7 +76,7 @@ detailed information about the
 .B "\-l, \-\-list-supported"
 List all Super I/O chips recognized by
 .BR superiotool ". The phrase"
-.BR (dump available)
+.BR "(dump available)"
 following a chip name indicates that
 .B superiotool
 supports the
@@ -98,8 +99,10 @@ Show version information and exit.
 .B "\-h, \-\-help"
 Show a help text and exit.
 .SH BUGS
-Please report any bugs at http://tracker.coreboot.org/trac/coreboot/
-or on the coreboot mailing list (http://coreboot.org/Mailinglist).
+Please report any bugs at
+.B http://tracker.coreboot.org/trac/coreboot/newticket
+or on the coreboot mailing list
+.RB "(" http://coreboot.org/Mailinglist ")."
 .SH AUTHORS
 Please see the individual source code files and/or the README file.
 .SH LICENCE

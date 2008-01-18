@@ -30,9 +30,10 @@ Installation
 Usage
 -----
 
- $ superiotool [-d] [-V] [-v] [-h]
+ $ superiotool [-d] [-l] [-V] [-v] [-h]
 
  -d | --dump            Dump Super I/O register contents
+ -l | --list-supported  Show the list of supported Super I/O chips
  -V | --verbose         Verbose mode
  -v | --version         Show the superiotool version
  -h | --help            Show a short help text
@@ -54,10 +55,12 @@ Typical usage of superiotool:
 Supported Super I/O Chips
 -------------------------
 
-Please see http://coreboot.org/Superiotool#Supported_devices.
+Please see http://coreboot.org/Superiotool#Supported_devices, or type
+
+ $ superiotool -l
 
 There's also a collection of sample register dumps from various Super I/O
-chips on that page. Please send further register dumps (either from a
+chips on that web page. Please send further register dumps (either from a
 proprietary BIOS and/or from coreboot) to the coreboot mailing list
 (http://coreboot.org/Mailinglist).
 
@@ -79,7 +82,7 @@ Superiotool is copyrighted by a number of individual developers. Please
 refer to the respective source code files for details.
 
 It is licensed under the terms of the GNU General Public License (GPL),
-either version 2 of the License, or (at your option) any later version.
+either version 2 of the license, or (at your option) any later version.
 
 
 Contributors

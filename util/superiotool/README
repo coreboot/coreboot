@@ -11,14 +11,14 @@ Superiotool is a user-space utility which can
  - dump all register contents of the Super I/O chip, together with the
    default values as per datasheet (to make comparing the values easy).
 
-It is mainly used for LinuxBIOS development purposes (see linuxbios.org
-for details on LinuxBIOS), but it may also be useful for other things.
+It is mainly used for coreboot development purposes (see coreboot.org
+for details on coreboot), but it may also be useful for other things.
 
 
 Installation
 ------------
 
- $ svn co svn://linuxbios.org/repos/trunk/util/superiotool
+ $ svn co svn://coreboot.org/repos/trunk/util/superiotool
 
  $ cd superiotool
 
@@ -54,21 +54,21 @@ Typical usage of superiotool:
 Supported Super I/O Chips
 -------------------------
 
-Please see http://linuxbios.org/Superiotool#Supported_devices.
+Please see http://coreboot.org/Superiotool#Supported_devices.
 
 There's also a collection of sample register dumps from various Super I/O
 chips on that page. Please send further register dumps (either from a
-proprietary BIOS and/or from LinuxBIOS) to the LinuxBIOS mailing list
-(http://linuxbios.org/Mailinglist).
+proprietary BIOS and/or from coreboot) to the coreboot mailing list
+(http://coreboot.org/Mailinglist).
 
 
 Website and Mailing List
 ------------------------
 
-The main website is http://linuxbios.org/Superiotool.
+The main website is http://coreboot.org/Superiotool.
 
 For additional information, patches, and discussions, please join the
-LinuxBIOS mailing list at http://linuxbios.org/Mailinglist, where most
+coreboot mailing list at http://coreboot.org/Mailinglist, where most
 superiotool developers are subscribed.
 
 

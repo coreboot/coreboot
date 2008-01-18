@@ -6,14 +6,14 @@ specialy when you are testing new motherboards, changing your hardware often, pl
 
 INSTALL:
 
-edit Makefile, define the root to Linuxbios tree
+edit Makefile, define the root to coreboot tree
 make
 
 USAGE:
 
 ./getpir
 
-Will dump irq table to the file called irq_tables.c, ready to use with Linuxbios. Just move the 
+Will dump irq table to the file called irq_tables.c, ready to use with coreboot. Just move the 
 file to corresponding place in the linux bios tree.
 
 

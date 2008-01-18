@@ -1,5 +1,5 @@
 /* checkpir.c : This software is released under GPL
- * For LinuxBIOS use only
+ * For coreboot use only
  * Aug 26 2001 , Nikolai Vladychevski, <niko@isl.net.mx>
  */
 
@@ -20,7 +20,7 @@ int main(void)
 	printf("(no other tests are done)\n");
 
 	if (!sum) {
-		printf("Checksum for IRQ Routing table is ok. You can use irq_tables.c in LinuxBIOS now.\n");
+		printf("Checksum for IRQ Routing table is ok. You can use irq_tables.c in coreboot now.\n");
 	} else {
 		newsum = rt->checksum - sum;
 		printf("BAD CHECKSUM for IRQ Routing table !!!!\n");

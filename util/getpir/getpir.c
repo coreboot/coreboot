@@ -1,5 +1,5 @@
 /* getpir.c : This software is released under GPL
- * For LinuxBIOS use only
+ * For coreboot use only
  * Aug 26 2001 , Nikolai Vladychevski, <niko@isl.net.mx>
  * 2007.04.09 Jeremy Jackson <jerj@coplanar.net>
  *     updated for amd64 and general 64 bit portability
@@ -78,7 +78,7 @@ int main(void)
 
 	close(fd_mem);
 
-	printf("Done, you can move the file to the LinuxBIOS tree now.\n");
+	printf("Done, you can move the file to the coreboot tree now.\n");
 
 	return 0;
 }

@@ -532,7 +532,33 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 	if (tree->config){
 		configname = clean(tree->label, 0);
 		printf("\t.device_configuration = &%s,\n", configname);
+		/* The config property list for a device is derived from the
+		 * device dts, e.g. northbridge/intel/i440bx/dts, not the
+		 * mainboard dts. 
+		 * Almost all of these properties are specific to the device. 
+		 * Some, such as the device id, are part of the common
+		 * device struct. Check the config properties and 
+		 * pull out those properties that are for the common 
+		 * (a.k.a. generic) device struct. 
+		 */
+		/* get the properties out that are generic device props */
+		for_each_config(tree, prop) {
+			if (streq(prop->name, "domainid")){
+				fprintf(f, "\t.id = {.type=DEVICE_ID_PCI_DOMAIN,.u={.pci_domain={ %s }}},\n", 
+					prop->val.val);
+			}
+			if (streq(prop->name, "pciid")){
+				fprintf(f, "\t.id = {.type=DEVICE_ID_PCI,.u={.pci={ %s }}},\n", 
+					prop->val.val);
+			}
+		}
 	}
+	/* Process the properties specified in the mainboard dts. 
+	 * Some of these properties require special initialization 
+	 * (e.g. the path); some are flags, i.e. if the property exists
+	 * then a variable is set to 1 (e.g. on_mainboard); 
+	 * and some are just set directly into the code (e.g. ops_pci).
+	 */
 	for_each_property(tree, prop) {
 		if (streq(prop->name, "pcidomain")){
 			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = %s }}},\n", 

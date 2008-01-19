@@ -209,11 +209,12 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	}
 
 	dev = new_device();
-	if (!dev) /* Please don't do this at home */
+	if (!dev)
 		goto out;
 
 	memset(dev, 0, sizeof(*dev));
-	memcpy(&dev->path, path, sizeof(*path));
+	dev->path = *path;
+	dev->id = *devid;
 
 	/* Initialize the back pointers in the link fields. */
 	for (link = 0; link < MAX_LINKS; link++) {

@@ -25,18 +25,28 @@
 #include <device/resource.h>
 #include <device/path.h>
 
+/**
+ * Create a 32-bit value from four characters. This is better
+ * than the usual enum values when using (JTAG) debuggers.
+ * It also makes it harder for accidentally assigned type values
+ * to be mistaken for a real value -- e.g. it is more likely in the event
+ * of a programming error that a '1' is somehow assigned
+ * to the type field, whereas these values are more complex. 
+ * Thus errors may be easier to find. 
+ */
+#define TYPENAME(a,b,c,d) ((a<<24)|(b<<16)|(c<<8)|(d))
 #define DEVICE_ID_MAX 64
 enum device_id_type {
-	DEVICE_ID_NONE = 0,
-	DEVICE_ID_ROOT,
-	DEVICE_ID_PCI,
-	DEVICE_ID_PNP,
-	DEVICE_ID_I2C,
-	DEVICE_ID_APIC,
-	DEVICE_ID_PCI_DOMAIN,
-	DEVICE_ID_APIC_CLUSTER,
-	DEVICE_ID_CPU,
-	DEVICE_ID_CPU_BUS,
+	DEVICE_ID_NONE	= 0,
+	DEVICE_ID_ROOT	= TYPENAME('R','O','O','T'),
+	DEVICE_ID_PCI	= TYPENAME(' ','P','C','I'),
+	DEVICE_ID_PNP	= TYPENAME(' ','P','N','P'),
+	DEVICE_ID_I2C	= TYPENAME(' ','I','2','C'),
+	DEVICE_ID_APIC	= TYPENAME('A','P','I','C'),
+	DEVICE_ID_PCI_DOMAIN = TYPENAME('P','C','I','D'),
+	DEVICE_ID_APIC_CLUSTER = TYPENAME('A','P','C','C'),
+	DEVICE_ID_CPU = TYPENAME(' ','C','P','U'),
+	DEVICE_ID_CPU_BUS =  TYPENAME(' ','B','U','S'),
 };
 
 struct device;

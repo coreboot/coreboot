@@ -29,6 +29,7 @@
 #include <device/device.h>
 #include <device/pci_ops.h>
 #include <device/pci_rom.h>
+#include <device/pci_ids.h>
 
 /*
  *	For more information, please consult the following manuals (look at

@@ -234,7 +234,16 @@ extern struct flashchip flashchips[];
 
 #define TI_ID			0x97	/* Texas Instruments */
 
+/*
+ * W25X chips are SPI, first byte of device ID is memory type, second
+ * byte of device ID is related to log(bitsize).
+ */
 #define WINBOND_ID		0xDA	/* Winbond */
+#define WINBOND_NEX_ID		0xEF	/* Winbond (ex Nexcom) serial flash devices */
+#define W_25X10			0x3011
+#define W_25X20			0x3012
+#define W_25X40			0x3013
+#define W_25X80			0x3014
 #define W_29C011		0xC1
 #define W_29C020C		0x45
 #define W_29C040P		0x46
@@ -297,6 +306,7 @@ void generic_spi_write_enable();
 void generic_spi_write_disable();
 int generic_spi_chip_erase_c7(struct flashchip *flash);
 int generic_spi_chip_write(struct flashchip *flash, uint8_t *buf);
+int generic_spi_chip_read(struct flashchip *flash, uint8_t *buf);
 
 /* 82802ab.c */
 int probe_82802ab(struct flashchip *flash);

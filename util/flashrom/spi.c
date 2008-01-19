@@ -1,7 +1,8 @@
 /*
  * This file is part of the flashrom project.
  *
- * Copyright (C) 2007 Carl-Daniel Hailfinger
+ * Copyright (C) 2007, 2008 Carl-Daniel Hailfinger
+ * Copyright (C) 2008 Ronald Hoogenboom <ronald@zonnet.nl>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,9 +77,27 @@
 #define JEDEC_RDSR_INSIZE	0x01
 #define JEDEC_RDSR_BIT_WIP	(0x01 << 0)
 
-uint16_t it8716f_flashport = 0;
+/* Write Status Register */
+#define JEDEC_WRSR	0x01
+#define JEDEC_WRSR_OUTSIZE	0x02
+#define JEDEC_WRSR_INSIZE	0x00
 
-void generic_spi_prettyprint_status_register(struct flashchip *flash);
+/* Read the memory */
+#define JEDEC_READ	0x03
+#define JEDEC_READ_OUTSIZE	0x04
+/*      JEDEC_READ_INSIZE : any length */
+
+/* Write memory byte */
+#define JEDEC_BYTE_PROGRAM 0x02
+#define JEDEC_BYTE_PROGRAM_OUTSIZE 0x05
+#define JEDEC_BYTE_PROGRAM_INSIZE 0x00
+
+uint16_t it8716f_flashport = 0;
+/* use fast 33MHz SPI (<>0) or slow 16MHz (0) */
+int fast_spi=1;
+
+void spi_prettyprint_status_register(struct flashchip *flash);
+void spi_disable_blockprotect(void);
 
 /* Generic Super I/O helper functions */
 uint8_t regval(uint16_t port, uint8_t reg)
@@ -203,10 +222,11 @@ static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned in
 			__FUNCTION__, writecnt);
 		return 1;
 	}
-	/* Start IO, 33MHz, readcnt input bytes, writecnt output bytes. Note:
+	/* Start IO, 33 or 16 MHz, readcnt input bytes, writecnt output bytes.
+	 * Note:
 	 * We can't use writecnt directly, but have to use a strange encoding.
 	 */ 
-	outb((0x5 << 4) | ((readcnt & 0x3) << 2) | (writeenc), port);
+	outb(((0x4 + (fast_spi ? 1 : 0)) << 4) | ((readcnt & 0x3) << 2) | (writeenc), port);
 	do {
 		busy = inb(port) & 0x80;
 	} while (busy);
@@ -242,7 +262,6 @@ void generic_spi_write_enable()
 
 	/* Send WREN (Write Enable) */
 	generic_spi_command(JEDEC_WREN_OUTSIZE, JEDEC_WREN_INSIZE, cmd, NULL);
-
 }
 
 void generic_spi_write_disable()
@@ -267,7 +286,7 @@ int probe_spi(struct flashchip *flash)
 			/* Print the status register to tell the
 			 * user about possible write protection.
 			 */
-			generic_spi_prettyprint_status_register(flash);
+			spi_prettyprint_status_register(flash);
 
 			return 1;
 		}
@@ -290,31 +309,61 @@ uint8_t generic_spi_read_status_register()
 	return readarr[0];
 }
 
+/* Prettyprint the status register. Common definitions.
+ */
+void spi_prettyprint_status_register_common(uint8_t status)
+{
+	printf_debug("Chip status register: Bit 5 / Block Protect 3 (BP3) is "
+		"%sset\n", (status & (1 << 5)) ? "" : "not ");
+	printf_debug("Chip status register: Bit 4 / Block Protect 2 (BP2) is "
+		"%sset\n", (status & (1 << 4)) ? "" : "not ");
+	printf_debug("Chip status register: Bit 3 / Block Protect 1 (BP1) is "
+		"%sset\n", (status & (1 << 3)) ? "" : "not ");
+	printf_debug("Chip status register: Bit 2 / Block Protect 0 (BP0) is "
+		"%sset\n", (status & (1 << 2)) ? "" : "not ");
+	printf_debug("Chip status register: Write Enable Latch (WEL) is "
+		"%sset\n", (status & (1 << 1)) ? "" : "not ");
+	printf_debug("Chip status register: Write In Progress (WIP/BUSY) is "
+		"%sset\n", (status & (1 << 0)) ? "" : "not ");
+}
+
 /* Prettyprint the status register. Works for
  * ST M25P series
  * MX MX25L series
  */
-void generic_spi_prettyprint_status_register_st_m25p(uint8_t status)
+void spi_prettyprint_status_register_st_m25p(uint8_t status)
 {
 	printf_debug("Chip status register: Status Register Write Disable "
 		"(SRWD) is %sset\n", (status & (1 << 7)) ? "" : "not ");
 	printf_debug("Chip status register: Bit 6 is "
 		"%sset\n", (status & (1 << 6)) ? "" : "not ");
-	printf_debug("Chip status register: Bit 5 is "
-		"%sset\n", (status & (1 << 5)) ? "" : "not ");
-	printf_debug("Chip status register: Block Protect 2 (BP2) is "
-		"%sset\n", (status & (1 << 4)) ? "" : "not ");
-	printf_debug("Chip status register: Block Protect 1 (BP1) is "
-		"%sset\n", (status & (1 << 3)) ? "" : "not ");
-	printf_debug("Chip status register: Block Protect 0 (BP0) is "
-		"%sset\n", (status & (1 << 2)) ? "" : "not ");
-	printf_debug("Chip status register: Write Enable Latch (WEL) is "
-		"%sset\n", (status & (1 << 1)) ? "" : "not ");
-	printf_debug("Chip status register: Write In Progress (WIP) is "
-		"%sset\n", (status & (1 << 0)) ? "" : "not ");
+	spi_prettyprint_status_register_common(status);
 }
 
-void generic_spi_prettyprint_status_register(struct flashchip *flash)
+/* Prettyprint the status register. Works for
+ * SST 25VF016
+ */
+void spi_prettyprint_status_register_sst25vf016(uint8_t status)
+{
+	const char *bpt[]={
+		"none",
+		"1F0000H-1FFFFFH",
+		"1E0000H-1FFFFFH",
+		"1C0000H-1FFFFFH",
+		"180000H-1FFFFFH",
+		"100000H-1FFFFFH",
+		"all","all"
+	};
+	printf_debug("Chip status register: Block Protect Write Disable "
+		"(BPL) is %sset\n", (status & (1 << 7)) ? "" : "not ");
+	printf_debug("Chip status register: Auto Address Increment Programming "
+		"(AAI) is %sset\n", (status & (1 << 6)) ? "" : "not ");
+	spi_prettyprint_status_register_common(status);
+	printf_debug("Resulting block protection : %s\n",
+		bpt[(status & 0x1c) >> 2]);
+}
+
+void spi_prettyprint_status_register(struct flashchip *flash)
 {
 	uint8_t status;
 
@@ -324,7 +373,11 @@ void generic_spi_prettyprint_status_register(struct flashchip *flash)
 	case ST_ID:
 	case MX_ID:
 		if ((flash->model_id & 0xff00) == 0x2000)
-			generic_spi_prettyprint_status_register_st_m25p(status);
+			spi_prettyprint_status_register_st_m25p(status);
+		break;
+	case SST_ID:
+		if (flash->model_id == SST_25VF016B)
+			spi_prettyprint_status_register_sst25vf016(status);
 		break;
 	}
 }
@@ -333,6 +386,7 @@ int generic_spi_chip_erase_c7(struct flashchip *flash)
 {
 	const unsigned char cmd[] = JEDEC_CE_C7;
 	
+	spi_disable_blockprotect();
 	generic_spi_write_enable();
 	/* Send CE (Chip Erase) */
 	generic_spi_command(JEDEC_CE_C7_OUTSIZE, JEDEC_CE_C7_INSIZE, cmd, NULL);
@@ -392,7 +446,7 @@ void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 
 	generic_spi_write_enable();
 	outb(0x06 , it8716f_flashport + 1);
-	outb((3 << 4), it8716f_flashport);
+	outb(((2+(fast_spi?1:0)) << 4), it8716f_flashport);
 	for (i = 0; i < 256; i++) {
 		bios[256 * block + i] = buf[256 * block + i];
 	}
@@ -410,11 +464,113 @@ void generic_spi_page_program(int block, uint8_t *buf, uint8_t *bios)
 		it8716f_spi_page_program(block, buf, bios);
 }
 
+/*
+ * This is according the SST25VF016 datasheet, who knows it is more
+ * generic that this...
+ */
+void spi_write_status_register(int status)
+{
+	const unsigned char cmd[] = {JEDEC_WRSR, (unsigned char)status};
+
+	/* Send WRSR (Write Status Register) */
+	generic_spi_command(JEDEC_WRSR_OUTSIZE, JEDEC_WRSR_INSIZE, cmd, NULL);
+}
+
+void spi_byte_program(int address, uint8_t byte)
+{
+	const unsigned char cmd[JEDEC_BYTE_PROGRAM_OUTSIZE] = {JEDEC_BYTE_PROGRAM,
+		(address>>16)&0xff,
+		(address>>8)&0xff,
+		(address>>0)&0xff,
+		byte
+	};
+
+	/* Send Byte-Program */
+	generic_spi_command(JEDEC_BYTE_PROGRAM_OUTSIZE, JEDEC_BYTE_PROGRAM_INSIZE, cmd, NULL);
+}
+
+void spi_disable_blockprotect(void)
+{
+	uint8_t status;
+
+	status = generic_spi_read_status_register();
+	/* If there is block protection in effect, unprotect it first. */
+	if ((status & 0x3c) != 0) {
+		printf_debug("Some block protection in effect, disabling\n");
+		generic_spi_write_enable();
+		spi_write_status_register(status & ~0x3c);
+	}
+}
+
+/*
+ * IT8716F only allows maximum of 512 kb SPI mapped to LPC memory cycles
+ * Program chip using firmware cycle byte programming. (SLOW!)
+ */
+int it8716f_over512k_spi_chip_write(struct flashchip *flash, uint8_t *buf)
+{
+	int total_size = 1024 * flash->total_size;
+	int i;
+	fast_spi=0;
+
+	spi_disable_blockprotect();
+	for (i=0; i<total_size; i++) {
+		generic_spi_write_enable();
+		spi_byte_program(i,buf[i]);
+		/* FIXME: We really should read the status register and delay
+		 * accordingly.
+		 */
+		//while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		myusec_delay(10);
+		//if (i%1024==0) fputc('b',stderr);
+	}
+	/* resume normal ops... */
+	outb(0x20, it8716f_flashport);
+	return 0;
+}
+
+void spi_3byte_read(int address, uint8_t *bytes, int len)
+{
+	const unsigned char cmd[JEDEC_READ_OUTSIZE] = {JEDEC_READ,
+		(address>>16)&0xff,
+		(address>>8)&0xff,
+		(address>>0)&0xff,
+	};
+
+	/* Send Read */
+	generic_spi_command(JEDEC_READ_OUTSIZE, len, cmd, bytes);
+}
+
+/*
+ * IT8716F only allows maximum of 512 kb SPI mapped to LPC memory cycles
+ * Need to read this big flash using firmware cycles 3 byte at a time.
+ */
+int generic_spi_chip_read(struct flashchip *flash, uint8_t *buf)
+{
+	int total_size = 1024 * flash->total_size;
+	int i;
+	fast_spi=0;
+
+	if (total_size > 512 * 1024) {
+		for (i = 0; i < total_size; i+=3) {
+			int toread=3;
+			if (total_size-i < toread) toread=total_size-i;
+			spi_3byte_read(i, buf+i, toread);
+		}
+	} else {
+		memcpy(buf, (const char *)flash->virtual_memory, total_size);
+	}
+	return 0;
+}
+
 int generic_spi_chip_write(struct flashchip *flash, uint8_t *buf) {
 	int total_size = 1024 * flash->total_size;
 	int i;
-	for (i = 0; i < total_size / 256; i++) {
-		generic_spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
+	if (total_size > 512 * 1024) {
+		it8716f_over512k_spi_chip_write(flash, buf);
+	} else {
+		for (i = 0; i < total_size / 256; i++) {
+			generic_spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
+		}
 	}
 	return 0;
 }

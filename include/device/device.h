@@ -197,9 +197,6 @@ struct device {
 	struct device_path path;
 	struct device_id id;
 	char 		dtsname[MAX_DTSNAME_SIZE];	/* the name from the dts */
-	/* XXX remove this soon */
-	unsigned 	device, vendor;
-	/* XXX */
 	u16 status;
 	u8 revision;
 	u8 cache_line;
@@ -266,7 +263,8 @@ void disable_children(struct bus *bus);
 /* Helper functions */
 struct device * find_dev_path(struct bus *parent, struct device_path *path);
 struct device * alloc_find_dev(struct bus *parent, struct device_path *path, struct device_id *id);
-struct device * dev_find_device (unsigned int vendor, unsigned int device, struct device * from);
+struct device * dev_find_device (struct device_id *devid, struct device * from);
+struct device *dev_find_pci_device(u16 vendor, u16 device, struct device *from);
 struct device * dev_find_class (unsigned int class, struct device * from);
 struct device * dev_find_slot (unsigned int bus, unsigned int devfn);
 struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);

@@ -824,7 +824,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 static void set_pci_ops(struct device *dev)
 {
 	struct constructor *c;
-	struct device_id id = {.type = DEVICE_ID_PCI };
+	struct device_id id;
 
 	if (dev->ops) {
 		printk(BIOS_SPEW, "%s: dev %p(%s) already has ops %p\n",
@@ -832,9 +832,7 @@ static void set_pci_ops(struct device *dev)
 		return;
 	}
 
-	/* We need to make the ID in the device a device_id type. */
-	id.u.pci.vendor = dev->vendor;
-	id.u.pci.device = dev->device;
+	id  = dev->id;
 
 	/* Look through the list of setup drivers and find one for
 	 * this PCI device.
@@ -842,9 +840,9 @@ static void set_pci_ops(struct device *dev)
 	c = find_constructor(&id);
 	if (c) {
 		dev->ops = c->ops;
-		printk(BIOS_SPEW, "%s id %s [%04x/%04x] %sops\n",
-		       dev_path(dev), dev_id_string(&id), dev->vendor,
-		       dev->device, (dev->ops->phase3_scan ? "bus " : ""));
+		printk(BIOS_SPEW, "%s id %s %sops\n",
+			dev_path(dev), dev_id_string(&id), 
+			(dev->ops->phase3_scan ? "bus " : ""));
 		return;
 	}
 
@@ -869,9 +867,9 @@ static void set_pci_ops(struct device *dev)
 	      bad:
 		if (dev->enabled) {
 			printk(BIOS_ERR,
-			       "%s [%04x/%04x/%06x] has unknown header "
+			       "%s [%s/%06x] has unknown header "
 			       "type %02x, ignoring.\n", dev_path(dev),
-			       dev->vendor, dev->device, dev->class >> 8,
+			       dev_id_string(&dev->id), dev->class >> 8,
 			       dev->hdr_type);
 		}
 	}
@@ -1027,8 +1025,9 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	dev->subsystem_device = pci_read_config16(dev, PCI_SUBSYSTEM_ID);
 
 	/* Store the interesting information in the device structure. */
-	dev->vendor = id & 0xffff;
-	dev->device = (id >> 16) & 0xffff;
+	dev->id.type = DEVICE_ID_PCI;
+	dev->id.u.pci.vendor = id & 0xffff;
+	dev->id.u.pci.device = (id >> 16) & 0xffff;
 	dev->hdr_type = hdr_type;
 	/* Class code, the upper 3 bytes of PCI_CLASS_REVISION. */
 	dev->class = class >> 8;
@@ -1051,9 +1050,8 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	/* Display the device and error if we don't have some PCI operations
 	 * for it.
 	 */
-	printk(BIOS_DEBUG, "%s [%04x/%04x] %s%s\n",
-	       dev_path(dev),
-	       dev->vendor, dev->device,
+	printk(BIOS_DEBUG, "%s [%s] %s%s\n",
+	       dev_path(dev), dev_id_string(&dev->id),
 	       dev->enabled ? "enabled" : "disabled",
 	       dev->ops ? "" : " No operations");
 

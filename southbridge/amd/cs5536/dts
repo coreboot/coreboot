@@ -20,6 +20,7 @@
 
 {
 	constructor = "cs5536_constructors";
+	pciid = "PCI_VENDOR_ID_AMD,PCI_DEVICE_ID_AMD_CS5536_ISA";
 
 	/* Interrupt enables for LPC bus. Each bit is an IRQ 0-15. */
 	lpc_serirq_enable = "0";

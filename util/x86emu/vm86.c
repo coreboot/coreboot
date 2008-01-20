@@ -645,7 +645,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 		vendorid = *pedx;
 		devindex = *pesi;
 		dev = 0;
-		while ((dev = dev_find_device(vendorid, devid, dev))) {
+		while ((dev = dev_find_pci_device(vendorid, devid, dev))) {
 			if (devindex <= 0)
 				break;
 			devindex--;

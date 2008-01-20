@@ -227,7 +227,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 	u32 gpio_addr;
 	struct device *dev;
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD,
+	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 
 	gpio_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
@@ -389,7 +389,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	struct msr msr;
 	struct device *dev;
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD,
+	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_EHCI, 0);
 	if (dev) {
 		/* Serial short detect enable */
@@ -409,7 +409,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		*(bar + HCCPARAMS) = 0x00005012;
 	}
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD,
+	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (dev) {
 		bar = (u32 *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -434,14 +434,14 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	 *  - Set APU bit in uoc register
 	 */
 	if (sb->enable_USBP4_device) {
-		dev = dev_find_device(PCI_VENDOR_ID_AMD,
+		dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 				      PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 		if (dev) {
 			bar = (u32 *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 			*(bar + UDCDEVCTL) |= UDC_SD_SET;
 		}
 
-		dev = dev_find_device(PCI_VENDOR_ID_AMD,
+		dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 				      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 		if (dev) {
 			bar = (u32 *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -451,12 +451,12 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	}
 
 	/* Disable virtual PCI UDC and OTG headers. */
-	dev = dev_find_device(PCI_VENDOR_ID_AMD,
+	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 	if (dev)
 		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
 
-	dev = dev_find_device(PCI_VENDOR_ID_AMD,
+	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (dev)
 		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
@@ -479,7 +479,7 @@ void chipsetinit(void)
 	const struct msrinit *csi;
 
 	post_code(P80_CHIPSET_INIT);
-	dev = dev_find_device(PCI_VENDOR_ID_AMD,
+	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 	if (!dev) {
 		printk(BIOS_ERR, "%s: Could not find the south bridge!\n",

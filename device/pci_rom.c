@@ -83,7 +83,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 	printk(BIOS_SPEW, "PCI ROM Image, Vendor %04x, Device %04x,\n",
 	       rom_data->vendor, rom_data->device);
-	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
+	if (dev->id.u.pci.vendor != rom_data->vendor || dev->id.u.pci.device != rom_data->device) {
 		printk(BIOS_ERR,
 		       "Device or Vendor ID mismatch Vendor %04x, Device %04x\n",
 		       rom_data->vendor, rom_data->device);

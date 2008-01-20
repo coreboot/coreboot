@@ -19,6 +19,7 @@
  */
 
 {
-        constructor = "geodelx_north_constructors";
+	constructor = "geodelx_north_constructors";
+	domainid = "PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_LXBRIDGE";
 };
 

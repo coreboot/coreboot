@@ -115,24 +115,49 @@ struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
 /**
  * Find a device of a given vendor and type.
  *
- * @param vendor Vendor ID (e.g. 0x8086 for Intel)
- * @param device Device ID
+ * @param devid Pointer to device_id struct 
  * @param from Pointer to the device structure, used as a starting point
  *             in the linked list of all_devices, which can be 0 to start
  *             at the head of the list (i.e. all_devices).
  * @return Pointer to the device struct.
  */
-struct device *dev_find_device(unsigned int vendor, unsigned int device,
-			       struct device *from)
+struct device *dev_find_device(struct device_id *devid, struct device *from)
 {
+	printk(BIOS_SPEW, "%s: find %s\n", __FUNCTION__, dev_id_string(devid));
+
 	if (!from)
 		from = all_devices;
 	else
 		from = from->next;
-	while (from && (from->vendor != vendor || from->device != device)) {
-		from = from->next;
+	for(;from;from = from->next){
+		printk(BIOS_SPEW, "Check %s\n", dev_id_string(&from->id));
+		if (id_eq(devid, &from->id))
+			break;
 	}
+	printk(BIOS_SPEW, "%sfound\n", from ? "" : "not ");
 	return from;
+}
+
+/**
+ * Find a PCI device of a given vendor and type.
+ * This is a convenience function since PCI device searches
+ * are by far the most common. 
+ *
+ * @param vendor vendor number
+ * @param device device number
+ * @param from Pointer to the device structure, used as a starting point
+ *             in the linked list of all_devices, which can be 0 to start
+ *             at the head of the list (i.e. all_devices).
+ * @return Pointer to the device struct.
+ */
+struct device *dev_find_pci_device(u16 vendor, u16 device, struct device *from)
+{
+	struct device_id id;
+
+	id.type = DEVICE_ID_PCI;
+	id.u.pci.vendor = vendor;
+	id.u.pci.device = device;
+	return dev_find_device(&id, from);
 }
 
 /**

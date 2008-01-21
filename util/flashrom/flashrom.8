@@ -2,7 +2,7 @@
 .SH NAME
 flashrom \- a universal BIOS/ROM/flash programming utility
 .SH SYNOPSIS
-.B flashrom \fR[\fB\-rwvEVfh\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
+.B flashrom \fR[\fB\-rwvEVfhR\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
          [\fB-m\fR vendor:part] [\fB-l\fR file.layout] [\fB-i\fR image_name] [file]
 .SH DESCRIPTION
 .B flashrom
@@ -63,9 +63,9 @@ from flash layout.
 .TP
 .B "\-h, \-\-help"
 Show a help text and exit.
-.\".TP
-.\".B "\-\-version"
-.\"Show version information and exit.
+.TP
+.B "\-R, \-\-version"
+Show version information and exit.
 .SH BUGS
 Please report any bugs at
 .BR http://tracker.coreboot.org/trac/coreboot/newticket ","

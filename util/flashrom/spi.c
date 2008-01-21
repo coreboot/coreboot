@@ -227,12 +227,15 @@ static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned in
 	 * We can't use writecnt directly, but have to use a strange encoding.
 	 */ 
 	outb(((0x4 + (fast_spi ? 1 : 0)) << 4) | ((readcnt & 0x3) << 2) | (writeenc), port);
-	do {
-		busy = inb(port) & 0x80;
-	} while (busy);
 
-	for (i = 0; i < readcnt; i++) {
-		readarr[i] = inb(port + 5 + i);
+	if (readcnt > 0) {
+		do {
+			busy = inb(port) & 0x80;
+		} while (busy);
+
+		for (i = 0; i < readcnt; i++) {
+			readarr[i] = inb(port + 5 + i);
+		}
 	}
 
 	return 0;

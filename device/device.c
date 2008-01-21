@@ -737,7 +737,7 @@ void dev_phase2(void)
 		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
 		printk(BIOS_SPEW, "%s: ops %p ops->phase2_setup_scan_bus %p\n",
 			__FUNCTION__, dev->ops, 
-			dev->ops? dev->ops->phase2_setup_scan_bus : "None");
+			dev->ops? dev->ops->phase2_setup_scan_bus : NULL);
 		if (dev->ops && dev->ops->phase2_setup_scan_bus) {
 			printk(BIOS_SPEW,
 			       "Calling phase2 phase2_setup_scan_bus...");

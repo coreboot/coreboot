@@ -8,7 +8,7 @@ makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC_INC_DIR := $(shell LC_ALL=C $(CC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
-makedefine CFLAGS := $(CPU_OPT) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
+makedefine CFLAGS := $(CPU_OPT) $(DISTRO_CFLAGS) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
 
 makedefine HOSTCFLAGS:= -Os -Wall
 
@@ -38,14 +38,15 @@ makerule coreboot.a
         action  "ar cr coreboot.a $(OBJECTS)"
 end
 
+
 makerule coreboot_ram.o
 	depends	"$(DRIVER) coreboot.a $(LIBGCC_FILE_NAME)" 
-	action	"$(CC) -nostdlib -r -o $@ c_start.o $(DRIVER) coreboot.a $(LIBGCC_FILE_NAME)"
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ c_start.o $(DRIVER) coreboot.a $(LIBGCC_FILE_NAME)"
 end
 
 makerule coreboot_ram
 	depends	"coreboot_ram.o $(TOP)/src/config/coreboot_ram.ld ldoptions" 
-	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_ram.ld coreboot_ram.o"
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_ram.ld coreboot_ram.o"
 	action 	"$(CROSS_COMPILE)nm -n coreboot_ram | sort > coreboot_ram.map"
 end
 
@@ -83,12 +84,12 @@ if CONFIG_AP_CODE_IN_CAR
 
 	makerule coreboot_apc.o
 		depends "coreboot_apc.a c_start.o $(LIBGCC_FILE_NAME)"
-        action  "$(CC) -nostdlib -r -o $@ c_start.o coreboot_apc.a $(LIBGCC_FILE_NAME)"
+        action  "$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ c_start.o coreboot_apc.a $(LIBGCC_FILE_NAME)"
 	end
 
 	makerule coreboot_apc
 		depends "coreboot_apc.o $(TOP)/src/config/coreboot_apc.ld ldoptions"
-		action  "$(CC) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_apc.ld coreboot_apc.o"
+		action  "$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_apc.ld coreboot_apc.o"
 		action  "$(CROSS_COMPILE)nm -n coreboot_apc | sort > coreboot_apc.map"
 	end
 
@@ -121,7 +122,7 @@ makedefine COREBOOT_RAM_ROM:=coreboot_ram.rom
 
 makerule coreboot   
 	depends	"crt0.o $(INIT-OBJECTS) $(COREBOOT_APC) $(COREBOOT_RAM_ROM) ldscript.ld"
-	action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o $(INIT-OBJECTS)"
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o $(INIT-OBJECTS)"
 	action	"$(CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
 end
 

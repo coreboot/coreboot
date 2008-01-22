@@ -69,9 +69,16 @@ fi
 
 rm -rf .$$.tmp
 
+ld --help | awk '{for (i=1;i<=NF;i++) if ($i ~ /build-id/){n++} }; END {exit n}' 
+build_id=$?
+if [ $build_id -ge 1 ] ; then
+	EXTRA_LFLAGS+=" -Wl,--build-id=none"
+fi
+
 for i in $build_dir/Makefile.settings $build_dir/*/Makefile.settings
 do
-	echo CFLAGS+=$EXTRA_CFLAGS >>$i
+	echo DISTRO_CFLAGS+=$EXTRA_CFLAGS >>$i
+	echo DISTRO_LFLAGS+=$EXTRA_LFLAGS >>$i
 done
 
 exit $?

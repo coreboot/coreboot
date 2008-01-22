@@ -159,7 +159,11 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 {
 	int idx;
 	int total_size = flash->total_size * 1024;
-	volatile uint8_t *bios = flash->virtual_memory;
+	uint8_t *buf2 = (uint8_t *) calloc(total_size, sizeof(char));
+	if (flash->read == NULL)
+		memcpy(buf2, (const char *)flash->virtual_memory, total_size);
+	else
+		flash->read(flash, buf2);
 
 	printf("Verifying flash... ");
 
@@ -170,7 +174,7 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 		if (verbose && ((idx & 0xfff) == 0xfff))
 			printf("0x%08x", idx);
 
-		if (*(bios + idx) != *(buf + idx)) {
+		if (*(buf2 + idx) != *(buf + idx)) {
 			if (verbose) {
 				printf("0x%08x ", idx);
 			}

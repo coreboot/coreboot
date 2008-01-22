@@ -94,7 +94,7 @@
 
 uint16_t it8716f_flashport = 0;
 /* use fast 33MHz SPI (<>0) or slow 16MHz (0) */
-int fast_spi=1;
+int fast_spi = 1;
 
 void spi_prettyprint_status_register(struct flashchip *flash);
 void spi_disable_blockprotect(void);
@@ -155,7 +155,7 @@ static uint16_t find_ite_spi_flash_port(uint16_t port)
 			0xFFF80000, 0xFFFEFFFF, (tmp & 1 << 3) ? "en" : "dis");
 		printf("LPC write to serial flash %sabled\n",
 			(tmp & 1 << 4) ? "en" : "dis");
-		printf("serial flash pin %i\n",	(tmp & 1 << 5) ? 87 : 29);
+		printf("serial flash pin %i\n", (tmp & 1 << 5) ? 87 : 29);
 		/* LDN 0x7, reg 0x64/0x65 */
 		regwrite(port, 0x07, 0x7);
 		flashport = regval(port, 0x64) << 8;
@@ -348,14 +348,14 @@ void spi_prettyprint_status_register_st_m25p(uint8_t status)
  */
 void spi_prettyprint_status_register_sst25vf016(uint8_t status)
 {
-	const char *bpt[]={
+	const char *bpt[] = {
 		"none",
 		"1F0000H-1FFFFFH",
 		"1E0000H-1FFFFFH",
 		"1C0000H-1FFFFFH",
 		"180000H-1FFFFFH",
 		"100000H-1FFFFFH",
-		"all","all"
+		"all", "all"
 	};
 	printf_debug("Chip status register: Block Protect Write Disable "
 		"(BPL) is %sset\n", (status & (1 << 7)) ? "" : "not ");
@@ -449,7 +449,7 @@ void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 
 	generic_spi_write_enable();
 	outb(0x06 , it8716f_flashport + 1);
-	outb(((2+(fast_spi?1:0)) << 4), it8716f_flashport);
+	outb(((2 + (fast_spi ? 1 : 0)) << 4), it8716f_flashport);
 	for (i = 0; i < 256; i++) {
 		bios[256 * block + i] = buf[256 * block + i];
 	}
@@ -513,18 +513,14 @@ int it8716f_over512k_spi_chip_write(struct flashchip *flash, uint8_t *buf)
 {
 	int total_size = 1024 * flash->total_size;
 	int i;
-	fast_spi=0;
+	fast_spi = 0;
 
 	spi_disable_blockprotect();
-	for (i=0; i<total_size; i++) {
+	for (i = 0; i < total_size; i++) {
 		generic_spi_write_enable();
-		spi_byte_program(i,buf[i]);
-		/* FIXME: We really should read the status register and delay
-		 * accordingly.
-		 */
-		//while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
-		myusec_delay(10);
-		//if (i%1024==0) fputc('b',stderr);
+		spi_byte_program(i, buf[i]);
+		while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+			myusec_delay(10);
 	}
 	/* resume normal ops... */
 	outb(0x20, it8716f_flashport);
@@ -534,9 +530,9 @@ int it8716f_over512k_spi_chip_write(struct flashchip *flash, uint8_t *buf)
 void spi_3byte_read(int address, uint8_t *bytes, int len)
 {
 	const unsigned char cmd[JEDEC_READ_OUTSIZE] = {JEDEC_READ,
-		(address>>16)&0xff,
-		(address>>8)&0xff,
-		(address>>0)&0xff,
+		(address >> 16) & 0xff,
+		(address >> 8) & 0xff,
+		(address >> 0) & 0xff,
 	};
 
 	/* Send Read */
@@ -551,13 +547,14 @@ int generic_spi_chip_read(struct flashchip *flash, uint8_t *buf)
 {
 	int total_size = 1024 * flash->total_size;
 	int i;
-	fast_spi=0;
+	fast_spi = 0;
 
 	if (total_size > 512 * 1024) {
-		for (i = 0; i < total_size; i+=3) {
-			int toread=3;
-			if (total_size-i < toread) toread=total_size-i;
-			spi_3byte_read(i, buf+i, toread);
+		for (i = 0; i < total_size; i += 3) {
+			int toread = 3;
+			if (total_size - i < toread)
+				toread = total_size - i;
+			spi_3byte_read(i, buf + i, toread);
 		}
 	} else {
 		memcpy(buf, (const char *)flash->virtual_memory, total_size);

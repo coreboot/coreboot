@@ -37,17 +37,19 @@
 
 __asm__ (
 	/* pointer to original gdt */
+	"	.globl gdtarg\n"
 	"gdtarg:			\n"
 	"	.word	gdt_limit	\n"
 	"	.long	gdtptr	       	\n"		
 
 	/* compute the table limit */
 	"__mygdt_limit = __mygdt_end - __mygdt - 1	\n"
-
+	"	.globl __mygdtaddr\n"
 	"__mygdtaddr:			\n"
 	"	.word	__mygdt_limit  	\n"
 	"	.long	__mygdt	       	\n"
 
+	"	.globl __mygdt\n"
 	"__mygdt: 		       	\n"
 	/* selgdt 0, unused */
 	"	.word	0x0000, 0x0000	\n"
@@ -80,6 +82,7 @@ __asm__ (
 	"__mygdt_end:				\n"
 
 	/* FIXME: This does probably not belong here */
+	"	.globl idtarg\n"
 	"idtarg:\n"
 	"	.word   _idt_end - _idt - 1\n"     /* limit */
 	"	.long   _idt\n"
@@ -89,6 +92,7 @@ __asm__ (
 	"_idt_end:\n"
 
 	/* Declare a pointer to where our idt is going to be i.e. at mem zero */
+	"	.globl __myidt\n"
 	 "__myidt:		\n"
 	 /* 16-bit limit */
 	 "	.word 1023	\n"

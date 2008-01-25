@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2005/12/16 22:45:49 dsp_llnl Exp $
+# $Id$
 
 PROJECT = lxbios
 CC = gcc

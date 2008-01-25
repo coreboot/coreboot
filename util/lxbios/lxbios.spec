@@ -1,5 +1,5 @@
 ##
-# $Id: lxbios.spec,v 1.3 2006/01/24 00:25:40 dsp_llnl Exp $
+# $Id$
 ##
 
 Name:    lxbios

@@ -1,6 +1,6 @@
 /*****************************************************************************\
  * cmos_ops.h
- * $Id: cmos_ops.h,v 1.3 2006/01/24 00:25:40 dsp_llnl Exp $
+ * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -10,7 +10,7 @@
  *
  *  This file is part of lxbios, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see <http://www.llnl.gov/linux/lxbios/>.
+ *  For details, see http://coreboot.org/Lxbios.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.

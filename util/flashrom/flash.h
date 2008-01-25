@@ -166,6 +166,14 @@ extern struct flashchip flashchips[];
 #define SHARP_LHF00L04		0xCF
 
 /*
+ * Spansion was previously a joint venture of AMD and Fujitsu.
+ * S25 chips are SPI. The first device ID byte is memory type and
+ * the second device ID byte is memory capacity.
+ */
+#define SPANSION_ID		0x01	/* Spansion */
+#define SPANSION_S25FL016A	0x0214
+
+/*
  * SST25 chips are SPI, first byte of device ID is memory type, second
  * byte of device ID is related to log(bitsize) at least for some chips.
  */

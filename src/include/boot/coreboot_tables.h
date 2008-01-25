@@ -138,6 +138,13 @@ struct lb_string {
 	uint8_t  string[0];
 };
 
+#define LB_TAG_SERIAL		0x000f
+struct lb_serial {
+	uint32_t tag;
+	uint32_t size;
+	uint16_t ioport;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

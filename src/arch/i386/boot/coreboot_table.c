@@ -74,6 +74,22 @@ struct lb_memory *lb_memory(struct lb_header *header)
 	return mem;
 }
 
+struct lb_serial *lb_serial(struct lb_header *header)
+{
+#if defined(TTYS0_BASE)
+	struct lb_record *rec;
+	struct lb_serial *serial;
+	rec = lb_new_record(header);
+	serial = (struct lb_serial *)rec;
+	serial->tag = LB_TAG_SERIAL;
+	serial->size = sizeof(*serial);
+	serial->ioport = TTYS0_BASE;
+	return serial;
+#else
+	return header;
+#endif
+}
+
 struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -406,8 +422,10 @@ unsigned long write_coreboot_table(
 	 * size of the coreboot table.
 	 */
 
-	/* Record our motheboard */
+	/* Record our motherboard */
 	lb_mainboard(head);
+	/* Record the serial port, if present */
+	lb_serial(head);
 	/* Record our various random string information */
 	lb_strings(head);
 

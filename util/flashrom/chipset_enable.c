@@ -256,7 +256,7 @@ static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 	close(fd_msr);
 	if (buf[7] != 0x22) {
 		printf("Enabling Geode MSR to write to flash.\n");
-		buf[7] = 0x22;
+		buf[7] &= 0xFB;
 		fd_msr = open("/dev/cpu/0/msr", O_WRONLY);
 		if (!fd_msr) {
 			perror("open msr");

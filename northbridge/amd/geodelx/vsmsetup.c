@@ -182,7 +182,7 @@ void do_vsmbios(void *bios)
 	}
 	init_archive(&archive);
 
-	if (find_file(&archive, "/blob/vsa", &file)){
+	if (find_file(&archive, "blob/vsa", &file)){
 		printk(BIOS_ERR, "NO VSA found!\n");
 		return;
 	}

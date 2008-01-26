@@ -50,7 +50,21 @@ static void enable_rom(void)
 	post_code(POST_STAGE1_ENABLE_ROM);
 }
 
+void init_archive(struct mem_file *archive)
+{
+	// FIXME this should be defined in the VPD area
+	// but NOT IN THE CODE.
 
+	/* The len field starts behind the reset vector on x86.
+	 * The start is not correct for all platforms. sc520 will
+	 * need some hands on here.
+	 */
+	archive->len = *(u32 *)0xfffffff4;
+	archive->start =(void *)(0UL-archive->len);
+
+	// FIXME check integrity
+
+}
 /* until we get rid of elf */
 int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *mem)
 {
@@ -121,18 +135,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	// location and size of image.
 
-	// FIXME this should be defined in the VPD area
-	// but NOT IN THE CODE.
-
-	/* The len field starts behind the reset vector on x86.
-	 * The start is not correct for all platforms. sc520 will
-	 * need some hands on here.
-	 */
-	archive.len = *(u32 *)0xfffffff4;
-	archive.start =(void *)(0UL-archive.len);
-
-	// FIXME check integrity
-
+	init_archive(&archive);
 
 	// find first initram
 	if (check_normal_boot_flag()) {

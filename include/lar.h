@@ -51,6 +51,7 @@
 #define LAR_H
 
 #include <types.h>
+#include <shared.h>
 
 #define MAGIC "LARCHIVE"
 #define MAX_PATHLEN 1024
@@ -82,11 +83,15 @@ struct mem_file {
 };
 
 /* Prototypes. */
-int find_file(const struct mem_file *archive, const char *filename, struct mem_file *result);
-int copy_file(const struct mem_file *archive, const char *filename, void *where);
-int run_file(const struct mem_file *archive, const char *filename, void *where);
-int execute_in_place(const struct mem_file *archive, const char *filename);
-int run_address(void *f);
-void *load_file(const struct mem_file *archive, const char *filename);
-void *load_file_segments(const struct mem_file *archive, const char *filename);
+/* architecture-defined */
+SHARED(init_archive, void, struct mem_file *);
+/* architecture-independent */
+SHARED(find_file, int, const struct mem_file *archive, const char *filename, struct mem_file *result);
+SHARED(copy_file, int, const struct mem_file *archive, const char *filename, void *where);
+SHARED(run_file, int, const struct mem_file *archive, const char *filename, void *where);
+SHARED(execute_in_place, int, const struct mem_file *archive, const char *filename);
+SHARED(run_address, int, void *f);
+SHARED(load_file, void *, const struct mem_file *archive, const char *filename);
+SHARED(load_file_segments, void *, const struct mem_file *archive, const char *filename);
+SHARED(process_file, int, const struct mem_file *archive, void *where);
 #endif /* LAR_H */

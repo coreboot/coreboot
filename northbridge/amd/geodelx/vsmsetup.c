@@ -29,6 +29,7 @@
 #include <device/pci_ids.h>
 #include <msr.h>
 #include <amd_geodelx.h>
+#include <lar.h>
 
 #define VSA2_BUFFER			0x60000
 #define VSA2_ENTRY_POINT	0x60020
@@ -169,25 +170,30 @@ u32 VSA_msrRead(u32 msrAddr)
 
 void do_vsmbios(void *bios)
 {
-	struct device *dev;
-	unsigned long busdevfn;
-	unsigned int rom = 0;
 	unsigned char *buf;
-	unsigned int size = SMM_SIZE * 1024;
 	int i;
-	unsigned long ilen, olen;
+	struct mem_file archive;
+	struct mem_file file;
 
 	printk(BIOS_ERR, "do_vsmbios\n");
 	/* clear vsm bios data area */
 	for (i = 0x400; i < 0x500; i++) {
 		*(volatile unsigned char *)i = 0;
 	}
+	init_archive(&archive);
 
-	rom = (unsigned long) bios;
+	if (find_file(&archive, "/blob/vsa", &file)){
+		printk(BIOS_ERR, "NO VSA found!\n");
+		return;
+	}
+
+	if (process_file(&file, (void *)VSA2_BUFFER)) {
+		printk(BIOS_ERR, "Processing /blob/vsa failed\n");
+		return;
+	}
+
 	buf = (unsigned char *)VSA2_BUFFER;
-	// FIXME
-	//olen = unrv2b((u8 *) rom, buf, &ilen);
-	printk(BIOS_DEBUG, "buf ilen %d olen%d\n", ilen, olen);
+	printk(BIOS_DEBUG, "buf ilen %d real len %uld\n", file.len, file.reallen);
 	printk(BIOS_DEBUG, "buf %p *buf %d buf[256k] %d\n",
 		     buf, buf[0], buf[SMM_SIZE * 1024]);
 	printk(BIOS_DEBUG, "buf[0x20] signature is %x:%x:%x:%x\n",
@@ -253,16 +259,16 @@ static int biosint(unsigned long intnumber,
 		     eax, ebx, ecx, edx);
 	printk(BIOS_DEBUG, "biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
 		     ebp, esp, edi, esi);
-	printk(BIOS_DEBUG, "biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
+	printk(BIOS_DEBUG, "biosint:  ip 0x%lx   cs 0x%lx  flags 0x%lx\n",
 		     ip, cs, flags);
-	printk(BIOS_DEBUG, "biosint: gs 0x%x fs 0x%x ds 0x%x es 0x%x\n",
+	printk(BIOS_DEBUG, "biosint: gs 0x%lx fs 0x%lx ds 0x%lx es 0x%lx\n",
 		     gsfs >> 16, gsfs & 0xffff, dses >> 16, dses & 0xffff);
 
 	// cases in a good compiler are just as good as your own tables.
 	switch (intnumber) {
 	case 0 ... 15:
 		// These are not BIOS service, but the CPU-generated exceptions
-		printk(BIOS_INFO, "biosint: Oops, exception %u\n", intnumber);
+		printk(BIOS_INFO, "biosint: Oops, exception %lu\n", intnumber);
 		if (esp < 0x1000) {
 			printk(BIOS_DEBUG, "Stack contents: ");
 			while (esp < 0x1000) {
@@ -290,7 +296,7 @@ static int biosint(unsigned long intnumber,
 				  &ebx, &edx, &ecx, &eax, &flags);
 		break;
 	default:
-	  printk(BIOS_INFO, "BIOSINT: Unsupport int #0x%x\n", intnumber);
+	  printk(BIOS_INFO, "BIOSINT: Unsupport int #0x%lx\n", intnumber);
 		break;
 	}
 	if (ret)

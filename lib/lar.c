@@ -145,7 +145,7 @@ int find_file(const struct mem_file *archive, const char *filename, struct mem_f
 	return 1;
 }
 
-static int process_file(const struct mem_file *archive, void *where)
+int process_file(const struct mem_file *archive, void *where)
 {
 	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", archive->compression);
 	/* no compression */

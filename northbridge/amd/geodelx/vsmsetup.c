@@ -168,7 +168,7 @@ u32 VSA_msrRead(u32 msrAddr)
 	return eax;
 }
 
-void do_vsmbios(void *bios)
+void do_vsmbios(void)
 {
 	unsigned char *buf;
 	int i;

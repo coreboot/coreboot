@@ -313,6 +313,8 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
  */
 static void geodelx_pci_domain_phase2(struct device *dev)
 {
+	void do_vsmbios(void);
+
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
 
 	northbridge_init_early();
@@ -322,9 +324,8 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 
 	printk(BIOS_SPEW, "Before VSA:\n");
 	/* print_conf(); */
-#warning Not doing vsm bios -- linux will fail.
 	/* Do the magic stuff here, so prepare your tambourine ;) */
-	/* do_vsmbios(); */
+	do_vsmbios(); 
 	printk(BIOS_SPEW, "After VSA:\n");
 	/* print_conf(); */
 

@@ -90,6 +90,39 @@ struct lb_serial *lb_serial(struct lb_header *header)
 #endif
 }
 
+void add_console(struct lb_header *header, u16 consoletype)
+{
+	struct lb_record *rec;
+	struct lb_console *console;
+	rec = lb_new_record(header);
+	console = (struct lb_console *)lb_new_record(header);
+	console->tag = LB_TAG_CONSOLE;
+	console->size = sizeof(*console);
+	console->type = consoletype;
+}
+
+void lb_console(struct lb_header *header)
+{
+#ifdef CONFIG_CONSOLE_SERIAL8250
+	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
+#endif
+#ifdef CONFIG_CONSOLE_VGA
+	add_console(header, LB_TAG_CONSOLE_VGA);
+#endif
+#ifdef CONFIG_CONSOLE_BTEXT
+	add_console(header, LB_TAG_CONSOLE_BTEXT);
+#endif
+#ifdef CONFIG_CONSOLE_LOGBUF
+	add_console(header, LB_TAG_CONSOLE_LOGBUF);
+#endif
+#ifdef CONFIG_CONSOLE_SROM
+	add_console(header, LB_TAG_CONSOLE_SROM);
+#endif
+#ifdef CONFIG_USBDEBUG_DIRECT
+	add_console(header, LB_TAG_CONSOLE_EHCI);
+#endif
+}
+
 struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -426,6 +459,8 @@ unsigned long write_coreboot_table(
 	lb_mainboard(head);
 	/* Record the serial port, if present */
 	lb_serial(head);
+	/* Record our console setup */
+	lb_console(head);
 	/* Record our various random string information */
 	lb_strings(head);
 

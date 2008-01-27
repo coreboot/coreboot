@@ -138,12 +138,28 @@ struct lb_string {
 	uint8_t  string[0];
 };
 
+/* 0xe is taken by v3 */
+
 #define LB_TAG_SERIAL		0x000f
 struct lb_serial {
 	uint32_t tag;
 	uint32_t size;
 	uint16_t ioport;
 };
+
+#define LB_TAG_CONSOLE		0x0010
+struct lb_console {
+	uint32_t tag;
+	uint32_t size;
+	uint16_t type;
+};
+
+#define LB_TAG_CONSOLE_SERIAL8250	0
+#define LB_TAG_CONSOLE_VGA		1
+#define LB_TAG_CONSOLE_BTEXT		2
+#define LB_TAG_CONSOLE_LOGBUF		3
+#define LB_TAG_CONSOLE_SROM		4
+#define LB_TAG_CONSOLE_EHCI		5
 
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200

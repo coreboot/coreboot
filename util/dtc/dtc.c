@@ -91,7 +91,7 @@ static void usage(void)
 	fprintf(stderr, "\t\t\tdts - device tree source text\n");
 	fprintf(stderr, "\t\t\tdtb - device tree blob\n");
 	fprintf(stderr, "\t\t\tasm - assembler source\n");
-	fprintf(stderr, "\t\t\tlinuxbios (or just lb) - linuxbios source\n");
+	fprintf(stderr, "\t\t\tcoreboot (or just lb) - coreboot source\n");
 	fprintf(stderr, "\t-V <output version>\n");
 	fprintf(stderr, "\t\tBlob version to produce, defaults to 3 (relevant for dtb\n\t\tand asm output only)\n");
 	fprintf(stderr, "\t-R <number>\n");
@@ -199,10 +199,10 @@ int main(int argc, char *argv[])
 		dt_to_asm(outf, bi, outversion, boot_cpuid_phys);
 	} else if (streq(outform, "C")) {
 		dt_to_C(outf, bi, outversion, boot_cpuid_phys);
-	} else if (streq(outform, "linuxbios") || streq(outform, "lb")) {
-		dt_to_linuxbios(outf, bi, outversion, boot_cpuid_phys);
-	} else if (streq(outform, "linuxbiosinclude") || streq(outform, "lbh")) {
-		dt_to_linuxbiosh(outf, bi, outversion, boot_cpuid_phys);
+	} else if (streq(outform, "coreboot") || streq(outform, "lb")) {
+		dt_to_coreboot(outf, bi, outversion, boot_cpuid_phys);
+	} else if (streq(outform, "corebootinclude") || streq(outform, "lbh")) {
+		dt_to_corebooth(outf, bi, outversion, boot_cpuid_phys);
 	} else if (streq(outform, "null")) {
 		/* do nothing */
 	} else {

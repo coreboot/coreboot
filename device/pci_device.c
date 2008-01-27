@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * It was originally based on the Linux kernel (drivers/pci/pci.c).
  *
@@ -272,7 +272,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 
 	if ((dev->on_mainboard) && (dev->rom_address == 0)) {
 		// Skip it if rom_address is not set in MB Config.lb.
-		// TODO: No more Config.lb in LinuxBIOSv3.
+		// TODO: No more Config.lb in coreboot-v3.
 		return;
 	}
 
@@ -320,7 +320,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	/* For on board device with embedded ROM image, the ROM image is at
 	 * fixed address specified in the Config.lb, the dev->rom_address is
 	 * inited by driver_pci_onboard_ops::enable_dev() */
-	/* TODO: No more Config.lb in LinuxBIOSv3. */
+	/* TODO: No more Config.lb in coreboot-v3. */
 	if ((dev->on_mainboard) && (dev->rom_address != 0)) {
 		resource->base = dev->rom_address;
 		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY |
@@ -1131,7 +1131,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 
 	/* Die if any leftover static devices are are found.  
 	 * There's probably a problem in the Config.lb.
-	 * TODO: No more Config.lb in LinuxBIOSv3.
+	 * TODO: No more Config.lb in coreboot-v3.
 	 */
 	if (old_devices) {
 		struct device *left;

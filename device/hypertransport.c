@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2003-2004 Linux Networx
  * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
@@ -576,7 +576,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 
 	/* Die if any leftover static devices are found.
 	 * There's probably a problem in the Config.lb.
-	 * TODO: No more Config.lb in LinuxBIOSv3.
+	 * TODO: No more Config.lb in coreboot-v3.
 	 */
 	if (old_devices) {
 		struct device *left;

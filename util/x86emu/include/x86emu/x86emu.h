@@ -43,7 +43,7 @@
 #define __X86EMU_X86EMU_H
 
 /* FIXME: undefine printk for the moment */
-#ifdef LINUXBIOS_VERSION
+#ifdef COREBOOT_VERSION
 #include <console.h>
 #define printk(x...) printk(BIOS_DEBUG, x)
 #else

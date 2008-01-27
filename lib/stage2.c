@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Ron Minnich <rminnich@lanl.gov>
  * Copyright (C) 2007 coresystems GmbH
@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-/* stage2 - LinuxBIOS RAM-based setup. */
+/* stage2 - coreboot RAM-based setup. */
 
 #include <types.h>
 #include <string.h>
@@ -29,9 +29,9 @@
 #include <tables.h>
 
 /**
- * Main function of the DRAM part of LinuxBIOS.
+ * Main function of the DRAM part of coreboot.
  *
- * LinuxBIOS is divided into pre-DRAM part and DRAM part. The stages before
+ * Coreboot is divided into pre-DRAM part and DRAM part. The stages before
  * this part are stage 0 and stage 1. This part contains stage 2, which
  * consists of phases 1 through 6.
  * printk has been set up in stage 1 and is working.

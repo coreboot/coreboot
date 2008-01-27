@@ -5,13 +5,13 @@ HACKING
 Development Guidelines
 ----------------------
 
-Please read http://linuxbios.org/Development_Guidelines.
+Please read http://www.coreboot.org/Development_Guidelines.
 
 
 Doxygen-generated Code/API Documentation
 ----------------------------------------
 
-The source code of LinuxBIOS is documented using Doxygen-style code comments.
+The source code of coreboot is documented using Doxygen-style code comments.
 The Doxygen tool can generate HTML API documentation out of these comments.
 
 You can generate this documentation via:
@@ -22,7 +22,7 @@ The documentation will be stored in the doxygen/html directory.
 
 The generation of the documentation takes ca. 1-2 minutes, and may require
 more than 30 MB of space on the hard drive, depending on the options
-selected in the Doxygen config file, util/doxygen/Doxyfile.LinuxBIOS.
+selected in the Doxygen config file, util/doxygen/Doxyfile.coreboot.
 
 Required software:
 
@@ -57,7 +57,7 @@ Third-party Code and License Overview
   Current version we use: 15508d22d00277a1f2a1022dce38f2772c810d32 (02/2006)
 
 * util/lar/*: GPLv2
-  Independant project, but written specifically for LinuxBIOS.
+  Independant project, but written specifically for coreboot.
 
 * include/lar.h, util/lar/lar.h, util/lar/example.c:
   Dual-licensed (GPLv2 + revised BSD license)

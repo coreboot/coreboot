@@ -128,11 +128,11 @@ void rtc_init(int invalid)
 	CMOS_WRITE(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
 
 #if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
-	/* See if there is a LB CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
-			LB_CKS_RANGE_END,LB_CKS_LOC);
+	/* See if there is a coreboot CMOS checksum error */
+	checksum_invalid = !rtc_checksum_valid(CB_CKS_RANGE_START,
+			CB_CKS_RANGE_END,CB_CKS_LOC);
 	if(checksum_invalid)
-		printk(BIOS_WARNING, "Invalid LinuxBIOS CMOS checksum.\n");
+		printk(BIOS_WARNING, "Invalid coreboot CMOS checksum.\n");
 
 	/* Make certain we have a valid checksum */
 	rtc_set_checksum(PC_CKS_RANGE_START,
@@ -184,8 +184,8 @@ struct cmos_option_table *get_option_table(void)
 	int ret;
 
 	// FIXME - i want to be dynamic.
-	archive.len=(CONFIG_LINUXBIOS_ROMSIZE_KB-16)*1024;
-	archive.start=(void *)(0UL-(CONFIG_LINUXBIOS_ROMSIZE_KB*1024)); 
+	archive.len=(CONFIG_COREBOOT_ROMSIZE_KB-16)*1024;
+	archive.start=(void *)(0UL-(CONFIG_COREBOOT_ROMSIZE_KB*1024)); 
 
 	ret = find_file(&archive, "normal/option_table", &result);
 	if (ret) {
@@ -223,8 +223,8 @@ int get_option(void *dest, char *name)
 	
 	if(get_cmos_value(ce->bit, ce->length, dest))
 		return(-3);
-	if(!rtc_checksum_valid(LB_CKS_RANGE_START,
-			LB_CKS_RANGE_END,LB_CKS_LOC))
+	if(!rtc_checksum_valid(CB_CKS_RANGE_START,
+			CB_CKS_RANGE_END,CB_CKS_LOC))
 		return(-4);
 #if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
 	return(0);
@@ -255,14 +255,14 @@ static int cmos_chksum_valid(void)
 	u32 sum, old_sum;
 	sum = 0;
 	/* Comput the cmos checksum */
-	for(addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
+	for(addr = CB_CKS_RANGE_START; addr <= CB_CKS_RANGE_END; addr++) {
 		sum += CMOS_READ(addr);
 	}
 	sum = (sum & 0xffff) ^ 0xffff;
 
 	/* Read the stored checksum */
-	old_sum = CMOS_READ(LB_CKS_LOC) << 8;
-	old_sum |=  CMOS_READ(LB_CKS_LOC+1);
+	old_sum = CMOS_READ(CB_CKS_LOC) << 8;
+	old_sum |=  CMOS_READ(CB_CKS_LOC+1);
 
 	return sum == old_sum;
 }

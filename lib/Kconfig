@@ -1,5 +1,5 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -54,7 +54,7 @@ config DEFAULT_COMPRESSION_NRV2B
 config DEFAULT_COMPRESSION_NONE
 	bool "No compression"
 	help
-	  Do not compress any LinuxBIOS modules per default.
+	  Do not compress any coreboot modules per default.
 
 endchoice
 
@@ -139,7 +139,7 @@ config CONSOLE_SERIAL
 	default y
 	depends CONSOLE
 	help
-	  Send LinuxBIOS output to serial console.
+	  Send coreboot output to serial console.
 
 choice
 	prompt "Serial console COM port"
@@ -194,7 +194,7 @@ config CONSOLE_USB
 	boolean "USB2 console support (EXPERIMENTAL)"
 	depends CONSOLE && EXPERIMENTAL
 	help
-	  Send LinuxBIOS output to USB2 (EHCI) console.
+	  Send coreboot output to USB2 (EHCI) console.
 
 	  Note: This requires a USB2 controller which supports the EHCI
 	  Debug Port capability. Controllers which are known to work:
@@ -210,7 +210,7 @@ config CONSOLE_USB
 	    * 8086:2836 Intel ICH8
 	    * 8086:283a Intel ICH8
 
-	  See http://linuxbios.org/EHCI_Debug_Port for an up-to-date list.
+	  See http://www.coreboot.org/EHCI_Debug_Port for an up-to-date list.
 
 comment "Cosmetic console options"
 	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
@@ -220,7 +220,7 @@ config CONSOLE_PREFIX
 	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
 	default n
 	help
-	  When you enable this option, LinuxBIOS will prefix each line of
+	  When you enable this option, coreboot will prefix each line of
 	  console output with '(LB)'.
 
 endmenu

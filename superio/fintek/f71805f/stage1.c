@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright 2007 Corey Osgood <corey.osgood@gmail.com>
  *

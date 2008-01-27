@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2000 Ron Minnich, Advanced Computing Lab, LANL
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>

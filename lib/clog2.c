@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * It is based on the file js/src/jscpucfg.c from Mozilla, CVS rev. 3.25.
  * See http://lxr.mozilla.org/mozilla1.8.0/source/js/src/jscpucfg.c.

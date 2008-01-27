@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Stefan Reinauer <stepan@coresystems.de>
  *
@@ -20,7 +20,7 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-/* TODO: This structure should contain typematic settings, but LinuxBIOS
+/* TODO: This structure should contain typematic settings, but coreboot
  * does not care yet.
  */
 struct pc_keyboard {

@@ -1,5 +1,5 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -29,12 +29,12 @@ SILENT := >/dev/null 2>&1
 #
 # Build the ROM Image / LAR archive
 #
-# LinuxBIOS v3 is completely modular. One module, the bootblock (stage0),
+# coreboot v3 is completely modular. One module, the bootblock (stage0),
 # is mandatory. All modules are packed together in a LAR archive.
 # The LAR archive may contain any number of stages, payloads and option ROMs.
 #
 
-ROM_SIZE := $(shell expr $(CONFIG_LINUXBIOS_ROMSIZE_KB) \* 1024)
+ROM_SIZE := $(shell expr $(CONFIG_COREBOOT_ROMSIZE_KB) \* 1024)
 
 LARFILES := nocompress:normal/initram normal/stage2 nocompress:normal/option_table
 ifneq ($(CONFIG_PAYLOAD_NONE),y)
@@ -57,12 +57,12 @@ ifeq ($(CONFIG_DEFAULT_COMPRESSION_NRV2B),y)
 COMPRESSFLAG := -C nrv2b
 endif
 
-$(obj)/linuxbios.rom $(obj)/linuxbios.map: $(obj)/linuxbios.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/linuxbios.initram $(obj)/linuxbios.stage2 $(obj)/option_table
+$(obj)/coreboot.rom $(obj)/coreboot.map: $(obj)/coreboot.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/coreboot.initram $(obj)/coreboot.stage2 $(obj)/option_table
 	$(Q)rm -rf $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp
 	$(Q)mkdir $(obj)/lar.tmp/normal
-	$(Q)cp $(obj)/linuxbios.initram $(obj)/lar.tmp/normal/initram
-	$(Q)cp $(obj)/linuxbios.stage2 $(obj)/lar.tmp/normal/stage2
+	$(Q)cp $(obj)/coreboot.initram $(obj)/lar.tmp/normal/initram
+	$(Q)cp $(obj)/coreboot.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	$(Q)printf "  PAYLOAD none (as specified by user)\n"
@@ -77,31 +77,31 @@ else
 	fi
 endif
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)rm -f $(obj)/linuxbios.rom
+	$(Q)rm -f $(obj)/coreboot.rom
 	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar $(PARSEELF) $(COMPRESSFLAG) -c \
-		../linuxbios.rom \
+		../coreboot.rom \
 		$(LARFILES) \
-		-s $(ROM_SIZE) -b $(obj)/linuxbios.bootblock
+		-s $(ROM_SIZE) -b $(obj)/coreboot.bootblock
 	$(Q)# QEMU wants bios.bin:
 	$(Q)# Run "qemu -L build/ -serial stdio -hda /dev/zero".
 	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/bios.bin)\n"
 	$(Q)cp $@ $(obj)/bios.bin
-	$(Q)echo "LinuxBIOS ROM Image:" > $(obj)/linuxbios.map
-	$(Q)$(obj)/util/lar/lar -l $(obj)/linuxbios.rom >> $(obj)/linuxbios.map
-	$(Q)(echo; echo "Stage 0/1 Map:") >> $(obj)/linuxbios.map
-	$(Q)cat $(obj)/stage0.init.map >> $(obj)/linuxbios.map
-	$(Q)(echo; echo "Stage Initram Map:") >> $(obj)/linuxbios.map
-	$(Q)cat $(obj)/linuxbios.initram.map >> $(obj)/linuxbios.map
-	$(Q)(echo; echo "Stage 2 Map:") >> $(obj)/linuxbios.map
-	$(Q)cat $(obj)/linuxbios.stage2.map >> $(obj)/linuxbios.map
+	$(Q)echo "Coreboot ROM Image:" > $(obj)/coreboot.map
+	$(Q)$(obj)/util/lar/lar -l $(obj)/coreboot.rom >> $(obj)/coreboot.map
+	$(Q)(echo; echo "Stage 0/1 Map:") >> $(obj)/coreboot.map
+	$(Q)cat $(obj)/stage0.init.map >> $(obj)/coreboot.map
+	$(Q)(echo; echo "Stage Initram Map:") >> $(obj)/coreboot.map
+	$(Q)cat $(obj)/coreboot.initram.map >> $(obj)/coreboot.map
+	$(Q)(echo; echo "Stage 2 Map:") >> $(obj)/coreboot.map
+	$(Q)cat $(obj)/coreboot.stage2.map >> $(obj)/coreboot.map
 
 
-$(obj)/linuxbios.bootblock: $(obj)/linuxbios.vpd $(obj)/stage0.init
+$(obj)/coreboot.bootblock: $(obj)/coreboot.vpd $(obj)/stage0.init
 	$(Q)printf "  BUILD   $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)cat $^ > $@
 
 #
-# LinuxBIOS stage0. This is the LinuxBIOS "boot block code".
+# Coreboot stage0. This is the coreboot "boot block code".
 # It enables Cache-as-RAM and parses the LAR archive for an
 # initram module and the various stages and payload files.
 #
@@ -164,7 +164,7 @@ $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 
 
 #
-# This is the rest of LinuxBIOS (v2: linuxbios_ram.rom).
+# This is the rest of coreboot (v2: coreboot_ram.rom).
 # Is this maybe platform independent, except for the "drivers"?
 # Where should it be built, maybe in device/?
 #
@@ -174,7 +174,7 @@ $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o tables.o delay.o \
 		       compute_ip_checksum.o string.o
 
-STAGE2_ARCH_X86_OBJ  = archtables.o linuxbios_table.o udelay_io.o
+STAGE2_ARCH_X86_OBJ  = archtables.o coreboot_table.o udelay_io.o
 STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o
 STAGE2_ARCH_X86_OBJ += keyboard.o i8259.o isa-dma.o
 
@@ -203,12 +203,12 @@ endif
 
 STAGE2_OBJ_NEEDED = $(filter-out $(STAGE0_OBJ), $(STAGE2_OBJ))
 
-$(obj)/linuxbios.stage2 $(obj)/linuxbios.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ_NEEDED)
+$(obj)/coreboot.stage2 $(obj)/coreboot.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ_NEEDED)
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x1000 --entry=stage2 \
-		  -o $(obj)/linuxbios.stage2 $(STAGE2_OBJ_NEEDED)
-	$(Q)$(NM) $(obj)/linuxbios.stage2 | sort -u > $(obj)/linuxbios.stage2.map
+		  -o $(obj)/coreboot.stage2 $(STAGE2_OBJ_NEEDED)
+	$(Q)$(NM) $(obj)/coreboot.stage2 | sort -u > $(obj)/coreboot.stage2.map
 
 #
 # Build rules.
@@ -222,7 +222,7 @@ $(obj)/arch/x86/%.o: $(src)/arch/x86/%.c
 # Building asm stub.
 $(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
+	$(Q)$(CC) -E $(COREBOOTINCLUDE) $< \
 		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 \
 		-DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
@@ -231,20 +231,20 @@ $(obj)/arch/x86/stage0%.o: $(src)/arch/x86/stage0%.S
 $(obj)/arch/x86/geodelx/stage0.o: $(src)/arch/x86/geodelx/stage0.S
 	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) -E $(LINUXBIOSINCLUDE) $< \
+	$(Q)$(CC) -E $(COREBOOTINCLUDE) $< \
 		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 \
 		-DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
-$(obj)/linuxbios.initram $(obj)/linuxbios.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_OBJ)
+$(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_OBJ)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
-	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c -combine $(INITRAM_OBJ) -o $(obj)/linuxbios.initram_partiallylinked.o
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c -combine $(INITRAM_OBJ) -o $(obj)/coreboot.initram_partiallylinked.o
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \
-		$(obj)/linuxbios.initram_partiallylinked.o -o $(obj)/linuxbios.initram
+		$(obj)/coreboot.initram_partiallylinked.o -o $(obj)/coreboot.initram
 	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(NM) $(obj)/linuxbios.initram | sort -u > $(obj)/linuxbios.initram.map
+	$(Q)$(NM) $(obj)/coreboot.initram | sort -u > $(obj)/coreboot.initram.map
 
 endif

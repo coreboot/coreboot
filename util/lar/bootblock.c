@@ -1,5 +1,5 @@
 /*
- * lar - LinuxBIOS archiver
+ * lar - lightweight archiver
  *
  * Copyright (C) 2007 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)

@@ -1,5 +1,5 @@
 /*
- * lar - LinuxBIOS archiver
+ * lar - lightweight archiver
  *
  * Copyright (C) 2006 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -61,7 +61,7 @@ typedef uint64_t u64;
 typedef uint32_t u32;
 typedef uint8_t  u8;
 
-/* NOTE -- This and the linuxbios lar.h may NOT be in sync. Be careful. */
+/* NOTE -- This and the coreboot lar.h may NOT be in sync. Be careful. */
 struct lar_header {
 	char magic[8];
 	u32 len;

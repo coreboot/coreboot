@@ -1,7 +1,7 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
-## LinuxBIOS build system Lbuild
+## coreboot build system Lbuild
 ##
 ## Copyright (C) 2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -72,16 +72,16 @@ else
 include $(src)/.config
 
 ifneq ($(CONFIG_LOCALVERSION),"")
-LINUXBIOS_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
+COREBOOT_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
 endif
 
-all: prepare prepare2 $(obj)/linuxbios.rom
+all: prepare prepare2 $(obj)/coreboot.rom
 	$(Q)printf "  DONE\n"
 
 ARCH:=$(shell echo $(CONFIG_ARCH))
 MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
 
-LINUXBIOSINCLUDE    :=  -I$(src) -Iinclude \
+COREBOOTINCLUDE    :=   -I$(src) -Iinclude \
 			-I$(src)/include \
 			-I$(src)/include/arch/$(ARCH)/ \
 			-include $(obj)/config.h \
@@ -96,8 +96,8 @@ AR := $(AR_$(ARCH))
 
 CFLAGS += $(CFLAGS_$(ARCH))
 
-CPPFLAGS := $(LINUXBIOSINCLUDE)
-CFLAGS += $(LINUXBIOSINCLUDE)
+CPPFLAGS := $(COREBOOTINCLUDE)
+CFLAGS += $(COREBOOTINCLUDE)
 
 # Note: This _must_ come after 'CC' is set for the second time in this
 # Makefile (see above), otherwise the build would break if 'gcc' isn't
@@ -122,7 +122,7 @@ doc:
 
 doxy: doxygen
 doxygen:
-	$(Q)$(DOXYGEN) util/doxygen/Doxyfile.LinuxBIOS
+	$(Q)$(DOXYGEN) util/doxygen/Doxyfile.coreboot
 
 prepare:
 	$(Q)mkdir -p $(obj)
@@ -133,17 +133,17 @@ prepare2:
 	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/config.h)\n"
 	$(Q)cp $(src)/.tmpconfig.h $(obj)/config.h
 	$(Q)printf "  GEN     $(subst $(shell pwd)/,,$(obj)/build.h)\n"
-	$(Q)printf "#define LINUXBIOS_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_EXTRA_VERSION \"$(LINUXBIOS_EXTRA_VERSION)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
+	$(Q)printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
 	$(Q)printf "\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define LINUXBIOS_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
+	$(Q)printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
 
 clean:
 	$(Q)printf "  CLEAN   $(subst $(shell pwd)/,,$(obj))\n"

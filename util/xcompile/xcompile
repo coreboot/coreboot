@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# This file is part of the LinuxBIOS project.
+# This file is part of the coreboot project.
 #
 # Copyright (C) 2007 coresystems GmbH
 # (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -110,5 +110,5 @@ testcc "$CC" "-fno-stack-protector" && CFLAGS="$CFLAGS-fno-stack-protector "
 echo "CFLAGS_x86 := $CFLAGS"
 
 # TODO: The same as above for PowerPC, and other architectures
-#       as soon as they are supported by LinuxBIOSv3.
+#       as soon as they are supported by coreboot v3.
 

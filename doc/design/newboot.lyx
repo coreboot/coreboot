@@ -30,13 +30,13 @@
 \begin_body
 
 \begin_layout Title
-LinuxBIOS boot structure
+coreboot boot structure
 \newline
 LA-UR-06-7928
 \end_layout
 
 \begin_layout Author
-New LinuxBIOS group
+New coreboot group
 \newline
 
 \end_layout
@@ -58,7 +58,7 @@ thispagestyle{empty}
 \end_layout
 
 \begin_layout Abstract
-This is the new LinuxBIOS boot architecture.
+This is the new coreboot boot architecture.
 \end_layout
 
 \begin_layout Section
@@ -84,18 +84,18 @@ That is, "1." instead of just "1"
 \end_layout
 
 \begin_layout Standard
-The new LinuxBIOS boot architecture depends on CAR, with payloads appearing
+The new coreboot boot architecture depends on CAR, with payloads appearing
  as files in a LAR archive.
  The device tree is defined by a device tree blob (DTB) and all the activities
  flow from that.
- For now, the DTC will produce a standard LinuxBIOS v2 device tree; this
+ For now, the DTC will produce a standard coreboot v2 device tree; this
  will, we hope, be improved.
  romcc is gone.
  
 \end_layout
 
 \begin_layout Standard
-Required attributes of a CPU for LinuxBIOS v3: 
+Required attributes of a CPU for coreboot v3: 
 \end_layout
 
 \begin_layout Itemize
@@ -181,7 +181,7 @@ initram
 \end_layout
 
 \begin_layout Itemize
-Traditional LinuxBIOS RAM code (LAR, etc.)
+Traditional coreboot RAM code (LAR, etc.)
 \end_layout
 
 \begin_layout Itemize
@@ -217,7 +217,7 @@ FLASH layout
 \end_layout
 
 \begin_layout Section
-Introduction to the LinuxBIOS device tree
+Introduction to the coreboot device tree
 \end_layout
 
 \begin_layout Subsection
@@ -225,8 +225,8 @@ Purpose and function
 \end_layout
 
 \begin_layout Standard
-The LinuxBIOS device tree is probably the single most important concept
- in LinuxBIOS, and, in V2, was the least understood part of the software.
+The coreboot device tree is probably the single most important concept
+ in coreboot, and, in V2, was the least understood part of the software.
  The device tree provides a tremendous amount of capability to the software.
  The initial tree, which almost always will be an incomplete representation
  of the hardware (consider pluggable devices), is created by the configuration
@@ -303,7 +303,7 @@ Device tree structures
 \end_layout
 
 \begin_layout Standard
-There are three primary objects which are used to manage the LinuxBIOS device
+There are three primary objects which are used to manage the coreboot device
  tree: devices, links, and drivers.
  Devices and links are generic structures: drivers, on the other hand, are
  specialized.
@@ -353,7 +353,7 @@ path
  But, not all devices have identical capabilities.
  Some PCI devices have IDE controllers, others do not; some can drive the
  legacy PC XBUS, others can not; and so on.
- In LinuxBIOS V1, we attempted to create devices that were the union of
+ In coreboot V1, we attempted to create devices that were the union of
  all possible devices, but creating such a union proved to be impossible,
  as new devices with new capabilities came out.
  So, in V2, we split off the device-specific information into a seperate
@@ -417,7 +417,7 @@ The files in the i440bx directory.
 \end_layout
 
 \begin_layout LyX-Code
-[rminnich@q ~]$ ls ~/src/bios/LinuxBIOSv3/northbridge/intel/i440bxemulation/
+[rminnich@q ~]$ ls ~/src/bios/coreboot-v3/northbridge/intel/i440bxemulation/
  
 \end_layout
 
@@ -1403,7 +1403,7 @@ If all the tests pass, run each one, in order, decompressing those which
  If the checksum fails, If the test fails, use the backup property in the
  option node to find a backup.
  initram is (C, PIC) as it must execute in place.
- The LinuxBIOS payload will be uncompressed to RAM, and is in C, but need
+ The coreboot payload will be uncompressed to RAM, and is in C, but need
  not be PIC.
  
 \end_layout
@@ -1780,7 +1780,7 @@ lzma
 \end_layout
 
 \begin_layout Standard
-This is for creating the linuxbios.lzma file.
+This is for creating the coreboot.lzma file.
  
 \end_layout
 
@@ -1797,7 +1797,7 @@ This is for creating initram.
 \end_layout
 
 \begin_layout Subsection
-linuxbios_ram
+coreboot_ram
 \end_layout
 
 \begin_layout Standard
@@ -1819,7 +1819,7 @@ This is what we boot.
 \end_layout
 
 \begin_layout Subsection
-linuxbios.lar
+coreboot.lar
 \end_layout
 
 \begin_layout Standard
@@ -1831,7 +1831,7 @@ file system
 \begin_inset Quotes erd
 \end_inset
 
- that contains the lzma, initram, linuxbios_ram, and payload targets.
+ that contains the lzma, initram, coreboot_ram, and payload targets.
  
 \end_layout
 
@@ -1913,7 +1913,7 @@ Any redundancy in the config/build process should be removed.
 \begin_layout Itemize
 Global vs.
  local builds - pros/cons with kernel style (global) build (always produces
- arch/x/*Image) and LBv2 style build (produces target/x/y/z/linuxbios.rom
+ arch/x/*Image) and coreboot v2 style build (produces target/x/y/z/coreboot.rom
  for each target) Either way the config/build system must be consistently
  either global or local.
 \end_layout
@@ -1946,15 +1946,15 @@ One idea is a kind of iterative config with increasing resolution per iteration.
 
 \begin_layout Itemize
 Payload.
- I say something must be included in the LB tree or trivially added to a
+ I say something must be included in the coreboot tree or trivially added to a
  tree by download or command.
  FILO is candidate for inclusion.
- What's up with FILO(EB) and FILO(LB) ? Merge them? Make EB default payload?
+ What's up with FILO(EB) and FILO(CB) ? Merge them? Make EB default payload?
  FILO? memtest86? All about making a usable product.
  memtest86 would have to be explicitly selected in expert mode in favor
  of the default option that would be able to load an OS.
  Doesn't matter much if it's only Linux right now because that's the most
- likely boot candidate for early LB adopters.
+ likely boot candidate for early CB adopters.
 \end_layout
 
 \begin_layout Itemize
@@ -2118,11 +2118,11 @@ CAR
 
 \begin_layout Standard
 Next we bring in the initram.c from v2.
- This is LinuxBIOSv2/src/mainboard/amd/norwich/cache_as_ram_auto.c.
+ This is coreboot-v2/src/mainboard/amd/norwich/cache_as_ram_auto.c.
  It will not build in V3, as the includes are wrong.
  We fix these and, while we are at it, change the entry point to be called
  main().
- This file will be a standalone file in the LinuxBIOS Archive (LAR), and
+ This file will be a standalone file in the coreboot Lightweight Archive (LAR), and
  hence needs to have main() as the entry point.
  
 \end_layout
@@ -2138,43 +2138,43 @@ We pretty much get a ton of errors once include is fixed.
 \begin_layout LyX-Code
 
 \size tiny
-/home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c: In function
- 'spd_read_byte': /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/init
+/home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c: In function
+ 'spd_read_byte': /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/init
 ram.c:30: error: implicit declaration of function 'smbus_read_byte' /home/rminnic
-h/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c: In function 'msr_init':
- /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:41:
+h/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c: In function 'msr_init':
+ /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c:41:
  error: 'msr_t' undeclared (first use in this function) /home/rminnich/src/bios/
-LinuxBIOSv3/mainboard/amd/norwich/initram.c:41: error: (Each undeclared identifie
-r is reported only once /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwic
-h/initram.c:41: error: for each function it appears in.) /home/rminnich/src/bios/L
-inuxBIOSv3/mainboard/amd/norwich/initram.c:41: error: expected ';' before
- 'msr' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:43:
- error: 'msr' undeclared (first use in this function) /home/rminnich/src/bios/Li
-nuxBIOSv3/mainboard/amd/norwich/initram.c:45: error: implicit declaration
- of function 'wrmsr' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/i
-nitram.c: In function 'main': /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/n
+coreboot-v3/mainboard/amd/norwich/initram.c:41: error: (Each undeclared identifie
+r is reported only once /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwic
+h/initram.c:41: error: for each function it appears in.) /home/rminnich/src/bios/c
+oreboot-v3/mainboard/amd/norwich/initram.c:41: error: expected ';' before
+ 'msr' /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c:43:
+ error: 'msr' undeclared (first use in this function) /home/rminnich/src/bios/co
+reboot-v3/mainboard/amd/norwich/initram.c:45: error: implicit declaration
+ of function 'wrmsr' /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/i
+nitram.c: In function 'main': /home/rminnich/src/bios/coreboot-v3/mainboard/amd/n
 orwich/initram.c:79: error: implicit declaration of function 'POST_CODE'
- /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:81:
- error: array type has incomplete element type /home/rminnich/src/bios/LinuxBIOS
+ /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c:81:
+ error: array type has incomplete element type /home/rminnich/src/bios/coreboot-
 v3/mainboard/amd/norwich/initram.c:82: error: field name not in record or
- union initializer /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/ini
-tram.c:82: error: (near initialization for 'memctrl') /home/rminnich/src/bios/Lin
-uxBIOSv3/mainboard/amd/norwich/initram.c:85: error: implicit declaration
- of function 'SystemPreInit' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/n
+ union initializer /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/ini
+tram.c:82: error: (near initialization for 'memctrl') /home/rminnich/src/bios/cor
+eboot-v3/mainboard/amd/norwich/initram.c:85: error: implicit declaration
+ of function 'SystemPreInit' /home/rminnich/src/bios/coreboot-v3/mainboard/amd/n
 orwich/initram.c:88: error: implicit declaration of function 'cs5536_early_setup'
- /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:95:
+ /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c:95:
  error: implicit declaration of function 'cs5536_setup_onchipuart' /home/rminnic
-h/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:97: error: implicit
- declaration of function 'uart_init' /home/rminnich/src/bios/LinuxBIOSv3/mainboa
+h/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c:97: error: implicit
+ declaration of function 'uart_init' /home/rminnich/src/bios/coreboot-v3/mainboa
 rd/amd/norwich/initram.c:100: error: implicit declaration of function 'pll_reset'
- /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:102:
- error: implicit declaration of function 'cpuRegInit' /home/rminnich/src/bios/Li
-nuxBIOSv3/mainboard/amd/norwich/initram.c:104: error: implicit declaration
- of function 'sdram_initialize' /home/rminnich/src/bios/LinuxBIOSv3/mainboard/am
+ /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c:102:
+ error: implicit declaration of function 'cpuRegInit' /home/rminnich/src/bios/co
+reboot-v3/mainboard/amd/norwich/initram.c:104: error: implicit declaration
+ of function 'sdram_initialize' /home/rminnich/src/bios/coreboot-v3/mainboard/am
 d/norwich/initram.c:110: warning: 'return' with no value, in function returning
- non-void /home/rminnich/src/bios/LinuxBIOSv3/mainboard/amd/norwich/initram.c:81:
+ non-void /home/rminnich/src/bios/coreboot-v3/mainboard/amd/norwich/initram.c:81:
  warning: unused variable 'memctrl' make: exit 2 make: *** [/home/rminnich/src/b
-ios/LinuxBIOSv3/build/mainboard/amd/norwich/initram.o] Error 1 
+ios/coreboot-v3/build/mainboard/amd/norwich/initram.o] Error 1 
 \end_layout
 
 \begin_layout Standard
@@ -2191,7 +2191,7 @@ Hold on.
 \begin_layout Standard
 We need to create an initram file for the LAR.
  This initram file is going to set up DRAM.
- LinuxBIOS supplies a skeleton function, which we show below, and the programmer
+ Coreboot supplies a skeleton function, which we show below, and the programmer
  needs to supply some functions for their chipsets, so that this function
  can work.
  
@@ -2442,7 +2442,7 @@ Any or all of these functions may be empty.
 \end_layout
 
 \begin_layout Standard
-All of the LinuxBIOS code that is run after this point uses the device tree;
+All of the coreboot code that is run after this point uses the device tree;
  none of the initram code uses the device tree.
  The reason is simple: the device tree lives in RAM.
  This bootstrap code is intentionally simple and does not use the device
@@ -2472,7 +2472,7 @@ Get the old code:
 \end_layout
 
 \begin_layout LyX-Code
-cp LinuxBIOSv2/src/southbridge/amd/cs5536/cs5536_early_smbus.c southbridge/amd/cs
+cp coreboot-v2/src/southbridge/amd/cs5536/cs5536_early_smbus.c southbridge/amd/cs
 5536/smbus_initram.c 
 \end_layout
 
@@ -2501,7 +2501,7 @@ R334
 \begin_layout Standard
 The errors were mainly changes to printk.
  Also, we had to copy the old cs5536.h from the V2 tree.
- This file is only used for the southbridge part, so, following LinuxBIOS
+ This file is only used for the southbridge part, so, following coreboot
  include rules, cs5536.h does not go in include; rather, it goes in the 
 \family typewriter
 southbridge/amd/cs5536

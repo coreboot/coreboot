@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * It is based on the arch/i386/boot/setup.S file from the Linux kernel.
  */

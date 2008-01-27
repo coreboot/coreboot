@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * It is based on the Linux kernel files include/asm-i386/processor.h
  * and arch/i386/kernel/cpu/mtrr/state.c.

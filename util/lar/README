@@ -1,4 +1,4 @@
-LinuxBIOS Archiver: lar
+Lightweight Archiver: lar
 -----------------------
 
 Table of Contents
@@ -12,7 +12,8 @@ Table of Contents
 Introduction
 ------------
 
-This is a simple archiver, similar to cpio, ar or tar.
+This is a simple archiver, similar to cpio, ar or tar. It was designed and
+written for coreboot.
 
 Design goals were
   - minimum overhead

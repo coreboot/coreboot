@@ -1,7 +1,7 @@
 /*
- * lar - LinuxBIOS archiver
+ * lar - lightweight archiver
  *
- * Copyright (C) 2006-2007 coresystems GmbH
+ * Copyright (C) 2006-2008 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 #include "lib.h"
 
 #define VERSION "v0.9.1"
-#define COPYRIGHT "Copyright (C) 2006-2007 coresystems GmbH"
+#define COPYRIGHT "Copyright (C) 2006-2008 coresystems GmbH"
 
 static int isverbose = 0;
 static int iselfparse = 0;
@@ -44,7 +44,7 @@ enum compalgo algo = none;
 
 static void usage(char *name)
 {
-	printf("\nLAR - the LinuxBIOS Archiver " VERSION "\n" COPYRIGHT "\n\n"
+	printf("\nLAR - the Lightweight Archiver " VERSION "\n" COPYRIGHT "\n\n"
 	       "Usage: %s [-ecxal] archive.lar [[[file1] file2] ...]\n\n", name);
 	printf("Examples:\n");
 	printf("  lar -c -s 32k -b bootblock myrom.lar foo nocompress:bar\n");
@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
 			isverbose = 1;
 			break;
 		case 'V':
-			printf("LAR - the LinuxBIOS Archiver " VERSION "\n");
+			printf("LAR - the Lightweight Archiver " VERSION "\n");
 			break;
 		default:
 			usage(argv[0]);

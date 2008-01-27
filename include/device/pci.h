@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  *  PCI defines and function prototypes
  *  Copyright 1994, Drew Eckhardt

@@ -1,6 +1,5 @@
 /*
- * table management code for Linux BIOS
- *
+ * table management code for coreboot
  *
  * Copyright (C) 2002 Eric Biederman, Linux NetworX
  *
@@ -45,7 +44,7 @@ struct gdtarg {
 #if 0
 // Copy GDT to new location and reload it
 // 2003-07 by SONE Takeshi
-// Ported from Etherboot to LinuxBIOS 2005-08 by Steve Magnani
+// Ported from Etherboot to coreboot 2005-08 by Steve Magnani
 void move_gdt(unsigned long newgdt)
 {
 	u16 num_gdt_bytes = &gdt_end - &gdt;
@@ -85,7 +84,7 @@ struct lb_memory *arch_write_tables(void)
 
 	/* Write ACPI tables */
 	/* write them in the rom area because DSDT can be large (8K on epia-m) which
-	 * pushes linuxbios table out of first 4K if set up in low table area 
+	 * pushes coreboot table out of first 4K if set up in low table area 
          */
 
 //	rom_table_end = write_acpi_tables(rom_table_end);
@@ -136,8 +135,8 @@ struct lb_memory *arch_write_tables(void)
 	move_gdt(low_table_end);
 	low_table_end += &gdt_end - &gdt;
 #endif
-	/* The linuxbios table must be in 0-4K or 960K-1M */
-	write_linuxbios_table(
+	/* The coreboot table must be in 0-4K or 960K-1M */
+	write_coreboot_table(
 			      low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);
 

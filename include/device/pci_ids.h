@@ -1,10 +1,10 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * It is based on the include/linux/pci_ids.h file from the Linux kernel.
  *
  * Note: we maintain our own short list of PCI vendor IDs and device IDs
- * for LinuxBIOS, as we only need very few of the entries.
+ * for coreboot, as we only need very few of the entries.
  * The 'Device classes and subclasses' section is copied from the Linux file.
  */
 

@@ -1,5 +1,5 @@
 /*
- * lar - LinuxBIOS archiver
+ * lar - lightweight archiver
  *
  * This includes code from previous versions of the LAR utility,
  * including create.c, list.c, extract.c and bootblock.c

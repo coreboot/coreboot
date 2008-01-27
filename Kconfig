@@ -1,5 +1,5 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2006 Ronald G. Minnich <rminnich@gmail.com>
 ## Copyright (C) 2006 Segher Boessenkool <segher@kernel.crashing.org>
@@ -26,7 +26,7 @@
 # see http://lxr.linux.no/source/Documentation/kbuild/kconfig-language.txt.
 #
 
-mainmenu "LinuxBIOS Configuration"
+mainmenu "coreboot configuration"
 
 menu "General setup"
 
@@ -43,22 +43,22 @@ config EXPERT
 	bool "Expert mode"
 	help
 	  This allows you to select certain advanced configuration options.
-	  It is mainly intended for LinuxBIOS developers.
+	  It is mainly intended for coreboot developers.
 
 	  Warning: Only enable this option if you really know what you're
 	  doing! You have been warned!
 
 config LOCALVERSION
-	string "Local version - append to LinuxBIOS release"
+	string "Local version - append to coreboot release"
 	help
-	  Append an extra string to the end of the LinuxBIOS version.
+	  Append an extra string to the end of the coreboot version.
 
 config BEEPS
-	bool "Enable beeps upon certain LinuxBIOS events"
+	bool "Enable beeps upon certain coreboot events"
 	depends EXPERT
 	default n
 	help
-	  Enable this option to make LinuxBIOS beep upon certain events.
+	  Enable this option to make coreboot beep upon certain events.
 
 endmenu
 
@@ -101,7 +101,7 @@ config PAYLOAD_PREPARSE_ELF
 	depends EXPERT
 	default n
 	help
-	  Until now, LinuxBIOS has used ELF for the payload. There are many
+	  Until now, coreboot has used ELF for the payload. There are many
 	  problems with this, not least being the inefficiency -- the ELF has
 	  to be decompressed to memory and then the segments have to be
 	  copied. Plus, lar can't see the segments in the ELF -- to see all
@@ -113,17 +113,17 @@ config PAYLOAD_PREPARSE_ELF
 	  flashed the FLASH and rebooted the machine. Boot time is really
 	  not the time you want to find out your ELF payload is broken.
 
-	  With this option, LinuxBIOS will direct lar to break each ELF
+	  With this option, coreboot will direct lar to break each ELF
 	  segment into a LAR entry. ELF will not be used at all. Note that
-	  (for now) LinuxBIOS is backward compatible -- if you put an ELF
-	  payload in, LinuxBIOS can still parse it. We hope to remove ELF
+	  (for now) coreboot is backward compatible -- if you put an ELF
+	  payload in, coreboot can still parse it. We hope to remove ELF
 	  entirely in the future.
 
 config PAYLOAD_ELF
 	bool "An ELF executable payload file"
 	help
 	  Select this option if you have a payload image (an ELF file)
-	  which LinuxBIOS should run as soon as the basic hardware
+	  which coreboot should run as soon as the basic hardware
 	  initialization is completed.
 
 	  You will be able to specify the location and file name of the
@@ -132,8 +132,8 @@ config PAYLOAD_ELF
 config PAYLOAD_NONE
 	bool "No payload"
 	help
-	  Select this option if you want to create an "empty" LinuxBIOS
-	  ROM image for a certain mainboard, i.e. a LinuxBIOS ROM image
+	  Select this option if you want to create an "empty" coreboot
+	  ROM image for a certain mainboard, i.e. a coreboot ROM image
 	  which does not yet contain a payload.
 
 	  For such an image to be useful, you have to use the 'lar' tool

@@ -1,5 +1,5 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -27,7 +27,7 @@ INITRAM_OBJ =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 
 STAGE2_MAINBOARD_OBJ = 
 
-$(obj)/linuxbios.vpd:
+$(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
-	$(Q)dd if=/dev/zero of=$(obj)/linuxbios.vpd bs=256 count=1 $(SILENT)
+	$(Q)dd if=/dev/zero of=$(obj)/coreboot.vpd bs=256 count=1 $(SILENT)
 

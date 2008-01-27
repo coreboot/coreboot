@@ -1055,7 +1055,7 @@ int main(int ac, char **av)
 
 	sym = sym_lookup("KERNELVERSION", 0);
 	sym_calc_value(sym);
-	sprintf(menu_backtitle, _("LinuxBIOS v%s Configuration"),
+	sprintf(menu_backtitle, _("coreboot v%s configuration"),
 		sym_get_string_value(sym));
 
 	mode = getenv("MENUCONFIG_MODE");
@@ -1089,7 +1089,7 @@ int main(int ac, char **av)
 			return 1;
 		}
 		printf(_("\n\n"
-			"*** End of LinuxBIOS configuration.\n"
+			"*** End of coreboot configuration.\n"
 			"*** Execute 'make' to build the firmware or try 'make help'."
 			"\n\n"));
 	} else {

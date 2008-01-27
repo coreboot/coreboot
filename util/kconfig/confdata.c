@@ -381,7 +381,7 @@ int conf_write(const char *name)
 
 	fprintf(out, _("#\n"
 		       "# Automatically generated make config: don't edit\n"
-		       "# LinuxBIOS version: %s\n"
+		       "# coreboot version: %s\n"
 		       "%s%s"
 		       "#\n"),
 		     sym_get_string_value(sym),
@@ -390,7 +390,7 @@ int conf_write(const char *name)
 	if (out_h)
 		fprintf(out_h, "/*\n"
 			       " * Automatically generated C config: don't edit\n"
-			       " * LinuxBIOS version: %s\n"
+			       " * coreboot version: %s\n"
 			       "%s%s"
 			       " */\n"
 			       "#define AUTOCONF_INCLUDED\n",
@@ -508,7 +508,7 @@ int conf_write(const char *name)
 	fclose(out);
 	if (out_h) {
 		fclose(out_h);
-		rename(".tmpconfig.h", "include/linuxbios/autoconf.h");
+		rename(".tmpconfig.h", "include/coreboot/autoconf.h");
 		file_write_dep(NULL);
 	}
 	if (!name || basename != conf_def_filename) {

@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Stefan Reinauer <stepan@coresystems.de>
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
@@ -182,7 +182,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	else
 		die("FATAL: No usable payload found.\n");
 
-	die ("FATAL: Last stage returned to LinuxBIOS.\n");
+	die ("FATAL: Last stage returned to coreboot.\n");
 }
 
 

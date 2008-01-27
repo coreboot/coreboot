@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2002 Linux Networx
  * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
@@ -19,7 +19,7 @@
  */
 
 /*
- * Table management code for LinuxBIOS.
+ * Table management code for coreboot.
  *
  * This is the architecture-independent driver; it has a hook to
  * architecture-dependent code. 

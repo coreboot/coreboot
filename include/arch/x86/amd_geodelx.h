@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2006 Indrek Kruusa <indrek.kruusa@artecdesign.ee>
  * Copyright (C) 2006 Ronald G. Minnich <rminnich@gmail.com>
@@ -568,7 +568,7 @@
 #define DCACHE_RAM_SIZE 0x08000
 #define DCACHE_RAM_BASE 0x80000
 /* This is where the DCache will be mapped and be used as stack. It would be
- * cool if it was the same base as LinuxBIOS normal stack.
+ * cool if it was the same base as coreboot normal stack.
  */
 #define LX_STACK_BASE		DCACHE_RAM_BASE
 #define LX_STACK_END		LX_STACK_BASE + (DCACHE_RAM_SIZE - 4)

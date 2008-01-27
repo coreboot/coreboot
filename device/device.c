@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * It was originally based on the Linux kernel (arch/i386/kernel/pci-pc.c).
  *

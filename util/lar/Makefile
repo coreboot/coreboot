@@ -1,7 +1,7 @@
 ##
-## lar - LinuxBIOS archiver
+## lar - lightweight archiver
 ##
-## Copyright (C) 2006-2007 coresystems GmbH
+## Copyright (C) 2006-2008 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -61,9 +61,9 @@ tree:
 	$(Q)mkdir -p tree/normal
 	$(Q)mkdir -p tree/fallback
 	$(Q)dd if=/dev/urandom of=tree/compression/lzma bs=1k count=8 &>/dev/null
-	$(Q)dd if=/dev/urandom of=tree/normal/linuxbios.elf.lzma bs=1k count=32 &>/dev/null
+	$(Q)dd if=/dev/urandom of=tree/normal/coreboot.elf.lzma bs=1k count=32 &>/dev/null
 	$(Q)dd if=/dev/urandom of=tree/normal/initmem bs=1k count=16 &>/dev/null
-	$(Q)dd if=/dev/urandom of=tree/fallback/linuxbios.elf.lzma bs=1k count=32 &>/dev/null
+	$(Q)dd if=/dev/urandom of=tree/fallback/coreboot.elf.lzma bs=1k count=32 &>/dev/null
 	$(Q)dd if=/dev/urandom of=tree/fallback/initmem bs=1k count=16 &>/dev/null
 	$(Q)printf "done.\n"
 

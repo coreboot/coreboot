@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2002 Linux Networx
  * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
@@ -21,7 +21,7 @@
 
 /* elfboot -- boot elf images */
 
-/* This code is modified from the LinuxBIOS V2 version as follows:
+/* This code is modified from the coreboot V2 version as follows:
  * great simplified
  * checksum removed -- lar can do that
  * can run from read-only FLASH

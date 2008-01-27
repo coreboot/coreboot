@@ -1,5 +1,5 @@
 /*
- * table management code for Linux BIOS tables
+ * table management code for coreboot tables
  *
  * Copyright (C) 2002 Eric Biederman, Linux NetworX
  * Copyright (C) 2007 coresystems GmbH
@@ -133,9 +133,9 @@ struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 
 	cmos_checksum->size = (sizeof(*cmos_checksum));
 
-	cmos_checksum->range_start = LB_CKS_RANGE_START * 8;
-	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
-	cmos_checksum->location = LB_CKS_LOC * 8;
+	cmos_checksum->range_start = CB_CKS_RANGE_START * 8;
+	cmos_checksum->range_end = ( CB_CKS_RANGE_END * 8 ) + 7;
+	cmos_checksum->location = CB_CKS_LOC * 8;
 
 	cmos_checksum->type = CHECKSUM_PCBIOS;
 
@@ -148,16 +148,16 @@ void lb_strings(struct lb_header *header)
 		u32 tag;
 		const u8 *string;
 	} strings[] = {
-		{ LB_TAG_VERSION,        (const u8 *)LINUXBIOS_VERSION        },
-		{ LB_TAG_EXTRA_VERSION,  (const u8 *)LINUXBIOS_EXTRA_VERSION  },
-		{ LB_TAG_BUILD,          (const u8 *)LINUXBIOS_BUILD          },
-		{ LB_TAG_COMPILE_TIME,   (const u8 *)LINUXBIOS_COMPILE_TIME   }, // duplicate?
-		{ LB_TAG_COMPILE_BY,     (const u8 *)LINUXBIOS_COMPILE_BY     },
-		{ LB_TAG_COMPILE_HOST,   (const u8 *)LINUXBIOS_COMPILE_HOST   },
-		{ LB_TAG_COMPILE_DOMAIN, (const u8 *)LINUXBIOS_COMPILE_DOMAIN },
-		{ LB_TAG_COMPILER,       (const u8 *)LINUXBIOS_COMPILER       },
-		{ LB_TAG_LINKER,         (const u8 *)LINUXBIOS_LINKER         },
-		{ LB_TAG_ASSEMBLER,      (const u8 *)LINUXBIOS_ASSEMBLER      },
+		{ LB_TAG_VERSION,        (const u8 *)COREBOOT_VERSION        },
+		{ LB_TAG_EXTRA_VERSION,  (const u8 *)COREBOOT_EXTRA_VERSION  },
+		{ LB_TAG_BUILD,          (const u8 *)COREBOOT_BUILD          },
+		{ LB_TAG_COMPILE_TIME,   (const u8 *)COREBOOT_COMPILE_TIME   }, // duplicate?
+		{ LB_TAG_COMPILE_BY,     (const u8 *)COREBOOT_COMPILE_BY     },
+		{ LB_TAG_COMPILE_HOST,   (const u8 *)COREBOOT_COMPILE_HOST   },
+		{ LB_TAG_COMPILE_DOMAIN, (const u8 *)COREBOOT_COMPILE_DOMAIN },
+		{ LB_TAG_COMPILER,       (const u8 *)COREBOOT_COMPILER       },
+		{ LB_TAG_LINKER,         (const u8 *)COREBOOT_LINKER         },
+		{ LB_TAG_ASSEMBLER,      (const u8 *)COREBOOT_ASSEMBLER      },
 	};
 	unsigned int i;
 	for(i = 0; i < ARRAY_SIZE(strings); i++) {
@@ -231,7 +231,7 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk(BIOS_DEBUG,"Wrote LinuxBIOS table at: %p - %p  checksum %x\n",
+	printk(BIOS_DEBUG,"Wrote coreboot table at: %p - %p  checksum %x\n",
 		head, rec, head->table_checksum);
 	return (unsigned long)rec;
 }
@@ -352,8 +352,8 @@ static void lb_add_memory_range(struct lb_memory *mem,
 	lb_cleanup_memory_ranges(mem);
 }
 
-/* Routines to extract part so the linuxBIOS table or 
- * information from the linuxBIOS table after we have written it.
+/* Routines to extract part so the coreboot table or 
+ * information from the coreboot table after we have written it.
  * Currently get_lb_mem relies on a global we can change the
  * implementaiton.
  */
@@ -386,7 +386,7 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 }
 
 /**
- * Add pointer to device tree to LinuxBIOS table.
+ * Add pointer to device tree to coreboot table.
  *
  * @param head Pointer to lbtable header.
  * @return TODO
@@ -405,7 +405,7 @@ struct lb_devtree *lb_devtree(struct lb_header *head)
 	return lbdev;
 }
 
-unsigned long write_linuxbios_table( 
+unsigned long write_coreboot_table( 
 	unsigned long low_table_start, unsigned long low_table_end, 
 	unsigned long rom_table_start, unsigned long rom_table_end)
 {
@@ -429,7 +429,7 @@ unsigned long write_linuxbios_table(
 		rec_dest = lb_new_record(head);
 
 		memcpy(rec_dest,  rec_src, rec_src->size);
-		/* Create cmos checksum entry in linuxbios table */
+		/* Create cmos checksum entry in coreboot table */
 		lb_cmos_checksum(head);
 	}
 
@@ -446,9 +446,9 @@ unsigned long write_linuxbios_table(
 
 	/* Note:
 	 * I assume that there is always memory at immediately after
-	 * the low_table_end.  This means that after I setup the linuxbios table.
+	 * the low_table_end.  This means that after I setup the coreboot table.
 	 * I can trivially fixup the reserved memory ranges to hold the correct
-	 * size of the linuxbios table.
+	 * size of the coreboot table.
 	 */
 
 	/* Record our motherboard */
@@ -457,7 +457,7 @@ unsigned long write_linuxbios_table(
 	/* Record our various random string information */
 	lb_strings(head);
 
-	/* Record a pointer to the LinuxBIOS device tree */
+	/* Record a pointer to the coreboot device tree */
 	lb_devtree(head);
 
 	/* Remember where my valid memory ranges are */

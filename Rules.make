@@ -1,5 +1,5 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -25,7 +25,7 @@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o: $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c $(obj)/statictree.h
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) $(LINUXBIOSINCLUDE) -c -o $@ $<
+	$(Q)$(CC) $(INITCFLAGS) $(COREBOOTINCLUDE) -c -o $@ $<
 
 $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c: $(src)/mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
 	$(Q)printf "  DTC     $(subst $(shell pwd)/,,$(@))\n"

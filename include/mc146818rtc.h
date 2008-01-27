@@ -101,15 +101,15 @@
 #define PC_CKS_RANGE_END	45
 #define PC_CKS_LOC		46
 
-/* Linux bios checksum is built only over bytes 49..125 */
-#ifndef LB_CKS_RANGE_START
-#define LB_CKS_RANGE_START	49
+/* coreboot checksum is built only over bytes 49..125 */
+#ifndef CB_CKS_RANGE_START
+#define CB_CKS_RANGE_START	49
 #endif
-#ifndef LB_CKS_RANGE_END
-#define LB_CKS_RANGE_END	125
+#ifndef CB_CKS_RANGE_END
+#define CB_CKS_RANGE_END	125
 #endif
-#ifndef LB_CKS_LOC
-#define LB_CKS_LOC		126
+#ifndef CB_CKS_LOC
+#define CB_CKS_LOC		126
 #endif
 
 #define RTC_BOOT_BYTE		48

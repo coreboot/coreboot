@@ -17,7 +17,7 @@
  * it with the version available from LANL.
  */
  /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  *  (c) Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
  *

@@ -2,7 +2,7 @@
 #define _OSDEP_ENDIAN_H
 
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2006 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (C) 2007 Patrick Georgi <patrick@georgi-clan.de>

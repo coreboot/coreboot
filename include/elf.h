@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * It is based on elf/elf.h from the GNU C Library, CVS rev. 1.156.
  *
@@ -2628,8 +2628,8 @@ extern void jmp_to_elf_entry(void *entry);
 struct lb_memory;
 extern int elfboot(struct lb_memory *mem);
 
-#define FIRMWARE_TYPE "LinuxBIOS"
+#define FIRMWARE_TYPE "coreboot"
 #define BOOTLOADER "elfboot"
-#define BOOTLOADER_VERSION "1.3"
+#define BOOTLOADER_VERSION "3.0"
 
 #endif /* ELF_H */

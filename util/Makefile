@@ -1,5 +1,5 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -24,12 +24,12 @@ include util/dtc/Makefile
 include util/kconfig/Makefile
 include util/options/Makefile
 
-# Parts used by LinuxBIOS.
+# Parts used by coreboot.
 include util/x86emu/Makefile
 
 # Compressors.
 include util/lzma/Makefile
 include util/nrv2b/Makefile
 
-# LinuxBIOS archiver
+# coreboot lightweight archiver
 include util/lar/Makefile

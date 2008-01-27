@@ -1,5 +1,5 @@
 ##
-## This file is part of the LinuxBIOS project.
+## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
@@ -59,7 +59,7 @@ config SMP
 	boolean
 	help
 	  This option is used to enable certain functions to make 
-	  LinuxBIOS work correctly on symmetric multi processor
+	  coreboot work correctly on symmetric multi processor
 	  systems.
 	  It is usually set in mainboard/*/Kconfig.
  

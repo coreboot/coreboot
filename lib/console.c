@@ -72,11 +72,11 @@ void banner(int level, const char *s)
 void console_init(void)
 {
 	static const char console_test[] =
-		"\n\nLinuxBIOS-"
-		LINUXBIOS_VERSION
-		LINUXBIOS_EXTRA_VERSION
+		"\n\ncoreboot-"
+		COREBOOT_VERSION
+		COREBOOT_EXTRA_VERSION
 		" "
-		LINUXBIOS_BUILD
+		COREBOOT_BUILD
 		" starting...\n";
 
 	printk(BIOS_INFO, console_test);

@@ -1,5 +1,5 @@
 /*
- * This file is part of the LinuxBIOS project.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2002 Linux Networx
  * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
@@ -24,15 +24,15 @@
 #define TABLES_H
 
 /*
- * Table management structs and prototypes for LinuxBIOS.
+ * Table management structs and prototypes for coreboot.
  *
- * ALL structs and prototypes for tables that LinuxBIOS generates should be
+ * ALL structs and prototypes for tables that coreboot generates should be
  * defined here. 
  */
 
 struct lb_memory *write_tables(void);
 
-/* The LinuxBIOS table information is for conveying information
+/* The coreboot table information is for conveying information
  * from the firmware to the loaded OS image.  Primarily this
  * is expected to be information that cannot be discovered by
  * other means, such as quering the hardware directly.
@@ -60,12 +60,12 @@ struct lb_memory *write_tables(void);
  * table entries and be backwards compatible, but it is not required.
  */
 
-/* Since LinuxBIOS is usually compiled 32bit, gcc will align 64bit 
- * types to 32bit boundaries. If the LinuxBIOS table is dumped on a 
+/* Since coreboot is usually compiled 32bit, gcc will align 64bit 
+ * types to 32bit boundaries. If the coreboot table is dumped on a 
  * 64bit system, a u64 would be aligned to 64bit boundaries, 
  * breaking the table format.
  *
- * lb_uint64 will keep 64bit LinuxBIOS table values aligned to 32bit
+ * lb_uint64 will keep 64bit coreboot table values aligned to 32bit
  * to ensure compatibility. They can be accessed with the two functions
  * below: unpack_lb64() and pack_lb64()
  *
@@ -249,7 +249,7 @@ struct	cmos_checksum {
 };
 
 struct lb_memory *arch_write_tables(void);
-unsigned long write_linuxbios_table(
+unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end);
 
@@ -262,8 +262,8 @@ struct lb_memory *lb_memory(struct lb_header *header);
 struct lb_mainboard *lb_mainboard(struct lb_header *header);
 unsigned long lb_table_fini(struct lb_header *header);
 
-/* Routines to extract part so the linuxBIOS table or information
- * from the linuxBIOS table.
+/* Routines to extract part so the coreboot table or information
+ * from the coreboot table.
  */
 struct lb_memory *get_lb_mem(void);
 

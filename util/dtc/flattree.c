@@ -405,16 +405,16 @@ static struct emitter C_emitter = {
 };
 
 
-/* LinuxBIOS static.c */
+/* coreboot static.c */
 
-static void linuxbios_emit_cell(void *e, cell_t val)
+static void coreboot_emit_cell(void *e, cell_t val)
 {
 	FILE *f = e;
 
 	fprintf(f, "\tu32\tc%d = 0x%x;\n", unique++, val);
 }
 
-static void linuxbios_emit_string(void *e, char *str, int len)
+static void coreboot_emit_string(void *e, char *str, int len)
 {
 	FILE *f = e;
 	char c = 0;
@@ -432,14 +432,14 @@ static void linuxbios_emit_string(void *e, char *str, int len)
 	}
 }
 
-static void linuxbios_emit_align(void *e, int a)
+static void coreboot_emit_align(void *e, int a)
 {
 	FILE *f = e;
 
 	fprintf(f, "\tALIGN(x)\t%d\n", a);
 }
 
-static void linuxbios_emit_data(void *e, struct property *p)
+static void coreboot_emit_data(void *e, struct property *p)
 {
 	struct data d = p->val;
 	FILE *f = e;
@@ -465,7 +465,7 @@ static void linuxbios_emit_data(void *e, struct property *p)
 #endif
 }
 
-static void linuxbios_emit_beginnode(void *e, char *label)
+static void coreboot_emit_beginnode(void *e, char *label)
 {
 	FILE *f = e;
 
@@ -474,7 +474,7 @@ static void linuxbios_emit_beginnode(void *e, char *label)
 	}
 }
 
-static void linuxbios_emit_endnode(void *e, char *label)
+static void coreboot_emit_endnode(void *e, char *label)
 {
 	FILE *f = e;
 
@@ -483,8 +483,8 @@ static void linuxbios_emit_endnode(void *e, char *label)
 	}
 }
 
-#ifdef LINUXBIOS_OUTPUT
-static void linuxbios_emit_struct_start(void *e, char *prefix, char *label)
+#ifdef COREBOOT_OUTPUT
+static void coreboot_emit_struct_start(void *e, char *prefix, char *label)
 {
 	FILE *f = e;
 
@@ -493,7 +493,7 @@ static void linuxbios_emit_struct_start(void *e, char *prefix, char *label)
 	}
 }
 
-static void linuxbios_emit_struct_end(void *e, char *prefix, char *label)
+static void coreboot_emit_struct_end(void *e, char *prefix, char *label)
 {
 	FILE *f = e;
 
@@ -504,7 +504,7 @@ static void linuxbios_emit_struct_end(void *e, char *prefix, char *label)
 #endif
 
 
-static void linuxbios_emit_property(void *e, char *label)
+static void coreboot_emit_property(void *e, char *label)
 {
 	FILE *f = e;
 
@@ -514,7 +514,7 @@ static void linuxbios_emit_property(void *e, char *label)
 	fprintf(f, "\tu32 p%d = \tOF_DT_PROP;\n", unique++);
 }
 
-static void linuxbios_emit_special(FILE *e, struct node *tree)
+static void coreboot_emit_special(FILE *e, struct node *tree)
 {
 	FILE *f = e;
 	struct property *prop;
@@ -634,15 +634,15 @@ static void linuxbios_emit_special(FILE *e, struct node *tree)
 	fprintf(f, "};\n");
 }
 
-static struct emitter linuxbios_emitter = {
-	.cell = linuxbios_emit_cell,
-	.string = linuxbios_emit_string,
-	.align = linuxbios_emit_align,
-	.data = linuxbios_emit_data,
-	.beginnode = linuxbios_emit_beginnode,
-	.endnode = linuxbios_emit_endnode,
-	.property = linuxbios_emit_property,
-	.special = linuxbios_emit_special,	
+static struct emitter coreboot_emitter = {
+	.cell = coreboot_emit_cell,
+	.string = coreboot_emit_string,
+	.align = coreboot_emit_align,
+	.data = coreboot_emit_data,
+	.beginnode = coreboot_emit_beginnode,
+	.endnode = coreboot_emit_endnode,
+	.property = coreboot_emit_property,
+	.special = coreboot_emit_special,	
 };
 
 
@@ -1279,7 +1279,7 @@ void fix_next(struct node *root){
 	first_node = root;
 }
 
-void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
+void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 {
 	struct property *prop;
 	struct version_info *vi = NULL;
@@ -1339,16 +1339,16 @@ void dt_to_linuxbios(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	/* emit the code, if any */
 	if (code)
 		fprintf(f, "%s\n", code);
-	flatten_tree_emit_structinits(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	flatten_tree_emit_structinits(bi->dt, &coreboot_emitter, f, &strbuf, vi);
 	fprintf(f, "struct constructor *all_constructors[] = {\n");
-	flatten_tree_emit_constructors(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	flatten_tree_emit_constructors(bi->dt, &coreboot_emitter, f, &strbuf, vi);
 	fprintf(f, "\t0\n};\n");
 	data_free(strbuf);
 	/* */
 
 }
 
-void dt_to_linuxbiosh(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
+void dt_to_corebooth(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 {
 	struct version_info *vi = NULL;
 	int i;
@@ -1377,9 +1377,9 @@ void dt_to_linuxbiosh(FILE *f, struct boot_info *bi, int version, int boot_cpuid
 	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
 	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
 	fprintf(f, "extern const char *mainboard_vendor, *mainboard_part_number;\n");
-	flatten_tree_emit_includes(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	flatten_tree_emit_includes(bi->dt, &coreboot_emitter, f, &strbuf, vi);
 
-	flatten_tree_emit_structdecls(bi->dt, &linuxbios_emitter, f, &strbuf, vi);
+	flatten_tree_emit_structdecls(bi->dt, &coreboot_emitter, f, &strbuf, vi);
 	/* */
 
 }

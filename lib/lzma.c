@@ -1,6 +1,6 @@
 /* 
 
-LinuxBIOS interface to memory-saving variant of LZMA decoder
+coreboot interface to memory-saving variant of LZMA decoder
 (C)opyright 2006 Carl-Daniel Hailfinger
 Released under the GNU GPL
 

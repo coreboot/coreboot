@@ -23,20 +23,20 @@ Usage
 -----
 
  $ flashrom [-rwvEVfh] [-c chipname] [-s exclude_start] [-e exclude_end]
-            [-m vendor:part] [-l file.layout] [-i imagename] [file]
-   -r | --read:                    read flash and save into file
-   -w | --write:                   write file into flash (default when
-                                   file is specified)
-   -v | --verify:                  verify flash against file
-   -E | --erase:                   erase flash device
-   -V | --verbose:                 more verbose output
-   -c | --chip <chipname>:         probe only for specified flash chip
-   -s | --estart <addr>:           exclude start position
-   -e | --eend <addr>:             exclude end postion
-   -m | --mainboard <vendor:part>: override mainboard settings
-   -f | --force:                   force write without checking image
-   -l | --layout <file.layout>:    read rom layout from file
-   -i | --image <name>:            only flash image name from flash layout
+            [-m [vendor:]part] [-l file.layout] [-i imagename] [file]
+   -r | --read:                      read flash and save into file
+   -w | --write:                     write file into flash (default when
+                                     file is specified)
+   -v | --verify:                    verify flash against file
+   -E | --erase:                     erase flash device
+   -V | --verbose:                   more verbose output
+   -c | --chip <chipname>:           probe only for specified flash chip
+   -s | --estart <addr>:             exclude start position
+   -e | --eend <addr>:               exclude end postion
+   -m | --mainboard <[vendor:]part>: override mainboard settings
+   -f | --force:                     force write without checking image
+   -l | --layout <file.layout>:      read rom layout from file
+   -i | --image <name>:              only flash image name from flash layout
 
  If no file is specified, then all that happens
  is that flash info is dumped and the flash chip is set to writable.

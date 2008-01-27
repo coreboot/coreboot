@@ -413,9 +413,10 @@ struct board_pciid_enable board_pciid_enables[] = {
 static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, const char *part)
 {
 	struct board_pciid_enable *board = board_pciid_enables;
+	struct board_pciid_enable *partmatch = NULL;
 
 	for (; board->name; board++) {
-		if (!board->lb_vendor || strcmp(board->lb_vendor, vendor))
+		if (vendor && (!board->lb_vendor || strcmp(board->lb_vendor, vendor)))
 			continue;
 
 		if (!board->lb_part || strcmp(board->lb_part, part))
@@ -427,8 +428,23 @@ static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, 
 		if (board->second_vendor &&
 			!pci_dev_find(board->second_vendor, board->second_device))
 			continue;
-		return board;
+
+		if (vendor)
+			return board;
+
+		if (partmatch) {
+			/* a second entry has a matching part name */
+			printf("AMBIGUOUS BOARD NAME: %s\n", part);
+			printf("At least vendors '%s' and '%s' match.\n",
+				partmatch->lb_vendor, board->lb_vendor);
+			printf("Please use the full -m vendor:part syntax.\n");
+			return NULL;
+		}
+		partmatch = board;
 	}
+
+	if (partmatch)
+		return partmatch;
 
 	printf("NOT FOUND %s:%s\n", vendor, part);
 
@@ -477,7 +493,7 @@ int board_flash_enable(const char *vendor, const char *part)
 	struct board_pciid_enable *board = NULL;
 	int ret = 0;
 
-	if (vendor && part)
+	if (part)
 		board = board_match_coreboot_name(vendor, part);
 
 	if (!board)

@@ -40,11 +40,11 @@ Exclude start position (obsolete).
 .B "\-e, \-\-eend" <addr> 
 Exclude end postion (obsolete).
 .TP
-.B "\-m, \-\-mainboard" <vendor:part>
+.B "\-m, \-\-mainboard" <[vendor:]part>
 Override mainboard settings. This option is needed for some mainboards,
 see the
 .B flashrom
-README for a list.
+README for a list. The vendor is not required when the board name is unique.
 .TP
 .B "\-f, \-\-force"
 Force write without checking whether the ROM image file is really meant

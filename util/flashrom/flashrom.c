@@ -196,21 +196,21 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 void usage(const char *name)
 {
 	printf("usage: %s [-rwvEVfhR] [-c chipname] [-s exclude_start]\n", name);
-	printf("       [-e exclude_end] [-m vendor:part] [-l file.layout] [-i imagename] [file]\n");
+	printf("       [-e exclude_end] [-m [vendor:]part] [-l file.layout] [-i imagename] [file]\n");
 	printf
-	    ("   -r | --read:                    read flash and save into file\n"
-	     "   -w | --write:                   write file into flash\n"
-	     "   -v | --verify:                  verify flash against file\n"
-	     "   -E | --erase:                   erase flash device\n"
-	     "   -V | --verbose:                 more verbose output\n"
-	     "   -c | --chip <chipname>:         probe only for specified flash chip\n"
-	     "   -s | --estart <addr>:           exclude start position\n"
-	     "   -e | --eend <addr>:             exclude end postion\n"
-	     "   -m | --mainboard <vendor:part>: override mainboard settings\n"
-	     "   -f | --force:                   force write without checking image\n"
-	     "   -l | --layout <file.layout>:    read rom layout from file\n"
-	     "   -i | --image <name>:            only flash image name from flash layout\n"
-	     "   -R | --version:                 print the version (release)\n"
+	    ("   -r | --read:                      read flash and save into file\n"
+	     "   -w | --write:                     write file into flash\n"
+	     "   -v | --verify:                    verify flash against file\n"
+	     "   -E | --erase:                     erase flash device\n"
+	     "   -V | --verbose:                   more verbose output\n"
+	     "   -c | --chip <chipname>:           probe only for specified flash chip\n"
+	     "   -s | --estart <addr>:             exclude start position\n"
+	     "   -e | --eend <addr>:               exclude end postion\n"
+	     "   -m | --mainboard <[vendor:]part>: override mainboard settings\n"
+	     "   -f | --force:                     force write without checking image\n"
+	     "   -l | --layout <file.layout>:      read rom layout from file\n"
+	     "   -i | --image <name>:              only flash image name from flash layout\n"
+	     "   -R | --version:                   print the version (release)\n"
             "\n" " If no file is specified, then all that happens"
 	     " is that flash info is dumped.\n\n");
 	exit(1);
@@ -301,8 +301,8 @@ int main(int argc, char *argv[])
 				lb_vendor = tempstr;
 				lb_part = tempstr2;
 			} else {
-				printf("warning: ignored wrong format of"
-				       " mainboard: %s\n", tempstr);
+				lb_vendor = NULL;
+				lb_part = tempstr;
 			}
 			break;
 		case 'f':

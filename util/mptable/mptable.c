@@ -302,10 +302,10 @@ int 	noisy = 0;
 /* preamble to the mptable. This is fixed for all coreboots */
  
 char *preamble[] = {
+"#include <console/console.h>",
 "#include <arch/smp/mpspec.h>",
+"#include <device/pci.h>",
 "#include <string.h>",
-"#include <printk.h>",
-"#include <pci.h>",
 "#include <stdint.h>",
 "",
 "void *smp_write_config_table(void *v)",
@@ -361,31 +361,35 @@ char *postamble[] = {
 char *ioapic_code[] = {
 "	smp_write_ioapic(mc, 2, 0x20, 0xfec00000);",
 "	{",
-"		struct pci_dev *dev;",
-"		uint32_t base;",
-"		dev = pci_find_slot(1, PCI_DEVFN(0x1e,0));",
+"		device_t dev;",
+"		struct resource *res;",
+"		dev = dev_find_slot(1, PCI_DEVFN(0x1e,0));",
 "		if (dev) {",
-"			pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
-"			base &= PCI_BASE_ADDRESS_MEM_MASK;",
-"			smp_write_ioapic(mc, 3, 0x20, base);",
+"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
+"			if (res) {",
+"				smp_write_ioapic(mc, 3, 0x20, res->base);",
+"			}",
 "		}",
-"		dev = pci_find_slot(1, PCI_DEVFN(0x1c,0));",
+"		dev = dev_find_slot(1, PCI_DEVFN(0x1c,0));",
 "		if (dev) {",
-"			pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
-"			base &= PCI_BASE_ADDRESS_MEM_MASK;",
-"			smp_write_ioapic(mc, 4, 0x20, base);",
+"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
+"			if (res) {",
+"				smp_write_ioapic(mc, 4, 0x20, res->base);",
+"			}",
 "		}",
-"                dev = pci_find_slot(4, PCI_DEVFN(0x1e,0));",
+"                dev = dev_find_slot(4, PCI_DEVFN(0x1e,0));",
 "                if (dev) {",
-"                        pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
-"                        base &= PCI_BASE_ADDRESS_MEM_MASK;",
-"                        smp_write_ioapic(mc, 5, 0x20, base);",
+"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
+"			if (res) {",
+"				smp_write_ioapic(mc, 5, 0x20, res->base);",
+"			}",
 "                }",
-"                dev = pci_find_slot(4, PCI_DEVFN(0x1c,0));",
+"                dev = dev_find_slot(4, PCI_DEVFN(0x1c,0));",
 "                if (dev) {",
-"                        pci_read_config_dword(dev, PCI_BASE_ADDRESS_0, &base);",
-"                        base &= PCI_BASE_ADDRESS_MEM_MASK;",
-"                        smp_write_ioapic(mc, 8, 0x20, base);",
+"			res = find_resource(dev, PCI_BASE_ADDRESS_0);",
+"			if (res) {",
+"				smp_write_ioapic(mc, 8, 0x20, res->base);",
+"			}",
 "                }",
 "	}",
 0
@@ -1122,10 +1126,10 @@ char* intTypes[] = {
 };
 
 char* polarityMode[] = {
-    "conforms", "MP_IRQ_POLARITY_HIGH", "reserved", "MP_IRQ_POLARITY_LOW"
+    "MP_IRQ_POLARITY_DEFAULT", "MP_IRQ_POLARITY_HIGH", "reserved", "MP_IRQ_POLARITY_LOW"
 };
 char* triggerMode[] = {
-    "conforms", "MP_IRQ_TRIGGER_EDGE", "reserved", "MP_IRQ_TRIGGER_LEVEL"
+    "MP_IRQ_TRIGGER_DEFAULT", "MP_IRQ_TRIGGER_EDGE", "reserved", "MP_IRQ_TRIGGER_LEVEL"
 };
 
 static void

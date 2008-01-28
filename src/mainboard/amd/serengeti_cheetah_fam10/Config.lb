@@ -136,14 +136,14 @@ if USE_DCACHE_RAM
 		# compile cache_as_ram.c to auto.o
 		makerule ./cache_as_ram_auto.o
 			depends "$(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) option_table.h"
-			action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+			action "$(CC) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
 		end
 
 	else
 		#compile cache_as_ram.c to auto.inc
 		makerule ./cache_as_ram_auto.inc
 			depends "$(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) option_table.h"
-			action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+			action "$(CC) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
 			action "perl -e 's/.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/.text/.section .rom.text/g' -pi $@"
 		end
@@ -156,7 +156,7 @@ else
     if CONFIG_AP_CODE_IN_CAR
 	 makerule ./apc_auto.o
 		 depends "$(MAINBOARD)/apc_auto.c option_table.h"
-		 action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+		 action "$(CC) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
 	 end
 	 ldscript /arch/i386/init/ldscript_apc.lb
     end

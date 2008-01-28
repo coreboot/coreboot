@@ -147,7 +147,7 @@ else
     if CONFIG_AP_CODE_IN_CAR
 	makerule ./apc_auto.o
 		depends "$(MAINBOARD)/apc_auto.c option_table.h"
-		action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+		action "$(CC) -I$(TOP)/src -I. $(DISTRO_CFLAGS) $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
 	end
 	ldscript /arch/i386/init/ldscript_apc.lb
     end

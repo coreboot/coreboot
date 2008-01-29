@@ -31,6 +31,8 @@
 #include <errno.h>
 #include <unistd.h>
 #include <netinet/in.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 /* also covers (part of?) linux's byteswap.h functionality */
 #include "endian.h"
@@ -236,5 +238,6 @@ struct boot_info *dt_from_fs(char *dirname);
 
 char *join_path(char *path, char *name);
 void fill_fullpaths(struct node *tree, char *prefix);
-
+FILE *fopenfile(char *fname);
+FILE *dtc_open_file(char *fname);
 #endif /* _DTC_H */

@@ -61,20 +61,46 @@ void fill_fullpaths(struct node *tree, char *prefix)
 		fill_fullpaths(child, tree->fullpath);
 }
 
-static FILE *dtc_open_file(char *fname)
+/* How stupid is POSIX? This stupid: you can fopen a directory if mode
+ * is "r", but then there is very little you can do with it except get errors. 
+ * This function now makes sure that the thing you open is a file. 
+ */
+FILE *fopenfile(char *fname)
 {
-	FILE *f;
+	FILE *f = NULL;
 
-	if (streq(fname, "-"))
+	if (streq(fname, "-")){
 		f = stdin;
-	else
+	} else {
+		struct stat buf;
+		if (stat(fname, &buf) < 0) {
+			errno = EISDIR;
+			goto no;
+		}
+
+		if (! S_ISREG(buf.st_mode)){
+			errno = EISDIR;
+			goto no;
+		}
+
 		f = fopen(fname, "r");
+	}
+
+no:
+
+	return f;
+}
+
+FILE *dtc_open_file(char *fname)
+{
+	FILE *f = fopenfile(fname);
 
 	if (! f)
 		die("Couldn't open \"%s\": %s\n", fname, strerror(errno));
 
 	return f;
 }
+
 
 static void usage(void)
 {

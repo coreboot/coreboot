@@ -121,17 +121,16 @@ proplist:	propdef proplist {
 config:        DT_CONFIG '(' 
 		includepath {
 			void switchin(FILE *f);
-
-			/* switch ... */
-			char path[1024];
 			FILE *f;
+			/* The need for a cast here is silly */
+			char *name = (char *)$3.val;
+
 			/* TODO: keep track of which of these we have read in. If we have already done it, then 
 			  * don't do it twice. 
 			  */
-			sprintf(path, "%s/dts", $3.val);
-			f  = fopen(path, "r");
+			f  = fopenfile(name);
 			if (! f){
-				perror(path);
+				perror(name);
 				exit(1);
 			}
 			switchin(f);

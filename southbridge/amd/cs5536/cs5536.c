@@ -172,7 +172,7 @@ static void enable_ide_nand_flash_header(void)
  *
  * @param sb Southbridge config structure.
  */
-static void lpc_init(struct southbridge_amd_cs5536_config *sb)
+static void lpc_init(struct southbridge_amd_cs5536_dts_config *sb)
 {
 	struct msr msr;
 
@@ -220,7 +220,7 @@ static void lpc_init(struct southbridge_amd_cs5536_config *sb)
  *
  * @param sb Southbridge config structure.
  */
-static void uarts_init(struct southbridge_amd_cs5536_config *sb)
+static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
 {
 	struct msr msr;
 	u16 addr = 0;
@@ -383,7 +383,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
  *
  * @param sb Southbridge config structure.
  */
-static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
+static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 {
 	u32 *bar;
 	struct msr msr;
@@ -475,7 +475,7 @@ void chipsetinit(void)
 {
 	struct device *dev;
 	struct msr msr;
-	struct southbridge_amd_cs5536_config *sb;
+	struct southbridge_amd_cs5536_dts_config *sb;
 	const struct msrinit *csi;
 
 	post_code(P80_CHIPSET_INIT);
@@ -486,7 +486,7 @@ void chipsetinit(void)
 		       __FUNCTION__);
 		return;
 	}
-	sb = (struct southbridge_amd_cs5536_config *)dev->device_configuration;
+	sb = (struct southbridge_amd_cs5536_dts_config *)dev->device_configuration;
 
 #if 0
 	if (!IsS3Resume())
@@ -548,8 +548,8 @@ void chipsetinit(void)
  */
 static void southbridge_init(struct device *dev)
 {
-	struct southbridge_amd_cs5536_config *sb =
-	    (struct southbridge_amd_cs5536_config *)dev->device_configuration;
+	struct southbridge_amd_cs5536_dts_config *sb =
+	    (struct southbridge_amd_cs5536_dts_config *)dev->device_configuration;
 
 	/*
 	 * struct device *gpiodev;

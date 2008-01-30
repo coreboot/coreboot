@@ -343,7 +343,7 @@ int smbus_read_byte(u16 device, u8 address)
  * @param address The address.
  * @return The data from the SMBus packet area or an error of 0xff (i.e. -1).
  */
-int spd_read_byte(u16 device, u8 address)
+u8 spd_read_byte(u16 device, u8 address)
 {
 	return smbus_read_byte(device, address);
 }

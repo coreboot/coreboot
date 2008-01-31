@@ -27,7 +27,7 @@
 		enabled;
 	};
 	domain0 {
-		/config/("northbridge/intel/i440bxemulation");
+		/config/("northbridge/intel/i440bxemulation/dts");
 		ops = "i440bxemulation_pcidomainops";
 		enabled;
 		pcidomain = "0";
@@ -36,7 +36,7 @@
 			pcipath = "0,0";
 		};
 		southbridge,intel,i82371eb {
-			/config/("southbridge/intel/i82371eb");
+			/config/("southbridge/intel/i82371eb/dts");
 			pcipath = "1,0";
 			enabled;
 		};

@@ -115,7 +115,7 @@ static void init_hwm(u16 base)
 
 static void w83627hf_init(struct device * dev)
 {
-	struct superio_winbond_w83627hf_config *conf;
+	struct superio_winbond_w83627hf_dts_config *conf;
 	struct resource *res0, *res1;
 	struct pc_keyboard keyboard;
 

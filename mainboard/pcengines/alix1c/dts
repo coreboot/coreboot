@@ -26,7 +26,7 @@
 		enabled;
 	};
 	domain0 {
-		/config/("northbridge/amd/geodelx");
+		/config/("northbridge/amd/geodelx/dts");
 		enabled;
 		pcidomain = "0";
 		device0,0 {
@@ -34,12 +34,12 @@
 			pcipath = "1,0";
 		};
 		southbridge {
-			/config/("southbridge/amd/cs5536");
+			/config/("southbridge/amd/cs5536/dts");
 			pcipath = "0xf,1";
 			enabled;
 		};
 		superio {
-			/config/("superio/winbond/w83627hf");
+			/config/("superio/winbond/w83627hf/dts");
 			com1enable = "1";
 		};
 	};

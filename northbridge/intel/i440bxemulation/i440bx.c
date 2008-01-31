@@ -53,7 +53,7 @@ static void pci_domain_set_resources(struct device *dev)
 	struct device *mc_dev;
 	u32 tolmk;		/* Top of low mem, Kbytes. */
 	int idx;
-	struct northbridge_intel_i440bxemulation_config *device_configuration =
+	struct northbridge_intel_i440bxemulation_dts_config *device_configuration =
 	    dev->device_configuration;
 	tolmk = device_configuration->ramsize * 1024;
 	mc_dev = dev->link[0].children;

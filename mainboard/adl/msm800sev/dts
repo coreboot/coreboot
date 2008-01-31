@@ -34,12 +34,12 @@
 			pcipath = "1,0";
 		};
 		southbridge {
-			/config/("southbridge/amd/cs5536");
+			/config/("southbridge/amd/cs5536/dts");
 			pcipath = "1,1";
 			enabled;
 		};
 		superio {
-			/config/("superio/winbond/w83627hf");
+			/config/("superio/winbond/w83627hf/dts");
 			com1enable = "1";
 		};
 	};

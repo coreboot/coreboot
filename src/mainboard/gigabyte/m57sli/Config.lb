@@ -290,7 +290,7 @@ chip northbridge/amd/amdk8/root_complex
 				# Simple I/O base
 								io 0x62 = 0x800
 				# Serial Flash I/O (SPI only)
-                	                			#io 0x64 = 0x820 
+								io 0x64 = 0x820
 				# watch dog force timeout (parallel flash only)
 								#irq 0x71 = 0x1
 								# No WDT interrupt

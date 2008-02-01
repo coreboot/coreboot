@@ -55,7 +55,7 @@ struct bus {
 	unsigned	disable_relaxed_ordering : 1;
 };
 
-#define MAX_RESOURCES 12 
+#define MAX_RESOURCES 24 
 #define MAX_LINKS    8 
 /*
  * There is one device structure for each slot-number/function-number

@@ -67,6 +67,12 @@ struct device **last_dev_p;
 static struct device devs[MAX_DEVICES];
 
 /**
+ * the number of devices that have been allocated 
+ */
+static int devcnt;
+
+
+/**
  * The device creator.
  * 
  * reserves a piece of memory for a device in the tree
@@ -76,9 +82,9 @@ static struct device devs[MAX_DEVICES];
 
 static struct device *new_device(void)
 {
-	static int devcnt=0;
 	devcnt++;
 
+	printk(BIOS_SPEW, "%s: devcnt %d\n", __FUNCTION__, devcnt);
 	/* Should we really die here? */
 	if (devcnt>=MAX_DEVICES) {
 		die("Too many devices. Increase MAX_DEVICES\n");
@@ -155,6 +161,7 @@ void dev_init(void)
 			dev->ops = c->ops;
 		last_dev_p = &dev->next;
 	}
+	devcnt = 0;
 }
 
 /**

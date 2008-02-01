@@ -551,6 +551,10 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 				fprintf(f, "\t.id = {.type=DEVICE_ID_PCI,.u={.pci={ %s }}},\n", 
 					prop->val.val);
 			}
+			if (streq(prop->name, "apicid")){
+				fprintf(f, "\t.id = {.type=DEVICE_ID_APIC,.u={.pci={ %s }}},\n", 
+					prop->val.val);
+			}
 		}
 	}
 	/* Process the properties specified in the mainboard dts. 

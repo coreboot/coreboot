@@ -380,9 +380,12 @@ static struct device_operations geodelx_apic_ops = {
 };
 
 /** Operations for when the northbridge is running a PCI device. */
+/** Note that phase3 scan is done in the domain, 
+ * and MUST NOT be done here too 
+ */
 static struct device_operations geodelx_pci_ops = {
 	.constructor			= default_device_constructor,
-	.phase3_scan			= pci_domain_scan_bus,
+	.phase3_scan			= 0,
 	.phase4_read_resources		= pci_domain_read_resources,
 	.phase4_set_resources		= geodelx_northbridge_set_resources,
 	.phase5_enable_resources	= enable_childrens_resources,

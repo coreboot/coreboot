@@ -1136,9 +1136,9 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	if (old_devices) {
 		struct device *left;
 		for (left = old_devices; left; left = left->sibling) {
-			printk(BIOS_ERR, "%s\n", dev_path(left));
+			printk(BIOS_SPEW, "%s\n", left->dtsname);
 		}
-		die("PCI: Left over static devices.\n");
+		banner(BIOS_SPEW, "PCI: Left over static devices.\n");
 	}
 
 	/* For all children that implement scan_bus() (i.e. bridges)

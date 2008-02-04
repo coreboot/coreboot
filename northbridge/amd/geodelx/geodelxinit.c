@@ -25,7 +25,6 @@
 #include <amd_geodelx.h>
 
 /* Function prototypes */
-extern int sizeram(void);
 
 struct gliutable {
 	unsigned long desc_name;
@@ -139,6 +138,49 @@ static void ShadowInit(struct gliutable *gl)
 	msr = rdmsr(gl->desc_name);
 	if (msr.lo == 0)
 		writeglmsr(gl);
+}
+
+/**
+ * Size up ram.
+ *
+ * All we need to do here is read the MSR for DRAM and grab out the sizing
+ * bits. Note that this code depends on initram having run. It uses the MSRs,
+ * not the SPDs, and the MSRs of course are set up by initram.
+ *
+ * @return TODO
+ */
+int sizeram(void)
+{
+	struct msr msr;
+	int sizem = 0;
+	u32 dimm;
+
+	/* Get the RAM size from the memory controller as calculated
+	 * and set by auto_size_dimm().
+	 */
+	msr = rdmsr(MC_CF07_DATA);
+	printk(BIOS_DEBUG, "sizeram: _MSR MC_CF07_DATA: %08x:%08x\n", msr.hi,
+	       msr.lo);
+
+	/* DIMM 0 */
+	dimm = msr.hi;
+	/* Installed? */
+	if ((dimm & 7) != 7) {
+		/* 1:8MB, 2:16MB, 3:32MB, 4:64MB, ... 7:512MB, 8:1GB */
+		sizem = 4 << ((dimm >> 12) & 0x0F);
+	}
+
+	/* DIMM 1 */
+	dimm = msr.hi >> 16;
+	/* Installed? */
+	if ((dimm & 7) != 7) {
+		/* 1:8MB, 2:16MB, 3:32MB, 4:64MB, ... 7:512MB, 8:1GB */
+		sizem += 4 << ((dimm >> 12) & 0x0F);
+	}
+
+	printk(BIOS_DEBUG, "sizeram: sizem 0x%xMB\n", sizem);
+
+	return sizem;
 }
 
 /**

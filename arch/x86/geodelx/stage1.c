@@ -55,6 +55,7 @@ void geodelx_msr_init(void)
  */
 void disable_car(void)
 {
+	extern void northbridge_init_early(void);
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
@@ -67,5 +68,6 @@ void disable_car(void)
 	__asm__ __volatile__("cld; rep movsl" ::"D" (DCACHE_RAM_BASE), "S" (DCACHE_RAM_BASE), "c" (DCACHE_RAM_SIZE/4): "memory");
 	__asm__ __volatile__ ("wbinvd\n");
 	banner(BIOS_DEBUG, "Disable_car: done wbinvd");
+	northbridge_init_early();
 	banner(BIOS_DEBUG, "disable_car: done");
 }

@@ -117,6 +117,7 @@ else
 ifeq ($(CONFIG_CPU_AMD_GEODELX),y)
 	STAGE0_CAR_OBJ = geodelx/stage0.o
 	STAGE0_ARCH_X86_OBJ += geodelx/stage1.o
+	STAGE0_ARCH_X86_OBJ += ../../northbridge/amd/geodelx/geodelxinit.o
 else
 	STAGE0_CAR_OBJ = stage0_i586.o
 endif

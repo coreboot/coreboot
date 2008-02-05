@@ -91,4 +91,4 @@ romimage "fallback"
 #      payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_com2.zelf
 end
 
-buildrom ./ms9185.lxb ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

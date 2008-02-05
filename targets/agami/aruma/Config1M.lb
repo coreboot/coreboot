@@ -21,4 +21,4 @@ romimage "fallback"
 	payload ../../../../../../linux.elf
 end
 
-buildrom ./agami_aruma.rom ROM_SIZE "fallback"
+buildrom ./coreboot.rom ROM_SIZE "fallback"

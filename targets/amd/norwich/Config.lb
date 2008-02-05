@@ -46,4 +46,4 @@ romimage "fallback"
 	payload ../payload.elf
 end
 
-buildrom ./norwich.rom ROM_SIZE "fallback"
+buildrom ./coreboot.rom ROM_SIZE "fallback"

@@ -65,6 +65,6 @@ romimage "failover"
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
 end
 
-#buildrom ./amd-cheetah-fam10.rom ROM_SIZE "normal" "fallback" "failover"
-buildrom ./amd-cheetah-fam10.rom ROM_SIZE "fallback" "failover"
+#buildrom ./coreboot.rom ROM_SIZE "normal" "fallback" "failover"
+buildrom ./coreboot.rom ROM_SIZE "fallback" "failover"
 

@@ -31,4 +31,4 @@ romimage "fallback"
 	payload ../payload.elf
 end
 
-buildrom ./dbe61.rom ROM_SIZE  "fallback"
+buildrom ./coreboot.rom ROM_SIZE  "fallback"

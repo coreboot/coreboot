@@ -42,4 +42,4 @@ romimage "fallback"
 	payload ../../../payloads/tg3--ide_disk.zelf
 end
 
-buildrom ./khepri.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

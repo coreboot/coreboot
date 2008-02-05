@@ -16,5 +16,5 @@ romimage "image"
 	payload /home/stepan/core.img
 end
 
-buildrom ./qemu-bios.rom ROM_SIZE "image"
+buildrom ./coreboot.rom ROM_SIZE "image"
 

@@ -100,4 +100,4 @@ romimage "fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 end
 
-buildrom ./luxbios.rom ROM_SIZE "fallback"
+buildrom ./coreboot.rom ROM_SIZE "fallback"

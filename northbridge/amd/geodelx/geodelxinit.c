@@ -658,7 +658,8 @@ static void rom_shadow_settings(void)
 #define SYSMEM_RCONF_WRITETHROUGH	8
 #define DEVRC_RCONF_DEFAULT		0x21
 #define ROMBASE_RCONF_DEFAULT		0xFFFC0000
-#define ROMRC_RCONF_DEFAULT		0x25
+#define ROMRC_RCONF_SAFE		0x25
+#define ROMRC_RCONF_DEFAULT		0x04
 
 /**
  * TODO.
@@ -848,3 +849,15 @@ void northbridge_init_early(void)
 
 	printk(BIOS_DEBUG, "Exit %s\n", __FUNCTION__);
 }
+
+void geode_pre_payload(void)
+{
+	struct msr msr;
+
+	/* Set ROM cache properties for runtime. */
+	msr = rdmsr(CPU_RCONF_DEFAULT);
+	msr.hi &= ~(0xFF << 24);        	// clear ROMRC
+	msr.hi |= ROMRC_RCONF_SAFE << 24;	// set WS, CD, WP
+	wrmsr(CPU_RCONF_DEFAULT, msr);
+}
+

@@ -52,7 +52,7 @@
 
 #define MAGIC "LARCHIVE"
 #define MAX_PATHLEN 1024
-#define BOOTBLOCK_SIZE 16384
+#define BOOTBLOCK_SIZE 20480
 
 #define BOOTBLOCK_NAME "bootblock"
 #define BOOTBLOCK_NAME_LEN 16

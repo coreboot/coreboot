@@ -1269,6 +1269,7 @@ void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo);
 void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1);
 void system_preinit(void);
 void msr_init(void);
+void geode_pre_payload(void);
 #endif
 
 #endif

@@ -157,7 +157,7 @@ $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 	$(Q)$(OBJCOPY) --prefix-symbols=stage0_ $(obj)/stage0.o $(obj)/stage0-prefixed.o
 
 	$(Q)printf "  TEST    $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)test `wc -c < $(obj)/stage0.init` -gt 16128 && \
+	$(Q)test `wc -c < $(obj)/stage0.init` -gt 20224 && \
 		printf "Error. Bootblock got too big.\n" || true
 	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(NM) $(obj)/stage0.o | sort -u > $(obj)/stage0.init.map

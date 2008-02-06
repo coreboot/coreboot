@@ -61,3 +61,9 @@ void hardware_stage1(void)
 	 */
 	cs5536_setup_onchipuart();
 }
+
+void mainboard_pre_payload(void)
+{
+	geode_pre_payload();
+	banner(BIOS_DEBUG, "mainboard_pre_payload: done");
+}

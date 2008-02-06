@@ -37,6 +37,7 @@ void uart_init(void);
 void die(const char *msg);
 void hardware_stage1(void);
 void disable_car(void);
+void mainboard_pre_payload(void);
 
 static void stop_ap(void)
 {
@@ -177,11 +178,13 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 		legacy(&archive, "normal/payload", (void *)UNCOMPRESS_AREA, mem);
 
 	entry = load_file_segments(&archive, "normal/payload");
-	if (entry != (void*)-1)
+	if (entry != (void*)-1) {
+		/* Final coreboot call before handing off to the payload. */
+		mainboard_pre_payload();
 		run_address(entry);
-	else
+	} else {
 		die("FATAL: No usable payload found.\n");
-
+	}
 	die ("FATAL: Last stage returned to coreboot.\n");
 }
 

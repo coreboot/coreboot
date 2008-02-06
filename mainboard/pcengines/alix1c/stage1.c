@@ -49,3 +49,9 @@ void hardware_stage1(void)
 	w83627hf_enable_serial(0x2e, SERIAL_DEV, SERIAL_IOBASE);
 
 }
+
+void mainboard_pre_payload(void)
+{
+	geode_pre_payload();
+	banner(BIOS_DEBUG, "mainboard_pre_payload: done");
+}

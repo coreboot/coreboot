@@ -30,3 +30,8 @@ void hardware_stage1(void)
 void disable_car(void)
 {
 }
+
+
+void pre_payload(void)
+{
+}

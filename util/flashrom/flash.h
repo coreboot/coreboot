@@ -158,7 +158,20 @@ extern struct flashchip flashchips[];
 /* Programmable Micro Corp is listed in JEP106W in bank 2, so it should have
  * a 0x7F continuation code prefix.
  */
-#define PMC_ID			0x9D	/* PMC */
+#define PMC_ID			0x7F9D	/* PMC */
+#define PMC_ID_NOPREFIX		0x9D	/* PMC, missing 0x7F prefix */
+#define PMC_25LV512		0x7B
+#define PMC_25LV010		0x7C
+#define PMC_25LV020		0x7D
+#define PMC_25LV040		0x7E
+#define PMC_25LV080B		0x13
+#define PMC_25LV016B		0x14
+#define PMC_39LV512		0x1B
+#define PMC_39F010		0x1C	/* also Pm39LV010 */
+#define PMC_39LV020		0x3D
+#define PMC_39LV040		0x3E
+#define PMC_39F020		0x4D
+#define PMC_39F040		0x4E
 #define PMC_49FL002		0x6D
 #define PMC_49FL004		0x6E
 

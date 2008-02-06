@@ -278,11 +278,17 @@ void generic_spi_write_disable()
 int probe_spi(struct flashchip *flash)
 {
 	unsigned char readarr[3];
-	uint8_t manuf_id;
-	uint16_t model_id;
+	uint32_t manuf_id;
+	uint32_t model_id;
 	if (!generic_spi_rdid(readarr)) {
-		manuf_id = readarr[0];
-		model_id = (readarr[1] << 8) | readarr[2];
+		/* Check if this is a continuation vendor ID */
+		if (readarr[0] == 0x7f) {
+			manuf_id = (readarr[0] << 8) | readarr[1];
+			model_id = readarr[2];
+		} else {
+			manuf_id = readarr[0];
+			model_id = (readarr[1] << 8) | readarr[2];
+		}
 		printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id, model_id);
 		if (manuf_id == flash->manufacture_id &&
 		    model_id == flash->model_id) {

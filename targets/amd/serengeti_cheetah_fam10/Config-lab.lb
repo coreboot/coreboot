@@ -1,0 +1,54 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007 Advanced Micro Devices, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+# Sample config file for
+# the amd cheetah_fam10
+# This will make a target directory of ./serengeti_cheetah_fam10
+
+target serengeti_cheetah_fam10
+mainboard amd/serengeti_cheetah_fam10
+# Request this level of debugging output
+	option  DEFAULT_CONSOLE_LOGLEVEL=11
+# At a maximum only compile in this level of debugging
+	option  MAXIMUM_CONSOLE_LOGLEVEL=11
+
+# 1024KB ROM
+option ROM_SIZE=1024*1024
+option FALLBACK_SIZE=ROM_SIZE-FAILOVER_SIZE
+
+romimage "fallback"
+	option USE_FAILOVER_IMAGE=0
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=0x30000
+	option XIP_ROM_SIZE=0x40000
+	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+	payload ../payload.elf.lzma
+end
+
+romimage "failover"
+	option USE_FAILOVER_IMAGE=1
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=FAILOVER_SIZE
+	option XIP_ROM_SIZE=FAILOVER_SIZE
+	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
+end
+
+buildrom ./coreboot.rom ROM_SIZE "fallback" "failover"
+

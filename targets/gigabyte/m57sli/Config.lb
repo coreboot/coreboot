@@ -82,7 +82,7 @@ romimage "fallback"
 #	payload ../../../../payloads/adlo.elf
 #	payload ../../../../payloads/tg3--filo_hda2_vga_5_4.zelf
 #	payload ../../../../payloads/forcedeth_mcp55_filo_hda2.zelf
-	payload ../../../../payloads/forcedeth--filo_hda2_vga_5_4_2_mcp55.zelf
+#	payload ../../../../payloads/forcedeth--filo_hda2_vga_5_4_2_mcp55.zelf
 #	payload ../../../../payloads/forcedeth--filo_hda2_vga.zelf
 #	payload ../../../payloads/tg3_com2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
@@ -90,6 +90,7 @@ romimage "fallback"
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
 #	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_5.3.zelf
 #	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_com2.zelf
+	payload ../payload.elf
 end
 
 romimage "failover"

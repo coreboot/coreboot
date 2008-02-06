@@ -27,13 +27,14 @@ romimage "normal"
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
 #        payload ../../../payloads/tg3--filo.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
+#	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vga_com2.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vga_5_3.zelf
 #	payload ../../../payloads/tg3--filo_btext_hda2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
+	payload ../payload.elf
 end
 
 romimage "fallback" 
@@ -49,13 +50,14 @@ romimage "fallback"
 #        payload ../../../payloads/filo_mem.elf
 #       payload ../../../payloads/filo.zelf
 #        payload ../../../payloads/tg3--filo.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
+#	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vga_com2.zelf
 #	payload ../../../payloads/tg3--filo_hda2_vga_5_3.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #	payload ../../../payloads/tg3--filo_btext_hda2.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
+	payload ../payload.elf
 end
 
 buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

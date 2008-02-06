@@ -3,7 +3,9 @@
 target qemu-i386
 mainboard emulation/qemu-i386
 
-option ROM_SIZE=256*1024
+option ROM_SIZE=2048*1024
+option CONFIG_COMPRESSED_PAYLOAD_LZMA=0
+option CONFIG_PRECOMPRESSED_PAYLOAD=0
 
 option CC="gcc -m32"
 
@@ -12,10 +14,9 @@ option IRQ_SLOT_COUNT=6
 
 romimage "image" 
 	option ROM_IMAGE_SIZE=0x10000
-	option COREBOOT_EXTRA_VERSION="-GRUB2"
-#	payload /home/stepan/core.img
-	payload ../payload.elf
+	option COREBOOT_EXTRA_VERSION="-LAB"
+	payload ../payload.elf.lzma
 end
 
-buildrom ./coreboot.rom ROM_SIZE "image"
+buildrom ./qemu.rom ROM_SIZE "image"
 

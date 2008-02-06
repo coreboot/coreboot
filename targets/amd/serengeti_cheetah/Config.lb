@@ -29,7 +29,7 @@ romimage "normal"
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../../payloads/tg3_vga.zelf
 #	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga_5.4.1.zelf
+#	payload ../../../../payloads/tg3--filo_hda2_vga_5.4.1.zelf
 #	payload ../../../../payloads/e1000_vga.zelf
 #	payload ../../../../payloads/tg3--filo_hda2_vga_5_4.zelf
 #	payload ../../../payloads/tg3_com2.zelf
@@ -38,6 +38,7 @@ romimage "normal"
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
 #	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_5.3.zelf
 #	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_com2.zelf
+	payload ../payload.elf
 end
 
 romimage "fallback" 
@@ -62,7 +63,7 @@ romimage "fallback"
 #	payload ../../../../payloads/filo_hda.zelf
 #	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
 #	payload ../../../../payloads/tg3--filo_hda2_vga_5_4.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga_5.4.1.zelf
+#	payload ../../../../payloads/tg3--filo_hda2_vga_5.4.1.zelf
 #	payload ../../../../payloads/filo_hda2_novga.zelf
 #	payload ../../../payloads/tg3_com2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
@@ -70,6 +71,7 @@ romimage "fallback"
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
 #	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_5.3.zelf
 #	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_com2.zelf
+	payload ../payload.elf
 end
 
 romimage "failover"

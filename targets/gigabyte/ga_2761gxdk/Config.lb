@@ -32,7 +32,8 @@ romimage "normal"
         option ROM_IMAGE_SIZE=0x20000
         option XIP_ROM_SIZE=0x40000
         option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
-        payload ../../../../payloads/filo_uda1.elf
+#	payload ../../../../payloads/filo_uda1.elf
+	payload ../payload.elf
 end
 
 romimage "fallback"
@@ -41,7 +42,8 @@ romimage "fallback"
         option ROM_IMAGE_SIZE=0x20000
         option XIP_ROM_SIZE=0x40000
         option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
-        payload ../../../../payloads/filo_uda1.elf
+#	payload ../../../../payloads/filo_uda1.elf
+	payload ../payload.elf
 end
 
 romimage "failover"

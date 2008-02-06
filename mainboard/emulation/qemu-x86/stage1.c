@@ -32,6 +32,6 @@ void disable_car(void)
 }
 
 
-void pre_payload(void)
+void mainboard_pre_payload(void)
 {
 }

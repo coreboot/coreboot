@@ -22,7 +22,7 @@ static int conf_lineno, conf_warnings, conf_unsaved;
 
 const char conf_def_filename[] = ".config";
 
-const char conf_defname[] = "arch/$ARCH/defconfig";
+const char conf_defname[] = "mainboard/$MAINBOARDDIR/defconfig";
 
 const char *conf_confnames[] = {
 	".config",

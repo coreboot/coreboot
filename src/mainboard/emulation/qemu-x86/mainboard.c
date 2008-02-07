@@ -33,7 +33,7 @@ static const struct pci_driver vga_driver __pci_driver = {
 	.device = 0x00b8,
 };
 
-struct chip_operations mainboard_emulation_qemu_i386_ops = {
+struct chip_operations mainboard_emulation_qemu_x86_ops = {
 	CHIP_NAME("QEMU Mainboard")
 };
 

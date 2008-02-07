@@ -138,7 +138,7 @@ static void enable_dev(struct device *dev)
 	}
 }
 
-struct chip_operations cpu_emulation_qemu_i386_ops = {
+struct chip_operations cpu_emulation_qemu_x86_ops = {
 	CHIP_NAME("QEMU Northbridge")
 	.enable_dev = enable_dev,
 };

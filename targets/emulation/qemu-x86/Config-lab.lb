@@ -1,7 +1,7 @@
-# This will make a target directory of ./emulation_qemu-i386
+# This will make a target directory of ./emulation_qemu-x86
 
-target qemu-i386
-mainboard emulation/qemu-i386
+target qemu-x86
+mainboard emulation/qemu-x86
 
 option ROM_SIZE=2048*1024
 option CONFIG_COMPRESSED_PAYLOAD_LZMA=0

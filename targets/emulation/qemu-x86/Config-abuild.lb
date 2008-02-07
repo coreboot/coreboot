@@ -1,7 +1,7 @@
-# This will make a target directory of ./emulation_qemu-i386
+# This will make a target directory of ./emulation_qemu-x86
 
-target emulation_qemu-i386
-mainboard emulation/qemu-i386
+target emulation_qemu-x86
+mainboard emulation/qemu-x86
 
 __COMPRESSION__
 

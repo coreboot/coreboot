@@ -18,5 +18,5 @@ romimage "image"
 	payload ../payload.elf.lzma
 end
 
-buildrom ./qemu.rom ROM_SIZE "image"
+buildrom ./coreboot.rom ROM_SIZE "image"
 

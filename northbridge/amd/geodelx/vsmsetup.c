@@ -183,13 +183,11 @@ void do_vsmbios(void)
 	init_archive(&archive);
 
 	if (find_file(&archive, "blob/vsa", &file)){
-		printk(BIOS_ERR, "NO VSA found!\n");
-		return;
+		die("FATAL: NO VSA found!\n");
 	}
 
 	if (process_file(&file, (void *)VSA2_BUFFER)) {
-		printk(BIOS_ERR, "Processing /blob/vsa failed\n");
-		return;
+		die("FATAL: Processing /blob/vsa failed\n");
 	}
 
 	buf = (unsigned char *)VSA2_BUFFER;
@@ -202,8 +200,7 @@ void do_vsmbios(void)
 	   don't bother. */
 	if ((buf[0x20] != 0xb0) || (buf[0x21] != 0x10) ||
 	    (buf[0x22] != 0xe6) || (buf[0x23] != 0x80)) {
-		printk(BIOS_ERR, "do_vsmbios: no vsainit.bin signature, skipping!\n");
-		return;
+		die("FATAL: no vsainit.bin signature, skipping!\n");
 	}
 
 	/* ecx gets smm, edx gets sysm */
@@ -218,7 +215,6 @@ void do_vsmbios(void)
 	if (VSA_vrRead(SIGNATURE) == VSA2_SIGNATURE)
 		printk(BIOS_DEBUG, "do_vsmbios: VSA2 VR signature verified\n");
 	else
-		printk(BIOS_ERR, 
-		       "do_vsmbios: VSA2 VR signature not valid, install failed!\n");
+		die("FATAL: VSA2 VR signature not valid, install failed!\n");
 }
 

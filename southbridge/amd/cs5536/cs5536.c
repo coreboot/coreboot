@@ -541,6 +541,35 @@ void chipsetinit(void)
 	}
 }
 
+#define IDE_CFG	  0x40
+	#define CHANEN  (1L <<  1)
+	#define PWB	(1L << 14)
+	#define CABLE	(1L << 16)
+#define IDE_DTC	  0x48
+#define IDE_CAST  0x4C
+#define IDE_ETC	  0x50
+
+/**
+ * Enabled the IDE. This is code that is optionally run if the ide_enable is set
+ * in the mainboard dts. 
+ * 
+ * @param dev The device 
+ */
+static void ide_init(struct device *dev)
+{
+	u32 ide_cfg;
+
+	printk(BIOS_DEBUG, "cs5536_ide: %s\n", __func__);
+	/* GPIO and IRQ setup are handled in the main chipset code. */
+
+	// Enable the channel and Post Write Buffer
+	// NOTE: Only 32-bit writes to the data buffer are allowed when PWB is set
+	ide_cfg = pci_read_config32(dev, IDE_CFG);
+	ide_cfg |= CHANEN | PWB;
+	pci_write_config8(dev, IDE_CFG, ide_cfg);
+}
+
+
 /**
  * TODO.
  *
@@ -576,6 +605,9 @@ static void southbridge_init(struct device *dev)
 
 	enable_USB_port4(sb);
 
+	if (sb->enable_ide)
+		ide_init(dev);
+
 #warning Add back in unwanted VPCI support
 #if 0
 	/* Disable unwanted virtual PCI devices. */
@@ -586,12 +618,6 @@ static void southbridge_init(struct device *dev)
 		outl(0xDEADBEEF, 0xCFC);
 	}
 #endif
-}
-
-static void southbridge_enable(struct device *dev)
-{
-	printk(BIOS_ERR, "cs5536: Enter %s: dev is %p\n", __FUNCTION__, dev);
-	printk(BIOS_ERR, "cs5536: Exit %s: dev is %p\n", __FUNCTION__, dev);
 }
 
 /**

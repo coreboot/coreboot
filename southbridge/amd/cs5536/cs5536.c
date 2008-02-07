@@ -618,6 +618,7 @@ static void southbridge_init(struct device *dev)
 		outl(0xDEADBEEF, 0xCFC);
 	}
 #endif
+	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
 }
 
 /**
@@ -631,9 +632,11 @@ static void cs5536_pci_dev_enable_resources(struct device *dev)
 	printk(BIOS_SPEW, "cs5536: %s()\n", __FUNCTION__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
+	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
 }
 
 static struct device_operations southbridge_ops = {
+	.constructor			= default_device_constructor,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= pci_dev_read_resources,
 	.phase4_set_resources		= pci_dev_set_resources,

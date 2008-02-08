@@ -74,8 +74,9 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 			int filelen, enum compalgo algo)
 {
 	int ret;
-        Elf32_Phdr *phdr;
+	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr;
+	Elf32_Shdr *shdr;
 	u32 entry;
 	int i;
 	int size;
@@ -121,11 +122,53 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 		ehdr->e_phnum,
 		ehdr->e_shentsize,
 		ehdr->e_shnum);
-        phdr = (Elf32_Phdr *)&(header[ehdr->e_phoff]);
+	phdr = (Elf32_Phdr *)&(header[ehdr->e_phoff]);
+	shdr = (Elf32_Shdr *)&(header[ehdr->e_shoff]);
 
 	if (verbose())
 		fprintf(stderr, "%s: header %p #headers %d\n", __FUNCTION__, ehdr, headers);
+
 	entry = ehdr->e_entry;
+	/* bss segments are special. They are in the section headers, 
+	 * not program headers. So, sadly, we have to look at section headers. 
+	 */
+
+	for(i = 0; i < ehdr->e_shnum; i++) {
+		char *p, *q;
+		/* Ignore data that I don't need to handle */
+		if (shdr[i].sh_type != SHT_NOBITS) {
+			if (verbose())
+				fprintf(stderr, "Dropping non SHT_NOBITS section\n");
+			continue;
+		}
+		/* might need to test flags with SHF_ALLOC */
+		if (shdr[i].sh_size == 0) {
+			if (verbose())
+				fprintf(stderr, "Dropping empty section\n");
+			continue;
+		}
+		thisalgo = algo;
+		if (verbose())
+			fprintf(stderr,  "New section addr %#x size %#x\n",
+			(u32)shdr[i].sh_addr, (u32)shdr[i].sh_size);
+		/* Clean up the values */
+		size = shdr[i].sh_size;
+		if (verbose()) {
+			fprintf(stderr, "(cleaned up) New section addr %p size 0x%#x\n",
+				(void *)shdr[i].sh_addr, (u32)shdr[i].sh_size);
+		}
+			/* ok, copy it out */
+		sprintf(ename, "%s/segment%d", name, segment++);
+		/* just allocate a bunch of zeros */
+		p = calloc(sizeof(*p), size);
+		q = calloc(sizeof(*q), size);
+		complen = lar_compress(p, size, q, &thisalgo);
+		ret = lar_add_entry(lar, ename, q, complen, size, 
+				    shdr[i].sh_addr, entry, thisalgo);
+		free(p);
+		free(q);
+	}
+
 	for(i = 0; i < headers; i++) {
 		/* Ignore data that I don't need to handle */
 		if (phdr[i].p_type != PT_LOAD) {

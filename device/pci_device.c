@@ -972,7 +972,7 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 			       devfn, id);
 			return NULL;
 		}
-		devid.type = DEVICE_PATH_PCI;
+		devid.type = DEVICE_ID_PCI;
 		devid.u.pci.vendor = id & 0xffff;
 		devid.u.pci.device = id >> 16;
 		dev = alloc_dev(bus, &dummy.path, &devid);

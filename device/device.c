@@ -126,7 +126,7 @@ struct constructor *find_constructor(struct device_id *id)
 		for (c = all_constructors[i]; c->ops; c++) {
 			printk(BIOS_SPEW, "%s: cons %p, cons id %s\n",
 			       __func__, c, dev_id_string(&c->id));
-			if ((!c->ops) || (!c->ops->constructor)) {
+			if (!c->ops) {
 				continue;
 			}
 			if (id_eq(&c->id, id)) {
@@ -182,8 +182,12 @@ void constructor(struct device *dev, struct device_id *id)
 	c = find_constructor(id);
 	printk(BIOS_SPEW, "%s: constructor is %p\n", __func__, c);
  
-	if(c && c->ops && c->ops->constructor)
-		c->ops->constructor(dev, c);
+	if(c && c->ops) {
+		if(c->ops->constructor)
+			c->ops->constructor(dev, c);
+		else
+			default_device_constructor(dev, c);
+	}
 	else
 		printk(BIOS_INFO, "No constructor called for %s.\n", 
 			dev_id_string(&c->id));

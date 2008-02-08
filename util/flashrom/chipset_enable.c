@@ -228,6 +228,8 @@ static int enable_flash_cs5530(struct pci_dev *dev, const char *name)
 
 static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 {
+	#define MSR_NORF_CTL	0x51400018
+
 	int fd_msr;
 	unsigned char buf[8];
 	unsigned int addr = 0x1808;
@@ -243,34 +245,53 @@ static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 	 * could have potential problems on SMP machines since it
 	 * assumes cpu0, but it is safe on the Geode which is not SMP.
 	 *
+	 * Geode systems also write protect the NOR flash chip itself
+	 * via MSR_NORF_CTL. To enable write to NOR Boot flash for the
+	 * benefit of systems that have such a setup, raise
+	 * MSR 0x51400018 WE_CS3 (write enable Boot Flash Chip Select).
+	 *
 	 * This is probably not portable beyond Linux.
 	 */
 
-	fd_msr = open("/dev/cpu/0/msr", O_RDONLY);
+	fd_msr = open("/dev/cpu/0/msr", O_RDWR);
 	if (!fd_msr) {
 		perror("open msr");
 		return -1;
 	}
 	lseek64(fd_msr, (off64_t) addr, SEEK_SET);
 	read(fd_msr, buf, 8);
-	close(fd_msr);
+
+	printf("Enabling Geode MSR to write to flash.\n");
+
 	if (buf[7] != 0x22) {
-		printf("Enabling Geode MSR to write to flash.\n");
-		buf[7] &= 0xFB;
-		fd_msr = open("/dev/cpu/0/msr", O_WRONLY);
-		if (!fd_msr) {
-			perror("open msr");
-			return -1;
-		}
+		buf[7] &= 0xfb;
 		lseek64(fd_msr, (off64_t) addr, SEEK_SET);
 		if (write(fd_msr, buf, 8) < 0) {
 			perror("msr write");
-			printf
-			    ("Cannot write to MSR.  Make sure msr kernel is loaded: 'modprobe msr'\n");
+			printf("Cannot write to MSR. Did you run 'modprobe msr'?\n");
 			return -1;
 		}
-		close(fd_msr);
 	}
+
+	lseek64(fd_msr, (off64_t) MSR_NORF_CTL, SEEK_SET);
+	if (read(fd_msr, buf, 8) != 8) {
+		perror("read msr");
+		return -1;
+	}
+
+	/* Raise WE_CS3 bit. */
+	buf[0] |= 0x08;
+
+	lseek64(fd_msr, (off64_t) MSR_NORF_CTL, SEEK_SET);
+	if (write(fd_msr, buf, 8) < 0) {
+		perror("msr write");
+		printf("Cannot write to MSR. Did you run 'modprobe msr'?\n");
+		return -1;
+	}
+
+	close(fd_msr);
+
+	#undef MSR_NORF_CTL
 	return 0;
 }
 

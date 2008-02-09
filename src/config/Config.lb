@@ -35,7 +35,7 @@ end
 makerule coreboot.a
         depends "$(OBJECTS)"
         action  "rm -f coreboot.a"
-        action  "ar cr coreboot.a $(OBJECTS)"
+        action  "$(CROSS_COMPILE)ar cr coreboot.a $(OBJECTS)"
 end
 
 
@@ -79,7 +79,7 @@ if CONFIG_AP_CODE_IN_CAR
 	makerule coreboot_apc.a
 		depends "apc_auto.o"
 		action  "rm -f coreboot_apc.a"
-		action  "ar cr coreboot_apc.a apc_auto.o"
+		action  "$(CROSS_COMPILE)ar cr coreboot_apc.a apc_auto.o"
 	end
 
 	makerule coreboot_apc.o

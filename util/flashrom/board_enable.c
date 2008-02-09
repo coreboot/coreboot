@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2005-2007 coresystems GmbH <stepan@coresystems.de>
  * Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
- * Copyright (C) 2007 Luc Verhaegen <libv@skynet.be>
+ * Copyright (C) 2007-2008 Luc Verhaegen <libv@skynet.be>
  * Copyright (C) 2007 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
@@ -213,6 +213,28 @@ static int board_asus_a7v8x_mx(const char *name)
 }
 
 /**
+ * Suited for VIAs EPIA SP.
+ */
+static int board_via_epia_sp(const char *name)
+{
+	struct pci_dev *dev;
+	uint8_t val;
+
+	dev = pci_dev_find(0x1106, 0x3227);	/* VT8237R ISA bridge */
+	if (!dev) {
+		fprintf(stderr, "\nERROR: VT8237R ISA bridge not found.\n");
+		return -1;
+	}
+
+	/* All memory cycles, not just ROM ones, go to LPC */
+	val = pci_read_byte(dev, 0x59);
+	val &= ~0x80;
+	pci_write_byte(dev, 0x59, val);
+
+	return 0;
+}
+
+/**
  * Suited for ASUS P5A.
  *
  * This is rather nasty code, but there's no way to do this cleanly.
@@ -393,6 +415,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 NULL, NULL, "VIA EPIA M/MII/...", board_via_epia_m},
 	{0x1106, 0x3177, 0x1043, 0x80A1, 0x1106, 0x3205, 0x1043, 0x8118,
 	 NULL, NULL, "ASUS A7V8-MX SE", board_asus_a7v8x_mx},
+	{0x1106, 0x3227, 0x1106, 0xAA01, 0x1106, 0x0259, 0x1106, 0xAA01,
+	 NULL, NULL, "VIA EPIA SP", board_via_epia_sp},
 	{0x8086, 0x1076, 0x8086, 0x1176, 0x1106, 0x3059, 0x10f1, 0x2498,
 	 NULL, NULL, "Tyan Tomcat K7M", board_asus_a7v8x_mx},
 	{0x10B9, 0x1541, 0x0000, 0x0000, 0x10B9, 0x1533, 0x0000, 0x0000,

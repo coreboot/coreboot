@@ -182,6 +182,39 @@ int list_lar(const char *archivename, struct file *files)
 	return 0;
 }
 
+int zerofill_lar(const char *archivename)
+{
+	struct lar_header *header;
+	int ret, hlen;
+	int pathlen;
+	u32 *walk,  csum;
+	u32 offset;
+	char *name = "zerofill";
+	int zerolen;
+	char *zero;
+
+	struct lar *lar = lar_open_archive(archivename);
+
+	if (lar == NULL) {
+		fprintf(stderr, "Unable to open LAR archive %s\n", archivename);
+		exit(1);
+	}
+
+	zerolen = maxsize(lar, name);
+	if (zerolen <= 0) {
+		fprintf(stderr, "No room for zerofill.\n");
+		return -1;
+	}
+
+	zero = malloc(zerolen);
+	memset(zero, 0xff, zerolen);
+
+	lar_add_entry(lar, name, zero, zerolen, zerolen,0, 0, 0);
+
+	lar_close_archive(lar);
+	return 0;
+}
+
 int extract_lar(const char *archivename, struct file *files)
 {
 	int ret;
@@ -218,6 +251,7 @@ int main(int argc, char *argv[])
 		{"elfparse", 1, 0, 'e'},
 		{"verbose", 0, 0, 'v'},
 		{"version", 0, 0, 'V'},
+		{"zerofill", 0, 0, 'z'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
@@ -227,7 +261,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	while ((opt = getopt_long(argc, argv, "acC:xels:b:vVh?",
+	while ((opt = getopt_long(argc, argv, "acC:xzels:b:vVh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'a':
@@ -252,6 +286,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'x':
 			larmode = EXTRACT;
+			break;
+		case 'z':
+			larmode = ZEROFILL;
 			break;
 		case 's':
 			parse_larsize(optarg);
@@ -287,6 +324,8 @@ int main(int argc, char *argv[])
 			larmode = CREATE;
 		else if (strncmp(argv[optind], "l", 2) == 0)
 			larmode = LIST;
+		else if (strncmp(argv[optind], "z", 2) == 0)
+			larmode = ZEROFILL;
 
 		/* If larmode changed in this if branch,
 		 * eat a parameter
@@ -324,7 +363,7 @@ int main(int argc, char *argv[])
 
 	if (optind < argc) {
 		archivename = argv[optind++];
-	} else {
+	} else if (larmode != ZEROFILL) {
 
 		usage(argv[0]);
 		fprintf(stderr, "Error: No archive name.\n\n");
@@ -355,6 +394,9 @@ int main(int argc, char *argv[])
 		break;
 	case LIST:
 		list_lar(archivename, get_files());
+		break;
+	case ZEROFILL:
+		zerofill_lar(archivename);
 		break;
 	}
 

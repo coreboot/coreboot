@@ -784,6 +784,45 @@ char *mapfile(char *filename, u32 *size)
 }
 
 /**
+ * Given a name, return the size of the header for that name.  
+ * 
+ * @param name header name
+ * @return  header size
+ */
+int hlen(char *pathname)
+{
+	int pathlen;
+	int len;
+
+	pathlen = strlen(pathname) + 1 > MAX_PATHLEN ? 
+		MAX_PATHLEN : strlen(pathname) + 1;
+	len = sizeof(struct lar_header) + pathlen;
+	len = (len + 15) & 0xFFFFFFF0;
+
+	return len;
+}
+
+/**
+ * Return the amount of space left in a lar, given a name for the entry
+ * @param Name of the entry
+ * @return Maximum possible size for the entry
+ */
+int maxsize(struct lar *lar, char *name)
+{
+	int size;
+	u32 offset;
+	int bootblock_size;
+
+	/* Find the beginning of the available space in the LAR */
+	offset = lar_empty_offset(lar);
+
+	/* Figure out how big our header will be */
+	size = get_bootblock_offset(lar->size) - offset - hlen(name) - 1;
+
+	return size;
+}
+
+/**
  * Compress an area according to an algorithm. If the area grows, 
  * use no compression. 
  * @param ptr data to be compressed

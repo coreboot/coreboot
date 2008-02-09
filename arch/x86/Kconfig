@@ -55,6 +55,13 @@ config OPTION_TABLE
 	  a battery backed up real time clock with CMOS NVRAM.
 	  It is usually set in mainboard/*/Kconfig.
 
+config PIRQ_TABLE
+	boolean
+	help
+	  This option is used to determine whether the mainboard has
+	  a PIRQ table, which is the old way to set up interrupt routing. 
+	  It is usually set in mainboard/*/Kconfig.
+
 config SMP
 	boolean
 	help

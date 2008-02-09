@@ -269,4 +269,9 @@ struct lb_memory *get_lb_mem(void);
 
 struct cmos_option_table *get_option_table(void);
 
+#ifdef CONFIG_PIRQ_TABLE
+unsigned long write_pirq_routing_table(unsigned long addr);
+#endif
+
+
 #endif /* TABLES_H */

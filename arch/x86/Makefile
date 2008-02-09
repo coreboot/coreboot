@@ -179,6 +179,10 @@ STAGE2_ARCH_X86_OBJ  = archtables.o coreboot_table.o udelay_io.o
 STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o
 STAGE2_ARCH_X86_OBJ += keyboard.o i8259.o isa-dma.o
 
+ifeq ($(CONFIG_PIRQ_TABLE),y)
+STAGE2_ARCH_X86_OBJ += pirq_routing.o
+endif
+
 STAGE2_DYNAMIC_OBJ   = statictree.o
 
 STAGE2_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE2_LIB_OBJ)) \

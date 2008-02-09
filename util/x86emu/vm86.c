@@ -595,11 +595,23 @@ void setup_realmode_idt(void)
 	intbyte = codeptr + 3;
 	*intbyte = 0x42; /* int42 is the relocated int10 */
 
+	/* The source of the following code is not yet known. 
+ 	 * We feel it may be useful someday, but right now it 
+ 	 * scribbles over code space. We are leaving it here as a 
+ 	 * "Living comment" since it may at some point be needed 
+ 	 * again. It is a very intriguing idea -- one could run
+ 	 * vm86 code with TF set and set programmable times 
+ 	 * between instructions to slow them down. For those who
+ 	 * recall the "turbo" switch on old PCs, this is the 
+ 	 * software equivalent.
+ 	 */
+#if 0
 	/* debug handler - useful to set a programmable delay between instructions if the
 	   TF bit is set upon call to real mode */
 	idts[1].cs = 0;
 	idts[1].offset = 16384;
 	memcpy((void *)16384, &debughandle, &end_debughandle - &debughandle);
+#endif
 
 	
 }

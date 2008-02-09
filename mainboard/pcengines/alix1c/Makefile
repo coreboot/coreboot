@@ -27,6 +27,10 @@ INITRAM_OBJ =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 
 STAGE2_MAINBOARD_OBJ = 
 
+ifeq ($(CONFIG_PIRQ_TABLE),y)
+STAGE2_MAINBOARD_OBJ += irq_tables.o 
+endif
+
 $(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
 	$(Q)dd if=/dev/zero of=$(obj)/coreboot.vpd bs=256 count=1 $(SILENT)

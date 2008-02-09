@@ -99,6 +99,9 @@ void pci_domain_read_resources(struct device *dev);
 void ram_resource(struct device *dev, unsigned long index,
                   unsigned long basek, unsigned long sizek);
 unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max);
+void pci_assign_irqs(unsigned int bus, unsigned int slot,
+		     const unsigned char pIntAtoD[4]);
+
 
 
 #define PCI_IO_BRIDGE_ALIGN 4096

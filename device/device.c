@@ -119,16 +119,13 @@ struct constructor *find_constructor(struct device_id *id)
 	extern struct constructor *all_constructors[];
 	struct constructor *c;
 	int i;
-	printk(BIOS_SPEW, "%s: find %s\n", __func__, dev_id_string(id));
+
 	for (i = 0; all_constructors[i]; i++) {
 		printk(BIOS_SPEW, "%s: check all_constructors[i] %p\n",
 		       __func__, all_constructors[i]);
 		for (c = all_constructors[i]; c->ops; c++) {
 			printk(BIOS_SPEW, "%s: cons %p, cons id %s\n",
 			       __func__, c, dev_id_string(&c->id));
-			if (!c->ops) {
-				continue;
-			}
 			if (id_eq(&c->id, id)) {
 				printk(BIOS_SPEW, "%s: match\n", __func__);
 				return c;
@@ -180,6 +177,7 @@ void constructor(struct device *dev, struct device_id *id)
 	struct constructor *c;
 
 	c = find_constructor(id);
+
 	printk(BIOS_SPEW, "%s: constructor is %p\n", __func__, c);
  
 	if(c && c->ops) {
@@ -190,7 +188,7 @@ void constructor(struct device *dev, struct device_id *id)
 	}
 	else
 		printk(BIOS_INFO, "No constructor called for %s.\n", 
-			dev_id_string(&c->id));
+			dev_id_string(id));
 }
 
 /**
@@ -211,7 +209,6 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 {
 	struct device *dev, *child;
 	int link;
-
 	spin_lock(&dev_lock);
 
 	/* Find the last child of our parent. */

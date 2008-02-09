@@ -79,8 +79,13 @@ struct lb_memory *arch_write_tables(void)
 	post_code(POST_STAGE2_ARCH_WRITE_TABLES_ENTER);
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
-//	rom_table_end = write_pirq_routing_table(rom_table_end);
-//	rom_table_end = (rom_table_end + 1023) & ~1023;
+	/* we need to make a decision: create empty functions 
+ 	 * in .h files if the cpp variable is undefined, or #ifdef?
+ 	 */
+#ifdef CONFIG_PIRQ_TABLE
+	rom_table_end = write_pirq_routing_table(rom_table_end);
+	rom_table_end = (rom_table_end + 1023) & ~1023;
+#endif
 
 	/* Write ACPI tables */
 	/* write them in the rom area because DSDT can be large (8K on epia-m) which

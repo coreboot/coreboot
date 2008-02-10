@@ -742,17 +742,16 @@ void dev_phase2(void)
 	post_code(POST_STAGE2_PHASE2_ENTER);
 	printk(BIOS_DEBUG, "Phase 2: Early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
-		printk(BIOS_SPEW, "%s: dev %s: ", __FUNCTION__, dev->dtsname);
-		printk(BIOS_SPEW, "%s: ops %p ops->phase2_setup_scan_bus %p\n",
-			__FUNCTION__, dev->ops, 
+		printk(BIOS_SPEW,
+			"%s: dev %s: ops %p ops->phase2_setup_scan_bus %p\n",
+			__FUNCTION__, dev->dtsname, dev->ops, 
 			dev->ops? dev->ops->phase2_setup_scan_bus : NULL);
 		if (dev->ops && dev->ops->phase2_setup_scan_bus) {
 			printk(BIOS_SPEW,
-			       "Calling phase2 phase2_setup_scan_bus...");
+			       "Calling phase2 phase2_setup_scan_bus...\n");
 			dev->ops->phase2_setup_scan_bus(dev);
-			printk(BIOS_SPEW, " done");
+			printk(BIOS_SPEW, "phase2_setup_scan_bus done\n");
 		}
-		printk(BIOS_SPEW, "\n");
 	}
 
 	post_code(POST_STAGE2_PHASE2_DONE);

@@ -183,9 +183,7 @@ struct cmos_option_table *get_option_table(void)
 	struct mem_file result, archive;
 	int ret;
 
-	// FIXME - i want to be dynamic.
-	archive.len=(CONFIG_COREBOOT_ROMSIZE_KB-16)*1024;
-	archive.start=(void *)(0UL-(CONFIG_COREBOOT_ROMSIZE_KB*1024)); 
+	init_archive(&archive);
 
 	ret = find_file(&archive, "normal/option_table", &result);
 	if (ret) {

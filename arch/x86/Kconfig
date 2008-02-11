@@ -69,4 +69,17 @@ config SMP
 	  coreboot work correctly on symmetric multi processor
 	  systems.
 	  It is usually set in mainboard/*/Kconfig.
- 
+
+config CARBASE
+	hex
+	default 0x8f000 if CPU_I586
+	default 0x80000 if CPU_AMD_GEODELX
+	help
+	  This option sets the base address of the area used for CAR.
+
+config CARSIZE
+	hex
+	default 0x1000 if CPU_I586
+	default 0x8000 if CPU_AMD_GEODELX
+	help
+	  This option sets the size of the area used for CAR.

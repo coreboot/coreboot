@@ -183,18 +183,9 @@ __protected_stage0:
  * the other is very similar to the AMD CAR, except remove amd specific msr 
  */
 
-#ifndef CONFIG_CARSIZE
-#define CacheSize 4096
-#else
 #define CacheSize CONFIG_CARSIZE
-#endif
 
-/* pick a safer value for default -- i.e. not the C segment! */
-#ifndef CONFIG_CARBASE
-#define CacheBase (0x90000 - CacheSize) 
-#else
 #define CacheBase CONFIG_CARBASE
-#endif
 
 #define ASSEMBLY
 #include "mtrr.h"

@@ -565,8 +565,8 @@
 #define SMM_SIZE				128	/* changed SMM_SIZE from 256 KB to 128 KB */
 
 /* ------------------------  */
-#define DCACHE_RAM_SIZE 0x08000
-#define DCACHE_RAM_BASE 0x80000
+#define DCACHE_RAM_SIZE CONFIG_CARSIZE
+#define DCACHE_RAM_BASE CONFIG_CARBASE
 /* This is where the DCache will be mapped and be used as stack. It would be
  * cool if it was the same base as coreboot normal stack.
  */

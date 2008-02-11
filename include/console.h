@@ -49,5 +49,6 @@ struct console_driver {
 SHARED_WITH_ATTRIBUTES(printk, int, __attribute__((format (printf, 2, 3))),
 					int msg_level, const char *fmt, ...);
 SHARED(banner, void, int msg_level, const char *msg);
+SHARED(dump_mem_range, void, int msg_level, unsigned char *buf, int size);
 
 #endif /* CONSOLE_H */

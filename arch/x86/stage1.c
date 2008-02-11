@@ -66,6 +66,19 @@ void init_archive(struct mem_file *archive)
 	// FIXME check integrity
 
 }
+
+void dump_mem_range(int msg_level, unsigned char *buf, int size)
+{
+	int i;
+	printk(msg_level, "dumping memrange %p size %i:\n", buf, size);
+	for (i = 0; i < size; i++) {
+		printk(msg_level, "%02x ", buf[i]);
+		if (i % 16 == 15)
+			printk(msg_level, "\n");
+	}
+	return;
+}
+
 /* until we get rid of elf */
 int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *mem)
 {

@@ -259,17 +259,16 @@ static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 
 	if (lseek64(fd_msr, (off64_t) MSR_RCONF_DEFAULT, SEEK_SET) == -1) {
 		perror("lseek64");
+		printf("Cannot operate on MSR. Did you run 'modprobe msr'?\n");
 		close(fd_msr);
 		return -1;
 	}
 
 	if (read(fd_msr, buf, 8) != 8) {
-		perror("read");
+		perror("read msr");
 		close(fd_msr);
 		return -1;
 	}
-
-	printf("Enabling Geode MSR to write to flash.\n");
 
 	if (buf[7] != 0x22) {
 		buf[7] &= 0xfb;
@@ -281,7 +280,6 @@ static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 
 		if (write(fd_msr, buf, 8) < 0) {
 			perror("msr write");
-			printf("Cannot write to MSR. Did you run 'modprobe msr'?\n");
 			close(fd_msr);
 			return -1;
 		}
@@ -309,7 +307,6 @@ static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 	}
 	if (write(fd_msr, buf, 8) < 0) {
 		perror("msr write");
-		printf("Cannot write to MSR. Did you run 'modprobe msr'?\n");
 		close(fd_msr);
 		return -1;
 	}

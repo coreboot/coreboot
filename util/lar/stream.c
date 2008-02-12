@@ -545,6 +545,7 @@ static int file_in_list(struct file *files, char *filename)
 void lar_list_files(struct lar *lar, struct file *files)
 {
 	u8 *ptr = lar->map;
+	u32 total_size = 0;
 	char *filename;
 
 	struct lar_header *header;
@@ -553,12 +554,13 @@ void lar_list_files(struct lar *lar, struct file *files)
 	while (ptr < (lar->map + get_bootblock_offset(lar->size))) {
 		header = (struct lar_header *) ptr;
 
-		/* We interpet the absence of the magic as empty space */
+		/* We interpret the absence of the magic as empty space */
 
 		if (strncmp(header->magic, MAGIC, 8))
 			break;
 
 		filename = (char *) (ptr + sizeof(struct lar_header));
+		total_size += sizeof(struct lar_header);
 
 		if (file_in_list(files, filename)) {
 			printf("  %s ", filename);
@@ -568,6 +570,7 @@ void lar_list_files(struct lar *lar, struct file *files)
 				       ntohl(header->len),
 				       (unsigned long)(ptr - lar->map) +
 				       ntohl(header->offset));
+				total_size += ntohl(header->len);
 			} else {
 				printf("(%d bytes, %s compressed to %d bytes "
 				       "@0x%lx);",
@@ -576,6 +579,7 @@ void lar_list_files(struct lar *lar, struct file *files)
 				       ntohl(header->len),
 				       (unsigned long)(ptr - lar->map) +
 				       ntohl(header->offset));
+				total_size += ntohl(header->len);
 			}
 			printf("loadaddress 0x%#x entry 0x%#x\n", 
 					ntohl(header->loadaddress), 
@@ -595,7 +599,12 @@ void lar_list_files(struct lar *lar, struct file *files)
 		       ntohl(header->len),
 		       get_bootblock_offset(lar->size) +
 		       ntohl(header->offset));
+		total_size += sizeof(struct lar_header) + ntohl(header->len);
 	}
+
+	/* Print the total size */
+	printf ("Total size = %d bytes (0x%x)\n", total_size, total_size);
+	
 }
 
 /**

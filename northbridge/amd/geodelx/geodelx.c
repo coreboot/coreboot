@@ -163,20 +163,6 @@ static void geodelx_northbridge_init(struct device *dev)
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
 
 	enable_shadow(dev);
-
-#if 0
-	/* Swiss cheese */
-	msr = rdmsr(MSR_GLIU0_SHADOW);
-
-	msr.hi |= 0x3;
-	msr.lo |= 0x30000;
-
-	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
-	       MSR_GLIU0_SHADOW, msr.hi, msr.lo);
-	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
-	       MSR_GLIU1_SHADOW, msr.hi, msr.lo);
-	/* TODO: Is the respective wrmsr() missing? */
-#endif
 }
 
 /**

@@ -216,15 +216,6 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 	if (spd_byte1 == 0xFF)
 		spd_byte1 = 0;
 
-	/* I don't think you need this check. */
-#if 0
-	if (spd_byte0 < 0xA0 || spd_byte0 < 0xA0) {
-		printk(BIOS_EMERG, "DIMM overclocked. Check GeodeLink speed\n");
-		post_code(POST_PLL_MEM_FAIL);
-		hlt();
-	}
-#endif
-
 	/* Use the slowest DIMM. */
 	if (spd_byte0 < spd_byte1)
 		spd_byte0 = spd_byte1;
@@ -580,13 +571,6 @@ void sdram_set_registers(void)
 	msr.lo &= ~0xF0;
 	msr.lo |= 0x40;		/* Set refresh to 4 SDRAM clocks. */
 	wrmsr(MC_CF07_DATA, msr);
-
-	/* Memory Interleave: Set HOI here otherwise default is LOI. */
-#if 0
-	msr = rdmsr(MC_CF8F_DATA);
-	msr.hi |= CF8F_UPPER_HOI_LOI_SET;
-	wrmsr(MC_CF8F_DATA, msr);
-#endif
 }
 
 /**

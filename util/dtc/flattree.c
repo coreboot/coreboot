@@ -521,12 +521,44 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	int ops_set = 0;
 	int is_root = 0;
 	char *configname;
+	char *path;
+	int enabled = 1;
 
 	fprintf(f, "struct device dev_%s = {\n", tree->label);
 	/* special case -- the root has a distinguished path */
 	if (! strncmp(tree->label, "root", 4)){
 		is_root = 1;
 		fprintf(f, "\t.path =  { .type = DEVICE_PATH_ROOT },\n");
+	}
+
+	/* from the node names (tree->name) we derive the path */
+	path = index(tree->name, '@');
+	if (path && path[1]) {
+		path++;
+		if (!strncmp(tree->name, "cpu", 3)){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_CPU,.u={.cpu={ .id = %s }}},\n", 
+				path);
+		}
+		if (!strncmp(tree->name, "bus", 3)){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_BUS,.u={.pci_bus={ .bus = %s }}},\n", 
+				path);
+		}
+		if (!strncmp(tree->name, "apic", 4)){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_APIC,.u={.apic={ %s }}},\n", 
+				path);
+		}
+		if (!strncmp(tree->name, "domain", 6)){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = %s }}},\n", 
+				path);
+		}
+		if (!strncmp(tree->name, "pci", 3)){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(%s)}}},\n", 
+				path);
+		}
+		if (!strncmp(tree->name, "lpc", 3)){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_SUPERIO,.u={.superio={.iobase=%s}}},\n", 
+				path);
+		}
 	}
 
 	if (tree->config){
@@ -564,20 +596,15 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	 * and some are just set directly into the code (e.g. ops_pci).
 	 */
 	for_each_property(tree, prop) {
-		if (streq(prop->name, "pcidomain")){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = %s }}},\n", 
-				prop->val.val);
-		}
-		if (streq(prop->name, "pcipath")){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(%s)}}},\n", 
-				prop->val.val);
-		}
 		/* to do: check the value, maybe. Kinda pointless though. */
 		if (streq(prop->name, "on_mainboard")){
 			fprintf(f, "\t.on_mainboard = 1,\n");
 		}
 		if (streq(prop->name, "enabled")){
-			fprintf(f, "\t.enabled = 1,\n");
+			enabled = 1;
+		}
+		if (streq(prop->name, "disabled")){
+			enabled = 0;
 		}
 
 		if (streq(prop->name, "config")){
@@ -634,6 +661,7 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 		fprintf(f, "\t.ops = &default_dev_ops_root,\n");
 
 	fprintf(f, "\t.dtsname = \"%s\",\n", tree->label);
+	fprintf(f, "\t.enabled = %d\n", enabled);
 
 	fprintf(f, "};\n");
 }
@@ -796,18 +824,6 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 	struct node *child;
 	int seen_name_prop = 0;
 	FILE *f = etarget;
-/*
-	treename = clean(tree->name, 0);
-	fprintf(f, "struct %s %s = {\n", treename, tree->label);
-	free(treename);
-
-*/
-#if 0
-	if (vi->flags & FTF_FULLPATH)
-		emit->string(etarget, tree->fullpath, 0);
-	else
-		emit->string(etarget, tree->name, 0);
-#endif
 	/* here is the real action. What we have to do, given a -> config entry, is this:
 	  * foreach property(tree->config)
 	  * search for the property in this node's property list
@@ -826,24 +842,13 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 		  * the operator should take the node itself, not a string. 
 		  */
 		printf("struct %s %s = {\n", structname, treelabel);
-//		emit->beginnode(etarget, treename);
-#if 0
-		if (vi->flags & FTF_FULLPATH)
-			emit->string(etarget, tree->fullpath, 0);
-		else
-			emit->string(etarget, tree->name, 0);
-#endif
 
 		for_each_config(tree, configprop) {
 			char *cleanname;
 			int found = 0;
 			if (streq(configprop->name, "constructor")) /* this is special */
 				continue;
-#if 0
-			cleanname = clean(configprop->name, 0);
-			fprintf(f, "\tu32 %s = \n", cleanname);
-			free(cleanname);
-#endif
+
 			for_each_property(tree, dtsprop) {
 				if (streq(dtsprop->name,configprop->name)){
 					emit->data(etarget, dtsprop);
@@ -854,28 +859,8 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 				emit->data(etarget, configprop);
 
 		}
-#if 0
-		if ((vi->flags & FTF_NAMEPROPS) && !seen_name_configprop) {
-			fprintf(f, "\tu8 %s[%d];\n", configprop->name, configprop->val.len);
-		}
-#endif
 		emit->endnode(etarget, treelabel);
 	}
-/*
-	for_each_property(tree, prop) {
-		if (streq(prop->name, "name"))
-			seen_name_prop = 1;
-		emit->data(etarget, prop);
-	}
- */
-#if 0
-	if ((vi->flags & FTF_NAMEPROPS) && !seen_name_prop) {
-		fprintf(f, "\tu8 %s[%d]\n", prop->name, prop->data.len);
-	}
-#endif
-/*
-	emit->endnode(etarget, tree->label);
-*/
 
 	/* now emit the device for this node, with sibling and child pointers etc. */
 	emit->special(f, tree);
@@ -1253,7 +1238,7 @@ void dt_to_C(FILE *f, struct boot_info *bi, int version, int boot_cpuid_phys)
 	data_free(strbuf);
 }
 
-/* the label is not really used. So go ahead and make clean names for all labels */
+/*Set up the clean label  */
 
 void
 labeltree(struct node *tree)

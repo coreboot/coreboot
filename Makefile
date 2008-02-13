@@ -43,7 +43,7 @@ CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 
 HOSTCC     := gcc
 HOSTCXX    := g++
-HOSTCFLAGS := -Wall -Wstrict-prototypes -O2 -fomit-frame-pointer \
+HOSTCFLAGS := -Wall -Wstrict-prototypes -g -fomit-frame-pointer \
 	      -Wno-unused -Wno-sign-compare
 
 LEX        := flex

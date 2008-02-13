@@ -559,7 +559,9 @@ int biosint(unsigned long intnumber,
 void setup_realmode_idt(void) 
 {
 	extern unsigned char idthandle, end_idthandle;
+#if 0
 	extern unsigned char debughandle, end_debughandle;
+#endif
 
 	int i;
 	struct realidt *idts = (struct realidt *) 0;

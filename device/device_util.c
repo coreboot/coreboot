@@ -221,6 +221,10 @@ const char *dev_path(struct device *dev)
 			sprintf(buffer, "PCI_DOMAIN: %04x",
 				dev->path.u.pci_domain.domain);
 			break;
+		case DEVICE_PATH_PCI_BUS:
+			sprintf(buffer, "PCI_BUS: %04x",
+				dev->path.u.pci_bus.bus);
+			break;
 		case DEVICE_PATH_APIC_CLUSTER:
 			sprintf(buffer, "APIC_CLUSTER: %01x",
 				dev->path.u.apic_cluster.cluster);
@@ -231,6 +235,10 @@ const char *dev_path(struct device *dev)
 		case DEVICE_PATH_CPU_BUS:
 			sprintf(buffer, "CPU_BUS: %02x",
 				dev->path.u.cpu_bus.id);
+			break;
+		case DEVICE_PATH_LPC:
+			sprintf(buffer, "LPC: %02x",
+				dev->path.u.lpc.iobase);
 			break;
 		default:
 			printk(BIOS_ERR, "%s: Unknown device path type: %d\n",

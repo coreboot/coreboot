@@ -81,10 +81,10 @@ struct device_operations i440bxemulation_pcidomainops = {
 /* The plain PCI device uses the standard PCI operations. */
 struct constructor i440bx_constructors[] = {
 	{.id = {.type = DEVICE_ID_PCI_DOMAIN,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7190}}},
-	 &i440bxemulation_pcidomainops},
+		.u = {.pci_domain = {.vendor = 0x8086,.device = 0x7190}}},
+	 .ops = &i440bxemulation_pcidomainops},
 	{.id = {.type = DEVICE_ID_PCI,
 		.u = {.pci = {.vendor = 0x8086,.device = 0x7190}}},
-	 &default_pci_ops_bus},
+	 .ops = &default_pci_ops_bus},
 	{.ops = 0},
 };

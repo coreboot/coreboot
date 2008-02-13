@@ -471,7 +471,7 @@ static void clock_gating_init(void)
 	struct msr msr;
 	struct msrinit *gating = clock_gating_default;
 
-	for (/* Nothing */; gating->msrnum != 0xffffffff; gating++) {
+	for (; gating->msrnum != 0xffffffff; gating++) {
 		msr = rdmsr(gating->msrnum);
 		msr.hi |= gating->msr.hi;
 		msr.lo |= gating->msr.lo;
@@ -487,7 +487,7 @@ static void geode_link_priority(void)
 	struct msr msr;
 	struct msrinit *prio = geode_link_priority_table;
 
-	for (/* Nothing */; prio->msrnum != 0xffffffff; prio++) {
+	for (; prio->msrnum != 0xffffffff; prio++) {
 		msr = rdmsr(prio->msrnum);
 		msr.hi |= prio->msr.hi;
 		msr.lo &= ~0xfff;
@@ -539,7 +539,7 @@ static void set_shadowRCONF(u32 shadowHi, u32 shadowLo)
 	}
 
 	/* Load up C000 settings in eax. */
-	for (/* Nothing */; bit; bit--) {
+	for (; bit; bit--) {
 		msr.lo <<= 8;
 		msr.lo |= 1;	/* Cache disable PCI/Shadow memory. */
 		if (shadowByte && (1 << bit))
@@ -559,7 +559,7 @@ static void set_shadowRCONF(u32 shadowHi, u32 shadowLo)
 	}
 
 	/* Load up E000 settings in eax. */
-	for (/* Nothing */; bit; bit--) {
+	for (; bit; bit--) {
 		msr.lo <<= 8;
 		msr.lo |= 1;	/* Cache disable PCI/Shadow memory. */
 		if (shadowByte && (1 << bit))

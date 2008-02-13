@@ -492,7 +492,7 @@ void chipsetinit(void)
 	if (!IsS3Resume())
 	{
 		struct acpi_init *aci = acpi_init_table;
-		for (/* Nothing */; aci->ioreg; aci++) {
+		for (; aci->ioreg; aci++) {
 			outl(aci->regdata, aci->ioreg);
 			inl(aci->ioreg);
 		}
@@ -517,7 +517,7 @@ void chipsetinit(void)
 	wrmsr(GLPCI_SB_CTRL, msr);
 
 	csi = SB_MASTER_CONF_TABLE;
-	for (/* Nothing */; csi->msrnum; csi++) {
+	for (; csi->msrnum; csi++) {
 		msr.lo = csi->msr.lo;
 		msr.hi = csi->msr.hi;
 		wrmsr(csi->msrnum, msr);
@@ -533,7 +533,7 @@ void chipsetinit(void)
 	/* TODO: Why the extra block here? Can it be removed? */
 	{
 		csi = CS5536_CLOCK_GATING_TABLE;
-		for (/* Nothing */; csi->msrnum; csi++) {
+		for (; csi->msrnum; csi++) {
 			msr.lo = csi->msr.lo;
 			msr.hi = csi->msr.hi;
 			wrmsr(csi->msrnum, msr);

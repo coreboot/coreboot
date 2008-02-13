@@ -1304,10 +1304,11 @@ void Encode(void)  /* compression */
 #endif
 
 #ifdef COMPACT
-void do_nrv2b_compress(uint8_t *in, unsigned long in_len, uint8_t *out, unsigned long *out_len) {
-	*out_len = in_len + (in_len/8) + 256;
-	out = malloc(*out_len);
-	ucl_nrv2b_99_compress(in, in_len, out, out_len, 0 );
+void do_nrv2b_compress(uint8_t *in, int in_len, uint8_t *out, int *out_len) {
+	unsigned long new_out_len = in_len + (in_len/8) + 256;
+	out = malloc(new_out_len);
+	ucl_nrv2b_99_compress(in, in_len, out, &new_out_len, 0 );
+	*out_len = (int) new_out_len;
 }
 #endif
 
@@ -1346,7 +1347,7 @@ void do_nrv2b_compress(uint8_t *in, unsigned long in_len, uint8_t *out, unsigned
 #endif
 
 #ifdef COMPACT
-void do_nrv2b_uncompress(uint8_t *dst, uint8_t *src, unsigned long len) {
+void do_nrv2b_uncompress(uint8_t *dst, uint8_t *src, int len) {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
 	uint32_t bb = 0;
 	unsigned bc = 0;

@@ -113,7 +113,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 		ehdr->e_type,
 		ehdr->e_machine,
 		ehdr->e_version,
-		(void *)ehdr->e_entry,
+		(void *)(unsigned long)ehdr->e_entry,
 		ehdr->e_phoff,
 		ehdr->e_shoff,
 		ehdr->e_flags,
@@ -155,7 +155,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 		size = shdr[i].sh_size;
 		if (verbose()) {
 			fprintf(stderr, "(cleaned up) New section addr %p size 0x%#x\n",
-				(void *)shdr[i].sh_addr, (u32)shdr[i].sh_size);
+				(void *)(unsigned long)shdr[i].sh_addr, (u32)shdr[i].sh_size);
 		}
 			/* ok, copy it out */
 		sprintf(ename, "%s/segment%d", name, segment++);
@@ -193,9 +193,9 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 		}
 		if (verbose()) {
 			fprintf(stderr, "(cleaned up) New segment addr %p size 0x%#x offset 0x%x\n",
-				(void *)phdr[i].p_paddr, size, phdr[i].p_offset);
+				(void *)(unsigned long)phdr[i].p_paddr, size, phdr[i].p_offset);
 			fprintf(stderr, "Copy to %p from %p for %d bytes\n", 
-				(unsigned char *)phdr[i].p_paddr, 
+				(unsigned char *)(unsigned long)phdr[i].p_paddr, 
 				&header[phdr[i].p_offset], size);
 			fprintf(stderr, "entry %ux loadaddr %ux\n", 
 				entry,  phdr[i].p_paddr);
@@ -840,9 +840,9 @@ int maxsize(struct lar *lar, char *name)
  * @param thisalgo pointer to algorithm -- this can be modified
  * @return  size of compressed data
  */
-u32 lar_compress(char *ptr, ssize_t size, char *temp, enum compalgo *thisalgo)
+int lar_compress(char *ptr, int size, char *temp, enum compalgo *thisalgo)
 {
-	u32 complen;
+	int complen;
 	compress_functions[*thisalgo](ptr, size, temp, &complen);
 
 	if (complen >= size && (*thisalgo != none)) {

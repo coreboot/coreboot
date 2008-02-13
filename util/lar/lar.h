@@ -93,18 +93,18 @@ struct lar {
 
 enum compalgo { none = 0, lzma = 1, nrv2b = 2 };
 
-typedef void (*compress_func) (char *, u32, char *, u32 *);
-typedef void (*uncompress_func) (char *, char *, u32);
+typedef void (*compress_func) (char *, int, char *, int *);
+typedef void (*uncompress_func) (char *, char *, int);
 
-void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len);
-void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len);
-void do_lzma_compress(char *in, u32 in_len, char *out, u32 *out_len);
-void do_nrv2b_compress(char *in, u32 in_len, char *out, u32 *out_len);
+void compress_impossible(char *in, int in_len, char *out, int *out_len);
+void do_no_compress(char *in, int in_len, char *out, int *out_len);
+void do_lzma_compress(char *in, int in_len, char *out, int *out_len);
+void do_nrv2b_compress(char *in, int in_len, char *out, int *out_len);
 
-void uncompress_impossible(char *, char *, u32);
-void do_no_uncompress(char *, char *, u32);
-void do_lzma_uncompress(char *, char *, u32);
-void do_nrv2b_uncompress(char *, char *, u32);
+void uncompress_impossible(char *, char *, int);
+void do_no_uncompress(char *, char *, int);
+void do_lzma_uncompress(char *, char *, int);
+void do_nrv2b_uncompress(char *, char *, int);
 
 static compress_func compress_functions[] = {
 	do_no_compress,

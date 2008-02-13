@@ -58,7 +58,7 @@ int iself(char *filebuf);
 /* Prototypes for in-memory LAR operations */
 int lar_process_name(char *name, char **pfilename, char **ppathname, 
 		enum compalgo *thisalgo);
-u32 lar_compress(char *ptr, ssize_t size, char *temp, enum compalgo *thisalgo);
+int lar_compress(char *ptr, int size, char *temp, enum compalgo *thisalgo);
 int hlen(char *name);
 int maxsize(struct lar *lar, char *name);
 int lar_add_entry(struct lar *lar, char *pathname, void *data, 

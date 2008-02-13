@@ -40,7 +40,7 @@ static struct file *files = NULL;
  * The default "compress impossible" hook to call when no other compression
  * is used
  */
-void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len)
+void compress_impossible(char *in, int in_len, char *out, int *out_len)
 {
 	fprintf(stderr,
 		"The selected compression algorithm wasn't compiled in.\n");
@@ -50,7 +50,7 @@ void compress_impossible(char *in, u32 in_len, char *out, u32 *out_len)
 /**
  * The default "compress" hook to call when no other compression is used
  */
-void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len)
+void do_no_compress(char *in, int in_len, char *out, int *out_len)
 {
 	memcpy(out, in, in_len);
 	out_len[0] = in_len;
@@ -60,7 +60,7 @@ void do_no_compress(char *in, u32 in_len, char *out, u32 *out_len)
  * The default "uncompress" hook to call when no other compression is used
  */
 
-void do_no_uncompress(char *dst, char *src, u32 len)
+void do_no_uncompress(char *dst, char *src, int len)
 {
 	memcpy(dst, src, len);
 }
@@ -68,7 +68,7 @@ void do_no_uncompress(char *dst, char *src, u32 len)
 /**
  * The default "uncompress" hook to call when no other compression is used
  */
-void uncompress_impossible(char *dst, char *src, u32 len)
+void uncompress_impossible(char *dst, char *src, int len)
 {
 	fprintf(stderr,
 		"Cannot uncompress data (algorithm not compiled in).\n");

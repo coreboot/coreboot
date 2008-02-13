@@ -37,6 +37,10 @@ void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
 void die(const char *msg);
+#ifdef CONFIG_CONSOLE_BUFFER
+void printk_buffer_init(void);
+void printk_buffer_move(void *newaddr, int newsize);
+#endif
 
 struct console_driver {
 	void (*init)(void);
@@ -45,6 +49,15 @@ struct console_driver {
 	unsigned char (*rx_byte)(void);
 	int (*tst_byte)(void);
 };
+
+#ifdef CONFIG_CONSOLE_BUFFER
+struct printk_buffer {
+	int len;
+	int readoffset;
+	int writeoffset;
+	char buffer[];
+};
+#endif
 
 SHARED_WITH_ATTRIBUTES(printk, int, __attribute__((format (printf, 2, 3))),
 					int msg_level, const char *fmt, ...);

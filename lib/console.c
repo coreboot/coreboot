@@ -3,6 +3,7 @@
 #include <console.h>
 #include <uart8250.h>
 #include <stdarg.h>
+#include <string.h>
 
 int vtxprintf(void (*)(unsigned char, void *arg), 
 		void *arg, const char *, va_list);
@@ -12,8 +13,80 @@ static int console_loglevel(void)
 	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 }
 
+#ifdef CONFIG_CONSOLE_BUFFER
+void printk_buffer_move(void *newaddr, int newsize)
+{
+	struct printk_buffer **p;
+	struct printk_buffer *oldbuf, *newbuf;
+	int copylen;
+	p = bottom_of_stack();
+	oldbuf = *p;
+	newbuf = newaddr;
+	newbuf->len = newsize;
+	newbuf->readoffset = 0;
+	/* Check for wraparound */
+	if (oldbuf->writeoffset < oldbuf->readoffset) {
+		/* Copy from readoffset to end of buffer. */
+		copylen = oldbuf->len - oldbuf->readoffset;
+	} else {
+		/* Copy from readoffset to writeoffset (exclusive).*/
+		copylen = oldbuf->writeoffset - oldbuf->readoffset;
+	}
+	if (copylen > newsize)
+		copylen = newsize;
+	/* If memcpy() ever uses printk we will see pretty explosions. */
+	memcpy(&newbuf->buffer[0], &oldbuf->buffer[oldbuf->readoffset],
+		copylen);
+	newbuf->writeoffset = copylen;
+	/* Check for wraparound */
+	if (oldbuf->writeoffset < oldbuf->readoffset) {
+		/* Copy from start of buffer to writeoffset (exclusive). */
+		copylen = (copylen + oldbuf->writeoffset > newsize)
+				? newsize - copylen : oldbuf->writeoffset;
+		memcpy(&newbuf->buffer[newbuf->writeoffset],
+			&oldbuf->buffer[0], copylen);
+		newbuf->writeoffset += copylen;
+	}
+	*p = newbuf;
+	return;
+}
+
+struct printk_buffer *printk_buffer_addr(void)
+{
+	struct printk_buffer **p;
+	p = bottom_of_stack();
+	return *p;
+}
+
+void printk_buffer_init(void)
+{
+	struct printk_buffer *buf = printk_buffer_addr();
+	buf->len = PRINTK_BUF_SIZE_CAR - sizeof(struct printk_buffer);
+	buf->readoffset = 0;
+	buf->writeoffset = 0;
+	return;
+}
+
+void buffer_tx_byte(unsigned char byte, void *arg)
+{
+	struct printk_buffer *buf = printk_buffer_addr();
+	buf->buffer[buf->writeoffset++] = byte;
+	buf->writeoffset %= buf->len;
+	/* Make sure writeoffset is always ahead of readoffset here. */
+	if (buf->writeoffset == buf->readoffset) {
+		buf->readoffset++;
+		buf->readoffset %= buf->len;
+	}
+	return;
+}
+#endif
+
 void console_tx_byte(unsigned char byte, void *arg)
 {
+#ifdef CONFIG_CONSOLE_BUFFER
+	buffer_tx_byte(byte, arg);
+#endif
+#ifdef CONFIG_CONSOLE_SERIAL
 	if (byte == '\n') {
 		uart8250_tx_byte(TTYSx_BASE, '\r');
 #if defined(CONFIG_CONSOLE_PREFIX) && (CONFIG_CONSOLE_PREFIX == 1)
@@ -26,8 +99,8 @@ void console_tx_byte(unsigned char byte, void *arg)
 		return;
 #endif
 	}
-
 	uart8250_tx_byte(TTYSx_BASE, byte);
+#endif
 }
 
 int printk(int msg_level, const char *fmt, ...)

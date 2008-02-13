@@ -433,7 +433,13 @@ clear_fixed_var_mtrr_out:
 	movw    %ax, %ss
 
 lout:
-
+#ifdef CONFIG_CONSOLE_BUFFER
+	/* Store pointer to start of printk buffer, should really use
+	 * PRINTK_BUF_ADDR_CAR instead.
+	 */
+	movl    $CONFIG_CARBASE, %eax
+	pushl 	%eax  /* printk buffer */
+#endif
 	/* Restore the BIST result */
 	movl	%ebp, %eax
 	/* We need to set ebp ? No need */

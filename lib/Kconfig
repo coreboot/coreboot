@@ -223,5 +223,12 @@ config CONSOLE_PREFIX
 	  When you enable this option, coreboot will prefix each line of
 	  console output with '(LB)'.
 
+config CONSOLE_BUFFER
+	boolean "Console memory buffer support"
+	default y
+	depends CONSOLE
+	help
+	  Save coreboot output in a memory buffer.
+
 endmenu
 

@@ -24,6 +24,7 @@
 
 #include <types.h>
 #include <device/device.h>
+#include <shared.h>
 
 #define X86_VENDOR_INTEL	0
 #define X86_VENDOR_CYRIX	1
@@ -195,5 +196,14 @@ static inline __attribute__((always_inline)) void hlt(void)
 {
 	__asm__ __volatile__("hlt" : : : "memory");
 }
+
+SHARED(bottom_of_stack, void *, void);
+
+#ifdef CONFIG_CONSOLE_BUFFER
+#define PRINTK_BUF_SIZE_CAR (CONFIG_CARSIZE / 2)
+#define PRINTK_BUF_ADDR_CAR CONFIG_CARBASE
+#define PRINTK_BUF_SIZE_RAM 65536
+#define PRINTK_BUF_ADDR_RAM 0x90000
+#endif
 
 #endif /* ARCH_X86_CPU_H */

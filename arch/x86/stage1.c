@@ -26,6 +26,7 @@
 #include <tables.h>
 #include <lib.h>
 #include <mc146818rtc.h>
+#include <cpu.h>
 
 /* ah, well, what a mess! This is a hard code. FIX ME but how? 
  * By getting rid of ELF ...
@@ -65,6 +66,12 @@ void init_archive(struct mem_file *archive)
 
 	// FIXME check integrity
 
+}
+
+void *bottom_of_stack(void)
+{
+	/* -4-4 because CONFIG_CARBASE + CONFIG_CARSIZE - 4 is initial %esp */
+	return (void *)(CONFIG_CARBASE + CONFIG_CARSIZE - 4 - 4);
 }
 
 void dump_mem_range(int msg_level, unsigned char *buf, int size)
@@ -129,6 +136,11 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	// We have cache as ram running and can start executing code in C.
 
+#ifdef CONFIG_CONSOLE_BUFFER
+	/* Initialize the printk buffer. */
+	printk_buffer_init();
+#endif
+
 	hardware_stage1();
 
 	//
@@ -173,9 +185,13 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	printk(BIOS_DEBUG, "Done RAM init code\n");
 
-
 	/* Turn off Cache-As-Ram */
 	disable_car();
+
+#ifdef CONFIG_CONSOLE_BUFFER
+	/* Move the printk buffer to PRINTK_BUF_ADDR_RAM */
+	printk_buffer_move((void *)PRINTK_BUF_ADDR_RAM, PRINTK_BUF_SIZE_RAM);
+#endif
 
 	entry = load_file_segments(&archive, "normal/stage2");
 	if (entry == (void *)-1)

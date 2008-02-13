@@ -685,6 +685,7 @@ int lar_extract_files(struct lar *lar, struct file *files)
 
 				uncompress_functions[ntohl(header->compression)](
 					(char*) buf,
+					ntohl(header->reallen),
 					(char *) ptr + ntohl(header->offset),
 					ntohl(header->len));
 

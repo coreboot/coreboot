@@ -94,17 +94,17 @@ struct lar {
 enum compalgo { none = 0, lzma = 1, nrv2b = 2 };
 
 typedef void (*compress_func) (char *, int, char *, int *);
-typedef void (*uncompress_func) (char *, char *, int);
+typedef void (*uncompress_func) (char *, int, char *, int);
 
 void compress_impossible(char *in, int in_len, char *out, int *out_len);
 void do_no_compress(char *in, int in_len, char *out, int *out_len);
 void do_lzma_compress(char *in, int in_len, char *out, int *out_len);
 void do_nrv2b_compress(char *in, int in_len, char *out, int *out_len);
 
-void uncompress_impossible(char *, char *, int);
-void do_no_uncompress(char *, char *, int);
-void do_lzma_uncompress(char *, char *, int);
-void do_nrv2b_uncompress(char *, char *, int);
+void uncompress_impossible(char *dst, int dst_len, char *src, int src_len);
+void do_no_uncompress(char *dst, int dst_len, char *src, int src_len);
+void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
+void do_nrv2b_uncompress(char *dst, int dst_len, char *src, int src_len);
 
 static compress_func compress_functions[] = {
 	do_no_compress,

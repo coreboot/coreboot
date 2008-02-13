@@ -60,15 +60,22 @@ void do_no_compress(char *in, int in_len, char *out, int *out_len)
  * The default "uncompress" hook to call when no other compression is used
  */
 
-void do_no_uncompress(char *dst, char *src, int len)
+void do_no_uncompress(char *dst, int dst_len, char *src, int src_len)
 {
-	memcpy(dst, src, len);
+	if (dst_len == src_len)
+		memcpy(dst, src, dst_len);
+	else
+	{
+		fprintf(stderr,"%s: src_len(%d)!=dst_len(%d)\n",
+			__FUNCTION__,src_len,dst_len);
+		exit(1);
+	}
 }
 
 /**
  * The default "uncompress" hook to call when no other compression is used
  */
-void uncompress_impossible(char *dst, char *src, int len)
+void uncompress_impossible(char *dst, int dst_len, char *src, int src_len)
 {
 	fprintf(stderr,
 		"Cannot uncompress data (algorithm not compiled in).\n");

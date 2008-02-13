@@ -1338,16 +1338,16 @@ void do_nrv2b_compress(uint8_t *in, int in_len, uint8_t *out, int *out_len) {
 #error "Bad Combination of ENDIAN and BITSIZE values specified"
 #endif
 
-#undef SAFE
+#define SAFE
 
 #ifdef SAFE
-#define FAIL(x,r)   if (x) { Error(r); }
+#define FAIL(x,r)   if (x) { fprintf(stderr,r); exit(1); }
 #else
 #define FAIL(x,r)
 #endif
 
 #ifdef COMPACT
-void do_nrv2b_uncompress(uint8_t *dst, uint8_t *src, int len) {
+void do_nrv2b_uncompress(uint8_t *dst, int dst_len, uint8_t *src, int src_len) {
 	unsigned long ilen = 0, olen = 0, last_m_off = 1;
 	uint32_t bb = 0;
 	unsigned bc = 0;

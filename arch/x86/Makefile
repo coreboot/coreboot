@@ -208,7 +208,7 @@ endif
 
 STAGE2_OBJ_NEEDED = $(filter-out $(STAGE0_OBJ), $(STAGE2_OBJ))
 
-$(obj)/coreboot.stage2 $(obj)/coreboot.stage2.map: $(obj)/stage0.init $(STAGE2_OBJ_NEEDED)
+$(obj)/coreboot.stage2 $(obj)/coreboot.stage2.map: $(obj)/stage0.o $(STAGE2_OBJ_NEEDED)
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x2000 --entry=stage2 \

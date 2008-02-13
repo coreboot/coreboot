@@ -87,3 +87,13 @@ config INITIALIZE_ONBOARD_VGA_FIRST
 
 endmenu
 
+menu "Power management"
+
+config SUSPEND_TO_RAM
+	bool "Suspend-to-RAM (S3)"
+	depends EXPERIMENTAL && BROKEN
+	help
+	  Enable support for Suspend-to-RAM (S3) functionality.
+
+endmenu
+

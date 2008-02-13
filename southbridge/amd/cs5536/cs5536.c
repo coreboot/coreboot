@@ -488,8 +488,9 @@ void chipsetinit(void)
 	}
 	sb = (struct southbridge_amd_cs5536_dts_config *)dev->device_configuration;
 
-#if 0
+#ifdef CONFIG_SUSPEND_TO_RAM
 	if (!IsS3Resume())
+#endif
 	{
 		struct acpi_init *aci = acpi_init_table;
 		for (; aci->ioreg; aci++) {
@@ -498,7 +499,6 @@ void chipsetinit(void)
 		}
 		pm_chipset_init();
 	}
-#endif
 
 	/* Set HD IRQ. */
 	outl(GPIOL_2_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);

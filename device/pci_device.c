@@ -247,19 +247,6 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	if (resource->limit > limit) {
 		resource->limit = limit;
 	}
-#if 0
-	if (resource->flags) {
-		printk(BIOS_DEBUG, "%s %02x ->",
-		       dev_path(dev), resource->index);
-		printk(BIOS_DEBUG,
-		       " value: 0x%08llx zeroes: 0x%08llx ones: 0x%08llx attr: %08lx\n",
-		       value, zeroes, ones, attr);
-		printk(BIOS_DEBUG,
-		       "%s %02x -> size: 0x%08llx max: 0x%08llx %s\n ",
-		       dev_path(dev), resource->index, resource->size,
-		       resource->limit, resource_type(resource));
-	}
-#endif
 
 	return resource;
 }

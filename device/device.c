@@ -534,7 +534,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	       base, bridge->size, bridge->align, bridge->gran);
 }
 
-#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
+#ifdef CONFIG_PCI_OPTION_ROM_RUN
 struct device *vga_pri = 0;
 int vga_inited = 0;
 static void allocate_vga_resource(void)
@@ -580,8 +580,7 @@ static void allocate_vga_resource(void)
 	if (!vga) {
 		vga = vga_first;
 	}
-#if defined(CONFIG_INITIALIZE_ONBOARD_VGA_FIRST) && \
-	CONFIG_INITIALIZE_ONBOARD_VGA_FIRST == 1
+#ifdef CONFIG_INITIALIZE_ONBOARD_VGA_FIRST
 	if (vga_onboard)	// Will use on board VGA as pri.
 #else
 	if (!vga)		// Will use last add on adapter as pri.
@@ -919,7 +918,7 @@ void dev_phase4(void)
 	mem->flags |= IORESOURCE_ASSIGNED;
 	mem->flags &= ~IORESOURCE_STORED;
 
-#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
+#ifdef CONFIG_PCI_OPTION_ROM_RUN
 	/* Allocate the VGA I/O resource. */
 	allocate_vga_resource();
 #endif

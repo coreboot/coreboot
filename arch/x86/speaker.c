@@ -93,7 +93,7 @@ void speaker_tone(u16 freq, unsigned int duration)
  */
 void beep_short(void)
 {
-#if defined(CONFIG_BEEPS) && (CONFIG_BEEPS == 1)
+#ifdef CONFIG_BEEPS
 	speaker_tone(1760, 500);	/* 1760 == note A6. */
 #endif
 }
@@ -103,7 +103,7 @@ void beep_short(void)
  */
 void beep_long(void)
 {
-#if defined(CONFIG_BEEPS) && (CONFIG_BEEPS == 1)
+#ifdef CONFIG_BEEPS
 	speaker_tone(1760, 2000);	/* 1760 == note A6. */
 #endif
 }

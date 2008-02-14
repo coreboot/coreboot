@@ -689,7 +689,7 @@ void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 void pci_dev_init(struct device *dev)
 {
 	printk(BIOS_SPEW, "PCI: pci_dev_init\n");
-#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
+#ifdef CONFIG_PCI_OPTION_ROM_RUN
 	void run_bios(struct device *dev, unsigned long addr);
 	struct rom_header *rom, *ram;
 

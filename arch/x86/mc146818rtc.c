@@ -43,7 +43,7 @@ outb((addr),RTC_PORT(0)); \
 outb((val),RTC_PORT(1)); \
 })
 
-#if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
+#ifdef CONFIG_OPTION_TABLE
 
 static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 {
@@ -78,14 +78,14 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 
 void rtc_init(int invalid)
 {
-#if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
+#ifdef CONFIG_OPTION_TABLE
 	unsigned char x;
 	int cmos_invalid, checksum_invalid;
 #endif
 
 	printk(BIOS_DEBUG, "Initializing realtime clock.\n");
 
-#if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
+#ifdef CONFIG_OPTION_TABLE
 
 	/* See if there has been a CMOS power problem. */
 	x = CMOS_READ(RTC_VALID);
@@ -127,7 +127,7 @@ void rtc_init(int invalid)
 	/* Setup the frequency it operates at */
 	CMOS_WRITE(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
 
-#if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
+#ifdef CONFIG_OPTION_TABLE
 	/* See if there is a coreboot CMOS checksum error */
 	checksum_invalid = !rtc_checksum_valid(CB_CKS_RANGE_START,
 			CB_CKS_RANGE_END,CB_CKS_LOC);
@@ -224,7 +224,7 @@ int get_option(void *dest, char *name)
 	if(!rtc_checksum_valid(CB_CKS_RANGE_START,
 			CB_CKS_RANGE_END,CB_CKS_LOC))
 		return(-4);
-#if defined(CONFIG_OPTION_TABLE) && (CONFIG_OPTION_TABLE == 1)
+#ifdef CONFIG_OPTION_TABLE
 	return(0);
 #else
 	return -2;

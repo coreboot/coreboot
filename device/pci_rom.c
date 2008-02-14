@@ -105,7 +105,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 
-#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
+#ifdef CONFIG_PCI_OPTION_ROM_RUN
 extern int vga_inited;		// Defined in vga_console.c.
 #ifndef CONFIG_MULTIPLE_VGA_INIT
 extern struct device *vga_pri;	// The primary VGA device, defined in device.c.
@@ -135,7 +135,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 	rom_size = rom_header->size * 512;
 
 	if (PCI_CLASS_DISPLAY_VGA == rom_data->class_hi) {
-#if defined(CONFIG_PCI_OPTION_ROM_RUN) && CONFIG_PCI_OPTION_ROM_RUN == 1
+#ifdef CONFIG_PCI_OPTION_ROM_RUN
 #ifndef CONFIG_MULTIPLE_VGA_INIT
 		if (dev != vga_pri)
 			return NULL;	// Only one VGA supported.

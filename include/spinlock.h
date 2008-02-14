@@ -23,7 +23,7 @@
 #ifndef SPINLOCK_H
 #define SPINLOCK_H
 
-#if defined(CONFIG_SMP) && CONFIG_SMP == 1
+#ifdef CONFIG_SMP
 
 #include <arch/spinlock.h>
 

@@ -89,7 +89,7 @@ void console_tx_byte(unsigned char byte, void *arg)
 #ifdef CONFIG_CONSOLE_SERIAL
 	if (byte == '\n') {
 		uart8250_tx_byte(TTYSx_BASE, '\r');
-#if defined(CONFIG_CONSOLE_PREFIX) && (CONFIG_CONSOLE_PREFIX == 1)
+#ifdef CONFIG_CONSOLE_PREFIX
 		uart8250_tx_byte(TTYSx_BASE, '\n');
 		uart8250_tx_byte(TTYSx_BASE, '(');
 		uart8250_tx_byte(TTYSx_BASE, 'L');

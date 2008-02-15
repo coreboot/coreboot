@@ -1,0 +1,123 @@
+* 2.6 14 March 2006
+- Fix the i386-linux probe code so it does not get confused by
+  bzImages that are also ELF executables.
+- Changed value of GDTLOC and REAL_MODE_DATA_LOC to be below
+  512kb. This allows for booting on machines whose BIOS reports
+  only 512kb of memory below 1MB.
+
+* 2.5 24 April 2003
+- Fix the checksum code so that it checksums the bss sections as well.
+  How I missed the checksum code was broken in 2.4 I don't know.
+
+* 2.4 22 April 2003
+- Fix code that failed to write more than the first ELF note.
+  Resulting in checksums and other information not being present
+  in the generated ELF image.
+  This bug has been present since mkelfImage-2.0
+
+* 2.3 7 Febuary 2003
+- Disable debugging code on the itanium that is not always safe.
+
+* 2.2 6 Febuary 2003
+- Always read the correct pointer when an ELF boot header is found.
+- Add a printf implementation to i386-linux/convert_param.c
+- Minor man page updates.
+
+* 2.1 27 January 2003
+- Allow an arbitrary number of kernel headers in mkelf-linux-ia64.c
+- Remove unused entries from Makefile.conf.in
+- Correctly report the elf note size.
+- Check for broken binutils when we run, so mkelfImage does not generate incorrect images.
+- Add automatic decompress of kernel images
+
+* 2.0 13 January 2003
+- Convert everything to C
+- Add itanium support
+
+* 1.19 20 December 2002
+ - Update to handle a Bhdr passed via the C calling conventions.
+
+* 1.18 9 November 2002
+ - Update to work with binutils 2.13.x
+
+* 1.17 17 October 2002
+ - Add an rpm target
+ - Fix Source0 in the rpm spec file
+ - Linux 2.5.x support
+
+* 1.16 29 August 2002
+ - Include the source for my spec file in the tarball.
+ - Fix the make install target
+
+* 1.15 23 August 2002
+ - Rewrote the perl ip checksum code to be reasonably fast
+ - Fixes to the initial parameter passing in head.S thanks to Jake Page <jake@CS.Stanford.EDU>
+ - Initial cross compiling support thanks to Jake Page <jake@CS.Stanford.EDU>
+ - Official specfile thanks to Andrew Ip <aip@cwlinux.com>
+ - Autoconf support Josh Aune <lunke@linuxnetworx.com>
+
+* 1.14 28 June 2002
+ - Use much less complex ld magic (removed the use of PHDRS directive)
+ - Fix a small bug in the LinuxBIOS checksum verification code (only affected odd length tables)
+
+* 1.13 10 May 2002
+  Include the version number in mkelfImage.
+
+* 1.12 26 January 2002
+  Better firmware detection, and stripping excess symbols from the
+  generated object.
+
+* 1.11 24 January 2002 
+  Bug fix to command line processing.
+ 
+* 1.10 21 January 2002
+  Starting using the PHDRS directive which many versions of ld cannot
+  handle correctly.  The symptom is generally a file that is 9MB in
+  size.
+
+  Start computing a checksum on the Image.
+
+  Include an ELF note section in the image for out of band
+  information (checksum, program name, etc).
+
+* 1.9 7 January 2002
+  I changed LinuxBIOS (in LinuxBIOS) from passing it's information
+  locally, to passing it in a global table that is always present.
+  So that whoever needs that information can get it unfiltered.  And
+  because it isn't being passed around it has less chance of
+  becomming corrupt.  Globals for global information are good :)
+  Version 1.9 goes out and finds that table.
+
+* 1.8 10 December 2001
+  Move the ramdisk up even higher in memory.
+  Better debugging of multiboot parameters
+  Pass the correct values for a vga screen instead of telling the
+  kernel we have EGA...
+
+* 1.7 18 May 2001
+  Warn when I don't have information about the bootloader.
+  Include a ELF compreressor that works on alpha && x86
+  There is no good way to apply it though.
+
+* 1.6 1 Febuary 2001
+  Code cleanup in bzImage support.
+
+* 1.5 1 Febuary 2001
+  Add support for bzImage 
+
+* 1.4 ???
+  ???
+
+* 1.3 27 December 2000
+  Minor bug fixes for working with the e820 memory map.
+
+* 1.2 18 December 2000
+  Work around for some versions of ld not treating /dev/null and an
+  empty file the same 
+
+* 1.1 30 November 2000
+  Fix for ramdisks and large amounts of memory with 2.2 series
+  kernels.
+
+* 1.0 7 November 2000
+  Initial release (supports vmlinux && bvmlinux)

@@ -1,0 +1,50 @@
+Summary: make an elf network bootable image for linux
+Name: mkelfImage
+Version: 
+Release: 0
+Copyright: GPL
+Group: Development/Tools
+Source0:%{name}-%{version}.tar.gz
+Packager: Andrew Ip <aip@cwlinux.com>
+BuildRoot: %{_tmppath}/%{name}
+
+%description
+mkelfImage is a program that makes a elf boot image for linux kernel images.
+The image should work with any i386 multiboot compliant boot loader, an ELF boot
+loader that passes no options, a loader compliant with the linuxBIOS elf booting
+spec or with the linux kexec kernel patch.  A key feature here is that nothing 
+relies upon BIOS calls, but they are made when necessary.  This is useful for 
+systems running linuxbios.
+
+%prep
+%setup -q -n %{name}-%{version}
+
+%build
+%configure
+make
+
+%install
+make install DESTDIR=${RPM_BUILD_ROOT}
+
+%files
+%defattr(-,root,root)
+%{_sbindir}/mkelfImage
+%doc News
+%doc COPYING
+%doc AUTHORS
+%{_mandir}/man8/mkelfImage.8.gz
+
+%changelog
+* Mon Jan 13 2003 Eric Biederman <ebiederman@lnxi.com>
+- Move the man page into section 8 as mkelfImage lives in sbin
+
+* Mon Aug 26 2002 Joshua Aune <luken@linuxnetworx.com>  1.15-1
+- New version
+- Merge distro and Eric's spec file
+
+* Fri Aug 23 2002 Eric Biederman <ebiederman@lnxi.com>
+- Simplified and incorporated into mkelfImage
+
+* Sat Aug 10 2002 Andrew Ip <aip@cwlinux.com>
+- Initial release
+

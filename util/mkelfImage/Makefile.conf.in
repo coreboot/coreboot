@@ -1,0 +1,46 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+
+bindir=@bindir@
+sbindir=@sbindir@
+libexecdir=@libexecdir@
+datadir=@datadir@
+sysconfdir=@sysconfdir@
+sharedstatedir=@sharedstatedir@
+localstatedir=@localstatedir@
+libdir=@libdir@
+infodir=@infodir@
+mandir=@mandir@
+includedir=@includedir@
+
+DEFS=@DEFS@
+LIBS=@LIBS@
+HOST_CC=@HOST_CC@
+HOST_CFLAGS=@HOST_CFLAGS@  $(DEFS)
+
+I386_CC     =@I386_CC@
+I386_LD     =@I386_LD@
+I386_AS     =@I386_AS@
+I386_CPP    =@I386_CPP@
+I386_OBJCOPY=@I386_OBJCOPY@
+I386_CFLAGS =@I386_CFLAGS@
+I386_ASFLAGS=@I386_ASFLAGS@
+I386_LDFLAGS=@I386_LDFLAGS@
+
+IA64_CC     =@IA64_CC@
+IA64_LD     =@IA64_LD@
+IA64_AS     =@IA64_AS@
+IA64_CPP    =@IA64_CPP@
+IA64_OBJCOPY=@IA64_OBJCOPY@
+IA64_CFLAGS =@IA64_CFLAGS@
+IA64_ASFLAGS=@IA64_ASFLAGS@
+IA64_LDFLAGS=@IA64_LDFLAGS@
+
+MKDIR=@MKDIR@
+RM=@RM@
+CP=@CP@
+LN=@LN@
+TAR=@TAR@
+RPM=@RPM@
+SED=@SED@
+FIND=@FIND@

@@ -75,6 +75,7 @@ struct lar_header {
 	 * 0 = no compression
 	 * 1 = lzma
 	 * 2 = nrv2b
+	 * 3 = zeroes
 	 */
 	u32 compression;
 	u64 entry;
@@ -91,7 +92,7 @@ struct lar {
 	u32 size; /**< Size of the mmaped file */
 };
 
-enum compalgo { none = 0, lzma = 1, nrv2b = 2 };
+enum compalgo { none = 0, lzma = 1, nrv2b = 2, zeroes = 3 };
 
 typedef void (*compress_func) (char *, int, char *, int *);
 typedef void (*uncompress_func) (char *, int, char *, int);
@@ -100,26 +101,31 @@ void compress_impossible(char *in, int in_len, char *out, int *out_len);
 void do_no_compress(char *in, int in_len, char *out, int *out_len);
 void do_lzma_compress(char *in, int in_len, char *out, int *out_len);
 void do_nrv2b_compress(char *in, int in_len, char *out, int *out_len);
+void do_zeroes_compress(char *in, int in_len, char *out, int *out_len);
 
 void uncompress_impossible(char *dst, int dst_len, char *src, int src_len);
 void do_no_uncompress(char *dst, int dst_len, char *src, int src_len);
 void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
 void do_nrv2b_uncompress(char *dst, int dst_len, char *src, int src_len);
+void do_zeroes_uncompress(char *dst, int dst_len, char *src, int src_len);
 
 static compress_func compress_functions[] = {
 	do_no_compress,
 	do_lzma_compress,
 	do_nrv2b_compress,
+	do_zeroes_compress,
 };
 
 static uncompress_func uncompress_functions[] = {
 	do_no_uncompress,
 	do_lzma_uncompress,
 	do_nrv2b_uncompress,
+	do_zeroes_uncompress,
 };
 
 static const char *algo_name[] = {
 	"",
 	"lzma",
 	"nrv2b",
+	"zeroes",
 };

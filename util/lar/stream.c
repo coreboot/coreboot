@@ -147,7 +147,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 				fprintf(stderr, "Dropping empty section\n");
 			continue;
 		}
-		thisalgo = algo;
+		thisalgo = zeroes;
 		if (verbose())
 			fprintf(stderr,  "New section addr %#x size %#x\n",
 			(u32)shdr[i].sh_addr, (u32)shdr[i].sh_size);

@@ -67,6 +67,7 @@ struct lar_header {
 	 * 0 = no compression
 	 * 1 = lzma
 	 * 2 = nrv2b
+	 * 3 = zeroes
 	 */
 	u32 compression;
 	u64 entry;

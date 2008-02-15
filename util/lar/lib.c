@@ -57,6 +57,25 @@ void do_no_compress(char *in, int in_len, char *out, int *out_len)
 }
 
 /**
+ * The zeroes "compress" hook
+ * Leave one byte for calculating the checksum.
+ */
+void do_zeroes_compress(char *in, int in_len, char *out, int *out_len)
+{
+	out[0] = 0;
+	out_len[0] = 1;
+}
+
+/**
+ * The zeroes "uncompress" hook
+ */
+
+void do_zeroes_uncompress(char *dst, int dst_len, char *src, int src_len)
+{
+	memset(dst, 0, dst_len);
+}
+
+/**
  * The default "uncompress" hook to call when no other compression is used
  */
 

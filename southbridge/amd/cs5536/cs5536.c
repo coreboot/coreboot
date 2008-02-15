@@ -570,6 +570,15 @@ static void ide_init(struct device *dev)
 }
 
 
+static void hide_vpci(u32 vpci_devid)
+{
+	/* Hide unwanted virtual PCI device. */
+	printk(BIOS_DEBUG, "Hiding VPCI device: 0x%08X\n",
+		vpci_devid);
+	outl(vpci_devid + 0x7C, 0xCF8);
+	outl(0xDEADBEEF, 0xCFC);
+}
+
 /**
  * TODO.
  *
@@ -608,16 +617,6 @@ static void southbridge_init(struct device *dev)
 	if (sb->enable_ide)
 		ide_init(dev);
 
-#warning Add back in unwanted VPCI support
-#if 0
-	/* Disable unwanted virtual PCI devices. */
-	for (i = 0; (i < MAX_UNWANTED_VPCI) && (0 != sb->unwanted_vpci[i]); i++) {
-		printk(BIOS_DEBUG, "Disabling VPCI device: 0x%08X\n",
-		       sb->unwanted_vpci[i]);
-		outl(sb->unwanted_vpci[i] + 0x7C, 0xCF8);
-		outl(0xDEADBEEF, 0xCFC);
-	}
-#endif
 	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
 }
 

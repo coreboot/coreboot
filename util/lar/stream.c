@@ -148,6 +148,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 			continue;
 		}
 		thisalgo = zeroes;
+		thisalgo = algo;
 		if (verbose())
 			fprintf(stderr,  "New section addr %#x size %#x\n",
 			(u32)shdr[i].sh_addr, (u32)shdr[i].sh_size);

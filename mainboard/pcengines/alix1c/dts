@@ -22,26 +22,17 @@
 	enabled;
 	mainboard-vendor = "PC Engines";
 	mainboard-name = "ALIX1.C";
-	cpus {
-		enabled;
-	};
-	apic {
+	cpus { };
+	apic@0 {
 		/config/("northbridge/amd/geodelx/apic");
-		enabled;
 	};
-	domain0 {
+	domain@0 {
 		/config/("northbridge/amd/geodelx/domain");
-		enabled;
-		pcidomain = "0";
-		device0,0 {
-		/config/("northbridge/amd/geodelx/pci");
-			enabled;
-			pcipath = "1,0";
+		pci@1,0 {
+			/config/("northbridge/amd/geodelx/pci");
 		};
-		southbridge {
+		pci@15,0 {
 			/config/("southbridge/amd/cs5536/dts");
-			pcipath = "0xf,0";
-			enabled;
 			enable_ide = "1";
 			/* Interrupt enables for LPC bus.
 			 *  Each bit is an IRQ 0-15. */
@@ -54,7 +45,7 @@
 			 * See virtual PIC spec. */
 			enable_gpio_int_route = "0x0D0C0700";
 		};
-		superio {
+		ioport@46 {
 			/config/("superio/winbond/w83627hf/dts");
 			com1enable = "1";
 		};

@@ -99,37 +99,36 @@ static struct device *new_device(void)
  * Initialize device->ops of a newly allocated device structure.
  *
  * @param dev Pointer to the newly created device structure.
- * @param constructor A pointer to a struct constructor.
+ * @param ops Pointer to device_operations
  */
-void default_device_constructor(struct device *dev, struct constructor *constructor)
+void default_device_constructor(struct device *dev, struct device_operations *ops)
 {
 	printk(BIOS_DEBUG, "default device constructor called\n");
-	dev->ops = constructor->ops;
+	dev->ops = ops;
 }
 
 /**
- * Given a path, locate the constructor for it from all_constructors.
+ * Given a path, locate the device_operations  for it from all_device_operations..
  *
  * @param path Path to the device to be created.
- * @return Pointer to the constructor or 0, if none found.
+ * @return Pointer to the ops or 0, if none found.
  * @see device_path
  */
-struct constructor *find_constructor(struct device_id *id)
+struct device_operations *find_device_operations(struct device_id *id)
 {
-	extern struct constructor *all_constructors[];
-	struct constructor *c;
+	extern struct device_operations *all_device_operations[];
+	struct device_operations *c;
 	int i;
 
-	for (i = 0; all_constructors[i]; i++) {
-		printk(BIOS_SPEW, "%s: check all_constructors[i] %p\n",
-		       __func__, all_constructors[i]);
-		for (c = all_constructors[i]; c->ops; c++) {
-			printk(BIOS_SPEW, "%s: cons %p, cons id %s\n",
-			       __func__, c, dev_id_string(&c->id));
-			if (id_eq(&c->id, id)) {
-				printk(BIOS_SPEW, "%s: match\n", __func__);
-				return c;
-			}
+	for (i = 0; all_device_operations[i]; i++) {
+		printk(BIOS_SPEW, "%s: check all_device_operations[i] %p\n",
+		       __func__, all_device_operations[i]);
+		c = all_device_operations[i];
+		printk(BIOS_SPEW, "%s: cons %p, cons id %s\n",
+		       __func__, c, dev_id_string(&c->id));
+		if (id_eq(&c->id, id)) {
+			printk(BIOS_SPEW, "%s: match\n", __func__);
+			return c;
 		}
 	}
 
@@ -147,48 +146,56 @@ struct constructor *find_constructor(struct device_id *id)
 void dev_init(void)
 {
 	struct device *dev;
-	struct constructor *c;
+	struct device_operations *c;
 
 	for (dev = all_devices; dev; dev = dev->next) {
-		c = find_constructor(&dev->id);
+		c = dev->ops;
+		if (c)
+			dev->id = c->id;
 		/* note the difference from the constructor function below. 
-		 * we are not allocating the device here, just setting the ops. 
+		 * we are not allocating the device here, just setting the id.
+		 * We set the id here because we don't want to set it in the dts
+		 * as we used to. The user sees none of this work. 
 		 */
 		if (c)
-			dev->ops = c->ops;
+			dev->ops = c;
 		last_dev_p = &dev->next;
 	}
 	devcnt = 0;
 }
 
 /**
- * Given a path, find a constructor, and run it.
+ * Given a device, find a constructor function and, if found, run it. 
  * 
- * Given a path, call find_constructor to find the constructor for it.
- * Call that constructor via constructor->ops->constructor, with itself as
- * a parameter; return the result. 
+ * Given a device, use the device id in the device to find a device_operations.
+ * Call the device_operations->constructor, with itself as
+ * a parameter; return the result. If there is no constructor, 
+ * then no constructor is run.
  *
  * @param dev  Pointer to the newly created device structure.
  * @param path Path to the device to be created.
  * @see device_path
  */
-void constructor(struct device *dev, struct device_id *id)
+void constructor(struct device *dev)
 {
-	struct constructor *c;
+	struct device_operations *c;
 
-	c = find_constructor(id);
+	c = dev->ops;
+
+	if (!c)
+		c = find_device_operations(&dev->id);
 
 	printk(BIOS_SPEW, "%s: constructor is %p\n", __func__, c);
  
-	if(c && c->ops) {
-		if(c->ops->constructor)
-			c->ops->constructor(dev, c);
+	if(c) {
+		if(c->constructor)
+			c->constructor(dev, c);
 		else
 			default_device_constructor(dev, c);
 	}
 	else
-		printk(BIOS_INFO, "No constructor called for %s.\n", 
-			dev_id_string(id));
+		printk(BIOS_INFO, "No ops found and no constructor called for %s.\n", 
+			dev_id_string(&dev->id));
 }
 
 /**
@@ -254,7 +261,7 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	 * so it gets the chance to overwrite the "inherited" values above
 	 */
 
-	constructor(dev, devid);
+	constructor(dev);
 
 out:
 	spin_unlock(&dev_lock);

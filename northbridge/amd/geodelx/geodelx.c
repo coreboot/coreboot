@@ -300,7 +300,10 @@ static void cpu_bus_noop(struct device *dev)
  */
 
 /** Operations for when the northbridge is running a PCI domain. */
-static struct device_operations geodelx_pcidomain_ops = {
+struct device_operations geodelx_north_domain = {
+	.id = {.type = DEVICE_ID_PCI_DOMAIN,
+		.u = {.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
+				     .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase2_setup_scan_bus		= geodelx_pci_domain_phase2,
 	.phase3_scan			= pci_domain_scan_bus,
@@ -312,7 +315,10 @@ static struct device_operations geodelx_pcidomain_ops = {
 };
 
 /** Operations for when the northbridge is running an APIC cluster. */
-static struct device_operations geodelx_apic_ops = {
+struct device_operations geodelx_north_apic = {
+	.id = {.type = DEVICE_ID_APIC_CLUSTER,
+		.u = {.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,
+				       .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,
 	.phase4_read_resources		= cpu_bus_noop,
@@ -326,7 +332,10 @@ static struct device_operations geodelx_apic_ops = {
 /** Note that phase3 scan is done in the domain, 
  * and MUST NOT be done here too 
  */
-static struct device_operations geodelx_pci_ops = {
+struct device_operations geodelx_north_pci = {
+	.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
+			      .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,
 	.phase4_read_resources		= pci_domain_read_resources,
@@ -334,30 +343,4 @@ static struct device_operations geodelx_pci_ops = {
 	.phase5_enable_resources	= enable_childrens_resources,
 	.phase6_init			= geodelx_northbridge_init,
 	.ops_pci_bus			= &pci_cf8_conf1,
-};
-
-/**
- * The constructor for the device.
- * Domain ops and APIC cluster ops and PCI device ops are different.
- */
-struct constructor geodelx_north_constructors[] = {
-	/* Northbridge running a PCI domain. */
-	{.id = {.type = DEVICE_ID_PCI_DOMAIN,
-		.u = {.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
-				     .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
-	 .ops = &geodelx_pcidomain_ops},
-
-	/* Northbridge running an APIC cluster. */
-	{.id = {.type = DEVICE_ID_APIC_CLUSTER,
-		.u = {.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,
-				       .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
-	 .ops = &geodelx_apic_ops},
-
-	/* Northbridge running a PCI device. */
-	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
-	 .ops = &geodelx_pci_ops},
-
-	{.ops = 0},
 };

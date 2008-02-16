@@ -634,7 +634,10 @@ static void cs5536_pci_dev_enable_resources(struct device *dev)
 	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
 }
 
-static struct device_operations southbridge_ops = {
+struct device_operations cs5536_ops = {
+	.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
+			      .device = PCI_DEVICE_ID_AMD_CS5536_ISA}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= pci_dev_read_resources,
@@ -643,11 +646,3 @@ static struct device_operations southbridge_ops = {
 	.phase6_init			= southbridge_init,
 };
 
-struct constructor cs5536_constructors[] = {
-	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_CS5536_ISA}}},
-	 .ops = &southbridge_ops},
-
-	{.ops = 0},
-};

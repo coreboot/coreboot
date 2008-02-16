@@ -83,7 +83,9 @@ static void i82371eb_acpi_init(struct device *dev)
 }
 
 /* You can override or extend each operation as needed for the device. */
-static struct device_operations i82371eb_isa_ops_dev = {
+struct device_operations i82371eb_isa = {
+	.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7000}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
@@ -94,7 +96,9 @@ static struct device_operations i82371eb_isa_ops_dev = {
 	.ops_pci		 = &pci_dev_ops_pci,
 };
 
-static struct device_operations i82371eb_ide_ops_dev = {
+struct device_operations i82371eb_ide = {
+	.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7010}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
@@ -105,7 +109,9 @@ static struct device_operations i82371eb_ide_ops_dev = {
 	.ops_pci		 = &pci_dev_ops_pci,
 };
 
-static struct device_operations i82371eb_acpi_ops_dev = {
+struct device_operations i82371eb_acpi = {
+	.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = 0x8086,.device = 0x7113}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
@@ -114,17 +120,4 @@ static struct device_operations i82371eb_acpi_ops_dev = {
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = i82371eb_acpi_init,
 	.ops_pci		 = &pci_dev_ops_pci,
-};
-
-struct constructor i82371eb_constructors[] = {
-	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7000}}},
-		&i82371eb_isa_ops_dev},
-	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7010}}},
-		&i82371eb_ide_ops_dev},
-	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7113}}},
-		&i82371eb_acpi_ops_dev},
-	{.ops = 0},
 };

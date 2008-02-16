@@ -74,6 +74,14 @@ static void lx_init(struct device *dev)
 };
 
 /**
+ * Device operations for the CPU. 
+ *
+ * Later, we might need to change it to use a different phase3_scan, and
+ * match on a CPU ID. However, CPU IDs are known to be kind of weird,
+ * depending on date manufactured they can be all over the place (the Geode
+ * alone has had 3 vendors!) so we will have to be careful.
+ */
+/**
  * The only operations currently set up are the phase 6. We might, however,
  * set up an op in phase3_scan to get the cpuinfo into a struct for all to
  * see. On SMP, it would not be hard to have phase3_scan set up an array of
@@ -83,25 +91,11 @@ static void lx_init(struct device *dev)
  * in multiple CPU files and use the device ID, at scan time, to pick which
  * one is used. There is a lot of flexibility here!
  */
-static const struct device_operations geodelx_cpuops = {
-	.constructor	= default_device_constructor,
-	.phase3_scan	= NULL,
-	.phase6_init	= lx_init,
-};
-
-/**
- * This is a constructor for a CPU.
- *
- * Later, we might need to change it to use a different phase3_scan, and
- * match on a CPU ID. However, CPU IDs are known to be kind of weird,
- * depending on date manufactured they can be all over the place (the Geode
- * alone has had 3 vendors!) so we will have to be careful.
- */
-const struct constructor geodelx_constructors[] = {
+struct device_operations geodelx_cpuops = {
 	{.id = {.type = DEVICE_ID_PCI,
 		/* TODO: This is incorrect, these are _not_ PCI IDs! */
 		.u = {.pci = {.vendor = X86_VENDOR_AMD,.device = 0x05A2}}},
-	 .ops = &geodelx_cpuops},
-
-	{.ops = 0},
+	 .ops = &geodelx_cpuops}	.constructor	= default_device_constructor,
+	.phase3_scan	= NULL,
+	.phase6_init	= lx_init,
 };

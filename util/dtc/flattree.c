@@ -555,8 +555,8 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(%s)}}},\n", 
 				path);
 		}
-		if (!strncmp(tree->name, "lpc", 3)){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_SUPERIO,.u={.superio={.iobase=%s}}},\n", 
+		if (!strncmp(tree->name, "ioport", 3)){
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_IOPORT,.u={.ioport={.iobase=%s}}},\n", 
 				path);
 		}
 	}
@@ -575,17 +575,11 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 		 */
 		/* get the properties out that are generic device props */
 		for_each_config(tree, prop) {
-			if (streq(prop->name, "domainid")){
-				fprintf(f, "\t.id = {.type=DEVICE_ID_PCI_DOMAIN,.u={.pci_domain={ %s }}},\n", 
-					prop->val.val);
+			if (streq(prop->name, "constructor")){
+				fprintf(f, "\t.ops = &%s,\n", prop->val.val);
 			}
-			if (streq(prop->name, "pciid")){
-				fprintf(f, "\t.id = {.type=DEVICE_ID_PCI,.u={.pci={ %s }}},\n", 
-					prop->val.val);
-			}
-			if (streq(prop->name, "apicid")){
-				fprintf(f, "\t.id = {.type=DEVICE_ID_APIC,.u={.pci={ %s }}},\n", 
-					prop->val.val);
+			if (streq(prop->name, "device_operations")){
+				fprintf(f, "\t.ops = &%s,\n", prop->val.val);
 			}
 		}
 	}
@@ -718,7 +712,7 @@ static void flatten_tree_emit_includes(struct node *tree, struct emitter *emit,
 
 }
 
-static void flatten_tree_emit_constructors(struct node *tree, struct emitter *emit,
+static void flatten_tree_emit_device_operations(struct node *tree, struct emitter *emit,
 			 void *etarget, struct data *strbuf,
 			 struct version_info *vi)
 {
@@ -727,18 +721,32 @@ static void flatten_tree_emit_constructors(struct node *tree, struct emitter *em
 	/* find any/all properties with the name constructor */
 	for_each_config(tree, prop) {
 		if (streq(prop->name, "constructor")){
-			printf("\t%s,\n", prop->val.val);
+fprintf(stderr, "LEFT OVER CONSTRUCTOR -- FIX ME\n");
+			printf("\t&%s,\n", prop->val.val);
 		}
 	}
 
 	for_each_property(tree, prop) {
 		if (streq(prop->name, "constructor")){
-			printf("\t%s,\n", prop->val.val);
+			printf("\t&%s,\n", prop->val.val);
+fprintf(stderr, "LEFT OVER CONSTRUCTOR -- FIX ME\n");
+		}
+	}
+
+	for_each_config(tree, prop) {
+		if (streq(prop->name, "device_operations")){
+			printf("\t&%s,\n", prop->val.val);
+		}
+	}
+
+	for_each_property(tree, prop) {
+		if (streq(prop->name, "device_operations")){
+			printf("\t&%s,\n", prop->val.val);
 		}
 	}
 
 	for_each_child(tree, child) {
-		flatten_tree_emit_constructors(child, emit, etarget, strbuf, vi);
+		flatten_tree_emit_device_operations(child, emit, etarget, strbuf, vi);
 	}
 
 
@@ -774,6 +782,8 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 				seen_name_prop = 1;
 			if (streq(prop->name, "constructor")) /* this is special */
 				continue;
+			if (streq(prop->name, "device_operations")) /* this is special */
+				continue;
 			cleanname = clean(prop->name, 0);
 			fprintf(f, "\tu32 %s;\n", cleanname);
 			free(cleanname);
@@ -790,13 +800,25 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 	for_each_config(tree, prop) {
 		if (! streq(prop->name, "constructor")) /* this is special */
 			continue;
-		fprintf(f, "extern struct constructor %s[];\n", prop->val.val);
+		fprintf(f, "extern struct device_operations %s;\n", prop->val.val);
+	}
+
+	for_each_config(tree, prop) {
+		if (! streq(prop->name, "device_operations")) /* this is special */
+			continue;
+		fprintf(f, "extern struct device_operations %s;\n", prop->val.val);
 	}
 
 	for_each_property(tree, prop) {
 		if (! streq(prop->name, "constructor")) /* this is special */
 			continue;
-		fprintf(f, "extern struct constructor %s[];\n", prop->val.val);
+		fprintf(f, "extern struct device_operations %s;\n", prop->val.val);
+	}
+
+	for_each_property(tree, prop) {
+		if (! streq(prop->name, "device_operations")) /* this is special */
+			continue;
+		fprintf(f, "extern struct device_operations %s;\n", prop->val.val);
 	}
 
 	for_each_property(tree, prop) {
@@ -804,6 +826,7 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 			continue;
 		fprintf(f, "extern struct device_operations %s;\n", prop->val.val);
 	}
+
 
 	for_each_child(tree, child) {
 		flatten_tree_emit_structdecls(child, emit, etarget, strbuf, vi);
@@ -847,6 +870,9 @@ static void flatten_tree_emit_structinits(struct node *tree, struct emitter *emi
 			char *cleanname;
 			int found = 0;
 			if (streq(configprop->name, "constructor")) /* this is special */
+				continue;
+
+			if (streq(configprop->name, "device_operations")) /* this is special */
 				continue;
 
 			for_each_property(tree, dtsprop) {
@@ -1329,8 +1355,8 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 	if (code)
 		fprintf(f, "%s\n", code);
 	flatten_tree_emit_structinits(bi->dt, &coreboot_emitter, f, &strbuf, vi);
-	fprintf(f, "struct constructor *all_constructors[] = {\n");
-	flatten_tree_emit_constructors(bi->dt, &coreboot_emitter, f, &strbuf, vi);
+	fprintf(f, "struct device_operations *all_device_operations[] = {\n");
+	flatten_tree_emit_device_operations(bi->dt, &coreboot_emitter, f, &strbuf, vi);
 	fprintf(f, "\t0\n};\n");
 	data_free(strbuf);
 	/* */

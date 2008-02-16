@@ -20,6 +20,5 @@
 
 {
 	ramsize = "128";
-	constructor = "i440bx_constructors";
-	domainid = "0x8086, 0x7190";
+	device_operations = "i440bx_domain";
 };

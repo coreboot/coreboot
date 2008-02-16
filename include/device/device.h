@@ -112,12 +112,12 @@ struct device_id {
 };
 
 
-struct constructor {
-	struct device_id id;
-	struct device_operations *ops;
-};
-
 struct device_operations {
+	/* the device id for this set of device operations. 
+	 * In almost all cases, this is non-zero. For the 
+	 * default_device_constructor, it's zero
+	 */
+	struct device_id id;
 	/* for now, we leave these, since they seem generic */
 	void (*set_link)(struct device * dev, unsigned int link);
 	void (*reset_bus)(struct bus *bus);
@@ -136,7 +136,7 @@ struct device_operations {
 	 * constructors->constructor(constructors->constructor) and a new
 	 * device is created. 
 	 */
-	void (*constructor)(struct device *, struct constructor *);
+	void (*constructor)(struct device *, struct device_operations *);
 
 	/* set device ops */
 	void (*phase1_set_device_operations)(struct device *dev);
@@ -195,6 +195,9 @@ struct device {
 	struct device *	next;		/* chain of all devices */
 
 	struct device_path path;
+	/* note there is a device id maintained here. This covers the special case
+	 * of default_device_operations, which has an id of zero. 
+	 */
 	struct device_id id;
 	char 		dtsname[MAX_DTSNAME_SIZE];	/* the name from the dts */
 	u16 status;
@@ -237,7 +240,7 @@ extern struct device	*all_devices;	/* list of all devices */
 
 
 /* Generic device interface functions */
-struct constructor *find_constructor(struct device_id *id);
+struct device_operations *find_device_operations(struct device_id *id);
 struct device * alloc_dev(struct bus *parent, struct device_path *path, struct device_id *id);
 void dev_enumerate(void);
 void dev_configure(void);
@@ -268,7 +271,7 @@ struct device *dev_find_pci_device(u16 vendor, u16 device, struct device *from);
 struct device * dev_find_class (unsigned int class, struct device * from);
 struct device * dev_find_slot (unsigned int bus, unsigned int devfn);
 struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
-void default_device_constructor(struct device *dev, struct constructor *constructor);
+void default_device_constructor(struct device *dev, struct device_operations *constructor);
 
 
 /* Rounding for boundaries. 

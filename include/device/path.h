@@ -30,7 +30,7 @@ enum device_path_type {
 	DEVICE_PATH_APIC_CLUSTER,
 	DEVICE_PATH_CPU,
 	DEVICE_PATH_CPU_BUS,
-	DEVICE_PATH_LPC,
+	DEVICE_PATH_IOPORT,
 };
 
 struct pci_domain_path
@@ -81,7 +81,7 @@ struct cpu_bus_path
 	unsigned id;
 };
 
-struct lpc_path
+struct ioport_path
 {
 	unsigned iobase;
 };
@@ -99,7 +99,7 @@ struct device_path {
 		struct apic_cluster_path apic_cluster;
 		struct cpu_path		cpu;
 		struct cpu_bus_path	cpu_bus;
-		struct lpc_path		lpc;
+		struct ioport_path		ioport;
 	} u;
 };
 

@@ -53,7 +53,7 @@ static void pci_domain_set_resources(struct device *dev)
 	struct device *mc_dev;
 	u32 tolmk;		/* Top of low mem, Kbytes. */
 	int idx;
-	struct northbridge_intel_i440bxemulation_dts_config *device_configuration =
+	struct northbridge_intel_i440bxemulation_domain_config *device_configuration =
 	    dev->device_configuration;
 	tolmk = device_configuration->ramsize * 1024;
 	mc_dev = dev->link[0].children;
@@ -66,7 +66,9 @@ static void pci_domain_set_resources(struct device *dev)
 
 /* Here are the operations for when the northbridge is running a PCI domain. */
 /* See mainboard/emulation/qemu-x86 for an example of how these are used. */
-struct device_operations i440bxemulation_pcidomainops = {
+struct device_operations i440bx_domain = {
+	.id = {.type = DEVICE_ID_PCI_DOMAIN,
+		.u = {.pci_domain = {.vendor = 0x8086,.device = 0x7190}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_domain_scan_bus,
 	.phase4_read_resources	 = pci_domain_read_resources,
@@ -75,16 +77,4 @@ struct device_operations i440bxemulation_pcidomainops = {
 	.phase6_init		 = 0,
 	.ops_pci_bus		 = &pci_cf8_conf1,
 
-};
-
-/* The constructor for the device. */
-/* The plain PCI device uses the standard PCI operations. */
-struct constructor i440bx_constructors[] = {
-	{.id = {.type = DEVICE_ID_PCI_DOMAIN,
-		.u = {.pci_domain = {.vendor = 0x8086,.device = 0x7190}}},
-	 .ops = &i440bxemulation_pcidomainops},
-	{.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7190}}},
-	 .ops = &default_pci_ops_bus},
-	{.ops = 0},
 };

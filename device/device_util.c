@@ -236,9 +236,9 @@ const char *dev_path(struct device *dev)
 			sprintf(buffer, "CPU_BUS: %02x",
 				dev->path.u.cpu_bus.id);
 			break;
-		case DEVICE_PATH_LPC:
-			sprintf(buffer, "LPC: %02x",
-				dev->path.u.lpc.iobase);
+		case DEVICE_PATH_IOPORT:
+			sprintf(buffer, "IOPORT: %02x",
+				dev->path.u.ioport.iobase);
 			break;
 		default:
 			printk(BIOS_ERR, "%s: Unknown device path type: %d\n",

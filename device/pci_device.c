@@ -810,7 +810,7 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
  */
 static void set_pci_ops(struct device *dev)
 {
-	struct constructor *c;
+	struct device_operations *c;
 	struct device_id id;
 
 	if (dev->ops) {
@@ -824,9 +824,9 @@ static void set_pci_ops(struct device *dev)
 	/* Look through the list of setup drivers and find one for
 	 * this PCI device.
 	 */
-	c = find_constructor(&id);
+	c = find_device_operations(&dev->id);
 	if (c) {
-		dev->ops = c->ops;
+		dev->ops = c;
 		printk(BIOS_SPEW, "%s id %s %sops\n",
 			dev_path(dev), dev_id_string(&id), 
 			(dev->ops->phase3_scan ? "bus " : ""));

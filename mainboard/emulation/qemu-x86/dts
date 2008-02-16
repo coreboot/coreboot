@@ -21,15 +21,15 @@
 /{
 	mainboard-vendor = "Emulation";
 	mainboard-name = "QEMU x86";
-	constructor = "qemuvga_constructors";
+	device_operations = "qemuvga_pci_ops_dev";
 	cpus {};
 	domain@0 {
-		/config/("northbridge/intel/i440bxemulation/dts");
+		/config/("northbridge/intel/i440bxemulation/domain");
 		bus@0 {
 			pci@0,0 {
 			};
 			pci@1,0 {
-				/config/("southbridge/intel/i82371eb/dts");
+				/config/("southbridge/intel/i82371eb/ide");
 			};
 		};
 	};

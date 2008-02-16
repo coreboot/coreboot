@@ -172,7 +172,7 @@ int process_file(const struct mem_file *archive, void *where)
 #endif
 	/* zeroes */
 	if (archive->compression == 3) {
-		memset(archive->start, 0, archive->reallen);
+		memset(where, 0, archive->reallen);
 		return 0;
 	}
 	printk(BIOS_INFO, "LAR: Compression algorithm #%i not supported!\n", archive->compression);

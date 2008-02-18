@@ -22,6 +22,7 @@
 STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
 INITRAM_OBJ =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
+		$(src)/northbridge/amd/geodelx/raminit.c \
 		$(src)/arch/x86/geodelx/geodelx.c
 
 STAGE2_MAINBOARD_OBJ = 

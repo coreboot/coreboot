@@ -29,120 +29,118 @@
 #include <msr.h>
 #include <io.h>
 #include <amd_geodelx.h>
-#include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
+#include <spd.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config. */
-
-#define PLLMSRHI 0x00001490	/* Manual settings for the PLL */
+#define MANUALCONF 0		/* Do automatic strapped PLL config */
+#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
 #define PLLMSRLO 0x02000030
-
-#define DIVIL_LBAR_GPIO		0x5140000c
-
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
-#define GPIO_BASE		0x6100 /* Mainboard-specific */
-
-/** Empty function to always fail SMBus reads. */
-int smbus_read_byte(unsigned device, unsigned address)
-{
-	return -1;
-}
-
-static void init_gpio(void)
-{
-	struct msr msr;
-
-	printk(BIOS_DEBUG, "Initializing GPIO module...\n");
-
-	/* Initialize the GPIO LBAR. */
-	msr.lo = GPIO_BASE;
-	msr.hi = 0x0000f001;
-	wrmsr(DIVIL_LBAR_GPIO, msr);
-	msr = rdmsr(DIVIL_LBAR_GPIO);
-
-	printk(BIOS_DEBUG, "DIVIL_LBAR_GPIO set to 0x%08x 0x%08x\n",
-	       msr.hi, msr.lo);
-}
-
-static void sdram_hardwire(void)
-{
-	/* Total size of DIMM = 2^row address (byte 3) * 2^col address (byte 4) *
-	 *                      component Banks (byte 17) * module banks, side (byte 5) *
-	 *                      width in bits (byte 6,7)
-	 *                    = Density per side (byte 31) * number of sides (byte 5)
-	 */
-
-	/* Initialize GLMC registers based on SPD values, do one DIMM for now. */
-	struct msr msr;
-
-	msr.hi = 0x10075012;
-	msr.lo = 0x00000040;
-	wrmsr(MC_CF07_DATA, msr);	/* GX3 */
-
-	/* Timing and mode... */
-
-	//msr = rdmsr(0x20000019);
-	
-	/* per standard bios settings */	
-/*
-	msr.hi = 0x18000108;
-	msr.lo = 
-			(6<<28) |		// cas_lat
-			(10<<24)|		// ref2act
-			(7<<20)|		// act2pre
-			(3<<16)|		// pre2act
-			(3<<12)|		// act2cmd
-			(2<<8)|			// act2act
-			(2<<6)|			// dplwr
-			(2<<4)|			// dplrd
-			(3);			// dal
-	* the msr value reported by quanta is very, very different. 
-	 * we will go with that value for now. 
-	 *
-	//msr.lo = 0x286332a3;
-*/
-	//wrmsr(0x20000019, msr);	//GX3
-
-}
-
-/* CPU and GLIU mult/div */
-#define PLLMSRhi 0x0000039C
-/* Hold Count - how long we will sit in reset */
-#define PLLMSRlo 0x00DE0000
-
-static const struct wmsr {
-	u32 reg;
-	struct msr msr;
-} dbe61_msr[] = {
-	{.reg = 0x10000020, {.lo = 0x00fff80, .hi = 0x20000000}},
-	{.reg = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
-	{.reg = 0x40000020, {.lo = 0x00fff80, .hi = 0x20000000}},
-	{.reg = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
+/* The part is a Hynix hy5du121622ctp-d43.
+ *
+ * HY 5D U 12 16 2 2 C <blank> T <blank> P D43
+ * Hynix
+ * DDR SDRAM (5D)
+ * VDD 2.5 VDDQ 2.5 (U)
+ * 512M 8K REFRESH (12)
+ * x16 (16)
+ * 4banks (2)
+ * SSTL_2 (2)
+ * 4th GEN die (C)
+ * Normal Power Consumption (<blank> )
+ * TSOP (T)
+ * Single Die (<blank>)
+ * Lead Free (P)
+ * DDR400 3-3-3 (D43)
+ */
+/* SPD array */
+static const u8 spdbytes[] = {
+	[SPD_ACCEPTABLE_CAS_LATENCIES] = 0x10,
+	[SPD_BANK_DENSITY] = 0x40,
+	[SPD_DEVICE_ATTRIBUTES_GENERAL] = 0xff,
+	[SPD_MEMORY_TYPE] = 7,
+	[SPD_MIN_CYCLE_TIME_AT_CAS_MAX] = 10, /* A guess for the tRAC value */
+	[SPD_MODULE_ATTRIBUTES] = 0xff, /* FIXME later when we figure out. */
+	[SPD_NUM_BANKS_PER_SDRAM] = 4,
+	[SPD_PRIMARY_SDRAM_WIDTH] = 8,
+	[SPD_NUM_DIMM_BANKS] = 1, /* ALIX1.C is 1 bank. */
+	[SPD_NUM_COLUMNS] = 0xa,
+	[SPD_NUM_ROWS] = 3,
+	[SPD_REFRESH] = 0x3a,
+	[SPD_SDRAM_CYCLE_TIME_2ND] = 60,
+	[SPD_SDRAM_CYCLE_TIME_3RD] = 75,
+	[SPD_tRAS] = 40,
+	[SPD_tRCD] = 15,
+	[SPD_tRFC] = 70,
+	[SPD_tRP] = 15,
+	[SPD_tRRD] = 10,
 };
 
-static void dbe61_msr_init(void)
+u8 spd_read_byte(u16 device, u8 address)
 {
-	int i;
-	for (i = 0; i < ARRAY_SIZE(dbe61_msr); i++)
-		wrmsr(dbe61_msr[i].reg, dbe61_msr[i].msr);
+	printk(BIOS_DEBUG, "spd_read_byte dev %04x\n", device);
+
+	if (device != (0x50 << 1)) {
+		printk(BIOS_DEBUG, " returns 0xff\n");
+		return 0xff;
+	}
+
+	printk(BIOS_DEBUG, " addr %02x returns %02x\n", address, spdbytes[address]);
+
+	return spdbytes[address];
 }
 
+/**
+  * Placeholder in case we ever need it. Since this file is a
+  * template for other motherboards, we want this here and we want the
+  * call in the right place.
+  */
+
+static void mb_gpio_init(void)
+{
+	/* Early mainboard specific GPIO setup */
+}
+
+/** 
+  * main for initram for the PC Engines Alix 1C.  It might seem that you
+  * could somehow do these functions in, e.g., the cpu code, but the
+  * order of operations and what those operations are is VERY strongly
+  * mainboard dependent. It's best to leave it in the mainboard code.
+  */
 int main(void)
 {
+	u8 smb_devices[] =  {
+		DIMM0, DIMM1
+	};
+	printk(BIOS_DEBUG, "Hi there from stage1\n");
 	post_code(POST_START_OF_MAIN);
 
 	system_preinit();
-	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
-	cpu_reg_init(0, DIMM0, DIMM1);
+	printk(BIOS_DEBUG, "done preinit\n");
 
-	sdram_hardwire();
+	mb_gpio_init();
+	printk(BIOS_DEBUG, "done gpio init\n");
+
+	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
+	printk(BIOS_DEBUG, "done pll reset\n");
+
+	cpu_reg_init(0, DIMM0, DIMM1);
+	printk(BIOS_DEBUG, "done cpu reg init\n");
+
+	sdram_set_registers();
+	printk(BIOS_DEBUG, "done sdram set registers\n");
+
+	sdram_set_spd_registers(DIMM0, DIMM1);
+	printk(BIOS_DEBUG, "done sdram set spd registers\n");
+
+	sdram_enable(DIMM0, DIMM1);
+	printk(BIOS_DEBUG, "done sdram enable\n");
 
 	/* Check low memory */
-	/* ram_check(0, 640 * 1024); */
+	/*ram_check(0x00000000, 640*1024); */
 
-	init_gpio();
-
+	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;
 }

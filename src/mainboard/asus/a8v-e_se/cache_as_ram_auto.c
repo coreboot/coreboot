@@ -182,16 +182,15 @@ void sio_init(void) {
 
 	pnp_enter_ext_func_mode(GPIO_DEV);
 	pnp_set_logical_device(GPIO_DEV);
-	pnp_exit_ext_func_mode(GPIO_DEV);
-
+	
 	/* set memory voltage to 2.75V, vcore offset + 100mV, 1.5V Chipset voltage */
+	pnp_write_config(GPIO_DEV, 0x30, 0x9);	/* Enable GPIO 2 & GPIO 5 */
+	pnp_write_config(GPIO_DEV, 0xe2, 0x0);	/* no inversion */
+	pnp_write_config(GPIO_DEV, 0xe5, 0x0);	/* no inversion */
+	pnp_write_config(GPIO_DEV, 0xe3, 0x3);	/* 0000 0011 0=output 1=input */
 	pnp_write_config(GPIO_DEV, 0xe0, 0xde);	/* 1101110  0=output 1=input */
 	pnp_write_config(GPIO_DEV, 0xe1, 0x1);	/* set output val */
-	pnp_write_config(GPIO_DEV, 0xe2, 0x0);	/* no inversion */
-	pnp_write_config(GPIO_DEV, 0xe3, 0x3);	/* 0000 0011 0=output 1=input */
-	pnp_write_config(GPIO_DEV, 0xe4, 0xa4);	/* set output val  1010 0100 */
-	pnp_write_config(GPIO_DEV, 0xe5, 0x0);	/* no inversion */
-	pnp_write_config(GPIO_DEV, 0x30, 0x9);	/* Enable GPIO 2 & GPIO 5 */
+	pnp_write_config(GPIO_DEV, 0xe4, 0xb4);	/* set output val  1011 0100 */
 	pnp_exit_ext_func_mode(GPIO_DEV);
 }
 

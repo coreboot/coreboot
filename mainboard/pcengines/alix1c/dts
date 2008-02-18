@@ -19,7 +19,6 @@
  */
 
 /{
-	enabled;
 	mainboard-vendor = "PC Engines";
 	mainboard-name = "ALIX1.C";
 	cpus { };

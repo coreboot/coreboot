@@ -19,23 +19,19 @@
  */
 
 /{
-	enabled;
 	mainboard-vendor = "AMD";
 	mainboard-name = "Norwich";
-	cpus {
-		enabled;
+	cpus { };
+	apic@0 {
+		/config/("northbridge/amd/geodelx/apic");
 	};
-	domain0 {
-		enabled;
-		pcidomain = "0";
-		device0,0 {
-			enabled;
-			pcipath = "1,0";
+	domain@0 {
+		/config/("northbridge/amd/geodelx/domain");
+		pci@1,0 {
+			/config/("northbridge/amd/geodelx/pci");
 		};
-		southbridge {
+		pci@1,1 {
 			/config/("southbridge/amd/cs5536/dts");
-			pcipath = "1,1";
-			enabled;
 		};
 	};
 };

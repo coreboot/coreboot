@@ -40,7 +40,7 @@ static int isverbose = 0;
 static int iselfparse = 0;
 static long larsize = 0;
 static char *bootblock = NULL;
-enum compalgo algo = none;
+enum compalgo algo = ALGO_NONE;
 
 static void usage(char *name)
 {
@@ -272,10 +272,10 @@ int main(int argc, char *argv[])
 			break;
 		case 'C':
 			if (strcasecmp("lzma", optarg) == 0) {
-				algo = lzma;
+				algo = ALGO_LZMA;
 			}
 			if (strcasecmp("nrv2b", optarg) == 0) {
-				algo = nrv2b;
+				algo = ALGO_NRV2B;
 			}
 			break;
 		case 'l':

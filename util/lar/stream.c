@@ -147,7 +147,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 				fprintf(stderr, "Dropping empty section\n");
 			continue;
 		}
-		thisalgo = zeroes;
+		thisalgo = ALGO_ZEROES;
 		if (verbose())
 			fprintf(stderr,  "New section addr %#x size %#x\n",
 			(u32)shdr[i].sh_addr, (u32)shdr[i].sh_size);
@@ -565,7 +565,7 @@ void lar_list_files(struct lar *lar, struct file *files)
 		if (file_in_list(files, filename)) {
 			printf("  %s ", filename);
 
-			if (ntohl(header->compression) == none) {
+			if (ntohl(header->compression) == ALGO_NONE) {
 				printf("(%d bytes @0x%lx);",
 				       ntohl(header->len),
 				       (unsigned long)(ptr - lar->map) +
@@ -669,7 +669,7 @@ int lar_extract_files(struct lar *lar, struct file *files)
 
 		if (file_in_list(files, filename)) {
 
-			if (ntohl(header->compression) == none) {
+			if (ntohl(header->compression) == ALGO_NONE) {
 				ret = _write_file(filename,
 						  (u8 *) (ptr + ntohl(header->offset)),
 						  (u32) ntohl(header->len));
@@ -730,7 +730,7 @@ int lar_process_name(char *name, char **pfilename, char **ppathname,
 
 	if (!strncmp(name, "nocompress:",11)) {
 		filename += 11;
-		*thisalgo = none;
+		*thisalgo = ALGO_NONE;
 	}
 
 	/* this is dangerous */
@@ -846,8 +846,8 @@ int lar_compress(char *ptr, int size, char *temp, enum compalgo *thisalgo)
 	int complen;
 	compress_functions[*thisalgo](ptr, size, temp, &complen);
 
-	if (complen >= size && (*thisalgo != none)) {
-		*thisalgo = none;
+	if (complen >= size && (*thisalgo != ALGO_NONE)) {
+		*thisalgo = ALGO_NONE;
 		compress_functions[*thisalgo](ptr, size, temp, &complen);
 	}
 	return complen;

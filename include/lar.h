@@ -74,6 +74,15 @@ struct lar_header {
 	u64 loadaddress;
 };
 
+enum compalgo {
+	ALGO_NONE = 0,
+	ALGO_LZMA = 1,
+	ALGO_NRV2B = 2,
+	ALGO_ZEROES = 3,
+	/* invalid should always be the last entry. */
+	ALGO_INVALID
+};
+
 struct mem_file {
 	void *start;
 	int len;

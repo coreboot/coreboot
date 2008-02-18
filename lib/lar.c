@@ -31,6 +31,15 @@
 #define ntohl(x) (x)
 #endif
 
+static const char *algo_name[] = {
+	"none",
+	"lzma",
+	"nrv2b",
+	"zeroes",
+	/* invalid should always be the last entry. */
+	"invalid"
+};
+
 /**
  * run_address is passed the address of a function taking no parameters and
  * jumps to it, returning the result. 
@@ -147,36 +156,41 @@ int find_file(const struct mem_file *archive, const char *filename, struct mem_f
 
 int process_file(const struct mem_file *archive, void *where)
 {
-	printk(BIOS_SPEW, "LAR: Compression algorithm #%i used\n", archive->compression);
+	const char *algoname = algo_name[(archive->compression >= ALGO_INVALID)
+					? ALGO_INVALID : archive->compression];
+	printk(BIOS_SPEW, "LAR: Compression algorithm #%i (%s) used\n",
+		archive->compression, algoname);
+	switch (archive->compression) {
 	/* no compression */
-	if (archive->compression == 0) {
+	case ALGO_NONE:
 		memcpy(where, archive->start, archive->len);
 		return 0;
-	}
 #ifdef CONFIG_COMPRESSION_LZMA
 	/* lzma */
-	unsigned long ulzma(unsigned char *src, unsigned char *dst);
-	if (archive->compression == 1) {
+	case ALGO_LZMA: {
+		unsigned long ulzma(unsigned char *src, unsigned char *dst);
 		ulzma(archive->start, where);
 		return 0;
 	}
 #endif
 #ifdef CONFIG_COMPRESSION_NRV2B
 	/* nrv2b */
-	unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
-	if (archive->compression == 2) {
+	case ALGO_NRV2B: {
+		unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
 		unsigned long tmp;
 		unrv2b(archive->start, where, &tmp);
 		return 0;
 	}
 #endif
 	/* zeroes */
-	if (archive->compression == 3) {
+	case ALGO_ZEROES:
 		memset(where, 0, archive->reallen);
 		return 0;
+	default:
+		printk(BIOS_INFO, "LAR: Compression algorithm #%i (%s) not"
+			" supported!\n", archive->compression, algoname);
+		return -1;
 	}
-	printk(BIOS_INFO, "LAR: Compression algorithm #%i not supported!\n", archive->compression);
-	return -1;
 }
 
 /**

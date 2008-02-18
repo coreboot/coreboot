@@ -92,7 +92,14 @@ struct lar {
 	u32 size; /**< Size of the mmaped file */
 };
 
-enum compalgo { none = 0, lzma = 1, nrv2b = 2, zeroes = 3 };
+enum compalgo {
+	ALGO_NONE = 0,
+	ALGO_LZMA = 1,
+	ALGO_NRV2B = 2,
+	ALGO_ZEROES = 3,
+	/* invalid should always be the last entry. */
+	ALGO_INVALID
+};
 
 typedef void (*compress_func) (char *, int, char *, int *);
 typedef void (*uncompress_func) (char *, int, char *, int);
@@ -124,8 +131,10 @@ static uncompress_func uncompress_functions[] = {
 };
 
 static const char *algo_name[] = {
-	"",
+	"none",
 	"lzma",
 	"nrv2b",
 	"zeroes",
+	/* invalid should always be the last entry. */
+	"invalid"
 };

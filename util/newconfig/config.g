@@ -923,7 +923,7 @@ class partobj:
 		""" Add a relative path to a pnp device hanging off our parent """
 		if ((port < 0) or (port > 65536)):
 			fatal("Invalid port")
-		if ((device < 0) or (device > 0xff)):
+		if ((device < 0) or (device > 0xffff)):
 			fatal("Invalid device")
 		self.set_path(".type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}" % (port, device))
 		

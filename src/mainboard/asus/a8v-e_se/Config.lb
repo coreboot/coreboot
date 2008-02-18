@@ -231,24 +231,30 @@ chip northbridge/amd/amdk8/root_complex
                                                        end
                                                        device pnp 2e.5 off #keyb OFF
                                                        end
-                                                       device pnp 2e.6 off #  SERIAL_FLASH
+                                                       device pnp 2e.106 off #  SERIAL_FLASH
                                                                io 0x60 = 0x100
                                                        end
-                                                       device pnp 2e.7 off #  GAME_MIDI_GIPO1
-                                                              # io 0x60 = 0x220
-                                                              # io 0x62 = 0x300
-                                                              # irq 0x70 = a
+
+                                                       device pnp 2e.007 off #GPIO1 off
+                                                       end
+                                                       device pnp 2e.107 on #GAME on
+                                                               io 0x60 = 0x201
+                                                       end
+                                                       device pnp 2e.207 on #MIDI on
+                                                               io 0x62 = 0x330
+                                                               irq 0x70 = 0xa
+                                                       end
+                                                       device pnp 2e.307 off #GPIO6 off
                                                        end
                                                        device pnp 2e.8 off end #  WDTO_PLED
-                                                       device pnp 2e.9 off end #  GPIO2_GPIO3_GPIO4_GPIO5 0x30 0x9
-										#GPIO 5 and 2 active
-								#0xe0 = de
-								#0xe1 = 01
-								#0xe2 = 00
-								#0xe3 = 03
-								#0xe4 = a4
-								#0xe5 = 00
-
+                                                       device pnp 2e.009 on #GPIO2 on Logical device 9 is in sio_setup
+                                                       end
+                                                       device pnp 2e.109 off #GPIO3 off
+                                                       end
+                                                       device pnp 2e.209 off #GPIO4 off
+                                                       end
+                                                       device pnp 2e.309 on #GPIO5 on
+                                                       end
                                                        device pnp 2e.a off end #  ACPI
                                                        device pnp 2e.b on #  HW Monitor
                                                                io 0x60 = 0x290

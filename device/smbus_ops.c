@@ -20,7 +20,6 @@
  */
 
 #include <console.h>
-#include <stdint.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <device/smbus.h>

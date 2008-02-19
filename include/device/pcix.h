@@ -18,6 +18,8 @@
 #ifndef DEVICE_PCIX_H
 #define DEVICE_PCIX_H
 
+#include <device/device.h>
+
 /* (c) 2005 Linux Networx GPL see COPYING for details */
 
 unsigned int pcix_scan_bus(struct bus *bus, 

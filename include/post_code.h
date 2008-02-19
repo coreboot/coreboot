@@ -21,6 +21,7 @@
 #ifndef POST_CODE_H
 #define POST_CODE_H
 
+#include <types.h>
 #include <shared.h>
 
 SHARED(post_code, void, u8 value);

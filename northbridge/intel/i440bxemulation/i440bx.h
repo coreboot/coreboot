@@ -21,6 +21,8 @@
 #ifndef NORTHBRIDGE_INTEL_I440BXEMULATION_I440BX_H
 #define NORTHBRIDGE_INTEL_I440BXEMULATION_I440BX_H
 
+#include <device/device.h>
+
 /*
  * Datasheet:
  *   - Name: Intel 440BX AGPset: 82443BX Host Bridge/Controller

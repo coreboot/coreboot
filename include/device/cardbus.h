@@ -19,6 +19,8 @@
 #ifndef DEVICE_CARDBUS_H
 #define DEVICE_CARDBUS_H
 
+#include <device/device.h>
+
 void cardbus_read_resources(struct device *dev);
 unsigned int cardbus_scan_bus(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max);

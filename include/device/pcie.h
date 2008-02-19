@@ -20,6 +20,8 @@
 #ifndef DEVICE_PCIE_H
 #define DEVICE_PCIE_H
 
+#include <device/device.h>
+
 unsigned int pcie_scan_bus(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max);
 unsigned int pcie_scan_bridge(struct device *dev, unsigned int max);

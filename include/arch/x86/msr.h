@@ -20,6 +20,8 @@
 #ifndef CPU_X86_MSR_H
 #define CPU_X86_MSR_H
 
+#include <types.h>
+
 /* standard MSR operations, everyone has written these one hundred times */
 struct msr {
 	u32 lo;

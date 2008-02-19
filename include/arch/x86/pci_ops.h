@@ -17,6 +17,8 @@
 #ifndef ARCH_X86_PCI_OPS_H
 #define ARCH_X86_PCI_OPS_H
 
+#include <device/device.h>
+
 extern const struct pci_bus_operations pci_cf8_conf1;
 extern const struct pci_bus_operations pci_cf8_conf2;
 

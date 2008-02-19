@@ -18,6 +18,7 @@
 #ifndef DEVICE_HYPERTRANSPORT_H
 #define DEVICE_HYPERTRANSPORT_H
 
+#include <device/device.h>
 #include <device/hypertransport_def.h>
 
 unsigned int hypertransport_scan_chain(struct bus *bus, 

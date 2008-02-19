@@ -36,6 +36,8 @@
 #ifndef _SPD_H_
 #define _SPD_H_
 
+#include <types.h>
+
 /* Byte numbers. */
 #define SPD_NUM_MANUFACTURER_BYTES          0  /* Number of bytes used by module manufacturer */
 #define SPD_TOTAL_SPD_MEMORY_SIZE           1  /* Total SPD memory size */

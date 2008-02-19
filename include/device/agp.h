@@ -19,6 +19,8 @@
 #ifndef DEVICE_AGP_H
 #define DEVICE_AGP_H
 
+#include <device/device.h>
+
 unsigned int agp_scan_bus(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max);
 unsigned int agp_scan_bridge(struct device *dev, unsigned int max);

@@ -18,7 +18,6 @@
 #ifndef DEVICE_SMBUS_H
 #define DEVICE_SMBUS_H
 
-#include <stdint.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <device/smbus_def.h>

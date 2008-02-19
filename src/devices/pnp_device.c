@@ -51,7 +51,7 @@ void pnp_set_logical_device(device_t dev)
 
 void pnp_set_enable(device_t dev, int enable)
 {
-	u8 tmp, bitpos;
+	uint8_t tmp, bitpos;
 
 	tmp = pnp_read_config(dev, 0x30);
 	/* handle the virtual devices, which share same LDN register */
@@ -67,11 +67,11 @@ void pnp_set_enable(device_t dev, int enable)
 
 int pnp_read_enable(device_t dev)
 {
-	u8 tmp, bitpos;
+	uint8_t tmp, bitpos;
 	tmp = pnp_read_config(dev, 0x30);
 	/* handle the virtual devices, which share same LDN register */
 	bitpos = (dev->path.u.pnp.device >> 8) & 0x7;
-	return !!(tmp & bitpos);
+	return !!(tmp & (1 << bitpos));
 }
 
 void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)

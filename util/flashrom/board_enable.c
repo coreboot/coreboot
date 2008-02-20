@@ -28,6 +28,7 @@
 #include <pci/pci.h>
 #include <stdint.h>
 #include <string.h>
+#include <fcntl.h>
 #include "flash.h"
 
 /*
@@ -368,12 +369,77 @@ static int board_acorp_6a815epd(const char *name)
 }
 
 /**
+ * Suited for Artec Group DBE61 and DBE62.
+ */
+static int board_artecgroup_dbe6x(const char *name)
+{
+#define DBE6x_MSR_DIVIL_BALL_OPTS	0x51400015
+#define DBE6x_PRI_BOOT_LOC_SHIFT	(2)
+#define DBE6x_BOOT_OP_LATCHED_SHIFT	(8)
+#define DBE6x_SEC_BOOT_LOC_SHIFT	(10)
+#define DBE6x_PRI_BOOT_LOC		(3 << DBE6x_PRI_BOOT_LOC_SHIFT)
+#define DBE6x_BOOT_OP_LATCHED		(3 << DBE6x_BOOT_OP_LATCHED_SHIFT)
+#define DBE6x_SEC_BOOT_LOC		(3 << DBE6x_SEC_BOOT_LOC_SHIFT)
+#define DBE6x_BOOT_LOC_FLASH		(2)
+#define DBE6x_BOOT_LOC_FWHUB		(3)
+
+	unsigned long msr[2];
+	int msr_fd;
+	unsigned long boot_loc;
+
+	msr_fd = open("/dev/cpu/0/msr", O_RDWR);
+	if (msr_fd == -1) {
+		perror("open /dev/cpu/0/msr");
+		return -1;
+	}
+
+	if (lseek(msr_fd, DBE6x_MSR_DIVIL_BALL_OPTS, SEEK_SET) == -1) {
+		perror("lseek");
+		close(msr_fd);
+		return -1;
+	}
+
+	if (read(msr_fd, (void*) msr, 8) != 8) {
+		perror("read");
+		close(msr_fd);
+		return -1;
+	}
+
+	if ((msr[0] & (DBE6x_BOOT_OP_LATCHED)) ==
+	    (DBE6x_BOOT_LOC_FWHUB << DBE6x_BOOT_OP_LATCHED_SHIFT))
+		boot_loc = DBE6x_BOOT_LOC_FWHUB;
+	else
+		boot_loc = DBE6x_BOOT_LOC_FLASH;
+
+	msr[0] &= ~(DBE6x_PRI_BOOT_LOC | DBE6x_SEC_BOOT_LOC);
+	msr[0] |= ((boot_loc << DBE6x_PRI_BOOT_LOC_SHIFT) |
+	    (boot_loc << DBE6x_SEC_BOOT_LOC_SHIFT));
+
+	if (lseek(msr_fd, DBE6x_MSR_DIVIL_BALL_OPTS, SEEK_SET) == -1) {
+		perror("lseek");
+		close(msr_fd);
+		return -1;
+	}
+
+	if (write(msr_fd, (void*) msr, 8) != 8) {
+		perror("write");
+		close(msr_fd);
+		return -1;
+	}
+
+	close(msr_fd);
+	return 0;
+}
+
+/**
  * We use 2 sets of IDs here, you're free to choose which is which. This
  * is to provide a very high degree of certainty when matching a board on
  * the basis of subsystem/card IDs. As not every vendor handles
  * subsystem/card IDs in a sane manner.
  *
  * Keep the second set NULLed if it should be ignored.
+ *
+ * Keep the subsystem IDs NULLed if they don't identify the board fully.
  */
 struct board_pciid_enable {
 	/* Any device, but make it sensible, like the ISA bridge. */
@@ -427,6 +493,10 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 "epox", "ep-bx3", "EPoX EP-BX3", board_epox_ep_bx3},
 	{0x8086, 0x1130, 0x0000, 0x0000, 0x105a, 0x0d30, 0x105a, 0x4d33,
 	 "acorp", "6a815epd", "Acorp 6A815EPD", board_acorp_6a815epd},
+	{0x1022, 0x2090, 0x0000, 0x0000, 0x1022, 0x2080, 0x0000, 0x0000,
+	 "artecgroup", "dbe61", "Artec Group DBE61", board_artecgroup_dbe6x},
+	{0x1022, 0x2090, 0x0000, 0x0000, 0x1022, 0x2080, 0x0000, 0x0000,
+	 "artecgroup", "dbe62", "Artec Group DBE62", board_artecgroup_dbe6x},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

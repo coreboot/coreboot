@@ -61,7 +61,7 @@ int pcibios_handler(void)
 		break;
 	case FIND_PCI_DEVICE:
 		/* FixME: support SI != 0 */
-		dev = dev_find_device(X86_DX, X86_CX, dev);
+		dev = dev_find_pci_device(X86_DX, X86_CX, dev);
 		if (dev != 0) {
 			X86_BH = dev->bus->secondary;
 			X86_BL = dev->path.u.pci.devfn;

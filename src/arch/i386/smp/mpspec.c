@@ -1,6 +1,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/path.h>
+#include <device/pci_ids.h>
 #include <cpu/cpu.h>
 #include <arch/smp/mpspec.h>
 #include <string.h>
@@ -26,8 +27,7 @@ void *smp_write_floating_table(unsigned long addr)
 	void *v;
 	
 	/* 16 byte align the table address */
-	addr += 15;
-	addr &= ~15;
+	addr = (addr + 0xf) & (~0xf);
 	v = (void *)addr;
 
 	mf = v;
@@ -52,8 +52,8 @@ void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_ph
 {
         struct intel_mp_floating *mf;
         void *v;
-
-        v = (void *)addr;
+	
+	v = (void *)addr;
         mf = v;
         mf->mpf_signature[0] = '_';
         mf->mpf_signature[1] = 'M';
@@ -204,6 +204,58 @@ void smp_write_intsrc(struct mp_config_table *mc,
 #endif
 }
 
+void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
+	unsigned char irqtype, unsigned short irqflag,
+	struct device *dev,
+	unsigned char dstapic, unsigned char *dstirq)
+{
+	struct device *child;
+
+	int linkn;
+	int i;
+	int srcbus;
+	int slot;
+
+	struct bus *link;
+	unsigned char dstirq_x[4];
+
+	for (linkn = 0; linkn < dev->links; linkn++) {
+
+		link = &dev->link[linkn];
+		child = link->children;
+		srcbus = link->secondary;
+
+		while (child) {
+			if (child->path.type != DEVICE_PATH_PCI)
+				goto next;
+
+			slot = (child->path.u.pci.devfn >> 3);
+			/* round pins */
+			for (i = 0; i < 4; i++)
+				dstirq_x[i] = dstirq[(i + slot) % 4];
+
+			if ((child->class >> 16) != PCI_BASE_CLASS_BRIDGE) {
+				/* pci device */
+				printk_debug("route irq: %s %04x\n", dev_path(child));
+				for (i = 0; i < 4; i++)
+					smp_write_intsrc(mc, irqtype, irqflag, srcbus, (slot<<2)|i, dstapic, dstirq_x[i]);
+				goto next;
+			}
+
+			switch (child->class>>8) {
+			case PCI_CLASS_BRIDGE_PCI:
+			case PCI_CLASS_BRIDGE_PCMCIA:
+			case PCI_CLASS_BRIDGE_CARDBUS:
+				printk_debug("route irq bridge: %s %04x\n", dev_path(child));
+				smp_write_intsrc_pci_bridge(mc, irqtype, irqflag, child, dstapic, dstirq_x);
+			}
+
+		next:
+			child = child->sibling;
+		}
+
+	}
+}
 
 void smp_write_lintsrc(struct mp_config_table *mc,
 	unsigned char irqtype, unsigned short irqflag,

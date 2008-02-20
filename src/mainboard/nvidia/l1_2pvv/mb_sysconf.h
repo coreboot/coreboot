@@ -24,12 +24,11 @@
 
 struct mb_sysconf_t {
         unsigned char bus_isa;
-        unsigned char bus_mcp55[8]; //1
-        unsigned char bus_mcp55b[8];//a
+        unsigned char bus_mcp55;
+        unsigned char bus_mcp55b;
         unsigned apicid_mcp55;
         unsigned apicid_mcp55b;
 	unsigned bus_type[256]; 
-	unsigned char bus_pcix[3]; // under bus_mcp55_2
 
 	unsigned sbdnb;
 

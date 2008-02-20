@@ -87,7 +87,7 @@ static struct ioapicreg ioapicregvalues[] = {
 	/* Be careful and don't write past the end... */
 };
 
-static void setup_ioapic(unsigned long ioapic_base)
+static void setup_ioapic(unsigned long ioapic_base, int master)
 {
 	int i;
 	unsigned long value_low, value_high;
@@ -95,7 +95,14 @@ static void setup_ioapic(unsigned long ioapic_base)
 	volatile unsigned long *l;
 	struct ioapicreg *a = ioapicregvalues;
 
-	ioapicregvalues[0].value_high = lapicid()<<(56-32);
+	if (master) {
+		ioapicregvalues[0].value_high = lapicid()<<(56-32);
+		ioapicregvalues[0].value_low = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
+	}
+	else {
+		ioapicregvalues[0].value_high = NONE;
+		ioapicregvalues[0].value_low = DISABLED;
+	}
 
 	l = (unsigned long *) ioapic_base;
 
@@ -121,14 +128,14 @@ static void setup_ioapic(unsigned long ioapic_base)
 
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
-#define SLOW_CPU_OFF	0
-#define SLOW_CPU__ON	1
+#define SLOW_CPU_OFF		0
+#define SLOW_CPU__ON		1
 
 #ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL	MAINBOARD_POWER_ON
+#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
-static void lpc_common_init(device_t dev)
+static void lpc_common_init(device_t dev, int master)
 {
 	uint8_t byte;
 	uint32_t dword;
@@ -139,13 +146,12 @@ static void lpc_common_init(device_t dev)
 	pci_write_config8(dev, 0x74, byte);
 	dword = pci_read_config32(dev, PCI_BASE_ADDRESS_1); // 0x14
 
-	setup_ioapic(dword);
-
+	setup_ioapic(dword, master);
 }
 
 static void lpc_slave_init(device_t dev)
 {
-	lpc_common_init(dev);
+	lpc_common_init(dev, 0);
 }
 
 #if 0
@@ -166,13 +172,12 @@ static void lpc_init(device_t dev)
 	int on;
 	int nmi_option;
 
-	lpc_common_init(dev);
+	lpc_common_init(dev, 1);
 
 #if 0
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);
 	pci_write_config8(dev, 0x46, byte | (1<<0));
-
 #endif
 	/* power after power fail */
 
@@ -198,7 +203,7 @@ static void lpc_init(device_t dev)
 		dword = inl(pm10_bar + 0x10);
 		on = 8-on;
 		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
-				(on*12)+(on>>1),(on&1)*5);
+			     (on*12)+(on>>1),(on&1)*5);
 	}
 
 #if 0

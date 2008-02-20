@@ -248,6 +248,10 @@ void smp_write_intsrc(struct mp_config_table *mc,
 	unsigned char irqtype, unsigned short irqflag,
 	unsigned char srcbus, unsigned char srcbusirq,
 	unsigned char dstapic, unsigned char dstirq);
+void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
+	unsigned char irqtype, unsigned short irqflag,
+	struct device *dev,
+	unsigned char dstapic, unsigned char *dstirq);
 void smp_write_lintsrc(struct mp_config_table *mc,
 	unsigned char irqtype, unsigned short irqflag,
 	unsigned char srcbusid, unsigned char srcbusirq,

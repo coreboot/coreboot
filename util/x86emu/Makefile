@@ -20,7 +20,7 @@
 
 X86EMU_OBJ  = debug.o decode.o fpu.o ops.o ops2.o prim_ops.o sys.o
 BIOSEMU_OBJ = biosemu.o pcbios/pcibios.o
-VM86_OBJ    = vm86.o
+VM86_OBJ    = vm86.o vm86_gdt.o
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
 LIBX86EMU_OBJS = $(patsubst %,$(obj)/util/x86emu/x86emu/%,$(X86EMU_OBJ)) \

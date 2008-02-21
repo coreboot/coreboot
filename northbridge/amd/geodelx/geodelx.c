@@ -30,7 +30,6 @@
 extern void chipsetinit(void);
 extern u32 get_systop(void);
 extern void northbridge_init_early(void);
-extern void setup_realmode_idt(void);
 
 
 /**
@@ -154,8 +153,6 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 
 //	northbridge_init_early();
 	chipsetinit();
-
-	setup_realmode_idt();
 
 	printk(BIOS_SPEW, "Before VSA:\n");
 	/* print_conf(); */

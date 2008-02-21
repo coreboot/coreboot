@@ -89,10 +89,6 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 		"	mov	%%ax, %%ss	\n"
 		"	movl	$0x1000, %%eax	\n"
 		"	movl	%%eax, %%esp	\n"
-		/* Load our 16 it idt */
-		"	xor	%%ax, %%ax	\n"
-		"	mov	%%ax, %%ds	\n"
-		"	lidt	__myidt		\n"
 		/* Dump zeros in the other segregs */
 		"	mov	%%ax, %%es     	\n"
 		/* FixMe: Big real mode for gs, fs? */
@@ -120,9 +116,8 @@ static void real_mode_switch_call_vsm(unsigned long smm, unsigned long sysm)
 		"	mov	%%ax, %%fs	\n"
 		"	mov	%%ax, %%gs	\n"
 		"	mov	%%ax, %%ss	\n"
-		/* restore proper gdt and idt */
+		/* restore proper gdt */
 		"	lgdt	%%cs:gdtarg	\n"
-		"	lidt	idtarg		\n"
 		".globl vsm_exit		\n"
 		"vsm_exit:			\n"
 		"	mov	__stack, %%esp	\n"

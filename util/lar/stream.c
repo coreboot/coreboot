@@ -946,6 +946,9 @@ int lar_add_file(struct lar *lar, char *name)
 
 	ptr = mapfile(filename, &size);
 
+	if (ptr == MAP_FAILED)
+		return -1;
+
 	if (elfparse() && iself(ptr)) {
 		output_elf_segments(lar, pathname, ptr, size, thisalgo);
 		return 0;

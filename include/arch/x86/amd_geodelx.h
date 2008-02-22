@@ -1254,7 +1254,7 @@ static inline void vr_write(u16 class_index, u16 data)
   * @param class_index The register index
   * @return the 16-bit word of data
   */
-static inline u16 vr_ead(u16 class_index)
+static inline u16 vr_read(u16 class_index)
 {
 	u16 data;
 	outl(((u32) VR_UNLOCK << 16) | class_index, VRC_INDEX);

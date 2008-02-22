@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,63 +23,8 @@
 #include <msr.h>
 #include <cpu.h>
 #include <amd_geodelx.h>
+#include "geodelink.h"
 
-/* Function prototypes */
-
-struct gliutable {
-	unsigned long desc_name;
-	unsigned short desc_type;
-	unsigned long hi, lo;
-};
-
-static struct gliutable gliu0table[] = {
-	/* 0-7FFFF to MC */
-	{.desc_name = MSR_GLIU0_BASE1,.desc_type = BM,.hi = MSR_MC + 0x0,
-	 .lo = 0x0FFF80},
-	/* 80000-9FFFF to MC */
-	{.desc_name = MSR_GLIU0_BASE2,.desc_type = BM,.hi = MSR_MC + 0x0,
-	 .lo = (0x80 << 20) + 0x0FFFE0},
-	/* C0000-FFFFF split to MC and PCI (sub decode) A0000-BFFFF
-	 * handled by SoftVideo.
-	 */
-	{.desc_name = MSR_GLIU0_SHADOW,.desc_type = SC_SHADOW,
-	 .hi = MSR_MC + 0x0,.lo = 0x03},
-	/* Catch and fix dynamically. */
-	{.desc_name = MSR_GLIU0_SYSMEM,.desc_type = R_SYSMEM,
-	 .hi = MSR_MC,.lo = 0x0},
-	/* Catch and fix dynamically. */
-	{.desc_name = MSR_GLIU0_SMM,.desc_type = BMO_SMM,
-	 .hi = MSR_MC,.lo = 0x0},
-	{.desc_name = GLIU0_GLD_MSR_COH,.desc_type = OTHER,
-	 .hi = 0x0,.lo = GL0_CPU},
-	{.desc_name = GL_END,.desc_type = GL_END,.hi = 0x0,.lo = 0x0},
-};
-
-static struct gliutable gliu1table[] = {
-	/* 0-7FFFF to MC */
-	{.desc_name = MSR_GLIU1_BASE1,.desc_type = BM,.hi = MSR_GL0 + 0x0,
-	 .lo = 0x0FFF80},
-	/* 80000-9FFFF to MC */
-	{.desc_name = MSR_GLIU1_BASE2,.desc_type = BM,.hi = MSR_GL0 + 0x0,
-	 .lo = (0x80 << 20) + 0x0FFFE0},
-	/* C0000-Fffff split to MC and PCI (sub decode) */
-	{.desc_name = MSR_GLIU1_SHADOW,.desc_type = SC_SHADOW,
-	 .hi = MSR_GL0 + 0x0,.lo = 0x03},
-	/* Catch and fix dynamically. */
-	{.desc_name = MSR_GLIU1_SYSMEM,.desc_type = R_SYSMEM,
-	 .hi = MSR_GL0,.lo = 0x0},
-	/* Catch and fix dynamically. */
-	{.desc_name = MSR_GLIU1_SMM,.desc_type = BM_SMM,
-	 .hi = MSR_GL0,.lo = 0x0},
-	{.desc_name = GLIU1_GLD_MSR_COH,.desc_type = OTHER,
-	 .hi = 0x0,.lo = GL1_GLIU0},
-	/* FooGlue FPU 0xF0 */
-	{.desc_name = MSR_GLIU1_FPU_TRAP,.desc_type = SCIO,
-	 .hi = (GL1_GLCP << 29) + 0x0,.lo = 0x033000F0},
-	{.desc_name = GL_END,.desc_type = GL_END,.hi = 0x0,.lo = 0x0},
-};
-
-static struct gliutable *gliutables[] = { gliu0table, gliu1table, 0 };
 
 static struct msrinit clock_gating_default[] = {
 	{GLIU0_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0005}},
@@ -763,10 +708,6 @@ static void enable_L2_cache(void)
 	printk(BIOS_DEBUG, "L2 cache enabled\n");
 }
 
-#ifndef CONFIG_VIDEO_MB
-#warning "CONFIG_VIDEO_MB was not defined"
-#define CONFIG_VIDEO_MB 8
-#endif
 
 /**
  * Set up all LX cache registers, L1, L2, and x86.
@@ -787,36 +728,6 @@ static void setup_lx_cache(void)
 
 	enable_cache();
 	__asm__("wbinvd\n");	/* TODO: Use wbinvd() function? */
-}
-
-/**
- * TODO.
- *
- * @return TODO.
- */
-u32 get_systop(void)
-{
-	struct gliutable *gl = NULL;
-	u32 systop;
-	struct msr msr;
-	int i;
-
-	for (i = 0; gliu0table[i].desc_name != GL_END; i++) {
-		if (gliu0table[i].desc_type == R_SYSMEM) {
-			gl = &gliu0table[i];
-			break;
-		}
-	}
-	if (gl) {
-		msr = rdmsr(gl->desc_name);
-		systop = ((msr.hi & 0xFF) << 24) | ((msr.lo & 0xFFF00000) >> 8);
-		systop += 4 * 1024;	/* 4K */
-	} else {
-		systop =
-		    ((sizeram() - CONFIG_VIDEO_MB) * 1024) - SMM_SIZE - 1024;
-	}
-
-	return systop;
 }
 
 /**

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,12 +25,14 @@
 #include <device/pci_ids.h>
 #include <msr.h>
 #include <amd_geodelx.h>
+#include <statictree.h>
+#include "geodelink.h"
 
 /* Function prototypes */
 extern void chipsetinit(void);
-extern u32 get_systop(void);
 extern void northbridge_init_early(void);
-
+extern void graphics_init(struct northbridge_amd_geodelx_pci_config *nb_pci);
+extern u64 sizeram(void);
 
 /**
  * Currently not set up.
@@ -39,6 +41,37 @@ extern void northbridge_init_early(void);
  */
 static void enable_shadow(struct device *dev)
 {
+}
+
+
+/**
+ * TODO.
+ *
+ * @return TODO.
+ */
+u64 get_systop(struct northbridge_amd_geodelx_pci_config *nb_pci)
+{
+	struct gliutable *gl = NULL;
+	u64 systop;
+	struct msr msr;
+	int i;
+
+	for (i = 0; gliu0table[i].desc_name != GL_END; i++) {
+		if (gliu0table[i].desc_type == R_SYSMEM) {
+			gl = &gliu0table[i];
+			break;
+		}
+	}
+	if (gl) {
+		msr = rdmsr(gl->desc_name);
+		systop = ((msr.hi & 0xFF) << 24) | ((msr.lo & 0xFFF00000) >> 8);
+		systop += 4 * 1024;	/* 4K */
+	} else {
+		systop =
+		    (((sizeram() - nb_pci->geode_video_mb) * 1024) - SMM_SIZE) * 1024;
+	}
+
+	return systop;
 }
 
 /**
@@ -116,6 +149,8 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
 {
 	int idx;
 	struct device *mc_dev;
+	struct northbridge_amd_geodelx_pci_config *nb_pci =
+	 (struct northbridge_amd_geodelx_pci_config *)dev->device_configuration;
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
 
@@ -125,9 +160,9 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
 		idx = 10;
 		/* 0 .. 640 KB */
 		ram_resource(dev, idx++, 0, 640);
-		/* 1 MB .. (Systop - 1 MB) (converted to KB) */
+		/* 1 MB .. (Systop - 1 MB) (in KB) */
 		ram_resource(dev, idx++, 1024,
-			     (get_systop() - (1 * 1024 * 1024)) / 1024);
+			     (get_systop(nb_pci)/1024) - 1024);
 	}
 
 	phase4_assign_resources(&dev->link[0]);
@@ -147,6 +182,9 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
  */
 static void geodelx_pci_domain_phase2(struct device *dev)
 {
+	struct northbridge_amd_geodelx_pci_config *nb_pci =
+	 (struct northbridge_amd_geodelx_pci_config *)dev->device_configuration;
+
 	void do_vsmbios(void);
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
@@ -161,8 +199,7 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 	printk(BIOS_SPEW, "After VSA:\n");
 	/* print_conf(); */
 
-#warning graphics_init is disabled.
-	/* graphics_init(); */
+	graphics_init(nb_pci);
 	pci_set_method(dev);
 }
 

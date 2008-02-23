@@ -73,6 +73,6 @@ static const struct gliutable gliu1table[] = {
 	{.desc_name = GL_END,.desc_type = GL_END,.hi = 0x0,.lo = 0x0},
 };
 
-static struct gliutable *gliutables[] = { gliu0table, gliu1table, 0 };
+static const struct gliutable *gliutables[] = { gliu0table, gliu1table, 0 };
 
 #endif /* GEODELINK_H */

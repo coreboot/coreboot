@@ -27,10 +27,10 @@
 	};
 	domain@0 {
 		/config/("northbridge/amd/geodelx/domain");
+		/* Video RAM has to be in 2MB chunks. */
+		geode_video_mb = "8";
 		pci@1,0 {
 			/config/("northbridge/amd/geodelx/pci");
-			/* Video RAM has to be in 2MB chunks. */
-			geode_video_mb = "8";
 		};
 		pci@15,0 {
 			/config/("southbridge/amd/cs5536/dts");

@@ -31,7 +31,7 @@
 /* Function prototypes */
 extern void chipsetinit(void);
 extern void northbridge_init_early(void);
-extern void graphics_init(struct northbridge_amd_geodelx_pci_config *nb_pci);
+extern void graphics_init(u8 video_mb);
 extern u64 sizeram(void);
 
 /**
@@ -49,9 +49,9 @@ static void enable_shadow(struct device *dev)
  *
  * @return TODO.
  */
-u64 get_systop(struct northbridge_amd_geodelx_pci_config *nb_pci)
+u64 get_systop(struct northbridge_amd_geodelx_domain_config *nb_dm)
 {
-	struct gliutable *gl = NULL;
+	const struct gliutable *gl = NULL;
 	u64 systop;
 	struct msr msr;
 	int i;
@@ -68,7 +68,7 @@ u64 get_systop(struct northbridge_amd_geodelx_pci_config *nb_pci)
 		systop += 4 * 1024;	/* 4K */
 	} else {
 		systop =
-		    (((sizeram() - nb_pci->geode_video_mb) * 1024) - SMM_SIZE) * 1024;
+		    (((sizeram() - nb_dm->geode_video_mb) * 1024) - SMM_SIZE) * 1024;
 	}
 
 	return systop;
@@ -149,8 +149,8 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
 {
 	int idx;
 	struct device *mc_dev;
-	struct northbridge_amd_geodelx_pci_config *nb_pci =
-	 (struct northbridge_amd_geodelx_pci_config *)dev->device_configuration;
+	struct northbridge_amd_geodelx_domain_config *nb_dm =
+	 (struct northbridge_amd_geodelx_domain_config *)dev->device_configuration;
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
 
@@ -162,7 +162,7 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
 		ram_resource(dev, idx++, 0, 640);
 		/* 1 MB .. (Systop - 1 MB) (in KB) */
 		ram_resource(dev, idx++, 1024,
-			     (get_systop(nb_pci)/1024) - 1024);
+			     (get_systop(nb_dm)/1024) - 1024);
 	}
 
 	phase4_assign_resources(&dev->link[0]);
@@ -182,8 +182,8 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
  */
 static void geodelx_pci_domain_phase2(struct device *dev)
 {
-	struct northbridge_amd_geodelx_pci_config *nb_pci =
-	 (struct northbridge_amd_geodelx_pci_config *)dev->device_configuration;
+	struct northbridge_amd_geodelx_domain_config *nb_dm =
+	 (struct northbridge_amd_geodelx_domain_config *)dev->device_configuration;
 
 	void do_vsmbios(void);
 
@@ -198,8 +198,8 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 	do_vsmbios(); 
 	printk(BIOS_SPEW, "After VSA:\n");
 	/* print_conf(); */
-
-	graphics_init(nb_pci);
+printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", nb_dm->geode_video_mb);
+	graphics_init((u8)nb_dm->geode_video_mb);
 	pci_set_method(dev);
 }
 

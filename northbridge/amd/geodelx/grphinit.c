@@ -26,7 +26,7 @@
  /*
   * This function mirrors the Graphics_Init routine in GeodeROM.
   */
-void graphics_init(struct northbridge_amd_geodelx_pci_config *nb_pci)
+void graphics_init(u8 video_mb)
 {
 	u16 wClassIndex, wData, res;
 
@@ -54,7 +54,7 @@ void graphics_init(struct northbridge_amd_geodelx_pci_config *nb_pci)
 	 */
 
 	wData = VG_CFG_DRIVER | VG_CFG_PRIORITY | 
-			VG_CFG_DSCRT | (nb_pci->geode_video_mb & VG_MEM_MASK);
+			VG_CFG_DSCRT | (video_mb & VG_MEM_MASK);
 	vr_write(wClassIndex, wData);
 
 	res = vr_read(wClassIndex);

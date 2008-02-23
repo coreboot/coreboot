@@ -59,7 +59,7 @@ static struct msrinit geode_link_priority_table[] = {
  *
  * @param gl A GeodeLink table descriptor.
  */
-static void writeglmsr(struct gliutable *gl)
+static void writeglmsr(const struct gliutable *gl)
 {
 	struct msr msr;
 
@@ -76,7 +76,7 @@ static void writeglmsr(struct gliutable *gl)
  *
  * @param gl A GeodeLink table descriptor.
  */
-static void ShadowInit(struct gliutable *gl)
+static void ShadowInit(const struct gliutable *gl)
 {
 	struct msr msr;
 
@@ -134,7 +134,7 @@ int sizeram(void)
  *
  * @param gl A GeodeLink table descriptor.
  */
-static void sysmem_init(struct gliutable *gl)
+static void sysmem_init(const struct gliutable *gl)
 {
 	struct msr msr;
 	int sizembytes, sizebytes;
@@ -170,7 +170,7 @@ static void sysmem_init(struct gliutable *gl)
  *
  * @param gl A GeodeLink table descriptor.
  */
-static void SMMGL0Init(struct gliutable *gl)
+static void SMMGL0Init(const struct gliutable *gl)
 {
 	struct msr msr;
 	int sizebytes = sizeram() << 20;
@@ -201,7 +201,7 @@ static void SMMGL0Init(struct gliutable *gl)
  *
  * @param gl A GeodeLink table descriptor.
  */
-static void SMMGL1Init(struct gliutable *gl)
+static void SMMGL1Init(const struct gliutable *gl)
 {
 	struct msr msr;
 	printk(BIOS_DEBUG, "%s:\n", __FUNCTION__);
@@ -225,7 +225,7 @@ static void SMMGL1Init(struct gliutable *gl)
  *
  * @param gl A GeodeLink table descriptor.
  */
-static void GLIUInit(struct gliutable *gl)
+static void GLIUInit(const struct gliutable *gl)
 {
 	while (gl->desc_type != GL_END) {
 		switch (gl->desc_type) {
@@ -259,7 +259,7 @@ static void GLIUInit(struct gliutable *gl)
  */
 static void GLPCI_init(void)
 {
-	struct gliutable *gl = NULL;
+	const struct gliutable *gl = NULL;
 	struct msr msr;
 	int i, enable_preempt, enable_cpu_override;
 	int nic_grants_control, enable_bus_parking;
@@ -545,7 +545,7 @@ static void set_shadow(u64 shadowSettings)
 {
 	int i;
 	struct msr msr;
-	struct gliutable *pTable;
+	const struct gliutable *pTable;
 	u32 shadowLo, shadowHi;
 
 	shadowLo = (u32) shadowSettings;
@@ -612,7 +612,7 @@ static void rom_shadow_settings(void)
 static void enable_L1_cache(void)
 {
 	int i;
-	struct gliutable *gl = NULL;
+	const struct gliutable *gl = NULL;
 	struct msr msr;
 	u8 SysMemCacheProp;
 

@@ -87,6 +87,10 @@ else
 		../util/lar/lar $(PARSEELF) $(COMPRESSFLAG) -a \
 			../coreboot.rom normal/payload;
 endif
+ifeq ($(CONFIG_ZERO_AFTER_PAYLOAD),y)
+	$(Q)printf "  ZEROING lar -z ./coreboot.rom\n"
+	$(Q)cd $(obj) && ./util/lar/lar -z ./coreboot.rom
+endif
 	$(Q)# QEMU wants bios.bin:
 	$(Q)# Run "qemu -L build/ -serial stdio -hda /dev/zero".
 	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/bios.bin)\n"

@@ -148,5 +148,13 @@ config PAYLOAD_PREPARSE_ELF
 	  payload in, coreboot can not parse it. We hope to remove ELF
 	  entirely in the future.
 
+config ZERO_AFTER_PAYLOAD
+	bool "Zero fill lar after adding the payload"
+	depends PAYLOAD_ELF
+	default n
+	help
+	  This option speeds booting but makes it so that no further files may
+	  be added to the lar.
+
 endmenu
 

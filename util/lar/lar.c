@@ -370,13 +370,13 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* when a new archive is created, recurse over
-	 * physical files when a directory is found.
+	/* when a new archive is created or added to, recurse over
+	 * the physical files when a directory is found.
 	 * Otherwise just add the directory to the match list
 	 */
 
 	while (optind < argc) {
-		if (larmode == CREATE) {
+		if (larmode == CREATE || larmode == ADD) {
 			add_files(argv[optind++]);
 		} else
 			add_file_or_directory(argv[optind++]);

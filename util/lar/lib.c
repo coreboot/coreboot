@@ -223,7 +223,7 @@ static int handle_directory(const char *name)
 
 /*
  * Add physically existing files to the file list. 
- * This function is used when an archive is created.
+ * This function is used when an archive is created or added to.
  */
 
 int add_files(const char *name)

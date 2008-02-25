@@ -96,29 +96,6 @@ choice
         prompt "Payload type"
         default PAYLOAD_NONE
 
-config PAYLOAD_PREPARSE_ELF
-	bool "Pre-parse ELF file and convert ELF segments to LAR entries"
-	depends EXPERT
-	default n
-	help
-	  Until now, coreboot has used ELF for the payload. There are many
-	  problems with this, not least being the inefficiency -- the ELF has
-	  to be decompressed to memory and then the segments have to be
-	  copied. Plus, lar can't see the segments in the ELF -- to see all
-	  segments, you have to extract the ELF and run readelf on it.
-
-	  There are problems with collisions of the decompressed ELF
-	  location in memory and the segment locations in memory.
-	  Finally, validation of the ELF is done at run time, once you have
-	  flashed the FLASH and rebooted the machine. Boot time is really
-	  not the time you want to find out your ELF payload is broken.
-
-	  With this option, coreboot will direct lar to break each ELF
-	  segment into a LAR entry. ELF will not be used at all. Note that
-	  (for now) coreboot is backward compatible -- if you put an ELF
-	  payload in, coreboot can still parse it. We hope to remove ELF
-	  entirely in the future.
-
 config PAYLOAD_ELF
 	bool "An ELF executable payload file"
 	help
@@ -143,10 +120,33 @@ endchoice
 
 config PAYLOAD_FILE
 	string "Payload path and filename"
-	depends PAYLOAD_ELF || PAYLOAD_PREPARSE_ELF
+	depends PAYLOAD_ELF
 	default "payload.elf"
 	help
 	  The path and filename of the ELF executable file to use as payload.
+
+config PAYLOAD_PREPARSE_ELF
+	bool "Pre-parse ELF file and convert ELF segments to LAR entries"
+	depends PAYLOAD_ELF
+	default y
+	help
+	  Until now, coreboot has used ELF for the payload. There are many
+	  problems with this, not least being the inefficiency -- the ELF has
+	  to be decompressed to memory and then the segments have to be
+	  copied. Plus, lar can't see the segments in the ELF -- to see all
+	  segments, you have to extract the ELF and run readelf on it.
+
+	  There are problems with collisions of the decompressed ELF
+	  location in memory and the segment locations in memory.
+	  Finally, validation of the ELF is done at run time, once you have
+	  flashed the FLASH and rebooted the machine. Boot time is really
+	  not the time you want to find out your ELF payload is broken.
+
+	  With this option, coreboot will direct lar to break each ELF
+	  segment into a LAR entry. ELF will not be used at all. Note that
+	  (for now) coreboot is not backward compatible -- if you put an ELF
+	  payload in, coreboot can not parse it. We hope to remove ELF
+	  entirely in the future.
 
 endmenu
 

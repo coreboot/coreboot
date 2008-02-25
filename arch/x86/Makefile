@@ -36,10 +36,8 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_COREBOOT_ROMSIZE_KB) \* 1024)
 
-LARFILES := nocompress:normal/initram normal/stage2 nocompress:normal/option_table
-ifneq ($(CONFIG_PAYLOAD_NONE),y)
-LARFILES += normal/payload
-endif
+LARFILES_NOCOMPRESS := normal/initram normal/option_table
+LARFILES_COMPRESSIBLE := normal/stage2
 
 DECOMPRESSORS :=
 ifeq ($(CONFIG_COMPRESSION_LZMA),y)
@@ -64,24 +62,31 @@ $(obj)/coreboot.rom $(obj)/coreboot.map: $(obj)/coreboot.bootblock $(obj)/util/l
 	$(Q)cp $(obj)/coreboot.initram $(obj)/lar.tmp/normal/initram
 	$(Q)cp $(obj)/coreboot.stage2 $(obj)/lar.tmp/normal/stage2
 	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
+	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)rm -f $(obj)/coreboot.rom
+	$(Q)cd $(obj)/lar.tmp && \
+		../util/lar/lar -e -c \
+			../coreboot.rom \
+			$(LARFILES_NOCOMPRESS) \
+			-s $(ROM_SIZE) -b $(obj)/coreboot.bootblock
+	$(Q)cd $(obj)/lar.tmp && \
+		../util/lar/lar -e $(COMPRESSFLAG) -a \
+			../coreboot.rom \
+			$(LARFILES_COMPRESSIBLE)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	$(Q)printf "  PAYLOAD none (as specified by user)\n"
 else
-	$(Q)# TODO: Print sth. other than $(CONFIG_PAYLOAD_FILE) if compressed.
 	$(Q)if [ -r $(CONFIG_PAYLOAD_FILE) ]; then \
-		printf "  PAYLOAD $(CONFIG_PAYLOAD_FILE)\n"; \
+		printf "  PAYLOAD $(CONFIG_PAYLOAD_FILE) $(COMPRESSFLAG)\n"; \
 		cp $(CONFIG_PAYLOAD_FILE) $(obj)/lar.tmp/normal/payload; \
 	else \
 		printf "Error: payload file '$(CONFIG_PAYLOAD_FILE)' not found.\n"; \
 		exit 1; \
 	fi
+	$(Q)cd $(obj)/lar.tmp && \
+		../util/lar/lar $(PARSEELF) $(COMPRESSFLAG) -a \
+			../coreboot.rom normal/payload;
 endif
-	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)rm -f $(obj)/coreboot.rom
-	$(Q)cd $(obj)/lar.tmp && ../util/lar/lar $(PARSEELF) $(COMPRESSFLAG) -c \
-		../coreboot.rom \
-		$(LARFILES) \
-		-s $(ROM_SIZE) -b $(obj)/coreboot.bootblock
 	$(Q)# QEMU wants bios.bin:
 	$(Q)# Run "qemu -L build/ -serial stdio -hda /dev/zero".
 	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(obj)/bios.bin)\n"
@@ -123,12 +128,10 @@ else
 endif
 endif
 
-
-# We now parse initram as ELF, so we need PARSEELF enabled unconditionally.
 ifeq ($(CONFIG_PAYLOAD_PREPARSE_ELF), y)
 	PARSEELF = -e
 else
-	PARSEELF = -e
+	PARSEELF =
 endif
 
 STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \

@@ -248,7 +248,6 @@ static void lpc_init(device_t dev)
 static void mcp55_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
-	unsigned long index;
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev); // We got one for APIC, or one more for TRAP

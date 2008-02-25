@@ -20,18 +20,35 @@
 
 /{
 	mainboard-vendor = "AMD";
-	mainboard-name = "Norwich";
+	mainboard-name = "NORWICH";
 	cpus { };
 	apic@0 {
 		/config/("northbridge/amd/geodelx/apic");
 	};
 	domain@0 {
 		/config/("northbridge/amd/geodelx/domain");
+		/* Video RAM has to be in 2MB chunks. */
+                geode_video_mb = "8";
 		pci@1,0 {
 			/config/("northbridge/amd/geodelx/pci");
 		};
-		pci@1,1 {
+		pci@15,0 {
 			/config/("southbridge/amd/cs5536/dts");
+			enable_ide = "1";
+			/* Interrupt enables for LPC bus.
+			 *  Each bit is an IRQ 0-15. */
+			lpc_serirq_enable = "0x00001002";
+			/* LPC IRQ polarity. Each bit is an IRQ 0-15. */
+			lpc_serirq_polarity = "0x0000EFFD";
+			/* 0:continuous 1:quiet */
+			lpc_serirq_mode = "1";
+			/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none.
+			 * See virtual PIC spec. */
+			enable_gpio_int_route = "0x0D0C0700";
+			/* COM1 settings */
+			com1_enable = "1";
+			com1_address = "0x3f8";
+			com1_irq = "4";
 		};
 	};
 };

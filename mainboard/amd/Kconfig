@@ -30,6 +30,7 @@ config BOARD_AMD_NORWICH
 	select OPTION_TABLE
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
+	select PIRQ_TABLE
 	help
 	  AMD Norwich Geode LX development board.
 

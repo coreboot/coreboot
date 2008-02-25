@@ -115,6 +115,7 @@ uses WAIT_BEFORE_CPUS_INIT
 
 uses CONFIG_USE_PRINTK_IN_CAR
 
+uses HAVE_FANCTL
 ###
 ### Build options
 ###
@@ -138,6 +139,11 @@ default FAILOVER_SIZE=0x01000
 
 #more 1M for pgtbl
 default CONFIG_LB_MEM_TOPK=2048
+
+##
+## Set-up automatic fan control
+##
+default HAVE_FANCTL=1
 
 ##
 ## Build code for the fallback boot

@@ -861,6 +861,11 @@ end
 # Misc device options
 ###############################################
 
+define HAVE_FANCTL
+	default 0
+	export used
+	comment "Include board specific FAN control initialization"
+end
 define CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 	default 0
 	export used

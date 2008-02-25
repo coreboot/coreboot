@@ -62,6 +62,9 @@ static uint8_t pnp_read_index(uint16_t port_base, uint8_t reg)
 	return inb(port_base + 1);
 }
 
+#ifdef HAVE_FANCTL
+extern void init_ec(uint16_t base);
+#else
 static void init_ec(uint16_t base)
 {
 	uint8_t value;
@@ -77,6 +80,7 @@ static void init_ec(uint16_t base)
 	printk_debug("FAN_CTL: reg = 0x%04x, writing value = 0x%02x\r\n",
 		     base + 0x14, value | 0x87);
 }
+#endif
 
 static void it8716f_init(device_t dev)
 {

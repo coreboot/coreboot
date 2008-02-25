@@ -206,6 +206,10 @@ else
     end
 end
 
+if HAVE_FANCTL
+	object fanctl.o
+end
+
 ##
 ## Setup RAM
 ##

@@ -24,7 +24,7 @@
 #include "superiotool.h"
 
 /* Command line options. */
-int dump = 0, verbose = 0;
+int dump = 0, verbose = 0, extra_dump = 0;
 
 /* Global flag which indicates whether a chip was detected at all. */
 int chip_found = 0;
@@ -208,6 +208,7 @@ int main(int argc, char *argv[])
 
 	static const struct option long_options[] = {
 		{"dump",		no_argument, NULL, 'd'},
+		{"extra-dump",		no_argument, NULL, 'e'},
 		{"list-supported",	no_argument, NULL, 'l'},
 		{"verbose",		no_argument, NULL, 'V'},
 		{"version",		no_argument, NULL, 'v'},
@@ -215,11 +216,14 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "dlVvh",
+	while ((opt = getopt_long(argc, argv, "delVvh",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
 			dump = 1;
+			break;
+		case 'e':
+			extra_dump = 1;
 			break;
 		case 'l':
 			print_list_of_supported_chips();

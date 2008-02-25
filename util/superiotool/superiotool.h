@@ -32,6 +32,7 @@
 
 #define USAGE "Usage: superiotool [-d] [-l] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O register contents\n\
+  -e | --extra-dump      Dump Secondary registers too (like EC registers etc.)\n\
   -l | --list-supported  Show the list of supported Super I/O chips\n\
   -V | --verbose         Verbose mode\n\
   -v | --version         Show the superiotool version\n\
@@ -56,7 +57,7 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define MAXNUMPORTS	(6 + 1)		/* Maximum number of Super I/O ports */
 
 /* Command line parameters. */
-extern int dump, verbose;
+extern int dump, verbose, extra_dump;
 
 extern int chip_found;
 

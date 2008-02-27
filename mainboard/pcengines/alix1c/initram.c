@@ -55,41 +55,59 @@
  * Lead Free (P)
  * DDR400 3-3-3 (D43)
  */
-/* SPD array */
-static const u8 spdbytes[] = {
-	[SPD_ACCEPTABLE_CAS_LATENCIES] = 0x10,
-	[SPD_BANK_DENSITY] = 0x40,
-	[SPD_DEVICE_ATTRIBUTES_GENERAL] = 0xff,
-	[SPD_MEMORY_TYPE] = 7,
-	[SPD_MIN_CYCLE_TIME_AT_CAS_MAX] = 10, /* A guess for the tRAC value */
-	[SPD_MODULE_ATTRIBUTES] = 0xff, /* FIXME later when we figure out. */
-	[SPD_NUM_BANKS_PER_SDRAM] = 4,
-	[SPD_PRIMARY_SDRAM_WIDTH] = 8,
-	[SPD_NUM_DIMM_BANKS] = 1, /* ALIX1.C is 1 bank. */
-	[SPD_NUM_COLUMNS] = 0xa,
-	[SPD_NUM_ROWS] = 3,
-	[SPD_REFRESH] = 0x3a,
-	[SPD_SDRAM_CYCLE_TIME_2ND] = 60,
-	[SPD_SDRAM_CYCLE_TIME_3RD] = 75,
-	[SPD_tRAS] = 40,
-	[SPD_tRCD] = 15,
-	[SPD_tRFC] = 70,
-	[SPD_tRP] = 15,
-	[SPD_tRRD] = 10,
+
+struct spd_entry {
+	u8 address;
+	u8 data;
 };
 
+/* Save space by using a short list of SPD values used by Geode LX Memory init */
+static const struct spd_entry spd_table[] = {
+	{SPD_ACCEPTABLE_CAS_LATENCIES, 0x10},
+	{SPD_BANK_DENSITY, 0x40},
+	{SPD_DEVICE_ATTRIBUTES_GENERAL, 0xff},
+	{SPD_MEMORY_TYPE, 7},
+	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX, 10}, /* A guess for the tRAC value */
+	{SPD_MODULE_ATTRIBUTES, 0xff}, /* FIXME later when we figure out. */
+	{SPD_NUM_BANKS_PER_SDRAM, 4},
+	{SPD_PRIMARY_SDRAM_WIDTH, 8},
+	{SPD_NUM_DIMM_BANKS, 1}, /* ALIX1.C is 1 bank. */
+	{SPD_NUM_COLUMNS, 0xa},
+	{SPD_NUM_ROWS, 3},
+	{SPD_REFRESH, 0x3a},
+	{SPD_SDRAM_CYCLE_TIME_2ND, 60},
+	{SPD_SDRAM_CYCLE_TIME_3RD, 75},
+	{SPD_tRAS, 40},
+	{SPD_tRCD, 15},
+	{SPD_tRFC, 70},
+	{SPD_tRP, 15},
+	{SPD_tRRD, 10},
+};
+
+/**
+ * Given an SMBUS device, and an address in that device, return the value of SPD
+ * for that device. In this mainboard, the only one that can return is DIMM0. 
+ * @param device The device number
+ * @param address The address in SPD rom to return the value of
+ * @returns The value
+ */ 
 u8 spd_read_byte(u16 device, u8 address)
 {
-	printk(BIOS_DEBUG, "spd_read_byte dev %04x\n", device);
+	int i;
+	/* returns 0xFF on any failures */
+	u8 ret = 0xff;
 
-	if (device != (0x50 << 1)) {
-		printk(BIOS_DEBUG, " returns 0xff\n");
-		return 0xff;
+	printk(BIOS_DEBUG, "spd_read_byte dev %04x\n", device);
+	if (device == DIMM0) {
+		for (i = 0; i < ARRAY_SIZE(spd_table); i++) {
+			if (spd_table[i].address == address) {
+				ret = spd_table[i].data;
+			}
+		}
 	}
 
-	printk(BIOS_DEBUG, " addr %02x returns %02x\n", address, spdbytes[address]);
-
-	return spdbytes[address];
+	printk(BIOS_DEBUG, " addr %02x returns %02x\n", address, ret);
+	return ret;
 }
 
 /**

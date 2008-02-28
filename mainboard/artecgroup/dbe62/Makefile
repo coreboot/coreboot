@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2007 coresystems GmbH
+## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -19,33 +19,15 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_ARTECGROUP
+STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
-config BOARD_ARTECGROUP_DBE61
-	bool "DBE61"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select PIRQ_TABLE
-	help
-	  Artec Group DBE61, also known as ThinCan and Linutop.
+INITRAM_OBJ =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
+		$(src)/northbridge/amd/geodelx/raminit.c \
+		$(src)/arch/x86/geodelx/geodelx.c
 
-config BOARD_ARTECGROUP_DBE62
-	bool "DBE62"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select PIRQ_TABLE
-	help
-	  Artec Group DBE62, also known as ThinCan and Linutop2.
+STAGE2_MAINBOARD_OBJ = irq_tables.o 
 
-endchoice
+$(obj)/coreboot.vpd:
+	$(Q)printf "  BUILD   DUMMY VPD\n"
+	$(Q)dd if=/dev/zero of=$(obj)/coreboot.vpd bs=256 count=1 $(SILENT)
 
-source "mainboard/artecgroup/dbe61/Kconfig"
-source "mainboard/artecgroup/dbe62/Kconfig"

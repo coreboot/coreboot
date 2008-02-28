@@ -3,6 +3,7 @@
 ##
 ## Copyright (C) 2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+## Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -19,33 +20,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_ARTECGROUP
-
-config BOARD_ARTECGROUP_DBE61
-	bool "DBE61"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select PIRQ_TABLE
+config MAINBOARD_NAME
+	string
+	default artecgroup/dbe62
+	depends BOARD_ARTECGROUP_DBE62
 	help
-	  Artec Group DBE61, also known as ThinCan and Linutop.
-
-config BOARD_ARTECGROUP_DBE62
-	bool "DBE62"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select PIRQ_TABLE
-	help
-	  Artec Group DBE62, also known as ThinCan and Linutop2.
-
-endchoice
-
-source "mainboard/artecgroup/dbe61/Kconfig"
-source "mainboard/artecgroup/dbe62/Kconfig"
+	  This is the default mainboard name.

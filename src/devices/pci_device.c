@@ -654,7 +654,7 @@ void pci_dev_init(struct device *dev)
 	 * is set but CONFIG_PCI_ROM_RUN is not. In this case we skip
 	 * all other option ROM types.
 	 */
-	if (dev->class!=PCI_CLASS_DISPLAY_VGA) 
+	if ((dev->class>>8)!=PCI_CLASS_DISPLAY_VGA)
 		return;
 #endif
 
@@ -670,7 +670,7 @@ void pci_dev_init(struct device *dev)
 
 #if CONFIG_CONSOLE_VGA == 1
 	/* vga_inited is a trigger of the VGA console code. */
-	if (dev->class == PCI_CLASS_DISPLAY_VGA) {
+	if ((dev->class>>8) == PCI_CLASS_DISPLAY_VGA) {
 	    extern int vga_inited;
 	    vga_inited = 1;
 	}

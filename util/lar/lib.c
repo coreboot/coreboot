@@ -85,8 +85,8 @@ void do_no_uncompress(char *dst, int dst_len, char *src, int src_len)
 		memcpy(dst, src, dst_len);
 	else
 	{
-		fprintf(stderr,"%s: src_len(%d)!=dst_len(%d)\n",
-			__FUNCTION__,src_len,dst_len);
+		fprintf(stderr, "%s: src_len(%d)!=dst_len(%d)\n",
+			__FUNCTION__, src_len, dst_len);
 		exit(1);
 	}
 }
@@ -181,7 +181,8 @@ done:
 	return ret;
 }
 
-static int handle_directory(const char *name)
+static int handle_directory(const char *name, const char *pathname,
+				const enum compalgo thisalgo)
 {
 	int n;
 	int ret = -1;
@@ -193,23 +194,52 @@ static int handle_directory(const char *name)
 		fprintf(stderr, "Could not enter directory %s\n", name);
 	} else {
 		while (n--) {
-			char fullname[MAX_PATH];
-
-			fullname[0] = '\0';
+			char fullname[MAX_PATHLEN+1];
+			char fullpathname[MAX_PATHLEN+1];
+			int len;
 
 			if (strncmp("..", namelist[n]->d_name, 3) &&
 			    strncmp(".", namelist[n]->d_name, 2)) {
 
-				strncpy(fullname, name, MAX_PATH);
+				len = strlen(name);
+				len += (name[len-1]=='/' ? 1 : 0);
+				len += strlen(namelist[n]->d_name);
 
-				if (name[(strlen(name)) - 1] != '/') {
-					strncat(fullname, "/", MAX_PATH);
+				if (len > MAX_PATHLEN) {
+					fprintf(stderr,
+						"%s: %s+%s exceeds MAX_PATHLEN.\n",
+						__FUNCTION__, name,
+						namelist[n]->d_name);
+					return -1;
 				}
 
-				strncat(fullname, namelist[n]->d_name,
-					MAX_PATH);
+				strcpy(fullname, name);
+				if (name[(strlen(name)) - 1] != '/') {
+					strcat(fullname, "/");
+				}
 
-				add_files(fullname);
+				strcat(fullname, namelist[n]->d_name);
+
+				len = strlen(pathname);
+				len += (pathname[len-1]=='/'?1:0);
+				len += strlen(namelist[n]->d_name);
+
+				if (len > MAX_PATHLEN) {
+					fprintf(stderr,
+						"%s: %s+%s exceeds MAX_PATHLEN.\n",
+						__FUNCTION__, pathname,
+						namelist[n]->d_name);
+					return -1;
+				}
+
+				strcpy(fullpathname, pathname);
+				if (pathname[(strlen(pathname)) - 1] != '/') {
+					strcat(fullpathname, "/");
+				}
+
+				strcat(fullpathname, namelist[n]->d_name);
+
+				add_files(fullname, fullpathname, thisalgo);
 			}
 			free(namelist[n]);
 
@@ -222,82 +252,80 @@ static int handle_directory(const char *name)
 }
 
 /*
- * Add physically existing files to the file list. 
+ * Add physically existing files to the file list.
  * This function is used when an archive is created or added to.
  */
 
-int add_files(const char *name)
+int add_files(const char *filename, const char * pathname,
+		const enum compalgo thisalgo)
 {
 	struct stat filestat;
 	int ret = -1;
-	char *realname;
 	char *c;
 
-	if (strstr(name, "nocompress:") == name) {
-		realname = strdup(name + 11);
-	} else {
-		realname = strdup(name);
-	}
+	if (verbose())
+		printf("%s: %s:%s\n", __FUNCTION__, filename, pathname);
 
-	if (realname == NULL) {
-	  fprintf(stderr, "Out of memory.\n");
-	  exit(1);
-	}
-
-	/* printf("... add_files %s\n", name); */
-	if (stat(realname, &filestat) == -1) {
-		fprintf(stderr, "Error getting file attributes of %s\n", name);
-		free(realname);
+	if (stat(filename, &filestat) == -1) {
+		fprintf(stderr, "Error getting file attributes of %s\n", filename);
 		return -1;
 	}
 
 	if (S_ISCHR(filestat.st_mode) || S_ISBLK(filestat.st_mode)) {
-		fprintf(stderr, "Device files are not supported: %s\n", name);
+		fprintf(stderr, "Device files are not supported: %s\n", filename);
 	}
 
 	if (S_ISFIFO(filestat.st_mode)) {
-		fprintf(stderr, "FIFOs are not supported: %s\n", name);
+		fprintf(stderr, "FIFOs are not supported: %s\n", filename);
 	}
 
 	if (S_ISSOCK(filestat.st_mode)) {
-		fprintf(stderr, "Sockets are not supported: %s\n", name);
+		fprintf(stderr, "Sockets are not supported: %s\n", filename);
 	}
 
 	if (S_ISLNK(filestat.st_mode)) {
-		fprintf(stderr, "Symbolic links are not supported: %s\n", name);
+		fprintf(stderr, "Symbolic links are not supported: %s\n", filename);
 	}
-	// Is it a directory?
+	/* Is it a directory? */
 	if (S_ISDIR(filestat.st_mode)) {
-		ret = handle_directory(realname);
+		ret = handle_directory(filename, pathname, thisalgo);
 	}
-	// Is it a regular file?
+	/* Is it a regular file? */
 	if (S_ISREG(filestat.st_mode)) {
 		struct file *tmpfile;
 
-		/* printf("... adding %s\n", name); */
+		if (verbose())
+			printf("... adding %s\n", filename);
 		tmpfile = malloc(sizeof(struct file));
 		if (!tmpfile) {
 			fprintf(stderr, "Out of memory.\n");
 			exit(1);
 		}
 
-		tmpfile->name = strdup(name);
+		tmpfile->name = strdup(filename);
 		if (!tmpfile->name) {
 			fprintf(stderr, "Out of memory.\n");
 			exit(1);
 		}
+
+		tmpfile->pathname = strdup(pathname);
+		if (!tmpfile->pathname) {
+			fprintf(stderr, "Out of memory.\n");
+			exit(1);
+		}
+
+		tmpfile->algo = thisalgo;
 
 		tmpfile->next = files;
 		files = tmpfile;
 		ret = 0;
 	}
 
-	free(realname);
 	return ret;
 }
 
 /*
- * Add files or directories as specified to the file list. 
+ * Add files or directories as specified to the file list.
  * This function is used when an archive is listed or extracted.
  */
 
@@ -318,6 +346,8 @@ int add_file_or_directory(const char *name)
 	}
 
 	tmpfile->next = files;
+	tmpfile->pathname = NULL;
+	tmpfile->algo = ALGO_INVALID;
 	files = tmpfile;
 
 	return 0;
@@ -336,6 +366,8 @@ void free_files(void)
 		temp = files;
 		files = files->next;
 		free(temp->name);
+		if (temp->pathname!=NULL)
+			free(temp->pathname);
 		free(temp);
 	}
 }
@@ -347,7 +379,10 @@ int list_files(void)
 
 	printf("File list:\n");
 	while (walk) {
-		printf("- %s\n", walk->name);
+		if (temp->pathname==NULL)
+			printf("- %s\n", walk->name);
+		else
+			printf("- %s:%s\n", walk->name, walk->pathname);
 		walk = walk->next;
 	}
 	printf("-----\n");

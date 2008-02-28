@@ -130,8 +130,9 @@ int create_lar(const char *archivename, struct file *files)
 	}
 
 	for( ; files; files = files->next) {
-		if (lar_add_file(lar, files->name)) {
-			fprintf(stderr, "Error adding %s to the LAR.\n", files->name);
+		if (lar_add_file(lar, files)) {
+			fprintf(stderr, "Error adding %s:%s (%d) to the LAR.\n",
+				 files->name, files->pathname, files->algo);
 			lar_close_archive(lar);
 			exit(1);
 		}
@@ -157,8 +158,9 @@ int add_lar(const char *archivename, struct file *files)
 	}
 
 	for( ; files; files = files->next) {
-		if (lar_add_file(lar, files->name)) {
-			fprintf(stderr, "Error adding %s to the LAR.\n", files->name);
+		if (lar_add_file(lar, files)) {
+			fprintf(stderr, "Error adding %s:%s (%d) to the LAR.\n",
+				 files->name, files->pathname, files->algo);
 			lar_close_archive(lar);
 			exit(1);
 		}
@@ -377,7 +379,12 @@ int main(int argc, char *argv[])
 
 	while (optind < argc) {
 		if (larmode == CREATE || larmode == ADD) {
-			add_files(argv[optind++]);
+			char *name=argv[optind++], *filename, *pathname;
+			enum compalgo file_algo=algo;
+			if (lar_process_name(name, &filename,
+						&pathname, &file_algo))
+				exit(1);
+			add_files(filename,pathname, file_algo);
 		} else
 			add_file_or_directory(argv[optind++]);
 	}

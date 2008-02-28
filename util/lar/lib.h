@@ -25,6 +25,8 @@
 
 struct file {
 	char *name;
+	char *pathname;
+	enum compalgo algo;
 	struct file *next;
 };
 
@@ -46,7 +48,8 @@ char *get_bootblock(void);
 /* prototypes for lib.c functions */
 int mkdirp_below(const char *parent, const char *dirpath, mode_t mode);
 
-int add_files(const char *name);
+int add_files(const char *name, const char *pathname_in,
+		const enum compalgo algo_in);
 int add_file_or_directory(const char *name);
 
 struct file *get_files(void);
@@ -71,7 +74,7 @@ struct lar * lar_open_archive(const char *archive);
 void lar_close_archive(struct lar *lar);
 
 void lar_list_files(struct lar *lar, struct file *files);
-int lar_add_file(struct lar *lar, char *name);
+int lar_add_file(struct lar *lar, struct file* file);
 int lar_add_bootblock(struct lar *lar, const char *bootblock);
 int lar_extract_files(struct lar *lar, struct file *files);
 

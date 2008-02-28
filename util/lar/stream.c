@@ -929,28 +929,22 @@ int lar_add_entry(struct lar *lar, char *pathname, void *data,
  * @param name The name of the file to add
  * @return  0 on success, or -1 on failure
  */
-int lar_add_file(struct lar *lar, char *name)
+int lar_add_file(struct lar *lar, struct file* file)
 {
-	char *filename, *ptr, *temp;
-	char *pathname;
+	char *ptr, *temp;
 
-	enum compalgo thisalgo;
 	struct lar_header *header;
 	int ret, hlen;
 	u32 complen;
-	int pathlen;
 	u32 size;
 
-	thisalgo = algo;
-	lar_process_name(name, &filename, &pathname, &thisalgo);
-
-	ptr = mapfile(filename, &size);
+	ptr = mapfile(file->name, &size);
 
 	if (ptr == MAP_FAILED)
 		return -1;
 
 	if (elfparse() && iself(ptr)) {
-		output_elf_segments(lar, pathname, ptr, size, thisalgo);
+		output_elf_segments(lar, file->pathname, ptr, size, file->algo);
 		return 0;
 	}
 
@@ -969,11 +963,11 @@ int lar_add_file(struct lar *lar, char *name)
 		return -1;
 	}
 
-	complen = lar_compress(ptr, size, temp, &thisalgo);
+	complen = lar_compress(ptr, size, temp, &file->algo);
 
 	munmap(ptr, size);
 
-	ret = lar_add_entry(lar, pathname, temp, complen, size, 0, 0, thisalgo);
+	ret = lar_add_entry(lar, file->pathname, temp, complen, size, 0, 0, file->algo);
 
 	free(temp);
 	return ret;

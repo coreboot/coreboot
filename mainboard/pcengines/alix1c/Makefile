@@ -25,11 +25,7 @@ INITRAM_OBJ =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 		$(src)/northbridge/amd/geodelx/raminit.c \
 		$(src)/arch/x86/geodelx/geodelx.c
 
-STAGE2_MAINBOARD_OBJ = 
-
-ifeq ($(CONFIG_PIRQ_TABLE),y)
-STAGE2_MAINBOARD_OBJ += irq_tables.o 
-endif
+STAGE2_MAINBOARD_OBJ = irq_tables.o 
 
 $(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"

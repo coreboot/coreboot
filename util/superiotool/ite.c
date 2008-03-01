@@ -379,7 +379,7 @@ static void exit_conf_mode_ite(uint16_t port)
 
 static void probe_idregs_ite_helper(const char *init, uint16_t port)
 {
-	uint16_t id, chipver;
+	uint16_t id, chipver, ecport;
 
 	probing_for("ITE", init, port);
 
@@ -400,13 +400,16 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 	dump_superio("ITE", reg_table, port, id);
 
 	if (extra_dump) {
-		uint16_t ecport;
-		regwrite(port, 0x07, 0x04); /*EC LDN*/
+		regwrite(port, 0x07, 0x04); /* Select LDN 4 (EC). */
+
+		/* Get EC base address (stored in LDN 4, index 0x60/0x61). */
 		ecport = regval(port, 0x60) << 8;
 		ecport |= regval(port, 0x61);
+
+		/* EC address register = EC base address + 5. */
 		ecport += 5;
 
-		printf("Environment Controller (0x%04x)\n",ecport);
+		printf("Environment controller (0x%04x)\n", ecport);
 		dump_superio("ITE-EC", ec_table, ecport, id);
 	}
 }

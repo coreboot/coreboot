@@ -30,10 +30,10 @@ Installation
 Usage
 -----
 
- $ superiotool [-d] [-l] [-V] [-v] [-h]
+ $ superiotool [-d] [-e] [-l] [-V] [-v] [-h]
 
  -d | --dump            Dump Super I/O register contents
- -e | --extra-dump      Dump Secondary registers too (like EC registers etc.)
+ -e | --extra-dump      Dump secondary registers too (e.g. EC registers)
  -l | --list-supported  Show the list of supported Super I/O chips
  -V | --verbose         Verbose mode
  -v | --version         Show the superiotool version

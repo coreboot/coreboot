@@ -158,8 +158,7 @@ void probing_for(const char *vendor, const char *info, uint16_t port)
 		return;
 
 	/* Yes, there's no space between '%s' and 'at'! */
-	printf("Probing for %s Super I/O %sat 0x%x...\n",
-	       vendor, info, port);
+	printf("Probing for %s Super I/O %sat 0x%x...\n", vendor, info, port);
 }
 
 /** Print a list of all supported chips from the given vendor. */

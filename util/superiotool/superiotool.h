@@ -30,9 +30,9 @@
 #include <getopt.h>
 #include <sys/io.h>
 
-#define USAGE "Usage: superiotool [-d] [-l] [-V] [-v] [-h]\n\n\
+#define USAGE "Usage: superiotool [-d] [-e] [-l] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O register contents\n\
-  -e | --extra-dump      Dump Secondary registers too (like EC registers etc.)\n\
+  -e | --extra-dump      Dump secondary registers too (e.g. EC registers)\n\
   -l | --list-supported  Show the list of supported Super I/O chips\n\
   -V | --verbose         Verbose mode\n\
   -v | --version         Show the superiotool version\n\

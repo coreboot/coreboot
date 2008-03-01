@@ -2,21 +2,21 @@
 # $Id$
 ##
 
-Name:    lxbios
+Name:    nvramtool
 Version: 2.0.1
 Release: 0
 
 Summary: coreboot utility program
 Group:   System Environment/Base
 License: GPL
-Provides: lxbios
+Provides: nvramtool
 
 BuildRoot: %{_tmppath}/%{name}-%{version}
 
 Source0: %{name}-%{version}.tgz
 
 %description
-lxbios is a utility for reading/writing coreboot parameters and displaying
+nvramtool is a utility for reading/writing coreboot parameters and displaying
 information from the coreboot table.
 
 At boot time, coreboot places a table (known as the coreboot table) in low
@@ -36,8 +36,8 @@ make
 rm -rf "$RPM_BUILD_ROOT"
 mkdir -p "$RPM_BUILD_ROOT/usr/bin"
 mkdir -p "$RPM_BUILD_ROOT/usr/man/man1"
-cp lxbios "$RPM_BUILD_ROOT/usr/bin"
-cp lxbios.1.gz $RPM_BUILD_ROOT/usr/man/man1
+cp nvramtool "$RPM_BUILD_ROOT/usr/bin"
+cp nvramtool.1.gz $RPM_BUILD_ROOT/usr/man/man1
 
 %clean
 rm -rf "$RPM_BUILD_ROOT"
@@ -46,5 +46,5 @@ rm -rf "$RPM_BUILD_ROOT"
 %defattr(-,root,root,0755)
 %doc ChangeLog README
 %doc README
-/usr/bin/lxbios
-/usr/man/man1/lxbios.1.gz
+/usr/bin/nvramtool
+/usr/man/man1/nvramtool.1.gz

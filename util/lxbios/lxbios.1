@@ -1,5 +1,5 @@
 .\"***************************************************************************\
-.\" lxbios.1
+.\" nvramtool.1
 .\" $Id$
 .\"***************************************************************************
 .\"  Copyright (C) 2002, 2003 The Regents of the University of California.
@@ -8,9 +8,9 @@
 .\"  UCRL-CODE-2003-012
 .\"  All rights reserved.
 .\"
-.\"  This file is part of lxbios, a utility for reading/writing coreboot
+.\"  This file is part of nvramtool, a utility for reading/writing coreboot
 .\"  parameters and displaying information from the coreboot table.
-.\"  For details, see http://coreboot.org/Lxbios.
+.\"  For details, see http://coreboot.org/nvramtool.
 .\"
 .\"  Please also read the file DISCLAIMER which is included in this software
 .\"  distribution.
@@ -28,43 +28,43 @@
 .\"  with this program; if not, write to the Free Software Foundation, Inc.,
 .\"  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 .\"***************************************************************************/
-.TH LXBIOS 1 "January 2008" Linux
+.TH NVRAMTOOL 1 "January 2008" Linux
 .SH NAME
-lxbios \- read/write coreboot-related information
+nvramtool \- read/write coreboot-related information
 .SH SYNOPSIS
-.B "lxbios [OPTS] [-n] -r NAME"
+.B "nvramtool [OPTS] [-n] -r NAME"
 .br
-.B "lxbios [OPTS] -e NAME"
+.B "nvramtool [OPTS] -e NAME"
 .br
-.B "lxbios [OPTS] -a"
+.B "nvramtool [OPTS] -a"
 .br
-.B "lxbios [OPTS] -w NAME=VALUE"
+.B "nvramtool [OPTS] -w NAME=VALUE"
 .br
-.B "lxbios [OPTS] -p INPUT_FILE"
+.B "nvramtool [OPTS] -p INPUT_FILE"
 .br
-.B "lxbios [OPTS] -i"
+.B "nvramtool [OPTS] -i"
 .br
-.B "lxbios [OPTS] -c [VALUE]"
+.B "nvramtool [OPTS] -c [VALUE]"
 .br
-.B "lxbios [OPTS] -l [ARG]"
+.B "nvramtool [OPTS] -l [ARG]"
 .br
-.B "lxbios [OPTS] -d"
+.B "nvramtool [OPTS] -d"
 .br
-.B "lxbios [OPTS] -Y"
+.B "nvramtool [OPTS] -Y"
 .br
-.B "lxbios [OPTS] -b OUTPUT_FILE"
+.B "nvramtool [OPTS] -b OUTPUT_FILE"
 .br
-.B "lxbios [OPTS] -B INPUT_FILE"
+.B "nvramtool [OPTS] -B INPUT_FILE"
 .br
-.B "lxbios [OPTS] -x"
+.B "nvramtool [OPTS] -x"
 .br
-.B "lxbios [OPTS] -X DUMPFILE"
+.B "nvramtool [OPTS] -X DUMPFILE"
 .br
-.B "lxbios [OPTS] -v"
+.B "nvramtool [OPTS] -v"
 .br
-.B "lxbios [OPTS] -h"
+.B "nvramtool [OPTS] -h"
 .SH DESCRIPTION
-.B "lxbios"
+.B "nvramtool"
 is a utility for reading/writing coreboot parameters and displaying
 information from the coreboot table.
 
@@ -180,11 +180,11 @@ evaluates to the following:
 
 The
 .B "'-y LAYOUT_FILE'"
-option tells lxbios to obtain CMOS layout information from the contents of
+option tells nvramtool to obtain CMOS layout information from the contents of
 .B "LAYOUT_FILE."
 Likewise, the
 .B "'-t'"
-option tells lxbios to obtain CMOS layout information from the CMOS option
+option tells nvramtool to obtain CMOS layout information from the CMOS option
 table (contained within the coreboot table).  If neither option is
 specified, the CMOS option table is used by default.
 .B "LAYOUT_FILE"

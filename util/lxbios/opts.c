@@ -8,9 +8,9 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/Lxbios.
+ *  For details, see http://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -32,30 +32,30 @@
 #include "common.h"
 #include "opts.h"
 
-lxbios_op_info_t lxbios_op;
+nvramtool_op_info_t nvramtool_op;
 
-lxbios_op_modifier_info_t lxbios_op_modifiers[LXBIOS_NUM_OP_MODIFIERS];
+nvramtool_op_modifier_info_t nvramtool_op_modifiers[NVRAMTOOL_NUM_OP_MODIFIERS];
 
 static char * handle_optional_arg (int argc, char *argv[]);
-static void register_op (int *op_found, lxbios_op_t op, char op_param[]);
-static void register_op_modifier (lxbios_op_modifier_t mod, char mod_param[]);
+static void register_op (int *op_found, nvramtool_op_t op, char op_param[]);
+static void register_op_modifier (nvramtool_op_modifier_t mod, char mod_param[]);
 static void resolve_op_modifiers (void);
 static void sanity_check_args (void);
 
 static const char getopt_string[] = "-ab:B:c::de:hil::np:r:tvw:xX:y:Y";
 
 /****************************************************************************
- * parse_lxbios_args
+ * parse_nvramtool_args
  *
  * Parse command line arguments.
  ****************************************************************************/
-void parse_lxbios_args (int argc, char *argv[])
- { lxbios_op_modifier_info_t *mod_info;
+void parse_nvramtool_args (int argc, char *argv[])
+ { nvramtool_op_modifier_info_t *mod_info;
    int i, op_found;
    char c;
 
-   for (i = 0, mod_info = lxbios_op_modifiers;
-        i < LXBIOS_NUM_OP_MODIFIERS;
+   for (i = 0, mod_info = nvramtool_op_modifiers;
+        i < NVRAMTOOL_NUM_OP_MODIFIERS;
         i++, mod_info++)
     { mod_info->found = FALSE;
       mod_info->found_seq = 0;
@@ -68,63 +68,63 @@ void parse_lxbios_args (int argc, char *argv[])
    do
     { switch (c = getopt(argc, argv, getopt_string))
        { case 'a':
-            register_op(&op_found, LXBIOS_OP_CMOS_SHOW_ALL_PARAMS, NULL);
+            register_op(&op_found, NVRAMTOOL_OP_CMOS_SHOW_ALL_PARAMS, NULL);
             break;
          case 'b':
-            register_op(&op_found, LXBIOS_OP_WRITE_CMOS_DUMP, optarg);
+            register_op(&op_found, NVRAMTOOL_OP_WRITE_CMOS_DUMP, optarg);
             break;
          case 'B':
-            register_op(&op_found, LXBIOS_OP_READ_CMOS_DUMP, optarg);
+            register_op(&op_found, NVRAMTOOL_OP_READ_CMOS_DUMP, optarg);
             break;
          case 'c':
-            register_op(&op_found, LXBIOS_OP_CMOS_CHECKSUM,
+            register_op(&op_found, NVRAMTOOL_OP_CMOS_CHECKSUM,
                         handle_optional_arg(argc, argv));
             break;
          case 'd':
-            register_op(&op_found, LXBIOS_OP_LBTABLE_DUMP, NULL);
+            register_op(&op_found, NVRAMTOOL_OP_LBTABLE_DUMP, NULL);
             break;
          case 'e':
-            register_op(&op_found, LXBIOS_OP_SHOW_PARAM_VALUES, optarg);
+            register_op(&op_found, NVRAMTOOL_OP_SHOW_PARAM_VALUES, optarg);
             break;
          case 'h':
-            register_op(&op_found, LXBIOS_OP_SHOW_USAGE, NULL);
+            register_op(&op_found, NVRAMTOOL_OP_SHOW_USAGE, NULL);
             break;
          case 'i':
-            register_op(&op_found, LXBIOS_OP_CMOS_SET_PARAMS_STDIN, NULL);
+            register_op(&op_found, NVRAMTOOL_OP_CMOS_SET_PARAMS_STDIN, NULL);
             break;
          case 'l':
-            register_op(&op_found, LXBIOS_OP_LBTABLE_SHOW_INFO,
+            register_op(&op_found, NVRAMTOOL_OP_LBTABLE_SHOW_INFO,
                         handle_optional_arg(argc, argv));
             break;
          case 'n':
-            register_op_modifier(LXBIOS_MOD_SHOW_VALUE_ONLY, NULL);
+            register_op_modifier(NVRAMTOOL_MOD_SHOW_VALUE_ONLY, NULL);
             break;
          case 'p':
-            register_op(&op_found, LXBIOS_OP_CMOS_SET_PARAMS_FILE, optarg);
+            register_op(&op_found, NVRAMTOOL_OP_CMOS_SET_PARAMS_FILE, optarg);
             break;
          case 'r':
-            register_op(&op_found, LXBIOS_OP_CMOS_SHOW_ONE_PARAM, optarg);
+            register_op(&op_found, NVRAMTOOL_OP_CMOS_SHOW_ONE_PARAM, optarg);
             break;
          case 't':
-            register_op_modifier(LXBIOS_MOD_USE_CMOS_OPT_TABLE, NULL);
+            register_op_modifier(NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE, NULL);
             break;
          case 'v':
-            register_op(&op_found, LXBIOS_OP_SHOW_VERSION, NULL);
+            register_op(&op_found, NVRAMTOOL_OP_SHOW_VERSION, NULL);
             break;
          case 'w':
-            register_op(&op_found, LXBIOS_OP_CMOS_SET_ONE_PARAM, optarg);
+            register_op(&op_found, NVRAMTOOL_OP_CMOS_SET_ONE_PARAM, optarg);
             break;
          case 'x':
-            register_op(&op_found, LXBIOS_OP_SHOW_CMOS_HEX_DUMP, NULL);
+            register_op(&op_found, NVRAMTOOL_OP_SHOW_CMOS_HEX_DUMP, NULL);
             break;
          case 'X':
-            register_op(&op_found, LXBIOS_OP_SHOW_CMOS_DUMPFILE, optarg);
+            register_op(&op_found, NVRAMTOOL_OP_SHOW_CMOS_DUMPFILE, optarg);
             break;
          case 'y':
-            register_op_modifier(LXBIOS_MOD_USE_CMOS_LAYOUT_FILE, optarg);
+            register_op_modifier(NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE, optarg);
             break;
          case 'Y':
-            register_op(&op_found, LXBIOS_OP_SHOW_LAYOUT, NULL);
+            register_op(&op_found, NVRAMTOOL_OP_SHOW_LAYOUT, NULL);
             break;
          case -1:  /* no more command line args */
             break;
@@ -178,13 +178,13 @@ static char * handle_optional_arg (int argc, char *argv[])
  *
  * Store the user's selection of which operation this program should perform.
  ****************************************************************************/
-static void register_op (int *op_found, lxbios_op_t op, char op_param[])
- { if (*op_found && (op != lxbios_op.op))
+static void register_op (int *op_found, nvramtool_op_t op, char op_param[])
+ { if (*op_found && (op != nvramtool_op.op))
       usage(stderr);
 
    *op_found = TRUE;
-   lxbios_op.op = op;
-   lxbios_op.param = op_param;
+   nvramtool_op.op = op;
+   nvramtool_op.param = op_param;
  }
 
 /****************************************************************************
@@ -193,11 +193,11 @@ static void register_op (int *op_found, lxbios_op_t op, char op_param[])
  * Store information regarding an optional argument specified in addition to
  * the user's selection of which operation this program should perform.
  ****************************************************************************/
-static void register_op_modifier (lxbios_op_modifier_t mod, char mod_param[])
+static void register_op_modifier (nvramtool_op_modifier_t mod, char mod_param[])
  { static int found_seq = 0;
-   lxbios_op_modifier_info_t *mod_info;
+   nvramtool_op_modifier_info_t *mod_info;
 
-   mod_info = &lxbios_op_modifiers[mod];
+   mod_info = &nvramtool_op_modifiers[mod];
    mod_info->found = TRUE;
    mod_info->found_seq = ++found_seq;
    mod_info->param = mod_param;
@@ -210,13 +210,13 @@ static void register_op_modifier (lxbios_op_modifier_t mod, char mod_param[])
  * the last specified argument overrides previous conflicting arguments.
  ****************************************************************************/
 static void resolve_op_modifiers (void)
- { if (lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_LAYOUT_FILE].found &&
-       lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_OPT_TABLE].found)
-    { if (lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_LAYOUT_FILE].found_seq >
-          lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_OPT_TABLE].found_seq)
-         lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_OPT_TABLE].found = FALSE;
+ { if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].found &&
+       nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE].found)
+    { if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].found_seq >
+          nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE].found_seq)
+         nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE].found = FALSE;
       else
-         lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_LAYOUT_FILE].found = FALSE;
+         nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].found = FALSE;
     }
  }
 
@@ -226,7 +226,7 @@ static void resolve_op_modifiers (void)
  * Perform sanity checking on command line arguments.
  ****************************************************************************/
 static void sanity_check_args (void)
- { if ((lxbios_op_modifiers[LXBIOS_MOD_SHOW_VALUE_ONLY].found) &&
-       (lxbios_op.op != LXBIOS_OP_CMOS_SHOW_ONE_PARAM))
+ { if ((nvramtool_op_modifiers[NVRAMTOOL_MOD_SHOW_VALUE_ONLY].found) &&
+       (nvramtool_op.op != NVRAMTOOL_OP_CMOS_SHOW_ONE_PARAM))
       usage(stderr);
  }

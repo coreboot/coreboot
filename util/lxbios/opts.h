@@ -8,9 +8,9 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/Lxbios.
+ *  For details, see http://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -29,56 +29,56 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 \*****************************************************************************/
 
-#ifndef LXBIOS_OPTS_H
-#define LXBIOS_OPTS_H
+#ifndef OPTS_H
+#define OPTS_H
 
 #include "common.h"
 
 typedef enum
- { LXBIOS_OP_SHOW_VERSION = 0,
-   LXBIOS_OP_SHOW_USAGE,
-   LXBIOS_OP_LBTABLE_SHOW_INFO,
-   LXBIOS_OP_LBTABLE_DUMP,
-   LXBIOS_OP_SHOW_PARAM_VALUES,
-   LXBIOS_OP_CMOS_SHOW_ONE_PARAM,
-   LXBIOS_OP_CMOS_SHOW_ALL_PARAMS,
-   LXBIOS_OP_CMOS_SET_ONE_PARAM,
-   LXBIOS_OP_CMOS_SET_PARAMS_STDIN,
-   LXBIOS_OP_CMOS_SET_PARAMS_FILE,
-   LXBIOS_OP_CMOS_CHECKSUM,
-   LXBIOS_OP_SHOW_LAYOUT,
-   LXBIOS_OP_WRITE_CMOS_DUMP,
-   LXBIOS_OP_READ_CMOS_DUMP,
-   LXBIOS_OP_SHOW_CMOS_HEX_DUMP,
-   LXBIOS_OP_SHOW_CMOS_DUMPFILE
+ { NVRAMTOOL_OP_SHOW_VERSION = 0,
+   NVRAMTOOL_OP_SHOW_USAGE,
+   NVRAMTOOL_OP_LBTABLE_SHOW_INFO,
+   NVRAMTOOL_OP_LBTABLE_DUMP,
+   NVRAMTOOL_OP_SHOW_PARAM_VALUES,
+   NVRAMTOOL_OP_CMOS_SHOW_ONE_PARAM,
+   NVRAMTOOL_OP_CMOS_SHOW_ALL_PARAMS,
+   NVRAMTOOL_OP_CMOS_SET_ONE_PARAM,
+   NVRAMTOOL_OP_CMOS_SET_PARAMS_STDIN,
+   NVRAMTOOL_OP_CMOS_SET_PARAMS_FILE,
+   NVRAMTOOL_OP_CMOS_CHECKSUM,
+   NVRAMTOOL_OP_SHOW_LAYOUT,
+   NVRAMTOOL_OP_WRITE_CMOS_DUMP,
+   NVRAMTOOL_OP_READ_CMOS_DUMP,
+   NVRAMTOOL_OP_SHOW_CMOS_HEX_DUMP,
+   NVRAMTOOL_OP_SHOW_CMOS_DUMPFILE
  }
-lxbios_op_t;
+nvramtool_op_t;
 
 typedef struct
- { lxbios_op_t op;
+ { nvramtool_op_t op;
    char *param;
  }
-lxbios_op_info_t;
+nvramtool_op_info_t;
 
 typedef enum
- { LXBIOS_MOD_SHOW_VALUE_ONLY = 0,
-   LXBIOS_MOD_USE_CMOS_LAYOUT_FILE,
-   LXBIOS_MOD_USE_CMOS_OPT_TABLE,
-   LXBIOS_NUM_OP_MODIFIERS  /* must always be last */
+ { NVRAMTOOL_MOD_SHOW_VALUE_ONLY = 0,
+   NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE,
+   NVRAMTOOL_MOD_USE_CMOS_OPT_TABLE,
+   NVRAMTOOL_NUM_OP_MODIFIERS  /* must always be last */
  }
-lxbios_op_modifier_t;
+nvramtool_op_modifier_t;
 
 typedef struct
  { int found;
    int found_seq;
    char *param;
  }
-lxbios_op_modifier_info_t;
+nvramtool_op_modifier_info_t;
 
-extern lxbios_op_info_t lxbios_op;
+extern nvramtool_op_info_t nvramtool_op;
 
-extern lxbios_op_modifier_info_t lxbios_op_modifiers[];
+extern nvramtool_op_modifier_info_t nvramtool_op_modifiers[];
 
-void parse_lxbios_args (int argc, char *argv[]);
+void parse_nvramtool_args (int argc, char *argv[]);
 
-#endif  /* LXBIOS_OPTS_H */
+#endif  /* OPTS_H */

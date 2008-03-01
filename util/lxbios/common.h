@@ -8,9 +8,9 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/Lxbios.
+ *  For details, see http://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -29,8 +29,8 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 \*****************************************************************************/
 
-#ifndef LXBIOS_COMMON_H
-#define LXBIOS_COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -69,4 +69,4 @@ int get_line_from_file (FILE *f, char line[], int line_buf_size);
 void out_of_memory (void);
 void usage (FILE *outfile);
 
-#endif  /* LXBIOS_COMMON_H */
+#endif  /* COMMON_H */

@@ -8,9 +8,9 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/Lxbios.
+ *  For details, see http://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -29,8 +29,8 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 \*****************************************************************************/
 
-#ifndef LXBIOS_LAYOUT_H
-#define LXBIOS_LAYOUT_H
+#ifndef LAYOUT_H
+#define LAYOUT_H
 
 #include "common.h"
 #include "coreboot_tables.h"
@@ -111,4 +111,4 @@ int is_checksum_name (const char name[]);
 int checksum_layout_to_bytes (cmos_checksum_layout_t *layout);
 void checksum_layout_to_bits (cmos_checksum_layout_t *layout);
 
-#endif  /* LXBIOS_LAYOUT_H */
+#endif  /* LAYOUT_H */

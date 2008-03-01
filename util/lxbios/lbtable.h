@@ -8,9 +8,9 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/Lxbios.
+ *  For details, see http://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -29,8 +29,8 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 \*****************************************************************************/
 
-#ifndef LXBIOS_LBTABLE_H
-#define LXBIOS_LBTABLE_H
+#ifndef LBTABLE_H
+#define LBTABLE_H
 
 #include "common.h"
 
@@ -40,4 +40,4 @@ void dump_lbtable (void);
 void list_lbtable_choices (void);
 void list_lbtable_item (const char item[]);
 
-#endif  /* LXBIOS_LBTABLE_H */
+#endif  /* LBTABLE_H */

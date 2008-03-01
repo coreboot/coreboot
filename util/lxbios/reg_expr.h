@@ -8,9 +8,9 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/Lxbios.
+ *  For details, see http://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -29,8 +29,8 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 \*****************************************************************************/
 
-#ifndef LXBIOS_REG_EXPR_H
-#define LXBIOS_REG_EXPR_H
+#ifndef REG_EXPR_H
+#define REG_EXPR_H
 
 #include <regex.h>
 #include "common.h"
@@ -39,4 +39,4 @@ void compile_reg_exprs (int cflags, int num_exprs,
                         /* const char *expr1, regex_t *reg1, */ ...);
 void free_reg_exprs (int num_exprs, /* regex_t *reg1, */ ...);
 
-#endif  /* LXBIOS_REG_EXPR_H */
+#endif  /* REG_EXPR_H */

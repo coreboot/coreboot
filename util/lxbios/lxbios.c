@@ -1,5 +1,5 @@
 /*****************************************************************************\
- * lxbios.c
+ * nvramtool.c
  * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
@@ -8,9 +8,9 @@
  *  UCRL-CODE-2003-012
  *  All rights reserved.
  *
- *  This file is part of lxbios, a utility for reading/writing coreboot
+ *  This file is part of nvramtool, a utility for reading/writing coreboot
  *  parameters and displaying information from the coreboot table.
- *  For details, see http://coreboot.org/Lxbios.
+ *  For details, see http://coreboot.org/nvramtool.
  *
  *  Please also read the file DISCLAIMER which is included in this software
  *  distribution.
@@ -96,18 +96,18 @@ static const hexdump_format_t cmos_dump_format =
 int main (int argc, char *argv[])
  { cmos_layout_get_fn_t fn;
 
-   parse_lxbios_args(argc, argv);
+   parse_nvramtool_args(argc, argv);
 
-   if (lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_LAYOUT_FILE].found)
+   if (nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].found)
     { set_layout_filename(
-            lxbios_op_modifiers[LXBIOS_MOD_USE_CMOS_LAYOUT_FILE].param);
+            nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_LAYOUT_FILE].param);
       fn = get_layout_from_file;
     }
    else
       fn = get_layout_from_cmos_table;
 
    register_cmos_layout_get_fn(fn);
-   op_fns[lxbios_op.op]();
+   op_fns[nvramtool_op.op]();
    return 0;
  }
 
@@ -140,11 +140,11 @@ static void op_show_usage (void)
  * Else show all possible values for ARG.
  ****************************************************************************/
 static void op_lbtable_show_info (void)
- { if (lxbios_op.param == NULL)
+ { if (nvramtool_op.param == NULL)
       list_lbtable_choices();
    else
     { get_lbtable();
-      list_lbtable_item(lxbios_op.param);
+      list_lbtable_item(nvramtool_op.param);
     }
  }
 
@@ -169,7 +169,7 @@ static void op_lbtable_dump (void)
  ****************************************************************************/
 static void op_show_param_values (void)
  { get_cmos_layout();
-   list_param_enums(lxbios_op.param);
+   list_param_enums(nvramtool_op.param);
  }
 
 /****************************************************************************
@@ -184,8 +184,8 @@ static void op_cmos_show_one_param (void)
  { int result;
 
    get_cmos_layout();
-   result = list_one_param(lxbios_op.param,
-                  !lxbios_op_modifiers[LXBIOS_MOD_SHOW_VALUE_ONLY].found);
+   result = list_one_param(nvramtool_op.param,
+                  !nvramtool_op_modifiers[NVRAMTOOL_MOD_SHOW_VALUE_ONLY].found);
    cmos_checksum_verify();
 
    if (result)
@@ -225,7 +225,7 @@ static void op_cmos_set_one_param (void)
    /* Separate 'NAME=VALUE' syntax into two strings representing NAME and
     * VALUE.
     */
-   parse_assignment(lxbios_op.param, &name, &value);
+   parse_assignment(nvramtool_op.param, &name, &value);
 
    set_one_param(name, value);
  }
@@ -252,9 +252,9 @@ static void op_cmos_set_params_stdin (void)
 static void op_cmos_set_params_file (void)
  { FILE *f;
 
-   if ((f = fopen(lxbios_op.param, "r")) == NULL)
+   if ((f = fopen(nvramtool_op.param, "r")) == NULL)
     { fprintf(stderr, "%s: Can not open file %s for reading: %s\n",
-              prog_name, lxbios_op.param, strerror(errno));
+              prog_name, nvramtool_op.param, strerror(errno));
       exit(1);
     }
 
@@ -276,14 +276,14 @@ static void op_cmos_checksum (void)
 
    get_cmos_layout();
 
-   if (lxbios_op.param == NULL)
+   if (nvramtool_op.param == NULL)
     { set_iopl(3);
       checksum = cmos_checksum_read();
       set_iopl(0);
       printf("0x%x\n", checksum);
     }
    else
-    { checksum = convert_checksum_value(lxbios_op.param);
+    { checksum = convert_checksum_value(nvramtool_op.param);
       set_iopl(3);
       cmos_checksum_write(checksum);
       set_iopl(0);
@@ -313,9 +313,9 @@ static void op_write_cmos_dump (void)
  { unsigned char data[CMOS_SIZE];
    FILE *f;
 
-   if ((f = fopen(lxbios_op.param, "w")) == NULL)
+   if ((f = fopen(nvramtool_op.param, "w")) == NULL)
     { fprintf(stderr, "%s: Can not open file %s for writing: %s\n",
-              prog_name, lxbios_op.param, strerror(errno));
+              prog_name, nvramtool_op.param, strerror(errno));
       exit(1);
     }
 
@@ -325,7 +325,7 @@ static void op_write_cmos_dump (void)
 
    if (fwrite(data, 1, CMOS_SIZE, f) != CMOS_SIZE)
     { fprintf(stderr, "%s: Error writing CMOS data to file %s: %s\n",
-              prog_name, lxbios_op.param, strerror(errno));
+              prog_name, nvramtool_op.param, strerror(errno));
       exit(1);
     }
 
@@ -344,16 +344,16 @@ static void op_read_cmos_dump (void)
    size_t nr_bytes;
    FILE *f;
 
-   if ((f = fopen(lxbios_op.param, "r")) == NULL)
+   if ((f = fopen(nvramtool_op.param, "r")) == NULL)
     { fprintf(stderr, "%s: Can not open file %s for reading: %s\n",
-              prog_name, lxbios_op.param, strerror(errno));
+              prog_name, nvramtool_op.param, strerror(errno));
       exit(1);
     }
 
    if ((nr_bytes = fread(data, 1, CMOS_SIZE, f)) != CMOS_SIZE)
     { fprintf(stderr, "%s: Error: Only able to read %d bytes of CMOS data "
               "from file %s.  CMOS data is unchanged.\n", prog_name,
-              (int) nr_bytes, lxbios_op.param);
+              (int) nr_bytes, nvramtool_op.param);
       exit(1);
     }
 
@@ -392,9 +392,9 @@ static void op_show_cmos_dumpfile (void)
    size_t nr_bytes;
    FILE *f;
 
-   if ((f = fopen(lxbios_op.param, "r")) == NULL)
+   if ((f = fopen(nvramtool_op.param, "r")) == NULL)
     { fprintf(stderr, "%s: Can not open file %s for reading: %s\n",
-              prog_name, lxbios_op.param, strerror(errno));
+              prog_name, nvramtool_op.param, strerror(errno));
       exit(1);
     }
 

@@ -2,7 +2,7 @@ $Id$
 
 Summary of Operation
 --------------------
-lxbios is a utility for reading/writing coreboot parameters and
+nvramtool is a utility for reading/writing coreboot parameters and
 displaying information from the coreboot table.  It is intended for x86-based
 systems (both 32-bit and 64-bit) that use coreboot.
 

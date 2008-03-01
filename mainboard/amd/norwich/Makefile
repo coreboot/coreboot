@@ -26,7 +26,7 @@ INITRAM_OBJ =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 		$(src)/southbridge/amd/cs5536/smbus_initram.c \
 		$(src)/arch/x86/geodelx/geodelx.c
 
-STAGE2_MAINBOARD_OBJ = irq_tables.o
+STAGE2_MAINBOARD_OBJ = 
 
 $(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"

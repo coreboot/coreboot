@@ -23,6 +23,10 @@ ifeq ($(CONFIG_SOUTHBRIDGE_AMD_CS5536),y)
 
 STAGE2_CHIPSET_OBJ += $(obj)/southbridge/amd/cs5536/cs5536.o
 
+ifeq ($(CONFIG_PIRQ_TABLE),y)
+STAGE2_CHIPSET_OBJ += $(obj)/southbridge/amd/cs5536/irq_tables.o 
+endif
+
 STAGE0_CHIPSET_OBJ += $(obj)/southbridge/amd/cs5536/stage1.o
 
 endif

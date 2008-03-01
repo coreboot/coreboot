@@ -85,6 +85,7 @@ export MAINBOARDDIR
 COREBOOTINCLUDE    :=   -I$(src) -Iinclude \
 			-I$(src)/include \
 			-I$(src)/include/arch/$(ARCH)/ \
+			-I$(src)/mainboard/$(MAINBOARDDIR)/ \
 			-include $(obj)/config.h \
 			-include $(obj)/build.h
 

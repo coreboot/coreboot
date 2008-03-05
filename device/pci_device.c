@@ -1101,7 +1101,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		dev = pci_probe_dev(dev, bus, devfn);
 		printk(BIOS_SPEW,
 		       "PCI: pci_scan_bus pci_probe_dev returns dev %p(%s)\n",
-		       dev, dev->dtsname);
+		       dev, dev ? dev->dtsname : "None (not found)");
 
 		/* If this is not a multi function device, or the device is
 		 * not present don't waste time probing another function. 

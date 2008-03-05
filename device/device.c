@@ -278,8 +278,13 @@ static void read_resources(struct bus *bus)
 	struct device *curdev;
 
 	printk(BIOS_SPEW, "%s: %s(%s) read_resources bus %d link: %d\n",
-	       __func__, bus->dev->dtsname, dev_path(bus->dev),
+	       __func__,
+	       (bus->dev ? bus->dev->dtsname : "No dtsname for NULL device"),
+	       (bus->dev ? dev_path(bus->dev) : "No path for NULL device"),
 	       bus->secondary, bus->link);
+	if (!bus->dev)
+		printk(BIOS_WARNING, "%s: ERROR: bus->dev is NULL!\n",
+		       __func__);
 
 	/* Walk through all devices and find which resources they need. */
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {

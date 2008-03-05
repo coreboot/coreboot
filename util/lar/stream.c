@@ -82,7 +82,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 	int size;
 	int segment = 0;
 	char *header;
-	char ename[64];
+	char ename[MAX_PATHLEN];
 	int headers;
 	char *temp;
 	enum compalgo thisalgo;
@@ -529,7 +529,7 @@ static int file_in_list(struct file *files, char *filename)
 		return 1;
 
 	for(p = files ; p; p = p->next) {
-		if (!strcmp(p->name, filename))
+		if (!strncmp(p->name, filename, strlen(p->name)))
 			return 1;
 	}
 
@@ -560,17 +560,17 @@ void lar_list_files(struct lar *lar, struct file *files)
 			break;
 
 		filename = (char *) (ptr + sizeof(struct lar_header));
-		total_size += sizeof(struct lar_header);
 
 		if (file_in_list(files, filename)) {
 			printf("  %s ", filename);
+			total_size += ntohl(header->offset);
+			total_size += ntohl(header->len);
 
 			if (ntohl(header->compression) == ALGO_NONE) {
 				printf("(%d bytes @0x%lx);",
 				       ntohl(header->len),
 				       (unsigned long)(ptr - lar->map) +
 				       ntohl(header->offset));
-				total_size += ntohl(header->len);
 			} else {
 				printf("(%d bytes, %s compressed to %d bytes "
 				       "@0x%lx);",
@@ -579,7 +579,6 @@ void lar_list_files(struct lar *lar, struct file *files)
 				       ntohl(header->len),
 				       (unsigned long)(ptr - lar->map) +
 				       ntohl(header->offset));
-				total_size += ntohl(header->len);
 			}
 			printf("loadaddress 0x%#x entry 0x%#x\n", 
 					ntohl(header->loadaddress), 
@@ -603,8 +602,11 @@ void lar_list_files(struct lar *lar, struct file *files)
 	}
 
 	/* Print the total size */
-	printf ("Total size = %d bytes (0x%x)\n", total_size, total_size);
-	
+	if (total_size >0)
+		printf("Total size = %dB %dKB (0x%x)\n", 
+			total_size, total_size/1024, total_size);
+	else
+		printf("No matching lar entries found.\n");
 }
 
 /**
@@ -797,9 +799,10 @@ char *mapfile(char *filename, u32 *size)
  * Given a name, return the size of the header for that name.  
  * 
  * @param name header name
+ * @param new_pathlen pointer to the (possibly truncated) pathlen
  * @return  header size
  */
-int hlen(char *pathname)
+int header_len(char *pathname, int *new_pathlen)
 {
 	int pathlen;
 	int len;
@@ -808,6 +811,8 @@ int hlen(char *pathname)
 		MAX_PATHLEN : strlen(pathname) + 1;
 	len = sizeof(struct lar_header) + pathlen;
 	len = (len + 15) & 0xFFFFFFF0;
+	if (new_pathlen!=NULL)
+		*new_pathlen = pathlen;
 
 	return len;
 }
@@ -827,7 +832,7 @@ int maxsize(struct lar *lar, char *name)
 	offset = lar_empty_offset(lar);
 
 	/* Figure out how big our header will be */
-	size = get_bootblock_offset(lar->size) - offset - hlen(name) - 1;
+	size = get_bootblock_offset(lar->size) - offset - header_len(name,NULL) - 1;
 
 	return size;
 }
@@ -878,12 +883,8 @@ int lar_add_entry(struct lar *lar, char *pathname, void *data,
 	/* Find the beginning of the available space in the LAR */
 	offset = lar_empty_offset(lar);
 
-	pathlen = strlen(pathname) + 1 > MAX_PATHLEN ? 
-		MAX_PATHLEN : strlen(pathname) + 1;
-
 	/* Figure out how big our header will be */
-	hlen = sizeof(struct lar_header) + pathlen;
-	hlen = (hlen + 15) & 0xFFFFFFF0;
+	hlen = header_len(pathname, &pathlen);
 
 	if (offset + hlen + complen >= get_bootblock_offset(lar->size)) {
 		err("Not enough room in the LAR to add the file.\n");

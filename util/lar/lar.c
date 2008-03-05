@@ -44,8 +44,9 @@ enum compalgo algo = ALGO_NONE;
 
 static void usage(char *name)
 {
-	printf("\nLAR - the Lightweight Archiver " VERSION "\n" COPYRIGHT "\n\n"
-	       "Usage: %s [-ecxal] archive.lar [[[file1] file2] ...]\n\n", name);
+	printf("\nLAR - the Lightweight Archiver " VERSION "\n" COPYRIGHT "\n\n");
+	printf("Usage: %s [-ecxal] archive.lar [-b NAME] [-s SIZE[M|k]]\n",name);
+	printf("\t[[[file1] file2] ...]\n\n");
 	printf("Examples:\n");
 	printf("  lar -c -s 32k -b bootblock myrom.lar foo nocompress:bar\n");
 	printf("  lar -a myrom.lar foo blob:baz\n");
@@ -121,7 +122,7 @@ char *get_bootblock(void)
 
 int create_lar(const char *archivename, struct file *files)
 {
-	struct lar *lar = lar_new_archive(archivename, larsize);
+	struct lar *lar = lar_new_archive(archivename, get_larsize());
 
 	if (lar == NULL) {
 		fprintf(stderr, "Unable to create %s as a LAR archive.\n",
@@ -343,24 +344,21 @@ int main(int argc, char *argv[])
 	}
 
 	/* size only makes sense when creating a lar */
-	if (larmode != CREATE && larsize) {
+	if (larmode != CREATE && get_larsize()) {
 		printf("Warning: size parameter ignored since "
 		       "not creating an archive.\n");
 	}
 
-	if (bootblock) {
+	if (larmode == CREATE && !get_larsize()) {
+		printf("When creating a LAR archive, "
+			"you must specify an archive size.\n");
+		exit(1);
+	}
 
-		/* adding a bootblock only makes sense when creating a lar */
-		if (larmode != CREATE) {
-			printf("Warning: bootblock parameter ignored since "
-			       "not creating an archive.\n");
-		}
-
-		/* adding a bootblock only makes sense when creating a lar */
-		if (!larsize) {
-			printf("When creating a LAR archive, you must specify an archive size.\n");
-			exit(1);
-		}
+	/* adding a bootblock only makes sense when creating a lar */
+	if (bootblock && larmode != CREATE) {
+		printf("Warning: bootblock parameter ignored since "
+		       "not creating an archive.\n");
 	}
 
 	if (optind < argc) {

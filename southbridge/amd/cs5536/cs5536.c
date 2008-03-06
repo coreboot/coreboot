@@ -89,6 +89,26 @@ static const u32 FlashPort[] = {
 };
 
 /**
+ * Power button setup.
+ *
+ * Setup GPIO24, it is the external signal for CS5536 vsb_work_aux which
+ * controls all voltage rails except Vstandby & Vmem. We need to enable
+ * OUT_AUX1 and OUTPUT_ENABLE in this order.
+ *
+ * @param sb The southbridge config structure. 
+ * If GPIO24 is not enabled then soft-off will not work.
+ */
+static void cs5536_setup_power_button(struct southbridge_amd_cs5536_dts_config *sb )
+{
+	if (!sb->power_button)
+		return;
+	/* TODO: Should be a #define? */
+	outl(0x40020000, PMS_IO_BASE + 0x40);
+	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUT_AUX1_SELECT);
+	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
+}
+
+/**
  * Program ACPI LBAR and initialize ACPI registers.
  */
 static void pm_chipset_init(void)
@@ -616,6 +636,8 @@ static void southbridge_init(struct device *dev)
 
 	if (sb->enable_ide)
 		ide_init(dev);
+
+	cs5536_setup_power_button(sb);
 
 	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
 }

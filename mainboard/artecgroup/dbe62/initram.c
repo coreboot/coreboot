@@ -53,7 +53,7 @@ struct spd_entry {
 
 /* Save space by using a short list of SPD values used by Geode LX Memory init */
 static const struct spd_entry spd_table[] = {
-	{SPD_ACCEPTABLE_CAS_LATENCIES, 0x10},
+	{SPD_ACCEPTABLE_CAS_LATENCIES, 0xe},
 	{SPD_BANK_DENSITY, 0x40},
 	{SPD_DEVICE_ATTRIBUTES_GENERAL, 0xff},
 	{SPD_MEMORY_TYPE, 7},
@@ -63,7 +63,7 @@ static const struct spd_entry spd_table[] = {
 	{SPD_PRIMARY_SDRAM_WIDTH, 8},
 	{SPD_NUM_DIMM_BANKS, 1},
 	{SPD_NUM_COLUMNS, 0xa},
-	{SPD_NUM_ROWS, 3},
+	{SPD_NUM_ROWS, 13},
 	{SPD_REFRESH, 0x3a},
 	{SPD_SDRAM_CYCLE_TIME_2ND, 60},
 	{SPD_SDRAM_CYCLE_TIME_3RD, 75},
@@ -87,13 +87,18 @@ u8 spd_read_byte(u16 device, u8 address)
 	/* returns 0xFF on any failures */
 	u8 ret = 0xff;
 
-	printk(BIOS_DEBUG, "spd_read_byte dev %04x\n", device);
+	printk(BIOS_DEBUG, "spd_read_byte dev %04x", device);
 	if (device == DIMM0) {
 		for (i = 0; i < ARRAY_SIZE(spd_table); i++) {
 			if (spd_table[i].address == address) {
 				ret = spd_table[i].data;
+				break;
 			}
 		}
+
+		if (i == ARRAY_SIZE(spd_table))
+			printk(BIOS_DEBUG, " addr %02x does not exist in SPD table",
+				address);
 	}
 
 	printk(BIOS_DEBUG, " addr %02x returns %02x\n", address, ret);
@@ -147,7 +152,7 @@ int main(void)
 	printk(BIOS_DEBUG, "done sdram enable\n");
 
 	/* Check low memory */
-	/*ram_check(0x00000000, 640*1024); */
+	ram_check(0x00000000, 640*1024);
 
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;

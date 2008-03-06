@@ -97,13 +97,17 @@ u8 spd_read_byte(u16 device, u8 address)
 	/* returns 0xFF on any failures */
 	u8 ret = 0xff;
 
-	printk(BIOS_DEBUG, "spd_read_byte dev %04x\n", device);
+	printk(BIOS_DEBUG, "spd_read_byte dev %04x", device);
 	if (device == DIMM0) {
 		for (i = 0; i < ARRAY_SIZE(spd_table); i++) {
 			if (spd_table[i].address == address) {
 				ret = spd_table[i].data;
+				break;
 			}
 		}
+		if (i == ARRAY_SIZE(spd_table))
+			printk(BIOS_DEBUG, " addr %02x does not exist in SPD table",
+				address);
 	}
 
 	printk(BIOS_DEBUG, " addr %02x returns %02x\n", address, ret);

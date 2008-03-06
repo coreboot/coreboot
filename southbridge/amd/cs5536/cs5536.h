@@ -444,6 +444,7 @@
 /* Function prototypes */
 void cs5536_disable_internal_uart(void);
 void cs5536_setup_onchipuart(void);
+void cs5536_setup_onchipuart2(void);
 void cs5536_stage1(void);
 
 #endif /* SOUTHBRIDGE_AMD_CS5536_CS5536_H */

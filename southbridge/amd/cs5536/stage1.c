@@ -113,23 +113,6 @@ static void cs5536_setup_iobase(void)
 }
 
 /**
- * Power button setup.
- *
- * Setup GPIO24, it is the external signal for CS5536 vsb_work_aux which
- * controls all voltage rails except Vstandby & Vmem. We need to enable
- * OUT_AUX1 and OUTPUT_ENABLE in this order.
- *
- * If GPIO24 is not enabled then soft-off will not work.
- */
-static void cs5536_setup_power_button(void)
-{
-	/* TODO: Should be a #define? */
-	outl(0x40020000, PMS_IO_BASE + 0x40);
-	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUT_AUX1_SELECT);
-	outl(GPIOH_24_SET, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
-}
-
-/**
  * Set the various GPIOs.
  *
  * An unknown question at this point is how general this is to all mainboards.
@@ -239,6 +222,40 @@ void cs5536_setup_onchipuart(void)
 	wrmsr(MDD_UART1_CONF, msr);
 }
 
+void cs5536_setup_onchipuart2(void)
+{
+	struct msr msr;
+
+	/* GPIO4 - UART2_TX */
+	/* Set: Output Enable  (0x4) */
+	outl(GPIOL_4_SET, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
+	/* Set: OUTAUX1 Select (0x10) */
+	outl(GPIOL_4_SET, GPIO_IO_BASE + GPIOL_OUT_AUX1_SELECT);
+	/* GPIO4 - UART2_RX */
+	/* Set: Input Enable   (0x20) */
+	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
+	/* Set: INAUX1 Select  (0x34) */
+	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
+
+	/* Set: GPIO 3 + 3 Pull Up  (0x18) */
+	outl(GPIOL_3_SET | GPIOL_4_SET, GPIO_IO_BASE + GPIOL_PULLUP_ENABLE);
+
+	/* set address to 3F8 */
+	msr = rdmsr(MDD_LEG_IO);
+	msr.lo |= 0x7 << 20;
+	wrmsr(MDD_LEG_IO, msr);
+
+	/* Bit 1 = DEVEN (device enable)
+	 * Bit 4 = EN_BANKS (allow access to the upper banks
+	 */
+	msr.lo = (1 << 4) | (1 << 1);
+	msr.hi = 0;
+
+	/* enable COM2 */
+	wrmsr(MDD_UART2_CONF, msr);
+}
+
+
 /**
  * Board setup.
  *
@@ -279,5 +296,4 @@ void cs5536_stage1(void)
 	cs5536_setup_iobase();
 	cs5536_setup_smbus_gpio();
 	/* cs5536_enable_smbus(); -- Leave this out for now. */
-	cs5536_setup_power_button();
 }

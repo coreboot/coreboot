@@ -56,4 +56,12 @@
 	com2_enable = "0";
 	com2_address = "0x2f8";
 	com2_irq = "3";
+
+	/* enable/disable power button. On systems with no power switch, 
+	 * one usually does not want the button enabled. Example: 
+	 * Alix1C, dbe62, dbe61. If you enable this, and the power is 
+	 * hard-wired, the board will turn off after 4 seconds, which is 
+	 * probably not what you want. 
+	 */
+	power_button = "0";
 };

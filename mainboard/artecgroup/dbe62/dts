@@ -43,6 +43,12 @@
 			/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none. 
 			 * See virtual PIC spec. */
 			enable_gpio_int_route = "0x0D0C0700";
+			/* we use com2 since that is on the dongle */
+			com2_enable = "1";
+			/* Set com2 address to be COM1 */
+			com2_address = "0x3f8";
+			/* Set com2 IRQ to be what is usually COM1 */
+			com2_irq = "4";
 		};
 	};
 };

@@ -130,6 +130,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	/* Module Density * Module Banks */
 	/* Shift to multiply by the number of DIMM banks. */
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;
+	printk(BIOS_DEBUG, "DIMM size is %x\n", dimm_size);
 	banner(BIOS_DEBUG, "BEFORT CTZ");
 	dimm_size = __builtin_ctz(dimm_size);
 	banner(BIOS_DEBUG, "TEST DIMM SIZE>8");
@@ -183,6 +184,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	banner(BIOS_DEBUG, "RDMSR CF07");
 	msr = rdmsr(MC_CF07_DATA);
 	banner(BIOS_DEBUG, "WRMSR CF07");
+	printk(BIOS_DEBUG, "CF07(%x): %08x.%08x\n", MC_CF07_DATA, msr.hi, msr.lo);
 	if (dimm == dimm0) {
 		msr.hi &= 0xFFFF0000;
 		msr.hi |= dimm_setting;
@@ -223,6 +225,7 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 	/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 	speed = 2 * ((10000 / (((spd_byte0 >> 4) * 10) + (spd_byte0 & 0x0F))));
 
+	printk(BIOS_DEBUG, "ddr max speed is %d\n", speed);
 	/* Current speed > max speed? */
 	if (geode_link_speed() > speed) {
 		printk(BIOS_EMERG, "DIMM overclocked. Check GeodeLink speed\n");
@@ -266,6 +269,7 @@ static void set_refresh_rate(u8 dimm0, u8 dimm1)
 	msr = rdmsr(MC_CF07_DATA);
 	msr.lo |= ((rate0 * (geode_link_speed() / 2)) / 16)
 		   << CF07_LOWER_REF_INT_SHIFT;
+	printk(BIOS_DEBUG, "Refresh rate set to %x\n", rate0);
 	wrmsr(MC_CF07_DATA, msr);
 }
 
@@ -385,6 +389,7 @@ static void set_cas(u8 dimm0, u8 dimm1)
 		hlt();
 	}
 
+	printk(BIOS_DEBUG, "Set cas latency to %x\n", spd_byte);
 	msr = rdmsr(MC_CF8F_DATA);
 	msr.lo &= ~(7 << CF8F_LOWER_CAS_LAT_SHIFT);
 	msr.lo |= spd_byte << CF8F_LOWER_CAS_LAT_SHIFT;

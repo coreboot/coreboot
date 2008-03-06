@@ -29,7 +29,7 @@
  * @param addr The memory address to write to.
  * @param value The value to write into the specified memory address.
  */
-static void write_phys(unsigned long addr, unsigned long value)
+void ram_write_phys(unsigned long addr, unsigned long value)
 {
 	volatile unsigned long *ptr;
 	ptr = (void *)addr;
@@ -42,7 +42,7 @@ static void write_phys(unsigned long addr, unsigned long value)
  * @param addr The memory address to read from.
  * @return The value read from the specified memory address.
  */
-static unsigned long read_phys(unsigned long addr)
+unsigned long ram_read_phys(unsigned long addr)
 {
 	volatile unsigned long *ptr;
 	ptr = (void *)addr;
@@ -68,7 +68,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 		/* Display address being filled. */
 		if (!(addr & 0xffff))
 			printk(BIOS_DEBUG, "%lx\r", addr);
-		write_phys(addr, addr);
+		ram_write_phys(addr, addr);
 	};
 	/* Display final address. */
 	printk(BIOS_DEBUG, "%lx\nDRAM filled.\n", addr);
@@ -94,14 +94,13 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		/* Display address being tested. */
 		if (!(addr & 0xffff))
 			printk(BIOS_DEBUG, "%lx\r", addr);
-		value = read_phys(addr);
+		value = ram_read_phys(addr);
 		if (value != addr) {
 			/* Display address with error. */
 			printk(BIOS_ERR, "Fail @%lx Read value=%lx\n",
 			       addr, value);
-			i++;
 			/* Abort after 256 verify errors. */
-			if (i > 256) {
+			if (++i > 256) {
 				printk(BIOS_ERR, "Aborting.\n");
 				break;
 			}
@@ -111,11 +110,8 @@ static void ram_verify(unsigned long start, unsigned long stop)
 	/* Display final address. */
 	printk(BIOS_DEBUG, "%lx\r", addr);
 
-	if (i) {
-		printk(BIOS_DEBUG, "\nDRAM did _NOT_ verify!\n");
-	} else {
-		printk(BIOS_DEBUG, "\nDRAM range verified.\n");
-	}
+	/* Print whether or not the verify failed. */
+	printk(BIOS_DEBUG, "\nDRAM range %sverified.", i ? "_NOT_ " : "");
 }
 
 /**

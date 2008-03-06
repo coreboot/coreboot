@@ -23,7 +23,12 @@
 #include <lib.h>
 #include <console.h>
 
-
+/**
+ * Write a value into memory.
+ *
+ * @param addr The memory address to write to.
+ * @param value The value to write into the specified memory address.
+ */
 static void write_phys(unsigned long addr, unsigned long value)
 {
 	volatile unsigned long *ptr;
@@ -31,6 +36,12 @@ static void write_phys(unsigned long addr, unsigned long value)
 	*ptr = value;
 }
 
+/**
+ * Read a value from memory.
+ *
+ * @param addr The memory address to read from.
+ * @return The value read from the specified memory address.
+ */
 static unsigned long read_phys(unsigned long addr)
 {
 	volatile unsigned long *ptr;
@@ -38,71 +49,89 @@ static unsigned long read_phys(unsigned long addr)
 	return *ptr;
 }
 
+/**
+ * Fill the specified RAM area.
+ *
+ * The data which is written into RAM is the address of each memory location.
+ * E.g., we write a value of 0x1234 into address 0x1234, we write 0x1235 into
+ * memory address 0x1235, and so on.
+ *
+ * @param start The beginning of the RAM area.
+ * @param stop The end of the RAM area.
+ */
 static void ram_fill(unsigned long start, unsigned long stop)
 {
 	unsigned long addr;
-	/* 
-	 * Fill.
-	 */
+
 	printk(BIOS_DEBUG, "DRAM fill: %lx-%lx\n", start, stop);
-	for(addr = start; addr < stop ; addr += 4) {
-		/* Display address being filled */
-		if (!(addr & 0xffff)) {
+	for (addr = start; addr < stop; addr += 4) {
+		/* Display address being filled. */
+		if (!(addr & 0xffff))
 			printk(BIOS_DEBUG, "%lx\r", addr);
-		}
 		write_phys(addr, addr);
 	};
-	/* Display final address */
-	printk(BIOS_DEBUG, "%lx\nDRAM filled\n", addr);
+	/* Display final address. */
+	printk(BIOS_DEBUG, "%lx\nDRAM filled.\n", addr);
 }
 
+/**
+ * Verify the specified RAM area.
+ *
+ * This checks whether the specified RAM locations return the "correct" data
+ * as written by ram_fill(). The value at address 0x1234 for example should
+ * be 0x1234, the value of address 0x1235 should be 0x1235, and so on.
+ *
+ * @param start The beginning of the RAM area.
+ * @param stop The end of the RAM area.
+ */
 static void ram_verify(unsigned long start, unsigned long stop)
 {
-	unsigned long addr;
+	unsigned long addr, value;
 	int i = 0;
-	/* 
-	 * Verify.
-	 */
+
 	printk(BIOS_DEBUG, "DRAM verify: %lx-%lx\n", start, stop);
-	for(addr = start; addr < stop ; addr += 4) {
-		unsigned long value;
-		/* Display address being tested */
-		if (!(addr & 0xffff)) {
+	for (addr = start; addr < stop; addr += 4) {
+		/* Display address being tested. */
+		if (!(addr & 0xffff))
 			printk(BIOS_DEBUG, "%lx\r", addr);
-		}
 		value = read_phys(addr);
 		if (value != addr) {
-			/* Display address with error */
-			printk(BIOS_ERR, "Fail @%lx Read value=%lx\n", 
-				addr, value);
+			/* Display address with error. */
+			printk(BIOS_ERR, "Fail @%lx Read value=%lx\n",
+			       addr, value);
 			i++;
-			if(i>256) {
+			/* Abort after 256 verify errors. */
+			if (i > 256) {
 				printk(BIOS_ERR, "Aborting.\n");
 				break;
 			}
 		}
 	}
-	/* Display final address */
+
+	/* Display final address. */
 	printk(BIOS_DEBUG, "%lx\r", addr);
+
 	if (i) {
 		printk(BIOS_DEBUG, "\nDRAM did _NOT_ verify!\n");
-	}
-	else {
+	} else {
 		printk(BIOS_DEBUG, "\nDRAM range verified.\n");
 	}
 }
 
-
+/**
+ * Check whether the specified RAM area verifies correctly, and thus whether
+ * we can be reasonably confident that our DRAM setup is correct.
+ *
+ * This is much more of a "Is my DRAM properly configured?" test than
+ * a "Is my DRAM faulty?" test, though.
+ *
+ * @param start The beginning of the RAM area.
+ * @param stop The end of the RAM area.
+ */
 void ram_check(unsigned long start, unsigned long stop)
 {
-	/*
-	 * This is much more of a "Is my DRAM properly configured?"
-	 * test than a "Is my DRAM faulty?" test.  Not all bits
-	 * are tested.   -Tyson
-	 */
 	printk(BIOS_DEBUG, "Testing DRAM: %lx-%lx\n", start, stop);
 	ram_fill(start, stop);
 	ram_verify(start, stop);
 	printk(BIOS_DEBUG, "Done.\n");
 }
-

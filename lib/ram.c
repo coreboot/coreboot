@@ -33,10 +33,11 @@ void ram_failure(const char *why)
 	hlt();
 }
 
-/* Northbridge or memory controller code must define these functions */
+/* Northbridge or memory controller code must define these functions. */
 void ram_set_registers(void *ctrl, int i);
 int ram_set_spd_registers(void *ctrl, int i);
 void ram_enable(int controllers, void *ctrl);
+
 /**
  * ram_initialize() is is the main RAM init function.
  *
@@ -45,10 +46,11 @@ void ram_enable(int controllers, void *ctrl);
  * of making it an empty function.
  *
  * @param controllers How many memory controllers there are.
- * @param ctrl Pointer to the mem control structure. This is a generic pointer, since the 
- *    structure is wholly chip-dependent, and a survey of all the types makes it clear that a common 
- *    struct is not possible. We can not use the device tree here as this code is run before the device tree
- *    is available. 
+ * @param ctrl Pointer to the mem control structure. This is a generic pointer,
+ *             since the structure is wholly chip-dependent, and a survey of
+ *             all the types makes it clear that a common struct is not
+ *             possible. We can not use the device tree here as this code is
+ *             run before the device tree is available. 
  */
 void ram_initialize(int controllers, void *ctrl)
 {
@@ -61,10 +63,10 @@ void ram_initialize(int controllers, void *ctrl)
 		ram_set_registers(ctrl, i);
 	}
 
-	/* Now setup those things we can auto detect. */
+	/* Now setup those things we can auto-detect via SPD. */
 	for (i = 0; i < controllers; i++) {
 		printk(BIOS_INFO,
-		  "Setting SPD based registers of RAM controller %d\n", i);
+		       "Setting SPD based registers of RAM controller %d\n", i);
 		ram_set_spd_registers(ctrl, i);
 	}
 

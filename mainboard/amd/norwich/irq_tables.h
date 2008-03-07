@@ -17,20 +17,10 @@
 * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
-#include <types.h>
-#include <lib.h>
-#include <console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <string.h>
-#include <msr.h>
-#include <io.h>
 #include <pirq_routing.h>
-#include <amd_geodelx.h>
-#include "../../../southbridge/amd/cs5536/cs5536.h"
 
 /* Number of slots and devices in the PIR table */
-#define SLOT_COUNT 6
+#define IRQ_SLOT_COUNT 6
 
 /* Platform IRQs */
 #define PIRQA 11
@@ -73,7 +63,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,
 	PIRQ_VERSION,
-	32 + 16 * SLOT_COUNT,	/* Max. number of devices on the bus */
+	32 + 16 * IRQ_SLOT_COUNT,	/* Max. number of devices on the bus */
 	0x00,			/* Where the interrupt router lies (bus) */
 	(0x0F << 3) | 0x0,      /* Where the interrupt router lies (dev) */
 	0x00,			/* IRQs devoted exclusively to PCI usage */
@@ -83,13 +73,19 @@ const struct irq_routing_table intel_irq_routing_table = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},	/* u8 rfu[11] */
 	0x00,			/* Checksum */
 	{
-	 /* If you change the number of entries, change the IRQ_SLOT_COUNT above! */
-	 /* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
-	 {0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},	/* cpu */
-	 {0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},	/* chipset */
-	 {0x00, (0x0D << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}}, 0x1, 0x0},	/* slot1 */
-	 {0x00, (0x0E << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}}, 0x2, 0x0},	/* slot2 */
-	 {0x00, (0x0B << 3) | 0x0, {{L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}}, 0x3, 0x0},	/* slot3 */
-	 {0x00, (0x0C << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x4, 0x0},	/* slot4 */
+		/* If you change the number of entries, change IRQ_SLOT_COUNT above! */
+		/* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
+		/* CPU */
+		{0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
+		/* chipset */
+		{0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},
+		/* slot1 */
+		{0x00, (0x0D << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}}, 0x1, 0x0},
+		/* slot2 */
+		{0x00, (0x0E << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}}, 0x2, 0x0},
+		/* slot3 */
+		{0x00, (0x0B << 3) | 0x0, {{L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}}, 0x3, 0x0},
+		/* slot4 */
+		{0x00, (0x0C << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x4, 0x0},
 	 }
 };

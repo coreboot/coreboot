@@ -19,6 +19,8 @@
 
 #include <pirq_routing.h>
 
+/* Number of slots and devices in the PIR table */
+#define IRQ_SLOT_COUNT 5
 
 /* Platform IRQs */
 #define PIRQA 11
@@ -71,7 +73,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,
 	PIRQ_VERSION,
-	32 + 16 * 5,		/* Max. number of devices on the bus */
+	32 + 16 * IRQ_SLOT_COUNT,	/* Max. number of devices on the bus */
 	0x00,			/* Where the interrupt router lies (bus) */
 	(0x0F << 3) | 0x0,      /* Where the interrupt router lies (dev) */
 	0x00,			/* IRQs devoted exclusively to PCI usage */

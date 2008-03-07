@@ -37,16 +37,6 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 
 	printk(BIOS_INFO, "Checking IRQ routing table consistency...\n");
 
-#if defined(IRQ_SLOT_COUNT)
-	if (sizeof(struct irq_routing_table) != rt->size) {
-		printk_warning("Inconsistent IRQ routing table size (0x%x/0x%x)\n",
-			       sizeof(struct irq_routing_table),
-			       rt->size
-			);
-		rt->size=sizeof(struct irq_routing_table);
-	}
-#endif
-
 	for (i = 0; i < rt->size; i++)
 		sum += addr[i];
 

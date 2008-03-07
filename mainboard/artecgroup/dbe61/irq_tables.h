@@ -5,7 +5,7 @@
  * Documentation at : http://www.microsoft.com/hwdev/busbios/PCIIRQ.HTM
 */
 
-#include <arch/pirq_routing.h>
+#include <pirq_routing.h>
 
 #define ID_SLOT_PCI_NET		1			// ThinCan ethernet
 #define ID_SLOT_PCI_RSVD1	2           // reserved entry 1

@@ -42,7 +42,7 @@ void hardware_stage1(void)
 	 * early MSR setup for the CS5536. We do this early for debug. 
 	 * Real setup should be done in chipset init via dts settings.
 	 */
-	cs5536_setup_onchipuart();
+	cs5536_setup_onchipuart(1);
 }
 
 void mainboard_pre_payload(void)

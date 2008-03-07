@@ -59,7 +59,7 @@ void hardware_stage1(void)
 	 * NOTE: Must do this AFTER the early_setup! It is counting on some
 	 * early MSR setup for the CS5536.
 	 */
-	cs5536_setup_onchipuart();
+	cs5536_setup_onchipuart(2);
 }
 
 void mainboard_pre_payload(void)

@@ -102,6 +102,7 @@ u8 spd_read_byte(u16 device, u8 address)
 		for (i = 0; i < ARRAY_SIZE(spd_table); i++) {
 			if (spd_table[i].address == address) {
 				ret = spd_table[i].data;
+                                break;
 			}
 		}
 

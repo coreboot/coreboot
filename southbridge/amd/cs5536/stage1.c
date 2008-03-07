@@ -49,10 +49,10 @@ static void cs5536_setup_extmsr(void)
 	/* TODO: unsigned char -> u8? */
 #if CS5536_GLINK_PORT_NUM <= 4
 	msr.lo = CS5536_DEV_NUM <<
-	    (unsigned char)((CS5536_GLINK_PORT_NUM - 1) * 8);
+	    (unsigned char) ((CS5536_GLINK_PORT_NUM - 1) * 8);
 #else
 	msr.hi = CS5536_DEV_NUM <<
-	    (unsigned char)((CS5536_GLINK_PORT_NUM - 5) * 8);
+	    (unsigned char) ((CS5536_GLINK_PORT_NUM - 5) * 8);
 #endif
 
 	wrmsr(GLPCI_ExtMSR, msr);
@@ -90,11 +90,11 @@ static void cs5536_usb_swapsif(void)
 }
 
 static const struct msrinit msr_table[] = {
-	{MDD_LBAR_SMB,   {.hi = 0x0000f001, .lo = SMBUS_IO_BASE}},
-	{MDD_LBAR_GPIO,  {.hi = 0x0000f001, .lo = GPIO_IO_BASE}},
-	{MDD_LBAR_MFGPT, {.hi = 0x0000f001, .lo = MFGPT_IO_BASE}},
-	{MDD_LBAR_ACPI,  {.hi = 0x0000f001, .lo = ACPI_IO_BASE}},
-	{MDD_LBAR_PMS,   {.hi = 0x0000f001, .lo = PMS_IO_BASE}},
+	{MDD_LBAR_SMB, {.hi = 0x0000f001,.lo = SMBUS_IO_BASE}},
+	{MDD_LBAR_GPIO, {.hi = 0x0000f001,.lo = GPIO_IO_BASE}},
+	{MDD_LBAR_MFGPT, {.hi = 0x0000f001,.lo = MFGPT_IO_BASE}},
+	{MDD_LBAR_ACPI, {.hi = 0x0000f001,.lo = ACPI_IO_BASE}},
+	{MDD_LBAR_PMS, {.hi = 0x0000f001,.lo = PMS_IO_BASE}},
 };
 
 /**
@@ -147,15 +147,15 @@ void cs5536_disable_internal_uart(void)
 	 * Disable and reset them and configure them later (SIO init).
 	 */
 	msr = rdmsr(MDD_UART1_CONF);
-	msr.lo = 1;			/* Reset */
+	msr.lo = 1;		/* Reset */
 	wrmsr(MDD_UART1_CONF, msr);
-	msr.lo = 0;			/* Disable */
+	msr.lo = 0;		/* Disable */
 	wrmsr(MDD_UART1_CONF, msr);
 
 	msr = rdmsr(MDD_UART2_CONF);
-	msr.lo = 1;			/* Reset */
+	msr.lo = 1;		/* Reset */
 	wrmsr(MDD_UART2_CONF, msr);
-	msr.lo = 0;			/* Disable */
+	msr.lo = 0;		/* Disable */
 	wrmsr(MDD_UART2_CONF, msr);
 }
 
@@ -182,7 +182,7 @@ static void cs5536_setup_cis_mode(void)
  *
  * See page 412 of the AMD Geode CS5536 Companion Device data book.
  */
-void cs5536_setup_onchipuart(void)
+void cs5536_setup_onchipuart1(void)
 {
 	struct msr msr;
 
@@ -238,7 +238,8 @@ void cs5536_setup_onchipuart2(void)
 	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
 
 	/* Set: GPIO 3 + 3 Pull Up  (0x18) */
-	outl(GPIOL_3_SET | GPIOL_4_SET, GPIO_IO_BASE + GPIOL_PULLUP_ENABLE);
+	outl(GPIOL_3_SET | GPIOL_4_SET,
+	     GPIO_IO_BASE + GPIOL_PULLUP_ENABLE);
 
 	/* set address to 3F8 */
 	msr = rdmsr(MDD_LEG_IO);
@@ -253,6 +254,18 @@ void cs5536_setup_onchipuart2(void)
 
 	/* enable COM2 */
 	wrmsr(MDD_UART2_CONF, msr);
+}
+
+void cs5536_setup_onchipuart(int uart)
+{
+	switch (uart) {
+	case 1:
+		cs5536_setup_onchipuart1();
+		break;
+	case 2:
+		cs5536_setup_onchipuart2();
+		break;
+	}
 }
 
 

@@ -20,8 +20,7 @@
 #include <pirq_routing.h>
 
 /* Number of slots and devices in the PIR table */
-#error IRQ_SLOT_COUNT does not match PIR table contents, IRQ routing setup will access uninitialied memory
-#define IRQ_SLOT_COUNT 5
+#define IRQ_SLOT_COUNT 3
 
 /* Platform IRQs */
 #define PIRQA 10

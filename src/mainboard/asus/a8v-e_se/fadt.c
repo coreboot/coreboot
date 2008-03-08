@@ -1,7 +1,8 @@
 /*
- * ACPI - create the Fixed ACPI Description Tables (FADT)
- * (C) Copyright 2004 Nick Barker <nick.barker9@btinternet.com>
- * (C) Copyright 2007 Rudolf Marek <r.marek@assembler.cz>
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2004 Nick Barker <nick.barker9@btinternet.com>
+ * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -15,15 +16,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- * MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
 #include <string.h>
 #include <arch/acpi.h>
 #include <../../../southbridge/via/vt8237r/vt8237r.h>
 
-void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
+/**
+ * Create the Fixed ACPI Description Tables (FADT) for this board.
+ */
+void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 
@@ -146,6 +149,5 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_gpe1_blk.addrl = 0x0;
 	fadt->x_gpe1_blk.addrh = 0x0;
 
-	header->checksum =
-	    acpi_checksum((void *) fadt, sizeof(acpi_fadt_t));
+	header->checksum = acpi_checksum((void *) fadt, sizeof(acpi_fadt_t));
 }

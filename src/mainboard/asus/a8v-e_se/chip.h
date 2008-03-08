@@ -20,5 +20,4 @@
 extern struct chip_operations mainboard_asus_a8v_e_se_ops;
 
 struct mainboard_asus_a8v_e_se_config {
-     
 };

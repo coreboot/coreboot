@@ -43,11 +43,9 @@ uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses STACK_SIZE
 uses HEAP_SIZE
-##uses USE_OPTION_TABLE
-##uses CONFIG_LB_MEM_TOPK
-
+# uses USE_OPTION_TABLE
+# uses CONFIG_LB_MEM_TOPK
 uses HAVE_ACPI_TABLES
-
 uses LB_CKS_RANGE_START
 uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
@@ -75,242 +73,96 @@ uses CONFIG_GDB_STUB
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
-#bx_b001- uses K8_HW_MEM_HOLE_SIZEK
+# bx_b001- uses K8_HW_MEM_HOLE_SIZEK
 uses K8_HT_FREQ_1G_SUPPORT
-
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
 uses DCACHE_RAM_GLOBAL_VAR_SIZE
 uses CONFIG_USE_INIT
-
 uses ENABLE_APIC_EXT_ID
 uses APIC_ID_OFFSET
 uses LIFT_BSP_APIC_ID
-
 uses HT_CHAIN_UNITID_BASE
 uses HT_CHAIN_END_UNITID_BASE
-#bx_b001- uses K8_SB_HT_CHAIN_ON_BUS0
+# bx_b001- uses K8_SB_HT_CHAIN_ON_BUS0
 uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
-#bx_b005+
+# bx_b005+
 uses SB_HT_CHAIN_ON_BUS0
-
 uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
 uses CONFIG_COMPRESSED_PAYLOAD_LZMA
 
-## ROM_SIZE is the size of boot ROM that this board will use.
-#512K bytes
-default ROM_SIZE=512 * 1024
+default ROM_SIZE = 512 * 1024
+default FALLBACK_SIZE = 256 * 1024
+default HAVE_FALLBACK_BOOT = 1
+default HAVE_HARD_RESET = 0
+default HAVE_PIRQ_TABLE = 0
+default IRQ_SLOT_COUNT = 11	# FIXME?
+default HAVE_MP_TABLE = 1
+default HAVE_OPTION_TABLE = 0	# FIXME
+# Move the default coreboot CMOS range off of AMD RTC registers.
+default LB_CKS_RANGE_START = 49
+default LB_CKS_RANGE_END = 122
+default LB_CKS_LOC = 123
+default CONFIG_SMP = 1
+default CONFIG_MAX_CPUS = 2
+default CONFIG_MAX_PHYSICAL_CPUS = 1
+default CONFIG_LOGICAL_CPUS = 1
+default HAVE_ACPI_TABLES = 1
+# default CONFIG_CHIP_NAME = 1
 
-#1M bytes
-#bx- default ROM_SIZE=1024 * 1024
+# 1G memory hole
+# bx_b001- default K8_HW_MEM_HOLE_SIZEK = 0x100000
 
-##
-## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
-##
-#256K
-default FALLBACK_SIZE=256 * 1024
+# Opteron K8 1G HT support
+default K8_HT_FREQ_1G_SUPPORT = 1
 
-###
-### Build options
-###
+# HT Unit ID offset, default is 1, the typical one.
+default HT_CHAIN_UNITID_BASE = 0x0
 
-##
-## Build code for the fallback boot
-##
-default HAVE_FALLBACK_BOOT=1
+# Real SB Unit ID, default is 0x20, mean don't touch it at last.
+# default HT_CHAIN_END_UNITID_BASE = 0x0
 
-##
-## Build code to reset the motherboard from coreboot
-##
-default HAVE_HARD_RESET=0
+# Make the SB HT chain on bus 0, default is not (0).
+# bx_b001- default K8_SB_HT_CHAIN_ON_BUS0 = 2
 
-##
-## Build code to export a programmable irq routing table
-##
-default HAVE_PIRQ_TABLE=0
-default IRQ_SLOT_COUNT=11
+# bx_b005+ make the SB HT chain on bus 0.
+default SB_HT_CHAIN_ON_BUS0 = 1
 
-##
-## Build code to export an x86 MP table
-## Useful for specifying IRQ routing values
-##
-default HAVE_MP_TABLE=1
+# Only offset for SB chain?, default is yes(1).
+default SB_HT_CHAIN_UNITID_OFFSET_ONLY = 0
 
-##
-## Build code to export a CMOS option table
-##
-default HAVE_OPTION_TABLE=0
-
-##
-## Move the default coreboot cmos range off of AMD RTC registers
-##
-default LB_CKS_RANGE_START=49
-default LB_CKS_RANGE_END=122
-default LB_CKS_LOC=123
-
-##
-## Build code for SMP support
-## Only worry about 2 micro processors
-##
-default CONFIG_SMP=1
-default CONFIG_MAX_CPUS=2
-default CONFIG_MAX_PHYSICAL_CPUS=1
-default CONFIG_LOGICAL_CPUS=1
-
-#acpi
-default HAVE_ACPI_TABLES=1
-
-#CHIP_NAME ?
-#default CONFIG_CHIP_NAME=1
-
-#1G memory hole
-#bx_b001- default K8_HW_MEM_HOLE_SIZEK=0x100000
-
-#Opteron K8 1G HT Support
-default K8_HT_FREQ_1G_SUPPORT=1
-
-##HT Unit ID offset, default is 1, the typical one
-default HT_CHAIN_UNITID_BASE=0x0
-
-##real SB Unit ID, default is 0x20, mean dont touch it at last
-#default HT_CHAIN_END_UNITID_BASE=0x0
-
-#make the SB HT chain on bus 0, default is not (0)
-#bx_b001- default K8_SB_HT_CHAIN_ON_BUS0=2
-
-##bx_b005+ make the SB HT chain on bus 0
-default SB_HT_CHAIN_ON_BUS0=1
-
-##only offset for SB chain?, default is yes(1)
-default SB_HT_CHAIN_UNITID_OFFSET_ONLY=0
-
-#VGA
-default CONFIG_CONSOLE_VGA=1
-default CONFIG_PCI_ROM_RUN=1
-
-##
-## enable CACHE_AS_RAM specifics
-##
-default USE_DCACHE_RAM=1
-default DCACHE_RAM_BASE=0xcc000
-default DCACHE_RAM_SIZE=0x4000
-default DCACHE_RAM_GLOBAL_VAR_SIZE=0x01000
-default CONFIG_USE_INIT=0
-
-default ENABLE_APIC_EXT_ID=0
-default APIC_ID_OFFSET=0x10
-default LIFT_BSP_APIC_ID=0
-
-
-##
-## Build code to setup a generic IOAPIC
-##
-default CONFIG_IOAPIC=1
-
-##
-## Clean up the motherboard id strings
-##
-default MAINBOARD_PART_NUMBER="A8V-E SE"
-default MAINBOARD_VENDOR="ASUS"
-default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x1043
-#default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x1234
-
-###
-### coreboot layout values
-###
-
-## ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
+default CONFIG_CONSOLE_VGA = 1		# Needed for VGA.
+default CONFIG_PCI_ROM_RUN = 1		# Needed for VGA.
+default USE_DCACHE_RAM = 1
+default DCACHE_RAM_BASE = 0xcc000
+default DCACHE_RAM_SIZE = 0x4000
+default DCACHE_RAM_GLOBAL_VAR_SIZE = 0x01000
+default CONFIG_USE_INIT = 0
+default ENABLE_APIC_EXT_ID = 0
+default APIC_ID_OFFSET = 0x10
+default LIFT_BSP_APIC_ID = 0
+default CONFIG_IOAPIC = 1
+default MAINBOARD_VENDOR = "ASUS"
+default MAINBOARD_PART_NUMBER = "A8V-E SE"
+default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID = 0x1043
+# default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID = 0x1234	# FIXME
 default ROM_IMAGE_SIZE = 64 * 1024
-
-##
-## Use a small 8K stack
-##
-default STACK_SIZE= 8 * 1024
-
-##
-## Use a small 256K heap
-##
-default HEAP_SIZE=256 * 1024
-
-#more 1M for pgtbl
-##default CONFIG_LB_MEM_TOPK=2048
-
-##
-## Only use the option table in a normal image
-##
-##default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
-
-##
-## Coreboot C code runs at this location in RAM
-##
-default _RAMBASE=0x00004000
-
-##
-## Load the payload from the ROM
-##
+default STACK_SIZE = 8 * 1024
+default HEAP_SIZE = 256 * 1024
+# More 1M for pgtbl.
+# default CONFIG_LB_MEM_TOPK = 2048
+default _RAMBASE = 0x00004000
+# default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
 default CONFIG_ROM_PAYLOAD = 1
-
-###
-### Defaults of options that you may want to override in the target config file
-###
-
-##
-## The default compiler
-##
-default CC="$(CROSS_COMPILE)gcc -m32"
-default HOSTCC="gcc"
-
-##
-## Disable the gdb stub by default
-##
-default CONFIG_GDB_STUB=0
-
-##
-## The Serial Console
-##
-
-# To Enable the Serial Console
-default CONFIG_CONSOLE_SERIAL8250=1
-
-## Select the serial console baud rate
-default TTYS0_BAUD=115200
-#default TTYS0_BAUD=57600
-#default TTYS0_BAUD=38400
-#default TTYS0_BAUD=19200
-#default TTYS0_BAUD=9600
-#default TTYS0_BAUD=4800
-#default TTYS0_BAUD=2400
-#default TTYS0_BAUD=1200
-
-# Select the serial console base port
-default TTYS0_BASE=0x3f8
-
-# Select the serial protocol
-# This defaults to 8 data bits, 1 stop bit, and no parity
-default TTYS0_LCS=0x3
-
-##
-### Select the coreboot loglevel
-##
-## EMERG      1   system is unusable
-## ALERT      2   action must be taken immediately
-## CRIT       3   critical conditions
-## ERR        4   error conditions
-## WARNING    5   warning conditions
-## NOTICE     6   normal but significant condition
-## INFO       7   informational
-## DEBUG      8   debug-level messages
-## SPEW       9   Way too many details
-
-## Request this level of debugging output
-default  DEFAULT_CONSOLE_LOGLEVEL=8
-## At a maximum only compile in this level of debugging
-default  MAXIMUM_CONSOLE_LOGLEVEL=8
-
-##
-## Select power on after power fail setting
-default MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
-
-### End Options.lb
+default CC = "$(CROSS_COMPILE)gcc -m32"
+default HOSTCC = "gcc"
+default CONFIG_GDB_STUB = 0
+default CONFIG_CONSOLE_SERIAL8250 = 1
+default TTYS0_BAUD = 115200
+default TTYS0_BASE = 0x3f8
+default TTYS0_LCS = 0x3		# 8n1
+default DEFAULT_CONSOLE_LOGLEVEL = 8
+default MAXIMUM_CONSOLE_LOGLEVEL = 8
+default MAINBOARD_POWER_ON_AFTER_POWER_FAIL = "MAINBOARD_POWER_ON"
 end

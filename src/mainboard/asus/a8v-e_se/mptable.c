@@ -17,43 +17,42 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <arch/smp/mpspec.h>
 #include <string.h>
 #include <stdint.h>
-
+#include <arch/smp/mpspec.h>
 #include <../../../southbridge/via/vt8237r/vt8237r.h>
 #include <../../../southbridge/via/k8t890/k8t890.h>
 
 void *smp_write_config_table(void *v)
 {
-        static const char sig[4] = "PCMP";
-        static const char oem[8] = "LNXB    ";
-        static const char productid[12] = "A8V-E SE    ";
-        struct mp_config_table *mc;
+	static const char sig[4] = "PCMP";
+	static const char oem[8] = "LNXB    ";
+	static const char productid[12] = "A8V-E SE    ";
+	struct mp_config_table *mc;
 	unsigned int conforms = 0;
 	int bus_isa = 42;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-        memset(mc, 0, sizeof(*mc));
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	memset(mc, 0, sizeof(*mc));
 
-        memcpy(mc->mpc_signature, sig, sizeof(sig));
-        mc->mpc_length = sizeof(*mc); /* initially just the header */
-        mc->mpc_spec = 0x04;
-        mc->mpc_checksum = 0; /* not yet computed */
-        memcpy(mc->mpc_oem, oem, sizeof(oem));
-        memcpy(mc->mpc_productid, productid, sizeof(productid));
-        mc->mpc_oemptr = 0;
-        mc->mpc_oemsize = 0;
-        mc->mpc_entry_count = 0; /* No entries yet... */
-        mc->mpc_lapic = LAPIC_ADDR;
-        mc->mpe_length = 0;
-        mc->mpe_checksum = 0;
-        mc->reserved = 0;
+	memcpy(mc->mpc_signature, sig, sizeof(sig));
+	mc->mpc_length = sizeof(*mc); /* Initially just the header. */
+	mc->mpc_spec = 0x04;
+	mc->mpc_checksum = 0; /* Not yet computed. */
+	memcpy(mc->mpc_oem, oem, sizeof(oem));
+	memcpy(mc->mpc_productid, productid, sizeof(productid));
+	mc->mpc_oemptr = 0;
+	mc->mpc_oemsize = 0;
+	mc->mpc_entry_count = 0; /* No entries yet. */
+	mc->mpc_lapic = LAPIC_ADDR;
+	mc->mpe_length = 0;
+	mc->mpe_checksum = 0;
+	mc->reserved = 0;
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 
-/*Bus:		Bus ID	Type*/
+	/* Bus:		Bus ID	Type */
 	smp_write_bus(mc, 0, "PCI   ");
 	smp_write_bus(mc, 1, "PCI   ");
 	smp_write_bus(mc, 2, "PCI   ");
@@ -62,11 +61,10 @@ void *smp_write_config_table(void *v)
 	smp_write_bus(mc, 5, "PCI   ");
 	smp_write_bus(mc, 6, "PCI   ");
 	smp_write_bus(mc, bus_isa, "ISA   ");
-/*I/O APICs:	APIC ID	Version	State		Address*/
 
+	/* I/O APICs:	APIC ID	Version	State		Address */
 	smp_write_ioapic(mc, VT8237R_APIC_ID, 0x20, VT8237R_APIC_BASE);
 	smp_write_ioapic(mc, K8T890_APIC_ID, 0x20, K8T890_APIC_BASE);
-
 
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, VT8237R_APIC_ID, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x1, VT8237R_APIC_ID, 0x1);
@@ -142,14 +140,16 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x6,  (0x00 << 2) | 2, K8T890_APIC_ID, 0x12);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x6,  (0x00 << 2) | 3, K8T890_APIC_ID, 0x13);
 
-/*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
-	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
-	smp_write_intsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);
+	/* Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
+	smp_write_intsrc(mc, mp_ExtINT,	MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);
+	smp_write_intsrc(mc, mp_NMI,	MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x1);
 	/* There is no extension information... */
 
-	/* Compute the checksums */
-	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
+	/* Compute the checksums. */
+	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc),
+						mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
+
 	return smp_next_mpe_entry(mc);
 }
 

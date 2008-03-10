@@ -1,0 +1,59 @@
+.TH ICH_GPIO 8 "March 8, 2008"
+.SH NAME
+ich_gpio \- Intel southbridge GPIO Dump Utility
+.SH SYNOPSIS
+.B ich_gpio
+.SH DESCRIPTION
+.B ich_gpio 
+is a user-space utility which can dump all 
+register contents of the Intel ICH series Southbridges.
+.PP
+It is mainly used for coreboot development purposes (see coreboot.org
+for details on coreboot), but it may also be useful for other things.
+.PP
+Here is an example output:
+.br
+[root@localhost dumpgpio]# ich_gpio
+.br
+Intel Southbridge: 8086:24c0
+.br
+GPIOBASE = 0x0500
+.br
+gpiobase+0x0000: 0x1a003180
+.br
+gpiobase+0x0004: 0x0900ffff
+.br
+gpiobase+0x0008: 0x00000000
+.br
+gpiobase+0x000c: 0x1bbf0000
+.br
+gpiobase+0x0010: 0x00000000
+.br
+gpiobase+0x0014: 0x00000000
+.br
+gpiobase+0x0018: 0x00040000
+.br
+gpiobase+0x001c: 0x00000000
+.br
+gpiobase+0x0020: 0x00000000
+.br
+gpiobase+0x0024: 0x00000000
+.br
+gpiobase+0x0028: 0x00000000
+.br
+gpiobase+0x002c: 0x00003000
+.br
+gpiobase+0x0030: 0x00000fff
+.br
+gpiobase+0x0034: 0x00000e00
+.br
+gpiobase+0x0038: 0x00000fff
+.br
+gpiobase+0x003c: 0x00000000
+.PP
+Please consult your datasheet for the register meanings.
+.SH OPTIONS
+No command line options needed just run ich_gpio.
+.SH AUTHORS
+Please see the individual source code files.
+

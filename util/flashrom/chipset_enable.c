@@ -561,6 +561,17 @@ static const FLASH_ENABLE enables[] = {
 	{0x1166, 0x0205, "Broadcom HT-1000", enable_flash_ht1000},
 };
 
+void print_supported_chipsets(void)
+{
+	int i;
+
+	printf("\nSupported chipsets:\n\n");
+
+	for (i = 0; i < ARRAY_SIZE(enables); i++)
+		printf("%s (%04x:%04x)\n", enables[i].name,
+		       enables[i].vendor, enables[i].device);
+}
+
 int chipset_flash_enable(void)
 {
 	struct pci_dev *dev = 0;
@@ -568,8 +579,7 @@ int chipset_flash_enable(void)
 	int i;
 
 	/* Now let's try to find the chipset we have... */
-	/* TODO: Use ARRAY_SIZE. */
-	for (i = 0; i < sizeof(enables) / sizeof(enables[0]); i++) {
+	for (i = 0; i < ARRAY_SIZE(enables); i++) {
 		dev = pci_dev_find(enables[i].vendor, enables[i].device);
 		if (dev)
 			break;

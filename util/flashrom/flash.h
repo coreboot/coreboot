@@ -30,6 +30,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+
 struct flashchip {
 	const char *name;
 	/* With 32bit manufacture_id and model_id we can cover IDs up to
@@ -287,11 +289,14 @@ struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
 struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 			      uint16_t card_vendor, uint16_t card_device);
 
+
 /* board_enable.c */
 int board_flash_enable(const char *vendor, const char *part);
+void print_supported_boards(void);
 
 /* chipset_enable.c */
 int chipset_flash_enable(void);
+void print_supported_chipsets(void);
 
 /* Physical memory mapping device */
 #if defined (__sun) && (defined(__i386) || defined(__amd64))

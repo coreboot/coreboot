@@ -500,6 +500,18 @@ struct board_pciid_enable board_pciid_enables[] = {
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 
+void print_supported_boards(void)
+{
+	int i;
+
+	printf("\nSupported mainboards (this list is not exhaustive!):\n\n");
+
+	for (i = 0; board_pciid_enables[i].name != NULL; i++)
+		printf("%s\n", board_pciid_enables[i].name);
+
+	printf("\nSee also: http://coreboot.org/Flashrom\n");
+}
+
 /**
  * Match boards on coreboot table gathered vendor and part name.
  * Require main PCI IDs to match too as extra safety.

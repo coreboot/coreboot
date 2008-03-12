@@ -2,13 +2,13 @@
 .SH NAME
 flashrom \- a universal BIOS/ROM/flash programming utility
 .SH SYNOPSIS
-.B flashrom \fR[\fB\-rwvEVfhR\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
+.B flashrom \fR[\fB\-rwvEVfLhR\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
          [\fB-m\fR vendor:part] [\fB-l\fR file.layout] [\fB-i\fR image_name] [file]
 .SH DESCRIPTION
 .B flashrom
 is a universal flash programming utility for DIP, PLCC, or SPI flash ROM
 chips. It can be used to flash BIOS/coreboot/firmware images, for example.
-
+.sp
 (see
 .B http://coreboot.org
 for details on coreboot)
@@ -60,6 +60,17 @@ Read ROM layout from file.
 Only flash image
 .B <name>
 from flash layout.
+.TP
+.B "\-L, \-\-list\-supported"
+List the ROM chips, chipsets, and mainboards supported by flashrom.
+The list of mainboards consists of those boards which need a special
+ROM write-enable function for flashrom to work.
+.sp
+There are many other boards which will work out of the box, without such
+special support in flashrom. Some of the known-good/known-bad and tested ones
+are listed at
+.BR http://coreboot.org/Flashrom#Supported_mainboards ,
+but the list is not exhaustive, of course.
 .TP
 .B "\-h, \-\-help"
 Show a help text and exit.

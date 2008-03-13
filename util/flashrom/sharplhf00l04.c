@@ -18,6 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/*
+ * Datasheet:
+ *  - Name: Intel 82802AB/82802AC Firmware Hub (FWH)
+ *  - URL: http://www.intel.com/design/chipsets/datashts/290658.htm
+ *  - PDF: http://download.intel.com/design/chipsets/datashts/29065804.pdf
+ *  - Order number: 290658-004
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "flash.h"

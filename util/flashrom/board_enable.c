@@ -506,8 +506,16 @@ void print_supported_boards(void)
 
 	printf("\nSupported mainboards (this list is not exhaustive!):\n\n");
 
-	for (i = 0; board_pciid_enables[i].name != NULL; i++)
-		printf("%s\n", board_pciid_enables[i].name);
+	for (i = 0; board_pciid_enables[i].name != NULL; i++) {
+		if (board_pciid_enables[i].lb_vendor != NULL) {
+			printf("%s (-m %s:%s)\n", board_pciid_enables[i].name,
+			       board_pciid_enables[i].lb_vendor,
+			       board_pciid_enables[i].lb_part);
+		} else {
+			printf("%s (autodetected)\n",
+			       board_pciid_enables[i].name);
+		}
+	}
 
 	printf("\nSee also: http://coreboot.org/Flashrom\n");
 }

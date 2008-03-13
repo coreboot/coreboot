@@ -105,10 +105,16 @@ $(obj)/coreboot.bootblock: $(obj)/coreboot.vpd $(obj)/stage0.init
 # initram module and the various stages and payload files.
 #
 
-STAGE0_LIB_OBJ       = uart8250.o mem.o elfboot.o lar.o delay.o vtxprintf.o \
+
+STAGE0_LIB_OBJ       = uart8250.o mem.o lar.o delay.o vtxprintf.o \
 		       vsprintf.o console.o string.o $(DECOMPRESSORS)
-STAGE0_ARCH_X86_OBJ  = stage1.o serial.o archelfboot.o speaker.o \
+STAGE0_ARCH_X86_OBJ  = stage1.o serial.o speaker.o \
 		       udelay_io.o mc146818rtc.o post_code.o
+
+ifeq ($(CONFIG_PAYLOAD_ELF_LOADER),y)
+STAGE0_LIB_OBJ      += elfboot.o
+STAGE0_ARCH_X86_OBJ += archelfboot.o
+endif
 
 ifeq ($(CONFIG_CPU_I586),y)
 	STAGE0_CAR_OBJ = stage0_i586.o
@@ -122,10 +128,10 @@ else
 endif
 endif
 
-ifeq ($(CONFIG_PAYLOAD_PREPARSE_ELF), y)
-	PARSEELF = -e
-else
+ifeq ($(CONFIG_PAYLOAD_NO_PREPARSE_ELF), y)
 	PARSEELF =
+else
+	PARSEELF = -e
 endif
 
 STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \

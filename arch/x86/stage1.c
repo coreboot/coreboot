@@ -28,10 +28,12 @@
 #include <mc146818rtc.h>
 #include <cpu.h>
 
+#ifdef CONFIG_PAYLOAD_ELF_LOADER
 /* ah, well, what a mess! This is a hard code. FIX ME but how? 
  * By getting rid of ELF ...
  */
 #define UNCOMPRESS_AREA (0x400000)
+#endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
 /* these prototypes should go into headers */
 void uart_init(void);
@@ -86,6 +88,8 @@ void dump_mem_range(int msg_level, unsigned char *buf, int size)
 	return;
 }
 
+
+#ifdef CONFIG_PAYLOAD_ELF_LOADER
 /* until we get rid of elf */
 int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *mem)
 {
@@ -101,6 +105,7 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
 	printk(BIOS_ERR, "elfboot_mem returns %d\n", ret);
 	return -1;
 }
+#endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
 /*
  * This function is called from assembler code with its argument on the
@@ -110,7 +115,9 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 {
 	int ret;
 	struct mem_file archive, result;
+#ifdef CONFIG_PAYLOAD_ELF_LOADER
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
+#endif /* CONFIG_PAYLOAD_ELF_LOADER */
 	void *entry;
 
 	/* we can't statically init this hack. */
@@ -202,9 +209,11 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 
 	printk(BIOS_DEBUG, "Stage2 code done.\n");
 
+#ifdef CONFIG_PAYLOAD_ELF_LOADER
 	ret = find_file(&archive, "normal/payload", &result);
 	if (! ret)
 		legacy(&archive, "normal/payload", (void *)UNCOMPRESS_AREA, mem);
+#endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
 	entry = load_file_segments(&archive, "normal/payload");
 	if (entry != (void*)-1) {

@@ -92,6 +92,12 @@ source northbridge/intel/i440bxemulation/Kconfig
 
 menu "Payload"
 
+config PAYLOAD_ELF_LOADER
+	bool "Include ELF payload loader"
+	default n
+	help
+	  This option allows an unparsed ELF paylaod to be added and loaded.
+
 choice
         prompt "Payload type"
         default PAYLOAD_NONE
@@ -125,10 +131,10 @@ config PAYLOAD_FILE
 	help
 	  The path and filename of the ELF executable file to use as payload.
 
-config PAYLOAD_PREPARSE_ELF
-	bool "Pre-parse ELF file and convert ELF segments to LAR entries"
-	depends PAYLOAD_ELF
-	default y
+config PAYLOAD_NO_PREPARSE_ELF
+	bool "Add ELF without parsing and converting to LAR entries"
+	depends PAYLOAD_ELF && PAYLOAD_ELF_LOADER
+	default n
 	help
 	  Until now, coreboot has used ELF for the payload. There are many
 	  problems with this, not least being the inefficiency -- the ELF has
@@ -142,7 +148,7 @@ config PAYLOAD_PREPARSE_ELF
 	  flashed the FLASH and rebooted the machine. Boot time is really
 	  not the time you want to find out your ELF payload is broken.
 
-	  With this option, coreboot will direct lar to break each ELF
+	  Without this option, coreboot will direct lar to break each ELF
 	  segment into a LAR entry. ELF will not be used at all. Note that
 	  (for now) coreboot is not backward compatible -- if you put an ELF
 	  payload in, coreboot can not parse it. We hope to remove ELF

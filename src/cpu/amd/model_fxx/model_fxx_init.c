@@ -605,6 +605,14 @@ static struct cpu_device_id cpu_table[] = {
 #endif
 
 #if K8_REV_F_SUPPORT == 1
+	/*
+	 * AMD F0 support.
+	 *
+	 * See Revision Guide for AMD NPT Family 0Fh Processors,
+	 * Publication #33610, Revision: 3.30, February 2008.
+	 *
+	 * http://www.amd.com/us-en/assets/content_type/white_papers_and_tech_docs/33610.pdf
+	 */
 	{ X86_VENDOR_AMD, 0x40f50 }, /* SH-F0 (socket F/1207) */
 	{ X86_VENDOR_AMD, 0x40f70 }, /* SH-F0 (socket AM2) */
 	{ X86_VENDOR_AMD, 0x40f40 }, /* SH-F0 (socket S1g1) */
@@ -624,6 +632,13 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0xc0f13 }, /* JH-F3 (socket F/1207) */
 	{ X86_VENDOR_AMD, 0x50ff3 }, /* DH-F3 (socket AM2) */
 	{ X86_VENDOR_AMD, 0x60fb1 }, /* BH-G1 (socket AM2) */
+	{ X86_VENDOR_AMD, 0x60f81 }, /* BH-G1 (socket S1g1) */
+	{ X86_VENDOR_AMD, 0x60fb2 }, /* BH-G2 (socket AM2) */
+	{ X86_VENDOR_AMD, 0x60f82 }, /* BH-G2 (socket S1g1) */
+	{ X86_VENDOR_AMD, 0x70ff1 }, /* DH-G1 (socket AM2) */
+	{ X86_VENDOR_AMD, 0x60ff2 }, /* DH-G2 (socket AM2) */
+	{ X86_VENDOR_AMD, 0x60fc2 }, /* DH-G2 (socket S1g1) */
+	{ X86_VENDOR_AMD, 0x70fc2 }, /* DH-G2 (socket S1g1) */
 #endif
 
 	{ 0, 0 },

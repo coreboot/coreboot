@@ -36,8 +36,8 @@ SILENT := >/dev/null 2>&1
 
 ROM_SIZE := $(shell expr $(CONFIG_COREBOOT_ROMSIZE_KB) \* 1024)
 
-LARFILES_NOCOMPRESS := normal/initram normal/option_table
-LARFILES_COMPRESSIBLE := normal/stage2
+LARFILES_NOCOMPRESS := coreboot.initram:normal/initram option_table:normal/option_table
+LARFILES_COMPRESSIBLE := coreboot.stage2:normal/stage2
 
 DECOMPRESSORS :=
 ifeq ($(CONFIG_COMPRESSION_LZMA),y)
@@ -56,36 +56,26 @@ COMPRESSFLAG := -C nrv2b
 endif
 
 $(obj)/coreboot.rom $(obj)/coreboot.map: $(obj)/coreboot.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/coreboot.initram $(obj)/coreboot.stage2 $(obj)/option_table
-	$(Q)rm -rf $(obj)/lar.tmp
-	$(Q)mkdir $(obj)/lar.tmp
-	$(Q)mkdir $(obj)/lar.tmp/normal
-	$(Q)cp $(obj)/coreboot.initram $(obj)/lar.tmp/normal/initram
-	$(Q)cp $(obj)/coreboot.stage2 $(obj)/lar.tmp/normal/stage2
-	$(Q)cp $(obj)/option_table $(obj)/lar.tmp/normal/option_table
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)rm -f $(obj)/coreboot.rom
-	$(Q)cd $(obj)/lar.tmp && \
-		../util/lar/lar -e -c \
-			../coreboot.rom \
-			$(LARFILES_NOCOMPRESS) \
-			-s $(ROM_SIZE) -b $(obj)/coreboot.bootblock
-	$(Q)cd $(obj)/lar.tmp && \
-		../util/lar/lar -e $(COMPRESSFLAG) -a \
-			../coreboot.rom \
+	$(Q)cd $(obj) && \
+		./util/lar/lar -e -c coreboot.rom \
+			-s $(ROM_SIZE) -b coreboot.bootblock \
+			$(LARFILES_NOCOMPRESS)
+	$(Q)cd $(obj) && \
+		./util/lar/lar -e $(COMPRESSFLAG) -a coreboot.rom \
 			$(LARFILES_COMPRESSIBLE)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	$(Q)printf "  PAYLOAD none (as specified by user)\n"
 else
 	$(Q)if [ -r $(CONFIG_PAYLOAD_FILE) ]; then \
 		printf "  PAYLOAD $(CONFIG_PAYLOAD_FILE) $(COMPRESSFLAG)\n"; \
-		cp $(CONFIG_PAYLOAD_FILE) $(obj)/lar.tmp/normal/payload; \
 	else \
 		printf "Error: payload file '$(CONFIG_PAYLOAD_FILE)' not found.\n"; \
 		exit 1; \
 	fi
-	$(Q)cd $(obj)/lar.tmp && \
-		../util/lar/lar $(PARSEELF) $(COMPRESSFLAG) -a \
-			../coreboot.rom normal/payload;
+	$(Q)$(obj)/util/lar/lar $(PARSEELF) $(COMPRESSFLAG) -a \
+		$(obj)/coreboot.rom $(CONFIG_PAYLOAD_FILE):normal/payload;
 endif
 ifeq ($(CONFIG_ZERO_AFTER_PAYLOAD),y)
 	$(Q)printf "  ZEROING lar -z ./coreboot.rom\n"

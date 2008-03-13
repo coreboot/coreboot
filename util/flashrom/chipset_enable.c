@@ -510,55 +510,56 @@ typedef struct penable {
 } FLASH_ENABLE;
 
 static const FLASH_ENABLE enables[] = {
-	{0x1039, 0x0630, "SIS630", enable_flash_sis630},
-	{0x8086, 0x7110, "PIIX4/PIIX4E/PIIX4M", enable_flash_piix4},
-	{0x8086, 0x7198, "Intel 440MX", enable_flash_piix4},
-	{0x8086, 0x2410, "ICH", enable_flash_ich_4e},
-	{0x8086, 0x2420, "ICH0", enable_flash_ich_4e},
-	{0x8086, 0x2440, "ICH2", enable_flash_ich_4e},
-	{0x8086, 0x244c, "ICH2-M", enable_flash_ich_4e},
-	{0x8086, 0x2480, "ICH3-S", enable_flash_ich_4e},
-	{0x8086, 0x248c, "ICH3-M", enable_flash_ich_4e},
-	{0x8086, 0x24c0, "ICH4/ICH4-L", enable_flash_ich_4e},
-	{0x8086, 0x24cc, "ICH4-M", enable_flash_ich_4e},
-	{0x8086, 0x24d0, "ICH5/ICH5R", enable_flash_ich_4e},
-	{0x8086, 0x2640, "ICH6/ICH6R", enable_flash_ich_dc},
-	{0x8086, 0x2641, "ICH6-M", enable_flash_ich_dc},
-	{0x8086, 0x27b0, "ICH7DH", enable_flash_ich_dc},
-	{0x8086, 0x27b8, "ICH7/ICH7R", enable_flash_ich_dc},
-	{0x8086, 0x27b9, "ICH7M", enable_flash_ich_dc},
-	{0x8086, 0x27bd, "ICH7MDH", enable_flash_ich_dc},
-	{0x8086, 0x2810, "ICH8/ICH8R", enable_flash_ich_dc},
-	{0x8086, 0x2812, "ICH8DH", enable_flash_ich_dc},
-	{0x8086, 0x2814, "ICH8DO", enable_flash_ich_dc},
-	{0x1106, 0x8231, "VT8231", enable_flash_vt823x},
-	{0x1106, 0x3177, "VT8235", enable_flash_vt823x},
-	{0x1106, 0x3227, "VT8237", enable_flash_vt823x},
-	{0x1106, 0x8324, "CX700", enable_flash_vt823x},
-	{0x1106, 0x0686, "VT82C686", enable_flash_amd8111},
-	{0x1078, 0x0100, "CS5530/CS5530A", enable_flash_cs5530},
-	{0x100b, 0x0510, "SC1100", enable_flash_sc1100},
-	{0x1039, 0x0008, "SIS5595", enable_flash_sis5595},
-	{0x1022, 0x2080, "AMD GEODE CS5536", enable_flash_cs5536},
-	{0x1022, 0x7468, "AMD8111", enable_flash_amd8111},
-	{0x10B9, 0x1533, "ALi M1533", enable_flash_ali_m1533},
-	{0x10de, 0x0050, "NVIDIA CK804", enable_flash_ck804},	/* LPC */
-	{0x10de, 0x0051, "NVIDIA CK804", enable_flash_ck804},	/* Pro */
-	{0x10de, 0x00d3, "NVIDIA CK804", enable_flash_ck804},	/* Slave, should not be here, to fix known bug for A01. */
-	{0x10de, 0x0260, "NVidia MCP51", enable_flash_ck804},
-	{0x10de, 0x0261, "NVidia MCP51", enable_flash_ck804},
-	{0x10de, 0x0262, "NVidia MCP51", enable_flash_ck804},
-	{0x10de, 0x0263, "NVidia MCP51", enable_flash_ck804},
-	{0x10de, 0x0360, "NVIDIA MCP55", enable_flash_mcp55},	/* M57SLI-S4 */
-	{0x10de, 0x0361, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
-	{0x10de, 0x0362, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
-	{0x10de, 0x0363, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
-	{0x10de, 0x0364, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
-	{0x10de, 0x0365, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
-	{0x10de, 0x0366, "NVIDIA MCP55", enable_flash_mcp55},	/* LPC */
-	{0x10de, 0x0367, "NVIDIA MCP55", enable_flash_mcp55},	/* Pro */
-	{0x1002, 0x4377, "ATI SB400", enable_flash_sb400},
-	{0x1166, 0x0205, "Broadcom HT-1000", enable_flash_ht1000},
+	{0x1039, 0x0630, "SiS630",		enable_flash_sis630},
+	{0x8086, 0x7110, "Intel PIIX4/4E/4M",	enable_flash_piix4},
+	{0x8086, 0x7198, "Intel 440MX",		enable_flash_piix4},
+	{0x8086, 0x2410, "Intel ICH",		enable_flash_ich_4e},
+	{0x8086, 0x2420, "Intel ICH0",		enable_flash_ich_4e},
+	{0x8086, 0x2440, "Intel ICH2",		enable_flash_ich_4e},
+	{0x8086, 0x244c, "Intel ICH2-M",	enable_flash_ich_4e},
+	{0x8086, 0x2480, "Intel ICH3-S",	enable_flash_ich_4e},
+	{0x8086, 0x248c, "Intel ICH3-M",	enable_flash_ich_4e},
+	{0x8086, 0x24c0, "Intel ICH4/ICH4-L",	enable_flash_ich_4e},
+	{0x8086, 0x24cc, "Intel ICH4-M",	enable_flash_ich_4e},
+	{0x8086, 0x24d0, "Intel ICH5/ICH5R",	enable_flash_ich_4e},
+	{0x8086, 0x2640, "Intel ICH6/ICH6R",	enable_flash_ich_dc},
+	{0x8086, 0x2641, "Intel ICH6-M",	enable_flash_ich_dc},
+	{0x8086, 0x27b0, "Intel ICH7DH",	enable_flash_ich_dc},
+	{0x8086, 0x27b8, "Intel ICH7/ICH7R",	enable_flash_ich_dc},
+	{0x8086, 0x27b9, "Intel ICH7M",		enable_flash_ich_dc},
+	{0x8086, 0x27bd, "Intel ICH7MDH",	enable_flash_ich_dc},
+	{0x8086, 0x2810, "Intel ICH8/ICH8R",	enable_flash_ich_dc},
+	{0x8086, 0x2812, "Intel ICH8DH",	enable_flash_ich_dc},
+	{0x8086, 0x2814, "Intel ICH8DO",	enable_flash_ich_dc},
+	{0x1106, 0x8231, "VIA VT8231",		enable_flash_vt823x},
+	{0x1106, 0x3177, "VIA VT8235",		enable_flash_vt823x},
+	{0x1106, 0x3227, "VIA VT8237",		enable_flash_vt823x},
+	{0x1106, 0x8324, "VIA CX700",		enable_flash_vt823x},
+	{0x1106, 0x0686, "VIA VT82C686",	enable_flash_amd8111},
+	{0x1078, 0x0100, "AMD CS5530(A)",	enable_flash_cs5530},
+	{0x100b, 0x0510, "AMD SC1100",		enable_flash_sc1100},
+	{0x1039, 0x0008, "SiS5595",		enable_flash_sis5595},
+	{0x1022, 0x2080, "AMD CS5536",		enable_flash_cs5536},
+	{0x1022, 0x7468, "AMD8111",		enable_flash_amd8111},
+	{0x10B9, 0x1533, "ALi M1533",		enable_flash_ali_m1533},
+	{0x10de, 0x0050, "NVIDIA CK804",	enable_flash_ck804}, /* LPC */
+	{0x10de, 0x0051, "NVIDIA CK804",	enable_flash_ck804}, /* Pro */
+	/* Slave, should not be here, to fix known bug for A01. */
+	{0x10de, 0x00d3, "NVIDIA CK804",	enable_flash_ck804},
+	{0x10de, 0x0260, "NVIDIA MCP51",	enable_flash_ck804},
+	{0x10de, 0x0261, "NVIDIA MCP51",	enable_flash_ck804},
+	{0x10de, 0x0262, "NVIDIA MCP51",	enable_flash_ck804},
+	{0x10de, 0x0263, "NVIDIA MCP51",	enable_flash_ck804},
+	{0x10de, 0x0360, "NVIDIA MCP55",	enable_flash_mcp55}, /* M57SLI*/
+	{0x10de, 0x0361, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
+	{0x10de, 0x0362, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
+	{0x10de, 0x0363, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
+	{0x10de, 0x0364, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
+	{0x10de, 0x0365, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
+	{0x10de, 0x0366, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
+	{0x10de, 0x0367, "NVIDIA MCP55",	enable_flash_mcp55}, /* Pro */
+	{0x1002, 0x4377, "ATI SB400",		enable_flash_sb400},
+	{0x1166, 0x0205, "Broadcom HT-1000",	enable_flash_ht1000},
 };
 
 void print_supported_chipsets(void)

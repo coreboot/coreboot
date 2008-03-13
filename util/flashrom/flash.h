@@ -33,6 +33,7 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 struct flashchip {
+	const char *vendor;
 	const char *name;
 	/* With 32bit manufacture_id and model_id we can cover IDs up to
 	 * (including) the 4th bank of JEDEC JEP106W Standard Manufacturer's

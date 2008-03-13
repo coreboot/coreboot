@@ -22,7 +22,7 @@
 {
 	device_operations = "geodelx_north_domain";
 
-        /* Video RAM has to be in 2MB chunks. */
-        geode_video_mb = "0";
+	/* Video RAM has to be in 2MB chunks. */
+	geode_video_mb = "0";
 };
 

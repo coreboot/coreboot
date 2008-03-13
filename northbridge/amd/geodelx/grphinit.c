@@ -23,9 +23,11 @@
 #include <console.h>
 #include <statictree.h>
 
- /*
-  * This function mirrors the Graphics_Init routine in GeodeROM.
-  */
+/**
+ * This function mirrors the Graphics_Init routine in GeodeROM.
+ *
+ * @param video_mb Size of the video RAM in 2 MB chunks.
+ */
 void graphics_init(u8 video_mb)
 {
 	u16 wClassIndex, wData, res;
@@ -34,7 +36,7 @@ void graphics_init(u8 video_mb)
 	printk(BIOS_DEBUG, "Graphics init...\n");
 
 	/* Call SoftVG with the main configuration parameters. */
-	/* NOTE: SoftVG expects the memory size to be given in 2MB blocks */
+	/* NOTE: SoftVG expects the memory size to be given in 2MB blocks. */
 
 	wClassIndex = (VRC_VG << 8) + VG_CONFIG;
 
@@ -48,13 +50,12 @@ void graphics_init(u8 video_mb)
 	 * PLL Reference Clock Bypass(0)		0, Default
 	 */
 
-	/* Video RAM has to be given in 2MB chunks
-	 *   the value is read @ 7:1 (looks like video_mb & ~1)
-	 *   so we can add the real value in megabytes.
+	/* Video RAM has to be given in 2MB chunks.
+	 * The value is read @ 7:1 (looks like video_mb & ~1)
+	 * so we can add the real value in megabytes.
 	 */
-
-	wData = VG_CFG_DRIVER | VG_CFG_PRIORITY | 
-			VG_CFG_DSCRT | (video_mb & VG_MEM_MASK);
+	wData = VG_CFG_DRIVER | VG_CFG_PRIORITY |
+		VG_CFG_DSCRT | (video_mb & VG_MEM_MASK);
 	vr_write(wClassIndex, wData);
 
 	res = vr_read(wClassIndex);

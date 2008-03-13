@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef GEODELINK_H
-#define GEODELINK_H
+#ifndef NORTHBRIDGE_AMD_GEODE_GEODELINK_H
+#define NORTHBRIDGE_AMD_GEODE_GEODELINK_H
 
 struct gliutable {
 	unsigned long desc_name;
@@ -75,4 +75,4 @@ static const struct gliutable gliu1table[] = {
 
 static const struct gliutable *gliutables[] = { gliu0table, gliu1table, 0 };
 
-#endif /* GEODELINK_H */
+#endif /* NORTHBRIDGE_AMD_GEODE_GEODELINK_H */

@@ -25,7 +25,6 @@
 #include <amd_geodelx.h>
 #include "geodelink.h"
 
-
 static struct msrinit clock_gating_default[] = {
 	{GLIU0_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0005}},
 	{MC_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0001}},
@@ -204,6 +203,7 @@ static void SMMGL0Init(const struct gliutable *gl)
 static void SMMGL1Init(const struct gliutable *gl)
 {
 	struct msr msr;
+
 	printk(BIOS_DEBUG, "%s:\n", __FUNCTION__);
 
 	msr.hi = gl->hi;
@@ -219,9 +219,10 @@ static void SMMGL1Init(const struct gliutable *gl)
 }
 
 /**
- * Set up all GeodeLink interfaces. Iterate over the table until done.
+ * Set up all GeodeLink interfaces.
  *
- * Case out on the link type, and call the appropriate function.
+ * Iterate over the table until done. Case out on the link type,
+ * and call the appropriate function.
  *
  * @param gl A GeodeLink table descriptor.
  */
@@ -288,7 +289,8 @@ static void GLPCI_init(void)
 		 * translates to a base of 0x00100000 and top of 0xffbf0000
 		 * base of 1M and top of around 256M.
 		 */
-		/* we have to create a page-aligned (4KB page) address
+
+		/* We have to create a page-aligned (4KB page) address
 		 * for base and top.
 		 * So we need a high page aligned addresss (pah) and
 		 * low page aligned address (pal) pah is from msr.hi
@@ -319,10 +321,11 @@ static void GLPCI_init(void)
 	       msr.lo, msr.hi);
 	wrmsr(GLPCI_RC2, msr);
 
-	/* This is done elsewhere already, but it does no harm to do
+	/*
+	 * This is done elsewhere already, but it does no harm to do
 	 * it more than once.
-	 */
-	/* Write serialize memory hole to PCI. Need to to unWS when
+	 *
+	 * Write serialize memory hole to PCI. Need to to unWS when
 	 * something is shadowed regardless of cachablility.
 	 */
 	msr.lo = 0x021212121;	/* Cache disabled and write serialized. */
@@ -708,7 +711,6 @@ static void enable_L2_cache(void)
 	printk(BIOS_DEBUG, "L2 cache enabled\n");
 }
 
-
 /**
  * Set up all LX cache registers, L1, L2, and x86.
  */
@@ -767,8 +769,8 @@ void geode_pre_payload(void)
 
 	/* Set ROM cache properties for runtime. */
 	msr = rdmsr(CPU_RCONF_DEFAULT);
-	msr.hi &= ~(0xFF << 24);        	// clear ROMRC
-	msr.hi |= ROMRC_RCONF_SAFE << 24;	// set WS, CD, WP
+	msr.hi &= ~(0xFF << 24);        	/* Clear ROMRC. */
+	msr.hi |= ROMRC_RCONF_SAFE << 24;	/* Set WS, CD, WP. */
 	wrmsr(CPU_RCONF_DEFAULT, msr);
 }
 

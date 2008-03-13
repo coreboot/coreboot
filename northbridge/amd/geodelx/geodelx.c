@@ -43,7 +43,6 @@ static void enable_shadow(struct device *dev)
 {
 }
 
-
 /**
  * TODO.
  *
@@ -67,8 +66,8 @@ u64 get_systop(struct northbridge_amd_geodelx_domain_config *nb_dm)
 		systop = ((msr.hi & 0xFF) << 24) | ((msr.lo & 0xFFF00000) >> 8);
 		systop += 4 * 1024;	/* 4K */
 	} else {
-		systop =
-		    (((sizeram() - nb_dm->geode_video_mb) * 1024) - SMM_SIZE) * 1024;
+		systop = (((sizeram() - nb_dm->geode_video_mb) * 1024)
+				- SMM_SIZE) * 1024;
 	}
 
 	return systop;
@@ -82,10 +81,7 @@ u64 get_systop(struct northbridge_amd_geodelx_domain_config *nb_dm)
  */
 static void geodelx_northbridge_init(struct device *dev)
 {
-	/* struct msr msr; */
-
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
-
 	enable_shadow(dev);
 }
 
@@ -162,7 +158,7 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
 		ram_resource(dev, idx++, 0, 640);
 		/* 1 MB .. (Systop - 1 MB) (in KB) */
 		ram_resource(dev, idx++, 1024,
-			     (get_systop(nb_dm)/1024) - 1024);
+			     (get_systop(nb_dm) / 1024) - 1024);
 	}
 
 	phase4_assign_resources(&dev->link[0]);
@@ -189,7 +185,7 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
 
-//	northbridge_init_early();
+	/* northbridge_init_early(); */
 	chipsetinit();
 
 	printk(BIOS_SPEW, "Before VSA:\n");
@@ -198,7 +194,7 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 	do_vsmbios(); 
 	printk(BIOS_SPEW, "After VSA:\n");
 	/* print_conf(); */
-printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", nb_dm->geode_video_mb);
+	printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", nb_dm->geode_video_mb);
 	graphics_init((u8)nb_dm->geode_video_mb);
 	pci_set_method(dev);
 }
@@ -254,9 +250,10 @@ struct device_operations geodelx_north_apic = {
 	.ops_pci_bus			= &pci_cf8_conf1,
 };
 
-/** Operations for when the northbridge is running a PCI device. */
-/** Note that phase3 scan is done in the domain, 
- * and MUST NOT be done here too 
+/**
+ * Operations for when the northbridge is running a PCI device.
+ *
+ * Note that phase3 scan is done in the domain, and MUST NOT be done here too.
  */
 struct device_operations geodelx_north_pci = {
 	.id = {.type = DEVICE_ID_PCI,

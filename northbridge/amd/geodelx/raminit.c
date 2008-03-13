@@ -36,17 +36,15 @@ static const u8 num_col_addr[] = {
 u8 spd_read_byte(u16 device, u8 address);
 
 /**
- * Halt and Catch Fire. Print an error, then loop, sending NULLs on serial port, 
- * to ensure the message is visible. 
- *
+ * Halt and Catch Fire. Print an error, then loop, sending NULLs on
+ * serial port, to ensure the message is visible.
  */
-
 void hcf(void)
 {
 	printk(BIOS_EMERG, "DIE\r\n");
-	/* this guarantees we flush the UART fifos (if any) and also 
-	 * ensures that things, in general, keep going so no debug output 
-	 * is lost
+
+	/* This guarantees we flush the UART FIFOs (if any) and also ensures
+	 * that things, in general, keep going so no debug output is lost.
 	 */
 	while (1)
 		printk(BIOS_EMERG, "\r");
@@ -97,12 +95,12 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	}
 	dimm_setting |= (spd_byte >> 2) << CF07_UPPER_D0_CB_SHIFT;
 
-	/*; Field: DIMM size
-	 *; EEPROM byte usage: (3)  Number of Row Addresses
-	 *;                                       (4)  Number of Column Addresses
-	 *;                                       (5)  Number of DIMM Banks
-	 *;                                       (31) Module Bank Density
-	 *; Size = Module Density * Module Banks
+	/* Field: DIMM size
+	 * EEPROM byte usage: (3)  Number of Row Addresses
+	 *                    (4)  Number of Column Addresses
+	 *                    (5)  Number of DIMM Banks
+	 *                    (31) Module Bank Density
+	 * Size = Module Density * Module Banks
 	 */
 	banner(BIOS_DEBUG, "SPDNUMROWS");
 
@@ -228,7 +226,7 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 	printk(BIOS_DEBUG, "ddr max speed is %d\n", speed);
 	/* Current speed > max speed? */
 	if (geode_link_speed() > speed) {
-		printk(BIOS_EMERG, "DIMM overclocked. Check GeodeLink speed\n");
+		printk(BIOS_EMERG, "DIMM overclocked. Check GeodeLink speed.\n");
 		post_code(POST_PLL_MEM_FAIL);
 		hlt();
 	}
@@ -562,7 +560,7 @@ void sdram_set_registers(void)
 {
 	struct msr msr;
 
-	/* Set Timing Control */
+	/* Set Timing Control. */
 	msr = rdmsr(MC_CF1017_DATA);
 	msr.lo &= ~(7 << CF1017_LOWER_RD_TMG_CTL_SHIFT);
 	if (geode_link_speed() < 334)
@@ -571,7 +569,7 @@ void sdram_set_registers(void)
 		msr.lo |= (4 << CF1017_LOWER_RD_TMG_CTL_SHIFT);
 	wrmsr(MC_CF1017_DATA, msr);
 
-	/* Set Refresh Staggering */
+	/* Set Refresh Staggering. */
 	msr = rdmsr(MC_CF07_DATA);
 	msr.lo &= ~0xF0;
 	msr.lo |= 0x40;		/* Set refresh to 4 SDRAM clocks. */
@@ -610,8 +608,8 @@ void sdram_set_spd_registers(u8 dimm0, u8 dimm1)
 	/* Check that the memory is not overclocked. */
 	check_ddr_max(dimm0, dimm1);
 
-	/* Size the DIMMS.
-	 * This is gross. It is an artifact of our move to parametes instead of
+	/* Size the DIMMs.
+	 * This is gross. It is an artifact of our move to parameters instead of
 	 * #defines. FIXME! The fix is trivial but I want to see it work first.
 	 */
 	post_code(POST_MEM_SETUP3);
@@ -623,7 +621,7 @@ void sdram_set_spd_registers(u8 dimm0, u8 dimm1)
 	post_code(POST_MEM_SETUP5);
 	set_cas(dimm0, dimm1);
 
-	/* Set all the other latencies here (tRAS, tRP...). */
+	/* Set all the other latencies here (tRAS, tRP, ...). */
 	set_latencies(dimm0, dimm1);
 
 	/* Set Extended Mode Registers. */
@@ -788,9 +786,8 @@ void sdram_enable(u8 dimm0, u8 dimm1)
 		*ptr = (unsigned long)i;
 	}
 
-	/* SWAPSiF for PBZ 4112 (Errata 34)
-	 * Check for failed DLL settings now that we have done a
-	 * memory write.
+	/* SWAPSiF for PBZ 4112 (Errata 34).
+	 * Check for failed DLL settings now that we have done a memory write.
 	 */
 	msr = rdmsr(GLCP_DELAY_CONTROLS);
 	if ((msr.lo & 0x7FF) == 0x104) {
@@ -798,7 +795,7 @@ void sdram_enable(u8 dimm0, u8 dimm1)
 		 * count flag (depending on where it counts from etc).
 		 */
 
-		/* The we are about to perform clears the PM_SSC
+		/* The operation we are about to perform clears the PM_SSC
 		 * register in the CS5536 so will need to store the S3
 		 * resume flag in NVRAM otherwise it would do a normal boot.
 		 */

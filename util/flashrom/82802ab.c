@@ -18,12 +18,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/*
+ * Datasheet:
+ *  - Name: Intel 82802AB/82802AC Firmware Hub (FWH)
+ *  - URL: http://www.intel.com/design/chipsets/datashts/290658.htm
+ *  - PDF: http://download.intel.com/design/chipsets/datashts/29065804.pdf
+ *  - Order number: 290658-004
+ */
+
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
 #include "flash.h"
 
 // I need that Berkeley bit-map printer
-void print_lhf00l04_status(uint8_t status)
+void print_82802ab_status(uint8_t status)
 {
 	printf("%s", status & 0x80 ? "Ready:" : "Busy:");
 	printf("%s", status & 0x40 ? "BE SUSPEND:" : "BE RUN/FINISH:");
@@ -34,13 +42,12 @@ void print_lhf00l04_status(uint8_t status)
 	printf("%s", status & 0x2 ? "WP|TBL#|WP#,ABORT:" : "UNLOCK:");
 }
 
-int probe_lhf00l04(struct flashchip *flash)
+int probe_82802ab(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
 #if 0
-	/* Enter ID mode */
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	*(volatile uint8_t *)(bios + 0x5555) = 0x90;
@@ -71,7 +78,7 @@ int probe_lhf00l04(struct flashchip *flash)
 	return 1;
 }
 
-uint8_t wait_lhf00l04(volatile uint8_t *bios)
+uint8_t wait_82802ab(volatile uint8_t *bios)
 {
 	uint8_t status;
 	uint8_t id1, id2;
@@ -99,7 +106,7 @@ uint8_t wait_lhf00l04(volatile uint8_t *bios)
 	return status;
 }
 
-int erase_lhf00l04_block(struct flashchip *flash, int offset)
+int erase_82802ab_block(struct flashchip *flash, int offset)
 {
 	volatile uint8_t *bios = flash->virtual_memory + offset;
 	volatile uint8_t *wrprotect = flash->virtual_registers + offset + 2;
@@ -107,28 +114,26 @@ int erase_lhf00l04_block(struct flashchip *flash, int offset)
 
 	// clear status register
 	*bios = 0x50;
-	printf("Erase at %p\n", bios);
-	status = wait_lhf00l04(flash->virtual_memory);
-	print_lhf00l04_status(status);
+	//printf("Erase at %p\n", bios);
 	// clear write protect
-	printf("write protect is at %p\n", (wrprotect));
-	printf("write protect is 0x%x\n", *(wrprotect));
+	//printf("write protect is at %p\n", (wrprotect));
+	//printf("write protect is 0x%x\n", *(wrprotect));
 	*(wrprotect) = 0;
-	printf("write protect is 0x%x\n", *(wrprotect));
+	//printf("write protect is 0x%x\n", *(wrprotect));
 
 	// now start it
 	*(volatile uint8_t *)(bios) = 0x20;
 	*(volatile uint8_t *)(bios) = 0xd0;
 	myusec_delay(10);
 	// now let's see what the register is
-	status = wait_lhf00l04(flash->virtual_memory);
-	print_lhf00l04_status(status);
+	status = wait_82802ab(flash->virtual_memory);
+	//print_82802ab_status(status);
 	printf("DONE BLOCK 0x%x\n", offset);
 
 	return 0;
 }
 
-int erase_lhf00l04(struct flashchip *flash)
+int erase_82802ab(struct flashchip *flash)
 {
 	int i;
 	unsigned int total_size = flash->total_size * 1024;
@@ -136,14 +141,14 @@ int erase_lhf00l04(struct flashchip *flash)
 	printf("total_size is %d; flash->page_size is %d\n",
 	       total_size, flash->page_size);
 	for (i = 0; i < total_size; i += flash->page_size)
-		erase_lhf00l04_block(flash, i);
+		erase_82802ab_block(flash, i);
 	printf("DONE ERASE\n");
 
 	return 0;
 }
 
-void write_page_lhf00l04(volatile uint8_t *bios, uint8_t *src,
-			 volatile uint8_t *dst, int page_size)
+void write_page_82802ab(volatile uint8_t *bios, uint8_t *src,
+			volatile uint8_t *dst, int page_size)
 {
 	int i;
 
@@ -151,27 +156,27 @@ void write_page_lhf00l04(volatile uint8_t *bios, uint8_t *src,
 		/* transfer data from source to destination */
 		*dst = 0x40;
 		*dst++ = *src++;
-		wait_lhf00l04(bios);
+		wait_82802ab(bios);
 	}
 }
 
-int write_lhf00l04(struct flashchip *flash, uint8_t *buf)
+int write_82802ab(struct flashchip *flash, uint8_t *buf)
 {
 	int i;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	erase_lhf00l04(flash);
+	erase_82802ab(flash);
 	if (*bios != 0xff) {
-		printf("ERASE FAILED!\n");
+		printf("ERASE FAILED\n");
 		return -1;
 	}
 	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		printf("%04d at address: 0x%08x", i, i * page_size);
-		write_page_lhf00l04(bios, buf + i * page_size,
-				    bios + i * page_size, page_size);
+		write_page_82802ab(bios, buf + i * page_size,
+				   bios + i * page_size, page_size);
 		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");

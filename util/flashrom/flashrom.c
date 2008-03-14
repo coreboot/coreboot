@@ -200,7 +200,7 @@ void print_supported_chips(void)
 	printf("Supported ROM chips:\n\n");
 
 	for (i = 0; flashchips[i].name != NULL; i++)
-		printf("%s\n", flashchips[i].name);
+		printf("%s %s\n", flashchips[i].vendor, flashchips[i].name);
 }
 
 void usage(const char *name)

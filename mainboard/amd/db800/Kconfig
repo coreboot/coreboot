@@ -19,35 +19,26 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_AMD
-
-config BOARD_AMD_DB800
-	bool "DB800"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select SUPERIO_WINBOND_W83627HF
-	select PIRQ_TABLE
+config MAINBOARD_NAME
+	string
+	default amd/db800
+	depends BOARD_AMD_DB800
 	help
-	  AMD DB800 Geode LX development board.
+	  This is the default mainboard name.
 
-config BOARD_AMD_NORWICH
-	bool "Norwich"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select PIRQ_TABLE
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	# TODO: Fix PCI ID.
+	default 0x1022
+	depends BOARD_AMD_DB800
 	help
-	  AMD Norwich Geode LX development board.
+	  Mainboard specific PCI subsystem vendor ID.
 
-endchoice
-
-source "mainboard/amd/db800/Kconfig"
-source "mainboard/amd/norwich/Kconfig"
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	# TODO: Fix PCI ID.
+	default 0x2323
+	depends BOARD_AMD_DB800
+	help
+	  Mainboard specific PCI subsystem device ID.
 

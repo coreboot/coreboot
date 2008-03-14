@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include "flash.h"
@@ -139,8 +140,8 @@ static int enable_flash_piix4(struct pci_dev *dev, const char *name)
 }
 
 /*
- * See ie. page 375 of "Intel ICH7 External Design Specification"
- * http://download.intel.com/design/chipsets/datashts/30701302.pdf
+ * See ie. page 375 of "Intel I/O Controller Hub 7 (ICH7) Family Datasheet"
+ * http://download.intel.com/design/chipsets/datashts/30701303.pdf
  */
 static int enable_flash_ich(struct pci_dev *dev, const char *name,
 			    int bios_cntl)
@@ -152,6 +153,12 @@ static int enable_flash_ich(struct pci_dev *dev, const char *name,
 	 * just treating it as 8 bit wide seems to work fine in practice.
 	 */
 	old = pci_read_byte(dev, bios_cntl);
+
+	printf_debug("BIOS Lock Enable: %sabled, ",
+		     (old & (1 << 1)) ? "en" : "dis");
+	printf_debug("BIOS Write Enable: %sabled, ",
+		     (old & (1 << 0)) ? "en" : "dis");
+	printf_debug("BIOS_CNTL is 0x%x\n", old);
 
 	new = old | 1;
 
@@ -176,6 +183,50 @@ static int enable_flash_ich_4e(struct pci_dev *dev, const char *name)
 static int enable_flash_ich_dc(struct pci_dev *dev, const char *name)
 {
 	return enable_flash_ich(dev, name, 0xdc);
+}
+
+static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name)
+{
+	uint8_t old, new, bbs;
+	uint32_t tmp, gcs;
+	void *rcba;
+
+	/* Root Complex Base Address Register (RCBA) */
+	tmp = pci_read_long(dev, 0xf0);
+	tmp &= 0xffffc000;
+	printf_debug("Root Complex Base Address Register = 0x%x\n", tmp);
+	rcba = mmap(0, 0x3510, PROT_READ, MAP_SHARED, fd_mem, (off_t)tmp);
+	if (rcba == MAP_FAILED) {
+		perror("Can't mmap memory using " MEM_DEV);
+		exit(1);
+	}
+	printf_debug("GCS address = 0x%x\n", tmp + 0x3410);
+	gcs = *(volatile uint32_t *)(rcba + 0x3410);
+	printf_debug("GCS = 0x%x: ", gcs);
+	printf_debug("BIOS Interface Lock-Down: %sabled, ",
+		     (gcs & 0x1) ? "en" : "dis");
+	bbs = (gcs >> 10) & 0x3;
+	printf_debug("BOOT BIOS Straps: 0x%x (%s)\n",	bbs,
+		     (bbs == 0x3) ? "LPC" : ((bbs == 0x2) ? "PCI" : "SPI"));
+	printf_debug("SPIBAR = 0x%x\n", tmp + 0x3020);
+	/* TODO: Dump the SPI config regs */
+	munmap(rcba, 0x3510);
+
+	old = pci_read_byte(dev, 0xdc);
+	printf_debug("SPI Read Configuration: ");
+	new = (old >> 2) & 0x3;
+	switch (new) {
+	case 0:
+	case 1:
+	case 2:
+		printf_debug("prefetching %sabled, caching %sabled, ",
+			(new & 0x2) ? "en" : "dis", (new & 0x1) ? "dis" : "en");
+		break;
+	default:
+		printf_debug("invalid prefetching/caching settings, ");
+		break;
+	}
+	return enable_flash_ich_dc(dev, name);
 }
 
 static int enable_flash_vt823x(struct pci_dev *dev, const char *name)
@@ -524,13 +575,15 @@ static const FLASH_ENABLE enables[] = {
 	{0x8086, 0x24d0, "Intel ICH5/ICH5R",	enable_flash_ich_4e},
 	{0x8086, 0x2640, "Intel ICH6/ICH6R",	enable_flash_ich_dc},
 	{0x8086, 0x2641, "Intel ICH6-M",	enable_flash_ich_dc},
-	{0x8086, 0x27b0, "Intel ICH7DH",	enable_flash_ich_dc},
-	{0x8086, 0x27b8, "Intel ICH7/ICH7R",	enable_flash_ich_dc},
-	{0x8086, 0x27b9, "Intel ICH7M",		enable_flash_ich_dc},
-	{0x8086, 0x27bd, "Intel ICH7MDH",	enable_flash_ich_dc},
-	{0x8086, 0x2810, "Intel ICH8/ICH8R",	enable_flash_ich_dc},
-	{0x8086, 0x2812, "Intel ICH8DH",	enable_flash_ich_dc},
-	{0x8086, 0x2814, "Intel ICH8DO",	enable_flash_ich_dc},
+	{0x8086, 0x27b0, "Intel ICH7DH",	enable_flash_ich_dc_spi},
+	{0x8086, 0x27b8, "Intel ICH7/ICH7R",	enable_flash_ich_dc_spi},
+	{0x8086, 0x27b9, "Intel ICH7M",		enable_flash_ich_dc_spi},
+	{0x8086, 0x27bd, "Intel ICH7MDH",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2810, "Intel ICH8/ICH8R",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2811, "Intel ICH8M-E",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2812, "Intel ICH8DH",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2814, "Intel ICH8DO",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2815, "Intel ICH8M",		enable_flash_ich_dc_spi},
 	{0x1106, 0x8231, "VIA VT8231",		enable_flash_vt823x},
 	{0x1106, 0x3177, "VIA VT8235",		enable_flash_vt823x},
 	{0x1106, 0x3227, "VIA VT8237",		enable_flash_vt823x},

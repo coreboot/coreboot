@@ -165,7 +165,7 @@ struct flashchip flashchips[] = {
 	{"M50FLW080B",	ST_ID,		ST_M50FLW080B,	1024,	64 * 1024,
 	 probe_jedec,	erase_chip_jedec,	write_jedec},
 	{"M50FW080",	ST_ID,		ST_M50FW080,	1024,	64 * 1024,
-	 probe_jedec,	erase_chip_jedec,	write_jedec},
+	 probe_82802ab,	erase_82802ab,		write_82802ab},
 	{"M50FW016",	ST_ID,		ST_M50FW016,	2048,	64 * 1024,
 	 probe_jedec,	erase_chip_jedec,	write_jedec},
 	{"M50LPW116",	ST_ID,		ST_M50LPW116,	2048,	64 * 1024,

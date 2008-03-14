@@ -193,9 +193,9 @@ struct flashchip flashchips[] = {
 	{"M25P128",	ST_ID,		ST_M25P128,	16384,	256,
 	 probe_spi,	generic_spi_chip_erase_c7,	generic_spi_chip_write, generic_spi_chip_read},
 	{"82802ab",	INTEL_ID,	173,		512, 64 * 1024,
-	 probe_lhf00l04, erase_lhf00l04,	write_lhf00l04},
+	 probe_82802ab, erase_82802ab,	write_82802ab},
 	{"82802ac",	INTEL_ID,	172,		1024, 64 * 1024,
-	 probe_lhf00l04, erase_lhf00l04,	write_lhf00l04},
+	 probe_82802ab, erase_82802ab,	write_82802ab},
 	{"F49B002UA",   EMST_ID,        EMST_F49B002UA, 256, 4096,
          probe_jedec,   erase_chip_jedec, write_49f002},
 #ifndef DISABLE_DOC

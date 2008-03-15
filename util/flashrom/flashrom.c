@@ -129,9 +129,12 @@ struct flashchip *probe_flash(struct flashchip *flash)
 		 */
 
 		if (getpagesize() > size) {
+			/*
+			 * if a flash size of 0 is mapped, we map a single page
+			 * so we can probe in that area whether we know the
+			 * vendor at least.
+			 */
 			size = getpagesize();
-			printf("WARNING: size: %d -> %ld (page size)\n",
-			       flash->total_size * 1024, (unsigned long)size);
 		}
 
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,

@@ -4,8 +4,8 @@
 target adl855pc
 mainboard digitallogic/adl855pc
 
-option DEFAULT_CONSOLE_LOGLEVEL=10
-option MAXIMUM_CONSOLE_LOGLEVEL=10
+option DEFAULT_CONSOLE_LOGLEVEL=9
+option MAXIMUM_CONSOLE_LOGLEVEL=9
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x10000

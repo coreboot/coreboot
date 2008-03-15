@@ -25,9 +25,9 @@
 target serengeti_cheetah_fam10
 mainboard amd/serengeti_cheetah_fam10
 # Request this level of debugging output
-	option  DEFAULT_CONSOLE_LOGLEVEL=11
+	option  DEFAULT_CONSOLE_LOGLEVEL=9
 # At a maximum only compile in this level of debugging
-	option  MAXIMUM_CONSOLE_LOGLEVEL=11
+	option  MAXIMUM_CONSOLE_LOGLEVEL=9
 
 # 1024KB ROM
 option ROM_SIZE=1024*1024

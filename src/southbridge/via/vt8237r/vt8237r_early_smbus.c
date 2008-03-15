@@ -212,3 +212,18 @@ void smbus_fixup(const struct mem_controller *ctrl)
 	else
 		PRINT_DEBUG("Done\r\n");
 }
+
+void enable_rom_decode(void)
+{
+	device_t dev;
+
+	/* Bus Control and Power Management  */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+
+	if (dev == PCI_DEV_INVALID)
+		die("SB not found\r\n");
+
+	/* ROM decode last 1MB FFC00000 - FFFFFFFF */
+	pci_write_config8(dev, 0x41, 0x7f);
+}

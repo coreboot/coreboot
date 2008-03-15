@@ -192,6 +192,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 	w83627ehg_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
+	enable_rom_decode();
 
 	print_info("now booting... fallback\r\n");
 
@@ -259,6 +260,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	w83627ehg_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
+	enable_rom_decode();
 
 	print_info("now booting... real_main\r\n");
 

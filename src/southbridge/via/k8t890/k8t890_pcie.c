@@ -41,8 +41,6 @@ static void peg_init(struct device *dev)
 	 * pci_write_config8(dev, 0xe2, 0x0);
 	 * pci_write_config8(dev, 0xe3, 0x92);
 	 */
-	/* Disable scrambling bit 6 to 1. */
-	pci_write_config8(dev, 0xc0, 0x43);
 
 	/* Set replay timer limit. */
 	pci_write_config8(dev, 0xb1, 0xf0);
@@ -61,18 +59,6 @@ static void peg_init(struct device *dev)
 	/* Enable link. */
 	reg = pci_read_config8(dev, 0x50);
 	pci_write_config8(dev, 0x50, reg & ~0x10);
-
-	/* Retrain link. */
-	reg = pci_read_config8(dev, 0x50);
-	pci_write_config8(dev, 0x50, reg | 0x20);
-
-	reg = pci_read_config8(dev, 0x3e);
-	reg |= 0x40;		/* Bus reset. */
-	pci_write_config8(dev, 0x3e, reg);
-
-	reg = pci_read_config8(dev, 0x3e);
-	reg &= ~0x40;		/* Clear reset. */
-	pci_write_config8(dev, 0x3e, reg);
 
 	dump_south(dev);
 }
@@ -96,18 +82,6 @@ static void pcie_init(struct device *dev)
 	/* Enable link. */
 	reg = pci_read_config8(dev, 0x50);
 	pci_write_config8(dev, 0x50, reg & ~0x10);
-
-	/* Retrain. */
-	reg = pci_read_config8(dev, 0x50);
-	pci_write_config8(dev, 0x50, reg | 0x20);
-
-	reg = pci_read_config8(dev, 0x3e);
-	reg |= 0x40;		/* Bus reset. */
-	pci_write_config8(dev, 0x3e, reg);
-
-	reg = pci_read_config8(dev, 0x3e);
-	reg &= ~0x40;		/* Clear reset. */
-	pci_write_config8(dev, 0x3e, reg);
 
 	dump_south(dev);
 }

@@ -63,9 +63,18 @@ int erase_sst_fwhub(struct flashchip *flash)
 {
 	int i;
 	unsigned int total_size = flash->total_size * 1024;
+	volatile uint8_t *bios = flash->virtual_memory;
 
 	for (i = 0; i < total_size; i += flash->page_size)
 		erase_sst_fwhub_block(flash, i);
+
+	// dumb check if erase was successful.
+	for (i = 0; i < total_size; i++) {
+		if (bios[i] != 0xff) {
+			printf("ERASE FAILED!\n");
+			return -1;
+		}
+	}
 
 	return 0;
 }
@@ -78,15 +87,8 @@ int write_sst_fwhub(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	// FIXME: We want block wide erase instead of ironing the whole chip
-	erase_sst_fwhub(flash);
-
-	// dumb check if erase was successful.
-	for (i = 0; i < total_size; i++) {
-		if (bios[i] != 0xff) {
-			printf("ERASE FAILED!\n");
-			return -1;
-		}
-	}
+	if (erase_sst_fwhub(flash))
+		return -1;
 
 	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {

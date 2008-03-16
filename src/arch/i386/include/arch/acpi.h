@@ -31,14 +31,14 @@ typedef unsigned long long u64;
 #define SLIT_NAME	      "SLIT"
 
 #define RSDT_TABLE            "RSDT    "
-#define HPET_TABLE            "HPET    "
+#define HPET_TABLE            "AMD64   "
 #define MCFG_TABLE            "MCFG    "
 #define MADT_TABLE            "MADT    "
 #define SRAT_TABLE	      "SRAT    "
 #define SLIT_TABLE	      "SLIT    "
 
-#define OEM_ID                "COREv2"
-#define ASLC                  "CORE"
+#define OEM_ID                "LXBIOS"
+#define ASLC                  "NONE"
 
 /* ACPI 2.0 table RSDP */
 

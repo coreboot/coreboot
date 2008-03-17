@@ -129,6 +129,8 @@ struct flashchip flashchips[] = {
 	{"Winbond",	"W49F002U",		WINBOND_ID,	W_49F002U,		256,	128,		probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"Winbond",	"W49V002A",		WINBOND_ID,	W_49V002A,		256,	128,		probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"Winbond",	"W49V002FA",		WINBOND_ID,	W_49V002FA,		256,	128,		probe_jedec,		erase_chip_jedec,		write_49f002},
+	{"Winbond",	"W39V080FA",		WINBOND_ID,	W_39V080FA,		1024,	64*1024,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
+	{"Winbond",	"W39V080FA (dual mode)",WINBOND_ID,	W_39V080FA_DM,		512,	64*1024,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
 
 	{"EON",		"unknown SPI chip",	EON_ID_NOPREFIX,GENERIC_DEVICE_ID,	0,	0,		probe_spi,		NULL,				NULL},
 	{"Macronix",	"unknown SPI chip",	MX_ID,		GENERIC_DEVICE_ID,	0,	0,		probe_spi,		NULL,				NULL},

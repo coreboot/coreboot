@@ -276,6 +276,8 @@ extern struct flashchip flashchips[];
 #define W_39V040A		0x3D
 #define W_39V040B		0x54
 #define W_39V080A		0xD0
+#define W_39V080FA		0xD3
+#define W_39V080FA_DM		0x93
 #define W_49F002U		0x0B
 #define W_49V002A		0xB0
 #define W_49V002FA		0x32
@@ -413,6 +415,11 @@ int write_49lfxxxc(struct flashchip *flash, uint8_t *buf);
 int probe_sst_fwhub(struct flashchip *flash);
 int erase_sst_fwhub(struct flashchip *flash);
 int write_sst_fwhub(struct flashchip *flash, uint8_t *buf);
+
+/* w39V080fa.c */
+int probe_winbond_fwhub(struct flashchip *flash);
+int erase_winbond_fwhub(struct flashchip *flash);
+int write_winbond_fwhub(struct flashchip *flash, uint8_t *buf);
 
 /* w29ee011.c */
 int probe_w29ee011(struct flashchip *flash);

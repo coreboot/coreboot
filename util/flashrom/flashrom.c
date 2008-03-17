@@ -109,8 +109,8 @@ struct flashchip *probe_flash(struct flashchip *flash)
 			flash++;
 			continue;
 		}
-		printf_debug("Probing for %s, %d KB\n",
-			     flash->name, flash->total_size);
+		printf_debug("Probing for %s %s, %d KB: ",
+			     flash->vendor, flash->name, flash->total_size);
 
 		size = flash->total_size * 1024;
 

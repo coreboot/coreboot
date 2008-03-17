@@ -431,6 +431,42 @@ static int board_artecgroup_dbe6x(const char *name)
 	return 0;
 }
 
+static int board_kontron_986lcd_m(const char *name)
+{
+	struct pci_dev *dev;
+	uint16_t gpiobar;
+	uint32_t val;
+
+#define ICH7_GPIO_LVL2 0x38
+
+	dev = pci_dev_find(0x8086, 0x27b8);     /* Intel ICH7 LPC */
+	if (!dev) {
+		// This will never happen on this board
+		fprintf(stderr, "\nERROR: ICH7 LPC bridge not found.\n");
+		return -1;
+	}
+
+	/* Use GPIOBASE register to find where the GPIO is mapped. */
+	gpiobar = pci_read_word(dev, 0x48) & 0xfffc;
+
+	val = inl(gpiobar + ICH7_GPIO_LVL2);	/* GP_LVL2 */
+	printf_debug("\nGPIOBAR=0x%04x GP_LVL: 0x%08x\n", gpiobar, val);
+
+	/* bit 2 (0x04) = 0 #TBL --> bootblock locking = 1
+	 * bit 2 (0x04) = 1 #TBL --> bootblock locking = 0
+	 * bit 3 (0x08) = 0 #WP --> block locking = 1
+	 * bit 3 (0x08) = 1 #WP --> block locking = 0
+	 *
+	 * To enable full block locking, you would do:
+	 *     val &= ~ ((1 << 2) | (1 << 3));
+	 */
+	val |= (1 << 2) | (1 << 3);
+
+	outl(val, gpiobar + ICH7_GPIO_LVL2);
+
+	return 0;
+}
+
 /**
  * We use 2 sets of IDs here, you're free to choose which is which. This
  * is to provide a very high degree of certainty when matching a board on
@@ -497,6 +533,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 "artecgroup", "dbe61", "Artec Group DBE61", board_artecgroup_dbe6x},
 	{0x1022, 0x2090, 0x0000, 0x0000, 0x1022, 0x2080, 0x0000, 0x0000,
 	 "artecgroup", "dbe62", "Artec Group DBE62", board_artecgroup_dbe6x},
+ 	{0x8086, 0x27b8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+ 	 "kontron", "986lcd-m", "Kontron 986LCD-M", board_kontron_986lcd_m},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

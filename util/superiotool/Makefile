@@ -29,9 +29,8 @@ PREFIX  = /usr/local
 SVNDEF := -D'SUPERIOTOOL_VERSION="$(shell svnversion -cn . \
           | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/")"'
 
-# TODO: -pedantic
 CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
-         -Werror-implicit-function-declaration -ansi $(SVNDEF)
+         -Werror-implicit-function-declaration -ansi -pedantic $(SVNDEF)
 
 OBJS = superiotool.o ali.o fintek.o ite.o nsc.o smsc.o winbond.o
 
@@ -43,7 +42,7 @@ $(PROGRAM): $(OBJS) superiotool.h
 	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS)
 
 install: $(PROGRAM)
-	$(INSTALL) $(PROGRAM) $(PREFIX)/bin
+	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
 	mkdir -p $(PREFIX)/share/man/man8
 	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
 

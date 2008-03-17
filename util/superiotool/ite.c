@@ -428,4 +428,5 @@ void probe_idregs_ite(uint16_t port)
 void print_ite_chips(void)
 {
 	print_vendor_chips("ITE", reg_table);
+	print_vendor_chips("ITE EC", ec_table);
 }

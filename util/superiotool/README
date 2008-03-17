@@ -30,7 +30,7 @@ Installation
 Usage
 -----
 
-Please read the superiotool(1) manpage or type 'superiotool --help'.
+Please read the superiotool(8) manpage or type 'superiotool --help'.
 
 Per default (no options) superiotool will just probe for a Super I/O
 and print its vendor, name, ID, revision, and config port.

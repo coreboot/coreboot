@@ -237,6 +237,7 @@ int main(int argc, char *argv[])
 			break;
 		case 'h':
 			printf(USAGE);
+			printf(USAGE_INFO);
 			exit(0);
 			break;
 		default:

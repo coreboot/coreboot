@@ -36,7 +36,9 @@
   -l | --list-supported  Show the list of supported Super I/O chips\n\
   -V | --verbose         Verbose mode\n\
   -v | --version         Show the superiotool version\n\
-  -h | --help            Show a short help text\n\n\
+  -h | --help            Show a short help text\n\n"
+
+#define USAGE_INFO "\
 Per default (no options) superiotool will just probe for a Super I/O\n\
 and print its vendor, name, ID, revision, and config port.\n"
 
@@ -122,7 +124,6 @@ static const struct {
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x162e, 0x164e, 0x3f0, 0x370, EOT}},
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
 };
-
 
 /** Table of functions to print out supported Super I/O chips. */
 static const struct {

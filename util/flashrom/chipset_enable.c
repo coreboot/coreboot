@@ -208,7 +208,8 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name)
 	bbs = (gcs >> 10) & 0x3;
 	printf_debug("BOOT BIOS Straps: 0x%x (%s)\n",	bbs,
 		     (bbs == 0x3) ? "LPC" : ((bbs == 0x2) ? "PCI" : "SPI"));
-	printf_debug("SPIBAR = 0x%x\n", tmp + 0x3020);
+	/* SPIBAR is at RCBA+0x3020 for ICH[78] and RCBA+0x3800 for ICH9. */
+	/* printf_debug("SPIBAR = 0x%x\n", tmp + 0x3020); */
 	/* TODO: Dump the SPI config regs */
 	munmap(rcba, 0x3510);
 
@@ -584,6 +585,12 @@ static const FLASH_ENABLE enables[] = {
 	{0x8086, 0x2812, "Intel ICH8DH",	enable_flash_ich_dc_spi},
 	{0x8086, 0x2814, "Intel ICH8DO",	enable_flash_ich_dc_spi},
 	{0x8086, 0x2815, "Intel ICH8M",		enable_flash_ich_dc_spi},
+	{0x8086, 0x2912, "Intel ICH9DH",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2914, "Intel ICH9DO",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2916, "Intel ICH9R",		enable_flash_ich_dc_spi},
+	{0x8086, 0x2917, "Intel ICH9M-E",	enable_flash_ich_dc_spi},
+	{0x8086, 0x2918, "Intel ICH9",		enable_flash_ich_dc_spi},
+	{0x8086, 0x2919, "Intel ICH9M",		enable_flash_ich_dc_spi},
 	{0x1106, 0x8231, "VIA VT8231",		enable_flash_vt823x},
 	{0x1106, 0x3177, "VIA VT8235",		enable_flash_vt823x},
 	{0x1106, 0x3227, "VIA VT8237",		enable_flash_vt823x},

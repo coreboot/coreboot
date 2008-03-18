@@ -134,7 +134,7 @@ config chip.h
 chip northbridge/via/vt8623
 
 	device apic_cluster 0 on
-		chip cpu/via/model_centaur
+		chip cpu/via/model_c3
 			device apic 0 on  end 
 		end
 	end

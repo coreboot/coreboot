@@ -1,8 +1,0 @@
-dir /cpu/x86/tsc
-dir /cpu/x86/mtrr
-dir /cpu/x86/fpu
-dir /cpu/x86/mmx
-dir /cpu/x86/sse
-dir /cpu/x86/lapic
-dir /cpu/x86/cache
-driver model_centaur_init.o

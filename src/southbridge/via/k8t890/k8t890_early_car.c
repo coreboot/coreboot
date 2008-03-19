@@ -22,35 +22,71 @@
  * generate PCI reset or LDTSTOP to apply.
  */
 
-u8 k8t890_early_setup_car(u8 width, u8 speed)
+#include <stdlib.h>
+
+/* AMD K8 LDT0, LDT1, LDT2 Link Control Registers */
+static ldtreg[3] = {0x86, 0xa6, 0xc6};
+
+/* This functions sets KT890 link frequency and width to same values as
+ * it has been setup on K8 side, by AMD NB init.
+ */ 
+
+u8 k8t890_early_setup_ht(void)
 {
-	u8 awidth, aspeed;
+	u8 awidth, afreq, cldtfreq; 
+	u8 cldtwidth_in, cldtwidth_out, vldtwidth_in, vldtwidth_out, ldtnr, width;
+	u16 vldtcaps;
 
-	print_debug("LDT width and speed for K8T890 was");
+	/* check if connected non coherent, initcomplete (find the SB on K8 side) */
+	if (0x7 == pci_read_config8(PCI_DEV(0, 0x18, 0), 0x98)) {
+		ldtnr = 0;
+	} else if (0x7 == pci_read_config8(PCI_DEV(0, 0x18, 0), 0xb8)) {
+		ldtnr = 1;
+	} else if (0x7 == pci_read_config8(PCI_DEV(0, 0x18, 0), 0xd8)) {
+		ldtnr = 2;
+	}
+
+	print_debug("K8T890 found at LDT ");
+	print_debug_hex8(ldtnr);
+
+	/* get the maximum widths for both sides */
+	cldtwidth_in = pci_read_config8(PCI_DEV(0, 0x18, 0), ldtreg[ldtnr]) & 0x7;
+	cldtwidth_out = (pci_read_config8(PCI_DEV(0, 0x18, 0), ldtreg[ldtnr]) >> 4) & 0x7;
+	vldtwidth_in = pci_read_config8(PCI_DEV(0, 0x0, 0), 0x66) & 0x7;
+	vldtwidth_out = (pci_read_config8(PCI_DEV(0, 0x0, 0), 0x66) >> 4) & 0x7;
+
+	width = MIN(MIN(MIN(cldtwidth_out, cldtwidth_in), vldtwidth_out), vldtwidth_in);
+	print_debug(" Agreed on width: ");
+	print_debug_hex8(width);
+
 	awidth = pci_read_config8(PCI_DEV(0, 0x0, 0), 0x67);
-	print_debug_hex8(awidth);
 
-	aspeed = pci_read_config8(PCI_DEV(0, 0x0, 0), 0x6d);
-	print_debug_hex8(aspeed);
+	/* Update the desired HT LNK to match AMD NB max from VIA NB is 0x1 */
+	width = (width == 0x01) ? 0x11 : 0x00;
 
-	if ((aspeed == speed) && (((width == 16) && (awidth == 0x11)) ||
-				  ((width == 8) && (awidth == 0x00))))
-		return 0;
+	pci_write_config8(PCI_DEV(0, 0x0, 0), 0x67, width);
 
-	/* Update the desired HT LNK capabilities in NB too. */
-	pci_write_config8(PCI_DEV(0, 0x0, 0), 0x67,
-			  (width == 16) ? 0x11 : 0x00);
-	pci_write_config8(PCI_DEV(0, 0x0, 0), 0x6d, speed);
+	/* Get programmed HT freq at base 0x89 */
+	cldtfreq = pci_read_config8(PCI_DEV(0, 0x18, 0), ldtreg[ldtnr] + 3) & 0xf;
+	print_debug(" CPU programmed to HT freq: ");
+	print_debug_hex8(cldtfreq);
 
-	print_debug(" and will after HT reset: ");
+	print_debug(" VIA HT caps: ");
+	vldtcaps = pci_read_config16(PCI_DEV(0, 0, 0), 0x6e);
+	print_debug_hex16(vldtcaps);
 
-	awidth = pci_read_config8(PCI_DEV(0, 0x0, 0), 0x67);
-	print_debug_hex8(awidth);
+	if (!(vldtcaps & (1 << cldtfreq ))) {
+		die("Chipset does not support desired HT frequency\n");
+	}
 
-	aspeed = pci_read_config8(PCI_DEV(0, 0x0, 0), 0x6d);
-	print_debug_hex8(aspeed);
-
+	afreq = pci_read_config8(PCI_DEV(0, 0x0, 0), 0x6d);
+	pci_write_config8(PCI_DEV(0, 0x0, 0), 0x6d, cldtfreq);
 	print_debug("\n");
+
+	/* no reset needed */
+	if ((width == awidth) && (afreq == cldtfreq)) {
+		return 0;
+	}
 
 	return 1;
 }

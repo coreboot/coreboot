@@ -284,19 +284,18 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	init_timer();
 	ht_setup_chains_x(sysinfo); /* Init sblnk and sbbusn, nodes, sbdn. */
 
-	enable_fid_change();
-	init_fidvid_bsp(bsp_apicid);
-
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
-
-	/* FIXME: Assumes that 1000MHz LDT is selected. */
-	needs_reset |= k8t890_early_setup_car(16, 0x6);
+	needs_reset |= k8t890_early_setup_ht();
 
 	if (needs_reset) {
 		print_debug("ht reset -\r\n");
 		soft_reset();
 	}
+
+	/* the HT settings needs to be OK, because link freq chnage may cause HT disconnect */
+	enable_fid_change();
+	init_fidvid_bsp(bsp_apicid);
 
 	/* Stop the APs so we can start them later in init. */
 	allow_all_aps_stop(bsp_apicid);

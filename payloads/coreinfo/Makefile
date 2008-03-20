@@ -25,7 +25,7 @@ INCLUDES += -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | head -n 1 | cut
 
 LIBPAYLOAD = ../libpayload/libpayload.a
 LIBGCC := $(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
-CFLAGS := -Werror -fno-stack-protector -nostdinc $(INCLUDES)
+CFLAGS := -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
 
 MODULES = cpuinfo_module.o cpuid.o pci_module.o coreboot_module.o
 OBJECTS = coreinfo.o

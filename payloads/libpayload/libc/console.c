@@ -42,7 +42,7 @@ void console_init(void)
 static void device_putchar(unsigned char c)
 {
 #ifdef CONFIG_VGA_CONSOLE
-	vga_putchar(0x700| c);
+	vga_putchar(0x700 | c);
 #endif
 #ifdef CONFIG_SERIAL_CONSOLE
 	serial_putchar(c);
@@ -65,10 +65,10 @@ int puts(const char *s)
 	while (*s) {
 		putchar(*s++);
 		n++;
-    	}
-    
+	}
+
 	putchar('\n');
-	return n+1;
+	return n + 1;
 }
 
 int havekey(void)
@@ -81,13 +81,13 @@ int havekey(void)
 	if (keyboard_havechar())
 		return 1;
 #endif
-    	return 0;
+	return 0;
 }
 
-/* This returns an ascii value - the two getchar functions
- cook the respective input from the device
-*/
-
+/**
+ * This returns an ASCII value - the two getchar functions
+ * cook the respective input from the device.
+ */
 int getchar(void)
 {
 	while (1) {
@@ -101,4 +101,3 @@ int getchar(void)
 #endif
 	}
 }
-

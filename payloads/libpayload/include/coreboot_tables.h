@@ -123,21 +123,21 @@ struct cb_console {
 
 #define CB_TAG_CONSOLE_SERIAL8250 0
 #define CB_TAG_CONSOLE_VGA        1
-#define CB_TAG_CONSOLE_BTEXT      2 
+#define CB_TAG_CONSOLE_BTEXT      2
 #define CB_TAG_CONSOLE_LOGBUF     3
 #define CB_TAG_CONSOLE_SROM       4
 #define CB_TAG_CONSOLE_EHCI       5
 
-/* Still to come: CMOS information */
+/* Still to come: CMOS information. */
 
 /* Helpful macros */
 
 #define MEM_RANGE_COUNT(_rec) \
-  (((_rec)->size - sizeof(*(_rec))) / sizeof((_rec)->map[0]))
+	(((_rec)->size - sizeof(*(_rec))) / sizeof((_rec)->map[0]))
 
 #define MEM_RANGE_PTR(_rec, _idx) \
-  (((uint8_t *) (_rec)) + sizeof(*(_rec)) \
-  + (sizeof((_rec)->map[0]) * (_idx)))
+	(((uint8_t *) (_rec)) + sizeof(*(_rec)) \
+	+ (sizeof((_rec)->map[0]) * (_idx)))
 
 #define MB_VENDOR_STRING(_mb) \
 	(((unsigned char *) ((_mb)->strings)) + (_mb)->vendor_idx)

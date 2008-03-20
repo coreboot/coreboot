@@ -29,14 +29,12 @@
 
 #include <arch/types.h>
 
-/* This structure seeds the stack.  We provide
-   the return address of our main function, and
-   further down, the address of the function 
-   that we call when we leave and try to restore
-   the original stack.  At the very bottom of the
-   stack we store the orignal stack pointer
-   from the calling application
-*/
+/*
+ * This structure seeds the stack. We provide the return address of our main
+ * function, and further down, the address of the function that we call when
+ * we leave and try to restore the original stack. At the very bottom of the
+ * stack we store the orignal stack pointer from the calling application.
+ */
 
 static void start_main(void);
 extern void _leave(void);
@@ -45,35 +43,40 @@ static struct {
 	uint32_t eip[2];
 	uint32_t raddr[2];
 	uint32_t esp;
-} initial_stack __attribute__((section (".istack"))) = {
+} initial_stack __attribute__ ((section(".istack"))) = {
 	{ (uint32_t) start_main, 0 },
 	{ (uint32_t) _leave, 0 },
-	(uint32_t) &initial_stack,
+	(uint32_t) & initial_stack,
 };
 
-void * _istack = &initial_stack;
+void *_istack = &initial_stack;
 
-/* This is our C entry function - set up the system
-   and jump into the payload entry point */
-
+/**
+ * This is our C entry function - set up the system
+ * and jump into the payload entry point.
+ */
 static void start_main(void)
 {
 	extern int main(void);
 
-	/* Set up the consoles */
+	/* Set up the consoles. */
 	console_init();
 
-	/* Gather system information */
+	/* Gather system information. */
 	lib_get_sysinfo();
 
-	/* Any other system init that has to happen before the
-	   user gets control goes here. */
+	/*
+	 * Any other system init that has to happen before the
+	 * user gets control goes here.
+	 */
 
-	/* Go to the entry point */
+	/* Go to the entry point. */
 
-	/* in the future we may care about the return value */
+	/* In the future we may care about the return value. */
 	(void) main();
 
-	/* Returning here will go to the _leave function to return
-	   us to the original context */
+	/*
+	 * Returning here will go to the _leave function to return
+	 * us to the original context.
+	 */
 }

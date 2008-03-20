@@ -174,45 +174,38 @@ struct {
 static int cook_scancodes(unsigned char code)
 {
 	static int modifiers = 0;
-	int ch = 0,  sc, shift;
+	int ch = 0, sc, shift;
 
-	switch(code) {
+	switch (code) {
 	case DOWN(SCANCODE_RSHIFT):
 	case DOWN(SCANCODE_LSHIFT):
 		modifiers |= SHIFT_MODIFIER;
 		return 0;
-
 	case UP(SCANCODE_RSHIFT):
 	case UP(SCANCODE_LSHIFT):
 		modifiers &= ~SHIFT_MODIFIER;
 		return 0;
-
 	case UP(SCANCODE_CAPSLOCK):
 		if (modifiers & CAPSLOCK_MODIFIER)
 			modifiers &= ~CAPSLOCK_MODIFIER;
 		else
 			modifiers |= CAPSLOCK_MODIFIER;
 		return 0;
-
 	case DOWN(SCANCODE_LALT):
 		modifiers |= ALT_MODIFIER;
 		return 0;
-
 	case UP(SCANCODE_LALT):
 		modifiers &= ~ALT_MODIFIER;
 		return 0;
-
 	case DOWN(SCANCODE_LCTRL):
 		modifiers |= CTRL_MODIFIER;
 		return 0;
-
 	case UP(SCANCODE_LCTRL):
 		modifiers &= ~CTRL_MODIFIER;
 		return 0;
 	}
 
-	/* Only process keys on an upstroke */
-
+	/* Only process keys on an upstroke. */
 	if (!ISUP(code))
 		return 0;
 
@@ -231,8 +224,8 @@ static int cook_scancodes(unsigned char code)
 	return ch;
 }
 
-static int curses_getchar(int delay) {
-
+static int curses_getchar(int delay)
+{
 	unsigned char c = 0;
 	int ret;
 
@@ -243,7 +236,7 @@ static int curses_getchar(int delay) {
 		if ((c & 1) == 0) {
 
 			if ((curses_flags & F_ENABLE_SERIAL) &&
-			serial_havechar()) {
+			    serial_havechar()) {
 				c = serial_getchar();
 				return cook_serial(c);
 			}
@@ -258,9 +251,9 @@ static int curses_getchar(int delay) {
 
 		if (ret != 0) {
 			return ret;
-		 }
+		}
 
-	} while(1);
+	} while (1);
 
 	return ERR;
 }

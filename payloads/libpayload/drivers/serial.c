@@ -37,32 +37,32 @@
 #endif
 
 void serial_init(void)
-{	
+{
 #ifdef CONFIG_SERIAL_SET_SPEED
 	unsigned char reg;
 
-	/* Disable interrupts */
+	/* Disable interrupts. */
 	outb(0, IOBASE + 0x01);
 
-	/* Assert RTS and DTR */
+	/* Assert RTS and DTR. */
 	outb(3, IOBASE + 0x04);
 
-	/* Set the divisor latch */
+	/* Set the divisor latch. */
 	reg = inb(IOBASE + 0x03);
 	outb(reg | 0x80, IOBASE + 0x03);
 
-	/* Write the divisor */
+	/* Write the divisor. */
 	outb(DIVISOR & 0xFF, IOBASE);
 	outb(DIVISOR >> 8 & 0xFF, IOBASE + 1);
 
-	/* Restore the previous value of the divisor */
+	/* Restore the previous value of the divisor. */
 	outb(reg &= ~0x80, IOBASE + 0x03);
 #endif
 }
-			
+
 void serial_putchar(unsigned char c)
 {
-	while((inb(IOBASE + 0x05) & 0x20) == 0);
+	while ((inb(IOBASE + 0x05) & 0x20) == 0) ;
 	outb(c, IOBASE);
 }
 
@@ -73,6 +73,6 @@ int serial_havechar(void)
 
 int serial_getchar(void)
 {
-	while (!serial_havechar());
-	return (int) inb(IOBASE);
+	while (!serial_havechar()) ;
+	return (int)inb(IOBASE);
 }

@@ -27,34 +27,36 @@
  * SUCH DAMAGE.
  */
 
-/* Basic ctype functions */
-
 #include <libpayload.h>
 
 int isspace(int c)
 {
-    switch (c) {
-    case ' ': case '\f': case '\n':
-    case '\r': case '\t': case '\v':
-	return 1;
-    default:
-	return 0;
-    }
+	switch (c) {
+	case ' ':
+	case '\f':
+	case '\n':
+	case '\r':
+	case '\t':
+	case '\v':
+		return 1;
+	default:
+		return 0;
+	}
 }
 
 int isdigit(int c)
 {
-    switch (c) {
-    case '0'...'9':
-	return 1;
-    default:
-	return 0;
-    }
+	switch (c) {
+	case '0'...'9':
+		return 1;
+	default:
+		return 0;
+	}
 }
 
 int tolower(int c)
 {
-    if (c >= 'A' && c <= 'Z')
-	return c - 'A' + 'a';
-    return c;
+	if (c >= 'A' && c <= 'Z')
+		return c - 'A' + 'a';
+	return c;
 }

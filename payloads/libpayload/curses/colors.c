@@ -36,7 +36,8 @@ unsigned char color_pairs[256] = {
 	[0] = 0x07,
 };
 
-int start_color(void) {
+int start_color(void)
+{
 	return 0;
 }
 

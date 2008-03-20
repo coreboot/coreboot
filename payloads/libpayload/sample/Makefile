@@ -29,15 +29,15 @@
 
 # Sample libpayload Makefile.
 
-CC=gcc
+CC = gcc
 CROSS_CFLAGS = -m32
 
-INCLUDES=-I../include
+INCLUDES = -I../include
 INCLUDES += -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
 
-LIBPAYLOAD=../libpayload.a
-LIBGCC:=$(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
-CFLAGS := -Werror -fno-stack-protector -nostdinc $(INCLUDES)
+LIBPAYLOAD = ../libpayload.a
+LIBGCC := $(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
+CFLAGS := -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
 
 all: hello.elf
 

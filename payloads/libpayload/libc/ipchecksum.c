@@ -1,5 +1,7 @@
 /*
- * This file is part of the libpayload project
+ * This file is part of the libpayload project.
+ *
+ * It has orginally been taken from the FreeBSD project.
  *
  * Copyright (c) 2001 Charles Mott <cm@linktel.net>
  * All rights reserved.
@@ -30,20 +32,20 @@
 
 unsigned short ipchksum(const unsigned short *ptr, unsigned long nbytes)
 {
-        int sum, oddbyte;
+	int sum, oddbyte;
 
-        sum = 0;
-        while (nbytes > 1) {
-                sum += *ptr++;
-                nbytes -= 2;
-        }
-        if (nbytes == 1) {
-                oddbyte = 0;
-                ((u8 *) &oddbyte)[0] = *(u8 *)ptr;
-                ((u8 *) &oddbyte)[1] = 0;
-                sum += oddbyte;
-        }
-        sum = (sum >> 16) + (sum & 0xffff);
-        sum += (sum >> 16);
-        return (~sum);
+	sum = 0;
+	while (nbytes > 1) {
+		sum += *ptr++;
+		nbytes -= 2;
+	}
+	if (nbytes == 1) {
+		oddbyte = 0;
+		((u8 *) & oddbyte)[0] = *(u8 *) ptr;
+		((u8 *) & oddbyte)[1] = 0;
+		sum += oddbyte;
+	}
+	sum = (sum >> 16) + (sum & 0xffff);
+	sum += (sum >> 16);
+	return (~sum);
 }

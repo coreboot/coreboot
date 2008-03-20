@@ -150,20 +150,22 @@ WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 	int flags = _SUBWIN;
 
 	/* Make sure window fits inside the original one. */
-	if (begy < 0 || begx < 0 || orig == 0 || num_lines < 0 || num_columns < 0)
-	    return NULL;
+	if (begy < 0 || begx < 0 || orig == 0 || num_lines < 0
+	    || num_columns < 0)
+		return NULL;
+
 	if (begy + num_lines > orig->_maxy + 1
 	    || begx + num_columns > orig->_maxx + 1)
-	    return NULL;
+		return NULL;
 
 	if (num_lines == 0)
-	    num_lines = orig->_maxy + 1 - begy;
+		num_lines = orig->_maxy + 1 - begy;
 
 	if (num_columns == 0)
-	    num_columns = orig->_maxx + 1 - begx;
+		num_columns = orig->_maxx + 1 - begx;
 
 	if (orig->_flags & _ISPAD)
-	    flags |= _ISPAD;
+		flags |= _ISPAD;
 
 	//// if ((win = _nc_makenew(num_lines, num_columns, orig->_begy + begy,
 	////                        orig->_begx + begx, flags)) == 0)
@@ -175,7 +177,7 @@ WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 	win->_nc_bkgd = orig->_nc_bkgd;
 
 	for (i = 0; i < num_lines; i++)
-	    win->_line[i].text = &orig->_line[begy++].text[begx];
+		win->_line[i].text = &orig->_line[begy++].text[begx];
 
 	win->_parent = orig;
 
@@ -217,11 +219,9 @@ WINDOW *initscr(void)
 	// def_prog_mode();
 
 	if (curses_flags & F_ENABLE_CONSOLE) {
-
-	  /* Clear the screen and kill the cursor */
-
-	  vga_clear();
-	  vga_cursor_enable(0);
+		/* Clear the screen and kill the cursor. */
+		vga_clear();
+		vga_cursor_enable(0);
 	}
 
 	// Speaker init?
@@ -313,7 +313,8 @@ WINDOW *newwin(int num_lines, int num_columns, int begy, int begx)
 	win->_attrs = A_NORMAL;
 
 	for (i = 0; i < num_lines; i++)
-		win->_line[i].text = (NCURSES_CH_T *)&linebuf_list[linebuf_count++];
+		win->_line[i].text =
+		     (NCURSES_CH_T *)&linebuf_list[linebuf_count++];
 
 	return win;
 }
@@ -479,7 +480,7 @@ int wclrtoeol(WINDOW *win) { /* TODO */ return(*(int *)0); }
 int wcolor_set(WINDOW *win, short color_pair_number, void *opts)
 {
 	if (!opts && (color_pair_number >= 0)
-		&& (color_pair_number < COLOR_PAIRS)) {
+	    && (color_pair_number < COLOR_PAIRS)) {
 		SET_WINDOW_PAIR(win, color_pair_number);
 		if_EXT_COLORS(win->_color = color_pair_number);
 		return OK;
@@ -511,7 +512,7 @@ int whline(WINDOW *win, chtype ch, int n)
 	start = win->_curx;
 	end = start + n - 1;
 	if (end > win->_maxx)
-	    end = win->_maxx;
+		end = win->_maxx;
 
 	CHANGED_RANGE(line, start, end);
 
@@ -526,8 +527,8 @@ int whline(WINDOW *win, chtype ch, int n)
 	wch = _nc_render(win, wch);
 
 	while (end >= start) {
-	    line->text[end] = wch;
-	    end--;
+		line->text[end] = wch;
+		end--;
 	}
 
 	//// _nc_synchook(win);
@@ -570,25 +571,21 @@ int wnoutrefresh(WINDOW *win)
 
 			if (curses_flags & F_ENABLE_CONSOLE) {
 				attr_t attr = win->_line[y].text[x].attr;
-				unsigned int c = ((int) color_pairs[PAIR_NUMBER(attr)]) << 8;
+				unsigned int c =
+				  ((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
 
-				/* Handle some of the attributes */
-
-				if (attr & A_BOLD) {
+				/* Handle some of the attributes. */
+				if (attr & A_BOLD)
 					c |= 0x0800;
-				}
-				if (attr & A_DIM) {
+				if (attr & A_DIM)
 					c &= ~0x800;
-				}
 				if (attr & A_REVERSE) {
-					unsigned char tmp = (c >> 8) & 0xF;
-					c = (c >> 4) & 0xF00;
+					unsigned char tmp = (c >> 8) & 0xf;
+					c = (c >> 4) & 0xf00;
 					c |= tmp << 12;
 				}
 
 				c |= win->_line[y].text[x].chars[0];
-
-
 				vga_putc(y, x, c);
 			}
 		}

@@ -27,24 +27,23 @@
  * SUCH DAMAGE.
  */
 
-/* This is a classically weak malloc() implmentation.
-   We have a relatively small and static heap, so we take
-   the easy route with an O(N) loop through the tree for
-   every malloc() and free().  Obviously, this doesn't scale
-   past a few hundred K (if that).
+/*
+ * This is a classically weak malloc() implmentation. We have a relatively
+ * small and static heap, so we take the easy route with an O(N) loop
+ * through the tree for every malloc() and free(). Obviously, this doesn't
+ * scale past a few hundred KB (if that).
+ *
+ * We're also susecptable to the usual buffer overun poisoning, though the
+ * risk is within acceptable ranges for this implementation (don't overrun
+ * your buffers, kids!).
+ */
 
-   We're also susecptable to the usual buffer overun poisoning,
-   though the risk is within acceptable ranges for this
-   implementation (don't overrun your buffers, kids!)
-*/
-   
 #include <libpayload.h>
 
-/* Defined in the ldscript */
-extern char _heap, _eheap;
+extern char _heap, _eheap;	/* Defined in the ldscript. */
 
-static void *hstart = (void *) &_heap;
-static void *hend = (void *) &_eheap;
+static void *hstart = (void *)&_heap;
+static void *hend = (void *)&_eheap;
 
 typedef unsigned int hdrtype_t;
 
@@ -66,66 +65,64 @@ typedef unsigned int hdrtype_t;
 
 void print_malloc_map(void);
 
-static void setup(void) 
+static void setup(void)
 {
-	int size = (unsigned int) (_heap - _eheap) - HDRSIZE;
+	int size = (unsigned int)(_heap - _eheap) - HDRSIZE;
 	*((hdrtype_t *) hstart) = FREE_BLOCK(size);
 }
-	
+
 static void *alloc(int len)
 {
 	hdrtype_t header;
 	void *ptr = hstart;
-       
-	/* align the size */
+
+	/* Align the size. */
 	len = (len + 3) & ~3;
 
-	if (!len || len > 0xFFFFFF)
-		return (void *) NULL;
+	if (!len || len > 0xffffff)
+		return (void *)NULL;
 
-	/* Make sure the region is setup correctly */
+	/* Make sure the region is setup correctly. */
 	if (!HAS_MAGIC(*((hdrtype_t *) ptr)))
 		setup();
 
-	/* Find some free space */
-
+	/* Find some free space. */
 	do {
 		header = *((hdrtype_t *) ptr);
 		int size = SIZE(header);
 
 		if (header & FLAG_FREE) {
-
 			if (len <= size) {
 				void *nptr = ptr + HDRSIZE + len;
 				int nsize = size - (len + 8);
 
-				/* Mark the block as used */
+				/* Mark the block as used. */
 				*((hdrtype_t *) ptr) = USED_BLOCK(len);
 
 				/* If there is still room in this block,
-				 * then mark it as such */
-
-				if (nsize > 0) 
+				 * then mark it as such.
+				 */
+				if (nsize > 0)
 					*((hdrtype_t *) nptr) =
-						FREE_BLOCK(nsize - 4);
+					    FREE_BLOCK(nsize - 4);
 
-				return (void *) (ptr + HDRSIZE);
+				return (void *)(ptr + HDRSIZE);
 			}
 		}
 
 		ptr += HDRSIZE + size;
 
-	} while(ptr < hend);
+	} while (ptr < hend);
 
-	/* Nothing available */
-	return (void *) NULL;
+	/* Nothing available. */
+	return (void *)NULL;
 }
 
 static void _consolidate(void)
 {
 	void *ptr = hstart;
 
-	while(ptr < hend) {
+	while (ptr < hend) {
 		void *nptr;
 		hdrtype_t hdr = *((hdrtype_t *) ptr);
 		unsigned int size = 0;
@@ -134,23 +131,23 @@ static void _consolidate(void)
 			ptr += HDRSIZE + SIZE(hdr);
 			continue;
 		}
-			
+
 		size = SIZE(hdr);
 		nptr = ptr + HDRSIZE + SIZE(hdr);
 
 		while (nptr < hend) {
-			hdrtype_t nhdr =  *((hdrtype_t *) nptr);
-			
+			hdrtype_t nhdr = *((hdrtype_t *) nptr);
+
 			if (!(IS_FREE(nhdr)))
 				break;
-						
+
 			size += SIZE(nhdr) + HDRSIZE;
 
-		        *((hdrtype_t *) nptr) = 0;
+			*((hdrtype_t *) nptr) = 0;
 
 			nptr += (HDRSIZE + SIZE(nhdr));
 		}
-		
+
 		*((hdrtype_t *) ptr) = FREE_BLOCK(size);
 		ptr = nptr;
 	}
@@ -162,20 +159,20 @@ void free(void *ptr)
 
 	ptr -= HDRSIZE;
 
-	/* Sanity check */
+	/* Sanity check. */
 	if (ptr < hstart || ptr >= hend)
 		return;
 
 	hdr = *((hdrtype_t *) ptr);
 
-	/* Not our header (we're probably poisoned) */
+	/* Not our header (we're probably poisoned). */
 	if (!HAS_MAGIC(hdr))
 		return;
 
-	/* Double free */
+	/* Double free. */
 	if (hdr & FLAG_FREE)
 		return;
-       	
+
 	*((hdrtype_t *) ptr) = FREE_BLOCK(SIZE(hdr));
 	_consolidate();
 }
@@ -198,8 +195,7 @@ void *calloc(size_t nmemb, size_t size)
 
 void *realloc(void *ptr, size_t size)
 {
-	void *ret;
-	void *pptr;
+	void *ret, *pptr;
 	unsigned int osize;
 
 	if (ptr == NULL)
@@ -209,38 +205,38 @@ void *realloc(void *ptr, size_t size)
 
 	if (!HAS_MAGIC(*((hdrtype_t *) pptr)))
 		return NULL;
-	
-	/* Get the original size of the block */
-	osize = SIZE(*((hdrtype_t *) pptr));
-		
-	/* Free the memory to update the tables - this
-	   won't touch the actual memory, so we can still
-	   use it for the copy after we have reallocated
-	   the new space
-	*/
 
- 	free(ptr);
+	/* Get the original size of the block. */
+	osize = SIZE(*((hdrtype_t *) pptr));
+
+	/*
+	 * Free the memory to update the tables - this won't touch the actual
+	 * memory, so we can still use it for the copy after we have
+	 * reallocated the new space.
+	 */
+	free(ptr);
 	ret = alloc(size);
 
-	/* if ret == NULL, then doh - failure.
-	   if ret == ptr then woo-hoo!  no copy needed */
-	
+	/*
+	 * if ret == NULL, then doh - failure.
+	 * if ret == ptr then woo-hoo! no copy needed.
+	 */
 	if (ret == NULL || ret == ptr)
 		return ret;
-	
-	/* Copy the memory to the new location */
+
+	/* Copy the memory to the new location. */
 	memcpy(ret, ptr, osize > size ? size : osize);
+
 	return ret;
 }
 
-/* This is for debugging purposes */
+/* This is for debugging purposes. */
 #ifdef TEST
-
 void print_malloc_map(void)
 {
 	void *ptr = hstart;
 
-	while(ptr < hend) {
+	while (ptr < hend) {
 		hdrtype_t hdr = *((hdrtype_t *) ptr);
 
 		if (!HAS_MAGIC(hdr)) {
@@ -248,15 +244,13 @@ void print_malloc_map(void)
 			break;
 		}
 
-		/* FIXME:  Verify the size of the block */
+		/* FIXME: Verify the size of the block. */
 
 		printf("%x: %s (%x bytes)\n",
-		       (unsigned int) (ptr - hstart),
-		       hdr & FLAG_FREE ? "FREE" : "USED",
-		       SIZE(hdr));
+		       (unsigned int)(ptr - hstart),
+		       hdr & FLAG_FREE ? "FREE" : "USED", SIZE(hdr));
 
 		ptr += HDRSIZE + SIZE(hdr);
 	}
 }
-
 #endif

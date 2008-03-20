@@ -135,8 +135,8 @@ char *strncpy(char *d, const char *s, int n)
 	int max = n > strlen(s) + 1 ? strlen(s) + 1 : n;
 	int i;
 
-	for(i = 0; i < max; i++)
-		d[i] = (char) s[i];
+	for (i = 0; i < max; i++)
+		d[i] = (char)s[i];
 
 	return d;
 }
@@ -152,25 +152,24 @@ char *strncat(char *d, const char *s, int n)
 	int max = n > strlen(s) ? strlen(s) : n;
 	int i;
 
-	for(i = 0; i < max; i++)
+	for (i = 0; i < max; i++)
 		p[i] = s[i];
 
 	p[i] = '\0';
 	return d;
 }
 
-char * strchr(const char *s, int c)
+char *strchr(const char *s, int c)
 {
-	char *p = (char *) s;
+	char *p = (char *)s;
 
-	for( ; *p != 0; p++) {
+	for (; *p != 0; p++) {
 		if (*p == c)
 			return p;
 	}
 
 	return NULL;
 }
-
 
 char *strdup(const char *s)
 {
@@ -189,11 +188,9 @@ char *strstr(const char *h, const char *n)
 	int nn = strlen(n);
 	int i;
 
-	for(i = 0; i <= hn - nn; i++)
+	for (i = 0; i <= hn - nn; i++)
 		if (!strcmp(&h[i], n))
-			return (char *) &h[i];
+			return (char *)&h[i];
 
 	return NULL;
 }
-
-	

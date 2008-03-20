@@ -101,12 +101,11 @@ void *memmove(void *dst, const void *src, size_t n)
 /**
  * Compare two memory areas.
  *
- * @param s1	Pointer to the first area to compare.
- * @param s2	Pointer to the second area to compare.
- * @param len	Size of the first area in bytes. Both areas must have the same
- *		length.
- * @return	If len is 0, return zero. If the areas match, return zero.
- *		Otherwise return non-zero.
+ * @param s1 Pointer to the first area to compare.
+ * @param s2 Pointer to the second area to compare.
+ * @param len Size of the first area in bytes (both must have the same length).
+ * @return If len is 0, return zero. If the areas match, return zero.
+ *         Otherwise return non-zero.
  */
 int memcmp(const char *s1, const char *s2, size_t len)
 {

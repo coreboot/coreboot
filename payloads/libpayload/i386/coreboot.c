@@ -31,20 +31,19 @@
 #include <sysinfo.h>
 #include <coreboot_tables.h>
 
-/* Some of this is x86 specific, and the rest of it
-   is generic.  Right now, since we only support x86,
-   we'll avoid trying to make lots of infrastructure
-   we don't need.  If in the future, we want to use
-   coreboot on some other architecture, then take out
-   the generic parsing code and move it elsewhere
-*/
+/*
+ * Some of this is x86 specific, and the rest of it is generic. Right now,
+ * since we only support x86, we'll avoid trying to make lots of infrastructure
+ * we don't need. If in the future, we want to use coreboot on some other
+ * architecture, then take out the generic parsing code and move it elsewhere.
+ */
 
 /* === Parsing code === */
-/* This is the generic parsing code */
+/* This is the generic parsing code. */
 
 static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_memory *mem = (struct cb_memory *) ptr;
+	struct cb_memory *mem = (struct cb_memory *)ptr;
 	int count = MEM_RANGE_COUNT(mem);
 	int i;
 
@@ -53,18 +52,18 @@ static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 
 	info->n_memranges = 0;
 
-	for(i = 0; i < count; i++) {
-		struct cb_memory_range *range = 
-			(struct cb_memory_range *) MEM_RANGE_PTR(mem, i);
-		
+	for (i = 0; i < count; i++) {
+		struct cb_memory_range *range =
+		    (struct cb_memory_range *)MEM_RANGE_PTR(mem, i);
+
 		if (range->type != CB_MEM_RAM)
 			continue;
 
 		info->memrange[info->n_memranges].base =
-			UNPACK_CB64(range->start);
+		    UNPACK_CB64(range->start);
 
 		info->memrange[info->n_memranges].size =
-			UNPACK_CB64(range->size);
+		    UNPACK_CB64(range->size);
 
 		info->n_memranges++;
 	}
@@ -72,55 +71,48 @@ static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 
 static void cb_parse_serial(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_serial *ser = (struct cb_serial *) ptr;
+	struct cb_serial *ser = (struct cb_serial *)ptr;
 	info->ser_ioport = ser->ioport;
 }
 
 static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
-	unsigned char *ptr = (unsigned char *) addr;
+	unsigned char *ptr = (unsigned char *)addr;
 	int i;
 
 	for (i = 0; i < len; i += 16, ptr += 16) {
-		header = (struct cb_header *) ptr;
-
+		header = (struct cb_header *)ptr;
 		if (!strncmp(header->signature, "LBIO", 4))
 			break;
 	}
-	
-	/* We walked the entire space and didn't find anything */
 
+	/* We walked the entire space and didn't find anything. */
 	if (i >= len)
 		return -1;
 
 	if (!header->table_bytes)
 		return 0;
 
-	/* Make sure the checksums match */
-
+	/* Make sure the checksums match. */
 	if (ipchksum((uint16_t *) header, sizeof(*header)) != 0)
 		return -1;
 
 	if (ipchksum((uint16_t *) (ptr + sizeof(*header)),
-		header->table_bytes) != header->table_checksum)
+		     header->table_bytes) != header->table_checksum)
 		return -1;
 
-	/* Now, walk the tables */
+	/* Now, walk the tables. */
 	ptr += header->header_bytes;
-    
-	for(i = 0; i < header->table_entries; i++) {
-		struct cb_record *rec = (struct cb_record *) ptr;
 
-		/* We only care about a few tags here - maybe
-		   more will be interesting later 
-		*/
+	for (i = 0; i < header->table_entries; i++) {
+		struct cb_record *rec = (struct cb_record *)ptr;
 
- 		switch(rec->tag) {
+		/* We only care about a few tags here (maybe more later). */
+		switch (rec->tag) {
 		case CB_TAG_MEMORY:
 			cb_parse_memory(ptr, info);
 			break;
-			
 		case CB_TAG_SERIAL:
 			cb_parse_serial(ptr, info);
 			break;
@@ -128,19 +120,19 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 		ptr += rec->size;
 	}
-	
+
 	return 1;
 }
 
-/* == Architecture specific ==*/
-/* This is the x86 specific stuff */
+/* == Architecture specific == */
+/* This is the x86 specific stuff. */
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header((void *) 0x0, 0x1000, info);
+	int ret = cb_parse_header((void *)0x0, 0x1000, info);
 
 	if (ret != 1)
-		ret = cb_parse_header((void *) 0xf0000, 0x1000, info);
+		ret = cb_parse_header((void *)0xf0000, 0x1000, info);
 
 	return (ret == 1) ? 0 : -1;
 }

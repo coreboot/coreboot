@@ -31,7 +31,8 @@
 
 #include <libpayload.h>
 
-int main(void) {
+int main(void)
+{
 	printf("Hello world!\n");
 	halt();
 

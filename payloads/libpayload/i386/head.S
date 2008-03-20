@@ -26,60 +26,55 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-	
+
 	.global _entry, _leave
 	.text
 	.align 4
 
-/* Our entry point - assume that the CPU is in
- *  32 bit protected mode and all segments are in a
- *  flat model.  Thats our operating mode, so we won't
- *  change anything
+/*
+ * Our entry point - assume that the CPU is in 32 bit protected mode and
+ * all segments are in a flat model. That's our operating mode, so we won't
+ * change anything.
  */
-	
 _entry:
 	call _init
 
-	/* We're back - go back to the bootloader */
+	/* We're back - go back to the bootloader. */
 	ret
 
-/* This function saves off the previous stack and
-   switches us to our own execution enviornment
-*/	
-
+/*
+ * This function saves off the previous stack and switches us to our
+ * own execution environment.
+ */
 _init:
-	/* No interrupts, please */
+	/* No interrupts, please. */
 	cli
 
-	/* Get the current stack pointer */
+	/* Get the current stack pointer. */
 	movl %esp, %esi
 
 	movl _istack, %ebx
 
-	/* lret needs %cs in the stack, so copy it over */
+	/* lret needs %cs in the stack, so copy it over. */
 	movw %cs, 4(%ebx)
 
-	/* Exchange the current stack pointer for the one in
-	   the initial stack (which happens to be the new
-	   stack pointer) */
-
+	/*
+	 * Exchange the current stack pointer for the one in the initial
+	 * stack (which happens to be the new stack pointer).
+	 */
 	xchgl %esi, 16(%ebx)
 
-	/* Set the new stack pointer */
+	/* Set the new stack pointer. */
 	movl %esi, %esp
 
-	/* Return into the main entry function
-	   and go
-	 */
-
+	/* Return into the main entry function and go. */
 	lret
 
 _leave:
 	movl _istack, %ebx
 
-	/* Restore the stack pointer from the storage area */
+	/* Restore the stack pointer from the storage area. */
 	movl 16(%ebx), %esp
 
-	/* Return to the original context */
+	/* Return to the original context. */
 	lret
-

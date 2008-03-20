@@ -32,53 +32,47 @@
 
 static unsigned int cpu_khz;
 
-/* Calculate the speed of the processor for use in delays */
-
+/**
+ * Calculate the speed of the processor for use in delays.
+ *
+ * @return The CPU speed in kHz.
+ */
 unsigned int get_cpu_speed(void)
 {
 	unsigned long long start, end;
 
-	/* Set up the PPC port - disable the speaker, 
-	 * enable the T2 gate */
-	
+	/* Set up the PPC port - disable the speaker, enable the T2 gate. */
 	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
 
-	/* Set the PIT to Mode 0, counter 2, word access */
+	/* Set the PIT to Mode 0, counter 2, word access. */
 	outb(0xB0, 0x43);
 
-	/* Load the counter with 0xFFFF */
-	
-	outb(0xFF, 0x42);
-	outb(0xFF, 0x42);
+	/* Load the counter with 0xffff. */
+	outb(0xff, 0x42);
+	outb(0xff, 0x42);
 
-	/* Read the number of ticks during the period */
-
+	/* Read the number of ticks during the period. */
 	start = rdtsc();
-	while(!(inb(0x61) & 0x20));
+	while (!(inb(0x61) & 0x20)) ;
 	end = rdtsc();
 
-	/* The clock rate is 1193180 Hz
-	* the number of miliseconds for a period
-	* of 0xFFFF is 1193180 / (0xFFFF * 1000)
-	* or .0182.  Multiply that by the number of 
-	* measured clocks to get the khz value 
-	*/
-
-	cpu_khz =
-		(unsigned int ) ((end - start) * 1193180U / (1000 * 0xFFFF));
+	/*
+	 * The clock rate is 1193180 Hz, the number of miliseconds for a
+	 * period of 0xffff is 1193180 / (0xFFFF * 1000) or .0182.
+	 * Multiply that by the number of measured clocks to get the kHz value.
+	 */
+	cpu_khz = (unsigned int)((end - start) * 1193180U / (1000 * 0xffff));
 }
-
-/* Global delay functions */
 
 static inline void _delay(unsigned int delta)
 {
 	unsigned long long timeout = rdtsc() + delta;
-	while (rdtsc() < timeout);
+	while (rdtsc() < timeout) ;
 }
 
 void ndelay(unsigned int n)
 {
- 	_delay(n * cpu_khz / 1000000);
+	_delay(n * cpu_khz / 1000000);
 }
 
 void mdelay(unsigned int m)

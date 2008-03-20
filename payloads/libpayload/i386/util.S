@@ -26,12 +26,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-	.global halt	
+
+	.global halt
 	.text
 	.align 4
-	
-/* This function puts the system into a halt.  */		
 
+/* This function puts the system into a halt. */
 halt:
 	cli
 	hlt

@@ -30,41 +30,29 @@
 #include <libpayload.h>
 #include <sysinfo.h>
 
-/* This is a global structure that is used through the
-   library - we set it up initially with some dummy
-   values - hopefully they will be overridden 
-*/
-
+/**
+ * This is a global structure that is used through the library - we set it
+ * up initially with some dummy values - hopefully they will be overridden.
+ */
 struct sysinfo_t lib_sysinfo = {
-	. cpu_khz = 200,
-	. ser_ioport = CONFIG_SERIAL_IOBASE,
+	.cpu_khz = 200,
+	.ser_ioport = CONFIG_SERIAL_IOBASE,
 };
-       
+
 void lib_get_sysinfo(void)
 {
-	/* Get the CPU speed (for delays) */
+	/* Get the CPU speed (for delays). */
 	lib_sysinfo.cpu_khz = get_cpu_speed();
-	
-	/* Get the memory information */
 
+	/* Get the memory information. */
 	get_coreboot_info(&lib_sysinfo);
 
 	if (!lib_sysinfo.n_memranges) {
-		
-		/* If we couldn't get a good memory range,
-		   then use a hard coded default */
-	
+		/* If we can't get a good memory range, use the default. */
 		lib_sysinfo.n_memranges = 2;
-
 		lib_sysinfo.memrange[0].base = 0;
 		lib_sysinfo.memrange[0].size = 640 * 1024;
 		lib_sysinfo.memrange[1].base = 1024 * 1024;
 		lib_sysinfo.memrange[1].size = 31 * 1024 * 1024;
 	}
 }
-
-	
-
-
-
-	

@@ -38,8 +38,8 @@
 #define CRTC_INDEX      0x3d4
 #define CRTC_DATA       0x3d5
 
-#define VIDEO(_r, _c)\
-  ((uint16_t *) (0xB8000 + ((_r) * (WIDTH * 2)) + ((_c) * 2)))
+#define VIDEO(_r, _c) \
+	((uint16_t *) (0xB8000 + ((_r) * (WIDTH * 2)) + ((_c) * 2)))
 
 static int cursor_enabled;
 static int cursorx;
@@ -49,24 +49,25 @@ static void vga_scroll_up(void);
 
 static inline uint8_t crtc_read(uint8_t index)
 {
-        outb(index, CRTC_INDEX);
-        return inb(CRTC_DATA);
+	outb(index, CRTC_INDEX);
+	return inb(CRTC_DATA);
 }
 
 static inline void crtc_write(uint8_t data, uint8_t index)
 {
-        outb(index, CRTC_INDEX);
-        outb(data, CRTC_DATA);
+	outb(index, CRTC_INDEX);
+	outb(data, CRTC_DATA);
 }
 
 static void vga_get_cursor_pos(void)
 {
 	unsigned int addr;
-	addr = ((unsigned int) crtc_read(0x0E)) << 8;
+
+	addr = ((unsigned int)crtc_read(0x0E)) << 8;
 	addr += crtc_read(0x0E);
 
 	cursorx = addr % WIDTH;
-	cursory = addr / WIDTH;       
+	cursory = addr / WIDTH;
 }
 
 static void vga_fixup_cursor(void)
@@ -78,16 +79,16 @@ static void vga_fixup_cursor(void)
 
 	if (cursorx < 0)
 		cursorx = 0;
-	
+
 	if (cursory < 0)
 		cursory = 0;
-	
+
 	if (cursorx >= WIDTH) {
 		cursorx = 0;
 		cursory++;
 	}
 
-	while(cursory >= HEIGHT)
+	while (cursory >= HEIGHT)
 		vga_scroll_up();
 
 	addr = cursorx + (WIDTH * cursory);
@@ -102,8 +103,7 @@ void vga_cursor_enable(int state)
 	if (state == 0) {
 		tmp |= (1 << 5);
 		cursor_enabled = 0;
-	}
-	else {
+	} else {
 		tmp &= ~(1 << 5);
 		cursor_enabled = 1;
 		vga_fixup_cursor();
@@ -117,19 +117,19 @@ void vga_clear_line(uint8_t row, uint8_t ch, uint8_t attr)
 	int col;
 	uint16_t *ptr = VIDEO(0, row);
 
-	for(col = 0; col < WIDTH; col++)
+	for (col = 0; col < WIDTH; col++)
 		ptr[col] = ((attr & 0xFF) << 8) | (ch & 0xFF);
 }
-	
+
 static void vga_scroll_up(void)
 {
-	uint16_t *src = VIDEO(0,1);
-	uint16_t *dst = VIDEO(0,0);
+	uint16_t *src = VIDEO(0, 1);
+	uint16_t *dst = VIDEO(0, 0);
 	int i;
 
-	for(i = 0; i < (HEIGHT - 1) * WIDTH; i++)
+	for (i = 0; i < (HEIGHT - 1) * WIDTH; i++)
 		*dst++ = *src++;
-	
+
 	vga_clear_line(HEIGHT - 1, ' ', VGA_COLOR_WHITE);
 	cursory--;
 }
@@ -137,7 +137,7 @@ static void vga_scroll_up(void)
 void vga_fill(uint8_t ch, uint8_t attr)
 {
 	uint8_t row;
-	for(row = 0; row < HEIGHT; row++)
+	for (row = 0; row < HEIGHT; row++)
 		vga_clear_line(row, ch, attr);
 }
 
@@ -153,11 +153,12 @@ void vga_putc(uint8_t row, uint8_t col, unsigned int c)
 	*ptr = (uint16_t) (c & 0xFFFF);
 }
 
-void vga_putchar(unsigned int ch) {
-	
+void vga_putchar(unsigned int ch)
+{
+
 	uint16_t *ptr;
 
-	switch(ch & 0xFF) {
+	switch (ch & 0xFF) {
 	case '\r':
 		cursorx = 0;
 		break;
@@ -187,30 +188,25 @@ int vga_move_cursor(int x, int y)
 {
 	cursorx = x;
 	cursory = y;
-	
+
 	vga_fixup_cursor();
 }
 
 void vga_init(void)
 {
-	/* Get the position of the cursor */
+	/* Get the position of the cursor. */
 	vga_get_cursor_pos();
 
-	/* See if it us currently enabled or not */
+	/* See if it currently enabled or not. */
 	cursor_enabled = !(crtc_read(0x0A) & (1 << 5));
 
-	/* If the cursor is enabled, get us to a sane point */
-
+	/* If the cursor is enabled, get us to a sane point. */
 	if (cursor_enabled) {
-
-		/* Go to the next line */
-
+		/* Go to the next line. */
 		if (cursorx) {
 			cursorx = 0;
 			cursory++;
 		}
-
 		vga_fixup_cursor();
 	}
 }
-

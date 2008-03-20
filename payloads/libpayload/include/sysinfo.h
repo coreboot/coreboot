@@ -27,11 +27,10 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _SYSINFO_H_
-#define _SYSINFO_H_
+#ifndef SYSINFO_H
+#define SYSINFO_H
 
-/* Allow a maximum of 16 memory range definitions */
-
+/* Allow a maximum of 16 memory range definitions. */
 #define SYSINFO_MAX_MEM_RANGES 16
 
 struct sysinfo_t {

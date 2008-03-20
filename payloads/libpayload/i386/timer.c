@@ -34,7 +34,7 @@ static unsigned int cpu_khz;
 
 /* Calculate the speed of the processor for use in delays */
 
-void get_cpu_speed(void)
+unsigned int get_cpu_speed(void)
 {
 	unsigned long long start, end;
 

@@ -29,7 +29,6 @@
  */
 
 #include <libpayload.h>
-#include <arch/types.h>
 
 /**
  * Calculate the length of a fixed-size string.

@@ -27,73 +27,106 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LIBPAYLOAD_H_
-#define LIBPAYLOAD_H_
+#ifndef LIBPAYLOAD_H
+#define LIBPAYLOAD_H
 
 #include <autoconf.h>
 #include <stddef.h>
 #include <arch/types.h>
 #include <arch/io.h>
+#include <sysinfo.h>
 #include <stdarg.h>
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
-/* serial.c */
-void serial_putchar(unsigned char c);
+/* drivers/keyboard.c */
+int keyboard_havechar(void);
+unsigned char keyboard_get_scancode(void);
+int keyboard_getchar(void);
 
-/* console.c */
+/* drivers/serial.c */
+void serial_init(void);
+void serial_putchar(unsigned char c);
+int serial_havechar(void);
+int serial_getchar(void);
+
+/* drivers/serial.c */
+void vga_cursor_enable(int state);
+void vga_clear_line(uint8_t row, uint8_t ch, uint8_t attr);
+void vga_fill(uint8_t ch, uint8_t attr);
+void vga_clear(void);
+void vga_putc(uint8_t row, uint8_t col, unsigned int c);
+void vga_putchar(unsigned int ch);
+int vga_move_cursor(int x, int y);
+void vga_init(void);
+
+/* libc/console.c */
+void console_init(void);
 int putchar(int c);
+int puts(const char *s);
+int havekey(void);
+int getchar(void);
+
 extern int last_putchar;
 
 #define havechar havekey
 
-/* ctype.c */
+/* libc/ctype.c */
 int isspace(int c);
 int isdigit(int c);
 int tolower(int c);
 
-/* malloc.c */
-void *malloc(size_t size);
+/* libc/ipchecksum.c */
+unsigned short ipchksum(const unsigned short *ptr, unsigned long nbytes);
+
+/* libc/malloc.c */
 void free(void *ptr);
+void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
 
-/* memory.c */
-int memcmp(const char *s1, const char *s2, size_t len);
-void *memcpy(void *dst, const void *src, size_t n);
+/* libc/memory.c */
 void *memset(void *s, int c, size_t n);
+void *memcpy(void *dst, const void *src, size_t n);
 void *memmove(void *dst, const void *src, size_t n);
+int memcmp(const char *s1, const char *s2, size_t len);
 
-/* printf.c */
+/* libc/printf.c */
 int sprintf(char *str, const char *fmt, ...);
 int vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 int vsprintf(char *str, const char *fmt, va_list ap);
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list ap);
 
-/* string.c */
-size_t strnlen(const char *src, size_t max);
-size_t strlen(const char *src);
+/* libc/string.c */
+size_t strnlen(const char *str, size_t maxlen);
+size_t strlen(const char *str);
 int strcmp(const char *s1, const char *s2);
-char *strdup(const char *s);
+int strncmp(const char *s1, const char *s2, int maxlen);
+char *strncpy(char *d, const char *s, int n);
+char *strcpy(char *d, const char *s);
+char *strncat(char *d, const char *s, int n);
 char *strchr(const char *s, int c);
-char *strncpy(char *to, const char *from, int count);
-char * strcpy (char *dest, const char *src);
-char * strstr (const char *s1, const char *s2);
+char *strdup(const char *s);
+char *strstr(const char *h, const char *n);
 
-/* ipchchecksum.c */
-unsigned short ipchksum(const unsigned short *ptr, unsigned long nbytes);
+/* i386/coreboot.c */
+int get_coreboot_info(struct sysinfo_t *info);
 
-/* util.S */
+/* i386/sysinfo.c */
+void lib_get_sysinfo(void);
+
+/* i386/timer.c */
+/* Timer functions - defined by each arcitecture. */
+unsigned int get_cpu_speed(void);
+void ndelay(unsigned int n);
+void mdelay(unsigned int n);
+void delay(unsigned int n);
+
+/* i386/util.S */
 #define abort() halt()
 void halt(void) __attribute__ ((noreturn));
-
-/* Timer functions - defined by each arcitecture */
-
-void ndelay(unsigned int);
-void mdelay(unsigned int);
-void delay(unsigned int);
 
 #endif

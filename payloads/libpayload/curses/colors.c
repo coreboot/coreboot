@@ -57,4 +57,6 @@ int pair_content(short index, short *fg, short *bg)
 
 	*bg = (color_pairs[index] >> 4) & 0xF;
 	*fg = color_pairs[index] & 0xF;
+
+	return 0;
 }

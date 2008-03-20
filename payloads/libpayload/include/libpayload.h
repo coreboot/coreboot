@@ -59,7 +59,7 @@ void vga_fill(uint8_t ch, uint8_t attr);
 void vga_clear(void);
 void vga_putc(uint8_t row, uint8_t col, unsigned int c);
 void vga_putchar(unsigned int ch);
-int vga_move_cursor(int x, int y);
+void vga_move_cursor(int x, int y);
 void vga_init(void);
 
 /* libc/console.c */

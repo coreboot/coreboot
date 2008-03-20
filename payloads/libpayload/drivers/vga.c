@@ -184,7 +184,7 @@ void vga_putchar(unsigned int ch)
 	vga_fixup_cursor();
 }
 
-int vga_move_cursor(int x, int y)
+void vga_move_cursor(int x, int y)
 {
 	cursorx = x;
 	cursory = y;

@@ -83,7 +83,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 	for (i = 0; i < len; i += 16, ptr += 16) {
 		header = (struct cb_header *)ptr;
-		if (!strncmp(header->signature, "LBIO", 4))
+		if (!strncmp((const char *)header->signature, "LBIO", 4))
 			break;
 	}
 

@@ -268,6 +268,7 @@ int wgetch(WINDOW *win)
 int nodelay(WINDOW *win, NCURSES_BOOL flag)
 {
 	win->_delay = flag ? 0 : -1;
+	return 0;
 }
 
 #ifdef CONFIG_VGA_CONSOLE

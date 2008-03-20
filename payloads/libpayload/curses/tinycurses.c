@@ -145,7 +145,7 @@ int delwin(WINDOW *win)
 }
 WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 {
-	WINDOW *win;
+	WINDOW *win = NULL;
 	int i;
 	int flags = _SUBWIN;
 
@@ -167,6 +167,7 @@ WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 	if (orig->_flags & _ISPAD)
 		flags |= _ISPAD;
 
+	// FIXME
 	//// if ((win = _nc_makenew(num_lines, num_columns, orig->_begy + begy,
 	////                        orig->_begx + begx, flags)) == 0)
 	////     return NULL;
@@ -308,8 +309,8 @@ WINDOW *newwin(int num_lines, int num_columns, int begy, int begx)
 
 	win->_line = &ldat_list[ldat_count++];
 
-	/* FIXME:  Is this right?  Should the window attributes be normal? */
-	win->_color - PAIR_NUMBER(0);
+	/* FIXME: Is this right? Should the window attributes be normal? */
+	win->_color = PAIR_NUMBER(0);
 	win->_attrs = A_NORMAL;
 
 	for (i = 0; i < num_lines; i++)

@@ -62,6 +62,8 @@ unsigned int get_cpu_speed(void)
 	 * Multiply that by the number of measured clocks to get the kHz value.
 	 */
 	cpu_khz = (unsigned int)((end - start) * 1193180U / (1000 * 0xffff));
+
+	return cpu_khz;
 }
 
 static inline void _delay(unsigned int delta)

@@ -37,7 +37,7 @@ INCLUDES += -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | head -n 1 | cut
 
 LIBPAYLOAD = ../libpayload.a
 LIBGCC := $(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
-CFLAGS := -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
+CFLAGS := -Wall -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
 
 all: hello.elf
 

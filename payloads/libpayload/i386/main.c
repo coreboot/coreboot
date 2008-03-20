@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/types.h>
+#include <libpayload.h>
 
 /*
  * This structure seeds the stack. We provide the return address of our main

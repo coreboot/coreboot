@@ -46,22 +46,22 @@ void print_module_title(WINDOW *win, const char *title)
 
 	wmove(win, 1, 1);
 
-	for(i = 0; i < 78; i++)
+	for (i = 0; i < 78; i++)
 		waddch(win, '\304');
 }
 
-void print_menu(void) {
-	int i, len;
+void print_menu(void)
+{
+	int i, j, len;
 	char menu[80];
 	char *ptr = menu;
-	int j;
 
 	wmove(stdscr, 23, 0);
 
-	for(j = 0; j < SCREEN_X; j++)
+	for (j = 0; j < SCREEN_X; j++)
 		waddch(stdscr, ' ');
 
-	for(i = 0; i < MODULE_COUNT; i++)
+	for (i = 0; i < MODULE_COUNT; i++)
 		ptr += sprintf(ptr, "F%d: %s ", i + 1, modules[i]->name);
 
 	mvprintw(23, 0, menu);
@@ -74,7 +74,7 @@ void center(int row, const char *str)
 
 	wmove(stdscr, row, 0);
 
-	for(j = 0; j < SCREEN_X; j++)
+	for (j = 0; j < SCREEN_X; j++)
 		waddch(stdscr, ' ');
 
 	mvprintw(row, (SCREEN_X - len) / 2, str);
@@ -87,13 +87,12 @@ void header(int row, const char *str)
 	int i;
 	int len = strlen(str) + 4;
 
-	for(i = 0; i < (SCREEN_X - len) / 2; i++)
+	for (i = 0; i < (SCREEN_X - len) / 2; i++)
 		ptr += sprintf(ptr, "=");
 
 	ptr += sprintf(ptr, "[ %s ]", str);
 
-
-	for(i = ((SCREEN_X - len) / 2) + len; i < SCREEN_X ; i++)
+	for (i = ((SCREEN_X - len) / 2) + len; i < SCREEN_X; i++)
 		ptr += sprintf(ptr, "=");
 
 	mvprintw(row, 0, buf);
@@ -116,11 +115,11 @@ int loop(void)
 	modules[curwin]->redraw(modwin);
 	refresh();
 
-	while(1) {
+	while (1) {
 		key = getch();
 
 		if (key == ERR)
-		  continue;
+			continue;
 
 		if (key >= KEY_F(1) && key <= KEY_F(9)) {
 			unsigned char ch = key - KEY_F(1);
@@ -156,17 +155,17 @@ int main(void)
 	wattrset(stdscr, COLOR_PAIR(1) | A_BOLD);
 	wattrset(modwin, COLOR_PAIR(2));
 
-	for(i = 0; i < 23; i++) {
+	for (i = 0; i < 23; i++) {
 		wmove(modwin, i - 1, 0);
 
-		for(j = 0; j < SCREEN_X; j++)
+		for (j = 0; j < SCREEN_X; j++)
 			waddch(modwin, ' ');
 	}
 
 	refresh();
 
-	for(i = 0; i < MODULE_COUNT; i++)
+	for (i = 0; i < MODULE_COUNT; i++)
 		modules[i]->init();
-	
+
 	loop();
 }

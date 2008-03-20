@@ -32,14 +32,14 @@ static struct {
 	char part[32];
 
 	char strings[10][64];
-	
+
 	struct cb_serial serial;
 	struct cb_console console;
 } cb_info;
 
 static int tables_good = 0;
 
-int coreboot_module_redraw(WINDOW *win) 
+int coreboot_module_redraw(WINDOW *win)
 {
 	int row = 2;
 	int i;
@@ -50,13 +50,13 @@ int coreboot_module_redraw(WINDOW *win)
 		mvwprintw(win, row++, 2, "No Coreboot tables were found");
 		return 0;
 	}
-		
+
 	mvwprintw(win, row++, 2, "Vendor: %s", cb_info.vendor);
 	mvwprintw(win, row++, 2, "Part: %s", cb_info.part);
 
-	mvwprintw(win, row++, 2, "Version: %s%s", 
-		 cb_info.strings[CB_TAG_VERSION - 0x4],
-		 cb_info.strings[CB_TAG_EXTRA_VERSION - 0x4]);
+	mvwprintw(win, row++, 2, "Version: %s%s",
+		  cb_info.strings[CB_TAG_VERSION - 0x4],
+		  cb_info.strings[CB_TAG_EXTRA_VERSION - 0x4]);
 
 	mvwprintw(win, row++, 2, "Built: %s (%s@%s.%s)",
 		  cb_info.strings[CB_TAG_BUILD - 0x4],
@@ -66,13 +66,13 @@ int coreboot_module_redraw(WINDOW *win)
 
 	if (cb_info.serial.tag != 0x0) {
 		mvwprintw(win, row++, 2, "Serial Port I/O base: 0x%x",
-			 cb_info.serial.ioport);
+			  cb_info.serial.ioport);
 	}
 
 	if (cb_info.console.tag != 0x0) {
 		mvwprintw(win, row++, 2, "Default Output Console: ");
-		
-		switch(cb_info.console.type) {
+
+		switch (cb_info.console.type) {
 		case CB_TAG_CONSOLE_SERIAL8250:
 			wprintw(win, "Serial Port");
 			break;
@@ -96,51 +96,48 @@ int coreboot_module_redraw(WINDOW *win)
 
 	row++;
 	mvwprintw(win, row++, 2, "-- Memory Map --");
-	
-	for(i = 0; i < cb_info.mem_count; i++) {
 
-		switch(cb_info.range[i].type) {
+	for (i = 0; i < cb_info.mem_count; i++) {
+		switch (cb_info.range[i].type) {
 		case CB_MEM_RAM:
 			mvwprintw(win, row++, 4, "     RAM: ");
 			break;
-
 		case CB_MEM_RESERVED:
 			mvwprintw(win, row++, 4, "Reserved: ");
 			break;
-
 		case CB_MEM_TABLE:
 			mvwprintw(win, row++, 4, "   Table: ");
 		}
 
 		wprintw(win, "%16.16llx - %16.16llx",
 			UNPACK_CB64(cb_info.range[i].start),
-			UNPACK_CB64(cb_info.range[i].start) + 
+			UNPACK_CB64(cb_info.range[i].start) +
 			UNPACK_CB64(cb_info.range[i].size) - 1);
 	}
 }
 
 static void parse_memory(unsigned char *ptr)
 {
-	struct cb_memory *mem = (struct cb_memory *) ptr;
-	
+	struct cb_memory *mem = (struct cb_memory *)ptr;
+
 	int max = (MEM_RANGE_COUNT(mem) > MAX_MEMORY_COUNT)
-		? MAX_MEMORY_COUNT : MEM_RANGE_COUNT(mem);
+	    ? MAX_MEMORY_COUNT : MEM_RANGE_COUNT(mem);
 	int i;
 
-	for(i = 0; i < max; i++) {
-		struct cb_memory_range *range = 
-			(struct cb_memory_range *) MEM_RANGE_PTR(mem, i);
+	for (i = 0; i < max; i++) {
+		struct cb_memory_range *range =
+		    (struct cb_memory_range *)MEM_RANGE_PTR(mem, i);
 
 		memcpy(&cb_info.range[i], range, sizeof(*range));
 	}
-	
+
 	cb_info.mem_count = max;
 	cb_info.mem_actual = MEM_RANGE_COUNT(mem);
 }
 
-static void parse_mainboard(unsigned char *ptr)	
+static void parse_mainboard(unsigned char *ptr)
 {
-	struct cb_mainboard *mb = (struct cb_mainboard *) ptr;
+	struct cb_mainboard *mb = (struct cb_mainboard *)ptr;
 
 	strncpy(cb_info.vendor, MB_VENDOR_STRING(mb), 31);
 	strncpy(cb_info.part, MB_PART_STRING(mb), 31);
@@ -148,69 +145,67 @@ static void parse_mainboard(unsigned char *ptr)
 
 static void parse_strings(unsigned char *ptr)
 {
-	struct cb_string *string = (struct cb_string *) ptr;
+	struct cb_string *string = (struct cb_string *)ptr;
 	int index = string->tag - CB_TAG_VERSION;
-	
+
 	strncpy(cb_info.strings[index], string->string, 63);
 	cb_info.strings[index][63] = 0;
 }
 
 static void parse_serial(unsigned char *ptr)
 {
-	memcpy(&cb_info.serial, (struct cb_serial *) ptr,
+	memcpy(&cb_info.serial, (struct cb_serial *)ptr,
 	       sizeof(struct cb_serial));
 }
 
 static void parse_console(unsigned char *ptr)
-{	
-	memcpy(&cb_info.console, (struct cb_console *) ptr,
+{
+	memcpy(&cb_info.console, (struct cb_console *)ptr,
 	       sizeof(struct cb_console));
 }
- 	
+
 static int parse_header(void *addr, int len)
 {
 	struct cb_header *header;
-	unsigned char *ptr = (unsigned char *) addr;
+	unsigned char *ptr = (unsigned char *)addr;
 	int i;
 
 	for (i = 0; i < len; i += 16, ptr += 16) {
-		header = (struct cb_header *) ptr;
+		header = (struct cb_header *)ptr;
 
 		if (!strncmp(header->signature, "LBIO", 4))
 			break;
 	}
 
-	/* We walked the entire space and didn't find anything */
+	/* We walked the entire space and didn't find anything. */
 	if (i >= len)
 		return -1;
 
 	if (!header->table_bytes)
 		return 0;
-	
-	/* FIXME: Check the checksum */
+
+	/* FIXME: Check the checksum. */
 
 	if (ipchksum((uint16_t *) header, sizeof(*header)))
-	  return -1;
+		return -1;
 
-	if (ipchksum((uint16_t *) (ptr + sizeof(*header)), header->table_bytes) !=
-	    header->table_checksum)
-	  return -1;
+	if (ipchksum((uint16_t *) (ptr + sizeof(*header)), header->table_bytes)
+	    != header->table_checksum)
+		return -1;
 
-	/* Now, walk the tables */
+	/* Now, walk the tables. */
 	ptr += header->header_bytes;
 
-	for(i = 0; i < header->table_entries; i++) {
-		struct cb_record *rec = (struct cb_record *) ptr;
-		
-		switch(rec->tag) {
+	for (i = 0; i < header->table_entries; i++) {
+		struct cb_record *rec = (struct cb_record *)ptr;
+
+		switch (rec->tag) {
 		case CB_TAG_MEMORY:
 			parse_memory(ptr);
 			break;
-			
 		case CB_TAG_MAINBOARD:
 			parse_mainboard(ptr);
 			break;
-			
 		case CB_TAG_VERSION:
 		case CB_TAG_EXTRA_VERSION:
 		case CB_TAG_BUILD:
@@ -223,39 +218,33 @@ static int parse_header(void *addr, int len)
 		case CB_TAG_ASSEMBLER:
 			parse_strings(ptr);
 			break;
-
 		case CB_TAG_SERIAL:
 			parse_serial(ptr);
 			break;
-
 		case CB_TAG_CONSOLE:
 			parse_console(ptr);
 			break;
-
 		default:
 			break;
 		}
 
 		ptr += rec->size;
 	}
-	
+
 	return 1;
 }
 
 int coreboot_module_init(void)
 {
-	int ret = parse_header((void *) 0x00000, 0x1000);
+	int ret = parse_header((void *)0x00000, 0x1000);
 
 	if (ret != 1)
-		ret = parse_header((void *) 0xf0000, 0x1000);
+		ret = parse_header((void *)0xf0000, 0x1000);
 
-	/* return error if we couldn't find it at either address */
-
-	tables_good =  (ret == 1) ? 0 : -1;
+	/* Return error if we couldn't find it at either address. */
+	tables_good = (ret == 1) ? 0 : -1;
 	return tables_good;
 }
-
-
 
 struct coreinfo_module coreboot_module = {
 	.name = "Coreboot",

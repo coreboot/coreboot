@@ -40,13 +40,14 @@ const char *generic_cap_flags[] = {
 	"fxsr", "sse", "sse2", "ss", "ht", "tm", NULL, "pbe"
 };
 
-  /* CPUID 0x00000001 ECX flags */
+/* CPUID 0x00000001 ECX flags */
 const char *intel_cap_generic_ecx_flags[] = {
 	"sse3", NULL, NULL, "monitor", "ds-cpl", "vmx", NULL, "est",
 	"tm2", "ssse3", "cntx-id", NULL, NULL, "cx16", "xTPR", NULL,
 	NULL, NULL, "dca", NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
+
 /* CPUID 0x80000001 EDX flags */
 const char *intel_cap_extended_edx_flags[] = {
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -54,6 +55,7 @@ const char *intel_cap_extended_edx_flags[] = {
 	NULL, NULL, NULL, NULL, "xd", NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, "em64t", NULL, NULL,
 };
+
 /* CPUID 0x80000001 ECX flags */
 const char *intel_cap_extended_ecx_flags[] = {
 	"lahf_lm", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -96,11 +98,11 @@ void decode_flags(WINDOW *win, unsigned long reg, const char **flags, int *row)
 
 	wmove(win, lrow, 2);
 
-	for(i = 0; i < 32; i++) {
+	for (i = 0; i < 32; i++) {
 		if (flags[i] == NULL)
 			continue;
 
-		if (reg & (1 << i)) 
+		if (reg & (1 << i))
 			wprintw(win, "%s ", flags[i]);
 
 		if (i && (i % 16) == 0) {
@@ -111,7 +113,6 @@ void decode_flags(WINDOW *win, unsigned long reg, const char **flags, int *row)
 
 	*row = lrow;
 }
-
 
 static void get_features(WINDOW *win, int *row)
 {
@@ -127,7 +128,7 @@ static void get_features(WINDOW *win, int *row)
 
 	lrow++;
 
-	switch(vendor) {
+	switch (vendor) {
 	case VENDOR_AMD:
 		wmove(win, lrow++, 1);
 		wprintw(win, "AMD Extended Flags: ");
@@ -136,7 +137,6 @@ static void get_features(WINDOW *win, int *row)
 		decode_flags(win, edx, amd_cap_extended_edx_flags, &lrow);
 		decode_flags(win, ecx, amd_cap_extended_ecx_flags, &lrow);
 		break;
-
 	case VENDOR_INTEL:
 		wmove(win, lrow++, 1);
 		wprintw(win, "Intel Extended Flags: ");
@@ -152,47 +152,44 @@ static void get_features(WINDOW *win, int *row)
 
 static void do_name(WINDOW *win, int row)
 {
-	char str[80];
+	char str[80], name[49], *p;
 	unsigned long eax, ebx, ecx, edx;
 	int i, t;
-	char name[49], *p;
 
 	p = name;
 
-	for(i = 0x80000002; i <= 0x80000004; i++) {
+	for (i = 0x80000002; i <= 0x80000004; i++) {
 		docpuid(i, &eax, &ebx, &ecx, &edx);
 
 		if (eax == 0)
 			break;
 
-		for(t = 0; t < 4; t++)
+		for (t = 0; t < 4; t++)
 			*p++ = eax >> (8 * t);
-		for(t = 0; t < 4; t++)
+		for (t = 0; t < 4; t++)
 			*p++ = ebx >> (8 * t);
-		for(t = 0; t < 4; t++)
+		for (t = 0; t < 4; t++)
 			*p++ = ecx >> (8 * t);
-		for(t = 0; t < 4; t++)
+		for (t = 0; t < 4; t++)
 			*p++ = edx >> (8 * t);
 	}
 
-	mvwprintw(win, row,1, "Processor: %s", name);
+	mvwprintw(win, row, 1, "Processor: %s", name);
 }
 
-int cpuinfo_module_redraw(WINDOW *win)
+int cpuinfo_module_redraw(WINDOW * win)
 {
 	unsigned long eax, ebx, ecx, edx;
-
 	unsigned int brand;
-	char str[80];
-	char *vstr;
+	char str[80], *vstr;
 	int row = 2;
 
 	print_module_title(win, "CPU Information");
 
 	docpuid(0, NULL, &vendor, NULL, NULL);
 
-	switch(vendor) {
-	case  VENDOR_INTEL:
+	switch (vendor) {
+	case VENDOR_INTEL:
 		vstr = "Intel";
 		break;
 	case VENDOR_AMD:
@@ -221,7 +218,7 @@ int cpuinfo_module_redraw(WINDOW *win)
 
 	docpuid(0x00000001, &eax, &ebx, &ecx, &edx);
 
-	mvwprintw(win, row++, 1, "Family: %X",(eax >> 8) & 0x0f);
+	mvwprintw(win, row++, 1, "Family: %X", (eax >> 8) & 0x0f);
 	mvwprintw(win, row++, 1, "Model: %X",
 		  ((eax >> 4) & 0xf) | ((eax >> 16) & 0xf) << 4);
 
@@ -229,34 +226,30 @@ int cpuinfo_module_redraw(WINDOW *win)
 
 	if (vendor == VENDOR_AMD) {
 		docpuid(0x80000001, &eax, &ebx, &ecx, &edx);
-		brand = ((ebx >> 9) & 0x1F);
+		brand = ((ebx >> 9) & 0x1f);
 
-		mvwprintw(win, row++, 1,"Brand: %X", brand);
+		mvwprintw(win, row++, 1, "Brand: %X", brand);
 	}
 
-	if (cpu_khz != 0) {
-		mvwprintw(win, row++, 1, "CPU Speed: %d Mhz",
-				cpu_khz / 1000);
-	}
-	else {
+	if (cpu_khz != 0)
+		mvwprintw(win, row++, 1, "CPU Speed: %d Mhz", cpu_khz / 1000);
+	else
 		mvwprintw(win, row++, 1, "CPU Speed: Error");
-	}
 
 	row++;
 	get_features(win, &row);
 }
 
-unsigned int getticks(void) 
+unsigned int getticks(void)
 {
 	unsigned long long start, end;
 
-	/* Read the number of ticks during the period */
-
+	/* Read the number of ticks during the period. */
 	start = rdtsc();
 	mdelay(100);
 	end = rdtsc();
 
-	return (unsigned int) ((end - start) / 100);
+	return (unsigned int)((end - start) / 100);
 }
 
 int cpuinfo_module_init(void)

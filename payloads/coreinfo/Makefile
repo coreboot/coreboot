@@ -17,14 +17,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-CC=gcc
+CC = gcc
 CROSS_CFLAGS = -m32
 
 INCLUDES = -I../libpayload/include 
 INCLUDES += -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
 
-LIBPAYLOAD=../libpayload/libpayload.a
-LIBGCC:=$(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
+LIBPAYLOAD = ../libpayload/libpayload.a
+LIBGCC := $(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
 CFLAGS := -Werror -fno-stack-protector -nostdinc $(INCLUDES)
 
 MODULES = cpuinfo_module.o cpuid.o pci_module.o coreboot_module.o
@@ -34,12 +34,12 @@ TARGET  = coreinfo.elf
 all: $(TARGET)
 
 clean:
-	@ rm -f $(TARGET) $(MODULES) $(OBJECTS)
+	@rm -f $(TARGET) $(MODULES) $(OBJECTS)
 
 $(TARGET): $(OBJECTS) $(MODULES)
-	#ld --verbose -T ../libpayload/libpayload.ldscript -o $@ $(OBJECTS) --whole-archive $(LIBPAYLOAD) --no-whole-archive $(LIBGCC)
+	@#ld --verbose -T ../libpayload/libpayload.ldscript -o $@ $(OBJECTS) --whole-archive $(LIBPAYLOAD) --no-whole-archive $(LIBGCC)
 	ld -T ../libpayload/libpayload.ldscript -o $@ $(OBJECTS) $(MODULES) ../libpayload/i386/head.o $(LIBPAYLOAD) $(LIBGCC)
-	@ strip $@
+	@strip $@
 
 .S.o:
 	$(AS) --32 -o $@ $<

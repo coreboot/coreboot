@@ -21,18 +21,18 @@
 #define COREINFO_H_
 
 #include <libpayload.h>
-
 #include <curses.h>
 
 struct coreinfo_module {
 	char name[15];
-	int (*init)(void);
-	int (*redraw)(WINDOW *);
-	int (*handle)(int);
+	int (*init) (void);
+	int (*redraw) (WINDOW *);
+	int (*handle) (int);
 };
 
-extern void docpuid(int, unsigned long *, unsigned long *, unsigned long *, unsigned long *);
+extern void docpuid(int, unsigned long *, unsigned long *, unsigned long *,
+		    unsigned long *);
 
-void print_module_title(WINDOW *, const char *title);
+void print_module_title(WINDOW *win, const char *title);
 
 #endif

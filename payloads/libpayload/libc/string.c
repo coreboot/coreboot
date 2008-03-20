@@ -142,6 +142,11 @@ char *strncpy(char *d, const char *s, int n)
 	return d;
 }
 
+char *strcpy(char *d, const char *s)
+{
+	return strncpy(d, s, strlen(s));
+}
+
 char *strncat(char *d, const char *s, int n)
 {
 	char *p = d + strlen(d);

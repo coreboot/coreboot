@@ -29,7 +29,6 @@
 
 #include <libpayload.h>
 #include <sysinfo.h>
-#include <ipchecksum.h>
 #include <coreboot_tables.h>
 
 /* Some of this is x86 specific, and the rest of it

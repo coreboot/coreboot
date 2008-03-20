@@ -1,0 +1,87 @@
+-------------------------------------------------------------------------------
+Copyright and Licenses
+-------------------------------------------------------------------------------
+
+The copyright on libpayload is owned by various individual developers
+and/or companies. Please check the individual source files for details.
+
+The libpayload code is mostly licensed under the terms of the three-clause
+BSD license:
+
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions
+   are met:
+
+   1. Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+   2. Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+   3. The name of the author may not be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+   THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+   ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+   FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+   DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+   OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+   SUCH DAMAGE.
+
+For some parts, which were taken from external projects, other (compatible)
+licenses may apply. Please check the individual source files for details,
+or see the section below for an overview of third-party code in libpayload.
+
+
+Third-party Code and License Overview
+-------------------------------------
+
+This is an overview of (modified or unmodified) third-party code in
+libpayload, and where it was originally taken from.
+
+Please check the individual source code files for the list of copyright
+holders, and the exact license terms that apply.
+
+* util/kconfig/*: GPLv2
+  Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
+  Current version we use: TODO
+
+* include/curses.priv.h: BSD-like license
+  Source: ncurses, http://www.gnu.org/software/ncurses/
+  Original files: ncurses/curses.priv.h
+  Current version we use: 5.6
+
+* include/curses.h: BSD-like license
+  Source: ncurses, http://www.gnu.org/software/ncurses/
+  Original files: include/curses.h.in
+  Current version we use: 5.6
+
+* libc/ipchecksum.c: 2-clause BSD license
+  Source: FreeBSD's base system libraries, http://www.freebsd.org
+          http://www.freebsd.org/cgi/cvsweb.cgi/src/lib/libalias/Attic/alias_util.c?rev=1.15;content-type=text%2Fplain
+  Original files: lib/libalias/alias_util.c, function LibAliasInternetChecksum()
+  Current version we use: CVS revision 1.15 2004/07/06 12:13:28
+
+* libc/memory.c: 3-clause BSD license
+  Source: HelenOS, http://www.helenos.eu
+          svn checkout svn://svn.helenos.eu/HelenOS/trunk HelenOS
+          http://svn.helenos.eu/chora/browse.php?f=%2Ftrunk%2F
+  Original files: uspace/libc/generic/string.c
+  Current version we use: r2754
+
+* libc/printf.c: 3-clause BSD license
+  Source: HelenOS, http://www.helenos.eu
+          svn checkout svn://svn.helenos.eu/HelenOS/trunk HelenOS
+          http://svn.helenos.eu/chora/browse.php?f=%2Ftrunk%2F
+  Original files: kernel/generic/src/printf/printf_core.c
+                  kernel/generic/src/printf/sprintf.c
+                  kernel/generic/src/printf/vsnprintf.c
+                  kernel/generic/src/printf/vsprintf.c
+                  kernel/generic/src/printf/printf.c
+                  kernel/generic/src/printf/vprintf.c
+  Current version we use: r2745
+

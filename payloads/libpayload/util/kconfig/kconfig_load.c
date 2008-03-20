@@ -15,7 +15,7 @@ void kconfig_load(void)
 
 	handle = dlopen("./libkconfig.so", RTLD_LAZY);
 	if (!handle) {
-		handle = dlopen("./scripts/kconfig/libkconfig.so", RTLD_LAZY);
+		handle = dlopen("./util/kconfig/libkconfig.so", RTLD_LAZY);
 		if (!handle) {
 			fprintf(stderr, "%s\n", dlerror());
 			exit(1);

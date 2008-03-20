@@ -27,15 +27,22 @@ static void bridge_enable(struct device *dev)
 	print_debug("B188 device dump\n");
 
 	/* VIA recommends this, sorry no known info. */
+
 	writeback(dev, 0x40, 0x91);
 	writeback(dev, 0x41, 0x40);
 	writeback(dev, 0x43, 0x44);
-	writeback(dev, 0x44, 0x31);
+	writeback(dev, 0x44, 0x31); 	/* K8M890 should have 0x35 datasheet 
+					 * says it is reserved 
+					 */
 	writeback(dev, 0x45, 0x3a);
 	writeback(dev, 0x46, 0x88);	/* PCI ID lo */
 	writeback(dev, 0x47, 0xb1);	/* PCI ID hi */
-	writeback(dev, 0x3e, 0x16);	/* Bridge control */
 
+	/* Bridge control, K8M890 bit 3 should be set to enable VGA on AGP 
+	 * (Forward VGA compatible memory and I/O cycles )
+	 */
+
+	writeback(dev, 0x3e, 0x16);
 	dump_south(dev);
 }
 

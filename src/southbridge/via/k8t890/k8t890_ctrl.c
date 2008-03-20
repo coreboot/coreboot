@@ -23,75 +23,23 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 
-/**
- * Setup the V-Link for VT8237R, 8X mode.
- *
- * For K8T890CF VIA recommends what is in VIA column, AW is award 8X:
- *
- *						 REG   DEF   AW  VIA-8X VIA-4X
- *						 -----------------------------
- * NB V-Link Manual Driving Control strobe	 0xb5  0x46  0x46  0x88  0x88
- * NB V-Link Manual Driving Control - Data	 0xb6  0x46  0x46  0x88  0x88
- * NB V-Link Receiving Strobe Delay		 0xb7  0x02  0x02  0x61  0x01
- * NB V-Link Compensation Control bit4,0 (b5,b6) 0xb4  0x10  0x10  0x11  0x11
- * SB V-Link Strobe Drive Control 		 0xb9  0x00  0xa5  0x98  0x98
- * SB V-Link Data drive Control????		 0xba  0x00  0xbb  0x77  0x77
- * SB V-Link Receive Strobe Delay????		 0xbb  0x04  0x11  0x11  0x11
- * SB V-Link Compensation Control bit0 (use b9)	 0xb8  0x00  0x01  0x01  0x01
- * V-Link CKG Control				 0xb0  0x05  0x05  0x06  0x03
- * V-Link CKG Control				 0xb1  0x05  0x05  0x01  0x03
+/* We support here K8M890/K8T890 and VT8237R PCI1/Vlink which setup is not in separate 
+ * PCI device 0:11.7, but it is mapped to PCI 0:0.7 (0x70-0x7c for PCI1)
  */
-static void ctrl_init_vt8237r(struct device *dev)
-{
-	u8 reg;
 
-	/*
-	 * This init code is valid only for the VT8237R! For different
-	 * sounthbridges (e.g. VT8237A, VT8237S, VT8237 (without plus R)
-	 * and VT8251) a different init code is required.
-	 */
-	device_t devsb = dev_find_device(PCI_VENDOR_ID_VIA,
-					 PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
-	if (!devsb)
-		return;
-
-	pci_write_config8(dev, 0xb5, 0x88);
-	pci_write_config8(dev, 0xb6, 0x88);
-	pci_write_config8(dev, 0xb7, 0x61);
-
-	reg = pci_read_config8(dev, 0xb4);
-	reg |= 0x11;
-	pci_write_config8(dev, 0xb4, reg);
-
-	pci_write_config8(dev, 0xb9, 0x98);
-	pci_write_config8(dev, 0xba, 0x77);
-	pci_write_config8(dev, 0xbb, 0x11);
-
-	reg = pci_read_config8(dev, 0xb8);
-	reg |= 0x1;
-	pci_write_config8(dev, 0xb8, reg);
-
-	pci_write_config8(dev, 0xb0, 0x06);
-	pci_write_config8(dev, 0xb1, 0x01);
-
-	/* Program V-link 8X 16bit full duplex, parity enabled. */
-	pci_write_config8(dev, 0x48, 0xa3);
-}
-
-static void ctrl_enable(struct device *dev)
+static void vt8237r_cfg(struct device *dev, struct device *devsb)
 {
 	u8 regm, regm2, regm3;
-	device_t devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+
+	device_t devfun3;
+
+	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
 
-	/* TODO: Fix some ordering issue fo V-link set Rx77[6] and PCI1_Rx4F[0]
-	   should to 1 */
+		if (!devfun3)
+			devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
+					   PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
 
-	/* C2P Read ACK Return Priority */
-	/* PCI CFG Address bits[27:24] are used as extended register address
-	   bit[11:8] */
-	pci_write_config8(dev, 0x47, 0x30);
-	/* Magic init. This is not well documented :/ */
 	pci_write_config8(dev, 0x70, 0xc2);
 
 	/* PCI Control */
@@ -137,17 +85,98 @@ static void ctrl_enable(struct device *dev)
 	pci_write_config8(dev, 0x63, regm3 | (regm & 0x3F));
 }
 
+
+
+/**
+ * Setup the V-Link for VT8237R, 8X mode.
+ *
+ * For K8T890CF VIA recommends what is in VIA column, AW is award 8X:
+ *
+ *						 REG   DEF   AW  VIA-8X VIA-4X
+ *						 -----------------------------
+ * NB V-Link Manual Driving Control strobe	 0xb5  0x46  0x46  0x88  0x88
+ * NB V-Link Manual Driving Control - Data	 0xb6  0x46  0x46  0x88  0x88
+ * NB V-Link Receiving Strobe Delay		 0xb7  0x02  0x02  0x61  0x01
+ * NB V-Link Compensation Control bit4,0 (b5,b6) 0xb4  0x10  0x10  0x11  0x11
+ * SB V-Link Strobe Drive Control 		 0xb9  0x00  0xa5  0x98  0x98
+ * SB V-Link Data drive Control????		 0xba  0x00  0xbb  0x77  0x77
+ * SB V-Link Receive Strobe Delay????		 0xbb  0x04  0x11  0x11  0x11
+ * SB V-Link Compensation Control bit0 (use b9)	 0xb8  0x00  0x01  0x01  0x01
+ * V-Link CKG Control				 0xb0  0x05  0x05  0x06  0x03
+ * V-Link CKG Control				 0xb1  0x05  0x05  0x01  0x03
+ */
+
+static void vt8237r_vlink_init(struct device *dev)
+{
+	u8 reg;
+
+	/*
+	 * This init code is valid only for the VT8237R! For different
+	 * sounthbridges (e.g. VT8237A, VT8237S, VT8237 (without plus R)
+	 * and VT8251) a different init code is required.
+	 */
+
+	pci_write_config8(dev, 0xb5, 0x88);
+	pci_write_config8(dev, 0xb6, 0x88);
+	pci_write_config8(dev, 0xb7, 0x61);
+
+	reg = pci_read_config8(dev, 0xb4);
+	reg |= 0x11;
+	pci_write_config8(dev, 0xb4, reg);
+
+	pci_write_config8(dev, 0xb9, 0x98);
+	pci_write_config8(dev, 0xba, 0x77);
+	pci_write_config8(dev, 0xbb, 0x11);
+
+	reg = pci_read_config8(dev, 0xb8);
+	reg |= 0x1;
+	pci_write_config8(dev, 0xb8, reg);
+
+	pci_write_config8(dev, 0xb0, 0x06);
+	pci_write_config8(dev, 0xb1, 0x01);
+
+	/* Program V-link 8X 16bit full duplex, parity enabled. */
+	pci_write_config8(dev, 0x48, 0xa3);
+}
+
+static void ctrl_init(struct device *dev) {
+
+	/* TODO: Fix some ordering issue fo V-link set Rx77[6] and PCI1_Rx4F[0]
+	   should to 1 */
+
+	/* C2P Read ACK Return Priority */
+	/* PCI CFG Address bits[27:24] are used as extended register address
+	   bit[11:8] */
+
+	pci_write_config8(dev, 0x47, 0x30);
+
+	/* VT8237R specific configuration  other SB are done in their own directories */
+
+	device_t devsb = dev_find_device(PCI_VENDOR_ID_VIA,
+					 PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
+	if (devsb) {
+		vt8237r_vlink_init(dev);
+		vt8237r_cfg(dev, devsb);
+	}
+
+}
+
 static const struct device_operations ctrl_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.enable			= ctrl_enable,
-	.init			= ctrl_init_vt8237r,
+	.init			= ctrl_init,
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver __pci_driver = {
+static const struct pci_driver northbridge_driver_t __pci_driver = {
 	.ops	= &ctrl_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_7,
+};
+
+static const struct pci_driver northbridge_driver_m __pci_driver = {
+	.ops	= &ctrl_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M890CE_7,
 };

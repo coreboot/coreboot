@@ -68,15 +68,15 @@ static void apic_mmconfig_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM;
 }
 
-static void traf_ctrl_enable(struct device *dev)
+static void traf_ctrl_enable_generic(struct device *dev)
 {
 	volatile u32 *apic;
 	u32 data;
 
-	/* Enable D3F1-D3F3, no device2 redirect, enable just one device behind
+	/* no device2 redirect, enable just one device behind
 	 * bridge device 2 and device 3).
 	 */
-	pci_write_config8(dev, 0x60, 0x88);
+	pci_write_config8(dev, 0x60, 0x08);
 
 	/* Will enable MMCONFIG later. */
 	pci_write_config8(dev, 0x64, 0x23);
@@ -104,16 +104,46 @@ static void traf_ctrl_enable(struct device *dev)
 	apic[4] = (data & 0xF0FFFF) | (K8T890_APIC_ID << 24);
 }
 
-static const struct device_operations traf_ctrl_ops = {
+static void traf_ctrl_enable_k8m890(struct device *dev)
+{
+	traf_ctrl_enable_generic(dev);
+}
+
+static void traf_ctrl_enable_k8t890(struct device *dev)
+{
+	u8 reg;
+
+	traf_ctrl_enable_generic(dev);
+
+	/* Enable D3F1-D3F3 */
+	reg = pci_read_config8(dev, 0x60);
+	pci_write_config8(dev, 0x60, 0x80 | reg);
+}
+
+static const struct device_operations traf_ctrl_ops_m = {
 	.read_resources		= apic_mmconfig_read_resources,
 	.set_resources		= mmconfig_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.enable			= traf_ctrl_enable,
+	.enable			= traf_ctrl_enable_k8m890,
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops	= &traf_ctrl_ops,
+static const struct device_operations traf_ctrl_ops_t = {
+	.read_resources		= apic_mmconfig_read_resources,
+	.set_resources		= mmconfig_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= traf_ctrl_enable_k8t890,
+	.ops_pci		= 0,
+};
+
+static const struct pci_driver northbridge_driver_t __pci_driver = {
+	.ops	= &traf_ctrl_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_5,
+};
+
+static const struct pci_driver northbridge_driver_m __pci_driver = {
+	.ops	= &traf_ctrl_ops_m,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M890CE_5,
 };

@@ -32,4 +32,7 @@
 #define K8T890_MMCONFIG_MBAR	0x61
 #define K8T890_MULTIPLE_FN_EN	0x4f
 
+/* the FB size in MB (min is 8MB max is 512MB) */
+#define K8M890_FBSIZEMB		64
+
 #endif

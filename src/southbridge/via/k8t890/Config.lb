@@ -19,6 +19,7 @@
 
 driver k8t890_ctrl.o
 driver k8t890_dram.o
+driver k8t890_bridge.o
 driver k8t890_host.o
 driver k8t890_host_ctrl.o
 driver k8t890_pcie.o

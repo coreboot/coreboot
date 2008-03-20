@@ -23,4 +23,3 @@ driver vt8237r.o
 driver vt8237r_ide.o
 driver vt8237r_lpc.o
 driver vt8237r_sata.o
-driver vt8237r_bridge.o

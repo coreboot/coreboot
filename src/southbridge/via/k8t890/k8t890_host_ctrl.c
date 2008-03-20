@@ -23,8 +23,10 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 
+/* this may be later merged */
+
 /* This fine tunes the HT link settings, which were loaded by ROM strap. */
-static void host_ctrl_enable(struct device *dev)
+static void host_ctrl_enable_k8t890(struct device *dev)
 {
 	dump_south(dev);
 
@@ -47,6 +49,11 @@ static void host_ctrl_enable(struct device *dev)
 
 	/* Arbitration control 2 */
 	pci_write_config8(dev, 0xa6, 0x80);
+
+	/* this will be possibly removed, when I figure out
+	 * if the ROM SIP is good, second reason is that the 
+	 * unknown bits are AGP related, which are dummy on K8T890
+	 */
 
 	writeback(dev, 0xa0, 0x13);	/* Bit4 is reserved! */
 	writeback(dev, 0xa1, 0x8e);	/* Some bits are reserved. */
@@ -78,16 +85,55 @@ static void host_ctrl_enable(struct device *dev)
 	dump_south(dev);
 }
 
-static const struct device_operations host_ctrl_ops = {
+/* This fine tunes the HT link settings, which were loaded by ROM strap. */
+static void host_ctrl_enable_k8m890(struct device *dev) {
+
+	/*
+	 * Set PCI to HT outstanding requests to 03.
+	 * Bit 4 32 AGP ADS Read Outstanding Request Number
+	 */
+	pci_write_config8(dev, 0xa0, 0x13);
+
+	/* Disable NVRAM and enable non-posted PCI writes. */
+	pci_write_config8(dev, 0xa1, 0x8e);
+
+	/*
+	 * NVRAM I/O base 0xe00-0xeff, but it is disabled.
+	 */
+
+	pci_write_config8(dev, 0xa2, 0x0e);
+	/* Arbitration control  */
+	pci_write_config8(dev, 0xa5, 0x3c);
+
+	/* Arbitration control 2 */
+	pci_write_config8(dev, 0xa6, 0x82);
+
+}
+
+static const struct device_operations host_ctrl_ops_t = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.enable			= host_ctrl_enable,
+	.enable			= host_ctrl_enable_k8t890,
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops	= &host_ctrl_ops,
+static const struct device_operations host_ctrl_ops_m = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= host_ctrl_enable_k8m890,
+	.ops_pci		= 0,
+};
+
+static const struct pci_driver northbridge_driver_t __pci_driver = {
+	.ops	= &host_ctrl_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_2,
+};
+
+static const struct pci_driver northbridge_driver_m __pci_driver = {
+	.ops	= &host_ctrl_ops_m,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M890CE_2,
 };

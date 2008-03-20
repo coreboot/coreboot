@@ -30,6 +30,8 @@ static void error_enable(struct device *dev)
 	 * bit7 - Parity Error/SERR# Report Through NMI
 	 */
 	pci_write_config8(dev, 0x58, 0x81);
+
+	/* TODO: enable AGP errors reporting on K8M890 */
 }
 
 static const struct device_operations error_ops = {
@@ -40,8 +42,14 @@ static const struct device_operations error_ops = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver __pci_driver = {
+static const struct pci_driver northbridge_driver_t __pci_driver = {
 	.ops	= &error_ops,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_1,
+};
+
+static const struct pci_driver northbridge_driver_m __pci_driver = {
+	.ops	= &error_ops,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M890CE_1,
 };

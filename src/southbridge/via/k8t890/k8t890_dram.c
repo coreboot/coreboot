@@ -23,6 +23,8 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <bitops.h>
+#include "k8t890.h"
 
 static void dram_enable(struct device *dev)
 {
@@ -59,10 +61,75 @@ static void dram_enable(struct device *dev)
 	reg = pci_read_config16(dev, 0x88);
 	reg &= 0xf800;
 
+	/* The Address Next to the Last Valid DRAM Address */
 	pci_write_config16(dev, 0x88, (msr.lo >> 24) | reg);
 }
 
-static const struct device_operations dram_ops = {
+static struct resource *resmax;
+
+static void get_memres(void *gp, struct device *dev, struct resource *res)
+{
+	unsigned int *fbsize = (unsigned int *) gp;
+	uint64_t proposed_base = res->base + res->size - *fbsize;
+
+	printk_debug("get_memres: res->base=%llx res->size=%llx %d %d %d\n",
+			res->base, res->size, (res->size > *fbsize), 
+			(!(proposed_base & (*fbsize - 1))),
+			(proposed_base < ((uint64_t) 0xffffffff)));
+
+	/* if we fit and also align OK, and must be below 4GB */
+	if ((res->size > *fbsize) && (!(proposed_base & (*fbsize - 1))) && 
+		(proposed_base < ((uint64_t) 0xffffffff) )) {
+		resmax = res;
+	}
+}
+
+
+static void dram_init_fb(struct device *dev)
+{
+	/* Important bits:
+	 * Enable the internal GFX bit 7 of reg 0xa1 plus in same reg:
+	 * bits 6:4 X fbuffer size will be  2^(X+2) or 100 = 64MB, 101 = 128MB 
+	 * bits 3:0 BASE [31:28]
+	 * reg 0xa0 bits 7:1 BASE [27:21] bit0 enable CPU access
+	 */
+	u8 tmp;
+	uint64_t proposed_base;
+	unsigned int fbsize = (K8M890_FBSIZEMB * 1024 * 1024);
+
+	resmax = NULL;
+	search_global_resources(
+                IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+                get_memres, (void *) &fbsize);
+
+	/* no space for FB */
+	if (!resmax) {
+		printk_err("VIA FB: no space for framebuffer in RAM\n");
+		return;
+	}
+
+	proposed_base = resmax->base + resmax->size - fbsize;
+	resmax->size -= fbsize;
+
+	printk_debug("VIA FB proposed base: %llx\n", proposed_base);
+
+	/* enable UMA but no FB */
+	pci_write_config8(dev, 0xa1, 0x80);
+
+	/* 27:21 goes to 7:1, 0 is enable CPU access */
+	tmp = (proposed_base >> 20) | 0x1;
+	pci_write_config8(dev, 0xa0, tmp);
+
+	/* 31:28 goes to 3:0 */
+	tmp = ((proposed_base >> 28) & 0xf);
+	tmp = ((log2(K8M890_FBSIZEMB) - 2) << 4);
+	tmp |= 0x80;
+	pci_write_config8(dev, 0xa1, tmp);
+
+	/* TODO K8 needs some UMA fine tuning too maybe call some generic routine here? */
+}
+
+static const struct device_operations dram_ops_t = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -70,8 +137,23 @@ static const struct device_operations dram_ops = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops	= &dram_ops,
+static const struct device_operations dram_ops_m = {
+	.read_resources		= pci_dev_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= pci_dev_enable_resources,
+	.enable			= dram_enable,
+	.init			= dram_init_fb,
+	.ops_pci		= 0,
+};
+
+static const struct pci_driver northbridge_driver_t __pci_driver = {
+	.ops	= &dram_ops_t,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_K8T890CE_3,
+};
+
+static const struct pci_driver northbridge_driver_m __pci_driver = {
+	.ops	= &dram_ops_m,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_K8M890CE_3,
 };

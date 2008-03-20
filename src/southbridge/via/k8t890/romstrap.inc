@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* This file constructs the ROM strap table for K8T890. */
+/* This file constructs the ROM strap table for K8T890 and K8M890 */
 
 .section ".romstrap", "a", @progbits
 

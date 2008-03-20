@@ -52,7 +52,7 @@ void print_module_title(WINDOW *win, const char *title)
 
 void print_menu(void)
 {
-	int i, j, len;
+	int i, j;
 	char menu[80];
 	char *ptr = menu;
 
@@ -105,7 +105,7 @@ static void redraw_module(void)
 	refresh();
 }
 
-int loop(void)
+void loop(void)
 {
 	int key;
 
@@ -168,4 +168,6 @@ int main(void)
 		modules[i]->init();
 
 	loop();
+
+	return 0;
 }

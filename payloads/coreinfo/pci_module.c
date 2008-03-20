@@ -106,7 +106,7 @@ static void pci_read_byte(unsigned int bus, unsigned int devfn,
 	*val = inb(0xcfc + (reg & 3));
 }
 
-static int show_config_space(WINDOW *win, int row, int col, int index)
+static void show_config_space(WINDOW *win, int row, int col, int index)
 {
 	unsigned char cspace[64];
 	int bus, devfn;
@@ -116,7 +116,7 @@ static int show_config_space(WINDOW *win, int row, int col, int index)
 	devfn = devices[index].device & 0xff;
 
 	for (i = 0; i < 64; i += 4)
-		pci_read_dword(bus, devfn, i, ((int *)&cspace[i]));
+		pci_read_dword(bus, devfn, i, ((unsigned int *)&cspace[i]));
 
 	for (y = 0; y < 4; y++) {
 		for (x = 0; x < 16; x++)
@@ -272,11 +272,7 @@ int pci_module_handle(int key)
 
 int pci_module_init(void)
 {
-	unsigned int val;
-	int bus = 0;
-
 	pci_scan_bus(0);
-
 	return 0;
 }
 

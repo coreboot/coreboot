@@ -92,7 +92,6 @@ static unsigned int cpu_khz;
 
 void decode_flags(WINDOW *win, unsigned long reg, const char **flags, int *row)
 {
-	int index = 0;
 	int i;
 	int lrow = *row;
 
@@ -117,7 +116,6 @@ void decode_flags(WINDOW *win, unsigned long reg, const char **flags, int *row)
 static void get_features(WINDOW *win, int *row)
 {
 	unsigned long eax, ebx, ecx, edx;
-	int index = 0;
 	int lrow = *row;
 
 	wmove(win, lrow++, 1);
@@ -152,7 +150,7 @@ static void get_features(WINDOW *win, int *row)
 
 static void do_name(WINDOW *win, int row)
 {
-	char str[80], name[49], *p;
+	char name[49], *p;
 	unsigned long eax, ebx, ecx, edx;
 	int i, t;
 
@@ -177,11 +175,11 @@ static void do_name(WINDOW *win, int row)
 	mvwprintw(win, row, 1, "Processor: %s", name);
 }
 
-int cpuinfo_module_redraw(WINDOW * win)
+int cpuinfo_module_redraw(WINDOW *win)
 {
 	unsigned long eax, ebx, ecx, edx;
 	unsigned int brand;
-	char str[80], *vstr;
+	char *vstr;
 	int row = 2;
 
 	print_module_title(win, "CPU Information");
@@ -210,6 +208,10 @@ int cpuinfo_module_redraw(WINDOW * win)
 		break;
 	case VENDOR_SIS:
 		vstr = "SiS";
+		break;
+	default:
+		vstr = "Unknown";
+		break;
 	}
 
 	mvwprintw(win, row++, 1, "Vendor: %s", vstr);
@@ -238,6 +240,8 @@ int cpuinfo_module_redraw(WINDOW * win)
 
 	row++;
 	get_features(win, &row);
+
+	return 0;
 }
 
 unsigned int getticks(void)
@@ -255,6 +259,7 @@ unsigned int getticks(void)
 int cpuinfo_module_init(void)
 {
 	cpu_khz = getticks();
+	return 0;
 }
 
 struct coreinfo_module cpuinfo_module = {

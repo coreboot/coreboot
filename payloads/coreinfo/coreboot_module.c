@@ -114,6 +114,8 @@ int coreboot_module_redraw(WINDOW *win)
 			UNPACK_CB64(cb_info.range[i].start) +
 			UNPACK_CB64(cb_info.range[i].size) - 1);
 	}
+
+	return 0;
 }
 
 static void parse_memory(unsigned char *ptr)
@@ -139,8 +141,8 @@ static void parse_mainboard(unsigned char *ptr)
 {
 	struct cb_mainboard *mb = (struct cb_mainboard *)ptr;
 
-	strncpy(cb_info.vendor, MB_VENDOR_STRING(mb), 31);
-	strncpy(cb_info.part, MB_PART_STRING(mb), 31);
+	strncpy(cb_info.vendor, (const char *)MB_VENDOR_STRING(mb), 31);
+	strncpy(cb_info.part, (const char *)MB_PART_STRING(mb), 31);
 }
 
 static void parse_strings(unsigned char *ptr)
@@ -148,7 +150,7 @@ static void parse_strings(unsigned char *ptr)
 	struct cb_string *string = (struct cb_string *)ptr;
 	int index = string->tag - CB_TAG_VERSION;
 
-	strncpy(cb_info.strings[index], string->string, 63);
+	strncpy(cb_info.strings[index], (const char *)string->string, 63);
 	cb_info.strings[index][63] = 0;
 }
 
@@ -173,7 +175,7 @@ static int parse_header(void *addr, int len)
 	for (i = 0; i < len; i += 16, ptr += 16) {
 		header = (struct cb_header *)ptr;
 
-		if (!strncmp(header->signature, "LBIO", 4))
+		if (!strncmp((const char *)header->signature, "LBIO", 4))
 			break;
 	}
 

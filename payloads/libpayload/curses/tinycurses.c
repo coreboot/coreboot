@@ -49,7 +49,7 @@
  *  - Only implements a small subset of the (n)curses functions.
  *  - Only implements very few sanity checks (for smaller code).
  *     - Thus: Don't do obviously stupid things in your code.
- *  - Doesn't implement the 'form', 'panel', and 'menu' extentions.
+ *  - Doesn't implement the 'form', 'panel', and 'menu' extensions.
  *  - Only implements C bindings (no C++, Ada95, or others).
  *  - Doesn't include wide character support.
  */
@@ -111,7 +111,7 @@ NCURSES_CH_T _nc_render(WINDOW *win, NCURSES_CH_T ch)
 }
 
 /*
- * Implementations of most functions marked 'implemented' in tinycurses.h:
+ * Implementations of most functions marked 'implemented' in include/curses.h:
  */
 
 // int baudrate(void) {}
@@ -204,7 +204,6 @@ int endwin(void)
 // int flash(void) {}
 // int flushinp (void) {}
 // WINDOW *getwin (FILE *) {}
-
 bool has_colors (void) { /* TODO */ return(*(bool *)0); }
 // bool has_ic (void) {}
 // bool has_il (void) {}
@@ -239,7 +238,6 @@ WINDOW *initscr(void)
 
 	return stdscr;
 }
-
 // int intrflush (WINDOW *,bool) {}
 /* D */ bool isendwin(void) { return ((SP == NULL) ? FALSE : SP->_endwin); }
 // bool is_linetouched (WINDOW *,int) {}
@@ -321,7 +319,6 @@ WINDOW *newwin(int num_lines, int num_columns, int begy, int begx)
 }
 /* D */ int nl(void) { SP->_nl = TRUE; return OK; }
 int nocbreak(void) { /* TODO */ return(*(int *)0); }
-
 /* D */ int noecho(void) { SP->_echo = FALSE; return OK; }
 /* D */ int nonl(void) { SP->_nl = FALSE; return OK; }
 // void noqiflush (void) {}
@@ -502,7 +499,6 @@ int werase(WINDOW *win)
 	}
 	return OK;
 }
-
 // int wgetnstr (WINDOW *,char *,int) {}
 int whline(WINDOW *win, chtype ch, int n)
 {
@@ -558,8 +554,6 @@ int whline(WINDOW *win, chtype ch, int n)
 	win->_flags |= _HASMOVED;
 	return OK;
 }
-
-
 int wnoutrefresh(WINDOW *win)
 {
 	// FIXME.
@@ -594,7 +588,6 @@ int wnoutrefresh(WINDOW *win)
 
 	return OK;
 }
-
 int wprintw(WINDOW *win, const char *fmt, ...)
 {
 	va_list argp;

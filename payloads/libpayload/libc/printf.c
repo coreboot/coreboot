@@ -279,8 +279,8 @@ static int print_number(uint64_t num, int width, int precision, int base,
 		flags &= ~__PRINTF_FLAG_ZEROPADDED;
 
 	/*
-	 * If the number is leftaligned or precision is specified then
-	 * zeropadding is ignored.
+	 * If the number is left-aligned or precision is specified then
+	 * zero-padding is ignored.
 	 */
 	if (flags & __PRINTF_FLAG_ZEROPADDED) {
 		if ((precision == 0) && (width > size))

@@ -119,7 +119,7 @@ int get_coreboot_info(struct sysinfo_t *info);
 void lib_get_sysinfo(void);
 
 /* i386/timer.c */
-/* Timer functions - defined by each arcitecture. */
+/* Timer functions - defined by each architecture. */
 unsigned int get_cpu_speed(void);
 void ndelay(unsigned int n);
 void mdelay(unsigned int n);

@@ -57,7 +57,7 @@ unsigned int get_cpu_speed(void)
 	end = rdtsc();
 
 	/*
-	 * The clock rate is 1193180 Hz, the number of miliseconds for a
+	 * The clock rate is 1193180 Hz, the number of milliseconds for a
 	 * period of 0xffff is 1193180 / (0xFFFF * 1000) or .0182.
 	 * Multiply that by the number of measured clocks to get the kHz value.
 	 */

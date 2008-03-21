@@ -103,7 +103,7 @@ int strcmp(const char *s1, const char *s2)
 			return c1 - c2;
 	}
 
-	/* Return someting positive (if s1 is longer than s2), or zero (if s1
+	/* Return something positive (if s1 is longer than s2), or zero (if s1
 	   and s2 are equal). */
 	return c1 - c2;
 }

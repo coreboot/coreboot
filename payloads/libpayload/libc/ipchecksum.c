@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * It has orginally been taken from the FreeBSD project.
+ * It has originally been taken from the FreeBSD project.
  *
  * Copyright (c) 2001 Charles Mott <cm@linktel.net>
  * All rights reserved.

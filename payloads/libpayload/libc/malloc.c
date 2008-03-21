@@ -28,12 +28,12 @@
  */
 
 /*
- * This is a classically weak malloc() implmentation. We have a relatively
+ * This is a classically weak malloc() implementation. We have a relatively
  * small and static heap, so we take the easy route with an O(N) loop
  * through the tree for every malloc() and free(). Obviously, this doesn't
  * scale past a few hundred KB (if that).
  *
- * We're also susecptable to the usual buffer overun poisoning, though the
+ * We're also susceptible to the usual buffer overrun poisoning, though the
  * risk is within acceptable ranges for this implementation (don't overrun
  * your buffers, kids!).
  */

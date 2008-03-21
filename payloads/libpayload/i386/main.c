@@ -33,7 +33,7 @@
  * This structure seeds the stack. We provide the return address of our main
  * function, and further down, the address of the function that we call when
  * we leave and try to restore the original stack. At the very bottom of the
- * stack we store the orignal stack pointer from the calling application.
+ * stack we store the original stack pointer from the calling application.
  */
 
 static void start_main(void);

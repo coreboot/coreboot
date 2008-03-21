@@ -130,8 +130,7 @@ int strncmp(const char *s1, const char *s2, int maxlen)
 
 char *strncpy(char *d, const char *s, int n)
 {
-	/* use +1 to get the null terminator */
-
+	/* Use +1 to get the NUL terminator. */
 	int max = n > strlen(s) + 1 ? strlen(s) + 1 : n;
 	int i;
 
@@ -143,7 +142,7 @@ char *strncpy(char *d, const char *s, int n)
 
 char *strcpy(char *d, const char *s)
 {
-	return strncpy(d, s, strlen(s));
+	return strncpy(d, s, strlen(s) + 1);
 }
 
 char *strncat(char *d, const char *s, int n)

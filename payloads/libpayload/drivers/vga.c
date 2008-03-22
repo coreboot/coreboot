@@ -64,7 +64,7 @@ static void vga_get_cursor_pos(void)
 	unsigned int addr;
 
 	addr = ((unsigned int)crtc_read(0x0E)) << 8;
-	addr += crtc_read(0x0E);
+	addr += crtc_read(0x0F);
 
 	cursorx = addr % WIDTH;
 	cursory = addr / WIDTH;
@@ -93,7 +93,7 @@ static void vga_fixup_cursor(void)
 
 	addr = cursorx + (WIDTH * cursory);
 	crtc_write(addr >> 8, 0x0E);
-	crtc_write(addr, 0x0E);
+	crtc_write(addr, 0x0F);
 }
 
 void vga_cursor_enable(int state)
@@ -115,7 +115,7 @@ void vga_cursor_enable(int state)
 void vga_clear_line(uint8_t row, uint8_t ch, uint8_t attr)
 {
 	int col;
-	uint16_t *ptr = VIDEO(0, row);
+	uint16_t *ptr = VIDEO(row, 0);
 
 	for (col = 0; col < WIDTH; col++)
 		ptr[col] = ((attr & 0xFF) << 8) | (ch & 0xFF);
@@ -123,7 +123,7 @@ void vga_clear_line(uint8_t row, uint8_t ch, uint8_t attr)
 
 static void vga_scroll_up(void)
 {
-	uint16_t *src = VIDEO(0, 1);
+	uint16_t *src = VIDEO(1, 0);
 	uint16_t *dst = VIDEO(0, 0);
 	int i;
 

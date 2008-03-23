@@ -125,7 +125,7 @@ static void show_config_space(WINDOW *win, int row, int col, int index)
 	}
 }
 
-int pci_module_redraw(WINDOW *win)
+static int pci_module_redraw(WINDOW *win)
 {
 	unsigned int bus, devfn, func;
 	int i, last;
@@ -237,7 +237,7 @@ static void pci_scan_bus(int bus)
 	quicksort(devices, devices_index);
 }
 
-int pci_module_handle(int key)
+static int pci_module_handle(int key)
 {
 	int ret = 0;
 
@@ -270,7 +270,7 @@ int pci_module_handle(int key)
 	return ret;
 }
 
-int pci_module_init(void)
+static int pci_module_init(void)
 {
 	pci_scan_bus(0);
 	return 0;

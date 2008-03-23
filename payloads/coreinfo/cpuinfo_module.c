@@ -33,7 +33,7 @@
 #define VENDOR_SIS   0x20536953
 
 /* CPUID 0x00000001 EDX flags */
-const char *generic_cap_flags[] = {
+static const char *generic_cap_flags[] = {
 	"fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce",
 	"cx8", "apic", NULL, "sep", "mtrr", "pge", "mca", "cmov",
 	"pat", "pse36", "psn", "clflsh", NULL, "ds", "acpi", "mmx",
@@ -41,7 +41,7 @@ const char *generic_cap_flags[] = {
 };
 
 /* CPUID 0x00000001 ECX flags */
-const char *intel_cap_generic_ecx_flags[] = {
+static const char *intel_cap_generic_ecx_flags[] = {
 	"sse3", NULL, NULL, "monitor", "ds-cpl", "vmx", NULL, "est",
 	"tm2", "ssse3", "cntx-id", NULL, NULL, "cx16", "xTPR", NULL,
 	NULL, NULL, "dca", NULL, NULL, NULL, NULL, NULL,
@@ -49,7 +49,7 @@ const char *intel_cap_generic_ecx_flags[] = {
 };
 
 /* CPUID 0x80000001 EDX flags */
-const char *intel_cap_extended_edx_flags[] = {
+static const char *intel_cap_extended_edx_flags[] = {
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, "SYSCALL", NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, "xd", NULL, NULL, NULL,
@@ -57,21 +57,21 @@ const char *intel_cap_extended_edx_flags[] = {
 };
 
 /* CPUID 0x80000001 ECX flags */
-const char *intel_cap_extended_ecx_flags[] = {
+static const char *intel_cap_extended_ecx_flags[] = {
 	"lahf_lm", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
 };
 
-const char *amd_cap_generic_ecx_flags[] = {
+static const char *amd_cap_generic_ecx_flags[] = {
 	"sse3", NULL, NULL, "mwait", NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, "cmpxchg16b", NULL, NULL,
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, "popcnt",
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
-const char *amd_cap_extended_edx_flags[] = {
+static const char *amd_cap_extended_edx_flags[] = {
 	"fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce",
 	"cx8", "apic", NULL, "sep", "mtrr", "pge", "mca", "cmov",
 	"pat", "pse36", NULL, "mp", "nx", NULL, "mmxext", "mmx",
@@ -79,7 +79,7 @@ const char *amd_cap_extended_edx_flags[] = {
 	NULL, "lm", "3dnowext", "3dnow"
 }; /* "mp" defined for CPUs prior to AMD family 0xf */
 
-const char *amd_cap_extended_ecx_flags[] = {
+static const char *amd_cap_extended_ecx_flags[] = {
 	"lahf/sahf", "CmpLegacy", "svm", "ExtApicSpace",
 	"LockMovCr0", "abm", "sse4a", "misalignsse",
 	"3dnowPref", "osvw", "ibs", NULL, "skinit", "wdt", NULL, NULL,
@@ -90,7 +90,8 @@ const char *amd_cap_extended_ecx_flags[] = {
 static unsigned long vendor;
 static unsigned int cpu_khz;
 
-void decode_flags(WINDOW *win, unsigned long reg, const char **flags, int *row)
+static void decode_flags(WINDOW *win, unsigned long reg, const char **flags,
+			 int *row)
 {
 	int i;
 	int lrow = *row;
@@ -175,7 +176,7 @@ static void do_name(WINDOW *win, int row)
 	mvwprintw(win, row, 1, "Processor: %s", name);
 }
 
-int cpuinfo_module_redraw(WINDOW *win)
+static int cpuinfo_module_redraw(WINDOW *win)
 {
 	unsigned long eax, ebx, ecx, edx;
 	unsigned int brand;
@@ -244,7 +245,7 @@ int cpuinfo_module_redraw(WINDOW *win)
 	return 0;
 }
 
-unsigned int getticks(void)
+static unsigned int getticks(void)
 {
 	unsigned long long start, end;
 
@@ -256,7 +257,7 @@ unsigned int getticks(void)
 	return (unsigned int)((end - start) / 100);
 }
 
-int cpuinfo_module_init(void)
+static int cpuinfo_module_init(void)
 {
 	cpu_khz = getticks();
 	return 0;

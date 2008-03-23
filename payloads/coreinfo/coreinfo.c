@@ -50,7 +50,7 @@ void print_module_title(WINDOW *win, const char *title)
 		waddch(win, '\304');
 }
 
-void print_menu(void)
+static void print_menu(void)
 {
 	int i, j;
 	char menu[80];
@@ -67,7 +67,7 @@ void print_menu(void)
 	mvprintw(23, 0, menu);
 }
 
-void center(int row, const char *str)
+static void center(int row, const char *str)
 {
 	int len = strlen(str);
 	int j;
@@ -80,7 +80,9 @@ void center(int row, const char *str)
 	mvprintw(row, (SCREEN_X - len) / 2, str);
 }
 
-void header(int row, const char *str)
+/* FIXME: Currently unused. */
+#if 0
+static void header(int row, const char *str)
 {
 	char buf[SCREEN_X];
 	char *ptr = buf;
@@ -97,6 +99,7 @@ void header(int row, const char *str)
 
 	mvprintw(row, 0, buf);
 }
+#endif
 
 static void redraw_module(void)
 {
@@ -105,7 +108,7 @@ static void redraw_module(void)
 	refresh();
 }
 
-void loop(void)
+static void loop(void)
 {
 	int key;
 

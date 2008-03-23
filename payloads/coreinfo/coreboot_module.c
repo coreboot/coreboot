@@ -121,7 +121,6 @@ int coreboot_module_redraw(WINDOW *win)
 static void parse_memory(unsigned char *ptr)
 {
 	struct cb_memory *mem = (struct cb_memory *)ptr;
-
 	int max = (MEM_RANGE_COUNT(mem) > MAX_MEMORY_COUNT)
 	    ? MAX_MEMORY_COUNT : MEM_RANGE_COUNT(mem);
 	int i;
@@ -236,7 +235,7 @@ static int parse_header(void *addr, int len)
 	return 1;
 }
 
-int coreboot_module_init(void)
+static int coreboot_module_init(void)
 {
 	int ret = parse_header((void *)0x00000, 0x1000);
 

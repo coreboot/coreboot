@@ -2,6 +2,7 @@
 ## This file is part of the coreinfo project.
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
+## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,32 +18,85 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+export src := $(shell pwd)
+export srctree := $(src)
+export srck := $(src)/util/kconfig
+export obj := $(src)/build
+export objk := $(src)/build/util/kconfig
+
+export KERNELVERSION      := 0.1.0
+export KCONFIG_AUTOHEADER := $(obj)/config.h
+export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
+
+CONFIG_SHELL := sh
+KBUILD_DEFCONFIG := configs/defconfig
+UNAME_RELEASE := $(shell uname -r)
+HAVE_DOTCONFIG := $(wildcard .config)
+MAKEFLAGS += -rR --no-print-directory
+
+# Make is silent per default, but 'make V=1' will show all compiler calls.
+ifneq ($(V),1)
+Q := @
+endif
+
+HOSTCC = gcc
+HOSTCXX = g++
+HOSTCFLAGS := -I$(srck) -I$(objk)
+HOSTCXXFLAGS := -I$(srck) -I$(objk)
+
 CC = gcc
 CROSS_CFLAGS = -m32
-
-INCLUDES = -I../libpayload/include 
-INCLUDES += -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
-
+INCLUDES = -I../libpayload/include \
+	   -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | \
+	   head -n 1 | cut -d' ' -f2)include
 LIBPAYLOAD = ../libpayload/libpayload.a
 LIBGCC := $(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
 CFLAGS := -Wall -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
-
-MODULES = cpuinfo_module.o cpuid.o pci_module.o coreboot_module.o
+MODULES = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o
 OBJECTS = coreinfo.o
-TARGET  = coreinfo.elf
+OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS)) $(patsubst %,$(obj)/%,$(MODULES))
+TARGET  = $(obj)/coreinfo.elf
+
+ifeq ($(strip $(HAVE_DOTCONFIG)),)
+
+all:
+	$(Q)printf "Please run make config/menuconfig/xconfig/gconfig first.\n"
+
+else
+
+include $(src)/.config
 
 all: $(TARGET)
 
+$(TARGET): $(OBJS)
+	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)#ld --verbose -T ../libpayload/libpayload.ldscript -o $@ $(OBJS) \
+		#--whole-archive $(LIBPAYLOAD) --no-whole-archive $(LIBGCC)
+	$(Q)ld -T ../libpayload/libpayload.ldscript -o $@ $(OBJS) \
+		../libpayload/i386/head.o $(LIBPAYLOAD) $(LIBGCC)
+	$(Q)printf "  STRIP   $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)strip -s $@
+
+$(obj)/%.S.o: $(src)/%.S
+	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(AS) --32 -o $@ $<
+
+$(obj)/%.o: $(src)/%.c
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) $(CROSS_CFLAGS) $(CFLAGS) -c -o $@ $<
+
+endif
+
+prepare:
+	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
+
 clean:
-	@rm -f $(TARGET) $(MODULES) $(OBJECTS)
+	$(Q)rm -rf build
 
-$(TARGET): $(OBJECTS) $(MODULES)
-	@#ld --verbose -T ../libpayload/libpayload.ldscript -o $@ $(OBJECTS) --whole-archive $(LIBPAYLOAD) --no-whole-archive $(LIBGCC)
-	ld -T ../libpayload/libpayload.ldscript -o $@ $(OBJECTS) $(MODULES) ../libpayload/i386/head.o $(LIBPAYLOAD) $(LIBGCC)
-	@strip $@
+distclean: clean
+	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
-.S.o:
-	$(AS) --32 -o $@ $<
+include util/kconfig/Makefile
 
-.c.o:
-	$(CC) $(CROSS_CFLAGS) $(CFLAGS) -c -o $@ $<
+.PHONY: $(PHONY) prepare clean distclean
+

@@ -67,13 +67,13 @@ void f71805f_pnp_enable(struct device *dev)
 {
 	pnp_enter_conf_state(dev);   
 	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, dev->enabled)
+	pnp_set_enable(dev, dev->enabled);
 	pnp_exit_conf_state(dev);  
 }
 
 static void f71805f_init(struct device *dev)
 {
-	struct superio_smsc_f71805f_config *conf = dev->chip_info;
+	struct superio_fintek_f71805f_config *conf = dev->device_configuration;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled)

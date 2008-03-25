@@ -66,5 +66,10 @@ void code_gen(char *filename, struct irq_routing_table *rt)
 	fprintf(fpir, "\t}\n");
 	fprintf(fpir, "};\n");
 
+	fprintf(fpir, "\nunsigned long write_pirq_routing_table(unsigned long addr)\n");
+	fprintf(fpir, "{\n");
+	fprintf(fpir, "\treturn copy_pirq_routing_table(addr);\n");
+	fprintf(fpir, "}\n");
+
 	fclose(fpir);
 }

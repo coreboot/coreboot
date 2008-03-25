@@ -28,8 +28,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdio.h>
 #include <errno.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
 
 #include <vector>
 #include <algorithm>

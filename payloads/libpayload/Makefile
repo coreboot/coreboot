@@ -61,7 +61,8 @@ include $(PLATFORM-y) $(BUILD-y)
 
 INCLUDES := -I./include
 INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
-CFLAGS := -Wall -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
+# TODO: Re-add -Os as soon as we find out why it caused problems.
+CFLAGS := -Wall -Werror -fno-stack-protector -nostdinc $(INCLUDES)
 
 libpayload.a: $(TARGETS-y)
 	$(AR) rc $@ $(TARGETS-y)

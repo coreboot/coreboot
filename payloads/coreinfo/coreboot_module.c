@@ -47,30 +47,30 @@ int coreboot_module_redraw(WINDOW *win)
 	print_module_title(win, "Coreboot Tables");
 
 	if (tables_good) {
-		mvwprintw(win, row++, 2, "No Coreboot tables were found");
+		mvwprintw(win, row++, 1, "No Coreboot tables were found");
 		return 0;
 	}
 
-	mvwprintw(win, row++, 2, "Vendor: %s", cb_info.vendor);
-	mvwprintw(win, row++, 2, "Part: %s", cb_info.part);
+	mvwprintw(win, row++, 1, "Vendor: %s", cb_info.vendor);
+	mvwprintw(win, row++, 1, "Part: %s", cb_info.part);
 
-	mvwprintw(win, row++, 2, "Version: %s%s",
+	mvwprintw(win, row++, 1, "Version: %s%s",
 		  cb_info.strings[CB_TAG_VERSION - 0x4],
 		  cb_info.strings[CB_TAG_EXTRA_VERSION - 0x4]);
 
-	mvwprintw(win, row++, 2, "Built: %s (%s@%s.%s)",
+	mvwprintw(win, row++, 1, "Built: %s (%s@%s.%s)",
 		  cb_info.strings[CB_TAG_BUILD - 0x4],
 		  cb_info.strings[CB_TAG_COMPILE_BY - 0x04],
 		  cb_info.strings[CB_TAG_COMPILE_HOST - 0x04],
 		  cb_info.strings[CB_TAG_COMPILE_DOMAIN - 0x04]);
 
 	if (cb_info.serial.tag != 0x0) {
-		mvwprintw(win, row++, 2, "Serial Port I/O base: 0x%x",
+		mvwprintw(win, row++, 1, "Serial Port I/O base: 0x%x",
 			  cb_info.serial.ioport);
 	}
 
 	if (cb_info.console.tag != 0x0) {
-		mvwprintw(win, row++, 2, "Default Output Console: ");
+		mvwprintw(win, row++, 1, "Default Output Console: ");
 
 		switch (cb_info.console.type) {
 		case CB_TAG_CONSOLE_SERIAL8250:
@@ -95,18 +95,18 @@ int coreboot_module_redraw(WINDOW *win)
 	}
 
 	row++;
-	mvwprintw(win, row++, 2, "-- Memory Map --");
+	mvwprintw(win, row++, 1, "-- Memory Map --");
 
 	for (i = 0; i < cb_info.mem_count; i++) {
 		switch (cb_info.range[i].type) {
 		case CB_MEM_RAM:
-			mvwprintw(win, row++, 4, "     RAM: ");
+			mvwprintw(win, row++, 3, "     RAM: ");
 			break;
 		case CB_MEM_RESERVED:
-			mvwprintw(win, row++, 4, "Reserved: ");
+			mvwprintw(win, row++, 3, "Reserved: ");
 			break;
 		case CB_MEM_TABLE:
-			mvwprintw(win, row++, 4, "   Table: ");
+			mvwprintw(win, row++, 3, "   Table: ");
 		}
 
 		wprintw(win, "%16.16llx - %16.16llx",

@@ -66,7 +66,7 @@ else
 
 include $(src)/.config
 
-all: $(TARGET)
+all: prepare $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"

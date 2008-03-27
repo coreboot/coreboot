@@ -26,12 +26,10 @@ extern struct coreinfo_module cpuinfo_module;
 extern struct coreinfo_module pci_module;
 extern struct coreinfo_module coreboot_module;
 
-#define MODULE_COUNT 3
-
-struct coreinfo_module *modules[MODULE_COUNT] = {
+struct coreinfo_module *modules[] = {
 	&cpuinfo_module,
 	&pci_module,
-	&coreboot_module
+	&coreboot_module,
 };
 
 static WINDOW *modwin;
@@ -61,7 +59,7 @@ static void print_menu(void)
 	for (j = 0; j < SCREEN_X; j++)
 		waddch(stdscr, ' ');
 
-	for (i = 0; i < MODULE_COUNT; i++)
+	for (i = 0; i < ARRAY_SIZE(modules); i++)
 		ptr += sprintf(ptr, "F%d: %s ", i + 1, modules[i]->name);
 
 	mvprintw(23, 0, menu);
@@ -127,7 +125,7 @@ static void loop(void)
 		if (key >= KEY_F(1) && key <= KEY_F(9)) {
 			unsigned char ch = key - KEY_F(1);
 
-			if (ch < MODULE_COUNT) {
+			if (ch < ARRAY_SIZE(modules)) {
 				curwin = ch;
 				redraw_module();
 				continue;
@@ -167,7 +165,7 @@ int main(void)
 
 	refresh();
 
-	for (i = 0; i < MODULE_COUNT; i++)
+	for (i = 0; i < ARRAY_SIZE(modules); i++)
 		modules[i]->init();
 
 	loop();

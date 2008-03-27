@@ -156,7 +156,7 @@ static int pci_module_redraw(WINDOW *win)
 		else
 			wattrset(win, COLOR_PAIR(2));
 
-		mvwprintw(win, 2 + i, 1, "%X:%2.2X.%2.2X %X:%X  ",
+		mvwprintw(win, 2 + i, 1, "%X:%2.2X.%2.2X %04X:%04X  ",
 			  bus, devfn, func,
 			  devices[item].id & 0xffff,
 			  (devices[item].id >> 16) & 0xffff);

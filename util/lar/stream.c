@@ -492,7 +492,7 @@ err:
  * @param lar the LAR archive structure
  * @return The offset of the first chunk of empty space
  */
-static int lar_empty_offset(struct lar *lar)
+static s64 lar_empty_offset(struct lar *lar)
 {
 	u32 offset = 0;
 	struct lar_header *header;
@@ -508,10 +508,12 @@ static int lar_empty_offset(struct lar *lar)
 		offset += get_next_offset(header);
 	}
 
-	if (offset >= get_bootblock_offset(lar->size))
+	if (offset >= get_bootblock_offset(lar->size)) {
+		err("No empty space found!\n");	
 		return -1;
+	}
 
-	return offset;
+	return (s64)offset;
 }
 
 /**
@@ -825,11 +827,16 @@ int header_len(char *pathname, int *new_pathlen)
 int maxsize(struct lar *lar, char *name)
 {
 	int size;
-	u32 offset;
+	s64 offset;
 	int bootblock_size;
 
 	/* Find the beginning of the available space in the LAR */
+#warning We should check all chunks of free space in the LAR. Right now we do not return the maximum size, but the size of the first chunk.
 	offset = lar_empty_offset(lar);
+	if (offset < 0) {
+		err("maxsize is negative\n");
+		return offset;
+	}
 
 	/* Figure out how big our header will be */
 	size = get_bootblock_offset(lar->size) - offset - header_len(name,NULL) - 1;
@@ -878,7 +885,7 @@ int lar_add_entry(struct lar *lar, char *pathname, void *data,
 	int ret, hlen;
 	int pathlen;
 	u32 *walk,  csum;
-	u32 offset;
+	s64 offset;
 
 	/* Find the beginning of the available space in the LAR */
 	offset = lar_empty_offset(lar);
@@ -886,7 +893,8 @@ int lar_add_entry(struct lar *lar, char *pathname, void *data,
 	/* Figure out how big our header will be */
 	hlen = header_len(pathname, &pathlen);
 
-	if (offset + hlen + complen >= get_bootblock_offset(lar->size)) {
+	if ((offset < 0) || 
+		(offset + hlen + complen >= get_bootblock_offset(lar->size))) {
 		err("Not enough room in the LAR to add the file.\n");
 		return -1;
 	}

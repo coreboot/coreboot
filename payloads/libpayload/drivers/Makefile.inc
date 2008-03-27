@@ -31,3 +31,4 @@
 TARGETS-$(CONFIG_SERIAL_CONSOLE) += drivers/serial.o
 TARGETS-$(CONFIG_VGA_CONSOLE) += drivers/vga.o
 TARGETS-$(CONFIG_PC_KEYBOARD) += drivers/keyboard.o
+TARGETS-$(CONFIG_CMOS) += drivers/cmos.o

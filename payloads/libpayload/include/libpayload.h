@@ -41,6 +41,18 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
+/* Some CMOS byte definitions */
+#define CMOS_RTC_SECONDS        0
+#define CMOS_RTC_MINUTES        2
+#define CMOS_RTC_HOURS          4
+#define CMOS_RTC_DAY            7
+#define CMOS_RTC_MONTH          8
+#define CMOS_RTC_YEAR           9
+
+/* drivers/cmos.c */
+u8 cmos_read(u8 addr);
+void cmos_write(u8 val, u8 addr);
+
 /* drivers/keyboard.c */
 int keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
@@ -86,6 +98,10 @@ void free(void *ptr);
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
+
+/* libc/lib.c */
+int bcd2dec(int b);
+int dec2bcd(int d);
 
 /* libc/memory.c */
 void *memset(void *s, int c, size_t n);

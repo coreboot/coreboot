@@ -28,5 +28,4 @@
 ##
 
 TARGETS-y += libc/malloc.o libc/printf.o libc/console.o libc/string.o
-TARGETS-y += libc/memory.o libc/ctype.o
-TARGETS-y += libc/ipchecksum.o
+TARGETS-y += libc/memory.o libc/ctype.o libc/ipchecksum.o libc/lib.o

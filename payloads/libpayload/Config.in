@@ -68,6 +68,10 @@ config PC_KEYBOARD
        depends VGA_CONSOLE
        default y
 
+config CMOS
+       bool "Support for reading/writing CMOS bytes"
+       default y
+
 endmenu
 
 menu "Build Options"

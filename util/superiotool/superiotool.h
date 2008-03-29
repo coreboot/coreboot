@@ -51,7 +51,6 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define NANA		-3		/* Not Available */
 #define RSVD		-4		/* Reserved */
 #define MISC		-5		/* Needs special comment in output */
-#define MAXNAMELEN	30		/* Maximum Name Length */
 #define MAXLDN		0x10		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
 #define MAXNUMIDX	70		/* Maximum number of indexes */
@@ -65,12 +64,12 @@ extern int chip_found;
 
 struct superio_registers {
 	int32_t superio_id;		/* Signed, as we need EOT. */
-	const char name[MAXNAMELEN];	/* Super I/O name */
+	const char *name;		/* Super I/O name */
 	struct {
-		int ldn;
+		int8_t ldn;
 		const char *name;	/* LDN name */
-		int idx[IDXSIZE];
-		int def[IDXSIZE];
+		int16_t idx[IDXSIZE];
+		int16_t def[IDXSIZE];
 	} ldn[LDNSIZE];
 };
 

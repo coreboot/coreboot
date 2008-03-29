@@ -80,7 +80,7 @@ static void dump_regs(const struct superio_registers reg_table[],
 		      int i, int j, uint16_t port)
 {
 	int k;
-	const int *idx;
+	const int16_t *idx;
 
 	if (reg_table[i].ldn[j].ldn != NOLDN) {
 		printf("LDN 0x%02x", reg_table[i].ldn[j].ldn);

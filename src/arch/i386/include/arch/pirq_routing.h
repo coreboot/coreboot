@@ -42,6 +42,12 @@ extern const struct irq_routing_table intel_irq_routing_table;
 #if HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long start);
 unsigned long write_pirq_routing_table(unsigned long start);
+#if PIRQ_ROUTE==1
+void pirq_routing_irqs(unsigned long start);
+void pirq_assign_irqs(const unsigned char pIntAtoD[4]);
+#else
+#define pirq_routing_irqs(start) {}
+#endif
 #else
 #define copy_pirq_routing_table(start) (start)
 #define write_pirq_routing_table(start) (start)

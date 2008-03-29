@@ -63,6 +63,7 @@ uses CONFIG_VIDEO_MB
 uses CONFIG_SPLASH_GRAPHIC
 uses CONFIG_GX1_VIDEO
 uses CONFIG_GX1_VIDEOMODE
+uses PIRQ_ROUTE
 
 ## Enable VGA with a splash screen (only 640x480 to run on most monitors).
 ## We want to support up to 1024x768@16 so we need 2MiB video memory.
@@ -75,6 +76,7 @@ default CONFIG_VIDEO_MB = 2
 default ROM_SIZE = 256 * 1024
 default HAVE_PIRQ_TABLE = 1
 default IRQ_SLOT_COUNT = 0		# Override this in targets/*/Config.lb.
+default PIRQ_ROUTE = 1
 default HAVE_FALLBACK_BOOT = 1
 default HAVE_MP_TABLE = 0
 default HAVE_HARD_RESET = 0

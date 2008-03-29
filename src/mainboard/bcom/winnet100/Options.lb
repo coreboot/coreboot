@@ -63,6 +63,7 @@ uses CONFIG_VIDEO_MB
 uses CONFIG_SPLASH_GRAPHIC
 uses CONFIG_GX1_VIDEO
 uses CONFIG_GX1_VIDEOMODE
+uses PIRQ_ROUTE
 
 ## Enable VGA with a splash screen (only 640x480 to run on most monitors).
 ## We want to support up to 1024x768@16 so we need 2MiB video memory.
@@ -82,6 +83,7 @@ default CONFIG_UDELAY_TSC = 1
 default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 = 1
 default HAVE_PIRQ_TABLE = 1
 default IRQ_SLOT_COUNT = 2	# Soldered NIC, internal USB, no real slots
+default PIRQ_ROUTE = 1
 default HAVE_OPTION_TABLE = 0
 default ROM_IMAGE_SIZE = 64 * 1024
 default FALLBACK_SIZE = 128 * 1024

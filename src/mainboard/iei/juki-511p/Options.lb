@@ -43,6 +43,7 @@ uses TTYS0_BAUD
 uses TTYS0_BASE
 uses TTYS0_LCS
 uses CONFIG_VIDEO_MB
+uses PIRQ_ROUTE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -72,6 +73,7 @@ default CONFIG_UDELAY_IO=1
 ##
 default HAVE_PIRQ_TABLE=0
 default IRQ_SLOT_COUNT=2
+default PIRQ_ROUTE=1
 #object irq_tables.o
 
 ##

@@ -23,3 +23,4 @@ driver cs5530.o
 driver cs5530_isa.o
 driver cs5530_ide.o
 driver cs5530_vga.o
+driver cs5530_pirq.o

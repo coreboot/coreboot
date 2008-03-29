@@ -45,6 +45,7 @@ uses CONFIG_COMPRESSED_PAYLOAD_LZMA
 uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
 uses CONFIG_PRECOMPRESSED_PAYLOAD
 uses CONFIG_VIDEO_MB
+uses PIRQ_ROUTE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
@@ -82,6 +83,7 @@ default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 ##
 default HAVE_PIRQ_TABLE=1
 default IRQ_SLOT_COUNT=7
+default PIRQ_ROUTE=1
 #object irq_tables.o
 
 ##

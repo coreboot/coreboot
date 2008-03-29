@@ -20,3 +20,4 @@
 config chip.h
 driver cs5536.o
 driver cs5536_ide.o
+driver cs5536_pirq.o

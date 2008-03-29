@@ -1,6 +1,7 @@
 #include <console/console.h>
 #include <arch/pirq_routing.h>
 #include <string.h>
+#include <device/pci.h>
 
 #if (DEBUG==1 && HAVE_PIRQ_TABLE==1)
 static void check_pirq_routing_table(struct irq_routing_table *rt)
@@ -94,6 +95,80 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk_info("done.\n");
 	verify_copy_pirq_routing_table(addr);
+	pirq_routing_irqs(addr);
 	return addr + intel_irq_routing_table.size;
+}
+#endif
+
+#if (PIRQ_ROUTE==1 && HAVE_PIRQ_TABLE==1)
+void pirq_routing_irqs(unsigned long addr)
+{
+	int i, j, k, num_entries;
+	unsigned char irq_slot[4];
+	unsigned char pirq[4] = {0, 0, 0, 0};
+	struct irq_routing_table *pirq_tbl;
+	device_t pdev;
+
+	pirq_tbl = (struct irq_routing_table *)(addr);
+	num_entries = (pirq_tbl->size - 32) / 16;
+
+	/* Set PCI IRQs. */
+	for (i = 0; i < num_entries; i++) {
+
+		printk_debug("PIR Entry %d Dev/Fn: %X Slot: %d\n", i,
+			pirq_tbl->slots[i].devfn >> 3, pirq_tbl->slots[i].slot);
+
+		for (j = 0; j < 4; j++) {
+
+			int link = pirq_tbl->slots[i].irq[j].link;
+			int bitmap = pirq_tbl->slots[i].irq[j].bitmap & pirq_tbl->exclusive_irqs;
+			int irq = 0;
+
+			printk_debug("INT: %c link: %x bitmap: %x  ",
+				'A' + j, link, bitmap);
+
+			if (!bitmap|| !link || link > 4) {
+
+				printk_debug("not routed\n");
+				irq_slot[j] = irq;
+				continue;
+			}
+
+			/* yet not routed */
+			if (!pirq[link - 1]) {
+
+				for (k = 2; k < 15; k++) {
+
+					if (!((bitmap >> k) & 1))
+						continue;
+
+					irq = k;
+
+					/* yet not routed */
+					if (pirq[0] != irq && pirq[1] != irq && pirq[2] != irq && pirq[3] != irq)
+						break;
+				}
+
+				if (irq)
+					pirq[link - 1] = irq;
+			}
+			else
+				irq = pirq[link - 1];
+
+			printk_debug("IRQ: %d\n", irq);
+			irq_slot[j] = irq;
+		}
+
+		/* Bus, device, slots IRQs for {A,B,C,D}. */
+		pci_assign_irqs(pirq_tbl->slots[i].bus,
+			pirq_tbl->slots[i].devfn >> 3, irq_slot);
+	}
+
+	printk_debug("PIRQ1: %d\n", pirq[0]);
+	printk_debug("PIRQ2: %d\n", pirq[1]);
+	printk_debug("PIRQ3: %d\n", pirq[2]);
+	printk_debug("PIRQ4: %d\n", pirq[3]);
+
+	pirq_assign_irqs(pirq);
 }
 #endif

@@ -64,42 +64,5 @@ const struct irq_routing_table intel_irq_routing_table = {
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-	int i, j, k, num_entries;
-	unsigned char pirq[4];
-	uint16_t chipset_irq_map;
-	uint32_t pciAddr, pirtable_end;
-	struct irq_routing_table *pirq_tbl;
-
-	pirtable_end = copy_pirq_routing_table(addr);
-
-	/* Set up chipset IRQ steering. */
-	pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
-	chipset_irq_map = (PIRQD << 12 | PIRQC << 8 | PIRQB << 4 | PIRQA);
-	printk_debug("%s(%08X, %04X)\n", __FUNCTION__, pciAddr,
-		     chipset_irq_map);
-	outl(pciAddr & ~3, 0xCF8);
-	outl(chipset_irq_map, 0xCFC);
-
-	pirq_tbl = (struct irq_routing_table *)(addr);
-	num_entries = (pirq_tbl->size - 32) / 16;
-
-	/* Set PCI IRQs. */
-	for (i = 0; i < num_entries; i++) {
-		printk_debug("PIR Entry %d Dev/Fn: %X Slot: %d\n", i,
-			     pirq_tbl->slots[i].devfn, pirq_tbl->slots[i].slot);
-		for (j = 0; j < 4; j++) {
-			printk_debug("INT: %c bitmap: %x ", 'A' + j,
-				     pirq_tbl->slots[i].irq[j].bitmap);
-			for (k = 0; (!((pirq_tbl->slots[i].irq[j].bitmap >> k) & 1)) && (pirq_tbl->slots[i].irq[j].bitmap != 0); k++) ;	/* Finds lsb in bitmap to IRQ#. */
-			pirq[j] = k;
-			printk_debug("PIRQ: %d\n", k);
-		}
-
-		/* Bus, device, slots IRQs for {A,B,C,D}. */
-		pci_assign_irqs(pirq_tbl->slots[i].bus,
-				pirq_tbl->slots[i].devfn >> 3, pirq);
-	}
-
-	/* Put the PIR table in memory and checksum. */
-	return pirtable_end;
+	return copy_pirq_routing_table(addr);
 }

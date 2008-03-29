@@ -716,6 +716,11 @@ define HAVE_PIRQ_TABLE
 	export used
 	comment "Define if we have a PIRQ table"
 end
+define PIRQ_ROUTE
+	default 0
+	export used
+	comment "Define if we have a PIRQ table and want routing IRQs"
+end
 define IRQ_SLOT_COUNT
 	default none
 	export used

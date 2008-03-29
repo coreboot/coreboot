@@ -580,7 +580,13 @@ int wnoutrefresh(WINDOW *win)
 					c |= tmp << 12;
 				}
 
-				c |= win->_line[y].text[x].chars[0];
+				/*
+				 * FIXME: Somewhere along the line, the
+				 * character value is getting sign-extented.
+				 * For now grab just the 8 bit character,
+				 * but this will break wide characters!
+				 */
+				c |= (chtype) (win->_line[y].text[x].chars[0] & 0xff);
 				vga_putc(y, x, c);
 			}
 		}

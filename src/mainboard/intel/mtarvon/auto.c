@@ -90,6 +90,9 @@ static void main(unsigned long bist)
 	uart_init();
 	console_init();
 
+	/* Prevent the TCO timer from rebooting us */
+	i3100_halt_tco_timer();
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 

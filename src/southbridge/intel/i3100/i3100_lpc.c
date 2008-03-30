@@ -276,7 +276,7 @@ static void i3100_lpc_enable_resources(device_t dev)
 
 	/* Enable the ACPI bar */
 	acpi_cntl = pci_read_config8(dev, 0x44);
-	acpi_cntl |= (1 << 4);
+	acpi_cntl |= (1 << 7);
 	pci_write_config8(dev, 0x44, acpi_cntl);
 
 	/* Enable the GPIO bar */

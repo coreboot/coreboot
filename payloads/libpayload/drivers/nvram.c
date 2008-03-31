@@ -42,7 +42,29 @@
 
 #include <libpayload.h>
 
-#define RTC_PORT 0x70
+
+/**
+ * PCs can have either 64 (very old ones), 128, or 256 bytes of CMOS RAM.
+ *
+ * Usually you access the lower 128 CMOS bytes via I/O port 0x70/0x71.
+ * For more recent chipsets with 256 bytes, you have to access the upper
+ * 128 bytes (128-255) using two different registers, usually 0x72/0x73.
+ *
+ * On some chipsets this can be different, though. The VIA VT8237R for example
+ * only recognizes the ports 0x74/0x75 for accessing the high 128 CMOS bytes
+ * (as seems to be the case for multiple VIA chipsets).
+ *
+ * It's very chipset-specific if and how the upper 128 bytes are enabled at
+ * all, but this work should be done in coreboot anyway. Libpayload assumes
+ * that coreboot has properly enabled access to the upper 128 bytes and
+ * doesn't try to do this on its own.
+ */
+#define RTC_PORT_STANDARD      0x70
+#ifdef CONFIG_RTC_PORT_EXTENDED_VIA
+#define RTC_PORT_EXTENDED      0x74
+#else
+#define RTC_PORT_EXTENDED      0x72
+#endif
 
 /**
  * Read a byte from the specified NVRAM address.
@@ -52,8 +74,10 @@
  */
 u8 nvram_read(u8 addr)
 {
-	outb(addr, RTC_PORT);
-	return inb(RTC_PORT + 1);
+	u16 rtc_port = addr < 128 ? RTC_PORT_STANDARD : RTC_PORT_EXTENDED;
+
+	outb(addr, rtc_port);
+	return inb(rtc_port + 1);
 }
 
 /**
@@ -64,6 +88,8 @@ u8 nvram_read(u8 addr)
  */
 void nvram_write(u8 val, u8 addr)
 {
-	outb(addr, RTC_PORT);
-	outb(val, RTC_PORT + 1);
+	u16 rtc_port = addr < 128 ? RTC_PORT_STANDARD : RTC_PORT_EXTENDED;
+
+	outb(addr, rtc_port);
+	outb(val, rtc_port + 1);
 }

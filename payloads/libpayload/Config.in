@@ -72,6 +72,22 @@ config NVRAM
 	bool "Support for reading/writing NVRAM bytes"
 	default y
 
+config RTC_PORT_EXTENDED_VIA
+	bool "Extended RTC ports are 0x74/0x75"
+	default n
+	help
+	  For recent chipsets with 256 NVRAM bytes, you have to access the
+	  upper 128 bytes (128-255) using two different I/O ports,
+	  usually 0x72/0x73.
+	
+	  On some chipsets this can be a different set of ports, though.
+	  The VIA VT8237R for example only recognizes the ports 0x74/0x75
+	  for accessing the high 128 NVRAM bytes (as seems to be the case for
+	  multiple VIA chipsets).
+	
+	  If you want to read or write CMOS bytes on computers with one of
+	  these chipsets, say 'y' here.
+
 endmenu
 
 menu "Build Options"

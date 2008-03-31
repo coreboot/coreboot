@@ -27,7 +27,7 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-$(CONFIG_TINYCURSES) += curses/keyboard.o 
+TARGETS-$(CONFIG_TINYCURSES) += curses/keyboard.o
 TARGETS-$(CONFIG_TINYCURSES) += curses/tinycurses.o
 TARGETS-$(CONFIG_TINYCURSES) += curses/speaker.o
 TARGETS-$(CONFIG_TINYCURSES) += curses/colors.o

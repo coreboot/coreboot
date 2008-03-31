@@ -50,31 +50,26 @@ _init:
 	/* No interrupts, please. */
 	cli
 
-	/* Get the current stack pointer. */
+	/* Store current stack pointer. */
 	movl %esp, %esi
 
+	/* Setup new stack. */
 	movl _istack, %ebx
 
-	/* lret needs %cs in the stack, so copy it over. */
-	movw %cs, 4(%ebx)
+	movl (%ebx), %esp
 
-	/*
-	 * Exchange the current stack pointer for the one in the initial
-	 * stack (which happens to be the new stack pointer).
-	 */
-	xchgl %esi, 16(%ebx)
+	/* Save old stack pointer. */
+	pushl %esi
 
-	/* Set the new stack pointer. */
-	movl %esi, %esp
-
-	/* Return into the main entry function and go. */
-	lret
-
+	/* Let's rock. */
+	call start_main
+	
 _leave:
-	movl _istack, %ebx
+	/* Get old stack pointer. */
+	popl %ebx
 
-	/* Restore the stack pointer from the storage area. */
-	movl 16(%ebx), %esp
+	/* Restore old stack. */
+	movl %esp, %ebx
 
 	/* Return to the original context. */
 	lret

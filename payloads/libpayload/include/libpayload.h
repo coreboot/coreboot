@@ -49,7 +49,7 @@
 #define NVRAM_RTC_MONTH          8
 #define NVRAM_RTC_YEAR           9
 
-/* drivers/cmos.c */
+/* drivers/nvram.c */
 u8 nvram_read(u8 addr);
 void nvram_write(u8 val, u8 addr);
 

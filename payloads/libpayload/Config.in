@@ -30,25 +30,25 @@
 mainmenu "Libpayload Configuration"
 
 config HAVE_DOT_CONFIG
-        bool
-        default y
+	bool
+	default y
 
 # When (if) we support multiple architectures, this will become an option.
 config TARGET_I386
-       bool
-       default y
+	bool
+	default y
 
 menu "Output Options"
-     
+
 config SERIAL_CONSOLE
-       bool "See output on the serial port console"
-       default y
+	bool "See output on the serial port console"
+	default y
 
 config SERIAL_IOBASE
-       hex "I/O base for the serial port (default 0x3f8)"
-       depends SERIAL_CONSOLE
-       default 0x3f8
-       
+	hex "I/O base for the serial port (default 0x3f8)"
+	depends SERIAL_CONSOLE
+	default 0x3f8
+
 config SERIAL_SET_SPEED
 	bool "Override the serial console baud rate"
 	default n
@@ -59,25 +59,25 @@ config SERIAL_BAUD_RATE
 	depends SERIAL_SET_SPEED
 	default 115200
 
-config VGA_CONSOLE	
-       bool "See output on a VGA console"
-       default y
+config VGA_CONSOLE
+	bool "See output on a VGA console"
+	default y
 
 config PC_KEYBOARD
-       bool "Allow input from a PC keyboard"
-       depends VGA_CONSOLE
-       default y
+	bool "Allow input from a PC keyboard"
+	depends VGA_CONSOLE
+	default y
 
 config NVRAM
-       bool "Support for reading/writing NVRAM bytes"
-       default y
+	bool "Support for reading/writing NVRAM bytes"
+	default y
 
 endmenu
 
 menu "Build Options"
 
 config TINYCURSES
-       bool "Enable tinycurses support"
-       default y
+	bool "Enable tinycurses support"
+	default y
 
 endmenu

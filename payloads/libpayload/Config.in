@@ -68,8 +68,8 @@ config PC_KEYBOARD
        depends VGA_CONSOLE
        default y
 
-config CMOS
-       bool "Support for reading/writing CMOS bytes"
+config NVRAM
+       bool "Support for reading/writing NVRAM bytes"
        default y
 
 endmenu

@@ -45,24 +45,24 @@
 #define RTC_PORT 0x70
 
 /**
- * Read a byte from the specified CMOS address.
+ * Read a byte from the specified NVRAM address.
  * 
- * @param addr The CMOS address to read a byte from.
- * @return The byte at the given CMOS address.
+ * @param addr The NVRAM address to read a byte from.
+ * @return The byte at the given NVRAM address.
  */
-u8 cmos_read(u8 addr)
+u8 nvram_read(u8 addr)
 {
 	outb(addr, RTC_PORT);
 	return inb(RTC_PORT + 1);
 }
 
 /**
- * Write a byte to the specified CMOS address.
+ * Write a byte to the specified NVRAM address.
  * 
- * @param val The byte to write to CMOS.
- * @param addr The CMOS address to write to.
+ * @param val The byte to write to NVRAM.
+ * @param addr The NVRAM address to write to.
  */
-void cmos_write(u8 val, u8 addr)
+void nvram_write(u8 val, u8 addr)
 {
 	outb(addr, RTC_PORT);
 	outb(val, RTC_PORT + 1);

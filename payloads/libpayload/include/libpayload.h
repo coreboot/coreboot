@@ -41,17 +41,17 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
-/* Some CMOS byte definitions */
-#define CMOS_RTC_SECONDS        0
-#define CMOS_RTC_MINUTES        2
-#define CMOS_RTC_HOURS          4
-#define CMOS_RTC_DAY            7
-#define CMOS_RTC_MONTH          8
-#define CMOS_RTC_YEAR           9
+/* Some NVRAM byte definitions */
+#define NVRAM_RTC_SECONDS        0
+#define NVRAM_RTC_MINUTES        2
+#define NVRAM_RTC_HOURS          4
+#define NVRAM_RTC_DAY            7
+#define NVRAM_RTC_MONTH          8
+#define NVRAM_RTC_YEAR           9
 
 /* drivers/cmos.c */
-u8 cmos_read(u8 addr);
-void cmos_write(u8 val, u8 addr);
+u8 nvram_read(u8 addr);
+void nvram_write(u8 val, u8 addr);
 
 /* drivers/keyboard.c */
 int keyboard_havechar(void);

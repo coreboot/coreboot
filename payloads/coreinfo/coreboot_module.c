@@ -20,6 +20,8 @@
 #include <coreboot_tables.h>
 #include "coreinfo.h"
 
+#ifdef CONFIG_MODULE_COREBOOT
+
 #define MAX_MEMORY_COUNT 5
 
 static struct {
@@ -252,3 +254,10 @@ struct coreinfo_module coreboot_module = {
 	.init = coreboot_module_init,
 	.redraw = coreboot_module_redraw,
 };
+
+#else
+
+struct coreinfo_module coreboot_module = {
+};
+
+#endif

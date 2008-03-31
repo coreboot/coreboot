@@ -23,6 +23,8 @@
 #include "coreinfo.h"
 #include <arch/rdtsc.h>
 
+#ifdef CONFIG_MODULE_CPUINFO
+
 #define VENDOR_INTEL 0x756e6547
 #define VENDOR_AMD   0x68747541
 #define VENDOR_CYRIX 0x69727943
@@ -267,5 +269,11 @@ struct coreinfo_module cpuinfo_module = {
 	.name = "CPU Info",
 	.init = cpuinfo_module_init,
 	.redraw = cpuinfo_module_redraw,
-	.handle = NULL,
 };
+
+#else
+
+struct coreinfo_module cpuinfo_module = {
+};
+
+#endif

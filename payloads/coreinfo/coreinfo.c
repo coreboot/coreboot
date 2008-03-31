@@ -25,11 +25,21 @@
 extern struct coreinfo_module cpuinfo_module;
 extern struct coreinfo_module pci_module;
 extern struct coreinfo_module coreboot_module;
+extern struct coreinfo_module nvram_module;
 
 struct coreinfo_module *modules[] = {
+#ifdef CONFIG_MODULE_CPUINFO
 	&cpuinfo_module,
+#endif
+#ifdef CONFIG_MODULE_PCI
 	&pci_module,
+#endif
+#ifdef CONFIG_MODULE_COREBOOT
 	&coreboot_module,
+#endif
+#ifdef CONFIG_MODULE_NVRAM
+	&nvram_module,
+#endif
 };
 
 static WINDOW *modwin;
@@ -63,6 +73,16 @@ static void print_menu(void)
 		ptr += sprintf(ptr, "F%d: %s ", i + 1, modules[i]->name);
 
 	mvprintw(23, 0, menu);
+
+#ifdef CONFIG_SHOW_DATE_TIME
+	mvprintw(23, 59, "%02d/%02d/20%02d - %02d:%02d:%02d",
+		 bcd2dec(nvram_read(NVRAM_RTC_MONTH)),
+		 bcd2dec(nvram_read(NVRAM_RTC_DAY)),
+		 bcd2dec(nvram_read(NVRAM_RTC_YEAR)),
+		 bcd2dec(nvram_read(NVRAM_RTC_HOURS)),
+		 bcd2dec(nvram_read(NVRAM_RTC_MINUTES)),
+		 bcd2dec(nvram_read(NVRAM_RTC_SECONDS)));
+#endif
 }
 
 static void center(int row, const char *str)

@@ -46,15 +46,15 @@ HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 CC = gcc
 CROSS_CFLAGS = -m32
-INCLUDES = -I../libpayload/include \
+INCLUDES = -I../libpayload/include -Ibuild \
 	   -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | \
 	   head -n 1 | cut -d' ' -f2)include
 LIBPAYLOAD = ../libpayload/libpayload.a
 LIBGCC := $(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
 CFLAGS := -Wall -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
-MODULES = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o
-OBJECTS = coreinfo.o
-OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS)) $(patsubst %,$(obj)/%,$(MODULES))
+OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
+	  nvram_module.o coreinfo.o
+OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS))
 TARGET  = $(obj)/coreinfo.elf
 
 ifeq ($(strip $(HAVE_DOTCONFIG)),)

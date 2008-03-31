@@ -20,6 +20,8 @@
 #include <arch/io.h>
 #include "coreinfo.h"
 
+#ifdef CONFIG_MODULE_PCI
+
 struct pci_devices {
 	unsigned short device;
 	unsigned int id;
@@ -282,3 +284,10 @@ struct coreinfo_module pci_module = {
 	.redraw = pci_module_redraw,
 	.handle = pci_module_handle,
 };
+
+#else
+
+struct coreinfo_module pci_module = {
+};
+
+#endif

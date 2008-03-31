@@ -21,6 +21,7 @@
 #define COREINFO_H_
 
 #include <libpayload.h>
+#include <config.h>
 #include <curses.h>
 
 struct coreinfo_module {

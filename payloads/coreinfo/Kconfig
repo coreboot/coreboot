@@ -24,9 +24,19 @@
 
 mainmenu "coreinfo Configuration"
 
-menu "Modules"
+menu "General settings"
 
-# TODO: Currently none of these options has any effect.
+# TODO: Needs changes in coreinfo, won't update without keypress currently.
+config SHOW_DATE_TIME
+	bool "Show current date/time in the menu"
+	default y
+	help
+	  Show the current date and time in the lower-right corner of
+	  the coreinfo menu.
+
+endmenu
+
+menu "Modules"
 
 config MODULE_COREBOOT
 	bool "Enable the coreboot module"
@@ -38,6 +48,10 @@ config MODULE_CPUINFO
 
 config MODULE_PCI
 	bool "Enable the PCI info module"
+	default y
+
+config MODULE_NVRAM
+	bool "Enable the NVRAM dump module"
 	default y
 
 endmenu

@@ -28,7 +28,7 @@ static void i3100_enable_superio(void)
 
 static void i3100_halt_tco_timer(void)
 {
-	device_t dev = PCI_DEV(0, 0x1f, 0);
+	device_t dev = PCI_DEV(0x0, 0x1f, 0x0);
 
 	/* Temporarily enable the ACPI I/O range at 0x4000 */
 	pci_write_config32(dev, 0x40, 0x4000 | (1 << 0));

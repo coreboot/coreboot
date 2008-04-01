@@ -4,12 +4,8 @@
 
 static void enable_smbus(void)
 {
-	device_t dev;
-	dev = pci_locate_device(PCI_ID(0x8086, 0x25a4), 0);
-	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
-	}
-	uint8_t enable;
+	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
+
 	print_spew("SMBus controller enabled\r\n");
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
 	pci_write_config8(dev, 0x40, 1);
@@ -19,11 +15,6 @@ static void enable_smbus(void)
 	
 	/* Disable interrupt generation */
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
-
-	dev = pci_locate_device(PCI_ID(0x8086, 0x25a1), 0);
-	if (dev == PCI_DEV_INVALID) {
-		die("ISA bridge not found\r\n");
-	}
 }
 
 static int smbus_read_byte(unsigned device, unsigned address)

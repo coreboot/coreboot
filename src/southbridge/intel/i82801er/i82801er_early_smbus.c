@@ -4,13 +4,10 @@
 
 static void enable_smbus(void)
 {
-	device_t dev;
-	dev = pci_locate_device(PCI_ID(0x8086, 0x24d3), 0);
-	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
-	}
+	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
+
 	print_spew("SMBus controller enabled\r\n");
-	
+
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
 	/* Set smbus enable */
 	pci_write_config8(dev, 0x40, 1);
@@ -18,19 +15,12 @@ static void enable_smbus(void)
 	pci_write_config8(dev, 0x4, 1);
 	/* SMBALERT_DIS */
 	pci_write_config8(dev, 0x11, 4);
-	
+
 	/* Disable interrupt generation */
 	outb(0, SMBUS_IO_BASE + SMBHSTCTL);
 
 	/* clear any lingering errors, so the transaction will run */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-
-#if 0	// It's unlikely that half the southbridge suddenly vanishes?
-	dev = pci_locate_device(PCI_ID(0x8086, 0x24d0), 0);
-	if (dev == PCI_DEV_INVALID) {
-		die("ISA bridge not found\r\n");
-	}
-#endif
 }
 
 static int smbus_read_byte(unsigned device, unsigned address)

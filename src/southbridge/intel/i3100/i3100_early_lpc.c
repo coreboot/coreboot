@@ -20,12 +20,7 @@
 
 static void i3100_enable_superio(void)
 {
-	device_t dev;
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
-				       PCI_DEVICE_ID_INTEL_3100_LPC), 0);
-	if (dev == PCI_DEV_INVALID) {
-		die("LPC bridge not found\r\n");
-	}
+	device_t dev = PCI_DEV(0x0, 0x1f, 0x0);
 
 	/* Enable decoding of I/O locations for SuperIO devices */
 	pci_write_config16(dev, 0x82, 0x340f);
@@ -33,12 +28,7 @@ static void i3100_enable_superio(void)
 
 static void i3100_halt_tco_timer(void)
 {
-	device_t dev;
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
-				       PCI_DEVICE_ID_INTEL_3100_LPC), 0);
-	if (dev == PCI_DEV_INVALID) {
-		die("LPC bridge not found\r\n");
-	}
+	device_t dev = PCI_DEV(0, 0x1f, 0);
 
 	/* Temporarily enable the ACPI I/O range at 0x4000 */
 	pci_write_config32(dev, 0x40, 0x4000 | (1 << 0));

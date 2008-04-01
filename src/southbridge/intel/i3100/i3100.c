@@ -18,52 +18,45 @@
  *
  */
 
-/* This code is based on src/southbridge/intel/esb6300/esb6300.c */
-
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include "i3100.h"
 
 void i3100_enable(device_t dev)
 {
 	device_t lpc_dev;
-	u32 index = 0;
-	u16 reg_old, reg;
+	u8 func;
+	volatile u32 *disable;
 
-	/* See if we are behind the i3100 PCI bridge */
-	lpc_dev = dev_find_slot(dev->bus->secondary, PCI_DEVFN(0x1f, 0));
-	if ((dev->path.u.pci.devfn & 0xf8) == 0xf8) {
-		index = dev->path.u.pci.devfn & 7;
-	}
-	else if ((dev->path.u.pci.devfn & 0xf8) == 0xe8) {
-		index = (dev->path.u.pci.devfn & 7) + 8;
-	}
-	if ((!lpc_dev) || (index >= 16) || ((1 << index) & 0x3091)) {
+	if (dev->enabled)
 		return;
-	}
-	if ((lpc_dev->vendor != PCI_VENDOR_ID_INTEL) ||
-		(lpc_dev->device != PCI_DEVICE_ID_INTEL_3100_LPC)) {
-		u32 id;
-		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
-		if (id != (PCI_VENDOR_ID_INTEL |
-				(PCI_DEVICE_ID_INTEL_3100_LPC << 16))) {
-			return;
-		}
-	}
 
-	reg = reg_old = pci_read_config16(lpc_dev, 0xf2);
-	reg &= ~(1 << index);
-	if (!dev->enabled) {
-		reg |= (1 << index);
+	/*
+	 * To disable an integrated southbridge device, set the corresponding
+	 * flag in the Function Disable register.
+	 */
+
+	/* Temporarily enable the root complex register block at 0xa0000000. */
+	lpc_dev = dev_find_slot(0x0, PCI_DEVFN(0x1f, 0x0));
+	pci_write_config32(lpc_dev, 0xf0, 0xa0000000 | (1 << 0));
+	disable = (volatile u32 *) 0xa0003418;
+	func = PCI_FUNC(dev->path.u.pci.devfn);
+	switch (PCI_SLOT(dev->path.u.pci.devfn)) {
+	case 0x1f: /* LPC (fn0), SATA (fn2), SMBus (fn3) */
+		*disable |= (1 << (func == 0x0 ? 14 : func));
+		break;
+	case 0x1d: /* UHCI (fn0, fn1), EHCI (fn7) */
+		*disable |= (1 << (func + 8));
+		break;
+	case 0x1c: /* PCIe ports B0-B3 (fn0-fn3) */
+		*disable |= (1 << (func + 16));
+		break;
 	}
-	if (reg != reg_old) {
-		pci_write_config16(lpc_dev, 0xf2, reg);
-	}
+	/* Disable the root complex register block. */
+	pci_write_config32(lpc_dev, 0xf0, 0);
 }
 
 struct chip_operations southbridge_intel_i3100_ops = {
 	CHIP_NAME("Intel 3100 Southbridge")
-	.enable_dev = i3100_enable,
 };

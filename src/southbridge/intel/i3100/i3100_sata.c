@@ -72,18 +72,19 @@ static struct device_operations sata_ops  = {
 	.enable_resources = pci_dev_enable_resources,
 	.init             = sata_init,
 	.scan_bus         = 0,
+	.enable           = i3100_enable,
 	.ops_pci          = &lops_pci,
 };
 
 static struct pci_driver sata_driver __pci_driver = {
-        .ops    = &sata_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = PCI_DEVICE_ID_INTEL_3100_SATA,
+	.ops    = &sata_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_3100_SATA,
 };
 
 static struct pci_driver sata_driver_nr __pci_driver = {
-        .ops    = &sata_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = PCI_DEVICE_ID_INTEL_3100_SATA_R,
+	.ops    = &sata_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_3100_SATA_R,
 };
 

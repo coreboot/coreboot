@@ -110,6 +110,7 @@ void *memmove(void *dst, const void *src, size_t n);
 int memcmp(const char *s1, const char *s2, size_t len);
 
 /* libc/printf.c */
+int snprintf(char *str, size_t size, const char *fmt, ...);
 int sprintf(char *str, const char *fmt, ...);
 int vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 int vsprintf(char *str, const char *fmt, va_list ap);

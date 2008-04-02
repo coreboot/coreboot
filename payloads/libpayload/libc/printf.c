@@ -694,6 +694,18 @@ out:
 	return counter;
 }
 
+int snprintf(char *str, size_t size, const char *fmt, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args, fmt);
+	ret = vsnprintf(str, size, fmt, args);
+	va_end(args);
+
+	return ret;
+}
+
 int sprintf(char *str, const char *fmt, ...)
 {
 	int ret;

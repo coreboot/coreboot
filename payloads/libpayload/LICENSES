@@ -78,6 +78,7 @@ holders, and the exact license terms that apply.
           svn checkout svn://svn.helenos.eu/HelenOS/trunk HelenOS
           http://svn.helenos.eu/chora/browse.php?f=%2Ftrunk%2F
   Original files: kernel/generic/src/printf/printf_core.c
+                  kernel/generic/src/printf/snprintf.c
                   kernel/generic/src/printf/sprintf.c
                   kernel/generic/src/printf/vsnprintf.c
                   kernel/generic/src/printf/vsprintf.c

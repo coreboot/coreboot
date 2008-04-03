@@ -679,8 +679,10 @@ int conf_write_autoconf(void)
 
 	file_write_dep("build/auto.conf.cmd");
 
+#if 0
 	if (conf_split_config())
 		return 1;
+#endif
 
 	out = fopen(".tmpconfig", "w");
 	if (!out)

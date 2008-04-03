@@ -624,6 +624,10 @@ int main(int ac, char **av)
 		fprintf(stderr, _("\n*** Error during writing of the configuration.\n\n"));
 		return 1;
 	}
+	if (conf_write_autoconf()) {
+		fprintf(stderr, _("\n*** Error during writing of the configuration.\n\n"));
+		return 1;
+	}
 skip_check:
 	if (input_mode == ask_silent && conf_write_autoconf()) {
 		fprintf(stderr, _("\n*** Error during writing of the configuration.\n\n"));

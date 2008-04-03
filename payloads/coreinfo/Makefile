@@ -59,8 +59,7 @@ TARGET  = $(obj)/coreinfo.elf
 
 ifeq ($(strip $(HAVE_DOTCONFIG)),)
 
-all:
-	$(Q)printf "Please run make config/menuconfig/xconfig/gconfig first.\n"
+all: config
 
 else
 
@@ -91,9 +90,10 @@ prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
 
 clean:
-	$(Q)rm -rf build
+	$(Q)rm -rf build/util build/*.conf build/*.cmd build/*.elf build/*.o
 
 distclean: clean
+	$(Q)rm -rf build
 	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
 include util/kconfig/Makefile

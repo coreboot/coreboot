@@ -86,3 +86,9 @@ holders, and the exact license terms that apply.
                   kernel/generic/src/printf/vprintf.c
   Current version we use: r2745
 
+* crypto/sha1.c: Public domain
+  Source: OpenBSD
+          http://www.openbsd.org/cgi-bin/cvsweb/src/lib/libc/hash/sha1.c
+  Original files: src/lib/libc/hash/sha1.c
+  Current version we use: CVS revision 1.20 2005/08/08
+  

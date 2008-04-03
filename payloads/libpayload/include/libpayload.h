@@ -41,6 +41,14 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
+#define LITTLE_ENDIAN	1234
+#define BIG_ENDIAN	4321
+#ifdef CONFIG_TARGET_I386
+#define BYTE_ORDER	LITTLE_ENDIAN
+#else
+#define BYTE_ORDER	BIG_ENDIAN
+#endif
+
 /* Some NVRAM byte definitions */
 #define NVRAM_RTC_SECONDS        0
 #define NVRAM_RTC_MINUTES        2
@@ -116,6 +124,20 @@ int vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 int vsprintf(char *str, const char *fmt, va_list ap);
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list ap);
+
+/* libc/sha1.c */
+#define SHA1_BLOCK_LENGTH	64
+#define SHA1_DIGEST_LENGTH	20
+typedef struct {
+	u32 state[5];
+	u64 count;
+	u8 buffer[SHA1_BLOCK_LENGTH];
+} SHA1_CTX;
+void SHA1Init(SHA1_CTX *context);
+void SHA1Transform(u32 state[5], const u8 buffer[SHA1_BLOCK_LENGTH]);
+void SHA1Update(SHA1_CTX *context, const u8 *data, size_t len);
+void SHA1Final(u8 digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context);
+u8 *sha1(const u8 *data, size_t len, u8 *buf);
 
 /* libc/string.c */
 size_t strnlen(const char *str, size_t maxlen);

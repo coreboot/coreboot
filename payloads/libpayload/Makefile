@@ -54,7 +54,7 @@ endif
 PLATFORM-$(CONFIG_TARGET_I386) += i386/Makefile.inc
 TARGETS-y :=
 
-BUILD-y := libc/Makefile.inc drivers/Makefile.inc
+BUILD-y := crypto/Makefile.inc libc/Makefile.inc drivers/Makefile.inc
 BUILD-$(CONFIG_TINYCURSES) += curses/Makefile.inc
 
 include $(PLATFORM-y) $(BUILD-y)

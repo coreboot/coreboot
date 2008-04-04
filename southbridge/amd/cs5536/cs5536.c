@@ -258,6 +258,7 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
 
 	/* COM1 */
 	if (sb->com1_enable) {
+		printk(BIOS_SPEW, "uarts_init: enable COM1\n");
 		/* Set the address. */
 		switch (sb->com1_address) {
 		case 0x3F8:
@@ -308,6 +309,7 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
 		wrmsr(MDD_UART1_CONF, msr);
 	} else {
 		/* Reset and disable COM1. */
+		printk(BIOS_SPEW, "uarts_init: disable COM1\n");
 		msr = rdmsr(MDD_UART1_CONF);
 		msr.lo = 1;			/* Reset */
 		wrmsr(MDD_UART1_CONF, msr);
@@ -322,6 +324,7 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
 
 	/* COM2 */
 	if (sb->com2_enable) {
+		printk(BIOS_SPEW, "uarts_init: enable COM2\n");
 		switch (sb->com2_address) {
 		case 0x3F8:
 			addr = 7;
@@ -348,14 +351,20 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
 		/* GPIO3 - UART2_RX */
 		/* Set: Output Enable (0x4) */
 		outl(GPIOL_3_SET, gpio_addr + GPIOL_OUTPUT_ENABLE);
+
 		/* Set: OUTAUX1 Select (0x10) */
 		outl(GPIOL_3_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
 
 		/* GPIO4 - UART2_TX */
 		/* Set: Input Enable (0x20) */
 		outl(GPIOL_4_SET, gpio_addr + GPIOL_INPUT_ENABLE);
+
 		/* Set: INAUX1 Select (0x34) */
-		outl(GPIOL_4_SET, gpio_addr + GPIOL_IN_AUX1_SELECT);
+		/* this totally disables com2 for serial, leave it out until we can
+		 * figure it out
+		 */
+//		outl(GPIOL_4_SET, gpio_addr + GPIOL_IN_AUX2_SELECT);
+//		printk(BIOS_SPEW, "uarts_init: set INAUX2 for COM2\n");
 
 		/* Set: GPIO 3 + 3 Pull Up (0x18) */
 		outl(GPIOL_3_SET | GPIOL_4_SET,
@@ -369,7 +378,9 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
 		msr.lo = (1 << 4) | (1 << 1);
 		msr.hi = 0;
 		wrmsr(MDD_UART2_CONF, msr);
+		printk(BIOS_SPEW, "uarts_init: COM2 enabled\n");
 	} else {
+		printk(BIOS_SPEW, "uarts_init: disable COM2\n");
 		/* Reset and disable COM2. */
 		msr = rdmsr(MDD_UART2_CONF);
 		msr.lo = 1;			/* Reset */
@@ -621,10 +632,13 @@ static void southbridge_init(struct device *dev)
 	uarts_init(sb);
 
 	if (sb->enable_gpio_int_route) {
+		printk(BIOS_SPEW, "cs5536: call vr_write\n");
 		vr_write((VRC_MISCELLANEOUS << 8) + PCI_INT_AB,
 			 (sb->enable_gpio_int_route & 0xFFFF));
+		printk(BIOS_SPEW, "cs5536: done first call vr_write\n");
 		vr_write((VRC_MISCELLANEOUS << 8) + PCI_INT_CD,
 			 (sb->enable_gpio_int_route >> 16));
+		printk(BIOS_SPEW, "cs5536: done second call vr_write\n");
 	}
 
 	printk(BIOS_ERR, "cs5536: %s: enable_ide_nand_flash is %d\n",

@@ -35,6 +35,42 @@ static const u8 num_col_addr[] = {
 
 u8 spd_read_byte(u16 device, u8 address);
 
+
+/** 
+ * Dump key MSR values for RAM init. You can call this function and then use it to 
+ * compare to a factory BIOS setting.
+ * @param level printk level
+ */
+
+void dumplxmsrs(void)
+{
+	const static unsigned long msrs[] = {
+        	MC_CF07_DATA, 
+        	MC_CF8F_DATA, 
+        	MC_CF1017_DATA, 
+        	GLCP_DELAY_CONTROLS, 
+        	MC_CFCLK_DBUG, 
+        	MC_CF_PMCTR,
+		GLCP_SYS_RSTPLL
+	};
+	const static char *msrnames[] = {
+        	"MC_CF07_DATA", 
+        	"MC_CF8F_DATA", 
+        	"MC_CF1017_DATA", 
+        	"GLCP_DELAY_CONTROLS", 
+        	"MC_CFCLK_DBUG", 
+        	"MC_CF_PMCTR",
+		"PLL reg"
+	};
+	int i;
+
+	for(i = 0; i < sizeof(msrs)/sizeof(msrs[0]); i++){
+		struct msr msr;
+		msr = rdmsr(msrs[i]);
+		printk(BIOS_DEBUG, "(%lx): %x.%x\n",  msrs[i], msr.hi, msr.lo);
+	}
+
+}
 /**
  * Halt and Catch Fire. Print an error, then loop, sending NULLs on
  * serial port, to ensure the message is visible.
@@ -387,7 +423,7 @@ static void set_cas(u8 dimm0, u8 dimm1)
 		hlt();
 	}
 
-	printk(BIOS_DEBUG, "Set cas latency to %x\n", spd_byte);
+	printk(BIOS_DEBUG, "Set CAS latency to %x\n", spd_byte);
 	msr = rdmsr(MC_CF8F_DATA);
 	msr.lo &= ~(7 << CF8F_LOWER_CAS_LAT_SHIFT);
 	msr.lo |= spd_byte << CF8F_LOWER_CAS_LAT_SHIFT;

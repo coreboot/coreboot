@@ -33,9 +33,9 @@
 #include <northbridge/amd/geodelx/raminit.h>
 #include <spd.h>
 
-#define MANUALCONF 0		/* Do automatic strapped PLL config */
-#define PLLMSRHI 0x00001490	/* manual settings for the PLL */
-#define PLLMSRLO 0x02000030
+#define MANUALCONF 1		/* Do manual strapped PLL config */
+#define PLLMSRHI 0x000003d9	/* manual settings for the PLL */
+#define PLLMSRLO 0x07de0080	/* from factory bios */
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
@@ -53,25 +53,23 @@ struct spd_entry {
 
 /* Save space by using a short list of SPD values used by Geode LX Memory init */
 static const struct spd_entry spd_table[] = {
-	{SPD_ACCEPTABLE_CAS_LATENCIES, 0xe},
-	{SPD_BANK_DENSITY, 0x40},
-	{SPD_DEVICE_ATTRIBUTES_GENERAL, 0xff},
 	{SPD_MEMORY_TYPE, 7},
-	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX, 10}, /* A guess for the tRAC value */
-	{SPD_MODULE_ATTRIBUTES, 0xff}, /* FIXME later when we figure out. */
-	{SPD_NUM_BANKS_PER_SDRAM, 4},
-	{SPD_PRIMARY_SDRAM_WIDTH, 8},
-	{SPD_NUM_DIMM_BANKS, 1},
-	{SPD_NUM_COLUMNS, 0xa},
 	{SPD_NUM_ROWS, 13},
-	{SPD_REFRESH, 0x3a},
-	{SPD_SDRAM_CYCLE_TIME_2ND, 60},
-	{SPD_SDRAM_CYCLE_TIME_3RD, 75},
-	{SPD_tRAS, 40},
+	{SPD_tRFC, 0x4b},
+	{SPD_ACCEPTABLE_CAS_LATENCIES, 0x10},
+	{SPD_DENSITY_OF_EACH_ROW_ON_MODULE, 0x40},
+	{SPD_tRAS, 0x2d},
+	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX, 0x7}, /*0x <= 7},*/
+	{SPD_MIN_RAS_TO_CAS_DELAY, 0x58},
+	{SPD_tRRD, 0x3c},
+	{SPD_tRP, 0x58},
+	{SPD_NUM_BANKS_PER_SDRAM, 0x4},
+	{SPD_NUM_COLUMNS, 0x8},
+	{SPD_NUM_DIMM_BANKS, 0x1},
+	{SPD_REFRESH, 0x82},
+	{SPD_SDRAM_CYCLE_TIME_2ND, 0x0},
+	{SPD_SDRAM_CYCLE_TIME_3RD, 0x0},
 	{SPD_tRCD, 15},
-	{SPD_tRFC, 70},
-	{SPD_tRP, 15},
-	{SPD_tRRD, 10},
 };
 
 /**
@@ -124,6 +122,8 @@ static void mb_gpio_init(void)
   */
 int main(void)
 {
+	void dumplxmsrs(void);
+
 	u8 smb_devices[] =  {
 		DIMM0, DIMM1
 	};
@@ -151,8 +151,12 @@ int main(void)
 	sdram_enable(DIMM0, DIMM1);
 	printk(BIOS_DEBUG, "done sdram enable\n");
 
+	dumplxmsrs();
 	/* Check low memory */
-	ram_check(0x00000000, 640*1024);
+	/* The RAM is working now. Leave this test commented out but
+	 * here for reference. 
+	 * Note that the range 0x87000 will fail; that's the stack! */
+	/*	ram_check(0x00000000, 640*1024);*/
 
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;

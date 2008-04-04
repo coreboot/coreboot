@@ -72,7 +72,8 @@ static void print_menu(void)
 	for (i = 0; i < ARRAY_SIZE(modules); i++)
 		ptr += sprintf(ptr, "F%d: %s ", i + 1, modules[i]->name);
 
-	mvprintw(23, 0, menu);
+	if (ARRAY_SIZE(modules) != 0)
+		mvprintw(23, 0, menu);
 
 #ifdef CONFIG_SHOW_DATE_TIME
 	mvprintw(23, 59, "%02d/%02d/20%02d - %02d:%02d:%02d",
@@ -121,6 +122,9 @@ static void header(int row, const char *str)
 
 static void redraw_module(void)
 {
+	if (ARRAY_SIZE(modules) == 0)
+		return;
+
 	wclear(modwin);
 	modules[curwin]->redraw(modwin);
 	refresh();
@@ -133,7 +137,8 @@ static void loop(void)
 	center(0, "coreinfo v0.1");
 
 	print_menu();
-	modules[curwin]->redraw(modwin);
+	if (ARRAY_SIZE(modules) != 0)
+		modules[curwin]->redraw(modwin);
 	refresh();
 
 	while (1) {
@@ -145,14 +150,16 @@ static void loop(void)
 		if (key >= KEY_F(1) && key <= KEY_F(9)) {
 			unsigned char ch = key - KEY_F(1);
 
-			if (ch < ARRAY_SIZE(modules)) {
+			if (ch <= ARRAY_SIZE(modules)) {
+				if (ch == ARRAY_SIZE(modules))
+					continue;
 				curwin = ch;
 				redraw_module();
 				continue;
 			}
 		}
 
-		if (modules[curwin]->handle)
+		if (ARRAY_SIZE(modules) != 0 && modules[curwin]->handle)
 			if (modules[curwin]->handle(key))
 				redraw_module();
 	}

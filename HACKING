@@ -59,6 +59,11 @@ Third-party Code and License Overview
 * util/lar/*: GPLv2
   Independant project, but written specifically for coreboot.
 
+* util/lar/elf.h: LGPL-2.1 or later
+  Source: glibc, http://ftp.gnu.org/gnu/glibc/
+  Original files: elf/elf.h
+  Current version we use: 2.7
+
 * include/lar.h, util/lar/lar.h, util/lar/example.c:
   Dual-licensed (GPLv2 + revised BSD license)
 

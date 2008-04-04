@@ -297,20 +297,20 @@ clear_fixed_var_mtrr_out:
  *   register we want to use for CAR.
  * reg is the register where the IO type should be stored.
  */
-.macro extractmask size_segs, reg
-.if \size_segs <= 0
+.macro extractmask segs, reg
+.if \segs <= 0
 	/* The xorl here is superfluous because at the point of first execution
 	 * of this macro, %eax and %edx are cleared. Later invocations of this
-	 * macro will have a monotonically increasing size_segs parameter.
+	 * macro will have a monotonically increasing segs parameter.
 	 */
 	xorl \reg, \reg
-.elseif \size_segs == 0x1000
+.elseif \segs == 1
 	movl $0x06000000, \reg
-.elseif \size_segs == 0x2000
+.elseif \segs == 2
 	movl $0x06060000, \reg
-.elseif \size_segs == 0x3000
+.elseif \segs == 3
 	movl $0x06060600, \reg
-.elseif \size_segs >= 0x4000
+.elseif \segs >= 4
 	movl $0x06060606, \reg
 .endif
 .endm
@@ -319,8 +319,8 @@ clear_fixed_var_mtrr_out:
  * windowoffset is the 32k-aligned window into CAR size
  */
 .macro simplemask carsize, windowoffset
-	extractmask ((( \carsize - \windowoffset ) ) - 0x4000 ), %eax
-	extractmask ((( \carsize - \windowoffset ) ) ), %edx
+	extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
+	extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
 .endm
 
 #if CacheSize > 0x10000

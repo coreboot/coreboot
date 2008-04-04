@@ -216,7 +216,7 @@ void root_dev_reset(struct bus *bus)
  * own ops in (e.g.) the mainboard, and initialize it in the dts in the
  * mainboard directory. 
  */
-const struct device_operations default_dev_ops_root = {
+struct device_operations default_dev_ops_root = {
 	.phase4_read_resources   = root_dev_read_resources,
 	.phase4_set_resources    = root_dev_set_resources,
 	.phase5_enable_resources = root_dev_enable_resources,

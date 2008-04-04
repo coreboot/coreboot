@@ -82,7 +82,7 @@ case  "$ARCH" in
 		fi
 		echo "CC_x86 := $CC"
 		echo "AR_x86 := i386-elf-ar"
-		echo "AS_x86 := i386-elf-as"
+		echo "AS_x86 := i386-elf-as --divide"
 		echo "LD_x86 := i386-elf-ld"
 		echo "NM_x86 := i386-elf-nm"
 		echo "OBJCOPY_x86 := i386-elf-objcopy"

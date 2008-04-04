@@ -34,6 +34,8 @@ config SHOW_DATE_TIME
 	  Show the current date and time in the lower-right corner of
 	  the coreinfo menu.
 
+	  This option will increase the ELF file size by ca. 256 bytes.
+
 endmenu
 
 menu "Modules"
@@ -41,18 +43,26 @@ menu "Modules"
 config MODULE_COREBOOT
 	bool "Enable the coreboot module"
 	default y
+	help
+	  This option will increase the ELF file size by ca. 2250 bytes.
 
 config MODULE_CPUINFO
 	bool "Enable the cpuinfo module"
 	default y
+	help
+	  This option will increase the ELF file size by ca. 2650 bytes.
 
 config MODULE_PCI
 	bool "Enable the PCI info module"
 	default y
+	help
+	  This option will increase the ELF file size by ca. 1750 bytes.
 
 config MODULE_NVRAM
 	bool "Enable the NVRAM dump module"
 	default y
+	help
+	  This option will increase the ELF file size by ca. 150 bytes.
 
 endmenu
 

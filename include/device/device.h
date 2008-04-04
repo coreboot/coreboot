@@ -231,7 +231,7 @@ struct device {
 	/* number of buses attached to the device */
 	unsigned int links;
 
-	struct device_operations *ops;
+	const struct device_operations *ops;
 	void *device_configuration;
 };
 

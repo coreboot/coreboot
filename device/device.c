@@ -130,6 +130,7 @@ struct device_operations *find_device_operations(struct device_id *id)
 			printk(BIOS_SPEW, "%s: match\n", __func__);
 			return c;
 		}
+		printk(BIOS_SPEW, "no more constructors\n");
 	}
 
 	return NULL;

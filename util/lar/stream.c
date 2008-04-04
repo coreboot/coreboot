@@ -32,8 +32,8 @@
 #include <sys/mman.h>
 #include <netinet/in.h>
 #include <libgen.h>
-#include <elf.h>
 
+#include "elf.h"
 #include "lar.h"
 #include "lib.h"
 

@@ -23,7 +23,9 @@
 
 VERSION = 3
 PATCHLEVEL = 0
-SUBLEVEL = 0
+# Set the sublevel version string from the highest revision number
+# of the checked out files.
+SUBLEVEL := "$(shell svnversion -cn . \ | sed -e "s/.*://" -e "s/\([0-9]*\).*/\1/")"'
 
 have_dotconfig := $(wildcard .config)
 

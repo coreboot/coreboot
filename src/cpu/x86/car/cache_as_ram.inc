@@ -158,8 +158,15 @@ clear_fixed_var_mtrr_out:
  * windowoffset is the 32k-aligned window into CAR size
  */
 .macro simplemask carsize, windowoffset
+	.set gas_bug_workaround,(((\carsize - \windowoffset) / 0x1000) - 4)
+	extractmask gas_bug_workaround, %eax
+	.set gas_bug_workaround,(((\carsize - \windowoffset) / 0x1000))
+	extractmask gas_bug_workaround, %edx
+/* Without the gas bug workaround, the entire macro would consist only of the
+ * two lines below.
 	extractmask (((\carsize - \windowoffset) / 0x1000) - 4), %eax
 	extractmask (((\carsize - \windowoffset) / 0x1000)), %edx
+ */
 .endm
 
 #if CacheSize > 0x10000

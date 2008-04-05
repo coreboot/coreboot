@@ -27,6 +27,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <string.h>
+#include <lar.h>
 
 struct rom_header *pci_rom_probe(struct device *dev)
 {
@@ -35,12 +36,30 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	struct pci_data *rom_data;
 	unsigned int i;
 	unsigned char sum = 0, *rom_bytes;
+	struct mem_file archive, result;
 
 	if (dev->on_mainboard) {
+		int ret;
+		char pcifile[] = "pci0000,0000.rom";
 		/* In case some device PCI_ROM_ADDRESS can not be set
 		 * or readonly.
 		 */
-		rom_address = dev->rom_address;
+		init_archive(&archive);
+		sprintf(pcifile, "pci%04x,%04x.rom", dev->id.u.pci.vendor,
+				dev->id.u.pci.device);
+
+		ret = find_file(&archive, pcifile, &result);
+		if (ret) {
+			printk(BIOS_INFO, "No option rom for onboard device.\n");
+			return NULL;
+		}
+
+		/* FIXME hardcode to 0xc0000 for now because we can only init
+		 * VGA anyways.
+		 */
+		process_file(&result, (void *)0xc0000);
+		rom_address = 0xc0000;
+
 	} else {
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 	}
@@ -140,10 +159,11 @@ struct rom_header *pci_rom_load(struct device *dev,
 		if (dev != vga_pri)
 			return NULL;	// Only one VGA supported.
 #endif
-		printk(BIOS_DEBUG,
-		       "Copying VGA ROM image from %p to 0x%x, 0x%x bytes\n",
-		       rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
-		memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
+		if (rom_header != (void *)PCI_VGA_RAM_IMAGE_START) {
+			printk(BIOS_DEBUG, "Copying VGA ROM image from %p to 0x%x, 0x%x bytes\n", 
+					rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
+			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
+		}
 		vga_inited = 1;
 		return (struct rom_header *)(PCI_VGA_RAM_IMAGE_START);
 #endif

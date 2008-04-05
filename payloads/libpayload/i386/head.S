@@ -54,9 +54,9 @@ _init:
 	movl %esp, %esi
 
 	/* Setup new stack. */
-	movl _istack, %ebx
+	movl $_stack, %ebx
 
-	movl (%ebx), %esp
+	movl %ebx, %esp
 
 	/* Save old stack pointer. */
 	pushl %esi

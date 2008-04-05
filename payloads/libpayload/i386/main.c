@@ -29,23 +29,6 @@
 
 #include <libpayload.h>
 
-/*
- * This structure seeds the stack. We provide the return address of our main
- * function, and further down, the address of the function that we call when
- * we leave and try to restore the original stack. At the very bottom of the
- * stack we store the original stack pointer from the calling application.
- */
-
-extern void _leave(void);
-
-static struct {
-	uint32_t esp;
-} initial_stack  __attribute__ ((section(".istack"))) = {
-	(uint32_t) &initial_stack,
-};
-
-void *_istack = &initial_stack;
-
 /**
  * This is our C entry function - set up the system
  * and jump into the payload entry point.

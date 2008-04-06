@@ -32,7 +32,6 @@
 #include <arch/io.h>
 #include "i82801xx.h"
 
-#define PMBASE_ADDR	0x00000400 /* ACPI Base Address Register */
 #define GPIO_BASE_ADDR	0x00000500 /* GPIO Base Address Register */
 
 #define NMI_OFF 0

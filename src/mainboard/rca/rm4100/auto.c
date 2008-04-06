@@ -42,6 +42,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
 #include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
+#include "southbridge/intel/i82801xx/i82801xx_early_lpc.c"
 
 /**
  * The onboard 128MB PC133 memory does not have a SPD EEPROM so the
@@ -67,24 +68,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/i82830/raminit.c"
 #include "sdram/generic_sdram.c"
-
-/**
- * We have to disable the TCO Timer system reboot feature
- * or we get several reboots through out the boot processes.
- */
-static void disable_tco_timer(void)
-{
-	device_t dev;
-	u8 reg8;
-
-	/* Set the LPC device statically. */
-	dev = PCI_DEV(0x0, 0x1f, 0x0);
-
-	/* Disable the TCO Timer system reboot feature. */
-	reg8 = pci_read_config8(dev, 0xd4);
-	reg8 |= (1 << 1);
-	pci_write_config8(dev, 0xd4, reg8);
-}
 
 /**
  * The AC'97 Audio Controller I/O space registers are read only by default
@@ -131,6 +114,6 @@ static void main(unsigned long bist)
 	/* ram_check(0, 640 * 1024); */
 	/* ram_check(130048 * 1024, 131072 * 1024); */
 
-	disable_tco_timer();
+	i82801xx_halt_tco_timer();
 	ac97_io_enable();
 }

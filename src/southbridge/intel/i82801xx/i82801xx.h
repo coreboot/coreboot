@@ -34,6 +34,7 @@ extern void i82801xx_enable(device_t dev);
 #define GEN_PMCON_3		0xa4
 
 #define PMBASE			0x40
+#define PMBASE_ADDR		0x0400 /* ACPI Base Address Register */
 #define ACPI_CNTL		0x44
 #define BIOS_CNTL		0x4E
 #define GPIO_BASE_ICH0_5	0x58 /* LPC GPIO Base Addr. Reg. (ICH0-ICH5) */
@@ -67,6 +68,9 @@ extern void i82801xx_enable(device_t dev);
 #define CNF			0x50
 #define MTT			0x70
 #define PCI_MAST_STS		0x82
+
+#define TCOBASE			0x60 /* TCO Base Address Register */
+#define TCO1_CNT		0x08 /* TCO1 Control Register */
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)

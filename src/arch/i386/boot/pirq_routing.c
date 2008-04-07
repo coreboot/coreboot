@@ -121,7 +121,7 @@ void pirq_routing_irqs(unsigned long addr)
 		for (j = 0; j < 4; j++) {
 
 			int link = pirq_tbl->slots[i].irq[j].link;
-			int bitmap = pirq_tbl->slots[i].irq[j].bitmap & pirq_tbl->exclusive_irqs;
+			int bitmap = pirq_tbl->slots[i].irq[j].bitmap;
 			int irq = 0;
 
 			printk_debug("INT: %c link: %x bitmap: %x  ",

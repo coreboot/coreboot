@@ -53,6 +53,8 @@
 #define BYTE_ORDER	BIG_ENDIAN
 #endif
 
+#define RAND_MAX 0x7fffffff
+
 /* Some NVRAM byte definitions */
 #define NVRAM_RTC_SECONDS        0
 #define NVRAM_RTC_MINUTES        2

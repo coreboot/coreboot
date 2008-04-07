@@ -66,6 +66,12 @@ holders, and the exact license terms that apply.
   Original files: lib/libalias/alias_util.c, function LibAliasInternetChecksum()
   Current version we use: CVS revision 1.15 2004/07/06 12:13:28
 
+* libc/rand.c: 3-clause BSD license
+  Source: OpenBSD
+          http://www.openbsd.org/cgi-bin/cvsweb/src/lib/libc/stdlib/rand.c
+  Original files: src/lib/libc/stdlib/rand.c
+  Current version we use: CVS revision 1.9 2005/8/8 08:05:37
+
 * libc/memory.c: 3-clause BSD license
   Source: HelenOS, http://www.helenos.eu
           svn checkout svn://svn.helenos.eu/HelenOS/trunk HelenOS

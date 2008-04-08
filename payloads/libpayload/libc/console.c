@@ -101,3 +101,19 @@ int getchar(void)
 #endif
 	}
 }
+
+int getchar_timeout(int *ms)
+{
+	while (*ms > 0) {
+		if (havekey())
+			return getchar();
+
+		mdelay(100);
+		*ms -= 100;
+	}
+
+	if (*ms < 0)
+		*ms = 0;
+
+	return 0;
+}

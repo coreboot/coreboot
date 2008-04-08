@@ -318,7 +318,6 @@ WINDOW *newwin(int num_lines, int num_columns, int begy, int begx)
 	return win;
 }
 /* D */ int nl(void) { SP->_nl = TRUE; return OK; }
-int nocbreak(void) { /* TODO */ return(*(int *)0); }
 /* D */ int noecho(void) { SP->_echo = FALSE; return OK; }
 /* D */ int nonl(void) { SP->_nl = FALSE; return OK; }
 // void noqiflush (void) {}

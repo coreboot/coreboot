@@ -94,6 +94,7 @@ int putchar(int c);
 int puts(const char *s);
 int havekey(void);
 int getchar(void);
+int getchar_timeout(int *ms);
 
 extern int last_putchar;
 

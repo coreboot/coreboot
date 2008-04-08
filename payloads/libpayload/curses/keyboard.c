@@ -39,6 +39,8 @@
 
 #include "local.h"
 
+static int _halfdelay = 0;
+
 /* ============== Serial ==================== */
 
 /* FIXME:  Cook the serial correctly */
@@ -241,8 +243,13 @@ static int curses_getchar(int delay)
 				return cook_serial(c);
 			}
 
-			if (!delay)
+			if (delay == 0)
 				break;
+
+			if (delay > 0) {
+				mdelay(100);
+				delay--;
+			}
 		}
 
 		c = inb(0x60);
@@ -262,12 +269,33 @@ static int curses_getchar(int delay)
 
 int wgetch(WINDOW *win)
 {
-	return curses_getchar(win->_delay);
+	int delay = -1;
+
+	if (_halfdelay || win->_delay)
+		delay = win->_delay ? 0 : _halfdelay;
+
+	return curses_getchar(delay);
 }
 
 int nodelay(WINDOW *win, NCURSES_BOOL flag)
 {
-	win->_delay = flag ? 0 : -1;
+	win->_delay = flag ? 1 : 0;
+	return 0;
+}
+
+int halfdelay(int tenths)
+{
+	if (tenths > 255)
+		return ERR;
+
+	_halfdelay = tenths;
+	return 0;
+}
+
+int nocbreak(void)
+{
+	/* Remove half delay timeout. */
+	_halfdelay = 0;
 	return 0;
 }
 

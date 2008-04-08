@@ -132,6 +132,11 @@ int vsprintf(char *str, const char *fmt, va_list ap);
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list ap);
 
+/* libc/rand.c */
+int rand_r(unsigned int *seed);
+int rand(void);
+void srand(unsigned int seed);
+
 /* libc/sha1.c */
 #define SHA1_BLOCK_LENGTH	64
 #define SHA1_DIGEST_LENGTH	20

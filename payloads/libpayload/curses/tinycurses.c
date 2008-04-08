@@ -79,8 +79,8 @@ int COLOR_PAIRS;
 WINDOW *stdscr;
 WINDOW *curscr;
 WINDOW *newscr;
-int LINES;
-int COLS;
+int LINES = 25;
+int COLS = 80;
 int TABSIZE;
 int ESCDELAY;
 // char ttytype[];
@@ -202,7 +202,7 @@ int endwin(void)
 // char erasechar (void) {}
 // void filter (void) {}
 // int flash(void) {}
-// int flushinp (void) {}
+int flushinp(void) { /* TODO */ return 0; }
 // WINDOW *getwin (FILE *) {}
 bool has_colors (void) { /* TODO */ return(*(bool *)0); }
 // bool has_ic (void) {}
@@ -322,7 +322,7 @@ WINDOW *newwin(int num_lines, int num_columns, int begy, int begx)
 /* D */ int nonl(void) { SP->_nl = FALSE; return OK; }
 // void noqiflush (void) {}
 // int noraw (void) {}
-// int notimeout (WINDOW *,bool) {}
+/* D */ int notimeout (WINDOW *win, bool f) { win->_notimeout = f; return OK; }
 // int overlay (const WINDOW*,WINDOW *) {}
 // int overwrite (const WINDOW*,WINDOW *) {}
 // int pair_content (short,short*,short*) {}
@@ -655,7 +655,7 @@ int wsetscrreg(WINDOW *win, int top, int bottom)
 }
 // void wsyncdown (WINDOW *) {}
 // void wsyncup (WINDOW *) {}
-// void wtimeout (WINDOW *,int) {}
+/* D */ void wtimeout(WINDOW *win, int delay) { win->_delay = delay; }
 /* D */ int wtouchln(WINDOW *win, int y, int n, int changed)
 {
 	int i;

@@ -1,4 +1,4 @@
-##
+#!/bin/sh
 ## This file is part of the libpayload project.
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
@@ -25,21 +25,80 @@
 ## LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 ## OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ## SUCH DAMAGE.
-##
 
-# Sample libpayload Makefile.
+# GCC wrapper for libpayload
 
-CC := ../bin/lpgcc
+DEFAULT_PREFIX=/opt
+DEFAULT_CC=gcc
 
-CFLAGS := -Wall -Werror -Os
+BASE=`dirname $0`
 
-all: hello.elf
+# This will set the _LIBDIR and _INCDIR variables used below
+. $BASE/lp.functions
 
-hello.elf: hello.o
-	$(CC) -o $@ hello.o
+trygccoption() {
+	$DEFAULT_CC $1 -S -xc /dev/null -o .$$.tmp > /dev/null
+	rm -f .$$.tmp
+	return $?
+}
 
-hello.o: hello.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+DEBUGME=0
+DOLINK=1
 
-clean:
-	rm -f hello.elf hello.o
+# This variable will contain the command line that the user wants to
+# pass to gas
+
+CMDLINE=
+
+# Process various flags that would change our behavior
+
+while [ $# -gt 0 ]; do
+	case $1 in
+	    -m32|-fno-stack-protector)
+		shift
+		continue
+		;;
+	    -m64)
+		error "Invalid option --64 - only 32 bit architectures are supported"
+		;;
+	    -c)
+		DOLINK=0
+		;;
+	    -debug-wrapper)
+		DEBUGME=1
+		shift
+		continue
+		;;
+	    *)
+		;;
+	esac
+
+	CMDLINE="$CMDLINE $1"
+	shift
+done
+
+_CFLAGS="-m32 -nostdinc -nostdlib -I$_INCDIR"
+
+# Check for the -fno-stack-protector silliness
+
+trygccoption -fno-stack-protector
+[ $? -eq 0 ] && _CFLAGS="$_CFLAGS -fno-stack-protector"
+
+_CFLAGS="$_CFLAGS -I`$DEFAULT_CC -m32 -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
+
+_LDFLAGS="-Wl,-T,$_LIBDIR/libpayload.ldscript -static"
+
+if [ $DOLINK -eq 0 ]; then
+    if [ $DEBUGME -eq 1 ]; then
+    	echo "$DEFAULT_CC $_CFLAGS $CMDLINE"
+    fi
+
+    $DEFAULT_CC $_CFLAGS $CMDLINE
+else
+    _LIBGCC=`$DEFAULT_CC -m32 -print-libgcc-file-name`
+    if [ $DEBUGME -eq 1 ]; then
+	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $CMDLINE $_LIBDIR/i386/head.o $_LIBDIR/libpayload.a $_LIBGCC"
+    fi
+
+    $DEFAULT_CC $_CFLAGS $_LDFLAGS $CMDLINE $_LIBDIR/i386/head.o $_LIBDIR/libpayload.a $_LIBGCC
+fi

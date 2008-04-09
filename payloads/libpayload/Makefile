@@ -29,6 +29,7 @@
 
 BASE_DIR=$(shell pwd)
 KCONFIG_DIR=util/kconfig
+DESTDIR=/opt
 
 ifeq (.config, $(wildcard .config))
 dot-config := 1
@@ -49,9 +50,10 @@ all: .config
 	@echo "Configuration completed - type make to build libpayload"
 else
 -include .config
-endif
 
-PLATFORM-$(CONFIG_TARGET_I386) += i386/Makefile.inc
+ARCHDIR-$(CONFIG_TARGET_I386) := i386
+
+PLATFORM-y += $(ARCHDIR-y)/Makefile.inc
 TARGETS-y :=
 
 BUILD-y := crypto/Makefile.inc libc/Makefile.inc drivers/Makefile.inc
@@ -64,8 +66,14 @@ INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)inclu
 # TODO: Re-add -Os as soon as we find out why it caused problems.
 CFLAGS := -Wall -Werror -fno-stack-protector -nostdinc $(INCLUDES)
 
-libpayload.a: $(TARGETS-y)
-	$(AR) rc $@ $(TARGETS-y)
+lib: lib/libpayload.a lib/$(ARCHDIR-y)/head.o
+
+lib/libpayload.a: $(TARGETS-y)
+	@ $(AR) rc $@ $(TARGETS-y)
+
+lib/$(ARCHDIR-y)/head.o: $(ARCHDIR-y)/head.o
+	@ mkdir -p lib/$(ARCHDIR-y)
+	@ cp $< $@
 
 %.o: %.c
 	$(CC) -m32 $(CFLAGS) -c -o $@ $<
@@ -73,15 +81,26 @@ libpayload.a: $(TARGETS-y)
 %.o: %.S
 	$(AS) --32 -o $@ $<
 
+install: lib
+	install -m 755 -d $(DESTDIR)/libpayload/lib
+	cp -r lib/* $(DESTDIR)/libpayload/lib/
+	install -m 755 -d $(DESTDIR)/libpayload/include
+	cp -r include/* $(DESTDIR)/libpayload/include/
+	install -m 755 -d $(DESTDIR)/libpayload/bin
+	install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
+	install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
+	install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
+
 clean:
 	@ rm -f $(TARGETS-y)
-	@ rm -f libpayload.a
+	@ rm -f lib/libpayload.a lib/$(ARCHDIR-y)/head.o
 
 distclean: clean
 	@ make -C $(KCONFIG_DIR) clean
 	@ rm -f $(KCONFIG_DIR)/lxdialog/lxdialog
 	@ rm -f .config .kconfig.d  include/autoconf.h
-	
+endif
+
 ifeq ($(config-targets),1)
 
 $(KCONFIG_DIR)/conf:

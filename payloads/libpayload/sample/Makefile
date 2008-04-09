@@ -29,17 +29,26 @@
 
 # Sample libpayload Makefile.
 
-CC := ../bin/lpgcc
-
+LIBPAYLOAD_DIR := ..
+CC := $(LIBPAYLOAD_DIR)/bin/lpgcc
+AS := $(LIBPAYLOAD_DIR)/bin/lpas
 CFLAGS := -Wall -Werror -Os
+TARGET := hello
+OBJS := $(TARGET).o
 
-all: hello.elf
+all: $(TARGET).elf
 
-hello.elf: hello.o
-	$(CC) -o $@ hello.o
+$(TARGET).elf: $(OBJS)
+	$(CC) -o $@ $(OBJS)
 
-hello.o: hello.c
+%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+%.S.o: %.S
+	$(AS) --32 -o $@ $<
+
 clean:
-	rm -f hello.elf hello.o
+	rm -f $(TARGET).elf *.o
+
+distclean: clean
+

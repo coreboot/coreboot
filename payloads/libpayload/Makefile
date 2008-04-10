@@ -85,7 +85,9 @@ install: lib
 	install -m 755 -d $(DESTDIR)/libpayload/lib
 	cp -r lib/* $(DESTDIR)/libpayload/lib/
 	install -m 755 -d $(DESTDIR)/libpayload/include
-	cp -r include/* $(DESTDIR)/libpayload/include/
+	for file in `find include -name *.h -type f`; do \
+		install -m 644 -D $$file $(DESTDIR)/libpayload/$$file; \
+	done
 	install -m 755 -d $(DESTDIR)/libpayload/bin
 	install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
 	install -m 755 bin/lpas $(DESTDIR)/libpayload/bin

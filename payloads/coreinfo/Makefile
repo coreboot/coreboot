@@ -44,14 +44,12 @@ HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
-CC = gcc
-CROSS_CFLAGS = -m32
-INCLUDES = -I../libpayload/include -Ibuild \
-	   -I$(shell $(CC) $(CROSS_CFLAGS) -print-search-dirs | \
-	   head -n 1 | cut -d' ' -f2)include
-LIBPAYLOAD = ../libpayload/libpayload.a
-LIBGCC := $(shell $(CC) $(CROSS_CFLAGS) -print-libgcc-file-name)
-CFLAGS := -Wall -Werror -Os -fno-stack-protector -nostdinc $(INCLUDES)
+LIBPAYLOAD_DIR := ../libpayload
+CC = $(LIBPAYLOAD_DIR)/bin/lpgcc
+AS = $(LIBPAYLOAD_DIR)/bin/lpas
+
+INCLUDES = -Ibuild
+CFLAGS := -Wall -Werror -Os $(INCLUDES)
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
 	  nvram_module.o coreinfo.o
 OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS))
@@ -69,20 +67,17 @@ all: prepare $(TARGET)
 
 $(TARGET): $(OBJS)
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)#ld --verbose -T ../libpayload/libpayload.ldscript -o $@ $(OBJS) \
-		#--whole-archive $(LIBPAYLOAD) --no-whole-archive $(LIBGCC)
-	$(Q)ld -T ../libpayload/libpayload.ldscript -o $@ $(OBJS) \
-		../libpayload/i386/head.o $(LIBPAYLOAD) $(LIBGCC)
+	$(Q)$(CC) -o $@ $(OBJS)
 	$(Q)printf "  STRIP   $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)strip -s $@
 
 $(obj)/%.S.o: $(src)/%.S
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(AS) --32 -o $@ $<
+	$(Q)$(AS) -o $@ $<
 
 $(obj)/%.o: $(src)/%.c
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(CROSS_CFLAGS) $(CFLAGS) -c -o $@ $<
+	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
 
 endif
 

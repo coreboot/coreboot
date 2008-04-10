@@ -28,66 +28,65 @@
  */
 
 #include <libpayload.h>
-#include <arch/rdtsc.h>
+#include <pci.h>
 
-static unsigned int cpu_khz;
-
-/**
- * Calculate the speed of the processor for use in delays.
- *
- * @return The CPU speed in kHz.
- */
-unsigned int get_cpu_speed(void)
+static int find_on_bus(int bus, unsigned short vid, unsigned short did,
+		       pcidev_t * dev)
 {
-	unsigned long long start, end;
+	int devfn;
+	unsigned int val;
+	unsigned char hdr;
 
-	/* Set up the PPC port - disable the speaker, enable the T2 gate. */
-	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
+	for (devfn = 0; devfn < 0x100; devfn++) {
+		pci_read_dword(bus, devfn, REG_VENDOR_ID, &val);
 
-	/* Set the PIT to Mode 0, counter 2, word access. */
-	outb(0xB0, 0x43);
+		if (val == 0xffffffff || val == 0x00000000 ||
+		    val == 0x0000ffff || val == 0xffff0000)
+			continue;
 
-	/* Load the counter with 0xffff. */
-	outb(0xff, 0x42);
-	outb(0xff, 0x42);
+		if (val == ((did << 16) | vid)) {
+			*dev = PCIDEV(bus, devfn);
+			return 1;
+		}
 
-	/* Read the number of ticks during the period. */
-	start = rdtsc();
-	while (!(inb(0x61) & 0x20)) ;
-	end = rdtsc();
+		pci_read_byte(bus, devfn, REG_HEADER_TYPE, &hdr);
 
-	/*
-	 * The clock rate is 1193180 Hz, the number of milliseconds for a
-	 * period of 0xffff is 1193180 / (0xFFFF * 1000) or .0182.
-	 * Multiply that by the number of measured clocks to get the kHz value.
-	 */
-	cpu_khz = (unsigned int)((end - start) * 1193180U / (1000 * 0xffff));
+		hdr &= 0x7F;
 
-	return cpu_khz;
+		if (hdr == HEADER_TYPE_BRIDGE || hdr == HEADER_TYPE_CARDBUS) {
+			unsigned int busses;
+			pci_read_dword(bus, devfn, REG_PRIMARY_BUS, &busses);
+			if (find_on_bus((busses >> 8) & 0xFF, vid, did, dev))
+				return 1;
+		}
+	}
+
+	return 0;
 }
 
-static inline void _delay(unsigned int delta)
+void pci_read_dword(unsigned int bus, unsigned int devfn,
+		    unsigned int reg, unsigned int *val)
 {
-	unsigned long long timeout = rdtsc() + delta;
-	while (rdtsc() < timeout) ;
+	outl(PCI_ADDR(bus, devfn, reg), 0xCF8);
+	*val = inl(0xCFC);
 }
 
-void ndelay(unsigned int n)
+void pci_read_byte(unsigned int bus, unsigned int devfn,
+		   unsigned int reg, unsigned char *val)
 {
-	_delay(n * cpu_khz / 1000000);
+	outl(PCI_ADDR(bus, devfn, reg), 0xCF8);
+	*val = inb(0xCFC + (reg & 3));
 }
 
-void udelay(unsigned int n)
+int pci_find_device(unsigned short vid, unsigned short did, pcidev_t * dev)
 {
-	_delay(n * cpu_khz / 1000);
+	return find_on_bus(0, vid, did, dev);
 }
 
-void mdelay(unsigned int m)
+unsigned int pci_read_resource(pcidev_t dev, int bar)
 {
-	_delay(m * cpu_khz);
-}
-
-void delay(unsigned int s)
-{
-	_delay(s * cpu_khz * 1000);
+	unsigned int val;
+	pci_read_dword(PCIDEV_BUS(dev), PCIDEV_DEVFN(dev), 0x10 + (bar * 4),
+		       &val);
+	return val;
 }

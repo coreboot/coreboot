@@ -27,67 +27,32 @@
  * SUCH DAMAGE.
  */
 
-#include <libpayload.h>
-#include <arch/rdtsc.h>
+#ifndef _ARCH_MSR_H_
+#define _ARCH_MSR_H_
 
-static unsigned int cpu_khz;
-
-/**
- * Calculate the speed of the processor for use in delays.
- *
- * @return The CPU speed in kHz.
- */
-unsigned int get_cpu_speed(void)
+static inline unsigned long long _rdmsr(unsigned int msr)
 {
-	unsigned long long start, end;
-
-	/* Set up the PPC port - disable the speaker, enable the T2 gate. */
-	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
-
-	/* Set the PIT to Mode 0, counter 2, word access. */
-	outb(0xB0, 0x43);
-
-	/* Load the counter with 0xffff. */
-	outb(0xff, 0x42);
-	outb(0xff, 0x42);
-
-	/* Read the number of ticks during the period. */
-	start = rdtsc();
-	while (!(inb(0x61) & 0x20)) ;
-	end = rdtsc();
-
-	/*
-	 * The clock rate is 1193180 Hz, the number of milliseconds for a
-	 * period of 0xffff is 1193180 / (0xFFFF * 1000) or .0182.
-	 * Multiply that by the number of measured clocks to get the kHz value.
-	 */
-	cpu_khz = (unsigned int)((end - start) * 1193180U / (1000 * 0xffff));
-
-	return cpu_khz;
+	unsigned long long val;
+	asm volatile("rdmsr" : "=A" (val) : "c" (msr));
+	return val;
 }
 
-static inline void _delay(unsigned int delta)
+static inline void _wrmsr(unsigned int msr, unsigned long long val)
 {
-	unsigned long long timeout = rdtsc() + delta;
-	while (rdtsc() < timeout) ;
+	asm volatile("wrmsr" : : "c" (msr), "A"(val));
 }
 
-void ndelay(unsigned int n)
+#define rdmsr(_m, _l, _h) \
+	do { \
+		unsigned long long _v = _rdmsr((_m)); \
+		(_l) = (unsigned int) _v; \
+		(_h) = (unsigned int) ((_v >> 32) & 0xFFFFFFFF); \
+	} while(0)
+
+static inline void wrmsr(unsigned int msr, unsigned int lo, unsigned int hi)
 {
-	_delay(n * cpu_khz / 1000000);
+	unsigned long long val = (((unsigned long long) hi) << 32) | lo;
+	_wrmsr(msr, val);
 }
 
-void udelay(unsigned int n)
-{
-	_delay(n * cpu_khz / 1000);
-}
-
-void mdelay(unsigned int m)
-{
-	_delay(m * cpu_khz);
-}
-
-void delay(unsigned int s)
-{
-	_delay(s * cpu_khz * 1000);
-}
+#endif

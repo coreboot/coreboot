@@ -27,67 +27,35 @@
  * SUCH DAMAGE.
  */
 
-#include <libpayload.h>
-#include <arch/rdtsc.h>
+#ifndef _PCI_H_
+#define _PCI_H_
 
-static unsigned int cpu_khz;
+typedef unsigned short pcidev_t;
 
-/**
- * Calculate the speed of the processor for use in delays.
- *
- * @return The CPU speed in kHz.
- */
-unsigned int get_cpu_speed(void)
-{
-	unsigned long long start, end;
+#define REG_VENDOR_ID   0x00
+#define REG_DEVICE_ID   0x04
+#define REG_HEADER_TYPE 0x0E
+#define REG_PRIMARY_BUS 0x18
 
-	/* Set up the PPC port - disable the speaker, enable the T2 gate. */
-	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
+#define HEADER_TYPE_NORMAL  0
+#define HEADER_TYPE_BRIDGE  1
+#define HEADER_TYPE_CARDBUS 2
 
-	/* Set the PIT to Mode 0, counter 2, word access. */
-	outb(0xB0, 0x43);
+#define PCIDEV(_b, _d) ((((_b) & 0xFF) << 8) | ((_d) & 0xFF))
 
-	/* Load the counter with 0xffff. */
-	outb(0xff, 0x42);
-	outb(0xff, 0x42);
+#define PCIDEV_BUS(_d) (((_d) >> 8) & 0xFF)
+#define PCIDEV_DEVFN(_d) ((_d) & 0xFF)
 
-	/* Read the number of ticks during the period. */
-	start = rdtsc();
-	while (!(inb(0x61) & 0x20)) ;
-	end = rdtsc();
+#define PCI_ADDR(_bus, _dev, _reg) \
+(0x80000000 | (_bus << 16) | (_dev << 8) | (_reg & ~3))
 
-	/*
-	 * The clock rate is 1193180 Hz, the number of milliseconds for a
-	 * period of 0xffff is 1193180 / (0xFFFF * 1000) or .0182.
-	 * Multiply that by the number of measured clocks to get the kHz value.
-	 */
-	cpu_khz = (unsigned int)((end - start) * 1193180U / (1000 * 0xffff));
+void pci_read_dword(unsigned int bus, unsigned int devfn,
+		    unsigned int reg, unsigned int *val);
 
-	return cpu_khz;
-}
+void pci_read_byte(unsigned int bus, unsigned int devfn,
+		   unsigned int reg, unsigned char *val);
 
-static inline void _delay(unsigned int delta)
-{
-	unsigned long long timeout = rdtsc() + delta;
-	while (rdtsc() < timeout) ;
-}
+int pci_find_device(unsigned short vid, unsigned short did, pcidev_t *dev);
+unsigned int pci_read_resource(pcidev_t dev, int bar);
 
-void ndelay(unsigned int n)
-{
-	_delay(n * cpu_khz / 1000000);
-}
-
-void udelay(unsigned int n)
-{
-	_delay(n * cpu_khz / 1000);
-}
-
-void mdelay(unsigned int m)
-{
-	_delay(m * cpu_khz);
-}
-
-void delay(unsigned int s)
-{
-	_delay(s * cpu_khz * 1000);
-}
+#endif

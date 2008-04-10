@@ -31,8 +31,8 @@
 
 void console_init(void)
 {
-#ifdef CONFIG_VGA_CONSOLE
-	vga_init();
+#ifdef CONFIG_VIDEO_CONSOLE
+	video_console_init();
 #endif
 #ifdef CONFIG_SERIAL_CONSOLE
 	serial_init();
@@ -41,8 +41,8 @@ void console_init(void)
 
 static void device_putchar(unsigned char c)
 {
-#ifdef CONFIG_VGA_CONSOLE
-	vga_putchar(0x700 | c);
+#ifdef CONFIG_VIDEO_CONSOLE
+	video_console_putchar(0x700| c);
 #endif
 #ifdef CONFIG_SERIAL_CONSOLE
 	serial_putchar(c);

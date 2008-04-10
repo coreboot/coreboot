@@ -219,9 +219,10 @@ WINDOW *initscr(void)
 	// def_prog_mode();
 
 	if (curses_flags & F_ENABLE_CONSOLE) {
-		/* Clear the screen and kill the cursor. */
-		vga_clear();
-		vga_cursor_enable(0);
+		/* Clear the screen and kill the cursor */
+
+		video_console_clear();
+		video_console_cursor_enable(0);
 	}
 
 	// Speaker init?
@@ -586,7 +587,7 @@ int wnoutrefresh(WINDOW *win)
 				 * but this will break wide characters!
 				 */
 				c |= (chtype) (win->_line[y].text[x].chars[0] & 0xff);
-				vga_putc(y, x, c);
+				video_console_putc(y, x, c);
 			}
 		}
 	}

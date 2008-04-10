@@ -29,6 +29,9 @@
 ##
 
 TARGETS-$(CONFIG_SERIAL_CONSOLE) += drivers/serial.o
-TARGETS-$(CONFIG_VGA_CONSOLE) += drivers/vga.o
 TARGETS-$(CONFIG_PC_KEYBOARD) += drivers/keyboard.o
 TARGETS-$(CONFIG_NVRAM) += drivers/nvram.o
+
+# Video console drivers
+TARGETS-$(CONFIG_VIDEO_CONSOLE) += drivers/video/video.o
+TARGETS-$(CONFIG_VGA_VIDEO_CONSOLE) += drivers/video/vga.o

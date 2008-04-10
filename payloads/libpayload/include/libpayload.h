@@ -78,15 +78,12 @@ void serial_putchar(unsigned char c);
 int serial_havechar(void);
 int serial_getchar(void);
 
-/* drivers/serial.c */
-void vga_cursor_enable(int state);
-void vga_clear_line(uint8_t row, uint8_t ch, uint8_t attr);
-void vga_fill(uint8_t ch, uint8_t attr);
-void vga_clear(void);
-void vga_putc(uint8_t row, uint8_t col, unsigned int c);
-void vga_putchar(unsigned int ch);
-void vga_move_cursor(int x, int y);
-void vga_init(void);
+/* video/video.c */
+int video_console_init(void);
+void video_console_putchar(unsigned int ch);
+void video_console_putc(u8 row, u8 col, unsigned int ch);
+void video_console_clear(void);
+void video_console_cursor_enable(int state);
 
 /* libc/console.c */
 void console_init(void);

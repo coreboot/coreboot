@@ -59,13 +59,17 @@ config SERIAL_BAUD_RATE
 	depends SERIAL_SET_SPEED
 	default 115200
 
-config VGA_CONSOLE
-	bool "See output on a VGA console"
+config VIDEO_CONSOLE
+	bool "See output on a video console"
+	default y
+
+config VGA_VIDEO_CONSOLE
+	bool "VGA video console driver"
+	depends on VIDEO_CONSOLE
 	default y
 
 config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
-	depends VGA_CONSOLE
 	default y
 
 config NVRAM

@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2008 Advanced Micro Devices, Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,68 +27,21 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TINYCURSES_H
-#define TINYCURSES_H
+#ifndef VIDEO_CONSOLE_H_
+#define VIDEO_CONSOLE_H_
 
-/* For curses.priv.h: */
-#define USE_RCS_IDS 0
-#define DECL_ERRNO 0
-#define HAVE_LIBGPM 0
-#define NCURSES_EXT_FUNCS 0
-#define USE_OK_BCOPY 0
-#define USE_MY_MEMMOVE 0
-#define USE_SCROLL_HINTS 0
-#define USE_HASHMAP 0
-#define USE_WIDEC_SUPPORT 0	/* We do _not_ want wide character support. */
-// #define NCURSES_EXT_COLORS 1
-#define NCURSES_EXT_COLORS 0
-#define USE_SYSMOUSE 0
-#define NCURSES_NO_PADDING 0
-#define USE_HARD_TABS 0
-#define HAVE_FCNTL_H 0
-#define USE_XMC_SUPPORT 0
-#define NCURSES_EXPANDED 0
-#define HAVE_GETCWD 0
-#define USE_XMC_SUPPORT 0
-#define HAVE_STRSTR 0
-#define NO_LEAKS 0
-#define HAVE_RESIZETERM 0
-#define HAVE_VSSCANF 0
-#define BROKEN_LINKER 0
+#define VIDEO_ROWS 25
+#define VIDEO_COLS 80
 
-#undef USE_TERMLIB
+struct video_console {
+	int (*init)(void);
+	void (*putc)(u8, u8, unsigned int);
+	void (*clear)(void);
+	void (*scroll_up)(void);
 
-#include <libpayload.h>
-#include <arch/types.h>
-#include <arch/io.h>
-#include <curses.h>
-#include <curses.priv.h>
+	void (*get_cursor)(unsigned int *, unsigned int *, unsigned int *);
+	void (*set_cursor)(unsigned int, unsigned int);
+	void (*enable_cursor)(int);
+};
 
-#define SCREEN_X 80
-#define SCREEN_Y 25
-
-/* Flags used to determine what output methods are available */
-
-#ifdef CONFIG_VIDEO_CONSOLE
-#define F_ENABLE_CONSOLE 0x01
-#else
-#define F_ENABLE_CONSOLE 0x00
 #endif
-
-#ifdef CONFIG_SERIAL_CONSOLE
-#define F_ENABLE_SERIAL  0x02
-#else
-#define F_ENABLE_SERIAL  0x00
-#endif
-
-extern int curses_flags;
-
-/* Share the color table for easy lookup */
-extern unsigned char color_pairs[256];
-
-/* speaker.c */
-void speaker_enable(u16 freq);
-void speaker_disable(void);
-void speaker_tone(u16 freq, unsigned int duration);
-
-#endif				/* TINYCURSES_H */

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,11 +129,11 @@ u16 mctGet_NVbits(u8 index)
 		//val = 1;	/* enable */
 		break;
 	case NV_BottomIO:
-		val = 0xC0;	/* address bits [31:24] */
+		val = 0xE0;	/* address bits [31:24] */
 		break;
 	case NV_BottomUMA:
 #if (UMA_SUPPORT == 0)
-		val = 0xC0;	/* address bits [31:24] */
+		val = 0xE0;	/* address bits [31:24] */
 #elif (UMA_SUPPORT == 1)
 		val = 0xB0;	/* address bits [31:24] */
 #endif
@@ -205,7 +205,7 @@ u16 mctGet_NVbits(u8 index)
 		val = 1;		/* Enabled */
 		//val = 0;	/* Disabled */
 	case NV_ChannelIntlv:
-		val = 5;	/* Disabled */ /* Not currently checked in mctchi_d.c */
+		val = 5;	/* Not currently checked in mctchi_d.c */
 	/* Bit 0 =     0 - Disable
 	 *             1 - Enable
 	 * Bits[2:1] = 00b - Address bits 6
@@ -335,4 +335,9 @@ void mctHookAfterAnyTraining(void)
 u32 mctGetLogicalCPUID_D(u8 node)
 {
 	return mctGetLogicalCPUID(node);
+}
+
+u8 mctSetNodeBoundary_D(void)
+{
+	return 0;
 }

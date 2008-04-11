@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1130,6 +1130,9 @@ u32 mct_GetMCTSysAddr_D(struct MCTStatStruc *pMCTstat,
 			val += (1 << (15-8));	/* add 32K */
 	}
 
+	/* Add a node seed */
+	val += (((1 * pDCTstat->Node_ID) << 20) >> 8);	/* Add 1MB per node to avoid aliases */
+
 	/* HW remap disabled? */
 	if (!(pDCTstat->Status & (1 << SB_HWHole))) {
 		if (!(pDCTstat->Status & (1 << SB_SWNodeHole))) {
@@ -1167,6 +1170,13 @@ exitGetAddrWNoError:
 			*valid = 1;
 		}
 	}
+	print_debug_dqs("mct_GetMCTSysAddr_D: receiver ", receiver, 2);
+	print_debug_dqs("mct_GetMCTSysAddr_D: Channel ", Channel, 2);
+	print_debug_dqs("mct_GetMCTSysAddr_D: base_addr ", val, 2);
+	print_debug_dqs("mct_GetMCTSysAddr_D: valid ", *valid, 2);
+	print_debug_dqs("mct_GetMCTSysAddr_D: status ", pDCTstat->Status, 2);
+	print_debug_dqs("mct_GetMCTSysAddr_D: HoleBase ", pDCTstat->DCTHoleBase, 2);
+	print_debug_dqs("mct_GetMCTSysAddr_D: Cachetop ", pMCTstat->Sub4GCacheTop, 2);
 
 exitGetAddr:
 	return val;

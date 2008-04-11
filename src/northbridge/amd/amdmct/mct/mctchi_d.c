@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,11 +41,10 @@ void InterleaveChannels_D(struct MCTStatStruc *pMCTstat,
 	/* call back to wrapper not needed ManualChannelInterleave_D(); */
 	/* call back - DctSelIntLvAddr = mctGet_NVbits(NV_ChannelIntlv);*/	/* override interleave */
 	// FIXME: Check for Cx
-	DctSelIntLvAddr = 5;	/* use default: Enable channel interleave */
-	enabled = 1;		/* with Hash*: exclusive OR of address bits[20:16, 6]. */
+	DctSelIntLvAddr = mctGet_NVbits(NV_ChannelIntlv); /* typ=5: Hash*: exclusive OR of address bits[20:16, 6]. */
 	beforeInterleaveChannels_D(pDCTstatA, &enabled);
 
-	if (enabled) {
+	if (DctSelIntLvAddr & 1) {
 		DctSelIntLvAddr >>= 1;
 		HoleSize = 0;
 		if ((pMCTstat->GStatus & (1 << GSB_SoftHole)) ||
@@ -84,7 +83,7 @@ void InterleaveChannels_D(struct MCTStatStruc *pMCTstat,
 				dct0_size += DramBase;
 				dct0_size += dct1_size;
 				if (dct0_size >= HoleBase)	/* if DctSelBaseAddr > HoleBase */
-					dct0_size += HoleBase;
+					dct0_size += HoleSize;
 				DctSelBase = dct0_size;
 
 				if (dct1_size == 0)
@@ -100,7 +99,7 @@ void InterleaveChannels_D(struct MCTStatStruc *pMCTstat,
 				val |= DctSelHi;
 				val |= (DctSelIntLvAddr << 6) & 0xFF;
 				Set_NB32(pDCTstat->dev_dct, 0x110, val);
-				print_tx("InterleaveChannels: DRAM Controller Select Low Register = ", val);
+				print_tx("InterleaveChannels: F2x110 DRAM Controller Select Low Register = ", val);
 
 				if (HoleValid) {
 					tmp = DramBase;
@@ -112,10 +111,10 @@ void InterleaveChannels_D(struct MCTStatStruc *pMCTstat,
 					}
 					tmp += HoleSize;
 					val = Get_NB32(pDCTstat->dev_map, 0xF0);	/* DramHoleOffset */
-					val &= 0x7F;
-					val |= (tmp & 0xFF);
+					val &= 0xFFFF007F;
+					val |= (tmp & ~0xFFFF007F);
 					Set_NB32(pDCTstat->dev_map, 0xF0, val);
-print_tx("InterleaveChannels:0xF0 = ", val);
+					print_tx("InterleaveChannels: F1xF0 DRAM Hole Address Register = ", val);
 
 				}
 			}

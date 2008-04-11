@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,10 +42,7 @@ static void mct_SetFinalRcvrEnDly_D(struct DCTStatStruc *pDCTstat,
 				u8 Channel, u8 Receiver,
 				u32 dev, u32 index_reg,
 				u8 Addl_Index, u8 Pass);
-static void CalcMaxLatency_D(struct DCTStatStruc *pDCTstat,
-				u8 DQSRcvrEnDly, u8 Channel);
 static void mct_SetMaxLatency_D(struct DCTStatStruc *pDCTstat, u8 Channel, u8 DQSRcvEnDly);
-static void mct_SetDQSRcvEn_D(struct DCTStatStruc *pDCTstat, u32 val);
 static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 dct);
 static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat);
@@ -766,9 +763,8 @@ static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
 	u8 *test_buf;
 	u8 i;
 	u8 result;
-	u8 *addr_lo_buf;
+	u8 value;
 
-	SetUpperFSbase(addr);	// needed?
 
 	if(Pass == FirstPass) {
 		if(pattern==1) {
@@ -780,44 +776,27 @@ static u8 mct_CompareTestPatternQW0_D(struct MCTStatStruc *pMCTstat,
 		test_buf = (u8 *)TestPattern2_D;
 	}
 
-	addr_lo_buf = (u8 *) (addr << 8);
-	result = DQS_FAIL;
+	SetUpperFSbase(addr);
+	addr <<= 8;
 
 	if((pDCTstat->Status & (1<<SB_128bitmode)) && channel ) {
-		addr_lo_buf += 8;	/* second channel */
+		addr += 8;	/* second channel */
 		test_buf += 8;
 	}
 
-
-#if DQS_TRAIN_DEBUG > 4
-	print_debug("\t\t\t\t\t\tQW0 :   test_buf  = ");
-	print_debug_hex32((unsigned)test_buf);
-	print_debug(": ");
+	print_debug_dqs_pair("\t\t\t\t\t\t  test_buf = ", (u32)test_buf, "  |  addr_lo = ", addr,  4);
 	for (i=0; i<8; i++) {
-		print_debug_hex8(test_buf[i]); print_debug(" ");
-	}
-	print_debug("\n");
+		value = read32_fs(addr);
+		print_debug_dqs_pair("\t\t\t\t\t\t\t\t ", test_buf[i], "  |  ", value, 4);
 
-	print_debug("\t\t\t\t\t\tQW0 : addr_lo_buf = ");
-	print_debug_hex32((unsigned)addr_lo_buf);
-	print_debug(": ");
-	for (i=0; i<8; i++) {
-		print_debug_hex8(addr_lo_buf[i]); print_debug(" ");
-	}
-	print_debug("\n");
-#endif
-
-	/* prevent speculative execution of following instructions */
-	_EXECFENCE;
-
-	for (i=0; i<8; i++) {
-		if(addr_lo_buf[i] == test_buf[i]) {
+		if (value == test_buf[i]) {
 			pDCTstat->DqsRcvEn_Pass |= (1<<i);
 		} else {
 			pDCTstat->DqsRcvEn_Pass &= ~(1<<i);
 		}
 	}
 
+	result = DQS_FAIL;
 
 	if (Pass == FirstPass) {
 		/* if first pass, at least one byte lane pass
@@ -1062,7 +1041,7 @@ static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 	Set_NB32_index_wait(dev, index_reg, 0x08, val);
 
 	/* Wait 200 MEMCLKs. */
-	mct_Wait_10ns (20000);		/* wait 200us */
+	mct_Wait(50000);		/* wait 200us */
 
 	/* Clear F2x[1,0]9C_x08[PhyFenceTrEn]=0. */
 	val = Get_NB32_index_wait(dev, index_reg, 0x08);
@@ -1101,21 +1080,20 @@ static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void mct_Wait_10ns (u32 cycles)
+static void mct_Wait(u32 cycles)
 {
-	u32 saved, i;
+	u32 saved;
 	u32 hi, lo, msr;
 
-	/* cycles = number of 10ns cycles(or longer) to delay */
-	/* FIXME: Need to calibrate to CPU/NCLK speed? */
+	/* Wait # of 50ns cycles
+	   This seems like a hack to me...  */
 
-	msr = 0x10;				/* TSC */
-	for (i = 0; i < cycles; i++) {
+	cycles <<= 3;		/* x8 (number of 1.25ns ticks) */
+
+	msr = 0x10;			/* TSC */
+	_RDMSR(msr, &lo, &hi);
+	saved = lo;
+	do {
 		_RDMSR(msr, &lo, &hi);
-		saved = lo;
-
-		do {
-			_RDMSR(msr, &lo, &hi);
-		} while (lo - saved < 8);	/* 8 x 1.25 ns as NCLK is  at 1.25ns */
-	}
+	} while (lo - saved < cycles );
 }

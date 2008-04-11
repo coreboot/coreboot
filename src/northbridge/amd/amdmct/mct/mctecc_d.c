@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,6 +88,7 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	u32 dev;
 	u32 reg;
 	u32 val;
+	u16 nvbits;
 
 	mctHookBeforeECC();
 
@@ -100,14 +101,15 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 	OB_ChipKill = mctGet_NVbits(NV_ChipKill); 	/* ECC Chip-kill mode */
 
 	OF_ScrubCTL = 0;		/* Scrub CTL for Dcache, L2, and dram */
-	val = mctGet_NVbits(NV_DCBKScrub);
-	mct_AdjustScrub_D(pDCTstatA, val);
-	OF_ScrubCTL |= val << 16;
-	val = mctGet_NVbits(NV_L2BKScrub);
-	OF_ScrubCTL |= val << 8;
+	nvbits = mctGet_NVbits(NV_DCBKScrub);
+	mct_AdjustScrub_D(pDCTstatA, &nvbits);
+	OF_ScrubCTL |= (u32) nvbits << 16;
 
-	val = mctGet_NVbits(NV_DramBKScrub);
-	OF_ScrubCTL |= val;
+	nvbits = mctGet_NVbits(NV_L2BKScrub);
+	OF_ScrubCTL |= (u32) nvbits << 8;
+
+	nvbits = mctGet_NVbits(NV_DramBKScrub);
+	OF_ScrubCTL |= nvbits;
 
 	AllECC = 1;
 	MemClrECC = 0;
@@ -190,7 +192,20 @@ u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 					Set_NB32(dev, 0x5C, val); /* Dram Scrub Addr Low */
 					val = curBase>>24;
 					Set_NB32(dev, 0x60, val); /* Dram Scrub Addr High */
-					Set_NB32(dev, 0x58, OF_ScrubCTL);	/*Scrub Control */    /*set dram background scrubbing to setup value */
+					Set_NB32(dev, 0x58, OF_ScrubCTL);	/*Scrub Control */
+
+					/* Divisor should not be set deeper than
+					 * divide by 16 when Dcache scrubber or
+					 * L2 scrubber is enabled.
+					 */
+					if ((OF_ScrubCTL & (0x1F << 16)) || (OF_ScrubCTL & (0x1F << 8))) {
+						val = Get_NB32(dev, 0x84);
+						if ((val & 0xE0000000) > 0x80000000) {	/* Get F3x84h[31:29]ClkDivisor for C1 */
+							val &= 0x1FFFFFFF;	/* If ClkDivisor is deeper than divide-by-16 */
+							val |= 0x80000000;	/* set it to divide-by-16 */
+							Set_NB32(dev, 0x84, val);
+						}
+					}
 				}	/* this node has ECC enabled dram */
 			}	/*Node has Dram */
 		}	/*if Node present */

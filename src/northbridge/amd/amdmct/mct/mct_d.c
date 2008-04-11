@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -279,6 +279,9 @@ restartinit:
 	print_t("mctAutoInitMCT_D: DQSTiming_D\n");
 	DQSTiming_D(pMCTstat, pDCTstatA);	/* Get Receiver Enable and DQS signal timing*/
 
+	print_t("mctAutoInitMCT_D: UMAMemTyping_D\n");
+	UMAMemTyping_D(pMCTstat, pDCTstatA);	/* Fix up for UMA sizing */
+
 	print_t("mctAutoInitMCT_D: :OtherTiming\n");
 	mct_OtherTiming(pMCTstat, pDCTstatA);
 
@@ -348,10 +351,11 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 	/* FIXME: BOZO- DQS training every time*/
 	nv_DQSTrainCTL = 1;
 
+	print_t("DQSTiming_D: mct_BeforeDQSTrain_D:\n");
+	mct_BeforeDQSTrain_D(pMCTstat, pDCTstatA);;
+	phyAssistedMemFnceTraining(pMCTstat, pDCTstatA);
+
 	if (nv_DQSTrainCTL) {
-		print_t("DQSTiming_D: mct_BeforeDQSTrain_D:\n");
-		mct_BeforeDQSTrain_D(pMCTstat, pDCTstatA);;
-		phyAssistedMemFnceTraining(pMCTstat, pDCTstatA);
 		mctHookBeforeAnyTraining();
 
 		print_t("DQSTiming_D: TrainReceiverEn_D FirstPass:\n");
@@ -512,7 +516,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 	u32 val;
 	u32 base;
 	u32 limit;
-	u32 dev;
+	u32 dev, devx;
 	struct DCTStatStruc *pDCTstat;
 
 	_MemHoleRemap = mctGet_NVbits(NV_MemHole);
@@ -531,6 +535,8 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 
 
 	for (Node = 0; Node < MAX_NODES_SUPPORTED; Node++) {
+		pDCTstat = pDCTstatA + Node;
+		devx = pDCTstat->dev_map;
 		DramSelBaseAddr = 0;
 		pDCTstat = pDCTstatA + Node;
 		if (!pDCTstat->GangedMode) {
@@ -569,7 +575,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 					val <<= 8; /* shl 16, rol 24 */
 					val |= DramHoleBase << 24;
 					val |= 1  << DramHoleValid;
-					Set_NB32(dev, 0xF0, val); /*Dram Hole Address Register*/
+					Set_NB32(devx, 0xF0, val); /* Dram Hole Address Reg */
 					pDCTstat->DCTSysLimit += HoleSize;
 					base = pDCTstat->DCTSysBase;
 					limit = pDCTstat->DCTSysLimit;
@@ -598,21 +604,33 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 			pMCTstat->SysLimit = limit;
 		}
 		Set_NB32(dev, 0x40 + (Node << 3), base); /* [Node] + Dram Base 0 */
-		val = limit & 0xffff0000;
-		val |= Node;				/* set DstNode*/
+
+		/* if Node limit > 1GB then set it to 1GB boundary for each node */
+		if ((mctSetNodeBoundary_D()) && (limit > 0x00400000)) {
+			limit++;
+			limit &= 0xFFC00000;
+			limit--;
+		}
+		val = limit & 0xFFFF0000;
+		val |= Node;
 		Set_NB32(dev, 0x44 + (Node << 3), val);	/* set DstNode */
 
 		limit = pDCTstat->DCTSysLimit;
 		if (limit) {
-			NextBase = (limit & 0xffff0000) + 0x10000;
+			NextBase = (limit & 0xFFFF0000) + 0x10000;
+			if ((mctSetNodeBoundary_D()) && (NextBase > 0x00400000)) {
+				NextBase++;
+				NextBase &= 0xFFC00000;
+				NextBase--;
+			}
 		}
 	}
 
 	/* Copy dram map from Node 0 to Node 1-7 */
 	for (Node = 1; Node < MAX_NODES_SUPPORTED; Node++) {
-		pDCTstat = pDCTstatA + Node;
 		u32 reg;
-		u32 devx = pDCTstat->dev_map;
+		pDCTstat = pDCTstatA + Node;
+		devx = pDCTstat->dev_map;
 
 		if (pDCTstat->NodePresent) {
 		printk_debug(" Copy dram map from Node 0 to Node %02x \n", Node);
@@ -1016,7 +1034,7 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 			if ((val == 0) || (val == 0xFF)) {
 				pDCTstat->ErrStatus |= 1<<SB_NoTrcTrfc;
 				pDCTstat->ErrCode = SC_VarianceErr;
-				val = Get_DefTrc_k_D(pDCTstat->DIMMAutoSpeed);
+				val = Get_DefTrc_k_D(pDCTstat->Speed);
 			} else {
 				byte = mctRead_SPD(smbaddr, SPD_TRCRFC);
 				if (byte & 0xF0) {
@@ -1054,7 +1072,7 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 
 	/* Convert  DRAM CycleTiming values and store into DCT structure */
 	DDR2_1066 = 0;
-	byte = pDCTstat->DIMMAutoSpeed;
+	byte = pDCTstat->Speed;
 	if (byte == 5)
 		DDR2_1066 = 1;
 	Tk40 = Get_40Tk_D(byte);
@@ -1175,12 +1193,10 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 	dword = Trtp * 10;
 	pDCTstat->DIMMTrtp = dword;
 	val = pDCTstat->Speed;
-	if (val <= 2) {
-		val = 2;	/* Calculate by 7.75ns / Speed in ns to get clock # */
-	} else if (val == 4) {	/* Note a speed of 3 will be a Trtp of 3 */
-		val = 3;
-	} else if (val == 5){
-		val = 2;
+	if (val <= 2) {		/* 7.75ns / Speed in ns to get clock # */
+		val = 2;	/* for DDR400/DDR533 */
+	} else {		/* Note a speed of 3 will be a Trtp of 3 */
+		val = 3;	/* for DDR667/DDR800/DDR1066 */
 	}
 	pDCTstat->Trtp = val;
 
@@ -1810,7 +1826,7 @@ static void SPDSetBanks_D(struct MCTStatStruc *pMCTstat,
 	/* SetCKETriState */
 	SetODTTriState(pMCTstat, pDCTstat, dct);
 
-	if ( pDCTstat->Status & 1<<SB_128bitmode) {
+	if (pDCTstat->Status & (1 << SB_128bitmode)) {
 		SetCSTriState(pMCTstat, pDCTstat, 1); /* force dct1) */
 		SetODTTriState(pMCTstat, pDCTstat, 1); /* force dct1) */
 	}
@@ -2631,7 +2647,7 @@ static void mct_AfterStitchMemory(struct MCTStatStruc *pMCTstat,
 	if (!pDCTstat->GangedMode) {
 		dev = pDCTstat->dev_dct;
 		pDCTstat->NodeSysLimit += pDCTstat->DCTSysLimit;
-		/* if DCT0 and DCT1 exist both, set DctSelBaseAddr[47:27] */
+		/* if DCT0 and DCT1 both exist, set DctSelBaseAddr[47:27] to the top of DCT0 */
 		if (dct == 0) {
 			if (pDCTstat->DIMMValidDCT[1] > 0) {
 				dword = pDCTstat->DCTSysLimit + 1;
@@ -2641,8 +2657,7 @@ static void mct_AfterStitchMemory(struct MCTStatStruc *pMCTstat,
 					pMCTstat->HoleBase = (DramHoleBase & 0xFFFFF800) << 8;
 					val = pMCTstat->HoleBase;
 					val >>= 16;
-					val &= ~(0xFF);
-					val |= (((~val) & 0xFF) + 1);
+					val = (((~val) & 0xFF) + 1);
 					val <<= 8;
 					dword += val;
 				}
@@ -2653,6 +2668,7 @@ static void mct_AfterStitchMemory(struct MCTStatStruc *pMCTstat,
 				val |= 3;  /* Set F2x110[DctSelHiRngEn], F2x110[DctSelHi] */
 				Set_NB32(dev, reg, val);
 				print_tx("AfterStitch DCT0 and DCT1: DRAM Controller Select Low Register = ", val);
+				print_tx("AfterStitch DCT0 and DCT1: DRAM Controller Select High Register = ", dword);
 
 				reg = 0x114;
 				val = dword;
@@ -2664,7 +2680,7 @@ static void mct_AfterStitchMemory(struct MCTStatStruc *pMCTstat,
 			if (pDCTstat->DIMMValidDCT[0] == 0) {
 				dword = pDCTstat->NodeSysBase;
 				dword >>= 8;
-				if (dword >= DramHoleBase) {
+				if ((dword >= DramHoleBase) && _MemHoleRemap) {
 					pMCTstat->HoleBase = (DramHoleBase & 0xFFFFF800) << 8;
 					val = pMCTstat->HoleBase;
 					val >>= 8;
@@ -2680,6 +2696,7 @@ static void mct_AfterStitchMemory(struct MCTStatStruc *pMCTstat,
 				val |= 3;	/* Set F2x110[DctSelHiRngEn], F2x110[DctSelHi] */
 				Set_NB32(dev, reg, val);
 				print_tx("AfterStitch DCT1 only: DRAM Controller Select Low Register = ", val);
+				print_tx("AfterStitch DCT1 only: DRAM Controller Select High Register = ", dword);
 			}
 		}
 	} else {
@@ -2872,16 +2889,25 @@ static void Get_Twrwr(struct MCTStatStruc *pMCTstat,
 static void Get_Twrrd(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 dct)
 {
-	u8 byte, bytex;
+	u8 byte, bytex, val;
 	u32 index_reg = 0x98 + 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 
 	/* On any given byte lane, the largest WrDatGrossDlyByte delay of
 	   any DIMM minus the DqsRcvEnGrossDelay delay of any other DIMM is
 	   equal to the Critical Gross Delay Difference (CGDD) for Twrrd.*/
-	pDCTstat->Twrrd = 0;
+
+	/* WrDatGrossDlyByte only use one set register when DDR400~DDR667
+	   DDR800 have two set register for DIMM0 and DIMM1 */
+	if (pDCTstat->Speed > 3) {
+		val = Get_WrDatGross_Diff(pDCTstat, dct, dev, index_reg);
+	} else {
+		val = Get_WrDatGross_MaxMin(pDCTstat, dct, dev, index_reg, 1);	/* WrDatGrossDlyByte byte 0,1,2,3 for DIMM0 */
+		pDCTstat->WrDatGrossH = (u8) val; /* low byte = max value */
+	}
+
 	Get_DqsRcvEnGross_Diff(pDCTstat, dev, index_reg);
-	Get_WrDatGross_Diff(pDCTstat, dct, dev, index_reg);
+
 	bytex = pDCTstat->DqsRcvEnGrossL;
 	byte = pDCTstat->WrDatGrossH;
 	if (byte > bytex) {
@@ -2946,11 +2972,15 @@ static u8 Check_DqsRcvEn_Diff(struct DCTStatStruc *pDCTstat,
 	u8 i;
 	u32 val;
 	u8 byte;
+	u8 ecc_reg = 0;
 
 	Smallest_0 = 0xFF;
 	Smallest_1 = 0xFF;
 	Largest_0 = 0;
 	Largest_1 = 0;
+
+	if (index == 0x12)
+		ecc_reg = 1;
 
 	for (i=0; i < 8; i+=2) {
 		if ( pDCTstat->DIMMValid & (1 << i)) {
@@ -2960,11 +2990,13 @@ static u8 Check_DqsRcvEn_Diff(struct DCTStatStruc *pDCTstat,
 				Smallest_0 = byte;
 			if (byte > Largest_0)
 				Largest_0 = byte;
-			byte = (val >> 16) & 0xFF;
-			if (byte < Smallest_1)
-				Smallest_1 = byte;
-			if (byte > Largest_1)
-				Largest_1 = byte;
+			if (!(ecc_reg)) {
+				byte = (val >> 16) & 0xFF;
+				if (byte < Smallest_1)
+					Smallest_1 = byte;
+				if (byte > Largest_1)
+					Largest_1 = byte;
+			}
 		}
 		index += 3;
 	}	/* while ++i */
@@ -2973,8 +3005,9 @@ static u8 Check_DqsRcvEn_Diff(struct DCTStatStruc *pDCTstat,
 	   two DIMMs is less than half of a MEMCLK */
 	if ((Largest_0 - Smallest_0) > 31)
 		return 1;
-	if ((Largest_1 - Smallest_1) > 31)
-		return 1;
+	if (!(ecc_reg))
+		if ((Largest_1 - Smallest_1) > 31)
+			return 1;
 	return 0;
 }
 
@@ -3072,9 +3105,13 @@ static u16 Get_DqsRcvEnGross_MaxMin(struct DCTStatStruc *pDCTstat,
 	u8 byte;
 	u32 val;
 	u16 word;
+	u8 ecc_reg = 0;
 
 	Smallest = 7;
 	Largest = 0;
+
+	if (index == 0x12)
+		ecc_reg = 1;
 
 	for (i=0; i < 8; i+=2) {
 		if ( pDCTstat->DIMMValid & (1 << i)) {
@@ -3085,11 +3122,13 @@ static u16 Get_DqsRcvEnGross_MaxMin(struct DCTStatStruc *pDCTstat,
 				Smallest = byte;
 			if (byte > Largest)
 				Largest = byte;
-			byte = (val >> (16 + 5)) & 0xFF;
-			if (byte < Smallest)
-				Smallest = byte;
-			if (byte > Largest)
-				Largest = byte;
+			if (!(ecc_reg)) {
+				byte = (val >> (16 + 5)) & 0xFF;
+				if (byte < Smallest)
+					Smallest = byte;
+				if (byte > Largest)
+					Largest = byte;
+			}
 		}
 	index += 3;
 	}	/* while ++i */
@@ -3353,25 +3392,32 @@ static void SetODTTriState(struct MCTStatStruc *pMCTstat,
 	u32 index_reg = 0x98 + 0x100 * dct;
 	u8 cs;
 	u32 index;
-	u16 word;
-
-	/* Tri-state unused ODTs when motherboard termination is available */
+	u8 odt;
+	u8 max_dimms;
 
 	// FIXME: skip for Ax
 
-	dev = pDCTstat->dev_dct;
-	word = 0;
+	/* Tri-state unused ODTs when motherboard termination is available */
+	max_dimms = (u8) mctGet_NVbits(NV_MAX_DIMMS);
+	odt = 0x0F;	/* tristate all the pins then clear the used ones. */
+
 	for (cs = 0; cs < 8; cs += 2) {
-		if (!(pDCTstat->CSPresent & (1 << cs))) {
-			if (!(pDCTstat->CSPresent & (1 << (cs + 1))))
-				word |= (1 << (cs >> 1));
+		if (pDCTstat->CSPresent & (1 << cs)) {
+			odt &= ~(1 << (cs / 2));
+
+			/* if quad-rank capable platform clear adtitional pins */
+			if (max_dimms != MAX_CS_SUPPORTED) {
+				if (pDCTstat->CSPresent & (1 << (cs + 1)))
+					odt &= ~(4 << (cs / 2));
+			}
 		}
 	}
 
 	index  = 0x0C;
 	val = Get_NB32_index_wait(dev, index_reg, index);
-	val |= (word << 8);
+	val |= (odt << 8);
 	Set_NB32_index_wait(dev, index_reg, index, val);
+
 }
 
 
@@ -3414,8 +3460,14 @@ static void InitPhyCompensation(struct MCTStatStruc *pMCTstat,
 	}
 
 	/* Override/Exception */
-	if ((pDCTstat->Speed == 2) && (pDCTstat->MAdimms[dct] == 4))
-		dword &= 0xF18FFF18;
+	if (!pDCTstat->GangedMode) {
+		i = 0; /* use i for the dct setting required */
+		if (pDCTstat->MAdimms[0] < 4)
+			i = 1;
+		if (((pDCTstat->Speed == 2) || (pDCTstat->Speed == 3)) && (pDCTstat->MAdimms[i] == 4))
+			dword &= 0xF18FFF18;
+			index_reg = 0x98;	/* force dct = 0 */
+	}
 
 	Set_NB32_index_wait(dev, index_reg, 0x0a, dword);
 }
@@ -3733,11 +3785,25 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 dct)
 {
 	u8 Receiver;
-	u32 val;
 	u32 dev = pDCTstat->dev_dct;
 	u32 reg_off = 0x100 * dct;
 	u32 addr;
+	u32 lo, hi;
+	u8 wrap32dis = 0;
 	u8 valid = 0;
+
+	/* FIXME: Skip reset DLL for B3 */
+
+	addr = HWCR;
+	_RDMSR(addr, &lo, &hi);
+	if(lo & (1<<17)) {		/* save the old value */
+		wrap32dis = 1;
+	}
+	lo |= (1<<17);			/* HWCR.wrap32dis */
+	lo &= ~(1<<15);			/* SSEDIS */
+	/* Setting wrap32dis allows 64-bit memory references in 32bit mode */
+	_WRMSR(addr, lo, hi);
+
 
 	pDCTstat->Channel = dct;
 	Receiver = mct_InitReceiver_D(pDCTstat, dct);
@@ -3747,22 +3813,23 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 			addr = mct_GetRcvrSysAddr_D(pMCTstat, pDCTstat, dct, Receiver, &valid);
 			if (valid) {
 				mct_Read1LTestPattern_D(pMCTstat, pDCTstat, addr);	/* cache fills */
-				Set_NB32(dev, 0x98 + reg_off, 0x0D00000C);
-				val = Get_NB32(dev, 0x9C + reg_off);
-				val |= 1 << 15;
-				Set_NB32(dev, 0x9C + reg_off, val);
-				Set_NB32(dev, 0x98 + reg_off, 0x4D0F0F0C);
-				mct_Wait_10ns(60); /* wait >= 300ns */
 
-				Set_NB32(dev, 0x98 + reg_off, 0x0D00000C);
-				val = Get_NB32(dev, 0x9C + reg_off);
-				val &= ~(1 << 15);
-				Set_NB32(dev, 0x9C + reg_off, val);
-				Set_NB32(dev, 0x98 + reg_off, 0x4D0F0F0C);
-				mct_Wait_10ns(400); /* wait >= 2us */
+				/* Write 0000_8000h to register F2x[1,0]9C_xD080F0C */
+				Set_NB32_index_wait(dev, 0x98 + reg_off, 0x4D080F0C, 0x00008000);
+				mct_Wait(80); /* wait >= 300ns */
+
+				/* Write 0000_0000h to register F2x[1,0]9C_xD080F0C */
+				Set_NB32_index_wait(dev, 0x98 + reg_off, 0x4D080F0C, 0x00000000);
+				mct_Wait(800); /* wait >= 2us */
 				break;
 			}
 		}
+	}
+	if(!wrap32dis) {
+		addr = HWCR;
+		_RDMSR(addr, &lo, &hi);
+		lo &= ~(1<<17);		/* restore HWCR.wrap32dis */
+		_WRMSR(addr, lo, hi);
 	}
 }
 
@@ -3784,7 +3851,7 @@ static void mct_EnableDatIntlv_D(struct MCTStatStruc *pMCTstat,
 		// FIXME Skip for Cx
 		dev = pDCTstat->dev_nbmisc;
 		val = Get_NB32(dev, 0x8C);	// NB Configuration Hi
-		val |= 36-32;			// DisDatMask
+		val |= 1 << (36-32);		// DisDatMask
 		Set_NB32(dev, 0x8C, val);
 	}
 }
@@ -3818,8 +3885,9 @@ static void AfterDramInit_D(struct DCTStatStruc *pDCTstat, u8 dct) {
 	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 
+	/* FIXME: Add B3 */
 	if (pDCTstat->LogicalCPUID & AMD_DR_B2) {
-		mct_Wait_10ns(5000);	/* Wait 50 us*/
+		mct_Wait(10000);	/* Wait 50 us*/
 		val = Get_NB32(dev, 0x110);
 		if ( val & (1 << DramEnabled)) {
 			/* If 50 us expires while DramEnable =0 then do the following */

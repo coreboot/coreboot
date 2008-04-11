@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,15 +61,7 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 		Bottom40bIO = val;
 	}
 
-	val = mctGet_NVbits(NV_BottomUMA);
-	if(val == 0)
-		val++;
-
-	val <<= (24-8);
-	if(val >  Bottom32bIO)
-		val = Bottom32bIO;
-
-	Cache32bTOP = val;
+	Cache32bTOP = Bottom32bIO;
 
 	/*======================================================================
 	 Set default values for CPU registers
@@ -118,6 +110,8 @@ void CPUMemTyping_D(struct MCTStatStruc *pMCTstat,
 	if(Bottom40bIO) {
 		hi = Bottom40bIO >> 24;
 		lo = Bottom40bIO << 8;
+		if (mctSetNodeBoundary_D())
+			lo &= 0xC0000000;
 		addr += 3;		/* TOM2 */
 		_WRMSR(addr, lo, hi);
 	}
@@ -210,4 +204,54 @@ static void SetMTRRrange_D(u32 Base, u32 *pLimit, u32 *pMtrrAddr, u16 MtrrType)
 	*pMtrrAddr = addr;
 }
 
+void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
+{
+/* UMA memory size may need splitting the MTRR configuration into two
+  Before training use NB_BottomIO or the physical memory size to set the MTRRs.
+  After training, add UMAMemTyping function to reconfigure the MTRRs based on
+  NV_BottomUMA (for UMA systems only).
+  This two-step process allows all memory to be cached for training
+*/
+	u32 Bottom32bIO, Cache32bTOP;
+	u32 val;
+	u32 addr;
+	u32 lo, hi;
 
+	/*======================================================================
+	 * Adjust temp top of memory down to accomodate UMA memory start
+	 *======================================================================*/
+	/* Bottom32bIO=sub 4GB top of memory, right justified 8 bits
+	 * (defines dram versus IO space type)
+	 * Cache32bTOP=sub 4GB top of WB cacheable memory, right justified 8 bits */
+
+	Bottom32bIO = pMCTstat->Sub4GCacheTop >> 8;
+
+	val = mctGet_NVbits(NV_BottomUMA);
+	if (val == 0)
+		val++;
+
+	val <<= (24-8);
+	if (val < Bottom32bIO) {
+		Cache32bTOP = val;
+		pMCTstat->Sub4GCacheTop = val;
+
+	/*======================================================================
+	 * Clear variable MTRR values
+	 *======================================================================*/
+		addr = 0x200;
+		lo = 0;
+		hi = lo;
+		while( addr < 0x20C) {
+			_WRMSR(addr, lo, hi);		/* prog. MTRR with current region Mask */
+			addr++;						/* next MTRR pair addr */
+		}
+
+		/*======================================================================
+		 * Set variable MTRR values
+		 *======================================================================*/
+		print_tx("\t UMAMemTyping_D: Cache32bTOP:", Cache32bTOP);
+		SetMTRRrangeWB_D(0, &Cache32bTOP, &addr);
+		if(addr == -1)		/* ran out of MTRRs?*/
+			pMCTstat->GStatus |= 1<<GSB_MTRRshort;
+	}
+}

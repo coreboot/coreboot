@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -699,6 +699,7 @@ u32 SetupDqsPattern_1PassB(u8 Pass);
 u8 mct_Get_Start_RcvrEnDly_1Pass(u8 Pass);
 u8 mct_Average_RcvrEnDly_Pass(struct DCTStatStruc *pDCTstat, u8 RcvrEnDly, u8 RcvrEnDlyLimit, u8 Channel, u8 Receiver, u8 Pass);
 void CPUMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
+void UMAMemTyping_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 u32 mctGetLogicalCPUID(u32 Node);
 u8 ECCInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA);
 void TrainReceiverEn_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u8 Pass);
@@ -730,7 +731,7 @@ void phyAssistedMemFnceTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStr
 u8 mct_SaveRcvEnDly_D_1Pass(struct DCTStatStruc *pDCTstat, u8 pass);
 static void mct_AdjustScrub_D(struct DCTStatStruc *pDCTstat, u16 *scrub_request);
 static u8 mct_InitReceiver_D(struct DCTStatStruc *pDCTstat, u8 dct);
-static void mct_Wait_10ns (u32 cycles);
+static void mct_Wait(u32 cycles);
 u8 mct_RcvrRankEnabled_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 Channel, u8 ChipSel);
 u32 mct_GetRcvrSysAddr_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 channel, u8 receiver, u8 *valid);
 void mct_Read1LTestPattern_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u32 addr);

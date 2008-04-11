@@ -28,7 +28,6 @@
  */
 
 #include <libpayload.h>
-#include <sysinfo.h>
 #include <coreboot_tables.h>
 
 /*

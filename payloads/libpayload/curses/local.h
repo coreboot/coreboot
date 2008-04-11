@@ -59,8 +59,6 @@
 #undef USE_TERMLIB
 
 #include <libpayload.h>
-#include <arch/types.h>
-#include <arch/io.h>
 #include <curses.h>
 #include <curses.priv.h>
 
@@ -85,10 +83,5 @@ extern int curses_flags;
 
 /* Share the color table for easy lookup */
 extern unsigned char color_pairs[256];
-
-/* speaker.c */
-void speaker_enable(u16 freq);
-void speaker_disable(void);
-void speaker_tone(u16 freq, unsigned int duration);
 
 #endif

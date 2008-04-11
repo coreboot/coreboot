@@ -34,7 +34,6 @@
  */
 
 #include <libpayload.h>
-#include <stdarg.h>
 
 /** Structure for specifying output methods for different printf clones. */
 struct printf_spec {

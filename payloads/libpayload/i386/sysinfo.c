@@ -28,7 +28,6 @@
  */
 
 #include <libpayload.h>
-#include <sysinfo.h>
 
 /**
  * This is a global structure that is used through the library - we set it

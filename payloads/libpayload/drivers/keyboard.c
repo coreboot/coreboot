@@ -27,7 +27,6 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/io.h>
 #include <libpayload.h>
 
 unsigned char map[2][0x57] = {

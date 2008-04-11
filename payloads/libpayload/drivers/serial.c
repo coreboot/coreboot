@@ -28,7 +28,6 @@
  */
 
 #include <libpayload.h>
-#include <sysinfo.h>
 
 #define IOBASE lib_sysinfo.ser_ioport
 

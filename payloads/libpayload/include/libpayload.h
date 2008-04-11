@@ -49,6 +49,9 @@
 #define BYTE_ORDER	BIG_ENDIAN
 #endif
 
+#define EXIT_SUCCESS 0
+#define EXIT_FAILURE 1
+
 #define RAND_MAX 0x7fffffff
 
 /* Some NVRAM byte definitions */

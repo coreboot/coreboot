@@ -30,9 +30,7 @@
 #include <libpayload.h>
 #include <pci.h>
 #include <video_console.h>
-#include <arch/io.h>
 #include <arch/msr.h>
-
 #include "font8x16.h"
 
 /* This is the video mode that we're going to use for our VGA screen */

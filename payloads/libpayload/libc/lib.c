@@ -27,6 +27,8 @@
  * SUCH DAMAGE.
  */
 
+#include <libpayload.h>
+
 /*
  * Convert a number in BCD format to decimal.
  *
@@ -49,3 +51,53 @@ int dec2bcd(int d)
 	return ((d / 10) << 4) | (d % 10);
 }
 
+/**
+ * Return the absolute value of the specified integer.
+ *
+ * @param val The integer of which we want to know the absolute value.
+ * @return The absolute value of the specified integer.
+ */
+int abs(int j)
+{
+	return (j >= 0 ? j : -j);
+}
+
+long int labs(long int j)
+{
+	return (j >= 0 ? j : -j);
+}
+
+long long int llabs(long long int j)
+{
+	return (j >= 0 ? j : -j);
+}
+
+/**
+ * Given a 4-bit value, return the ASCII hex representation of it.
+ *
+ * @param b A 4-bit value which shall be converted to ASCII hex.
+ * @return The ASCII hex representation of the specified 4-bit value.
+ *         Returned hex-characters will always be lower-case (a-f, not A-F).
+ */
+u8 bin2hex(u8 b)
+{
+	return (b < 10) ? '0' + b : 'a' + (b - 10);
+}
+
+/**
+ * Given an ASCII hex input character, return its integer value.
+ *
+ * For example, the input value '6' will be converted to 6, 'a'/'A' will
+ * be converted to 10, 'f'/'F' will be converted to 15, and so on.
+ *
+ * The return value for invalid input characters is 0.
+ *
+ * @param h The input byte in ASCII hex format.
+ * @return The integer value of the specified ASCII hex byte.
+ */
+u8 hex2bin(u8 h)
+{
+	return (('0' <= h && h <= '9') ? (h - '0') : \
+	        ('A' <= h && h <= 'F') ? (h - 'A' + 10) : \
+	        ('a' <= h && h <= 'f') ? (h - 'a' + 10) : 0);
+}

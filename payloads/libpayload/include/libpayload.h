@@ -41,10 +41,6 @@
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
-#define BIN2HEX(b) ("0123456789abcdef"[b & 15])
-#define HEX2BIN(h) (('0' <= h && h <= '9') ? (h - '0') : \
-                    ('a' <= h && h <= 'f') ? (h - 'a' + 10) : 0)
-
 #define LITTLE_ENDIAN	1234
 #define BIG_ENDIAN	4321
 #ifdef CONFIG_TARGET_I386
@@ -119,6 +115,11 @@ void *realloc(void *ptr, size_t size);
 /* libc/lib.c */
 int bcd2dec(int b);
 int dec2bcd(int d);
+int abs(int j);
+long int labs(long int j);
+long long int llabs(long long int j);
+u8 bin2hex(u8 b);
+u8 hex2bin(u8 h);
 
 /* libc/memory.c */
 void *memset(void *s, int c, size_t n);

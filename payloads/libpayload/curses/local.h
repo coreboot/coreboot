@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TINYCURSES_H
-#define TINYCURSES_H
+#ifndef _CURSES_LOCAL_H
+#define _CURSES_LOCAL_H
 
 /* For curses.priv.h: */
 #define USE_RCS_IDS 0
@@ -91,4 +91,4 @@ void speaker_enable(u16 freq);
 void speaker_disable(void);
 void speaker_tone(u16 freq, unsigned int duration);
 
-#endif				/* TINYCURSES_H */
+#endif

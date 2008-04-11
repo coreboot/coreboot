@@ -27,28 +27,28 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _COREBOOT_TABLES_H_
-#define _COREBOOT_TABLES_H_
+#ifndef _COREBOOT_TABLES_H
+#define _COREBOOT_TABLES_H
 
 #include <arch/types.h>
 
 struct cbuint64 {
-	uint32_t lo;
-	uint32_t hi;
+	u32 lo;
+	u32 hi;
 };
 
 struct cb_header {
-	uint8_t signature[4];
-	uint32_t header_bytes;
-	uint32_t header_checksum;
-	uint32_t table_bytes;
-	uint32_t table_checksum;
-	uint32_t table_entries;
+	u8 signature[4];
+	u32 header_bytes;
+	u32 header_checksum;
+	u32 table_bytes;
+	u32 table_checksum;
+	u32 table_entries;
 };
 
 struct cb_record {
-	uint32_t tag;
-	uint32_t size;
+	u32 tag;
+	u32 size;
 };
 
 #define CB_TAG_UNUSED     0x0000
@@ -57,7 +57,7 @@ struct cb_record {
 struct cb_memory_range {
 	struct cbuint64 start;
 	struct cbuint64 size;
-	uint32_t type;
+	u32 type;
 };
 
 #define CB_MEM_RAM      1
@@ -65,27 +65,27 @@ struct cb_memory_range {
 #define CB_MEM_TABLE    16
 
 struct cb_memory {
-	uint32_t tag;
-	uint32_t size;
+	u32 tag;
+	u32 size;
 	struct cb_memory_range map[0];
 };
 
 #define CB_TAG_HWRPB      0x0002
 
 struct cb_hwrpb {
-	uint32_t tag;
-	uint32_t size;
-	uint64_t hwrpb;
+	u32 tag;
+	u32 size;
+	u64 hwrpb;
 };
 
 #define CB_TAG_MAINBOARD  0x0003
 
 struct cb_mainboard {
-	uint32_t tag;
-	uint32_t size;
-	uint8_t vendor_idx;
-	uint8_t part_number_idx;
-	uint8_t strings[0];
+	u32 tag;
+	u32 size;
+	u8 vendor_idx;
+	u8 part_number_idx;
+	u8 strings[0];
 };
 
 #define CB_TAG_VERSION        0x0004
@@ -100,25 +100,25 @@ struct cb_mainboard {
 #define CB_TAG_ASSEMBLER      0x000d
 
 struct cb_string {
-	uint32_t tag;
-	uint32_t size;
-	uint8_t string[0];
+	u32 tag;
+	u32 size;
+	u8 string[0];
 };
 
 #define CB_TAG_SERIAL         0x000f
 
 struct cb_serial {
-	uint32_t tag;
-	uint32_t size;
-	uint16_t ioport;
+	u32 tag;
+	u32 size;
+	u16 ioport;
 };
 
 #define CB_TAG_CONSOLE       0x00010
 
 struct cb_console {
-	uint32_t tag;
-	uint32_t size;
-	uint16_t type;
+	u32 tag;
+	u32 size;
+	u16 type;
 };
 
 #define CB_TAG_CONSOLE_SERIAL8250 0
@@ -136,7 +136,7 @@ struct cb_console {
 	(((_rec)->size - sizeof(*(_rec))) / sizeof((_rec)->map[0]))
 
 #define MEM_RANGE_PTR(_rec, _idx) \
-	(((uint8_t *) (_rec)) + sizeof(*(_rec)) \
+	(((u8 *) (_rec)) + sizeof(*(_rec)) \
 	+ (sizeof((_rec)->map[0]) * (_idx)))
 
 #define MB_VENDOR_STRING(_mb) \
@@ -146,6 +146,6 @@ struct cb_console {
 	(((unsigned char *) ((_mb)->strings)) + (_mb)->part_number_idx)
 
 #define UNPACK_CB64(_in) \
-	( (((uint64_t) _in.hi) << 32) | _in.lo )
+	( (((u64) _in.hi) << 32) | _in.lo )
 
 #endif

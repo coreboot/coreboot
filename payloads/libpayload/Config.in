@@ -46,17 +46,17 @@ config SERIAL_CONSOLE
 
 config SERIAL_IOBASE
 	hex "I/O base for the serial port (default 0x3f8)"
-	depends SERIAL_CONSOLE
+	depends on SERIAL_CONSOLE
 	default 0x3f8
 
 config SERIAL_SET_SPEED
 	bool "Override the serial console baud rate"
 	default n
-	depends SERIAL_CONSOLE
+	depends on SERIAL_CONSOLE
 
 config SERIAL_BAUD_RATE
 	int "Serial console baud rate (default 115200)"
-	depends SERIAL_SET_SPEED
+	depends on SERIAL_SET_SPEED
 	default 115200
 
 config VIDEO_CONSOLE

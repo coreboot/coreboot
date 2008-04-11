@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _ARCH_X86_TYPES_H
-#define _ARCH_X86_TYPES_H
+#ifndef _ARCH_TYPES_H
+#define _ARCH_TYPES_H
 
 typedef unsigned char uint8_t;
 typedef unsigned char u8;

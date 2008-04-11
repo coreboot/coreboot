@@ -43,8 +43,8 @@
  *
  */
 
-#ifndef CURSES_PRIV_H
-#define CURSES_PRIV_H 1
+#ifndef _CURSES_PRIV_H
+#define _CURSES_PRIV_H 1
 
 //// XXX
 extern void *memset(void *s, int c, size_t len);

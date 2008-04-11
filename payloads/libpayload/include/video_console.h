@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef VIDEO_CONSOLE_H_
-#define VIDEO_CONSOLE_H_
+#ifndef _VIDEO_CONSOLE_H
+#define _VIDEO_CONSOLE_H
 
 #define VIDEO_ROWS 25
 #define VIDEO_COLS 80

@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _RDTSC_H_
-#define _RDTSC_H_
+#ifndef _ARCH_RDTSC_H
+#define _ARCH_RDTSC_H
 
 static inline unsigned long long rdtsc(void)
 {

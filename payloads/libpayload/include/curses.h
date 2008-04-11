@@ -34,8 +34,8 @@
 
 /* $Id: curses.h.in,v 1.167 2006/11/26 01:14:54 tom Exp $ */
 
-#ifndef __NCURSES_H
-#define __NCURSES_H
+#ifndef _CURSES_H
+#define _CURSES_H
 
 #define CURSES 1
 #define CURSES_H 1
@@ -1673,4 +1673,4 @@ extern NCURSES_EXPORT(const char *) _nc_visbuf (const char *);
 void curses_enable_vga(int);
 void curses_enable_serial(int);
 
-#endif /* __NCURSES_H */
+#endif /* _CURSES_H */

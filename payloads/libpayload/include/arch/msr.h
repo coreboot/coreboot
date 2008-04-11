@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _ARCH_MSR_H_
-#define _ARCH_MSR_H_
+#ifndef _ARCH_MSR_H
+#define _ARCH_MSR_H
 
 static inline unsigned long long _rdmsr(unsigned int msr)
 {

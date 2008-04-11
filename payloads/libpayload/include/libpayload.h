@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LIBPAYLOAD_H
-#define LIBPAYLOAD_H
+#ifndef _LIBPAYLOAD_H
+#define _LIBPAYLOAD_H
 
 #include <autoconf.h>
 #include <stddef.h>
@@ -77,6 +77,11 @@ void serial_init(void);
 void serial_putchar(unsigned char c);
 int serial_havechar(void);
 int serial_getchar(void);
+
+/* drivers/speaker.c */
+void speaker_enable(u16 freq);
+void speaker_disable(void);
+void speaker_tone(u16 freq, unsigned int duration);
 
 /* video/video.c */
 int video_console_init(void);

@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef SYSINFO_H
-#define SYSINFO_H
+#ifndef _SYSINFO_H
+#define _SYSINFO_H
 
 /* Allow a maximum of 16 memory range definitions. */
 #define SYSINFO_MAX_MEM_RANGES 16

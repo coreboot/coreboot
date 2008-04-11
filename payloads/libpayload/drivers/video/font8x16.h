@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef FONT_8X16_H_
-#define FONT_8X16_H_
+#ifndef _DRIVERS_VIDEO_FONT8X16_H
+#define _DRIVERS_VIDEO_FONT8X16_H
 
 #ifdef HAVE_CONSOLE_FONT
 #error "You have already defined a console font!"

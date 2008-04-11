@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _X86_ARCH_IO_H_
-#define _X86_ARCH_IO_H_
+#ifndef _ARCH_IO_H
+#define _ARCH_IO_H
 
 #define readb(_a) (*(volatile unsigned char *) (_a))
 #define readw(_a) (*(volatile unsigned short *) (_a))

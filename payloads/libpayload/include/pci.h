@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _PCI_H_
-#define _PCI_H_
+#ifndef _PCI_H
+#define _PCI_H
 
 typedef unsigned short pcidev_t;
 

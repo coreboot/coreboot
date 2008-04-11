@@ -36,3 +36,7 @@ TARGETS-$(CONFIG_NVRAM) += drivers/nvram.o
 # Video console drivers
 TARGETS-$(CONFIG_VIDEO_CONSOLE) += drivers/video/video.o
 TARGETS-$(CONFIG_VGA_VIDEO_CONSOLE) += drivers/video/vga.o
+
+# Geode console drivers
+TARGETS-$(CONFIG_GEODE_VIDEO_CONSOLE) += drivers/video/geode.o
+TARGETS-$(CONFIG_GEODE_VIDEO_CONSOLE) += drivers/video/font8x16.o

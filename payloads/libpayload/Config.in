@@ -68,6 +68,11 @@ config VGA_VIDEO_CONSOLE
 	depends on VIDEO_CONSOLE
 	default y
 
+config GEODE_VIDEO_CONSOLE
+	bool "Geode video console driver"
+	depends on VIDEO_CONSOLE
+	default n
+
 config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
 	default y

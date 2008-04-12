@@ -91,7 +91,7 @@ int isupper(int c)
 
 int isxdigit(int c)
 {
-	return isdigit(c) || (tolower(c) >= 'a' && tolower(c) <= 'z');
+	return isdigit(c) || (tolower(c) >= 'a' && tolower(c) <= 'f');
 }
 
 int tolower(int c)

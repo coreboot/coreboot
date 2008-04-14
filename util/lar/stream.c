@@ -846,7 +846,7 @@ int maxsize(struct lar *lar, char *name)
 
 /**
  * Compress an area according to an algorithm. If the area grows, 
- * use no compression. 
+ * use no compression.  The size of temp should be at least size bytes.
  * @param ptr data to be compressed
  * @param size size of the data 
  * @param temp destination of compressed data

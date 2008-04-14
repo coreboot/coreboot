@@ -283,11 +283,21 @@ int main(int argc, char *argv[])
 #else
 extern "C" {
 
+/**
+ * Compress a buffer with lzma
+ * Don't copy the result back if it is too large.
+ * @param in a pointer to the buffer
+ * @param in_len the length in bytes
+ * @param out a pointer to a buffer of at least size in_len
+ * @param out_len a pointer to the compressed length of in 
+ */
+
 void do_lzma_compress(char *in, int in_len, char *out, int *out_len) {
 	std::vector<unsigned char> result;
 	result = LZMACompress(std::vector<unsigned char>(in, in + in_len));
 	*out_len = result.size();
-	std::memcpy(out, &result[0], *out_len);
+	if (*out_len < in_len)
+		std::memcpy(out, &result[0], *out_len);
 }
 
 void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len) {

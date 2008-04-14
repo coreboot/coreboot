@@ -1304,11 +1304,28 @@ void Encode(void)  /* compression */
 #endif
 
 #ifdef COMPACT
+
+/**
+ * Compress a buffer with nrv2b
+ * Don't copy the result back if it is too large
+ * @param in a pointer to the buffer
+ * @param in_len the length in bytes
+ * @param out a pointer to a buffer of at least size in_len
+ * @param out_len a pointer to the compressed length of in 
+ */
+
 void do_nrv2b_compress(uint8_t *in, int in_len, uint8_t *out, int *out_len) {
 	unsigned long new_out_len = in_len + (in_len/8) + 256;
-	out = malloc(new_out_len);
-	ucl_nrv2b_99_compress(in, in_len, out, &new_out_len, 0 );
+	uint8_t *new_out = malloc(new_out_len);
+	if (new_out == NULL) {
+		printf("Not enough memory to allocate buffer.\n");
+		exit(1);
+	}
+	ucl_nrv2b_99_compress(in, in_len, new_out, &new_out_len, 0 );
 	*out_len = (int) new_out_len;
+	if (*out_len < in_len)
+		memcpy(out, new_out, *out_len);
+	free(new_out);
 }
 #endif
 

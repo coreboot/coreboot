@@ -1,0 +1,325 @@
+Patch tint 0.03b to be usable as coreboot payload, linked against
+the libpayload library.
+
+Signed-off-by: Uwe Hermann <uwe@hermann-uwe.de>
+
+diff -Naur tint-0.03b.orig/config.h tint-0.03b/config.h
+--- tint-0.03b.orig/config.h	2001-12-08 00:03:24.000000000 +0100
++++ tint-0.03b/config.h	2008-04-11 22:19:35.000000000 +0200
+@@ -29,7 +29,16 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#include <libpayload.h>
++#include <curses.h>
++#define random(x) rand(x)
++#define srandom(x) srand(x)
++#define curs_set(x)
++typedef int time_t;
++
+ /* Score file */
++#if 0
+ const char scorefile[] = SCOREFILE;
++#endif
+ 
+ #endif	/* #ifndef CONFIG_H */
+diff -Naur tint-0.03b.orig/engine.c tint-0.03b/engine.c
+--- tint-0.03b.orig/engine.c	2005-07-17 13:26:22.000000000 +0200
++++ tint-0.03b/engine.c	2008-04-11 22:19:35.000000000 +0200
+@@ -27,8 +27,12 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#include "config.h"
++
++#if 0
+ #include <stdlib.h>
+ #include <string.h>
++#endif
+ 
+ #include "typedefs.h"
+ #include "utils.h"
+diff -Naur tint-0.03b.orig/io.c tint-0.03b/io.c
+--- tint-0.03b.orig/io.c	2001-12-07 16:48:20.000000000 +0100
++++ tint-0.03b/io.c	2008-04-11 22:19:35.000000000 +0200
+@@ -27,9 +27,13 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#include "config.h"
++
++#if 0
+ #include <stdarg.h>		/* va_list(), va_start(), va_end() */
+ #include <sys/time.h>	/* gettimeofday() */
+ #include <unistd.h>		/* gettimeofday() */
++#endif
+ 
+ #include <curses.h>
+ 
+@@ -70,7 +74,11 @@
+ /* Initialize screen */
+ void io_init ()
+ {
++   curses_enable_serial(0);
++   curses_enable_vga(1);
+    initscr ();
++   halfdelay(1);
++   timeout(1);
+    start_color ();
+    curs_set (CURSOR_INVISIBLE);
+    out_attr = A_NORMAL;
+@@ -176,11 +184,17 @@
+ /* Read a character. Please note that you MUST call in_timeout() before in_getch() */
+ int in_getch ()
+ {
++#if 0
+    struct timeval starttv,endtv;
++#endif
+    int ch;
++#if 0
+    timeout (in_timeleft / 1000);
+    gettimeofday (&starttv,NULL);
++#endif
+    ch = getch ();
++   mdelay(150);
++#if 0
+    gettimeofday (&endtv,NULL);
+    /* Timeout? */
+    if (ch == ERR)
+@@ -198,6 +212,7 @@
+ 		in_timeleft -= endtv.tv_usec;
+ 		if (in_timeleft <= 0) in_timeleft = in_timetotal;
+ 	 }
++#endif
+    return ch;
+ }
+ 
+diff -Naur tint-0.03b.orig/Makefile tint-0.03b/Makefile
+--- tint-0.03b.orig/Makefile	2005-07-17 13:30:54.000000000 +0200
++++ tint-0.03b/Makefile	2008-04-11 22:19:35.000000000 +0200
+@@ -28,6 +28,36 @@
+ #  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++LIBPAYLOAD_DIR := ../libpayload
++CC := $(LIBPAYLOAD_DIR)/bin/lpgcc
++AS := $(LIBPAYLOAD_DIR)/bin/lpas
++# CFLAGS := -Wall -Werror -Os
++CFLAGS := -Wall -Os
++TARGET := tint
++OBJS := $(TARGET).o engine.o io.o utils.o
++
++all: $(TARGET).elf
++
++$(TARGET).elf: $(OBJS)
++	$(CC) -o $@ $(OBJS)
++
++%.o: %.c
++	$(CC) $(CFLAGS) -c -o $@ $<
++
++%.S.o: %.S
++	$(AS) --32 -o $@ $<
++
++clean:
++	rm -f $(TARGET).elf *.o
++
++distclean: clean
++
++
++
++
++
++ifdef $(UNUSED)
++
+ #CROSS = arm-linux-
+ 
+ bindir = $(DESTDIR)/usr/games
+@@ -110,3 +140,4 @@
+ distclean: clean
+ 	$(MAKE) -C debian clean
+ 
++endif
+diff -Naur tint-0.03b.orig/tint.c tint-0.03b/tint.c
+--- tint-0.03b.orig/tint.c	2005-07-17 13:26:43.000000000 +0200
++++ tint-0.03b/tint.c	2008-04-11 22:19:35.000000000 +0200
+@@ -27,6 +27,7 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#if 0
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <string.h>
+@@ -34,6 +35,7 @@
+ #include <pwd.h>
+ #include <sys/types.h>
+ #include <unistd.h>
++#endif
+ 
+ #include "typedefs.h"
+ #include "utils.h"
+@@ -321,6 +323,7 @@
+    time_t timestamp;
+ } score_t;
+ 
++#if 0
+ static void getname (char *name)
+ {
+    struct passwd *pw = getpwuid (geteuid ());
+@@ -337,7 +340,9 @@
+ 		name[NAMELEN - 1] = '\0';
+ 	 }
+ }
++#endif
+ 
++#if 0
+ static void err1 ()
+ {
+    fprintf (stderr,"Error creating %s\n",scorefile);
+@@ -349,10 +354,11 @@
+    fprintf (stderr,"Error writing to %s\n",scorefile);
+    exit (EXIT_FAILURE);
+ }
++#endif
+ 
+ void showplayerstats (engine_t *engine)
+ {
+-   fprintf (stderr,
++   printf (
+ 			"\n\t   PLAYER STATISTICS\n\n\t"
+ 			"Score       %11d\n\t"
+ 			"Efficiency  %11d\n\t"
+@@ -360,6 +366,7 @@
+ 			GETSCORE (engine->score),engine->status.efficiency,GETSCORE (engine->score) / getsum ());
+ }
+ 
++#if 0
+ static void createscores (int score)
+ {
+    FILE *handle;
+@@ -394,7 +401,9 @@
+    fprintf (stderr,"%s",scoretitle);
+    fprintf (stderr,"\t  1* %7d        %s\n\n",score,scores[0].name);
+ }
++#endif
+ 
++#if 0
+ static int cmpscores (const void *a,const void *b)
+ {
+    int result;
+@@ -412,7 +421,9 @@
+    /* timestamps is equal */
+    return 0;
+ }
++#endif
+ 
++#if 0
+ static void savescores (int score)
+ {
+    FILE *handle;
+@@ -490,11 +501,13 @@
+ 	 }
+    fprintf (stderr,"\n");
+ }
++#endif
+ 
+           /***************************************************************************/
+           /***************************************************************************/
+           /***************************************************************************/
+ 
++#if 0
+ static void showhelp ()
+ {
+    fprintf (stderr,"USAGE: tint [-h] [-l level] [-n]\n");
+@@ -504,9 +517,11 @@
+    fprintf (stderr,"  -d           Draw vertical dotted lines\n");
+    exit (EXIT_FAILURE);
+ }
++#endif
+ 
+ static void parse_options (int argc,char *argv[])
+ {
++#if 0
+    int i = 1;
+    while (i < argc)
+ 	 {
+@@ -536,10 +551,12 @@
+ 		  }
+ 		i++;
+ 	 }
++#endif
+ }
+ 
+ static void choose_level ()
+ {
++#if 0
+    char buf[NAMELEN];
+ 
+    do
+@@ -549,6 +566,8 @@
+ 		buf[strlen (buf) - 1] = '\0';
+ 	 }
+    while (!str2int (&level,buf) || level < MINLEVEL || level > MAXLEVEL);
++#endif
++	level = 1;
+ }
+ 
+           /***************************************************************************/
+@@ -663,8 +682,15 @@
+    if (ch != 'q')
+ 	 {
+ 		showplayerstats (&engine);
++#if 0
+ 		savescores (GETSCORE (engine.score));
++#endif
+ 	 }
++   mvprintw(10, 10, "Bye.");
++   refresh();
++   halt();
++#if 0
+    exit (EXIT_SUCCESS);
++#endif
+ }
+ 
+diff -Naur tint-0.03b.orig/utils.c tint-0.03b/utils.c
+--- tint-0.03b.orig/utils.c	2001-12-07 16:49:19.000000000 +0100
++++ tint-0.03b/utils.c	2008-04-11 22:19:35.000000000 +0200
+@@ -27,9 +27,13 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#include "config.h"
++
++#if 0
+ #include <stdlib.h>
+ #include <time.h>
+ #include <limits.h>
++#endif
+ 
+ #include "typedefs.h"
+ 
+@@ -41,8 +45,11 @@
+ #ifdef USE_RAND
+    srand (time (NULL));
+ #else
++#if 0
+    srandom (time (NULL));
+ #endif
++   srandom (123);
++#endif
+ }
+ 
+ /*
+@@ -61,6 +68,7 @@
+  * Convert an str to long. Returns TRUE if successful,
+  * FALSE otherwise.
+  */
++#if 0
+ bool str2int (int *i,const char *str)
+ {
+    char *endptr;
+@@ -69,3 +77,4 @@
+    return TRUE;
+ }
+ 
++#endif

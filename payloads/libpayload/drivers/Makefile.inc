@@ -27,7 +27,9 @@
 ## OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 ## SUCH DAMAGE.
 ##
+
 TARGETS-y += drivers/pci.o
+TARGETS-y += drivers/speaker.o
 
 TARGETS-$(CONFIG_SERIAL_CONSOLE) += drivers/serial.o
 TARGETS-$(CONFIG_PC_KEYBOARD) += drivers/keyboard.o

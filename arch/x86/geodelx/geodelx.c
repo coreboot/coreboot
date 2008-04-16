@@ -386,6 +386,7 @@ static void set_delay_control(u8 dimm0, u8 dimm1)
 				msr.hi |= delay_control_table[i].fast_hi;
 				msr.lo |= delay_control_table[i].fast_low;
 			}
+			break;
 		}
 	}
 	wrmsr(GLCP_DELAY_CONTROLS, msr);

@@ -113,7 +113,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	/* EEPROM byte usage: (5) Number of DIMM Banks */
 	banner(BIOS_DEBUG, "MODBANKS");
 	spd_byte = spd_read_byte(dimm, SPD_NUM_DIMM_BANKS);
-	if ((MIN_MOD_BANKS > spd_byte) && (spd_byte > MAX_MOD_BANKS)) {
+	if ((MIN_MOD_BANKS > spd_byte) || (spd_byte > MAX_MOD_BANKS)) {
 		printk(BIOS_EMERG, "Number of module banks not compatible\n");
 		post_code(ERROR_BANK_SET);
 		hlt();
@@ -124,7 +124,7 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	/* EEPROM byte usage: (17) Number of Banks on SDRAM Device */
 	banner(BIOS_DEBUG, "FIELDBANKS");
 	spd_byte = spd_read_byte(dimm, SPD_NUM_BANKS_PER_SDRAM);
-	if ((MIN_DEV_BANKS > spd_byte) && (spd_byte > MAX_DEV_BANKS)) {
+	if ((MIN_DEV_BANKS > spd_byte) || (spd_byte > MAX_DEV_BANKS)) {
 		printk(BIOS_EMERG, "Number of device banks not compatible\n");
 		post_code(ERROR_BANK_SET);
 		hlt();

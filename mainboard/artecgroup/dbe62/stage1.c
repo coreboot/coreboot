@@ -59,6 +59,9 @@ void hardware_stage1(void)
 	 * early MSR setup for the CS5536.
 	 */
 	cs5536_setup_onchipuart(2);
+
+	/* Set up 4MB mode for Artec LPC Dongle (this should be a no-op when not booting from the dongle) */
+	outb(0xf4,0x88);
 }
 
 void mainboard_pre_payload(void)

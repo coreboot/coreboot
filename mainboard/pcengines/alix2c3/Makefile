@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2007 coresystems GmbH
+## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -19,35 +19,15 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_PCENGINES
+STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 
-config BOARD_PCENGINES_ALIX1C
-	bool "ALIX1.C"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select SUPERIO_WINBOND_W83627HF
-	select PIRQ_TABLE
-	help
-	  PC Engines ALIX1.C.
+INITRAM_OBJ =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
+		$(src)/northbridge/amd/geodelx/raminit.c \
+		$(src)/arch/x86/geodelx/geodelx.c
 
-config BOARD_PCENGINES_ALIX2C3
-	bool "ALIX.2C3"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select PIRQ_TABLE
-	help
-	  PC Engines ALIX.2C3.
+STAGE2_MAINBOARD_OBJ = 
 
-endchoice
-
-source "mainboard/pcengines/alix1c/Kconfig"
-source "mainboard/pcengines/alix2c3/Kconfig"
+$(obj)/coreboot.vpd:
+	$(Q)printf "  BUILD   DUMMY VPD\n"
+	$(Q)dd if=/dev/zero of=$(obj)/coreboot.vpd bs=256 count=1 $(SILENT)
 

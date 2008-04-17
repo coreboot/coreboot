@@ -3,6 +3,7 @@
 ##
 ## Copyright (C) 2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+## Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -19,35 +20,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_PCENGINES
-
-config BOARD_PCENGINES_ALIX1C
-	bool "ALIX1.C"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select SUPERIO_WINBOND_W83627HF
-	select PIRQ_TABLE
+config MAINBOARD_NAME
+	string
+	default pcengines/alix2c3
+	depends BOARD_PCENGINES_ALIX2C3
 	help
-	  PC Engines ALIX1.C.
-
-config BOARD_PCENGINES_ALIX2C3
-	bool "ALIX.2C3"
-	select ARCH_X86
-	select CPU_AMD_GEODELX
-	select OPTION_TABLE
-	select NORTHBRIDGE_AMD_GEODELX
-	select SOUTHBRIDGE_AMD_CS5536
-	select PIRQ_TABLE
-	help
-	  PC Engines ALIX.2C3.
-
-endchoice
-
-source "mainboard/pcengines/alix1c/Kconfig"
-source "mainboard/pcengines/alix2c3/Kconfig"
-
+	  This is the default mainboard name.

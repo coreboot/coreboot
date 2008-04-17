@@ -617,6 +617,7 @@ static void hide_vpci(u32 vpci_devid)
  */
 static void southbridge_init(struct device *dev)
 {
+	int i;
 	struct southbridge_amd_cs5536_dts_config *sb =
 	    (struct southbridge_amd_cs5536_dts_config *)dev->device_configuration;
 
@@ -647,6 +648,11 @@ static void southbridge_init(struct device *dev)
 		enable_ide_nand_flash_header();
 
 	enable_USB_port4(sb);
+
+	/* disable unwanted virtual PCI devices */
+	for (i = 0; 0 != sb->unwanted_vpci[i]; i++) {
+		hide_vpci(sb->unwanted_vpci[i]);
+	}
 
 	if (sb->enable_ide)
 		ide_init(dev);

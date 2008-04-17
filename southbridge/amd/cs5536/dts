@@ -64,4 +64,9 @@
 	 * probably not what you want. 
 	 */
 	power_button = "0";
+
+	/* Vpci devices to be disabled. Put device locations here, and always end the
+	 * array with a zero element. */
+	unwanted_vpci = < 0 >;
+
 };

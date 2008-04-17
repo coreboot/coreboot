@@ -452,9 +452,24 @@ static void coreboot_emit_data(void *e, struct property *p)
 		return;
 
 	cleanname = clean(p->name, 1);
-	fprintf(f, "\t.%s = ", cleanname);
+	if (d.type == 'S') {
+		// Standard property (scalar)
+		fprintf(f, "\t.%s = ", cleanname);
+		fprintf(f, "0x%lx,\n", strtoul((char *)d.val, 0, 0));
+	} else if (d.type == 'C') {
+		// 'Cell' property (array of 4-byte elements)
+		fprintf(f, "\t.%s = {\n", cleanname);
+		int i;
+		for (i = 0; (i < d.len) && (0 != *(u32 *)(d.val+i)); i = i+4) {
+			fprintf(f, "\t\t[%d] = 0x%08X,\n",i/4,*(u32 *)(d.val+i));
+		} 
+		fprintf(f, "\t\t[%d] = 0x0,\n",i/4);	// Make sure to end our array with a zero element
+		fprintf(f, "\t},\n");
+	} else if (d.type == 'B') {
+		fprintf(f, "\tUNIMPLEMENTED: FIXME\n");
+	}
 	free(cleanname);
-	fprintf(f, "0x%lx,\n", strtoul((char *)d.val, 0, 0));
+
 #if 0
 	/* sorry, but right now, u32 is all you get */
 	fprintf(f, "0");
@@ -785,7 +800,16 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 			if (streq(prop->name, "device_operations")) /* this is special */
 				continue;
 			cleanname = clean(prop->name, 0);
-			fprintf(f, "\tu32 %s;\n", cleanname);
+			if (prop->val.type == 'S') {
+				// Standard property, scalar
+				fprintf(f, "\tu32 %s;\n", cleanname);
+			} else if (prop->val.type == 'C') {
+				// 'Cell' property (array of 4-byte elements)
+				fprintf(f, "\tu32 %s[%d];\n", cleanname,prop->val.len/4+1);
+			} else if (prop->val.type == 'B') {
+				// Byte property
+				fprintf(f, "\tUNIMPLEMENTED: FIXME\n");
+			}
 			free(cleanname);
 
 		}

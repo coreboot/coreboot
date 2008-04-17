@@ -32,6 +32,9 @@ struct property *build_property(char *name, struct data val, char *label)
 
 	new->name = name;
 	new->val = val;
+	if (new->val.type == NULL) {
+		new->val.type = 'S'; // Default to 'scalar' type; if this is a cell or byte value, type will already be set
+	}
 
 	new->next = NULL;
 
@@ -301,7 +304,9 @@ static struct {
 } prop_checker_table[] = {
 	{"name", must_be_string},
 	{"name", name_prop_check},
-/* we don't care about these things now  -- we think */
+	/* unwanted_vpci must be a cells field (i.e. an array) */
+	{"unwanted_vpci", must_be_cells},
+	/* we don't care about these things now  -- we think */
 	{"linux,phandle", must_be_one_cell},
 	{"#address-cells", must_be_one_cell},
 	{"#size-cells", must_be_one_cell},

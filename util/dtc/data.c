@@ -64,6 +64,7 @@ struct data data_grow_for(struct data d, int xlen)
 	nd.asize = newsize;
 	nd.val = xrealloc(d.val, newsize);
 	nd.len = d.len;
+	nd.type = d.type;
 	nd.refs = d.refs;
 
 	assert(nd.asize >= (d.len + xlen));
@@ -199,7 +200,11 @@ struct data data_append_data(struct data d, void *p, int len)
 
 struct data data_append_cell(struct data d, cell_t word)
 {
-	cell_t beword = cpu_to_be32(word);
+	// Don't do system/network order byte translation. We don't do it for scalars either.
+	//cell_t beword = cpu_to_be32(word);
+	cell_t beword = word;
+	// Mark this property as being of the 'cell' type
+	d.type = 'C';
 
 	return data_append_data(d, &beword, sizeof(beword));
 }
@@ -223,6 +228,8 @@ struct data data_append_addr(struct data d, u64 addr)
 
 struct data data_append_byte(struct data d, uint8_t byte)
 {
+	// Mark this property as being of the 'byte' type
+	d.type = 'B';
 	return data_append_data(d, &byte, 1);
 }
 

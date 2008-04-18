@@ -69,9 +69,7 @@ fi
 
 rm -rf .$$.tmp
 
-$CC -Wl,--help | awk '{for (i=1;i<=NF;i++) if ($i ~ /build-id/){n++} }; END {exit n}'
-build_id=$?
-if [ $build_id -ge 1 ] ; then
+if $CC -Wl,--help | grep -q build-id; then
 	EXTRA_LFLAGS="$EXTRA_LFLAGS -Wl,--build-id=none"
 fi
 

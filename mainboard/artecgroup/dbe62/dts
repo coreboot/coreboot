@@ -43,6 +43,8 @@
 			/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none. 
 			 * See virtual PIC spec. */
 			enable_gpio_int_route = "0x0D0C0700";
+			/* 0:IDE 1:FLASH */
+			enable_ide_nand_flash = "1";
 			/* we use com2 since that is on the dongle */
 			com2_enable = "1";
 			/* Set com2 address to be COM1 */

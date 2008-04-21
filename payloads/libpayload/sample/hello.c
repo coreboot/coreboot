@@ -33,8 +33,5 @@
 
 int main(void)
 {
-	printf("Hello world!\n");
-	halt();
-
 	return 0;
 }

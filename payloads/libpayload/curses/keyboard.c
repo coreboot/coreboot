@@ -250,6 +250,8 @@ static int curses_getchar(int delay)
 				mdelay(100);
 				delay--;
 			}
+
+			continue;
 		}
 
 		c = inb(0x60);

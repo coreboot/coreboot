@@ -53,6 +53,7 @@ static inline void print_initcpu(const char *strval, u32 val)
 }
 
 
+void update_microcode(u32 cpu_deviceid);
 static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
 void cpuSetAMDMSR(void);
@@ -391,6 +392,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		 * This happens after HTinit.
 		 * The BSP runs this code in it's own path.
 		 */
+		update_microcode(cpuid_eax(1));
 		cpuSetAMDMSR();
 
 

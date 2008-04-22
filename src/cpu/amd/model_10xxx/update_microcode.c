@@ -31,14 +31,14 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
 
 #ifdef __ROMCC__
 
-	// Barcelona revAx
+	// Barcelona rev Ax
 //		#include "mc_patch_01000020.h"
 
-	// Barcelona revBx
-		#include "mc_patch_01000033.h"
+	// Barcelona rev B0, B1, BA
+//		#include "mc_patch_01000066.h"
 
-	// Barcelona rev Cx??
-//		#include "mc_patch_01000035.h"
+	// Barcelona rev B2, B3
+		#include "mc_patch_01000065.h"
 
 #endif
 	/*  Dummy terminator  */
@@ -57,6 +57,7 @@ static u32 get_equivalent_processor_rev_id(u32 orig_id) {
 		0x100f21, 0x1020,
 		0x100f2A, 0x1020,
 		0x100f22, 0x1022,
+		0x100f23, 0x1022,
 	};
 
 	u32 new_id;

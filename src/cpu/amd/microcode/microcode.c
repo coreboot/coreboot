@@ -61,8 +61,8 @@ static int need_apply_patch(struct microcode *m, u32 equivalent_processor_rev_id
 {
 
 	if (m->processor_rev_id != equivalent_processor_rev_id) {
-		printk_debug("microcode: rev id does not match this patch.\n");
-		printk_debug("microcode: Not updated! Fix microcode_updates[] \n");
+		printk_err("microcode: rev id (%x) does not match this patch.\n", m->processor_rev_id);
+		printk_err("microcode: Not updated! Fix microcode_updates[] \n");
 		return 0;
 	}
 	if (m->nb_dev_id) {

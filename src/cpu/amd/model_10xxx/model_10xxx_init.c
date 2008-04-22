@@ -369,7 +369,6 @@ static void smash1Gpages(void)
 
 }
 
-extern void update_microcode(u32 cpu_deviceid);
 
 
 void model_10xxx_init(device_t dev)
@@ -385,10 +384,6 @@ void model_10xxx_init(device_t dev)
 	x86_enable_cache();
 	amd_setup_mtrrs();
 	x86_mtrr_check();
-
-
-	/* Update the microcode */
-	update_microcode(dev->device);
 
 	disable_cache();
 
@@ -455,6 +450,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x100f21 },
 	{ X86_VENDOR_AMD, 0x100f2A },
 	{ X86_VENDOR_AMD, 0x100f22 },
+	{ X86_VENDOR_AMD, 0x100f23 },
 	{ 0, 0 },
 };
 static struct cpu_driver model_10xxx __cpu_driver = {

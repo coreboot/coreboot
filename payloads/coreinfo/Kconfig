@@ -62,7 +62,7 @@ config MODULE_NVRAM
 	bool "Enable the NVRAM dump module"
 	default y
 	help
-	  This option will increase the ELF file size by ca. 150 bytes.
+	  This option will increase the ELF file size by ca. 350 bytes.
 
 endmenu
 

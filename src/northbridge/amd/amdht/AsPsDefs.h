@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,6 @@
 
 #ifndef ASPSDEFS_H
 #define ASPSDEFS_H
-
-/* AMD Platform Types */
-#define AMD_PTYPE_DSK 1
-#define AMD_PTYPE_MOB 2
-#define AMD_PTYPE_SVR 4
-#define AMD_PTYPE_DC 8
-#define AMD_PTYPE_MC 0x10
-#define AMD_PTYPE_UMA 0x20
 
 #define APIC_BAR 0x1b			/* APIC_BAR register */
 #define APIC_BAR_BP 0x100		/* APIC_BAR BSP bit */

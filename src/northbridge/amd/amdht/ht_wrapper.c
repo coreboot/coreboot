@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,7 @@
 #define NODE_MP(x) NODE_PCI(x,1)
 #define NODE_MC(x) NODE_PCI(x,3)
 #define NODE_LC(x) NODE_PCI(x,4)
+
 static  u32 get_nodes(void)
 {
 	device_t dev;
@@ -74,26 +75,6 @@ static  u32 get_nodes(void)
 
 	return nodes;
 }
-
-static void enable_apic_ext_id(u32 node)
-{
-	u32 val;
-	val = pci_read_config32(NODE_HT(node), 0x68);
-	val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
-	pci_write_config32(NODE_HT(node), 0x68, val);
-}
-
-
-static void setup_link_trans_cntrl()
-{
-	/* FIXME: Not sure that this belongs here but it is HT related */
-	u32 val;
-	val = pci_read_config32(NODE_HT(0), 0x68);
-	val |= 0x00206800;	// DSNpReqLimit, LimitCldtCfg, BufRefPri, RespPassPW per BKDG;
-	pci_write_config32(NODE_HT(0), 0x68, val);
-}
-
-
 
 
 /**

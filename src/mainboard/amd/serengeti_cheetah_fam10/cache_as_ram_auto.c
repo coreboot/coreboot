@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -255,59 +255,29 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	// Load MPB
 	val = cpuid_eax(1);
-	printk_debug("Family_Model: %08x \n", val);
-
-	/* FIXME: Need to make sure that APs are updated with the microcode and Errata */
-	update_microcode(val);
-	post_code(0x33);
-
-	/* FIXME: This errata code needs to move out of the mainboard but I am not sure where to yet.*/
-	/* FIXME: Check CPU revision to apply correct erratas */
-	/* Rev B errata */
-	/* Errata #169 - supercedes errata #131 */
-	msr = rdmsr(0xC001001F);
-	msr.hi |= 1 << (32 - 32);
-	wrmsr(0xC001101F, msr);
-
-	/* Errata #202 [DIS_PIGGY_BACK_SCRUB]=1 */
-	msr = rdmsr(0xC0011022);
-	msr.hi |= 1 << 24;
-	wrmsr(0xC0010022, msr);
-
-	/* 298 : FIXME: Fixed in B3/C1 */
-/*	msr = rdmsr(0xC0010015);
-	msr.lo |= 1 << 3;
-	wrmsr(0xC0010015, msr);
-
-	msr = rdmsr(0xC0011023);
-	msr.lo |= 1 << 1;
-	wrmsr(0xC0010023, msr);
-*/
-	/* FIXME: Erratum #254 revB1 BU_CFG[21]=1 */
-
-
+	printk_debug("BSP Family_Model: %08x \n", val);
 	printk_debug("*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
-	setup_mb_resource_map();
-	post_code(0x34);
-
-//	dump_pci_device(PCI_DEV(CBB, CDB, 0));
-
 	printk_debug("bsp_apicid = %02x \n", bsp_apicid);
 	printk_debug("cpu_init_detectedx = %08x \n", cpu_init_detectedx);
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
 
+	update_microcode(val);
+	post_code(0x33);
+
+	cpuSetAMDMSR();
+	post_code(0x34);
+
+	amd_ht_init(sysinfo);
 	post_code(0x35);
 
-	// FIXME: Add needs_reset check to HT links.
-	amd_ht_init(sysinfo);
-//	print_pci_devices();
-//	dump_pci_devices();
-
-	post_code(0x36);
-
+	/* Setup nodes PCI space and start core 0 AP init. */
 	finalize_node_setup(sysinfo);
+
+	/* Setup any mainboard PCI settings etc. */
+	setup_mb_resource_map();
+	post_code(0x36);
 
 	/* wait for all the APs core0 started by finalize_node_setup. */
 	/* FIXME: A bunch of cores are going to start output to serial at once.
@@ -378,10 +348,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 
 	memreset_setup();
+	post_code(0x40);
 
 //	die("Die Before MCT init.");
 
-	post_code(0x40);
 	printk_debug("raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
 	post_code(0x41);

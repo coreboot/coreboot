@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include "defaults.h"
 
 //it takes the ENABLE_APIC_EXT_ID and APIC_ID_OFFSET and LIFT_BSP_APIC_ID
 #ifndef FAM10_SET_FIDVID
@@ -28,7 +29,6 @@
 	   Need to do every AP to set common FID/VID*/
 	#define FAM10_SET_FIDVID_CORE0_ONLY 0
 #endif
-
 
 static inline void print_initcpu8 (const char *strval, u8 val)
 {
@@ -55,6 +55,7 @@ static inline void print_initcpu(const char *strval, u32 val)
 
 static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
+void cpuSetAMDMSR(void);
 
 #if PCI_IO_CFG_EXT == 1
 static inline void set_EnableCf8ExtCfg(void)
@@ -261,12 +262,6 @@ static void wait_ap_started(u32 ap_apicid, void *gp )
 }
 
 
-static void wait_all_aps_started(u32 bsp_apicid)
-{
-	for_each_ap(bsp_apicid, 0 , wait_ap_started, (void *)0);
-}
-
-
 static void wait_all_other_cores_started(u32 bsp_apicid)
 {
 	// all aps other than core0
@@ -285,6 +280,15 @@ static void allow_all_aps_stop(u32 bsp_apicid)
 
 	// allow aps to stop use 6 bits for state
 	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | 0x14);
+}
+
+static void enable_apic_ext_id(u32 node)
+{
+	u32 val;
+
+	val = pci_read_config32(NODE_HT(node), 0x68);
+	val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
+	pci_write_config32(NODE_HT(node), 0x68, val);
 }
 
 
@@ -383,6 +387,13 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 
 	if(apicid != bsp_apicid) {
+		/* Setup each AP's cores MSRs.
+		 * This happens after HTinit.
+		 * The BSP runs this code in it's own path.
+		 */
+		cpuSetAMDMSR();
+
+
 #if FAM10_SET_FIDVID == 1
 	#if (CONFIG_LOGICAL_CPUS == 1)  && (FAM10_SET_FIDVID_CORE0_ONLY == 1)
 		// Run on all AP for proper FID/VID setup.
@@ -512,13 +523,415 @@ static void setup_remote_node(u8 node)
 	}
 	printk_debug(" done\n");
 }
-#endif
+#endif	/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
+
+void AMD_Errata281(u8 node, u32 revision, u32 platform)
+{
+	/* Workaround for Transaction Scheduling Conflict in
+	 * Northbridge Cross Bar.  Implement XCS Token adjustment
+	 * for ganged links.  Also, perform fix up for the mixed
+	 * revision case.
+	 */
+
+	u32 reg, val;
+	u8 i;
+	u8 mixed = 0;
+	u8 nodes = get_nodes();
+
+	if (platform & AMD_PTYPE_SVR) {
+		/* For each node we need to check for a "broken" node */
+		if (!(revision & (AMD_DR_B0 | AMD_DR_B1))) {
+			for (i = 0; i < nodes; i++) {
+				if (mctGetLogicalCPUID(i) & (AMD_DR_B0 | AMD_DR_B1)) {
+					mixed = 1;
+					break;
+				}
+			}
+		}
+
+		if ((revision & (AMD_DR_B0 | AMD_DR_B1)) || mixed) {
+
+			/* F0X68[22:21] DsNpReqLmt0 = 01b */
+			val = pci_read_config32(NODE_PCI(node, 0), 0x68);
+			val &= ~0x00600000;
+			val |= 0x00200000;
+			pci_write_config32(NODE_PCI(node, 0), 0x68, val);
+
+			/* F3X6C */
+			val = pci_read_config32(NODE_PCI(node, 3), 0x6C);
+			val &= ~0x700780F7;
+			val |= 0x00010094;
+			pci_write_config32(NODE_PCI(node, 3), 0x6C, val);
+
+			/* F3X7C */
+			val = pci_read_config32(NODE_PCI(node, 3), 0x7C);
+			val &= ~0x707FFF1F;
+			val |= 0x00144514;
+			pci_write_config32(NODE_PCI(node, 3), 0x7C, val);
+
+			/* F3X144[3:0] RspTok = 0001b */
+			val = pci_read_config32(NODE_PCI(node, 3), 0x144);
+			val &= ~0x0000000F;
+			val |= 0x00000001;
+			pci_write_config32(NODE_PCI(node, 3), 0x144, val);
+
+			for (i = 0; i < 3; i++) {
+				reg = 0x148 + (i * 4);
+				val = pci_read_config32(NODE_PCI(node, 3), reg);
+				val &= ~0x000000FF;
+				val |= 0x000000DB;
+				pci_write_config32(NODE_PCI(node, 3), reg, val);
+			}
+		}
+	}
+}
+
+
+void AMD_Errata298(void)
+{
+	/* Workaround for L2 Eviction May Occur during operation to
+	 * set Accessed or dirty bit.
+	 */
+
+	msr_t msr;
+	u8 i;
+	u8 affectedRev = 0;
+	u8 nodes = get_nodes();
+
+	/* For each core we need to check for a "broken" node */
+	for (i = 0; i < nodes; i++) {
+		if (mctGetLogicalCPUID(i) & (AMD_DR_B0 | AMD_DR_B1 | AMD_DR_B2)) {
+			affectedRev = 1;
+			break;
+		}
+	}
+
+	if (affectedRev) {
+		msr = rdmsr(HWCR);
+		msr.lo |= 0x08;		/* Set TlbCacheDis bit[3] */
+		wrmsr(HWCR, msr);
+
+		msr = rdmsr(BU_CFG);
+		msr.lo |= 0x02;		/* Set TlbForceMemTypeUc bit[1] */
+		wrmsr(BU_CFG, msr);
+
+		msr = rdmsr(OSVW_ID_Length);
+		msr.lo |= 0x01;		/* OS Visible Workaround - MSR */
+		wrmsr(OSVW_ID_Length, msr);
+
+		msr = rdmsr(OSVW_Status);
+		msr.lo |= 0x01;		/* OS Visible Workaround - MSR */
+		wrmsr(OSVW_Status, msr);
+	}
+
+	if (!affectedRev && (mctGetLogicalCPUID(0xFF) & AMD_DR_B3)) {
+		msr = rdmsr(OSVW_ID_Length);
+		msr.lo |= 0x01;		/* OS Visible Workaround - MSR */
+		wrmsr(OSVW_ID_Length, msr);
+
+	}
+}
+
+
+u32 get_platform_type(void)
+{
+	u32 ret = 0;
+
+	switch(SYSTEM_TYPE) {
+	case 1:
+		ret |= AMD_PTYPE_DSK;
+		break;
+	case 2:
+		ret |= AMD_PTYPE_MOB;
+		break;
+	case 0:
+		ret |= AMD_PTYPE_SVR;
+		break;
+	default:
+		break;
+	}
+
+	/* FIXME: add UMA support. */
+
+	/* All Fam10 are multi core */
+	ret |= AMD_PTYPE_MC;
+
+	return ret;
+}
+
+
+/**
+ * AMD_CpuFindCapability - Traverse PCI capability list to find host HT links.
+ *  HT Phy operations are not valid on links that aren't present, so this
+ *  prevents invalid accesses.
+ *
+ * Returns the offset of the link register.
+ */
+BOOL AMD_CpuFindCapability (u8 node, u8 cap_count, u8 *offset)
+{
+	u32 val;
+
+	/* get start of CPU HT Host Capabilities */
+	val = pci_read_config32(NODE_PCI(node, 0), 0x34);
+	val &= 0xFF;
+
+	cap_count++;
+
+	/* Traverse through the capabilities. */
+	do {
+		val = pci_read_config32(NODE_PCI(node, 0), val);
+		/* Is the capability block a HyperTransport capability block? */
+		if ((val & 0xFF) == 0x08)
+			/* Is the HT capability block an HT Host Capability? */
+			if ((val & 0xE0000000) == (1 << 29))
+				cap_count--;
+		val = (val >> 8) & 0xFF;
+	} while (cap_count && val);
+
+	*offset = (u8) val;
+
+	/* If requested capability found val != 0 */
+	if (!cap_count)
+		return TRUE;
+	else
+		return FALSE;
+}
+
+
+/**
+ * AMD_checkLinkType - Compare desired link characteristics using a logical
+ *     link type mask.
+ *
+ * Returns the link characteristic mask.
+ */
+u32 AMD_checkLinkType (u8 node, u8 link, u8 regoff)
+{
+	u32 val;
+	u32 linktype;
+
+	/* Check coherency */
+	val = pci_read_config32(NODE_PCI(node, 0), regoff + 0x18);
+	val &= 0x1F;
+
+	if (val == 3)
+		linktype |= HTPHY_LINKTYPE_COHERENT;
+
+	if (val == 7)
+		linktype |= HTPHY_LINKTYPE_NONCOHERENT;
+
+	/* Check gen3 */
+	val = pci_read_config32(NODE_PCI(node, 0), regoff + 0x08);
+
+	if (((val >> 8) & 0x0F) > 6)
+		linktype |= HTPHY_LINKTYPE_HT3;
+	else
+		linktype |= HTPHY_LINKTYPE_HT1;
+
+
+	/* Check ganged */
+	val = pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170);
+
+	if ( val & 1)
+		linktype |= HTPHY_LINKTYPE_GANGED;
+	else
+		linktype |= HTPHY_LINKTYPE_UNGANGED;
+
+	return linktype;
+}
+
+
+/**
+ * AMD_SetHtPhyRegister - Use the HT link's HT Phy portal registers to update
+ *   a phy setting for that link.
+ */
+void AMD_SetHtPhyRegister (u8 node, u8 link, u8 entry)
+{
+	u32 phyReg;
+	u32 phyBase;
+	u32 val;
+
+	/* Determine this link's portal */
+	if (link > 3)
+		link -= 4;
+
+	phyBase = ((u32)link << 3) | 0x180;
+
+
+	/* Get the portal control register's initial value
+	 * and update it to access the desired phy register
+	 */
+	phyReg = pci_read_config32(NODE_PCI(node, 4), phyBase);
+
+	if (fam10_htphy_default[entry].htreg > 0x1FF) {
+		phyReg &= ~HTPHY_DIRECT_OFFSET_MASK;
+		phyReg |= HTPHY_DIRECT_MAP;
+	} else {
+		phyReg &= ~HTPHY_OFFSET_MASK;
+	}
+
+	/* Now get the current phy register data
+	 * LinkPhyDone = 0, LinkPhyWrite = 0 is a read
+	 */
+	phyReg |= fam10_htphy_default[entry].htreg;
+	pci_write_config32(NODE_PCI(node, 4), phyBase, phyReg);
+
+	do {
+		val = pci_read_config32(NODE_PCI(node, 4), phyBase);
+	} while (!(val & HTPHY_IS_COMPLETE_MASK));
+
+	/* Now we have the phy register data, apply the change */
+	val = pci_read_config32(NODE_PCI(node, 4), phyBase + 4);
+	val &= ~fam10_htphy_default[entry].mask;
+	val |= fam10_htphy_default[entry].data;
+	pci_write_config32(NODE_PCI(node, 4), phyBase + 4, val);
+
+	/* write it through the portal to the phy
+	 * LinkPhyDone = 0, LinkPhyWrite = 1 is a write
+	 */
+	phyReg |= HTPHY_WRITE_CMD;
+	pci_write_config32(NODE_PCI(node, 4), phyBase, phyReg);
+
+	do {
+		val = pci_read_config32(NODE_PCI(node, 4), phyBase);
+	} while (!(val & HTPHY_IS_COMPLETE_MASK));
+}
+
+
+void cpuSetAMDMSR(void)
+{
+	/* This routine loads the CPU with default settings in fam10_msr_default
+	 * table . It must be run after Cache-As-RAM has been enabled, and
+	 * Hypertransport initialization has taken place.  Also note
+	 * that it is run on the current processor only, and only for the current
+	 * processor core.
+	 */
+	msr_t msr;
+	u8 i;
+	u32 revision, platform;
+
+	printk_debug("cpuSetAMDMSR ");
+
+	revision = mctGetLogicalCPUID(0xFF);
+	platform = get_platform_type();
+
+	for(i = 0; i < sizeof(fam10_msr_default)/sizeof(fam10_msr_default[0]); i++) {
+		if ((fam10_msr_default[i].revision & revision) &&
+		    (fam10_msr_default[i].platform & platform)) {
+			msr = rdmsr(fam10_msr_default[i].msr);
+			msr.hi &= ~fam10_msr_default[i].mask_hi;
+			msr.hi |= fam10_msr_default[i].data_hi;
+			msr.lo &= ~fam10_msr_default[i].mask_lo;
+			msr.lo |= fam10_msr_default[i].data_lo;
+			wrmsr(fam10_msr_default[i].msr, msr);
+		}
+	}
+	AMD_Errata298();
+
+	printk_debug(" done\n");
+}
+
+
+void cpuSetAMDPCI(u8 node)
+{
+	/* This routine loads the CPU with default settings in fam10_pci_default
+	 * table . It must be run after Cache-As-RAM has been enabled, and
+	 * Hypertransport initialization has taken place.  Also note
+	 * that it is run for the first core on each node
+	 */
+	u8 i, j;
+	u32 revision, platform;
+	u32 val;
+	u8 offset;
+
+	printk_debug("cpuSetAMDPCI %02d", node);
+
+	revision = mctGetLogicalCPUID(node);
+	platform = get_platform_type();
+
+	for(i = 0; i < sizeof(fam10_pci_default)/sizeof(fam10_pci_default[0]); i++) {
+		if ((fam10_pci_default[i].revision & revision) &&
+		    (fam10_pci_default[i].platform & platform)) {
+			val = pci_read_config32(NODE_PCI(node,
+				fam10_pci_default[i].function),
+				fam10_pci_default[i].offset);
+			val &= ~fam10_pci_default[i].mask;
+			val |= fam10_pci_default[i].data;
+			pci_write_config32(NODE_PCI(node,
+				fam10_pci_default[i].function),
+				fam10_pci_default[i].offset, val);
+		}
+	}
+
+	for(i = 0; i < sizeof(fam10_htphy_default)/sizeof(fam10_htphy_default[0]); i++) {
+		if ((fam10_htphy_default[i].revision & revision) &&
+		    (fam10_htphy_default[i].platform & platform)) {
+			/* HT Phy settings either apply to both sublinks or have
+			 * separate registers for sublink zero and one, so there
+			 * will be two table entries. So, here we only loop
+			 cd t	* through the sublink zeros in function zero.
+			 */
+			for (j = 0; j < 4; j++) {
+				if (AMD_CpuFindCapability(node, j, &offset)) {
+					if (AMD_checkLinkType(node, j, offset)
+					    & fam10_htphy_default[i].linktype) {
+						AMD_SetHtPhyRegister(node, j, i);
+					}
+				} else {
+					/* No more capabilities,
+					 * link not present
+					 */
+					break;
+				}
+			}
+		}
+	}
+
+	/* FIXME: add UMA support and programXbarToSriReg(); */
+
+	AMD_Errata281(node, revision, platform);
+
+	/* FIXME: if the dct phy doesn't init correct it needs to reset.
+	if (revision & (AMD_DR_B2 | AMD_DR_B3))
+		dctPhyDiag(); */
+
+	printk_debug(" done\n");
+}
+
+
+void cpuInitializeMCA(void)
+{
+	/* Clears Machine Check Architecture (MCA) registers, which power on
+	 * containing unknown data, on currently running processor.
+	 * This routine should only be executed on initial power on (cold boot),
+	 * not across a warm reset because valid data is present at that time.
+	 */
+
+	msr_t msr;
+	u32 reg;
+	u8 i;
+
+	if (cpuid_edx(1) & 0x4080) { /* MCE and MCA (edx[7] and edx[14]) */
+		msr = rdmsr(MCG_CAP);
+		if (msr.lo & MCG_CTL_P){	/* MCG_CTL_P bit is set? */
+			msr.lo &= 0xFF;
+			msr.lo--;
+			msr.lo <<= 2;		/* multiply the count by 4 */
+			reg = MC0_STA + msr.lo;
+			msr.lo = msr.hi = 0;
+			for (i=0; i < 4; i++) {
+				wrmsr (reg, msr);
+				reg -=4;	/* Touch status regs for each bank */
+			}
+		}
+	}
+}
+
+
 /**
  * finalize_node_setup()
  *
  * Do any additional post HT init
  *
- * This could really be moved to cache_as_ram_auto.c since it really isn't HT init.
  */
 void finalize_node_setup(struct sys_info *sysinfo)
 {
@@ -535,7 +948,10 @@ void finalize_node_setup(struct sys_info *sysinfo)
 	sysinfo->sbdn = get_sbdn(sysinfo->sbbusn);
 #endif
 
-	setup_link_trans_cntrl();
+
+	for (i = 0; i < nodes; i++) {
+		cpuSetAMDPCI(i);
+	}
 
 #if FAM10_SET_FIDVID == 1
 	// Prep each node for FID/VID setup.

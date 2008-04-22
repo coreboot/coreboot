@@ -106,23 +106,26 @@ void mctGet_DIMMAddr(struct DCTStatStruc *pDCTstat, u32 node)
 
 u32 mctGetLogicalCPUID(u32 Node)
 {
+	/* FIXME: Move this to a more generic place. Maybe to the CPU code */
+	/* Converts the CPUID to a logical ID MASK that is used to check
+	 CPU version support versions */
 	u32 dev;
 	u32 val, valx;
 	u32 family, model, stepping;
 	u32 ret;
-	dev = PA_NBMISC(Node);
-	val = Get_NB32(dev, 0xfc);
-	print_debug("Family_Model:"); print_debug_hex32(val); print_debug("\n");
 
-	family = ((val >> 8) & 0x0f) + ((val>>20) & 0xff);
-	model = ((val>>4) & 0x0f) | ((val>>(16-4)) & 0xf0);
-	stepping = val & 0xff;
-	print_debug("Family:"); print_debug_hex8(family); print_debug("\t");
-	print_debug("Model:"); print_debug_hex8(model); print_debug("\t");
-	print_debug("Stepping:"); print_debug_hex8(stepping); print_debug("\n");
+	if (Node == 0xFF) { /* current node */
+		val = cpuid_eax(0x80000001);
+	} else {
+		dev = PA_NBMISC(Node);
+		val = Get_NB32(dev, 0xfc);
+	}
 
-	valx = (family<<12) | (model<<4) | (stepping);
-	print_debug("converted:"); print_debug_hex32(valx); print_debug("\n");
+	family = ((val >> 8) & 0x0f) + ((val >> 20) & 0xff);
+	model = ((val >> 4) & 0x0f) | ((val >> (16-4)) & 0xf0);
+	stepping = val & 0x0f;
+
+	valx = (family << 12) | (model << 4) | (stepping);
 
 	switch (valx) {
 	case 0x10000:
@@ -134,7 +137,21 @@ u32 mctGetLogicalCPUID(u32 Node)
 	case 0x10002:
 		ret = AMD_DR_A2;
 		break;
+	case 0x10020:
+		ret = AMD_DR_B0;
+		break;
+	case 0x10021:
+		ret = AMD_DR_B1;
+		break;
+	case 0x10022:
+		ret = AMD_DR_B2;
+		break;
+	case 0x10023:
+		ret = AMD_DR_B3;
+		break;
 	default:
+		/* FIXME: mabe we should die() here. */
+		print_err("FIXME! CPU Version unknown or not supported! \n");
 		ret = 0;
 	}
 

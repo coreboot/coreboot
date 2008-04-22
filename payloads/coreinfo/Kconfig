@@ -64,5 +64,9 @@ config MODULE_NVRAM
 	help
 	  This option will increase the ELF file size by ca. 350 bytes.
 
+config MODULE_BOOTLOG
+	bool "Enable the coreboot bootlog module"
+	default y
+
 endmenu
 

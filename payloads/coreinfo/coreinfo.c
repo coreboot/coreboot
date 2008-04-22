@@ -26,6 +26,7 @@ extern struct coreinfo_module cpuinfo_module;
 extern struct coreinfo_module pci_module;
 extern struct coreinfo_module coreboot_module;
 extern struct coreinfo_module nvram_module;
+extern struct coreinfo_module bootlog_module;
 
 struct coreinfo_module *modules[] = {
 #ifdef CONFIG_MODULE_CPUINFO
@@ -39,6 +40,9 @@ struct coreinfo_module *modules[] = {
 #endif
 #ifdef CONFIG_MODULE_NVRAM
 	&nvram_module,
+#endif
+#ifdef CONFIG_MODULE_BOOTLOG
+	&bootlog_module,
 #endif
 };
 

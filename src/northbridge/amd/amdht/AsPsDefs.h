@@ -157,7 +157,10 @@
 #define CPTC1 0xd8			/* Clock Power/Timing Control1 Register*/
 #define VSRAMP_SLAM_MASK 0xffffff88	/* MaskOff [VSRampTime]&[VSSlamTime] */
 #define VSRAMP_SLAM_VALUE 0x16		/* [VSRampTime]=001b&[VSSlamTime]=110b */
+#define VSRAMP_MASK 0xffffff8f		/* MaskOff [VSRampTime] */
+#define VSRAMP_VALUE 0x10		/* [VSRampTime]=001b */
 #define VS_RAMP_T 4			/* VSRampTime bit position */
+#define VSSLAM_MASK 0xfffffff8		/* MaskOff [VSSlamTime] */
 #define PWR_PLN_SHIFT 28		/* PwrPlanes bit shift */
 #define PWR_PLN_ON 0x10000000		/* PwrPlanes bit ON */
 #define PWR_PLN_OFF 0x0efffffff	/* PwrPlanes bit OFF */

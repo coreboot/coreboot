@@ -229,7 +229,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
 	struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
-	int needs_reset = 0;
 	u32 bsp_apicid = 0;
 	u32 val;
 	msr_t msr;
@@ -237,7 +236,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x30);
 
 	if (bist == 0) {
-		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo); //mmconf is inited in init_cpus
+		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo); /* mmconf is inited in init_cpus */
 		/* All cores run this but the BSP(node0,core0) is the only core that returns. */
 	}
 
@@ -288,7 +287,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	wait_all_core0_started();
 
  #if CONFIG_LOGICAL_CPUS==1
-	// Core0 on each node is configured. Now setup any additional cores.
+	/* Core0 on each node is configured. Now setup any additional cores. */
 	printk_debug("start_other_cores()\n");
 	start_other_cores();
 	post_code(0x37);
@@ -299,7 +298,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
  #if FAM10_SET_FIDVID == 1
 	msr = rdmsr(0xc0010071);
-	printk_debug("Begin MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
 
 	/* FIXME: The sb fid change may survive the warm reset and only
 	   need to be done once.*/
@@ -307,36 +306,37 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x39);
 
-	if (warm_reset_detect(0)) {			// BSP is node 0
-		init_fidvid_stage2(bsp_apicid, 0);	// BSP is node 0
+	if (!warm_reset_detect(0)) {			// BSP is node 0
+		init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
 	} else {
-		needs_reset |= (init_fidvid_bsp(bsp_apicid, sysinfo->nodes) << 31);
+		init_fidvid_stage2(bsp_apicid, 0);	// BSP is node 0
 	}
 
 	post_code(0x3A);
 
-	set_p0();	// Speed up the BSP!
-
-	// show final fid and vid
+	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
-	printk_debug("End MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk_debug("End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
  #endif
 
-	// Reset for HT and FIDVID changes?
-	if (needs_reset) {
-		print_info("\tht reset -\n");
+
+	/* Reset for HT, FIDVID, PLL and errata changes to take affect. */
+	if (!warm_reset_detect(0)) {
+		print_info("...WARM RESET...\n\n\n");
 		soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
 		die("After soft_reset_x - shouldn't see this message!!!\n");
 	}
 
 	post_code(0x3B);
 
-	//enable cf9 for hard reset
+
+	/* FIXME:  Move this to chipset init.
+	enable cf9 for hard reset */
 	print_debug("enable_cf9_x()\n");
 	enable_cf9_x(sysinfo->sbbusn, sysinfo->sbdn);
 	post_code(0x3C);
 
-	//It's the time to set ctrl in sysinfo now;
+	/* It's the time to set ctrl in sysinfo now; */
 	printk_debug("fill_mem_ctrl()\n");
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	post_code(0x3D);

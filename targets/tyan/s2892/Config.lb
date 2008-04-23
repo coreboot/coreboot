@@ -7,8 +7,8 @@ mainboard tyan/s2892
 
 # Tyan s2892
 romimage "normal"
-#       48K for ATI ROM in 1M
-        option ROM_SIZE = 1024*1024-48*1024
+#       36K for ATI ROM in 1M
+	option ROM_SIZE = 1024*1024-36*1024
 #       48K for SCSI FW or ATI ROM
 #        option ROM_SIZE = 512*1024-48*1024
 #       48K for SCSI FW and 48K for ATI ROM
@@ -29,11 +29,12 @@ romimage "normal"
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../payloads/tg3_vga.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
+#	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
 #        payload ../../../payloads/tg3--filo_hda2_com2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
+	payload ../payload.elf
 end
 
 romimage "fallback" 
@@ -51,11 +52,12 @@ romimage "fallback"
 #       payload ../../../payloads/filo.zelf
 #	payload ../../../payloads/tg3.zelf
 #	payload ../../../payloads/tg3_vga.zelf
-	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
+#	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
 #        payload ../../../payloads/tg3--filo_hda2_com2.zelf
 #       payload ../../../payloads/e1000--filo.zelf
 #        payload ../../../payloads/tg3--e1000--filo.zelf
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
+	payload ../payload.elf
 end
 
 buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

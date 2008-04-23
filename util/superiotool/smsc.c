@@ -436,6 +436,8 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x85, "SCH5317", {	/* From sensors-detect */
 		{EOT}}},
+	{0x89, "SCH5027", {	/* From sensors-detect (no public datasheet) */
+		{EOT}}},
 	{0x90, "SCH4307", {	/* From sensors-detect */
 		{EOT}}},
 

@@ -78,7 +78,7 @@ void *smp_write_config_table(void *v)
         
 	/* Initialize interrupt mapping*/
 
-			dword = 0x0000d218;
+			dword = 0x0120d218;
 	        	pci_write_config32(dev, 0x7c, dword);
 
 		        dword = 0x12008a00;
@@ -189,8 +189,6 @@ void *smp_write_config_table(void *v)
         for(i=0;i<4;i++) {
                 smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (2<<2)|i, apicid_8131_1, (2+i)%4); //26
         }
-
-
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);

@@ -1,0 +1,26 @@
+# Sample config file for 
+# the Tyan s2892 
+# This will make a target directory of ./s2892
+
+target s2892
+mainboard tyan/s2892
+
+# Leave Space for VGA BIOS
+option ROM_SIZE = 1024*1024-36*1024
+#option ROM_SIZE = 1024*1024
+option CONFIG_CONSOLE_SERIAL8250 = 1
+option CONFIG_CONSOLE_VGA = 1
+option XIP_ROM_SIZE = 0x20000
+option ROM_IMAGE_SIZE = 0x18000
+option FALLBACK_SIZE = ROM_SIZE
+
+# Tyan s2892
+romimage "fallback" 
+	option CONFIG_COMPRESSED_PAYLOAD_LZMA=1
+	option CONFIG_PRECOMPRESSED_PAYLOAD=1
+	option USE_FALLBACK_IMAGE=1
+	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+	payload ../payload.elf.lzma
+end
+
+buildrom ./coreboot.rom ROM_SIZE "fallback"

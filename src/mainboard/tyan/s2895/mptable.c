@@ -83,9 +83,9 @@ void *smp_write_config_table(void *v)
 				smp_write_ioapic(mc, apicid_ck804, 0x11, res->base);
 			}
 
-        	/* Initialize interrupt mapping*/
+	/* Initialize interrupt mapping*/
 
-			dword = 0x0000d218;
+			dword = 0x0120d218;
 	        	pci_write_config32(dev, 0x7c, dword);
 
 		        dword = 0x12008a00;

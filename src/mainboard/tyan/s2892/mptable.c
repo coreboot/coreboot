@@ -75,7 +75,7 @@ void *smp_write_config_table(void *v)
 			if (res) {
 				smp_write_ioapic(mc, apicid_ck804, 0x11, res->base);
 			}
-        
+
 	/* Initialize interrupt mapping*/
 
 			dword = 0x0120d218;

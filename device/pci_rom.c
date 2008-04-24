@@ -61,7 +61,13 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		rom_address = 0xc0000;
 
 	} else {
-		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
+		if (dev->rom_address) {
+			/* Override in place? */
+			rom_address = dev->rom_address;
+		} else {
+			rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS) & 0xfffffffe;
+		}
+
 	}
 
 	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {

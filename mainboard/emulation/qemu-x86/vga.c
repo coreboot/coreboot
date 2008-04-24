@@ -33,7 +33,6 @@ static void setup_onboard(struct device *dev)
 
 	printk(BIOS_INFO, "Init VGA device\n");
 
-	dev->on_mainboard = 1;
 	dev->rom_address = 0xc0000;
 
 	/*

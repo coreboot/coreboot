@@ -1,0 +1,237 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 Peter Stuge
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
+ */
+
+/*
+ * This code sets the Processor Name String for AMD64 CPUs.
+ *
+ * Revision Guide for AMD Family 10h Processors
+ * Publication # 41322 Revision: 3.17 Issue Date: February 2008
+ */
+
+#include <console/console.h>
+#include <string.h>
+#include <cpu/x86/msr.h>
+#include <cpu/cpu.h>
+
+extern void wrmsr_amd(u32 index, msr_t msr);
+
+/* The maximum length of CPU names is 48 bytes, including the final NULL byte.
+ * If you change these names your BIOS will _NOT_ pass the AMD validation and
+ * your mainboard will not be posted on the AMD Recommended Motherboard Website
+ */
+
+struct str_s {
+	u8 Pg;
+	u8 NC;
+	u8 String;
+	char const *value;
+};
+
+
+static const struct str_s String1_socket_F[] = {
+	{0x00, 0x01, 0x00, "Dual-Core AMD Opteron(tm) Processor 83"},
+	{0x00, 0x01, 0x01, "Dual-Core AMD Opteron(tm) Processor 23"},
+	{0x00, 0x03, 0x00, "Quad-Core AMD Opteron(tm) Processor 83"},
+	{0x00, 0x03, 0x01, "Quad-Core AMD Opteron(tm) Processor 23"},
+	{0x00, 0x03, 0x02, "Embedded AMD Opteron(tm) Processor 83"},
+	{0x00, 0x03, 0x03, "Embedded AMD Opteron(tm) Processor 23"},
+	{0x00, 0x03, 0x04, "Embedded AMD Opteron(tm) Processor 13"},
+	{0x00, 0x03, 0x05, "AMD Phenom(tm) FX-"},
+	{0x01, 0x01, 0x01, "Embedded AMD Opteron(tm) Processor"},
+	{0, 0, 0, NULL}
+};
+
+static const struct str_s String2_socket_F[] = {
+	{0x00, 0xFF, 0x0A, " SE"},
+	{0x00, 0xFF, 0x0B, " HE"},
+	{0x00, 0xFF, 0x0C, " EE"},
+	{0x00, 0xFF, 0x0D, " Quad-Core Processor"},
+	{0x00, 0xFF, 0x0F, ""},
+	{0x01, 0x01, 0x01, "GF HE"},
+	{0, 0, 0, NULL}
+};
+
+
+static const struct str_s String1_socket_AM2[] = {
+	{0x00, 0x00, 0x00, "AMD Athlon(tm) Processor LE-"},
+	{0x00, 0x00, 0x01, "AMD Sempron(tm) Processor LE-"},
+	{0x00, 0x01, 0x00, "Dual-Core AMD Opteron(tm) Processor 13"},
+	{0x00, 0x01, 0x01, "AMD Athlon(tm)"},
+	{0x00, 0x02, 0x00, "AMD Phenom(tm)"},
+	{0x00, 0x03, 0x00, "Quad-Core AMD Opteron(tm) Processor 13"},
+	{0x00, 0x03, 0x01, "AMD Phenom(tm) FX-"},
+	{0x00, 0x03, 0x02, "AMD Phenom(tm)"},
+	{0, 0, 0, NULL}
+};
+
+static const struct str_s String2_socket_AM2[] = {
+	{0x00, 0x00, 0x00, "00"},
+	{0x00, 0x00, 0x01, "10"},
+	{0x00, 0x00, 0x02, "20"},
+	{0x00, 0x00, 0x03, "30"},
+	{0x00, 0x00, 0x04, "40"},
+	{0x00, 0x00, 0x05, "50"},
+	{0x00, 0x00, 0x06, "60"},
+	{0x00, 0x00, 0x07, "70"},
+	{0x00, 0x00, 0x08, "80"},
+	{0x00, 0x00, 0x09, "90"},
+	{0x00, 0x01, 0x00, "00 Dual-Core Processor"},
+	{0x00, 0x01, 0x01, "00e Dual-Core Processor"},
+	{0x00, 0x01, 0x02, "00B Dual-Core Processor"},
+	{0x00, 0x01, 0x03, "50 Dual-Core Processor"},
+	{0x00, 0x01, 0x04, "50e Dual-Core Processor"},
+	{0x00, 0x01, 0x05, "50B Dual-Core Processor"},
+	{0x00, 0x02, 0x00, "00 Triple-Core Processor"},
+	{0x00, 0x02, 0x01, "00e Triple-Core Processor"},
+	{0x00, 0x02, 0x02, "00B Triple-Core Processor"},
+	{0x00, 0x02, 0x03, "50 Triple-Core Processor"},
+	{0x00, 0x02, 0x04, "50e Triple-Core Processor"},
+	{0x00, 0x02, 0x05, "50B Triple-Core Processor"},
+	{0x00, 0x03, 0x00, "00 Quad-Core Processor"},
+	{0x00, 0x03, 0x01, "00e Quad-Core Processor"},
+	{0x00, 0x03, 0x02, "00B Quad-Core Processor"},
+	{0x00, 0x03, 0x03, "50 Quad-Core Processor"},
+	{0x00, 0x03, 0x04, "50e Quad-Core Processor"},
+	{0x00, 0x03, 0x05, "50B Quad-Core Processor"},
+	{0x00, 0x03, 0x0A, " SE"},
+	{0x00, 0x03, 0x0B, " HE"},
+	{0x00, 0x03, 0x0C, " EE"},
+	{0x00, 0x03, 0x0D, " Quad-Core Processor"},
+	{0x00, 0xFF, 0x0F, ""},
+	{0, 0, 0, NULL}
+};
+
+
+char const *unknown = "AMD Processor model unknown";
+char const *unknown2 = " type unknown";
+char const *sample = "AMD Engineering Sample";
+char const *thermal = "AMD Thermal Test Kit";
+
+
+int strcpymax(char *dst, const char *src, int buflen) {
+	int i;
+	for (i = 0; i < buflen && src[i]; i++)
+		dst[i] = src[i];
+	if (i >= buflen)
+		i--;
+	dst[i] = 0;
+	return i;
+}
+
+
+int init_processor_name(void)
+{
+	/* variable names taken from fam10 revision guide for clarity */
+	u32 BrandId;	/* CPUID Fn8000_0001_EBX */
+	u8 String1;	/* BrandID[14:11] */
+	u8 String2;	/* BrandID[3:0] */
+	u8 Model;	/* BrandID[10:4] */
+	u8 Pg;		/* BrandID[15] */
+	u8 PkgTyp;	/* BrandID[31:28] */
+	u8 NC;		/* CPUID Fn8000_0008_ECX */
+	const char *processor_name_string = unknown;
+	char program_string[48];
+	u32 *p_program_string = (u32 *)program_string;
+	msr_t msr;
+	int i, j = 0, str2_checkNC = 1;
+	const struct str_s *str, *str2;
+
+
+	/* Find out which CPU brand it is */
+	BrandId = cpuid_ebx(0x80000001);
+	String1 = (u8)((BrandId >> 11) & 0x0F);
+	String2 = (u8)((BrandId >> 0) & 0x0F);
+	Model = (u8)((BrandId >> 4) & 0x7F);
+	Pg = (u8)((BrandId >> 15) & 0x01);
+	PkgTyp = (u8)((BrandId >> 28) & 0x0F);
+	NC = (u8)(cpuid_ecx(0x80000008) & 0xFF);
+
+	/* null the string */
+	memset(program_string, 0, sizeof(program_string));
+
+	if (!Model) {
+		processor_name_string = Pg ? sample : thermal;
+		goto done;
+	}
+
+	switch (PkgTyp) {
+	case 0:		/* F1207 */
+		str = String1_socket_F;
+		str2 = String2_socket_F;
+		str2_checkNC = 0;
+		break;
+	case 1:		/* AM2 */
+		str = String1_socket_AM2;
+		str2 = String2_socket_AM2;
+		break;
+	default:
+		goto done;
+	}
+
+	/* String1 */
+	for (i = 0; str[i].value; i++) {
+		if ((str[i].Pg == Pg) &&
+		    (str[i].NC == NC) &&
+		    (str[i].String == String1)) {
+			processor_name_string = str[i].value;
+			break;
+		}
+	}
+
+	if (!str[i].value)
+		goto done;
+
+	j = strcpymax(program_string, processor_name_string,
+		      sizeof(program_string));
+
+	/* Translate Model from 01-99 to ASCII and put it on the end.
+	 * Numbers less than 10 should include a leading zero, e.g., 09.*/
+	if (Model < 100 && j < sizeof(program_string) - 2) {
+		program_string[j++] = (Model / 10) + '0';
+		program_string[j++] = (Model % 10) + '0';
+	}
+
+	processor_name_string = unknown2;
+
+	/* String 2 */
+	for(i = 0; str2[i].value; i++) {
+		if ((str2[i].Pg == Pg) &&
+		    ((str2[i].NC == NC) || !str2_checkNC) &&
+		    (str2[i].String == String2)) {
+			processor_name_string = str2[i].value;
+			break;
+		}
+	}
+
+
+done:
+	strcpymax(&program_string[j], processor_name_string,
+		  sizeof(program_string) - j);
+
+	printk_debug("CPU model: %s\n", program_string);
+
+	for (i = 0; i < 6; i++) {
+		msr.lo = p_program_string[(2 * i) + 0];
+		msr.hi = p_program_string[(2 * i) + 1];
+		wrmsr_amd(0xC0010030 + i, msr);
+	}
+
+	return 0;
+}

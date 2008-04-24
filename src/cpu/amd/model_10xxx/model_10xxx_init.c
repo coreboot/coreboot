@@ -39,13 +39,14 @@
 #include <cpu/amd/model_10xxx_msr.h>
 
 extern device_t get_node_pci(u32 nodeid, u32 fn);
+extern int init_processor_name(void);
 
 
 
 #define MCI_STATUS 0x401
 
 
-static inline msr_t rdmsr_amd(u32 index)
+msr_t rdmsr_amd(u32 index)
 {
 	 msr_t result;
 	 __asm__ __volatile__ (
@@ -57,7 +58,7 @@ static inline msr_t rdmsr_amd(u32 index)
 }
 
 
-static inline void wrmsr_amd(u32 index, msr_t msr)
+void wrmsr_amd(u32 index, msr_t msr)
 {
 	__asm__ __volatile__ (
 		"wrmsr"
@@ -99,7 +100,8 @@ void model_10xxx_init(device_t dev)
 	/* Enable the local cpu apics */
 	setup_lapic();
 
-	/* FIXME: Update CPUID name strings here */
+	/* Set the processor name string */
+	init_processor_name();
 
 #if CONFIG_LOGICAL_CPUS == 1
 	siblings = cpuid_ecx(0x80000008) & 0xff;

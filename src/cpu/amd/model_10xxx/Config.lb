@@ -37,3 +37,4 @@ dir /cpu/amd/microcode
 driver model_10xxx_init.o
 object update_microcode.o
 object apic_timer.o
+object processor_name.o

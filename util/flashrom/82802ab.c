@@ -27,6 +27,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <stdint.h>
 #include "flash.h"
 
@@ -110,6 +111,7 @@ int erase_82802ab_block(struct flashchip *flash, int offset)
 {
 	volatile uint8_t *bios = flash->virtual_memory + offset;
 	volatile uint8_t *wrprotect = flash->virtual_registers + offset + 2;
+	int j;
 	uint8_t status;
 
 	// clear status register
@@ -128,6 +130,12 @@ int erase_82802ab_block(struct flashchip *flash, int offset)
 	// now let's see what the register is
 	status = wait_82802ab(flash->virtual_memory);
 	//print_82802ab_status(status);
+	for (j = 0; j < flash->page_size; j++) {
+		if (*(bios + j) != 0xFF) {
+			printf("BLOCK ERASE failed at 0x%x\n", offset);
+			return -1;
+		}
+	}
 	printf("DONE BLOCK 0x%x\n", offset);
 
 	return 0;
@@ -167,17 +175,29 @@ int write_82802ab(struct flashchip *flash, uint8_t *buf)
 	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	erase_82802ab(flash);
-	if (*bios != 0xff) {
-		printf("ERASE FAILED\n");
-		return -1;
-	}
-	printf("Programming page: ");
+	printf("Programming page: \n");
 	for (i = 0; i < total_size / page_size; i++) {
+		printf
+		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		printf("%04d at address: 0x%08x", i, i * page_size);
+
+		/* Auto Skip Blocks, which already contain the desired data
+		 * Faster, because we only write, what has changed
+		 * More secure, because blocks, which are excluded
+		 * (with the exclude or layout feature)
+		 * or not erased and rewritten; their data is retained also in
+		 * sudden power off situations
+		 */
+		if (!memcmp((void *)(buf + i * page_size),
+			    (void *)(bios + i * page_size), page_size)) {
+			printf("SKIPPED\n");
+			continue;
+		}
+
+		/* erase block by block and write block by block; this is the most secure way */
+		erase_82802ab_block(flash, i * page_size);
 		write_page_82802ab(bios, buf + i * page_size,
 				   bios + i * page_size, page_size);
-		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 	}
 	printf("\n");
 	protect_jedec(bios);

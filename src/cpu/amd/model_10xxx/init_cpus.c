@@ -295,6 +295,13 @@ static void enable_apic_ext_id(u32 node)
 
 static void STOP_CAR_AND_CPU()
 {
+	msr_t msr;
+
+	/* Disable L2 IC to L3 connection (Only for CAR) */
+	msr = rdmsr(BU_CFG2);
+	msr.lo &= ~(1 << ClLinesToNbDis);
+	wrmsr(BU_CFG2, msr);
+
 	disable_cache_as_ram(); // inline
 	stop_this_cpu();
 }

@@ -24,7 +24,7 @@
 
 #include "cpu/amd/quadcore/quadcore_id.c"
 
-static inline u32 get_core_num_in_bsp(u32 nodeid)
+static u32 get_core_num_in_bsp(u32 nodeid)
 {
 	u32 dword;
 	dword = pci_read_config32(NODE_PCI(nodeid, 3), 0xe8);
@@ -34,7 +34,7 @@ static inline u32 get_core_num_in_bsp(u32 nodeid)
 }
 
 #if SET_NB_CFG_54 == 1
-static inline u8 set_apicid_cpuid_lo(void)
+static u8 set_apicid_cpuid_lo(void)
 {
 	// set the NB_CFG[54]=1; why the OS will be happy with that ???
 	msr_t msr;
@@ -46,12 +46,12 @@ static inline u8 set_apicid_cpuid_lo(void)
 }
 #else
 
-static inline void set_apicid_cpuid_lo(void) { }
+static void set_apicid_cpuid_lo(void) { }
 
 #endif
 
 
-static inline void real_start_other_core(u32 nodeid, u32 cores)
+static void real_start_other_core(u32 nodeid, u32 cores)
 {
 	u32 dword;
 
@@ -78,7 +78,7 @@ static inline void real_start_other_core(u32 nodeid, u32 cores)
 }
 
 //it is running on core0 of node0
-static inline void start_other_cores(void)
+static void start_other_cores(void)
 {
 	u32 nodes;
 	u32 nodeid;

@@ -65,7 +65,7 @@ static void SetupDqsPattern_D(struct MCTStatStruc *pMCTstat,
 
 #define DQS_TRAIN_DEBUG 0
 
-static inline void print_debug_dqs(const char *str, u32 val, u8 level)
+static void print_debug_dqs(const char *str, u32 val, u8 level)
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {
@@ -74,7 +74,7 @@ static inline void print_debug_dqs(const char *str, u32 val, u8 level)
 #endif
 }
 
-static inline void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32 val2, u8 level)
+static void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32 val2, u8 level)
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {

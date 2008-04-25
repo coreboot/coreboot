@@ -60,7 +60,7 @@ static inline void _cpu_id(u32 addr, u32 *val)
 }
 
 
-static inline u32 bsr(u32 x)
+static u32 bsr(u32 x)
 {
 	u8 i;
 	u32 ret = 0;
@@ -77,7 +77,7 @@ static inline u32 bsr(u32 x)
 }
 
 
-static inline u32 bsf(u32 x)
+static u32 bsf(u32 x)
 {
 	u8 i;
 	u32 ret = 32;

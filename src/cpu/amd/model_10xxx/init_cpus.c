@@ -30,24 +30,24 @@
 	#define FAM10_SET_FIDVID_CORE0_ONLY 0
 #endif
 
-static inline void print_initcpu8 (const char *strval, u8 val)
+static void print_initcpu8 (const char *strval, u8 val)
 {
 	printk_debug("%s%02x\n", strval, val);
 }
 
-static inline void print_initcpu8_nocr (const char *strval, u8 val)
+static void print_initcpu8_nocr (const char *strval, u8 val)
 {
 	printk_debug("%s%02x", strval, val);
 }
 
 
-static inline void print_initcpu16 (const char *strval, u16 val)
+static void print_initcpu16 (const char *strval, u16 val)
 {
 	printk_debug("%s%04x\n", strval, val);
 }
 
 
-static inline void print_initcpu(const char *strval, u32 val)
+static void print_initcpu(const char *strval, u32 val)
 {
 	printk_debug("%s%08x\n", strval, val);
 }
@@ -59,7 +59,7 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid);
 void cpuSetAMDMSR(void);
 
 #if PCI_IO_CFG_EXT == 1
-static inline void set_EnableCf8ExtCfg(void)
+static void set_EnableCf8ExtCfg(void)
 {
 	// set the NB_CFG[46]=1;
 	msr_t msr;
@@ -69,7 +69,7 @@ static inline void set_EnableCf8ExtCfg(void)
 	wrmsr(NB_CFG_MSR, msr);
 }
 #else
-static inline void set_EnableCf8ExtCfg(void) { }
+static void set_EnableCf8ExtCfg(void) { }
 #endif
 
 
@@ -78,7 +78,7 @@ static inline void set_EnableCf8ExtCfg(void) { }
 /* because we will use gs to store hi, so need to make sure lo can start
    from 0, So PCI_MMIO_BASE & 0x00ffffff should be equal to 0*/
 
-static inline void set_pci_mmio_conf_reg(void)
+static void set_pci_mmio_conf_reg(void)
 {
 #if MMCONF_SUPPORT
 	msr_t msr;
@@ -184,7 +184,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 }
 
 /* FIXME: Duplicate of what is in lapic.h? */
-static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
+static int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 {
 	int timeout;
 	u32 status;

@@ -102,7 +102,7 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 }
 
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
+static void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x18
 	int ret,i;
@@ -119,7 +119,7 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 }
 
 
-static inline int spd_read_byte(u32 device, u32 address)
+static int spd_read_byte(u32 device, u32 address)
 {
 	int result;
 	result = smbus_read_byte(device, address);

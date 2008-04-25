@@ -32,7 +32,7 @@ u32 read_nb_cfg_54(void)
 	return ( ( msr.hi >> (54-32)) & 1);
 }
 
-static inline u32 get_initial_apicid(void)
+static u32 get_initial_apicid(void)
 {
 	return ((cpuid_ebx(1) >> 24) & 0xff);
 }
@@ -67,12 +67,12 @@ struct node_core_id get_node_core_id(u32 nb_cfg_54)
 	return id;
 }
 
-static inline u32 get_core_num(void)
+static u32 get_core_num(void)
 {
 	return (cpuid_ecx(0x80000008) & 0xff);
 }
 
-static inline struct node_core_id get_node_core_id_x(void) {
+static struct node_core_id get_node_core_id_x(void) {
 
 	return get_node_core_id( read_nb_cfg_54() );
 }

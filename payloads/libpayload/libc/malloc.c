@@ -67,7 +67,8 @@ void print_malloc_map(void);
 
 static void setup(void)
 {
-	int size = (unsigned int)(_heap - _eheap) - HDRSIZE;
+	int size = (unsigned int)(&_eheap - &_heap) - HDRSIZE;
+
 	*((hdrtype_t *) hstart) = FREE_BLOCK(size);
 }
 
@@ -91,9 +92,12 @@ static void *alloc(int len)
 		header = *((hdrtype_t *) ptr);
 		int size = SIZE(header);
 
+		if (!HAS_MAGIC(header) || size == 0)
+			halt();
+
 		if (header & FLAG_FREE) {
 			if (len <= size) {
-				void *nptr = ptr + HDRSIZE + len;
+				void *nptr = ptr + (HDRSIZE + len);
 				int nsize = size - (len + 8);
 
 				/* Mark the block as used. */
@@ -102,6 +106,7 @@ static void *alloc(int len)
 				/* If there is still room in this block,
 				 * then mark it as such.
 				 */
+
 				if (nsize > 0)
 					*((hdrtype_t *) nptr) =
 					    FREE_BLOCK(nsize - 4);
@@ -184,8 +189,8 @@ void *malloc(size_t size)
 
 void *calloc(size_t nmemb, size_t size)
 {
-	unsigned int total = (nmemb * size);
-	void *ptr = alloc(size);
+	size_t total = nmemb * size;
+	void *ptr = alloc(total);
 
 	if (ptr)
 		memset(ptr, 0, total);

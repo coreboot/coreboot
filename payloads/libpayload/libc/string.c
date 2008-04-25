@@ -173,11 +173,12 @@ char *strchr(const char *s, int c)
 char *strdup(const char *s)
 {
 	int n = strlen(s);
-	char *p = malloc(n);
+	char *p = malloc(n + 1);
 
 	if (p != NULL)
 		strncpy(p, s, n);
 
+	p[n] = 0;
 	return p;
 }
 

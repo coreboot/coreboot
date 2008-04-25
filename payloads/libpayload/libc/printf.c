@@ -156,7 +156,7 @@ static int print_char(char c, int width, uint64_t flags, struct printf_spec *ps)
 			++counter;
 	}
 
-	return ++counter;
+	return counter;
 }
 
 /**

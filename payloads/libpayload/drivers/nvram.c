@@ -93,3 +93,43 @@ void nvram_write(u8 val, u8 addr)
 	outb(addr, rtc_port);
 	outb(val, rtc_port + 1);
 }
+
+/**
+ * Return 1 if the NVRAM is currently updating and a 0 otherwise
+ * @return A 1 if the NVRAM is updating and 0 otherwise
+ */
+
+int nvram_updating(void)
+{
+       return (nvram_read(NVRAM_RTC_FREQ_SELECT) & NVRAM_RTC_UIP) ? 1 : 0;
+}
+
+/**
+ * Get the current time and date from the RTC
+ *
+ * @param time A pointer to a broken-down time structure
+ */
+void rtc_read_clock(struct tm *time)
+{
+	memset(time, 0, sizeof(*time));
+
+	while(nvram_updating());
+
+	time->tm_mon = bcd2dec(nvram_read(NVRAM_RTC_MONTH)) - 1;
+	time->tm_sec = bcd2dec(nvram_read(NVRAM_RTC_SECONDS));
+	time->tm_min = bcd2dec(nvram_read(NVRAM_RTC_MINUTES));
+	time->tm_mday = bcd2dec(nvram_read(NVRAM_RTC_DAY));
+	time->tm_hour = bcd2dec(nvram_read(NVRAM_RTC_HOURS));
+
+	/* Instead of finding the century register,
+	   we just make an assumption that if the year value is
+	   less then 80, then it is 2000+
+	*/
+
+	time->tm_year = bcd2dec(nvram_read(NVRAM_RTC_YEAR));
+
+	if (time->tm_year < 80)
+		time->tm_year += 100;
+}
+
+

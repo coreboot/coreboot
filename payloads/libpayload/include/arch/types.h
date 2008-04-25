@@ -50,6 +50,9 @@ typedef unsigned long long u64;
 typedef signed long long int64_t;
 typedef signed long long s64;
 
+typedef long time_t;
+typedef long suseconds_t;
+
 #ifndef NULL
 #define NULL ((void *)0)
 #endif

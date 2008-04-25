@@ -30,7 +30,7 @@
 #include <libpayload.h>
 #include <arch/rdtsc.h>
 
-static unsigned int cpu_khz;
+unsigned int cpu_khz;
 
 /**
  * Calculate the speed of the processor for use in delays.

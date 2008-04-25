@@ -30,9 +30,9 @@
 #ifndef _ARCH_RDTSC_H
 #define _ARCH_RDTSC_H
 
-static inline unsigned long long rdtsc(void)
+static u64 rdtsc(void)
 {
-	unsigned long long val;
+	u64 val;
 	__asm__ __volatile__ ("rdtsc" : "=A" (val));
 	return val;
 }

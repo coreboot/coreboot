@@ -61,10 +61,26 @@
 #define NVRAM_RTC_DAY            7
 #define NVRAM_RTC_MONTH          8
 #define NVRAM_RTC_YEAR           9
+#define NVRAM_RTC_FREQ_SELECT    10
+#define  NVRAM_RTC_UIP           0x80
+
+struct tm {
+	int tm_sec;
+	int tm_min;
+	int tm_hour;
+	int tm_mday;
+	int tm_mon;
+	int tm_year;
+	int tm_wday;
+	int tm_yday;
+	int tm_isdst;
+};
 
 /* drivers/nvram.c */
 u8 nvram_read(u8 addr);
 void nvram_write(u8 val, u8 addr);
+int nvram_updating(void);
+void rtc_read_clock(struct tm *tm);
 
 /* drivers/keyboard.c */
 void keyboard_init(void);
@@ -181,6 +197,15 @@ char *strncat(char *d, const char *s, int n);
 char *strchr(const char *s, int c);
 char *strdup(const char *s);
 char *strstr(const char *h, const char *n);
+
+/* libc/time.c */
+
+struct timeval {
+	time_t tv_sec;
+	suseconds_t tv_usec;
+};
+
+int gettimeofday(struct timeval *tv, void *tz);
 
 /* i386/coreboot.c */
 int get_coreboot_info(struct sysinfo_t *info);

@@ -305,16 +305,16 @@ void compute_allocate_resource(
 		 * return them.   Some resources must be set even when they have
 		 * no size.  PCI bridge resources are a good example of this.
 		 */
-		/* Propogate the resource alignment to the bridge register  */
-		if (resource->align > bridge->align) {
-			bridge->align = resource->align;
-		}
-
 		/* Make certain we are dealing with a good minimum size */
 		size = resource->size;
 		align = resource->align;
 		if (align < min_align) {
 			align = min_align;
+		}
+
+		/* Propogate the resource alignment to the bridge register  */
+		if (align > bridge->align) {
+			bridge->align = align;
 		}
 
 		if (resource->flags & IORESOURCE_FIXED) {

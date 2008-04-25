@@ -37,6 +37,9 @@ void console_init(void)
 #ifdef CONFIG_SERIAL_CONSOLE
 	serial_init();
 #endif
+#ifdef CONFIG_PC_KEYBOARD
+	keyboard_init();
+#endif
 }
 
 static void device_putchar(unsigned char c)

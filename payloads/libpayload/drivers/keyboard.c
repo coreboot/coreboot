@@ -29,6 +29,11 @@
 
 #include <libpayload.h>
 
+#define I8042_CMD_READ_MODE  0x20
+#define I8042_CMD_WRITE_MODE 0x60
+
+#define I8042_MODE_XLATE     0x40
+
 unsigned char map[2][0x57] = {
 	{
 	 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
@@ -118,3 +123,54 @@ int keyboard_getchar(void)
 
 	return ret;
 }
+
+static int keyboard_wait_read(void)
+{
+	int timeout = 10000;
+
+	while(timeout-- && !(inb(0x64) & 0x01))
+		udelay(50);
+
+	return (timeout <= 0) ? -1 : 0;
+}
+
+static int keyboard_wait_write(void)
+{
+	int timeout = 10000;
+
+	while(timeout-- && (inb(0x64) & 0x02))
+		udelay(50);
+
+	return (timeout <= 0) ? -1 : 0;
+}
+
+static unsigned char keyboard_get_mode(void)
+{
+	outb(I8042_CMD_READ_MODE, 0x64);
+	keyboard_wait_read();
+	return inb(0x60);
+}
+
+static void keyboard_set_mode(unsigned char mode)
+{
+	outb(I8042_CMD_WRITE_MODE, 0x64);
+	keyboard_wait_write();
+	outb(mode, 0x60);
+}
+
+void keyboard_init(void)
+{
+	u8 mode;
+
+	/* Read the current mode */
+	mode = keyboard_get_mode();
+
+	/* Turn on scancode translate mode so that we can
+	   use the scancode set 1 tables */
+
+	mode |= I8042_MODE_XLATE;
+
+	/* Write the new mode */
+	keyboard_set_mode(mode);
+}
+

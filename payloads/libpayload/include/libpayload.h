@@ -67,6 +67,7 @@ u8 nvram_read(u8 addr);
 void nvram_write(u8 val, u8 addr);
 
 /* drivers/keyboard.c */
+void keyboard_init(void);
 int keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);

@@ -32,7 +32,7 @@ struct property *build_property(char *name, struct data val, char *label)
 
 	new->name = name;
 	new->val = val;
-	if (new->val.type == NULL) {
+	if (new->val.type == '\0') {
 		new->val.type = 'S'; // Default to 'scalar' type; if this is a cell or byte value, type will already be set
 	}
 

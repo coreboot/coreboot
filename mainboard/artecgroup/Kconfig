@@ -32,7 +32,7 @@ config BOARD_ARTECGROUP_DBE61
 	select SOUTHBRIDGE_AMD_CS5536
 	select PIRQ_TABLE
 	help
-	  Artec Group DBE61, also known as ThinCan and Linutop.
+	  Artec Group DBE61 ThinCan, also known as Linutop 1.
 
 config BOARD_ARTECGROUP_DBE62
 	bool "DBE62"
@@ -43,7 +43,7 @@ config BOARD_ARTECGROUP_DBE62
 	select SOUTHBRIDGE_AMD_CS5536
 	select PIRQ_TABLE
 	help
-	  Artec Group DBE62, also known as ThinCan and Linutop2.
+	  Artec Group DBE62 ThinCan.
 
 endchoice
 

@@ -427,4 +427,8 @@ int probe_w29ee011(struct flashchip *flash);
 /* w49f002u.c */
 int write_49f002(struct flashchip *flash, uint8_t *buf);
 
+/* stm50flw0x0x.c */
+int probe_stm50flw0x0x(struct flashchip *flash);
+int erase_stm50flw0x0x(struct flashchip *flash);
+int write_stm50flw0x0x(struct flashchip *flash, uint8_t *buf);
 #endif				/* !__FLASH_H__ */

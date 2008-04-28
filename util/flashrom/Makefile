@@ -16,15 +16,15 @@ OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), SunOS)
 LDFLAGS = -lpci -lz
 else
-LDFLAGS = -lpci -lz -static 
+LDFLAGS = -lpci -lz
 STRIP_ARGS = -s
 endif
 
-OBJS = chipset_enable.o board_enable.o udelay.o jedec.o sst28sf040.o \
-	am29f040b.o mx29f002.o sst39sf020.o m29f400bt.o w49f002u.o \
-	82802ab.o msys_doc.o pm49fl004.o sst49lf040.o sst49lfxxxc.o \
-	sst_fwhub.o layout.o cbtable.o flashchips.o flashrom.o \
-	w39v080fa.o sharplhf00l04.o w29ee011.o spi.o
+OBJS = chipset_enable.o board_enable.o udelay.o jedec.o stm50flw0x0x.c \
+	sst28sf040.o am29f040b.o mx29f002.o sst39sf020.o m29f400bt.o \
+	w49f002u.o 82802ab.o msys_doc.o pm49fl004.o sst49lf040.o \
+	sst49lfxxxc.o sst_fwhub.o layout.o cbtable.o flashchips.o \
+	flashrom.o w39v080fa.o sharplhf00l04.o w29ee011.o spi.o
 
 all: pciutils dep $(PROGRAM)
 

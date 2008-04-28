@@ -111,6 +111,11 @@ struct flashchip *probe_flash(struct flashchip *flash)
 		}
 		printf_debug("Probing for %s %s, %d KB: ",
 			     flash->vendor, flash->name, flash->total_size);
+		if (!flash->probe) {
+			printf_debug("failed! flashrom has no probe function for this flash chip.\n");
+			flash++;
+			continue;
+		}
 
 		size = flash->total_size * 1024;
 
@@ -425,6 +430,10 @@ int main(int argc, char *argv[])
 
 	if (erase_it) {
 		printf("Erasing flash chip\n");
+		if (!flash->erase) {
+			fprintf(stderr, "Error: flashrom has no erase function for this flash chip.\n");
+			return 1;
+		}
 		flash->erase(flash);
 		exit(0);
 	} else if (read_it) {
@@ -493,8 +502,13 @@ int main(int argc, char *argv[])
 
 	// ////////////////////////////////////////////////////////////
 
-	if (write_it)
+	if (write_it) {
+		if (!flash->write) {
+			fprintf(stderr, "Error: flashrom has no write function for this flash chip.\n");
+			return 1;
+		}
 		ret |= flash->write(flash, buf);
+	}
 
 	if (verify_it)
 		ret |= verify_flash(flash, buf);

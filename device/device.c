@@ -292,9 +292,10 @@ static void read_resources(struct bus *bus)
 		int i;
 		printk(BIOS_SPEW,
 		       "%s: %s(%s) dtsname %s have_resources %d enabled %d\n",
-		       __func__, bus->dev->dtsname, dev_path(bus->dev),
-		       curdev->dtsname,
-		       curdev->have_resources, curdev->enabled);
+			__func__, bus->dev? bus->dev->dtsname : "NOBUSDEV", 
+			bus->dev ? dev_path(bus->dev) : "NOBUSDEV",
+			curdev->dtsname,
+			curdev->have_resources, curdev->enabled);
 		if (curdev->have_resources) {
 			continue;
 		}
@@ -469,16 +470,17 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 		 * they have no size. PCI bridge resources are a good example
 		 * of this.
 		 */
-		/* Propagate the resource alignment to the bridge register. */
-		if (resource->align > bridge->align) {
-			bridge->align = resource->align;
-		}
 
 		/* Make certain we are dealing with a good minimum size. */
 		size = resource->size;
 		align = resource->align;
 		if (align < min_align) {
 			align = min_align;
+		}
+
+		/* Propogate the resource alignment to the bridge register  */
+		if (align > bridge->align) {
+			bridge->align = align;
 		}
 
 		if (resource->flags & IORESOURCE_FIXED) {

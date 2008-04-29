@@ -234,6 +234,9 @@ static int enable_flash_vt823x(struct pci_dev *dev, const char *name)
 {
 	uint8_t val;
 
+	/* enable ROM decode range (1MB) FFC00000 - FFFFFFFF*/
+	pci_write_byte(dev, 0x41, 0x7f);
+
 	/* ROM write enable */
 	val = pci_read_byte(dev, 0x40);
 	val |= 0x10;

@@ -63,6 +63,7 @@ static const struct spd_entry spd_table[] = {
 	{SPD_MIN_RAS_TO_CAS_DELAY, 0x58},
 	{SPD_tRRD, 0x3c},
 	{SPD_tRP, 0x58},
+	{SPD_PRIMARY_SDRAM_WIDTH, 8},
 	{SPD_NUM_BANKS_PER_SDRAM, 0x4},
 	{SPD_NUM_COLUMNS, 0x8},
 	{SPD_NUM_DIMM_BANKS, 0x1},

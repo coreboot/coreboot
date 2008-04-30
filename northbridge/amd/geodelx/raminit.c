@@ -151,15 +151,11 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	banner(BIOS_DEBUG, "SPDBANKDENSITY");
 	dimm_size = spd_read_byte(dimm, SPD_BANK_DENSITY);
 
-	/* Align so 1 GB (bit 0) is bit 8. This is a little weird to get gcc
-	 * to not optimize this out.
-	 */
-	dimm_size |= (dimm_size << 8);
-
-	/* And off 2 GB DIMM size: not supported and the 1 GB size we just
-	 * moved up to bit 8 as well as all the extra on top.
-	 */
-	dimm_size &= 0x01FC;
+       /* Bits 0-1 have been redefined by JEDEC to contain what would have
+        * been in non-existing bits 8 (1GB) and 9 (2GB). Move bits 0-1 to
+        * bits 8-9 and mask bits 0-1 off.
+        */
+	dimm_size = ((dimm_size & 0x3) << 8) | (dimm_size & ~0x3);
 
 	/* Module Density * Module Banks */
 	/* Shift to multiply by the number of DIMM banks. */

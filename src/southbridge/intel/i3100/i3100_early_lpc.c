@@ -23,6 +23,7 @@ static void i3100_enable_superio(void)
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x0);
 
 	/* Enable decoding of I/O locations for SuperIO devices */
+	pci_write_config16(dev, 0x80, 0x0010);
 	pci_write_config16(dev, 0x82, 0x340f);
 }
 

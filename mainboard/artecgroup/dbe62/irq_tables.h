@@ -23,10 +23,10 @@
 #define IRQ_SLOT_COUNT 3
 
 /* Platform IRQs */
-#define PIRQA 10
-#define PIRQB 11
-#define PIRQC 10
-#define PIRQD 11
+#define PIRQA 11
+#define PIRQB 10
+#define PIRQC 9
+#define PIRQD 5
 
 /* Map */
 #define M_PIRQA (1 << PIRQA)	/* Bitmap of supported IRQs */
@@ -60,6 +60,6 @@ const struct irq_routing_table intel_irq_routing_table = {
 		/* chipset */
 		{0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},
 		/* ethernet */
-		{0x00, (0x0D << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
+		{0x00, (0x0D << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
 	}
 };

@@ -45,6 +45,11 @@ struct flashchip {
 	int total_size;
 	int page_size;
 
+	/* Indicate if flashrom has been tested with this flash chip and if
+	 * everything worked correctly.
+	 */
+	uint32_t tested;
+
 	int (*probe) (struct flashchip *flash);
 	int (*erase) (struct flashchip *flash);
 	int (*write) (struct flashchip *flash, uint8_t *buf);
@@ -54,6 +59,20 @@ struct flashchip {
 	volatile uint8_t *virtual_memory;
 	volatile uint8_t *virtual_registers;
 };
+
+#define TEST_UNTESTED	0
+
+#define TEST_OK_PROBE	(1<<0)
+#define TEST_OK_READ	(1<<1)
+#define TEST_OK_ERASE	(1<<2)
+#define TEST_OK_WRITE	(1<<3)
+#define TEST_OK_MASK	0x0f
+
+#define TEST_BAD_PROBE	(1<<4)
+#define TEST_BAD_READ	(1<<5)
+#define TEST_BAD_ERASE	(1<<6)
+#define TEST_BAD_WRITE	(1<<7)
+#define TEST_BAD_MASK	0xf0
 
 extern struct flashchip flashchips[];
 

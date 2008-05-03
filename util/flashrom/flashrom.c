@@ -412,6 +412,36 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Flash part is %s (%d KB).\n", flash->name, flash->total_size);
+	if (TEST_OK_MASK != (flash->tested & TEST_OK_MASK)) {
+		printf("===\n");
+		if (flash->tested & TEST_BAD_MASK) {
+			printf("This flash part has status NOT WORKING for operations:");
+			if (flash->tested & TEST_BAD_PROBE)
+				printf(" PROBE");
+			if (flash->tested & TEST_BAD_READ)
+				printf(" READ");
+			if (flash->tested & TEST_BAD_ERASE)
+				printf(" ERASE");
+			if (flash->tested & TEST_BAD_WRITE)
+				printf(" WRITE");
+			printf("\n");
+		} else {
+			printf("This flash part has status UNTESTED for operations:");
+			if (!(flash->tested & TEST_OK_PROBE))
+				printf(" PROBE");
+			if (!(flash->tested & TEST_OK_READ))
+				printf(" READ");
+			if (!(flash->tested & TEST_OK_ERASE))
+				printf(" ERASE");
+			if (!(flash->tested & TEST_OK_WRITE))
+				printf(" WRITE");
+			printf("\n");
+		}
+		printf("Please email a report to flashrom@coreboot.org if any of the above operations\n");
+		printf("work correctly for you with this flash part. Please include the full output\n");
+		printf("from the program, including chipset found. Thank you for your help!\n");
+		printf("===\n");
+	}
 
 	if (!(read_it | write_it | verify_it | erase_it)) {
 		printf("No operations were specified.\n");

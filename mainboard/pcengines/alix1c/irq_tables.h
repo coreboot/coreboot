@@ -61,11 +61,11 @@
  * -------------------------------------------------
  * AES          00:01.2 0a      01      A       A
  * 3VPCI        00:0c.0 0a      01      A       A
- * eth0 	00:0d.0 0b      01      A       B
- * mpci 	00:0e.0 0a      01      A       A
- * usb          00:0f.3 0b      02      B       B
- * usb          00:0f.4 0b      04      D       D
- * usb          00:0f.5 0b      04      D       D
+ * eth0         00:0d.0 0b      01      A       B
+ * minipci      00:0e.0 0a      01      A       A
+ * audio        00:0f.3 0b      02      B       B
+ * usb (ohci)   00:0f.4 0b      04      D       D
+ * usb (ehci)   00:0f.5 0b      04      D       D
  *
  * The only swizzled interrupt is eth0, where INTA is wired to interrupt controller line B.
  */

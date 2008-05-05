@@ -51,7 +51,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x002B,			/* Device */
 	0,			/* Crap (miniport) */
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},	/* u8 rfu[11] */
-	0x00,			/* Checksum */
+	0xb3,			/* Checksum */
 	{
 		/* If you change the number of entries, change IRQ_SLOT_COUNT above! */
 		/* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */

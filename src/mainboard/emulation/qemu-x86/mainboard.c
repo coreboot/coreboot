@@ -17,6 +17,8 @@ static void vga_init(device_t dev)
         do_vgabios();
 
 	vga_enable_console();
+
+	init_pc_keyboard(0x60, 0x64, 0);
 }
 
 static struct device_operations vga_operations = {

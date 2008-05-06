@@ -28,23 +28,45 @@ extern struct coreinfo_module coreboot_module;
 extern struct coreinfo_module nvram_module;
 extern struct coreinfo_module bootlog_module;
 
-struct coreinfo_module *modules[] = {
+struct coreinfo_module *system_modules[] = {
 #ifdef CONFIG_MODULE_CPUINFO
 	&cpuinfo_module,
 #endif
 #ifdef CONFIG_MODULE_PCI
 	&pci_module,
 #endif
-#ifdef CONFIG_MODULE_COREBOOT
-	&coreboot_module,
-#endif
 #ifdef CONFIG_MODULE_NVRAM
 	&nvram_module,
+#endif
+};
+
+struct coreinfo_module *coreboot_modules[] = {
+#ifdef CONFIG_MODULE_COREBOOT
+	&coreboot_module,
 #endif
 #ifdef CONFIG_MODULE_BOOTLOG
 	&bootlog_module,
 #endif
 };
+
+struct coreinfo_cat {
+	char name[15];
+	int cur;
+	int count;
+	struct coreinfo_module **modules;
+} categories[] = {
+	{
+		.name = "System",
+		.modules = system_modules,
+		.count = ARRAY_SIZE(system_modules),
+	},
+	{
+		.name = "Coreboot",
+		.modules = coreboot_modules,
+		.count = ARRAY_SIZE(coreboot_modules),
+	}
+};
+
 
 static WINDOW *modwin;
 static int curwin;
@@ -62,6 +84,26 @@ void print_module_title(WINDOW *win, const char *title)
 		waddch(win, '\304');
 }
 
+static void print_submenu(struct coreinfo_cat *cat)
+{
+	int i, j;
+	char menu[80];
+	char *ptr = menu;
+
+	wmove(stdscr, 22, 0);
+
+	for (j = 0; j < SCREEN_X; j++)
+		waddch(stdscr, ' ');
+
+	if (!cat->count)
+		return;
+
+	for (i = 0; i < cat->count; i++)
+		ptr += sprintf(ptr, "[%c: %s] ", 'A' + i, cat->modules[i]->name);
+
+	mvprintw(22, 0, menu);
+}
+
 static void print_menu(void)
 {
 	int i, j;
@@ -73,11 +115,14 @@ static void print_menu(void)
 	for (j = 0; j < SCREEN_X; j++)
 		waddch(stdscr, ' ');
 
-	for (i = 0; i < ARRAY_SIZE(modules); i++)
-		ptr += sprintf(ptr, "F%d: %s ", i + 1, modules[i]->name);
+	for (i = 0; i < ARRAY_SIZE(categories); i++) {
+		if (categories[i].count == 0)
+			continue;
 
-	if (ARRAY_SIZE(modules) != 0)
-		mvprintw(23, 0, menu);
+		ptr += sprintf(ptr, "F%d: %s ", i + 1, categories[i].name);
+	}
+
+	mvprintw(23, 0, menu);
 
 #ifdef CONFIG_SHOW_DATE_TIME
 	mvprintw(23, 59, "%02d/%02d/20%02d - %02d:%02d:%02d",
@@ -117,6 +162,8 @@ static void header(int row, const char *str)
 
 	ptr += sprintf(ptr, "[ %s ]", str);
 
+
+
 	for (i = ((SCREEN_X - len) / 2) + len; i < SCREEN_X; i++)
 		ptr += sprintf(ptr, "=");
 
@@ -124,14 +171,33 @@ static void header(int row, const char *str)
 }
 #endif
 
-static void redraw_module(void)
+static void redraw_module(struct coreinfo_cat *cat)
 {
-	if (ARRAY_SIZE(modules) == 0)
+	if (cat->count == 0)
 		return;
 
 	wclear(modwin);
-	modules[curwin]->redraw(modwin);
+	cat->modules[cat->cur]->redraw(modwin);
 	refresh();
+}
+
+static void handle_category_key(struct coreinfo_cat *cat, int key)
+{
+	if (key >= 'a' && key <= 'z') {
+		int index = key - 'a';
+
+		if (index < cat->count) {
+
+		cat->cur = index;
+			redraw_module(cat);
+			return;
+		}
+	}
+
+	if (cat->count && cat->modules[cat->cur]->handle) {
+		if (cat->modules[cat->cur]->handle(key))
+			redraw_module(cat);
+	}
 }
 
 static void loop(void)
@@ -141,9 +207,8 @@ static void loop(void)
 	center(0, "coreinfo v0.1");
 
 	print_menu();
-	if (ARRAY_SIZE(modules) != 0)
-		modules[curwin]->redraw(modwin);
-	refresh();
+	print_submenu(&categories[curwin]);
+	redraw_module(&categories[curwin]);
 
 	while (1) {
 		key = getch();
@@ -154,18 +219,21 @@ static void loop(void)
 		if (key >= KEY_F(1) && key <= KEY_F(9)) {
 			unsigned char ch = key - KEY_F(1);
 
-			if (ch <= ARRAY_SIZE(modules)) {
-				if (ch == ARRAY_SIZE(modules))
+			if (ch <= ARRAY_SIZE(categories)) {
+				if (ch == ARRAY_SIZE(categories))
 					continue;
+				if (categories[ch].count == 0)
+					continue;
+
 				curwin = ch;
-				redraw_module();
+				print_submenu(&categories[curwin]);
+				redraw_module(&categories[curwin]);
 				continue;
 			}
 		}
 
-		if (ARRAY_SIZE(modules) != 0 && modules[curwin]->handle)
-			if (modules[curwin]->handle(key))
-				redraw_module();
+
+		handle_category_key(&categories[curwin], key);
 	}
 }
 
@@ -182,7 +250,7 @@ int main(void)
 	init_pair(2, COLOR_BLACK, COLOR_WHITE);
 	init_pair(3, COLOR_WHITE, COLOR_WHITE);
 
-	modwin = newwin(23, 80, 1, 0);
+	modwin = newwin(22, 80, 1, 0);
 
 	wattrset(stdscr, COLOR_PAIR(1) | A_BOLD);
 	wattrset(modwin, COLOR_PAIR(2));
@@ -196,8 +264,11 @@ int main(void)
 
 	refresh();
 
-	for (i = 0; i < ARRAY_SIZE(modules); i++)
-		modules[i]->init();
+	for (i = 0; i < ARRAY_SIZE(categories); i++) {
+		for(j = 0; j < categories[i].count; j++)
+			categories[i].modules[j]->init();
+
+	}
 
 	loop();
 

@@ -21,9 +21,9 @@
  */
 
 #include "coreinfo.h"
-#include <arch/rdtsc.h>
 
 #ifdef CONFIG_MODULE_CPUINFO
+#include <arch/rdtsc.h>
 
 #define VENDOR_INTEL 0x756e6547
 #define VENDOR_AMD   0x68747541

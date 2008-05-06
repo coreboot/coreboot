@@ -25,7 +25,7 @@
 #define ASSEMBLY 1
 #define __ROMCC__
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+#define SERIAL_DEV PNP_DEV(0x4e, W83627HF_SP1)
 
 /* Used by raminit. */
 #define QRANK_DIMM_SUPPORT 1

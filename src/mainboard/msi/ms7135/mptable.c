@@ -163,6 +163,10 @@ void *smp_write_config_table(void *v)
 	PCI_INT(0, sbdn+10, 0, 22);
 
 
+	/* "AGR" slot */
+	PCI_INT(1, 0, 0, 16);
+	PCI_INT(1, 0, 1, 17);
+
 	/* legacy PCI */
 	PCI_INT(1, 7, 0, 17);
 	PCI_INT(1, 7, 1, 18);
@@ -184,8 +188,8 @@ void *smp_write_config_table(void *v)
 	PCI_INT(2, 0, 0, 19);
 	/* XXX guesses */
 	PCI_INT(2, 0, 1, 16);
-	PCI_INT(2, 9, 2, 17);
-	PCI_INT(2, 9, 3, 18);
+	PCI_INT(2, 0, 2, 17);
+	PCI_INT(2, 0, 3, 18);
 
 	/* PCI-E x16 port */  /* XXX fix me ? */
 	PCI_INT(3, 0, 0, 18);

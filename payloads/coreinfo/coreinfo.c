@@ -104,6 +104,22 @@ static void print_submenu(struct coreinfo_cat *cat)
 	mvprintw(22, 0, menu);
 }
 
+#ifdef CONFIG_SHOW_DATE_TIME
+static void print_time_and_date(void)
+{
+	struct tm tm;
+
+	while(nvram_updating())
+		mdelay(10);
+
+	rtc_read_clock(&tm);
+
+	mvprintw(23, 57, "%02d/%02d/%04d - %02d:%02d:%02d",
+		tm.tm_mon, tm.tm_mday, 1900+tm.tm_year, tm.tm_hour,
+		tm.tm_min, tm.tm_sec);
+}
+#endif
+
 static void print_menu(void)
 {
 	int i, j;
@@ -125,13 +141,7 @@ static void print_menu(void)
 	mvprintw(23, 0, menu);
 
 #ifdef CONFIG_SHOW_DATE_TIME
-	mvprintw(23, 59, "%02d/%02d/20%02d - %02d:%02d:%02d",
-		 bcd2dec(nvram_read(NVRAM_RTC_MONTH)),
-		 bcd2dec(nvram_read(NVRAM_RTC_DAY)),
-		 bcd2dec(nvram_read(NVRAM_RTC_YEAR)),
-		 bcd2dec(nvram_read(NVRAM_RTC_HOURS)),
-		 bcd2dec(nvram_read(NVRAM_RTC_MINUTES)),
-		 bcd2dec(nvram_read(NVRAM_RTC_SECONDS)));
+	print_time_and_date();
 #endif
 }
 
@@ -210,7 +220,14 @@ static void loop(void)
 	print_submenu(&categories[curwin]);
 	redraw_module(&categories[curwin]);
 
+	halfdelay(10);
+
 	while (1) {
+#ifdef CONFIG_SHOW_DATE_TIME
+		print_time_and_date();
+		refresh();
+#endif
+
 		key = getch();
 
 		if (key == ERR)

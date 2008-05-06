@@ -43,7 +43,7 @@ static void ide_init(struct device *dev)
 	// NOTE: Only 32-bit writes to the data buffer are allowed when PWB is set
 	ide_cfg = pci_read_config32(dev, IDE_CFG);
 	ide_cfg |= CHANEN | PWB;
-	pci_write_config8(dev, IDE_CFG, ide_cfg);
+	pci_write_config32(dev, IDE_CFG, ide_cfg);
 }
 
 static void ide_enable(struct device *dev)

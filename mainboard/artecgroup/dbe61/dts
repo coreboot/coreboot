@@ -105,5 +105,8 @@ end
 			com2_address = "0x3f8";
 			com2_irq = "4";
 		};
+		pci@15,2 {
+			/config/("southbridge/amd/cs5536/ide");
+		};
 	};
 };

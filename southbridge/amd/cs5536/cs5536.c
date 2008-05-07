@@ -590,6 +590,11 @@ static void ide_init(struct device *dev)
 {
 	u32 ide_cfg;
 
+	struct southbridge_amd_cs5536_ide_config *ide =
+	    (struct southbridge_amd_cs5536_ide_config *)dev->device_configuration;
+	if (!ide->enable_ide)
+		return;
+
 	printk(BIOS_DEBUG, "cs5536_ide: %s\n", __func__);
 	/* GPIO and IRQ setup are handled in the main chipset code. */
 
@@ -654,9 +659,6 @@ static void southbridge_init(struct device *dev)
 		hide_vpci(sb->unwanted_vpci[i]);
 	}
 
-	if (sb->enable_ide)
-		ide_init(dev);
-
 	cs5536_setup_power_button(sb);
 
 	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
@@ -686,5 +688,19 @@ struct device_operations cs5536_ops = {
 	.phase4_set_resources		= pci_dev_set_resources,
 	.phase5_enable_resources	= cs5536_pci_dev_enable_resources,
 	.phase6_init			= southbridge_init,
+};
+
+struct device_operations cs5536_ide = {
+	.id = {.type = DEVICE_ID_PCI,
+		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
+			      .device = PCI_DEVICE_ID_AMD_CS5536_B0_IDE}}},
+	.constructor		 = default_device_constructor,
+#warning FIXME: what has to go in phase3_scan?
+	.phase3_scan		 = 0,
+	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_dev_enable_resources,
+	.phase6_init		 = ide_init,
+	.ops_pci		 = &pci_dev_ops_pci,
 };
 

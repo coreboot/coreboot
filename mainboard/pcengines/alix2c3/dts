@@ -32,7 +32,6 @@
 		};
 		pci@15,0 {
 			/config/("southbridge/amd/cs5536/dts");
-			enable_ide = "1";
 			/* Interrupt enables for LPC bus.
 			 *  Each bit is an IRQ 0-15. */
 			lpc_serirq_enable = "0x000010da";
@@ -49,6 +48,10 @@
 			com1_irq = "4";
 			/* this board does not really have vga; disable it (pci device 00:01.1)  */
 			unwanted_vpci = < 80000900 0 >;
+		};
+		pci@15,2 {
+			/config/("southbridge/amd/cs5536/ide");
+			enable_ide = "1";
 		};
 	};
 };

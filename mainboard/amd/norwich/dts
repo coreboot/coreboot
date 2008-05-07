@@ -34,7 +34,6 @@
 		};
 		pci@15,0 {
 			/config/("southbridge/amd/cs5536/dts");
-			enable_ide = "1";
 			/* Interrupt enables for LPC bus.
 			 *  Each bit is an IRQ 0-15. */
 			lpc_serirq_enable = "0x00001002";
@@ -49,6 +48,10 @@
 			com1_enable = "1";
 			com1_address = "0x3f8";
 			com1_irq = "4";
+		};
+		pci@15,2 {
+			/config/("southbridge/amd/cs5536/ide");
+			enable_ide = "1";
 		};
 	};
 };

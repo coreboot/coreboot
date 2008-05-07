@@ -34,7 +34,6 @@
 		};
 		pci@15,0 {
 			/config/("southbridge/amd/cs5536/dts");
-			enable_ide = "1";
 			/* Interrupt enables for LPC bus.
 			 *  Each bit is an IRQ 0-15. */
 			lpc_serirq_enable = "0x000010da";
@@ -46,6 +45,10 @@
 			 * See virtual PIC spec. */
 			enable_gpio_int_route = "0x0D0C0700";
 			enable_USBP4_device = "1";
+		};
+		pci@15,2 {
+			/config/("southbridge/amd/cs5536/ide");
+			enable_ide = "1";
 		};
 		ioport@46 {
 			/config/("superio/winbond/w83627hf/dts");

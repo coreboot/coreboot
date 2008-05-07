@@ -36,9 +36,6 @@
 	/* 0:IDE 1:FLASH, if you are using NAND flash instead of IDE drive. */
 	enable_ide_nand_flash = "0";
 
-	/* IDE: enable CS5536 IDE. There may be a different IDE controller on board */
-	enable_ide = "0";
-
 	/* Enable USB Port 4 (0:host 1:device). */
 	enable_USBP4_device = "0";
 

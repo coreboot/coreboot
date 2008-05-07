@@ -111,10 +111,32 @@ static void set_i3100_gpio_use_sel(
 	device_t dev, struct resource *res, config_t *config)
 {
 	u32 gpio_use_sel, gpio_use_sel2;
+	int i;
 
-	gpio_use_sel  = 0x1b0ce7c3;
-	gpio_use_sel2 = 0x00000107;
-	outl(gpio_use_sel,  res->base + 0x00);
+	gpio_use_sel = inl(res->base + 0x00) | 0x0000c603;
+	gpio_use_sel2 = inl(res->base + 0x30) | 0x00000100;
+	for (i = 0; i < 64; i++) {
+		int val;
+		switch (config->gpio[i] & I3100_GPIO_USE_MASK) {
+		case I3100_GPIO_USE_AS_NATIVE:
+			val = 0;
+			break;
+		case I3100_GPIO_USE_AS_GPIO:
+			val = 1;
+			break;
+		default:
+			continue;
+		}
+		/* The caller is responsible for not playing with unimplemented bits */
+		if (i < 32) {
+			gpio_use_sel &= ~(1 << i);
+			gpio_use_sel |= (val << i);
+		} else {
+			gpio_use_sel2 &= ~(1 << (i - 32));
+			gpio_use_sel2 |= (val << (i - 32));
+		}
+	}
+	outl(gpio_use_sel, res->base + 0x00);
 	outl(gpio_use_sel2, res->base + 0x30);
 }
 
@@ -122,10 +144,32 @@ static void set_i3100_gpio_direction(
 	device_t dev, struct resource *res, config_t *config)
 {
 	u32 gpio_io_sel, gpio_io_sel2;
+	int i;
 
-	gpio_io_sel  = 0xed00ffff;
-	gpio_io_sel2 = 0x00000307;
-	outl(gpio_io_sel,  res->base + 0x04);
+	gpio_io_sel = inl(res->base + 0x04);
+	gpio_io_sel2 = inl(res->base + 0x34);
+	for (i = 0; i < 64; i++) {
+		int val;
+		switch (config->gpio[i] & I3100_GPIO_SEL_MASK) {
+		case I3100_GPIO_SEL_OUTPUT:
+			val = 0;
+			break;
+		case I3100_GPIO_SEL_INPUT:
+			val = 1;
+			break;
+		default:
+			continue;
+		}
+		/* The caller is responsible for not playing with unimplemented bits */
+		if (i < 32) {
+			gpio_io_sel &= ~(1 << i);
+			gpio_io_sel |= (val << i);
+		} else {
+			gpio_io_sel2 &= ~(1 << (i - 32));
+			gpio_io_sel2 |= (val << (i - 32));
+		}
+	}
+	outl(gpio_io_sel, res->base + 0x04);
 	outl(gpio_io_sel2, res->base + 0x34);
 }
 
@@ -134,22 +178,68 @@ static void set_i3100_gpio_level(
 {
 	u32 gpio_lvl, gpio_lvl2;
 	u32 gpio_blink;
+	int i;
 
-	gpio_lvl   = 0x00030000;
-	gpio_blink = 0x00000000;
-	gpio_lvl2  = 0x00000300;
-	outl(gpio_lvl,   res->base + 0x0c);
+	gpio_lvl = inl(res->base + 0x0c);
+	gpio_blink = inl(res->base + 0x18);
+	gpio_lvl2 = inl(res->base + 0x38);
+	for (i = 0; i < 64; i++) {
+		int val, blink;
+		switch (config->gpio[i] & I3100_GPIO_LVL_MASK) {
+		case I3100_GPIO_LVL_LOW:
+			val = 0;
+			blink = 0;
+			break;
+		case I3100_GPIO_LVL_HIGH:
+			val = 1;
+			blink = 0;
+			break;
+		case I3100_GPIO_LVL_BLINK:
+			val = 1;
+			blink = 1;
+			break;
+		default:
+			continue;
+		}
+		/* The caller is responsible for not playing with unimplemented bits */
+		if (i < 32) {
+			gpio_lvl &= ~(1 << i);
+			gpio_blink &= ~(1 << i);
+			gpio_lvl |= (val << i);
+			gpio_blink |= (blink << i);
+		} else {
+			gpio_lvl2 &= ~(1 << (i - 32));
+			gpio_lvl2 |= (val << (i - 32));
+		}
+	}
+	outl(gpio_lvl, res->base + 0x0c);
 	outl(gpio_blink, res->base + 0x18);
-	outl(gpio_lvl2,  res->base + 0x38);
+	outl(gpio_lvl2, res->base + 0x38);
 }
 
 static void set_i3100_gpio_inv(
 	device_t dev, struct resource *res, config_t *config)
 {
 	u32 gpio_inv;
+	int i;
 
-	gpio_inv   = 0x00006000;
-	outl(gpio_inv,   res->base + 0x2c);
+	gpio_inv = inl(res->base + 0x2c);
+	for (i = 0; i < 32; i++) {
+		int val;
+		switch (config->gpio[i] & I3100_GPIO_INV_MASK) {
+		case I3100_GPIO_INV_OFF:
+			val = 0;
+			break;
+		case I3100_GPIO_INV_ON:
+			val = 1;
+			break;
+		default:
+			continue;
+		}
+		gpio_inv &= ~(1 << i);
+		gpio_inv |= (val << i);
+	}
+	outl(gpio_inv, res->base + 0x2c);
 }
 
 static void i3100_pirq_init(device_t dev)

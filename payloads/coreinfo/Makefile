@@ -51,7 +51,7 @@ AS = $(LIBPAYLOAD_DIR)/bin/lpas
 INCLUDES = -Ibuild
 CFLAGS := -Wall -Werror -Os $(INCLUDES)
 OBJECTS = cpuinfo_module.o cpuid.S.o pci_module.o coreboot_module.o \
-	  nvram_module.o bootlog_module.o coreinfo.o
+	  nvram_module.o bootlog_module.o lar_module.o coreinfo.o
 OBJS    = $(patsubst %,$(obj)/%,$(OBJECTS))
 TARGET  = $(obj)/coreinfo.elf
 

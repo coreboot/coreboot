@@ -27,6 +27,7 @@ extern struct coreinfo_module pci_module;
 extern struct coreinfo_module coreboot_module;
 extern struct coreinfo_module nvram_module;
 extern struct coreinfo_module bootlog_module;
+extern struct coreinfo_module lar_module;
 
 struct coreinfo_module *system_modules[] = {
 #ifdef CONFIG_MODULE_CPUINFO
@@ -46,6 +47,9 @@ struct coreinfo_module *coreboot_modules[] = {
 #endif
 #ifdef CONFIG_MODULE_BOOTLOG
 	&bootlog_module,
+#endif
+#ifdef CONFIG_MODULE_LAR
+	&lar_module
 #endif
 };
 
@@ -90,7 +94,7 @@ static void print_submenu(struct coreinfo_cat *cat)
 	char menu[80];
 	char *ptr = menu;
 
-	wmove(stdscr, 22, 0);
+	wmove(stdscr, SCREEN_Y - 2, 0);
 
 	for (j = 0; j < SCREEN_X; j++)
 		waddch(stdscr, ' ');
@@ -101,7 +105,7 @@ static void print_submenu(struct coreinfo_cat *cat)
 	for (i = 0; i < cat->count; i++)
 		ptr += sprintf(ptr, "[%c: %s] ", 'A' + i, cat->modules[i]->name);
 
-	mvprintw(22, 0, menu);
+	mvprintw(SCREEN_Y - 2, 0, menu);
 }
 
 #ifdef CONFIG_SHOW_DATE_TIME
@@ -126,7 +130,7 @@ static void print_menu(void)
 	char menu[80];
 	char *ptr = menu;
 
-	wmove(stdscr, 23, 0);
+	wmove(stdscr, SCREEN_Y - 1, 0);
 
 	for (j = 0; j < SCREEN_X; j++)
 		waddch(stdscr, ' ');
@@ -267,12 +271,12 @@ int main(void)
 	init_pair(2, COLOR_BLACK, COLOR_WHITE);
 	init_pair(3, COLOR_WHITE, COLOR_WHITE);
 
-	modwin = newwin(22, 80, 1, 0);
+	modwin = newwin(SCREEN_Y-2, SCREEN_X, 1, 0);
 
 	wattrset(stdscr, COLOR_PAIR(1) | A_BOLD);
 	wattrset(modwin, COLOR_PAIR(2));
 
-	for (i = 0; i < 23; i++) {
+	for (i = 0; i < SCREEN_Y - 1; i++) {
 		wmove(modwin, i - 1, 0);
 
 		for (j = 0; j < SCREEN_X; j++)

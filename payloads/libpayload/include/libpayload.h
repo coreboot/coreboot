@@ -36,6 +36,7 @@
 #include <arch/io.h>
 #include <sysinfo.h>
 #include <stdarg.h>
+#include <lar.h>
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -206,6 +207,55 @@ struct timeval {
 };
 
 int gettimeofday(struct timeval *tv, void *tz);
+
+/* libc/lar.c */
+
+struct LAR {
+	void * start;
+	int cindex;
+	int count;
+	int alloc;
+	int eof;
+	void **headers;
+};
+
+struct larent {
+	u8 name[LAR_MAX_PATHLEN];
+};
+
+struct larstat {
+	u32 len;
+	u32 reallen;
+	u32 checksum;
+	u32 compchecksum;
+	u32 offset;
+	u32 compression;
+	u64 entry;
+	u64 loadaddress;
+};
+
+struct LFILE {
+	struct LAR *lar;
+	struct lar_header *header;
+	u32 size;
+	void *start;
+	u32 offset;
+};
+
+struct LAR *openlar(void *addr);
+int closelar(struct LAR *lar);
+struct larent *readlar(struct LAR *lar);
+void rewindlar(struct LAR *lar);
+int larstat(struct LAR *lar, const char *path, struct larstat *buf);
+struct LFILE * lfopen(struct LAR *lar, const char *filename);
+int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
+
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+
+int lfseek(struct LFILE *stream, long offset, int whence);
+int lfclose(struct LFILE *file);
 
 /* i386/coreboot.c */
 int get_coreboot_info(struct sysinfo_t *info);

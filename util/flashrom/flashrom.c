@@ -246,11 +246,12 @@ int main(int argc, char *argv[])
 	uint8_t *buf;
 	unsigned long size;
 	FILE *image;
-	struct flashchip *flash;
+	/* Probe for up to three flash chips. */
+	struct flashchip *flash, *flashes[3];
 	int opt;
 	int option_index = 0;
 	int read_it = 0, write_it = 0, erase_it = 0, verify_it = 0;
-	int ret = 0;
+	int ret = 0, i;
 
 	static struct option long_options[] = {
 		{"read", 0, 0, 'r'},
@@ -405,11 +406,26 @@ int main(int argc, char *argv[])
 
 	board_flash_enable(lb_vendor, lb_part);
 
-	if ((flash = probe_flash(flashchips)) == NULL) {
+	for (i = 0; i < ARRAY_SIZE(flashes); i++) {
+		flashes[i] = probe_flash(i ? flashes[i - 1] + 1 : flashchips);
+		if (!flashes[i])
+			for (i++; i < ARRAY_SIZE(flashes); i++)
+				flashes[i] = NULL;
+	}
+
+	if (flashes[1]) {
+		printf("Multiple flash chips were detected:");
+		for (i = 0; i < ARRAY_SIZE(flashes) && flashes[i]; i++)
+			printf(" %s", flashes[i]->name);
+		printf("\nPlease specify which chip to use with the -c <chipname> option.\n");
+		exit(1);
+	} else if (!flashes[0]) {
 		printf("No EEPROM/flash device found.\n");
 		// FIXME: flash writes stay enabled!
 		exit(1);
 	}
+
+	flash = flashes[0];
 
 	printf("Flash part is %s (%d KB).\n", flash->name, flash->total_size);
 	if (TEST_OK_MASK != (flash->tested & TEST_OK_MASK)) {

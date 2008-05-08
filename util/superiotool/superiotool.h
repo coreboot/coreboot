@@ -53,7 +53,7 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define MISC		-5		/* Needs special comment in output */
 #define MAXLDN		0x10		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
-#define MAXNUMIDX	70		/* Maximum number of indexes */
+#define MAXNUMIDX	170		/* Maximum number of indexes */
 #define IDXSIZE 	(MAXNUMIDX + 1)
 #define MAXNUMPORTS	(6 + 1)		/* Maximum number of Super I/O ports */
 

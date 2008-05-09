@@ -36,9 +36,9 @@
 			/config/("southbridge/amd/cs5536/dts");
 			/* Interrupt enables for LPC bus.
 			 *  Each bit is an IRQ 0-15. */
-			lpc_serirq_enable = "0x000010da";
+			lpc_serirq_enable = "0x0000105A";
 			/* LPC IRQ polarity. Each bit is an IRQ 0-15. */
-			lpc_serirq_polarity = "0x0000EF25";
+			lpc_serirq_polarity = "0x0000EFA5";
 			/* 0:continuous 1:quiet */
 			lpc_serirq_mode = "1";
 			/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none. 

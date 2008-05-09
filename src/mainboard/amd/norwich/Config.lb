@@ -139,7 +139,7 @@ chip northbridge/amd/lx
 			register "com1_enable" = "1"
 			register "com1_address" = "0x3F8"
 			register "com1_irq" = "4"
-			register "com2_enable" = "1"
+			register "com2_enable" = "0"
 			register "com2_address" = "0x2F8"
 			register "com2_irq" = "3"
 			register "unwanted_vpci[0]" = "0"	# End of list has a zero

@@ -26,7 +26,7 @@
 #define PIRQA 9
 #define PIRQB 10
 #define PIRQC 11
-#define PIRQD 12
+#define PIRQD 11
 
 /* Map */
 #define M_PIRQA (1 << PIRQA)	/* Bitmap of supported IRQs */

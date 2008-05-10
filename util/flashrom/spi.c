@@ -241,7 +241,7 @@ static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned in
 	return 0;
 }
 
-int generic_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
+int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
 	if (it8716f_flashport)
 		return it8716f_spi_command(it8716f_flashport, writecnt, readcnt, writearr, readarr);
@@ -249,30 +249,30 @@ int generic_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 	return 1;
 }
 
-static int generic_spi_rdid(unsigned char *readarr)
+static int spi_rdid(unsigned char *readarr)
 {
 	const unsigned char cmd[] = JEDEC_RDID;
 
-	if (generic_spi_command(JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
+	if (spi_command(JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
 		return 1;
 	printf_debug("RDID returned %02x %02x %02x.\n", readarr[0], readarr[1], readarr[2]);
 	return 0;
 }
 
-void generic_spi_write_enable()
+void spi_write_enable()
 {
 	const unsigned char cmd[] = JEDEC_WREN;
 
 	/* Send WREN (Write Enable) */
-	generic_spi_command(JEDEC_WREN_OUTSIZE, JEDEC_WREN_INSIZE, cmd, NULL);
+	spi_command(JEDEC_WREN_OUTSIZE, JEDEC_WREN_INSIZE, cmd, NULL);
 }
 
-void generic_spi_write_disable()
+void spi_write_disable()
 {
 	const unsigned char cmd[] = JEDEC_WRDI;
 
 	/* Send WRDI (Write Disable) */
-	generic_spi_command(JEDEC_WRDI_OUTSIZE, JEDEC_WRDI_INSIZE, cmd, NULL);
+	spi_command(JEDEC_WRDI_OUTSIZE, JEDEC_WRDI_INSIZE, cmd, NULL);
 }
 
 int probe_spi(struct flashchip *flash)
@@ -280,7 +280,7 @@ int probe_spi(struct flashchip *flash)
 	unsigned char readarr[3];
 	uint32_t manuf_id;
 	uint32_t model_id;
-	if (!generic_spi_rdid(readarr)) {
+	if (!spi_rdid(readarr)) {
 		/* Check if this is a continuation vendor ID */
 		if (readarr[0] == 0x7f) {
 			manuf_id = (readarr[0] << 8) | readarr[1];
@@ -308,13 +308,13 @@ int probe_spi(struct flashchip *flash)
 	return 0;
 }
 
-uint8_t generic_spi_read_status_register()
+uint8_t spi_read_status_register()
 {
 	const unsigned char cmd[] = JEDEC_RDSR;
 	unsigned char readarr[1];
 
 	/* Read Status Register */
-	generic_spi_command(JEDEC_RDSR_OUTSIZE, JEDEC_RDSR_INSIZE, cmd, readarr);
+	spi_command(JEDEC_RDSR_OUTSIZE, JEDEC_RDSR_INSIZE, cmd, readarr);
 	return readarr[0];
 }
 
@@ -376,7 +376,7 @@ void spi_prettyprint_status_register(struct flashchip *flash)
 {
 	uint8_t status;
 
-	status = generic_spi_read_status_register();
+	status = spi_read_status_register();
 	printf_debug("Chip status register is %02x\n", status);
 	switch (flash->manufacture_id) {
 	case ST_ID:
@@ -391,18 +391,18 @@ void spi_prettyprint_status_register(struct flashchip *flash)
 	}
 }
 	
-int generic_spi_chip_erase_c7(struct flashchip *flash)
+int spi_chip_erase_c7(struct flashchip *flash)
 {
 	const unsigned char cmd[] = JEDEC_CE_C7;
 	
 	spi_disable_blockprotect();
-	generic_spi_write_enable();
+	spi_write_enable();
 	/* Send CE (Chip Erase) */
-	generic_spi_command(JEDEC_CE_C7_OUTSIZE, JEDEC_CE_C7_INSIZE, cmd, NULL);
+	spi_command(JEDEC_CE_C7_OUTSIZE, JEDEC_CE_C7_INSIZE, cmd, NULL);
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 1-85 s, so wait in 1 s steps.
 	 */
-	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		sleep(1);
 	return 0;
 }
@@ -412,39 +412,39 @@ int generic_spi_chip_erase_c7(struct flashchip *flash)
  * 32k for SST
  * 4-32k non-uniform for EON
  */
-int generic_spi_block_erase_d8(const struct flashchip *flash, unsigned long addr)
+int spi_block_erase_d8(const struct flashchip *flash, unsigned long addr)
 {
 	unsigned char cmd[JEDEC_BE_D8_OUTSIZE] = JEDEC_BE_D8;
 
 	cmd[1] = (addr & 0x00ff0000) >> 16;
 	cmd[2] = (addr & 0x0000ff00) >> 8;
 	cmd[3] = (addr & 0x000000ff);
-	generic_spi_write_enable();
+	spi_write_enable();
 	/* Send BE (Block Erase) */
-	generic_spi_command(JEDEC_BE_D8_OUTSIZE, JEDEC_BE_D8_INSIZE, cmd, NULL);
+	spi_command(JEDEC_BE_D8_OUTSIZE, JEDEC_BE_D8_INSIZE, cmd, NULL);
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 100-4000 ms, so wait in 100 ms steps.
 	 */
-	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		usleep(100 * 1000);
 	return 0;
 }
 
 /* Sector size is usually 4k, though Macronix eliteflash has 64k */
-int generic_spi_sector_erase(const struct flashchip *flash, unsigned long addr)
+int spi_sector_erase(const struct flashchip *flash, unsigned long addr)
 {
 	unsigned char cmd[JEDEC_SE_OUTSIZE] = JEDEC_SE;
 	cmd[1] = (addr & 0x00ff0000) >> 16;
 	cmd[2] = (addr & 0x0000ff00) >> 8;
 	cmd[3] = (addr & 0x000000ff);
 
-	generic_spi_write_enable();
+	spi_write_enable();
 	/* Send SE (Sector Erase) */
-	generic_spi_command(JEDEC_SE_OUTSIZE, JEDEC_SE_INSIZE, cmd, NULL);
+	spi_command(JEDEC_SE_OUTSIZE, JEDEC_SE_INSIZE, cmd, NULL);
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 15-800 ms, so wait in 10 ms steps.
 	 */
-	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		usleep(10 * 1000);
 	return 0;
 }
@@ -453,7 +453,7 @@ int generic_spi_sector_erase(const struct flashchip *flash, unsigned long addr)
 void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 	int i;
 
-	generic_spi_write_enable();
+	spi_write_enable();
 	outb(0x06 , it8716f_flashport + 1);
 	outb(((2 + (fast_spi ? 1 : 0)) << 4), it8716f_flashport);
 	for (i = 0; i < 256; i++) {
@@ -463,11 +463,11 @@ void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 1-10 ms, so wait in 1 ms steps.
 	 */
-	while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		usleep(1000);
 }
 
-void generic_spi_page_program(int block, uint8_t *buf, uint8_t *bios)
+void spi_page_program(int block, uint8_t *buf, uint8_t *bios)
 {
 	if (it8716f_flashport)
 		it8716f_spi_page_program(block, buf, bios);
@@ -482,7 +482,7 @@ void spi_write_status_register(int status)
 	const unsigned char cmd[] = {JEDEC_WRSR, (unsigned char)status};
 
 	/* Send WRSR (Write Status Register) */
-	generic_spi_command(JEDEC_WRSR_OUTSIZE, JEDEC_WRSR_INSIZE, cmd, NULL);
+	spi_command(JEDEC_WRSR_OUTSIZE, JEDEC_WRSR_INSIZE, cmd, NULL);
 }
 
 void spi_byte_program(int address, uint8_t byte)
@@ -495,18 +495,18 @@ void spi_byte_program(int address, uint8_t byte)
 	};
 
 	/* Send Byte-Program */
-	generic_spi_command(JEDEC_BYTE_PROGRAM_OUTSIZE, JEDEC_BYTE_PROGRAM_INSIZE, cmd, NULL);
+	spi_command(JEDEC_BYTE_PROGRAM_OUTSIZE, JEDEC_BYTE_PROGRAM_INSIZE, cmd, NULL);
 }
 
 void spi_disable_blockprotect(void)
 {
 	uint8_t status;
 
-	status = generic_spi_read_status_register();
+	status = spi_read_status_register();
 	/* If there is block protection in effect, unprotect it first. */
 	if ((status & 0x3c) != 0) {
 		printf_debug("Some block protection in effect, disabling\n");
-		generic_spi_write_enable();
+		spi_write_enable();
 		spi_write_status_register(status & ~0x3c);
 	}
 }
@@ -523,9 +523,9 @@ int it8716f_over512k_spi_chip_write(struct flashchip *flash, uint8_t *buf)
 
 	spi_disable_blockprotect();
 	for (i = 0; i < total_size; i++) {
-		generic_spi_write_enable();
+		spi_write_enable();
 		spi_byte_program(i, buf[i]);
-		while (generic_spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 			myusec_delay(10);
 	}
 	/* resume normal ops... */
@@ -542,14 +542,14 @@ void spi_3byte_read(int address, uint8_t *bytes, int len)
 	};
 
 	/* Send Read */
-	generic_spi_command(JEDEC_READ_OUTSIZE, len, cmd, bytes);
+	spi_command(JEDEC_READ_OUTSIZE, len, cmd, bytes);
 }
 
 /*
  * IT8716F only allows maximum of 512 kb SPI mapped to LPC memory cycles
  * Need to read this big flash using firmware cycles 3 byte at a time.
  */
-int generic_spi_chip_read(struct flashchip *flash, uint8_t *buf)
+int spi_chip_read(struct flashchip *flash, uint8_t *buf)
 {
 	int total_size = 1024 * flash->total_size;
 	int i;
@@ -568,14 +568,14 @@ int generic_spi_chip_read(struct flashchip *flash, uint8_t *buf)
 	return 0;
 }
 
-int generic_spi_chip_write(struct flashchip *flash, uint8_t *buf) {
+int spi_chip_write(struct flashchip *flash, uint8_t *buf) {
 	int total_size = 1024 * flash->total_size;
 	int i;
 	if (total_size > 512 * 1024) {
 		it8716f_over512k_spi_chip_write(flash, buf);
 	} else {
 		for (i = 0; i < total_size / 256; i++) {
-			generic_spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
+			spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
 		}
 	}
 	return 0;

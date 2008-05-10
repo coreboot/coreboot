@@ -179,13 +179,13 @@ int it87xx_probe_spi_flash(const char *name)
    whereas the IT8716F splits commands internally into address and non-address
    commands with the address in inverse wire order. That's why the register
    ordering in case 4 and 5 may seem strange. */
-static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
+static int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
 	uint8_t busy, writeenc;
 	int i;
 
 	do {
-		busy = inb(port) & 0x80;
+		busy = inb(it8716f_flashport) & 0x80;
 	} while (busy);
 	if (readcnt > 3) {
 		printf("%s called with unsupported readcnt %i.\n",
@@ -194,27 +194,27 @@ static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned in
 	}
 	switch (writecnt) {
 	case 1:
-		outb(writearr[0], port + 1);
+		outb(writearr[0], it8716f_flashport + 1);
 		writeenc = 0x0;
 		break;
 	case 2:
-		outb(writearr[0], port + 1);
-		outb(writearr[1], port + 7);
+		outb(writearr[0], it8716f_flashport + 1);
+		outb(writearr[1], it8716f_flashport + 7);
 		writeenc = 0x1;
 		break;
 	case 4:
-		outb(writearr[0], port + 1);
-		outb(writearr[1], port + 4);
-		outb(writearr[2], port + 3);
-		outb(writearr[3], port + 2);
+		outb(writearr[0], it8716f_flashport + 1);
+		outb(writearr[1], it8716f_flashport + 4);
+		outb(writearr[2], it8716f_flashport + 3);
+		outb(writearr[3], it8716f_flashport + 2);
 		writeenc = 0x2;
 		break;
 	case 5:
-		outb(writearr[0], port + 1);
-		outb(writearr[1], port + 4);
-		outb(writearr[2], port + 3);
-		outb(writearr[3], port + 2);
-		outb(writearr[4], port + 7);
+		outb(writearr[0], it8716f_flashport + 1);
+		outb(writearr[1], it8716f_flashport + 4);
+		outb(writearr[2], it8716f_flashport + 3);
+		outb(writearr[3], it8716f_flashport + 2);
+		outb(writearr[4], it8716f_flashport + 7);
 		writeenc = 0x3;
 		break;
 	default:
@@ -226,15 +226,15 @@ static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned in
 	 * Note:
 	 * We can't use writecnt directly, but have to use a strange encoding.
 	 */ 
-	outb(((0x4 + (fast_spi ? 1 : 0)) << 4) | ((readcnt & 0x3) << 2) | (writeenc), port);
+	outb(((0x4 + (fast_spi ? 1 : 0)) << 4) | ((readcnt & 0x3) << 2) | (writeenc), it8716f_flashport);
 
 	if (readcnt > 0) {
 		do {
-			busy = inb(port) & 0x80;
+			busy = inb(it8716f_flashport) & 0x80;
 		} while (busy);
 
 		for (i = 0; i < readcnt; i++) {
-			readarr[i] = inb(port + 5 + i);
+			readarr[i] = inb(it8716f_flashport + 5 + i);
 		}
 	}
 
@@ -244,7 +244,7 @@ static int it8716f_spi_command(uint16_t port, unsigned int writecnt, unsigned in
 int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
 	if (it8716f_flashport)
-		return it8716f_spi_command(it8716f_flashport, writecnt, readcnt, writearr, readarr);
+		return it8716f_spi_command(writecnt, readcnt, writearr, readarr);
 	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
 	return 1;
 }

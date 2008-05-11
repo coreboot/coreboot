@@ -65,7 +65,7 @@ include $(src)/.config
 
 all: prepare $(TARGET)
 
-$(TARGET): $(OBJS)
+$(TARGET): $(src)/.config $(OBJS)
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -o $@ $(OBJS)
 	$(Q)printf "  STRIP   $(subst $(shell pwd)/,,$(@))\n"
@@ -85,7 +85,7 @@ prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
 
 clean:
-	$(Q)rm -rf build/util build/*.conf build/*.cmd build/*.elf build/*.o
+	$(Q)rm -rf build/*.elf build/*.o
 
 distclean: clean
 	$(Q)rm -rf build

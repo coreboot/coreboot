@@ -96,6 +96,7 @@ extern struct flashchip flashchips[];
 #define AM_29F016D		0xAD
 
 #define AMIC_ID			0x7F37	/* AMIC */
+#define AMIC_ID_NOPREFIX	0x37	/* AMIC */
 
 #define ASD_ID			0x25	/* ASD, not listed in JEP106W */
 #define ASD_AE49F2008		0x52
@@ -226,7 +227,10 @@ extern struct flashchip flashchips[];
 #define SST_39SF010		0xB5
 #define SST_39SF020		0xB6
 #define SST_39SF040		0xB7
+#define SST_39VF512		0xD4
+#define SST_39VF010		0xD5
 #define SST_39VF020		0xD6
+#define SST_39VF040		0xD7
 #define SST_49LF040B		0x50
 #define SST_49LF040		0x51
 #define SST_49LF020A		0x52

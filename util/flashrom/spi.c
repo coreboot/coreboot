@@ -32,47 +32,47 @@
 #define ITE_SUPERIO_PORT2	0x4e
 
 /* Read Electronic ID */
-#define JEDEC_RDID	{0x9f}
+#define JEDEC_RDID	0x9f
 #define JEDEC_RDID_OUTSIZE	0x01
 #define JEDEC_RDID_INSIZE	0x03
 
 /* Write Enable */
-#define JEDEC_WREN	{0x06}
+#define JEDEC_WREN	0x06
 #define JEDEC_WREN_OUTSIZE	0x01
 #define JEDEC_WREN_INSIZE	0x00
 
 /* Write Disable */
-#define JEDEC_WRDI	{0x04}
+#define JEDEC_WRDI	0x04
 #define JEDEC_WRDI_OUTSIZE	0x01
 #define JEDEC_WRDI_INSIZE	0x00
 
 /* Chip Erase 0x60 is supported by Macronix/SST chips. */
-#define JEDEC_CE_60	{0x60};
+#define JEDEC_CE_60	0x60
 #define JEDEC_CE_60_OUTSIZE	0x01
 #define JEDEC_CE_60_INSIZE	0x00
 
 /* Chip Erase 0xc7 is supported by ST/EON/Macronix chips. */
-#define JEDEC_CE_C7	{0xc7};
+#define JEDEC_CE_C7	0xc7
 #define JEDEC_CE_C7_OUTSIZE	0x01
 #define JEDEC_CE_C7_INSIZE	0x00
 
 /* Block Erase 0x52 is supported by SST chips. */
-#define JEDEC_BE_52	{0x52};
+#define JEDEC_BE_52	0x52
 #define JEDEC_BE_52_OUTSIZE	0x04
 #define JEDEC_BE_52_INSIZE	0x00
 
 /* Block Erase 0xd8 is supported by EON/Macronix chips. */
-#define JEDEC_BE_D8	{0xd8};
+#define JEDEC_BE_D8	0xd8
 #define JEDEC_BE_D8_OUTSIZE	0x04
 #define JEDEC_BE_D8_INSIZE	0x00
 
 /* Sector Erase 0x20 is supported by Macronix/SST chips. */
-#define JEDEC_SE	{0x20};
+#define JEDEC_SE	0x20
 #define JEDEC_SE_OUTSIZE	0x04
 #define JEDEC_SE_INSIZE	0x00
 
 /* Read Status Register */
-#define JEDEC_RDSR	{0x05};
+#define JEDEC_RDSR	0x05
 #define JEDEC_RDSR_OUTSIZE	0x01
 #define JEDEC_RDSR_INSIZE	0x01
 #define JEDEC_RDSR_BIT_WIP	(0x01 << 0)
@@ -251,7 +251,7 @@ int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char
 
 static int spi_rdid(unsigned char *readarr)
 {
-	const unsigned char cmd[] = JEDEC_RDID;
+	const unsigned char cmd[JEDEC_RDID_OUTSIZE] = {JEDEC_RDID};
 
 	if (spi_command(JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
 		return 1;
@@ -261,7 +261,7 @@ static int spi_rdid(unsigned char *readarr)
 
 void spi_write_enable()
 {
-	const unsigned char cmd[] = JEDEC_WREN;
+	const unsigned char cmd[JEDEC_WREN_OUTSIZE] = {JEDEC_WREN};
 
 	/* Send WREN (Write Enable) */
 	spi_command(JEDEC_WREN_OUTSIZE, JEDEC_WREN_INSIZE, cmd, NULL);
@@ -269,7 +269,7 @@ void spi_write_enable()
 
 void spi_write_disable()
 {
-	const unsigned char cmd[] = JEDEC_WRDI;
+	const unsigned char cmd[JEDEC_WRDI_OUTSIZE] = {JEDEC_WRDI};
 
 	/* Send WRDI (Write Disable) */
 	spi_command(JEDEC_WRDI_OUTSIZE, JEDEC_WRDI_INSIZE, cmd, NULL);
@@ -310,7 +310,7 @@ int probe_spi(struct flashchip *flash)
 
 uint8_t spi_read_status_register()
 {
-	const unsigned char cmd[] = JEDEC_RDSR;
+	const unsigned char cmd[JEDEC_RDSR_OUTSIZE] = {JEDEC_RDSR};
 	unsigned char readarr[1];
 
 	/* Read Status Register */
@@ -393,7 +393,7 @@ void spi_prettyprint_status_register(struct flashchip *flash)
 	
 int spi_chip_erase_c7(struct flashchip *flash)
 {
-	const unsigned char cmd[] = JEDEC_CE_C7;
+	const unsigned char cmd[JEDEC_CE_C7_OUTSIZE] = {JEDEC_CE_C7};
 	
 	spi_disable_blockprotect();
 	spi_write_enable();
@@ -414,7 +414,7 @@ int spi_chip_erase_c7(struct flashchip *flash)
  */
 int spi_block_erase_d8(const struct flashchip *flash, unsigned long addr)
 {
-	unsigned char cmd[JEDEC_BE_D8_OUTSIZE] = JEDEC_BE_D8;
+	unsigned char cmd[JEDEC_BE_D8_OUTSIZE] = {JEDEC_BE_D8};
 
 	cmd[1] = (addr & 0x00ff0000) >> 16;
 	cmd[2] = (addr & 0x0000ff00) >> 8;
@@ -433,7 +433,7 @@ int spi_block_erase_d8(const struct flashchip *flash, unsigned long addr)
 /* Sector size is usually 4k, though Macronix eliteflash has 64k */
 int spi_sector_erase(const struct flashchip *flash, unsigned long addr)
 {
-	unsigned char cmd[JEDEC_SE_OUTSIZE] = JEDEC_SE;
+	unsigned char cmd[JEDEC_SE_OUTSIZE] = {JEDEC_SE};
 	cmd[1] = (addr & 0x00ff0000) >> 16;
 	cmd[2] = (addr & 0x0000ff00) >> 8;
 	cmd[3] = (addr & 0x000000ff);
@@ -479,7 +479,7 @@ void spi_page_program(int block, uint8_t *buf, uint8_t *bios)
  */
 void spi_write_status_register(int status)
 {
-	const unsigned char cmd[] = {JEDEC_WRSR, (unsigned char)status};
+	const unsigned char cmd[JEDEC_WRSR_OUTSIZE] = {JEDEC_WRSR, (unsigned char)status};
 
 	/* Send WRSR (Write Status Register) */
 	spi_command(JEDEC_WRSR_OUTSIZE, JEDEC_WRSR_INSIZE, cmd, NULL);

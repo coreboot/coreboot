@@ -360,6 +360,11 @@ void spi_write_disable();
 int spi_chip_erase_c7(struct flashchip *flash);
 int spi_chip_write(struct flashchip *flash, uint8_t *buf);
 int spi_chip_read(struct flashchip *flash, uint8_t *buf);
+uint8_t spi_read_status_register();
+void spi_disable_blockprotect(void);
+void spi_byte_program(int address, uint8_t byte);
+void spi_page_program(int block, uint8_t *buf, uint8_t *bios);
+void spi_nbyte_read(int address, uint8_t *bytes, int len);
 
 /* 82802ab.c */
 int probe_82802ab(struct flashchip *flash);
@@ -370,6 +375,13 @@ int write_82802ab(struct flashchip *flash, uint8_t *buf);
 int probe_29f040b(struct flashchip *flash);
 int erase_29f040b(struct flashchip *flash);
 int write_29f040b(struct flashchip *flash, uint8_t *buf);
+
+/* it87spi.c */
+extern uint16_t it8716f_flashport;
+int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
+int it8716f_spi_chip_read(struct flashchip *flash, uint8_t *buf);
+int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf);
+void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios);
 
 /* jedec.c */
 void toggle_ready_jedec(volatile uint8_t *dst);

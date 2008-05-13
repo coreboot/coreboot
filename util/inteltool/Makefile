@@ -1,33 +1,38 @@
 #
-# Makefile for ich_gpio utility
+# Makefile for inteltool utility
+#
+# Copyright (C) 2008 by coresystems GmbH 
+# written by Stefan Reinauer <stepan@coresystems.de> 
 # 
-# (C) 2008 by coresystems GmbH
-# written by Stefan Reinauer <stepan@coresystems.de>
-# Copyright (C) 2008 Joseph Smith <joe@smittys.pointclark.net>
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-PROGRAM = ich_gpio
+PROGRAM = inteltool
 
-CC = gcc
-STRIP	= strip
+CC      = gcc
 INSTALL = /usr/bin/install
-PREFIX = /usr/local
-CFLAGS = -O2 -g -Wall
-OS_ARCH = $(shell uname)
-ifeq ($(OS_ARCH), SunOS)
-LDFLAGS = -lpci -lz
-else
-LDFLAGS = -lpci -lz -static 
-STRIP_ARGS = -s
-endif
+PREFIX  = /usr/local
+CFLAGS  = -O2 -g -Wall -W
+LDFLAGS = -lpci -lz 
 
-OBJS = ich_gpio.o
+OBJS = inteltool.o
 
 all: pciutils dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
-	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:
 	rm -f *.o *~

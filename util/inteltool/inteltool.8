@@ -1,0 +1,66 @@
+.TH INTELTOOL 8 "May 12, 2008"
+.SH NAME
+inteltool \- a tool for dumping Intel(R) CPU / chipset configuration parameters
+.SH SYNOPSIS
+.B inteltool \fR[\fB\-vh?grpmedPM\fR]
+.SH DESCRIPTION
+.B inteltool
+is a handy little tool for dumping the configuration space of Intel(R)
+CPUs, northbridges and southbridges.
+
+This tool has been developed for the coreboot project (see
+.B http://www.coreboot.org/
+for details on coreboot).
+.SH OPTIONS
+.TP
+.B "\-h, \-\-help"
+Show a help text and exit.
+.TP
+.B "\-v, \-\-version"
+Show version information and exit.
+.TP
+.B "\-a, \-\-all"
+Dump all known I/O Controller Hub (ICH) southbridge, Intel(R) northbridge and Intel(R) Core CPU MSRs.
+.TP
+.B "\-g, \-\-gpio"
+Dump I/O Controller Hub (ICH) southbridge GPIO registers
+.TP
+.B "\-r, \-\-rcba"
+Dump I/O Controller Hub (ICH) southbridge RCBA registers
+.TP
+.B "\-p, \-\-pmbase"
+Dump I/O Controller Hub (ICH) southbridge pmbase registers
+.TP
+.B "\-m, \-\-mchbar"
+Dump Intel(R) northbridge MCHBAR registers
+.TP
+.B "\-e, \-\-epbar"
+Dump Intel(R) northbridge EPBAR registers
+.TP
+.B "\-d, \-\-dmibar"
+Dump Intel(R) northbridge DMIBAR registers
+.TP
+.B "\-P, \-\-pciexbar"
+Dump Intel(R) northbridge PCIEXBAR registers
+.TP
+.B "\-M, \-\-msrs"
+Dump Intel(R) CPU MSRs
+.SH BUGS
+Please report any bugs at
+.BR http://tracker.coreboot.org/trac/coreboot/newticket ","
+or on the coreboot mailing list
+.RB "(" http://coreboot.org/Mailinglist ")."
+.SH LICENCE
+.B inteltool
+is covered by the GNU General Public License (GPL), version 2 or later.
+.SH COPYRIGHT
+(C) 2008 coresystems GmbH
+.SH AUTHORS
+Stefan Reinauer <stepan@coresystems.de>
+.PP
+This manual page was written by Stefan Reinauer <stepan@coresystems.de>.
+It is licensed under the terms of the GNU GPL (version 2).
+
+Intel(R) is a registered trademark of Intel Corporation. Other product and/or company names mentioned herein may be trademarks or registered trademarks of their respective owners.
+
+

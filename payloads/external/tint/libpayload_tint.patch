@@ -15,7 +15,7 @@ diff -Naur tint-0.03b.orig/config.h tint-0.03b/config.h
 +#define random(x) rand(x)
 +#define srandom(x) srand(x)
 +#define curs_set(x)
-+typedef int time_t;
++
 +
  /* Score file */
 +#if 0

@@ -577,6 +577,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x8086, 0x24c0, "Intel ICH4/ICH4-L",	enable_flash_ich_4e},
 	{0x8086, 0x24cc, "Intel ICH4-M",	enable_flash_ich_4e},
 	{0x8086, 0x24d0, "Intel ICH5/ICH5R",	enable_flash_ich_4e},
+	{0x8086, 0x25a1, "Intel 6300ESB",	enable_flash_ich_4e},
 	{0x8086, 0x2640, "Intel ICH6/ICH6R",	enable_flash_ich_dc},
 	{0x8086, 0x2641, "Intel ICH6-M",	enable_flash_ich_dc},
 	{0x8086, 0x27b0, "Intel ICH7DH",	enable_flash_ich_dc_spi},

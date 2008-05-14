@@ -136,11 +136,11 @@ struct flashchip flashchips[] = {
 	{"Winbond",	"W39V080FA",		WINBOND_ID,	W_39V080FA,		1024,	64*1024,	TEST_UNTESTED,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
 	{"Winbond",	"W39V080FA (dual mode)",WINBOND_ID,	W_39V080FA_DM,		512,	64*1024,	TEST_UNTESTED,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
 
-	{"EON",		"unknown SPI chip",	EON_ID_NOPREFIX,GENERIC_DEVICE_ID,	0,	0,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
-	{"Macronix",	"unknown SPI chip",	MX_ID,		GENERIC_DEVICE_ID,	0,	0,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
-	{"PMC",		"unknown SPI chip",	PMC_ID,		GENERIC_DEVICE_ID,	0,	0,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
-	{"SST",		"unknown SPI chip",	SST_ID,		GENERIC_DEVICE_ID,	0,	0,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
-	{"ST",		"unknown SPI chip",	ST_ID,		GENERIC_DEVICE_ID,	0,	0,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
+	{"EON",		"unknown EON SPI chip",	EON_ID_NOPREFIX,GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
+	{"Macronix",	"unknown Macronix SPI chip",	MX_ID,	GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
+	{"PMC",		"unknown PMC SPI chip",	PMC_ID,		GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
+	{"SST",		"unknown SST SPI chip",	SST_ID,		GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
+	{"ST",		"unknown ST SPI chip",	ST_ID,		GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi,		NULL,				NULL},
 
 	{NULL,}
 };

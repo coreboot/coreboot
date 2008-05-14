@@ -126,14 +126,14 @@ void video_console_putchar(unsigned int ch)
 	case '\t':
 		while(cursorx % 8 && cursorx < VIDEO_COLS) {
 			if (console)
-				console->putc(cursorx, cursory, (ch & 0xFF00) | ' ');
+				console->putc(cursory, cursorx, (ch & 0xFF00) | ' ');
 
 			cursorx++;
 		}
 		break;
 	default:
 		if (console)
-			console->putc(cursorx++, cursory, ch);
+			console->putc(cursory, cursorx++, ch);
 		break;
 	}
 

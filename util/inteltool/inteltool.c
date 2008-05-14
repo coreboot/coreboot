@@ -39,7 +39,24 @@
 #define PCI_DEVICE_ID_INTEL_ICH4	0x24c0
 #define PCI_DEVICE_ID_INTEL_ICH4M	0x24cc
 #define PCI_DEVICE_ID_INTEL_ICH7	0x27b8
+#define PCI_DEVICE_ID_INTEL_ICH7MDH	0x27bd
 #define PCI_DEVICE_ID_INTEL_82945GM	0x27a0
+
+static const struct {
+	uint16_t vendor_id, device_id;
+	char * name;
+} supported_chips_list[] = {
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945GM, "i945GM" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7MDH, "ICH7-M DH" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7, "ICH7" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4M, "ICH4-M" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4, "ICH4" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH0, "ICH0" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
+};
+
+
+
 
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
@@ -117,6 +134,7 @@ int print_gpios(struct pci_dev *sb)
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH7:
+	case PCI_DEVICE_ID_INTEL_ICH7MDH:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich7_gpio_registers;
 		size = ARRAY_SIZE(ich7_gpio_registers);
@@ -134,7 +152,7 @@ int print_gpios(struct pci_dev *sb)
 		size = ARRAY_SIZE(ich0_gpio_registers);
 		break;
 	case 0x1234: // Dummy for non-existent functionality
-		printf("Error: This southbridge does not have GPIOBASE.\n");
+		printf("This southbridge does not have GPIOBASE.\n");
 		return 1;
 	default:
 		printf("Error: Dumping GPIOs on this southbridge is not (yet) supported.\n");
@@ -179,13 +197,14 @@ int print_rcba(struct pci_dev *sb)
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH7:
+	case PCI_DEVICE_ID_INTEL_ICH7MDH:
 		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;  
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH:
 	case PCI_DEVICE_ID_INTEL_ICH0:
 	case PCI_DEVICE_ID_INTEL_ICH4:
 	case PCI_DEVICE_ID_INTEL_ICH4M:
-		printf("Error: This southbridge does not have RCBA.\n");
+		printf("This southbridge does not have RCBA.\n");
 		return 1;
 	default:
 		printf("Error: Dumping RCBA on this southbridge is not (yet) supported.\n");
@@ -220,10 +239,11 @@ int print_pmbase(struct pci_dev *sb)
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH7:
+	case PCI_DEVICE_ID_INTEL_ICH7MDH:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc; 
 		break;
 	case 0x1234: // Dummy for non-existent functionality
-		printf("Error: This southbridge does not have PMBASE.\n");
+		printf("This southbridge does not have PMBASE.\n");
 		return 1;
 	default:
 		printf("Error: Dumping PMBASE on this southbridge is not (yet) supported.\n");
@@ -256,7 +276,7 @@ int print_mchbar(struct pci_dev *nb)
 		mchbar_phys = pci_read_long(nb, 0x44) & 0xfffffffe;  
 		break;
 	case 0x1234: // Dummy for non-existent functionality
-		printf("Error: This northbrigde does not have MCHBAR.\n");
+		printf("This northbrigde does not have MCHBAR.\n");
 		return 1;
 	default:
 		printf("Error: Dumping MCHBAR on this northbridge is not (yet) supported.\n");
@@ -298,7 +318,7 @@ int print_epbar(struct pci_dev *nb)
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe; 
 		break;
 	case 0x1234: // Dummy for non-existent functionality
-		printf("Error: This northbrigde does not have EPBAR.\n");
+		printf("This northbrigde does not have EPBAR.\n");
 		return 1;
 	default:
 		printf("Error: Dumping EPBAR on this northbridge is not (yet) supported.\n");
@@ -340,7 +360,7 @@ int print_dmibar(struct pci_dev *nb)
 		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe; 
 		break;
 	case 0x1234: // Dummy for non-existent functionality
-		printf("Error: This northbrigde does not have DMIBAR.\n");
+		printf("This northbrigde does not have DMIBAR.\n");
 		return 1;
 	default:
 		printf("Error: Dumping DMIBAR on this northbridge is not (yet) supported.\n");
@@ -690,18 +710,6 @@ int main(int argc, char *argv[])
 		{"msrs", 0, 0, 'M'},
 		{"all", 0, 0, 'a'},
 		{0, 0, 0, 0}
-	};
-
-	struct {
-		uint16_t vendor_id, device_id;
-		char * name;
-	} supported_chips_list[] = {
-		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945GM, "i945" },
-		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7, "ICH7" },
-		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4M, "ICH4-M" },
-		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4, "ICH4" },
-		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH0, "ICH0" },
-		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
 	};
 
 	while ((opt = getopt_long(argc, argv, "vh?grpmedPMa",

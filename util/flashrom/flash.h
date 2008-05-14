@@ -396,6 +396,7 @@ int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf);
 void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios);
 
 /* jedec.c */
+uint8_t oddparity(uint8_t val);
 void toggle_ready_jedec(volatile uint8_t *dst);
 void data_polling_jedec(volatile uint8_t *dst, uint8_t data);
 void unprotect_jedec(volatile uint8_t *bios);

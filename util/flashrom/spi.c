@@ -71,8 +71,12 @@ int probe_spi(struct flashchip *flash)
 	uint32_t manuf_id;
 	uint32_t model_id;
 	if (!spi_rdid(readarr)) {
+		if (!oddparity(readarr[0]))
+			printf_debug("RDID byte 0 parity violation.\n");
 		/* Check if this is a continuation vendor ID */
 		if (readarr[0] == 0x7f) {
+			if (!oddparity(readarr[1]))
+				printf_debug("RDID byte 1 parity violation.\n");
 			manuf_id = (readarr[0] << 8) | readarr[1];
 			model_id = readarr[2];
 		} else {

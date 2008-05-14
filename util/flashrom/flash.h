@@ -66,7 +66,7 @@ struct flashchip {
 #define TEST_OK_READ	(1<<1)
 #define TEST_OK_ERASE	(1<<2)
 #define TEST_OK_WRITE	(1<<3)
-#define TEST_OK_PREW	(TEST_OK_PROBE|TEST_OK_READ|TEST_OK_ERASE|TEST_OK_WRITE)	
+#define TEST_OK_PREW	(TEST_OK_PROBE|TEST_OK_READ|TEST_OK_ERASE|TEST_OK_WRITE)
 #define TEST_OK_MASK	0x0f
 
 #define TEST_BAD_PROBE	(1<<4)
@@ -103,6 +103,18 @@ extern struct flashchip flashchips[];
 #define ASD_AE49F2008		0x52
 
 #define ATMEL_ID		0x1F	/* Atmel */
+#define AT_25DF021		0x4300
+#define AT_25DF041A		0x4401
+#define AT_25DF081		0x4502
+#define AT_25DF161		0x4602
+#define AT_25DF321		0x4700	/* also 26DF321 */
+#define AT_25DF321A		0x4701
+#define AT_25DF641		0x4800
+#define AT_26DF041		0x4400
+#define AT_26DF081		0x4500	/* guessed, no datasheet available */
+#define AT_26DF081A		0x4501
+#define AT_26DF161		0x4600
+#define AT_26DF161A		0x4601
 #define AT_29C040A		0xA4
 #define AT_29C020		0xDA
 #define AT_49F002N		0x07	/* for AT49F002(N)  */

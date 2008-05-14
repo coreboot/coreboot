@@ -646,7 +646,7 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?grpmedPM]\n", name);
+	printf("usage: %s [-vh?grpmedPMa]\n", name);
 	printf("\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
@@ -658,6 +658,7 @@ void print_usage(const char *name)
 	     "   -d | --dmibar:                    dump northbridge DMIBAR registers\n"
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
+	     "   -a | --all:                       dump all known registers\n"
              "\n");
 	exit(1);
 }
@@ -703,7 +704,7 @@ int main(int argc, char *argv[])
 		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?gmrpedPca",
+	while ((opt = getopt_long(argc, argv, "vh?grpmedPMa",
                                  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':

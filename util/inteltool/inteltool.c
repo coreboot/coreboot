@@ -34,6 +34,10 @@
 
 /* Tested Chipsets: */
 #define PCI_VENDOR_ID_INTEL		0x8086
+#define PCI_DEVICE_ID_INTEL_ICH		0x2410
+#define PCI_DEVICE_ID_INTEL_ICH0	0x2420
+#define PCI_DEVICE_ID_INTEL_ICH4	0x24c0
+#define PCI_DEVICE_ID_INTEL_ICH4M	0x24cc
 #define PCI_DEVICE_ID_INTEL_ICH7	0x27b8
 #define PCI_DEVICE_ID_INTEL_82945GM	0x27a0
 
@@ -45,35 +49,89 @@ int fd_msr;
 typedef struct { uint32_t hi, lo; } msr_t;
 typedef struct { uint16_t addr; int size; char *name; } io_register_t;
 
+
+static const io_register_t ich0_gpio_registers[] =  {
+	{ 0x00, 4, "GPIO_USE_SEL" },
+	{ 0x04, 4, "GP_IO_SEL" },
+	{ 0x08, 4, "RESERVED" },
+	{ 0x0c, 4, "GP_LVL" },
+	{ 0x10, 4, "RESERVED" },
+	{ 0x14, 4, "GPO_TTL" },
+	{ 0x18, 4, "GPO_BLINK" },
+	{ 0x1c, 4, "RESERVED" },
+	{ 0x20, 4, "RESERVED" },
+	{ 0x24, 4, "RESERVED" },
+	{ 0x28, 4, "RESERVED" },
+	{ 0x2c, 4, "GPI_INV" },
+	{ 0x30, 4, "RESERVED" },
+	{ 0x34, 4, "RESERVED" },
+	{ 0x38, 4, "RESERVED" },
+	{ 0x3C, 4, "RESERVED" }
+};
+
+static const io_register_t ich4_gpio_registers[] =  {
+	{ 0x00, 4, "GPIO_USE_SEL" },
+	{ 0x04, 4, "GP_IO_SEL" },
+	{ 0x08, 4, "RESERVED" },
+	{ 0x0c, 4, "GP_LVL" },
+	{ 0x10, 4, "RESERVED" },
+	{ 0x14, 4, "GPO_TTL" },
+	{ 0x18, 4, "GPO_BLINK" },
+	{ 0x1c, 4, "RESERVED" },
+	{ 0x20, 4, "RESERVED" },
+	{ 0x24, 4, "RESERVED" },
+	{ 0x28, 4, "RESERVED" },
+	{ 0x2c, 4, "GPI_INV" },
+	{ 0x30, 4, "GPIO_USE_SEL2" },
+	{ 0x34, 4, "GP_IO_SEL2" },
+	{ 0x38, 4, "GP_LVL2" },
+	{ 0x3C, 4, "RESERVED" }
+};
+
+static const io_register_t ich7_gpio_registers[] =  {
+	{ 0x00, 4, "GPIO_USE_SEL" },
+	{ 0x04, 4, "GP_IO_SEL" },
+	{ 0x08, 4, "RESERVED" },
+	{ 0x0c, 4, "GP_LVL" },
+	{ 0x10, 4, "RESERVED" },
+	{ 0x14, 4, "RESERVED" },
+	{ 0x18, 4, "GPO_BLINK" },
+	{ 0x1c, 4, "RESERVED" },
+	{ 0x20, 4, "RESERVED" },
+	{ 0x24, 4, "RESERVED" },
+	{ 0x28, 4, "RESERVED" },
+	{ 0x2c, 4, "GPI_INV" },
+	{ 0x30, 4, "GPIO_USE_SEL2" },
+	{ 0x34, 4, "GP_IO_SEL2" },
+	{ 0x38, 4, "GP_LVL2" },
+	{ 0x3C, 4, "RESERVED" }
+};
+
 int print_gpios(struct pci_dev *sb)
 {
-	int i;
+	int i, size;
 	uint16_t gpiobase;
-
-	io_register_t ich7_gpio_registers[] =  {
-		{ 0x00, 4, "GPIO_USE_SEL" },
-		{ 0x04, 4, "GP_IO_SEL" },
-		{ 0x08, 4, "RESERVED" },
-		{ 0x0c, 4, "GP_LVL" },
-		{ 0x10, 4, "RESERVED" },
-		{ 0x14, 4, "RESERVED" },
-		{ 0x18, 4, "GPO_BLINK" },
-		{ 0x1c, 4, "RESERVED" },
-		{ 0x20, 4, "RESERVED" },
-		{ 0x24, 4, "RESERVED" },
-		{ 0x28, 4, "RESERVED" },
-		{ 0x2c, 4, "GPI_INV" },
-		{ 0x30, 4, "GPIO_USE_SEL2" },
-		{ 0x34, 4, "GP_IO_SEL2" },
-		{ 0x38, 4, "GP_LVL2" },
-		{ 0x3C, 4, "RESERVED" }
-	};
+	const io_register_t *gpio_registers;
 
 	printf("\n============= GPIOS =============\n\n");
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH7:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = ich7_gpio_registers;
+		size = ARRAY_SIZE(ich7_gpio_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_ICH4:
+	case PCI_DEVICE_ID_INTEL_ICH4M:
+		gpiobase = pci_read_word(sb, 0x58) & 0xfffc;
+		gpio_registers = ich4_gpio_registers;
+		size = ARRAY_SIZE(ich4_gpio_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_ICH:
+	case PCI_DEVICE_ID_INTEL_ICH0:
+		gpiobase = pci_read_word(sb, 0x58) & 0xfffc;
+		gpio_registers = ich0_gpio_registers;
+		size = ARRAY_SIZE(ich0_gpio_registers);
 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("Error: This southbridge does not have GPIOBASE.\n");
@@ -85,25 +143,25 @@ int print_gpios(struct pci_dev *sb)
 
 	printf("GPIOBASE = 0x%04x (IO)\n\n", gpiobase);
 
-	for (i=0; i<ARRAY_SIZE(ich7_gpio_registers); i++) {
-		switch (ich7_gpio_registers[i].size) {
+	for (i=0; i<size; i++) {
+		switch (gpio_registers[i].size) {
 		case 4:
 			printf("gpiobase+0x%04x: 0x%08x (%s)\n", 
-				ich7_gpio_registers[i].addr,
-				inl(gpiobase+ich7_gpio_registers[i].addr),
-				ich7_gpio_registers[i].name);
+				gpio_registers[i].addr,
+				inl(gpiobase+gpio_registers[i].addr),
+				gpio_registers[i].name);
 			break;
 		case 2:
 			printf("gpiobase+0x%04x: 0x%04x     (%s)\n", 
-				ich7_gpio_registers[i].addr,
-				inw(gpiobase+ich7_gpio_registers[i].addr),
-				ich7_gpio_registers[i].name);
+				gpio_registers[i].addr,
+				inw(gpiobase+gpio_registers[i].addr),
+				gpio_registers[i].name);
 			break;
 		case 1:
 			printf("gpiobase+0x%04x: 0x%02x       (%s)\n", 
-				ich7_gpio_registers[i].addr,
-				inb(gpiobase+ich7_gpio_registers[i].addr),
-				ich7_gpio_registers[i].name);
+				gpio_registers[i].addr,
+				inb(gpiobase+gpio_registers[i].addr),
+				gpio_registers[i].name);
 			break;
 		}
 	}
@@ -123,7 +181,10 @@ int print_rcba(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH7:
 		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;  
 		break;
-	case 0x1234: // Dummy for non-existent functionality
+	case PCI_DEVICE_ID_INTEL_ICH:
+	case PCI_DEVICE_ID_INTEL_ICH0:
+	case PCI_DEVICE_ID_INTEL_ICH4:
+	case PCI_DEVICE_ID_INTEL_ICH4M:
 		printf("Error: This southbridge does not have RCBA.\n");
 		return 1;
 	default:
@@ -635,7 +696,11 @@ int main(int argc, char *argv[])
 		char * name;
 	} supported_chips_list[] = {
 		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945GM, "i945" },
-		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7, "ICH7" }
+		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7, "ICH7" },
+		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4M, "ICH4-M" },
+		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4, "ICH4" },
+		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH0, "ICH0" },
+		{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
 	};
 
 	while ((opt = getopt_long(argc, argv, "vh?gmrpedPca",

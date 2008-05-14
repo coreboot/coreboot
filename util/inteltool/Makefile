@@ -39,7 +39,7 @@ clean:
 
 distclean: clean
 	rm -f $(PROGRAM) .dependencies
-	
+
 dep:
 	@$(CC) -MM *.c > .dependencies
 

@@ -32,7 +32,7 @@
 
 #define INTELTOOL_VERSION "1.0"
 
-/* Tested Chipsets: */
+/* Tested chipsets: */
 #define PCI_VENDOR_ID_INTEL		0x8086
 #define PCI_DEVICE_ID_INTEL_ICH		0x2410
 #define PCI_DEVICE_ID_INTEL_ICH0	0x2420
@@ -46,7 +46,7 @@
 
 static const struct {
 	uint16_t vendor_id, device_id;
-	char * name;
+	char *name;
 } supported_chips_list[] = {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945GM, "i945GM" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7MDH, "ICH7-M DH" },
@@ -59,9 +59,6 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
 };
 
-
-
-
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
 int fd_mem;
@@ -70,8 +67,7 @@ int fd_msr;
 typedef struct { uint32_t hi, lo; } msr_t;
 typedef struct { uint16_t addr; int size; char *name; } io_register_t;
 
-
-static const io_register_t ich0_gpio_registers[] =  {
+static const io_register_t ich0_gpio_registers[] = {
 	{ 0x00, 4, "GPIO_USE_SEL" },
 	{ 0x04, 4, "GP_IO_SEL" },
 	{ 0x08, 4, "RESERVED" },
@@ -90,7 +86,7 @@ static const io_register_t ich0_gpio_registers[] =  {
 	{ 0x3C, 4, "RESERVED" }
 };
 
-static const io_register_t ich4_gpio_registers[] =  {
+static const io_register_t ich4_gpio_registers[] = {
 	{ 0x00, 4, "GPIO_USE_SEL" },
 	{ 0x04, 4, "GP_IO_SEL" },
 	{ 0x08, 4, "RESERVED" },
@@ -109,7 +105,7 @@ static const io_register_t ich4_gpio_registers[] =  {
 	{ 0x3C, 4, "RESERVED" }
 };
 
-static const io_register_t ich7_gpio_registers[] =  {
+static const io_register_t ich7_gpio_registers[] = {
 	{ 0x00, 4, "GPIO_USE_SEL" },
 	{ 0x04, 4, "GP_IO_SEL" },
 	{ 0x08, 4, "RESERVED" },
@@ -167,22 +163,22 @@ int print_gpios(struct pci_dev *sb)
 
 	printf("GPIOBASE = 0x%04x (IO)\n\n", gpiobase);
 
-	for (i=0; i<size; i++) {
+	for (i = 0; i < size; i++) {
 		switch (gpio_registers[i].size) {
 		case 4:
-			printf("gpiobase+0x%04x: 0x%08x (%s)\n", 
+			printf("gpiobase+0x%04x: 0x%08x (%s)\n",
 				gpio_registers[i].addr,
 				inl(gpiobase+gpio_registers[i].addr),
 				gpio_registers[i].name);
 			break;
 		case 2:
-			printf("gpiobase+0x%04x: 0x%04x     (%s)\n", 
+			printf("gpiobase+0x%04x: 0x%04x     (%s)\n",
 				gpio_registers[i].addr,
 				inw(gpiobase+gpio_registers[i].addr),
 				gpio_registers[i].name);
 			break;
 		case 1:
-			printf("gpiobase+0x%04x: 0x%02x       (%s)\n", 
+			printf("gpiobase+0x%04x: 0x%02x       (%s)\n",
 				gpio_registers[i].addr,
 				inb(gpiobase+gpio_registers[i].addr),
 				gpio_registers[i].name);
@@ -195,7 +191,7 @@ int print_gpios(struct pci_dev *sb)
 
 int print_rcba(struct pci_dev *sb)
 {
-	int i, size=0x4000;
+	int i, size = 0x4000;
 	volatile uint8_t *rcba;
 	uint32_t rcba_phys;
 
@@ -206,7 +202,7 @@ int print_rcba(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
-		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;  
+		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH:
 	case PCI_DEVICE_ID_INTEL_ICH0:
@@ -229,18 +225,18 @@ int print_rcba(struct pci_dev *sb)
 
 	printf("RCBA = 0x%08x (MEM)\n\n", rcba_phys);
 
-	for (i=0; i<size; i+=4) {
-		if(*(uint32_t *)(rcba+i))
-			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(rcba+i));
+	for (i = 0; i < size; i += 4) {
+		if (*(uint32_t *)(rcba + i))
+			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(rcba + i));
 	}
 
-	munmap((void *) rcba, size);
+	munmap((void *)rcba, size);
 	return 0;
 }
 
 int print_pmbase(struct pci_dev *sb)
 {
-	int i, size=0x80;
+	int i, size = 0x80;
 	uint16_t pmbase;
 
 	printf("\n============= PMBASE ============\n\n");
@@ -250,7 +246,7 @@ int print_pmbase(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
-		pmbase = pci_read_word(sb, 0x40) & 0xfffc; 
+		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This southbridge does not have PMBASE.\n");
@@ -262,8 +258,8 @@ int print_pmbase(struct pci_dev *sb)
 
 	printf("PMBASE = 0x%04x (IO)\n\n", pmbase);
 
-	for (i=0; i<size; i+=4) {
-		printf("pmbase+0x%04x: 0x%08x\n", i, inl(pmbase+i));
+	for (i = 0; i < size; i += 4) {
+		printf("pmbase+0x%04x: 0x%08x\n", i, inl(pmbase + i));
 	}
 
 	return 0;
@@ -272,10 +268,9 @@ int print_pmbase(struct pci_dev *sb)
 /*
  * (G)MCH MMIO Config Space
  */
-
 int print_mchbar(struct pci_dev *nb)
 {
-	int i, size=(16*1024);
+	int i, size = (16 * 1024);
 	volatile uint8_t *mchbar;
 	uint32_t mchbar_phys;
 
@@ -283,7 +278,7 @@ int print_mchbar(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
-		mchbar_phys = pci_read_long(nb, 0x44) & 0xfffffffe;  
+		mchbar_phys = pci_read_long(nb, 0x44) & 0xfffffffe;
 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This northbrigde does not have MCHBAR.\n");
@@ -294,7 +289,7 @@ int print_mchbar(struct pci_dev *nb)
 	}
 
 	mchbar = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) mchbar_phys );
+		      fd_mem, (off_t) mchbar_phys);
 	
 	if (mchbar == MAP_FAILED) {
 		perror("Error mapping MCHBAR");
@@ -303,12 +298,12 @@ int print_mchbar(struct pci_dev *nb)
 
 	printf("MCHBAR = 0x%08x (MEM)\n\n", mchbar_phys);
 
-	for (i=0; i<size; i+=4) {
-		if(*(uint32_t *)(mchbar+i))
+	for (i = 0; i < size; i += 4) {
+		if (*(uint32_t *)(mchbar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(mchbar+i));
 	}
 
-	munmap((void *) mchbar, size);
+	munmap((void *)mchbar, size);
 	return 0;
 }
 
@@ -317,7 +312,7 @@ int print_mchbar(struct pci_dev *nb)
  */
 int print_epbar(struct pci_dev *nb)
 {
-	int i, size=4096;
+	int i, size = (4 * 1024);
 	volatile uint8_t *epbar;
 	uint32_t epbar_phys;
 
@@ -325,7 +320,7 @@ int print_epbar(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
-		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe; 
+		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This northbrigde does not have EPBAR.\n");
@@ -336,7 +331,7 @@ int print_epbar(struct pci_dev *nb)
 	}
 
 	epbar = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) epbar_phys );
+		     fd_mem, (off_t) epbar_phys);
 	
 	if (epbar == MAP_FAILED) {
 		perror("Error mapping EPBAR");
@@ -344,22 +339,21 @@ int print_epbar(struct pci_dev *nb)
 	}
 
 	printf("EPBAR = 0x%08x (MEM)\n\n", epbar_phys);
-	for (i=0; i<size; i+=4) {
-		if(*(uint32_t *)(epbar+i))
+	for (i = 0; i < size; i += 4) {
+		if (*(uint32_t *)(epbar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(epbar+i));
 	}
 
-	munmap((void *) epbar, size);
+	munmap((void *)epbar, size);
 	return 0;
 }
 
-
 /*
- * MCH-ICH Serial Interconnect Ingress Root Complex  MMIO configuration space
+ * MCH-ICH Serial Interconnect Ingress Root Complex MMIO configuration space
  */
 int print_dmibar(struct pci_dev *nb)
 {
-	int i, size=4096;
+	int i, size = (4 * 1024);
 	volatile uint8_t *dmibar;
 	uint32_t dmibar_phys;
 
@@ -367,7 +361,7 @@ int print_dmibar(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
-		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe; 
+		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe;
 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This northbrigde does not have DMIBAR.\n");
@@ -378,7 +372,7 @@ int print_dmibar(struct pci_dev *nb)
 	}
 
 	dmibar = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) dmibar_phys );
+		      fd_mem, (off_t) dmibar_phys);
 	
 	if (dmibar == MAP_FAILED) {
 		perror("Error mapping DMIBAR");
@@ -386,12 +380,12 @@ int print_dmibar(struct pci_dev *nb)
 	}
 
 	printf("DMIBAR = 0x%08x (MEM)\n\n", dmibar_phys);
-	for (i=0; i<size; i+=4) {
-		if(*(uint32_t *)(dmibar+i))
+	for (i = 0; i < size; i += 4) {
+		if (*(uint32_t *)(dmibar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(dmibar+i));
 	}
 
-	munmap((void *) dmibar, size);
+	munmap((void *)dmibar, size);
 	return 0;
 }
 
@@ -410,7 +404,7 @@ int print_pciexbar(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
-		pciexbar_reg = pci_read_long(nb, 0x48); 
+		pciexbar_reg = pci_read_long(nb, 0x48);
 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("Error: This northbrigde does not have PCIEXBAR.\n");
@@ -420,7 +414,7 @@ int print_pciexbar(struct pci_dev *nb)
 		return 1;
 	}
 
-	if( !(pciexbar_reg & (1 << 0))) {
+	if (!(pciexbar_reg & (1 << 0))) {
 		printf("PCIEXBAR register is disabled.\n");
 		return 0;
 	}
@@ -439,14 +433,14 @@ int print_pciexbar(struct pci_dev *nb)
 		max_busses = 64;
 		break;
 	default: // RSVD
-		printf("Undefined Address base. Bailing out\n");
+		printf("Undefined address base. Bailing out.\n");
 		return 1;
 	}	
 
 	printf("PCIEXBAR: 0x%08x\n", pciexbar_phys);
 
-	pciexbar = mmap(0, (max_busses * 1024 * 1024), PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) pciexbar_phys );
+	pciexbar = mmap(0, (max_busses * 1024 * 1024), PROT_WRITE | PROT_READ,
+		        MAP_SHARED, fd_mem, (off_t) pciexbar_phys);
 	
 	if (pciexbar == MAP_FAILED) {
 		perror("Error mapping PCIEXBAR");
@@ -471,7 +465,7 @@ int print_pciexbar(struct pci_dev *nb)
 				}
 
 				printf("\nPCIe %02x:%02x.%01x extended config space:", bus, dev, fn);
-				for (i=0; i<4096; i++) {
+				for (i = 0; i < 4096; i++) {
 					if((i % 0x10) == 0)
 						printf("\n%04x:", i);
 					printf(" %02x", *(pciexbar+devbase+i));
@@ -481,7 +475,7 @@ int print_pciexbar(struct pci_dev *nb)
 		}
 	}
 
-	munmap((void *) pciexbar, (max_busses * 1024 * 1024));
+	munmap((void *)pciexbar, (max_busses * 1024 * 1024));
 
 	return 0;
 }
@@ -490,7 +484,7 @@ int msr_readerror = 0;
 
 msr_t rdmsr(int addr)
 {
-	unsigned char buf[8];
+	uint8_t buf[8];
 	msr_t msr = { 0xffffffff, 0xffffffff };
 
 	if (lseek(fd_msr, (off_t) addr, SEEK_SET) == -1) {
@@ -501,7 +495,7 @@ msr_t rdmsr(int addr)
 
 	if (read(fd_msr, buf, 8) == 8) {
 		msr.lo = *(uint32_t *)buf;
-		msr.hi = *(uint32_t *)(buf+4);
+		msr.hi = *(uint32_t *)(buf + 4);
 
 		return msr;
 	}
@@ -523,7 +517,6 @@ int print_intel_core_msrs(void)
 {
 	unsigned int i, core;
 	msr_t msr;
-
 
 #define IA32_PLATFORM_ID		0x0017
 #define EBL_CR_POWERON			0x002a
@@ -610,8 +603,8 @@ int print_intel_core_msrs(void)
 		//{ 0x00c000080, "IA32_CR_EFER" }, // Seems to be RO
 	};
 
- 	fd_msr = open("/dev/cpu/0/msr", O_RDWR);
-	if (fd_msr<0) {
+	fd_msr = open("/dev/cpu/0/msr", O_RDWR);
+	if (fd_msr < 0) {
 		perror("Error while opening /dev/cpu/0/msr");
 		printf("Did you run 'modprobe msr'?\n");
 		return -1;
@@ -622,38 +615,39 @@ int print_intel_core_msrs(void)
 	for (i = 0; i < ARRAY_SIZE(global_msrs); i++) {
 		msr = rdmsr(global_msrs[i].number);
 		printf(" MSR 0x%08X = 0x%08X:0x%08X (%s)\n",
-			     global_msrs[i].number, msr.hi, msr.lo, global_msrs[i].name);
+		       global_msrs[i].number, msr.hi, msr.lo,
+		       global_msrs[i].name);
 	}
 
-
 	close(fd_msr);
-	
-	for (core=0; core < 8; core++) {
+
+	for (core = 0; core < 8; core++) {
 		char msrfilename[64];
 		memset(msrfilename, 0, 64);
 		sprintf(msrfilename, "/dev/cpu/%d/msr", core);
 
 		fd_msr = open(msrfilename, O_RDWR);
-		if (fd_msr<0) {
-			/* If the file is not there, we're probably through. 
-			 * No error, since we successfully opened /dev/cpu/0/msr before
-			 */
+
+		/* If the file is not there, we're probably through. No error,
+		 * since we successfully opened /dev/cpu/0/msr before.
+		 */
+		if (fd_msr < 0)
 			break;
-		}
 
 		printf("\n====================== UNIQUE MSRs  (core %d) ======================\n", core);
 
 		for (i = 0; i < ARRAY_SIZE(per_core_msrs); i++) {
 			msr = rdmsr(per_core_msrs[i].number);
 			printf(" MSR 0x%08X = 0x%08X:0x%08X (%s)\n",
-				     per_core_msrs[i].number, msr.hi, msr.lo, per_core_msrs[i].name);
+			       per_core_msrs[i].number, msr.hi, msr.lo,
+			       per_core_msrs[i].name);
 		}
 
 		close(fd_msr);
 	}
 
 	if (msr_readerror)
-		printf("\n(*) Some MSRs could not be read. The marked values are unreliable.\n");	
+		printf("\n(*) Some MSRs could not be read. The marked values are unreliable.\n");
 
 	return 0;
 }
@@ -689,7 +683,7 @@ void print_usage(const char *name)
 	     "   -P | --pciexpress:                dump northbridge PCIEXBAR registers\n\n"
 	     "   -M | --msrs:                      dump CPU MSRs\n"
 	     "   -a | --all:                       dump all known registers\n"
-             "\n");
+	     "\n");
 	exit(1);
 }
 
@@ -697,15 +691,13 @@ int main(int argc, char *argv[])
 {
 	struct pci_access *pacc;
 	struct pci_dev *sb, *nb;
-	int opt;
-	int option_index = 0;
-	int i;
+	int i, opt, option_index = 0;
 
-	char *sbname="unknown", *nbname="unknown";
+	char *sbname = "unknown", *nbname = "unknown";
 
-	int dump_gpios=0, dump_mchbar=0, dump_rcba=0;
-	int dump_pmbase=0, dump_epbar=0, dump_dmibar=0;
-	int dump_pciexbar=0, dump_coremsrs=0;
+	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
+	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
+	int dump_pciexbar = 0, dump_coremsrs = 0;
 
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
@@ -723,7 +715,7 @@ int main(int argc, char *argv[])
 	};
 
 	while ((opt = getopt_long(argc, argv, "vh?grpmedPMa",
-                                 long_options, &option_index)) != EOF) {
+                                  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
 			print_version();
@@ -772,7 +764,10 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if (iopl(3)) { printf("You need to be root.\n"); exit(1); }
+	if (iopl(3)) {
+		printf("You need to be root.\n");
+		exit(1);
+	}
 
 	if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
 		perror("Can not open /dev/mem");
@@ -782,7 +777,6 @@ int main(int argc, char *argv[])
 	pacc = pci_alloc();
 	pci_init(pacc);
 	pci_scan_bus(pacc);
-
 
 	/* Find the required devices */
 
@@ -815,10 +809,10 @@ int main(int argc, char *argv[])
 	/* TODO check cpuid, too */
 
 	/* Determine names */
-	for (i=0; i<ARRAY_SIZE(supported_chips_list); i++)
+	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
 		if (nb->device_id == supported_chips_list[i].device_id)
 			nbname = supported_chips_list[i].name;
-	for (i=0; i<ARRAY_SIZE(supported_chips_list); i++)
+	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)
 		if (sb->device_id == supported_chips_list[i].device_id)
 			sbname = supported_chips_list[i].name;
 
@@ -870,9 +864,7 @@ int main(int argc, char *argv[])
 		printf("\n\n");
 	}
 
-
 	/* Clean up */
-
 	pci_free_dev(nb);
 	pci_free_dev(sb);
 	pci_cleanup(pacc);

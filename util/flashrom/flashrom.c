@@ -381,8 +381,8 @@ int main(int argc, char *argv[])
 	pci_init(pacc);		/* Initialize the PCI library */
 	pci_scan_bus(pacc);	/* We want to get the list of devices */
 
-	/* Open the memory device. A lot of functions need it */
-	if ((fd_mem = open(MEM_DEV, O_RDWR)) < 0) {
+	/* Open the memory device UNCACHED. That's important for MMIO. */
+	if ((fd_mem = open(MEM_DEV, O_RDWR|O_SYNC)) < 0) {
 		perror("Error: Can not access memory using " MEM_DEV
 		       ". You need to be root.");
 		exit(1);

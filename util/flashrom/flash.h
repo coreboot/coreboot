@@ -336,6 +336,8 @@ void print_supported_boards(void);
 /* chipset_enable.c */
 int chipset_flash_enable(void);
 void print_supported_chipsets(void);
+extern int ich9_detected;
+extern void *ich_spibar;
 
 /* Physical memory mapping device */
 #if defined (__sun) && (defined(__i386) || defined(__amd64))

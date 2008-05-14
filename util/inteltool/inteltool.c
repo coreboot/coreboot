@@ -38,7 +38,9 @@
 #define PCI_DEVICE_ID_INTEL_ICH0	0x2420
 #define PCI_DEVICE_ID_INTEL_ICH4	0x24c0
 #define PCI_DEVICE_ID_INTEL_ICH4M	0x24cc
+#define PCI_DEVICE_ID_INTEL_ICH7DH	0x27b0
 #define PCI_DEVICE_ID_INTEL_ICH7	0x27b8
+#define PCI_DEVICE_ID_INTEL_ICH7M	0x27b9
 #define PCI_DEVICE_ID_INTEL_ICH7MDH	0x27bd
 #define PCI_DEVICE_ID_INTEL_82945GM	0x27a0
 
@@ -48,7 +50,9 @@ static const struct {
 } supported_chips_list[] = {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945GM, "i945GM" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7MDH, "ICH7-M DH" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7M, "ICH7-M" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7, "ICH7" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7DH, "ICH7DH" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4M, "ICH4-M" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4, "ICH4" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH0, "ICH0" },
@@ -134,6 +138,8 @@ int print_gpios(struct pci_dev *sb)
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH7:
+	case PCI_DEVICE_ID_INTEL_ICH7M:
+	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich7_gpio_registers;
@@ -197,6 +203,8 @@ int print_rcba(struct pci_dev *sb)
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH7:
+	case PCI_DEVICE_ID_INTEL_ICH7M:
+	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
 		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;  
 		break;
@@ -239,6 +247,8 @@ int print_pmbase(struct pci_dev *sb)
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_ICH7:
+	case PCI_DEVICE_ID_INTEL_ICH7M:
+	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc; 
 		break;

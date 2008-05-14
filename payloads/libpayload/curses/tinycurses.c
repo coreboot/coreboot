@@ -464,7 +464,39 @@ int wattr_off(WINDOW *win, attr_t at, void *opts GCC_UNUSED)
 }
 // int wbkgd (WINDOW *, chtype) {}
 void wbkgdset(WINDOW *win, chtype ch) { /* TODO */ }
-// int wborder (WINDOW *,chtype,chtype,chtype,chtype,chtype,chtype,chtype,chtype) {}
+
+int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, chtype bs,
+		chtype tl, chtype tr, chtype bl, chtype br)
+{
+	int x, y;
+
+	for(y = 0; y <= win->_maxy; y++) {
+
+		if (y == 0) {
+			 mvwaddch(win, y, 0, tl);
+
+			for(x = 1; x < win->_maxx; x++)
+				mvwaddch(win, y, x, ts);
+
+			mvwaddch(win, y, win->_maxx, tr);
+		}
+		else if (y == win->_maxy) {
+			mvwaddch(win, y, 0, bl);
+
+			for(x = 1; x < win->_maxx; x++)
+				mvwaddch(win, y, x, bs);
+
+			mvwaddch(win, y, win->_maxx, br);
+		}
+		else {
+			mvwaddch(win, y, 0, ls);
+			mvwaddch(win, y, win->_maxx, rs);
+		}
+	}
+
+	return OK;
+}
+
 // int wchgat (WINDOW *, int, attr_t, short, const void *) {}
 /* D */ int wclear(WINDOW *win)
 {

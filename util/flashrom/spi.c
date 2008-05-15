@@ -213,6 +213,10 @@ void spi_prettyprint_status_register(struct flashchip *flash)
 	printf_debug("Chip status register is %02x\n", status);
 	switch (flash->manufacture_id) {
 	case ST_ID:
+		if (((flash->model_id & 0xff00) == 0x2000) ||
+		    ((flash->model_id & 0xff00) == 0x2500))
+			spi_prettyprint_status_register_st_m25p(status);
+		break;
 	case MX_ID:
 		if ((flash->model_id & 0xff00) == 0x2000)
 			spi_prettyprint_status_register_st_m25p(status);

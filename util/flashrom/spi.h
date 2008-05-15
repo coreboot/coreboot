@@ -29,6 +29,11 @@
 #define JEDEC_RDID_OUTSIZE	0x01
 #define JEDEC_RDID_INSIZE	0x03
 
+/* Read Electronic Signature */
+#define JEDEC_RES		0xab
+#define JEDEC_RES_OUTSIZE	0x04
+#define JEDEC_RES_INSIZE	0x01
+
 /* Write Enable */
 #define JEDEC_WREN		0x06
 #define JEDEC_WREN_OUTSIZE	0x01

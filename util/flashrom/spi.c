@@ -49,6 +49,16 @@ static int spi_rdid(unsigned char *readarr)
 	return 0;
 }
 
+static int spi_res(unsigned char *readarr)
+{
+	const unsigned char cmd[JEDEC_RES_OUTSIZE] = {JEDEC_RES, 0, 0, 0};
+
+	if (spi_command(JEDEC_RES_OUTSIZE, JEDEC_RES_INSIZE, cmd, readarr))
+		return 1;
+	printf_debug("RES returned %02x.\n", readarr[0]);
+	return 0;
+}
+
 void spi_write_enable()
 {
 	const unsigned char cmd[JEDEC_WREN_OUTSIZE] = {JEDEC_WREN};
@@ -65,7 +75,7 @@ void spi_write_disable()
 	spi_command(JEDEC_WRDI_OUTSIZE, JEDEC_WRDI_INSIZE, cmd, NULL);
 }
 
-int probe_spi(struct flashchip *flash)
+int probe_spi_rdid(struct flashchip *flash)
 {
 	unsigned char readarr[3];
 	uint32_t manuf_id;
@@ -97,6 +107,35 @@ int probe_spi(struct flashchip *flash)
 		if (manuf_id == flash->manufacture_id &&
 		    GENERIC_DEVICE_ID == flash->model_id)
 			return 1;
+	}
+
+	return 0;
+}
+
+int probe_spi_res(struct flashchip *flash)
+{
+	unsigned char readarr[3];
+	uint32_t model_id;
+	if (!spi_rdid(readarr)) {
+		/* Check if RDID returns 0xff 0xff 0xff, then we use RES. */
+		if ((readarr[0] != 0xff) || (readarr[1] != 0xff) ||
+		    (readarr[2] != 0xff))
+			return 0;
+	} else {
+		/* We couldn't issue RDID, it's pointless to try RES. */
+		return 0;
+	}
+	if (!spi_res(readarr)) {
+		model_id = readarr[0];
+		printf_debug("%s: id 0x%x\n", __FUNCTION__, model_id);
+		if (model_id == flash->model_id) {
+			/* Print the status register to tell the
+			 * user about possible write protection.
+			 */
+			spi_prettyprint_status_register(flash);
+
+			return 1;
+		}
 	}
 
 	return 0;

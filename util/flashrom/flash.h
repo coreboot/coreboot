@@ -177,6 +177,8 @@ extern struct flashchip flashchips[];
 /*
  * MX25 chips are SPI, first byte of device ID is memory type,
  * second byte of device ID is log(bitsize)-9.
+ * Generalplus SPI chips seem to be compatible with Macronix
+ * and use the same set of IDs.
  */
 #define MX_ID			0xC2	/* Macronix (MX) */
 #define MX_25L512		0x2010	/* 2^19 kbit or 2^16 kByte */
@@ -266,6 +268,7 @@ extern struct flashchip flashchips[];
 #define ST_M25P10A		0x2011
 #define ST_M25P20		0x2012
 #define ST_M25P40		0x2013
+#define ST_M25P40_RES		0x12
 #define ST_M25P80		0x2014
 #define ST_M25P16		0x2015
 #define ST_M25P32		0x2016
@@ -366,7 +369,8 @@ int coreboot_init(void);
 extern char *lb_part, *lb_vendor;
 
 /* spi.c */
-int probe_spi(struct flashchip *flash);
+int probe_spi_rdid(struct flashchip *flash);
+int probe_spi_res(struct flashchip *flash);
 int it87xx_probe_spi_flash(const char *name);
 int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
 void spi_write_enable();

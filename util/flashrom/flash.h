@@ -237,8 +237,21 @@ extern struct flashchip flashchips[];
 #define SST_25VF032B		0x254A
 #define SST_25VF040B		0x258D
 #define SST_25VF080B		0x258E
-#define SST_29EE020A		0x10
+#define SST_27SF512		0xA4
+#define SST_27SF010		0xA5
+#define SST_27SF020		0xA6
+#define SST_27VF010		0xA9
+#define SST_27VF020		0xAA
 #define SST_28SF040		0x04
+#define SST_29EE512		0x5D
+#define SST_29EE010		0x07
+#define SST_29LE010		0x08	/* also SST29VE010 */
+#define SST_29EE020A		0x10
+#define SST_29LE020		0x12	/* also SST29VE020 */
+#define SST_29SF020		0x24
+#define SST_29VF020		0x25
+#define SST_29SF040		0x13
+#define SST_29VF040		0x14
 #define SST_39SF010		0xB5
 #define SST_39SF020		0xB6
 #define SST_39SF040		0xB7

@@ -33,7 +33,9 @@
 #include "ram/ramtest.c"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "northbridge/intel/i82830/raminit.h"
+#include "northbridge/intel/i82830/memory_initialized.c"
 #include "southbridge/intel/i82801xx/i82801xx.h"
+#include "southbridge/intel/i82801xx/i82801xx_reset.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "spd_table.h"
@@ -95,6 +97,9 @@ static void main(unsigned long bist)
 
 	if (bist == 0)
 		early_mtrr_init();
+		if (memory_initialized()) {
+			hard_reset();
+		}
 
 	enable_smbus();
 
@@ -102,6 +107,9 @@ static void main(unsigned long bist)
 	mb_gpio_init();
 	uart_init();
 	console_init();
+
+	/* Prevent the TCO timer from rebooting us */
+	i82801xx_halt_tco_timer();
 
 	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
@@ -114,6 +122,5 @@ static void main(unsigned long bist)
 	/* ram_check(0, 640 * 1024); */
 	/* ram_check(130048 * 1024, 131072 * 1024); */
 
-	i82801xx_halt_tco_timer();
 	ac97_io_enable();
 }

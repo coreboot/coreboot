@@ -128,9 +128,9 @@ chip northbridge/amd/lx
 			# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK
 			# How to get these? Boot linux and do this:
 			# rdmsr 0x51400025
-			register "lpc_serirq_enable" = "0x000010da"
+			register "lpc_serirq_enable" = "0x0000105a"
 			# rdmsr 0x5140004e -- polairy is high 16 bits of low 32 bits
-			register "lpc_serirq_polarity" = "0x0000EF25"
+			register "lpc_serirq_polarity" = "0x0000EFA5"
 			# mode is high 10 bits (determined from code)
 			register "lpc_serirq_mode" = "1"
 			# Don't yet know how to find this.

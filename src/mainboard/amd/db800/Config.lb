@@ -127,8 +127,8 @@ chip northbridge/amd/lx
 			# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
 			# SIRQ Mode = Active(Quiet) mode. Save power....
 			# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse, UARTs, etc IRQs. OK
-			register "lpc_serirq_enable" = "0x000010da"
-			register "lpc_serirq_polarity" = "0x0000EF25"
+			register "lpc_serirq_enable" = "0x0000105a"
+			register "lpc_serirq_polarity" = "0x0000EFA5"
 			register "lpc_serirq_mode" = "1"
 			register "enable_gpio_int_route" = "0x0D0C0700"
 			register "enable_ide_nand_flash" = "0"	# 0:ide mode, 1:flash

@@ -22,21 +22,6 @@
 #include <stdint.h>
 #include "flash.h"
 
-#define AUTO_PG_ERASE1		0x20
-#define AUTO_PG_ERASE2		0xD0
-
-static __inline__ int erase_sector_39sf020(volatile uint8_t *bios,
-					   unsigned long address)
-{
-	*bios = AUTO_PG_ERASE1;
-	*(bios + address) = AUTO_PG_ERASE2;
-
-	/* wait for Toggle bit ready         */
-	toggle_ready_jedec(bios);
-
-	return 0;
-}
-
 int write_39sf020(struct flashchip *flash, uint8_t *buf)
 {
 	int i;

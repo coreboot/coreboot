@@ -1,0 +1,468 @@
+/*
+ * This file is part of the flashrom project.
+ *
+ * Copyright (C) 2008 Stefan Wildemann <stefan.wildemann@kontron.com>
+ * Copyright (C) 2008 Claus Gindhart <claus.gindhart@kontron.com>
+ * Copyright (C) 2008 Dominik Geyer <dominik.geyer@kontron.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ *
+ */
+
+/*
+ * This module is designed for supporting the devices
+ * ST M25P40
+ * ST M25P80
+ * ST M25P16
+ * ST M25P32 already tested
+ * ST M25P64
+ * AT 25DF321 already tested
+ *
+ */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+#include <sys/mman.h>
+#include <pci/pci.h>
+#include "flash.h"
+#include "spi.h"
+
+#define MAXDATABYTES 0x40
+
+/*ICH9 controller register definition*/
+#define REG_FADDR		0x08	/* 32 Bits */
+#define REG_FDATA0		0x10	/* 64 Bytes */
+#define REG_SSFS		0x90	/* 08 Bits */
+#define SSFS_SCIP		0x00000001
+#define SSFS_CDS		0x00000004
+#define SSFS_FCERR		0x00000008
+#define SSFS_AEL		0x00000010
+#define REG_SSFC		0x91	/* 24 Bits */
+#define SSFC_SCGO		0x00000200
+#define SSFC_ACS		0x00000400
+#define SSFC_SPOP		0x00000800
+#define SSFC_COP		0x00001000
+#define SSFC_DBC		0x00010000
+#define SSFC_DS			0x00400000
+#define SSFC_SME		0x00800000
+#define SSFC_SCF		0x01000000
+#define SSFC_SCF_20MHZ 0x00000000
+#define SSFC_SCF_33MHZ 0x01000000
+#define REG_PREOP		0x94	/* 16 Bits */
+#define REG_OPTYPE		0x96	/* 16 Bits */
+#define REG_OPMENU		0x98	/* 64 BITS */
+
+// ICH9R SPI commands
+#define SPI_OPCODE_TYPE_READ_NO_ADDRESS     0
+#define SPI_OPCODE_TYPE_WRITE_NO_ADDRESS    1
+#define SPI_OPCODE_TYPE_READ_WITH_ADDRESS   2
+#define SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS  3
+
+
+typedef struct _OPCODE {
+	uint8_t opcode;		//This commands spi opcode
+	uint8_t spi_type;	//This commands spi type
+	uint8_t atomic;		//Use preop: (0: none, 1: preop0, 2: preop1
+} OPCODE;
+
+/* Opcode definition:
+ * Preop 1: Write Enable
+ * Preop 2: Write Status register enable
+ *
+ * OP 0: Write address
+ * OP 1: Read Address
+ * OP 2: ERASE block
+ * OP 3: Read Status register
+ * OP 4: Read ID
+ * OP 5: Write Status register
+ * OP 6: chip private (read JDEC id)
+ * OP 7: Chip erase
+ */
+typedef struct _OPCODES {
+	uint8_t preop[2];
+	OPCODE opcode[8];
+} OPCODES;
+
+
+static OPCODES *curopcodes=NULL;
+
+
+/* HW access functions */
+static inline uint32_t REGREAD32(int X)
+{
+	volatile uint32_t regval;
+	regval = *(volatile uint32_t *)((uint8_t *)ich_spibar + X);
+	return regval;
+}
+
+#define REGWRITE32(X,Y) (*(uint32_t *)((uint8_t *)ich_spibar+X)=Y)
+#define REGWRITE16(X,Y) (*(uint16_t *)((uint8_t *)ich_spibar+X)=Y)
+#define REGWRITE8(X,Y)  (*(uint8_t *)((uint8_t *)ich_spibar+X)=Y)
+
+
+/* Common SPI functions */
+static int program_opcodes(OPCODES * op);
+static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength, uint8_t * data);
+static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset);
+static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes, int Offset);
+static int ich_spi_erase_block(struct flashchip *flash, int offset);
+
+
+OPCODES O_ST_M25P = {
+	{
+	 JEDEC_WREN,
+	 0
+	},
+	{
+	 {JEDEC_BYTE_PROGRAM, 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS, 	1},	// Write Byte
+	 {JEDEC_READ, 		SPI_OPCODE_TYPE_READ_WITH_ADDRESS, 	0},	// Read Data
+	 {JEDEC_BE_D8, 		SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS, 	1},	// Erase Sector
+	 {JEDEC_RDSR, 		SPI_OPCODE_TYPE_READ_NO_ADDRESS, 	0},	// Read Device Status Reg
+	 {JEDEC_RES, 		SPI_OPCODE_TYPE_READ_WITH_ADDRESS, 	0},	// Resume Deep Power-Down
+	 {JEDEC_WRSR, 		SPI_OPCODE_TYPE_WRITE_NO_ADDRESS, 	1},	// Write Status Register
+	 {JEDEC_RDID, 		SPI_OPCODE_TYPE_READ_NO_ADDRESS, 	0},	// Read JDEC ID
+	 {JEDEC_CE_C7, 		SPI_OPCODE_TYPE_WRITE_NO_ADDRESS, 	1},	// Bulk erase
+	}
+};
+
+
+int program_opcodes(OPCODES * op)
+{
+	uint8_t a;
+	uint16_t temp16;
+	uint32_t temp32;
+
+	/* Program Prefix Opcodes */
+	temp16 = 0;
+	/* 0:7 Prefix Opcode 1 */
+	temp16 = (op->preop[0]);
+	/* 8:16 Prefix Opcode 2 */
+	temp16 |= ((uint16_t) op->preop[1]) << 8;
+	REGWRITE16(REG_PREOP, temp16);
+
+	/*Program Opcode Types 0 - 7 */
+	temp16 = 0;
+	for (a = 0; a < 8; a++) {
+		temp16 |= ((uint16_t) op->opcode[a].spi_type) << (a * 2);
+	}
+	REGWRITE16(REG_OPTYPE, temp16);
+
+	/*Program Allowable Opcodes 0 - 3 */
+	temp32 = 0;
+	for (a = 0; a < 4; a++) {
+		temp32 |= ((uint32_t) op->opcode[a].opcode) << (a * 8);
+	}
+	REGWRITE32(REG_OPMENU, temp32);
+
+	/*Program Allowable Opcodes 4 - 7 */
+	temp32 = 0;
+	for (a = 4; a < 8; a++) {
+		temp32 |= ((uint32_t) op->opcode[a].opcode) << ((a - 4) * 8);
+	}
+	REGWRITE32(REG_OPMENU + 4, temp32);
+
+	return 0;
+}
+
+int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
+	      uint8_t * data)
+{
+	int write_cmd = 0;
+	uint32_t temp32;
+	uint32_t a;
+
+	/* Is it a write command? */
+	if ((op.spi_type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS)
+	    || (op.spi_type == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS)) {
+		write_cmd = 1;
+	}
+
+	/* Programm Offset in Flash into FADDR */
+	REGWRITE32(REG_FADDR, (offset & 0x00FFFFFF));	/*SPI addresses are 24 BIT only */
+
+	/* Program data into FDATA0 to N */
+	if (write_cmd && (datalength != 0)) {
+		temp32 = 0;
+		for (a = 0; a < datalength; a++) {
+			if ((a % 4) == 0) {
+				temp32 = 0;
+			}
+
+			temp32 |= ((uint32_t) data[a]) << ((a % 4) * 8);
+
+			if ((a % 4) == 3) {
+				REGWRITE32(REG_FDATA0 + (a - (a % 4)), temp32);
+			}
+		}
+		if (((a - 1) % 4) != 3) {
+			REGWRITE32(REG_FDATA0 + ((a - 1) - ((a - 1) % 4)),
+				   temp32);
+		}
+
+	}
+
+	/* Assemble SSFS + SSFC */
+	temp32 = 0;
+
+	/* clear error status registers */
+	temp32 |= (SSFS_CDS + SSFS_FCERR);
+	/* USE 20 MhZ */
+	temp32 |= SSFC_SCF_20MHZ;
+
+	if (datalength != 0) {
+		uint32_t datatemp;
+		temp32 |= SSFC_DS;
+		datatemp = ((uint32_t) ((datalength - 1) & 0x3f)) << (8 + 8);
+		temp32 |= datatemp;
+	}
+
+	/* Select opcode */
+	temp32 |= ((uint32_t) (nr & 0x07)) << (8 + 4);
+
+	/* Handle Atomic */
+	if (op.atomic != 0) {
+		/* Select atomic command */
+		temp32 |= SSFC_ACS;
+		/* Selct prefix opcode */
+		if ((op.atomic - 1) == 1) {
+			/*Select prefix opcode 2 */
+			temp32 |= SSFC_SPOP;
+		}
+	}
+
+	/* Start */
+	temp32 |= SSFC_SCGO;
+
+	/* write it */
+	REGWRITE32(REG_SSFS, temp32);
+
+	/*wait for cycle complete */
+	while ((REGREAD32(REG_SSFS) & SSFS_CDS) == 0) {
+		/*TODO; Do something that this can't lead into an endless loop. but some
+		 * commands may cause this to be last more than 30 seconds */
+	}
+
+	if ((REGREAD32(REG_SSFS) & SSFS_FCERR) != 0) {
+		printf_debug("Transaction error!\n");
+		return 1;
+	}
+
+	if ((!write_cmd) && (datalength != 0)) {
+		for (a = 0; a < datalength; a++) {
+			if ((a % 4) == 0) {
+				temp32 = REGREAD32(REG_FDATA0 + (a));
+			}
+
+			data[a] =
+			    (temp32 & (((uint32_t) 0xff) << ((a % 4) * 8))) >>
+			    ((a % 4) * 8);
+		}
+	}
+
+	return 0;
+}
+
+
+static int ich_spi_erase_block(struct flashchip *flash, int offset)
+{
+	printf_debug("Spi_Erase,Offset=%d,sectors=%d\n", offset, 1);
+
+	if (run_opcode(2, curopcodes->opcode[2], offset, 0, NULL) != 0) {
+		printf_debug("Error erasing sector at 0x%x", offset);
+		return -1;
+	}
+
+	printf("DONE BLOCK 0x%x\n", offset);
+
+	return 0;
+}
+
+static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset)
+{
+	int page_size = flash->page_size;
+	uint32_t remaining = flash->page_size;
+	int a;
+
+	printf_debug("Spi_Read,Offset=%d,number=%d,buf=%p\n", Offset, page_size, buf);
+
+	for (a = 0; a < page_size; a += MAXDATABYTES) {
+		if (remaining < MAXDATABYTES) {
+
+			if (run_opcode
+			    (1, curopcodes->opcode[1],
+			     Offset + (page_size - remaining), remaining,
+			     &buf[page_size - remaining]) != 0) {
+				printf_debug("Error reading");
+				return 1;
+			}
+			remaining = 0;
+		} else {
+			if (run_opcode
+			    (1, curopcodes->opcode[1],
+			     Offset + (page_size - remaining), MAXDATABYTES,
+			     &buf[page_size - remaining]) != 0) {
+				printf_debug("Error reading");
+				return 1;
+			}
+			remaining -= MAXDATABYTES;
+		}
+	}
+
+	return 0;
+}
+
+static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
+			     int Offset)
+{
+	int page_size = flash->page_size;
+	uint32_t remaining = page_size;
+	int a;
+
+	printf_debug("write_page_ichspi,Offset=%d,number=%d,buf=%p\n", Offset, page_size,
+	       bytes);
+
+	for (a = 0; a < page_size; a += MAXDATABYTES) {
+		if (remaining < MAXDATABYTES) {
+			if (run_opcode
+			    (0, curopcodes->opcode[0],
+			     Offset + (page_size - remaining), remaining,
+			     &bytes[page_size - remaining]) != 0) {
+				printf_debug("Error writing");
+				return 1;
+			}
+			remaining = 0;
+		} else {
+			if (run_opcode
+			    (0, curopcodes->opcode[0],
+			     Offset + (page_size - remaining), MAXDATABYTES,
+			     &bytes[page_size - remaining]) != 0) {
+				printf_debug("Error writing");
+				return 1;
+			}
+			remaining -= MAXDATABYTES;
+		}
+	}
+
+	return 0;
+}
+
+
+int ich_spi_read(struct flashchip *flash, uint8_t * buf)
+{
+	int i, rc = 0;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
+
+	for (i = 0; (i < total_size / page_size) && (rc == 0); i++) {
+		rc = ich_spi_read_page(flash, (void *)(buf + i * page_size),
+				      i * page_size);
+	}
+
+	return rc;
+}
+
+
+int ich_spi_write(struct flashchip *flash, uint8_t * buf)
+{
+	int i, j, rc = 0;
+	int total_size = flash->total_size * 1024;
+	int page_size = flash->page_size;
+	int erase_size = 64 * 1024;
+
+	spi_disable_blockprotect();
+
+	printf("Programming page: \n");
+
+	for (i = 0; i < total_size / erase_size; i++) {
+		rc = ich_spi_erase_block(flash, i * erase_size);
+		if (rc) {
+			printf("Error erasing block at 0x%x\n", i);
+			break;
+		}
+		
+		for (j = 0; j < erase_size / page_size; j++) {
+			ich_spi_write_page(flash, (void *)(buf + (i * erase_size) + (j * page_size)),
+					   (i * erase_size) + (j * page_size));
+		}
+	}
+
+	printf("\n");
+
+	return rc;
+}
+
+int ich_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
+{
+	int a;
+	int opcode_index = -1;
+	const unsigned char cmd = *writearr;
+	OPCODE *opcode;
+	uint32_t addr = 0;
+	uint8_t *data;
+	int count;
+
+	/* program opcodes if not already done */
+	if (curopcodes == NULL) {
+		printf_debug("Programming OPCODES\n");
+		curopcodes=&O_ST_M25P;
+		program_opcodes(curopcodes);
+	}
+
+	/* find cmd in opcodes-table */
+	for (a = 0; a < 8; a++) {
+		if ((curopcodes->opcode[a]).opcode == cmd) {
+			opcode_index = a;
+			break;
+		}
+	}
+
+	/* unknown / not programmed command */
+	if (opcode_index == -1) {
+		printf_debug("Invalid OPCODE 0x%02x\n", cmd);
+		return 1;
+	}
+
+	opcode = &(curopcodes->opcode[opcode_index]);
+
+	/* if opcode-type requires an address */
+	if (opcode->spi_type == SPI_OPCODE_TYPE_READ_WITH_ADDRESS ||
+	    opcode->spi_type == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS) {
+		addr = (writearr[1]<<16) |
+		       (writearr[2]<<8)  |
+		       (writearr[3]<<0);
+	}
+	
+	/* translate read/write array/count */
+	if (opcode->spi_type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS) {
+		data = (uint8_t*)(writearr+1);
+		count = writecnt-1;
+	}
+	else if (opcode->spi_type == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS) {
+		data = (uint8_t*)(writearr+4);
+		count = writecnt-4;
+	}
+	else {
+		data = (uint8_t*)readarr;
+		count = readcnt;
+	}
+	
+	if (run_opcode(opcode_index, *opcode, addr, count, data) != 0) {
+		printf_debug("run OPCODE 0x%02x failed\n", opcode->opcode);
+		return 1;
+	}
+
+	return 0;
+}

@@ -384,7 +384,6 @@ extern char *lb_part, *lb_vendor;
 /* spi.c */
 int probe_spi_rdid(struct flashchip *flash);
 int probe_spi_res(struct flashchip *flash);
-int it87xx_probe_spi_flash(const char *name);
 int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
 void spi_write_enable();
 void spi_write_disable();
@@ -407,8 +406,14 @@ int probe_29f040b(struct flashchip *flash);
 int erase_29f040b(struct flashchip *flash);
 int write_29f040b(struct flashchip *flash, uint8_t *buf);
 
+/* ichspi.c */
+int ich_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
+int ich_spi_read(struct flashchip *flash, uint8_t * buf);
+int ich_spi_write(struct flashchip *flash, uint8_t * buf);
+
 /* it87spi.c */
 extern uint16_t it8716f_flashport;
+int it87xx_probe_spi_flash(const char *name);
 int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
 int it8716f_spi_chip_read(struct flashchip *flash, uint8_t *buf);
 int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf);
@@ -499,4 +504,5 @@ int write_49f002(struct flashchip *flash, uint8_t *buf);
 int probe_stm50flw0x0x(struct flashchip *flash);
 int erase_stm50flw0x0x(struct flashchip *flash);
 int write_stm50flw0x0x(struct flashchip *flash, uint8_t *buf);
+
 #endif				/* !__FLASH_H__ */

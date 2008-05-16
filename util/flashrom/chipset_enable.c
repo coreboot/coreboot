@@ -198,7 +198,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsign
 	/* Calculate the Root Complex Register Block address */
 	tmp &= 0xffffc000;
 	printf_debug("Root Complex Register Block address = 0x%x\n", tmp);
-	rcrb = mmap(0, 0x4000, PROT_READ, MAP_SHARED, fd_mem, (off_t)tmp);
+	rcrb = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem, (off_t)tmp);
 	if (rcrb == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
 		exit(1);

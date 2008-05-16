@@ -93,6 +93,12 @@ static uint16_t find_ite_spi_flash_port(uint16_t port)
 			0xFFF80000, 0xFFFEFFFF, (tmp & 1 << 3) ? "en" : "dis");
 		printf("LPC write to serial flash %sabled\n",
 			(tmp & 1 << 4) ? "en" : "dis");
+		/* If any serial flash segment is enabled, enable writing. */
+		if ((tmp & 0xe) && (!(tmp & 1 << 4))) {
+			printf("Enabling LPC write to serial flash\n");
+			tmp |= 1 << 4;
+			regwrite(port, 0x24, tmp);
+		}
 		printf("serial flash pin %i\n", (tmp & 1 << 5) ? 87 : 29);
 		/* LDN 0x7, reg 0x64/0x65 */
 		regwrite(port, 0x07, 0x7);

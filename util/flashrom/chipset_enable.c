@@ -234,12 +234,18 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsign
 	return enable_flash_ich_dc(dev, name);
 }
 
-static int enable_flash_ich78(struct pci_dev *dev, const char *name)
+static int enable_flash_ich7(struct pci_dev *dev, const char *name)
 {
 	return enable_flash_ich_dc_spi(dev, name, 0x3020);
 }
 
 int ich9_detected = 0;
+
+static int enable_flash_ich8(struct pci_dev *dev, const char *name)
+{
+	ich9_detected = 1;
+	return enable_flash_ich_dc_spi(dev, name, 0x3020);
+}
 
 static int enable_flash_ich9(struct pci_dev *dev, const char *name)
 {
@@ -597,15 +603,15 @@ static const FLASH_ENABLE enables[] = {
 	{0x8086, 0x25a1, "Intel 6300ESB",	enable_flash_ich_4e},
 	{0x8086, 0x2640, "Intel ICH6/ICH6R",	enable_flash_ich_dc},
 	{0x8086, 0x2641, "Intel ICH6-M",	enable_flash_ich_dc},
-	{0x8086, 0x27b0, "Intel ICH7DH",	enable_flash_ich78},
-	{0x8086, 0x27b8, "Intel ICH7/ICH7R",	enable_flash_ich78},
-	{0x8086, 0x27b9, "Intel ICH7M",		enable_flash_ich78},
-	{0x8086, 0x27bd, "Intel ICH7MDH",	enable_flash_ich78},
-	{0x8086, 0x2810, "Intel ICH8/ICH8R",	enable_flash_ich78},
-	{0x8086, 0x2811, "Intel ICH8M-E",	enable_flash_ich78},
-	{0x8086, 0x2812, "Intel ICH8DH",	enable_flash_ich78},
-	{0x8086, 0x2814, "Intel ICH8DO",	enable_flash_ich78},
-	{0x8086, 0x2815, "Intel ICH8M",		enable_flash_ich78},
+	{0x8086, 0x27b0, "Intel ICH7DH",	enable_flash_ich7},
+	{0x8086, 0x27b8, "Intel ICH7/ICH7R",	enable_flash_ich7},
+	{0x8086, 0x27b9, "Intel ICH7M",		enable_flash_ich7},
+	{0x8086, 0x27bd, "Intel ICH7MDH",	enable_flash_ich7},
+	{0x8086, 0x2810, "Intel ICH8/ICH8R",	enable_flash_ich8},
+	{0x8086, 0x2811, "Intel ICH8M-E",	enable_flash_ich8},
+	{0x8086, 0x2812, "Intel ICH8DH",	enable_flash_ich8},
+	{0x8086, 0x2814, "Intel ICH8DO",	enable_flash_ich8},
+	{0x8086, 0x2815, "Intel ICH8M",		enable_flash_ich8},
 	{0x8086, 0x2912, "Intel ICH9DH",	enable_flash_ich9},
 	{0x8086, 0x2914, "Intel ICH9DO",	enable_flash_ich9},
 	{0x8086, 0x2916, "Intel ICH9R",		enable_flash_ich9},

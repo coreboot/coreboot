@@ -453,10 +453,10 @@ int probe_29f002(struct flashchip *flash);
 int erase_29f002(struct flashchip *flash);
 int write_29f002(struct flashchip *flash, uint8_t *buf);
 
-/* pm49fl004.c */
-int probe_49fl004(struct flashchip *flash);
-int erase_49fl004(struct flashchip *flash);
-int write_49fl004(struct flashchip *flash, uint8_t *buf);
+/* pm49fl00x.c */
+int probe_49fl00x(struct flashchip *flash);
+int erase_49fl00x(struct flashchip *flash);
+int write_49fl00x(struct flashchip *flash, uint8_t *buf);
 
 /* sharplhf00l04.c */
 int probe_lhf00l04(struct flashchip *flash);

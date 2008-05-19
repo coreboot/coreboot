@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2008 VIA Technologies, Inc.
+ * (Written by Aaron Lwe <aaron.lwe@gmail.com> for VIA)
  * Copyright (C) 2007 Corey Osgood <corey.osgood@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -34,9 +36,11 @@
 
 static void memctrl_init(device_t dev)
 {
+	device_t vlink_dev;
 	u16 reg16;
-	
-	pci_write_config8(dev, 0x86, 0x2d);
+	u8 ranks;
+	u8 pagec, paged, pagee, pagef;
+	u8 shadowreg;
 	
 	/* Set up the vga framebuffer size */
 	reg16 = (log2(CONFIG_VIDEO_MB) << 12) | (1 << 15);
@@ -45,8 +49,41 @@ static void memctrl_init(device_t dev)
 	/* Set up VGA timers */
 	pci_write_config8(dev, 0xa2, 0x44);
 	
-	pci_write_config16(dev, 0xb0, 0xaa60);
+	for (ranks = 0x4b; ranks >= 0x48; ranks--) {
+		if (pci_read_config8(dev, ranks)) {
+			ranks -= 0x48;
+			break;
+		}
+	}
+	if (ranks == 0x47)
+		ranks = 0x00;
+	reg16 = 0xaae0;
+	reg16 |= ranks;
+	/* GMINT Misc. FrameBuffer rank */
+	pci_write_config16(dev, 0xb0, reg16);
+	/* AGPCINT Misc. */
 	pci_write_config8(dev, 0xb8, 0x08);
+
+	/* shadown ram */
+	pagec = 0xff, paged = 0xff, pagee = 0xff, pagef = 0x30;
+	/* PAGE C, D, E are all read write enable */
+	pci_write_config8(dev, 0x80, pagec);
+	pci_write_config8(dev, 0x81, paged);
+	pci_write_config8(dev, 0x82, pagee);
+	/* PAGE F are read/writable */
+	shadowreg = pci_read_config8(dev, 0x83);
+	shadowreg |= pagef;
+	pci_write_config8(dev, 0x83, shadowreg);
+	/* vlink mirror */
+	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_CN700_VLINK, 0);
+	if (vlink_dev) {
+		pci_write_config8(vlink_dev, 0x61, pagec);
+		pci_write_config8(vlink_dev, 0x62, paged);
+		pci_write_config8(vlink_dev, 0x64, pagee);
+		shadowreg = pci_read_config8(vlink_dev, 0x63);
+		shadowreg |= pagef;
+		pci_write_config8(vlink_dev, 0x63, shadowreg);
+	}
 }
 
 static const struct device_operations memctrl_operations = {
@@ -124,7 +161,10 @@ static u32 find_pci_tolm(struct bus *bus)
 
 static void pci_domain_set_resources(device_t dev)
 {
-	static const u8 ramregs[] = {0x40, 0x41, 0x42, 0x43};
+	/* 
+	 * the order is important to find the correct ram size.
+	 */
+	static const u8 ramregs[] = {0x43, 0x42, 0x41, 0x40};
 	device_t mc_dev;
         u32 pci_tolm;
 
@@ -133,19 +173,25 @@ static void pci_domain_set_resources(device_t dev)
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA, 
 				PCI_DEVICE_ID_VIA_CN700_MEMCTRL, 0);
-	
+
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
 		unsigned char rambits;
 		int i, idx;
 
+		/*
+		 * once the register value is not zero, the ramsize is
+		 * this register's value multiply 64 * 1024 * 1024
+		 */
 		for(rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
 			unsigned char reg;
-			reg = pci_read_config8(mc_dev, ramregs[i]);
-			rambits += reg;
+			rambits = pci_read_config8(mc_dev, ramregs[i]);
+			if (rambits != 0)
+				break;
 		}
 		
-		tomk = rambits;
+		tomk = rambits * 64 * 1024;
+		printk_spew("tomk is 0x%x\n", tomk);
 		/* Compute the Top Of Low Memory, in Kb */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -156,16 +202,15 @@ static void pci_domain_set_resources(device_t dev)
 		idx = 10;
 		/* TODO: Hole needed? */
 		ram_resource(dev, idx++, 0, 640); /* first 640k */
-		/* Leave a hole for vga */
-		ram_resource(dev, idx++, 768, (tolmk - 768 -
-						(CONFIG_VIDEO_MB * 1024)));
+		/* Leave a hole for vga, 0xa0000 - 0xc0000 */
+		ram_resource(dev, idx++, 768, (tolmk - 768 - CONFIG_VIDEO_MB * 1024));
 	}
 	assign_resources(&dev->link[0]);
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
-	printk_spew("Entering cn700 pci_domain_scan_bus.\n");
+	printk_debug("Entering cn700 pci_domain_scan_bus.\n");
 
         max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
         return max;

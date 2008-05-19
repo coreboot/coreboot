@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2008 VIA Technologies, Inc.
+ * (Written by Aaron Lwe <aaron.lwe@gmail.com> for VIA)
  * Copyright (C) 2007 Corey Osgood <corey.osgood@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -39,7 +41,7 @@
 #define DUMPNORTH()
 #endif
 
-static void do_ram_command(device_t dev, u8 command, u32 addr_offset)
+static void do_ram_command(device_t dev, u8 command)
 {
 	u8 reg;
 
@@ -55,10 +57,7 @@ static void do_ram_command(device_t dev, u8 command, u32 addr_offset)
 	PRINT_DEBUG_MEM(" to 0x");
 	PRINT_DEBUG_MEM_HEX32(0 + addr_offset);
 	PRINT_DEBUG_MEM("\r\n");
-
-	read32(0 + addr_offset);
 }
-
 
 /**
  * Configure the bus between the cpu and the northbridge. This might be able to 
@@ -83,7 +82,7 @@ static void c7_cpu_setup(device_t dev)
 	/* Arbitration */
 	pci_write_config8(dev, 0x53, 0x88);
 	/* Miscellaneous Control */
-	pci_write_config8(dev, 0x54, 0x10);
+	pci_write_config8(dev, 0x54, 0x1e);
 	pci_write_config8(dev, 0x55, 0x16);
 	/* Write Policy */
 	pci_write_config8(dev, 0x56, 0x01);
@@ -93,9 +92,8 @@ static void c7_cpu_setup(device_t dev)
 	 *	010 : 166MHz	011 : 200MHz
 	 *	100 : 266MHz	101 : 333MHz
 	 *	110/111 : Reserved */
-	//pci_write_config8(dev, 0x57, 0x60);//set 200MHz dram clock
 	/* CPU Miscellaneous Control */
-	pci_write_config8(dev, 0x59, 0x60);
+	pci_write_config8(dev, 0x59, 0x44);	
 	/* Write Policy */
 	pci_write_config8(dev, 0x5d, 0xb2);
 	/* Bandwidth Timer */
@@ -113,16 +111,16 @@ static void c7_cpu_setup(device_t dev)
 	pci_write_config8(dev, 0x65, 0x0f);
 	/* Read Line Burst DRDY# Timing Control */
 	pci_write_config8(dev, 0x66, 0xff);
-	pci_write_config8(dev, 0x67, 0x70);
+	pci_write_config8(dev, 0x67, 0x30);
 		
 	/* Host Bus IO Circuit (See datasheet) */
 	/* Host Address Pullup/down Driving */
-	pci_write_config8(dev, 0x70, 0x33);
-	pci_write_config8(dev, 0x71, 0x00);
-	pci_write_config8(dev, 0x72, 0x33);
-	pci_write_config8(dev, 0x73, 0x00);
+	pci_write_config8(dev, 0x70, 0x11);
+	pci_write_config8(dev, 0x71, 0x11);
+	pci_write_config8(dev, 0x72, 0x11);
+	pci_write_config8(dev, 0x73, 0x11);
 	/* Miscellaneous Control */
-	pci_write_config8(dev, 0x74, 0x00);
+	pci_write_config8(dev, 0x74, 0x35);
 	/* AGTL+ I/O Circuit */
 	pci_write_config8(dev, 0x75, 0x28);
 	/* AGTL+ Compensation Status */
@@ -135,12 +133,123 @@ static void c7_cpu_setup(device_t dev)
 	pci_write_config8(dev, 0x79, 0xaa);
 	/* Address Strobe Input Delay Control */
 	pci_write_config8(dev, 0x7a, 0x24);
-	/* Address CKG Rising/Falling Time Control */
-	pci_write_config8(dev, 0x7b, 0x00);
+	// Address CKG Rising/Falling Time Control
+	pci_write_config8(dev, 0x7b, 0xaa);
 	/* Address CKG Clock Rising/Falling Time Control */
 	pci_write_config8(dev, 0x7c, 0x00);
 	/* Undefined (can't remember why I did this) */
-	pci_write_config8(dev, 0x7d, 0x6d);	
+	pci_write_config8(dev, 0x7d, 0x6d);
+	pci_write_config8(dev, 0x7e, 0x00);
+	pci_write_config8(dev, 0x7f, 0x00);
+	pci_write_config8(dev, 0x80, 0x1b);
+	pci_write_config8(dev, 0x81, 0x0a);
+	pci_write_config8(dev, 0x82, 0x0a);
+	pci_write_config8(dev, 0x83, 0x0a);
+}
+
+/**
+ * Set up dram size according to spd data. Eventually, DRAM timings should be 
+ * done in a similar manner.
+ *
+ * @param ctrl The northbridge devices and spd addresses.
+ */
+static void sdram_set_size(const struct mem_controller *ctrl)
+{
+	u8 density, ranks, result, col;
+
+	ranks = spd_read_byte(ctrl->channel0[0], SPD_NUM_DIMM_BANKS);
+	ranks = (ranks & 0x07) + 1;
+	density = spd_read_byte(ctrl->channel0[0], SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
+	switch (density)
+	{
+		case 0x80:
+			result = 0x08;	/* 512MB / 64MB = 0x08 */
+			break;
+		case 0x40:
+			result = 0x04;
+			break;
+		case 0x20:
+			result = 0x02;
+			break;
+		case 0x10:
+			result = 0xff;	/* 16GB */
+			break;
+		case 0x08:
+			result = 0xff;	/* 8GB */
+			break;
+		case 0x04:
+			result = 0xff;	/* 4GB */
+			break;
+		case 0x02:
+			result = 0x20;	/* 2GB */
+			break;
+		case 0x01:
+			result = 0x10;	/* 1GB */
+			break;
+	}
+
+	if (result == 0xff)
+		die("dram module size too big, not supported by cn700\r\n");
+
+	pci_write_config8(ctrl->d0f3, 0x40, result);
+	pci_write_config8(ctrl->d0f3, 0x48, 0x00);
+	if (ranks == 2) {
+		pci_write_config8(ctrl->d0f3, 0x41, result * ranks);
+		pci_write_config8(ctrl->d0f3, 0x49, result);
+	}
+	/* size mirror */
+	pci_write_config8(ctrl->d0f7, 0xe5, (result * ranks) << 2);
+	pci_write_config8(ctrl->d0f7, 0x57, (result * ranks) << 2);
+	/* Low Top Address */
+	pci_write_config8(ctrl->d0f3, 0x84, 0x00);
+	pci_write_config8(ctrl->d0f3, 0x85, (result * ranks) << 2);
+	pci_write_config8(ctrl->d0f3, 0x88, (result * ranks) << 2);
+
+	/* Physical-Virtual Mapping */
+	if (ranks == 2)
+		pci_write_config8(ctrl->d0f3, 0x54, 1 << 7 | 0 << 4 | 1 << 3 | 1 << 0);
+	if (ranks == 1)
+		pci_write_config8(ctrl->d0f3, 0x54, 1 << 7 | 0 << 4);
+	pci_write_config8(ctrl->d0f3, 0x55, 0x00);
+	/* virtual rank interleave, disable */
+	pci_write_config32(ctrl->d0f3, 0x58, 0x00);
+
+	/* MA Map Type */
+	result = spd_read_byte(ctrl->channel0[0], SPD_NUM_BANKS_PER_SDRAM);
+	if (result == 8) {
+		col = spd_read_byte(ctrl->channel0[0], SPD_NUM_COLUMNS);
+		switch (col)
+		{
+			case 10:
+				pci_write_config8(ctrl->d0f3, 0x50, 0xa0);
+				break;
+			case 11:
+				pci_write_config8(ctrl->d0f3, 0x50, 0xc0);
+				break;
+			case 12:
+				pci_write_config8(ctrl->d0f3, 0x50, 0xe0);
+				break;
+		}
+	}
+	else if (result == 4) {
+		col = spd_read_byte(ctrl->channel0[0], SPD_NUM_COLUMNS);
+		switch (col)
+		{
+			case 9:
+				pci_write_config8(ctrl->d0f3, 0x50, 0x00);
+				break;
+			case 10:
+				pci_write_config8(ctrl->d0f3, 0x50, 0x20);
+				break;
+			case 11:
+				pci_write_config8(ctrl->d0f3, 0x50, 0x40);
+				break;
+			case 12:
+				pci_write_config8(ctrl->d0f3, 0x50, 0x60);
+				break;
+		}
+	}
+	pci_write_config8(ctrl->d0f3, 0x51, 0x00);
 }
 
 /**
@@ -150,224 +259,204 @@ static void c7_cpu_setup(device_t dev)
  */
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
-	/* DQ/DQS Strength Control */
-	pci_write_config8(ctrl->d0f3, 0xd0, 0x88);
-	pci_write_config8(ctrl->d0f3, 0xd1, 0x8b);
-	pci_write_config8(ctrl->d0f3, 0xd2, 0x89);
-	/* SMM and APIC Decoding */
-	pci_write_config8(ctrl->d0f3, 0x86, 0x2d);
-	
-	/* Driving selection */
-	/* DQ / DQS ODT Driving and Range Select */
-	pci_write_config8(ctrl->d0f3, 0xd5, 0x8a);
-	/* Memory Pads Driving and Range Select */
-	pci_write_config8(ctrl->d0f3, 0xd6, 0xaa);
-	/* DRAM Driving – Group DQS */
-	pci_write_config8(ctrl->d0f3, 0xe0, 0xee);
-	/* DRAM Driving – Group DQ (DQ, MPD, DQM) */
-	pci_write_config8(ctrl->d0f3, 0xe2, 0xac);//ba
-	/* DRAM Driving – Group CS */
-	pci_write_config8(ctrl->d0f3, 0xe4, 0x66);
-	/* DRAM Driving – Group MA */
-	pci_write_config8(ctrl->d0f3, 0xe8, 0x86);
-	/* DRAM Driving – Group MCLK */
-	pci_write_config8(ctrl->d0f3, 0xe6, 0xaa);
+	u8 reg;
 
-	/* ODT (some are set with driving select above) */
-	/* Memory Pad ODT Pullup / Pulldown Control */
-	pci_write_config8(ctrl->d0f3, 0xd4, 0x0a);
-	/* Memory Ranks ODT Lookup Table */
-	pci_write_config8(ctrl->d0f3, 0xd8, 0x00);//was 1
-	/* Compensation Control */
-	pci_write_config8(ctrl->d0f3, 0xd3, 0x89);//enable auto compensation
-	
-	/* MCLKO Phase Control */
-	pci_write_config8(ctrl->d0f3, 0x91, 0x02);
-	/* CS/CKE Clock Phase Control */
-	pci_write_config8(ctrl->d0f3, 0x92, 0x06);
-	/* SCMD/MA Clock Phase Control */
-	pci_write_config8(ctrl->d0f3, 0x93, 0x07);
-	/* Channel A DQS Input Capture Range Control */
-	pci_write_config8(ctrl->d0f3, 0x78, 0x83);
-	/* DQS Input Capture Range Control */
-	/* Set in accordance with the BIOS update note */
-	pci_write_config8(ctrl->d0f3, 0x7a, 0x00);
-	/* DQS Input Delay Offset Control */
-	pci_write_config8(ctrl->d0f3, 0x7c, 0x00);
-	/* SDRAM ODT Control */
-	pci_write_config8(ctrl->d0f3, 0xda, 0x80);
-	/* DQ/DQS CKG Output Delay Control - I */
-	pci_write_config8(ctrl->d0f3, 0xdc, 0xff);
-	/* DQ/DQS CKG Output Delay Control - II */
-	pci_write_config8(ctrl->d0f3, 0xdd, 0xff);
-	/* DQS / DQ CKG Duty Cycle Control */
-	pci_write_config8(ctrl->d0f3, 0xec, 0x88);
-	/* MCLK Output Duty Control */
-	pci_write_config8(ctrl->d0f3, 0xee, 0x00);
-	pci_write_config8(ctrl->d0f3, 0xed, 0x10);
-	/* DQS CKG Input Delay Control */
-	pci_write_config8(ctrl->d0f3, 0xef, 0x10);
-
-	pci_write_config8(ctrl->d0f3, 0x77, 0x9d);
-	pci_write_config8(ctrl->d0f3, 0x79, 0x83);
-	pci_write_config16(ctrl->d0f3, 0x88, 0x0020);
-	
-	pci_write_config8(ctrl->d0f4, 0xa7, 0x80);
-
-	/* VLink Control */
-	pci_write_config8(ctrl->d0f7, 0xb0, 0x05);
-	pci_write_config8(ctrl->d0f7, 0xb1, 0x01);
-	
-	/* Memory base */
-	pci_write_config16(ctrl->d1f0, 0x20, 0xfb00);
-	/* Memory limit */
-	pci_write_config16(ctrl->d1f0, 0x22, 0xfcf0);
-	/* Prefetch memory base */
-	pci_write_config16(ctrl->d1f0, 0x24, 0xf400);
-	/* Prefetch memory limit */
-	pci_write_config16(ctrl->d1f0, 0x26, 0xf7f0);
-	/* PCI to PCI bridge control */
-	pci_write_config16(ctrl->d1f0, 0x3e, 0x0008);
-	
-	/* CPU to PCI flow control 1 */
-	pci_write_config8(ctrl->d1f0, 0x40, 0x83);
-	pci_write_config8(ctrl->d1f0, 0x41, 0xc3);//clear reset error, set to 43
-	pci_write_config8(ctrl->d1f0, 0x42, 0xe2);
-	pci_write_config8(ctrl->d1f0, 0x43, 0x44);
-	pci_write_config8(ctrl->d1f0, 0x44, 0x34);
-	pci_write_config8(ctrl->d1f0, 0x45, 0x72);
-
-	/* Disable cross bank/multi page mode */
-	pci_write_config8(ctrl->d0f3, DDR_PAGE_CTL, 0x80);
-	pci_write_config8(ctrl->d0f3, DRAM_REFRESH_COUNTER, 0x00);
-
-	/* Set WR=5 and RFC */
-	pci_write_config8(ctrl->d0f3, 0x61, 0xc7);
-	/* Set CAS=5 */
-	pci_write_config8(ctrl->d0f3, 0x62, 0xaf);
+	/* Set WR=5 */
+	pci_write_config8(ctrl->d0f3, 0x61, 0xe0);
+	/* Set CAS=4 */
+	pci_write_config8(ctrl->d0f3, 0x62, 0xfa);
+	/* dram timing-3 */
 	pci_write_config8(ctrl->d0f3, 0x63, 0xca);
-	/* Set to DDR2 sdram, BL=8 (0xc8, 0xc0 for bl=4) */
-	pci_write_config8(ctrl->d0f3, 0x6c, 0xc8);
+	/* dram timing-4 */
+	pci_write_config8(ctrl->d0f3, 0x64, 0xcc);
+	/* DIMM command / Address Selection */
+	pci_write_config8(ctrl->d0f3, 0x67, 0x00);
+	/* Disable cross bank/multi page mode */
+	pci_write_config8(ctrl->d0f3, 0x69, 0x00);
+	/* disable refresh now */
+	pci_write_config8(ctrl->d0f3, 0x6a, 0x00);
+
+	/* frequency 100MHZ */
+	pci_write_config8(ctrl->d0f3, 0x90, 0x00);
+	pci_write_config8(ctrl->d0f2, 0x57, 0x18);
 	/* Allow manual dll reset */
 	pci_write_config8(ctrl->d0f3, 0x6b, 0x10);
-	
-	pci_write_config8(ctrl->d0f3, 0x6e, 0x89);
-	pci_write_config8(ctrl->d0f3, 0x67, 0x50);
-	pci_write_config8(ctrl->d0f3, 0x65, 0xd9);
-	
-	/* Only enable bank 1, for now */
-	/* TODO: Multiple, dynamically controlled bank enables */
-	pci_write_config8(ctrl->d0f3, 0x54, 0x80);
-	pci_write_config8(ctrl->d0f3, 0x55, 0x00);
-	
-	/* Set to 2T, MA Map type 1. 
-	 * TODO: Needs to become dynamic */
-	pci_write_config16(ctrl->d0f3, 0x50, 0x0020);
 
-	/* BA0-2 Selection. Don't mess with */
+	/* Bank/Rank Interleave Address Select */
 	pci_write_config8(ctrl->d0f3, 0x52, 0x33);
 	pci_write_config8(ctrl->d0f3, 0x53, 0x3f);
 	
-	/* Disable bank interleaving. This feature seems useless anyways */
-	pci_write_config32(ctrl->d0f3, 0x58, 0x00000000);
-	pci_write_config8(ctrl->d0f3, 0x88, 0x08);
+	/* Set to DDR2 sdram, BL=8 (0xc8, 0xc0 for bl=4) */
+	pci_write_config8(ctrl->d0f3, 0x6c, 0xc8);
 
-	/* Some DQS control stuffs */
-	pci_write_config8(ctrl->d0f3, 0x74, 0x04);
-	pci_write_config8(ctrl->d0f3, 0x75, 0x04);
-	pci_write_config8(ctrl->d0f3, 0x76, 0x00);
-}
+	/* DRAM Bus Turn-Around Setting */
+	pci_write_config8(ctrl->d0f3, 0x60, 0x03);
+	/* DRAM Arbitration Control */
+	pci_write_config8(ctrl->d0f3, 0x66, 0x80);
+	/* DQS Tuning: testing on a couple different boards has shown this is
+	 * static, or close enough that it can be. Which is good, because the
+ 	 * tuning function used too many registers
+	 */
+	/* DQS Output Delay for CHannel A */
+	pci_write_config8(ctrl->d0f3, 0x70, 0x00);
+	/* MD Output Delay for Channel A */
+	pci_write_config8(ctrl->d0f3, 0x71, 0x01);
+	pci_write_config8(ctrl->d0f3, 0x73, 0x01);
 
-/**
- * Set up dram size according to spd data. Eventually, DRAM timings should be 
- * done in a similar manner.
- *
- * @param ctrl The northbridge devices and spd addresses.
- */
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
-{
-	u8 spd_data, spd_data2;
+	/* dram arbitration timer */
+	pci_write_config8(ctrl->d0f3, 0x65, 0xd9);
+
+	/* dram signal timing control */
+	pci_write_config8(ctrl->d0f3, 0x74, 0x01);
+	pci_write_config8(ctrl->d0f3, 0x75, 0x01);
+	pci_write_config8(ctrl->d0f3, 0x76, 0x06);
+	pci_write_config8(ctrl->d0f3, 0x77, 0x92);
+	pci_write_config8(ctrl->d0f3, 0x78, 0x83);
+	pci_write_config8(ctrl->d0f3, 0x79, 0x83);
+	pci_write_config8(ctrl->d0f3, 0x7a, 0x00);
+	pci_write_config8(ctrl->d0f3, 0x7b, 0x10);
+
+	/* dram clocking control */
+	pci_write_config8(ctrl->d0f3, 0x91, 0x01);
+	/* CS/CKE Clock Phase Control */
+	pci_write_config8(ctrl->d0f3, 0x92, 0x02);
+	/* SCMD/MA Clock Phase Control */
+	pci_write_config8(ctrl->d0f3, 0x93, 0x02);
+	/* DCLKO Feedback Mode Output Control */
+	pci_write_config8(ctrl->d0f3, 0x94, 0x00);
+	pci_write_config8(ctrl->d0f3, 0x9d, 0x0f);
 	
-	/* DRAM Bank Size */
-	spd_data = spd_read_byte(ctrl->channel0[0],
-					SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
-	/* I know this seems weird. Blame JEDEC/Via. */
-	if(spd_data >= 0x10)
-		spd_data = spd_data >> 1;
-	else
-		spd_data = spd_data << 1;
+	/* SDRAM ODT Control */
+	pci_write_config8(ctrl->d0f3, 0xda, 0x80);
+	/* Channel A DQ/DQS CKG Output Delay Control */
+	pci_write_config8(ctrl->d0f3, 0xdc, 0x54);
+	/* Channel A DQ/DQS CKG Output Delay Control */
+	pci_write_config8(ctrl->d0f3, 0xdd, 0x55);
+	/* odt lookup table */
+	pci_write_config8(ctrl->d0f3, 0xd8, 0x01);
+	pci_write_config8(ctrl->d0f3, 0xd9, 0x0a);
 
-	/* Check for double sided dimm and adjust size accordingly */
-	spd_data2 = spd_read_byte(ctrl->channel0[0], SPD_NUM_BANKS_PER_SDRAM);
-	/* There should be 4 banks on a single sided dimm, 
-	 * or 8 on a dual sided one */
-	spd_data = spd_data * (spd_data2 / 4);
-	pci_write_config8(ctrl->d0f3, 0x40, spd_data);
-	/* TODO: The rest of the DIMMs */
+	/* ddr sdram control */
+	pci_write_config8(ctrl->d0f3, 0x6d, 0xc0);
+	pci_write_config8(ctrl->d0f3, 0x6f, 0x41);
+
+	/* DQ/DQS Strength Control */
+	pci_write_config8(ctrl->d0f3, 0xd0, 0xaa);
+
+	/* Compensation Control */
+	pci_write_config8(ctrl->d0f3, 0xd3, 0x01); /*enable auto compensation*/
+	/* ODT (some are set with driving select above) */
+	pci_write_config8(ctrl->d0f3, 0xd4, 0x80);
+	pci_write_config8(ctrl->d0f3, 0xd5, 0x8a);
+	/* Memory Pads Driving and Range Select */
+	pci_write_config8(ctrl->d0f3, 0xd6, 0xaa);
+
+	pci_write_config8(ctrl->d0f3, 0xe0, 0xee);
+	pci_write_config8(ctrl->d0f3, 0xe2, 0xac);
+	pci_write_config8(ctrl->d0f3, 0xe4, 0x66);
+	pci_write_config8(ctrl->d0f3, 0xe6, 0x33);
+	pci_write_config8(ctrl->d0f3, 0xe8, 0x86);
+	/* DQS / DQ CKG Duty Cycle Control */
+	pci_write_config8(ctrl->d0f3, 0xec, 0x00);
+	/* MCLK Output Duty Control */
+	pci_write_config8(ctrl->d0f3, 0xee, 0x00);
+	/* DQS CKG Input Delay Control */
+	pci_write_config8(ctrl->d0f3, 0xef, 0x10);
+	
+	/* dram duty control */
+	pci_write_config8(ctrl->d0f3, 0xed, 0x10);
+
+	/* SMM and APIC deocoding, we donot use SMM */
+	reg = 0x29;
+	pci_write_config8(ctrl->d0f3, 0x86, reg);
+	/* SMM and APIC decoding mirror */
+	pci_write_config8(ctrl->d0f7, 0xe6, reg);
+
+	/* dram module configuration */
+	pci_write_config8(ctrl->d0f3, 0x6e, 0x89);
 }
 
-static void sdram_enable(device_t dev)
+static void sdram_set_post(const struct mem_controller *ctrl)
 {
-	int i;
+	device_t dev = ctrl->d0f3;
+	/* Enable multipage mode. */
+	pci_write_config8(dev, 0x69, 0x03);
+
+	/* Enable refresh. */
+	pci_write_config8(dev, 0x6a, 0x32);
+
+	// vga device
+	pci_write_config16(dev, 0xa0, (1 <<15));
+	pci_write_config16(dev, 0xa4, 0x0010);
+	
+}
+
+static void sdram_enable(device_t dev, unsigned long rank_address)
+{
+	u8 i;
 
 	/* 1. Apply NOP. */
 	PRINT_DEBUG_MEM("RAM Enable 1: Apply NOP\r\n");
-	do_ram_command(dev, RAM_COMMAND_NOP, 0);
-	udelay(200);
+	do_ram_command(dev, RAM_COMMAND_NOP);
+	udelay(100);
+	read32(rank_address + 0x10);
 
 	/* 2. Precharge all. */
+	udelay(400);
 	PRINT_DEBUG_MEM("RAM Enable 2: Precharge all\r\n");
-	do_ram_command(dev, RAM_COMMAND_PRECHARGE, 0);
+	do_ram_command(dev, RAM_COMMAND_PRECHARGE);
+	read32(rank_address + 0x10);
 
 	/* 3. Mode register set. */
 	PRINT_DEBUG_MEM("RAM Enable 4: Mode register set\r\n");
-	do_ram_command(dev, RAM_COMMAND_MRS, 0x2000);//enable dll
-	do_ram_command(dev, RAM_COMMAND_MRS, 0x800);//reset dll
+	do_ram_command(dev, RAM_COMMAND_MRS);
+	read32(rank_address + 0x120000);// EMRS DLL Enable
+	read32(rank_address + 0x800); 	// MRS DLL Reset
 	
 	/* 4. Precharge all again. */
 	PRINT_DEBUG_MEM("RAM Enable 2: Precharge all\r\n");
-	do_ram_command(dev, RAM_COMMAND_PRECHARGE, 0);
+	do_ram_command(dev, RAM_COMMAND_PRECHARGE);
+	read32(rank_address + 0x0);
 	
 	/* 5. Perform 8 refresh cycles. Wait tRC each time. */
 	PRINT_DEBUG_MEM("RAM Enable 3: CBR\r\n");
-	do_ram_command(dev, RAM_COMMAND_CBR, 0);
-	/* First read is actually done by do_ram_command */
-	for(i = 0; i < 7; i++) {
+	do_ram_command(dev, RAM_COMMAND_CBR);
+	for(i = 0; i < 8; i++) {
+		read32(rank_address + 0x20);
 		udelay(100);
-		read32(0);
 	}
 
 	/* 6. Mode register set. */
 	PRINT_DEBUG_MEM("RAM Enable 4: Mode register set\r\n");
-	//safe value for now, BL=8, WR=5, CAS=5
+	//safe value for now, BL=8, WR=5, CAS=4
 	/* (E)MRS values are from the BPG. No direct explanation is given, but 
 	 * they should somehow conform to the JEDEC DDR2 SDRAM Specification
 	 * (JESD79-2C). */
-	do_ram_command(dev, RAM_COMMAND_MRS, 0x0022d8);
-	
-	/* 7. Mode register set. */
-	PRINT_DEBUG_MEM("RAM Enable 4: Mode register set\r\n");
-	do_ram_command(dev, RAM_COMMAND_MRS, 0x21c20);//default OCD calibration
-	do_ram_command(dev, RAM_COMMAND_MRS, 0x20020);//exit calibration mode
+	do_ram_command(dev, RAM_COMMAND_MRS);
+	read32(rank_address + 0x002258);	// MRS command
+	read32(rank_address + 0x121c20);	// EMRS OCD Default
+	read32(rank_address + 0x120020);	// EMRS OCD Calibration Mode Exit
 	
 	/* 8. Normal operation */
 	PRINT_DEBUG_MEM("RAM Enable 5: Normal operation\r\n");
-	do_ram_command(dev, RAM_COMMAND_NORMAL, 0);
-	
-	/* Enable multipage mode. */
-	pci_write_config8(dev, DDR_PAGE_CTL, 0x83);
-	/* Enable refresh. */
-	pci_write_config8(dev, DRAM_REFRESH_COUNTER, 0x32);
-	
-	/* DQS Tuning: testing on a couple different boards has shown this is
-	 * static, or close enough that it can be. Which is good, because the
-	 * tuning function used too many registers. */
-	pci_write_config8(dev, CH_A_DQS_OUTPUT_DELAY, 0x00);
-	pci_write_config8(dev, CH_A_MD_OUTPUT_DELAY, 0x03);
-
-	/* Enable VGA device with no memory, add memory later. We need this
-	 * here to enable the actual device, otherwise it won't show up until
-	 * later and LB will have a fit. */
-	pci_write_config16(dev, 0xa0, (1 << 15));
-	pci_write_config16(dev, 0xa4, 0x0010);
+	do_ram_command(dev, RAM_COMMAND_NORMAL);
+	read32(rank_address + 0x30);
 }
+
+/*
+ * Support one dimm with up to 2 ranks
+ */
+static void ddr_ram_setup(const struct mem_controller *ctrl)
+{
+	u8 reg;
+
+	c7_cpu_setup(ctrl->d0f2);
+	sdram_set_registers(ctrl);
+	sdram_set_size(ctrl);
+	sdram_enable(ctrl->d0f3, 0);
+	reg = pci_read_config8(ctrl->d0f3, 0x41);
+	if (reg != 0)
+		sdram_enable(ctrl->d0f3, pci_read_config8(ctrl->d0f3, 0x40) << 26);
+	sdram_set_post(ctrl);
+}
+

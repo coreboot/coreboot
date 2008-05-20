@@ -218,6 +218,16 @@ int larstat(struct LAR *lar, const char *path, struct larstat *buf)
 	return 0;
 }
 
+void * larfptr(struct LAR *lar, const char *filename)
+{
+	struct lar_header *header = get_header_by_name(lar, filename);
+
+	if (header == NULL)
+		return NULL;
+
+	return (void *) ((u8 *) header + ntohl(header->offset));
+}
+
 struct LFILE * lfopen(struct LAR *lar, const char *filename)
 {
 	struct LFILE *file;

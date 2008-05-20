@@ -256,6 +256,8 @@ static void loop(void)
 			}
 		}
 
+		if (key == 0x1B)
+			return;
 
 		handle_category_key(&categories[curwin], key);
 	}

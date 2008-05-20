@@ -19,7 +19,7 @@
 
 #include "coreinfo.h"
 
-#define SCREEN_Y 24
+#define SCREEN_Y 25
 #define SCREEN_X 80
 
 extern struct coreinfo_module cpuinfo_module;
@@ -73,6 +73,8 @@ struct coreinfo_cat {
 
 
 static WINDOW *modwin;
+static WINDOW *menuwin;
+
 static int curwin;
 
 void print_module_title(WINDOW *win, const char *title)
@@ -94,10 +96,10 @@ static void print_submenu(struct coreinfo_cat *cat)
 	char menu[80];
 	char *ptr = menu;
 
-	wmove(stdscr, SCREEN_Y - 2, 0);
+	wmove(menuwin, 0, 0);
 
 	for (j = 0; j < SCREEN_X; j++)
-		waddch(stdscr, ' ');
+		waddch(menuwin, ' ');
 
 	if (!cat->count)
 		return;
@@ -105,7 +107,7 @@ static void print_submenu(struct coreinfo_cat *cat)
 	for (i = 0; i < cat->count; i++)
 		ptr += sprintf(ptr, "[%c: %s] ", 'A' + i, cat->modules[i]->name);
 
-	mvprintw(SCREEN_Y - 2, 0, menu);
+	mvwprintw(menuwin, 0, 0, menu);
 }
 
 #ifdef CONFIG_SHOW_DATE_TIME
@@ -118,7 +120,7 @@ static void print_time_and_date(void)
 
 	rtc_read_clock(&tm);
 
-	mvprintw(23, 57, "%02d/%02d/%04d - %02d:%02d:%02d",
+	mvwprintw(menuwin, 0, 57, "%02d/%02d/%04d - %02d:%02d:%02d",
 		tm.tm_mon, tm.tm_mday, 1900+tm.tm_year, tm.tm_hour,
 		tm.tm_min, tm.tm_sec);
 }
@@ -130,10 +132,10 @@ static void print_menu(void)
 	char menu[80];
 	char *ptr = menu;
 
-	wmove(stdscr, SCREEN_Y - 1, 0);
+	wmove(menuwin, 1, 0);
 
 	for (j = 0; j < SCREEN_X; j++)
-		waddch(stdscr, ' ');
+		waddch(menuwin, ' ');
 
 	for (i = 0; i < ARRAY_SIZE(categories); i++) {
 		if (categories[i].count == 0)
@@ -142,7 +144,7 @@ static void print_menu(void)
 		ptr += sprintf(ptr, "F%d: %s ", i + 1, categories[i].name);
 	}
 
-	mvprintw(23, 0, menu);
+	mvwprintw(menuwin, 1, 0, menu);
 
 #ifdef CONFIG_SHOW_DATE_TIME
 	print_time_and_date();
@@ -192,7 +194,7 @@ static void redraw_module(struct coreinfo_cat *cat)
 
 	wclear(modwin);
 	cat->modules[cat->cur]->redraw(modwin);
-	refresh();
+	wrefresh(modwin);
 }
 
 static void handle_category_key(struct coreinfo_cat *cat, int key)
@@ -219,6 +221,7 @@ static void loop(void)
 	int key;
 
 	center(0, "coreinfo v0.1");
+	refresh();
 
 	print_menu();
 	print_submenu(&categories[curwin]);
@@ -229,7 +232,7 @@ static void loop(void)
 	while (1) {
 #ifdef CONFIG_SHOW_DATE_TIME
 		print_time_and_date();
-		refresh();
+		wrefresh(menuwin);
 #endif
 
 		key = getch();
@@ -271,10 +274,12 @@ int main(void)
 	init_pair(2, COLOR_BLACK, COLOR_WHITE);
 	init_pair(3, COLOR_WHITE, COLOR_WHITE);
 
-	modwin = newwin(SCREEN_Y-2, SCREEN_X, 1, 0);
+	modwin = newwin(SCREEN_Y - 3, SCREEN_X, 1, 0);
+	menuwin = newwin(2, SCREEN_X, SCREEN_Y - 2, 0);
 
 	wattrset(stdscr, COLOR_PAIR(1) | A_BOLD);
 	wattrset(modwin, COLOR_PAIR(2));
+	wattrset(menuwin, COLOR_PAIR(1) | A_BOLD);
 
 	for (i = 0; i < SCREEN_Y - 1; i++) {
 		wmove(modwin, i - 1, 0);
@@ -283,7 +288,7 @@ int main(void)
 			waddch(modwin, ' ');
 	}
 
-	refresh();
+	wrefresh(modwin);
 
 	for (i = 0; i < ARRAY_SIZE(categories); i++) {
 		for(j = 0; j < categories[i].count; j++)

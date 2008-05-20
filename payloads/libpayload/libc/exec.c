@@ -27,50 +27,24 @@
  * SUCH DAMAGE.
  */
 
-	.global _entry, _leave
-	.text
-	.align 4
+#include <libpayload.h>
 
-/*
- * Our entry point - assume that the CPU is in 32 bit protected mode and
- * all segments are in a flat model. That's our operating mode, so we won't
- * change anything.
+#ifdef CONFIG_TARGET_I386
+extern void i386_do_exec(long addr, int argc, char **argv, int *ret);
+#endif
+
+/**
+ * Execute code in memory
+ *
+ * @param ptr The entry point to jump to
+ * @return Return the return value from the entry point
  */
-_entry:
-	call _init
+int exec(long addr, int argc, char **argv)
+{
+	int val = -1;
 
-	/* We're back - go back to the bootloader. */
-	ret
-
-/*
- * This function saves off the previous stack and switches us to our
- * own execution environment.
- */
-_init:
-	/* No interrupts, please. */
-	cli
-
-	/* Store current stack pointer. */
-	movl %esp, %esi
-
-	/* Setup new stack. */
-	movl $_stack, %ebx
-
-	movl %ebx, %esp
-
-	/* Save old stack pointer. */
-	pushl %esi
-
-	/* Let's rock. */
-	call start_main
-
-	/* %eax has the return value - pass it on unmolested */
-_leave:
-	/* Get old stack pointer. */
-	popl %ebx
-
-	/* Restore old stack. */
-	movl %ebx, %esp
-
-	/* Return to the original context. */
-	ret
+#ifdef CONFIG_TARGET_I386
+	i386_do_exec(addr, argc, argv, &val);
+#endif
+	return val;
+}

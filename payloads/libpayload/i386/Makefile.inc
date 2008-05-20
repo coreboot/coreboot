@@ -29,3 +29,4 @@
 
 TARGETS-y += i386/head.o i386/main.o i386/sysinfo.o
 TARGETS-y += i386/timer.o i386/coreboot.o i386/util.o
+TARGETS-y += i386/exec.o

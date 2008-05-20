@@ -145,6 +145,9 @@ void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
 
+/* libc/exec.c */
+int exec(long addr, int argc, char **argv);
+
 /* libc/lib.c */
 int bcd2dec(int b);
 int dec2bcd(int d);

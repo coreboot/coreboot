@@ -27,50 +27,73 @@
  * SUCH DAMAGE.
  */
 
-	.global _entry, _leave
-	.text
-	.align 4
+/* calling syntax:  i386_do_exec(long addr, int argc, char **argv, int *ret) */
 
-/*
- * Our entry point - assume that the CPU is in 32 bit protected mode and
- * all segments are in a flat model. That's our operating mode, so we won't
- * change anything.
+/* This implements the payload API detailed here:
+ * http://www.coreboot.org/Payload_API
  */
-_entry:
-	call _init
 
-	/* We're back - go back to the bootloader. */
-	ret
+.align 4
+.text
 
-/*
- * This function saves off the previous stack and switches us to our
- * own execution environment.
- */
-_init:
-	/* No interrupts, please. */
-	cli
+.global i386_do_exec
+        .type i386_do_exec,@function
 
-	/* Store current stack pointer. */
-	movl %esp, %esi
+i386_do_exec:
+	pushl %ebp
+	movl %esp, %ebp
+	pushl %eax
 
-	/* Setup new stack. */
-	movl $_stack, %ebx
+	/* Put the run address in %eax */
+	movl 8(%ebp), %eax
 
-	movl %ebx, %esp
+	/* Save off the rest of the registers */
 
-	/* Save old stack pointer. */
 	pushl %esi
+	pushl %ecx
+	pushl %ebp
 
-	/* Let's rock. */
-	call start_main
+	/* Push the argc and argv pointers on to the stack */
 
-	/* %eax has the return value - pass it on unmolested */
-_leave:
-	/* Get old stack pointer. */
-	popl %ebx
+	movl 12(%ebp), %esi
+	movl 16(%ebp), %ecx
 
-	/* Restore old stack. */
-	movl %ebx, %esp
+	pushl %esi
+	pushl %ecx
 
-	/* Return to the original context. */
+	/* Move a "magic" number on the stack - the other
+	 * payload will use this as a clue that the argc
+	 * and argv are sane
+	 */
+
+	movl  $12345678, %ecx
+	pushl %ecx
+
+	/* Jump to the code */
+	call *%eax
+
+	/* %eax has the return value */
+
+	/* Skip over the argc/argv stuff still on the stack */
+	addl $12, %esp
+
+	/* Get back %ebp */
+	popl %ebp
+
+	/* Get the pointer to the return value
+	 * and save the return value in it
+         */
+
+	movl 20(%ebp), %ecx
+	movl %eax, (%eax)
+
+	/* Get the rest of the saved registers */
+	popl %ecx
+	popl %esi
+	popl %eax
+
+	/* Restore the stack pointer */
+	movl %ebp,%esp
+	popl %ebp
 	ret
+

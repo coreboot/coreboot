@@ -66,7 +66,7 @@ static WINDOW window_list[MAX_WINDOWS];
 static int window_count = 1;
 
 // struct ldat foo;
-static struct ldat ldat_list[3];
+static struct ldat ldat_list[MAX_WINDOWS][SCREEN_Y];
 static int ldat_count = 0;
 
 /* One item bigger than SCREEN_X to reverse place for a NUL byte. */
@@ -306,7 +306,7 @@ WINDOW *newwin(int num_lines, int num_columns, int begy, int begx)
 	win->_begx = begx;
 	// win->_yoffset = SP->_topstolen;
 
-	win->_line = &ldat_list[ldat_count++];
+	win->_line = ldat_list[ldat_count++];
 
 	/* FIXME: Is this right? Should the window attributes be normal? */
 	win->_color = PAIR_NUMBER(0);
@@ -523,8 +523,8 @@ int wcolor_set(WINDOW *win, short color_pair_number, void *opts)
 int werase(WINDOW *win)
 {
 	int x, y;
-	for (y = 0; y < win->_maxy; y++) {
-		for (x = 0; x < win->_maxx; x++) {
+	for (y = 0; y <= win->_maxy; y++) {
+		for (x = 0; x <= win->_maxx; x++) {
 			win->_line[y].text[x].chars[0] = ' ';
 			win->_line[y].text[x].attr = WINDOW_ATTRS(win);
 		}
@@ -591,8 +591,8 @@ int wnoutrefresh(WINDOW *win)
 	// FIXME.
 	int x, y;
 
-	for (y = 0; y < win->_maxy; y++) {
-		for (x = 0; x < win->_maxx; x++) {
+	for (y = 0; y <= win->_maxy; y++) {
+		for (x = 0; x <= win->_maxx; x++) {
 			if (curses_flags & F_ENABLE_SERIAL)
 				serial_putchar(win->_line[y].text[x].chars[0]);
 
@@ -619,7 +619,7 @@ int wnoutrefresh(WINDOW *win)
 				 * but this will break wide characters!
 				 */
 				c |= (chtype) (win->_line[y].text[x].chars[0] & 0xff);
-				video_console_putc(y, x, c);
+				video_console_putc(win->_begy + y, win->_begx + x, c);
 			}
 		}
 	}

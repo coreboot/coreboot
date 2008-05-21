@@ -22,6 +22,8 @@
 #define SCREEN_Y 25
 #define SCREEN_X 80
 
+#define KEY_ESC 27
+
 extern struct coreinfo_module cpuinfo_module;
 extern struct coreinfo_module pci_module;
 extern struct coreinfo_module coreboot_module;
@@ -256,7 +258,7 @@ static void loop(void)
 			}
 		}
 
-		if (key == 0x1B)
+		if (key == KEY_ESC)
 			return;
 
 		handle_category_key(&categories[curwin], key);

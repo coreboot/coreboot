@@ -227,6 +227,10 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 		if ((mtype == LB_MEM_RAM) && (start < mend) && (end > mstart)) {
 			break;
 		}
+		if ((mtype == LB_MEM_TABLE) && (start < mend) && (end > mstart)) {
+			printk_err("Payload is overwriting Coreboot tables.\n");
+			break;
+		}
 	}
 	if (i == mem_entries) {
 		printk_err("No matching ram area found for range:\n");

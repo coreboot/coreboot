@@ -701,7 +701,7 @@ int board_flash_enable(const char *vendor, const char *part)
 		board = board_match_pci_card_ids();
 
 	if (board) {
-		printf("Found board \"%s\": enabling flash write... ",
+		printf("Found board \"%s\", enabling flash write... ",
 			board->name);
 
 		ret = board->enable(board->name);

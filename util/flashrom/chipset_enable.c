@@ -154,7 +154,7 @@ static int enable_flash_ich(struct pci_dev *dev, const char *name,
 	 */
 	old = pci_read_byte(dev, bios_cntl);
 
-	printf_debug("BIOS Lock Enable: %sabled, ",
+	printf_debug("\nBIOS Lock Enable: %sabled, ",
 		     (old & (1 << 1)) ? "en" : "dis");
 	printf_debug("BIOS Write Enable: %sabled, ",
 		     (old & (1 << 0)) ? "en" : "dis");

@@ -151,8 +151,9 @@ struct flashchip *probe_flash(struct flashchip *flash)
 		flash->virtual_memory = bios;
 
 		if (flash->probe(flash) == 1) {
-			printf("%s found at physical address 0x%lx.\n",
-			       flash->name, flash_baseaddr);
+			printf("Found chip \"%s %s\" (%d KB) at physical address 0x%lx.\n",
+			       flash->vendor, flash->name, flash->total_size,
+			       flash_baseaddr);
 			return flash;
 		}
 		munmap((void *)bios, size);
@@ -360,7 +361,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (read_it && write_it) {
-		printf("-r and -w are mutually exclusive\n");
+		printf("Error: -r and -w are mutually exclusive.\n");
 		usage(argv[0]);
 	}
 
@@ -432,7 +433,6 @@ int main(int argc, char *argv[])
 
 	flash = flashes[0];
 
-	printf("Flash part is %s (%d KB).\n", flash->name, flash->total_size);
 	if (TEST_OK_MASK != (flash->tested & TEST_OK_MASK)) {
 		printf("===\n");
 		if (flash->tested & TEST_BAD_MASK) {
@@ -480,7 +480,7 @@ int main(int argc, char *argv[])
 	buf = (uint8_t *) calloc(size, sizeof(char));
 
 	if (erase_it) {
-		printf("Erasing flash chip\n");
+		printf("Erasing flash chip.\n");
 		if (!flash->erase) {
 			fprintf(stderr, "Error: flashrom has no erase function for this flash chip.\n");
 			return 1;
@@ -517,7 +517,7 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 		if (image_stat.st_size != flash->total_size * 1024) {
-			fprintf(stderr, "Error: Image size doesnt match\n");
+			fprintf(stderr, "Error: Image size doesn't match\n");
 			exit(1);
 		}
 

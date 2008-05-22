@@ -431,6 +431,53 @@ static int board_artecgroup_dbe6x(const char *name)
 	return 0;
 }
 
+/**
+ * Set the specified GPIO on the specified ICHx southbridge to high.
+ *
+ * @param name The name of this board.
+ * @param ich_vendor PCI vendor ID of the specified ICHx southbridge.
+ * @param ich_device PCI device ID of the specified ICHx southbridge.
+ * @param gpiobase_reg GPIOBASE register offset in the LPC bridge.
+ * @param gp_lvl Offset of GP_LVL register in I/O space, relative to GPIOBASE.
+ * @param gp_lvl_bitmask GP_LVL bitmask (set GPIO bits to 1, all others to 0).
+ * @param gpio_bit The bit (GPIO) which shall be set to high.
+ * @return If the write-enable was successful return 0, otherwise return -1.
+ */
+static int ich_gpio_raise(const char *name, uint16_t ich_vendor,
+			  uint16_t ich_device, uint8_t gpiobase_reg,
+			  uint8_t gp_lvl, uint32_t gp_lvl_bitmask,
+			  unsigned int gpio_bit)
+{
+	struct pci_dev *dev;
+	uint16_t gpiobar;
+	uint32_t reg32;
+
+	dev = pci_dev_find(ich_vendor, ich_device);     /* Intel ICHx LPC */
+	if (!dev) {
+		fprintf(stderr, "\nERROR: ICHx LPC dev %4x:%4x not found.\n",
+			ich_vendor, ich_device);
+		return -1;
+	}
+
+	/* Use GPIOBASE register to find the I/O space for GPIO. */
+	gpiobar = pci_read_word(dev, gpiobase_reg) & gp_lvl_bitmask;
+
+	/* Set specified GPIO to high. */
+	reg32 = INL(gpiobar + gp_lvl);
+	reg32 |= (1 << gpio_bit);
+	OUTL(reg32, gpiobar + gp_lvl);
+
+	return 0;
+}
+
+/**
+ * Suited for ASUS P4B266.
+ */
+static int ich2_gpio22_raise(const char *name)
+{
+	return ich_gpio_raise(name, 0x8086, 0x2440, 0x58, 0x0c, 0xffc0, 22);
+}
+
 static int board_kontron_986lcd_m(const char *name)
 {
 	struct pci_dev *dev;
@@ -501,6 +548,8 @@ struct board_pciid_enable {
 };
 
 struct board_pciid_enable board_pciid_enables[] = {
+	{0x8086, 0x1a30, 0x1043, 0x8070, 0x8086, 0x244b, 0x1043, 0x8028,
+	 NULL, NULL, "ASUS P4B266", ich2_gpio22_raise},
 	{0x10de, 0x0360, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 	 "gigabyte", "m57sli", "GIGABYTE GA-M57SLI-S4", it87xx_probe_spi_flash},
 	{0x10de, 0x03e0, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

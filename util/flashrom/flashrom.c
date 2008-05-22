@@ -252,6 +252,9 @@ int main(int argc, char *argv[])
 	int option_index = 0;
 	int read_it = 0, write_it = 0, erase_it = 0, verify_it = 0;
 	int ret = 0, i;
+#ifdef __FreeBSD__
+	int io_fd;
+#endif
 
 	static struct option long_options[] = {
 		{"read", 0, 0, 'r'},
@@ -367,6 +370,8 @@ int main(int argc, char *argv[])
 	/* First get full io access */
 #if defined (__sun) && (defined(__i386) || defined(__amd64))
 	if (sysi86(SI86V86, V86SC_IOPL, PS_IOPL) != 0) {
+#elif defined(__FreeBSD__)
+	if ((io_fd = open("/dev/io", O_RDWR)) < 0) {
 #else
 	if (iopl(3) != 0) {
 #endif
@@ -559,5 +564,8 @@ int main(int argc, char *argv[])
 	if (verify_it)
 		ret |= verify_flash(flash, buf);
 
+#ifdef __FreeBSD__
+	close(io_fd);
+#endif
 	return ret;
 }

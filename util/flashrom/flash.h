@@ -30,6 +30,25 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef __FreeBSD__
+  #include <machine/cpufunc.h>
+  #define off64_t off_t
+  #define lseek64 lseek
+  #define OUTB(x, y) do { u_int tmp = (y); outb(tmp, (x)); } while (0)
+  #define OUTW(x, y) do { u_int tmp = (y); outw(tmp, (x)); } while (0)
+  #define OUTL(x, y) do { u_int tmp = (y); outl(tmp, (x)); } while (0)
+  #define INB(x) __extension__ ({ u_int tmp = (x); inb(tmp); })
+  #define INW(x) __extension__ ({ u_int tmp = (x); inw(tmp); })
+  #define INL(x) __extension__ ({ u_int tmp = (x); inl(tmp); })
+#else
+  #define OUTB outb
+  #define OUTW outw
+  #define OUTL outl
+  #define INB  inb
+  #define INW  inw
+  #define INL  inl
+#endif
+
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
 struct flashchip {

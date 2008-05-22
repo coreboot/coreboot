@@ -40,14 +40,14 @@ int fast_spi = 1;
 /* Generic Super I/O helper functions */
 uint8_t regval(uint16_t port, uint8_t reg)
 {
-	outb(reg, port);
-	return inb(port + 1);
+	OUTB(reg, port);
+	return INB(port + 1);
 }
 
 void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 {
-	outb(reg, port);
-	outb(val, port + 1);
+	OUTB(reg, port);
+	OUTB(val, port + 1);
 }
 
 /* Helper functions for most recent ITE IT87xx Super I/O chips */
@@ -55,13 +55,13 @@ void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 #define CHIP_ID_BYTE2_REG	0x21
 static void enter_conf_mode_ite(uint16_t port)
 {
-	outb(0x87, port);
-	outb(0x01, port);
-	outb(0x55, port);
+	OUTB(0x87, port);
+	OUTB(0x01, port);
+	OUTB(0x55, port);
 	if (port == ITE_SUPERIO_PORT1)
-		outb(0x55, port);
+		OUTB(0x55, port);
 	else
-		outb(0xaa, port);
+		OUTB(0xaa, port);
 }
 
 static void exit_conf_mode_ite(uint16_t port)
@@ -129,7 +129,7 @@ int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 	int i;
 
 	do {
-		busy = inb(it8716f_flashport) & 0x80;
+		busy = INB(it8716f_flashport) & 0x80;
 	} while (busy);
 	if (readcnt > 3) {
 		printf("%s called with unsupported readcnt %i.\n",
@@ -138,27 +138,27 @@ int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 	}
 	switch (writecnt) {
 	case 1:
-		outb(writearr[0], it8716f_flashport + 1);
+		OUTB(writearr[0], it8716f_flashport + 1);
 		writeenc = 0x0;
 		break;
 	case 2:
-		outb(writearr[0], it8716f_flashport + 1);
-		outb(writearr[1], it8716f_flashport + 7);
+		OUTB(writearr[0], it8716f_flashport + 1);
+		OUTB(writearr[1], it8716f_flashport + 7);
 		writeenc = 0x1;
 		break;
 	case 4:
-		outb(writearr[0], it8716f_flashport + 1);
-		outb(writearr[1], it8716f_flashport + 4);
-		outb(writearr[2], it8716f_flashport + 3);
-		outb(writearr[3], it8716f_flashport + 2);
+		OUTB(writearr[0], it8716f_flashport + 1);
+		OUTB(writearr[1], it8716f_flashport + 4);
+		OUTB(writearr[2], it8716f_flashport + 3);
+		OUTB(writearr[3], it8716f_flashport + 2);
 		writeenc = 0x2;
 		break;
 	case 5:
-		outb(writearr[0], it8716f_flashport + 1);
-		outb(writearr[1], it8716f_flashport + 4);
-		outb(writearr[2], it8716f_flashport + 3);
-		outb(writearr[3], it8716f_flashport + 2);
-		outb(writearr[4], it8716f_flashport + 7);
+		OUTB(writearr[0], it8716f_flashport + 1);
+		OUTB(writearr[1], it8716f_flashport + 4);
+		OUTB(writearr[2], it8716f_flashport + 3);
+		OUTB(writearr[3], it8716f_flashport + 2);
+		OUTB(writearr[4], it8716f_flashport + 7);
 		writeenc = 0x3;
 		break;
 	default:
@@ -170,15 +170,15 @@ int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 	 * Note:
 	 * We can't use writecnt directly, but have to use a strange encoding.
 	 */ 
-	outb(((0x4 + (fast_spi ? 1 : 0)) << 4) | ((readcnt & 0x3) << 2) | (writeenc), it8716f_flashport);
+	OUTB(((0x4 + (fast_spi ? 1 : 0)) << 4) | ((readcnt & 0x3) << 2) | (writeenc), it8716f_flashport);
 
 	if (readcnt > 0) {
 		do {
-			busy = inb(it8716f_flashport) & 0x80;
+			busy = INB(it8716f_flashport) & 0x80;
 		} while (busy);
 
 		for (i = 0; i < readcnt; i++) {
-			readarr[i] = inb(it8716f_flashport + 5 + i);
+			readarr[i] = INB(it8716f_flashport + 5 + i);
 		}
 	}
 
@@ -190,12 +190,12 @@ void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 	int i;
 
 	spi_write_enable();
-	outb(0x06 , it8716f_flashport + 1);
-	outb(((2 + (fast_spi ? 1 : 0)) << 4), it8716f_flashport);
+	OUTB(0x06 , it8716f_flashport + 1);
+	OUTB(((2 + (fast_spi ? 1 : 0)) << 4), it8716f_flashport);
 	for (i = 0; i < 256; i++) {
 		bios[256 * block + i] = buf[256 * block + i];
 	}
-	outb(0, it8716f_flashport);
+	OUTB(0, it8716f_flashport);
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 1-10 ms, so wait in 1 ms steps.
 	 */
@@ -221,7 +221,7 @@ int it8716f_over512k_spi_chip_write(struct flashchip *flash, uint8_t *buf)
 			myusec_delay(10);
 	}
 	/* resume normal ops... */
-	outb(0x20, it8716f_flashport);
+	OUTB(0x20, it8716f_flashport);
 	return 0;
 }
 

@@ -37,36 +37,36 @@
 /* Enter extended functions */
 static void w836xx_ext_enter(uint16_t port)
 {
-	outb(0x87, port);
-	outb(0x87, port);
+	OUTB(0x87, port);
+	OUTB(0x87, port);
 }
 
 /* Leave extended functions */
 static void w836xx_ext_leave(uint16_t port)
 {
-	outb(0xAA, port);
+	OUTB(0xAA, port);
 }
 
 /* General functions for reading/writing Winbond Super I/Os. */
 static unsigned char wbsio_read(uint16_t index, uint8_t reg)
 {
-	outb(reg, index);
-	return inb(index + 1);
+	OUTB(reg, index);
+	return INB(index + 1);
 }
 
 static void wbsio_write(uint16_t index, uint8_t reg, uint8_t data)
 {
-	outb(reg, index);
-	outb(data, index + 1);
+	OUTB(reg, index);
+	OUTB(data, index + 1);
 }
 
 static void wbsio_mask(uint16_t index, uint8_t reg, uint8_t data, uint8_t mask)
 {
 	uint8_t tmp;
 
-	outb(reg, index);
-	tmp = inb(index + 1) & ~mask;
-	outb(tmp | (data & mask), index + 1);
+	OUTB(reg, index);
+	tmp = INB(index + 1) & ~mask;
+	OUTB(tmp | (data & mask), index + 1);
 }
 
 /**
@@ -172,9 +172,9 @@ static int board_via_epia_m(const char *name)
 	base = pci_read_word(dev, 0x88) & 0xFF80;
 
 	/* Enable GPIO15 which is connected to write protect. */
-	val = inb(base + 0x4D);
+	val = INB(base + 0x4D);
 	val |= 0x80;
-	outb(val, base + 0x4D);
+	OUTB(val, base + 0x4D);
 
 	return 0;
 }
@@ -249,14 +249,14 @@ static int board_asus_p5a(const char *name)
 
 #define ASUSP5A_LOOP 5000
 
-	outb(0x00, 0xE807);
-	outb(0xEF, 0xE803);
+	OUTB(0x00, 0xE807);
+	OUTB(0xEF, 0xE803);
 
-	outb(0xFF, 0xE800);
+	OUTB(0xFF, 0xE800);
 
 	for (i = 0; i < ASUSP5A_LOOP; i++) {
-		outb(0xE1, 0xFF);
-		if (inb(0xE800) & 0x04)
+		OUTB(0xE1, 0xFF);
+		if (INB(0xE800) & 0x04)
 			break;
 	}
 
@@ -265,13 +265,13 @@ static int board_asus_p5a(const char *name)
 		return -1;
 	}
 
-	outb(0x20, 0xE801);
-	outb(0x20, 0xE1);
+	OUTB(0x20, 0xE801);
+	OUTB(0x20, 0xE1);
 
-	outb(0xFF, 0xE802);
+	OUTB(0xFF, 0xE802);
 
 	for (i = 0; i < ASUSP5A_LOOP; i++) {
-		tmp = inb(0xE800);
+		tmp = INB(0xE800);
 		if (tmp & 0x70)
 			break;
 	}
@@ -281,24 +281,24 @@ static int board_asus_p5a(const char *name)
 		return -1;
 	}
 
-	tmp = inb(0xE804);
+	tmp = INB(0xE804);
 	tmp &= ~0x02;
 
-	outb(0x00, 0xE807);
-	outb(0xEE, 0xE803);
+	OUTB(0x00, 0xE807);
+	OUTB(0xEE, 0xE803);
 
-	outb(tmp, 0xE804);
+	OUTB(tmp, 0xE804);
 
-	outb(0xFF, 0xE800);
-	outb(0xE1, 0xFF);
+	OUTB(0xFF, 0xE800);
+	OUTB(0xE1, 0xFF);
 
-	outb(0x20, 0xE801);
-	outb(0x20, 0xE1);
+	OUTB(0x20, 0xE801);
+	OUTB(0x20, 0xE1);
 
-	outb(0xFF, 0xE802);
+	OUTB(0xFF, 0xE802);
 
 	for (i = 0; i < ASUSP5A_LOOP; i++) {
-		tmp = inb(0xE800);
+		tmp = INB(0xE800);
 		if (tmp & 0x70)
 			break;
 	}
@@ -316,9 +316,9 @@ static int board_ibm_x3455(const char *name)
 	uint8_t byte;
 
 	/* Set GPIO lines in the Broadcom HT-1000 southbridge. */
-	outb(0x45, 0xcd6);
-	byte = inb(0xcd7);
-	outb(byte | 0x20, 0xcd7);
+	OUTB(0x45, 0xcd6);
+	byte = INB(0xcd7);
+	OUTB(byte | 0x20, 0xcd7);
 
 	return 0;
 }
@@ -331,13 +331,13 @@ static int board_epox_ep_bx3(const char *name)
 	uint8_t tmp;
 
 	/* Raise GPIO22. */
-	tmp = inb(0x4036);
-	outb(tmp, 0xEB);
+	tmp = INB(0x4036);
+	OUTB(tmp, 0xEB);
 
 	tmp |= 0x40;
 
-	outb(tmp, 0x4036);
-	outb(tmp, 0xEB);
+	OUTB(tmp, 0x4036);
+	OUTB(tmp, 0xEB);
 
 	return 0;
 }
@@ -360,10 +360,10 @@ static int board_acorp_6a815epd(const char *name)
 	/* Use GPIOBASE register to find where the GPIO is mapped. */
 	port = (pci_read_word(dev, 0x58) & 0xFFC0) + 0xE;
 
-	val = inb(port);
+	val = INB(port);
 	val |= 0x80; /* Top Block Lock -- pin 8 of PLCC32 */
 	val |= 0x40; /* Lower Blocks Lock -- pin 7 of PLCC32 */
-	outb(val, port);
+	OUTB(val, port);
 
 	return 0;
 }
@@ -449,7 +449,7 @@ static int board_kontron_986lcd_m(const char *name)
 	/* Use GPIOBASE register to find where the GPIO is mapped. */
 	gpiobar = pci_read_word(dev, 0x48) & 0xfffc;
 
-	val = inl(gpiobar + ICH7_GPIO_LVL2);	/* GP_LVL2 */
+	val = INL(gpiobar + ICH7_GPIO_LVL2);	/* GP_LVL2 */
 	printf_debug("\nGPIOBAR=0x%04x GP_LVL: 0x%08x\n", gpiobar, val);
 
 	/* bit 2 (0x04) = 0 #TBL --> bootblock locking = 1
@@ -462,7 +462,7 @@ static int board_kontron_986lcd_m(const char *name)
 	 */
 	val |= (1 << 2) | (1 << 3);
 
-	outl(val, gpiobar + ICH7_GPIO_LVL2);
+	OUTL(val, gpiobar + ICH7_GPIO_LVL2);
 
 	return 0;
 }

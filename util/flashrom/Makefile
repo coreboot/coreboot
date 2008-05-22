@@ -19,6 +19,10 @@ else
 LDFLAGS = -lpci -lz
 STRIP_ARGS = -s
 endif
+ifeq ($(OS_ARCH), FreeBSD)
+CFLAGS += -I/usr/local/include
+LDFLAGS += -L/usr/local/lib
+endif
 
 OBJS = chipset_enable.o board_enable.o udelay.o jedec.o stm50flw0x0x.c \
 	sst28sf040.o am29f040b.o mx29f002.o sst39sf020.o m29f400bt.o \

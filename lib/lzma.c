@@ -34,7 +34,7 @@ unsigned long ulzma(u8 *src, u8 *dst)
 	}
 	mallocneeds = (LzmaGetNumProbs(&state.Properties) * sizeof(CProb));
 	if (mallocneeds > LZMA_SCRATCHPAD_SIZE) {
-		printk(BIOS_WARNING,("Decoder scratchpad too small, have %i, need %i!\n",
+		printk(BIOS_WARNING, "Decoder scratchpad too small, have %i, need %i!\n",
 				LZMA_SCRATCHPAD_SIZE, mallocneeds);
 	}
 	state.Probs = (CProb *)scratchpad;

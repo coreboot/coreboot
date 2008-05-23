@@ -14,6 +14,7 @@ SDK 4.42, which is written and distributed to public domain by Igor Pavlov.
 #include "string.h"
 #include "console.h"
 
+#define LZMA_SCRATCHPAD_SIZE 15980
 
 unsigned long ulzma(u8 *src, u8 *dst)
 {
@@ -24,7 +25,7 @@ unsigned long ulzma(u8 *src, u8 *dst)
 	int res;
 	CLzmaDecoderState state;
 	SizeT mallocneeds;
-	unsigned char scratchpad[15980];
+	unsigned char scratchpad[LZMA_SCRATCHPAD_SIZE];
 
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	outSize = *(UInt32 *)(src + LZMA_PROPERTIES_SIZE);
@@ -32,8 +33,9 @@ unsigned long ulzma(u8 *src, u8 *dst)
 		printk(BIOS_WARNING, "Incorrect stream properties\n");
 	}
 	mallocneeds = (LzmaGetNumProbs(&state.Properties) * sizeof(CProb));
-	if (mallocneeds > 15980) {
-		printk(BIOS_WARNING, "Decoder scratchpad too small!\n");
+	if (mallocneeds > LZMA_SCRATCHPAD_SIZE) {
+		printk(BIOS_WARNING,("Decoder scratchpad too small, have %i, need %i!\n",
+				LZMA_SCRATCHPAD_SIZE, mallocneeds);
 	}
 	state.Probs = (CProb *)scratchpad;
 	res = LzmaDecode(&state, src + LZMA_PROPERTIES_SIZE + 8, (SizeT)0xffffffff, &inProcessed,

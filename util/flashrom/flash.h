@@ -85,6 +85,7 @@ struct flashchip {
 #define TEST_OK_READ	(1<<1)
 #define TEST_OK_ERASE	(1<<2)
 #define TEST_OK_WRITE	(1<<3)
+#define TEST_OK_PR	(TEST_OK_PROBE|TEST_OK_READ)
 #define TEST_OK_PREW	(TEST_OK_PROBE|TEST_OK_READ|TEST_OK_ERASE|TEST_OK_WRITE)
 #define TEST_OK_MASK	0x0f
 

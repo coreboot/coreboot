@@ -88,7 +88,7 @@ struct flashchip flashchips[] = {
 	{"SST",		"SST49LF003A/B",	SST_ID,		SST_49LF003A,		384,	64 * 1024,	TEST_UNTESTED,	probe_sst_fwhub,	erase_sst_fwhub,		write_sst_fwhub},
 	{"SST",		"SST49LF004A/B",	SST_ID,		SST_49LF004A,		512,	64 * 1024,	TEST_OK_PREW,	probe_sst_fwhub,	erase_sst_fwhub,		write_sst_fwhub},
 	{"SST",		"SST49LF004C",		SST_ID,		SST_49LF004C,		512,	4 * 1024,	TEST_UNTESTED,	probe_49lfxxxc,		erase_49lfxxxc,			write_49lfxxxc},
-	{"SST",		"SST49LF008A",		SST_ID,		SST_49LF008A,		1024,	64 * 1024,	TEST_OK_PR,	probe_sst_fwhub,	erase_sst_fwhub,		write_sst_fwhub},
+	{"SST",		"SST49LF008A",		SST_ID,		SST_49LF008A,		1024,	64 * 1024,	TEST_OK_PREW,	probe_sst_fwhub,	erase_sst_fwhub,		write_sst_fwhub},
 	{"SST",		"SST49LF008C",		SST_ID,		SST_49LF008C,		1024,	4 * 1024,	TEST_UNTESTED,	probe_49lfxxxc,		erase_49lfxxxc,			write_49lfxxxc},
 	{"SST",		"SST49LF016C",		SST_ID,		SST_49LF016C,		2048,	4 * 1024,	TEST_UNTESTED,	probe_49lfxxxc,		erase_49lfxxxc,			write_49lfxxxc},
 	{"SST",		"SST49LF020A",		SST_ID,		SST_49LF020A,		256,	16 * 1024,	TEST_UNTESTED,	probe_jedec,		erase_49lf040,			write_49lf040},

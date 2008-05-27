@@ -251,6 +251,7 @@ struct larent *readlar(struct LAR *lar);
 void rewindlar(struct LAR *lar);
 int larstat(struct LAR *lar, const char *path, struct larstat *buf);
 void *larfptr(struct LAR *lar, const char *filename);
+int lfverify(struct LAR *lar, const char *filename);
 struct LFILE * lfopen(struct LAR *lar, const char *filename);
 int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
 

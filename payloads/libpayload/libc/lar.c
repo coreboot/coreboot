@@ -228,6 +228,41 @@ void * larfptr(struct LAR *lar, const char *filename)
 	return (void *) ((u8 *) header + ntohl(header->offset));
 }
 
+/**
+ * Verify the checksum on a particular LAR entry
+ *
+ * @param lar A pointer to the LAR stream
+ * @param filename The lar entry to verify
+ * @return Return 1 if the entry is valid, 0 if it is not, or -1
+ * on error
+ */
+
+int lfverify(struct LAR *lar, const char *filename)
+{
+	struct lar_header *header = get_header_by_name(lar, filename);
+
+	u8 *ptr = (u8 *) header;
+	int len = ntohl(header->len) + ntohl(header->offset);
+	int offset;
+	u32 csum = 0;
+
+	if (header == NULL)
+		return -1;
+
+	/* The checksum needs to be calulated on entire data section,
+	 * including any padding for the 16 byte alignment (which should
+	 * be zeros
+	 */
+
+	len = (len + 15) & 0xFFFFFFF0;
+
+	for(offset = 0; offset < len; offset += 4) {
+		csum += *((u32 *) (ptr + offset));
+	}
+
+	return (csum == 0xFFFFFFFF) ? 1 : 0;
+}
+
 struct LFILE * lfopen(struct LAR *lar, const char *filename)
 {
 	struct LFILE *file;

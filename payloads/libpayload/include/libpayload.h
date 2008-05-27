@@ -55,6 +55,18 @@
 
 #define RAND_MAX 0x7fffffff
 
+/* Payload information parameters - these are used to pass information
+ * to the entity loading the payload
+ * Usage:  PAYLOAD_INFO(key, value)
+ * Example:  PAYLOAD_INFO(name, "CoreInfo!")
+ */
+
+#define _pstruct(key) __pinfo_ ##key
+#define PAYLOAD_INFO(key, value)                                        \
+static const char _pstruct(key)[]                                        \
+  __attribute__((__used__))                                              \
+  __attribute__((section(".note.pinfo"),unused)) = #key "=" value
+
 /* Some NVRAM byte definitions */
 #define NVRAM_RTC_SECONDS        0
 #define NVRAM_RTC_MINUTES        2

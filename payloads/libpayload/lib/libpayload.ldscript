@@ -81,5 +81,5 @@ SECTIONS
 
 	_end = .;
 
-	/DISCARD/ : { *(.comment) *(.note) *(.note.*) }
+	/DISCARD/ : { *(.comment) }
 }

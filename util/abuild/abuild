@@ -14,8 +14,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="May 3rd, 2008"
-ABUILD_VERSION="0.6"
+ABUILD_DATE="May 27th, 2008"
+ABUILD_VERSION="0.7"
 
 # Where shall we place all the build trees?
 TARGET=$( pwd )/coreboot-builds
@@ -496,11 +496,11 @@ verbose=false
 
 # parse parameters.. try to find out whether we're running GNU getopt
 if [ "`getopt -V`" == "getopt.*" ]; then
-	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent Vvhat:bp:Tc:s -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml Vvhat:bp:Tc:sx -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvhat:bp:Tc:s $*`
+	args=`getopt Vvhat:bp:Tc:sx $*`
 	set -- $args
 fi
 

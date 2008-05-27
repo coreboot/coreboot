@@ -1,9 +1,9 @@
-.TH ABUILD 1 "October 24, 2006"
+.TH ABUILD 1 "May 3, 2008"
 .SH NAME
 abuild \- build coreboot images for all available targets
 .SH SYNOPSIS
 .B abuild
-\fR[\fB\-abxVh\fR] [\fB\-t\fR vendor/board] [\fB\-p\fR dir]
+\fR[\fB\-abvxsTVh\fR] [\fB\-c\fR numcpus|max] [\fB\-t\fR vendor/board] [\fB\-p\fR dir]
 [LBROOT]
 .SH DESCRIPTION
 .B abuild
@@ -47,6 +47,16 @@ Submit generated image(s) to the automated test system.
 The results of the tests will be made available at 
 .B http://qa.coreboot.org/log_manual.php
 .TP
+.B "\-c, \-\-cpus [<numcpus>|max]"
+Build on 
+.B numcpus
+cpus at the same time, or on all available with 
+.B max\fR.
+.TP
+.B "\-s, \-\-silent"
+Don't print any compiler calls in the log files. In coreboot v2 compiler
+calls are quite long, so it is hard to find the warnings between them.
+.TP
 .B "\-v, \-\-verbose"
 More verbose output.
 .TP
@@ -66,7 +76,7 @@ is covered by the GNU General Public License (GPL), version 2 or later.
 .SH COPYRIGHT
 2004 Stefan Reinauer
 .br
-2006 coresystems GmbH
+2006-2008 coresystems GmbH
 .SH AUTHORS
 Stefan Reinauer <stepan@coresystems.de>
 .PP

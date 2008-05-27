@@ -5,7 +5,7 @@
 #  This script builds coreboot images for all available targets.
 #
 #  (C) 2004 by Stefan Reinauer <stepan@openbios.org>
-#  (C) 2006 by coresystems GmbH <info@coresystems.de>
+#  (C) 2006-2008 by coresystems GmbH <info@coresystems.de>
 #
 #  This file is subject to the terms and conditions of the GNU General
 #  Public License. See the file COPYING in the main directory of this
@@ -14,8 +14,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="October 24, 2006"
-ABUILD_VERSION="0.4"
+ABUILD_DATE="May 3rd, 2008"
+ABUILD_VERSION="0.6"
 
 # Where shall we place all the build trees?
 TARGET=$( pwd )/coreboot-builds
@@ -29,12 +29,19 @@ CONTEXT=5
 
 TESTSUBMISSION="http://qa.coreboot.org/deployment/send.php"
 
+# Number of CPUs to compile on per default
+cpus=1
+
 # One might want to adjust these in case of cross compiling
 MAKE="make"
 PYTHON=python
 
 # this can be changed to xml by -x
 mode=text
+
+# silent mode.. no compiler calls, only warnings in the log files.
+# this is disabled per default but can be enabled with -s
+silent=
 
 ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 	-e s/arm.*/arm/ -e s/sa110/arm/ -e s/x86_64/amd64/ \
@@ -173,13 +180,13 @@ EOF
 		COMPRESSION="# no compression"
 	fi
 
-	sed -i.pre -e s,VENDOR,$VENDOR,g \
-		-e s,MAINBOARD,$MAINBOARD,g \
-		-e s,payload\ __PAYLOAD__,payload\ $PAYLOAD,g \
-		-e s,CROSSCC,"$CC",g \
-		-e s,CROSS_PREFIX,"$CROSS_COMPILE",g \
-		-e s,CROSS_HOSTCC,"$HOSTCC",g \
-		-e s,__COMPRESSION__,"$COMPRESSION",g \
+	sed -i.pre -e s:VENDOR:$VENDOR:g \
+		-e s:MAINBOARD:$MAINBOARD:g \
+		-e s:payload\ __PAYLOAD__:payload\ $PAYLOAD:g \
+		-e s:CROSSCC:"$CC":g \
+		-e s:CROSS_PREFIX:"$CROSS_COMPILE":g \
+		-e s:CROSS_HOSTCC:"$HOSTCC":g \
+		-e s:__COMPRESSION__:"$COMPRESSION":g \
 		$TARGET/Config-${VENDOR}_${MAINBOARD}.lb
 	printf " ok\n"
 }
@@ -243,11 +250,15 @@ function compile_target
 	VENDOR=$1
 	MAINBOARD=$2
 
-	printf "  Compiling image .."
+	printf "  Compiling image "
+	test "$cpus" == "" && printf "in parallel .. "
+	test "$cpus" == "1" && printf "on 1 cpu .. "
+	test 0$cpus -gt 1 && printf "on %d cpus in parallel .. " $cpus
+
 	CURR=$( pwd )
 	cd $TARGET/${VENDOR}_${MAINBOARD}
 	stime=`date +%s`
-	eval $MAKE &> make.log
+	eval $MAKE $silent -j $cpus &> make.log
 	ret=$?
 	etime=`date +%s`
 	duration=$(( $etime - $stime ))
@@ -301,9 +312,17 @@ function build_target
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
 	# default setting
-	CC='$(CROSS_COMPILE)gcc'
-	HOSTCC='gcc'
-	CROSS_COMPILE=''
+
+	if [ "`uname -s`" == Darwin ]; then
+		# Darwin requires i386-elf-[binuitils|gcc] from MacPorts
+		# and a link from i386-elf-gcc-<version> to i386-elf-gcc
+		CC="$TARCH-elf-gcc -Wa,--divide"
+		CROSS_COMPILE="$TARCH-elf-"
+	else 
+		CC='$(CROSS_COMPILE)gcc'
+		CROSS_COMPILE=''
+	fi
+ 	HOSTCC='gcc'
 
 	printf "Processing mainboard/$VENDOR/$MAINBOARD"
 
@@ -447,6 +466,8 @@ function myhelp
 	printf "    [-x|--xml]			  write xml log file \n"
 	printf "                                  (defaults to $XMLFILE)\n"
 	printf "    [-T|--test]			  submit image(s) to automated test system\n"
+	printf "    [-c|--cpus <numcpus>]         build on <numcpus> at the same time\n"
+	printf "    [-s|--silent]                 omit compiler calls in logs\n"
 	printf "    [lbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $LBROOT)\n\n"
 }
@@ -473,15 +494,21 @@ buildall=false
 LBROOT=$( cd ../..; pwd )
 verbose=false
 
-# parse parameters
-args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test Vvhat:bp:T -- "$@"`
+# parse parameters.. try to find out whether we're running GNU getopt
+if [ "`getopt -V`" == "getopt.*" ]; then
+	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent Vvhat:bp:Tc:s -- "$@"`
+	eval set "$args"
+else
+	# Detected non-GNU getopt
+	args=`getopt Vvhat:bp:Tc:s $*`
+	set -- $args
+fi
 
 if [ $? != 0 ]; then
 	myhelp
 	exit 1
 fi
 
-eval set "$args"
 while true ; do
 	case "$1" in
 		-x|--xml)       shift; mode=xml; rm -f $XMLFILE ;;
@@ -493,6 +520,8 @@ while true ; do
 		-h|--help)	shift; myversion; myhelp; exit 0;;
 		-p|--payloads)  shift; payloads="$1"; shift;;
 		-T|--test)      shift; hwtest=true;;
+		-c|--cpus)	shift; cpus="$1"; test "$cpus" == "max" && cpus=""; shift;;
+		-s|--silent)    shift; silent="-s";;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;

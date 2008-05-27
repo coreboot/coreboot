@@ -304,3 +304,7 @@ int main(void)
 
 	return 0;
 }
+
+PAYLOAD_INFO(name,"coreinfo");
+PAYLOAD_INFO(listname,"System Information");
+PAYLOAD_INFO(desc,"Display information about the system");

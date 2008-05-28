@@ -81,6 +81,9 @@ end
 	};
 	domain@0 {
 		/config/("northbridge/amd/geodelx/domain");
+		/* Video RAM has to be in 2MB chunks. */
+		/* 16MB for now, as 8MB would not be enough for WinCE */
+		geode_video_mb = "16";
 		pci@1,0 {
 			/config/("northbridge/amd/geodelx/pci");
 		};

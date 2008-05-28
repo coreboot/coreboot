@@ -495,7 +495,9 @@ LBROOT=$( cd ../..; pwd )
 verbose=false
 
 # parse parameters.. try to find out whether we're running GNU getopt
-if [ "`getopt -V`" == "getopt.*" ]; then
+getoptbrand="`getopt -V`"
+if [ "${getoptbrand:0:6}" == "getopt" ]; then
+	# Detected GNU getopt that supports long options.
 	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml Vvhat:bp:Tc:sx -- "$@"`
 	eval set "$args"
 else

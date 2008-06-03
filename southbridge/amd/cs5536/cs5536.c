@@ -454,8 +454,16 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 			*(bar + UOCMUX) |= PMUX_HOST;
 
 		/* Overcurrent configuration */
+		printk(BIOS_DEBUG, "UOCCAP is %x\n", *(bar + UOCCAP));
 		if (sb->enable_USBP4_overcurrent)
 			*(bar + UOCCAP) |= sb->enable_USBP4_overcurrent;
+		/* power control. see comment in the dts for these bits */
+		if (sb->pph) {
+			*(bar + UOCCAP) &= ~0xff;
+			*(bar + UOCCAP) |= sb->pph;
+		}
+		printk(BIOS_DEBUG, "UOCCAP is %x\n", *(bar + UOCCAP));
+
 	}
 
 	/* PBz#6466: If the UOC(OTG) device, port 4, is configured as a
@@ -481,7 +489,17 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 		}
 	}
 
-	/* Disable virtual PCI UDC and OTG headers. */
+	/* Disable virtual PCI UDC and OTG headers.  The kernel never
+	 * sees a header for this device.  It used to provide an OS
+	 * visible device, but that was defeatured.  There are still
+	 * some registers in the block that are useful for the firmware
+	 * to setup, but nothing that a kernel level driver would need
+	 * to consume.
+	 *
+	 * As you can see above, VSA does provide the header under
+	 * device ID PCI_DEVICE_ID_AMD_CS5536_OTG, but it is hidden
+	 * when 0xDEADBEEF is written to config space register 0x7C.
+	 */
 	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 	if (dev)

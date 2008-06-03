@@ -52,6 +52,8 @@
 			com2_address = "0x3f8";
 			/* Set com2 IRQ to be what is usually COM1 */
 			com2_irq = "4";
+			/* USB Port Power Handling setting. */
+			pph = "0xf5";
 		};
 		pci@15,2 {
 			/config/("southbridge/amd/cs5536/ide");

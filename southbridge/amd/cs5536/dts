@@ -36,9 +36,34 @@
 	/* 0:IDE 1:FLASH, if you are using NAND flash instead of IDE drive. */
 	enable_ide_nand_flash = "0";
 
-	/* Enable USB Port 4 (0:host 1:device). */
+	/* Enable USB Port 4 (0:host 1:device). 
+	 * This means that the board or whatever would be a "gadget", i.e. 
+	 * you connect it to a computer and it looks like a storage or camera
+	 * or printer. 
+	 */
 	enable_USBP4_device = "0";
 
+	/* This is a tad confusing, but it's hard to make it easy. 
+	 * These are the PPH bits (port power handling) in the 
+	 * USB Option Capability register. They are 4 2-bit fields
+	 * that correspond to the four ports. This chip has two PWR ENABLE
+	 * pins, and what you can do is, for each of the four fields, 
+	 * map which port controls which pin. It is common to map 
+	 * ports 1&2 to PWR_EN_1, and ports 3&4 to PWR_EN_2.
+	 * The two bit fields are as follows:
+	 * 00 -- no power ever
+	 * 01 -- power control in EHCI will turn on both. 
+	 * 10 -- power control will turn on EN1
+	 * 11 -- power control will turn on EN2
+	 * This is all very wiring dependent, 
+	 * and there is a default hardware value (0xea),
+	 * meaning port 4 is EN2 and the rest are EN1. 
+	 * So we let this default to 0, which to the driver means "do nothing", 
+	 * but if the mainboard sets it, then it will be set into the UOCCAP.
+	 * for reference, DBE62 seems to want xx111010 -- xx because we 
+	 * can get port 3 to work, but not port 4.
+	 */
+	pph = "0";
 	/* 0:off, xxxx:overcurrent setting, e.g. 0x3FEA.
 	 * See CS5536 - Data Book (pages 380-381).
 	 */

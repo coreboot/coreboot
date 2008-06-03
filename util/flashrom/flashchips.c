@@ -95,7 +95,7 @@ struct flashchip flashchips[] = {
 	{"SST",		"SST49LF040",		SST_ID,		SST_49LF040,		512,	4096,		TEST_UNTESTED,	probe_jedec,		erase_49lf040,			write_49lf040},
 	{"SST",		"SST49LF040B",		SST_ID,		SST_49LF040B,		512,	64 * 1024,	TEST_UNTESTED,	probe_sst_fwhub,	erase_sst_fwhub,		write_sst_fwhub},
 	{"SST",		"SST49LF080A",		SST_ID,		SST_49LF080A,		1024,	4096,		TEST_OK_PREW,	probe_jedec,		erase_49lf040,			write_49lf040},
-	{"SST",		"SST49LF160C",		SST_ID,		SST_49LF160C,		2048,	4 * 1024,	TEST_UNTESTED,	probe_49lfxxxc,		erase_49lfxxxc,			write_49lfxxxc},
+	{"SST",		"SST49LF160C",		SST_ID,		SST_49LF160C,		2048,	4 * 1024,	TEST_OK_PREW,	probe_49lfxxxc,		erase_49lfxxxc,			write_49lfxxxc},
 	{"ST",		"M25P05-A",		ST_ID,		ST_M25P05A,		64,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M25P10-A",		ST_ID,		ST_M25P10A,		128,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M25P20",		ST_ID,		ST_M25P20,		256,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},

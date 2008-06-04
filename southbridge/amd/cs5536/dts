@@ -66,6 +66,10 @@
 	pph = "0";
 	/* 0:off, xxxx:overcurrent setting, e.g. 0x3FEA.
 	 * See CS5536 - Data Book (pages 380-381).
+	 * And don't just set this to "1". You have to set it 
+	 * to values that make sense for the register. Do not set this
+	 * for your mainboard unless you have made sure of the register
+	 * settings!
 	 */
 	enable_USBP4_overcurrent = "0";
 

@@ -395,18 +395,19 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
 	}
 }
 
-#define HCCPARAMS		0x08
-#define IPREG04			0xA0
+/* the /sizeof(u32) is to convert byte offsets into u32 offsets */
+#define HCCPARAMS		(0x08/sizeof(u32))
+#define IPREG04			(0xA0/sizeof(u32))
 #define USB_HCCPW_SET		(1 << 1)
 #define UOCCAP			0x00
 #define APU_SET			(1 << 15)
-#define UOCMUX			0x04
+#define UOCMUX			(0x04/sizeof(u32))
 #define PMUX_HOST		0x02
 #define PMUX_DEVICE		0x03
 #define PUEN_SET		(1 << 2)
-#define UDCDEVCTL		0x404
+#define UDCDEVCTL		(0x404/sizeof(u32))
 #define UDC_SD_SET		(1 << 10)
-#define UOCCTL			0x0C
+#define UOCCTL			(0x0C/sizeof(u32))
 #define PADEN_SET		(1 << 7)
 
 /**
@@ -445,6 +446,8 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 	if (dev) {
 		bar = (u32 *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
+		printk(BIOS_DEBUG, "UOCMUX is %x\n", *(bar + UOCMUX));
+
 		*(bar + UOCMUX) &= PUEN_SET;
 
 		/* Host or Device? */
@@ -463,6 +466,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 			*(bar + UOCCAP) |= sb->pph;
 		}
 		printk(BIOS_DEBUG, "UOCCAP is %x\n", *(bar + UOCCAP));
+		printk(BIOS_DEBUG, "UOCMUX is %x\n", *(bar + UOCMUX));
 
 	}
 
@@ -488,6 +492,8 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 			*(bar + UOCCAP) |= APU_SET;
 		}
 	}
+
+	printk(BIOS_DEBUG, "UOCCTL is %x\n", *(bar + UOCCTL));
 
 	/* Disable virtual PCI UDC and OTG headers.  The kernel never
 	 * sees a header for this device.  It used to provide an OS

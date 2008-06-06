@@ -102,11 +102,11 @@ gconf-objects := gconf.o kconfig_load.o zconf.tab.o
 
 $(obj)/util/kconfig/mconf: $(patsubst %,$(obj)/util/kconfig/%,$(mconf-objects))
 	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(HOSTCC) $(CURSESLIBS) $(INTLLIBS) -o $@ $^
+	$(Q)$(HOSTCC) -o $@ $^ $(CURSESLIBS) $(INTLLIBS)
 
 $(obj)/util/kconfig/conf: $(patsubst %,$(obj)/util/kconfig/%,$(conf-objects))
 	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(HOSTCC) $(CURSESLIBS) -o $@ $^
+	$(Q)$(HOSTCC) -o $@ $^ $(CURSESLIBS)
 
 $(obj)/util/kconfig/qconf: $(patsubst %,$(obj)/util/kconfig/%,$(qconf-objects))
 	$(Q)printf "  HOSTCXX $(subst $(shell pwd)/,,$(@))\n"

@@ -51,7 +51,7 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define NANA		-3		/* Not Available */
 #define RSVD		-4		/* Reserved */
 #define MISC		-5		/* Needs special comment in output */
-#define MAXLDN		0x10		/* Biggest LDN */
+#define MAXLDN		0x14		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
 #define MAXNUMIDX	170		/* Maximum number of indexes */
 #define IDXSIZE 	(MAXNUMIDX + 1)

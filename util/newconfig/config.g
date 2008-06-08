@@ -2158,7 +2158,7 @@ def writemakefile(path):
 	for i, o in romimages.items():
 		file.write("%s/coreboot.rom:\n" % o.getname())
 		file.write("\tif (cd %s; \\\n" % o.getname())
-		file.write("\t\tmake coreboot.rom)\\\n")
+		file.write("\t\t$(MAKE) coreboot.rom)\\\n")
 		file.write("\tthen true; else exit 1; fi;\n\n")
 	file.write("clean: ")
 	for i in romimages.keys():
@@ -2166,7 +2166,7 @@ def writemakefile(path):
 	file.write("\n\n")
 	for i, o in romimages.items():
 		file.write("%s-clean:\n" % o.getname())
-		file.write("\t(cd %s; make clean)\n\n" % o.getname())
+		file.write("\t(cd %s; $(MAKE) clean)\n\n" % o.getname())
 
 	for i in buildroms:
 		file.write("%s:" % i.name)

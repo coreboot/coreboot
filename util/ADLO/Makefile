@@ -40,7 +40,7 @@ loader.o: loader.s
 #-------------------------------------------------
 
 bios:
-	( cd ${BOCHS_B} ; make )
+	( cd ${BOCHS_B} ; $(MAKE) )
 	sync
 
 #-------------------------------------------------
@@ -101,7 +101,7 @@ install:
 
 clean:
 	rm -rf *.o ${PAYLOAD}
-	(cd ${BOCHS_B} ; make clean ) 
+	(cd ${BOCHS_B} ; $(MAKE) clean ) 
 
 distclean: clean
 	rm -rf ${BOCHS_C}

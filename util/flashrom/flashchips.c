@@ -45,6 +45,7 @@ struct flashchip flashchips[] = {
 	{"Atmel",	"AT49F002(N)T",		ATMEL_ID,	AT_49F002NT,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"Atmel",       "AT25DF321",		ATMEL_ID,	AT_25DF321,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Amic Technology","A25L40P",		AMIC_ID,	AMIC_A25L40P,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
+	{"Amic Technology","A29040B",		AMIC_ID_NOPREFIX, AMIC_A29040B,		512,	64 * 1024,	TEST_OK_PR,	probe_29f040b,		erase_29f040b,			write_29f040b},
 	{"EMST",	"F49B002UA",		EMST_ID,	EMST_F49B002UA,		256,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"EON",		"EN29F002(A)(N)B",	EON_ID,		EN_29F002B,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"EON",		"EN29F002(A)(N)T",	EON_ID,		EN_29F002T,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},

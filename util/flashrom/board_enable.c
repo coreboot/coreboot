@@ -515,6 +515,32 @@ static int board_kontron_986lcd_m(const char *name)
 }
 
 /**
+ * Suited for:
+ *   - BioStar P4M80-M4: Intel P4 + VIA P4M800 + VT8237
+ */
+static int board_biostar_p4m80_m4(const char *name)
+{
+	/* enter IT87xx conf mode */
+	OUTB(0x87, 0x2e);
+	OUTB(0x01, 0x2e);
+	OUTB(0x55, 0x2e);
+	OUTB(0x55, 0x2e);
+
+	/* select right flash chip */
+	wbsio_mask(0x2e, 0x22, 0x80, 0x80);
+
+	/* bit 3: flash chip write enable
+	 * bit 7: map flash chip at 1MB-128K (why though? ignoring this.)
+	 */
+	wbsio_mask(0x2e, 0x24, 0x04, 0x04);
+
+	/* exit IT87xx conf mode */
+	wbsio_write(0x2, 0x2e, 0x2);
+
+	return 0;
+}
+
+/**
  * We use 2 sets of IDs here, you're free to choose which is which. This
  * is to provide a very high degree of certainty when matching a board on
  * the basis of subsystem/card IDs. As not every vendor handles
@@ -584,6 +610,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 "artecgroup", "dbe62", "Artec Group DBE62", board_artecgroup_dbe6x},
  	{0x8086, 0x27b8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
  	 "kontron", "986lcd-m", "Kontron 986LCD-M", board_kontron_986lcd_m},
+ 	{0x1106, 0x3149, 0x1565, 0x3206, 0x1106, 0x3344, 0x1565, 0x1202,
+ 	 NULL, NULL, "BioStar P4M80-M4", board_biostar_p4m80_m4},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

@@ -517,6 +517,7 @@ static int board_kontron_986lcd_m(const char *name)
 /**
  * Suited for:
  *   - BioStar P4M80-M4: Intel P4 + VIA P4M800 + VT8237
+ *   - GIGABYTE GA-7VT600: AMD K7 + VIA KT600 + VT8237
  */
 static int board_biostar_p4m80_m4(const char *name)
 {
@@ -612,6 +613,8 @@ struct board_pciid_enable board_pciid_enables[] = {
  	 "kontron", "986lcd-m", "Kontron 986LCD-M", board_kontron_986lcd_m},
  	{0x1106, 0x3149, 0x1565, 0x3206, 0x1106, 0x3344, 0x1565, 0x1202,
  	 NULL, NULL, "BioStar P4M80-M4", board_biostar_p4m80_m4},
+ 	{0x1106, 0x3227, 0x1458, 0x5001, 0x10ec, 0x8139, 0x1458, 0xe000,
+ 	 NULL, NULL, "GIGABYTE GA-7VT600", board_biostar_p4m80_m4},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

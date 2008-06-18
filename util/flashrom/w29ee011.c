@@ -18,12 +18,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <string.h>
 #include "flash.h"
 
 int probe_w29ee011(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
+	extern char *chip_to_probe;
+
+	if (!chip_to_probe || strcmp(chip_to_probe,"W29EE011")) {
+		printf_debug("\n===\n");
+		printf_debug("  Probing disabled for Winbond W29EE011 because the probing sequence puts the\n");
+		printf_debug("  AMIC A49LF040A in a funky state.\n");
+		printf_debug("  Use 'flashrom -c W29EE011' if you have a board with this chip.");
+		printf_debug("\n===\n");
+		return 0;
+	}
 
 	/* Issue JEDEC Product ID Entry command */
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;

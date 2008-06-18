@@ -120,6 +120,7 @@ extern struct flashchip flashchips[];
 #define AMIC_ID_NOPREFIX	0x37	/* AMIC */
 #define AMIC_A25L40P		0x2013
 #define AMIC_A29040B		0x86
+#define AMIC_A49LF040A		0x9d
 
 #define ASD_ID			0x25	/* ASD, not listed in JEP106W */
 #define ASD_AE49F2008		0x52

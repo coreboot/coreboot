@@ -28,8 +28,6 @@ char *mainboard_vendor = NULL;
 char *mainboard_part = NULL;
 int romimages = 0;
 
-extern int force;
-
 #define MAX_ROMLAYOUT	16
 
 typedef struct {
@@ -43,7 +41,7 @@ romlayout_t rom_entries[MAX_ROMLAYOUT];
 
 static char *def_name = "DEFAULT";
 
-int show_id(uint8_t *bios, int size)
+int show_id(uint8_t *bios, int size, int force)
 {
 	unsigned int *walk;
 

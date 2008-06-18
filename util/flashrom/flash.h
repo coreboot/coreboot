@@ -394,7 +394,7 @@ extern int verbose;
 int map_flash_registers(struct flashchip *flash);
 
 /* layout.c */
-int show_id(uint8_t *bios, int size);
+int show_id(uint8_t *bios, int size, int force);
 int read_romlayout(char *name);
 int find_romentry(char *name);
 int handle_romentries(uint8_t *buffer, uint8_t *content);

@@ -35,6 +35,25 @@
 #define DIVISOR (115200 / CONFIG_SERIAL_BAUD_RATE)
 #endif
 
+/* This is a hack - we convert the drawing characters to ASCII */
+
+static unsigned char translate_special_chars(unsigned char c)
+{
+	switch(c) {
+	case 196:
+		return '-';
+	case 179:
+		return '|';
+	case 218:
+	case 191:
+	case 192:
+	case 217:
+		return '+';
+	default:
+		return ' ';
+	}
+}
+
 void serial_init(void)
 {
 #ifdef CONFIG_SERIAL_SET_SPEED
@@ -61,6 +80,9 @@ void serial_init(void)
 
 void serial_putchar(unsigned char c)
 {
+	if (c > 127)
+		c = translate_special_chars(c);
+
 	while ((inb(IOBASE + 0x05) & 0x20) == 0) ;
 	outb(c, IOBASE);
 }
@@ -74,4 +96,39 @@ int serial_getchar(void)
 {
 	while (!serial_havechar()) ;
 	return (int)inb(IOBASE);
+}
+
+/*  These are thinly veiled vt100 functions used by curses */
+
+#define VT100_CLEAR       "\e[H\e[J"
+#define VT100_SBOLD       "\e[7m"
+#define VT100_EBOLD       "\e[m"
+#define VT100_CURSOR_ADDR "\e[%d;%dH"
+
+static void serial_putcmd(char *str)
+{
+	while(*str)
+		serial_putchar(*(str++));
+}
+
+void serial_clear(void)
+{
+	serial_putcmd(VT100_CLEAR);
+}
+
+void serial_start_bold(void)
+{
+	serial_putcmd(VT100_SBOLD);
+}
+
+void serial_end_bold(void)
+{
+	serial_putcmd(VT100_EBOLD);
+}
+
+void serial_set_cursor(int y, int x)
+{
+	char buffer[32];
+	snprintf(buffer, sizeof(buffer), VT100_CURSOR_ADDR, y, x);
+	serial_putcmd(buffer);
 }

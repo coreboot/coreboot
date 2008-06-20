@@ -107,6 +107,11 @@ void serial_putchar(unsigned char c);
 int serial_havechar(void);
 int serial_getchar(void);
 
+void serial_clear(void);
+void serial_start_bold(void);
+void serial_end_bold(void);
+void serial_set_cursor(int y, int x);
+
 /* drivers/speaker.c */
 void speaker_enable(u16 freq);
 void speaker_disable(void);

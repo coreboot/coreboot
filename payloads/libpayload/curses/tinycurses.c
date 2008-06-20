@@ -218,6 +218,10 @@ WINDOW *initscr(void)
 	// newterm(name, stdout, stdin);
 	// def_prog_mode();
 
+	if (curses_flags & F_ENABLE_SERIAL) {
+		serial_clear();
+	}
+
 	if (curses_flags & F_ENABLE_CONSOLE) {
 		/* Clear the screen and kill the cursor */
 
@@ -586,20 +590,48 @@ int whline(WINDOW *win, chtype ch, int n)
 	win->_flags |= _HASMOVED;
 	return OK;
 }
+
 int wnoutrefresh(WINDOW *win)
 {
 	// FIXME.
+	int serial_is_bold = 0;
+
 	int x, y;
 
+	serial_end_bold();
+
 	for (y = 0; y <= win->_maxy; y++) {
+
+		/* Position the serial cursor */
+
+		if (curses_flags & F_ENABLE_SERIAL)
+			serial_set_cursor(win->_begy + y, win->_begx);
+
 		for (x = 0; x <= win->_maxx; x++) {
-			if (curses_flags & F_ENABLE_SERIAL)
+			attr_t attr = win->_line[y].text[x].attr;
+
+			unsigned int c =
+				((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
+
+			if (curses_flags & F_ENABLE_SERIAL) {
+
+				if (attr & A_BOLD) {
+					if (!serial_is_bold) {
+						serial_start_bold();
+						serial_is_bold = 1;
+					}
+				}
+				else {
+					if (serial_is_bold) {
+						serial_end_bold();
+						serial_is_bold = 0;
+					}
+				}
+
 				serial_putchar(win->_line[y].text[x].chars[0]);
+			}
 
 			if (curses_flags & F_ENABLE_CONSOLE) {
-				attr_t attr = win->_line[y].text[x].attr;
-				unsigned int c =
-				  ((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
 
 				/* Handle some of the attributes. */
 				if (attr & A_BOLD)

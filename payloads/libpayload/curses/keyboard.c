@@ -43,11 +43,89 @@ static int _halfdelay = 0;
 
 /* ============== Serial ==================== */
 
-/* FIXME:  Cook the serial correctly */
+/* We treat serial like a vt100 terminal.  For now we
+   do the cooking in here, but we should probably eventually
+   pass it to dedicated vt100 code */
+
+static int getkeyseq(char *buffer, int len)
+{
+	int i;
+
+	for(i = 0; i < 75; i++) {
+		if (serial_havechar())
+			break;
+		mdelay(1);
+	}
+
+	if (i == 75)
+		return len;
+
+	buffer[len++] = serial_getchar();
+	return getkeyseq(buffer, len);
+}
+
+static struct {
+	char *seq;
+	int key;
+} escape_codes[] = {
+	{ "[A", KEY_UP },
+	{ "[B", KEY_DOWN },
+	{ "[C", KEY_RIGHT },
+	{ "[D", KEY_LEFT },
+	{ "OP", KEY_F(1) },
+	{ "OQ", KEY_F(2) },
+	{ "OR", KEY_F(3) },
+	{ "OS", KEY_F(4) },
+	{ "[15~", KEY_F(5) },
+	{ "[17~", KEY_F(6) },
+	{ "[18~", KEY_F(7) },
+	{ "[19~", KEY_F(8) },
+	{ "[20~", KEY_F(9) },
+	{ "[21~", KEY_F(10) },
+	{ "[24~", KEY_F(12) },
+	{ NULL },
+};
+
+static int handle_escape(void)
+{
+	char buffer[5];
+	int len = getkeyseq(buffer, 0);
+	int i, t;
+
+	if (len == 0)
+		return 27;
+
+	for(i = 0; escape_codes[i].seq != NULL; i++) {
+		char *p = escape_codes[i].seq;
+
+		for(t = 0; t < len; t++) {
+			if (!*p || *p != buffer[t])
+				break;
+			p++;
+		}
+
+		if (t == len)
+			return escape_codes[i].key;
+	}
+
+	return 0;
+}
 
 static int cook_serial(unsigned char ch)
 {
-	return (int) ch;
+	switch(ch) {
+	case 8:
+		return KEY_BACKSPACE;
+
+	case 13:
+		return KEY_ENTER;
+
+	case 27:
+		return handle_escape();
+
+	default:
+		return ch;
+	}
 }
 
 /* ================ Keyboard ================ */

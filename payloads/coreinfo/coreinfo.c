@@ -269,9 +269,6 @@ int main(void)
 {
 	int i, j;
 
-	curses_enable_serial(0);
-	curses_enable_vga(1);
-
 	initscr();
 
 	init_pair(1, COLOR_WHITE, COLOR_GREEN);

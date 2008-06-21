@@ -103,7 +103,7 @@ int probe_jedec(struct flashchip *flash)
 	 * needs 10 ms according to the data sheet, but it has been tested
 	 * to work reliably with 20 us. Allow a factor of 2 safety margin.
 	 */
-	myusec_delay(40);
+	myusec_delay(2000);
 
 	/* Read product ID */
 	id1 = *(volatile uint8_t *)bios;

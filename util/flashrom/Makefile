@@ -24,7 +24,7 @@ CFLAGS += -I/usr/local/include
 LDFLAGS += -L/usr/local/lib
 endif
 
-OBJS = chipset_enable.o board_enable.o udelay.o jedec.o stm50flw0x0x.c \
+OBJS = chipset_enable.o board_enable.o udelay.o jedec.o stm50flw0x0x.o \
 	sst28sf040.o am29f040b.o mx29f002.o sst39sf020.o m29f400bt.o \
 	w49f002u.o 82802ab.o msys_doc.o pm49fl00x.o sst49lf040.o \
 	sst49lfxxxc.o sst_fwhub.o layout.o cbtable.o flashchips.o \

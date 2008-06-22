@@ -46,11 +46,11 @@ flashrom.o: flashrom.c
 	$(CC) -c $(CFLAGS) $(SVNDEF) $(CPPFLAGS) $< -o $@
 
 clean:
-	rm -f *.o *~
+	rm -f $(PROGRAM) *.o *~
 
 distclean: clean
-	rm -f $(PROGRAM) .dependencies
-	
+	rm -f .dependencies
+
 dep:
 	@$(CC) -MM *.c > .dependencies
 
@@ -68,11 +68,10 @@ pciutils:
 	@rm -f .test.c .test
 
 install: $(PROGRAM)
-	$(INSTALL) flashrom $(PREFIX)/sbin
+	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
 	mkdir -p $(PREFIX)/share/man/man8
 	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
 
 .PHONY: all clean distclean dep pciutils
 
 -include .dependencies
-

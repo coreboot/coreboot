@@ -98,7 +98,7 @@ ROM layout and the ROM image in one file (cpio, zip or something?).
 Disk on Chip support
 --------------------
 
-Disk on Chip support was removed from flashrom in r3380. It had already
+Disk on Chip support was removed from flashrom in r3382. It had already
 been disabled by default in flashrom for several years because the code
 was considered unstable and incomplete. The products intended to work
 have been End-Of-Lifed by the manufacturer for a long time.

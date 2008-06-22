@@ -98,8 +98,10 @@ ROM layout and the ROM image in one file (cpio, zip or something?).
 Disk on Chip support
 --------------------
 
-Disk on Chip support is currently disabled since it is considered unstable.
-Change CFLAGS in the Makefile to enable it: Remove -DDISABLE_DOC from CFLAGS.
+Disk on Chip support was removed from flashrom in r3380. It had already
+been disabled by default in flashrom for several years because the code
+was considered unstable and incomplete. The products intended to work
+have been End-Of-Lifed by the manufacturer for a long time.
 
 
 Supported Flash Chips
@@ -113,7 +115,6 @@ Atmel AT-29C020
 EMST F49B002UA
 Intel 82802AB (Firmware Hub) 
 Intel 82802AC (Firmware Hub) 
-M-Systems MD-2802 (unsupported, disabled by default)
 MX MX-29F002
 PMC PMC-49FL002
 PMC PMC-49FL004

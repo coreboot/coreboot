@@ -192,11 +192,6 @@ extern struct flashchip flashchips[];
 
 #define ISSI_ID			0xD5	/* ISSI Integrated Silicon Solutions */
 
-#define MSYSTEMS_ID		0x156F	/* M-Systems, not listed in JEP106W */
-#define MSYSTEMS_MD2200		0xDB
-#define MSYSTEMS_MD2800		0x30	/* hmm -- both 0x30 */
-#define MSYSTEMS_MD2802		0x30	/* hmm -- both 0x30 */
-
 /*
  * MX25 chips are SPI, first byte of device ID is memory type,
  * second byte of device ID is log(bitsize)-9.

@@ -21,9 +21,6 @@
  */
 
 #include "flash.h"
-#ifndef DISABLE_DOC
-#include "msys_doc.h"
-#endif
 
 /**
  * List of supported flash ROM chips.
@@ -58,9 +55,6 @@ struct flashchip flashchips[] = {
 	{"Macronix",	"MX25L1605",		MX_ID,		MX_25L1605,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L3205",		MX_ID,		MX_25L3205,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX29F002",		MX_ID,		MX_29F002,		256,	64 * 1024,	TEST_UNTESTED,	probe_29f002,		erase_29f002,			write_29f002},
-#ifndef DISABLE_DOC
-	{"M-Systems",	"MD-2802",		MSYSTEMS_ID,	MSYSTEMS_MD2802,	8,	8 * 1024,	TEST_UNTESTED,	probe_md2802,		erase_md2802,			write_md2802,		read_md2802},
-#endif
 	{"PMC",		"Pm25LV010",		PMC_ID,		PMC_25LV010,		128,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"PMC",		"Pm25LV016B",		PMC_ID,		PMC_25LV016B,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"PMC",		"Pm25LV020",		PMC_ID,		PMC_25LV020,		256,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},

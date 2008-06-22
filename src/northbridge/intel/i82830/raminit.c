@@ -53,7 +53,7 @@ Macros and definitions.
  * 0x2 for Refresh interval 7.8 us for 133MHz
  * 0x7 /* Refresh interval 128 Clocks. (Fast Refresh Mode)
  */
-#define RAM_COMMAND_REFRESH		0x2
+#define RAM_COMMAND_REFRESH		0x1
 
 /* DRC[6:4] - SDRAM Mode Select (SMS). */
 #define RAM_COMMAND_SELF_REFRESH	0x0
@@ -76,7 +76,7 @@ static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
 			   uint32_t addr_offset)
 {
 	int i;
-	uint8_t reg8, reg8_2 = 0;
+	uint8_t dimm_start, dimm_end;
 	uint32_t reg32;
 
 	/* Configure the RAM command. */
@@ -84,28 +84,27 @@ static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
 	/* Clear bits 29, 10-8, 6-4. */
 	reg32 &= 0xdffff88f;
 	reg32 |= command << 4;
-	/* If RAM_COMMAND_NORMAL set the refresh mode and IC bit. */
-	if (command == RAM_COMMAND_NORMAL)
-		reg32 |= ((RAM_COMMAND_REFRESH << 8) | (RAM_COMMAND_IC << 29));
 	pci_write_config32(ctrl->d0, DRC, reg32);
 
-	/* RAM_COMMAND_NORMAL affects only the memory controller and
-	   doesn't need to be "sent" to the DIMMs. */
-	/* if (command == RAM_COMMAND_NORMAL) return; */
+	/* Send the ram command to each row of memory.
+	 * (DIMM_SOCKETS * 2) is the maximum number of rows possible.
+	 * Note: Each DRB defines the upper boundary address of 
+	 * each SDRAM row in 32-MB granularity.
+	 */
+	dimm_start = 0;
 
-	PRINT_DEBUG("    Sending RAM command 0x");
-	PRINT_DEBUG_HEX32(reg32);
-	PRINT_DEBUG(" to 0x");
-	PRINT_DEBUG_HEX32(0 + addr_offset);
-	PRINT_DEBUG("\r\n");
-
-	/* NOTE: Dual-sided ready. */
-	read32(0 + addr_offset);
-	for (i = 0; i < 4; i++) {
-		reg8 = pci_read_config8(ctrl->d0, DRB + i);
-		if (reg8 != reg8_2)
-			read32(reg8 * 32 * 1024 * 1024);
-		reg8_2 = reg8;
+	for (i = 0; i < (DIMM_SOCKETS * 2); i++) {
+		dimm_end = pci_read_config8(ctrl->d0, DRB + i);
+		if (dimm_end > dimm_start) {
+			PRINT_DEBUG("    Sending RAM command 0x");
+			PRINT_DEBUG_HEX32(reg32);
+			PRINT_DEBUG(" to 0x");
+			PRINT_DEBUG_HEX32((dimm_start * 32 * 1024 * 1024) + addr_offset);
+			PRINT_DEBUG("\r\n");
+			read32((dimm_start * 32 * 1024 * 1024) + addr_offset);
+		}
+		/* Set the start of the next DIMM. */
+		dimm_start = dimm_end;
 	}
 }
 
@@ -316,38 +315,28 @@ static void set_dram_row_attributes(const struct mem_controller *ctrl)
 			value = spd_read_byte(device, 5);
 
 			if (value == 1) {
-				switch (dra) {
-				case 2: /* 2KB */
-					dra = 0xF0;
-					break;
-				case 4: /* 4KB */
-					dra = 0xF1;
-					break;
-				case 8: /* 8KB */
-					dra = 0xF2;
-					break;
-				case 16: /* 16KB */
-					dra = 0xF3;
-					break;
-				default:
+				if (dra == 2) {
+					dra = 0xF0; /* 2KB */
+				} else if (dra == 4) {
+					dra = 0xF1; /* 4KB */
+				} else if (dra == 8) {
+					dra = 0xF2; /* 8KB */
+				} else if (dra == 16) {
+					dra = 0xF3; /* 16KB */
+				} else {
 					print_err("Page size not supported\r\n");
 					die("HALT\r\n");
 				}
 			} else if (value == 2) {
-				switch (dra) {
-				case 2: /* 2KB */
-					dra = 0x00;
-					break;
-				case 4: /* 4KB */
-					dra = 0x11;
-					break;
-				case 8: /* 8KB */
-					dra = 0x22;
-					break;
-				case 16: /* 16KB */
-					dra = 0x33;
-					break;
-				default:
+				if (dra == 2) {
+					dra = 0x00; /* 2KB */
+				} else if (dra == 4) {
+					dra = 0x11; /* 4KB */
+				} else if (dra == 8) {
+					dra = 0x22; /* 8KB */
+				} else if (dra == 16) {
+					dra = 0x33; /* 16KB */
+				} else {
 					print_err("Page size not supported\r\n");
 					die("HALT\r\n");
 				}
@@ -471,6 +460,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
+	uint32_t reg32;
 
 	/* 0. Wait until power/voltages and clocks are stable (200us). */
 	udelay(200);
@@ -502,6 +492,12 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
 	do_ram_command(ctrl, RAM_COMMAND_NORMAL, 0);
 	udelay(1);
+
+	/* 6. Enable refresh and Set initialization complete. */
+	PRINT_DEBUG("RAM Enable 6: Enable Refresh and IC\r\n");
+	reg32 = pci_read_config32(ctrl->d0, DRC);
+	reg32 |= ((RAM_COMMAND_REFRESH << 8) | (RAM_COMMAND_IC << 29));
+	pci_write_config32(ctrl->d0, DRC, reg32);
 
 	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");
 	DUMPNORTH();

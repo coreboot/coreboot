@@ -11,11 +11,10 @@ flash ROM chips. It can be used to flash BIOS/coreboot/firmware images.
 Build Requirements
 ------------------
 
-To build the flashrom utility you need to have the following packages
-installed on your Linux system:
+To build the flashrom utility you need to install the following packages:
 
 * pciutils
-* pciutils-devel / pciutils-dev
+* pciutils-devel / pciutils-dev / libpci-dev
 * zlib-devel / zlib1g-dev
 
 
@@ -49,20 +48,11 @@ Flashrom reads the coreboot table to determine the current mainboard
 (parse DMI as well in future?). If no coreboot table could be read
 or if you want to override these values, you can specify -m, e.g.:
 
-  flashrom -w --mainboard AGAMI:ARUMA agami_aruma.rom
+ $ flashrom -w --mainboard AGAMI:ARUMA agami_aruma.rom
 
-The following boards require the specification of the board name, if
-no coreboot table is found:
-
-* IWILL DK8-HTX: use -m iwill:dk8_htx
-* Agami Aruma: use -m AGAMI:ARUMA
-* ASUS P5A: use -m asus:p5a
-* IBM x3455: use -m ibm:x3455
-* EPoX EP-BX3: use -m epox:ep-bx3
-* GIGABYTE GA-M57SLI-S4 v2.0: use -m gigabyte:m57sli
-* GIGABYTE GA-M61P-S3: use -m gigabyte:m61p
-* MSI K8N Neo3: use -m msi:k8n-neo3
-* Acorp 6A815EPD: use -m acorp:6a815epd
+See the 'Supported mainboards' section in the output of 'flashrom -L' for
+a list of boards which require the specification of the board name, if no
+coreboot table is found.
 
 
 ROM Layout Support
@@ -104,90 +94,11 @@ was considered unstable and incomplete. The products intended to work
 have been End-Of-Lifed by the manufacturer for a long time.
 
 
-Supported Flash Chips
----------------------
+Supported Flash Chips / Chipsets / Mainboards
+---------------------------------------------
 
-AMD AM-29F040B
-AMD AM-29F016D
-ASD AE49F2008
-Atmel AT-29C040A
-Atmel AT-29C020
-EMST F49B002UA
-Intel 82802AB (Firmware Hub) 
-Intel 82802AC (Firmware Hub) 
-MX MX-29F002
-PMC PMC-49FL002
-PMC PMC-49FL004
-Sharp LHF-00L04
-Spansion S25FL016A
-SST SST-29EE020A
-SST SST-28SF040A
-SST SST-39SF010A
-SST SST-39SF020A
-SST SST-39SF040
-SST SST-39VF020
-SST SST-49LF040B
-SST SST-49LF040
-SST SST-49LF020A
-SST SST-49LF080A
-SST SST-49LF160C
-SST SST-49LF002A/B
-SST SST-49LF003A/B
-SST SST-49LF004A/B
-SST SST-49LF008A
-SST SST-49LF004C
-SST SST-49LF008C
-SST SST-49LF016C
-ST ST-M50FLW040A
-ST ST-M50FLW040B
-ST ST-M50FLW080A
-ST ST-M50FLW080B
-ST ST-M50FW040
-ST ST-M50FW080
-ST ST-M50FW016
-ST ST-M50LPW116
-ST ST-M29F002B
-ST ST-M29F002T
-ST ST-M29F002NT
-ST ST-M29F400BT
-ST ST-M29F040B
-ST ST-M29W010B
-ST ST-M29W040B
-SyncMOS S29C51001T/B
-SyncMOS S29C51002T/B
-SyncMOS S29C51004T/B
-SyncMOS S29C31004T
-Winbond W29C011
-Winbond W29C020C
-Winbond W29C040P
-Winbond W29EE011
-Winbond W49F002U
-Winbond W49V002A
-Winbond W49V002FA
-Winbond W39V040FA
-Winbond W39V040A
-Winbond W39V040B
-Winbond W39V080A
+Please check the output of 'flashrom -L' for the list of supported
+flash chips, chipsets/southbridges, and mainboards.
 
-
-Supported Southbridges
-----------------------
-
-AMD CS5530/CS5530A
-AMD Geode SC1100
-AMD AMD-8111
-ATI SB400
-Broadcom HT-1000
-Intel ICH0-ICH8 (all variations)
-Intel PIIX4/PIIX4E/PIIX4M
-NVIDIA CK804
-NVIDIA MCP51
-NVIDIA MCP55
-SiS 630
-SiS 5595
-VIA CX700
-VIA VT8231
-VIA VT8235
-VIA VT8237
-VIA VT82C686
+See also http://coreboot.org/Flashrom for more details.
 

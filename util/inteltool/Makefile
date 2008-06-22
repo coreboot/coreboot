@@ -35,10 +35,10 @@ $(PROGRAM): $(OBJS)
 	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
 
 clean:
-	rm -f *.o *~
+	rm -f $(PROGRAM) *.o *~
 
 distclean: clean
-	rm -f $(PROGRAM) .dependencies
+	rm -f .dependencies
 
 dep:
 	@$(CC) -MM *.c > .dependencies

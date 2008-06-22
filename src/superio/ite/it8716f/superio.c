@@ -50,6 +50,9 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	pnp_write_config(dev, 0x02, 0x02);
 }
 
+#ifdef HAVE_FANCTL
+extern void init_ec(uint16_t base);
+#else
 static void pnp_write_index(uint16_t port_base, uint8_t reg, uint8_t value)
 {
 	outb(reg, port_base);
@@ -62,9 +65,6 @@ static uint8_t pnp_read_index(uint16_t port_base, uint8_t reg)
 	return inb(port_base + 1);
 }
 
-/* #ifdef HAVE_FANCTL
-extern void init_ec(uint16_t base);
-#else */
 static void init_ec(uint16_t base)
 {
 	uint8_t value;
@@ -80,7 +80,7 @@ static void init_ec(uint16_t base)
 	printk_debug("FAN_CTL: reg = 0x%04x, writing value = 0x%02x\r\n",
 		     base + 0x14, value | 0x87);
 }
-//#endif
+#endif
 
 static void it8716f_init(device_t dev)
 {

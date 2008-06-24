@@ -51,7 +51,7 @@ struct flashchip flashchips[] = {
 	{"Intel",	"82802AB",		INTEL_ID,	173,			512,	64 * 1024,	TEST_OK_PREW,	probe_82802ab,		erase_82802ab,			write_82802ab},
 	{"Intel",	"82802AC",		INTEL_ID,	172,			1024,	64 * 1024,	TEST_UNTESTED,	probe_82802ab,		erase_82802ab,			write_82802ab},
 	{"Macronix",	"MX25L4005",		MX_ID,		MX_25L4005,		512,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
-	{"Macronix",	"MX25L8005",		MX_ID,		MX_25L8005,		1024,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"Macronix",	"MX25L8005",		MX_ID,		MX_25L8005,		1024,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L1605",		MX_ID,		MX_25L1605,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L3205",		MX_ID,		MX_25L3205,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX29F002",		MX_ID,		MX_29F002,		256,	64 * 1024,	TEST_UNTESTED,	probe_29f002,		erase_29f002,			write_29f002},

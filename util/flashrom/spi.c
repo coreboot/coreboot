@@ -82,34 +82,40 @@ int probe_spi_rdid(struct flashchip *flash)
 	unsigned char readarr[3];
 	uint32_t manuf_id;
 	uint32_t model_id;
-	if (!spi_rdid(readarr)) {
-		if (!oddparity(readarr[0]))
-			printf_debug("RDID byte 0 parity violation.\n");
-		/* Check if this is a continuation vendor ID */
-		if (readarr[0] == 0x7f) {
-			if (!oddparity(readarr[1]))
-				printf_debug("RDID byte 1 parity violation.\n");
-			manuf_id = (readarr[0] << 8) | readarr[1];
-			model_id = readarr[2];
-		} else {
-			manuf_id = readarr[0];
-			model_id = (readarr[1] << 8) | readarr[2];
-		}
-		printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id, model_id);
-		if (manuf_id == flash->manufacture_id &&
-		    model_id == flash->model_id) {
-			/* Print the status register to tell the
-			 * user about possible write protection.
-			 */
-			spi_prettyprint_status_register(flash);
 
-			return 1;
-		}
-		/* Test if this is a pure vendor match. */
-		if (manuf_id == flash->manufacture_id &&
-		    GENERIC_DEVICE_ID == flash->model_id)
-			return 1;
+	if (spi_rdid(readarr))
+		return 0;
+
+	if (!oddparity(readarr[0]))
+		printf_debug("RDID byte 0 parity violation.\n");
+
+	/* Check if this is a continuation vendor ID */
+	if (readarr[0] == 0x7f) {
+		if (!oddparity(readarr[1]))
+			printf_debug("RDID byte 1 parity violation.\n");
+		manuf_id = (readarr[0] << 8) | readarr[1];
+		model_id = readarr[2];
+	} else {
+		manuf_id = readarr[0];
+		model_id = (readarr[1] << 8) | readarr[2];
 	}
+
+	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id, model_id);
+
+	if (manuf_id == flash->manufacture_id &&
+	    model_id == flash->model_id) {
+		/* Print the status register to tell the
+		 * user about possible write protection.
+		 */
+		spi_prettyprint_status_register(flash);
+
+		return 1;
+	}
+
+	/* Test if this is a pure vendor match. */
+	if (manuf_id == flash->manufacture_id &&
+	    GENERIC_DEVICE_ID == flash->model_id)
+		return 1;
 
 	return 0;
 }
@@ -118,29 +124,29 @@ int probe_spi_res(struct flashchip *flash)
 {
 	unsigned char readarr[3];
 	uint32_t model_id;
-	if (!spi_rdid(readarr)) {
-		/* Check if RDID returns 0xff 0xff 0xff, then we use RES. */
-		if ((readarr[0] != 0xff) || (readarr[1] != 0xff) ||
-		    (readarr[2] != 0xff))
-			return 0;
-	} else {
+
+	if (spi_rdid(readarr))
 		/* We couldn't issue RDID, it's pointless to try RES. */
 		return 0;
-	}
-	if (!spi_res(readarr)) {
-		model_id = readarr[0];
-		printf_debug("%s: id 0x%x\n", __FUNCTION__, model_id);
-		if (model_id == flash->model_id) {
-			/* Print the status register to tell the
-			 * user about possible write protection.
-			 */
-			spi_prettyprint_status_register(flash);
 
-			return 1;
-		}
-	}
+	/* Check if RDID returns 0xff 0xff 0xff, then we use RES. */
+	if ((readarr[0] != 0xff) || (readarr[1] != 0xff) ||
+	    (readarr[2] != 0xff))
+		return 0;
 
-	return 0;
+	if (spi_res(readarr))
+		return 0;
+
+	model_id = readarr[0];
+	printf_debug("%s: id 0x%x\n", __FUNCTION__, model_id);
+	if (model_id != flash->model_id)
+		return 0;
+
+	/* Print the status register to tell the
+	 * user about possible write protection.
+	 */
+	spi_prettyprint_status_register(flash);
+	return 1;
 }
 
 uint8_t spi_read_status_register()

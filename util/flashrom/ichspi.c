@@ -71,7 +71,6 @@
 #define SPI_OPCODE_TYPE_READ_WITH_ADDRESS   2
 #define SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS  3
 
-
 typedef struct _OPCODE {
 	uint8_t opcode;		//This commands spi opcode
 	uint8_t spi_type;	//This commands spi type
@@ -96,15 +95,13 @@ typedef struct _OPCODES {
 	OPCODE opcode[8];
 } OPCODES;
 
-
-static OPCODES *curopcodes=NULL;
-
+static OPCODES *curopcodes = NULL;
 
 /* HW access functions */
 static inline uint32_t REGREAD32(int X)
 {
 	volatile uint32_t regval;
-	regval = *(volatile uint32_t *)((uint8_t *)ich_spibar + X);
+	regval = *(volatile uint32_t *)((uint8_t *) ich_spibar + X);
 	return regval;
 }
 
@@ -112,32 +109,31 @@ static inline uint32_t REGREAD32(int X)
 #define REGWRITE16(X,Y) (*(uint16_t *)((uint8_t *)ich_spibar+X)=Y)
 #define REGWRITE8(X,Y)  (*(uint8_t *)((uint8_t *)ich_spibar+X)=Y)
 
-
 /* Common SPI functions */
 static int program_opcodes(OPCODES * op);
-static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength, uint8_t * data);
-static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset);
-static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes, int Offset);
+static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
+		      uint8_t datalength, uint8_t * data);
+static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf,
+			     int Offset);
+static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
+			      int Offset);
 static int ich_spi_erase_block(struct flashchip *flash, int offset);
-
 
 OPCODES O_ST_M25P = {
 	{
 	 JEDEC_WREN,
-	 0
-	},
+	 0},
 	{
-	 {JEDEC_BYTE_PROGRAM, 	SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS, 	1},	// Write Byte
-	 {JEDEC_READ, 		SPI_OPCODE_TYPE_READ_WITH_ADDRESS, 	0},	// Read Data
-	 {JEDEC_BE_D8, 		SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS, 	1},	// Erase Sector
-	 {JEDEC_RDSR, 		SPI_OPCODE_TYPE_READ_NO_ADDRESS, 	0},	// Read Device Status Reg
-	 {JEDEC_RES, 		SPI_OPCODE_TYPE_READ_WITH_ADDRESS, 	0},	// Resume Deep Power-Down
-	 {JEDEC_WRSR, 		SPI_OPCODE_TYPE_WRITE_NO_ADDRESS, 	1},	// Write Status Register
-	 {JEDEC_RDID, 		SPI_OPCODE_TYPE_READ_NO_ADDRESS, 	0},	// Read JDEC ID
-	 {JEDEC_CE_C7, 		SPI_OPCODE_TYPE_WRITE_NO_ADDRESS, 	1},	// Bulk erase
-	}
+	 {JEDEC_BYTE_PROGRAM, SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS, 1},	// Write Byte
+	 {JEDEC_READ, SPI_OPCODE_TYPE_READ_WITH_ADDRESS, 0},	// Read Data
+	 {JEDEC_BE_D8, SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS, 1},	// Erase Sector
+	 {JEDEC_RDSR, SPI_OPCODE_TYPE_READ_NO_ADDRESS, 0},	// Read Device Status Reg
+	 {JEDEC_RES, SPI_OPCODE_TYPE_READ_WITH_ADDRESS, 0},	// Resume Deep Power-Down
+	 {JEDEC_WRSR, SPI_OPCODE_TYPE_WRITE_NO_ADDRESS, 1},	// Write Status Register
+	 {JEDEC_RDID, SPI_OPCODE_TYPE_READ_NO_ADDRESS, 0},	// Read JDEC ID
+	 {JEDEC_CE_C7, SPI_OPCODE_TYPE_WRITE_NO_ADDRESS, 1},	// Bulk erase
+	 }
 };
-
 
 int program_opcodes(OPCODES * op)
 {
@@ -178,7 +174,7 @@ int program_opcodes(OPCODES * op)
 }
 
 int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
-	      uint8_t * data)
+	       uint8_t * data)
 {
 	int write_cmd = 0;
 	uint32_t temp32;
@@ -275,7 +271,6 @@ int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
 	return 0;
 }
 
-
 static int ich_spi_erase_block(struct flashchip *flash, int offset)
 {
 	printf_debug("Spi_Erase,Offset=%d,sectors=%d\n", offset, 1);
@@ -296,7 +291,8 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset)
 	uint32_t remaining = flash->page_size;
 	int a;
 
-	printf_debug("Spi_Read,Offset=%d,number=%d,buf=%p\n", Offset, page_size, buf);
+	printf_debug("Spi_Read,Offset=%d,number=%d,buf=%p\n", Offset, page_size,
+		     buf);
 
 	for (a = 0; a < page_size; a += MAXDATABYTES) {
 		if (remaining < MAXDATABYTES) {
@@ -325,14 +321,14 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset)
 }
 
 static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
-			     int Offset)
+			      int Offset)
 {
 	int page_size = flash->page_size;
 	uint32_t remaining = page_size;
 	int a;
 
-	printf_debug("write_page_ichspi,Offset=%d,number=%d,buf=%p\n", Offset, page_size,
-	       bytes);
+	printf_debug("write_page_ichspi,Offset=%d,number=%d,buf=%p\n", Offset,
+		     page_size, bytes);
 
 	for (a = 0; a < page_size; a += MAXDATABYTES) {
 		if (remaining < MAXDATABYTES) {
@@ -359,7 +355,6 @@ static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
 	return 0;
 }
 
-
 int ich_spi_read(struct flashchip *flash, uint8_t * buf)
 {
 	int i, rc = 0;
@@ -368,12 +363,11 @@ int ich_spi_read(struct flashchip *flash, uint8_t * buf)
 
 	for (i = 0; (i < total_size / page_size) && (rc == 0); i++) {
 		rc = ich_spi_read_page(flash, (void *)(buf + i * page_size),
-				      i * page_size);
+				       i * page_size);
 	}
 
 	return rc;
 }
-
 
 int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 {
@@ -392,7 +386,7 @@ int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 			printf("Error erasing block at 0x%x\n", i);
 			break;
 		}
-		
+
 		for (j = 0; j < erase_size / page_size; j++) {
 			ich_spi_write_page(flash, (void *)(buf + (i * erase_size) + (j * page_size)),
 					   (i * erase_size) + (j * page_size));
@@ -404,7 +398,8 @@ int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 	return rc;
 }
 
-int ich_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
+int ich_spi_command(unsigned int writecnt, unsigned int readcnt,
+		    const unsigned char *writearr, unsigned char *readarr)
 {
 	int a;
 	int opcode_index = -1;
@@ -417,7 +412,7 @@ int ich_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned 
 	/* program opcodes if not already done */
 	if (curopcodes == NULL) {
 		printf_debug("Programming OPCODES\n");
-		curopcodes=&O_ST_M25P;
+		curopcodes = &O_ST_M25P;
 		program_opcodes(curopcodes);
 	}
 
@@ -440,25 +435,22 @@ int ich_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned 
 	/* if opcode-type requires an address */
 	if (opcode->spi_type == SPI_OPCODE_TYPE_READ_WITH_ADDRESS ||
 	    opcode->spi_type == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS) {
-		addr = (writearr[1]<<16) |
-		       (writearr[2]<<8)  |
-		       (writearr[3]<<0);
+		addr = (writearr[1] << 16) |
+		    (writearr[2] << 8) | (writearr[3] << 0);
 	}
-	
+
 	/* translate read/write array/count */
 	if (opcode->spi_type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS) {
-		data = (uint8_t*)(writearr+1);
-		count = writecnt-1;
-	}
-	else if (opcode->spi_type == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS) {
-		data = (uint8_t*)(writearr+4);
-		count = writecnt-4;
-	}
-	else {
-		data = (uint8_t*)readarr;
+		data = (uint8_t *) (writearr + 1);
+		count = writecnt - 1;
+	} else if (opcode->spi_type == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS) {
+		data = (uint8_t *) (writearr + 4);
+		count = writecnt - 4;
+	} else {
+		data = (uint8_t *) readarr;
 		count = readcnt;
 	}
-	
+
 	if (run_opcode(opcode_index, *opcode, addr, count, data) != 0) {
 		printf_debug("run OPCODE 0x%02x failed\n", opcode->opcode);
 		return 1;

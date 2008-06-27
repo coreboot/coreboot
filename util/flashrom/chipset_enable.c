@@ -189,15 +189,16 @@ void *ich_spibar = NULL;
 
 static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsigned long spibar)
 {
-	uint8_t old, new, bbs;
+	uint8_t old, new, bbs, buc;
 	uint32_t tmp, gcs;
 	void *rcrb;
 
 	/* Read the Root Complex Base Address Register (RCBA) */
 	tmp = pci_read_long(dev, 0xf0);
+
 	/* Calculate the Root Complex Register Block address */
 	tmp &= 0xffffc000;
-	printf_debug("Root Complex Register Block address = 0x%x\n", tmp);
+	printf_debug("\nRoot Complex Register Block address = 0x%x\n", tmp);
 	rcrb = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem, (off_t)tmp);
 	if (rcrb == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
@@ -212,10 +213,41 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsign
 	printf_debug("BOOT BIOS Straps: 0x%x (%s)\n",	bbs,
 		     (bbs == 0x3) ? "LPC" : ((bbs == 0x2) ? "PCI" : "SPI"));
 
+	buc = *(volatile uint8_t *)(rcrb + 0x3414);
+	printf_debug("Top Swap : %s\n", (buc & 1)?"enabled (A16 inverted)":"not enabled");
+
 	/* SPIBAR is at RCRB+0x3020 for ICH[78] and RCRB+0x3800 for ICH9. */
-	printf_debug("SPIBAR = 0x%lx\n", tmp + spibar);
-	/* TODO: Dump the SPI config regs */
+	printf_debug("SPIBAR = 0x%x + 0x%04x\n", tmp, (uint16_t)spibar);
+
+	// Assign Virtual Address
 	ich_spibar =  rcrb + spibar;
+
+	if (ich7_detected) {
+		int i;
+		printf_debug("0x00: 0x%04x     (SPIS)\n", *(uint16_t *)(ich_spibar + 0));
+		printf_debug("0x02: 0x%04x     (SPIC)\n", *(uint16_t *)(ich_spibar + 2));
+		printf_debug("0x04: 0x%08x (SPIA)\n", *(uint32_t *)(ich_spibar + 4));
+		for (i=0; i < 8; i++) {
+			int offs;
+			offs = 8 + (i * 8);
+			printf_debug("0x%02x: 0x%08x (SPID%d)\n", offs, *(uint32_t *)(ich_spibar + offs), i);
+			printf_debug("0x%02x: 0x%08x (SPID%d+4)\n", offs+4, *(uint32_t *)(ich_spibar + offs +4), i);
+		}
+		printf_debug("0x50: 0x%08x (BBAR)\n", *(uint32_t *)(ich_spibar + 0x50));
+		printf_debug("0x54: 0x%04x     (PREOP)\n", *(uint16_t *)(ich_spibar + 0x54));
+		printf_debug("0x56: 0x%04x     (OPTYPE)\n", *(uint16_t *)(ich_spibar + 0x56));
+		printf_debug("0x58: 0x%08x (OPMENU)\n", *(uint32_t *)(ich_spibar + 0x58));
+		printf_debug("0x5c: 0x%08x (OPMENU+4)\n", *(uint32_t *)(ich_spibar + 0x5c));
+		for (i=0; i < 4; i++) {
+			int offs;
+			offs = 0x60 + (i * 4);
+			printf_debug("0x%02x: 0x%08x (PBR%d)\n", offs, *(uint32_t *)(ich_spibar + offs), i);
+		}
+		printf_debug("\n");
+		if ( (*(uint16_t *)ich_spibar) & (1 << 15)) {
+			printf("WARNING: SPI Configuration Lockdown activated.\n");
+		}
+	}
 
 	old = pci_read_byte(dev, 0xdc);
 	printf_debug("SPI Read Configuration: ");
@@ -234,11 +266,16 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsign
 	return enable_flash_ich_dc(dev, name);
 }
 
+/* Flag for ICH7 SPI register block */
+int ich7_detected = 0;
+
 static int enable_flash_ich7(struct pci_dev *dev, const char *name)
 {
+       ich7_detected = 1;
 	return enable_flash_ich_dc_spi(dev, name, 0x3020);
 }
 
+/* Flag for ICH8/ICH9 SPI register block */
 int ich9_detected = 0;
 
 static int enable_flash_ich8(struct pci_dev *dev, const char *name)

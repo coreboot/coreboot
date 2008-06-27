@@ -370,6 +370,7 @@ void print_supported_boards(void);
 /* chipset_enable.c */
 int chipset_flash_enable(void);
 void print_supported_chipsets(void);
+extern int ich7_detected;
 extern int ich9_detected;
 extern void *ich_spibar;
 

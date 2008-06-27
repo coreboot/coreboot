@@ -4,6 +4,7 @@
  * Copyright (C) 2008 Stefan Wildemann <stefan.wildemann@kontron.com>
  * Copyright (C) 2008 Claus Gindhart <claus.gindhart@kontron.com>
  * Copyright (C) 2008 Dominik Geyer <dominik.geyer@kontron.com>
+ * Copyright (C) 2008 coresystems GmbH <info@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,15 +43,17 @@
 
 #define MAXDATABYTES 0x40
 
-/*ICH9 controller register definition*/
-#define REG_FADDR		0x08	/* 32 Bits */
-#define REG_FDATA0		0x10	/* 64 Bytes */
-#define REG_SSFS		0x90	/* 08 Bits */
+/* ICH9 controller register definition */
+#define ICH9_REG_FADDR         0x08	/* 32 Bits */
+#define ICH9_REG_FDATA0                0x10	/* 64 Bytes */
+
+#define ICH9_REG_SSFS          0x90	/* 08 Bits */
 #define SSFS_SCIP		0x00000001
 #define SSFS_CDS		0x00000004
 #define SSFS_FCERR		0x00000008
 #define SSFS_AEL		0x00000010
-#define REG_SSFC		0x91	/* 24 Bits */
+
+#define ICH9_REG_SSFC          0x91	/* 24 Bits */
 #define SSFC_SCGO		0x00000200
 #define SSFC_ACS		0x00000400
 #define SSFC_SPOP		0x00000800
@@ -61,15 +64,34 @@
 #define SSFC_SCF		0x01000000
 #define SSFC_SCF_20MHZ 0x00000000
 #define SSFC_SCF_33MHZ 0x01000000
-#define REG_PREOP		0x94	/* 16 Bits */
-#define REG_OPTYPE		0x96	/* 16 Bits */
-#define REG_OPMENU		0x98	/* 64 BITS */
+
+#define ICH9_REG_PREOP         0x94	/* 16 Bits */
+#define ICH9_REG_OPTYPE                0x96	/* 16 Bits */
+#define ICH9_REG_OPMENU                0x98	/* 64 Bits */
 
 // ICH9R SPI commands
 #define SPI_OPCODE_TYPE_READ_NO_ADDRESS     0
 #define SPI_OPCODE_TYPE_WRITE_NO_ADDRESS    1
 #define SPI_OPCODE_TYPE_READ_WITH_ADDRESS   2
 #define SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS  3
+
+// ICH7 registers
+#define ICH7_REG_SPIS          0x00	/* 16 Bits */
+#define SPIS_SCIP              0x00000001
+#define SPIS_CDS               0x00000004
+#define SPIS_FCERR             0x00000008
+
+#define ICH7_REG_SPIC          0x02	/* 16 Bits */
+#define SPIC_SCGO              0x0002
+#define SPIC_ACS               0x0004
+#define SPIC_SPOP              0x0008
+#define SPIC_DS                        0x4000
+
+#define ICH7_REG_SPIA          0x04	/* 32 Bits */
+#define ICH7_REG_SPID0         0x08	/* 64 Bytes */
+#define ICH7_REG_PREOP         0x54	/* 16 Bits */
+#define ICH7_REG_OPTYPE                0x56	/* 16 Bits */
+#define ICH7_REG_OPMENU                0x58	/* 64 Bits */
 
 typedef struct _OPCODE {
 	uint8_t opcode;		//This commands spi opcode
@@ -101,7 +123,14 @@ static OPCODES *curopcodes = NULL;
 static inline uint32_t REGREAD32(int X)
 {
 	volatile uint32_t regval;
-	regval = *(volatile uint32_t *)((uint8_t *) ich_spibar + X);
+	regval = *(volatile uint32_t *) ((uint8_t *) ich_spibar + X);
+	return regval;
+}
+
+static inline uint16_t REGREAD16(int X)
+{
+	volatile uint16_t regval;
+	regval = *(volatile uint16_t *) ((uint8_t *) ich_spibar + X);
 	return regval;
 }
 
@@ -114,9 +143,9 @@ static int program_opcodes(OPCODES * op);
 static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 		      uint8_t datalength, uint8_t * data);
 static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf,
-			     int Offset);
+			     int offset);
 static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
-			      int Offset);
+			      int offset);
 static int ich_spi_erase_block(struct flashchip *flash, int offset);
 
 OPCODES O_ST_M25P = {
@@ -147,37 +176,61 @@ int program_opcodes(OPCODES * op)
 	temp16 = (op->preop[0]);
 	/* 8:16 Prefix Opcode 2 */
 	temp16 |= ((uint16_t) op->preop[1]) << 8;
-	REGWRITE16(REG_PREOP, temp16);
+	if (ich7_detected) {
+		REGWRITE16(ICH7_REG_PREOP, temp16);
+	} else if (ich9_detected) {
+		REGWRITE16(ICH9_REG_PREOP, temp16);
+	}
 
-	/*Program Opcode Types 0 - 7 */
+	/* Program Opcode Types 0 - 7 */
 	temp16 = 0;
 	for (a = 0; a < 8; a++) {
 		temp16 |= ((uint16_t) op->opcode[a].spi_type) << (a * 2);
 	}
-	REGWRITE16(REG_OPTYPE, temp16);
 
-	/*Program Allowable Opcodes 0 - 3 */
+	if (ich7_detected) {
+		REGWRITE16(ICH7_REG_OPTYPE, temp16);
+	} else if (ich9_detected) {
+		REGWRITE16(ICH9_REG_OPTYPE, temp16);
+	}
+
+
+	/* Program Allowable Opcodes 0 - 3 */
 	temp32 = 0;
 	for (a = 0; a < 4; a++) {
 		temp32 |= ((uint32_t) op->opcode[a].opcode) << (a * 8);
 	}
-	REGWRITE32(REG_OPMENU, temp32);
+
+	if (ich7_detected) {
+		REGWRITE32(ICH7_REG_OPMENU, temp32);
+	} else if (ich9_detected) {
+		REGWRITE32(ICH9_REG_OPMENU, temp32);
+	}
+
 
 	/*Program Allowable Opcodes 4 - 7 */
 	temp32 = 0;
 	for (a = 4; a < 8; a++) {
-		temp32 |= ((uint32_t) op->opcode[a].opcode) << ((a - 4) * 8);
+		temp32 |=
+		    ((uint32_t) op->opcode[a].opcode) << ((a - 4) * 8);
 	}
-	REGWRITE32(REG_OPMENU + 4, temp32);
+
+	if (ich7_detected) {
+		REGWRITE32(ICH7_REG_OPMENU + 4, temp32);
+	} else if (ich9_detected) {
+		REGWRITE32(ICH9_REG_OPMENU + 4, temp32);
+	}
 
 	return 0;
 }
 
-int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
-	       uint8_t * data)
+static int ich7_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
+			   uint8_t datalength, uint8_t * data)
 {
 	int write_cmd = 0;
+	int timeout;
 	uint32_t temp32;
+	uint16_t temp16;
 	uint32_t a;
 
 	/* Is it a write command? */
@@ -187,7 +240,7 @@ int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
 	}
 
 	/* Programm Offset in Flash into FADDR */
-	REGWRITE32(REG_FADDR, (offset & 0x00FFFFFF));	/*SPI addresses are 24 BIT only */
+	REGWRITE32(ICH7_REG_SPIA, (offset & 0x00FFFFFF));	/* SPI addresses are 24 BIT only */
 
 	/* Program data into FDATA0 to N */
 	if (write_cmd && (datalength != 0)) {
@@ -200,12 +253,115 @@ int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
 			temp32 |= ((uint32_t) data[a]) << ((a % 4) * 8);
 
 			if ((a % 4) == 3) {
-				REGWRITE32(REG_FDATA0 + (a - (a % 4)), temp32);
+				REGWRITE32(ICH7_REG_SPID0 + (a - (a % 4)),
+					   temp32);
 			}
 		}
 		if (((a - 1) % 4) != 3) {
-			REGWRITE32(REG_FDATA0 + ((a - 1) - ((a - 1) % 4)),
-				   temp32);
+			REGWRITE32(ICH7_REG_SPID0 +
+				   ((a - 1) - ((a - 1) % 4)), temp32);
+		}
+
+	}
+
+	/* Assemble SPIS */
+	temp16 = 0;
+	/* clear error status registers */
+	temp16 |= (SPIS_CDS + SPIS_FCERR);
+	REGWRITE16(ICH7_REG_SPIS, temp16);
+
+	/* Assemble SPIC */
+	temp16 = 0;
+
+	if (datalength != 0) {
+		temp16 |= SPIC_DS;
+		temp16 |= ((uint16_t) ((datalength - 1) & 0x3f)) << 8;
+	}
+
+	/* Select opcode */
+	temp16 |= ((uint16_t) (nr & 0x07)) << 4;
+
+	/* Handle Atomic */
+	if (op.atomic != 0) {
+		/* Select atomic command */
+		temp16 |= SPIC_ACS;
+		/* Selct prefix opcode */
+		if ((op.atomic - 1) == 1) {
+			/*Select prefix opcode 2 */
+			temp16 |= SPIC_SPOP;
+		}
+	}
+
+	/* Start */
+	temp16 |= SPIC_SCGO;
+
+	/* write it */
+	REGWRITE16(ICH7_REG_SPIC, temp16);
+
+	/* wait for cycle complete */
+	timeout = 1000 * 60;	// 60s is a looong timeout.
+	while (((REGREAD16(ICH7_REG_SPIS) & SPIS_CDS) == 0) && --timeout) {
+		myusec_delay(1000);
+	}
+	if (!timeout) {
+		printf_debug("timeout\n");
+	}
+
+	if ((REGREAD16(ICH7_REG_SPIS) & SPIS_FCERR) != 0) {
+		printf_debug("Transaction error!\n");
+		return 1;
+	}
+
+	if ((!write_cmd) && (datalength != 0)) {
+		for (a = 0; a < datalength; a++) {
+			if ((a % 4) == 0) {
+				temp32 = REGREAD32(ICH7_REG_SPID0 + (a));
+			}
+
+			data[a] =
+			    (temp32 & (((uint32_t) 0xff) << ((a % 4) * 8)))
+			    >> ((a % 4) * 8);
+		}
+	}
+
+	return 0;
+}
+
+
+static int ich9_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
+			   uint8_t datalength, uint8_t * data)
+{
+	int write_cmd = 0;
+	uint32_t temp32;
+	uint32_t a;
+
+	/* Is it a write command? */
+	if ((op.spi_type == SPI_OPCODE_TYPE_WRITE_NO_ADDRESS)
+	    || (op.spi_type == SPI_OPCODE_TYPE_WRITE_WITH_ADDRESS)) {
+		write_cmd = 1;
+	}
+
+	/* Programm Offset in Flash into FADDR */
+	REGWRITE32(ICH9_REG_FADDR, (offset & 0x00FFFFFF));	/* SPI addresses are 24 BIT only */
+
+	/* Program data into FDATA0 to N */
+	if (write_cmd && (datalength != 0)) {
+		temp32 = 0;
+		for (a = 0; a < datalength; a++) {
+			if ((a % 4) == 0) {
+				temp32 = 0;
+			}
+
+			temp32 |= ((uint32_t) data[a]) << ((a % 4) * 8);
+
+			if ((a % 4) == 3) {
+				REGWRITE32(ICH9_REG_FDATA0 + (a - (a % 4)),
+					   temp32);
+			}
+		}
+		if (((a - 1) % 4) != 3) {
+			REGWRITE32(ICH9_REG_FDATA0 +
+				   ((a - 1) - ((a - 1) % 4)), temp32);
 		}
 
 	}
@@ -243,15 +399,15 @@ int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
 	temp32 |= SSFC_SCGO;
 
 	/* write it */
-	REGWRITE32(REG_SSFS, temp32);
+	REGWRITE32(ICH9_REG_SSFS, temp32);
 
 	/*wait for cycle complete */
-	while ((REGREAD32(REG_SSFS) & SSFS_CDS) == 0) {
+	while ((REGREAD32(ICH9_REG_SSFS) & SSFS_CDS) == 0) {
 		/*TODO; Do something that this can't lead into an endless loop. but some
 		 * commands may cause this to be last more than 30 seconds */
 	}
 
-	if ((REGREAD32(REG_SSFS) & SSFS_FCERR) != 0) {
+	if ((REGREAD32(ICH9_REG_SSFS) & SSFS_FCERR) != 0) {
 		printf_debug("Transaction error!\n");
 		return 1;
 	}
@@ -259,21 +415,35 @@ int run_opcode(uint8_t nr, OPCODE op, uint32_t offset, uint8_t datalength,
 	if ((!write_cmd) && (datalength != 0)) {
 		for (a = 0; a < datalength; a++) {
 			if ((a % 4) == 0) {
-				temp32 = REGREAD32(REG_FDATA0 + (a));
+				temp32 = REGREAD32(ICH9_REG_FDATA0 + (a));
 			}
 
 			data[a] =
-			    (temp32 & (((uint32_t) 0xff) << ((a % 4) * 8))) >>
-			    ((a % 4) * 8);
+			    (temp32 & (((uint32_t) 0xff) << ((a % 4) * 8)))
+			    >> ((a % 4) * 8);
 		}
 	}
 
 	return 0;
 }
 
+static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
+		      uint8_t datalength, uint8_t * data)
+{
+	if (ich7_detected)
+		return ich7_run_opcode(nr, op, offset, datalength, data);
+	else if (ich9_detected) {
+		return ich9_run_opcode(nr, op, offset, datalength, data);
+	}
+
+	/* If we ever get here, something really weird happened */
+	return -1;
+}
+
 static int ich_spi_erase_block(struct flashchip *flash, int offset)
 {
-	printf_debug("Spi_Erase,Offset=%d,sectors=%d\n", offset, 1);
+	printf_debug("ich_spi_erase_block: offset=%d, sectors=%d\n",
+		     offset, 1);
 
 	if (run_opcode(2, curopcodes->opcode[2], offset, 0, NULL) != 0) {
 		printf_debug("Error erasing sector at 0x%x", offset);
@@ -285,21 +455,21 @@ static int ich_spi_erase_block(struct flashchip *flash, int offset)
 	return 0;
 }
 
-static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset)
+static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset)
 {
 	int page_size = flash->page_size;
 	uint32_t remaining = flash->page_size;
 	int a;
 
-	printf_debug("Spi_Read,Offset=%d,number=%d,buf=%p\n", Offset, page_size,
-		     buf);
+	printf_debug("ich_spi_read_page: offset=%d, number=%d, buf=%p\n",
+		     offset, page_size, buf);
 
 	for (a = 0; a < page_size; a += MAXDATABYTES) {
 		if (remaining < MAXDATABYTES) {
 
 			if (run_opcode
 			    (1, curopcodes->opcode[1],
-			     Offset + (page_size - remaining), remaining,
+			     offset + (page_size - remaining), remaining,
 			     &buf[page_size - remaining]) != 0) {
 				printf_debug("Error reading");
 				return 1;
@@ -308,7 +478,7 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset)
 		} else {
 			if (run_opcode
 			    (1, curopcodes->opcode[1],
-			     Offset + (page_size - remaining), MAXDATABYTES,
+			     offset + (page_size - remaining), MAXDATABYTES,
 			     &buf[page_size - remaining]) != 0) {
 				printf_debug("Error reading");
 				return 1;
@@ -321,20 +491,20 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int Offset)
 }
 
 static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
-			      int Offset)
+			      int offset)
 {
 	int page_size = flash->page_size;
 	uint32_t remaining = page_size;
 	int a;
 
-	printf_debug("write_page_ichspi,Offset=%d,number=%d,buf=%p\n", Offset,
-		     page_size, bytes);
+	printf_debug("ich_spi_write_page: offset=%d, number=%d, buf=%p\n",
+		     offset, page_size, bytes);
 
 	for (a = 0; a < page_size; a += MAXDATABYTES) {
 		if (remaining < MAXDATABYTES) {
 			if (run_opcode
 			    (0, curopcodes->opcode[0],
-			     Offset + (page_size - remaining), remaining,
+			     offset + (page_size - remaining), remaining,
 			     &bytes[page_size - remaining]) != 0) {
 				printf_debug("Error writing");
 				return 1;
@@ -343,7 +513,7 @@ static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
 		} else {
 			if (run_opcode
 			    (0, curopcodes->opcode[0],
-			     Offset + (page_size - remaining), MAXDATABYTES,
+			     offset + (page_size - remaining), MAXDATABYTES,
 			     &bytes[page_size - remaining]) != 0) {
 				printf_debug("Error writing");
 				return 1;

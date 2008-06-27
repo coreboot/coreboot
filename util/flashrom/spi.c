@@ -2,6 +2,7 @@
  * This file is part of the flashrom project.
  *
  * Copyright (C) 2007, 2008 Carl-Daniel Hailfinger
+ * Copyright (C) 2008 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +36,8 @@ int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char
 {
 	if (it8716f_flashport)
 		return it8716f_spi_command(writecnt, readcnt, writearr, readarr);
+       else if (ich7_detected)
+               return ich_spi_command(writecnt, readcnt, writearr, readarr);
 	else if (ich9_detected)
 		return ich_spi_command(writecnt, readcnt, writearr, readarr);
 	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
@@ -357,6 +360,8 @@ int spi_chip_read(struct flashchip *flash, uint8_t *buf)
 {
 	if (it8716f_flashport)
 		return it8716f_spi_chip_read(flash, buf);
+       else if (ich7_detected)
+               return ich_spi_read(flash, buf);
 	else if (ich9_detected)
 		return ich_spi_read(flash, buf);
 	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
@@ -367,6 +372,8 @@ int spi_chip_write(struct flashchip *flash, uint8_t *buf)
 {
 	if (it8716f_flashport)
 		return it8716f_spi_chip_write(flash, buf);
+       else if (ich7_detected)
+               return ich_spi_write(flash, buf);
 	else if (ich9_detected)
 		return ich_spi_write(flash, buf);
 	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);

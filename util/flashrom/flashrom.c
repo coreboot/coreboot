@@ -378,7 +378,7 @@ int main(int argc, char *argv[])
 #else
 	if (iopl(3) != 0) {
 #endif
-		fprintf(stderr, "ERROR: iopl failed: \"%s\"\n",
+               fprintf(stderr, "ERROR: Could not get IO privileges (%s).\nYou need to be root.\n",
 			strerror(errno));
 		exit(1);
 	}

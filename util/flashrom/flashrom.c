@@ -74,8 +74,8 @@ struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 
 	for (temp = pacc->devices; temp; temp = temp->next)
 		if (pci_filter_match(&filter, temp)) {
-			if ((card_vendor == pci_read_word(temp, 0x2C)) &&
-			    (card_device == pci_read_word(temp, 0x2E)))
+			if ((card_vendor == pci_read_word(temp, PCI_SUBSYSTEM_VENDOR_ID)) &&
+			    (card_device == pci_read_word(temp, PCI_SUBSYSTEM_ID)))
 				return temp;
 		}
 

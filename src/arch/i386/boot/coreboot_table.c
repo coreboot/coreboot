@@ -84,6 +84,7 @@ struct lb_serial *lb_serial(struct lb_header *header)
 	serial->tag = LB_TAG_SERIAL;
 	serial->size = sizeof(*serial);
 	serial->ioport = TTYS0_BASE;
+	serial->baud = TTYS0_BAUD;
 	return serial;
 #else
 	return header;

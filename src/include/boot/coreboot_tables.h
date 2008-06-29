@@ -145,6 +145,7 @@ struct lb_serial {
 	uint32_t tag;
 	uint32_t size;
 	uint16_t ioport;
+	uint32_t baud;
 };
 
 #define LB_TAG_CONSOLE		0x0010

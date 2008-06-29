@@ -229,7 +229,7 @@ static int ich7_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 {
 	int write_cmd = 0;
 	int timeout;
-	uint32_t temp32;
+	uint32_t temp32 = 0;
 	uint16_t temp16;
 	uint32_t a;
 

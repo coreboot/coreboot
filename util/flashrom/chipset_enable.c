@@ -212,6 +212,8 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsign
 	bbs = (gcs >> 10) & 0x3;
 	printf_debug("BOOT BIOS Straps: 0x%x (%s)\n",	bbs,
 		     (bbs == 0x3) ? "LPC" : ((bbs == 0x2) ? "PCI" : "SPI"));
+	if (bbs >= 2)
+		ich7_detected = 0;
 
 	buc = *(volatile uint8_t *)(rcrb + 0x3414);
 	printf_debug("Top Swap : %s\n", (buc & 1)?"enabled (A16 inverted)":"not enabled");

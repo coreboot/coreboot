@@ -581,9 +581,10 @@ int ich_spi_command(unsigned int writecnt, unsigned int readcnt,
 
 	/* program opcodes if not already done */
 	if (curopcodes == NULL) {
-		printf_debug("Programming OPCODES\n");
+		printf_debug("Programming OPCODES... ");
 		curopcodes = &O_ST_M25P;
 		program_opcodes(curopcodes);
+		printf_debug("done\n");
 	}
 
 	/* find cmd in opcodes-table */

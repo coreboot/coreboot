@@ -25,6 +25,7 @@
 #include <device/device.h>
 #include <tables.h>
 #include <mc146818rtc.h>
+#include <uart8250.h>
 #include <lib.h>
 //#include <cpu/cpu.h>
 //#include <pirq_routing.h>
@@ -96,6 +97,45 @@ struct lb_memory *lb_memory(struct lb_header *header)
 	mem->tag = LB_TAG_MEMORY;
 	mem->size = sizeof(*mem);
 	return mem;
+}
+
+struct lb_serial *lb_serial(struct lb_header *header)
+{
+#if defined(TTYSx_BASE)
+	struct lb_record *rec;
+	struct lb_serial *serial;
+	rec = lb_new_record(header);
+	serial = (struct lb_serial *)rec;
+	serial->tag = LB_TAG_SERIAL;
+	serial->size = sizeof(*serial);
+	serial->ioport = TTYSx_BASE;
+	serial->baud = TTYSx_BAUD;
+	return serial;
+#else
+	return header;
+#endif
+}
+
+void add_console(struct lb_header *header, u16 consoletype)
+{
+	struct lb_record *rec;
+	struct lb_console *console;
+	rec = lb_new_record(header);
+	console = (struct lb_console *)lb_new_record(header);
+	console->tag = LB_TAG_CONSOLE;
+	console->size = sizeof(*console);
+	console->type = consoletype;
+}
+
+void lb_console(struct lb_header *header)
+{
+#ifdef CONFIG_CONSOLE_SERIAL
+	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
+#endif
+/* FIXME when we have a proper vga console ourself */
+#ifdef CONFIG_PCI_OPTION_ROM_RUN
+	add_console(header, LB_TAG_CONSOLE_VGA);
+#endif
 }
 
 struct lb_mainboard *lb_mainboard(struct lb_header *header)
@@ -453,6 +493,12 @@ unsigned long write_coreboot_table(
 
 	/* Record our motherboard */
 	lb_mainboard(head);
+
+	/* Record the serial port, if present */
+	lb_serial(head);
+
+	/* Record our console setup */
+	lb_console(head);
 
 	/* Record our various random string information */
 	lb_strings(head);

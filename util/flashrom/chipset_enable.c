@@ -35,6 +35,17 @@
 #include <unistd.h>
 #include "flash.h"
 
+/**
+ * flashrom defaults to LPC flash devices. If a known SPI controller is found
+ * and the SPI strappings are set, this will be overwritten by the probing code.
+ *
+ * Eventually, this will become an array when multiple flash support works.
+ */
+
+flashbus_t flashbus = BUS_TYPE_LPC;
+void *spibar = NULL;
+
+
 static int enable_flash_ali_m1533(struct pci_dev *dev, const char *name)
 {
 	uint8_t tmp;
@@ -124,7 +135,7 @@ static int enable_flash_piix4(struct pci_dev *dev, const char *name)
 	 * Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
 	 * Set bit 2: BIOSCS# Write Enable (1=enable, 0=disable).
 	 */
-	new = old | 0x2c4;
+	new = old | 0x02c4;
 
 	if (new == old)
 		return 0;
@@ -185,88 +196,131 @@ static int enable_flash_ich_dc(struct pci_dev *dev, const char *name)
 	return enable_flash_ich(dev, name, 0xdc);
 }
 
-void *ich_spibar = NULL;
+#define ICH_STRAP_RSVD 0x00
+#define ICH_STRAP_SPI  0x01
+#define ICH_STRAP_PCI  0x02
+#define ICH_STRAP_LPC  0x03
 
 static int enable_flash_vt8237s_spi(struct pci_dev *dev, const char *name) {
 	uint32_t mmio_base;
 
 	mmio_base = (pci_read_long(dev, 0xbc)) << 8;
 	printf_debug("MMIO base at = 0x%x\n", mmio_base);
-	ich_spibar =  mmap(NULL, 0x70, PROT_READ | PROT_WRITE, MAP_SHARED,
+	spibar =  mmap(NULL, 0x70, PROT_READ | PROT_WRITE, MAP_SHARED,
 				fd_mem, mmio_base);
 
-	if (ich_spibar == MAP_FAILED) {
+	if (spibar == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
 		exit(1);
 	}
 
-	printf_debug("0x6c: 0x%04x     (CLOCK/DEBUG)\n", *(uint16_t *)(ich_spibar + 0x6c));
-	viaspi_detected = 1;
+	printf_debug("0x6c: 0x%04x     (CLOCK/DEBUG)\n", *(uint16_t *)(spibar + 0x6c));
+
+	flashbus = BUS_TYPE_VIA_SPI;
+
 	return 0;
 }
 
-static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsigned long spibar)
+static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ich_generation)
 {
+	int ret, i;
 	uint8_t old, new, bbs, buc;
+	uint16_t spibar_offset;
 	uint32_t tmp, gcs;
 	void *rcrb;
+	static const char *straps_names[] = { "reserved", "SPI", "PCI", "LPC" };
+	
+	/* Enable Flash Writes */
+	ret = enable_flash_ich_dc(dev, name);
 
-	/* Read the Root Complex Base Address Register (RCBA) */
-	tmp = pci_read_long(dev, 0xf0);
-
-	/* Calculate the Root Complex Register Block address */
-	tmp &= 0xffffc000;
+	/* Get physical address of Root Complex Register Block */
+	tmp = pci_read_long(dev, 0xf0) & 0xffffc000;
 	printf_debug("\nRoot Complex Register Block address = 0x%x\n", tmp);
+
+	/* Map RCBA to virtual memory */
 	rcrb = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem, (off_t)tmp);
 	if (rcrb == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
 		exit(1);
 	}
-	printf_debug("GCS address = 0x%x\n", tmp + 0x3410);
+
 	gcs = *(volatile uint32_t *)(rcrb + 0x3410);
 	printf_debug("GCS = 0x%x: ", gcs);
 	printf_debug("BIOS Interface Lock-Down: %sabled, ",
 		     (gcs & 0x1) ? "en" : "dis");
 	bbs = (gcs >> 10) & 0x3;
-	printf_debug("BOOT BIOS Straps: 0x%x (%s)\n",	bbs,
-		     (bbs == 0x3) ? "LPC" : ((bbs == 0x2) ? "PCI" : "SPI"));
-	if (bbs >= 2)
-		ich7_detected = 0;
+	printf_debug("BOOT BIOS Straps: 0x%x (%s)\n", bbs, straps_names[bbs]);
 
 	buc = *(volatile uint8_t *)(rcrb + 0x3414);
 	printf_debug("Top Swap : %s\n", (buc & 1)?"enabled (A16 inverted)":"not enabled");
 
+	/* It seems the ICH7 does not support SPI and LPC chips at the same
+	 * time. At least not with our current code. So we prevent searching
+	 * on ICH7 when the southbridge is strapped to LPC
+	 */
+
+	if (ich_generation == 7 && bbs == ICH_STRAP_LPC) {
+		/* No further SPI initialization required */
+		return ret;
+	}
+
+	switch (ich_generation) {
+	case 7:
+		flashbus = BUS_TYPE_ICH7_SPI;
+		spibar_offset = 0x3020;
+		break;
+	case 8:
+		flashbus = BUS_TYPE_ICH9_SPI;
+		spibar_offset = 0x3020;
+		break;
+	case 9:
+	default: /* Future version might behave the same */
+		flashbus = BUS_TYPE_ICH9_SPI;
+		spibar_offset = 0x3800;
+		break;
+	}
+
 	/* SPIBAR is at RCRB+0x3020 for ICH[78] and RCRB+0x3800 for ICH9. */
-	printf_debug("SPIBAR = 0x%x + 0x%04x\n", tmp, (uint16_t)spibar);
+	printf_debug("SPIBAR = 0x%x + 0x%04x\n", tmp, spibar_offset);
 
-	// Assign Virtual Address
-	ich_spibar =  rcrb + spibar;
+	/* Assign Virtual Address */
+	spibar =  rcrb + spibar_offset;
 
-	if (ich7_detected) {
-		int i;
-		printf_debug("0x00: 0x%04x     (SPIS)\n", *(uint16_t *)(ich_spibar + 0));
-		printf_debug("0x02: 0x%04x     (SPIC)\n", *(uint16_t *)(ich_spibar + 2));
-		printf_debug("0x04: 0x%08x (SPIA)\n", *(uint32_t *)(ich_spibar + 4));
+	switch (flashbus) {
+	case BUS_TYPE_ICH7_SPI:
+		printf_debug("0x00: 0x%04x     (SPIS)\n", *(uint16_t *)(spibar + 0));
+		printf_debug("0x02: 0x%04x     (SPIC)\n", *(uint16_t *)(spibar + 2));
+		printf_debug("0x04: 0x%08x (SPIA)\n", *(uint32_t *)(spibar + 4));
 		for (i=0; i < 8; i++) {
 			int offs;
 			offs = 8 + (i * 8);
-			printf_debug("0x%02x: 0x%08x (SPID%d)\n", offs, *(uint32_t *)(ich_spibar + offs), i);
-			printf_debug("0x%02x: 0x%08x (SPID%d+4)\n", offs+4, *(uint32_t *)(ich_spibar + offs +4), i);
+			printf_debug("0x%02x: 0x%08x (SPID%d)\n", offs, *(uint32_t *)(spibar + offs), i);
+			printf_debug("0x%02x: 0x%08x (SPID%d+4)\n", offs+4, *(uint32_t *)(spibar + offs +4), i);
 		}
-		printf_debug("0x50: 0x%08x (BBAR)\n", *(uint32_t *)(ich_spibar + 0x50));
-		printf_debug("0x54: 0x%04x     (PREOP)\n", *(uint16_t *)(ich_spibar + 0x54));
-		printf_debug("0x56: 0x%04x     (OPTYPE)\n", *(uint16_t *)(ich_spibar + 0x56));
-		printf_debug("0x58: 0x%08x (OPMENU)\n", *(uint32_t *)(ich_spibar + 0x58));
-		printf_debug("0x5c: 0x%08x (OPMENU+4)\n", *(uint32_t *)(ich_spibar + 0x5c));
+		printf_debug("0x50: 0x%08x (BBAR)\n", *(uint32_t *)(spibar + 0x50));
+		printf_debug("0x54: 0x%04x     (PREOP)\n", *(uint16_t *)(spibar + 0x54));
+		printf_debug("0x56: 0x%04x     (OPTYPE)\n", *(uint16_t *)(spibar + 0x56));
+		printf_debug("0x58: 0x%08x (OPMENU)\n", *(uint32_t *)(spibar + 0x58));
+		printf_debug("0x5c: 0x%08x (OPMENU+4)\n", *(uint32_t *)(spibar + 0x5c));
 		for (i=0; i < 4; i++) {
 			int offs;
 			offs = 0x60 + (i * 4);
-			printf_debug("0x%02x: 0x%08x (PBR%d)\n", offs, *(uint32_t *)(ich_spibar + offs), i);
+			printf_debug("0x%02x: 0x%08x (PBR%d)\n", offs, *(uint32_t *)(spibar + offs), i);
 		}
 		printf_debug("\n");
-		if ( (*(uint16_t *)ich_spibar) & (1 << 15)) {
+		if ( (*(uint16_t *)spibar) & (1 << 15)) {
 			printf("WARNING: SPI Configuration Lockdown activated.\n");
 		}
+		break;
+	case BUS_TYPE_ICH9_SPI:
+		/* TODO: Add dumping function for ICH8/ICH9, or drop the 
+		 * whole SPIBAR dumping from chipset_enable.c - There's 
+		 * inteltool for this task already.
+		 */
+		break;
+	default:
+		/* Nothing */
+		break;
 	}
 
 	old = pci_read_byte(dev, 0xdc);
@@ -277,38 +331,30 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsign
 	case 1:
 	case 2:
 		printf_debug("prefetching %sabled, caching %sabled, ",
-			(new & 0x2) ? "en" : "dis", (new & 0x1) ? "dis" : "en");
+			(new & 0x2) ? "en" : "dis", 
+			(new & 0x1) ? "dis" : "en");
 		break;
 	default:
 		printf_debug("invalid prefetching/caching settings, ");
 		break;
 	}
-	return enable_flash_ich_dc(dev, name);
-}
 
-/* Flag for ICH7 SPI register block */
-int ich7_detected = 0;
-int viaspi_detected = 0;
+	return ret;
+}
 
 static int enable_flash_ich7(struct pci_dev *dev, const char *name)
 {
-       ich7_detected = 1;
-	return enable_flash_ich_dc_spi(dev, name, 0x3020);
+	return enable_flash_ich_dc_spi(dev, name, 7);
 }
-
-/* Flag for ICH8/ICH9 SPI register block */
-int ich9_detected = 0;
 
 static int enable_flash_ich8(struct pci_dev *dev, const char *name)
 {
-	ich9_detected = 1;
-	return enable_flash_ich_dc_spi(dev, name, 0x3020);
+	return enable_flash_ich_dc_spi(dev, name, 8);
 }
 
 static int enable_flash_ich9(struct pci_dev *dev, const char *name)
 {
-	ich9_detected = 1;
-	return enable_flash_ich_dc_spi(dev, name, 0x3800);
+	return enable_flash_ich_dc_spi(dev, name, 9);
 }
 
 static int enable_flash_vt823x(struct pci_dev *dev, const char *name)

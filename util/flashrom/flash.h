@@ -370,10 +370,17 @@ void print_supported_boards(void);
 /* chipset_enable.c */
 int chipset_flash_enable(void);
 void print_supported_chipsets(void);
-extern int ich7_detected;
-extern int viaspi_detected;
-extern int ich9_detected;
-extern void *ich_spibar;
+
+typedef enum {
+	BUS_TYPE_LPC,
+	BUS_TYPE_ICH7_SPI,
+	BUS_TYPE_ICH9_SPI,
+	BUS_TYPE_IT87XX_SPI,
+	BUS_TYPE_VIA_SPI
+} flashbus_t;
+
+extern flashbus_t flashbus;
+extern void *spibar;
 
 /* Physical memory mapping device */
 #if defined (__sun) && (defined(__i386) || defined(__amd64))

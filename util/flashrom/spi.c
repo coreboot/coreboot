@@ -34,13 +34,16 @@ void spi_prettyprint_status_register(struct flashchip *flash);
 
 int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
 {
-	if (it8716f_flashport)
+	switch (flashbus) {
+	case BUS_TYPE_IT87XX_SPI:
 		return it8716f_spi_command(writecnt, readcnt, writearr, readarr);
-	else if ((ich7_detected) || (viaspi_detected))
-		return ich_spi_command(writecnt, readcnt, writearr, readarr);
-	else if (ich9_detected)
-		return ich_spi_command(writecnt, readcnt, writearr, readarr);
-	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
+	case BUS_TYPE_ICH7_SPI:
+	case BUS_TYPE_ICH9_SPI:
+	case BUS_TYPE_VIA_SPI:
+               return ich_spi_command(writecnt, readcnt, writearr, readarr);
+	default:
+		printf_debug("%s called, but no SPI chipset/strapping detected\n", __FUNCTION__);
+	}
 	return 1;
 }
 
@@ -135,9 +138,16 @@ int probe_spi_rdid(struct flashchip *flash) {
 int probe_spi_rdid4(struct flashchip *flash) {
 
 	/* only some SPI chipsets support 4 bytes commands */
-	if (!((ich7_detected) || (ich9_detected) || (viaspi_detected)))
-		return 0;
-	return probe_spi_rdid_generic(flash, 4);
+	switch (flashbus) {
+	case BUS_TYPE_ICH7_SPI:
+	case BUS_TYPE_ICH9_SPI:
+	case BUS_TYPE_VIA_SPI:
+		return probe_spi_rdid_generic(flash, 4);
+	default:
+		printf_debug("4b ID not supported on this SPI controller\n");
+	}
+
+	return 0;
 }
 
 int probe_spi_res(struct flashchip *flash)
@@ -316,11 +326,17 @@ int spi_sector_erase(const struct flashchip *flash, unsigned long addr)
 
 void spi_page_program(int block, uint8_t *buf, uint8_t *bios)
 {
-	if (it8716f_flashport) {
+	switch (flashbus) {
+	case BUS_TYPE_IT87XX_SPI:
 		it8716f_spi_page_program(block, buf, bios);
-		return;
+		break;
+	case BUS_TYPE_ICH7_SPI:
+	case BUS_TYPE_ICH9_SPI:
+		printf_debug("%s called, but not implemented for ICH\n", __FUNCTION__);
+		break;
+	default:
+		printf_debug("%s called, but no SPI chipset/strapping detected\n", __FUNCTION__);
 	}
-	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
 }
 
 /*
@@ -375,25 +391,34 @@ void spi_nbyte_read(int address, uint8_t *bytes, int len)
 
 int spi_chip_read(struct flashchip *flash, uint8_t *buf)
 {
-	if (it8716f_flashport)
+
+	switch (flashbus) {
+	case BUS_TYPE_IT87XX_SPI:
 		return it8716f_spi_chip_read(flash, buf);
-	else if ((ich7_detected) || (viaspi_detected))
+	case BUS_TYPE_ICH7_SPI:
+	case BUS_TYPE_ICH9_SPI:
+	case BUS_TYPE_VIA_SPI:
 		return ich_spi_read(flash, buf);
-	else if (ich9_detected)
-		return ich_spi_read(flash, buf);
-	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
+	default:
+		printf_debug("%s called, but no SPI chipset/strapping detected\n", __FUNCTION__);
+	}
+
 	return 1;
 }
 
 int spi_chip_write(struct flashchip *flash, uint8_t *buf)
 {
-	if (it8716f_flashport)
+	switch (flashbus) {
+	case BUS_TYPE_IT87XX_SPI:
 		return it8716f_spi_chip_write(flash, buf);
-	else if ((ich7_detected) || (viaspi_detected))
+	case BUS_TYPE_ICH7_SPI:
+	case BUS_TYPE_ICH9_SPI:
+	case BUS_TYPE_VIA_SPI:
 		return ich_spi_write(flash, buf);
-	else if (ich9_detected)
-		return ich_spi_write(flash, buf);
-	printf_debug("%s called, but no SPI chipset detected\n", __FUNCTION__);
+	default:
+		printf_debug("%s called, but no SPI chipset/strapping detected\n", __FUNCTION__);
+	}
+
 	return 1;
 }
 

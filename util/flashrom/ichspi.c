@@ -131,20 +131,20 @@ static OPCODES *curopcodes = NULL;
 static inline uint32_t REGREAD32(int X)
 {
 	volatile uint32_t regval;
-	regval = *(volatile uint32_t *) ((uint8_t *) ich_spibar + X);
+	regval = *(volatile uint32_t *) ((uint8_t *) spibar + X);
 	return regval;
 }
 
 static inline uint16_t REGREAD16(int X)
 {
 	volatile uint16_t regval;
-	regval = *(volatile uint16_t *) ((uint8_t *) ich_spibar + X);
+	regval = *(volatile uint16_t *) ((uint8_t *) spibar + X);
 	return regval;
 }
 
-#define REGWRITE32(X,Y) (*(uint32_t *)((uint8_t *)ich_spibar+X)=Y)
-#define REGWRITE16(X,Y) (*(uint16_t *)((uint8_t *)ich_spibar+X)=Y)
-#define REGWRITE8(X,Y)  (*(uint8_t *)((uint8_t *)ich_spibar+X)=Y)
+#define REGWRITE32(X,Y) (*(uint32_t *)((uint8_t *)spibar+X)=Y)
+#define REGWRITE16(X,Y) (*(uint16_t *)((uint8_t *)spibar+X)=Y)
+#define REGWRITE8(X,Y)  (*(uint8_t *)((uint8_t *)spibar+X)=Y)
 
 /* Common SPI functions */
 static int program_opcodes(OPCODES * op);
@@ -175,58 +175,51 @@ OPCODES O_ST_M25P = {
 int program_opcodes(OPCODES * op)
 {
 	uint8_t a;
-	uint16_t temp16;
-	uint32_t temp32;
+	uint16_t preop, optype;
+	uint32_t opmenu[2];
 
 	/* Program Prefix Opcodes */
-	temp16 = 0;
+	preop = 0;
 	/* 0:7 Prefix Opcode 1 */
-	temp16 = (op->preop[0]);
+	preop = (op->preop[0]);
 	/* 8:16 Prefix Opcode 2 */
-	temp16 |= ((uint16_t) op->preop[1]) << 8;
-	if ((ich7_detected) || (viaspi_detected)) {
-		REGWRITE16(ICH7_REG_PREOP, temp16);
-	} else if (ich9_detected) {
-		REGWRITE16(ICH9_REG_PREOP, temp16);
-	}
-
+	preop |= ((uint16_t) op->preop[1]) << 8;
+	
 	/* Program Opcode Types 0 - 7 */
-	temp16 = 0;
+	optype = 0;
 	for (a = 0; a < 8; a++) {
-		temp16 |= ((uint16_t) op->opcode[a].spi_type) << (a * 2);
+		optype |= ((uint16_t) op->opcode[a].spi_type) << (a * 2);
 	}
-
-	if ((ich7_detected) || (viaspi_detected)) {
-		REGWRITE16(ICH7_REG_OPTYPE, temp16);
-	} else if (ich9_detected) {
-		REGWRITE16(ICH9_REG_OPTYPE, temp16);
-	}
-
-
+	
 	/* Program Allowable Opcodes 0 - 3 */
-	temp32 = 0;
+	opmenu[0] = 0;
 	for (a = 0; a < 4; a++) {
-		temp32 |= ((uint32_t) op->opcode[a].opcode) << (a * 8);
+		opmenu[0] |= ((uint32_t) op->opcode[a].opcode) << (a * 8);
 	}
-
-	if ((ich7_detected) || (viaspi_detected)) {
-		REGWRITE32(ICH7_REG_OPMENU, temp32);
-	} else if (ich9_detected) {
-		REGWRITE32(ICH9_REG_OPMENU, temp32);
-	}
-
 
 	/*Program Allowable Opcodes 4 - 7 */
-	temp32 = 0;
+	opmenu[1] = 0;
 	for (a = 4; a < 8; a++) {
-		temp32 |=
-		    ((uint32_t) op->opcode[a].opcode) << ((a - 4) * 8);
+		opmenu[1] |= ((uint32_t) op->opcode[a].opcode) << ((a - 4) * 8);
 	}
 
-	if ((ich7_detected) || (viaspi_detected)) {
-		REGWRITE32(ICH7_REG_OPMENU + 4, temp32);
-	} else if (ich9_detected) {
-		REGWRITE32(ICH9_REG_OPMENU + 4, temp32);
+	switch (flashbus) {
+	case BUS_TYPE_ICH7_SPI: 
+	case BUS_TYPE_VIA_SPI: 
+		REGWRITE16(ICH7_REG_PREOP, preop);
+		REGWRITE16(ICH7_REG_OPTYPE, optype);
+		REGWRITE32(ICH7_REG_OPMENU, opmenu[0]);
+		REGWRITE32(ICH7_REG_OPMENU + 4, opmenu[1]);
+		break;
+	case BUS_TYPE_ICH9_SPI:
+		REGWRITE16(ICH9_REG_PREOP, preop);
+		REGWRITE16(ICH9_REG_OPTYPE, optype);
+		REGWRITE32(ICH9_REG_OPMENU, opmenu[0]);
+		REGWRITE32(ICH9_REG_OPMENU + 4, opmenu[1]);
+		break;
+	default:
+		printf_debug("%s: unsupported chipset\n", __FUNCTION__);
+		return -1;
 	}
 
 	return 0;
@@ -340,6 +333,7 @@ static int ich9_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 			   uint8_t datalength, uint8_t * data)
 {
 	int write_cmd = 0;
+	int timeout;
 	uint32_t temp32;
 	uint32_t a;
 
@@ -410,9 +404,12 @@ static int ich9_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 	REGWRITE32(ICH9_REG_SSFS, temp32);
 
 	/*wait for cycle complete */
-	while ((REGREAD32(ICH9_REG_SSFS) & SSFS_CDS) == 0) {
-		/*TODO; Do something that this can't lead into an endless loop. but some
-		 * commands may cause this to be last more than 30 seconds */
+	timeout = 1000 * 60;	// 60s is a looong timeout.
+	while (((REGREAD32(ICH9_REG_SSFS) & SSFS_CDS) == 0) && --timeout) {
+		myusec_delay(1000);
+	}
+	if (!timeout) {
+		printf_debug("timeout\n");
 	}
 
 	if ((REGREAD32(ICH9_REG_SSFS) & SSFS_FCERR) != 0) {
@@ -438,12 +435,16 @@ static int ich9_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 		      uint8_t datalength, uint8_t * data)
 {
-	if (ich7_detected)
-		return ich7_run_opcode(nr, op, offset, datalength, data, 64);
-	else if (viaspi_detected)
+	switch (flashbus) {
+	case BUS_TYPE_VIA_SPI:
 		return ich7_run_opcode(nr, op, offset, datalength, data, 16);
-	else if (ich9_detected)
+	case BUS_TYPE_ICH7_SPI:
+		return ich7_run_opcode(nr, op, offset, datalength, data, 64);
+	case BUS_TYPE_ICH9_SPI:
 		return ich9_run_opcode(nr, op, offset, datalength, data);
+	default:
+		printf_debug("%s: unsupported chipset\n", __FUNCTION__);
+	}
 
 	/* If we ever get here, something really weird happened */
 	return -1;
@@ -541,7 +542,7 @@ int ich_spi_read(struct flashchip *flash, uint8_t * buf)
 	int page_size = flash->page_size;
 	int maxdata = 64;
 
-	if (viaspi_detected) {
+	if (flashbus == BUS_TYPE_VIA_SPI) {
 		maxdata = 16;
 	}
 
@@ -572,7 +573,7 @@ int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 			break;
 		}
 
-	if (viaspi_detected) {
+	if (flashbus == BUS_TYPE_VIA_SPI) {
 		maxdata = 16;
 	}
 		for (j = 0; j < erase_size / page_size; j++) {

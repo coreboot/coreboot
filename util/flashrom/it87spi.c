@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007, 2008 Carl-Daniel Hailfinger
  * Copyright (C) 2008 Ronald Hoogenboom <ronald@zonnet.nl>
+ * Copyright (C) 2008 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,8 +113,13 @@ static uint16_t find_ite_spi_flash_port(uint16_t port)
 int it87xx_probe_spi_flash(const char *name)
 {
 	it8716f_flashport = find_ite_spi_flash_port(ITE_SUPERIO_PORT1);
+
 	if (!it8716f_flashport)
 		it8716f_flashport = find_ite_spi_flash_port(ITE_SUPERIO_PORT2);
+
+	if (it8716f_flashport)
+		flashbus = BUS_TYPE_IT87XX_SPI;
+
 	return (!it8716f_flashport);
 }
 

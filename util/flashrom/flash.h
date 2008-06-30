@@ -403,6 +403,7 @@ extern char *lb_part, *lb_vendor;
 
 /* spi.c */
 int probe_spi_rdid(struct flashchip *flash);
+int probe_spi_rdid4(struct flashchip *flash);
 int probe_spi_res(struct flashchip *flash);
 int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
 void spi_write_enable();

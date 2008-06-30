@@ -44,11 +44,11 @@ int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char
 	return 1;
 }
 
-static int spi_rdid(unsigned char *readarr)
+static int spi_rdid(unsigned char *readarr, int bytes)
 {
 	const unsigned char cmd[JEDEC_RDID_OUTSIZE] = {JEDEC_RDID};
 
-	if (spi_command(JEDEC_RDID_OUTSIZE, JEDEC_RDID_INSIZE, cmd, readarr))
+	if (spi_command(JEDEC_RDID_OUTSIZE, bytes, cmd, readarr))
 		return 1;
 	printf_debug("RDID returned %02x %02x %02x.\n", readarr[0], readarr[1], readarr[2]);
 	return 0;
@@ -80,13 +80,13 @@ void spi_write_disable()
 	spi_command(JEDEC_WRDI_OUTSIZE, JEDEC_WRDI_INSIZE, cmd, NULL);
 }
 
-int probe_spi_rdid(struct flashchip *flash)
+static int probe_spi_rdid_generic(struct flashchip *flash, int bytes)
 {
-	unsigned char readarr[3];
+	unsigned char readarr[4];
 	uint32_t manuf_id;
 	uint32_t model_id;
 
-	if (spi_rdid(readarr))
+	if (spi_rdid(readarr, bytes))
 		return 0;
 
 	if (!oddparity(readarr[0]))
@@ -98,6 +98,10 @@ int probe_spi_rdid(struct flashchip *flash)
 			printf_debug("RDID byte 1 parity violation.\n");
 		manuf_id = (readarr[0] << 8) | readarr[1];
 		model_id = readarr[2];
+		if (bytes > 3) {
+			model_id <<= 8;
+			model_id |= readarr[3];
+		}
 	} else {
 		manuf_id = readarr[0];
 		model_id = (readarr[1] << 8) | readarr[2];
@@ -123,12 +127,25 @@ int probe_spi_rdid(struct flashchip *flash)
 	return 0;
 }
 
+int probe_spi_rdid(struct flashchip *flash) {
+	return probe_spi_rdid_generic(flash, 3);
+}
+
+/* support 4 bytes flash ID */
+int probe_spi_rdid4(struct flashchip *flash) {
+
+	/* only some SPI chipsets support 4 bytes commands */
+	if (!((ich7_detected) || (ich9_detected) || (viaspi_detected)))
+		return 0;
+	return probe_spi_rdid_generic(flash, 4);
+}
+
 int probe_spi_res(struct flashchip *flash)
 {
 	unsigned char readarr[3];
 	uint32_t model_id;
 
-	if (spi_rdid(readarr))
+	if (spi_rdid(readarr, 3))
 		/* We couldn't issue RDID, it's pointless to try RES. */
 		return 0;
 

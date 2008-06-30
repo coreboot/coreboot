@@ -41,8 +41,6 @@
 #include "flash.h"
 #include "spi.h"
 
-#define MAXDATABYTES 0x40
-
 /* ICH9 controller register definition */
 #define ICH9_REG_FADDR         0x08	/* 32 Bits */
 #define ICH9_REG_FDATA0                0x10	/* 64 Bytes */
@@ -81,11 +79,21 @@
 #define SPIS_CDS               0x00000004
 #define SPIS_FCERR             0x00000008
 
+/* VIA SPI is compatible with ICH7, but maxdata
+   to transfer is 16 bytes.
+
+   DATA byte count on ICH7 is 8:13, on VIA 8:11
+
+   bit 12 is port select CS0 CS1
+   bit 13 is FAST READ enable
+   bit 7  is used with fast read and one shot controls CS de-assert?
+*/
+
 #define ICH7_REG_SPIC          0x02	/* 16 Bits */
 #define SPIC_SCGO              0x0002
 #define SPIC_ACS               0x0004
 #define SPIC_SPOP              0x0008
-#define SPIC_DS                        0x4000
+#define SPIC_DS                0x4000
 
 #define ICH7_REG_SPIA          0x04	/* 32 Bits */
 #define ICH7_REG_SPID0         0x08	/* 64 Bytes */
@@ -143,9 +151,9 @@ static int program_opcodes(OPCODES * op);
 static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 		      uint8_t datalength, uint8_t * data);
 static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf,
-			     int offset);
+			     int offset, int maxdata);
 static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
-			      int offset);
+			      int offset, int maxdata);
 static int ich_spi_erase_block(struct flashchip *flash, int offset);
 
 OPCODES O_ST_M25P = {
@@ -176,7 +184,7 @@ int program_opcodes(OPCODES * op)
 	temp16 = (op->preop[0]);
 	/* 8:16 Prefix Opcode 2 */
 	temp16 |= ((uint16_t) op->preop[1]) << 8;
-	if (ich7_detected) {
+	if ((ich7_detected) || (viaspi_detected)) {
 		REGWRITE16(ICH7_REG_PREOP, temp16);
 	} else if (ich9_detected) {
 		REGWRITE16(ICH9_REG_PREOP, temp16);
@@ -188,7 +196,7 @@ int program_opcodes(OPCODES * op)
 		temp16 |= ((uint16_t) op->opcode[a].spi_type) << (a * 2);
 	}
 
-	if (ich7_detected) {
+	if ((ich7_detected) || (viaspi_detected)) {
 		REGWRITE16(ICH7_REG_OPTYPE, temp16);
 	} else if (ich9_detected) {
 		REGWRITE16(ICH9_REG_OPTYPE, temp16);
@@ -201,7 +209,7 @@ int program_opcodes(OPCODES * op)
 		temp32 |= ((uint32_t) op->opcode[a].opcode) << (a * 8);
 	}
 
-	if (ich7_detected) {
+	if ((ich7_detected) || (viaspi_detected)) {
 		REGWRITE32(ICH7_REG_OPMENU, temp32);
 	} else if (ich9_detected) {
 		REGWRITE32(ICH9_REG_OPMENU, temp32);
@@ -215,7 +223,7 @@ int program_opcodes(OPCODES * op)
 		    ((uint32_t) op->opcode[a].opcode) << ((a - 4) * 8);
 	}
 
-	if (ich7_detected) {
+	if ((ich7_detected) || (viaspi_detected)) {
 		REGWRITE32(ICH7_REG_OPMENU + 4, temp32);
 	} else if (ich9_detected) {
 		REGWRITE32(ICH9_REG_OPMENU + 4, temp32);
@@ -225,7 +233,7 @@ int program_opcodes(OPCODES * op)
 }
 
 static int ich7_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
-			   uint8_t datalength, uint8_t * data)
+			   uint8_t datalength, uint8_t * data, int maxdata)
 {
 	int write_cmd = 0;
 	int timeout;
@@ -275,7 +283,7 @@ static int ich7_run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 
 	if (datalength != 0) {
 		temp16 |= SPIC_DS;
-		temp16 |= ((uint16_t) ((datalength - 1) & 0x3f)) << 8;
+		temp16 |= ((uint32_t) ((datalength - 1) & (maxdata - 1))) << 8;
 	}
 
 	/* Select opcode */
@@ -431,10 +439,11 @@ static int run_opcode(uint8_t nr, OPCODE op, uint32_t offset,
 		      uint8_t datalength, uint8_t * data)
 {
 	if (ich7_detected)
-		return ich7_run_opcode(nr, op, offset, datalength, data);
-	else if (ich9_detected) {
+		return ich7_run_opcode(nr, op, offset, datalength, data, 64);
+	else if (viaspi_detected)
+		return ich7_run_opcode(nr, op, offset, datalength, data, 16);
+	else if (ich9_detected)
 		return ich9_run_opcode(nr, op, offset, datalength, data);
-	}
 
 	/* If we ever get here, something really weird happened */
 	return -1;
@@ -455,7 +464,7 @@ static int ich_spi_erase_block(struct flashchip *flash, int offset)
 	return 0;
 }
 
-static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset)
+static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset, int maxdata)
 {
 	int page_size = flash->page_size;
 	uint32_t remaining = flash->page_size;
@@ -464,8 +473,8 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset)
 	printf_debug("ich_spi_read_page: offset=%d, number=%d, buf=%p\n",
 		     offset, page_size, buf);
 
-	for (a = 0; a < page_size; a += MAXDATABYTES) {
-		if (remaining < MAXDATABYTES) {
+	for (a = 0; a < page_size; a += maxdata) {
+		if (remaining < maxdata) {
 
 			if (run_opcode
 			    (1, curopcodes->opcode[1],
@@ -478,12 +487,12 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset)
 		} else {
 			if (run_opcode
 			    (1, curopcodes->opcode[1],
-			     offset + (page_size - remaining), MAXDATABYTES,
+			     offset + (page_size - remaining), maxdata,
 			     &buf[page_size - remaining]) != 0) {
 				printf_debug("Error reading");
 				return 1;
 			}
-			remaining -= MAXDATABYTES;
+			remaining -= maxdata;
 		}
 	}
 
@@ -491,7 +500,7 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset)
 }
 
 static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
-			      int offset)
+			      int offset, int maxdata)
 {
 	int page_size = flash->page_size;
 	uint32_t remaining = page_size;
@@ -500,8 +509,8 @@ static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
 	printf_debug("ich_spi_write_page: offset=%d, number=%d, buf=%p\n",
 		     offset, page_size, bytes);
 
-	for (a = 0; a < page_size; a += MAXDATABYTES) {
-		if (remaining < MAXDATABYTES) {
+	for (a = 0; a < page_size; a += maxdata) {
+		if (remaining < maxdata) {
 			if (run_opcode
 			    (0, curopcodes->opcode[0],
 			     offset + (page_size - remaining), remaining,
@@ -513,12 +522,12 @@ static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
 		} else {
 			if (run_opcode
 			    (0, curopcodes->opcode[0],
-			     offset + (page_size - remaining), MAXDATABYTES,
+			     offset + (page_size - remaining), maxdata,
 			     &bytes[page_size - remaining]) != 0) {
 				printf_debug("Error writing");
 				return 1;
 			}
-			remaining -= MAXDATABYTES;
+			remaining -= maxdata;
 		}
 	}
 
@@ -530,10 +539,15 @@ int ich_spi_read(struct flashchip *flash, uint8_t * buf)
 	int i, rc = 0;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
+	int maxdata = 64;
+
+	if (viaspi_detected) {
+		maxdata = 16;
+	}
 
 	for (i = 0; (i < total_size / page_size) && (rc == 0); i++) {
 		rc = ich_spi_read_page(flash, (void *)(buf + i * page_size),
-				       i * page_size);
+				       i * page_size, maxdata);
 	}
 
 	return rc;
@@ -545,6 +559,7 @@ int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
 	int erase_size = 64 * 1024;
+	int maxdata = 64;
 
 	spi_disable_blockprotect();
 
@@ -557,9 +572,12 @@ int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 			break;
 		}
 
+	if (viaspi_detected) {
+		maxdata = 16;
+	}
 		for (j = 0; j < erase_size / page_size; j++) {
 			ich_spi_write_page(flash, (void *)(buf + (i * erase_size) + (j * page_size)),
-					   (i * erase_size) + (j * page_size));
+					   (i * erase_size) + (j * page_size), maxdata);
 		}
 	}
 

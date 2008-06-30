@@ -187,6 +187,24 @@ static int enable_flash_ich_dc(struct pci_dev *dev, const char *name)
 
 void *ich_spibar = NULL;
 
+static int enable_flash_vt8237s_spi(struct pci_dev *dev, const char *name) {
+	uint32_t mmio_base;
+
+	mmio_base = (pci_read_long(dev, 0xbc)) << 8;
+	printf_debug("MMIO base at = 0x%x\n", mmio_base);
+	ich_spibar =  mmap(NULL, 0x70, PROT_READ | PROT_WRITE, MAP_SHARED,
+				fd_mem, mmio_base);
+
+	if (ich_spibar == MAP_FAILED) {
+		perror("Can't mmap memory using " MEM_DEV);
+		exit(1);
+	}
+
+	printf_debug("0x6c: 0x%04x     (CLOCK/DEBUG)\n", *(uint16_t *)(ich_spibar + 0x6c));
+	viaspi_detected = 1;
+	return 0;
+}
+
 static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsigned long spibar)
 {
 	uint8_t old, new, bbs, buc;
@@ -270,6 +288,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, unsign
 
 /* Flag for ICH7 SPI register block */
 int ich7_detected = 0;
+int viaspi_detected = 0;
 
 static int enable_flash_ich7(struct pci_dev *dev, const char *name)
 {
@@ -660,6 +679,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x1106, 0x8231, "VIA VT8231",		enable_flash_vt823x},
 	{0x1106, 0x3177, "VIA VT8235",		enable_flash_vt823x},
 	{0x1106, 0x3227, "VIA VT8237",		enable_flash_vt823x},
+	{0x1106, 0x3372, "VIA VT8237S",		enable_flash_vt8237s_spi},
 	{0x1106, 0x8324, "VIA CX700",		enable_flash_vt823x},
 	{0x1106, 0x0686, "VIA VT82C686",	enable_flash_amd8111},
 	{0x1078, 0x0100, "AMD CS5530(A)",	enable_flash_cs5530},

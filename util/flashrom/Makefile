@@ -46,7 +46,7 @@ flashrom.o: flashrom.c
 	$(CC) -c $(CFLAGS) $(SVNDEF) $(CPPFLAGS) $< -o $@
 
 clean:
-	rm -f $(PROGRAM) *.o *~
+	rm -f $(PROGRAM) *.o
 
 distclean: clean
 	rm -f .dependencies

@@ -678,7 +678,7 @@ static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, 
 	if (partmatch)
 		return partmatch;
 
-	printf("\nUnknown vendor:board in coreboot table: %s:%s\n\n", vendor, part);
+	printf("\nUnknown vendor:board from coreboot table or -m option: %s:%s\n\n", vendor, part);
 	return NULL;
 }
 

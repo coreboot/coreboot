@@ -102,18 +102,15 @@ int map_flash_registers(struct flashchip *flash)
 struct flashchip *probe_flash(struct flashchip *flash, int force)
 {
 	volatile uint8_t *bios;
-	unsigned long flash_baseaddr, size;
+	unsigned long flash_baseaddr = 0, size;
 
-	while (flash->name != NULL) {
-		if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0) {
-			flash++;
+	for (; flash && flash->name; flash++) {
+		if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0)
 			continue;
-		}
 		printf_debug("Probing for %s %s, %d KB: ",
 			     flash->vendor, flash->name, flash->total_size);
 		if (!flash->probe && !force) {
 			printf_debug("failed! flashrom has no probe function for this flash chip.\n");
-			flash++;
 			continue;
 		}
 
@@ -150,18 +147,21 @@ struct flashchip *probe_flash(struct flashchip *flash, int force)
 		}
 		flash->virtual_memory = bios;
 
-		if (force || flash->probe(flash) == 1) {
-			printf("Found chip \"%s %s\" (%d KB) at physical address 0x%lx.\n",
-			       flash->vendor, flash->name, flash->total_size,
-			       flash_baseaddr);
-			return flash;
-		}
-		munmap((void *)bios, size);
+		if (force)
+			break;
 
-		flash++;
+		if (flash->probe(flash) == 1)
+			break;
+
+		munmap((void *)bios, size);
 	}
 
-	return NULL;
+	if (!flash || !flash->name)
+		return NULL;
+
+	printf("Found chip \"%s %s\" (%d KB) at physical address 0x%lx.\n",
+	       flash->vendor, flash->name, flash->total_size, flash_baseaddr);
+	return flash;
 }
 
 int verify_flash(struct flashchip *flash, uint8_t *buf)

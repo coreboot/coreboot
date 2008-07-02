@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 Silicon Integrated System Corporation
  * Copyright (C) 2004 Tyan Corp
- * Copyright (C) 2005-2007 coresystems GmbH <stepan@openbios.org>
+ * Copyright (C) 2005-2008 coresystems GmbH <stepan@openbios.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,7 +135,7 @@ struct flashchip flashchips[] = {
 	{"Winbond",	"W49F002U",		WINBOND_ID,	W_49F002U,		256,	128,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"Winbond",	"W49V002A",		WINBOND_ID,	W_49V002A,		256,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"Winbond",	"W49V002FA",		WINBOND_ID,	W_49V002FA,		256,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
-	{"Winbond",	"W39V080FA",		WINBOND_ID,	W_39V080FA,		1024,	64*1024,	TEST_OK_PR,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
+	{"Winbond",	"W39V080FA",		WINBOND_ID,	W_39V080FA,		1024,	64*1024,	TEST_OK_PREW,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
 	{"Winbond",	"W39V080FA (dual mode)",WINBOND_ID,	W_39V080FA_DM,		512,	64*1024,	TEST_UNTESTED,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
 
 	{"EON",		"unknown EON SPI chip",	EON_ID_NOPREFIX,GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,				NULL},

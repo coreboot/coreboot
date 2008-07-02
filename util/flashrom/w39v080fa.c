@@ -168,6 +168,8 @@ int erase_winbond_fwhub(struct flashchip *flash)
 	int i, total_size = flash->total_size * 1024;
 	volatile uint8_t *bios = flash->virtual_memory;
 	
+	unlock_winbond_fwhub(flash);
+
 	printf("Erasing:     ");
 
 	for (i = 0; i < total_size; i += flash->page_size)

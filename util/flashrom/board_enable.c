@@ -648,10 +648,10 @@ static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, 
 	struct board_pciid_enable *partmatch = NULL;
 
 	for (; board->name; board++) {
-		if (vendor && (!board->lb_vendor || strcmp(board->lb_vendor, vendor)))
+		if (vendor && (!board->lb_vendor || strcasecmp(board->lb_vendor, vendor)))
 			continue;
 
-		if (!board->lb_part || strcmp(board->lb_part, part))
+		if (!board->lb_part || strcasecmp(board->lb_part, part))
 			continue;
 
 		if (!pci_dev_find(board->first_vendor, board->first_device))
@@ -678,8 +678,7 @@ static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, 
 	if (partmatch)
 		return partmatch;
 
-	printf("NOT FOUND %s:%s\n", vendor, part);
-
+	printf("\nUnknown vendor:board in coreboot table: %s:%s\n\n", vendor, part);
 	return NULL;
 }
 

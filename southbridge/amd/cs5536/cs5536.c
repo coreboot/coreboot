@@ -240,15 +240,12 @@ static void lpc_init(struct southbridge_amd_cs5536_dts_config *sb)
  *
  * @param sb Southbridge config structure.
  */
-static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb)
+static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb,
+			struct device *dev)
 {
 	struct msr msr;
 	u16 addr = 0;
 	u32 gpio_addr;
-	struct device *dev;
-
-	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
-			      PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 
 	gpio_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
 	gpio_addr &= ~1;	/* Clear I/O bit */
@@ -419,11 +416,11 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 {
 	u32 *bar;
 	struct msr msr;
-	struct device *dev;
+	struct device *ehci_dev, *otg_dev, *udc_dev;
 
-	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
+	ehci_dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_EHCI, 0);
-	if (dev) {
+	if (ehci_dev) {
 		/* Serial short detect enable */
 		msr = rdmsr(USB2_SB_GLD_MSR_CONF);
 		msr.hi |= USB2_UPPER_SSDEN_SET;
@@ -432,7 +429,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 		/* Write to clear diag register. */
 		wrmsr(USB2_SB_GLD_MSR_DIAG, rdmsr(USB2_SB_GLD_MSR_DIAG));
 
-		bar = (u32 *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+		bar = (u32 *) pci_read_config32(ehci_dev, PCI_BASE_ADDRESS_0);
 
 		/* Make HCCPARAMS writable. */
 		*(bar + IPREG04) |= USB_HCCPW_SET;
@@ -441,10 +438,10 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 		*(bar + HCCPARAMS) = 0x00005012;
 	}
 
-	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
+	otg_dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
-	if (dev) {
-		bar = (u32 *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	if (otg_dev) {
+		bar = (u32 *) pci_read_config32(otg_dev, PCI_BASE_ADDRESS_0);
 
 		printk(BIOS_DEBUG, "UOCMUX is %x\n", *(bar + UOCMUX));
 
@@ -470,6 +467,8 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 
 	}
 
+	udc_dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
+				  PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 	/* PBz#6466: If the UOC(OTG) device, port 4, is configured as a
 	 * device, then perform the following sequence:
 	 *  - Set SD bit in DEVCTRL udc register
@@ -477,23 +476,18 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 	 *  - Set APU bit in uoc register
 	 */
 	if (sb->enable_USBP4_device) {
-		dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
-				      PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
-		if (dev) {
-			bar = (u32 *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+		if (udc_dev) {
+			bar = (u32 *)pci_read_config32(udc_dev, PCI_BASE_ADDRESS_0);
 			*(bar + UDCDEVCTL) |= UDC_SD_SET;
 		}
 
-		dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
-				      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
-		if (dev) {
-			bar = (u32 *)pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+		if (otg_dev) {
+			bar = (u32 *)pci_read_config32(otg_dev, PCI_BASE_ADDRESS_0);
 			*(bar + UOCCTL) |= PADEN_SET;
 			*(bar + UOCCAP) |= APU_SET;
+			printk(BIOS_DEBUG, "UOCCTL is %x\n", *(bar + UOCCTL));
 		}
 	}
-
-	printk(BIOS_DEBUG, "UOCCTL is %x\n", *(bar + UOCCTL));
 
 	/* Disable virtual PCI UDC and OTG headers.  The kernel never
 	 * sees a header for this device.  It used to provide an OS
@@ -506,15 +500,11 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 	 * device ID PCI_DEVICE_ID_AMD_CS5536_OTG, but it is hidden
 	 * when 0xDEADBEEF is written to config space register 0x7C.
 	 */
-	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
-			      PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
-	if (dev)
-		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
+	if (udc_dev)
+		pci_write_config32(udc_dev, 0x7C, 0xDEADBEEF);
 
-	dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
-			      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
-	if (dev)
-		pci_write_config32(dev, 0x7C, 0xDEADBEEF);
+	if (otg_dev)
+		pci_write_config32(otg_dev, 0x7C, 0xDEADBEEF);
 }
 
 /** 
@@ -659,7 +649,7 @@ static void southbridge_init(struct device *dev)
 
 	setup_i8259();
 	lpc_init(sb);
-	uarts_init(sb);
+	uarts_init(sb, dev);
 
 	if (sb->enable_gpio_int_route) {
 		printk(BIOS_SPEW, "cs5536: call vr_write\n");

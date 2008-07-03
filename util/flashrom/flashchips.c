@@ -123,7 +123,7 @@ struct flashchip flashchips[] = {
 	{"Winbond",	"W25x10",		WINBOND_NEX_ID,	W_25X10,		128,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"Winbond",	"W25x20",		WINBOND_NEX_ID,	W_25X20,		256,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"Winbond",	"W25x40",		WINBOND_NEX_ID,	W_25X40,		512,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
-	{"Winbond",	"W25x80",		WINBOND_NEX_ID,	W_25X80,		1024,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
+	{"Winbond",	"W25x80",		WINBOND_NEX_ID,	W_25X80,		1024,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"Winbond",	"W29C011",		WINBOND_ID,	W_29C011,		128,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"Winbond",	"W29C020C",		WINBOND_ID,	W_29C020C,		256,	128,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"Winbond",	"W29C040P",		WINBOND_ID,	W_29C040P,		512,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},

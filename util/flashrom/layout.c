@@ -50,9 +50,8 @@ int show_id(uint8_t *bios, int size, int force)
 	walk--;
 
 	if ((*walk) == 0 || ((*walk) & 0x3ff) != 0) {
-		/* We might have an Nvidia chipset bios 
-		 * which stores the id information at a 
-		 * different location.
+		/* We might have an NVIDIA chipset BIOS which stores the ID
+		 * information at a different location.
 		 */
 		walk = (unsigned int *)(bios + size - 0x80);
 		walk--;
@@ -88,19 +87,17 @@ int show_id(uint8_t *bios, int size, int force)
 
 	/*
 	 * If lb_vendor is not set, the coreboot table was
-	 * not found. Nor was -mVENDOR:PART specified
+	 * not found. Nor was -m VENDOR:PART specified.
 	 */
-
 	if (!lb_vendor || !lb_part) {
 		printf("Note: If the following flash access fails, "
-		       "you might need to specify -m <vendor>:<mainboard>.\n");
+		       "try -m <vendor>:<mainboard>.\n");
 		return 0;
 	}
 
 	/* These comparisons are case insensitive to make things
 	 * a little less user^Werror prone. 
 	 */
-
 	if (!strcasecmp(mainboard_vendor, lb_vendor) &&
 	    !strcasecmp(mainboard_part, lb_part)) {
 		printf_debug("This firmware image matches "

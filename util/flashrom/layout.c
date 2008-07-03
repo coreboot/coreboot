@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <stdint.h>
 #include "flash.h"
 
@@ -57,7 +58,18 @@ int show_id(uint8_t *bios, int size, int force)
 		walk--;
 	}
 
-	if ((*walk) == 0 || ((*walk) & 0x3ff) != 0) {
+	/*
+	 * Check if coreboot last image size is 0 or not a multiple of 1k or
+	 * bigger than the chip or if the pointers to vendor ID or mainboard ID
+	 * are outside the image of if the start of ID strings are nonsensical
+	 * (nonprintable and not \0).
+	 */
+	if ((*walk) == 0 || ((*walk) & 0x3ff) != 0 || *walk > size ||
+		*(walk - 1) > size || *(walk - 2) > size ||
+		(!isprint((const char *)(bios + size - *(walk - 1))) &&
+		((const char *)(bios + size - *(walk - 1)))) ||
+		(!isprint((const char *)(bios + size - *(walk - 2))) &&
+		((const char *)(bios + size - *(walk - 2))))) {
 		printf("Flash image seems to be a legacy BIOS. Disabling checks.\n");
 		mainboard_vendor = def_name;
 		mainboard_part = def_name;

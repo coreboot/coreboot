@@ -750,6 +750,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x10de, 0x0365, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
 	{0x10de, 0x0366, "NVIDIA MCP55",	enable_flash_mcp55}, /* LPC */
 	{0x10de, 0x0367, "NVIDIA MCP55",	enable_flash_mcp55}, /* Pro */
+	{0x10de, 0x0548, "NVIDIA MCP67",	enable_flash_mcp55},
 	{0x1002, 0x4377, "ATI SB400",		enable_flash_sb400},
 	{0x1166, 0x0205, "Broadcom HT-1000",	enable_flash_ht1000},
 };

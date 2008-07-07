@@ -192,7 +192,7 @@ int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 }
 
 /* Page size is usually 256 bytes */
-void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
+static void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
 	int i;
 
 	spi_write_enable();
@@ -261,7 +261,7 @@ int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf) {
 		it8716f_over512k_spi_chip_write(flash, buf);
 	} else {
 		for (i = 0; i < total_size / 256; i++) {
-			spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
+			it8716f_spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
 		}
 	}
 	return 0;

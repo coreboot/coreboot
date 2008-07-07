@@ -49,7 +49,7 @@
 #define JEDEC_CE_60_OUTSIZE	0x01
 #define JEDEC_CE_60_INSIZE	0x00
 
-/* Chip Erase 0xc7 is supported by ST/EON/Macronix chips. */
+/* Chip Erase 0xc7 is supported by SST/ST/EON/Macronix chips. */
 #define JEDEC_CE_C7		0xc7
 #define JEDEC_CE_C7_OUTSIZE	0x01
 #define JEDEC_CE_C7_INSIZE	0x00

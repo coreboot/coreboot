@@ -573,9 +573,9 @@ int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 			break;
 		}
 
-	if (flashbus == BUS_TYPE_VIA_SPI) {
-		maxdata = 16;
-	}
+		if (flashbus == BUS_TYPE_VIA_SPI)
+			maxdata = 16;
+
 		for (j = 0; j < erase_size / page_size; j++) {
 			ich_spi_write_page(flash, (void *)(buf + (i * erase_size) + (j * page_size)),
 					   (i * erase_size) + (j * page_size), maxdata);

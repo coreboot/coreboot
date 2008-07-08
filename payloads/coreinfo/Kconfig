@@ -68,6 +68,10 @@ config MODULE_BOOTLOG
 	bool "Enable the coreboot bootlog module"
 	default y
 
+config MODULE_RAMDUMP
+	bool "Enable the RAM dump module"
+	default y
+
 config MODULE_LAR
 	bool "Enable the coreboot LAR module"
 	default y

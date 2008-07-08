@@ -29,6 +29,7 @@ extern struct coreinfo_module pci_module;
 extern struct coreinfo_module coreboot_module;
 extern struct coreinfo_module nvram_module;
 extern struct coreinfo_module bootlog_module;
+extern struct coreinfo_module ramdump_module;
 extern struct coreinfo_module lar_module;
 
 struct coreinfo_module *system_modules[] = {
@@ -40,6 +41,9 @@ struct coreinfo_module *system_modules[] = {
 #endif
 #ifdef CONFIG_MODULE_NVRAM
 	&nvram_module,
+#endif
+#ifdef CONFIG_MODULE_RAMDUMP
+	&ramdump_module,
 #endif
 };
 

@@ -21,6 +21,8 @@
 /{
 	mainboard-vendor = "AMD";
 	mainboard-name = "DB800";
+	mainboard_pci_subsystem_vendor = "0x1022";
+	mainboard_pci_subsystem_device = "0x2323";
 	cpus { };
 	apic@0 {
 		/config/("northbridge/amd/geodelx/apic");

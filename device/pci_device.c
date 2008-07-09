@@ -50,6 +50,7 @@
 #if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1
 #include <device/cardbus.h>
 #endif
+#include <statictree.h>
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {
@@ -627,19 +628,18 @@ void pci_dev_enable_resources(struct device *dev)
 	/* Set the subsystem vendor and device ID for mainboard devices. */
 	ops = ops_pci(dev);
 
-#if defined(CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID) && \
-	defined(CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID)
+#ifdef HAVE_MAINBOARD_PCI_SUBSYSTEM_ID
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		printk(BIOS_DEBUG,
 		       "%s: Setting subsystem VID/DID to %02x/%02x\n",
-		       dev_path(dev), CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-		       CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+		       dev_path(dev), mainboard_pci_subsystem_vendor,
+		       mainboard_pci_subsystem_device);
 
-		ops->set_subsystem(dev,
-				   CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-				   CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+		ops->set_subsystem(dev,	mainboard_pci_subsystem_vendor,
+				   mainboard_pci_subsystem_device);
 	}
 #endif
+
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
 	command |= (PCI_COMMAND_PARITY + PCI_COMMAND_SERR); // Error check.

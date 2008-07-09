@@ -1328,7 +1328,7 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 	extern char *code;
 	struct node *next;
 	extern struct node *first_node;
-	int found_mainboard_vendor = 0, found_mainboard_partnumber = 0;
+	int found_mainboard_vendor = 0, found_mainboard_partnumber = 0, found_mainboard_subsys = 0;
 
 	labeltree(bi->dt);
 
@@ -1361,6 +1361,14 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 			found_mainboard_partnumber = 1;
 			fprintf(f, "const char *mainboard_part_number = \"%s\";\n", prop->val.val);
 		}
+		if (streq(prop->name, "mainboard_pci_subsystem_vendor")){
+			found_mainboard_subsys++;
+			fprintf(f, "const u16 mainboard_pci_subsystem_vendor = %s;\n", prop->val.val);
+		}
+		if (streq(prop->name, "mainboard_pci_subsystem_device")){
+			found_mainboard_subsys++;
+			fprintf(f, "const u16 mainboard_pci_subsystem_device = %s;\n", prop->val.val);
+		}
 	}
 
 	if (! 	found_mainboard_vendor){
@@ -1374,6 +1382,17 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 			"(and make sure there is a mainboard-vendor property too");
 	}
 
+	switch (found_mainboard_subsys) {
+	case 0:
+		break;
+	case 1:
+		die("There is only one of mainboard_pci_subsystem_vendor and "
+		    "mainboard_pci_subsystem_device properties in the root. "
+		    "Please add the other one or remove the existing one.");
+		break;
+	case 2:
+		break;
+	}
 
 	/* emit the code, if any */
 	if (code)
@@ -1395,6 +1414,8 @@ void dt_to_corebooth(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	char *symprefix = "dt";
 	extern char *code;
 	struct node *next;
+	struct property *prop;
+	int found_mainboard_subsys = 0;
 	extern struct node *first_node;
 
 	labeltree(bi->dt);
@@ -1416,6 +1437,31 @@ void dt_to_corebooth(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
 	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
 	fprintf(f, "extern const char *mainboard_vendor, *mainboard_part_number;\n");
+
+	for_each_property(bi->dt, prop) {
+		if (streq(prop->name, "mainboard_pci_subsystem_vendor")){
+			found_mainboard_subsys++;
+		}
+		if (streq(prop->name, "mainboard_pci_subsystem_device")){
+			found_mainboard_subsys++;
+		}
+	}
+
+	switch (found_mainboard_subsys) {
+	case 0:
+		break;
+	case 1:
+		die("There is only one of mainboard_pci_subsystem_vendor and "
+		    "mainboard_pci_subsystem_device properties in the root. "
+		    "Please add the other one or remove the existing one.");
+		break;
+	case 2:
+		fprintf(f, "#define HAVE_MAINBOARD_PCI_SUBSYSTEM_ID\n");
+		fprintf(f, "extern const u16 mainboard_pci_subsystem_vendor;\n");
+		fprintf(f, "extern const u16 mainboard_pci_subsystem_device;\n");
+		break;
+	}
+
 	flatten_tree_emit_includes(bi->dt, &coreboot_emitter, f, &strbuf, vi);
 
 	flatten_tree_emit_structdecls(bi->dt, &coreboot_emitter, f, &strbuf, vi);

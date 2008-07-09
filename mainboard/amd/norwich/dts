@@ -21,6 +21,8 @@
 /{
 	mainboard-vendor = "AMD";
 	mainboard-name = "NORWICH";
+	mainboard_pci_subsystem_vendor = "0x1022";
+	mainboard_pci_subsystem_device = "0x2323";
 	cpus { };
 	apic@0 {
 		/config/("northbridge/amd/geodelx/apic");
@@ -28,7 +30,7 @@
 	domain@0 {
 		/config/("northbridge/amd/geodelx/domain");
 		/* Video RAM has to be in 2MB chunks. */
-                geode_video_mb = "8";
+		geode_video_mb = "8";
 		pci@1,0 {
 			/config/("northbridge/amd/geodelx/pci");
 		};

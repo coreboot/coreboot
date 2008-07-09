@@ -26,19 +26,3 @@ config MAINBOARD_NAME
 	help
 	  This is the default mainboard name.
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	# TODO: Fix PCI ID.
-	default 0x1022
-	depends BOARD_AMD_DB800
-	help
-	  Mainboard specific PCI subsystem vendor ID.
-
-config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-	hex
-	# TODO: Fix PCI ID.
-	default 0x2323
-	depends BOARD_AMD_DB800
-	help
-	  Mainboard specific PCI subsystem device ID.
-

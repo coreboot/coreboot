@@ -19,7 +19,7 @@
  */
 
 /{
-	mainboard-vendor = "Emulation";
+	mainboard_vendor = "Emulation";
 	mainboard-name = "QEMU x86";
 	mainboard_pci_subsystem_vendor = "0x15ad";
 	mainboard_pci_subsystem_device = "0x1976";

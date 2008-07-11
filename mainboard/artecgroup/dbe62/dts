@@ -19,7 +19,7 @@
  */
 
 /{
-	mainboard-vendor = "Artec";
+	mainboard_vendor = "Artec";
 	mainboard-name = "DBE62";
 	cpus { };
 	apic@0 {

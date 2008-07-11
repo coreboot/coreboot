@@ -19,7 +19,7 @@
  */
 
 /{
-	mainboard-vendor = "PC Engines";
+	mainboard_vendor = "PC Engines";
 	mainboard-name = "ALIX1.C";
 	cpus { };
 	apic@0 {

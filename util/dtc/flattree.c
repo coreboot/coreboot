@@ -1353,7 +1353,7 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 
 	/* special for the root. Emit the names for the mainboard vendor and part # */
 	for_each_property(bi->dt, prop) {
-		if (streq(prop->name, "mainboard-vendor")){
+		if (streq(prop->name, "mainboard_vendor")){
 			found_mainboard_vendor = 1;
 			fprintf(f, "const char *mainboard_vendor = \"%s\";\n", prop->val.val);
 		}
@@ -1372,14 +1372,14 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 	}
 
 	if (! 	found_mainboard_vendor){
-		die("There is no mainboard-vendor property in the root. Please add one."
+		die("There is no mainboard_vendor property in the root. Please add one."
 			"(and make sure there is a mainboard-name property too");
 	}
 
 	if (! 	found_mainboard_partnumber){
 		die("There is no mainboard-name property in the root. "
 			"Please add one."
-			"(and make sure there is a mainboard-vendor property too");
+			"(and make sure there is a mainboard_vendor property too");
 	}
 
 	switch (found_mainboard_subsys) {

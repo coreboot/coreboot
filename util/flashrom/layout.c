@@ -45,6 +45,11 @@ static char *def_name = "DEFAULT";
 int show_id(uint8_t *bios, int size, int force)
 {
 	unsigned int *walk;
+	unsigned int mb_part_offset, mb_vendor_offset;
+	char *mb_part, *mb_vendor;
+
+	mainboard_vendor = def_name;
+	mainboard_part = def_name;
 
 	walk = (unsigned int *)(bios + size - 0x10);
 	walk--;
@@ -63,25 +68,28 @@ int show_id(uint8_t *bios, int size, int force)
 	 * are outside the image of if the start of ID strings are nonsensical
 	 * (nonprintable and not \0).
 	 */
-	if ((*walk) == 0 || ((*walk) & 0x3ff) != 0 || *walk > size ||
-		*(walk - 1) > size || *(walk - 2) > size ||
-		(!isprint((const char *)(bios + size - *(walk - 1))) &&
-		((const char *)(bios + size - *(walk - 1)))) ||
-		(!isprint((const char *)(bios + size - *(walk - 2))) &&
-		((const char *)(bios + size - *(walk - 2))))) {
+	mb_part_offset = *(walk - 1);
+	mb_vendor_offset = *(walk - 2);
+	if ((*walk) == 0 || ((*walk) & 0x3ff) != 0 || (*walk) > size ||
+	    mb_part_offset > size || mb_vendor_offset > size) {
 		printf("Flash image seems to be a legacy BIOS. Disabling checks.\n");
-		mainboard_vendor = def_name;
-		mainboard_part = def_name;
+		return 0;
+	}
+	
+	mb_part = (char *)(bios + size - mb_part_offset);
+	mb_vendor = (char *)(bios + size - mb_vendor_offset);
+	if (!isprint((unsigned char)*mb_part) ||
+	    !isprint((unsigned char)*mb_vendor)) {
+		printf("Flash image seems to have garbage in the ID location."
+			" Disabling checks.\n");
 		return 0;
 	}
 
 	printf_debug("coreboot last image size "
 		     "(not ROM size) is %d bytes.\n", *walk);
 
-	walk--;
-	mainboard_part = strdup((const char *)(bios + size - *walk));
-	walk--;
-	mainboard_vendor = strdup((const char *)(bios + size - *walk));
+	mainboard_part = strdup(mb_part);
+	mainboard_vendor = strdup(mb_vendor);
 	printf_debug("Manufacturer: %s\n", mainboard_vendor);
 	printf_debug("Mainboard ID: %s\n", mainboard_part);
 

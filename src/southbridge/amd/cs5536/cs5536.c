@@ -409,7 +409,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 
 static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 {
-	uint32_t *bar;
+	uint8_t *bar;
 	msr_t msr;
 	device_t dev;
 
@@ -425,32 +425,33 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		/* write to clear diag register */
 		wrmsr(USB2_SB_GLD_MSR_DIAG, rdmsr(USB2_SB_GLD_MSR_DIAG));
 
-		bar = (uint32_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+		bar = (uint8_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
 		/* Make HCCPARAMS writeable */
-		*(bar + IPREG04) |= USB_HCCPW_SET;
+		writel(readl(bar + IPREG04) | USB_HCCPW_SET, bar + IPREG04);
 
 		/* ; EECP=50h, IST=01h, ASPC=1 */
-		*(bar + HCCPARAMS) = 0x00005012;
+		writel(0x00005012, bar + HCCPARAMS);
 	}
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
 			PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (dev) {
-		bar = (uint32_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+		bar = (uint8_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
-		*(bar + UOCMUX) &= PUEN_SET;
+		writel(readl(bar + UOCMUX) & PUEN_SET, bar + UOCMUX);
 
 		/* Host or Device? */
 		if (sb->enable_USBP4_device) {
-			*(bar + UOCMUX) |= PMUX_DEVICE;
+			writel(readl(bar + UOCMUX) | PMUX_DEVICE, bar + UOCMUX);
 		} else {
-			*(bar + UOCMUX) |= PMUX_HOST;
+			writel(readl(bar + UOCMUX) | PMUX_HOST, bar + UOCMUX);
 		}
 
 		/* Overcurrent configuration */
 		if (sb->enable_USBP4_overcurrent) {
-			*(bar + UOCCAP) |= sb->enable_USBP4_overcurrent;
+			writel(readl(bar + UOCCAP)
+			       | sb->enable_USBP4_overcurrent, bar + UOCCAP);
 		}
 	}
 
@@ -464,19 +465,20 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		dev = dev_find_device(PCI_VENDOR_ID_AMD, 
 				PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 		if (dev) {
-			bar = (uint32_t *) pci_read_config32(dev, 
+			bar = (uint8_t *) pci_read_config32(dev, 
 					PCI_BASE_ADDRESS_0);
-			*(bar + UDCDEVCTL) |= UDC_SD_SET;
+			writel(readl(bar + UDCDEVCTL) | UDC_SD_SET,
+			       bar + UDCDEVCTL);
 
 		}
 
 		dev = dev_find_device(PCI_VENDOR_ID_AMD,
 				PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 		if (dev) {
-			bar = (uint32_t *) pci_read_config32(dev,
+			bar = (uint8_t *) pci_read_config32(dev,
 					PCI_BASE_ADDRESS_0);
-			*(bar + UOCCTL) |= PADEN_SET;
-			*(bar + UOCCAP) |= APU_SET;
+			writel(readl(bar + UOCCTL) | PADEN_SET, bar + UOCCTL);
+			writel(readl(bar + UOCCAP) | APU_SET, bar + UOCCAP);
 		}
 	}
 

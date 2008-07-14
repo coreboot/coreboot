@@ -393,18 +393,18 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb,
 }
 
 /* the /sizeof(u32) is to convert byte offsets into u32 offsets */
-#define HCCPARAMS		(0x08/sizeof(u32))
-#define IPREG04			(0xA0/sizeof(u32))
+#define HCCPARAMS		0x08
+#define IPREG04		0xA0
 #define USB_HCCPW_SET		(1 << 1)
 #define UOCCAP			0x00
-#define APU_SET			(1 << 15)
-#define UOCMUX			(0x04/sizeof(u32))
+#define APU_SET		(1 << 15)
+#define UOCMUX			0x04
 #define PMUX_HOST		0x02
 #define PMUX_DEVICE		0x03
 #define PUEN_SET		(1 << 2)
-#define UDCDEVCTL		(0x404/sizeof(u32))
+#define UDCDEVCTL		0x404
 #define UDC_SD_SET		(1 << 10)
-#define UOCCTL			(0x0C/sizeof(u32))
+#define UOCCTL			0x0C
 #define PADEN_SET		(1 << 7)
 
 /**
@@ -414,7 +414,7 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb,
  */
 static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 {
-	u32 *bar;
+	u8 *bar;
 	struct msr msr;
 	struct device *ehci_dev, *otg_dev, *udc_dev;
 
@@ -429,41 +429,42 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 		/* Write to clear diag register. */
 		wrmsr(USB2_SB_GLD_MSR_DIAG, rdmsr(USB2_SB_GLD_MSR_DIAG));
 
-		bar = (u32 *) pci_read_config32(ehci_dev, PCI_BASE_ADDRESS_0);
+		bar = (u8 *) pci_read_config32(ehci_dev, PCI_BASE_ADDRESS_0);
 
 		/* Make HCCPARAMS writable. */
-		*(bar + IPREG04) |= USB_HCCPW_SET;
+		writel(readl(bar + IPREG04) | USB_HCCPW_SET, bar + IPREG04);
 
 		/* EECP=50h, IST=01h, ASPC=1 */
-		*(bar + HCCPARAMS) = 0x00005012;
+		writel(0x00005012, bar + HCCPARAMS);
 	}
 
 	otg_dev = dev_find_pci_device(PCI_VENDOR_ID_AMD,
 			      PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (otg_dev) {
-		bar = (u32 *) pci_read_config32(otg_dev, PCI_BASE_ADDRESS_0);
+		bar = (u8 *) pci_read_config32(otg_dev, PCI_BASE_ADDRESS_0);
 
-		printk(BIOS_DEBUG, "UOCMUX is %x\n", *(bar + UOCMUX));
+		printk(BIOS_DEBUG, "UOCMUX is %x\n", readl(bar + UOCMUX));
 
-		*(bar + UOCMUX) &= PUEN_SET;
+		writel(readl(bar + UOCMUX) & PUEN_SET, bar + UOCMUX);
 
 		/* Host or Device? */
 		if (sb->enable_USBP4_device)
-			*(bar + UOCMUX) |= PMUX_DEVICE;
+			writel(readl(bar + UOCMUX) | PMUX_DEVICE, bar + UOCMUX);
 		else
-			*(bar + UOCMUX) |= PMUX_HOST;
+			writel(readl(bar + UOCMUX) | PMUX_HOST, bar + UOCMUX);
 
 		/* Overcurrent configuration */
-		printk(BIOS_DEBUG, "UOCCAP is %x\n", *(bar + UOCCAP));
+		printk(BIOS_DEBUG, "UOCCAP is %x\n", readl(bar + UOCCAP));
 		if (sb->enable_USBP4_overcurrent)
-			*(bar + UOCCAP) |= sb->enable_USBP4_overcurrent;
+			writel(readl(bar + UOCCAP)
+			       | sb->enable_USBP4_overcurrent, bar + UOCCAP);
 		/* power control. see comment in the dts for these bits */
 		if (sb->pph) {
-			*(bar + UOCCAP) &= ~0xff;
-			*(bar + UOCCAP) |= sb->pph;
+			writel((readl(bar + UOCCAP)
+				& ~0xff) | sb->pph, bar + UOCCAP);
 		}
-		printk(BIOS_DEBUG, "UOCCAP is %x\n", *(bar + UOCCAP));
-		printk(BIOS_DEBUG, "UOCMUX is %x\n", *(bar + UOCMUX));
+		printk(BIOS_DEBUG, "UOCCAP is %x\n", readl(bar + UOCCAP));
+		printk(BIOS_DEBUG, "UOCMUX is %x\n", readl(bar + UOCMUX));
 
 	}
 
@@ -477,15 +478,16 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_dts_config *sb)
 	 */
 	if (sb->enable_USBP4_device) {
 		if (udc_dev) {
-			bar = (u32 *)pci_read_config32(udc_dev, PCI_BASE_ADDRESS_0);
-			*(bar + UDCDEVCTL) |= UDC_SD_SET;
+			bar = (u8 *)pci_read_config32(udc_dev, PCI_BASE_ADDRESS_0);
+			writel(readl(bar + UDCDEVCTL) | UDC_SD_SET,
+			       bar + UDCDEVCTL);
 		}
 
 		if (otg_dev) {
-			bar = (u32 *)pci_read_config32(otg_dev, PCI_BASE_ADDRESS_0);
-			*(bar + UOCCTL) |= PADEN_SET;
-			*(bar + UOCCAP) |= APU_SET;
-			printk(BIOS_DEBUG, "UOCCTL is %x\n", *(bar + UOCCTL));
+			bar = (u8 *)pci_read_config32(otg_dev, PCI_BASE_ADDRESS_0);
+			writel(readl(bar + UOCCTL) | PADEN_SET, bar + UOCCTL);
+			writel(readl(bar + UOCCAP) | APU_SET, bar + UOCCAP);
+			printk(BIOS_DEBUG, "UOCCTL is %x\n", readl(bar + UOCCTL));
 		}
 	}
 

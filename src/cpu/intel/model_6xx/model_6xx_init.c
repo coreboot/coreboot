@@ -44,6 +44,7 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_6xx_init,
 };
 static struct cpu_device_id cpu_table[] = {
+	{ X86_VENDOR_INTEL, 0x0652 },
 	{ X86_VENDOR_INTEL, 0x0665 }, /* Celeron (Mendocino) */
 	{ X86_VENDOR_INTEL, 0x0672 },
 	{ X86_VENDOR_INTEL, 0x0673 },

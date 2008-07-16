@@ -253,9 +253,9 @@ void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
 	u8 predecessorNode, predecessorLink, currentPair;
 
 	if (targetNode == 0)
-		return;  // BSP has no predecessor, stop
+		return;  /*  BSP has no predecessor, stop */
 
-	// Search for the link that connects targetNode to its predecessor
+	/*  Search for the link that connects targetNode to its predecessor */
 	currentPair = 0;
 	while (pDat->PortList[currentPair*2+1].NodeID != targetNode)
 	{
@@ -266,8 +266,8 @@ void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
 	predecessorNode = pDat->PortList[currentPair*2].NodeID;
 	predecessorLink = pDat->PortList[currentPair*2].Link;
 
-	// Recursively call self to ensure the route from the BSP to the Predecessor
-	// Node is established
+	/*  Recursively call self to ensure the route from the BSP to the Predecessor */
+	/*  Node is established */
 	routeFromBSP(predecessorNode, actualTarget, pDat);
 
 	pDat->nb->writeRoutingTable(predecessorNode, actualTarget, predecessorLink, pDat->nb);
@@ -601,15 +601,15 @@ BOOL isoMorph(u8 i, sMainData *pDat)
 
 	if (i != nodecnt)
 	{
-		// Keep building the permutation
+		/*  Keep building the permutation */
 		for (j = 0; j < nodecnt; j++)
 		{
-			// Make sure the degree matches
+			/*  Make sure the degree matches */
 			if (pDat->sysDegree[i] != pDat->dbDegree[j])
 				continue;
 
-			// Make sure that j hasn't been used yet (ought to use a "used"
-			// array instead, might be faster)
+			/*  Make sure that j hasn't been used yet (ought to use a "used" */
+			/*  array instead, might be faster) */
 			for (k = 0; k < i; k++)
 			{
 				if (pDat->Perm[k] == j)
@@ -623,7 +623,7 @@ BOOL isoMorph(u8 i, sMainData *pDat)
 		}
 		return FALSE;
 	} else {
-		// Test to see if the permutation is isomorphic
+		/*  Test to see if the permutation is isomorphic */
 		for (j = 0; j < nodecnt; j++)
 		{
 			for (k = 0; k < nodecnt; k++)
@@ -685,7 +685,7 @@ void lookupComputeAndLoadRoutingTables(sMainData *pDat)
 	{
 		if (graphHowManyNodes(pSelected) == size)
 		{
-			// Build Degree vector and Adjency Matrix for this entry
+			/*  Build Degree vector and Adjency Matrix for this entry */
 			for (i = 0; i < size; i++)
 			{
 				pDat->dbDegree[i] = 0;
@@ -703,7 +703,7 @@ void lookupComputeAndLoadRoutingTables(sMainData *pDat)
 				}
 			}
 			if (isoMorph(0, pDat))
-				break;	 // A matching topology was found
+				break;  /*  A matching topology was found */
 		}
 
 		pTopologyList++;
@@ -712,13 +712,13 @@ void lookupComputeAndLoadRoutingTables(sMainData *pDat)
 
 	if (pSelected != NULL)
 	{
-		// Compute the reverse Permutation
+		/*  Compute the reverse Permutation */
 		for (i = 0; i < size; i++)
 		{
 			pDat->ReversePerm[pDat->Perm[i]] = i;
 		}
 
-		// Start with the last discovered node, and move towards the BSP
+		/*  Start with the last discovered node, and move towards the BSP */
 		for (i = size-1; i >= 0; i--)
 		{
 			for (j = 0; j < size; j++)
@@ -1171,7 +1171,7 @@ void ncInit(sMainData *pDat)
 		for (link = 0; link < pDat->nb->maxLinks; link++)
 		{
 			if (pDat->HtBlock->AMD_CB_IgnoreLink && pDat->HtBlock->AMD_CB_IgnoreLink(node, link))
-				continue;   // Skip the link
+				continue;   /*  Skip the link */
 
 			if (node == 0 && link == compatLink)
 				continue;
@@ -1208,68 +1208,68 @@ void regangLinks(sMainData *pDat)
 	u8 i, j;
 	for (i = 0; i < pDat->TotalLinks*2; i += 2)
 	{
-		ASSERT(pDat->PortList[i].Type < 2 && pDat->PortList[i].Link < pDat->nb->maxLinks);  // Data validation
-		ASSERT(pDat->PortList[i+1].Type < 2 && pDat->PortList[i+1].Link < pDat->nb->maxLinks); // data validation
-		ASSERT(!(pDat->PortList[i].Type == PORTLIST_TYPE_IO && pDat->PortList[i+1].Type == PORTLIST_TYPE_CPU));  // ensure src is closer to the bsp than dst
+		ASSERT(pDat->PortList[i].Type < 2 && pDat->PortList[i].Link < pDat->nb->maxLinks);  /*  Data validation */
+		ASSERT(pDat->PortList[i+1].Type < 2 && pDat->PortList[i+1].Link < pDat->nb->maxLinks); /*  data validation */
+		ASSERT(!(pDat->PortList[i].Type == PORTLIST_TYPE_IO && pDat->PortList[i+1].Type == PORTLIST_TYPE_CPU));  /*  ensure src is closer to the bsp than dst */
 
 		/* Regang is false unless we pass all conditions below */
 		pDat->PortList[i].SelRegang = FALSE;
 		pDat->PortList[i+1].SelRegang = FALSE;
 
 		if ( (pDat->PortList[i].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[i+1].Type != PORTLIST_TYPE_CPU))
-			continue;	 // Only process cpu to cpu links
+			continue;   /*  Only process cpu to cpu links */
 
 		for (j = i+2; j < pDat->TotalLinks*2; j += 2)
 		{
 			if ( (pDat->PortList[j].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[j+1].Type != PORTLIST_TYPE_CPU) )
-				continue;   // Only process cpu to cpu links
+				continue;   /*  Only process cpu to cpu links */
 
 			if (pDat->PortList[i].NodeID != pDat->PortList[j].NodeID)
-				continue;   // Links must be from the same source
+				continue;   /*  Links must be from the same source */
 
 			if (pDat->PortList[i+1].NodeID != pDat->PortList[j+1].NodeID)
-				continue;   // Link must be to the same target
+				continue;   /*  Link must be to the same target */
 
 			if ((pDat->PortList[i].Link & 3) != (pDat->PortList[j].Link & 3))
-				continue;   // Ensure same source base port
+				continue;   /*  Ensure same source base port */
 
 			if ((pDat->PortList[i+1].Link & 3) != (pDat->PortList[j+1].Link & 3))
-				continue;   // Ensure same destination base port
+				continue;   /*  Ensure same destination base port */
 
 			if ((pDat->PortList[i].Link & 4) != (pDat->PortList[i+1].Link & 4))
-				continue;   // Ensure sublink0 routes to sublink0
+				continue;   /*  Ensure sublink0 routes to sublink0 */
 
-			ASSERT((pDat->PortList[j].Link & 4) == (pDat->PortList[j+1].Link & 4)); // (therefore sublink1 routes to sublink1)
+			ASSERT((pDat->PortList[j].Link & 4) == (pDat->PortList[j+1].Link & 4)); /*  (therefore sublink1 routes to sublink1) */
 
 			if (pDat->HtBlock->AMD_CB_SkipRegang &&
-			    pDat->HtBlock->AMD_CB_SkipRegang(pDat->PortList[i].NodeID,
+				pDat->HtBlock->AMD_CB_SkipRegang(pDat->PortList[i].NodeID,
 							pDat->PortList[i].Link & 0x03,
 							pDat->PortList[i+1].NodeID,
 							pDat->PortList[i+1].Link & 0x03))
 			{
-				continue;   // Skip regang
+				continue;   /*  Skip regang */
 			}
 
 
-			pDat->PortList[i].Link &= 0x03; // Force to point to sublink0
+			pDat->PortList[i].Link &= 0x03; /*  Force to point to sublink0 */
 			pDat->PortList[i+1].Link &= 0x03;
-			pDat->PortList[i].SelRegang = TRUE; // Enable link reganging
+			pDat->PortList[i].SelRegang = TRUE; /*  Enable link reganging */
 			pDat->PortList[i+1].SelRegang = TRUE;
 			pDat->PortList[i].PrvWidthOutCap = HT_WIDTH_16_BITS;
 			pDat->PortList[i+1].PrvWidthOutCap = HT_WIDTH_16_BITS;
 			pDat->PortList[i].PrvWidthInCap = HT_WIDTH_16_BITS;
 			pDat->PortList[i+1].PrvWidthInCap = HT_WIDTH_16_BITS;
 
-			// Delete PortList[j, j+1], slow but easy to debug implementation
+			/*  Delete PortList[j, j+1], slow but easy to debug implementation */
 			pDat->TotalLinks--;
 			Amdmemcpy(&(pDat->PortList[j]), &(pDat->PortList[j+2]), sizeof(sPortDescriptor)*(pDat->TotalLinks*2-j));
 			Amdmemset(&(pDat->PortList[pDat->TotalLinks*2]), INVALID_LINK, sizeof(sPortDescriptor)*2);
 
-			////High performance, but would make debuging harder due to 'shuffling' of the records
-			////Amdmemcpy(PortList[TotalPorts-2], PortList[j], SIZEOF(sPortDescriptor)*2);
-			////TotalPorts -=2;
+			/* //High performance, but would make debuging harder due to 'shuffling' of the records */
+			/* //Amdmemcpy(PortList[TotalPorts-2], PortList[j], SIZEOF(sPortDescriptor)*2); */
+			/* //TotalPorts -=2; */
 
-			break; // Exit loop, advance to PortList[i+2]
+			break; /*  Exit loop, advance to PortList[i+2] */
 		}
 	}
 #endif /* HT_BUILD_NC_ONLY */
@@ -1400,14 +1400,14 @@ void hammerSublinkFixup(sMainData *pDat)
 		changes = FALSE;
 		for (i = 0; i < pDat->TotalLinks*2; i++)
 		{
-			if (pDat->PortList[i].Type != PORTLIST_TYPE_CPU) // Must be a CPU link
+			if (pDat->PortList[i].Type != PORTLIST_TYPE_CPU) /*  Must be a CPU link */
 				continue;
-			if (pDat->PortList[i].Link < 4) // Only look for for sublink1's
+			if (pDat->PortList[i].Link < 4) /*  Only look for for sublink1's */
 				continue;
 
 			for (j = 0; j < pDat->TotalLinks*2; j++)
 			{
-				// Step 1. Find the matching sublink0
+				/*  Step 1. Find the matching sublink0 */
 				if (pDat->PortList[j].Type != PORTLIST_TYPE_CPU)
 					continue;
 				if (pDat->PortList[j].NodeID != pDat->PortList[i].NodeID)
@@ -1415,7 +1415,7 @@ void hammerSublinkFixup(sMainData *pDat)
 				if (pDat->PortList[j].Link != (pDat->PortList[i].Link & 0x03))
 					continue;
 
-				// Step 2. Check for an illegal frequency ratio
+				/*  Step 2. Check for an illegal frequency ratio */
 				if (pDat->PortList[i].SelFrequency >= pDat->PortList[j].SelFrequency)
 				{
 					hiIndex = i;
@@ -1430,65 +1430,65 @@ void hammerSublinkFixup(sMainData *pDat)
 				}
 
 				if (hiFreq == loFreq)
-					break; // The frequencies are 1:1, no need to do anything
+					break; /*  The frequencies are 1:1, no need to do anything */
 
 				downgrade = FALSE;
 
 				if (hiFreq == 13)
 				{
-					if ((loFreq != 7) &&  //{13, 7} 2400MHz / 1200MHz 2:1
-					    (loFreq != 4) &&  //{13, 4} 2400MHz / 600MHz 4:1
-					    (loFreq != 2) )   //{13, 2} 2400MHz / 400MHz 6:1
+					if ((loFreq != 7) &&  /* {13, 7} 2400MHz / 1200MHz 2:1 */
+						(loFreq != 4) &&  /* {13, 4} 2400MHz /  600MHz 4:1 */
+						(loFreq != 2) )   /* {13, 2} 2400MHz /  400MHz 6:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 11)
 				{
-					if ((loFreq != 6))	//{11, 6} 2000MHz / 1000MHz 2:1
+					if ((loFreq != 6))    /* {11, 6} 2000MHz / 1000MHz 2:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 9)
 				{
-					if ((loFreq != 5) &&  //{ 9, 5} 1600MHz / 800MHz 2:1
-					    (loFreq != 2) &&  //{ 9, 2} 1600MHz / 400MHz 4:1
-					    (loFreq != 0) )   //{ 9, 0} 1600MHz / 200Mhz 8:1
+					if ((loFreq != 5) &&  /* { 9, 5} 1600MHz /  800MHz 2:1 */
+						(loFreq != 2) &&  /* { 9, 2} 1600MHz /  400MHz 4:1 */
+						(loFreq != 0) )   /* { 9, 0} 1600MHz /  200Mhz 8:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 7)
 				{
-					if ((loFreq != 4) &&  //{ 7, 4} 1200MHz / 600MHz 2:1
-					    (loFreq != 0) )   //{ 7, 0} 1200MHz / 200MHz 6:1
+					if ((loFreq != 4) &&  /* { 7, 4} 1200MHz /  600MHz 2:1 */
+						(loFreq != 0) )   /* { 7, 0} 1200MHz /  200MHz 6:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 5)
 				{
-					if ((loFreq != 2) &&  //{ 5, 2}  800MHz / 400MHz 2:1
-					    (loFreq != 0) )   //{ 5, 0}  800MHz / 200MHz 4:1
+					if ((loFreq != 2) &&  /* { 5, 2}  800MHz /  400MHz 2:1 */
+						(loFreq != 0) )   /* { 5, 0}  800MHz /  200MHz 4:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 2)
 				{
-					if ((loFreq != 0))	   //{ 2, 0}  400MHz / 200MHz 2:1
+					if ((loFreq != 0))    /* { 2, 0}  400MHz /  200MHz 2:1 */
 						downgrade = TRUE;
 				}
 				else
 				{
-					downgrade = TRUE; // no legal ratios for hiFreq
+					downgrade = TRUE; /*  no legal ratios for hiFreq */
 				}
 
-				// Step 3. Downgrade the higher of the two frequencies, and set nochanges to FALSE
+				/*  Step 3. Downgrade the higher of the two frequencies, and set nochanges to FALSE */
 				if (downgrade)
 				{
-					// Although the problem was with the port specified by hiIndex, we need to
-					// downgrade both ends of the link.
-					hiIndex = hiIndex & 0xFE; // Select the 'upstream' (i.e. even) port
+					/*  Although the problem was with the port specified by hiIndex, we need to */
+					/*  downgrade both ends of the link. */
+					hiIndex = hiIndex & 0xFE; /*  Select the 'upstream' (i.e. even) port */
 
 					temp = pDat->PortList[hiIndex].CompositeFrequencyCap;
 
-					// Remove hiFreq from the list of valid frequencies
-					temp = temp & ~((u32)1 << hiFreq);
+					/*  Remove hiFreq from the list of valid frequencies */
+					temp = temp & ~((uint32)1 << hiFreq);
 					ASSERT (temp != 0);
-					pDat->PortList[hiIndex].CompositeFrequencyCap = (u16)temp;
-					pDat->PortList[hiIndex+1].CompositeFrequencyCap = (u16)temp;
+					pDat->PortList[hiIndex].CompositeFrequencyCap = (uint16)temp;
+					pDat->PortList[hiIndex+1].CompositeFrequencyCap = (uint16)temp;
 
 					for (k = 15; ; k--)
 					{
@@ -1503,7 +1503,7 @@ void hammerSublinkFixup(sMainData *pDat)
 				}
 			}
 		}
-	} while (changes); // Repeat until a valid configuration is reached
+	} while (changes); /*  Repeat until a valid configuration is reached */
 #endif /* HT_BUILD_NC_ONLY */
 }
 
@@ -1550,7 +1550,7 @@ void trafficDistribution(sMainData *pDat)
 	u8 linkCount;
 	u8 i;
 
-	// Traffic Distribution is only used when there are exactly two nodes in the system
+	/*  Traffic Distribution is only used when there are exactly two nodes in the system */
 	if (pDat->NodesDiscovered+1 != 2)
 		return;
 
@@ -1568,7 +1568,7 @@ void trafficDistribution(sMainData *pDat)
 	}
 	ASSERT(linkCount != 0);
 	if (linkCount == 1)
-		return; // Don't setup Traffic Distribution if only one link is being used
+		return; /*  Don't setup Traffic Distribution if only one link is being used */
 
 	pDat->nb->writeTrafficDistribution(links01, links10, pDat->nb);
 #endif /* HT_BUILD_NC_ONLY */

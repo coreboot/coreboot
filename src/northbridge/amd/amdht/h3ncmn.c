@@ -333,10 +333,10 @@ BOOL verifyLinkIsCoherent(u8 node, u8 link, cNorthBridge *nb)
 
 	linkBase = makeLinkBase(node, link);
 
-	// FN0_98/A4/C4 = LDT Type Register
+	/*  FN0_98/A4/C4 = LDT Type Register */
 	AmdPCIRead(linkBase + HTHOST_LINK_TYPE_REG, &linkType);
 
-	// Verify LinkCon=1, InitComplete=1, NC=0, UniP-cLDT=0, LinkConPend=0
+	/*  Verify LinkCon=1, InitComplete=1, NC=0, UniP-cLDT=0, LinkConPend=0 */
 	return (linkType & HTHOST_TYPE_MASK) ==  HTHOST_TYPE_COHERENT;
 #else
 	return 0;
@@ -1111,10 +1111,9 @@ u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
 	} else if (value == 4) {
 		return 2;
 	}
-	STOP_HERE; // This is an error internal condition
+	STOP_HERE; /*  This is an error internal condition */
 
 	return 0xFF;	// make the compiler happy.
-
 }
 
 /**----------------------------------------------------------------------------------------
@@ -1143,7 +1142,7 @@ u8 convertWidthToBits(u8 value, cNorthBridge *nb)
 	} else if (value == 2) {
 		return 4;
 	}
-	STOP_HERE; // This is an internal error condition
+	STOP_HERE; /*  This is an internal error condition */
 
 	return 0xFF;	// make the compiler happy.
 }
@@ -1262,7 +1261,7 @@ void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
 
 			AmdPCIReadBits(linkBase + HTHOST_FREQ_REV_REG, 31, 16, &temp);
 			pDat->PortList[i].PrvFrequencyCap = (u16)temp & 0x7FFF
-				 & nb->northBridgeFreqMask(pDat->PortList[i].NodeID, pDat->nb); // Mask off bit 15, reserved value
+				& nb->northBridgeFreqMask(pDat->PortList[i].NodeID, pDat->nb); /*  Mask off bit 15, reserved value */
 		}
 		else
 		{
@@ -1384,7 +1383,7 @@ void setLinkData(sMainData *pDat, cNorthBridge *nb)
 			ASSERT((temp >= HT_FREQUENCY_600M && temp <= HT_FREQUENCY_2600M)
 				|| (temp == HT_FREQUENCY_200M) || (temp == HT_FREQUENCY_400M));
 			AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG, 11, 8, &temp);
-			if (temp > HT_FREQUENCY_1000M) // Gen1 = 200Mhz -> 1000MHz, Gen3 = 1200MHz -> 2600MHz
+			if (temp > HT_FREQUENCY_1000M) /*  Gen1 = 200Mhz -> 1000MHz, Gen3 = 1200MHz -> 2600MHz */
 			{
 				/* Enable  for Gen3 frequencies */
 				temp = 1;

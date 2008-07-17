@@ -401,7 +401,11 @@ BOOL readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBridge *nb)
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
 					/* Pass the node and link on which the generic synch flood event occurred. */
-					sHtEventHWHtCrc evt = {sizeof(sHtEventHWHtCrc), node, link, (u8)crc};
+					sHtEventHWHtCrc evt;
+					evt.eSize = sizeof(sHtEventHWHtCrc);
+					evt.node = node;
+					evt.link = link;
+					evt.laneMask = (uint8)crc;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_HW_FAULT,
 									HT_EVENT_HW_HTCRC,
@@ -414,7 +418,10 @@ BOOL readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBridge *nb)
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
 					/* Pass the node and link on which the generic synch flood event occurred. */
-					sHtEventHWSynchFlood evt = {sizeof(sHtEventHWSynchFlood), node, link};
+					sHtEventHWSynchFlood evt;
+					evt.eSize = sizeof(sHtEventHWSynchFlood);
+					evt.node = node;
+					evt.link = link;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_HW_FAULT,
 									HT_EVENT_HW_SYNCHFLOOD,
@@ -1112,8 +1119,6 @@ u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
 		return 2;
 	}
 	STOP_HERE; /*  This is an error internal condition */
-
-	return 0xFF;	// make the compiler happy.
 }
 
 /**----------------------------------------------------------------------------------------
@@ -1143,8 +1148,6 @@ u8 convertWidthToBits(u8 value, cNorthBridge *nb)
 		return 4;
 	}
 	STOP_HERE; /*  This is an internal error condition */
-
-	return 0xFF;	// make the compiler happy.
 }
 
 /**----------------------------------------------------------------------------------------
@@ -1468,10 +1471,11 @@ void setLinkData(sMainData *pDat, cNorthBridge *nb)
 					{
 						if (pDat->HtBlock->AMD_CB_EventNotify)
 						{
-							sHtEventOptRequiredCap evt ={sizeof(sHtEventOptRequiredCap),
-										pDat->PortList[i].NodeID,
-										pDat->PortList[i].HostLink,
-										pDat->PortList[i].HostDepth};
+							sHtEventOptRequiredCap evt;
+							evt.eSize = sizeof(sHtEventOptRequiredCap);
+							evt.node = pDat->PortList[i].NodeID;
+							evt.link = pDat->PortList[i].HostLink;
+							evt.depth = pDat->PortList[i].HostDepth;
 
 							pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_WARNING,
 										HT_EVENT_OPT_REQUIRED_CAP_RETRY,
@@ -1513,10 +1517,11 @@ void setLinkData(sMainData *pDat, cNorthBridge *nb)
 					{
 						if (pDat->HtBlock->AMD_CB_EventNotify)
 						{
-							sHtEventOptRequiredCap evt ={sizeof(sHtEventOptRequiredCap),
-									pDat->PortList[i].NodeID,
-									pDat->PortList[i].HostLink,
-									pDat->PortList[i].HostDepth};
+							sHtEventOptRequiredCap evt;
+							evt.eSize = sizeof(sHtEventOptRequiredCap);
+							evt.node = pDat->PortList[i].NodeID;
+							evt.link = pDat->PortList[i].HostLink;
+							evt.depth = pDat->PortList[i].HostDepth;
 
 							pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_WARNING,
 										HT_EVENT_OPT_REQUIRED_CAP_GEN3,

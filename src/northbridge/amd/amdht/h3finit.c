@@ -112,7 +112,7 @@
  */
 
 /*----------------------------------------------------------------------------------------
- * int
+ * u8
  * graphHowManyNodes(u8 *graph)
  *
  *  Description:
@@ -123,7 +123,7 @@
  *	@param[out] u8 results = the number of nodes in the graph
  * ---------------------------------------------------------------------------------------
  */
-int graphHowManyNodes(u8 *graph)
+u8 graphHowManyNodes(u8 *graph)
 {
 	return graph[0];
 }
@@ -198,7 +198,7 @@ u8 graphGetRsp(u8 *graph, u8 nodeA, u8 nodeB)
  */
 u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
 {
-	int size = graph[0];
+	u8 size = graph[0];
 	ASSERT(size <= MAX_NODES);
 	ASSERT((nodeA < size) && (nodeB < size));
 	return (graph[1+(nodeA*size+nodeB)*2+1] & 0x0F);
@@ -206,7 +206,7 @@ u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
 
 /*----------------------------------------------------------------------------------------
  * u8
- * graphGetBc(unsigned char *graph, int nodeA, int nodeB)
+ * graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
  *
  *  Description:
  *	 Returns a bit vector of nodes that nodeA should forward a broadcast from
@@ -219,9 +219,9 @@ u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
  *	OU    u8    results = the broadcast routes for nodeA from nodeB
  * ---------------------------------------------------------------------------------------
  */
-u8 graphGetBc(unsigned char *graph, int nodeA, int nodeB)
+u8 graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
 {
-	int size = graph[0];
+	u8 size = graph[0];
 	ASSERT(size <= MAX_NODES);
 	ASSERT((nodeA < size) && (nodeB < size));
 	return graph[1+(nodeA*size+nodeB)*2];
@@ -415,10 +415,11 @@ void htDiscoveryFloodFill(sMainData *pDat)
 				/* Notify BIOS of event (while variables are still the same) */
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
-					sHtEventCohFamilyFeud evt = {sizeof(sHtEventCohFamilyFeud),
-								currentNode,
-								currentLink,
-								pDat->NodesDiscovered};
+					sHtEventCohFamilyFeud evt;
+					evt.eSize = sizeof(sHtEventCohFamilyFeud);
+					evt.node = currentNode;
+					evt.link = currentLink;
+					evt.totalNodes = pDat->NodesDiscovered;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,
 									HT_EVENT_COH_FAMILY_FEUD,
@@ -470,11 +471,12 @@ void htDiscoveryFloodFill(sMainData *pDat)
 					/* Notify BIOS of event  */
 					if (pDat->HtBlock->AMD_CB_EventNotify)
 					{
-						sHtEventCohMpCapMismatch evt = {sizeof(sHtEventCohMpCapMismatch),
-									currentNode,
-									currentLink,
-									pDat->sysMpCap,
-									pDat->NodesDiscovered};
+						sHtEventCohMpCapMismatch evt;
+						evt.eSize = sizeof(sHtEventCohMpCapMismatch);
+						evt.node = currentNode;
+						evt.link = currentLink;
+						evt.sysMpCap = pDat->sysMpCap;
+						evt.totalNodes = pDat->NodesDiscovered;
 
 						pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,
 									HT_EVENT_COH_MPCAP_MISMATCH,
@@ -502,10 +504,11 @@ void htDiscoveryFloodFill(sMainData *pDat)
 				 */
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
-					sHtEventCohNodeDiscovered evt = {sizeof(sHtEventCohNodeDiscovered),
-								currentNode,
-								currentLink,
-								token};
+					sHtEventCohNodeDiscovered evt;
+					evt.eSize = sizeof(sHtEventCohNodeDiscovered);
+					evt.node = currentNode;
+					evt.link = currentLink;
+					evt.newNode = token;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_INFO,
 								HT_EVENT_COH_NODE_DISCOVERED,
@@ -527,12 +530,13 @@ void htDiscoveryFloodFill(sMainData *pDat)
 				 */
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
-					sHtEventCohLinkExceed evt = {sizeof(sHtEventCohLinkExceed),
-								currentNode,
-								currentLink,
-								token,
-								pDat->NodesDiscovered,
-								pDat->nb->maxLinks};
+					sHtEventCohLinkExceed evt;
+					evt.eSize = sizeof(sHtEventCohLinkExceed);
+					evt.node = currentNode;
+					evt.link = currentLink;
+					evt.targetNode = token;
+					evt.totalNodes = pDat->NodesDiscovered;
+					evt.maxLinks = pDat->nb->maxLinks;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,
 									HT_EVENT_COH_LINK_EXCEED,
@@ -776,8 +780,9 @@ void lookupComputeAndLoadRoutingTables(sMainData *pDat)
 		 */
 		if (pDat->HtBlock->AMD_CB_EventNotify)
 		{
-			sHtEventCohNoTopology evt = {sizeof(sHtEventCohNoTopology),
-							pDat->NodesDiscovered};
+			sHtEventCohNoTopology evt;
+			evt.eSize = sizeof(sHtEventCohNoTopology);
+			evt.totalNodes = pDat->NodesDiscovered;
 
 			pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,
 						HT_EVENT_COH_NO_TOPOLOGY,
@@ -840,7 +845,7 @@ void finializeCoherentInit(sMainData *pDat)
  */
 void coherentInit(sMainData *pDat)
 {
-	int i, j;
+	u8 i, j;
 
 #ifdef HT_BUILD_NC_ONLY
 	/* Replace discovery process with:
@@ -912,7 +917,11 @@ void processLink(u8 node, u8 link, sMainData *pDat)
 			 */
 			if (pDat->HtBlock->AMD_CB_EventNotify)
 			{
-				sHTEventNcohBusMaxExceed evt = {sizeof(sHTEventNcohBusMaxExceed), node, link, pDat->AutoBusCurrent};
+				sHTEventNcohBusMaxExceed evt;
+				evt.eSize = sizeof(sHTEventNcohBusMaxExceed);
+				evt.node = node;
+				evt.link = link;
+				evt.bus = pDat->AutoBusCurrent;
 
 				pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,HT_EVENT_NCOH_BUS_MAX_EXCEED,(u8 *)&evt);
 			}
@@ -927,7 +936,10 @@ void processLink(u8 node, u8 link, sMainData *pDat)
 			 */
 			if (pDat->HtBlock->AMD_CB_EventNotify)
 			{
-				sHtEventNcohCfgMapExceed evt = {sizeof(sHtEventNcohCfgMapExceed), node, link};
+				sHtEventNcohCfgMapExceed evt;
+				evt.eSize = sizeof(sHtEventNcohCfgMapExceed);
+				evt.node = node;
+				evt.link = link;
 
 				pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,
 							HT_EVENT_NCOH_CFG_MAP_EXCEED,
@@ -1049,11 +1061,12 @@ void processLink(u8 node, u8 link, sMainData *pDat)
 				 */
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
-					sHtEventNcohLinkExceed evt = {sizeof(sHtEventNcohLinkExceed),
-							node,
-							link,
-							depth,
-							pDat->nb->maxLinks};
+					sHtEventNcohLinkExceed evt;
+					evt.eSize = sizeof(sHtEventNcohLinkExceed);
+					evt.node = node;
+					evt.link = link;
+					evt.depth = depth;
+					evt.maxLinks = pDat->nb->maxLinks;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,
 								HT_EVENT_NCOH_LINK_EXCEED,
@@ -1097,8 +1110,13 @@ void processLink(u8 node, u8 link, sMainData *pDat)
 				/* An error handler for the case where we run out of BUID's on a chain */
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
-					sHtEventNcohBuidExceed evt = {sizeof(sHtEventNcohBuidExceed),
-								node, link, depth, (u8)currentBUID, (u8)unitIDcnt};
+					sHtEventNcohBuidExceed evt;
+					evt.eSize = sizeof(sHtEventNcohBuidExceed);
+					evt.node = node;
+					evt.link = link;
+					evt.depth = depth;
+					evt.currentBUID = (uint8)currentBUID;
+					evt.unitCount = (uint8)unitIDcnt;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,HT_EVENT_NCOH_BUID_EXCEED,(u8 *)&evt);
 				}
@@ -1115,8 +1133,12 @@ void processLink(u8 node, u8 link, sMainData *pDat)
 				/* An error handler for this critical error */
 				if (pDat->HtBlock->AMD_CB_EventNotify)
 				{
-					sHtEventNcohDeviceFailed evt = {sizeof(sHtEventNcohDeviceFailed),
-							node, link, depth, (u8)currentBUID};
+					sHtEventNcohDeviceFailed evt;
+					evt.eSize = sizeof(sHtEventNcohDeviceFailed);
+					evt.node = node;
+					evt.link = link;
+					evt.depth = depth;
+					evt.attemptedBUID = (uint8)currentBUID;
 
 					pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_ERROR,HT_EVENT_NCOH_DEVICE_FAILED,(u8 *)&evt);
 				}
@@ -1138,7 +1160,11 @@ void processLink(u8 node, u8 link, sMainData *pDat)
 		if (pDat->HtBlock->AMD_CB_EventNotify)
 		{
 			/* Provide information on automatic device results */
-			sHtEventNcohAutoDepth evt = {sizeof(sHtEventNcohAutoDepth), node, link, (depth - 1)};
+			sHtEventNcohAutoDepth evt;
+			evt.eSize = sizeof(sHtEventNcohAutoDepth);
+			evt.node = node;
+			evt.link = link;
+			evt.depth = (depth - 1);
 
 			pDat->HtBlock->AMD_CB_EventNotify(HT_EVENT_CLASS_INFO,HT_EVENT_NCOH_AUTO_DEPTH,(u8 *)&evt);
 		}

@@ -46,6 +46,10 @@ static const struct {
 	  0xF << 19, 0x00000000,
 	  0xF << 19, 0x00000000 },	/* [RtryHt[0..3]]=1 */
 
+	{ MC4_CTL_MASK, AMD_DR_ALL, AMD_PTYPE_ALL,
+	  0x1 << 10, 0x00000000,
+	  0x1 << 10, 0x00000000 },	/* [GartTblWkEn]=1 */
+
 	{ DC_CFG, AMD_DR_ALL, AMD_PTYPE_SVR,
 	  0x00000000, 0x00000004,
 	  0x00000000, 0x0000000C },	/* [REQ_CTR] = 1 for Server */

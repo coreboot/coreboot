@@ -79,16 +79,56 @@ static  u32 get_nodes(void)
 
 /**
  * void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
- *
- *  Needs to be fixed to output the debug structures.
- *
  */
-void AMD_CB_EventNotify (u8 evtClass, u16 event, const u8 *pEventData0)
+void AMD_CB_EventNotify (u8 evtClass, u16 event, u8 *pEventData0)
 {
+	u8 i;
+
 	printk_debug("AMD_CB_EventNotify()\n");
-	printk_debug("event class: %02x event: %04x\n", evtClass, event);
+	printk_debug(" event class: %02x\n event: %04x\n data: ", evtClass, event);
+
+	for (i = 0; i < *pEventData0; i++) {
+		printk_debug(" %02x ", *(pEventData0 + i));
+	}
+	printk_debug("\n");
 
 }
+
+
+/**
+ * BOOL AMD_CB_ManualBUIDSwapList(u8 Node, u8 Link, u8 **List)
+ * Description:
+ *	This routine is called every time a non-coherent chain is processed.
+ *	BUID assignment may be controlled explicitly on a non-coherent chain. Provide a
+ *	swap list. The first part of the list controls the BUID assignment and the
+ *	second part of the list provides the device to device linking.  Device orientation
+ *	can be detected automatically, or explicitly.  See documentation for more details.
+ *
+ *	Automatic non-coherent init assigns BUIDs starting at 1 and incrementing sequentially
+ *	based on each device's unit count.
+ *
+ * Parameters:
+ *	@param[in]  u8  node    = The node on which this chain is located
+ *	@param[in]  u8  link    = The link on the host for this chain
+ *	@param[out] u8** list   = supply a pointer to a list
+ *	@param[out] BOOL result = true to use a manual list
+ *				  false to initialize the link automatically
+ */
+BOOL AMD_CB_ManualBUIDSwapList (u8 node, u16 link, u8 **List)
+{
+	u8 swaplist[] = { 0xFF, HT_CHAIN_UNITID_BASE, HT_CHAIN_END_UNITID_BASE, 0xFF };
+	/* If the BUID was adjusted in early_ht we need to do the manual override */
+	if ((HT_CHAIN_UNITID_BASE != 0) && (HT_CHAIN_END_UNITID_BASE != 0)) {
+		printk_debug("AMD_CB_ManualBUIDSwapList()\n");
+		if ((node == 0) && (link == 0)) {	/* BSP SB link */
+			*List = swaplist;
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 
 /**
  * void getAmdTopolist(u8 ***p)
@@ -110,6 +150,7 @@ void getAmdTopolist(u8 ***p)
  */
 void amd_ht_init(struct sys_info *sysinfo)
 {
+
 	AMD_HTBLOCK ht_wrapper = {
 		NULL,	// u8 **topolist;
 		0,	// u8 AutoBusStart;
@@ -117,7 +158,7 @@ void amd_ht_init(struct sys_info *sysinfo)
 		6,	// u8 AutoBusIncrement;
 		NULL,	// BOOL (*AMD_CB_IgnoreLink)();
 		NULL,	// BOOL (*AMD_CB_OverrideBusNumbers)();
-		NULL,	// BOOL (*AMD_CB_ManualBUIDSwapList)();
+		AMD_CB_ManualBUIDSwapList,	// BOOL (*AMD_CB_ManualBUIDSwapList)();
 		NULL,	// void (*AMD_CB_DeviceCapOverride)();
 		NULL,	// void (*AMD_CB_Cpu2CpuPCBLimits)();
 		NULL,	// void (*AMD_CB_IOPCBLimits)();

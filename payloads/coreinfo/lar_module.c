@@ -22,8 +22,9 @@
 #ifdef CONFIG_MODULE_LAR
 
 static struct LAR *lar;
-static int lcount;
+static int lcount, selected;
 static char **lnames;
+static const char *compression_table[4] = {"none", "LZMA", "NRV2B", "zeroes"};
 
 static int lar_module_init(void)
 {
@@ -35,7 +36,7 @@ static int lar_module_init(void)
 	if (lar == NULL)
 		return 0;
 
-	while((larent = readlar(lar)))
+	while ((larent = readlar(lar)))
 		lcount++;
 
 	lnames = malloc(lcount * sizeof(char *));
@@ -45,37 +46,30 @@ static int lar_module_init(void)
 
 	rewindlar(lar);
 
-	while((larent = readlar(lar)))
+	while ((larent = readlar(lar)))
 		lnames[index++] = strdup((const char *) larent->name);
 
 	return 0;
 }
 
-static int selected;
-
 static int lar_module_redraw(WINDOW *win)
 {
-	int i;
-	int row = 2;
+	int i, row = 2;
 	struct larstat stat;
 
 	print_module_title(win, "LAR Listing");
 
 	if (lar == 0) {
-		mvwprintw(win, 11, 61/2,  "Bad or missing LAR");
+		mvwprintw(win, 11, 61 / 2,  "Bad or missing LAR");
 		return 0;
 	}
 
-	/* Draw a line down the middle */
+	/* Draw a line down the middle. */
+	for (i = 2; i < 21; i++)
+		mvwaddch(win, i, 30, '\263');
 
-	for(i = 2; i < 20; i++) {
-		wmove(win, i, 30);
-		waddch(win, '\263');
-	}
-
-	/* Draw the names down the left side */
-
-	for(i = 0; i < lcount; i++) {
+	/* Draw the names down the left side. */
+	for (i = 0; i < lcount; i++) {
 		if (i == selected)
 			wattrset(win, COLOR_PAIR(3) | A_BOLD);
 		else
@@ -84,8 +78,7 @@ static int lar_module_redraw(WINDOW *win)
 		mvwprintw(win, 2 + i, 1, "%.25s", lnames[i]);
 	}
 
-	/* Get the information for the LAR */
-
+	/* Get the information for the LAR. */
 	if (larstat(lar, lnames[selected], &stat)) {
 		printf("larstat failed\n");
 		return 0;
@@ -96,26 +89,17 @@ static int lar_module_redraw(WINDOW *win)
 	mvwprintw(win, row++, 32, "Offset: 0x%x", stat.offset);
 
 	if (stat.compression) {
-		switch(stat.compression) {
-		case ALGO_LZMA:
-			mvwprintw(win, row++, 32, "Compression: LZMA");
-			break;
-		case ALGO_NRV2B:
-			mvwprintw(win, row++, 32, "Compression: NRV2B");
-			break;
-		case ALGO_ZEROES:
-			mvwprintw(win, row++, 32, "Compression: zeroes");
-			break;
-		}
-
+		mvwprintw(win, row++, 32, "Compression: %s",
+			  compression_table[stat.compression]);
 		mvwprintw(win, row++, 32, "Compressed length: %d", stat.len);
-		mvwprintw(win, row++, 32, "Compressed checksum: 0x%x", stat.compchecksum);
+		mvwprintw(win, row++, 32, "Compressed checksum: 0x%x",
+			  stat.compchecksum);
 	}
 
 	mvwprintw(win, row++, 32, "Length: %d", stat.reallen);
 	mvwprintw(win, row++, 32, "Checksum: 0x%x", stat.checksum);
-	mvwprintw(win, row++, 32, "Load Address: 0x%llx", stat.loadaddress);
-	mvwprintw(win, row++, 32, "Entry Point: 0x%llx", stat.entry);
+	mvwprintw(win, row++, 32, "Load address: 0x%llx", stat.loadaddress);
+	mvwprintw(win, row++, 32, "Entry point: 0x%llx", stat.entry);
 
 	return 0;
 }
@@ -151,13 +135,10 @@ struct coreinfo_module lar_module = {
 	.redraw = lar_module_redraw,
 	.handle = lar_module_handle
 };
+
 #else
 
 struct coreinfo_module lar_module = {
 };
 
 #endif
-
-
-
-

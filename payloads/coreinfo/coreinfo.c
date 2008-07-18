@@ -77,7 +77,6 @@ struct coreinfo_cat {
 	}
 };
 
-
 static WINDOW *modwin;
 static WINDOW *menuwin;
 
@@ -121,14 +120,14 @@ static void print_time_and_date(void)
 {
 	struct tm tm;
 
-	while(nvram_updating())
+	while (nvram_updating())
 		mdelay(10);
 
 	rtc_read_clock(&tm);
 
 	mvwprintw(menuwin, 0, 57, "%02d/%02d/%04d - %02d:%02d:%02d",
-		tm.tm_mon, tm.tm_mday, 1900+tm.tm_year, tm.tm_hour,
-		tm.tm_min, tm.tm_sec);
+		  tm.tm_mon, tm.tm_mday, 1900+tm.tm_year, tm.tm_hour,
+		  tm.tm_min, tm.tm_sec);
 }
 #endif
 
@@ -184,8 +183,6 @@ static void header(int row, const char *str)
 
 	ptr += sprintf(ptr, "[ %s ]", str);
 
-
-
 	for (i = ((SCREEN_X - len) / 2) + len; i < SCREEN_X; i++)
 		ptr += sprintf(ptr, "=");
 
@@ -207,10 +204,8 @@ static void handle_category_key(struct coreinfo_cat *cat, int key)
 {
 	if (key >= 'a' && key <= 'z') {
 		int index = key - 'a';
-
 		if (index < cat->count) {
-
-		cat->cur = index;
+			cat->cur = index;
 			redraw_module(cat);
 			return;
 		}
@@ -296,7 +291,7 @@ int main(void)
 	wrefresh(modwin);
 
 	for (i = 0; i < ARRAY_SIZE(categories); i++) {
-		for(j = 0; j < categories[i].count; j++)
+		for (j = 0; j < categories[i].count; j++)
 			categories[i].modules[j]->init();
 
 	}
@@ -306,6 +301,6 @@ int main(void)
 	return 0;
 }
 
-PAYLOAD_INFO(name,"coreinfo");
-PAYLOAD_INFO(listname,"System Information");
-PAYLOAD_INFO(desc,"Display information about the system");
+PAYLOAD_INFO(name, "coreinfo");
+PAYLOAD_INFO(listname, "System Information");
+PAYLOAD_INFO(desc, "Display information about the system");

@@ -20,7 +20,7 @@
 
 /{
 	mainboard_vendor = "PC Engines";
-	mainboard-name = "ALIX.2C3";
+	mainboard_name = "ALIX.2C3";
 	cpus { };
 	apic@0 {
 		/config/("northbridge/amd/geodelx/apic");

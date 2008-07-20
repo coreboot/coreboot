@@ -1328,7 +1328,7 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 	extern char *code;
 	struct node *next;
 	extern struct node *first_node;
-	int found_mainboard_vendor = 0, found_mainboard_partnumber = 0, found_mainboard_subsys = 0;
+	int found_mainboard_vendor = 0, found_mainboard_name = 0, found_mainboard_subsys = 0;
 
 	labeltree(bi->dt);
 
@@ -1357,9 +1357,9 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 			found_mainboard_vendor = 1;
 			fprintf(f, "const char *mainboard_vendor = \"%s\";\n", prop->val.val);
 		}
-		if (streq(prop->name, "mainboard-name")){
-			found_mainboard_partnumber = 1;
-			fprintf(f, "const char *mainboard_part_number = \"%s\";\n", prop->val.val);
+		if (streq(prop->name, "mainboard_name")){
+			found_mainboard_name = 1;
+			fprintf(f, "const char *mainboard_name = \"%s\";\n", prop->val.val);
 		}
 		if (streq(prop->name, "mainboard_pci_subsystem_vendor")){
 			found_mainboard_subsys++;
@@ -1373,11 +1373,11 @@ void dt_to_coreboot(FILE *f, struct boot_info *bi, int version, int boot_cpuid_p
 
 	if (! 	found_mainboard_vendor){
 		die("There is no mainboard_vendor property in the root. Please add one."
-			"(and make sure there is a mainboard-name property too");
+			"(and make sure there is a mainboard_name property too");
 	}
 
-	if (! 	found_mainboard_partnumber){
-		die("There is no mainboard-name property in the root. "
+	if (! 	found_mainboard_name){
+		die("There is no mainboard_name property in the root. "
 			"Please add one."
 			"(and make sure there is a mainboard_vendor property too");
 	}
@@ -1436,7 +1436,7 @@ void dt_to_corebooth(FILE *f, struct boot_info *bi, int version, int boot_cpuid_
 	fix_next(bi->dt);
 	/* emit any includes that we need  -- TODO: ONLY ONCE PER TYPE*/
 	fprintf(f, "#include <device/device.h>\n#include <device/pci.h>\n");
-	fprintf(f, "extern const char *mainboard_vendor, *mainboard_part_number;\n");
+	fprintf(f, "extern const char *mainboard_vendor, *mainboard_name;\n");
 
 	for_each_property(bi->dt, prop) {
 		if (streq(prop->name, "mainboard_pci_subsystem_vendor")){

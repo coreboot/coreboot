@@ -20,7 +20,7 @@
 
 /{
 	mainboard_vendor = "Artec";
-	mainboard-name = "DBE62";
+	mainboard_name = "DBE62";
 	cpus { };
 	apic@0 {
 		/config/("northbridge/amd/geodelx/apic");

@@ -142,14 +142,14 @@ struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
 	struct lb_record *rec;
 	struct lb_mainboard *mainboard;
-	extern char *mainboard_vendor, *mainboard_part_number;
+	extern char *mainboard_vendor, *mainboard_name;
 	rec = lb_new_record(header);
 	mainboard = (struct lb_mainboard *)rec;
 	mainboard->tag = LB_TAG_MAINBOARD;
 
 	mainboard->size = (sizeof(*mainboard) +
 		strlen(mainboard_vendor) + 1 + 
-		strlen(mainboard_part_number) + 1 +
+		strlen(mainboard_name) + 1 +
 		3) & ~3;
 
 	mainboard->vendor_idx = 0;
@@ -158,7 +158,7 @@ struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	memcpy(mainboard->strings + mainboard->vendor_idx,
 		mainboard_vendor,      strlen(mainboard_vendor) + 1);
 	memcpy(mainboard->strings + mainboard->part_number_idx,
-		mainboard_part_number, strlen(mainboard_part_number) + 1);
+		mainboard_name, strlen(mainboard_name) + 1);
 
 	return mainboard;
 }

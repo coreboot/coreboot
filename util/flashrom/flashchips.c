@@ -132,6 +132,7 @@ struct flashchip flashchips[] = {
 	{"Winbond",	"W29EE011",		WINBOND_ID,	W_29C011,		128,	128,		TEST_OK_PREW,	probe_w29ee011,		erase_chip_jedec,		write_jedec},
 	{"Winbond",	"W39V040A",		WINBOND_ID,	W_39V040A,		512,	64*1024,	TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"Winbond",	"W39V040B",		WINBOND_ID,	W_39V040B,		512,	64*1024,	TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
+	{"Winbond",	"W39V040C",		0xda,		0x50,			512,	64*1024,	TEST_OK_PREW,	probe_w39v040c,		erase_w39v040c,			write_w39v040c},
 	{"Winbond",	"W39V040FA",		WINBOND_ID,	W_39V040FA,		512,	64*1024,	TEST_OK_PR,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"Winbond",	"W39V080A",		WINBOND_ID,	W_39V080A,		1024,	64*1024,	TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"Winbond",	"W49F002U",		WINBOND_ID,	W_49F002U,		256,	128,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_49f002},

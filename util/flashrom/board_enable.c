@@ -114,6 +114,7 @@ static int w83627hf_gpio24_raise_2e(const char *name)
  * Winbond W83627THF: GPIO 4, bit 4
  *
  * Suited for:
+ *  - MSI K8T Neo2-F
  *  - MSI K8N-NEO3
  */
 static int w83627thf_gpio4_4_raise(uint16_t index, const char *name)
@@ -139,6 +140,11 @@ static int w83627thf_gpio4_4_raise(uint16_t index, const char *name)
 	w836xx_ext_leave(index);
 
 	return 0;
+}
+
+static int w83627thf_gpio4_4_raise_2e(const char *name)
+{
+	return w83627thf_gpio4_4_raise(0x2e, name);
 }
 
 static int w83627thf_gpio4_4_raise_4e(const char *name)
@@ -617,6 +623,8 @@ struct board_pciid_enable board_pciid_enables[] = {
  	 NULL, NULL, "BioStar P4M80-M4", board_biostar_p4m80_m4},
  	{0x1106, 0x3227, 0x1458, 0x5001, 0x10ec, 0x8139, 0x1458, 0xe000,
  	 NULL, NULL, "GIGABYTE GA-7VT600", board_biostar_p4m80_m4},
+	{0x1106, 0x3149, 0x1462, 0x7094, 0x10ec, 0x8167, 0x1462, 0x094c,
+	 NULL, NULL, "MSI K8T Neo2", w83627thf_gpio4_4_raise_2e},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
 };
 

@@ -517,6 +517,11 @@ int probe_sst_fwhub(struct flashchip *flash);
 int erase_sst_fwhub(struct flashchip *flash);
 int write_sst_fwhub(struct flashchip *flash, uint8_t *buf);
 
+/* w39v040c.c */
+int probe_w39v040c(struct flashchip *flash);
+int erase_w39v040c(struct flashchip *flash);
+int write_w39v040c(struct flashchip *flash, uint8_t *buf);
+
 /* w39V080fa.c */
 int probe_winbond_fwhub(struct flashchip *flash);
 int erase_winbond_fwhub(struct flashchip *flash);

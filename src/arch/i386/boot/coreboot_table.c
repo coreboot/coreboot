@@ -402,7 +402,6 @@ unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end, 
 	unsigned long rom_table_start, unsigned long rom_table_end)
 {
-	unsigned long table_size;
 	struct lb_header *head;
 	struct lb_memory *mem;
 
@@ -445,9 +444,8 @@ unsigned long write_coreboot_table(
 		low_table_start, low_table_end - low_table_start);
 
 	/* Record the pirq table, acpi tables, and maybe the mptable */
-	table_size=rom_table_end-rom_table_start;
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
-		rom_table_start, table_size<0x10000?0x10000:table_size);
+		rom_table_start, rom_table_end-rom_table_start);
 
 	/* Note:
 	 * I assume that there is always memory at immediately after

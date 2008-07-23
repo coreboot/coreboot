@@ -72,8 +72,9 @@ struct lb_memory *write_tables(void)
 #if HAVE_MP_TABLE==1
         /* Don't write anything in the traditional x86 BIOS data segment,
          * for example the linux kernel smp need to use 0x467 to pass reset vector
+         * or use 0x40e/0x413 for EBDA finding...
          */
-	if(new_low_table_end>0x467){
+	if(new_low_table_end>0x400){
 		unsigned mptable_size;
 		unsigned mpc_start;
 		low_table_end += SMP_FLOATING_TABLE_LEN; /* keep the mpf in 1k low, so kernel can find it */

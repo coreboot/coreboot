@@ -46,10 +46,6 @@ static const struct {
 	  0xF << 19, 0x00000000,
 	  0xF << 19, 0x00000000 },	/* [RtryHt[0..3]]=1 */
 
-	{ MC4_CTL_MASK, AMD_DR_ALL, AMD_PTYPE_ALL,
-	  0x1 << 10, 0x00000000,
-	  0x1 << 10, 0x00000000 },	/* [GartTblWkEn]=1 */
-
 	{ DC_CFG, AMD_DR_ALL, AMD_PTYPE_SVR,
 	  0x00000000, 0x00000004,
 	  0x00000000, 0x0000000C },	/* [REQ_CTR] = 1 for Server */
@@ -68,7 +64,7 @@ static const struct {
 
 	{ DC_CFG, AMD_DR_ALL, AMD_PTYPE_ALL,
 	  1 << 24, 0x00000000,
-	  1 << 24, 0x00000000 },	/* Erratum #202 [DIS_PIGGY_BACK_SCRUB]=1 */
+	  1 << 24, 0x00000000 },	/* Erratum #261 [DIS_PIGGY_BACK_SCRUB]=1 */
 
 	{ LS_CFG, AMD_DR_GT_B0, AMD_PTYPE_ALL,
 	  0 << 1, 0x00000000,
@@ -160,12 +156,15 @@ static const struct {
 	  0x00000100, 0x00000100 },	/* [8] MstrAbrtEn */
 
 	{ 3, 0x44, AMD_DR_ALL, AMD_PTYPE_ALL,
-	  0x0A100044, 0x0A300044 },	/* [27] NB MCA to CPU0 Enable,
-					   [25] DisPciCfgCpuErrRsp,
-					   [21] SyncOnErr=0,
-					   [20] SyncOnWDTEn=1,
-					   [6] CpuErrDis,
-					   [2] SyncOnUcEccEn=1 */
+	  0x4A30005C, 0x4A30005C },	/* [30] SyncOnDramAdrParErrEn = 1,
+					   [27] NbMcaToMstCpuEn = 1,
+					   [25] DisPciCfgCpuErrRsp = 1,
+					   [21] SyncOnAnyErrEn = 1,
+					   [20] SyncOnWDTEn = 1,
+					   [6] CpuErrDis = 1,
+					   [4] SyncPktPropDis = 1,
+					   [3] SyncPktGenDis = 1,
+					   [2] SyncOnUcEccEn = 1 */
 
 	/* XBAR buffer settings */
 	{ 3, 0x6C, AMD_DR_ALL, AMD_PTYPE_ALL,
@@ -222,7 +221,7 @@ static const struct {
 	{ 3, 0x84, AMD_DR_ALL, AMD_PTYPE_ALL,
 	  0xA0E641E6, 0xFFFFFFFF },
 
-	{ 3, 0xA0, AMD_DR_ALL, AMD_PTYPE_MOB,
+	{ 3, 0xA0, AMD_DR_ALL, AMD_PTYPE_MOB | AMD_PTYPE_DSK,
 	  0x00000080, 0x00000080 },	/* [7] PSIVidEnable */
 
 	{ 3, 0xA0, AMD_DR_ALL, AMD_PTYPE_ALL,
@@ -250,9 +249,13 @@ static const struct {
 
 	/* Extended NB MCA Config Register */
 	{ 3, 0x180, AMD_DR_ALL, AMD_PTYPE_ALL,
-	  0x00700022, 0x00700022 },	/* [5]     = DisPciCfgCpuMstAbtRsp
-					   [22:20] = SyncFloodOn_Err = 7,
-					   [1] = SyncFloodOnUsPwDataErr = 1 */
+	  0x007003E2, 0x007003E2 },	/* [22:20] = SyncFloodOn_Err = 7,
+					   [9] SyncOnUncNbAryEn = 1 ,
+					   [8] SyncOnProtEn = 1,
+					   [7] SyncFloodOnTgtAbtErr = 1,
+					   [6] SyncFloodOnDatErr = 1,
+					   [5] DisPciCfgCpuMstAbtRsp = 1,
+					   [1] SyncFloodOnUsPwDataErr = 1 */
 
 	/* L3 Control Register */
 	{ 3, 0x1B8, AMD_DR_ALL, AMD_PTYPE_ALL,

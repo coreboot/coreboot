@@ -669,6 +669,35 @@ u32 get_platform_type(void)
 }
 
 
+void AMD_SetupPSIVID_d (u32 platform_type, u8 node)
+{
+	u32 dword;
+	int i;
+	msr_t msr;
+
+	if (platform_type & (AMD_PTYPE_MOB | AMD_PTYPE_DSK)) {
+
+	/* The following code sets the PSIVID to the lowest support P state
+	 * assuming that the VID for the lowest power state is below
+	 * the VDD voltage regulator threshold. (This also assumes that there
+	 * is a Pstate lower than P0)
+	 */
+
+		for( i = 4; i >= 0; i--) {
+			msr = rdmsr(PS_REG_BASE + i);
+			/*  Pstate valid? */
+			if (msr.hi & PS_EN_MASK) {
+				dword = pci_read_config32(NODE_PCI(i,3), 0xA0);
+				dword &= ~0x7F;
+				dword |= (msr.lo >> 9) & 0x7F;
+				pci_write_config32(NODE_PCI(i,3), 0xA0, dword);
+				break;
+			}
+		}
+	}
+}
+
+
 /**
  * AMD_CpuFindCapability - Traverse PCI capability list to find host HT links.
  *  HT Phy operations are not valid on links that aren't present, so this
@@ -854,8 +883,11 @@ void cpuSetAMDPCI(u8 node)
 
 	printk_debug("cpuSetAMDPCI %02d", node);
 
+
 	revision = mctGetLogicalCPUID(node);
 	platform = get_platform_type();
+
+	AMD_SetupPSIVID_d(platform, node);	/* Set PSIVID offset which is not table driven */
 
 	for(i = 0; i < sizeof(fam10_pci_default)/sizeof(fam10_pci_default[0]); i++) {
 		if ((fam10_pci_default[i].revision & revision) &&

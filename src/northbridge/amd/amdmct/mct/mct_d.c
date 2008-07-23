@@ -2401,30 +2401,34 @@ static void mct_DramInit(struct MCTStatStruc *pMCTstat,
 	mct_BeforeDramInit_Prod_D(pMCTstat, pDCTstat);
 	// FIXME: for rev A: mct_BeforeDramInit_D(pDCTstat, dct);
 
-	/* Disable auto refresh before Dram init when in ganged mode */
-	if (pDCTstat->GangedMode) {
-		val = Get_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct));
-		val |= 1 << DisAutoRefresh;
-		Set_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct), val);
+	/* Disable auto refresh before Dram init when in ganged mode (Erratum 278) */
+	if (pDCTstat->LogicalCPUID & AMD_DR_LT_B2) {
+		if (pDCTstat->GangedMode) {
+			val = Get_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct));
+			val |= 1 << DisAutoRefresh;
+			Set_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct), val);
+		}
 	}
 
 	mct_DramInit_Hw_D(pMCTstat, pDCTstat, dct);
 
 	/* Re-enable auto refresh after Dram init when in ganged mode
-	 * to ensure both DCTs are in sync
+	 * to ensure both DCTs are in sync (Erratum 278)
 	 */
 
-	if (pDCTstat->GangedMode) {
-		do {
-			val = Get_NB32(pDCTstat->dev_dct, 0x90 + (0x100 * dct));
-		} while (!(val & (1 << InitDram)));
+	if (pDCTstat->LogicalCPUID & AMD_DR_LT_B2) {
+		if (pDCTstat->GangedMode) {
+			do {
+				val = Get_NB32(pDCTstat->dev_dct, 0x90 + (0x100 * dct));
+			} while (!(val & (1 << InitDram)));
 
-		WaitRoutine_D(50);
+			WaitRoutine_D(50);
 
-		val = Get_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct));
-		val &= ~(1 << DisAutoRefresh);
-		val |= 1 << DisAutoRefresh;
-		val &= ~(1 << DisAutoRefresh);
+			val = Get_NB32(pDCTstat->dev_dct, 0x8C + (0x100 * dct));
+			val &= ~(1 << DisAutoRefresh);
+			val |= 1 << DisAutoRefresh;
+			val &= ~(1 << DisAutoRefresh);
+		}
 	}
 }
 
@@ -3792,7 +3796,10 @@ static void mct_ResetDLL_D(struct MCTStatStruc *pMCTstat,
 	u8 wrap32dis = 0;
 	u8 valid = 0;
 
-	/* FIXME: Skip reset DLL for B3 */
+	/* Skip reset DLL for B3 */
+	if (pDCTstat->LogicalCPUID & AMD_DR_B3) {
+		return;
+	}
 
 	addr = HWCR;
 	_RDMSR(addr, &lo, &hi);
@@ -3885,8 +3892,7 @@ static void AfterDramInit_D(struct DCTStatStruc *pDCTstat, u8 dct) {
 	u32 reg_off = 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
 
-	/* FIXME: Add B3 */
-	if (pDCTstat->LogicalCPUID & AMD_DR_B2) {
+	if (pDCTstat->LogicalCPUID & (AMD_DR_B2 | AMD_DR_B3)) {
 		mct_Wait(10000);	/* Wait 50 us*/
 		val = Get_NB32(dev, 0x110);
 		if ( val & (1 << DramEnabled)) {

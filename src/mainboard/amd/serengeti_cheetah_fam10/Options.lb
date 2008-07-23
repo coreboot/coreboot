@@ -114,6 +114,7 @@ uses CONFIG_AMDMCT
 
 uses CONFIG_USE_PRINTK_IN_CAR
 uses CAR_FAM10
+uses AMD_UCODE_PATCH_FILE
 
 ###
 ### Build options
@@ -259,6 +260,15 @@ default MAINBOARD_PART_NUMBER="Cheetah Fam10"
 default MAINBOARD_VENDOR="AMD"
 default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x1022
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2b80
+
+##
+## Set microcode patch file name
+##
+##	Barcelona rev Ax:  "mc_patch_01000020.h"
+##	Barcelona rev B0, B1, BA: "mc_patch_01000084.h"
+##	Barcelona rev B2, B3: "mc_patch_01000083.h"
+##
+default AMD_UCODE_PATCH_FILE="mc_patch_01000083.h"
 
 ###
 ### coreboot layout values

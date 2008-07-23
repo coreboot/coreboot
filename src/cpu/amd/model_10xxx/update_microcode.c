@@ -31,14 +31,22 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
 
 #ifdef __ROMCC__
 
-	// Barcelona rev Ax
-//		#include "mc_patch_01000020.h"
+/* From the Revision Guide :
+ * Equivalent Processor Table for AMD Family 10h Processors
+ *
+ * Installed Processor   Equivalent Processor   Patch Level
+ * Revision ID           Revision ID
+ * 00100F00h             1000h                  01000020h
+ * 00100F01h             1000h                  01000020h
+ * 00100F02h             1000h                  01000020h
+ * 00100F20h             1020h                  01000084h
+ * 00100F21h             1020h                  01000084h
+ * 00100F2Ah             1020h                  01000084h
+ * 00100F22h             1022h                  01000083h
+ * 00100F23h             1022h                  01000083h
+ */
 
-	// Barcelona rev B0, B1, BA
-//		#include "mc_patch_01000066.h"
-
-	// Barcelona rev B2, B3
-		#include "mc_patch_01000065.h"
+#include AMD_UCODE_PATCH_FILE
 
 #endif
 	/*  Dummy terminator  */

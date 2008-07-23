@@ -1065,7 +1065,8 @@ define AMD_UCODE_PATCH_FILE
 	default none
 	export used
 	format "\"%s\""
-	comment "name of the micorcode patch file"
+	comment "name of the microcode patch file"	
+end
 
 define CONFIG_VIDEO_MB
         default none

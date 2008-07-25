@@ -230,6 +230,21 @@
 #define DM_CONFIG0_LOWER_DCDIS_SET		(1 << 8)
 #define DM_CONFIG0_LOWER_MISSER_SET		(1<<1)
 
+/* Region CONFiguration registers  (RCONF) */
+/* There are control bits for memory configuration. They are at different 
+ * offsets depending on the MSR. We define them here with values
+ * independent of their position in a 64-bit MSR, with a "shift" value
+ * to get them into the right place. To use them for, e.g., the 
+ * CPU_RCONF_DEFAULT register, you would use 
+ * RCONF_WT(RCONF_DEFAULT_LOWER_SYSRC_SHIFT)
+ */
+#define RCONF_WS(x)	(1<<(5+x))	/* Write-serialize */ 
+#define RCONF_WC(x)	(1<<(4+x))	/* Write-combine */ 
+#define RCONF_WT(x)	(1<<(3+x))	/* Write-through */ 
+#define RCONF_WP(x)	(1<<(2+x))	/* Write-protect */ 
+#define RCONF_WA(x)	(1<<(1+x))	/* Write-allocate */ 
+#define RCONF_CD(x)	(1<<(0+x))	/* Cache Disable */
+
 #define CPU_RCONF_DEFAULT			0x1808
 #define RCONF_DEFAULT_UPPER_ROMRC_SHIFT		24
 #define RCONF_DEFAULT_UPPER_ROMBASE_SHIFT	4

@@ -376,6 +376,11 @@
 #define GLCP_DELAY_CONTROLS			(MSR_GLCP + 0x0F)
 #define DELAY_UPPER_DISABLE_CLK135	(1 << 23)
 #define DELAY_LOWER_STATUS_MASK		0x7C0
+
+/* DRAM_TERMINATED affects how the DELAY register is set. */
+#define DRAM_TERMINATED 'T'
+#define DRAM_UNTERMINATED 't'
+
 #define GLCP_SYS_RSTPLL				(MSR_GLCP + 0x14)	/* R/W */
 #define RSTPLL_UPPER_GLMULT_SHIFT		7
 #define RSTPLL_UPPER_GLMULT_MASK		0x1F
@@ -1281,7 +1286,7 @@ static inline u16 vr_read(u16 class_index)
 u32 geode_link_speed(void);
 void geodelx_msr_init(void);
 void pll_reset(int manualconf, u32 pll_hi, u32 pll_lo);
-void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1);
+void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated);
 void system_preinit(void);
 void msr_init(void);
 void geode_pre_payload(void);

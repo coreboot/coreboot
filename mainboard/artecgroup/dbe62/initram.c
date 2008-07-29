@@ -33,7 +33,7 @@
 #include <northbridge/amd/geodelx/raminit.h>
 #include <spd.h>
 
-#define MANUALCONF 1		/* Do manual strapped PLL config */
+#define MANUALCONF 0		/* Do manual strapped PLL config */
 #define PLLMSRHI 0x000003d9	/* manual settings for the PLL */
 #define PLLMSRLO 0x07de0080	/* from factory bios */
 #define DIMM0 ((u8) 0xA0)
@@ -140,7 +140,7 @@ int main(void)
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 	printk(BIOS_DEBUG, "done pll reset\n");
 
-	cpu_reg_init(0, DIMM0, DIMM1);
+	cpu_reg_init(0, DIMM0, DIMM1, DRAM_UNTERMINATED);
 	printk(BIOS_DEBUG, "done cpu reg init\n");
 
 	sdram_set_registers();

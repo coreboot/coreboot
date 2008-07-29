@@ -313,8 +313,9 @@ static const struct delay_controls {
  *
  * @param dimm0 The SMBus address of DIMM 0 (mainboard dependent).
  * @param dimm1 The SMBus address of DIMM 1 (mainboard dependent).
+ * @param terminated The bus is terminated. (mainboard dependent).
  */
-static void set_delay_control(u8 dimm0, u8 dimm1)
+static void set_delay_control(u8 dimm0, u8 dimm1, int terminated)
 {
 	u32 glspeed;
 	u8 spdbyte0, spdbyte1, dimms, i;
@@ -376,7 +377,10 @@ static void set_delay_control(u8 dimm0, u8 dimm1)
 
 	spdbyte0 += spdbyte1;
 
-	for (i = 0; i < ARRAY_SIZE(delay_control_table); i++) {
+	if ((dimms == 1) && (terminated == DRAM_TERMINATED)) {
+		msr.hi = 0xF2F100FF;
+		msr.lo = 0x56960004;
+	} else for (i = 0; i < ARRAY_SIZE(delay_control_table); i++) {
 		if ((dimms == delay_control_table[i].dimms) &&
 		    (spdbyte0 <= delay_control_table[i].devices)) {
 			if (glspeed < 334) {
@@ -400,8 +404,9 @@ static void set_delay_control(u8 dimm0, u8 dimm1)
  *                            setting in future.
  * @param dimm0 SMBus address of DIMM 0 (mainboard dependent).
  * @param dimm1 SMBus address of DIMM 1 (mainboard dependent).
+ * @param terminated The bus is terminated (mainboard dependent).
  */
-void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1)
+void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 {
 	struct msr msr;
 
@@ -432,7 +437,7 @@ void cpu_reg_init(int debug_clock_disable, u8 dimm0, u8 dimm1)
 	wrmsr(GLIU1_PORT_ACTIVE, msr);
 
 	/* Set the Delay Control in GLCP. */
-	set_delay_control(dimm0, dimm1);
+	set_delay_control(dimm0, dimm1, terminated);
 
 	/* Enable RSDC. */
 	msr = rdmsr(CPU_AC_SMM_CTL);

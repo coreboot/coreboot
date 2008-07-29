@@ -50,7 +50,7 @@ int main(void)
 
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 
-	cpu_reg_init(0, DIMM0, DIMM1);
+	cpu_reg_init(0, DIMM0, DIMM1, DRAM_TERMINATED);
 	sdram_set_registers();
 	sdram_set_spd_registers(DIMM0, DIMM1);
 	sdram_enable(DIMM0, DIMM1);

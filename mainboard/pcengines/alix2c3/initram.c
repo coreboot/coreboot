@@ -145,7 +145,7 @@ int main(void)
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 	printk(BIOS_DEBUG, "done pll reset\n");
 
-	cpu_reg_init(0, DIMM0, DIMM1);
+	cpu_reg_init(0, DIMM0, DIMM1, DRAM_TERMINATED);
 	printk(BIOS_DEBUG, "done cpu reg init\n");
 
 	sdram_set_registers();

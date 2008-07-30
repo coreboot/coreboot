@@ -34,7 +34,7 @@
 		pci@1,0 {
 			/config/("northbridge/amd/geodelx/pci");
 		};
-		pci@15,0 {
+		pci@f,0 {
 			/config/("southbridge/amd/cs5536/dts");
 			/* Interrupt enables for LPC bus.
 			 *  Each bit is an IRQ 0-15. */
@@ -51,7 +51,7 @@
 			com1_address = "0x3f8";
 			com1_irq = "4";
 		};
-		pci@15,2 {
+		pci@f,2 {
 			/config/("southbridge/amd/cs5536/ide");
 			enable_ide = "1";
 		};

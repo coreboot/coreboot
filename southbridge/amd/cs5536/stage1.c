@@ -18,6 +18,7 @@
  */
 
 #include <types.h>
+#include <console.h>
 #include <msr.h>
 #include <lib.h>
 #include <amd_geodelx.h>

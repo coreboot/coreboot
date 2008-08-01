@@ -20,9 +20,9 @@
 
 #include <types.h>
 #include <lib.h>
-#include <msr.h>
 #include <amd_geodelx.h>
 #include <console.h>
+#include <msr.h>
 
 static const struct msrinit msr_table[] = {
   /* Setup access to cache under 1MB. */

@@ -41,7 +41,6 @@ u8 spd_read_byte(u16 device, u8 address);
  * compare to a factory BIOS setting.
  * @param level printk level
  */
-
 void dumplxmsrs(void)
 {
 	const static unsigned long msrs[] = {
@@ -64,13 +63,15 @@ void dumplxmsrs(void)
 	};
 	int i;
 
-	for(i = 0; i < sizeof(msrs)/sizeof(msrs[0]); i++){
+	for (i = 0; i < ARRAY_SIZE(msrs); i++) {
 		struct msr msr;
 		msr = rdmsr(msrs[i]);
-		printk(BIOS_DEBUG, "(%lx): %x.%x\n",  msrs[i], msr.hi, msr.lo);
+		printk(BIOS_DEBUG, "%s (%lx): %x.%x\n",  msrnames[i], msrs[i],
+			msr.hi, msr.lo);
 	}
 
 }
+
 /**
  * Halt and Catch Fire. Print an error, then loop, sending NULLs on
  * serial port, to ensure the message is visible.

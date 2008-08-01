@@ -66,15 +66,15 @@ int main(int argc, char *argv[])
 		fatal("stat of infile");
 	if (payloadbuf.st_size > (romsize - size)){
 		fprintf(stderr, "ERROR: payload (%d) + coreboot (%d) - Size is %d bytes larger than ROM size (%d).\n", 
-				payloadbuf.st_size, size, 
-				payloadbuf.st_size+size-romsize,
+				(int)payloadbuf.st_size, size, 
+				(int)(payloadbuf.st_size+size-romsize),
 				romsize);
 		exit(1);
 	}
 
 	printf("Payload: %d coreboot: %d ROM size: %d Left space: %d\n",
-			payloadbuf.st_size, size, romsize,
-			romsize-payloadbuf.st_size-size);
+			(int)payloadbuf.st_size, size, romsize,
+			(int)(romsize-payloadbuf.st_size-size));
 
 	cp = malloc(romsize);
 	if (!cp)

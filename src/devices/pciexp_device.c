@@ -34,7 +34,7 @@ static void pciexp_tune_dev(device_t dev)
 		/* error... */
 		return;
 	}
-	printk_debug("PCIe: tunning %s\n", dev_path(dev));
+	printk_debug("PCIe: tuning %s\n", dev_path(dev));
 #warning "IMPLEMENT PCI EXPRESS TUNING"
 }
 

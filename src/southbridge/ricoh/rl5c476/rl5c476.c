@@ -1,7 +1,6 @@
 /*
  * (C) Copyright 2004 Nick Barker <nick.barker9@btinternet.com>
  *
- *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of
@@ -20,7 +19,6 @@
 /* (C) Copyright 2005 Nick Barker <nick.barker@btinternet.com
    brought into line with the current architecture of coreboot */ 
 
-
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -34,10 +32,10 @@
 static int enable_cf_boot = 0;
 static unsigned int cf_base;
 
-static void udelay(int i){
+static void udelay(int i)
+{
 	for(; i > 0 ; i--)
 		inb(0x80);
-
 }
 
 static void rl5c476_init(device_t dev)
@@ -105,8 +103,6 @@ static void rl5c476_init(device_t dev)
 		pc16->ioffl1 = 0x0;
 		pc16->ioffh1 = 0;
 
-
-
 		// set up CF config window
 		pc16->smpga0 = cf_base>>24;
 		pc16->smsth0 = (cf_base>>20)&0x0f;
@@ -164,15 +160,12 @@ void rl5c476_read_resources(device_t dev)
 		resource->size = 0x1000;
 		resource->align = resource->gran = 12;
 		resource->limit= 0xffff0000;
-		//compute_allocate_resource(&dev->link[0],resource,resource->flags,resource->flags);
 	}
 	cardbus_read_resources(dev);
-
 }
 
 void rl5c476_set_resources(device_t dev)
 {
-
 	struct resource *resource;
 	printk_debug("%s In set resources \n",dev_path(dev));
 	if( enable_cf_boot && (PCI_FUNC(dev->path.u.pci.devfn) == 1)){

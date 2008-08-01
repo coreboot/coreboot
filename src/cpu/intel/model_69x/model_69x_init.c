@@ -38,7 +38,8 @@ static struct device_operations cpu_dev_ops = {
 	.init     = model_69x_init,
 };
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x0695 }, /* Pentium M */
+	{ X86_VENDOR_INTEL, 0x0690 }, /* Pentium M */
+	{ X86_VENDOR_INTEL, 0x0695 },
 	{ 0, 0 },
 };
 

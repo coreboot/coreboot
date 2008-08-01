@@ -84,7 +84,7 @@ if CONFIG_AP_CODE_IN_CAR
 
 	makerule coreboot_apc.o
 		depends "coreboot_apc.a c_start.o $(LIBGCC_FILE_NAME)"
-        action  "$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ c_start.o coreboot_apc.a $(LIBGCC_FILE_NAME)"
+        	action  "$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ c_start.o coreboot_apc.a $(LIBGCC_FILE_NAME)"
 	end
 
 	makerule coreboot_apc
@@ -126,11 +126,6 @@ makerule coreboot
 	action	"$(CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
 end
 
-#makerule crt0.S   
-#	depends	"$(CRT0)" 
-#	action		"cp $< $@"
-#end
-
 # the buildrom tool
 makerule buildrom 
 	depends	"$(TOP)/util/buildrom/buildrom.c" 
@@ -141,13 +136,11 @@ end
 makedefine .PHONY : crt0.s
 makerule crt0.s   
 	depends	"crt0.S $(CRT0_INCLUDES)" 
-	action	"@echo \"$(CPP) ... $< > $@ \""
 	action	"$(CPP) $(CPPFLAGS) -I. -I$(TOP)/src  $< > $@.new && mv $@.new $@"
 end
 
 makerule crt0.o  
 	depends	"crt0.s" 
-	action	"@echo $(CC) ... -o $@ $<"
 	action	"@$(CC) -c $(CPU_OPT) -o $@ $<"
 end
 
@@ -179,11 +172,6 @@ makerule build_opt_tbl
 	action	"$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
 end
 
-#makerule /$(TARGET_DIR)/option_table.c
-#	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
-#	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout"
-#end
-
 makerule option_table.c
 	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
 	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout --header option_table.h"
@@ -196,12 +184,6 @@ end
 
 if HAVE_OPTION_TABLE
 object ./option_table.o 
-#special rule
-#makerule option_table.o 
-#	depends	"option_table.c" 
-#	action	"$(CC) -c $(CFLAGS) -o $@ $<"
-#end
-# object option_table.o 
 end
 
 makerule clean  

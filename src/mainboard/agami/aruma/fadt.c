@@ -22,13 +22,13 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	header->length = 244;
 	header->revision = 1;
 	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, "LXBACPI ", 8);
+	memcpy(header->oem_table_id, "COREBOOT", 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	header->asl_compiler_revision = 0;
 
 	fadt->firmware_ctrl = (u32) facs;
 	fadt->dsdt = (u32) dsdt;
-	fadt->res1 = 0x0;
+
 	// 3=Workstation,4=Enterprise Server, 7=Performance Server
 	fadt->preferred_pm_profile = 0x03;
 	fadt->sci_int = 9;

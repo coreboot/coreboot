@@ -35,7 +35,7 @@ struct intel_mp_floating
 	unsigned char mpf_feature3;	/* Unused (0)			*/
 	unsigned char mpf_feature4;	/* Unused (0)			*/
 	unsigned char mpf_feature5;	/* Unused (0)			*/
-};
+} __attribute__((packed));
 
 struct mp_config_table
 {
@@ -53,7 +53,7 @@ struct mp_config_table
 	unsigned short mpe_length;	/* Extended Table size */
 	unsigned char mpe_checksum;	/* Extended Table checksum */
 	unsigned char reserved;
-};
+} __attribute__((packed));
 
 /* Followed by entries */
 
@@ -77,14 +77,14 @@ struct mpc_config_processor
 #define MPC_CPU_FAMILY_MASK	0xF00
 	unsigned long mpc_featureflag;	/* CPUID feature value */
 	unsigned long mpc_reserved[2];
-};
+} __attribute__((packed));
 
 struct mpc_config_bus
 {
 	unsigned char mpc_type;
 	unsigned char mpc_busid;
-	unsigned char mpc_bustype[6] __attribute((packed));
-};
+	unsigned char mpc_bustype[6];
+} __attribute__((packed));
 
 #define BUSTYPE_EISA	"EISA"
 #define BUSTYPE_ISA	"ISA"
@@ -102,7 +102,7 @@ struct mpc_config_ioapic
 	unsigned char mpc_flags;
 #define MPC_APIC_USABLE		0x01
 	unsigned long mpc_apicaddr;
-};
+} __attribute__((packed));
 
 struct mpc_config_intsrc
 {
@@ -113,7 +113,7 @@ struct mpc_config_intsrc
 	unsigned char mpc_srcbusirq;
 	unsigned char mpc_dstapic;
 	unsigned char mpc_dstirq;
-};
+} __attribute__((packed));
 
 enum mp_irq_source_types {
 	mp_INT = 0,
@@ -142,7 +142,7 @@ struct mpc_config_lintsrc
 	unsigned char mpc_destapic;	
 #define MP_APIC_ALL	0xFF
 	unsigned char mpc_destapiclint;
-};
+} __attribute__((packed));
 
 /*
  *	Default configurations
@@ -174,7 +174,7 @@ enum mp_bustype {
 struct mp_exten_config {
 	unsigned char mpe_type;
 	unsigned char mpe_length;
-};
+} __attribute__((packed));
 
 typedef struct mp_exten_config *mpe_t;
 
@@ -190,7 +190,7 @@ struct mp_exten_system_address_space {
 	unsigned int  mpe_address_base_high;
 	unsigned int  mpe_address_length_low;
 	unsigned int  mpe_address_length_high;
-};
+} __attribute__((packed));
 
 struct mp_exten_bus_hierarchy {
 	unsigned char mpe_type;
@@ -200,7 +200,7 @@ struct mp_exten_bus_hierarchy {
 #define BUS_SUBTRACTIVE_DECODE 1
 	unsigned char mpe_parent_busid;
 	unsigned char reserved[3];
-};
+} __attribute__((packed));
 
 struct mp_exten_compatibility_address_space {
 	unsigned char mpe_type;
@@ -226,7 +226,7 @@ struct mp_exten_compatibility_address_space {
 	 * XFB0 - XFBB
 	 * XFC0 - XCDF
 	 */
-};
+} __attribute__((packed));
 
 /* Default local apic addr */
 #define LAPIC_ADDR 0xFEE00000
@@ -240,7 +240,7 @@ void smp_write_processor(struct mp_config_table *mc,
 	unsigned int featureflag);
 void smp_write_processors(struct mp_config_table *mc);
 void smp_write_bus(struct mp_config_table *mc,
-	unsigned char id, unsigned char *bustype);
+	unsigned char id, char *bustype);
 void smp_write_ioapic(struct mp_config_table *mc,
 	unsigned char id, unsigned char ver, 
 	unsigned long apicaddr);

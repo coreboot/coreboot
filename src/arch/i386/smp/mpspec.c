@@ -155,7 +155,7 @@ void smp_write_processors(struct mp_config_table *mc)
 }
 
 void smp_write_bus(struct mp_config_table *mc,
-	unsigned char id, unsigned char *bustype)
+	unsigned char id, char *bustype)
 {
 	struct mpc_config_bus *mpc;
 	mpc = smp_next_mpc_entry(mc);

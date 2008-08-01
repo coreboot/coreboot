@@ -37,8 +37,8 @@ typedef unsigned long long u64;
 #define SRAT_TABLE	      "SRAT    "
 #define SLIT_TABLE	      "SLIT    "
 
-#define OEM_ID                "LXBIOS"
-#define ASLC                  "NONE"
+#define OEM_ID                "CORE  "
+#define ASLC                  "CORE"
 
 /* ACPI 2.0 table RSDP */
 
@@ -219,7 +219,7 @@ typedef struct acpi_fadt {
 	struct acpi_table_header header;
 	u32 firmware_ctrl;
 	u32 dsdt;
-	u8 res1;
+	u8 model;
 	u8 preferred_pm_profile;
 	u16 sci_int;
 	u32 smi_cmd;

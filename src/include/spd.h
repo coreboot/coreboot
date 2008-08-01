@@ -73,6 +73,7 @@
 #define SPD_CMD_SIGNAL_INPUT_HOLD_TIME      33 /* Command and address signal input hold time */
 #define SPD_DATA_SIGNAL_INPUT_SETUP_TIME    34 /* Data signal input setup time */
 #define SPD_DATA_SIGNAL_INPUT_HOLD_TIME     35 /* Data signal input hold time */
+#define SPD_WRITE_RECOVERY_TIME             36 /* Write recovery time (tWR) */
 #define SPD_SPD_DATA_REVISION_CODE          62 /* SPD data revision code */
 #define SPD_CHECKSUM_FOR_BYTES_0_TO_62      63 /* Checksum for bytes 0-62 */
 #define SPD_MANUFACTURER_JEDEC_ID_CODE      64 /* Manufacturer's JEDEC ID code, per EIA/JEP106 (bytes 64-71) */
@@ -128,6 +129,11 @@
 #define SPD_CAS_LATENCY_3_0              0x10
 #define SPD_CAS_LATENCY_3_5              0x20
 #define SPD_CAS_LATENCY_4_0              0x40
+
+#define SPD_CAS_LATENCY_DDR2_3		(1 << 3)
+#define SPD_CAS_LATENCY_DDR2_4		(1 << 4)
+#define SPD_CAS_LATENCY_DDR2_5		(1 << 5)
+#define SPD_CAS_LATENCY_DDR2_6		(1 << 6)
 
 /* SPD_SUPPORTED_BURST_LENGTHS values. */
 #define SPD_BURST_LENGTH_1               1

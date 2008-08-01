@@ -98,7 +98,7 @@ SECTIONS
 	_estack = .;
         _heap = .;
         .heap . : {
-                /* Reserve 256K for the heap */
+                /* Reserve HEAP_SIZE bytes for the heap */
                 . = HEAP_SIZE ;
                 . = ALIGN(4);
         }

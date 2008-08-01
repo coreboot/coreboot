@@ -223,7 +223,7 @@ class romimage:
 		# init object files added by 'initobject' directive
 		self.initobjectrules = {}
 
-		# driver files added by 'drive' directive
+		# driver files added by 'driver' directive
 		self.driverrules = {}
 
 		# loader scripts added by 'ldscript' directive
@@ -2072,11 +2072,9 @@ def writeimagemakefile(image):
 		if (type  == 'S'):
 			# for .S, .o depends on .s
 			file.write("%s: %s.s\n" % (init[0], init[3]))
-        		file.write("\t@echo $(CC) ... -o $@ $<\n")
         		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
 			# and .s depends on .S
 			file.write("%s.s: %s\n" % (init[3], source))
-			file.write("\t@echo $(CPP) ... $< > $@\n")
 			# Note: next 2 lines are ONE output line!
         		file.write("\t$(CPP) $(CPPFLAGS) $< ")
 			file.write(">$@.new && mv $@.new $@\n")
@@ -2091,11 +2089,9 @@ def writeimagemakefile(image):
 		if (type  == 'S'):
 			# for .S, .o depends on .s
 			file.write("%s: %s.s\n" % (obj[0], obj[3]))
-        		file.write("\t@echo $(CC) ... -o $@ $<\n")
         		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
 			# and .s depends on .S
 			file.write("%s.s: %s\n" % (obj[3], source))
-			file.write("\t@echo $(CPP) ... $< > $@\n")
 			# Note: next 2 lines are ONE output line!
         		file.write("\t$(CPP) $(CPPFLAGS) $< ")
 			file.write(">$@.new && mv $@.new $@\n")

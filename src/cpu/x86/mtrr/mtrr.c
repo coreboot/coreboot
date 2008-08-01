@@ -352,7 +352,7 @@ void x86_setup_fixed_mtrrs(void)
 
         printk_debug("\n");
         /* Initialized the fixed_mtrrs to uncached */
-        printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n",
+        printk_debug("Setting fixed MTRRs(%d-%d) Type: UC\n",
 	        0, NUM_FIXED_RANGES);
         set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 

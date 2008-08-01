@@ -33,4 +33,7 @@ config BOARD_GIGABYTE_M57SLI
 
 endchoice
 
-source "mainboard/gigabyte/m57sli/Kconfig"
+config MAINBOARD_DIR
+	string
+	default gigabyte/m57sli
+	depends BOARD_GIGABYTE_M57SLI

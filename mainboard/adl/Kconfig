@@ -36,5 +36,8 @@ config BOARD_ADL_MSM800SEV
 
 endchoice
 
-source "mainboard/adl/msm800sev/Kconfig"
+config MAINBOARD_DIR
+	string
+	default adl/msm800sev
+	depends BOARD_ADL_MSM800SEV
 

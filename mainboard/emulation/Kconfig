@@ -37,5 +37,8 @@ config BOARD_EMULATION_QEMU_X86
 
 endchoice
 
-source "mainboard/emulation/qemu-x86/Kconfig"
+config MAINBOARD_DIR
+	string
+	default emulation/qemu-x86
+	depends BOARD_EMULATION_QEMU_X86
 

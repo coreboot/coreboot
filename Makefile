@@ -81,7 +81,7 @@ all: prepare prepare2 $(obj)/coreboot.rom
 	$(Q)printf "  DONE\n"
 
 ARCH:=$(shell echo $(CONFIG_ARCH))
-MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_NAME))
+MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_DIR))
 export MAINBOARDDIR
 
 COREBOOTINCLUDE    :=   -I$(src) -Iinclude \

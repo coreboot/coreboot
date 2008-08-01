@@ -47,5 +47,12 @@ config BOARD_ARTECGROUP_DBE62
 
 endchoice
 
-source "mainboard/artecgroup/dbe61/Kconfig"
-source "mainboard/artecgroup/dbe62/Kconfig"
+config MAINBOARD_DIR
+	string
+	default artecgroup/dbe61
+	depends BOARD_ARTECGROUP_DBE61
+
+config MAINBOARD_DIR
+	string
+	default artecgroup/dbe62
+	depends BOARD_ARTECGROUP_DBE62

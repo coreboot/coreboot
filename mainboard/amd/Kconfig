@@ -48,6 +48,13 @@ config BOARD_AMD_NORWICH
 
 endchoice
 
-source "mainboard/amd/db800/Kconfig"
-source "mainboard/amd/norwich/Kconfig"
+config MAINBOARD_DIR
+	string
+	default amd/db800
+	depends BOARD_AMD_DB800
+
+config MAINBOARD_DIR
+	string
+	default amd/norwich
+	depends BOARD_AMD_NORWICH
 

@@ -272,7 +272,7 @@ void compute_allocate_resource(
 	min_align = 0;
 	base = bridge->base;
 
-	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d\n", 
+	printk_spew("%s compute_allocate_resource %s: base: %08Lx size: %08Lx align: %d gran: %d\n", 
 		dev_path(bus->dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
@@ -312,7 +312,7 @@ void compute_allocate_resource(
 			align = min_align;
 		}
 
-		/* Propogate the resource alignment to the bridge register  */
+		/* Propagate the resource alignment to the bridge register  */
 		if (align > bridge->align) {
 			bridge->align = align;
 		}
@@ -325,10 +325,12 @@ void compute_allocate_resource(
 		if (bridge->limit > resource->limit) {
 			bridge->limit = resource->limit;
 		}
+#warning This heuristics should be replaced by real devices with fixed resources.
 		/* Artificially deny limits between DEVICE_MEM_HIGH and 0xffffffff */
 		if ((bridge->limit > DEVICE_MEM_HIGH) && (bridge->limit <= 0xffffffff)) {
 			bridge->limit = DEVICE_MEM_HIGH;
 		}
+
 		if (resource->flags & IORESOURCE_IO) {
 			/* Don't allow potential aliases over the
 			 * legacy pci expansion card addresses.
@@ -373,7 +375,7 @@ void compute_allocate_resource(
 	 */
 	bridge->size = round(base, bridge->gran) - bridge->base;
 
-	printk_spew("%s compute_allocate_%s: base: %08Lx size: %08Lx align: %d gran: %d done\n", 
+	printk_spew("%s compute_allocate_resource %s: base: %08Lx size: %08Lx align: %d gran: %d done\n", 
 		dev_path(bus->dev),
 		(bridge->flags & IORESOURCE_IO)? "io":
 		(bridge->flags & IORESOURCE_PREFETCH)? "prefmem" : "mem",
@@ -633,7 +635,7 @@ void dev_enumerate(void)
  * relocated to their final position and stored to the hardware.
  *
  * I/O resources start at DEVICE_IO_START and grow upward. MEM resources start
- * at DEVICE_MEM_START and grow downward.
+ * at DEVICE_MEM_HIGH and grow downward.
  *
  * Since the assignment is hierarchical we set the values into the dev_root
  * struct. 

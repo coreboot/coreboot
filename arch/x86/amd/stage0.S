@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 #include "../macros.h"
-#define CacheSize DCACHE_RAM_SIZE
-#define CacheBase DCACHE_RAM_BASE
+#define CacheSize CONFIG_CARSIZE
+#define CacheBase CONFIG_CARBASE
 #define MEM_TOPK 2048
 #define ASSEMBLY
 

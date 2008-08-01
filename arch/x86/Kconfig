@@ -90,6 +90,6 @@ config CARSIZE
 	hex
 	default 0x1000 if CPU_I586
 	default 0x8000 if CPU_AMD_GEODELX
-	default 0x08000 if CPU_AMD_K8
+	default 0x8000 if CPU_AMD_K8
 	help
 	  This option sets the size of the area used for CAR.

@@ -325,7 +325,7 @@ void compute_allocate_resource(
 		if (bridge->limit > resource->limit) {
 			bridge->limit = resource->limit;
 		}
-#warning This heuristics should be replaced by real devices with fixed resources.
+#warning This heuristic should be replaced by real devices with fixed resources.
 		/* Artificially deny limits between DEVICE_MEM_HIGH and 0xffffffff */
 		if ((bridge->limit > DEVICE_MEM_HIGH) && (bridge->limit <= 0xffffffff)) {
 			bridge->limit = DEVICE_MEM_HIGH;

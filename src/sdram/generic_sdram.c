@@ -52,7 +52,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	}
 
 	/* Now that everything is setup enable the SDRAM.
-	 * Some chipsets do the work for use while on others 
+	 * Some chipsets do the work for us while on others 
 	 * we need to it by hand.
 	 */
 	print_debug("Ram3\r\n");

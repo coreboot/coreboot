@@ -36,7 +36,7 @@ static void vga_init(void)
 	// these are globals
 	vga_line = 0;
 	vga_col = 0;
-	vidmem = (unsigned char *) VIDBUFFER;
+	vidmem = (char *) VIDBUFFER;
 	
 	// mainboard or chip specific init routines
 	// also loads font

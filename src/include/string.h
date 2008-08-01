@@ -4,12 +4,12 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-extern void *memcpy(void *dest, const void *src, size_t n);
-extern void *memmove(void *dest, const void *src, size_t n);
-extern void *memset(void *s, int c, size_t n);
-extern int memcmp(const void *s1, const void *s2, size_t n);
-
-extern int sprintf(char * buf, const char *fmt, ...);
+void *memcpy(void *dest, const void *src, size_t n);
+void *memmove(void *dest, const void *src, size_t n);
+void *memset(void *s, int c, size_t n);
+int memcmp(const void *s1, const void *s2, size_t n);
+void *malloc(size_t size);
+int sprintf(char * buf, const char *fmt, ...);
 
 // yes, linux has fancy ones. We don't care. This stuff gets used 
 // hardly at all. And the pain of including those files is just too high.

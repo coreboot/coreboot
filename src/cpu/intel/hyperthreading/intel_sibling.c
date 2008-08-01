@@ -48,7 +48,6 @@ void intel_sibling_init(device_t cpu)
 	for(i = 1; i < siblings; i++) {
 		struct device_path cpu_path;
 		device_t new;
-		unsigned long count;
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.u.apic.apic_id = cpu->path.u.apic.apic_id + i;

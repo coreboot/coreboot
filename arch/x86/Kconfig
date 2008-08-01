@@ -48,6 +48,14 @@ config CPU_AMD_GEODELX
 	  arch/x86/Makefile for more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
+config CPU_AMD_K8
+	boolean
+	help
+	  CPU type. At the moment this option selects the reset vector and
+	  Cache-as-RAM (CAR) implementation for a mainboard. See
+	  arch/x86/Makefile for more hints on possible values.
+	  It is usually set in mainboard/*/Kconfig.
+
 config OPTION_TABLE
 	boolean
 	help
@@ -74,6 +82,7 @@ config CARBASE
 	hex
 	default 0x8f000 if CPU_I586
 	default 0x80000 if CPU_AMD_GEODELX
+	default 0xc8000 if CPU_AMD_K8
 	help
 	  This option sets the base address of the area used for CAR.
 
@@ -81,5 +90,6 @@ config CARSIZE
 	hex
 	default 0x1000 if CPU_I586
 	default 0x8000 if CPU_AMD_GEODELX
+	default 0x08000 if CPU_AMD_K8
 	help
 	  This option sets the size of the area used for CAR.

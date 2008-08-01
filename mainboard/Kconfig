@@ -42,6 +42,11 @@ config VENDOR_ARTECGROUP
 	help
 	  Select this option for various systems from the Artec Group.
 
+config VENDOR_GIGABYTE
+	bool "Gigabyte"
+	help
+	  Select this option for various systems from Gigabyte
+
 config VENDOR_EMULATION
 	bool "Emulated systems"
 	help
@@ -58,6 +63,7 @@ source "mainboard/adl/Kconfig"
 source "mainboard/amd/Kconfig"
 source "mainboard/artecgroup/Kconfig"
 source "mainboard/emulation/Kconfig"
+source "mainboard/gigabyte/Kconfig"
 source "mainboard/pcengines/Kconfig"
 
 choice

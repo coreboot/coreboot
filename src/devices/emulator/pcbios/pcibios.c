@@ -7,9 +7,9 @@
 
 #include "pcibios.h"
 
-int pcibios_handler()
+int pcibios_handler(void)
 {
-	int i, ret = 0;
+	int  ret = 0;
 	struct device *dev = 0;
 
 	switch (X86_AX) {

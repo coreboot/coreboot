@@ -7,6 +7,8 @@
 
 #include <x86emu/x86emu.h>
 
+#include "pcbios/pcibios.h"
+
 #define MEM_WB(where, what) wrb(where, what)
 #define MEM_WW(where, what) wrw(where, what)
 #define MEM_WL(where, what) wrl(where, what)
@@ -21,6 +23,10 @@ void x_outb(u16 port, u8 val);
 void x_outw(u16 port, u16 val);
 u32 x_inl(u16 port);
 void x_outl(u16 port, u32 val);
+
+
+// sys.c
+void X86EMU_setMemBase(void *base, size_t size);
 
 /* general software interrupt handler */
 u32 getIntVect(int num)

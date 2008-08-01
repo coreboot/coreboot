@@ -25,4 +25,7 @@ enum {
 	SET_FAILED		= 0x88,
 	BUFFER_TOO_SMALL	= 0x89
 };
+
+int pcibios_handler(void);
+
 #endif /* PCI_BIOS_H */

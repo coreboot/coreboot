@@ -647,6 +647,7 @@ void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 void pci_dev_init(struct device *dev)
 {
 #if CONFIG_PCI_ROM_RUN == 1 || CONFIG_VGA_ROM_RUN == 1
+	void run_bios(struct device * dev, unsigned long addr);
 	struct rom_header *rom, *ram;
 
 #if CONFIG_PCI_ROM_RUN != 1
@@ -666,7 +667,7 @@ void pci_dev_init(struct device *dev)
 	if (ram == NULL)
 		return;
 
-	run_bios(dev, ram);
+	run_bios(dev, (unsigned long)ram);
 
 #if CONFIG_CONSOLE_VGA == 1
 	/* vga_inited is a trigger of the VGA console code. */
@@ -1070,7 +1071,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 	}
 	post_code(0x25);
 
-	/* Die if any leftover Static devices are are found.  
+	/* Die if any left over static devices are are found.  
 	 * There's probably a problem in the Config.lb.
 	*/
 	if(old_devices) {
@@ -1078,7 +1079,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 		for(left = old_devices; left; left = left->sibling) {
 			printk_err("%s\n", dev_path(left));
 		}
-		die("PCI: Left over static devices.  Check your Config.lb\n");
+		printk_warning("PCI: Left over static devices.  Check your mainboard Config.lb\n");
 	}
 
 	/* For all children that implement scan_bus (i.e. bridges)

@@ -1,6 +1,5 @@
 uses HAVE_FALLBACK_BOOT
 uses CONFIG_USE_INIT
-uses CONFIG_USE_PRINTK_IN_CAR
 uses CONFIG_USBDEBUG_DIRECT
 
 object clog2.o
@@ -23,9 +22,7 @@ object version.o
 makedefine .PHONY : version.o
 
 if CONFIG_USE_INIT
-#	if CONFIG_USE_PRINTK_IN_CAR
 	initobject uart8250.c
-#	end
 	initobject memset.o
 	initobject memcpy.o
 	initobject memcmp.o

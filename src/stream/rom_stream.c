@@ -80,8 +80,8 @@ int stream_init(void)
 #if _RAMBASE<0x00100000
 	olen = *(unsigned int *)dest;
 #if (CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1)
-	if((dest < 0xa0000) && ((dest+olen)>0xa0000)) {
-		dest = (CONFIG_LB_MEM_TOPK<<10);
+	if((dest < (unsigned char *)0xa0000) && ((dest+olen)>(unsigned char *)0xa0000)) {
+		dest = (unsigned char *)(CONFIG_LB_MEM_TOPK<<10);
 	}
 #endif
         if((dest < (unsigned char *) 0xf0000) && ((dest+olen)> (unsigned char *)0xf0000)) { // coreboot tables etc

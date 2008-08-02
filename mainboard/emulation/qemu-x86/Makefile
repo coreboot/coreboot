@@ -28,10 +28,10 @@ STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o
 # directory and is built from what was auto.c in v2.
 #
 
-INITRAM_OBJ = $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
+INITRAM_SRC = $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 		$(src)/mainboard/$(MAINBOARDDIR)/initram_printktest.c
 
-STAGE2_MAINBOARD_OBJ = vga.o
+STAGE2_MAINBOARD_SRC = vga.c
 
 #
 # VPD or SIP ROM or... how does NVIDIA call it?

@@ -24,6 +24,6 @@ $(obj)/device/%.o: $(src)/device/%.c
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 
-STAGE2_DEVICE_OBJ = device.o device_util.o root_device.o \
-		    pci_device.o pci_ops.o pci_rom.o pnp_device.o pnp_raw.o
+STAGE2_DEVICE_SRC = device.c device_util.c root_device.c \
+		    pci_device.c pci_ops.c pci_rom.c pnp_device.c pnp_raw.c
 

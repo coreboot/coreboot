@@ -24,6 +24,6 @@ STAGE0_CHIPSET_OBJ += $(obj)/superio/ite/it8716f/stage1.o
 STAGE0_CHIPSET_OBJ += $(obj)/device/pnp_raw.o
 
 # Always add to variables, as there could be more than one Super I/O.
-STAGE2_CHIPSET_OBJ += $(obj)/superio/ite/it8716f/superio.o
+STAGE2_CHIPSET_SRC += $(src)/superio/ite/it8716f/superio.c
 
 endif

@@ -178,26 +178,31 @@ $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 # TODO: This should be compressed with the default compressor.
 #
 
-STAGE2_LIB_OBJ       = stage2.o clog2.o mem.o tables.o delay.o \
-		       compute_ip_checksum.o string.o
+STAGE2_LIB_SRC       = stage2.c clog2.c mem.c tables.c delay.c \
+		       compute_ip_checksum.c string.c
 
-STAGE2_ARCH_X86_OBJ  = archtables.o coreboot_table.o udelay_io.o
-STAGE2_ARCH_X86_OBJ += pci_ops_auto.o pci_ops_conf1.o pci_ops_conf2.o
-STAGE2_ARCH_X86_OBJ += keyboard.o i8259.o isa-dma.o
+STAGE2_ARCH_X86_SRC  = archtables.c coreboot_table.c udelay_io.c
+STAGE2_ARCH_X86_SRC += pci_ops_auto.c pci_ops_conf1.c pci_ops_conf2.c
+STAGE2_ARCH_X86_SRC += keyboard.c i8259.c isa-dma.c
 
 ifeq ($(CONFIG_PIRQ_TABLE),y)
-STAGE2_ARCH_X86_OBJ += pirq_routing.o
+STAGE2_ARCH_X86_SRC += pirq_routing.c
 endif
 
 STAGE2_DYNAMIC_OBJ   = statictree.o
 
-STAGE2_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE2_LIB_OBJ)) \
-	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE2_ARCH_X86_OBJ)) \
-	      $(patsubst %,$(obj)/device/%,$(STAGE2_DEVICE_OBJ)) \
-	      $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_MAINBOARD_OBJ)) \
-	      $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_DYNAMIC_OBJ))
+STAGE2_SRC := $(patsubst %,$(src)/lib/%,$(STAGE2_LIB_SRC)) \
+	      $(patsubst %,$(src)/arch/x86/%,$(STAGE2_ARCH_X86_SRC)) \
+	      $(patsubst %,$(src)/device/%,$(STAGE2_DEVICE_SRC)) \
+	      $(patsubst %,$(src)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_MAINBOARD_SRC))
 
-STAGE2_OBJ += $(STAGE2_CHIPSET_OBJ)
+STAGE2_SRC += $(STAGE2_CHIPSET_SRC)
+
+STAGE2_OBJ := $(patsubst $(src)/%.c,$(obj)/%.o,$(STAGE2_SRC))
+
+# This one is special because the static tree object ends up in the mainboard
+# dir of the object tree.
+STAGE2_OBJ += $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_DYNAMIC_OBJ))
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN),y)
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
@@ -214,7 +219,7 @@ endif
 
 STAGE2_OBJ_NEEDED = $(filter-out $(STAGE0_OBJ), $(STAGE2_OBJ))
 
-$(obj)/coreboot.stage2 $(obj)/coreboot.stage2.map: $(obj)/stage0.o $(STAGE2_OBJ_NEEDED)
+$(obj)/coreboot.stage2 $(obj)/coreboot.stage2.map: $(obj)/stage0.o $(STAGE2_OBJ_NEEDED) $(STAGE2_SRC)
 	$(Q)# leave a .o with full symbols in it for debugging.
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -R $(obj)/stage0.o -Ttext 0x2000 --entry=stage2 \
@@ -260,9 +265,9 @@ $(obj)/arch/x86/amd/stage0.o: $(src)/arch/x86/amd/stage0.S
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
-$(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_OBJ)
+$(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_SRC)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
-	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c -combine $(INITRAM_OBJ) -o $(obj)/coreboot.initram_partiallylinked.o
+	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c -combine $(INITRAM_SRC) -o $(obj)/coreboot.initram_partiallylinked.o
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \

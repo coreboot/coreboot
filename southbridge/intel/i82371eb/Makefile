@@ -20,6 +20,6 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82371EB),y)
 
-STAGE2_CHIPSET_OBJ += $(obj)/southbridge/intel/i82371eb/i82371eb.o
+STAGE2_CHIPSET_SRC += $(src)/southbridge/intel/i82371eb/i82371eb.c
 
 endif

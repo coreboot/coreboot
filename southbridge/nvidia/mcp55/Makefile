@@ -21,10 +21,10 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55),y)
 
-STAGE2_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/mcp55.o
+STAGE2_CHIPSET_SRC += $(src)/southbridge/nvidia/mcp55/mcp55.c
 
 ifeq ($(CONFIG_PIRQ_TABLE),y)
-STAGE2_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/irq_tables.o
+STAGE2_CHIPSET_SRC += $(src)/southbridge/nvidia/mcp55/irq_tables.c
 endif
 
 STAGE0_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/stage1.o

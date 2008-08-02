@@ -21,9 +21,9 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_AMD_GEODELX),y)
 
-STAGE2_CHIPSET_OBJ += $(obj)/northbridge/amd/geodelx/geodelx.o \
-		      $(obj)/northbridge/amd/geodelx/vsmsetup.o \
-		      $(obj)/util/x86emu/vm86_gdt.o \
-		      $(obj)/northbridge/amd/geodelx/grphinit.o
+STAGE2_CHIPSET_SRC += $(src)/northbridge/amd/geodelx/geodelx.c \
+		      $(src)/northbridge/amd/geodelx/vsmsetup.c \
+		      $(src)/util/x86emu/vm86_gdt.c \
+		      $(src)/northbridge/amd/geodelx/grphinit.c
 
 endif

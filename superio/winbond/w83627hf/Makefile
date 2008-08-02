@@ -25,6 +25,6 @@ STAGE0_CHIPSET_OBJ += $(obj)/superio/winbond/w83627hf/stage1.o
 STAGE0_CHIPSET_OBJ += $(obj)/device/pnp_raw.o
 
 # Always add to variables, as there could be more than one Super I/O.
-STAGE2_CHIPSET_OBJ += $(obj)/superio/winbond/w83627hf/superio.o
+STAGE2_CHIPSET_SRC += $(src)/superio/winbond/w83627hf/superio.c
 
 endif

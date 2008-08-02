@@ -12,12 +12,14 @@
 static void copy_and_run(unsigned cpu_reset)
 {
 	uint8_t *src, *dst; 
+#if !CONFIG_COMPRESS
 	unsigned long dst_len;
+#endif
         unsigned long ilen, olen;
 
-	print_debug("Copying coreboot to RAM.\r\n");
 
 #if !CONFIG_COMPRESS 
+	print_debug("Copying coreboot to RAM.\r\n");
 	__asm__ volatile (
 		"leal _liseg, %0\n\t"
 		"leal _iseg, %1\n\t"
@@ -27,6 +29,7 @@ static void copy_and_run(unsigned cpu_reset)
 	);
 	memcpy(src, dst, dst_len);
 #else 
+	print_debug("Uncompressing coreboot to RAM.\r\n");
 
         __asm__ volatile (
 	        "leal _liseg, %0\n\t"
@@ -35,11 +38,11 @@ static void copy_and_run(unsigned cpu_reset)
         );
 
 #if CONFIG_USE_INIT		
-	printk_debug("src=%08x\r\n",src); 
-	printk_debug("dst=%08x\r\n",dst);
+	printk_spew("src=%08x\r\n",src); 
+	printk_spew("dst=%08x\r\n",dst);
 #else
-        print_debug("src="); print_debug_hex32(src); print_debug("\r\n");
-        print_debug("dst="); print_debug_hex32(dst); print_debug("\r\n");
+        print_spew("src="); print_spew_hex32((uint32_t)src); print_spew("\r\n");
+        print_spew("dst="); print_spew_hex32((uint32_t)dst); print_spew("\r\n");
 #endif
 	
 //	dump_mem(src, src+0x100);
@@ -49,9 +52,9 @@ static void copy_and_run(unsigned cpu_reset)
 #endif
 //	dump_mem(dst, dst+0x100);
 #if CONFIG_USE_INIT
-	printk_debug("linxbios_ram.bin length = %08x\r\n", olen);
+	printk_spew("linxbios_ram.bin length = %08x\r\n", olen);
 #else
-	print_debug("linxbios_ram.bin length = "); print_debug_hex32(olen); print_debug("\r\n");
+	print_spew("linxbios_ram.bin length = "); print_spew_hex32(olen); print_spew("\r\n");
 #endif
 	print_debug("Jumping to coreboot.\r\n");
 

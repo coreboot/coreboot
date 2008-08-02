@@ -22,7 +22,7 @@
 #include <lib.h>
 #include <console.h>
 #include <msr.h>
-#include <amd_k8.h>
+#include <amd/k8/k8.h>
 
 /**
  * Disable Cache As RAM (CAR) after memory is setup.

@@ -126,7 +126,7 @@ ifeq ($(CONFIG_CPU_AMD_GEODELX),y)
 else
 ifeq ($(CONFIG_CPU_AMD_K8),y)
 	STAGE0_CAR_OBJ = amd/stage0.o
-	STAGE0_ARCH_X86_OBJ += amdk8/stage1.o
+	STAGE0_ARCH_X86_OBJ += amd/k8/stage1.o
 endif
 endif
 endif

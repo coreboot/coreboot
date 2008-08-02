@@ -51,7 +51,7 @@ struct flashchip flashchips[] = {
 	{"EON",		"EN29F002(A)(N)T",	EON_ID,		EN_29F002T,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"Fujitsu",	"MBM29F400TC",		FUJITSU_ID,	MBM29F400TC_STRANGE,	512,	64 * 1024,	TEST_UNTESTED,	probe_m29f400bt,	erase_m29f400bt,		write_coreboot_m29f400bt},
 	{"Intel",	"82802AB",		INTEL_ID,	173,			512,	64 * 1024,	TEST_OK_PREW,	probe_82802ab,		erase_82802ab,			write_82802ab},
-	{"Intel",	"82802AC",		INTEL_ID,	172,			1024,	64 * 1024,	TEST_UNTESTED,	probe_82802ab,		erase_82802ab,			write_82802ab},
+	{"Intel",	"82802AC",		INTEL_ID,	172,			1024,	64 * 1024,	TEST_OK_PREW,	probe_82802ab,		erase_82802ab,			write_82802ab},
 	{"Macronix",	"MX25L4005",		MX_ID,		MX_25L4005,		512,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L8005",		MX_ID,		MX_25L8005,		1024,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L1605",		MX_ID,		MX_25L1605,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},

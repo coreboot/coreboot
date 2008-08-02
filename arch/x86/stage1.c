@@ -114,8 +114,9 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
 void __attribute__((stdcall)) stage1_main(u32 bist)
 {
 	int ret;
-	struct mem_file archive, result;
+	struct mem_file archive;
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
+	struct mem_file result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 #endif /* CONFIG_PAYLOAD_ELF_LOADER */
 	void *entry;

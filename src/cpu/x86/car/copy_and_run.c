@@ -52,9 +52,9 @@ static void copy_and_run(unsigned cpu_reset)
 #endif
 //	dump_mem(dst, dst+0x100);
 #if CONFIG_USE_INIT
-	printk_spew("linxbios_ram.bin length = %08x\r\n", olen);
+	printk_spew("coreboot_ram.bin length = %08x\r\n", olen);
 #else
-	print_spew("linxbios_ram.bin length = "); print_spew_hex32(olen); print_spew("\r\n");
+	print_spew("coreboot_ram.bin length = "); print_spew_hex32(olen); print_spew("\r\n");
 #endif
 	print_debug("Jumping to coreboot.\r\n");
 

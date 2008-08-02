@@ -92,7 +92,7 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
  *     pci1234[0] will record the south bridge link and bus range
  *     pci1234[i] will record HT chain i.
  *
- * For example, on the Tyan S2885 linxbios_ram will put the AMD8151 chain (HT
+ * For example, on the Tyan S2885 coreboot_ram will put the AMD8151 chain (HT
  * link 0) into the register 0xE0, and the AMD8131/8111 HT chain into the
  * register 0xE4.
  *

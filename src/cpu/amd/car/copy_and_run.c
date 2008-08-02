@@ -23,9 +23,9 @@ static void copy_and_run(void)
 	uint8_t *src, *dst; 
         unsigned long ilen, olen;
 
-	print_debug("Copying coreboot to RAM.\r\n");
 
 #if !CONFIG_COMPRESS 
+	print_debug("Copying coreboot to RAM.\r\n");
 	__asm__ volatile (
 		"leal _liseg, %0\n\t"
 		"leal _iseg, %1\n\t"
@@ -35,6 +35,7 @@ static void copy_and_run(void)
 	);
 	memcpy(dst, src, olen);
 #else 
+	print_debug("Uncompressing coreboot to RAM.\r\n");
 
         __asm__ volatile (
 	        "leal _liseg, %0\n\t"
@@ -48,12 +49,12 @@ static void copy_and_run(void)
 //	dump_mem(src, src+0x100);
 
 	olen = unrv2b(src, dst, &ilen);
-	print_debug_cp_run("linxbios_ram.nrv2b length = ", ilen);
+	print_debug_cp_run("coreboot_ram.nrv2b length = ", ilen);
 
 #endif
 //	dump_mem(dst, dst+0x100);
 
-	print_debug_cp_run("linxbios_ram.bin   length = ", olen);
+	print_debug_cp_run("coreboot_ram.bin   length = ", olen);
 
 	print_debug("Jumping to coreboot.\r\n");
 
@@ -98,12 +99,12 @@ static void copy_and_run_ap_code_in_car(unsigned ret_addr)
 //      dump_mem(src, src+0x100);
 
         olen = unrv2b(src, dst, &ilen);
-//        print_debug_cp_run("linxbios_apc.nrv2b length = ", ilen);
+//        print_debug_cp_run("coreboot_apc.nrv2b length = ", ilen);
 
 #endif
 //      dump_mem(dst, dst+0x100);
 
-//        print_debug_cp_run("linxbios_apc.bin   length = ", olen);
+//        print_debug_cp_run("coreboot_apc.bin   length = ", olen);
 
 //        print_debug("Jumping to coreboot AP code in CAR.\r\n");
 

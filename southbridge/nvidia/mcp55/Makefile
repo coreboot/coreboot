@@ -19,24 +19,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_GIGABYTE
+ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55),y)
 
-config BOARD_GIGABYTE_M57SLI
-	bool "M57SLI"
-	select ARCH_X86
-	select OPTION_TABLE
-	select CPU_AMD_K8
-	select NORTHBRIDGE_AMD_K8
-#	select SOUTHBRIDGE_NVIDIA_MCP55
-	select SUPERIO_ITE_IT8716F
-	help
-	  Gigabyte M57SLI
+STAGE2_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/mcp55.o
 
-endchoice
+ifeq ($(CONFIG_PIRQ_TABLE),y)
+STAGE2_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/irq_tables.o
+endif
 
-config MAINBOARD_DIR
-	string
-	default gigabyte/m57sli
-	depends BOARD_GIGABYTE_M57SLI
+STAGE0_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/stage1.o
+
+endif

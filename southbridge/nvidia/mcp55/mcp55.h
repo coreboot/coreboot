@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2007 AMD
+ * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +19,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/{
-	mainboard_vendor = "Gigabyte";
-	mainboard_name = "M57SLI";
-	cpus { };
-	apic@0 {
-	};
-	domain@0 {
-		pci@18,0 {
-			/config/("northbridge/amd/k8/pci");
-		};
-	};
-};
+#ifndef MCP55_H
+#define MCP55_H
+
+void mcp55_enable(device_t dev);
+
+#endif /* MCP55_H */

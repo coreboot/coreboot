@@ -155,4 +155,33 @@
 #define PCI_VENDOR_ID_CIRRUS			0x1013
 #define PCI_DEVICE_ID_CIRRUS_5446		0x00b8	/* Used by QEMU */
 
+#define PCI_VENDIR_ID_NVIDIA                    0x10de
+/*
+0360MCP55 LPC Bridge
+0361MCP55 LPC Bridge
+0362MCP55 LPC Bridge
+0363MCP55 LPC Bridge
+0364MCP55 LPC Bridge
+0365MCP55 LPC Bridge
+0366MCP55 LPC Bridge
+0367MCP55 LPC Bridge
+0368MCP55 SMBus
+0369MCP55 Memory Controller
+036aMCP55 Memory Controller
+036bMCP55 SMU
+036cMCP55 USB Controller
+036dMCP55 USB Controller
+036eMCP55 IDE
+0370MCP55 PCI bridge
+0371MCP55 High Definition Audio
+0372MCP55 Ethernet
+0373MCP55 Ethernet
+0374MCP55 PCI Express bridge
+0375MCP55 PCI Express bridge
+0376MCP55 PCI Express bridge
+0377MCP55 PCI Express bridge
+0378MCP55 PCI Express bridge
+037aMCP55 Memory Controller
+*/
+#define PCI_DEVICE_ID_NVIDIA_MCP55_PCIBRIDGE 0x370
 #endif /* DEVICE_PCI_IDS_H */

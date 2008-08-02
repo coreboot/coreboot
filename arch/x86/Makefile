@@ -248,10 +248,13 @@ $(obj)/arch/x86/geodelx/stage0.o: $(src)/arch/x86/geodelx/stage0.S
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AS) $(obj)/arch/x86/stage0_asm.s -o $@
 
+
+# NOTE HACK. Stefan will fix this :-)
 $(obj)/arch/x86/amd/stage0.o: $(src)/arch/x86/amd/stage0.S
 	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -E $(COREBOOTINCLUDE) $< \
+		-I $(src)/include/arch/x86/amd/k8 \
 		-o $(obj)/arch/x86/stage0_asm.s -DBOOTBLK=0x1f00 \
 		-DRESRVED=0xf0 -DDATE=\"`date +%Y/%m/%d`\"
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"

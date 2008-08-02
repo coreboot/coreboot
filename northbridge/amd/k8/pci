@@ -18,15 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/{
-	mainboard_vendor = "Gigabyte";
-	mainboard_name = "M57SLI";
-	cpus { };
-	apic@0 {
-	};
-	domain@0 {
-		pci@18,0 {
-			/config/("northbridge/amd/k8/pci");
-		};
-	};
+{
+	device_operations = "k8_ops";
 };

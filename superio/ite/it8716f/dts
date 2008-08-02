@@ -1,0 +1,80 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2008 Peter Stuge <peter@stuge.se>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+{
+	/* Floppy */
+	floppydev = "0x0";
+	floppyenable = "0";
+	floppyio = "0x3f0";
+	floppyirq = "0x60";
+	floppydrq = "0x02";
+
+	/* COM1 */
+	com1dev = "1";
+	com1enable = "0";
+	com1io = "0x3f8";
+	com1irq = "4";
+
+	/* COM2 */
+	com2dev = "2";
+	com2enable = "0";
+	com2io = "0x2f8";
+	com2irq = "3";
+
+	/* Parallel port */
+	ppdev = "3";
+	ppenable = "0";
+	ppio = "0x378";
+	ppirq = "7";
+
+	/* Environment controller */
+	ecdev = "4";
+	ecenable = "0";
+
+	/* Keyboard */
+	kbdev = "5";
+	kbenable = "0";
+	kbio = "0x60";
+	kbio2 = "0x62";
+	kbirq = "1";
+	kbirq2 = "12";
+
+	/* Mouse */
+	mousedev = "6";
+	mouseenable = "0";
+
+	/* GPIO */
+	gpiodev = "7";
+	gpioenable = "0";
+
+	/* MIDI port */
+	mididev = "8";
+	midienable = "0";
+
+	/* Game port */
+	gamedev = "9";
+	gameenable = "0";
+	gameio = "0x220";
+	gameio2 = "0x400";
+	gameirq = "9";
+
+	/* Consumer IR */
+	cirdev = "0xa";
+	cirenable = "0";
+};

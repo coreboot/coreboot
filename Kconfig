@@ -86,6 +86,8 @@ config SUPERIO_WINBOND_W83627HF
 	boolean
 config SUPERIO_FINTEK_F71805F
 	boolean
+config SUPERIO_ITE_IT8716F
+	boolean
 
 # Source all northbridge/southbridge/superio Kconfig files:
 source northbridge/intel/i440bxemulation/Kconfig

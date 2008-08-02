@@ -1,6 +1,7 @@
 /*
 	2005.12 yhlu add coreboot_ram cross the vga font buffer handling
 	2005.12 yhlu add _RAMBASE above 1M support for SMP
+	2008.05 stepan add support for going back to sipi wait state
 */
 
 #include <cpu/x86/lapic.h>
@@ -16,6 +17,7 @@
 
 #if CONFIG_SMP == 1
 
+#if _RAMBASE >= 0x100000
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors 
  * will return 0, meaning no CPU. 
@@ -27,6 +29,7 @@ static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 {
 	return (unsigned long)orig_start_eip & 0xffff; // 16 bit to avoid 0xa0000 
 }
+#endif
 
 static void copy_secondary_start_to_1m_below(void) 
 {
@@ -277,9 +280,73 @@ int start_cpu(device_t cpu)
 	return result;
 }
 
+#if CONFIG_AP_IN_SIPI_WAIT == 1
+/**
+ * Normally this function is defined in lapic.h as an always inline function
+ * that just keeps the CPU in a hlt() loop. This does not work on all CPUs.
+ * I think all hyperthreading CPUs might need this version, but I could only
+ * verify this on the Intel Core Duo
+ */
+void stop_this_cpu(void)
+{
+	int timeout;
+	unsigned long send_status;
+	unsigned long lapicid;
+
+	lapicid = lapic_read(LAPIC_ID) >> 24;
+
+	printk_debug("CPU %d going down...\n", lapicid);
+
+	/* send an LAPIC INIT to myself */
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid));
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT | LAPIC_DM_INIT);
+
+	/* wait for the ipi send to finish */
+#if 0
+	// When these two printk_spew calls are not removed, the
+	// machine will hang when log level is SPEW. Why?
+	printk_spew("Waiting for send to finish...\n");
+#endif
+	timeout = 0;
+	do {
+#if 0
+		printk_spew("+");
+#endif
+		udelay(100);
+		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+	} while (send_status && (timeout++ < 1000));
+	if (timeout >= 1000) {
+		printk_err("timed out\n");
+	}
+	mdelay(10);
+
+	printk_spew("Deasserting INIT.\n");
+	/* Deassert the LAPIC INIT */
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid));	
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
+
+	printk_spew("Waiting for send to finish...\n");
+	timeout = 0;
+	do {
+		printk_spew("+");
+		udelay(100);
+		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
+	} while (send_status && (timeout++ < 1000));
+	if (timeout >= 1000) {
+		printk_err("timed out\n");
+	}
+
+	while(1) {
+		hlt();
+	}
+}
+#endif
+
 /* C entry point of secondary cpus */
 void secondary_cpu_init(void)
 {
+	unsigned long cpunum;
+
 	atomic_inc(&active_cpus);
 #if SERIAL_CPU_INIT == 1
   #if CONFIG_MAX_CPUS>2
@@ -294,6 +361,7 @@ void secondary_cpu_init(void)
 #endif
 
 	atomic_dec(&active_cpus);
+
 	stop_this_cpu();
 }
 
@@ -356,7 +424,6 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		if (!cpu->initialized) {
 			printk_err("CPU 0x%02x did not initialize!\n", 
 				cpu->path.u.apic.apic_id);
-#warning "FIXME do I need a mainboard_cpu_fixup function?"
 		}
 	}
 	printk_debug("All AP CPUs stopped\n");

@@ -51,6 +51,11 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
 	return lapic_read(LAPIC_ID) >> 24;
 }
 
+
+#if CONFIG_AP_IN_SIPI_WAIT != 1
+/* If we need to go back to sipi wait, we use the long non-inlined version of
+ * this function in lapic_cpu_init.c
+ */
 static inline __attribute__((always_inline)) void stop_this_cpu(void)
 {
 
@@ -59,6 +64,7 @@ static inline __attribute__((always_inline)) void stop_this_cpu(void)
 		hlt();
 	}
 }
+#endif
 
 #if ! defined (__ROMCC__)
 
@@ -98,7 +104,7 @@ static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int siz
 }
 
 
-extern inline void lapic_write_atomic(unsigned long reg, unsigned long v)
+static inline void lapic_write_atomic(unsigned long reg, unsigned long v)
 {
 	xchg((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg), v);
 }

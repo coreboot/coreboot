@@ -574,6 +574,11 @@ define CONFIG_LOGICAL_CPUS
 	export always
 	comment "Should multiple cpus per die be enabled?"
 end
+define CONFIG_AP_IN_SIPI_WAIT
+	default 0
+	export always
+	comment "Should application processors go to SIPI wait state after initialization? (Required for Intel Core Duo)"
+end
 define HAVE_MP_TABLE
 	default none
 	export used

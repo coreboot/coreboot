@@ -22,6 +22,6 @@
 #ifndef MCP55_H
 #define MCP55_H
 
-void mcp55_enable(device_t dev);
+
 
 #endif /* MCP55_H */

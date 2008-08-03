@@ -21,32 +21,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <console/console.h>
+#include <console.h>
 
-#include <arch/io.h>
+#include <io.h>
 
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
 #include "mcp55.h"
 
-static uint32_t final_reg;
+static u32 final_reg;
 
-static device_t find_lpc_dev( device_t dev,  unsigned devfn)
+static struct device *find_lpc_dev( struct device *dev,  unsigned devfn)
 {
 
-	device_t lpc_dev;
+	struct device *lpc_dev;
 
 	lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
 
 	if ( !lpc_dev ) return lpc_dev;
-
-	if ((lpc_dev->vendor != PCI_VENDOR_ID_NVIDIA) || (
-		(lpc_dev->device < PCI_DEVICE_ID_NVIDIA_MCP55_LPC) ||
-		(lpc_dev->device > PCI_DEVICE_ID_NVIDIA_MCP55_PRO)
+	/* it had better be a PCI device */
+	if ( lpc_dev->id.type != DEVICE_ID_PCI)
+	  return lpc_dev;
+	/* the range makes it hard to use the library function. Sorry. 
+	 * I realize this is not pretty. It would be nice if we could 
+	 * use anonymous unions. 
+	 */
+	if ((lpc_dev->id.u.pci.vendor != PCI_VENDOR_ID_NVIDIA) || (
+		(lpc_dev->id.u.pci.device < PCI_DEVICE_ID_NVIDIA_MCP55_LPC) ||
+		(lpc_dev->id.u.pci.device > PCI_DEVICE_ID_NVIDIA_MCP55_PRO)
 		) ) {
-			uint32_t id;
+			u32 id;
 			id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
 			if ( (id < (PCI_VENDOR_ID_NVIDIA | (PCI_DEVICE_ID_NVIDIA_MCP55_LPC << 16))) ||
 				(id > (PCI_VENDOR_ID_NVIDIA | (PCI_DEVICE_ID_NVIDIA_MCP55_PRO << 16)))
@@ -58,30 +62,31 @@ static device_t find_lpc_dev( device_t dev,  unsigned devfn)
 	return lpc_dev;
 }
 
-static void mcp55_enable(device_t dev)
+static void mcp55_enable(struct device *dev)
 {
-	device_t lpc_dev = 0;
-	device_t sm_dev = 0;
+	struct device *lpc_dev = 0;
+	struct device *sm_dev = 0;
 	unsigned index = 0;
 	unsigned index2 = 0;
-	uint32_t reg_old, reg;
-	uint8_t byte;
+	u32 reg_old, reg;
+	u8 byte;
 	unsigned deviceid;
 	unsigned vendorid;
 
 	struct southbridge_nvidia_mcp55_config *conf;
-	conf = dev->chip_info;
+	conf = dev->device_configuration;
 	int i;
 
 	unsigned devfn;
 
-	if(dev->device==0x0000) {
+	/* sorry. Again, anonymous unions etc. would make this easier. */
+	if(dev->id.u.pci.device==0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid>>16) & 0xffff;
 //		vendorid &= 0xffff;
 	} else {
 //		vendorid = dev->vendor;
-		deviceid = dev->device;
+		deviceid = dev->id.u.pci.device;
 	}
 
 	devfn = (dev->path.u.pci.devfn) & ~7;
@@ -245,7 +250,7 @@ static void mcp55_enable(device_t dev)
 struct device_operations nvidia_ops = {
 	.id = {.type = DEVICE_ID_PCI,
 		.u = {.pci = {.vendor = PCI_VENDOR_ID_NVIDIA,
-			      .device = PCI_DEVICE_ID_NVIDIA_MCP55_PCIBRIDGE}}},
+			      .device = PCI_DEVICE_ID_NVIDIA_MCP55_PCI}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= pci_dev_read_resources,

@@ -19,6 +19,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <console.h>
+#include <io.h>
+#include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <device/pci_ops.h>
+#include <amd/k8/k8.h>
+#include "mcp55.h"
+
+#warning fix disgusting define of MCP55_NUM it is mainboard dependent
+#define MCP55_NUM 1
 static int set_ht_link_mcp55(u8 ht_c_num)
 {
 	unsigned vendorid = 0x10de;
@@ -107,7 +118,7 @@ static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *d
 	for(j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_offset(ctrl_devport_conf,
 			sizeof(ctrl_devport_conf)/sizeof(ctrl_devport_conf[0]),
-			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
+			PCI_BDF(busn[j], devn[j], 0) , io_base[j]);
 	}
 }
 
@@ -124,7 +135,7 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned 
 	for(j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_offset(ctrl_devport_conf_clear,
 			sizeof(ctrl_devport_conf_clear)/sizeof(ctrl_devport_conf_clear[0]),
-			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
+			PCI_BDF(busn[j], devn[j], 0) , io_base[j]);
 	}
 
 
@@ -144,8 +155,10 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 	u32 pll_ctrl;
 	u32 dword;
 	int i;
-	device_t dev;
-	dev = PCI_DEV(busnx, devnx+1, 1);
+	//struct device dev;
+	struct device *dev;
+#error dev is not set up
+	//	dev = PCI_BDF(busnx, devnx+1, 1);
 	dword = pci_read_config32(dev, 0xe4);
 	dword |= 0x3f0; // disable it at first
 	pci_write_config32(dev, 0xe4, dword);
@@ -328,23 +341,23 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 		mcp55_early_pcie_setup(busn[j], devn[j], io_base[j] + ANACTRL_IO_BASE, pci_e_x[j]);
 
 		setup_resource_map_x_offset(ctrl_conf_1, sizeof(ctrl_conf_1)/sizeof(ctrl_conf_1[0]),
-				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 		for(i=0; i<3; i++) { // three SATA
 			setup_resource_map_x_offset(ctrl_conf_1_1, sizeof(ctrl_conf_1_1)/sizeof(ctrl_conf_1_1[0]),
-				PCI_DEV(busn[j], devn[j], i), io_base[j]);
+				PCI_BDF(busn[j], devn[j], i), io_base[j]);
 		}
 		if(busn[j] == 0) {
 			setup_resource_map_x_offset(ctrl_conf_mcp55_only, sizeof(ctrl_conf_mcp55_only)/sizeof(ctrl_conf_mcp55_only[0]),
-				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 		}
 
 		if( (busn[j] == 0) && (mcp55_num>1) ) {
 			setup_resource_map_x_offset(ctrl_conf_master_only, sizeof(ctrl_conf_master_only)/sizeof(ctrl_conf_master_only[0]),
-				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 		}
 
 		setup_resource_map_x_offset(ctrl_conf_2, sizeof(ctrl_conf_2)/sizeof(ctrl_conf_2[0]),
-				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 
 	}
 
@@ -395,8 +408,9 @@ static int mcp55_early_setup_x(void)
 		busnx = ht_c_index * HT_CHAIN_BUSN_D;
 		for(devnx=0;devnx<0x20;devnx++) {
 			u32 id;
-			device_t dev;
-			dev = PCI_DEV(busnx, devnx, 0);
+			struct device *dev;
+#error dev is not set up
+			//			dev = PCI_BDF(busnx, devnx, 0);
 			id = pci_read_config32(dev, PCI_VENDOR_ID);
 			if(id == 0x036910de) {
 				busn[mcp55_num] = busnx;
@@ -410,7 +424,7 @@ static int mcp55_early_setup_x(void)
 	}
 
 out:
-	print_debug("mcp55_num:"); print_debug_hex8(mcp55_num); print_debug("\r\n");
+	printk(BIOS_DEBUG, "mcp55_num: %d\n", mcp55_num);
 
 	mcp55_early_set_port(mcp55_num, busn, devn, io_base);
 	mcp55_early_setup(mcp55_num, busn, devn, io_base, pci_e_x);

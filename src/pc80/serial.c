@@ -91,8 +91,13 @@ static void uart_init(void)
 #endif
 	outb(UART_LCS, TTYS0_BASE + UART_LCR);
 }
+
 #else
+/* CONFIG_USE_PRINTK_IN_CAR == 1 */
+#if CONFIG_USE_INIT == 0
 #include "../lib/uart8250.c"
+#endif
+
 extern void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs);
 static void uart_init(void)
 {

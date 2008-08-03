@@ -13,16 +13,17 @@ static void __console_tx_byte(unsigned char byte)
 
 #include "console_printk.c"
 
+#if CONFIG_USE_INIT == 0
 // do_printk
 #include "../../../console/vtxprintf.c"
 #include "printk_init.c"
+#endif
 
 #endif /* CONFIG_USE_PRINTK_IN_CAR */
 
 #ifndef COREBOOT_EXTRA_VERSION
 #define COREBOOT_EXTRA_VERSION ""
 #endif
-
 
 static void console_init(void)
 {

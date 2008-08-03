@@ -609,11 +609,7 @@ int elfboot(struct lb_memory *mem)
 	int i, result;
 
 	result = 0;
-	printk_info("\n");
-	printk_info("Welcome to %s, the open sourced starter.\n", BOOTLOADER);
-	printk_info("January 2002, Eric Biederman.\n");
-	printk_info("Version %s\n", BOOTLOADER_VERSION);
-	printk_info("\n");
+	printk_debug("\nelfboot: Attempting to load payload.\n");
 	post_code(0xf8);
 
 	if (stream_init() < 0) {

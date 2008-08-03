@@ -42,6 +42,13 @@ $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c: $(obj)/util/options/build_opt_t
 		--config $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout \
 		--option $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c 
 
+$(obj)/mainboard/$(MAINBOARDDIR)/option_table.h: $(obj)/util/options/build_opt_tbl $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout
+	$(Q)printf "  OPTIONS $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
+	$(Q)$(obj)/util/options/build_opt_tbl -b \
+		--config $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout \
+		--header $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c 
+
 $(obj)/option_table: $(obj)/mainboard/$(MAINBOARDDIR)/option_table.o
 	$(Q)printf "  OBJCOPY $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $< $@ 

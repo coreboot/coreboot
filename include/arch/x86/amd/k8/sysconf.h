@@ -22,7 +22,7 @@
 
 #define HC_POSSIBLE_NUM 8
 
-struct amdk8_sysconf_t {
+struct amdk8_sysconf{
 	//ht
 	unsigned nodes;
 	unsigned hc_possible_num;

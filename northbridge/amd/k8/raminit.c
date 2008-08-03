@@ -32,13 +32,23 @@
 
 #include <console.h>
 #include <mtrr.h>
+#include <macros.h>
+#include <spd.h>
+#include <cpu.h>
+#include <msr.h>
 #include <amd/k8/raminit.h>
 #include <amd/k8/k8.h>
 #include <amd/k8/sysconf.h>
 #include <device/pci.h>
+#include <mc146818rtc.h>
+#include <lib.h>
 
 #ifndef QRANK_DIMM_SUPPORT
 #define QRANK_DIMM_SUPPORT 0
+#endif
+
+#ifndef HW_MEM_HOLE_SIZEK
+#define HW_MEM_HOLE_SIZEK 64*1024*1024
 #endif
 
 static void hard_reset(void);
@@ -566,14 +576,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 static void hw_enable_ecc(const struct mem_controller *ctrl)
 {
-	u32 dcl, nbcap;
+	u32 dcl, nbcap, opt = 1;
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_DimmEccEn;
 	if (nbcap & NBCAP_ECC) {
 		dcl |= DCL_DimmEccEn;
 	}
-	if (read_option(CMOS_VSTART_ECC_memory, CMOS_VLEN_ECC_memory, 1) == 0) {
+	if (get_option(&opt, "ECC_memory") || opt) {
 		dcl &= ~DCL_DimmEccEn;
 	}
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
@@ -609,16 +619,6 @@ static int is_registered(const struct mem_controller *ctrl)
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	return !(dcl & DCL_UnBufDimm);
 }
-
-struct dimm_size {
-	unsigned long side1;
-	unsigned long side2;
-	unsigned long rows;
-	unsigned long col;
-#if QRANK_DIMM_SUPPORT == 1
-	unsigned long rank;
-#endif
-};
 
 static struct dimm_size spd_get_dimm_size(unsigned device)
 {
@@ -1118,8 +1118,9 @@ unsigned long memory_end_k(const struct mem_controller *ctrl, int max_node_id)
 static void order_dimms(const struct mem_controller *ctrl)
 {
 	unsigned long tom_k, base_k;
+	int opt = 1;
 
-	if (read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) != 0) {
+	if (get_option(&opt, "interleave_chip_selects") || opt) {
 		tom_k = interleave_chip_selects(ctrl);
 	} else {
 		printk(BIOS_DEBUG, "Interleaving disabled\n");
@@ -1405,6 +1406,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	unsigned min_cycle_time, min_latency, bios_cycle_time;
 	int i;
 	u32 value;
+	u32 max_mem_clk_index = 0;
 
 	static const u8 latency_indicies[] = { 26, 23, 9 };
 	static const unsigned char min_cycle_times[] = {
@@ -1417,8 +1419,9 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	value = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
-	bios_cycle_time = min_cycle_times[
-		read_option(CMOS_VSTART_max_mem_clock, CMOS_VLEN_max_mem_clock, 0)];
+
+	get_option(&max_mem_clk_index, "max_mem_clk");
+	bios_cycle_time = min_cycle_times[max_mem_clk_index];
 	if (bios_cycle_time > min_cycle_time) {
 		min_cycle_time = bios_cycle_time;
 	}
@@ -2111,7 +2114,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sy
 	return;
  hw_spd_err:
 	/* Unrecoverable error reading SPD data */
-	print_err("SPD error - reset\n");
+	printk(BIOS_ERR, "SPD error - reset\n");
 	hard_reset();
 	return;
 }

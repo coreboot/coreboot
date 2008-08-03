@@ -322,4 +322,14 @@ int check_normal_boot_flag(void)
 	return (byte & RTC_NORMAL_BOOT_FLAG_SET);
 }
 
+unsigned read_option(unsigned start, unsigned size, unsigned def)
+{
+#ifdef CONFIG_OPTION_TABLE
+	unsigned byte;
+	byte = CMOS_READ(start/8);
+	return (byte >> (start & 7U)) & ((1U << size) - 1U);
+#else
+	return def;
+#endif
+}
 

@@ -17,11 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-#include "../macros.h"
+#define ASSEMBLY
+#include <macros.h>
 #define CacheSize CONFIG_CARSIZE
 #define CacheBase CONFIG_CARBASE
 #define MEM_TOPK 2048
-#define ASSEMBLY
 
 /* leave some space for global variable to pass to RAM stage */
 #define GlobalVarSize 32

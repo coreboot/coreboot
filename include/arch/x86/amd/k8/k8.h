@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2006-2007 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -282,3 +282,124 @@
 #define	 NBCAP_MEMCLK_166MHZ  1
 #define	 NBCAP_MEMCLK_200MHZ  0
 #define	 NBCAP_MEMCTRL	      (1 << 8)
+
+/* resources for the routing in the northbridge. These may be family specific; 
+ * the were in v2. 
+ */
+#define RES_DEBUG 0
+#define RES_PCI_IO 0x10
+#define RES_PORT_IO_8 0x22
+#define RES_PORT_IO_32 0x20
+#define RES_MEM_IO 0x40
+
+#ifndef ASSEMBLY
+/* cpu version -- no support for f0 yet */
+static inline int is_cpu_rev_a0(void)
+{
+	return (cpuid_eax(1) & 0xfffef) == 0x0f00;
+}
+static inline int is_cpu_pre_c0(void)
+{
+        return (cpuid_eax(1) & 0xfffef) < 0x0f48;
+}
+
+static inline int is_cpu_c0(void)
+{
+        return (cpuid_eax(1) & 0xfffef) == 0x0f48;
+}
+
+static inline int is_cpu_pre_b3(void)
+{
+        return (cpuid_eax(1) & 0xfffef) < 0x0f41;
+}
+
+static inline int is_cpu_b3(void)
+{
+        return (cpuid_eax(1) & 0xfffef) == 0x0f41;
+}
+//AMD_D0_SUPPORT
+static inline int is_cpu_pre_d0(void)
+{
+        return (cpuid_eax(1) & 0xfff0f) < 0x10f00;
+}
+
+static inline int is_cpu_d0(void)
+{
+        return (cpuid_eax(1) & 0xfff0f) == 0x10f00;
+}
+
+//AMD_E0_SUPPORT
+static inline int is_cpu_pre_e0(void)
+{
+        return (cpuid_eax(1) & 0xfff0f) < 0x20f00;
+}
+
+static inline int is_cpu_e0(void)
+{
+        return (cpuid_eax(1) & 0xfff00) == 0x20f00;
+}
+
+
+/* note: we'd like to have this sysinfo common to all K8, there's no need to
+ * have one different kind per different kind of k8 at this point. 
+ */
+//#include "raminit.h"
+
+struct dimm_size {
+        u8 per_rank; // it is rows + col + bank_lines + data lines */
+        u8 rows;
+        u8 col;
+        u8 bank; //1, 2, 3 mean 2, 4, 8
+        u8 rank;
+} __attribute__((packed));
+
+struct mem_info { // pernode
+        u32 dimm_mask;
+        struct dimm_size sz[DIMM_SOCKETS];
+        u32 x4_mask;
+        u32 x16_mask;
+	u32 single_rank_mask;
+        u32 page_1k_mask;
+//        u32 ecc_mask;
+//        u32 registered_mask;
+        u8 is_opteron;
+        u8 is_registered;
+        u8 is_ecc;
+        u8 is_Width128;
+        u8 memclk_set; // we need to use this to retrieve the mem param
+	u8 rsv[3];
+} __attribute__((packed));
+
+struct link_pair_st {
+        struct device * udev;
+        u32 upos;
+        u32 uoffs;
+        struct device * dev;
+        u32 pos;
+        u32 offs;
+
+} __attribute__((packed));
+
+struct sys_info {
+        u8 ctrl_present[NODE_NUMS];
+        struct mem_info meminfo[NODE_NUMS];
+	struct mem_controller ctrl[NODE_NUMS];
+	u8 mem_trained[NODE_NUMS]; //0: no dimm, 1: trained, 0x80: not started, 0x81: recv1 fail, 0x82: Pos Fail, 0x83:recv2 fail
+        u32 tom_k;
+        u32 tom2_k;
+
+	u32 mem_base[NODE_NUMS];
+	u32 cs_base[NODE_NUMS*8]; //8 cs_idx
+	u32 hole_reg[NODE_NUMS]; // can we spare it to one, and put ctrl idx in it
+
+	u8 dqs_delay_a[NODE_NUMS*2*2*9]; //8 node channel 2, direction 2 , bytelane *9
+	u8 dqs_rcvr_dly_a[NODE_NUMS*2*8]; //8 node, channel 2, receiver 8
+	u32 nodes;
+        struct link_pair_st link_pair[16];// enough? only in_conherent
+        u32 link_pair_num;
+        u32 ht_c_num;
+	u32 sbdn;
+	u32 sblk;
+	u32 sbbusn;
+} __attribute__((packed));
+#endif /* ! ASSEMBLY */

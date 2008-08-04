@@ -18,6 +18,7 @@
  */
 
 #include <arch/io.h>
+#include <libpayload.h>
 #include "coreinfo.h"
 
 #ifdef CONFIG_MODULE_PCI
@@ -29,17 +30,6 @@ struct pci_devices {
 
 static struct pci_devices devices[64];
 static int devices_index;
-
-#define REG_VENDOR_ID   0x00
-#define REG_HEADER_TYPE 0x0e
-#define REG_PRIMARY_BUS 0x18
-
-#define HEADER_TYPE_NORMAL  0
-#define HEADER_TYPE_BRIDGE  1
-#define HEADER_TYPE_CARDBUS 2
-
-#define PCI_ADDR(_bus, _dev, _reg) \
-	(0x80000000 | (_bus << 16) | (_dev << 8) | (_reg & ~3))
 
 /* Number of entries to show in the list */
 #define MENU_VISIBLE 16
@@ -92,20 +82,6 @@ static void quicksort(struct pci_devices *list, int len)
 
 	quicksort(list, index);
 	quicksort(&(list[index]), len - index);
-}
-
-static void pci_read_dword(unsigned int bus, unsigned int devfn,
-			   unsigned int reg, unsigned int *val)
-{
-	outl(PCI_ADDR(bus, devfn, reg), 0xcf8);
-	*val = inl(0xcfc);
-}
-
-static void pci_read_byte(unsigned int bus, unsigned int devfn,
-			  unsigned int reg, unsigned char *val)
-{
-	outl(PCI_ADDR(bus, devfn, reg), 0xcf8);
-	*val = inb(0xcfc + (reg & 3));
 }
 
 static void show_config_space(WINDOW *win, int row, int col, int index)

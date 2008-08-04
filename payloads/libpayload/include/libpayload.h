@@ -37,6 +37,7 @@
 #include <sysinfo.h>
 #include <stdarg.h>
 #include <lar.h>
+#include <pci.h>
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))

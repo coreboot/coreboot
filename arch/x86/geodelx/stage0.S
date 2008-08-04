@@ -25,7 +25,7 @@
 
 /* Init code - Switch CPU to protected mode and enable Cache-as-Ram (CAR). */
 
-#include "../macros.h"
+#include <macros.h>
 #include <amd_geodelx.h>
 
 	.code16

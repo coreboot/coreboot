@@ -24,7 +24,7 @@
 
 # init code - switch cpu to pmode and enable cache as ram.
 
-#include "macros.h"
+#include <macros.h>
 
 #define ROM_CODE_SEG 0x08
 #define ROM_DATA_SEG 0x10

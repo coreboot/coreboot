@@ -206,4 +206,49 @@ SHARED(bottom_of_stack, void *, void);
 #define PRINTK_BUF_ADDR_RAM 0x90000
 #endif
 
+/* resource maps. These started out as special for the K8 but now have more general usage */
+/* it's not totally clear that the type and union are a great idea, but see the v2 code: 
+ * there are tables that are combinations of all three (or the code supports it anyway)
+ */
+/* types of resource maps */
+#define PCIRM	'p'
+#define IO8	'8'
+#define IO32	'I'
+
+/* pci config map */
+struct pcm {
+	u8 bus, dev, fn, reg;
+	u32 and;
+	u32 or;
+};
+
+struct io8 {
+	u16 port;
+	u8 and, or;
+};
+
+struct io32 {
+	u16 port;
+	u32 and, or;
+};
+
+
+/* convenience initializer */
+#define PCM(abus,adev,afn,areg,aand,aor) {.type = PCIRM, {.pcm ={.bus=abus,.dev=adev,.fn=afn,.reg=areg,.and=aand,.or=aor}}}
+#define EIO8(aport, aand, aor) {.type=IO8, {.io8 = {.port = aport, .and = aand, .or = aor}}}
+#define EIO32(aport, aand, aaor) {.type = IO32, {.io32 = {.port = aport, .and = aand, .or = aor}}}
+struct rmap {
+	int type;
+	union {
+		struct pcm pcm;
+		struct io8 io8;
+		struct io32 io32;
+	};
+};
+
+void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
+                                 u32 offset_dev, u32 offset_pciio, 
+                                 u32 offset_io);
+void setup_resource_map(const struct rmap *rm, u32 max);
+
 #endif /* ARCH_X86_CPU_H */

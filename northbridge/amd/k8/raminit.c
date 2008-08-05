@@ -56,8 +56,8 @@
 extern const struct pci_bus_operations pci_cf8_conf1;
 static void hard_reset(void);
 
-#define pci_config_read32(bus, dev, where) pci_cf8_conf1.read32(NULL, r->pcm.bus, dev, where)
-#define pci_config_write32(bus, dev, where, what) pci_cf8_conf1.write32(NULL, r->pcm.bus, dev, where, what)
+#define pci_config_read32(bus, dev, where) pci_cf8_conf1.read32(NULL,  bus, dev, where)
+#define pci_config_write32(bus, dev, where, what) pci_cf8_conf1.write32(NULL, bus, dev, where, what)
 
 
 static int controller_present(const struct mem_controller *ctrl)

@@ -36,6 +36,30 @@ config SHOW_DATE_TIME
 
 	  This option will increase the ELF file size by ca. 256 bytes.
 
+config PAYLOAD_INFO_NAME
+	string "Payload name"
+	default "coreinfo"
+	help
+	  The name of this payload for use in (e.g.) Bayou.
+
+config PAYLOAD_INFO_LISTNAME
+	string "Payload menu entry name"
+	default "System Information"
+	help
+	  The name of this payload's menu entry for use in (e.g.) Bayou.
+
+config PAYLOAD_INFO_DESC
+	string "Payload description"
+	default "Display information about the system"
+	help
+	  The description of this payload for use in (e.g.) Bayou.
+
+config PAYLOAD_INFO_VERSION
+	string "Payload version"
+	default "0.1"
+	help
+	  The version number of this payload.
+
 endmenu
 
 menu "Modules"

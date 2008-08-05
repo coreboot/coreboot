@@ -221,7 +221,7 @@ static void loop(void)
 {
 	int key;
 
-	center(0, "coreinfo v0.1");
+	center(0, CONFIG_PAYLOAD_INFO_NAME " " CONFIG_PAYLOAD_INFO_VERSION);
 	refresh();
 
 	print_menu();
@@ -301,6 +301,6 @@ int main(void)
 	return 0;
 }
 
-PAYLOAD_INFO(name, "coreinfo");
-PAYLOAD_INFO(listname, "System Information");
-PAYLOAD_INFO(desc, "Display information about the system");
+PAYLOAD_INFO(name, CONFIG_PAYLOAD_INFO_NAME);
+PAYLOAD_INFO(listname, CONFIG_PAYLOAD_INFO_LISTNAME);
+PAYLOAD_INFO(desc, CONFIG_PAYLOAD_INFO_DESC);

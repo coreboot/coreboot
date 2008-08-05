@@ -23,6 +23,7 @@
 #include <console.h>
 #include <msr.h>
 #include <macros.h>
+#include <cpu.h>
 #include <amd/k8/k8.h>
 
 /**

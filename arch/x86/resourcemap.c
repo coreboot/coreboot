@@ -29,10 +29,8 @@
  *
  * @param rm The resource map
  * @param max The map size
- * @param offset_dev pci device offset. This can be useful on e.g. k8
- *        we have a number of similar devices which need the same setups
- *        we can use one map for more than one device. NOTE: 
- *        offset_dev IS NOT ASSUMED TO BE OFFSET BY FN (i.e. it is not << 3)
+ * @param offset_bdf pci device offset. Note this is a u32 in 
+ * 			busdevfn format. See PCI_BDF macro if you are not sure what that is. 
  * @param offset_pciio added to the OR value for setting up PCI IO
  * @param offset_io offset from the io base in the resource map
  */
@@ -40,11 +38,11 @@
 /* NOTE: By doing the config write in this manner we guarantee that this
  * will work in stage1 or stage2.
  */
-#define pci_config_read32(bus, dev, where) pci_cf8_conf1.read32(NULL, r->pcm.bus, dev, where)
-#define pci_config_write32(bus, dev, where, what) pci_cf8_conf1.write32(NULL, r->pcm.bus, dev, where, what)
+#define pci_read_config32(bus, dev, where) pci_cf8_conf1.read32(NULL, r->pcm.bus, dev, where)
+#define pci_write_config32(bus, dev, where, what) pci_cf8_conf1.write32(NULL, r->pcm.bus, dev, where, what)
 
 void setup_resource_map_x_offset(const rmap *rm, u32 max,
-                                 u32 offset_dev, u32 offset_pciio, 
+                                 u32 offset_bdf, u32 offset_pciio, 
                                  u32 offset_io)
 {
 	u32 i;
@@ -53,26 +51,30 @@ void setup_resource_map_x_offset(const rmap *rm, u32 max,
 
 	for(i = 0; i < max; i++, rm++) {
           switch (rm->type){
-		case PCIRM: 
+		case TPCIRM: 
 			{
                           u32 dev;
                           unsigned where;
                           unsigned long reg;
-			  printk(BIOS_DEBUG, "(%x,%x+%x,%x,%x) & %08x | %08x+%08x\n", rm->pcm.bus,rm->pcm.dev+offset_dev,
-                                 rm->pcm.fn,rm->pcm.reg,
+			u8 offset_devfn = offset_bdf;
+#warning make sure offset_bus is right for extended PCI addressing
+			u32 offset_bus = offset_bdf >> 8;
+			  printk(BIOS_DEBUG, "(%x+%x,%x+%x,%x+%x,%x) & %08x | %08x+%08x\n", rm->pcm.bus,
+				offset_bus, rm->pcm.dev+offset_devfn>>3,
+                                 rm->pcm.fn, offset_devfn&3, rm->pcm.reg,
 				 rm->pcm.and,rm->pcm.or, offset_pciio);
                           dev = rm->pcm.dev;
-                          dev += offset_dev;
-                          where = rm->pcm.reg;
+                        where = rm->pcm.reg;
                           dev <<= 3;
                           dev |= rm->pcm.fn;
-                          reg = pci_config_read32(rm->pcm.bus, dev, where);
+                            dev += offset_devfn;
+                          reg = pci_read_config32(rm->pcm.bus + offset_bus, dev, where);
                           reg &= rm->pcm.and;
                           reg |= rm->pcm.or + offset_pciio; 
-                          pci_config_write32(rm->pcm.bus, dev, where, reg);
+                          pci_write_config32(rm->pcm.bus, dev, where, reg);
 			}
 			break;
-		case IO8:
+		case TIO8:
 			{
                           u32 where;
                           u8 reg;
@@ -84,7 +86,7 @@ void setup_resource_map_x_offset(const rmap *rm, u32 max,
                           outb(reg, where);
 			}
 			break;
-		case IO32:
+		case TIO32:
 			{
                           u32 where;
                           u32 reg;

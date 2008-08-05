@@ -211,9 +211,9 @@ SHARED(bottom_of_stack, void *, void);
  * there are tables that are combinations of all three (or the code supports it anyway)
  */
 /* types of resource maps */
-#define PCIRM	'p'
-#define IO8	'8'
-#define IO32	'I'
+#define TPCIRM	'p'
+#define TIO8	'8'
+#define TIO32	'I'
 
 /* pci config map */
 struct pcm {
@@ -234,9 +234,9 @@ struct io32 {
 
 
 /* convenience initializer */
-#define PCM(abus,adev,afn,areg,aand,aor) {.type = PCIRM, {.pcm ={.bus=abus,.dev=adev,.fn=afn,.reg=areg,.and=aand,.or=aor}}}
-#define EIO8(aport, aand, aor) {.type=IO8, {.io8 = {.port = aport, .and = aand, .or = aor}}}
-#define EIO32(aport, aand, aaor) {.type = IO32, {.io32 = {.port = aport, .and = aand, .or = aor}}}
+#define PCM(abus,adev,afn,areg,aand,aor) {.type = TPCIRM, {.pcm ={.bus=abus,.dev=adev,.fn=afn,.reg=areg,.and=aand,.or=aor}}}
+#define IO8(aport, aand, aor) {.type=TIO8, {.io8 = {.port = aport, .and = aand, .or = aor}}}
+#define IO32(aport, aand, aor) {.type = TIO32, {.io32 = {.port = aport, .and = aand, .or = aor}}}
 struct rmap {
 	int type;
 	union {

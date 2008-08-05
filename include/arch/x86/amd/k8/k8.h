@@ -17,6 +17,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+/* Until we resolve a better way to do this, work around it with a value "too large to fail" */
+#warning clean up setting of DIMM_SOCKETS and NODE_NUMS
+#define DIMM_SOCKETS 4
+#define NODE_NUMS 16
+
 #define ROM_CODE_SEG		0x08
 #define ROM_DATA_SEG		0x10
 
@@ -347,6 +353,7 @@ static inline int is_cpu_e0(void)
 
 struct dimm_size {
         u8 per_rank; // it is rows + col + bank_lines + data lines */
+	u8 side1, side2;
         u8 rows;
         u8 col;
         u8 bank; //1, 2, 3 mean 2, 4, 8
@@ -370,11 +377,18 @@ struct mem_info { // pernode
 	u8 rsv[3];
 } __attribute__((packed));
 
+struct mem_controller {
+	unsigned node_id;
+	u32 f0, f1, f2, f3;
+	u32 channel0[DIMM_SOCKETS];
+	u32 channel1[DIMM_SOCKETS];
+};
+
 struct link_pair_st {
-        struct device * udev;
+  u32 udev;
         u32 upos;
         u32 uoffs;
-        struct device * dev;
+        u32 dev;
         u32 pos;
         u32 offs;
 

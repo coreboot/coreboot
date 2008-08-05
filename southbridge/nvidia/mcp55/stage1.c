@@ -23,10 +23,11 @@
 #include <io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <device/pci_ops.h>
+#include <cpu.h>
 #include <amd/k8/k8.h>
 #include "mcp55.h"
+#define pci_read_config32(bus, dev, where) pci_cf8_conf1.read32(NULL, bus, dev, where)
+#define pci_write_config32(bus, dev, where, what) pci_cf8_conf1.write32(NULL, bus, dev, where, what)
 
 #warning fix disgusting define of MCP55_NUM it is mainboard dependent
 #define MCP55_NUM 1
@@ -107,35 +108,33 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control, con
 
 static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base)
 {
-
-	static const unsigned int ctrl_devport_conf[] = {
-		PCI_ADDR(0, 1, 1, ANACTRL_REG_POS), ~(0x0000ff00), ANACTRL_IO_BASE,
-		PCI_ADDR(0, 1, 1, SYSCTRL_REG_POS), ~(0x0000ff00), SYSCTRL_IO_BASE,
-		PCI_ADDR(0, 1, 1, ACPICTRL_REG_POS), ~(0x0000ff00), ACPICTRL_IO_BASE,
+	static const struct rmap ctrl_devport_conf[] = {
+	PCM(0, 1, 1, ANACTRL_REG_POS, ~0x0000ff00, ANACTRL_IO_BASE),
+	PCM(0, 1, 1, SYSCTRL_REG_POS, ~0x0000ff00, SYSCTRL_IO_BASE),
+	PCM(0, 1, 1, ACPICTRL_REG_POS, ~0x0000ff00, ACPICTRL_IO_BASE),
 	};
 
 	int j;
 	for(j = 0; j < mcp55_num; j++ ) {
-		setup_resource_map_offset(ctrl_devport_conf,
+		setup_resource_map_x_offset(ctrl_devport_conf,
 			sizeof(ctrl_devport_conf)/sizeof(ctrl_devport_conf[0]),
-			PCI_BDF(busn[j], devn[j], 0) , io_base[j]);
+			PCI_BDF(busn[j], devn[j], 0) , io_base[j], 0);
 	}
 }
-
 static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base)
 {
 
-	static const unsigned int ctrl_devport_conf_clear[] = {
-		PCI_ADDR(0, 1, 1, ANACTRL_REG_POS), ~(0x0000ff00), 0,
-		PCI_ADDR(0, 1, 1, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
-		PCI_ADDR(0, 1, 1, ACPICTRL_REG_POS), ~(0x0000ff00), 0,
+	static const struct rmap ctrl_devport_conf_clear[] = {
+	PCM(0, 1, 1, ANACTRL_REG_POS, ~0x0000ff00, 0),
+	PCM(0, 1, 1, SYSCTRL_REG_POS, ~0x0000ff00, 0),
+	PCM(0, 1, 1, ACPICTRL_REG_POS, ~0x0000ff00, 0),
 	};
 
 	int j;
 	for(j = 0; j < mcp55_num; j++ ) {
-		setup_resource_map_offset(ctrl_devport_conf_clear,
+		setup_resource_map_x_offset(ctrl_devport_conf_clear,
 			sizeof(ctrl_devport_conf_clear)/sizeof(ctrl_devport_conf_clear[0]),
-			PCI_BDF(busn[j], devn[j], 0) , io_base[j]);
+			PCI_BDF(busn[j], devn[j], 0) , io_base[j], 0);
 	}
 
 
@@ -155,13 +154,11 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 	u32 pll_ctrl;
 	u32 dword;
 	int i;
-	//struct device dev;
-	struct device *dev;
-#error dev is not set up
+	u32 dev;
 	//	dev = PCI_BDF(busnx, devnx+1, 1);
-	dword = pci_read_config32(dev, 0xe4);
+	dword = pci_read_config32(busnx, (devnx+1)<<3 | 1, 0xe4);
 	dword |= 0x3f0; // disable it at first
-	pci_write_config32(dev, 0xe4, dword);
+	pci_write_config32(busnx,  (devnx+1)<<3 | 1, 0xe4, dword);
 
 	for(i=0; i<3; i++) {
 		tgio_ctrl = inl(anactrl_io_base + 0xcc);
@@ -183,9 +180,9 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 //	wait 100us
 	delayx(1);
 
-	dword = pci_read_config32(dev, 0xe4);
+	dword = pci_read_config32(busnx,  (devnx+1)<<3 | 1, 0xe4);
 	dword &= ~(0x3f0); // enable
-	pci_write_config32(dev, 0xe4, dword);
+	pci_write_config32(busnx,  (devnx+1)<<3 | 1, 0xe4, dword);
 
 //	need to wait 100ms
 	delayx(1000);
@@ -194,102 +191,100 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base, unsigned *pci_e_x)
 {
 
-    static const unsigned int ctrl_conf_1[] = {
-	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0x10, 0x0007ffff, 0xff78000,
-	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0xa4, 0xffedffff, 0x0012000,
-	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0xac, 0xfffffdff, 0x0000200,
-	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0xb4, 0xfffffffd, 0x0000002,
+    static const struct rmap ctrl_conf_1[] = {
+	IO32(ACPICTRL_IO_BASE + 0x10, 0x0007ffff, 0xff78000),
+	IO32(ACPICTRL_IO_BASE + 0xa4, 0xffedffff, 0x0012000),
+	IO32(ACPICTRL_IO_BASE + 0xac, 0xfffffdff, 0x0000200),
+	IO32(ACPICTRL_IO_BASE + 0xb4, 0xfffffffd, 0x0000002),
 
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x24, 0xc0f0f08f, 0x26020230,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x34, 0x00000000, 0x22222222,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x08, 0x7FFFFFFF, 0x00000000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x2C, 0x7FFFFFFF, 0x80000000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0xCC, 0xFFFFF9FF, 0x00000000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x30, 0x8FFFFFFF, 0x40000000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0xCC, 0xFFFFF9FF, 0x00000200,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x30, 0x8FFFFFFF, 0x40000000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0xCC, 0xFFFFF9FF, 0x00000400,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x30, 0x8FFFFFFF, 0x40000000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x74, 0xFFFF0FF5, 0x0000F000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x78, 0xFF00FF00, 0x00100010,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x7C, 0xFF0FF0FF, 0x00500500,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, 0xFFFFFFE7, 0x00000000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x60, 0xFFCFFFFF, 0x00300000,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x90, 0xFFFF00FF, 0x0000FF00,
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x9C, 0xFF00FFFF, 0x00070000,
+	IO32(ANACTRL_IO_BASE + 0x24, 0xc0f0f08f, 0x26020230),
+	IO32(ANACTRL_IO_BASE + 0x34, 0x00000000, 0x22222222),
+	IO32(ANACTRL_IO_BASE + 0x08, 0x7FFFFFFF, 0x00000000),
+	IO32(ANACTRL_IO_BASE + 0x2C, 0x7FFFFFFF, 0x80000000),
+	IO32(ANACTRL_IO_BASE + 0xCC, 0xFFFFF9FF, 0x00000000),
+	IO32(ANACTRL_IO_BASE + 0x30, 0x8FFFFFFF, 0x40000000),
+	IO32(ANACTRL_IO_BASE + 0xCC, 0xFFFFF9FF, 0x00000200),
+	IO32(ANACTRL_IO_BASE + 0x30, 0x8FFFFFFF, 0x40000000),
+	IO32(ANACTRL_IO_BASE + 0xCC, 0xFFFFF9FF, 0x00000400),
+	IO32(ANACTRL_IO_BASE + 0x30, 0x8FFFFFFF, 0x40000000),
+	IO32(ANACTRL_IO_BASE + 0x74, 0xFFFF0FF5, 0x0000F000),
+	IO32(ANACTRL_IO_BASE + 0x78, 0xFF00FF00, 0x00100010),
+	IO32(ANACTRL_IO_BASE + 0x7C, 0xFF0FF0FF, 0x00500500),
+	IO32(ANACTRL_IO_BASE + 0x80, 0xFFFFFFE7, 0x00000000),
+	IO32(ANACTRL_IO_BASE + 0x60, 0xFFCFFFFF, 0x00300000),
+	IO32(ANACTRL_IO_BASE + 0x90, 0xFFFF00FF, 0x0000FF00),
+	IO32(ANACTRL_IO_BASE + 0x9C, 0xFF00FFFF, 0x00070000),
 
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x48), 0xFFFFDCED, 0x00002002,
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x78), 0xFFFFFF8E, 0x00000011,
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x80), 0xFFFF0000, 0x00009923,
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x88), 0xFFFFFFFE, 0x00000000,
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x8C), 0xFFFF0000, 0x0000007F,
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xDC), 0xFFFEFFFF, 0x00010000,
+	PCM(0, 0, 0, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 0, 0, 0x48, 0xFFFFDCED, 0x00002002), 
+	PCM(0, 0, 0, 0x78, 0xFFFFFF8E, 0x00000011), 
+	PCM(0, 0, 0, 0x80, 0xFFFF0000, 0x00009923), 
+	PCM(0, 0, 0, 0x88, 0xFFFFFFFE, 0x00000000), 
+	PCM(0, 0, 0, 0x8C, 0xFFFF0000, 0x0000007F), 
+	PCM(0, 0, 0, 0xDC, 0xFFFEFFFF, 0x00010000), 
 
-	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x74), 0xFFFFFF7B, 0x00000084,
-	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xF8), 0xFFFFFFCF, 0x00000010,
+	PCM(0, 1, 0, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 1, 0, 0x74, 0xFFFFFF7B, 0x00000084), 
+	PCM(0, 1, 0, 0xF8, 0xFFFFFFCF, 0x00000010), 
 
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xC4), 0xFFFFFFFE, 0x00000001,
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xF0), 0x7FFFFFFD, 0x00000002,
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xF8), 0xFFFFFFCF, 0x00000010,
+	PCM(0, 1, 1, 0xC4, 0xFFFFFFFE, 0x00000001), 
+	PCM(0, 1, 1, 0xF0, 0x7FFFFFFD, 0x00000002), 
+	PCM(0, 1, 1, 0xF8, 0xFFFFFFCF, 0x00000010), 
 
-	RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x68), 0xFFFFFF00, 0x000000FF,
-	RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xF8), 0xFFFFFFBF, 0x00000040,//Enable bridge mode
+	PCM(0, 8, 0, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 8, 0, 0x68, 0xFFFFFF00, 0x000000FF), 
+	PCM(0, 8, 0, 0xF8, 0xFFFFFFBF, 0x00000040), //Enable bridge mode
 
-	RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x68), 0xFFFFFF00, 0x000000FF,
-	RES_PCI_IO, PCI_ADDR(0, 9, 0, 0xF8), 0xFFFFFFBF, 0x00000040,//Enable bridge mode
+	PCM(0, 9, 0, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 9, 0, 0x68, 0xFFFFFF00, 0x000000FF), 
+	PCM(0, 9, 0, 0xF8, 0xFFFFFFBF, 0x00000040), //Enable bridge mode
     };
 
-    static const unsigned int ctrl_conf_1_1[] = {
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0x50), 0xFFFFFFFC, 0x00000003,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0x64), 0xFFFFFFFE, 0x00000001,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0x70), 0xFFF0FFFF, 0x00040000,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0xAC), 0xFFFFF0FF, 0x00000100,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0x7C), 0xFFFFFFEF, 0x00000000,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0xC8), 0xFF00FF00, 0x000A000A,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0xD0), 0xF0FFFFFF, 0x03000000,
-	RES_PCI_IO, PCI_ADDR(0, 5, 0, 0xE0), 0xF0FFFFFF, 0x03000000,
+    static const struct rmap ctrl_conf_1_1[] = {
+	PCM(0, 5, 0, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 5, 0, 0x50, 0xFFFFFFFC, 0x00000003), 
+	PCM(0, 5, 0, 0x64, 0xFFFFFFFE, 0x00000001), 
+	PCM(0, 5, 0, 0x70, 0xFFF0FFFF, 0x00040000), 
+	PCM(0, 5, 0, 0xAC, 0xFFFFF0FF, 0x00000100), 
+	PCM(0, 5, 0, 0x7C, 0xFFFFFFEF, 0x00000000), 
+	PCM(0, 5, 0, 0xC8, 0xFF00FF00, 0x000A000A), 
+	PCM(0, 5, 0, 0xD0, 0xF0FFFFFF, 0x03000000), 
+	PCM(0, 5, 0, 0xE0, 0xF0FFFFFF, 0x03000000), 
     };
 
+    static const struct rmap ctrl_conf_mcp55_only[] = {
+	PCM(0, 1, 1, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 1, 1, 0xE0, 0xFFFFFEFF, 0x00000000), 
+	PCM(0, 1, 1, 0xE4, 0xFFFFFFFB, 0x00000000), 
+	PCM(0, 1, 1, 0xE8, 0xFFA9C8FF, 0x00003000), 
 
-    static const unsigned int ctrl_conf_mcp55_only[] = {
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE0), 0xFFFFFEFF, 0x00000000,
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE4), 0xFFFFFFFB, 0x00000000,
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE8), 0xFFA9C8FF, 0x00003000,
+	PCM(0, 4, 0, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 4, 0, 0xF8, 0xFFFFFFCF, 0x00000010), 
 
-	RES_PCI_IO, PCI_ADDR(0, 4, 0, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 4, 0, 0xF8), 0xFFFFFFCF, 0x00000010,
+	PCM(0, 2, 0, 0x40, 0x00000000, 0xCB8410DE), 
 
-	RES_PCI_IO, PCI_ADDR(0, 2, 0, 0x40), 0x00000000, 0xCB8410DE,
+	PCM(0, 2, 1, 0x40, 0x00000000, 0xCB8410DE), 
+	PCM(0, 2, 1, 0x64, 0xF87FFFFF, 0x05000000), 
+	PCM(0, 2, 1, 0x78, 0xFFC07FFF, 0x00360000), 
+	PCM(0, 2, 1, 0x68, 0xFE00D03F, 0x013F2C00), 
+	PCM(0, 2, 1, 0x70, 0xFFF7FFFF, 0x00080000), 
+	PCM(0, 2, 1, 0x7C, 0xFFFFF00F, 0x00000570), 
+	PCM(0, 2, 1, 0xF8, 0xFFFFFFCF, 0x00000010), 
 
-	RES_PCI_IO, PCI_ADDR(0, 2, 1, 0x40), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 2, 1, 0x64), 0xF87FFFFF, 0x05000000,
-	RES_PCI_IO, PCI_ADDR(0, 2, 1, 0x78), 0xFFC07FFF, 0x00360000,
-	RES_PCI_IO, PCI_ADDR(0, 2, 1, 0x68), 0xFE00D03F, 0x013F2C00,
-	RES_PCI_IO, PCI_ADDR(0, 2, 1, 0x70), 0xFFF7FFFF, 0x00080000,
-	RES_PCI_IO, PCI_ADDR(0, 2, 1, 0x7C), 0xFFFFF00F, 0x00000570,
-	RES_PCI_IO, PCI_ADDR(0, 2, 1, 0xF8), 0xFFFFFFCF, 0x00000010,
+	PCM(0, 6, 0, 0x04, 0xFFFFFEFB, 0x00000104), 
+	PCM(0, 6, 0, 0x3C, 0xF5FFFFFF, 0x0A000000), 
+	PCM(0, 6, 0, 0x40, 0x00C8FFFF, 0x07330000), 
+	PCM(0, 6, 0, 0x48, 0xFFFFFFF8, 0x00000005), 
+	PCM(0, 6, 0, 0x4C, 0xFE02FFFF, 0x004C0000), 
+	PCM(0, 6, 0, 0x74, 0xFFFFFFC0, 0x00000000), 
+	PCM(0, 6, 0, 0xC0, 0x00000000, 0xCB8410DE), 
+	PCM(0, 6, 0, 0xC4, 0xFFFFFFF8, 0x00000007), 
 
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0x04), 0xFFFFFEFB, 0x00000104,
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0x3C), 0xF5FFFFFF, 0x0A000000,
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0x40), 0x00C8FFFF, 0x07330000,
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0x48), 0xFFFFFFF8, 0x00000005,
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0x4C), 0xFE02FFFF, 0x004C0000,
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0x74), 0xFFFFFFC0, 0x00000000,
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0xC0), 0x00000000, 0xCB8410DE,
-	RES_PCI_IO, PCI_ADDR(0, 6, 0, 0xC4), 0xFFFFFFF8, 0x00000007,
-
-	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xC0FFFFFF, 0x19000000,
-
+	PCM(0, 1, 0, 0x78, 0xC0FFFFFF, 0x19000000), 
 #if MCP55_USE_AZA == 1
-	RES_PCI_IO, PCI_ADDR(0, 6, 1, 0x40), 0x00000000, 0xCB8410DE,
+	PCM(0, 6, 1, 0x40, 0x00000000, 0xCB8410DE), 
 
-//	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xE4), ~(1<<14), 1<<14,
+//	PCM(0, 1, 1, 0xE4), ~(1<<14, 1<<14)),
 #endif
 // play a while with GPIO in MCP55
 #ifdef MCP55_MB_SETUP
@@ -297,39 +292,39 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 #endif
 
 #if MCP55_USE_AZA == 1
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 21, ~(3<<2), (2<<2),
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 22, ~(3<<2), (2<<2),
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 46, ~(3<<2), (2<<2),
+	IO8(SYSCTRL_IO_BASE + 0xc0+ 21, ~(3<<2), (2<<2)),
+	IO8(SYSCTRL_IO_BASE + 0xc0+ 22, ~(3<<2), (2<<2)),
+	IO8(SYSCTRL_IO_BASE + 0xc0+ 46, ~(3<<2), (2<<2)),
 #endif
 
 
     };
 
-    static const unsigned int ctrl_conf_master_only[] = {
+    static const struct rmap ctrl_conf_master_only[] = {
 
-	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0x80, 0xEFFFFFF, 0x01000000,
+	IO32(ACPICTRL_IO_BASE + 0x80, 0xEFFFFFF, 0x01000000),
 
 	//Master MCP55 ????YHLU
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 0, ~(3<<2), (0<<2),
+	IO8( SYSCTRL_IO_BASE + 0xc0+ 0, ~(3<<2), (0<<2)),
 
     };
 
-    static const unsigned int ctrl_conf_2[] = {
+    static const struct rmap ctrl_conf_2[] = {
 	/* I didn't put pcie related stuff here */
 
-	RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x74), 0xFFFFF00F, 0x000009D0,
-	RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x74), 0xFFFF7FFF, 0x00008000,
+	PCM(0, 0, 0, 0x74, 0xFFFFF00F, 0x000009D0),
+	PCM(0, 1, 0, 0x74, 0xFFFF7FFF, 0x00008000),
 
-	RES_PORT_IO_32, SYSCTRL_IO_BASE + 0x48, 0xFFFEFFFF, 0x00010000,
+	IO32(SYSCTRL_IO_BASE + 0x48, 0xFFFEFFFF, 0x00010000),
 
-	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x60, 0xFFFFFF00, 0x00000012,
+	IO32(ANACTRL_IO_BASE + 0x60, 0xFFFFFF00, 0x00000012),
 
 
 #if MCP55_USE_NIC == 1
-	RES_PCI_IO, PCI_ADDR(0, 1, 1, 0xe4), ~((1<<22)|(1<<20)), (1<<22)|(1<<20),
+	PCM(0, 1, 1, 0xe4, ~((1<<22)|(1<<20)), (1<<22)|(1<<20)),
 
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(0<<0)),
-	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(1<<0)),
+	IO8(SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(0<<0))),
+	IO8(SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(1<<0))),
 #endif
 
     };
@@ -341,23 +336,23 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 		mcp55_early_pcie_setup(busn[j], devn[j], io_base[j] + ANACTRL_IO_BASE, pci_e_x[j]);
 
 		setup_resource_map_x_offset(ctrl_conf_1, sizeof(ctrl_conf_1)/sizeof(ctrl_conf_1[0]),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
 		for(i=0; i<3; i++) { // three SATA
 			setup_resource_map_x_offset(ctrl_conf_1_1, sizeof(ctrl_conf_1_1)/sizeof(ctrl_conf_1_1[0]),
-				PCI_BDF(busn[j], devn[j], i), io_base[j]);
+				PCI_BDF(busn[j], devn[j], i), io_base[j], 0);
 		}
 		if(busn[j] == 0) {
 			setup_resource_map_x_offset(ctrl_conf_mcp55_only, sizeof(ctrl_conf_mcp55_only)/sizeof(ctrl_conf_mcp55_only[0]),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
 		}
 
 		if( (busn[j] == 0) && (mcp55_num>1) ) {
 			setup_resource_map_x_offset(ctrl_conf_master_only, sizeof(ctrl_conf_master_only)/sizeof(ctrl_conf_master_only[0]),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
 		}
 
 		setup_resource_map_x_offset(ctrl_conf_2, sizeof(ctrl_conf_2)/sizeof(ctrl_conf_2[0]),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
 
 	}
 
@@ -408,10 +403,8 @@ static int mcp55_early_setup_x(void)
 		busnx = ht_c_index * HT_CHAIN_BUSN_D;
 		for(devnx=0;devnx<0x20;devnx++) {
 			u32 id;
-			struct device *dev;
-#error dev is not set up
 			//			dev = PCI_BDF(busnx, devnx, 0);
-			id = pci_read_config32(dev, PCI_VENDOR_ID);
+			id = pci_read_config32(busnx, devnx<<3, PCI_VENDOR_ID);
 			if(id == 0x036910de) {
 				busn[mcp55_num] = busnx;
 				devn[mcp55_num] = devnx;

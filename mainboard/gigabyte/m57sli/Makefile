@@ -20,7 +20,8 @@
 ##
 
 STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o \
-			$(obj)/mainboard/$(MAINBOARDDIR)/option_table.c
+			$(obj)/mainboard/$(MAINBOARDDIR)/option_table.c \
+			$(obj)/southbridge/nvidia/mcp55/stage1_smbus.o
 
 INITRAM_SRC =      $(src)/mainboard/$(MAINBOARDDIR)/initram.c
 

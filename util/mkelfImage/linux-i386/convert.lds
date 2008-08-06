@@ -27,7 +27,7 @@ SECTIONS
 		*(.bss)
 	}
 	_end = . ;
-	bss_size = _end - _bss;
+	bss_sizex = _end - _bss;
 	
 	/DISCARD/ : {
 		*(.comment)

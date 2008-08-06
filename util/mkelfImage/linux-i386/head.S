@@ -59,7 +59,7 @@ startup_32:
 	movl	$GDTLOC, %edi
 	movl	$(gdt_end - gdt), %ecx
 	rep	movsb
-	
+
 	# Linux makes stupid assumptions about the segments
 	# that are already setup, so setup a new gdt & ldt
 	# and then reload the segment registers.
@@ -95,22 +95,113 @@ startup_32:
 	# Flag to indicate we are the bootstrap processor
 	xorl	%ebx, %ebx
 
+	movl    switch_64, %eax
+	cmp	$1, %eax
+	jz	switch_to_64
+
 	# Clear the unspecified registers for good measure
 	xorl	%eax, %eax
 	xorl	%ecx, %ecx
 	xorl	%edx, %edx
 	xorl	%edi, %edi
-	xorl	%esp, %esp
 	xorl	%ebp, %ebp
 
+	# do not clear esp, we still need to use lret later
 
-	# Jump to the linux kernel
-	ljmp	$ PROT_CODE_SEG , $ 0x100000
+        pushl $PROT_CODE_SEG
+        movl entry, %eax
+        pushl %eax
+
+	lret
+
+switch_to_64:
+
+	/* We need to switch to 64bit before use startup_64 entry go to kernel */
+ /*
+  * Prepare for entering 64 bit mode
+  */
+        # Move the gdt64 where Linux will not smash it during decompression
+	movl	%esi, %eax # save the real mode pointer
+	movl    $gdt64, %esi
+	movl    $GDT64LOC, %edi
+	movl    $(gdt64_end - gdt64), %ecx
+	rep     movsb
+	movl	%eax, %esi
+
+	/* Load new GDT with the 64bit segments using 32bit descriptor */
+	lgdt	gdt64
+
+	/* Enable PAE mode */
+	xorl    %eax, %eax
+	btsl    $5, %eax
+	movl    %eax, %cr4
+
+ /*
+  * Build early 4G boot pagetable
+  */
+       /* Initialize Page tables to 0*/
+       movl    $PGTLOC, %edi
+       xorl    %eax, %eax
+       movl    $((4096*6)/4), %ecx
+       rep     stosl
+
+       /* Build Level 4 */
+       movl    $(PGTLOC + 0), %edi
+       leal    0x1007 (%edi), %eax
+       movl    %eax, 0(%edi)
+
+       /* Build Level 3 */
+       movl    $(PGTLOC + 0x1000), %edi
+       leal    0x1007(%edi), %eax
+       movl    $4, %ecx
+1:     movl    %eax, 0x00(%edi)
+       addl    $0x00001000, %eax
+       addl    $8, %edi
+       decl    %ecx
+       jnz     1b
+
+       /* Build Level 2 */
+       movl    $(PGTLOC + 0x2000), %edi
+       movl    $0x00000183, %eax
+       movl    $2048, %ecx
+1:     movl    %eax, 0(%edi)
+       addl    $0x00200000, %eax
+       addl    $8, %edi
+       decl    %ecx
+       jnz     1b
+
+       /* Enable the boot page tables */
+       movl    $PGTLOC, %eax
+       movl    %eax, %cr3
+
+       /* Enable Long mode in EFER (Extended Feature Enable Register) */
+       movl    $0xc0000080, %ecx
+       rdmsr
+       btsl    $8, %eax
+       wrmsr
+
+	/* Preparing for 64bit jmp */
+        pushl $PROT_CODE_SEG
+        movl entry, %eax
+        pushl %eax
+
+       /* Enter paged protected Mode, activating Long Mode */
+        xorl    %eax, %eax
+        btsl    $31, %eax
+        btsl    $0, %eax
+        movl    %eax, %cr0
+
+        /*
+         * At this point we're in long mode but in 32bit compatibility mode
+         * with EFER.LME = 1, CS.L = 0, CS.D = 1 (and in turn
+         * EFER.LMA = 1). Now we want to jump in 64bit mode, to do that we use
+         * the new gdt/idt that has __KERNEL_CS with CS.L = 1.
+         */
+
+	lret
 
 
 	/* Routines to query the BIOS... */
-
-
 /**************************************************************************
 E820_MEMSIZE - Get a listing of memory regions
 **************************************************************************/
@@ -409,6 +500,7 @@ gdt:
 	.word	0x9200				# data read/write
 	.word	0x00CF				# granularity = 4096, 386
 						#  (+5th nibble of limit)
+
 /*
  * The layout of the per-CPU GDT under Linux:
  *
@@ -446,7 +538,14 @@ gdt:
  */
 gdt_end:
 
-
+gdt64:
+	.word	gdt64_end - gdt64
+	.long	GDT64LOC
+	.word	0
+	.quad	0x0000000000000000	/* NULL descriptor */
+	.quad	0x00af9a000000ffff	/* __KERNEL_CS */
+	.quad	0x00cf92000000ffff	/* __KERNEL_DS */
+gdt64_end:
 	
 	.section ".trailer", "a"
 	/* Constants set at build time, these are at the very end of my image */
@@ -458,13 +557,19 @@ convert_magic:
 	.long	CONVERT_MAGIC
 gdt_size:
 	.long	gdt_end - gdt
+gdt64_size:
+	.long	gdt64_end - gdt64
+pgt_size:
+	.long   4096*6
 bss_size:
-	.long	bss_size
+	.long	bss_sizex
 ramdisk_flags:
 	.word	0
 root_dev:
 	.word	DEFAULT_ROOT_DEV
 entry:
+	.long	0
+switch_64:
 	.long	0
 initrd_start:
 	.long	0

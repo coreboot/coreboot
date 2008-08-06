@@ -81,7 +81,7 @@ static void parse_kernel(struct kernel_info *info,
 	phdr = (Elf64_Phdr *)(kernel_buf + le64_to_cpu(ehdr->e_phoff));
 	phdrs = 0;
 	for(i = 0; i < le16_to_cpu(ehdr->e_phnum); i++) {
-		if (le16_to_cpu(phdr[i].p_type) != PT_LOAD)
+		if (le32_to_cpu(phdr[i].p_type) != PT_LOAD)
 			continue;
 		phdrs++;
 	}

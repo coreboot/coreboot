@@ -173,15 +173,15 @@ fi
 dnl ---Output variables...
 
 HOST_CC=$CC
-HOST_CFLAGS='-O2 -Wall $(HOST_CPPFLAGS)'
+HOST_CFLAGS="$HOST_CFLAGS -O2 -Wall \$(HOST_CPPFLAGS)"
 
 dnl TODO: figure out how to set these appropriately for compilers other than gcc
-I386_CFLAGS='-Os -ffreestanding -Wall -W -Wno-format $(I386_CPPFLAGS)'
+I386_CFLAGS="$I386_CFLAGS -Os -ffreestanding -Wall -W -Wno-format \$(I386_CPPFLAGS)"
 I386_ASFLAGS=''
 I386_LDFLAGS='-static --warn-multiple-gp --warn-common'
 
 dnl TODO: figure out how to set these appropriately for compilers other than gcc
-IA64_CFLAGS='-Os -ffreestanding -Wall -W -Wno-format -fpic -mconstant-gp -mauto-pic -fno-unwind-tables $(IA64_CPPFLAGS)'
+IA64_CFLAGS="$IA64_CFLAGS -Os -ffreestanding -Wall -W -Wno-format -fpic -mconstant-gp -mauto-pic -fno-unwind-tables \$(IA64_CPPFLAGS)"
 IA64_ASFLAGS='-mconstant-gp -mauto-pic'
 IA64_LDFLAGS='-static --warn-multiple-gp --warn-common'
 

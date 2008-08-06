@@ -19,13 +19,16 @@ struct kernel_info;
 static void (*parse_kernel_type)(struct kernel_info *info, char *kernel_buf, size_t kernel_size);
 static void parse_bzImage_kernel(struct kernel_info *info, char *kernel_buf, size_t kernel_size);
 static void parse_elf32_kernel(struct kernel_info *info, char *kernel_buf, size_t kernel_size);
+static void parse_elf64_kernel(struct kernel_info *info, char *kernel_buf, size_t kernel_size);
+
+char *vmlinux_x86_64_probe(char *kernel_buf, off_t kernel_size);
 
 char *vmlinux_i386_probe(char *kernel_buf, off_t kernel_size)
 {
 	Elf32_Ehdr *ehdr;
 	Elf32_Phdr *phdr;
 	int i;
-	int hdr1, hdr2;
+	int phdrs;
 	ehdr = (Elf32_Ehdr *)kernel_buf;
 	if (
 		(ehdr->e_ident[EI_MAG0] != ELFMAG0) ||
@@ -35,7 +38,8 @@ char *vmlinux_i386_probe(char *kernel_buf, off_t kernel_size)
 		return "No ELF signature found on kernel\n";
 	}
 	if (ehdr->e_ident[EI_CLASS] != ELFCLASS32) {
-		return "Not a 32bit ELF kernel\n";
+		return vmlinux_x86_64_probe(kernel_buf, kernel_size);
+//		return "Not a 32bit ELF kernel\n";
 	}
 	if (ehdr->e_ident[EI_DATA]  != ELFDATA2LSB) {
 		return "Not a little endian ELF kernel\n";
@@ -54,26 +58,63 @@ char *vmlinux_i386_probe(char *kernel_buf, off_t kernel_size)
 		return "Kernel uses bad program header size.\n";
 	}
 	phdr = (Elf32_Phdr *)(kernel_buf + le32_to_cpu(ehdr->e_phoff));
-	hdr1 = hdr2 = -1;
-	for(i = 0; i < le32_to_cpu(ehdr->e_phnum); i++) {
+	phdrs = 0;
+	for(i = 0; i < le16_to_cpu(ehdr->e_phnum); i++) {
 		if (le32_to_cpu(phdr[i].p_type) != PT_LOAD)
 			continue;
-		if (((hdr1 != -1) && 
-			((le32_to_cpu(phdr[hdr1].p_paddr) & 0xfffffff) != 0x100000)) ||
-			(hdr2 != -1)) {
-			return "Too many PT_LOAD segments to be a linux kernel\n";
-		}
-		if (hdr1 == -1) {
-			hdr1 = i;
-		} else {
-			hdr2 = i;
-		}
+		phdrs++;
 	}
-	if (hdr1 == -1) {
+	if (phdrs == 0) {
 		return "No PT_LOAD segments!\n";
 	}
 	parse_kernel_type = parse_elf32_kernel;
 	return 0;
+}
+char *vmlinux_x86_64_probe(char *kernel_buf, off_t kernel_size)
+{
+        Elf64_Ehdr *ehdr;
+        Elf64_Phdr *phdr;
+        int i;
+	int phdrs = 0;
+        ehdr = (Elf64_Ehdr *)kernel_buf;
+        if (
+                (ehdr->e_ident[EI_MAG0] != ELFMAG0) ||
+                (ehdr->e_ident[EI_MAG1] != ELFMAG1) ||
+                (ehdr->e_ident[EI_MAG2] != ELFMAG2) ||
+                (ehdr->e_ident[EI_MAG3] != ELFMAG3)) {
+                return "No ELF signature found on kernel\n";
+        }
+        if (ehdr->e_ident[EI_CLASS] != ELFCLASS64) {
+                return "Not a 64bit ELF kernel\n";
+        }
+        if (ehdr->e_ident[EI_DATA]  != ELFDATA2LSB) {
+                return "Not a little endian ELF kernel\n";
+        }
+        if (le16_to_cpu(ehdr->e_type) != ET_EXEC) {
+                return "Not an executable kernel\n";
+        }
+        if (le16_to_cpu(ehdr->e_machine) != EM_X86_64) {
+                return "Not an x86_64 kernel\n";
+        }
+        if (    (ehdr->e_ident[EI_VERSION] != EV_CURRENT) ||
+                (le32_to_cpu(ehdr->e_version) != EV_CURRENT)) {
+                return "Kernel not using ELF version 1.\n";
+        }
+        if (le16_to_cpu(ehdr->e_phentsize) != sizeof(*phdr)) {
+                return "Kernel uses bad program header size.\n";
+        }
+        phdr = (Elf64_Phdr *)(kernel_buf + le64_to_cpu(ehdr->e_phoff));
+	phdrs = 0;
+        for(i = 0; i < le16_to_cpu(ehdr->e_phnum); i++) {
+                if (le32_to_cpu(phdr[i].p_type) != PT_LOAD)
+                        continue;
+		phdrs++;
+        }
+        if (phdrs == 0) {
+                return "No PT_LOAD segments!\n";
+        }
+        parse_kernel_type = parse_elf64_kernel;
+        return 0;
 }
 
 char *bzImage_i386_probe(char *kernel_buf, off_t kernel_size)
@@ -118,17 +159,14 @@ char *linux_i386_probe(char *kernel_buf, off_t kernel_size)
 
 struct kernel_info
 {
-	void *kernel;
-	size_t filesz;
-	size_t memsz;
-	size_t paddr;
-	size_t vaddr;
-	void *kernel2;
-	size_t filesz2;
-	size_t memsz2;
-	size_t paddr2;
-	size_t vaddr2;
+	int phdrs;
+	void *kernel[4];
+	size_t filesz[4];
+	size_t memsz[4];
+	size_t paddr[4];
+	size_t vaddr[4];
 	size_t entry;
+	size_t switch_64;
 	char *version;
 };
 
@@ -137,42 +175,67 @@ static void parse_elf32_kernel(struct kernel_info *info, char *kernel_buf, size_
 	Elf32_Ehdr *ehdr;
 	Elf32_Phdr *phdr;
 	int i;
-	int hdr1, hdr2;
+	int phdrs;
 	ehdr = (Elf32_Ehdr *)kernel_buf;
 	phdr = (Elf32_Phdr *)(kernel_buf + ehdr->e_phoff);
-	hdr1 = hdr2 = -1;
+	phdrs = 0;
 	for(i = 0; i < le16_to_cpu(ehdr->e_phnum); i++) {
 		if (le32_to_cpu(phdr[i].p_type) != PT_LOAD)
 			continue;
-		if (hdr2 != -1) {
-			die("Too many PT_LOAD segments to be a linux kernel\n");
-		}
-		if (hdr1 == -1) {
-			hdr1 = i;
-		} else {
-			hdr2 = i;
-		}
+		info->kernel[phdrs]  = kernel_buf + le32_to_cpu(phdr[i].p_offset);
+		info->filesz[phdrs]  = le32_to_cpu(phdr[i].p_filesz);
+		info->memsz[phdrs]   = le32_to_cpu(phdr[i].p_memsz);
+		info->paddr[phdrs]   = le32_to_cpu(phdr[i].p_paddr) & 0xfffffff;
+		info->vaddr[phdrs]   = le32_to_cpu(phdr[i].p_vaddr);
+		phdrs++;
 	}
-	if (hdr1 == -1) {
-		die("No PT_LOAD segments!\n");
-	}
-	info->kernel  = kernel_buf + le32_to_cpu(phdr[hdr1].p_offset);
-	info->filesz  = le32_to_cpu(phdr[hdr1].p_filesz);
-	info->memsz   = le32_to_cpu(phdr[hdr1].p_memsz);
-	info->paddr   = le32_to_cpu(phdr[hdr1].p_paddr) & 0xfffffff;
-	info->vaddr   = le32_to_cpu(phdr[hdr1].p_vaddr);
 
-	if (hdr2 != -1) {
-		info->kernel2 = kernel_buf + le32_to_cpu(phdr[hdr2].p_offset);
-		info->filesz2 = le32_to_cpu(phdr[hdr2].p_filesz);
-		info->memsz2  = le32_to_cpu(phdr[hdr2].p_memsz);
-		info->paddr2  = le32_to_cpu(phdr[hdr2].p_paddr) & 0xfffffff;
-		info->vaddr2  = le32_to_cpu(phdr[hdr2].p_vaddr);
-	}
-	
-	info->entry   = 0x100000;
+	if(!phdrs)
+		die("We need at least one phdr\n");
+
+	info->phdrs = phdrs;
+        info->entry   = le32_to_cpu(ehdr->e_entry);
+	info->switch_64   = 0; //not convert from elf64
 	info->version = "unknown";
 }
+
+static void parse_elf64_kernel(struct kernel_info *info, char *kernel_buf, size_t kernel_size)
+{
+        Elf64_Ehdr *ehdr;
+        Elf64_Phdr *phdr;
+        int i;
+	int phdrs;
+        ehdr = (Elf64_Ehdr *)kernel_buf;
+        phdr = (Elf64_Phdr *)(kernel_buf + le64_to_cpu(ehdr->e_phoff));
+
+	phdrs = 0;
+	for(i = 0; i < le16_to_cpu(ehdr->e_phnum); i++) {
+		if (le32_to_cpu(phdr[i].p_type) != PT_LOAD)
+			continue;
+		info->kernel[phdrs]  = kernel_buf + le64_to_cpu(phdr[i].p_offset);
+		info->filesz[phdrs]  = le64_to_cpu(phdr[i].p_filesz);
+		info->memsz[phdrs]   = le64_to_cpu(phdr[i].p_memsz);
+		info->paddr[phdrs]   = le64_to_cpu(phdr[i].p_paddr) & 0xffffff;
+		info->vaddr[phdrs]   = le64_to_cpu(phdr[i].p_vaddr);
+		phdrs++;
+	}
+
+	if(!phdrs)
+		die("We need at least one phdr\n");
+	
+	info->phdrs = phdrs;
+        info->entry   = le64_to_cpu(ehdr->e_entry);
+#if  0
+	if (info->entry != info->paddr[0]) {
+		info->entry = info->paddr[0]; // we still have startup_32 there
+		info->switch_64   = 0; //not convert from elf64
+	} else
+#endif
+		info->switch_64   = 1; //convert from elf64
+
+        info->version = "unknown";
+}
+
 
 static void parse_bzImage_kernel(struct kernel_info *info, char *kernel_buf, size_t kernel_size)
 {
@@ -186,12 +249,14 @@ static void parse_bzImage_kernel(struct kernel_info *info, char *kernel_buf, siz
 	}
 	offset = 512 + (512 *setup_sects);
 
-	info->kernel  = kernel_buf + offset;
-	info->filesz  = kernel_size - offset;
-	info->memsz   = 0x700000;
-	info->paddr   = 0x100000;
-	info->vaddr   = 0x100000;
-	info->entry   = info->paddr;
+	info->kernel[0]  = kernel_buf + offset;
+	info->filesz[0]  = kernel_size - offset;
+	info->memsz[0]   = 0x700000;
+	info->paddr[0]   = 0x100000;
+	info->vaddr[0]   = 0x100000;
+	info->phdrs = 1;
+	info->entry   = info->paddr[0];
+	info->switch_64   = 0; //not convert from elf64, even later bzImage become elf64, it still includes startup_32
 	info->version = kernel_buf + 512 + le16_to_cpu(hdr->kver_addr);
 }
 
@@ -237,6 +302,7 @@ int linux_i386_mkelf(int argc, char **argv,
 	struct kernel_info kinfo;
 	struct image_parameters *params;
 	int index;
+	int i;
 
 	int opt;
 	static const struct option options[] = {
@@ -310,7 +376,7 @@ int linux_i386_mkelf(int argc, char **argv,
 	
 	/* Add a program header for the note section */
 	index = 4;
-	index += kinfo.kernel2 ? 1:0;
+	index += (kinfo.phdrs - 1);
 	index += ramdisk_size ? 1:0;
 	phdr = add_program_headers(ehdr, index);
 
@@ -328,23 +394,24 @@ int linux_i386_mkelf(int argc, char **argv,
 	phdr[2].p_paddr  = REAL_MODE_DATA_LOC;
 	phdr[2].p_vaddr  = REAL_MODE_DATA_LOC;
 	phdr[2].p_filesz = 0;
-	phdr[2].p_memsz  = (GDTLOC - REAL_MODE_DATA_LOC) + params->gdt_size;
+	if(!kinfo.switch_64)
+		phdr[2].p_memsz = (GDTLOC - REAL_MODE_DATA_LOC) + params->gdt_size;
+	else
+		phdr[2].p_memsz = (PGTLOC - REAL_MODE_DATA_LOC) + params->pgt_size;
 	phdr[2].p_data   = 0;
 
-	phdr[3].p_paddr  = kinfo.paddr;
-	phdr[3].p_vaddr  = kinfo.vaddr;
-	phdr[3].p_filesz = kinfo.filesz;
-	phdr[3].p_memsz  = kinfo.memsz;
-	phdr[3].p_data   = kinfo.kernel;
+	if( (phdr[1].p_paddr + phdr[1].p_memsz) > phdr[2].p_paddr) {
+		die("Internal error: need to increase REAL_MODE_DATA_LOC !\n");
+	}
 
-	index = 4;
+	index = 3;
 	/* Put the second kernel frament if present */
-	if (kinfo.kernel2) {
-		phdr[index].p_paddr  = kinfo.paddr2;
-		phdr[index].p_vaddr  = kinfo.vaddr2;
-		phdr[index].p_filesz = kinfo.filesz2;
-		phdr[index].p_memsz  = kinfo.memsz2;
-		phdr[index].p_data   = kinfo.kernel2;
+	for(i=0;i<kinfo.phdrs;i++) {
+		phdr[index].p_paddr  = kinfo.paddr[i];
+		phdr[index].p_vaddr  = kinfo.vaddr[i];
+		phdr[index].p_filesz = kinfo.filesz[i];
+		phdr[index].p_memsz  = kinfo.memsz[i];
+		phdr[index].p_data   = kinfo.kernel[i];
 		index++;
 	}
 	
@@ -352,6 +419,10 @@ int linux_i386_mkelf(int argc, char **argv,
 	 */
 	params->initrd_start = params->initrd_size = 0;
 	if (ramdisk_size) {
+		if( (phdr[index-1].p_paddr + phdr[index-1].p_memsz) > ramdisk_base) {
+			die("need to increase increase ramdisk_base !\n");
+		}
+
 		phdr[index].p_paddr  = ramdisk_base;
 		phdr[index].p_vaddr  = ramdisk_base;
 		phdr[index].p_filesz = ramdisk_size;
@@ -364,6 +435,7 @@ int linux_i386_mkelf(int argc, char **argv,
 	
 	/* Set the start location */
 	params->entry = kinfo.entry;
+	params->switch_64 = kinfo.switch_64;
 	ehdr->e_entry = phdr[1].p_paddr;
 
 	/* Setup the elf notes */

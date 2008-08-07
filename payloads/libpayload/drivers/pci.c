@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,32 +31,70 @@
 #include <libpayload.h>
 #include <pci.h>
 
+u8 pci_read_config8(pcidev_t device, u16 reg)
+{
+	outl(device | (reg & ~3), 0xCF8);
+	return inb(0xCFC + (reg & 3));
+}
+
+u16 pci_read_config16(pcidev_t device, u16 reg)
+{
+	outl(device | (reg & ~3), 0xCF8);
+	return inw(0xCFC + (reg & 3));
+}
+
+u32 pci_read_config32(pcidev_t device, u16 reg)
+{
+	outl(device | (reg & ~3), 0xCF8);
+	return inl(0xCFC + (reg & 3));
+}
+
+void pci_write_config8(pcidev_t device, u16 reg, u8 val)
+{
+	outl(device | (reg & ~3), 0xCF8);
+	outb(val, 0xCFC + (reg & 3));
+}
+
+void pci_write_config16(pcidev_t device, u16 reg, u16 val)
+{
+	outl(device | (reg & ~3), 0xCF8);
+	outw(val, 0xCFC + (reg & 3));
+}
+
+void pci_write_config32(pcidev_t device, u16 reg, u32 val)
+{
+	outl(device | (reg & ~3), 0xCF8);
+	outl(val, 0xCFC + (reg & 3));
+}
+
 static int find_on_bus(int bus, unsigned short vid, unsigned short did,
 		       pcidev_t * dev)
 {
 	int devfn;
-	unsigned int val;
+	u32 val;
 	unsigned char hdr;
 
 	for (devfn = 0; devfn < 0x100; devfn++) {
-		pci_read_dword(bus, devfn, REG_VENDOR_ID, &val);
+		val = pci_read_config32(PCI_DEV(bus, PCI_SLOT(devfn),
+					PCI_FUNC(devfn)), REG_VENDOR_ID);
 
 		if (val == 0xffffffff || val == 0x00000000 ||
 		    val == 0x0000ffff || val == 0xffff0000)
 			continue;
 
 		if (val == ((did << 16) | vid)) {
-			*dev = PCIDEV(bus, devfn);
+			*dev = PCI_DEV(bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
 			return 1;
 		}
 
-		pci_read_byte(bus, devfn, REG_HEADER_TYPE, &hdr);
-
+		hdr = pci_read_config8(PCI_DEV(bus, PCI_SLOT(devfn),
+					PCI_FUNC(devfn)), REG_HEADER_TYPE);
 		hdr &= 0x7F;
 
 		if (hdr == HEADER_TYPE_BRIDGE || hdr == HEADER_TYPE_CARDBUS) {
 			unsigned int busses;
-			pci_read_dword(bus, devfn, REG_PRIMARY_BUS, &busses);
+			busses = pci_read_config32(PCI_DEV(bus, PCI_SLOT(devfn),
+						PCI_FUNC(devfn)), REG_PRIMARY_BUS);
 			if (find_on_bus((busses >> 8) & 0xFF, vid, did, dev))
 				return 1;
 		}
@@ -64,29 +103,12 @@ static int find_on_bus(int bus, unsigned short vid, unsigned short did,
 	return 0;
 }
 
-void pci_read_dword(unsigned int bus, unsigned int devfn,
-		    unsigned int reg, unsigned int *val)
-{
-	outl(PCI_ADDR(bus, devfn, reg), 0xCF8);
-	*val = inl(0xCFC);
-}
-
-void pci_read_byte(unsigned int bus, unsigned int devfn,
-		   unsigned int reg, unsigned char *val)
-{
-	outl(PCI_ADDR(bus, devfn, reg), 0xCF8);
-	*val = inb(0xCFC + (reg & 3));
-}
-
-int pci_find_device(unsigned short vid, unsigned short did, pcidev_t * dev)
+int pci_find_device(u16 vid, u16 did, pcidev_t * dev)
 {
 	return find_on_bus(0, vid, did, dev);
 }
 
-unsigned int pci_read_resource(pcidev_t dev, int bar)
+u32 pci_read_resource(pcidev_t dev, int bar)
 {
-	unsigned int val;
-	pci_read_dword(PCIDEV_BUS(dev), PCIDEV_DEVFN(dev), 0x10 + (bar * 4),
-		       &val);
-	return val;
+	return pci_read_config32(dev, 0x10 + (bar * 4));
 }

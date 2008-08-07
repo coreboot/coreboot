@@ -94,7 +94,8 @@ static void show_config_space(WINDOW *win, int row, int col, int index)
 	devfn = devices[index].device & 0xff;
 
 	for (i = 0; i < 64; i += 4)
-		pci_read_dword(bus, devfn, i, ((unsigned int *)&cspace[i]));
+		cspace[i] = pci_read_config32(PCI_DEV(bus, PCI_SLOT(devfn),
+					PCI_FUNC(devfn)), i);
 
 	for (y = 0; y < 4; y++) {
 		for (x = 0; x < 16; x++)
@@ -180,7 +181,10 @@ static void pci_scan_bus(int bus)
 
 	for (devfn = 0; devfn < 0x100;) {
 		for (func = 0; func < 8; func++, devfn++) {
-			pci_read_dword(bus, devfn, REG_VENDOR_ID, &val);
+			pcidev_t dev = PCI_DEV(bus, PCI_SLOT(devfn),
+					PCI_FUNC(devfn));
+
+			val = pci_read_config32(dev, REG_VENDOR_ID);
 
 			/* Nobody home. */
 			if (val == 0xffffffff || val == 0x00000000 ||
@@ -197,14 +201,13 @@ static void pci_scan_bus(int bus)
 			devices[devices_index++].id = val;
 
 			/* If this is a bridge, then follow it. */
-			pci_read_byte(bus, devfn, REG_HEADER_TYPE, &hdr);
+			hdr = pci_read_config8(dev, REG_HEADER_TYPE);
 			hdr &= 0x7f;
 			if (hdr == HEADER_TYPE_BRIDGE ||
 			    hdr == HEADER_TYPE_CARDBUS) {
 				unsigned int busses;
 
-				pci_read_dword(bus, devfn, REG_PRIMARY_BUS,
-					       &busses);
+				busses = pci_read_config32(dev, REG_PRIMARY_BUS);
 
 				pci_scan_bus((busses >> 8) & 0xff);
 

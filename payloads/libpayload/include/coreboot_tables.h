@@ -128,7 +128,57 @@ struct cb_console {
 #define CB_TAG_CONSOLE_SROM       4
 #define CB_TAG_CONSOLE_EHCI       5
 
-/* Still to come: CMOS information. */
+#define CB_TAG_CMOS_OPTION_TABLE 0x00c8
+struct cb_cmos_option_table {
+	u32 tag;
+	u32 size;
+	u32 header_length;
+};
+
+#define CB_TAG_OPTION         0x00c9
+#define CMOS_MAX_NAME_LENGTH    32
+struct cb_cmos_entries {
+	u32 tag;
+	u32 size;
+	u32 bit;
+	u32 length;
+	u32 config;
+	u32 config_id;
+	u8 name[CMOS_MAX_NAME_LENGTH];
+};
+
+
+#define CB_TAG_OPTION_ENUM    0x00ca
+#define CMOS_MAX_TEXT_LENGTH 32
+struct cb_cmos_enums {
+	u32 tag;
+	u32 size;
+	u32 config_id;
+	u32 value;
+	u8 text[CMOS_MAX_TEXT_LENGTH];
+};
+
+#define CB_TAG_OPTION_DEFAULTS 0x00cb
+#define CMOS_IMAGE_BUFFER_SIZE 128
+struct cb_cmos_defaults {
+	u32 tag;
+	u32 size;
+	u32 name_length;
+	u8 name[CMOS_MAX_NAME_LENGTH];
+	u8 default_set[CMOS_IMAGE_BUFFER_SIZE];
+};
+
+#define CB_TAG_OPTION_CHECKSUM 0x00cc
+#define CHECKSUM_NONE	0
+#define CHECKSUM_PCBIOS	1
+struct	cb_cmos_checksum {
+	u32 tag;
+	u32 size;
+	u32 range_start;
+	u32 range_end;
+	u32 location;
+	u32 type;
+};
 
 /* Helpful macros */
 

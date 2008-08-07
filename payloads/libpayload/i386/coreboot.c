@@ -74,6 +74,21 @@ static void cb_parse_serial(unsigned char *ptr, struct sysinfo_t *info)
 	info->ser_ioport = ser->ioport;
 }
 
+#ifdef CONFIG_NVRAM
+static void cb_parse_optiontable(unsigned char *ptr, struct sysinfo_t *info)
+{
+	info->option_table = (struct cb_cmos_option_table *)ptr;
+}
+
+static void cb_parse_checksum(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_cmos_checksum *cmos_cksum = (struct cb_cmos_checksum *)ptr;
+	info->cmos_range_start = cmos_cksum->range_start;
+	info->cmos_range_end = cmos_cksum->range_end;
+	info->cmos_checksum_location = cmos_cksum->location;
+}
+#endif
+
 static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -115,6 +130,14 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_SERIAL:
 			cb_parse_serial(ptr, info);
 			break;
+#ifdef CONFIG_NVRAM
+		case CB_TAG_CMOS_OPTION_TABLE:
+			cb_parse_optiontable(ptr, info);
+			break;
+		case CB_TAG_OPTION_CHECKSUM:
+			cb_parse_checksum(ptr, info);
+			break;
+#endif
 		}
 
 		ptr += rec->size;

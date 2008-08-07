@@ -43,6 +43,11 @@ struct sysinfo_t {
 		unsigned long long base;
 		unsigned long long size;
 	} memrange[SYSINFO_MAX_MEM_RANGES];
+
+	struct cb_cmos_option_table *option_table;
+	u32 cmos_range_start;
+	u32 cmos_range_end;
+	u32 cmos_checksum_location;
 };
 
 extern struct sysinfo_t lib_sysinfo;

@@ -60,7 +60,7 @@ static int lar_module_redraw(WINDOW *win)
 	print_module_title(win, "LAR Listing");
 
 	if (lar == 0) {
-		mvwprintw(win, 11, 61 / 2,  "Bad or missing LAR");
+		mvwprintw(win, 11, 61 / 2, "Bad or missing LAR");
 		return 0;
 	}
 

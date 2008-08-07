@@ -77,9 +77,7 @@ struct coreinfo_cat {
 	}
 };
 
-static WINDOW *modwin;
-static WINDOW *menuwin;
-
+static WINDOW *modwin, *menuwin;
 static int curwin;
 
 void print_module_title(WINDOW *win, const char *title)
@@ -90,7 +88,6 @@ void print_module_title(WINDOW *win, const char *title)
 	mvwprintw(win, 0, 1, title);
 
 	wmove(win, 1, 1);
-
 	for (i = 0; i < 78; i++)
 		waddch(win, '\304');
 }
@@ -110,7 +107,8 @@ static void print_submenu(struct coreinfo_cat *cat)
 		return;
 
 	for (i = 0; i < cat->count; i++)
-		ptr += sprintf(ptr, "[%c: %s] ", 'A' + i, cat->modules[i]->name);
+		ptr += sprintf(ptr, "[%c: %s] ", 'A' + i,
+			       cat->modules[i]->name);
 
 	mvwprintw(menuwin, 0, 0, menu);
 }
@@ -126,7 +124,7 @@ static void print_time_and_date(void)
 	rtc_read_clock(&tm);
 
 	mvwprintw(menuwin, 0, 57, "%02d/%02d/%04d - %02d:%02d:%02d",
-		  tm.tm_mon, tm.tm_mday, 1900+tm.tm_year, tm.tm_hour,
+		  tm.tm_mon, tm.tm_mday, 1900 + tm.tm_year, tm.tm_hour,
 		  tm.tm_min, tm.tm_sec);
 }
 #endif
@@ -138,7 +136,6 @@ static void print_menu(void)
 	char *ptr = menu;
 
 	wmove(menuwin, 1, 0);
-
 	for (j = 0; j < SCREEN_X; j++)
 		waddch(menuwin, ' ');
 
@@ -158,11 +155,9 @@ static void print_menu(void)
 
 static void center(int row, const char *str)
 {
-	int len = strlen(str);
-	int j;
+	int j, len = strlen(str);
 
 	wmove(stdscr, row, 0);
-
 	for (j = 0; j < SCREEN_X; j++)
 		waddch(stdscr, ' ');
 
@@ -283,7 +278,6 @@ int main(void)
 
 	for (i = 0; i < SCREEN_Y - 1; i++) {
 		wmove(modwin, i - 1, 0);
-
 		for (j = 0; j < SCREEN_X; j++)
 			waddch(modwin, ' ');
 	}
@@ -293,7 +287,6 @@ int main(void)
 	for (i = 0; i < ARRAY_SIZE(categories); i++) {
 		for (j = 0; j < categories[i].count; j++)
 			categories[i].modules[j]->init();
-
 	}
 
 	loop();

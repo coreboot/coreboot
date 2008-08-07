@@ -309,7 +309,7 @@ $(objk)/conf.o: $(srck)/conf.c
 
 $(objk)/zconf.tab.o: $(objk)/zconf.tab.c $(objk)/lex.zconf.c \
 		     $(objk)/zconf.hash.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -c -o $@ $(objk)/zconf.tab.c
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $(objk)/zconf.tab.c
 $(objk)/kconfig_load.o: $(srck)/kconfig_load.c $(objk)/lkc_defs.h
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -c -o $@ $<
 $(objk)/qconf.o: $(srck)/qconf.cc $(objk)/qconf.moc $(objk)/lkc_defs.h

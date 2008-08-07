@@ -28,8 +28,11 @@
 
 # GCC wrapper for libpayload
 
-DEFAULT_PREFIX=/opt
+if [ "$CC" != "" ]; then
+DEFAULT_CC=$CC
+else
 DEFAULT_CC=gcc
+fi
 
 BASE=`dirname $0`
 
@@ -37,9 +40,10 @@ BASE=`dirname $0`
 . $BASE/lp.functions
 
 trygccoption() {
-	$DEFAULT_CC $1 -S -xc /dev/null -o .$$.tmp > /dev/null
+	$DEFAULT_CC $1 -S -xc /dev/null -o .$$.tmp &> /dev/null
+	RET=$?
 	rm -f .$$.tmp
-	return $?
+	return $RET
 }
 
 DEBUGME=0

@@ -45,8 +45,9 @@ HOSTCFLAGS := -I$(srck) -I$(objk)
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 LIBPAYLOAD_DIR := ../libpayload
-CC = $(LIBPAYLOAD_DIR)/bin/lpgcc
+XCC := CC=$(CC) $(LIBPAYLOAD_DIR)/bin/lpgcc
 AS = $(LIBPAYLOAD_DIR)/bin/lpas
+STRIP ?= strip
 
 INCLUDES = -Ibuild
 CFLAGS := -Wall -Werror -Os $(INCLUDES)
@@ -68,9 +69,9 @@ all: prepare $(TARGET)
 
 $(TARGET): $(src)/.config $(OBJS)
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) -o $@ $(OBJS)
+	$(Q)$(XCC) -o $@ $(OBJS)
 	$(Q)printf "  STRIP   $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)strip -s $@
+	$(Q)$(STRIP) -s $@
 
 $(obj)/%.S.o: $(src)/%.S
 	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
@@ -78,7 +79,7 @@ $(obj)/%.S.o: $(src)/%.S
 
 $(obj)/%.o: $(src)/%.c
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
+	$(Q)$(XCC) $(CFLAGS) -c -o $@ $<
 
 endif
 

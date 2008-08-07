@@ -63,8 +63,21 @@ include $(PLATFORM-y) $(BUILD-y)
 
 INCLUDES := -I./include
 INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
+
+try-run= $(shell set -e; \
+TMP=".$$$$.tmp"; \
+if ($(1)) > /dev/null 2>&1; \
+then echo "$(2)"; \
+else echo "$(3)"; \
+fi; rm -rf "$$TMP")
+
+cc-option= $(call try-run,\
+$(CC) $(1) -S -xc /dev/null -o "$$TMP", $(1), $(2))
+
+STACKPROTECT += $(call cc-option, -fno-stack-protector,)
+
 # TODO: Re-add -Os as soon as we find out why it caused problems.
-CFLAGS := -Wall -Werror -fno-stack-protector -nostdinc $(INCLUDES)
+CFLAGS := -Wall -Werror $(STACKPROTECT) -nostdinc $(INCLUDES)
 
 lib: lib/libpayload.a lib/$(ARCHDIR-y)/head.o
 

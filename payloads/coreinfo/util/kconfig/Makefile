@@ -4,7 +4,7 @@
 
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
-Kconfig := Config.in
+Kconfig := Kconfig
 
 xconfig: prepare $(objk)/qconf
 	$(Q)$(objk)/qconf $(Kconfig)

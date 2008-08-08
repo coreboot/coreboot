@@ -107,7 +107,14 @@ config chip.h
 chip cpu/emulation/qemu-x86
 	device pci_domain 0 on 
 		device pci 0.0 on end
-		device pci 1.0 on end
+
+		chip southbridge/intel/i82371eb # southbridge
+			device pci 01.0 on end
+			device pci 01.1 on end
+			register "ide0_enable" = "1"
+			register "ide1_enable" = "1"
+		end
+
 #		register "com1" = "{1}"
 #		register "com1" = "{1, 0, 0x3f8, 4}"
 	end

@@ -2,6 +2,7 @@
 ## This file is part of the libpayload project.
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
+## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
 ##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
@@ -27,29 +28,41 @@
 ## SUCH DAMAGE.
 ##
 
-BASE_DIR=$(shell pwd)
-KCONFIG_DIR=util/kconfig
-DESTDIR=/opt
+export src := $(shell pwd)
+export srctree := $(src)
+export srck := $(src)/util/kconfig
+export obj := $(src)/build
+export objk := $(src)/build/util/kconfig
 
-ifeq (.config, $(wildcard .config))
-dot-config := 1
-else
-dot-config := 0
-config-targets := 1
+export KERNELVERSION      := 0.1.0
+export KCONFIG_AUTOHEADER := $(obj)/config.h
+export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
+
+CONFIG_SHELL := sh
+KBUILD_DEFCONFIG := configs/defconfig
+UNAME_RELEASE := $(shell uname -r)
+HAVE_DOTCONFIG := $(wildcard .config)
+MAKEFLAGS += -rR --no-print-directory
+
+# Make is silent per default, but 'make V=1' will show all compiler calls.
+ifneq ($(V),1)
+Q := @
 endif
 
-ifneq ($(filter textconfig oldconfig defconfig menuconfig,$(MAKECMDGOALS)),)
-config-targets := 1
-dot-config := 0
-endif
+HOSTCC = gcc
+HOSTCXX = g++
+HOSTCFLAGS := -I$(srck) -I$(objk)
+HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
-ifeq ($(dot-config),0)
-all: .config
+DESTDIR = /opt
 
-.config: oldconfig
-	@echo "Configuration completed - type make to build libpayload"
+ifeq ($(strip $(HAVE_DOTCONFIG)),)
+
+all: config
+
 else
--include .config
+
+include $(src)/.config
 
 ARCHDIR-$(CONFIG_TARGET_I386) := i386
 
@@ -61,7 +74,8 @@ BUILD-$(CONFIG_TINYCURSES) += curses/Makefile.inc
 
 include $(PLATFORM-y) $(BUILD-y)
 
-INCLUDES := -I./include
+OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
+INCLUDES := -Iinclude -Ibuild
 INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
 
 try-run= $(shell set -e; \
@@ -79,64 +93,60 @@ STACKPROTECT += $(call cc-option, -fno-stack-protector,)
 # TODO: Re-add -Os as soon as we find out why it caused problems.
 CFLAGS := -Wall -Werror $(STACKPROTECT) -nostdinc $(INCLUDES)
 
-lib: lib/libpayload.a lib/$(ARCHDIR-y)/head.o
+all: lib
 
-lib/libpayload.a: $(TARGETS-y)
-	@ $(AR) rc $@ $(TARGETS-y)
+lib: prepare $(obj)/lib/libpayload.a copystuff
 
-lib/$(ARCHDIR-y)/head.o: $(ARCHDIR-y)/head.o
-	@ mkdir -p lib/$(ARCHDIR-y)
-	@ cp $< $@
+# Copy libpayload.a and head.o into $(src)/lib where lpgcc et al expect them.
+copystuff:
+	$(Q)cp $(obj)/$(ARCHDIR-y)/head.S.o $(src)/lib/$(ARCHDIR-y)/head.o
+	$(Q)cp $(obj)/lib/libpayload.a $(src)/lib
 
-%.o: %.c
-	$(CC) -m32 $(CFLAGS) -c -o $@ $<
+$(obj)/lib/libpayload.a: $(OBJS)
+	$(Q)printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(AR) rc $@ $(OBJS)
 
-%.o: %.S
-	$(AS) --32 -o $@ $<
+$(obj)/%.o: $(src)/%.c
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
+
+$(obj)/%.S.o: $(src)/%.S
+	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(AS) --32 -o $@ $<
+
+endif
 
 install: lib
-	install -m 755 -d $(DESTDIR)/libpayload/lib
-	cp -r lib/* $(DESTDIR)/libpayload/lib/
-	install -m 755 -d $(DESTDIR)/libpayload/include
-	for file in `find include -name *.h -type f`; do \
+	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/lib\n"
+	$(Q)install -m 755 -d $(DESTDIR)/libpayload/lib
+	$(Q)cp -r lib/* $(DESTDIR)/libpayload/lib/
+	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/include\n"
+	$(Q)install -m 755 -d $(DESTDIR)/libpayload/include
+	$(Q)for file in `find include -name *.h -type f`; do \
 		install -m 644 -D $$file $(DESTDIR)/libpayload/$$file; \
 	done
-	install -m 755 -d $(DESTDIR)/libpayload/bin
-	install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
-	install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
-	install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
+	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/bin\n"
+	$(Q)install -m 755 -d $(DESTDIR)/libpayload/bin
+	$(Q)install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
+	$(Q)install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
+	$(Q)install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
+
+prepare:
+	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
+	$(Q)mkdir -p $(obj)/crypto $(obj)/curses $(obj)/drivers/video
+	$(Q)mkdir -p $(obj)/i386 $(obj)/lib/$(ARCHDIR-y) $(obj)/libc 
+	$(Q)mkdir -p $(src)/lib/$(ARCHDIR-y)
 
 clean:
-	@ rm -f $(TARGETS-y)
-	@ rm -f lib/libpayload.a lib/$(ARCHDIR-y)/head.o
+	$(Q)rm -rf $(obj)/crypto $(obj)/curses $(obj)/drivers
+	$(Q)rm -rf $(obj)/i386 $(obj)/lib $(obj)/libc 
+	$(Q)rm -rf $(src)/lib/i386 $(src)/lib/libpayload.a
 
 distclean: clean
-	@ make -C $(KCONFIG_DIR) clean
-	@ rm -f $(KCONFIG_DIR)/lxdialog/lxdialog
-	@ rm -f .config .kconfig.d  include/autoconf.h
-endif
+	$(Q)rm -rf build
+	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
-ifeq ($(config-targets),1)
+include util/kconfig/Makefile
 
-$(KCONFIG_DIR)/conf:
-	make -C $(KCONFIG_DIR) conf
+.PHONY: $(PHONY) prepare clean distclean
 
-$(KCONFIG_DIR)/mconf:
-	make -C $(KCONFIG_DIR) mconf
-
-$(KCONFIG_DIR)/lxdialog/lxdialog:
-	make -C $(KCONFIG_DIR)/lxdialog lxdialog
-
-textconfig: $(KCONFIG_DIR)/conf
-	@$(KCONFIG_DIR)/conf $(BASE_DIR)/Config.in
-
-oldconfig: $(KCONFIG_DIR)/conf
-	@$(KCONFIG_DIR)/conf -o $(BASE_DIR)/Config.in
-
-defconfig: $(KCONFIG_DIR)/conf
-	@$(KCONFIG_DIR)/conf -d $(BASE_DIR)/Config.in
-
-menuconfig: $(KCONFIG_DIR)/lxdialog/lxdialog $(KCONFIG_DIR)/mconf
-	@$(KCONFIG_DIR)/mconf $(BASE_DIR)/Config.in
-
-endif

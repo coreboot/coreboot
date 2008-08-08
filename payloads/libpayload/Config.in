@@ -29,10 +29,6 @@
 
 mainmenu "Libpayload Configuration"
 
-config HAVE_DOT_CONFIG
-	bool
-	default y
-
 # When (if) we support multiple architectures, this will become an option.
 config TARGET_I386
 	bool

@@ -30,7 +30,6 @@
 #ifndef _LIBPAYLOAD_H
 #define _LIBPAYLOAD_H
 
-#include <autoconf.h>
 #include <stddef.h>
 #include <arch/types.h>
 #include <arch/io.h>

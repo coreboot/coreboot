@@ -87,7 +87,7 @@ struct expr *expr_copy(struct expr *org)
 		break;
 	case E_AND:
 	case E_OR:
-	case E_CHOICE:
+	case E_LIST:
 		e->left.expr = expr_copy(org->left.expr);
 		e->right.expr = expr_copy(org->right.expr);
 		break;
@@ -145,7 +145,8 @@ static void __expr_eliminate_eq(enum expr_type type, struct expr **ep1, struct e
 		return;
 	}
 	if (e1->type == E_SYMBOL && e2->type == E_SYMBOL &&
-	    e1->left.sym == e2->left.sym && (e1->left.sym->flags & (SYMBOL_YES|SYMBOL_NO)))
+	    e1->left.sym == e2->left.sym &&
+	    (e1->left.sym == &symbol_yes || e1->left.sym == &symbol_no))
 		return;
 	if (!expr_eq(e1, e2))
 		return;
@@ -216,7 +217,7 @@ int expr_eq(struct expr *e1, struct expr *e2)
 		expr_free(e2);
 		trans_count = old_count;
 		return res;
-	case E_CHOICE:
+	case E_LIST:
 	case E_RANGE:
 	case E_NONE:
 		/* panic */;
@@ -647,7 +648,7 @@ struct expr *expr_transform(struct expr *e)
 	case E_EQUAL:
 	case E_UNEQUAL:
 	case E_SYMBOL:
-	case E_CHOICE:
+	case E_LIST:
 		break;
 	default:
 		e->left.expr = expr_transform(e->left.expr);
@@ -931,7 +932,7 @@ struct expr *expr_trans_compare(struct expr *e, enum expr_type type, struct symb
 		break;
 	case E_SYMBOL:
 		return expr_alloc_comp(type, e->left.sym, sym);
-	case E_CHOICE:
+	case E_LIST:
 	case E_RANGE:
 	case E_NONE:
 		/* panic */;
@@ -954,14 +955,14 @@ tristate expr_calc_value(struct expr *e)
 	case E_AND:
 		val1 = expr_calc_value(e->left.expr);
 		val2 = expr_calc_value(e->right.expr);
-		return E_AND(val1, val2);
+		return EXPR_AND(val1, val2);
 	case E_OR:
 		val1 = expr_calc_value(e->left.expr);
 		val2 = expr_calc_value(e->right.expr);
-		return E_OR(val1, val2);
+		return EXPR_OR(val1, val2);
 	case E_NOT:
 		val1 = expr_calc_value(e->left.expr);
-		return E_NOT(val1);
+		return EXPR_NOT(val1);
 	case E_EQUAL:
 		sym_calc_value(e->left.sym);
 		sym_calc_value(e->right.sym);
@@ -999,9 +1000,9 @@ int expr_compare_type(enum expr_type t1, enum expr_type t2)
 		if (t2 == E_OR)
 			return 1;
 	case E_OR:
-		if (t2 == E_CHOICE)
+		if (t2 == E_LIST)
 			return 1;
-	case E_CHOICE:
+	case E_LIST:
 		if (t2 == 0)
 			return 1;
 	default:
@@ -1012,73 +1013,79 @@ int expr_compare_type(enum expr_type t1, enum expr_type t2)
 #endif
 }
 
-void expr_print(struct expr *e, void (*fn)(void *, const char *), void *data, int prevtoken)
+void expr_print(struct expr *e, void (*fn)(void *, struct symbol *, const char *), void *data, int prevtoken)
 {
 	if (!e) {
-		fn(data, "y");
+		fn(data, NULL, "y");
 		return;
 	}
 
 	if (expr_compare_type(prevtoken, e->type) > 0)
-		fn(data, "(");
+		fn(data, NULL, "(");
 	switch (e->type) {
 	case E_SYMBOL:
 		if (e->left.sym->name)
-			fn(data, e->left.sym->name);
+			fn(data, e->left.sym, e->left.sym->name);
 		else
-			fn(data, "<choice>");
+			fn(data, NULL, "<choice>");
 		break;
 	case E_NOT:
-		fn(data, "!");
+		fn(data, NULL, "!");
 		expr_print(e->left.expr, fn, data, E_NOT);
 		break;
 	case E_EQUAL:
-		fn(data, e->left.sym->name);
-		fn(data, "=");
-		fn(data, e->right.sym->name);
+		if (e->left.sym->name)
+			fn(data, e->left.sym, e->left.sym->name);
+		else
+			fn(data, NULL, "<choice>");
+		fn(data, NULL, "=");
+		fn(data, e->right.sym, e->right.sym->name);
 		break;
 	case E_UNEQUAL:
-		fn(data, e->left.sym->name);
-		fn(data, "!=");
-		fn(data, e->right.sym->name);
+		if (e->left.sym->name)
+			fn(data, e->left.sym, e->left.sym->name);
+		else
+			fn(data, NULL, "<choice>");
+		fn(data, NULL, "!=");
+		fn(data, e->right.sym, e->right.sym->name);
 		break;
 	case E_OR:
 		expr_print(e->left.expr, fn, data, E_OR);
-		fn(data, " || ");
+		fn(data, NULL, " || ");
 		expr_print(e->right.expr, fn, data, E_OR);
 		break;
 	case E_AND:
 		expr_print(e->left.expr, fn, data, E_AND);
-		fn(data, " && ");
+		fn(data, NULL, " && ");
 		expr_print(e->right.expr, fn, data, E_AND);
 		break;
-	case E_CHOICE:
-		fn(data, e->right.sym->name);
+	case E_LIST:
+		fn(data, e->right.sym, e->right.sym->name);
 		if (e->left.expr) {
-			fn(data, " ^ ");
-			expr_print(e->left.expr, fn, data, E_CHOICE);
+			fn(data, NULL, " ^ ");
+			expr_print(e->left.expr, fn, data, E_LIST);
 		}
 		break;
 	case E_RANGE:
-		fn(data, "[");
-		fn(data, e->left.sym->name);
-		fn(data, " ");
-		fn(data, e->right.sym->name);
-		fn(data, "]");
+		fn(data, NULL, "[");
+		fn(data, e->left.sym, e->left.sym->name);
+		fn(data, NULL, " ");
+		fn(data, e->right.sym, e->right.sym->name);
+		fn(data, NULL, "]");
 		break;
 	default:
 	  {
 		char buf[32];
 		sprintf(buf, "<unknown type %d>", e->type);
-		fn(data, buf);
+		fn(data, NULL, buf);
 		break;
 	  }
 	}
 	if (expr_compare_type(prevtoken, e->type) > 0)
-		fn(data, ")");
+		fn(data, NULL, ")");
 }
 
-static void expr_print_file_helper(void *data, const char *str)
+static void expr_print_file_helper(void *data, struct symbol *sym, const char *str)
 {
 	fwrite(str, strlen(str), 1, data);
 }
@@ -1088,7 +1095,7 @@ void expr_fprint(struct expr *e, FILE *out)
 	expr_print(e, expr_print_file_helper, out, E_NONE);
 }
 
-static void expr_print_gstr_helper(void *data, const char *str)
+static void expr_print_gstr_helper(void *data, struct symbol *sym, const char *str)
 {
 	str_append((struct gstr*)data, str);
 }

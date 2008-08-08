@@ -300,7 +300,7 @@ $(objk)/gconf: $(patsubst %,$(objk)/%,$(gconf-objs))
 $(objk)/mconf: $(patsubst %,$(objk)/%,$(mconf-objs))
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) -o $@ $^
 $(objk)/conf: $(patsubst %,$(objk)/%,$(conf-objs))
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $^
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
 
 $(objk)/mconf.o: $(srck)/mconf.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<

@@ -305,7 +305,7 @@ $(objk)/conf: $(patsubst %,$(objk)/%,$(conf-objs))
 $(objk)/mconf.o: $(srck)/mconf.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 $(objk)/conf.o: $(srck)/conf.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -c -o $@ $<
+	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 
 $(objk)/zconf.tab.o: $(objk)/zconf.tab.c $(objk)/lex.zconf.c \
 		     $(objk)/zconf.hash.c

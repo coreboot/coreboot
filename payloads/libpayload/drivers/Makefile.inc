@@ -3,6 +3,7 @@
 ##
 ## Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
+## Copyright (C) 2008 coresystems GmbH
 ##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
@@ -28,11 +29,14 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-y += drivers/pci.o
-TARGETS-y += drivers/speaker.o
+TARGETS-$(CONFIG_PCI) += drivers/pci.o
+
+TARGETS-$(CONFIG_SPEAKER) += drivers/speaker.o
 
 TARGETS-$(CONFIG_SERIAL_CONSOLE) += drivers/serial.o
+
 TARGETS-$(CONFIG_PC_KEYBOARD) += drivers/keyboard.o
+
 TARGETS-$(CONFIG_NVRAM) += drivers/nvram.o
 TARGETS-$(CONFIG_NVRAM) += drivers/options.o
 

@@ -2,6 +2,7 @@
 ## This file is part of the libpayload project.
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
+## Copyright (C) 2008 coresystems GmbH
 ##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
@@ -27,6 +28,6 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-y += libc/malloc.o libc/printf.o libc/console.o libc/string.o
-TARGETS-y += libc/memory.o libc/ctype.o libc/ipchecksum.o libc/lib.o
-TARGETS-y += libc/rand.o libc/time.o libc/lar.o libc/exec.o
+TARGETS-$(CONFIG_LIBC) += libc/malloc.o libc/printf.o libc/console.o libc/string.o
+TARGETS-$(CONFIG_LIBC) += libc/memory.o libc/ctype.o libc/ipchecksum.o libc/lib.o
+TARGETS-$(CONFIG_LIBC) += libc/rand.o libc/time.o libc/lar.o libc/exec.o

@@ -2,6 +2,7 @@
 ## This file is part of the libpayload project.
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
+## Copyright (C) 2008 coresystems GmbH
 ##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
@@ -34,7 +35,19 @@ config TARGET_I386
 	bool
 	default y
 
-menu "Output Options"
+menu "Standard Libraries"
+
+config LIBC
+	bool "Enable C library support"
+	default y
+
+config TINYCURSES
+	bool "Enable tinycurses support"
+	default y
+
+endmenu
+
+menu "Console Options"
 
 config SERIAL_CONSOLE
 	bool "See output on the serial port console"
@@ -73,6 +86,14 @@ config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
 	default y
 
+endmenu
+
+menu "Drivers"
+
+config PCI
+	bool "Support for PCI devices"
+	default y
+
 config NVRAM
 	bool "Support for reading/writing NVRAM bytes"
 	default y
@@ -93,12 +114,9 @@ config RTC_PORT_EXTENDED_VIA
 	  If you want to read or write CMOS bytes on computers with one of
 	  these chipsets, say 'y' here.
 
-endmenu
-
-menu "Build Options"
-
-config TINYCURSES
-	bool "Enable tinycurses support"
+config SPEAKER
+	bool "Support for PC speaker"
 	default y
 
 endmenu
+

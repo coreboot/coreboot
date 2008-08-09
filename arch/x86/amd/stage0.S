@@ -212,15 +212,6 @@ CAR_FAM10_out:
 
 #endif
 
-#ifdef CONFIG_CPU_AMD_K10
-	/* Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
-	   Re-enable it in after RAM is initialized and before CAR is disabled */
-	movl	$0xc001102a, %ecx
-	rdmsr
-	bts	$15, %eax
-	wrmsr
-#endif
-
 	/* Set MtrrFixDramModEn for clear fixed mtrr */
 enable_fixed_mtrr_dram_modify:
 	movl	$SYSCFG_MSR, %ecx

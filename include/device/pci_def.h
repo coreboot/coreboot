@@ -481,6 +481,8 @@
 #define PCI_SLOT(devfn)		(((devfn) >> 3) & 0x1f)
 #define PCI_FUNC(devfn)		((devfn) & 0x07)
 #define PCI_BDF(bus,dev,func)	((bus) << 16 | (dev) << 11 | (func) << 8)
+/* bus,devfn pairs are used many places as well */
+#define PCI_BDEVFN(bus,devfn)	((bus) << 16 | (devfn) << 8)
 #define PCI_ADDR(bus,dev,func,where) (PCI_BDF((bus),(dev),(func)) << 4 | (where & 0xfff))
 
 #endif /* DEVICE_PCI_DEF_H */

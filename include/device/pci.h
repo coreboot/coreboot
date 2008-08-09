@@ -49,12 +49,13 @@ struct pci_operations {
 
 /* Common pci bus operations */
 struct pci_bus_operations {
-	u8 (*read8)(struct bus *pbus, int bus, int devfn, int where);
-	u16 (*read16)(struct bus *pbus, int bus, int devfn, int where);
-	u32 (*read32)(struct bus *pbus, int bus, int devfn, int where);
-	void (*write8)(struct bus *pbus, int bus, int devfn, int where, u8 val);
-	void (*write16)(struct bus *pbus, int bus, int devfn, int where, u16 val);
-	void (*write32)(struct bus *pbus, int bus, int devfn, int where, u32 val);
+	u8 (*read8)(u32 bdf, int where);
+	u16 (*read16)(u32 bdf, int where);
+	u32 (*read32)(u32 bdf, int where);
+	void (*write8)(u32 bdf, int where, u8 val);
+	void (*write16)(u32 bdf, int where, u16 val);
+	void (*write32)(u32 bdf, int where, u32 val);
+	int (*find)(u16 vendid, u16 devid, u32 *busdevfn);
 };
 
 struct pci_driver {

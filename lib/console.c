@@ -8,9 +8,30 @@
 int vtxprintf(void (*)(unsigned char, void *arg), 
 		void *arg, const char *, va_list);
 
-static int console_loglevel(void)
+static unsigned int loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+
+/**
+ * set the console log level
+ * There are no invalid settings, although there are ones that 
+ * do not make much sense. 
+ *
+ * @param level The new level
+ */
+void set_loglevel(unsigned int level) {
+	if (level > BIOS_SPEW)
+		printk(BIOS_ALWAYS, "Warning: ridiculous log level setting: %d (max %d)\n", 
+			level, BIOS_SPEW);
+	loglevel = level;
+}
+
+/**
+ * get the console log level
+ *
+ * @return The level
+ */
+static unsigned int console_loglevel(void)
 {
-	return CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+	return loglevel;
 }
 
 #ifdef CONFIG_CONSOLE_BUFFER
@@ -150,9 +171,9 @@ void console_init(void)
 		COREBOOT_EXTRA_VERSION
 		" "
 		COREBOOT_BUILD
-		" starting...\n";
+		" starting... (console_loglevel=%d)\n";
 
-	printk(BIOS_INFO, console_test);
+	printk(BIOS_ALWAYS, console_test, console_loglevel());
 }
 
 /**

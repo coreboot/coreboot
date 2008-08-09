@@ -152,7 +152,7 @@ int main(void)
 	sdram_enable(DIMM0, DIMM1);
 	printk(BIOS_DEBUG, "done sdram enable\n");
 
-	dumplxmsrs();
+	/*dumplxmsrs();*/
 	/* Check low memory */
 	/* The RAM is working now. Leave this test commented out but
 	 * here for reference. 

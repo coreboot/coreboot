@@ -20,7 +20,6 @@
 #include <device/device.h>
 
 extern const struct pci_bus_operations pci_cf8_conf1;
-extern const struct pci_bus_operations pci_cf8_conf2;
 
 #if defined(CONFIG_MMCONF_SUPPORT) && (CONFIG_MMCONF_SUPPORT==1)
 extern const struct pci_bus_operations pci_ops_mmconf;

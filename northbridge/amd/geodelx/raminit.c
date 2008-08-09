@@ -66,7 +66,10 @@ void dumplxmsrs(void)
 	for (i = 0; i < ARRAY_SIZE(msrs); i++) {
 		struct msr msr;
 		msr = rdmsr(msrs[i]);
-		printk(BIOS_DEBUG, "%s (%lx): %x.%x\n",  msrnames[i], msrs[i],
+		/* don't change the %p to a %s unless you fix the problem. 
+		 * in particular, don't change or submit a patch UNLESS YOU TEST IT
+		 */
+		printk(BIOS_DEBUG, "%p (%lx): %x.%x\n",  msrnames[i], msrs[i],
 			msr.hi, msr.lo);
 	}
 

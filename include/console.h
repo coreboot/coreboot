@@ -21,6 +21,7 @@
 #include <shared.h> /* We share symbols from stage 0 */
 #include <post_code.h>
 
+#define BIOS_ALWAYS	0	/* log no matter what; not necessarily an error */
 #define BIOS_EMERG      0   /* system is unusable                   */
 #define BIOS_ALERT      1   /* action must be taken immediately     */
 #define BIOS_CRIT       2   /* critical conditions                  */

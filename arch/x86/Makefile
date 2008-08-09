@@ -182,7 +182,7 @@ STAGE2_LIB_SRC       = stage2.c clog2.c mem.c tables.c delay.c \
 		       compute_ip_checksum.c string.c
 
 STAGE2_ARCH_X86_SRC  = archtables.c coreboot_table.c udelay_io.c
-STAGE2_ARCH_X86_SRC += pci_ops_auto.c pci_ops_conf1.c pci_ops_conf2.c
+STAGE2_ARCH_X86_SRC += pci_ops_auto.c pci_ops_conf1.c
 STAGE2_ARCH_X86_SRC += keyboard.c i8259.c isa-dma.c
 
 ifeq ($(CONFIG_PIRQ_TABLE),y)

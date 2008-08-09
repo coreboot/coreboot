@@ -72,7 +72,7 @@ static u8 smbus_read_byte(u8 device, u8 address)
 	return do_smbus_read_byte(SMBUS0_IO_BASE, device, address);
 }
 
-static u8 smbus_write_byte(u8 device, u8 address, u8 char val)
+static u8 smbus_write_byte(u8 device, u8 address, u8 val)
 {
 	return do_smbus_write_byte(SMBUS0_IO_BASE, device, address, val);
 }
@@ -82,7 +82,7 @@ static u8 smbusx_recv_byte(u8 smb_index, u8 device)
 	return do_smbus_recv_byte(SMBUS0_IO_BASE + (smb_index<<8), device);
 }
 
-static u8 smbusx_send_byte(u8 smb_index, u8 device, u8 char val)
+static u8 smbusx_send_byte(u8 smb_index, u8 device, u8 val)
 {
 	return do_smbus_send_byte(SMBUS0_IO_BASE + (smb_index<<8), device, val);
 }
@@ -92,7 +92,7 @@ static u8 smbusx_read_byte(u8 smb_index, u8 device, u8 address)
 	return do_smbus_read_byte(SMBUS0_IO_BASE + (smb_index<<8), device, address);
 }
 
-static u8 smbusx_write_byte(u8 smb_index, u8 device, u8 address, u8 char val)
+static u8 smbusx_write_byte(u8 smb_index, u8 device, u8 address, u8 val)
 {
 	return do_smbus_write_byte(SMBUS0_IO_BASE + (smb_index<<8), device, address, val);
 }

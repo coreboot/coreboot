@@ -38,7 +38,7 @@
 static inline void smbus_delay(void)
 {
 	/* let's hope this is not optimized out */
-	(void) intb(0x80);
+	(void) inb(0x80);
 }
 
 static int smbus_wait_until_ready(u16 smbus_io_base)
@@ -74,7 +74,7 @@ static int smbus_wait_until_done(u16 smbus_io_base)
 	return -3;
 }
 
-static int do_smbus_recv_byte(u16 smbus_io_base, unsigned u8)
+static int do_smbus_recv_byte(u16 smbus_io_base, u8 device)
 {
 	u8 global_status_register;
 	u8 byte;

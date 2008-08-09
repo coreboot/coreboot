@@ -107,8 +107,8 @@ void *memmove(void *dst, const void *src, size_t n)
  * @return If len is 0, return zero. If the areas match, return zero.
  *         Otherwise return non-zero.
  */
-int memcmp(const char *s1, const char *s2, size_t len)
+int memcmp(const void *s1, const void *s2, size_t len)
 {
-	for (; len && *s1++ == *s2++; len--) ;
+	for (; len && *(char *)s1++ == *(char *)s2++; len--) ;
 	return len;
 }

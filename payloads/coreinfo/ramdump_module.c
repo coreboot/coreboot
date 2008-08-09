@@ -40,8 +40,8 @@ static void dump_ram(WINDOW *win, uint32_t addr, int row, int col)
 	for (i = 1; i < 257; i++) {
 		if (x == 0) {
 			mvwprintw(win, row + y, col - 1, "%08x", addr + 16 * y);
-			mvwaddch(win, row + y, col + 59, (const chtype)"|");
-			mvwaddch(win, row + y, col + 76, (const chtype)"|");
+			mvwaddch(win, row + y, col + 59, '|');
+			mvwaddch(win, row + y, col + 76, '|');
 		}
 		mvwprintw(win, row + y, col + x + 9, "%02x", ptr[i - 1]);
 		mvwprintw(win, row + y, 62 + count++, "%c", ptr[i - 1]);

@@ -101,7 +101,7 @@ int serial_getchar(void)
 /*  These are thinly veiled vt100 functions used by curses */
 
 #define VT100_CLEAR       "\e[H\e[J"
-#define VT100_SBOLD       "\e[7m"
+#define VT100_SBOLD       "\e[1m"
 #define VT100_EBOLD       "\e[m"
 #define VT100_CURSOR_ADDR "\e[%d;%dH"
 
@@ -129,6 +129,6 @@ void serial_end_bold(void)
 void serial_set_cursor(int y, int x)
 {
 	char buffer[32];
-	snprintf(buffer, sizeof(buffer), VT100_CURSOR_ADDR, y, x);
+	snprintf(buffer, sizeof(buffer), VT100_CURSOR_ADDR, y + 1, x + 1);
 	serial_putcmd(buffer);
 }

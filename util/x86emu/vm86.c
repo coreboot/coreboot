@@ -249,7 +249,7 @@ void run_bios(struct device *dev, unsigned long addr)
 		*(unsigned char *) i = 0;
 	}
 
-	real_mode_switch_call_vga((dev->bus->secondary << 8) | dev->path.u.pci.devfn);
+	real_mode_switch_call_vga((dev->bus->secondary << 8) | dev->path.pci.devfn);
 }
 
 
@@ -603,7 +603,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 			// busnum is an unsigned char;
 			// devfn is an int, so we mask it off. 
 			busdevfn = (dev->bus->secondary << 8)
-				| (dev->path.u.pci.devfn & 0xff);
+				| (dev->path.pci.devfn & 0xff);
 			printk(BIOS_DEBUG, "0x%x: return 0x%x\n", func, busdevfn);
 			*pebx = busdevfn;
 			retval = 0;

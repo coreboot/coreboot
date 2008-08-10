@@ -108,7 +108,7 @@ struct device_id {
 		struct apic_cluster_id	apic_cluster;
 		struct cpu_id			cpu;
 		struct cpu_bus_id		cpu_bus;
-	} u;
+	};
 };
 
 

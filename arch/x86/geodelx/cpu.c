@@ -94,7 +94,7 @@ static void lx_init(struct device *dev)
 struct device_operations geodelx_cpuops = {
 	{.id = {.type = DEVICE_ID_PCI,
 		/* TODO: This is incorrect, these are _not_ PCI IDs! */
-		.u = {.pci = {.vendor = X86_VENDOR_AMD,.device = 0x05A2}}},
+		{.pci = {.vendor = X86_VENDOR_AMD,.device = 0x05A2}}},
 	 .ops = &geodelx_cpuops}	.constructor	= default_device_constructor,
 	.phase3_scan	= NULL,
 	.phase6_init	= lx_init,

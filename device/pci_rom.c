@@ -45,8 +45,8 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		 * or readonly.
 		 */
 		init_archive(&archive);
-		sprintf(pcifile, "pci%04x,%04x.rom", dev->id.u.pci.vendor,
-				dev->id.u.pci.device);
+		sprintf(pcifile, "pci%04x,%04x.rom", dev->id.pci.vendor,
+				dev->id.pci.device);
 
 		ret = find_file(&archive, pcifile, &result);
 		if (ret) {
@@ -108,7 +108,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 	printk(BIOS_SPEW, "PCI ROM Image, Vendor %04x, Device %04x,\n",
 	       rom_data->vendor, rom_data->device);
-	if (dev->id.u.pci.vendor != rom_data->vendor || dev->id.u.pci.device != rom_data->device) {
+	if (dev->id.pci.vendor != rom_data->vendor || dev->id.pci.device != rom_data->device) {
 		printk(BIOS_ERR,
 		       "Device or Vendor ID mismatch Vendor %04x, Device %04x\n",
 		       rom_data->vendor, rom_data->device);

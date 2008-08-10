@@ -551,19 +551,19 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	if (path && path[1]) {
 		path++;
 		if (!strncmp(tree->name, "cpu", 3)){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_CPU,.u={.cpu={ .id = 0x%s }}},\n", 
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_CPU,{.cpu={ .id = 0x%s }}},\n", 
 				path);
 		}
 		if (!strncmp(tree->name, "bus", 3)){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_BUS,.u={.pci_bus={ .bus = 0x%s }}},\n", 
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_BUS,{.pci_bus={ .bus = 0x%s }}},\n", 
 				path);
 		}
 		if (!strncmp(tree->name, "apic", 4)){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_APIC,.u={.apic={ 0x%s }}},\n", 
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_APIC,{.apic={ 0x%s }}},\n", 
 				path);
 		}
 		if (!strncmp(tree->name, "domain", 6)){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = 0x%s }}},\n", 
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_DOMAIN,{.pci_domain={ .domain = 0x%s }}},\n", 
 				path);
 		}
 		if (!strncmp(tree->name, "pci", 3)){
@@ -580,11 +580,11 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 			else
 				fn = "0";
 
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%s, 0x%s)}}},\n", 
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI,{.pci={ .devfn = PCI_DEVFN(0x%s, 0x%s)}}},\n", 
 				dev, fn);
 		}
 		if (!strncmp(tree->name, "ioport", 6)){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_IOPORT,.u={.ioport={.iobase=0x%s}}},\n", 
+			fprintf(f, "\t.path = {.type=DEVICE_PATH_IOPORT,{.ioport={.iobase=0x%s}}},\n", 
 				path);
 		}
 	}

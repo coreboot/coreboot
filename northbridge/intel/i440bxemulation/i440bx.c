@@ -68,7 +68,7 @@ static void pci_domain_set_resources(struct device *dev)
 /* See mainboard/emulation/qemu-x86 for an example of how these are used. */
 struct device_operations i440bx_domain = {
 	.id = {.type = DEVICE_ID_PCI_DOMAIN,
-		.u = {.pci_domain = {.vendor = 0x8086,.device = 0x7190}}},
+		{.pci_domain = {.vendor = 0x8086,.device = 0x7190}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_domain_scan_bus,
 	.phase4_read_resources	 = pci_domain_read_resources,

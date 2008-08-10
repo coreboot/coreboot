@@ -36,13 +36,13 @@
 
 static void pnp_enter_ext_func_mode(struct device * dev) 
 {
-        outb(0x87, dev->path.u.pnp.port);
-        outb(0x87, dev->path.u.pnp.port);
+        outb(0x87, dev->path.pnp.port);
+        outb(0x87, dev->path.pnp.port);
 }
 
 static void pnp_exit_ext_func_mode(struct device * dev) 
 {
-        outb(0xaa, dev->path.u.pnp.port);
+        outb(0xaa, dev->path.pnp.port);
 }
 
 static void pnp_write_index(u16 port_base, u8 reg, u8 value)
@@ -73,7 +73,7 @@ static void init_acpi(struct device * dev)
 #warning Fix CMOS handling
 	// get_option(&power_on, "power_on_after_fail");
 	pnp_enter_ext_func_mode(dev);
-	pnp_write_index(dev->path.u.pnp.port,7,0x0a); 
+	pnp_write_index(dev->path.pnp.port,7,0x0a); 
 	value = pnp_read_config(dev, 0xE4);
 	value &= ~(3<<5);
 	if(power_on) {
@@ -128,7 +128,7 @@ static void w83627hf_init(struct device * dev)
 	}
 
 	conf = dev->device_configuration;
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case W83627HF_SP1: 
 		res0 = find_resource(dev, PNP_IDX_IO0);
 #warning init_uart8250
@@ -167,7 +167,7 @@ void w83627hf_pnp_enable_resources(struct device * dev)
 {       
         pnp_enter_ext_func_mode(dev);  
 	pnp_enable_resources(dev);               
-        switch(dev->path.u.pnp.device) {
+        switch(dev->path.pnp.device) {
 	case W83627HF_HWM:
 		printk(BIOS_DEBUG, "w83627hf hwm smbus enabled\n");
 		enable_hwm_smbus(dev);

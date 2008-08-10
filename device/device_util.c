@@ -81,7 +81,7 @@ struct device *dev_find_slot(unsigned int bus, unsigned int devfn)
 	for (dev = all_devices; dev; dev = dev->next) {
 		if ((dev->path.type == DEVICE_PATH_PCI) &&
 		    (dev->bus->secondary == bus) &&
-		    (dev->path.u.pci.devfn == devfn)) {
+		    (dev->path.pci.devfn == devfn)) {
 			result = dev;
 			break;
 		}
@@ -104,7 +104,7 @@ struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
 	for (dev = all_devices; dev; dev = dev->next) {
 		if ((dev->path.type == DEVICE_PATH_I2C) &&
 		    (dev->bus->secondary == bus) &&
-		    (dev->path.u.i2c.device == addr)) {
+		    (dev->path.i2c.device == addr)) {
 			result = dev;
 			break;
 		}
@@ -155,8 +155,8 @@ struct device *dev_find_pci_device(u16 vendor, u16 device, struct device *from)
 	struct device_id id;
 
 	id.type = DEVICE_ID_PCI;
-	id.u.pci.vendor = vendor;
-	id.u.pci.device = device;
+	id.pci.vendor = vendor;
+	id.pci.device = device;
 	return dev_find_device(&id, from);
 }
 
@@ -197,48 +197,48 @@ const char *dev_path(struct device *dev)
 			sprintf(buffer, "PCI: %04x:%02x:%02x.%01x",
 				dev->bus->secondary >> 8,
 				dev->bus->secondary & 0xff,
-				PCI_SLOT(dev->path.u.pci.devfn),
-				PCI_FUNC(dev->path.u.pci.devfn));
+				PCI_SLOT(dev->path.pci.devfn),
+				PCI_FUNC(dev->path.pci.devfn));
 #else
 			sprintf(buffer, "PCI: %02x:%02x.%01x",
 				dev->bus->secondary,
-				PCI_SLOT(dev->path.u.pci.devfn),
-				PCI_FUNC(dev->path.u.pci.devfn));
+				PCI_SLOT(dev->path.pci.devfn),
+				PCI_FUNC(dev->path.pci.devfn));
 #endif
 			break;
 		case DEVICE_PATH_PNP:
 			sprintf(buffer, "PNP: %04x.%01x",
-				dev->path.u.pnp.port, dev->path.u.pnp.device);
+				dev->path.pnp.port, dev->path.pnp.device);
 			break;
 		case DEVICE_PATH_I2C:
 			sprintf(buffer, "I2C: %02x:%02x",
-				dev->bus->secondary, dev->path.u.i2c.device);
+				dev->bus->secondary, dev->path.i2c.device);
 			break;
 		case DEVICE_PATH_APIC:
-			sprintf(buffer, "APIC: %02x", dev->path.u.apic.apic_id);
+			sprintf(buffer, "APIC: %02x", dev->path.apic.apic_id);
 			break;
 		case DEVICE_PATH_PCI_DOMAIN:
 			sprintf(buffer, "PCI_DOMAIN: %04x",
-				dev->path.u.pci_domain.domain);
+				dev->path.pci_domain.domain);
 			break;
 		case DEVICE_PATH_PCI_BUS:
 			sprintf(buffer, "PCI_BUS: %04x",
-				dev->path.u.pci_bus.bus);
+				dev->path.pci_bus.bus);
 			break;
 		case DEVICE_PATH_APIC_CLUSTER:
 			sprintf(buffer, "APIC_CLUSTER: %01x",
-				dev->path.u.apic_cluster.cluster);
+				dev->path.apic_cluster.cluster);
 			break;
 		case DEVICE_PATH_CPU:
-			sprintf(buffer, "CPU: %02x", dev->path.u.cpu.id);
+			sprintf(buffer, "CPU: %02x", dev->path.cpu.id);
 			break;
 		case DEVICE_PATH_CPU_BUS:
 			sprintf(buffer, "CPU_BUS: %02x",
-				dev->path.u.cpu_bus.id);
+				dev->path.cpu_bus.id);
 			break;
 		case DEVICE_PATH_IOPORT:
 			sprintf(buffer, "IOPORT: %02x",
-				dev->path.u.ioport.iobase);
+				dev->path.ioport.iobase);
 			break;
 		default:
 			printk(BIOS_ERR, "%s: Unknown device path type: %d\n",
@@ -262,36 +262,36 @@ const char *dev_id_string(struct device_id *id)
 			memcpy(buffer, "Root Device", 12);
 			break;
 		case DEVICE_ID_PCI:
-			sprintf(buffer, "PCI: %04x:%04x", id->u.pci.vendor,
-				id->u.pci.device);
+			sprintf(buffer, "PCI: %04x:%04x", id->pci.vendor,
+				id->pci.device);
 			break;
 		case DEVICE_ID_PNP:
-			sprintf(buffer, "PNP: %04x", id->u.pnp.device);
+			sprintf(buffer, "PNP: %04x", id->pnp.device);
 			break;
 		case DEVICE_ID_I2C:
-			sprintf(buffer, "I2C: %04x", id->u.i2c.id);
+			sprintf(buffer, "I2C: %04x", id->i2c.id);
 			break;
 		case DEVICE_ID_APIC:
-			sprintf(buffer, "APIC: %02x:%02x", id->u.apic.vendor,
-				id->u.apic.device);
+			sprintf(buffer, "APIC: %02x:%02x", id->apic.vendor,
+				id->apic.device);
 			break;
 		case DEVICE_ID_PCI_DOMAIN:
 			sprintf(buffer, "PCI_DOMAIN: %04x:%04x",
-				id->u.pci_domain.vendor,
-				id->u.pci_domain.device);
+				id->pci_domain.vendor,
+				id->pci_domain.device);
 			break;
 		case DEVICE_ID_APIC_CLUSTER:
 			sprintf(buffer, "APIC_CLUSTER: %02x:%02x",
-				id->u.apic_cluster.vendor,
-				id->u.apic_cluster.device);
+				id->apic_cluster.vendor,
+				id->apic_cluster.device);
 			break;
 		case DEVICE_ID_CPU:
-			sprintf(buffer, "CPU", id->u.cpu.cpuid[0],
-				id->u.cpu.cpuid[1], id->u.cpu.cpuid[2]);
+			sprintf(buffer, "CPU", id->cpu.cpuid[0],
+				id->cpu.cpuid[1], id->cpu.cpuid[2]);
 			break;
 		case DEVICE_ID_CPU_BUS:
 			sprintf(buffer, "CPU_BUS: %02x:%02x",
-				id->u.cpu_bus.vendor, id->u.cpu_bus.device);
+				id->cpu_bus.vendor, id->cpu_bus.device);
 			break;
 		default:
 			printk(BIOS_ERR, "%s: Unknown device ID type: %d\n",
@@ -321,34 +321,34 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			equal = 1;
 			break;
 		case DEVICE_PATH_PCI:
-			equal = (path1->u.pci.devfn == path2->u.pci.devfn);
+			equal = (path1->pci.devfn == path2->pci.devfn);
 			break;
 		case DEVICE_PATH_PNP:
-			equal = (path1->u.pnp.port == path2->u.pnp.port) &&
-			    (path1->u.pnp.device == path2->u.pnp.device);
+			equal = (path1->pnp.port == path2->pnp.port) &&
+			    (path1->pnp.device == path2->pnp.device);
 			break;
 		case DEVICE_PATH_I2C:
-			equal = (path1->u.i2c.device == path2->u.i2c.device);
+			equal = (path1->i2c.device == path2->i2c.device);
 			break;
 		case DEVICE_PATH_APIC:
 			equal =
-			    (path1->u.apic.apic_id == path2->u.apic.apic_id);
+			    (path1->apic.apic_id == path2->apic.apic_id);
 			break;
 		case DEVICE_PATH_PCI_DOMAIN:
 			equal =
-			    (path1->u.pci_domain.domain ==
-			     path2->u.pci_domain.domain);
+			    (path1->pci_domain.domain ==
+			     path2->pci_domain.domain);
 			break;
 		case DEVICE_PATH_APIC_CLUSTER:
 			equal =
-			    (path1->u.apic_cluster.cluster ==
-			     path2->u.apic_cluster.cluster);
+			    (path1->apic_cluster.cluster ==
+			     path2->apic_cluster.cluster);
 			break;
 		case DEVICE_PATH_CPU:
-			equal = (path1->u.cpu.id == path2->u.cpu.id);
+			equal = (path1->cpu.id == path2->cpu.id);
 			break;
 		case DEVICE_PATH_CPU_BUS:
-			equal = (path1->u.cpu_bus.id == path2->u.cpu_bus.id);
+			equal = (path1->cpu_bus.id == path2->cpu_bus.id);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device type: %d\n",
@@ -370,41 +370,41 @@ int id_eq(struct device_id *path1, struct device_id *path2)
 			equal = 1;
 			break;
 		case DEVICE_ID_PCI:
-			equal = (path1->u.pci.vendor == path2->u.pci.vendor)
-			    && (path1->u.pci.device == path2->u.pci.device);
+			equal = (path1->pci.vendor == path2->pci.vendor)
+			    && (path1->pci.device == path2->pci.device);
 			break;
 		case DEVICE_ID_PNP:
-			equal = (path1->u.pnp.device == path2->u.pnp.device);
+			equal = (path1->pnp.device == path2->pnp.device);
 			break;
 		case DEVICE_ID_I2C:
-			equal = (path1->u.i2c.id == path2->u.i2c.id);
+			equal = (path1->i2c.id == path2->i2c.id);
 			break;
 		case DEVICE_ID_APIC:
-			equal = (path1->u.apic.vendor == path2->u.apic.vendor)
-			    && (path1->u.apic.device == path2->u.apic.device);
+			equal = (path1->apic.vendor == path2->apic.vendor)
+			    && (path1->apic.device == path2->apic.device);
 			break;
 		case DEVICE_ID_PCI_DOMAIN:
 			equal =
-			    (path1->u.pci_domain.vendor ==
-			     path2->u.pci_domain.vendor)
-			    && (path1->u.pci_domain.device ==
-				path2->u.pci_domain.device);
+			    (path1->pci_domain.vendor ==
+			     path2->pci_domain.vendor)
+			    && (path1->pci_domain.device ==
+				path2->pci_domain.device);
 			break;
 		case DEVICE_ID_APIC_CLUSTER:
 			equal =
-			    (path1->u.apic_cluster.vendor ==
-			     path2->u.apic_cluster.vendor)
-			    && (path1->u.apic_cluster.device ==
-				path2->u.apic_cluster.device);
+			    (path1->apic_cluster.vendor ==
+			     path2->apic_cluster.vendor)
+			    && (path1->apic_cluster.device ==
+				path2->apic_cluster.device);
 			break;
 		case DEVICE_ID_CPU:
-			equal = (path1->u.cpu.cpuid == path2->u.cpu.cpuid);
+			equal = (path1->cpu.cpuid == path2->cpu.cpuid);
 			break;
 		case DEVICE_ID_CPU_BUS:
 			equal =
-			    (path1->u.cpu_bus.vendor == path2->u.cpu_bus.vendor)
-			    && (path1->u.cpu_bus.device ==
-				path2->u.cpu_bus.device);
+			    (path1->cpu_bus.vendor == path2->cpu_bus.vendor)
+			    && (path1->cpu_bus.device ==
+				path2->cpu_bus.device);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device type: %d\n",

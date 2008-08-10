@@ -41,12 +41,12 @@ static void pnp_exit_conf_state(struct device *dev);
 
 static void pnp_enter_conf_state(struct device *dev) 
 {
-	outb(0x87, dev->path.u.pnp.port);
+	outb(0x87, dev->path.pnp.port);
 }
 
 static void pnp_exit_conf_state(struct device *dev) 
 {
-	outb(0xaa, dev->path.u.pnp.port);
+	outb(0xaa, dev->path.pnp.port);
 }
 
 void f71805f_pnp_set_resources(struct device *dev)
@@ -79,7 +79,7 @@ static void f71805f_init(struct device *dev)
 	if (!dev->enabled)
 		return;
 	
-	switch (dev->path.u.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case F71805F_SP1: 
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		//TODO: needed? fix or remove?

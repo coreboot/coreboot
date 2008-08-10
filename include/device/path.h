@@ -100,7 +100,7 @@ struct device_path {
 		struct cpu_path		cpu;
 		struct cpu_bus_path	cpu_bus;
 		struct ioport_path		ioport;
-	} u;
+	};
 };
 
 

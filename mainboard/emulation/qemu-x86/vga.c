@@ -44,7 +44,7 @@ static void setup_onboard(struct device *dev)
 
 struct device_operations qemuvga_pci_ops_dev = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = PCI_VENDOR_ID_CIRRUS,
+		{.pci = {.vendor = PCI_VENDOR_ID_CIRRUS,
 			      .device = PCI_DEVICE_ID_CIRRUS_5446}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,

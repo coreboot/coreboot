@@ -32,19 +32,19 @@
 
 void pnp_write_config(struct device *dev, u8 reg, u8 value)
 {
-	outb(reg, dev->path.u.pnp.port);
-	outb(value, dev->path.u.pnp.port + 1);
+	outb(reg, dev->path.pnp.port);
+	outb(value, dev->path.pnp.port + 1);
 }
 
 u8 pnp_read_config(struct device *dev, u8 reg)
 {
-	outb(reg, dev->path.u.pnp.port);
-	return inb(dev->path.u.pnp.port + 1);
+	outb(reg, dev->path.pnp.port);
+	return inb(dev->path.pnp.port + 1);
 }
 
 void pnp_set_logical_device(struct device *dev)
 {
-	pnp_write_config(dev, 0x07, dev->path.u.pnp.device);
+	pnp_write_config(dev, 0x07, dev->path.pnp.device);
 }
 
 void pnp_set_enable(struct device *dev, int enable)
@@ -238,11 +238,11 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 	int i;
 
 	path.type = DEVICE_PATH_PNP;
-	path.u.pnp.port = base_dev->path.u.pnp.port;
+	path.pnp.port = base_dev->path.pnp.port;
 
 	/* Setup the ops and resources on the newly allocated devices. */
 	for (i = 0; i < functions; i++) {
-		path.u.pnp.device = info[i].function;
+		path.pnp.device = info[i].function;
 		dev = alloc_find_dev(base_dev->bus, &path, &id);
 
 		/* Don't initialize a device multiple times. */

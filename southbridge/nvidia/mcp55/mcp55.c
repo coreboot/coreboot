@@ -45,10 +45,11 @@ static struct device *find_lpc_dev( struct device *dev,  unsigned devfn)
 	/* the range makes it hard to use the library function. Sorry. 
 	 * I realize this is not pretty. It would be nice if we could 
 	 * use anonymous unions. 
+	 * We now use anonymous unions. Fix up the code? 
 	 */
-	if ((lpc_dev->id.u.pci.vendor != PCI_VENDOR_ID_NVIDIA) || (
-		(lpc_dev->id.u.pci.device < PCI_DEVICE_ID_NVIDIA_MCP55_LPC) ||
-		(lpc_dev->id.u.pci.device > PCI_DEVICE_ID_NVIDIA_MCP55_PRO)
+	if ((lpc_dev->id.pci.vendor != PCI_VENDOR_ID_NVIDIA) || (
+		(lpc_dev->id.pci.device < PCI_DEVICE_ID_NVIDIA_MCP55_LPC) ||
+		(lpc_dev->id.pci.device > PCI_DEVICE_ID_NVIDIA_MCP55_PRO)
 		) ) {
 			u32 id;
 			id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
@@ -80,16 +81,16 @@ static void mcp55_enable(struct device *dev)
 	unsigned devfn;
 
 	/* sorry. Again, anonymous unions etc. would make this easier. */
-	if(dev->id.u.pci.device==0x0000) {
+	if(dev->id.pci.device==0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid>>16) & 0xffff;
 //		vendorid &= 0xffff;
 	} else {
 //		vendorid = dev->vendor;
-		deviceid = dev->id.u.pci.device;
+		deviceid = dev->id.pci.device;
 	}
 
-	devfn = (dev->path.u.pci.devfn) & ~7;
+	devfn = (dev->path.pci.devfn) & ~7;
 	switch(deviceid) {
 		case PCI_DEVICE_ID_NVIDIA_MCP55_HT:
 			return;
@@ -129,7 +130,7 @@ static void mcp55_enable(struct device *dev)
 		case PCI_DEVICE_ID_NVIDIA_MCP55_SATA1: //three
 			devfn -= (4<<3);
 			index = 22;
-			i = (dev->path.u.pci.devfn) & 7;
+			i = (dev->path.pci.devfn) & 7;
 			if(i>0) {
 				index -= (i+3);
 			}
@@ -249,7 +250,7 @@ static void mcp55_enable(struct device *dev)
 
 struct device_operations nvidia_ops = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = PCI_VENDOR_ID_NVIDIA,
+		{.pci = {.vendor = PCI_VENDOR_ID_NVIDIA,
 			      .device = PCI_DEVICE_ID_NVIDIA_MCP55_PCI}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= scan_static_bus,

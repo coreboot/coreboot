@@ -894,8 +894,8 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 			continue;
 		}
 		printk(BIOS_SPEW, "%s: check dev %s it has devfn 0x%02x\n",
-		       __func__, (*list)->dtsname, (*list)->path.u.pci.devfn);
-		if ((*list)->path.u.pci.devfn == devfn) {
+		       __func__, (*list)->dtsname, (*list)->path.pci.devfn);
+		if ((*list)->path.pci.devfn == devfn) {
 			/* Unlink from the list. */
 			dev = *list;
 			*list = (*list)->sibling;
@@ -948,7 +948,7 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 		struct device_id devid;
 		dummy.bus = bus;
 		dummy.path.type = DEVICE_PATH_PCI;
-		dummy.path.u.pci.devfn = devfn;
+		dummy.path.pci.devfn = devfn;
 		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
 		/* Have we found something?
 		 * Some broken boards return 0 if a slot is empty.
@@ -960,8 +960,8 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 			return NULL;
 		}
 		devid.type = DEVICE_ID_PCI;
-		devid.u.pci.vendor = id & 0xffff;
-		devid.u.pci.device = id >> 16;
+		devid.pci.vendor = id & 0xffff;
+		devid.pci.device = id >> 16;
 		dev = alloc_dev(bus, &dummy.path, &devid);
 	} else {
 		/* Enable/disable the device. Once we have found the device
@@ -1013,8 +1013,8 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 
 	/* Store the interesting information in the device structure. */
 	dev->id.type = DEVICE_ID_PCI;
-	dev->id.u.pci.vendor = id & 0xffff;
-	dev->id.u.pci.device = (id >> 16) & 0xffff;
+	dev->id.pci.vendor = id & 0xffff;
+	dev->id.pci.device = (id >> 16) & 0xffff;
 	dev->hdr_type = hdr_type;
 	/* Class code, the upper 3 bytes of PCI_CLASS_REVISION. */
 	dev->class = class >> 8;

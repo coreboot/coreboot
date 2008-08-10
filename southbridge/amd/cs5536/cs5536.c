@@ -696,7 +696,7 @@ static void cs5536_pci_dev_enable_resources(struct device *dev)
 
 struct device_operations cs5536_ops = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
+		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_AMD_CS5536_ISA}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= scan_static_bus,
@@ -708,7 +708,7 @@ struct device_operations cs5536_ops = {
 
 struct device_operations cs5536_ide = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
+		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_AMD_CS5536_B0_IDE}}},
 	.constructor		 = default_device_constructor,
 #warning FIXME: what has to go in phase3_scan?

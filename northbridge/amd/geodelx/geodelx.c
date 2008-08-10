@@ -224,7 +224,7 @@ static void cpu_bus_noop(struct device *dev)
 /** Operations for when the northbridge is running a PCI domain. */
 struct device_operations geodelx_north_domain = {
 	.id = {.type = DEVICE_ID_PCI_DOMAIN,
-		.u = {.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
+		{.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
 				     .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase2_setup_scan_bus		= geodelx_pci_domain_phase2,
@@ -239,7 +239,7 @@ struct device_operations geodelx_north_domain = {
 /** Operations for when the northbridge is running an APIC cluster. */
 struct device_operations geodelx_north_apic = {
 	.id = {.type = DEVICE_ID_APIC_CLUSTER,
-		.u = {.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,
+		{.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,
 				       .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,
@@ -257,7 +257,7 @@ struct device_operations geodelx_north_apic = {
  */
 struct device_operations geodelx_north_pci = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = PCI_VENDOR_ID_AMD,
+		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,

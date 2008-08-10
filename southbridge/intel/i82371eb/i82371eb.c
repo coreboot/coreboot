@@ -85,7 +85,7 @@ static void i82371eb_acpi_init(struct device *dev)
 /* You can override or extend each operation as needed for the device. */
 struct device_operations i82371eb_isa = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7000}}},
+		{.pci = {.vendor = 0x8086,.device = 0x7000}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
@@ -98,7 +98,7 @@ struct device_operations i82371eb_isa = {
 
 struct device_operations i82371eb_ide = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7010}}},
+		{.pci = {.vendor = 0x8086,.device = 0x7010}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
@@ -111,7 +111,7 @@ struct device_operations i82371eb_ide = {
 
 struct device_operations i82371eb_acpi = {
 	.id = {.type = DEVICE_ID_PCI,
-		.u = {.pci = {.vendor = 0x8086,.device = 0x7113}}},
+		{.pci = {.vendor = 0x8086,.device = 0x7113}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,

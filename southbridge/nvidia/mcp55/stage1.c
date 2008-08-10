@@ -26,20 +26,20 @@
 #include <cpu.h>
 #include <amd/k8/k8.h>
 #include "mcp55.h"
-#define pci_read_config32(bus, dev, where) pci_cf8_conf1.read32(NULL, bus, dev, where)
-#define pci_write_config32(bus, dev, where, what) pci_cf8_conf1.write32(NULL, bus, dev, where, what)
+#include "stage1.h"
 
 #warning fix disgusting define of MCP55_NUM it is mainboard dependent
 #define MCP55_NUM 1
-static int set_ht_link_mcp55(u8 ht_c_num)
+int set_ht_link_mcp55(u8 ht_c_num)
 {
+	int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid,  unsigned val);
 	unsigned vendorid = 0x10de;
 	unsigned val = 0x01610109;
 	/* Nvidia mcp55 hardcode, hw can not set it automatically */
 	return set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
 }
 
-static void setup_ss_table(unsigned index, unsigned where, unsigned control, const unsigned int *register_values, int max)
+void setup_ss_table(unsigned index, unsigned where, unsigned control, const unsigned int *register_values, int max)
 {
 	int i;
 
@@ -139,14 +139,6 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned 
 
 
 }
-static void delayx(u8 value) {
-#if 1
-	int i;
-	for(i=0;i<0x8000;i++) {
-		outb(value, 0x80);
-	}
-#endif
-}
 
 static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io_base, unsigned pci_e_x)
 {
@@ -154,11 +146,10 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 	u32 pll_ctrl;
 	u32 dword;
 	int i;
-	u32 dev;
-	//	dev = PCI_BDF(busnx, devnx+1, 1);
-	dword = pci_read_config32(busnx, (devnx+1)<<3 | 1, 0xe4);
+	u32 bdf = PCI_BDF(busnx, devnx+1, 1);
+	dword = pci_read_config32(bdf, 0xe4);
 	dword |= 0x3f0; // disable it at first
-	pci_write_config32(busnx,  (devnx+1)<<3 | 1, 0xe4, dword);
+	pci_write_config32(bdf, 0xe4, dword);
 
 	for(i=0; i<3; i++) {
 		tgio_ctrl = inl(anactrl_io_base + 0xcc);
@@ -178,14 +169,14 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 	outl(tgio_ctrl, anactrl_io_base + 0xcc);
 
 //	wait 100us
-	delayx(1);
+	udelay(100);
 
-	dword = pci_read_config32(busnx,  (devnx+1)<<3 | 1, 0xe4);
+	dword = pci_read_config32(bdf, 0xe4);
 	dword &= ~(0x3f0); // enable
-	pci_write_config32(busnx,  (devnx+1)<<3 | 1, 0xe4, dword);
+	pci_write_config32(bdf, 0xe4, dword);
 
 //	need to wait 100ms
-	delayx(1000);
+	udelay(100000);
 }
 
 static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base, unsigned *pci_e_x)
@@ -380,7 +371,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 
 #endif
 
-static int mcp55_early_setup_x(void)
+int mcp55_early_setup_x(void)
 {
 	/*find out how many mcp55 we have */
 	unsigned busn[HT_CHAIN_NUM_MAX];
@@ -403,8 +394,9 @@ static int mcp55_early_setup_x(void)
 		busnx = ht_c_index * HT_CHAIN_BUSN_D;
 		for(devnx=0;devnx<0x20;devnx++) {
 			u32 id;
-			//			dev = PCI_BDF(busnx, devnx, 0);
-			id = pci_read_config32(busnx, devnx<<3, PCI_VENDOR_ID);
+			u32 bdf;
+			bdf = PCI_BDF(busnx, devnx, 0);
+			id = pci_read_config32(bdf, PCI_VENDOR_ID);
 			if(id == 0x036910de) {
 				busn[mcp55_num] = busnx;
 				devn[mcp55_num] = devnx;
@@ -431,4 +423,49 @@ out:
 }
 
 
+/* this was in separate file but I am trying to gather the utility junk
+ * into one file. 
+ */
+
+unsigned int get_sbdn(unsigned int bus)
+{
+#warning bus ignore in get_sbdn; do we care
+	/* Find the device.
+	 */
+	u32 bdf;
+	if (!pci_locate_device(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_MCP55_HT, &bdf)) {
+		die("PCI_DEVICE_ID_NVIDIA_MCP55_HT not found\r\n");
+	}
+
+	return (bdf>>15) & 0x1f;
+
+}
+
+void hard_reset(void)
+{
+#warning what is set_bios_reset
+//	set_bios_reset();
+
+	/* full reset */
+	outb(0x0a, 0x0cf9);
+	outb(0x0e, 0x0cf9);
+}
+
+void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
+{
+/* default value for mcp55 is good */
+	/* set VFSMAF ( VID/FID System Management Action Field) to 2 */
+
+}
+
+void soft_reset(void)
+{
+#warning what is set_bios_reset
+//	set_bios_reset();
+#if 1
+	/* link reset */
+	outb(0x02, 0x0cf9);
+	outb(0x06, 0x0cf9);
+#endif
+}
 

@@ -29,6 +29,7 @@
 #include <string.h>
 #include <msr.h>
 #include <io.h>
+#include <cpu.h>
 #include <amd/k8/k8.h>
 #include <spd.h>
 

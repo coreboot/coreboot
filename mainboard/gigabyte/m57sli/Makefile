@@ -21,9 +21,15 @@
 
 STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o \
 			$(obj)/mainboard/$(MAINBOARDDIR)/option_table.c \
-			$(obj)/southbridge/nvidia/mcp55/stage1_smbus.o
+			$(obj)/southbridge/nvidia/mcp55/stage1_smbus.o \
+			$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
+			$(obj)/northbridge/amd/k8/raminit.o \
+			$(obj)/northbridge/amd/k8/coherent_ht.o \
+			$(obj)/northbridge/amd/k8/incoherent_ht.o
 
-INITRAM_SRC =      $(src)/mainboard/$(MAINBOARDDIR)/initram.c
+# I can't get this to work -- if you can fix it do so. The file above
+# from "initram" on should be here. 
+INITRAM_SRC=
 
 STAGE2_MAINBOARD_SRC = 
 

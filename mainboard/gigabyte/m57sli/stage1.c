@@ -23,11 +23,28 @@
 #include <lib.h>
 #include <console.h>
 #include <device/device.h>
+#include <cpu.h>
+#include <amd/k8/k8.h>
+#include <amd/k8/sysconf.h>
 #include <device/pci.h>
 #include <string.h>
 #include <msr.h>
 #include <io.h>
 #include <arch/x86/msr.h>
+
+void memreset_setup(void)
+{
+}
+
+void memreset(int controllers, const struct mem_controller *ctrl)
+{
+}
+
+void activate_spd_rom(const struct mem_controller *ctrl)
+{
+	/* nothing to do */
+}
+
 
 void hardware_stage1(void)
 {

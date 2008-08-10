@@ -298,6 +298,11 @@
 #define RES_PORT_IO_32 0x20
 #define RES_MEM_IO 0x40
 
+#define LinkConnected     (1 << 0)
+#define InitComplete      (1 << 1)
+#define NonCoherent       (1 << 2)
+#define ConnectionPending (1 << 4)
+
 #ifndef ASSEMBLY
 /* cpu version -- no support for f0 yet */
 static inline int is_cpu_rev_a0(void)
@@ -379,6 +384,7 @@ struct mem_info { // pernode
 
 struct mem_controller {
 	unsigned node_id;
+	/* NOTE: these are in "BDF" format -- i.e. bus in upper 16, devfn in upper 8 of lower 16 */
 	u32 f0, f1, f2, f3;
 	u32 channel0[DIMM_SOCKETS];
 	u32 channel1[DIMM_SOCKETS];

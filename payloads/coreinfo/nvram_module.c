@@ -36,9 +36,9 @@ static void dump_nvram(WINDOW *win, int row, int col)
 
 	/* Print vertical and horizontal line. */
 	for (i = 0; i < 18; i++)
-		mvwaddch(win, 3 + i, 3, '\263');
+		mvwaddch(win, 3 + i, 3, ACS_VLINE);
 	for (i = 0; i < 48; i++)
-		mvwaddch(win, 3, 3 + i, (i == 0) ? '\332' : '\304');
+		mvwaddch(win, 3, 3 + i, (i == 0) ? ACS_ULCORNER : ACS_HLINE);
 
 	/* Dump NVRAM contents. */
 	for (i = 1; i < 257; i++) {

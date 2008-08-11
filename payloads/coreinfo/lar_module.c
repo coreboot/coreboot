@@ -66,7 +66,7 @@ static int lar_module_redraw(WINDOW *win)
 
 	/* Draw a line down the middle. */
 	for (i = 2; i < 21; i++)
-		mvwaddch(win, i, 30, '\263');
+		mvwaddch(win, i, 30, ACS_VLINE);
 
 	/* Draw the names down the left side. */
 	for (i = 0; i < lcount; i++) {

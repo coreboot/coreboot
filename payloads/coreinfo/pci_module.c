@@ -144,11 +144,11 @@ static int pci_module_redraw(WINDOW *win)
 
 		if (i == 0) {
 			if (item != 0)
-				mvwprintw(win, 2 + i, 19, "\30");
+				mvwaddch(win, 2 + i, 19, ACS_UARROW);
 		}
 		if (i == MENU_VISIBLE - 1) {
 			if ((item + 1) < devices_index)
-				mvwprintw(win, 2 + i, 19, "\31");
+				mvwaddch(win, 2 + i, 19, ACS_DARROW);
 		}
 	}
 
@@ -160,12 +160,12 @@ static int pci_module_redraw(WINDOW *win)
 	wmove(win, 3, 25);
 
 	for (i = 0; i < 48; i++)
-		waddch(win, (i == 0) ? '\332' : '\304');
+		waddch(win, (i == 0) ? ACS_ULCORNER : ACS_HLINE);
 
 	for (i = 0; i < 4; i++) {
 		mvwprintw(win, 4 + i, 23, "%2.2X", i * 16);
 		wmove(win, 4 + i, 25);
-		waddch(win, '\263');
+		waddch(win, ACS_VLINE);
 	}
 
 	show_config_space(win, 4, 26, menu_selected);

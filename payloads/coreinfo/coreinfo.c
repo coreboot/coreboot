@@ -89,7 +89,7 @@ void print_module_title(WINDOW *win, const char *title)
 
 	wmove(win, 1, 1);
 	for (i = 0; i < 78; i++)
-		waddch(win, '\304');
+		waddch(win, ACS_HLINE);
 }
 
 static void print_submenu(struct coreinfo_cat *cat)

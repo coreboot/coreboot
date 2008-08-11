@@ -2,10 +2,9 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2000 Ollie Lo, Silicon Integrated Systems
- * Copyright (C) 2000 Ron Minnich
+ * Copyright (C) 2000,2008 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2001 Eric Biederman
  * Copyright (C) 2002 Andrew Ip
- * Copyright (C) 2008 Ron Minnich
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

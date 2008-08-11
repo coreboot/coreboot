@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Ron Minnich <rminnich@lanl.gov>
+ * Copyright (C) 2007 Ronald G. Minnich <rminnich@lanl.gov>
  * Copyright (C) 2007 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
  *

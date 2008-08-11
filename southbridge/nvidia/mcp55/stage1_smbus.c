@@ -5,7 +5,7 @@
  * Written by Yinghai Lu <yhlu@tyan.com> for Tyan Computer.
  * Copyright (C) 2006,2007 AMD
  * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
- * Copyright (C) 2008 Ronald G. Minnich (for v3)
+ * Copyright (C) 2008 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

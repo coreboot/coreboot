@@ -22,6 +22,8 @@
  */
 
 #include <device/smbus_def.h>
+#include <shared.h> /* We share symbols from stage 0 */
+
 
 #define SMBHSTSTAT	0x1
 #define SMBHSTPRTCL	0x0
@@ -41,157 +43,8 @@ static inline void smbus_delay(void)
 	(void) inb(0x80);
 }
 
-static int smbus_wait_until_ready(u16 smbus_io_base)
-{
-	unsigned long loops;
-	loops = SMBUS_TIMEOUT;
-	do {
-		unsigned char val;
-		smbus_delay();
-		val = inb(smbus_io_base + SMBHSTSTAT);
-		val &= 0x1f;
-		if (val == 0) {
-			return 0;
-		}
-		outb(val,smbus_io_base + SMBHSTSTAT);
-	} while(--loops);
-	return -2;
-}
-
-static int smbus_wait_until_done(u16 smbus_io_base)
-{
-	unsigned long loops;
-	loops = SMBUS_TIMEOUT;
-	do {
-		unsigned char val;
-		smbus_delay();
-
-		val = inb(smbus_io_base + SMBHSTSTAT);
-		if ( (val & 0xff) != 0) {
-			return 0;
-		}
-	} while(--loops);
-	return -3;
-}
-
-static int do_smbus_recv_byte(u16 smbus_io_base, u8 device)
-{
-	u8 global_status_register;
-	u8 byte;
-
-	/* set the device I'm talking too */
-	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
-	smbus_delay();
-
-	/* byte data recv */
-	outb(0x05, smbus_io_base + SMBHSTPRTCL);
-	smbus_delay();
-
-	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0) {
-		return -3;
-	}
-
-	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */
-
-	/* read results of transaction */
-	byte = inb(smbus_io_base + SMBHSTCMD);
-
-	if (global_status_register != 0x80) { // loose check, otherwise it should be 0
-		return -1;
-	}
-	return byte;
-}
-
-static int do_smbus_send_byte(u16 smbus_io_base, u8 device, u8 val)
-{
-	u8 global_status_register;
-
-	outb(val, smbus_io_base + SMBHSTDAT0);
-	smbus_delay();
-
-	/* set the command... */
-	outb(val, smbus_io_base + SMBHSTCMD);
-	smbus_delay();
-
-	/* set the device I'm talking too */
-	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
-	smbus_delay();
-
-	/* set up for a byte data write */
-	outb(0x04, smbus_io_base + SMBHSTPRTCL);
-	smbus_delay();
-
-	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0) {
-		return -3;
-	}
-	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
-
-	if (global_status_register != 0x80) {
-		return -1;
-	}
-	return 0;
-}
-
-static int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address)
-{
-	u8 global_status_register;
-	u8 byte;
-
-	/* set the device I'm talking too */
-	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
-	smbus_delay();
-	/* set the command/address... */
-	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
-	smbus_delay();
-	/* byte data read */
-	outb(0x07, smbus_io_base + SMBHSTPRTCL);
-	smbus_delay();
-
-	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0) {
-		return -3;
-	}
-
-	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */
-
-	/* read results of transaction */
-	byte = inb(smbus_io_base + SMBHSTDAT0);
-
-	if (global_status_register != 0x80) { // lose check, otherwise it should be 0
-		return -1;
-	}
-	return byte;
-}
-
-static int do_smbus_write_byte(u16 smbus_io_base, u8 device, u8 address, u8 val)
-{
-	u8 global_status_register;
-
-	outb(val, smbus_io_base + SMBHSTDAT0);
-	smbus_delay();
-
-	/* set the device I'm talking too */
-	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
-	smbus_delay();
-
-	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
-	smbus_delay();
-
-	/* set up for a byte data write */
-	outb(0x06, smbus_io_base + SMBHSTPRTCL);
-	smbus_delay();
-
-	/* poll for transaction completion */
-	if (smbus_wait_until_done(smbus_io_base) < 0) {
-		return -3;
-	}
-	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
-
-	if (global_status_register != 0x80) {
-		return -1;
-	}
-	return 0;
-}
-
+int do_smbus_recv_byte(u16 smbus_io_base, u8 device);
+int do_smbus_send_byte(u16 smbus_io_base, u8 device, u8 val);
+int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address);
+int do_smbus_write_byte(u16 smbus_io_base, u8 device, u8 address, u8 val);
+void enable_smbus(void);

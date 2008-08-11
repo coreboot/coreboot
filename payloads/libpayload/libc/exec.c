@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
 #include <libpayload.h>
 
 #ifdef CONFIG_TARGET_I386

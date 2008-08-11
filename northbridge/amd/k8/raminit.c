@@ -595,7 +595,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	int value, low;
 	/* no memset per now and we might want non-zero values */
 	sz.per_rank = 0;
-	sz.side1;
+	sz.side1 = 0;
 	sz.side2 = 0;
 	sz.rows = 0;
 	sz.col = 0;

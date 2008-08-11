@@ -22,5 +22,7 @@
 ifeq ($(CONFIG_NORTHBRIDGE_AMD_K8),y)
 
 # no stage2 sources yet. 
-STAGE2_CHIPSET_SRC +=
+STAGE2_CHIPSET_SRC += $(src)/northbridge/amd/k8/get_sblk_pci1234.c \
+					$(src)/northbridge/amd/k8/northbridge.c \
+
 endif

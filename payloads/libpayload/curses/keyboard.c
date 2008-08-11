@@ -37,6 +37,7 @@
  * Actually cook the serial (handle special keys)
  */
 
+#include <config.h>
 #include "local.h"
 
 static int _halfdelay = 0;

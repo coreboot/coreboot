@@ -54,7 +54,7 @@ static void vga_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en)
 {
 	unsigned int addr;
 	addr = ((unsigned int) crtc_read(0x0E)) << 8;
-	addr += crtc_read(0x0E);
+	addr += crtc_read(0x0F);
 
 	*x = addr % VIDEO_COLS;
 	*y = addr / VIDEO_COLS;
@@ -68,7 +68,7 @@ static void vga_set_cursor(unsigned int x, unsigned int y)
 
 	addr = x + (VIDEO_COLS * y);
 	crtc_write(addr >> 8, 0x0E);
-	crtc_write(addr, 0x0E);
+	crtc_write(addr, 0x0F);
 }
 
 static void vga_enable_cursor(int state)
@@ -87,7 +87,7 @@ static void vga_enable_cursor(int state)
 static void vga_clear_line(u8 row, u8 ch, u8 attr)
 {
 	int col;
-	u16 *ptr = VIDEO(0, row);
+	u16 *ptr = VIDEO(row, 0);
 
 	for(col = 0; col < VIDEO_COLS; col++)
 		ptr[col] = ((attr & 0xFF) << 8) | (ch & 0xFF);
@@ -95,7 +95,7 @@ static void vga_clear_line(u8 row, u8 ch, u8 attr)
 
 static void vga_scroll_up(void)
 {
-	u16 *src = VIDEO(0,1);
+	u16 *src = VIDEO(1,0);
 	u16 *dst = VIDEO(0,0);
 	int i;
 

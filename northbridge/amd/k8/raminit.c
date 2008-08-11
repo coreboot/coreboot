@@ -52,7 +52,6 @@
 #endif
 
 
-/* now THIS is a kludge but ... it will do for now until we work this out. */
 void hard_reset(void);
 
 static int controller_present(const struct mem_controller *ctrl)

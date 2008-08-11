@@ -21,6 +21,6 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_AMD_K8),y)
 
-STAGE2_CHIPSET_SRC += $(src)/northbridge/amd/k8/raminit.c
-
+# no stage2 sources yet. 
+STAGE2_CHIPSET_SRC +=
 endif

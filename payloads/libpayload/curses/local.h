@@ -58,6 +58,7 @@
 
 #undef USE_TERMLIB
 
+#include <config.h>
 #include <libpayload.h>
 #include <curses.h>
 #include <curses.priv.h>

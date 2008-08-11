@@ -44,11 +44,6 @@
 
 #define LITTLE_ENDIAN	1234
 #define BIG_ENDIAN	4321
-#ifdef CONFIG_TARGET_I386
-#define BYTE_ORDER	LITTLE_ENDIAN
-#else
-#define BYTE_ORDER	BIG_ENDIAN
-#endif
 
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1

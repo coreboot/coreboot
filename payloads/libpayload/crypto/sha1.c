@@ -20,12 +20,21 @@
  *   34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
  */
 
+#include <config.h>
 #include <libpayload.h>
 
 typedef u8 u_int8_t;
 typedef u32 u_int32_t;
 typedef u64 u_int64_t;
 typedef unsigned int u_int;
+
+/* Moved from libpayload.h */
+
+#ifdef CONFIG_TARGET_I386
+#define BYTE_ORDER      LITTLE_ENDIAN
+#else
+#define BYTE_ORDER      BIG_ENDIAN
+#endif
 
 #if 0
 #include <sys/param.h>

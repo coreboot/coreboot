@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 Ulf Jordan <jordan@chalmers.se>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -105,6 +106,10 @@ int serial_getchar(void)
 #define VT100_SBOLD       "\e[1m"
 #define VT100_EBOLD       "\e[m"
 #define VT100_CURSOR_ADDR "\e[%d;%dH"
+/* The following smacs/rmacs are actually for xterm; a real vt100 has
+   enacs=\E(B\E)0, smacs=^N, rmacs=^O.  */
+#define VT100_SMACS       "\e(0"
+#define VT100_RMACS       "\e(B"
 
 static void serial_putcmd(char *str)
 {
@@ -125,6 +130,16 @@ void serial_start_bold(void)
 void serial_end_bold(void)
 {
 	serial_putcmd(VT100_EBOLD);
+}
+
+void serial_start_altcharset(void)
+{
+	serial_putcmd(VT100_SMACS);
+}
+
+void serial_end_altcharset(void)
+{
+	serial_putcmd(VT100_RMACS);
 }
 
 void serial_set_cursor(int y, int x)

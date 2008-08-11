@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2008 Ulf Jordan <jordan@chalmers.se>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -87,6 +88,69 @@ int ESCDELAY;
 // cchar_t *_nc_wacs;
 SCREEN *SP;
 chtype acs_map[128];
+
+/* See terminfo(5). */
+chtype fallback_acs_map[128] =
+	{
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	'>',	'<',	'^',	'v',	' ',
+	'#',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	' ',	' ',	' ',	' ',	' ',	' ',	' ',	' ',
+	'+',	':',	' ',	' ',	' ',	' ',	'\\',   '#',
+	'#',	'#',	'+',	'+',	'+',	'+',	'+',	'~',
+	'-',	'-',	'-',	'_',	'+',	'+',	'+',	'+',
+	'|',	'<',	'>',	'*',	'!',	'f',	'o',	' ',
+	};
+
+/* See acsc of vt100. */
+chtype serial_acs_map[128] =
+	{
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	'`',	'a',	0,	0,	0,	0,	'f',	'g',
+	0,	0,	'j',	'k',	'l',	'm',	'n',	'o',
+	'p',	'q',	'r',	's',	't',	'u',	'v',	'w',
+	'x',	'y',	'z',	'{',	'|',	'}',	'~',	0,
+	};
+
+/* See acsc of linux. */
+chtype console_acs_map[128] =
+	{
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	'\020', '\021', '\030', '\031',	0,
+	'\333',	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,
+	'\004',	'\261',	0,	0,	0,	0,	'\370',	'\361',
+	'\260',	'\316',	'\331',	'\277',	'\332',	'\300',	'\305',	'~',
+	'\304',	'\304',	'\304',	'_',	'\303', '\264', '\301',	'\302',
+	'\263',	'\363',	'\362',	'\342',	'\330',	'\234',	'\376',	0,
+	};
 
 // FIXME: Ugly (and insecure!) hack!
 char sprintf_tmp[1024];
@@ -213,10 +277,13 @@ void immedok(WINDOW *win, bool flag) { win->_immed = flag; }
 /** Note: Must _not_ be called twice! */
 WINDOW *initscr(void)
 {
-	int x, y;
+	int x, y, i;
 
 	// newterm(name, stdout, stdin);
 	// def_prog_mode();
+
+	for (i = 0; i < 128; i++)
+	  acs_map[i] = (chtype) i | A_ALTCHARSET;
 
 	if (curses_flags & F_ENABLE_SERIAL) {
 		serial_clear();
@@ -409,12 +476,12 @@ int waddch(WINDOW *win, const chtype ch)
 	// NCURSES_CH_T wch;
 	// SetChar2(wch, ch);
 
-	win->_line[win->_cury].text[win->_curx].chars[0] = ch;
-
-	/* Use the window attributes - perhaps we also pull attributes from
-	   the ch itself, I don't know */
+	win->_line[win->_cury].text[win->_curx].chars[0] =
+		((ch) & (chtype)A_CHARTEXT);
 
 	win->_line[win->_cury].text[win->_curx].attr = WINDOW_ATTRS(win);
+	win->_line[win->_cury].text[win->_curx].attr |=
+		((ch) & (chtype)A_ATTRIBUTES);
 	win->_curx++;	// FIXME
 
 	// if (win && (waddch_nosync(win, wch) != ERR)) {
@@ -595,10 +662,14 @@ int wnoutrefresh(WINDOW *win)
 {
 	// FIXME.
 	int serial_is_bold = 0;
+	int serial_is_altcharset = 0;
 
 	int x, y;
+	chtype ch;
+	int need_altcharset;
 
 	serial_end_bold();
+	serial_end_altcharset();
 
 	for (y = 0; y <= win->_maxy; y++) {
 
@@ -614,6 +685,7 @@ int wnoutrefresh(WINDOW *win)
 				((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
 
 			if (curses_flags & F_ENABLE_SERIAL) {
+				ch = win->_line[y].text[x].chars[0];
 
 				if (attr & A_BOLD) {
 					if (!serial_is_bold) {
@@ -628,10 +700,28 @@ int wnoutrefresh(WINDOW *win)
 					}
 				}
 
-				serial_putchar(win->_line[y].text[x].chars[0]);
+				need_altcharset = 0;
+				if (attr & A_ALTCHARSET) {
+					if (serial_acs_map[ch & 0x7f]) {
+						ch = serial_acs_map[ch & 0x7f];
+						need_altcharset = 1;
+					} else
+						ch = fallback_acs_map[ch & 0x7f];
+				}
+				if (need_altcharset && !serial_is_altcharset) {
+					serial_start_altcharset();
+					serial_is_altcharset = 1;
+				}
+				if (!need_altcharset && serial_is_altcharset) {
+					serial_end_altcharset();
+					serial_is_altcharset = 0;
+				}
+
+				serial_putchar(ch);
 			}
 
 			if (curses_flags & F_ENABLE_CONSOLE) {
+				ch = win->_line[y].text[x].chars[0];
 
 				/* Handle some of the attributes. */
 				if (attr & A_BOLD)
@@ -643,6 +733,12 @@ int wnoutrefresh(WINDOW *win)
 					c = (c >> 4) & 0xf00;
 					c |= tmp << 12;
 				}
+				if (attr & A_ALTCHARSET) {
+					if (console_acs_map[ch & 0x7f])
+						ch = console_acs_map[ch & 0x7f];
+					else
+						ch = fallback_acs_map[ch & 0x7f];
+				}
 
 				/*
 				 * FIXME: Somewhere along the line, the
@@ -650,7 +746,7 @@ int wnoutrefresh(WINDOW *win)
 				 * For now grab just the 8 bit character,
 				 * but this will break wide characters!
 				 */
-				c |= (chtype) (win->_line[y].text[x].chars[0] & 0xff);
+				c |= (chtype) (ch & 0xff);
 				video_console_putc(win->_begy + y, win->_begx + x, c);
 			}
 		}

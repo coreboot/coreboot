@@ -105,6 +105,8 @@ int serial_getchar(void);
 void serial_clear(void);
 void serial_start_bold(void);
 void serial_end_bold(void);
+void serial_start_altcharset(void);
+void serial_end_altcharset(void);
 void serial_set_cursor(int y, int x);
 
 /* drivers/speaker.c */

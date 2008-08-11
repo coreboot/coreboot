@@ -17,7 +17,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-
+#include <types.h>
+#include <lib.h>
+#include <console.h>
+#include <device/pci.h>
+#include <msr.h>
+#include <legacy.h>
+#include <device/pci_ids.h>
+#include <cpu.h>
+#include <io.h>
+#include <config.h>
 /**
  * setup a resource map. 
  * for PCRM entries, add a pci device offset, and a pci "OR value offset"
@@ -38,10 +47,10 @@
 /* NOTE: By doing the config write in this manner we guarantee that this
  * will work in stage1 or stage2.
  */
-#define pci_read_config32(bus, dev, where) pci_cf8_conf1.read32(NULL, r->pcm.bus, dev, where)
-#define pci_write_config32(bus, dev, where, what) pci_cf8_conf1.write32(NULL, r->pcm.bus, dev, where, what)
+#define pci_read_config32(busdevfn, where) pci_cf8_conf1.read32(busdevfn, where)
+#define pci_write_config32(busdevfn, where, what) pci_cf8_conf1.write32(busdevfn, where, what)
 
-void setup_resource_map_x_offset(const rmap *rm, u32 max,
+void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
                                  u32 offset_bdf, u32 offset_pciio, 
                                  u32 offset_io)
 {
@@ -60,7 +69,7 @@ void setup_resource_map_x_offset(const rmap *rm, u32 max,
 #warning make sure offset_bus is right for extended PCI addressing
 			u32 offset_bus = offset_bdf >> 8;
 			  printk(BIOS_DEBUG, "(%x+%x,%x+%x,%x+%x,%x) & %08x | %08x+%08x\n", rm->pcm.bus,
-				offset_bus, rm->pcm.dev+offset_devfn>>3,
+				offset_bus, rm->pcm.dev, (offset_devfn>>3),
                                  rm->pcm.fn, offset_devfn&3, rm->pcm.reg,
 				 rm->pcm.and,rm->pcm.or, offset_pciio);
                           dev = rm->pcm.dev;
@@ -68,21 +77,21 @@ void setup_resource_map_x_offset(const rmap *rm, u32 max,
                           dev <<= 3;
                           dev |= rm->pcm.fn;
                             dev += offset_devfn;
-                          reg = pci_read_config32(rm->pcm.bus + offset_bus, dev, where);
+                          reg = pci_read_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev),  where);
                           reg &= rm->pcm.and;
                           reg |= rm->pcm.or + offset_pciio; 
-                          pci_write_config32(rm->pcm.bus, dev, where, reg);
+                          pci_write_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev), where, reg);
 			}
 			break;
 		case TIO8:
 			{
                           u32 where;
                           u8 reg;
-                          printk(BIOS_DEBUG, "(%04x+%04x) &  %02x | %02xx\n", rm->port, offset_io, rm->pcm.and,rm->pcm.or);
-                          where = rm->port + offset_io;
+                          printk(BIOS_DEBUG, "(%04x+%04x) &  %02x | %02xx\n", rm->io8.port, offset_io, rm->io8.and,rm->io8.or);
+                          where = rm->io8.port + offset_io;
                           reg = inb(where);
-                          reg &= rm->and;
-                          reg |= rm->or;
+                          reg &= rm->io8.and;
+                          reg |= rm->io8.or;
                           outb(reg, where);
 			}
 			break;
@@ -90,11 +99,11 @@ void setup_resource_map_x_offset(const rmap *rm, u32 max,
 			{
                           u32 where;
                           u32 reg;
-                          printk(BIOS_DEBUG, "(%04x+%04x) &  %02x | %02xx\n", rm->port, offset_io, rm->pcm.and,rm->pcm.or);
-                          where = rm->port + offset_io;
+                          printk(BIOS_DEBUG, "(%04x+%04x) &  %02x | %02xx\n", rm->io32.port, offset_io, rm->io32.and,rm->io32.or);
+                          where = rm->io32.port + offset_io;
                           reg = inl(where);
-                          reg &= rm->and;
-                          reg |= rm->or;
+                          reg &= rm->io32.and;
+                          reg |= rm->io32.or;
                           outl(reg, where);
 			}
 			break;
@@ -116,6 +125,6 @@ void setup_resource_map_x_offset(const rmap *rm, u32 max,
 void setup_resource_map(const struct rmap *rm, u32 max)
 {
 
-  setup_resource_map_x_offset(rm, max);
+  setup_resource_map_x_offset(rm, max, 0, 0, 0);
 }
 

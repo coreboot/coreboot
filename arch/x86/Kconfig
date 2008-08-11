@@ -124,11 +124,18 @@ config PIRQ_TABLE
 
 config SMP
 	boolean
+	default 0
 	help
 	  This option is used to enable certain functions to make 
 	  coreboot work correctly on symmetric multi processor
 	  systems.
 	  It is usually set in mainboard/*/Kconfig.
+
+config IOAPIC
+	boolean
+	default 0
+	help
+	  If you want to configure an IOAPIC, set this. 
 
 config CARBASE
 	hex
@@ -192,3 +199,15 @@ config HT_FREQ_800MHZ
 	help
 		Can we run HT at 800 Mhz
 
+config USBDEBUG_DIRECT
+	boolean
+	default 0
+	help
+		Determines if we enable USB Direct debugging. If you don't have a dongle, 
+		this is probably of no value to you.
+
+config APIC_ID_OFFSET
+	hex "APIC ID offset"
+	default 0x10
+	help
+		This is entirely mainboard dependent. 0x10 is a *typical* setting but not always a good setting. 

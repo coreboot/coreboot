@@ -109,7 +109,8 @@ $(obj)/coreboot.bootblock: $(obj)/coreboot.vpd $(obj)/stage0.init
 STAGE0_LIB_OBJ       = uart8250.o mem.o lar.o delay.o vtxprintf.o \
 		       vsprintf.o console.o string.o $(DECOMPRESSORS)
 STAGE0_ARCH_X86_OBJ  = stage1.o serial.o speaker.o \
-		       udelay_io.o mc146818rtc.o post_code.o
+		       udelay_io.o mc146818rtc.o post_code.o \
+			pci_ops_conf1.o resourcemap.o
 
 ifeq ($(CONFIG_PAYLOAD_ELF_LOADER),y)
 STAGE0_LIB_OBJ      += elfboot.o

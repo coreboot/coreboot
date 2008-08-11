@@ -139,9 +139,17 @@ config:        DT_CONFIG '('
 			switchback();
 			
 		}
-		')' ';' { 
+		')' ';' {
+				int namelen;
+				char *name = strdup((char *)$3.val);
 				/* convention: first property is labeled with path */
-				$6->label = strdup((char *)$3.val);
+				$6->label = name;
+
+				/* convention: if it ends in .dts, strip that off	*/
+				namelen = strlen($6->label);
+				if ((namelen > 4) && (! strncmp(&name[namelen-4], ".dts", 4)))
+					$6->label[namelen-4] = '\0';
+
 				$$ = $6
 			}
 	|

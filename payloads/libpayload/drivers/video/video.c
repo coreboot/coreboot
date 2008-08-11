@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
 #include <libpayload.h>
 #include <video_console.h>
 

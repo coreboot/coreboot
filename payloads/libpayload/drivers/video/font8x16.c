@@ -1,8 +1,8 @@
 /*
- * This file is part of libpayload
+ * This file is part of the libpayload project.
  *
  * It has originally been taken from the HelenOS project
- * (http://www.helenos.eu)
+ * (http://www.helenos.eu), and slightly modified for our purposes.
  *
  * Copyright (c) 2005 Martin Decky
  * All rights reserved.

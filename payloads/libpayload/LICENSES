@@ -48,7 +48,7 @@ holders, and the exact license terms that apply.
 
 * util/kconfig/*: GPLv2
   Source: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux-2.6
-  Current version we use: TODO
+  Current version we use: 587c90616a5b44e6ccfac38e64d4fecee51d588c (03/2008)
 
 * include/curses.priv.h: BSD-like license
   Source: ncurses, http://www.gnu.org/software/ncurses/
@@ -59,6 +59,11 @@ holders, and the exact license terms that apply.
   Source: ncurses, http://www.gnu.org/software/ncurses/
   Original files: include/curses.h.in
   Current version we use: 5.6
+
+* include/lar.h: GPLv2 or revised BSD license
+  Source: coreboot v3, svn://coreboot.org/repository/coreboot-v3
+  Original file: util/lar/lar.h
+  Current version we use: r647
 
 * libc/ipchecksum.c: 2-clause BSD license
   Source: FreeBSD's base system libraries, http://www.freebsd.org
@@ -91,6 +96,13 @@ holders, and the exact license terms that apply.
                   kernel/generic/src/printf/printf.c
                   kernel/generic/src/printf/vprintf.c
   Current version we use: r2745
+
+* drivers/video/font8x16.c: 3-clause BSD license
+  Source: HelenOS, http://www.helenos.eu
+          svn checkout svn://svn.helenos.eu/HelenOS/trunk HelenOS
+          http://svn.helenos.eu/chora/browse.php?f=%2Ftrunk%2F
+  Original file: kernel/genarch/src/fb/font-8x16.c
+  Current version we use: r3293
 
 * crypto/sha1.c: Public domain
   Source: OpenBSD

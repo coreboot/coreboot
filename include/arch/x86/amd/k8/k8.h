@@ -422,4 +422,20 @@ struct sys_info {
 	u32 sblk;
 	u32 sbbusn;
 } __attribute__((packed));
+
+/* dual core support */
+unsigned int read_nb_cfg_54(void);
+
+struct node_core_id {
+        unsigned nodeid;
+        unsigned coreid;
+};
+
+// it can be used to get unitid and coreid it running only
+struct node_core_id get_node_core_id(unsigned int nb_cfg_54);
+
+struct device;
+unsigned get_apicid_base(unsigned ioapic_num);
+void amd_sibling_init(struct device *cpu);
+
 #endif /* ! ASSEMBLY */

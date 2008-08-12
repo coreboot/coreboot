@@ -99,9 +99,13 @@ static inline struct cpuid_result cpuid(u32 op)
 	r.ecx = 0;
 
 	/* ecx is often an input as well as an output. */
-	__asm__("cpuid"
+	/* can't use ebx in PIC mode */
+	__asm__("pushl %%ebx"
+			"\n\tcpuid"
+			"\n\tmovl %%ebx, %%esi"
+			"\n\tpopl %%ebx"
 		: "=a" (r.eax),
-		  "=b" (r.ebx),
+		  "=S" (r.ebx),
 		  "=c" (r.ecx),
 		  "=d" (r.edx)
 		: "0" (r.eax), "2" (r.ecx));
@@ -246,9 +250,9 @@ struct rmap {
 	};
 };
 
-void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
+SHARED(setup_resource_map_x_offset, void, const struct rmap *rm, u32 max,
                                  u32 offset_dev, u32 offset_pciio, 
                                  u32 offset_io);
-void setup_resource_map(const struct rmap *rm, u32 max);
+SHARED(setup_resource_map, void, const struct rmap *rm, u32 max);
 
 #endif /* ARCH_X86_CPU_H */

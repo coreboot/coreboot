@@ -89,7 +89,7 @@ struct apic_cluster_id
 
 struct cpu_id
 {
-	u32 cpuid[3];
+	u8 cpuid[24];
 };
 
 struct cpu_bus_id

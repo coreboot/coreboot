@@ -42,6 +42,6 @@ struct amdk8_sysconf{
 	
 };
 
-extern struct amdk8_sysconf_t sysconf;
+extern struct amdk8_sysconf sysconf;
 
 #endif

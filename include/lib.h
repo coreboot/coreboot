@@ -20,6 +20,7 @@
 
 #ifndef LIB_H
 #define LIB_H
+#include <shared.h>
 
 /**
  * Return the size of a given array, no matter of which data type

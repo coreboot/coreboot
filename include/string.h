@@ -22,6 +22,7 @@
 #define STRING_H
 
 #include <types.h>
+#include <shared.h>
 
 /* lib/string.c */
 size_t strnlen(const char *str, size_t maxlen);
@@ -30,10 +31,10 @@ int strcmp(const char *s1, const char *s2);
 int strncmp(const char *s1, const char *s2, int maxlen);
 
 /* lib/mem.c */
-void *memcpy(void *dest, const void *src, size_t len);
-void *memmove(void *dest, const void *src, size_t len);
-void *memset(void *s, int c, size_t len);
-int memcmp(const void *s1, const void *s2, size_t len);
+SHARED(memcpy, void *, void *dest, const void *src, size_t len);
+SHARED(memmove, void *, void *dest, const void *src, size_t len);
+SHARED(memset, void *, void *s, int c, size_t len);
+SHARED(memcmp, int , const void *s1, const void *s2, size_t len);
 
 /* console/vsprintf.c */
 int sprintf(char *buf, const char *fmt, ...);

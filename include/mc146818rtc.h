@@ -117,8 +117,14 @@
 #define RTC_LAST_BOOT_FLAG_SET	(1<<1)
 #define RTC_NORMAL_BOOT_FLAG_SET (1<<0)
 
-void rtc_init(int invalid);
+#ifdef STANDALONE  /* standalone program using this file */
 int get_option(void *dest, char *name);
+#else
+#include <shared.h>
+
+SHARED(get_option, int, void *dest, char *name);
+#endif
+void rtc_init(int invalid);
 int last_boot_normal(void);
 int check_normal_boot_flag(void);
 

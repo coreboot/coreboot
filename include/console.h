@@ -37,7 +37,6 @@ void console_tx_byte(unsigned char byte, void *arg);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
-void die(const char *msg);
 #ifdef CONFIG_CONSOLE_BUFFER
 void printk_buffer_init(void);
 void printk_buffer_move(void *newaddr, int newsize);
@@ -64,5 +63,6 @@ SHARED_WITH_ATTRIBUTES(printk, int, __attribute__((format (printf, 2, 3))),
 					int msg_level, const char *fmt, ...);
 SHARED(banner, void, int msg_level, const char *msg);
 SHARED(dump_mem_range, void, int msg_level, unsigned char *buf, int size);
+SHARED(die, void, const char *msg);
 
 #endif /* CONSOLE_H */

@@ -116,14 +116,6 @@ struct flashchip *probe_flash(struct flashchip *flash, int force)
 
 		size = flash->total_size * 1024;
 
-#ifdef TS5300
-		// FIXME: Wrong place for this decision
-		// FIXME: This should be autodetected. It is trivial.
-		flash_baseaddr = 0x9400000;
-#else
-		flash_baseaddr = (0xffffffff - size + 1);
-#endif
-
 		/* If getpagesize() > size -> 
 		 * "Can't mmap memory using /dev/mem: Invalid argument"
 		 * This should never happen as we don't support any flash chips
@@ -138,6 +130,14 @@ struct flashchip *probe_flash(struct flashchip *flash, int force)
 			 */
 			size = getpagesize();
 		}
+
+#ifdef TS5300
+		// FIXME: Wrong place for this decision
+		// FIXME: This should be autodetected. It is trivial.
+		flash_baseaddr = 0x9400000;
+#else
+		flash_baseaddr = (0xffffffff - size + 1);
+#endif
 
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
 			    fd_mem, (off_t) flash_baseaddr);

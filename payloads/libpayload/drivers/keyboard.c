@@ -96,6 +96,7 @@ int keyboard_getchar(void)
 	case 0x80 | 0x36:
 	case 0x80 | 0x2a:
 		modifier |= MOD_SHIFT;
+		break;
 	case 0x1d:
 		modifier &= ~MOD_CTRL;
 		break;

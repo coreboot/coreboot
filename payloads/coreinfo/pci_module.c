@@ -18,13 +18,14 @@
  */
 
 #include <arch/io.h>
+#include <pci.h>
 #include <libpayload.h>
 #include "coreinfo.h"
 
 #ifdef CONFIG_MODULE_PCI
 
 struct pci_devices {
-	unsigned short device;
+	pcidev_t device;
 	unsigned int id;
 };
 
@@ -86,18 +87,16 @@ static void quicksort(struct pci_devices *list, int len)
 
 static void show_config_space(WINDOW *win, int row, int col, int index)
 {
-	unsigned char cspace[64];
-	int bus, devfn;
+	unsigned char cspace[256];
+	pcidev_t dev;
 	int i, x, y;
 
-	bus = (devices[index].device >> 8) & 0xff;
-	devfn = devices[index].device & 0xff;
+	dev = devices[index].device;
 
-	for (i = 0; i < 64; i += 4)
-		cspace[i] = pci_read_config32(PCI_DEV(bus, PCI_SLOT(devfn),
-					PCI_FUNC(devfn)), i);
+	for (i = 0; i < 256; i ++)
+		cspace[i] = pci_read_config8(dev, i);
 
-	for (y = 0; y < 4; y++) {
+	for (y = 0; y < 16; y++) {
 		for (x = 0; x < 16; x++)
 			mvwprintw(win, row + y, col + (x * 3), "%2.2X ",
 				  cspace[(y * 16) + x]);
@@ -106,7 +105,7 @@ static void show_config_space(WINDOW *win, int row, int col, int index)
 
 static int pci_module_redraw(WINDOW *win)
 {
-	unsigned int bus, devfn, func;
+	unsigned int bus, slot, func;
 	int i, last;
 
 	print_module_title(win, "PCI Device List");
@@ -126,9 +125,9 @@ static int pci_module_redraw(WINDOW *win)
 			continue;
 		}
 
-		bus = (devices[item].device >> 8) & 0xff;
-		devfn = (devices[item].device & 0xff) / 8;
-		func = (devices[item].device & 0xff) % 8;
+		bus = PCI_BUS(devices[item].device);
+		slot = PCI_SLOT(devices[item].device);
+		func = PCI_FUNC(devices[item].device);
 
 		if (item == menu_selected)
 			wattrset(win, COLOR_PAIR(3) | A_BOLD);
@@ -136,7 +135,7 @@ static int pci_module_redraw(WINDOW *win)
 			wattrset(win, COLOR_PAIR(2));
 
 		mvwprintw(win, 2 + i, 1, "%X:%2.2X.%2.2X %04X:%04X  ",
-			  bus, devfn, func,
+			  bus, slot, func,
 			  devices[item].id & 0xffff,
 			  (devices[item].id >> 16) & 0xffff);
 
@@ -162,7 +161,7 @@ static int pci_module_redraw(WINDOW *win)
 	for (i = 0; i < 48; i++)
 		waddch(win, (i == 0) ? ACS_ULCORNER : ACS_HLINE);
 
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < 16; i++) {
 		mvwprintw(win, 4 + i, 23, "%2.2X", i * 16);
 		wmove(win, 4 + i, 25);
 		waddch(win, ACS_VLINE);
@@ -175,14 +174,13 @@ static int pci_module_redraw(WINDOW *win)
 
 static void pci_scan_bus(int bus)
 {
-	int devfn, func;
+	int slot, func;
 	unsigned int val;
 	unsigned char hdr;
 
-	for (devfn = 0; devfn < 0x100;) {
-		for (func = 0; func < 8; func++, devfn++) {
-			pcidev_t dev = PCI_DEV(bus, PCI_SLOT(devfn),
-					PCI_FUNC(devfn));
+	for (slot = 0; slot < 0x1f; slot++) {
+		for (func = 0; func < 8; func++) {
+			pcidev_t dev = PCI_DEV(bus, slot, func);
 
 			val = pci_read_config32(dev, REG_VENDOR_ID);
 
@@ -195,8 +193,8 @@ static void pci_scan_bus(int bus)
 			if (devices_index >= 64)
 				return;
 
-			devices[devices_index].device =
-			    ((bus & 0xff) << 8) | (devfn & 0xff);
+			devices[devices_index].device = 
+			    PCI_DEV(bus, slot, func);
 
 			devices[devices_index++].id = val;
 

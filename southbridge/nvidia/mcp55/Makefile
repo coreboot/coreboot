@@ -27,6 +27,16 @@ ifeq ($(CONFIG_PIRQ_TABLE),y)
 STAGE2_CHIPSET_SRC += $(src)/southbridge/nvidia/mcp55/irq_tables.c
 endif
 
-STAGE0_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/stage1.o
+STAGE2_CHIPSET_SRC += $(src)/southbridge/nvidia/mcp55/ide.c \
+ 					$(src)/southbridge/nvidia/mcp55/pci.c \
+ 					$(src)/southbridge/nvidia/mcp55/lpc.c \
+ 					$(src)/southbridge/nvidia/mcp55/pcie.c \
+ 					$(src)/southbridge/nvidia/mcp55/sata.c \
+					$(src)/southbridge/nvidia/mcp55/smbus.c \
+					$(src)/southbridge/nvidia/mcp55/usb.c \
+					$(src)/southbridge/nvidia/mcp55/usb2.c 
+					
+STAGE0_CHIPSET_OBJ += $(obj)/southbridge/nvidia/mcp55/stage1.o 
+
 
 endif

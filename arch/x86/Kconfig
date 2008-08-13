@@ -56,6 +56,13 @@ config CPU_AMD_K8
 	  arch/x86/Makefile for more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
+config CONFIG_HPET
+	boolean
+	depends CPU_AMD_K8
+	help
+	  Whether to configure a High Precision Event Timer. Note that HPETs are 
+		known to be bug-prone. 
+
 config K8_REV_F_SUPPORT
 	hex
 	default 0 if CPU_AMD_K8

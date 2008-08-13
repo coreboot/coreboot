@@ -178,7 +178,7 @@ static void pci_scan_bus(int bus)
 	unsigned int val;
 	unsigned char hdr;
 
-	for (slot = 0; slot < 0x1f; slot++) {
+	for (slot = 0; slot < 0x20; slot++) {
 		for (func = 0; func < 8; func++) {
 			pcidev_t dev = PCI_DEV(bus, slot, func);
 

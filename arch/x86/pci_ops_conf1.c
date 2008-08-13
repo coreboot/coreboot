@@ -56,37 +56,37 @@
 #define CONFIG_CMD(bdf, where)   (0x80000000 | (bdf) | ((where & 0xff) & ~3) | ((where & 0xf00)<<16) )
 #endif
 
-static u8 pci_conf1_read_config8(u32 bdf, int where)
+u8 pci_conf1_read_config8(u32 bdf, int where)
 {
 		outl(CONFIG_CMD(bdf, where), 0xCF8);
 		return inb(0xCFC + (where & 3));
 }
 
-static u16 pci_conf1_read_config16(u32 bdf, int where)
+u16 pci_conf1_read_config16(u32 bdf, int where)
 {
 		outl(CONFIG_CMD(bdf, where), 0xCF8);
 		return inw(0xCFC + (where & 2));
 }
 
-static u32 pci_conf1_read_config32(u32 bdf, int where)
+u32 pci_conf1_read_config32(u32 bdf, int where)
 {
 		outl(CONFIG_CMD(bdf, where), 0xCF8);
 		return inl(0xCFC);
 }
 
-static void  pci_conf1_write_config8(u32 bdf, int where, u8 value)
+void  pci_conf1_write_config8(u32 bdf, int where, u8 value)
 {
 		outl(CONFIG_CMD(bdf, where), 0xCF8);
 		outb(value, 0xCFC + (where & 3));
 }
 
-static void pci_conf1_write_config16(u32 bdf, int where, u16 value)
+void pci_conf1_write_config16(u32 bdf, int where, u16 value)
 {
 		outl(CONFIG_CMD(bdf, where), 0xCF8);
 		outw(value, 0xCFC + (where & 2));
 }
 
-static void pci_conf1_write_config32(u32 bdf, int where, u32 value)
+void pci_conf1_write_config32(u32 bdf, int where, u32 value)
 {
 		outl(CONFIG_CMD(bdf, where), 0xCF8);
 		outl(value, 0xCFC);
@@ -111,7 +111,7 @@ static void pci_conf1_write_config32(u32 bdf, int where, u32 value)
  * @return 1 if found, 0 otherwise
  */
 
-static int find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
+int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 
 {
 	u16 devfn;
@@ -139,7 +139,7 @@ static int find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 		if (hdr == PCI_HEADER_TYPE_BRIDGE || hdr == PCI_HEADER_TYPE_CARDBUS) {
 			unsigned int busses;
 			busses = pci_conf1_read_config32(confaddr, PCI_PRIMARY_BUS);
-			if (find_on_bus((busses >> 8) & 0xFF, vid, did, busdevfn))
+			if (pci_conf1_find_on_bus((busses >> 8) & 0xFF, vid, did, busdevfn))
 				return 1;
 		}
 	}
@@ -147,17 +147,7 @@ static int find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 	return 0;
 }
 
-static int pci_find_device(u16 vid, u16 did, u32 * dev)
+int pci_conf1_find_device(u16 vid, u16 did, u32 * dev)
 {
-	return find_on_bus(0, vid, did, dev);
+	return pci_conf1_find_on_bus(0, vid, did, dev);
 }
-
-const struct pci_bus_operations pci_cf8_conf1 = {
-	.read8  = pci_conf1_read_config8,
-	.read16 = pci_conf1_read_config16,
-	.read32 = pci_conf1_read_config32,
-	.write8  = pci_conf1_write_config8,
-	.write16 = pci_conf1_write_config16,
-	.write32 = pci_conf1_write_config32,
-	.find = 	pci_find_device,
-};

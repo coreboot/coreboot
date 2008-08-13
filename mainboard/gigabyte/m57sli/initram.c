@@ -31,7 +31,27 @@
 #include <io.h>
 #include <cpu.h>
 #include <amd/k8/k8.h>
+#include <southbridge/nvidia/mcp55/mcp55_smbus.h>
+#include <mc146818rtc.h>
 #include <spd.h>
+
+# warning fix hard_reset
+void hard_reset(void)
+{
+}
+void memreset_setup(void)
+{
+}
+
+void memreset(int controllers, const struct mem_controller *ctrl)
+{
+}
+
+void activate_spd_rom(const struct mem_controller *ctrl)
+{
+	/* nothing to do */
+}
+
 
 /** 
   * main for initram for the Gigabyte m57sli.  

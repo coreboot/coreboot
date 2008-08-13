@@ -20,16 +20,18 @@
 ##
 
 STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o \
-			$(obj)/mainboard/$(MAINBOARDDIR)/option_table.c \
+			$(obj)/mainboard/$(MAINBOARDDIR)/option_table.o \
 			$(obj)/southbridge/nvidia/mcp55/stage1_smbus.o \
-			$(obj)/mainboard/$(MAINBOARDDIR)/initram.o \
-			$(obj)/northbridge/amd/k8/raminit.o \
 			$(obj)/northbridge/amd/k8/coherent_ht.o \
-			$(obj)/northbridge/amd/k8/incoherent_ht.o
+			$(obj)/northbridge/amd/k8/incoherent_ht.o \
+			$(obj)/lib/clog2.o
 
-# I can't get this to work -- if you can fix it do so. The file above
-# from "initram" on should be here. 
-INITRAM_SRC=
+INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
+			$(src)/northbridge/amd/k8/raminit.c \
+			$(src)/arch/x86/pci_ops_conf1.c \
+			$(src)/southbridge/nvidia/mcp55/stage1_smbus.c \
+			$(src)/lib/clog2.c
+
 
 STAGE2_MAINBOARD_SRC = 
 

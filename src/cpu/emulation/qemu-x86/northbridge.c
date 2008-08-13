@@ -147,7 +147,7 @@ void udelay(int usecs)
 {
 	int i;
 	for(i = 0; i < usecs; i++)
-		outb(i&0xff, 0x80);
+		inb(0x80);
 }
 
 

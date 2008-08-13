@@ -49,6 +49,7 @@ typedef u32 pcidev_t;
 #define PCI_DEV(_bus, _dev, _fn) \
 (0x80000000 | (_bus << 16) | (_dev << 11) | (_fn << 8))
 
+#define PCI_BUS(_d)  ((_d >> 16) & 0xff)
 #define PCI_SLOT(_d) ((_d >> 11) & 0x1f)
 #define PCI_FUNC(_d) ((_d >> 8) & 0x7)
 

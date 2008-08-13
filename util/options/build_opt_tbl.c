@@ -10,6 +10,7 @@
 #define u16 uint16_t
 #define u8 uint8_t
 
+#define STANDALONE
 #include <mc146818rtc.h>
 #include <tables.h>
 

@@ -47,8 +47,6 @@
 /* NOTE: By doing the config write in this manner we guarantee that this
  * will work in stage1 or stage2.
  */
-#define pci_read_config32(busdevfn, where) pci_cf8_conf1.read32(busdevfn, where)
-#define pci_write_config32(busdevfn, where, what) pci_cf8_conf1.write32(busdevfn, where, what)
 
 void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
                                  u32 offset_bdf, u32 offset_pciio, 
@@ -77,10 +75,10 @@ void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
                           dev <<= 3;
                           dev |= rm->pcm.fn;
                             dev += offset_devfn;
-                          reg = pci_read_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev),  where);
+                          reg = pci_conf1_read_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev),  where);
                           reg &= rm->pcm.and;
                           reg |= rm->pcm.or + offset_pciio; 
-                          pci_write_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev), where, reg);
+                          pci_conf1_write_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev), where, reg);
 			}
 			break;
 		case TIO8:

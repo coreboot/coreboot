@@ -133,6 +133,7 @@ config SMP
 
 config IOAPIC
 	boolean
+	depends ARCH_X86
 	default 0
 	help
 	  If you want to configure an IOAPIC, set this. 
@@ -209,5 +210,6 @@ config USBDEBUG_DIRECT
 config APIC_ID_OFFSET
 	hex "APIC ID offset"
 	default 0x10
+	depends IO_APIC
 	help
 		This is entirely mainboard dependent. 0x10 is a *typical* setting but not always a good setting. 

@@ -35,13 +35,16 @@ static unsigned int console_loglevel(void)
 }
 
 #ifdef CONFIG_CONSOLE_BUFFER
+struct printk_buffer *printk_buffer_addr(void)
+{
+	return global_vars()->printk_buffer;
+}
+
 void printk_buffer_move(void *newaddr, int newsize)
 {
-	struct printk_buffer **p;
 	struct printk_buffer *oldbuf, *newbuf;
 	int copylen;
-	p = bottom_of_stack();
-	oldbuf = *p;
+	oldbuf = printk_buffer_addr();
 	newbuf = newaddr;
 	newbuf->len = newsize;
 	newbuf->readoffset = 0;
@@ -68,15 +71,8 @@ void printk_buffer_move(void *newaddr, int newsize)
 			&oldbuf->buffer[0], copylen);
 		newbuf->writeoffset += copylen;
 	}
-	*p = newbuf;
+	global_vars()->printk_buffer = newbuf;
 	return;
-}
-
-struct printk_buffer *printk_buffer_addr(void)
-{
-	struct printk_buffer **p;
-	p = bottom_of_stack();
-	return *p;
 }
 
 void printk_buffer_init(void)

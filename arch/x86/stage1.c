@@ -70,10 +70,19 @@ void init_archive(struct mem_file *archive)
 
 }
 
+/*
+ * The name is slightly misleading because this is the initial stack pointer,
+ * not the address of the first element on the stack.
+ */
 void *bottom_of_stack(void)
 {
-	/* -4-4 because CONFIG_CARBASE + CONFIG_CARSIZE - 4 is initial %esp */
-	return (void *)(CONFIG_CARBASE + CONFIG_CARSIZE - 4 - 4);
+	/* -4 because CONFIG_CARBASE + CONFIG_CARSIZE - 4 is initial %esp */
+	return (void *)(CONFIG_CARBASE + CONFIG_CARSIZE - 4);
+}
+
+struct global_vars *global_vars(void)
+{
+	return (struct global_vars *)(bottom_of_stack() - sizeof(struct global_vars));
 }
 
 void dump_mem_range(int msg_level, unsigned char *buf, int size)

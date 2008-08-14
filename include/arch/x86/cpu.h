@@ -202,6 +202,7 @@ static inline __attribute__((always_inline)) void hlt(void)
 }
 
 SHARED(bottom_of_stack, void *, void);
+SHARED(global_vars, struct global_vars *, void);
 
 #ifdef CONFIG_CONSOLE_BUFFER
 #define PRINTK_BUF_SIZE_CAR (CONFIG_CARSIZE / 2)

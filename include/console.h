@@ -59,6 +59,18 @@ struct printk_buffer {
 };
 #endif
 
+/*
+ * If you change struct global_vars in any way, you have to fix all stage0 asm
+ * code. The stage0 asm code modification is nontrivial (size of the struct,
+ * alignment, initialization, order of struct members, initialization).
+ * Depending on your compiler, real breakage may happen.
+ */
+struct global_vars {
+#ifdef CONFIG_CONSOLE_BUFFER
+	struct printk_buffer *printk_buffer;
+#endif
+};
+
 SHARED_WITH_ATTRIBUTES(printk, int, __attribute__((format (printf, 2, 3))),
 					int msg_level, const char *fmt, ...);
 SHARED(banner, void, int msg_level, const char *msg);

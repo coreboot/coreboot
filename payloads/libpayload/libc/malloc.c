@@ -92,13 +92,15 @@ static void *alloc(int len)
 		header = *((hdrtype_t *) ptr);
 		int size = SIZE(header);
 
-		if (!HAS_MAGIC(header) || size == 0)
+		if (!HAS_MAGIC(header) || size == 0) {
+			printf("memory allocator panic.\n");
 			halt();
+		}
 
 		if (header & FLAG_FREE) {
 			if (len <= size) {
 				void *nptr = ptr + (HDRSIZE + len);
-				int nsize = size - (len + 8);
+				int nsize = size - (HDRSIZE + len);
 
 				/* Mark the block as used. */
 				*((hdrtype_t *) ptr) = USED_BLOCK(len);
@@ -109,7 +111,7 @@ static void *alloc(int len)
 
 				if (nsize > 0)
 					*((hdrtype_t *) nptr) =
-					    FREE_BLOCK(nsize - 4);
+					    FREE_BLOCK(nsize);
 
 				return (void *)(ptr + HDRSIZE);
 			}

@@ -883,7 +883,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 	dev = 0;
 	printk(BIOS_SPEW, "%s: list is %p, *list is %p\n", __func__, list,
 	       *list);
-	for (/* */; *list; list = &(*list)->sibling) {
+	for (; *list; list = &(*list)->sibling) {
 		printk(BIOS_SPEW, "%s: check dev %s \n", __func__,
 		       (*list)->dtsname);
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
@@ -1122,10 +1122,11 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	 */
 	if (old_devices) {
 		struct device *left;
+		printk(BIOS_INFO, "PCI: Left over static devices:\n");
 		for (left = old_devices; left; left = left->sibling) {
-			printk(BIOS_SPEW, "%s\n", left->dtsname);
+			printk(BIOS_INFO, "%s\n", left->dtsname);
 		}
-		banner(BIOS_SPEW, "PCI: Left over static devices.\n");
+		printk(BIOS_INFO, "PCI: End of leftover list.\n");
 	}
 
 	/* For all children that implement scan_bus() (i.e. bridges)

@@ -580,10 +580,11 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	 */
 	if (old_devices) {
 		struct device *left;
+		printk(BIOS_INFO, "HT: Left over static devices:\n");
 		for (left = old_devices; left; left = left->sibling) {
-			printk(BIOS_DEBUG, "%s\n", dev_path(left));
+			printk(BIOS_INFO, "%s\n", dev_path(left));
 		}
-		printk(BIOS_ERR, "HT: Left over static devices.\n");
+		printk(BIOS_INFO, "HT: End of leftover list.\n");
 		/* Put back the left over static device, and let
 		 * pci_scan_bus() disable it.
 		 */

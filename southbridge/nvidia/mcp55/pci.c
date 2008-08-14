@@ -99,5 +99,5 @@ struct device_operations mcp55_pci = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = pci_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };

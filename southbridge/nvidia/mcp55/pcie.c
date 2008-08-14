@@ -57,7 +57,7 @@ struct device_operations mcp55_pcie_a = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = pcie_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_pcie_b_c = {
@@ -71,7 +71,7 @@ struct device_operations mcp55_pcie_b_c = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = pcie_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_pcie_d = {
@@ -85,7 +85,7 @@ struct device_operations mcp55_pcie_d = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = pcie_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_pcie_e = {
@@ -99,7 +99,7 @@ struct device_operations mcp55_pcie_e = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = pcie_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_pcie_f = {
@@ -113,5 +113,5 @@ struct device_operations mcp55_pcie_f = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = pcie_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };

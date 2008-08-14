@@ -67,13 +67,6 @@ static void sata_init(struct device *dev)
 	dword = pci_read_config32(dev, 0xf8);
 	dword |= 2;
 	pci_write_config32(dev, 0xf8, dword);
-
-
-#warning finish set subsystem in mcp55 sata
-#if 0
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-#endif
 }
 
 struct device_operations mcp55_sata = {
@@ -86,5 +79,5 @@ struct device_operations mcp55_sata = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = sata_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };

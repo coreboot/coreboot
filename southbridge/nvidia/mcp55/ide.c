@@ -68,12 +68,6 @@ static void ide_init(struct device *dev)
 #ifdef CONFIG_PCI_ROM_RUN
 	pci_dev_init(dev);
 #endif
-
-#warning set subsystem id on mcp55 ide
-#if 0
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-#endif
 }
 
 struct device_operations mcp55_ide = {
@@ -86,6 +80,6 @@ struct device_operations mcp55_ide = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = ide_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 

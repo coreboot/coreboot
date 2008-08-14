@@ -34,11 +34,6 @@
 
 static void usb_init(struct device * dev)
 {
-#warning handle subsystem set in mcp55 usb
-#if 0
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-#endif
 }
 
 struct device_operations mcp55_usb = {
@@ -51,5 +46,5 @@ struct device_operations mcp55_usb = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = usb_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };

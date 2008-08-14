@@ -338,13 +338,6 @@ static void mcp55_lpc_enable_resources(struct device *dev)
 	mcp55_lpc_enable_childrens_resources(dev);
 }
 
-/* This is awaiting the subsystem support in dtc/dts
-static void lpci_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
-{
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-}
-*/
 struct device_operations mcp55_lpc = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_NVIDIA,
@@ -355,7 +348,7 @@ struct device_operations mcp55_lpc = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = mcp55_lpc_enable_resources,
 	.phase6_init		 = lpc_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_pro = {
@@ -368,7 +361,7 @@ struct device_operations mcp55_pro = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = mcp55_lpc_enable_resources,
 	.phase6_init		 = lpc_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_lpc2 = {
@@ -381,7 +374,7 @@ struct device_operations mcp55_lpc2 = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = mcp55_lpc_enable_resources,
 	.phase6_init		 = lpc_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_lpc3 = {
@@ -394,7 +387,7 @@ struct device_operations mcp55_lpc3 = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = mcp55_lpc_enable_resources,
 	.phase6_init		 = lpc_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_lpc4 = {
@@ -407,7 +400,7 @@ struct device_operations mcp55_lpc4 = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = mcp55_lpc_enable_resources,
 	.phase6_init		 = lpc_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_lpc5 = {
@@ -420,7 +413,7 @@ struct device_operations mcp55_lpc5 = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = mcp55_lpc_enable_resources,
 	.phase6_init		 = lpc_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_lpc6 = {
@@ -433,7 +426,7 @@ struct device_operations mcp55_lpc6 = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = mcp55_lpc_enable_resources,
 	.phase6_init		 = lpc_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };
 
 struct device_operations mcp55_lpcslave = {
@@ -446,5 +439,5 @@ struct device_operations mcp55_lpcslave = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = lpc_slave_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };

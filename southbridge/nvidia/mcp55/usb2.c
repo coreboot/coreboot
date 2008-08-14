@@ -44,11 +44,6 @@ static void usb2_init(struct device *dev)
 	dword = pci_read_config32(dev, 0xf8);
 	dword |= 40;
 	pci_write_config32(dev, 0xf8, dword);
-#warning mange set subsystem in mcp55 usb2
-#if 0
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-#endif
 }
 
 static void usb2_set_resources(struct device *dev)
@@ -84,5 +79,5 @@ struct device_operations mcp55_usb2 = {
 	.phase4_set_resources	 = usb2_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = usb2_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
 };

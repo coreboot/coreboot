@@ -22,6 +22,10 @@
 #ifndef MCP55_H
 #define MCP55_H
 
+#define PCI_MCP55_SUBSYSTEM_VENDOR_ID 0x40
 
+void mcp55_pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
+			   unsigned int device);
+struct pci_operations mcp55_pci_dev_ops_pci;
 
 #endif /* MCP55_H */

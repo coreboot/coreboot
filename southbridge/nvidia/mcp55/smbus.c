@@ -127,24 +127,19 @@ static void mcp55_sm_init(struct device *dev)
 	if (res)
 		pm_base = res->base;
 #endif
-#warning finish subsystem set in mcp55 smbus
-#if 0
-	pci_write_config32(dev, 0x40,
-		((device & 0xffff) << 16) | (vendor & 0xffff));
-#endif
 }
 
 struct device_operations mcp55_smbus = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_NVIDIA,
 			      .device = PCI_DEVICE_ID_NVIDIA_MCP55_SM2}}},
-	.constructor		 	= default_device_constructor,
-	.phase3_scan		 	= scan_static_bus,
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = scan_static_bus,
 	.phase4_read_resources	 = mcp55_sm_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
-	.phase6_init		 	= mcp55_sm_init,
-	.ops_pci		 		= &pci_dev_ops_pci,
-	.ops_smbus_bus		= &lops_smbus_bus,
+	.phase6_init		 = mcp55_sm_init,
+	.ops_pci		 = &mcp55_pci_dev_ops_pci,
+	.ops_smbus_bus		 = &lops_smbus_bus,
 };
 

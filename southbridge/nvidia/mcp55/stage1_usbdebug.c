@@ -33,15 +33,14 @@
 #define EHCI_DEBUG_OFFSET	0x98
 
 #include "pci.h"
-#include "stage1.h"
 static void set_debug_port(unsigned port)
 {
 	u32 dword;
 	u32 bdf = PCI_BDF(0, MCP55_DEVN_BASE+2, 1);
-	dword = pci_read_config32(bdf, 0x74);
+	dword = pci_conf1_read_config32(bdf, 0x74);
 	dword &= ~(0xf<<12);
 	dword |= (port<<12);
-	pci_write_config32(bdf, 0x74, dword);
+	pci_conf1_write_config32(bdf, 0x74, dword);
 
 }
 
@@ -49,7 +48,7 @@ static void mcp55_enable_usbdebug_direct(unsigned port)
 {
 	u32 bdf = PCI_BDF(0, MCP55_DEVN_BASE+2, 1);
 	set_debug_port(port);
-	pci_write_config32(bdf, EHCI_BAR_INDEX, EHCI_BAR);
-	pci_write_config8(bdf, 0x04, 0x2); // mem space enable
+	pci_conf1_write_config32(bdf, EHCI_BAR_INDEX, EHCI_BAR);
+	pci_conf1_write_config8(bdf, 0x04, 0x2); // mem space enable
 }
 

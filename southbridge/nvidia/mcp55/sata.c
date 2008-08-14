@@ -40,7 +40,7 @@ static void sata_init(struct device *dev)
 	struct southbridge_nvidia_mcp55_sata_config *conf =
 	    (struct southbridge_nvidia_mcp55_sata_config *)dev->device_configuration;
 
-	dword = pci_read_config32(dev, 0x50);
+	dword = pci_conf1_read_config32(dev, 0x50);
 	/* Ensure prefetch is disabled */
 	dword &= ~((1 << 15) | (1 << 13));
 	if(conf) {
@@ -62,11 +62,11 @@ static void sata_init(struct device *dev)
 	dword &= ~(0x1f<<24);
 	dword |= (0x15<<24);
 #endif
-	pci_write_config32(dev, 0x50, dword);
+	pci_conf1_write_config32(dev, 0x50, dword);
 
-	dword = pci_read_config32(dev, 0xf8);
+	dword = pci_conf1_read_config32(dev, 0xf8);
 	dword |= 2;
-	pci_write_config32(dev, 0xf8, dword);
+	pci_conf1_write_config32(dev, 0xf8, dword);
 }
 
 struct device_operations mcp55_sata = {

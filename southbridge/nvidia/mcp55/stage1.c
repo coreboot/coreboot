@@ -27,7 +27,6 @@
 #include <cpu.h>
 #include <amd/k8/k8.h>
 #include "mcp55.h"
-#include "stage1.h"
 
 #warning fix disgusting define of MCP55_NUM it is mainboard dependent
 #define MCP55_NUM 1
@@ -148,9 +147,9 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 	u32 dword;
 	int i;
 	u32 bdf = PCI_BDF(busnx, devnx+1, 1);
-	dword = pci_read_config32(bdf, 0xe4);
+	dword = pci_conf1_read_config32(bdf, 0xe4);
 	dword |= 0x3f0; // disable it at first
-	pci_write_config32(bdf, 0xe4, dword);
+	pci_conf1_write_config32(bdf, 0xe4, dword);
 
 	for(i=0; i<3; i++) {
 		tgio_ctrl = inl(anactrl_io_base + 0xcc);
@@ -172,9 +171,9 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 //	wait 100us
 	udelay(100);
 
-	dword = pci_read_config32(bdf, 0xe4);
+	dword = pci_conf1_read_config32(bdf, 0xe4);
 	dword &= ~(0x3f0); // enable
-	pci_write_config32(bdf, 0xe4, dword);
+	pci_conf1_write_config32(bdf, 0xe4, dword);
 
 //	need to wait 100ms
 	udelay(100000);
@@ -397,7 +396,7 @@ int mcp55_early_setup_x(void)
 			u32 id;
 			u32 bdf;
 			bdf = PCI_BDF(busnx, devnx, 0);
-			id = pci_read_config32(bdf, PCI_VENDOR_ID);
+			id = pci_conf1_read_config32(bdf, PCI_VENDOR_ID);
 			if(id == 0x036910de) {
 				busn[mcp55_num] = busnx;
 				devn[mcp55_num] = devnx;
@@ -434,7 +433,7 @@ unsigned int get_sbdn(unsigned int bus)
 	/* Find the device.
 	 */
 	u32 bdf;
-	if (!pci_locate_device(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_MCP55_HT, &bdf)) {
+	if (!pci_conf1_find_device(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_MCP55_HT, &bdf)) {
 		die("PCI_DEVICE_ID_NVIDIA_MCP55_HT not found\r\n");
 	}
 

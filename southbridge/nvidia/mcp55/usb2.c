@@ -41,9 +41,9 @@
 static void usb2_init(struct device *dev)
 {
 	u32 dword;
-	dword = pci_read_config32(dev, 0xf8);
+	dword = pci_conf1_read_config32(dev, 0xf8);
 	dword |= 40;
-	pci_write_config32(dev, 0xf8, dword);
+	pci_conf1_write_config32(dev, 0xf8, dword);
 }
 
 static void usb2_set_resources(struct device *dev)

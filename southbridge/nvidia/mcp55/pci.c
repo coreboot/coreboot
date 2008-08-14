@@ -43,23 +43,23 @@ static void pci_init(struct device *dev)
 #endif
 
 	/* System error enable */
-	dword = pci_read_config32(dev, 0x04);
+	dword = pci_conf1_read_config32(dev, 0x04);
 	dword |= (1<<8); /* System error enable */
 	dword |= (1<<30); /* Clear possible errors */
-	pci_write_config32(dev, 0x04, dword);
+	pci_conf1_write_config32(dev, 0x04, dword);
 
 #if 1
 	//only need (a01,xx]
-	word = pci_read_config16(dev, 0x48);
+	word = pci_conf1_read_config16(dev, 0x48);
 	word |= (1<<0); /* MRL2MRM */
 	word |= (1<<2); /* MR2MRM */
-	pci_write_config16(dev, 0x48, word);
+	pci_conf1_write_config16(dev, 0x48, word);
 #endif
 
 #if 1
-	dword = pci_read_config32(dev, 0x4c);
+	dword = pci_conf1_read_config32(dev, 0x4c);
 	dword |= 0x00440000; /*TABORT_SER_ENABLE Park Last Enable.*/
-	pci_write_config32(dev, 0x4c, dword);
+	pci_conf1_write_config32(dev, 0x4c, dword);
 #endif
 
 #ifdef CONFIG_PCI_64BIT_PREF_MEM
@@ -84,7 +84,7 @@ static void pci_init(struct device *dev)
 	printk(BIOS_DEBUG, "dev_root mem base = 0x%010Lx\n", dev_root.resource[1].base);
 #endif
 	printk(BIOS_DEBUG, "[0x50] <-- 0x%08x\n", dword);
-	pci_write_config32(dev, 0x50, dword); //TOM
+	pci_conf1_write_config32(dev, 0x50, dword); //TOM
 
 }
 

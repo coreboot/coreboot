@@ -41,7 +41,7 @@ static void ide_init(struct device *dev)
 	u16 word;
 	u8 byte;
 
-	word = pci_read_config16(dev, 0x50);
+	word = pci_conf1_read_config16(dev, 0x50);
 	/* Ensure prefetch is disabled */
 	word &= ~((1 << 15) | (1 << 13));
 	if (conf->ide1_enable) {
@@ -56,15 +56,15 @@ static void ide_init(struct device *dev)
 	word |= (1<<12);
 	word |= (1<<14);
 
-	pci_write_config16(dev, 0x50, word);
+	pci_conf1_write_config16(dev, 0x50, word);
 
 
 	byte = 0x20 ; // Latency: 64-->32
-	pci_write_config8(dev, 0xd, byte);
+	pci_conf1_write_config8(dev, 0xd, byte);
 
-	dword = pci_read_config32(dev, 0xf8);
+	dword = pci_conf1_read_config32(dev, 0xf8);
 	dword |= 12;
-	pci_write_config32(dev, 0xf8, dword);
+	pci_conf1_write_config32(dev, 0xf8, dword);
 #ifdef CONFIG_PCI_ROM_RUN
 	pci_dev_init(dev);
 #endif

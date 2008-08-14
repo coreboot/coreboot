@@ -27,7 +27,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include "mcp55.h"
-#include "stage1.h"
 #include "mcp55_smbus.h"
 
 #define SMBUS0_IO_BASE	0x1000
@@ -192,16 +191,16 @@ int do_smbus_write_byte(u16 smbus_io_base, u8 device, u8 address, u8 val)
 void enable_smbus(void)
 {
 	u32 bdf;
-	if (!pci_locate_device(0x10de, 0x0368, &bdf)) {
+	if (!pci_conf1_find_device(0x10de, 0x0368, &bdf)) {
 		die("SMBUS controller not found\r\n");
 	}
 
 	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 	/* set smbus iobase */
-	pci_write_config32(bdf, 0x20, SMBUS0_IO_BASE | 1);
-	pci_write_config32(bdf, 0x24, SMBUS1_IO_BASE | 1);
+	pci_conf1_write_config32(bdf, 0x20, SMBUS0_IO_BASE | 1);
+	pci_conf1_write_config32(bdf, 0x24, SMBUS1_IO_BASE | 1);
 	/* Set smbus iospace enable */
-	pci_write_config16(bdf, 0x4, 0x01);
+	pci_conf1_write_config16(bdf, 0x4, 0x01);
 	/* clear any lingering errors, so the transaction will run */
 	outb(inb(SMBUS0_IO_BASE + SMBHSTSTAT), SMBUS0_IO_BASE + SMBHSTSTAT);
 	outb(inb(SMBUS1_IO_BASE + SMBHSTSTAT), SMBUS1_IO_BASE + SMBHSTSTAT);

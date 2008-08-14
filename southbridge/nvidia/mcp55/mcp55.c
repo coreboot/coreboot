@@ -52,7 +52,7 @@ static struct device *find_lpc_dev( struct device *dev,  unsigned devfn)
 		(lpc_dev->id.pci.device > PCI_DEVICE_ID_NVIDIA_MCP55_PRO)
 		) ) {
 			u32 id;
-			id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
+			id = pci_conf1_read_config32(lpc_dev, PCI_VENDOR_ID);
 			if ( (id < (PCI_VENDOR_ID_NVIDIA | (PCI_DEVICE_ID_NVIDIA_MCP55_LPC << 16))) ||
 				(id > (PCI_VENDOR_ID_NVIDIA | (PCI_DEVICE_ID_NVIDIA_MCP55_PRO << 16)))
 				) {
@@ -82,7 +82,7 @@ static void mcp55_enable(struct device *dev)
 
 	/* sorry. Again, anonymous unions etc. would make this easier. */
 	if(dev->id.pci.device==0x0000) {
-		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
+		vendorid = pci_conf1_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid>>16) & 0xffff;
 //		vendorid &= 0xffff;
 	} else {
@@ -180,14 +180,14 @@ static void mcp55_enable(struct device *dev)
 		if(!sm_dev) return;
 
 		if ( sm_dev ) {
-			reg_old = reg =  pci_read_config32(sm_dev, 0xe4);
+			reg_old = reg =  pci_conf1_read_config32(sm_dev, 0xe4);
 
 			if (!dev->enabled) { //disable it
 				reg |= (1<<index2);
 			}
 
 			if (reg != reg_old) {
-				pci_write_config32(sm_dev, 0xe4, reg);
+				pci_conf1_write_config32(sm_dev, 0xe4, reg);
 			}
 		}
 
@@ -199,14 +199,14 @@ static void mcp55_enable(struct device *dev)
 	if ( index == 0) {  // for LPC
 
 		// expose ioapic base
-		byte = pci_read_config8(lpc_dev, 0x74);
+		byte = pci_conf1_read_config8(lpc_dev, 0x74);
 		byte |= ((1<<1)); // expose the BAR
-		pci_write_config8(dev, 0x74, byte);
+		pci_conf1_write_config8(dev, 0x74, byte);
 
 		// expose trap base
-		byte = pci_read_config8(lpc_dev, 0xdd);
+		byte = pci_conf1_read_config8(lpc_dev, 0xdd);
 		byte |= ((1<<0)|(1<<3)); // expose the BAR and enable write
-		pci_write_config8(dev, 0xdd, byte);
+		pci_conf1_write_config8(dev, 0xdd, byte);
 
 		return;
 
@@ -216,16 +216,16 @@ static void mcp55_enable(struct device *dev)
 		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
 		if(!sm_dev) return;
 
-		final_reg = pci_read_config32(sm_dev, 0xe8);
+		final_reg = pci_conf1_read_config32(sm_dev, 0xe8);
 		final_reg &= ~((1<<16)|(1<<8)|(1<<20)|(1<<14)|(1<<22)|(1<<18)|(1<<17)|(1<<15)|(1<<11)|(1<<10)|(1<<9));
-		pci_write_config32(sm_dev, 0xe8, final_reg); //enable all at first
+		pci_conf1_write_config32(sm_dev, 0xe8, final_reg); //enable all at first
 #if 0
-		reg_old = reg = pci_read_config32(sm_dev, 0xe4);
+		reg_old = reg = pci_conf1_read_config32(sm_dev, 0xe4);
 //		reg |= (1<<0);
 		reg &= ~(0x3f<<4);
 		if (reg != reg_old) {
 			printk_debug("mcp55.c pcie enabled\n");
-			pci_write_config32(sm_dev, 0xe4, reg);
+			pci_conf1_write_config32(sm_dev, 0xe4, reg);
 		}
 #endif
 	}
@@ -238,9 +238,9 @@ static void mcp55_enable(struct device *dev)
 	if(index == 9 ) { //NIC1 is the final, We need update final reg to 0xe8
 		sm_dev = dev_find_slot(dev->bus->secondary, devfn + 1);
 		if(!sm_dev) return;
-		reg_old = pci_read_config32(sm_dev, 0xe8);
+		reg_old = pci_conf1_read_config32(sm_dev, 0xe8);
 		if (final_reg != reg_old) {
-			pci_write_config32(sm_dev, 0xe8, final_reg);
+			pci_conf1_write_config32(sm_dev, 0xe8, final_reg);
 		}
 
 	}
@@ -251,7 +251,7 @@ static void mcp55_enable(struct device *dev)
 void mcp55_pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 			   unsigned int device)
 {
-	pci_write_config32(dev, PCI_MCP55_SUBSYSTEM_VENDOR_ID,
+	pci_conf1_write_config32(dev, PCI_MCP55_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

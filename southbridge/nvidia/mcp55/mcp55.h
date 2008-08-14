@@ -26,6 +26,6 @@
 
 void mcp55_pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 			   unsigned int device);
-struct pci_operations mcp55_pci_dev_ops_pci;
+extern struct pci_operations mcp55_pci_dev_ops_pci;
 
 #endif /* MCP55_H */

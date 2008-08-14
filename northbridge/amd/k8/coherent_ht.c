@@ -88,7 +88,6 @@
 #include <device/hypertransport_def.h>
 #include <mc146818rtc.h>
 #include <lib.h>
-#include "stage1.h"
 
 #define enable_bsp_routing()	enable_routing(0)
 
@@ -154,11 +153,11 @@ void disable_probes(void)
 
 	printk(BIOS_SPEW, "Disabling read/write/fill probes for UP... ");
 
-	val=pci_read_config32(NODE_HT(0), HT_TRANSACTION_CONTROL);
+	val=pci_conf1_read_config32(NODE_HT(0), HT_TRANSACTION_CONTROL);
 	val |= HTTC_DIS_FILL_P | HTTC_DIS_RMT_MEM_C | HTTC_DIS_P_MEM_C |
 		HTTC_DIS_MTS | HTTC_DIS_WR_DW_P | HTTC_DIS_WR_B_P | 
 		HTTC_DIS_RD_DW_P | HTTC_DIS_RD_B_P;
-	pci_write_config32(NODE_HT(0), HT_TRANSACTION_CONTROL, val);
+	pci_conf1_write_config32(NODE_HT(0), HT_TRANSACTION_CONTROL, val);
 
 	printk(BIOS_SPEW, "done.\n");
 
@@ -171,9 +170,9 @@ void enable_apic_ext_id(u8 node)
 
       u32 val;
 
-        val = pci_read_config32(NODE_HT(node), 0x68);
+        val = pci_conf1_read_config32(NODE_HT(node), 0x68);
         val |= (HTTC_APIC_EXT_SPUR | HTTC_APIC_EXT_ID | HTTC_APIC_EXT_BRD_CST);
-        pci_write_config32(NODE_HT(node), 0x68, val);
+        pci_conf1_write_config32(NODE_HT(node), 0x68, val);
 #endif
 }
 
@@ -206,16 +205,16 @@ void enable_routing(u8 node)
 	/* Enable routing table */
 	printk(BIOS_SPEW, "Enabling routing table for node %x", node);
 
-	val=pci_read_config32(NODE_HT(node), 0x6c);
+	val=pci_conf1_read_config32(NODE_HT(node), 0x6c);
 	val &= ~((1<<1)|(1<<0));
-	pci_write_config32(NODE_HT(node), 0x6c, val);
+	pci_conf1_write_config32(NODE_HT(node), 0x6c, val);
 
 	printk(BIOS_SPEW, " done.\r\n");
 }
 
 void fill_row(u8 node, u8 row, u32 value)
 {
-	pci_write_config32(NODE_HT(node), 0x40+(row<<2), value);
+	pci_conf1_write_config32(NODE_HT(node), 0x40+(row<<2), value);
 }
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
@@ -240,7 +239,7 @@ u8 link_to_register(int ldt)
 
 u32 get_row(u8 node, u8 row)
 {
-	return pci_read_config32(NODE_HT(node), 0x40+(row<<2));
+	return pci_conf1_read_config32(NODE_HT(node), 0x40+(row<<2));
 }
 
 int link_connection(u8 src, u8 dest)
@@ -254,10 +253,10 @@ void rename_temp_node(u8 node)
 
 	printk(BIOS_SPEW, "Renaming current temporary node to %x", node);
 
-	val=pci_read_config32(NODE_HT(7), 0x60);
+	val=pci_conf1_read_config32(NODE_HT(7), 0x60);
 	val &= (~7);  /* clear low bits. */
         val |= node;   /* new node        */
-	pci_write_config32(NODE_HT(7), 0x60, val);
+	pci_conf1_write_config32(NODE_HT(7), 0x60, val);
 
 	printk(BIOS_SPEW, " done.\n");
 }
@@ -271,7 +270,7 @@ int verify_connection(u8 dest)
 	 * established and actually working by reading the
 	 * remode node's vendor/device id
 	 */
-        val = pci_read_config32(NODE_HT(dest),0);
+        val = pci_conf1_read_config32(NODE_HT(dest),0);
 	if(val != 0x11001022)
 		return 0;
 
@@ -284,7 +283,7 @@ u16 read_freq_cap(u32 dev, u8 pos)
 	u16 freq_cap;
 	u32 id;
 
-	freq_cap = pci_read_config16(dev, pos);
+	freq_cap = pci_conf1_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
 #if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1
@@ -296,7 +295,7 @@ u16 read_freq_cap(u32 dev, u8 pos)
 	}
 #endif
 
-	id = pci_read_config32(dev, 0);
+	id = pci_conf1_read_config32(dev, 0);
 
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
@@ -328,20 +327,20 @@ int optimize_connection(u32 node1, u8 link1, u32 node2, u8 link2)
 	freq = log2(freq_cap1 & freq_cap2);
 
 	/* See if I am changing the link freqency */
-	old_freq = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ);
+	old_freq = pci_conf1_read_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ);
 	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
-	old_freq = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_FREQ);
+	old_freq = pci_conf1_read_config8(node2, link2 + PCI_HT_CAP_HOST_FREQ);
 	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
 
 	/* Set the Calulcated link frequency */
-	pci_write_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ, freq);
-	pci_write_config8(node2, link2 + PCI_HT_CAP_HOST_FREQ, freq);
+	pci_conf1_write_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ, freq);
+	pci_conf1_write_config8(node2, link2 + PCI_HT_CAP_HOST_FREQ, freq);
 
 	/* Get the width capabilities */
-	width_cap1 = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH);
-	width_cap2 = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH);
+	width_cap1 = pci_conf1_read_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH);
+	width_cap2 = pci_conf1_read_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH);
 
 	/* Calculate node1's input width */
 	ln_width1 = link_width_to_pow2[width_cap1 & 7];
@@ -359,23 +358,23 @@ int optimize_connection(u32 node1, u8 link1, u32 node2, u8 link2)
 	width |= pow2_to_link_width[ln_width1] << 4;
 	
 	/* See if I am changing node1's width */
-	old_width = pci_read_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH + 1);
+	old_width = pci_conf1_read_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH + 1);
 	old_width &= 0x77;	
 	needs_reset |= old_width != width;
 
 	/* Set node1's widths */
-	pci_write_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+	pci_conf1_write_config8(node1, link1 + PCI_HT_CAP_HOST_WIDTH + 1, width);
 
 	// * Calculate node2's width */
 	width = ((width & 0x70) >> 4) | ((width & 0x7) << 4);
 
 	/* See if I am changing node2's width */
-	old_width = pci_read_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1);
+	old_width = pci_conf1_read_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1);
 	old_width &= 0x77;
 	needs_reset |= old_width != width;
 
 	/* Set node2's widths */
-	pci_write_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
+	pci_conf1_write_config8(node2, link2 + PCI_HT_CAP_HOST_WIDTH + 1, width);
 
 	return needs_reset;
 }
@@ -414,7 +413,7 @@ void setup_row_local(u8 source, u8 row) /* source will be 7 when it is for temp 
 		u8 regpos; 
 		u32 reg;
 		regpos = 0x98 + 0x20 * linkn;
-		reg = pci_read_config32(NODE_HT(source), regpos);
+		reg = pci_conf1_read_config32(NODE_HT(source), regpos);
 		if ((reg & 0x17) != 3) continue; /* it is not conherent or not connected*/
 		val |= 1<<(linkn+1); 
 	}
@@ -519,8 +518,8 @@ void setup_remote_node(u8 node)
 		u32 value;
 		u8 reg;
 		reg = pci_reg[i];
-		value = pci_read_config32(NODE_MP(0), reg);
-		pci_write_config32(NODE_MP(7), reg, value);
+		value = pci_conf1_read_config32(NODE_MP(0), reg);
+		pci_conf1_write_config32(NODE_MP(7), reg, value);
 
 	}
 	printk(BIOS_SPEW, "done\r\n");
@@ -664,7 +663,7 @@ void setup_uniprocessor(void)
 {
 	printk(BIOS_SPEW, "Enabling UP settings\r\n");
 #if CONFIG_LOGICAL_CPUS==1
-	unsigned tmp = (pci_read_config32(NODE_MC(0), 0xe8) >> 12) & 3;
+	unsigned tmp = (pci_conf1_read_config32(NODE_MC(0), 0xe8) >> 12) & 3;
 	if (tmp>0) return;
 #endif
 	disable_probes();
@@ -713,7 +712,7 @@ unsigned setup_smp2(void)
 	verify_connection(7);
 
 	/* We found 2 nodes so far */
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /*get default link on node7 to node0*/
 	print_linkn("(1,0) link=", byte);
 	setup_row_local(7,1);
@@ -738,7 +737,7 @@ unsigned setup_smp2(void)
 		verify_connection(7);
 			
 		/* We found 2 nodes so far */
-		val = pci_read_config32(NODE_HT(7), 0x6c);
+		val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 		byte = (val>>2) & 0x3; /* get default link on node7 to node0*/
 		print_linkn("\t-->(1,0) link=", byte); 
 		setup_row_local(7,1);
@@ -811,7 +810,7 @@ unsigned setup_smp4(void)
 
 	setup_temp_row(0,2);
 	verify_connection(7);
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 0*/
 	print_linkn("(2,0) link=", byte); 
 
@@ -826,7 +825,7 @@ unsigned setup_smp4(void)
 	setup_temp_row(1,3);
 	verify_connection(7);
 
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 1*/
 	print_linkn("(3,1) link=", byte); 
 
@@ -861,7 +860,7 @@ unsigned setup_smp4(void)
 	} 
 #endif
 
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 2*/
 	print_linkn("(3,2) link=", byte); 
 	setup_remote_row_direct(3,2, byte);
@@ -985,7 +984,7 @@ unsigned setup_smp6(void)
 		setup_temp_row(byte,byte+2);
 	}
 	verify_connection(7);
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /*get default link on 7 to 2*/
 	print_linkn("(4,2) link=", byte); 
 	
@@ -1014,7 +1013,7 @@ unsigned setup_smp6(void)
 	}
 	verify_connection(7);
 
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 3*/
 	print_linkn("(5,3) link=", byte); 
 	setup_row_local(7,5);
@@ -1051,7 +1050,7 @@ unsigned setup_smp6(void)
 	} 
 #endif
 
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
 	print_linkn("(5,4) link=", byte); 
 	setup_remote_row_direct(5,4, byte);
@@ -1213,7 +1212,7 @@ unsigned setup_smp8(void)
 		setup_temp_row(byte,byte+2);
 	}
 	verify_connection(7);
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
 	print_linkn("(6,4) link=", byte);
 	
@@ -1276,7 +1275,7 @@ unsigned setup_smp8(void)
 
        	        verify_connection(7);
 	}
-        val = pci_read_config32(NODE_HT(7), 0x6c);
+        val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
         byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
         print_linkn("(6,5) link=", byte);
         setup_remote_row_direct(6, 5, byte);
@@ -1294,7 +1293,7 @@ unsigned setup_smp8(void)
 
 	verify_connection(7);
 
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
 	print_linkn("(7,5) link=", byte); 
 	setup_row_local(7,7);
@@ -1314,7 +1313,7 @@ unsigned setup_smp8(void)
 
         verify_connection(7);
 
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 4*/
 	print_linkn("(7,4) link=", byte); 
 	setup_row_local(7,7);
@@ -1339,7 +1338,7 @@ unsigned setup_smp8(void)
 
 	verify_connection(7);
 
-	val = pci_read_config32(NODE_HT(7), 0x6c);
+	val = pci_conf1_read_config32(NODE_HT(7), 0x6c);
 	byte = (val>>2) & 0x3; /* get default link on 7 to 5*/
 	print_linkn("(7,5) link=", byte);
 	setup_remote_row_direct(7, 5, byte);
@@ -1523,7 +1522,7 @@ unsigned verify_mp_capabilities(unsigned nodes)
 	mask = 0x06; /* BigMPCap */
 
 	for (node=0; node<nodes; node++) {
-		mask &= pci_read_config32(NODE_MC(node), 0xe8);
+		mask &= pci_conf1_read_config32(NODE_MC(node), 0xe8);
 	}
 	
 	switch(mask) {
@@ -1583,7 +1582,7 @@ unsigned verify_dualcore(unsigned nodes)
 
 	totalcpus = 0;
 	for (node=0; node<nodes; node++) {
-		tmp = (pci_read_config32(NODE_MC(node), 0xe8) >> 12) & 3 ;
+		tmp = (pci_conf1_read_config32(NODE_MC(node), 0xe8) >> 12) & 3 ;
 		totalcpus += (tmp + 1);
 	}
 
@@ -1627,19 +1626,19 @@ void coherent_ht_finalize(unsigned nodes)
 		dev = NODE_HT(node);
 
 		/* Set the Total CPU and Node count in the system */
-		val = pci_read_config32(dev, 0x60);
+		val = pci_conf1_read_config32(dev, 0x60);
 		val &= (~0x000F0070);
 #if CONFIG_LOGICAL_CPUS==1
 		val |= ((total_cpus-1)<<16)|((nodes-1)<<4);
 #else
 		val |= ((nodes-1)<<16)|((nodes-1)<<4);
 #endif
-		pci_write_config32(dev, 0x60, val);
+		pci_conf1_write_config32(dev, 0x60, val);
 
 		/* Only respond to real cpu pci configuration cycles
 		 * and optimize the HT settings 
 		 */
-		val=pci_read_config32(dev, HT_TRANSACTION_CONTROL);
+		val=pci_conf1_read_config32(dev, HT_TRANSACTION_CONTROL);
 		val &= ~((HTTC_BUF_REL_PRI_MASK << HTTC_BUF_REL_PRI_SHIFT) |
 			(HTTC_MED_PRI_BYP_CNT_MASK << HTTC_MED_PRI_BYP_CNT_SHIFT) |
 			(HTTC_HI_PRI_BYP_CNT_MASK << HTTC_HI_PRI_BYP_CNT_SHIFT));
@@ -1647,13 +1646,13 @@ void coherent_ht_finalize(unsigned nodes)
 			(HTTC_BUF_REL_PRI_8 << HTTC_BUF_REL_PRI_SHIFT) |
 			(3 << HTTC_MED_PRI_BYP_CNT_SHIFT) |
 			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
-		pci_write_config32(dev, HT_TRANSACTION_CONTROL, val);
+		pci_conf1_write_config32(dev, HT_TRANSACTION_CONTROL, val);
 
 #if CONFIG_K8_REV_F_SUPPORT == 0
 		if (rev_a0) {
-			pci_write_config32(dev, 0x94, 0);
-			pci_write_config32(dev, 0xb4, 0);
-			pci_write_config32(dev, 0xd4, 0);
+			pci_conf1_write_config32(dev, 0x94, 0);
+			pci_conf1_write_config32(dev, 0xb4, 0);
+			pci_conf1_write_config32(dev, 0xd4, 0);
 		}
 #endif
 	}
@@ -1675,25 +1674,25 @@ int apply_cpu_errata_fixes(unsigned nodes)
 			/* Errata 66
 			 * Limit the number of downstream posted requests to 1 
 			 */
-			cmd = pci_read_config32(dev, 0x70);
+			cmd = pci_conf1_read_config32(dev, 0x70);
 			if ((cmd & (3 << 0)) != 2) {
 				cmd &= ~(3<<0);
 				cmd |= (2<<0);
-				pci_write_config32(dev, 0x70, cmd );
+				pci_conf1_write_config32(dev, 0x70, cmd );
 				needs_reset = 1;
 			}
-			cmd = pci_read_config32(dev, 0x7c);
+			cmd = pci_conf1_read_config32(dev, 0x7c);
 			if ((cmd & (3 << 4)) != 0) {
 				cmd &= ~(3<<4);
 				cmd |= (0<<4);
-				pci_write_config32(dev, 0x7c, cmd );
+				pci_conf1_write_config32(dev, 0x7c, cmd );
 				needs_reset = 1;
 			}
 			/* Clock Power/Timing Low */
-			cmd = pci_read_config32(dev, 0xd4);
+			cmd = pci_conf1_read_config32(dev, 0xd4);
 			if (cmd != 0x000D0001) {
 				cmd = 0x000D0001;
-				pci_write_config32(dev, 0xd4, cmd);
+				pci_conf1_write_config32(dev, 0xd4, cmd);
 				needs_reset = 1; /* Needed? */
 			}
 
@@ -1705,9 +1704,9 @@ int apply_cpu_errata_fixes(unsigned nodes)
 			 * Clock Power/Timing Low
 			 */
 			cmd_ref = 0x04e20707; /* Registered */
-			cmd = pci_read_config32(dev, 0xd4);
+			cmd = pci_conf1_read_config32(dev, 0xd4);
 			if(cmd != cmd_ref) {
-				pci_write_config32(dev, 0xd4, cmd_ref );
+				pci_conf1_write_config32(dev, 0xd4, cmd_ref );
 				needs_reset = 1; /* Needed? */
 			}
 		}
@@ -1726,13 +1725,13 @@ int optimize_link_read_pointers(unsigned nodes)
 		int link;
 		f0_dev = NODE_HT(node);
 		f3_dev = NODE_MC(node);
-		cmd_ref = cmd = pci_read_config32(f3_dev, 0xdc);
+		cmd_ref = cmd = pci_conf1_read_config32(f3_dev, 0xdc);
 		for(link = 0; link < 3; link++) {
 			u32 link_type;
 			unsigned reg;
 			/* This works on an Athlon64 because unimplemented links return 0 */
 			reg = 0x98 + (link * 0x20);
-			link_type = pci_read_config32(f0_dev, reg);
+			link_type = pci_conf1_read_config32(f0_dev, reg);
 			/* Only handle coherent links */
 			if ((link_type & (LinkConnected | InitComplete|NonCoherent)) == 
 				(LinkConnected|InitComplete)) 
@@ -1742,7 +1741,7 @@ int optimize_link_read_pointers(unsigned nodes)
 			}
 		}
 		if (cmd != cmd_ref) {
-			pci_write_config32(f3_dev, 0xdc, cmd);
+			pci_conf1_write_config32(f3_dev, 0xdc, cmd);
 			needs_reset = 1;
 		}
 	}
@@ -1751,7 +1750,7 @@ int optimize_link_read_pointers(unsigned nodes)
 
 inline unsigned get_nodes(void)
 {
-        return ((pci_read_config32(PCI_BDF(0, 0x18, 0), 0x60)>>4) & 7) + 1;
+        return ((pci_conf1_read_config32(PCI_BDF(0, 0x18, 0), 0x60)>>4) & 7) + 1;
 }
 
 int optimize_link_coherent_ht(void)

@@ -48,7 +48,7 @@ u8 ht_lookup_capability(u32 bdf, u16 val)
 	u8 pos;
 	u8 hdr_type;
 
-	hdr_type = pci_read_config8(bdf, PCI_HEADER_TYPE);
+	hdr_type = pci_conf1_read_config8(bdf, PCI_HEADER_TYPE);
 	pos = 0;
 	hdr_type &= 0x7f;
 
@@ -57,21 +57,21 @@ u8 ht_lookup_capability(u32 bdf, u16 val)
 		pos = PCI_CAPABILITY_LIST;
 	}
 	if (pos > PCI_CAP_LIST_NEXT) {
-		pos = pci_read_config8(bdf, pos);
+		pos = pci_conf1_read_config8(bdf, pos);
 	}
 	while(pos != 0) { /* loop through the linked list */
 		u8 cap;
-		cap = pci_read_config8(bdf, pos + PCI_CAP_LIST_ID);
+		cap = pci_conf1_read_config8(bdf, pos + PCI_CAP_LIST_ID);
 		if (cap == PCI_CAP_ID_HT) {
 			u16 flags;
 
-			flags = pci_read_config16(bdf, pos + PCI_CAP_FLAGS);
+			flags = pci_conf1_read_config16(bdf, pos + PCI_CAP_FLAGS);
 			if ((flags >> 13) == val) {
 				/* Entry is a slave or host , success... */
 				break;
 			}
 		}
-		pos = pci_read_config8(bdf, pos + PCI_CAP_LIST_NEXT);
+		pos = pci_conf1_read_config8(bdf, pos + PCI_CAP_LIST_NEXT);
 	}
 	return pos;
 }
@@ -101,7 +101,7 @@ static void ht_collapse_previous_enumeration(u8 bus, unsigned offset_unitid)
 	/* Check if is already collapsed */
 	if((!offset_unitid) || (offset_unitid && (!((CONFIG_HT_CHAIN_END_UNITID_BASE == 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE <CONFIG_HT_CHAIN_UNITID_BASE))))) {
 		bdf = PCI_BDF(bus, 0, 0);
-        	id = pci_read_config32(bdf, PCI_VENDOR_ID);
+        	id = pci_conf1_read_config32(bdf, PCI_VENDOR_ID);
 	        if ( ! ( (id == 0xffffffff) || (id == 0x00000000) ||
         	    (id == 0x0000ffff) || (id == 0xffff0000) ) ) {
 	                     return;
@@ -116,7 +116,7 @@ static void ht_collapse_previous_enumeration(u8 bus, unsigned offset_unitid)
 		u8 pos;
 		u16 flags;
 		
-		id = pci_read_config32(bdf, PCI_VENDOR_ID);
+		id = pci_conf1_read_config32(bdf, PCI_VENDOR_ID);
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
@@ -128,9 +128,9 @@ static void ht_collapse_previous_enumeration(u8 bus, unsigned offset_unitid)
 		}
 
 		/* Clear the unitid */
-		flags = pci_read_config16(bdf, pos + PCI_CAP_FLAGS);
+		flags = pci_conf1_read_config16(bdf, pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
-		pci_write_config16(bdf, pos + PCI_CAP_FLAGS, flags);
+		pci_conf1_write_config16(bdf, pos + PCI_CAP_FLAGS, flags);
 	}
 }
 
@@ -140,10 +140,10 @@ static u16 ht_read_freq_cap(u32 bdf, u8 pos)
 	u16 freq_cap;
 	u32 id;
 
-	freq_cap = pci_read_config16(bdf, pos);
+	freq_cap = pci_conf1_read_config16(bdf, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
-	id = pci_read_config32(bdf, 0);
+	id = pci_conf1_read_config32(bdf, 0);
 
 	/* AMD 8131 Errata 48 */
 	if (id == (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8131_PCIX << 16))) {
@@ -174,11 +174,11 @@ static u16 ht_read_freq_cap(u32 bdf, u8 pos)
 }
 static u8 ht_read_width_cap(u32 bdf, u8 pos)
 {
-	u8 width_cap = pci_read_config8(bdf, pos);
+	u8 width_cap = pci_conf1_read_config8(bdf, pos);
 
 	u32 id;
 
-	id = pci_read_config32(bdf, 0);
+	id = pci_conf1_read_config32(bdf, 0);
 
 	/* netlogic micro cap doesn't support 16 bit yet */
 	if (id == (0x184e | (0x0001 << 16))) {
@@ -239,16 +239,16 @@ static int ht_optimize_link(
 	freq = log2(freq_cap1 & freq_cap2);
 
 	/* See if I am changing the link freqency */
-	old_freq = pci_read_config8(bdf1, pos1 + LINK_FREQ(offs1));
+	old_freq = pci_conf1_read_config8(bdf1, pos1 + LINK_FREQ(offs1));
 	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
-	old_freq = pci_read_config8(bdf2, pos2 + LINK_FREQ(offs2));
+	old_freq = pci_conf1_read_config8(bdf2, pos2 + LINK_FREQ(offs2));
 	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
 
 	/* Set the Calulcated link frequency */
-	pci_write_config8(bdf1, pos1 + LINK_FREQ(offs1), freq);
-	pci_write_config8(bdf2, pos2 + LINK_FREQ(offs2), freq);
+	pci_conf1_write_config8(bdf1, pos1 + LINK_FREQ(offs1), freq);
+	pci_conf1_write_config8(bdf2, pos2 + LINK_FREQ(offs2), freq);
 
 	/* Get the width capabilities */
 	width_cap1 = ht_read_width_cap(bdf1, pos1 + LINK_WIDTH(offs1));
@@ -270,23 +270,23 @@ static int ht_optimize_link(
 	width |= pow2_to_link_width[ln_width1] << 4;
 
 	/* See if I am changing dev1's width */
-	old_width = pci_read_config8(bdf1, pos1 + LINK_WIDTH(offs1) + 1);
+	old_width = pci_conf1_read_config8(bdf1, pos1 + LINK_WIDTH(offs1) + 1);
 	old_width &= 0x77;
 	needs_reset |= old_width != width;
 
 	/* Set dev1's widths */
-	pci_write_config8(bdf1, pos1 + LINK_WIDTH(offs1) + 1, width);
+	pci_conf1_write_config8(bdf1, pos1 + LINK_WIDTH(offs1) + 1, width);
 
 	/* Calculate dev2's width */
 	width = ((width & 0x70) >> 4) | ((width & 0x7) << 4);
 
 	/* See if I am changing dev2's width */
-	old_width = pci_read_config8(bdf2, pos2 + LINK_WIDTH(offs2) + 1);
+	old_width = pci_conf1_read_config8(bdf2, pos2 + LINK_WIDTH(offs2) + 1);
 	old_width &= 0x77;
 	needs_reset |= old_width != width;
 
 	/* Set dev2's widths */
-	pci_write_config8(bdf2, pos2 + LINK_WIDTH(offs2) + 1, width);
+	pci_conf1_write_config8(bdf2, pos2 + LINK_WIDTH(offs2) + 1, width);
 
 	return needs_reset;
 }
@@ -327,8 +327,8 @@ int scan_pci_bus( unsigned bus , struct sys_info *sysinfo)
 		u32 bdf;
 		u16 cr;
 		bdf = PCI_BDF((bus & 0xff), ((devfn>>3) & 0x1f), (devfn & 0x7));
-                hdr_type = pci_read_config8(bdf, PCI_HEADER_TYPE);
-                class = pci_read_config16(bdf, PCI_CLASS_DEVICE);
+                hdr_type = pci_conf1_read_config8(bdf, PCI_HEADER_TYPE);
+                class = pci_conf1_read_config16(bdf, PCI_CLASS_DEVICE);
 
 		switch(hdr_type & 0x7f) {  /* header type */
 		        case PCI_HEADER_TYPE_BRIDGE:
@@ -336,18 +336,18 @@ int scan_pci_bus( unsigned bus , struct sys_info *sysinfo)
 				/* set the bus range dev */
 
 			        /* Clear all status bits and turn off memory, I/O and master enables. */
-			        cr = pci_read_config16(bdf, PCI_COMMAND);
-			        pci_write_config16(bdf, PCI_COMMAND, 0x0000);
-			        pci_write_config16(bdf, PCI_STATUS, 0xffff);
+			        cr = pci_conf1_read_config16(bdf, PCI_COMMAND);
+			        pci_conf1_write_config16(bdf, PCI_COMMAND, 0x0000);
+			        pci_conf1_write_config16(bdf, PCI_STATUS, 0xffff);
 
-			        buses = pci_read_config32(bdf, PCI_PRIMARY_BUS);
+			        buses = pci_conf1_read_config32(bdf, PCI_PRIMARY_BUS);
 
 			        buses &= 0xff000000;
 				new_bus++;
 			        buses |= (((unsigned int) (bus & 0xff) << 0) |
 			                ((unsigned int) (new_bus & 0xff) << 8) |
 			                ((unsigned int) max_bus << 16));
-			        pci_write_config32(bdf, PCI_PRIMARY_BUS, buses);
+			        pci_conf1_write_config32(bdf, PCI_PRIMARY_BUS, buses);
 				
 				/* here we need to figure out if dev is a ht bridge
 					if it is ht bridge, we need to call ht_setup_chainx at first
@@ -369,9 +369,9 @@ int scan_pci_bus( unsigned bus , struct sys_info *sysinfo)
 
 			        buses = (buses & 0xff00ffff) |
 			                ((unsigned int) (new_bus & 0xff) << 16);
-			        pci_write_config32(bdf, PCI_PRIMARY_BUS, buses);
+			        pci_conf1_write_config32(bdf, PCI_PRIMARY_BUS, buses);
 
-				pci_write_config16(bdf, PCI_COMMAND, cr);
+				pci_conf1_write_config16(bdf, PCI_COMMAND, cr);
 
                 		break;  
         		default:
@@ -425,7 +425,7 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 	
 		/* Wait until the link initialization is complete */
 		do {
-			ctrl = pci_read_config16(bdf, upos + LINK_CTRL(uoffs));
+			ctrl = pci_conf1_read_config16(bdf, upos + LINK_CTRL(uoffs));
 			/* Is this the end of the hypertransport chain? */
 			if (ctrl & (1 << 6)) {
 				goto end_of_chain;	
@@ -440,8 +440,8 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
                                 * if its transient
                                 */
 				ctrl |= ((1 << 4) | (1 <<8)); // Link fail + Crc
-                                pci_write_config16(bdf, upos + LINK_CTRL(uoffs), ctrl);
-                                ctrl = pci_read_config16(bdf, upos + LINK_CTRL(uoffs));
+                                pci_conf1_write_config16(bdf, upos + LINK_CTRL(uoffs), ctrl);
+                                ctrl = pci_conf1_read_config16(bdf, upos + LINK_CTRL(uoffs));
                                 if (ctrl & ((1 << 4) | (1 << 8))) {
                                 	printk(BIOS_ERR, "Detected error on Hypertransport Link\n");
 					break;
@@ -452,7 +452,7 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 		u32 abdf = PCI_BDF(bus, 0, 0);
 		last_unitid = next_unitid;
 
-		id = pci_read_config32(abdf, PCI_VENDOR_ID);
+		id = pci_conf1_read_config32(abdf, PCI_VENDOR_ID);
 
 		/* If the chain is enumerated quit */
 		if (    (id == 0xffffffff) || (id == 0x00000000) ||
@@ -487,10 +487,10 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 		} 
 #endif
 		/* Update the Unitid of the current device */
-		flags = pci_read_config16(abdf, pos + PCI_CAP_FLAGS);
+		flags = pci_conf1_read_config16(abdf, pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f; /* mask out the base Unit ID */
 		flags |= next_unitid & 0x1f;
-		pci_write_config16(abdf, pos + PCI_CAP_FLAGS, flags);
+		pci_conf1_write_config16(abdf, pos + PCI_CAP_FLAGS, flags);
 
                 /* Compute the number of unitids consumed */
                 count = (flags >> 5) & 0x1f;
@@ -504,7 +504,7 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 		 * by reading which direction our last write to PCI_CAP_FLAGS
 		 * came from.
 		 */
-		flags = pci_read_config16(abdf, pos + PCI_CAP_FLAGS);
+		flags = pci_conf1_read_config16(abdf, pos + PCI_CAP_FLAGS);
                 offs = ((flags>>10) & 1) ? PCI_HT_SLAVE1_OFFS : PCI_HT_SLAVE0_OFFS;
                
                 /* store the link pair here and we will Setup the Hypertransport link later, after we get final FID/VID */
@@ -533,10 +533,10 @@ end_of_chain: ;
         if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used ) {
                 u16 flags;
 		int i;
-                flags = pci_read_config16(PCI_BDF(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
+                flags = pci_conf1_read_config16(PCI_BDF(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
                 flags &= ~0x1f;
                 flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
-                pci_write_config16(PCI_BDF(bus, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
+                pci_conf1_write_config16(PCI_BDF(bus, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
 
 		// Here need to change the dev in the array
 		for(i=0;i<sysinfo->link_pair_num;i++)
@@ -585,17 +585,17 @@ int optimize_link_read_pointer(u8 node, u8 linkn, u8 linkt, u8 val)
 	u8 link_type;
 	
 	/* This works on an Athlon64 because unimplemented links return 0 */
-	dword = pci_read_config32(PCI_BDF(0,0x18+node,0), 0x98 + (linkn * 0x20));
+	dword = pci_conf1_read_config32(PCI_BDF(0,0x18+node,0), 0x98 + (linkn * 0x20));
 	link_type = dword & 0xff;
 	
 	
 	if ( (link_type & 7) == linkt ) { /* Coherent Link only linkt = 3, ncoherent = 7*/
-		dword_old = dword = pci_read_config32(PCI_BDF(0,0x18+node,3), 0xdc);
+		dword_old = dword = pci_conf1_read_config32(PCI_BDF(0,0x18+node,3), 0xdc);
 		dword &= ~( 0xff<<(linkn *8) );
 		dword |= val << (linkn *8);
 	
 		if (dword != dword_old) {
-			pci_write_config32(PCI_BDF(0,0x18+node,3), 0xdc, dword);
+			pci_conf1_write_config32(PCI_BDF(0,0x18+node,3), 0xdc, dword);
 			return 1;
 		}
 	}
@@ -624,13 +624,13 @@ static int optimize_link_read_pointers_chain(u8 ht_c_num)
                         devn = CONFIG_HT_CHAIN_UNITID_BASE;
         #endif
 
-		reg = pci_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);
+		reg = pci_conf1_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);
 		
 		nodeid = ((reg & 0xf0)>>4); // nodeid
 		linkn = ((reg & 0xf00)>>8); // link n
 		busn = (reg & 0xff0000)>>16; //busn
 
-		reg = pci_read_config32( PCI_BDF(busn, devn, 0), PCI_VENDOR_ID); // ? the chain dev maybe offseted
+		reg = pci_conf1_read_config32( PCI_BDF(busn, devn, 0), PCI_VENDOR_ID); // ? the chain dev maybe offseted
 		if ( (reg & 0xffff) == PCI_VENDOR_ID_AMD) {
 			val = 0x25;
 		} else if ( (reg & 0xffff) == PCI_VENDOR_ID_NVIDIA ) {
@@ -656,15 +656,15 @@ int set_ht_link_buffer_count(u8 node, u8 linkn, u8 linkt, unsigned val)
         /* This works on an Athlon64 because unimplemented links return 0 */
 	regpos = 0x98 + (linkn * 0x20);
 	bdf = PCI_BDF(0,0x18+node,0);
-        dword = pci_read_config32(bdf, regpos);
+        dword = pci_conf1_read_config32(bdf, regpos);
         link_type = dword & 0xff;
 
         if ( (link_type & 0x7) == linkt ) { /* Coherent Link only linkt = 3, ncoherent = 7*/
 		regpos = 0x90 + (linkn * 0x20);
-        	dword = pci_read_config32(bdf, regpos );
+        	dword = pci_conf1_read_config32(bdf, regpos );
 
 	        if (dword != val) {
-        	        pci_write_config32(bdf, regpos, val);
+        	        pci_conf1_write_config32(bdf, regpos, val);
 	                return 1;
         	}
 	}
@@ -685,7 +685,7 @@ int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid,  unsigned va
                 u8 busn;
                 unsigned devn;
 
-                reg = pci_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);
+                reg = pci_conf1_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);
                 if((reg & 3) != 3) continue; // not enabled
 
                 nodeid = ((reg & 0xf0)>>4); // nodeid
@@ -693,7 +693,7 @@ int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid,  unsigned va
                 busn = (reg & 0xff0000)>>16; //busn
 
 		for(devn = 0; devn < 0x20; devn++) {
-	                reg = pci_read_config32( PCI_BDF(busn, devn, 0), PCI_VENDOR_ID); //1?
+	                reg = pci_conf1_read_config32( PCI_BDF(busn, devn, 0), PCI_VENDOR_ID); //1?
         	        if ( (reg & 0xffff) == vendorid ) {
                 	        reset_needed |= set_ht_link_buffer_count(nodeid, linkn, 0x07,val);
 				break;
@@ -728,17 +728,17 @@ static void ht_setup_chains(u8 ht_c_num, struct sys_info *sysinfo)
 		unsigned bus;
 		unsigned offset_unitid = 0;
 		
-		reg = pci_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);
+		reg = pci_conf1_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);
 
 		//We need setup 0x94, 0xb4, and 0xd4 according to the reg
 		devpos = ((reg & 0xf0)>>4)+0x18; // nodeid; it will decide 0x18 or 0x19
 		regpos = ((reg & 0xf00)>>8) * 0x20 + 0x94; // link n; it will decide 0x94 or 0xb4, 0x0xd4;
 		busn = (reg & 0xff0000)>>16;
 		
-		dword = pci_read_config32( PCI_BDF(0, devpos, 0), regpos) ;
+		dword = pci_conf1_read_config32( PCI_BDF(0, devpos, 0), regpos) ;
 		dword &= ~(0xffff<<8);
 		dword |= (reg & 0xffff0000)>>8;
-		pci_write_config32( PCI_BDF(0, devpos,0), regpos , dword);
+		pci_conf1_write_config32( PCI_BDF(0, devpos,0), regpos , dword);
 	
 
 	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
@@ -782,34 +782,34 @@ void ht_setup_chains_x(struct sys_info *sysinfo)
 	nodes = get_nodes();     
  
         /* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
-        reg = pci_read_config32(PCI_BDF(0, 0x18, 0), 0x64);
+        reg = pci_conf1_read_config32(PCI_BDF(0, 0x18, 0), 0x64);
         /* update PCI_DEV(0, 0x18, 1) 0xe0 to 0x05000m03, and next_busn=0x3f+1 */
 	print_linkn_in("SBLink=", ((reg>>8) & 3) );
 	sysinfo->sblk = (reg>>8) & 3;
 	sysinfo->sbbusn = 0;
 	sysinfo->nodes = nodes;
         tempreg = 3 | ( 0<<4) | (((reg>>8) & 3)<<8) | (0<<16)| (0x3f<<24);
-        pci_write_config32(PCI_BDF(0, 0x18, 1), 0xe0, tempreg);
+        pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xe0, tempreg);
 
 	next_busn=0x3f+1; /* 0 will be used ht chain with SB we need to keep SB in bus0 in auto stage*/
 
 #if CONFIG_K8_ALLOCATE_IO_RANGE == 1
 	/* io range allocation */
 	tempreg = 0 | (((reg>>8) & 0x3) << 4 )|  (0x3<<12); //limit
-	pci_write_config32(PCI_BDF(0, 0x18, 1), 0xC4, tempreg);
+	pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xC4, tempreg);
 	tempreg = 3 | ( 3<<4) | (0<<12);	//base
-	pci_write_config32(PCI_BDF(0, 0x18, 1), 0xC0, tempreg);
+	pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xC0, tempreg);
 	next_io_base = 0x3+0x1;
 #endif
 
 	/* clean others */
         for(ht_c_num=1;ht_c_num<4; ht_c_num++) {
-                pci_write_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
+                pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4, 0);
 
 #if CONFIG_K8_ALLOCATE_IO_RANGE == 1
 		/* io range allocation */
-		pci_write_config32(PCI_BDF(0, 0x18, 1), 0xc4 + ht_c_num * 8, 0);
-		pci_write_config32(PCI_BDF(0, 0x18, 1), 0xc0 + ht_c_num * 8, 0);
+		pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xc4 + ht_c_num * 8, 0);
+		pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xc0 + ht_c_num * 8, 0);
 #endif
         }
  
@@ -820,13 +820,13 @@ void ht_setup_chains_x(struct sys_info *sysinfo)
                 for(linkn = 0; linkn<3; linkn++) {
                         unsigned regpos;
                         regpos = 0x98 + 0x20 * linkn;
-                        reg = pci_read_config32(bdf, regpos);
+                        reg = pci_conf1_read_config32(bdf, regpos);
                         if ((reg & 0x17) != 7) continue; /* it is not non conherent or not connected*/
 			print_linkn_in("NC node|link=", ((nodeid & 0xf)<<4)|(linkn & 0xf));
                         tempreg = 3 | (nodeid <<4) | (linkn<<8);
                         /*compare (temp & 0xffff), with (PCI(0, 0x18, 1) 0xe0 to 0xec & 0xfffff) */
                         for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
-                                reg = pci_read_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4);
+                                reg = pci_conf1_read_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4);
                                 if(((reg & 0xffff) == (tempreg & 0xffff)) || ((reg & 0xffff) == 0x0000)) {  /*we got it*/
                                         break;
                                 }
@@ -836,15 +836,15 @@ void ht_setup_chains_x(struct sys_info *sysinfo)
 			if((reg & 0xf) == 3) continue; /*SbLink so don't touch it */
 			print_linkn_in("\tbusn=", next_busn);
                         tempreg |= (next_busn<<16)|((next_busn+0x3f)<<24);
-                        pci_write_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4, tempreg);
+                        pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4, tempreg);
 			next_busn+=0x3f+1;
 
 #if CONFIG_K8_ALLOCATE_IO_RANGE == 1			
 			/* io range allocation */
 		        tempreg = nodeid | (linkn<<4) |  ((next_io_base+0x3)<<12); //limit
-		        pci_write_config32(PCI_BDF(0, 0x18, 1), 0xC4 + ht_c_num * 8, tempreg);
+		        pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xC4 + ht_c_num * 8, tempreg);
 		        tempreg = 3 /*| ( 3<<4)*/ | (next_io_base<<12);        //base :ISA and VGA ?
-		        pci_write_config32(PCI_BDF(0, 0x18, 1), 0xC0 + ht_c_num * 8, tempreg);
+		        pci_conf1_write_config32(PCI_BDF(0, 0x18, 1), 0xC0 + ht_c_num * 8, tempreg);
 		        next_io_base += 0x3+0x1;
 #endif
 
@@ -859,8 +859,8 @@ void ht_setup_chains_x(struct sys_info *sysinfo)
                 for(i = 0; i< 4; i++) {
                         unsigned regpos;
                         regpos = 0xe0 + i * 4;
-                        reg = pci_read_config32(PCI_BDF(0, 0x18, 1), regpos);
-                        pci_write_config32(dev, regpos, reg);
+                        reg = pci_conf1_read_config32(PCI_BDF(0, 0x18, 1), regpos);
+                        pci_conf1_write_config32(dev, regpos, reg);
                 }
 
 #if CONFIG_K8_ALLOCATE_IO_RANGE == 1
@@ -868,14 +868,14 @@ void ht_setup_chains_x(struct sys_info *sysinfo)
                 for(i = 0; i< 4; i++) {
                         unsigned regpos;
                         regpos = 0xc4 + i * 8;
-                        reg = pci_read_config32(PCI_BDF(0, 0x18, 1), regpos);
-                        pci_write_config32(dev, regpos, reg);
+                        reg = pci_conf1_read_config32(PCI_BDF(0, 0x18, 1), regpos);
+                        pci_conf1_write_config32(dev, regpos, reg);
                 }
                 for(i = 0; i< 4; i++) {
                         unsigned regpos;
                         regpos = 0xc0 + i * 8;
-                        reg = pci_read_config32(PCI_BDF(0, 0x18, 1), regpos);
-                        pci_write_config32(dev, regpos, reg);
+                        reg = pci_conf1_read_config32(PCI_BDF(0, 0x18, 1), regpos);
+                        pci_conf1_write_config32(dev, regpos, reg);
                 }
 #endif
         }
@@ -883,7 +883,7 @@ void ht_setup_chains_x(struct sys_info *sysinfo)
 	/* recount ht_c_num*/
 	u8 i=0;
         for(ht_c_num=0;ht_c_num<4; ht_c_num++) {
-		reg = pci_read_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4);
+		reg = pci_conf1_read_config32(PCI_BDF(0, 0x18, 1), 0xe0 + ht_c_num * 4);
                 if(((reg & 0xf) != 0x0)) {
 			i++;
 		}

@@ -620,25 +620,46 @@ void ram_resource(struct device *dev, unsigned long index,
 	printk(BIOS_SPEW, "Adding RAM resource (%lld bytes)\n", res->size);
 }
 
-void pci_dev_enable_resources(struct device *dev)
+void pci_dev_set_subsystem_wrapper(struct device *dev)
 {
 	const struct pci_operations *ops;
-	u16 command;
+	u16 vendor = 0;
+	u16 device = 0;
 
+#warning Per-device subsystem ID has to be set here, but for that we have to extend the dts.
+
+#ifdef HAVE_MAINBOARD_PCI_SUBSYSTEM_ID
+	/* If there's no explicit subsystem ID for this device and the device
+	 * is onboard, use the board defaults. */
+	if (dev->on_mainboard) {
+		if (!vendor)
+			vendor = mainboard_pci_subsystem_vendor;
+		if (!device)
+			device = mainboard_pci_subsystem_device;
+	}
+#endif
 	/* Set the subsystem vendor and device ID for mainboard devices. */
 	ops = ops_pci(dev);
 
-#ifdef HAVE_MAINBOARD_PCI_SUBSYSTEM_ID
-	if (dev->on_mainboard && ops && ops->set_subsystem) {
+	/* If either vendor or device is zero, we leave it as is. */
+	if (ops && ops->set_subsystem && vendor && device) {
 		printk(BIOS_DEBUG,
 		       "%s: Setting subsystem VID/DID to %02x/%02x\n",
-		       dev_path(dev), mainboard_pci_subsystem_vendor,
-		       mainboard_pci_subsystem_device);
+		       dev_path(dev), vendor, device);
 
-		ops->set_subsystem(dev,	mainboard_pci_subsystem_vendor,
-				   mainboard_pci_subsystem_device);
+		ops->set_subsystem(dev,	vendor, device);
+	} else {
+		printk(BIOS_DEBUG, "%s: Not setting subsystem VID/DID\n",
+			dev_path(dev));
 	}
-#endif
+		
+}
+
+void pci_dev_enable_resources(struct device *dev)
+{
+	u16 command;
+
+	pci_dev_set_subsystem_wrapper(dev);
 
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
@@ -1008,6 +1029,7 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	dev->irq_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 	dev->min_gnt = pci_read_config8(dev, PCI_MIN_GNT);
 	dev->max_lat = pci_read_config8(dev, PCI_MAX_LAT);
+#warning Per-device subsystem ID should only be read from the device if none has been specified for the device in the dts.
 	dev->subsystem_vendor = pci_read_config16(dev, PCI_SUBSYSTEM_VENDOR_ID);
 	dev->subsystem_device = pci_read_config16(dev, PCI_SUBSYSTEM_ID);
 

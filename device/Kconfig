@@ -95,5 +95,19 @@ config SUSPEND_TO_RAM
 	help
 	  Enable support for Suspend-to-RAM (S3) functionality.
 
-endmenu
+config PCI_64BIT_PREF_MEM
+	bool "64 bit prefetchable memory addresses"
+	help
+		Enable support for 64-bit prefetchable memory addresses in PCI. 
 
+config HW_MEM_HOLE_SIZEK
+	hex "HW memory hole size in KB"
+	default 0x1000
+	help
+		Some chipsets support setting up a "hole" at the top of memory. It is essentially 
+		a hole torn in the physical address space so that you can fit non-memory resources
+		(e.g. flash) at the top of the 4G address space. Given that this only happens on machines
+		with lots of memory, the default 4 MB is a very reasonable value. 
+		
+
+endmenu

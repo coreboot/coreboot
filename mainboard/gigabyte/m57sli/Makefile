@@ -28,7 +28,6 @@ STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o \
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/raminit.c \
-			$(src)/arch/x86/pci_ops_conf1.c \
 			$(src)/southbridge/nvidia/mcp55/stage1_smbus.c \
 			$(src)/lib/clog2.c
 

@@ -19,5 +19,5 @@
  */
 
 {
-	device_operations = "amd8111_usb2";
+	device_operations = "amd8111";
 };

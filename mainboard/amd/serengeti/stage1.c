@@ -1,6 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
  * Copyright (C) 2008 Ronald G. Minnich <rminnich@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +19,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <types.h>
+#include <lib.h>
+#include <console.h>
+#include <device/device.h>
+#include <cpu.h>
+#include <amd/k8/k8.h>
+#include <amd/k8/sysconf.h>
+#include <device/pci.h>
+#include <string.h>
+#include <msr.h>
+#include <io.h>
+#include <arch/x86/msr.h>
+
+
+void hardware_stage1(void)
 {
-	device_operations = "amd8111_usb2";
-};
+	post_code(POST_START_OF_MAIN);
+
+}
+
+void mainboard_pre_payload(void)
+{
+	banner(BIOS_DEBUG, "mainboard_pre_payload: done");
+}

@@ -1,0 +1,56 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2008 Ronald G. Minnich <rminnich@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+/*00:00.0 RAM memory: nVidia Corporation MCP55 Memory Controller (rev a1)
+00:01.0 ISA bridge: nVidia Corporation MCP55 LPC Bridge (rev a2)
+00:01.1 SMBus: nVidia Corporation MCP55 SMBus (rev a2)
+00:02.0 USB Controller: nVidia Corporation MCP55 USB Controller (rev a1)
+00:02.1 USB Controller: nVidia Corporation MCP55 USB Controller (rev a2)
+00:04.0 IDE interface: nVidia Corporation MCP55 IDE (rev a1)
+00:05.0 IDE interface: nVidia Corporation MCP55 SATA Controller (rev a2)
+00:05.1 IDE interface: nVidia Corporation MCP55 SATA Controller (rev a2)
+00:06.0 PCI bridge: nVidia Corporation MCP55 PCI bridge (rev a2)
+00:06.1 Audio device: nVidia Corporation MCP55 High Definition Audio (rev a2)
+00:08.0 Bridge: nVidia Corporation MCP55 Ethernet (rev a2)
+00:0f.0 PCI bridge: nVidia Corporation MCP55 PCI Express bridge (rev a2)
+00:18.0 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] HyperTransport Technology Configuration
+00:18.1 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] Address Map
+00:18.2 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] DRAM Controller
+00:18.3 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] Miscellaneous Control
+01:0a.0 FireWire (IEEE 1394): Texas Instruments TSB43AB23 IEEE-1394a-2000 Controller (PHY/Link)
+02:00.0 VGA compatible controller: nVidia Corporation G72 [GeForce 7300 LE] (rev a1)
+*/
+
+/{
+	mainboard_vendor = "AMD";
+	mainboard_name = "Serengeti";
+	cpus { };
+	apic@0 {
+	};
+	domain@0 {
+		pci@1,0{
+		};
+		pci@18,0 {
+			/config/("northbridge/amd/k8/pci");
+			pci@0,0 {
+				/config/("southbridge/amd/amd8111/amd8111.dts");
+			};
+		};
+	};
+};

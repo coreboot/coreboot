@@ -1,4 +1,5 @@
 #include <device/smbus_def.h>
+#include <io.h>
 
 #define SMBGSTATUS 0xe0
 #define SMBGCTL    0xe2

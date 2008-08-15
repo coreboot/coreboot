@@ -37,12 +37,11 @@
 
 void enable_smbus(void)
 {
-	u32 bdf;
+	u32 dev;
 	u8 enable;
 
-	/* this 746b is the ACPI device. This is from original code. It's weird however. */
-	pci_locate_device_on_bus(0, PCI_VENDOR_ID_AMD, 0x746b, &dev);
-	if (dev == PCI_DEV_INVALID) {
+	/* Yes, the ACPI device controls the SMBUS.  */
+	if (!pci_conf1_find_on_bus(0, PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ACPI, &dev)){
 		die("SMBUS controller not found\r\n");
 	}
 

@@ -36,7 +36,6 @@
 #include <device/hypertransport_def.h>
 #include <mc146818rtc.h>
 #include <lib.h>
-#include "stage1.h"
 
 static void print_linkn_in (const char *strval, u8 byteval)
 {

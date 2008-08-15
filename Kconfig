@@ -94,7 +94,6 @@ config SUPERIO_ITE_IT8716F
 	boolean
 
 # Source all northbridge/southbridge/superio Kconfig files:
-source northbridge/intel/i440bxemulation/Kconfig
 
 menu "Payload"
 

@@ -56,9 +56,12 @@ static void pci_domain_set_resources(struct device *dev)
 	struct northbridge_intel_i440bxemulation_domain_config *device_configuration =
 	    dev->device_configuration;
 	tolmk = device_configuration->ramsize * 1024;
+	printk(BIOS_WARNING, "Ignoring chipset specified RAM size. Using dts "
+		"settings of %d kB instead.\n", tolmk);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
 		idx = 10;
+#warning FIXME: We have no memory hole between 640 and 768 kB
 		ram_resource(dev, idx++, 0, tolmk);
 	}
 	phase4_assign_resources(&dev->link[0]);

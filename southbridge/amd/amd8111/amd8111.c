@@ -92,7 +92,7 @@ void amd8111_enable(struct device * dev)
 	}
 }
 
-struct device_operations mcp55_ide = {
+struct device_operations amd8111 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_AMD_8111_PCI}}},

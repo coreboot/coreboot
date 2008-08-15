@@ -345,19 +345,6 @@ static void bridge_set_resources(struct device *dev)
 }
 #endif /* BRIDGE_40_BIT_SUPPORT */
 
-static struct device_operations pcix_ops  = {
-#if BRIDGE_40_BIT_SUPPORT
-        .read_resources   = bridge_read_resources,
-        .set_resources    = bridge_set_resources,
-#else
-        .read_resources   = pci_bus_read_resources,
-        .set_resources    = pci_dev_set_resources,
-#endif
-	.enable_resources = ,
-        .init             = ,
-        .scan_bus         = ,
-};
-
 struct device_operations amd8132_pcix = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,

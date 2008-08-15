@@ -129,6 +129,13 @@ config PIRQ_TABLE
 	  a PIRQ table, which is the old way to set up interrupt routing. 
 	  It is usually set in mainboard/*/Kconfig.
 
+config ACPI_TABLE
+	boolean
+	help
+	  This option is used to determine whether the mainboard has
+	  an ACPI table. 
+	  It is usually set in mainboard/*/Kconfig.
+
 config SMP
 	boolean
 	default 0

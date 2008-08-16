@@ -269,10 +269,17 @@ $(obj)/arch/x86/amd/stage0.o: $(src)/arch/x86/amd/stage0.S
 $(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_SRC)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
 	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c -combine $(INITRAM_SRC) -o $(obj)/coreboot.initram_partiallylinked.o
+	$(Q)printf "  WRAP    $(subst $(shell pwd)/,,$(@)) (PIC->non-PIC)\n"
+	$(Q)$(NM) --undefined-only $(obj)/coreboot.initram_partiallylinked.o |\
+		grep -v _GLOBAL_OFFSET_TABLE_ | grep " U " | sed "s/^ *U //" |\
+		$(src)/util/picwrapper/picwrapper > $(obj)/initram_picwrapper.s
+	$(Q)printf "  AS      initram_picwrapper.s\n"
+	$(Q)$(AS) $(obj)/initram_picwrapper.s -o $(obj)/initram_picwrapper.o
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \
-		$(obj)/coreboot.initram_partiallylinked.o -o $(obj)/coreboot.initram
+		$(obj)/coreboot.initram_partiallylinked.o \
+		$(obj)/initram_picwrapper.o -o $(obj)/coreboot.initram
 	$(Q)printf "  NM      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(NM) $(obj)/coreboot.initram | sort -u > $(obj)/coreboot.initram.map
 

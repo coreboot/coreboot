@@ -22,35 +22,9 @@
 #ifndef SHARED_H
 #define SHARED_H
 
-#ifdef _SHARED
-/* _SHARED mode enforces some functions to be called with an
- * absolute address, even in PIE mode. This is required since
- * the relative distance between XIP code and stage 0 is not known
- */
-#define FUNC(func, ret, attr, args...)   \
-	ret stage0_##func(args) attr
-
-/*
- * The introduction of the _SHARED macros had one flaw: If multiple files
- * had _SHARED defined during compilation, each of them would contain an
- * assignment of stage0_printk to *printk. During linking, this caused
- * errors as multiple definitions of printk existed.
- * Make sure _SHARED alone gives you only the printk prototype, and iff
- * _MAINOBJECT is defined as well, include the assignment.
- */
-#ifdef _MAINOBJECT
-#define EXTERN(func, ret, attr, args...) \
-	ret (*func)(args) attr= stage0_##func
-#else
-#define EXTERN(func, ret, attr, args...) \
-	extern ret (*func)(args) attr
-#endif
-
-#else
 #define FUNC(func, ret, attr, args...)   \
 	ret func(args) attr
 #define EXTERN(func, ret, attr, args...)
-#endif
 
 /**
  * Use the SHARED macro to create a universally usable function 

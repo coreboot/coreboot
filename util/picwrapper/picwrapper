@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2008 Carl-Daniel Hailfinger
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+#
+# This program creates wrappers to be able to call non-PIC code from PIC code
+# for the x86 instruction architecture. The wrappers are needed because of the
+# ABI mismatch between PIC and non-PIC.
+# Other architectures may need similar wrappers.
+
+echo -e "\
+# These wrappers must fulfill the following conditions:
+# - They must not clobber the stuff already on the stack
+# - They must not clobber any register
+# - The jump/call must be absolute
+# - Neither caller nor callee shall have to be modified
+# - The parameters on the stack shall not be touched
+# - Referencing fixed memory locations is a no-go for PIC
+#
+# That rules out the following instructions:
+# - All relative jumps
+# - All jumps with address given in register/fixed memory
+# - All call instructions
+#
+# The only jump instructions left are far jumps, but hardcoding the code
+# segment in advance is ugly/bad/unworkable.
+#
+# The trick is to push the destination address on the stack with an immediate
+# instruction (no register/memory references), then return to that address.
+# This emulates the nonexisting "Jump near, absolute, addrees in operand"
+# instruction in the x86 instruction set.
+#
+
+	.text
+
+"
+while read a; do
+echo -e "\
+	.globl $a
+	.type $a, @function
+$a:
+	pushl \$stage0_$a
+	ret
+"
+done

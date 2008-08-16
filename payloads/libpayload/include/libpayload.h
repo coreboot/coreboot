@@ -151,7 +151,7 @@ int tolower(int c);
 int toupper(int c);
 
 /* libc/ipchecksum.c */
-unsigned short ipchksum(const unsigned short *ptr, unsigned long nbytes);
+unsigned short ipchksum(const void *ptr, unsigned long nbytes);
 
 /* libc/malloc.c */
 void free(void *ptr);

@@ -4,6 +4,7 @@
  * It has originally been taken from the FreeBSD project.
  *
  * Copyright (c) 2001 Charles Mott <cm@linktel.net>
+ * Copyright (c) 2008 coresystems GmbH
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,9 +31,10 @@
 
 #include <libpayload.h>
 
-unsigned short ipchksum(const unsigned short *ptr, unsigned long nbytes)
+unsigned short ipchksum(const void *vptr, unsigned long nbytes)
 {
 	int sum, oddbyte;
+	const unsigned short *ptr = vptr;
 
 	sum = 0;
 	while (nbytes > 1) {

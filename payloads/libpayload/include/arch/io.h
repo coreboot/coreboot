@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -72,6 +73,36 @@ static inline void outw(unsigned short val, int port)
 static inline void outb(unsigned char val, int port)
 {
 	__asm__ __volatile__("outb %b0, %w1" : : "a"(val), "Nd"(port));
+}
+
+static inline void outsl(int port, const void *addr, unsigned long count)
+{
+	__asm__ __volatile__("rep; outsl" : "+S"(addr), "+c"(count) : "d"(port));
+}
+
+static inline void outsw(int port, const void *addr, unsigned long count)
+{
+	__asm__ __volatile__("rep; outsw" : "+S"(addr), "+c"(count) : "d"(port));
+}
+
+static inline void outsb(int port, const void *addr, unsigned long count)
+{
+	__asm__ __volatile__("rep; outsb" : "+S"(addr), "+c"(count) : "d"(port));
+}
+
+static inline void insl(int port, void *addr, unsigned long count)
+{
+	__asm__ __volatile__("rep; insl" : "+D"(addr), "+c"(count) : "d"(port));
+}
+
+static inline void insw(int port, void *addr, unsigned long count)
+{
+	__asm__ __volatile__("rep; insw" : "+D"(addr), "+c"(count) : "d"(port));
+}
+
+static inline void insb(int port, void *addr, unsigned long count)
+{
+	__asm__ __volatile__("rep; insb" : "+D"(addr), "+c"(count) : "d"(port));
 }
 
 #endif

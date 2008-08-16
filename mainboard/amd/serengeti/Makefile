@@ -22,8 +22,10 @@
 STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o \
 			$(obj)/mainboard/$(MAINBOARDDIR)/option_table.o \
 			$(obj)/southbridge/amd/amd8111/stage1_smbus.o \
+			$(obj)/southbridge/amd/amd8111/stage1_ctrl.o \
 			$(obj)/northbridge/amd/k8/coherent_ht.o \
 			$(obj)/northbridge/amd/k8/incoherent_ht.o \
+			$(obj)/northbridge/amd/k8/libstage1.o \
 			$(obj)/lib/clog2.o
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \

@@ -31,7 +31,6 @@
 #include <io.h>
 #include <cpu.h>
 #include <amd/k8/k8.h>
-#include <southbridge/nvidia/mcp55/mcp55_smbus.h>
 #include <mc146818rtc.h>
 #include <spd.h>
 

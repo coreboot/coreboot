@@ -23,19 +23,22 @@
 #include <device/pci.h>
 #include <msr.h>
 #include <legacy.h>
-#include <device/pci_ids.h>
+#include <device/pci.h>
 #include <statictree.h>
 #include <config.h>
+#include <io.h>
 #include "amd8111.h"
 
-
+void set_bios_reset(void);
+unsigned get_sblk(void);
+u8 get_sbbusn(unsigned int sblk);
 /* by yhlu 2005.10 */
 /** 
  * Get the device fn for the 8111. 
  * @param bus the bus on which to search
  * @return The device number, in the range 0-31
  */
-static u32 get_sbdn(unsigned bus)
+u32 get_sbdn(unsigned bus)
 {
         u32 dev;
 
@@ -45,10 +48,7 @@ static u32 get_sbdn(unsigned bus)
 
         pci_conf1_find_on_bus(bus, PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_PCI, &dev);
 
-	/* this makes no sense. At all. I wonder if this is an ancient bug. >> 15? */
-#warning shift right 15? makes no sense. 
-
-        return (dev>>15) & 0x1f;
+        return (dev>>11) & 0x1f;
 
 }
 
@@ -57,7 +57,7 @@ static u32 get_sbdn(unsigned bus)
  * @param bus the bus on which to search
  * @return The device number, in the range 0-31
  */
-static void enable_cf9_x(unsigned sbbusn, unsigned sbdn)
+void enable_cf9_x(unsigned sbbusn, unsigned sbdn)
 {
 	u32 dev;
 	u8 byte;
@@ -66,13 +66,13 @@ static void enable_cf9_x(unsigned sbbusn, unsigned sbdn)
 	/* enable cf9 */
 	byte = pci_conf1_read_config8(dev, 0x41);
 	byte |= (1<<6) | (1<<5);
-	pci_conf1+write_config8(dev, 0x41, byte);
+	pci_conf1_write_config8(dev, 0x41, byte);
 }
 
 /** 
  * Enable "cf9". cf9 is a commonly used 8-bit IO address for reset, overlapping the 32-bit cf8 config address. 
  */
-static void enable_cf9(void)
+void enable_cf9(void)
 {
 	u32 sblk = get_sblk();
 	u32 sbbusn = get_sbbusn(sblk);
@@ -86,7 +86,7 @@ static void enable_cf9(void)
  * came out of a coreboot-initiated reset. 
  * @return Never returns. 
  */
-static void hard_reset(void)
+void hard_reset(void)
 {
         set_bios_reset();
         /* reset */
@@ -99,7 +99,7 @@ static void hard_reset(void)
  * @param sbbusn south bridge bus number
  * @param sbdn southbridge device numer 
  */
-static void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn)
+void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn)
 {
 	u32 dev;
 
@@ -118,7 +118,7 @@ static void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn)
  * @param sbdn southbridge device numer 
  * @return never
  */
-static void soft_reset_x(unsigned sbbusn, unsigned sbdn)
+void soft_reset_x(unsigned sbbusn, unsigned sbdn)
 {
         u32 dev;
 
@@ -134,7 +134,7 @@ static void soft_reset_x(unsigned sbbusn, unsigned sbdn)
  * Initiate a soft reset by finding the southbridge and calling soft_reset_x
  * @return never
  */
-static void soft_reset(void)
+void soft_reset(void)
 {
 
 	unsigned sblk = get_sblk();

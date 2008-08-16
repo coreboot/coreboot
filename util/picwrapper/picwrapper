@@ -42,7 +42,7 @@ echo -e "\
 #
 # The trick is to push the destination address on the stack with an immediate
 # instruction (no register/memory references), then return to that address.
-# This emulates the nonexisting "Jump near, absolute, addrees in operand"
+# This emulates the nonexisting "Jump near, absolute, address in operand"
 # instruction in the x86 instruction set.
 #
 

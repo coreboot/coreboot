@@ -122,7 +122,8 @@ int get_option(void *dest, char *name);
 #else
 #include <shared.h>
 
-SHARED(get_option, int, void *dest, char *name);
+int get_option(void *dest, char *name);
+EXPORT_SYMBOL(get_option);
 #endif
 void rtc_init(int invalid);
 int last_boot_normal(void);

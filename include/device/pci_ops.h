@@ -30,13 +30,21 @@ void pci_write_config8(struct device * dev, unsigned where, u8 val);
 void pci_write_config16(struct device * dev, unsigned where, u16 val);
 void pci_write_config32(struct device * dev, unsigned where, u32 val);
 
-SHARED(pci_conf1_read_config8, u8, u32 bdf, int where);
-SHARED(pci_conf1_read_config16, u16, u32 bdf, int where);
-SHARED(pci_conf1_read_config32, u32, u32 bdf, int where);
-SHARED(pci_conf1_write_config8, void , u32 bdf, int where, u8 value);
-SHARED(pci_conf1_write_config16, void, u32 bdf, int where, u16 value);
-SHARED(pci_conf1_write_config32, void, u32 bdf, int where, u32 value);
-SHARED(pci_conf1_find_on_bus, int, u16 bus, u16 vid, u16 did, u32 *busdevfn);
-SHARED(pci_conf1_find_device, int, u16 vid, u16 did, u32 * dev);
+u8 pci_conf1_read_config8(u32 bdf, int where);
+EXPORT_SYMBOL(pci_conf1_read_config8);
+u16 pci_conf1_read_config16(u32 bdf, int where);
+EXPORT_SYMBOL(pci_conf1_read_config16);
+u32 pci_conf1_read_config32(u32 bdf, int where);
+EXPORT_SYMBOL(pci_conf1_read_config32);
+void pci_conf1_write_config8(u32 bdf, int where, u8 value);
+EXPORT_SYMBOL(pci_conf1_write_config8);
+void pci_conf1_write_config16(u32 bdf, int where, u16 value);
+EXPORT_SYMBOL(pci_conf1_write_config16);
+void pci_conf1_write_config32(u32 bdf, int where, u32 value);
+EXPORT_SYMBOL(pci_conf1_write_config32);
+int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn);
+EXPORT_SYMBOL(pci_conf1_find_on_bus);
+int pci_conf1_find_device(u16 vid, u16 did, u32 * dev);
+EXPORT_SYMBOL(pci_conf1_find_device);
 
 #endif /* DEVICE_PCI_OPS_H */

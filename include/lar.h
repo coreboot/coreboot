@@ -94,14 +94,23 @@ struct mem_file {
 
 /* Prototypes. */
 /* architecture-defined */
-SHARED(init_archive, void, struct mem_file *);
+void init_archive(struct mem_file *);
+EXPORT_SYMBOL(init_archive);
 /* architecture-independent */
-SHARED(find_file, int, const struct mem_file *archive, const char *filename, struct mem_file *result);
-SHARED(copy_file, int, const struct mem_file *archive, const char *filename, void *where);
-SHARED(run_file, int, const struct mem_file *archive, const char *filename, void *where);
-SHARED(execute_in_place, int, const struct mem_file *archive, const char *filename);
-SHARED(run_address, int, void *f);
-SHARED(load_file, void *, const struct mem_file *archive, const char *filename);
-SHARED(load_file_segments, void *, const struct mem_file *archive, const char *filename);
-SHARED(process_file, int, const struct mem_file *archive, void *where);
+int find_file(const struct mem_file *archive, const char *filename, struct mem_file *result);
+EXPORT_SYMBOL(find_file);
+int copy_file(const struct mem_file *archive, const char *filename, void *where);
+EXPORT_SYMBOL(copy_file);
+int run_file(const struct mem_file *archive, const char *filename, void *where);
+EXPORT_SYMBOL(run_file);
+int execute_in_place(const struct mem_file *archive, const char *filename);
+EXPORT_SYMBOL(execute_in_place);
+int run_address(void *f);
+EXPORT_SYMBOL(run_address);
+void * load_file(const struct mem_file *archive, const char *filename);
+EXPORT_SYMBOL(load_file);
+void * load_file_segments(const struct mem_file *archive, const char *filename);
+EXPORT_SYMBOL(load_file_segments);
+int process_file(const struct mem_file *archive, void *where);
+EXPORT_SYMBOL(process_file);
 #endif /* LAR_H */

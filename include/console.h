@@ -71,10 +71,13 @@ struct global_vars {
 #endif
 };
 
-SHARED_WITH_ATTRIBUTES(printk, int, __attribute__((format (printf, 2, 3))),
-					int msg_level, const char *fmt, ...);
-SHARED(banner, void, int msg_level, const char *msg);
-SHARED(dump_mem_range, void, int msg_level, unsigned char *buf, int size);
-SHARED(die, void, const char *msg);
+int printk(int msg_level, const char *fmt, ...) __attribute__((format (printf, 2, 3)));
+EXPORT_SYMBOL(printk);
+void banner(int msg_level, const char *msg);
+EXPORT_SYMBOL(banner);
+void dump_mem_range(int msg_level, unsigned char *buf, int size);
+EXPORT_SYMBOL(dump_mem_range);
+void die(const char *msg);
+EXPORT_SYMBOL(die);
 
 #endif /* CONSOLE_H */

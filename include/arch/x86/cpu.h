@@ -201,8 +201,10 @@ static inline __attribute__((always_inline)) void hlt(void)
 	__asm__ __volatile__("hlt" : : : "memory");
 }
 
-SHARED(bottom_of_stack, void *, void);
-SHARED(global_vars, struct global_vars *, void);
+void * bottom_of_stack(void);
+EXPORT_SYMBOL(bottom_of_stack);
+struct global_vars * global_vars(void);
+EXPORT_SYMBOL(global_vars);
 
 #ifdef CONFIG_CONSOLE_BUFFER
 #define PRINTK_BUF_SIZE_CAR (CONFIG_CARSIZE / 2)
@@ -251,9 +253,11 @@ struct rmap {
 	};
 };
 
-SHARED(setup_resource_map_x_offset, void, const struct rmap *rm, u32 max,
+void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
                                  u32 offset_dev, u32 offset_pciio, 
                                  u32 offset_io);
-SHARED(setup_resource_map, void, const struct rmap *rm, u32 max);
+EXPORT_SYMBOL(setup_resource_map_x_offset);
+void setup_resource_map(const struct rmap *rm, u32 max);
+EXPORT_SYMBOL(setup_resource_map);
 
 #endif /* ARCH_X86_CPU_H */

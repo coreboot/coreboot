@@ -24,7 +24,8 @@
 #include <types.h>
 #include <shared.h>
 
-SHARED(post_code, void, u8 value);
+void post_code(u8 value);
+EXPORT_SYMBOL(post_code);
 
 /* This is a collection of existing POST values used by post_code().
  * port80_post() and Geode specific codes are not (yet?) listed here.

@@ -31,10 +31,14 @@ int strcmp(const char *s1, const char *s2);
 int strncmp(const char *s1, const char *s2, int maxlen);
 
 /* lib/mem.c */
-SHARED(memcpy, void *, void *dest, const void *src, size_t len);
-SHARED(memmove, void *, void *dest, const void *src, size_t len);
-SHARED(memset, void *, void *s, int c, size_t len);
-SHARED(memcmp, int , const void *s1, const void *s2, size_t len);
+void * memcpy(void *dest, const void *src, size_t len);
+EXPORT_SYMBOL(memcpy);
+void * memmove(void *dest, const void *src, size_t len);
+EXPORT_SYMBOL(memmove);
+void * memset(void *s, int c, size_t len);
+EXPORT_SYMBOL(memset);
+int memcmp(const void *s1, const void *s2, size_t len);
+EXPORT_SYMBOL(memcmp);
 
 /* console/vsprintf.c */
 int sprintf(char *buf, const char *fmt, ...);

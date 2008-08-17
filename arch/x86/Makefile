@@ -260,7 +260,7 @@ $(obj)/arch/x86/amd/stage0.o: $(src)/arch/x86/amd/stage0.S
 
 $(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_SRC)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
-	$(Q)$(CC) $(INITCFLAGS) -D_SHARED -fPIE -c -combine $(INITRAM_SRC) -o $(obj)/coreboot.initram_partiallylinked.o
+	$(Q)$(CC) $(INITCFLAGS) -fPIE -c -combine $(INITRAM_SRC) -o $(obj)/coreboot.initram_partiallylinked.o
 	$(Q)printf "  WRAP    $(subst $(shell pwd)/,,$(@)) (PIC->non-PIC)\n"
 	$(Q)$(NM) --undefined-only $(obj)/coreboot.initram_partiallylinked.o |\
 		grep -v _GLOBAL_OFFSET_TABLE_ | grep " U " | sed "s/^ *U //" |\

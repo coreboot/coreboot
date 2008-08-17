@@ -49,70 +49,14 @@
 #include <cpu/amd/model_fxx_rev.h>
 #endif
 
-struct amdk8_sysconf sysconf;
-
 #define FX_DEVS 8
-static struct device * __f0_dev[FX_DEVS];
-static struct device * __f1_dev[FX_DEVS];
-
-#if 0
-static void debug_fx_devs(void)
-{
-	int i;
-	for(i = 0; i < FX_DEVS; i++) {
-		struct device * dev;
-		dev = __f0_dev[i];
-		if (dev) {
-			printk(BIOS_DEBUG, "__f0_dev[%d]: %s bus: %p\n",
-				i, dev_path(dev), dev->bus);
-		}
-		dev = __f1_dev[i];
-		if (dev) {
-			printk(BIOS_DEBUG, "__f1_dev[%d]: %s bus: %p\n",
-				i, dev_path(dev), dev->bus);
-		}
-	}
-}
-#endif
-
-static void get_fx_devs(void)
-{
-	int i;
-	if (__f1_dev[0]) {
-		return;
-	}
-	for(i = 0; i < FX_DEVS; i++) {
-		__f0_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
-		__f1_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 1));
-	}
-	if (!__f1_dev[0]) {
-		die("Cannot find 0:0x18.1\n");
-	}
-}
-
-static u32 f1_read_config32(unsigned reg)
-{
-	get_fx_devs();
-	return pci_read_config32(__f1_dev[0], reg);
-}
-
-static void f1_write_config32(unsigned reg, u32 value)
-{
-	int i;
-	get_fx_devs();
-	for(i = 0; i < FX_DEVS; i++) {
-		struct device * dev;
-		dev = __f1_dev[i];
-		if (dev && dev->enabled) {
-			pci_write_config32(dev, reg, value);
-		}
-	}
-}
-
-static unsigned int amdk8_nodeid(struct device * dev)
-{
-	return (dev->path.pci.devfn >> 3) - 0x18;
-}
+extern struct device * __f0_dev[FX_DEVS];
+extern struct device * __f1_dev[FX_DEVS];
+void debug_fx_devs(void);
+void get_fx_devs(void);
+u32 f1_read_config32(unsigned int reg);
+void f1_write_config32(unsigned int reg, u32 value);
+unsigned int amdk8_nodeid(struct device * dev);
 
 static unsigned int amdk8_scan_chain(struct device * dev, unsigned nodeid, unsigned link, unsigned sblink, unsigned int max, unsigned offset_unitid)
 {
@@ -527,7 +471,7 @@ static void amdk8_set_resource(struct device * dev, struct resource *resource, u
  * I tried to reuse the resource allocation code in amdk8_set_resource()
  * but it is too diffcult to deal with the resource allocation magic.
  */
-#if CONFIG_MULTIPLE_VGA_INIT == 1
+#ifdef CONFIG_MULTIPLE_VGA_INIT
 extern struct device * vga_pri;        // the primary vga device, defined in device.c
 #endif
 
@@ -542,7 +486,7 @@ static void amdk8_create_vga_resource(struct device * dev, unsigned nodeid)
 	 * we only deal with the 'first' vga card */
 	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-#if CONFIG_MULTIPLE_VGA_INIT == 1
+#ifdef CONFIG_MULTIPLE_VGA_INIT
 			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d dev->link[link] bus range [%d,%d]\n", vga_pri->bus->secondary, 
 				dev->link[link].secondary,dev->link[link].subordinate);
 			/* We need to make sure the vga_pri is under the link */
@@ -624,196 +568,8 @@ static void mcf0_control_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-static void k8_ram_resource(struct device * dev, unsigned long index, 
-	unsigned long basek, unsigned long sizek)
-{
-	struct resource *resource;
-
-	if (!sizek) {
-		return;
-	}
-	resource = new_resource(dev, index);
-	resource->base  = ((resource_t)basek) << 10;
-	resource->size  = ((resource_t)sizek) << 10;
-	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
-}
-
-static void tolm_test(void *gp, struct device *dev, struct resource *new)
-{
-	struct resource **best_p = gp;
-	struct resource *best;
-	best = *best_p;
-	if (!best || (best->base > new->base)) {
-		best = new;
-	}
-	*best_p = best;
-}
-
-static u32 find_pci_tolm(struct bus *bus)
-{
-	struct resource *min;
-	u32 tolm;
-	min = 0;
-	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
-	tolm = 0xffffffffUL;
-	if (min && tolm > min->base) {
-		tolm = min->base;
-	}
-	return tolm;
-}
-
 #ifdef CONFIG_PCI_64BIT_PREF_MEM
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
-#endif
-
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-
-struct hw_mem_hole_info {
-	unsigned hole_startk;
-	int node_id;
-};
-
-static struct hw_mem_hole_info get_hw_mem_hole_info(void)
-{
-		struct hw_mem_hole_info mem_hole;
-		int i;
-
-                mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
-		mem_hole.node_id = -1;
-
-                for (i = 0; i < 8; i++) {
-                        u32 base;
-                        u32 hole;
-                        base  = f1_read_config32(0x40 + (i << 3));
-                        if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                                continue;
-                        }
-
-                        hole = pci_read_config32(__f1_dev[i], 0xf0);
-                        if(hole & 1) { // we find the hole 
-	                        mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
-        	                mem_hole.node_id = i; // record the node No with hole
-                	        break; // only one hole
-			}
-                }
-
-                //We need to double check if there is speical set on base reg and limit reg are not continous instead of hole, it will find out it's hole_startk
-                if(mem_hole.node_id==-1) {
-                        u32 limitk_pri = 0;
-                        for(i=0; i<8; i++) {
-                                u32 base, limit;
-                                unsigned base_k, limit_k;
-                                base  = f1_read_config32(0x40 + (i << 3));
-                                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                                        continue;
-                                }
-
-                                base_k = (base & 0xffff0000) >> 2;
-                                if(limitk_pri != base_k) { // we find the hole 
-	                                mem_hole.hole_startk = limitk_pri;
-        	                        mem_hole.node_id = i;
-                	                break; //only one hole
-				}
-
-	                        limit = f1_read_config32(0x44 + (i << 3));
-                	        limit_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
-                                limitk_pri = limit_k;
-                        }
-                }
-		
-		return mem_hole;
-		
-}
-static void disable_hoist_memory(unsigned long hole_startk, int i)
-{
-        int ii;
-        struct device * dev;
-        u32 base, limit;
-        u32 hoist;
-	u32 hole_sizek;
-
-
-        //1. find which node has hole
-        //2. change limit in that node.
-        //3. change base and limit in later node
-        //4. clear that node f0
-
-	//if there is not mem hole enabled, we need to change it's base instead
-
-	hole_sizek = (4*1024*1024) - hole_startk;
-
-        for(ii=7;ii>i;ii--) {
-
-                base  = f1_read_config32(0x40 + (ii << 3));
-                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                        continue;
-                }
-		limit = f1_read_config32(0x44 + (ii << 3));
-                f1_write_config32(0x44 + (ii << 3),limit - (hole_sizek << 2));
-                f1_write_config32(0x40 + (ii << 3),base - (hole_sizek << 2));
-        }
-        limit = f1_read_config32(0x44 + (i << 3));
-        f1_write_config32(0x44 + (i << 3),limit - (hole_sizek << 2));
-        dev = __f1_dev[i];
-	hoist = pci_read_config32(dev, 0xf0);
-	if(hoist & 1) {
-		pci_write_config32(dev, 0xf0, 0);
-	}
-	else {
-		base = pci_read_config32(dev, 0x40 + (i << 3));
-		f1_write_config32(0x40 + (i << 3),base - (hole_sizek << 2));
-	}
-		
-}
-
-static u32 hoist_memory(unsigned long hole_startk, int i)
-{
-        int ii;
-        u32 carry_over;
-        struct device * dev;
-        u32 base, limit;
-        u32 basek;
-        u32 hoist;
-
-        carry_over = (4*1024*1024) - hole_startk;
-
-        for(ii=7;ii>i;ii--) {
-
-                base  = f1_read_config32(0x40 + (ii << 3));
-                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                        continue;
-                }
-		limit = f1_read_config32(0x44 + (ii << 3));
-                f1_write_config32(0x44 + (ii << 3),limit + (carry_over << 2));
-                f1_write_config32(0x40 + (ii << 3),base + (carry_over << 2));
-        }
-        limit = f1_read_config32(0x44 + (i << 3));
-        f1_write_config32(0x44 + (i << 3),limit + (carry_over << 2));
-        dev = __f1_dev[i];
-        base  = pci_read_config32(dev, 0x40 + (i << 3));
-        basek  = (base & 0xffff0000) >> 2;
-	if(basek == hole_startk) {
-		//don't need set memhole here, because hole off set will be 0, overflow
-		//so need to change base reg instead, new basek will be 4*1024*1024
-		base &= 0x0000ffff;
-		base |= (4*1024*1024)<<2;
-		f1_write_config32(0x40 + (i<<3), base);
-	}
-	else 
-	{
-	        hoist = /* hole start address */
-        	        ((hole_startk << 10) & 0xff000000) +
-                	/* hole address to memory controller address */
-	                (((basek + carry_over) >> 6) & 0x0000ff00) +
-        	        /* enable */
-	                1;
-	
-        	pci_write_config32(dev, 0xf0, hoist);
-	}
-
-        return carry_over;
-}
 #endif
 
 struct device_operations k8_ops = {

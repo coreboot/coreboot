@@ -304,6 +304,16 @@
 #define ConnectionPending (1 << 4)
 
 #ifndef ASSEMBLY
+
+/* Steppings of the K8 cpu */
+enum steppings {
+  A0,
+  A1,
+  A2,
+  B0,
+  C0,
+  CG,
+};
 /* cpu version -- no support for f0 yet */
 static inline int is_cpu_rev_a0(void)
 {
@@ -391,22 +401,22 @@ struct mem_controller {
 };
 
 struct link_pair_st {
-  u32 udev;
-        u32 upos;
-        u32 uoffs;
-        u32 dev;
-        u32 pos;
-        u32 offs;
+	u32 udev;
+	u32	upos;
+	u32	uoffs;
+	u32	dev;
+	u32	pos;
+	u32	offs;
 
 } __attribute__((packed));
 
 struct sys_info {
-        u8 ctrl_present[NODE_NUMS];
-        struct mem_info meminfo[NODE_NUMS];
+	u8 ctrl_present[NODE_NUMS];
+	struct mem_info meminfo[NODE_NUMS];
 	struct mem_controller ctrl[NODE_NUMS];
 	u8 mem_trained[NODE_NUMS]; //0: no dimm, 1: trained, 0x80: not started, 0x81: recv1 fail, 0x82: Pos Fail, 0x83:recv2 fail
-        u32 tom_k;
-        u32 tom2_k;
+	u32 tom_k;
+	u32 tom2_k;
 
 	u32 mem_base[NODE_NUMS];
 	u32 cs_base[NODE_NUMS*8]; //8 cs_idx
@@ -415,9 +425,9 @@ struct sys_info {
 	u8 dqs_delay_a[NODE_NUMS*2*2*9]; //8 node channel 2, direction 2 , bytelane *9
 	u8 dqs_rcvr_dly_a[NODE_NUMS*2*8]; //8 node, channel 2, receiver 8
 	u32 nodes;
-        struct link_pair_st link_pair[16];// enough? only in_conherent
-        u32 link_pair_num;
-        u32 ht_c_num;
+	struct link_pair_st link_pair[16];// enough? only in_conherent
+	u32 link_pair_num;
+	u32 ht_c_num;
 	u32 sbdn;
 	u32 sblk;
 	u32 sbbusn;

@@ -28,6 +28,7 @@
 	2005.11 yhlu add put sb ht chain on bus 0
 */
 
+#include <config.h>
 #include <console.h>
 #include <lib.h>
 #include <string.h>

@@ -224,6 +224,6 @@ config USBDEBUG_DIRECT
 config APIC_ID_OFFSET
 	hex "APIC ID offset"
 	default 0x10
-	depends IO_APIC
+	depends IOAPIC
 	help
 		This is entirely mainboard dependent. 0x10 is a *typical* setting but not always a good setting. 

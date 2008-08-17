@@ -19,12 +19,12 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-COMPRESSORS :=
+DECOMPRESSORS :=
 ifeq ($(CONFIG_COMPRESSION_LZMA),y)
-COMPRESSORS += lzma.o
+DECOMPRESSORS += lzma.c
 endif
 ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
-COMPRESSORS += nrv2b.o
+DECOMPRESSORS += nrv2b.c
 endif
 
 #

@@ -39,14 +39,6 @@ ROM_SIZE := $(shell expr $(CONFIG_COREBOOT_ROMSIZE_KB) \* 1024)
 LARFILES_NOCOMPRESS := coreboot.initram:normal/initram option_table:normal/option_table
 LARFILES_COMPRESSIBLE := coreboot.stage2:normal/stage2
 
-DECOMPRESSORS :=
-ifeq ($(CONFIG_COMPRESSION_LZMA),y)
-DECOMPRESSORS += lzma.o
-endif
-ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
-DECOMPRESSORS += nrv2b.o
-endif
-
 COMPRESSFLAG :=
 ifeq ($(CONFIG_DEFAULT_COMPRESSION_LZMA),y)
 COMPRESSFLAG := -C lzma

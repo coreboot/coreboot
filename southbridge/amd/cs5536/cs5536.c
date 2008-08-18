@@ -89,6 +89,28 @@ static const u32 FlashPort[] = {
 };
 
 /**
+ * Hide unwanted virtual PCI device.
+ *
+ * @param vpci_devid The bus location of the device to be hidden.
+ * bits  0 ->  1 zero
+ * bits  2 ->  7 target dword within the target function 
+ *               (zero if we're disabling entire pci devices)
+ * bits  8 -> 10 target function of the device
+ * bits 11 -> 15 target pci device
+ * bits 16 -> 23 pci bus
+ * bits 24 -> 30 reserved and set to zero
+ * bit  31       triggers the config cycle
+ */
+static void hide_vpci(u32 vpci_devid)
+{
+	printk(BIOS_DEBUG, "Hiding VPCI device: 0x%08X (%02x:%02x.%01x)\n",
+		vpci_devid, (vpci_devid >> 16) & 0xff,
+		(vpci_devid >> 11) & 0x1f, (vpci_devid >> 8) & 0x7);
+	outl(vpci_devid + 0x7C, 0xCF8);
+	outl(0xDEADBEEF, 0xCFC);
+}
+
+/**
  * Power button setup.
  *
  * Setup GPIO24, it is the external signal for CS5536 vsb_work_aux which
@@ -175,8 +197,7 @@ static void chipset_flash_setup(void)
 static void enable_ide_nand_flash_header(void)
 {
 	/* Tell VSA to use FLASH PCI header. Not IDE header. */
-	outl(0x80007A40, 0xCF8);
-	outl(0xDEADBEEF, 0xCFC);
+	hide_vpci(0x800079C4);
 }
 
 #define RTC_CENTURY	0x32
@@ -619,16 +640,6 @@ static void ide_init(struct device *dev)
 	ide_cfg = pci_read_config32(dev, IDE_CFG);
 	ide_cfg |= CHANEN | PWB;
 	pci_write_config32(dev, IDE_CFG, ide_cfg);
-}
-
-
-static void hide_vpci(u32 vpci_devid)
-{
-	/* Hide unwanted virtual PCI device. */
-	printk(BIOS_DEBUG, "Hiding VPCI device: 0x%08X\n",
-		vpci_devid);
-	outl(vpci_devid + 0x7C, 0xCF8);
-	outl(0xDEADBEEF, 0xCFC);
 }
 
 /**

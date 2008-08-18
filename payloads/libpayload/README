@@ -1,7 +1,66 @@
-This is libpayload, a minimal library to support standalone payloads
-that can be booted with firmware like coreboot.  It handles the setup
-code, and provides common C library symbols such as malloc() and
-printf().
+-------------------------------------------------------------------------------
+libpayload README
+-------------------------------------------------------------------------------
 
-Please see the sample/ directory for an example of the payload in
-action.
+libpayload is a minimal library to support standalone payloads
+that can be booted with firmware like coreboot. It handles the setup
+code, and provides common C library symbols such as malloc() and printf().
+
+Note: This is _not_ a standard library for use with an operating system,
+rather it's only useful for coreboot payload development!
+See http://coreboot.org for details on coreboot.
+
+
+Installation
+------------
+
+ $ svn co svn://coreboot.org/repos/trunk/payloads/libpayload
+
+ $ cd libpayload
+
+ $ make menuconfig
+
+ $ make
+
+ $ sudo make install (optional, will install into /opt per default)
+
+As libpayload is for 32bit x86 systems only, you might have to install the
+32bit libgcc version, otherwise your payloads will fail to compile.
+On Debian systems you'd do 'apt-get install gcc-multilib' for example.
+
+
+Usage
+-----
+
+Here's an example of a very simple payload (hello.c) and how to build it:
+
+ #include <libpayload.h>
+
+ int main(void)
+ {
+     printf("Hello, world!\n");
+     return 0;
+ }
+
+Building the payload using the 'lpgcc' compiler wrapper:
+
+ $ lpgcc -o hello.elf hello.c
+
+Please see the sample/ directory for details.
+
+
+Website and Mailing List
+------------------------
+
+The main website is http://www.coreboot.org/Libpayload.
+
+For additional information, patches, and discussions, please join the
+coreboot mailing list at http://coreboot.org/Mailinglist, where most
+libpayload developers are subscribed.
+
+
+Copyright and License
+---------------------
+
+See LICENSES.
+

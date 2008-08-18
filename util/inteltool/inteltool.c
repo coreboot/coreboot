@@ -485,6 +485,18 @@ int print_pciexbar(struct pci_dev *nb)
 	return 0;
 }
 
+static unsigned int cpuid(unsigned int op)
+{
+	unsigned int ret;
+	unsigned int dummy2, dummy3, dummy4;
+	asm volatile ( 
+		"cpuid" 
+		: "=a" (ret), "=b" (dummy2), "=c" (dummy3), "=d" (dummy4)
+		: "a" (op)
+	);
+	return ret;
+}
+
 int msr_readerror = 0;
 
 msr_t rdmsr(int addr)
@@ -520,7 +532,7 @@ msr_t rdmsr(int addr)
 
 int print_intel_core_msrs(void)
 {
-	unsigned int i, core;
+	unsigned int i, core, id;
 	msr_t msr;
 
 #define IA32_PLATFORM_ID		0x0017
@@ -534,7 +546,7 @@ int print_intel_core_msrs(void)
 		char *name;
 	} msr_entry_t;
 
-	msr_entry_t global_msrs[] = {
+	static const msr_entry_t model6ex_global_msrs[] = {
 		{ 0x0017, "IA32_PLATFORM_ID" },
 		{ 0x002a, "EBL_CR_POWERON" },
 		{ 0x00cd, "FSB_CLOCK_STS" },
@@ -558,7 +570,7 @@ int print_intel_core_msrs(void)
 		//{ 0x040f, "IA32_MC4_MISC" } // Seems to be RO
 	};
 
-	msr_entry_t per_core_msrs[] = {
+	static const msr_entry_t model6ex_per_core_msrs[] = {
 		{ 0x0010, "IA32_TIME_STAMP_COUNTER" },
 		{ 0x001b, "IA32_APIC_BASE" },
 		{ 0x003a, "IA32_FEATURE_CONTROL" },
@@ -608,6 +620,37 @@ int print_intel_core_msrs(void)
 		//{ 0x00c000080, "IA32_CR_EFER" }, // Seems to be RO
 	};
 
+	typedef struct {
+		unsigned int model;
+		const msr_entry_t *global_msrs;
+		unsigned int num_global_msrs;
+		const msr_entry_t *per_core_msrs;
+		unsigned int num_per_core_msrs;
+	} cpu_t;
+
+	cpu_t cpulist[] = {
+		{ 0x006e0, model6ex_global_msrs, ARRAY_SIZE(model6ex_global_msrs), model6ex_per_core_msrs, ARRAY_SIZE(model6ex_per_core_msrs) },
+		{ 0x006f0, model6ex_global_msrs, ARRAY_SIZE(model6ex_global_msrs), model6ex_per_core_msrs, ARRAY_SIZE(model6ex_per_core_msrs) }, // for now
+	};
+
+	cpu_t *cpu = NULL;
+
+	/* Get CPU family and model, not the stepping 
+	 * (TODO: extended family/model)
+	 */
+	id = cpuid(1) & 0xff0;
+	for (i = 0; i < ARRAY_SIZE(cpulist); i++) {
+		if(cpulist[i].model == id) {
+			cpu = &cpulist[i];
+			break;
+		}
+	}
+
+	if (!cpu) {
+		printf("Error: Dumping MSRs on this CPU (0x%06x) is not (yet) supported.\n", id);
+		return -1;
+	}
+
 	fd_msr = open("/dev/cpu/0/msr", O_RDWR);
 	if (fd_msr < 0) {
 		perror("Error while opening /dev/cpu/0/msr");
@@ -617,11 +660,11 @@ int print_intel_core_msrs(void)
 
 	printf("\n===================== SHARED MSRs (All Cores) =====================\n");
 
-	for (i = 0; i < ARRAY_SIZE(global_msrs); i++) {
-		msr = rdmsr(global_msrs[i].number);
+	for (i = 0; i < cpu->num_global_msrs; i++) {
+		msr = rdmsr(cpu->global_msrs[i].number);
 		printf(" MSR 0x%08X = 0x%08X:0x%08X (%s)\n",
-		       global_msrs[i].number, msr.hi, msr.lo,
-		       global_msrs[i].name);
+		       cpu->global_msrs[i].number, msr.hi, msr.lo,
+		       cpu->global_msrs[i].name);
 	}
 
 	close(fd_msr);
@@ -641,11 +684,11 @@ int print_intel_core_msrs(void)
 
 		printf("\n====================== UNIQUE MSRs  (core %d) ======================\n", core);
 
-		for (i = 0; i < ARRAY_SIZE(per_core_msrs); i++) {
-			msr = rdmsr(per_core_msrs[i].number);
+		for (i = 0; i < cpu->num_per_core_msrs; i++) {
+			msr = rdmsr(cpu->per_core_msrs[i].number);
 			printf(" MSR 0x%08X = 0x%08X:0x%08X (%s)\n",
-			       per_core_msrs[i].number, msr.hi, msr.lo,
-			       per_core_msrs[i].name);
+			       cpu->per_core_msrs[i].number, msr.hi, msr.lo,
+			       cpu->per_core_msrs[i].name);
 		}
 
 		close(fd_msr);
@@ -697,6 +740,7 @@ int main(int argc, char *argv[])
 	struct pci_access *pacc;
 	struct pci_dev *sb, *nb;
 	int i, opt, option_index = 0;
+	unsigned int id;
 
 	char *sbname = "unknown", *nbname = "unknown";
 
@@ -811,7 +855,9 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* TODO check cpuid, too */
+	id = cpuid(1);
+	printf("Intel CPU: Family %x, Model %x\n", 
+			(id >> 8) & 0xf, (id >> 4) & 0xf);
 
 	/* Determine names */
 	for (i = 0; i < ARRAY_SIZE(supported_chips_list); i++)

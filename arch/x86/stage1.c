@@ -124,13 +124,12 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 {
 	int ret;
 	struct mem_file archive;
+	void *entry;
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
 	struct mem_file result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
-#endif /* CONFIG_PAYLOAD_ELF_LOADER */
-	void *entry;
 
-	/* we can't statically init this hack. */
+	/* Why can't we statically init this hack? */
 	unsigned char faker[64];
 	struct lb_memory *mem = (struct lb_memory*) faker;
 
@@ -140,7 +139,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	mem->map[0].size.lo = (32*1024*1024);
 	mem->map[0].size.hi = 0;
 	mem->map[0].type = LB_MEM_RAM;
-
+#endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
 	post_code(POST_STAGE1_MAIN);
 

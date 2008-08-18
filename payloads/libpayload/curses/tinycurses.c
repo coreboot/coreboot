@@ -658,6 +658,8 @@ int whline(WINDOW *win, chtype ch, int n)
 	return OK;
 }
 
+#define SWAP_RED_BLUE(c) \
+	(((c) & 0x4400) >> 2) | ((c) & 0xAA00) | (((c) & 0x1100) << 2)
 int wnoutrefresh(WINDOW *win)
 {
 	// FIXME.
@@ -719,6 +721,8 @@ int wnoutrefresh(WINDOW *win)
 
 				serial_putchar(ch);
 			}
+
+			c = SWAP_RED_BLUE(c);
 
 			if (curses_flags & F_ENABLE_CONSOLE) {
 				ch = win->_line[y].text[x].chars[0];

@@ -114,7 +114,7 @@ int find_file(const struct mem_file *archive, const char *filename, struct mem_f
 	for (walk = archive->start;
 	     (walk < (char *)(archive->start + archive->len - sizeof(struct lar_header))) && 
 			(walk >= (char *)archive->start); walk += 16) {
-		if (strncmp(walk, MAGIC, 8) != 0)
+		if (strncmp(walk, MAGIC, sizeof(header->magic)) != 0)
 			continue;
 
 		header = (struct lar_header *)walk;

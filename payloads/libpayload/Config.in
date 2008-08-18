@@ -68,6 +68,20 @@ config SERIAL_BAUD_RATE
 	depends on SERIAL_SET_SPEED
 	default 115200
 
+config SERIAL_ACS_FALLBACK
+	bool "Use plain ASCII characters for ACS"
+	default n
+	depends on SERIAL_CONSOLE
+	help
+	  The alternate character set (ACS) is used for drawing lines and
+	  displaying a couple of other special graphics characters.  The
+	  ACS characters generally look good on screen, but can be difficult
+	  to cut and paste from a terminal window to a text editor.
+	
+	  Say 'y' here if you want to always use plain ASCII characters to
+	  approximate the appearance of ACS characters on the serial port 
+	  console.
+
 config VIDEO_CONSOLE
 	bool "See output on a video console"
 	default y

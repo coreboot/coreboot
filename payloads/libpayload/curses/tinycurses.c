@@ -110,6 +110,9 @@ chtype fallback_acs_map[128] =
 	'|',	'<',	'>',	'*',	'!',	'f',	'o',	' ',
 	};
 
+#ifdef CONFIG_SERIAL_ACS_FALLBACK
+chtype serial_acs_map[128];
+#else
 /* See acsc of vt100. */
 chtype serial_acs_map[128] =
 	{
@@ -130,6 +133,7 @@ chtype serial_acs_map[128] =
 	'p',	'q',	'r',	's',	't',	'u',	'v',	'w',
 	'x',	'y',	'z',	'{',	'|',	'}',	'~',	0,
 	};
+#endif
 
 /* See acsc of linux. */
 chtype console_acs_map[128] =

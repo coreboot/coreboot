@@ -8,8 +8,6 @@
 int vtxprintf(void (*)(unsigned char, void *arg), 
 		void *arg, const char *, va_list);
 
-static unsigned int loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-
 /**
  * set the console log level
  * There are no invalid settings, although there are ones that 
@@ -21,7 +19,7 @@ void set_loglevel(unsigned int level) {
 	if (level > BIOS_SPEW)
 		printk(BIOS_ALWAYS, "Warning: ridiculous log level setting: %d (max %d)\n", 
 			level, BIOS_SPEW);
-	loglevel = level;
+	global_vars()->loglevel = level;
 }
 
 /**
@@ -31,7 +29,12 @@ void set_loglevel(unsigned int level) {
  */
 static unsigned int console_loglevel(void)
 {
-	return loglevel;
+	return global_vars()->loglevel;
+}
+
+void console_loglevel_init(void)
+{
+	set_loglevel(CONFIG_DEFAULT_CONSOLE_LOGLEVEL);
 }
 
 #ifdef CONFIG_CONSOLE_BUFFER

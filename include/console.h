@@ -37,6 +37,7 @@ void console_tx_byte(unsigned char byte, void *arg);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
+void console_loglevel_init(void);
 #ifdef CONFIG_CONSOLE_BUFFER
 void printk_buffer_init(void);
 void printk_buffer_move(void *newaddr, int newsize);
@@ -69,6 +70,7 @@ struct global_vars {
 #ifdef CONFIG_CONSOLE_BUFFER
 	struct printk_buffer *printk_buffer;
 #endif
+	unsigned int loglevel;
 };
 
 int printk(int msg_level, const char *fmt, ...) __attribute__((format (printf, 2, 3)));

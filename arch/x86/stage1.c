@@ -89,6 +89,12 @@ void global_vars_init(struct global_vars *globvars)
 {
 	memset(globvars, 0, sizeof(struct global_vars));
 	*(struct global_vars **)(bottom_of_stack() - sizeof(struct global_vars *)) = globvars;
+#ifdef CONFIG_CONSOLE_BUFFER
+	/* Initialize the printk buffer. */
+	printk_buffer_init();
+#endif
+	console_loglevel_init();
+
 }
 
 void dump_mem_range(int msg_level, unsigned char *buf, int size)
@@ -162,11 +168,6 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	 * NEVER run this on an AP!
 	 */
 	global_vars_init(&globvars);
-
-#ifdef CONFIG_CONSOLE_BUFFER
-	/* Initialize the printk buffer. NEVER run this on an AP! */
-	printk_buffer_init();
-#endif
 
 	hardware_stage1();
 

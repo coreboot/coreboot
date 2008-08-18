@@ -129,6 +129,7 @@ static unsigned int cpu_bus_scan(struct device * dev, unsigned int max)
 
 		}
 
+#warning clean this mess up
 		e0_later_single_core = 0;
 		if (dev && dev->enabled) {
 			j = pci_read_config32(dev, 0xe8);
@@ -141,11 +142,7 @@ static unsigned int cpu_bus_scan(struct device * dev, unsigned int max)
 				// That is the typical case
 
 		                if(j == 0 ){
-				       #ifndef CONFIG_K8_REV_F_SUPPORT
-                 		       	e0_later_single_core = is_e0_later_in_bsp(i);  // single core 
-				       #else
-				       	e0_later_single_core = is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3
-				       #endif
+				       	e0_later_single_core = 1; // we are all f0 or later now. is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3
 		                } else {
 		                       e0_later_single_core = 0;
                			}

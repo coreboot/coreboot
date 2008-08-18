@@ -286,10 +286,7 @@ u16 read_freq_cap(u32 dev, u8 pos)
 	freq_cap = pci_conf1_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
-#if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1
-    #if CONFIG_K8_REV_F_SUPPORT == 0
-	if (!is_cpu_pre_e0())
-    #endif 
+#ifdef CONFIG_K8_HT_FREQ_1G_SUPPORT
 	{
 		return freq_cap;
 	}
@@ -1595,9 +1592,6 @@ void coherent_ht_finalize(unsigned nodes)
 {
 	unsigned node;
 	int dual_core = 0;
-#if CONFIG_K8_REV_F_SUPPORT == 0
-	int rev_a0;
-#endif
 #if CONFIG_LOGICAL_CPUS==1
 	unsigned total_cpus;
 
@@ -1617,9 +1611,6 @@ void coherent_ht_finalize(unsigned nodes)
 	 */
 
 	printk(BIOS_SPEW, "coherent_ht_finalize\r\n");
-#if CONFIG_K8_REV_F_SUPPORT == 0
-	rev_a0 = is_cpu_rev_a0();
-#endif
 	for (node = 0; node < nodes; node++) {
 		u32 dev;
 		u32 val;
@@ -1648,13 +1639,6 @@ void coherent_ht_finalize(unsigned nodes)
 			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
 		pci_conf1_write_config32(dev, HT_TRANSACTION_CONTROL, val);
 
-#if CONFIG_K8_REV_F_SUPPORT == 0
-		if (rev_a0) {
-			pci_conf1_write_config32(dev, 0x94, 0);
-			pci_conf1_write_config32(dev, 0xb4, 0);
-			pci_conf1_write_config32(dev, 0xd4, 0);
-		}
-#endif
 	}
 
 	printk(BIOS_SPEW, "done\r\n");
@@ -1668,49 +1652,6 @@ int apply_cpu_errata_fixes(unsigned nodes)
 		u32 dev;
 		u32 cmd;
 		dev = NODE_MC(node);
-#if CONFIG_K8_REV_F_SUPPORT == 0
-		if (is_cpu_pre_c0()) {
-
-			/* Errata 66
-			 * Limit the number of downstream posted requests to 1 
-			 */
-			cmd = pci_conf1_read_config32(dev, 0x70);
-			if ((cmd & (3 << 0)) != 2) {
-				cmd &= ~(3<<0);
-				cmd |= (2<<0);
-				pci_conf1_write_config32(dev, 0x70, cmd );
-				needs_reset = 1;
-			}
-			cmd = pci_conf1_read_config32(dev, 0x7c);
-			if ((cmd & (3 << 4)) != 0) {
-				cmd &= ~(3<<4);
-				cmd |= (0<<4);
-				pci_conf1_write_config32(dev, 0x7c, cmd );
-				needs_reset = 1;
-			}
-			/* Clock Power/Timing Low */
-			cmd = pci_conf1_read_config32(dev, 0xd4);
-			if (cmd != 0x000D0001) {
-				cmd = 0x000D0001;
-				pci_conf1_write_config32(dev, 0xd4, cmd);
-				needs_reset = 1; /* Needed? */
-			}
-
-		}
-		else if (is_cpu_pre_d0()) { // d0 later don't need it
-			u32 cmd_ref;
-			/* Errata 98 
-			 * Set Clk Ramp Hystersis to 7
-			 * Clock Power/Timing Low
-			 */
-			cmd_ref = 0x04e20707; /* Registered */
-			cmd = pci_conf1_read_config32(dev, 0xd4);
-			if(cmd != cmd_ref) {
-				pci_conf1_write_config32(dev, 0xd4, cmd_ref );
-				needs_reset = 1; /* Needed? */
-			}
-		}
-#endif
 	}
 	return needs_reset;
 }

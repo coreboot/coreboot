@@ -158,13 +158,7 @@ static u16 ht_read_freq_cap(u32 bdf, u8 pos)
 	
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
-	#if K8_HT_FREQ_1G_SUPPORT == 1 
-		#if K8_REV_F_SUPPORT == 0 
-	        if (is_cpu_pre_e0()) {  // only E0 later support 1GHz
-			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
-		}
-		#endif
-	#else	
+	#ifndef K8_HT_FREQ_1G_SUPPORT	
                 freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 	#endif
 	}

@@ -262,9 +262,6 @@ static void k8_pci_domain_set_resources(struct device * dev)
      * if mmio_basek is bigger that hole_basek and will use hole_basek as mmio_basek and we don't need to reset hole.
      * otherwise We reset the hole to the mmio_basek
      */
-    #ifndef CONFIG_K8_REV_F_SUPPORT
-        if (!is_cpu_pre_e0()) {
-    #endif
 
 		mem_hole = get_hw_mem_hole_info();
 
@@ -302,10 +299,6 @@ static void k8_pci_domain_set_resources(struct device * dev)
 			}	
 		#endif	
         	}
-
-#ifndef CONFIG_K8_REV_F_SUPPORT
-	} // is_cpu_pre_e0
-#endif
 
 #endif
 
@@ -346,9 +339,6 @@ static void k8_pci_domain_set_resources(struct device * dev)
 				}
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 				if(reset_memhole) 
-					#ifndef CONFIG_K8_REV_F_SUPPORT
-                	                if(!is_cpu_pre_e0() ) 
-					#endif
                        		                 sizek += hoist_memory(mmio_basek,i);
 				#endif
 				

@@ -95,13 +95,7 @@ static unsigned ht_read_freq_cap(struct device *dev, unsigned pos)
 	}
 	/* AMD K8 unsupported 1GHz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
-#if K8_HT_FREQ_1G_SUPPORT == 1
-#if K8_REV_F_SUPPORT == 0
-		if (is_cpu_pre_e0()) {	// Only e0 later support 1GHz HT.
-			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
-		}
-#endif
-#else
+#ifndef K8_HT_FREQ_1G_SUPPORT
 		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 #endif
 

@@ -26,6 +26,7 @@ STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
 			$(src)/northbridge/amd/k8/coherent_ht.c \
 			$(src)/northbridge/amd/k8/incoherent_ht.c \
 			$(src)/northbridge/amd/k8/libstage1.c \
+			$(src)/arch/x86/amd/model_fxx/stage1.c \
 			$(src)/lib/clog2.c
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \

@@ -24,6 +24,7 @@
 	2004.12 yhlu add D0 support
 	2005.02 yhlu add E0 memory hole support
 */
+#warning use raminit_f.c not this one. 
 /* not yet 
 #if K8_REV_F_SUPPORT == 1
         #include "raminit_f.c"

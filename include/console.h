@@ -60,10 +60,10 @@ struct printk_buffer {
 #endif
 
 /*
- * If you change struct global_vars in any way, you have to fix all stage0 asm
- * code. The stage0 asm code modification is nontrivial (size of the struct,
- * alignment, initialization, order of struct members, initialization).
- * Depending on your compiler, real breakage may happen.
+ * struct global_vars is managed entirely from C code. Keep in mind that there
+ * is NO buffer at the end of the struct, so having zero-sized arrays at the
+ * end or similar stuff for which the compiler can't determine the final size
+ * will corrupt memory. If you don't try to be clever, everything will be fine.
  */
 struct global_vars {
 #ifdef CONFIG_CONSOLE_BUFFER

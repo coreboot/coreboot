@@ -23,7 +23,9 @@
 #define CacheBase CONFIG_CARBASE
 #define MEM_TOPK 2048
 
-/* leave some space for global variable to pass to RAM stage */
+/* Leave some space for a pointer to the global variables.
+ * This should most likely be 4.
+ */
 #define GlobalVarSize 32
 
 #ifdef CONFIG_CPU_AMD_K10

@@ -82,7 +82,13 @@ void *bottom_of_stack(void)
 
 struct global_vars *global_vars(void)
 {
-	return (struct global_vars *)(bottom_of_stack() - sizeof(struct global_vars));
+	return *(struct global_vars **)(bottom_of_stack() - sizeof(struct global_vars *));
+}
+
+void global_vars_init(struct global_vars *globvars)
+{
+	memset(globvars, 0, sizeof(struct global_vars));
+	*(struct global_vars **)(bottom_of_stack() - sizeof(struct global_vars *)) = globvars;
 }
 
 void dump_mem_range(int msg_level, unsigned char *buf, int size)
@@ -119,9 +125,11 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
 /*
  * This function is called from assembler code with its argument on the
  * stack. Force the compiler to generate always correct code for this case.
+ * We have cache as ram running and can start executing code in C.
  */
 void __attribute__((stdcall)) stage1_main(u32 bist)
 {
+	struct global_vars globvars;
 	int ret;
 	struct mem_file archive;
 	void *entry;
@@ -150,10 +158,13 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 		stop_ap();
 	}
 
-	// We have cache as ram running and can start executing code in C.
+	/* Initialize global variables before we can think of using them.
+	 * NEVER run this on an AP!
+	 */
+	global_vars_init(&globvars);
 
 #ifdef CONFIG_CONSOLE_BUFFER
-	/* Initialize the printk buffer. */
+	/* Initialize the printk buffer. NEVER run this on an AP! */
 	printk_buffer_init();
 #endif
 

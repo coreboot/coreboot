@@ -361,13 +361,10 @@ DCacheSetupGood:
 	movw	%ax, %ss
 
 lout:
-#ifdef CONFIG_CONSOLE_BUFFER
-	/* Store pointer to start of printk buffer, should really use
-	 * PRINTK_BUF_ADDR_CAR instead.
-	 */
-	movl    $CONFIG_CARBASE, %eax
-	pushl   %eax  /* printk buffer */
-#endif
+	/* Store zero for the pointer to the global variables. */
+	movl    $0, %eax
+	pushl   %eax
+
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 

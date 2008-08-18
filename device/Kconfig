@@ -97,11 +97,13 @@ config SUSPEND_TO_RAM
 
 config PCI_64BIT_PREF_MEM
 	bool "64 bit prefetchable memory addresses"
+	depends CPU_AMD_K8
 	help
 		Enable support for 64-bit prefetchable memory addresses in PCI. 
 
 config HW_MEM_HOLE_SIZEK
 	hex "HW memory hole size in KB"
+	depends CPU_AMD_K8
 	default 0x1000
 	help
 		Some chipsets support setting up a "hole" at the top of memory. It is essentially 

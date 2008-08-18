@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
-# coreboot version: 3.0.0
-# Thu Mar 13 07:13:17 2008
+# coreboot version: 3.0."782"
+# Mon Aug 18 18:45:49 2008
 #
 
 #
@@ -17,6 +17,7 @@ CONFIG_LOCALVERSION=""
 # CONFIG_VENDOR_ADL is not set
 # CONFIG_VENDOR_AMD is not set
 # CONFIG_VENDOR_ARTECGROUP is not set
+# CONFIG_VENDOR_GIGABYTE is not set
 CONFIG_VENDOR_EMULATION=y
 # CONFIG_VENDOR_PCENGINES is not set
 CONFIG_MAINBOARD_DIR="emulation/qemu-x86"
@@ -31,6 +32,7 @@ CONFIG_ARCH_X86=y
 CONFIG_ARCH="x86"
 CONFIG_CPU_I586=y
 CONFIG_OPTION_TABLE=y
+# CONFIG_SMP is not set
 CONFIG_CARBASE=0x8f000
 CONFIG_CARSIZE=0x1000
 

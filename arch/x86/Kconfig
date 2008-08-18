@@ -93,12 +93,14 @@ config K8_ALLOCATE_MMIO_RANGE
 	
 config LOGICAL_CPUS
 	hex
+	depends CPU_AMD_K8
 	default 1
 	help
 		How many logical CPUs there are. Fix me.
 
 config MAX_PHYSICAL_CPUS
 	hex
+	depends CPU_AMD_K8
 	default 1
 	help
 		Max number of physical CPUs (sockets)
@@ -138,6 +140,7 @@ config ACPI_TABLE
 
 config SMP
 	boolean
+	depends CPU_I586 || CPU_AMD_K8
 	default 0
 	help
 	  This option is used to enable certain functions to make 
@@ -147,7 +150,7 @@ config SMP
 
 config IOAPIC
 	boolean
-	depends ARCH_X86
+	depends ARCH_X86 && CPU_AMD_K8
 	default 0
 	help
 	  If you want to configure an IOAPIC, set this. 
@@ -216,6 +219,7 @@ config HT_FREQ_800MHZ
 
 config USBDEBUG_DIRECT
 	boolean
+	depends SOUTHBRIDGE_NVIDIA_MCP55
 	default 0
 	help
 		Determines if we enable USB Direct debugging. If you don't have a dongle, 

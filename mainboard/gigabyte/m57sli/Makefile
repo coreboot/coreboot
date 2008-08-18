@@ -19,12 +19,12 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-STAGE0_MAINBOARD_OBJ := $(obj)/mainboard/$(MAINBOARDDIR)/stage1.o \
-			$(obj)/mainboard/$(MAINBOARDDIR)/option_table.o \
-			$(obj)/southbridge/nvidia/mcp55/stage1_smbus.o \
-			$(obj)/northbridge/amd/k8/coherent_ht.o \
-			$(obj)/northbridge/amd/k8/incoherent_ht.o \
-			$(obj)/lib/clog2.o
+STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
+			$(src)/mainboard/$(MAINBOARDDIR)/option_table.c \
+			$(src)/southbridge/nvidia/mcp55/stage1_smbus.c \
+			$(src)/northbridge/amd/k8/coherent_ht.c \
+			$(src)/northbridge/amd/k8/incoherent_ht.c \
+			$(src)/lib/clog2.c
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/raminit.c \

@@ -34,7 +34,7 @@ STAGE2_CHIPSET_SRC += \
  					$(src)/southbridge/amd/amd8111/usb.c \
  					$(src)/southbridge/amd/amd8111/usb2.c 
 					
-STAGE0_CHIPSET_OBJ += $(obj)/southbridge/amd/amd8111/stage1.o 
+STAGE0_CHIPSET_SRC += $(src)/southbridge/amd/amd8111/stage1.c 
 
 
 endif

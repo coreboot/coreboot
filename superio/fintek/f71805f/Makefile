@@ -20,8 +20,8 @@
 
 ifeq ($(CONFIG_SUPERIO_FINTEK_F71805F),y)
 
-STAGE0_CHIPSET_OBJ += $(obj)/superio/fintek/f71805f/stage1.o
-STAGE0_CHIPSET_OBJ += $(obj)/device/pnp_raw.o
+STAGE0_CHIPSET_SRC += $(src)/superio/fintek/f71805f/stage1.c
+STAGE0_CHIPSET_SRC += $(src)/device/pnp_raw.c
 
 # Always add to variables, as there could be more than one Super I/O.
 STAGE2_CHIPSET_SRC += $(src)/superio/fintek/f71805f/superio.c

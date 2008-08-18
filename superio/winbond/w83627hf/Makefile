@@ -21,8 +21,8 @@
 
 ifeq ($(CONFIG_SUPERIO_WINBOND_W83627HF),y)
 
-STAGE0_CHIPSET_OBJ += $(obj)/superio/winbond/w83627hf/stage1.o
-STAGE0_CHIPSET_OBJ += $(obj)/device/pnp_raw.o
+STAGE0_CHIPSET_SRC += $(src)/superio/winbond/w83627hf/stage1.c
+STAGE0_CHIPSET_SRC += $(src)/device/pnp_raw.c
 
 # Always add to variables, as there could be more than one Super I/O.
 STAGE2_CHIPSET_SRC += $(src)/superio/winbond/w83627hf/superio.c

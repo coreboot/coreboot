@@ -21,10 +21,10 @@
 
 DECOMPRESSORS :=
 ifeq ($(CONFIG_COMPRESSION_LZMA),y)
-DECOMPRESSORS += lzma.o
+DECOMPRESSORS += lzma.c
 endif
 ifeq ($(CONFIG_COMPRESSION_NRV2B),y)
-DECOMPRESSORS += nrv2b.o
+DECOMPRESSORS += nrv2b.c
 endif
 
 #

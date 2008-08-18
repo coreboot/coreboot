@@ -3,6 +3,7 @@
 ##
 ## Copyright (C) 2006-2007 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+## Copyright (C) 2007-2008 Carl-Daniel Hailfinger
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -98,15 +99,15 @@ $(obj)/coreboot.bootblock: $(obj)/coreboot.vpd $(obj)/stage0.init
 #
 
 
-STAGE0_LIB_OBJ       = uart8250.o mem.o lar.o delay.o vtxprintf.o \
-		       vsprintf.o console.o string.o $(DECOMPRESSORS)
-STAGE0_ARCH_X86_OBJ  = stage1.o serial.o speaker.o \
-		       udelay_io.o mc146818rtc.o post_code.o \
-			pci_ops_conf1.o resourcemap.o
+STAGE0_LIB_SRC       = uart8250.c mem.c lar.c delay.c vtxprintf.c \
+		       vsprintf.c console.c string.c $(DECOMPRESSORS)
+STAGE0_ARCH_X86_SRC  = stage1.c serial.c speaker.c \
+		       udelay_io.c mc146818rtc.c post_code.c \
+			pci_ops_conf1.c resourcemap.c
 
 ifeq ($(CONFIG_PAYLOAD_ELF_LOADER),y)
-STAGE0_LIB_OBJ      += elfboot.o
-STAGE0_ARCH_X86_OBJ += archelfboot.o
+STAGE0_LIB_SRC      += elfboot.c
+STAGE0_ARCH_X86_SRC += archelfboot.c
 endif
 
 ifeq ($(CONFIG_CPU_I586),y)
@@ -114,12 +115,12 @@ ifeq ($(CONFIG_CPU_I586),y)
 else
 ifeq ($(CONFIG_CPU_AMD_GEODELX),y)
 	STAGE0_CAR_OBJ = geodelx/stage0.o
-	STAGE0_ARCH_X86_OBJ += geodelx/stage1.o
-	STAGE0_ARCH_X86_OBJ += ../../northbridge/amd/geodelx/geodelxinit.o
+	STAGE0_ARCH_X86_SRC += geodelx/stage1.c
+	STAGE0_ARCH_X86_SRC += ../../northbridge/amd/geodelx/geodelxinit.c
 else
 ifeq ($(CONFIG_CPU_AMD_K8),y)
 	STAGE0_CAR_OBJ = amd/stage0.o
-	STAGE0_ARCH_X86_OBJ += amd/k8/stage1.o
+	STAGE0_ARCH_X86_SRC += amd/k8/stage1.c
 endif
 endif
 endif
@@ -130,10 +131,12 @@ else
 	PARSEELF = -e
 endif
 
-STAGE0_OBJ := $(patsubst %,$(obj)/lib/%,$(STAGE0_LIB_OBJ)) \
-	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_ARCH_X86_OBJ)) \
-	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ)) \
-	      $(STAGE0_MAINBOARD_OBJ) $(STAGE0_CHIPSET_OBJ)
+STAGE0_SRC := $(patsubst %,$(src)/lib/%,$(STAGE0_LIB_SRC)) \
+	      $(patsubst %,$(src)/arch/x86/%,$(STAGE0_ARCH_X86_SRC)) \
+	      $(STAGE0_MAINBOARD_SRC) $(STAGE0_CHIPSET_SRC)
+
+STAGE0_OBJ := $(patsubst $(src)/%.c,$(obj)/%.o,$(STAGE0_SRC)) \
+	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ))
 
 $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 	$(Q)# We need to be careful. If stage0.o gets bigger than
@@ -182,7 +185,7 @@ ifeq ($(CONFIG_PIRQ_TABLE),y)
 STAGE2_ARCH_X86_SRC += pirq_routing.c
 endif
 
-STAGE2_DYNAMIC_OBJ   = statictree.o
+STAGE2_DYNAMIC_SRC   = $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c
 
 STAGE2_SRC := $(patsubst %,$(src)/lib/%,$(STAGE2_LIB_SRC)) \
 	      $(patsubst %,$(src)/arch/x86/%,$(STAGE2_ARCH_X86_SRC)) \
@@ -195,7 +198,7 @@ STAGE2_OBJ := $(patsubst $(src)/%.c,$(obj)/%.o,$(STAGE2_SRC))
 
 # This one is special because the static tree object ends up in the mainboard
 # dir of the object tree.
-STAGE2_OBJ += $(patsubst %,$(obj)/mainboard/$(MAINBOARDDIR)/%,$(STAGE2_DYNAMIC_OBJ))
+STAGE2_OBJ += $(patsubst $(obj)/%.c,$(obj)/%.o,$(STAGE2_DYNAMIC_SRC))
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN),y)
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)

@@ -27,6 +27,6 @@ ifeq ($(CONFIG_PIRQ_TABLE),y)
 STAGE2_CHIPSET_SRC += $(src)/southbridge/amd/cs5536/irq_tables.c
 endif
 
-STAGE0_CHIPSET_OBJ += $(obj)/southbridge/amd/cs5536/stage1.o
+STAGE0_CHIPSET_SRC += $(src)/southbridge/amd/cs5536/stage1.c
 
 endif

@@ -90,7 +90,7 @@ int get_option(void *dest, char *name)
 	for (   cmos_entry = (struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);
 		cmos_entry->tag == CB_TAG_OPTION;
 		cmos_entry = (struct cb_cmos_entries*)((unsigned char *)cmos_entry + cmos_entry->size)) {
-		if (memcmp(cmos_entry->name, name, len))
+		if (memcmp((const char*)cmos_entry->name, name, len))
 			continue;
 		if(get_cmos_value(cmos_entry->bit, cmos_entry->length, dest))
 			return 1;

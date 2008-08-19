@@ -39,7 +39,7 @@ struct sysinfo_t {
 
 	int n_memranges;
 
-	struct {
+	struct memrange {
 		unsigned long long base;
 		unsigned long long size;
 	} memrange[SYSINFO_MAX_MEM_RANGES];

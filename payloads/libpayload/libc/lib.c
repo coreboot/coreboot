@@ -101,3 +101,15 @@ u8 hex2bin(u8 h)
 	        ('A' <= h && h <= 'F') ? (h - 'A' + 10) : \
 	        ('a' <= h && h <= 'f') ? (h - 'a' + 10) : 0);
 }
+
+/**
+ * Enters HALT state, after printing msg
+ *
+ * @param msg message to print
+ */
+void fatal(const char *msg)
+{
+	printf("%s",msg);
+	halt();
+}
+

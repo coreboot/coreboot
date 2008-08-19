@@ -298,5 +298,10 @@ void delay(unsigned int n);
 /* i386/util.S */
 #define abort() halt()
 void halt(void) __attribute__ ((noreturn));
+void fatal(const char* msg) __attribute__ ((noreturn));
+
+/* libc/readline.c */
+char * readline(const char * prompt);
+int getline(char *buffer, int len)
 
 #endif

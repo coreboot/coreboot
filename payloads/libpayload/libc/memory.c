@@ -43,59 +43,41 @@ void *memset(void *s, int c, size_t n)
 	return s;
 }
 
-struct along {
-	unsigned long n;
-} __attribute__ ((packed));
-
-static void *unaligned_memcpy(void *dst, const void *src, size_t n)
-{
-	int i, j;
-	struct along *adst = dst;
-	const struct along *asrc = src;
-
-	for (i = 0; i < n / sizeof(unsigned long); i++)
-		adst[i].n = asrc[i].n;
-
-	for (j = 0; j < n % sizeof(unsigned long); j++)
-		((unsigned char *)(((unsigned long *)dst) + i))[j] =
-		    ((unsigned char *)(((unsigned long *)src) + i))[j];
-
-	return (char *)src;
-}
-
 void *memcpy(void *dst, const void *src, size_t n)
 {
-	int i, j;
+	int i;
 
-	if (((long)dst & (sizeof(long) - 1))
-	    || ((long)src & (sizeof(long) - 1)))
-		return unaligned_memcpy(dst, src, n);
+	for(i = 0; i < n % sizeof(unsigned long); i++)
+		((unsigned char *) dst)[i] = ((unsigned char *) src)[i];
 
-	for (i = 0; i < n / sizeof(unsigned long); i++)
-		((unsigned long *)dst)[i] = ((unsigned long *)src)[i];
+	n -= i;
+	src += i;
+	dst += i;
 
-	for (j = 0; j < n % sizeof(unsigned long); j++)
-		((unsigned char *)(((unsigned long *)dst) + i))[j] =
-		    ((unsigned char *)(((unsigned long *)src) + i))[j];
+	for(i = 0; i < n / sizeof(unsigned long); i++)
+		((unsigned long *) dst)[i] = ((unsigned long *) src)[i];
 
-	return (char *)src;
+	return dst;
 }
 
 void *memmove(void *dst, const void *src, size_t n)
 {
-	int i, j;
+	int i;
+	unsigned long offs;
 
 	if (src > dst)
 		return memcpy(dst, src, n);
 
-	for (j = (n % sizeof(unsigned long)) - 1; j >= 0; j--)
-		((unsigned char *)((unsigned long *)dst))[j] =
-		    ((unsigned char *)((unsigned long *)src))[j];
+	offs = n - (n % sizeof(unsigned long));
+
+	for (i = (n % sizeof(unsigned long)) - 1; i >= 0; i--)
+		((unsigned char *)dst)[i + offs] = 
+			((unsigned char *)src)[i + offs];
 
 	for (i = n / sizeof(unsigned long) - 1; i >= 0; i--)
 		((unsigned long *)dst)[i] = ((unsigned long *)src)[i];
 
-	return (char *)src;
+	return dst;
 }
 
 /**

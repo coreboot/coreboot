@@ -30,17 +30,12 @@
 #ifndef _ARCH_ENDIAN_H
 #define _ARCH_ENDIAN_H
 
-static u32 ntohl(u32 in)
-{
-	return ((in & 0xFF) << 24) | ((in & 0xFF00) << 8) |
-		((in & 0xFF0000) >> 8) | ((in & 0xFF000000) >> 24);
-}
+#include <arch/types.h>
 
-static u64 ntohll(u64 in)
-{
-	u32 h = in >> 32;
-	u32 l = in & 0xFFFFFFFF;
+#define ntohw(in) ((( (in) & 0xFF) << 8) | (( (in) & 0xFF00) >> 8))
 
-	return (((u64) ntohl(l) << 32) | ((u64) ntohl(h)));
-}
+#define ntohl(in) ((( (in) & 0xFF) << 24) | (( (in) & 0xFF00) << 8) | \
+		(( (in) & 0xFF0000) >> 8) | (( (in) & 0xFF000000) >> 24))
+
+#define ntohll(in) (((u64) ntohl( (in) & 0xFFFFFFFF) << 32) | ((u64) ntohl( (in) >> 32))) 
 #endif

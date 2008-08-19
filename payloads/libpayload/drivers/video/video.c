@@ -141,6 +141,26 @@ void video_console_putchar(unsigned int ch)
 	video_console_fixup_cursor();
 }
 
+void video_console_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en)
+{
+	*x=0;
+	*y=0;
+	*en=0;
+
+	if (console->get_cursor)
+		console->get_cursor(x, y, en);
+
+	*x = cursorx;
+	*y = cursory;
+}
+
+void video_console_set_cursor(unsigned int x, unsigned int y)
+{
+	cursorx = x;
+	cursory = y;
+	video_console_fixup_cursor();
+}
+
 int video_console_init(void)
 {
 		int i;

@@ -120,6 +120,11 @@ void video_console_putchar(unsigned int ch);
 void video_console_putc(u8 row, u8 col, unsigned int ch);
 void video_console_clear(void);
 void video_console_cursor_enable(int state);
+void video_console_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en);
+void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
+
+/* drivers/option.c */
+int get_option(void *dest, char *name);
 
 /* libc/console.c */
 void console_init(void);

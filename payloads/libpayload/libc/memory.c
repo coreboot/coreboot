@@ -46,6 +46,7 @@ void *memset(void *s, int c, size_t n)
 void *memcpy(void *dst, const void *src, size_t n)
 {
 	int i;
+	void *ret = dst;
 
 	for(i = 0; i < n % sizeof(unsigned long); i++)
 		((unsigned char *) dst)[i] = ((unsigned char *) src)[i];
@@ -57,7 +58,7 @@ void *memcpy(void *dst, const void *src, size_t n)
 	for(i = 0; i < n / sizeof(unsigned long); i++)
 		((unsigned long *) dst)[i] = ((unsigned long *) src)[i];
 
-	return dst;
+	return ret;
 }
 
 void *memmove(void *dst, const void *src, size_t n)

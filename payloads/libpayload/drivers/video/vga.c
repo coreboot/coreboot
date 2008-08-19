@@ -36,7 +36,7 @@
 #define CRTC_DATA       0x3d5
 
 #define VIDEO(_r, _c)\
-  ((u16 *) (0xB8000 + ((_r) * (VIDEO_COLS * 2)) + ((_c) * 2)))
+  ((u16 *) (phys_to_virt(0xB8000) + ((_r) * (VIDEO_COLS * 2)) + ((_c) * 2)))
 
 static u8 crtc_read(u8 index)
 {

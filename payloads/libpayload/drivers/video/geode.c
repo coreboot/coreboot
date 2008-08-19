@@ -87,7 +87,10 @@ static unsigned long vgaddr;
 static unsigned long gpaddr;
 static unsigned long fbaddr;
 
-#define FB ((unsigned char *) fbaddr)
+#define DC (phys_to_virt(dcaddr))
+#define VG (phys_to_virt(vgaddr))
+#define GP (phys_to_virt(gpaddr))
+#define FB ((unsigned char *) phys_to_virt(fbaddr))
 
 static void init_video_mode(void)
 {
@@ -119,32 +122,32 @@ static void init_video_mode(void)
 	lo &= ~0x38;
 	wrmsr(0x48002001, lo, hi);
 
-	writel(0x4758, dcaddr + 0x00);
+	writel(0x4758, DC + 0x00);
 
-	val = readl(dcaddr + 0x00);
+	val = readl(DC + 0x00);
 
-	writel(0, dcaddr + 0x10);
-	writel(0, dcaddr + 0x14);
-	writel(0, dcaddr + 0x18);
+	writel(0, DC + 0x10);
+	writel(0, DC + 0x14);
+	writel(0, DC + 0x18);
 
 	/* Set up the default scaling */
 
-	val = readl(dcaddr + 0xD4);
+	val = readl(DC + 0xD4);
 
-	writel((0x4000 << 16) | 0x4000, dcaddr + 0x90);
-	writel(0, dcaddr + 0x94);
-	writel(val & ~0xf3040000, dcaddr + 0xD4);
+	writel((0x4000 << 16) | 0x4000, DC + 0x90);
+	writel(0, DC + 0x94);
+	writel(val & ~0xf3040000, DC + 0xD4);
 
 	/* Set up the compression (or lack thereof) */
-	writel(vga_mode.hactive * vga_mode.vactive | 0x01, dcaddr + 0x2C);
+	writel(vga_mode.hactive * vga_mode.vactive | 0x01, DC + 0x2C);
 
-	val = readl(dcaddr + 0x88);
-	writel(val & ~0xC00, dcaddr + 0x88);
-	writel(0, dcaddr + 0x8C);
+	val = readl(DC + 0x88);
+	writel(val & ~0xC00, DC + 0x88);
+	writel(0, DC + 0x8C);
 
 	/* Set the pitch */
-	writel(vga_mode.hactive >> 3, dcaddr + 0x34);
-	writel((vga_mode.hactive + 7) >> 3, dcaddr + 0x30);
+	writel(vga_mode.hactive >> 3, DC + 0x34);
+	writel((vga_mode.hactive + 7) >> 3, DC + 0x30);
 
 	/* Set up default watermarks */
 
@@ -154,50 +157,50 @@ static void init_video_mode(void)
 	/* Write the timings */
 
 	writel((vga_mode.hactive - 1) | ((vga_mode.htotal - 1) << 16),
-	       dcaddr + 0x40);
+	       DC + 0x40);
 
 	writel((vga_mode.hblankstart - 1) | ((vga_mode.hblankend - 1) << 16),
-	       dcaddr + 0x44);
+	       DC + 0x44);
 
 	writel((vga_mode.hsyncstart - 1) | ((vga_mode.hsyncend - 1) << 16),
-	       dcaddr + 0x48);
+	       DC + 0x48);
 
 	writel((vga_mode.vactive - 1) | ((vga_mode.vtotal - 1) << 16),
-	       dcaddr + 0x50);
+	       DC + 0x50);
 
 	writel((vga_mode.vblankstart - 1) | ((vga_mode.vblankend - 1) << 16),
-	       dcaddr + 0x54);
+	       DC + 0x54);
 
 	writel((vga_mode.vsyncstart - 1) | ((vga_mode.vsyncend - 1) << 16),
-	       dcaddr + 0x58);
+	       DC + 0x58);
 
 	writel(((vga_mode.hactive - 1) << 16) | (vga_mode.vactive - 1),
-	       dcaddr + 0x5C);
+	       DC + 0x5C);
 
 
 	/* Write the VG configuration */
 
-	writel(0x290000F | vga_mode.synccfg, vgaddr + 0x08);
+	writel(0x290000F | vga_mode.synccfg, VG + 0x08);
 
 	/* Turn on the dacs */
 
-	val = readl(vgaddr + 0x50);
-	writel((val & ~0xC00) | 0x01, vgaddr + 0x50);
+	val = readl(VG + 0x50);
+	writel((val & ~0xC00) | 0x01, VG + 0x50);
 
 	/* Set the framebuffer base */
-	writel(fbaddr, dcaddr + 0x84);
+	writel(fbaddr, DC + 0x84);
 
 	/* Write the final configuration */
 
-	writel(0xB000059, dcaddr + 0x08);
-	writel(0, dcaddr + 0x0C);
-	writel(0x2B601, dcaddr + 0x04);
+	writel(0xB000059, DC + 0x08);
+	writel(0, DC + 0x0C);
+	writel(0x2B601, DC + 0x04);
 }
 
 static void geode_set_palette(int entry, unsigned int color)
 {
-	writel(entry, dcaddr + 0x70);
-	writel(color, dcaddr + 0x74);
+	writel(entry, DC + 0x70);
+	writel(color, DC + 0x74);
 }
 
 static void geode_scroll_up(void)

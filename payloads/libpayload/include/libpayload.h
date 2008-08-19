@@ -33,6 +33,7 @@
 #include <stddef.h>
 #include <arch/types.h>
 #include <arch/io.h>
+#include <arch/virtual.h>
 #include <sysinfo.h>
 #include <stdarg.h>
 #include <lar.h>

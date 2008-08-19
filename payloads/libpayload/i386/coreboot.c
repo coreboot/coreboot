@@ -152,10 +152,10 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header((void *)0x0, 0x1000, info);
+	int ret = cb_parse_header(phys_to_virt(0x00000000), 0x1000, info);
 
 	if (ret != 1)
-		ret = cb_parse_header((void *)0xf0000, 0x1000, info);
+		ret = cb_parse_header(phys_to_virt(0x000f0000), 0x1000, info);
 
 	return (ret == 1) ? 0 : -1;
 }

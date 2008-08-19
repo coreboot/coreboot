@@ -548,6 +548,51 @@ static int board_biostar_p4m80_m4(const char *name)
 }
 
 /**
+ * Winbond W83697HF Super I/O + VIA VT8235 southbridge
+ *
+ * Suited for:
+ *   - MSI KT4V and KT4V-L: AMD K7 + VIA KT400 + VT8235
+ *   - MSI KT3 Ultra2: AMD K7 + VIA KT333 + VT8235
+ */
+static int board_msi_kt4v(const char *name)
+{
+	struct pci_dev *dev;
+	uint8_t val;
+	uint32_t val2;
+	uint16_t port;
+
+	dev = pci_dev_find(0x1106, 0x3177);	/* VT8235 ISA bridge */
+	if (!dev) {
+		fprintf(stderr, "\nERROR: VT823x ISA bridge not found.\n");
+		return -1;
+	}
+
+	val = pci_read_byte(dev, 0x59);
+	val &= 0x0c;
+	pci_write_byte(dev, 0x59, val);
+
+	/* We need the I/O Base Address for this board's flash enable. */
+	port = pci_read_word(dev, 0x88) & 0xff80;
+
+	/* Starting at 'I/O Base + 0x4c' is the GPO Port Output Value.
+	 * We must assert GPO12 for our enable, which is in 0x4d.
+	 */
+	val2 = INB(port + 0x4d);
+	val2 |= 0x10;
+	OUTB(val2, port + 0x4d);
+
+	/* Raise ROM MEMW# line on Winbond W83697 Super I/O. */
+	w836xx_ext_enter(0x2e);
+	if (!(wbsio_read(0x2e, 0x24) & 0x02)) {	/* Flash ROM enabled? */
+		/* Enable MEMW# and set ROM size select to max. (4M). */
+		wbsio_mask(0x2e, 0x24, 0x28, 0x28);
+	}
+	w836xx_ext_leave(0x2e);
+
+	return 0;
+}
+
+/**
  * We use 2 sets of IDs here, you're free to choose which is which. This
  * is to provide a very high degree of certainty when matching a board on
  * the basis of subsystem/card IDs. As not every vendor handles
@@ -581,6 +626,8 @@ struct board_pciid_enable {
 };
 
 struct board_pciid_enable board_pciid_enables[] = {
+	{0x1106, 0x0571, 0x1462, 0x7120, 0x0000, 0x0000, 0x0000, 0x0000,
+	 "msi", "kt4v", "MSI KT4V", board_msi_kt4v},
 	{0x8086, 0x1a30, 0x1043, 0x8070, 0x8086, 0x244b, 0x1043, 0x8028,
 	 NULL, NULL, "ASUS P4B266", ich2_gpio22_raise},
 	{0x10de, 0x0360, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

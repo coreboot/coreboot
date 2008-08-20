@@ -25,7 +25,7 @@
 #include <amd_geodelx.h>
 #include "geodelink.h"
 
-static struct msrinit clock_gating_default[] = {
+static const struct msrinit clock_gating_default[] = {
 	{GLIU0_GLD_MSR_PM,	{.hi = 0x00,.lo = 0x0005}},
 	{MC_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0001}},
 	{VG_GLD_MSR_PM,		{.hi = 0x00,.lo = 0x0015}},
@@ -41,7 +41,7 @@ static struct msrinit clock_gating_default[] = {
 };
 
 /** GeodeLink priority table. */
-static struct msrinit geode_link_priority_table[] = {
+static const struct msrinit geode_link_priority_table[] = {
 	{CPU_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0220}},
 	{DF_GLD_MSR_MASTER_CONF,	{.hi = 0x00,.lo = 0x0000}},
 	{VG_GLD_MSR_CONFIG,		{.hi = 0x00,.lo = 0x0720}},
@@ -417,7 +417,7 @@ static void GLPCI_init(void)
 static void clock_gating_init(void)
 {
 	struct msr msr;
-	struct msrinit *gating = clock_gating_default;
+	const struct msrinit *gating = clock_gating_default;
 
 	for (; gating->msrnum != 0xffffffff; gating++) {
 		msr = rdmsr(gating->msrnum);
@@ -433,7 +433,7 @@ static void clock_gating_init(void)
 static void geode_link_priority(void)
 {
 	struct msr msr;
-	struct msrinit *prio = geode_link_priority_table;
+	const struct msrinit *prio = geode_link_priority_table;
 
 	for (; prio->msrnum != 0xffffffff; prio++) {
 		msr = rdmsr(prio->msrnum);

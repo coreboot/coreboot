@@ -27,7 +27,7 @@ PREFIX  = /usr/local
 CFLAGS  = -O2 -g -Wall -W
 LDFLAGS = -lpci -lz 
 
-OBJS = inteltool.o
+OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o
 
 all: pciutils dep $(PROGRAM)
 

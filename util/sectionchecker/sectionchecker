@@ -1,0 +1,58 @@
+#!/bin/bash
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2008 Carl-Daniel Hailfinger
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+#
+# This program checks whether a given list of files ($3+) has any writable
+# and allocatable non-empty sections. If so, the name of the file, the name of
+# the section and the symbols in that section are printed and an error is
+# returned.
+#
+# This is extremely useful for stage1 and initram correctness because
+# the .data* and .bss sections are silently dropped. All accesses there
+# would wreak havoc (silent discard of writes or silent corruption of
+# unspecified memory or cache).
+#
+# The string parsing used here heavily depends on the textual form of
+# GNU objdump output and on the instruction architecture of the files.
+
+LANG=C
+OBJDUMP=$1
+READELF=$2
+shift 2
+for a in $*; do
+	# Look for sections which have WRITE and ALLOC flags set.
+	$READELF -St $a|
+		grep -B2 "WRITE.*ALLOC"|
+		grep -B1 "^ \+[[:alnum:]]\+ \+[0-9a-f]\+ \+[0-9a-f]\+ \+0*[1-9a-f]"|
+		grep "^ \+\[ *[0-9]\+"|
+		cut -f 2 -d"]"|
+		sed "s/^[[:blank:]]*//"|
+		while read b; do
+			echo -n "$a: section $b: "
+			$OBJDUMP -t --section=$b $a|
+				grep -i "^[0-9a-f]\{8\}"|
+				grep -v "00000000 [^ ]\+$"|
+				sed "s/.* //"|
+				xargs echo
+		done
+done|
+	grep ""
+
+# Invert the result
+test $? -ne 0

@@ -52,7 +52,7 @@ void dumplxmsrs(void)
         	MC_CF_PMCTR,
 		GLCP_SYS_RSTPLL
 	};
-	const static char *msrnames[] = {
+	const static const char *msrnames[] = {
         	"MC_CF07_DATA", 
         	"MC_CF8F_DATA", 
         	"MC_CF1017_DATA", 

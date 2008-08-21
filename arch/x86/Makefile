@@ -23,7 +23,7 @@
 ifeq ($(CONFIG_ARCH_X86),y)
 
 INITCFLAGS := $(CFLAGS) -I$(src)/include/arch/x86 -I$(src)/include \
-		-I$(obj) -fno-builtin  
+		-I$(obj) -I$(src)/mainboard/$(MAINBOARDDIR)/-fno-builtin  
 
 SILENT := >/dev/null 2>&1
 
@@ -142,6 +142,10 @@ $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 	$(Q)# We need to be careful. If stage0.o gets bigger than
 	$(Q)# 0x4000 - 0x100, we will end up with a 4 gig file.
 	$(Q)# I wonder if that behavior is on purpose.
+
+	$(Q)# .data and .bss must be empty because they aren't handled
+	$(Q)printf "  CHECK   stage0 (non-empty writable/allocatable sections)\n"
+	$(Q)./util/sectionchecker/sectionchecker objdump readelf $(STAGE0_OBJ)
 
 	$(Q)# Note: we invoke gcc (instead of ld directly) here, as we hit
 	$(Q)# strange problems in the past. It seems that only gcc knows how
@@ -264,6 +268,11 @@ $(obj)/arch/x86/amd/stage0.o: $(src)/arch/x86/amd/stage0.S
 $(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_SRC)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
 	$(Q)$(CC) $(INITCFLAGS) -fPIE -c -combine $(INITRAM_SRC) -o $(obj)/coreboot.initram_partiallylinked.o
+
+	$(Q)# .data and .bss must be empty because they aren't handled
+	$(Q)printf "  CHECK   initram (non-empty writable/allocatable sections)\n"
+	$(Q)./util/sectionchecker/sectionchecker objdump readelf $(obj)/coreboot.initram_partiallylinked.o
+
 	$(Q)printf "  WRAP    $(subst $(shell pwd)/,,$(@)) (PIC->non-PIC)\n"
 	$(Q)$(NM) --undefined-only $(obj)/coreboot.initram_partiallylinked.o |\
 		grep -v _GLOBAL_OFFSET_TABLE_ | grep " U " | sed "s/^ *U //" |\

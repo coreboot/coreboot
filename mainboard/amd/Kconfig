@@ -52,9 +52,7 @@ config BOARD_AMD_SERENGETI
 	select OPTION_TABLE
 	select CPU_AMD_K8
 	select NORTHBRIDGE_AMD_K8
-	select SOUTHBRIDGE_AMD_AMD8111
 	select IOAPIC
-	select APIC_ID_OFFSET
 	help
 	  AMD Serengeti
 

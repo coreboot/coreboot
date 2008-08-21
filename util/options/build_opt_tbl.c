@@ -237,7 +237,8 @@ int main(int argc, char **argv)
 	int enum_length;
 	int len;
 	char buf[16];
-
+	char *preamble = "const unsigned char option_table[] = {";
+	char *postamble = "};\n";
         for(i=1;i<argc;i++) {
                 if(argv[i][0]!='-') {
                         display_usage();
@@ -503,7 +504,7 @@ int main(int argc, char **argv)
 		}
 	}
 	/* write the header */
-        if(!fwrite("unsigned char option_table[] = {",1,32,fp)) {
+        if(!fwrite(preamble,1,strlen(preamble),fp)) {
                 fprintf(stderr, "Error - Could not write image file\n");
                 fclose(fp);
                 exit(1);
@@ -517,7 +518,7 @@ int main(int argc, char **argv)
 	/* write the end */
 	sprintf(buf,"0x%02x",cmos_table[i]);
 	fwrite(buf,1,4,fp);
-        if(!fwrite("};\n",1,3,fp)) {
+        if(!fwrite(postamble,1,strlen(postamble),fp)) {
                 fprintf(stderr, "Error - Could not write image file\n");
                 fclose(fp);
                 exit(1);

@@ -35,6 +35,28 @@ static const u8 num_col_addr[] = {
 
 u8 spd_read_byte(u16 device, u8 address);
 
+const static unsigned long msrs[] = {
+	MC_CF07_DATA, 
+	MC_CF8F_DATA, 
+	MC_CF1017_DATA, 
+	GLCP_DELAY_CONTROLS, 
+	MC_CFCLK_DBUG, 
+	MC_CF_PMCTR,
+	GLCP_SYS_RSTPLL
+};
+
+/* If you ever change any of the strings below, make sure the char array size
+ * is the length of the longest string +1
+ */
+const static char msrnames[][20] = {
+	"MC_CF07_DATA", 
+	"MC_CF8F_DATA", 
+	"MC_CF1017_DATA", 
+	"GLCP_DELAY_CONTROLS", 
+	"MC_CFCLK_DBUG", 
+	"MC_CF_PMCTR",
+	"PLL reg"
+};
 
 /** 
  * Dump key MSR values for RAM init. You can call this function and then use it to 
@@ -43,24 +65,6 @@ u8 spd_read_byte(u16 device, u8 address);
  */
 void dumplxmsrs(void)
 {
-	const static unsigned long msrs[] = {
-        	MC_CF07_DATA, 
-        	MC_CF8F_DATA, 
-        	MC_CF1017_DATA, 
-        	GLCP_DELAY_CONTROLS, 
-        	MC_CFCLK_DBUG, 
-        	MC_CF_PMCTR,
-		GLCP_SYS_RSTPLL
-	};
-	const static const char *msrnames[] = {
-        	"MC_CF07_DATA", 
-        	"MC_CF8F_DATA", 
-        	"MC_CF1017_DATA", 
-        	"GLCP_DELAY_CONTROLS", 
-        	"MC_CFCLK_DBUG", 
-        	"MC_CF_PMCTR",
-		"PLL reg"
-	};
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(msrs); i++) {

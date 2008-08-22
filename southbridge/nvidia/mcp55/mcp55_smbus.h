@@ -39,8 +39,7 @@
 
 static inline void smbus_delay(void)
 {
-	/* let's hope this is not optimized out */
-	(void) inb(0x80);
+	udelay(1);
 }
 
 int do_smbus_recv_byte(u16 smbus_io_base, u8 device);

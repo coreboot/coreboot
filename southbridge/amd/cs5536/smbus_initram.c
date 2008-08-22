@@ -69,7 +69,7 @@ static void smbus_init(void)
  */
 static void smbus_delay(void)
 {
-	/* inb(0x80); */
+	/* udelay(1); */
 }
 
 /**

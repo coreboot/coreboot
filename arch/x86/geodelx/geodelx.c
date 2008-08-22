@@ -76,7 +76,7 @@ void system_preinit(void)
  * Bugtool #465 and #609 PCI cache deadlock.
  * TODO: URL?
  *
- * There is also fix code in cache and PCI functions. This bug is very is
+ * There is also fix code in cache and PCI functions. This bug is very
  * pervasive.
  */
 static void pci_deadlock(void)

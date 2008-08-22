@@ -63,6 +63,8 @@ case  "$ARCH" in
 	searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld) -b elf32-i386 -melf_i386"
 	searchgnu nm >/dev/null && echo "NM_x86 := $(searchgnu nm)"
 	searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
+	searchgnu objdump >/dev/null && echo "OBJDUMP_x86 := $(searchgnu objdump)"
+	searchgnu readelf >/dev/null && echo "READELF_x86 := $(searchgnu readelf)"
 	;;
 "x86")
 	if [ "$OS" != "Darwin" ]; then
@@ -74,6 +76,8 @@ case  "$ARCH" in
 		searchgnu ld >/dev/null && echo "LD_x86 := $(searchgnu ld)"
 		searchgnu nm >/dev/null && echo "NM_x86 := $(searchgnu nm)"
 		searchgnu objcopy >/dev/null && echo "OBJCOPY_x86 := $(searchgnu objcopy)"
+		searchgnu objdump >/dev/null && echo "OBJDUMP_x86 := $(searchgnu objdump)"
+		searchgnu readelf >/dev/null && echo "READELF_x86 := $(searchgnu readelf)"
 	else
 		CC=`find /opt/local/bin/ -name "i386-elf-gcc-*"`
 		if [ "$CC" == "" ]; then
@@ -86,6 +90,8 @@ case  "$ARCH" in
 		echo "LD_x86 := i386-elf-ld"
 		echo "NM_x86 := i386-elf-nm"
 		echo "OBJCOPY_x86 := i386-elf-objcopy"
+		echo "OBJDUMP_x86 := i386-elf-objdump"
+		echo "READELF_x86 := i386-elf-readelf"
 		echo "INTLCFLAGS  := -I/opt/local/include"
 		echo "INTLLIBS    := -L/opt/local/lib -lintl"
 	fi
@@ -99,6 +105,8 @@ case  "$ARCH" in
 	echo "LD_x86 := i386-linux-ld"
 	echo "NM_x86 := i386-linux-nm"
 	echo "OBJCOPY_x86 := i386-linux-objcopy"
+	echo "OBJDUMP_x86 := i386-linux-objdump"
+	echo "READELF_x86 := i386-elf-readelf"
 	;;
 esac
 

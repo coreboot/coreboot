@@ -145,7 +145,7 @@ $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 
 	$(Q)# .data and .bss must be empty because they aren't handled
 	$(Q)printf "  CHECK   stage0 (non-empty writable/allocatable sections)\n"
-	$(Q)./util/sectionchecker/sectionchecker objdump readelf $(STAGE0_OBJ)
+	$(Q)./util/sectionchecker/sectionchecker $(OBJDUMP) $(READELF) $(STAGE0_OBJ)
 
 	$(Q)# Note: we invoke gcc (instead of ld directly) here, as we hit
 	$(Q)# strange problems in the past. It seems that only gcc knows how
@@ -271,7 +271,7 @@ $(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/s
 
 	$(Q)# .data and .bss must be empty because they aren't handled
 	$(Q)printf "  CHECK   initram (non-empty writable/allocatable sections)\n"
-	$(Q)./util/sectionchecker/sectionchecker objdump readelf $(obj)/coreboot.initram_partiallylinked.o
+	$(Q)./util/sectionchecker/sectionchecker $(OBJDUMP) $(READELF) $(obj)/coreboot.initram_partiallylinked.o
 
 	$(Q)printf "  WRAP    $(subst $(shell pwd)/,,$(@)) (PIC->non-PIC)\n"
 	$(Q)$(NM) --undefined-only $(obj)/coreboot.initram_partiallylinked.o |\

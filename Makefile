@@ -96,6 +96,8 @@ AS := $(AS_$(ARCH))
 LD := $(LD_$(ARCH))
 NM := $(NM_$(ARCH))
 OBJCOPY := $(OBJCOPY_$(ARCH))
+OBJDUMP := $(OBJDUMP_$(ARCH))
+READELF := $(READELF_$(ARCH))
 AR := $(AR_$(ARCH))
 
 CFLAGS += $(CFLAGS_$(ARCH))

@@ -950,12 +950,19 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 /** 
  * Scan a PCI bus.
  *
- * Determine the existence of a given PCI device.
+ * Determine the existence of a given PCI device. Allocate a new struct device
+ * if dev==NULL was passed in and the device exists in hardware.
  *
+ * @param dev Pointer to the device structure if it already is in the device
+ *         tree, i.e. was specified in the dts. It may not exist on hardware,
+ *         however. Looking for hardware not yet in the device tree has this
+ *         parameter as NULL.
  * @param bus Pointer to the bus structure.
  * @param devfn A device/function number.
- * @return The device structure for the device (if found)
- *         or the NULL if no device is found.
+ * @return The device structure for the device if it exists in hardware
+ *         or the passed in device structure with enabled=0 if the device
+ *         does not exist in hardware and only in the tree
+ *         or NULL if no device is found and dev==NULL was passed in.
  */
 struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 			     unsigned int devfn)

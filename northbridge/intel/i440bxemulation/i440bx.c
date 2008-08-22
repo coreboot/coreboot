@@ -44,7 +44,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include "i440bx.h"
-#include "statictree.h"
+#include <statictree.h>
 
 /* Here are the ops for 440BX as a PCI domain. */
 

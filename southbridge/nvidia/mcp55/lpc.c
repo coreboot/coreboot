@@ -109,7 +109,7 @@ static void setup_ioapic(unsigned long ioapic_base, int master)
 
 	l = (unsigned long *) ioapic_base;
 
-	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
+	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
 		l[4] = a->value_low;

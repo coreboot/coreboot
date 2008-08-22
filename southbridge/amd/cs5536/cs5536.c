@@ -417,7 +417,6 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb,
 	}
 }
 
-/* the /sizeof(u32) is to convert byte offsets into u32 offsets */
 #define HCCPARAMS		0x08
 #define IPREG04		0xA0
 #define USB_HCCPW_SET		(1 << 1)

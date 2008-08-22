@@ -1402,7 +1402,7 @@ long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_mask, str
 		}
 		device0 = ctrl->channel0[i];
 		device1 = ctrl->channel1[i];
-		for(j = 0; j < sizeof(addresses)/sizeof(addresses[0]); j++) {
+		for(j = 0; j < ARRAY_SIZE(addresses); j++) {
 			unsigned addr;
 			addr = addresses[j];
 			value0 = spd_read_byte(device0, addr);

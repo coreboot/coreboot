@@ -94,7 +94,7 @@ static void setup_ioapic(void)
 	ioapicregvalues[0].value_high = bsp_apicid<<(56-32);
 	printk(BIOS_DEBUG, "amd8111: ioapic bsp_apicid = %02x\n", bsp_apicid); 
 	
-	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
+	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
 		l[4] = a->value_low;

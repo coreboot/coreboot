@@ -360,23 +360,26 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb,
 		msr = rdmsr(MDD_LEG_IO);
 		msr.lo |= addr << 20;
 		wrmsr(MDD_LEG_IO, msr);
+		printk(BIOS_SPEW, "uarts_init: wrote COM2 address 0x%x\n", sb->com2_address);
 
 		/* Set the IRQ. */
 		msr = rdmsr(MDD_IRQM_YHIGH);
 		msr.lo |= sb->com2_irq << 28;
 		wrmsr(MDD_IRQM_YHIGH, msr);
+		printk(BIOS_SPEW, "uarts_init: set COM2 irq\n");
 
 		/* GPIO3 - UART2_RX */
 		/* Set: Output Enable (0x4) */
 		outl(GPIOL_3_SET, gpio_addr + GPIOL_OUTPUT_ENABLE);
-
+		printk(BIOS_SPEW, "uarts_init: set output enable\n");
 		/* Set: OUTAUX1 Select (0x10) */
 		outl(GPIOL_3_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
+		printk(BIOS_SPEW, "uarts_init: set OUTAUX1\n");
 
 		/* GPIO4 - UART2_TX */
 		/* Set: Input Enable (0x20) */
 		outl(GPIOL_4_SET, gpio_addr + GPIOL_INPUT_ENABLE);
-
+		printk(BIOS_SPEW, "uarts_init: set COM2 input enable\n");
 		/* Set: INAUX1 Select (0x34) */
 		/* this totally disables com2 for serial, leave it out until we can
 		 * figure it out
@@ -384,9 +387,10 @@ static void uarts_init(struct southbridge_amd_cs5536_dts_config *sb,
 //		outl(GPIOL_4_SET, gpio_addr + GPIOL_IN_AUX2_SELECT);
 //		printk(BIOS_SPEW, "uarts_init: set INAUX2 for COM2\n");
 
-		/* Set: GPIO 3 + 3 Pull Up (0x18) */
+		/* Set: GPIO 3 + 4 Pull Up (0x18) */
 		outl(GPIOL_3_SET | GPIOL_4_SET,
 		     gpio_addr + GPIOL_PULLUP_ENABLE);
+		printk(BIOS_SPEW, "uarts_init: set pullup COM2\n");
 
 		/* Enable COM2.
 		 *
@@ -664,6 +668,7 @@ static void southbridge_init(struct device *dev)
 	lpc_init(sb);
 	uarts_init(sb, dev);
 
+	printk(BIOS_SPEW, "cs5536: done uarts_init\n");
 	if (sb->enable_gpio_int_route) {
 		printk(BIOS_SPEW, "cs5536: call vr_write\n");
 		vr_write((VRC_MISCELLANEOUS << 8) + PCI_INT_AB,

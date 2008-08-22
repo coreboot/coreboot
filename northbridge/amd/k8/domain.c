@@ -166,6 +166,8 @@ static void k8_pci_domain_read_resources(struct device * dev)
 
 static void k8_pci_domain_set_resources(struct device * dev)
 {
+	struct hw_mem_hole_info get_hw_mem_hole_info(void);
+	void disable_hoist_memory(unsigned long hole_startk, int i);
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
 	struct resource *io, *mem1, *mem2;
 	struct resource *resource, *last;
@@ -325,7 +327,7 @@ static void k8_pci_domain_set_resources(struct device * dev)
 		}
 
 	
-		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu 
+		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08lx, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu 
 			
 		/* See if I need to split the region to accomodate pci memory space */
 		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {

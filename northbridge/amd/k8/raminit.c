@@ -27,6 +27,7 @@
 */
 
 #include <console.h>
+#include <string.h>
 #include <mtrr.h>
 #include <macros.h>
 #include <spd.h>
@@ -44,7 +45,9 @@
 
 #warning where to we define supported DIMM types
 #define DIMM_SUPPORT 0x0104
-#define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 1
+
+/* we won't support the buggy old chips */
+#undef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
 inline void print_raminit(const char *strval, u32 val)
 {
         printk(BIOS_DEBUG, "%s%08x\n", strval, val);
@@ -866,7 +869,7 @@ void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size *sz, unsi
 #if CPU_SOCKET_TYPE == SOCKET_L1
 		ClkDis0 = DTL_MemClkDis0;
 #else 
-	#if CPU_SOCKET_TYPE SOCKET_AM2
+	#if CPU_SOCKET_TYPE == SOCKET_AM2
 		ClkDis0 = DTL_MemClkDis0_AM2;
 	#endif
 #endif 
@@ -1595,7 +1598,7 @@ struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *ctrl, l
 
 	value = pci_conf1_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
-	read_option(&max_mem_clock, "max_mem_clock");
+	get_option(&max_mem_clock, "max_mem_clock");
 	bios_cycle_time = min_cycle_times[max_mem_clock];
 	if (bios_cycle_time > min_cycle_time) {
 		min_cycle_time = bios_cycle_time;
@@ -2379,15 +2382,15 @@ void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *meminfo
 #endif
 
         /* Program the Output Driver Compensation Control Registers (Function 2:Offset 0x9c, index 0, 0x20) */
-        pci_conf1_write_config32_index_wait(ctrl->f2, 0x98, 0, dword);
+        pci_write_config32_index_wait(ctrl->f2, 0x98, 0, dword);
 	if(meminfo->is_Width128) {	
-	        pci_conf1_write_config32_index_wait(ctrl->f2, 0x98, 0x20, dword);
+	        pci_write_config32_index_wait(ctrl->f2, 0x98, 0x20, dword);
 	}
 
         /* Program the Address Timing Control Registers (Function 2:Offset 0x9c, index 4, 0x24) */
-        pci_conf1_write_config32_index_wait(ctrl->f2, 0x98, 4, dwordx);
+        pci_write_config32_index_wait(ctrl->f2, 0x98, 4, dwordx);
 	if(meminfo->is_Width128) {
-	        pci_conf1_write_config32_index_wait(ctrl->f2, 0x98, 0x24, dwordx);
+	        pci_write_config32_index_wait(ctrl->f2, 0x98, 0x24, dwordx);
 	}
 
 }
@@ -2519,6 +2522,8 @@ void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info 
 	struct mem_param paramx;
 	struct mem_info *meminfo;
 	long dimm_mask;
+	void activate_spd_rom(const struct mem_controller *ctrl);
+	void hard_reset(void);
 #if 1
 	if (!sysinfo->ctrl_present[ctrl->node_id]) {
 		return;
@@ -2526,7 +2531,7 @@ void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info 
 #endif
 	meminfo = &sysinfo->meminfo[ctrl->node_id];
 
-	print_debug_addr("sdram_set_spd_registers: paramx :", &paramx);
+	printk(BIOS_DEBUG, "sdram_set_spd_registers: paramx :0x%x\n", paramx);
 	
 	activate_spd_rom(ctrl);
 	dimm_mask = spd_detect_dimms(ctrl);
@@ -2684,9 +2689,9 @@ void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
 {
 	int i;
-
-
-#if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
+	void dqs_timing(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo);
+	void memreset(int controllers, const struct mem_controller *ctrl);
+#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
         unsigned cpu_f0_f1[8];
 	/* FIXME: How about 32 node machine later? */
 	tsc_t tsc, tsc0[8];
@@ -2755,7 +2760,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 			pci_conf1_write_config32(ctrl[i].f3, MCA_NB_CONFIG, mnc);
 		}
 
-#if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
+#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
 	        cpu_f0_f1[i] = is_cpu_pre_f2_in_bsp(i);
 	        if(cpu_f0_f1[i]) {
 			//Rev F0/F1 workaround
@@ -2808,7 +2813,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 			dcm = pci_conf1_read_config32(ctrl[i].f2, DRAM_CTRL_MISC);
 		} while(((dcm & DCM_MemClrStatus) == 0) /* || ((dcm & DCM_DramEnabled) == 0)*/ );
 
-#if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
+#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
 		if(cpu_f0_f1[i]) {
 	                tsc= rdtsc();
 
@@ -2863,7 +2868,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 
 
 #if MEM_TRAIN_SEQ ==  0
-   #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
+   #ifdef
 	dqs_timing(controllers, ctrl, tsc0, sysinfo);
    #else
 	dqs_timing(controllers, ctrl, sysinfo);
@@ -2880,7 +2885,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
                 if(sysinfo->mem_trained[i]!=0x80) 
 			continue;
 
-                dqs_timing(i, &ctrl[i], sysinfo, 1);
+                dqs_timing(i, &ctrl[i], sysinfo);
 
    #if MEM_TRAIN_SEQ == 1
                 break; // only train the first node with ram

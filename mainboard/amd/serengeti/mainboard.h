@@ -22,3 +22,4 @@
  */
 
 #define CPU_SOCKET_TYPE SOCKET_AM2
+#define MEM_TRAIN_SEQ 1 /* for now */

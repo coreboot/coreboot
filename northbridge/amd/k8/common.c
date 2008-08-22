@@ -121,7 +121,7 @@ struct hw_mem_hole_info {
 	int node_id;
 };
 
-static struct hw_mem_hole_info get_hw_mem_hole_info(void)
+struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
 		struct hw_mem_hole_info mem_hole;
 		int i;
@@ -172,7 +172,8 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		return mem_hole;
 		
 }
-static void disable_hoist_memory(unsigned long hole_startk, int i)
+
+void disable_hoist_memory(unsigned long hole_startk, int i)
 {
         int ii;
         struct device * dev;

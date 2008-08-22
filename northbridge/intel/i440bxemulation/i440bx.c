@@ -61,8 +61,12 @@ static void pci_domain_set_resources(struct device *dev)
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
 		idx = 10;
-#warning FIXME: We have no memory hole between 640 and 768 kB
-		ram_resource(dev, idx++, 0, tolmk);
+		/* 0 .. 640 kB */
+		ram_resource(dev, idx++, 0, 640);
+		/* Hole for VGA (0xA0000-0xAFFFF) graphics and text mode
+		 * graphics (0xB8000-0xBFFFF) */
+		/* 768 kB .. Systop (in KB) */
+		ram_resource(dev, idx++, 768, tolmk - 768);
 	}
 	phase4_assign_resources(&dev->link[0]);
 }

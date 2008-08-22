@@ -180,10 +180,10 @@ cache_as_ram_setup:
 	/* for GH, CAR need to set DRAM Base/Limit Registers to direct that to node0 */
 
 	/* Only BSP needed, for other nodes set during HT/memory init. */
-	/* So we need to check if it is BSP */
-	movl	$0x1b, %ecx
+	/* So we need to check if it is BSP/BSC */
+	movl	$0x1b, %ecx /* APIC Base Address Register */
 	rdmsr
-	bt	$8, %eax /*BSC */
+	bt	$8, %eax /* BSC Boot Strap CPU Core */
 	jnc	CAR_FAM10_out
 
 	/* Enable RT tables on BSP */
@@ -341,10 +341,10 @@ clear_fixed_var_mtrr_out:
 
 
 #ifdef CONFIG_CPU_AMD_K10
-	/* So we need to check if it is BSP */
-	movl	$0x1b, %ecx
+	/* So we need to check if it is BSP/BSC */
+	movl	$0x1b, %ecx /* APIC BAR */
 	rdmsr
-	bt	$8, %eax /*BSC */
+	bt	$8, %eax /* BSC */
 	jnc	CAR_FAM10_ap
 #endif
 

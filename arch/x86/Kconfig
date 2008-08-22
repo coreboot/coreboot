@@ -231,3 +231,13 @@ config APIC_ID_OFFSET
 	depends IOAPIC
 	help
 		This is entirely mainboard dependent. 0x10 is a *typical* setting but not always a good setting. 
+
+menu "Debugging"
+
+config CARTEST
+	bool "Test CAR area"
+	default n
+	help
+		Test the CAR area after it has been set up.
+
+endmenu

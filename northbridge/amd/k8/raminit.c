@@ -60,7 +60,7 @@ inline void print_raminit(const char *strval, u32 val)
 #endif
 
 /* bit [10,8] are dev func, bit[1,0] are dev index */
-static u32 pci_read_config32_index(u32 dev, u32 index_reg, u32 index)
+u32 pci_read_config32_index(u32 dev, u32 index_reg, u32 index)
 {
         u32 dword;
 
@@ -71,7 +71,7 @@ static u32 pci_read_config32_index(u32 dev, u32 index_reg, u32 index)
         return dword;
 }
 
-static void pci_write_config32_index(u32 dev, u32 index_reg, u32 index, u32 data)
+void pci_write_config32_index(u32 dev, u32 index_reg, u32 index, u32 data)
 {
 
         pci_conf1_write_config32(dev, index_reg, index);
@@ -80,7 +80,7 @@ static void pci_write_config32_index(u32 dev, u32 index_reg, u32 index, u32 data
 
 }
 
-static u32 pci_read_config32_index_wait(u32 dev, u32 index_reg, u32 index)
+u32 pci_read_config32_index_wait(u32 dev, u32 index_reg, u32 index)
 {
 
         u32 dword;
@@ -97,7 +97,7 @@ static u32 pci_read_config32_index_wait(u32 dev, u32 index_reg, u32 index)
         return dword;
 }
 
-static void pci_write_config32_index_wait(u32 dev, u32 index_reg, u32 index, u32 data)
+void pci_write_config32_index_wait(u32 dev, u32 index_reg, u32 index, u32 data)
 {
 
         u32 dword;
@@ -2685,6 +2685,57 @@ void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 }
 
 #endif
+static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
+{
+
+        int i;
+        u32 mask = 0;
+	unsigned int needs_reset = 0;
+	void hard_reset(void);
+
+	if(sysinfo->nodes == 1) return; // in case only one cpu installed	
+
+        for(i=1; i<sysinfo->nodes; i++) {
+                /* Skip everything if I don't have any memory on this controller */
+                if(sysinfo->mem_trained[i]==0x00) continue;
+
+                mask |= (1<<i);
+
+        }
+
+        i = 1;
+        while(1) {
+		if(mask & (1<<i)) {
+			if((sysinfo->mem_trained[i])!=0x80) {
+				mask &= ~(1<<i);
+			}
+		}
+
+                if(!mask) break;
+
+                i++;
+                i%=sysinfo->nodes;
+	}
+
+	for(i=0; i<sysinfo->nodes; i++) {
+		printk(BIOS_DEBUG, "mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]); 
+                switch(sysinfo->mem_trained[i]) {
+		case 0: //don't need train
+		case 1: //trained
+			break;
+		case 0x81: //recv1: fail
+		case 0x82: //Pos :fail
+		case 0x83: //recv2: fail
+			needs_reset = 1;
+			break;
+		}
+	}
+	if(needs_reset) {
+		printk(BIOS_DEBUG, "mem trained failed\n"); 
+		hard_reset();
+	}
+
+}
 
 void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
 {
@@ -2868,7 +2919,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 
 
 #if MEM_TRAIN_SEQ ==  0
-   #ifdef
+   #ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
 	dqs_timing(controllers, ctrl, tsc0, sysinfo);
    #else
 	dqs_timing(controllers, ctrl, sysinfo);

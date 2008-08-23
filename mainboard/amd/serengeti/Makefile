@@ -31,6 +31,7 @@ STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/raminit.c \
+			$(src)/northbridge/amd/k8/dqs.c \
 			$(src)/arch/x86/pci_ops_conf1.c \
 			$(src)/southbridge/amd/amd8111/stage1_smbus.c \
 			$(src)/lib/clog2.c

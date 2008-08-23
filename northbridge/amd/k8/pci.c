@@ -45,10 +45,6 @@
 #include <lib.h>
 #include  <lapic.h>
 
-#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-#include <cpu/amd/model_fxx_rev.h>
-#endif
-
 #define FX_DEVS 8
 extern struct device * __f0_dev[FX_DEVS];
 extern struct device * __f1_dev[FX_DEVS];

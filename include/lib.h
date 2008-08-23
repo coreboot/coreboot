@@ -34,6 +34,12 @@ void udelay(unsigned int usecs);
 void mdelay(unsigned int msecs);
 void delay(unsigned int secs);
 
+/* all architectures must implement a 64-bit time counter
+ * that is compiled into stage1 
+ * rdtsc is usually fine. 
+ */
+u64 cycles(void);
+
 void beep_short(void);
 void beep_long(void);
 

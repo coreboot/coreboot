@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#include <types.h>
 #include <lib.h>
 
 void mdelay(unsigned int msecs)

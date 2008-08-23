@@ -44,7 +44,7 @@
 #include <mc146818rtc.h>
 #include <lib.h>
 #include  <lapic.h>
-
+#include <mainboard.h>
 
 #ifdef CONFIG_PCI_64BIT_PREF_MEM
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
@@ -166,8 +166,11 @@ static void k8_pci_domain_read_resources(struct device * dev)
 
 static void k8_pci_domain_set_resources(struct device * dev)
 {
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info get_hw_mem_hole_info(void);
 	void disable_hoist_memory(unsigned long hole_startk, int i);
+	u32 hoist_memory(unsigned long hole_startk, int i);
+#endif
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
 	struct resource *io, *mem1, *mem2;
 	struct resource *resource, *last;

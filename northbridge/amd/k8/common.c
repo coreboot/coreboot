@@ -45,10 +45,11 @@
 #include <lib.h>
 #include  <lapic.h>
 
+/*
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 #include <cpu/amd/model_fxx_rev.h>
 #endif
-
+*/
 struct amdk8_sysconf sysconf;
 
 #define FX_DEVS 8
@@ -115,11 +116,6 @@ unsigned int amdk8_nodeid(struct device * dev)
 
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
-
-struct hw_mem_hole_info {
-	unsigned hole_startk;
-	int node_id;
-};
 
 struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
@@ -215,7 +211,7 @@ void disable_hoist_memory(unsigned long hole_startk, int i)
 		
 }
 
-static u32 hoist_memory(unsigned long hole_startk, int i)
+u32 hoist_memory(unsigned long hole_startk, int i)
 {
         int ii;
         u32 carry_over;

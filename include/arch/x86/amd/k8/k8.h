@@ -512,6 +512,8 @@ that are corresponding to 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x10, 
 #define  NBCAP_CmpCap_SHIFT	12
 #define  NBCAP_CmpCap_MASK	3
 
+/* other hypertransport constants */
+#define HT_INIT_CONTROL	0x6c
 
 #define LinkConnected     (1 << 0)
 #define InitComplete      (1 << 1)
@@ -618,5 +620,13 @@ struct node_core_id get_node_core_id(unsigned int nb_cfg_54);
 struct device;
 unsigned get_apicid_base(unsigned ioapic_num);
 void amd_sibling_init(struct device *cpu);
+
+/* memory hole management */
+struct hw_mem_hole_info {
+	unsigned hole_startk;
+	int node_id;
+};
+
+struct hw_mem_hole_info get_hw_mem_hole_info(void);
 
 #endif /* ! ASSEMBLY */

@@ -109,6 +109,16 @@ void dump_mem_range(int msg_level, unsigned char *buf, int size)
 	return;
 }
 
+/** cycles
+ * provide 64-bit high precision counter 
+ * @returns Time in 64 bits
+ */
+u64 cycles(void)
+{
+	u64 ret;
+	asm volatile ("rdtsc" : "=A" (ret));
+	return ret;
+}
 
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
 /* until we get rid of elf */

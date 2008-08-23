@@ -303,6 +303,6 @@ void fatal(const char* msg) __attribute__ ((noreturn));
 
 /* libc/readline.c */
 char * readline(const char * prompt);
-int getline(char *buffer, int len)
+int getline(char *buffer, int len);
 
 #endif

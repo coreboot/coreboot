@@ -32,15 +32,15 @@
 /**
  * Enable the 5 MB address space for the ROM
  */
-static void amd8111_enable_rom(void)
+void amd8111_enable_rom(void)
 {
 	u8 byte;
 	u32 dev;
 
 	/* Enable 5MB rom access at 0xFFB00000 - 0xFFFFFFFF */
 	/* Locate the amd8111 */
-	pci_locate_device_on_bus(0, PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ISA, &dev);
-
+	pci_conf1_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ISA, 
+				&dev);
 	/* Set the 5MB enable bits */
 	byte = pci_conf1_read_config8(dev, 0x43);
 	byte |= 0xC0;

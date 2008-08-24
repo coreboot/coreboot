@@ -25,6 +25,7 @@ STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/option_table.c \
 			$(src)/southbridge/amd/amd8111/stage1_smbus.c \
 			$(src)/southbridge/amd/amd8111/stage1_ctrl.c \
+			$(src)/southbridge/amd/amd8111/stage1_enable_rom.c \
 			$(src)/northbridge/amd/k8/coherent_ht.c \
 			$(src)/northbridge/amd/k8/incoherent_ht.c \
 			$(src)/northbridge/amd/k8/libstage1.c \

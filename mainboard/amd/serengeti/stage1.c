@@ -32,9 +32,13 @@
 #include <io.h>
 #include <arch/x86/msr.h>
 
+void amd8111_enable_rom(void);
 
 void hardware_stage1(void)
 {
+	printk(BIOS_ERR, "Stage1: enable rom ...\n");
+	amd8111_enable_rom();
+	printk(BIOS_ERR, "Done.\n");
 	post_code(POST_START_OF_MAIN);
 
 }

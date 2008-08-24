@@ -453,3 +453,42 @@ mem_top:
 	.long	0x000 /* NULL, end of table */
 
 cache_as_ram_setup_out:
+/* Reset vector. */
+
+/*
+ * RVECTOR: Size of reset vector, default is 0x10.
+ * RESRVED: Size of vpd code, default is 0xf0.
+ * BOOTBLK: Size of bootblock code, default is 0x1f00 (8k-256b).
+ */
+
+SEGMENT_SIZE = 0x10000
+RVECTOR      = 0x00010
+
+/* Due to YET ANOTHER BUG in GNU bintools, you can NOT have a code16 here.
+ * I think we should leave it this way forever, as the bugs come and
+ * go -- and come again.
+ *
+ *	.code16
+ *	.section ".rom.text"
+ */
+.section ".reset", "ax"
+	.globl _resetjump
+_resetjump:
+	/* GNU bintools bugs again. This jumps to stage0 - 2. Sigh. */
+	/* jmp _stage0 */
+	.byte	0xe9
+	.int	_stage0 - ( . + 2 )
+
+	/* Note: The above jump is hand coded to work around bugs in binutils.
+	 * 5 bytes are used for a 3 byte instruction. This works because x86
+	 * is little endian and allows us to use supported 32 bit relocations
+	 * instead of the weird 16 bit relocations that binutils does not
+	 * handle consistenly between versions because they are used so rarely.
+	 */
+.byte	0
+
+/* Date? ID string? We might want to put something else in here. */
+.ascii DATE
+
+/* Checksum. */
+/* .word 0 */

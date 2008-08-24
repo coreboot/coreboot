@@ -309,6 +309,8 @@ int lar_add_bootblock(struct lar *lar, const char *bootblock)
 		if (s.st_size != BOOTBLOCK_SIZE) {
 			err("Bootblock %s does not appear to be a bootblock.\n",
 			    bootblock);
+			err("It is the wrong size; it should be %d bytes and it is %d bytes\n", 
+				BOOTBLOCK_SIZE, s.st_size);
 			close(fd);
 			return -1;
 		}

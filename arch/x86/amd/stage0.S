@@ -163,6 +163,21 @@ __protected_stage0:
 	/* Save the BIST result */
 	movl	%eax, %ebp
 
+	/* Save the BIST value. */
+	movl	%eax, %ebp
+
+	port80_post(0x01)
+
+	movw	$ROM_DATA_SEG, %ax
+	movw	%ax, %ds
+	movw	%ax, %es
+	movw	%ax, %ss
+	movw	%ax, %fs
+	movw	%ax, %gs
+
+	/* Restore the BIST value to %eax. */
+	movl	%ebp, %eax
+
 	/*for normal part %ebx already contain cpu_init_detected from fallback call */
 
 cache_as_ram_setup:

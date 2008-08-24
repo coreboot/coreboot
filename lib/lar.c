@@ -31,7 +31,7 @@
 #define ntohl(x) (x)
 #endif
 
-static const char *algo_name[] = {
+static const char * const algo_name[] = {
 	"none",
 	"lzma",
 	"nrv2b",

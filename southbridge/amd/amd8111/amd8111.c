@@ -41,27 +41,27 @@ void amd8111_enable(struct device * dev)
 
 	/* See if we are behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
-	if ((bus_dev->vendor == PCI_VENDOR_ID_AMD) && 
-	    (bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI)) 
+	if ((bus_dev->id.pci.vendor == PCI_VENDOR_ID_AMD) && 
+	    (bus_dev->id.pci.device == PCI_DEVICE_ID_AMD_8111_PCI)) 
 	{
 		unsigned devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
 		lpc_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
-		index = ((dev->path.u.pci.devfn & ~7) >> 3) + 8;
-		if (dev->path.u.pci.devfn == 2) { /* EHCI */
+		index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
+		if (dev->path.pci.devfn == 2) { /* EHCI */
 			index = 16;
 		}
 	} else {
 		unsigned devfn;
-		devfn = (dev->path.u.pci.devfn) & ~7;
+		devfn = (dev->path.pci.devfn) & ~7;
 		lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
-		index = dev->path.u.pci.devfn & 7;
+		index = dev->path.pci.devfn & 7;
 	}
 	if ((!lpc_dev) || (index >= 17)) {
 		return;
 	}
-	if ((lpc_dev->vendor != PCI_VENDOR_ID_AMD) ||
-	    (lpc_dev->device != PCI_DEVICE_ID_AMD_8111_ISA)) 
+	if ((lpc_dev->id.pci.vendor != PCI_VENDOR_ID_AMD) ||
+	    (lpc_dev->id.pci.device != PCI_DEVICE_ID_AMD_8111_ISA)) 
 	{
 		u32 id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);

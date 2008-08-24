@@ -20,4 +20,5 @@
 
 {
 	device_operations = "amd8111_nic";
+	phy_lowreset = "0";
 };

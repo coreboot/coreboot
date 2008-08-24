@@ -26,13 +26,12 @@
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include <config.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/smbus.h>
-#include <arch/io.h>
+#include <io.h>
 #include "amd8111.h"
 
 static void lpci_set_subsystem(struct device * dev, unsigned vendor, unsigned device)
@@ -59,6 +58,6 @@ struct device_operations amd8111_smbus = {
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = NULL,
-	.ops_pci          = &lops_pci
+	.ops_pci          = &lops_pci,
 	.ops_smbus_bus    = &lops_smbus_bus,
 };

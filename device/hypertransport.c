@@ -23,21 +23,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <bitops.h>
 #include <console.h>
-#include <device/device.h>
-#include <device/path.h>
+#include <lib.h>
+#include <string.h>
+#include <mtrr.h>
+#include <macros.h>
+#include <spd.h>
+#include <cpu.h>
+#include <msr.h>
+#include <amd/k8/k8.h>
+#include <amd/k8/sysconf.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
+#include <device/hypertransport_def.h>
 #include <device/hypertransport.h>
-#include <part/hard_reset.h>
-#include <part/fallback_boot.h>
+#include <mc146818rtc.h>
+#include <lib.h>
+#include  <lapic.h>
+#include <mainboard.h>
 
 #define OPT_HT_LINK 0
-
-#if OPT_HT_LINK == 1
-#include <cpu/amd/model_fxx_rev.h>
-#endif
 
 static struct device *ht_scan_get_devs(struct device **old_devices)
 {
@@ -322,7 +326,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	} while ((ctrl & (1 << 5)) == 0);
 
 	/* Actually, only for one HT device HT chain, and unitid is 0. */
-#if HT_CHAIN_UNITID_BASE == 0
+#if CONFIG_HT_CHAIN_UNITID_BASE == 0
 	if (offset_unitid) {
 		return;
 	}
@@ -332,8 +336,8 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	if ((!offset_unitid)
 	    || (offset_unitid
 		&&
-		(!((HT_CHAIN_END_UNITID_BASE == 0)
-		   && (HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE))))) {
+		(!((CONFIG_HT_CHAIN_END_UNITID_BASE == 0)
+		   && (CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE))))) {
 		struct device dummy;
 		u32 id;
 		dummy.bus = bus;
@@ -361,8 +365,9 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			continue;
 		}
-		dummy.vendor = id & 0xffff;
-		dummy.device = (id >> 16) & 0xffff;
+		dummy.id.type = DEVICE_ID_PCI;
+		dummy.id.pci.vendor = id & 0xffff;
+		dummy.id.pci.device = (id >> 16) & 0xffff;
 		dummy.hdr_type = pci_read_config8(&dummy, PCI_HEADER_TYPE);
 		pos = ht_lookup_slave_capability(&dummy);
 		if (!pos) {
@@ -374,7 +379,7 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 		flags &= ~0x1f;
 		pci_write_config16(&dummy, pos + PCI_CAP_FLAGS, flags);
 		printk(BIOS_SPEW, "Collapsing %s [%04x/%04x]\n",
-			    dev_path(&dummy), dummy.vendor, dummy.device);
+			    dev_path(&dummy), dummy.id.pci.vendor, dummy.id.pci.device);
 	}
 }
 
@@ -384,20 +389,20 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 				       unsigned int *ht_unitid_base,
 				       unsigned int offset_unitid)
 {
-	/* Even HT_CHAIN_UNITID_BASE == 0, we still can go through this
+	/* Even CONFIG_HT_CHAIN_UNITID_BASE == 0, we still can go through this
 	 * function, because of end_of_chain check, also we need it to
 	 * optimize link.
 	 */
 	unsigned int next_unitid, last_unitid;
 	struct device *old_devices, *dev, *func;
-	unsigned int min_unitid = (offset_unitid) ? HT_CHAIN_UNITID_BASE : 1;
+	unsigned int min_unitid = (offset_unitid) ? CONFIG_HT_CHAIN_UNITID_BASE : 1;
 	struct ht_link prev;
 	struct device *last_func = 0;
 	int ht_dev_num = 0;
 
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
 	/* Let's record the device of last HT device, so we can set the
-	 * unitid to HT_CHAIN_END_UNITID_BASE.
+	 * unitid to CONFIG_HT_CHAIN_END_UNITID_BASE.
 	 */
 	unsigned int real_last_unitid;
 	u8 real_last_pos;
@@ -509,7 +514,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 		/* Update the unitid of the next device. */
 		ht_unitid_base[ht_dev_num] = next_unitid;
 		ht_dev_num++;
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
 		if (offset_unitid) {
 			real_last_unitid = next_unitid;
 			real_last_pos = pos;
@@ -523,7 +528,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 
 		printk(BIOS_DEBUG, "%s [%04x/%04x] %s next_unitid: %04x\n",
 			     dev_path(dev),
-			     dev->vendor, dev->device,
+			     dev->id.pci.vendor, dev->id.pci.device,
 			     (dev->enabled ? "enabled" : "disabled"),
 			     next_unitid);
 
@@ -538,7 +543,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 	}
 #endif
 
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
 	if (offset_unitid && (ht_dev_num > 0)) {
 		u16 flags;
 		int i;
@@ -546,19 +551,19 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 		flags = pci_read_config16(real_last_dev,
 			      real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
-		flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+		flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_write_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS,
 				   flags);
 
 		for (func = real_last_dev; func; func = func->sibling) {
 			func->path.pci.devfn -=
 			    ((real_last_unitid -
-			      HT_CHAIN_END_UNITID_BASE) << 3);
+			      CONFIG_HT_CHAIN_END_UNITID_BASE) << 3);
 			last_func = func;
 		}
 
 		/* Update last one. */
-		ht_unitid_base[ht_dev_num - 1] = HT_CHAIN_END_UNITID_BASE;
+		ht_unitid_base[ht_dev_num - 1] = CONFIG_HT_CHAIN_END_UNITID_BASE;
 
 		next_unitid = real_last_unitid;
 	}
@@ -629,12 +634,11 @@ static const struct pci_operations ht_bus_ops_pci = {
 };
 
 const struct device_operations default_ht_ops_bus = {
-	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = ht_scan_bridge,
-	.enable           = 0,
+	.phase3_scan         = ht_scan_bridge,
+	.phase4_read_resources   = pci_bus_read_resources,
+	.phase4_set_resources    = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init             = 0,
 	.reset_bus        = pci_bus_reset,
 	.ops_pci          = &ht_bus_ops_pci,
 };

@@ -17,11 +17,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-#include <console/console.h>
-#include <device/device.h>
+#include <types.h>
+#include <lib.h>
+#include <console.h>
 #include <device/pci.h>
+#include <msr.h>
+#include <legacy.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
+#include <statictree.h>
+#include <config.h>
 #include "amd8111.h"
 
 static void lpci_set_subsystem(struct device * dev, unsigned vendor, unsigned device)

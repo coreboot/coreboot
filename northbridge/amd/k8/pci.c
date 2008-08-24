@@ -546,7 +546,7 @@ static void amdk8_set_resources(struct device * dev)
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
-			assign_resources(bus);
+			phase4_assign_resources(bus);
 		}
 	}
 }

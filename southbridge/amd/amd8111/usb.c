@@ -26,13 +26,11 @@
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include <config.h>
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <device/smbus.h>
-#include <arch/io.h>
+#include <io.h>
 #include "amd8111.h"
 
 

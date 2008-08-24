@@ -27,6 +27,8 @@
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include <config.h>
+#include <lapic.h> 
+#include <mc146818rtc.h>
 #include "amd8111.h"
 
 #define NMI_OFF 0
@@ -103,7 +105,7 @@ static void setup_ioapic(void)
 		l[4] = a->value_high;
 		value_high = l[4];
 		if ((i==0) && (value_low == 0xffffffff)) {
-			printk_warning("IO APIC not responding.\n");
+			printk(BIOS_WARNING, "IO APIC not responding.\n");
 			return;
 		}
 		printk(BIOS_SPEW, "for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 

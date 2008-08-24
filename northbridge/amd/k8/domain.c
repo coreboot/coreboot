@@ -360,7 +360,7 @@ static void k8_pci_domain_set_resources(struct device * dev)
 		k8_ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 	}
-	assign_resources(&dev->link[0]);
+	phase4_assign_resources(&dev->link[0]);
 }
 
 static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)

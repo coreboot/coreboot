@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-#include <console/console.h>
+#include <console.h>
 #include <device/device.h>
 #include <types.h>
 #include <lib.h>
@@ -27,7 +27,10 @@
 #include <legacy.h>
 #include <device/pci_ids.h>
 #include <statictree.h>
-#include <config.h>#include "amd8111.h"
+#include <config.h>
+#include <device/smbus.h>
+#include <mc146818rtc.h>
+#include "amd8111.h"
 #include "amd8111_smbus.h"
 
 #define PREVIOUS_POWER_STATE 0x43
@@ -43,6 +46,7 @@
 
 static int lsmbus_recv_byte(struct device * dev)
 {
+	int do_smbus_recv_byte(u16 smbus_io_base, u16 device);
 	unsigned device;
 	struct resource *res;
 
@@ -54,6 +58,7 @@ static int lsmbus_recv_byte(struct device * dev)
 
 static int lsmbus_send_byte(struct device * dev, u8 val)
 {
+	int do_smbus_send_byte(u16 smbus_io_base, u8 device, u8 val);
 	unsigned device;
 	struct resource *res;
 
@@ -66,6 +71,7 @@ static int lsmbus_send_byte(struct device * dev, u8 val)
 
 static int lsmbus_read_byte(struct device * dev, u8 address)
 {
+	int do_smbus_read_byte(u16 smbus_io_base, u8 device, u8 address);
 	unsigned device;
 	struct resource *res;
 
@@ -77,6 +83,7 @@ static int lsmbus_read_byte(struct device * dev, u8 address)
 
 static int lsmbus_write_byte(struct device * dev, u8 address, u8 val)
 {
+	int do_smbus_write_byte(u16 smbus_io_base, u8 device, u8 address, u8 val);
 	unsigned device;
 	struct resource *res;
 
@@ -140,7 +147,7 @@ static void acpi_init(struct device *dev)
 		byte |= 0x40;
 	}
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
-	printk_info("set power %s after power fail\n", on?"on":"off");
+	printk(BIOS_INFO, "set power %s after power fail\n", on?"on":"off");
 
 	/* switch serial irq logic from quiet mode to continuous
 	 * mode for Winbond W83627HF Rev. 17
@@ -218,11 +225,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = lpci_set_subsystem,
-};
-
-struct device_operations ac97audio = {
+struct device_operations acpi = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_AMD_8111_ACPI}}},

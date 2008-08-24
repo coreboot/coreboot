@@ -71,6 +71,7 @@ static void nic_init(struct device *dev)
 
 	/* Hard Reset PHY */
 	printk(BIOS_DEBUG, "Reseting PHY... ");
+/*
 	if (conf->phy_lowreset) {
 		writel(VAL0 | PHY_RST_POL | RESET_PHY , (void *)(mmio + CMD3));
 	} else {
@@ -78,6 +79,7 @@ static void nic_init(struct device *dev)
 	}
 	mdelay(15);
 	writel(RESET_PHY, (void *)(mmio + CMD3));
+*/
 	printk(BIOS_DEBUG, "Done\n");
 }
 

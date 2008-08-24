@@ -26,7 +26,7 @@
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include <config.h>
-#nclude "amd8111.h"
+#include "amd8111.h"
 
 static void ide_init(struct device *dev)
 {
@@ -34,7 +34,7 @@ static void ide_init(struct device *dev)
 	/* Enable ide devices so the linux ide driver will work */
 	u16 word;
 	u8 byte;
-	conf = dev->chip_info;
+	conf = dev->device_configuration;
 
 	word = pci_read_config16(dev, 0x40);
 	/* Ensure prefetch is disabled */
@@ -72,7 +72,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = lpci_set_subsystem,
 };
 
-struct device_operations mcp55_ide = {
+struct device_operations amd8111_ide = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_AMD_8111_IDE}}},

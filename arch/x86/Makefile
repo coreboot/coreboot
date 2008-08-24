@@ -101,9 +101,10 @@ $(obj)/coreboot.bootblock: $(obj)/coreboot.vpd $(obj)/stage0.init
 
 STAGE0_LIB_SRC       = uart8250.c mem.c lar.c delay.c vtxprintf.c \
 		       vsprintf.c console.c string.c $(DECOMPRESSORS)
-STAGE0_ARCH_X86_SRC  = stage1.c serial.c speaker.c \
+STAGE0_ARCH_X86_SRC  = stage1.c serial.c \
 		       udelay_io.c mc146818rtc.c post_code.c \
-			pci_ops_conf1.c resourcemap.c
+			pci_ops_conf1.c resourcemap.c 
+# speaker.c \
 
 ifeq ($(CONFIG_PAYLOAD_ELF_LOADER),y)
 STAGE0_LIB_SRC      += elfboot.c

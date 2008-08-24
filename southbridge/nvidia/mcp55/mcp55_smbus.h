@@ -23,6 +23,7 @@
 
 #include <device/smbus_def.h>
 #include <shared.h> /* We share symbols from stage 0 */
+#include <lib.h>
 
 
 #define SMBHSTSTAT	0x1

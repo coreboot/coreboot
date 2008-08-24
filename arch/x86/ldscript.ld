@@ -25,10 +25,12 @@ OUTPUT_ARCH(i386)
 ENTRY(_start)
 */
 
+BOOTBLOCK_SIZE = 20480;
+
 TARGET(binary)
 SECTIONS
 {
-	. = 0xffffb000 + 256; /* leave space for vpd */
+	. = 0 - BOOTBLOCK_SIZE + 256; /* leave space for vpd */
 
 	.stage0_1 . : {
 		_stage0_1 = .;

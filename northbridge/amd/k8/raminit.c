@@ -2264,8 +2264,6 @@ void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *meminfo
 {
         u32 dword;
 	u32 dwordx;
-	unsigned SlowAccessMode = 0;
-
 	long dimm_mask = meminfo->dimm_mask & 0x0f;
 
 #if DIMM_SUPPORT==0x0104   /* DDR2 and REG */
@@ -2293,7 +2291,8 @@ void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *meminfo
 #endif
 
 #if DIMM_SUPPORT==0x0004  /* DDR2 and unbuffered */
-        /* for UNBUF DIMM */
+ 	unsigned SlowAccessMode = 0;
+       /* for UNBUF DIMM */
         dword = 0x00111222;
 	dwordx = 0x002f2f00;
 	switch (meminfo->memclk_set) {
@@ -2531,7 +2530,7 @@ void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info 
 #endif
 	meminfo = &sysinfo->meminfo[ctrl->node_id];
 
-	printk(BIOS_DEBUG, "sdram_set_spd_registers: paramx :0x%x\n", paramx);
+	printk(BIOS_DEBUG, "FIXME sdram_set_spd_registers: paramx :%p\n", &paramx);
 	
 	activate_spd_rom(ctrl);
 	dimm_mask = spd_detect_dimms(ctrl);
@@ -2749,7 +2748,6 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 	
 	print_debug_addr("sdram_enable: tsc0[8]: ", &tsc0[0]);
 #endif
-	u32 dword;
 
 	/* Error if I don't have memory */
 	if (memory_end_k(ctrl, controllers) == 0) {
@@ -2758,7 +2756,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 
 	/* Before enabling memory start the memory clocks */
 	for(i = 0; i < controllers; i++) {
-		u32 dtl, dch;
+		u32 dch;
 		if (!sysinfo->ctrl_present[ i ])
 			continue;
                 dch = pci_conf1_read_config32(ctrl[i].f2, DRAM_CONFIG_HIGH);
@@ -2779,11 +2777,10 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 
 	/* We need to wait a mimmium of 20 MEMCLKS to enable the  InitDram */
 	memreset(controllers, ctrl);
-#if 0
+#if 1
 	printk(BIOS_DEBUG, "prepare to InitDram:");
 	for(i=0; i<10; i++) {
-		print_debug_hex32(i);
-		printk(BIOS_DEBUG, "\b\b\b\b\b\b\b\b");
+		printk(BIOS_DEBUG, "%08x\b\b\b\b\b\b\b\b", i);
 	}
 	printk(BIOS_DEBUG, "\n");
 #endif
@@ -2839,7 +2836,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 	}
 
 	for(i = 0; i < controllers; i++) {
-		u32 dcl, dch, dcm;
+		u32 dcl, dcm;
 		if (!sysinfo->ctrl_present[ i ])
 			continue;
 		/* Skip everything if I don't have any memory on this controller */

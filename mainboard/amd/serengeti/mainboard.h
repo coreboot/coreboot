@@ -24,3 +24,4 @@
 #define CPU_SOCKET_TYPE SOCKET_AM2
 #define MEM_TRAIN_SEQ 0 /* for now */
 #define HW_MEM_HOLE_SIZE_AUTO_INC 0
+#define HW_MEM_HOLE_SIZEK 0x100000

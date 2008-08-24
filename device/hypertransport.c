@@ -117,18 +117,19 @@ struct ht_link {
 static int ht_setup_link(struct ht_link *prev, struct device *dev,
 			 unsigned int pos)
 {
-	static const u8 link_width_to_pow2[] = { 3, 4, 0, 5, 1, 2, 0, 0 };
-	static const u8 pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
 	struct ht_link cur[1];
+	int reset_needed;
+	int linkb_to_host;
+#if OPT_HT_LINK == 1
 	unsigned int present_width_cap, upstream_width_cap;
 	unsigned int present_freq_cap, upstream_freq_cap;
+	static const u8 link_width_to_pow2[] = { 3, 4, 0, 5, 1, 2, 0, 0 };
+	static const u8 pow2_to_link_width[] = { 0x7, 4, 5, 0, 1, 3 };
 	unsigned int ln_present_width_in, ln_upstream_width_in;
 	unsigned int ln_present_width_out, ln_upstream_width_out;
 	unsigned int freq, old_freq;
 	unsigned int present_width, upstream_width, old_width;
-	int reset_needed;
-	int linkb_to_host;
-
+#endif
 	/* Set the hypertransport link width and frequency. */
 	reset_needed = 0;
 	/* See which side of the device our previous write to 

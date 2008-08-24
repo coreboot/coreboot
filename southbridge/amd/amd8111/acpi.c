@@ -100,12 +100,12 @@ unsigned pm_base;
 static void acpi_init(struct device *dev)
 {
 	u8 byte;
-	u16 word;
 	u16 pm10_bar;
 	u32 dword;
 	int on;
 
 #if 0
+	u16 word;
 	printk(BIOS_DEBUG, "ACPI: disabling NMI watchdog.. ");
 	byte = pci_read_config8(dev, 0x49);
 	pci_write_config8(dev, 0x49, byte | (1<<2));

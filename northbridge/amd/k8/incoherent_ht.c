@@ -394,8 +394,6 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 	u8 next_unitid, last_unitid;
 	unsigned uoffs;
 
-	int reset_needed = 0;
-
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
         /* let's record the device of last ht device, 
 	 * So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
@@ -519,7 +517,9 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 
 	} while (last_unitid != next_unitid );
 
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 out:
+#endif
 end_of_chain: ;
 	
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
@@ -718,7 +718,6 @@ static void ht_setup_chains(u8 ht_c_num, struct sys_info *sysinfo)
 		unsigned regpos;
 		u32 dword;
 		u8 busn;
-		unsigned bus;
 		unsigned offset_unitid = 0;
 		
 		reg = pci_conf1_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);

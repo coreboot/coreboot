@@ -126,7 +126,7 @@ static void k8_pci_domain_read_resources(struct device * dev)
 			}
 		}
 	}
-#if CONFIG_PCI_64BIT_PREF_MEM == 0
+#ifdef CONFIG_PCI_64BIT_PREF_MEM
 	/* Initialize the system wide io space constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	resource->base  = 0x400;
@@ -171,7 +171,7 @@ static void k8_pci_domain_set_resources(struct device * dev)
 	void disable_hoist_memory(unsigned long hole_startk, int i);
 	u32 hoist_memory(unsigned long hole_startk, int i);
 #endif
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#ifdef CONFIG_PCI_64BIT_PREF_MEM
 	struct resource *io, *mem1, *mem2;
 	struct resource *resource, *last;
 #endif
@@ -188,7 +188,7 @@ static void k8_pci_domain_set_resources(struct device * dev)
         io = find_resource(dev, 0);
         io->base = DEVICE_IO_START;
 #endif
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
+#ifdef CONFIG_PCI_64BIT_PREF_MEM
         /* Now reallocate the pci resources memory with the
          * highest addresses I can manage.
          */
@@ -330,7 +330,7 @@ static void k8_pci_domain_set_resources(struct device * dev)
 		}
 
 	
-		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08lx, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu 
+		printk(BIOS_DEBUG, "node %d : mmio_basek=%08lx, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu 
 			
 		/* See if I need to split the region to accomodate pci memory space */
 		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {

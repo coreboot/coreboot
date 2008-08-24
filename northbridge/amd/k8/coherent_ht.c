@@ -1644,13 +1644,12 @@ void coherent_ht_finalize(unsigned nodes)
 	printk(BIOS_SPEW, "done\r\n");
 }
 
-int apply_cpu_errata_fixes(unsigned nodes)
+int apply_cpu_errata_fixes(unsigned int nodes)
 {
 	unsigned node;
 	int needs_reset = 0;
 	for(node = 0; node < nodes; node++) {
 		u32 dev;
-		u32 cmd;
 		dev = NODE_MC(node);
 	}
 	return needs_reset;

@@ -26,7 +26,6 @@ STAGE2_CHIPSET_SRC += $(src)/northbridge/amd/k8/get_sblk_pci1234.c \
 					$(src)/northbridge/amd/k8/common.c \
 					$(src)/northbridge/amd/k8/cpu.c \
 					$(src)/northbridge/amd/k8/domain.c \
-					$(src)/northbridge/amd/k8/pci.c \
-					$(src)/device/hypertransport.c
+					$(src)/northbridge/amd/k8/pci.c
 
 endif

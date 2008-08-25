@@ -142,7 +142,7 @@ struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
 	struct lb_record *rec;
 	struct lb_mainboard *mainboard;
-	extern char *mainboard_vendor, *mainboard_name;
+	extern const char *mainboard_vendor, *mainboard_name;
 	rec = lb_new_record(header);
 	mainboard = (struct lb_mainboard *)rec;
 	mainboard->tag = LB_TAG_MAINBOARD;

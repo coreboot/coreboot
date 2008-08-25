@@ -72,3 +72,8 @@ static struct pci_driver smbus_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_INTEL_3100_SMB,
 };
 
+static struct pci_driver smbus_driver_ep80579 __pci_driver = {
+	.ops    = &smbus_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_EP80579_SMB,
+};

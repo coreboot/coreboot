@@ -60,3 +60,9 @@ static struct pci_driver ehci_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_3100_EHCI,
 };
+
+static struct pci_driver ehci_driver_ep80579 __pci_driver = {
+	.ops    = &ehci_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_EP80579_EHCI,
+};

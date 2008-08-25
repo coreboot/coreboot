@@ -88,3 +88,14 @@ static struct pci_driver sata_driver_nr __pci_driver = {
 	.device = PCI_DEVICE_ID_INTEL_3100_SATA_R,
 };
 
+static struct pci_driver sata_driver_ep80579 __pci_driver = {
+	.ops    = &sata_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_EP80579_SATA,
+};
+
+static struct pci_driver sata_driver_nr_ep80579 __pci_driver = {
+	.ops    = &sata_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_EP80579_SATA_R,
+};

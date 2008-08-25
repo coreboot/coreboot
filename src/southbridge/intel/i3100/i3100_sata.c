@@ -79,23 +79,23 @@ static struct device_operations sata_ops  = {
 static struct pci_driver sata_driver __pci_driver = {
 	.ops    = &sata_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_3100_SATA,
+	.device = PCI_DEVICE_ID_INTEL_3100_IDE,
 };
 
 static struct pci_driver sata_driver_nr __pci_driver = {
 	.ops    = &sata_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_3100_SATA_R,
+	.device = PCI_DEVICE_ID_INTEL_3100_AHCI,
 };
 
 static struct pci_driver sata_driver_ep80579 __pci_driver = {
 	.ops    = &sata_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_EP80579_SATA,
+	.device = PCI_DEVICE_ID_INTEL_EP80579_IDE,
 };
 
 static struct pci_driver sata_driver_nr_ep80579 __pci_driver = {
 	.ops    = &sata_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_EP80579_SATA_R,
+	.device = PCI_DEVICE_ID_INTEL_EP80579_AHCI,
 };

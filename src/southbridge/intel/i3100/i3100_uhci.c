@@ -52,17 +52,17 @@ static struct device_operations uhci_ops  = {
 static struct pci_driver uhci_driver __pci_driver = {
 	.ops    = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_3100_USB,
+	.device = PCI_DEVICE_ID_INTEL_3100_UHCI,
 };
 
 static struct pci_driver usb2_driver __pci_driver = {
 	.ops    = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_3100_USB2,
+	.device = PCI_DEVICE_ID_INTEL_3100_UHCI2,
 };
 
 static struct pci_driver uhci_driver_ep80579 __pci_driver = {
 	.ops    = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_EP80579_USB,
+	.device = PCI_DEVICE_ID_INTEL_EP80579_UHCI,
 };

@@ -119,7 +119,8 @@ int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 	u8 hdr;
 	int bdf = bus << 16;
 
-	/* skip over all the function sin a device -- multifunction devices always have one vendor */
+	/* skip over all the functions in a device -- 
+	 * multifunction devices always have one vendor */
 	for (devfn = 0; devfn < 0x100; devfn += 8) {
 		u32 confaddr = bdf | (devfn << 8);
 		val = pci_conf1_read_config32(confaddr, PCI_VENDOR_ID);
@@ -127,7 +128,6 @@ int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 		if (val == 0xffffffff || val == 0x00000000 ||
 		    val == 0x0000ffff || val == 0xffff0000)
 			continue;
-
 		if (val == ((did << 16) | vid)) {
 			*busdevfn = confaddr;
 			return 1;
@@ -135,10 +135,16 @@ int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 
 		hdr = pci_conf1_read_config8(confaddr, PCI_HEADER_TYPE);
 		hdr &= 0x7F;
-
 		if (hdr == PCI_HEADER_TYPE_BRIDGE || hdr == PCI_HEADER_TYPE_CARDBUS) {
 			unsigned int busses;
 			busses = pci_conf1_read_config32(confaddr, PCI_PRIMARY_BUS);
+			/* We should never see a value of 0.
+			 * this can happen if we run this before 
+			 * things are set up (which we have to be able to do 
+			 * in stage 0 
+			 */
+			if (! busses)
+				continue;
 			if (pci_conf1_find_on_bus((busses >> 8) & 0xFF, vid, did, busdevfn))
 				return 1;
 		}

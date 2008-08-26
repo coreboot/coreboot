@@ -91,7 +91,7 @@ $(CC) $(1) -S -xc /dev/null -o "$$TMP", $(1), $(2))
 STACKPROTECT += $(call cc-option, -fno-stack-protector,)
 
 # TODO: Re-add -Os as soon as we find out why it caused problems.
-CFLAGS := -Wall -Werror $(STACKPROTECT) -nostdinc $(INCLUDES)
+CFLAGS := -Wall -Werror $(STACKPROTECT) -nostdinc $(INCLUDES) -ffreestanding
 
 all: lib
 

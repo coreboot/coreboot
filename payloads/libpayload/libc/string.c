@@ -116,7 +116,7 @@ int strcmp(const char *s1, const char *s2)
  * @param maxlen Return at most maxlen characters as length of the string.
  * @return A non-zero value if s1 and s2 differ, or zero if s1 equals s2.
  */
-int strncmp(const char *s1, const char *s2, int maxlen)
+int strncmp(const char *s1, const char *s2, size_t maxlen)
 {
 	int i;
 
@@ -128,7 +128,7 @@ int strncmp(const char *s1, const char *s2, int maxlen)
 	return 0;
 }
 
-char *strncpy(char *d, const char *s, int n)
+char *strncpy(char *d, const char *s, size_t n)
 {
 	/* Use +1 to get the NUL terminator. */
 	int max = n > strlen(s) + 1 ? strlen(s) + 1 : n;
@@ -145,7 +145,7 @@ char *strcpy(char *d, const char *s)
 	return strncpy(d, s, strlen(s) + 1);
 }
 
-char *strncat(char *d, const char *s, int n)
+char *strncat(char *d, const char *s, size_t n)
 {
 	char *p = d + strlen(d);
 	int max = n > strlen(s) ? strlen(s) : n;

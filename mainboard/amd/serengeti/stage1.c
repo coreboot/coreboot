@@ -290,10 +290,12 @@ void amd8111_enable_rom(void);
 
 void hardware_stage1(void)
 {
+	void enumerate_ht_chain(void);
 	int max;
 	printk(BIOS_ERR, "Stage1: enable rom ...\n");
 	max = ARRAY_SIZE(register_values);
 	setup_resource_map(register_values, max);
+	enumerate_ht_chain();
 	amd8111_enable_rom();
 	printk(BIOS_ERR, "Done.\n");
 	post_code(POST_START_OF_MAIN);

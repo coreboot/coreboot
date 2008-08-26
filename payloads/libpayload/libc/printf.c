@@ -135,6 +135,7 @@ static int printf_putchar(int c, struct printf_spec *ps)
  * @param c	Character to print.
  * @param width	Width modifier.
  * @param flags	Flags that change the way the character is printed.
+ * @param ps	Output methods spec for different printf clones.
  * @return	Number of characters printed, negative value on failure.
  */
 static int print_char(char c, int width, uint64_t flags, struct printf_spec *ps)
@@ -166,8 +167,10 @@ static int print_char(char c, int width, uint64_t flags, struct printf_spec *ps)
  * @param width		Width modifier.
  * @param precision	Precision modifier.
  * @param flags		Flags that modify the way the string is printed.
+ * @param ps		Output methods spec for different printf clones.
  * @return		Number of characters printed, negative value on	failure.
  */
+/** Structure for specifying output methods for different printf clones. */
 static int print_string(char *s, int width, unsigned int precision,
 			uint64_t flags, struct printf_spec *ps)
 {
@@ -207,10 +210,11 @@ static int print_string(char *s, int width, unsigned int precision,
  * Print significant digits of a number in given base.
  *
  * @param num		Number to print.
- * @param widt		Width modifier.h
+ * @param width		Width modifier.h
  * @param precision	Precision modifier.
  * @param base		Base to print the number in (must be between 2 and 16).
  * @param flags		Flags that modify the way the number is printed.
+ * @param ps		Output methods spec for different printf clones.
  * @return		Number of characters printed.
  */
 static int print_number(uint64_t num, int width, int precision, int base,
@@ -359,7 +363,8 @@ static int print_number(uint64_t num, int width, int precision, int base,
 	return counter;
 }
 
-/** Print formatted string.
+/**
+ * Print formatted string.
  *
  * Print string formatted according to the fmt parameter and variadic arguments.
  * Each formatting directive must have the following form:

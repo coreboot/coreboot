@@ -54,7 +54,7 @@ int dec2bcd(int d)
 /**
  * Return the absolute value of the specified integer.
  *
- * @param val The integer of which we want to know the absolute value.
+ * @param j The integer of which we want to know the absolute value.
  * @return The absolute value of the specified integer.
  */
 int abs(int j)

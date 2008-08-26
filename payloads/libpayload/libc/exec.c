@@ -35,10 +35,12 @@ extern void i386_do_exec(long addr, int argc, char **argv, int *ret);
 #endif
 
 /**
- * Execute code in memory
+ * Execute code in memory.
  *
- * @param ptr The entry point to jump to
- * @return Return the return value from the entry point
+ * @param addr TODO
+ * @param argc TODO
+ * @param argv TODO
+ * @return Return the return value from the entry point.
  */
 int exec(long addr, int argc, char **argv)
 {

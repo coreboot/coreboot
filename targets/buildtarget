@@ -69,7 +69,12 @@ fi
 
 rm -rf .$$.tmp
 
-if $CC -Wl,--help | grep -q build-id; then
+# The linker output fd depends on the gcc version.
+#  1) 'ld-2.15 --help' and 'gcc-4.0 -Wl,--help' use STDOUT.
+#  2) 'gcc-3.3 --help' and 'gcc-3.4 -Wl,--help' use STDERR.
+# Thus older versions of GCC (presumably 3.x) implement a redirection of
+# output to stderr. Re-redirect stderr to stdout to work always.
+if $CC -Wl,--help 2>&1 | grep -q build-id; then
 	EXTRA_LFLAGS="$EXTRA_LFLAGS -Wl,--build-id=none"
 fi
 

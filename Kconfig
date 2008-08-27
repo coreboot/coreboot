@@ -60,6 +60,22 @@ config BEEPS
 	help
 	  Enable this option to make coreboot beep upon certain events.
 
+config WHOLE_PROGRAM_COMPILE
+	bool "Enable whole-program optimizations (DANGEROUS)"
+	depends EXPERT && EXPERIMENTAL
+	help
+	  Enable gcc -fwhole-program -combine for select code.
+	  Needs lots of annotation in stage1 and stage2.
+	  Works for initram only.
+	  This increases compile time (no parallel compilation possible
+	  anymore) and compiler memory usage (up to a factor of 20) and
+	  makes debugging really hard.
+
+	  Requires at least gcc 4.2.x, but miscompilations may occur.
+
+	  Say No.
+	  If you are a Gentoo user, say NO!
+
 endmenu
 
 source mainboard/Kconfig

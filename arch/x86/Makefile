@@ -132,6 +132,12 @@ else
 	PARSEELF = -e
 endif
 
+ifeq ($(CONFIG_WHOLE_PROGRAM_COMPILE), y)
+	COMBINEFLAGS = -fwhole-program
+else
+	COMBINEFLAGS =
+endif
+
 STAGE0_SRC := $(patsubst %,$(src)/lib/%,$(STAGE0_LIB_SRC)) \
 	      $(patsubst %,$(src)/arch/x86/%,$(STAGE0_ARCH_X86_SRC)) \
 	      $(STAGE0_MAINBOARD_SRC) $(STAGE0_CHIPSET_SRC)
@@ -268,7 +274,7 @@ $(obj)/arch/x86/amd/stage0.o: $(src)/arch/x86/amd/stage0.S
 
 $(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/stage0-prefixed.o $(INITRAM_SRC)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@)) (XIP)\n"
-	$(Q)$(CC) $(INITCFLAGS) -fPIE -c -combine $(INITRAM_SRC) -o $(obj)/coreboot.initram_partiallylinked.o
+	$(Q)$(CC) $(INITCFLAGS) -fPIE -c -combine $(COMBINEFLAGS) $(INITRAM_SRC) -o $(obj)/coreboot.initram_partiallylinked.o
 
 	$(Q)# .data and .bss must be empty because they aren't handled
 	$(Q)printf "  CHECK   initram (non-empty writable/allocatable sections)\n"

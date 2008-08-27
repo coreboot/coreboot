@@ -21,6 +21,7 @@
 #include <types.h>
 #include <io.h>
 #include <console.h>
+#include <globalvars.h>
 #include <lar.h>
 #include <string.h>
 #include <tables.h>
@@ -138,12 +139,16 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
 }
 #endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
-/*
+/**
  * This function is called from assembler code with its argument on the
  * stack. Force the compiler to generate always correct code for this case.
  * We have cache as ram running and can start executing code in C.
+ * @param bist Built In Self Test value
+ * @param init_detected This (optionally set) value is used on some platforms (e.g. k8) to indicate
+ * that we are restarting after some sort of reconfiguration. Note that we could use it on geode but 
+ * do not at present. 
  */
-void __attribute__((stdcall)) stage1_main(u32 bist)
+void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
 {
 	struct global_vars globvars;
 	int ret;
@@ -178,6 +183,8 @@ void __attribute__((stdcall)) stage1_main(u32 bist)
 	 * NEVER run this on an AP!
 	 */
 	global_vars_init(&globvars);
+	globvars.bist = bist;
+	globvars.init_detected = init_detected;
 
 	hardware_stage1();
 

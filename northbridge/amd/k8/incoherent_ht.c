@@ -756,7 +756,7 @@ static void ht_setup_chains(u8 ht_c_num, struct sys_info *sysinfo)
 
 }
 
-unsigned get_nodes(void);
+unsigned int get_nodes(void);
 
 void ht_setup_chains_x(struct sys_info *sysinfo)
 {

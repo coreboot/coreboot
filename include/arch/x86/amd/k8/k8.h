@@ -20,6 +20,8 @@
 
 /* Until we resolve a better way to do this, work around it with a value "too large to fail" */
 
+#ifndef AMD_K8_H
+#define AMD_K8_H
 /* Socket types */
 #define SOCKET_AM2 0x11
 #define SOCKET_L1	0x10
@@ -62,6 +64,7 @@
 
 /* Definitions of various K8 registers for REV F*/
 /* Function 0 */
+#define NODEID 0x60
 #define HT_TRANSACTION_CONTROL 0x68
 #define  HTTC_DIS_RD_B_P            (1 << 0)
 #define  HTTC_DIS_RD_DW_P           (1 << 1)
@@ -611,7 +614,8 @@ struct node_core_id {
         unsigned coreid;
 };
 
-// it can be used to get unitid and coreid it running only
+/* use this to get the nodeid and core it of the current cpu (but not other CPUs) */
+/* the nb_cfg_54 indicates the setting of bit 54 (InitApicIdCpuIdLo) */
 struct node_core_id get_node_core_id(unsigned int nb_cfg_54);
 
 struct device;
@@ -627,3 +631,5 @@ struct hw_mem_hole_info {
 struct hw_mem_hole_info get_hw_mem_hole_info(void);
 
 #endif /* ! ASSEMBLY */
+
+#endif /* AMD_K8_H */

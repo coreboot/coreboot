@@ -25,14 +25,14 @@
 #include <console.h>
 #include <device/device.h>
 #include <cpu.h>
-#include <amd/k8/k8.h>
-#include <amd/k8/sysconf.h>
 #include <device/pci.h>
 #include <string.h>
 #include <msr.h>
 #include <io.h>
 #include <arch/x86/msr.h>
-
+#include <superio/winbond/w83627hf/w83627hf.h>
+#include <amd/k8/k8.h>
+#include <amd/k8/sysconf.h>
 
 static const struct rmap register_values[] = {
 	/* Careful set limit registers before base registers which contain the enables */
@@ -289,8 +289,12 @@ static const struct rmap register_values[] = {
 
 void amd8111_enable_rom(void);
 
+#define SERIAL_DEV W83627HF_SP1
+#define SERIAL_IOBASE 0x3f8
+
 void hardware_stage1(void)
 {
+	void w83627hf_enable_serial(u8 dev, u8 serial, u16 iobase);
 	void enumerate_ht_chain(void);
 	int max;
 	printk(BIOS_ERR, "Stage1: enable rom ...\n");
@@ -299,6 +303,7 @@ void hardware_stage1(void)
 	enumerate_ht_chain();
 	amd8111_enable_rom();
 	printk(BIOS_ERR, "Done.\n");
+	w83627hf_enable_serial(0x2e, SERIAL_DEV, SERIAL_IOBASE);
 	post_code(POST_START_OF_MAIN);
 
 }

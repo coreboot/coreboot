@@ -178,8 +178,6 @@ __protected_stage0:
 	/* Restore the BIST value to %eax. */
 	movl	%ebp, %eax
 
-	/*for normal part %ebx already contain cpu_init_detected from fallback call */
-
 cache_as_ram_setup:
 
 	movb	$0xA0, %al

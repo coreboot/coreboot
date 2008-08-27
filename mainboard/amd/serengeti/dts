@@ -40,5 +40,9 @@
 				/config/("southbridge/amd/amd8111/nic.dts");
 			};
 		};
+		ioport@2e {
+			/config/("superio/winbond/w83627hf/dts");
+			com1enable = "1";
+		};
 	};
 };

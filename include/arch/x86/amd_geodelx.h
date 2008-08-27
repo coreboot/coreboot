@@ -1258,6 +1258,18 @@
 
 #ifndef __ASSEMBLER__
 
+/* This is new. 
+ * We're not using it yet on Geode. 
+ * K8 requires it and, for future ports, we are going to require it. 
+ * it's a useful placeholder for platform info that usually ends up 
+ * scattered everywhere. On K8, it is initially stored at the base of stack
+ * in cache-as-ram and then copied out once ram is started. 
+ */
+struct sys_info {
+	int empty;
+};
+
+
 /*
  * Write to a Virtual Register
  * @param class_index The register index

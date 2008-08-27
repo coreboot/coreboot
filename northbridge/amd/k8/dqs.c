@@ -27,12 +27,12 @@
 #include <spd.h>
 #include <cpu.h>
 #include <msr.h>
-#include <amd/k8/k8.h>
-#include <amd/k8/sysconf.h>
 #include <device/pci.h>
 #include <pci_ops.h>
 #include <mc146818rtc.h>
 #include <lib.h>
+#include <amd/k8/k8.h>
+#include <amd/k8/sysconf.h>
 
 #include <spd_ddr2.h>
 /*

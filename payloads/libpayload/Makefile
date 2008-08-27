@@ -56,6 +56,9 @@ HOSTCXXFLAGS := -I$(srck) -I$(objk)
 
 DESTDIR = /opt
 
+DOXYGEN := doxygen
+DOXYGEN_OUTPUT_DIR := doxygen
+
 ifeq ($(strip $(HAVE_DOTCONFIG)),)
 
 all: config
@@ -137,10 +140,15 @@ prepare:
 	$(Q)mkdir -p $(obj)/i386 $(obj)/lib/$(ARCHDIR-y) $(obj)/libc 
 	$(Q)mkdir -p $(src)/lib/$(ARCHDIR-y)
 
+doxy: doxygen
+doxygen:
+	$(Q)$(DOXYGEN) Doxyfile
+
 clean:
 	$(Q)rm -rf $(obj)/crypto $(obj)/curses $(obj)/drivers
 	$(Q)rm -rf $(obj)/i386 $(obj)/lib $(obj)/libc 
 	$(Q)rm -rf $(src)/lib/i386 $(src)/lib/libpayload.a
+	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
 
 distclean: clean
 	$(Q)rm -rf build
@@ -148,5 +156,5 @@ distclean: clean
 
 include util/kconfig/Makefile
 
-.PHONY: $(PHONY) prepare clean distclean
+.PHONY: $(PHONY) prepare clean distclean doxygen doxy
 

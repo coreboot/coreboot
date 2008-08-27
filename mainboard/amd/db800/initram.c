@@ -42,6 +42,18 @@ extern int smbus_read_byte(u16 device, u8 address);
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
+/**
+ * Read a byte from the SPD. 
+ *
+ * For this board, that is really just saying 'read a byte from SMBus'.
+ * So we use smbus_read_byte(). Nota Bene: leave this here as a function 
+ * rather than a #define in an obscure location. This function is called 
+ * only a few dozen times, and it's not performance critical. 
+ *
+ * @param device The device.
+ * @param address The address.
+ * @return The data from the SMBus packet area or an error of 0xff (i.e. -1).
+ */
 u8 spd_read_byte(u16 device, u8 address)
 {
 	u8 spdbyte;

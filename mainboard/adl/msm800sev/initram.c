@@ -34,6 +34,8 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
 
+extern int smbus_read_byte(u16 device, u8 address);
+
 #define MANUALCONF 0		/* Do automatic strapped PLL config. */
 
 #define PLLMSRHI 0x00001490	/* Manual settings for the PLL */
@@ -41,6 +43,31 @@
 
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
+
+/**
+ * Read a byte from the SPD. 
+ *
+ * For this board, that is really just saying 'read a byte from SMBus'.
+ * So we use smbus_read_byte(). Nota Bene: leave this here as a function 
+ * rather than a #define in an obscure location. This function is called 
+ * only a few dozen times, and it's not performance critical. 
+ *
+ * @param device The device.
+ * @param address The address.
+ * @return The data from the SMBus packet area or an error of 0xff (i.e. -1).
+ */
+u8 spd_read_byte(u16 device, u8 address)
+{
+	u8 spdbyte;
+
+	printk(BIOS_DEBUG, "spd_read_byte dev %04x\n", device);
+
+	spdbyte = smbus_read_byte(device, address);
+
+	printk(BIOS_DEBUG, " addr %02x returns %02x\n", address, spdbyte);
+
+	return spdbyte;
+}
 
 int main(void)
 {

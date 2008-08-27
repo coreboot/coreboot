@@ -26,7 +26,7 @@ extern unsigned char _heap, _eheap;
 #error "You're defining more than one compression type, which is not allowed (of course)"
 #endif
 #define HAVE_UNCOMPRESSER 1
-// include generic nrv2b
+// include generic lzma
 #include "../lib/lzma.c"
 #endif
 
@@ -97,8 +97,14 @@ int stream_init(void)
         printk_debug("Uncompressing to RAM 0x%08lx ", dest);
         olen = uncompress((uint8_t *) rom_start, (uint8_t *)dest );
 	printk_debug(" olen = 0x%08lx done.\n", olen);
-	rom_end = dest + olen - 1;
-	rom = dest;
+	if (olen != 0) {
+		rom_end = dest + olen - 1;
+		rom = dest;
+	} else {
+		/* Decompression failed, assume payload is uncompressed */
+		printk_debug("Decompression failed. Assuming payload is uncompressed...\n");
+		rom = rom_start;
+	}
 #else
         rom = rom_start;
 #endif

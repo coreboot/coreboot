@@ -24,6 +24,7 @@
 #include <types.h>
 #include <device/resource.h>
 #include <device/path.h>
+#include <shared.h>
 
 /**
  * Create a 32-bit value from four characters. This is better
@@ -268,8 +269,10 @@ struct device * find_dev_path(struct bus *parent, struct device_path *path);
 struct device * alloc_find_dev(struct bus *parent, struct device_path *path, struct device_id *id);
 struct device * dev_find_device (struct device_id *devid, struct device * from);
 struct device *dev_find_pci_device(u16 vendor, u16 device, struct device *from);
+EXPORT_SYMBOL(dev_find_pci_device);
 struct device * dev_find_class (unsigned int class, struct device * from);
 struct device * dev_find_slot (unsigned int bus, unsigned int devfn);
+EXPORT_SYMBOL(dev_find_slot);
 struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 void default_device_constructor(struct device *dev, struct device_operations *constructor);
 

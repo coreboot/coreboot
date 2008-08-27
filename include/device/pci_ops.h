@@ -24,11 +24,17 @@
 #include <shared.h>
 
 u8 pci_read_config8(struct device * dev, unsigned where);
+EXPORT_SYMBOL(pci_read_config8);
 u16 pci_read_config16(struct device * dev, unsigned where);
+EXPORT_SYMBOL(pci_read_config16);
 u32 pci_read_config32(struct device * dev, unsigned where);
+EXPORT_SYMBOL(pci_read_config32);
 void pci_write_config8(struct device * dev, unsigned where, u8 val);
+EXPORT_SYMBOL(pci_write_config8);
 void pci_write_config16(struct device * dev, unsigned where, u16 val);
+EXPORT_SYMBOL(pci_write_config16);
 void pci_write_config32(struct device * dev, unsigned where, u32 val);
+EXPORT_SYMBOL(pci_write_config32);
 
 u8 pci_conf1_read_config8(u32 bdf, int where);
 EXPORT_SYMBOL(pci_conf1_read_config8);

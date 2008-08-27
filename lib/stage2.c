@@ -93,3 +93,4 @@ int stage2(void)
 
 	return 0;
 }
+EXPORT_SYMBOL(stage2);

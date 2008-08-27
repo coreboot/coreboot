@@ -36,6 +36,10 @@
  * is NO buffer at the end of the struct, so having zero-sized arrays at the
  * end or similar stuff for which the compiler can't determine the final size
  * will corrupt memory. If you don't try to be clever, everything will be fine.
+ *
+ * BIG FAT WARNING: Never write to global variables without using accessor
+ * functions. global_vars_init() is the place to call variable-specific
+ * initialization functions.
  */
 struct global_vars {
 #ifdef CONFIG_CONSOLE_BUFFER

@@ -76,6 +76,7 @@
 			CPU1-------------CPU0     	
  */
 
+#include <mainboard.h>
 #include <console.h>
 #include <mtrr.h>
 #include <macros.h>

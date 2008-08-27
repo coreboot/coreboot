@@ -28,6 +28,7 @@
 	2005.11 yhlu add put sb ht chain on bus 0
 */
 
+#include <mainboard.h>
 #include <console.h>
 #include <lib.h>
 #include <string.h>
@@ -44,7 +45,6 @@
 #include <mc146818rtc.h>
 #include <lib.h>
 #include  <lapic.h>
-#include <mainboard.h>
 
 #ifdef CONFIG_PCI_64BIT_PREF_MEM
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)

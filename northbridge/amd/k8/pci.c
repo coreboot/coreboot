@@ -28,6 +28,7 @@
 	2005.11 yhlu add put sb ht chain on bus 0
 */
 
+#include <mainboard.h>
 #include <console.h>
 #include <lib.h>
 #include <string.h>
@@ -110,12 +111,12 @@ static unsigned int amdk8_scan_chain(struct device * dev, unsigned nodeid, unsig
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
+#if SB_HT_CHAIN_ON_BUS0 > 0
                 // first chain will on bus 0
 		if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
                         min_bus = max;
                 } 
-	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
+	#if SB_HT_CHAIN_ON_BUS0 > 1
 		// second chain will be on 0x40, third 0x80, forth 0xc0
                 else {
                         min_bus = ((max>>6) + 1) * 0x40; 
@@ -212,8 +213,8 @@ static unsigned int amdk8_scan_chains(struct device * dev, unsigned int max)
 	
         if(nodeid==0) {
                 sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
-	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
+#if SB_HT_CHAIN_ON_BUS0 > 0
+	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
                 offset_unitid = 1;
         #endif
 		// do southbridge ht chain first, in case s2885 put southbridge chain (8131/8111) on link2, 
@@ -223,12 +224,12 @@ static unsigned int amdk8_scan_chains(struct device * dev, unsigned int max)
         }
 
         for(link = 0; link < dev->links; link++) {
-#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
+#if SB_HT_CHAIN_ON_BUS0 > 0
 		if( (nodeid == 0) && (sblink == link) ) continue; //already done
 #endif
 		offset_unitid = 0;
-		#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-	                #if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+		#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
+	                #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
 			if((nodeid == 0) && (sblink == link))
 			#endif
 				offset_unitid = 1;

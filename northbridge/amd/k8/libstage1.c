@@ -25,6 +25,7 @@
 	2005.02 yhlu add E0 memory hole support
 */
 
+#include <mainboard.h>
 #include <console.h>
 #include <mtrr.h>
 #include <macros.h>
@@ -134,7 +135,7 @@ u8 get_sbbusn(unsigned int sblk)
 void enumerate_ht_chain(void)
 {
 #if HT_CHAIN_UNITID_BASE != 0
-/* HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */
+/*  HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */
 
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
 	 * On most boards this just happens.  If a cpu has multiple
@@ -143,22 +144,24 @@ void enumerate_ht_chain(void)
 	 */
 	unsigned next_unitid, last_unitid;
 	u32 dev;
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-	//let's record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
-	unsigned real_last_unitid;
-	u8 real_last_pos;
+#if  HT_CHAIN_END_UNITID_BASE != 0x20
+	//let's record the device of last ht device, So we can set the Unitid to  HT_CHAIN_END_UNITID_BASE
+	unsigned real_last_unitid = 0;
+	u8 real_last_pos = 0;
 	int ht_dev_num = 0;	// except host_bridge
 	u8 end_used = 0;
 #endif
 
 	dev = PCI_BDF(0, 0, 0);
-	next_unitid = HT_CHAIN_UNITID_BASE;
+	next_unitid =  HT_CHAIN_UNITID_BASE;
 	do {
 		u32 id;
 		u8 hdr_type, pos;
+		printk(BIOS_SPEW, "dev 0x%x unitid %d: ", dev, next_unitid);
 		last_unitid = next_unitid;
 
 		id = pci_conf1_read_config32(dev, PCI_VENDOR_ID);
+		printk(BIOS_SPEW, "id 0x%x\n", id);
 		/* If the chain is enumerated quit */
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff)
 		    || (((id >> 16) & 0xffff) == 0xffff)
@@ -166,7 +169,7 @@ void enumerate_ht_chain(void)
 			break;
 		}
 
-		hdr_type = pci_con1_read_config8(dev, PCI_HEADER_TYPE);
+		hdr_type = pci_conf1_read_config8(dev, PCI_HEADER_TYPE);
 		pos = 0;
 		hdr_type &= 0x7f;
 
@@ -183,6 +186,7 @@ void enumerate_ht_chain(void)
 						   pos + PCI_CAP_LIST_ID);
 			if (cap == PCI_CAP_ID_HT) {
 				u16 flags;
+				printk(BIOS_SPEW, "Found CAP HT\n");
 				/* Read and write and reread flags so the link
 				 * direction bit is valid.
 				 */
@@ -190,7 +194,7 @@ void enumerate_ht_chain(void)
 				    pci_conf1_read_config16(dev,
 							    pos +
 							    PCI_CAP_FLAGS);
-				pci_write_conf1_config16(dev,
+				pci_conf1_write_config16(dev,
 							 pos +
 							 PCI_CAP_FLAGS,
 							 flags);
@@ -203,11 +207,11 @@ void enumerate_ht_chain(void)
 					unsigned ctrl, ctrl_off;
 					u32 devx;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if  HT_CHAIN_END_UNITID_BASE != 0x20
 					if (next_unitid >= 0x18) {	// don't get mask out by k8, at this time BSP, RT is not enabled, it will response from 0x18,0--0x1f.
 						if (!end_used) {
 							next_unitid =
-							    HT_CHAIN_END_UNITID_BASE;
+							     HT_CHAIN_END_UNITID_BASE;
 							end_used = 1;
 						} else {
 							goto out;
@@ -228,6 +232,7 @@ void enumerate_ht_chain(void)
 								 PCI_CAP_FLAGS,
 								 flags);
 
+					printk(BIOS_SPEW, "devx 0x%x\n", devx);
 					next_unitid += count;
 
 					flags =
@@ -239,7 +244,7 @@ void enumerate_ht_chain(void)
 
 					do {
 						ctrl =
-						    pci_read_config16(devx,
+						    pci_conf1_read_config16(devx,
 								      pos +
 								      ctrl_off);
 						/* Is this the end of the hypertransport chain? */
@@ -258,13 +263,13 @@ void enumerate_ht_chain(void)
 							 * if its transient
 							 */
 							ctrl |= ((1 << 4) | (1 << 8));	// Link fail + Crc
-							pci_write_config16
+							pci_conf1_write_config16
 							    (devx,
 							     pos +
 							     ctrl_off,
 							     ctrl);
 							ctrl =
-							    pci_read_config16
+							    pci_conf1_read_config16
 							    (devx,
 							     pos +
 							     ctrl_off);
@@ -290,9 +295,9 @@ void enumerate_ht_chain(void)
       out:
 	;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if  HT_CHAIN_END_UNITID_BASE != 0x20
 	if ((ht_dev_num > 1)
-	    && (real_last_unitid != HT_CHAIN_END_UNITID_BASE)
+	    && (real_last_unitid !=  HT_CHAIN_END_UNITID_BASE)
 	    && !end_used) {
 		u16 flags;
 		dev = PCI_BDF(0, real_last_unitid, 0);
@@ -300,13 +305,15 @@ void enumerate_ht_chain(void)
 		    pci_conf1_read_config16(dev,
 					    real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
-		flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+		flags |=  HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_conf1_write_config16(dev,
 					 real_last_pos + PCI_CAP_FLAGS,
 					 flags);
 	}
 #endif
 
+	printk(BIOS_SPEW, "Done: ht_dev_num %d, real_last_pos %d\n",
+			ht_dev_num, real_last_pos);
 #endif
 
 }

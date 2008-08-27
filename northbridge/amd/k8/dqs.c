@@ -19,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
+#include <mainboard.h>
 #include <console.h>
 #include <string.h>
 #include <mtrr.h>
@@ -32,7 +33,6 @@
 #include <pci_ops.h>
 #include <mc146818rtc.h>
 #include <lib.h>
-#include <mainboard.h>
 
 #include <spd_ddr2.h>
 /*

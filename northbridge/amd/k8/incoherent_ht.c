@@ -24,6 +24,7 @@
 	2004.12 yhlu add multi ht chain dynamically support
 	2005.11 yhlu add let real sb to use small unitid
 */
+#include <mainboard.h>
 #include <console.h>
 #include <mtrr.h>
 #include <macros.h>
@@ -36,7 +37,6 @@
 #include <device/hypertransport_def.h>
 #include <mc146818rtc.h>
 #include <lib.h>
-
 static void print_linkn_in (const char *strval, u8 byteval)
 {
 	printk(BIOS_DEBUG, "%s%02x\n", strval, byteval); 
@@ -91,14 +91,14 @@ static void ht_collapse_previous_enumeration(u8 bus, unsigned offset_unitid)
 	u32 id;
 
 	//actually, only for one HT device HT chain, and unitid is 0
-#if CONFIG_HT_CHAIN_UNITID_BASE == 0
+#if HT_CHAIN_UNITID_BASE == 0
 	if(offset_unitid) {
 		return;
 	}
 #endif
 
 	/* Check if is already collapsed */
-	if((!offset_unitid) || (offset_unitid && (!((CONFIG_HT_CHAIN_END_UNITID_BASE == 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE <CONFIG_HT_CHAIN_UNITID_BASE))))) {
+	if((!offset_unitid) || (offset_unitid && (!((HT_CHAIN_END_UNITID_BASE == 0) && (HT_CHAIN_END_UNITID_BASE <HT_CHAIN_UNITID_BASE))))) {
 		bdf = PCI_BDF(bus, 0, 0);
         	id = pci_conf1_read_config32(bdf, PCI_VENDOR_ID);
 	        if ( ! ( (id == 0xffffffff) || (id == 0x00000000) ||
@@ -389,23 +389,23 @@ int scan_pci_bus( unsigned bus , struct sys_info *sysinfo)
 void ht_setup_chainx(u32 bdf, u8 upos, u8 bus, 
 	unsigned offset_unitid, struct sys_info *sysinfo)
 {
-	//even CONFIG_HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
+	//even HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
 
 	u8 next_unitid, last_unitid;
 	unsigned uoffs;
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+#if HT_CHAIN_END_UNITID_BASE != 0x20
         /* let's record the device of last ht device, 
-	 * So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
+	 * So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
 	 */
-        unsigned real_last_unitid;
-        u8 real_last_pos;
+        unsigned real_last_unitid = 0;
+        u8 real_last_pos = 0;
 	int ht_dev_num = 0;
 	u8 end_used = 0;
 #endif
 
 	uoffs = PCI_HT_HOST_OFFS;
-	next_unitid = (offset_unitid) ? CONFIG_HT_CHAIN_UNITID_BASE:1;
+	next_unitid = (offset_unitid) ? HT_CHAIN_UNITID_BASE:1;
 
 	do {
 		u32 id;
@@ -461,11 +461,11 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 		}
 
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+#if HT_CHAIN_END_UNITID_BASE != 0x20
 		if(offset_unitid) {
 			if(next_unitid>= (bus ? 0x20:0x18) ) {
 				if(!end_used) {
-			                next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
+			                next_unitid = HT_CHAIN_END_UNITID_BASE;
 					end_used = 1;
 				} else {
 					goto out;
@@ -517,18 +517,18 @@ void ht_setup_chainx(u32 bdf, u8 upos, u8 bus,
 
 	} while (last_unitid != next_unitid );
 
-#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+#if HT_CHAIN_END_UNITID_BASE != 0x20
 out:
 #endif
 end_of_chain: ;
 	
-#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used ) {
+#if HT_CHAIN_END_UNITID_BASE != 0x20
+        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) && !end_used ) {
                 u16 flags;
 		int i;
                 flags = pci_conf1_read_config16(PCI_BDF(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
                 flags &= ~0x1f;
-                flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
+                flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
                 pci_conf1_write_config16(PCI_BDF(bus, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
 
 		// Here need to change the dev in the array
@@ -536,11 +536,11 @@ end_of_chain: ;
                 {
                         struct link_pair_st *link_pair = &sysinfo->link_pair[i];
                         if(link_pair->udev == PCI_BDF(bus, real_last_unitid, 0)) {
-				link_pair->udev = PCI_BDF(bus, CONFIG_HT_CHAIN_END_UNITID_BASE, 0);
+				link_pair->udev = PCI_BDF(bus, HT_CHAIN_END_UNITID_BASE, 0);
 				continue;
 			}
                         if(link_pair->dev == PCI_BDF(bus, real_last_unitid, 0)) {
-                                link_pair->dev = PCI_BDF(bus, CONFIG_HT_CHAIN_END_UNITID_BASE, 0);
+                                link_pair->dev = PCI_BDF(bus, HT_CHAIN_END_UNITID_BASE, 0);
                         }
                 }
 
@@ -552,7 +552,7 @@ end_of_chain: ;
 void ht_setup_chain(u32 bdf, unsigned upos, struct sys_info *sysinfo)
 {
 	unsigned offset_unitid = 0;
-#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
+#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
         offset_unitid = 1;
 #endif
 
@@ -565,7 +565,7 @@ void ht_setup_chain(u32 bdf, unsigned upos, struct sys_info *sysinfo)
         /* Make certain the HT bus is not enumerated */
         ht_collapse_previous_enumeration(0, 0);
 
-#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
+#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
         offset_unitid = 1;
 #endif
 
@@ -610,11 +610,11 @@ static int optimize_link_read_pointers_chain(u8 ht_c_num)
 		u8 val;
 		unsigned devn = 1;
 
-	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-                #if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
+                #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
                 if(i==0) // to check if it is sb ht chain
                 #endif
-                        devn = CONFIG_HT_CHAIN_UNITID_BASE;
+                        devn = HT_CHAIN_UNITID_BASE;
         #endif
 
 		reg = pci_conf1_read_config32(PCI_BDF(0,0x18,1), 0xe0 + i * 4);
@@ -733,8 +733,8 @@ static void ht_setup_chains(u8 ht_c_num, struct sys_info *sysinfo)
 		pci_conf1_write_config32( PCI_BDF(0, devpos,0), regpos , dword);
 	
 
-	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
-                #if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
+                #if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
                 if(i==0) // to check if it is sb ht chain
                 #endif
                         offset_unitid = 1;

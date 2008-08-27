@@ -19,9 +19,6 @@
  */
 
 /* Until we resolve a better way to do this, work around it with a value "too large to fail" */
-#warning clean up setting of DIMM_SOCKETS and NODE_NUMS
-#define DIMM_SOCKETS 4
-#define NODE_NUMS 16
 
 /* Socket types */
 #define SOCKET_AM2 0x11

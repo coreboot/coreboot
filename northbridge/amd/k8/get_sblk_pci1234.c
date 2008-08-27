@@ -23,6 +23,7 @@
 // 2005.9 yhlu    modify that to more dynamic for AMD Opteron Based MB
 // 2007.9 stepan  improve code documentation
 
+#include <mainboard.h>
 #include <console.h>
 #include <mtrr.h>
 #include <macros.h>

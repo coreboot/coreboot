@@ -26,6 +26,7 @@
 	2005.10 yhlu make it support DDR2 only
 */
 
+#include <mainboard.h>
 #include <console.h>
 #include <string.h>
 #include <mtrr.h>
@@ -39,7 +40,6 @@
 #include <pci_ops.h>
 #include <mc146818rtc.h>
 #include <lib.h>
-#include <mainboard.h>
 
 #include <spd_ddr2.h>
 

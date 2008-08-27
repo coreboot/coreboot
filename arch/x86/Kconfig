@@ -171,39 +171,6 @@ config CARSIZE
 	help
 	  This option sets the size of the area used for CAR.
 
-# variables related to AMD Hypertransport. 
-config HT_CHAIN_UNITID_BASE
-	hex
-	default 0 if CPU_AMD_K8
-	help
-		Hypertransport unit ID base value. 
-		Mainboard-dependent. 
-
-config HT_CHAIN_END_UNITID_BASE
-	hex
-	default 0x20 if CPU_AMD_K8
-	help
-		Unit id of the end of hypertransport chain 
-		(usually the real SB); if it is 
-		less than than HT_CHAIN_UNITID_BASE, 
-		it can be 0
-
-config SB_HT_CHAIN_UNITID_OFFSET_ONLY
-	hex
-        default 1 if CPU_AMD_K8
-        help
-		Determines (I don't understand; ask YHLU) 
-		if only offset SB hypertransport chain
-
-config SB_HT_CHAIN_ON_BUS0
-	hex
-        default 0 if CPU_AMD_K8
-        help
-		Make SB hypertransport chain sit on bus 0, if it is 1, 
-		will put sb ht chain on bus 0, if it is 2 will 
-		put other chain on 0x40, 0x80, 0xc0
-
-
 config K8_HT_FREQ_1G_SUPPORT
 	hex
 	default 1 if CPU_AMD_K8

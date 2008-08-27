@@ -21,7 +21,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#define DIMM_SOCKETS 4
+#define NODE_NUMS 16
 #define CPU_SOCKET_TYPE SOCKET_AM2
 #define MEM_TRAIN_SEQ 0 /* for now */
 #define HW_MEM_HOLE_SIZE_AUTO_INC 0
 #define HW_MEM_HOLE_SIZEK 0x100000
+#define HT_CHAIN_UNITID_BASE 0xa
+#define HT_CHAIN_END_UNITID_BASE 0x6
+#define SB_HT_CHAIN_ON_BUS0 2
+#define SB_HT_CHAIN_UNITID_OFFSET_ONLY 1

@@ -67,7 +67,7 @@ struct flashchip flashchips[] = {
 	{"PMC",		"Pm49FL004",		PMC_ID_NOPREFIX,PMC_49FL004,		512,	64 * 1024,	TEST_OK_PREW,	probe_49fl00x,		erase_49fl00x,		write_49fl00x},
 	{"Sharp",	"LHF00L04",		SHARP_ID,	SHARP_LHF00L04,		1024,	64 * 1024,	TEST_UNTESTED,	probe_lhf00l04,		erase_lhf00l04,			write_lhf00l04},
 	{"Spansion",	"S25FL016A",		SPANSION_ID,	SPANSION_S25FL016A,	2048,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
-	{"SST",		"SST25VF016B",		SST_ID,		SST_25VF016B,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"SST",		"SST25VF016B",		SST_ID,		SST_25VF016B,		2048,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"SST",		"SST25VF040B",		SST_ID,		SST_25VF040B,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"SST",		"SST28SF040A",		SST_ID,		SST_28SF040,		512,	256,		TEST_UNTESTED,	probe_28sf040,		erase_28sf040,			write_28sf040},
 	{"SST",		"SST29EE010",		SST_ID,		SST_29EE010,		128,	128,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_jedec},

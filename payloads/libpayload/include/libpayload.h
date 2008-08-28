@@ -244,6 +244,7 @@ long int labs(long int j);
 long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
+void fatal(const char* msg) __attribute__ ((noreturn));
 /** @} */
 
 /**
@@ -398,6 +399,8 @@ int lfclose(struct LFILE *file);
 
 /**
  * @defgroup arch Architecture Specific Functions
+ * This modules contains global architecure specific functions.
+ * All architectures are expected to define these functions.
  * @{
  */
 int get_coreboot_info(struct sysinfo_t *info);
@@ -411,9 +414,13 @@ void udelay(unsigned int n);
 void mdelay(unsigned int n);
 void delay(unsigned int n);
 
-#define abort() halt()
+#define abort() halt()    /**< Alias for the halt() function */
+
+/**
+ * Stops executions and halts the processor.  This function does
+ * not return.
+ */
 void halt(void) __attribute__ ((noreturn));
-void fatal(const char* msg) __attribute__ ((noreturn));
 /** @} */
 
 /**

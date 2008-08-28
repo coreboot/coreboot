@@ -74,6 +74,16 @@
 #define SPD_DATA_SIGNAL_INPUT_SETUP_TIME    34 /* Data signal input setup time */
 #define SPD_DATA_SIGNAL_INPUT_HOLD_TIME     35 /* Data signal input hold time */
 #define SPD_WRITE_RECOVERY_TIME             36 /* Write recovery time (tWR) */
+#define SPD_INT_WRITE_TO_READ_DELAY         37 /* Internal write to read command delay (tWTR) */
+#define SPD_INT_READ_TO_PRECHARGE_DELAY     38 /* Internal read to precharge command delay (tRTP) */
+#define SPD_MEM_ANALYSIS_PROBE_PARAMS       39 /* Memory analysis probe characteristics */
+#define SPD_BYTE_41_42_EXTENSION            40 /* Extension of byte 41 (tRC) and byte 42 (tRFC) */
+#define SPD_MIN_ACT_TO_ACT_AUTO_REFRESH     41 /* Minimum active to active auto refresh (tRCmin) */
+#define SPD_MIN_AUTO_REFRESH_TO_ACT         42 /* Minimum auto refresh to active/auto refresh (tRFC) */
+#define SPD_MAX_DEVICE_CYCLE_TIME           43 /* Maximum device cycle time (tCKmax) */
+#define SPD_MAX_DQS_DQ_SKEW                 44 /* Maximum skew between DQS and DQ (tDQSQ) */
+#define SPD_MAX_READ_DATAHOLD_SKEW          45 /* Maximum read data-hold skew factor (tQHS) */
+#define SPD_PLL_RELOCK_TIME                 46 /* PLL relock time */
 #define SPD_SPD_DATA_REVISION_CODE          62 /* SPD data revision code */
 #define SPD_CHECKSUM_FOR_BYTES_0_TO_62      63 /* Checksum for bytes 0-62 */
 #define SPD_MANUFACTURER_JEDEC_ID_CODE      64 /* Manufacturer's JEDEC ID code, per EIA/JEP106 (bytes 64-71) */

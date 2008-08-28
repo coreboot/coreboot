@@ -32,3 +32,6 @@ STAGE2_DEVICE_SRC = device.c device_util.c root_device.c \
 ifeq ($(CONFIG_NORTHBRIDGE_AMD_K8),y)
 STAGE2_DEVICE_SRC += hypertransport.c
 endif
+
+
+$(obj)/device/pci_device.o: $(src)/device/pci_device.c $(obj)/statictree.h

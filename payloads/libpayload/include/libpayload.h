@@ -27,6 +27,19 @@
  * SUCH DAMAGE.
  */
 
+/** @mainpage
+ * @section intro Introduction
+ * libpayload is a small BSD-licensed static library (a lightweight
+ * implementation of common and useful functions) intended to be used
+ * as a basis for coreboot payloads.
+ *
+ * @section example Example
+ * Here is an example of a very simple payload:
+ * @include sample/hello.c
+ *
+ */
+
+
 #ifndef _LIBPAYLOAD_H
 #define _LIBPAYLOAD_H
 
@@ -73,6 +86,10 @@ static const char _pstruct(key)[]                                        \
 #define NVRAM_RTC_FREQ_SELECT    10
 #define  NVRAM_RTC_UIP           0x80
 
+/**
+ * @defgroup nvram NVRAM and RTC functions
+ * @{
+ */
 struct tm {
 	int tm_sec;
 	int tm_min;
@@ -85,19 +102,33 @@ struct tm {
 	int tm_isdst;
 };
 
-/* drivers/nvram.c */
 u8 nvram_read(u8 addr);
 void nvram_write(u8 val, u8 addr);
 int nvram_updating(void);
 void rtc_read_clock(struct tm *tm);
+/** @} */
 
-/* drivers/keyboard.c */
+/**
+ * @defgroup input Device functions
+ * @{ @}
+ */
+
+/**
+ * @defgroup keyboard Keyboard functions
+ * @ingroup input
+ * @{
+ */
 void keyboard_init(void);
 int keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);
+/** @} */
 
-/* drivers/serial.c */
+/**
+ * @defgroup serial Serial functions
+ * @ingroup input
+ * @{
+ */
 void serial_init(void);
 void serial_putchar(unsigned char c);
 int serial_havechar(void);
@@ -109,13 +140,23 @@ void serial_end_bold(void);
 void serial_start_altcharset(void);
 void serial_end_altcharset(void);
 void serial_set_cursor(int y, int x);
+/** @} */
 
-/* drivers/speaker.c */
+/**
+ * @defgroup speaker Speaker functions
+ * @ingroup input
+ * @{
+ */
 void speaker_enable(u16 freq);
 void speaker_disable(void);
 void speaker_tone(u16 freq, unsigned int duration);
+/** @} */
 
-/* video/video.c */
+/**
+ * @defgroup video Video functions
+ * @ingroup input
+ * @{
+ */
 int video_console_init(void);
 void video_console_putchar(unsigned int ch);
 void video_console_putc(u8 row, u8 col, unsigned int ch);
@@ -123,11 +164,15 @@ void video_console_clear(void);
 void video_console_cursor_enable(int state);
 void video_console_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en);
 void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
+/** @} */
 
 /* drivers/option.c */
 int get_option(void *dest, char *name);
 
-/* libc/console.c */
+/**
+ * @defgroup console Console functions
+ * @{
+ */
 void console_init(void);
 int putchar(int c);
 int puts(const char *s);
@@ -138,8 +183,12 @@ int getchar_timeout(int *ms);
 extern int last_putchar;
 
 #define havechar havekey
+/** @} */
 
-/* libc/ctype.c */
+/**
+ * @defgroup ctype Character Type Functions
+ * @{
+ */
 int isalnum(int c);
 int isalpha(int c);
 int isascii(int c);
@@ -155,20 +204,36 @@ int isupper(int c);
 int isxdigit(int c);
 int tolower(int c);
 int toupper(int c);
+/** @} */
 
-/* libc/ipchecksum.c */
+/**
+ * @defgroup ipchecksum IP Checksum Functions
+ * @{
+ */
 unsigned short ipchksum(const void *ptr, unsigned long nbytes);
+/** @} */
 
-/* libc/malloc.c */
+/**
+ * @defgroup malloc Memory Allocation Functions
+ * @{
+ */
 void free(void *ptr);
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
+/** @} */
 
-/* libc/exec.c */
+/**
+ * @defgroup exec Execution Functions
+ * @{
+ */
 int exec(long addr, int argc, char **argv);
+/** @} */
 
-/* libc/lib.c */
+/**
+ * @defgroup misc Misc Functions
+ * @{
+ */
 int bcd2dec(int b);
 int dec2bcd(int d);
 int abs(int j);
@@ -176,27 +241,43 @@ long int labs(long int j);
 long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
+/** @} */
 
-/* libc/memory.c */
+/**
+ * @defgroup memory Memory Manipulation Functions
+ * @{
+ */
 void *memset(void *s, int c, size_t n);
 void *memcpy(void *dst, const void *src, size_t n);
 void *memmove(void *dst, const void *src, size_t n);
 int memcmp(const void *s1, const void *s2, size_t len);
+/** @} */
 
-/* libc/printf.c */
+/**
+ * @defgroup printf Print Functions
+ * @{
+ */
 int snprintf(char *str, size_t size, const char *fmt, ...);
 int sprintf(char *str, const char *fmt, ...);
 int vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 int vsprintf(char *str, const char *fmt, va_list ap);
 int printf(const char *fmt, ...);
 int vprintf(const char *fmt, va_list ap);
+/** @} */
 
-/* libc/rand.c */
+/**
+ * @defgroup rand Random Number Generator Functions
+ * @{
+ */
 int rand_r(unsigned int *seed);
 int rand(void);
 void srand(unsigned int seed);
+/** @} */
 
-/* libc/sha1.c */
+/**
+ * @defgroup hash Hashing Functions
+ * @{
+ */
 #define SHA1_BLOCK_LENGTH	64
 #define SHA1_DIGEST_LENGTH	20
 typedef struct {
@@ -209,8 +290,12 @@ void SHA1Transform(u32 state[5], const u8 buffer[SHA1_BLOCK_LENGTH]);
 void SHA1Update(SHA1_CTX *context, const u8 *data, size_t len);
 void SHA1Final(u8 digest[SHA1_DIGEST_LENGTH], SHA1_CTX *context);
 u8 *sha1(const u8 *data, size_t len, u8 *buf);
+/** @} */
 
-/* libc/string.c */
+/**
+ * @defgroup string String Functions
+ * @{
+ */
 size_t strnlen(const char *str, size_t maxlen);
 size_t strlen(const char *str);
 int strcmp(const char *s1, const char *s2);
@@ -221,18 +306,24 @@ char *strncat(char *d, const char *s, size_t n);
 char *strchr(const char *s, int c);
 char *strdup(const char *s);
 char *strstr(const char *h, const char *n);
+/** @} */
 
-/* libc/time.c */
-
+/**
+ * @defgroup time Time Functions
+ * @{
+ */
 struct timeval {
 	time_t tv_sec;
 	suseconds_t tv_usec;
 };
 
 int gettimeofday(struct timeval *tv, void *tz);
+/** @} */
 
-/* libc/lar.c */
-
+/**
+ * @defgroup lar LAR Functions
+ * @{
+ */
 struct LAR {
 	void * start;
 	int cindex;
@@ -281,14 +372,16 @@ int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
 
 int lfseek(struct LFILE *stream, long offset, int whence);
 int lfclose(struct LFILE *file);
+/** @} */
 
-/* i386/coreboot.c */
+/**
+ * @defgroup arch Architecture Specific Functions
+ * @{
+ */
 int get_coreboot_info(struct sysinfo_t *info);
 
-/* i386/sysinfo.c */
 void lib_get_sysinfo(void);
 
-/* i386/timer.c */
 /* Timer functions - defined by each architecture. */
 unsigned int get_cpu_speed(void);
 void ndelay(unsigned int n);
@@ -296,13 +389,17 @@ void udelay(unsigned int n);
 void mdelay(unsigned int n);
 void delay(unsigned int n);
 
-/* i386/util.S */
 #define abort() halt()
 void halt(void) __attribute__ ((noreturn));
 void fatal(const char* msg) __attribute__ ((noreturn));
+/** @} */
 
-/* libc/readline.c */
+/**
+ * @defgroup readline Readline Functions
+ * @{
+ */
 char * readline(const char * prompt);
 int getline(char *buffer, int len);
+/** @} */
 
 #endif

@@ -144,11 +144,14 @@ doxy: doxygen
 doxygen:
 	$(Q)$(DOXYGEN) Doxyfile
 
-clean:
+doxyclean: doxygen-clean
+doxygen-clean:
+	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
+
+clean: doxygen-clean
 	$(Q)rm -rf $(obj)/crypto $(obj)/curses $(obj)/drivers
 	$(Q)rm -rf $(obj)/i386 $(obj)/lib $(obj)/libc 
 	$(Q)rm -rf $(src)/lib/i386 $(src)/lib/libpayload.a
-	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
 
 distclean: clean
 	$(Q)rm -rf build

@@ -106,6 +106,10 @@ u8 spd_read_byte(u16 device, u8 address)
  */
 int main(void)
 {
+	/* sure, we could put this in a .h. It's called precisely once, from this one 
+	 * place. And it only relates to the initram stage. I think I'll leave it here. 
+	 * That way we can see the definition without grepping the source tree. 
+	 */
 	void enable_smbus(void);
 	u32 init_detected;
 	static const u16 spd_addr[] = {
@@ -161,7 +165,7 @@ int main(void)
 	 * So here need to make sure last core0 is started, esp for two way system,
 	 * (there may be apic id conflicts in that case) 
 	 */
-        start_other_cores();
+        start_all_cores();
 	wait_all_other_cores_started(bsp_apicid);
 #endif
 	
@@ -177,9 +181,9 @@ int main(void)
 #if K8_SET_FIDVID == 1
 
         {
-                msr_t msr;
-                msr=rdmsr(0xc0010042);
-                print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\r\n");
+                struct msr msr;
+                msr=rdmsr(FIDVID_STATUS);
+                printk(BIOS_DEBUG, "begin msr fid, vid %08x:%08x\n",  msr.hi ,msr.lo);
 
         }
 
@@ -191,9 +195,9 @@ int main(void)
 
         // show final fid and vid
         {
-                msr_t msr;
-                msr=rdmsr(0xc0010042);
-                print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\r\n"); 
+                struct msr;
+                msr=rdmsr(msr_t);
+               printk(BIOS_DEBUG, "begin msr fid, vid %08x:%08x\n",  msr.hi ,msr.lo);
 
         }
 #endif
@@ -204,8 +208,9 @@ int main(void)
 
         // fidvid change will issue one LDTSTOP and the HT change will be effective too
         if (needs_reset) {
-                print_info("ht reset -\r\n");
-                soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
+                printk(BIOS_INFO, "ht reset -\r\n");
+#warning define soft_reset_x
+//FIXME                soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
         }
 #endif
 	allow_all_aps_stop(bsp_apicid);
@@ -247,9 +252,8 @@ int main(void)
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif
 
-        post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
-
-1
+#warning re-implement post_cache_as_ram
+ //       post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
 
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;

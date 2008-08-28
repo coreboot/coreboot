@@ -33,36 +33,7 @@
 #include <amd/k8/k8.h>
 #include <mc146818rtc.h>
 #include <spd.h>
-
-// for rev F, need to set FID to max
-#define K8_SET_FIDVID 1
-
-#ifndef K8_SET_FIDVID_CORE0_ONLY
-	/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores, so may don't need to do twice */
-#define K8_SET_FIDVID_CORE0_ONLY 1
-#endif
-
-static void print_initcpu8(const char *strval, unsigned int val)
-{
-	printk(BIOS_DEBUG, "%s%02x\n", strval, val);
-}
-
-static void print_initcpu8_nocr(const char *strval, unsigned val)
-{
-	printk(BIOS_DEBUG, "%s%02x", strval, val);
-}
-
-
-static void print_initcpu16(const char *strval, unsigned val)
-{
-	printk(BIOS_DEBUG, "%s%04x\n", strval, val);
-}
-
-static inline void print_initcpu(const char *strval, unsigned val)
-{
-	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
-
-}
+#include <lapic.h>
 
 typedef void (*process_ap_t) (unsigned apicid, void *gp);
 /* See page 330 of Publication # 26094       Revision: 3.30 Issue Date: February 2006
@@ -173,7 +144,7 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range,
  * @param pvalue pointer to int for return value
  * @returns 0 on success, -1 on error 
  */
-static int lapic_remote_read(int apicid, int reg, unsigned int *pvalue)
+int lapic_remote_read(int apicid, int reg, unsigned int *pvalue)
 {
 	int timeout;
 	unsigned status;
@@ -216,27 +187,13 @@ static int lapic_remote_read(int apicid, int reg, unsigned int *pvalue)
 
 #define LAPIC_MSG_REG 0x380
 
+void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
 
-#if K8_SET_FIDVID == 1
-static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
-#endif
-
-static inline __attribute__ ((always_inline))
 void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id,
 				const char *str)
 {
-#if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug
-	    ("%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n",
+	printk(BIOS_DEBUG, ""%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n",
 	     str, apicid, id.nodeid, id.coreid);
-#else
-	printk(BIOS_DEBUG, str);
-	printk(BIOS_DEBUG, " ---- {APICID = ");
-	print_debug_hex8(apicid);
-	printk(BIOS_DEBUG, " NODEID = "), print_debug_hex8(id.nodeid);
-	printk(BIOS_DEBUG, " COREID = "), print_debug_hex8(id.coreid);
-	printk(BIOS_DEBUG, "} --- \r\n");
-#endif
 }
 
 
@@ -247,7 +204,7 @@ void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id,
  * @param state The state we are waiting for
  * @return 0 on success, readback value on error 
  */
-static unsigned int wait_cpu_state(unsigned apicid, unsigned state)
+unsigned int wait_cpu_state(unsigned apicid, unsigned state)
 {
 	unsigned readback = 0;
 	unsigned timeout = 1;
@@ -275,15 +232,15 @@ static unsigned int wait_cpu_state(unsigned apicid, unsigned state)
  * @param ap_apicid the apic id of the CPu
  * @param gp arbitrary parameter
  */
-static void wait_ap_started(unsigned ap_apicid, void *gp)
+void wait_ap_started(unsigned ap_apicid, void *gp)
 {
 	unsigned timeout;
 	timeout = wait_cpu_state(ap_apicid, 0x33);	// started
 	if (timeout) {
-		print_initcpu8_nocr("*", ap_apicid);
-		print_initcpu("*", timeout);
+		printk(BIOS_DEBUG, "%s%02x", "*",  ap_apicid);
+		printk(BIOS_DEBUG, "%s%08x\n", "*",  timeout);
 	} else {
-		print_initcpu8_nocr(" ", ap_apicid);
+		printk(BIOS_DEBUG, "%s%02x", " ",  ap_apicid);
 	}
 }
 
@@ -300,7 +257,7 @@ static void wait_all_aps_started(unsigned bsp_apicid)
  * Wait on all other cores to start. This includes  cores on bsp, we think. 
  * @param bsp_apicid The BSP APIC ID
  */
-static void wait_all_other_cores_started(unsigned bsp_apicid)	// all aps other than core0
+void wait_all_other_cores_started(unsigned bsp_apicid)	// all aps other than core0
 {
 	printk(BIOS_DEBUG, "started ap apicid: ");
 	for_each_ap(bsp_apicid, 2, wait_ap_started, (void *) 0);
@@ -311,12 +268,12 @@ static void wait_all_other_cores_started(unsigned bsp_apicid)	// all aps other t
  * Stop all APs
  * @param bsp_apicid The BSP apic id, to make sure we don't send ourselves the stop
  */
-static void allow_all_aps_stop(unsigned bsp_apicid)
+void allow_all_aps_stop(unsigned bsp_apicid)
 {
 	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | 0x44);	// allow aps to stop
 }
 
-static void STOP_CAR_AND_CPU(void)
+void STOP_CAR_AND_CPU(void)
 {
 	disable_cache_as_ram();	// inline
 	stop_this_cpu();	// inline, it will stop all cores except node0/core0 the bsp ....
@@ -529,7 +486,7 @@ static unsigned int is_core0_started(unsigned nodeid)
 /**
  * Wait for all core 0s on all CPUs to start up. 
  */
-static void wait_all_core0_started(void)
+void wait_all_core0_started(void)
 {
 	//When core0 is started, it will distingush_cpu_resets. So wait for that
 	// whatever that comment means?
@@ -543,7 +500,7 @@ static void wait_all_core0_started(void)
 	for (i = 1; i < nodes; i++) {
 		while (!is_core0_started(i)) {
 		}
-		print_initcpu8_nocr(" ", i);
+		printk(BIOS_DEBUG, "%s%02x", " ",  i);
 	}
 	printk(BIOS_DEBUG, "\r\n");
 

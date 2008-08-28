@@ -33,3 +33,14 @@
 #define SB_HT_CHAIN_UNITID_OFFSET_ONLY 1
 #define ENABLE_APIC_EXT_ID 0
 #define LIFT_BSP_APIC_ID 1
+
+#warning clean up confusion on FIDVID. v2 was inconsistent. 
+/* In v2 there is confusion on the settings of these. 
+ * The serengeti config sets it to zero. 
+ * In the model_fxx support it is hardwired to 1. 
+ * We'll assume that setting it to 1 is ok. 
+ */
+#define K8_SET_FIDVID 1
+/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores, 
+ * so may don't need to do twice */
+#define K8_SET_FIDVID_CORE0_ONLY 1

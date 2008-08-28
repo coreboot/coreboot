@@ -38,6 +38,7 @@ INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/arch/x86/amd/model_fxx/init_cpus.c \
 			$(src)/arch/x86/amd/model_fxx/dualcore.c \
 			$(src)/arch/x86/amd/model_fxx/dualcore_id.c \
+			$(src)/arch/x86/amd/model_fxx/fidvid.c \
 			$(src)/lib/clog2.c
 
 

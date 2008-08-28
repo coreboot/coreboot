@@ -38,13 +38,6 @@
 #include <mc146818rtc.h>
 #include <lib.h>
 
-#define NODE_ID		0x60
-#define	HT_INIT_CONTROL 0x6c
-
-#define HTIC_ColdR_Detect  (1<<4)
-#define HTIC_BIOSR_Detect  (1<<5)
-#define HTIC_INIT_Detect   (1<<6)
-
 int cpu_init_detected(unsigned int nodeid)
 {
 	unsigned long htic;

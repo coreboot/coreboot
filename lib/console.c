@@ -4,6 +4,7 @@
 #include <uart8250.h>
 #include <stdarg.h>
 #include <string.h>
+#include <globalvars.h>
 
 int vtxprintf(void (*)(unsigned char, void *arg), 
 		void *arg, const char *, va_list);

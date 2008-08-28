@@ -27,6 +27,10 @@
  * SUCH DAMAGE.
  */
 
+/** @file libc/time.c
+ * @brief General Time Functions
+ */
+
 #include <config.h>
 #include <libpayload.h>
 #include <arch/rdtsc.h>
@@ -110,6 +114,12 @@ static void gettimeofday_init(void)
 }
 #endif
 
+/**
+ * Return the current time broken into a timeval structure
+ * @param tv A pointer to a timeval structure
+ * @param tz Added for compatability - not used
+ * @return 0 for success
+ */
 int gettimeofday(struct timeval *tv, void *tz)
 {
 	/* Call the gtod init when we need it - this keeps

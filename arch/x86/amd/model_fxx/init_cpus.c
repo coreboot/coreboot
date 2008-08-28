@@ -334,19 +334,25 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid,
 #endif
 
 /**
- * Init all the CPUs. Part of the process involves setting APIC IDs for all cores on all sockets. The code that is run 
+ * Init all the CPUs. Part of the process involves setting APIC IDs for all cores on all sockets. 
+ * The code that is run 
  * is for the most part the same on all cpus and cores of cpus. 
  * Since we only support F2 and later Opteron CPUs our job is considerably simplified
  * as compared to v2. The basic process it to set up the cpu 0 core 0, then the other cpus, one by one. 
- * Complications: BSP, a.k.a. cpu 0, comes up with APIC id 0, the others all come up with APIC id 7, including other cpu 0 cores. 
- * There is also the question of the need to "lift" the BSP APIC id. For some setups, we want the BSP APIC id to be 0; for others, 
+ * Complications: BSP, a.k.a. cpu 0, comes up with APIC id 0, the others all come up with APIC id 7, 
+ * including other cpu 0 cores. Why? Because the BSP brings them up one by one and assigns their APIC ID. 
+ * There is also the question of the need to "lift" the BSP APIC id. 
+ * For some setups, we want the BSP APIC id to be 0; for others, 
  * a non-zero value is preferred. This means that we have to change the BSP APIC ID on the fly. 
+ * 
  * So here we have it, some of the slickest code you'll ever read. Which cores run this function? 
  * All of them. 
  * Do they communicate through APIC Interrupts or memory? Yes. Both. APICs before
  * memory is ready, memory afterword. What is the state of the cores at the end of this function? 
  * They are all ready to go, just waiting to be started up. What is the state of memory on all sockets? 
  * It's all working. 
+ * Except that it's not quite that simple. We'll try to comment this well enough to make sense. 
+ * But rest assured, it's complicated!
  * @param cpu_init_detectedx has this cpu been init'ed before? 
  * @param sysinfo The sys_info pointer 
  * @returns the BSP APIC ID
@@ -363,7 +369,8 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 	 */
 
 	/* that is from initial apicid, we need nodeid and coreid later */
-	id = get_node_core_id_x();
+	/* this comment still confuses me, but I *think* "that" means the "bsp_apicid. Not sure. */
+	id = get_node_core_id();
 	printk(BIOS_DEBUG, "init_cpus: node %d core %d\n", id.nodeid, id.coreid);
 
 	/* The NB_CFG MSR is shared between cores on a given node. 
@@ -385,10 +392,14 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 #endif
 	}
 
+	/* enable the local APIC, which we need to do message passing between sockets. */
 	enable_lapic();
 //              init_timer(); // We need TMICT to pass msg for FID/VID change
 
 #if (ENABLE_APIC_EXT_ID == 1)
+	/* we wish to enable extended APIC IDs. We have an APIC ID already which we can
+	 * use as a "base" for the extended ID. 
+	 */
 	unsigned initial_apicid = get_initial_apicid();
 	/* We don't always need to lift the BSP APIC ID. 
 	 * Again, is there harm if we do it anyway? 
@@ -405,6 +416,9 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 
 		lapic_write(LAPIC_ID, dword);
 	}
+	/* Again, the bsp_apicid is a special case and if we changed it 
+	 * we need to remember that change.
+	 */
 #if LIFT_BSP_APIC_ID == 1
 	bsp_apicid += APIC_ID_OFFSET;
 #endif
@@ -440,9 +454,16 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 		//              start_other_core(id.nodeid); // start second core in first cpu, only allowed for nb_cfg_54 is not set
 	}
 	//Indicate to other CPUs that our CPU is running. 
+	/* and, again, recall that this is running on all sockets at some point, although it runs at
+	 * different times. 
+	 */
 	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x33);
 
-	/* non-BSP CPUs are now set up and need to halt. BSP will train memory on all CPUs. */
+	/* non-BSP CPUs are now set up and need to halt. There are a few possibilities here.
+	 * BSP may train memory
+	 * AP may train memory
+	 * In v2, both are possible. 
+	 */
 	if (apicid != bsp_apicid) {
 		unsigned timeout = 1;
 		unsigned loop = 100;
@@ -454,6 +475,15 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 #endif
 
 		// We need to stop the CACHE as RAM for this CPU, really?
+		/* Yes we do. What happens here is really interesting. To this point 
+		 * we have used APICs to communicate. We're going to use the sysinfo 
+		 * struct. But to do that we have to use real memory. So we have to 
+		 * disable car, and do it in a way that lets us continue in this function. 
+		 * The way we do it for non-node 0 is to never return from this function, 
+		 * but to do the work in this function to train RAM. 
+		 * Note that serengeti, the SimNow target, does not do this; it lets BSP train AP memory. 
+		 */
+		/* Wait for the bsp to enter state 44. */
 		while (timeout && (loop-- > 0)) {
 			timeout = wait_cpu_state(bsp_apicid, 0x44);
 		}
@@ -462,13 +492,18 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 			    ("while waiting for BSP signal to STOP, timeout in ap ",
 			     apicid);
 		}
-		lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x44);	// bsp can not check it before stop_this_cpu
+		/* indicate that we are in state 44 as well. We are catching up to the BSP. */
+		// old comment follows -- not sure what this means yet. 
+		// bsp can not check it before stop_this_cpu
+		lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x44);
+		/* Now set up so we can use RAM. This will be low memory, i.e. BSP memory, already working. */
 		set_init_ram_access();
+		/* this is not done on Serengeti. */
 #if MEM_TRAIN_SEQ == 1
 		train_ram_on_node(id.nodeid, id.coreid, sysinfo,
 				  STOP_CAR_AND_CPU);
 #endif
-
+		/* this is inline and there is no return. */
 		STOP_CAR_AND_CPU();
 	}
 
@@ -497,7 +532,7 @@ static unsigned int is_core0_started(unsigned nodeid)
 static void wait_all_core0_started(void)
 {
 	//When core0 is started, it will distingush_cpu_resets. So wait for that
-	// whatever that means
+	// whatever that comment means?
 	unsigned i;
 	unsigned nodes = get_nodes();
 

@@ -135,7 +135,6 @@ int main(void)
 	post_code(POST_START_OF_MAIN);
 	sysinfo = &(global_vars()->sys_info);
 
-	init_detected = sysinfo->init_detected;
 	/* well, here we are. For starters, we need to know if this is cpu0 core0. 
 	 * cpu0 core 0 will do all the DRAM setup. 
 	 */

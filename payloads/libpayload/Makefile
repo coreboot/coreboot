@@ -101,7 +101,7 @@ all: lib
 lib: prepare $(obj)/lib/libpayload.a copystuff
 
 # Copy libpayload.a and head.o into $(src)/lib where lpgcc et al expect them.
-copystuff:
+copystuff: $(obj)/$(ARCHDIR-y)/head.S.o $(obj)/lib/libpayload.a
 	$(Q)cp $(obj)/$(ARCHDIR-y)/head.S.o $(src)/lib/$(ARCHDIR-y)/head.o
 	$(Q)cp $(obj)/lib/libpayload.a $(src)/lib
 

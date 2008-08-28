@@ -31,7 +31,7 @@
 #include <amd_geodelx.h>
 #endif
 
-#ifdef :CONFIG_BOARD_EMULATION_QEMU_X86
+#ifdef CONFIG_BOARD_EMULATION_QEMU_X86
 #include <qemu.h>
 #endif
 

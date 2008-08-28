@@ -31,6 +31,10 @@
 #include <amd_geodelx.h>
 #endif
 
+#ifdef :CONFIG_BOARD_EMULATION_QEMU_X86
+#include <qemu.h>
+#endif
+
 /*
  * struct global_vars is managed entirely from C code. Keep in mind that there
  * is NO buffer at the end of the struct, so having zero-sized arrays at the

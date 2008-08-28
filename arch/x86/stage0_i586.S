@@ -439,6 +439,9 @@ lout:
 	movl    $0, %eax
 	pushl   %eax
 
+	/* Store zero for the unused init_detected parameter. */
+	pushl   %eax
+
 	/* Restore the BIST result */
 	movl	%ebp, %eax
 	/* We need to set ebp ? No need */

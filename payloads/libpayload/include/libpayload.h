@@ -76,30 +76,33 @@ static const char _pstruct(key)[]                                        \
   __attribute__((__used__))                                              \
   __attribute__((section(".note.pinfo"),unused)) = #key "=" value
 
-/* Some NVRAM byte definitions */
-#define NVRAM_RTC_SECONDS        0
-#define NVRAM_RTC_MINUTES        2
-#define NVRAM_RTC_HOURS          4
-#define NVRAM_RTC_DAY            7
-#define NVRAM_RTC_MONTH          8
-#define NVRAM_RTC_YEAR           9
-#define NVRAM_RTC_FREQ_SELECT    10
-#define  NVRAM_RTC_UIP           0x80
-
 /**
  * @defgroup nvram NVRAM and RTC functions
  * @{
  */
+
+#define NVRAM_RTC_SECONDS        0      /**< RTC Seconds offset in CMOS */
+#define NVRAM_RTC_MINUTES        2      /**< RTC Minutes offset in CMOS */
+#define NVRAM_RTC_HOURS          4      /**< RTC Hours offset in CMOS */
+#define NVRAM_RTC_DAY            7      /**< RTC Days offset in CMOS */
+#define NVRAM_RTC_MONTH          8      /**< RTC Month offset in CMOS */
+#define NVRAM_RTC_YEAR           9      /**< RTC Year offset in CMOS */
+#define NVRAM_RTC_FREQ_SELECT    10     /**< RTC Update Status Register */
+#define  NVRAM_RTC_UIP           0x80
+
+/** @struct tm
+ *  \brief Broken down time structure
+ */
 struct tm {
-	int tm_sec;
-	int tm_min;
-	int tm_hour;
-	int tm_mday;
-	int tm_mon;
-	int tm_year;
-	int tm_wday;
-	int tm_yday;
-	int tm_isdst;
+	int tm_sec;   /**< Number of seconds after the minute */
+	int tm_min;   /**< Number of minutes after the hour */
+	int tm_hour;  /**< Number of hours past midnight */
+	int tm_mday;  /**< The day of the month */
+	int tm_mon;   /**< The month of the year */
+	int tm_year;  /**< The number of years since 1900 */
+	int tm_wday;  /**< The day of the week */
+	int tm_yday;  /**< The number of days since January 1 */
+	int tm_isdst; /**< A flag indicating daylight savings time */
 };
 
 u8 nvram_read(u8 addr);
@@ -312,9 +315,14 @@ char *strstr(const char *h, const char *n);
  * @defgroup time Time Functions
  * @{
  */
+
+/** @struct timeval
+ * @brief System time structure
+ */
+
 struct timeval {
-	time_t tv_sec;
-	suseconds_t tv_usec;
+	time_t tv_sec;       /**< Seconds */
+	suseconds_t tv_usec; /**< Microseconds */
 };
 
 int gettimeofday(struct timeval *tv, void *tz);
@@ -324,36 +332,50 @@ int gettimeofday(struct timeval *tv, void *tz);
  * @defgroup lar LAR Functions
  * @{
  */
+
+/** @struct LAR
+ * @brief LAR File Header
+ */
 struct LAR {
-	void * start;
-	int cindex;
-	int count;
-	int alloc;
-	int eof;
-	void **headers;
+	void * start;   /**< Location of the LAR in memory */
+	int cindex;     /**< Next file to return in readlar() */
+	int count;      /**< Number of entries in the header cache */
+	int alloc;      /**< Number of slots in the header cache */
+	int eof;        /**< Last entry in the header cache */
+	void **headers; /**< Pointer to the header cache */
 };
 
+/** @struct larent
+ * @brief A structure representing the next LAR entry
+ */
 struct larent {
-	u8 name[LAR_MAX_PATHLEN];
+	u8 name[LAR_MAX_PATHLEN]; /**< The name of the next LAR entry */
 };
 
+/** @struct larstat
+ * @brief A structure containing information about a LAR file
+ */
 struct larstat {
-	u32 len;
-	u32 reallen;
-	u32 checksum;
-	u32 compchecksum;
-	u32 offset;
-	u32 compression;
-	u64 entry;
-	u64 loadaddress;
+	u32 len;           /**< Length of the file in the LAR */
+	u32 reallen;       /**< Length of the uncompressed file */
+	u32 checksum;      /**< Checksum of the uncompressed file */
+	u32 compchecksum;  /**< Checksum of the compressed file in the LAR */
+	u32 offset;        /**< Offset of the file in the LAR */
+	u32 compression;   /**< Compression type of the file */
+	u64 entry;         /**< Entry point of the file for executables */
+	u64 loadaddress;   /**< Address in memory to put the uncompressed file */
 };
+
+/** @struct LFILE
+ * @brief A structure representing a LAR file
+ */
 
 struct LFILE {
-	struct LAR *lar;
-	struct lar_header *header;
-	u32 size;
-	void *start;
-	u32 offset;
+	struct LAR *lar;           /**< Pointer to the LAR struct */
+	struct lar_header *header; /**< Pointer to the header struct */
+	u32 size;                  /**< Size of the file */
+	void *start;               /**< Start of the file in memory */
+	u32 offset;                /**< Offset of the file in the LAR */
 };
 
 struct LAR *openlar(void *addr);
@@ -366,9 +388,9 @@ int lfverify(struct LAR *lar, const char *filename);
 struct LFILE * lfopen(struct LAR *lar, const char *filename);
 int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
 
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
+#define SEEK_SET 0 /**@def The seek offset is absolute  */
+#define SEEK_CUR 1 /**@def The seek offset is against the current position */
+#define SEEK_END 2 /**@def The see offset is against the end of the file */
 
 int lfseek(struct LFILE *stream, long offset, int whence);
 int lfclose(struct LFILE *file);

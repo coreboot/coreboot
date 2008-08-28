@@ -418,6 +418,9 @@ void fatal(const char* msg) __attribute__ ((noreturn));
 
 /**
  * @defgroup readline Readline Functions
+ * This interface provides a simple implementation of the standard
+ * readline and getline functions.  They are suitable for reading a
+ * line of input from the console.
  * @{
  */
 char * readline(const char * prompt);

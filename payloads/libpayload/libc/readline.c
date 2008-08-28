@@ -27,16 +27,26 @@
  * SUCH DAMAGE.
  */
 
+/** @file libc/readline.c
+ * @brief Simple readline implementation
+ */
+
 #include <libpayload.h>
 
 static char * readline_buffer;
 static int readline_bufferlen;
 
 /**
- * This readline implementation is rather simple, but it does more than the
- * original readline() because it allows us to have a pre-filled buffer. To
- * pre-fill the buffer, use the getline() function.
+ * @brief Read a line from the terminal and return it
+ * @param prompt A prompt to display on the line
+ * @return A pointer to the input string
+ *
+ * Read a line from the terminal and return it.  This readline implementation
+ * is rather simple, but it does more than the original readline() because
+ * it allows us to have a pre-filled buffer. To pre-fill the buffer, use the
+ * getline() function.
  */
+
 char * readline(const char * prompt)
 {
 	char *buffer;
@@ -50,7 +60,7 @@ char * readline(const char * prompt)
 	}
 
 	buffer = readline_buffer;
-	
+
 	/* print prompt */
 	if (prompt) {
 		current = 0;
@@ -139,6 +149,18 @@ out:
 
 	return buffer;
 }
+
+/**
+ * @brief Read a line from the input and store it in a buffer
+ * @param prompt A buffer to store the line in
+ * @param len Length of the buffer
+ * @return The final length of the string
+ * This function allows the user to pass a predefined buffer to
+ * readline().  The buffer may be filled with a default value
+ * which will be displayed by readline and can be edited as normal.
+ * The final input string returned by readline will be returned in
+ * the buffer and the function will return the length of the string.
+ */
 
 int getline(char *buffer, int len)
 {

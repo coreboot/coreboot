@@ -47,7 +47,6 @@ struct global_vars {
 #endif
 	unsigned int loglevel;
 	/* these two values are of interest in many stages */
-	u32 bist;
 	u32 init_detected;
 	struct sys_info sys_info;
 };

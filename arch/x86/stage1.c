@@ -143,7 +143,9 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
  * This function is called from assembler code with its argument on the
  * stack. Force the compiler to generate always correct code for this case.
  * We have cache as ram running and can start executing code in C.
- * @param bist Built In Self Test value
+ * @param bist Built In Self Test, which is used to indicate status of self test.
+ * bist is defined by the CPU hardware and is present in EAX on first instruction of coreboot. 
+ * Its value is implementation defined.
  * @param init_detected This (optionally set) value is used on some platforms (e.g. k8) to indicate
  * that we are restarting after some sort of reconfiguration. Note that we could use it on geode but 
  * do not at present. 
@@ -174,6 +176,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
 
 	// before we do anything, we want to stop if we dont run
 	// on the bootstrap processor.
+#warning We do not want to check BIST here, we want to check whether we are BSC!
 	if (bist==0) {
 		// stop secondaries
 		stop_ap();
@@ -183,7 +186,6 @@ void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
 	 * NEVER run this on an AP!
 	 */
 	global_vars_init(&globvars);
-	globvars.bist = bist;
 	globvars.init_detected = init_detected;
 
 	hardware_stage1();

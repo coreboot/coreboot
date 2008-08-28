@@ -86,12 +86,11 @@ u8 spd_read_byte(u16 device, u8 address)
 
 /** 
   * main for initram for the AMD Serengeti
- * @param bist Built In Self Test, which is used to indicate status of self test
  * @param init_detected Used to indicate that we have been started via init
  * @returns 0 on success
  * The purpose of this code is to not only get ram going, but get any other cpus/cores going. 
  * The two activities are very tightly connected and not really seperable. 
- * The BSP (boot strap processor? ) Core 0 is responsible for all training or all sockets. Note that
+ * The BSP (boot strap processor) Core 0 (BSC) is responsible for all training or all sockets. Note that
  * this need not be socket 0; one great strength of coreboot, as opposed to other BIOSes, is that it could
  * always boot with with a CPU in any socket, and even with empty sockets (as opposed to, e.g., the BIOS
  * that came installed on the Sun Ultra 40, which would freeze if one CPU were not installed).
@@ -100,9 +99,6 @@ u8 spd_read_byte(u16 device, u8 address)
  * 
   */
 /* 
- * bist is defined by the CPU hardware and is present in EAX on first instruction of coreboot. 
- * Its value is implementation defined. 
- * 
  * init_detected is used to determine if we did a soft reset as required by a reprogramming of the 
  * hypertransport links. If we did this kind of reset, bit 11 will be set in the MTRRdefType_MSR MSR. 
  * That may seem crazy, but there are not lots of places to hide a bit when the CPU does a reset. 
@@ -111,7 +107,7 @@ u8 spd_read_byte(u16 device, u8 address)
 int main(void)
 {
 	void enable_smbus(void);
-	u32 bist, u32 init_detected;
+	u32 init_detected;
 	static const u16 spd_addr[] = {
 			//first node
                         RC0|DIMM0, RC0|DIMM2, 0, 0,
@@ -139,17 +135,11 @@ int main(void)
 	post_code(POST_START_OF_MAIN);
 	sysinfo = &(global_vars()->sys_info);
 
-	bist = sysinfo->bist;
 	init_detected = sysinfo->init_detected;
-	/* We start out by looking at bist. Where was bist set? */
 	/* well, here we are. For starters, we need to know if this is cpu0 core0. 
 	 * cpu0 core 0 will do all the DRAM setup. 
 	 */
-	if (bist) {
-		printk(BIOS_EMERG, "Bist 0x%x\n", bist);
-		die("bist failure");
-	} else
-		bsp_apicid = init_cpus(init_detected, sysinfo);
+	bsp_apicid = init_cpus(init_detected, sysinfo);
 
 //	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
 

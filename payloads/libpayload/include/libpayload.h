@@ -399,7 +399,7 @@ int lfclose(struct LFILE *file);
 
 /**
  * @defgroup arch Architecture Specific Functions
- * This modules contains global architecure specific functions.
+ * This modules contains global architecture specific functions.
  * All architectures are expected to define these functions.
  * @{
  */

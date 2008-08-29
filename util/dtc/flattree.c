@@ -622,6 +622,12 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 		if (streq(prop->name, "on_mainboard")){
 			fprintf(f, "\t.on_mainboard = 1,\n");
 		}
+		if (streq(prop->name, "subsystem_vendor")){
+			fprintf(f, "\t.subsystem_vendor = %s,\n", prop->val.val);
+		}
+		if (streq(prop->name, "subsystem_device")){
+			fprintf(f, "\t.subsystem_device = %s,\n", prop->val.val);
+		}
 		if (streq(prop->name, "enabled")){
 			enabled = 1;
 		}

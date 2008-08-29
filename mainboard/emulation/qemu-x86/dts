@@ -30,8 +30,11 @@
 		bus@0 {
 			pci@0,0 {
 			};
-			pci@1,0 {
+			pci@1,1 {
 				/config/("southbridge/intel/i82371eb/ide");
+				subsystem_vendor = "0x15ad";
+				subsystem_device = "0x1976";
+				on_mainboard;
 			};
 		};
 	};

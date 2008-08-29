@@ -111,6 +111,7 @@ int main(void)
 	 * That way we can see the definition without grepping the source tree. 
 	 */
 	void enable_smbus(void);
+	void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn);
 	u32 init_detected;
 	static const u16 spd_addr[] = {
 			//first node
@@ -195,8 +196,8 @@ int main(void)
 
         // show final fid and vid
         {
-                struct msr;
-                msr=rdmsr(msr_t);
+                struct msr msr;
+                msr=rdmsr(FIDVID_STATUS);
                printk(BIOS_DEBUG, "begin msr fid, vid %08x:%08x\n",  msr.hi ,msr.lo);
 
         }

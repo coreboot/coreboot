@@ -120,7 +120,8 @@ extern inline void lapic_write_atomic(unsigned long reg, unsigned long v)
 	xchg((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg), v);
 }
 
-
+/* I think we don't want to do this any more. But there is one defined for k8 explicitly; what to do?*/
+#if 0
 #ifdef CONFIG_X86_GOOD_APIC
 # define FORCE_READ_AROUND_WRITE 0
 # define lapic_read_around(x) lapic_read(x)
@@ -155,7 +156,7 @@ static inline int lapic_remote_read(int apicid, int reg, unsigned long *pvalue)
 	return result;
 }
 
-
+#endif
 void setup_lapic(void);
 
 

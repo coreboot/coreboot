@@ -62,6 +62,28 @@
 #define TOP_MEM_MASK			0x007fffff
 #define TOP_MEM_MASK_KB			(TOP_MEM_MASK >> 10)
 
+/* MSRs for the model_fxx */
+/* the comments are confusing. Does "only E0" mean "only E0 or later" or really "Only E0"
+ */
+#define HWCR_MSR			0xC0010015
+#define NB_CFG_MSR			0xC001001f
+#define LS_CFG_MSR                      0xC0011020
+#define IC_CFG_MSR			0xC0011021
+#define DC_CFG_MSR			0xC0011022
+#define BU_CFG_MSR			0xC0011023
+#define FIDVID_CTL				0xC0010041
+#define FIDVID_STATUS			0xC0010042
+
+
+#define CPU_ID_FEATURES_MSR		0xc0011004
+
+/* D0 only */
+#define CPU_ID_HYPER_EXT_FEATURES	0xc001100d
+/* E0 only */
+#define LOGICAL_CPUS_NUM_MSR		0xc001100d
+
+#define CPU_ID_EXT_FEATURES_MSR		0xc0011005
+
 /* Definitions of various K8 registers for REV F*/
 /* Function 0 */
 #define NODEID 0x60
@@ -102,6 +124,10 @@
 #define  HTTC_HI_PRI_BYP_CNT_SHIFT  26
 #define  HTTC_HI_PRI_BYP_CNT_MASK   3
 
+#define	HT_INIT_CONTROL 0x6c
+#define HTIC_ColdR_Detect  (1<<4)
+#define HTIC_BIOSR_Detect  (1<<5)
+#define HTIC_INIT_Detect   (1<<6)
 
 /* Function 1 */
 #define PCI_IO_BASE0       0xc0
@@ -459,6 +485,7 @@ that are corresponding to 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x10, 
 #define MCA_NB_CONFIG      0x44
 #define   MNC_ECC_EN       (1 << 22)
 #define   MNC_CHIPKILL_EN  (1 << 23)
+#define	MNC_NBMCATOMSTCPUEN (1 << 27)
 
 #define SCRUB_CONTROL	   0x58
 #define	  SCRUB_NONE	    0
@@ -519,6 +546,9 @@ that are corresponding to 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x10, 
 #define InitComplete      (1 << 1)
 #define NonCoherent       (1 << 2)
 #define ConnectionPending (1 << 4)
+
+/* Special LAPIC define which we only find in the K8 sources. */
+#define LAPIC_MSG_REG 0x380
 
 #ifndef ASSEMBLY
 
@@ -614,9 +644,10 @@ struct node_core_id {
         unsigned coreid;
 };
 
-/* use this to get the nodeid and core it of the current cpu (but not other CPUs) */
-/* the nb_cfg_54 indicates the setting of bit 54 (InitApicIdCpuIdLo) */
-struct node_core_id get_node_core_id(unsigned int nb_cfg_54);
+/* use this to get the nodeid and core id of the current cpu 
+ * (but not other CPUs)
+ */
+struct node_core_id get_node_core_id(void);
 
 struct device;
 unsigned get_apicid_base(unsigned ioapic_num);
@@ -628,7 +659,36 @@ struct hw_mem_hole_info {
 	int node_id;
 };
 
+typedef void (*process_ap_t) (unsigned apicid, void *gp);
+
 struct hw_mem_hole_info get_hw_mem_hole_info(void);
+
+/* General purpose support functions that can run in any stage. */
+
+unsigned int get_nodes(void);
+unsigned int init_cpus(unsigned cpu_init_detectedx,
+	       struct sys_info *sysinfo);
+void setup_coherent_ht_domain(void);
+void wait_all_core0_started(void);
+void start_all_cores(void);
+void wait_all_other_cores_started(unsigned bsp_apicid);
+void for_each_ap(unsigned bsp_apicid, unsigned core_range,
+			process_ap_t process_ap, void *gp);
+void ht_setup_chains_x(struct sys_info *sysinfo);
+int optimize_link_coherent_ht(void);
+int optimize_link_incoherent_ht(struct sys_info *sysinfo);
+void allow_all_aps_stop(unsigned bsp_apicid);
+unsigned int get_core_count(void);
+void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, 
+		const u16 *spd_addr);
+int lapic_remote_read(int apicid, int reg, unsigned int *pvalue);
+void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id,
+				const char *str);
+unsigned int wait_cpu_state(unsigned apicid, unsigned state);
+void set_apicid_cpuid_lo(void);
+/* fidvid.c */
+void enable_fid_change(void);
+void init_fidvid_bsp(unsigned bsp_apicid);
 
 #endif /* ! ASSEMBLY */
 

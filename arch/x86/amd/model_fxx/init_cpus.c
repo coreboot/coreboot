@@ -35,7 +35,6 @@
 #include <spd.h>
 #include <lapic.h>
 
-typedef void (*process_ap_t) (unsigned apicid, void *gp);
 /* See page 330 of Publication # 26094       Revision: 3.30 Issue Date: February 2006
  * for APIC id discussion
  */
@@ -51,7 +50,7 @@ typedef void (*process_ap_t) (unsigned apicid, void *gp);
  * @param process pointer to the function to run
  * @param gp general purpose argument to be passed as a parameter to the function
  */
-static void for_each_ap(unsigned bsp_apicid, unsigned core_range,
+void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 			process_ap_t process_ap, void *gp)
 {
 	/* Assume the OS will not change our APIC ID. Why does this matter? Because some of the setup
@@ -74,8 +73,10 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 	get_option(&disable_siblings, "dual_core");
 
 	/* There is an interesting problem in different steppings. See page 373. The interpretation of the 
-	 * APIC ID bits is different. To determine which order is used, check bit 54 of the 
-	 /* here we assume that all nodes are the same stepping. If not, "otherwise we can use use nb_cfg_54 from bsp for all nodes" */
+	 * APIC ID bits is different. To determine which order is used, check bit 54 of the programmers' guide
+	 * here we assume that all nodes are the same stepping. 
+	 * If not, "otherwise we can use use nb_cfg_54 from bsp for all nodes"
+	 */
 	nb_cfg_54 = read_nb_cfg_54();
 
 
@@ -88,7 +89,7 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 		     NBCAP_CmpCap_MASK);
 		if (nb_cfg_54) {
 			if (j == 0)	// if it is single core, we need to increase siblings for apic calculation 
-				J = 1;
+				j = 1;
 		}
 		siblings = j;
 
@@ -192,7 +193,7 @@ void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
 void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id,
 				const char *str)
 {
-	printk(BIOS_DEBUG, ""%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n",
+	printk(BIOS_DEBUG, "%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\n",
 	     str, apicid, id.nodeid, id.coreid);
 }
 
@@ -445,8 +446,7 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 			timeout = wait_cpu_state(bsp_apicid, 0x44);
 		}
 		if (timeout) {
-			print_initcpu8
-			    ("while waiting for BSP signal to STOP, timeout in ap ",
+			printk(BIOS_DEBUG, "while waiting for BSP signal to STOP, timeout in ap 0x%08x\n",
 			     apicid);
 		}
 		/* indicate that we are in state 44 as well. We are catching up to the BSP. */

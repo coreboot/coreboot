@@ -12,6 +12,7 @@
 #include <amd/k8/k8.h>
 #include <mc146818rtc.h>
 #include <spd.h>
+#include <lapic.h>
 
 #define K8_SET_FIDVID_DEBUG 1
 
@@ -25,7 +26,7 @@
 
 #define FX_SUPPORT 1
 
-static void enable_fid_change(void)
+void enable_fid_change(void)
 {
 	u32 dword;
 	unsigned nodes;
@@ -35,26 +36,26 @@ static void enable_fid_change(void)
 
 #warning document these settings!
 	for (i = 0; i < nodes; i++) {
-		dword = pci_conf1_read_config32(PCI_DEV(0, 0x18+i, 3), 0xd8);
+		dword = pci_conf1_read_config32(PCI_BDF(0, 0x18+i, 3), 0xd8);
 		dword &= 0x8ff00000;
 		dword |= (2 << 28) | (0x02710);
-		pci_conf1_write_config32(PCI_DEV(0, 0x18+i, 3), 0xd8, dword);
+		pci_conf1_write_config32(PCI_BDF(0, 0x18+i, 3), 0xd8, dword);
 
 		dword = 0x04e2a707;
-		pci_conf1_write_config32(PCI_DEV(0, 0x18+i, 3), 0xd4, dword);
+		pci_conf1_write_config32(PCI_BDF(0, 0x18+i, 3), 0xd4, dword);
 
 		/* disable the DRAM interface at first, it will be enabled
 		 * by raminit again */
-		dword = pci_conf1_read_config32(PCI_DEV(0, 0x18+i, 2), 0x94);
+		dword = pci_conf1_read_config32(PCI_BDF(0, 0x18+i, 2), 0x94);
 		dword |= (1 << 14);
-		pci_conf1_write_config32(PCI_DEV(0, 0x18+i, 2), 0x94, dword);
+		pci_conf1_write_config32(PCI_BDF(0, 0x18+i, 2), 0x94, dword);
 
 		dword = 0x23070700; /* enable FID/VID change */
 //		dword = 0x00070000; /* enable FID/VID change */
-		pci_conf1_write_config32(PCI_DEV(0, 0x18+i, 3), 0x80, dword);
+		pci_conf1_write_config32(PCI_BDF(0, 0x18+i, 3), 0x80, dword);
 
 		dword = 0x00132113;
-		pci_conf1_write_config32(PCI_DEV(0, 0x18+i, 3), 0x84, dword);
+		pci_conf1_write_config32(PCI_BDF(0, 0x18+i, 3), 0x84, dword);
 
 	}
 }
@@ -250,7 +251,7 @@ void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 	u32 send;
 	u32 readback = 0;
 	unsigned int timeout = 1;
-	struct msr;
+	struct msr msr;
 	u32 vid_cur;
 	u32 fid_cur;
 	u32 fid_max;
@@ -425,7 +426,7 @@ static void store_ap_apicid(unsigned ap_apicid, void *gp)
 }
 #endif
 
-static void init_fidvid_bsp(unsigned bsp_apicid)
+void init_fidvid_bsp(unsigned bsp_apicid)
 {
 	u32 vid_max;
 	u32 fid_max;

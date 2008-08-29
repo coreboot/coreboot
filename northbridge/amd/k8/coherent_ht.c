@@ -1692,7 +1692,7 @@ int optimize_link_read_pointers(unsigned nodes)
 /** 
  * get_nodes
  * see page 46 of the BKDG Publication # 26094       Revision: 3.30 Issue Date: February 2006
- * @returns an int containing the node id. 
+ * @returns an int containing the number of nodes.
  * The format of the register is 32 bits, and the node count is in bits 4-6
  */
 unsigned int get_nodes(void)

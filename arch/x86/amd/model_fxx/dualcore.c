@@ -21,10 +21,11 @@
 
 /**
  * Given a nodeid, return the count of the number of cores in that node. 
+ * Note there are two very similar functions that do almost the same thing. 
  * @param nodeid The nodeid
  * @returns The number of cores in that node. 
  */
-unsigned int get_core_count(unsigned int nodeid)
+unsigned int get_node_core_count(unsigned int nodeid)
 {
 	u32 dword;
 	dword = pci_conf1_read_config32(PCI_BDF(0, 0x18+nodeid, 3), NORTHBRIDGE_CAP);
@@ -59,22 +60,22 @@ void set_apicid_cpuid_lo(void)
 void start_cores(unsigned nodeid)
 {
 	u32 dword;
-	/* set PCI_DEV(0, 0x18+nodeid, 3), 0x44 bit 27 to redirect all MC4 
+	/* set PCI_BDF(0, 0x18+nodeid, 3), 0x44 bit 27 to redirect all MC4 
 	 * accesses and error logging to core0
 	 */
 	dword = pci_conf1_read_config32(PCI_BDF(0, 0x18+nodeid, 3), MCA_NB_CONFIG);
 	dword |= MNC_NBMCATOMSTCPUEN; // NbMcaToMstCpuEn bit
-	pci_conf1_write_config32(PCI_DEV(0, 0x18+nodeid, 3), MCA_NB_CONFIG, dword);
-	// set PCI_DEV(0, 0x18+nodeid, 0), 0x68 bit 5 to start core1
+	pci_conf1_write_config32(PCI_BDF(0, 0x18+nodeid, 3), MCA_NB_CONFIG, dword);
+	// set PCI_BDF(0, 0x18+nodeid, 0), 0x68 bit 5 to start core1
 	dword = pci_conf1_read_config32(PCI_BDF(0, 0x18+nodeid, 0), HT_TRANSACTION_CONTROL);
 	dword |= HTTC_CPU1_EN;
-	pci_conf1_write_config32(PCI_DEV(0, 0x18+nodeid, 0), HT_TRANSACTION_CONTROL, dword);
+	pci_conf1_write_config32(PCI_BDF(0, 0x18+nodeid, 0), HT_TRANSACTION_CONTROL, dword);
 }
 
 /**
  * start cores on all nodes including BSP. This is assumed to be running on core 0 of node 0
  */
-static inline void start_all_cores(void)
+void start_all_cores(void)
 {
 	unsigned nodes;
 	unsigned nodeid;
@@ -88,7 +89,7 @@ static inline void start_all_cores(void)
         nodes = get_nodes();
 
         for(nodeid=0; nodeid<nodes; nodeid++) {
-		if( get_core_count(nodeid) > 0) {
+		if( get_node_core_count(nodeid) > 0) {
 			start_cores(nodeid);
 		}
 	}

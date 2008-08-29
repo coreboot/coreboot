@@ -636,6 +636,9 @@ void pci_dev_set_subsystem_wrapper(struct device *dev)
 			vendor = mainboard_pci_subsystem_vendor;
 		if (!device)
 			device = mainboard_pci_subsystem_device;
+	} else {
+		printk(BIOS_DEBUG, "%s: Device not on_mainboard\n",
+		       dev_path(dev));
 	}
 #endif
 	/* Set the subsystem vendor and device ID for mainboard devices. */
@@ -1098,6 +1101,10 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 
 	printk(BIOS_DEBUG, "%s start bus %p, bus->dev %p\n", __func__, bus,
 	       bus->dev);
+	if (bus->dev->path.type != DEVICE_PATH_PCI_BUS)
+		printk(BIOS_ERR, "ERROR: pci_scan_bus called with incorrect "
+		       "bus->dev->path.type, path is %s\n", dev_path(bus->dev));
+
 #if PCI_BUS_SEGN_BITS
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %04x:%02x\n",
 	       bus->secondary >> 8, bus->secondary & 0xff);
@@ -1139,6 +1146,8 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		if ((PCI_FUNC(devfn) == 0x00) &&
 		    (!dev
 		     || (dev->enabled && ((dev->hdr_type & 0x80) != 0x80)))) {
+			printk(BIOS_SPEW, "Not a multi function device, or the "
+			       "device is not present. Skip to next device.\n");
 			devfn += 0x07;
 		}
 	}
@@ -1186,6 +1195,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
  */
 unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max)
 {
+	printk(BIOS_SPEW, "pci_domain_scan_bus: calling pci_scan_bus\n");
 	/* There is only one link on this device, and it is always link 0. */
 	return pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
 }
@@ -1277,6 +1287,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
  */
 unsigned int pci_scan_bridge(struct device *dev, unsigned int max)
 {
+	printk(BIOS_SPEW, "pci_scan_bridge: calling pci_scan_bus\n");
 	return do_pci_scan_bridge(dev, max, pci_scan_bus);
 }
 

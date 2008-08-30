@@ -118,10 +118,11 @@ int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 	u32 val;
 	u8 hdr;
 	int bdf = bus << 16;
-
+	printk(BIOS_SPEW, "pci_conf1_find_on_bus: bus %d, find 0x%04x:%04x\n", 
+				bus, vid, did);
 	/* skip over all the functions in a device -- 
 	 * multifunction devices always have one vendor */
-	for (devfn = 0; devfn < 0x100; devfn += 8) {
+	for (devfn = 0; devfn < 0x100; devfn += 1) {
 		u32 confaddr = bdf | (devfn << 8);
 		val = pci_conf1_read_config32(confaddr, PCI_VENDOR_ID);
 

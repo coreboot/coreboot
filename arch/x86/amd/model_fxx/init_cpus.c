@@ -321,6 +321,11 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 	unsigned bsp_apicid = 0;
 	unsigned apicid;
 	struct node_core_id id;
+	/* this is a bit weird but soft_reset can be defined in many places, 
+	 * so finding a common 
+	 * include file to use is a little daunting.
+	 */
+	void soft_reset(void);
 
 	/* 
 	 * MTRR must be set by this point.

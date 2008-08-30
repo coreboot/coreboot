@@ -1,6 +1,7 @@
 #include <types.h>
 #include <cpu.h>
 #include <console.h>
+#include <globalvars.h>
 #include <uart8250.h>
 #include <stdarg.h>
 #include <string.h>

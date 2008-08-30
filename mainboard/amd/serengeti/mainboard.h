@@ -33,7 +33,6 @@
 #define SB_HT_CHAIN_UNITID_OFFSET_ONLY 1
 #define ENABLE_APIC_EXT_ID 0
 #define LIFT_BSP_APIC_ID 1
-
 #warning clean up confusion on FIDVID. v2 was inconsistent. 
 /* In v2 there is confusion on the settings of these. 
  * The serengeti config sets it to zero. 
@@ -44,3 +43,7 @@
 /* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores, 
  * so may don't need to do twice */
 #define K8_SET_FIDVID_CORE0_ONLY 1
+
+/* architecture stuff which ought to be set "somewhere" "SOMEHOW" */
+/* preferably by asking the CPU, not be a DEFINE! */
+#define CPU_ADDR_BITS 40

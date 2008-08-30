@@ -120,7 +120,8 @@ int find_file(const struct mem_file *archive, const char *filename, struct mem_f
 		header = (struct lar_header *)walk;
 		fullname = walk + sizeof(struct lar_header);
 
-		printk(BIOS_SPEW, "LAR: seen member %s\n", fullname);
+		printk(BIOS_SPEW, "LAR: %s@%p, size %d\n", fullname, 
+				header, ntohl(header->len));
 		// FIXME: check checksum
 
 		if (strcmp(fullname, filename) == 0) {

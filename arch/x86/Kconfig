@@ -171,6 +171,15 @@ config CARSIZE
 	help
 	  This option sets the size of the area used for CAR.
 
+config CBMEMK
+	hex
+	default 0x1000 if CPU_I586
+	default 0x1000 if CPU_AMD_GEODELX
+	default 0x2000 if CPU_AMD_K8
+	help
+	  This option sets the top of the memory area, in KiB, 
+	  used for coreboot.
+
 config K8_HT_FREQ_1G_SUPPORT
 	hex
 	default 1 if CPU_AMD_K8

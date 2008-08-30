@@ -22,6 +22,7 @@
 #define _MAINOBJECT
 
 #include <mainboard.h>
+#include <config.h>
 #include <types.h>
 #include <lib.h>
 #include <console.h>

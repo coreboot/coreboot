@@ -2972,3 +2972,40 @@ void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, const u16 *sp
                 }
         }
 }
+
+/**
+ * initialize sdram. There was a "generic" function in v2 that was not really that useful. 
+ * we break it out by northbridge now to accomodate the different peculiarities of 
+ * different chipsets. 
+ *@param controllers Number of controllers
+ *@param ctlr array of memory controllers
+ *@param sysinfo pointer to sysinfo struct. 
+ */
+void sdram_initialize(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
+{
+	int i;
+	/* Set the registers we can set once to reasonable values */
+	for(i = 0; i < controllers; i++) {
+		printk(BIOS_DEBUG, "Ram1.%d, ",i);
+
+		sdram_set_registers(ctrl + i , sysinfo);
+	}
+
+	/* Now setup those things we can auto detect */
+	for(i = 0; i < controllers; i++) {
+		printk(BIOS_DEBUG, "Ram2.%d, ",i);
+		sdram_set_spd_registers(ctrl + i , sysinfo);
+
+	}
+
+	/* Now that everything is setup enable the SDRAM.
+	 * Some chipsets do the work for us while on others 
+	 * we need to it by hand.
+	 */
+	printk(BIOS_DEBUG, "Ram3\n");
+
+	sdram_enable(controllers, ctrl, sysinfo);
+
+	printk(BIOS_DEBUG, "Ram4\n");
+
+}

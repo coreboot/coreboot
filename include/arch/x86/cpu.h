@@ -21,10 +21,11 @@
 
 #ifndef ARCH_X86_CPU_H
 #define ARCH_X86_CPU_H
-
+#include <config.h>
 #include <types.h>
 #include <device/device.h>
 #include <shared.h>
+#include <mtrr.h>
 
 #define X86_VENDOR_INTEL	0
 #define X86_VENDOR_CYRIX	1
@@ -80,6 +81,13 @@ struct cpuinfo_x86 {
 	u8 x86_model;
 	u8 x86_mask;
 };
+
+/* prototypes for functions that may or may not be compiled in depending on cpu type */
+void set_var_mtrr_x(
+        unsigned long reg, u32 base_lo, u32 base_hi, u32 size_lo, u32 size_hi, unsigned long type);
+void set_var_mtrr(
+	unsigned long reg, unsigned long base, unsigned long size, unsigned long type);
+
 
 /**
  * Generic CPUID function.
@@ -201,6 +209,48 @@ static inline __attribute__((always_inline)) void hlt(void)
 	__asm__ __volatile__("hlt" : : : "memory");
 }
 
+/** 
+ * Optimized generic x86 assembly for clearing memory
+ * @param addr address
+ * @param size Size in bytes to clear
+ */
+static inline void clear_memory(void *addr, unsigned long size)
+{
+        asm volatile(
+                "cld \n\t"
+                "rep; stosl\n\t"
+                : /* No outputs */
+                : "a" (0), "D" (addr), "c" (size>>2)
+                );
+
+}
+
+/* in v2, these were specialized to the k8 for no apparent reason. 
+ * Also, clear_init_ram was set to noinline, 
+ * for reasons I do not understand  (but may be important; see the comment */
+/* by yhlu 6.2005 */
+/* be warned, this file will be used core 0/node 0 only */
+
+//static void __attribute__((noinline)) clear_init_ram(void)
+static inline void clear_init_ram(void)
+{
+	// ???
+	// gcc 3.4.5 will inline the copy_and_run and clear_init_ram in post_cache_as_ram
+	// will reuse %edi as 0 from clear_memory for copy_and_run part, actually it is increased already
+	// so noline clear_init_ram
+	// ???
+        clear_memory(0,  ((CONFIG_CBMEMK<<10) - CONFIG_CARSIZE));
+
+}
+
+/* be warned, this file will be used by core other than core 0/node 0 or core0/node0 when cpu_reset*/
+static void set_init_ram_access(void)
+{
+	set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, MTRR_TYPE_WRBACK);
+}
+
+
+
 void * bottom_of_stack(void);
 EXPORT_SYMBOL(bottom_of_stack);
 struct global_vars * global_vars(void);
@@ -259,5 +309,6 @@ void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
 EXPORT_SYMBOL(setup_resource_map_x_offset);
 void setup_resource_map(const struct rmap *rm, u32 max);
 EXPORT_SYMBOL(setup_resource_map);
+
 
 #endif /* ARCH_X86_CPU_H */

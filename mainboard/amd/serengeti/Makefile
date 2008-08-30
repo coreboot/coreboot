@@ -27,13 +27,13 @@ STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/southbridge/amd/amd8111/stage1_ctrl.c \
 			$(src)/southbridge/amd/amd8111/stage1_enable_rom.c \
 			$(src)/northbridge/amd/k8/coherent_ht.c \
-			$(src)/northbridge/amd/k8/incoherent_ht.c \
 			$(src)/northbridge/amd/k8/libstage1.c \
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/raminit.c \
 			$(src)/northbridge/amd/k8/dqs.c \
 			$(src)/northbridge/amd/k8/reset_test.c \
+			$(src)/northbridge/amd/k8/incoherent_ht.c \
 			$(src)/arch/x86/pci_ops_conf1.c \
 			$(src)/arch/x86/stage1_mtrr.c \
 			$(src)/southbridge/amd/amd8111/stage1_smbus.c \

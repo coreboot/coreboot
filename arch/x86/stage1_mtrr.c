@@ -63,7 +63,7 @@ void cache_cbmem(int type)
 {
 	/* Enable caching for 0 - 1MB using variable mtrr */
 	disable_cache();
-	set_var_mtrr(0, 0x00000000, COREBOOT_MEM_TOPK << 10, type);
+	set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, type);
 	enable_cache();
 }
 

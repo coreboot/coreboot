@@ -69,8 +69,8 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 	nodes = get_nodes();
 
 	/* if the get_option fails siblings remain disabled. */
-	disable_siblings = !CONFIG_LOGICAL_CPUS;
-	get_option(&disable_siblings, "dual_core");
+	// This sound not be a config option. 	disable_siblings = !CONFIG_LOGICAL_CPUS;
+	//get_option(&disable_siblings, "dual_core");
 
 	/* There is an interesting problem in different steppings. See page 373. The interpretation of the 
 	 * APIC ID bits is different. To determine which order is used, check bit 54 of the programmers' guide
@@ -79,7 +79,7 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 	 */
 	nb_cfg_54 = read_nb_cfg_54();
 
-
+	printk(BIOS_SPEW, "for_each_ap: nodes is %d\n", nodes);
 	for (i = 0; i < nodes; i++) {
 		e0_later_single_core = 0;
 		/* Page 166. This field indicates the number of cores, with 0 meaning 1, 1 meaning 2, and all else reserved */
@@ -93,6 +93,7 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 		}
 		siblings = j;
 
+		printk(BIOS_SPEW, "Node %d: siblings is %d\n", i, siblings);
 		unsigned jstart, jend;
 
 		if (core_range == 2) {
@@ -109,7 +110,7 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 
 
 		for (j = jstart; j <= jend; j++) {
-
+			printk(BIOS_SPEW, "Node %d: Start %d\n", i, j);
 			ap_apicid =
 			    i * (nb_cfg_54 ? (siblings + 1) : 1) +
 			    j * (nb_cfg_54 ? 1 : 8);
@@ -327,6 +328,8 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 	 */
 	void soft_reset(void);
 
+#warning ignore init_detectedx
+cpu_init_detectedx = 0;
 	/* 
 	 * MTRR must be set by this point.
 	 */

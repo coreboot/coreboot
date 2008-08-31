@@ -753,25 +753,29 @@ void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 	if ((value & 0xff) == 0) goto val_err; // max is 16 ?
 	sz->per_rank += value & 0xff;
 	sz->rows = value & 0xff;
+	printk(BIOS_SPEW, "%d rows\n", sz->rows);
 
 	value = spd_read_byte(device, SPD_COL_NUM);	/* columns */
 	if (value < 0) goto hw_err;
 	if ((value & 0xff) == 0) goto val_err;  //max is 11
 	sz->per_rank += value & 0xff;
 	sz->col = value & 0xff;
+	printk(BIOS_SPEW, "%d pre_rank %d col\n", sz->per_rank, sz->col);
 
 	value = spd_read_byte(device, SPD_BANK_NUM);	/* banks */
 	if (value < 0) goto hw_err;
 	if ((value & 0xff) == 0) goto val_err;
 	sz->bank = log2(value & 0xff);  // convert 4 to 2, and 8 to 3
+	printk(BIOS_SPEW, "%d SPD banks %d bank\n", value, sz->bank);
 	sz->per_rank += sz->bank;
-
+	printk(BIOS_SPEW, "sz->per_rank is now %d\n", sz->per_rank);
 	/* Get the module data width and convert it to a power of two */
 	value = spd_read_byte(device, SPD_DATA_WIDTH);	
 	if (value < 0) goto hw_err;
 	value &= 0xff;
 	if ((value != 72) && (value != 64)) goto val_err;
 	sz->per_rank += log2(value) - 3; //64 bit So another 3 lines
+	printk(BIOS_SPEW, "value %d log2(value) %d sz->per_rank now %d\n", value, log2(value), sz->per_rank);
 
 	/* How many ranks? */
 	value = spd_read_byte(device, SPD_MOD_ATTRIB_RANK);	/* number of physical banks */
@@ -779,6 +783,7 @@ void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 //	value >>= SPD_MOD_ATTRIB_RANK_NUM_SHIFT;
 	value &= SPD_MOD_ATTRIB_RANK_NUM_MASK;
 	value += SPD_MOD_ATTRIB_RANK_NUM_BASE; // 0-->1, 1-->2, 3-->4
+	printk(BIOS_SPEW, "# banks %d\n", value);
 	/*
 	  rank == 1 only one rank or say one side
 	  rank == 2 two side , and two ranks
@@ -796,9 +801,11 @@ void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
         value = spd_read_byte(device, SPD_RANK_SIZE);
         if (value < 0) goto hw_err;
         value &= 0xff;
+	printk(BIOS_SPEW, "spd rank size is %d\n", value);
 	value = log2(value);
 	if(value <=4 ) value += 8; // add back to 1G to high
 	value += (27-5); // make 128MB to the real lines
+	printk(BIOS_SPEW, " computed value is %d\n", value);
 	if( value != (sz->per_rank)) { 
 		printk(BIOS_ERR, "Bad RANK Size -- value is 0x%x, and it should be 0x%x\n", value, sz->per_rank);
 		goto val_err;

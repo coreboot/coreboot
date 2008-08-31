@@ -335,7 +335,7 @@ cpu_init_detectedx = 0;
 	 */
 
 	/* that is from initial apicid, we need nodeid and coreid later */
-	/* this comment still confuses me, but I *think* "that" means the "bsp_apicid. Not sure. */
+	/* this comment still confuses me, but I *think* "that" means the "bsp_apicid". Not sure. */
 	id = get_node_core_id();
 	printk(BIOS_DEBUG, "init_cpus: node %d core %d\n", id.nodeid, id.coreid);
 

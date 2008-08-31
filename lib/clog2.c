@@ -45,12 +45,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-int log2(unsigned int n)
+/**
+ * return the truncated log2 of the number. 
+ * @param n number to take the log of
+ * @return log2 of the smallest integer that is a power of of 2 
+ * and that is <= to the parameter. E.g. log2f(72) is 6. 
+ */ 
+int log2f(unsigned int n)
 {
 	int log2 = 0;
-
-	if (n & (n - 1))
-		log2++;
 	if (n >> 16)
 		log2 += 16, n >>= 16;
 	if (n >> 8)
@@ -63,3 +66,19 @@ int log2(unsigned int n)
 		log2++;
 	return log2;
 }
+
+/**
+ * return the log2 of the number in integer form, rounded up as needed. 
+ * @param n number to take the log of
+ * @return log2 of the smallest integer that is a power of 2
+ * that is >= to the parameter. E.g. log2(72) is 7. 
+ */ 
+int log2c(unsigned int n)
+{
+	int log2 = 0;
+
+	if (n & (n - 1))
+		log2++;
+	return log2 + log2f(n);
+}
+

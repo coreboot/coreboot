@@ -86,3 +86,6 @@
 #define SPD_TRFC	42	/* add byte 0x40 bit [6:4] , so final val42+ table[((val40>>4) & 0x7)] + (val40 & 1)*256*/
 
 #define SPD_TREF	12
+
+/* prototypes for dealing with spd */
+u8 spd_read_byte(u16 device, u8 address);

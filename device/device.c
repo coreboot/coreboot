@@ -446,10 +446,10 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	 * resource type specific.
 	 */
 	if (bridge->flags & IORESOURCE_IO) {
-		min_align = log2(DEVICE_IO_ALIGN);
+		min_align = log2c(DEVICE_IO_ALIGN);
 	}
 	if (bridge->flags & IORESOURCE_MEM) {
-		min_align = log2(DEVICE_MEM_ALIGN);
+		min_align = log2c(DEVICE_MEM_ALIGN);
 	}
 
 	/* Make certain we have read in all of the resources. */

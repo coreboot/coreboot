@@ -28,7 +28,13 @@
  */
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
-int log2(unsigned int n);
+/* you have to explicity pick logc2 (ceiling) or log2f (floor) 
+ * it is a no-op if you KNOW that your number is a power of 2. 
+ * It is important to know what you are doing otherwise. 
+ * example: log2c(72) is 7, log2f(72) is 6!
+ */
+int log2c(unsigned int n);
+int log2f(unsigned int n);
 
 void udelay(unsigned int usecs);
 void mdelay(unsigned int msecs);

@@ -27,8 +27,9 @@
  * SUCH DAMAGE.
  */
 
-/** @file i386/timer.c
- * @brief i386 specific timer routines
+/**
+ * @file i386/timer.c
+ * i386 specific timer routines
  */
 
 #include <libpayload.h>
@@ -36,7 +37,7 @@
 
 /**
  * @ingroup arch
- * Global variable containing the speed of the processor in KHz
+ * Global variable containing the speed of the processor in KHz.
  */
 u32 cpu_khz;
 
@@ -81,8 +82,9 @@ static inline void _delay(unsigned int delta)
 }
 
 /**
- * Delay for a specified number of nanoseconds
- * @param n Number of nanoseconds to delay for
+ * Delay for a specified number of nanoseconds.
+ *
+ * @param n Number of nanoseconds to delay for.
  */
 void ndelay(unsigned int n)
 {
@@ -90,8 +92,9 @@ void ndelay(unsigned int n)
 }
 
 /**
- * Delay for a specified number of microseconds
- * @param n Number of microseconds to delay for
+ * Delay for a specified number of microseconds.
+ *
+ * @param n Number of microseconds to delay for.
  */
 void udelay(unsigned int n)
 {
@@ -99,20 +102,20 @@ void udelay(unsigned int n)
 }
 
 /**
- * Delay for a specified number of milliseconds
- * @param n Number of milliseconds to delay for
+ * Delay for a specified number of milliseconds.
+ *
+ * @param m Number of milliseconds to delay for.
  */
-
 void mdelay(unsigned int m)
 {
 	_delay(m * cpu_khz);
 }
 
 /**
- * Delay for a specified number of seconds
- * @param n Number of seconds to delay for
+ * Delay for a specified number of seconds.
+ *
+ * @param s Number of seconds to delay for.
  */
-
 void delay(unsigned int s)
 {
 	_delay(s * cpu_khz * 1000);

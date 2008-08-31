@@ -27,7 +27,9 @@
  * SUCH DAMAGE.
  */
 
-/** @mainpage
+/**
+ * @mainpage
+ *
  * @section intro Introduction
  * libpayload is a small BSD-licensed static library (a lightweight
  * implementation of common and useful functions) intended to be used
@@ -36,9 +38,7 @@
  * @section example Example
  * Here is an example of a very simple payload:
  * @include sample/hello.c
- *
  */
-
 
 #ifndef _LIBPAYLOAD_H
 #define _LIBPAYLOAD_H
@@ -64,12 +64,12 @@
 
 #define RAND_MAX 0x7fffffff
 
-/* Payload information parameters - these are used to pass information
- * to the entity loading the payload
- * Usage:  PAYLOAD_INFO(key, value)
- * Example:  PAYLOAD_INFO(name, "CoreInfo!")
+/*
+ * Payload information parameters - these are used to pass information
+ * to the entity loading the payload.
+ * Usage:   PAYLOAD_INFO(key, value)
+ * Example: PAYLOAD_INFO(name, "CoreInfo!")
  */
-
 #define _pstruct(key) __pinfo_ ##key
 #define PAYLOAD_INFO(key, value)                                        \
 static const char _pstruct(key)[]                                        \
@@ -90,9 +90,7 @@ static const char _pstruct(key)[]                                        \
 #define NVRAM_RTC_FREQ_SELECT    10     /**< RTC Update Status Register */
 #define  NVRAM_RTC_UIP           0x80
 
-/** @struct tm
- *  \brief Broken down time structure
- */
+/** Broken down time structure */
 struct tm {
 	int tm_sec;   /**< Number of seconds after the minute */
 	int tm_min;   /**< Number of minutes after the hour */
@@ -136,7 +134,6 @@ void serial_init(void);
 void serial_putchar(unsigned char c);
 int serial_havechar(void);
 int serial_getchar(void);
-
 void serial_clear(void);
 void serial_start_bold(void);
 void serial_end_bold(void);
@@ -189,7 +186,7 @@ extern int last_putchar;
 /** @} */
 
 /**
- * @defgroup ctype Character Type Functions
+ * @defgroup ctype Character type functions
  * @{
  */
 int isalnum(int c);
@@ -210,14 +207,14 @@ int toupper(int c);
 /** @} */
 
 /**
- * @defgroup ipchecksum IP Checksum Functions
+ * @defgroup ipchecksum IP checksum functions
  * @{
  */
 unsigned short ipchksum(const void *ptr, unsigned long nbytes);
 /** @} */
 
 /**
- * @defgroup malloc Memory Allocation Functions
+ * @defgroup malloc Memory allocation functions
  * @{
  */
 void free(void *ptr);
@@ -227,14 +224,14 @@ void *realloc(void *ptr, size_t size);
 /** @} */
 
 /**
- * @defgroup exec Execution Functions
+ * @defgroup exec Execution functions
  * @{
  */
 int exec(long addr, int argc, char **argv);
 /** @} */
 
 /**
- * @defgroup misc Misc Functions
+ * @defgroup misc Misc functions
  * @{
  */
 int bcd2dec(int b);
@@ -244,11 +241,11 @@ long int labs(long int j);
 long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
-void fatal(const char* msg) __attribute__ ((noreturn));
+void fatal(const char *msg) __attribute__ ((noreturn));
 /** @} */
 
 /**
- * @defgroup memory Memory Manipulation Functions
+ * @defgroup memory Memory manipulation functions
  * @{
  */
 void *memset(void *s, int c, size_t n);
@@ -258,7 +255,7 @@ int memcmp(const void *s1, const void *s2, size_t len);
 /** @} */
 
 /**
- * @defgroup printf Print Functions
+ * @defgroup printf Print functions
  * @{
  */
 int snprintf(char *str, size_t size, const char *fmt, ...);
@@ -270,7 +267,7 @@ int vprintf(const char *fmt, va_list ap);
 /** @} */
 
 /**
- * @defgroup rand Random Number Generator Functions
+ * @defgroup rand Random number generator functions
  * @{
  */
 int rand_r(unsigned int *seed);
@@ -279,7 +276,7 @@ void srand(unsigned int seed);
 /** @} */
 
 /**
- * @defgroup hash Hashing Functions
+ * @defgroup hash Hashing functions
  * @{
  */
 #define SHA1_BLOCK_LENGTH	64
@@ -297,7 +294,7 @@ u8 *sha1(const u8 *data, size_t len, u8 *buf);
 /** @} */
 
 /**
- * @defgroup string String Functions
+ * @defgroup string String functions
  * @{
  */
 size_t strnlen(const char *str, size_t maxlen);
@@ -313,14 +310,11 @@ char *strstr(const char *h, const char *n);
 /** @} */
 
 /**
- * @defgroup time Time Functions
+ * @defgroup time Time functions
  * @{
  */
 
-/** @struct timeval
- * @brief System time structure
- */
-
+/** System time structure */
 struct timeval {
 	time_t tv_sec;       /**< Seconds */
 	suseconds_t tv_usec; /**< Microseconds */
@@ -330,15 +324,13 @@ int gettimeofday(struct timeval *tv, void *tz);
 /** @} */
 
 /**
- * @defgroup lar LAR Functions
+ * @defgroup lar LAR functions
  * @{
  */
 
-/** @struct LAR
- * @brief LAR File Header
- */
+/** LAR file header */
 struct LAR {
-	void * start;   /**< Location of the LAR in memory */
+	void *start;    /**< Location of the LAR in memory */
 	int cindex;     /**< Next file to return in readlar() */
 	int count;      /**< Number of entries in the header cache */
 	int alloc;      /**< Number of slots in the header cache */
@@ -346,16 +338,12 @@ struct LAR {
 	void **headers; /**< Pointer to the header cache */
 };
 
-/** @struct larent
- * @brief A structure representing the next LAR entry
- */
+/** A structure representing the next LAR entry */
 struct larent {
 	u8 name[LAR_MAX_PATHLEN]; /**< The name of the next LAR entry */
 };
 
-/** @struct larstat
- * @brief A structure containing information about a LAR file
- */
+/** A structure containing information about a LAR file */
 struct larstat {
 	u32 len;           /**< Length of the file in the LAR */
 	u32 reallen;       /**< Length of the uncompressed file */
@@ -367,10 +355,7 @@ struct larstat {
 	u64 loadaddress;   /**< Address in memory to put the uncompressed file */
 };
 
-/** @struct LFILE
- * @brief A structure representing a LAR file
- */
-
+/** A structure representing a LAR file */
 struct LFILE {
 	struct LAR *lar;           /**< Pointer to the LAR struct */
 	struct lar_header *header; /**< Pointer to the header struct */
@@ -386,20 +371,20 @@ void rewindlar(struct LAR *lar);
 int larstat(struct LAR *lar, const char *path, struct larstat *buf);
 void *larfptr(struct LAR *lar, const char *filename);
 int lfverify(struct LAR *lar, const char *filename);
-struct LFILE * lfopen(struct LAR *lar, const char *filename);
+struct LFILE *lfopen(struct LAR *lar, const char *filename);
 int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
 
-#define SEEK_SET 0 /**@def The seek offset is absolute  */
-#define SEEK_CUR 1 /**@def The seek offset is against the current position */
-#define SEEK_END 2 /**@def The see offset is against the end of the file */
+#define SEEK_SET 0 /**< The seek offset is absolute. */
+#define SEEK_CUR 1 /**< The seek offset is against the current position. */
+#define SEEK_END 2 /**< The seek offset is against the end of the file. */
 
 int lfseek(struct LFILE *stream, long offset, int whence);
 int lfclose(struct LFILE *file);
 /** @} */
 
 /**
- * @defgroup arch Architecture Specific Functions
- * This modules contains global architecture specific functions.
+ * @defgroup arch Architecture specific functions
+ * This module contains global architecture specific functions.
  * All architectures are expected to define these functions.
  * @{
  */
@@ -417,20 +402,18 @@ void delay(unsigned int n);
 #define abort() halt()    /**< Alias for the halt() function */
 
 /**
- * Stops executions and halts the processor.  This function does
- * not return.
+ * Stop execution and halt the processor (this function does not return).
  */
 void halt(void) __attribute__ ((noreturn));
 /** @} */
 
 /**
- * @defgroup readline Readline Functions
- * This interface provides a simple implementation of the standard
- * readline and getline functions.  They are suitable for reading a
- * line of input from the console.
+ * @defgroup readline Readline functions
+ * This interface provides a simple implementation of the standard readline()
+ * and getline() functions. They read a line of input from the console.
  * @{
  */
-char * readline(const char * prompt);
+char *readline(const char *prompt);
 int getline(char *buffer, int len);
 /** @} */
 

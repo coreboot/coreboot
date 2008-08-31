@@ -27,8 +27,9 @@
  * SUCH DAMAGE.
  */
 
-/** @file libc/time.c
- * @brief General Time Functions
+/**
+ * @file libc/time.c
+ * General time functions
  */
 
 #include <config.h>
@@ -115,18 +116,18 @@ static void gettimeofday_init(void)
 #endif
 
 /**
- * Return the current time broken into a timeval structure
- * @param tv A pointer to a timeval structure
- * @param tz Added for compatability - not used
- * @return 0 for success
+ * Return the current time broken into a timeval structure.
+ *
+ * @param tv A pointer to a timeval structure.
+ * @param tz Added for compatability - not used.
+ * @return 0 for success (this function cannot return non-zero currently).
  */
 int gettimeofday(struct timeval *tv, void *tz)
 {
-	/* Call the gtod init when we need it - this keeps
-	   the code from being included in the binary if we don't
-	   need it
-	*/
-
+	/*
+	 * Call the gtod init when we need it - this keeps the code from
+	 * being included in the binary if we don't need it.
+	 */
 	if (!clock.ticks)
 		gettimeofday_init();
 

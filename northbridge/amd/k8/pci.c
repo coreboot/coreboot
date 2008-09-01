@@ -332,8 +332,8 @@ static void amdk8_link_read_bases(struct device * dev, unsigned nodeid, unsigned
 	if (resource) {
 		resource->base  = 0;
 		resource->size  = 0;
-		resource->align = log2(HT_IO_HOST_ALIGN);
-		resource->gran  = log2(HT_IO_HOST_ALIGN);
+		resource->align = log2c(HT_IO_HOST_ALIGN);
+		resource->gran  = log2c(HT_IO_HOST_ALIGN);
 		resource->limit = 0xffffUL;
 		resource->flags = IORESOURCE_IO;
 		compute_allocate_resource(&dev->link[link], resource, 
@@ -345,8 +345,8 @@ static void amdk8_link_read_bases(struct device * dev, unsigned nodeid, unsigned
 	if (resource) {
 		resource->base  = 0;
 		resource->size  = 0;
-		resource->align = log2(HT_MEM_HOST_ALIGN);
-		resource->gran  = log2(HT_MEM_HOST_ALIGN);
+		resource->align = log2c(HT_MEM_HOST_ALIGN);
+		resource->gran  = log2c(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
 		compute_allocate_resource(&dev->link[link], resource, 
@@ -359,8 +359,8 @@ static void amdk8_link_read_bases(struct device * dev, unsigned nodeid, unsigned
 	if (resource) {
 		resource->base  = 0;
 		resource->size  = 0;
-		resource->align = log2(HT_MEM_HOST_ALIGN);
-		resource->gran  = log2(HT_MEM_HOST_ALIGN);
+		resource->align = log2c(HT_MEM_HOST_ALIGN);
+		resource->gran  = log2c(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM;
 		compute_allocate_resource(&dev->link[link], resource, 

@@ -185,8 +185,8 @@ static void acpi_read_resources(struct device * dev)
 	resource = new_resource(dev, 0x58);
 	resource->base  = 0;
 	resource->size  = 256;
-	resource->align = log2(256);
-	resource->gran  = log2(256);
+	resource->align = log2f(256);
+	resource->gran  = log2f(256);
 	resource->limit = 65536;
 	resource->flags = IORESOURCE_IO;
 	resource->index = 0x58;

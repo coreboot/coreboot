@@ -322,7 +322,7 @@ int optimize_connection(u32 node1, u8 link1, u32 node2, u8 link2)
 	freq_cap2 = read_freq_cap(node2, link2 + PCI_HT_CAP_HOST_FREQ_CAP);
 
 	/* Calculate the highest possible frequency */
-	freq = log2(freq_cap1 & freq_cap2);
+	freq = log2c(freq_cap1 & freq_cap2);
 
 	/* See if I am changing the link freqency */
 	old_freq = pci_conf1_read_config8(node1, link1 + PCI_HT_CAP_HOST_FREQ);

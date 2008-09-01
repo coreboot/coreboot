@@ -229,7 +229,7 @@ static int ht_optimize_link(
 	freq_cap2 = ht_read_freq_cap(bdf2, pos2 + LINK_FREQ_CAP(offs2));
 
 	/* Calculate the highest possible frequency */
-	freq = log2(freq_cap1 & freq_cap2);
+	freq = log2c(freq_cap1 & freq_cap2);
 
 	/* See if I am changing the link freqency */
 	old_freq = pci_conf1_read_config8(bdf1, pos1 + LINK_FREQ(offs1));

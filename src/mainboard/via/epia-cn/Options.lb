@@ -94,7 +94,7 @@ default USE_OPTION_TABLE = 0
 default _RAMBASE = 0x00004000
 default CONFIG_ROM_PAYLOAD = 1
 default CROSS_COMPILE = ""
-default CC = "$(CROSS_COMPILE)gcc -m32"
+default CC = "$(CROSS_COMPILE)gcc -m32 -fno-stack-protector"
 default HOSTCC = "gcc"
 
 ##

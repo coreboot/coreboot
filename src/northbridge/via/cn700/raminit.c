@@ -366,7 +366,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	/* dram duty control */
 	pci_write_config8(ctrl->d0f3, 0xed, 0x10);
 
-	/* SMM and APIC deocoding, we donot use SMM */
+	/* SMM and APIC decoding, we do not use SMM */
 	reg = 0x29;
 	pci_write_config8(ctrl->d0f3, 0x86, reg);
 	/* SMM and APIC decoding mirror */

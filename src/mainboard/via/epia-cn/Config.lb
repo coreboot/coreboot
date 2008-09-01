@@ -98,12 +98,14 @@ chip northbridge/via/cn700			# Northbridge
       register "ide0_80pin_cable" = "0"
       register "ide1_80pin_cable" = "0"
       device pci f.0 on end			# IDE
-      register "fn_ctrl_lo" = "0x8a"
-      register "fn_ctrl_hi" = "0x9d"
-      device pci 10.0 on end			# USB 1.1
-      device pci 10.1 on end			# USB 1.1
-      device pci 10.2 on end			# USB 1.1
-      device pci 10.3 on end			# USB 1.1
+      register "fn_ctrl_lo" = "0x80"
+      register "fn_ctrl_hi" = "0x1d"
+      device pci 10.0 on end			# OHCI
+      device pci 10.1 on end			# OHCI
+      device pci 10.2 on end			# OHCI
+      device pci 10.3 on end			# OHCI
+      device pci 10.4 on end			# EHCI
+      device pci 10.5 on end			# UDCI
       device pci 11.0 on			# Southbridge LPC
         chip superio/via/vt1211			# Super I/O
           device pnp 2e.0 off			# Floppy

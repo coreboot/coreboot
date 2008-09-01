@@ -45,14 +45,12 @@ static void vga_init(device_t dev)
 	u8 reg8;
 
 	print_debug("Copying BOCHS Bios to 0xf000\n");
-/* Copy the BOCHs BIOS from 0xFFFFFFFF - ROM_SIZE - BOCHs size (64k) to 0xf0000
-   This is for compatibility with the VGA ROM's BIOS callbacks */
-	memcpy(0xf0000, (0xFFFFFFFF - ROM_SIZE - 0x10000), 0x10000);
+	/* Copy BOCHS BIOS from 4G-ROM_SIZE-64k (in flash) to 0xf0000 (in RAM)
+	 * This is for compatibility with the VGA ROM's BIOS callbacks */
+	memcpy(0xf0000, (0xffffffff - ROM_SIZE - 0xffff), 0x10000);
 
 	printk_debug("Initializing VGA\n");
 	
-	pci_write_config8(dev, 0x3c, 0xb);
-
 	/* Set memory rate to 200MHz */
 	outb(0x3d, CRTM_INDEX);
 	reg8 = inb(CRTM_DATA);
@@ -71,8 +69,6 @@ static void vga_init(device_t dev)
 	pci_write_config8(dev, 0x0d, 0x20);
 	pci_write_config32(dev,0x10, 0xf4000008);
 	pci_write_config32(dev,0x14, 0xfb000000);
-	pci_write_config8(dev, 0x3e, 0x02);
-	pci_write_config8(dev, 0x3c, 0x0a);
 	
 	
 	printk_debug("INSTALL REAL-MODE IDT\n");

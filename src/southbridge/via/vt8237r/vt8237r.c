@@ -79,8 +79,6 @@ static void vt8237r_enable(struct device *dev)
 	pci_write_config8(dev, 0x51, sb->fn_ctrl_hi);
 
 	/* TODO: If SATA is disabled, move IDE to fn0 to conform PCI specs. */
-	/* Extend ROM decode to 1MB FFC00000 - FFFFFFFF */
-	pci_write_config8(dev, 0x41, 0x7f);
 }
 
 struct chip_operations southbridge_via_vt8237r_ops = {

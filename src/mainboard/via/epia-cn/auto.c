@@ -55,34 +55,27 @@ static void enable_mainboard_devices(void)
 {
 	device_t dev;
 	u8 reg;
-
-	/*
-	 * If I enable SATA, FILO will not find the IDE disk, so I'll disable
-	 * SATA here. To not conflict with PCI spec, I'll move IDE device
-	 * from 00:0f.1 to 00:0f.0.
-	 */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				PCI_DEVICE_ID_VIA_VT6420_SATA), 0);
-	if (dev != PCI_DEV_INVALID) {
-		/* Enable PATA. */
-		reg = pci_read_config8(dev, 0xd1);
-		reg |= 0x08;
-		pci_write_config8(dev, 0xd1, reg);
-		reg = pci_read_config8(dev, 0x49);
-		reg |= 0x80;
-		pci_write_config8(dev, 0x49, reg);
-	} else {
-		print_debug("No SATA device\r\n");
-	}
-
-	/* Disable SATA, and PATA device will be 00:0f.0. */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+ 
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 	if (dev == PCI_DEV_INVALID)
-		die("Southbridge not found!!!\r\n");
-	reg = pci_read_config8(dev, 0x50);
-	reg |= 0x08;
-	pci_write_config8(dev, 0x50, reg);
+		die("Southbridge not found!!!\n");
+
+	/* bit=0 means enable function (per CX700 datasheet)
+	 *   5 16.1 USB 2
+	 *   4 16.0 USB 1
+	 *   3 15.0 SATA and PATA
+	 *   2 16.2 USB 3
+	 *   1 16.4 USB EHCI
+	 */
+	pci_write_config8(dev, 0x50, 0x80);
+
+	/* bit=1 means enable internal function (per CX700 datasheet)
+	 *   3 Internal RTC
+	 *   2 Internal PS2 Mouse
+	 *   1 Internal KBC Configuration
+	 *   0 Internal Keyboard Controller
+	 */
+	pci_write_config8(dev, 0x51, 0x1d);
 }
 
 static const struct mem_controller ctrl = {

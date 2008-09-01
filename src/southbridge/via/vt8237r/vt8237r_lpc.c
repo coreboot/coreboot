@@ -244,10 +244,20 @@ static void vt8237r_init(struct device *dev)
 	enables |= 0x80;
 	pci_write_config8(dev, 0x6C, enables);
 
-	/* FIXME: Map 4MB of flash into the address space,
-	 * this should be in CAR call.
+	/*
+	 * ROM decode
+	 * bit range
+	 *   7 000E0000h-000EFFFFh
+	 *   6 FFF00000h-FFF7FFFFh
+	 *   5 FFE80000h-FFEFFFFFh
+	 *   4 FFE00000h-FFE7FFFFh
+	 *   3 FFD80000h-FFDFFFFFh
+	 *   2 FFD00000h-FFD7FFFFh
+	 *   1 FFC80000h-FFCFFFFFh
+	 *   0 FFC00000h-FFC7FFFFh
+	 * So 0x7f here sets ROM decode to FFC00000-FFFFFFFF or 4Mbyte.
 	 */
-	/* pci_write_config8(dev, 0x41, 0x7f); */
+	pci_write_config8(dev, 0x41, 0x7f);
 
 	/* Set bit 6 of 0x40 (I/O recovery time).
 	 * IMPORTANT FIX - EISA = ECLR reg at 0x4d0! Decoding must be on so
@@ -271,8 +281,14 @@ static void vt8237r_init(struct device *dev)
 	/* ROM memory cycles go to LPC. */
 	pci_write_config8(dev, 0x59, 0x80);
 
-	/* Bypass APIC De-Assert Message, INTE#, INTF#, INTG#, INTH# as PCI. */
-	pci_write_config8(dev, 0x5B, 0xb);
+	/*
+	 * bit meaning
+	 *   3 Bypass APIC De-Assert Message (1=Enable)
+	 *   1 possibly "INTE#, INTF#, INTG#, INTH# as PCI"
+	 *     bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
+	 *   0 Dynamic Clock Gating Main Switch (1=Enable)
+	 */
+	pci_write_config8(dev, 0x5b, 0x9);
 
 	/* Set Read Pass Write Control Enable (force A2 from APIC FSB to low). */
 	pci_write_config8(dev, 0x48, 0x8c);

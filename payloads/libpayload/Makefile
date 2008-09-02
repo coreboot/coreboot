@@ -137,6 +137,7 @@ install: lib
 prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
 	$(Q)mkdir -p $(obj)/crypto $(obj)/curses $(obj)/drivers/video
+	$(Q)mkdir -p $(obj)/drivers/usb
 	$(Q)mkdir -p $(obj)/i386 $(obj)/lib/$(ARCHDIR-y) $(obj)/libc 
 	$(Q)mkdir -p $(src)/lib/$(ARCHDIR-y)
 

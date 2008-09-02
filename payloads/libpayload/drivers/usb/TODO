@@ -1,0 +1,22 @@
+- handle error conditions
+- handle disconnect more gracefully (ie. make calling layer aware that the device doesn't exist somehow)
+- usbhub:
+  - proper client enumeration (esp. detach)
+  - change detection
+  - power management
+- handle interrupts more cleverly:
+  create a new queue for the interrupt with a couple of TD sequences,
+    - each ending with "breadth first" flag
+    - linked as a chain
+  add that queue at the appropriate times in front of the default structure so the max latency is honored
+    - only one intr chain per framelist item, so it must be arranged appropriately
+  reads from usb device just look at "invalidated" tds and the results they got
+  handled tds get reactivated as a ring structure
+    - added as child of the oldest td
+    - queue header already dropped the td, so no issue there
+  
+  this setup ensures that:
+  - the max latency of the device is honored
+  - the client knows the right order of the data
+  - there is no need for an interrupt handler
+    - but must be polled at least max latency * num tds times -> more tds = less time pressure

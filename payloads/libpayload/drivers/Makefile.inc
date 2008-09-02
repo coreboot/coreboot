@@ -47,3 +47,14 @@ TARGETS-$(CONFIG_VGA_VIDEO_CONSOLE) += drivers/video/vga.o
 # Geode console drivers
 TARGETS-$(CONFIG_GEODE_VIDEO_CONSOLE) += drivers/video/geode.o
 TARGETS-$(CONFIG_GEODE_VIDEO_CONSOLE) += drivers/video/font8x16.o
+
+# USB stack
+TARGETS-$(CONFIG_USB) += drivers/usb/usbinit.o
+TARGETS-$(CONFIG_USB) += drivers/usb/usb.o
+TARGETS-$(CONFIG_USB) += drivers/usb/usb_dev.o
+TARGETS-$(CONFIG_USB_HUB) += drivers/usb/usbhub.o
+TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci.o
+TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci_rh.o
+TARGETS-$(CONFIG_USB_HID) += drivers/usb/usbhid.o
+TARGETS-$(CONFIG_USB_MSC) += drivers/usb/usbmsc.o
+

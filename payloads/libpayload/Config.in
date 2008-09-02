@@ -132,5 +132,46 @@ config SPEAKER
 	bool "Support for PC speaker"
 	default y
 
+config USB
+	bool "USB Support"
+	default n
+
+config USB_UHCI
+	bool "Support for USB UHCI controllers"
+	depends on USB
+	help
+	  Select this option if you are going to use USB 1.1 on an Intel based
+	  system.
+
+config USB_OHCI
+	bool "Support for USB OHCI controllers"
+	depends on USB
+	help
+	  Select this option if you are going to use USB 1.1 on an AMD based
+	  system.
+	  NOTE: This option is not (fully) implemented yet
+
+config USB_EHCI
+	bool "Support for USB EHCI controllers"
+	depends on USB
+	help
+	  Select this option if you want to use USB 2.0
+	  NOTE: This option is not (fully) implemented yet
+
+config USB_HID
+	bool "Support for USB keyboards (broken)"
+	depends on USB
+	default n
+
+config USB_HUB
+	bool "Support for USB hubs (broken)"
+	depends on USB
+	default n
+
+config USB_MSC
+	bool "Support for USB storage"
+	depends on USB
+
+
 endmenu
 

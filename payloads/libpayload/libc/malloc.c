@@ -72,7 +72,7 @@ static void setup(void)
 	*((hdrtype_t *) hstart) = FREE_BLOCK(size);
 }
 
-static void *alloc(int len)
+static void *alloc(int len, int align)
 {
 	hdrtype_t header;
 	void *ptr = hstart;
@@ -92,13 +92,20 @@ static void *alloc(int len)
 		header = *((hdrtype_t *) ptr);
 		int size = SIZE(header);
 
-		if (!HAS_MAGIC(header) || size == 0) {
+		if (!HAS_MAGIC(header)) {
 			printf("memory allocator panic.\n");
 			halt();
 		}
 
 		if (header & FLAG_FREE) {
-			if (len <= size) {
+			int realaddr = (int)(ptr + HDRSIZE);
+			int overhead = ((realaddr+align-1) & ~(align-1)) - realaddr;
+			if (len + overhead <= size) {
+				if (overhead != 0) {
+					*((hdrtype_t *) ptr) = FREE_BLOCK(overhead - HDRSIZE);
+					ptr += overhead;
+					size -= overhead;
+				}
 				void *nptr = ptr + (HDRSIZE + len);
 				int nsize = size - (HDRSIZE + len);
 
@@ -186,13 +193,13 @@ void free(void *ptr)
 
 void *malloc(size_t size)
 {
-	return alloc(size);
+	return alloc(size, 1);
 }
 
 void *calloc(size_t nmemb, size_t size)
 {
 	size_t total = nmemb * size;
-	void *ptr = alloc(total);
+	void *ptr = alloc(total, 1);
 
 	if (ptr)
 		memset(ptr, 0, total);
@@ -206,7 +213,7 @@ void *realloc(void *ptr, size_t size)
 	unsigned int osize;
 
 	if (ptr == NULL)
-		return alloc(size);
+		return alloc(size, 1);
 
 	pptr = ptr - HDRSIZE;
 
@@ -222,7 +229,7 @@ void *realloc(void *ptr, size_t size)
 	 * reallocated the new space.
 	 */
 	free(ptr);
-	ret = alloc(size);
+	ret = alloc(size, 1);
 
 	/*
 	 * if ret == NULL, then doh - failure.
@@ -237,11 +244,23 @@ void *realloc(void *ptr, size_t size)
 	return ret;
 }
 
+/**
+ * Allocate an aligned chunk of memory
+ *
+ * @param align alignment, must be power of two
+ * @param size size of chunk in bytes
+ * @return Return the address of such a memory region or NULL
+ */
+void *memalign(size_t align, size_t size)
+{
+	return alloc(size, align);
+}
+
 /* This is for debugging purposes. */
 #ifdef TEST
 void print_malloc_map(void)
 {
-	void *ptr = hstart;
+void *ptr = hstart;
 
 	while (ptr < hend) {
 		hdrtype_t hdr = *((hdrtype_t *) ptr);

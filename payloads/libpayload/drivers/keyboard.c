@@ -79,7 +79,7 @@ unsigned char keyboard_get_scancode(void)
 
 int keyboard_getchar(void)
 {
-	static int modifier;
+	static int modifier = 0;
 	unsigned char ch;
 	int shift;
 	int ret = 0;
@@ -91,17 +91,17 @@ int keyboard_getchar(void)
 	switch (ch) {
 	case 0x36:
 	case 0x2a:
-		modifier &= ~MOD_SHIFT;
+		modifier |= MOD_SHIFT;
 		break;
 	case 0x80 | 0x36:
 	case 0x80 | 0x2a:
-		modifier |= MOD_SHIFT;
+		modifier &= ~MOD_SHIFT;
 		break;
 	case 0x1d:
-		modifier &= ~MOD_CTRL;
+		modifier |= MOD_CTRL;
 		break;
 	case 0x80 | 0x1d:
-		modifier |= MOD_CTRL;
+		modifier &= ~MOD_CTRL;
 		break;
 	case 0x3a:
 		if (modifier & MOD_CAPSLOCK)

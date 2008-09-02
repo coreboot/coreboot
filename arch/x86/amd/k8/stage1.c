@@ -38,8 +38,16 @@ void disable_car(void)
 	 * the data back over itself, and the wbinvd should then 
 	 * flush to memory. Let's see. 
 	 */
+	/* nope. 
 	__asm__ __volatile__("cld; rep movsl" ::"D" (CONFIG_CARBASE), "S" (CONFIG_CARBASE), "c" (CONFIG_CARSIZE/4): "memory");
+	 */
+	/* call the inlined function */
+	disable_cache_as_ram();
+
+	/* copy it down, wbinvd, copy it back? */
+	__asm__ __volatile__("cld; rep movsl" ::"D" (0x88000), "S" (CONFIG_CARBASE), "c" (CONFIG_CARSIZE/4): "memory");
 	__asm__ __volatile__ ("wbinvd\n");
+	__asm__ __volatile__("cld; rep movsl" ::"D" (CONFIG_CARBASE), "S" (0x88000), "c" (CONFIG_CARSIZE/4): "memory");
 	banner(BIOS_DEBUG, "Disable_car: done wbinvd");
 	banner(BIOS_DEBUG, "disable_car: done");
 }

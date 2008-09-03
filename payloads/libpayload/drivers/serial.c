@@ -110,6 +110,8 @@ int serial_getchar(void)
    enacs=\E(B\E)0, smacs=^N, rmacs=^O.  */
 #define VT100_SMACS       "\e(0"
 #define VT100_RMACS       "\e(B"
+/* A vt100 doesn't do color, setaf/setab below are from xterm-color. */
+#define VT100_SET_COLOR   "\e[3%d;4%dm"
 
 static void serial_putcmd(char *str)
 {
@@ -140,6 +142,19 @@ void serial_start_altcharset(void)
 void serial_end_altcharset(void)
 {
 	serial_putcmd(VT100_RMACS);
+}
+
+/**
+ * Set the foreground and background colors on the serial console.
+ *
+ * @param fg Foreground color number.
+ * @param bg Background color number.
+ */
+void serial_set_color(short fg, short bg)
+{
+	char buffer[32];
+	snprintf(buffer, sizeof(buffer), VT100_SET_COLOR, fg, bg);
+	serial_putcmd(buffer);
 }
 
 void serial_set_cursor(int y, int x)

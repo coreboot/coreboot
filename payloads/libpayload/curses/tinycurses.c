@@ -669,10 +669,12 @@ int wnoutrefresh(WINDOW *win)
 	// FIXME.
 	int serial_is_bold = 0;
 	int serial_is_altcharset = 0;
+	int serial_cur_pair = 0;
 
 	int x, y;
 	chtype ch;
 	int need_altcharset;
+	short fg, bg;
 
 	serial_end_bold();
 	serial_end_altcharset();
@@ -703,6 +705,7 @@ int wnoutrefresh(WINDOW *win)
 					if (serial_is_bold) {
 						serial_end_bold();
 						serial_is_bold = 0;
+						serial_cur_pair = 0;
 					}
 				}
 
@@ -721,6 +724,13 @@ int wnoutrefresh(WINDOW *win)
 				if (!need_altcharset && serial_is_altcharset) {
 					serial_end_altcharset();
 					serial_is_altcharset = 0;
+				}
+
+				if (serial_cur_pair != PAIR_NUMBER(attr)) {
+					pair_content(PAIR_NUMBER(attr),
+						     &fg, &bg);
+					serial_set_color(fg, bg);
+					serial_cur_pair = PAIR_NUMBER(attr);
 				}
 
 				serial_putchar(ch);

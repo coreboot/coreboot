@@ -99,12 +99,13 @@ int map_flash_registers(struct flashchip *flash)
 	return 0;
 }
 
-struct flashchip *probe_flash(struct flashchip *flash, int force)
+struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 {
 	volatile uint8_t *bios;
+	struct flashchip *flash;
 	unsigned long flash_baseaddr = 0, size;
 
-	for (; flash && flash->name; flash++) {
+	for (flash = first_flash; flash && flash->name; flash++) {
 		if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0)
 			continue;
 		printf_debug("Probing for %s %s, %d KB: ",
@@ -150,9 +151,13 @@ struct flashchip *probe_flash(struct flashchip *flash, int force)
 		if (force)
 			break;
 
-		if (flash->probe(flash) == 1)
+		if (flash->probe(flash) != 1)
+			goto notfound;
+
+		if (first_flash == flashchips || flash->model_id != GENERIC_DEVICE_ID)
 			break;
 
+notfound:
 		munmap((void *)bios, size);
 	}
 

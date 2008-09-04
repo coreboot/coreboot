@@ -144,8 +144,10 @@ int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
 			 * things are set up (which we have to be able to do 
 			 * in stage 0 
 			 */
-			if (! busses)
+			if (!busses) {
+				printk(BIOS_WARNING, "pci_conf1_find_on_bus: busses is 0!\n");
 				continue;
+			}
 			if (pci_conf1_find_on_bus((busses >> 8) & 0xFF, vid, did, busdevfn))
 				return 1;
 		}

@@ -82,7 +82,9 @@ void printk_buffer_move(void *newaddr, int newsize)
 
 void printk_buffer_init(void)
 {
-	struct printk_buffer *buf = printk_buffer_addr();
+	struct printk_buffer *buf = (struct printk_buffer *)PRINTK_BUF_ADDR_CAR;
+	global_vars()->printk_buffer = buf;
+	buf = printk_buffer_addr();
 	buf->len = PRINTK_BUF_SIZE_CAR - sizeof(struct printk_buffer);
 	buf->readoffset = 0;
 	buf->writeoffset = 0;

@@ -37,25 +37,6 @@
 #define DIVISOR (115200 / CONFIG_SERIAL_BAUD_RATE)
 #endif
 
-/* This is a hack - we convert the drawing characters to ASCII */
-
-static unsigned char translate_special_chars(unsigned char c)
-{
-	switch(c) {
-	case 196:
-		return '-';
-	case 179:
-		return '|';
-	case 218:
-	case 191:
-	case 192:
-	case 217:
-		return '+';
-	default:
-		return ' ';
-	}
-}
-
 void serial_init(void)
 {
 #ifdef CONFIG_SERIAL_SET_SPEED
@@ -82,9 +63,6 @@ void serial_init(void)
 
 void serial_putchar(unsigned char c)
 {
-	if (c > 127)
-		c = translate_special_chars(c);
-
 	while ((inb(IOBASE + 0x05) & 0x20) == 0) ;
 	outb(c, IOBASE);
 }

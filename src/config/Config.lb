@@ -162,7 +162,7 @@ makerule documentation
 	action	"doxygen corebootDoc.config"
 end
 
-makerule ./romcc   
+makerule ../romcc   
 	depends	"$(TOP)/util/romcc/romcc.c" 
 	action	"$(HOSTCC) -g $(HOSTCFLAGS) $< -o $@"
 end

@@ -68,22 +68,22 @@ if HAVE_PIRQ_TABLE object irq_tables.o end
 ## Romcc output
 ##
 makerule ./failover.E
-        depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ./romcc"
-        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+        depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+        action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 
 makerule ./failover.inc
-        depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ./romcc"
-        action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+        depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+        action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 
 makerule ./auto.E
-        depends "$(MAINBOARD)/auto.c ./romcc"
-        action "./romcc -E -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+        depends "$(MAINBOARD)/auto.c ../romcc"
+        action "../romcc -E -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc
-        depends "$(MAINBOARD)/auto.c ./romcc"
-        action "./romcc -mcpu=p4 -fno-simplify-phi -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+        depends "$(MAINBOARD)/auto.c ../romcc"
+        action "../romcc -mcpu=p4 -fno-simplify-phi -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 end
 
 ##

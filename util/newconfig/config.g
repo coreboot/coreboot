@@ -2159,10 +2159,13 @@ def writemakefile(path):
 	file.write("clean: ")
 	for i in romimages.keys():
 		file.write(" %s-clean" % i)
+	file.write(" base-clean")
 	file.write("\n\n")
 	for i, o in romimages.items():
 		file.write("%s-clean:\n" % o.getname())
 		file.write("\t(cd %s; $(MAKE) clean)\n\n" % o.getname())
+	file.write("base-clean:\n")
+	file.write("\trm -f romcc*\n\n")
 
 	for i in buildroms:
 		file.write("%s:" % i.name)

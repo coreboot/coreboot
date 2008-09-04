@@ -67,23 +67,23 @@ else
 	## Romcc output
 	##
 	makerule ./failover.E
-        	depends "$(MAINBOARD)/failover.c ./romcc"
-	        action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+        	depends "$(MAINBOARD)/failover.c ../romcc"
+	        action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 	end
 
 	makerule ./failover.inc
-	        depends "$(MAINBOARD)/failover.c ./romcc"
-        	action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	        depends "$(MAINBOARD)/failover.c ../romcc"
+        	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 	end
 
 	makerule ./auto.E
-        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-	        action  "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+        	depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
+	        action  "../romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 	end
 
 	makerule ./auto.inc
-        	depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
-	        action  "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+        	depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
+	        action  "../romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
 	end
 
 	##

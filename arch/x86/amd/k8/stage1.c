@@ -34,20 +34,31 @@
  */
 void disable_car(void)
 {
-	/* OK, here is the theory: we should be able to copy 
-	 * the data back over itself, and the wbinvd should then 
-	 * flush to memory. Let's see. 
-	 */
-	/* nope. 
-	__asm__ __volatile__("cld; rep movsl" ::"D" (CONFIG_CARBASE), "S" (CONFIG_CARBASE), "c" (CONFIG_CARSIZE/4): "memory");
-	 */
 	/* call the inlined function */
 	disable_cache_as_ram();
 
-	/* copy it down, wbinvd, copy it back? */
-	__asm__ __volatile__("cld; rep movsl" ::"D" (0x88000), "S" (CONFIG_CARBASE), "c" (CONFIG_CARSIZE/4): "memory");
-	__asm__ __volatile__ ("wbinvd\n");
-	__asm__ __volatile__("cld; rep movsl" ::"D" (CONFIG_CARBASE), "S" (0x88000), "c" (CONFIG_CARSIZE/4): "memory");
+	/* The BKDG says that a WBINVD will not flush CAR to RAM (because the
+	 * cache tags are not dirty).
+	 * Solution:
+	 * - Two subsequent memcpy in the same inline asm block, one from stack
+	 *   to backup, one from backup to stack.
+	 * The solution for geode of using a inline asm memcpy of the stack
+	 * onto itself will not mark the cache tags as dirty on K8.
+	 */
+	__asm__ __volatile__(
+	"	movl %[carbase], %%esi		\n"
+	"	movl %[backuplocation], %%edi	\n"
+	"	movl %[carsizequads], %%ecx	\n"
+	"	cld				\n"
+	"	rep movsl			\n"
+	"	wbinvd				\n"
+	"	movl %[backuplocation], %%esi	\n"
+	"	movl %[carbase], %%edi		\n"
+	"	movl %[carsizequads], %%ecx	\n"
+	"	rep movsl			\n"
+	:: [carbase] "i" (CONFIG_CARBASE), [backuplocation] "i" (0x88000),
+	   [carsizequads] "i" (CONFIG_CARSIZE/4)
+	: "memory", "%edi", "%esi", "%ecx");
 	banner(BIOS_DEBUG, "Disable_car: done wbinvd");
 	banner(BIOS_DEBUG, "disable_car: done");
 }

@@ -29,7 +29,8 @@ struct pci_devices {
 	unsigned int id;
 };
 
-static struct pci_devices devices[64];
+#define MAX_PCI_DEVICES 64
+static struct pci_devices devices[MAX_PCI_DEVICES];
 static int devices_index;
 
 /* Number of entries to show in the list */
@@ -190,7 +191,7 @@ static void pci_scan_bus(int bus)
 				continue;
 
 			/* FIXME: Remove this arbitrary limitation. */
-			if (devices_index >= 64)
+			if (devices_index >= MAX_PCI_DEVICES)
 				return;
 
 			devices[devices_index].device = 

@@ -128,7 +128,6 @@ u8 smbus_read_byte(u8 dimm, u8 offset)
 
 	return val;
 }
-
 /**
  * Enable the smbus on vt8237r-based systems
  */
@@ -137,11 +136,17 @@ void enable_smbus(void)
 	device_t dev;
 
 	/* Power management controller */
+
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 
-	if (dev == PCI_DEV_INVALID)
-		die("Power management controller not found\r\n");
+	if (dev == PCI_DEV_INVALID) {
+		/* Power management controller */
+		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+					       PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+		if (dev == PCI_DEV_INVALID)
+			die("Power management controller not found\r\n");
+	}
 
 	/* 7 = SMBus Clock from RTC 32.768KHz
 	 * 5 = Internal PLL reset from susp
@@ -213,17 +218,253 @@ void smbus_fixup(const struct mem_controller *ctrl)
 		PRINT_DEBUG("Done\r\n");
 }
 
+/* fixme better separate the NB and SB, will done once it works */
+
+void vt8237_sb_enable_fid_vid(void) {
+	device_t dev;
+	device_t devctl;
+
+	/* Power management controller */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+
+	if (dev == PCI_DEV_INVALID) {
+    		/* Power management controller */
+		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+					       PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+		if (dev == PCI_DEV_INVALID)
+			return;
+
+		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+					       PCI_DEVICE_ID_VIA_VT8237_VLINK), 0);
+		if (devctl == PCI_DEV_INVALID)
+			return;
+		
+		{
+		u8 tmp;
+		tmp = pci_read_config8(devctl, 0xec);
+		print_debug("EC is ");
+		print_debug_hex8(tmp);
+		print_debug(" E5 is ");
+		tmp = pci_read_config8(dev, 0xe5);
+		print_debug_hex8(tmp);
+		
+		}
+		/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
+		pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
+		/* Enable ACPI accessm RTC signal gated with PSON. */
+		pci_write_config8(dev, 0x81, 0x84);
+		/* Allow SLP# signal to assert LDTSTOP_L.
+		 * Will work for C3 and for FID/VID change.
+		 */
+
+		/* fixme */
+		outb(0xff, VT8237R_ACPI_IO_BASE + 0x50);  //fixme maybe not needed
+
+//		outb(0x4, VT8237R_ACPI_IO_BASE + 0x50);  //fixme maybe not needed
+
+		/* it seems for AMD LDTSTP is connected not to SLP anymore */
+		/* enable 0: DPSLP# / DPRSTP# / VRDSLP */
+
+		/* Enable SATA LED, VR timer = 100us
+		 * Enable DPSLP# / DPRSTP# / VRDSLP - WARNING LDTSTP connetcs to some of those pins! (and not to SLP as on R ver)
+		 */
+		 //fixme
+		pci_write_config8(dev, 0xe5, 0x69);
+	
+		/* REQ5 as PCI request input - should be together with INTE-INTH. 
+		 * Fast VR timer disable - need for LDTSTP signal
+		*/
+		pci_write_config8(dev, 0xe4, 0xa5);
+	
+		/* reduce further the STPCLK/LDTSTP signal to 5us */
+
+		pci_write_config8(dev, 0xec, 0x4);
+		/* Host Bus Power Management Control, maybe not needed */
+		pci_write_config8(dev, 0x8c, 0x5);
+
+		/* so the chip knows we are on AMD */
+		pci_write_config8(devctl, 0x7c, 0x77);
+
+		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+					       0x2336), 0);
+		if (devctl == PCI_DEV_INVALID)
+			return;
+		/* Enable C2NOW delay to PSTATECTL VID / FID Change Delay to P-State Control */
+		pci_write_config8(devctl, 0xa6, 0x83);
+
+		//return; //FIXME fall through some revs have it old way
+	}
+	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
+	pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
+	/* Enable ACPI accessm RTC signal gated with PSON. */
+	pci_write_config8(dev, 0x81, 0x84);
+	/* Allow SLP# signal to assert LDTSTOP_L.
+	 * Will work for C3 and for FID/VID change.
+	 */
+	outb(0x1, VT8237R_ACPI_IO_BASE + 0x11);
+}
+
 void enable_rom_decode(void)
 {
 	device_t dev;
 
-	/* Bus Control and Power Management  */
+	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+
+	if (dev == PCI_DEV_INVALID) {
+    		/* Power management controller */
+		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+					       PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+		if (dev == PCI_DEV_INVALID)
+			return;
+	}
+
+	/* ROM decode last 1MB FFC00000 - FFFFFFFF */
+	pci_write_config8(dev, 0x41, 0x7f);
+}
+
+void vt8237_early_spi_init(void) {
+	device_t dev;
+	volatile u16 *spireg;
+	u32 tmp;
+
+	/* Bus Control and Power Management  */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				       PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID)
 		die("SB not found\r\n");
 
-	/* ROM decode last 1MB FFC00000 - FFFFFFFF */
-	pci_write_config8(dev, 0x41, 0x7f);
+	/* put SPI base 20 d0 fe */
+	tmp = pci_read_config32(dev, 0xbc);
+	pci_write_config32(dev, 0xbc, (VT8237S_SPI_MEM_BASE >> 8) | (tmp & 0xFF000000));
+
+	/* set SPI clock to 33MHz */
+	spireg = (u16 *) (VT8237S_SPI_MEM_BASE + 0x6c);
+	(*spireg) &=  0xff00;
+}
+
+/* offset 0x58
+ * 31:20 	reserved
+ * 19:16	4 bit position in shadow EEPROM
+ * 15:0		data to write
+ *
+ * offset 0x5c
+ * 31:28	reserved
+ * 27 		ERDBG - enable read from 0x5c
+ * 26		reserved
+ * 25		SEELD
+ * 24		SEEPR - write 1 when done updating, wait until SEELD is set to 1, sticky
+ *		cleared by reset, if it is 1 writing is disabled
+ * 19:16	4 bit position in shadow EEPROM
+ * 15:0		data from shadow EEPROM
+ *
+ * after PCIRESET SEELD and SEEPR must be 1 and 1
+*/
+
+/* 1 = needs PCI reset, 0 don't reset, network initialized */
+
+/* fixme maybe close the debug register after use? */
+
+#define LAN_TIMEOUT 0x7FFFFFFF
+
+int vt8237_early_network_init(struct vt8237_network_rom *rom) {
+	struct vt8237_network_rom n;
+	int loops;
+	device_t dev;
+	u32 tmp;
+	u8 status;
+	u16 *rom_write;
+	unsigned int checksum;
+	int i;
+
+	/* Network adapter */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				       PCI_DEVICE_ID_VIA_8233_7), 0);
+
+	if (dev == PCI_DEV_INVALID) {
+	    print_err("Network is disabled, please enable\n");
+	    return 0;
+	}
+
+	tmp = pci_read_config32(dev, 0x5c);
+	/* enable ERDBG */
+	tmp |= 0x08000000;
+	pci_write_config32(dev, 0x5c, tmp);
+	
+	status = ((pci_read_config32(dev, 0x5c) >> 24) & 0x3);
+	
+	if (status == 3) {
+	    /* network controller OK, EEPROM loaded */
+	    return 0;
+	}
+	
+	if (rom == NULL) {
+	    print_err("No configuration data specified, using default MAC!\n");
+		n.mac_address[0] = 0x0;
+		n.mac_address[1] = 0x0;
+		n.mac_address[2] = 0xde;
+		n.mac_address[3] = 0xad;
+		n.mac_address[4] = 0xbe;
+		n.mac_address[5] = 0xef;
+		n.phy_addr = 0x1;
+		n.res1 = 0x0;
+		n.sub_sid = 0x102;
+		n.sub_vid = 0x1106;
+		n.pid = 0x3065;
+		n.vid = 0x1106;
+		n.pmcc = 0x1f;
+		n.data_sel = 0x10;
+		n.pmu_data_reg = 0x0;
+		n.aux_curr = 0x0;
+		n.reserved = 0x0;
+		n.min_gnt = 0x3;
+		n.max_lat = 0x8;
+		n.bcr0 = 0x9;
+		n.bcr1 = 0xe;
+		n.cfg_a = 0x3;
+		n.cfg_b = 0x0;
+		n.cfg_c = 0x40;
+		n.cfg_d = 0x82;
+		n.checksum = 0x0;
+		rom = &n;
+	}
+	
+	rom_write = (u16 *) rom;
+	checksum = 0;
+	/* write all data except checksum and second to last byte */
+	tmp &= 0xff000000; /* leave reserved bits in */
+	for (i = 0; i < 15; i++) {
+		pci_write_config32(dev, 0x58, tmp | (i << 16) | rom_write[i]);
+		/* lame code fixme */
+		checksum += rom_write[i] & 0xff;
+		//checksum %= 256;
+		checksum += (rom_write[i] >> 8) & 0xff;
+		//checksum %= 256;
+	}
+	
+	checksum += (rom_write[15] & 0xff);
+	checksum = ~(checksum & 0xff);
+	tmp |= (((checksum & 0xff) << 8) | rom_write[15]);
+
+	/* write last byte and checksum */
+	pci_write_config32(dev, 0x58, (15 << 16) |  tmp);
+	
+	tmp = pci_read_config32(dev, 0x5c);
+	pci_write_config32(dev, 0x5c, tmp | 0x01000000); /* toggle SEEPR */
+	
+	/* Yes, this is a mess, but it's the easiest way to do it. */
+	while ( (((pci_read_config32(dev, 0x5c) >> 25) & 1) == 0)
+ 			&& (loops < LAN_TIMEOUT))
+		++loops;
+
+	if (loops >= LAN_TIMEOUT) {
+	    print_err("Timout - LAN controller did not accept configuration\n");
+	    return 0;
+	}
+	
+	/* we are done, config will be used after PCIRST# */
+	return 1;
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2007, 2008 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License v2 as published by
@@ -116,6 +116,8 @@ static void setup_ioapic(u32 ioapic_base)
 	}
 }
 
+static void southbridge_init_common(struct device *dev);
+
 /** Set up PCI IRQ routing, route everything through APIC. */
 static void pci_routing_fixup(struct device *dev)
 {
@@ -173,6 +175,7 @@ static void setup_pm(device_t dev)
 
 	/* 7 = stp to sust delay 1msec
 	 * 6 = SUSST# Deasserted Before PWRGD for STD
+	 * 4 = PWRGOOD reset on VT8237A/S
 	 * 3 = GPO26/GPO27 is GPO 
 	 * 2 = Disable Alert on Lan
 	 */
@@ -180,14 +183,6 @@ static void setup_pm(device_t dev)
 
 	/* Disable GP3 timer. */
 	pci_write_config8(dev, 0x98, 0);
-
-	/* Enable SATA LED, disable special CPU Frequency Change -
-	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
-	 */
-	pci_write_config8(dev, 0xe5, 0x9);
-
-	/* REQ5 as PCI request input - should be together with INTE-INTH. */
-	pci_write_config8(dev, 0xe4, 0x4);
 
 	/* Enable ACPI accessm RTC signal gated with PSON. */
 	pci_write_config8(dev, 0x81, 0x84);
@@ -222,6 +217,30 @@ static void setup_pm(device_t dev)
 	/* SCI is generated for RTC/pwrBtn/slpBtn. */
 	outw(0x001, VT8237R_ACPI_IO_BASE + 0x04);
 
+}
+
+
+static void vt8237r_init(struct device *dev) {
+	u8 enables;
+
+	/* Enable SATA LED, disable special CPU Frequency Change -
+	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
+	 */
+	pci_write_config8(dev, 0xe5, 0x9);
+
+	/* REQ5 as PCI request input - should be together with INTE-INTH. */
+	pci_write_config8(dev, 0xe4, 0x4);
+
+	/* Set bit 3 of 0x4f (use INIT# as CPU reset). */
+	enables = pci_read_config8(dev, 0x4f);
+	enables |= 0x08;
+	pci_write_config8(dev, 0x4f, enables);
+
+	/* Set Read Pass Write Control Enable (force A2 from APIC FSB to low). */
+	pci_write_config8(dev, 0x48, 0x8c);
+
+	southbridge_init_common(dev);
+
 	/* FIXME: Intel needs more bit set for C2/C3. */
 
 	/* Allow SLP# signal to assert LDTSTOP_L.
@@ -230,7 +249,44 @@ static void setup_pm(device_t dev)
 	outb(0x1, VT8237R_ACPI_IO_BASE + 0x11);
 }
 
-static void vt8237r_init(struct device *dev)
+static void vt8237s_init(struct device *dev)
+{
+	u32 tmp;
+	
+	/* put SPI base VT8237S_SPI_MEM_BASE */
+	tmp = pci_read_config32(dev, 0xbc);
+	pci_write_config32(dev, 0xbc, (VT8237S_SPI_MEM_BASE >> 8) | (tmp & 0xFF000000));
+
+	/* Enable SATA LED, VR timer = 100us, VR timer should be fixed */
+	
+	pci_write_config8(dev, 0xe5, 0x69);
+
+	/* REQ5 as PCI request input - should be together with INTE-INTH. 
+	 * Fast VR timer disable - need for LDTSTOP_L signal
+	*/
+	pci_write_config8(dev, 0xe4, 0xa5);
+
+	/* reduce further the STPCLK/LDTSTP signal to 5us */
+
+	pci_write_config8(dev, 0xec, 0x4);
+
+	/* Host Bus Power Management Control, maybe not needed */
+	pci_write_config8(dev, 0x8c, 0x5);
+
+	/* Enable HPET at VT8237R_HPET_ADDR., does not work correctly on R */
+	pci_write_config32(dev, 0x68, (VT8237R_HPET_ADDR | 0x80));
+
+	southbridge_init_common(dev);
+	
+	/* FIXME: Intel needs more bit set for C2/C3. */
+
+	/* Allow SLP# signal to assert LDTSTOP_L.
+	 * Will work for C3 and for FID/VID change. FIXME FIXME, pre rev A2
+	 */
+	outb(0xff, VT8237R_ACPI_IO_BASE + 0x50);
+	dump_south(dev);
+}
+static void vt8237_common_init(struct device *dev)
 {
 	u8 enables, byte;
 
@@ -275,7 +331,7 @@ static void vt8237r_init(struct device *dev)
 	/* Delay transaction control */
 	pci_write_config8(dev, 0x43, 0xb);
 
-	/* I/O recovery time */
+	/* I/O recovery time, default IDE routing */
 	pci_write_config8(dev, 0x4c, 0x44);
 
 	/* ROM memory cycles go to LPC. */
@@ -288,24 +344,13 @@ static void vt8237r_init(struct device *dev)
 	 *     bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
 	 *   0 Dynamic Clock Gating Main Switch (1=Enable)
 	 */
-	pci_write_config8(dev, 0x5b, 0x9);
-
-	/* Set Read Pass Write Control Enable (force A2 from APIC FSB to low). */
-	pci_write_config8(dev, 0x48, 0x8c);
+	pci_write_config8(dev, 0x5b, 0xb);
 
 	/* Set 0x58 to 0x43 APIC and RTC. */
 	pci_write_config8(dev, 0x58, 0x43);
 
-	/* Set bit 3 of 0x4f (use INIT# as CPU reset). */
-	enables = pci_read_config8(dev, 0x4f);
-	enables |= 0x08;
-	pci_write_config8(dev, 0x4f, enables);
-
 	/* Enable serial IRQ, 6PCI clocks. */
 	pci_write_config8(dev, 0x52, 0x9);
-
-	/* Enable HPET at VT8237R_HPET_ADDR. */
-	pci_write_config32(dev, 0x68, (VT8237R_HPET_ADDR | 0x80));
 
 	/* Power management setup */
 	setup_pm(dev);
@@ -348,25 +393,40 @@ static void init_keyboard(struct device *dev)
 		init_pc_keyboard(0x60, 0x64, 0);
 }
 
-static void southbridge_init(struct device *dev)
+static void southbridge_init_common(struct device *dev)
 {
-	vt8237r_init(dev);
+	vt8237_common_init(dev);
 	pci_routing_fixup(dev);
 	setup_ioapic(VT8237R_APIC_BASE);
 	setup_i8259();
 	init_keyboard(dev);
 }
 
-static const struct device_operations vt8237r_lpc_ops = {
+static const struct device_operations vt8237r_lpc_ops_s = {
 	.read_resources		= vt8237r_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= vt8237r_enable_resources,
-	.init			= &southbridge_init,
+	.init			= &vt8237s_init,
 	.scan_bus		= scan_static_bus,
 };
 
-static const struct pci_driver lpc_driver __pci_driver = {
-	.ops	= &vt8237r_lpc_ops,
+
+static const struct device_operations vt8237r_lpc_ops_r = {
+	.read_resources		= vt8237r_read_resources,
+	.set_resources		= pci_dev_set_resources,
+	.enable_resources	= vt8237r_enable_resources,
+	.init			= &vt8237r_init,
+	.scan_bus		= scan_static_bus,
+};
+
+static const struct pci_driver lpc_driver_r __pci_driver = {
+	.ops	= &vt8237r_lpc_ops_r,
 	.vendor	= PCI_VENDOR_ID_VIA,
 	.device	= PCI_DEVICE_ID_VIA_VT8237R_LPC,
+};
+
+static const struct pci_driver lpc_driver_s __pci_driver = {
+	.ops	= &vt8237r_lpc_ops_s,
+	.vendor	= PCI_VENDOR_ID_VIA,
+	.device	= PCI_DEVICE_ID_VIA_VT8237S_LPC,
 };

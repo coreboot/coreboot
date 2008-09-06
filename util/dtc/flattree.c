@@ -661,8 +661,6 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	}
 	if (tree->next_sibling) 
 		fprintf(f, "\t.sibling = &dev_%s,\n", tree->next_sibling->label);
-	if (tree->next) 
-		fprintf(f, "\t.next = &dev_%s,\n", tree->next->label);
 	/* now do we do next? */
 	/* this will need to do a bus for every child. And, below, we're going to need to find which bus we're on*/
 	/* for now, let's keep it to the minimum that will work, while we see if we like this. */

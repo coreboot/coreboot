@@ -1311,8 +1311,22 @@ void
 labeltree(struct node *tree)
 {
 	struct node *child;
+	char *tmp1;
+	char *tmp2;
 
 	tree->label = clean(tree->name, 1);
+	if (tree->parent && tree->label) {
+		tmp1 = strdup(tree->parent->label);
+		if (strlen(tmp1)) {
+			tmp2 = tree->label;
+			tree->label = malloc(strlen(tmp1) + strlen(tmp2) + 2);
+			strcpy(tree->label, tmp1);
+			strcat(tree->label, "_");
+			strcat(tree->label, tmp2);
+			free(tmp2);
+		}
+		free(tmp1);
+	}
 	
 	if (tree->next_sibling)
 		labeltree(tree->next_sibling);

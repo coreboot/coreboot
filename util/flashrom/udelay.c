@@ -55,6 +55,12 @@ void myusec_calibrate_delay()
 	// compute one microsecond. That will be count / time
 	micro = count / timeusec;
 
-	printf_debug("%ldM loops per second. ", (unsigned long)micro);
+	gettimeofday(&start, 0);
+	myusec_delay(100);
+	gettimeofday(&end, 0);
+	timeusec = 1000000 * (end.tv_sec - start.tv_sec) +
+	    (end.tv_usec - start.tv_usec);
+	printf_debug("%ldM loops per second, 100 myus = %ld us. ",
+	    (unsigned long)micro, timeusec);
 	printf("OK.\n");
 }

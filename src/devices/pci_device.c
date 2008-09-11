@@ -923,7 +923,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 		if (	(id == 0xffffffff) || (id == 0x00000000) ||
 			(id == 0x0000ffff) || (id == 0xffff0000))
 		{
-			printk_spew("PCI: devfn 0x%x, bad id 0x%x\n", devfn, id);
+			printk_spew("%s, bad id 0x%x\n", dev_path(&dummy), id);
 			return NULL;
 		}
 		dev = alloc_dev(bus, &dummy.path);

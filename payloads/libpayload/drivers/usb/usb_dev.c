@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include "usb.h"
+#include <usb/usb.h>
 
 static void
 usb_nop_destroy (usbdev_t *dev)

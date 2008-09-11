@@ -28,9 +28,9 @@
  */
 
 #include <arch/endian.h>
-#include "usb.h"
-#include "usbmsc.h"
-#include "usbdisk.h"
+#include <usb/usb.h>
+#include <usb/usbmsc.h>
+#include <usb/usbdisk.h>
 
 enum {
 	msc_subclass_rbc = 0x1,

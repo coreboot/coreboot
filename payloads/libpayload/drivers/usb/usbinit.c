@@ -28,9 +28,9 @@
  */
 
 #include <config.h>
-#include "usb.h"
+#include <usb/usb.h>
 #include "uhci.h"
-#include "usbdisk.h"
+#include <usb/usbdisk.h>
 
 /**
  * Initializes USB controller attached to PCI

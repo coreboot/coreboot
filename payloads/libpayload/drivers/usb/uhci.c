@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include "usb.h"
+#include <usb/usb.h>
 #include "uhci.h"
 #include <arch/virtual.h>
 

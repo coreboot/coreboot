@@ -31,7 +31,7 @@
 #define __UHCI_H
 
 #include <pci.h>
-#include "usb.h"
+#include <usb/usb.h>
 
 typedef union {
 	struct {

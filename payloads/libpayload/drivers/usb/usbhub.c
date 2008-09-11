@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include "usb.h"
+#include <usb/usb.h>
 
 // assume that host_to_device is overwritten if necessary
 #define DR_PORT gen_bmRequestType(host_to_device, class_type, other_recp)

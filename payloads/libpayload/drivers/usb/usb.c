@@ -28,7 +28,7 @@
  */
 
 #include <config.h>
-#include "usb.h"
+#include <usb/usb.h>
 
 hci_t *usb_hcs = 0;
 

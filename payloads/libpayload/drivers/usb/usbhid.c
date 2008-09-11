@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include "usb.h"
+#include <usb/usb.h>
 
 enum { hid_subclass_none = 0, hid_subclass_boot = 1 };
 enum { hid_proto_boot = 0, hid_proto_report = 1 };

@@ -51,8 +51,8 @@ static struct video_console *console_list[] =
 
 static struct video_console *console;
 
-static unsigned int cursorx;
-static unsigned int cursory;
+static int cursorx;
+static int cursory;
 static unsigned int cursor_enabled = 1;
 
 static void video_console_fixup_cursor(void)
@@ -122,6 +122,10 @@ void video_console_putchar(unsigned int ch)
 
 	case '\b':
 		cursorx--;
+		if (cursorx < 0) {
+			cursory--;
+			cursorx = VIDEO_COLS;
+		}
 		break;
 
 	case '\t':
@@ -172,7 +176,7 @@ int video_console_init(void)
 			console = console_list[i];
 
 			if (console->get_cursor)
-				console->get_cursor(&cursorx, &cursory, &cursor_enabled);
+				console->get_cursor((unsigned int*)&cursorx, (unsigned int*)&cursory, &cursor_enabled);
 
 			if (cursorx) {
 				cursorx = 0;

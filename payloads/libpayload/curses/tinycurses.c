@@ -70,7 +70,7 @@ static int window_count = 1;
 static struct ldat ldat_list[MAX_WINDOWS][SCREEN_Y];
 static int ldat_count = 0;
 
-/* One item bigger than SCREEN_X to reverse place for a NUL byte. */
+/* One item bigger than SCREEN_X to reserve space for a NUL byte. */
 static NCURSES_CH_T linebuf_list[SCREEN_Y * MAX_WINDOWS][SCREEN_X + 1];
 static int linebuf_count = 0;
 
@@ -305,8 +305,8 @@ WINDOW *initscr(void)
 	stdscr = newwin(SCREEN_Y, SCREEN_X + 1, 0, 0);
 	// TODO: curscr, newscr?
 
-	for (y = 0; y < stdscr->_maxy; y++) {
-		for (x = 0; x < stdscr->_maxx; x++) {
+	for (y = 0; y <= stdscr->_maxy; y++) {
+		for (x = 0; x <= stdscr->_maxx; x++) {
 			stdscr->_line[y].text[x].chars[0] = ' ';
 			stdscr->_line[y].text[x].attr = A_NORMAL;
 		}
@@ -817,6 +817,22 @@ int wscrl(WINDOW *win, int n)
 		return ERR;
 
 	if (n != 0) {
+		int x, y;
+
+		for (y = 0; y <= (win->_maxy - n); y++) {
+			for (x = 0; x <= win->_maxx; x++) {
+				win->_line[y].text[x].chars[0] = win->_line[y + n].text[x].chars[0];
+				win->_line[y].text[x].attr = win->_line[y + n].text[x].attr;
+			}
+		}
+
+		for (y = (win->_maxy+1 - n); y <= win->_maxy; y++) {
+			for (x = 0; x <= win->_maxx; x++) {
+				win->_line[y].text[x].chars[0] = ' ';
+				win->_line[y].text[x].attr = A_NORMAL;
+			}
+		}
+
 		// _nc_scroll_window(win, n, win->_regtop, win->_regbottom, win->_nc_bkgd);
 		// _nc_synchook(win);
 	}

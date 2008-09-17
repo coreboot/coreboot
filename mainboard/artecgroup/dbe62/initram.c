@@ -65,7 +65,7 @@ static const struct spd_entry spd_table[] = {
 	{SPD_tRP, 0x58},
 	{SPD_PRIMARY_SDRAM_WIDTH, 8},
 	{SPD_NUM_BANKS_PER_SDRAM, 0x4},
-	{SPD_NUM_COLUMNS, 0x8}, /* 8kB */
+	{SPD_NUM_COLUMNS, 0xa}, /* 8kB */
 	{SPD_NUM_DIMM_BANKS, 0x1},
 	{SPD_REFRESH, 0x82},
 	{SPD_SDRAM_CYCLE_TIME_2ND, 0x0},

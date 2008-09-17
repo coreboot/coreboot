@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2008 Ulf Jordan <jordan@chalmers.se>
+ * Copyright (C) 2008 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -193,7 +194,18 @@ int beep(void)
 int cbreak(void) { /* TODO */ return 0; }
 /* D */ int clearok(WINDOW *win, bool flag) { win->_clear = flag; return OK; }
 // int color_content(short color, short *r, short *g, short *b) {}
-// int curs_set(int) {}
+int curs_set(int on)
+{
+	if (curses_flags & F_ENABLE_SERIAL) {
+		// TODO
+	}
+
+	if (curses_flags & F_ENABLE_CONSOLE) {
+		video_console_cursor_enable(on);
+	}
+
+	return OK;
+}
 // int def_prog_mode(void) {}
 // int def_shell_mode(void) {}
 // int delay_output(int) {}
@@ -252,7 +264,7 @@ WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 
 	return win;
 }
-int doupdate(void) { /* TODO */ return(*(int *)0); }
+int doupdate(void) { /* TODO */ return(0); }
 // WINDOW * dupwin (WINDOW *) {}
 /* D */ int echo(void) { SP->_echo = TRUE; return OK; }
 int endwin(void)
@@ -281,7 +293,7 @@ void immedok(WINDOW *win, bool flag) { win->_immed = flag; }
 /** Note: Must _not_ be called twice! */
 WINDOW *initscr(void)
 {
-	int x, y, i;
+	int i;
 
 	// newterm(name, stdout, stdin);
 	// def_prog_mode();
@@ -305,12 +317,7 @@ WINDOW *initscr(void)
 	stdscr = newwin(SCREEN_Y, SCREEN_X + 1, 0, 0);
 	// TODO: curscr, newscr?
 
-	for (y = 0; y <= stdscr->_maxy; y++) {
-		for (x = 0; x <= stdscr->_maxx; x++) {
-			stdscr->_line[y].text[x].chars[0] = ' ';
-			stdscr->_line[y].text[x].attr = A_NORMAL;
-		}
-	}
+	werase(stdscr);
 
 	return stdscr;
 }
@@ -473,12 +480,15 @@ int vwprintw(WINDOW *win, const char *fmt, va_list argp)
 	return waddstr(win, (char *)&sprintf_tmp);
 }
 // int vwscanw (WINDOW *, NCURSES_CONST char *,va_list) {}
-// int waddch (WINDOW *, const chtype) {}
 int waddch(WINDOW *win, const chtype ch)
 {
 	int code = ERR;
 	// NCURSES_CH_T wch;
 	// SetChar2(wch, ch);
+
+	if (win->_line[win->_cury].firstchar == _NOCHANGE || 
+			win->_line[win->_cury].firstchar > win->_curx)
+		win->_line[win->_cury].firstchar = win->_curx;
 
 	win->_line[win->_cury].text[win->_curx].chars[0] =
 		((ch) & (chtype)A_CHARTEXT);
@@ -486,6 +496,11 @@ int waddch(WINDOW *win, const chtype ch)
 	win->_line[win->_cury].text[win->_curx].attr = WINDOW_ATTRS(win);
 	win->_line[win->_cury].text[win->_curx].attr |=
 		((ch) & (chtype)A_ATTRIBUTES);
+
+	if (win->_line[win->_cury].lastchar == _NOCHANGE || 
+			win->_line[win->_cury].lastchar < win->_curx)
+		win->_line[win->_cury].lastchar = win->_curx;
+
 	win->_curx++;	// FIXME
 
 	// if (win && (waddch_nosync(win, wch) != ERR)) {
@@ -507,6 +522,10 @@ int waddnstr(WINDOW *win, const char *astr, int n)
 	if (n < 0)
 		n = strlen(astr);
 
+	if (win->_line[win->_cury].firstchar == _NOCHANGE || 
+			win->_line[win->_cury].firstchar > win->_curx)
+		win->_line[win->_cury].firstchar = win->_curx;
+
 	while ((n-- > 0) && (*str != '\0')) {
 	// while (*str != '\0') {
 		win->_line[win->_cury].text[win->_curx].chars[0] = *str++;
@@ -521,6 +540,11 @@ int waddnstr(WINDOW *win, const char *astr, int n)
 		// 	break;
 		// }
 	}
+
+	if (win->_line[win->_cury].lastchar == _NOCHANGE || 
+			win->_line[win->_cury].lastchar < win->_curx)
+		win->_line[win->_cury].lastchar = win->_curx;
+
 	return code;
 }
 int wattr_on(WINDOW *win, attr_t at, void *opts GCC_UNUSED)
@@ -603,6 +627,9 @@ int werase(WINDOW *win)
 			win->_line[y].text[x].chars[0] = ' ';
 			win->_line[y].text[x].attr = WINDOW_ATTRS(win);
 		}
+		// Should we check instead?
+		win->_line[y].firstchar = 0;
+		win->_line[y].lastchar = win->_maxx;
 	}
 	return OK;
 }
@@ -681,12 +708,16 @@ int wnoutrefresh(WINDOW *win)
 
 	for (y = 0; y <= win->_maxy; y++) {
 
+		if (win->_line[y].firstchar == _NOCHANGE)
+			continue;
+
 		/* Position the serial cursor */
 
 		if (curses_flags & F_ENABLE_SERIAL)
-			serial_set_cursor(win->_begy + y, win->_begx);
+			serial_set_cursor(win->_begy + y, win->_begx +
+					win->_line[y].firstchar);
 
-		for (x = 0; x <= win->_maxx; x++) {
+		for (x = win->_line[y].firstchar; x <= win->_line[y].lastchar; x++) {
 			attr_t attr = win->_line[y].text[x].attr;
 
 			unsigned int c =
@@ -734,6 +765,7 @@ int wnoutrefresh(WINDOW *win)
 				}
 
 				serial_putchar(ch);
+
 			}
 
 			c = SWAP_RED_BLUE(c);
@@ -768,7 +800,15 @@ int wnoutrefresh(WINDOW *win)
 				video_console_putc(win->_begy + y, win->_begx + x, c);
 			}
 		}
+		win->_line[y].firstchar = _NOCHANGE;
+		win->_line[y].lastchar = _NOCHANGE;
 	}
+
+	if (curses_flags & F_ENABLE_SERIAL)
+		serial_set_cursor(win->_begy + win->_cury, win->_begx + win->_curx);
+
+	if (curses_flags & F_ENABLE_CONSOLE)
+		video_console_set_cursor(win->_begx + win->_curx, win->_begy + win->_cury);
 
 	return OK;
 }
@@ -813,29 +853,49 @@ int wrefresh(WINDOW *win)
 // int wscanw (WINDOW *, NCURSES_CONST char *,...) {}
 int wscrl(WINDOW *win, int n)
 {
+	int x, y;
+
 	if (!win->_scroll)
 		return ERR;
 
-	if (n != 0) {
-		int x, y;
+	if (n == 0)
+		return OK;
 
-		for (y = 0; y <= (win->_maxy - n); y++) {
-			for (x = 0; x <= win->_maxx; x++) {
+	for (y = 0; y <= (win->_maxy - n); y++) {
+		win->_line[y].firstchar = win->_line[y + n].firstchar;
+		win->_line[y].lastchar = win->_line[y + n].lastchar;
+		for (x = 0; x <= win->_maxx; x++) {
+			if ((win->_line[y].text[x].chars[0] != win->_line[y + n].text[x].chars[0]) || 
+					(win->_line[y].text[x].attr != win->_line[y + n].text[x].attr)) {
+				if (win->_line[y].firstchar == _NOCHANGE)
+					win->_line[y].firstchar = x;
+
+				win->_line[y].lastchar = x;
+
 				win->_line[y].text[x].chars[0] = win->_line[y + n].text[x].chars[0];
 				win->_line[y].text[x].attr = win->_line[y + n].text[x].attr;
 			}
 		}
+	}
 
-		for (y = (win->_maxy+1 - n); y <= win->_maxy; y++) {
-			for (x = 0; x <= win->_maxx; x++) {
+	for (y = (win->_maxy+1 - n); y <= win->_maxy; y++) {
+		for (x = 0; x <= win->_maxx; x++) {
+			if ((win->_line[y].text[x].chars[0] != ' ') || 
+					(win->_line[y].text[x].attr != A_NORMAL)) {
+				if (win->_line[y].firstchar == _NOCHANGE)
+					win->_line[y].firstchar = x;
+
+				win->_line[y].lastchar = x;
+
 				win->_line[y].text[x].chars[0] = ' ';
 				win->_line[y].text[x].attr = A_NORMAL;
 			}
 		}
-
-		// _nc_scroll_window(win, n, win->_regtop, win->_regbottom, win->_nc_bkgd);
-		// _nc_synchook(win);
 	}
+
+	// _nc_scroll_window(win, n, win->_regtop, win->_regbottom, win->_nc_bkgd);
+	// _nc_synchook(win);
+
 	return OK;
 }
 int wsetscrreg(WINDOW *win, int top, int bottom)

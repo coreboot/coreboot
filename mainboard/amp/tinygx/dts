@@ -1,0 +1,60 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+/{
+	mainboard_vendor = "AMP";
+	mainboard_name = "TinyGX";
+	mainboard_pci_subsystem_vendor = "0x1022";
+	mainboard_pci_subsystem_device = "0x2323";
+	cpus { };
+	apic@0 {
+		/config/("northbridge/amd/geodelx/apic");
+	};
+	domain@0 {
+		/config/("northbridge/amd/geodelx/domain");
+		/* Video RAM has to be in 2MB chunks. */
+		geode_video_mb = "8";
+		pci@1,0 {
+			/config/("northbridge/amd/geodelx/pci");
+		};
+		pci@f,0 {
+			/config/("southbridge/amd/cs5536/dts");
+			/* Interrupt enables for LPC bus.
+			 *  Each bit is an IRQ 0-15. */
+			lpc_serirq_enable = "0x000010da";
+			/* LPC IRQ polarity. Each bit is an IRQ 0-15. */
+			lpc_serirq_polarity = "0x0000EF25";
+			/* 0:continuous 1:quiet */
+			lpc_serirq_mode = "1";
+			/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none. 
+			 * See virtual PIC spec. */
+			enable_gpio_int_route = "0x0D0C0700";
+			enable_USBP4_device = "1";
+		};
+		pci@f,2 {
+			/config/("southbridge/amd/cs5536/ide");
+			enable_ide = "1";
+		};
+		ioport@2e {
+			/config/("superio/ite/it8716f/dts");
+			com1enable = "1";
+		};
+	};
+};

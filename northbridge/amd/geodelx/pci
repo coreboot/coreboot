@@ -20,5 +20,6 @@
 
 {
 	device_operations = "geodelx_north_pci";
+	bridge;
 };
 

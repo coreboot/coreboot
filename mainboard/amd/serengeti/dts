@@ -25,10 +25,11 @@
 	apic@0 {
 	};
 	domain@0 {
+		/config/("northbridge/amd/k8/domain");
 		pci@1,0{
 		};
 		/* guesses; we need a real lspci */
-		pci@18,0 {
+		pci0@18,0 {
 			/config/("northbridge/amd/k8/pci");
 			pci@0,0 {
 				/config/("southbridge/amd/amd8111/amd8111.dts");
@@ -38,6 +39,15 @@
 			};
 			pci@5,0 {
 				/config/("southbridge/amd/amd8111/nic.dts");
+			};
+		};
+		pci1@18,0 {
+			/config/("northbridge/amd/k8/pci");
+		};
+		pci2@18,0 {
+			/config/("northbridge/amd/k8/pci");
+			/* just for illustrating link #2 */
+			pci@2,0{
 			};
 		};
 		ioport@2e {

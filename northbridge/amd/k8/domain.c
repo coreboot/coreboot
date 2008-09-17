@@ -104,6 +104,7 @@ static void k8_pci_domain_read_resources(struct device * dev)
 	unsigned reg;
 
 	/* Find the already assigned resource pairs */
+	printk(BIOS_DEBUG, "k8_pci_domain_read_resources\n");
 	get_fx_devs();
 	for(reg = 0x80; reg <= 0xd8; reg+= 0x08) {
 		u32 base, limit;
@@ -166,6 +167,7 @@ static void k8_pci_domain_read_resources(struct device * dev)
 
 static void k8_pci_domain_set_resources(struct device * dev)
 {
+	printk(BIOS_DEBUG, "k8_pci_domain_set_resources\n");
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info get_hw_mem_hole_info(void);
 	void disable_hoist_memory(unsigned long hole_startk, int i);
@@ -367,6 +369,7 @@ static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)
 {
 	unsigned reg;
 	int i;
+	printk(BIOS_DEBUG, "k8_domain_scan_bus\n");
 	/* Unmap all of the HT chains */
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
@@ -397,7 +400,7 @@ static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)
 	return max;
 }
 
-struct device_operations k8apic_ops = {
+struct device_operations k8domain_ops = {
 	.id = {.type = DEVICE_ID_APIC_CLUSTER,
 		{.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = 0x1100}}},

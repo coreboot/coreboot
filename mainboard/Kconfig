@@ -37,6 +37,12 @@ config VENDOR_AMD
 	  Select this option for various systems from 
 	  Advanced Micro Devices, Inc.
 
+config VENDOR_AMP
+	bool "AMP"
+	help
+	  Select this option for various systems from 
+	  Advanced Micro Devices, Inc.
+
 config VENDOR_ARTECGROUP
 	bool "Artec Group"
 	help
@@ -61,6 +67,7 @@ endchoice
 
 source "mainboard/adl/Kconfig"
 source "mainboard/amd/Kconfig"
+source "mainboard/amp/Kconfig"
 source "mainboard/artecgroup/Kconfig"
 source "mainboard/emulation/Kconfig"
 source "mainboard/gigabyte/Kconfig"

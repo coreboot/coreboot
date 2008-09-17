@@ -166,6 +166,10 @@ struct node {
 	int addr_cells, size_cells;
 
 	char *label;
+	/* coreboot-specific */
+	int linked; /* has this node been added to the links for a bridge? */
+	struct node *linknode; /* If I am linked, which node is it? */
+	int whichlink; /* which link of the node am I on? */
 };
 
 #define for_each_property(n, p) \
@@ -173,6 +177,10 @@ struct node {
 
 #define for_each_child(n, c)	\
 	for ((c) = (n)->children; (c); (c) = (c)->next_sibling)
+
+/* N.B.: includes ourselves */
+#define for_all_siblings(n, s)	\
+	for ((s) = (n->next_sibling); (s); (s) = (s)->next_sibling)
 
 #define for_each_config(n, p)	\
 	for ((p) = (n)->config; (p); (p) = (p)->next)

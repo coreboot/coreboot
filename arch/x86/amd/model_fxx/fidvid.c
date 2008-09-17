@@ -441,6 +441,7 @@ void init_fidvid_bsp(unsigned bsp_apicid)
 	struct msr msr;
 	msr =	rdmsr(FIDVID_STATUS);
 	fid_max = ((msr.lo >> 16) & 0x3f); /* max fid */
+	printk(BIOS_DEBUG, "init_fidvid_bsp: fid_max is 0x%x\n", fid_max);
 #if FX_SUPPORT == 1
 	if (fid_max >= ((25-4) * 2)) { /* FX max fid is 5G */
 		fid_max = ((msr.lo >> 8) & 0x3f) + 5*2; /* maxFID = minFID + 1G */

@@ -74,6 +74,7 @@ static unsigned int amdk8_scan_chain(struct device * dev, unsigned nodeid, unsig
 		if (!(link_type & LinkConnected)) {
 			return max;
 		}
+		printk(BIOS_DEBUG, "amdk8_scan_chain: link %d is connected\n", link);
 		do {
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
 		} while(!(link_type & InitComplete));
@@ -211,6 +212,8 @@ static unsigned int amdk8_scan_chains(struct device * dev, unsigned int max)
 	unsigned offset_unitid = 0;
         nodeid = amdk8_nodeid(dev);
 	
+	printk(BIOS_DEBUG, "amdk8_scan_chains\n");
+
         if(nodeid==0) {
                 sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
 #if SB_HT_CHAIN_ON_BUS0 > 0
@@ -371,6 +374,7 @@ static void amdk8_link_read_bases(struct device * dev, unsigned nodeid, unsigned
 
 static void amdk8_read_resources(struct device * dev)
 {
+	printk(BIOS_DEBUG, "amdk8_read_resources\n");
 	unsigned nodeid, link;
 	nodeid = amdk8_nodeid(dev);
 	for(link = 0; link < dev->links; link++) {
@@ -385,7 +389,7 @@ static void amdk8_set_resource(struct device * dev, struct resource *resource, u
 	resource_t rbase, rend;
 	unsigned reg, link;
 	char buf[50];
-
+	printk(BIOS_DEBUG, "amdk8_set_resource\n");
 	/* Make certain the resource has actually been set */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		return;
@@ -536,6 +540,7 @@ static void amdk8_set_resources(struct device * dev)
 	/* Find the nodeid */
 	nodeid = amdk8_nodeid(dev);
 
+	printk(BIOS_DEBUG, "amdk8_set_resources: nodeid %d\n", nodeid);
 	amdk8_create_vga_resource(dev, nodeid);
 	
 	/* Set each resource we have found */
@@ -554,6 +559,7 @@ static void amdk8_set_resources(struct device * dev)
 
 static void amdk8_enable_resources(struct device * dev)
 {
+	printk(BIOS_DEBUG, "amdk8_enable_resources\n");
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }
@@ -581,4 +587,5 @@ struct device_operations k8_ops = {
 	.phase5_enable_resources = amdk8_enable_resources,
 	.phase6_init		 = mcf0_control_init,
 	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci_bus      = &pci_cf8_conf1,
 };

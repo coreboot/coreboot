@@ -529,6 +529,31 @@ static void coreboot_emit_property(void *e, char *label)
 	fprintf(f, "\tu32 p%d = \tOF_DT_PROP;\n", unique++);
 }
 
+/* Is the node a bridge? 
+ * If it has children, yes. 
+ * OR if it has a config, if the config has 
+ * the 'bridge' property, yes. 
+ */
+static int is_bridge(struct node *tree)
+{
+	int bridge = 0;
+	struct property *prop;
+	/* simple test: does it have children? If so, it's a bridge */
+	if (tree->children)
+		return 1;
+	if (tree->config){
+		for_each_config(tree, prop) {
+			if (streq(prop->name, "bridge")){
+				bridge = 1;
+			}
+		}
+	}
+
+	return bridge;
+
+}
+
+
 static void coreboot_emit_special(FILE *e, struct node *tree)
 {
 	FILE *f = e;
@@ -538,6 +563,7 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	char *configname;
 	char *path;
 	int enabled = 1;
+	int linkcount = 0;
 
 	fprintf(f, "struct device dev_%s = {\n", tree->label);
 	/* special case -- the root has a distinguished path */
@@ -609,6 +635,10 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 			if (streq(prop->name, "device_operations")){
 				fprintf(f, "\t.ops = &%s,\n", prop->val.val);
 			}
+			if (streq(prop->name, "ops_pci_bus")){
+				fprintf(f, "\t.ops_pci_bus = &%s,\n", clean((char *)prop->val.val, 0));
+				ops_set  = 1;
+			}
 		}
 	}
 	/* Process the properties specified in the mainboard dts. 
@@ -661,23 +691,50 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	}
 	if (tree->next_sibling) 
 		fprintf(f, "\t.sibling = &dev_%s,\n", tree->next_sibling->label);
-	/* now do we do next? */
-	/* this will need to do a bus for every child. And, below, we're going to need to find which bus we're on*/
-	/* for now, let's keep it to the minimum that will work, while we see if we like this. */
-	if (tree->children){
-		fprintf(f,"\t.links = 1,\n");
+
+	/* If we are a bridge, and we have not been linked, then set up our links.
+	 * There is a good chance we could expand the for loop to contain this first bit of code. 
+	 * OTOH, the compiler can do it for us, and the initial conditions are clearer this way.
+	 */
+	if ((! tree->linked) && is_bridge(tree)){
+		struct node *siblings; 
 		fprintf(f,"\t.link = {\n");
-		fprintf(f,"\t\t[0] = {\n");
+		fprintf(f,"\t\t[%d] = {\n", linkcount);
 		fprintf(f,"\t\t\t.dev = &dev_%s,\n", tree->label);
-		fprintf(f,"\t\t\t.link = 0,\n");
-		fprintf(f,"\t\t\t.children = &dev_%s\n", tree->children->label);
+		fprintf(f,"\t\t\t.link = %d,\n", linkcount);
+		if (tree->children)
+			fprintf(f,"\t\t\t.children = &dev_%s\n", tree->children->label);
 		fprintf(f,"\t\t},\n");
+		/* now we need to handle our siblings. */
+		linkcount++;
+		for_all_siblings(tree, siblings) {
+			if (is_bridge(siblings) && (!siblings->linked)){
+				fprintf(f,"\t\t[%d] = {\n", linkcount);
+				fprintf(f,"\t\t\t.dev = &dev_%s,\n", siblings->label);
+				fprintf(f,"\t\t\t.link = %d,\n", linkcount);
+				if (siblings->children) {
+					fprintf(f,"\t\t\t.children = &dev_%s\n", siblings->children->label);
+					siblings->children->linked = 1;
+					siblings->children->linknode = tree;
+					siblings->children->whichlink = linkcount;
+				}
+				fprintf(f,"\t\t},\n");
+				siblings->linked = 1;
+				siblings->whichlink = linkcount;
+				siblings->linknode = tree;
+				linkcount++;
+			}
+		}
 		fprintf(f,"\t},\n");
 	}
+	fprintf(f,"\t.links = %d,\n", linkcount);
 	/* fill in the 'bus I am on' entry */
-	if (tree->parent)
+	/* being 'linked' on a bus overrides the parent link */
+	if (tree->linked) 
+		fprintf(f, "\t.bus = &dev_%s.link[%d],\n", tree->linknode->label, tree->whichlink);
+	else if (tree->parent)
 		fprintf(f, "\t.bus = &dev_%s.link[0],\n", tree->parent->label);
-	else
+	else 		/* this is a very unusual case: the root */
 		fprintf(f, "\t.bus = &dev_%s.link[0],\n", tree->label);
 
 	if (tree->next)
@@ -784,6 +841,8 @@ fprintf(stderr, "LEFT OVER CONSTRUCTOR -- FIX ME\n");
 
 }
 
+char *emitted_names[256];
+int emitted_names_count = 0;
 static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emit,
 			 void *etarget, struct data *strbuf,
 			 struct version_info *vi)
@@ -794,10 +853,24 @@ static void flatten_tree_emit_structdecls(struct node *tree, struct emitter *emi
 	struct node *child;
 	int seen_name_prop = 0;
 	FILE *f = etarget;
+	int doconfig = 0;
+	int already_done = 0;
 
 	if (tree->config){
+		int i;
 //		treename = clean(tree->label, 0);
 		treename = toname(tree->config->label, "_config");
+		for(i = 0; i < emitted_names_count; i++)
+			if (!strcmp(treename, emitted_names[i]))
+				already_done++;
+		if (! already_done) {
+			emitted_names[emitted_names_count++] = treename;
+			doconfig = 1;
+		}
+	}
+
+	if (doconfig) {
+
 		emit->beginnode(etarget, treename);
 
 

@@ -35,6 +35,12 @@ static struct bus *get_pbus(struct device *dev)
 {
 	struct bus *pbus = dev->bus;
 	while (pbus && pbus->dev && !ops_pci_bus(pbus)) {
+		if (pbus->dev == dev) {
+			printk(BIOS_EMERG, "Loop: dev->dtsname dev->bus->dev\n");
+			printk(BIOS_EMERG, "To fix this, set ops_pci_bus in dts\n");
+			die("loop due to insufficient dts");
+		}
+
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops

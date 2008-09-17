@@ -19,7 +19,9 @@
 
 #include <types.h>
 #include <console.h>
+#include <globalvars.h>
 #include <io.h>
+#include <cpu.h>
 #include "cs5536.h"
 
 #define SMBUS_ERROR			-1

@@ -321,11 +321,11 @@ err:
  */
 int smbus_read_byte(u16 device, u8 address)
 {
-	static int first_time = 1;
+	struct global_vars *g = global_vars();
 
-	if (first_time) {
+	if (!g->spd_inited) {
 		smbus_init();
-		first_time = 0;
+		g->spd_inited = 1;
 	}
 
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);

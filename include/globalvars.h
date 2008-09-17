@@ -53,6 +53,8 @@ struct global_vars {
 	/* these two values are of interest in many stages */
 	u32 init_detected;
 	struct sys_info sys_info;
+	/* has the spd hardware been set up? */
+	int spd_inited;
 };
 
 #endif /* GLOBALVARS_H */

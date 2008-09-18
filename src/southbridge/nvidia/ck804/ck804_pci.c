@@ -18,7 +18,7 @@ static void pci_init(struct device *dev)
 	device_t pci_domain_dev;
 	struct resource *mem1, *mem2;
 #endif
-	
+
 	/* System error enable */
 	dword = pci_read_config32(dev, 0x04);
 	dword |= (1<<8); /* System error enable */
@@ -26,16 +26,16 @@ static void pci_init(struct device *dev)
 	pci_write_config32(dev, 0x04, dword);
 
 #if 0
-        word = pci_read_config16(dev, 0x48);
-        word |= (1<<0); /* MRL2MRM */
-        word |= (1<<2); /* MR2MRM */
-        pci_write_config16(dev, 0x48, word);
+	word = pci_read_config16(dev, 0x48);
+	word |= (1<<0); /* MRL2MRM */
+	word |= (1<<2); /* MR2MRM */
+	pci_write_config16(dev, 0x48, word);
 #endif
 
 #if 1
-        dword = pci_read_config32(dev, 0x4c);
-        dword |= 0x00440000; /*TABORT_SER_ENABLE Park Last Enable.*/
-        pci_write_config32(dev, 0x4c, dword);
+	dword = pci_read_config32(dev, 0x4c);
+	dword |= 0x00440000; /*TABORT_SER_ENABLE Park Last Enable.*/
+	pci_write_config32(dev, 0x4c, dword);
 #endif
 
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
@@ -61,12 +61,12 @@ static void pci_init(struct device *dev)
 #endif
 
 	printk_debug("[0x50] <-- 0x%08x\n", dword);
-        pci_write_config32(dev, 0x50, dword); //TOM
+	pci_write_config32(dev, 0x50, dword); //TOM
 
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = 0,
+	.set_subsystem = 0,
 };
 
 static struct device_operations pci_ops  = {

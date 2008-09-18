@@ -3,9 +3,9 @@
  *  by yhlu@tyan.com
  */
 #if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
-        #define CK804_DEVN_BASE HT_CHAIN_END_UNITID_BASE
+	#define CK804_DEVN_BASE HT_CHAIN_END_UNITID_BASE
 #else
-        #define CK804_DEVN_BASE HT_CHAIN_UNITID_BASE
+	#define CK804_DEVN_BASE HT_CHAIN_UNITID_BASE
 #endif
 
 static void ck804_enable_rom(void)

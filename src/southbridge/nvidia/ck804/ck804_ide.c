@@ -39,12 +39,12 @@ static void ide_init(struct device *dev)
 	pci_write_config16(dev, 0x50, word);
 
 
-        byte = 0x20 ; // Latency: 64-->32
-        pci_write_config8(dev, 0xd, byte);
+	byte = 0x20 ; // Latency: 64-->32
+	pci_write_config8(dev, 0xd, byte);
 
-        dword = pci_read_config32(dev, 0xf8);
-        dword |= 12; 
-        pci_write_config32(dev, 0xf8, dword);
+	dword = pci_read_config32(dev, 0xf8);
+	dword |= 12;
+	pci_write_config32(dev, 0xf8, dword);
 #if CONFIG_PCI_ROM_RUN == 1
 	pci_dev_init(dev);
 #endif
@@ -53,21 +53,21 @@ static void ide_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations ide_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = ide_init,
-	.scan_bus         = 0,
-//	.enable           = ck804_enable,
-	.ops_pci          = &lops_pci,
+	.init	     = ide_init,
+	.scan_bus	 = 0,
+//	.enable	   = ck804_enable,
+	.ops_pci	  = &lops_pci,
 };
 
 static const struct pci_driver ide_driver __pci_driver = {

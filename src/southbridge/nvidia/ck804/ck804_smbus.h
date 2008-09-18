@@ -11,7 +11,7 @@
 #define SMBHSTDAT0 0x4
 #define SMBHSTDAT1 0x5
 
-/* Between 1-10 seconds, We should never timeout normally 
+/* Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.
  */
 #define SMBUS_TIMEOUT (100*1000*10)
@@ -45,7 +45,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	do {
 		unsigned char val;
 		smbus_delay();
-		
+
 		val = inb(smbus_io_base + SMBHSTSTAT);
 		if ( (val & 0xff) != 0) {
 			return 0;
@@ -55,87 +55,87 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 }
 static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 {
-        unsigned char global_status_register;
-        unsigned char byte;
-#if 0 
-// Don't need, when you write to PRTCL, the status will be cleared automatically
-        if (smbus_wait_until_ready(smbus_io_base) < 0) {
-                return -2;
-        }
-#endif
-
-        /* set the device I'm talking too */
-        outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
-        smbus_delay();
-        /* set the command/address... */
-        outb(0, smbus_io_base + SMBHSTCMD);
-        smbus_delay();
-        /* byte data recv */
-        outb(0x05, smbus_io_base + SMBHSTPRTCL);
-        smbus_delay();
-
-        /* poll for transaction completion */
-        if (smbus_wait_until_done(smbus_io_base) < 0) {
-                return -3;
-        }
-
-        global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */
-
-        /* read results of transaction */
-        byte = inb(smbus_io_base + SMBHSTDAT0);
-
-        if (global_status_register != 0x80) { // lose check, otherwise it should be 0
-                return -1;
-        }
-        return byte;
-}
-static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned char val)
-{
-        unsigned global_status_register;
-
-#if 0
-// Don't need, when you write to PRTCL, the status will be cleared automatically
-        if (smbus_wait_until_ready(smbus_io_base) < 0) {
-                return -2;
-        }
-#endif
-
-        outb(val, smbus_io_base + SMBHSTDAT0);
-        smbus_delay();
-
-        /* set the device I'm talking too */
-        outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
-        smbus_delay();
-
-        outb(0, smbus_io_base + SMBHSTCMD);
-        smbus_delay();
-
-        /* set up for a byte data write */
-        outb(0x04, smbus_io_base + SMBHSTPRTCL);
-        smbus_delay();
-
-        /* poll for transaction completion */
-        if (smbus_wait_until_done(smbus_io_base) < 0) {
-                return -3;
-        }
-        global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
-
-        if (global_status_register != 0x80) {
-                return -1;
-        }
-        return 0;
-}
-static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
-{
 	unsigned char global_status_register;
 	unsigned char byte;
-#if 0 
+#if 0
 // Don't need, when you write to PRTCL, the status will be cleared automatically
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return -2;
 	}
 #endif
-	
+
+	/* set the device I'm talking too */
+	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
+	smbus_delay();
+	/* set the command/address... */
+	outb(0, smbus_io_base + SMBHSTCMD);
+	smbus_delay();
+	/* byte data recv */
+	outb(0x05, smbus_io_base + SMBHSTPRTCL);
+	smbus_delay();
+
+	/* poll for transaction completion */
+	if (smbus_wait_until_done(smbus_io_base) < 0) {
+		return -3;
+	}
+
+	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */
+
+	/* read results of transaction */
+	byte = inb(smbus_io_base + SMBHSTDAT0);
+
+	if (global_status_register != 0x80) { // lose check, otherwise it should be 0
+		return -1;
+	}
+	return byte;
+}
+static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device, unsigned char val)
+{
+	unsigned global_status_register;
+
+#if 0
+// Don't need, when you write to PRTCL, the status will be cleared automatically
+	if (smbus_wait_until_ready(smbus_io_base) < 0) {
+		return -2;
+	}
+#endif
+
+	outb(val, smbus_io_base + SMBHSTDAT0);
+	smbus_delay();
+
+	/* set the device I'm talking too */
+	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
+	smbus_delay();
+
+	outb(0, smbus_io_base + SMBHSTCMD);
+	smbus_delay();
+
+	/* set up for a byte data write */
+	outb(0x04, smbus_io_base + SMBHSTPRTCL);
+	smbus_delay();
+
+	/* poll for transaction completion */
+	if (smbus_wait_until_done(smbus_io_base) < 0) {
+		return -3;
+	}
+	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
+
+	if (global_status_register != 0x80) {
+		return -1;
+	}
+	return 0;
+}
+static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
+{
+	unsigned char global_status_register;
+	unsigned char byte;
+#if 0
+// Don't need, when you write to PRTCL, the status will be cleared automatically
+	if (smbus_wait_until_ready(smbus_io_base) < 0) {
+		return -2;
+	}
+#endif
+
 	/* set the device I'm talking too */
 	outb(((device & 0x7f) << 1)|1 , smbus_io_base + SMBXMITADD);
 	smbus_delay();
@@ -165,38 +165,38 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 
 static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned address, unsigned char val)
 {
-        unsigned global_status_register;
+	unsigned global_status_register;
 
 #if 0
 // Don't need, when you write to PRTCL, the status will be cleared automatically
-        if (smbus_wait_until_ready(smbus_io_base) < 0) {
-                return -2;
-        }
+	if (smbus_wait_until_ready(smbus_io_base) < 0) {
+		return -2;
+	}
 #endif
 
 	outb(val, smbus_io_base + SMBHSTDAT0);
 	smbus_delay();
 
-        /* set the device I'm talking too */
-        outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
+	/* set the device I'm talking too */
+	outb(((device & 0x7f) << 1) | 0, smbus_io_base + SMBXMITADD);
 	smbus_delay();
 
-        outb(address & 0xff, smbus_io_base + SMBHSTCMD);
+	outb(address & 0xff, smbus_io_base + SMBHSTCMD);
 	smbus_delay();
 
-        /* set up for a byte data write */ 
-        outb(0x06, smbus_io_base + SMBHSTPRTCL);
+	/* set up for a byte data write */
+	outb(0x06, smbus_io_base + SMBHSTPRTCL);
 	smbus_delay();
 
-        /* poll for transaction completion */
-        if (smbus_wait_until_done(smbus_io_base) < 0) {
-                return -3;
-        }
-        global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
+	/* poll for transaction completion */
+	if (smbus_wait_until_done(smbus_io_base) < 0) {
+		return -3;
+	}
+	global_status_register = inb(smbus_io_base + SMBHSTSTAT) & 0x80; /* lose check */;
 
-        if (global_status_register != 0x80) {
-                return -1;
-        }
-        return 0;
+	if (global_status_register != 0x80) {
+		return -1;
+	}
+	return 0;
 }
 

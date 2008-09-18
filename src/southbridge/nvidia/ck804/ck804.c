@@ -21,9 +21,9 @@ static device_t find_lpc_dev( device_t dev,  unsigned devfn)
 	device_t lpc_dev;
 
         lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
-                
+
         if ( !lpc_dev ) return lpc_dev;
-        
+
         if ((lpc_dev->vendor != PCI_VENDOR_ID_NVIDIA) || (
 		(lpc_dev->device != PCI_DEVICE_ID_NVIDIA_CK804_LPC) &&
                 (lpc_dev->device != PCI_DEVICE_ID_NVIDIA_CK804_PRO) &&
@@ -37,7 +37,7 @@ static device_t find_lpc_dev( device_t dev,  unsigned devfn)
                                lpc_dev = 0;
         		}
         }
-	
+
 	return lpc_dev;
 }
 
@@ -114,7 +114,7 @@ void ck804_enable(device_t dev)
                         index = 15;
                         break;
 		case PCI_DEVICE_ID_NVIDIA_CK804_PCI_E:
-			devfn -= (0xa<<3);  
+			devfn -= (0xa<<3);
 			index2 = 19;
 			break;
 		default:
@@ -147,23 +147,21 @@ void ck804_enable(device_t dev)
 	}
 
 
-	lpc_dev = find_lpc_dev(dev, devfn);	
+	lpc_dev = find_lpc_dev(dev, devfn);
 
 	if ( !lpc_dev )	return; 
 
-        if ( index == 0) {  
+        if ( index == 0) {
 
 		final_reg = pci_read_config32(lpc_dev, 0xe8);
 		final_reg &= ~((1<<16)|(1<<8)|(1<<20)|(1<<10)|(1<<12)|(1<<13)|(1<<14)|(1<<22)|(1<<18)|(1<<15));
 		pci_write_config32(lpc_dev, 0xe8, final_reg); 
 
-#if 1
                 reg_old = reg = pci_read_config32(lpc_dev, 0xe4);
-                reg |= (1<<20);  
+                reg |= (1<<20);
                 if (reg != reg_old) {
                         pci_write_config32(lpc_dev, 0xe4, reg);
                 }
-#endif
 
                 byte = pci_read_config8(lpc_dev, 0x74);
                 byte |= ((1<<1)); 
@@ -185,7 +183,7 @@ void ck804_enable(device_t dev)
 		reg_old = pci_read_config32(lpc_dev, 0xe8);
         	if (final_reg != reg_old) {
                 	pci_write_config32(lpc_dev, 0xe8, final_reg);
-        	}	
+        	}
 
 	}
 

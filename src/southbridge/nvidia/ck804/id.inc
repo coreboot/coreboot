@@ -3,9 +3,9 @@
 
 	.globl __id_start
 __id_start:
-vendor:	
+vendor:
 	.asciz MAINBOARD_VENDOR
-part:		
+part:
 	.asciz MAINBOARD_PART_NUMBER
 .long __id_end + 0x80 - vendor  /* Reverse offset to the vendor id */
 .long __id_end + 0x80 - part    /* Reverse offset to the part number */

@@ -21,30 +21,30 @@ static void nic_init(struct device *dev)
 
 	static uint32_t nic_index = 0;
 
-        uint8_t *base;
-        struct resource *res;
+	uint8_t *base;
+	struct resource *res;
 
-        res = find_resource(dev, 0x10);
+	res = find_resource(dev, 0x10);
 
-        base = res->base;
+	base = res->base;
 
 #define NvRegPhyInterface  0xC0
 #define PHY_RGMII          0x10000000
 
-        writel(PHY_RGMII, base + NvRegPhyInterface);
+	writel(PHY_RGMII, base + NvRegPhyInterface);
 
-        old = dword = pci_read_config32(dev, 0x30);
-        dword &= ~(0xf);
-        dword |= 0xf;
-        if(old != dword) {
-                pci_write_config32(dev, 0x30 , dword);
-        }
+	old = dword = pci_read_config32(dev, 0x30);
+	dword &= ~(0xf);
+	dword |= 0xf;
+	if(old != dword) {
+		pci_write_config32(dev, 0x30 , dword);
+	}
 
-        conf = dev->chip_info;
-       
-	if(conf->mac_eeprom_smbus != 0) { 
+	conf = dev->chip_info;
+
+	if(conf->mac_eeprom_smbus != 0) {
 //      read MAC address from EEPROM at first
-	        struct device *dev_eeprom;
+		struct device *dev_eeprom;
 		dev_eeprom = dev_find_slot_on_smbus(conf->mac_eeprom_smbus, conf->mac_eeprom_addr);
 
 		if(dev_eeprom) {
@@ -65,12 +65,12 @@ static void nic_init(struct device *dev)
 				}
 				if(mac_l != 0xffffffff) {
 					mac_l += nic_index;
-        			        mac_h = 0;
-                			for(i=5;i>=4;i--) {
+					mac_h = 0;
+					for(i=5;i>=4;i--) {
 						mac_h <<= 8;
-                        			mac_h += dat[i];
-        		        	}
-					eeprom_valid = 1;	
+						mac_h += dat[i];
+					}
+					eeprom_valid = 1;
 				}
 			}
 		}
@@ -82,12 +82,12 @@ static void nic_init(struct device *dev)
 		mac_l = readl(mac_pos) + nic_index;
 		mac_h = readl(mac_pos + 4);
 	}
-#if 1   
+#if 1
 //      set that into NIC MMIO
 #define NvRegMacAddrA  0xA8
 #define NvRegMacAddrB  0xAC
-        writel(mac_l, base + NvRegMacAddrA);
-        writel(mac_h, base + NvRegMacAddrB);
+	writel(mac_l, base + NvRegMacAddrA);
+	writel(mac_h, base + NvRegMacAddrB);
 #else
 //	set that into NIC
 	pci_write_config32(dev, 0xa8, mac_l);
@@ -104,12 +104,12 @@ static void nic_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations nic_ops  = {
@@ -127,7 +127,7 @@ static const struct pci_driver nic_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_NIC,
 };
 static const struct pci_driver nic_bridge_driver __pci_driver = {
-        .ops    = &nic_ops,
-        .vendor = PCI_VENDOR_ID_NVIDIA,
-        .device = PCI_DEVICE_ID_NVIDIA_CK804_NIC_BRIDGE,
+	.ops    = &nic_ops,
+	.vendor = PCI_VENDOR_ID_NVIDIA,
+	.device = PCI_DEVICE_ID_NVIDIA_CK804_NIC_BRIDGE,
 };

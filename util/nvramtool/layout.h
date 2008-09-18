@@ -59,7 +59,7 @@ typedef struct
    unsigned length;
    cmos_entry_config_t config;
    unsigned config_id;
-   char name[CMOS_MAX_NAME_LENGTH];
+   char name[CMOS_MAX_NAME_LENGTH + 1];
  }
 cmos_entry_t;
 
@@ -69,7 +69,7 @@ cmos_entry_t;
 typedef struct
  { unsigned config_id;
    unsigned long long value;
-   char text[CMOS_MAX_TEXT_LENGTH];
+   char text[CMOS_MAX_TEXT_LENGTH + 1];
  }
 cmos_enum_t;
 

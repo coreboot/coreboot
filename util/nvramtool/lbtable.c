@@ -30,6 +30,7 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 \*****************************************************************************/
 
+#include <string.h>
 #include <sys/mman.h>
 #include "common.h"
 #include "coreboot_tables.h"
@@ -556,7 +557,7 @@ static void process_cmos_table (void)
    for (p = first_cmos_table_enum(); p != NULL; p = next_cmos_table_enum(p))
     { cmos_enum.config_id = p->config_id;
       cmos_enum.value = p->value;
-      strncpy(cmos_enum.text, p->text, CMOS_MAX_TEXT_LENGTH);
+      strncpy(cmos_enum.text, (char *)p->text, CMOS_MAX_TEXT_LENGTH);
       cmos_enum.text[CMOS_MAX_TEXT_LENGTH] = '\0';
       try_add_cmos_table_enum(&cmos_enum);
     }
@@ -589,7 +590,7 @@ static void process_cmos_table (void)
        }
 
       cmos_entry.config_id = q->config_id;
-      strncpy(cmos_entry.name, q->name, CMOS_MAX_NAME_LENGTH);
+      strncpy(cmos_entry.name, (char *)q->name, CMOS_MAX_NAME_LENGTH);
       cmos_entry.name[CMOS_MAX_NAME_LENGTH] = '\0';
       try_add_cmos_table_entry(&cmos_entry);
     }

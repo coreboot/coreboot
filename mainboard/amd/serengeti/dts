@@ -50,6 +50,9 @@
 			pci@2,0{
 			};
 		};
+		pci@18,1 {};
+		pci@18,2 {};
+		pci@18,3 {};
 		ioport@2e {
 			/config/("superio/winbond/w83627hf/dts");
 			com1enable = "1";

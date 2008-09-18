@@ -48,9 +48,6 @@
 
 #define FX_DEVS 8
 extern struct device * __f0_dev[FX_DEVS];
-extern struct device * __f1_dev[FX_DEVS];
-void debug_fx_devs(void);
-void get_fx_devs(void);
 u32 f1_read_config32(unsigned int reg);
 void f1_write_config32(unsigned int reg, u32 value);
 unsigned int amdk8_nodeid(struct device * dev);
@@ -66,7 +63,7 @@ static unsigned int amdk8_scan_chain(struct device * dev, unsigned nodeid, unsig
                 unsigned max_bus;
                 unsigned min_bus;
 		unsigned max_devfn;
-
+	printk(BIOS_SPEW, "amdk8_scan_chain\n");
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
@@ -201,6 +198,7 @@ static unsigned int amdk8_scan_chain(struct device * dev, unsigned nodeid, unsig
 
 		}
 
+	printk(BIOS_SPEW, "amdk8_scan_chain done\n");
 	return max;
 }
 
@@ -244,7 +242,7 @@ static unsigned int amdk8_scan_chains(struct device * dev, unsigned int max)
         return max;
 }
 
-
+#warning document this unreadable function reg_useable
 static int reg_useable(unsigned reg, 
 	struct device * goal_dev, unsigned goal_nodeid, unsigned goal_link)
 {
@@ -252,9 +250,12 @@ static int reg_useable(unsigned reg,
 	unsigned nodeid, link;
 	int result;
 	res = 0;
+#warning fix hard-coded 8 in for loop. 
 	for(nodeid = 0; !res && (nodeid < 8); nodeid++) {
 		struct device * dev;
 		dev = __f0_dev[nodeid];
+		if (! dev)
+			continue;
 		for(link = 0; !res && (link < 3); link++) {
 			res = probe_resource(dev, 0x100 + (reg | link));
 		}
@@ -379,9 +380,11 @@ static void amdk8_read_resources(struct device * dev)
 	nodeid = amdk8_nodeid(dev);
 	for(link = 0; link < dev->links; link++) {
 		if (dev->link[link].children) {
+			printk(BIOS_DEBUG, "amdk8_read_resources link %d\n", link);
 			amdk8_link_read_bases(dev, nodeid, link);
 		}
 	}
+	printk(BIOS_DEBUG, "amdk8_read_resources done\n");
 }
 
 static void amdk8_set_resource(struct device * dev, struct resource *resource, unsigned nodeid)

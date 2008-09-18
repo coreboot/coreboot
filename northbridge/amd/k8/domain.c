@@ -52,8 +52,6 @@
 
 #define FX_DEVS 8
 extern struct device * __f0_dev[FX_DEVS];
-extern struct device * __f1_dev[FX_DEVS];
-void debug_fx_devs(void);
 void get_fx_devs(void);
 u32 f1_read_config32(unsigned int reg);
 void f1_write_config32(unsigned int reg, u32 value);
@@ -163,6 +161,7 @@ static void k8_pci_domain_read_resources(struct device * dev)
                 IORESOURCE_MEM | IORESOURCE_PREFETCH,
                 IORESOURCE_MEM);
 #endif
+	printk(BIOS_DEBUG, "k8_pci_domain_read_resources done\n");
 }
 
 static void k8_pci_domain_set_resources(struct device * dev)

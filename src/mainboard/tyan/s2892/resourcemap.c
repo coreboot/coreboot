@@ -6,7 +6,6 @@
 static void setup_s2892_resource_map(void)
 {
 	static const unsigned int register_values[] = {
-#if 1
 		/* Careful set limit registers before base registers which contain the enables */
 		/* DRAM Limit i Registers
 		 * F1:0x44 i = 0
@@ -80,8 +79,6 @@ static void setup_s2892_resource_map(void)
 		PCI_ADDR(0, 0x18, 1, 0x68), 0x0000f8fc, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0x70), 0x0000f8fc, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0x78), 0x0000f8fc, 0x00000000,
-#endif
-#if 1
 
 		/* Memory-Mapped I/O Limit i Registers
 		 * F1:0x84 i = 0
@@ -158,8 +155,6 @@ static void setup_s2892_resource_map(void)
 		PCI_ADDR(0, 0x18, 1, 0xA8), 0x000000f0, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xB0), 0x000000f0, 0x00000000,
 //		PCI_ADDR(0, 0x18, 1, 0xB8), 0x000000f0, 0x00fc0003,
-#endif
-#if 1
 
 		/* PCI I/O Limit i Registers
 		 * F1:0xC4 i = 0
@@ -220,7 +215,7 @@ static void setup_s2892_resource_map(void)
 		PCI_ADDR(0, 0x18, 1, 0xC8), 0xFE000FCC, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD0), 0xFE000FCC, 0x00000000,
 		PCI_ADDR(0, 0x18, 1, 0xD8), 0xFE000FCC, 0x00000000,
-#endif
+
 		/* Config Base and Limit i Registers
 		 * F1:0xE0 i = 0
 		 * F1:0xE4 i = 1
@@ -257,12 +252,10 @@ static void setup_s2892_resource_map(void)
 		 * [31:24] Bus Number Limit i
 		 *	   This field defines the highest bus number in configuration region i
 		 */
-#if 1
 //		PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0x07000003, /* link 0 of cpu 0 --> Nvidia CK 804 Pro */
 //		PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x7f080203, /* link 2 of cpu 0 --> AMD8131 	*/
 		PCI_ADDR(0, 0x18, 1, 0xE8), 0x0000FC88, 0x00000000, 
 		PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000, 
-#endif
 
 	};
 

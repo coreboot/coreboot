@@ -50,13 +50,11 @@ static void sio_setup(void)
 
 }
 
-
 #if CONFIG_LOGICAL_CPUS==1
 #include "cpu/amd/dualcore/dualcore_id.c"
 #else
 #include "cpu/amd/model_fxx/node_id.c"
 #endif
-
 
 static unsigned long main(unsigned long bist)
 {

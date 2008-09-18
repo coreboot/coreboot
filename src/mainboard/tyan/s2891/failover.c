@@ -91,7 +91,6 @@ static unsigned long main(unsigned long bist)
 		: "a" (bist) /* inputs */
 		: /* clobbers */
 		);
-
  fallback_image:
 	return bist;
 }

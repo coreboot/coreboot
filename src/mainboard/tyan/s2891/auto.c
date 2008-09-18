@@ -1,5 +1,5 @@
 #define ASSEMBLY 1
- 
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -33,20 +33,20 @@
 
 static void hard_reset(void)
 {
-        set_bios_reset();
+	set_bios_reset();
 
-        /* full reset */
+	/* full reset */
 	outb(0x0a, 0x0cf9);
-        outb(0x0e, 0x0cf9);
+	outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
-        set_bios_reset();
+	set_bios_reset();
 #if 1
-        /* link reset */
+	/* link reset */
 	outb(0x02, 0x0cf9);
-        outb(0x06, 0x0cf9);
+	outb(0x06, 0x0cf9);
 #endif
 }
 
@@ -69,15 +69,14 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #define QRANK_DIMM_SUPPORT 1
-
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
- /* tyan does not want the default */
-#include "resourcemap.c" 
+/* tyan does not want the default */
+#include "resourcemap.c"
 
-#define FIRST_CPU  1
+#define FIRST_CPU	1
 #define SECOND_CPU 1
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 
@@ -112,38 +111,36 @@ static void main(unsigned long bist)
 #endif
 	};
 
-        int needs_reset;
+	int needs_reset;
 #if CONFIG_LOGICAL_CPUS==1
-        struct node_core_id id;
+	struct node_core_id id;
 #else
-        unsigned nodeid;
+	unsigned nodeid;
 #endif
 
-        if (bist == 0) {
-	    	k8_init_and_stop_secondaries();
-        }
+	if (bist == 0) {
+		k8_init_and_stop_secondaries();
+	}
 
-	// post_code(0x32);
-	
- 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
-        uart_init();
-        console_init();
-	
+	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	uart_init();
+	console_init();
+
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-        setup_s2891_resource_map();
+	setup_s2891_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
-        
+
 	needs_reset |= ht_setup_chains_x();
 
-        needs_reset |= ck804_early_setup_x();
+	needs_reset |= ck804_early_setup_x();
 
-       	if (needs_reset) {
-               	print_info("ht reset -\r\n");
-               	soft_reset();
-       	}
+	if (needs_reset) {
+		print_info("ht reset -\r\n");
+		soft_reset();
+	}
 
 	enable_smbus();
 

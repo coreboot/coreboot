@@ -30,9 +30,9 @@ uses USE_OPTION_TABLE
 uses LB_CKS_RANGE_START
 uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
+uses MAINBOARD
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
-uses MAINBOARD
 uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 uses COREBOOT_EXTRA_VERSION
@@ -75,7 +75,6 @@ default ROM_SIZE=524288
 
 #1M bytes
 #default ROM_SIZE=1048576
-
 
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
@@ -131,6 +130,9 @@ default CONFIG_MAX_CPUS=4
 default CONFIG_MAX_PHYSICAL_CPUS=2
 default CONFIG_LOGICAL_CPUS=1
 
+#1G memory hole
+default HW_MEM_HOLE_SIZEK=0x100000
+
 ##HT Unit ID offset, default is 1, the typical one
 default HT_CHAIN_UNITID_BASE=0x0
 
@@ -142,9 +144,6 @@ default SB_HT_CHAIN_ON_BUS0=2
 
 ##only offset for SB chain?, default is yes(1)
 default SB_HT_CHAIN_UNITID_OFFSET_ONLY=0
-
-#1G memory hole
-default HW_MEM_HOLE_SIZEK=0x100000
 
 #BTEXT Console
 #default CONFIG_CONSOLE_BTEXT=1

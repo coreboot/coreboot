@@ -1,5 +1,5 @@
 #define ASSEMBLY 1
- 
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -37,20 +37,20 @@
 
 static void hard_reset(void)
 {
-        set_bios_reset();
+	set_bios_reset();
 
-        /* full reset */
+	/* full reset */
 	outb(0x0a, 0x0cf9);
-        outb(0x0e, 0x0cf9);
+	outb(0x0e, 0x0cf9);
 }
 
 static void soft_reset(void)
 {
-        set_bios_reset();
+	set_bios_reset();
 #if 1
-        /* link reset */
+	/* link reset */
 	outb(0x02, 0x0cf9);
-        outb(0x06, 0x0cf9);
+	outb(0x06, 0x0cf9);
 #endif
 }
 
@@ -63,7 +63,7 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 }
 
 #define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)
-        
+	
 #define SUPERIO_GPIO_IO_BASE 0x400
 
 static void sio_gpio_setup(void){
@@ -71,13 +71,9 @@ static void sio_gpio_setup(void){
 	unsigned value;
 
 //	lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE); // Already enable in failover.c
-
-#if 1
 	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L 
 	value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
 	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
-#endif
-	
 }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
@@ -91,23 +87,14 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #define QRANK_DIMM_SUPPORT 1
-
 #include "northbridge/amd/amdk8/raminit.c"
-#if 0
-        #define ENABLE_APIC_EXT_ID 1
-        #define APIC_ID_OFFSET 0x10
-        #define LIFT_BSP_APIC_ID 0
-#else
-        #define ENABLE_APIC_EXT_ID 0
-#endif
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "sdram/generic_sdram.c"
 
 /* tyan does not want the default */
 #include "resourcemap.c"
 
-
-#define FIRST_CPU  1
+#define FIRST_CPU	1
 #define SECOND_CPU 1
 #define TOTAL_CPUS (FIRST_CPU + SECOND_CPU)
 
@@ -116,18 +103,16 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define CK804_USE_NIC 1
 #define CK804_USE_ACI 1
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
-
 //set GPIO to input mode
 #define CK804_MB_SETUP \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 5, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M9,GPIO6, PCIXB2_PRSNT1_L*/  \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXB2_PRSNT2_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/  \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 7, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M5,GPIO8, PCIXA_PRSNT2_L*/   \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/  \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/
-		
-#include "southbridge/nvidia/ck804/ck804_early_setup.c"
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 5, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M9,GPIO6, PCIXB2_PRSNT1_L*/	\
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXB2_PRSNT2_L*/ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/	\
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+ 7, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* M5,GPIO8, PCIXA_PRSNT2_L*/	\
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/	\
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/
 
+#include "southbridge/nvidia/ck804/ck804_early_setup.c"
 
 static void main(unsigned long bist)
 {
@@ -156,41 +141,37 @@ static void main(unsigned long bist)
 #endif
 	};
 
-        int needs_reset;
+	int needs_reset;
 
-        if (bist == 0) {
-	    	k8_init_and_stop_secondaries();
-        }
+	if (bist == 0) {
+		k8_init_and_stop_secondaries();
+	}
 
-	// post_code(0x32);
+	lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	uart_init();
+	console_init();
 
-        lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
-        uart_init();
-        console_init();
-	
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	sio_gpio_setup();
 
-        setup_s2895_resource_map();
+	setup_s2895_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
 
-        needs_reset |= ht_setup_chains_x();
+	needs_reset |= ht_setup_chains_x();
 
-	needs_reset |= ck804_early_setup_x();	
+	needs_reset |= ck804_early_setup_x();
 
-       	if (needs_reset) {
-               	print_info("ht reset -\r\n");
-               	soft_reset();
-       	}
-
+	if (needs_reset) {
+		print_info("ht reset -\r\n");
+		soft_reset();
+	}
 
 	enable_smbus();
 
 	memreset_setup();
 	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
-
 
 }

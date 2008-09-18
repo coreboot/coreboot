@@ -1,6 +1,6 @@
 #define ASSEMBLY 1
 #define __ROMCC__
- 
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -13,18 +13,8 @@
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
 
-#if 0
-static void post_code(uint8_t value) {
-#if 1
-        int i;
-        for(i=0;i<0x80000;i++) {
-                outb(value, 0x80);
-        }
-#endif
-}
-#endif
-
 #include <cpu/amd/model_fxx_rev.h>
+
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "southbridge/nvidia/ck804/ck804_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -72,7 +62,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "sdram/generic_sdram.c"
 
  /* tyan does not want the default */
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1
@@ -83,10 +73,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/nvidia/ck804/ck804_early_setup_ss.h"
 //set GPIO to input mode
 #define CK804_MB_SETUP \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXA_PRSNT2_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXA_PRSNT2_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
 
 #include "southbridge/nvidia/ck804/ck804_early_setup.c"
 
@@ -96,7 +86,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-
 #if USE_FALLBACK_IMAGE == 1
 
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
@@ -105,63 +94,64 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void sio_setup(void)
 {
 
-        unsigned value;
-        uint32_t dword;
-        uint8_t byte;
+	unsigned value;
+	uint32_t dword;
+	uint8_t byte;
 
-        byte = pci_read_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20;
-        pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
+	byte = pci_read_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
 
-        dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1<<0);
-        pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
+	dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
+	dword |= (1<<0);
+	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
 
 }
+
 void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-        unsigned last_boot_normal_x = last_boot_normal();
+	unsigned last_boot_normal_x = last_boot_normal();
 
-        /* Is this a cpu only reset? or Is this a secondary cpu? */
-        if ((cpu_init_detectedx) || (!boot_cpu())) {
-                if (last_boot_normal_x) {
-                        goto normal_image;
-                } else {
-                        goto fallback_image;
-                }
-        }
+	/* Is this a cpu only reset? or Is this a secondary cpu? */
+	if ((cpu_init_detectedx) || (!boot_cpu())) {
+	if (last_boot_normal_x) {
+	goto normal_image;
+	} else {
+	goto fallback_image;
+	}
+	}
 
-        /* Nothing special needs to be done to find bus 0 */
-        /* Allow the HT devices to be found */
+	/* Nothing special needs to be done to find bus 0 */
+	/* Allow the HT devices to be found */
 
-        enumerate_ht_chain();
+	enumerate_ht_chain();
 
-        sio_setup();
+	sio_setup();
 
-        /* Setup the ck804 */
-        ck804_enable_rom();
+	/* Setup the ck804 */
+	ck804_enable_rom();
 
-        /* Is this a deliberate reset by the bios */
-//        post_code(0x22);
-        if (bios_reset_detected() && last_boot_normal_x) {
-                goto normal_image;
-        }
-        /* This is the primary cpu how should I boot? */
-        else if (do_normal_boot()) {
-                goto normal_image;
-        }
-        else {
-                goto fallback_image;
-        }
+	/* Is this a deliberate reset by the bios */
+//	post_code(0x22);
+	if (bios_reset_detected() && last_boot_normal_x) {
+	goto normal_image;
+	}
+	/* This is the primary cpu how should I boot? */
+	else if (do_normal_boot()) {
+	goto normal_image;
+	}
+	else {
+	goto fallback_image;
+	}
  normal_image:
-//        post_code(0x23);
-        __asm__ volatile ("jmp __normal_image"
-                : /* outputs */
-                : "a" (bist), "b"(cpu_init_detectedx) /* inputs */
-                );
- 
+//	post_code(0x23);
+	__asm__ volatile ("jmp __normal_image"
+	: /* outputs */
+	: "a" (bist), "b"(cpu_init_detectedx) /* inputs */
+	);
+
  fallback_image:
-//        post_code(0x25);
+//	post_code(0x25);
 	;
 }
 #endif
@@ -172,91 +162,90 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
 #if USE_FALLBACK_IMAGE == 1
-        failover_process(bist, cpu_init_detectedx);
+		failover_process(bist, cpu_init_detectedx);
 #endif
-        real_main(bist, cpu_init_detectedx);
+	real_main(bist, cpu_init_detectedx);
 
 }
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-
-        static const uint16_t spd_addr [] = {
-                        (0xa<<3)|0, (0xa<<3)|2, 0, 0,
-                        (0xa<<3)|1, (0xa<<3)|3, 0, 0,
+	static const uint16_t spd_addr [] = {
+		(0xa<<3)|0, (0xa<<3)|2, 0, 0,
+		(0xa<<3)|1, (0xa<<3)|3, 0, 0,
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-                        (0xa<<3)|4, (0xa<<3)|6, 0, 0,
-                        (0xa<<3)|5, (0xa<<3)|7, 0, 0,
+		(0xa<<3)|4, (0xa<<3)|6, 0, 0,
+		(0xa<<3)|5, (0xa<<3)|7, 0, 0,
 #endif
-        };
+	};
 
-        int needs_reset;
-        unsigned bsp_apicid = 0;
+	int needs_reset;
+	unsigned bsp_apicid = 0;
 
-        struct mem_controller ctrl[8];
-        unsigned nodes;
+	struct mem_controller ctrl[8];
+	unsigned nodes;
 
-        if (bist == 0) {
+	if (bist == 0) {
 		init_cpus(cpu_init_detectedx);
-        }
+	}
 
 //	post_code(0x32);
 
-        w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
-        uart_init();
-        console_init();
+	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	uart_init();
+	console_init();
 
-        /* Halt if there was a built in self test failure */
-        report_bist_failure(bist);
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
-        setup_s2892_resource_map();
+	setup_s2892_resource_map();
 #if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
-        dump_pci_device(PCI_DEV(0, 0x19, 0));
+	dump_pci_device(PCI_DEV(0, 0x18, 0));
+	dump_pci_device(PCI_DEV(0, 0x19, 0));
 #endif
 
-        needs_reset = setup_coherent_ht_domain();
+	needs_reset = setup_coherent_ht_domain();
 
-        wait_all_core0_started();
+	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
-        // It is said that we should start core1 after all core0 launched
-        start_other_cores();
-        wait_all_other_cores_started(bsp_apicid);
+	// It is said that we should start core1 after all core0 launched
+	start_other_cores();
+	wait_all_other_cores_started(bsp_apicid);
 #endif
 
-        needs_reset |= ht_setup_chains_x();
+	needs_reset |= ht_setup_chains_x();
 
-        needs_reset |= ck804_early_setup_x();
+	needs_reset |= ck804_early_setup_x();
 
-        if (needs_reset) {
-                print_info("ht reset -\r\n");
-                soft_reset();
-        }
+	if (needs_reset) {
+		print_info("ht reset -\r\n");
+		soft_reset();
+	}
 
-        allow_all_aps_stop(bsp_apicid);
+	allow_all_aps_stop(bsp_apicid);
 
-        nodes = get_nodes();
-        //It's the time to set ctrl now;
-        fill_mem_ctrl(nodes, ctrl, spd_addr);
+	nodes = get_nodes();
+	//It's the time to set ctrl now;
+	fill_mem_ctrl(nodes, ctrl, spd_addr);
 
-        enable_smbus();
+	enable_smbus();
 #if 0
-        dump_spd_registers(&cpu[0]);
+	dump_spd_registers(&cpu[0]);
 #endif
 #if 0
-        dump_smbus_registers();
+	dump_smbus_registers();
 #endif
 
-        memreset_setup();
-        sdram_initialize(nodes, ctrl);
-
-#if 0
-        print_pci_devices();
-#endif
+	memreset_setup();
+	sdram_initialize(nodes, ctrl);
 
 #if 0
-        dump_pci_devices();
+	print_pci_devices();
 #endif
 
-        post_cache_as_ram();
+#if 0
+	dump_pci_devices();
+#endif
+
+	post_cache_as_ram();
 }

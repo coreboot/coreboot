@@ -25,9 +25,9 @@
         unsigned apicid_ck804;
         unsigned apicid_8131_1;
         unsigned apicid_8131_2;
-	
 
-unsigned pci1234x[] = 
+
+unsigned pci1234x[] =
 {        //Here you only need to set value in pci1234 for HT-IO that could be installed or not
 	 //You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
         0x0000000,
@@ -39,7 +39,7 @@ unsigned pci1234x[] =
 //        0x0000ff0,
 //        0x0000ff0
 };
-unsigned hcdnx[] = 
+unsigned hcdnx[] =
 { //HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
@@ -62,9 +62,9 @@ void get_bus_conf(void)
 {
 
 	unsigned apicid_base;
+	unsigned sbdn;
 
         device_t dev;
-	unsigned sbdn;
         int i;
 
         if(get_bus_conf_done==1) return; //do it only once
@@ -78,7 +78,7 @@ void get_bus_conf(void)
         }
 
         get_sblk_pci1234();
-	
+
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
 	sbdn = sysconf.sbdn;
 
@@ -91,51 +91,15 @@ void get_bus_conf(void)
                 dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(sbdn + 0x09,0));
                 if (dev) {
                         bus_ck804_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if 0
-                        bus_ck804_2 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_2++;
-#else
                         bus_ck804_4 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_ck804_4++;
-#endif
                 }
                 else {
                         printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x09);
 
                         bus_ck804_1 = 2;
-#if 0
-                        bus_ck804_2 = 3;
-#else
                         bus_ck804_4 = 3;
-#endif
-
                 }
-#if 0
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(sbdn + 0x0b,0));
-                if (dev) {
-                        bus_ck804_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_ck804_3 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_3++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x0b);
-
-                        bus_ck804_3 = bus_ck804_2+1;
-                }
-
-                dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(sbdn + 0x0c,0));
-                if (dev) {
-                        bus_ck804_3 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_ck804_4 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_ck804_4++;
-                }
-                else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x0c);
-
-                        bus_ck804_4 = bus_ck804_3+1;
-                }
-
-#endif
 
                 dev = dev_find_slot(bus_ck804_0, PCI_DEVFN(sbdn + 0x0d,0));
                 if (dev) {
@@ -160,7 +124,6 @@ void get_bus_conf(void)
                 }
 
 		bus_8131_0 = (sysconf.pci1234[1] >> 16) & 0xff;
-
                 /* 8131-1 */
                 dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3,0));
                 if (dev) {
@@ -192,13 +155,13 @@ void get_bus_conf(void)
 			bus_coproc_0 = (sysconf.pci1234[2] >> 16) & 0xff;
 			coprocdn =  (sysconf.hcdn[2] & 0xff);
 		}
-		
+
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(3);
-#else 
-	apicid_base = CONFIG_MAX_PHYSICAL_CPUS; 
+#else
+	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
 	apicid_ck804 = apicid_base+0;
         apicid_8131_1 = apicid_base+1;

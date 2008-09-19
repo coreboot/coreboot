@@ -46,8 +46,7 @@
 #warning where to we define supported DIMM types
 #define DIMM_SUPPORT 0x0104
 
-/* we won't support the buggy old chips */
-#undef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
+/* NOTE: F2 and later ONLY */
 inline void print_raminit(const char *strval, u32 val)
 {
         printk(BIOS_DEBUG, "%s%08x\n", strval, val);
@@ -2750,13 +2749,6 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 	int i;
 	void dqs_timing(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo);
 	void memreset(int controllers, const struct mem_controller *ctrl);
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-        unsigned cpu_f0_f1[8];
-	/* FIXME: How about 32 node machine later? */
-	tsc_t tsc, tsc0[8];
-	
-	print_debug_addr("sdram_enable: tsc0[8]: ", &tsc0[0]);
-#endif
 
 	/* Error if I don't have memory */
 	if (memory_end_k(ctrl, controllers) == 0) {
@@ -2817,20 +2809,6 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 			pci_conf1_write_config32(ctrl[i].f3, MCA_NB_CONFIG, mnc);
 		}
 
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-	        cpu_f0_f1[i] = is_cpu_pre_f2_in_bsp(i);
-	        if(cpu_f0_f1[i]) {
-			//Rev F0/F1 workaround
-#if 1
-			        /* Set the DqsRcvEnTrain bit */
-		        dword = pci_conf1_read_config32(ctrl[i].f2, DRAM_CTRL);
-		        dword |= DC_DqsRcvEnTrain;
-		        pci_conf1_write_config32(ctrl[i].f2, DRAM_CTRL, dword);
-#endif
-			tsc0[i] = rdtsc();			
-		}
-#endif
-
 #if 0
                                /* Set the DqsRcvEnTrain bit */
                         dword = pci_conf1_read_config32(ctrl[i].f2, DRAM_CTRL);
@@ -2870,25 +2848,6 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 			dcm = pci_conf1_read_config32(ctrl[i].f2, DRAM_CTRL_MISC);
 		} while(((dcm & DCM_MemClrStatus) == 0) /* || ((dcm & DCM_DramEnabled) == 0)*/ );
 
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-		if(cpu_f0_f1[i]) {
-	                tsc= rdtsc();
-
-			print_debug_dqs_tsc("\nbegin tsc0", i, tsc0[i].hi, tsc0[i].lo, 2); 
-			print_debug_dqs_tsc("end   tsc ", i, tsc.hi, tsc.lo, 2); 
-
-        	        if(tsc.lo<tsc0[i].lo) {
-                	        tsc.hi--;
-	                }
-        	        tsc.lo -= tsc0[i].lo;
-	                tsc.hi -= tsc0[i].hi;
-
-        	        tsc0[i].lo = tsc.lo;
-	                tsc0[i].hi = tsc.hi;
-
-        	        print_debug_dqs_tsc("     dtsc0", i, tsc0[i].hi, tsc0[i].lo, 2);
-		}
-#endif
 		printk(BIOS_DEBUG, " done\n");
 	}
 
@@ -2925,11 +2884,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl, struct sys
 
 
 #if MEM_TRAIN_SEQ ==  0
-   #ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-	dqs_timing(controllers, ctrl, tsc0, sysinfo);
-   #else
 	dqs_timing(controllers, ctrl, sysinfo);
-   #endif
 #else
 
    #if MEM_TRAIN_SEQ == 2

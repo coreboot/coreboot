@@ -126,6 +126,7 @@ int main(void)
 	void enable_smbus(void);
 	void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn);
 	void soft_reset_x(unsigned sbbusn, unsigned sbdn);
+	int cpu_init_detected(unsigned int nodeid);
 	u32 init_detected;
 	static const u16 spd_addr[] = {
 		//first node
@@ -151,11 +152,15 @@ int main(void)
 	int needs_reset;
 	unsigned bsp_apicid = 0;
 	struct msr msr;
+	struct node_core_id me;
 
-	printk(BIOS_DEBUG, "Hi there from stage1\n");
+	me = get_node_core_id();
+	printk(BIOS_DEBUG, "Hi there from stage1, cpu%d, core%d\n", me.nodeid, me.coreid);
 	post_code(POST_START_OF_MAIN);
 	sysinfo = &(global_vars()->sys_info);
 
+	init_detected = cpu_init_detected(me.nodeid);
+	printk(BIOS_DEBUG, "init_detected: %d\n", init_detected);
 	/* well, here we are. For starters, we need to know if this is cpu0 core0. 
 	 * cpu0 core 0 will do all the DRAM setup. 
 	 */

@@ -41,8 +41,6 @@
 //0: mean no debug info
 #define DQS_TRAIN_DEBUG 0
 
-// always undef this. We only support F2 and later. 
-#undef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
 u32 pci_read_config32_index(u32 dev, u32 index_reg, u32 index);
 void pci_write_config32_index(u32 dev, u32 index_reg, u32 index, u32 data);
 u32 pci_read_config32_index_wait(u32 dev, u32 index_reg, u32 index);
@@ -559,10 +557,6 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 
 
 	if(Pass == DQS_FIRST_PASS) {
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-	cpu_f0_f1 = is_cpu_pre_f2_in_bsp(ctrl->node_id);
-	if(!cpu_f0_f1) 
-#endif
 	{
 #if 1
 		/* Set the DqsRcvEnTrain bit */
@@ -870,9 +864,6 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
         pci_conf1_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dword);
 
 	if(Pass == DQS_FIRST_PASS) {
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-	if(!cpu_f0_f1) 
-#endif
 	{
 		dword = pci_conf1_read_config32(ctrl->f2, DRAM_CTRL);
 	        dword &= ~DC_DqsRcvEnTrain;
@@ -1650,77 +1641,6 @@ static unsigned train_DqsPos(const struct mem_controller *ctrl, struct sys_info 
 	
 }
 
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-static void f0_svm_workaround(int controllers, const struct mem_controller *ctrl, u64 *tsc0, struct sys_info *sysinfo)
-{
-        u64 tsc1[8];
-	unsigned cpu_f0_f1[8];
-	int i;
-
-	if (DQS_TRAIN_DEBUG) {
-	        printk(BIOS_DEBUG, "dqs_timing: tsc1[8] :0x%llx", tsc1);
-	}
-
-        for(i = 0; i < controllers; i++) {
-                if (!sysinfo->ctrl_present[i])
-                        continue;
-
-                /* Skip everything if I don't have any memory on this controller */
-		if(sysinfo->meminfo[i].dimm_mask==0x00) continue;
-
-                u32 dword;
-
-                cpu_f0_f1[i] = is_cpu_pre_f2_in_bsp(i);
-
-                if(!cpu_f0_f1[i]) continue;
-
-                dword = pci_conf1_read_config32(ctrl[i].f2, DRAM_CTRL);
-                dword &= ~DC_DqsRcvEnTrain;
-                pci_conf1_write_config32(ctrl[i].f2, DRAM_CTRL, dword);
-
-                dword = pci_conf1_read_config32(ctrl[i].f2, DRAM_INIT);
-                dword |= DI_EnDramInit;
-                pci_conf1_write_config32(ctrl[i].f2, DRAM_INIT, dword);
-                dword &= ~DI_EnDramInit;
-                pci_conf1_write_config32(ctrl[i].f2, DRAM_INIT, dword);
-
-                tsc1[i] = cycles();
-                print_debug_dqs_tsc("begin: tsc1", i, tsc1[i].hi, tsc1[i].lo, 2);
-
-                dword = tsc1[i].lo + tsc0[i].lo;
-                if((dword<tsc1[i].lo) || (dword<tsc0[i].lo)) {
-                        tsc1[i].hi++;
-                }
-                tsc1[i].lo = dword;
-                tsc1[i].hi+= tsc0[i].hi;
-
-                print_debug_dqs_tsc("end  : tsc1", i, tsc1[i].hi, tsc1[i].lo, 2);
-
-        }
-
-        for(i = 0; i < controllers; i++) {
-                if (!sysinfo->ctrl_present[i])
-                        continue;
-
-                /* Skip everything if I don't have any memory on this controller */
-		if(sysinfo->meminfo[i].dimm_mask==0x00) continue;
-
-		if(!cpu_f0_f1[i]) continue;
-
-                u64 tsc;
-
-                do {
-                        tsc = cycles();
-                } while ((tsc1[i].hi>tsc.hi) || ((tsc1[i].hi==tsc.hi) && (tsc1[i].lo>tsc.lo)));
-
-                print_debug_dqs_tsc("end  : tsc ", i, tsc.hi, tsc.lo, 2);
-        }
-
-}
-
-#endif
-
-
 /* setting variable mtrr, comes from linux kernel source */
 static void set_var_mtrr_dqs(
         unsigned int reg, unsigned long basek, unsigned long sizek,
@@ -1927,12 +1847,7 @@ void set_sysinfo_in_ram(unsigned val)
 
 #if MEM_TRAIN_SEQ == 0
 
-
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-static void dqs_timing(int controllers, const struct mem_controller *ctrl, u64 *tsc0, struct sys_info *sysinfo)
-#else
 void dqs_timing(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)
-#endif
 {
 	int  i;
 
@@ -1969,9 +1884,6 @@ void dqs_timing(int controllers, const struct mem_controller *ctrl, struct sys_i
         }
 
 	tsc[1] = cycles();
-#ifdef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-	f0_svm_workaround(controllers, ctrl, tsc0, sysinfo);
-#endif
 
 	tsc[2] = cycles();
         for(i = 0; i < controllers; i++) {

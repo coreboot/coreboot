@@ -63,6 +63,15 @@ static void dram_enable(struct device *dev)
 
 	/* The Address Next to the Last Valid DRAM Address */
 	pci_write_config16(dev, 0x88, (msr.lo >> 24) | reg);
+
+}
+
+static void dram_enable_k8m890(struct device *dev)
+{
+	dram_enable(dev);
+
+	/* enable VGA, so the bridges gets VGA_EN and resources are set */
+	pci_write_config8(dev, 0xa1, 0x80);
 }
 
 static struct resource *resmax;
@@ -113,17 +122,11 @@ static void dram_init_fb(struct device *dev)
 
 	printk_debug("VIA FB proposed base: %llx\n", proposed_base);
 
-	/* enable UMA but no FB */
+	/* Step 1: enable UMA but no FB */
 	pci_write_config8(dev, 0xa1, 0x80);
 
-	/* 27:21 goes to 7:1, 0 is enable CPU access */
-	tmp = (proposed_base >> 20) | 0x1;
-	pci_write_config8(dev, 0xa0, tmp);
-
-	/* 31:28 goes to 3:0 */
-	tmp = ((proposed_base >> 28) & 0xf);
-	tmp = ((log2(K8M890_FBSIZEMB) - 2) << 4);
-	tmp |= 0x80;
+	/* Step 2: enough is just the FB size, the CPU accessible address is not needed */
+	tmp = ((log2(K8M890_FBSIZEMB) - 2) << 4) | 0x80;
 	pci_write_config8(dev, 0xa1, tmp);
 
 	/* TODO K8 needs some UMA fine tuning too maybe call some generic routine here? */
@@ -141,7 +144,7 @@ static const struct device_operations dram_ops_m = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.enable			= dram_enable,
+	.enable			= dram_enable_k8m890,
 	.init			= dram_init_fb,
 	.ops_pci		= 0,
 };

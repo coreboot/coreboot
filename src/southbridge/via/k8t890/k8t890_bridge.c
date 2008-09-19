@@ -24,8 +24,8 @@
 
 static void bridge_enable(struct device *dev)
 {
+	u8 tmp;
 	print_debug("B188 device dump\n");
-
 	/* VIA recommends this, sorry no known info. */
 
 	writeback(dev, 0x40, 0x91);
@@ -44,6 +44,12 @@ static void bridge_enable(struct device *dev)
 
 	writeback(dev, 0x3e, 0x16);
 	dump_south(dev);
+
+	/* disable I/O and memory decode, or it freezes PCI bus during BAR sizing */
+	tmp = pci_read_config8(dev, PCI_COMMAND);
+	tmp &= ~0x3;
+	pci_write_config8(dev, PCI_COMMAND, tmp);
+
 }
 
 static const struct device_operations bridge_ops = {

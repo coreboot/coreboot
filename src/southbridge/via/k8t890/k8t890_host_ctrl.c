@@ -105,8 +105,8 @@ static void host_ctrl_enable_k8m890(struct device *dev) {
 	/* Arbitration control  */
 	pci_write_config8(dev, 0xa5, 0x3c);
 
-	/* Arbitration control 2 */
-	pci_write_config8(dev, 0xa6, 0x82);
+	/* Arbitration control 2, Enable C2NOW delay to PSTATECTL */
+	pci_write_config8(dev, 0xa6, 0x83);
 
 }
 

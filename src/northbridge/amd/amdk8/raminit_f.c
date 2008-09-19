@@ -1,8 +1,23 @@
-/*	This should be done by Eric
-	2004.11 yhlu add 4 rank DIMM support
-	2004.12 yhlu add D0 support
-	2005.02 yhlu add E0 memory hole support
-	2005.10 yhlu make it support DDR2 only
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2002 Linux Networx
+ * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
+ * Copyright (C) 2004 YingHai Lu
+ * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
 #include <cpu/x86/mem.h>
@@ -819,10 +834,10 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size *s
 		uint32_t ClkDis0;
 #if CPU_SOCKET_TYPE == 0x10 /* L1 */
 		ClkDis0 = DTL_MemClkDis0;
-#else 
-	#if CPU_SOCKET_TYPE == 0x11 /* AM2 */
+#elif CPU_SOCKET_TYPE == 0x11 /* AM2 */
 		ClkDis0 = DTL_MemClkDis0_AM2;
-	#endif
+#elif CPU_SOCKET_TYPE == 0x12	/* S1G1 */
+		ClkDis0 = DTL_MemClkDis0_S1g1;
 #endif 
 
 		dword = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW); //Channel A
@@ -2053,10 +2068,16 @@ static void set_DramTerm(const struct mem_controller *ctrl, const struct mem_par
 		}
 
 	}	
-        dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
-        dcl &= ~(DCL_DramTerm_MASK<<DCL_DramTerm_SHIFT);
-        dcl |= (odt & DCL_DramTerm_MASK) << (DCL_DramTerm_SHIFT);
-        pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
+
+
+#if DIMM_SUPPORT == 0x0204
+	odt = 0x2;		/* 150 ohms */
+#endif
+
+    dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
+    dcl &= ~(DCL_DramTerm_MASK<<DCL_DramTerm_SHIFT);
+    dcl |= (odt & DCL_DramTerm_MASK) << (DCL_DramTerm_SHIFT);
+    pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 }
 
 
@@ -2235,6 +2256,46 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
                 break;
 	}
 
+#endif
+
+#if DIMM_SUPPORT==0x0204	/* DDR2 and SO-DIMM, S1G1 */
+	dword = 0x00111222;
+	dwordx = 0x002F2F00;
+
+	switch (meminfo->memclk_set) {
+	case DCH_MemClkFreq_200MHz:	/* nothing to be set here */
+		break;
+	case DCH_MemClkFreq_266MHz:
+		if ((meminfo->single_rank_mask == 0)
+		    && (meminfo->x4_mask == 0) && (meminfo->x16_mask))
+			dwordx = 0x002C2C00;	/* Double rank x8 */
+		/* else SRx16, SRx8, DRx16 == 0x002F2F00 */
+		break;
+	case DCH_MemClkFreq_333MHz:
+		if ((meminfo->single_rank_mask == 1)
+		   && (meminfo->x16_mask == 1))	/* SR x16 */
+			dwordx = 0x00272700;
+		else if ((meminfo->x4_mask == 0) && (meminfo->x16_mask == 0)
+		         && (meminfo->single_rank_mask == 0)) {	/* DR x8 */
+			SlowAccessMode = 1;
+			dwordx = 0x00002800;
+		} else {	/* SR x8, DR x16 */
+			dwordx = 0x002A2A00;
+		}
+		break;
+	case DCH_MemClkFreq_400MHz:
+		if ((meminfo->single_rank_mask == 1)
+		   && (meminfo->x16_mask == 1))	/* SR x16 */
+			dwordx = 0x00292900;
+		else if ((meminfo->x4_mask == 0) && (meminfo->x16_mask == 0)
+		         && (meminfo->single_rank_mask == 0)) {	/* DR x8 */
+			SlowAccessMode = 1;
+			dwordx = 0x00002A00;
+		} else {	/* SR x8, DR x16 */
+			dwordx = 0x002A2A00;
+		}
+		break;
+	}
 #endif
 
 #if DIMM_SUPPORT==0x0004  /* DDR2 and unbuffered */

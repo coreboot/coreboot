@@ -28,6 +28,16 @@
 #include <amd/k8/k8.h>
 
 /**
+ * Set the MTRR for initial ram access. 
+ * be warned, this will be used by core other than core 0/node 0 or core0/node0 when cpu_reset. 
+ * This warning has some significance I don't yet understand. 
+ */
+void set_init_ram_access(void)
+{
+	set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, MTRR_TYPE_WRBACK);
+}
+
+/**
  * Disable Cache As RAM (CAR) after memory is setup.
  *
  * Unknown how to do this just yet. 
@@ -60,5 +70,7 @@ void disable_car(void)
 	   [carsizequads] "i" (CONFIG_CARSIZE/4)
 	: "memory", "%edi", "%esi", "%ecx");
 	banner(BIOS_DEBUG, "Disable_car: done wbinvd");
+	/* we're now running in ram. Although this will be called again, it does no harm to call it here. */
+	set_init_ram_access();
 	banner(BIOS_DEBUG, "disable_car: done");
 }

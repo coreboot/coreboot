@@ -51,14 +51,21 @@
 #define DIMM6 0x56
 #define DIMM7 0x57
 
-# warning fix hard_reset
-void hard_reset(void)
+/* this code is very mainboard dependent, sadly. */
+/** 
+ * call the amd 8111 memreset_setup_amd8111 function to jam the GPIOs to reset memory. 
+ */
+static void memreset_setup(void)
 {
-}
-void memreset_setup(void)
-{
+	void memreset_setup_amd8111(u8 data, u16 offset);
+	//GPIO on amd8111 to enable MEMRST ????
+        memreset_setup_amd8111((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), 0xc0 + 16);  //REVC_MEMRST_EN=1
+        memreset_setup_amd8111((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), 0xc0 + 17);
 }
 
+/** 
+ * this is a no op on this platform. 
+ */
 void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
@@ -66,24 +73,29 @@ void memreset(int controllers, const struct mem_controller *ctrl)
 void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x18
-	 int smbus_write_byte(u16 device, u16 address, u8 val);
-       int ret,i;
-        u16 device=(ctrl->channel0[0])>>8;
-        /* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
-        i=2;
-        do {
-                ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-        } while ((ret!=0) && (i-->0));
+	int smbus_write_byte(u16 device, u16 address, u8 val);
+	int ret, i;
+	u16 device = (ctrl->channel0[0]) >> 8;
+	/* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time */
+	i = 2;
+	do {
+		ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
+	} while ((ret != 0) && (i-- > 0));
 
-        smbus_write_byte(SMBUS_HUB, 0x03, 0);
+	smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
+/**
+ * read a byte from spd. 
+ * @param device device to read from
+ * @param address address in the spd ROM
+ * @return the value of the byte at that address. 
+ */
 u8 spd_read_byte(u16 device, u8 address)
 {
 	int smbus_read_byte(u16 device, u16 address);
-        return smbus_read_byte(device, address);
+	return smbus_read_byte(device, address);
 }
-
 
 /** 
   * main for initram for the AMD Serengeti
@@ -113,30 +125,33 @@ int main(void)
 	 */
 	void enable_smbus(void);
 	void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn);
+	void soft_reset_x(unsigned sbbusn, unsigned sbdn);
 	u32 init_detected;
 	static const u16 spd_addr[] = {
-			//first node
-                        RC0|DIMM0, RC0|DIMM2, 0, 0,
-                        RC0|DIMM1, RC0|DIMM3, 0, 0,
+		//first node
+		RC0 | DIMM0, RC0 | DIMM2, 0, 0,
+		RC0 | DIMM1, RC0 | DIMM3, 0, 0,
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-			//second node
-                        RC1|DIMM0, RC1|DIMM2, RC1|DIMM4, RC1|DIMM6,
-                        RC1|DIMM1, RC1|DIMM3, RC1|DIMM5, RC1|DIMM7,
+		//second node
+		RC1 | DIMM0, RC1 | DIMM2, RC1 | DIMM4, RC1 | DIMM6,
+		RC1 | DIMM1, RC1 | DIMM3, RC1 | DIMM5, RC1 | DIMM7,
 #endif
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-                        // third node
-                        RC2|DIMM0, RC2|DIMM2, 0, 0,
-                        RC2|DIMM1, RC2|DIMM3, 0, 0,
-                        // four node
-                        RC3|DIMM0, RC3|DIMM2, RC3|DIMM4, RC3|DIMM6,
-                        RC3|DIMM1, RC3|DIMM3, RC3|DIMM5, RC3|DIMM7,
+		// third node
+		RC2 | DIMM0, RC2 | DIMM2, 0, 0,
+		RC2 | DIMM1, RC2 | DIMM3, 0, 0,
+		// four node
+		RC3 | DIMM0, RC3 | DIMM2, RC3 | DIMM4, RC3 | DIMM6,
+		RC3 | DIMM1, RC3 | DIMM3, RC3 | DIMM5, RC3 | DIMM7,
 #endif
 
 	};
 
 	struct sys_info *sysinfo;
-        int needs_reset; int i;
-        unsigned bsp_apicid = 0;
+	int needs_reset;
+	unsigned bsp_apicid = 0;
+	struct msr msr;
+
 	printk(BIOS_DEBUG, "Hi there from stage1\n");
 	post_code(POST_START_OF_MAIN);
 	sysinfo = &(global_vars()->sys_info);
@@ -146,116 +161,91 @@ int main(void)
 	 */
 	bsp_apicid = init_cpus(init_detected, sysinfo);
 
-//	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
+//      dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
 
 #if 0
-        dump_pci_device(PCI_DEV(0, 0x18, 0));
+	dump_pci_device(PCI_DEV(0, 0x18, 0));
 	dump_pci_device(PCI_DEV(0, 0x19, 0));
 #endif
 
 	printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
 
 #if MEM_TRAIN_SEQ == 1
-        set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram 
+	set_sysinfo_in_ram(0);	// in BSP so could hold all ap until sysinfo is in ram 
 #endif
-	setup_coherent_ht_domain(); // routing table and start other core0
+	setup_coherent_ht_domain();	// routing table and start other core0
 
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
-        // It is said that we should start core1 after all core0 launched
+	// It is said that we should start core1 after all core0 launched
 	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain, 
 	 * So here need to make sure last core0 is started, esp for two way system,
 	 * (there may be apic id conflicts in that case) 
 	 */
-        start_all_cores();
+	start_all_cores();
 	wait_all_other_cores_started(bsp_apicid);
 #endif
-	
+
 	/* it will set up chains and store link pair for optimization later */
-        ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
+	ht_setup_chains_x(sysinfo);	// it will init sblnk and sbbusn, nodes, sbdn
 
 #if 0
 	//it your CPU min fid is 1G, you can change HT to 1G and FID to max one time.
-        needs_reset = optimize_link_coherent_ht();
-        needs_reset |= optimize_link_incoherent_ht(sysinfo);
+	needs_reset = optimize_link_coherent_ht();
+	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 #endif
 
-#if K8_SET_FIDVID == 1
-
-        {
-                struct msr msr;
-                msr=rdmsr(FIDVID_STATUS);
-                printk(BIOS_DEBUG, "begin msr fid, vid %08x:%08x\n",  msr.hi ,msr.lo);
-
-        }
+	msr = rdmsr(FIDVID_STATUS);
+	printk(BIOS_DEBUG, "begin msr fid, vid %08x:%08x\n",
+	       msr.hi, msr.lo);
 
 	enable_fid_change();
 
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
 
-        init_fidvid_bsp(bsp_apicid);
+	init_fidvid_bsp(bsp_apicid);
 
-        // show final fid and vid
-        {
-                struct msr msr;
-                msr=rdmsr(FIDVID_STATUS);
-               printk(BIOS_DEBUG, "begin msr fid, vid %08x:%08x\n",  msr.hi ,msr.lo);
-
-        }
-#endif
+	msr = rdmsr(FIDVID_STATUS);
+	printk(BIOS_DEBUG, "begin msr fid, vid %08x:%08x\n",
+	       msr.hi, msr.lo);
 
 #if 1
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 
-        // fidvid change will issue one LDTSTOP and the HT change will be effective too
-        if (needs_reset) {
-                printk(BIOS_INFO, "ht reset -\r\n");
-#warning define soft_reset_x
-//FIXME                soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
-        }
+	// fidvid change will issue one LDTSTOP and the HT change will be effective too
+	if (needs_reset) {
+		printk(BIOS_INFO, "ht reset -\r\n");
+		soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
+	}
 #endif
 	allow_all_aps_stop(bsp_apicid);
 
-        //It's the time to set ctrl in sysinfo now;
+	//It's the time to set ctrl in sysinfo now;
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	enable_smbus();
 
-#if 0
-	for(i=0;i<4;i++) {
-		activate_spd_rom(&cpu[i]);
-		dump_smbus_registers();
-	}
-#endif
-
-#if 0
-        for(i=1;i<256;i<<=1) {
-                change_i2c_mux(i);
-                dump_smbus_registers();
-        }
-#endif
-
 	memreset_setup();
 
 	//do we need apci timer, tsc...., only debug need it for better output
-        /* all ap stopped? */
+	/* all ap stopped? */
 //        init_timer(); // Need to use TMICT to synconize FID/VID
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 #if 0
-        print_pci_devices();
+	print_pci_devices();
 #endif
 
 #if 0
 //        dump_pci_devices();
-        dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
+	dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif
 
 #warning re-implement post_cache_as_ram
- //       post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
+	//       post_cache_as_ram(); // bsp switch stack to ram and copy sysinfo ram now
 
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;

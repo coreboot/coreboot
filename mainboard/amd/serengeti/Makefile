@@ -23,6 +23,7 @@
 STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/option_table.c \
+			$(src)/arch/x86/stage1_mtrr.c \
 			$(src)/southbridge/amd/amd8111/stage1_smbus.c \
 			$(src)/southbridge/amd/amd8111/stage1_ctrl.c \
 			$(src)/southbridge/amd/amd8111/stage1_enable_rom.c \

@@ -246,11 +246,33 @@ void wait_ap_started(unsigned ap_apicid, void *gp)
 	}
 }
 
+/** 
+ * disable cache as ram on a BSP. 
+ * For reasons not totally known we are saving ecx and edx. 
+ * That will work on k8 as we copy the stack and return in the same stack frame. 
+ */
+void disable_cache_as_ram_bsp(void)
+{
+	__asm__ volatile (
+//		"pushl %eax\n\t"
+ 		"pushl %edx\n\t"
+ 		"pushl %ecx\n\t"
+	);
+
+	disable_cache_as_ram();
+        __asm__ volatile (
+                "popl %ecx\n\t"
+                "popl %edx\n\t"
+//                "popl %eax\n\t"
+        );
+}
+
+
 /**
  * wait for all apics to start. Make sure we don't wait on ourself. 
  * @param bsp_apicid The BSP APIC ID
  */
-static void wait_all_aps_started(unsigned bsp_apicid)
+void wait_all_aps_started(unsigned bsp_apicid)
 {
 	for_each_ap(bsp_apicid, 0, wait_ap_started, (void *) 0);
 }

@@ -243,13 +243,7 @@ static inline void clear_init_ram(void)
 
 }
 
-/* be warned, this file will be used by core other than core 0/node 0 or core0/node0 when cpu_reset*/
-static void set_init_ram_access(void)
-{
-	set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, MTRR_TYPE_WRBACK);
-}
-
-
+void set_init_ram_access(void);
 
 void * bottom_of_stack(void);
 EXPORT_SYMBOL(bottom_of_stack);

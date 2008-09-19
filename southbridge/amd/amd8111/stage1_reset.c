@@ -30,7 +30,10 @@
 
 void hard_reset(void)
 {
-	u32 dev;
+	void set_bios_reset(void);
+	unsigned get_sblk(void);
+	u8 node_link_to_bus(unsigned int node, unsigned int link);
+	u32 busdevfn;
 	unsigned int bus;
 	unsigned int node = 0;
 	unsigned int link = get_sblk();
@@ -39,9 +42,9 @@ void hard_reset(void)
 	 * There can only be one 8111 on a hypertransport chain/bus.
 	 */
 	bus = node_link_to_bus(node, link);
-	pci_locate_device_on_bus(0, PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ISA, &dev);
+	pci_conf1_find_on_bus(0, PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ISA, &busdevfn);
 
 	/* Reset */
 	set_bios_reset();
-	pci_write_config8(dev, 0x47, 1);
+	pci_conf1_write_config8(busdevfn, 0x47, 1);
 }

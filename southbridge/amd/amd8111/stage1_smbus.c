@@ -305,3 +305,17 @@ u8 spd_read_byte(u16 device, u8 address)
         return smbus_read_byte(device, address);
 }
 
+/**
+ * memreset_setup_amd8111
+ * This function is part of a complex dance played between the mainboard and 
+ * the southbridge. We don't want to export SMBUS_IO_BASE, but neither can the 
+ * amd8111 know about what GPIOs connect to what reset lines. So 
+ * we split the difference. The mainboard must call this function with bytes
+ * to be output to accomplish reset, as well as the offset from IOBASE;
+ * amd8111 will output those bytes to SMBIOS_IOBASE. 
+ * The caller of this function must have called spd_init for it to work correctly. 
+ */
+void memreset_setup_amd8111(u8 data, u16 offset)
+{
+	outb(data, SMBUS_IO_BASE + offset);
+}

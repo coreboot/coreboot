@@ -743,22 +743,7 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
         );
 }
 
-static void disable_cache_as_ram_bsp(void)
-{
-	__asm__ volatile (
-//		"pushl %eax\n\t"
- 		"pushl %edx\n\t"
- 		"pushl %ecx\n\t"
-	);
-
-	disable_cache_as_ram();
-        __asm__ volatile (
-                "popl %ecx\n\t"
-                "popl %edx\n\t"
-//                "popl %eax\n\t"
-        );
-}
-
+void disable_cache_as_ram_bsp(void);
 
 #endif /* ! ASSEMBLY */
 

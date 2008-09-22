@@ -1073,10 +1073,22 @@ define AMD_UCODE_PATCH_FILE
 	comment "name of the microcode patch file"	
 end
 
+define K8_MEM_BANK_B_ONLY
+	default 0
+	export always
+	comment "use AMD K8's memory bank B only to make a 64bit memory system and memory bank A is free, such as Filbert."
+end
+
 define CONFIG_VIDEO_MB
         default none
         export used
         comment "Integrated graphics with UMA has dynamic setup"
+end
+
+define CONFIG_GFXUMA
+        default none
+        export used
+        comment "GFX UMA"
 end
 
 define CONFIG_SPLASH_GRAPHIC

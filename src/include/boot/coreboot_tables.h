@@ -43,6 +43,12 @@
  * See also: util/lbtdump/lbtdump.c
  */
 
+/* AMD rs690 chip, declare global variables. */
+#if (CONFIG_GFXUMA == 1) 
+	unsigned long uma_memory_start, uma_memory_size;
+#endif
+	
+
 struct lb_uint64 {
 	uint32_t lo;
 	uint32_t hi;

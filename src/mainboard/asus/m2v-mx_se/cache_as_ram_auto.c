@@ -157,6 +157,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sio_init();
 	it8712f_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	it8712f_kill_watchdog();
 	uart_init();
 	console_init();
 	enable_rom_decode();
@@ -226,6 +227,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sio_init();
 	it8712f_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	it8712f_kill_watchdog();
 	uart_init();
 	console_init();
 	enable_rom_decode();

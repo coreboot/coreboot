@@ -32,6 +32,7 @@
 #define IT8712F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
 #define IT8712F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8712F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
+#define IT8712F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
 
 #define IT8712F_CONFIGURATION_PORT   0x2e /* Write-only. */
 
@@ -75,6 +76,16 @@ static void it8712f_24mhz_clkin(void)
 
 	it8712f_exit_conf();
 
+}
+
+static void it8712f_kill_watchdog(void)
+{
+	it8712f_enter_conf();
+
+	/* Kill the Watchdog */
+	it8712f_sio_write(0x07, IT8712F_CONFIG_REG_WATCHDOG, 0x00);
+
+	it8712f_exit_conf();
 }
 
 /* Enable the peripheral devices on the IT8712F Super I/O chip. */

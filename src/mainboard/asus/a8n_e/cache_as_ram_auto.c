@@ -221,6 +221,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
 	}
 
+	it8712f_24mhz_clkin();
 	it8712f_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();

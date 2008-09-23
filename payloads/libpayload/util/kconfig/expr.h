@@ -12,7 +12,12 @@ extern "C" {
 
 #include <stdio.h>
 #ifndef __cplusplus
+#ifndef __sun
 #include <stdbool.h>
+#else
+typedef short bool;
+enum { true=1, false=0};
+#endif
 #endif
 
 struct file {

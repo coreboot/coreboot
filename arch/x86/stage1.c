@@ -28,6 +28,7 @@
 #include <lib.h>
 #include <mc146818rtc.h>
 #include <cpu.h>
+#include <multiboot.h>
 
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
 /* ah, well, what a mess! This is a hard code. FIX ME but how? 
@@ -138,6 +139,14 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
 	return -1;
 }
 #endif /* CONFIG_PAYLOAD_ELF_LOADER */
+
+
+static int run_address_multiboot(void *f)
+{
+	int ret, dummy;
+	__asm__ __volatile__ ("call *%4" : "=a" (ret), "=c" (dummy) : "a" (MB_MAGIC2), "b" (0xf0000), "c" (f) : "edx", "memory");
+	return ret;
+}
 
 /**
  * This function is called from assembler code with its argument on the
@@ -259,7 +268,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
 	if (entry != (void*)-1) {
 		/* Final coreboot call before handing off to the payload. */
 		mainboard_pre_payload();
-		run_address(entry);
+		run_address_multiboot(entry);
 	} else {
 		die("FATAL: No usable payload found.\n");
 	}

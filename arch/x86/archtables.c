@@ -24,6 +24,7 @@
 #include <console.h>
 #include <string.h>
 #include <tables.h>
+#include <multiboot.h>
 //#include <cpu/cpu.h>
 //#include <pirq_routing.h>
 //#include <smp/mpspec.h>
@@ -77,6 +78,14 @@ struct lb_memory *arch_write_tables(void)
 	low_table_end = 16;
 
 	post_code(POST_STAGE2_ARCH_WRITE_TABLES_ENTER);
+
+	/* The Multiboot information structure must be in 0xf0000 */
+	rom_table_end = write_multiboot_info(
+			      low_table_start, low_table_end,
+			      rom_table_start, rom_table_end);
+
+	/* FIXME: is this alignment needed for PIRQ table? */
+	rom_table_end = (rom_table_end + 1023) & ~1023;
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
 	/* we need to make a decision: create empty functions 

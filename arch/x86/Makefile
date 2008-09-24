@@ -188,7 +188,7 @@ $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)
 STAGE2_LIB_SRC       = stage2.c clog2.c mem.c tables.c delay.c \
 		       compute_ip_checksum.c string.c
 
-STAGE2_ARCH_X86_SRC  = archtables.c coreboot_table.c udelay_io.c
+STAGE2_ARCH_X86_SRC  = archtables.c coreboot_table.c multiboot.c udelay_io.c
 STAGE2_ARCH_X86_SRC += pci_ops_auto.c
 STAGE2_ARCH_X86_SRC += keyboard.c i8259.c isa-dma.c
 

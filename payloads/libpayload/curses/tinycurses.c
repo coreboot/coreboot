@@ -314,7 +314,7 @@ WINDOW *initscr(void)
 
 	// Speaker init?
 
-	stdscr = newwin(SCREEN_Y, SCREEN_X + 1, 0, 0);
+	stdscr = newwin(SCREEN_Y, SCREEN_X, 0, 0);
 	// TODO: curscr, newscr?
 
 	werase(stdscr);

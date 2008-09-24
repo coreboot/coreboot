@@ -23,6 +23,7 @@ romimage "failover"
         option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION=".0-failover"
+	payload __PAYLOAD__
 end
 
 buildrom ./coreboot.rom ROM_SIZE "normal" "failover"

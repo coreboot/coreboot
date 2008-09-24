@@ -276,13 +276,7 @@ int main(void)
 	wattrset(modwin, COLOR_PAIR(2));
 	wattrset(menuwin, COLOR_PAIR(1) | A_BOLD);
 
-	for (i = 0; i < SCREEN_Y - 1; i++) {
-		wmove(modwin, i - 1, 0);
-		for (j = 0; j < SCREEN_X; j++)
-			waddch(modwin, ' ');
-	}
-
-	wrefresh(modwin);
+	werase(modwin);
 
 	for (i = 0; i < ARRAY_SIZE(categories); i++) {
 		for (j = 0; j < categories[i].count; j++)

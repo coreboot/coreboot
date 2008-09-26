@@ -123,8 +123,22 @@ static void vga_putc(u8 row, u8 col, unsigned int c)
 	*ptr = (u16) (c & 0xFFFF);
 }
 
+static void vga_init_cursor(void)
+{
+	u8 val;
+
+#define CURSOR_MSL   0x09   /* cursor maximum scan line */
+#define CURSOR_START 0x0A   /* cursor start */
+#define CURSOR_END   0x0B   /* cursor end */
+
+	val = crtc_read(CURSOR_MSL) & 0x1f;
+	crtc_write(0, CURSOR_START);
+	crtc_write(val - 2, CURSOR_END);
+}
+
 static int vga_init(void)
 {
+	vga_init_cursor();
 	return 0;
 }
 

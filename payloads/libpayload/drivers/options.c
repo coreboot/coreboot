@@ -33,9 +33,9 @@
 static int options_checksum_valid(void)
 {
 	int i;
-	int range_start = lib_sysinfo.cmos_range_start;
-	int range_end = lib_sysinfo.cmos_range_end;
-	int checksum_location = lib_sysinfo.cmos_checksum_location;
+	int range_start = lib_sysinfo.cmos_range_start / 8;
+	int range_end = lib_sysinfo.cmos_range_end / 8;
+	int checksum_location = lib_sysinfo.cmos_checksum_location / 8;
 	u16 checksum = 0, checksum_old;
 
 	for(i = range_start; i <= range_end; i++) {
@@ -80,7 +80,7 @@ static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
 
 int get_option(void *dest, char *name)
 {
-	struct cb_cmos_option_table *option_table = lib_sysinfo.option_table;
+	struct cb_cmos_option_table *option_table = phys_to_virt(lib_sysinfo.option_table);
 	struct cb_cmos_entries *cmos_entry;
 	int len = strnlen(name, CMOS_MAX_NAME_LENGTH);
 	

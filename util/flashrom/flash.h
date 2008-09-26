@@ -435,6 +435,11 @@ int probe_29f040b(struct flashchip *flash);
 int erase_29f040b(struct flashchip *flash);
 int write_29f040b(struct flashchip *flash, uint8_t *buf);
 
+/* en29f002a.c */
+int probe_en29f002a(struct flashchip *flash);
+int erase_en29f002a(struct flashchip *flash);
+int write_en29f002a(struct flashchip *flash, uint8_t *buf);
+
 /* ichspi.c */
 int ich_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
 int ich_spi_read(struct flashchip *flash, uint8_t * buf);

@@ -76,6 +76,7 @@ static void it8712f_init(device_t dev)
 	case IT8712F_KBCK:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
+		set_kbc_ps2_mode();
 		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
 		break;
 	case IT8712F_KBCM: /* TODO. */

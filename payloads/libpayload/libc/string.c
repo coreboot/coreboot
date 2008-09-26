@@ -128,6 +128,14 @@ int strncmp(const char *s1, const char *s2, size_t maxlen)
 	return 0;
 }
 
+/**
+ * Copy a string with a maximum length.
+ *
+ * @param d The destination memory.
+ * @param s The source string.
+ * @param n Copy at most n characters as length of the string.
+ * @return A pointer to the destination memory.
+ */
 char *strncpy(char *d, const char *s, size_t n)
 {
 	/* Use +1 to get the NUL terminator. */
@@ -140,11 +148,26 @@ char *strncpy(char *d, const char *s, size_t n)
 	return d;
 }
 
+/**
+ * Copy a string.
+ *
+ * @param d The destination memory.
+ * @param s The source string.
+ * @return A pointer to the destination memory.
+ */
 char *strcpy(char *d, const char *s)
 {
 	return strncpy(d, s, strlen(s) + 1);
 }
 
+/**
+ * Concatenates two strings with a maximum length.
+ *
+ * @param d The destination string.
+ * @param s The source string.
+ * @param n The target string will have a length of n characters at most.
+ * @return A pointer to the destination string.
+ */
 char *strncat(char *d, const char *s, size_t n)
 {
 	char *p = d + strlen(d);
@@ -158,6 +181,14 @@ char *strncat(char *d, const char *s, size_t n)
 	return d;
 }
 
+/**
+ * Find a character in a string.
+ *
+ * @param s The string.
+ * @param c The character.
+ * @return A pointer to the first occurence of the character in the
+ * string, or NULL if the character was not encountered within the string.
+ */
 char *strchr(const char *s, int c)
 {
 	char *p = (char *)s;
@@ -170,6 +201,12 @@ char *strchr(const char *s, int c)
 	return NULL;
 }
 
+/**
+ * Duplicate a string.
+ *
+ * @param s The string to duplicate.
+ * @return A pointer to the copy of the original string.
+ */
 char *strdup(const char *s)
 {
 	int n = strlen(s);
@@ -182,6 +219,14 @@ char *strdup(const char *s)
 	return p;
 }
 
+/**
+ * Find a substring within a string.
+ *
+ * @param h The haystack string.
+ * @param n The needle string (substring).
+ * @return A pointer to the first occurence of the substring in
+ * the string, or NULL if the substring was not encountered within the string.
+ */
 char *strstr(const char *h, const char *n)
 {
 	int hn = strlen(h);
@@ -194,3 +239,35 @@ char *strstr(const char *h, const char *n)
 
 	return NULL;
 }
+
+/**
+ * Separate strings.
+ *
+ * @param stringp reference of the string to separate.
+ * @param delim string containing all delimiters.
+ * @return Token string.
+ */
+char *strsep(char **stringp, const char *delim)
+{
+	char *walk, *token;
+
+	if (!stringp || !*stringp || !**stringp)
+		return NULL;
+
+	token = walk = *stringp;
+
+	/* Walk, search for delimiters */
+	while(*walk && !strchr(delim, *walk))
+		walk++;
+
+	if (*walk) {
+		/* NUL terminate */
+		*walk = '\0';
+		walk++;
+	}
+
+	*stringp = walk;
+
+	return token;
+}
+

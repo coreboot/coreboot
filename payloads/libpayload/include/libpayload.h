@@ -110,6 +110,13 @@ void rtc_read_clock(struct tm *tm);
 /** @} */
 
 /**
+ * @defgroup usb USB functions
+ * @{
+ */
+int usb_initialize(void);                                                      
+/** @} */
+
+/**
  * @defgroup input Device functions
  * @{ @}
  */
@@ -315,6 +322,7 @@ char *strncat(char *d, const char *s, size_t n);
 char *strchr(const char *s, int c);
 char *strdup(const char *s);
 char *strstr(const char *h, const char *n);
+char *strsep(char **stringp, const char *delim);
 /** @} */
 
 /**

@@ -1,0 +1,35 @@
+#
+# Automatically generated make config: don't edit
+# libpayload version: 0.1.0
+# Thu Sep 25 16:03:40 2008
+#
+CONFIG_TARGET_I386=y
+
+#
+# Standard Libraries
+#
+CONFIG_LIBC=y
+CONFIG_TINYCURSES=y
+
+#
+# Console Options
+#
+CONFIG_SERIAL_CONSOLE=y
+CONFIG_SERIAL_IOBASE=0x3f8
+# CONFIG_SERIAL_SET_SPEED is not set
+# CONFIG_SERIAL_ACS_FALLBACK is not set
+CONFIG_VIDEO_CONSOLE=y
+CONFIG_VGA_VIDEO_CONSOLE=y
+# CONFIG_GEODE_VIDEO_CONSOLE is not set
+CONFIG_PC_KEYBOARD=y
+CONFIG_PC_KEYBOARD_LAYOUT_US=y
+# CONFIG_PC_KEYBOARD_LAYOUT_DE is not set
+
+#
+# Drivers
+#
+CONFIG_PCI=y
+CONFIG_NVRAM=y
+# CONFIG_RTC_PORT_EXTENDED_VIA is not set
+CONFIG_SPEAKER=y
+# CONFIG_USB is not set

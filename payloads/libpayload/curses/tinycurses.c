@@ -77,7 +77,7 @@ static int linebuf_count = 0;
 
 /* Globals */
 int COLORS;		/* Currently unused? */
-int COLOR_PAIRS;
+int COLOR_PAIRS = 255;
 WINDOW *stdscr;
 WINDOW *curscr;
 WINDOW *newscr;
@@ -111,6 +111,7 @@ chtype fallback_acs_map[128] =
 	'|',	'<',	'>',	'*',	'!',	'f',	'o',	' ',
 	};
 
+#ifdef CONFIG_SERIAL_CONSOLE
 #ifdef CONFIG_SERIAL_ACS_FALLBACK
 chtype serial_acs_map[128];
 #else
@@ -135,7 +136,9 @@ chtype serial_acs_map[128] =
 	'x',	'y',	'z',	'{',	'|',	'}',	'~',	0,
 	};
 #endif
+#endif
 
+#ifdef CONFIG_VIDEO_CONSOLE
 /* See acsc of linux. */
 chtype console_acs_map[128] =
 	{
@@ -156,6 +159,7 @@ chtype console_acs_map[128] =
 	'\304',	'\304',	'\304',	'_',	'\303', '\264', '\301',	'\302',
 	'\263',	'\363',	'\362',	'\343',	'\330',	'\234',	'\376',	0,
 	};
+#endif
 
 // FIXME: Ugly (and insecure!) hack!
 char sprintf_tmp[1024];
@@ -196,13 +200,16 @@ int cbreak(void) { /* TODO */ return 0; }
 // int color_content(short color, short *r, short *g, short *b) {}
 int curs_set(int on)
 {
+#ifdef CONFIG_SERIAL_CONSOLE
 	if (curses_flags & F_ENABLE_SERIAL) {
-		// TODO
+		serial_cursor_enable(on);
 	}
-
+#endif
+#ifdef CONFIG_VIDEO_CONSOLE
 	if (curses_flags & F_ENABLE_CONSOLE) {
 		video_console_cursor_enable(on);
 	}
+#endif
 
 	return OK;
 }
@@ -284,7 +291,7 @@ int endwin(void)
 // int flash(void) {}
 int flushinp(void) { /* TODO */ return 0; }
 // WINDOW *getwin (FILE *) {}
-bool has_colors (void) { /* TODO */ return(*(bool *)0); }
+bool has_colors (void) { return(TRUE); }
 // bool has_ic (void) {}
 // bool has_il (void) {}
 // void idcok (WINDOW *, bool) {}
@@ -300,21 +307,23 @@ WINDOW *initscr(void)
 
 	for (i = 0; i < 128; i++)
 	  acs_map[i] = (chtype) i | A_ALTCHARSET;
-
+#ifdef CONFIG_SERIAL_CONSOLE
 	if (curses_flags & F_ENABLE_SERIAL) {
 		serial_clear();
 	}
-
+#endif
+#ifdef CONFIG_VIDEO_CONSOLE
 	if (curses_flags & F_ENABLE_CONSOLE) {
 		/* Clear the screen and kill the cursor */
 
 		video_console_clear();
 		video_console_cursor_enable(0);
 	}
+#endif
 
 	// Speaker init?
 
-	stdscr = newwin(SCREEN_Y, SCREEN_X, 0, 0);
+	stdscr = newwin(SCREEN_Y, SCREEN_X + 1, 0, 0);
 	// TODO: curscr, newscr?
 
 	werase(stdscr);
@@ -693,18 +702,23 @@ int whline(WINDOW *win, chtype ch, int n)
 	(((c) & 0x4400) >> 2) | ((c) & 0xAA00) | (((c) & 0x1100) << 2)
 int wnoutrefresh(WINDOW *win)
 {
+#ifdef CONFIG_SERIAL_CONSOLE
 	// FIXME.
 	int serial_is_bold = 0;
+	int serial_is_reverse = 0;
 	int serial_is_altcharset = 0;
 	int serial_cur_pair = 0;
 
-	int x, y;
-	chtype ch;
 	int need_altcharset;
 	short fg, bg;
+#endif
+	int x, y;
+	chtype ch;
 
+#ifdef CONFIG_SERIAL_CONSOLE
 	serial_end_bold();
 	serial_end_altcharset();
+#endif
 
 	for (y = 0; y <= win->_maxy; y++) {
 
@@ -713,9 +727,11 @@ int wnoutrefresh(WINDOW *win)
 
 		/* Position the serial cursor */
 
+#ifdef CONFIG_SERIAL_CONSOLE
 		if (curses_flags & F_ENABLE_SERIAL)
 			serial_set_cursor(win->_begy + y, win->_begx +
 					win->_line[y].firstchar);
+#endif
 
 		for (x = win->_line[y].firstchar; x <= win->_line[y].lastchar; x++) {
 			attr_t attr = win->_line[y].text[x].attr;
@@ -723,6 +739,7 @@ int wnoutrefresh(WINDOW *win)
 			unsigned int c =
 				((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
 
+#ifdef CONFIG_SERIAL_CONSOLE
 			if (curses_flags & F_ENABLE_SERIAL) {
 				ch = win->_line[y].text[x].chars[0];
 
@@ -731,10 +748,30 @@ int wnoutrefresh(WINDOW *win)
 						serial_start_bold();
 						serial_is_bold = 1;
 					}
-				}
-				else {
+				} else {
 					if (serial_is_bold) {
 						serial_end_bold();
+						serial_is_bold = 0;
+						/* work around serial.c
+						 * shortcoming:
+						 */
+						serial_is_reverse = 0;
+						serial_cur_pair = 0;
+					}
+				}
+
+				if (attr & A_REVERSE) {
+					if (!serial_is_reverse) {
+						serial_start_reverse();
+						serial_is_reverse = 1;
+					}
+				} else {
+					if (serial_is_reverse) {
+						serial_end_reverse();
+						serial_is_reverse = 0;
+						/* work around serial.c
+						 * shortcoming:
+						 */
 						serial_is_bold = 0;
 						serial_cur_pair = 0;
 					}
@@ -767,7 +804,8 @@ int wnoutrefresh(WINDOW *win)
 				serial_putchar(ch);
 
 			}
-
+#endif
+#ifdef CONFIG_VIDEO_CONSOLE
 			c = SWAP_RED_BLUE(c);
 
 			if (curses_flags & F_ENABLE_CONSOLE) {
@@ -799,16 +837,21 @@ int wnoutrefresh(WINDOW *win)
 				c |= (chtype) (ch & 0xff);
 				video_console_putc(win->_begy + y, win->_begx + x, c);
 			}
+#endif
 		}
 		win->_line[y].firstchar = _NOCHANGE;
 		win->_line[y].lastchar = _NOCHANGE;
 	}
 
+#ifdef CONFIG_SERIAL_CONSOLE
 	if (curses_flags & F_ENABLE_SERIAL)
 		serial_set_cursor(win->_begy + win->_cury, win->_begx + win->_curx);
+#endif
 
+#ifdef CONFIG_VIDEO_CONSOLE
 	if (curses_flags & F_ENABLE_CONSOLE)
 		video_console_set_cursor(win->_begx + win->_curx, win->_begy + win->_cury);
+#endif
 
 	return OK;
 }
@@ -823,7 +866,19 @@ int wprintw(WINDOW *win, const char *fmt, ...)
 
 	return code;
 }
-// int wredrawln (WINDOW *,int,int) {}
+
+int wredrawln (WINDOW *win, int beg_line, int num_lines)
+{
+	int i;
+
+	for (i = beg_line; i < beg_line + num_lines; i++) {
+		win->_line[i].firstchar = 0;
+		win->_line[i].lastchar = win->_maxx;
+	}
+
+	return OK;
+}
+
 int wrefresh(WINDOW *win)
 {
 	// FIXME

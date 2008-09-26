@@ -131,15 +131,19 @@ int keyboard_getchar(void);
  * @{
  */
 void serial_init(void);
+void serial_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits);
 void serial_putchar(unsigned char c);
 int serial_havechar(void);
 int serial_getchar(void);
 void serial_clear(void);
 void serial_start_bold(void);
 void serial_end_bold(void);
+void serial_start_reverse(void);
+void serial_end_reverse(void);
 void serial_start_altcharset(void);
 void serial_end_altcharset(void);
 void serial_set_color(short fg, short bg);
+void serial_cursor_enable(int state);
 void serial_set_cursor(int y, int x);
 /** @} */
 

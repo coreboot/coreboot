@@ -1673,4 +1673,7 @@ extern NCURSES_EXPORT(const char *) _nc_visbuf (const char *);
 void curses_enable_vga(int);
 void curses_enable_serial(int);
 
+int curses_vga_enabled(void);
+int curses_serial_enabled(void);
+
 #endif /* _CURSES_H */

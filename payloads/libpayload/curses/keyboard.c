@@ -44,6 +44,7 @@ static int _halfdelay = 0;
 
 /* ============== Serial ==================== */
 
+#ifdef CONFIG_SERIAL_CONSOLE
 /* We treat serial like a vt100 terminal.  For now we
    do the cooking in here, but we should probably eventually
    pass it to dedicated vt100 code */
@@ -135,6 +136,7 @@ static int cook_serial(unsigned char ch)
 		return ch;
 	}
 }
+#endif
 
 /* ================ Keyboard ================ */
 
@@ -215,8 +217,14 @@ void curses_enable_vga(int state)
 	else
 		curses_flags &= ~F_ENABLE_CONSOLE;
 }
+
+int curses_vga_enabled(void)
+{
+	return (curses_flags & F_ENABLE_CONSOLE) != 0;
+}
 #else
 void curses_enable_vga(int state) { }
+int curses_vga_enabled(void) { return 0; }
 #endif
 
 #ifdef CONFIG_SERIAL_CONSOLE
@@ -227,7 +235,14 @@ void curses_enable_serial(int state)
 	else
 		curses_flags &= ~F_ENABLE_SERIAL;
 }
+
+int curses_serial_enabled(void)
+{
+	return (curses_flags & F_ENABLE_SERIAL) != 0;
+}
+
 #else
 void curses_enable_serial(int state) { }
+int curses_serial_enabled(void) { return 0; }
 #endif
 

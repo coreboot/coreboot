@@ -32,32 +32,36 @@
 #include <libpayload.h>
 
 #define IOBASE lib_sysinfo.ser_ioport
+#define DIVISOR(x) (115200 / x)
 
-#ifdef CONFIG_SERIAL_SET_SPEED
-#define DIVISOR (115200 / CONFIG_SERIAL_BAUD_RATE)
-#endif
+void serial_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits)
+{
+	unsigned char reg;
+
+	/* We will assume 8n1 for now. Does anyone use anything else these days? */
+
+	/* Disable interrupts. */
+	outb(0, port + 0x01);
+
+	/* Assert RTS and DTR. */
+	outb(3, port + 0x04);
+
+	/* Set the divisor latch. */
+	reg = inb(port + 0x03);
+	outb(reg | 0x80, port + 0x03);
+
+	/* Write the divisor. */
+	outb(DIVISOR(speed) & 0xFF, port);
+	outb(DIVISOR(speed) >> 8 & 0xFF, port + 1);
+
+	/* Restore the previous value of the divisor. */
+	outb(reg &= ~0x80, port + 0x03);
+}
 
 void serial_init(void)
 {
 #ifdef CONFIG_SERIAL_SET_SPEED
-	unsigned char reg;
-
-	/* Disable interrupts. */
-	outb(0, IOBASE + 0x01);
-
-	/* Assert RTS and DTR. */
-	outb(3, IOBASE + 0x04);
-
-	/* Set the divisor latch. */
-	reg = inb(IOBASE + 0x03);
-	outb(reg | 0x80, IOBASE + 0x03);
-
-	/* Write the divisor. */
-	outb(DIVISOR & 0xFF, IOBASE);
-	outb(DIVISOR >> 8 & 0xFF, IOBASE + 1);
-
-	/* Restore the previous value of the divisor. */
-	outb(reg &= ~0x80, IOBASE + 0x03);
+	serial_hardware_init(IOBASE, CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
 #endif
 }
 
@@ -81,9 +85,17 @@ int serial_getchar(void)
 /*  These are thinly veiled vt100 functions used by curses */
 
 #define VT100_CLEAR       "\e[H\e[J"
+/* These defines will fail if you use bold and reverse at the same time.
+ * Switching off one of them will switch off both. tinycurses knows about
+ * this and does the right thing.
+ */
 #define VT100_SBOLD       "\e[1m"
 #define VT100_EBOLD       "\e[m"
+#define VT100_SREVERSE    "\e[7m"
+#define VT100_EREVERSE    "\e[m"
 #define VT100_CURSOR_ADDR "\e[%d;%dH"
+#define VT100_CURSOR_ON   "\e[?25l"
+#define VT100_CURSOR_OFF  "\e[?25h"
 /* The following smacs/rmacs are actually for xterm; a real vt100 has
    enacs=\E(B\E)0, smacs=^N, rmacs=^O.  */
 #define VT100_SMACS       "\e(0"
@@ -110,6 +122,16 @@ void serial_start_bold(void)
 void serial_end_bold(void)
 {
 	serial_putcmd(VT100_EBOLD);
+}
+
+void serial_start_reverse(void)
+{
+	serial_putcmd(VT100_SREVERSE);
+}
+
+void serial_end_reverse(void)
+{
+	serial_putcmd(VT100_EREVERSE);
 }
 
 void serial_start_altcharset(void)
@@ -140,4 +162,12 @@ void serial_set_cursor(int y, int x)
 	char buffer[32];
 	snprintf(buffer, sizeof(buffer), VT100_CURSOR_ADDR, y + 1, x + 1);
 	serial_putcmd(buffer);
+}
+
+void serial_cursor_enable(int state)
+{
+	if (state)
+		serial_putcmd(VT100_CURSOR_ON);
+	else
+		serial_putcmd(VT100_CURSOR_OFF);
 }

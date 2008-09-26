@@ -135,6 +135,8 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
 			 bus_isa, 0x7, apicid_sb600, 0x7);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
+			 bus_isa, 0xc, apicid_sb600, 0xc);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
 			 bus_isa, 0xd, apicid_sb600, 0xd);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
 			 bus_isa, 0xe, apicid_sb600, 0xe);

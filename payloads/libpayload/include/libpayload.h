@@ -123,6 +123,8 @@ void keyboard_init(void);
 int keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);
+int keyboard_set_layout(char *country);
+int keyboard_add_reset_handler(void (*new_handler)(void));
 /** @} */
 
 /**

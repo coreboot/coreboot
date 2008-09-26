@@ -100,6 +100,16 @@ config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
 	default y
 
+config PC_KEYBOARD_LAYOUT_US
+	bool "English (US) keyboard layout"
+	depends on PC_KEYBOARD
+	default y
+
+config PC_KEYBOARD_LAYOUT_DE
+	bool "German keyboard layout"
+	depends on PC_KEYBOARD
+	default n
+
 endmenu
 
 menu "Drivers"

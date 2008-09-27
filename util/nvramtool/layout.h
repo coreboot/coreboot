@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * layout.h
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -49,6 +48,7 @@
 typedef enum
  { CMOS_ENTRY_ENUM,
    CMOS_ENTRY_HEX,
+   CMOS_ENTRY_STRING,
    CMOS_ENTRY_RESERVED
  }
 cmos_entry_config_t;

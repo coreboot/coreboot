@@ -1,3 +1,11 @@
+Tue Sep 23 19:14:27 CEST 2008  Stefan Reinauer (stepan@coresystems.de)
+
+	Version 2.1
+
+	* Fix a number of off by one errors when accessing arrays
+
+	* Add support for reading/writing strings from/to CMOS.
+
 Mon Jan 23 16:00:00 PST 2006  David S. Peterson (dsp@llnl.gov)
 
 	Version 2.0.1

@@ -1,5 +1,3 @@
-$Id$
-
 Summary of Operation
 --------------------
 nvramtool is a utility for reading/writing coreboot parameters and

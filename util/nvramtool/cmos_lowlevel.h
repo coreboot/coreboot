@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * cmos_lowlevel.h
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -33,19 +32,20 @@
 #define NVRAMTOOL_CMOS_LOWLEVEL_H
 
 #include "common.h"
+#include "layout.h"
 
 #define CMOS_AREA_OUT_OF_RANGE (CMOS_RESULT_START + 0)
 #define CMOS_AREA_OVERLAPS_RTC (CMOS_RESULT_START + 1)
 #define CMOS_AREA_TOO_WIDE (CMOS_RESULT_START + 2)
 
-unsigned long long cmos_read (unsigned bit, unsigned length);
-void cmos_write (unsigned bit, unsigned length, unsigned long long value);
+unsigned long long cmos_read (const cmos_entry_t *e);
+void cmos_write (const cmos_entry_t *e, unsigned long long value);
 unsigned char cmos_read_byte (unsigned index);
 void cmos_write_byte (unsigned index, unsigned char value);
 void cmos_read_all (unsigned char data[]);
 void cmos_write_all (unsigned char data[]);
 void set_iopl (int level);
-int verify_cmos_op (unsigned bit, unsigned length);
+int verify_cmos_op (unsigned bit, unsigned length, cmos_entry_config_t config);
 
 #define CMOS_SIZE 256  /* size of CMOS memory in bytes */
 #define CMOS_RTC_AREA_SIZE 14  /* first 14 bytes control real time clock */

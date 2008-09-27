@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * lbtable.c
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -580,6 +579,10 @@ static void process_cmos_table (void)
 
          case 'r':
             cmos_entry.config = CMOS_ENTRY_RESERVED;
+            break;
+
+         case 's':
+            cmos_entry.config = CMOS_ENTRY_STRING;
             break;
 
          default:

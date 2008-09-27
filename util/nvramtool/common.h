@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * common.h
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.

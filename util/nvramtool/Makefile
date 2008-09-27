@@ -1,28 +1,43 @@
-# $Id$
+#
+# Makefile for nvram utility
+# 
+# (C) 2005-2008 coresystems GmbH
+# written by Stefan Reinauer <stepan@coresystems.de>
+#
 
-PROJECT = nvramtool
-CC = gcc
-CFLAGS = -O2 -W -Wall
-LDFLAGS =
-OBJS = common.o compute_ip_checksum.o hexdump.o cmos_lowlevel.o \
-       reg_expr.o layout.o layout_file.o lbtable.o cmos_ops.o input_file.o \
-       opts.o nvramtool.o
-HEADERS = common.h ip_checksum.h coreboot_tables.h hexdump.h \
-          cmos_lowlevel.h reg_expr.h layout.h layout_file.h lbtable.h \
-          cmos_ops.h input_file.h opts.h
+PROGRAM = nvramtool
 
-all: nvramtool man
+CC      = gcc
+STRIP	= strip
+INSTALL = /usr/bin/install
+PREFIX  = /usr/local
+CFLAGS  = -O2 -g -Wall -W
+#CFLAGS  = -Os -Wall
 
-nvramtool: $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $(OBJS)
+OBJS =  cmos_lowlevel.o cmos_ops.o common.o compute_ip_checksum.o \
+	hexdump.o input_file.o layout.o layout_file.o lbtable.o   \
+	nvramtool.o opts.o reg_expr.o
 
-man: nvramtool.1.gz
+all: dep $(PROGRAM)
 
-$(OBJS): $(HEADERS)
-
-nvramtool.1.gz: nvramtool.1
-	gzip -c --best nvramtool.1 > nvramtool.1.gz
+$(PROGRAM): $(OBJS)
+	$(CC) -o $(PROGRAM) $(OBJS) $(LDFLAGS)
+	$(STRIP) $(STRIP_ARGS) $(PROGRAM)
 
 clean:
-	rm -f *.o nvramtool nvramtool.1.gz
+	rm -f $(PROGRAM) *.o
 
+distclean: clean
+	rm -f .dependencies
+
+dep:
+	@$(CC) -MM *.c > .dependencies
+
+install: $(PROGRAM)
+	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
+	mkdir -p $(PREFIX)/share/man/man1
+	$(INSTALL) $(PROGRAM).1 $(PREFIX)/share/man/man1
+
+.PHONY: all clean distclean dep
+
+-include .dependencies

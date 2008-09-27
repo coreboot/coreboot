@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * common.c
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -35,7 +34,7 @@
 const char prog_name[] = "nvramtool";
 
 /* version of this program */
-const char prog_version[] = "2.0.1";
+const char prog_version[] = "2.1";
 
 /****************************************************************************
  * get_line_from_file

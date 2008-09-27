@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * layout_file.c
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -551,6 +550,10 @@ static void create_entry (cmos_entry_t *cmos_entry,
          cmos_entry->config = CMOS_ENTRY_HEX;
          break;
 
+      case 's':
+	 cmos_entry->config = CMOS_ENTRY_STRING;
+	 break;
+
       case 'r':
          cmos_entry->config = CMOS_ENTRY_RESERVED;
          break;
@@ -757,6 +760,9 @@ static char cmos_entry_char_value (cmos_entry_config_t config)
 
       case CMOS_ENTRY_RESERVED:
          return 'r';
+
+      case CMOS_ENTRY_STRING:
+         return 's';
 
       default:
          BUG();

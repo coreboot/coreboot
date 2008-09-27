@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * cmos_ops.c
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -47,7 +46,7 @@ static int prepare_cmos_op_common (const cmos_entry_t *e)
       /* Access to reserved parameters is not permitted. */
       return CMOS_OP_RESERVED;
 
-   if ((result = verify_cmos_op(e->bit, e->length)) != OK)
+   if ((result = verify_cmos_op(e->bit, e->length, e->config)) != OK)
       return result;
 
    assert(e->length > 0);
@@ -70,6 +69,7 @@ int prepare_cmos_read (const cmos_entry_t *e)
    switch (e->config)
     { case CMOS_ENTRY_ENUM:
       case CMOS_ENTRY_HEX:
+      case CMOS_ENTRY_STRING:
          break;
 
       default:
@@ -92,6 +92,7 @@ int prepare_cmos_write (const cmos_entry_t *e, const char value_str[],
  { const cmos_enum_t *q;
    unsigned long long out;
    const char *p;
+   char *memory;
    int negative, result, found_one;
 
    if ((result = prepare_cmos_op_common(e)) != OK)
@@ -138,6 +139,15 @@ int prepare_cmos_write (const cmos_entry_t *e, const char value_str[],
             return CMOS_OP_NEGATIVE_INT;
 
          break;
+
+      case CMOS_ENTRY_STRING:
+	 if (e->length < (8 * strlen(value_str)))
+	    return CMOS_OP_VALUE_TOO_WIDE;
+	 memory = malloc(e->length / 8);
+         memset(memory, 0, e->length / 8);
+         strcpy(memory, value_str);
+         out = (unsigned long)memory;
+	 break;
 
       default:
          BUG();

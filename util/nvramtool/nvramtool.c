@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * nvramtool.c
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -477,6 +476,11 @@ static void list_param_enums (const char name[])
                 e->length);
          break;
 
+      case CMOS_ENTRY_STRING:
+         printf("Parameter %s requires a %u-byte string.\n", name,
+                e->length / 8);
+         break;
+
       case CMOS_ENTRY_RESERVED:
          printf("Parameter %s is reserved.\n", name);
          break;
@@ -570,7 +574,7 @@ static void set_one_param (const char name[], const char value[])
 
    /* write the value to nonvolatile RAM */
    set_iopl(3);
-   cmos_write(e->bit, e->length, n);
+   cmos_write(e, n);
    cmos_checksum_write(cmos_checksum_compute());
    set_iopl(0);
    return;
@@ -674,7 +678,7 @@ static int list_cmos_entry (const cmos_entry_t *e, int show_name)
 
    /* read the value from CMOS */
    set_iopl(3);
-   value = cmos_read(e->bit, e->length);
+   value = cmos_read(e);
    set_iopl(0);
 
    /* display the value */
@@ -700,6 +704,16 @@ static int list_cmos_entry (const cmos_entry_t *e, int show_name)
             printf("%s = 0x%llx\n", e->name, value);
          else
             printf("0x%llx\n", value);
+
+         break;
+
+      case CMOS_ENTRY_STRING:
+         if (show_name)
+	    printf("%s = %s\n", e->name, (char *)(unsigned long)value);
+	 else
+ 	    printf("%s\n", (char *)(unsigned long)value);
+
+         free((void *)(unsigned long)value);
 
          break;
 

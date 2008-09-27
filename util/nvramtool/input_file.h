@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * input_file.h
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -33,6 +32,7 @@
 #define INPUT_FILE_H
 
 #include "common.h"
+#include "layout.h"
 
 typedef struct cmos_write_t cmos_write_t;
 
@@ -44,6 +44,7 @@ typedef struct cmos_write_t cmos_write_t;
 struct cmos_write_t
  { unsigned bit;
    unsigned length;
+   cmos_entry_config_t config;
    unsigned long long value;
    cmos_write_t *next;
  };

@@ -1,9 +1,7 @@
 ##
-# $Id$
-##
 
 Name:    nvramtool
-Version: 2.0.1
+Version: 2.1
 Release: 0
 
 Summary: coreboot utility program

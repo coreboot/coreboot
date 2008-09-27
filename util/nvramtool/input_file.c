@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * input_file.c
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -137,6 +136,7 @@ cmos_write_t * process_input_file (FILE *f)
 
       item->bit = e->bit;
       item->length = e->length;
+      item->config = e->config;
       item->value = try_prepare_cmos_write(e, value);
 
       /* Append write operation to pending write list. */
@@ -162,9 +162,13 @@ void do_cmos_writes (cmos_write_t *list)
    set_iopl(3);
 
    while (list != NULL)
-    { item = list;
+    { cmos_entry_t e;
+      item = list;
+      e.bit = item->bit;
+      e.length = item->length;
+      e.config = item->config;
       list = item->next;
-      cmos_write(item->bit, item->length, item->value);
+      cmos_write(&e, item->value);
       free(item);
     }
 

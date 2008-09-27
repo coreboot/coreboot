@@ -1,6 +1,5 @@
 /*****************************************************************************\
  * cmos_lowlevel.c
- * $Id$
  *****************************************************************************
  *  Copyright (C) 2002-2005 The Regents of the University of California.
  *  Produced at the Lawrence Livermore National Laboratory.
@@ -70,7 +69,7 @@ static inline unsigned char get_bits (unsigned long long value, unsigned bit,
  ****************************************************************************/
 static inline void put_bits (unsigned char value, unsigned bit,
                              unsigned nr_bits, unsigned long long *result)
- { *result += (value & ((unsigned char) ((1 << nr_bits) - 1))) << bit; }
+ { *result += ((unsigned long long)(value & ((unsigned char) ((1 << nr_bits) - 1)))) << bit; }
 
 /****************************************************************************
  * cmos_read
@@ -79,21 +78,39 @@ static inline void put_bits (unsigned char value, unsigned bit,
  * and return this value.  The I/O privilege level of the currently executing
  * process must be set appropriately.
  ****************************************************************************/
-unsigned long long cmos_read (unsigned bit, unsigned length)
+unsigned long long cmos_read (const cmos_entry_t *e)
  { cmos_bit_op_location_t where;
+   unsigned bit = e->bit, length=e->length;
    unsigned next_bit, bits_left, nr_bits;
-   unsigned long long result;
+   unsigned long long result = 0;
    unsigned char value;
 
-   assert(!verify_cmos_op(bit, length));
+   assert(!verify_cmos_op(bit, length, e->config));
    result = 0;
 
-   for (next_bit = 0, bits_left = length;
-        bits_left;
-        next_bit += nr_bits, bits_left -= nr_bits)
-    { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left, &where);
-      value = cmos_read_bits(&where, nr_bits);
-      put_bits(value, next_bit, nr_bits, &result);
+   if (e->config == CMOS_ENTRY_STRING)
+    { char *newstring = malloc((length+7)/8);
+      unsigned usize = (8 * sizeof(unsigned long long));
+
+      if(!newstring) { out_of_memory(); }
+
+      for (next_bit = 0, bits_left = length;
+           bits_left;
+           next_bit += nr_bits, bits_left -= nr_bits)
+       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left>usize?usize:bits_left, &where);
+         value = cmos_read_bits(&where, nr_bits);
+         put_bits(value, next_bit % usize, nr_bits, &((unsigned long long *)newstring)[next_bit/usize]);
+	 result = (unsigned long)newstring;
+       }
+    }
+   else
+    { for (next_bit = 0, bits_left = length;
+           bits_left;
+           next_bit += nr_bits, bits_left -= nr_bits)
+       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left, &where);
+         value = cmos_read_bits(&where, nr_bits);
+         put_bits(value, next_bit, nr_bits, &result);
+       }
     }
 
    return result;
@@ -106,17 +123,32 @@ unsigned long long cmos_read (unsigned bit, unsigned length)
  * The I/O privilege level of the currently executing process must be set
  * appropriately.
  ****************************************************************************/
-void cmos_write (unsigned bit, unsigned length, unsigned long long value)
+void cmos_write (const cmos_entry_t *e, unsigned long long value)
  { cmos_bit_op_location_t where;
+   unsigned bit = e->bit, length=e->length;
    unsigned next_bit, bits_left, nr_bits;
 
-   assert(!verify_cmos_op(bit, length));
+   assert(!verify_cmos_op(bit, length, e->config));
 
-   for (next_bit = 0, bits_left = length;
-        bits_left;
-        next_bit += nr_bits, bits_left -= nr_bits)
-    { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left, &where);
-      cmos_write_bits(&where, nr_bits, get_bits(value, next_bit, nr_bits));
+   if (e->config == CMOS_ENTRY_STRING) 
+    { unsigned long long *data = (unsigned long long *)(unsigned long)value;
+      unsigned usize = (8 * sizeof(unsigned long long));
+
+      for (next_bit = 0, bits_left = length;
+           bits_left;
+           next_bit += nr_bits, bits_left -= nr_bits)
+       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left>usize?usize:bits_left, &where);
+         value = data[next_bit/usize];
+         cmos_write_bits(&where, nr_bits, get_bits(value, next_bit % usize, nr_bits));
+       }
+    }
+   else
+    { for (next_bit = 0, bits_left = length;
+           bits_left;
+           next_bit += nr_bits, bits_left -= nr_bits)
+       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left, &where);
+         cmos_write_bits(&where, nr_bits, get_bits(value, next_bit, nr_bits));
+       }
     }
  }
 
@@ -236,12 +268,15 @@ void set_iopl (int level)
  * wish to read or write.  Perform sanity checking on 'bit' and 'length'.  If
  * no problems were encountered, return OK.  Else return an error code.
  ****************************************************************************/
-int verify_cmos_op (unsigned bit, unsigned length)
+int verify_cmos_op (unsigned bit, unsigned length, cmos_entry_config_t config)
  { if ((bit >= (8 * CMOS_SIZE)) || ((bit + length) > (8 * CMOS_SIZE)))
       return CMOS_AREA_OUT_OF_RANGE;
 
    if (bit < (8 * CMOS_RTC_AREA_SIZE))
       return CMOS_AREA_OVERLAPS_RTC;
+
+   if (config == CMOS_ENTRY_STRING)
+      return OK;
 
    if (length > (8 * sizeof(unsigned long long)))
       return CMOS_AREA_TOO_WIDE;

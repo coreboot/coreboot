@@ -1,6 +1,7 @@
 #include <mainboard.h>
 #include <types.h>
 #include <lib.h>
+#include <cpu.h>
 #include <console.h>
 #include <globalvars.h>
 #include <device/device.h>
@@ -8,7 +9,6 @@
 #include <string.h>
 #include <msr.h>
 #include <io.h>
-#include <cpu.h>
 #include <amd/k8/k8.h>
 #include <mc146818rtc.h>
 #include <spd.h>

@@ -23,13 +23,13 @@
 #include <types.h>
 #include <lib.h>
 #include <console.h>
+#include <cpu.h>
 #include <globalvars.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
 #include <msr.h>
 #include <io.h>
-#include <cpu.h>
 #include <amd/k8/k8.h>
 #include <mc146818rtc.h>
 #include <spd.h>
@@ -286,15 +286,6 @@ void wait_all_other_cores_started(unsigned bsp_apicid)	// all aps other than cor
 	printk(BIOS_DEBUG, "started ap apicid: ");
 	for_each_ap(bsp_apicid, 2, wait_ap_started, (void *) 0);
 	printk(BIOS_DEBUG, "\r\n");
-}
-
-/**
- * Stop all APs
- * @param bsp_apicid The BSP apic id, to make sure we don't send ourselves the stop
- */
-void allow_all_aps_stop(unsigned bsp_apicid)
-{
-	lapic_write(LAPIC_MSG_REG, (bsp_apicid << 24) | 0x44);	// allow aps to stop
 }
 
 void STOP_CAR_AND_CPU(void)

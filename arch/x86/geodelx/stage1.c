@@ -20,6 +20,7 @@
 
 #include <types.h>
 #include <lib.h>
+#include <cpu.h>
 #include <amd_geodelx.h>
 #include <console.h>
 #include <msr.h>
@@ -46,6 +47,28 @@ static const struct msrinit msr_table[] = {
 void geodelx_msr_init(void)
 {
 }
+
+/**
+ * Return core id/node id info. Always 0. 
+ */
+struct node_core_id get_node_core_id(void)
+{
+	struct node_core_id id;
+	id.nodeid = 0;
+	id.coreid = 0;
+	return id;
+}
+
+/**
+ * stop_ap. Hey, maybe someday we get multicore geodes. 
+ * do not get upset about this code -- the cost is a one byte ret. 
+ */
+void stop_ap(void)
+{
+	// nothing yet if ever
+	post_code(POST_STAGE1_STOP_AP);
+}
+
 
 /**
  * Disable Cache As RAM (CAR) after memory is setup.

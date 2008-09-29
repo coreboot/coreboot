@@ -2,6 +2,7 @@
 #include <types.h>
 #include <lib.h>
 #include <console.h>
+#include <cpu.h>
 #include <globalvars.h>
 #include <device/device.h>
 #include <device/pci.h>

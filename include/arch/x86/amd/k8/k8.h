@@ -639,16 +639,6 @@ struct sys_info {
 /* dual core support */
 unsigned int read_nb_cfg_54(void);
 
-struct node_core_id {
-        unsigned nodeid;
-        unsigned coreid;
-};
-
-/* use this to get the nodeid and core id of the current cpu 
- * (but not other CPUs)
- */
-struct node_core_id get_node_core_id(void);
-
 struct device;
 unsigned get_apicid_base(unsigned ioapic_num);
 void amd_sibling_init(struct device *cpu);

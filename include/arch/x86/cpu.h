@@ -82,12 +82,28 @@ struct cpuinfo_x86 {
 	u8 x86_mask;
 };
 
+/* core and node id. This was special to k8 in v2 but is in fact quite generic */
+struct node_core_id {
+        unsigned nodeid;
+        unsigned coreid;
+};
+
+/* use this to get the nodeid and core id of the current cpu 
+ * (but not other CPUs). We're going to make this supported on all CPUs. 
+ * multicore is used everywhere now. For single socket/single core CPUs they can 
+ * just return a struct with 0s. This will simplify the stage1 code. 
+ */
+struct node_core_id get_node_core_id(void);
+
 /* prototypes for functions that may or may not be compiled in depending on cpu type */
 void set_var_mtrr_x(
         unsigned long reg, u32 base_lo, u32 base_hi, u32 size_lo, u32 size_hi, unsigned long type);
 void set_var_mtrr(
 	unsigned long reg, unsigned long base, unsigned long size, unsigned long type);
 
+/* generic SMP functions required to be supported (even by non-SMP)
+ */
+void stop_ap(void);
 
 /**
  * Generic CPUID function.

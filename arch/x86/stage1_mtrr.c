@@ -4,13 +4,13 @@
 #include <types.h>
 #include <io.h>
 #include <console.h>
+#include <cpu.h>
 #include <globalvars.h>
 #include <lar.h>
 #include <string.h>
 #include <tables.h>
 #include <lib.h>
 #include <mc146818rtc.h>
-#include <cpu.h>
 #include <msr.h>
 #include <mtrr.h>
 

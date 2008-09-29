@@ -21,6 +21,7 @@
 #include <types.h>
 #include <io.h>
 #include <console.h>
+#include <cpu.h>
 #include <globalvars.h>
 #include <lar.h>
 #include <string.h>
@@ -43,12 +44,6 @@ void die(const char *msg);
 void hardware_stage1(void);
 void disable_car(void);
 void mainboard_pre_payload(void);
-
-static void stop_ap(void)
-{
-	// nothing yet
-	post_code(POST_STAGE1_STOP_AP);
-}
 
 static void enable_rom(void)
 {
@@ -165,6 +160,7 @@ void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
 	int ret;
 	struct mem_file archive;
 	void *entry;
+	struct node_core_id me;
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
 	struct mem_file result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
@@ -183,16 +179,13 @@ void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
 
 	post_code(POST_STAGE1_MAIN);
 
-	// before we do anything, we want to stop if we dont run
-	// on the bootstrap processor.
-#warning We do not want to check BIST here, we want to check whether we are BSC!
-	if (bist==0) {
-		// stop secondaries
-		stop_ap();
-	}
+	/* before we do anything, we want to stop if we do not run
+	 * on the bootstrap processor.
+	 * stop_ap is responsible for NOT stopping the BSP
+	 */
+	stop_ap();
 
 	/* Initialize global variables before we can think of using them.
-	 * NEVER run this on an AP!
 	 */
 	global_vars_init(&globvars);
 	globvars.init_detected = init_detected;

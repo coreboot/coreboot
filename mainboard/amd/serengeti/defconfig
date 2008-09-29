@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
-# coreboot version: 3.0."869"
-# Fri Sep 19 15:57:34 2008
+# coreboot version: 3.0."874"
+# Mon Sep 29 10:45:42 2008
 #
 
 #
@@ -26,7 +26,6 @@ CONFIG_MAINBOARD_DIR="amd/serengeti"
 # CONFIG_BOARD_AMD_DB800 is not set
 # CONFIG_BOARD_AMD_NORWICH is not set
 CONFIG_BOARD_AMD_SERENGETI=y
-# CONFIG_BOARD_AMP_TINYGX is not set
 # CONFIG_COREBOOT_ROMSIZE_KB_128 is not set
 # CONFIG_COREBOOT_ROMSIZE_KB_256 is not set
 CONFIG_COREBOOT_ROMSIZE_KB_512=y
@@ -117,7 +116,5 @@ CONFIG_SUPERIO_WINBOND_W83627HF=y
 # Payload
 #
 # CONFIG_PAYLOAD_ELF_LOADER is not set
-CONFIG_PAYLOAD_ELF=y
-# CONFIG_PAYLOAD_NONE is not set
-CONFIG_PAYLOAD_FILE="../eb-5.4.3-via-velocity.elf"
-# CONFIG_ZERO_AFTER_PAYLOAD is not set
+# CONFIG_PAYLOAD_ELF is not set
+CONFIG_PAYLOAD_NONE=y

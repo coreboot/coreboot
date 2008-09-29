@@ -236,7 +236,7 @@ default DCACHE_RAM_SIZE=0x08000
 default DCACHE_RAM_GLOBAL_VAR_SIZE=0x01000
 default CONFIG_USE_INIT=0
 
-default CONFIG_AP_CODE_IN_CAR=0
+default CONFIG_AP_CODE_IN_CAR=1
 default MEM_TRAIN_SEQ=1
 default WAIT_BEFORE_CPUS_INIT=1
 
@@ -305,7 +305,7 @@ default CONFIG_GDB_STUB=0
 ##
 ## The Serial Console
 ##
-default CONFIG_USE_PRINTK_IN_CAR=0
+default CONFIG_USE_PRINTK_IN_CAR=1
 
 # To Enable the Serial Console
 default CONFIG_CONSOLE_SERIAL8250=1

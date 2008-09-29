@@ -100,6 +100,7 @@ uses SB_HT_CHAIN_ON_BUS0
 uses CONFIG_COMPRESSED_PAYLOAD_LZMA
 uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
 uses CONFIG_PRECOMPRESSED_PAYLOAD
+uses CONFIG_USE_PRINTK_IN_CAR
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes
@@ -203,7 +204,6 @@ default ENABLE_APIC_EXT_ID=1
 default APIC_ID_OFFSET=0x10
 default LIFT_BSP_APIC_ID=0
 
-
 ##
 ## Build code to setup a generic IOAPIC
 ##
@@ -267,6 +267,7 @@ default CONFIG_GDB_STUB=0
 ##
 ## The Serial Console
 ##
+default CONFIG_USE_PRINTK_IN_CAR=1
 
 # To Enable the Serial Console
 default CONFIG_CONSOLE_SERIAL8250=1

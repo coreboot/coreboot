@@ -286,7 +286,7 @@ default CONFIG_GDB_STUB=0
 ##
 ## The Serial Console
 ##
-default CONFIG_USE_PRINTK_IN_CAR=0
+default CONFIG_USE_PRINTK_IN_CAR=1
 
 # To Enable the Serial Console
 default CONFIG_CONSOLE_SERIAL8250=1

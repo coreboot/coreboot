@@ -849,7 +849,7 @@ static void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 
 
 static void set_dimm_size(const struct mem_controller *ctrl,
-			 struct dimm_size *sz, unsigned index, int is_Width128)
+			 struct dimm_size *sz, unsigned index, struct mem_info *meminfo)
 {
 	uint32_t base0, base1;
 
@@ -872,7 +872,7 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 	}
 
 	/* Double the size if we are using dual channel memory */
-	if (is_Width128) {
+	if (meminfo->is_Width128) {
 		base0 = (base0 << 1) | (base0 & 1);
 		base1 = (base1 << 1) | (base1 & 1);
 	}
@@ -881,15 +881,20 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 	base0 &= ~0xe007fffe;
 	base1 &= ~0xe007fffe;
 
-	/* Set the appropriate DIMM base address register */
-	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+0)<<2), base0);
-	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+1)<<2), base1);
+	if (!(meminfo->dimm_mask & 0x0F) && (meminfo->dimm_mask & 0xF0)) { /* channelB only? */
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 4) << 2), base0);
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 5) << 2), base1);
+	} else {
+		/* Set the appropriate DIMM base address register */
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 0) << 2), base0);
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 1) << 2), base1);
 #if QRANK_DIMM_SUPPORT == 1
-	if (sz->rank == 4) {
-		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+4)<<2), base0);
-		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+5)<<2), base1);
-	}
+		if (sz->rank == 4) {
+			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 4) << 2), base0);
+			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 5) << 2), base1);
+		}
 #endif
+	}
 
 	/* Enable the memory clocks for this DIMM by Clear the MemClkDis bit*/
 	if (base0) {
@@ -903,24 +908,31 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 		ClkDis0 = DTL_MemClkDis0_S1g1;
 #endif
 
-		dword = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW); //Channel A
-		dword &= ~(ClkDis0 >> index);
-#if QRANK_DIMM_SUPPORT == 1
-		if (sz->rank == 4) {
-			dword &= ~(ClkDis0 >> (index+2));
-		}
-#endif
-		pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, dword);
-
-		if (is_Width128) { //Channel B
+		if (!(meminfo->dimm_mask & 0x0F) && (meminfo->dimm_mask & 0xF0)) { /* channelB only? */
 			dword = pci_read_config32(ctrl->f2, DRAM_CTRL_MISC);
+			dword &= ~(ClkDis0 >> index);
+			pci_write_config32(ctrl->f2, DRAM_CTRL_MISC, dword);
+
+		} else {
+			dword = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW); //Channel A
 			dword &= ~(ClkDis0 >> index);
 #if QRANK_DIMM_SUPPORT == 1
 			if (sz->rank == 4) {
 				dword &= ~(ClkDis0 >> (index+2));
 			}
 #endif
-			pci_write_config32(ctrl->f2, DRAM_CTRL_MISC, dword);
+			pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, dword);
+
+			if (meminfo->is_Width128) { // ChannelA+B
+				dword = pci_read_config32(ctrl->f2, DRAM_CTRL_MISC);
+				dword &= ~(ClkDis0 >> index);
+#if QRANK_DIMM_SUPPORT == 1
+				if (sz->rank == 4) {
+					dword &= ~(ClkDis0 >> (index+2));
+				}
+#endif
+				pci_write_config32(ctrl->f2, DRAM_CTRL_MISC, dword);
+			}
 		}
 
 	}
@@ -943,7 +955,8 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 
 
 static void set_dimm_cs_map(const struct mem_controller *ctrl,
-			     struct dimm_size *sz, unsigned index)
+			     struct dimm_size *sz, unsigned index,
+			     struct mem_info *meminfo)
 {
 	static const uint8_t cs_map_aaa[24] = {
 		/* (bank=2, row=13, col=9)(3, 16, 11) ---> (0, 0, 0) (1, 3, 2) */
@@ -961,6 +974,9 @@ static void set_dimm_cs_map(const struct mem_controller *ctrl,
 
 	uint32_t map;
 
+	if (!(meminfo->dimm_mask & 0x0F) && (meminfo->dimm_mask & 0xF0)) { /* channelB only? */
+		index += 2;
+	}
 	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
 	map &= ~(0xf << (index * 4));
 #if QRANK_DIMM_SUPPORT == 1
@@ -986,24 +1002,31 @@ static void set_dimm_cs_map(const struct mem_controller *ctrl,
 }
 
 
-static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask,
+static long spd_set_ram_size(const struct mem_controller *ctrl,
 			      struct mem_info *meminfo)
 {
 	int i;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		struct dimm_size *sz = &(meminfo->sz[i]);
-		if (!(dimm_mask & (1 << i))) {
-			continue;
+		u32 spd_device = ctrl->channel0[i];
+
+		if (!(meminfo->dimm_mask & (1 << i))) {
+			if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
+				spd_device = ctrl->channel1[i];
+			} else {
+				continue;
+			}
 		}
-		spd_get_dimm_size(ctrl->channel0[i], sz);
+
+		spd_get_dimm_size(spd_device, sz);
 		if (sz->per_rank == 0) {
 			return -1; /* Report SPD error */
 		}
-		set_dimm_size(ctrl, sz, i, meminfo->is_Width128);
-		set_dimm_cs_map (ctrl, sz, i);
+		set_dimm_size(ctrl, sz, i, meminfo);
+		set_dimm_cs_map (ctrl, sz, i, meminfo);
 	}
-	return dimm_mask;
+	return meminfo->dimm_mask;
 }
 
 
@@ -1243,9 +1266,9 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 		/* Write the new base register */
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (canidate << 2), csbase);
 		/* Write the new mask register */
-		 if ((canidate & 1) == 0) {  //only have 4 CSMASK
-			 pci_write_config32(ctrl->f2, DRAM_CSMASK + ((canidate>>1) << 2), csmask);
-		 }
+		if ((canidate & 1) == 0) {  //only have 4 CSMASK
+			pci_write_config32(ctrl->f2, DRAM_CSMASK + ((canidate >> 1) << 2), csmask);
+		}
 
 	}
 	/* Return the memory size in K */
@@ -1299,27 +1322,32 @@ static void order_dimms(const struct mem_controller *ctrl,
 
 
 static long disable_dimm(const struct mem_controller *ctrl, unsigned index,
-			  long dimm_mask, struct mem_info *meminfo)
+			  struct mem_info *meminfo)
 {
 	print_debug("disabling dimm");
 	print_debug_hex8(index);
 	print_debug("\r\n");
-	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+0)<<2), 0);
-	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+1)<<2), 0);
+	if (!(meminfo->dimm_mask & 0x0F) && (meminfo->dimm_mask & 0xF0)) { /* channelB only? */
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 4) << 2), 0);
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 5) << 2), 0);
+	} else {
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 0) << 2), 0);
+		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 1) << 2), 0);
 #if QRANK_DIMM_SUPPORT == 1
-	if (meminfo->sz[index].rank == 4) {
-		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+4)<<2), 0);
-		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+5)<<2), 0);
-	}
+		if (meminfo->sz[index].rank == 4) {
+			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 4) << 2), 0);
+			pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 5) << 2), 0);
+		}
 #endif
+	}
 
-	dimm_mask &= ~(1 << index);
-	return dimm_mask;
+	meminfo->dimm_mask &= ~(1 << index);
+	return meminfo->dimm_mask;
 }
 
 
 static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
-					long dimm_mask, struct mem_info *meminfo)
+					 struct mem_info *meminfo)
 {
 	int i;
 	uint32_t registered;
@@ -1327,29 +1355,31 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	registered = 0;
 	for (i = 0; (i < DIMM_SOCKETS); i++) {
 		int value;
-		if (!(dimm_mask & (1 << i))) {
-			continue;
+		u32 spd_device = ctrl->channel0[i];
+		if (!(meminfo->dimm_mask & (1 << i))) {
+			if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
+				spd_device = ctrl->channel1[i];
+			} else {
+				continue;
+			}
 		}
-
-		value = spd_read_byte(ctrl->channel0[i], SPD_DIMM_TYPE);
+		value = spd_read_byte(spd_device, SPD_DIMM_TYPE);
 		if (value < 0) {
 			return -1;
 		}
 
 		/* Registered dimm ? */
 		value &= 0x3f;
-		if ((value == SPD_DIMM_TYPE_RDIMM) ||
-		    (value == SPD_DIMM_TYPE_mRDIMM)) {
-			/* check SPD_MOD_ATTRIB to verify it is
-			   SPD_MOD_ATTRIB_REGADC (0x11)? */
+		if ((value == SPD_DIMM_TYPE_RDIMM) || (value == SPD_DIMM_TYPE_mRDIMM)) {
+			//check SPD_MOD_ATTRIB to verify it is SPD_MOD_ATTRIB_REGADC (0x11)?
 			registered |= (1<<i);
 		}
 	}
 
 	if (is_opteron(ctrl)) {
 #if 0
-		if ( registered != (dimm_mask & ((1<<DIMM_SOCKETS)-1)) ) {
-			dimm_mask &= (registered | (registered << DIMM_SOCKETS) ); //disable unbuffed dimm
+		if ( registered != (meminfo->dimm_mask & ((1<<DIMM_SOCKETS)-1)) ) {
+			meminfo->dimm_mask &= (registered | (registered << DIMM_SOCKETS) ); //disable unbuffed dimm
 //			die("Mixed buffered and registered dimms not supported");
 		}
 		//By yhlu for debug M2, s1g1 can do dual channel, but it use unbuffer DIMM
@@ -1376,7 +1406,7 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 		print_debug("Unbuffered\r\n");
 	}
 #endif
-	return dimm_mask;
+	return meminfo->dimm_mask;
 }
 
 
@@ -1406,8 +1436,7 @@ static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
 	return dimm_mask;
 }
 
-
-static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_mask, struct mem_info *meminfo)
+static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_info *meminfo)
 {
 	int i;
 	uint32_t nbcap;
@@ -1438,13 +1467,21 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 		41,	/* *Minimum Active to Active/Auto Refresh Time(Trc) */
 		42,	/* *Minimum Auto Refresh Command Time(Trfc) */
 	};
+	u32 dcl, dcm;
+
+/* S1G1 and AM2 sockets are Mod64BitMux capable. */
+#if CPU_SOCKET_TYPE == 0x11 || CPU_SOCKET_TYPE == 0x12
+	u8 mux_cap = 1;
+#else
+	u8 mux_cap = 0;
+#endif
+
 	/* If the dimms are not in pairs do not do dual channels */
-	if ((dimm_mask & ((1 << DIMM_SOCKETS) - 1)) !=
-		((dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) {
+	if ((meminfo->dimm_mask & ((1 << DIMM_SOCKETS) - 1)) !=
+		((meminfo->dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) {
 		goto single_channel;
 	}
-	/* If the cpu is not capable of doing dual channels
-	   don't do dual channels */
+	/* If the cpu is not capable of doing dual channels don't do dual channels */
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	if (!(nbcap & NBCAP_128Bit)) {
 		goto single_channel;
@@ -1454,7 +1491,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 		int value0, value1;
 		int j;
 		/* If I don't have a dimm skip this one */
-		if (!(dimm_mask & (1 << i))) {
+		if (!(meminfo->dimm_mask & (1 << i))) {
 			continue;
 		}
 		device0 = ctrl->channel0[i];
@@ -1476,18 +1513,42 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 		}
 	}
 	print_spew("Enabling dual channel memory\r\n");
-	uint32_t dcl;
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_BurstLength32;  /*	32byte mode may be preferred in platforms that include graphics controllers that generate a lot of 32-bytes system memory accesses
 					32byte mode is not supported when the DRAM interface is 128 bits wides, even 32byte mode is set, system still use 64 byte mode	*/
 	dcl |= DCL_Width128;
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 	meminfo->is_Width128 = 1;
-	return dimm_mask;
+	return meminfo->dimm_mask;
+
  single_channel:
-	dimm_mask &= ~((1 << (DIMM_SOCKETS *2)) - (1 << DIMM_SOCKETS));
 	meminfo->is_Width128 = 0;
-	return dimm_mask;
+	meminfo->is_64MuxMode = 0;
+
+	/* single dimm */
+	if ((meminfo->dimm_mask & ((1 << DIMM_SOCKETS) - 1)) !=
+	   ((meminfo->dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) {
+		if (((meminfo->dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) {
+			/* mux capable and single dimm in channelB */
+			if (mux_cap) {
+				printk_spew("Enable 64MuxMode & BurstLength32\n");
+				dcm = pci_read_config32(ctrl->f2, DRAM_CTRL_MISC);
+				dcm |= DCM_Mode64BitMux;
+				pci_write_config32(ctrl->f2, DRAM_CTRL_MISC, dcm);
+				dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
+				//dcl |= DCL_BurstLength32; /* 32byte mode for channelB only */
+				pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
+				meminfo->is_64MuxMode = 1;
+			} else {
+				meminfo->dimm_mask &= ~((1 << (DIMM_SOCKETS * 2)) - (1 << DIMM_SOCKETS));
+			}
+		}
+	} else { /* unmatched dual dimms ? */
+		/* unmatched dual dimms not supported by meminit code. Use single channelA dimm. */
+		meminfo->dimm_mask &= ~((1 << (DIMM_SOCKETS * 2)) - (1 << DIMM_SOCKETS));
+		printk_spew("Unmatched dual dimms. Use single channelA dimm.\n");
+	}
+	return meminfo->dimm_mask;
 }
 
 struct mem_param {
@@ -1633,7 +1694,7 @@ static unsigned convert_to_linear(unsigned value)
 	return value;
 }
 
-static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *ctrl, long dimm_mask, struct mem_info *meminfo)
+static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *ctrl, struct mem_info *meminfo)
 {
 	/* Compute the minimum cycle time for these dimms */
 	struct spd_set_memclk_result result;
@@ -1670,9 +1731,15 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		int index;
 		int latencies;
 		int latency;
+		u32 spd_device = ctrl->channel0[i];
 
-		if (!(dimm_mask & (1 << i))) {
-			continue;
+		print_tx("1.1 dimm_mask:", meminfo->dimm_mask);
+		if (!(meminfo->dimm_mask & (1 << i))) {
+			if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
+				spd_device = ctrl->channel1[i];
+			} else {
+				continue;
+			}
 		}
 
 		/* First find the supported CAS latencies
@@ -1685,7 +1752,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		new_cycle_time = 0x500;
 		new_latency = 6;
 
-		latencies = spd_read_byte(ctrl->channel0[i], SPD_CAS_LAT);
+		latencies = spd_read_byte(spd_device, SPD_CAS_LAT);
 		if (latencies <= 0) continue;
 
 		print_tx("i:",i);
@@ -1700,7 +1767,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 				(!(latencies & (1 << latency)))) {
 				continue;
 			}
-			value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
+			value = spd_read_byte(spd_device, latency_indicies[index]);
 			if (value < 0) {
 				goto hw_error;
 			}
@@ -1753,16 +1820,22 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	print_tx("3 min_cycle_time:", min_cycle_time);
 	print_tx("3 min_latency:", min_latency);
 
-	for (i = 0; (i < DIMM_SOCKETS) && (ctrl->channel0[i]); i++) {
+	for (i = 0; (i < DIMM_SOCKETS); i++) {
 		int latencies;
 		int latency;
 		int index;
 		int value;
-		if (!(dimm_mask & (1 << i))) {
-			continue;
+		u32 spd_device = ctrl->channel0[i];
+
+		if (!(meminfo->dimm_mask & (1 << i))) {
+			if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
+				spd_device = ctrl->channel1[i];
+			} else {
+				continue;
+			}
 		}
 
-		latencies = spd_read_byte(ctrl->channel0[i], SPD_CAS_LAT);
+		latencies = spd_read_byte(spd_device, SPD_CAS_LAT);
 		if (latencies < 0) goto hw_error;
 		if (latencies == 0) {
 			continue;
@@ -1785,7 +1858,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		}
 
 		/* Read the min_cycle_time for this latency */
-		value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
+		value = spd_read_byte(spd_device, latency_indicies[index]);
 		if (value < 0) goto hw_error;
 
 		value = convert_to_linear(value);
@@ -1797,7 +1870,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		}
 		/* Otherwise I have an error, disable the dimm */
 	dimm_err:
-		dimm_mask = disable_dimm(ctrl, i, dimm_mask, meminfo);
+		meminfo->dimm_mask = disable_dimm(ctrl, i, meminfo);
 	}
 
 	print_tx("4 min_cycle_time:", min_cycle_time);
@@ -1820,7 +1893,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	value |= (min_latency - DTL_TCL_BASE)  << DTL_TCL_SHIFT;
 	pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, value);
 
-	result.dimm_mask = dimm_mask;
+	result.dimm_mask = meminfo->dimm_mask;
 	return result;
  hw_error:
 	result.param = (const struct mem_param *)0;
@@ -1837,18 +1910,26 @@ static unsigned convert_to_1_4(unsigned value)
 	valuex =  fraction [value & 0x7];
 	return valuex;
 }
-static int update_dimm_Trc(const struct mem_controller *ctrl, const struct mem_param *param, int i)
+static int update_dimm_Trc(const struct mem_controller *ctrl,
+			    const struct mem_param *param,
+			    int i, long dimm_mask)
 {
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
 	int value2;
-	value = spd_read_byte(ctrl->channel0[i], SPD_TRC);
+	u32 spd_device = ctrl->channel0[i];
+
+	if (!(dimm_mask & (1 << i)) && (dimm_mask & (1 << (DIMM_SOCKETS + i)))) { /* channelB only? */
+		spd_device = ctrl->channel1[i];
+	}
+
+	value = spd_read_byte(spd_device, SPD_TRC);
 	if (value < 0) return -1;
 
-		value2 = spd_read_byte(ctrl->channel0[i], SPD_TRC -1);
-		value <<= 2;
-		value += convert_to_1_4(value2>>4);
+	value2 = spd_read_byte(spd_device, SPD_TRC -1);
+	value <<= 2;
+	value += convert_to_1_4(value2>>4);
 
 	value *=10;
 
@@ -1878,9 +1959,16 @@ static int update_dimm_Trfc(const struct mem_controller *ctrl, const struct mem_
 	unsigned clocks, old_clocks;
 	uint32_t dth;
 	int value;
+	u8 ch_b = 0;
+	u32 spd_device = ctrl->channel0[i];
+
+	if (!(meminfo->dimm_mask & (1 << i)) && (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i)))) { /* channelB only? */
+		spd_device = ctrl->channel1[i];
+		ch_b = 2; /* offset to channelB trfc setting */
+	}
 
 	//get the cs_size --> logic dimm size
-	value = spd_read_byte(ctrl->channel0[i], SPD_PRI_WIDTH);
+	value = spd_read_byte(spd_device, SPD_PRI_WIDTH);
 	if (value < 0) {
 		return -1;
 	}
@@ -1891,24 +1979,31 @@ static int update_dimm_Trfc(const struct mem_controller *ctrl, const struct mem_
 
 	dth = pci_read_config32(ctrl->f2, DRAM_TIMING_HIGH);
 
-	old_clocks = ((dth >> (DTH_TRFC0_SHIFT+i*3)) & DTH_TRFC_MASK);
+	old_clocks = ((dth >> (DTH_TRFC0_SHIFT + ((i + ch_b) * 3))) & DTH_TRFC_MASK);
+
 	if (old_clocks >= clocks) { // some one did it?
 		return 1;
 	}
-	dth &= ~(DTH_TRFC_MASK << (DTH_TRFC0_SHIFT+i*3));
-	dth |= clocks  << (DTH_TRFC0_SHIFT+i*3);
+	dth &= ~(DTH_TRFC_MASK << (DTH_TRFC0_SHIFT + ((i + ch_b) * 3)));
+	dth |= clocks  << (DTH_TRFC0_SHIFT + ((i + ch_b) * 3));
 	pci_write_config32(ctrl->f2, DRAM_TIMING_HIGH, dth);
 	return 1;
 }
 
-static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct mem_param *param, int i,
+static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct mem_param *param, int i, long dimm_mask,
 					unsigned TT_REG,
 					unsigned SPD_TT, unsigned TT_SHIFT, unsigned TT_MASK, unsigned TT_BASE, unsigned TT_MIN, unsigned TT_MAX )
 {
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = spd_read_byte(ctrl->channel0[i], SPD_TT); //already in 1/4 ns
+	u32 spd_device = ctrl->channel0[i];
+
+	if (!(dimm_mask & (1 << i)) && (dimm_mask & (1 << (DIMM_SOCKETS + i)))) { /* channelB only? */
+		spd_device = ctrl->channel1[i];
+	}
+
+	value = spd_read_byte(spd_device, SPD_TT); //already in 1/4 ns
 	if (value < 0) return -1;
 	value *=10;
 	clocks = (value + param->divisor -1)/param->divisor;
@@ -1917,14 +2012,14 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 	}
 	
 	if (clocks > TT_MAX) {
-		 return 0;
+		return 0;
 	}
 
 	dtl = pci_read_config32(ctrl->f2, TT_REG);
 
 	old_clocks = ((dtl >> TT_SHIFT) & TT_MASK) + TT_BASE;
 	if (old_clocks >= clocks) { //some one did it?
-//	clocks = old_clocks;
+//		clocks = old_clocks;
 		return 1;
 	}
 	dtl &= ~(TT_MASK << TT_SHIFT);
@@ -1935,24 +2030,28 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 
 
 static int update_dimm_Trcd(const struct mem_controller *ctrl,
-			     const struct mem_param *param, int i)
+			     const struct mem_param *param, int i, long dimm_mask)
 {
-	return update_dimm_TT_1_4(ctrl, param, i, DRAM_TIMING_LOW, SPD_TRCD, DTL_TRCD_SHIFT, DTL_TRCD_MASK, DTL_TRCD_BASE, DTL_TRCD_MIN, DTL_TRCD_MAX);
+	return update_dimm_TT_1_4(ctrl, param, i, dimm_mask, DRAM_TIMING_LOW, SPD_TRCD, DTL_TRCD_SHIFT, DTL_TRCD_MASK, DTL_TRCD_BASE, DTL_TRCD_MIN, DTL_TRCD_MAX);
 }
 
-
-static int update_dimm_Trrd(const struct mem_controller *ctrl, const struct mem_param *param, int i)
+static int update_dimm_Trrd(const struct mem_controller *ctrl, const struct mem_param *param, int i, long dimm_mask)
 {
-	return update_dimm_TT_1_4(ctrl, param, i, DRAM_TIMING_LOW, SPD_TRRD, DTL_TRRD_SHIFT, DTL_TRRD_MASK, DTL_TRRD_BASE, DTL_TRRD_MIN, DTL_TRRD_MAX);
+	return update_dimm_TT_1_4(ctrl, param, i, dimm_mask, DRAM_TIMING_LOW, SPD_TRRD, DTL_TRRD_SHIFT, DTL_TRRD_MASK, DTL_TRRD_BASE, DTL_TRRD_MIN, DTL_TRRD_MAX);
 }
 
-
-static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_param *param, int i)
+static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_param *param, int i, long dimm_mask)
 {
 	unsigned clocks, old_clocks;
 	uint32_t dtl;
 	int value;
-	value = spd_read_byte(ctrl->channel0[i], SPD_TRAS); //in 1 ns
+	u32 spd_device = ctrl->channel0[i];
+
+	if (!(dimm_mask & (1 << i)) && (dimm_mask & (1 << (DIMM_SOCKETS + i)))) { /* channelB only? */
+		spd_device = ctrl->channel1[i];
+	}
+
+	value = spd_read_byte(spd_device, SPD_TRAS); //in 1 ns
 	if (value < 0) return -1;
 	print_tx("update_dimm_Tras: 0 value=", value);
 
@@ -1985,9 +2084,9 @@ static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_
 }
 
 static int update_dimm_Trp(const struct mem_controller *ctrl,
-			    const struct mem_param *param, int i)
+			    const struct mem_param *param, int i, long dimm_mask)
 {
-	return update_dimm_TT_1_4(ctrl, param, i, DRAM_TIMING_LOW, SPD_TRP, DTL_TRP_SHIFT, DTL_TRP_MASK, DTL_TRP_BASE, DTL_TRP_MIN, DTL_TRP_MAX);
+	return update_dimm_TT_1_4(ctrl, param, i, dimm_mask, DRAM_TIMING_LOW, SPD_TRP, DTL_TRP_SHIFT, DTL_TRP_MASK, DTL_TRP_BASE, DTL_TRP_MIN, DTL_TRP_MAX);
 }
 
 
@@ -2001,22 +2100,28 @@ static int update_dimm_Trtp(const struct mem_controller *ctrl,
 		dword = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 		if ((dword &  DCL_BurstLength32)) offset = 0;
 	}
-	 return update_dimm_TT_1_4(ctrl, param, i, DRAM_TIMING_LOW, SPD_TRTP, DTL_TRTP_SHIFT, DTL_TRTP_MASK, DTL_TRTP_BASE+offset, DTL_TRTP_MIN+offset, DTL_TRTP_MAX+offset);
+	return update_dimm_TT_1_4(ctrl, param, i, meminfo->dimm_mask, DRAM_TIMING_LOW, SPD_TRTP, DTL_TRTP_SHIFT, DTL_TRTP_MASK, DTL_TRTP_BASE+offset, DTL_TRTP_MIN+offset, DTL_TRTP_MAX+offset);
 }
 
 
-static int update_dimm_Twr(const struct mem_controller *ctrl, const struct mem_param *param, int i)
+static int update_dimm_Twr(const struct mem_controller *ctrl, const struct mem_param *param, int i, long dimm_mask)
 {
-	return update_dimm_TT_1_4(ctrl, param, i, DRAM_TIMING_LOW, SPD_TWR, DTL_TWR_SHIFT, DTL_TWR_MASK, DTL_TWR_BASE, DTL_TWR_MIN, DTL_TWR_MAX);
+	return update_dimm_TT_1_4(ctrl, param, i, dimm_mask, DRAM_TIMING_LOW, SPD_TWR, DTL_TWR_SHIFT, DTL_TWR_MASK, DTL_TWR_BASE, DTL_TWR_MIN, DTL_TWR_MAX);
 }
 
 
 static int update_dimm_Tref(const struct mem_controller *ctrl,
-			     const struct mem_param *param, int i)
+			     const struct mem_param *param, int i, long dimm_mask)
 {
 	uint32_t dth, dth_old;
 	int value;
-	value = spd_read_byte(ctrl->channel0[i], SPD_TREF); // 0: 15.625us, 1: 3.9us 2: 7.8 us....
+	u32 spd_device = ctrl->channel0[i];
+
+	if (!(dimm_mask & (1 << i)) && (dimm_mask & (1 << (DIMM_SOCKETS + i)))) { /* channelB only? */
+		spd_device = ctrl->channel1[i];
+	}
+
+	value = spd_read_byte(spd_device, SPD_TREF); // 0: 15.625us, 1: 3.9us 2: 7.8 us....
 	if (value < 0) return -1;
 
 	if (value == 1 ) {
@@ -2093,8 +2198,13 @@ static uint32_t get_extra_dimm_mask(const struct mem_controller *ctrl,
 	mask_page_1k = 0;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
+		u32 spd_device = ctrl->channel0[i];
 		if (!(dimm_mask & (1 << i))) {
-			continue;
+			if (dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
+				spd_device = ctrl->channel1[i];
+			} else {
+				continue;
+			}
 		}
 
 		if (meminfo->sz[i].rank == 1) {
@@ -2106,7 +2216,7 @@ static uint32_t get_extra_dimm_mask(const struct mem_controller *ctrl,
 		}
 
 
-		value = spd_read_byte(ctrl->channel0[i], SPD_PRI_WIDTH);
+		value = spd_read_byte(spd_device, SPD_PRI_WIDTH);
 
 		#if QRANK_DIMM_SUPPORT == 1
 			rank = meminfo->sz[i].rank;
@@ -2156,7 +2266,7 @@ static int count_ones(uint32_t dimm_mask)
 	int dimms;
 	unsigned index;
 	dimms = 0;
-	for (index = 0; index < DIMM_SOCKETS; index++, dimm_mask>>=1) {
+	for (index = 0; index < (2 * DIMM_SOCKETS); index++, dimm_mask >>= 1) {
 		if (dimm_mask & 1) {
 			dimms++;
 		}
@@ -2194,7 +2304,7 @@ static void set_DramTerm(const struct mem_controller *ctrl,
 
 
 static void set_ecc(const struct mem_controller *ctrl,
-	const struct mem_param *param, long dimm_mask, struct mem_info *meminfo)
+	const struct mem_param *param, struct mem_info *meminfo)
 {
 	int i;
 	int value;
@@ -2218,9 +2328,14 @@ static void set_ecc(const struct mem_controller *ctrl,
 	}
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-
-		if (!(dimm_mask & (1 << i))) {
-			continue;
+		u32 spd_device = ctrl->channel0[i];
+		if (!(meminfo->dimm_mask & (1 << i))) {
+			if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
+				spd_device = ctrl->channel1[i];
+				printk_debug("set_ecc spd_device: 0x%x\n", spd_device);
+			} else {
+				continue;
+			}
 		}
 
 		value = spd_read_byte(ctrl->channel0[i], SPD_DIMM_CONF_TYPE);
@@ -2237,12 +2352,10 @@ static void set_ecc(const struct mem_controller *ctrl,
 
 
 static int update_dimm_Twtr(const struct mem_controller *ctrl,
-			     const struct mem_param *param, int i)
+			     const struct mem_param *param, int i, long dimm_mask)
 {
-
-	return update_dimm_TT_1_4(ctrl, param, i, DRAM_TIMING_HIGH, SPD_TWTR, DTH_TWTR_SHIFT, DTH_TWTR_MASK, DTH_TWTR_BASE, DTH_TWTR_MIN, DTH_TWTR_MAX);
+	return update_dimm_TT_1_4(ctrl, param, i, dimm_mask, DRAM_TIMING_HIGH, SPD_TWTR, DTH_TWTR_SHIFT, DTH_TWTR_MASK, DTH_TWTR_BASE, DTH_TWTR_MIN, DTH_TWTR_MAX);
 }
-
 
 static void set_TT(const struct mem_controller *ctrl,
 	const struct mem_param *param, unsigned TT_REG, unsigned TT_SHIFT,
@@ -2510,18 +2623,25 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 	}
 #endif
 
-	/* Program the Output Driver Compensation Control Registers (Function 2:Offset 0x9c, index 0, 0x20) */
-	pci_write_config32_index_wait(ctrl->f2, 0x98, 0, dword);
-	if (meminfo->is_Width128) {
+	if (!(meminfo->dimm_mask & 0x0F) && (meminfo->dimm_mask & 0xF0)) { /* channelB only? */
+		/* Program the Output Driver Compensation Control Registers (Function 2:Offset 0x9c, index 0, 0x20) */
 		pci_write_config32_index_wait(ctrl->f2, 0x98, 0x20, dword);
-	}
 
-	/* Program the Address Timing Control Registers (Function 2:Offset 0x9c, index 4, 0x24) */
-	pci_write_config32_index_wait(ctrl->f2, 0x98, 4, dwordx);
-	if (meminfo->is_Width128) {
+		/* Program the Address Timing Control Registers (Function 2:Offset 0x9c, index 4, 0x24) */
 		pci_write_config32_index_wait(ctrl->f2, 0x98, 0x24, dwordx);
-	}
+	} else {
+		/* Program the Output Driver Compensation Control Registers (Function 2:Offset 0x9c, index 0, 0x20) */
+		pci_write_config32_index_wait(ctrl->f2, 0x98, 0, dword);
+		if (meminfo->is_Width128) {
+			pci_write_config32_index_wait(ctrl->f2, 0x98, 0x20, dword);
+		}
 
+		/* Program the Address Timing Control Registers (Function 2:Offset 0x9c, index 4, 0x24) */
+		pci_write_config32_index_wait(ctrl->f2, 0x98, 4, dwordx);
+		if (meminfo->is_Width128) {
+			pci_write_config32_index_wait(ctrl->f2, 0x98, 0x24, dwordx);
+		}
+	}
 }
 
 
@@ -2564,44 +2684,47 @@ static void set_RdWrQByp(const struct mem_controller *ctrl,
 }
 
 
-static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct mem_param *param, long dimm_mask, struct mem_info *meminfo)
+static long spd_set_dram_timing(const struct mem_controller *ctrl,
+				 const struct mem_param *param,
+				 struct mem_info *meminfo)
 {
 	int i;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		int rc;
-		if (!(dimm_mask & (1 << i))) {
+		if (!(meminfo->dimm_mask & (1 << i)) &&
+		    !(meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) ) {
 			continue;
 		}
-		print_tx("dimm socket: ", i);
+		print_tx("spd_set_dram_timing dimm socket: ", i);
 		/* DRAM Timing Low Register */
 		print_t("\ttrc\r\n");
-		if ((rc = update_dimm_Trc (ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Trc (ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		print_t("\ttrcd\r\n");
-		if ((rc = update_dimm_Trcd(ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Trcd(ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		print_t("\ttrrd\r\n");
-		if ((rc = update_dimm_Trrd(ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Trrd(ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		print_t("\ttras\r\n");
-		if ((rc = update_dimm_Tras(ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Tras(ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		print_t("\ttrp\r\n");
-		if ((rc = update_dimm_Trp (ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Trp (ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		print_t("\ttrtp\r\n");
 		if ((rc = update_dimm_Trtp(ctrl, param, i, meminfo)) <= 0) goto dimm_err;
 
 		print_t("\ttwr\r\n");
-		if ((rc = update_dimm_Twr (ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Twr (ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		/* DRAM Timing High Register */
 		print_t("\ttref\r\n");
-		if ((rc = update_dimm_Tref(ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Tref(ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		print_t("\ttwtr\r\n");
-		if ((rc = update_dimm_Twtr(ctrl, param, i)) <= 0) goto dimm_err;
+		if ((rc = update_dimm_Twtr(ctrl, param, i, meminfo->dimm_mask)) <= 0) goto dimm_err;
 
 		print_t("\ttrfc\r\n");
 		if ((rc = update_dimm_Trfc(ctrl, param, i, meminfo)) <= 0) goto dimm_err;
@@ -2610,13 +2733,12 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 
 		continue;
 	dimm_err:
+		printk_debug("spd_set_dram_timing dimm_err!\n");
 		if (rc < 0) {
 			return -1;
 		}
-		dimm_mask = disable_dimm(ctrl, i, dimm_mask, meminfo);
+		meminfo->dimm_mask = disable_dimm(ctrl, i, meminfo);
 	}
-
-	meminfo->dimm_mask = dimm_mask; // store final dimm_mask
 
 	get_extra_dimm_mask(ctrl, meminfo); // will be used by RDqsEn and dimm_x4
 	/* DRAM Timing Low Register */
@@ -2636,7 +2758,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 	set_RDqsEn(ctrl, param, meminfo);
 
 	/* DRAM Config Low */
-	set_ecc(ctrl, param, dimm_mask, meminfo);
+	set_ecc(ctrl, param, meminfo);
 	set_dimm_x4(ctrl, param, meminfo);
 	set_DramTerm(ctrl, param, meminfo);
 
@@ -2644,7 +2766,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 	set_idle_cycle_limit(ctrl, param);
 	set_RdWrQByp(ctrl, param);
 
-	return dimm_mask;
+	return meminfo->dimm_mask;
 }
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl,
@@ -2654,7 +2776,6 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 	const struct mem_param *param;
 	struct mem_param paramx;
 	struct mem_info *meminfo;
-	long dimm_mask;
 #if 1
 	if (!sysinfo->ctrl_present[ctrl->node_id]) {
 		return;
@@ -2665,24 +2786,35 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 	print_debug_addr("sdram_set_spd_registers: paramx :", &paramx);
 
 	activate_spd_rom(ctrl);
-	dimm_mask = spd_detect_dimms(ctrl);
-	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
+	meminfo->dimm_mask = spd_detect_dimms(ctrl);
+
+	print_tx("sdram_set_spd_registers: dimm_mask=0x%x\n", meminfo->dimm_mask);
+
+	if (!(meminfo->dimm_mask & ((1 << 2*DIMM_SOCKETS) - 1)))
+	{
 		print_debug("No memory for this cpu\r\n");
 		return;
 	}
-	dimm_mask = spd_enable_2channels(ctrl, dimm_mask, meminfo);
-	if (dimm_mask < 0)
+	meminfo->dimm_mask = spd_enable_2channels(ctrl, meminfo);
+	print_tx("spd_enable_2channels: dimm_mask=0x%x\n", meminfo->dimm_mask);
+	if (meminfo->dimm_mask == -1)
 		goto hw_spd_err;
-	dimm_mask = spd_set_ram_size(ctrl , dimm_mask, meminfo);
-	if (dimm_mask < 0)
+
+	meminfo->dimm_mask = spd_set_ram_size(ctrl, meminfo);
+	print_tx("spd_set_ram_size: dimm_mask=0x%x\n", meminfo->dimm_mask);
+	if (meminfo->dimm_mask == -1)
 		goto hw_spd_err;
-	dimm_mask = spd_handle_unbuffered_dimms(ctrl, dimm_mask, meminfo);
-	if (dimm_mask < 0)
+
+	meminfo->dimm_mask = spd_handle_unbuffered_dimms(ctrl, meminfo);
+	print_tx("spd_handle_unbuffered_dimms: dimm_mask=0x%x\n", meminfo->dimm_mask);
+	if (meminfo->dimm_mask == -1)
 		goto hw_spd_err;
-	result = spd_set_memclk(ctrl, dimm_mask, meminfo);
+
+	result = spd_set_memclk(ctrl, meminfo);
 	param     = result.param;
-	dimm_mask = result.dimm_mask;
-	if (dimm_mask < 0)
+	meminfo->dimm_mask = result.dimm_mask;
+	print_tx("spd_set_memclk: dimm_mask=0x%x\n", meminfo->dimm_mask);
+	if (meminfo->dimm_mask == -1)
 		goto hw_spd_err;
 
 	//store memclk set to sysinfo, incase we need rebuilt param again
@@ -2692,8 +2824,9 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 
 	paramx.divisor = get_exact_divisor(param->dch_memclk, paramx.divisor);
 
-	dimm_mask = spd_set_dram_timing(ctrl, &paramx , dimm_mask, meminfo); // dimm_mask will be stored to meminfo->dimm_mask
-	if (dimm_mask < 0)
+	meminfo->dimm_mask = spd_set_dram_timing(ctrl, &paramx, meminfo);
+	print_tx("spd_set_dram_timing: dimm_mask=0x%x\n", meminfo->dimm_mask);
+	if (meminfo->dimm_mask == -1)
 		goto hw_spd_err;
 
 	order_dimms(ctrl, meminfo);
@@ -2701,8 +2834,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 	return;
  hw_spd_err:
 	/* Unrecoverable error reading SPD data */
-	print_err("SPD error - reset\r\n");
-	hard_reset();
+	die("Unrecoverable error reading SPD data. No qualified DIMMs?");
 	return;
 }
 

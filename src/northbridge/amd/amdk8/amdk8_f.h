@@ -481,8 +481,9 @@ struct mem_info { // pernode
         uint8_t is_registered;
         uint8_t is_ecc;
         uint8_t is_Width128;
+	uint8_t is_64MuxMode;
         uint8_t memclk_set; // we need to use this to retrieve the mem param
-	uint8_t rsv[3];
+	uint8_t rsv[2];
 } __attribute__((packed));
 
 struct link_pair_st {

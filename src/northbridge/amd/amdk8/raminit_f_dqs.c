@@ -1,6 +1,23 @@
 /*
-	yhlu 2005.10 dqs training
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2005 YingHai Lu
+ * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 */
+
 //0: mean no debug info
 #define DQS_TRAIN_DEBUG 0
 
@@ -187,11 +204,6 @@ static unsigned ChipSelPresent(const struct mem_controller *ctrl, unsigned cs_id
 
 static unsigned RcvrRankEnabled(const struct mem_controller *ctrl, int channel, int cs_idx, unsigned is_Width128, struct sys_info *sysinfo)
 {
-	/* FIXME: process 64Muxed */
-        if(!is_Width128) {
-        	if(channel) return 0; // no channel b
-        }
-
 	return ChipSelPresent(ctrl, cs_idx, sysinfo);
 }
 
@@ -386,7 +398,11 @@ static void ResetDCTWrPtr(const struct mem_controller *ctrl)
 {
 	uint32_t dword;
 	unsigned index = 0x10;
-	
+
+	dword = pci_read_config32_index_wait(ctrl->f2, 0x98, index);
+	pci_write_config32_index_wait(ctrl->f2, 0x98, index, dword);
+
+	index += 0x20;
 	dword = pci_read_config32_index_wait(ctrl->f2, 0x98, index);
 	pci_write_config32_index_wait(ctrl->f2, 0x98, index, dword);
 
@@ -504,9 +520,9 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	unsigned PatternA;
 	unsigned PatternB;
 
-	unsigned TestAddr0, TestAddr0B, TestAddr1, TestAddr1B;
+	unsigned TestAddr0, TestAddr0B, TestAddr1, TestAddr1B = 0;
 
-	unsigned CurrRcvrCHADelay;
+	unsigned CurrRcvrCHADelay = 0;
 
 	unsigned tmp;
 
@@ -575,7 +591,14 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	Errors = 0;
 	/* for each channel */
 	CTLRMaxDelay = 0;
-	for(channel = 0; (channel < 2) && (!Errors); channel++) 
+	channel = 0;
+
+	if (!(sysinfo->meminfo[ctrl->node_id].dimm_mask & 0x0F) &&
+	     (sysinfo->meminfo[ctrl->node_id].dimm_mask & 0xF0)) { /* channelB only? */
+		channel = 1;
+	}
+
+	for ( ; (channel < 2) && (!Errors); channel++)
 	{ 
 		print_debug_dqs("\tTrainRcvEn51: channel ",channel, 1); 
 		
@@ -1104,8 +1127,8 @@ static unsigned TrainDQSPos(const struct mem_controller *ctrl, unsigned channel,
 	unsigned TestAddr;
 
 	unsigned LastTest;
-	unsigned RnkDlyFilterMax, RnkDlyFilterMin;
-	unsigned RnkDlySeqPassMax, RnkDlySeqPassMin;
+	unsigned RnkDlyFilterMax, RnkDlyFilterMin = 0;
+	unsigned RnkDlySeqPassMax, RnkDlySeqPassMin = 0;
 
 	Errors = 0;
 	BanksPresent = 0;
@@ -1388,8 +1411,13 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 	print_debug_addr("TrainDQSRdWrPos: buf_a:", buf_a);
 
 	Errors = 0;
-
 	channel = 0;
+
+	if (!(sysinfo->meminfo[ctrl->node_id].dimm_mask & 0x0F) &&
+	     (sysinfo->meminfo[ctrl->node_id].dimm_mask & 0xF0)) { /* channelB only? */
+		channel = 1;
+	}
+
 	while( (channel<2) && (!Errors)) {
 		print_debug_dqs("\tTrainDQSRdWrPos: 1 channel ",channel, 1); 
 		for(DQSWrDelay = 0; DQSWrDelay < 48; DQSWrDelay++) {

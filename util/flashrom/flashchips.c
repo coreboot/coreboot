@@ -120,7 +120,7 @@ struct flashchip flashchips[] = {
 	{"ST",		"M50LPW116",		ST_ID,		ST_M50LPW116,		2048,	64 * 1024,	TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"SyncMOS",	"S29C31004T",		SYNCMOS_ID,	S29C31004T,		512,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"SyncMOS",	"S29C51001T",		SYNCMOS_ID,	S29C51001T,		128,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
-	{"SyncMOS",	"S29C51002T",		SYNCMOS_ID,	S29C51002T,		256,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
+	{"SyncMOS",	"S29C51002T",		SYNCMOS_ID,	S29C51002T,		256,	128,		TEST_PREW,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"SyncMOS",	"S29C51004T",		SYNCMOS_ID,	S29C51004T,		512,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"Winbond",	"W25x10",		WINBOND_NEX_ID,	W_25X10,		128,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"Winbond",	"W25x20",		WINBOND_NEX_ID,	W_25X20,		256,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},

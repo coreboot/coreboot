@@ -282,7 +282,7 @@ static const long register_values[] = {
 	 *         1 = 2 clocks of RAS# precharge
 	 */
 	SDRAMC + 0, 0x00, 0x00,
-	SDRAMC + 0, 0x00, 0x00,
+	SDRAMC + 1, 0x00, 0x00,
 
 	/* PGPOL - Paging Policy Register
 	 * 0x78 - 0x79

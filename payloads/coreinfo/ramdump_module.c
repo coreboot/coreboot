@@ -44,7 +44,8 @@ static void dump_ram(WINDOW *win, uint32_t addr, int row, int col)
 			mvwaddch(win, row + y, col + 76, '|');
 		}
 		mvwprintw(win, row + y, col + x + 9, "%02x", ptr[i - 1]);
-		mvwprintw(win, row + y, 62 + count++, "%c", ptr[i - 1]);
+		mvwprintw(win, row + y, 62 + count++, "%c",
+			  isprint(ptr[i - 1]) ? ptr[i - 1] : ' ');
 		x += 3;
 		if (x == 24)	/* One more space after column/byte 8. */
 			x++;

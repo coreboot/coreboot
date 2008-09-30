@@ -63,7 +63,7 @@ static int bootlog_module_redraw(WINDOW *win)
 
 	/* FIXME: Handle lines longer than 80 characters. */
 	while (y <= 18) {
-		mvwaddnstr(win, y + 2, x, tmp, 1);
+		mvwaddch(win, y + 2, x, isprint(*tmp) ? *tmp : ' ');
 		x++;
 		tmp++;
 		if (*tmp == '\n') {

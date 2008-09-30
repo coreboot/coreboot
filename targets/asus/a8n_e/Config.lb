@@ -23,30 +23,30 @@ target asus_a8n_e
 mainboard asus/a8n_e
 
 romimage "normal"
-	option USE_FAILOVER_IMAGE=0
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
-	option COREBOOT_EXTRA_VERSION="_Normal"
+	option USE_FAILOVER_IMAGE = 0
+	option USE_FALLBACK_IMAGE = 0
+	option ROM_IMAGE_SIZE = 128 * 1024
+	option XIP_ROM_SIZE = 128 * 1024
+	option COREBOOT_EXTRA_VERSION = "_Normal"
 	payload ../payload.elf
 end
 
 romimage "fallback" 
-	option USE_FAILOVER_IMAGE=0
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
-	option COREBOOT_EXTRA_VERSION="_Fallback"
+	option USE_FAILOVER_IMAGE = 0
+	option USE_FALLBACK_IMAGE = 1
+	option ROM_IMAGE_SIZE = 128 * 1024
+	option XIP_ROM_SIZE = 128 * 1024
+	option COREBOOT_EXTRA_VERSION = "_Fallback"
 	payload ../payload.elf
 end
 
 romimage "failover"
-	option USE_FAILOVER_IMAGE=1
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=FAILOVER_SIZE
-	option XIP_ROM_SIZE=FAILOVER_SIZE
-	option COREBOOT_EXTRA_VERSION="_Failover"
+	option USE_FAILOVER_IMAGE = 1
+	option USE_FALLBACK_IMAGE = 0
+	option ROM_IMAGE_SIZE = FAILOVER_SIZE
+	option XIP_ROM_SIZE = FAILOVER_SIZE
+	option COREBOOT_EXTRA_VERSION = "_Failover"
 end
 
 buildrom ./coreboot.rom ROM_SIZE "normal" "fallback" "failover"
-#buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+# buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

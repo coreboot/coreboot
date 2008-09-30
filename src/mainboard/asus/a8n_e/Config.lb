@@ -21,10 +21,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-##
-## Compute the location and size of where this firmware image
-## (coreboot plus bootloader) will live in the boot rom chip.
-##
 if USE_FAILOVER_IMAGE
 	default ROM_SECTION_SIZE   = FAILOVER_SIZE
 	default ROM_SECTION_OFFSET = (ROM_SIZE - FAILOVER_SIZE)
@@ -37,27 +33,12 @@ else
 		default ROM_SECTION_OFFSET = 0
 	end
 end
-
-##
-## Compute the start location and size size of the coreboot bootloader.
-##
 default PAYLOAD_SIZE = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
 default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-
-##
-## Compute where this copy of coreboot will start in the boot ROM.
-##
-default _ROMBASE = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
-
-##
-## Compute a range of ROM that can be cached to speed up coreboot
-## execution speed.
-##
-## XIP_ROM_SIZE must be a power of 2 (here 64 Kbyte)
-## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
-##
-default XIP_ROM_SIZE = (64 * 1024)
-
+default _ROMBASE = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
+# XIP_ROM_SIZE must be a power of 2.
+# XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE.
+default XIP_ROM_SIZE = 64 * 1024
 if USE_FAILOVER_IMAGE
 	default XIP_ROM_BASE = (_ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
 else
@@ -67,28 +48,12 @@ else
 		default XIP_ROM_BASE = (_ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
 	end
 end
-
 arch i386 end
-
-##
-## Build the objects we have code for in this directory.
-##
-
 driver mainboard.o
-
-#dir /drivers/ati/ragexl
-
 # Needed by irq_tables and mptable and acpi_tables.
 object get_bus_conf.o
-
-if HAVE_MP_TABLE
-	object mptable.o
-end
-
-if HAVE_PIRQ_TABLE
-	object irq_tables.o
-end
-
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE object irq_tables.o end
 if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		makerule ./auto.o
@@ -104,10 +69,6 @@ if USE_DCACHE_RAM
 		end
 	end
 end
-
-##
-## Build our 16 bit and 32 bit coreboot entry code.
-##
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
 		mainboardinit cpu/x86/16bit/entry16.inc
@@ -119,19 +80,13 @@ else
 		ldscript /cpu/x86/16bit/entry16.lds
 	end
 end
-
 mainboardinit cpu/x86/32bit/entry32.inc
-
 if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		ldscript /cpu/x86/32bit/entry32.lds
 		ldscript /cpu/amd/car/cache_as_ram.lds
 	end
 end
-
-##
-## Build our reset vector (this is where coreboot is entered).
-##
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
 		mainboardinit cpu/x86/16bit/reset16.inc
@@ -149,22 +104,14 @@ else
 		ldscript /cpu/x86/32bit/reset32.lds
 	end
 end
-
 if USE_DCACHE_RAM
 else
-	### Should this be in the northbridge code?
 	mainboardinit arch/i386/lib/cpu_reset.inc
 end
-
-##
-## Include an ID string (for safe flashing).
-##
+# Include an ID string (for safe flashing).
 mainboardinit southbridge/nvidia/ck804/id.inc
 ldscript /southbridge/nvidia/ck804/id.lds
-
-##
-## ROMSTRAP table for CK804
-##
+# ROMSTRAP table for CK804.
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
 		mainboardinit southbridge/nvidia/ck804/romstrap.inc
@@ -176,20 +123,9 @@ else
 		ldscript /southbridge/nvidia/ck804/romstrap.lds
 	end
 end
-
 if USE_DCACHE_RAM
-	##
-	## Setup Cache-As-Ram
-	##
 	mainboardinit cpu/amd/car/cache_as_ram.inc
 end
-
-
-###
-### This is the early phase of coreboot startup.
-### Things are delicate and we test to see if we should
-### failover to another image.
-###
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
 		if USE_DCACHE_RAM
@@ -203,14 +139,6 @@ else
 		end
 	end
 end
-
-###
-### O.k. We aren't just an intermediary anymore!
-###
-
-##
-## Setup RAM
-##
 if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		initobject auto.o
@@ -218,10 +146,6 @@ if USE_DCACHE_RAM
 		mainboardinit ./auto.inc
 	end
 end
-
-##
-## Include the secondary configuration files
-##
 if CONFIG_CHIP_NAME
 	config chip.h
 end

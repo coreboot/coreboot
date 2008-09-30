@@ -26,13 +26,14 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #if CONFIG_LOGICAL_CPUS == 1
 #include <cpu/amd/dualcore.h>
 #endif
-
 #include <cpu/amd/amdk8_sysconf.h>
 
-/* Global variables for MB layouts and these will be shared by irqtable,
+/*
+ * Global variables for MB layouts and these will be shared by irqtable,
  * mptable and acpi_tables.
  */
 /* busnum is default */
@@ -40,13 +41,23 @@ unsigned char bus_isa;
 unsigned char bus_ck804[6];
 unsigned apicid_ck804;
 
-unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO that could be installed or not
-	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-	0x0000ff0,		//no HTIO for a8n_e
+/*
+ * Here you only need to set value in pci1234 for HT-IO that could be installed
+ * or not. You may need to preset pci1234 for HT-IO board, please refer to
+ * src/northbridge/amd/amdk8/get_sblk_pci1234.c for details.
+ */
+unsigned pci1234x[] = {
+	0x0000ff0,		/* No HTIO for A8N-E */
 };
-unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
-	0x20202020,		//a8n_e has only one ht-chain 
+
+/*
+ * HT Chain device num, actually it is unit id base of every ht device in
+ * chain, assume every chain only have 4 ht device at most.
+ */
+unsigned hcdnx[] = {
+	0x20202020,		/* A8N-E has only one ht-chain */
 };
+
 unsigned bus_type[256];
 
 extern void get_sblk_pci1234(void);
@@ -55,19 +66,18 @@ static unsigned get_bus_conf_done = 0;
 
 void get_bus_conf(void)
 {
-	unsigned apicid_base;
-
+	unsigned apicid_base, sbdn;
 	device_t dev;
-	unsigned sbdn;
 	int i, j;
 
 	if (get_bus_conf_done == 1)
-		return;		//do it only once
+		return;		/* Do it only once. */
 
 	get_bus_conf_done = 1;
 
-	sysconf.hc_possible_num = sizeof(pci1234x) / sizeof(pci1234x[0]);
-	sysconf.hc_possible_num = sizeof(pci1234x) / sizeof(pci1234x[0]);
+	/* FIXME: Is this really needed twice? */
+	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
+	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
 	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
 		sysconf.hcdn[i] = hcdnx[i];
@@ -75,18 +85,15 @@ void get_bus_conf(void)
 
 	get_sblk_pci1234();
 
-	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);	// first byte of first chain
+	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
 	sbdn = sysconf.sbdn;
 
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++)
 		bus_ck804[i] = 0;
-	}
-
-	for (i = 0; i < 256; i++) {
+	for (i = 0; i < 256; i++)
 		bus_type[i] = 0;
-	}
 
-	bus_type[0] = 1;	//pci
+	bus_type[0] = 1;	/* PCI */
 
 	bus_ck804[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 
@@ -107,9 +114,8 @@ void get_bus_conf(void)
 	}
 
 	for (i = 2; i < 6; i++) {
-		dev =
-		    dev_find_slot(bus_ck804[0],
-				  PCI_DEVFN(sbdn + 0x0b + i - 2, 0));
+		dev = dev_find_slot(bus_ck804[0],
+				    PCI_DEVFN(sbdn + 0x0b + i - 2, 0));
 		if (dev) {
 			bus_ck804[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
@@ -117,14 +123,12 @@ void get_bus_conf(void)
 			for (j = bus_ck804[i]; j < bus_isa; j++)
 				bus_type[j] = 1;
 		} else {
-			printk_debug
-			    ("ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+			printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n",
 			     bus_ck804[0], sbdn + 0x0b + i - 2);
 			bus_isa = bus_ck804[i - 1] + 1;
 		}
 	}
 
-/*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(3);
 #else

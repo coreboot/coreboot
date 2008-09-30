@@ -26,27 +26,22 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
-
 #include <cpu/amd/amdk8_sysconf.h>
 
 extern unsigned char bus_isa;
 extern unsigned char bus_ck804[6];
 extern unsigned apicid_ck804;
-
 extern unsigned bus_type[256];
-
 extern void get_bus_conf(void);
 
 void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
 	static const char oem[8] = "ASUS    ";
-	static const char productid[12] = "A8NE       ";
+	static const char productid[12] = "A8N-E      ";
 	struct mp_config_table *mc;
 	unsigned sbdn;
-
-	int bus_num;
-	int i;
+	int i, bus_num;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));
@@ -70,15 +65,15 @@ void *smp_write_config_table(void *v)
 	get_bus_conf();
 	sbdn = sysconf.sbdn;
 
-/* Bus:		Bus ID	Type*/
-	/* define numbers for pci and isa bus */
+	/* Bus:	Bus ID	Type */
+	/* Define numbers for PCI and ISA bus. */
 	for (bus_num = 0; bus_num < 256; bus_num++) {
 		if (bus_type[bus_num])
 			smp_write_bus(mc, bus_num, "PCI   ");
-	 }
+	}
 	smp_write_bus(mc, bus_isa, "ISA   ");
 
-/* I/O APICs:	APIC ID	Version	State		Address*/
+	/* I/O APICs:	APIC ID	Version	State		Address */
 	{
 		device_t dev;
 		struct resource *res;
@@ -92,7 +87,7 @@ void *smp_write_config_table(void *v)
 						 res->base);
 			}
 
-			/* Initialize interrupt mapping */
+			/* Initialize interrupt mapping. */
 			dword = 0x01200000;
 			pci_write_config32(dev, 0x7c, dword);
 
@@ -105,7 +100,7 @@ void *smp_write_config_table(void *v)
 		}
 	}
 
-/*I/O Ints:		Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
+	/* I/O Ints: Type Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_ExtINT,
 			 MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT,
 			 bus_isa, 0x0, apicid_ck804, 0x0);
@@ -151,21 +146,31 @@ void *smp_write_config_table(void *v)
 			 0xa);
 
 	// Onboard ck804 USB 1.1
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, bus_ck804[0], ((sbdn + 2) << 2) | 0, apicid_ck804, 0x15);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
+			 bus_ck804[0], ((sbdn + 2) << 2) | 0, apicid_ck804,
+			 0x15);
 
 	// Onboard ck804 USB 2
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, bus_ck804[0], ((sbdn + 2) << 2) | 1, apicid_ck804, 0x14);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
+			 bus_ck804[0], ((sbdn + 2) << 2) | 1, apicid_ck804,
+			 0x14);
 
 	// Onboard ck804 SATA 0
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, bus_ck804[0], ((sbdn + 7) << 2) | 0, apicid_ck804, 0x17);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
+			 bus_ck804[0], ((sbdn + 7) << 2) | 0, apicid_ck804,
+			 0x17);
 
 	// Onboard ck804 SATA 1
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, bus_ck804[0], ((sbdn + 8) << 2) | 0, apicid_ck804, 0x16);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
+			 bus_ck804[0], ((sbdn + 8) << 2) | 0, apicid_ck804,
+			 0x16);
 
 	// Onboard ck804 NIC
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, bus_ck804[0], ((sbdn + 10) << 2) | 0, apicid_ck804, 0x17);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
+			 bus_ck804[0], ((sbdn + 10) << 2) | 0, apicid_ck804,
+			 0x17);
 
-/*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
+	/* Local Ints: Type Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_ExtINT,
 			 MP_IRQ_TRIGGER_DEFAULT | MP_IRQ_POLARITY_DEFAULT,
 			 bus_ck804[0], 0x0, MP_APIC_ALL, 0x0);
@@ -175,7 +180,7 @@ void *smp_write_config_table(void *v)
 
 	/* There is no extension information... */
 
-	/* Compute the checksums */
+	/* Compute the checksums. */
 	mc->mpe_checksum =
 	    smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
@@ -186,7 +191,6 @@ void *smp_write_config_table(void *v)
 
 unsigned long write_smp_table(unsigned long addr)
 {
-	void *v;
-	v = smp_write_floating_table(addr);
+	void *v = smp_write_floating_table(addr);
 	return (unsigned long)smp_write_config_table(v);
 }

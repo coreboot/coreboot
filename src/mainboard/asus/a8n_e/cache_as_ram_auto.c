@@ -76,17 +76,17 @@
 
 static void memreset_setup(void)
 {
-	/* FIXME: Nothing to do? */
+	/* Nothing to do. */
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
-	/* FIXME: Nothing to do? */
+	/* Nothing to do. */
 }
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
-	/* FIXME: Nothing to do? */
+	/* Nothing to do. */
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -123,8 +123,7 @@ static void sio_setup(void)
 
 	/* LPC Positive Decode 0 */
 	dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE + 1, 0), 0xa0);
-	/* Serial 0, Serial 1 */
-	dword |= (1 << 0) | (1 << 1);
+	dword |= (1 << 0) | (1 << 1);	/* Serial 0, Serial 1 */
 	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE + 1, 0), 0xa0, dword);
 }
 
@@ -212,14 +211,11 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
 	int needs_reset;
-	unsigned bsp_apicid = 0;
-
+	unsigned nodes, bsp_apicid = 0;
 	struct mem_controller ctrl[8];
-	unsigned nodes;
 
-	if (bist == 0) {
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
-	}
 
 	it8712f_24mhz_clkin();
 	it8712f_enable_serial(SERIAL_DEV, TTYS0_BASE);
@@ -237,13 +233,12 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
-	// It is said that we should start core1 after all core0 launched
+	/* It is said that we should start core1 after all core0 launched. */
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
 #endif
 
 	needs_reset |= ht_setup_chains_x();
-
 	needs_reset |= ck804_early_setup_x();
 
 	if (needs_reset) {
@@ -254,7 +249,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	allow_all_aps_stop(bsp_apicid);
 
 	nodes = get_nodes();
-	//It's the time to set ctrl now;
+	/* It's the time to set ctrl now. */
 	fill_mem_ctrl(nodes, ctrl, spd_addr);
 
 	enable_smbus();

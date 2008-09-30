@@ -21,8 +21,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* Documentation at: http://www.microsoft.com/hwdev/busbios/PCIIRQ.HTM */
-
 #include <console/console.h>
 #include <device/pci.h>
 #include <string.h>
@@ -63,18 +61,14 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus,
  */
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-
 	struct irq_routing_table *pirq;
 	struct irq_info *pirq_info;
-	unsigned slot_num;
-	uint8_t *v;
-
-	uint8_t sum = 0;
+	unsigned slot_num, sbdn;
+	uint8_t *v, sum = 0;
 	int i;
-	unsigned sbdn;
 
-	/* get_bus_conf() will find out all bus num and apic that share with 
-	 * mptable.c and mptable.c
+	/* get_bus_conf() will find out all bus num and APIC that share with 
+	 * mptable.c and mptable.c.
 	 */
 	get_bus_conf();
 	sbdn = sysconf.sbdn;
@@ -83,23 +77,19 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	addr += 15;
 	addr &= ~15;
 
-	/* This table must be betweeen 0xf0000 & 0x100000 */
+	/* This table must be betweeen 0xf0000 & 0x100000. */
 	printk_info("Writing IRQ routing tables to 0x%x...", addr);
 
 	pirq = (void *)(addr);
-	v = (uint8_t *) (addr);
+	v = (uint8_t *)(addr);
 
 	pirq->signature = PIRQ_SIGNATURE;
 	pirq->version = PIRQ_VERSION;
-
 	pirq->rtr_bus = bus_ck804[0];
 	pirq->rtr_devfn = ((sbdn + 9) << 3) | 0;
-
 	pirq->exclusive_irqs = 0x828;
-
 	pirq->rtr_vendor = 0x10de;
 	pirq->rtr_device = 0x005c;
-
 	pirq->miniport_data = 0;
 
 	memset(pirq->rfu, 0, sizeof(pirq->rfu));
@@ -107,32 +97,31 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 
-//Slot1 PCIE 16x 
+	/* Slot1 PCIE 16x */
 	write_pirq_info(pirq_info, bus_ck804[1], (0 << 3) | 0, 0x3, 0xdeb8, 0x4,
 			0xdeb8, 0x1, 0xdeb8, 0x2, 0xdeb8, 4, 0);
 	pirq_info++;
 	slot_num++;
 
-//Slot2 PCIE 1x
+	/* Slot2 PCIE 1x */
 	write_pirq_info(pirq_info, bus_ck804[2], (0 << 3) | 0, 0x4, 0xdeb8, 0x1,
 			0xdeb8, 0x2, 0xdeb8, 0x3, 0xdeb8, 5, 0);
 	pirq_info++;
 	slot_num++;
 
-//Slot3 PCIE 1x
+	/* Slot3 PCIE 1x */
 	write_pirq_info(pirq_info, bus_ck804[3], (0 << 3) | 0, 0x1, 0xdeb8, 0x2,
 			0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 6, 0);
 	pirq_info++;
 	slot_num++;
 
-//Slot4 PCIE 4x 
-	write_pirq_info(pirq_info, bus_ck804[4], (0x4 << 3) | 0,
-			0x2, 0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 0x1, 0xdeb8,
-			7, 0);
+	/* Slot4 PCIE 4x */
+	write_pirq_info(pirq_info, bus_ck804[4], (0x4 << 3) | 0, 0x2,
+			0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 0x1, 0xdeb8, 7, 0);
 	pirq_info++;
 	slot_num++;
 
-//Slot5 - 7 PCI
+	/* Slot5 - Slot7 PCI */
 	for (i = 0; i < 3; i++) {
 		write_pirq_info(pirq_info, bus_ck804[5], (0 << (6 + i)) | 0,
 				((i + 0) % 4) + 1, 0xdeb8,
@@ -143,47 +132,50 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		slot_num++;
 	}
 
-//pci bridge
+	/* PCI bridge */
 	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 9) << 3) | 0, 0x1,
 			0xdeb8, 0x2, 0xdeb8, 0x3, 0xdeb8, 0x4, 0xdeb8, 0, 0);
 	pirq_info++;
 	slot_num++;
 
-//smbus
+	/* SMBus */
 	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 1) << 3) | 0, 0x2,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
 
-//usb
+	/* USB */
 	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 2) << 3) | 0, 0x1,
 			0xdeb8, 0x2, 0xdeb8, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
 
-//audio
+	/* Audio */
 	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 4) << 3) | 0, 0x1,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
-//sata
+
+	/* SATA */
 	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 7) << 3) | 0, 0x1,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
-//sata
+
+	/* SATA */
 	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 8) << 3) | 0, 0x1,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
-//nic
+
+	/* NIC */
 	write_pirq_info(pirq_info, bus_ck804[0], ((sbdn + 0xa) << 3) | 0, 0x1,
 			0xdeb8, 0, 0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
 	slot_num++;
 
 #if 0
-//firewire ??
+	/* Firewire? */
 	write_pirq_info(pirq_info, bus_ck804_1, (0x5 << 3) | 0, 0x3, 0xdeb8, 0,
 			0, 0, 0, 0, 0, 0, 0);
 	pirq_info++;
@@ -196,10 +188,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		sum += v[i];
 
 	sum = pirq->checksum - sum;
-
-	if (sum != pirq->checksum) {
+	if (sum != pirq->checksum)
 		pirq->checksum = sum;
-	}
 
 	printk_info("done.\n");
 

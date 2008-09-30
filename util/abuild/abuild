@@ -43,6 +43,9 @@ mode=text
 # this is disabled per default but can be enabled with -s
 silent=
 
+# stackprotect mode enabled by -ns option.
+stackprotect=false
+
 ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 	-e s/arm.*/arm/ -e s/sa110/arm/ -e s/x86_64/amd64/ \
 	-e "s/Power Macintosh/ppc/"`
@@ -322,8 +325,13 @@ function build_target
 		CC='$(CROSS_COMPILE)gcc'
 		CROSS_COMPILE=''
 	fi
- 	HOSTCC='gcc'
+	
+	if  [ "$stackprotect" = "true" ]; then
+		CC="$CC -fno-stack-protector"
+	fi
 
+	HOSTCC='gcc'
+	
 	printf "Processing mainboard/$VENDOR/$MAINBOARD"
 
 	xml "<mainboard>"
@@ -468,6 +476,7 @@ function myhelp
 	printf "    [-T|--test]			  submit image(s) to automated test system\n"
 	printf "    [-c|--cpus <numcpus>]         build on <numcpus> at the same time\n"
 	printf "    [-s|--silent]                 omit compiler calls in logs\n"
+	printf "    [-ns|--nostackprotect]        use gcc -fno-stack-protector option\n"
 	printf "    [lbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $LBROOT)\n\n"
 }
@@ -524,6 +533,7 @@ while true ; do
 		-T|--test)      shift; hwtest=true;;
 		-c|--cpus)	shift; cpus="$1"; test "$cpus" == "max" && cpus=""; shift;;
 		-s|--silent)    shift; silent="-s";;
+		-ns|--nostackprotect) shift; stackprotect=true;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;

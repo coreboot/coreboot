@@ -106,7 +106,7 @@ struct flashchip flashchips[] = {
 	{"ST",		"M25P128",		ST_ID,		ST_M25P128,		16384,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M29F002B",		ST_ID,		ST_M29F002B,		256,	64 * 1024,	TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"ST",		"M29F002T/NT",		ST_ID,		ST_M29F002T,		256,	64 * 1024,	TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
-	{"ST",		"M29F040B",		ST_ID,		ST_M29F040B,		512,	64 * 1024,	TEST_UNTESTED,	probe_29f040b,		erase_29f040b,			write_29f040b},
+	{"ST",		"M29F040B",		ST_ID,		ST_M29F040B,		512,	64 * 1024,	TEST_OK_PREW,	probe_29f040b,		erase_29f040b,			write_29f040b},
 	{"ST",		"M29F400BT",		ST_ID,		ST_M29F400BT,		512,	64 * 1024,	TEST_UNTESTED,	probe_m29f400bt,	erase_m29f400bt,		write_coreboot_m29f400bt},
 	{"ST",		"M29W010B",		ST_ID,		ST_M29W010B,		128,	16 * 1024,	TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"ST",		"M29W040B",		ST_ID,		ST_M29W040B,		512,	64 * 1024,	TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},

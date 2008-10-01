@@ -41,14 +41,10 @@
 #define L_PIRQD 4		/* Means Slot INTx# Connects To Chipset INTD# */
 
 /*
- * AMD DB800 interrupt wiring.
+ * AMP TinyGX interrupt wiring.
  *
- * Devices are:
- *
- * FIXME
- *
+ * Devices are: FIXME
  */
-
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,
 	PIRQ_VERSION,
@@ -62,7 +58,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},	/* u8 rfu[11] */
 	0x00,			/* Checksum */
 	{
-		/* If you change the number of entries, change IRQ_SLOT_COUNT above! */
+		/* If you change the number of entries, change SLOT_COUNT above! */
 
 		/* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
 

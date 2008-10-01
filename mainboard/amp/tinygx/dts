@@ -37,7 +37,7 @@
 		pci@f,0 {
 			/config/("southbridge/amd/cs5536/dts");
 			/* Interrupt enables for LPC bus.
-			 *  Each bit is an IRQ 0-15. */
+			 * Each bit is an IRQ 0-15. */
 			lpc_serirq_enable = "0x000010da";
 			/* LPC IRQ polarity. Each bit is an IRQ 0-15. */
 			lpc_serirq_polarity = "0x0000EF25";

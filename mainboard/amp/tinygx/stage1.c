@@ -36,18 +36,18 @@
 void hardware_stage1(void)
 {
  	void it8716f_enable_serial(u8 dev, u8 serial, u16 iobase);
+
 	post_code(POST_START_OF_MAIN);
 	geodelx_msr_init();
-
 	cs5536_stage1();
 
-	/* NOTE: must do this AFTER the early_setup!
-	 * it is counting on some early MSR setup
-	 * for cs5536.
+	/*
+	 * Note: Must do this AFTER the early_setup! It is counting on some
+	 * early MSR setup for CS5536.
 	 */
 	cs5536_disable_internal_uart();
- 	it8716f_enable_serial(0x2e, SERIAL_DEV, SERIAL_IOBASE);
 
+ 	it8716f_enable_serial(0x2e, SERIAL_DEV, SERIAL_IOBASE);
 }
 
 void mainboard_pre_payload(void)

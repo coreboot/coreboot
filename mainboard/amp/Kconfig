@@ -33,7 +33,7 @@ config BOARD_AMP_TINYGX
 	select SUPERIO_ITE_IT8716F
 	select PIRQ_TABLE
 	help
-	  SMP TinyGX
+	  AMP TinyGX
 
 endchoice
 

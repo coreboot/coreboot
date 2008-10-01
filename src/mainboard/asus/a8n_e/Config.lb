@@ -165,7 +165,7 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           device pci 0.0 on end			# HT
           device pci 1.0 on			# LPC
             chip superio/ite/it8712f		# Super I/O
-              device pnp 2e.0 off		# Floppy
+              device pnp 2e.0 on		# Floppy
                 io 0x60 = 0x3f0
                 irq 0x70 = 6
                 drq 0x74 = 2
@@ -174,13 +174,14 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
                 io 0x60 = 0x3f8
                 irq 0x70 = 4
               end
-              device pnp 2e.2 off		# Com2
+              device pnp 2e.2 off		# Com2 (N/A on this board)
                 io 0x60 = 0x2f8
                 irq 0x70 = 3
               end
               device pnp 2e.3 on		# Parallel port
                 io 0x60 = 0x378
                 irq 0x70 = 7
+                drq 0x74 = 3
               end
               device pnp 2e.4 on		# Environment controller
                 io 0x60 = 0x290
@@ -198,6 +199,7 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
                 irq 0x71 = 2
               end
               device pnp 2e.7 on		# GPIO config
+                io 0x60 = 0x0800
                 # Set GPIO 1 & 2
                 io 0x25 = 0x0000
                 # Set GPIO 3 & 4
@@ -212,9 +214,17 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
                 io 0xc8 = 0x0000
                 io 0xca = 0x0500
               end
-              device pnp 2e.8 off end		# Midi port
-              device pnp 2e.9 off end		# Game port
-              device pnp 2e.a off end		# IR
+              device pnp 2e.8 on		# Midi port
+                io 0x60 = 0x300
+                irq 0x70 = 10
+              end
+              device pnp 2e.9 on		# Game port
+                io 0x60 = 0x201
+              end
+              device pnp 2e.a off		# IR (N/A on this board)
+                io 0x60 = 0x310
+                irq 0x70 = 11
+              end
             end
           end
           device pci 1.1 on			# SM 0
@@ -245,8 +255,8 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           end
           device pci 2.0 on end			# USB 1.1
           device pci 2.1 on end			# USB 2
-          device pci 4.0 off end		# Onboard audio (ACI)
-          device pci 4.1 off end		# Onboard modem (MCI)
+          device pci 4.0 on end			# Onboard audio (ACI)
+          device pci 4.1 off end		# Onboard modem (MCI), N/A
           device pci 6.0 on end			# IDE
           device pci 7.0 on end			# SATA 1
           device pci 8.0 on end			# SATA 0

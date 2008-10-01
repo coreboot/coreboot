@@ -37,4 +37,12 @@
 #define IT8716F_GAME 0x09 /* GAME port */
 #define IT8716F_IR   0x0a /* Consumer IR */
 
+/* Global configuration registers. */
+#define IT8716F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
+#define IT8716F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
+#define IT8716F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
+#define IT8716F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
+#define IT8716F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
+
+
 #endif /* SUPERIO_ITE_IT8716F_IT8716F_H */

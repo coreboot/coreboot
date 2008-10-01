@@ -27,6 +27,7 @@
 void rawpnp_enter_ext_func_mode(u16 port);
 void rawpnp_exit_ext_func_mode(u16 port);
 void rawpnp_write_config(u16 port, u8 reg, u8 value);
+u8 rawpnp_read_config(u16 port, u8 reg);
 void rawpnp_set_logical_device(u16 port, u8 ldn);
 void rawpnp_set_enable(u16 port, int enable);
 void rawpnp_set_iobase(u16 port, u8 index, u16 iobase);

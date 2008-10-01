@@ -52,7 +52,8 @@ void rawpnp_exit_ext_func_mode(u16 port)
  *
  * This is done by writing the register number to the port, and the value
  * into port + 1. This code assumes that the data port is always the
- * config-port plus 1, but luckily this is true for pretty much all devices.
+ * config-port plus 1, but luckily this is true for pretty much all devices, since
+ * it is part of the standard.
  *
  * @param port The device I/O port.
  * @param reg The register number.
@@ -62,6 +63,24 @@ void rawpnp_write_config(u16 port, u8 reg, u8 value)
 {
 	outb(reg, port);
 	outb(value, port + 1);
+}
+
+/**
+ * Read an 8-bit pnp config value
+ *
+ * This is done by writing the register number to the port, and the value
+ * into port + 1. This code assumes that the data port is always the
+ * config-port plus 1, but luckily this is true for pretty much all devices, since
+ * it is part of the standard. 
+ *
+ * @param port The device I/O port.
+ * @param reg The register number.
+ * @returns value of the register
+ */
+u8 rawpnp_read_config(u16 port, u8 reg)
+{
+	outb(reg, port);
+	return inb(port + 1);
 }
 
 /**

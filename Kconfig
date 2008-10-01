@@ -64,7 +64,7 @@ config WHOLE_PROGRAM_COMPILE
 	bool "Enable whole-program optimizations (DANGEROUS)"
 	depends EXPERT && EXPERIMENTAL
 	help
-	  Enable gcc -fwhole-program -combine for select code.
+	  Enable 'gcc -fwhole-program -combine' for select code.
 	  Needs lots of annotation in stage1 and stage2.
 	  Works for initram only.
 	  This increases compile time (no parallel compilation possible
@@ -111,8 +111,6 @@ config SUPERIO_FINTEK_F71805F
 config SUPERIO_ITE_IT8716F
 	boolean
 
-# Source all northbridge/southbridge/superio Kconfig files:
-
 menu "Payload"
 
 config PAYLOAD_ELF_LOADER
@@ -122,8 +120,8 @@ config PAYLOAD_ELF_LOADER
 	  This option allows an unparsed ELF paylaod to be added and loaded.
 
 choice
-        prompt "Payload type"
-        default PAYLOAD_NONE
+	prompt "Payload type"
+	default PAYLOAD_NONE
 
 config PAYLOAD_ELF
 	bool "An ELF executable payload file"

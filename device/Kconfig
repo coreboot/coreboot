@@ -36,7 +36,6 @@ choice
 	  execute PCI option ROMs natively (32bit x86 system required),
 	  in an emulator (x86emu), or ignore option ROM execution.
 
-
 config PCI_OPTION_ROM_RUN_X86EMU
 	bool "x86emu"
 	select PCI_OPTION_ROM_RUN
@@ -46,7 +45,6 @@ config PCI_OPTION_ROM_RUN_X86EMU
 	
 	  x86emu is slow, big and safe. All 16bit x86 code is executed
 	  in an encapsulated environment where it can not break out.
-
 
 config PCI_OPTION_ROM_RUN_VM86
 	bool "vm86"
@@ -64,7 +62,6 @@ config PCI_OPTION_ROM_RUN_NONE
 	bool "Disabled"
 	help
 	  Do not execute PCI option ROMs at all.
-
 	  If you choose this option, VGA plugin cards will not be initialized.
 
 endchoice
@@ -74,7 +71,7 @@ config MULTIPLE_VGA_INIT
 	bool "Initialize all VGA cards"
 	depends PCI_OPTION_ROM_RUN
 	help
-	  If you enable this option, all VGA cards will be initialized
+	  If you enable this option, all VGA cards will be initialized.
 	  If you disable this option, only the first VGA card will be
 	  initialized.
 
@@ -82,7 +79,7 @@ config INITIALIZE_ONBOARD_VGA_FIRST
 	bool "Initialize onboard VGA first"
 	depends PCI_OPTION_ROM_RUN
 	help
-	  Initialize onboard VGA chips before any plugin VGA cards 
+	  Initialize onboard VGA chips before any plugin VGA cards
 	  are initialized.
 
 endmenu
@@ -99,17 +96,17 @@ config PCI_64BIT_PREF_MEM
 	bool "64 bit prefetchable memory addresses"
 	depends CPU_AMD_K8
 	help
-		Enable support for 64-bit prefetchable memory addresses in PCI. 
+	  Enable support for 64-bit prefetchable memory addresses in PCI.
 
 config HW_MEM_HOLE_SIZEK
 	hex "HW memory hole size in KB"
 	depends CPU_AMD_K8
 	default 0x1000
 	help
-		Some chipsets support setting up a "hole" at the top of memory. It is essentially 
-		a hole torn in the physical address space so that you can fit non-memory resources
-		(e.g. flash) at the top of the 4G address space. Given that this only happens on machines
-		with lots of memory, the default 4 MB is a very reasonable value. 
-		
+	  Some chipsets support setting up a "hole" at the top of memory.
+	  It is essentially a hole torn in the physical address space so that
+	  you can fit non-memory resources (e.g. flash) at the top of the 4G
+	  address space. Given that this only happens on machines with lots
+	  of memory, the default 4 MB is a very reasonable value.
 
 endmenu

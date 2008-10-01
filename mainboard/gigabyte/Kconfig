@@ -24,7 +24,7 @@ choice
 	depends on VENDOR_GIGABYTE
 
 config BOARD_GIGABYTE_M57SLI
-	bool "M57SLI"
+	bool "GA-M57SLI-S4"
 	select ARCH_X86
 	select OPTION_TABLE
 	select CPU_AMD_K8
@@ -33,7 +33,7 @@ config BOARD_GIGABYTE_M57SLI
 	select SUPERIO_ITE_IT8716F
 	select IOAPIC
 	help
-	  Gigabyte M57SLI
+	  GIGABYTE GA-M57SLI-S4.
 
 endchoice
 

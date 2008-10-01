@@ -60,62 +60,62 @@ config CONFIG_HPET
 	boolean
 	depends CPU_AMD_K8
 	help
-	  Whether to configure a High Precision Event Timer. Note that HPETs are 
-		known to be bug-prone. 
+	  Whether to configure a High Precision Event Timer (HPET). Note that
+	  HPETs are known to be bug-prone.
 
 config K8_REV_F_SUPPORT
 	hex
 	default 0 if CPU_AMD_K8
 	help
-		Whether to include rev F support
+	  Whether to include rev F support.
 
 config K8_SCAN_PCI_BUS
 	hex
 	default 0 if CPU_AMD_K8
 	help
-		Whether to scan the PCI bus in stage1
+	  Whether to scan the PCI bus in stage1.
 
 config K8_ALLOCATE_IO_RANGE
 	hex
 	default 0 if CPU_AMD_K8
 	help
-		Whether to allocate IO space in stage1
-	
+	  Whether to allocate I/O space in stage1.
+
 config K8_ALLOCATE_MMIO_RANGE
 	hex
 	default 0 if CPU_AMD_K8
 	help
-		Whether to allocate MMIO space in stage1. 
-		Comment from code:  
-		Do we need allocate MMIO? Currently we direct 
-		last 64M to southbridge link (sblink) only,  
-		We can not lose access to last 4M range to ROM. 
-	
+	  Whether to allocate MMIO space in stage1.
+
+	  Comment from code: Do we need allocate MMIO? Currently we direct
+	  last 64M to southbridge link (sblink) only. We can not lose access
+	  to last 4M range to ROM.
+
 config LOGICAL_CPUS
 	hex
 	depends CPU_AMD_K8
 	default 1
 	help
-		How many logical CPUs there are. Fix me.
+	  How many logical CPUs there are. FIXME.
 
 config MAX_PHYSICAL_CPUS
 	hex
 	depends CPU_AMD_K8
 	default 1
 	help
-		Max number of physical CPUs (sockets)
+	  Maximum number of physical CPUs (sockets).
 
 config MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED
 	hex
 	default 0 if CPU_AMD_K8
 	help
-		Config with 4 CPUs even if more are installed
+	  Config with 4 CPUs even if more are installed.
 
 config CROSS_BAR_47_56
 	hex
 	default 0 if CPU_AMD_K8
 	help
-		Configure for the type of crossbar on the mainboard. 
+	  Configure for the type of crossbar on the mainboard.
 
 config OPTION_TABLE
 	boolean
@@ -128,14 +128,14 @@ config PIRQ_TABLE
 	boolean
 	help
 	  This option is used to determine whether the mainboard has
-	  a PIRQ table, which is the old way to set up interrupt routing. 
+	  a PIRQ table, which is the old way to set up interrupt routing.
 	  It is usually set in mainboard/*/Kconfig.
 
 config ACPI_TABLE
 	boolean
 	help
 	  This option is used to determine whether the mainboard has
-	  an ACPI table. 
+	  an ACPI table.
 	  It is usually set in mainboard/*/Kconfig.
 
 config SMP
@@ -143,9 +143,8 @@ config SMP
 	depends CPU_I586 || CPU_AMD_K8
 	default 0
 	help
-	  This option is used to enable certain functions to make 
-	  coreboot work correctly on symmetric multi processor
-	  systems.
+	  This option is used to enable certain functions to make coreboot
+	  work correctly on symmetric multi processor systems.
 	  It is usually set in mainboard/*/Kconfig.
 
 config IOAPIC
@@ -153,7 +152,7 @@ config IOAPIC
 	depends ARCH_X86 && CPU_AMD_K8
 	default 0
 	help
-	  If you want to configure an IOAPIC, set this. 
+	  If you want to configure an IOAPIC, set this.
 
 config CARBASE
 	hex
@@ -177,36 +176,37 @@ config CBMEMK
 	default 0x1000 if CPU_AMD_GEODELX
 	default 0x2000 if CPU_AMD_K8
 	help
-	  This option sets the top of the memory area, in KiB, 
+	  This option sets the top of the memory area, in KiB,
 	  used for coreboot.
 
 config K8_HT_FREQ_1G_SUPPORT
 	hex
 	default 1 if CPU_AMD_K8
 	help
-		1 Ghz. support. Opteron E0 or later can support 
-		1G HT, but still depends on the mainboard
+	  1 GHz support. Opteron E0 or later can support 1G HT,
+	  but still depends on the mainboard.
 
 config HT_FREQ_800MHZ
 	hex
 	default 1 if CPU_AMD_K8
 	help
-		Can we run HT at 800 Mhz
+	  Can we run HT at 800 MHz.
 
 config USBDEBUG_DIRECT
 	boolean
 	depends SOUTHBRIDGE_NVIDIA_MCP55
 	default 0
 	help
-		Determines if we enable USB Direct debugging. If you don't have a dongle, 
-		this is probably of no value to you.
+	  Determines if we enable USB Direct debugging. If you don't have
+	  a dongle, this is probably of no value to you.
 
 config APIC_ID_OFFSET
 	hex "APIC ID offset"
 	default 0x10
 	depends IOAPIC
 	help
-		This is entirely mainboard dependent. 0x10 is a *typical* setting but not always a good setting. 
+	  This is entirely mainboard dependent. 0x10 is a *typical* setting
+	  but not always a good setting.
 
 menu "Debugging"
 
@@ -214,6 +214,6 @@ config CARTEST
 	bool "Test CAR area"
 	default n
 	help
-		Test the CAR area after it has been set up.
+	  Test the CAR area after it has been set up.
 
 endmenu

@@ -116,7 +116,7 @@ void console_tx_byte(unsigned char byte, void *arg)
 #ifdef CONFIG_CONSOLE_PREFIX
 		uart8250_tx_byte(TTYSx_BASE, '\n');
 		uart8250_tx_byte(TTYSx_BASE, '(');
-		uart8250_tx_byte(TTYSx_BASE, 'L');
+		uart8250_tx_byte(TTYSx_BASE, 'C');
 		uart8250_tx_byte(TTYSx_BASE, 'B');
 		uart8250_tx_byte(TTYSx_BASE, ')');
 		uart8250_tx_byte(TTYSx_BASE, ' ');

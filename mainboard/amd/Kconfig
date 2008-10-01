@@ -56,7 +56,7 @@ config BOARD_AMD_SERENGETI
 	select SUPERIO_WINBOND_W83627HF
 	select IOAPIC
 	help
-	  AMD Serengeti
+	  AMD Serengeti development board.
 
 endchoice
 

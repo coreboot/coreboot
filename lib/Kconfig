@@ -200,15 +200,21 @@ config CONSOLE_USB
 	  Debug Port capability. Controllers which are known to work:
 
 	    * 10b9:5239 ALi Corporation USB 2.0 (USB PCI card)
-	    * 10de:0088 NVIDIA MCP2A
-	    * 10de:005b NVIDIA CK804
-	    * 10de:036d NVIDIA MCP55
+	    * 8086:24cd Intel ICH4/ICH4-M
 	    * 8086:24dd Intel ICH5
 	    * 8086:265c Intel ICH6
 	    * 8086:268c Intel 631xESB/632xESB/3100
 	    * 8086:27cc Intel ICH7
 	    * 8086:2836 Intel ICH8
 	    * 8086:283a Intel ICH8
+	    * 8086:293a Intel ICH9
+	    * 10de:0088 NVIDIA MCP2A
+	    * 10de:005b NVIDIA CK804
+	    * 10de:026e NVIDIA MCP51
+	    * 10de:036d NVIDIA MCP55
+	    * 10de:03f2 NVIDIA MCP61
+	    * 1002:4386 ATI/AMD SB600
+	    * 1106:3104 VIA VX800
 
 	  See http://www.coreboot.org/EHCI_Debug_Port for an up-to-date list.
 
@@ -216,12 +222,12 @@ comment "Cosmetic console options"
 	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
 
 config CONSOLE_PREFIX
-	bool "Prefix all console output with '(LB)'"
+	bool "Prefix all console output with '(CB)'"
 	depends EXPERT && (CONSOLE_SERIAL || CONSOLE_USB)
 	default n
 	help
 	  When you enable this option, coreboot will prefix each line of
-	  console output with '(LB)'.
+	  console output with '(CB)'.
 
 config CONSOLE_BUFFER
 	boolean "Console memory buffer support"

@@ -24,7 +24,7 @@ choice
 	depends on VENDOR_PCENGINES
 
 config BOARD_PCENGINES_ALIX1C
-	bool "ALIX1.C"
+	bool "ALIX.1C"
 	select ARCH_X86
 	select CPU_AMD_GEODELX
 	select OPTION_TABLE
@@ -33,7 +33,7 @@ config BOARD_PCENGINES_ALIX1C
 	select SUPERIO_WINBOND_W83627HF
 	select PIRQ_TABLE
 	help
-	  PC Engines ALIX1.C.
+	  PC Engines ALIX.1C.
 
 config BOARD_PCENGINES_ALIX2C3
 	bool "ALIX.2C3"

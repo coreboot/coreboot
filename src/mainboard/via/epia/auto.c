@@ -6,6 +6,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
+#include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
@@ -107,7 +108,7 @@ static void main(unsigned long bist)
 
 	/*
 	  this is way more generic than we need.
-	  sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	  sdram_initialize(ARRAY_SIZE(cpu), cpu);
 	*/
 	sdram_set_registers((const struct mem_controller *) 0);
 	sdram_set_spd_registers((const struct mem_controller *) 0);
@@ -129,7 +130,7 @@ static void main(unsigned long bist)
 #endif
 	};
 	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(check_addrs); i++) {
 		ram_check(check_addrs[i].lo, check_addrs[i].hi);
 	}
 #endif

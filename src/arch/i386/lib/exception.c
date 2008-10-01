@@ -377,7 +377,7 @@ void x86_exception(struct eregs *info)
 	gdb_stub_registers[CS] = info->cs;
 	gdb_stub_registers[PS] = info->eflags;
 	signo = GDB_UNKNOWN;
-	if (info->vector < sizeof(exception_to_signal)/sizeof(exception_to_signal[0])) {
+	if (info->vector < ARRAY_SIZE(exception_to_signal)) {
 		signo = exception_to_signal[info->vector];
 	}
 	

@@ -6,6 +6,7 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
+#include <stdlib.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -148,7 +149,7 @@ static void main(unsigned long bist)
 #endif
 
 	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	sdram_initialize(ARRAY_SIZE(cpu), cpu);
 
 #if 1
 	dump_pci_devices();
@@ -181,7 +182,7 @@ static void main(unsigned long bist)
 #endif
 	};
 	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(check_addrs); i++) {
 		ram_check(check_addrs[i].lo, check_addrs[i].hi);
 	}
 #endif

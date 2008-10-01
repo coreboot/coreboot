@@ -102,7 +102,7 @@ static void ck804_early_set_port(void)
 #endif
 	};
 
-	setup_resource_map(ctrl_devport_conf, sizeof(ctrl_devport_conf)/sizeof(ctrl_devport_conf[0]));
+	setup_resource_map(ctrl_devport_conf, ARRAY_SIZE(ctrl_devport_conf));
 
 }
 
@@ -121,7 +121,7 @@ static void ck804_early_clear_port(void)
 #endif
 	};
 
-	setup_resource_map(ctrl_devport_conf_clear, sizeof(ctrl_devport_conf_clear)/sizeof(ctrl_devport_conf_clear[0]));
+	setup_resource_map(ctrl_devport_conf_clear, ARRAY_SIZE(ctrl_devport_conf_clear));
 
 }
 
@@ -324,7 +324,7 @@ static void ck804_early_setup(void)
 
 
 
-	setup_resource_map_x(ctrl_conf, sizeof(ctrl_conf)/sizeof(ctrl_conf[0]));
+	setup_resource_map_x(ctrl_conf, ARRAY_SIZE(ctrl_conf));
 
 	setup_ss_table(ANACTRL_IO_BASE+0x40, ANACTRL_IO_BASE+0x44, ANACTRL_IO_BASE+0x48, pcie_ss_tbl, 64);
 	setup_ss_table(ANACTRL_IO_BASE+0xb0, ANACTRL_IO_BASE+0xb4, ANACTRL_IO_BASE+0xb8, sata_ss_tbl, 64);

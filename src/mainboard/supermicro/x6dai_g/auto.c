@@ -5,6 +5,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
+#include <stdlib.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -113,7 +114,7 @@ static void main(unsigned long bist)
 	}
 #endif
 	disable_watchdogs();
-	sdram_initialize(sizeof(mch)/sizeof(mch[0]), mch);
+	sdram_initialize(ARRAY_SIZE(mch), mch);
 #if 1
 	dump_pci_device(PCI_DEV(0, 0x00, 0));
 //	dump_bar14(PCI_DEV(0, 0x00, 0));

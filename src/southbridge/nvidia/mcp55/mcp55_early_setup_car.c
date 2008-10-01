@@ -106,7 +106,7 @@ static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *d
 	int j;
 	for(j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_offset(ctrl_devport_conf,
-			sizeof(ctrl_devport_conf)/sizeof(ctrl_devport_conf[0]),
+			ARRAY_SIZE(ctrl_devport_conf),
 			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
 	}
 }
@@ -123,7 +123,7 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned 
 	int j;
 	for(j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_offset(ctrl_devport_conf_clear,
-			sizeof(ctrl_devport_conf_clear)/sizeof(ctrl_devport_conf_clear[0]),
+			ARRAY_SIZE(ctrl_devport_conf_clear),
 			PCI_DEV(busn[j], devn[j], 0) , io_base[j]);
 	}
 
@@ -327,23 +327,23 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 	for(j=0; j<mcp55_num; j++) {
 		mcp55_early_pcie_setup(busn[j], devn[j], io_base[j] + ANACTRL_IO_BASE, pci_e_x[j]);
 
-		setup_resource_map_x_offset(ctrl_conf_1, sizeof(ctrl_conf_1)/sizeof(ctrl_conf_1[0]),
+		setup_resource_map_x_offset(ctrl_conf_1, ARRAY_SIZE(ctrl_conf_1),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 		for(i=0; i<3; i++) { // three SATA
-			setup_resource_map_x_offset(ctrl_conf_1_1, sizeof(ctrl_conf_1_1)/sizeof(ctrl_conf_1_1[0]),
+			setup_resource_map_x_offset(ctrl_conf_1_1, ARRAY_SIZE(ctrl_conf_1_1),
 				PCI_DEV(busn[j], devn[j], i), io_base[j]);
 		}
 		if(busn[j] == 0) {
-			setup_resource_map_x_offset(ctrl_conf_mcp55_only, sizeof(ctrl_conf_mcp55_only)/sizeof(ctrl_conf_mcp55_only[0]),
+			setup_resource_map_x_offset(ctrl_conf_mcp55_only, ARRAY_SIZE(ctrl_conf_mcp55_only),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 		}
 
 		if( (busn[j] == 0) && (mcp55_num>1) ) {
-			setup_resource_map_x_offset(ctrl_conf_master_only, sizeof(ctrl_conf_master_only)/sizeof(ctrl_conf_master_only[0]),
+			setup_resource_map_x_offset(ctrl_conf_master_only, ARRAY_SIZE(ctrl_conf_master_only),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 		}
 
-		setup_resource_map_x_offset(ctrl_conf_2, sizeof(ctrl_conf_2)/sizeof(ctrl_conf_2[0]),
+		setup_resource_map_x_offset(ctrl_conf_2, ARRAY_SIZE(ctrl_conf_2),
 				PCI_DEV(busn[j], devn[j], 0), io_base[j]);
 
 	}

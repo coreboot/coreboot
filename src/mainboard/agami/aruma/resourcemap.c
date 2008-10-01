@@ -265,7 +265,7 @@ static void setup_aruma_resource_map(void)
 
 	};
 	int max;
-	max = sizeof(register_values)/sizeof(register_values[0]);
+	max = ARRAY_SIZE(register_values);
 	setup_resource_map(register_values, max);
 }
 

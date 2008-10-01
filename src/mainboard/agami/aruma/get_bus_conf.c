@@ -3,6 +3,7 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #if CONFIG_LOGICAL_CPUS==1
 #include <cpu/amd/dualcore.h>
 #endif
@@ -62,7 +63,7 @@ void get_bus_conf(void)
 
 	get_bus_conf_done = 1;
 
-	hc_possible_num = sizeof(pci1234) / sizeof(pci1234[0]);
+	hc_possible_num = ARRAY_SIZE(pci1234);
 
 	get_sblk_pci1234();
 

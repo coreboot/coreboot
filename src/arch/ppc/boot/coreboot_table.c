@@ -116,7 +116,7 @@ void lb_strings(struct lb_header *header)
 		{ LB_TAG_ASSEMBLER,      coreboot_assembler,      },
 	};
 	unsigned int i;
-	for(i = 0; i < sizeof(strings)/sizeof(strings[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(strings); i++) {
 		struct lb_string *rec;
 		size_t len;
 		rec = (struct lb_string *)lb_new_record(header);

@@ -22,6 +22,7 @@
 #include <device/pci_ids.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #if CONFIG_LOGICAL_CPUS==1
 #include <cpu/amd/dualcore.h>
 #endif
@@ -72,7 +73,7 @@ void get_bus_conf(void)
 		return;		/* do it only once */
 	get_bus_conf_done = 1;
 
-	sysconf.hc_possible_num = sizeof(pci1234x) / sizeof(pci1234x[0]);
+	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
 	for (i = 0; i < sysconf.hc_possible_num; i++) {
 		sysconf.pci1234[i] = pci1234x[i];
 		sysconf.hcdn[i] = hcdnx[i];

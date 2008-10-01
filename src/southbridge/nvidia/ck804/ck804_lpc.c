@@ -15,6 +15,7 @@
 #include <bitops.h>
 #include <arch/io.h>
 #include <cpu/x86/lapic.h>
+#include <stdlib.h>
 #include "ck804.h"
 
 #define CK804_CHIP_REV 2
@@ -82,7 +83,7 @@ static void setup_ioapic(unsigned long ioapic_base)
 
 	l = (unsigned long *) ioapic_base;
 
-	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
+	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
 		l[4] = a->value_low;

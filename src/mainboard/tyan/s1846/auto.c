@@ -26,6 +26,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
+#include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
@@ -67,6 +68,6 @@ static void main(unsigned long bist)
 	report_bist_failure(bist);
 	enable_smbus();
 	/* dump_spd_registers(&memctrl[0]); */
-	sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl);
+	sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 	/* ram_check(0, 640 * 1024); */
 }

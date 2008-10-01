@@ -123,7 +123,7 @@ static const char *cpu_vendor_name(int vendor)
 {
 	const char *name;
 	name = "<invalid cpu vendor>";
-	if ((vendor < (sizeof(x86_vendor_name)/sizeof(x86_vendor_name[0]))) &&
+	if ((vendor < (ARRAY_SIZE(x86_vendor_name))) &&
 		(x86_vendor_name[vendor] != 0)) 
 	{
 		name = x86_vendor_name[vendor];
@@ -185,7 +185,7 @@ static void identify_cpu(struct device *cpu)
 		}
 	}
 	cpu->vendor = X86_VENDOR_UNKNOWN;
-	for(i = 0; i < sizeof(x86_vendors)/sizeof(x86_vendors[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(x86_vendors); i++) {
 		if (memcmp(vendor_name, x86_vendors[i].name, 12) == 0) {
 			cpu->vendor = x86_vendors[i].vendor;
 			break;

@@ -26,6 +26,7 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <uart8250.h>
+#include <stdlib.h>
 
 #include "vt1211.h"
 #include "chip.h"
@@ -212,7 +213,7 @@ static void enable_dev(struct device *dev)
 	printk_debug("vt1211 enabling PNP devices.\n");
 	pnp_enable_devices(dev,
 			&ops,
-			sizeof(pnp_dev_info) / sizeof(pnp_dev_info[0]),
+			ARRAY_SIZE(pnp_dev_info),
 			pnp_dev_info);
 }
 

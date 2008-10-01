@@ -10,6 +10,7 @@
 #endif
 #include <arch/hlt.h>
 //#include "option_table.h"
+#include <stdlib.h>
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
@@ -100,7 +101,7 @@ static void main(unsigned long bist)
 
 		memreset_setup();
 
-		sdram_initialize(sizeof(memctrl)/sizeof(memctrl[0]), memctrl);
+		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 
 	} 
 #if 0

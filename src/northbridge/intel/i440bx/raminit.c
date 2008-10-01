@@ -21,6 +21,7 @@
 #include <spd.h>
 #include <sdram_mode.h>
 #include <delay.h>
+#include <stdlib.h>
 #include "i440bx.h"
 
 /*-----------------------------------------------------------------------------
@@ -430,7 +431,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	PRINT_DEBUG("Northbridge prior to SDRAM init:\r\n");
 	DUMPNORTH();
 
-	max = sizeof(register_values) / sizeof(register_values[0]);
+	max = ARRAY_SIZE(register_values);
 
 	/* Set registers as specified in the register_values[] array. */
 	for (i = 0; i < max; i += 3) {

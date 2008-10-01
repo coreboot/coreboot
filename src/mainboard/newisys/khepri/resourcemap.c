@@ -265,7 +265,7 @@ static void setup_khepri_resource_map(void)
 	PCI_ADDR(0, 0x18, 1, 0xEC), 0x0000FC88, 0x00000000,
 	};
 	int max;
-	max = sizeof(register_values)/sizeof(register_values[0]);
+	max = ARRAY_SIZE(register_values);
 	setup_resource_map(register_values, max);
 }
 

@@ -522,7 +522,7 @@ static void setup_remote_node(u8 node)
 	printk_debug("setup_remote_node: %02x", node);
 
 	/* copy the default resource map from node 0 */
-	for(i = 0; i < sizeof(pci_reg)/sizeof(pci_reg[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(pci_reg); i++) {
 		u32 value;
 		u16 reg;
 		reg = pci_reg[i];
@@ -852,7 +852,7 @@ void cpuSetAMDMSR(void)
 	revision = mctGetLogicalCPUID(0xFF);
 	platform = get_platform_type();
 
-	for(i = 0; i < sizeof(fam10_msr_default)/sizeof(fam10_msr_default[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(fam10_msr_default); i++) {
 		if ((fam10_msr_default[i].revision & revision) &&
 		    (fam10_msr_default[i].platform & platform)) {
 			msr = rdmsr(fam10_msr_default[i].msr);
@@ -889,7 +889,7 @@ void cpuSetAMDPCI(u8 node)
 
 	AMD_SetupPSIVID_d(platform, node);	/* Set PSIVID offset which is not table driven */
 
-	for(i = 0; i < sizeof(fam10_pci_default)/sizeof(fam10_pci_default[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(fam10_pci_default); i++) {
 		if ((fam10_pci_default[i].revision & revision) &&
 		    (fam10_pci_default[i].platform & platform)) {
 			val = pci_read_config32(NODE_PCI(node,
@@ -903,7 +903,7 @@ void cpuSetAMDPCI(u8 node)
 		}
 	}
 
-	for(i = 0; i < sizeof(fam10_htphy_default)/sizeof(fam10_htphy_default[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(fam10_htphy_default); i++) {
 		if ((fam10_htphy_default[i].revision & revision) &&
 		    (fam10_htphy_default[i].platform & platform)) {
 			/* HT Phy settings either apply to both sublinks or have

@@ -26,6 +26,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
+#include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
@@ -51,7 +52,7 @@ static int spd_read_byte(unsigned device, unsigned address)
 	int i;
 
 	if (device == DIMM0){
-		for (i=0; i < (sizeof spd_table/sizeof spd_table[0]); i++){
+		for (i=0; i < (ARRAY_SIZE(spd_table)); i++){
 			if (spd_table[i].address == address){
 				return spd_table[i].data;
 			}

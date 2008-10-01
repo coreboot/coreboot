@@ -25,6 +25,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/tsc.h>
 
+#include <stdlib.h>
 #include "raminit.h"
 #include "amdk8_f.h"
 #include "spd_ddr2.h"
@@ -715,7 +716,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	print_spew("setting up CPU");
 	print_spew_hex8(ctrl->node_id);
 	print_spew(" northbridge registers\r\n");
-	max = sizeof(register_values)/sizeof(register_values[0]);
+	max = ARRAY_SIZE(register_values);
 	for (i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
@@ -1496,7 +1497,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 		}
 		device0 = ctrl->channel0[i];
 		device1 = ctrl->channel1[i];
-		for (j = 0; j < sizeof(addresses)/sizeof(addresses[0]); j++) {
+		for (j = 0; j < ARRAY_SIZE(addresses); j++) {
 			unsigned addr;
 			addr = addresses[j];
 			value0 = spd_read_byte(device0, addr);

@@ -30,6 +30,7 @@
 #include <uart8250.h>
 #include <pc80/keyboard.h>
 #include <pc80/mc146818rtc.h>
+#include <stdlib.h>
 #include "chip.h"
 #include "w83627ehg.h"
 
@@ -93,7 +94,7 @@ static void init_hwm(unsigned long base)
 		0x48, 0x7f, 0x2a, /* Set SMBus base to 0x54 >> 1. */
 	};
 
-	for(i = 0; i < sizeof(hwm_reg_values)/sizeof(hwm_reg_values[0]); i += 3) {
+	for(i = 0; i < ARRAY_SIZE(hwm_reg_values); i += 3) {
 		reg = hwm_reg_values[i];
 		value = pnp_read_index(base, reg);
 		value &= 0xff & (~(hwm_reg_values[i + 1]));
@@ -200,7 +201,7 @@ static struct pnp_info pnp_dev_info[] = {
 static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops,
-		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
+		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_winbond_w83627ehg_ops = {

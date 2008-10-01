@@ -1,4 +1,5 @@
 #include <arch/io.h>
+#include <stdlib.h>
 
 static void write_index(uint16_t port_base, uint8_t reg, uint8_t value)
 {
@@ -67,15 +68,13 @@ static const struct {
 	{ 0x13, 0x77}
 };
 
-#define ARRAYSIZE(x) sizeof x/sizeof *x
-
 /*
  * Called from superio.c
  */
 void init_ec(uint16_t base)
 {
 	int i;
-	for (i=0; i<ARRAYSIZE(sequence); i++) {
+	for (i=0; i<ARRAY_SIZE(sequence); i++) {
 		write_index(base, sequence[i].index, sequence[i].value);
 	}
 }

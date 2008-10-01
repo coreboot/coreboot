@@ -44,7 +44,7 @@ void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 {
 	int i;
 	
-	int entries_num = sizeof(rsdt->entry)/sizeof(rsdt->entry[0]);
+	int entries_num = ARRAY_SIZE(rsdt->entry);
 	
 	for (i=0; i<entries_num; i++) {
 		if(rsdt->entry[i]==0) {

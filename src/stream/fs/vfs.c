@@ -70,7 +70,7 @@ int mount_fs(void)
 {
     int i;
 
-    for (i = 0; i < sizeof(fsys_table)/sizeof(fsys_table[0]); i++) {
+    for (i = 0; i < ARRAY_SIZE(fsys_table); i++) {
 	if (fsys_table[i].mount_func()) {
 	    fsys = &fsys_table[i];
 	    printk_info("Mounted %s\n", fsys->name);

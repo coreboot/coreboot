@@ -67,7 +67,7 @@ void setup_ioapic(void)
 	l[0] = 0x03;
 	l[4] = 1;
 #endif /* i786 */
-	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
+	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
 		l[4] = a->value_low;

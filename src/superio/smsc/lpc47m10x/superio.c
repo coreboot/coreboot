@@ -31,6 +31,7 @@
 #include <bitops.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
+#include <stdlib.h>
 #include "chip.h"
 #include "lpc47m10x.h"
 
@@ -82,7 +83,7 @@ static struct pnp_info pnp_dev_info[] = {
 static void enable_dev(device_t dev)
 {
 	pnp_enable_devices(dev, &pnp_ops, 
-					   sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), 
+					   ARRAY_SIZE(pnp_dev_info), 
 					   pnp_dev_info);
 }
 

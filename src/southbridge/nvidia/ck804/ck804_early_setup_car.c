@@ -105,12 +105,12 @@ static void ck804_early_set_port(unsigned ck804_num, unsigned *busn, unsigned *i
 	for(j = 0; j < ck804_num; j++ ) {
 		if(busn[j]==0) { //sb chain
 			setup_resource_map_offset(ctrl_devport_conf,
-				 sizeof(ctrl_devport_conf)/sizeof(ctrl_devport_conf[0]),
+				ARRAY_SIZE(ctrl_devport_conf),
 				PCI_DEV(busn[j], 0, 0) , io_base[j]);
 			continue;
 		}
 		setup_resource_map_offset(ctrl_devport_conf_b,
-			sizeof(ctrl_devport_conf_b)/sizeof(ctrl_devport_conf_b[0]),
+			ARRAY_SIZE(ctrl_devport_conf_b),
 			PCI_DEV(busn[j], 0, 0) , io_base[j]);
 	}
 }
@@ -132,12 +132,12 @@ static void ck804_early_clear_port(unsigned ck804_num, unsigned *busn, unsigned 
 	for(j = 0; j < ck804_num; j++ ) {
 		if(busn[j]==0) { //sb chain
 			setup_resource_map_offset(ctrl_devport_conf_clear,
-				sizeof(ctrl_devport_conf_clear)/sizeof(ctrl_devport_conf_clear[0]),
+				ARRAY_SIZE(ctrl_devport_conf_clear),
 				PCI_DEV(busn[j], 0, 0) , io_base[j]);
 			continue;
 		}
 		setup_resource_map_offset(ctrl_devport_conf_clear_b,
-			sizeof(ctrl_devport_conf_clear_b)/sizeof(ctrl_devport_conf_clear_b[0]),
+			ARRAY_SIZE(ctrl_devport_conf_clear_b),
 			PCI_DEV(busn[j], 0, 0) , io_base[j]);
 	}
 
@@ -327,13 +327,13 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn, unsigned *io_b
 
 	for(j=0; j<ck804_num; j++) {
 		if(busn[j] == 0) {
-			setup_resource_map_x_offset(ctrl_conf_master, sizeof(ctrl_conf_master)/sizeof(ctrl_conf_master[0]),
+			setup_resource_map_x_offset(ctrl_conf_master, ARRAY_SIZE(ctrl_conf_master),
 				PCI_DEV(busn[0],0,0), io_base[0]);
 			continue;
 		}
 
 
-		setup_resource_map_x_offset(ctrl_conf_slave, sizeof(ctrl_conf_slave)/sizeof(ctrl_conf_slave[0]),
+		setup_resource_map_x_offset(ctrl_conf_slave, ARRAY_SIZE(ctrl_conf_slave),
 			PCI_DEV(busn[j],0,0), io_base[j]);
 	}
 

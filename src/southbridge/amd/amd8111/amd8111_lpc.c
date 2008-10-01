@@ -10,6 +10,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <cpu/x86/lapic.h>
+#include <stdlib.h>
 #include "amd8111.h"
 
 #define NMI_OFF 0
@@ -77,7 +78,7 @@ static void setup_ioapic(void)
 	ioapicregvalues[0].value_high = bsp_apicid<<(56-32);
 	printk_debug("amd8111: ioapic bsp_apicid = %02x\n", bsp_apicid); 
 	
-	for (i = 0; i < sizeof(ioapicregvalues) / sizeof(ioapicregvalues[0]);
+	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
 	     i++, a++) {
 		l[0] = (a->reg * 2) + 0x10;
 		l[4] = a->value_low;

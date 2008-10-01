@@ -384,7 +384,7 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl) {
 #endif
 	int i;
 	int max;
-        max = sizeof(register_values)/sizeof(register_values[0]);
+        max = ARRAY_SIZE(register_values);
         for(i = 0; i < max; i += 3) {
                 uint32_t reg;
 #if DEBUG_RAM_CONFIG >=2

@@ -285,7 +285,7 @@ static void setup_ms9185_resource_map(void)
        };
 
        int max;
-       max = sizeof(register_values)/sizeof(register_values[0]);
+       max = ARRAY_SIZE(register_values);
        setup_resource_map(register_values, max);
 }
 

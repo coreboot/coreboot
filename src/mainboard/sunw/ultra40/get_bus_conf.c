@@ -6,6 +6,7 @@
 #if CONFIG_LOGICAL_CPUS==1
 #include <cpu/amd/dualcore.h>
 #endif
+#include <stdlib.h>
 
 
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
@@ -75,7 +76,7 @@ void get_bus_conf(void)
 
 	get_bus_conf_done = 1;
 
-	hc_possible_num = sizeof(pci1234)/sizeof(pci1234[0]);	
+	hc_possible_num = ARRAY_SIZE(pci1234);	
 	
 	get_sblk_pci1234();
 	

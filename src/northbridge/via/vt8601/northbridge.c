@@ -115,7 +115,7 @@ static void pci_domain_set_resources(device_t dev)
 		unsigned char rambits;
 		int i, idx;
 
-		for(rambits = 0, i = 0; i < sizeof(ramregs)/sizeof(ramregs[0]); i++) {
+		for(rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
 			unsigned char reg;
 			reg = pci_read_config8(mc_dev, ramregs[i]);
 			/* these are ENDING addresses, not sizes. 

@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <spd.h>
 #include <sdram_mode.h>
+#include <stdlib.h>
 #include "e7501.h"
 
 // Uncomment this to enable run-time checking of DIMM parameters 
@@ -1631,7 +1632,7 @@ static void RAM_RESET_DDR_PTR(const struct mem_controller *ctrl)
 static void ram_set_d0f0_regs(const struct mem_controller *ctrl) 
 {
 	int i;
-	int num_values = sizeof(constant_register_values)/sizeof(constant_register_values[0]);
+	int num_values = ARRAY_SIZE(constant_register_values);
 
 	ASSERT((num_values % 3) == 0);		// Bad table?
 

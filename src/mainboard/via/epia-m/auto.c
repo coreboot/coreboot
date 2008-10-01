@@ -10,6 +10,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
+#include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
@@ -146,7 +147,7 @@ static void main(unsigned long bist)
 #endif
 	};
 	int i;
-	for(i = 0; i < sizeof(check_addrs)/sizeof(check_addrs[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(check_addrs); i++) {
 		ram_check(check_addrs[i].lo, check_addrs[i].hi);
 	}
 #endif

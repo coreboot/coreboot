@@ -177,7 +177,7 @@ struct FLASH_DEVICE FlashInitTable[] = {
 	{ FLASH_TYPE_NONE, 0, 0 },	/* CS3, or Flash Device 3 */
 };
 
-#define FlashInitTableLen (sizeof(FlashInitTable)/sizeof(FlashInitTable[0]))
+#define FlashInitTableLen (ARRAY_SIZE(FlashInitTable))
 
 uint32_t FlashPort[] = {
 	MDD_LBAR_FLSH0,

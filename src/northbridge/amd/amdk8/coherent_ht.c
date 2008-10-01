@@ -66,6 +66,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
+#include <stdlib.h>
 #include "arch/romcc_io.h"
 
 #include "amdk8.h"
@@ -510,7 +511,7 @@ static void setup_remote_node(u8 node)
 	print_spew("setup_remote_node: ");
 
 	/* copy the default resource map from node 0 */
-	for(i = 0; i < sizeof(pci_reg)/sizeof(pci_reg[0]); i++) {
+	for(i = 0; i < ARRAY_SIZE(pci_reg); i++) {
 		uint32_t value;
 		uint8_t reg;
 		reg = pci_reg[i];
@@ -802,7 +803,7 @@ static unsigned setup_smp4(void)
 	};
 #endif
 
-	setup_row_indirect_group(conn4_1, sizeof(conn4_1)/sizeof(conn4_1[0]));
+	setup_row_indirect_group(conn4_1, ARRAY_SIZE(conn4_1));
 
 	setup_temp_row(0,2);
 	verify_connection(7);
@@ -893,7 +894,7 @@ static unsigned setup_smp4(void)
                 3,0,1,1,
         };
 #endif
-        setup_remote_row_indirect_group(conn4_3, sizeof(conn4_3)/sizeof(conn4_3[0]));
+        setup_remote_row_indirect_group(conn4_3, ARRAY_SIZE(conn4_3));
 
 /* ready to enable RT for Node 3 */
 	rename_temp_node(3);
@@ -909,7 +910,7 @@ static unsigned setup_smp4(void)
                 2,1,0,1,
         };      
 #endif          
-        setup_row_indirect_group(conn4_2, sizeof(conn4_2)/sizeof(conn4_2[0]));
+        setup_row_indirect_group(conn4_2, ARRAY_SIZE(conn4_2));
 
 #if 0
 	/*We need to do sth to reverse work for setup_temp_row (0,1) (1,3) */
@@ -974,7 +975,7 @@ static unsigned setup_smp6(void)
 #endif
 	}; 
 
-	setup_row_indirect_group(conn6_1, sizeof(conn6_1)/sizeof(conn6_1[0]));
+	setup_row_indirect_group(conn6_1, ARRAY_SIZE(conn6_1));
 	
 	for(byte=0; byte<4; byte+=2) {
 		setup_temp_row(byte,byte+2);
@@ -998,7 +999,7 @@ static unsigned setup_smp6(void)
 #endif
 	};      
 	
-	setup_remote_row_indirect_group(conn6_2, sizeof(conn6_2)/sizeof(conn6_2[0]));
+	setup_remote_row_indirect_group(conn6_2, ARRAY_SIZE(conn6_2));
 	
 	rename_temp_node(4);
 	enable_routing(4);
@@ -1084,7 +1085,7 @@ static unsigned setup_smp6(void)
 #endif
 	};      
 	
-	setup_remote_row_indirect_group(conn6_3, sizeof(conn6_3)/sizeof(conn6_3[0]));
+	setup_remote_row_indirect_group(conn6_3, ARRAY_SIZE(conn6_3));
 
 /* ready to enable RT for 5 */
 	rename_temp_node(5);
@@ -1110,7 +1111,7 @@ static unsigned setup_smp6(void)
 #endif
 	};      
 	
-	setup_row_indirect_group(conn6_4, sizeof(conn6_4)/sizeof(conn6_4[0]));
+	setup_row_indirect_group(conn6_4, ARRAY_SIZE(conn6_4));
 
 #if 0
 	/* We need to do sth about reverse about setup_temp_row (0,1), (2,4), (1, 3), (3,5)
@@ -1202,7 +1203,7 @@ static unsigned setup_smp8(void)
 #endif
 	};
 
-	setup_row_indirect_group(conn8_1,sizeof(conn8_1)/sizeof(conn8_1[0]));
+	setup_row_indirect_group(conn8_1,ARRAY_SIZE(conn8_1));
 
 	for(byte=0; byte<6; byte+=2) {
 		setup_temp_row(byte,byte+2);
@@ -1225,7 +1226,7 @@ static unsigned setup_smp8(void)
 #endif
 	};
 
-	setup_remote_row_indirect_group(conn8_2, sizeof(conn8_2)/sizeof(conn8_2[0]));
+	setup_remote_row_indirect_group(conn8_2, ARRAY_SIZE(conn8_2));
 
 #if CROSS_BAR_47_56
 	//init 5, 6 here
@@ -1414,7 +1415,7 @@ static unsigned setup_smp8(void)
 #endif
 	};
 
-	setup_row_indirect_group(conn8_3, sizeof(conn8_3)/sizeof(conn8_3[0]));
+	setup_row_indirect_group(conn8_3, ARRAY_SIZE(conn8_3));
 
 #if CROSS_BAR_47_56
         /* for 47, 56, 57, 75, 46, 64 we need to substract another link to 
@@ -1455,7 +1456,7 @@ static unsigned setup_smp8(void)
 		7, 3, 6,
         };
 
-        opt_broadcast_rt_group(conn8_4, sizeof(conn8_4)/sizeof(conn8_4[0]));
+        opt_broadcast_rt_group(conn8_4, ARRAY_SIZE(conn8_4));
 
         static const u8 conn8_5[] = {
                 2, 7, 0, 
@@ -1463,7 +1464,7 @@ static unsigned setup_smp8(void)
                 3, 6, 1, 
         };      
                 
-        opt_broadcast_rt_plus_group(conn8_5, sizeof(conn8_5)/sizeof(conn8_5[0]));
+        opt_broadcast_rt_plus_group(conn8_5, ARRAY_SIZE(conn8_5));
 #endif
 
 
@@ -1770,7 +1771,7 @@ static int optimize_link_coherent_ht(void)
                         1,3,
                         2,3,
                 };
-                needs_reset |= optimize_connection_group(opt_conn4, sizeof(opt_conn4)/sizeof(opt_conn4[0]));
+                needs_reset |= optimize_connection_group(opt_conn4, ARRAY_SIZE(opt_conn4));
         }
 #endif
 
@@ -1783,7 +1784,7 @@ static int optimize_link_coherent_ht(void)
                         4, 5,
         #endif
                 };
-                needs_reset |= optimize_connection_group(opt_conn6, sizeof(opt_conn6)/sizeof(opt_conn6[0]));
+                needs_reset |= optimize_connection_group(opt_conn6, ARRAY_SIZE(opt_conn6));
         }
 #endif
 
@@ -1798,7 +1799,7 @@ static int optimize_link_coherent_ht(void)
                        5, 7,
                        6, 7,
                };
-                needs_reset |= optimize_connection_group(opt_conn8, sizeof(opt_conn8)/sizeof(opt_conn8[0]));
+                needs_reset |= optimize_connection_group(opt_conn8, ARRAY_SIZE(opt_conn8));
         }
 #endif
 

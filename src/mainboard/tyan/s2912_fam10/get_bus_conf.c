@@ -30,6 +30,7 @@
 
 #include <cpu/amd/amdfam10_sysconf.h>
 
+#include <stdlib.h>
 #include "mb_sysconf.h"
 
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
@@ -83,7 +84,7 @@ void get_bus_conf(void)
 	m = sysconf.mb;
 	memset(m, 0, sizeof(struct mb_sysconf_t));
 
-        sysconf.hc_possible_num = sizeof(pci1234x)/sizeof(pci1234x[0]);
+        sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
         for(i=0;i<sysconf.hc_possible_num; i++) {
                 sysconf.pci1234[i] = pci1234x[i];
                 sysconf.hcdn[i] = hcdnx[i];

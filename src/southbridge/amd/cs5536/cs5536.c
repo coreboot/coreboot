@@ -29,6 +29,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/vr.h>
 #include <cpu/amd/geode_post_code.h>
+#include <stdlib.h>
 #include "chip.h"
 #include "cs5536.h"
 
@@ -93,7 +94,7 @@ struct FLASH_DEVICE FlashInitTable[] = {
 	{FLASH_TYPE_NONE, 0, 0},	/* CS3, or Flash Device 3 */
 };
 
-#define FlashInitTableLen (sizeof(FlashInitTable)/sizeof(FlashInitTable[0]))
+#define FlashInitTableLen (ARRAY_SIZE(FlashInitTable))
 
 uint32_t FlashPort[] = {
 	MDD_LBAR_FLSH0,

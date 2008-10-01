@@ -21,6 +21,7 @@
 #include <cpu/x86/mem.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
+#include <stdlib.h>
 #include "raminit.h"
 #include "e7520.h"
 
@@ -62,7 +63,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	int i;
 	int max;
 
-	max = sizeof(register_values)/sizeof(register_values[0]);
+	max = ARRAY_SIZE(register_values);
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;

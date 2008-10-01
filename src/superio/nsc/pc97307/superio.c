@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <stdlib.h>
 #include "chip.h"
 #include "pc97307.h"
 
@@ -79,7 +80,7 @@ static struct pnp_info pnp_dev_info[] = {
 static void enable_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &ops,
-		sizeof(pnp_dev_info)/sizeof(pnp_dev_info[0]), pnp_dev_info);
+		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_nsc_pc97307_ops = {

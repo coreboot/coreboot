@@ -281,7 +281,7 @@ static int atyfb_xl_init(struct fb_info_aty *info)
 	aty_st_le32(0xEC, 0x00000000, info);
 	aty_st_le32(0xFC, 0x00000000, info);
 
-	for (i=0; i<sizeof(lcd_tbl)/sizeof(lcd_tbl_t); i++) {
+	for (i=0; i<ARRAY_SIZE(lcd_tbl); i++) {
 		aty_st_lcd(lcd_tbl[i].lcd_reg, lcd_tbl[i].val, info);
 	}
 
@@ -547,7 +547,7 @@ static void ati_ragexl_init(device_t dev)
     	chip_id = aty_ld_le32(CONFIG_CHIP_ID, info);
     	type = chip_id & CFG_CHIP_TYPE;
     	rev = (chip_id & CFG_CHIP_REV)>>24;
-    	for (j = 0; j < (sizeof(aty_chips)/sizeof(*aty_chips)); j++)
+    	for (j = 0; j < ARRAY_SIZE(aty_chips); j++)
         	if (type == aty_chips[j].chip_type &&
             		(rev & aty_chips[j].rev_mask) == aty_chips[j].rev_val) {
             		chipname = aty_chips[j].name;

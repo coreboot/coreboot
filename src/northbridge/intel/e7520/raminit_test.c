@@ -4,6 +4,7 @@
 #include <string.h>
 #include <setjmp.h>
 #include <device/pci_def.h>
+#include <stdlib.h>
 #include "e7520.h"
 
 jmp_buf end_buf;
@@ -341,7 +342,7 @@ static void raminit_main(void)
 	};
 	console_init();
 	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	sdram_initialize(ARRAY_SIZE(cpu), cpu);
 
 }
 

@@ -8,6 +8,7 @@
 #include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
+#include <stdlib.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
@@ -163,7 +164,7 @@ static void main(unsigned long bist)
 #endif
 
 	memreset_setup();
-	sdram_initialize(sizeof(cpu)/sizeof(cpu[0]), cpu);
+	sdram_initialize(ARRAY_SIZE(cpu), cpu);
 
 #if 0
 	dump_pci_devices();

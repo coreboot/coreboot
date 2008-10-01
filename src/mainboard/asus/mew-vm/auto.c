@@ -26,6 +26,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
+#include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
@@ -77,7 +78,7 @@ static void main(unsigned long bist)
 	/* dump_spd_registers(&memctrl[0]); */
 
 	/* sdram_initialize() runs out of registers. */
-	/* sdram_initialize(sizeof(memctrl) / sizeof(memctrl[0]), memctrl); */
+	/* sdram_initialize(ARRAY_SIZE(memctrl), memctrl); */
 
 	sdram_set_registers(memctrl);
 	sdram_set_spd_registers(memctrl);

@@ -43,3 +43,6 @@
 /* architecture stuff which ought to be set "somewhere" "SOMEHOW" */
 /* preferably by asking the CPU, not be a DEFINE! */
 #define CPU_ADDR_BITS 40
+
+/* you don't want to set this in Kconfig or dts either. It's dangerous! */
+#define CONFIG_AP_CODE_IN_CAR 0

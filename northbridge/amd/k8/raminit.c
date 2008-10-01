@@ -2653,10 +2653,10 @@ void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 
 #if HW_MEM_HOLE_SIZE_AUTO_INC == 1
 	//We need to double check if the hole_startk is valid, if it is equal to basek, we need to decrease it some
-	u32 basek_pri;
+	u32 basek_pri = 0;
         for(i=0; i<controllers; i++) {
                         u32 base;
-                        unsigned base_k;
+                        u32 base_k;
                         base  = pci_conf1_read_config32(ctrl[0].f1, 0x40 + (i << 3));
                         if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
                                 continue;

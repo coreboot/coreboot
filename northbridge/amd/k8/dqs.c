@@ -26,6 +26,7 @@
 #include <macros.h>
 #include <spd.h>
 #include <cpu.h>
+#include <globalvars.h>
 #include <msr.h>
 #include <device/pci.h>
 #include <pci_ops.h>
@@ -1938,10 +1939,11 @@ out:
 
 #if MEM_TRAIN_SEQ > 0 
 
-static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info *sysinfo, unsigned int v)
+void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info *sysinfo)
 {
 
         int ii;
+	int v = 1; /* used to be a parameter; consider making it one again */
 
          u64 tsc[4];
 
@@ -1972,9 +1974,8 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	}
         	tsc[1] = cycles();
 	  	if (DQS_TRAIN_DEBUG) {
-	      printk(BIOS_DEBUG, "set DQS timing:DQSPos: ");
+	      printk(BIOS_DEBUG, "set DQS timing:DQSPos: %02x", i);
 	}
-	        print_debug_hex8(i);
 	}
 
         if(train_DqsPos(ctrl, sysinfo)) {
@@ -1987,9 +1988,8 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	        tsc[2] = cycles();
 
 		if (DQS_TRAIN_DEBUG) {
-	        printk(BIOS_DEBUG, "set DQS timing:RcvrEn:Pass2: ");
+	        printk(BIOS_DEBUG, "set DQS timing:RcvrEn:Pass2: %02x\n", i);
 	}
-	        print_debug_hex8(i);
 	}
         if(train_DqsRcvrEn(ctrl, 2,  sysinfo)){
 		sysinfo->mem_trained[i]=0x83; //
@@ -2011,7 +2011,7 @@ out:
 
 	if(v) {
 	        for(ii=0;ii<4;ii++) {
-        	      print_debug_dqs_tsc_x("Total DQS Training : tsc ", ii,  tsc[ii].hi, tsc[ii].lo);
+        	      printk(BIOS_ERR, "Total DQS Training : tsc %d: %llx", ii, tsc[ii]);
 	        }
 	}
 	
@@ -2025,17 +2025,21 @@ out:
 #if MEM_TRAIN_SEQ == 1
 static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info *sysinfox)
 {
-	dqs_timing(nodeid, &sysinfo->ctrl[nodeid], sysinfo, 0); // keep the output tidy
+	dqs_timing(nodeid, &sysinfo->ctrl[nodeid], sysinfo); // keep the output tidy
 //      memcpy(&sysinfox->dqs_rcvr_dly_a[nodeid * 2 * 8],&sysinfo->dqs_rcvr_dly_a[nodeid * 2 * 8], 2*8);
 //      memcpy(&sysinfox->dqs_delay_a[nodeid * 2 * 2 * 9], &sysinfo->dqs_delay_a[nodeid * 2 * 2 * 9], 2 * 2 * 9);
 	sysinfox->mem_trained[nodeid] = sysinfo->mem_trained[nodeid];
 
 }
 static void copy_and_run_ap_code_in_car(unsigned ret_addr);
-static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
+void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, void * retcall)
 {
 	if(coreid) return; // only do it on core0
-	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	/* this is a little weird. We're going to get the address of the global vars. But we're in CAR, so 
+	 * it's really private. We're going to copy from global memory, which is node 0 memory, which 
+	 * is working at this point. 
+	 */
+	struct sys_info *sysinfox = & global_vars()->sys_info;
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
 	if(sysinfox->mem_trained[nodeid] == 0x80) {
@@ -2046,7 +2050,7 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 		sysinfo->mem_trained[nodeid] = sysinfox->mem_trained[nodeid];
 		memcpy(&sysinfo->ctrl[nodeid], &sysinfox->ctrl[nodeid], sizeof(struct mem_controller));
 	#else
-		memcpy(sysinfo, sysinfox, DCACHE_RAM_GLOBAL_VAR_SIZE);
+		memcpy(sysinfo, sysinfox, sizeof(*sysinfo));
 	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
 	#if CONFIG_AP_CODE_IN_CAR == 0
@@ -2056,7 +2060,9 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 	#else
 		/* Can copy dqs_timing to ap cache and run from cache?
 		* we need coreboot_ap_car.rom? and treat it as coreboot_ram.rom for ap ?
+		 * not sure how we'll return. 
 		*/
+#warning resolve issues about returning from the copy_and_run_ap_code_in_car. 
 		copy_and_run_ap_code_in_car(retcall);
 		// will go back by jump
 	#endif

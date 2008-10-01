@@ -300,9 +300,9 @@ void STOP_CAR_AND_CPU(void)
 
 
 #if MEM_TRAIN_SEQ == 1
-static inline void train_ram_on_node(unsigned nodeid, unsigned coreid,
+void train_ram_on_node(unsigned nodeid, unsigned coreid,
 				     struct sys_info *sysinfo,
-				     unsigned retcall);
+				     void * retcall);
 #endif
 
 /**
@@ -479,7 +479,7 @@ cpu_init_detectedx = 0;
 		/* this is not done on Serengeti. */
 #if MEM_TRAIN_SEQ == 1
 		train_ram_on_node(id.nodeid, id.coreid, sysinfo,
-				  STOP_CAR_AND_CPU);
+				  (void *)STOP_CAR_AND_CPU);
 #endif
 		/* this is inline and there is no return. */
 		STOP_CAR_AND_CPU();

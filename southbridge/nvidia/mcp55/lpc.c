@@ -144,10 +144,10 @@ static void lpc_common_init(struct device *dev, int master)
 	u32 dword;
 
 	/* IO APIC initialization */
-	byte = pci_conf1_read_config8(dev, 0x74);
+	byte = pci_read_config8(dev, 0x74);
 	byte |= (1<<0); // enable APIC
-	pci_conf1_write_config8(dev, 0x74, byte);
-	dword = pci_conf1_read_config32(dev, PCI_BASE_ADDRESS_1); // 0x14
+	pci_write_config8(dev, 0x74, byte);
+	dword = pci_read_config32(dev, PCI_BASE_ADDRESS_1); // 0x14
 
 	setup_ioapic(dword, master);
 }
@@ -162,8 +162,8 @@ static void enable_hpet(struct device *dev)
 {
 	unsigned long hpet_address;
 
-	pci_conf1_write_config32(dev,0x44, 0xfed00001);
-	hpet_address=pci_conf1_read_config32(dev,0x44)& 0xfffffffe;
+	pci_write_config32(dev,0x44, 0xfed00001);
+	hpet_address=pci_read_config32(dev,0x44)& 0xfffffffe;
 	printk(BIOS_DEBUG, "enabling HPET @0x%x\n", hpet_address);
 }
 #endif
@@ -180,20 +180,20 @@ static void lpc_init(struct device *dev)
 #warning posted memory write enable disabled in mcp55 lpc?
 #if 0
 	/* posted memory write enable */
-	byte = pci_conf1_read_config8(dev, 0x46);
-	pci_conf1_write_config8(dev, 0x46, byte | (1<<0));
+	byte = pci_read_config8(dev, 0x46);
+	pci_write_config8(dev, 0x46, byte | (1<<0));
 #endif
 	/* power after power fail */
 
 #if 1
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
-	byte = pci_conf1_read_config8(dev, PREVIOUS_POWER_STATE);
+	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x40;
 	if (!on) {
 		byte |= 0x40;
 	}
-	pci_conf1_write_config8(dev, PREVIOUS_POWER_STATE, byte);
+	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
 	printk(BIOS_INFO, "set power %s after power fail\n", on?"on":"off");
 #endif
 	/* Throttle the CPU speed down for testing */
@@ -202,7 +202,7 @@ static void lpc_init(struct device *dev)
 	if(on) {
 		u16 pm10_bar;
 		u32 dword;
-		pm10_bar = (pci_conf1_read_config16(dev, 0x60)&0xff00);
+		pm10_bar = (pci_read_config16(dev, 0x60)&0xff00);
 		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
 		on = 8-on;
@@ -213,16 +213,16 @@ static void lpc_init(struct device *dev)
 #if 0
 // default is enabled
 	/* Enable Port 92 fast reset */
-	byte = pci_conf1_read_config8(dev, 0xe8);
+	byte = pci_read_config8(dev, 0xe8);
 	byte |= ~(1 << 3);
-	pci_conf1_write_config8(dev, 0xe8, byte);
+	pci_write_config8(dev, 0xe8, byte);
 #endif
 
 	/* Enable Error reporting */
 	/* Set up sync flood detected */
-	byte = pci_conf1_read_config8(dev, 0x47);
+	byte = pci_read_config8(dev, 0x47);
 	byte |= (1 << 1);
-	pci_conf1_write_config8(dev, 0x47, byte);
+	pci_write_config8(dev, 0x47, byte);
 
 	/* Set up NMI on errors */
 	byte = inb(0x70); // RTC70
@@ -286,7 +286,7 @@ static void mcp55_lpc_enable_childrens_resources(struct device *dev)
 	int i;
 	int var_num = 0;
 
-	reg = pci_conf1_read_config32(dev, 0xa0);
+	reg = pci_read_config32(dev, 0xa0);
 
 	for (link = 0; link < dev->links; link++) {
 		struct device *child;
@@ -324,9 +324,9 @@ static void mcp55_lpc_enable_childrens_resources(struct device *dev)
 			}
 		}
 	}
-	pci_conf1_write_config32(dev, 0xa0, reg);
+	pci_write_config32(dev, 0xa0, reg);
 	for(i=0;i<var_num;i++) {
-		pci_conf1_write_config32(dev, 0xa8 + i*4, reg_var[i]);
+		pci_write_config32(dev, 0xa8 + i*4, reg_var[i]);
 	}
 
 

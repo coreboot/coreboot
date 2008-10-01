@@ -67,6 +67,8 @@ static const struct superio_registers reg_table[] = {
 			{0x30,0xf0,0xf1,EOT},
 			{0x00,0x00,0x00,EOT}},
 		{EOT}}},
+	{0x0581, "F8000", {	/* Fintek/ASUS F8000 */
+		{EOT}}},
 	{EOT}
 };
 

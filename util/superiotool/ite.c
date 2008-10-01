@@ -318,6 +318,8 @@ static const struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x03,0x10,0x0b,0x00,EOT}},
 		{EOT}}},
+	{0x8720, "IT8720F", {	/* From sensors-detect */
+		{EOT}}},
 	{0x8726, "IT8726F", {
 		/* Datasheet wrongly says that the ID is 0x8716. */
 		{EOT}}},

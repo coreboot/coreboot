@@ -426,6 +426,8 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x62, "LPC47S45x", {
 		{EOT}}},
+	{0x67, "EMC2700LPC", {	/* From sensors-detect */
+		{EOT}}},
 	{0x6b, "LPC47M292", {	/* From sensors-detect */
 		{EOT}}},
 	{0x6e, "LPC47B387", {	/* TODO: Not yet in sensors-detect */
@@ -507,9 +509,17 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x81, "SCH5307", {
 		{EOT}}},
+	{0x83, "SCH5514D", {	/* From sensors-detect */
+		{EOT}}},
 	{0x85, "SCH5317", {	/* From sensors-detect */
+		/* The SCH5317 can have either 0x85 or 0x8c as device ID. */
+		{EOT}}},
+	{0x86, "SCH5127", {	/* From sensors-detect */
 		{EOT}}},
 	{0x89, "SCH5027", {	/* From sensors-detect (no public datasheet) */
+		{EOT}}},
+	{0x8c, "SCH5317", {	/* From sensors-detect */
+		/* The SCH5317 can have either 0x85 or 0x8c as device ID. */
 		{EOT}}},
 	{0x90, "SCH4307", {	/* From sensors-detect */
 		{EOT}}},

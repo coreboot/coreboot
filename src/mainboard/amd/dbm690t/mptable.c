@@ -45,7 +45,6 @@ void *smp_write_config_table(void *v)
 	static const char oem[8] = "ATI     ";
 	static const char productid[12] = "DBM690T     ";
 	struct mp_config_table *mc;
-	int i, j;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));
@@ -119,104 +118,77 @@ void *smp_write_config_table(void *v)
 	}
 
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
-	smp_write_intsrc(mc, mp_ExtINT,
-			 MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa,
-			 0x0, apicid_sb600, 0x0);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x1, apicid_sb600, 0x1);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x0, apicid_sb600, 0x2);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x3, apicid_sb600, 0x3);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x4, apicid_sb600, 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x6, apicid_sb600, 0x6);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x7, apicid_sb600, 0x7);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0xc, apicid_sb600, 0xc);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0xd, apicid_sb600, 0xd);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0xe, apicid_sb600, 0xe);
+#define IO_LOCAL_INT(type, intr, apicid, pin) \
+	smp_write_intsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
+	
+	IO_LOCAL_INT(mp_ExtINT, 0x0, apicid_sb600, 0x0);
+
+	/* ISA ints are edge-triggered, and usually originate from the ISA bus,
+	 * or its remainings.
+	 */
+#define ISA_INT(intr, pin) \
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, (intr), apicid_sb600, (pin))
+
+	ISA_INT(0x1, 0x1);
+	ISA_INT(0x0, 0x2);
+	ISA_INT(0x3, 0x3);
+	ISA_INT(0x4, 0x4);
+	ISA_INT(0x6, 0x6);
+	ISA_INT(0x7, 0x7);
+	ISA_INT(0xc, 0xc);
+	ISA_INT(0xd, 0xd);
+	ISA_INT(0xe, 0xe);
+
+	/* PCI interrupts are level triggered, and are
+	 * associated with a specific bus/device/function tuple.
+	 */
+#define PCI_INT(bus, dev, fn, pin) \
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sb600, (pin))
 
 	/* usb */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0, 19 << 2 | 0, apicid_sb600, 0x10);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0, 19 << 2 | 1, apicid_sb600, 0x11);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0, 19 << 2 | 2, apicid_sb600, 0x12);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0, 19 << 2 | 3, apicid_sb600, 0x13);
+	PCI_INT(0x0, 0x13, 0x0, 0x10);
+	PCI_INT(0x0, 0x13, 0x1, 0x11);
+	PCI_INT(0x0, 0x13, 0x2, 0x12);
+	PCI_INT(0x0, 0x13, 0x3, 0x13);
 
 	/* sata */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0, 18 << 2 | 0, apicid_sb600, 22);
+	PCI_INT(0x0, 0x12, 0x0, 0x16);
 
 	/* HD Audio: b0:d20:f1:reg63 should be 0. */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 0, 20 << 2 | 0, apicid_sb600, 16);
+	PCI_INT(0x0, 0x14, 0x0, 0x10);
 
 	/* on board NIC & Slot PCIE.  */
-	i = 2;
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[1], 0x5 << 2 | 0, apicid_sb600, 18);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[1], 0x5 << 2 | 1, apicid_sb600, 19);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[2], 0x0 << 2 | 0, apicid_sb600, 18);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[3], 0x0 << 2 | 0, apicid_sb600, 19);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[4], 0x0 << 2 | 0, apicid_sb600, 16);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[5], 0x0 << 2 | 0, apicid_sb600, 17);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[6], 0x0 << 2 | 0, apicid_sb600, 18);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_rs690[7], 0x0 << 2 | 0, apicid_sb600, 19);
+	PCI_INT(bus_rs690[1], 0x5, 0x0, 0x12);
+	PCI_INT(bus_rs690[1], 0x5, 0x1, 0x13);
+	PCI_INT(bus_rs690[2], 0x0, 0x0, 0x12);
+	PCI_INT(bus_rs690[3], 0x0, 0x0, 0x13);
+	PCI_INT(bus_rs690[4], 0x0, 0x0, 0x10);
+	PCI_INT(bus_rs690[5], 0x0, 0x0, 0x11);
+	PCI_INT(bus_rs690[6], 0x0, 0x0, 0x12);
+	PCI_INT(bus_rs690[7], 0x0, 0x0, 0x13);
 
 	/* PCI slots */
-	i += 6;
-	j = 5;
 	/* PCI_SLOT 0. */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 5 << 2 | 0, apicid_sb600, 20);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 5 << 2 | 1, apicid_sb600, 21);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 5 << 2 | 2, apicid_sb600, 22);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 5 << 2 | 3, apicid_sb600, 23);
+	PCI_INT(bus_sb600[1], 0x5, 0x0, 0x14);
+	PCI_INT(bus_sb600[1], 0x5, 0x1, 0x15);
+	PCI_INT(bus_sb600[1], 0x5, 0x2, 0x16);
+	PCI_INT(bus_sb600[1], 0x5, 0x3, 0x17);
 
 	/* PCI_SLOT 1. */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 6 << 2 | 0, apicid_sb600, 21);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 6 << 2 | 1, apicid_sb600, 22);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 6 << 2 | 2, apicid_sb600, 23);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 6 << 2 | 3, apicid_sb600, 20);
+	PCI_INT(bus_sb600[1], 0x6, 0x0, 0x15);
+	PCI_INT(bus_sb600[1], 0x6, 0x1, 0x16);
+	PCI_INT(bus_sb600[1], 0x6, 0x2, 0x17);
+	PCI_INT(bus_sb600[1], 0x6, 0x3, 0x14);
 
 	/* PCI_SLOT 2. */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 7 << 2 | 0, apicid_sb600, 22);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 7 << 2 | 1, apicid_sb600, 23);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 7 << 2 | 2, apicid_sb600, 20);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
-			 bus_sb600[1], 7 << 2 | 3, apicid_sb600, 21);
+	PCI_INT(bus_sb600[1], 0x7, 0x0, 0x16);
+	PCI_INT(bus_sb600[1], 0x7, 0x1, 0x17);
+	PCI_INT(bus_sb600[1], 0x7, 0x2, 0x14);
+	PCI_INT(bus_sb600[1], 0x7, 0x3, 0x15);
 
 	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
-	smp_write_intsrc(mc, mp_ExtINT,
-			 MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa,
-			 0x0, MP_APIC_ALL, 0x0);
-	smp_write_intsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH,
-			 bus_isa, 0x0, MP_APIC_ALL, 0x1);
+	IO_LOCAL_INT(mp_ExtINT, 0x0, MP_APIC_ALL, 0x0);
+	IO_LOCAL_INT(mp_NMI, 0x0, MP_APIC_ALL, 0x1);
 	/* There is no extension information... */
 
 	/* Compute the checksums */

@@ -23,6 +23,7 @@
 #ifndef AMD_K8_H
 #define AMD_K8_H
 /* Socket types */
+#define SOCKET_S1G1 0x12
 #define SOCKET_AM2 0x11
 #define SOCKET_L1	0x10
 

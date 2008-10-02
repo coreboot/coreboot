@@ -54,29 +54,29 @@ static void set_bios_reset(void)
 
 static unsigned node_link_to_bus(unsigned node, unsigned link)
 {
-        unsigned reg;
+	unsigned reg;
 
-        for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
-                unsigned config_map;
-                config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
-                if ((config_map & 3) != 3) {
-                        continue;
-                }
-                if ((((config_map >> 4) & 7) == node) &&
-                        (((config_map >> 8) & 3) == link))
-                {
-                        return (config_map >> 16) & 0xff;
-                }
-        }
-        return 0;
+	for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
+		unsigned config_map;
+		config_map = pci_read_config32(PCI_DEV(0, 0x18, 1), reg);
+		if ((config_map & 3) != 3) {
+			continue;
+		}
+		if ((((config_map >> 4) & 7) == node) &&
+			(((config_map >> 8) & 3) == link))
+		{
+			return (config_map >> 16) & 0xff;
+		}
+	}
+	return 0;
 }
 
 static unsigned get_sblk(void)
 {
-        uint32_t reg;
-        /* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
-        reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
-        return ((reg>>8) & 3) ;
+	uint32_t reg;
+	/* read PCI_DEV(0,0x18,0) 0x64 bit [8:9] to find out SbLink m */
+	reg = pci_read_config32(PCI_DEV(0, 0x18, 0), 0x64);
+	return ((reg>>8) & 3) ;
 }
 
 static unsigned get_sbbusn(unsigned sblk)

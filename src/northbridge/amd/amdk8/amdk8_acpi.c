@@ -49,133 +49,131 @@ acknowledgement of AMD's proprietary rights in them.
 
 unsigned long acpi_create_madt_lapics(unsigned long current)
 {
-        device_t cpu;
-        int cpu_index = 0;
+	device_t cpu;
+	int cpu_index = 0;
 
-        for(cpu = all_devices; cpu; cpu = cpu->next) {
-                if ((cpu->path.type != DEVICE_PATH_APIC) ||
-                        (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-                {
-                        continue;
-                }
-                if (!cpu->enabled) {
-                        continue;
-                }
-                current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.u.apic.apic_id);
-                cpu_index++;
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
+		{
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.u.apic.apic_id);
+		cpu_index++;
 
-        }
+	}
 
-        return current;
+	return current;
 }
 
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 lint)
 {
-        device_t cpu;
-        int cpu_index = 0;
+	device_t cpu;
+	int cpu_index = 0;
 
-        for(cpu = all_devices; cpu; cpu = cpu->next) {
-                if ((cpu->path.type != DEVICE_PATH_APIC) ||
-                        (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-                {
-                        continue;
-                }
-                if (!cpu->enabled) {
-                        continue;
-                }
-                current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, cpu_index, flags, lint);
-                cpu_index++;
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
+		{
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, cpu_index, flags, lint);
+		cpu_index++;
 
-        }
+	}
 
-        return current;
+	return current;
 }
+
 unsigned long acpi_create_srat_lapics(unsigned long current)
 {
-        device_t cpu;
-        int cpu_index = 0;
+	device_t cpu;
+	int cpu_index = 0;
 
-        for(cpu = all_devices; cpu; cpu = cpu->next) {
-                if ((cpu->path.type != DEVICE_PATH_APIC) ||
-                        (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-                {
-                        continue;
-                }
-                if (!cpu->enabled) {
-                        continue;
-                }
-                printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
-                current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
-                cpu_index++;
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
+		{
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
+		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
+		cpu_index++;
 
-        }
+	}
 
-        return current;
+	return current;
 }
-
-
 
 static unsigned long resk(uint64_t value)
 {
-        unsigned long resultk;
-        if (value < (1ULL << 42)) {
-                resultk = value >> 10;
-        }
-        else {
-                resultk = 0xffffffff;
-        }
-        return resultk;
+	unsigned long resultk;
+	if (value < (1ULL << 42)) {
+		resultk = value >> 10;
+	}
+	else {
+		resultk = 0xffffffff;
+	}
+	return resultk;
 }
 
-
 struct acpi_srat_mem_state {
-        unsigned long current;
+	unsigned long current;
 };
 
 void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 {
-        struct acpi_srat_mem_state *state = gp;
-        unsigned long basek, sizek;
-        basek = resk(res->base);
-        sizek = resk(res->size);
+	struct acpi_srat_mem_state *state = gp;
+	unsigned long basek, sizek;
+	basek = resk(res->base);
+	sizek = resk(res->size);
 
-        printk_debug("set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
-                     dev_path(dev), res->index, basek, sizek);
-        /*
-                0-640K must be on node 0
-                next range is from 1M---
-                So will cut off before 1M in the mem range
-        */
-        if((basek+sizek)<1024) return;
+	printk_debug("set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
+		     dev_path(dev), res->index, basek, sizek);
+	/*
+		0-640K must be on node 0
+		next range is from 1M---
+		So will cut off before 1M in the mem range
+	*/
+	if((basek+sizek)<1024) return;
 
-        if(basek<1024) {
-                sizek -= 1024 - basek;
-                basek = 1024;
-        }
+	if(basek<1024) {
+		sizek -= 1024 - basek;
+		basek = 1024;
+	}
 
-        state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1); // need to figure out NV
+	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1); // need to figure out NV
 }
 
 unsigned long acpi_fill_srat(unsigned long current)
 {
-        struct acpi_srat_mem_state srat_mem_state;
+	struct acpi_srat_mem_state srat_mem_state;
 
-        /* create all subtables for processors */
-        current = acpi_create_srat_lapics(current);
+	/* create all subtables for processors */
+	current = acpi_create_srat_lapics(current);
 
-        /* create all subteble for memory range */
+	/* create all subteble for memory range */
 
-        /* 0-640K must be on node 0 */
-        current += acpi_create_srat_mem((acpi_srat_mem_t *)current, 0, 0, 640, 1);//enable
-#if 1
-        srat_mem_state.current = current;
-        search_global_resources(
-                IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
-                set_srat_mem, &srat_mem_state);
+	/* 0-640K must be on node 0 */
+	current += acpi_create_srat_mem((acpi_srat_mem_t *)current, 0, 0, 640, 1);//enable
 
-        current = srat_mem_state.current;
-#endif
-        return current;
+	srat_mem_state.current = current;
+	search_global_resources(
+		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
+		set_srat_mem, &srat_mem_state);
+
+	current = srat_mem_state.current;
+
+	return current;
 }
 
 
@@ -184,7 +182,7 @@ unsigned long acpi_fill_slit(unsigned long current)
 	/* need to find out the node num at first */
 	/* fill the first 8 byte with that num */
 	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
-	
+
 	/* because We has assume that we know the topology of the HT connection, So we can have set if we know the node_num */
 	static uint8_t hops_8[] = {   0, 1, 1, 2, 2, 3, 3, 4,
 				      1, 0, 2, 1, 3, 2, 4, 3,
@@ -192,7 +190,7 @@ unsigned long acpi_fill_slit(unsigned long current)
 				      2, 1, 1, 0, 2, 1, 3, 2,
 				      2, 3, 1, 2, 0, 1, 1, 2,
 				      3, 2, 2, 1, 1, 0, 2, 1,
-				      3, 4, 2, 3, 1, 2, 0, 1, 	 
+				      3, 4, 2, 3, 1, 2, 0, 1,
 				      4, 4, 3, 2, 2, 1, 1, 0 };
 
 //	uint8_t outer_node[8];
@@ -208,10 +206,10 @@ unsigned long acpi_fill_slit(unsigned long current)
 #if 0
 	for(i=0;i<sysconf.hc_possible_num;i++) {
 		if((sysconf.pci1234[i]&1) !=1 ) continue;
-		outer_node[(sysconf.pci1234[i] >> 4) & 0xf] = 1; // mark the outer node		
+		outer_node[(sysconf.pci1234[i] >> 4) & 0xf] = 1; // mark the outer node
 	}
 #endif
-	
+
 	for(i=0;i<nodes;i++) {
 		for(j=0;j<nodes; j++) {
 			if(i==j) { p[i*nodes+j] = 10; }
@@ -234,7 +232,7 @@ unsigned long acpi_fill_slit(unsigned long current)
 					}
 				}
 				p[i*nodes+j] = hops_8[i*nodes+j] * 2 + latency_factor + 10;
-#else	
+#else
 				p[i*nodes+j] = hops_8[i*nodes+j] * 2 + 10;
 #endif
 
@@ -243,9 +241,9 @@ unsigned long acpi_fill_slit(unsigned long current)
 		}
 	}
 
-        current += 8+nodes*nodes;
+	current += 8+nodes*nodes;
 
-        return current;
+	return current;
 }
 
 
@@ -255,10 +253,10 @@ unsigned long acpi_fill_slit(unsigned long current)
 // moved from mb acpi_tables.c
 static void int_to_stream(uint32_t val, uint8_t *dest)
 {
-        int i;
-        for(i=0;i<4;i++) {
-                *(dest+i) = (val >> (8*i)) & 0xff;
-        }
+	int i;
+	for(i=0;i<4;i++) {
+		*(dest+i) = (val >> (8*i)) & 0xff;
+	}
 }
 
 
@@ -266,60 +264,60 @@ static void int_to_stream(uint32_t val, uint8_t *dest)
 
 void update_ssdt(void *ssdt)
 {
-        uint8_t *BUSN;
-        uint8_t *MMIO;
-        uint8_t *PCIO;
-        uint8_t *SBLK;
-        uint8_t *TOM1;
-        uint8_t *SBDN;
-        uint8_t *HCLK;
-        uint8_t *HCDN;
+	uint8_t *BUSN;
+	uint8_t *MMIO;
+	uint8_t *PCIO;
+	uint8_t *SBLK;
+	uint8_t *TOM1;
+	uint8_t *SBDN;
+	uint8_t *HCLK;
+	uint8_t *HCDN;
 	uint8_t *CBST;
 
-        int i;
-        device_t dev;
-        uint32_t dword;
-        msr_t msr;
+	int i;
+	device_t dev;
+	uint32_t dword;
+	msr_t msr;
 
-        BUSN = ssdt+0x3a; //+5 will be next BUSN
-        MMIO = ssdt+0x57; //+5 will be next MMIO
-        PCIO = ssdt+0xaf; //+5 will be next PCIO
-        SBLK = ssdt+0xdc; // one byte
-        TOM1 = ssdt+0xe3; //
-        SBDN = ssdt+0xed;//
-        HCLK = ssdt+0xfa; //+5 will be next HCLK
-        HCDN = ssdt+0x12a; //+5 will be next HCDN
+	BUSN = ssdt+0x3a; //+5 will be next BUSN
+	MMIO = ssdt+0x57; //+5 will be next MMIO
+	PCIO = ssdt+0xaf; //+5 will be next PCIO
+	SBLK = ssdt+0xdc; // one byte
+	TOM1 = ssdt+0xe3; //
+	SBDN = ssdt+0xed; //
+	HCLK = ssdt+0xfa; //+5 will be next HCLK
+	HCDN = ssdt+0x12a; //+5 will be next HCDN
 	CBST = ssdt+0x157; //
 
-        dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-        for(i=0;i<4;i++) {
-                dword = pci_read_config32(dev, 0xe0+i*4);
-                int_to_stream(dword, BUSN+i*5);
-        }
-        for(i=0;i<0x10;i++) {
-                dword = pci_read_config32(dev, 0x80+i*4);
-                int_to_stream(dword, MMIO+i*5);
-        }
-        for(i=0;i<0x08;i++) {
-                dword = pci_read_config32(dev, 0xc0+i*4);
-                int_to_stream(dword, PCIO+i*5);
-        }
+	dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+	for(i=0;i<4;i++) {
+		dword = pci_read_config32(dev, 0xe0+i*4);
+		int_to_stream(dword, BUSN+i*5);
+	}
+	for(i=0;i<0x10;i++) {
+		dword = pci_read_config32(dev, 0x80+i*4);
+		int_to_stream(dword, MMIO+i*5);
+	}
+	for(i=0;i<0x08;i++) {
+		dword = pci_read_config32(dev, 0xc0+i*4);
+		int_to_stream(dword, PCIO+i*5);
+	}
 
-        *SBLK = (uint8_t)(sysconf.sblk);
+	*SBLK = (uint8_t)(sysconf.sblk);
 
-        msr = rdmsr(TOP_MEM);
-        int_to_stream(msr.lo, TOM1);
+	msr = rdmsr(TOP_MEM);
+	int_to_stream(msr.lo, TOM1);
 
-        for(i=0;i<sysconf.hc_possible_num;i++) {
-                int_to_stream(sysconf.pci1234[i], HCLK + i*5);
-                int_to_stream(sysconf.hcdn[i],    HCDN + i*5);
-        }
-        for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
-                int_to_stream(0x00000000, HCLK + i*5);
-                int_to_stream(0x20202020, HCDN + i*5);
-        }
+	for(i=0;i<sysconf.hc_possible_num;i++) {
+		int_to_stream(sysconf.pci1234[i], HCLK + i*5);
+		int_to_stream(sysconf.hcdn[i],    HCDN + i*5);
+	}
+	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+		int_to_stream(0x00000000, HCLK + i*5);
+		int_to_stream(0x20202020, HCDN + i*5);
+	}
 
-        int_to_stream(sysconf.sbdn, SBDN);
+	int_to_stream(sysconf.sbdn, SBDN);
 
 	if((sysconf.pci1234[0] >> 12) & 0xff) { //sb chain on  other than bus 0
 		*CBST = (uint8_t) (0x0f);

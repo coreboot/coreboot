@@ -4,7 +4,7 @@
 	2005.02 yhlu add E0 memory hole support
 */
 #if K8_REV_F_SUPPORT == 1
-        #include "raminit_f.c"
+	#include "raminit_f.c"
 #else
 
 #include <cpu/x86/mem.h>
@@ -67,7 +67,7 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 
 static int controller_present(const struct mem_controller *ctrl)
 {
-        return pci_read_config32(ctrl->f0, 0) == 0x11001022;
+	return pci_read_config32(ctrl->f0, 0) == 0x11001022;
 }
 
 #if RAMINIT_SYSINFO==1
@@ -198,7 +198,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 * [29:21] Address Mask (33-25)
 	 *	   The bits with an address mask of 1 are excluded from address comparison
 	 * [31:30] Reserved
-	 * 
+	 *
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x60), 0xC01f01ff, 0x00000000,
 	PCI_ADDR(0, 0x18, 2, 0x64), 0xC01f01ff, 0x00000000,
@@ -211,7 +211,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	/* DRAM Bank Address Mapping Register
 	 * F2:0x80
 	 * Specify the memory module size
-	 * [ 2: 0] CS1/0 
+	 * [ 2: 0] CS1/0
 	 * [ 6: 4] CS3/2
 	 * [10: 8] CS5/4
 	 * [14:12] CS7/6
@@ -222,7 +222,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 *	   100 = 512Mbyte (Rows = 13 & Col = 11)|(Rows = 14 & Col = 10)
 	 *	   101 = 1Gbyte	  (Rows = 14 & Col = 11)|(Rows = 13 & Col = 12)
 	 *	   110 = 2Gbyte	  (Rows = 14 & Col = 12)
-	 *	   111 = reserved 
+	 *	   111 = reserved
 	 * [ 3: 3] Reserved
 	 * [ 7: 7] Reserved
 	 * [11:11] Reserved
@@ -338,8 +338,8 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 *	   0 = Disabled
 	 *	   1 = Enabled
 	 * [ 3: 3] Disable DQS Hystersis  (FIXME handle this one carefully)
-	 *	   0 = Enable DQS input filter 
-	 *	   1 = Disable DQS input filtering 
+	 *	   0 = Enable DQS input filter
+	 *	   1 = Disable DQS input filtering
 	 * [ 7: 4] Reserved
 	 * [ 8: 8] DRAM_Init
 	 *	   0 = Initialization done or not yet started.
@@ -396,12 +396,12 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 *	   111 = Oldest entry in DCQ can be bypassed 7 times
 	 * [31:28] Reserved
 	 */
-	PCI_ADDR(0, 0x18, 2, 0x90), 0xf0000000, 
-	(4 << 25)|(0 << 24)| 
-	(0 << 23)|(0 << 22)|(0 << 21)|(0 << 20)| 
-	(1 << 19)|(0 << 18)|(1 << 17)|(0 << 16)| 
-	(2 << 14)|(0 << 13)|(0 << 12)| 
-	(0 << 11)|(0 << 10)|(0 << 9)|(0 << 8)| 
+	PCI_ADDR(0, 0x18, 2, 0x90), 0xf0000000,
+	(4 << 25)|(0 << 24)|
+	(0 << 23)|(0 << 22)|(0 << 21)|(0 << 20)|
+	(1 << 19)|(0 << 18)|(1 << 17)|(0 << 16)|
+	(2 << 14)|(0 << 13)|(0 << 12)|
+	(0 << 11)|(0 << 10)|(0 << 9)|(0 << 8)|
 	(0 << 3) |(0 << 1) |(0 << 0),
 	/* DRAM Config High Register
 	 * F2:0x94
@@ -548,10 +548,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	int max;
 
 #if 1
-        if (!controller_present(ctrl)) {
-//                print_debug("No memory controller present\r\n");
-                return;
-        }
+	if (!controller_present(ctrl)) {
+//		print_debug("No memory controller present\r\n");
+		return;
+	}
 #endif
 	print_spew("setting up CPU");
 	print_spew_hex8(ctrl->node_id);
@@ -563,8 +563,8 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		unsigned long reg;
 #if 0
 	#if CONFIG_USE_PRINTK_IN_CAR
-                prink_debug("%08x <- %08x\r\n", register_values[i], register_values[i+2]);
-        #else
+		prink_debug("%08x <- %08x\r\n", register_values[i], register_values[i+2]);
+	#else
 		print_spew_hex32(register_values[i]);
 		print_spew(" <-");
 		print_spew_hex32(register_values[i+2]);
@@ -602,7 +602,7 @@ static void hw_enable_ecc(const struct mem_controller *ctrl)
 		dcl &= ~DCL_DimmEccEn;
 	}
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
-	
+
 }
 
 static int is_dual_channel(const struct mem_controller *ctrl)
@@ -614,7 +614,7 @@ static int is_dual_channel(const struct mem_controller *ctrl)
 
 static int is_opteron(const struct mem_controller *ctrl)
 {
-	/* Test to see if I am an Opteron.  
+	/* Test to see if I am an Opteron.
 	 * FIXME Socket 939 based Athlon64 have dual channel capability,
 	 * too, so we need a better test for Opterons
 	 */
@@ -684,7 +684,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	if (value < 0) goto hw_err;
 	value &= 0xff;
 	value <<= 8;
-	
+
 	low = spd_read_byte(device, 6);	/* (low byte) */
 	if (low < 0) goto hw_err;
 	value = value | (low & 0xff);
@@ -743,20 +743,20 @@ static void set_dimm_size(const struct mem_controller *ctrl, struct dimm_size sz
 	if (sz.side1 != sz.side2) {
 		sz.side2 = 0;
 	}
-	
+
 	/* For each base register.
 	 * Place the dimm size in 32 MB quantities in the bits 31 - 21.
 	 * The initialize dimm size is in bits.
 	 * Set the base enable bit0.
 	 */
-	
+
 	base0 = base1 = 0;
 
 	/* Make certain side1 of the dimm is at least 32MB */
 	if (sz.side1 >= (25 +3)) {
 		base0 = (1 << ((sz.side1 - (25 + 3)) + 21)) | 1;
 	}
-	
+
 	/* Make certain side2 of the dimm is at least 32MB */
 	if (sz.side2 >= (25 + 3)) {
 		base1 = (1 << ((sz.side2 - (25 + 3)) + 21)) | 1;
@@ -810,9 +810,9 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
 	map &= ~(0xf << (index * 4));
 #if QRANK_DIMM_SUPPORT == 1
-        if(sz.rank == 4) {
-                map &= ~(0xf << ( (index + 2) * 4));
-        }
+	if(sz.rank == 4) {
+		map &= ~(0xf << ( (index + 2) * 4));
+	}
 #endif
 
 
@@ -821,29 +821,29 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 		if(is_cpu_pre_d0()) {
 			map |= (sz.side1 - (25 + 3)) << (index *4);
 #if QRANK_DIMM_SUPPORT == 1
-	                if(sz.rank == 4) {
-         	              map |= (sz.side1 - (25 + 3)) << ( (index + 2) * 4);
-               		}
+			if(sz.rank == 4) {
+	 			map |= (sz.side1 - (25 + 3)) << ( (index + 2) * 4);
+			}
 #endif
 		}
 		else {
 			map |= cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << (index*4);
 #if QRANK_DIMM_SUPPORT == 1
-		        if(sz.rank == 4) {
-                	       map |=  cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << ( (index + 2) * 4);
-               		}
+			if(sz.rank == 4) {
+				map |=  cs_map_aa[(sz.rows - 12) * 5 + (sz.col - 8) ] << ( (index + 2) * 4);
+			}
 #endif
 		}
 	}
 
 	pci_write_config32(ctrl->f2, DRAM_BANK_ADDR_MAP, map);
-	
+
 }
 
 static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 {
 	int i;
-	
+
 	for(i = 0; i < DIMM_SOCKETS; i++) {
 		struct dimm_size sz;
 		if (!(dimm_mask & (1 << i))) {
@@ -913,11 +913,11 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	 */
 	if (tom_k >= 0x003f0000) {
 #if HW_MEM_HOLE_SIZEK != 0
-                if(hole_startk != 0) {
-                        tom_k = hole_startk;
-                } else
+		if(hole_startk != 0) {
+			tom_k = hole_startk;
+		} else
 #endif
-                tom_k = 0x3f0000;
+		tom_k = 0x3f0000;
 	}
 	msr.lo = (tom_k & 0x003fffff) << 10;
 	msr.hi = (tom_k & 0xffc00000) >> 22;
@@ -927,29 +927,29 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 {
 	/* 35 - 25 */
-	static const uint8_t csbase_low_shift[] = { 
+	static const uint8_t csbase_low_shift[] = {
 	/* 32MB */	(13 - 4),
 	/* 64MB */	(14 - 4),
-	/* 128MB */	(14 - 4), 
+	/* 128MB */	(14 - 4),
 	/* 256MB */	(15 - 4),
 	/* 512MB */	(15 - 4),
 	/* 1GB */	(16 - 4),
-	/* 2GB */	(16 - 4), 
+	/* 2GB */	(16 - 4),
 	};
 
-        static const uint8_t csbase_low_d0_shift[] = {
-        /* 32MB */      (13 - 4),
-        /* 64MB */      (14 - 4),
-        /* 128MB */     (14 - 4),
+	static const uint8_t csbase_low_d0_shift[] = {
+	/* 32MB */      (13 - 4),
+	/* 64MB */      (14 - 4),
+	/* 128MB */     (14 - 4),
 	/* 128MB */     (15 - 4),
-        /* 256MB */     (15 - 4),
-        /* 512MB */     (15 - 4),
-        /* 256MB */     (16 - 4),
-        /* 512MB */     (16 - 4),
-        /* 1GB */       (16 - 4),
+	/* 256MB */     (15 - 4),
+	/* 512MB */     (15 - 4),
+	/* 256MB */     (16 - 4),
+	/* 512MB */     (16 - 4),
+	/* 1GB */       (16 - 4),
 	/* 1GB */       (17 - 4),
-        /* 2GB */       (17 - 4),
-        };
+	/* 2GB */       (17 - 4),
+	};
 
 	/* cs_base_high is not changed */
 
@@ -970,9 +970,9 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		unsigned size;
 		unsigned cs_mode;
 		uint32_t value;
-		
+
 		value = pci_read_config32(ctrl->f2, DRAM_CSBASE + (index << 2));
-		
+
 		/* Is it enabled? */
 		if (!(value & 1)) {
 			continue;
@@ -988,15 +988,15 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		}
 
 		value = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
-                cs_mode =( value >> ((index>>1)*4)) & 0xf;
-                if(cs_mode == 0 ) continue;
-                if(common_cs_mode == 0) {
-                	common_cs_mode = cs_mode;
-                }
-                /* The size differed fail */
-                if(common_cs_mode != cs_mode) {
-                        return 0;
-                }
+		cs_mode =( value >> ((index>>1)*4)) & 0xf;
+		if(cs_mode == 0 ) continue;
+		if(common_cs_mode == 0) {
+			common_cs_mode = cs_mode;
+		}
+		/* The size differed fail */
+		if(common_cs_mode != cs_mode) {
+			return 0;
+		}
 	}
 
 	/* Chip selects can only be interleaved when there is
@@ -1011,26 +1011,26 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 	if(is_cpu_pre_d0()){
 		csbase_inc = 1 << csbase_low_shift[common_cs_mode];
 		if(is_dual_channel(ctrl)) {
-                /* Also we run out of address mask bits if we try and interleave 8 4GB dimms */
-	                if ((bits == 3) && (common_size == (1 << (32 - 3)))) {
-//     		                print_debug("8 4GB chip selects cannot be interleaved\r\n");
-	                        return 0;
-                	}  
+		/* Also we run out of address mask bits if we try and interleave 8 4GB dimms */
+			if ((bits == 3) && (common_size == (1 << (32 - 3)))) {
+//     				print_debug("8 4GB chip selects cannot be interleaved\r\n");
+				return 0;
+			}
 			csbase_inc <<=1;
 		}
 	}
 	else {
 		csbase_inc = 1 << csbase_low_d0_shift[common_cs_mode];
 		if(is_dual_channel(ctrl)) {
-	                if( (bits==3) && (common_cs_mode > 8)) {
-//        	                print_debug("8 cs_mode>8 chip selects cannot be interleaved\r\n");
-        	                return 0;
+			if( (bits==3) && (common_cs_mode > 8)) {
+//				print_debug("8 cs_mode>8 chip selects cannot be interleaved\r\n");
+				return 0;
 			}
 			csbase_inc <<=1;
-                }   
+		}
 	}
 
-	/* Compute the initial values for csbase and csbask. 
+	/* Compute the initial values for csbase and csbask.
 	 * In csbase just set the enable bit and the base to zero.
 	 * In csmask set the mask bits for the size and page level interleave.
 	 */
@@ -1049,7 +1049,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		pci_write_config32(ctrl->f2, DRAM_CSMASK + (index << 2), csmask);
 		csbase += csbase_inc;
 	}
-	
+
 	print_spew("Interleaved\r\n");
 
 	/* Return the memory size in K */
@@ -1077,12 +1077,12 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 			if (!(value & 1)) {
 				continue;
 			}
-			
+
 			/* Is it greater? */
 			if (value <= csbase) {
 				continue;
 			}
-			
+
 			/* Has it already been selected */
 			if (tom & (1 << (index + 24))) {
 				continue;
@@ -1116,7 +1116,7 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (canidate << 2), csbase);
 		/* Write the new mask register */
 		pci_write_config32(ctrl->f2, DRAM_CSMASK + (canidate << 2), csmask);
-		
+
 	}
 	/* Return the memory size in K */
 	return (tom & ~0xff000000) << 15;
@@ -1164,8 +1164,8 @@ static void order_dimms(const struct mem_controller *ctrl)
 
 static long disable_dimm(const struct mem_controller *ctrl, unsigned index, long dimm_mask)
 {
-	print_debug("disabling dimm"); 
-	print_debug_hex8(index); 
+	print_debug("disabling dimm");
+	print_debug_hex8(index);
 	print_debug("\r\n");
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+0)<<2), 0);
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+1)<<2), 0);
@@ -1194,7 +1194,7 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl, long 
 		/* Registered dimm ? */
 		if (value & (1 << 1)) {
 			registered = 1;
-		} 
+		}
 		/* Otherwise it must be an unbuffered dimm */
 		else {
 			unbuffered = 1;
@@ -1209,9 +1209,9 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl, long 
 	if (unbuffered) {
 		if ((has_dualch) && (!is_cpu_pre_d0())) {
 			dcl |= DCL_UnBufDimm; /* set DCL_DualDIMMen too? */
-			
+
 			/* set DCL_En2T if you have non-equal DDR mem types! */
-			
+
 			if ((cpuid_eax(1) & 0x30) == 0x30) {
 				/* CS[7:4] is copy of CS[3:0], should be set for 939 socket */
 				dcl |= DCL_UpperCSMap;
@@ -1286,7 +1286,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 	};
 	/* If the dimms are not in pairs do not do dual channels */
 	if ((dimm_mask & ((1 << DIMM_SOCKETS) - 1)) !=
-		((dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) { 
+		((dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) {
 		goto single_channel;
 	}
 	/* If the cpu is not capable of doing dual channels don't do dual channels */
@@ -1521,7 +1521,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	/* Make a second pass through the dimms and disable
 	 * any that cannot support the selected memclk and cas latency.
 	 */
-	
+
 	for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
 		int latencies;
 		int latency;
@@ -1551,12 +1551,12 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		if ((latency != min_latency) || (index >= 3)) {
 			goto dimm_err;
 		}
-		
+
 		/* Read the min_cycle_time for this latency */
 		value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
 		if (value < 0) goto hw_error;
-		
-		/* All is good if the selected clock speed 
+
+		/* All is good if the selected clock speed
 		 * is what I need or slower.
 		 */
 		if (value <= min_cycle_time) {
@@ -1571,12 +1571,12 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 #if QRANK_DIMM_SUPPORT
 	if(dimm_mask == (3|(3<<DIMM_SOCKETS)) ) {
 		int ranks = 4;
-	        for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
+		for(i = 0; (i < 4) && (ctrl->channel0[i]); i++) {
 			int val;
-                	if (!(dimm_mask & (1 << i))) {
-                        	continue;
-	                }
-        	        val = spd_read_byte(ctrl->channel0[i], 5);
+			if (!(dimm_mask & (1 << i))) {
+				continue;
+			}
+			val = spd_read_byte(ctrl->channel0[i], 5);
 			if(val!=ranks) {
 				ranks = val;
 				break;
@@ -1587,7 +1587,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 				min_cycle_time = 0x60;
 			}
 		}
-		
+
 	}
 #endif
 #endif
@@ -1615,7 +1615,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	value &= ~(DTL_TCL_MASK << DTL_TCL_SHIFT);
 	value |= latencies[min_latency - 2] << DTL_TCL_SHIFT;
 	pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, value);
-	
+
 	result.dimm_mask = dimm_mask;
 	return result;
  hw_error:
@@ -1844,9 +1844,9 @@ static int update_dimm_x4(const struct mem_controller *ctrl, const struct mem_pa
 	}
 
 #if QRANK_DIMM_SUPPORT == 1
-	rank = spd_read_byte(ctrl->channel0[i], 5);       /* number of physical banks */
+	rank = spd_read_byte(ctrl->channel0[i], 5);	/* number of physical banks */
 	if (rank < 0) {
-		return -1;	
+		return -1;
 	}
 #endif
 
@@ -1943,7 +1943,7 @@ static void set_Trwt(const struct mem_controller *ctrl, const struct mem_param *
 	if ((clocks < DTH_TRWT_MIN) || (clocks > DTH_TRWT_MAX)) {
 		die("Unknown Trwt\r\n");
 	}
-	
+
 	dth = pci_read_config32(ctrl->f2, DRAM_TIMING_HIGH);
 	dth &= ~(DTH_TRWT_MASK << DTH_TRWT_SHIFT);
 	dth |= ((clocks - DTH_TRWT_BASE) << DTH_TRWT_SHIFT);
@@ -2022,7 +2022,7 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 		if (dimms == 4) {
 			/* 9ns */
 			async_lat = 9;
-		} 
+		}
 		else {
 			/* 8ns */
 			async_lat = 8;
@@ -2059,7 +2059,7 @@ static void set_idle_cycle_limit(const struct mem_controller *ctrl, const struct
 static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct mem_param *param, long dimm_mask)
 {
 	int i;
-	
+
 	init_Tref(ctrl, param);
 	for(i = 0; i < DIMM_SOCKETS; i++) {
 		int rc;
@@ -2076,7 +2076,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 
 		/* DRAM Timing High Register */
 		if ((rc = update_dimm_Tref(ctrl, param, i)) <= 0) goto dimm_err;
-	
+
 
 		/* DRAM Config Low */
 		if ((rc = update_dimm_x4 (ctrl, param, i)) <= 0) goto dimm_err;
@@ -2104,9 +2104,9 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl, const struct 
 }
 
 #if RAMINIT_SYSINFO==1
-static void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 #else
-static void sdram_set_spd_registers(const struct mem_controller *ctrl) 
+static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #endif
 {
 	struct spd_set_memclk_result result;
@@ -2125,19 +2125,19 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 		print_debug("No memory for this cpu\r\n");
 		return;
 	}
-	dimm_mask = spd_enable_2channels(ctrl, dimm_mask);        
-	if (dimm_mask < 0) 
+	dimm_mask = spd_enable_2channels(ctrl, dimm_mask);
+	if (dimm_mask < 0)
 		goto hw_spd_err;
-	dimm_mask = spd_set_ram_size(ctrl , dimm_mask);           
-	if (dimm_mask < 0) 
+	dimm_mask = spd_set_ram_size(ctrl , dimm_mask);
+	if (dimm_mask < 0)
 		goto hw_spd_err;
-	dimm_mask = spd_handle_unbuffered_dimms(ctrl, dimm_mask); 
-	if (dimm_mask < 0) 
+	dimm_mask = spd_handle_unbuffered_dimms(ctrl, dimm_mask);
+	if (dimm_mask < 0)
 		goto hw_spd_err;
 	result = spd_set_memclk(ctrl, dimm_mask);
 	param     = result.param;
 	dimm_mask = result.dimm_mask;
-	if (dimm_mask < 0) 
+	if (dimm_mask < 0)
 		goto hw_spd_err;
 	dimm_mask = spd_set_dram_timing(ctrl, param , dimm_mask);
 	if (dimm_mask < 0)
@@ -2154,108 +2154,108 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 #if HW_MEM_HOLE_SIZEK != 0
 static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,unsigned hole_startk, int i)
 {
-        int ii;
-        uint32_t carry_over;
-        device_t dev;
-        uint32_t base, limit;
-        uint32_t basek;
-        uint32_t hoist;
-        int j;
+	int ii;
+	uint32_t carry_over;
+	device_t dev;
+	uint32_t base, limit;
+	uint32_t basek;
+	uint32_t hoist;
+	int j;
 
-        carry_over = (4*1024*1024) - hole_startk;
+	carry_over = (4*1024*1024) - hole_startk;
 
-        for(ii=controllers - 1;ii>i;ii--) {
-                base  = pci_read_config32(ctrl[0].f1, 0x40 + (ii << 3));
-                if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                        continue;
-                }
+	for(ii=controllers - 1;ii>i;ii--) {
+		base  = pci_read_config32(ctrl[0].f1, 0x40 + (ii << 3));
+		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+			continue;
+		}
 		limit = pci_read_config32(ctrl[0].f1, 0x44 + (ii << 3));
-                for(j = 0; j < controllers; j++) {
-                        pci_write_config32(ctrl[j].f1, 0x44 + (ii << 3), limit + (carry_over << 2));
-                        pci_write_config32(ctrl[j].f1, 0x40 + (ii << 3), base + (carry_over << 2));
-                }
-        }
-        limit = pci_read_config32(ctrl[0].f1, 0x44 + (i << 3));
-        for(j = 0; j < controllers; j++) {
-                pci_write_config32(ctrl[j].f1, 0x44 + (i << 3), limit + (carry_over << 2));
-        }
-        dev = ctrl[i].f1;
-        base  = pci_read_config32(dev, 0x40 + (i << 3));
-        basek  = (base & 0xffff0000) >> 2;
-        if(basek == hole_startk) {
-                //don't need set memhole here, because hole off set will be 0, overflow
-                //so need to change base reg instead, new basek will be 4*1024*1024
-                base &= 0x0000ffff;
-                base |= (4*1024*1024)<<2;
-                for(j = 0; j < controllers; j++) {
-                        pci_write_config32(ctrl[j].f1, 0x40 + (i<<3), base);
-                }
-        }
+		for(j = 0; j < controllers; j++) {
+			pci_write_config32(ctrl[j].f1, 0x44 + (ii << 3), limit + (carry_over << 2));
+			pci_write_config32(ctrl[j].f1, 0x40 + (ii << 3), base + (carry_over << 2));
+		}
+	}
+	limit = pci_read_config32(ctrl[0].f1, 0x44 + (i << 3));
+	for(j = 0; j < controllers; j++) {
+		pci_write_config32(ctrl[j].f1, 0x44 + (i << 3), limit + (carry_over << 2));
+	}
+	dev = ctrl[i].f1;
+	base  = pci_read_config32(dev, 0x40 + (i << 3));
+	basek  = (base & 0xffff0000) >> 2;
+	if(basek == hole_startk) {
+		//don't need set memhole here, because hole off set will be 0, overflow
+		//so need to change base reg instead, new basek will be 4*1024*1024
+		base &= 0x0000ffff;
+		base |= (4*1024*1024)<<2;
+		for(j = 0; j < controllers; j++) {
+			pci_write_config32(ctrl[j].f1, 0x40 + (i<<3), base);
+		}
+	}
 	else {
-        	hoist = /* hole start address */
-                	((hole_startk << 10) & 0xff000000) +
-	                /* hole address to memory controller address */
-        	        (((basek + carry_over) >> 6) & 0x0000ff00) +
-                	/* enable */
-	                1;
-	        pci_write_config32(dev, 0xf0, hoist);
+		hoist = /* hole start address */
+			((hole_startk << 10) & 0xff000000) +
+			/* hole address to memory controller address */
+			(((basek + carry_over) >> 6) & 0x0000ff00) +
+			/* enable */
+			1;
+		pci_write_config32(dev, 0xf0, hoist);
 	}
 
-        return carry_over;
+	return carry_over;
 }
 
 static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 {
 
-        uint32_t hole_startk;
-        int i;
+	uint32_t hole_startk;
+	int i;
 
-        hole_startk = 4*1024*1024 - HW_MEM_HOLE_SIZEK;
+	hole_startk = 4*1024*1024 - HW_MEM_HOLE_SIZEK;
 
-#if HW_MEM_HOLE_SIZE_AUTO_INC == 1 
+#if HW_MEM_HOLE_SIZE_AUTO_INC == 1
 	/* We need to double check if hole_startk is valid.
-	 * If it is equal to the dram base address in K (base_k), 
+	 * If it is equal to the dram base address in K (base_k),
 	 * we need to decrease it.
 	 */
-        uint32_t basek_pri;
-        for(i=0; i<controllers; i++) {
-                        uint32_t base;
-                        unsigned base_k;
-                        base  = pci_read_config32(ctrl[0].f1, 0x40 + (i << 3));
-                        if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                                continue;
-                        }
-                        base_k = (base & 0xffff0000) >> 2;
-                        if(base_k == hole_startk) {
+	uint32_t basek_pri;
+	for(i=0; i<controllers; i++) {
+			uint32_t base;
+			unsigned base_k;
+			base  = pci_read_config32(ctrl[0].f1, 0x40 + (i << 3));
+			if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+				continue;
+			}
+			base_k = (base & 0xffff0000) >> 2;
+			if(base_k == hole_startk) {
 				/* decrease memory hole startk to make sure it is
-				 * in the middle of the previous node 
+				 * in the middle of the previous node
 				 */
-                                hole_startk -= (base_k - basek_pri)>>1; 
-                                break; /* only one hole */
-                        }
-                        basek_pri = base_k;
-        }
+				hole_startk -= (base_k - basek_pri)>>1;
+				break; /* only one hole */
+			}
+			basek_pri = base_k;
+	}
 
 #endif
-        /* Find node number that needs the memory hole configured */
-        for(i=0; i<controllers; i++) {
-                        uint32_t base, limit;
-                        unsigned base_k, limit_k;
-                        base  = pci_read_config32(ctrl[0].f1, 0x40 + (i << 3));
-                        if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-                                continue;
-                        }
-                        limit = pci_read_config32(ctrl[0].f1, 0x44 + (i << 3));
-                        base_k = (base & 0xffff0000) >> 2;
-                        limit_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
+	/* Find node number that needs the memory hole configured */
+	for(i=0; i<controllers; i++) {
+			uint32_t base, limit;
+			unsigned base_k, limit_k;
+			base  = pci_read_config32(ctrl[0].f1, 0x40 + (i << 3));
+			if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+				continue;
+			}
+			limit = pci_read_config32(ctrl[0].f1, 0x44 + (i << 3));
+			base_k = (base & 0xffff0000) >> 2;
+			limit_k = ((limit + 0x00010000) & 0xffff0000) >> 2;
 			if ((base_k <= hole_startk) && (limit_k > hole_startk)) {
-                                unsigned end_k;
-                                hoist_memory(controllers, ctrl, hole_startk, i);
-                                end_k = memory_end_k(ctrl, controllers);
-                                set_top_mem(end_k, hole_startk);
-                                break; /* only one hole */
-                        }
-        }
+				unsigned end_k;
+				hoist_memory(controllers, ctrl, hole_startk, i);
+				end_k = memory_end_k(ctrl, controllers);
+				set_top_mem(end_k, hole_startk);
+				break; /* only one hole */
+			}
+	}
 
 }
 
@@ -2369,10 +2369,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 
 #if HW_MEM_HOLE_SIZEK != 0
-         // init hw mem hole here
-        /* DramHoleValid bit only can be set after MemClrStatus is set by Hardware */
+	 // init hw mem hole here
+	/* DramHoleValid bit only can be set after MemClrStatus is set by Hardware */
 	if(!is_cpu_pre_e0())
-	        set_hw_mem_hole(controllers, ctrl);
+		set_hw_mem_hole(controllers, ctrl);
 #endif
 
 	//FIXME add enable node interleaving here -- yhlu
@@ -2396,7 +2396,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* The first 1M is now setup, use it */
 	cache_lbmem(MTRR_TYPE_WRBACK);
-	
+
 	print_debug(" done\r\n");
 #endif
 }
@@ -2408,24 +2408,24 @@ static void set_sysinfo_in_ram(unsigned val)
 
 static void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, const uint16_t *spd_addr)
 {
-        int i;
-        int j;
-        struct mem_controller *ctrl;
-        for(i=0;i<controllers; i++) {
-                ctrl = &ctrl_a[i];
-                ctrl->node_id = i;
-                ctrl->f0 = PCI_DEV(0, 0x18+i, 0);
-                ctrl->f1 = PCI_DEV(0, 0x18+i, 1);
-                ctrl->f2 = PCI_DEV(0, 0x18+i, 2);
-                ctrl->f3 = PCI_DEV(0, 0x18+i, 3);
+	int i;
+	int j;
+	struct mem_controller *ctrl;
+	for(i=0;i<controllers; i++) {
+		ctrl = &ctrl_a[i];
+		ctrl->node_id = i;
+		ctrl->f0 = PCI_DEV(0, 0x18+i, 0);
+		ctrl->f1 = PCI_DEV(0, 0x18+i, 1);
+		ctrl->f2 = PCI_DEV(0, 0x18+i, 2);
+		ctrl->f3 = PCI_DEV(0, 0x18+i, 3);
 
-                if(spd_addr == (void *)0) continue;
+		if(spd_addr == (void *)0) continue;
 
-                for(j=0;j<DIMM_SOCKETS;j++) {
-                        ctrl->channel0[j] = spd_addr[(i*2+0)*DIMM_SOCKETS + j];
-                        ctrl->channel1[j] = spd_addr[(i*2+1)*DIMM_SOCKETS + j];
-                }
-        }
+		for(j=0;j<DIMM_SOCKETS;j++) {
+			ctrl->channel0[j] = spd_addr[(i*2+0)*DIMM_SOCKETS + j];
+			ctrl->channel1[j] = spd_addr[(i*2+1)*DIMM_SOCKETS + j];
+		}
+	}
 }
 #endif
 

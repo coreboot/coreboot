@@ -19,13 +19,13 @@ end
 
 if HAVE_ACPI_TABLES
 	object amdk8_acpi.o
-        makerule ssdt.c
-                depends "$(TOP)/src/northbridge/amd/amdk8/ssdt.dsl"
-                action  "iasl -p $(PWD)/ssdt -tc $(TOP)/src/northbridge/amd/amdk8/ssdt.dsl"
-                action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt.hex"
-                action  "mv ssdt.hex ssdt.c"
-        end
-        object ./ssdt.o
+	makerule ssdt.c
+		depends "$(TOP)/src/northbridge/amd/amdk8/ssdt.dsl"
+		action  "iasl -p $(PWD)/ssdt -tc $(TOP)/src/northbridge/amd/amdk8/ssdt.dsl"
+		action  "perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt.hex"
+		action  "mv ssdt.hex ssdt.c"
+	end
+	object ./ssdt.o
 end
 
 

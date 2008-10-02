@@ -1,11 +1,11 @@
-/*  
+/*
 	2005.11 yhlu add let the real sb to use small unitid
 */
 // only for sb ht chain
 static void enumerate_ht_chain(void)
 {
-#if HT_CHAIN_UNITID_BASE != 0 
-/* HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */ 
+#if HT_CHAIN_UNITID_BASE != 0
+/* HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */
 
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
 	 * On most boards this just happens.  If a cpu has multiple
@@ -43,7 +43,7 @@ static void enumerate_ht_chain(void)
 		hdr_type &= 0x7f;
 
 		if ((hdr_type == PCI_HEADER_TYPE_NORMAL) ||
-			(hdr_type == PCI_HEADER_TYPE_BRIDGE)) 
+			(hdr_type == PCI_HEADER_TYPE_BRIDGE))
 		{
 			pos = pci_read_config8(dev, PCI_CAPABILITY_LIST);
 		}
@@ -71,7 +71,7 @@ static void enumerate_ht_chain(void)
 						} else {
 							goto out;
 						}
-					} 
+					}
 					real_last_unitid = next_unitid;
 					real_last_pos = pos;
 					ht_dev_num++;
@@ -115,7 +115,7 @@ static void enumerate_ht_chain(void)
 							}
 						}
 					} while((ctrl & (1 << 5)) == 0);
-	
+
 					break;
 				}
 			}
@@ -130,9 +130,9 @@ out:
 	if((ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) && !end_used) {
 		uint16_t flags;
 		dev = PCI_DEV(0,real_last_unitid, 0);
-		flags = pci_read_config16(dev, real_last_pos + PCI_CAP_FLAGS); 
-                flags &= ~0x1f;
-                flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+		flags = pci_read_config16(dev, real_last_pos + PCI_CAP_FLAGS);
+	        flags &= ~0x1f;
+	        flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_write_config16(dev, real_last_pos + PCI_CAP_FLAGS, flags);
 	}
 #endif

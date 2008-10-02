@@ -1,7 +1,7 @@
 /*   SPDs for DDR2 SDRAM */
-#define SPD_MEM_TYPE	 2                                     
-	#define SPD_MEM_TYPE_SDRAM_DDR    0x07        
-	#define SPD_MEM_TYPE_SDRAM_DDR2   0x08     
+#define SPD_MEM_TYPE	 2
+	#define SPD_MEM_TYPE_SDRAM_DDR    0x07
+	#define SPD_MEM_TYPE_SDRAM_DDR2   0x08
 
 #define SPD_DIMM_TYPE    20 	/* x  bit0 or bit4 =1 mean registered*/
 	#define SPD_DIMM_TYPE_RDIMM	(1<<0)
@@ -11,9 +11,9 @@
 	#define SPD_DIMM_TYPE_mRDIMM	(1<<4)
 	#define SPD_DIMM_TYPE_mUDIMM	(1<<5)
 #define SPD_MOD_ATTRIB      21
-	#define SPD_MOD_ATTRIB_DIFCK    0x20           
-	#define SPD_MOD_ATTRIB_REGADC   0x11   /* x */   
-	#define SPD_MOD_ATTRIB_PROBE    0x40  
+	#define SPD_MOD_ATTRIB_DIFCK    0x20
+	#define SPD_MOD_ATTRIB_REGADC   0x11   /* x */
+	#define SPD_MOD_ATTRIB_PROBE    0x40
 
 #define SPD_DEV_ATTRIB   22  /* Device attributes --- general */
 #define SPD_DIMM_CONF_TYPE     11
@@ -22,16 +22,16 @@
 
 #define SPD_ROW_NUM        3        /* Number of Row addresses */
 #define SPD_COL_NUM        4	    /* Number of Column addresses */
-#define SPD_BANK_NUM      17        /* SDRAM Device attributes - Number of Banks on SDRAM device, it could be 0x4, 0x8, so address lines for that would be 2, and 3 */ 
- 
-#define SPD_MOD_ATTRIB_RANK      5       /* include Number of Ranks bit [2:0], Package (bit4, 1=stack, 0=planr), Height bit[7:5] */ 
+#define SPD_BANK_NUM      17        /* SDRAM Device attributes - Number of Banks on SDRAM device, it could be 0x4, 0x8, so address lines for that would be 2, and 3 */
+
+#define SPD_MOD_ATTRIB_RANK      5       /* include Number of Ranks bit [2:0], Package (bit4, 1=stack, 0=planr), Height bit[7:5] */
 	#define SPD_MOD_ATTRIB_RANK_NUM_SHIFT 0
-	#define SPD_MOD_ATTRIB_RANK_NUM_MASK 0x07 
+	#define SPD_MOD_ATTRIB_RANK_NUM_MASK 0x07
 		#define SPD_MOD_ATTRIB_RANK_NUM_BASE 1
 		#define SPD_MOD_ATTRIB_RANK_NUM_MIN 1
 		#define SPD_MOD_ATTRIB_RANK_NUM_MAX 8
 
-#define SPD_RANK_SIZE      31       /* Only one bit is set */ 
+#define SPD_RANK_SIZE      31       /* Only one bit is set */
 	#define SPD_RANK_SIZE_1GB   (1<<0)
 	#define SPD_RANK_SIZE_2GB   (1<<1)
 	#define SPD_RANK_SIZE_4GB   (1<<2)
@@ -58,7 +58,7 @@
 #define SPD_TRAS        30
 #define SPD_TWR         36            /* x */
 #define SPD_TWTR        37            /* x */
-#define SPD_TRTP        38            /* x */  
+#define SPD_TRTP        38            /* x */
 
 #define SPD_TRC         41            /* add byte 0x40 bit [3:1] , so final val41+ table[((val40>>1) & 0x7)]  ... table[]={0, 0.25, 0.33, 0.5, 0.75, 0, 0}*/
 #define SPD_TRFC        42	      /* add byte 0x40 bit [6:4] , so final val42+ table[((val40>>4) & 0x7)] + (val40 & 1)*256*/

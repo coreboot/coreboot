@@ -461,48 +461,48 @@ that are corresponding to 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x10, 
 //struct definitions
 
 struct dimm_size {
-        uint8_t per_rank; // it is rows + col + bank_lines + data lines */
-        uint8_t rows;
-        uint8_t col;
-        uint8_t bank; //1, 2, 3 mean 2, 4, 8
-        uint8_t rank;
+	uint8_t per_rank; // it is rows + col + bank_lines + data lines */
+	uint8_t rows;
+	uint8_t col;
+	uint8_t bank; //1, 2, 3 mean 2, 4, 8
+	uint8_t rank;
 } __attribute__((packed));
 
 struct mem_info { // pernode
-        uint32_t dimm_mask;
-        struct dimm_size sz[DIMM_SOCKETS];
-        uint32_t x4_mask;
-        uint32_t x16_mask;
+	uint32_t dimm_mask;
+	struct dimm_size sz[DIMM_SOCKETS];
+	uint32_t x4_mask;
+	uint32_t x16_mask;
 	uint32_t single_rank_mask;
-        uint32_t page_1k_mask;
-//        uint32_t ecc_mask;
-//        uint32_t registered_mask;
-        uint8_t is_opteron;
-        uint8_t is_registered;
-        uint8_t is_ecc;
-        uint8_t is_Width128;
+	uint32_t page_1k_mask;
+//	uint32_t ecc_mask;
+//	uint32_t registered_mask;
+	uint8_t is_opteron;
+	uint8_t is_registered;
+	uint8_t is_ecc;
+	uint8_t is_Width128;
 	uint8_t is_64MuxMode;
-        uint8_t memclk_set; // we need to use this to retrieve the mem param
+	uint8_t memclk_set; // we need to use this to retrieve the mem param
 	uint8_t rsv[2];
 } __attribute__((packed));
 
 struct link_pair_st {
-        device_t udev;
-        uint32_t upos;
-        uint32_t uoffs;
-        device_t dev;
-        uint32_t pos;
-        uint32_t offs;
+	device_t udev;
+	uint32_t upos;
+	uint32_t uoffs;
+	device_t dev;
+	uint32_t pos;
+	uint32_t offs;
 
 } __attribute__((packed));
 
 struct sys_info {
-        uint8_t ctrl_present[NODE_NUMS];
-        struct mem_info meminfo[NODE_NUMS];
+	uint8_t ctrl_present[NODE_NUMS];
+	struct mem_info meminfo[NODE_NUMS];
 	struct mem_controller ctrl[NODE_NUMS];
 	uint8_t mem_trained[NODE_NUMS]; //0: no dimm, 1: trained, 0x80: not started, 0x81: recv1 fail, 0x82: Pos Fail, 0x83:recv2 fail
-        uint32_t tom_k;
-        uint32_t tom2_k;
+	uint32_t tom_k;
+	uint32_t tom2_k;
 
 	uint32_t mem_base[NODE_NUMS];
 	uint32_t cs_base[NODE_NUMS*8]; //8 cs_idx
@@ -511,9 +511,9 @@ struct sys_info {
 	uint8_t dqs_delay_a[NODE_NUMS*2*2*9]; //8 node channel 2, direction 2 , bytelane *9
 	uint8_t dqs_rcvr_dly_a[NODE_NUMS*2*8]; //8 node, channel 2, receiver 8
 	uint32_t nodes;
-        struct link_pair_st link_pair[16];// enough? only in_conherent
-        uint32_t link_pair_num;
-        uint32_t ht_c_num;
+	struct link_pair_st link_pair[16];// enough? only in_conherent
+	uint32_t link_pair_num;
+	uint32_t ht_c_num;
 	uint32_t sbdn;
 	uint32_t sblk;
 	uint32_t sbbusn;
@@ -526,38 +526,38 @@ static void soft_reset(void);
 static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 {
 
-        int i;
-        uint32_t mask = 0;
+	int i;
+	uint32_t mask = 0;
 	unsigned needs_reset = 0;
 
 
 	if(sysinfo->nodes == 1) return; // in case only one cpu installed	
 
-        for(i=1; i<sysinfo->nodes; i++) {
-                /* Skip everything if I don't have any memory on this controller */
-                if(sysinfo->mem_trained[i]==0x00) continue;
+	for(i=1; i<sysinfo->nodes; i++) {
+		/* Skip everything if I don't have any memory on this controller */
+		if(sysinfo->mem_trained[i]==0x00) continue;
 
-                mask |= (1<<i);
+		mask |= (1<<i);
 
-        }
+	}
 
-        i = 1;
-        while(1) {
+	i = 1;
+	while(1) {
 		if(mask & (1<<i)) {
 			if((sysinfo->mem_trained[i])!=0x80) {
 				mask &= ~(1<<i);
 			}
 		}
 
-                if(!mask) break;
+		if(!mask) break;
 
 #if 0
 		/* cpu_relax */
 		__asm__ __volatile__("rep;nop": : :"memory");
 #endif
 
-                i++;
-                i%=sysinfo->nodes;
+		i++;
+		i%=sysinfo->nodes;
 	}
 
 	for(i=0; i<sysinfo->nodes; i++) {
@@ -566,7 +566,7 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 #else
 		printk_debug("mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]); 
 #endif
-                switch(sysinfo->mem_trained[i]) {
+		switch(sysinfo->mem_trained[i]) {
 		case 0: //don't need train
 		case 1: //trained
 			break;

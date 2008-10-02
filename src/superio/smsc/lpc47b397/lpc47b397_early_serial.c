@@ -3,12 +3,14 @@
 
 static inline void pnp_enter_conf_state(device_t dev) {
 	unsigned port = dev>>8;
-        outb(0x55, port);
+	outb(0x55, port);
 }
+
 static void pnp_exit_conf_state(device_t dev) {
 	unsigned port = dev>>8;
-        outb(0xaa, port);
+	outb(0xaa, port);
 }
+
 static void lpc47b397_enable_serial(device_t dev, unsigned iobase)
 {
 	pnp_enter_conf_state(dev);

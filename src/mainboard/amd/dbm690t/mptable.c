@@ -45,6 +45,7 @@ void *smp_write_config_table(void *v)
 	static const char oem[8] = "ATI     ";
 	static const char productid[12] = "DBM690T     ";
 	struct mp_config_table *mc;
+	int j;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));

@@ -2,6 +2,7 @@
  * Copyright 2004 Tyan Computer
  *  by yhlu@tyan.com
  */
+
 	.section ".romstrap", "a", @progbits
 
 

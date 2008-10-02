@@ -5,4 +5,4 @@
 
 void ck804_enable(device_t dev);
 
-#endif /* CK804_H */
+#endif

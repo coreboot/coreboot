@@ -15,7 +15,7 @@ typedef unsigned device_t;
 static void pci_write_config32(device_t dev, unsigned where, unsigned value)
 {
 	unsigned addr;
-	addr = (dev>>4) | where;
+	addr = (dev >> 4) | where;
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	outl(value, 0xCFC);
 }
@@ -23,7 +23,7 @@ static void pci_write_config32(device_t dev, unsigned where, unsigned value)
 static unsigned pci_read_config32(device_t dev, unsigned where)
 {
 	unsigned addr;
-	addr = (dev>>4) | where;
+	addr = (dev >> 4) | where;
 	outl(0x80000000 | (addr & ~3), 0xCF8);
 	return inl(0xCFC);
 }
@@ -33,8 +33,7 @@ static unsigned pci_read_config32(device_t dev, unsigned where)
 void hard_reset(void)
 {
 	set_bios_reset();
-	/* Try rebooting through port 0xcf9 */
-	outb((0 <<3)|(0<<2)|(1<<1), 0xcf9);
-      	outb((0 <<3)|(1<<2)|(1<<1), 0xcf9);
+	/* Try rebooting through port 0xcf9. */
+	outb((0 << 3) | (0 << 2) | (1 << 1), 0xcf9);
+	outb((0 << 3) | (1 << 2) | (1 << 1), 0xcf9);
 }
-

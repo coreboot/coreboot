@@ -17,19 +17,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <console/console.h>
-
-#include <arch/io.h>
-
-#include <device/device.h>
+#include <types.h>
+#include <lib.h>
+#include <console.h>
 #include <device/pci.h>
+#include <msr.h>
+#include <legacy.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
+#include <statictree.h>
+#include <config.h>
 #include "sb600.h"
 
-static device_t find_sm_dev(device_t dev, u32 devfn)
+static struct device * find_sm_dev(struct device * dev, u32 devfn)
 {
-	device_t sm_dev;
+	struct device * sm_dev;
 
 	sm_dev = dev_find_slot(dev->bus->secondary, devfn);
 	if (!sm_dev)
@@ -49,7 +50,7 @@ static device_t find_sm_dev(device_t dev, u32 devfn)
 	return sm_dev;
 }
 
-void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val)
+void set_sm_enable_bits(struct device * sm_dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
 	reg = reg_old = pci_read_config32(sm_dev, reg_pos);
@@ -96,7 +97,7 @@ u8 pm2_ioread(u8 reg)
 	return pmio_read_index(port_base, reg);
 }
 
-static void set_pmio_enable_bits(device_t sm_dev, u32 reg_pos,
+static void set_pmio_enable_bits(struct device * sm_dev, u32 reg_pos,
 				 u32 mask, u32 val)
 {
 	u8 reg_old, reg;
@@ -108,10 +109,10 @@ static void set_pmio_enable_bits(device_t sm_dev, u32 reg_pos,
 	}
 }
 
-void sb600_enable(device_t dev)
+void sb600_enable(struct device * dev)
 {
-	device_t sm_dev = 0;
-	device_t bus_dev = 0;
+	struct device * sm_dev = 0;
+	struct device * bus_dev = 0;
 	int index = -1;
 	u32 deviceid;
 	u32 vendorid;
@@ -122,7 +123,7 @@ void sb600_enable(device_t dev)
 
 	u32 devfn;
 
-	printk_debug("sb600_enable()\n");
+	printk(BIOS_DEBUG, "sb600_enable()\n");
 
 /*
 *	0:12.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
@@ -150,13 +151,13 @@ void sb600_enable(device_t dev)
 	bus_dev = dev->bus->dev;
 	if ((bus_dev->vendor == PCI_VENDOR_ID_ATI) &&
 	    (bus_dev->device == PCI_DEVICE_ID_ATI_SB600_PCI)) {
-		devfn = (bus_dev->path.u.pci.devfn) & ~7;
+		devfn = (bus_dev->path.pci.devfn) & ~7;
 		sm_dev = find_sm_dev(bus_dev, devfn);
 		if (!sm_dev)
 			return;
 
 		/* something under 00:01.0 */
-		switch (dev->path.u.pci.devfn) {
+		switch (dev->path.pci.devfn) {
 		case 5 << 3:
 			;
 		}
@@ -164,7 +165,7 @@ void sb600_enable(device_t dev)
 		return;
 	}
 
-	i = (dev->path.u.pci.devfn) & ~7;
+	i = (dev->path.pci.devfn) & ~7;
 	i += (2 << 3);
 	for (devfn = (0x14 << 3); devfn <= i; devfn += (1 << 3)) {
 		sm_dev = find_sm_dev(dev, devfn);
@@ -174,7 +175,7 @@ void sb600_enable(device_t dev)
 	if (!sm_dev)
 		return;
 
-	switch (dev->path.u.pci.devfn - (devfn - (0x14 << 3))) {
+	switch (dev->path.pci.devfn - (devfn - (0x14 << 3))) {
 	case (0x12 << 3) | 0:
 		index = 8;
 		set_sm_enable_bits(sm_dev, 0xac, 1 << index,
@@ -187,7 +188,7 @@ void sb600_enable(device_t dev)
 	case (0x13 << 3) | 3:
 	case (0x13 << 3) | 4:
 	case (0x13 << 3) | 5:
-		index = dev->path.u.pci.devfn & 7;
+		index = dev->path.pci.devfn & 7;
 		index++;
 		index %= 6;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
@@ -217,19 +218,27 @@ void sb600_enable(device_t dev)
 		break;
 	case (0x14 << 3) | 5:
 	case (0x14 << 3) | 6:
-		index = dev->path.u.pci.devfn & 7;
+		index = dev->path.pci.devfn & 7;
 		index -= 5;
 		set_pmio_enable_bits(sm_dev, 0x59, 1 << index,
 				     (dev->enabled ? 0 : 1) << index);
 		index += 32 * 4;
 		break;
 	default:
-		printk_debug("unknown dev: %s deviceid=%4x\n", dev_path(dev),
+		printk(BIOS_DEBUG, "unknown dev: %s deviceid=%4x\n", dev_path(dev),
 			     deviceid);
 	}
 }
 
-struct chip_operations southbridge_amd_sb600_ops = {
-	CHIP_NAME("ATI SB600")
-	.enable_dev = sb600_enable,
+struct device_operations sb600 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
+			      .device = xz}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = 0,
+	.phase4_enable_disable           = sb600_enable,
+	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase6_init		 = NULL,
+	.ops_pci		 = &pci_dev_ops_pci,
 };

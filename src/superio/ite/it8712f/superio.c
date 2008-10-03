@@ -121,15 +121,18 @@ static struct device_operations ops = {
 	.init			= it8712f_init,
 };
 
-/* TODO: FDC, MIDI, GAME, IR. */
 static struct pnp_info pnp_dev_info[] = {
-	{&ops, IT8712F_SP1, PNP_IO0 | PNP_IRQ0, {0x7f8, 0}, },
-	{&ops, IT8712F_SP2, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x7f8, 0}, },
-	{&ops, IT8712F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
-	{&ops, IT8712F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4},},
-	{&ops, IT8712F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4}, },
-	{&ops, IT8712F_KBCM, PNP_IRQ0, },
-	{&ops, IT8712F_GPIO, },
+	{&ops, IT8712F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0xff8, 0},},
+	{&ops, IT8712F_SP1, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
+	{&ops, IT8712F_SP2, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
+	{&ops, IT8712F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0xffc, 0},},
+	{&ops, IT8712F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0xff8, 0}, {0xff8, 4},},
+	{&ops, IT8712F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0xfff, 0}, {0xfff, 4},},
+	{&ops, IT8712F_KBCM, PNP_IRQ0,},
+	{&ops, IT8712F_GPIO,},
+	{&ops, IT8712F_MIDI, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
+	{&ops, IT8712F_GAME, PNP_IO0, {0xfff, 0},},
+	{&ops, IT8712F_IR, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
 };
 
 static void enable_dev(struct device *dev)

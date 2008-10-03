@@ -27,6 +27,11 @@ void hardware_stage1(void)
 	/* Nothing to do for QEMU. */
 }
 
+void stop_ap(void)
+{
+	/* Nothing to do for QEMU. */
+}
+
 void disable_car(void)
 {
 }

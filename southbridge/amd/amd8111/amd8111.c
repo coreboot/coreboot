@@ -95,10 +95,10 @@ void amd8111_enable(struct device * dev)
 struct device_operations amd8111 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8111_PCI}}},
+			 .device = PCI_DEVICE_ID_AMD_8111_PCI}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
-	.phase4_enable_disable           = amd8111_enable,
+	.phase4_enable_disable	 = amd8111_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase6_init		 = NULL,

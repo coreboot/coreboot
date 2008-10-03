@@ -20,6 +20,8 @@
 #ifndef SB600_H
 #define SB600_H
 
+#include "chip.h"
+
 #define PCI_DEVICE_ID_ATI_SB600_LPC 0x438D
 #define PCI_DEVICE_ID_ATI_SB600_SATA 0x4380
 #define PCI_DEVICE_ID_ATI_SB600_IDE 0x438C
@@ -34,7 +36,6 @@
 #define PCI_DEVICE_ID_ATI_SB600_USB_2 0x4389
 #define PCI_DEVICE_ID_ATI_SB600_USB_3 0x438A
 #define PCI_DEVICE_ID_ATI_SB600_USB_4 0x438B
-
 extern void pm_iowrite(u8 reg, u8 value);
 extern u8 pm_ioread(u8 reg);
 extern void pm2_iowrite(u8 reg, u8 value);

@@ -187,7 +187,7 @@ static struct pci_operations lops_pci = {
 	/* .set_subsystem = pci_dev_set_subsystem, */
 };
 
-struct device_operations amd8111_ide = {
+struct device_operations sb600_sata = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
 			      .device = PCI_DEVICE_ID_ATI_SB600_SATA}}},

@@ -211,7 +211,7 @@ static struct pci_operations lops_pci = {
 struct device_operations sb600_lpc = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8111_IDE}}},
+			      .device = PCI_DEVICE_ID_ATI_SB600_LPC}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan_bus	= scan_status_bus,
 	.phase4_read_resources	 = sb600_lpc_read_resources,

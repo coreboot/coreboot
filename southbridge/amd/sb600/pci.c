@@ -120,13 +120,13 @@ static void pci_init(struct device *dev)
 	pci_write_config32(dev, 0x64, dword);
 }
 
-struct device_operations amd8111_pci = {
+struct device_operations sb600_pci = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
 			      .device = PCI_DEVICE_ID_ATI_SB600_PCI}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
-	.phase4_enable_disable           = amd8111_enable,
+	.phase4_enable_disable           = sb600_enable,
 	.phase4_read_resources	 = pci_bus_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,

@@ -143,6 +143,7 @@ static void it8716f_init(struct device *dev)
 	}
 }
 
+static void it8716f_setup_scan_bus(struct device *dev);
 struct device_operations it8716f_ops = {
 	.phase2_setup_scan_bus	 = it8716f_setup_scan_bus,
 	.phase4_read_resources	 = pnp_read_resources,
@@ -153,19 +154,19 @@ struct device_operations it8716f_ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{&ops, IT8716F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
-	{&ops, IT8716F_SP1, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
-	{&ops, IT8716F_SP2, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
-	{&ops, IT8716F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
-	{&ops, IT8716F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0},
+	{&it8716f_ops, IT8716F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
+	{&it8716f_ops, IT8716F_SP1, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
+	{&it8716f_ops, IT8716F_SP2, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
+	{&it8716f_ops, IT8716F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
+	{&it8716f_ops, IT8716F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0},
 	 {0x7f8, 0x4},},
-	{&ops, IT8716F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7ff, 0},
+	{&it8716f_ops, IT8716F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7ff, 0},
 	 {0x7ff, 0x4},},
-	{&ops, IT8716F_KBCM, PNP_IRQ0,},
-	{&ops, IT8716F_GPIO, PNP_IO1 | PNP_IO2, {0, 0}, {0x7f8, 0}, {0x7f8, 0},},
-	{&ops, IT8716F_MIDI, PNP_IO0 | PNP_IRQ0, {0x7fe, 0x4},},
-	{&ops, IT8716F_GAME, PNP_IO0, {0x7ff, 0},},
-	{&ops, IT8716F_IR,},
+	{&it8716f_ops, IT8716F_KBCM, PNP_IRQ0,},
+	{&it8716f_ops, IT8716F_GPIO, PNP_IO1 | PNP_IO2, {0, 0}, {0x7f8, 0}, {0x7f8, 0},},
+	{&it8716f_ops, IT8716F_MIDI, PNP_IO0 | PNP_IRQ0, {0x7fe, 0x4},},
+	{&it8716f_ops, IT8716F_GAME, PNP_IO0, {0x7ff, 0},},
+	{&it8716f_ops, IT8716F_IR,},
 };
 
 static void it8716f_setup_scan_bus(struct device *dev)

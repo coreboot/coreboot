@@ -95,6 +95,8 @@ static void f71805f_init(struct device *dev)
 	}
 }
 
+static void phase2_setup_scan_bus(struct device *dev);
+
 struct device_operations f71805f_ops = {
 	.phase2_setup_scan_bus   = phase2_setup_scan_bus,
 	.phase4_read_resources   = pnp_read_resources,
@@ -105,8 +107,8 @@ struct device_operations f71805f_ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &ops, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &f71805f_ops, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &f71805f_ops, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	/* TODO: Everything else */
 };
 

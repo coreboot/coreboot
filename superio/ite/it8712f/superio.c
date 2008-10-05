@@ -114,7 +114,7 @@ static void it8712f_pnp_enable(struct device * dev)
 	pnp_set_enable(dev, dev->enabled);
 	pnp_exit_ext_func_mode(dev);
 }
-
+static void it8712f_setup_scan_bus(struct device *dev);
 struct device_operations it8712f_ops = {
 	.phase2_setup_scan_bus	 = it8712f_setup_scan_bus,
 	.phase4_read_resources	 = pnp_read_resources,
@@ -126,13 +126,13 @@ struct device_operations it8712f_ops = {
 
 /* TODO: FDC, MIDI, GAME, IR. */
 static struct pnp_info pnp_dev_info[] = {
-	{&ops, IT8712F_SP1, PNP_IO0 | PNP_IRQ0, {0x7f8, 0}, },
-	{&ops, IT8712F_SP2, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x7f8, 0}, },
-	{&ops, IT8712F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
-	{&ops, IT8712F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4},},
-	{&ops, IT8712F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4}, },
-	{&ops, IT8712F_KBCM, PNP_IRQ0, },
-	{&ops, IT8712F_GPIO, },
+	{&it8712f_ops, IT8712F_SP1, PNP_IO0 | PNP_IRQ0, {0x7f8, 0}, },
+	{&it8712f_ops, IT8712F_SP2, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x7f8, 0}, },
+	{&it8712f_ops, IT8712F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
+	{&it8712f_ops, IT8712F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4},},
+	{&it8712f_ops, IT8712F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4}, },
+	{&it8712f_ops, IT8712F_KBCM, PNP_IRQ0, },
+	{&it8712f_ops, IT8712F_GPIO, },
 };
 
 static void it8712f_setup_scan_bus(struct device *dev)

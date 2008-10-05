@@ -189,7 +189,7 @@ void w83627hf_pnp_enable(struct device * dev)
                 pnp_exit_ext_func_mode(dev);  
         }
 }
-
+static void phase2_setup_scan_bus(struct device *dev);
 struct device_operations w83627hf_ops = {
 	.phase2_setup_scan_bus = phase2_setup_scan_bus,
 	.phase4_read_resources   = pnp_read_resources,
@@ -200,18 +200,18 @@ struct device_operations w83627hf_ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, W83627HF_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-        { &ops, W83627HF_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-        { &ops, W83627HF_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-        { &ops, W83627HF_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+        { &w83627hf_ops, W83627HF_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+        { &w83627hf_ops, W83627HF_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+        { &w83627hf_ops, W83627HF_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+        { &w83627hf_ops, W83627HF_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
         // No 4 { 0,},
-        { &ops, W83627HF_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
-        { &ops, W83627HF_CIR, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-        { &ops, W83627HF_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 0x4}, },
-        { &ops, W83627HF_GPIO2, },
-        { &ops, W83627HF_GPIO3, },
-        { &ops, W83627HF_ACPI, },
-        { &ops, W83627HF_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
+        { &w83627hf_ops, W83627HF_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
+        { &w83627hf_ops, W83627HF_CIR, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+        { &w83627hf_ops, W83627HF_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 0x4}, },
+        { &w83627hf_ops, W83627HF_GPIO2, },
+        { &w83627hf_ops, W83627HF_GPIO3, },
+        { &w83627hf_ops, W83627HF_ACPI, },
+        { &w83627hf_ops, W83627HF_HWM,  PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
 };
 
 

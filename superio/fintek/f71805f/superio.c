@@ -95,7 +95,15 @@ static void f71805f_init(struct device *dev)
 	}
 }
 
-static struct device_operations ops;
+struct device_operations f71805f_ops = {
+	.phase2_setup_scan_bus   = phase2_setup_scan_bus,
+	.phase4_read_resources   = pnp_read_resources,
+	.phase4_set_resources    = f71805f_pnp_set_resources,
+	.phase4_enable_disable   = f71805f_pnp_enable_resources,
+	.phase5_enable_resources = f71805f_pnp_enable,
+	.phase6_init             = f71805f_init,
+};
+
 static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
@@ -104,14 +112,5 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void phase2_setup_scan_bus(struct device *dev)
 {
-	pnp_enable_devices(dev, &ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &f71805f_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
-
-static struct device_operations ops = {
-	.phase2_setup_scan_bus   = phase2_setup_scan_bus,
-	.phase4_read_resources   = pnp_read_resources,
-	.phase4_set_resources    = f71805f_pnp_set_resources,
-	.phase4_enable_disable   = f71805f_pnp_enable_resources,
-	.phase5_enable_resources = f71805f_pnp_enable,
-	.phase6_init             = f71805f_init,
-};

@@ -1,8 +1,8 @@
 /*
+ *
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Corey Osgood <corey.osgood@gmail.com>
- *
+ * Copyright (C) 2008 Ronald G. Minnich <rminnich@gmail.com>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,39 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ *
  */
-
 {
-	device_operations = "f71805f_ops";
-	/* Floppy */
-	floppydev = "0x0";
-	floppyenable = "0";
-	floppyio = "0x3f0";
-	floppyirq = "6";
-	floppydrq = "2";
+	device_operations = "it8712f_ops";
+	/* COM1 */
+	com1dev = "1";
+	com1enable = "0";
+	com1io = "0x3f8";
+	com1irq = "4";
 
-	/* Parallel port */
-	ppdev = "1";
-	ppenable = "1";
-	ppio = "0x378";
-	ppirq = "7";
-	
-	/* Note: renaming from comx to spx may have broken the DTS
-	 * We'll find out later */
-	/* Serial Port 1 */
-	sp1dev = "2";
-	sp1enable = "1";
-	sp1io = "0x3f8";
-	sp1irq = "4";
+	/* COM2 */
+	com2dev = "2";
+	com2enable = "0";
+	com2io = "0x2f8";
+	com2irq = "3";
 
-	/* Serial Port 2 */
-	sp2dev = "3";
-	sp2enable = "1";
-	sp2io = "0x2f8";
-	sp2irq = "3";
-
-	/* Hardware Monitor */
-	hwmdev = "0xb";
-	hwmenable = "0";
-	hwmio = "0xec00";
+	/* Keyboard */
+	kbdev = "5";
+	kbenable = "0";
+	kbio = "0x60";
+	kbio2 = "0x64";
+	kbirq = "1";
+	kbirq2 = "2";
 };

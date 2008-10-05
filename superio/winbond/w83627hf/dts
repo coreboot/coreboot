@@ -19,6 +19,7 @@
  */
 
 {
+	device_operations = "w83627hf_ops";
 	/* To override any of these, put the over-ride in mainboard dts. */
 
 	/* Floppy */

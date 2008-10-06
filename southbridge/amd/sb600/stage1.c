@@ -26,17 +26,49 @@
 #include <statictree.h>
 #include <config.h>
 #include <io.h>
-BORKED
-#define SMBUS_IO_BASE 0x1000	/* Is it a temporary SMBus I/O base address? */
-	 /*SIZE 0x40 */
+#include <cpu.h>
+#include "sb600_smbus.h"
 
-/* Get SB ASIC Revision.*/
-static u8 get_sb600_revision()
+
+void pmio_write_index(unsigned long port_base, u8 reg, u8 value)
+{
+	outb(reg, port_base);
+	outb(value, port_base + 1);
+}
+
+u8 pmio_read_index(unsigned long port_base, u8 reg)
+{
+	outb(reg, port_base);
+	return inb(port_base + 1);
+}
+
+void pm_iowrite(u8 reg, u8 value)
+{
+	unsigned long port_base = 0xcd6;
+	pmio_write_index(port_base, reg, value);
+}
+
+u8 pm_ioread(u8 reg)
+{
+	unsigned long port_base = 0xcd6;
+	return pmio_read_index(port_base, reg);
+}
+
+void pm2_iowrite(u8 reg, u8 value)
+{
+	unsigned long port_base = 0xcd0;
+	pmio_write_index(port_base, reg, value);
+}
+
+u8 pm2_ioread(u8 reg)
+{
+	unsigned long port_base = 0xcd0;
+	return pmio_read_index(port_base, reg);
+}/* Get SB ASIC Revision.*/
+static u8 get_sb600_revision(void)
 {
 	u32 dev;
-	pci_conf1_find_device(0x1002,  0x4385, &dev);
-
-	if (dev == PCI_DEV_INVALID) {
+	if (!pci_conf1_find_device(0x1002,  0x4385, &dev)){
 		die("SMBUS controller not found\r\n");
 	}
 	return pci_conf1_read_config8(dev, 0x08);
@@ -51,7 +83,7 @@ static u8 get_sb600_revision()
 *	LPC ROM size,
 * NOTE: Call me ASAP, because I will reset LPC ROM size!
 ***************************************/
-static void sb600_lpc_init(void)
+void sb600_lpc_init(void)
 {
 	u8 reg8;
 	u32 reg32;
@@ -89,7 +121,7 @@ static void sb600_lpc_init(void)
 }
 
 /* what is its usage? */
-static u32 get_sbdn(u32 bus)
+u32 get_sbdn(u32 bus)
 {
 	u32 dev;
 
@@ -99,7 +131,7 @@ static u32 get_sbdn(u32 bus)
 }
 
 
-static u8 dual_core()
+u8 dual_core(void)
 {
 	if(((cpuid_eax(0x80000000) & ~0xff) >= 8)) {
 		if(cpuid_ecx(0x80000008) & 1)
@@ -112,72 +144,64 @@ static u8 dual_core()
 SB600 VFSMAF (VID/FID System Management Action Field)  is 010b by default.
 RPR 2.3.3 C-state and VID/FID change for the K8 platform.
 */
-static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
+void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 {
 	u8 byte;
-	byte = pmio_read(0x9a);
+	byte = pm_ioread(0x9a);
 	byte &= ~0x34;
 	if(dual_core())
 		byte |= 0x34;
 	else
 		byte |= 0x04;
-	pmio_write(0x9a, byte);
+	pm_iowrite(0x9a, byte);
 
-	byte = pmio_read(0x8f);
+	byte = pm_ioread(0x8f);
 	byte &= ~0x30;
 	byte |= 0x20;
-	pmio_write(0x8f, byte);
+	pm_iowrite(0x8f, byte);
 
-	pmio_write(0x8b, 0x01);
-	pmio_write(0x8a, 0x90);
+	pm_iowrite(0x8b, 0x01);
+	pm_iowrite(0x8a, 0x90);
 
 	if(get_sb600_revision() > 0x13)
-		pmio_write(0x88, 0x10);
+		pm_iowrite(0x88, 0x10);
 	else
-		pmio_write(0x88, 0x06);
+		pm_iowrite(0x88, 0x06);
 
-	byte = pmio_read(0x7c);
+	byte = pm_ioread(0x7c);
 	byte &= ~0x01;
 	byte |= 0x01;
-	pmio_write(0x7c, byte);
+	pm_iowrite(0x7c, byte);
 
 	/*Must be 0 for K8 platform.*/
-	byte = pmio_read(0x68);
+	byte = pm_ioread(0x68);
 	byte &= ~0x01;
-	pmio_write(0x68, byte);
+	pm_iowrite(0x68, byte);
 	/*Must be 0 for K8 platform.*/
-	byte = pmio_read(0x8d);
+	byte = pm_ioread(0x8d);
 	byte &= ~(1<<6);
-	pmio_write(0x8d, byte);
+	pm_iowrite(0x8d, byte);
 
-	byte = pmio_read(0x61);
+	byte = pm_ioread(0x61);
 	byte &= ~0x04;
-	pmio_write(0x61, byte);
+	pm_iowrite(0x61, byte);
 
-	byte = pmio_read(0x42);
+	byte = pm_ioread(0x42);
 	byte &= ~0x04;
-	pmio_write(0x42, byte);
+	pm_iowrite(0x42, byte);
 
 	if(get_sb600_revision() == 0x14) {
-		pmio_write(0x89, 0x10);
+		pm_iowrite(0x89, 0x10);
 
-		byte = pmio_read(0x52);
+		byte = pm_ioread(0x52);
 		byte |= 0x80;
-		pmio_write(0x52, byte);
+		pm_iowrite(0x52, byte);
 	}
 }
 
+void set_bios_reset(void);
 
-static void hard_reset(void)
-{
-	set_bios_reset();
-
-	/* full reset */
-	outb(0x0a, 0x0cf9);
-	outb(0x0e, 0x0cf9);
-}
-
-static void soft_reset(void)
+void soft_reset(void)
 {
 	set_bios_reset();
 	/* link reset */
@@ -185,7 +209,7 @@ static void soft_reset(void)
 }
 
 
-static void sb600_pci_port80()
+void sb600_pci_port80(void)
 {
 	u8 byte;
 	u32 dev;
@@ -220,7 +244,7 @@ static void sb600_pci_port80()
 	pci_conf1_write_config8(dev, 0x4A, byte);
 }
 
-static void sb600_lpc_port80(void)
+void sb600_lpc_port80(void)
 {
 	u8 byte;
 	u32 dev;
@@ -241,17 +265,19 @@ static void sb600_lpc_port80(void)
 
 
 /* sbDevicesPorInitTable */
-static void sb600_devices_por_init()
+static void sb600_devices_por_init(void)
 {
+	void alink_ab_indx(unsigned int reg_space, unsigned int reg_addr,
+			  unsigned int mask, unsigned int val);
+	void alink_ax_indx(unsigned int space /*c or p? */ , unsigned int axindc,
+			  unsigned int mask, unsigned int val);
 	u32 dev;
 	u8 byte;
 
 	printk(BIOS_INFO, "sb600_devices_por_init()\n");
 	/* SMBus Device, BDF:0-20-0 */
 	printk(BIOS_INFO, "sb600_devices_por_init(): SMBus Device, BDF:0-20-0\n");
-	pci_conf1_find_device(0x1002,  0x4385, &dev);
-
-	if (dev == PCI_DEV_INVALID) {
+	if (!pci_conf1_find_device(0x1002,  0x4385, &dev)){
 		die("SMBUS controller not found\r\n");
 	}
 	printk(BIOS_INFO, "SMBus controller enabled, sb revision is 0x%x\r\n",
@@ -436,94 +462,94 @@ static void sb600_devices_por_init()
 * The index address is first programmed into IO reg 0xcd6.
 * Read or write values are accessed through IO reg 0xcd7.
 */
-static void sb600_pmio_por_init()
+static void sb600_pmio_por_init(void)
 {
 	u8 byte;
 
 	printk(BIOS_INFO, "sb600_pmio_por_init()\n");
 	/* K8KbRstEn, KB_RST# control for K8 system. */
-	byte = pmio_read(0x66);
+	byte = pm_ioread(0x66);
 	byte |= 0x20;
-	pmio_write(0x66, byte);
+	pm_iowrite(0x66, byte);
 
 	/* RPR2.3.4 S3/S4/S5 Function for the K8 Platform. */
-	byte = pmio_read(0x52);
+	byte = pm_ioread(0x52);
 	byte &= 0xc0;
 	byte |= 0x08;
-	pmio_write(0x52, byte);
+	pm_iowrite(0x52, byte);
 
 	/* C state enable and SLP enable in C states. */
-	byte = pmio_read(0x67);
+	byte = pm_ioread(0x67);
 	byte |= 0x6;
-	pmio_write(0x67, byte);
+	pm_iowrite(0x67, byte);
 
 	/* CIM sets 0x0e, but bit2 is for P4 system. */
-	byte = pmio_read(0x68);
+	byte = pm_ioread(0x68);
 	byte &= 0xf0;
 	byte |= 0x0c;
-	pmio_write(0x68, byte);
+	pm_iowrite(0x68, byte);
 
 	/* Watch Dog Timer Control
 	 * Set watchdog time base to 0xfec000f0 to avoid SCSI card boot failure.
 	 * But I don't find WDT is enabled in SMBUS 0x41 bit3 in CIM.
 	 */
-	pmio_write(0x6c, 0xf0);
-	pmio_write(0x6d, 0x00);
-	pmio_write(0x6e, 0xc0);
-	pmio_write(0x6f, 0xfe);
+	pm_iowrite(0x6c, 0xf0);
+	pm_iowrite(0x6d, 0x00);
+	pm_iowrite(0x6e, 0xc0);
+	pm_iowrite(0x6f, 0xfe);
 
 	/* rpr2.14: Enables HPET periodical mode */
-	byte = pmio_read(0x9a);
+	byte = pm_ioread(0x9a);
 	byte |= 1 << 7;
-	pmio_write(0x9a, byte);
-	byte = pmio_read(0x9f);
+	pm_iowrite(0x9a, byte);
+	byte = pm_ioread(0x9f);
 	byte |= 1 << 5;
-	pmio_write(0x9f, byte);
-	byte = pmio_read(0x9e);
+	pm_iowrite(0x9f, byte);
+	byte = pm_ioread(0x9e);
 	byte |= (1 << 6) | (1 << 7);
-	pmio_write(0x9e, byte);
+	pm_iowrite(0x9e, byte);
 
 	/* rpr2.14: Hides SM bus controller Bar1 where stores HPET MMIO base address */
-	byte = pmio_read(0x55);
+	byte = pm_ioread(0x55);
 	byte |= 1 << 7;
-	pmio_write(0x55, byte);
+	pm_iowrite(0x55, byte);
 
 	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridage */
-	byte = pmio_read(0x52);
+	byte = pm_ioread(0x52);
 	byte |= 1 << 6;
-	pmio_write(0x52, byte);
+	pm_iowrite(0x52, byte);
 
 	/* rpr2.22: PLL Reset */
-	byte = pmio_read(0x86);
+	byte = pm_ioread(0x86);
 	byte |= 1 << 7;
-	pmio_write(0x86, byte);
+	pm_iowrite(0x86, byte);
 
 	/* rpr2.3.3 */
 	/* This provides 16us delay before the assertion of LDTSTP# when C3 is entered.
 	* The delay will allow USB DMA to go on in a continuous manner
 	*/
-	pmio_write(0x89, 0x10);
+	pm_iowrite(0x89, 0x10);
 	/* Set this bit to allow pop-up request being latched during the minimum LDTSTP# assertion time */
-	byte = pmio_read(0x52);
+	byte = pm_ioread(0x52);
 	byte |= 1 << 7;
-	pmio_write(0x52, byte);
+	pm_iowrite(0x52, byte);
 
 	/* rpr2.15: ASF Remote Control Action */
-	byte = pmio_read(0x9f);
+	byte = pm_ioread(0x9f);
 	byte |= 1 << 6;
-	pmio_write(0x9f, byte);
+	pm_iowrite(0x9f, byte);
 
 	/* rpr2.19: Enabling Spread Spectrum */
-	byte = pmio_read(0x42);
+	byte = pm_ioread(0x42);
 	byte |= 1 << 7;
-	pmio_write(0x42, byte);
+	pm_iowrite(0x42, byte);
 }
 
 /*
 * Compliant with CIM_48's sbPciCfg.
 * Add any south bridge setting.
 */
-static void sb600_pci_cfg()
+static void sb600_pci_cfg(void)
 {
 	u32 dev;
 	u8 byte;
@@ -546,19 +572,19 @@ static void sb600_pci_cfg()
 
 	/* Set to 1 to reset USB on the software (such as IO-64 or IO-CF9 cycles) 
 	 * generated PCIRST#. */
-	byte = pmio_read(0x65);
+	byte = pm_ioread(0x65);
 	byte |= (1 << 4);
-	pmio_write(0x65, byte);
+	pm_iowrite(0x65, byte);
 	/*For A13 and above. */
 	if (get_sb600_revision() > 0x12) {
 		/* rpr2.16 C-State Reset, PMIO 0x9f[7]. */
-		byte = pmio_read(0x9f);
+		byte = pm_ioread(0x9f);
 		byte |= (1 << 7);
-		pmio_write(0x9f, byte);
+		pm_iowrite(0x9f, byte);
 		/* rpr2.17 PCI Clock Period will increase to 30.8ns. 0x53[7]. */
-		byte = pmio_read(0x53);
+		byte = pm_ioread(0x53);
 		byte |= (1 << 7);
-		pmio_write(0x53, byte);
+		pm_iowrite(0x53, byte);
 	}
 
 	/* IDE Device, BDF:0-20-1 */
@@ -612,7 +638,7 @@ static void sb600_pci_cfg()
 /*
 * Compliant with CIM_48's ATSBPowerOnResetInitJSP
 */
-static void sb600_por_init()
+static void sb600_por_init(void)
 {
 	/* sbDevicesPorInitTable + sbK8PorInitTable */
 	sb600_devices_por_init();
@@ -625,7 +651,7 @@ static void sb600_por_init()
 * Compliant with CIM_48's AtiSbBeforePciInit
 * It should be called during early POST after memory detection and BIOS shadowing but before PCI bus enumeration.
 */
-static void sb600_before_pci_init()
+void sb600_before_pci_init(void)
 {
 	sb600_pci_cfg();
 }
@@ -633,7 +659,7 @@ static void sb600_before_pci_init()
 /*
 * This function should be called after enable_sb600_smbus().
 */
-static void sb600_stage1(void)
+void sb600_stage1(void)
 {
 	printk(BIOS_INFO, "sb600_early_setup()\n");
 	sb600_por_init();

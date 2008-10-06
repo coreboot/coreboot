@@ -20,4 +20,5 @@
 
 {
 	device_operations = "sb600_hda";
+	hda_viddid = "0";
 };

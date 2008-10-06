@@ -76,7 +76,7 @@ static void rs690_gfx_read_resources(struct device * dev)
 static void internal_gfx_pci_dev_init(struct device *dev)
 {
 	unsigned short deviceid, vendorid;
-	struct southbridge_amd_rs690_gfx_dts_config *cfg = dev->device_configuration;
+	struct southbridge_amd_rs690_gfx_config *cfg = dev->device_configuration;
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
 	vendorid = pci_read_config16(dev, PCI_VENDOR_ID);
 	printk(BIOS_INFO, "internal_gfx_pci_dev_init device=%x, vendor=%x, vga_rom_address=0x%x.\n",
@@ -126,10 +126,10 @@ static void rs690_internal_gfx_enable(struct device * dev)
 {
 	u32 l_dword;
 	int i;
-	struct device * k8_f0 = 0, k8_f2 = 0;
+	struct device * k8_f0 = 0, *k8_f2 = 0;
 	struct device * nb_dev = dev_find_slot(0, 0);
 
-	printk(BIOS_INFO, "rs690_internal_gfx_enable dev=0x%x, nb_dev=0x%x.\n", dev,
+	printk(BIOS_INFO, "rs690_internal_gfx_enable dev=%p, nb_dev=%p.\n", dev,
 		    nb_dev);
 
 	/* set APERTURE_SIZE, 128M. */
@@ -214,7 +214,7 @@ static void single_port_configuration(struct device * nb_dev, struct device * de
 {
 	u8 result, width;
 	u32 reg32;
-	struct southbridge_amd_rs690_gfx_dts_config *cfg = nb_dev->device_configuration;
+	struct southbridge_amd_rs690_gfx_config *cfg = nb_dev->device_configuration;
 
 	printk(BIOS_INFO, "rs690_gfx_init single_port_configuration.\n");
 
@@ -271,8 +271,7 @@ static void dual_port_configuration(struct device * nb_dev, struct device * dev)
 {
 	u8 result, width;
 	u32 reg32;
-	struct southbridge_amd_rs690_config *cfg =
-		    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
+	struct southbridge_amd_rs690_gfx_config *cfg = nb_dev->device_configuration;
 
 	/* step 15: Training for Device 2 */
 	set_nbmisc_enable_bits(nb_dev, 0x8, 1 << 4, 0 << 4);
@@ -350,8 +349,7 @@ static void dynamic_link_width_control(struct device * nb_dev, struct device * d
 {
 	u32 reg32;
 	struct device * sb_dev;
-	struct southbridge_amd_rs690_config *cfg =
-	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
+	struct southbridge_amd_rs690_gfx_config *cfg = nb_dev->device_configuration;
 
 	/* step 5.9.1.1 */
 	reg32 = nbpcie_p_read_index(dev, 0xa2);
@@ -395,10 +393,9 @@ static void dynamic_link_width_control(struct device * nb_dev, struct device * d
 void rs690_gfx_init(struct device * nb_dev, struct device * dev, u32 port)
 {
 	u16 reg16;
-	struct southbridge_amd_rs690_config *cfg =
-	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
+	struct southbridge_amd_rs690_gfx_config *cfg = nb_dev->device_configuration;
 
-	printk(BIOS_INFO, "rs690_gfx_init, nb_dev=0x%x, dev=0x%x, port=0x%x.\n",
+	printk(BIOS_INFO, "rs690_gfx_init, nb_dev=%p dev=%p, port=0x%x.\n",
 		    nb_dev, dev, port);
 
 	/* step 0, REFCLK_SEL, skip A11 revision */
@@ -572,7 +569,7 @@ struct device_operations rs690_gfx = {
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
 			      .device = PCI_DEVICE_ID_ATI_RS690MT_INT_GFX}}},
 	.constructor		 = default_device_constructor,
-	.phase2_setup_scanbus	= rs690_internal_gfx_enable,
+	.phase2_setup_scan_bus	= rs690_internal_gfx_enable,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = rs690_gfx_read_resources,
 	.phase4_set_resources	 = rs690_gfx_set_resources,

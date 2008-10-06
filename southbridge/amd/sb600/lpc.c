@@ -109,7 +109,7 @@ static void sb600_lpc_enable_childrens_resources(struct device * dev)
 		struct device * child;
 		for (child = dev->link[link].children; child;
 		     child = child->sibling) {
-			enable_resources(child);
+			dev_phase5(child);
 			if (child->have_resources
 			    && (child->path.type == DEVICE_PATH_PNP)) {
 				for (i = 0; i < child->resources; i++) {
@@ -120,8 +120,7 @@ static void sb600_lpc_enable_childrens_resources(struct device * dev)
 						continue;
 					base = res->base;
 					end = resource_end(res);
-					printk_debug
-					    ("sb600 lpc decode:%s, base=0x%08x, end=0x%08x\n",
+					printk(BIOS_DEBUG, "sb600 lpc decode:%s, base=0x%08lx, end=0x%08lx\n",
 					     dev_path(child), base, end);
 					switch (base) {
 					case 0x60:	/*  KB */
@@ -213,7 +212,7 @@ struct device_operations sb600_lpc = {
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_ATI_SB600_LPC}}},
 	.constructor		 = default_device_constructor,
-	.phase3_scan_bus	= scan_status_bus,
+	.phase3_scan	= scan_static_bus,
 	.phase4_read_resources	 = sb600_lpc_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = sb600_lpc_enable_resources,

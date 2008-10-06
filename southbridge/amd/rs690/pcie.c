@@ -51,10 +51,10 @@ PCIE_CFG AtiPcieCfg = {
 	0			/* GppPwr */
 };
 
-static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port);
-static void ValidatePortEn(device_t nb_dev);
+static void PciePowerOffGppPorts(struct device * nb_dev, struct device * dev, u32 port);
+static void ValidatePortEn(struct device * nb_dev);
 
-static void ValidatePortEn(device_t nb_dev)
+static void ValidatePortEn(struct device * nb_dev)
 {
 }
 
@@ -63,11 +63,11 @@ static void ValidatePortEn(device_t nb_dev)
 * Compliant with CIM_33's PCIEPowerOffGppPorts
 * Power off unused GPP lines
 *****************************************************************/
-static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
+static void PciePowerOffGppPorts(struct device * nb_dev, struct device * dev, u32 port)
 {
 	u32 reg;
 	u16 state_save;
-	struct southbridge_amd_rs690_pcie_dts_config *cfg = nb_dev->device_configuration;
+	struct southbridge_amd_rs690_pcie_config *cfg = nb_dev->device_configuration;
 	u8 state = cfg->port_enable;
 
 	if (!(AtiPcieCfg.Config & PCIE_DISABLE_HIDE_UNUSED_PORTS))
@@ -109,7 +109,7 @@ static void pcie_init(struct device *dev)
 	/* Enable pci error detecting */
 	u32 dword;
 
-	printk_debug("pcie_init in rs690_pcie.c\n");
+	printk(BIOS_DEBUG, "pcie_init in rs690_pcie.c\n");
 
 	/* System error enable */
 	dword = pci_read_config32(dev, 0x04);
@@ -121,10 +121,10 @@ static void pcie_init(struct device *dev)
 
 /**********************************************************************
 **********************************************************************/
-static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
+static void switching_gpp_configurations(struct device * nb_dev, struct device * sb_dev)
 {
 	u32 reg;
-	struct southbridge_amd_rs690_pcie_dts_config *cfg = nb_dev->device_configuration;
+	struct southbridge_amd_rs690_pcie_config *cfg = nb_dev->device_configuration;
 
 	/* enables GPP reconfiguration */
 	reg = nbmisc_read_index(nb_dev, PCIE_NBCFG_REG7);
@@ -165,9 +165,9 @@ static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
 * The rs690 uses NBCONFIG:0x1c (BAR3) to map the PCIE Extended Configuration
 * Space to a 256MB range within the first 4GB of addressable memory.
 *****************************************************************/
-void enable_pcie_bar3(device_t nb_dev)
+void enable_pcie_bar3(struct device * nb_dev)
 {
-	printk_debug("enable_pcie_bar3()\n");
+	printk(BIOS_DEBUG, "enable_pcie_bar3()\n");
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
 	set_nbcfg_enable_bits(nb_dev, 0x84, 7 << 16, 0 << 16);
 
@@ -181,9 +181,9 @@ void enable_pcie_bar3(device_t nb_dev)
 * We should disable bar3 when we want to exit rs690_enable, because bar3 will be
 * remapped in set_resource later.
 *****************************************************************/
-void disable_pcie_bar3(device_t nb_dev)
+void disable_pcie_bar3(struct device * nb_dev)
 {
-	printk_debug("disable_pcie_bar3()\n");
+	printk(BIOS_DEBUG, "disable_pcie_bar3()\n");
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3. */
 	pci_write_config32(nb_dev, 0x1C, 0);	/* clear BAR3 address */
 	ProgK8TempMmioBase(0, EXT_CONF_BASE_ADDRESS, TEMP_MMIO_BASE_ADDRESS);
@@ -198,13 +198,13 @@ void disable_pcie_bar3(device_t nb_dev)
 * port:
 *	p2p bridge number, 4-8
 *****************************************/
-void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
+void rs690_gpp_sb_init(struct device * nb_dev, struct device * dev, u32 port)
 {
 	u8 reg8;
 	u16 reg16;
-	device_t sb_dev;
-	struct southbridge_amd_rs690_pcie_dts_config *cfg = nb_dev->device_configuration;
-	printk_debug("gpp_sb_init nb_dev=0x%x, dev=0x%x, port=0x%x\n", nb_dev, dev, port);
+	struct device * sb_dev;
+	struct southbridge_amd_rs690_pcie_config *cfg = nb_dev->device_configuration;
+	printk(BIOS_DEBUG, "gpp_sb_init nb_dev=%p, dev=%p, port=0x%x\n", nb_dev, dev, port);
 
 	/* init GPP core */
 	set_pcie_enable_bits(nb_dev, 0x20 | PCIE_CORE_INDEX_GPPSB, 1 << 8,
@@ -260,7 +260,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 			PcieReleasePortTraining(nb_dev, dev, port);
 			if (!(AtiPcieCfg.Config & PCIE_GPP_COMPLIANCE)) {
 				u8 res = PcieTrainPort(nb_dev, dev, port);
-				printk_debug("PcieTrainPort port=0x%x result=%d\n", port, res);
+				printk(BIOS_DEBUG, "PcieTrainPort port=0x%x result=%d\n", port, res);
 				if (res) {
 					AtiPcieCfg.PortDetect |= 1 << port;
 				}
@@ -331,10 +331,10 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 /*****************************************
 * Compliant with CIM_33's PCIEConfigureGPPCore
 *****************************************/
-void config_gpp_core(device_t nb_dev, device_t sb_dev)
+void config_gpp_core(struct device * nb_dev, struct device * sb_dev)
 {
 	u32 reg;
-	struct southbridge_amd_rs690_pcie_dts_config *cfg = nb_dev->chip_info;
+	struct southbridge_amd_rs690_pcie_config *cfg = nb_dev->device_configuration;
 
 	reg = nbmisc_read_index(nb_dev, 0x20);
 	if (AtiPcieCfg.Config & PCIE_ENABLE_STATIC_DEV_REMAP)
@@ -352,10 +352,9 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 /*****************************************
 * Compliant with CIM_33's PCIEMiscClkProg
 *****************************************/
-void pcie_config_misc_clk(device_t nb_dev)
+void pcie_config_misc_clk(struct device * nb_dev)
 {
 	u32 reg;
-	struct bus pbus; /* fake bus for dev0 fun1 */
 
 	reg = pci_read_config32(nb_dev, 0x4c);
 	reg |= 1 << 0;
@@ -368,9 +367,9 @@ void pcie_config_misc_clk(device_t nb_dev)
 		set_pcie_enable_bits(nb_dev, 0x11 | PCIE_CORE_INDEX_GFX, (3 << 6) | (~0xf), 3 << 6);
 
 		/* LCLK Clock Gating */
-		reg =  pci_cf8_conf1.read32(&pbus, 0, 1, 0x94);
+		reg =  pci_conf1_read_config32(PCI_BDF(0, 0, 1), 0x94);
 		reg &= ~(1 << 16);
-		pci_cf8_conf1.write32(&pbus, 0, 1, 0x94, reg);
+		pci_conf1_write_config32(PCI_BDF(0, 0, 1), 0x94, reg);
 	}
 
 	if (AtiPcieCfg.Config & PCIE_GPP_CLK_GATING) {
@@ -380,9 +379,9 @@ void pcie_config_misc_clk(device_t nb_dev)
 		set_pcie_enable_bits(nb_dev, 0x11 | PCIE_CORE_INDEX_GPPSB, (3 << 6) | (~0xf), 3 << 6);
 
 		/* LCLK Clock Gating */
-		reg =  pci_cf8_conf1.read32(&pbus, 0, 1, 0x94);
+		reg =  pci_conf1_read_config32(PCI_BDF(0, 0, 1),0x94);
 		reg &= ~(1 << 24);
-		pci_cf8_conf1.write32(&pbus, 0, 1, 0x94, reg);
+		pci_conf1_write_config32(PCI_BDF(0, 0, 1), 0x94, reg);
 	}
 
 	reg = pci_read_config32(nb_dev, 0x4c);

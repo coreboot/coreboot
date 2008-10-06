@@ -24,6 +24,7 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
+#include <io.h>
 #include <statictree.h>
 #include <config.h>
 #include "sb600.h"
@@ -36,8 +37,8 @@ static struct device * find_sm_dev(struct device * dev, u32 devfn)
 	if (!sm_dev)
 		return sm_dev;
 
-	if ((sm_dev->vendor != PCI_VENDOR_ID_ATI) ||
-	    ((sm_dev->device != PCI_DEVICE_ID_ATI_SB600_SM))) {
+	if ((sm_dev->id.pci.vendor != PCI_VENDOR_ID_ATI) ||
+	    ((sm_dev->id.pci.device != PCI_DEVICE_ID_ATI_SB600_SM))) {
 		u32 id;
 		id = pci_read_config32(sm_dev, PCI_VENDOR_ID);
 		if ((id !=
@@ -61,41 +62,12 @@ void set_sm_enable_bits(struct device * sm_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-static void pmio_write_index(unsigned long port_base, u8 reg, u8 value)
-{
-	outb(reg, port_base);
-	outb(value, port_base + 1);
-}
-
-static u8 pmio_read_index(unsigned long port_base, u8 reg)
-{
-	outb(reg, port_base);
-	return inb(port_base + 1);
-}
-
-void pm_iowrite(u8 reg, u8 value)
-{
-	unsigned long port_base = 0xcd6;
-	pmio_write_index(port_base, reg, value);
-}
-
-u8 pm_ioread(u8 reg)
-{
-	unsigned long port_base = 0xcd6;
-	return pmio_read_index(port_base, reg);
-}
-
-void pm2_iowrite(u8 reg, u8 value)
-{
-	unsigned long port_base = 0xcd0;
-	pmio_write_index(port_base, reg, value);
-}
-
-u8 pm2_ioread(u8 reg)
-{
-	unsigned long port_base = 0xcd0;
-	return pmio_read_index(port_base, reg);
-}
+void pmio_write_index(unsigned long port_base, u8 reg, u8 value);
+u8 pmio_read_index(unsigned long port_base, u8 reg);
+u8 pm_ioread(u8 reg);
+void pm_iowrite(u8 reg, u8 value);
+void pm2_iowrite(u8 reg, u8 value);
+u8 pm2_ioread(u8 reg);
 
 static void set_pmio_enable_bits(struct device * sm_dev, u32 reg_pos,
 				 u32 mask, u32 val)
@@ -140,17 +112,17 @@ void sb600_enable(struct device * dev)
 *	0:14.5  ACI	bit 0 of pm_io 0x59 : 0 - enable, default
 *	0:14.6  MCI	bit 1 of pm_io 0x59 : 0 - enable, default
 */
-	if (dev->device == 0x0000) {
+	if (dev->id.pci.device == 0x0000) {
 		vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
 		deviceid = (vendorid >> 16) & 0xffff;
 		vendorid &= 0xffff;
 	} else {
-		vendorid = dev->vendor;
-		deviceid = dev->device;
+		vendorid = dev->id.pci.vendor;
+		deviceid = dev->id.pci.device;
 	}
 	bus_dev = dev->bus->dev;
-	if ((bus_dev->vendor == PCI_VENDOR_ID_ATI) &&
-	    (bus_dev->device == PCI_DEVICE_ID_ATI_SB600_PCI)) {
+	if ((bus_dev->id.pci.vendor == PCI_VENDOR_ID_ATI) &&
+	    (bus_dev->id.pci.device == PCI_DEVICE_ID_ATI_SB600_PCI)) {
 		devfn = (bus_dev->path.pci.devfn) & ~7;
 		sm_dev = find_sm_dev(bus_dev, devfn);
 		if (!sm_dev)
@@ -233,7 +205,7 @@ void sb600_enable(struct device * dev)
 struct device_operations sb600 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = xz}}},
+			      .device = PCI_DEVICE_ID_ATI_SB600_LPC}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
 	.phase4_enable_disable           = sb600_enable,

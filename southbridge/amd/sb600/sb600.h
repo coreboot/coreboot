@@ -35,12 +35,12 @@
 #define PCI_DEVICE_ID_ATI_SB600_USB_3 0x438A
 #define PCI_DEVICE_ID_ATI_SB600_USB_4 0x438B
 
-extern void pm_iowrite(u8 reg, u8 value);
-extern u8 pm_ioread(u8 reg);
-extern void pm2_iowrite(u8 reg, u8 value);
-extern u8 pm2_ioread(u8 reg);
-extern void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
+void pm_iowrite(u8 reg, u8 value);
+u8 pm_ioread(u8 reg);
+void pm2_iowrite(u8 reg, u8 value);
+u8 pm2_ioread(u8 reg);
+void set_sm_enable_bits(struct device * sm_dev, u32 reg_pos, u32 mask, u32 val);
 
-void sb600_enable(device_t dev);
+void sb600_enable(struct device * dev);
 
 #endif /* SB600_H */

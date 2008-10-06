@@ -33,112 +33,112 @@
 #define NBMISC_INDEX		0x60
 #define NBMC_INDEX 		0xE8
 
-static u32 nb_read_index(u32 dev, u32 index_reg, u32 index)
+static u32 nb_bdf_read_index(u32 bdf, u32 index_reg, u32 index)
 {
-	pci_conf1_write_config32(dev, index_reg, index);
-	return pci_conf1_read_config32(dev, index_reg + 0x4);
+	pci_conf1_write_config32(bdf, index_reg, index);
+	return pci_conf1_read_config32(bdf, index_reg + 0x4);
 }
 
-static void nb_write_index(u32 dev, u32 index_reg, u32 index, u32 data)
+static void nb_bdf_write_index(u32 bdf, u32 index_reg, u32 index, u32 data)
 {
-	pci_conf1_write_config32(dev, index_reg, index /* | 0x80 */ );
-	pci_conf1_write_config32(dev, index_reg + 0x4, data);
+	pci_conf1_write_config32(bdf, index_reg, index /* | 0x80 */ );
+	pci_conf1_write_config32(bdf, index_reg + 0x4, data);
 }
 
-static u32 nbmisc_read_index(u32 nb_dev, u32 index)
+static u32 nbmisc_bdf_read_index(u32 nb_bdf, u32 index)
 {
-	return nb_read_index((nb_dev), NBMISC_INDEX, (index));
+	return nb_bdf_read_index((nb_bdf), NBMISC_INDEX, (index));
 }
 
-static void nbmisc_write_index(u32 nb_dev, u32 index, u32 data)
+static void nbmisc_bdf_write_index(u32 nb_bdf, u32 index, u32 data)
 {
-	nb_write_index((nb_dev), NBMISC_INDEX, ((index) | 0x80), (data));
+	nb_bdf_write_index((nb_bdf), NBMISC_INDEX, ((index) | 0x80), (data));
 }
 
-static u32 htiu_read_index(u32 nb_dev, u32 index)
+static u32 htiu_bdf_read_index(u32 nb_bdf, u32 index)
 {
-	return nb_read_index((nb_dev), NBHTIU_INDEX, (index));
+	return nb_bdf_read_index((nb_bdf), NBHTIU_INDEX, (index));
 }
 
-static void htiu_write_index(u32 nb_dev, u32 index, u32 data)
+static void htiu_bdf_write_index(u32 nb_bdf, u32 index, u32 data)
 {
-	nb_write_index((nb_dev), NBHTIU_INDEX, ((index) | 0x100), (data));
+	nb_bdf_write_index((nb_bdf), NBHTIU_INDEX, ((index) | 0x100), (data));
 }
 
-static u32 nbmc_read_index(u32 nb_dev, u32 index)
+static u32 nbmc_bdf_read_index(u32 nb_bdf, u32 index)
 {
-	return nb_read_index((nb_dev), NBMC_INDEX, (index));
+	return nb_bdf_read_index((nb_bdf), NBMC_INDEX, (index));
 }
 
-static void nbmc_write_index(u32 nb_dev, u32 index, u32 data)
+static void nbmc_bdf_write_index(u32 nb_bdf, u32 index, u32 data)
 {
-	nb_write_index((nb_dev), NBMC_INDEX, ((index) | 1 << 9), (data));
+	nb_bdf_write_index((nb_bdf), NBMC_INDEX, ((index) | 1 << 9), (data));
 }
 
-static void set_htiu_enable_bits(u32 nb_dev, u32 reg_pos, u32 mask,
+static void set_htiu_bdf_enable_bits(u32 nb_bdf, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;
-	reg = reg_old = htiu_read_index(nb_dev, reg_pos);
+	reg = reg_old = htiu_bdf_read_index(nb_bdf, reg_pos);
 	reg &= ~mask;
 	reg |= val;
 	if (reg != reg_old) {
-		htiu_write_index(nb_dev, reg_pos, reg);
+		htiu_bdf_write_index(nb_bdf, reg_pos, reg);
 	}
 }
 
-static void set_nbmisc_enable_bits(u32 nb_dev, u32 reg_pos, u32 mask,
+static void set_nbmisc_bdf_enable_bits(u32 nb_bdf, u32 reg_pos, u32 mask,
 				   u32 val)
 {
 	u32 reg_old, reg;
-	reg = reg_old = nbmisc_read_index(nb_dev, reg_pos);
+	reg = reg_old = nbmisc_bdf_read_index(nb_bdf, reg_pos);
 	reg &= ~mask;
 	reg |= val;
 	if (reg != reg_old) {
-		nbmisc_write_index(nb_dev, reg_pos, reg);
+		nbmisc_bdf_write_index(nb_bdf, reg_pos, reg);
 	}
 }
 
-static void set_nbcfg_enable_bits(u32 nb_dev, u32 reg_pos, u32 mask,
+static void set_nbcfg_bdf_enable_bits(u32 nb_bdf, u32 reg_pos, u32 mask,
 				  u32 val)
 {
 	u32 reg_old, reg;
-	reg = reg_old = pci_conf1_read_config32(nb_dev, reg_pos);
+	reg = reg_old = pci_conf1_read_config32(nb_bdf, reg_pos);
 	reg &= ~mask;
 	reg |= val;
 	if (reg != reg_old) {
-		pci_conf1_write_config32(nb_dev, reg_pos, reg);
+		pci_conf1_write_config32(nb_bdf, reg_pos, reg);
 	}
 }
 
-static void set_nbcfg_enable_bits_8(u32 nb_dev, u32 reg_pos, u8 mask,
+static void set_nbcfg_bdf_enable_bits_8(u32 nb_bdf, u32 reg_pos, u8 mask,
 				    u8 val)
 {
 	u8 reg_old, reg;
-	reg = reg_old = pci_conf1_read_config8(nb_dev, reg_pos);
+	reg = reg_old = pci_conf1_read_config8(nb_bdf, reg_pos);
 	reg &= ~mask;
 	reg |= val;
 	if (reg != reg_old) {
-		pci_conf1_write_config8(nb_dev, reg_pos, reg);
+		pci_conf1_write_config8(nb_bdf, reg_pos, reg);
 	}
 }
 
-static void set_nbmc_enable_bits(u32 nb_dev, u32 reg_pos, u32 mask,
+static void set_nbmc_bdf_enable_bits(u32 nb_bdf, u32 reg_pos, u32 mask,
 				 u32 val)
 {
 	u32 reg_old, reg;
-	reg = reg_old = nbmc_read_index(nb_dev, reg_pos);
+	reg = reg_old = nbmc_bdf_read_index(nb_bdf, reg_pos);
 	reg &= ~mask;
 	reg |= val;
 	if (reg != reg_old) {
-		nbmc_write_index(nb_dev, reg_pos, reg);
+		nbmc_bdf_write_index(nb_bdf, reg_pos, reg);
 	}
 }
 
 /*
 * Compliant with CIM_33's ATINB_PrepareInit
 */
-static void get_cpu_rev()
+static void get_cpu_rev(void)
 {
 	u32 eax, ebx, ecx, edx;
 	__asm__ volatile ("cpuid":"=a" (eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
@@ -162,13 +162,13 @@ static void get_cpu_rev()
 		printk(BIOS_INFO, "CPU Rev is K8_10.\n");
 }
 
-static u8 get_nb_rev(u32 nb_dev)
+static u8 get_nb_bdf_rev(u32 nb_bdf)
 {
 	u32 reg;
-	reg = pci_conf1_read_config32(nb_dev, 0x00);
+	reg = pci_conf1_read_config32(nb_bdf, 0x00);
 	if (0x7911 == (reg >> 16))
 		return 7;
-	reg = pci_conf1_read_config8(nb_dev, 0x89);	/* copy from CIM, can't find in doc */
+	reg = pci_conf1_read_config8(nb_bdf, 0x89);	/* copy from CIM, can't find in doc */
 	if (reg & 0x2)		/* check bit1 */
 		return 7;
 	if (reg & 0x1)		/* check bit0 */
@@ -181,7 +181,7 @@ static u8 get_nb_rev(u32 nb_dev)
 * Compliant with CIM_33's ATINB_HTInit
 * Init HT link speed/width for rs690 -- k8 link
 *****************************************/
-static void rs690_htinit()
+static void rs690_htinit(void)
 {
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
@@ -190,7 +190,7 @@ static void rs690_htinit()
 	u32 reg;
 	u8 k8_ht_freq;
 
-	k8_f0 = PCI_DEV(0, 0x18, 0);
+	k8_f0 = PCI_BDF(0, 0x18, 0);
 	/************************
 	* get k8's ht freq, in k8's function 0, offset 0x88
 	* bit11-8, specifics the maximum operation frequency of the link's transmitter clock.
@@ -213,7 +213,7 @@ static void rs690_htinit()
 * Optimize k8 with UMA.
 * See BKDG_NPT_0F guide for details.
 * The processor node is addressed by its Node ID on the HT link and can be
-* accessed with a device number in the PCI configuration space on Bus0.
+* accessed with a bdfice number in the PCI configuration space on Bus0.
 * The Node ID 0 is mapped to Device 24 (0x18), the Node ID 1 is mapped
 * to Device 25, and so on.
 * The processor implements configuration registers in PCI configuration
@@ -223,22 +223,22 @@ static void rs690_htinit()
 *	Function2: DRAM and HT technology Trace mode configuration
 *	Function3: Miscellaneous configuration
 *******************************************************/
-static void k8_optimization()
+static void k8_optimization(void)
 {
 	u32 k8_f0, k8_f2, k8_f3;
-	msr_t msr;
+	struct msr msr;
 
 	printk(BIOS_INFO, "k8_optimization()\n");
-	k8_f0 = PCI_DEV(0, 0x18, 0);
-	k8_f2 = PCI_DEV(0, 0x18, 2);
-	k8_f3 = PCI_DEV(0, 0x18, 3);
+	k8_f0 = PCI_BDF(0, 0x18, 0);
+	k8_f2 = PCI_BDF(0, 0x18, 2);
+	k8_f3 = PCI_BDF(0, 0x18, 3);
 
 	pci_conf1_write_config32(k8_f0, 0x90, 0x01700178);	/* CIM NPT_Optimization */
-	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 28, 0 << 28);
-	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 26 | 1 << 27,
+	set_nbcfg_bdf_enable_bits(k8_f0, 0x68, 1 << 28, 0 << 28);
+	set_nbcfg_bdf_enable_bits(k8_f0, 0x68, 1 << 26 | 1 << 27,
 			      1 << 26 | 1 << 27);
-	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 11, 1 << 11);
-	set_nbcfg_enable_bits(k8_f0, 0x84, 1 << 11 | 1 << 13 | 1 << 15, 1 << 11 | 1 << 13 | 1 << 15);	/* TODO */
+	set_nbcfg_bdf_enable_bits(k8_f0, 0x68, 1 << 11, 1 << 11);
+	set_nbcfg_bdf_enable_bits(k8_f0, 0x84, 1 << 11 | 1 << 13 | 1 << 15, 1 << 11 | 1 << 13 | 1 << 15);	/* TODO */
 
 	pci_conf1_write_config32(k8_f3, 0x70, 0x51320111);	/* CIM NPT_Optimization */
 	pci_conf1_write_config32(k8_f3, 0x74, 0x50304021);
@@ -247,13 +247,13 @@ static void k8_optimization()
 		pci_conf1_write_config32(k8_f3, 0x7C, 0x0000211B); /* dual core */
 	else
 		pci_conf1_write_config32(k8_f3, 0x7C, 0x0000211C); /* single core */
-	set_nbcfg_enable_bits_8(k8_f3, 0xDC, 0xFF, 0x25);
+	set_nbcfg_bdf_enable_bits_8(k8_f3, 0xDC, 0xFF, 0x25);
 
-	set_nbcfg_enable_bits(k8_f2, 0xA0, 1 << 5, 1 << 5);
-	set_nbcfg_enable_bits(k8_f2, 0x94, 0xF << 24, 7 << 24);
-	set_nbcfg_enable_bits(k8_f2, 0x90, 1 << 10, 1 << 10);
-	set_nbcfg_enable_bits(k8_f2, 0xA0, 3 << 2, 3 << 2);
-	set_nbcfg_enable_bits(k8_f2, 0xA0, 1 << 5, 1 << 5);
+	set_nbcfg_bdf_enable_bits(k8_f2, 0xA0, 1 << 5, 1 << 5);
+	set_nbcfg_bdf_enable_bits(k8_f2, 0x94, 0xF << 24, 7 << 24);
+	set_nbcfg_bdf_enable_bits(k8_f2, 0x90, 1 << 10, 1 << 10);
+	set_nbcfg_bdf_enable_bits(k8_f2, 0xA0, 3 << 2, 3 << 2);
+	set_nbcfg_bdf_enable_bits(k8_f2, 0xA0, 1 << 5, 1 << 5);
 
 	msr = rdmsr(0xC001001F);
 	msr.lo &= ~(1 << 9);
@@ -264,80 +264,80 @@ static void k8_optimization()
 /*****************************************
 * Compliant with CIM_33's ATINB_PCICFG_POR_TABLE
 *****************************************/
-static void rs690_por_pcicfg_init(u32 nb_dev)
+static void rs690_por_pcicfg_init(u32 nb_bdf)
 {
 	/* enable PCI Memory Access */
-	set_nbcfg_enable_bits_8(nb_dev, 0x04, (u8)(~0xFD), 0x02);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x04, (u8)(~0xFD), 0x02);
 	/* Set RCRB Enable */
-	set_nbcfg_enable_bits_8(nb_dev, 0x84, (u8)(~0xFF), 0x1);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x84, (u8)(~0xFF), 0x1);
 	/* allow decode of 640k-1MB */
-	set_nbcfg_enable_bits_8(nb_dev, 0x84, (u8)(~0xEF), 0x10);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x84, (u8)(~0xEF), 0x10);
 	/* Enable PM2_CNTL(BAR2) IO mapped cfg write access to be broadcast to both NB and SB */
-	set_nbcfg_enable_bits_8(nb_dev, 0x84, (u8)(~0xFF), 0x4);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x84, (u8)(~0xFF), 0x4);
 	/* Power Management Register Enable */
-	set_nbcfg_enable_bits_8(nb_dev, 0x84, (u8)(~0xFF), 0x80);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x84, (u8)(~0xFF), 0x80);
 
 	/* Reg4Ch[1]=1 (APIC_ENABLE) force cpu request with address 0xFECx_xxxx to south-bridge
 	 * Reg4Ch[6]=1 (BMMsgEn) enable BM_Set message generation
 	 * BMMsgEn */
-	set_nbcfg_enable_bits_8(nb_dev, 0x4C, (u8)(~0x00), 0x42 | 1);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x4C, (u8)(~0x00), 0x42 | 1);
 
 	/* Reg4Ch[16]=1 (WakeC2En) enable Wake_from_C2 message generation.
 	 * Reg4Ch[18]=1 (P4IntEnable) Enable north-bridge to accept MSI with address 0xFEEx_xxxx from south-bridge */
-	set_nbcfg_enable_bits_8(nb_dev, 0x4E, (u8)(~0xFF), 0x05);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x4E, (u8)(~0xFF), 0x05);
 	/* Reg94h[4:0] = 0x0  P drive strength offset 0
 	 * Reg94h[6:5] = 0x2  P drive strength additive adjust */
-	set_nbcfg_enable_bits_8(nb_dev, 0x94, (u8)(~0x80), 0x40);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x94, (u8)(~0x80), 0x40);
 
 	/* Reg94h[20:16] = 0x0  N drive strength offset 0
 	 * Reg94h[22:21] = 0x2  N drive strength additive adjust */
-	set_nbcfg_enable_bits_8(nb_dev, 0x96, (u8)(~0x80), 0x40);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x96, (u8)(~0x80), 0x40);
 
 	/* Reg80h[4:0] = 0x0  Termination offset
 	 * Reg80h[6:5] = 0x2  Termination additive adjust */
-	set_nbcfg_enable_bits_8(nb_dev, 0x80, (u8)(~0x80), 0x40);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x80, (u8)(~0x80), 0x40);
 
 	/* Reg80h[14] = 0x1   Enable receiver termination control */
-	set_nbcfg_enable_bits_8(nb_dev, 0x81, (u8)(~0xFF), 0x40);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x81, (u8)(~0xFF), 0x40);
 
 	/* Reg94h[15] = 0x1 Enables HT transmitter advanced features to be turned on
 	 * Reg94h[14] = 0x1  Enable drive strength control */
-	set_nbcfg_enable_bits_8(nb_dev, 0x95, (u8)(~0x3F), 0xC4);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x95, (u8)(~0x3F), 0xC4);
 
 	/* Reg94h[31:29] = 0x7 Enables HT transmitter de-emphasis */
-	set_nbcfg_enable_bits_8(nb_dev, 0x97, (u8)(~0x1F), 0xE0);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x97, (u8)(~0x1F), 0xE0);
 
 	/*Reg8Ch[10:9] = 0x3 Enables Gfx Debug BAR,
 	 * force this BAR as mem type in rs690_gfx.c */
-	set_nbcfg_enable_bits_8(nb_dev, 0x8D, (u8)(~0xFF), 0x03);
+	set_nbcfg_bdf_enable_bits_8(nb_bdf, 0x8D, (u8)(~0xFF), 0x03);
 	
 }
 
 /*****************************************
 * Compliant with CIM_33's ATINB_MCIndex_POR_TABLE
 *****************************************/
-static void rs690_por_mc_index_init(u32 nb_dev)
+static void rs690_por_mc_index_init(u32 nb_bdf)
 {
-	set_nbmc_enable_bits(nb_dev, 0x7A, ~0xFFFFFF80, 0x0000005F);
-	set_nbmc_enable_bits(nb_dev, 0xD8, ~0x00000000, 0x00600060);
-	set_nbmc_enable_bits(nb_dev, 0xD9, ~0x00000000, 0x00600060);
-	set_nbmc_enable_bits(nb_dev, 0xE0, ~0x00000000, 0x00000000);
-	set_nbmc_enable_bits(nb_dev, 0xE1, ~0x00000000, 0x00000000);
-	set_nbmc_enable_bits(nb_dev, 0xE8, ~0x00000000, 0x003E003E);
-	set_nbmc_enable_bits(nb_dev, 0xE9, ~0x00000000, 0x003E003E);
+	set_nbmc_bdf_enable_bits(nb_bdf, 0x7A, ~0xFFFFFF80, 0x0000005F);
+	set_nbmc_bdf_enable_bits(nb_bdf, 0xD8, ~0x00000000, 0x00600060);
+	set_nbmc_bdf_enable_bits(nb_bdf, 0xD9, ~0x00000000, 0x00600060);
+	set_nbmc_bdf_enable_bits(nb_bdf, 0xE0, ~0x00000000, 0x00000000);
+	set_nbmc_bdf_enable_bits(nb_bdf, 0xE1, ~0x00000000, 0x00000000);
+	set_nbmc_bdf_enable_bits(nb_bdf, 0xE8, ~0x00000000, 0x003E003E);
+	set_nbmc_bdf_enable_bits(nb_bdf, 0xE9, ~0x00000000, 0x003E003E);
 }
 
 /*****************************************
 * Compliant with CIM_33's ATINB_MISCIND_POR_TABLE
 * Compliant with CIM_33's MISC_INIT_TBL
 *****************************************/
-static void rs690_por_misc_index_init(u32 nb_dev)
+static void rs690_por_misc_index_init(u32 nb_bdf)
 {
 	/* NB_MISC_IND_WR_EN + IOC_PCIE_CNTL
 	 * Block non-snoop DMA request if PMArbDis is set.
 	 * Set BMSetDis */
-	set_nbmisc_enable_bits(nb_dev, 0x0B, ~0xFFFF0000, 0x00000180);
-	set_nbmisc_enable_bits(nb_dev, 0x01, ~0xFFFFFFFF, 0x00000040);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x0B, ~0xFFFF0000, 0x00000180);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x01, ~0xFFFFFFFF, 0x00000040);
 
 	/* NBCFG (NBMISCIND 0x0): NB_CNTL -
 	 *   HIDE_NB_AGP_CAP  ([0], default=1)HIDE
@@ -346,51 +346,51 @@ static void rs690_por_misc_index_init(u32 nb_dev)
 	 *   AGPMODE30        ([4], default=0)DISABLE
 	 *   AGP30ENCHANCED   ([5], default=0)DISABLE
 	 *   HIDE_AGP_CAP     ([8], default=1)ENABLE */
-	set_nbmisc_enable_bits(nb_dev, 0x00, ~0xFFFF0000, 0x00000506);	/* set bit 10 for MSI */
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x00, ~0xFFFF0000, 0x00000506);	/* set bit 10 for MSI */
 
 	/* NBMISCIND:0x6A[16]= 1 SB link can get a full swing
-	 *      set_nbmisc_enable_bits(nb_dev, 0x6A, 0ffffffffh, 000010000);
+	 *      set_nbmisc_bdf_enable_bits(nb_bdf, 0x6A, 0ffffffffh, 000010000);
 	 * NBMISCIND:0x6A[17]=1 Set CMGOOD_OVERRIDE. */
-	set_nbmisc_enable_bits(nb_dev, 0x6A, ~0xffffffff, 0x00020000);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x6A, ~0xffffffff, 0x00020000);
 
 	/* NBMISIND:0x40 Bit[8]=1 and Bit[10]=1 following bits are required to set in order to allow LVDS or PWM features to work. */
-	set_nbmisc_enable_bits(nb_dev, 0x40, ~0xffffffff, 0x00000500);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x40, ~0xffffffff, 0x00000500);
 
 	/* NBMISIND:0xC Bit[13]=1 Enable GSM mode for C1e or C3 with pop-up. */
-	set_nbmisc_enable_bits(nb_dev, 0x0C, ~0xffffffff, 0x00002000);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x0C, ~0xffffffff, 0x00002000);
 
 	/* Set NBMISIND:0x1F[3] to map NB F2 interrupt pin to INTB# */
-	set_nbmisc_enable_bits(nb_dev, 0x1F, ~0xffffffff, 0x00000008);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x1F, ~0xffffffff, 0x00000008);
 
 	/* Compliant with CIM_33's MISC_INIT_TBL, except Hide NB_BAR3_PCIE
 	 * Enable access to DEV8
 	 * Enable setPower message for all ports
 	 */
-	set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 6, 1 << 6);
-	set_nbmisc_enable_bits(nb_dev, 0x0b, 1 << 20, 1 << 20);
-	set_nbmisc_enable_bits(nb_dev, 0x51, 1 << 20, 1 << 20);
-	set_nbmisc_enable_bits(nb_dev, 0x53, 1 << 20, 1 << 20);
-	set_nbmisc_enable_bits(nb_dev, 0x55, 1 << 20, 1 << 20);
-	set_nbmisc_enable_bits(nb_dev, 0x57, 1 << 20, 1 << 20);
-	set_nbmisc_enable_bits(nb_dev, 0x59, 1 << 20, 1 << 20);
-	set_nbmisc_enable_bits(nb_dev, 0x5B, 1 << 20, 1 << 20);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x00, 1 << 6, 1 << 6);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x0b, 1 << 20, 1 << 20);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x51, 1 << 20, 1 << 20);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x53, 1 << 20, 1 << 20);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x55, 1 << 20, 1 << 20);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x57, 1 << 20, 1 << 20);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x59, 1 << 20, 1 << 20);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x5B, 1 << 20, 1 << 20);
 
-	set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 7, 1 << 7);
-	set_nbmisc_enable_bits(nb_dev, 0x07, 0x000000f0, 0x30);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x00, 1 << 7, 1 << 7);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x07, 0x000000f0, 0x30);
 	/* Disable bus-master trigger event from SB and Enable set_slot_power message to SB */
-	set_nbmisc_enable_bits(nb_dev, 0x0B, 0xffffffff, 0x500180);
+	set_nbmisc_bdf_enable_bits(nb_bdf, 0x0B, 0xffffffff, 0x500180);
 }
 
 /*****************************************
 * Compliant with CIM_33's ATINB_HTIUNBIND_POR_TABLE
 *****************************************/
-static void rs690_por_htiu_index_init(u32 nb_dev)
+static void rs690_por_htiu_index_init(u32 nb_bdf)
 {
 	/* 0xBC:
 	* Enables GSM mode for C1e or C3 with pop-up
 	* Prevents AllowLdtStop from being asserted during HT link recovery
 	* Allows FID cycles to be serviced faster. Needed for RS690 A12. No harm in RS690 A11 */
-	set_htiu_enable_bits(nb_dev, 0x05, ~0xffffffff, 0x0BC);
+	set_htiu_bdf_enable_bits(nb_bdf, 0x05, ~0xffffffff, 0x0BC);
 	/* 0x4203A202:
 	* Enables writes to pass in-progress reads
 	* Enables streaming of CPU writes
@@ -400,15 +400,15 @@ static void rs690_por_htiu_index_init(u32 nb_dev)
 	* Enables decoding of C1e/C3 and FID cycles
 	* Enables HTIU-display handshake bypass.
 	* Enables tagging fix */
-	set_htiu_enable_bits(nb_dev, 0x06, ~0xFFFFFFFE, 0x4203A202);
+	set_htiu_bdf_enable_bits(nb_bdf, 0x06, ~0xFFFFFFFE, 0x4203A202);
 
 	/* Enables byte-write optimization for IOC requests
 	* Disables delaying STPCLK de-assert during FID sequence. Needed when enhanced UMA arbitration is used.
 	* Disables upstream system-management delay */
-	set_htiu_enable_bits(nb_dev, 0x07, ~0xFFFFFFF9, 0x001);
+	set_htiu_bdf_enable_bits(nb_bdf, 0x07, ~0xFFFFFFF9, 0x001);
 
 	/* HTIUNBIND 0x16 [1] = 0x1     Enable crc decoding fix */
-	set_htiu_enable_bits(nb_dev, 0x16, ~0xFFFFFFFF, 0x2);
+	set_htiu_bdf_enable_bits(nb_bdf, 0x16, ~0xFFFFFFFF, 0x2);
 }
 
 /*****************************************
@@ -417,29 +417,29 @@ static void rs690_por_htiu_index_init(u32 nb_dev)
 * POR: Power On Reset
 * RPR: Register Programming Requirements
 *****************************************/
-static void rs690_por_init(u32 nb_dev)
+static void rs690_por_init(u32 nb_bdf)
 {
 	printk(BIOS_INFO, "rs690_por_init\n");
 	/* ATINB_PCICFG_POR_TABLE, initialize the values for rs690 PCI Config registers */
-	rs690_por_pcicfg_init(nb_dev);
+	rs690_por_pcicfg_init(nb_bdf);
 
 	/* ATINB_MCIND_POR_TABLE */
-	rs690_por_mc_index_init(nb_dev);
+	rs690_por_mc_index_init(nb_bdf);
 
 	/* ATINB_MISCIND_POR_TABLE */
-	rs690_por_misc_index_init(nb_dev);
+	rs690_por_misc_index_init(nb_bdf);
 
 	/* ATINB_HTIUNBIND_POR_TABLE */
-	rs690_por_htiu_index_init(nb_dev);
+	rs690_por_htiu_index_init(nb_bdf);
 
 	/* ATINB_CLKCFG_PORT_TABLE */
 	/* rs690 A11 SB Link full swing? */
 }
 
 /* enable CFG access to Dev8, which is the SB P2P Bridge */
-static void enable_rs690_dev8()
+void enable_rs690_dev8(void)
 {
-	set_nbmisc_enable_bits(PCI_DEV(0, 0, 0), 0x00, 1 << 6, 1 << 6);
+	set_nbmisc_bdf_enable_bits(PCI_BDF(0, 0, 0), 0x00, 1 << 6, 1 << 6);
 }
 
 
@@ -447,21 +447,21 @@ static void enable_rs690_dev8()
 /*
 * Compliant with CIM_33's AtiNBInitEarlyPost (AtiInitNBBeforePCIInit).
 */
-void rs690_before_pci_init()
+void rs690_before_pci_init(void)
 {
 }
 
 /*
 * The calling sequence is same as CIM.
 */
-void rs690_early_setup()
+void rs690_stage1(void)
 {
-	u32 nb_dev = PCI_DEV(0, 0, 0);
+	u32 nb_bdf = PCI_BDF(0, 0, 0);
 	printk(BIOS_INFO, "rs690_early_setup()\n");
 
 	/*ATINB_PrepareInit */
 	get_cpu_rev();
-	switch (get_nb_rev(nb_dev)) {	/* PCIEMiscInit */
+	switch (get_nb_bdf_rev(nb_bdf)) {	/* PCIEMiscInit */
 	case 5:
 		printk(BIOS_INFO, "NB Revision is A11.\n");
 		break;
@@ -475,5 +475,5 @@ void rs690_early_setup()
 
 	rs690_htinit();
 	k8_optimization();
-	rs690_por_init(nb_dev);
+	rs690_por_init(nb_bdf);
 }

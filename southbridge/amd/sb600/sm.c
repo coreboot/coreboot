@@ -23,10 +23,15 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
+#include <device/smbus.h>
+#include <cpu.h>
+#include <lapic.h>
+#include <io.h>
 #include <statictree.h>
 #include <config.h>
+#include <mc146818rtc.h>
 #include "sb600.h"
-#include "sb600_smbus.c"
+#include "sb600_smbus.h"
 
 #define NMI_OFF 0
 
@@ -86,6 +91,18 @@ static struct ioapicreg ioapicregvalues[] = {
 	/* Be careful and don't write past the end... */
 };
 
+void alink_ab_indx(unsigned int reg_space, unsigned int reg_addr,
+			  unsigned int mask, unsigned int val);
+void alink_ax_indx(unsigned int space /*c or p? */ , unsigned int axindc,
+			  unsigned int mask, unsigned int val);
+int do_smbus_recv_byte(u32 smbus_io_base, u32 device);
+int do_smbus_read_byte(u32 smbus_io_base, u32 device,
+			      u32 address);
+int do_smbus_write_byte(u32 smbus_io_base, u32 device,
+			       u32 address, u8 val);
+int do_smbus_send_byte(u32 smbus_io_base, u32 device,
+			      u8 val);
+
 static void setup_ioapic(unsigned long ioapic_base)
 {
 	int i;
@@ -108,7 +125,7 @@ static void setup_ioapic(unsigned long ioapic_base)
 		l[4] = a->value_high;
 		value_high = l[4];
 		if ((i == 0) && (value_low == 0xffffffff)) {
-			printk_warning("IO APIC not responding.\n");
+			printk(BIOS_WARNING, "IO APIC not responding.\n");
 			return;
 		}
 	}
@@ -382,6 +399,6 @@ struct device_operations sb600_sm = {
 	.phase4_set_resources	 = sb600_sm_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = sm_init,
-	.ops_pci          = &lops_pci
+	.ops_pci          = &lops_pci,
 	.ops_smbus_bus = &lops_smbus_bus,
 };

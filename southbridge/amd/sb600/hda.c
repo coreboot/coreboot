@@ -24,6 +24,7 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
+#include <io.h>
 #include <statictree.h>
 #include <config.h>
 #include "sb600.h"
@@ -149,8 +150,7 @@ static u32 cim_verb_data[] = {
 static unsigned find_verb(u32 viddid, u32 ** verb)
 {
 	struct device * azalia_dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
-	struct southbridge_amd_sb600_dts_config *cfg =
-	    (struct southbridge_amd_sb600_config *)azalia_dev->chip_info;
+	struct southbridge_amd_sb600_hda_config *cfg = azalia_dev->device_configuration;
 	printk(BIOS_DEBUG, "Dev=%s\n", dev_path(azalia_dev));
 	printk(BIOS_DEBUG, "Default viddid=%x\n", cfg->hda_viddid);
 	printk(BIOS_DEBUG, "Reading viddid=%x\n", viddid);
@@ -239,7 +239,7 @@ static void hda_init(struct device *dev)
 		return;
 
 	base = (u8 *) ((u32)res->base);
-	printk(BIOS_DEBUG, "base = %08x\n", base);
+	printk(BIOS_DEBUG, "base = %p\n", base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {

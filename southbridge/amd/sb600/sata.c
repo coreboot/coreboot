@@ -24,6 +24,7 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
+#include <io.h>
 #include <statictree.h>
 #include <config.h>
 #include "sb600.h"
@@ -69,7 +70,7 @@ static void sata_init(struct device *dev)
 	printk(BIOS_DEBUG, "sata_bar2=%x\n", sata_bar2);	/* 3040 */
 	printk(BIOS_DEBUG, "sata_bar3=%x\n", sata_bar3);	/* 3080 */
 	printk(BIOS_DEBUG, "sata_bar4=%x\n", sata_bar4);	/* 3000 */
-	printk(BIOS_DEBUG, "sata_bar5=%x\n", sata_bar5);	/* e0309000 */
+	printk(BIOS_DEBUG, "sata_bar5=%p\n", sata_bar5);	/* e0309000 */
 
 	/* Program the 2C to 0x43801002 */
 	dword = 0x43801002;

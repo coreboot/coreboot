@@ -17,13 +17,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/device.h>
+#include <types.h>
+#include <lib.h>
+#include <console.h>
 #include <device/pci.h>
+#include <msr.h>
+#include <legacy.h>
 #include <device/pci_ids.h>
-#include <device/pci_ops.h>
-#include <usbdebug_direct.h>
-#include <arch/io.h>
+#include <device/smbus.h>
+#include <cpu.h>
+#include <lapic.h>
+#include <io.h>
+#include <statictree.h>
+#include <config.h>
+#include <mc146818rtc.h>
+#include "sb600.h"
 #include "sb600.h"
 
 static struct pci_operations lops_pci = {
@@ -94,7 +102,7 @@ static void usb_init2(struct device *dev)
 	/* pci_write_config32(dev, 0xf8, dword); */
 
 	usb2_bar0 = (u8 *) (pci_read_config32(dev, 0x10) & ~0xFF);
-	printk_info("usb2_bar0=%x\n", usb2_bar0);
+	printk(BIOS_INFO, "usb2_bar0=%x\n", usb2_bar0);
 
 	/* RPR5.4 Enables the USB PHY auto calibration resister to match 45ohm resistence */
 	dword = 0x00020F00;

@@ -37,8 +37,8 @@ static struct device * find_nb_dev(struct device * dev, u32 devfn)
 	if (!nb_dev)
 		return nb_dev;
 
-	if ((nb_dev->vendor != PCI_VENDOR_ID_ATI)
-	    || (nb_dev->device != PCI_DEVICE_ID_ATI_RS690_HT)) {
+	if ((nb_dev->id.pci.vendor != PCI_VENDOR_ID_ATI)
+	    || (nb_dev->id.pci.device != PCI_DEVICE_ID_ATI_RS690_HT)) {
 		u32 id;
 		id = pci_read_config32(nb_dev, PCI_VENDOR_ID);
 		if (id != (PCI_VENDOR_ID_ATI | (PCI_DEVICE_ID_ATI_RS690_HT << 16))) {
@@ -51,38 +51,38 @@ static struct device * find_nb_dev(struct device * dev, u32 devfn)
 /*****************************************
 * Compliant with CIM_33's ATINB_MiscClockCtrl
 *****************************************/
-void static rs690_config_misc_clk(struct device * nb_dev)
+static void rs690_config_misc_clk(struct device * nb_dev)
 {
 	u32 reg;
 	u16 word;
 	/* u8 byte; */
-	struct bus pbus; /* fake bus for dev0 fun1 */
+	u32 dev0fun1 = PCI_BDF(0,0,1);
 
 	reg = pci_read_config32(nb_dev, 0x4c);
 	reg |= 1 << 0;
 	pci_write_config32(nb_dev, 0x4c, reg);
 
-	word = pci_cf8_conf1.read16(&pbus, 0, 1, 0xf8);
+	word = pci_conf1_read_config16(dev0fun1, 0xf8);
 	word &= 0xf00;
-	 pci_cf8_conf1.write16(&pbus, 0, 1, 0xf8, word);
+	 pci_conf1_write_config16(dev0fun1, 0xf8, word);
 
-	word = pci_cf8_conf1.read16(&pbus, 0, 1, 0xe8);
+	word = pci_conf1_read_config16(dev0fun1, 0xe8);
 	word &= ~((1 << 12) | (1 << 13) | (1 << 14));
 	word |= 1 << 13;
-	pci_cf8_conf1.write16(&pbus, 0, 1, 0xe8, word);
+	pci_conf1_write_config16(dev0fun1, 0xe8, word);
 
-	reg =  pci_cf8_conf1.read32(&pbus, 0, 1, 0x94);
+	reg = pci_conf1_read_config32(dev0fun1, 0x94);
 	reg &= ~((1 << 16) | (1 << 24) | (1 << 28));
-	pci_cf8_conf1.write32(&pbus, 0, 1, 0x94, reg);
+	pci_conf1_write_config32(dev0fun1, 0x94, reg);
 
-	reg = pci_cf8_conf1.read32(&pbus, 0, 1, 0x8c);
+	reg = pci_conf1_read_config32(dev0fun1, 0x8c);
 	reg &= ~((1 << 13) | (1 << 14) | (1 << 24) | (1 << 25));
 	reg |= 1 << 13;
-	pci_cf8_conf1.write32(&pbus, 0, 1, 0x8c, reg);
+	pci_conf1_write_config32(dev0fun1, 0x8c, reg);
 
-	reg = pci_cf8_conf1.read32(&pbus, 0, 1, 0xcc);
+	reg = pci_conf1_read_config32(dev0fun1, 0xcc);
 	reg |= 1 << 24;
-	pci_cf8_conf1.write32(&pbus, 0, 1, 0xcc, reg);
+	pci_conf1_write_config32(dev0fun1, 0xcc, reg);
 
 	reg = nbmc_read_index(nb_dev, 0x7a);
 	reg &= ~0x3f;
@@ -91,25 +91,25 @@ void static rs690_config_misc_clk(struct device * nb_dev)
 	set_htiu_enable_bits(nb_dev, 0x05, 1 << 11, 1 << 11);
 	nbmc_write_index(nb_dev, 0x7a, reg);
 	/* Powering Down efuse and strap block clocks after boot-up. GFX Mode. */
-	reg = pci_cf8_conf1.read32(&pbus, 0, 1, 0xcc);
+	reg = pci_conf1_read_config32(dev0fun1, 0xcc);
 	reg &= ~(1 << 23);
 	reg |= 1 << 24;
-	pci_cf8_conf1.write32(&pbus, 0, 1, 0xcc, reg);
+	pci_conf1_write_config32(dev0fun1, 0xcc, reg);
 #if 0
 	/* Powerdown reference clock to graphics core PLL in northbridge only mode */
-	reg = pci_cf8_conf1.read32(&pbus, 0, 1, 0x8c);
+	reg = pci_conf1_read_config32(dev0fun1, 0x8c);
 	reg |= 1 << 21;
-	pci_cf8_conf1.write32(&pbus, 0, 1, 0x8c, reg);
+	pci_conf1_write_config32(dev0fun1, 0x8c, reg);
 
 	/* Powering Down efuse and strap block clocks after boot-up. NB Only Mode. */
-	reg = pci_cf8_conf1.read32(&pbus, 0, 1, 0xcc);
+	reg = pci_conf1_read_config32(dev0fun1, 0xcc);
 	reg |= (1 << 23) | (1 << 24);
-	pci_cf8_conf1.write32(&pbus, 0, 1, 0xcc, reg);
+	pci_conf1_write_config32(dev0fun1, 0xcc, reg);
 
 	/* Powerdown clock to memory controller in northbridge only mode */
-	byte = pci_cf8_conf1.read8(&pbus, 0, 1, 0xe4);
+	byte = pci_conf1_read_config32(dev0fun1, 0xe4);
 	byte |= 1 << 0;
-	pci_cf8_conf1.write8(&pbus, 0, 1, 0xe4, reg);
+	pci_conf1_write_config32(dev0fun1, 0xe4, reg);
 
 	/* CLKCFG:0xE8 Bit[17] = 0x1 	 Powerdown clock to IOC GFX block in no external graphics mode */
 	/* TODO: */
@@ -138,7 +138,7 @@ void static rs690_config_misc_clk(struct device * nb_dev)
 ***********************************************/
 void rs690_enable(struct device * dev)
 {
-	struct device * nb_dev = 0, sb_dev = 0;
+	struct device * nb_dev = 0, *sb_dev = 0;
 	int index = -1;
 	u32 i;
 	u32 devfn;
@@ -152,7 +152,7 @@ void rs690_enable(struct device * dev)
 	/**********************************************************
 	* Work for bus0, internal GFX located on bus1 and will return after find_nb_dev.
 	**********************************************************/
-	i = (dev->path.u.pci.devfn) & ~7;
+	i = (dev->path.pci.devfn) & ~7;
 	for (devfn = 0; devfn <= i; devfn += (1 << 3)) {
 		nb_dev = find_nb_dev(dev, devfn);
 		if (nb_dev)
@@ -170,8 +170,8 @@ void rs690_enable(struct device * dev)
 		for (;;) ;
 	}
 
-	printk(BIOS_INFO, "rs690_enable bus0, dev=0x%x\n", (dev->path.u.pci.devfn - devfn) >> 3);
-	switch (dev->path.u.pci.devfn - devfn) {
+	printk(BIOS_INFO, "rs690_enable bus0, dev=0x%x\n", (dev->path.pci.devfn - devfn) >> 3);
+	switch (dev->path.pci.devfn - devfn) {
 	case 0:		/* bus0, dev0, fun0; */
 		printk(BIOS_INFO, "Bus-0, Dev-0, Fun-0.\n");
 		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
@@ -190,7 +190,7 @@ void rs690_enable(struct device * dev)
 	case 2 << 3:		/* bus0, dev2,3, two GFX */
 	case 3 << 3:
 		printk(BIOS_INFO, "Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
-		index = (dev->path.u.pci.devfn - devfn) >> 3;
+		index = (dev->path.pci.devfn - devfn) >> 3;
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << index,
 				       (dev->enabled ? 0 : 1) << index);
 		if (dev->enabled)
@@ -202,7 +202,7 @@ void rs690_enable(struct device * dev)
 	case 7 << 3:
 		printk(BIOS_INFO, "Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
 			    dev->enabled);
-		index = (dev->path.u.pci.devfn - devfn) >> 3;
+		index = (dev->path.pci.devfn - devfn) >> 3;
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << index,
 				       (dev->enabled ? 0 : 1) << index);
 		if (dev->enabled)
@@ -220,20 +220,3 @@ void rs690_enable(struct device * dev)
 		printk(BIOS_DEBUG, "unknown dev: %s\n", dev_path(dev));
 	}
 }
-
-struct chip_operations southbridge_amd_rs690_ops = {
-	CHIP_NAME("ATI RS690")
-	.enable_dev = rs690_enable,
-};
-struct device_operations rs690_sb = {
-	.id = {.type = DEVICE_ID_PCI,
-		{.pci = {.vendor = PCI_VENDOR_ID_NVIDIA,
-			      .device = PCI_DEVICE_ID_NVIDIA_MCP55_IDE}}},
-	.constructor		 = default_device_constructor,
-	.phase3_scan		 = 0,
-	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
-	.phase5_enable_resources = pci_dev_enable_resources,
-	.phase6_init		 = ide_init,
-	.ops_pci		 = &pci_dev_ops_pci,
-};

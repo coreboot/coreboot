@@ -55,7 +55,7 @@ static void ide_init(struct device *dev)
 	dword |= 1 << 2;
 	pci_write_config16(dev, 0x4, dword);
 
-#if CONFIG_PCI_ROM_RUN == 1
+#if CONFIG_PCI_OPTION_ROM_RUN == 1
 	pci_dev_init(dev);
 #endif
 

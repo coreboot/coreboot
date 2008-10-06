@@ -58,5 +58,7 @@
 #define axindxp_reg(reg, mask, val)	\
 	alink_ax_indx(1, (reg), (mask), (val))
 
+#define SMBUS_IO_BASE 0x1000	/* Is it a temporary SMBus I/O base address? */
+	 /*SIZE 0x40 */
 
 #endif

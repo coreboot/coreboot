@@ -48,9 +48,9 @@ u32 pci_ext_read_config32(struct device * nb_dev, struct device * dev, u32 reg)
 	/*get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c);
 	printk(BIOS_DEBUG, "addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
-		     dev->path.u.pci.devfn);
+		     dev->path.pci.devfn);
 	addr |= dev->bus->secondary << 20 |	/* bus num */
-	    dev->path.u.pci.devfn << 12 | reg;
+	    dev->path.pci.devfn << 12 | reg;
 	return *((u32 *) addr);
 }
 
@@ -61,9 +61,9 @@ void pci_ext_write_config32(struct device * nb_dev, struct device * dev, u32 reg
 	/*get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c);
 	printk(BIOS_DEBUG, "write: addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
-		     dev->path.u.pci.devfn);
+		     dev->path.pci.devfn);
 	addr |= dev->bus->secondary << 20 |	/* bus num */
-	    dev->path.u.pci.devfn << 12 | reg_pos;
+	    dev->path.pci.devfn << 12 | reg_pos;
 
 	reg = reg_old = *((u32 *) addr);
 	reg &= ~mask;
@@ -244,7 +244,7 @@ u8 PcieTrainPort(struct device * nb_dev, struct device * dev, u32 port)
 {
 	u16 count = 5000;
 	u32 lc_state, reg;
-	int8_t current, res = 0;
+	u8 current, res = 0;
 
 	while (count--) {
 		mdelay(40);
@@ -304,6 +304,7 @@ u8 PcieTrainPort(struct device * nb_dev, struct device * dev, u32 port)
 */
 void rs690_set_tom(struct device * nb_dev)
 {
+	extern unsigned long uma_memory_start;
 	/* set TOM */
 	pci_write_config32(nb_dev, 0x90, uma_memory_start);
 	nbmc_write_index(nb_dev, 0x1e, uma_memory_start);

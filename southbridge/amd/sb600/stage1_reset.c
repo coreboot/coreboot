@@ -19,6 +19,7 @@
 
 #include <types.h>
 #include <lib.h>
+#include <io.h>
 #include <console.h>
 #include <device/pci.h>
 #include <msr.h>
@@ -29,6 +30,7 @@
 
 void hard_reset(void)
 {
+	void set_bios_reset(void);
 	set_bios_reset();
 	/* Try rebooting through port 0xcf9 */
 	/* Actually it is not a real hard_reset --- it only resets coherent link table, but 

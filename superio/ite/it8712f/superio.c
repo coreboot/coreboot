@@ -38,7 +38,7 @@ static void pnp_enter_ext_func_mode(struct device * dev)
 	outb(0x01, dev->path.pnp.port);
 	outb(0x55, dev->path.pnp.port);
 
-	if (dev->dev->path.pnp.port == 0x4e) {
+	if (dev->path.pnp.port == 0x4e) {
 		outb(0xaa, dev->path.pnp.port);
 	} else {
 		outb(0x55, dev->path.pnp.port);
@@ -59,18 +59,19 @@ static void it8712f_init(struct device * dev)
 		return;
 	}
 
-	conf = dev->chip_info;
+	conf = dev->device_configuration;
 
-	switch (dev->path.u.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case IT8712F_FDC: /* TODO. */
 		break;
 	case IT8712F_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com1);
+#warning no init_uart8250 yet
+//		init_uart8250(res0->base, &conf->com1);
 		break;
 	case IT8712F_SP2:
 		res0 = find_resource(dev, PNP_IDX_IO0);
-		init_uart8250(res0->base, &conf->com2);
+//		init_uart8250(res0->base, &conf->com2);
 		break;
 	case IT8712F_PP: /* TODO. */
 		break;
@@ -79,8 +80,9 @@ static void it8712f_init(struct device * dev)
 	case IT8712F_KBCK:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
-		set_kbc_ps2_mode();
-		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
+#warning no set_kbc_ps2_mode yet
+//		set_kbc_ps2_mode();
+//		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
 		break;
 	case IT8712F_KBCM: /* TODO. */
 		break;
@@ -115,6 +117,7 @@ static void it8712f_pnp_enable(struct device * dev)
 	pnp_exit_ext_func_mode(dev);
 }
 static void it8712f_setup_scan_bus(struct device *dev);
+
 struct device_operations it8712f_ops = {
 	.phase2_setup_scan_bus	 = it8712f_setup_scan_bus,
 	.phase4_read_resources	 = pnp_read_resources,

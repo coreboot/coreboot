@@ -295,11 +295,12 @@ static const struct rmap register_values[] = {
 
 	};
 
-
 void hardware_stage1(void)
 {
 	void it8716f_enable_serial(u8 dev, u8 serial, u16 iobase);
 	void enumerate_ht_chain(void);
+	void sio_setup(u32 devn);
+	void mcp55_enable_rom(void);
 	int max;
 	u8 tmp;
 
@@ -325,6 +326,8 @@ void hardware_stage1(void)
 
 	setup_resource_map(register_values, max);
 	enumerate_ht_chain();
+	sio_setup(MCP55_DEVN_BASE);
+	mcp55_enable_rom();
 	printk(BIOS_ERR, "Done.\n");
 	post_code(POST_START_OF_MAIN);
 

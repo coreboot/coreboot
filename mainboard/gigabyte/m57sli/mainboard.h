@@ -46,3 +46,6 @@
 
 /* you don't want to set this in Kconfig or dts either. It's dangerous! */
 #define CONFIG_AP_CODE_IN_CAR 0
+/* MCP55 is another fun challenge */
+#define MCP55_NUM 1
+#define MCP55_DEVN_BASE	HT_CHAIN_UNITID_BASE

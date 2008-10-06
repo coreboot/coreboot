@@ -20,29 +20,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-
 #include <mainboard.h>
-#define EHCI_BAR_INDEX	0x10
-#define EHCI_BAR	0xFEF00000
-#define EHCI_DEBUG_OFFSET	0x98
-
-#include "pci.h"
-static void set_debug_port(unsigned port)
+#include <types.h>
+#include <lib.h>
+#include <device/device.h>
+#include <device/pci.h>
+void mcp55_enable_rom(void)
 {
-	u32 dword;
-	u32 bdf = PCI_BDF(0, MCP55_DEVN_BASE+2, 1);
-	dword = pci_conf1_read_config32(bdf, 0x74);
-	dword &= ~(0xf<<12);
-	dword |= (port<<12);
-	pci_conf1_write_config32(bdf, 0x74, dword);
+	u8 byte;
+	u16 word;
+	u32 addr;
 
+	/* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
+	addr = PCI_BDF(0, (MCP55_DEVN_BASE+1), 0);
+
+	/* Set the 4MB enable bit bit */
+	byte = pci_conf1_read_config8(addr, 0x88);
+	byte |= 0xff; //256K
+	pci_conf1_write_config8(addr, 0x88, byte);
+	byte = pci_conf1_read_config8(addr, 0x8c);
+	byte |= 0xff; //1M
+	pci_conf1_write_config8(addr, 0x8c, byte);
+	word = pci_conf1_read_config16(addr, 0x90);
+	word |= 0x7fff; //15M
+	pci_conf1_write_config16(addr, 0x90, word);
 }
-
-static void mcp55_enable_usbdebug_direct(unsigned port)
-{
-	u32 bdf = PCI_BDF(0, MCP55_DEVN_BASE+2, 1);
-	set_debug_port(port);
-	pci_conf1_write_config32(bdf, EHCI_BAR_INDEX, EHCI_BAR);
-	pci_conf1_write_config8(bdf, 0x04, 0x2); // mem space enable
-}
-

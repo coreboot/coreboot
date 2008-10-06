@@ -28,8 +28,10 @@
 #include <amd/k8/k8.h>
 #include "mcp55.h"
 
-#warning fix disgusting define of MCP55_NUM it is mainboard dependent
-#define MCP55_NUM 1
+#ifndef MCP55_NUM
+#error MCP55_NUM should be defined in mainboard.h (in the mainboard directory)
+#endif
+
 int set_ht_link_mcp55(u8 ht_c_num)
 {
 	int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid,  unsigned val);
@@ -441,10 +443,10 @@ unsigned int get_sbdn(unsigned int bus)
 
 }
 
+void set_bios_reset(void);
 void hard_reset(void)
 {
-#warning what is set_bios_reset
-//	set_bios_reset();
+	set_bios_reset();
 
 	/* full reset */
 	outb(0x0a, 0x0cf9);
@@ -460,12 +462,31 @@ void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 
 void soft_reset(void)
 {
-#warning what is set_bios_reset
-//	set_bios_reset();
-#if 1
+	set_bios_reset();
 	/* link reset */
 	outb(0x02, 0x0cf9);
 	outb(0x06, 0x0cf9);
-#endif
 }
+
+/* this seems to be needed. The mcp55 is a real mess. I won't miss it. */
+void sio_setup(u32 devn)
+{
+
+        unsigned value;
+        u32 dword;
+        u8 byte;
+
+        byte = pci_conf1_read_config8(PCI_BDF(0, devn+1 , 0), 0x7b);
+        byte |= 0x20; 
+        pci_conf1_write_config8(PCI_BDF(0, devn+1 , 0), 0x7b, byte);
+        
+        dword = pci_conf1_read_config32(PCI_BDF(0, devn+1 , 0), 0xa0);
+        dword |= (1<<0);
+        pci_conf1_write_config32(PCI_BDF(0, devn+1 , 0), 0xa0, dword);
+        
+        dword = pci_conf1_read_config32(PCI_BDF(0, devn+1 , 0), 0xa4);
+        dword |= (1<<16);
+        pci_conf1_write_config32(PCI_BDF(0, devn+1 , 0), 0xa4, dword);
+}
+
 

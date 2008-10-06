@@ -1,23 +1,23 @@
-## 
+##
 ## This file is part of the coreboot project.
-## 
+##
 ## Copyright (C) 2007 AMD
 ## Written by Yinghai Lu <yinghailu@amd.com> for AMD.
-## 
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-## 
+##
 
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
@@ -197,7 +197,7 @@ default LIFT_BSP_APIC_ID=1
 #CHIP_NAME ?
 default CONFIG_CHIP_NAME=1
 
-#memory hole size, 0 mean disable, others will enable the hole, at that case if it is small than mmio_basek, it will use mmio_basek instead. 
+#memory hole size, 0 mean disable, others will enable the hole, at that case if it is small than mmio_basek, it will use mmio_basek instead.
 #2G
 #default HW_MEM_HOLE_SIZEK=0x200000
 #1G
@@ -294,7 +294,7 @@ default CONFIG_ROM_PAYLOAD = 1
 
 ###
 ### Defaults of options that you may want to override in the target config file
-### 
+###
 
 ##
 ## The default compiler
@@ -304,7 +304,7 @@ default HOSTCC="gcc"
 
 ##
 ## Disable the gdb stub by default
-## 
+##
 default CONFIG_GDB_STUB=0
 
 ##
@@ -335,15 +335,15 @@ default TTYS0_LCS=0x3
 ##
 ### Select the coreboot loglevel
 ##
-## EMERG      1   system is unusable               
-## ALERT      2   action must be taken immediately 
-## CRIT       3   critical conditions              
-## ERR        4   error conditions                 
-## WARNING    5   warning conditions               
-## NOTICE     6   normal but significant condition 
-## INFO       7   informational                    
-## DEBUG      8   debug-level messages             
-## SPEW       9   Way too many details             
+## EMERG      1   system is unusable
+## ALERT      2   action must be taken immediately
+## CRIT       3   critical conditions
+## ERR        4   error conditions
+## WARNING    5   warning conditions
+## NOTICE     6   normal but significant condition
+## INFO       7   informational
+## DEBUG      8   debug-level messages
+## SPEW       9   Way too many details
 
 ## Request this level of debugging output
 default  DEFAULT_CONSOLE_LOGLEVEL=8

@@ -37,7 +37,7 @@
 #define FAM10_SET_FIDVID_CORE_RANGE 0
 
 #define DBGP_DEFAULT 7
- 
+
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -49,7 +49,7 @@
 #include "pc80/mc146818rtc_early.c"
 
 static void post_code(u8 value) {
-    outb(value, 0x80);
+	outb(value, 0x80);
 }
 
 #if USE_FAILOVER_IMAGE==0
@@ -79,7 +79,7 @@ static void post_code(u8 value) {
 #include "cpu/x86/bist.h"
 
 #if CONFIG_USE_INIT == 0
-        #include "lib/memcpy.c"
+	#include "lib/memcpy.c"
 #endif
 
 #include "northbridge/amd/amdfam10/debug.c"
@@ -118,7 +118,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdfam10/raminit_amdmct.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
 
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/quadcore/quadcore.c"
 
@@ -128,12 +128,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define MCP55_PCI_E_X_0 1
 
 #define MCP55_MB_SETUP \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x44,/* GPIO38 PCI_REQ3 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x44,/* GPIO39 PCI_GNT3 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+39, 0x00, 0x44,/* GPIO40 PCI_GNT2 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+40, 0x00, 0x44,/* GPIO41 PCI_REQ2 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+59, 0x00, 0x60,/* GPIP60 FANCTL0 */ \
-        RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+37, 0x00, 0x44,/* GPIO38 PCI_REQ3 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+38, 0x00, 0x44,/* GPIO39 PCI_GNT3 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+39, 0x00, 0x44,/* GPIO40 PCI_GNT2 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+40, 0x00, 0x44,/* GPIO41 PCI_REQ2 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+59, 0x00, 0x60,/* GPIP60 FANCTL0 */ \
+	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+60, 0x00, 0x60,/* GPIO61 FANCTL1 */
 
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
@@ -157,72 +157,72 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void sio_setup(void)
 {
 
-        unsigned value;
-        uint32_t dword;
-        uint8_t byte;
+	unsigned value;
+	uint32_t dword;
+	uint8_t byte;
 
-        byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20; 
-        pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
-        
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
-        /*serial 0 */
-        dword |= (1<<0);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
-        
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
-        dword |= (1<<16);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
+	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
+
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
+	/*serial 0 */
+	dword |= (1<<0);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
+
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
+	dword |= (1<<16);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
 
 }
 
 void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-        unsigned last_boot_normal_x = last_boot_normal();
+	unsigned last_boot_normal_x = last_boot_normal();
 
-        /* Is this a cpu only reset? or Is this a secondary cpu? */
-        if ((cpu_init_detectedx) || (!boot_cpu())) {
-                if (last_boot_normal_x) {
-                        goto normal_image;
-                } else {
-                        goto fallback_image;
-                }
-        }
+	/* Is this a cpu only reset? or Is this a secondary cpu? */
+	if ((cpu_init_detectedx) || (!boot_cpu())) {
+		if (last_boot_normal_x) {
+			goto normal_image;
+		} else {
+			goto fallback_image;
+		}
+	}
 
-        /* Nothing special needs to be done to find bus 0 */
-        /* Allow the HT devices to be found */
+	/* Nothing special needs to be done to find bus 0 */
+	/* Allow the HT devices to be found */
 
-        set_bsp_node_CHtExtNodeCfgEn();
-        enumerate_ht_chain();
+	set_bsp_node_CHtExtNodeCfgEn();
+	enumerate_ht_chain();
 
-        sio_setup();
+	sio_setup();
 
-        /* Setup the mcp55 */
-        mcp55_enable_rom();
+	/* Setup the mcp55 */
+	mcp55_enable_rom();
 
-        /* Is this a deliberate reset by the bios */
-        if (bios_reset_detected() && last_boot_normal_x) {
-                goto normal_image;
-        }
-        /* This is the primary cpu how should I boot? */
-        else if (do_normal_boot()) {
-                goto normal_image;
-        }
-        else {
-                goto fallback_image;
-        }
+	/* Is this a deliberate reset by the bios */
+	if (bios_reset_detected() && last_boot_normal_x) {
+		goto normal_image;
+	}
+	/* This is the primary cpu how should I boot? */
+	else if (do_normal_boot()) {
+		goto normal_image;
+	}
+	else {
+		goto fallback_image;
+	}
  normal_image:
-        __asm__ volatile ("jmp __normal_image"
-                : /* outputs */
-                : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-                );
+	__asm__ volatile ("jmp __normal_image"
+		: /* outputs */
+		: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
+		);
 
  fallback_image:
 #if HAVE_FAILOVER_BOOT==1
-        __asm__ volatile ("jmp __fallback_image"
-                : /* outputs */
-                : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-                )
+	__asm__ volatile ("jmp __fallback_image"
+		: /* outputs */
+		: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
+		)
 #endif
 	;
 }
@@ -231,15 +231,15 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if HAVE_FAILOVER_BOOT==1 
+#if HAVE_FAILOVER_BOOT==1
     #if USE_FAILOVER_IMAGE==1
-	failover_process(bist, cpu_init_detectedx);	
+	failover_process(bist, cpu_init_detectedx);
     #else
 	real_main(bist, cpu_init_detectedx);
     #endif
 #else
     #if USE_FALLBACK_IMAGE == 1
-	failover_process(bist, cpu_init_detectedx);	
+	failover_process(bist, cpu_init_detectedx);
     #endif
 	real_main(bist, cpu_init_detectedx);
 #endif
@@ -252,24 +252,24 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-        struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	u32 bsp_apicid = 0;
 	u32 val;
 	u32 wants_reset;
 	msr_t msr;
- 
+
 	post_code(0x30);
 
-        if (bist == 0) {
+	if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-        }
+	}
 
 	post_code(0x32);
 
 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
-        uart_init();
-        console_init();
+	uart_init();
+	console_init();
 	printk_debug("\n");
 
 	/* Halt if there was a built in self test failure */
@@ -285,7 +285,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk_debug("*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
 	printk_debug("bsp_apicid = %02x \n", bsp_apicid);
 	printk_debug("cpu_init_detectedx = %08x \n", cpu_init_detectedx);
-
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
@@ -308,9 +307,9 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* wait for all the APs core0 started by finalize_node_setup. */
 	/* FIXME: A bunch of cores are going to start output to serial at once.
-	   It would be nice to fixup prink spinlocks for ROM XIP mode.
-	   I think it could be done by putting the spinlock flag in the cache
-	   of the BSP located right after sysinfo.
+	 * It would be nice to fixup prink spinlocks for ROM XIP mode.
+	 * I think it could be done by putting the spinlock flag in the cache
+	 * of the BSP located right after sysinfo.
 	 */
 	wait_all_core0_started();
 
@@ -329,7 +328,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
 
 	/* FIXME: The sb fid change may survive the warm reset and only
-	   need to be done once.*/
+	 * need to be done once.*/
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
 
 	post_code(0x39);
@@ -357,7 +356,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	if (wants_reset)
-	    printk_debug("mcp55_early_setup_x wanted additional reset!\n");
+		printk_debug("mcp55_early_setup_x wanted additional reset!\n");
 
 	post_code(0x3B);
 

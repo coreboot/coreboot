@@ -25,7 +25,7 @@
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
 
-#define SET_NB_CFG_54 1 
+#define SET_NB_CFG_54 1
 
 //used by raminit
 #define QRANK_DIMM_SUPPORT 1
@@ -44,18 +44,18 @@
 #include "pc80/serial.c"
 
 #if CONFIG_USE_INIT == 0
-        #include "lib/memcpy.c"
+	#include "lib/memcpy.c"
 #endif
 
 #include "arch/i386/lib/console.c"
 
-#if 0 
+#if 0
 static void post_code(uint8_t value) {
 #if 1
-        int i;
-        for(i=0;i<0x80000;i++) {
-                outb(value, 0x80);
-        }
+	int i;
+	for(i=0;i<0x80000;i++) {
+		outb(value, 0x80);
+	}
 #endif
 }
 #endif
@@ -87,14 +87,14 @@ static void post_code(uint8_t value) {
 void hardwaremain(int ret_addr)
 {
 	struct sys_info *sysinfo = (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE); // in CACHE
-        struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
+	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
 
 	struct node_core_id id;
 
 	id = get_node_core_id_x();
 
 	//FIXME: for USBDEBUG_DIRECT you need to make sure dbg_info get assigned in AP
-        print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\r\n");
+	print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\r\n");
 
 	train_ram(id.nodeid, sysinfo, sysinfox);
 
@@ -102,29 +102,29 @@ void hardwaremain(int ret_addr)
 		go back, but can not use stack any more, because we only keep ret_addr and can not restore esp, and ebp
 	*/
 
-        __asm__ volatile (
-                "movl  %0, %%edi\n\t"
-                "jmp     *%%edi\n\t"
-                :: "a"(ret_addr)
-        );
+	__asm__ volatile (
+		"movl  %0, %%edi\n\t"
+		"jmp     *%%edi\n\t"
+		:: "a"(ret_addr)
+	);
 
 
 
 }
 struct eregs {
-        uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
-        uint32_t vector;
-        uint32_t error_code;
-        uint32_t eip;
-        uint32_t cs;
-        uint32_t eflags;
+	uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
+	uint32_t vector;
+	uint32_t error_code;
+	uint32_t eip;
+	uint32_t cs;
+	uint32_t eflags;
 };
 
 void x86_exception(struct eregs *info)
 {
-        do {
-                hlt();
-        } while(1);
+	do {
+		hlt();
+	} while(1);
 }
 
 

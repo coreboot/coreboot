@@ -37,27 +37,27 @@
 struct mb_sysconf_t mb_sysconf;
 
 unsigned pci1234x[] =
-{        //Here you only need to set value in pci1234 for HT-IO that could be installed or not
+{	//Here you only need to set value in pci1234 for HT-IO that could be installed or not
 	 //You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-        0x0000ff0,
-        0x0000ff0,
-        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+	0x0000ff0,
+	0x0000ff0,
+	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0
 };
 unsigned hcdnx[] =
 { //HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
-        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+	0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
 };
 
 
@@ -67,27 +67,27 @@ static unsigned get_bus_conf_done = 0;
 
 static unsigned get_hcid(unsigned i)
 {
-        unsigned id = 0;
+	unsigned id = 0;
 
-        unsigned busn = (sysconf.pci1234[i] >> 16) & 0xff;
+	unsigned busn = (sysconf.pci1234[i] >> 16) & 0xff;
 
-        unsigned devn = sysconf.hcdn[i] & 0xff;
+	unsigned devn = sysconf.hcdn[i] & 0xff;
 
-        device_t dev;
+	device_t dev;
 
-        dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
+	dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
 
-        switch (dev->device) {
-        case 0x0369: //IO55
-                id = 4;
-                break;
-        }
+	switch (dev->device) {
+	case 0x0369: //IO55
+		id = 4;
+		break;
+	}
 
-        // we may need more way to find out hcid: subsystem id? GPIO read ?
+	// we may need more way to find out hcid: subsystem id? GPIO read ?
 
-        // we need use id for 1. bus num, 2. mptable, 3. acpi table
+	// we need use id for 1. bus num, 2. mptable, 3. acpi table
 
-        return id;
+	return id;
 }
 
 void get_bus_conf(void)
@@ -96,27 +96,26 @@ void get_bus_conf(void)
 	unsigned apicid_base;
 	struct mb_sysconf_t *m;
 
-        device_t dev;
-        int i, j;
+	device_t dev;
+	int i, j;
 
-        if (get_bus_conf_done)
+	if (get_bus_conf_done)
 		return; //do it only once
 
-        get_bus_conf_done = 1;
+	get_bus_conf_done = 1;
 
 	sysconf.mb = &mb_sysconf;
 
 	m = sysconf.mb;
 	memset(m, 0, sizeof(struct mb_sysconf_t));
 
-        sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
+	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
+		sysconf.pci1234[i] = pci1234x[i];
+		sysconf.hcdn[i] = hcdnx[i];
+	}
 
-        for (i = 0; i < sysconf.hc_possible_num; i++) {
-                sysconf.pci1234[i] = pci1234x[i];
-                sysconf.hcdn[i] = hcdnx[i];
-        }
-
-        get_sblk_pci1234();
+	get_sblk_pci1234();
 
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
 
@@ -132,22 +131,22 @@ void get_bus_conf(void)
 		if (!(sysconf.pci1234[i] & 0x1))
 			continue;
 
-                busn_min = (sysconf.pci1234[i] >> 16) & 0xff;
-                busn_max = (sysconf.pci1234[i] >> 24) & 0xff;
+		busn_min = (sysconf.pci1234[i] >> 16) & 0xff;
+		busn_max = (sysconf.pci1234[i] >> 24) & 0xff;
 		for (j = busn_min; j <= busn_max; j++)
 			m->bus_type[j] = 1;
 		if(m->bus_isa <= busn_max)
 			m->bus_isa = busn_max + 1;
-	        printk_debug("i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn_min, busn_max, m->bus_isa);
+		printk_debug("i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn_min, busn_max, m->bus_isa);
 	}
 
-                /* MCP55b */
-        for (i = 1; i < sysconf.hc_possible_num; i++) {
+		/* MCP55b */
+	for (i = 1; i < sysconf.hc_possible_num; i++) {
 		if (!(sysconf.pci1234[i] & 0x0f))
 			continue;
-                // check hcid type here
-                sysconf.hcid[i] = get_hcid(i);
-                if (!sysconf.hcid[i])
+		// check hcid type here
+		sysconf.hcid[i] = get_hcid(i);
+		if (!sysconf.hcid[i])
 			continue; //unknown co processor
 
 		m->bus_mcp55b = (sysconf.pci1234[1]>>16) & 0xff;
@@ -160,6 +159,6 @@ void get_bus_conf(void)
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
 	m->apicid_mcp55 = apicid_base+0;
-        m->apicid_mcp55b = apicid_base+1;
+	m->apicid_mcp55b = apicid_base+1;
 
 }

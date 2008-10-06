@@ -31,74 +31,74 @@
 
 void *smp_write_config_table(void *v)
 {
-        static const char sig[4] = "PCMP";
-        static const char oem[8] = "TYAN    ";
-        static const char productid[12] = "S2895       ";
-        struct mp_config_table *mc;
+	static const char sig[4] = "PCMP";
+	static const char oem[8] = "TYAN    ";
+	static const char productid[12] = "S2895       ";
+	struct mp_config_table *mc;
 	struct mb_sysconf_t *m;
 	unsigned sbdn;
 
 	int i,j;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-        memset(mc, 0, sizeof(*mc));
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	memset(mc, 0, sizeof(*mc));
 
-        memcpy(mc->mpc_signature, sig, sizeof(sig));
-        mc->mpc_length = sizeof(*mc); /* initially just the header */
-        mc->mpc_spec = 0x04;
-        mc->mpc_checksum = 0; /* not yet computed */
-        memcpy(mc->mpc_oem, oem, sizeof(oem));
-        memcpy(mc->mpc_productid, productid, sizeof(productid));
-        mc->mpc_oemptr = 0;
-        mc->mpc_oemsize = 0;
-        mc->mpc_entry_count = 0; /* No entries yet... */
-        mc->mpc_lapic = LAPIC_ADDR;
-        mc->mpe_length = 0;
-        mc->mpe_checksum = 0;
-        mc->reserved = 0;
+	memcpy(mc->mpc_signature, sig, sizeof(sig));
+	mc->mpc_length = sizeof(*mc); /* initially just the header */
+	mc->mpc_spec = 0x04;
+	mc->mpc_checksum = 0; /* not yet computed */
+	memcpy(mc->mpc_oem, oem, sizeof(oem));
+	memcpy(mc->mpc_productid, productid, sizeof(productid));
+	mc->mpc_oemptr = 0;
+	mc->mpc_oemsize = 0;
+	mc->mpc_entry_count = 0; /* No entries yet... */
+	mc->mpc_lapic = LAPIC_ADDR;
+	mc->mpe_length = 0;
+	mc->mpe_checksum = 0;
+	mc->reserved = 0;
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	get_bus_conf();
 	sbdn = sysconf.sbdn;
 	m = sysconf.mb;
 
 /*Bus:		Bus ID	Type*/
-       /* define bus and isa numbers */
-        for(j= 0; j < 256 ; j++) {
+	/* define bus and isa numbers */
+	for(j= 0; j < 256 ; j++) {
 		if(m->bus_type[j])
 			 smp_write_bus(mc, j, "PCI   ");
-        }
-        smp_write_bus(mc, m->bus_isa, "ISA   ");
+	}
+	smp_write_bus(mc, m->bus_isa, "ISA   ");
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-        {
-                device_t dev;
+	{
+		device_t dev;
 		struct resource *res;
 		uint32_t dword;
 
-                dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sbdn+ 0x1,0));
-                if (dev) {
+		dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sbdn+ 0x1,0));
+		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
 			if (res) {
 				smp_write_ioapic(mc, m->apicid_mcp55, 0x11, res->base);
 			}
 
 			dword = 0x43c6c643;
-	        	pci_write_config32(dev, 0x7c, dword);
+			pci_write_config32(dev, 0x7c, dword);
 
-		        dword = 0x81001a00;
-		        pci_write_config32(dev, 0x80, dword);
+			dword = 0x81001a00;
+			pci_write_config32(dev, 0x80, dword);
 
-	        	dword = 0xd00002d2;
-		        pci_write_config32(dev, 0x84, dword);
+			dword = 0xd00002d2;
+			pci_write_config32(dev, 0x84, dword);
 
-                }
+		}
 
 
 	}
-  
-		   /*I/O Ints:	Type	Polarity    Trigger			Bus ID	 IRQ	APIC ID	PIN# */	
+
+		   /*I/O Ints:	Type	Polarity    Trigger			Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, m->apicid_mcp55, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x1, m->apicid_mcp55, 0x1);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x0, m->apicid_mcp55, 0x2);
@@ -112,30 +112,30 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xe, m->apicid_mcp55, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xf, m->apicid_mcp55, 0xf);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+1)<<2)|1, m->apicid_mcp55, 0xa);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+1)<<2)|1, m->apicid_mcp55, 0xa);
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|0, m->apicid_mcp55, 0x16); // 22
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|0, m->apicid_mcp55, 0x16); // 22
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|1, m->apicid_mcp55, 0x17); // 23
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|1, m->apicid_mcp55, 0x17); // 23
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|0, m->apicid_mcp55, 0x14); // 20
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|1, m->apicid_mcp55, 0x17); // 23
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|2, m->apicid_mcp55, 0x15); // 21
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|0, m->apicid_mcp55, 0x14); // 20
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|1, m->apicid_mcp55, 0x17); // 23
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|2, m->apicid_mcp55, 0x15); // 21
 
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+8)<<2)|0, m->apicid_mcp55, 0x16); // 22
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+9)<<2)|0, m->apicid_mcp55, 0x15); // 21
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+8)<<2)|0, m->apicid_mcp55, 0x16); // 22
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+9)<<2)|0, m->apicid_mcp55, 0x15); // 21
 
 	for(j=7; j>=2; j--) {
 		if(!m->bus_mcp55[j]) continue;
-	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[j], (0x00<<2)|i, m->apicid_mcp55, 0x10 + (2+j+i+4-sbdn%4)%4);
-        	}
+		for(i=0;i<4;i++) {
+			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[j], (0x00<<2)|i, m->apicid_mcp55, 0x10 + (2+j+i+4-sbdn%4)%4);
+		}
 	}
 
-	for(j=0; j<1; j++) 
-	        for(i=0;i<4;i++) {
-        	        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[1], ((0x04+j)<<2)|i, m->apicid_mcp55, 0x10 + (2+i+j)%4);
-	        }
+	for(j=0; j<1; j++)
+		for(i=0;i<4;i++) {
+			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[1], ((0x04+j)<<2)|i, m->apicid_mcp55, 0x10 + (2+i+j)%4);
+		}
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, MP_APIC_ALL, 0x0);

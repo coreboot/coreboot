@@ -102,6 +102,10 @@ config SOUTHBRIDGE_NVIDIA_MCP55
 	boolean
 config SOUTHBRIDGE_AMD_AMD8111
 	boolean
+config SOUTHBRIDGE_AMD_SB600
+	boolean
+config SOUTHBRIDGE_AMD_RS690
+	boolean
 
 # Super I/Os:
 config SUPERIO_WINBOND_W83627HF
@@ -109,6 +113,8 @@ config SUPERIO_WINBOND_W83627HF
 config SUPERIO_FINTEK_F71805F
 	boolean
 config SUPERIO_ITE_IT8716F
+	boolean
+config SUPERIO_ITE_IT8712F
 	boolean
 
 menu "Payload"

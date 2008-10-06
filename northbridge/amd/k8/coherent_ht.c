@@ -1689,17 +1689,6 @@ int optimize_link_read_pointers(unsigned nodes)
 	return needs_reset;
 }
 
-/** 
- * get_nodes
- * see page 46 of the BKDG Publication # 26094       Revision: 3.30 Issue Date: February 2006
- * @returns an int containing the number of nodes.
- * The format of the register is 32 bits, and the node count is in bits 4-6
- */
-unsigned int get_nodes(void)
-{
-        return ((pci_conf1_read_config32(PCI_BDF(0, 0x18, 0), NODEID)>>4) & 7) + 1;
-}
-
 int optimize_link_coherent_ht(void)
 {
         int needs_reset = 0;

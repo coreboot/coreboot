@@ -35,6 +35,19 @@ config BOARD_AMD_DB800
 	help
 	  AMD DB800 Geode LX development board.
 
+config BOARD_AMD_DBM690T
+	bool "dbm690t"
+	select ARCH_X86
+	select OPTION_TABLE
+	select CPU_AMD_K8
+	select NORTHBRIDGE_AMD_K8
+	select SOUTHBRIDGE_AMD_SB600
+	select SOUTHBRIDGE_AMD_RS690
+	select SUPERIO_ITE_IT8712F
+	select IOAPIC
+	help
+	  AMD dbm690t development board.
+
 config BOARD_AMD_NORWICH
 	bool "Norwich"
 	select ARCH_X86
@@ -67,6 +80,11 @@ config MAINBOARD_DIR
 
 config MAINBOARD_DIR
 	string
+	default amd/dbm690t
+	depends BOARD_AMD_DBM690T
+
+config MAINBOARD_DIR
+	string
 	default amd/norwich
 	depends BOARD_AMD_NORWICH
 
@@ -74,4 +92,3 @@ config MAINBOARD_DIR
 	string
 	default amd/serengeti
 	depends BOARD_AMD_SERENGETI
-

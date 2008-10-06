@@ -249,9 +249,6 @@ int main(void)
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif
 
-#warning re-implement post_cache_as_ram
-	//       post_cache_as_ram(); // bsp switch stack to ram and copy sysinfo ram now
-
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;
 }

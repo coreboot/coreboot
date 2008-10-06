@@ -153,7 +153,7 @@ protected_stage0:
 
 .globl __protected_stage0
 __protected_stage0:
-	/* Save the BIST value. */
+	/* Save the BIST result. */
 	movl	%eax, %ebp
 
 	port80_post(0x01)

@@ -1,26 +1,27 @@
-## 
-## This file is part of the coreboot project.
-## 
-## Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
-## Copyright (C) 2005 Eswar Nallusamy, LANL
-## Copyright (C) 2005 Tyan
-## (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
-## Copyright (C) 2007 coresystems GmbH
-## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
-## 
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; version 2 of the License.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-## 
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2005 Eswar Nallusamy, LANL
+ * Copyright (C) 2005 Tyan
+ * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
+ * Copyright (C) 2007 coresystems GmbH
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2008 Carl-Daniel Hailfinger
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 # init code - switch cpu to pmode and enable cache as ram.
 
@@ -39,7 +40,7 @@ _stage0:
 	/* save the BIST result */
 	movl	%eax, %ebp;
 
-	/* thanks to kmliu@sis.tw.com for this TLB fix */
+	/* thanks to kmliu@sis.com.tw for this TLB fix */
 	/* IMMEDIATELY invalidate the translation lookaside buffer before
 	 * executing any further code.  Even though paging is disabled we 
 	 * could still get false address translations due to the TLB if we 
@@ -461,38 +462,42 @@ var_mtrr_msr:
         .long   0x20C, 0x20D, 0x20E, 0x20F
         .long   0x000 /* NULL, end of table */
 
-# Reset vector.
+/* Reset vector. */
 
 /*
- RVECTOR: size of reset vector, default is 0x10
- RESRVED: size of vpd code, default is 0xf0
- BOOTBLK: size of bootblock code, default is 0x1f00 (8k-256b)
-*/
+ * RVECTOR: Size of reset vector, default is 0x10.
+ * RESRVED: Size of vpd code, default is 0xf0.
+ * BOOTBLK: Size of bootblock code, default is 0x1f00 (8k-256b).
+ */
 
 SEGMENT_SIZE = 0x10000
 RVECTOR      = 0x00010
-# Due to YET ANOTHER BUG in GNU bintools, you can NOT have a code16 here.
-# I think we should leave it this way forever, as the bugs come and
-# go -- and come again.
-#	.code16
-#	.section ".rom.text"
+
+/* Due to YET ANOTHER BUG in GNU bintools, you can NOT have a code16 here.
+ * I think we should leave it this way forever, as the bugs come and
+ * go -- and come again.
+ *
+ *	.code16
+ *	.section ".rom.text"
+ */
 .section ".reset", "ax"
 	.globl _resetjump
 _resetjump:
 	/* GNU bintools bugs again. This jumps to stage0 - 2. Sigh. */
-#	jmp _stage0
-	.byte  0xe9
-	.int   _stage0 - ( . + 2 )
+	/* jmp _stage0 */
+	.byte	0xe9
+	.int	_stage0 - ( . + 2 )
+
 	/* Note: The above jump is hand coded to work around bugs in binutils.
-	 * 5 byte are used for a 3 byte instruction.  This works because x86
-	 * is little endian and allows us to use supported 32bit relocations
+	 * 5 bytes are used for a 3 byte instruction. This works because x86
+	 * is little endian and allows us to use supported 32 bit relocations
 	 * instead of the weird 16 bit relocations that binutils does not
 	 * handle consistenly between versions because they are used so rarely.
 	 */
 .byte	0
 
-# Date? ID string? We might want to put something else in here.
+/* Date? ID string? We might want to put something else in here. */
 .ascii DATE
 
-# Checksum.
-#.word	0
+/* Checksum. */
+/* .word 0 */

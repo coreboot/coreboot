@@ -160,10 +160,7 @@ protected_stage0:
 
 .globl __protected_stage0
 __protected_stage0:
-	/* Save the BIST result */
-	movl	%eax, %ebp
-
-	/* Save the BIST value. */
+	/* Save the BIST result. */
 	movl	%eax, %ebp
 
 	port80_post(0x01)
@@ -436,7 +433,7 @@ CAR_FAM10_ap_out:
 	movb	$0xA5, %al
 	outb	%al, $0x80
 
-	/* Restore the BIST result */
+	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
 	/* We need to set ebp ? No need */

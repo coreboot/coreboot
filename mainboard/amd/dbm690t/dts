@@ -1,0 +1,75 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2008 Ronald G. Minnich <rminnich@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+/{
+	device_operations="dbm690t";
+	mainboard_vendor = "AMD";
+	mainboard_name = "Serengeti";
+	cpus { };
+	apic@0 {
+	};
+	domain@0 {
+		/config/("northbridge/amd/k8/domain");
+		pci@1,0{
+		};
+		/* guesses; we need a real lspci */
+		pci0@18,0 {
+			/config/("northbridge/amd/k8/pci");
+			/* make sure that the ht device is first, as it controls many other things. */
+			pci0 {
+				/config/("southbridge/amd/rs690/ht.dts");
+			};
+			pci1{
+				/config/("southbridge/amd/rs690/gfx.dts");
+			};
+			pci2{
+				/config/("southbridge/amd/rs690/pcie.dts");
+			};
+			pci3{
+				/config/("southbridge/amd/sb600/sb600.dts");
+			};
+			pci4{
+				/config/("southbridge/amd/sb600/hda.dts");
+			};
+			pci5{
+				/config/("southbridge/amd/sb600/usb.dts");
+			};
+			pci6{
+				/config/("southbridge/amd/sb600/usb2.dts");
+			};
+		};
+		pci1@18,0 {
+			/config/("northbridge/amd/k8/pci");
+		};
+		pci2@18,0 {
+			/config/("northbridge/amd/k8/pci");
+			/* just for illustrating link #2 */
+			pci@2,0{
+			};
+		};
+		pci@18,1 {};
+		pci@18,2 {};
+		pci@18,3 {};
+		ioport@2e {
+			/config/("superio/ite/it8712f/dts");
+			com1enable = "1";
+		};
+	};
+};

@@ -45,7 +45,6 @@ SECTIONS
 		*(.comment)
 		*(.note.*)
 		*(.note)
-		*(.note.*)
 	}
 }
 

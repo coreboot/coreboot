@@ -92,7 +92,7 @@ gdt16x:
 	.byte	0x00, 0x93, 0xcf, 0x00
 gdt16xend:
 
-	/* From now on we are 32bit. */
+	/* From now on we are 32 bit. */
 	.code32
 
 	/* We have two gdts where we could have one. That is ok.
@@ -365,15 +365,17 @@ lout:
 	movl    $0, %eax
 	pushl   %eax
 
-	/* Store zero for the unused init_detected parameter. */
-	pushl   %eax
-
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
 	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
-	pushl	%eax		/* BIST */
+
+	/* Second parameter: init_detected */
+	/* Store zero for the unused init_detected parameter. */
+	pushl	$0
+	/* First parameter: bist */
+	pushl	%eax
 	jmp	stage1_main
 	/* We will not go back. */
 

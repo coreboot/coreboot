@@ -17,8 +17,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+/* Init code - Switch CPU to protected mode and enable Cache-as-Ram (CAR). */
+
 #define ASSEMBLY
 #include <macros.h>
+#include <mtrr.h>
+#include <amd/k8/k8.h>
+
 #define CacheSize CONFIG_CARSIZE
 #define CacheBase CONFIG_CARBASE
 #define MEM_TOPK 2048
@@ -31,9 +37,6 @@
 #ifdef CONFIG_CPU_AMD_K10
 #define CacheSizeAPStack 0x400 /* 1K */
 #endif
-
-#include <mtrr.h>
-#include <amd/k8/k8.h>
 
 	.code16
 	.globl _stage0
@@ -239,13 +242,13 @@ enable_fixed_mtrr_dram_modify:
 clear_fixed_var_mtrr:
 	lodsl	(%esi), %eax
 	testl	%eax, %eax
-	jz		clear_fixed_var_mtrr_out
+	jz	clear_fixed_var_mtrr_out
 
 	movl	%eax, %ecx
 	xorl	%eax, %eax
 	wrmsr
 
-	jmp		clear_fixed_var_mtrr
+	jmp	clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
 /* 0x06 is the WB IO type for a given 4k segment.
@@ -304,14 +307,14 @@ clear_fixed_var_mtrr_out:
 #endif
 
 #if CacheSize > 0x8000
-        /* enable caching for 32K-64K using fixed mtrr */
-        movl    $0x268, %ecx  /* fix4k_c0000*/
+	/* enable caching for 32K-64K using fixed mtrr */
+	movl    $0x268, %ecx  /* fix4k_c0000*/
 	simplemask CacheSize, 0x8000
-        wrmsr
+	wrmsr
 #endif
 
-        /* enable caching for 0-32K using fixed mtrr */
-        movl    $0x269, %ecx  /* fix4k_c8000*/
+	/* enable caching for 0-32K using fixed mtrr */
+	movl    $0x269, %ecx  /* fix4k_c8000*/
 	simplemask CacheSize, 0
 	wrmsr
 
@@ -436,12 +439,15 @@ CAR_FAM10_ap_out:
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 
-	/* We need to set ebp ? No need */
+	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
-	pushl	%ebx  /* init detected */
-	pushl	%eax  /* bist */
+
+	/* Second parameter: init_detected */
+	pushl	%ebx
+	/* First parameter: bist */
+	pushl	%eax
 	call	stage1_main
-	/* We will not go back */
+	/* We will not go back. */
 
 	movb	$0xAF, %al		/* Should never see this postcode */
 	outb	%al, $0x80
@@ -462,7 +468,6 @@ mem_top:
 	.long	0xC001001A, 0xC001001D
 	.long	0x000 /* NULL, end of table */
 
-cache_as_ram_setup_out:
 /* Reset vector. */
 
 /*

@@ -23,7 +23,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-# init code - switch cpu to pmode and enable cache as ram.
+/* Init code - Switch CPU to protected mode and enable Cache-as-Ram (CAR). */
 
 #include <macros.h>
 
@@ -277,7 +277,7 @@ NotHtProcessor:
 	movl	$0x00000c00, %eax
 	wrmsr
 
-	/*Clear all MTRRs */
+	/* Clear all MTRRs */
 	xorl	%edx, %edx
 	movl	$fixed_mtrr_msr, %esi
 clear_fixed_var_mtrr:
@@ -289,7 +289,7 @@ clear_fixed_var_mtrr:
 	xorl	%eax, %eax
 	wrmsr
 
-	jmp     clear_fixed_var_mtrr
+	jmp	clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
 /* 0x06 is the WB IO type for a given 4k segment.
@@ -305,13 +305,13 @@ clear_fixed_var_mtrr_out:
 	 */
 	xorl \reg, \reg
 .elseif \segs == 1
-	movl $0x06000000, \reg
+	movl $0x06000000, \reg /* WB IO type */
 .elseif \segs == 2
-	movl $0x06060000, \reg
+	movl $0x06060000, \reg /* WB IO type */
 .elseif \segs == 3
-	movl $0x06060600, \reg
+	movl $0x06060600, \reg /* WB IO type */
 .elseif \segs >= 4
-	movl $0x06060606, \reg
+	movl $0x06060606, \reg /* WB IO type */
 .endif
 .endm
 
@@ -439,16 +439,20 @@ lout:
 	movl    $0, %eax
 	pushl   %eax
 
-	/* Store zero for the unused init_detected parameter. */
-	pushl   %eax
-
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
-	/* We need to set ebp ? No need */
+
+	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
-	pushl 	%eax  /* bist */
-	call    stage1_main
-	/* We will not go back */
+
+	/* Second parameter: init_detected */
+	/* Store zero for the unused init_detected parameter. */
+	pushl	$0
+	/* First parameter: bist */
+	pushl	%eax
+	call	stage1_main
+	/* We will not go back. */
+
 fixed_mtrr_msr:
 	.long	0x250, 0x258, 0x259
 	.long	0x268, 0x269, 0x26A

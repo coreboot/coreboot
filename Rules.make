@@ -27,13 +27,17 @@ $(obj)/mainboard/$(MAINBOARDDIR)/statictree.o: $(obj)/mainboard/$(MAINBOARDDIR)/
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) $(COREBOOTINCLUDE) -c -o $@ $<
 
+# Create a tmp file so that if the dtc fails we don't end up with a 
+# half-correct statictree.[ch]
 $(obj)/mainboard/$(MAINBOARDDIR)/statictree.c: $(src)/mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
 	$(Q)printf "  DTC     $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts > $@
+	$(Q)$(obj)/util/dtc/dtc -O lb mainboard/$(MAINBOARDDIR)/dts > /tmp/statictree.c.$$
+	$(Q)mv /tmp/statictree.c.$$ $@
 
 $(obj)/statictree.h: $(src)/mainboard/$(MAINBOARDDIR)/dts $(obj)/util/dtc/dtc
 	$(Q)printf "  DTC     $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(obj)/util/dtc/dtc -O lbh mainboard/$(MAINBOARDDIR)/dts > $@
+	$(Q)$(obj)/util/dtc/dtc -O lbh mainboard/$(MAINBOARDDIR)/dts > /tmp/statictree.h.$$
+	$(Q)mv /tmp/statictree.h.$$ $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/option_table.c: $(obj)/util/options/build_opt_tbl $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout
 	$(Q)printf "  OPTIONS $(subst $(shell pwd)/,,$(@))\n"
@@ -84,4 +88,3 @@ $(obj)/southbridge/%.o: $(src)/southbridge/%.c $(obj)/statictree.h
 	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
-

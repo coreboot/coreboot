@@ -32,6 +32,8 @@ struct flashchip flashchips[] = {
 	/**********************************************************************************************************************************************************************************************************************/
 	/* Vendor	Chip			Vendor ID	Chip ID			TODO	TODO		Test status	Probe function		Erase function			Write function		Read function */
 	/**********************************************************************************************************************************************************************************************************************/
+	{"AMD",		"Am29F002(N)BB",	AMD_ID,		AM_29F002BB,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_en29f002a},
+	{"AMD",		"Am29F002(N)BT",	AMD_ID,		AM_29F002BT,		256,	256,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_en29f002a},
 	{"AMD",		"Am29F016D",		AMD_ID,		AM_29F016D,		2048,	64 * 1024,	TEST_UNTESTED,	probe_29f040b,		erase_29f040b,			write_29f040b},
 	{"AMD",		"Am29F040B",		AMD_ID,		AM_29F040B,		512,	64 * 1024,	TEST_OK_PREW,	probe_29f040b,		erase_29f040b,			write_29f040b},
 	{"AMD",		"Am29LV040B",		AMD_ID,		AM_29LV040B,		512,	64 * 1024,	TEST_UNTESTED,	probe_29f040b,		erase_29f040b,			write_29f040b},
@@ -40,7 +42,7 @@ struct flashchip flashchips[] = {
 	{"Atmel",	"AT29C040A",		ATMEL_ID,	AT_29C040A,		512,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"Atmel",	"AT49F002(N)",		ATMEL_ID,	AT_49F002N,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"Atmel",	"AT49F002(N)T",		ATMEL_ID,	AT_49F002NT,		256,	256,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_49f002},
-	{"Atmel",       "AT25DF321",		ATMEL_ID,	AT_25DF321,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"Atmel",	"AT25DF321",		ATMEL_ID,	AT_25DF321,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"AMIC",	"A25L40P",		AMIC_ID,	AMIC_A25L40P,		512,	256,		TEST_OK_PREW,	probe_spi_rdid4,	spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"AMIC",	"A29002B",		AMIC_ID_NOPREFIX, AMIC_A29002B,		256,	64 * 1024,	TEST_UNTESTED,	probe_29f002,		erase_29f002,			write_29f002},
 	{"AMIC",	"A29002T",		AMIC_ID_NOPREFIX, AMIC_A29002T,		256,	64 * 1024,	TEST_OK_PREW,	probe_29f002,		erase_29f002,			write_29f002},

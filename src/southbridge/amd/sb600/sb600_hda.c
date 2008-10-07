@@ -26,6 +26,10 @@
 #include <delay.h>
 #include "sb600.h"
 
+#define HDA_ICII_REG 0x68
+#define   HDA_ICII_BUSY (1 << 0)
+#define   HDA_ICII_VALID  (1 << 1)
+
 static int set_bits(u8 * port, u32 mask, u32 val)
 {
 	u32 dword;
@@ -160,6 +164,51 @@ static unsigned find_verb(u32 viddid, u32 ** verb)
 	return sizeof(cim_verb_data) / sizeof(u32);
 }
 
+/**
+ *  Wait 50usec for for the codec to indicate it is ready
+ *  no response would imply that the codec is non-operative
+ */
+
+static int wait_for_ready(u8 *base)
+{
+	/* Use a 50 usec timeout - the Linux kernel uses the
+	 * same duration */
+
+	int timeout = 50;
+
+	while(timeout--) {
+		u32 dword=readl(base +  HDA_ICII_REG);
+		if (!(dword & HDA_ICII_BUSY))
+			return 0;
+		udelay(1);
+	}
+
+	return -1;
+}
+
+/**
+ *  Wait 50usec for for the codec to indicate that it accepted
+ *  the previous command.  No response would imply that the code
+ *  is non-operative
+ */
+
+static int wait_for_valid(u8 *base)
+{
+	/* Use a 50 usec timeout - the Linux kernel uses the
+	 * same duration */
+
+	int timeout = 50;
+	while(timeout--) {
+		u32 dword = readl(base + HDA_ICII_REG);
+		if ((dword & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
+			HDA_ICII_VALID)
+			return 0;
+		udelay(1);
+	}
+
+	return 1;
+}
+
 static void codec_init(u8 * base, int addr)
 {
 	u32 dword;
@@ -168,16 +217,14 @@ static void codec_init(u8 * base, int addr)
 	int i;
 
 	/* 1 */
-	do {
-		dword = readl(base + 0x68);
-	} while (dword & 1);
+	if (wait_for_ready(base) == -1)
+		return;
 
 	dword = (addr << 28) | 0x000f0000;
 	writel(dword, base + 0x60);
 
-	do {
-		dword = readl(base + 0x68);
-	} while ((dword & 3) != 2);
+	if (wait_for_valid(base) == -1)
+		return;
 
 	dword = readl(base + 0x64);
 
@@ -193,15 +240,13 @@ static void codec_init(u8 * base, int addr)
 	printk_debug("verb_size: %d\n", verb_size);
 	/* 3 */
 	for (i = 0; i < verb_size; i++) {
-		do {
-			dword = readl(base + 0x68);
-		} while (dword & 1);
+		if (wait_for_ready(base) == -1)
+			return;
 
 		writel(verb[i], base + 0x60);
 
-		do {
-			dword = readl(base + 0x68);
-		} while ((dword & 3) != 2);
+		if (wait_for_valid(base) == -1)
+			return;
 	}
 	printk_debug("verb loaded!\n");
 }

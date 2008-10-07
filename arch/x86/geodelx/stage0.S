@@ -36,6 +36,7 @@ _stage0:
 	/* Save the BIST result. */
 	movl	%eax, %ebp;
 
+	/* thanks to kmliu@sis.com.tw for this TLB fix */
 	/* IMMEDIATELY invalidate the translation lookaside buffer (TLB) before
 	 * executing any further code. Even though paging is disabled we
 	 * could still get false address translations due to the TLB if we
@@ -47,8 +48,8 @@ _stage0:
 	/* Switch to protected mode. */
 
 	/* NOTE: With GNU assembler version 2.15.94.0.2.2 (i386-redhat-linux)
-	 * using BFD version 2.15.94.0.2.2 20041220 this works fine without
-	 * all the ld hackery and so on. So leave it as is with this comment.
+	 * using BFD version 2.15.94.0.2.2 20041220 this works fine without all
+	 * the ld hackery and other things. So leave it as is with this comment.
 	 */
 
 	data32	lgdt %cs:gdtptr
@@ -103,7 +104,6 @@ gdt16xend:
 	 * good descriptor is at offset 8. So you word-align the table, and
 	 * then because you chose 8, you get a nice 64-bit aligned GDT entry,
 	 * which is good as this is the size of the entry.
-	 *
 	 * Just in case you ever wonder why people do this.
 	 */
 	.align 4
@@ -140,7 +140,7 @@ gdt_end:
 	 * After that, we call the chipset bootstrap routine that
 	 * does what is left of the chipset initialization.
 	 *
-	 * Note: Aligned to 4 so that we are sure that the prefetch
+	 * NOTE: Aligned to 4 so that we are sure that the prefetch
 	 * cache will be reloaded.
 	 */
 

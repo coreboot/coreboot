@@ -37,141 +37,140 @@
 _stage0:
 	cli
 
-	/* save the BIST result */
+	/* Save the BIST result. */
 	movl	%eax, %ebp;
 
 	/* thanks to kmliu@sis.com.tw for this TLB fix */
-	/* IMMEDIATELY invalidate the translation lookaside buffer before
-	 * executing any further code.  Even though paging is disabled we 
-	 * could still get false address translations due to the TLB if we 
+	/* IMMEDIATELY invalidate the translation lookaside buffer (TLB) before
+	 * executing any further code. Even though paging is disabled we
+	 * could still get false address translations due to the TLB if we
 	 * didn't invalidate it.
 	 */
-
 	xorl	%eax, %eax
-	movl	%eax, %cr3	/* Invalidate TLB */
+	movl	%eax, %cr3	/* Invalidate TLB. */
 
-	/* switch to protected mode */
+	/* Switch to protected mode. */
 
 	/* NOTE: With GNU assembler version 2.15.94.0.2.2 (i386-redhat-linux)
 	 * using BFD version 2.15.94.0.2.2 20041220 this works fine without all
-	 * the ld hackery and other things. So leave it as is with this comment. 
+	 * the ld hackery and other things. So leave it as is with this comment.
 	 */
 
 	data32	lgdt %cs:gdtptr
 
 	movl	%cr0, %eax
-	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
+	andl	$0x7FFAFFD1, %eax /* PG, AM, WP, NE, TS, EM, MP = 0 */
 	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
 	movl	%eax, %cr0
 
-	/* Restore BIST result */
+	/* Restore BIST result. */
 	movl	%ebp, %eax
 
+	// port80_post(0x23)
 
-	// port80_post (0x23)     /* post 0x01 */
 	/* Now we are in protected mode. Jump to a 32 bit code segment. */
-	data32 ljmp    $ROM_CODE_SEG, $protected_stage0
-	/* I am leaving this weird jump in here in the event that future gas bugs force it to be used. */
-	#.byte 0x66
-	.code32
-	#ljmp    $ROM_CODE_SEG, $protected_stage0
+	data32	ljmp $ROM_CODE_SEG, $protected_stage0
 
-	#.code16
-	.align  4
+	/* I am leaving this weird jump in here in the event that future gas
+	 * bugs force it to be used.
+	 */
+	/* .byte 0x66 */
+	.code32
+	/* ljmp	$ROM_CODE_SEG, $protected_stage0 */
+
+	/* .code16 */
+	.align 4
 	.globl gdt16
-gdt16 = . - _stage0 
+gdt16 = . - _stage0
 gdt16x:
-	.word   gdt16xend - gdt16x -1 /* compute the table limit */
+	.word	gdt16xend - gdt16x -1	/* Compute the table limit. */
 	.long	gdt16x
-	.word   0
+	.word	0
 
 	/* selgdt 0x08, flat code segment */
-	.word   0xffff, 0x0000
-	.byte   0x00, 0x9b, 0xcf, 0x00
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00
 
-	/* selgdt 0x10,flat data segment */
-	.word   0xffff, 0x0000
-	.byte   0x00, 0x93, 0xcf, 0x00
+	/* selgdt 0x10, flat data segment */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x93, 0xcf, 0x00
 gdt16xend:
 
-	/* From now on we are 32bit */
-
+	/* From now on we are 32 bit. */
 	.code32
 
-/* We have two gdts where we could have one. That is ok.  
- *
- * Let's not worry about this -- optimizing gdt is pointless since we're
- * only in it for a little bit.
- *
- * BTW note the trick below: The GDT points to ITSELF, and the first good
- * descriptor is at offset 8. So you word-align the table, and then because
- * you chose 8, you get a nice 64-bit aligned GDT entry, which is good as 
- * this is the size of the entry. 
- * Just in case you ever wonder why people do this. 
- */
-	.align  4
+	/* We have two gdts where we could have one. That is ok.
+	 *
+	 * Let's not worry about this -- optimizing gdt is pointless since
+	 * we're only in it for a little bit.
+	 *
+	 * Btw. note the trick below: The GDT points to ITSELF, and the first
+	 * good descriptor is at offset 8. So you word-align the table, and
+	 * then because you chose 8, you get a nice 64-bit aligned GDT entry,
+	 * which is good as this is the size of the entry.
+	 * Just in case you ever wonder why people do this.
+	 */
+	.align 4
 	.globl gdtptr
 	.globl gdt_limit
-gdt_limit = gdt_end - gdt - 1   /* compute the table limit */
+gdt_limit = gdt_end - gdt - 1		/* Compute the table limit. */
 
 gdt:
 gdtptr:
-	.word   gdt_end - gdt -1 /* compute the table limit */
-	.long   gdt              /* we know the offset */
-	.word   0
+	.word	gdt_end - gdt -1	/* Compute the table limit. */
+	.long	gdt			/* We know the offset. */
+	.word	0
 
 	/* selgdt 0x08, flat code segment */
-	.word   0xffff, 0x0000
-	.byte   0x00, 0x9b, 0xcf, 0x00
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00
 
-	/* selgdt 0x10,flat data segment */
-	.word   0xffff, 0x0000
-	.byte   0x00, 0x93, 0xcf, 0x00
+	/* selgdt 0x10, flat data segment */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x93, 0xcf, 0x00
 
 	/* selgdt 0x18, flat code segment for CAR */
-	.word   0xffff, 0x0000
-	.byte   0x00, 0x9b, 0xcf, 0x00
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00
 
-	/* selgdt 0x20,flat data segment for CAR */
-	.word   0xffff, 0x0000
-	.byte   0x00, 0x93, 0xcf, 0x00
+	/* selgdt 0x20, flat data segment for CAR */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x93, 0xcf, 0x00
 gdt_end:
 
-/*
- *      When we come here we are in protected mode. We expand
- *      the stack and copies the data segment from ROM to the
- *      memory.
- *
- *      After that, we call the chipset bootstrap routine that
- *      does what is left of the chipset initialization.
- *
- *      NOTE: Aligned to 4 so that we are sure that the prefetch
- *      cache will be reloaded.
- */
+	/* When we come here we are in protected mode. We expand the stack
+	 * and copy the data segment from ROM to the memory.
+	 *
+	 * After that, we call the chipset bootstrap routine that
+	 * does what is left of the chipset initialization.
+	 *
+	 * NOTE: Aligned to 4 so that we are sure that the prefetch
+	 * cache will be reloaded.
+	 */
 
 	.align  4
 	.globl protected_stage0
 protected_stage0:
-	//This code was used by v2. TODO
-	lgdt    %cs:gdtptr
-	ljmp    $ROM_CODE_SEG, $__protected_stage0
+	/* This code was used by v2. TODO. */
+	lgdt	%cs:gdtptr
+	ljmp	$ROM_CODE_SEG, $__protected_stage0
 
 .globl __protected_stage0
 __protected_stage0:
-	/* Save the BIST value */
-	movl    %eax, %ebp
+	/* Save the BIST result. */
+	movl	%eax, %ebp
 
-	port80_post (0x01)     /* post 0x01 */
+	port80_post(0x01)
 
-	movw    $ROM_DATA_SEG, %ax
-	movw    %ax, %ds
-	movw    %ax, %es
-	movw    %ax, %ss
-	movw    %ax, %fs
-	movw    %ax, %gs
+	movw	$ROM_DATA_SEG, %ax
+	movw	%ax, %ds
+	movw	%ax, %es
+	movw	%ax, %ss
+	movw	%ax, %fs
+	movw	%ax, %gs
 
-	/* Restore the BIST value to %eax */
-	movl    %ebp, %eax
+	/* Restore the BIST value to %eax. */
+	movl	%ebp, %eax
 
 .align 4
 
@@ -179,9 +178,9 @@ __protected_stage0:
 
 /* We will use 4Kbytes only for cache as ram. This is
  * enough to fit in our stack.
- * 
+ *
  * disable HyperThreading is done by eswar
- * the other is very similar to the AMD CAR, except remove amd specific msr 
+ * the other is very similar to the AMD CAR, except remove amd specific msr
  */
 
 #define CacheSize CONFIG_CARSIZE
@@ -195,102 +194,102 @@ __protected_stage0:
 	movl    %eax, %ebp
 
 CacheAsRam:
-        /* Check whether the processor has HT capability */
-        movl	$01, %eax
-        cpuid
-        btl	$28, %edx
-        jnc	NotHtProcessor
-        bswapl	%ebx
-        cmpb	$01, %bh
-        jbe	NotHtProcessor
+	/* Check whether the processor has HT capability */
+	movl	$01, %eax
+	cpuid
+	btl	$28, %edx
+	jnc	NotHtProcessor
+	bswapl	%ebx
+	cmpb	$01, %bh
+	jbe	NotHtProcessor
 
-        /* It is a HT processor; Send SIPI to the other logical processor
-         * within this processor so that the CAR related common system 
+	/* It is a HT processor; Send SIPI to the other logical processor
+	 * within this processor so that the CAR related common system
 	 * registers are programmed accordingly
 	 */
 
-        /* Use some register that is common to both logical processors
-         * as semaphore. Refer Appendix B, Vol.3
+	/* Use some register that is common to both logical processors
+	 * as semaphore. Refer Appendix B, Vol.3
 	 */
 
-        xorl	%eax, %eax
-        xorl	%edx, %edx
-        movl	$0x250, %ecx
-        wrmsr
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+	movl	$0x250, %ecx
+	wrmsr
 
-        /* Figure out the logical AP's APIC ID; the following logic will work
-         * only for processors with 2 threads.
+	/* Figure out the logical AP's APIC ID; the following logic will work
+	 * only for processors with 2 threads.
 	 *
-         * Refer to Vol 3. Table 7-1 for details about this logic
+	 * Refer to Vol 3. Table 7-1 for details about this logic
 	 */
-        movl	$0xFEE00020, %esi
-        movl	(%esi), %ebx
-        andl	$0xFF000000, %ebx
-        bswapl	%ebx
-        btl	$0, %ebx
-        jnc	LogicalAP0
-        andb	$0xFE, %bl
-        jmp	SendSIPI
+	movl	$0xFEE00020, %esi
+	movl	(%esi), %ebx
+	andl	$0xFF000000, %ebx
+	bswapl	%ebx
+	btl	$0, %ebx
+	jnc	LogicalAP0
+	andb	$0xFE, %bl
+	jmp	SendSIPI
 LogicalAP0:
-        orb	$0x01, %bl
+	orb	$0x01, %bl
 SendSIPI:
-        bswapl	%ebx  /* ebx - logical AP's APIC ID */
+	bswapl	%ebx  /* ebx - logical AP's APIC ID */
 
-        /* Fill up the IPI command registers in the Local APIC mapped to 
-	 * default address and issue SIPI to the other logical processor 
+	/* Fill up the IPI command registers in the Local APIC mapped to
+	 * default address and issue SIPI to the other logical processor
 	 * within this processor die.
 	 */
 
 RetrySIPI:
-        movl	%ebx, %eax
-        movl	$0xFEE00310, %esi
-        movl	%eax, (%esi)
+	movl	%ebx, %eax
+	movl	$0xFEE00310, %esi
+	movl	%eax, (%esi)
 
-        /* SIPI vector - F900:0000 */
-        movl	$0x000006F9, %eax
-        movl	$0xFEE00300, %esi
-        movl	%eax, (%esi)
+	/* SIPI vector - F900:0000 */
+	movl	$0x000006F9, %eax
+	movl	$0xFEE00300, %esi
+	movl	%eax, (%esi)
 
-        movl	$0x30, %ecx
+	movl	$0x30, %ecx
 SIPIDelay:
-        pause
-        decl	%ecx
-        jnz	SIPIDelay
+	pause
+	decl	%ecx
+	jnz	SIPIDelay
 
-        movl	(%esi), %eax
-        andl	$0x00001000, %eax
-        jnz	RetrySIPI
+	movl	(%esi), %eax
+	andl	$0x00001000, %eax
+	jnz	RetrySIPI
 
-        /* Wait for the Logical AP to complete initialization */
+	/* Wait for the Logical AP to complete initialization */
 LogicalAPSIPINotdone:
-        movl	$0x250, %ecx
-        rdmsr
-        orl	%eax, %eax
-        jz	LogicalAPSIPINotdone
+	movl	$0x250, %ecx
+	rdmsr
+	orl	%eax, %eax
+	jz	LogicalAPSIPINotdone
 
 
 
 NotHtProcessor:
-        /* Set the default memory type and enable fixed and variable MTRRs */
-        movl	$MTRRdefType_MSR, %ecx
-        xorl	%edx, %edx
-        /* Enable Variable and Fixed MTRRs */
-        movl	$0x00000c00, %eax
-        wrmsr
+	/* Set the default memory type and enable fixed and variable MTRRs */
+	movl	$MTRRdefType_MSR, %ecx
+	xorl	%edx, %edx
+	/* Enable Variable and Fixed MTRRs */
+	movl	$0x00000c00, %eax
+	wrmsr
 
 	/*Clear all MTRRs */
 	xorl	%edx, %edx
 	movl	$fixed_mtrr_msr, %esi
 clear_fixed_var_mtrr:
-        lodsl	(%esi), %eax
-        testl	%eax, %eax
-        jz	clear_fixed_var_mtrr_out
+	lodsl	(%esi), %eax
+	testl	%eax, %eax
+	jz	clear_fixed_var_mtrr_out
 
-        movl	%eax, %ecx
-        xorl	%eax, %eax
-        wrmsr   
+	movl	%eax, %ecx
+	xorl	%eax, %eax
+	wrmsr
 
-        jmp     clear_fixed_var_mtrr
+	jmp     clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
 /* 0x06 is the WB IO type for a given 4k segment.
@@ -336,92 +335,92 @@ clear_fixed_var_mtrr_out:
 #error Invalid CAR size, is not a multiple of 4k. This is a processor limitation.
 #endif
 
-#if CacheSize > 0x8000 
-        /* enable caching for 32K-64K using fixed mtrr */
-        movl    $0x268, %ecx  /* fix4k_c0000*/
+#if CacheSize > 0x8000
+	/* enable caching for 32K-64K using fixed mtrr */
+	movl    $0x268, %ecx  /* fix4k_c0000*/
 	simplemask CacheSize, 0x8000
-        wrmsr
+	wrmsr
 #endif
 
-        /* enable caching for 0-32K using fixed mtrr */
-        movl    $0x269, %ecx  /* fix4k_c8000*/
+	/* enable caching for 0-32K using fixed mtrr */
+	movl    $0x269, %ecx  /* fix4k_c8000*/
 	simplemask CacheSize, 0
 	wrmsr
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
-        /* enable write base caching so we can do execute in place
-         * on the flash rom.
-         */
-        movl    $0x202, %ecx
-        xorl    %edx, %edx
-        movl    $(XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
-        wrmsr
+	/* enable write base caching so we can do execute in place
+	 * on the flash rom.
+	 */
+	movl    $0x202, %ecx
+	xorl    %edx, %edx
+	movl    $(XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	wrmsr
 
-        movl    $0x203, %ecx
-        movl    $0x0000000f, %edx
-        movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
-        wrmsr
+	movl    $0x203, %ecx
+	movl    $0x0000000f, %edx
+	movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
+	wrmsr
 #endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
 
-        /* enable cache */
-        movl    %cr0, %eax
-        andl    $0x9fffffff,%eax
-        movl    %eax, %cr0
+	/* enable cache */
+	movl    %cr0, %eax
+	andl    $0x9fffffff,%eax
+	movl    %eax, %cr0
 
 	/* Read the range with lodsl*/
-        movl    $CacheBase, %esi
+	movl    $CacheBase, %esi
 	cld
-        movl    $(CacheSize>>2), %ecx
-        rep     lodsl
+	movl    $(CacheSize>>2), %ecx
+	rep     lodsl
 
 	/* Clear the range */
-        movl    $CacheBase, %edi
-        movl    $(CacheSize>>2), %ecx
-        xorl    %eax, %eax
-        rep     stosl
+	movl    $CacheBase, %edi
+	movl    $(CacheSize>>2), %ecx
+	xorl    %eax, %eax
+	rep     stosl
 
 
 	/* TODO: make this a config variable */
 #if CONFIG_CARTEST
 	/* check the cache as ram */
-        movl  $CacheBase, %esi
-        movl    $(CacheSize>>2), %ecx
-.xin1:  
-        movl  %esi, %eax
-        movl  %eax, (%esi)
-        decl  %ecx
-        je      .xout1
-        add     $4, %esi
-        jmp     .xin1
-.xout1: 
+	movl  $CacheBase, %esi
+	movl    $(CacheSize>>2), %ecx
+.xin1:
+	movl  %esi, %eax
+	movl  %eax, (%esi)
+	decl  %ecx
+	je      .xout1
+	add     $4, %esi
+	jmp     .xin1
+.xout1:
 
-        movl  $CacheBase, %esi
+	movl  $CacheBase, %esi
 //        movl    $(CacheSize>>2), %ecx
 	movl $4, %ecx
 .xin1x:
-        movl  %esi, %eax
+	movl  %esi, %eax
 
-        movl    $0x4000, %edx
-        movb    %ah, %al 
-.testx1:  
-        outb %al, $0x80
-        decl    %edx
-        jnz .testx1
-        
-        movl  (%esi), %eax
-        cmpb 0xff, %al
-        je .xin2  /* dont show */
+	movl    $0x4000, %edx
+	movb    %ah, %al
+.testx1:
+	outb %al, $0x80
+	decl    %edx
+	jnz .testx1
+	
+	movl  (%esi), %eax
+	cmpb 0xff, %al
+	je .xin2  /* dont show */
 
-        movl    $0x4000, %edx
+	movl    $0x4000, %edx
 .testx2:
-        outb %al, $0x80
-        decl    %edx
-        jnz .testx2
-        
+	outb %al, $0x80
+	decl    %edx
+	jnz .testx2
+	
 .xin2:  decl     %ecx
-        je      .xout1x
-        add     $4, %esi
-        jmp     .xin1x
+	je      .xout1x
+	add     $4, %esi
+	jmp     .xin1x
 .xout1x:
 
 #endif
@@ -443,24 +442,24 @@ lout:
 	/* Store zero for the unused init_detected parameter. */
 	pushl   %eax
 
-	/* Restore the BIST result */
+	/* Restore the BIST result. */
 	movl	%ebp, %eax
 	/* We need to set ebp ? No need */
 	movl	%esp, %ebp
 	pushl 	%eax  /* bist */
 	call    stage1_main
 	/* We will not go back */
-fixed_mtrr_msr: 
-        .long   0x250, 0x258, 0x259
-        .long   0x268, 0x269, 0x26A
-        .long   0x26B, 0x26C, 0x26D
-        .long   0x26E, 0x26F
-var_mtrr_msr:   
-        .long   0x200, 0x201, 0x202, 0x203
-        .long   0x204, 0x205, 0x206, 0x207
-        .long   0x208, 0x209, 0x20A, 0x20B
-        .long   0x20C, 0x20D, 0x20E, 0x20F
-        .long   0x000 /* NULL, end of table */
+fixed_mtrr_msr:
+	.long	0x250, 0x258, 0x259
+	.long	0x268, 0x269, 0x26A
+	.long	0x26B, 0x26C, 0x26D
+	.long	0x26E, 0x26F
+var_mtrr_msr:
+	.long	0x200, 0x201, 0x202, 0x203
+	.long	0x204, 0x205, 0x206, 0x207
+	.long	0x208, 0x209, 0x20A, 0x20B
+	.long	0x20C, 0x20D, 0x20E, 0x20F
+	.long	0x000 /* NULL, end of table */
 
 /* Reset vector. */
 

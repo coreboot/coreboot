@@ -162,6 +162,32 @@ static unsigned find_verb(u32 viddid, u32 ** verb)
 	return sizeof(cim_verb_data) / sizeof(u32);
 }
 
+static int wait_for_ready(u8 *base)
+{
+	int timeout = 50;
+	while(timeout--) {
+		u32 dword=readl(base + 0x68);
+		if (!(dword & 1))
+			return 0;
+		udelay(1);
+	}
+
+	return -1;
+}
+
+static int wait_for_valid(u8 *base)
+{
+	int timeout = 50;
+	while(timeout--) {
+		u32 dword = readl(base + 0x68);
+		if ((dword & 3) == 2)
+			return 0;
+		udelay(1);
+	}
+
+	return 1;
+}
+
 static void codec_init(u8 * base, int addr)
 {
 	u32 dword;
@@ -170,16 +196,14 @@ static void codec_init(u8 * base, int addr)
 	int i;
 
 	/* 1 */
-	do {
-		dword = readl(base + 0x68);
-	} while (dword & 1);
+	if (wait_for_ready(base) == -1)
+		return;
 
 	dword = (addr << 28) | 0x000f0000;
 	writel(dword, base + 0x60);
 
-	do {
-		dword = readl(base + 0x68);
-	} while ((dword & 3) != 2);
+	if (wait_for_valid(base) == -1)
+		return;
 
 	dword = readl(base + 0x64);
 
@@ -195,15 +219,13 @@ static void codec_init(u8 * base, int addr)
 	printk(BIOS_DEBUG, "verb_size: %d\n", verb_size);
 	/* 3 */
 	for (i = 0; i < verb_size; i++) {
-		do {
-			dword = readl(base + 0x68);
-		} while (dword & 1);
+		if (wait_for_ready(base) == -1)
+			return;
 
 		writel(verb[i], base + 0x60);
 
-		do {
-			dword = readl(base + 0x68);
-		} while ((dword & 3) != 2);
+		if (wait_for_valid(base) == -1)
+			return;
 	}
 	printk(BIOS_DEBUG, "verb loaded!\n");
 }

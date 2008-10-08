@@ -31,8 +31,8 @@
 #include <libpayload.h>
 #include <video_console.h>
 
-#ifdef CONFIG_GEODE_VIDEO_CONSOLE
-extern struct video_console geode_video_console;
+#ifdef CONFIG_GEODELX_VIDEO_CONSOLE
+extern struct video_console geodelx_video_console;
 #endif
 
 #ifdef CONFIG_VGA_VIDEO_CONSOLE
@@ -41,8 +41,8 @@ extern struct video_console vga_video_console;
 
 static struct video_console *console_list[] =
 {
-#ifdef CONFIG_GEODE_VIDEO_CONSOLE
-	&geode_video_console,
+#ifdef CONFIG_GEODELX_VIDEO_CONSOLE
+	&geodelx_video_console,
 #endif
 #ifdef CONFIG_VGA_VIDEO_CONSOLE
 	&vga_video_console,

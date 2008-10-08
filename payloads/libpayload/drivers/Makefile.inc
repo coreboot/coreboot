@@ -44,9 +44,9 @@ TARGETS-$(CONFIG_NVRAM) += drivers/options.o
 TARGETS-$(CONFIG_VIDEO_CONSOLE) += drivers/video/video.o
 TARGETS-$(CONFIG_VGA_VIDEO_CONSOLE) += drivers/video/vga.o
 
-# Geode console drivers
-TARGETS-$(CONFIG_GEODE_VIDEO_CONSOLE) += drivers/video/geode.o
-TARGETS-$(CONFIG_GEODE_VIDEO_CONSOLE) += drivers/video/font8x16.o
+# Geode LX console drivers
+TARGETS-$(CONFIG_GEODELX_VIDEO_CONSOLE) += drivers/video/geodelx.o
+TARGETS-$(CONFIG_GEODELX_VIDEO_CONSOLE) += drivers/video/font8x16.o
 
 # USB stack
 TARGETS-$(CONFIG_USB) += drivers/usb/usbinit.o

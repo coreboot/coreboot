@@ -197,13 +197,13 @@ static void init_video_mode(void)
 	writel(0x2B601, DC + 0x04);
 }
 
-static void geode_set_palette(int entry, unsigned int color)
+static void geodelx_set_palette(int entry, unsigned int color)
 {
 	writel(entry, DC + 0x70);
 	writel(color, DC + 0x74);
 }
 
-static void geode_scroll_up(void)
+static void geodelx_scroll_up(void)
 {
 	unsigned char *dst = FB;
 	unsigned char *src = FB + vga_mode.hactive;
@@ -224,7 +224,7 @@ static void geode_scroll_up(void)
 	}
 }
 
-static void geode_clear(void)
+static void geodelx_clear(void)
 {
 	int row;
 	unsigned char *ptr = FB;
@@ -235,7 +235,7 @@ static void geode_clear(void)
 	}
 }
 
-static void geode_putc(u8 row, u8 col, unsigned int ch)
+static void geodelx_putc(u8 row, u8 col, unsigned int ch)
 {
 	unsigned char *dst;
 	unsigned char *glyph = font8x16 + ((ch & 0xFF) * FONT_HEIGHT);
@@ -259,7 +259,7 @@ static void geode_putc(u8 row, u8 col, unsigned int ch)
 	}
 }
 
-static int geode_init(void)
+static int geodelx_init(void)
 {
 	pcidev_t dev;
 	int i;
@@ -277,15 +277,15 @@ static int geode_init(void)
 	/* Set up the palette */
 
 	for(i = 0; i < ARRAY_SIZE(vga_colors); i++) {
-		geode_set_palette(i, vga_colors[i]);
+		geodelx_set_palette(i, vga_colors[i]);
 	}
 
 	return 0;
 }
 
-struct video_console geode_video_console = {
-	.init = geode_init,
-	.putc = geode_putc,
-	.clear = geode_clear,
-	.scroll_up = geode_scroll_up
+struct video_console geodelx_video_console = {
+	.init = geodelx_init,
+	.putc = geodelx_putc,
+	.clear = geodelx_clear,
+	.scroll_up = geodelx_scroll_up
 };

@@ -271,7 +271,7 @@ lout:
 	pushl	$0
 	/* First parameter: bist */
 	pushl	%eax
-	jmp	stage1_main
+	call	stage1_main
 	/* We will not go back. */
 
 #include "../stage0_common.S"

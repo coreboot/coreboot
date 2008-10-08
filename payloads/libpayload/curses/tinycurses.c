@@ -736,9 +736,6 @@ int wnoutrefresh(WINDOW *win)
 		for (x = win->_line[y].firstchar; x <= win->_line[y].lastchar; x++) {
 			attr_t attr = win->_line[y].text[x].attr;
 
-			unsigned int c =
-				((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
-
 #ifdef CONFIG_SERIAL_CONSOLE
 			if (curses_flags & F_ENABLE_SERIAL) {
 				ch = win->_line[y].text[x].chars[0];
@@ -806,6 +803,9 @@ int wnoutrefresh(WINDOW *win)
 			}
 #endif
 #ifdef CONFIG_VIDEO_CONSOLE
+			unsigned int c =
+				((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
+
 			c = SWAP_RED_BLUE(c);
 
 			if (curses_flags & F_ENABLE_CONSOLE) {

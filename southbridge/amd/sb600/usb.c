@@ -205,6 +205,7 @@ struct device_operations sb600_usb2 = {
 			      .device = PCI_DEVICE_ID_ATI_SB600_USB2}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = scan_static_bus,
+	.phase4_enable_disable = sb600_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = usb_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,

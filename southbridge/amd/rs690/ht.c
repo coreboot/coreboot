@@ -87,6 +87,7 @@ struct device_operations rs690_ht = {
 	.constructor		 = default_device_constructor,
 	.phase2_setup_scan_bus = rs690_enable,
 	.phase3_scan		 = 0,
+	.phase4_enable_disable = rs690_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,

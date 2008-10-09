@@ -201,16 +201,3 @@ void sb600_enable(struct device * dev)
 			     deviceid);
 	}
 }
-
-struct device_operations sb600 = {
-	.id = {.type = DEVICE_ID_PCI,
-		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_ATI_SB600_LPC}}},
-	.constructor		 = default_device_constructor,
-	.phase3_scan		 = 0,
-	.phase4_enable_disable           = sb600_enable,
-	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
-	.phase6_init		 = NULL,
-	.ops_pci		 = &pci_dev_ops_pci,
-};

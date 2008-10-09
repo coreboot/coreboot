@@ -395,6 +395,7 @@ struct device_operations sb600_sm = {
 			      .device = PCI_DEVICE_ID_ATI_SB600_SM}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
+	.phase4_enable_disable = sb600_enable,
 	.phase4_read_resources	 = sb600_sm_read_resources,
 	.phase4_set_resources	 = sb600_sm_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,

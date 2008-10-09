@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-struct northbridge_via_cn700_config
-{
+struct northbridge_via_cn700_config {
 };
 
 extern struct chip_operations northbridge_via_cn700_ops;

@@ -19,18 +19,20 @@
  */
 
 #ifndef __ROMCC__
-static void cn700_noop(){}
+static void cn700_noop()
+{
+}
 #endif
 
 /* VGA stuff */
-#define SR_INDEX	0x3c4
-#define SR_DATA		0x3c5
-#define CRTM_INDEX	0x3b4
-#define CRTM_DATA	0x3b5
-#define CRTC_INDEX	0x3d4
-#define CRTC_DATA	0x3d5
+#define SR_INDEX		0x3c4
+#define SR_DATA			0x3c5
+#define CRTM_INDEX		0x3b4
+#define CRTM_DATA		0x3b5
+#define CRTC_INDEX		0x3d4
+#define CRTC_DATA		0x3d5
 
-/* Memory Controller Registers */
+/* Memory controller registers */
 #define RANK0_END		0x40
 #define RANK1_END		0x41
 #define RANK2_END		0x42
@@ -45,7 +47,7 @@ static void cn700_noop(){}
 #define CH_A_DQS_OUTPUT_DELAY	0x70
 #define CH_A_MD_OUTPUT_DELAY	0x71
 
-/* RAM Init Commands */
+/* RAM init commands */
 #define RAM_COMMAND_NORMAL	0x0
 #define RAM_COMMAND_NOP		0x1
 #define RAM_COMMAND_PRECHARGE	0x2

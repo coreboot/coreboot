@@ -165,7 +165,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 					case 0xfd60:
 						reg_x |= (1 << 23);
 						break;
-					      default:
+					default:
 						if (var_num >= 3)
 							continue;	/* only 3 var ; compact them ? */
 						switch (var_num) {
@@ -188,6 +188,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 	}
 	pci_write_config32(dev, 0x44, reg);
 	pci_write_config32(dev, 0x48, reg_x);
+	/* Set WideIO for as many IOs found (fall through is on purpose) */
 	switch (var_num) {
 	case 2:
 		pci_write_config16(dev, 0x90, reg_var[2]);

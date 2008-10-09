@@ -34,6 +34,7 @@ INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/reset_test.c \
 			$(src)/northbridge/amd/k8/coherent_ht.c \
 			$(src)/northbridge/amd/k8/incoherent_ht.c \
+			$(src)/northbridge/amd/k8/coherent_ht.c \
 			$(src)/arch/x86/pci_ops_conf1.c \
 			$(src)/arch/x86/stage1_mtrr.c \
 			$(src)/arch/x86/amd/model_fxx/dualcore.c \

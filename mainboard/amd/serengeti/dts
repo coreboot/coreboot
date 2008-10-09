@@ -32,13 +32,37 @@
 		pci0@18,0 {
 			/config/("northbridge/amd/k8/pci");
 			pci@0,0 {
-				/config/("southbridge/amd/amd8111/amd8111.dts");
+				/config/("southbridge/amd/amd8111/pci.dts");
+				pci@1,0{
+					/config/("southbridge/amd/amd8111/nic.dts");
+				};
+				pci@0,0{
+					/config/("southbridge/amd/amd8111/usb.dts");
+				};
+				pci@0,1{
+					/config/("southbridge/amd/amd8111/usb.dts");
+				};
+				pci@0,2{
+					/config/("southbridge/amd/amd8111/usb2.dts");
+				};
 			};
-			pci@4,0 {
+			pci@7,0 {
+				/config/("southbridge/amd/amd8111/lpc.dts");
+			};
+			pci@7,1 {
 				/config/("southbridge/amd/amd8111/ide.dts");
 			};
-			pci@5,0 {
-				/config/("southbridge/amd/amd8111/nic.dts");
+			pci@7,2 {
+				/config/("southbridge/amd/amd8111/smbus.dts");
+			};
+			pci@7,3 {
+				/config/("southbridge/amd/amd8111/acpi.dts");
+			};
+			pci@7,5 {
+				/config/("southbridge/amd/amd8111/ac97audio.dts");
+			};
+			pci@7,6 {
+				/config/("southbridge/amd/amd8111/ac97modem.dts");
 			};
 		};
 		pci1@18,0 {

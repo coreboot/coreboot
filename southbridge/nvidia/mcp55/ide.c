@@ -60,7 +60,7 @@ static void ide_init(struct device *dev)
 
 
 	byte = 0x20 ; // Latency: 64-->32
-	pci_write_config8(dev, 0xd, byte);
+	pci_write_config8(dev, PCI_LATENCY_TIMER, byte);
 
 	dword = pci_read_config32(dev, 0xf8);
 	dword |= 12;

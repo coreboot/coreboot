@@ -46,7 +46,7 @@ static void nb_write_index(struct device * dev, u32 index_reg, u32 index, u32 da
 u32 pci_ext_read_config32(struct device * nb_dev, struct device * dev, u32 reg)
 {
 	/*get BAR3 base address for nbcfg0x1c */
-	u32 addr = pci_read_config32(nb_dev, 0x1c);
+	u32 addr = pci_read_config32(nb_dev, PCI_BASE_ADDRESS_3);
 	printk(BIOS_DEBUG, "addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
 		     dev->path.pci.devfn);
 	addr |= dev->bus->secondary << 20 |	/* bus num */
@@ -59,7 +59,7 @@ void pci_ext_write_config32(struct device * nb_dev, struct device * dev, u32 reg
 	u32 reg_old, reg;
 
 	/*get BAR3 base address for nbcfg0x1c */
-	u32 addr = pci_read_config32(nb_dev, 0x1c);
+	u32 addr = pci_read_config32(nb_dev, PCI_BASE_ADDRESS_3);
 	printk(BIOS_DEBUG, "write: addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
 		     dev->path.pci.devfn);
 	addr |= dev->bus->secondary << 20 |	/* bus num */

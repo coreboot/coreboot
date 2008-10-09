@@ -60,10 +60,10 @@ static void pcie_init(struct device *dev)
 	printk(BIOS_INFO, "pcie_init in rs690_ht.c\n");
 
 	/* System error enable */
-	dword = pci_read_config32(dev, 0x04);
+	dword = pci_read_config32(dev, PCI_COMMAND);
 	dword |= (1 << 8);	/* System error enable */
 	dword |= (1 << 30);	/* Clear possible errors */
-	pci_write_config32(dev, 0x04, dword);
+	pci_write_config32(dev, PCI_COMMAND, dword);
 
 	/* 
 	 * 1 is APIC enable

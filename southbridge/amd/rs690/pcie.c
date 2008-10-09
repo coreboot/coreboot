@@ -112,10 +112,10 @@ static void pcie_init(struct device *dev)
 	printk(BIOS_DEBUG, "pcie_init in rs690_pcie.c\n");
 
 	/* System error enable */
-	dword = pci_read_config32(dev, 0x04);
+	dword = pci_read_config32(dev, PCI_COMMAND);
 	dword |= (1 << 8);	/* System error enable */
 	dword |= (1 << 30);	/* Clear possible errors */
-	pci_write_config32(dev, 0x04, dword);
+	pci_write_config32(dev, PCI_COMMAND, dword);
 }
 
 
@@ -171,8 +171,8 @@ void enable_pcie_bar3(struct device * nb_dev)
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
 	set_nbcfg_enable_bits(nb_dev, 0x84, 7 << 16, 0 << 16);
 
-	pci_write_config32(nb_dev, 0x1C, EXT_CONF_BASE_ADDRESS);	/* PCIEMiscInit */
-	pci_write_config32(nb_dev, 0x20, 0x00000000);
+	pci_write_config32(nb_dev, PCI_BASE_ADDRESS_3, EXT_CONF_BASE_ADDRESS);	/* PCIEMiscInit */
+	pci_write_config32(nb_dev, PCI_BASE_ADDRESS_4, 0x00000000);
 	set_htiu_enable_bits(nb_dev, 0x32, 1 << 28, 1 << 28);	/* PCIEMiscInit */
 	ProgK8TempMmioBase(1, EXT_CONF_BASE_ADDRESS, TEMP_MMIO_BASE_ADDRESS);
 }
@@ -185,7 +185,7 @@ void disable_pcie_bar3(struct device * nb_dev)
 {
 	printk(BIOS_DEBUG, "disable_pcie_bar3()\n");
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3. */
-	pci_write_config32(nb_dev, 0x1C, 0);	/* clear BAR3 address */
+	pci_write_config32(nb_dev, PCI_BASE_ADDRESS_3, 0);	/* clear BAR3 address */
 	ProgK8TempMmioBase(0, EXT_CONF_BASE_ADDRESS, TEMP_MMIO_BASE_ADDRESS);
 }
 

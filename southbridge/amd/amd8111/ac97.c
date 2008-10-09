@@ -30,7 +30,7 @@
 
 static void lpci_set_subsystem(struct device * dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, 0x2c, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 

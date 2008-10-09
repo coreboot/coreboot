@@ -33,9 +33,9 @@ static void agp3bridge_init(struct device * dev)
 
 	/* Enable BM, MEM and IO */
 	/* this config32 is arguably wrong but I won't change until we can test. */
-	byte = pci_read_config32(dev, 0x04);
+	byte = pci_read_config32(dev, PCI_COMMAND);
 	byte |= 0x07;
-	pci_write_config8(dev, 0x04, byte);
+	pci_write_config8(dev, PCI_COMMAND, byte);
 
 	return;
 }
@@ -62,9 +62,9 @@ static void agp3dev_enable(struct device * dev)
 	pci_write_config32(dev, 0xa8, value);
 
 	/* enable BM and MEM */
-	value = pci_read_config32(dev, 0x4);
+	value = pci_read_config32(dev, PCI_COMMAND);
 	value |= 6;
-	pci_write_config32(dev, 0x4, value);
+	pci_write_config32(dev, PCI_COMMAND, value);
 #if 0
 	/* FIXME: should we add agp aperture base and size here ?
 	 * or it is done by AGP drivers */

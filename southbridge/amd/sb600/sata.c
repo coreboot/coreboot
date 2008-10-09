@@ -42,15 +42,14 @@ static void sata_init(struct device *dev)
 
 	struct device * sm_dev;
 	/* SATA SMBus Disable */
-	/* sm_dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0); */
+	/* sm_dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_ATI, 0x4385), 0); */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	/* Disable SATA SMBUS */
 	byte = pci_read_config8(sm_dev, 0xad);
 	byte |= (1 << 1);
 	/* Enable SATA and power saving */
 	byte = pci_read_config8(sm_dev, 0xad);
-	byte |= (1 << 0);
-	byte |= (1 << 5);
+	byte |= (1 << 0) | (1 << 5);
 	pci_write_config8(sm_dev, 0xad, byte);
 	/* Set the interrupt Mapping to INTG# */
 	byte = pci_read_config8(sm_dev, 0xaf);
@@ -58,12 +57,12 @@ static void sata_init(struct device *dev)
 	pci_write_config8(sm_dev, 0xaf, byte);
 
 	/* get base addresss */
-	sata_bar5 = (u8 *) (pci_read_config32(dev, 0x24) & ~0x3FF);
-	sata_bar0 = pci_read_config16(dev, 0x10) & ~0x7;
-	sata_bar1 = pci_read_config16(dev, 0x14) & ~0x7;
-	sata_bar2 = pci_read_config16(dev, 0x18) & ~0x7;
-	sata_bar3 = pci_read_config16(dev, 0x1C) & ~0x7;
-	sata_bar4 = pci_read_config16(dev, 0x20) & ~0x7;
+	sata_bar5 = (u8 *) (pci_read_config32(dev, PCI_BASE_ADDRESS_5) & ~0x3FF);
+	sata_bar0 = pci_read_config16(dev, PCI_BASE_ADDRESS_0) & ~0x7;
+	sata_bar1 = pci_read_config16(dev, PCI_BASE_ADDRESS_1) & ~0x7;
+	sata_bar2 = pci_read_config16(dev, PCI_BASE_ADDRESS_2) & ~0x7;
+	sata_bar3 = pci_read_config16(dev, PCI_BASE_ADDRESS_3) & ~0x7;
+	sata_bar4 = pci_read_config16(dev, PCI_BASE_ADDRESS_4) & ~0x7;
 
 	printk(BIOS_DEBUG, "sata_bar0=%x\n", sata_bar0);	/* 3030 */
 	printk(BIOS_DEBUG, "sata_bar1=%x\n", sata_bar1);	/* 3070 */
@@ -72,14 +71,15 @@ static void sata_init(struct device *dev)
 	printk(BIOS_DEBUG, "sata_bar4=%x\n", sata_bar4);	/* 3000 */
 	printk(BIOS_DEBUG, "sata_bar5=%p\n", sata_bar5);	/* e0309000 */
 
-	/* Program the 2C to 0x43801002 */
-	dword = 0x43801002;
-	pci_write_config32(dev, 0x2c, dword);
+	/* Program the subsystem device/vendor to 0x43801002 */
+#warning Subsystem ID setting should be in a separate function
+	dword = (0x4380 << 16) | PCI_VENDOR_ID_ATI;
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, dword);
 
 	/* SERR-Enable */
-	word = pci_read_config16(dev, 0x04);
+	word = pci_read_config16(dev, PCI_COMMAND);
 	word |= (1 << 8);
-	pci_write_config16(dev, 0x04, word);
+	pci_write_config16(dev, PCI_COMMAND, word);
 
 	/* Dynamic power saving */
 	byte = pci_read_config8(dev, 0x40);
@@ -88,12 +88,11 @@ static void sata_init(struct device *dev)
 
 	/* Set SATA Operation Mode, Set to IDE mode */
 	byte = pci_read_config8(dev, 0x40);
-	byte |= (1 << 0);
-	byte |= (1 << 4);
+	byte |= (1 << 0) | (1 << 4);
 	pci_write_config8(dev, 0x40, byte);
 
 	dword = 0x01018f00;
-	pci_write_config32(dev, 0x8, dword);
+	pci_write_config32(dev, PCI_REVISION_ID, dword);
 
 	byte = pci_read_config8(dev, 0x40);
 	byte &= ~(1 << 0);
@@ -134,10 +133,10 @@ static void sata_init(struct device *dev)
 	dword |= 1 << 25;
 	pci_write_config32(dev, 0x40, dword);
 
-	/* Enable the I/O ,MM ,BusMaster access for SATA */
-	byte = pci_read_config8(dev, 0x4);
+	/* Enable the I/O, MM, BusMaster access for SATA */
+	byte = pci_read_config8(dev, PCI_COMMAND);
 	byte |= 7 << 0;
-	pci_write_config8(dev, 0x4, byte);
+	pci_write_config8(dev, PCI_COMMAND, byte);
 
 	/* RPR6.6 SATA drive detection. Currently we detect Primary Master Device only */
 	/* Use BAR5+0x1A8,BAR0+0x6 for Primary Slave */

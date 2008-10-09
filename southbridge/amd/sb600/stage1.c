@@ -23,6 +23,7 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <statictree.h>
 #include <config.h>
 #include <io.h>
@@ -68,7 +69,7 @@ u8 pm2_ioread(u8 reg)
 static u8 get_sb600_revision(void)
 {
 	u32 dev;
-	if (!pci_conf1_find_device(0x1002,  0x4385, &dev)){
+	if (!pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4385, &dev)){
 		die("SMBUS controller not found\r\n");
 	}
 	return pci_conf1_read_config8(dev, 0x08);
@@ -90,12 +91,12 @@ void sb600_lpc_init(void)
 	u32 dev;
 
 	/* Enable lpc controller */
-	pci_conf1_find_device(0x1002,  0x4385, &dev);	/* SMBUS controller */
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4385, &dev);	/* SMBUS controller */
 	reg32 = pci_conf1_read_config32(dev, 0x64);
 	reg32 |= 0x00100000;
 	pci_conf1_write_config32(dev, 0x64, reg32);
 
-	pci_conf1_find_device(0x1002,  0x438d, &dev);	/* LPC Controller */
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x438d, &dev);	/* LPC Controller */
 	/* Serial 0 */
 	reg8 = pci_conf1_read_config8(dev, 0x44);
 	reg8 |= (1 << 6);
@@ -126,7 +127,7 @@ u32 get_sbdn(u32 bus)
 	u32 dev;
 
 	/* Find the device. */
-	pci_conf1_find_on_bus(bus, 0x1002, 0x4385, &dev);
+	pci_conf1_find_on_bus(bus, PCI_VENDOR_ID_ATI, 0x4385, &dev);
 	return (dev >> 15) & 0x1f;
 }
 
@@ -215,7 +216,7 @@ void sb600_pci_port80(void)
 	u32 dev;
 
 	/* P2P Bridge */
-	pci_conf1_find_device(0x1002,  0x4384, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4384, &dev);
 
 	byte = pci_conf1_read_config8(dev, 0x40);
 	byte |= 1 << 5;
@@ -237,7 +238,7 @@ void sb600_pci_port80(void)
 	byte |= 1 << 0;
 	pci_conf1_write_config8(dev, 0x04, byte);
 
-	pci_conf1_find_device(0x1002,  0x438D, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x438D, &dev);
 
 	byte = pci_conf1_read_config8(dev, 0x4A);
 	byte &= ~(1 << 5);	/* disable lpc port 80 */
@@ -251,13 +252,13 @@ void sb600_lpc_port80(void)
 	u32 reg32;
 
 	/* enable lpc controller */
-	pci_conf1_find_device(0x1002,  0x4385, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4385, &dev);
 	reg32 = pci_conf1_read_config32(dev, 0x64);
 	reg32 |= 0x00100000;	/* lpcEnable */
 	pci_conf1_write_config32(dev, 0x64, reg32);
 
 	/* enable prot80 LPC decode in pci function 3 configuration space. */
-	pci_conf1_find_device(0x1002,  0x438d, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x438d, &dev);
 	byte = pci_conf1_read_config8(dev, 0x4a);
 	byte |= 1 << 5;		/* enable port 80 */
 	pci_conf1_write_config8(dev, 0x4a, byte);
@@ -277,7 +278,7 @@ static void sb600_devices_por_init(void)
 	printk(BIOS_INFO, "sb600_devices_por_init()\n");
 	/* SMBus Device, BDF:0-20-0 */
 	printk(BIOS_INFO, "sb600_devices_por_init(): SMBus Device, BDF:0-20-0\n");
-	if (!pci_conf1_find_device(0x1002,  0x4385, &dev)){
+	if (!pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4385, &dev)){
 		die("SMBUS controller not found\r\n");
 	}
 	printk(BIOS_INFO, "SMBus controller enabled, sb revision is 0x%x\r\n",
@@ -360,7 +361,7 @@ static void sb600_devices_por_init(void)
 
 	/* IDE Device, BDF:0-20-1 */
 	printk(BIOS_INFO, "sb600_devices_por_init(): IDE Device, BDF:0-20-1\n");
-	pci_conf1_find_device(0x1002,  0x438C, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x438C, &dev);
 	/* Disable prefetch */
 	byte = pci_conf1_read_config8(dev, 0x63);
 	byte |= 0x1;
@@ -368,7 +369,7 @@ static void sb600_devices_por_init(void)
 
 	/* LPC Device, BDF:0-20-3 */
 	printk(BIOS_INFO, "sb600_devices_por_init(): LPC Device, BDF:0-20-3\n");
-	pci_conf1_find_device(0x1002,  0x438D, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x438D, &dev);
 	/* DMA enable */
 	pci_conf1_write_config8(dev, 0x40, 0x04);
 
@@ -405,7 +406,7 @@ static void sb600_devices_por_init(void)
 	/* P2P Bridge, BDF:0-20-4, the configuration of the registers in this dev are copied from CIM, 
 	 * TODO: I don't know what are their mean? */
 	printk(BIOS_INFO, "sb600_devices_por_init(): P2P Bridge, BDF:0-20-4\n");
-	pci_conf1_find_device(0x1002,  0x4384, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4384, &dev);
 	/* I don't know why CIM tried to write into a read-only reg! */
 	/*pci_conf1_write_config8(dev, 0x0c, 0x20) */ ;
 
@@ -436,7 +437,7 @@ static void sb600_devices_por_init(void)
 
 	/* SATA Device, BDF:0-18-0, Non-Raid-5 SATA controller */
 	printk(BIOS_INFO, "sb600_devices_por_init(): SATA Device, BDF:0-18-0\n");
-	pci_conf1_find_device(0x1002,  0x4380, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4380, &dev);
 
 	/*PHY Global Control, we are using A14.
 	 * default:  0x2c40 for ASIC revision A12 and below
@@ -555,7 +556,7 @@ static void sb600_pci_cfg(void)
 	u8 byte;
 
 	/* SMBus Device, BDF:0-20-0 */
-	pci_conf1_find_device(0x1002,  0x4385, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4385, &dev);
 	/* Eable the hidden revision ID, available after A13. */
 	byte = pci_conf1_read_config8(dev, 0x70);
 	byte |= (1 << 8);
@@ -588,14 +589,14 @@ static void sb600_pci_cfg(void)
 	}
 
 	/* IDE Device, BDF:0-20-1 */
-	pci_conf1_find_device(0x1002,  0x438C, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x438C, &dev);
 	/* Enable IDE Explicit prefetch, 0x63[0] clear */
 	byte = pci_conf1_read_config8(dev, 0x63);
 	byte &= 0xfe;
 	pci_conf1_write_config8(dev, 0x63, byte);
 
 	/* LPC Device, BDF:0-20-3 */
-	pci_conf1_find_device(0x1002,  0x438D, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x438D, &dev);
 	/* rpr7.2 Enabling LPC DMA function. */
 	byte = pci_conf1_read_config8(dev, 0x40);
 	byte |= (1 << 2);
@@ -610,7 +611,7 @@ static void sb600_pci_cfg(void)
 	pci_conf1_write_config8(dev, 0x78, byte);
 
 	/* SATA Device, BDF:0-18-0, Non-Raid-5 SATA controller */
-	pci_conf1_find_device(0x1002,  0x4380, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4380, &dev);
 	/* rpr6.8 Disabling SATA MSI Capability, for A13 and above, 0x42[7]. */
 	if (0x12 < get_sb600_revision()) {
 		u32 reg32;
@@ -620,14 +621,14 @@ static void sb600_pci_cfg(void)
 	}
 
 	/* EHCI Device, BDF:0-19-5, ehci usb controller */
-	pci_conf1_find_device(0x1002,  0x4386, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4386, &dev);
 	/* rpr5.10 Disabling USB EHCI MSI Capability. 0x50[6]. */
 	byte = pci_conf1_read_config8(dev, 0x50);
 	byte |= (1 << 6);
 	pci_conf1_write_config8(dev, 0x50, byte);
 
 	/* OHCI0 Device, BDF:0-19-0, ohci usb controller #0 */
-	pci_conf1_find_device(0x1002,  0x4387, &dev);
+	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4387, &dev);
 	/* rpr5.11 Disabling USB OHCI MSI Capability. 0x40[12:8]=0x1f. */
 	byte = pci_conf1_read_config8(dev, 0x41);
 	byte |= 0x1f;

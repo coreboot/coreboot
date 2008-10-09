@@ -54,9 +54,9 @@ static void i82371eb_ide_init(struct device *dev)
 	pci_write_config16(dev, 0x42, c);
 
 	printk(BIOS_INFO, "Enabling Legacy IDE\n");
-	c = pci_read_config16(dev, 4);
+	c = pci_read_config16(dev, PCI_COMMAND);
 	c |= 1;
-	pci_write_config16(dev, 4, c);
+	pci_write_config16(dev, PCI_COMMAND, c);
 }
 
 static void i82371eb_acpi_init(struct device *dev)
@@ -71,7 +71,7 @@ static void i82371eb_acpi_init(struct device *dev)
 	/* smbus enable */
 	pci_write_config8(dev, 0xd2,  (0x4 << 1) | 1);
 	/* iospace enable */
-	pci_write_config16(dev, 0x4, 1);
+	pci_write_config16(dev, PCI_COMMAND, 1);
 
 	printk(BIOS_DEBUG, "Enable Power Management Functions\n");
 	pm_io = 0xFF80;

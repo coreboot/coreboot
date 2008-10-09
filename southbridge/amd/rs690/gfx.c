@@ -39,7 +39,7 @@
 
 static u32 clkind_read(struct device * dev, u32 index)
 {
-	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
+	u32 gfx_bar2 = pci_read_config32(dev, PCI_BASE_ADDRESS_2) & ~0xF;
 
 	*(u32*)(gfx_bar2+CLK_CNTL_INDEX) = index & 0x7F;
 	return *(u32*)(gfx_bar2+CLK_CNTL_DATA);
@@ -47,7 +47,7 @@ static u32 clkind_read(struct device * dev, u32 index)
 
 static void clkind_write(struct device * dev, u32 index, u32 data)
 {
-	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
+	u32 gfx_bar2 = pci_read_config32(dev, PCI_BASE_ADDRESS_2) & ~0xF;
 	/* printk(BIOS_INFO, "gfx bar 2 %02x\n", gfx_bar2); */
 
 	*(u32*)(gfx_bar2+CLK_CNTL_INDEX) = index | 1<<7;
@@ -66,7 +66,7 @@ static void rs690_gfx_read_resources(struct device * dev)
 	   Even if we write 0xFFFFFFFF into it, it will be 0xFFF00000,
 	   which tells us it is a memory address base.
 	 */
-	pci_write_config32(dev, 0x24, 0x00000000);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_5, 0x00000000);
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);

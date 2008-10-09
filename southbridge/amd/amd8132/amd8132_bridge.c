@@ -131,11 +131,11 @@ static void amd8132_pcix_tune_dev(struct device * dev, void *ptr)
 		cmd |= max_tran << 4;
 	}
 
-        /* Don't attempt to handle PCI-X errors */
-        cmd &= ~PCI_X_CMD_DPERR_E;
-        if (orig_cmd != cmd) {
-                pci_write_config16(dev, cap + PCI_X_CMD, cmd);
-        }
+	/* Don't attempt to handle PCI-X errors */
+	cmd &= ~PCI_X_CMD_DPERR_E;
+	if (orig_cmd != cmd) {
+		pci_write_config16(dev, cap + PCI_X_CMD, cmd);
+	}
 
 
 }
@@ -208,21 +208,21 @@ static void amd8132_pcix_init(struct device * dev)
 	u32 dword;
 	u8 byte;
 	unsigned chip_rev;
-        
+
 	/* Find the revision of the 8132 */
-        chip_rev = pci_read_config8(dev, PCI_CLASS_REVISION);
+	chip_rev = pci_read_config8(dev, PCI_CLASS_REVISION);
 
 	/* Enable memory write and invalidate ??? */
-	dword = pci_read_config32(dev, 0x04);
-        dword |= 0x10;
+	dword = pci_read_config32(dev, PCI_COMMAND);
+	dword |= 0x10;
 	dword &= ~(1<<6); // PERSP Parity Error Response
-        pci_write_config32(dev, 0x04, dword);
+	pci_write_config32(dev, PCI_COMMAND, dword);
 
 	if (chip_rev == 0x01) {
 		/* Errata #37 */
-		byte = pci_read_config8(dev, 0x0c);
+		byte = pci_read_config8(dev, PCI_CACHE_LINE_SIZE);
 		if(byte == 0x08 )
-			pci_write_config8(dev, 0x0c, 0x10);
+			pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 0x10);
 
 #if 0
 		/* Errata #59*/
@@ -235,10 +235,10 @@ static void amd8132_pcix_init(struct device * dev)
 
 	/* Set up error reporting, enable all */
 	/* system error enable */
-	dword = pci_read_config32(dev, 0x04);
-        dword |= (1<<8);
-        pci_write_config32(dev, 0x04, dword);
- 	
+	dword = pci_read_config32(dev, PCI_COMMAND);
+	dword |= (1<<8);
+	pci_write_config32(dev, PCI_COMMAND, dword);
+	
 	/* system and error parity enable */
 	dword = pci_read_config32(dev, 0x3c);
         dword |= (3<<16);

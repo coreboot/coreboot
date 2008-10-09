@@ -51,9 +51,9 @@ static void ide_init(struct device *dev)
 	pci_write_config8(dev, 0x56, byte);
 
 	/* Enable I/O Access&& Bus Master */
-	dword = pci_read_config16(dev, 0x4);
+	dword = pci_read_config16(dev, PCI_COMMAND);
 	dword |= 1 << 2;
-	pci_write_config16(dev, 0x4, dword);
+	pci_write_config16(dev, PCI_COMMAND, dword);
 
 #if CONFIG_PCI_OPTION_ROM_RUN == 1
 	pci_dev_init(dev);

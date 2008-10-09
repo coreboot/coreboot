@@ -62,8 +62,8 @@ static void pci_init(struct device *dev)
 	pci_write_config8(dev, 0x40, byte);
 
 	/* RPR 4.5 Enables the PCIB to retain ownership of the bus on the Primary side and on the Secondary side when GNT# is deasserted */
-	pci_write_config8(dev, 0x0D, 0x40);
-	pci_write_config8(dev, 0x1B, 0x40);
+	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
+	pci_write_config8(dev, PCI_SEC_LATENCY_TIMER, 0x40);
 
 	/* RPR 4.6 Enable the command matching checking function on "Memory Read" & "Memory Read Line" commands */
 	byte = pci_read_config8(dev, 0x4B);

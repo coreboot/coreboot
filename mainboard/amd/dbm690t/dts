@@ -17,6 +17,51 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+/*
+-[0000:00]-+-00.0
+           +-01.0-[0000:01]----05.0
+           +-06.0-[0000:02-03]--
+           +-07.0-[0000:04]----00.0
+           +-12.0
+           +-13.0
+           +-13.1
+           +-13.2
+           +-13.3
+           +-13.4
+           +-13.5
+           +-14.0
+           +-14.1
+           +-14.2
+           +-14.3
+           +-14.4-[0000:05]--
+           +-18.0
+           +-18.1
+           +-18.2
+           \-18.3
+00:00.0 Host bridge: ATI Technologies Inc RS690 Host Bridge
+00:01.0 PCI bridge: ATI Technologies Inc RS690 PCI to PCI Bridge (Internal gfx)
+00:06.0 PCI bridge: ATI Technologies Inc RS690 PCI to PCI Bridge (PCI Express Port 2)
+00:07.0 PCI bridge: ATI Technologies Inc RS690 PCI to PCI Bridge (PCI Express Port 3)
+00:12.0 SATA controller: ATI Technologies Inc SB600 Non-Raid-5 SATA
+00:13.0 USB Controller: ATI Technologies Inc SB600 USB (OHCI0)
+00:13.1 USB Controller: ATI Technologies Inc SB600 USB (OHCI1)
+00:13.2 USB Controller: ATI Technologies Inc SB600 USB (OHCI2)
+00:13.3 USB Controller: ATI Technologies Inc SB600 USB (OHCI3)
+00:13.4 USB Controller: ATI Technologies Inc SB600 USB (OHCI4)
+00:13.5 USB Controller: ATI Technologies Inc SB600 USB Controller (EHCI)
+00:14.0 SMBus: ATI Technologies Inc SBx00 SMBus Controller (rev 14)
+00:14.1 IDE interface: ATI Technologies Inc SB600 IDE
+00:14.2 Audio device: ATI Technologies Inc SBx00 Azalia
+00:14.3 ISA bridge: ATI Technologies Inc SB600 PCI to LPC Bridge
+00:14.4 PCI bridge: ATI Technologies Inc SBx00 PCI to PCI Bridge
+00:18.0 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] HyperTransport Technology Configuration
+00:18.1 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] Address Map
+00:18.2 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] DRAM Controller
+00:18.3 Host bridge: Advanced Micro Devices [AMD] K8 [Athlon64/Opteron] Miscellaneous Control
+01:05.0 VGA compatible controller: ATI Technologies Inc RS690M [Radeon X1200 Series]
+04:00.0 Ethernet controller: Broadcom Corporation NetLink BCM5789 Gigabit Ethernet PCI Express (rev 11)
+
+ */
 
 /{
 	device_operations="dbm690t";
@@ -41,9 +86,6 @@
 			};
 			pci2{
 				/config/("southbridge/amd/rs690/pcie.dts");
-			};
-			pci3{
-				/config/("southbridge/amd/sb600/sb600.dts");
 			};
 			pci4{
 				/config/("southbridge/amd/sb600/hda.dts");

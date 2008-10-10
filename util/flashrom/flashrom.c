@@ -449,6 +449,10 @@ int main(int argc, char *argv[])
 				printf("Run flashrom -L to view the hardware supported in this flashrom version.\n");
 				exit(1);
 			}
+			if (!filename) {
+				printf("Error: No filename specified.\n");
+				exit(1);
+			}
 			size = flashes[0]->total_size * 1024;
 			buf = (uint8_t *) calloc(size, sizeof(char));
 

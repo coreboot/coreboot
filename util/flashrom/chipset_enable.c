@@ -274,6 +274,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ic
 		spibar_offset = 0x3020;
 		break;
 	case 9:
+	case 10:
 	default: /* Future version might behave the same */
 		flashbus = BUS_TYPE_ICH9_SPI;
 		spibar_offset = 0x3800;
@@ -355,6 +356,11 @@ static int enable_flash_ich8(struct pci_dev *dev, const char *name)
 static int enable_flash_ich9(struct pci_dev *dev, const char *name)
 {
 	return enable_flash_ich_dc_spi(dev, name, 9);
+}
+
+static int enable_flash_ich10(struct pci_dev *dev, const char *name)
+{
+	return enable_flash_ich_dc_spi(dev, name, 10);
 }
 
 static int enable_flash_vt823x(struct pci_dev *dev, const char *name)
@@ -723,6 +729,10 @@ static const FLASH_ENABLE enables[] = {
 	{0x8086, 0x2917, "Intel ICH9M-E",	enable_flash_ich9},
 	{0x8086, 0x2918, "Intel ICH9",		enable_flash_ich9},
 	{0x8086, 0x2919, "Intel ICH9M",		enable_flash_ich9},
+	{0x8086, 0x3a14, "Intel ICH10DO",	enable_flash_ich10},
+	{0x8086, 0x3a16, "Intel ICH10R",	enable_flash_ich10},
+	{0x8086, 0x3a18, "Intel ICH10",		enable_flash_ich10},
+	{0x8086, 0x3a1a, "Intel ICH10D",	enable_flash_ich10},
 	{0x1106, 0x8231, "VIA VT8231",		enable_flash_vt823x},
 	{0x1106, 0x3177, "VIA VT8235",		enable_flash_vt823x},
 	{0x1106, 0x3227, "VIA VT8237",		enable_flash_vt823x},

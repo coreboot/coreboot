@@ -144,8 +144,8 @@ default SB_HT_CHAIN_ON_BUS0=0
 default HW_MEM_HOLE_SIZEK=0x100000
 
 #VGA Console
-#default CONFIG_CONSOLE_VGA=1
-#default CONFIG_PCI_ROM_RUN=1
+default CONFIG_CONSOLE_VGA=1
+default CONFIG_PCI_ROM_RUN=1
 
 
 ##

@@ -29,7 +29,6 @@
 #include <statictree.h>
 #include "f71805f.h"
 
-static void enable_dev(struct device *dev);
 void f71805f_pnp_set_resources(struct device *dev);
 void f71805f_pnp_set_resources(struct device *dev);
 void f71805f_pnp_enable_resources(struct device *dev);
@@ -73,7 +72,7 @@ void f71805f_pnp_enable(struct device *dev)
 
 static void f71805f_init(struct device *dev)
 {
-	struct superio_fintek_f71805f_config *conf = dev->device_configuration;
+	//struct superio_fintek_f71805f_config *conf = dev->device_configuration;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled)

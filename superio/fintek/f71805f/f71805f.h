@@ -26,6 +26,8 @@
  *  - Revision: V0.25P
  */ 
 
+void f71805f_enable_serial(u8, u8, u16);
+
 /* Logical Device Numbers (LDN). */
 #define	F71805F_FDC	0x00	/* Floppy */
 #define	F71805F_SP1	0x01	/* UART1 */

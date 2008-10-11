@@ -64,7 +64,6 @@ config CPU_VIA_C7
 	  arch/x86/Makefile for more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
-
 config CONFIG_HPET
 	boolean
 	depends CPU_AMD_K8

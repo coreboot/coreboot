@@ -69,21 +69,15 @@ __protected_stage0:
 
 .align 4
 
-
-
-/* We will use 4Kbytes only for cache as ram. This is
- * enough to fit in our stack.
- *
- * disable HyperThreading is done by eswar
+/* disable HyperThreading is done by eswar
  * the other is very similar to the AMD CAR, except remove amd specific msr
  */
 
 #define CacheSize CONFIG_CARSIZE
-
 #define CacheBase CONFIG_CARBASE
 
 #define ASSEMBLY
-#include "mtrr.h"
+#include <mtrr.h>
 
 	/* Save the BIST result */
 	movl    %eax, %ebp
@@ -175,6 +169,7 @@ NotHtProcessor:
 	/* Clear all MTRRs */
 	xorl	%edx, %edx
 	movl	$fixed_mtrr_msr, %esi
+
 clear_fixed_var_mtrr:
 	lodsl	(%esi), %eax
 	testl	%eax, %eax
@@ -331,8 +326,7 @@ clear_fixed_var_mtrr_out:
 
 lout:
 	/* Store zero for the pointer to the global variables. */
-	movl    $0, %eax
-	pushl   %eax
+	pushl   $0
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax

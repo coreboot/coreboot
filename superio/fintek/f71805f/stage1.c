@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2007 Corey Osgood <corey.osgood@gmail.com>
+ * Copyright 2008 Corey Osgood <corey.osgood@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,24 +18,32 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <io.h>
+#include <config.h>
 #include <device/pnp.h>
 #include "f71805f.h"
 
-static inline void f71805f_rawpnp_enter_ext_func_mode(u8 dev)
+void f71805f_enable_serial(u8 dev)
 {
-	/* Fintek F71805f needs this only once, but Winbond needs it twice.
-	 * Perhaps modify rawpnp_enter_ext_func_mode() to only do it once,
-	 * then modify the winbond to call it twice? */
-	outb(0x87, dev);
-}
+	u8 serial_ldn;
+	u16 serial_iobase;
 
-void f71805f_enable_serial(u8 dev, u8 serial, u16 iobase)
-{
-	f71805f_rawpnp_enter_ext_func_mode(dev);
-	rawpnp_set_logical_device(dev, serial);
+	/* Serial port info from Kconfig (FTW!). Would be even more 
+	 * awesome if we could get 'dev' from Kconfig or dts */
+	/* TODO: Get/set serial port speed divisor from Kconfig as well */
+#if defined (CONFIG_CONSOLE_SERIAL_COM1) && CONFIG_CONSOLE_SERIAL_COM1
+	serial_ldn = F71805F_COM1;
+	serial_iobase = 0x3f8;
+#elif defined (CONFIG_CONSOLE_SERIAL_COM2) && CONFIG_CONSOLE_SERIAL_COM2
+	serial_ldn = F71805F_COM2;
+	serial_iobase = 0x2f8;
+#else /* No serial console */
+	return;
+#endif
+
+	rawpnp_enter_ext_func_mode(dev);
+	rawpnp_set_logical_device(dev, serial_ldn);
 	rawpnp_set_enable(dev, 0);
-	rawpnp_set_iobase(dev, PNP_IDX_IO0, iobase);
+	rawpnp_set_iobase(dev, PNP_IDX_IO0, serial_iobase);
 	rawpnp_set_enable(dev, 1);
 	rawpnp_exit_ext_func_mode(dev);
 }

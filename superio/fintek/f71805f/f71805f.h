@@ -26,12 +26,12 @@
  *  - Revision: V0.25P
  */ 
 
-void f71805f_enable_serial(u8, u8, u16);
+void f71805f_enable_serial(u8);
 
 /* Logical Device Numbers (LDN). */
 #define	F71805F_FDC	0x00	/* Floppy */
-#define	F71805F_SP1	0x01	/* UART1 */
-#define	F71805F_SP2	0x02	/* UART2 */
+#define	F71805F_COM1	0x01	/* UART1 */
+#define	F71805F_COM2	0x02	/* UART2 */
 #define	F71805F_PP	0x03	/* Parallel Port */
 #define	F71805F_HWM	0x04	/* Hardware Monitor */
 #define	F71805F_GPIO	0x06	/* General Purpose I/O (GPIO) */

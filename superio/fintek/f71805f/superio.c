@@ -79,15 +79,15 @@ static void f71805f_init(struct device *dev)
 		return;
 	
 	switch (dev->path.pnp.device) {
-	case F71805F_SP1: 
+	case F71805F_COM1: 
 		res0 = find_resource(dev, PNP_IDX_IO0);
-		//TODO: needed? fix or remove?
-		//init_uart8250(res0->base, &conf->sp1);
+		/* TODO: Fix these */
+		//uart8250_init(res0->base, &conf->sp1);
 		break;
 		
-	case F71805F_SP2:
+	case F71805F_COM2:
 		res1 = find_resource(dev, PNP_IDX_IO0);
-		//init_uart8250(res0->base, &conf->sp2);
+		//uart8250_init(res0->base, &conf->sp2);
 		break;
 		
 	/* No KBC on F71805f */
@@ -106,8 +106,8 @@ struct device_operations f71805f_ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &f71805f_ops, F71805F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &f71805f_ops, F71805F_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &f71805f_ops, F71805F_COM1, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &f71805f_ops, F71805F_COM2, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	/* TODO: Everything else */
 };
 

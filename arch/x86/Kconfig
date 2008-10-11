@@ -56,6 +56,15 @@ config CPU_AMD_K8
 	  arch/x86/Makefile for more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
+config CPU_VIA_C7
+	boolean
+	help
+	  CPU type. At the moment this option selects the reset vector and
+	  Cache-as-RAM (CAR) implementation for a mainboard. See
+	  arch/x86/Makefile for more hints on possible values.
+	  It is usually set in mainboard/*/Kconfig.
+
+
 config CONFIG_HPET
 	boolean
 	depends CPU_AMD_K8
@@ -159,6 +168,7 @@ config CARBASE
 	default 0x8f000 if CPU_I586
 	default 0x80000 if CPU_AMD_GEODELX
 	default 0xc8000 if CPU_AMD_K8
+	default 0xffef0000 if CPU_VIA_C7
 	help
 	  This option sets the base address of the area used for CAR.
 
@@ -167,6 +177,7 @@ config CARSIZE
 	default 0x1000 if CPU_I586
 	default 0x8000 if CPU_AMD_GEODELX
 	default 0x8000 if CPU_AMD_K8
+	default 0x8000 if CPU_VIA_C7
 	help
 	  This option sets the size of the area used for CAR.
 
@@ -175,6 +186,7 @@ config CBMEMK
 	default 0x1000 if CPU_I586
 	default 0x1000 if CPU_AMD_GEODELX
 	default 0x2000 if CPU_AMD_K8
+	default 0x1000 if CPU_VIA_C7
 	help
 	  This option sets the top of the memory area, in KiB,
 	  used for coreboot.

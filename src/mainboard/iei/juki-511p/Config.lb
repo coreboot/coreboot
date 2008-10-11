@@ -47,13 +47,13 @@ if HAVE_PIRQ_TABLE object irq_tables.o end
 ## Romcc output
 ##
 makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c ../romcc" 
-	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc" 
+	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 
 makerule ./failover.inc
-	depends "$(MAINBOARD)/failover.c ../romcc"
-	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 
 makerule ./auto.E 

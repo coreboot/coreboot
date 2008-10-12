@@ -54,8 +54,8 @@ static struct ioapicreg {
 } ioapic_table[] = {
 	/* IO-APIC virtual wire mode configuration. */
 	/* mask, trigger, polarity, destination, delivery, vector */
-	{0,  ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST |
-	     ExtINT, NONE},
+	{0, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST |
+		    ExtINT, NONE}, {
 	{1,  DISABLED, NONE},
 	{2,  DISABLED, NONE},
 	{3,  DISABLED, NONE},
@@ -167,13 +167,15 @@ static void setup_pm(device_t dev)
 	/* GP Timer Control 1s */
 	pci_write_config8(dev, 0x93, 0x88);
 
-	/* 7 = SMBus clock from RTC 32.768KHz
+	/*
+	 * 7 = SMBus clock from RTC 32.768KHz
 	 * 5 = Internal PLL reset from susp
 	 * 2 = GPO2 is GPIO
 	 */
 	pci_write_config8(dev, 0x94, 0xa4);
 
-	/* 7 = stp to sust delay 1msec
+	/*
+	 * 7 = stp to sust delay 1msec
 	 * 6 = SUSST# Deasserted Before PWRGD for STD
 	 * 4 = PWRGOOD reset on VT8237A/S
 	 * 3 = GPO26/GPO27 is GPO 
@@ -216,14 +218,14 @@ static void setup_pm(device_t dev)
 
 	/* SCI is generated for RTC/pwrBtn/slpBtn. */
 	outw(0x001, VT8237R_ACPI_IO_BASE + 0x04);
-
 }
 
-
-static void vt8237r_init(struct device *dev) {
+static void vt8237r_init(struct device *dev)
+{
 	u8 enables;
 
-	/* Enable SATA LED, disable special CPU Frequency Change -
+	/*
+	 * Enable SATA LED, disable special CPU Frequency Change -
 	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
 	 */
 	pci_write_config8(dev, 0xe5, 0x9);
@@ -236,14 +238,18 @@ static void vt8237r_init(struct device *dev) {
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4f, enables);
 
-	/* Set Read Pass Write Control Enable (force A2 from APIC FSB to low). */
+	/*
+	 * Set Read Pass Write Control Enable
+	 * (force A2 from APIC FSB to low).
+	 */
 	pci_write_config8(dev, 0x48, 0x8c);
 
 	southbridge_init_common(dev);
 
 	/* FIXME: Intel needs more bit set for C2/C3. */
 
-	/* Allow SLP# signal to assert LDTSTOP_L.
+	/*
+	 * Allow SLP# signal to assert LDTSTOP_L.
 	 * Will work for C3 and for FID/VID change.
 	 */
 	outb(0x1, VT8237R_ACPI_IO_BASE + 0x11);
@@ -252,40 +258,43 @@ static void vt8237r_init(struct device *dev) {
 static void vt8237s_init(struct device *dev)
 {
 	u32 tmp;
-	
-	/* put SPI base VT8237S_SPI_MEM_BASE */
-	tmp = pci_read_config32(dev, 0xbc);
-	pci_write_config32(dev, 0xbc, (VT8237S_SPI_MEM_BASE >> 8) | (tmp & 0xFF000000));
 
-	/* Enable SATA LED, VR timer = 100us, VR timer should be fixed */
-	
+	/* Put SPI base VT8237S_SPI_MEM_BASE. */
+	tmp = pci_read_config32(dev, 0xbc);
+	pci_write_config32(dev, 0xbc,
+			   (VT8237S_SPI_MEM_BASE >> 8) | (tmp & 0xFF000000));
+
+	/* Enable SATA LED, VR timer = 100us, VR timer should be fixed. */
 	pci_write_config8(dev, 0xe5, 0x69);
 
-	/* REQ5 as PCI request input - should be together with INTE-INTH. 
-	 * Fast VR timer disable - need for LDTSTOP_L signal
-	*/
+	/*
+	 * REQ5 as PCI request input - should be together with INTE-INTH. 
+	 * Fast VR timer disable - need for LDTSTOP_L signal.
+	 */
 	pci_write_config8(dev, 0xe4, 0xa5);
 
-	/* reduce further the STPCLK/LDTSTP signal to 5us */
-
+	/* Reduce further the STPCLK/LDTSTP signal to 5us. */
 	pci_write_config8(dev, 0xec, 0x4);
 
 	/* Host Bus Power Management Control, maybe not needed */
 	pci_write_config8(dev, 0x8c, 0x5);
 
-	/* Enable HPET at VT8237R_HPET_ADDR., does not work correctly on R */
+	/* Enable HPET at VT8237R_HPET_ADDR., does not work correctly on R. */
 	pci_write_config32(dev, 0x68, (VT8237R_HPET_ADDR | 0x80));
 
 	southbridge_init_common(dev);
-	
+
 	/* FIXME: Intel needs more bit set for C2/C3. */
 
-	/* Allow SLP# signal to assert LDTSTOP_L.
-	 * Will work for C3 and for FID/VID change. FIXME FIXME, pre rev A2
+	/*
+	 * Allow SLP# signal to assert LDTSTOP_L.
+	 * Will work for C3 and for FID/VID change. FIXME FIXME, pre rev A2.
 	 */
 	outb(0xff, VT8237R_ACPI_IO_BASE + 0x50);
+
 	dump_south(dev);
 }
+
 static void vt8237_common_init(struct device *dev)
 {
 	u8 enables, byte;
@@ -315,7 +324,8 @@ static void vt8237_common_init(struct device *dev)
 	 */
 	pci_write_config8(dev, 0x41, 0x7f);
 
-	/* Set bit 6 of 0x40 (I/O recovery time).
+	/*
+	 * Set bit 6 of 0x40 (I/O recovery time).
 	 * IMPORTANT FIX - EISA = ECLR reg at 0x4d0! Decoding must be on so
 	 * that PCI interrupts can be properly marked as level triggered.
 	 */
@@ -338,11 +348,12 @@ static void vt8237_common_init(struct device *dev)
 	pci_write_config8(dev, 0x59, 0x80);
 
 	/*
-	 * bit meaning
-	 *   3 Bypass APIC De-Assert Message (1=Enable)
-	 *   1 possibly "INTE#, INTF#, INTG#, INTH# as PCI"
-	 *     bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
-	 *   0 Dynamic Clock Gating Main Switch (1=Enable)
+	 * Bit | Meaning
+	 * -------------
+	 *   3 | Bypass APIC De-Assert Message (1=Enable)
+	 *   1 | possibly "INTE#, INTF#, INTG#, INTH# as PCI"
+	 *     | bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
+	 *   0 | Dynamic Clock Gating Main Switch (1=Enable)
 	 */
 	pci_write_config8(dev, 0x5b, 0xb);
 
@@ -409,7 +420,6 @@ static const struct device_operations vt8237r_lpc_ops_s = {
 	.init			= &vt8237s_init,
 	.scan_bus		= scan_static_bus,
 };
-
 
 static const struct device_operations vt8237r_lpc_ops_r = {
 	.read_resources		= vt8237r_read_resources,

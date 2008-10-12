@@ -39,37 +39,43 @@ static void sata_i_init(struct device *dev)
 	pci_write_config8(dev, PCI_CLASS_DEVICE, 0x1);
 	reg |= 0x80;		/* Sub Class Write Protect on */
 	pci_write_config8(dev, SATA_MISC_CTRL, reg);
-	
+
 	return;
 }
 
-static void sata_ii_init(struct device *dev) {
+static void sata_ii_init(struct device *dev)
+{
 	u8 reg;
 
 	sata_i_init(dev);
-	
-	/* analog black magic, you may or may not need to adjust 0x60-0x6f, depends on PCB */
-	
-	/* Analog PHY - gen1
+
+	/*
+	 * Analog black magic, you may or may not need to adjust 0x60-0x6f,
+	 * depends on PCB.
+	 */
+
+	/*
+	 * Analog PHY - gen1
 	 * CDR bandwidth [6:5] = 3
 	 * Squelch Window Select [4:3] = 1
 	 * CDR Charge Pump [2:0] = 1
 	 */
-	 
+
 	pci_write_config8(dev, 0x64, 0x49);
-	
-	/* adjust driver current source value to 9 */
+
+	/* Adjust driver current source value to 9. */
 	reg = pci_read_config8(dev, 0x65);
 	reg &= 0xf0;
 	reg |= 0x9;
 	pci_write_config8(dev, 0x65, reg);
-	
-	/* set all manual termination 50ohm bits [2:0] and enable [4] */
+
+	/* Set all manual termination 50ohm bits [2:0] and enable [4]. */
 	reg = pci_read_config8(dev, 0x6a);
 	reg |= 0xf;
 	pci_write_config8(dev, 0x6a, reg);
 
-	/* Analog PHY - gen2
+	/*
+	 * Analog PHY - gen2
 	 * CDR bandwidth [5:4] = 2
 	 * Pre / De-emphasis Level [7:6] controls bits [3:2], rest in 0x6e
 	 * CDR Charge Pump [2:0] = 1
@@ -80,10 +86,10 @@ static void sata_ii_init(struct device *dev) {
 	reg |= 0x61;
 	pci_write_config8(dev, 0x6f, reg);
 
-	/* check if staggered spinup is supported */
+	/* Check if staggered spinup is supported. */
 	reg = pci_read_config8(dev, 0x83);
 	if ((reg & 0x8) == 0) {
-		/* start OOB sequence on both drives */
+		/* Start OOB sequence on both drives. */
 		reg |= 0x30;
 		pci_write_config8(dev, 0x83, reg);
 	}

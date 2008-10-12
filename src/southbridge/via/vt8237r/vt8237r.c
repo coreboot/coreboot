@@ -63,9 +63,8 @@ void dump_south(device_t dev)
 
 	for (i = 0; i < 256; i += 16) {
 		printk_debug("%02x: ", i);
-		for (j = 0; j < 16; j++) {
+		for (j = 0; j < 16; j++)
 			printk_debug("%02x ", pci_read_config8(dev, i + j));
-		}
 		printk_debug("\n");
 	}
 }

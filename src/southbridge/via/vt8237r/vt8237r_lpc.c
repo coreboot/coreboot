@@ -55,7 +55,7 @@ static struct ioapicreg {
 	/* IO-APIC virtual wire mode configuration. */
 	/* mask, trigger, polarity, destination, delivery, vector */
 	{0, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST |
-		    ExtINT, NONE}, {
+		    ExtINT, NONE},
 	{1,  DISABLED, NONE},
 	{2,  DISABLED, NONE},
 	{3,  DISABLED, NONE},

@@ -35,6 +35,10 @@
 #include <qemu.h>
 #endif
 
+#ifdef CONFIG_CPU_VIA_C7
+#include <via_c7.h>
+#endif
+
 /*
  * struct global_vars is managed entirely from C code. Keep in mind that there
  * is NO buffer at the end of the struct, so having zero-sized arrays at the

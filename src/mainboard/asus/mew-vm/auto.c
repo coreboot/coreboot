@@ -47,7 +47,7 @@ void udelay(int usecs)
 		outb(i&0xff, 0x80);
 }
 
-#include "debug.c"
+#include "lib/debug.c"
 #include "lib/delay.c"
 
 #include "northbridge/intel/i82810/raminit.c"

@@ -22,7 +22,7 @@
 #include <spd.h>
 #include <sdram_mode.h>
 #include <delay.h>
-#include "debug.c"
+#include "lib/debug.c"
 #include "i82830.h"
 
 /*-----------------------------------------------------------------------------

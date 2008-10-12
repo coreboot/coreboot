@@ -29,7 +29,7 @@ void udelay(int usecs)
 
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
-#include "debug.c"
+#include "lib/debug.c"
 
 #include "southbridge/via/vt8235/vt8235_early_smbus.c"
 

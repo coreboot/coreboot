@@ -32,7 +32,7 @@
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
 #include "northbridge/intel/i82810/raminit.h"
-#include "mainboard/asus/mew-vm/debug.c"	/* FIXME */
+#include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/mtrr/earlymtrr.c"

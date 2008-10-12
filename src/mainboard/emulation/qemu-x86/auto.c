@@ -23,7 +23,6 @@ void udelay(int usecs)
 
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
-#include "debug.c"
 
 static void main(void)
 {

@@ -17,7 +17,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC97317_SP1)
 
-//#include "debug.c"
 //#include "lib/delay.c"
 
 #include "northbridge/amd/gx1/raminit.c"

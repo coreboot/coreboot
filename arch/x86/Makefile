@@ -23,7 +23,7 @@
 ifeq ($(CONFIG_ARCH_X86),y)
 
 INITCFLAGS := $(CFLAGS) -I$(src)/include/arch/x86 -I$(src)/include \
-		-I$(obj) -I$(src)/mainboard/$(MAINBOARDDIR)/-fno-builtin  
+		-I$(obj) -I$(src)/mainboard/$(MAINBOARDDIR)/ -fno-builtin  
 
 SILENT := >/dev/null 2>&1
 
@@ -279,3 +279,17 @@ $(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/s
 	$(Q)$(NM) $(obj)/coreboot.initram | sort -u > $(obj)/coreboot.initram.map
 
 endif
+
+#
+# For Kscope
+#
+
+kscope: $(obj)/mainboard/$(MAINBOARDDIR)/kscope/cscope.files
+	kscope $(obj)/mainboard/$(MAINBOARDDIR)/kscope
+ALLSRC=$(STAGE0_SRC) $(INITRAM_SRC) $(STAGE2_SRC)
+$(obj)/mainboard/$(MAINBOARDDIR)/kscope/cscope.files: $(ALLSRC)
+	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)/kscope
+	$(Q)cp cscope.proj $(obj)/mainboard/$(MAINBOARDDIR)/kscope
+	$(Q)sh util/mkdep $@ $(INITCFLAGS) "--" $(ALLSRC)
+#	$(Q)sort -u -o $@ $@
+

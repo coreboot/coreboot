@@ -1,0 +1,16 @@
+#!/bin/sh
+out=$1
+shift
+o=""
+while [ "$1" != "--" ]; do
+o="$o $1"
+shift
+done
+shift
+p=`pwd`
+while [ "$1" ] ; do
+echo $1 >>${out}
+cpp  -M -m32 $o $1  | sed 's/.*://' | sed 's/^ *//g' | tr ' ' '\n' | tr '\\' ' ' |sed "s,^include,${p}/include," >>${out}
+shift
+done
+sort -o ${out} -u ${out}

@@ -1,0 +1,23 @@
+Version=2
+
+[AutoCompletion]
+Delay=500
+Enabled=true
+MaxEntries=100
+MinChars=3
+
+[Project]
+AutoRebuildTime=10
+CtagsCommand=
+FileTypes=*.c *.h *.cc
+InvIndex=true
+Kernel=false
+Name=try2
+NoCompress=false
+RootPath=/
+SlowPathDef=false
+TabWidth=0
+
+[Session]
+CallTreeFiles=
+

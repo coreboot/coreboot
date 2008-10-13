@@ -132,12 +132,22 @@ int printk(int msg_level, const char *fmt, ...)
 	va_list args;
 	int i;
 
+#ifdef CONFIG_CONSOLE_PREPEND_LOG_LEVEL
+	console_tx_byte('<', (void *)0);
+	console_tx_byte(msg_level + '0', (void *)0);
+	console_tx_byte('>', (void *)0);
+
+	i = 3;
+
 	if (msg_level > console_loglevel()) {
 		return 0;
 	}
+#else
+	i = 0;
+#endif
 
 	va_start(args, fmt);
-	i = vtxprintf(console_tx_byte, (void *)0, fmt, args);
+	i += vtxprintf(console_tx_byte, (void *)0, fmt, args);
 	va_end(args);
 
 	return i;

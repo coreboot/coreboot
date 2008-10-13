@@ -68,6 +68,11 @@ config CONSOLE
 	help
 	  Support for various types of (debugging) consoles.
 
+config CONSOLE_PREPEND_LOG_LEVEL
+	boolean "Prepend log level to messages"
+	default n
+	depends CONSOLE && EXPERT
+
 choice
 	prompt "Console log level"
 	default CONSOLE_LOGLEVEL_8

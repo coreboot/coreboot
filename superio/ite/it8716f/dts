@@ -1,5 +1,4 @@
 /*
- *
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Peter Stuge <peter@stuge.se>
@@ -17,16 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
  */
+
 {
 	device_operations = "it8716f_ops";
+
 	/* Floppy */
-	floppydev = "0x0";
+	floppydev = "0";
 	floppyenable = "0";
 	floppyio = "0x3f0";
-	floppyirq = "0x60";
-	floppydrq = "0x02";
+	floppyirq = "6";
+	floppydrq = "2";
 
 	/* COM1 */
 	com1dev = "1";
@@ -49,18 +49,20 @@
 	/* Environment controller */
 	ecdev = "4";
 	ecenable = "0";
+	ecio = "0x290";
+	ecirq = "9";
 
-	/* Keyboard */
+	/* PS/2 keyboard */
 	kbdev = "5";
 	kbenable = "0";
 	kbio = "0x60";
-	kbio2 = "0x62";
+	kbio2 = "0x64";
 	kbirq = "1";
-	kbirq2 = "12";
 
-	/* Mouse */
+	/* PS/2 mouse */
 	mousedev = "6";
 	mouseenable = "0";
+	mouseirq = "12";
 
 	/* GPIO */
 	gpiodev = "7";
@@ -69,15 +71,17 @@
 	/* MIDI port */
 	mididev = "8";
 	midienable = "0";
+	midiio = "0x300";
+	midiirq = "10";
 
 	/* Game port */
 	gamedev = "9";
 	gameenable = "0";
-	gameio = "0x220";
-	gameio2 = "0x400";
-	gameirq = "9";
+	gameio = "0x201";
 
 	/* Consumer IR */
-	cirdev = "0xa";
+	cirdev = "10";
 	cirenable = "0";
+	cirio = "0x310";
+	cirirq = "11";
 };

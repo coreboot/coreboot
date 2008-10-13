@@ -88,7 +88,7 @@ default HAVE_MP_TABLE=0
 ##
 ## Build code to reset the motherboard from coreboot
 ##
-default HAVE_HARD_RESET=1
+default HAVE_HARD_RESET=0
 
 ##
 ## Build code to export a programmable irq routing table

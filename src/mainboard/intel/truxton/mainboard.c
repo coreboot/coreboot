@@ -4,9 +4,8 @@
  * Copyright (C) 2008 Arastra, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,17 +15,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ *
  */
 
-/* Datasheet: http://www.intel.com/design/intarch/datashts/313458.htm */
+#include <device/device.h>
+#include "chip.h"
 
-#ifndef SUPERIO_INTEL_I3100_I3100_H
-#define SUPERIO_INTEL_I3100_I3100_H
+struct chip_operations mainboard_intel_truxton_ops = {
+	CHIP_NAME("Intel Truxton Mainboard")
+};
 
-#define I3100_SP1 0x04 /* Com1 */
-#define I3100_SP2 0x05 /* Com2 */
-#define I3100_WDT 0x06 /* Watchdog timer */
-
-#define I3100_SUPERIO_CONFIG_PORT 0x4e
-
-#endif

@@ -65,7 +65,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 			/* Override in place? */
 			rom_address = dev->rom_address;
 		} else {
-			rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS) & 0xfffffffe;
+			rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 		}
 
 	}
@@ -73,6 +73,8 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
 		return NULL;
 	}
+
+	rom_address = rom_address & ~PCI_ROM_ADDRESS_ENABLE;
 
 	printk(BIOS_DEBUG, "ROM address for %s = %lx\n", dev_path(dev),
 	       rom_address);
@@ -94,7 +96,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		       le32_to_cpu(rom_header->signature));
 		return NULL;
 	}
-	
+
 	/* checksum */
 	rom_bytes = (unsigned char *)rom_address;
 	for (i = 0; i < rom_header->size * 512; i++)
@@ -166,7 +168,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 			return NULL;	// Only one VGA supported.
 #endif
 		if (rom_header != (void *)PCI_VGA_RAM_IMAGE_START) {
-			printk(BIOS_DEBUG, "Copying VGA ROM image from %p to 0x%x, 0x%x bytes\n", 
+			printk(BIOS_DEBUG, "Copying VGA ROM image from %p to 0x%x, 0x%x bytes\n",
 					rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		}

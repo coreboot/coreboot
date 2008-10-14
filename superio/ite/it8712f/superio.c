@@ -62,8 +62,6 @@ static void it8712f_init(struct device * dev)
 	conf = dev->device_configuration;
 
 	switch (dev->path.pnp.device) {
-	case IT8712F_FDC: /* TODO. */
-		break;
 	case IT8712F_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 #warning no init_uart8250 yet
@@ -73,24 +71,12 @@ static void it8712f_init(struct device * dev)
 		res0 = find_resource(dev, PNP_IDX_IO0);
 //		init_uart8250(res0->base, &conf->com2);
 		break;
-	case IT8712F_PP: /* TODO. */
-		break;
-	case IT8712F_EC: /* TODO. */
-		break;
 	case IT8712F_KBCK:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
 #warning no set_kbc_ps2_mode yet
 //		set_kbc_ps2_mode();
 //		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
-		break;
-	case IT8712F_KBCM: /* TODO. */
-		break;
-	case IT8712F_MIDI: /* TODO. */
-		break;
-	case IT8712F_GAME: /* TODO. */
-		break;
-	case IT8712F_IR: /* TODO. */
 		break;
 	}
 }
@@ -127,19 +113,23 @@ struct device_operations it8712f_ops = {
 	.phase6_init		 = it8712f_init,
 };
 
-/* TODO: FDC, MIDI, GAME, IR. */
 static struct pnp_info pnp_dev_info[] = {
-	{&it8712f_ops, IT8712F_SP1, PNP_IO0 | PNP_IRQ0, {0x7f8, 0}, },
-	{&it8712f_ops, IT8712F_SP2, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x7f8, 0}, },
-	{&it8712f_ops, IT8712F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
-	{&it8712f_ops, IT8712F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4},},
-	{&it8712f_ops, IT8712F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4}, },
-	{&it8712f_ops, IT8712F_KBCM, PNP_IRQ0, },
-	{&it8712f_ops, IT8712F_GPIO, },
+	{&it8712f_ops, IT8712F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0xff8, 0},},
+	{&it8712f_ops, IT8712F_SP1, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
+	{&it8712f_ops, IT8712F_SP2, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
+	{&it8712f_ops, IT8712F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0xffc, 0},},
+	{&it8712f_ops, IT8712F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0xff8, 0}, {0xff8, 4},},
+	{&it8712f_ops, IT8712F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0xfff, 0}, {0xfff, 4},},
+	{&it8712f_ops, IT8712F_KBCM, PNP_IRQ0,},
+	{&it8712f_ops, IT8712F_GPIO,},
+	{&it8712f_ops, IT8712F_MIDI, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
+	{&it8712f_ops, IT8712F_GAME, PNP_IO0, {0xfff, 0},},
+	{&it8712f_ops, IT8712F_IR, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
 };
 
 static void it8712f_setup_scan_bus(struct device *dev)
 {
-	pnp_enable_devices(dev, &it8712f_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &it8712f_ops,
+			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 

@@ -1,5 +1,5 @@
 /*
- * K8 northbridge 
+ * K8 northbridge
  * This file is part of the coreboot project.
  * Copyright (C) 2004-2005 Linux Networx
  * (Written by Eric Biederman <ebiederman@lnxi.com> and Jason Schildt for Linux Networx)
@@ -57,7 +57,7 @@ u32 f1_read_config32(unsigned int reg);
 void f1_write_config32(unsigned int reg, u32 value);
 unsigned int amdk8_nodeid(struct device * dev);
 
-static void k8_ram_resource(struct device * dev, unsigned long index, 
+static void k8_ram_resource(struct device * dev, unsigned long index,
 	unsigned long basek, unsigned long sizek)
 {
 	struct resource *resource;
@@ -87,7 +87,7 @@ static u32 find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
 	u32 tolm;
-	min = 0;
+	min = NULL;
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
 	tolm = 0xffffffffUL;
 	if (min && tolm > min->base) {
@@ -125,41 +125,41 @@ static void k8_pci_domain_read_resources(struct device * dev)
 			}
 		}
 	}
-#ifdef CONFIG_PCI_64BIT_PREF_MEM
+#ifndef CONFIG_PCI_64BIT_PREF_MEM
 	/* Initialize the system wide io space constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	resource->base  = 0x400;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-        /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-        resource->limit = 0xfcffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	/* Initialize the system wide memory resources constraints */
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	resource->limit = 0xfcffffffffULL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 #else
-        /* Initialize the system wide io space constraints */
-        resource = new_resource(dev, 0);
-        resource->base  = 0x400;
-        resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO;
-        compute_allocate_resource(&dev->link[0], resource,
-                IORESOURCE_IO, IORESOURCE_IO);
+	/* Initialize the system wide io space constraints */
+	resource = new_resource(dev, 0);
+	resource->base  = 0x400;
+	resource->limit = 0xffffUL;
+	resource->flags = IORESOURCE_IO;
+	compute_allocate_resource(&dev->link[0], resource,
+		IORESOURCE_IO, IORESOURCE_IO);
 
-        /* Initialize the system wide prefetchable memory resources constraints */
-        resource = new_resource(dev, 1);
-        resource->limit = 0xfcffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-        compute_allocate_resource(&dev->link[0], resource,
-                IORESOURCE_MEM | IORESOURCE_PREFETCH,
-                IORESOURCE_MEM | IORESOURCE_PREFETCH);
+	/* Initialize the system wide prefetchable memory resources constraints */
+	resource = new_resource(dev, 1);
+	resource->limit = 0xfcffffffffULL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+	compute_allocate_resource(&dev->link[0], resource,
+		IORESOURCE_MEM | IORESOURCE_PREFETCH,
+		IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
-        /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, 2);
-        resource->limit = 0xfcffffffffULL;
-        resource->flags = IORESOURCE_MEM;
-        compute_allocate_resource(&dev->link[0], resource,
-                IORESOURCE_MEM | IORESOURCE_PREFETCH,
-                IORESOURCE_MEM);
+	/* Initialize the system wide memory resources constraints */
+	resource = new_resource(dev, 2);
+	resource->limit = 0xfcffffffffULL;
+	resource->flags = IORESOURCE_MEM;
+	compute_allocate_resource(&dev->link[0], resource,
+		IORESOURCE_MEM | IORESOURCE_PREFETCH,
+		IORESOURCE_MEM);
 #endif
 	printk(BIOS_DEBUG, "k8_pci_domain_read_resources done\n");
 }
@@ -185,68 +185,68 @@ static void k8_pci_domain_set_resources(struct device * dev)
 #endif
 
 #if 0
-        /* Place the IO devices somewhere safe */
-        io = find_resource(dev, 0);
-        io->base = DEVICE_IO_START;
+	/* Place the IO devices somewhere safe */
+	io = find_resource(dev, 0);
+	io->base = DEVICE_IO_START;
 #endif
 #ifdef CONFIG_PCI_64BIT_PREF_MEM
-        /* Now reallocate the pci resources memory with the
-         * highest addresses I can manage.
-         */
-        mem1 = find_resource(dev, 1);
-        mem2 = find_resource(dev, 2);
+	/* Now reallocate the pci resources memory with the
+	 * highest addresses I can manage.
+	 */
+	mem1 = find_resource(dev, 1);
+	mem2 = find_resource(dev, 2);
 
 #if 1
-                printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem1->base, mem1->limit, mem1->size, mem1->align);
-                printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem2->base, mem2->limit, mem2->size, mem2->align);
+		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+			mem1->base, mem1->limit, mem1->size, mem1->align);
+		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+			mem2->base, mem2->limit, mem2->size, mem2->align);
 #endif
 
-        /* See if both resources have roughly the same limits */
-        if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
-                ((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
-        {
-                /* If so place the one with the most stringent alignment first
-                 */
-                if (mem2->align > mem1->align) {
-                        struct resource *tmp;
-                        tmp = mem1;
-                        mem1 = mem2;
-                        mem2 = tmp;
-                }
-                /* Now place the memory as high up as it will go */
-                mem2->base = resource_max(mem2);
-                mem1->limit = mem2->base - 1;
-                mem1->base = resource_max(mem1);
-        }
-        else {
-                /* Place the resources as high up as they will go */
-                mem2->base = resource_max(mem2);
-                mem1->base = resource_max(mem1);
-        }
+	/* See if both resources have roughly the same limits */
+	if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
+		((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
+	{
+		/* If so place the one with the most stringent alignment first
+		 */
+		if (mem2->align > mem1->align) {
+			struct resource *tmp;
+			tmp = mem1;
+			mem1 = mem2;
+			mem2 = tmp;
+		}
+		/* Now place the memory as high up as it will go */
+		mem2->base = resource_max(mem2);
+		mem1->limit = mem2->base - 1;
+		mem1->base = resource_max(mem1);
+	}
+	else {
+		/* Place the resources as high up as they will go */
+		mem2->base = resource_max(mem2);
+		mem1->base = resource_max(mem1);
+	}
 
 #if 1
-                printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem1->base, mem1->limit, mem1->size, mem1->align);
-                printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-                        mem2->base, mem2->limit, mem2->size, mem2->align);
+		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+			mem1->base, mem1->limit, mem1->size, mem1->align);
+		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+			mem2->base, mem2->limit, mem2->size, mem2->align);
 #endif
 
-        last = &dev->resource[dev->resources];
-        for(resource = &dev->resource[0]; resource < last; resource++)
-        {
+	last = &dev->resource[dev->resources];
+	for(resource = &dev->resource[0]; resource < last; resource++)
+	{
 #if 1
-                resource->flags |= IORESOURCE_ASSIGNED;
-                resource->flags &= ~IORESOURCE_STORED;
+		resource->flags |= IORESOURCE_ASSIGNED;
+		resource->flags &= ~IORESOURCE_STORED;
 #endif
-                compute_allocate_resource(&dev->link[0], resource,
-                        BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
+		compute_allocate_resource(&dev->link[0], resource,
+			BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
 
-                resource->flags |= IORESOURCE_STORED;
-                report_resource_stored(dev, resource, "");
+		resource->flags |= IORESOURCE_STORED;
+		report_resource_stored(dev, resource, "");
 
-        }
+	}
 #endif
 
 
@@ -264,47 +264,47 @@ static void k8_pci_domain_set_resources(struct device * dev)
 #endif
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
-    /* if the hw mem hole is already set in raminit stage, here we will compare mmio_basek and hole_basek
-     * if mmio_basek is bigger that hole_basek and will use hole_basek as mmio_basek and we don't need to reset hole.
-     * otherwise We reset the hole to the mmio_basek
-     */
+	/* if the hw mem hole is already set in raminit stage, here we will compare mmio_basek and hole_basek
+	* if mmio_basek is bigger that hole_basek and will use hole_basek as mmio_basek and we don't need to reset hole.
+	* otherwise We reset the hole to the mmio_basek
+	*/
 
 		mem_hole = get_hw_mem_hole_info();
 
-                if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) { //We will use hole_basek as mmio_basek, and we don't need to reset hole anymore
-                        mmio_basek = mem_hole.hole_startk;
+		if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) { //We will use hole_basek as mmio_basek, and we don't need to reset hole anymore
+			mmio_basek = mem_hole.hole_startk;
 			reset_memhole = 0;
-                }
-		
+		}
+
 		//mmio_basek = 3*1024*1024; // for debug to meet boundary
 
 		if(reset_memhole) {
 			if(mem_hole.node_id!=-1) { // We need to select CONFIG_HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
-		               // We need to reset our Mem Hole, because We want more big HOLE than we already set
-        		       //Before that We need to disable mem hole at first, becase memhole could already be set on i+1 instead
-	        		disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
+				// We need to reset our Mem Hole, because We want more big HOLE than we already set
+				//Before that We need to disable mem hole at first, becase memhole could already be set on i+1 instead
+				disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
 			}
 
 		#if HW_MEM_HOLE_SIZE_AUTO_INC == 1
 			//We need to double check if the mmio_basek is valid for hole setting, if it is equal to basek, we need to decrease it some
-			u32 basek_pri; 
-	        	for (i = 0; i < 8; i++) {
-        	        	u32 base;
+			u32 basek_pri;
+			for (i = 0; i < 8; i++) {
+				u32 base;
 				u32 basek;
-        	        	base  = f1_read_config32(0x40 + (i << 3));
-	        	        if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
-        	        	        continue;
-	                	}
+				base  = f1_read_config32(0x40 + (i << 3));
+				if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
+					continue;
+				}
 
 				basek = (base & 0xffff0000) >> 2;
 				if(mmio_basek == basek) {
-					mmio_basek -= (basek - basek_pri)>>1; // increase mem hole size to make sure it is on middle of pri node 
-					break; 
+					mmio_basek -= (basek - basek_pri)>>1; // increase mem hole size to make sure it is on middle of pri node
+					break;
 				}
 				basek_pri = basek;
-			}	
-		#endif	
-        	}
+			}
+		#endif
+		}
 
 #endif
 
@@ -327,12 +327,12 @@ static void k8_pci_domain_set_resources(struct device * dev)
 			idx += 0x10;
 			basek = (8*64)+(16*16);
 			sizek = limitk - ((8*64)+(16*16));
-			
+
 		}
 
-	
-		printk(BIOS_DEBUG, "node %d : mmio_basek=%08lx, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu 
-			
+
+		printk(BIOS_DEBUG, "node %d : mmio_basek=%08lx, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu
+
 		/* See if I need to split the region to accomodate pci memory space */
 		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
 			if (basek <= mmio_basek) {
@@ -344,10 +344,10 @@ static void k8_pci_domain_set_resources(struct device * dev)
 					sizek -= pre_sizek;
 				}
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
-				if(reset_memhole) 
-                       		                 sizek += hoist_memory(mmio_basek,i);
+				if(reset_memhole)
+					sizek += hoist_memory(mmio_basek,i);
 				#endif
-				
+
 				basek = mmio_basek;
 			}
 			if ((basek + sizek) <= 4*1024*1024) {
@@ -373,8 +373,8 @@ static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)
 	for(reg = 0xe0; reg <= 0xec; reg += 4) {
 		f1_write_config32(reg, 0);
 	}
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);  
-	
+	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18, 0), 0xff, max);
+
 	/* Tune the hypertransport transaction for best performance.
 	 * Including enabling relaxed ordering if it is safe.
 	 */
@@ -402,12 +402,12 @@ static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)
 struct device_operations k8domain_ops = {
 	.id = {.type = DEVICE_ID_APIC_CLUSTER,
 		{.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = 0x1100}}},
+		 		.device = 0x1100}}},
 	.constructor		 = default_device_constructor,
-	.phase3_scan			= k8_domain_scan_bus,
+	.phase3_scan		 = k8_domain_scan_bus,
 	.phase4_read_resources	 = k8_pci_domain_read_resources,
 	.phase4_set_resources	 = k8_pci_domain_set_resources,
 	.phase5_enable_resources = enable_childrens_resources,
 	.ops_pci		 = &pci_dev_ops_pci,
-	.ops_pci_bus      = &pci_cf8_conf1,
+	.ops_pci_bus		 = &pci_cf8_conf1,
 };

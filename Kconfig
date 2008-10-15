@@ -92,6 +92,8 @@ config NORTHBRIDGE_AMD_K8
 	boolean
 config NORTHBRIDGE_INTEL_I440BXEMULATION
 	boolean
+config NORTHBRIDGE_VIA_CN700
+	boolean
 
 # Southbridges:
 config SOUTHBRIDGE_AMD_CS5536
@@ -105,6 +107,8 @@ config SOUTHBRIDGE_AMD_AMD8111
 config SOUTHBRIDGE_AMD_SB600
 	boolean
 config SOUTHBRIDGE_AMD_RS690
+	boolean
+config SOUTHBRIDGE_VIA_VT8237
 	boolean
 
 # Super I/Os:

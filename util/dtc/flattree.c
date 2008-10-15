@@ -572,14 +572,15 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 		fprintf(f, "\t.path =  { .type = DEVICE_PATH_ROOT },\n");
 	}
 
+	/* special case -- cpus don't have an @ */
+	if (tree->name && !strncmp(tree->name, "cpus", 4)){
+		fprintf(f, "\t.path = {.type=DEVICE_PATH_CPU},\n");
+	}
+
 	/* from the node names (tree->name) we derive the path */
 	path = index(tree->name, '@');
 	if (path && path[1]) {
 		path++;
-		if (!strncmp(tree->name, "cpu", 3)){
-			fprintf(f, "\t.path = {.type=DEVICE_PATH_CPU,{.cpu={ .id = 0x%s }}},\n", 
-				path);
-		}
 		if (!strncmp(tree->name, "bus", 3)){
 			fprintf(f, "\t.path = {.type=DEVICE_PATH_PCI_BUS,{.pci_bus={ .bus = 0x%s }}},\n", 
 				path);

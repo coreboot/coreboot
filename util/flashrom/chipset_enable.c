@@ -571,6 +571,26 @@ static int enable_flash_amd8111(struct pci_dev *dev, const char *name)
 	return 0;
 }
 
+static int enable_flash_sb600(struct pci_dev *dev, const char *name)
+{
+	uint32_t old, new;
+	uint8_t reg;
+
+	/* Clear ROM Protect 0-3 */
+	for (reg = 0x50; reg < 0x60; reg+=4) {
+		old = pci_read_long(dev, reg);
+		new = old & 0xFFFFFFFC;
+		if (new != old) {
+			pci_write_byte(dev, reg, new);
+			if (pci_read_long(dev, reg) != new) {
+				printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x50, new, name);
+			}
+		}
+	}
+
+	return 0;
+}
+
 static int enable_flash_ck804(struct pci_dev *dev, const char *name)
 {
 	uint8_t old, new;
@@ -744,6 +764,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x1039, 0x0008, "SiS5595",		enable_flash_sis5595},
 	{0x1022, 0x2080, "AMD CS5536",		enable_flash_cs5536},
 	{0x1022, 0x7468, "AMD8111",		enable_flash_amd8111},
+	{0x1002, 0x438D, "ATI(AMD) SB600",	enable_flash_sb600},
 	{0x10B9, 0x1533, "ALi M1533",		enable_flash_ali_m1533},
 	{0x10de, 0x0050, "NVIDIA CK804",	enable_flash_ck804}, /* LPC */
 	{0x10de, 0x0051, "NVIDIA CK804",	enable_flash_ck804}, /* Pro */

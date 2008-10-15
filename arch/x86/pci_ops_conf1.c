@@ -112,7 +112,6 @@ void pci_conf1_write_config32(u32 bdf, int where, u32 value)
  */
 
 int pci_conf1_find_on_bus(u16 bus, u16 vid, u16 did, u32 *busdevfn)
-
 {
 	u16 devfn;
 	u32 val;

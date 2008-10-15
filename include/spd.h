@@ -105,9 +105,11 @@
 #define SPD_tRAS                            SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY
 #define SPD_BANK_DENSITY                    SPD_DENSITY_OF_EACH_ROW_ON_MODULE
 #define SPD_ADDRESS_CMD_HOLD                SPD_CMD_SIGNAL_INPUT_HOLD_TIME
-#define SPD_tRC				    41	/* SDRAM Device Minimum Active to Active/Auto Refresh Time (tRC) */
-#define SPD_tRFC			    42	/* SDRAM Device Minimum Auto Refresh to Active/Auto Refresh (tRFC) */
-
+#define SPD_tWR				    SPD_WRITE_RECOVERY_TIME
+#define SPD_tWTR			    SPD_INT_WRITE_TO_READ_DELAY
+#define SPD_tRTP			    SPD_INT_READ_TO_PRECHARGE_DELAY
+#define SPD_tRC				    SPD_MIN_ACT_TO_ACT_AUTO_REFRESH
+#define SPD_tRFC			    SPD_MIN_AUTO_REFRESH_TO_ACT
 
 /* SPD_MEMORY_TYPE values. */
 #define SPD_MEMORY_TYPE_FPM_DRAM         1

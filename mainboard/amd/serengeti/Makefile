@@ -22,7 +22,6 @@
 			
 STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
-			$(src)/mainboard/$(MAINBOARDDIR)/option_table.c \
 			$(src)/arch/x86/stage1_mtrr.c \
 			$(src)/arch/x86/amd/model_fxx/dualcore_id.c \
 			$(src)/arch/x86/amd/model_fxx/stage1.c \
@@ -32,6 +31,8 @@ STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/southbridge/amd/amd8111/stage1_smbus.c \
 			$(src)/southbridge/amd/amd8111/stage1_ctrl.c \
 			$(src)/southbridge/amd/amd8111/stage1_enable_rom.c \
+
+STAGE0_DYNAMIC_SRC :=	$(obj)/mainboard/$(MAINBOARDDIR)/option_table.c
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/raminit.c \

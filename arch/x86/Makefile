@@ -147,6 +147,7 @@ STAGE0_SRC := $(patsubst %,$(src)/lib/%,$(STAGE0_LIB_SRC)) \
 	      $(STAGE0_MAINBOARD_SRC) $(STAGE0_CHIPSET_SRC)
 
 STAGE0_OBJ := $(patsubst $(src)/%.c,$(obj)/%.o,$(STAGE0_SRC)) \
+	      $(patsubst $(obj)/%.c,$(obj)/%.o,$(STAGE0_DYNAMIC_SRC)) \
 	      $(patsubst %,$(obj)/arch/x86/%,$(STAGE0_CAR_OBJ))
 
 $(obj)/stage0.o $(obj)/stage0.init $(obj)/stage0-prefixed.o: $(STAGE0_OBJ)

@@ -71,11 +71,21 @@ void init_archive(struct mem_file *archive)
 /*
  * The name is slightly misleading because this is the initial stack pointer,
  * not the address of the first element on the stack.
+ * NOTE: This function is very processor specific.
  */
 void *bottom_of_stack(void)
 {
-	/* -4 because CONFIG_CARBASE + CONFIG_CARSIZE - 4 is initial %esp */
-	return (void *)(CONFIG_CARBASE + CONFIG_CARSIZE - 4);
+	u32 onstack = (u32)&onstack;
+
+	/* Check whether the variable onstack is inside the CAR stack area.
+	 * If it is, assume we're still in CAR or the stack has not moved.
+	 * Otherwise return initial %esp for the RAM-based stack location.
+	 */
+	if ((onstack >= CAR_STACK_BASE - CAR_STACK_SIZE) &&
+	    (onstack < CAR_STACK_BASE))
+		return (void *)CAR_STACK_BASE;
+	/* OK, so current %esp is not inside the CAR stack area. */
+	return (void *)RAM_STACK_BASE;
 }
 
 struct global_vars *global_vars(void)

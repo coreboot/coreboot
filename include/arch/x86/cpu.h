@@ -266,11 +266,17 @@ EXPORT_SYMBOL(bottom_of_stack);
 struct global_vars * global_vars(void);
 EXPORT_SYMBOL(global_vars);
 
+#define CAR_STACK_BASE (CONFIG_CARBASE + CONFIG_CARSIZE - 4)
+#define RAM_STACK_BASE 0x88ffc
+
 #ifdef CONFIG_CONSOLE_BUFFER
 #define PRINTK_BUF_SIZE_CAR (CONFIG_CARSIZE / 2)
 #define PRINTK_BUF_ADDR_CAR CONFIG_CARBASE
 #define PRINTK_BUF_SIZE_RAM 65536
 #define PRINTK_BUF_ADDR_RAM 0x90000
+#define CAR_STACK_SIZE ((CONFIG_CARSIZE / 2) - 4)
+#else
+#define CAR_STACK_SIZE (CONFIG_CARSIZE - 4)
 #endif
 
 /* resource maps. These started out as special for the K8 but now have more general usage */

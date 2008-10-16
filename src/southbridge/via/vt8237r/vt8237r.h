@@ -93,6 +93,10 @@ struct vt8237_network_rom {
 	u8 cfg_c;
 	u8 cfg_d;
 	u8 checksum;
-} __attribute__ ((packed));
+}
+#if defined(__GNUC__)
+__attribute__ ((packed))
+#endif
+;
 
 #endif

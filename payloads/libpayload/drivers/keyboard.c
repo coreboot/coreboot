@@ -299,7 +299,7 @@ static void keyboard_set_mode(unsigned char mode)
 /**
  * Set keyboard layout
  * @param country string describing the keyboard layout language. 
- * Valid values are "en", "de".
+ * Valid values are "us", "de".
  */
 
 int keyboard_set_layout(char *country)

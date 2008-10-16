@@ -29,6 +29,7 @@
 
 #include <config.h>
 #include <libpayload.h>
+#include <usb/usb.h>
 
 void console_init(void)
 {
@@ -77,6 +78,11 @@ int puts(const char *s)
 
 int havekey(void)
 {
+#ifdef CONFIG_USB_HID
+	usb_poll();
+	if (usbhid_havechar())
+		return 1;
+#endif
 #ifdef CONFIG_SERIAL_CONSOLE
 	if (serial_havechar())
 		return 1;
@@ -95,6 +101,11 @@ int havekey(void)
 int getchar(void)
 {
 	while (1) {
+#ifdef CONFIG_USB_HID
+		usb_poll();
+		if (usbhid_havechar())
+			return usbhid_getchar();
+#endif
 #ifdef CONFIG_SERIAL_CONSOLE
 		if (serial_havechar())
 			return serial_getchar();

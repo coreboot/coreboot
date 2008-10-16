@@ -40,6 +40,9 @@ static int uhci_packet (usbdev_t *dev, int endp, int pid, int toggle,
 static int uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize);
 static int uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
+static void* uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
+static void uhci_destroy_intr_queue (endpoint_t *ep, void *queue);
+static u8* uhci_poll_intr_queue (void *queue);
 
 #if 0
 /* dump uhci */
@@ -119,7 +122,14 @@ uhci_init (pcidev_t addr)
 	controller->packet = uhci_packet;
 	controller->bulk = uhci_bulk;
 	controller->control = uhci_control;
-	UHCI_INST (controller)->roothub = &(controller->devices[0]);
+	controller->create_intr_queue = uhci_create_intr_queue;
+	controller->destroy_intr_queue = uhci_destroy_intr_queue;
+	controller->poll_intr_queue = uhci_poll_intr_queue;
+	for (i = 1; i < 128; i++) {
+		controller->devices[i] = 0;
+	}
+	init_device_entry (controller, 0);
+	UHCI_INST (controller)->roothub = controller->devices[0];
 
 	controller->bus_address = addr;
 	controller->reg_base = pci_read_config32 (controller->bus_address, 0x20) & ~1;	/* ~1 clears the register type indicator that is set to 1 for IO space */
@@ -134,9 +144,26 @@ uhci_init (pcidev_t addr)
 	memset (UHCI_INST (controller)->framelistptr, 0,
 		1024 * sizeof (flistp_t));
 
+	/* According to the *BSD UHCI code, this one is needed on some
+	   PIIX chips, because otherwise they misbehave. It must be
+	   added to the last chain.
+
+	   FIXME: this leaks, if the driver should ever be reinited
+	          for some reason. Not a problem now.
+	   */
+	td_t *antiberserk = memalign(16, sizeof(td_t));
+	memset(antiberserk, 0, sizeof(td_t));
+
+	UHCI_INST (controller)->qh_prei = memalign (16, sizeof (qh_t));
 	UHCI_INST (controller)->qh_intr = memalign (16, sizeof (qh_t));
 	UHCI_INST (controller)->qh_data = memalign (16, sizeof (qh_t));
 	UHCI_INST (controller)->qh_last = memalign (16, sizeof (qh_t));
+
+	UHCI_INST (controller)->qh_prei->headlinkptr.ptr =
+		virt_to_phys (UHCI_INST (controller)->qh_intr);
+	UHCI_INST (controller)->qh_prei->headlinkptr.queue_head = 1;
+	UHCI_INST (controller)->qh_prei->elementlinkptr.ptr = 0;
+	UHCI_INST (controller)->qh_prei->elementlinkptr.terminate = 1;
 
 	UHCI_INST (controller)->qh_intr->headlinkptr.ptr =
 		virt_to_phys (UHCI_INST (controller)->qh_data);
@@ -150,23 +177,20 @@ uhci_init (pcidev_t addr)
 	UHCI_INST (controller)->qh_data->elementlinkptr.ptr = 0;
 	UHCI_INST (controller)->qh_data->elementlinkptr.terminate = 1;
 
-	UHCI_INST (controller)->qh_last->headlinkptr.ptr = 0;
+	UHCI_INST (controller)->qh_last->headlinkptr.ptr = virt_to_phys (UHCI_INST (controller)->qh_data);
 	UHCI_INST (controller)->qh_last->headlinkptr.terminate = 1;
-	UHCI_INST (controller)->qh_last->elementlinkptr.ptr = 0;
+	UHCI_INST (controller)->qh_last->elementlinkptr.ptr = virt_to_phys (antiberserk);
 	UHCI_INST (controller)->qh_last->elementlinkptr.terminate = 1;
 
 	for (i = 0; i < 1024; i++) {
 		UHCI_INST (controller)->framelistptr[i].ptr =
-			virt_to_phys (UHCI_INST (controller)->qh_intr);
+			virt_to_phys (UHCI_INST (controller)->qh_prei);
 		UHCI_INST (controller)->framelistptr[i].terminate = 0;
 		UHCI_INST (controller)->framelistptr[i].queue_head = 1;
 	}
-	for (i = 1; i < 128; i++) {
-		init_device_entry (controller, i);
-	}
-	controller->devices[0].controller = controller;
-	controller->devices[0].init = uhci_rh_init;
-	controller->devices[0].init (&controller->devices[0]);
+	controller->devices[0]->controller = controller;
+	controller->devices[0]->init = uhci_rh_init;
+	controller->devices[0]->init (controller->devices[0]);
 	uhci_reset (controller);
 	return controller;
 }
@@ -181,6 +205,7 @@ uhci_shutdown (hci_t *controller)
 						  roothub);
 	uhci_reg_mask16 (controller, USBCMD, 0, 0);	// stop work
 	free (UHCI_INST (controller)->framelistptr);
+	free (UHCI_INST (controller)->qh_prei);
 	free (UHCI_INST (controller)->qh_intr);
 	free (UHCI_INST (controller)->qh_data);
 	free (UHCI_INST (controller)->qh_last);
@@ -205,12 +230,12 @@ uhci_stop (hci_t *controller)
 static td_t *
 wait_for_completed_qh (hci_t *controller, qh_t *qh)
 {
-	int timeout = 1000;	/* max 30 ms. */
+	int timeout = 1000000;	/* max 30 ms. */
 	void *current = GET_TD (qh->elementlinkptr.ptr);
 	while ((qh->elementlinkptr.terminate == 0) && (timeout-- > 0)) {
 		if (current != GET_TD (qh->elementlinkptr.ptr)) {
 			current = GET_TD (qh->elementlinkptr.ptr);
-			timeout = 1000;
+			timeout = 1000000;
 		}
 		uhci_reg_mask16 (controller, USBSTS, ~0, 0);	// clear resettable registers
 		udelay (30);
@@ -447,6 +472,130 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 	ep->toggle = toggle;
 	free (tds);
 	return 0;
+}
+
+typedef struct {
+	qh_t *qh;
+	td_t *tds;
+	td_t *last_td;
+	u8 *data;
+	int lastread;
+	int total;
+	int reqsize;
+} intr_q;
+
+/* create and hook-up an intr queue into device schedule */
+static void*
+uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming)
+{
+	u8 *data = malloc(reqsize*reqcount);
+	td_t *tds = memalign(16, sizeof(td_t) * reqcount);
+	qh_t *qh = memalign(16, sizeof(qh_t));
+
+	qh->elementlinkptr.ptr = virt_to_phys(tds);
+	qh->elementlinkptr.terminate = 0;
+
+	intr_q *q = malloc(sizeof(intr_q));
+	q->qh = qh;
+	q->tds = tds;
+	q->data = data;
+	q->lastread = 0;
+	q->total = reqcount;
+	q->reqsize = reqsize;
+	q->last_td = &tds[reqcount - 1];
+
+	memset (tds, 0, sizeof (td_t) * reqcount);
+	int i;
+	for (i = 0; i < reqcount; i++) {
+		tds[i].ptr = virt_to_phys (&tds[i + 1]);
+		tds[i].terminate = 0;
+		tds[i].queue_head = 0;
+		tds[i].depth_first = 0;
+
+		tds[i].pid = ep->direction;
+		tds[i].dev_addr = ep->dev->address;
+		tds[i].endp = ep->endpoint & 0xf;
+		tds[i].maxlen = maxlen (reqsize);
+		tds[i].counter = 0;
+		tds[i].data_toggle = ep->toggle & 1;
+		tds[i].lowspeed = ep->dev->lowspeed;
+		tds[i].bufptr = virt_to_phys (data);
+		tds[i].status_active = 1;
+		ep->toggle ^= 1;
+		data += reqsize;
+	}
+	tds[reqcount - 1].ptr = 0;
+	tds[reqcount - 1].terminate = 1;
+	tds[reqcount - 1].queue_head = 0;
+	tds[reqcount - 1].depth_first = 0;
+	for (i = reqtiming; i < 1024; i += reqtiming) {
+		/* FIXME: wrap in another qh, one for each occurance of the qh in the framelist */
+		qh->headlinkptr.ptr = UHCI_INST (ep->dev->controller)->framelistptr[i].ptr;
+		qh->headlinkptr.terminate = 0;
+		UHCI_INST (ep->dev->controller)->framelistptr[i].ptr = virt_to_phys(qh);
+		UHCI_INST (ep->dev->controller)->framelistptr[i].terminate = 0;
+		UHCI_INST (ep->dev->controller)->framelistptr[i].queue_head = 1;
+	}
+	return q;
+}
+
+/* remove queue from device schedule, dropping all data that came in */
+static void
+uhci_destroy_intr_queue (endpoint_t *ep, void *q_)
+{
+	intr_q *q = (intr_q*)q_;
+	u32 val = virt_to_phys (q->qh);
+	u32 end = virt_to_phys (UHCI_INST (ep->dev->controller)->qh_intr);
+	int i;
+	for (i=0; i<1024; i++) {
+		u32 oldptr = 0;
+		u32 ptr = UHCI_INST (ep->dev->controller)->framelistptr[i].ptr;
+		while (ptr != end) {
+			if (((qh_t*)phys_to_virt(ptr))->elementlinkptr.ptr == val) {
+				((qh_t*)phys_to_virt(oldptr))->headlinkptr.ptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr.ptr;
+				free(phys_to_virt(ptr));
+				break;
+			}
+			oldptr = ptr;
+			ptr = ((qh_t*)phys_to_virt(ptr))->headlinkptr.ptr;
+		}
+	}
+	free(q->data);
+	free(q->tds);
+	free(q->qh);
+	free(q);
+}
+
+/* read one intr-packet from queue, if available. extend the queue for new input.
+   return NULL if nothing new available.
+   Recommended use: while (data=poll_intr_queue(q)) process(data);
+ */
+static u8*
+uhci_poll_intr_queue (void *q_)
+{
+	intr_q *q = (intr_q*)q_;
+	if (q->tds[q->lastread].status_active == 0) {
+		/* FIXME: handle errors */
+		int current = q->lastread;
+		int previous;
+		if (q->lastread == 0) {
+			previous = q->total - 1;
+		} else {
+			previous = q->lastread - 1;
+		}
+		q->tds[previous].status = 0;
+		q->tds[previous].ptr = 0;
+		q->tds[previous].terminate = 1;
+		if (q->last_td != &q->tds[previous]) {
+			q->last_td->ptr = virt_to_phys(&q->tds[previous]);
+			q->last_td->terminate = 0;
+			q->last_td = &q->tds[previous];
+		}
+		q->tds[previous].status_active = 1;
+		q->lastread = (q->lastread + 1) % q->total;
+		return &q->data[current*q->reqsize];
+	}
+	return NULL;
 }
 
 void

@@ -69,7 +69,8 @@ static const char *msc_protocol_strings[0x51] = {
 static void
 usb_msc_destroy (usbdev_t *dev)
 {
-	usbdisk_remove (dev);
+	if (usbdisk_remove)
+		usbdisk_remove (dev);
 	free (dev->data);
 	dev->data = 0;
 }
@@ -393,5 +394,6 @@ usb_msc_init (usbdev_t *dev)
 	printf ("\n");
 
 	read_capacity (dev);
-	usbdisk_create (dev);
+	if (usbdisk_create)
+		usbdisk_create (dev);
 }

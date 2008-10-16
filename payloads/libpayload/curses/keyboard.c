@@ -38,6 +38,7 @@
  */
 
 #include <config.h>
+#include <usb/usb.h>
 #include "local.h"
 
 static int _halfdelay = 0;
@@ -145,6 +146,14 @@ static int curses_getchar(int delay)
 	unsigned short c;
 
 	do {
+#ifdef CONFIG_USB_HID
+		usb_poll();
+		if ((curses_flags & F_ENABLE_CONSOLE) &&
+		    usbhid_havechar()) {
+			c = usbhid_getchar();
+			if (c != 0) return c;
+		}
+#endif
 #ifdef CONFIG_PC_KEYBOARD
 		if ((curses_flags & F_ENABLE_CONSOLE) &&
 		    keyboard_havechar()) {

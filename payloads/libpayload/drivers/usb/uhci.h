@@ -111,7 +111,7 @@ typedef struct {
 
      typedef struct uhci {
 	     flistp_t *framelistptr;
-	     qh_t *qh_intr, *qh_data, *qh_last;
+	     qh_t *qh_prei, *qh_intr, *qh_data, *qh_last;
 	     usbdev_t *roothub;
      } uhci_t;
 

@@ -88,17 +88,13 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 	} else
 		return;
 	int devno = RH_INST (dev)->port[offset];
-	if (devno != -1) {
-		dev->controller->devices[devno].destroy (&dev->controller->
-							 devices[devno]);
-		init_device_entry (dev->controller, devno);
+	if ((dev->controller->devices[devno] != 0) && (devno != -1)) {
+		usb_detach_device(dev->controller, devno);
 		RH_INST (dev)->port[offset] = -1;
 	}
 	uhci_reg_mask16 (dev->controller, portsc, ~0, (1 << 3) | (1 << 2));	// clear port state change, enable port
 
 	if ((uhci_reg_read16 (dev->controller, portsc) & 1) != 0) {
-		int newdev;
-		usbdev_t *newdev_t;
 		// device attached
 
 		uhci_rh_disable_port (dev, port);
@@ -106,18 +102,8 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 
 		int lowspeed =
 			(uhci_reg_read16 (dev->controller, portsc) >> 8) & 1;
-		printf ("%sspeed device\n", (lowspeed == 1) ? "low" : "full");
 
-		newdev = set_address (dev->controller, lowspeed);
-		if (newdev == -1)
-			return;
-		newdev_t = &dev->controller->devices[newdev];
-		RH_INST (dev)->port[offset] = newdev;
-		newdev_t->address = newdev;
-		newdev_t->hub = dev->address;
-		newdev_t->port = portsc;
-		// determine responsible driver
-		newdev_t->init (newdev_t);
+		RH_INST (dev)->port[offset] = usb_attach_device(dev->controller, dev->address, portsc, lowspeed);
 	}
 }
 

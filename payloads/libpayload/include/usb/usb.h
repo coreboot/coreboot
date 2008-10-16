@@ -114,7 +114,7 @@ struct usbdev_hc {
 	struct usbdev_hc *next;
 	pcidev_t bus_address;
 	u32 reg_base;
-	usbdev_t devices[128];	// dev 0 is root hub, 127 is last addressable
+	usbdev_t *devices[128];	// dev 0 is root hub, 127 is last addressable
 	void (*start) (hci_t *controller);
 	void (*stop) (hci_t *controller);
 	void (*reset) (hci_t *controller);
@@ -124,6 +124,9 @@ struct usbdev_hc {
 	int (*bulk) (endpoint_t *ep, int size, u8 *data, int finalize);
 	int (*control) (usbdev_t *dev, pid_t pid, int dr_length,
 			void *devreq, int data_length, u8 *data);
+	void* (*create_intr_queue) (endpoint_t *ep, int reqsize, int reqcount, int reqtiming);
+	void (*destroy_intr_queue) (endpoint_t *ep, void *queue);
+	u8* (*poll_intr_queue) (void *queue);
 	void *instance;
 };
 
@@ -221,4 +224,6 @@ gen_bmRequestType (dev_req_dir dir, dev_req_type type, dev_req_recp recp)
 	return (dir << 7) | (type << 5) | recp;
 }
 
+void usb_detach_device(hci_t *controller, int devno);
+int usb_attach_device(hci_t *controller, int hubaddress, int port, int lowspeed);
 #endif

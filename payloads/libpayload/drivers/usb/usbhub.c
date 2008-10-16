@@ -53,9 +53,7 @@ usb_hub_destroy (usbdev_t *dev)
 static void
 usb_hub_scanport (usbdev_t *dev, int port)
 {
-	int newdev;
 	unsigned short buf[2];
-	usbdev_t *newdev_t;
 
 	get_status (dev, port, DR_PORT, 4, buf);
 	int portstatus = ((buf[0] & 1) == 0);
@@ -67,9 +65,7 @@ usb_hub_scanport (usbdev_t *dev, int port)
 		int devno = HUB_INST (dev)->ports[port];
 		if (devno == -1)
 			fatal ("FATAL: illegal devno!\n");
-		dev->controller->devices[devno].destroy (&dev->controller->
-							 devices[devno]);
-		init_device_entry (dev->controller, devno);
+		usb_detach_device(dev->controller, devno);
 		HUB_INST (dev)->ports[port] = -1;
 		return;
 	}
@@ -80,17 +76,7 @@ usb_hub_scanport (usbdev_t *dev, int port)
 	get_status (dev, port, DR_PORT, 4, buf);
 	int lowspeed = (buf[0] >> 9) & 1;
 
-	newdev = set_address (dev->controller, lowspeed);
-	if (newdev == -1)
-		return;
-	newdev_t = &dev->controller->devices[newdev];
-
-	HUB_INST (dev)->ports[port] = newdev;
-	newdev_t->address = newdev;
-	newdev_t->hub = dev->address;
-	newdev_t->port = port;
-	// determine responsible driver
-	newdev_t->init (newdev_t);
+	HUB_INST (dev)->ports[port] = usb_attach_device(dev->controller, dev->address, port, lowspeed);
 }
 
 static int

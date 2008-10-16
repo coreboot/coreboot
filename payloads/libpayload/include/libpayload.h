@@ -114,6 +114,8 @@ void rtc_read_clock(struct tm *tm);
  * @{
  */
 int usb_initialize(void);                                                      
+int usbhid_havechar(void);
+int usbhid_getchar(void);
 /** @} */
 
 /**

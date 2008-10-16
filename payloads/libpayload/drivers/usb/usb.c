@@ -75,8 +75,8 @@ usb_poll ()
 	while (controller != 0) {
 		int i;
 		for (i = 0; i < 128; i++) {
-			if (controller->devices[i].address != -1) {
-				controller->devices[i].poll (&controller->
+			if (controller->devices[i] != 0) {
+				controller->devices[i]->poll (controller->
 							     devices[i]);
 			}
 		}
@@ -87,12 +87,15 @@ usb_poll ()
 void
 init_device_entry (hci_t *controller, int i)
 {
-	controller->devices[i].controller = controller;
-	controller->devices[i].address = -1;
-	controller->devices[i].hub = -1;
-	controller->devices[i].port = -1;
-	controller->devices[i].init = usb_nop_init;
-	controller->devices[i].init (&controller->devices[i]);
+	if (controller->devices[i] != 0)
+		printf("warning: device %d reassigned?\n", i);
+	controller->devices[i] = malloc(sizeof(usbdev_t));
+	controller->devices[i]->controller = controller;
+	controller->devices[i]->address = -1;
+	controller->devices[i]->hub = -1;
+	controller->devices[i]->port = -1;
+	controller->devices[i]->init = usb_nop_init;
+	controller->devices[i]->init (controller->devices[i]);
 }
 
 void
@@ -208,7 +211,7 @@ get_free_address (hci_t *controller)
 {
 	int i;
 	for (i = 1; i < 128; i++) {
-		if (controller->devices[i].address != i)
+		if (controller->devices[i] == 0)
 			return i;
 	}
 	printf ("no free address found\n");
@@ -232,7 +235,8 @@ set_address (hci_t *controller, int lowspeed)
 	dr.wIndex = 0;
 	dr.wLength = 0;
 
-	usbdev_t *dev = &controller->devices[adr];
+	init_device_entry(controller, adr);
+	usbdev_t *dev = controller->devices[adr];
 	// dummy values for registering the address
 	dev->address = 0;
 	dev->lowspeed = lowspeed;
@@ -325,7 +329,7 @@ set_address (hci_t *controller, int lowspeed)
 	if (class == hub_device) {
 		printf ("hub found\n");
 #ifdef CONFIG_USB_HUB
-		controller->devices[adr].init = usb_hub_init;
+		controller->devices[adr]->init = usb_hub_init;
 #else
 		printf ("support not compiled in\n");
 #endif
@@ -333,7 +337,7 @@ set_address (hci_t *controller, int lowspeed)
 	if (class == hid_device) {
 		printf ("HID found\n");
 #ifdef CONFIG_USB_HID
-		controller->devices[adr].init = usb_hid_init;
+		controller->devices[adr]->init = usb_hid_init;
 #else
 		printf ("support not compiled in\n");
 #endif
@@ -341,10 +345,35 @@ set_address (hci_t *controller, int lowspeed)
 	if (class == msc_device) {
 		printf ("MSC found\n");
 #ifdef CONFIG_USB_MSC
-		controller->devices[adr].init = usb_msc_init;
+		controller->devices[adr]->init = usb_msc_init;
 #else
 		printf ("support not compiled in\n");
 #endif
 	}
 	return adr;
+}
+
+void
+usb_detach_device(hci_t *controller, int devno)
+{
+	controller->devices[devno]->destroy (controller->devices[devno]);
+	free(controller->devices[devno]);
+	controller->devices[devno] = 0;
+}
+
+int
+usb_attach_device(hci_t *controller, int hubaddress, int port, int lowspeed)
+{
+	printf ("%sspeed device\n", (lowspeed == 1) ? "low" : "full");
+	int newdev = set_address (controller, lowspeed);
+	if (newdev == -1)
+		return -1;
+	usbdev_t *newdev_t = controller->devices[newdev];
+
+	newdev_t->address = newdev;
+	newdev_t->hub = hubaddress;
+	newdev_t->port = port;
+	// determine responsible driver - current done in set_address
+	newdev_t->init (newdev_t);
+	return newdev;
 }

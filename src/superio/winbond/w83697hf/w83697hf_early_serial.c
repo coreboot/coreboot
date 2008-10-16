@@ -35,6 +35,16 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, port);
 }
 
+static void w83697hf_set_clksel_48(device_t dev)
+{
+	u16 port = dev >> 8;
+	pnp_enter_ext_func_mode(dev);
+	outb(0x24, port);
+	/* Set the clock input to 48Mhz */
+	outb(inb(port+1)|0x40, port+1);
+	pnp_exit_ext_func_mode(dev);
+}
+
 static void w83697hf_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);

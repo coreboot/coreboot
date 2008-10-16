@@ -162,9 +162,16 @@ makerule documentation
 	action	"doxygen corebootDoc.config"
 end
 
+# Yes, the rule doesn't seem to make sense, but multiple images could try to
+# create a romcc binary at the same time, clobbering each other.
+# Our makefile architecture won't allow us to easily have the romcc target
+# in the main makefile, so keep it here and move the race condition winner
+# in place. That way, romcc may get compiled twice, but the binary will always
+# be in a correct and valid state if it exists because the move is atomic.
 makerule ../romcc   
 	depends	"$(TOP)/util/romcc/romcc.c" 
-	action	"$(HOSTCC) -g $(HOSTCFLAGS) $< -o $@"
+	action	"$(HOSTCC) -g $(HOSTCFLAGS) $< -o romcc.tmpfile"
+	action	"mv romcc.tmpfile $@"
 end
 
 makerule build_opt_tbl   

@@ -26,6 +26,7 @@
 #include <macros.h>
 #include <cpu.h>
 #include <amd/k8/k8.h>
+#include <stage1.h>
 
 /**
  * Set the MTRR for initial ram access. 
@@ -73,4 +74,5 @@ void disable_car(void)
 	/* we're now running in ram. Although this will be called again, it does no harm to call it here. */
 	set_init_ram_access();
 	banner(BIOS_DEBUG, "disable_car: done");
+	stage1_phase3();
 }

@@ -759,7 +759,7 @@ Stage 1: C, in arch/{architecture}
 \end_layout
 
 \begin_layout Standard
-Initial entry point for stage 1 is arch/{architecture}/stage1.c:stage1_main().
+Initial entry point for stage 1 is arch/{architecture}/stage1.c:stage1_phase1().
 \end_layout
 
 \begin_layout Standard

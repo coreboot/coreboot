@@ -30,6 +30,7 @@
 #include <mc146818rtc.h>
 #include <cpu.h>
 #include <multiboot.h>
+#include <stage1.h>
 
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
 /* ah, well, what a mess! This is a hard code. FIX ME but how? 
@@ -154,28 +155,12 @@ static int run_address_multiboot(void *f)
  * that we are restarting after some sort of reconfiguration. Note that we could use it on geode but 
  * do not at present. 
  */
-void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
+void __attribute__((stdcall)) stage1_phase1(u32 bist, u32 init_detected)
 {
 	struct global_vars globvars;
 	int ret;
 	struct mem_file archive;
-	void *entry;
 	struct node_core_id me;
-#ifdef CONFIG_PAYLOAD_ELF_LOADER
-	struct mem_file result;
-	int elfboot_mem(struct lb_memory *mem, void *where, int size);
-
-	/* Why can't we statically init this hack? */
-	unsigned char faker[64];
-	struct lb_memory *mem = (struct lb_memory*) faker;
-
-	mem->tag = LB_TAG_MEMORY;
-	mem->size = 28;
-	mem->map[0].start.lo = mem->map[0].start.hi = 0;
-	mem->map[0].size.lo = (32*1024*1024);
-	mem->map[0].size.hi = 0;
-	mem->map[0].type = LB_MEM_RAM;
-#endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
 	post_code(POST_STAGE1_MAIN);
 
@@ -234,13 +219,76 @@ void __attribute__((stdcall)) stage1_main(u32 bist, u32 init_detected)
 
 	printk(BIOS_DEBUG, "Done RAM init code\n");
 
-	/* Turn off Cache-As-Ram */
-	disable_car();
+	/* Switch the stack location from CAR to RAM, rebuild the stack,
+	 * disable CAR and continue at stage1_phase3(). This is all wrapped in
+	 * stage1_phase2() to make the code easier to follow.
+	 * We will NEVER return.
+	 */
+	stage1_phase2();
 
+	/* If we reach this point, something went terribly wrong. */
+	die("The world is broken.\n");
+}
+
+/**
+ * This function is called to take care of switching and rebuilding the stack
+ * so that we can cope with processors which don't support a CAR area at low
+ * addresses where CAR could be copied to RAM without problems.
+ * This function handles everything related to switching off CAR and moving
+ * important data from CAR to RAM.
+ * 1.  Perform all work which can be done while CAR and RAM are both active.
+ *     That's mainly moving the printk buffer around.
+ * 2a. Optionally back up the new stack location (desirable for S3).
+ * 2b. Optionally rebuild the stack at another location.
+ * 2c. Switch stack pointer to the new stack if the stack was rebuilt.
+ * 3.  Disable CAR.
+ * 4.  Call or jump to stage1_phase3.
+ * Steps 2a-4 have to be done in asm. That's what the oddly named disable_car()
+ * function does.
+ *
+ * TODO: Some parts of the list above are not yet done, so the code will not
+ * yet work on C7.
+ */
+void stage1_phase2()
+{
 #ifdef CONFIG_CONSOLE_BUFFER
 	/* Move the printk buffer to PRINTK_BUF_ADDR_RAM */
 	printk_buffer_move((void *)PRINTK_BUF_ADDR_RAM, PRINTK_BUF_SIZE_RAM);
 #endif
+	/* Turn off Cache-As-Ram */
+	disable_car();
+
+	/* If we reach this point, something went terribly wrong. */
+	die("The world is broken.\n");
+}
+
+/**
+ * This function is the second part of the former stage1_main() after
+ * switching the stack and disabling CAR.
+ */
+void __attribute__((stdcall)) stage1_phase3()
+{
+	void *entry;
+	int ret;
+	struct mem_file archive;
+#ifdef CONFIG_PAYLOAD_ELF_LOADER
+	struct mem_file result;
+	int elfboot_mem(struct lb_memory *mem, void *where, int size);
+
+	/* Why can't we statically init this hack? */
+	unsigned char faker[64];
+	struct lb_memory *mem = (struct lb_memory*) faker;
+
+	mem->tag = LB_TAG_MEMORY;
+	mem->size = 28;
+	mem->map[0].start.lo = mem->map[0].start.hi = 0;
+	mem->map[0].size.lo = (32*1024*1024);
+	mem->map[0].size.hi = 0;
+	mem->map[0].type = LB_MEM_RAM;
+#endif /* CONFIG_PAYLOAD_ELF_LOADER */
+
+	// location and size of image.
+	init_archive(&archive);
 
 	entry = load_file_segments(&archive, "normal/stage2");
 	if (entry == (void *)-1)

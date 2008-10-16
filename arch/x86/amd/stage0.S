@@ -341,7 +341,7 @@ CAR_FAM10_ap_out:
 	pushl	%ebx
 	/* First parameter: bist */
 	pushl	%eax
-	call	stage1_main
+	call	stage1_phase1
 	/* We will not go back. */
 
 	movb	$0xAF, %al		/* Should never see this postcode */

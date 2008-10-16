@@ -24,6 +24,7 @@
 #include <amd_geodelx.h>
 #include <console.h>
 #include <msr.h>
+#include <stage1.h>
 
 static const struct msrinit msr_table[] = {
   /* Setup access to cache under 1MB. */
@@ -93,4 +94,5 @@ void disable_car(void)
 	banner(BIOS_DEBUG, "Disable_car: done wbinvd");
 	northbridge_init_early();
 	banner(BIOS_DEBUG, "disable_car: done");
+	stage1_phase3();
 }

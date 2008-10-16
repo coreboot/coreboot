@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <stage1.h>
+
 /* printk() will not yet output anything. */
 
 /** 
@@ -34,6 +36,7 @@ void stop_ap(void)
 
 void disable_car(void)
 {
+	stage1_phase3();
 }
 
 

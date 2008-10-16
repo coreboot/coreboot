@@ -393,6 +393,7 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = 0,
 };
 
+
 struct device_operations rs690_pcie = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
@@ -407,16 +408,94 @@ struct device_operations rs690_pcie = {
 	.ops_pci		 = &lops_pci,
 };
 
-/* not yet until we figure out how to handle gpp_configuration and port_enable  -- are they per port or per chip? Should they
- * be per port or per chip? 
-static struct pci_driver pcie_driver_dev7 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV7,
+/* the rest of these have no phase4_enable_disable; it is all managed by the above device. */
+struct device_operations rs690_pcie2 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
+			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV2}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = pci_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = pcie_init,
+	.ops_pci		 = &lops_pci,
 };
-static struct pci_driver pcie_driver_dev8 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV8,
+
+struct device_operations rs690_pcie3 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
+			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV3}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = pci_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = pcie_init,
+	.ops_pci		 = &lops_pci,
 };
-*/
+
+struct device_operations rs690_pcie4 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
+			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV4}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = pci_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = pcie_init,
+	.ops_pci		 = &lops_pci,
+};
+
+struct device_operations rs690_pcie5 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
+			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV5}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = pci_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = pcie_init,
+	.ops_pci		 = &lops_pci,
+};
+
+struct device_operations rs690_pcie6 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
+			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV6}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = pci_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = pcie_init,
+	.ops_pci		 = &lops_pci,
+};
+
+struct device_operations rs690_pcie7 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
+			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV7}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = pci_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = pcie_init,
+	.ops_pci		 = &lops_pci,
+};
+
+struct device_operations rs690_pcie8 = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
+			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV8}}},
+	.constructor		 = default_device_constructor,
+	.phase3_scan		 = pci_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = pcie_init,
+	.ops_pci		 = &lops_pci,
+};

@@ -29,7 +29,7 @@
 // #include <cpu.h>
 #include <tables.h>
 
-struct lb_memory *write_tables(void)
+void *write_tables(void)
 {
 	return arch_write_tables();
 }

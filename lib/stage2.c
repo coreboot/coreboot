@@ -41,8 +41,10 @@
  * TODO:
  * - Check whether this documentation is still correct. Improve it.
  */
-int stage2(void)
+void *stage2(void)
 {
+	void *mbi;
+
 	/* TODO: Add comment. */
 	void show_all_devs(void);
 
@@ -88,9 +90,9 @@ int stage2(void)
 
 	/* TODO: Add comment. */
 	post_code(POST_STAGE2_WRITE_TABLES);
-	write_tables();
+	mbi = write_tables();
 	show_all_devs();
 
-	return 0;
+	return mbi;
 }
 EXPORT_SYMBOL(stage2);

@@ -30,7 +30,7 @@
  * defined here. 
  */
 
-struct lb_memory *write_tables(void);
+void *write_tables(void);
 
 /* The coreboot table information is for conveying information
  * from the firmware to the loaded OS image.  Primarily this
@@ -270,7 +270,7 @@ struct	cmos_checksum {
 #define CHECKSUM_PCBIOS	1
 };
 
-struct lb_memory *arch_write_tables(void);
+void *arch_write_tables(void);
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end);

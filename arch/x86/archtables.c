@@ -59,7 +59,7 @@ void move_gdt(unsigned long newgdt)
 	printk(BIOS_DEBUG,"OK\n");
 }
 #endif
-struct lb_memory *arch_write_tables(void)
+void *arch_write_tables(void)
 {
 #if 0
 #if HAVE_MP_TABLE==1
@@ -68,6 +68,8 @@ struct lb_memory *arch_write_tables(void)
 #endif
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
+
+	void *mbi;
 
 	rom_table_start = 0xf0000;
 	rom_table_end =   0xf0000;
@@ -78,14 +80,6 @@ struct lb_memory *arch_write_tables(void)
 	low_table_end = 16;
 
 	post_code(POST_STAGE2_ARCH_WRITE_TABLES_ENTER);
-
-	/* The Multiboot information structure must be in 0xf0000 */
-	rom_table_end = write_multiboot_info(
-			      low_table_start, low_table_end,
-			      rom_table_start, rom_table_end);
-
-	/* FIXME: is this alignment needed for PIRQ table? */
-	rom_table_end = (rom_table_end + 1023) & ~1023;
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
 	/* we need to make a decision: create empty functions 
@@ -149,10 +143,17 @@ struct lb_memory *arch_write_tables(void)
 	move_gdt(low_table_end);
 	low_table_end += &gdt_end - &gdt;
 #endif
+
+	/* The Multiboot information structure */
+	mbi = rom_table_end;
+	rom_table_end = write_multiboot_info(
+			      low_table_start, low_table_end,
+			      rom_table_start, rom_table_end);
+
 	/* The coreboot table must be in 0-4K or 960K-1M */
 	write_coreboot_table(
 			      low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);
 
-	return get_lb_mem();
+	return mbi;
 }

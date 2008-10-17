@@ -147,10 +147,10 @@ int legacy(struct mem_file *archive, char *name, void *where, struct lb_memory *
 #endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
 
-static int run_address_multiboot(void *f)
+static int run_address_multiboot(void *f, struct multiboot_info *mbi)
 {
 	int ret, dummy;
-	__asm__ __volatile__ ("call *%4" : "=a" (ret), "=c" (dummy) : "a" (MB_MAGIC2), "b" (0xf0000), "c" (f) : "edx", "memory");
+	__asm__ __volatile__ ("call *%4" : "=a" (ret), "=c" (dummy) : "a" (MB_MAGIC2), "b" (mbi), "c" (f) : "edx", "memory");
 	return ret;
 }
 
@@ -281,6 +281,8 @@ void __attribute__((stdcall)) stage1_phase3()
 	void *entry;
 	int ret;
 	struct mem_file archive;
+	struct multiboot_info *mbi;
+
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
 	struct mem_file result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
@@ -303,8 +305,8 @@ void __attribute__((stdcall)) stage1_phase3()
 	entry = load_file_segments(&archive, "normal/stage2");
 	if (entry == (void *)-1)
 		die("FATAL: Failed loading stage2.");
-	ret = run_address(entry);
-	if (ret)
+	mbi = run_address(entry);
+	if (! mbi)
 		die("FATAL: Failed in stage2 code.");
 
 	printk(BIOS_DEBUG, "Stage2 code done.\n");
@@ -319,7 +321,7 @@ void __attribute__((stdcall)) stage1_phase3()
 	if (entry != (void*)-1) {
 		/* Final coreboot call before handing off to the payload. */
 		mainboard_pre_payload();
-		run_address_multiboot(entry);
+		run_address_multiboot(entry, mbi);
 	} else {
 		die("FATAL: No usable payload found.\n");
 	}

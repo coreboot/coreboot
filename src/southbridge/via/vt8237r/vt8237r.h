@@ -29,7 +29,11 @@
 #define VT8237R_SMBUS_IO_BASE		0x400
 /* 0x0 disabled, 0x2 reserved, 0xf = IRQ15 */
 #define VT8237R_ACPI_IRQ		0x9
+#if defined(__GNUC__)
 #define VT8237S_SPI_MEM_BASE		0xfed02000ULL
+#else
+#define VT8237S_SPI_MEM_BASE		0xfed02000UL
+#endif
 #define VT8237R_HPET_ADDR		0xfed00000ULL
 #define VT8237R_APIC_BASE		0xfec00000ULL
 

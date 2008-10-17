@@ -359,6 +359,11 @@ void vt8237_early_spi_init(void)
 	(*spireg) &= 0xff00;
 }
 
+/* This #if is special. ROMCC chokes on the (rom == NULL) comparison.
+ * Since the whole function is only called for one target and that target
+ * is compiled with GCC, hide the function from ROMCC and be happy.
+ */
+#if defined(__GNUC__)
 /*
  * Offset 0x58:
  * 31:20 	reserved
@@ -481,3 +486,4 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 	/* We are done, config will be used after PCIRST#. */
 	return 1;
 }
+#endif

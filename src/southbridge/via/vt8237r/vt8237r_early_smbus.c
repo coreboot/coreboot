@@ -336,6 +336,7 @@ void enable_rom_decode(void)
 	pci_write_config8(dev, 0x41, 0x7f);
 }
 
+#if defined(__GNUC__)
 void vt8237_early_spi_init(void)
 {
 	device_t dev;
@@ -358,6 +359,7 @@ void vt8237_early_spi_init(void)
 	spireg = (u16 *) (VT8237S_SPI_MEM_BASE + 0x6c);
 	(*spireg) &= 0xff00;
 }
+#endif
 
 /* This #if is special. ROMCC chokes on the (rom == NULL) comparison.
  * Since the whole function is only called for one target and that target

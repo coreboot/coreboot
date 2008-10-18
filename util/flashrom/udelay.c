@@ -61,6 +61,6 @@ void myusec_calibrate_delay()
 	timeusec = 1000000 * (end.tv_sec - start.tv_sec) +
 	    (end.tv_usec - start.tv_usec);
 	printf_debug("%ldM loops per second, 100 myus = %ld us. ",
-	    (unsigned long)micro, timeusec);
+		     (unsigned long)micro, timeusec);
 	printf("OK.\n");
 }

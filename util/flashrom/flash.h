@@ -54,7 +54,8 @@
 struct flashchip {
 	const char *vendor;
 	const char *name;
-	/* With 32bit manufacture_id and model_id we can cover IDs up to
+	/*
+	 * With 32bit manufacture_id and model_id we can cover IDs up to
 	 * (including) the 4th bank of JEDEC JEP106W Standard Manufacturer's
 	 * Identification code.
 	 */
@@ -64,7 +65,8 @@ struct flashchip {
 	int total_size;
 	int page_size;
 
-	/* Indicate if flashrom has been tested with this flash chip and if
+	/*
+	 * Indicate if flashrom has been tested with this flash chip and if
 	 * everything worked correctly.
 	 */
 	uint32_t tested;
@@ -149,7 +151,7 @@ extern struct flashchip flashchips[];
 
 #define CATALYST_ID		0x31	/* Catalyst */
 
-#define EMST_ID			0x8C	/* EMST / EFST Elite Flash Storage*/
+#define EMST_ID			0x8C	/* EMST / EFST Elite Flash Storage */
 #define EMST_F49B002UA		0x00
 
 /*
@@ -179,7 +181,8 @@ extern struct flashchip flashchips[];
 #define EN_29F002B		0x7F97
 
 #define FUJITSU_ID		0x04	/* Fujitsu */
-/* MBM29F400TC_STRANGE has a value not mentioned in the data sheet and we
+/*
+ * MBM29F400TC_STRANGE has a value not mentioned in the data sheet and we
  * try to read it from a location not mentioned in the data sheet.
  */
 #define MBM29F400TC_STRANGE	0x23
@@ -215,8 +218,9 @@ extern struct flashchip flashchips[];
 #define MX_25L3235D		0x2416
 #define MX_29F002		0xB0
 
-/* Programmable Micro Corp is listed in JEP106W in bank 2, so it should have
- * a 0x7F continuation code prefix.
+/*
+ * Programmable Micro Corp is listed in JEP106W in bank 2, so it should
+ * have a 0x7F continuation code prefix.
  */
 #define PMC_ID			0x7F9D	/* PMC */
 #define PMC_ID_NOPREFIX		0x9D	/* PMC, missing 0x7F prefix */
@@ -366,7 +370,6 @@ struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
 struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 			      uint16_t card_vendor, uint16_t card_device);
 
-
 /* board_enable.c */
 int board_flash_enable(const char *vendor, const char *part);
 void print_supported_boards(void);
@@ -416,7 +419,8 @@ extern char *lb_part, *lb_vendor;
 int probe_spi_rdid(struct flashchip *flash);
 int probe_spi_rdid4(struct flashchip *flash);
 int probe_spi_res(struct flashchip *flash);
-int spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
+int spi_command(unsigned int writecnt, unsigned int readcnt,
+		const unsigned char *writearr, unsigned char *readarr);
 void spi_write_enable();
 void spi_write_disable();
 int spi_chip_erase_c7(struct flashchip *flash);
@@ -443,14 +447,16 @@ int erase_en29f002a(struct flashchip *flash);
 int write_en29f002a(struct flashchip *flash, uint8_t *buf);
 
 /* ichspi.c */
-int ich_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
+int ich_spi_command(unsigned int writecnt, unsigned int readcnt,
+		    const unsigned char *writearr, unsigned char *readarr);
 int ich_spi_read(struct flashchip *flash, uint8_t * buf);
 int ich_spi_write(struct flashchip *flash, uint8_t * buf);
 
 /* it87spi.c */
 extern uint16_t it8716f_flashport;
 int it87xx_probe_spi_flash(const char *name);
-int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
+int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt,
+			const unsigned char *writearr, unsigned char *readarr);
 int it8716f_spi_chip_read(struct flashchip *flash, uint8_t *buf);
 int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf);
 

@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
  */
 
 /*
@@ -25,7 +24,6 @@
  * ST M50FLW040B (not yet tested)
  * ST M50FLW080A
  * ST M50FLW080B (not yet tested)
- *
  */
 
 #include <stdio.h>
@@ -93,7 +91,6 @@ int probe_stm50flw0x0x(struct flashchip *flash)
 	return 1;
 }
 
-
 static void wait_stm50flw0x0x(volatile uint8_t *bios)
 {
 	uint8_t id1;
@@ -114,50 +111,48 @@ static void wait_stm50flw0x0x(volatile uint8_t *bios)
 	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
 	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
 	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
-
 }
 
 /*
  * claus.gindhart@kontron.com
  * The ST M50FLW080B and STM50FLW080B chips have to be unlocked,
- * before you can erase them or write to them
-*/
+ * before you can erase them or write to them.
+ */
 int unlock_block_stm50flw0x0x(struct flashchip *flash, int offset)
 {
 	volatile uint8_t *flash_addr = flash->virtual_registers + 2;
 	const uint8_t unlock_sector = 0x00;
 	int j;
 
-	/* These chips have to be unlocked before you can erase
-	* them or write to them
-	* The size of the locking sectors depends on the type
-	* of chip
-	*
-	* Sometimes, the BIOS does this for you; so you propably
-	* dont need to worry about that
-	*/
+	/*
+	 * These chips have to be unlocked before you can erase them or write
+	 * to them. The size of the locking sectors depends on the type
+	 * of chip.
+	 *
+	 * Sometimes, the BIOS does this for you; so you propably
+	 * don't need to worry about that.
+	 */
 
-	/* check, if it's is a top/bottom-block with 4k-sectors */
-	/* TODO: What about the other types ? */
+	/* Check, if it's is a top/bottom-block with 4k-sectors. */
+	/* TODO: What about the other types? */
 	if ((offset == 0) ||
-		(offset == (flash->model_id == ST_M50FLW080A ? 0xE0000 : 0x10000))
-		|| (offset == 0xF0000)) {
+	    (offset == (flash->model_id == ST_M50FLW080A ? 0xE0000 : 0x10000))
+	    || (offset == 0xF0000)) {
 
 		// unlock each 4k-sector
 		for (j = 0; j < 0x10000; j += 0x1000) {
 			printf_debug("unlocking at 0x%x\n", offset + j);
 			*(flash_addr + offset + j) = unlock_sector;
-			if (*(flash_addr + offset + j) != unlock_sector)
-			{
-				printf("Cannot unlock sector @ 0x%x\n",offset + j);
+			if (*(flash_addr + offset + j) != unlock_sector) {
+				printf("Cannot unlock sector @ 0x%x\n",
+				       offset + j);
 				return -1;
 			}
 		}
 	} else {
 		printf_debug("unlocking at 0x%x\n", offset);
 		*(flash_addr + offset) = unlock_sector;
-		if (*(flash_addr + offset) != unlock_sector)
-		{
+		if (*(flash_addr + offset) != unlock_sector) {
 			printf("Cannot unlock sector @ 0x%x\n", offset);
 			return -1;
 		}
@@ -194,9 +189,9 @@ int erase_block_stm50flw0x0x(struct flashchip *flash, int offset)
 }
 
 int write_page_stm50flw0x0x(volatile uint8_t *bios, uint8_t *src,
-			   volatile uint8_t *dst, int page_size)
+			    volatile uint8_t *dst, int page_size)
 {
-	int i, rc=0;
+	int i, rc = 0;
 	volatile uint8_t *d = dst;
 	uint8_t *s = src;
 
@@ -236,18 +231,19 @@ int write_page_stm50flw0x0x(volatile uint8_t *bios, uint8_t *src,
  */
 int erase_stm50flw0x0x(struct flashchip *flash)
 {
-	int i,rc=0;
+	int i, rc = 0;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	printf("Erasing page:\n");
-	for (i = 0;(i < total_size / page_size) && (rc==0); i++) {
+	for (i = 0; (i < total_size / page_size) && (rc == 0); i++) {
 		printf
 		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		printf("%04d at address: 0x%08x ", i, i * page_size);
 		rc = unlock_block_stm50flw0x0x(flash, i * page_size);
-		if (!rc) rc = erase_block_stm50flw0x0x(flash, i * page_size);
+		if (!rc)
+			rc = erase_block_stm50flw0x0x(flash, i * page_size);
 	}
 	printf("\n");
 	protect_stm50flw0x0x(bios);
@@ -257,13 +253,13 @@ int erase_stm50flw0x0x(struct flashchip *flash)
 
 int write_stm50flw0x0x(struct flashchip *flash, uint8_t * buf)
 {
-	int i,rc=0;
+	int i, rc = 0;
 	int total_size = flash->total_size * 1024;
 	int page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	printf("Programming page: \n");
-	for (i = 0;(i < total_size / page_size) && (rc==0); i++) {
+	for (i = 0; (i < total_size / page_size) && (rc == 0); i++) {
 		printf
 		    ("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		printf("%04d at address: 0x%08x ", i, i * page_size);
@@ -282,9 +278,11 @@ int write_stm50flw0x0x(struct flashchip *flash, uint8_t * buf)
 		}
 
 		rc = unlock_block_stm50flw0x0x(flash, i * page_size);
-		if (!rc) rc = erase_block_stm50flw0x0x(flash, i * page_size);
-		if (!rc) write_page_stm50flw0x0x(bios, buf + i * page_size,
-				       bios + i * page_size, page_size);
+		if (!rc)
+			rc = erase_block_stm50flw0x0x(flash, i * page_size);
+		if (!rc)
+			write_page_stm50flw0x0x(bios, buf + i * page_size,
+					bios + i * page_size, page_size);
 	}
 	printf("\n");
 	protect_stm50flw0x0x(bios);

@@ -45,7 +45,6 @@
 flashbus_t flashbus = BUS_TYPE_LPC;
 void *spibar = NULL;
 
-
 static int enable_flash_ali_m1533(struct pci_dev *dev, const char *name)
 {
 	uint8_t tmp;
@@ -201,27 +200,30 @@ static int enable_flash_ich_dc(struct pci_dev *dev, const char *name)
 #define ICH_STRAP_PCI  0x02
 #define ICH_STRAP_LPC  0x03
 
-static int enable_flash_vt8237s_spi(struct pci_dev *dev, const char *name) {
+static int enable_flash_vt8237s_spi(struct pci_dev *dev, const char *name)
+{
 	uint32_t mmio_base;
 
 	mmio_base = (pci_read_long(dev, 0xbc)) << 8;
 	printf_debug("MMIO base at = 0x%x\n", mmio_base);
-	spibar =  mmap(NULL, 0x70, PROT_READ | PROT_WRITE, MAP_SHARED,
-				fd_mem, mmio_base);
+	spibar = mmap(NULL, 0x70, PROT_READ | PROT_WRITE, MAP_SHARED,
+		      fd_mem, mmio_base);
 
 	if (spibar == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
 		exit(1);
 	}
 
-	printf_debug("0x6c: 0x%04x     (CLOCK/DEBUG)\n", *(uint16_t *)(spibar + 0x6c));
+	printf_debug("0x6c: 0x%04x     (CLOCK/DEBUG)\n",
+		     *(uint16_t *) (spibar + 0x6c));
 
 	flashbus = BUS_TYPE_VIA_SPI;
 
 	return 0;
 }
 
-static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ich_generation)
+static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
+				   int ich_generation)
 {
 	int ret, i;
 	uint8_t old, new, bbs, buc;
@@ -229,7 +231,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ic
 	uint32_t tmp, gcs;
 	void *rcrb;
 	static const char *straps_names[] = { "reserved", "SPI", "PCI", "LPC" };
-	
+
 	/* Enable Flash Writes */
 	ret = enable_flash_ich_dc(dev, name);
 
@@ -238,7 +240,8 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ic
 	printf_debug("\nRoot Complex Register Block address = 0x%x\n", tmp);
 
 	/* Map RCBA to virtual memory */
-	rcrb = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem, (off_t)tmp);
+	rcrb = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem,
+		    (off_t) tmp);
 	if (rcrb == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
 		exit(1);
@@ -252,7 +255,8 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ic
 	printf_debug("BOOT BIOS Straps: 0x%x (%s)\n", bbs, straps_names[bbs]);
 
 	buc = *(volatile uint8_t *)(rcrb + 0x3414);
-	printf_debug("Top Swap : %s\n", (buc & 1)?"enabled (A16 inverted)":"not enabled");
+	printf_debug("Top Swap : %s\n",
+		     (buc & 1) ? "enabled (A16 inverted)" : "not enabled");
 
 	/* It seems the ICH7 does not support SPI and LPC chips at the same
 	 * time. At least not with our current code. So we prevent searching
@@ -275,7 +279,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ic
 		break;
 	case 9:
 	case 10:
-	default: /* Future version might behave the same */
+	default:		/* Future version might behave the same */
 		flashbus = BUS_TYPE_ICH9_SPI;
 		spibar_offset = 0x3800;
 		break;
@@ -285,31 +289,42 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ic
 	printf_debug("SPIBAR = 0x%x + 0x%04x\n", tmp, spibar_offset);
 
 	/* Assign Virtual Address */
-	spibar =  rcrb + spibar_offset;
+	spibar = rcrb + spibar_offset;
 
 	switch (flashbus) {
 	case BUS_TYPE_ICH7_SPI:
-		printf_debug("0x00: 0x%04x     (SPIS)\n", *(uint16_t *)(spibar + 0));
-		printf_debug("0x02: 0x%04x     (SPIC)\n", *(uint16_t *)(spibar + 2));
-		printf_debug("0x04: 0x%08x (SPIA)\n", *(uint32_t *)(spibar + 4));
-		for (i=0; i < 8; i++) {
+		printf_debug("0x00: 0x%04x     (SPIS)\n",
+			     *(uint16_t *) (spibar + 0));
+		printf_debug("0x02: 0x%04x     (SPIC)\n",
+			     *(uint16_t *) (spibar + 2));
+		printf_debug("0x04: 0x%08x (SPIA)\n",
+			     *(uint32_t *) (spibar + 4));
+		for (i = 0; i < 8; i++) {
 			int offs;
 			offs = 8 + (i * 8);
-			printf_debug("0x%02x: 0x%08x (SPID%d)\n", offs, *(uint32_t *)(spibar + offs), i);
-			printf_debug("0x%02x: 0x%08x (SPID%d+4)\n", offs+4, *(uint32_t *)(spibar + offs +4), i);
+			printf_debug("0x%02x: 0x%08x (SPID%d)\n", offs,
+				     *(uint32_t *) (spibar + offs), i);
+			printf_debug("0x%02x: 0x%08x (SPID%d+4)\n", offs + 4,
+				     *(uint32_t *) (spibar + offs + 4), i);
 		}
-		printf_debug("0x50: 0x%08x (BBAR)\n", *(uint32_t *)(spibar + 0x50));
-		printf_debug("0x54: 0x%04x     (PREOP)\n", *(uint16_t *)(spibar + 0x54));
-		printf_debug("0x56: 0x%04x     (OPTYPE)\n", *(uint16_t *)(spibar + 0x56));
-		printf_debug("0x58: 0x%08x (OPMENU)\n", *(uint32_t *)(spibar + 0x58));
-		printf_debug("0x5c: 0x%08x (OPMENU+4)\n", *(uint32_t *)(spibar + 0x5c));
-		for (i=0; i < 4; i++) {
+		printf_debug("0x50: 0x%08x (BBAR)\n",
+			     *(uint32_t *) (spibar + 0x50));
+		printf_debug("0x54: 0x%04x     (PREOP)\n",
+			     *(uint16_t *) (spibar + 0x54));
+		printf_debug("0x56: 0x%04x     (OPTYPE)\n",
+			     *(uint16_t *) (spibar + 0x56));
+		printf_debug("0x58: 0x%08x (OPMENU)\n",
+			     *(uint32_t *) (spibar + 0x58));
+		printf_debug("0x5c: 0x%08x (OPMENU+4)\n",
+			     *(uint32_t *) (spibar + 0x5c));
+		for (i = 0; i < 4; i++) {
 			int offs;
 			offs = 0x60 + (i * 4);
-			printf_debug("0x%02x: 0x%08x (PBR%d)\n", offs, *(uint32_t *)(spibar + offs), i);
+			printf_debug("0x%02x: 0x%08x (PBR%d)\n", offs,
+				     *(uint32_t *) (spibar + offs), i);
 		}
 		printf_debug("\n");
-		if ( (*(uint16_t *)spibar) & (1 << 15)) {
+		if ((*(uint16_t *) spibar) & (1 << 15)) {
 			printf("WARNING: SPI Configuration Lockdown activated.\n");
 		}
 		break;
@@ -332,8 +347,8 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name, int ic
 	case 1:
 	case 2:
 		printf_debug("prefetching %sabled, caching %sabled, ",
-			(new & 0x2) ? "en" : "dis", 
-			(new & 0x1) ? "dis" : "en");
+			     (new & 0x2) ? "en" : "dis",
+			     (new & 0x1) ? "dis" : "en");
 		break;
 	default:
 		printf_debug("invalid prefetching/caching settings, ");
@@ -367,7 +382,7 @@ static int enable_flash_vt823x(struct pci_dev *dev, const char *name)
 {
 	uint8_t val;
 
-	/* enable ROM decode range (1MB) FFC00000 - FFFFFFFF*/
+	/* enable ROM decode range (1MB) FFC00000 - FFFFFFFF */
 	pci_write_byte(dev, 0x41, 0x7f);
 
 	/* ROM write enable */
@@ -388,13 +403,13 @@ static int enable_flash_cs5530(struct pci_dev *dev, const char *name)
 {
 	uint8_t reg8;
 
-	#define DECODE_CONTROL_REG2		0x5b	/* F0 index 0x5b */
-	#define ROM_AT_LOGIC_CONTROL_REG	0x52	/* F0 index 0x52 */
+#define DECODE_CONTROL_REG2		0x5b	/* F0 index 0x5b */
+#define ROM_AT_LOGIC_CONTROL_REG	0x52	/* F0 index 0x52 */
 
-	#define LOWER_ROM_ADDRESS_RANGE		(1 << 0)
-	#define ROM_WRITE_ENABLE		(1 << 1)
-	#define UPPER_ROM_ADDRESS_RANGE		(1 << 2)
-	#define BIOS_ROM_POSITIVE_DECODE	(1 << 5)
+#define LOWER_ROM_ADDRESS_RANGE		(1 << 0)
+#define ROM_WRITE_ENABLE		(1 << 1)
+#define UPPER_ROM_ADDRESS_RANGE		(1 << 2)
+#define BIOS_ROM_POSITIVE_DECODE	(1 << 5)
 
 	/* Decode 0x000E0000-0x000FFFFF (128 KB), not just 64 KB, and
 	 * decode 0xFF000000-0xFFFFFFFF (16 MB), not just 256 KB.
@@ -433,8 +448,8 @@ static int enable_flash_cs5530(struct pci_dev *dev, const char *name)
  */
 static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 {
-	#define MSR_RCONF_DEFAULT	0x1808
-	#define MSR_NORF_CTL		0x51400018
+#define MSR_RCONF_DEFAULT	0x1808
+#define MSR_NORF_CTL		0x51400018
 
 	int fd_msr;
 	unsigned char buf[8];
@@ -460,7 +475,8 @@ static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 
 	if (buf[7] != 0x22) {
 		buf[7] &= 0xfb;
-		if (lseek64(fd_msr, (off64_t) MSR_RCONF_DEFAULT, SEEK_SET) == -1) {
+		if (lseek64(fd_msr, (off64_t) MSR_RCONF_DEFAULT,
+			    SEEK_SET) == -1) {
 			perror("lseek64");
 			close(fd_msr);
 			return -1;
@@ -501,8 +517,8 @@ static int enable_flash_cs5536(struct pci_dev *dev, const char *name)
 
 	close(fd_msr);
 
-	#undef MSR_RCONF_DEFAULT
-	#undef MSR_NORF_CTL
+#undef MSR_RCONF_DEFAULT
+#undef MSR_NORF_CTL
 	return 0;
 }
 
@@ -541,11 +557,11 @@ static int enable_flash_sis5595(struct pci_dev *dev, const char *name)
 	}
 
 	/* Extended BIOS enable = 1, Lower BIOS Enable = 1 */
-	new = pci_read_byte(dev,0x40);
+	new = pci_read_byte(dev, 0x40);
 	new &= 0xFB;
 	new |= 0x3;
-	pci_write_byte(dev,0x40,new);
-	newer = pci_read_byte(dev,0x40);
+	pci_write_byte(dev, 0x40, new);
+	newer = pci_read_byte(dev, 0x40);
 	if (newer != new) {
 		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x40, new, name);
 		printf("Stuck at 0x%x\n", newer);
@@ -588,7 +604,7 @@ static int enable_flash_sb600(struct pci_dev *dev, const char *name)
 	uint8_t reg;
 
 	/* Clear ROM Protect 0-3 */
-	for (reg = 0x50; reg < 0x60; reg+=4) {
+	for (reg = 0x50; reg < 0x60; reg += 4) {
 		old = pci_read_long(dev, reg);
 		new = old & 0xFFFFFFFC;
 		if (new != old) {
@@ -642,9 +658,8 @@ static int enable_flash_sb400(struct pci_dev *dev, const char *name)
 	f.device = 0x4372;
 
 	for (smbusdev = pacc->devices; smbusdev; smbusdev = smbusdev->next) {
-		if (pci_filter_match(&f, smbusdev)) {
+		if (pci_filter_match(&f, smbusdev))
 			break;
-		}
 	}
 
 	if (!smbusdev) {
@@ -697,9 +712,7 @@ static int enable_flash_mcp55(struct pci_dev *dev, const char *name)
 	pci_write_byte(dev, 0x6d, new);
 
 	if (pci_read_byte(dev, 0x6d) != new) {
-		printf
-		    ("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n",
-		     0x6d, new, name);
+		printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x6d, new, name);
 		return -1;
 	}
 

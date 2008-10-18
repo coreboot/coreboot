@@ -57,10 +57,11 @@ static int unlock_block_winbond_fwhub(struct flashchip *flash, int offset)
 	volatile uint8_t *wrprotect = flash->virtual_registers + offset + 2;
 	uint8_t locking;
 
-	printf_debug("Trying to unlock block @0x%08x = 0x%02x\n", offset, *wrprotect);
+	printf_debug("Trying to unlock block @0x%08x = 0x%02x\n", offset,
+		     *wrprotect);
 
 	locking = *wrprotect;
-	switch (locking & 0x7 ) {
+	switch (locking & 0x7) {
 	case 0:
 		printf_debug("Full Access.\n");
 		return 0;
@@ -99,7 +100,7 @@ int unlock_winbond_fwhub(struct flashchip *flash)
 	int i, total_size = flash->total_size * 1024;
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t locking;
-	
+
 	/* Are there any hardware restrictions that we can't overcome? 
 	 * If flashrom fail here, someone's got to check all those GPIOs.
 	 */
@@ -121,17 +122,17 @@ int unlock_winbond_fwhub(struct flashchip *flash)
 
 	printf_debug("Lockout bits:\n");
 
-	if (locking & (1<<2))
+	if (locking & (1 << 2))
 		fprintf(stderr, "Error: hardware bootblock locking (#TBL).\n");
 	else
 		printf_debug("No hardware bootblock locking (good!)\n");
 
-	if (locking & (1<<3))
+	if (locking & (1 << 3))
 		fprintf(stderr, "Error: hardware block locking (#WP).\n");
 	else
 		printf_debug("No hardware block locking (good!)\n");
 
-	if (locking & ((1<<2) | (1<<3)))
+	if (locking & ((1 << 2) | (1 << 3)))
 		return -1;
 
 	/* Unlock the complete chip */
@@ -142,7 +143,8 @@ int unlock_winbond_fwhub(struct flashchip *flash)
 	return 0;
 }
 
-static int erase_sector_winbond_fwhub(volatile uint8_t *bios, unsigned int sector)
+static int erase_sector_winbond_fwhub(volatile uint8_t *bios,
+				      unsigned int sector)
 {
 	/* Remember: too much sleep can waste your day. */
 
@@ -167,7 +169,7 @@ int erase_winbond_fwhub(struct flashchip *flash)
 {
 	int i, total_size = flash->total_size * 1024;
 	volatile uint8_t *bios = flash->virtual_memory;
-	
+
 	unlock_winbond_fwhub(flash);
 
 	printf("Erasing:     ");
@@ -197,7 +199,7 @@ int write_winbond_fwhub(struct flashchip *flash, uint8_t *buf)
 		return -1;
 
 	printf("Programming: ");
-	for (i = 0; i < total_size; i+=flash->page_size) {
+	for (i = 0; i < total_size; i += flash->page_size) {
 		printf("0x%08x\b\b\b\b\b\b\b\b\b\b", i);
 		write_sector_jedec(bios, buf + i, bios + i, flash->page_size);
 	}
@@ -205,4 +207,3 @@ int write_winbond_fwhub(struct flashchip *flash, uint8_t *buf)
 
 	return 0;
 }
-

@@ -357,7 +357,7 @@ static int board_acorp_6a815epd(const char *name)
 	uint16_t port;
 	uint8_t val;
 
-	dev = pci_dev_find(0x8086, 0x2440);     /* Intel ICH2 LPC */
+	dev = pci_dev_find(0x8086, 0x2440);	/* Intel ICH2 LPC */
 	if (!dev) {
 		fprintf(stderr, "\nERROR: ICH2 LPC bridge not found.\n");
 		return -1;
@@ -367,8 +367,8 @@ static int board_acorp_6a815epd(const char *name)
 	port = (pci_read_word(dev, 0x58) & 0xFFC0) + 0xE;
 
 	val = INB(port);
-	val |= 0x80; /* Top Block Lock -- pin 8 of PLCC32 */
-	val |= 0x40; /* Lower Blocks Lock -- pin 7 of PLCC32 */
+	val |= 0x80;		/* Top Block Lock -- pin 8 of PLCC32 */
+	val |= 0x40;		/* Lower Blocks Lock -- pin 7 of PLCC32 */
 	OUTB(val, port);
 
 	return 0;
@@ -405,7 +405,7 @@ static int board_artecgroup_dbe6x(const char *name)
 		return -1;
 	}
 
-	if (read(msr_fd, (void*) msr, 8) != 8) {
+	if (read(msr_fd, (void *)msr, 8) != 8) {
 		perror("read");
 		close(msr_fd);
 		return -1;
@@ -419,7 +419,7 @@ static int board_artecgroup_dbe6x(const char *name)
 
 	msr[0] &= ~(DBE6x_PRI_BOOT_LOC | DBE6x_SEC_BOOT_LOC);
 	msr[0] |= ((boot_loc << DBE6x_PRI_BOOT_LOC_SHIFT) |
-	    (boot_loc << DBE6x_SEC_BOOT_LOC_SHIFT));
+		   (boot_loc << DBE6x_SEC_BOOT_LOC_SHIFT));
 
 	if (lseek(msr_fd, DBE6x_MSR_DIVIL_BALL_OPTS, SEEK_SET) == -1) {
 		perror("lseek");
@@ -427,7 +427,7 @@ static int board_artecgroup_dbe6x(const char *name)
 		return -1;
 	}
 
-	if (write(msr_fd, (void*) msr, 8) != 8) {
+	if (write(msr_fd, (void *)msr, 8) != 8) {
 		perror("write");
 		close(msr_fd);
 		return -1;
@@ -458,7 +458,7 @@ static int ich_gpio_raise(const char *name, uint16_t ich_vendor,
 	uint16_t gpiobar;
 	uint32_t reg32;
 
-	dev = pci_dev_find(ich_vendor, ich_device);     /* Intel ICHx LPC */
+	dev = pci_dev_find(ich_vendor, ich_device);	/* Intel ICHx LPC */
 	if (!dev) {
 		fprintf(stderr, "\nERROR: ICHx LPC dev %4x:%4x not found.\n",
 			ich_vendor, ich_device);
@@ -492,7 +492,7 @@ static int board_kontron_986lcd_m(const char *name)
 
 #define ICH7_GPIO_LVL2 0x38
 
-	dev = pci_dev_find(0x8086, 0x27b8);     /* Intel ICH7 LPC */
+	dev = pci_dev_find(0x8086, 0x27b8);	/* Intel ICH7 LPC */
 	if (!dev) {
 		// This will never happen on this board
 		fprintf(stderr, "\nERROR: ICH7 LPC bridge not found.\n");
@@ -664,12 +664,12 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 "artecgroup", "dbe61", "Artec Group DBE61", board_artecgroup_dbe6x},
 	{0x1022, 0x2090, 0x0000, 0x0000, 0x1022, 0x2080, 0x0000, 0x0000,
 	 "artecgroup", "dbe62", "Artec Group DBE62", board_artecgroup_dbe6x},
- 	{0x8086, 0x27b8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
- 	 "kontron", "986lcd-m", "Kontron 986LCD-M", board_kontron_986lcd_m},
- 	{0x1106, 0x3149, 0x1565, 0x3206, 0x1106, 0x3344, 0x1565, 0x1202,
- 	 NULL, NULL, "BioStar P4M80-M4", board_biostar_p4m80_m4},
- 	{0x1106, 0x3227, 0x1458, 0x5001, 0x10ec, 0x8139, 0x1458, 0xe000,
- 	 NULL, NULL, "GIGABYTE GA-7VT600", board_biostar_p4m80_m4},
+	{0x8086, 0x27b8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+	 "kontron", "986lcd-m", "Kontron 986LCD-M", board_kontron_986lcd_m},
+	{0x1106, 0x3149, 0x1565, 0x3206, 0x1106, 0x3344, 0x1565, 0x1202,
+	 NULL, NULL, "BioStar P4M80-M4", board_biostar_p4m80_m4},
+	{0x1106, 0x3227, 0x1458, 0x5001, 0x10ec, 0x8139, 0x1458, 0xe000,
+	 NULL, NULL, "GIGABYTE GA-7VT600", board_biostar_p4m80_m4},
 	{0x1106, 0x3149, 0x1462, 0x7094, 0x10ec, 0x8167, 0x1462, 0x094c,
 	 NULL, NULL, "MSI K8T Neo2", w83627thf_gpio4_4_raise_2e},
 	{0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL}	/* Keep this */
@@ -699,13 +699,15 @@ void print_supported_boards(void)
  * Match boards on coreboot table gathered vendor and part name.
  * Require main PCI IDs to match too as extra safety.
  */
-static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, const char *part)
+static struct board_pciid_enable *board_match_coreboot_name(const char *vendor,
+							    const char *part)
 {
 	struct board_pciid_enable *board = board_pciid_enables;
 	struct board_pciid_enable *partmatch = NULL;
 
 	for (; board->name; board++) {
-		if (vendor && (!board->lb_vendor || strcasecmp(board->lb_vendor, vendor)))
+		if (vendor && (!board->lb_vendor
+			       || strcasecmp(board->lb_vendor, vendor)))
 			continue;
 
 		if (!board->lb_part || strcasecmp(board->lb_part, part))
@@ -715,7 +717,7 @@ static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, 
 			continue;
 
 		if (board->second_vendor &&
-			!pci_dev_find(board->second_vendor, board->second_device))
+		    !pci_dev_find(board->second_vendor, board->second_device))
 			continue;
 
 		if (vendor)
@@ -725,7 +727,7 @@ static struct board_pciid_enable *board_match_coreboot_name(const char *vendor, 
 			/* a second entry has a matching part name */
 			printf("AMBIGUOUS BOARD NAME: %s\n", part);
 			printf("At least vendors '%s' and '%s' match.\n",
-				partmatch->lb_vendor, board->lb_vendor);
+			       partmatch->lb_vendor, board->lb_vendor);
 			printf("Please use the full -m vendor:part syntax.\n");
 			return NULL;
 		}
@@ -752,20 +754,20 @@ static struct board_pciid_enable *board_match_pci_card_ids(void)
 			continue;
 
 		if (!pci_card_find(board->first_vendor, board->first_device,
-					board->first_card_vendor,
-					board->first_card_device))
+				   board->first_card_vendor,
+				   board->first_card_device))
 			continue;
 
 		if (board->second_vendor) {
 			if (board->second_card_vendor) {
 				if (!pci_card_find(board->second_vendor,
-						board->second_device,
-						board->second_card_vendor,
-						board->second_card_device))
+						   board->second_device,
+						   board->second_card_vendor,
+						   board->second_card_device))
 					continue;
 			} else {
 				if (!pci_dev_find(board->second_vendor,
-							board->second_device))
+						  board->second_device))
 					continue;
 			}
 		}
@@ -789,7 +791,7 @@ int board_flash_enable(const char *vendor, const char *part)
 
 	if (board) {
 		printf("Found board \"%s\", enabling flash write... ",
-			board->name);
+		       board->name);
 
 		ret = board->enable(board->name);
 		if (ret)

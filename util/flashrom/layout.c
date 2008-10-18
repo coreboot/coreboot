@@ -75,13 +75,13 @@ int show_id(uint8_t *bios, int size, int force)
 		printf("Flash image seems to be a legacy BIOS. Disabling checks.\n");
 		return 0;
 	}
-	
+
 	mb_part = (char *)(bios + size - mb_part_offset);
 	mb_vendor = (char *)(bios + size - mb_vendor_offset);
 	if (!isprint((unsigned char)*mb_part) ||
 	    !isprint((unsigned char)*mb_vendor)) {
 		printf("Flash image seems to have garbage in the ID location."
-			" Disabling checks.\n");
+		       " Disabling checks.\n");
 		return 0;
 	}
 
@@ -189,7 +189,7 @@ int find_romentry(char *name)
 			return i;
 		}
 	}
-	printf("not found.\n"); // Not found. Error.
+	printf("not found.\n");	// Not found. Error.
 
 	return -1;
 }

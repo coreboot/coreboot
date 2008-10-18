@@ -74,8 +74,10 @@ struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 
 	for (temp = pacc->devices; temp; temp = temp->next)
 		if (pci_filter_match(&filter, temp)) {
-			if ((card_vendor == pci_read_word(temp, PCI_SUBSYSTEM_VENDOR_ID)) &&
-			    (card_device == pci_read_word(temp, PCI_SUBSYSTEM_ID)))
+			if ((card_vendor ==
+			     pci_read_word(temp, PCI_SUBSYSTEM_VENDOR_ID))
+			    && (card_device ==
+				pci_read_word(temp, PCI_SUBSYSTEM_ID)))
 				return temp;
 		}
 
@@ -131,7 +133,6 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 			 */
 			size = getpagesize();
 		}
-
 #ifdef TS5300
 		// FIXME: Wrong place for this decision
 		// FIXME: This should be autodetected. It is trivial.
@@ -154,7 +155,8 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 		if (flash->probe(flash) != 1)
 			goto notfound;
 
-		if (first_flash == flashchips || flash->model_id != GENERIC_DEVICE_ID)
+		if (first_flash == flashchips
+		    || flash->model_id != GENERIC_DEVICE_ID)
 			break;
 
 notfound:
@@ -193,7 +195,7 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 				printf("0x%08x ", idx);
 			}
 			printf("FAILED!  Expected=0x%02x, Read=0x%02x\n",
-				*(buf + idx), *(buf2 + idx));
+			       *(buf + idx), *(buf2 + idx));
 			return 1;
 		}
 
@@ -220,7 +222,8 @@ void print_supported_chips(void)
 
 void usage(const char *name)
 {
-	printf("usage: %s [-rwvEVfLhR] [-c chipname] [-s exclude_start]\n", name);
+	printf("usage: %s [-rwvEVfLhR] [-c chipname] [-s exclude_start]\n",
+	       name);
 	printf("       [-e exclude_end] [-m [vendor:]part] [-l file.layout] [-i imagename] [file]\n");
 	printf
 	    ("   -r | --read:                      read flash and save into file\n"
@@ -383,8 +386,7 @@ int main(int argc, char *argv[])
 #else
 	if (iopl(3) != 0) {
 #endif
-               fprintf(stderr, "ERROR: Could not get IO privileges (%s).\nYou need to be root.\n",
-			strerror(errno));
+		fprintf(stderr, "ERROR: Could not get IO privileges (%s).\nYou need to be root.\n", strerror(errno));
 		exit(1);
 	}
 
@@ -395,7 +397,7 @@ int main(int argc, char *argv[])
 	pci_scan_bus(pacc);	/* We want to get the list of devices */
 
 	/* Open the memory device UNCACHED. That's important for MMIO. */
-	if ((fd_mem = open(MEM_DEV, O_RDWR|O_SYNC)) < 0) {
+	if ((fd_mem = open(MEM_DEV, O_RDWR | O_SYNC)) < 0) {
 		perror("Error: Can not access memory using " MEM_DEV
 		       ". You need to be root.");
 		exit(1);
@@ -420,7 +422,8 @@ int main(int argc, char *argv[])
 	board_flash_enable(lb_vendor, lb_part);
 
 	for (i = 0; i < ARRAY_SIZE(flashes); i++) {
-		flashes[i] = probe_flash(i ? flashes[i - 1] + 1 : flashchips, 0);
+		flashes[i] =
+		    probe_flash(i ? flashes[i - 1] + 1 : flashchips, 0);
 		if (!flashes[i])
 			for (i++; i < ARRAY_SIZE(flashes); i++)
 				flashes[i] = NULL;
@@ -468,7 +471,8 @@ int main(int argc, char *argv[])
 
 			if (exclude_end_position - exclude_start_position > 0)
 				memset(buf + exclude_start_position, 0,
-				       exclude_end_position - exclude_start_position);
+				       exclude_end_position -
+				       exclude_start_position);
 
 			fwrite(buf, sizeof(char), size, image);
 			fclose(image);

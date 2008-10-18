@@ -26,14 +26,13 @@
 extern int exclude_start_page, exclude_end_page;
 
 void write_lockbits_49fl00x(volatile uint8_t *bios, int size,
-					      unsigned char bits, int block_size)
+			    unsigned char bits, int block_size)
 {
 	int i, left = size;
 
 	for (i = 0; left >= block_size; i++, left -= block_size) {
-
 		/* pm49fl002 */
-		if (block_size == 16384 && i%2)
+		if (block_size == 16384 && i % 2)
 			continue;
 
 		*(bios + (i * block_size) + 2) = bits;
@@ -43,7 +42,7 @@ void write_lockbits_49fl00x(volatile uint8_t *bios, int size,
 int probe_49fl00x(struct flashchip *flash)
 {
 	int ret = probe_jedec(flash);
-	
+
 	if (ret == 1)
 		map_flash_registers(flash);
 
@@ -58,9 +57,13 @@ int erase_49fl00x(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	/* unprotected */
-	write_lockbits_49fl00x(flash->virtual_registers, total_size, 0, page_size);
+	write_lockbits_49fl00x(flash->virtual_registers,
+			       total_size, 0, page_size);
 
-	//erase_chip_jedec will not work ... datasheet says "Chip erase is available in A/A Mux Mode only"
+	/*
+	 * erase_chip_jedec() will not work... Datasheet says
+	 * "Chip erase is available in A/A Mux Mode only".
+	 */
 	printf("Erasing page: ");
 	for (i = 0; i < total_size / page_size; i++) {
 		if ((i >= exclude_start_page) && (i < exclude_end_page))
@@ -75,7 +78,8 @@ int erase_49fl00x(struct flashchip *flash)
 	printf("\n");
 
 	/* protected */
-	write_lockbits_49fl00x(flash->virtual_registers, total_size, 1, page_size);
+	write_lockbits_49fl00x(flash->virtual_registers,
+			       total_size, 1, page_size);
 
 	return 0;
 }
@@ -88,7 +92,8 @@ int write_49fl00x(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	/* unprotected */
-	write_lockbits_49fl00x(flash->virtual_registers, total_size, 0, page_size);
+	write_lockbits_49fl00x(flash->virtual_registers, total_size, 0,
+			       page_size);
 
 	printf("Programming page: ");
 	for (i = 0; i < total_size / page_size; i++) {
@@ -106,9 +111,10 @@ int write_49fl00x(struct flashchip *flash, uint8_t *buf)
 		fflush(stdout);
 	}
 	printf("\n");
-	
+
 	/* protected */
-	write_lockbits_49fl00x(flash->virtual_registers, total_size, 1, page_size);
+	write_lockbits_49fl00x(flash->virtual_registers, total_size, 1,
+			       page_size);
 
 	return 0;
 }

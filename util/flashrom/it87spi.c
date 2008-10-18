@@ -33,7 +33,6 @@
 #define ITE_SUPERIO_PORT1	0x2e
 #define ITE_SUPERIO_PORT2	0x4e
 
-
 uint16_t it8716f_flashport = 0;
 /* use fast 33MHz SPI (<>0) or slow 16MHz (0) */
 int fast_spi = 1;
@@ -85,15 +84,15 @@ static uint16_t find_ite_spi_flash_port(uint16_t port)
 		/* NOLDN, reg 0x24, mask out lowest bit (suspend) */
 		tmp = regval(port, 0x24) & 0xFE;
 		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
-			0xFFFE0000, 0xFFFFFFFF, (tmp & 1 << 1) ? "en" : "dis");
+		       0xFFFE0000, 0xFFFFFFFF, (tmp & 1 << 1) ? "en" : "dis");
 		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
-			0x000E0000, 0x000FFFFF, (tmp & 1 << 1) ? "en" : "dis");
+		       0x000E0000, 0x000FFFFF, (tmp & 1 << 1) ? "en" : "dis");
 		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
-			0xFFEE0000, 0xFFEFFFFF, (tmp & 1 << 2) ? "en" : "dis");
+		       0xFFEE0000, 0xFFEFFFFF, (tmp & 1 << 2) ? "en" : "dis");
 		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",
-			0xFFF80000, 0xFFFEFFFF, (tmp & 1 << 3) ? "en" : "dis");
+		       0xFFF80000, 0xFFFEFFFF, (tmp & 1 << 3) ? "en" : "dis");
 		printf("LPC write to serial flash %sabled\n",
-			(tmp & 1 << 4) ? "en" : "dis");
+		       (tmp & 1 << 4) ? "en" : "dis");
 		/* If any serial flash segment is enabled, enable writing. */
 		if ((tmp & 0xe) && (!(tmp & 1 << 4))) {
 			printf("Enabling LPC write to serial flash\n");
@@ -123,13 +122,17 @@ int it87xx_probe_spi_flash(const char *name)
 	return (!it8716f_flashport);
 }
 
-/* The IT8716F only supports commands with length 1,2,4,5 bytes including
-   command byte and can not read more than 3 bytes from the device.
-   This function expects writearr[0] to be the first byte sent to the device,
-   whereas the IT8716F splits commands internally into address and non-address
-   commands with the address in inverse wire order. That's why the register
-   ordering in case 4 and 5 may seem strange. */
-int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr)
+/*
+ * The IT8716F only supports commands with length 1,2,4,5 bytes including
+ * command byte and can not read more than 3 bytes from the device.
+ *
+ * This function expects writearr[0] to be the first byte sent to the device,
+ * whereas the IT8716F splits commands internally into address and non-address
+ * commands with the address in inverse wire order. That's why the register
+ * ordering in case 4 and 5 may seem strange.
+ */
+int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt,
+			const unsigned char *writearr, unsigned char *readarr)
 {
 	uint8_t busy, writeenc;
 	int i;
@@ -139,7 +142,7 @@ int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 	} while (busy);
 	if (readcnt > 3) {
 		printf("%s called with unsupported readcnt %i.\n",
-			__FUNCTION__, readcnt);
+		       __FUNCTION__, readcnt);
 		return 1;
 	}
 	switch (writecnt) {
@@ -169,34 +172,36 @@ int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt, const unsig
 		break;
 	default:
 		printf("%s called with unsupported writecnt %i.\n",
-			__FUNCTION__, writecnt);
+		       __FUNCTION__, writecnt);
 		return 1;
 	}
-	/* Start IO, 33 or 16 MHz, readcnt input bytes, writecnt output bytes.
+	/*
+	 * Start IO, 33 or 16 MHz, readcnt input bytes, writecnt output bytes.
 	 * Note:
 	 * We can't use writecnt directly, but have to use a strange encoding.
-	 */ 
-	OUTB(((0x4 + (fast_spi ? 1 : 0)) << 4) | ((readcnt & 0x3) << 2) | (writeenc), it8716f_flashport);
+	 */
+	OUTB(((0x4 + (fast_spi ? 1 : 0)) << 4)
+		| ((readcnt & 0x3) << 2) | (writeenc), it8716f_flashport);
 
 	if (readcnt > 0) {
 		do {
 			busy = INB(it8716f_flashport) & 0x80;
 		} while (busy);
 
-		for (i = 0; i < readcnt; i++) {
+		for (i = 0; i < readcnt; i++)
 			readarr[i] = INB(it8716f_flashport + 5 + i);
-		}
 	}
 
 	return 0;
 }
 
 /* Page size is usually 256 bytes */
-static void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios) {
+static void it8716f_spi_page_program(int block, uint8_t *buf, uint8_t *bios)
+{
 	int i;
 
 	spi_write_enable();
-	OUTB(0x06 , it8716f_flashport + 1);
+	OUTB(0x06, it8716f_flashport + 1);
 	OUTB(((2 + (fast_spi ? 1 : 0)) << 4), it8716f_flashport);
 	for (i = 0; i < 256; i++) {
 		bios[256 * block + i] = buf[256 * block + i];
@@ -217,6 +222,7 @@ int it8716f_over512k_spi_chip_write(struct flashchip *flash, uint8_t *buf)
 {
 	int total_size = 1024 * flash->total_size;
 	int i;
+
 	fast_spi = 0;
 
 	spi_disable_blockprotect();
@@ -228,6 +234,7 @@ int it8716f_over512k_spi_chip_write(struct flashchip *flash, uint8_t *buf)
 	}
 	/* resume normal ops... */
 	OUTB(0x20, it8716f_flashport);
+
 	return 0;
 }
 
@@ -251,19 +258,23 @@ int it8716f_spi_chip_read(struct flashchip *flash, uint8_t *buf)
 	} else {
 		memcpy(buf, (const char *)flash->virtual_memory, total_size);
 	}
+
 	return 0;
 }
 
-int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf) {
+int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf)
+{
 	int total_size = 1024 * flash->total_size;
 	int i;
+
 	if (total_size > 512 * 1024) {
 		it8716f_over512k_spi_chip_write(flash, buf);
 	} else {
 		for (i = 0; i < total_size / 256; i++) {
-			it8716f_spi_page_program(i, buf, (uint8_t *)flash->virtual_memory);
+			it8716f_spi_page_program(i, buf,
+				(uint8_t *)flash->virtual_memory);
 		}
 	}
+
 	return 0;
 }
-

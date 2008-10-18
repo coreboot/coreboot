@@ -540,6 +540,17 @@ static int enable_flash_sis5595(struct pci_dev *dev, const char *name)
 		return -1;
 	}
 
+	/* Extended BIOS enable = 1, Lower BIOS Enable = 1 */
+	new = pci_read_byte(dev,0x40);
+	new &= 0xFB;
+	new |= 0x3;
+	pci_write_byte(dev,0x40,new);
+	newer = pci_read_byte(dev,0x40);
+	if (newer != new) {
+		printf("tried to set register 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x40, new, name);
+		printf("Stuck at 0x%x\n", newer);
+		return -1;
+	}
 	return 0;
 }
 

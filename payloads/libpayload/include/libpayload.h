@@ -327,6 +327,8 @@ char *strchr(const char *s, int c);
 char *strdup(const char *s);
 char *strstr(const char *h, const char *n);
 char *strsep(char **stringp, const char *delim);
+unsigned int strtoul(const char *s, char **nptr, int base);
+
 /** @} */
 
 /**

@@ -75,27 +75,36 @@ static int find_on_bus(int bus, unsigned short vid, unsigned short did,
 	unsigned char hdr;
 
 	for (devfn = 0; devfn < 0x100; devfn++) {
-		val = pci_read_config32(PCI_DEV(bus, PCI_SLOT(devfn),
-					PCI_FUNC(devfn)), REG_VENDOR_ID);
+		int func = devfn & 0x7;
+		int slot = (devfn >> 3) & 0x1f;
+
+		val = pci_read_config32(PCI_DEV(bus, slot, func),
+					REG_VENDOR_ID);
 
 		if (val == 0xffffffff || val == 0x00000000 ||
 		    val == 0x0000ffff || val == 0xffff0000)
 			continue;
 
 		if (val == ((did << 16) | vid)) {
-			*dev = PCI_DEV(bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
+			*dev = PCI_DEV(bus, slot, func);
 			return 1;
 		}
 
-		hdr = pci_read_config8(PCI_DEV(bus, PCI_SLOT(devfn),
-					PCI_FUNC(devfn)), REG_HEADER_TYPE);
+		hdr = pci_read_config8(PCI_DEV(bus, slot, func),
+				       REG_HEADER_TYPE);
 		hdr &= 0x7F;
 
 		if (hdr == HEADER_TYPE_BRIDGE || hdr == HEADER_TYPE_CARDBUS) {
 			unsigned int busses;
-			busses = pci_read_config32(PCI_DEV(bus, PCI_SLOT(devfn),
-						PCI_FUNC(devfn)), REG_PRIMARY_BUS);
-			if (find_on_bus((busses >> 8) & 0xFF, vid, did, dev))
+			busses = pci_read_config32(PCI_DEV(bus, slot, func),
+						   REG_PRIMARY_BUS);
+			busses = (busses >> 8) & 0xFF;
+
+			/* Avoid recursion if the new bus is the same as
+			 * the old bus (insert lame The Who joke here) */
+
+			if ((busses != bus) &&
+			    find_on_bus(busses, vid, did, dev))
 				return 1;
 		}
 	}

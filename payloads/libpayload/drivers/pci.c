@@ -112,3 +112,11 @@ u32 pci_read_resource(pcidev_t dev, int bar)
 {
 	return pci_read_config32(dev, 0x10 + (bar * 4));
 }
+
+void pci_set_bus_master(pcidev_t dev)
+{
+	u16 val = pci_read_config16(dev, REG_COMMAND);
+	val |= REG_COMMAND_BM;
+	pci_write_config16(dev, REG_COMMAND, val);
+}
+

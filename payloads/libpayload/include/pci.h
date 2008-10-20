@@ -35,9 +35,11 @@
 typedef u32 pcidev_t;
 
 #define REG_VENDOR_ID   0x00
-#define REG_DEVICE_ID   0x04
+#define REG_COMMAND     0x04
 #define REG_HEADER_TYPE 0x0E
 #define REG_PRIMARY_BUS 0x18
+
+#define REG_COMMAND_BM  (1 << 2)
 
 #define HEADER_TYPE_NORMAL  0
 #define HEADER_TYPE_BRIDGE  1
@@ -63,5 +65,7 @@ void pci_write_config32(u32 device, u16 reg, u32 val);
 
 int pci_find_device(u16 vid, u16 did, pcidev_t *dev);
 u32 pci_read_resource(pcidev_t dev, int bar);
+
+void pci_set_bus_master(pcidev_t dev);
 
 #endif

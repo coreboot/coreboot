@@ -28,7 +28,6 @@
 		/config/("northbridge/amd/k8/domain");
 		pci@1,0{
 		};
-		/* guesses; we need a real lspci */
 		pci0@18,0 {
 			/config/("northbridge/amd/k8/pci");
 			pci@0,0 {
@@ -44,6 +43,9 @@
 				};
 				pci@0,2{
 					/config/("southbridge/amd/amd8111/usb2.dts");
+				};
+				pci@4,0{
+					rom_address = "0xfc000000";
 				};
 			};
 			pci@7,0 {
@@ -70,9 +72,6 @@
 		};
 		pci2@18,0 {
 			/config/("northbridge/amd/k8/pci");
-			/* just for illustrating link #2 */
-			pci@2,0{
-			};
 		};
 		pci@18,1 {};
 		pci@18,2 {};

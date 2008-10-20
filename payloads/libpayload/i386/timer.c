@@ -75,7 +75,7 @@ unsigned int get_cpu_speed(void)
 	return cpu_khz;
 }
 
-static inline void _delay(unsigned int delta)
+static inline void _delay(unsigned long long delta)
 {
 	unsigned long long timeout = rdtsc() + delta;
 	while (rdtsc() < timeout) ;

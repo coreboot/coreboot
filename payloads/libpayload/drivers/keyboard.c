@@ -175,11 +175,10 @@ static void keyboard_cmd(unsigned char cmd, unsigned char val)
 	while (inb(0x64) & 2);
 }
 
-
 int keyboard_havechar(void)
 {
 	unsigned char c = inb(0x64);
-	return c & 1;
+	return (c == 0xFF) ? 0 : c & 1;
 }
 
 unsigned char keyboard_get_scancode(void)
@@ -331,6 +330,12 @@ void keyboard_init(void)
 {
 	u8 mode;
 	map = &keyboard_layouts[0];
+
+	/* If 0x64 returns 0xff, then we have no keyboard
+	 * controller */
+
+	if (inb(0x64) == 0xFF)
+		return;
 
 	/* Empty keyboard buffer */
 	while (keyboard_havechar()) keyboard_getchar();

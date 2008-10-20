@@ -115,8 +115,8 @@ $(obj)/%.o: $(src)/%.c
 	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
 
 $(obj)/%.S.o: $(src)/%.S
-	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(AS) --32 -o $@ $<
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
 
 endif
 

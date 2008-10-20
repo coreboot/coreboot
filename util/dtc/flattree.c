@@ -666,6 +666,10 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 			enabled = 0;
 		}
 
+		if (streq(prop->name, "rom_address")){
+			fprintf(f, "\t.rom_address = %s,\n", prop->val.val);
+		}
+
 		if (streq(prop->name, "config")){
 			fprintf(f, "\t.device_configuration = &%s,\n", clean(tree->label, 1));
 		}

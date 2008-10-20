@@ -76,6 +76,11 @@ TARGETS-y :=
 BUILD-y := crypto/Makefile.inc libc/Makefile.inc drivers/Makefile.inc
 BUILD-$(CONFIG_TINYCURSES) += curses/Makefile.inc
 
+# The primary target needs to be here before we include the
+# other files
+
+all: lib
+
 include $(PLATFORM-y) $(BUILD-y)
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))

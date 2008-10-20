@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+	.code32
 	.global _entry, _leave
 	.text
 	.align 4
@@ -42,6 +43,21 @@ _entry:
 	/* We're back - go back to the bootloader. */
 	ret
 
+	.align 4
+
+#define MB_MAGIC 0x1BADB002
+#define MB_FLAGS 0x00010003
+
+mb_header:
+	.long MB_MAGIC
+	.long MB_FLAGS
+	.long -(MB_MAGIC + MB_FLAGS)
+	.long mb_header
+	.long _start
+	.long _edata
+	.long _end
+	.long _init
+
 /*
  * This function saves off the previous stack and switches us to our
  * own execution environment.
@@ -52,6 +68,11 @@ _init:
 
 	/* Store current stack pointer. */
 	movl %esp, %esi
+
+	/* Store EAX and EBX */
+
+	movl %eax,loader_eax
+	movl %ebx,loader_ebx
 
 	/* Setup new stack. */
 	movl $_stack, %ebx

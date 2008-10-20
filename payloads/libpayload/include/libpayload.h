@@ -64,6 +64,8 @@
 
 #define RAND_MAX 0x7fffffff
 
+#define MAX_ARGC_COUNT 10
+
 /*
  * Payload information parameters - these are used to pass information
  * to the entity loading the payload.
@@ -407,6 +409,7 @@ int lfclose(struct LFILE *file);
  * @{
  */
 int get_coreboot_info(struct sysinfo_t *info);
+int get_multiboot_info(struct sysinfo_t *info);
 
 void lib_get_sysinfo(void);
 

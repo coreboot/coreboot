@@ -27,44 +27,50 @@
  * SUCH DAMAGE.
  */
 
-#include <libpayload.h>
+#ifndef MULTIBOOT_TABLES_H_
+#define MULTIBOOT_TABLES_H_
 
-unsigned long loader_eax;  /**< The value of EAX passed from the loader */
-unsigned long loader_ebx;  /**< The value of EBX passed from the loader */
+#include <arch/types.h>
 
-unsigned int main_argc;    /**< The argc value to pass to main() */
+#define MULTIBOOT_MAGIC      0x2BADB002UL
+#define MULTIBOOT_FLAGS_MMAP    (1 << 6)
+#define MULTIBOOT_FLAGS_CMDLINE (1 << 2)
+struct multiboot_header {
+	u32 flags;
+	u32 mem_lower;
+	u32 mem_higher;
+	u32 boot_device;
+	u32 cmdline;
+	u32 mods_count;
+	u32 mods_addr;
 
-/** The argv value to pass to main() */
-char *main_argv[MAX_ARGC_COUNT];
+	u32 syms[4];
 
-/**
- * This is our C entry function - set up the system
- * and jump into the payload entry point.
- */
-void start_main(void)
-{
-	extern int main(int argc, char **argv);
+	u32 mmap_length;
+	u32 mmap_addr;
 
-	/* Set up the consoles. */
-	console_init();
+	u32 drives_length;
+	u32 drives_addr;
 
-	/* Gather system information. */
-	lib_get_sysinfo();
+	u32 config_table;
 
-	/*
-	 * Any other system init that has to happen before the
-	 * user gets control goes here.
-	 */
+	u32 boot_loader_name;
 
-	/*
-	 * Go to the entry point.
-	 * In the future we may care about the return value.
-	 */
+	u32 apm_table;
 
-	(void) main(main_argc, (main_argc != 0) ? main_argv : NULL);
+	u32 vbe_control_info;
+	u32 vbe_mode_info;
+	u32 vbe_mode;
+	u32 vbe_interface_seg;
+	u32 vbe_interface_off;
+	u32 vbe_interface_len;
+};
 
-	/*
-	 * Returning here will go to the _leave function to return
-	 * us to the original context.
-	 */
-}
+struct multiboot_mmap {
+	u32 size;
+	u64 addr;
+	u64 length;
+	u32 type;
+} __attribute((packed));
+
+#endif

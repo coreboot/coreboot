@@ -27,44 +27,70 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
 #include <libpayload.h>
+#include <multiboot_tables.h>
 
-unsigned long loader_eax;  /**< The value of EAX passed from the loader */
-unsigned long loader_ebx;  /**< The value of EBX passed from the loader */
+extern unsigned long loader_eax;
+extern unsigned long loader_ebx;
 
-unsigned int main_argc;    /**< The argc value to pass to main() */
-
-/** The argv value to pass to main() */
-char *main_argv[MAX_ARGC_COUNT];
-
-/**
- * This is our C entry function - set up the system
- * and jump into the payload entry point.
- */
-void start_main(void)
+static void mb_parse_mmap(struct multiboot_header *table,
+			struct sysinfo_t *info)
 {
-	extern int main(int argc, char **argv);
+	u8 *start = (u8 *) phys_to_virt(table->mmap_addr);
+	u8 *ptr = start;
 
-	/* Set up the consoles. */
-	console_init();
+	info->n_memranges = 0;
 
-	/* Gather system information. */
-	lib_get_sysinfo();
+	while(ptr < (start + table->mmap_length)) {
+		struct multiboot_mmap *mmap = (struct multiboot_mmap *) ptr;
 
-	/*
-	 * Any other system init that has to happen before the
-	 * user gets control goes here.
-	 */
+		/* 1 == normal RAM.  Ignore everything else for now */
 
-	/*
-	 * Go to the entry point.
-	 * In the future we may care about the return value.
-	 */
+		if (mmap->type == 1) {
+			info->memrange[info->n_memranges].base = mmap->addr;
+			info->memrange[info->n_memranges].size = mmap->length;
 
-	(void) main(main_argc, (main_argc != 0) ? main_argv : NULL);
+			if (++info->n_memranges == SYSINFO_MAX_MEM_RANGES)
+				return;
+		}
 
-	/*
-	 * Returning here will go to the _leave function to return
-	 * us to the original context.
-	 */
+		ptr += (mmap->size + sizeof(mmap->size));
+	}
+}
+
+static void mb_parse_cmdline(struct multiboot_header *table)
+{
+	extern int main_argc;
+	extern char *main_argv[];
+	char *c = phys_to_virt(table->cmdline);
+
+	while(*c != '\0' && main_argc < MAX_ARGC_COUNT) {
+		main_argv[main_argc++] = c;
+
+		for( ; *c != '\0' && !isspace(*c); c++);
+
+		if (*c) {
+			*c = 0;
+			c++;
+		}
+	}
+}
+
+int get_multiboot_info(struct sysinfo_t *info)
+{
+	struct multiboot_header *table;
+
+	if (loader_eax != MULTIBOOT_MAGIC)
+		return -1;
+
+	table = (struct multiboot_header *) phys_to_virt(loader_ebx);
+
+	if (table->flags & MULTIBOOT_FLAGS_MMAP)
+		mb_parse_mmap(table, info);
+
+	if (table->flags & MULTIBOOT_FLAGS_CMDLINE)
+		mb_parse_cmdline(table);
+
+	return 0;
 }

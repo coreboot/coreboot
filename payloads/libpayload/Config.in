@@ -35,6 +35,14 @@ config TARGET_I386
 	bool
 	default y
 
+menu "Architecture Options"
+
+config MULTIBOOT
+	bool "Multiboot header support"
+	default y
+
+endmenu
+
 menu "Standard Libraries"
 
 config LIBC

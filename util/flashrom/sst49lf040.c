@@ -52,12 +52,14 @@ int write_49lf040(struct flashchip *flash, uint8_t *buf)
 		erase_sector_jedec(bios, i * page_size);
 
 		/* write to the sector */
-		printf("%04d at address: 0x%08x ", i, i * page_size);
+		if (i % 10 == 0)
+			printf("%04d at address: 0x%08x ", i, i * page_size);
 
 		write_sector_jedec(bios, buf + i * page_size,
 				   bios + i * page_size, page_size);
 
-		printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+		if (i % 10 == 0)
+			printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 		fflush(stdout);
 	}
 	printf("\n");

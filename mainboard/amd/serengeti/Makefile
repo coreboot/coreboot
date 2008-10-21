@@ -40,6 +40,7 @@ INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/reset_test.c \
 			$(src)/northbridge/amd/k8/coherent_ht.c \
 			$(src)/northbridge/amd/k8/incoherent_ht.c \
+			$(src)/northbridge/amd/k8/util.c \
 			$(src)/arch/x86/pci_ops_conf1.c \
 			$(src)/arch/x86/stage1_mtrr.c \
 			$(src)/southbridge/amd/amd8111/stage1_smbus.c \
@@ -49,7 +50,7 @@ INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/lib/clog2.c
 
 
-STAGE2_MAINBOARD_SRC = 
+STAGE2_MAINBOARD_SRC = mainboard.c
 
 $(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"

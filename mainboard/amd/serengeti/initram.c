@@ -127,6 +127,7 @@ int main(void)
 	void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn);
 	void soft_reset_x(unsigned sbbusn, unsigned sbdn);
 	int cpu_init_detected(unsigned int nodeid);
+
 	u32 init_detected;
 	static const u16 spd_addr[] = {
 		//first node
@@ -248,6 +249,8 @@ int main(void)
 	dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif
+
+	showallroutes(BIOS_DEBUG, PCI_BDF(0,0x18, 0));
 
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;

@@ -19,6 +19,7 @@
  */
 
 /{
+	device_operations="serengeti";
 	mainboard_vendor = "AMD";
 	mainboard_name = "Serengeti";
 	cpus { };

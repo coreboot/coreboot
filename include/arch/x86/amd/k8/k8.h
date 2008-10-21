@@ -131,6 +131,18 @@
 #define HTIC_INIT_Detect   (1<<6)
 
 /* Function 1 */
+/* the DRAM, MMIO,and PCIIO routing are 64-bit registers, hence the ending at 
+ * 0x78, 0xb8, and 0xd8
+ */
+#define DRAM_ROUTE_START 0x40
+#define DRAM_ROUTE_END 0x78
+#define MMIO_ROUTE_START 0x80
+#define MMIO_ROUTE_END 0xb8
+#define PCIIO_ROUTE_START 0xc0
+#define PCIIO_ROUTE_END 0xd8
+#define CONFIG_ROUTE_START 0xe0
+#define CONFIG_ROUTE_END 0xec
+
 #define PCI_IO_BASE0       0xc0
 #define PCI_IO_BASE1       0xc8
 #define PCI_IO_BASE2       0xd0
@@ -683,6 +695,10 @@ void init_fidvid_bsp(unsigned bsp_apicid);
 
 /* k8/northbridge.c */
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo);
+
+/* k8 router printing */
+void showallroutes(int level, u32 dev);
+
 /* k8/reset_test.c */
 void distinguish_cpu_resets(unsigned nodeid);
 

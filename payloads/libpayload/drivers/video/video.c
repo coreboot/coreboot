@@ -111,6 +111,11 @@ void video_console_putc(u8 row, u8 col, unsigned int ch)
 
 void video_console_putchar(unsigned int ch)
 {
+	/* replace black-on-black with light-gray-on-black.
+	   do it here, instead of in libc/console.c */
+	if ((ch & 0xFF00) == 0) {
+		ch |= 0x0700;
+	}
 	switch(ch & 0xFF) {
 	case '\r':
 		cursorx = 0;
@@ -165,6 +170,10 @@ void video_console_set_cursor(unsigned int x, unsigned int y)
 	video_console_fixup_cursor();
 }
 
+static struct console_output_driver cons = {
+	.putchar = video_console_putchar
+};
+
 int video_console_init(void)
 {
 		int i;
@@ -186,6 +195,8 @@ int video_console_init(void)
 			video_console_fixup_cursor();
 			return 0;
 		}
+
+		console_add_output_driver(&cons);
 
 		return 0;
 }

@@ -326,6 +326,11 @@ int keyboard_add_reset_handler(void (*new_handler)(void))
 	return 0;
 }
 
+static struct console_input_driver cons = {
+	.havekey = keyboard_havechar,
+	.getchar = keyboard_getchar
+};
+
 void keyboard_init(void)
 {
 	u8 mode;
@@ -350,5 +355,7 @@ void keyboard_init(void)
 
 	/* Write the new mode */
 	keyboard_set_mode(mode);
+
+	console_add_input_driver(&cons);
 }
 

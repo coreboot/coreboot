@@ -145,9 +145,20 @@ usb_hid_set_protocol (usbdev_t *dev, interface_descriptor_t *interface, hid_prot
 	dev->controller->control (dev, OUT, sizeof (dev_req_t), &dr, 0, 0);
 }
 
+static struct console_input_driver cons = {
+	.havekey = usbhid_havechar,
+	.getchar = usbhid_getchar
+};
+
 void
 usb_hid_init (usbdev_t *dev)
 {
+
+	static int installed = 0;
+	if (!installed) {
+		installed = 1;
+		console_add_input_driver (&cons);
+	}
 
 	configuration_descriptor_t *cd = (configuration_descriptor_t*)dev->configuration;
 	interface_descriptor_t *interface = (interface_descriptor_t*)(((char *) cd) + cd->bLength);

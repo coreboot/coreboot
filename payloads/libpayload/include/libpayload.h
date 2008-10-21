@@ -145,7 +145,7 @@ int keyboard_add_reset_handler(void (*new_handler)(void));
  */
 void serial_init(void);
 void serial_hardware_init(int port, int speed, int word_bits, int parity, int stop_bits);
-void serial_putchar(unsigned char c);
+void serial_putchar(unsigned int c);
 int serial_havechar(void);
 int serial_getchar(void);
 void serial_clear(void);
@@ -192,13 +192,29 @@ int get_option(void *dest, char *name);
  * @{
  */
 void console_init(void);
-int putchar(int c);
+int putchar(unsigned int c);
 int puts(const char *s);
 int havekey(void);
 int getchar(void);
 int getchar_timeout(int *ms);
 
 extern int last_putchar;
+
+struct console_input_driver;
+struct console_input_driver {
+	struct console_input_driver *next;
+	int (*havekey) (void);
+	int (*getchar) (void);
+};
+
+struct console_output_driver;
+struct console_output_driver {
+	struct console_output_driver *next;
+	void (*putchar) (unsigned int);
+};
+
+void console_add_output_driver(struct console_output_driver *out);
+void console_add_input_driver(struct console_input_driver *in);
 
 #define havechar havekey
 /** @} */

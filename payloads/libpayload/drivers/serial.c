@@ -58,15 +58,27 @@ void serial_hardware_init(int port, int speed, int word_bits, int parity, int st
 	outb(reg &= ~0x80, port + 0x03);
 }
 
+static struct console_input_driver consin = {
+	.havekey = serial_havechar,
+	.getchar = serial_getchar
+};
+
+static struct console_output_driver consout = {
+	.putchar = serial_putchar
+};
+
 void serial_init(void)
 {
 #ifdef CONFIG_SERIAL_SET_SPEED
 	serial_hardware_init(IOBASE, CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
 #endif
+	console_add_input_driver(&consin);
+	console_add_output_driver(&consout);
 }
 
-void serial_putchar(unsigned char c)
+void serial_putchar(unsigned int c)
 {
+	c &= 0xff;
 	while ((inb(IOBASE + 0x05) & 0x20) == 0) ;
 	outb(c, IOBASE);
 }

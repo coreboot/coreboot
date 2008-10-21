@@ -31,6 +31,21 @@
 #include <libpayload.h>
 #include <usb/usb.h>
 
+struct console_output_driver *console_out;
+struct console_input_driver *console_in;
+
+void console_add_output_driver(struct console_output_driver *out)
+{
+	out->next = console_out;
+	console_out = out;
+}
+
+void console_add_input_driver(struct console_input_driver *in)
+{
+	in->next = console_in;
+	console_in = in;
+}
+
 void console_init(void)
 {
 #ifdef CONFIG_VIDEO_CONSOLE
@@ -46,15 +61,12 @@ void console_init(void)
 
 static void device_putchar(unsigned char c)
 {
-#ifdef CONFIG_VIDEO_CONSOLE
-	video_console_putchar(0x700| c);
-#endif
-#ifdef CONFIG_SERIAL_CONSOLE
-	serial_putchar(c);
-#endif
+	struct console_output_driver *out;
+	for (out = console_out; out != 0; out = out->next)
+		out->putchar(c);
 }
 
-int putchar(int c)
+int putchar(unsigned int c)
 {
 	c &= 0xff;
 	if (c == '\n')
@@ -78,19 +90,13 @@ int puts(const char *s)
 
 int havekey(void)
 {
-#ifdef CONFIG_USB_HID
+#ifdef CONFIG_USB
 	usb_poll();
-	if (usbhid_havechar())
-		return 1;
 #endif
-#ifdef CONFIG_SERIAL_CONSOLE
-	if (serial_havechar())
-		return 1;
-#endif
-#ifdef CONFIG_PC_KEYBOARD
-	if (keyboard_havechar())
-		return 1;
-#endif
+	struct console_input_driver *in;
+	for (in = console_in; in != 0; in = in->next)
+		if (in->havekey())
+			return 1;
 	return 0;
 }
 
@@ -101,19 +107,13 @@ int havekey(void)
 int getchar(void)
 {
 	while (1) {
-#ifdef CONFIG_USB_HID
+#ifdef CONFIG_USB
 		usb_poll();
-		if (usbhid_havechar())
-			return usbhid_getchar();
 #endif
-#ifdef CONFIG_SERIAL_CONSOLE
-		if (serial_havechar())
-			return serial_getchar();
-#endif
-#ifdef CONFIG_PC_KEYBOARD
-		if (keyboard_havechar())
-			return keyboard_getchar();
-#endif
+		struct console_input_driver *in = console_in;
+		for (in = console_in; in != 0; in = in->next)
+			if (in->havechar())
+				return in->getchar();
 	}
 }
 

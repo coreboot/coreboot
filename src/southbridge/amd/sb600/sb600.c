@@ -60,13 +60,13 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-static void pmio_write_index(unsigned long port_base, u8 reg, u8 value)
+static void pmio_write_index(u16 port_base, u8 reg, u8 value)
 {
 	outb(reg, port_base);
 	outb(value, port_base + 1);
 }
 
-static u8 pmio_read_index(unsigned long port_base, u8 reg)
+static u8 pmio_read_index(u16 port_base, u8 reg)
 {
 	outb(reg, port_base);
 	return inb(port_base + 1);
@@ -74,26 +74,22 @@ static u8 pmio_read_index(unsigned long port_base, u8 reg)
 
 void pm_iowrite(u8 reg, u8 value)
 {
-	unsigned long port_base = 0xcd6;
-	pmio_write_index(port_base, reg, value);
+	pmio_write_index(PM_INDEX, reg, value);
 }
 
 u8 pm_ioread(u8 reg)
 {
-	unsigned long port_base = 0xcd6;
-	return pmio_read_index(port_base, reg);
+	return pmio_read_index(PM_INDEX, reg);
 }
 
 void pm2_iowrite(u8 reg, u8 value)
 {
-	unsigned long port_base = 0xcd0;
-	pmio_write_index(port_base, reg, value);
+	pmio_write_index(PM2_INDEX, reg, value);
 }
 
 u8 pm2_ioread(u8 reg)
 {
-	unsigned long port_base = 0xcd0;
-	return pmio_read_index(port_base, reg);
+	return pmio_read_index(PM2_INDEX, reg);
 }
 
 static void set_pmio_enable_bits(device_t sm_dev, u32 reg_pos,

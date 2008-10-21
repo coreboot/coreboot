@@ -23,6 +23,12 @@
 #include <device/pci_ids.h>
 #include "chip.h"
 
+/* Power management index/data registers */
+#define PM_INDEX	0xcd6
+#define PM_DATA		0xcd7
+#define PM2_INDEX	0xcd0
+#define PM2_DATA	0xcd1
+
 extern void pm_iowrite(u8 reg, u8 value);
 extern u8 pm_ioread(u8 reg);
 extern void pm2_iowrite(u8 reg, u8 value);

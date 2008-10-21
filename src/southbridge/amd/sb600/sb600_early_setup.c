@@ -18,24 +18,22 @@
  */
 
 #include <arch/cpu.h>
+#include "sb600.h"
 #include "sb600_smbus.c"
 
 #define SMBUS_IO_BASE 0x1000	/* Is it a temporary SMBus I/O base address? */
 	 /*SIZE 0x40 */
 
-
-/* Copied from sb600.c
-* 0xCD6-0xCD7 is power management I/O register.*/
 static void pmio_write(u8 reg, u8 value)
 {
-	outb(reg, 0xCD6);
-	outb(value, 0xCD6 + 1);
+	outb(reg, PM_INDEX);
+	outb(value, PM_INDEX + 1);
 }
 
 static u8 pmio_read(u8 reg)
 {
-	outb(reg, 0xCD6);
-	return inb(0xCD6 + 1);
+	outb(reg, PM_INDEX);
+	return inb(PM_INDEX + 1);
 }
 
 /* Get SB ASIC Revision.*/

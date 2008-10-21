@@ -115,6 +115,8 @@ $(obj)/lib/libpayload.a: $(OBJS)
 	$(Q)printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AR) rc $@ $(OBJS)
 
+include util/kconfig/Makefile
+
 $(obj)/%.o: $(src)/%.c
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
@@ -164,7 +166,6 @@ distclean: clean
 	$(Q)rm -rf build
 	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
-include util/kconfig/Makefile
 
 .PHONY: $(PHONY) prepare clean distclean doxygen doxy
 

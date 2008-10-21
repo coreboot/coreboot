@@ -193,10 +193,9 @@ int video_console_init(void)
 			}
 
 			video_console_fixup_cursor();
+			console_add_output_driver(&cons);
 			return 0;
 		}
-
-		console_add_output_driver(&cons);
 
 		return 0;
 }

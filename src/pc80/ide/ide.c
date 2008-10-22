@@ -29,6 +29,7 @@ static int await_ide(int (*done)(struct controller *ctrl),
 	struct controller *ctrl, unsigned long timeout)
 {
 	int result;
+	timeout *= 100; /* timeout was ms; finer granularity => reacts faster */
 	for(;;) {
 		result = done(ctrl);
 		if (result) {
@@ -38,7 +39,7 @@ static int await_ide(int (*done)(struct controller *ctrl),
                 if (timeout-- <= 0) {
 			break;
 		}
-                udelay(1000); /* Added to avoid spinning GRW */
+		udelay(10); /* Added to avoid spinning GRW */
 	}
 	printk_info("IDE time out\n");
 	return -1;

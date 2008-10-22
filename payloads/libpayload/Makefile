@@ -142,8 +142,8 @@ install: lib
 	$(Q)install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
 	$(Q)install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
 	$(Q)install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
-	$(Q)install -m 644 $(KCONFIG_AUTOHEADER) $(DESTDIR)/libpayload/include/l ibpayload-config.h
-	$(Q)install -m 644 $(KCONFIG_AUTOCONFIG) $(DESTDIR)/libpayload/libpayloa d.config
+	$(Q)install -m 644 $(KCONFIG_AUTOHEADER) $(DESTDIR)/libpayload/include/libpayload-config.h
+	$(Q)install -m 644 $(KCONFIG_AUTOCONFIG) $(DESTDIR)/libpayload/libpayload.config
 
 prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog

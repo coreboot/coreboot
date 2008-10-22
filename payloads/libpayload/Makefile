@@ -134,13 +134,16 @@ install: lib
 	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/include\n"
 	$(Q)install -m 755 -d $(DESTDIR)/libpayload/include
 	$(Q)for file in `find include -name *.h -type f`; do \
-		install -m 644 -D $$file $(DESTDIR)/libpayload/$$file; \
+		install -m 755 -d $(DESTDIR)/libpayload/`dirname $$file`; \
+		install -m 644 $$file $(DESTDIR)/libpayload/$$file; \
 	done
 	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/bin\n"
 	$(Q)install -m 755 -d $(DESTDIR)/libpayload/bin
 	$(Q)install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
 	$(Q)install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
 	$(Q)install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
+	$(Q)install -m 644 $(KCONFIG_AUTOHEADER) $(DESTDIR)/libpayload/include/l ibpayload-config.h
+	$(Q)install -m 644 $(KCONFIG_AUTOCONFIG) $(DESTDIR)/libpayload/libpayloa d.config
 
 prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog

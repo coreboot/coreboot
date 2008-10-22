@@ -138,13 +138,13 @@ int printk(int msg_level, const char *fmt, ...)
 	console_tx_byte('>', (void *)0);
 
 	i = 3;
+#else
+	i = 0;
+#endif
 
 	if (msg_level > console_loglevel()) {
 		return 0;
 	}
-#else
-	i = 0;
-#endif
 
 	va_start(args, fmt);
 	i += vtxprintf(console_tx_byte, (void *)0, fmt, args);

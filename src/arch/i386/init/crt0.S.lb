@@ -74,6 +74,11 @@ __main:
 	movl	$_iseg,  %edi
 	movl	$_eiseg, %ecx
 	subl	%edi, %ecx
+	movb	%cl, %al
+	shrl	$2, %ecx
+	andb	$3, %al
+	rep	movsl
+	movb	%al, %cl
 	rep	movsb
 #else
 	leal	4+_liseg, %esi
@@ -215,7 +220,11 @@ crt_console_tx_string:
 
 #if defined(CONSOLE_DEBUG_TX_STRING) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
 .section ".rom.data"
+#if CONFIG_COMPRESS
+str_copying_to_ram:  .string "Uncompressing coreboot to RAM.\r\n"
+#else
 str_copying_to_ram:  .string "Copying coreboot to RAM.\r\n"
+#endif
 str_pre_main:        .string "Jumping to coreboot.\r\n"
 .previous
 

@@ -115,16 +115,6 @@ $(obj)/lib/libpayload.a: $(OBJS)
 	$(Q)printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(AR) rc $@ $(OBJS)
 
-include util/kconfig/Makefile
-
-$(obj)/%.o: $(src)/%.c
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
-
-$(obj)/%.S.o: $(src)/%.S
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
-
 endif
 
 install: lib
@@ -169,6 +159,22 @@ distclean: clean
 	$(Q)rm -rf build
 	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
+# This include must come _before_ the pattern rules below!
+# Order _does_ matter for pattern rules.
+include util/kconfig/Makefile
+
+ifeq ($(strip $(HAVE_DOTCONFIG)),)
+else
+
+$(obj)/%.o: $(src)/%.c
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
+
+$(obj)/%.S.o: $(src)/%.S
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) -m32 $(CFLAGS) -c -o $@ $<
+
+endif
 
 .PHONY: $(PHONY) prepare clean distclean doxygen doxy
 

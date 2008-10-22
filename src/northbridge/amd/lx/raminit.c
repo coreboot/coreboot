@@ -194,7 +194,7 @@ static void checkDDRMax(void)
 	}
 
 	/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
-	speed = 2 * ((10000 / (((spd_byte0 >> 4) * 10) + (spd_byte0 & 0x0F))));
+	speed = 20000 / (((spd_byte0 >> 4) * 10) + (spd_byte0 & 0x0F));
 
 	/* current speed > max speed? */
 	if (GeodeLinkSpeed() > speed) {
@@ -274,15 +274,14 @@ static void setCAS(void)
 		spd_byte = spd_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_2ND);
 		if (spd_byte != 0) {
 			/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
-			dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) +
-						(spd_byte & 0x0F)));
+			dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 			if (dimm_speed >= glspeed) {
 				casmap_shift = 1; /* -.5 is a shift of 1 */
 				/* IF -1 timing is supported, check -1 timing > GeodeLink */
 				spd_byte = spd_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
-					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
+					dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 					if (dimm_speed >= glspeed) {
 						casmap_shift = 2; /* -1 is a shift of 2 */
 					}
@@ -306,14 +305,14 @@ static void setCAS(void)
 		spd_byte = spd_read_byte(DIMM1, SPD_SDRAM_CYCLE_TIME_2ND);
 		if (spd_byte != 0) {
 			/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
-			dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
+			dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 			if (dimm_speed >= glspeed) {
 				casmap_shift = 1; /* -.5 is a shift of 1 */
 				/* IF -1 timing is supported, check -1 timing > GeodeLink */
 				spd_byte = spd_read_byte(DIMM1, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
-					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
+					dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 					if (dimm_speed >= glspeed) {
 						casmap_shift = 2; /* -1 is a shift of 2 */
 					}

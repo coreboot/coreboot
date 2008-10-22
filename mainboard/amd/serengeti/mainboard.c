@@ -35,14 +35,14 @@
 
 static void show(struct device *dev)
 {
-	showallroutes(BIOS_DEBUG, PCI_BDF(0,0x18, 0));
+	showallroutes(BIOS_DEBUG, PCI_BDF(0,0x18, 1));
 
 }
 
 struct device_operations serengeti = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = 1}}},
-	.constructor		 = default_device_constructor,
+			 .device = 1}}},
+	.constructor = default_device_constructor,
 	.phase6_init = show,
 };

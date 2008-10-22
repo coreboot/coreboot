@@ -79,7 +79,7 @@ static char *ileave(u32 base)
  */
 static int node(u32 reg)
 {
-	return BITS(reg, 0, 7);
+	return BITS(reg, 0, 0x7);
 }
 
 /**
@@ -88,7 +88,7 @@ static int node(u32 reg)
  */
 static int link(u32 reg)
 {
-	return BITS(reg, 4, 3);
+	return BITS(reg, 4, 0x3);
 }
 
 
@@ -103,9 +103,9 @@ static int link(u32 reg)
  */
 void showdram(int level, u8 which, u32 base, u32 lim)
 {
-	printk(level, "DRAM(%02x)%08x-%08x, ->(%d), %s, %s, %s, %d\n", 
-			which, ((base&0xfff0000)<<8), 
-			((lim&0xffff0000<<8))+0xffffff, 
+	printk(level, "DRAM(%02x)%010llx-%010llx, ->(%d), %s, %s, %s, %d\n", 
+			which, (((u64)base&0xffff0000)<<8), 
+			(((u64)lim&0xffff0000)<<8)+0xffffff, 
 			node(lim), re(base), we(base), 
 			ileave(base), (lim>>8)&3);
 }
@@ -121,10 +121,10 @@ void showdram(int level, u8 which, u32 base, u32 lim)
 void showconfig(int level, u8 which, u32 reg)
 {
 	/* don't use node() and link() here */
-	printk(level, "CONFIG(%02x)%08x-%08x ->(%d,%d),%s %s CE %d\n", 
+	printk(level, "CONFIG(%02x)%02x-%02x ->(%d,%d),%s %s CE %d\n", 
 			which, BITS(reg, 24, 0xff), BITS(reg, 16, 0xff),
-			BITS(reg, 4, 7), BITS(reg, 8, 3), 
-			re(reg), we(reg), BITS(reg, 0, 4));
+			BITS(reg, 4, 0x7), BITS(reg, 8, 0x3), 
+			re(reg), we(reg), BITS(reg, 2, 0x1));
 }
 			
 /**
@@ -138,15 +138,16 @@ void showconfig(int level, u8 which, u32 reg)
  */
 void showpciio(int level, u8 which, u32 base, u32 lim)
 {
-	printk(level, "PCIIO(%02x)%08x-%08x, ->(%d,%d), %s, %s,VGA %d ISA %d\n", 
-			which, BITS(base, 12, 0x3fff), BITS(lim, 12, 0x3fff), 
+	printk(level, "PCIIO(%02x)%07x-%07x, ->(%d,%d), %s, %s,VGA %d ISA %d\n", 
+			which, BITS(base, 12, 0x3fff)<<12,
+			(BITS(lim, 12, 0x3fff)<<12) + 0xfff, 
 			node(lim), link(lim),
 			re(base), we(base), 
-			BITS(base, 4, 1), BITS(base, 5, 1));
+			BITS(base, 4, 0x1), BITS(base, 5, 0x1));
 }
 
 /**
- * Print the pciio routing info for one base/limit pair. 
+ * Print the mmio routing info for one base/limit pair. 
  * Show base, limit, dest node, dest link on that node, read and write enable, and 
  * CPU Disable, Lock, and Non-posted. 
  * @param level printing level
@@ -156,19 +157,19 @@ void showpciio(int level, u8 which, u32 base, u32 lim)
  */
 void showmmio(int level, u8 which, u32 base, u32 lim)
 {
-	printk(level, "MMIO(%02x)%08x-%08x, ->(%d,%d), %s, %s, CPU disable %d, Lock %d, Non posted %d\n", 
-			which, BITS(base, 0, 0xffffff00)<<8, 
-			(BITS(lim, 0, 0xffffff00)<<8)+0xffff, 
+	printk(level, "MMIO(%02x)%010llx-%010llx, ->(%d,%d), %s, %s, CPU disable %d, Lock %d, Non posted %d\n", 
+			which, ((u64)BITS(base, 0, 0xffffff00))<<8, 
+			(((u64)BITS(lim, 0, 0xffffff00))<<8)+0xffff, 
 			node(lim), link(lim), re(base), we(base), 
-			BITS(base, 4, 1), 
-			BITS(base, 7, 1), BITS(lim, 7, 1));
+			BITS(base, 4, 0x1), 
+			BITS(base, 7, 0x1), BITS(lim, 7, 0x1));
 
 }
 
 /**
  * Show all dram routing registers. This function is callable at any time. 
  * @param level The debug level
- * @param dev 32-bit number if the standard bus/dev/fn format which is used raw config space
+ * @param dev 32-bit number in the standard bus/dev/fn format which is used raw config space
  */
 void showalldram(int level, u32 dev)
 {
@@ -183,7 +184,7 @@ void showalldram(int level, u32 dev)
 /**
  * Show all mmio routing registers. This function is callable at any time. 
  * @param level The debug level
- * @param dev 32-bit number if the standard bus/dev/fn format which is used raw config space
+ * @param dev 32-bit number in the standard bus/dev/fn format which is used raw config space
  */
 void showallmmio(int level, u32 dev)
 {
@@ -198,7 +199,7 @@ void showallmmio(int level, u32 dev)
 /**
  * Show all pciio routing registers. This function is callable at any time. 
  * @param level The debug level
- * @param dev 32-bit number if the standard bus/dev/fn format which is used raw config space
+ * @param dev 32-bit number in the standard bus/dev/fn format which is used raw config space
  */
 void showallpciio(int level, u32 dev)
 {
@@ -213,7 +214,7 @@ void showallpciio(int level, u32 dev)
 /**
  * Show all config routing registers. This function is callable at any time. 
  * @param level The debug level
- * @param dev 32-bit number if the standard bus/dev/fn format which is used raw config space
+ * @param dev 32-bit number in the standard bus/dev/fn format which is used raw config space
  */
 void showallconfig(int level, u32 dev)
 {
@@ -227,7 +228,7 @@ void showallconfig(int level, u32 dev)
 /**
  * Show all routing registers. This function is callable at any time. 
  * @param level The debug level
- * @param dev 32-bit number if the standard bus/dev/fn format which is used raw config space
+ * @param dev 32-bit number in the standard bus/dev/fn format which is used raw config space
  */
 void showallroutes(int level, u32 dev)
 {

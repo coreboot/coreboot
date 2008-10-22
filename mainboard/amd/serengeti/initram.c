@@ -250,7 +250,7 @@ int main(void)
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif
 
-	showallroutes(BIOS_DEBUG, PCI_BDF(0,0x18, 0));
+	showallroutes(BIOS_DEBUG, PCI_BDF(0,0x18, 1));
 
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;

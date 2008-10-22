@@ -137,7 +137,7 @@ void pirq_routing_irqs(unsigned long addr)
 			/* yet not routed */
 			if (!pirq[link - 1]) {
 
-				for (k = 2; k < 15; k++) {
+				for (k = 2; k <= 15; k++) {
 
 					if (!((bitmap >> k) & 1))
 						continue;

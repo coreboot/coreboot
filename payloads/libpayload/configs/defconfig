@@ -6,6 +6,11 @@
 CONFIG_TARGET_I386=y
 
 #
+# Architecture Options
+#
+# CONFIG_MULTIBOOT is not set
+
+#
 # Standard Libraries
 #
 CONFIG_LIBC=y

@@ -50,21 +50,24 @@ static int _halfdelay = 0;
    do the cooking in here, but we should probably eventually
    pass it to dedicated vt100 code */
 
-static int getkeyseq(char *buffer, int len)
+static int getkeyseq(char *buffer, int len, int max)
 {
 	int i;
 
-	for(i = 0; i < 75; i++) {
-		if (serial_havechar())
-			break;
-		mdelay(1);
+	while (1) {
+		for(i = 0; i < 75; i++) {
+			if (serial_havechar())
+				break;
+			mdelay(1);
+		}
+
+		if (i == 75)
+			return len;
+
+		buffer[len++] = serial_getchar();
+		if (len == max)
+			return len;
 	}
-
-	if (i == 75)
-		return len;
-
-	buffer[len++] = serial_getchar();
-	return getkeyseq(buffer, len);
 }
 
 static struct {
@@ -99,7 +102,7 @@ static struct {
 static int handle_escape(void)
 {
 	char buffer[5];
-	int len = getkeyseq(buffer, 0);
+	int len = getkeyseq(buffer, 0, sizeof(buffer));
 	int i, t;
 
 	if (len == 0)

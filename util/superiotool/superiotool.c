@@ -32,7 +32,7 @@ int chip_found = 0;
 uint8_t regval(uint16_t port, uint8_t reg)
 {
 	outb(reg, port);
-	return inb(port + 1);
+	return inb(port + ((port == 0x3bd) ? 2 : 1)); /* 0x3bd is special. */
 }
 
 void regwrite(uint16_t port, uint8_t reg, uint8_t val)

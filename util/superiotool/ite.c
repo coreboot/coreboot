@@ -23,12 +23,11 @@
 
 #define CHIP_ID_BYTE1_REG	0x20
 #define CHIP_ID_BYTE2_REG	0x21
-
 #define CHIP_VERSION_REG	0x22
+#define ISA_PNP_ADDR		0x279
 
 static const struct superio_registers reg_table[] = {
-	{0x8661, "IT8661F", {
-		/* TODO: Needs different init sequence. */
+	{0x8661, "IT8661F/IT8770F", {
 		{NOLDN, NULL,
 			{0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x20,0x21,0x22,
 			 0x23,0x24,EOT},
@@ -60,6 +59,10 @@ static const struct superio_registers reg_table[] = {
 			{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 			 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 			 0x00,0x00,0x00,0x00,EOT}},
+		{EOT}}},
+	{0x8673, "IT8673F", {
+		{EOT}}},
+	{0x8681, "IT8671F/IT8687R", {
 		{EOT}}},
 	{0x8702, "IT8702F", {
 		{EOT}}},
@@ -436,22 +439,53 @@ static const struct superio_registers ec_table[] = {
 	{EOT}
 };
 
+/* Works for: IT8661F/IT8770F */
+static const uint8_t initkey_it8661f[][4] = {
+	{0x86, 0x61, 0x55, 0x55},	/* 0x3f0 */
+	{0x86, 0x61, 0x55, 0xaa},	/* 0x3bd */
+	{0x86, 0x61, 0xaa, 0x55},	/* 0x370 */
+};
+
+/* Works for: IT8671F/IT8687R, IT8673F */
+static const uint8_t initkey_it8671f[][4] = {
+	{0x86, 0x80, 0x55, 0x55},	/* 0x3f0 */
+	{0x86, 0x80, 0x55, 0xaa},	/* 0x3bd */
+	{0x86, 0x80, 0xaa, 0x55},	/* 0x370 */
+};
+
+/* Works for: IT8661F/IT8770F, IT8671F/IT8687R, IT8673F. */
+static const uint8_t initkey_mbpnp[] = {
+	0x6a, 0xb5, 0xda, 0xed, 0xf6, 0xfb, 0x7d, 0xbe, 0xdf, 0x6f, 0x37,
+	0x1b, 0x0d, 0x86, 0xc3, 0x61, 0xb0, 0x58, 0x2c, 0x16, 0x8b, 0x45,
+	0xa2, 0xd1, 0xe8, 0x74, 0x3a, 0x9d, 0xce, 0xe7, 0x73, 0x39,
+};
+
+/* Works for: IT8661F/IT8770F, IT8671F/IT8687R, IT8673F. */
+static void enter_conf_mode_ite_legacy(uint16_t port, const uint8_t init[][4])
+{
+	int i, idx;
+
+	/* Determine Super I/O config port. */
+	idx = (port == 0x3f0) ? 0 : ((port == 0x3bd) ? 1 : 2);
+	for (i = 0; i < 4; i++)
+		outb(init[idx][i], ISA_PNP_ADDR);
+
+	/* Sequentially write the 32 MB PnP init values. */
+	for (i = 0; i < 32; i++)
+		outb(initkey_mbpnp[i], port);
+}
+
 /**
  * IT871[01]F and IT8708F use 0x87, 0x87
  * IT8761F uses 0x87, 0x61, 0x55, 0x55/0xaa
  * IT86xxF series uses different ports
- * IT8661F uses 0x86, 0x61, 0x55/0xaa, 0x55/0xaa and 32 more writes
- * IT8673F uses 0x86, 0x80, 0x55/0xaa, 0x55/0xaa and 32 more writes
  */
 static void enter_conf_mode_ite(uint16_t port)
 {
 	outb(0x87, port);
 	outb(0x01, port);
 	outb(0x55, port);
-	if (port == 0x2e)
-		outb(0x55, port);
-	else
-		outb(0xaa, port);
+	outb((port == 0x2e) ? 0x55 : 0xaa, port);
 }
 
 static void exit_conf_mode_ite(uint16_t port)
@@ -498,13 +532,23 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 
 void probe_idregs_ite(uint16_t port)
 {
-	enter_conf_mode_ite(port);
-	probe_idregs_ite_helper("(init=0x87,0x01,0x55,0x55/0xaa) ", port);
-	exit_conf_mode_ite(port);
+	if (port == 0x3f0 || port == 0x3bd || port == 0x370) {
+		enter_conf_mode_ite_legacy(port, initkey_it8661f);
+		probe_idregs_ite_helper("(init=legacy/it8661f) ", port);
+		exit_conf_mode_ite(port);
 
-	enter_conf_mode_winbond_fintek_ite_8787(port);
-	probe_idregs_ite_helper("(init=0x87,0x87) ", port);
-	exit_conf_mode_winbond_fintek_ite_8787(port);
+		enter_conf_mode_ite_legacy(port, initkey_it8671f);
+		probe_idregs_ite_helper("(init=legacy/it8671f) ", port);
+		exit_conf_mode_ite(port);
+	} else {
+		enter_conf_mode_ite(port);
+		probe_idregs_ite_helper("(init=0x87,0x01,0x55,0x55/0xaa) ", port);
+		exit_conf_mode_ite(port);
+
+		enter_conf_mode_winbond_fintek_ite_8787(port);
+		probe_idregs_ite_helper("(init=0x87,0x87) ", port);
+		exit_conf_mode_winbond_fintek_ite_8787(port);
+	}
 }
 
 void print_ite_chips(void)

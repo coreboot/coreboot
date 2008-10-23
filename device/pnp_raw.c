@@ -40,7 +40,7 @@ void rawpnp_enter_ext_func_mode(u16 port)
 /**
  * Exit the PNP extended function mode (a.k.a. "MB PnP" or "config" mode).
  *
- * @param dev The device IO port.
+ * @param port The device I/O port.
  */
 void rawpnp_exit_ext_func_mode(u16 port)
 {
@@ -89,7 +89,7 @@ u8 rawpnp_read_config(u16 port, u8 reg)
  * PNP has up to 16 logical devices. They are selected by writing the
  * logical device number (LDN) to register 0x07.
  *
- * @param dev The device I/O port.
+ * @param port The device I/O port.
  * @param ldn The logical device (number) which should be selected.
  */
 void rawpnp_set_logical_device(u16 port, u8 ldn)

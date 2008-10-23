@@ -108,9 +108,9 @@ void default_device_constructor(struct device *dev, struct device_operations *op
 }
 
 /**
- * Given a path, locate the device_operations  for it from all_device_operations..
+ * Given a path, locate the device_operations for it from all_device_operations.
  *
- * @param path Path to the device to be created.
+ * @param id TODO
  * @return Pointer to the ops or 0, if none found.
  * @see device_path
  */
@@ -173,7 +173,6 @@ void dev_init(void)
  * then no constructor is run.
  *
  * @param dev  Pointer to the newly created device structure.
- * @param path Path to the device to be created.
  * @see device_path
  */
 void constructor(struct device *dev)
@@ -198,6 +197,8 @@ void constructor(struct device *dev)
 			dev_id_string(&dev->id));
 }
 
+spin_define(dev_lock);
+
 /**
  * Allocate a new device structure and attach it to the device tree as a
  * child of the parent bus.
@@ -208,9 +209,6 @@ void constructor(struct device *dev)
  * @return Pointer to the newly created device structure.
  * @see device_path
  */
-
-spin_define(dev_lock);
-
 struct device *alloc_dev(struct bus *parent, struct device_path *path,
 			 struct device_id *devid)
 {

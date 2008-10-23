@@ -99,8 +99,7 @@ u8 spd_read_byte(u16 device, u8 address)
 
 /** 
   * main for initram for the AMD Serengeti
- * @param init_detected Used to indicate that we have been started via init
- * @returns 0 on success
+ * init_detected Used to indicate that we have been started via init
  * The purpose of this code is to not only get ram going, but get any other cpus/cores going. 
  * The two activities are very tightly connected and not really seperable. 
  * The BSP (boot strap processor) Core 0 (BSC) is responsible for all training or all sockets. Note that
@@ -110,12 +109,12 @@ u8 spd_read_byte(u16 device, u8 address)
  * The bringup proceeds in several sections. The cool part is that this code is run by all CPUs, and
  * control flow is managed by seeing which CPU we are -- BSP or AP? 
  * 
-  */
-/* 
  * init_detected is used to determine if we did a soft reset as required by a reprogramming of the 
  * hypertransport links. If we did this kind of reset, bit 11 will be set in the MTRRdefType_MSR MSR. 
  * That may seem crazy, but there are not lots of places to hide a bit when the CPU does a reset. 
  * This value is picked up in assembly, or it should be. 
+ *
+ * @return 0 on success
  */
 int main(void)
 {

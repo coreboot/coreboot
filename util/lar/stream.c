@@ -329,10 +329,11 @@ int lar_add_bootblock(struct lar *lar, const char *bootblock)
 }
 
 /**
- * mmap() the LAR archive
- * @param lar The LAR archive information to map
- * @param u32 size Size of the mapped region
- * @return 0 on success, or -1 on failure
+ * mmap() the LAR archive.
+ *
+ * @param lar The LAR archive information to map.
+ * @param size Size of the mapped region.
+ * @return 0 on success, or -1 on failure.
  */
 static int _map_lar(struct lar *lar, u32 size)
 {
@@ -439,7 +440,7 @@ err:
 
 /**
  * Open an existing LAR archive
- * @param The archive filename to open
+ * @param archive The archive filename to open
  * @return A LAR archive structure for the opened archive
  */
 struct lar * lar_open_archive(const char *archive)
@@ -802,9 +803,9 @@ char *mapfile(char *filename, u32 *size)
 /**
  * Given a name, return the size of the header for that name.  
  * 
- * @param name header name
+ * @param pathname header name
  * @param new_pathlen pointer to the (possibly truncated) pathlen
- * @return  header size
+ * @return header size
  */
 int header_len(char *pathname, int *new_pathlen)
 {
@@ -823,7 +824,8 @@ int header_len(char *pathname, int *new_pathlen)
 
 /**
  * Return the amount of space left in a lar, given a name for the entry
- * @param Name of the entry
+ * @param lar TODO
+ * @param name Name of the entry
  * @return Maximum possible size for the entry
  */
 int maxsize(struct lar *lar, char *name)
@@ -937,7 +939,7 @@ int lar_add_entry(struct lar *lar, char *pathname, void *data,
 /**
  * Add a new file to the LAR archive
  * @param lar The LAR archive to write into
- * @param name The name of the file to add
+ * @param file The name of the file to add (TODO: Fix comment)
  * @return  0 on success, or -1 on failure
  */
 int lar_add_file(struct lar *lar, struct file* file)

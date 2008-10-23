@@ -98,6 +98,7 @@ static void smbus_wait_until_ready(u16 smbus_io_base)
  *
  * @param dimm The address location of the DIMM on the SMBus.
  * @param offset The offset the data is located at.
+ * @param smbus_io_base The SMBus I/O base, usually 0x400.
  */
 u8 smbus_read_byte(u16 dimm, u8 offset, u16 smbus_io_base)
 {
@@ -138,7 +139,7 @@ u8 smbus_read_byte(u16 dimm, u8 offset, u16 smbus_io_base)
 /**
  * Enable the smbus on vt8237-based systems
  *
- * @param smbus_io_base: The SMBus I/O base, usually 0x400
+ * @param smbus_io_base The SMBus I/O base, usually 0x400.
  */
 void enable_smbus(u16 smbus_io_base)
 {

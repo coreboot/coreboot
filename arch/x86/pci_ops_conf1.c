@@ -105,8 +105,9 @@ void pci_conf1_write_config32(u32 bdf, int where, u32 value)
  * We should consider a breadth-first search. The reason is that in almost all cases, 
  * the device you want in the coreboot context is on bus 0. 
  * 
- * @param vid vendor id
- * @param did device ide
+ * @param bus Bus
+ * @param vid vendor ID
+ * @param did device ID
  * @param busdevfn pointer to a u32 in which the slot is returned. 
  * @return 1 if found, 0 otherwise
  */

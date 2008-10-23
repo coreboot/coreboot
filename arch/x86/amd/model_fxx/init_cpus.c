@@ -47,7 +47,7 @@
  * core_range = 0 : all cores
  * core range = 1 : core 0 only
  * core range = 2 : cores other than core0
- * @param process pointer to the function to run
+ * @param process_ap pointer to the function to run
  * @param gp general purpose argument to be passed as a parameter to the function
  */
 void for_each_ap(unsigned bsp_apicid, unsigned core_range,

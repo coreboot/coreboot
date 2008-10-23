@@ -2942,7 +2942,7 @@ void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, const u16 *sp
  * we break it out by northbridge now to accomodate the different peculiarities of 
  * different chipsets. 
  *@param controllers Number of controllers
- *@param ctlr array of memory controllers
+ *@param ctrl array of memory controllers
  *@param sysinfo pointer to sysinfo struct. 
  */
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo)

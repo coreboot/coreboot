@@ -61,7 +61,6 @@ const static char msrnames[][20] = {
 /** 
  * Dump key MSR values for RAM init. You can call this function and then use it to 
  * compare to a factory BIOS setting.
- * @param level printk level
  */
 void dumplxmsrs(void)
 {

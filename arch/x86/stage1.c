@@ -259,7 +259,7 @@ void __attribute__((stdcall)) stage1_phase1(u32 bist, u32 init_detected)
  * TODO: Some parts of the list above are not yet done, so the code will not
  * yet work on C7.
  */
-void stage1_phase2()
+void stage1_phase2(void)
 {
 #ifdef CONFIG_CONSOLE_BUFFER
 	/* Move the printk buffer to PRINTK_BUF_ADDR_RAM */
@@ -276,7 +276,7 @@ void stage1_phase2()
  * This function is the second part of the former stage1_main() after
  * switching the stack and disabling CAR.
  */
-void __attribute__((stdcall)) stage1_phase3()
+void __attribute__((stdcall)) stage1_phase3(void)
 {
 	void *entry;
 	int ret;

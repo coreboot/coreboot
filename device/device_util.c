@@ -32,7 +32,7 @@
 /**
  * See if a device structure exists for path.
  *
- * @param bus The bus to find the device on.
+ * @param parent The bus to find the device on.
  * @param path The relative path from the bus to the appropriate device.
  * @return Pointer to a device structure for the device on bus at path
  *         or 0/NULL if no device is found.
@@ -51,8 +51,9 @@ struct device *find_dev_path(struct bus *parent, struct device_path *path)
 /**
  * See if a device structure already exists and if not allocate it.
  *
- * @param bus The bus to find the device on.
+ * @param parent The bus to find the device on (TODO: comment correct?).
  * @param path The relative path from the bus to the appropriate device.
+ * @param device_id TODO
  * @return Pointer to a device structure for the device on bus at path.
  */
 struct device *alloc_find_dev(struct bus *parent, struct device_path *path,
@@ -616,6 +617,7 @@ const char *resource_type(struct resource *resource)
  *
  * @param dev The device the stored resource lives on.
  * @param resource The resource that was just stored.
+ * @param comment TODO
  */
 void report_resource_stored(struct device *dev, struct resource *resource,
 			    const char *comment)

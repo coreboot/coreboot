@@ -608,7 +608,9 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
  *
  * TODO: This comment in copy+pasted from elsewhere and probably incorrect.
  *
- * @param dev Pointer to the bridge device.
+ * @param bus TODO
+ * @param min_devfn TODO
+ * @param max_devfn TODO
  * @param max The highest bus number assigned up to now.
  * @return The maximum bus number found, after scanning all subordinate buses.
  */

@@ -43,7 +43,7 @@ static const char * const algo_name[] = {
 /**
  * run_address is passed the address of a function taking no parameters and
  * jumps to it, returning the result. 
- * @param v the address to call as a function. 
+ * @param f the address to call as a function. 
  * returns value returned by the function. 
  */
 

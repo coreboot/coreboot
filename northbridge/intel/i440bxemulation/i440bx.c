@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2000 Ron Minnich, Advanced Computing Lab, LANL
  * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
+ * Copyright (C) 2008 Patrick Georgi <patrick@georgi-clan.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,19 +44,30 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
+#include <io.h>
 #include "i440bx.h"
 #include <statictree.h>
 
 /* Here are the ops for 440BX as a PCI domain. */
+
+static int inb_cmos(int port)
+{
+	outb(port, 0x70);
+	return inb(0x71);
+}
 
 static void pci_domain_set_resources(struct device *dev)
 {
 	struct device *mc_dev;
 	u32 tolmk;		/* Top of low mem, Kbytes. */
 	int idx;
-	struct northbridge_intel_i440bxemulation_domain_config *device_configuration =
-	    dev->device_configuration;
-	tolmk = device_configuration->ramsize * 1024;
+	/* read large mem memory descriptor
+	   for <16 MB read the more detailed small mem descriptor
+	   all values in kbytes */
+	tolmk = ((inb_cmos(0x35)<<8) |inb_cmos(0x34)) * 64;
+	if (tolmk <= 16 * 1024) {
+		tolmk = (inb_cmos(0x31)<<8) |inb_cmos(0x30);
+	}
 	printk(BIOS_WARNING, "Ignoring chipset specified RAM size. Using dts "
 		"settings of %d kB instead.\n", tolmk);
 	mc_dev = dev->link[0].children;

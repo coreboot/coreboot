@@ -19,6 +19,5 @@
  */
 
 {
-	ramsize = "128";
 	device_operations = "i440bx_domain";
 };

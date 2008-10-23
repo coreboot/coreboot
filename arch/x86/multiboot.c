@@ -78,12 +78,12 @@ unsigned long write_multiboot_info(
 	struct multiboot_info *mbi;
 	int i;
 
-	mbi = rom_table_end;
+	mbi = (void*)rom_table_end;
 	memset(mbi, 0, sizeof(*mbi));
 	rom_table_end += sizeof(*mbi);
 
 	mbi->mmap_addr = (u32) rom_table_end;
-	mb_mem = rom_table_end;
+	mb_mem = (struct multiboot_mmap_entry*)rom_table_end;
 
 	/* reserved regions */
 	reserved_mem[0].addr = low_table_start;
@@ -107,5 +107,5 @@ unsigned long write_multiboot_info(
 
 	printk(BIOS_INFO, "Multiboot Information structure has been written.\n");
 
-	return mb_mem;
+	return (unsigned long)mb_mem;
 }

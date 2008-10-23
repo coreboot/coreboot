@@ -145,7 +145,7 @@ void *arch_write_tables(void)
 #endif
 
 	/* The Multiboot information structure */
-	mbi = rom_table_end;
+	mbi = (void*)rom_table_end;
 	rom_table_end = write_multiboot_info(
 			      low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);

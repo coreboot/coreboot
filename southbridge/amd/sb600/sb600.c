@@ -62,8 +62,8 @@ void set_sm_enable_bits(struct device * sm_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-void pmio_write_index(unsigned long port_base, u8 reg, u8 value);
-u8 pmio_read_index(unsigned long port_base, u8 reg);
+void pmio_write_index(u16 port_base, u8 reg, u8 value);
+u8 pmio_read_index(u16 port_base, u8 reg);
 u8 pm_ioread(u8 reg);
 void pm_iowrite(u8 reg, u8 value);
 void pm2_iowrite(u8 reg, u8 value);

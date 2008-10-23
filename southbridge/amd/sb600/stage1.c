@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 #include <types.h>
 #include <lib.h>
 #include <console.h>
@@ -29,15 +30,15 @@
 #include <io.h>
 #include <cpu.h>
 #include "sb600_smbus.h"
+#include "sb600.h"
 
-
-void pmio_write_index(unsigned long port_base, u8 reg, u8 value)
+void pmio_write_index(u16 port_base, u8 reg, u8 value)
 {
 	outb(reg, port_base);
 	outb(value, port_base + 1);
 }
 
-u8 pmio_read_index(unsigned long port_base, u8 reg)
+u8 pmio_read_index(u16 port_base, u8 reg)
 {
 	outb(reg, port_base);
 	return inb(port_base + 1);
@@ -45,27 +46,25 @@ u8 pmio_read_index(unsigned long port_base, u8 reg)
 
 void pm_iowrite(u8 reg, u8 value)
 {
-	unsigned long port_base = 0xcd6;
-	pmio_write_index(port_base, reg, value);
+	pmio_write_index(PM_INDEX, reg, value);
 }
 
 u8 pm_ioread(u8 reg)
 {
-	unsigned long port_base = 0xcd6;
-	return pmio_read_index(port_base, reg);
+	return pmio_read_index(PM_INDEX, reg);
 }
 
 void pm2_iowrite(u8 reg, u8 value)
 {
-	unsigned long port_base = 0xcd0;
-	pmio_write_index(port_base, reg, value);
+	pmio_write_index(PM2_INDEX, reg, value);
 }
 
 u8 pm2_ioread(u8 reg)
 {
-	unsigned long port_base = 0xcd0;
-	return pmio_read_index(port_base, reg);
-}/* Get SB ASIC Revision.*/
+	return pmio_read_index(PM2_INDEX, reg);
+}
+
+/* Get SB ASIC Revision.*/
 static u8 get_sb600_revision(void)
 {
 	u32 dev;
@@ -74,7 +73,6 @@ static u8 get_sb600_revision(void)
 	}
 	return pci_conf1_read_config8(dev, 0x08);
 }
-
 
 /***************************************
 * Legacy devices are mapped to LPC space.

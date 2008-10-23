@@ -22,6 +22,10 @@
 #define CPU_VIA_C7_H
 
 
+#define SYSCFG_MSR			0xC0010010
+#define SYSCFG_MSR_MtrrFixDramModEn	(1 << 19)
+#define SYSCFG_MSR_MtrrFixDramEn	(1 << 18)
+
 #ifndef __ASSEMBLER__
 
 /* This is new. 

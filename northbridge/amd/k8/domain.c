@@ -126,18 +126,18 @@ static void k8_pci_domain_read_resources(struct device * dev)
 		}
 	}
 #ifndef CONFIG_PCI_64BIT_PREF_MEM
-	/* Initialize the system wide io space constraints */
+	/* Initialize the system-wide io space constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	resource->base  = 0x400;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-	/* Initialize the system wide memory resources constraints */
+	/* Initialize the system-wide memory resource constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
 	resource->limit = 0xfcffffffffULL;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 #else
-	/* Initialize the system wide io space constraints */
+	/* Initialize the system-wide io space constraints */
 	resource = new_resource(dev, 0);
 	resource->base  = 0x400;
 	resource->limit = 0xffffUL;
@@ -145,7 +145,7 @@ static void k8_pci_domain_read_resources(struct device * dev)
 	compute_allocate_resource(&dev->link[0], resource,
 		IORESOURCE_IO, IORESOURCE_IO);
 
-	/* Initialize the system wide prefetchable memory resources constraints */
+	/* Initialize the system-wide prefetchable memory resource constraints */
 	resource = new_resource(dev, 1);
 	resource->limit = 0xfcffffffffULL;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
@@ -153,7 +153,7 @@ static void k8_pci_domain_read_resources(struct device * dev)
 		IORESOURCE_MEM | IORESOURCE_PREFETCH,
 		IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
-	/* Initialize the system wide memory resources constraints */
+	/* Initialize the system-wide memory resource constraints */
 	resource = new_resource(dev, 2);
 	resource->limit = 0xfcffffffffULL;
 	resource->flags = IORESOURCE_MEM;
@@ -197,10 +197,10 @@ static void k8_pci_domain_set_resources(struct device * dev)
 	mem2 = find_resource(dev, 2);
 
 #if 1
-		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-			mem1->base, mem1->limit, mem1->size, mem1->align);
-		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-			mem2->base, mem2->limit, mem2->size, mem2->align);
+	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+		mem1->base, mem1->limit, mem1->size, mem1->align);
+	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+		mem2->base, mem2->limit, mem2->size, mem2->align);
 #endif
 
 	/* See if both resources have roughly the same limits */
@@ -227,10 +227,10 @@ static void k8_pci_domain_set_resources(struct device * dev)
 	}
 
 #if 1
-		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-			mem1->base, mem1->limit, mem1->size, mem1->align);
-		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-			mem2->base, mem2->limit, mem2->size, mem2->align);
+	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+		mem1->base, mem1->limit, mem1->size, mem1->align);
+	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+		mem2->base, mem2->limit, mem2->size, mem2->align);
 #endif
 
 	last = &dev->resource[dev->resources];
@@ -264,10 +264,11 @@ static void k8_pci_domain_set_resources(struct device * dev)
 #endif
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
-	/* if the hw mem hole is already set in raminit stage, here we will compare mmio_basek and hole_basek
-	* if mmio_basek is bigger that hole_basek and will use hole_basek as mmio_basek and we don't need to reset hole.
-	* otherwise We reset the hole to the mmio_basek
-	*/
+	/* If the hw mem hole is already set in raminit stage, here we will
+	 * compare mmio_basek and hole_basek. If mmio_basek is bigger than
+	 * hole_basek, we use hole_basek as mmio_basek and we don't need
+	 * to reset hole. Otherwise, we reset the hole to the mmio_basek.
+	 */
 
 		mem_hole = get_hw_mem_hole_info();
 

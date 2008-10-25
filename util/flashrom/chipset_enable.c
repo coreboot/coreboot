@@ -570,6 +570,7 @@ static int enable_flash_sis5595(struct pci_dev *dev, const char *name)
 	return 0;
 }
 
+/* Works for AMD-8111, VIA VT82C586A/B, VIA VT82C686A/B. */
 static int enable_flash_amd8111(struct pci_dev *dev, const char *name)
 {
 	uint8_t old, new;
@@ -584,6 +585,7 @@ static int enable_flash_amd8111(struct pci_dev *dev, const char *name)
 		}
 	}
 
+	/* Enable 'ROM write' bit. */
 	old = pci_read_byte(dev, 0x40);
 	new = old | 0x01;
 	if (new == old)
@@ -782,7 +784,8 @@ static const FLASH_ENABLE enables[] = {
 	{0x1106, 0x3227, "VIA VT8237",		enable_flash_vt823x},
 	{0x1106, 0x3372, "VIA VT8237S",		enable_flash_vt8237s_spi},
 	{0x1106, 0x8324, "VIA CX700",		enable_flash_vt823x},
-	{0x1106, 0x0686, "VIA VT82C686",	enable_flash_amd8111},
+	{0x1106, 0x0586, "VIA VT82C586A/B",	enable_flash_amd8111},
+	{0x1106, 0x0686, "VIA VT82C686A/B",	enable_flash_amd8111},
 	{0x1078, 0x0100, "AMD CS5530(A)",	enable_flash_cs5530},
 	{0x100b, 0x0510, "AMD SC1100",		enable_flash_sc1100},
 	{0x1039, 0x0008, "SiS5595",		enable_flash_sis5595},

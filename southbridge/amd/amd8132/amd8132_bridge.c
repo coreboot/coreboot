@@ -348,16 +348,16 @@ static void bridge_set_resources(struct device *dev)
 struct device_operations amd8132_pcix = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8132_PCIX}}},
+			 .device = PCI_DEVICE_ID_AMD_8132_PCIX}}},
 	.constructor		 = default_device_constructor,
-	.reset_bus        = pci_bus_reset,
+	.reset_bus		 = pci_bus_reset,
 	.phase3_scan		 = amd8132_scan_bridge,
 #if BRIDGE_40_BIT_SUPPORT
-        .phase4_read_resources   = bridge_read_resources,
-        .phase4_set_resources    = bridge_set_resources,
+	.phase4_read_resources	 = bridge_read_resources,
+	.phase4_set_resources	 = bridge_set_resources,
 #else
-        .phase4_read_resources   = pci_bus_read_resources,
-        .phase4_set_resources    = pci_dev_set_resources,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
 #endif
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = amd8132_pcix_init,
@@ -422,10 +422,10 @@ static struct pci_operations pci_ops_pci_dev = {
 struct device_operations amd8132_apic = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8132_IOAPIC}}},
+			 .device = PCI_DEVICE_ID_AMD_8132_IOAPIC}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
-	.phase4_enable_disable           = ioapic_enable,
+	.phase4_enable_disable	 = ioapic_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase6_init		 = amd8132_ioapic_init,

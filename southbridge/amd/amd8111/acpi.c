@@ -228,14 +228,14 @@ static struct pci_operations lops_pci = {
 struct device_operations acpi = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8111_ACPI}}},
+			 .device = PCI_DEVICE_ID_AMD_8111_ACPI}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = scan_static_bus,
-	.phase3_chip_setup_dev           = amd8111_enable,
+	.phase3_chip_setup_dev	 = amd8111_enable,
 	.phase4_read_resources	 = acpi_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = acpi_enable_resources,
 	.phase6_init		 = acpi_init,
 	.ops_pci		 = &lops_pci,
-	.ops_smbus_bus    = &lops_smbus_bus,
+	.ops_smbus_bus 		 = &lops_smbus_bus,
 };

@@ -127,13 +127,13 @@ static void pci_init(struct device *dev)
 struct device_operations sb600_pci = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_SB600_PCI}}},
+			 .device = PCI_DEVICE_ID_ATI_SB600_PCI}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
-	.phase3_chip_setup_dev           = sb600_enable,
+	.phase3_chip_setup_dev	 = sb600_enable,
 	.phase4_read_resources	 = pci_bus_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = pci_init,
-	.reset_bus = pci_bus_reset,
+	.reset_bus		 = pci_bus_reset,
 };

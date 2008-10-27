@@ -72,10 +72,10 @@ static void pci_init(struct device *dev)
 struct device_operations amd8111_pci = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8111_PCI}}},
+			 .device = PCI_DEVICE_ID_AMD_8111_PCI}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
-	.phase3_chip_setup_dev           = amd8111_enable,
+	.phase3_chip_setup_dev	 = amd8111_enable,
 	.phase4_read_resources	 = pci_bus_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,

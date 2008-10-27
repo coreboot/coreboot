@@ -563,10 +563,10 @@ void rs690_gfx_init(struct device * nb_dev, struct device * dev, u32 port)
 struct device_operations rs690_gfx = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690MT_INT_GFX}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690MT_INT_GFX}}},
 	.constructor		 = default_device_constructor,
-	.phase3_chip_setup_dev = rs690_enable,
-	.phase3_enable	= rs690_internal_gfx_enable,
+	.phase3_chip_setup_dev	 = rs690_enable,
+	.phase3_enable		 = rs690_internal_gfx_enable,
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = rs690_gfx_read_resources,
 	.phase4_set_resources	 = rs690_gfx_set_resources,

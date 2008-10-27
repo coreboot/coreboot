@@ -43,11 +43,11 @@ static void agp3bridge_init(struct device * dev)
 struct device_operations amd8151_agp3bridge = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8151_AGP}}},
+			 .device = PCI_DEVICE_ID_AMD_8151_AGP}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge
-	.phase4_read_resources   = pci_bus_read_resources,
-	.phase4_set_resources    = pci_dev_set_resources,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = agp3bridge_init,
 };
@@ -78,11 +78,11 @@ static struct pci_operations pci_ops_pci_dev = {
 struct device_operations amd8151_agp3dev = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
-			      .device = PCI_DEVICE_ID_AMD_8151_SYSCTRL}}},
+			 .device = PCI_DEVICE_ID_AMD_8151_SYSCTRL}}},
 	.constructor		 = default_device_constructor,
-	.phase4_enable_disable = agp3dev_enable,
-	.phase4_read_resources   = pci_dev_read_resources,
-	.phase4_set_resources    = pci_dev_set_resources,
+	.phase4_enable_disable	 = agp3dev_enable,
+	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = NULL,
 	.ops_pci		 = &pci_dev_ops_pci,

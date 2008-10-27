@@ -166,14 +166,14 @@ static void usb_set_resources(struct device *dev)
 struct device_operations sb600_usb = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_SB600_USB_0}}},
+			 .device = PCI_DEVICE_ID_ATI_SB600_USB_0}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = scan_static_bus,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = usb_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = usb_init,
-	.ops_pci          = &lops_pci
+	.ops_pci		 = &lops_pci
 };
 
 #if 0
@@ -202,13 +202,13 @@ static struct pci_driver usb_4_driver __pci_driver = {
 struct device_operations sb600_usb2 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_SB600_USB2}}},
+			 .device = PCI_DEVICE_ID_ATI_SB600_USB2}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = scan_static_bus,
-	.phase3_chip_setup_dev = sb600_enable,
+	.phase3_chip_setup_dev	 = sb600_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = usb_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = usb_init,
-	.ops_pci          = &lops_pci
+	.ops_pci		 = &lops_pci
 };

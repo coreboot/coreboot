@@ -397,10 +397,10 @@ static struct pci_operations lops_pci = {
 struct device_operations rs690_pcie = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
-	.phase3_chip_setup_dev = rs690_enable,
+	.phase3_chip_setup_dev	 = rs690_enable,
 	.phase4_read_resources	 = pci_bus_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
@@ -412,7 +412,7 @@ struct device_operations rs690_pcie = {
 struct device_operations rs690_pcie2 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV2}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV2}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
@@ -425,7 +425,7 @@ struct device_operations rs690_pcie2 = {
 struct device_operations rs690_pcie3 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV3}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV3}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
@@ -438,7 +438,7 @@ struct device_operations rs690_pcie3 = {
 struct device_operations rs690_pcie4 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV4}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV4}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
@@ -451,7 +451,7 @@ struct device_operations rs690_pcie4 = {
 struct device_operations rs690_pcie5 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV5}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV5}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
@@ -464,7 +464,7 @@ struct device_operations rs690_pcie5 = {
 struct device_operations rs690_pcie6 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV6}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV6}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
@@ -477,7 +477,7 @@ struct device_operations rs690_pcie6 = {
 struct device_operations rs690_pcie7 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV7}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV7}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
@@ -490,7 +490,7 @@ struct device_operations rs690_pcie7 = {
 struct device_operations rs690_pcie8 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
-			      .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV8}}},
+			 .device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV8}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,

@@ -129,5 +129,5 @@ struct device_operations dbm690t = {
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = 1}}},
 	.constructor		 = default_device_constructor,
-	.phase3_enable_scan = dbm690t_enable,
+	.phase3_chip_setup_dev = dbm690t_enable,
 };

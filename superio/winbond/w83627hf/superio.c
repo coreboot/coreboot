@@ -189,12 +189,12 @@ void w83627hf_pnp_enable(struct device * dev)
                 pnp_exit_ext_func_mode(dev);  
         }
 }
-static void phase2_setup_scan_bus(struct device *dev);
+static void phase3_chip_setup_dev(struct device *dev);
 struct device_operations w83627hf_ops = {
-	.phase2_setup_scan_bus = phase2_setup_scan_bus,
+	.phase3_chip_setup_dev = phase3_chip_setup_dev,
+	.phase3_enable   = w83627hf_pnp_enable_resources,
 	.phase4_read_resources   = pnp_read_resources,
 	.phase4_set_resources    = w83627hf_pnp_set_resources,
-	.phase4_enable_disable   = w83627hf_pnp_enable_resources,
 	.phase5_enable_resources = w83627hf_pnp_enable,
 	.phase6_init             = w83627hf_init,
 };
@@ -215,7 +215,7 @@ static struct pnp_info pnp_dev_info[] = {
 };
 
 
-static void phase2_setup_scan_bus(struct device *dev)
+static void phase3_chip_setup_dev(struct device *dev)
 {
 	pnp_enable_devices(dev, &w83627hf_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

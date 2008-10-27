@@ -279,7 +279,7 @@ struct device_operations sb600_hda = {
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
 			      .device = PCI_DEVICE_ID_ATI_SB600_HDA}}},
 	.constructor		 = default_device_constructor,
-	.phase4_enable_disable = sb600_enable,
+	.phase3_chip_setup_dev = sb600_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,

@@ -40,6 +40,8 @@ static void setup_onboard(struct device *dev)
 	 * but since QEMU has no Super I/O...
 	 */
 	init_pc_keyboard(0x60, 0x64, &conf);
+	/* now run the rom */
+	pci_dev_init(dev);
 }
 
 struct device_operations qemuvga_pci_ops_dev = {
@@ -50,9 +52,8 @@ struct device_operations qemuvga_pci_ops_dev = {
 	.phase3_scan			= 0,
 	.phase4_read_resources		= pci_dev_read_resources,
 	.phase4_set_resources		= pci_dev_set_resources,
-	.phase4_enable_disable		= setup_onboard,
 	.phase5_enable_resources	= pci_dev_enable_resources,
-	.phase6_init			= pci_dev_init,
+	.phase6_init			= setup_onboard,
 	.ops_pci			= &pci_dev_ops_pci,
 };
 

@@ -33,7 +33,7 @@
 */
 {
 	device_operations	= "rs690_gfx";
-	vga_rom_address	=	"0xfff00000";		/* The location that the VGA rom has been appened. */
+	vga_rom_address = "0xfff0000";
 	gfx_dev2_dev3 = "1";	/* for GFX Core initialization REFCLK_SEL */
 	gfx_dual_slot = "0";		/* Is it dual graphics slots */
 	gfx_lane_reversal = "0";	/* Single/Dual slot lan reversal */

@@ -108,7 +108,8 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	rom_data = (struct pci_data *)((unsigned char *)rom_header +
 				       le32_to_cpu(rom_header->data));
 
-	printk(BIOS_SPEW, "PCI ROM Image, Vendor %04x, Device %04x,\n",
+	printk(BIOS_SPEW, "PCI ROM Image, @%p, Vendor %04x, Device %04x,\n",
+		&rom_data->vendor,
 	       rom_data->vendor, rom_data->device);
 	if (dev->id.pci.vendor != rom_data->vendor || dev->id.pci.device != rom_data->device) {
 		printk(BIOS_ERR,

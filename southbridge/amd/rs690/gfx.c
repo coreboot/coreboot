@@ -79,13 +79,9 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	struct southbridge_amd_rs690_gfx_config *cfg = dev->device_configuration;
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
 	vendorid = pci_read_config16(dev, PCI_VENDOR_ID);
-	printk(BIOS_INFO, "internal_gfx_pci_dev_init device=%x, vendor=%x, vga_rom_address=0x%x.\n",
+	printk(BIOS_INFO, "internal_gfx_pci_dev_init device=%x, vendor=%x, vga_rom_address=0x%lx.\n",
 	     deviceid, vendorid, cfg->vga_rom_address);
 
-#if 0 /* I think these should be done in Config.lb. Please check it. */
-	dev->on_mainboard = 1;
-	dev->rom_address = cfg->vga_rom_address;	/* 0xfff00000; */
-#endif
 	pci_dev_init(dev);
 
 	/* clk ind */
@@ -569,9 +565,9 @@ struct device_operations rs690_gfx = {
 		{.pci = {.vendor = PCI_VENDOR_ID_ATI,
 			      .device = PCI_DEVICE_ID_ATI_RS690MT_INT_GFX}}},
 	.constructor		 = default_device_constructor,
-	.phase2_setup_scan_bus	= rs690_internal_gfx_enable,
+	.phase3_chip_setup_dev = rs690_enable,
+	.phase3_enable	= rs690_internal_gfx_enable,
 	.phase3_scan		 = 0,
-	.phase4_enable_disable = rs690_enable,
 	.phase4_read_resources	 = rs690_gfx_read_resources,
 	.phase4_set_resources	 = rs690_gfx_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,

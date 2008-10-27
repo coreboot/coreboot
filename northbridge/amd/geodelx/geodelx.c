@@ -227,7 +227,7 @@ struct device_operations geodelx_north_domain = {
 		{.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
 				     .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
-	.phase2_setup_scan_bus		= geodelx_pci_domain_phase2,
+	.phase2_fixup		= geodelx_pci_domain_phase2,
 	.phase3_scan			= pci_domain_scan_bus,
 	.phase4_read_resources		= pci_domain_read_resources,
 	.phase4_set_resources		= geodelx_pci_domain_set_resources,

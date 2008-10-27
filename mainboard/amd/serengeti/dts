@@ -46,7 +46,6 @@
 					/config/("southbridge/amd/amd8111/usb2.dts");
 				};
 				pci@4,0{
-					rom_address = "0xfc000000";
 				};
 			};
 			pci@7,0 {

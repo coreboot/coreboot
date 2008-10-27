@@ -754,14 +754,14 @@ void dev_phase2(void)
 	printk(BIOS_DEBUG, "Phase 2: Early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW,
-			"%s: dev %s: ops %p ops->phase2_setup_scan_bus %p\n",
+			"%s: dev %s: ops %p ops->phase2_fixup %p\n",
 			__FUNCTION__, dev->dtsname, dev->ops, 
-			dev->ops? dev->ops->phase2_setup_scan_bus : NULL);
-		if (dev->ops && dev->ops->phase2_setup_scan_bus) {
+			dev->ops? dev->ops->phase2_fixup : NULL);
+		if (dev->ops && dev->ops->phase2_fixup) {
 			printk(BIOS_SPEW,
-			       "Calling phase2 phase2_setup_scan_bus...\n");
-			dev->ops->phase2_setup_scan_bus(dev);
-			printk(BIOS_SPEW, "phase2_setup_scan_bus done\n");
+			       "Calling phase2 phase2_fixup...\n");
+			dev->ops->phase2_fixup(dev);
+			printk(BIOS_SPEW, "phase2_fixup done\n");
 		}
 	}
 
@@ -797,14 +797,12 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 		return max;
 	}
 
-	if (busdevice->ops->phase3_enable_scan)
-		busdevice->ops->phase3_enable_scan(busdevice);
-
 	do_phase3 = 1;
 	while (do_phase3) {
 		int link;
 		printk(BIOS_INFO, "%s: scanning %s(%s)\n", __FUNCTION__,
 		       busdevice->dtsname, dev_path(busdevice));
+#warning do we call phase3_enable here. 
 		new_max = busdevice->ops->phase3_scan(busdevice, max);
 		do_phase3 = 0;
 		for (link = 0; link < busdevice->links; link++) {
@@ -853,8 +851,8 @@ void dev_root_phase3(void)
 	printk(BIOS_INFO, "Phase 3: Enumerating buses...\n");
 	root = &dev_root;
 
-	if (root->ops && root->ops->phase3_enable_scan) {
-		root->ops->phase3_enable_scan(root);
+	if (root->ops && root->ops->phase3_chip_setup_dev) {
+		root->ops->phase3_chip_setup_dev(root);
 	}
 	post_code(POST_STAGE2_PHASE3_MIDDLE);
 	if (!root->ops) {

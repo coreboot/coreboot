@@ -105,10 +105,10 @@ static void it8712f_pnp_enable(struct device * dev)
 static void it8712f_setup_scan_bus(struct device *dev);
 
 struct device_operations it8712f_ops = {
-	.phase2_setup_scan_bus	 = it8712f_setup_scan_bus,
+	.phase3_chip_setup_dev	 = it8712f_setup_scan_bus,
+	.phase3_enable	 = it8712f_pnp_enable_resources,
 	.phase4_read_resources	 = pnp_read_resources,
 	.phase4_set_resources	 = it8712f_pnp_set_resources,
-	.phase4_enable_disable	 = it8712f_pnp_enable_resources,
 	.phase5_enable_resources = it8712f_pnp_enable,
 	.phase6_init		 = it8712f_init,
 };

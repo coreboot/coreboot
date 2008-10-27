@@ -739,7 +739,6 @@ struct device_operations default_pci_ops_dev = {
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init             = pci_dev_init,
 	.phase3_scan             = 0,
-	.phase4_enable_disable   = 0,
 	.ops_pci                 = &pci_dev_ops_pci,
 };
 
@@ -749,12 +748,11 @@ struct pci_operations pci_bus_ops_pci = {
 };
 
 struct device_operations default_pci_ops_bus = {
+	.phase3_scan             = pci_scan_bridge,
 	.phase4_read_resources   = pci_bus_read_resources,
 	.phase4_set_resources    = pci_dev_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init             = 0,
-	.phase3_scan             = pci_scan_bridge,
-	.phase4_enable_disable   = 0,
 	.reset_bus               = pci_bus_reset,
 	.ops_pci                 = &pci_bus_ops_pci,
 };
@@ -1006,8 +1004,8 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 		 * it may be absent and enable_dev() must cope.
 		 */
 		/* Run the magic enable sequence for the device. */
-		if (dev->ops && dev->ops->phase3_enable_scan) {
-			dev->ops->phase3_enable_scan(dev);
+		if (dev->ops && dev->ops->phase3_chip_setup_dev) {
+			dev->ops->phase3_chip_setup_dev(dev);
 		}
 		/* Now read the vendor and device ID. */
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -1062,8 +1060,8 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	set_pci_ops(dev);
 
 	/* Now run the magic enable/disable sequence for the device. */
-	if (dev->ops && dev->ops->phase4_enable_disable) {
-		dev->ops->phase4_enable_disable(dev);
+	if (dev->ops && dev->ops->phase3_enable) {
+		dev->ops->phase3_enable(dev);
 	}
 
 	/* Display the device and error if we don't have some PCI operations

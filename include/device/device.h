@@ -143,19 +143,19 @@ struct device_operations {
 	void (*phase1_set_device_operations)(struct device *dev);
 
 	/* phase 2 is for any magic you have to do before the busses are scanned */
-	void (*phase2_setup_scan_bus)(struct device * dev);
+	void (*phase2_fixup)(struct device * dev);
 
 	/* phase 3 is for scanning the bus, if needed. */
-	void (*phase3_enable_scan)(struct device *dev);
+	void (*phase3_chip_setup_dev)(struct device *dev);
+	/* some devices need to be enabled to scan. */
+	/* this function enables/disables according the value of 'enabled' in the device*/
+	void (*phase3_enable)(struct device * dev);
 	unsigned int (*phase3_scan)(struct device * bus, unsigned int max);
 
 	/* typically used by phase4 */
 	/* again, if we never use this anywhere else, we may change the names */
 	void (*phase4_read_resources)(struct device * dev);
 	void (*phase4_set_resources)(struct device * dev);
-	/* some devices need to be enabled to scan, then disabled again. */
-	/* this function enables/disables according the value of 'enabled' in the device*/
-	void (*phase4_enable_disable)(struct device * dev);
 
 	/* phase 5: enable devices */
 	void (*phase5_enable_resources)(struct device * dev);

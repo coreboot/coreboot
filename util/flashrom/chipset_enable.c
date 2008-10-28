@@ -125,7 +125,7 @@ static int enable_flash_piix4(struct pci_dev *dev, const char *name)
 
 	/* Set bit 9: 1-Meg Extended BIOS Enable (PCI master accesses to
 	 *            FFF00000-FFF7FFFF are forwarded to ISA).
-	 *            Note: This bit is reserved on PIIX/PIIX3.
+	 *            Note: This bit is reserved on PIIX/PIIX3/MPIIX.
 	 * Set bit 7: Extended BIOS Enable (PCI master accesses to
 	 *            FFF80000-FFFDFFFF are forwarded to ISA).
 	 * Set bit 6: Lower BIOS Enable (PCI master, or ISA master accesses to
@@ -135,8 +135,9 @@ static int enable_flash_piix4(struct pci_dev *dev, const char *name)
 	 * Note: Accesses to FFFF0000-FFFFFFFF are always forwarded to ISA.
 	 * Set bit 2: BIOSCS# Write Enable (1=enable, 0=disable).
 	 */
-	if (dev->device_id == 0x122e || dev->device_id == 0x7000)
-		new = old | 0x00c4;	/* Bit 9 is reserved on PIIX/PIIX3. */
+	if (dev->device_id == 0x122e || dev->device_id == 0x7000
+	    || dev->device_id == 0x1234)
+		new = old | 0x00c4; /* PIIX/PIIX3/MPIIX: Bit 9 is reserved. */
 	else
 		new = old | 0x02c4;
 
@@ -750,6 +751,7 @@ typedef struct penable {
 static const FLASH_ENABLE enables[] = {
 	{0x1039, 0x0630, "SiS630",		enable_flash_sis630},
 	{0x8086, 0x122e, "Intel PIIX",		enable_flash_piix4},
+	{0x8086, 0x1234, "Intel MPIIX",		enable_flash_piix4},
 	{0x8086, 0x7000, "Intel PIIX3",		enable_flash_piix4},
 	{0x8086, 0x7110, "Intel PIIX4/4E/4M",	enable_flash_piix4},
 	{0x8086, 0x7198, "Intel 440MX",		enable_flash_piix4},

@@ -1503,12 +1503,7 @@ unsigned setup_smp(void)
 		nodes = setup_smp8();
 #endif
 
-#if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug("%02x nodes initialized.\r\n", nodes);
-#else
-	print_debug_hex8(nodes);
-	print_debug(" nodes initialized.\r\n");
-#endif
+	printk(BIOS_DEBUG,"%02x nodes initialized.\r\n", nodes);
 	
 	return nodes;
 }

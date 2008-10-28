@@ -259,7 +259,7 @@ static void k8_pci_domain_set_resources(struct device * dev)
 
 #if 1
 #warning "FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M MMIO hole"
-	/* Round the mmio hold to 64M */
+	/* Round the mmio hole to 64M */
 	mmio_basek &= ~((64*1024) - 1);
 #endif
 

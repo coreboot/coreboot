@@ -608,13 +608,13 @@ static void enter_conf_mode_smsc(uint16_t port)
 	 * in the assumption that the extra 0x55 won't hurt the other
 	 * Super I/Os. This is verified to be true on (at least) the FDC37N769.
 	 */
-	outb(0x55, port);
-	outb(0x55, port);
+	OUTB(0x55, port);
+	OUTB(0x55, port);
 }
 
 static void exit_conf_mode_smsc(uint16_t port)
 {
-	outb(0xaa, port);
+	OUTB(0xaa, port);
 }
 
 static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,

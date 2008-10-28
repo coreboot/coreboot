@@ -60,13 +60,13 @@ static const struct superio_registers reg_table[] = {
 
 static void enter_conf_mode_ali(uint16_t port)
 {
-	outb(0x51, port);
-	outb(0x23, port);
+	OUTB(0x51, port);
+	OUTB(0x23, port);
 }
 
 static void exit_conf_mode_ali(uint16_t port)
 {
-	outb(0xbb, port);
+	OUTB(0xbb, port);
 }
 
 void probe_idregs_ali(uint16_t port)

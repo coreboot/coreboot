@@ -470,18 +470,18 @@ static const struct superio_registers reg_table[] = {
 
 static void enter_conf_mode_winbond_88(uint16_t port)
 {
-	outb(0x88, port);
+	OUTB(0x88, port);
 }
 
 static void enter_conf_mode_winbond_89(uint16_t port)
 {
-	outb(0x89, port);
+	OUTB(0x89, port);
 }
 
 static void enter_conf_mode_winbond_86(uint16_t port)
 {
-	outb(0x86, port);
-	outb(0x86, port);
+	OUTB(0x86, port);
+	OUTB(0x86, port);
 }
 
 static void probe_idregs_winbond_helper(const char *init, uint16_t port)

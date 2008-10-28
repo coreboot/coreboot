@@ -28,7 +28,27 @@
 #include <stdint.h>
 #include <string.h>
 #include <getopt.h>
+#if defined(__GLIBC__)
 #include <sys/io.h>
+#endif
+
+#if defined(__FreeBSD__)
+#include <sys/types.h>
+#include <machine/cpufunc.h>
+#define OUTB(x, y) do { u_int tmp = (y); outb(tmp, (x)); } while (0)
+#define OUTW(x, y) do { u_int tmp = (y); outw(tmp, (x)); } while (0)
+#define OUTL(x, y) do { u_int tmp = (y); outl(tmp, (x)); } while (0)
+#define INB(x) __extension__ ({ u_int tmp = (x); inb(tmp); })
+#define INW(x) __extension__ ({ u_int tmp = (x); inw(tmp); })
+#define INL(x) __extension__ ({ u_int tmp = (x); inl(tmp); })
+#else
+#define OUTB outb
+#define OUTW outw
+#define OUTL outl
+#define INB  inb
+#define INW  inw
+#define INL  inl
+#endif
 
 #define USAGE "Usage: superiotool [-d] [-e] [-l] [-V] [-v] [-h]\n\n\
   -d | --dump            Dump Super I/O register contents\n\

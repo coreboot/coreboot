@@ -23,6 +23,11 @@
 
 #include "superiotool.h"
 
+#if defined(__FreeBSD__)
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
 /* Command line options. */
 int dump = 0, verbose = 0, extra_dump = 0;
 
@@ -31,25 +36,25 @@ int chip_found = 0;
 
 uint8_t regval(uint16_t port, uint8_t reg)
 {
-	outb(reg, port);
-	return inb(port + ((port == 0x3bd) ? 2 : 1)); /* 0x3bd is special. */
+	OUTB(reg, port);
+	return INB(port + ((port == 0x3bd) ? 2 : 1)); /* 0x3bd is special. */
 }
 
 void regwrite(uint16_t port, uint8_t reg, uint8_t val)
 {
-	outb(reg, port);
-	outb(val, port + 1);
+	OUTB(reg, port);
+	OUTB(val, port + 1);
 }
 
 void enter_conf_mode_winbond_fintek_ite_8787(uint16_t port)
 {
-	outb(0x87, port);
-	outb(0x87, port);
+	OUTB(0x87, port);
+	OUTB(0x87, port);
 }
 
 void exit_conf_mode_winbond_fintek_ite_8787(uint16_t port)
 {
-	outb(0xaa, port);		/* Fintek, Winbond */
+	OUTB(0xaa, port);		/* Fintek, Winbond */
 	regwrite(port, 0x02, 0x02);	/* ITE */
 }
 
@@ -204,6 +209,9 @@ static void print_version(void)
 int main(int argc, char *argv[])
 {
 	int i, j, opt, option_index;
+#if defined(__FreeBSD__)
+	int io_fd;
+#endif
 
 	static const struct option long_options[] = {
 		{"dump",		no_argument, NULL, 'd'},
@@ -247,8 +255,13 @@ int main(int argc, char *argv[])
 		}
 	}
 
+#if defined(__FreeBSD__)
+	if ((io_fd = open("/dev/io", O_RDWR)) < 0) {
+		perror("/dev/io");
+#else
 	if (iopl(3) < 0) {
 		perror("iopl");
+#endif
 		printf("Superiotool must be run as root.\n");
 		exit(1);
 	}
@@ -264,5 +277,8 @@ int main(int argc, char *argv[])
 	if (!chip_found)
 		printf("No Super I/O found\n");
 
+#if defined(__FreeBSD__)
+	close(io_fd);
+#endif
 	return 0;
 }

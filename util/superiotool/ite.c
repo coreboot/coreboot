@@ -468,11 +468,11 @@ static void enter_conf_mode_ite_legacy(uint16_t port, const uint8_t init[][4])
 	/* Determine Super I/O config port. */
 	idx = (port == 0x3f0) ? 0 : ((port == 0x3bd) ? 1 : 2);
 	for (i = 0; i < 4; i++)
-		outb(init[idx][i], ISA_PNP_ADDR);
+		OUTB(init[idx][i], ISA_PNP_ADDR);
 
 	/* Sequentially write the 32 MB PnP init values. */
 	for (i = 0; i < 32; i++)
-		outb(initkey_mbpnp[i], port);
+		OUTB(initkey_mbpnp[i], port);
 }
 
 /**
@@ -482,10 +482,10 @@ static void enter_conf_mode_ite_legacy(uint16_t port, const uint8_t init[][4])
  */
 static void enter_conf_mode_ite(uint16_t port)
 {
-	outb(0x87, port);
-	outb(0x01, port);
-	outb(0x55, port);
-	outb((port == 0x2e) ? 0x55 : 0xaa, port);
+	OUTB(0x87, port);
+	OUTB(0x01, port);
+	OUTB(0x55, port);
+	OUTB((port == 0x2e) ? 0x55 : 0xaa, port);
 }
 
 static void exit_conf_mode_ite(uint16_t port)

@@ -479,21 +479,21 @@ void probe_idregs_nsc(uint16_t port)
 
 	probing_for("NSC", "", port);
 
-	outb(CHIP_ID_REG, port);
-	if (inb(port) != CHIP_ID_REG) {
+	OUTB(CHIP_ID_REG, port);
+	if (INB(port) != CHIP_ID_REG) {
 		if (verbose)
 			printf(NOTFOUND "port=0x%02x, port+1=0x%02x\n",
-			       inb(port), inb(port + 1));
+			       INB(port), INB(port + 1));
 		return;
 	}
-	id = inb(port + 1);
+	id = INB(port + 1);
 
-	outb(CHIP_REV_REG, port);
-	if (inb(port) != CHIP_REV_REG) {
+	OUTB(CHIP_REV_REG, port);
+	if (INB(port) != CHIP_REV_REG) {
 		printf("Warning: Can't get chip revision. Setting to 0xff.\n");
 		rev = 0xff;
 	} else {
-		rev = inb(port + 1);
+		rev = INB(port + 1);
 	}
 
 	if (superio_unknown(reg_table, id)) {

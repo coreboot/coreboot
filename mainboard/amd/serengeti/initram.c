@@ -52,19 +52,19 @@
 #define DIMM7 0x57
 
 /* this code is very mainboard dependent, sadly. */
-/** 
- * call the amd 8111 memreset_setup_amd8111 function to jam the GPIOs to reset memory. 
+/**
+ * call the amd 8111 memreset_setup_amd8111 function to jam the GPIOs to reset memory.
  */
 static void memreset_setup(void)
 {
 	void memreset_setup_amd8111(u8 data, u16 offset);
 	//GPIO on amd8111 to enable MEMRST ????
-        memreset_setup_amd8111((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), 0xc0 + 16);  //REVC_MEMRST_EN=1
-        memreset_setup_amd8111((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), 0xc0 + 17);
+	memreset_setup_amd8111((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), 0xc0 + 16);  //REVC_MEMRST_EN=1
+	memreset_setup_amd8111((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), 0xc0 + 17);
 }
 
-/** 
- * this is a no op on this platform. 
+/**
+ * this is a no op on this platform.
  */
 void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -86,10 +86,10 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 }
 
 /**
- * read a byte from spd. 
+ * read a byte from spd.
  * @param device device to read from
  * @param address address in the spd ROM
- * @return the value of the byte at that address. 
+ * @return the value of the byte at that address.
  */
 u8 spd_read_byte(u16 device, u8 address)
 {
@@ -97,30 +97,30 @@ u8 spd_read_byte(u16 device, u8 address)
 	return smbus_read_byte(device, address);
 }
 
-/** 
+/**
   * main for initram for the AMD Serengeti
  * init_detected Used to indicate that we have been started via init
- * The purpose of this code is to not only get ram going, but get any other cpus/cores going. 
- * The two activities are very tightly connected and not really seperable. 
+ * The purpose of this code is to not only get ram going, but get any other cpus/cores going.
+ * The two activities are very tightly connected and not really seperable.
  * The BSP (boot strap processor) Core 0 (BSC) is responsible for all training or all sockets. Note that
  * this need not be socket 0; one great strength of coreboot, as opposed to other BIOSes, is that it could
  * always boot with with a CPU in any socket, and even with empty sockets (as opposed to, e.g., the BIOS
  * that came installed on the Sun Ultra 40, which would freeze if one CPU were not installed).
  * The bringup proceeds in several sections. The cool part is that this code is run by all CPUs, and
- * control flow is managed by seeing which CPU we are -- BSP or AP? 
- * 
- * init_detected is used to determine if we did a soft reset as required by a reprogramming of the 
- * hypertransport links. If we did this kind of reset, bit 11 will be set in the MTRRdefType_MSR MSR. 
- * That may seem crazy, but there are not lots of places to hide a bit when the CPU does a reset. 
- * This value is picked up in assembly, or it should be. 
+ * control flow is managed by seeing which CPU we are -- BSP or AP?
+ *
+ * init_detected is used to determine if we did a soft reset as required by a reprogramming of the
+ * hypertransport links. If we did this kind of reset, bit 11 will be set in the MTRRdefType_MSR MSR.
+ * That may seem crazy, but there are not lots of places to hide a bit when the CPU does a reset.
+ * This value is picked up in assembly, or it should be.
  *
  * @return 0 on success
  */
 int main(void)
 {
-	/* sure, we could put this in a .h. It's called precisely once, from this one 
-	 * place. And it only relates to the initram stage. I think I'll leave it here. 
-	 * That way we can see the definition without grepping the source tree. 
+	/* sure, we could put this in a .h. It's called precisely once, from this one
+	 * place. And it only relates to the initram stage. I think I'll leave it here.
+	 * That way we can see the definition without grepping the source tree.
 	 */
 	void enable_smbus(void);
 	void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn);
@@ -161,12 +161,12 @@ int main(void)
 
 	init_detected = cpu_init_detected(me.nodeid);
 	printk(BIOS_DEBUG, "init_detected: %d\n", init_detected);
-	/* well, here we are. For starters, we need to know if this is cpu0 core0. 
-	 * cpu0 core 0 will do all the DRAM setup. 
+	/* well, here we are. For starters, we need to know if this is cpu0 core0.
+	 * cpu0 core 0 will do all the DRAM setup.
 	 */
 	bsp_apicid = init_cpus(init_detected, sysinfo);
 
-//      dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
+//	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
 
 #if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 0));
@@ -176,16 +176,16 @@ int main(void)
 	printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
 
 #if MEM_TRAIN_SEQ == 1
-	set_sysinfo_in_ram(0);	// in BSP so could hold all ap until sysinfo is in ram 
+	set_sysinfo_in_ram(0);	// in BSP so could hold all ap until sysinfo is in ram
 #endif
 	setup_coherent_ht_domain();	// routing table and start other core0
 
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
 	// It is said that we should start core1 after all core0 launched
-	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain, 
+	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
 	 * So here need to make sure last core0 is started, esp for two way system,
-	 * (there may be apic id conflicts in that case) 
+	 * (there may be apic id conflicts in that case)
 	 */
 	start_all_cores();
 	wait_all_other_cores_started(bsp_apicid);
@@ -195,7 +195,7 @@ int main(void)
 	ht_setup_chains_x(sysinfo);	// it will init sblnk and sbbusn, nodes, sbdn
 
 #if 0
-	//it your CPU min fid is 1G, you can change HT to 1G and FID to max one time.
+	//if your CPU min fid is 1G, you can change HT to 1G and FID to max one time.
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 #endif
@@ -220,7 +220,7 @@ int main(void)
 
 	// fidvid change will issue one LDTSTOP and the HT change will be effective too
 	if (needs_reset) {
-		printk(BIOS_INFO, "ht reset -\r\n");
+		printk(BIOS_INFO, "ht reset -\n");
 		soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
 	}
 #endif
@@ -235,7 +235,7 @@ int main(void)
 
 	//do we need apci timer, tsc...., only debug need it for better output
 	/* all ap stopped? */
-//        init_timer(); // Need to use TMICT to synconize FID/VID
+//	init_timer(); // Need to use TMICT to synconize FID/VID
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
@@ -244,7 +244,7 @@ int main(void)
 #endif
 
 #if 0
-//        dump_pci_devices();
+//	dump_pci_devices();
 	dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif

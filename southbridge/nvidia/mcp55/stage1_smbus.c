@@ -192,7 +192,7 @@ void enable_smbus(void)
 {
 	u32 bdf;
 	if (!pci_conf1_find_device(0x10de, 0x0368, &bdf)) {
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 	}
 
 	printk(BIOS_DEBUG, "SMBus controller enabled\n");
@@ -261,6 +261,6 @@ u8 smbusx_write_byte(u8 smb_index, u8 device, u8 address, u8 val)
  */
 u8 spd_read_byte(u16 device, u8 address)
 {
-        return smbus_read_byte(device, address);
+	return smbus_read_byte(device, address);
 }
 

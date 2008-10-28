@@ -42,7 +42,7 @@ void enable_smbus(void)
 
 	/* Yes, the ACPI device controls the SMBUS.  */
 	if (!pci_conf1_find_on_bus(0, PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_8111_ACPI, &dev)){
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 	}
 
 	pci_conf1_write_config32(dev, 0x58, SMBUS_IO_BASE | 1);
@@ -56,7 +56,7 @@ void enable_smbus(void)
 
 	/* clear any lingering errors, so the transaction will run */
 	outw(inw(SMBUS_IO_BASE + SMBGSTATUS), SMBUS_IO_BASE + SMBGSTATUS);
-	printk(BIOS_SPEW, "SMBus controller enabled\r\n");
+	printk(BIOS_SPEW, "SMBus controller enabled\n");
 }
 
 int smbus_wait_until_ready(u16 smbus_io_base)
@@ -71,7 +71,7 @@ int smbus_wait_until_ready(u16 smbus_io_base)
 			break;
 		}
 		if(loops == (SMBUS_TIMEOUT / 2)) {
-			outw(inw(smbus_io_base + SMBGSTATUS), 
+			outw(inw(smbus_io_base + SMBGSTATUS),
 				smbus_io_base + SMBGSTATUS);
 		}
 	} while(--loops);
@@ -85,7 +85,7 @@ int smbus_wait_until_done(u16 smbus_io_base)
 	do {
 		u16 val;
 		smbus_delay();
-		
+
 		val = inw(smbus_io_base + SMBGSTATUS);
 		if (((val & 0x8) == 0) | ((val & 0x0037) != 0)) {
 			break;
@@ -102,7 +102,7 @@ int do_smbus_recv_byte(u16 smbus_io_base, u16 device)
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
@@ -147,7 +147,7 @@ int do_smbus_send_byte(u16 smbus_io_base, u16 device, u16 value)
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
@@ -190,7 +190,7 @@ int do_smbus_read_byte(u16 smbus_io_base, u16 device, u8 address)
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
 		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
 	}
-	
+
 	/* setup transaction */
 	/* disable interrupts */
 	outw(inw(smbus_io_base + SMBGCTL) & ~((1<<10)|(1<<9)|(1<<8)|(1<<4)), smbus_io_base + SMBGCTL);
@@ -302,18 +302,18 @@ int smbus_write_byte(u16 device, u16 address, u8 val)
  */
 u8 spd_read_byte(u16 device, u8 address)
 {
-        return smbus_read_byte(device, address);
+	return smbus_read_byte(device, address);
 }
 
 /**
  * memreset_setup_amd8111
- * This function is part of a complex dance played between the mainboard and 
- * the southbridge. We don't want to export SMBUS_IO_BASE, but neither can the 
- * amd8111 know about what GPIOs connect to what reset lines. So 
+ * This function is part of a complex dance played between the mainboard and
+ * the southbridge. We don't want to export SMBUS_IO_BASE, but neither can the
+ * amd8111 know about what GPIOs connect to what reset lines. So
  * we split the difference. The mainboard must call this function with bytes
  * to be output to accomplish reset, as well as the offset from IOBASE;
- * amd8111 will output those bytes to SMBIOS_IOBASE. 
- * The caller of this function must have called spd_init for it to work correctly. 
+ * amd8111 will output those bytes to SMBIOS_IOBASE.
+ * The caller of this function must have called spd_init for it to work correctly.
  */
 void memreset_setup_amd8111(u8 data, u16 offset)
 {

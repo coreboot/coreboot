@@ -40,10 +40,10 @@
  */
 /**
  * for_each_ap
- * iterate over all APs and have them run a function. 
+ * iterate over all APs and have them run a function.
  * The behaviour is modified by the core_range parameter
  * @param bsp_apicid The BSP APIC ID number
- * @param core_range modifier for the range of cores to run on: 
+ * @param core_range modifier for the range of cores to run on:
  * core_range = 0 : all cores
  * core range = 1 : core 0 only
  * core range = 2 : cores other than core0
@@ -54,7 +54,7 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 			process_ap_t process_ap, void *gp)
 {
 	/* Assume the OS will not change our APIC ID. Why does this matter? Because some of the setup
-	 * we do for other cores may depend on it not being changed. 
+	 * we do for other cores may depend on it not being changed.
 	 */
 	unsigned int ap_apicid;
 
@@ -69,12 +69,12 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 	nodes = get_nodes();
 
 	/* if the get_option fails siblings remain disabled. */
-	// This sound not be a config option. 	disable_siblings = !CONFIG_LOGICAL_CPUS;
+	// This sound not be a config option.	disable_siblings = !CONFIG_LOGICAL_CPUS;
 	//get_option(&disable_siblings, "dual_core");
 
-	/* There is an interesting problem in different steppings. See page 373. The interpretation of the 
+	/* There is an interesting problem in different steppings. See page 373. The interpretation of the
 	 * APIC ID bits is different. To determine which order is used, check bit 54 of the programmers' guide
-	 * here we assume that all nodes are the same stepping. 
+	 * here we assume that all nodes are the same stepping.
 	 * If not, "otherwise we can use use nb_cfg_54 from bsp for all nodes"
 	 */
 	nb_cfg_54 = read_nb_cfg_54();
@@ -88,7 +88,7 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 		       NORTHBRIDGE_CAP) >> NBCAP_CmpCap_SHIFT) &
 		     NBCAP_CmpCap_MASK);
 		if (nb_cfg_54) {
-			if (j == 0)	// if it is single core, we need to increase siblings for apic calculation 
+			if (j == 0)	// if it is single core, we need to increase siblings for apic calculation
 				j = 1;
 		}
 		siblings = j;
@@ -133,18 +133,18 @@ void for_each_ap(unsigned bsp_apicid, unsigned core_range,
 
 /**
  * lapic remote read
- * lapics are more than just an interrupt steering system. They are a key part of inter-processor communication. 
- * They can be used to start, control, and interrupt other CPUs from the BSP. It is not possible to bring up 
- * an SMP system without somehow using the APIC. 
- * CPUs and their attached IOAPICs all have an ID. For convenience, these IDs are unique. 
- * The communications is packet-based, using (in coreboot) a polling-based strategy. As with most APIC ops, 
- * the ID is the APIC ID. Even more fun, code can read registers in remote APICs, and this in turn can 
- * provide us with remote CPU status. 
- * This function does a remote read given an apic id. It returns the value or an error. It can time out. 
+ * lapics are more than just an interrupt steering system. They are a key part of inter-processor communication.
+ * They can be used to start, control, and interrupt other CPUs from the BSP. It is not possible to bring up
+ * an SMP system without somehow using the APIC.
+ * CPUs and their attached IOAPICs all have an ID. For convenience, these IDs are unique.
+ * The communications is packet-based, using (in coreboot) a polling-based strategy. As with most APIC ops,
+ * the ID is the APIC ID. Even more fun, code can read registers in remote APICs, and this in turn can
+ * provide us with remote CPU status.
+ * This function does a remote read given an apic id. It returns the value or an error. It can time out.
  * @param apicid Remote APIC id
  * @param reg The register number to read
  * @param pvalue pointer to int for return value
- * @returns 0 on success, -1 on error 
+ * @returns 0 on success, -1 on error
  */
 int lapic_remote_read(int apicid, int reg, unsigned int *pvalue)
 {
@@ -153,8 +153,8 @@ int lapic_remote_read(int apicid, int reg, unsigned int *pvalue)
 	int result;
 	/* Wait for the idle state. Could we enter this with the APIC busy? It's possible. */
 	lapic_wait_icr_idle();
-	/* The APIC Interrupt Control Registers define the operations and destinations. 
-	 * In this case, we set ICR2 to the dest, set the op to REMOTE READ, and set the 
+	/* The APIC Interrupt Control Registers define the operations and destinations.
+	 * In this case, we set ICR2 to the dest, set the op to REMOTE READ, and set the
 	 * reg (which is 16-bit aligned, it seems, hence the >> 4
 	 */
 	lapic_write(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
@@ -167,7 +167,7 @@ int lapic_remote_read(int apicid, int reg, unsigned int *pvalue)
 		/* note here the ICR is command and status. */
 		/* Why don't we use the lapic_wait_icr_idle() above? */
 		/* That said, it's a bad idea to mess with this code too much.
-		 * APICs (and their code) are quite fragile. 
+		 * APICs (and their code) are quite fragile.
 		 */
 		status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (status == LAPIC_ICR_BUSY && timeout++ < 1000);
@@ -195,16 +195,16 @@ void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id,
 				const char *str)
 {
 	printk(BIOS_DEBUG, "%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\n",
-	     str, apicid, id.nodeid, id.coreid);
+		str, apicid, id.nodeid, id.coreid);
 }
 
 
 /**
  * Using the APIC remote read code, wait for the CPU to enter a given state
- * This function can time out. 
+ * This function can time out.
  * @param apicid The apicid of the remote CPU
  * @param state The state we are waiting for
- * @return 0 on success, readback value on error 
+ * @return 0 on success, readback value on error
  */
 unsigned int wait_cpu_state(unsigned apicid, unsigned state)
 {
@@ -229,8 +229,8 @@ unsigned int wait_cpu_state(unsigned apicid, unsigned state)
 	return timeout;
 }
 
-/** 
- * Wait for an AP to start. 
+/**
+ * Wait for an AP to start.
  * @param ap_apicid the apic id of the CPu
  * @param gp arbitrary parameter
  */
@@ -246,30 +246,30 @@ void wait_ap_started(unsigned ap_apicid, void *gp)
 	}
 }
 
-/** 
- * disable cache as ram on a BSP. 
- * For reasons not totally known we are saving ecx and edx. 
- * That will work on k8 as we copy the stack and return in the same stack frame. 
+/**
+ * disable cache as ram on a BSP.
+ * For reasons not totally known we are saving ecx and edx.
+ * That will work on k8 as we copy the stack and return in the same stack frame.
  */
 void disable_cache_as_ram_bsp(void)
 {
 	__asm__ volatile (
 //		"pushl %eax\n\t"
- 		"pushl %edx\n\t"
- 		"pushl %ecx\n\t"
+		"pushl %edx\n\t"
+		"pushl %ecx\n\t"
 	);
 
 	disable_cache_as_ram();
-        __asm__ volatile (
-                "popl %ecx\n\t"
-                "popl %edx\n\t"
-//                "popl %eax\n\t"
-        );
+	__asm__ volatile (
+		"popl %ecx\n\t"
+		"popl %edx\n\t"
+//		"popl %eax\n\t"
+	);
 }
 
 
 /**
- * wait for all apics to start. Make sure we don't wait on ourself. 
+ * wait for all apics to start. Make sure we don't wait on ourself.
  * @param bsp_apicid The BSP APIC ID
  */
 void wait_all_aps_started(unsigned bsp_apicid)
@@ -278,14 +278,14 @@ void wait_all_aps_started(unsigned bsp_apicid)
 }
 
 /**
- * Wait on all other cores to start. This includes  cores on bsp, we think. 
+ * Wait on all other cores to start. This includes  cores on bsp, we think.
  * @param bsp_apicid The BSP APIC ID
  */
 void wait_all_other_cores_started(unsigned bsp_apicid)	// all aps other than core0
 {
 	printk(BIOS_DEBUG, "started ap apicid: ");
 	for_each_ap(bsp_apicid, 2, wait_ap_started, (void *) 0);
-	printk(BIOS_DEBUG, "\r\n");
+	printk(BIOS_DEBUG, "\n");
 }
 
 void STOP_CAR_AND_CPU(void)
@@ -301,49 +301,49 @@ void STOP_CAR_AND_CPU(void)
 
 #if MEM_TRAIN_SEQ == 1
 void train_ram_on_node(unsigned nodeid, unsigned coreid,
-				     struct sys_info *sysinfo,
-				     void * retcall);
+			struct sys_info *sysinfo,
+			void * retcall);
 #endif
 
 /**
- * Init all the CPUs. Part of the process involves setting APIC IDs for all cores on all sockets. 
- * The code that is run 
- * is for the most part the same on all cpus and cores of cpus. 
+ * Init all the CPUs. Part of the process involves setting APIC IDs for all cores on all sockets.
+ * The code that is run
+ * is for the most part the same on all cpus and cores of cpus.
  * Since we only support F2 and later Opteron CPUs our job is considerably simplified
- * as compared to v2. The basic process it to set up the cpu 0 core 0, then the other cpus, one by one. 
- * Complications: BSP, a.k.a. cpu 0, comes up with APIC id 0, the others all come up with APIC id 7, 
- * including other cpu 0 cores. Why? Because the BSP brings them up one by one and assigns their APIC ID. 
- * There is also the question of the need to "lift" the BSP APIC id. 
- * For some setups, we want the BSP APIC id to be 0; for others, 
- * a non-zero value is preferred. This means that we have to change the BSP APIC ID on the fly. 
- * 
- * So here we have it, some of the slickest code you'll ever read. Which cores run this function? 
- * All of them. 
+ * as compared to v2. The basic process it to set up the cpu 0 core 0, then the other cpus, one by one.
+ * Complications: BSP, a.k.a. cpu 0, comes up with APIC id 0, the others all come up with APIC id 7,
+ * including other cpu 0 cores. Why? Because the BSP brings them up one by one and assigns their APIC ID.
+ * There is also the question of the need to "lift" the BSP APIC id.
+ * For some setups, we want the BSP APIC id to be 0; for others,
+ * a non-zero value is preferred. This means that we have to change the BSP APIC ID on the fly.
+ *
+ * So here we have it, some of the slickest code you'll ever read. Which cores run this function?
+ * All of them.
  * Do they communicate through APIC Interrupts or memory? Yes. Both. APICs before
- * memory is ready, memory afterword. What is the state of the cores at the end of this function? 
- * They are all ready to go, just waiting to be started up. What is the state of memory on all sockets? 
- * It's all working. 
- * Except that it's not quite that simple. We'll try to comment this well enough to make sense. 
+ * memory is ready, memory afterword. What is the state of the cores at the end of this function?
+ * They are all ready to go, just waiting to be started up. What is the state of memory on all sockets?
+ * It's all working.
+ * Except that it's not quite that simple. We'll try to comment this well enough to make sense.
  * But rest assured, it's complicated!
- * @param cpu_init_detectedx has this cpu been init'ed before? 
- * @param sysinfo The sys_info pointer 
+ * @param cpu_init_detectedx has this cpu been init'ed before?
+ * @param sysinfo The sys_info pointer
  * @returns the BSP APIC ID
  */
 unsigned int init_cpus(unsigned cpu_init_detectedx,
-		       struct sys_info *sysinfo)
+			struct sys_info *sysinfo)
 {
 	unsigned bsp_apicid = 0;
 	unsigned apicid;
 	struct node_core_id id;
-	/* this is a bit weird but soft_reset can be defined in many places, 
-	 * so finding a common 
+	/* this is a bit weird but soft_reset can be defined in many places,
+	 * so finding a common
 	 * include file to use is a little daunting.
 	 */
 	void soft_reset(void);
 
 #warning ignore init_detectedx
 cpu_init_detectedx = 0;
-	/* 
+	/*
 	 * MTRR must be set by this point.
 	 */
 
@@ -352,19 +352,19 @@ cpu_init_detectedx = 0;
 	id = get_node_core_id();
 	printk(BIOS_DEBUG, "init_cpus: node %d core %d\n", id.nodeid, id.coreid);
 
-	/* The NB_CFG MSR is shared between cores on a given node. 
-	 * Here is an interesting parallel processing bug: if you were to start the 
+	/* The NB_CFG MSR is shared between cores on a given node.
+	 * Here is an interesting parallel processing bug: if you were to start the
 	 * other cores and THEN make this setting, different cores might read
 	 * a different value! Since ALL cores run this code, it is very important to have
 	 * core0 initialize this setting before any others.
-	 * So do this setting very early in the function to make sure the bit has a 
-	 * consistent value on all cores. 
+	 * So do this setting very early in the function to make sure the bit has a
+	 * consistent value on all cores.
 	 */
 	if (id.coreid == 0) {
 		set_apicid_cpuid_lo();	/* only set it on core0 */
-		/* Should we enable extended APIC IDs? This feature is used on a number of mainboards. 
-		 * It is required when the board requires more than 4 bits of ID. 
-		 * the question is, why not use it on all of them? Would it do harm to always enable it? 
+		/* Should we enable extended APIC IDs? This feature is used on a number of mainboards.
+		 * It is required when the board requires more than 4 bits of ID.
+		 * the question is, why not use it on all of them? Would it do harm to always enable it?
 		 */
 #if ENABLE_APIC_EXT_ID == 1
 		enable_apic_ext_id(id.nodeid);
@@ -373,18 +373,18 @@ cpu_init_detectedx = 0;
 
 	/* enable the local APIC, which we need to do message passing between sockets. */
 	enable_lapic();
-//              init_timer(); // We need TMICT to pass msg for FID/VID change
+//	init_timer(); // We need TMICT to pass msg for FID/VID change
 
 #if (ENABLE_APIC_EXT_ID == 1)
 	/* we wish to enable extended APIC IDs. We have an APIC ID already which we can
-	 * use as a "base" for the extended ID. 
+	 * use as a "base" for the extended ID.
 	 */
 	unsigned initial_apicid = get_initial_apicid();
-	/* We don't always need to lift the BSP APIC ID. 
-	 * Again, is there harm if we do it anyway? 
+	/* We don't always need to lift the BSP APIC ID.
+	 * Again, is there harm if we do it anyway?
 	 */
 #if LIFT_BSP_APIC_ID == 0
-	if (initial_apicid != 0)	// This CPU is not the BSP so lift it.  
+	if (initial_apicid != 0)	// This CPU is not the BSP so lift it.
 #endif
 	{
 		/* Use the CPUs initial 4-bit APIC id as the basis for the extended ID */
@@ -395,7 +395,7 @@ cpu_init_detectedx = 0;
 
 		lapic_write(LAPIC_ID, dword);
 	}
-	/* Again, the bsp_apicid is a special case and if we changed it 
+	/* Again, the bsp_apicid is a special case and if we changed it
 	 * we need to remember that change.
 	 */
 #if LIFT_BSP_APIC_ID == 1
@@ -422,26 +422,26 @@ cpu_init_detectedx = 0;
 
 	if (cpu_init_detectedx) {
 		print_apicid_nodeid_coreid(apicid, id,
-					   "\r\n\r\n\r\nINIT detected from ");
-		printk(BIOS_DEBUG, "\r\nIssuing SOFT_RESET...\r\n");
+					   "\n\n\nINIT detected from ");
+		printk(BIOS_DEBUG, "\nIssuing SOFT_RESET...\n");
 		soft_reset();
 	}
 
 	if (id.coreid == 0) {
 		/* not known what this is yet. */
 		distinguish_cpu_resets(id.nodeid);
-		//              start_other_core(id.nodeid); // start second core in first cpu, only allowed for nb_cfg_54 is not set
+//		start_other_core(id.nodeid); // start second core in first cpu, only allowed for nb_cfg_54 is not set
 	}
-	//Indicate to other CPUs that our CPU is running. 
+	//Indicate to other CPUs that our CPU is running.
 	/* and, again, recall that this is running on all sockets at some point, although it runs at
-	 * different times. 
+	 * different times.
 	 */
 	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x33);
 
 	/* non-BSP CPUs are now set up and need to halt. There are a few possibilities here.
 	 * BSP may train memory
 	 * AP may train memory
-	 * In v2, both are possible. 
+	 * In v2, both are possible.
 	 */
 	if (apicid != bsp_apicid) {
 		unsigned timeout = 1;
@@ -454,13 +454,13 @@ cpu_init_detectedx = 0;
 #endif
 
 		// We need to stop the CACHE as RAM for this CPU, really?
-		/* Yes we do. What happens here is really interesting. To this point 
-		 * we have used APICs to communicate. We're going to use the sysinfo 
-		 * struct. But to do that we have to use real memory. So we have to 
-		 * disable car, and do it in a way that lets us continue in this function. 
-		 * The way we do it for non-node 0 is to never return from this function, 
-		 * but to do the work in this function to train RAM. 
-		 * Note that serengeti, the SimNow target, does not do this; it lets BSP train AP memory. 
+		/* Yes we do. What happens here is really interesting. To this point
+		 * we have used APICs to communicate. We're going to use the sysinfo
+		 * struct. But to do that we have to use real memory. So we have to
+		 * disable car, and do it in a way that lets us continue in this function.
+		 * The way we do it for non-node 0 is to never return from this function,
+		 * but to do the work in this function to train RAM.
+		 * Note that serengeti, the SimNow target, does not do this; it lets BSP train AP memory.
 		 */
 		/* Wait for the bsp to enter state 44. */
 		while (timeout && (loop-- > 0)) {
@@ -468,10 +468,10 @@ cpu_init_detectedx = 0;
 		}
 		if (timeout) {
 			printk(BIOS_DEBUG, "while waiting for BSP signal to STOP, timeout in ap 0x%08x\n",
-			     apicid);
+				apicid);
 		}
 		/* indicate that we are in state 44 as well. We are catching up to the BSP. */
-		// old comment follows -- not sure what this means yet. 
+		// old comment follows -- not sure what this means yet.
 		// bsp can not check it before stop_this_cpu
 		lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x44);
 		/* Now set up so we can use RAM. This will be low memory, i.e. BSP memory, already working. */
@@ -490,7 +490,7 @@ cpu_init_detectedx = 0;
 
 
 /**
- * Given a node, find out if core0 is started. 
+ * Given a node, find out if core0 is started.
  * @param nodeid the node ID
  * @returns non-zero if node is started
  */
@@ -505,7 +505,7 @@ static unsigned int is_core0_started(unsigned nodeid)
 }
 
 /**
- * Wait for all core 0s on all CPUs to start up. 
+ * Wait for all core 0s on all CPUs to start up.
  */
 void wait_all_core0_started(void)
 {
@@ -523,6 +523,6 @@ void wait_all_core0_started(void)
 		}
 		printk(BIOS_DEBUG, "%s%02x", " ",  i);
 	}
-	printk(BIOS_DEBUG, "\r\n");
+	printk(BIOS_DEBUG, "\n");
 
 }

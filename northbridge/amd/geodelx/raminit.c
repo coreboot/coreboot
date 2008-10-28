@@ -84,7 +84,7 @@ void dumplxmsrs(void)
  */
 void hcf(void)
 {
-	printk(BIOS_EMERG, "DIE\r\n");
+	printk(BIOS_EMERG, "DIE\n");
 
 	/* This guarantees we flush the UART FIFOs (if any) and also ensures
 	 * that things, in general, keep going so no debug output is lost.

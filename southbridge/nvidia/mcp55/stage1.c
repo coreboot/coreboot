@@ -436,7 +436,7 @@ unsigned int get_sbdn(unsigned int bus)
 	 */
 	u32 bdf;
 	if (!pci_conf1_find_device(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_MCP55_HT, &bdf)) {
-		die("PCI_DEVICE_ID_NVIDIA_MCP55_HT not found\r\n");
+		die("PCI_DEVICE_ID_NVIDIA_MCP55_HT not found\n");
 	}
 
 	return (bdf>>15) & 0x1f;

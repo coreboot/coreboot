@@ -69,7 +69,7 @@ static u8 get_sb600_revision(void)
 {
 	u32 dev;
 	if (!pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4385, &dev)){
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 	}
 	return pci_conf1_read_config8(dev, 0x08);
 }
@@ -277,10 +277,10 @@ static void sb600_devices_por_init(void)
 	/* SMBus Device, BDF:0-20-0 */
 	printk(BIOS_INFO, "sb600_devices_por_init(): SMBus Device, BDF:0-20-0\n");
 	if (!pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4385, &dev)){
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 	}
-	printk(BIOS_INFO, "SMBus controller enabled, sb revision is 0x%x\r\n",
-		    get_sb600_revision());
+	printk(BIOS_INFO, "SMBus controller enabled, sb revision is 0x%x\n",
+		get_sb600_revision());
 
 	/* sbPorAtStartOfTblCfg */
 	/* Set A-Link bridge access address. This address is set at device 14h, function 0, register 0xf0.
@@ -392,7 +392,7 @@ static void sb600_devices_por_init(void)
 	byte |= ((1 << 1) + (1 << 6));	/*0x42, save the configuraion for port 0x80. */
 	pci_conf1_write_config8(dev, 0x4A, byte);
 
-	/* Set LPC ROM size, it has been done in sb600_lpc_init(). 
+	/* Set LPC ROM size, it has been done in sb600_lpc_init().
 	 * enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB;
 	 * enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB
 	 * pci_conf1_write_config16(dev, 0x68, 0x000e)
@@ -401,8 +401,8 @@ static void sb600_devices_por_init(void)
 	/* Enable Tpm12_en and Tpm_legacy. I don't know what is its usage and copied from CIM. */
 	pci_conf1_write_config8(dev, 0x7C, 0x05);
 
-	/* P2P Bridge, BDF:0-20-4, the configuration of the registers in this dev are copied from CIM, 
-	 * TODO: I don't know what are their mean? */
+	/* P2P Bridge, BDF:0-20-4, the configuration of the registers in this dev are copied from CIM,
+	 * TODO: I don't know what these mean? */
 	printk(BIOS_INFO, "sb600_devices_por_init(): P2P Bridge, BDF:0-20-4\n");
 	pci_conf1_find_device(PCI_VENDOR_ID_ATI,  0x4384, &dev);
 	/* I don't know why CIM tried to write into a read-only reg! */
@@ -416,7 +416,7 @@ static void sb600_devices_por_init(void)
 
 	pci_conf1_write_config8(dev, 0x40, 0x26);
 
-	/* I don't know why CIM set reg0x1c as 0x11. 
+	/* I don't know why CIM set reg0x1c as 0x11.
 	 * System will block at sdram_initialize() if I set it before call sdram_initialize().
 	 * If it is necessary to set reg0x1c as 0x11, please call this function after sdram_initialize().
 	 * pci_conf1_write_config8(dev, 0x1c, 0x11);
@@ -569,7 +569,7 @@ static void sb600_pci_cfg(void)
 	byte |= (1 << 3);
 	pci_conf1_write_config8(dev, 0x41, byte);
 
-	/* Set to 1 to reset USB on the software (such as IO-64 or IO-CF9 cycles) 
+	/* Set to 1 to reset USB on the software (such as IO-64 or IO-CF9 cycles)
 	 * generated PCIRST#. */
 	byte = pm_ioread(0x65);
 	byte |= (1 << 4);

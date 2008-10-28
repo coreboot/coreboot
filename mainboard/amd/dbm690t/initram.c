@@ -43,15 +43,15 @@
 #define DIMM1 0x51
 
 /* this code is very mainboard dependent, sadly. */
-/** 
+/**
  * no op at present
  */
 static void memreset_setup(void)
 {
 }
 
-/** 
- * this is a no op on this platform. 
+/**
+ * this is a no op on this platform.
  */
 void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -62,10 +62,10 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 }
 
 /**
- * read a byte from spd. 
+ * read a byte from spd.
  * @param device device to read from
  * @param address address in the spd ROM
- * @return the value of the byte at that address. 
+ * @return the value of the byte at that address.
  */
 u8 spd_read_byte(u16 device, u8 address)
 {
@@ -73,25 +73,25 @@ u8 spd_read_byte(u16 device, u8 address)
 	return do_smbus_read_byte(device, address);
 }
 
-/** 
+/**
   * main for initram for the AMD DBM690T
  * @param init_detected Used to indicate that we have been started via init
  * @returns 0 on success
- * The purpose of this code is to not only get ram going, but get any other cpus/cores going. 
+ * The purpose of this code is to not only get ram going, but get any other cpus/cores going.
  * The two activities are very tightly connected and not really seperable.
- * 
+ *
   */
-/* 
- * init_detected is used to determine if we did a soft reset as required by a reprogramming of the 
- * hypertransport links. If we did this kind of reset, bit 11 will be set in the MTRRdefType_MSR MSR. 
- * That may seem crazy, but there are not lots of places to hide a bit when the CPU does a reset. 
- * This value is picked up in assembly, or it should be. 
+/*
+ * init_detected is used to determine if we did a soft reset as required by a reprogramming of the
+ * hypertransport links. If we did this kind of reset, bit 11 will be set in the MTRRdefType_MSR MSR.
+ * That may seem crazy, but there are not lots of places to hide a bit when the CPU does a reset.
+ * This value is picked up in assembly, or it should be.
  */
 int main(void)
 {
-	/* sure, we could put this in a .h. It's called precisely once, from this one 
-	 * place. And it only relates to the initram stage. I think I'll leave it here. 
-	 * That way we can see the definition without grepping the source tree. 
+	/* sure, we could put this in a .h. It's called precisely once, from this one
+	 * place. And it only relates to the initram stage. I think I'll leave it here.
+	 * That way we can see the definition without grepping the source tree.
 	 */
 //	void do_enable_smbus(void);
 	void enable_fid_change_on_sb(u16 sbbusn, u16 sbdn);
@@ -122,12 +122,12 @@ int main(void)
 	sysinfo = &(global_vars()->sys_info);
 	init_detected = cpu_init_detected(me.nodeid);
 	printk(BIOS_DEBUG, "init_detected: %d\n", init_detected);
-	/* well, here we are. For starters, we need to know if this is cpu0 core0. 
-	 * cpu0 core 0 will do all the DRAM setup. 
+	/* well, here we are. For starters, we need to know if this is cpu0 core0.
+	 * cpu0 core 0 will do all the DRAM setup.
 	 */
 	bsp_apicid = init_cpus(init_detected, sysinfo);
 
-//      dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
+//	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
 
 #if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 0));
@@ -141,9 +141,9 @@ int main(void)
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
 	// It is said that we should start core1 after all core0 launched
-	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain, 
+	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
 	 * So here need to make sure last core0 is started, esp for two way system,
-	 * (there may be apic id conflicts in that case) 
+	 * (there may be apic id conflicts in that case)
 	 */
 	start_all_cores();
 	wait_all_other_cores_started(bsp_apicid);
@@ -176,7 +176,7 @@ int main(void)
 
 	// fidvid change will issue one LDTSTOP and the HT change will be effective too
 	if (needs_reset) {
-		printk(BIOS_INFO, "ht reset -\r\n");
+		printk(BIOS_INFO, "ht reset -\n");
 //		soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
 		soft_reset();
 	}
@@ -192,7 +192,7 @@ int main(void)
 
 	//do we need apci timer, tsc...., only debug need it for better output
 	/* all ap stopped? */
-//        init_timer(); // Need to use TMICT to synconize FID/VID
+//	init_timer(); // Need to use TMICT to synconize FID/VID
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
@@ -201,7 +201,7 @@ int main(void)
 #endif
 
 #if 0
-//        dump_pci_devices();
+//	dump_pci_devices();
 	dump_pci_device_index_wait(PCI_DEV(0, 0x18, 2), 0x98);
 	dump_pci_device_index_wait(PCI_DEV(0, 0x19, 2), 0x98);
 #endif

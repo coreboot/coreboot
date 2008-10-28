@@ -120,9 +120,9 @@ unsigned int pcix_scan_bridge(struct device *dev, unsigned int max)
 
 	/* Find the PCI-X capability. */
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
-	sstatus = pci_read_config16(dev, pos + PCI_X_SEC_STATUS);
+	status = pci_read_config16(dev, pos + PCI_X_SEC_STATUS);
 
-	if (PCI_X_SSTATUS_MFREQ(sstatus) == PCI_X_SSTATUS_CONVENTIONAL_PCI) {
+	if (PCI_X_SSTATUS_MFREQ(status) == PCI_X_SSTATUS_CONVENTIONAL_PCI) {
 		max = do_pci_scan_bridge(dev, max, pci_scan_bus);
 	} else {
 		max = do_pci_scan_bridge(dev, max, pcix_scan_bus);
@@ -130,23 +130,23 @@ unsigned int pcix_scan_bridge(struct device *dev, unsigned int max)
 
 	/* Print the PCI-X bus speed. */
 	printk(BIOS_DEBUG, "PCI-X: %02x: %s\n", dev->link[0].secondary,
-		     pcix_speed(sstatus));
+		     pcix_speed(status));
 
 	return max;
 }
 
 /** Default device operations for PCI-X bridges. */
-static const struct pci_operations pcix_bus_ops_pci = {
+struct pci_operations pcix_bus_ops_pci = {
 	.set_subsystem = 0,
 };
 
-const struct device_operations default_pcix_ops_bus = {
-	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pcix_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &pcix_bus_ops_pci,
+struct device_operations default_pcix_ops_bus = {
+	.phase4_read_resources   = pci_bus_read_resources,
+	.phase4_set_resources    = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init             = 0,
+	.phase3_scan             = pcix_scan_bridge,
+	.phase3_chip_setup_dev   = 0,
+	.reset_bus               = pci_bus_reset,
+	.ops_pci                 = &pcix_bus_ops_pci,
 };

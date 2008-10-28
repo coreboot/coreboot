@@ -22,6 +22,7 @@
 #include <lib.h>
 #include <console.h>
 #include <device/pci.h>
+#include <device/pcix.h>
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
@@ -425,9 +426,9 @@ struct device_operations amd8132_apic = {
 			 .device = PCI_DEVICE_ID_AMD_8132_IOAPIC}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
-	.phase4_enable_disable	 = ioapic_enable,
+	.phase3_chip_setup_dev	 = ioapic_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
 	.phase6_init		 = amd8132_ioapic_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &pci_ops_pci_dev,
 };

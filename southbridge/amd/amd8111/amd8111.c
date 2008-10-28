@@ -34,19 +34,19 @@
 
 void amd8111_enable(struct device * dev)
 {
-	struct device * lpc_dev;
+	struct device * sub_dev;
 	struct device * bus_dev;
 	unsigned index;
 	unsigned reg_old, reg;
 
 	/* See if we are behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
-	if ((bus_dev->id.pci.vendor == PCI_VENDOR_ID_AMD) && 
-	    (bus_dev->id.pci.device == PCI_DEVICE_ID_AMD_8111_PCI)) 
+	if ((bus_dev->id.pci.vendor == PCI_VENDOR_ID_AMD) &&
+	    (bus_dev->id.pci.device == PCI_DEVICE_ID_AMD_8111_PCI))
 	{
 		unsigned devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
-		lpc_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
+		sub_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
 		index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
 		if (dev->path.pci.devfn == 2) { /* EHCI */
 			index = 16;
@@ -54,40 +54,40 @@ void amd8111_enable(struct device * dev)
 	} else {
 		unsigned devfn;
 		devfn = (dev->path.pci.devfn) & ~7;
-		lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
+		sub_dev = dev_find_slot(dev->bus->secondary, devfn);
 		index = dev->path.pci.devfn & 7;
 	}
-	if ((!lpc_dev) || (index >= 17)) {
+	if ((!sub_dev) || (index >= 17)) {
 		return;
 	}
-	if ((lpc_dev->id.pci.vendor != PCI_VENDOR_ID_AMD) ||
-	    (lpc_dev->id.pci.device != PCI_DEVICE_ID_AMD_8111_ISA)) 
+	if ((sub_dev->id.pci.vendor != PCI_VENDOR_ID_AMD) ||
+	    (sub_dev->id.pci.device != PCI_DEVICE_ID_AMD_8111_ISA))
 	{
 		u32 id;
-		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
+		id = pci_read_config32(sub_dev, PCI_VENDOR_ID);
 		if (id != (PCI_VENDOR_ID_AMD | (PCI_DEVICE_ID_AMD_8111_ISA << 16))) {
 			return;
 		}
 	}
 
 	if (index < 16) {
-		reg = reg_old = pci_read_config16(lpc_dev, 0x48);
+		reg = reg_old = pci_read_config16(sub_dev, 0x48);
 		reg &= ~(1 << index);
 		if (dev->enabled) {
 			reg |= (1 << index);
 		}
 		if (reg != reg_old) {
-			pci_write_config16(lpc_dev, 0x48, reg);
+			pci_write_config16(sub_dev, 0x48, reg);
 		}
 	}
 	else if (index == 16) {
-		reg = reg_old = pci_read_config8(lpc_dev, 0x47);
+		reg = reg_old = pci_read_config8(sub_dev, 0x47);
 		reg &= ~(1 << 7);
 		if (!dev->enabled) {
 			reg |= (1 << 7);
 		}
 		if (reg != reg_old) {
-			pci_write_config8(lpc_dev, 0x47, reg);
+			pci_write_config8(sub_dev, 0x47, reg);
 		}
 	}
 }

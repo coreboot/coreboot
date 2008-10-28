@@ -33,5 +33,9 @@ ifeq ($(CONFIG_NORTHBRIDGE_AMD_K8),y)
 STAGE2_DEVICE_SRC += hypertransport.c
 endif
 
+# this is only needed for pcix devices
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_AMD8132),y)
+STAGE2_DEVICE_SRC += pcix_device.c
+endif
 
 $(obj)/device/pci_device.o: $(src)/device/pci_device.c $(obj)/statictree.h

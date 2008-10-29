@@ -48,6 +48,7 @@
 
 #define FX_DEVS 8
 extern struct device * __f0_dev[FX_DEVS];
+extern void get_fx_devs(void);
 u32 f1_read_config32(unsigned int reg);
 void f1_write_config32(unsigned int reg, u32 value);
 unsigned int amdk8_nodeid(struct device * dev);
@@ -63,7 +64,7 @@ static unsigned int amdk8_scan_chain(struct device * dev, unsigned nodeid, unsig
 		unsigned max_bus;
 		unsigned min_bus;
 		unsigned max_devfn;
-	printk(BIOS_SPEW, "amdk8_scan_chain\n");
+		printk(BIOS_SPEW, "amdk8_scan_chain link %x\n",link);
 		dev->link[link].cap = 0x80 + (link *0x20);
 		do {
 			link_type = pci_read_config32(dev, dev->link[link].cap + 0x18);
@@ -242,16 +243,25 @@ static unsigned int amdk8_scan_chains(struct device * dev, unsigned int max)
 	return max;
 }
 
-#warning document this unreadable function reg_useable
+/** 
+ * reg_useable
+ * @param reg register to check
+ * @param goal_dev device to own the resource
+ * @param goal_nodeid node number
+ * @param goal_link link number
+ * @return 0 if not useable, 1 if useable, or 2 if the pair is free
+ * __f0 is initialized once in amdk8_read_resources
+ */
 static int reg_useable(unsigned reg,
 	struct device * goal_dev, unsigned goal_nodeid, unsigned goal_link)
 {
 	struct resource *res;
-	unsigned nodeid, link;
+	unsigned nodeid, link=0;
 	int result;
-	res = 0;
-#warning fix hard-coded 8 in for loop.
-	for(nodeid = 0; !res && (nodeid < 8); nodeid++) {
+	res = NULL;
+
+	/* Look for the resource that matches this register. */
+	for(nodeid = 0; !res && (nodeid < CONFIG_MAX_PHYSICAL_CPUS); nodeid++) {
 		struct device * dev;
 		dev = __f0_dev[nodeid];
 		if (! dev)
@@ -260,9 +270,12 @@ static int reg_useable(unsigned reg,
 			res = probe_resource(dev, 0x100 + (reg | link));
 		}
 	}
+	
+	/* If no allocated resource was found, it is free - return 2 */
 	result = 2;
 	if (res) {
 		result = 0;
+		/* If the resource is allocated to the link and node already */
 		if (	(goal_link == (link - 1)) &&
 			(goal_nodeid == (nodeid - 1)) &&
 			(res->flags <= 1)) {
@@ -277,7 +290,7 @@ static struct resource *amdk8_find_iopair(struct device * dev, unsigned nodeid, 
 {
 	struct resource *resource;
 	unsigned free_reg, reg;
-	resource = 0;
+	resource = NULL;
 	free_reg = 0;
 	for(reg = 0xc0; reg <= 0xd8; reg += 0x8) {
 		int result;
@@ -304,7 +317,7 @@ static struct resource *amdk8_find_mempair(struct device * dev, unsigned nodeid,
 {
 	struct resource *resource;
 	unsigned free_reg, reg;
-	resource = 0;
+	resource = NULL;
 	free_reg = 0;
 	for(reg = 0x80; reg <= 0xb8; reg += 0x8) {
 		int result;
@@ -378,6 +391,9 @@ static void amdk8_read_resources(struct device * dev)
 	printk(BIOS_DEBUG, "amdk8_read_resources\n");
 	unsigned nodeid, link;
 	nodeid = amdk8_nodeid(dev);
+
+	get_fx_devs(); /* Make sure __f0 is initialized*/
+
 	for(link = 0; link < dev->links; link++) {
 		if (dev->link[link].children) {
 			printk(BIOS_DEBUG, "amdk8_read_resources link %d\n", link);
@@ -583,7 +599,7 @@ struct device_operations k8_ops = {
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = 0x1100}}},
 	.constructor		 = default_device_constructor,
-	.reset_bus		= pci_bus_reset,
+	.reset_bus		 = pci_bus_reset,
 	.phase3_scan		 = amdk8_scan_chains,
 	.phase4_read_resources	 = amdk8_read_resources,
 	.phase4_set_resources	 = amdk8_set_resources,

@@ -80,28 +80,27 @@ void debug_fx_devs(void)
 void get_fx_devs(void)
 {
 	int i;
-	if (__f1_dev[0]) {
-		return;
-	}
 	for(i = 0; i < FX_DEVS; i++) {
 		__f0_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
 		__f1_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 1));
 	}
-	if (!__f1_dev[0]) {
-		die("Cannot find 0:0x18.1\n");
+	if (__f1_dev[0] == NULL || __f0_dev[0] == NULL) {
+		die("Cannot find 0:0x18.[0|1]\n");
 	}
 }
 
 u32 f1_read_config32(unsigned int reg)
 {
-	get_fx_devs();
+	if ( __f1_dev[0] == NULL)
+		get_fx_devs();
 	return pci_read_config32(__f1_dev[0], reg);
 }
 
 void f1_write_config32(unsigned int reg, u32 value)
 {
 	int i;
-	get_fx_devs();
+	if ( __f1_dev[0] == NULL)
+		get_fx_devs();
 	for(i = 0; i < FX_DEVS; i++) {
 		struct device * dev;
 		dev = __f1_dev[i];

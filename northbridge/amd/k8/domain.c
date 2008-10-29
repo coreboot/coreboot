@@ -52,7 +52,6 @@
 
 #define FX_DEVS 8
 extern struct device * __f0_dev[FX_DEVS];
-void get_fx_devs(void);
 u32 f1_read_config32(unsigned int reg);
 void f1_write_config32(unsigned int reg, u32 value);
 unsigned int amdk8_nodeid(struct device * dev);
@@ -103,7 +102,6 @@ static void k8_pci_domain_read_resources(struct device * dev)
 
 	/* Find the already assigned resource pairs */
 	printk(BIOS_DEBUG, "k8_pci_domain_read_resources\n");
-	get_fx_devs();
 	for(reg = 0x80; reg <= 0xd8; reg+= 0x08) {
 		u32 base, limit;
 		base  = f1_read_config32(reg);
@@ -114,7 +112,7 @@ static void k8_pci_domain_read_resources(struct device * dev)
 			struct device * dev;
 			nodeid = limit & 7;
 			link   = (limit >> 4) & 3;
-			dev = __f0_dev[nodeid];
+			dev = __f0_dev[nodeid]; /* Initialized by f1_read_config32. */
 			if (dev) {
 				/* Reserve the resource  */
 				struct resource *resource;
@@ -379,10 +377,9 @@ static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)
 	/* Tune the hypertransport transaction for best performance.
 	 * Including enabling relaxed ordering if it is safe.
 	 */
-	get_fx_devs();
 	for(i = 0; i < FX_DEVS; i++) {
 		struct device * f0_dev;
-		f0_dev = __f0_dev[i];
+		f0_dev = __f0_dev[i]; /* Initialized by f1_write_config32. */
 		if (f0_dev && f0_dev->enabled) {
 			u32 httc;
 			httc = pci_read_config32(f0_dev, HT_TRANSACTION_CONTROL);

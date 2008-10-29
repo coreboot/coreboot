@@ -43,6 +43,7 @@ static void i82371eb_ide_init(struct device *dev)
 {
 	unsigned short c;
 
+	/* These should be controlled in the dts. */
 	printk(BIOS_DEBUG, "Enabling IDE channel 1\n");
 	c = pci_read_config16(dev, 0x40);
 	c |= 0x8000;
@@ -82,6 +83,9 @@ static void i82371eb_acpi_init(struct device *dev)
 	pci_write_config8(dev, 0x80, 1);
 }
 
+/*NOTE: We need our own read and set resources for this part! It has 
+ * BARS that are not in the normal place (such as SMBUS)
+ */
 /* You can override or extend each operation as needed for the device. */
 struct device_operations i82371eb_isa = {
 	.id = {.type = DEVICE_ID_PCI,

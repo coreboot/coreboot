@@ -430,10 +430,7 @@ void compact_resources(struct device *dev)
 	for (i = 0; i < dev->resources;) {
 		resource = &dev->resource[i];
 		if (!resource->flags) {
-			/* Note: memmove() was used here. But this can never
-			 * overlap, right?
-			 */
-			memcpy(resource, resource + 1, (dev->resources-i)* sizeof(*resource));
+			memmove(resource, resource + 1, (dev->resources-i)* sizeof(*resource));
 			dev->resources -= 1;
 			memset(&dev->resource[dev->resources], 0,
 			       sizeof(*resource));

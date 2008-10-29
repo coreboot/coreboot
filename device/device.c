@@ -805,6 +805,7 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 #warning do we call phase3_enable here. 
 		new_max = busdevice->ops->phase3_scan(busdevice, max);
 		do_phase3 = 0;
+		/* do we *ever* use this path */
 		for (link = 0; link < busdevice->links; link++) {
 			if (busdevice->link[link].reset_needed) {
 				if (reset_bus(&busdevice->link[link])) {
@@ -973,15 +974,13 @@ void dev_phase6(void)
 
 	printk(BIOS_INFO, "Phase 6: Initializing devices...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->enabled && !dev->initialized &&
-		    dev->ops && dev->ops->phase6_init) {
+		if (dev->enabled && dev->ops && dev->ops->phase6_init) {
 			if (dev->path.type == DEVICE_PATH_I2C) {
 				printk(BIOS_DEBUG, "Phase 6: smbus: %s[%d]->",
 				       dev_path(dev->bus->dev), dev->bus->link);
 			}
 			printk(BIOS_DEBUG, "Phase 6: %s init.\n",
 			       dev_path(dev));
-			dev->initialized = 1;
 			dev->ops->phase6_init(dev);
 		}
 	}
@@ -995,8 +994,8 @@ void show_all_devs(void)
 	printk(BIOS_INFO, "Show all devs...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW,
-		       "%s(%s): enabled %d have_resources %d initialized %d\n",
+		       "%s(%s): enabled %d have_resources %d\n",
 		       dev->dtsname, dev_path(dev), dev->enabled,
-		       dev->have_resources, dev->initialized);
+		       dev->have_resources);
 	}
 }

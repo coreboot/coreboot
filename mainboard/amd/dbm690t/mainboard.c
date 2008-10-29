@@ -17,6 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* N.B. This file should be removed in the long term. */
+/* the nic code goes to the south support. The UMA code should
+ * be moved to the cpu support. 
+ */
+
 #include <mainboard.h>
 #include <config.h>
 #include <types.h>

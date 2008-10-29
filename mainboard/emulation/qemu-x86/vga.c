@@ -38,6 +38,8 @@ static void setup_onboard(struct device *dev)
 	/*
 	 * FIXME: This should be in the Super I/O code some day,
 	 * but since QEMU has no Super I/O...
+	 * we need to create superio/emulation/qemu and move the keyboard
+	 * bits there. 
 	 */
 	init_pc_keyboard(0x60, 0x64, &conf);
 	/* now run the rom */

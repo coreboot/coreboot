@@ -29,7 +29,6 @@
 #include <string.h>
 #include <io.h>
 
-
 /* The address arguments to this function are PHYSICAL ADDRESSES */
 static void real_mode_switch_call_vga(unsigned long devfn)
 {
@@ -240,19 +239,6 @@ void vga_enable_console(void)
 		);
 }
 
-void run_bios(struct device *dev, unsigned long addr)
-{
-	int i;
-
-	/* clear vga bios data area */
-	for (i = 0x400; i < 0x500; i++) {
-		*(unsigned char *) i = 0;
-	}
-
-	real_mode_switch_call_vga((dev->bus->secondary << 8) | dev->path.pci.devfn);
-}
-
-
 // we had hoped to avoid this.
 // this is a stub IDT only. It's main purpose is to ignore calls
 // to the BIOS.
@@ -415,7 +401,7 @@ int handleint21(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 
 extern void vga_exit(void);
 
-int biosint(unsigned long intnumber,
+int __attribute__((regparm(0)))  biosint(unsigned long intnumber,
 	    unsigned long gsfs, unsigned long dses,
 	    unsigned long edi, unsigned long esi,
 	    unsigned long ebp, unsigned long esp,
@@ -484,7 +470,6 @@ int biosint(unsigned long intnumber,
 	return ret;
 }
 
-
 void setup_realmode_idt(void)
 {
 	extern unsigned char idthandle, end_idthandle;
@@ -543,11 +528,20 @@ void setup_realmode_idt(void)
 	idts[1].offset = 16384;
 	memcpy((void *)16384, &debughandle, &end_debughandle - &debughandle);
 #endif
-
-
 }
 
+void run_bios(struct device *dev, unsigned long addr)
+{
+	int i;
 
+	/* clear vga bios data area */
+	for (i = 0x400; i < 0x500; i++) {
+		*(unsigned char *) i = 0;
+	}
+	setup_realmode_idt();
+
+	real_mode_switch_call_vga((dev->bus->secondary << 8) | dev->path.pci.devfn);
+}
 
 enum {
 	CHECK = 0xb001,

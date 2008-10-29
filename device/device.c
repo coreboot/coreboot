@@ -271,7 +271,7 @@ out:
  *
  * @param bus Bus to read the resources on.
  */
-static void read_resources(struct bus *bus)
+void read_resources(struct bus *bus)
 {
 	struct device *curdev;
 
@@ -913,7 +913,39 @@ void dev_phase4(void)
 	root->ops->phase4_read_resources(root);
 	printk(BIOS_INFO, "Phase 4: Done reading resources.\n");
 
-	/* Get the resources. */
+	/* we have read the resources. We now compute the global allocation of resources. 
+	 * We have to create a root resource for the base of the tree. The root resource should contain the entire
+	 * address space for IO and MEM resources. The allocation of device resources will be done from this
+	 * resource address space. 
+	 */
+
+	/* Allocate a resource from the root device resource pool and initialize the system wide I/O space constraints. */
+	io = new_resource(root, 0);
+	io->base = 0x400;
+	io->size = 0;
+	io->align = 0;
+	io->gran = 0;
+	io->limit = 0xffffUL;
+	io->flags = IORESOURCE_IO;
+
+	/* Allocate a resource from the root device resource pool and initialize the system wide 
+	 * memory resources constraints.
+	 */
+	mem = new_resource(root, 1);
+	mem->base = 0;
+	mem->size = 0;
+	mem->align = 0;
+	mem->gran = 0;
+	mem->limit = 0xffffffffUL;
+	mem->flags = IORESOURCE_MEM;
+
+	compute_allocate_resource(&root->link[0], io,
+				  IORESOURCE_IO, IORESOURCE_IO);
+
+	compute_allocate_resource(&root->link[0], mem,
+				  IORESOURCE_MEM, IORESOURCE_MEM);
+
+	/* Now we need to adjust the resources. The issue is that mem grows downward. 
 	io = &root->resource[0];
 	mem = &root->resource[1];
 
@@ -933,6 +965,13 @@ void dev_phase4(void)
 	/* Allocate the VGA I/O resource. */
 	allocate_vga_resource();
 #endif
+
+	/* now rerun the compute allocate with the adjusted resources */
+	compute_allocate_resource(&root->link[0], io,
+				  IORESOURCE_IO, IORESOURCE_IO);
+
+	compute_allocate_resource(&root->link[0], mem,
+				  IORESOURCE_MEM, IORESOURCE_MEM);
 
 	/* Store the computed resource allocations into device registers. */
 	printk(BIOS_INFO, "Phase 4: Setting resources...\n");
@@ -997,5 +1036,45 @@ void show_all_devs(void)
 		       "%s(%s): enabled %d have_resources %d\n",
 		       dev->dtsname, dev_path(dev), dev->enabled,
 		       dev->have_resources);
+	}
+}
+
+void show_one_resource(struct device *dev, struct resource *resource,
+			    const char *comment)
+{
+	char buf[10];
+	unsigned long long base, end;
+	base = resource->base;
+	end = resource_end(resource);
+	buf[0] = '\0';
+	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+#if PCI_BUS_SEGN_BITS
+		sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
+			dev->link[0].secondary & 0xff);
+#else
+		sprintf(buf, "bus %02x ", dev->link[0].secondary);
+#endif
+	}
+	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] "
+		"size 0x%08Lx gran 0x%02x %s%s%s\n",
+		dev_path(dev), resource->index, base, end,
+		resource->size, resource->gran, buf,
+		resource_type(resource), comment);
+
+}
+
+void show_all_devs_resources(void)
+{
+	struct device *dev;
+
+	printk(BIOS_INFO, "Show all devs...\n");
+	for (dev = all_devices; dev; dev = dev->next) {
+		int i;
+		printk(BIOS_SPEW,
+		       "%s(%s): enabled %d have_resources %d\n",
+		       dev->dtsname, dev_path(dev), dev->enabled,
+		       dev->have_resources);
+		for(i = 0; i < dev->resources; i++)
+			show_one_resource(dev, &dev->resource[i], "");
 	}
 }

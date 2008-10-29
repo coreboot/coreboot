@@ -35,29 +35,13 @@
  */
 void root_dev_read_resources(struct device *root)
 {
-	struct resource *resource;
+	void read_resources(struct bus *bus);
+	void show_all_devs_resources(void);
 
-	/* Initialize the system wide I/O space constraints. */
-	resource = new_resource(root, 0);
-	resource->base = 0x400;
-	resource->size = 0;
-	resource->align = 0;
-	resource->gran = 0;
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO;
-	compute_allocate_resource(&root->link[0], resource,
-				  IORESOURCE_IO, IORESOURCE_IO);
+	read_resources(&root->link[0]);
 
-	/* Initialize the system wide memory resources constraints. */
-	resource = new_resource(root, 1);
-	resource->base = 0;
-	resource->size = 0;
-	resource->align = 0;
-	resource->gran = 0;
-	resource->limit = 0xffffffffUL;
-	resource->flags = IORESOURCE_MEM;
-	compute_allocate_resource(&root->link[0], resource,
-				  IORESOURCE_MEM, IORESOURCE_MEM);
+	printk(BIOS_DEBUG, "%s: Done allocating\n", __FUNCTION__);
+	show_all_devs_resources();
 }
 
 /**
@@ -68,15 +52,7 @@ void root_dev_read_resources(struct device *root)
  */
 void root_dev_set_resources(struct device *root)
 {
-	struct bus *bus;
-
-	bus = &root->link[0];
-	compute_allocate_resource(bus,
-				  &root->resource[0], IORESOURCE_IO,
-				  IORESOURCE_IO);
-	compute_allocate_resource(bus, &root->resource[1], IORESOURCE_MEM,
-				  IORESOURCE_MEM);
-	phase4_assign_resources(bus);
+	phase4_assign_resources(&root->link[0]);
 }
 
 /**

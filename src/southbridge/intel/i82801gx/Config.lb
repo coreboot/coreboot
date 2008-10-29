@@ -1,0 +1,66 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2008 coresystems GmbH
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+config chip.h
+driver i82801gx.o
+driver i82801gx_ac97.o
+driver i82801gx_ide.o
+driver i82801gx_lpc.o
+driver i82801gx_nic.o
+driver i82801gx_pci.o
+driver i82801gx_pcie.o
+driver i82801gx_sata.o
+driver i82801gx_usb.o
+driver i82801gx_usb_ehci.o
+
+object i82801gx_reset.o
+object i82801gx_watchdog.o
+
+object i82801gx_smi.o
+object smmrelocate.S
+
+makerule smmhandler.o
+	depends	"$(TOP)/src/southbridge/intel/i82801gx/smmhandler.S" 
+	action	"@$(CC) -c $(CPU_OPT) $(CPPFLAGS) $(CFLAGS) -o $@ $<"
+end
+
+makerule smihandler.o
+	depends	"$(TOP)/src/southbridge/intel/i82801gx/smihandler.c" 
+	action	"@$(CC) -c $(CPU_OPT) $(CPPFLAGS) $(CFLAGS) -o $@ $<"
+end
+
+makerule smm.o
+	depends	"smmhandler.o smihandler.o printk.o vtxprintf.o $(LIBGCC_FILE_NAME)" 
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ smmhandler.o smihandler.o printk.o vtxprintf.o $(LIBGCC_FILE_NAME)"
+end
+
+makerule smm
+	depends	"smm.o $(TOP)/src/southbridge/intel/i82801gx/smm.ld ldoptions" 
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o smm.elf -T $(TOP)/src/southbridge/intel/i82801gx/smm.ld smm.o"
+	action 	"$(CROSS_COMPILE)nm -n smm.elf | sort > smm.map"
+	action  "$(OBJCOPY) -O binary smm.elf smm"
+end
+
+makerule smm_bin.c
+	depends "smm"
+	action "(echo 'unsigned char smm[] = {'; od -vtx1 smm | sed -e 's,^[0-9]* *,,' -e 's:[0-9a-f][0-9a-f] :0x&,:g' -e 's:[0-9a-f][0-9a-f]$$:0x&,:'; echo '}; unsigned int smm_len = '; wc -c smm |awk '{print $$1;}' ; echo ';')  > smm_bin.c"
+end
+
+object ./smm_bin.o

@@ -71,7 +71,7 @@ struct device {
 	struct device_path path;
 	unsigned 	vendor;
 	unsigned 	device;
-	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
+	unsigned int	class;		/* 3 bytes: (base, sub, prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int    enabled : 1;	/* set if we should enable the device */
 	unsigned int    initialized : 1; /* set if we have initialized the device */
@@ -85,7 +85,7 @@ struct device {
 	struct resource resource[MAX_RESOURCES];
 	unsigned int resources;
 
-	/* link are (down sream) buses attached to the device, usually a leaf
+	/* link are (down stream) buses attached to the device, usually a leaf
 	 * device with no children have 0 buses attached and a bridge has 1 bus 
 	 */
 	struct bus link[MAX_LINKS];

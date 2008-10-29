@@ -76,9 +76,9 @@ static struct device_operations usb_ehci_ops = {
 	.ops_pci		= &lops_pci,
 };
 
-/* 82801Gx */
-static const struct pci_driver i82801ex_usb_ehci __pci_driver = {
+/* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
+static const struct pci_driver i82801gx_usb_ehci __pci_driver = {
 	.ops	= &usb_ehci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27cc,
+	.device	= PCI_DEVICE_ID_INTEL_82801GB_EHCI,
 };

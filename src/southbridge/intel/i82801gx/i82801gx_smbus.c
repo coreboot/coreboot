@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <smbus.h>
 #include <pci.h>
+#include <pci_ids.h>
 #include <arch/io.h>
 #include "i82801gx.h"
 #include "i82801_smbus.h"
@@ -56,4 +57,3 @@ static const struct pci_driver i82801gx_smbus __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801GB_SMB,
 };
-

@@ -338,24 +338,23 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-/* ICH7 / ICH7R */
-static const struct pci_driver ich7_ich7r_lpc __pci_driver = {
+/* 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
+static const struct pci_driver ich7_ich7r_ich7dh_lpc __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27b8,
+	.device	= PCI_DEVICE_ID_INTEL_82801GB_LPC,
 };
 
-/* ICH7M / ICH7U */
+/* 82801GBM/GU (ICH7-M/ICH7-U) */
 static const struct pci_driver ich7m_ich7u_lpc __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27b9,
+	.device	= PCI_DEVICE_ID_INTEL_82801GBM_LPC,
 };
 
-/* ICH7M DH */
+/* 82801GHM (ICH7-M DH) */
 static const struct pci_driver ich7m_dh_lpc __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27bd,
+	.device	= PCI_DEVICE_ID_INTEL_82801GHM_LPC,
 };
-

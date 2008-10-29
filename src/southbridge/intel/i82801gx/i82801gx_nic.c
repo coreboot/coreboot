@@ -40,11 +40,9 @@ static struct device_operations nic_ops = {
 
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
 /* Note: 82801GU (ICH7-U) doesn't have a NIC. */
-/* PCI ID loaded from EEPROM. If EEPROM is 0, 0x27dc is used */
-static const struct pci_driver i82801gb_nic __pci_driver = {
+/* PCI ID loaded from EEPROM. If EEPROM is 0, 0x27dc is used. */
+static const struct pci_driver i82801gx_nic __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801GB_LAN,
 };
-
-

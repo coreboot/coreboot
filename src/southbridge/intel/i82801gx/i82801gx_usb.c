@@ -58,22 +58,23 @@ static const struct pci_driver i82801gb_usb1 __pci_driver = {
 	.device	= PCI_DEVICE_ID_INTEL_82801GB_USB1,
 };
 
+/* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
 static const struct pci_driver i82801gb_usb2 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801GB_USB2,
 };
 
+/* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
 static const struct pci_driver i82801gb_usb3 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801GB_USB3,
 };
 
+/* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
 static const struct pci_driver i82801gb_usb4 __pci_driver = {
 	.ops	= &usb_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801GB_USB4,
 };
-
-

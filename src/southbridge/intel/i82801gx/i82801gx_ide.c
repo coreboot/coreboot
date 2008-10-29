@@ -92,9 +92,9 @@ static struct device_operations ide_ops = {
 	.enable			= i82801gx_enable,
 };
 
-/* 82801Gx */
+/* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
 static const struct pci_driver i82801gx_ide __pci_driver = {
 	.ops	= &ide_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27df,
+	.device	= PCI_DEVICE_ID_INTEL_82801GB_IDE,
 };

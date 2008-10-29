@@ -124,18 +124,18 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-
 /* Desktop */
+/* 82801BA/CA/DB/EB/ER/FB/FR/FW/FRW/GB/GR/GDH/HB/IB/6300ESB/i3100 */
 static const struct pci_driver i82801g_pci __pci_driver = {
 	.ops	= &device_ops,
-	.vendor	= 0x8086,
-	.device	= 0x244e,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801GB_PCI,
 };
 
 /* Mobile / Ultra Mobile */
+/* 82801BAM/CAM/DBL/DBM/FBM/GBM/GHM/GU/HBM/HEM */
 static const struct pci_driver i82801gmu_pci __pci_driver = {
 	.ops	= &device_ops,
-	.vendor	= 0x8086,
-	.device	= 0x2448,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= PCI_DEVICE_ID_INTEL_82801FBM_PCI,
 };
-

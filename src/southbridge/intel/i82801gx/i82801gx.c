@@ -25,7 +25,6 @@
 
 void i82801gx_enable(device_t dev)
 {
-
 }
 
 struct chip_operations southbridge_intel_i82801gx_ops = {

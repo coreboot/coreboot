@@ -366,6 +366,12 @@ void compute_allocate_resource(
 				(resource->flags & IORESOURCE_IO)? "io":
 				(resource->flags & IORESOURCE_PREFETCH)? "prefmem": "mem");
 		}
+#if CONFIG_PCIE_CONFIGSPACE_HOLE
+#warning Handle PCIe hole differently...
+		if (base >= 0xf0000000 && base < 0xf4000000) {
+			base = 0xf4000000;
+		}
+#endif
 	}
 	/* A pci bridge resource does not need to be a power
 	 * of two size, but it does have a minimum granularity.

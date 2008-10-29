@@ -377,7 +377,11 @@ static void pci_record_bridge_resource(
 		 * clear it and forget it.
 		 */
 		if (resource->size == 0) {
+#if CONFIG_PCI_64BIT_PREF_MEM == 1
 			resource->base = moving;
+#else
+			resource->base = moving & 0xffffffff;
+#endif
 			resource->flags |= IORESOURCE_ASSIGNED;
 			resource->flags &= ~IORESOURCE_STORED;
 			pci_set_resource(dev, resource);

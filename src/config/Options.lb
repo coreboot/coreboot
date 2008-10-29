@@ -1115,6 +1115,12 @@ define CONFIG_GX1_VIDEOMODE
 # 4 for 1280x1024
 end
 
+define CONFIG_PCIE_CONFIGSPACE_HOLE
+	default 0
+	export always
+	comment "Leave a hole for PCIe config space in the device allocator"
+end
+
 ###############################################
 # Board specific options
 ###############################################

@@ -437,6 +437,10 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	#define cpus_ready_for_init() do {} while(0)
 #endif
 
+#if HAVE_SMI_HANDLER
+void smm_init(void);
+#endif
+
 void initialize_cpus(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
@@ -457,14 +461,18 @@ void initialize_cpus(struct bus *cpu_bus)
 	cpu_path.type           = DEVICE_PATH_CPU;
 	cpu_path.u.cpu.id       = 0;
 #endif
-	
+
 	/* Find the device structure for the boot cpu */
 	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
 
 #if CONFIG_SMP == 1
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 #endif
-	
+
+#if HAVE_SMI_HANDLER
+	smm_init();
+#endif
+
         cpus_ready_for_init(); 
 
 #if CONFIG_SMP == 1
@@ -477,7 +485,6 @@ void initialize_cpus(struct bus *cpu_bus)
         /* Initialize the bootstrap processor */
         cpu_initialize();
 
-
 #if CONFIG_SMP == 1
         #if SERIAL_CPU_INIT == 1
         start_other_cpus(cpu_bus, info->cpu);
@@ -486,6 +493,5 @@ void initialize_cpus(struct bus *cpu_bus)
 	/* Now wait the rest of the cpus stop*/
 	wait_other_cpus_stop(cpu_bus);
 #endif
-
 }
 

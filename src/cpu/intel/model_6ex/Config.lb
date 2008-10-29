@@ -1,0 +1,13 @@
+uses HAVE_MOVNTI
+default HAVE_MOVNTI=1
+
+dir /cpu/x86/tsc
+dir /cpu/x86/mtrr
+dir /cpu/x86/fpu
+dir /cpu/x86/mmx
+dir /cpu/x86/sse
+dir /cpu/x86/lapic
+dir /cpu/x86/cache
+dir /cpu/intel/microcode
+dir /cpu/intel/hyperthreading
+driver model_6ex_init.o

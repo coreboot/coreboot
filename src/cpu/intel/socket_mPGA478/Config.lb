@@ -1,0 +1,4 @@
+config chip.h
+object socket_mPGA478.o
+dir /cpu/intel/model_69x
+dir /cpu/intel/model_6dx

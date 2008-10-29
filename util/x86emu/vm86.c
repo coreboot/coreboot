@@ -30,11 +30,11 @@
 #include <io.h>
 
 
-/* The address arguments to this function are PHYSICAL ADDRESSES */ 
+/* The address arguments to this function are PHYSICAL ADDRESSES */
 static void real_mode_switch_call_vga(unsigned long devfn)
 {
 	__asm__ __volatile__ (
-		/* paranoia -- does ecx get saved? not sure. 
+		/* paranoia -- does ecx get saved? not sure.
 		 * This is the easiest safe thing to do.
 		 */
 		"	pushal			\n"
@@ -45,7 +45,7 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"1:\n"
 		/* get devfn into %ecx */
 		"	movl    %esp, %ebp	\n"
-		// FIXME: why is this 8? 
+		// FIXME: why is this 8?
 		"	movl    8(%ebp), %ecx	\n"
 		/* load 'our' gdt */
 		"	lgdt	%cs:__mygdtaddr	\n"
@@ -56,10 +56,10 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"	.code16			\n"
 		/* 16 bit code from here on... */
 
-		/* Load the segment registers w/ properly configured 
-		 * segment descriptors. They will retain these 
-		 * configurations (limits, writability, etc.) once 
-		 * protected mode is turned off. 
+		/* Load the segment registers w/ properly configured
+		 * segment descriptors. They will retain these
+		 * configurations (limits, writability, etc.) once
+		 * protected mode is turned off.
 		 */
 		"	mov	$0x30, %ax	\n"
 		"	mov	%ax, %ds       	\n"
@@ -77,9 +77,9 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		"	ljmp	$0,  $__rms_real\n"
 		"__rms_real:			\n"
 
-		/* Setup a stack: Put the stack at the end of page zero. 
+		/* Setup a stack: Put the stack at the end of page zero.
 		 * That way we can easily share it between real and
-		 * protected, since the 16-bit ESP at segment 0 will 
+		 * protected, since the 16-bit ESP at segment 0 will
 		 * work for any case. */
 		"	mov	$0x0, %ax	\n"
 		"	mov	%ax, %ss	\n"
@@ -102,15 +102,15 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		/* run VGA BIOS at 0xc000:0003 */
 		"	lcall	$0xc000, $0x0003\n"
 
-		/* If we got here, just about done. 
-		 * Need to get back to protected mode 
+		/* If we got here, just about done.
+		 * Need to get back to protected mode
 		 */
 		"	movl	%cr0, %eax	\n"
 		"	orl	$0x0000001, %eax\n" /* PE = 1 */
 		"	movl	%eax, %cr0	\n"
 
-		/* Now that we are in protected mode 
-		 * jump to a 32 bit code segment. 
+		/* Now that we are in protected mode
+		 * jump to a 32 bit code segment.
 		 */
 		"	data32	ljmp	$0x10, $vgarestart\n"
 		"vgarestart:\n"
@@ -137,12 +137,12 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 // __asm__ (".text\n""real_mode_switch_end:\n");
 // extern char real_mode_switch_end[];
 
-/* call vga bios int 10 function 0x4f14 to enable main console 
-   epia-m does not always autosence the main console so forcing it on is good !! */ 
+/* call vga bios int 10 function 0x4f14 to enable main console
+   epia-m does not always autosence the main console so forcing it on is good !! */
 void vga_enable_console(void)
 {
 	__asm__ __volatile__ (
-		/* paranoia -- does ecx get saved? not sure. This is 
+		/* paranoia -- does ecx get saved? not sure. This is
 		 * the easiest safe thing to do. */
 		"	pushal			\n"
 		/* save the stack */
@@ -176,8 +176,8 @@ void vga_enable_console(void)
 		"	ljmp	$0, $__vga_ec_real \n"
 		"__vga_ec_real:                  \n"
 
-		/* put the stack at the end of page zero. 
-		 * that way we can easily share it between real and protected, 
+		/* put the stack at the end of page zero.
+		 * that way we can easily share it between real and protected,
 		 * since the 16-bit ESP at segment 0 will work for any case. */
 		/* Setup a stack */
 		"	mov	$0x0, %ax	\n"
@@ -213,7 +213,7 @@ void vga_enable_console(void)
 		"	movb	$0x55, %al	\n"
 		"	outb	%al, $0x80	\n"
 
-		/* if we got here, just about done. 
+		/* if we got here, just about done.
 		 * Need to get back to protected mode */
 		"	movl	%cr0, %eax	\n"
 		"	orl	$0x0000001, %eax\n" /* PE = 1 */
@@ -243,7 +243,7 @@ void vga_enable_console(void)
 void run_bios(struct device *dev, unsigned long addr)
 {
 	int i;
-	
+
 	/* clear vga bios data area */
 	for (i = 0x400; i < 0x500; i++) {
 		*(unsigned char *) i = 0;
@@ -253,32 +253,32 @@ void run_bios(struct device *dev, unsigned long addr)
 }
 
 
-// we had hoped to avoid this. 
-// this is a stub IDT only. It's main purpose is to ignore calls 
-// to the BIOS. 
+// we had hoped to avoid this.
+// this is a stub IDT only. It's main purpose is to ignore calls
+// to the BIOS.
 // no longer. Dammit. We have to respond to these.
 struct realidt {
 	unsigned short offset, cs;
-}; 
+};
 
 // from a handy writeup that andrey found.
 
-// handler. 
-// There are some assumptions we can make here. 
-// First, the Top Of Stack (TOS) is located on the top of page zero. 
-// we can share this stack between real and protected mode. 
+// handler.
+// There are some assumptions we can make here.
+// First, the Top Of Stack (TOS) is located on the top of page zero.
+// we can share this stack between real and protected mode.
 // that simplifies a lot of things ...
-// we'll just push all the registers on the stack as longwords, 
-// and pop to protected mode. 
-// second, since this only ever runs as part of coreboot, 
+// we'll just push all the registers on the stack as longwords,
+// and pop to protected mode.
+// second, since this only ever runs as part of coreboot,
 // we know all the segment register values -- so we don't save any.
-// keep the handler that calls things small. It can do a call to 
+// keep the handler that calls things small. It can do a call to
 // more complex code in coreboot itself. This helps a lot as we don't
 // have to do address fixup in this little stub, and calls are absolute
 // so the handler is relocatable.
 void handler(void)
 {
-	__asm__ __volatile__ ( 
+	__asm__ __volatile__ (
 		"	.code16		\n"
 		"idthandle:		\n"
 		"	pushal		\n"
@@ -291,7 +291,7 @@ void handler(void)
 
 void debughandler(void)
 {
-	__asm__ __volatile__ ( 
+	__asm__ __volatile__ (
 		"	.code16		\n"
 		"debughandle:		\n"
 		"	pushw	%cx	\n"
@@ -307,9 +307,9 @@ void debughandler(void)
 
 // Calling conventions. The first C function is called with this stuff
 // on the stack. They look like value parameters, but note that if you
-// modify them they will go back to the INTx function modified. 
+// modify them they will go back to the INTx function modified.
 // the C function will call the biosint function with these as
-// REFERENCE parameters. In this way, we can easily get 
+// REFERENCE parameters. In this way, we can easily get
 // returns back to the INTx caller (i.e. vgabios)
 void callbiosint(void)
 {
@@ -321,7 +321,7 @@ void callbiosint(void)
 		"	push	%fs	\n"
 		"	push	%gs	\n"
 		// clean up the int #. To save space we put it in the lower
-		// byte. But the top 24 bits are junk. 
+		// byte. But the top 24 bits are junk.
 		"	andl	$0xff, %eax\n"
 		// this push does two things:
 		// - put the INT # on the stack as a parameter
@@ -356,7 +356,7 @@ void callbiosint(void)
 		"	mov	%ax, %fs	\n"
 		"	mov	%ax, %gs	\n"
 		"	mov	%ax, %ss	\n"
-		
+
 		/* Turn off protection (bit 0 in CR0) */
 		"	movl	%cr0, %eax		\n"
 		"	andl	$0xFFFFFFFE, %eax	\n"
@@ -400,7 +400,7 @@ void callbiosint(void)
 }
 
 enum {
-	PCIBIOS = 0x1a, 
+	PCIBIOS = 0x1a,
 	MEMSIZE = 0x12
 };
 
@@ -411,36 +411,36 @@ int pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 int handleint21(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 		unsigned long *pesp, unsigned long *pebx, unsigned long *pedx,
 		unsigned long *pecx, unsigned long *peax, unsigned long *pflags
-        );
+	);
 
 extern void vga_exit(void);
 
 int biosint(unsigned long intnumber,
 	    unsigned long gsfs, unsigned long dses,
 	    unsigned long edi, unsigned long esi,
-	    unsigned long ebp, unsigned long esp, 
-	    unsigned long ebx, unsigned long edx, 
-	    unsigned long ecx, unsigned long eax, 
+	    unsigned long ebp, unsigned long esp,
+	    unsigned long ebx, unsigned long edx,
+	    unsigned long ecx, unsigned long eax,
 	    unsigned long cs_ip, unsigned short stackflags)
 {
-	unsigned long ip; 
-	unsigned long cs; 
+	unsigned long ip;
+	unsigned long cs;
 	unsigned long flags;
 	int ret = -1;
-	
+
 	ip = cs_ip & 0xffff;
 	cs = cs_ip >> 16;
 	flags = stackflags;
-	
+
 	printk(BIOS_DEBUG, "biosint: INT# 0x%lx\n", intnumber);
-	printk(BIOS_DEBUG, "biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n", 
+	printk(BIOS_DEBUG, "biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n",
 		      eax, ebx, ecx, edx);
 	printk(BIOS_DEBUG, "biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
 		     ebp, esp, edi, esi);
 	printk(BIOS_DEBUG, "biosint:  ip 0x%lx   cs 0x%lx  flags 0x%lx\n",
 		     ip, cs, flags);
 
-	// cases in a good compiler are just as good as your own tables. 
+	// cases in a good compiler are just as good as your own tables.
 	switch (intnumber) {
 	case 0 ... 15:
 		// These are not BIOS service, but the CPU-generated exceptions
@@ -457,22 +457,22 @@ int biosint(unsigned long intnumber,
 		// "longjmp"
 		vga_exit();
 		break;
-		
+
 	case PCIBIOS:
-		ret = pcibios( &edi, &esi, &ebp, &esp, 
+		ret = pcibios( &edi, &esi, &ebp, &esp,
 			       &ebx, &edx, &ecx, &eax, &flags);
 		break;
-	case MEMSIZE: 
-		// who cares. 
+	case MEMSIZE:
+		// who cares.
 		eax = 64 * 1024;
 		ret = 0;
 		break;
 	case 0x15:
-		ret=handleint21( &edi, &esi, &ebp, &esp, 
+		ret=handleint21( &edi, &esi, &ebp, &esp,
 				&ebx, &edx, &ecx, &eax, &flags);
 		break;
 	default:
-		printk(BIOS_INFO, "BIOSINT: Unsupport int #0x%lx\n", 
+		printk(BIOS_INFO, "BIOSINT: Unsupport int #0x%lx\n",
 			    intnumber);
 		break;
 	}
@@ -482,10 +482,10 @@ int biosint(unsigned long intnumber,
 		flags &= ~1;
 	stackflags = flags;
 	return ret;
-} 
+}
 
 
-void setup_realmode_idt(void) 
+void setup_realmode_idt(void)
 {
 	extern unsigned char idthandle, end_idthandle;
 #if 0
@@ -496,14 +496,14 @@ void setup_realmode_idt(void)
 	struct realidt *idts = (struct realidt *) 0;
 	int codesize = &end_idthandle - &idthandle;
 	unsigned char *intbyte, *codeptr;
-	
+
 	// for each int, we create a customized little handler
-	// that just pushes %ax, puts the int # in %al, 
-	// then calls the common interrupt handler. 
-	// this necessitated because intel didn't know much about 
+	// that just pushes %ax, puts the int # in %al,
+	// then calls the common interrupt handler.
+	// this necessitated because intel didn't know much about
 	// architecture when they did the 8086 (it shows)
 	// (hmm do they know anymore even now :-)
-	// obviously you can see I don't really care about memory 
+	// obviously you can see I don't really care about memory
 	// efficiency. If I did I would probe back through the stack
 	// and get it that way. But that's really disgusting.
 	for (i = 0; i < 256; i++) {
@@ -514,11 +514,11 @@ void setup_realmode_idt(void)
 		intbyte = codeptr + 3;
 		*intbyte = i;
 	}
-	
+
 	// fixed entry points
-	
+
 	// VGA BIOSes tend to hardcode f000:f065 as the previous handler of
-	// int10. 
+	// int10.
 	// calling convention here is the same as INTs, we can reuse
 	// the int entry code.
 	codeptr = (unsigned char *) 0xff065;
@@ -526,14 +526,14 @@ void setup_realmode_idt(void)
 	intbyte = codeptr + 3;
 	*intbyte = 0x42; /* int42 is the relocated int10 */
 
-	/* The source of the following code is not yet known. 
- 	 * We feel it may be useful someday, but right now it 
- 	 * scribbles over code space. We are leaving it here as a 
- 	 * "Living comment" since it may at some point be needed 
+	/* The source of the following code is not yet known.
+ 	 * We feel it may be useful someday, but right now it
+ 	 * scribbles over code space. We are leaving it here as a
+ 	 * "Living comment" since it may at some point be needed
  	 * again. It is a very intriguing idea -- one could run
- 	 * vm86 code with TF set and set programmable times 
+ 	 * vm86 code with TF set and set programmable times
  	 * between instructions to slow them down. For those who
- 	 * recall the "turbo" switch on old PCs, this is the 
+ 	 * recall the "turbo" switch on old PCs, this is the
  	 * software equivalent.
  	 */
 #if 0
@@ -544,7 +544,7 @@ void setup_realmode_idt(void)
 	memcpy((void *)16384, &debughandle, &end_debughandle - &debughandle);
 #endif
 
-	
+
 }
 
 
@@ -561,25 +561,25 @@ enum {
 };
 
 // errors go in AH. Just set these up so that word assigns
-// will work. KISS. 
+// will work. KISS.
 enum {
 	PCIBIOS_NODEV = 0x8600,
 	PCIBIOS_BADREG = 0x8700
 };
 
 int
-pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp, 
-	unsigned long *pesp, unsigned long *pebx, unsigned long *pedx, 
+pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
+	unsigned long *pesp, unsigned long *pebx, unsigned long *pedx,
 	unsigned long *pecx, unsigned long *peax, unsigned long *pflags)
 {
 	unsigned short func = (unsigned short) *peax;
 	int retval = 0;
 	unsigned short devid, vendorid, devfn;
 	/* Use short to get rid of gabage in upper half of 32-bit register */
-	short devindex; 
+	short devindex;
 	unsigned char bus;
 	struct device *dev;
-	
+
 	switch(func) {
 	case  CHECK:
 		*pedx = 0x4350;
@@ -601,7 +601,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 			unsigned short busdevfn;
 			*peax = 0;
 			// busnum is an unsigned char;
-			// devfn is an int, so we mask it off. 
+			// devfn is an int, so we mask it off.
 			busdevfn = (dev->bus->secondary << 8)
 				| (dev->path.pci.devfn & 0xff);
 			printk(BIOS_DEBUG, "0x%x: return 0x%x\n", func, busdevfn);
@@ -624,7 +624,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 		unsigned short word;
 		unsigned char byte;
 		unsigned char reg;
-		
+
 		devfn = *pebx & 0xff;
 		bus = *pebx >> 8;
 		reg = *pedi;
@@ -661,8 +661,8 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 			pci_write_config32(dev, reg, dword);
 			break;
 		}
-		
-		if (retval) 
+
+		if (retval)
 			retval = PCIBIOS_BADREG;
 		printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%lx\n",
 			     func, bus, devfn, reg, *pecx);
@@ -674,9 +674,9 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 		printk(BIOS_ERR, "UNSUPPORTED PCIBIOS FUNCTION 0x%x\n",  func);
 		break;
 	}
-	
+
 	return retval;
-} 
+}
 
 int handleint21(unsigned long *edi, unsigned long *esi, unsigned long *ebp,
 		unsigned long *esp, unsigned long *ebx, unsigned long *edx,
@@ -704,7 +704,7 @@ int handleint21(unsigned long *edi, unsigned long *esi, unsigned long *ebp,
 	case 0x5f02:
 		*eax=0x5f;
 		*ebx= (*ebx & 0xffff0000) | 2;
-		*ecx= (*ecx & 0xffff0000) | 0x401;  // PAL + crt only 
+		*ecx= (*ecx & 0xffff0000) | 0x401;  // PAL + crt only
 		*edx= (*edx & 0xffff0000) | 0;  // TV Layout - default
 		res=0;
 		break;

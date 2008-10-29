@@ -424,6 +424,7 @@ int spi_command(unsigned int writecnt, unsigned int readcnt,
 void spi_write_enable();
 void spi_write_disable();
 int spi_chip_erase_c7(struct flashchip *flash);
+int spi_chip_erase_d8(struct flashchip *flash);
 int spi_chip_write(struct flashchip *flash, uint8_t *buf);
 int spi_chip_read(struct flashchip *flash, uint8_t *buf);
 uint8_t spi_read_status_register();

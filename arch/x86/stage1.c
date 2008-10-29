@@ -170,7 +170,6 @@ void __attribute__((stdcall)) stage1_phase1(u32 bist, u32 init_detected)
 	struct global_vars globvars;
 	int ret;
 	struct mem_file archive;
-	struct node_core_id me;
 
 	post_code(POST_STAGE1_MAIN);
 
@@ -279,11 +278,11 @@ void stage1_phase2(void)
 void __attribute__((stdcall)) stage1_phase3(void)
 {
 	void *entry;
-	int ret;
 	struct mem_file archive;
 	struct multiboot_info *mbi;
 
 #ifdef CONFIG_PAYLOAD_ELF_LOADER
+	int ret;
 	struct mem_file result;
 	int elfboot_mem(struct lb_memory *mem, void *where, int size);
 
@@ -305,7 +304,7 @@ void __attribute__((stdcall)) stage1_phase3(void)
 	entry = load_file_segments(&archive, "normal/stage2");
 	if (entry == (void *)-1)
 		die("FATAL: Failed loading stage2.");
-	mbi = run_address(entry);
+	mbi = (struct multiboot_info*) run_address(entry);
 	if (! mbi)
 		die("FATAL: Failed in stage2 code.");
 

@@ -92,7 +92,7 @@ if USE_DCACHE_RAM
 	else
 		makerule ./cache_as_ram_auto.inc
 			depends "$(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) option_table.h"
-			action "$(CC) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+			action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
 			action "perl -e 's/.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/.text/.section .rom.text/g' -pi $@"
 		end
@@ -105,7 +105,7 @@ else
     if CONFIG_AP_CODE_IN_CAR
 	makerule ./apc_auto.o
 		depends "$(MAINBOARD)/apc_auto.c option_table.h"
-		action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+		action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
 	end
 	ldscript /arch/i386/init/ldscript_apc.lb
     end
@@ -345,7 +345,7 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 6.0 on
 						chip drivers/pci/onboard
 							device pci 4.0 on end
-							register "rom_address" = "0xfff80000"
+							register "rom_address" = "0xfff00000"
 						end
 					 end # PCI
 					device pci 6.1 off end # AZA

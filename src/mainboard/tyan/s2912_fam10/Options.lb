@@ -126,7 +126,7 @@ uses AMD_UCODE_PATCH_FILE
 ##
 ## ROM_SIZE is the size of boot ROM that this board will use.
 ##
-default ROM_SIZE=524288
+default ROM_SIZE=1024*1024
 #default ROM_SIZE=0x100000
 
 ##
@@ -135,9 +135,7 @@ default ROM_SIZE=524288
 #default FALLBACK_SIZE=131072
 #default FALLBACK_SIZE=0x40000
 
-#FALLBACK: ROM_SIZE-4K
-default FALLBACK_SIZE=ROM_SIZE-0x01000
-#FAILOVER: 4K
+default FALLBACK_SIZE=0x3f000
 default FAILOVER_SIZE=0x01000
 
 #more 1M for pgtbl

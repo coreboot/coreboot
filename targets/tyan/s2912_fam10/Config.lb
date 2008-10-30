@@ -24,80 +24,27 @@
 target s2912_fam10
 mainboard tyan/s2912_fam10
 
-# This builds a fallback-only BIOS that fits in a 512K ROM.  The S2912 onboard
-# flash is 1024K, so for use with that pad resulting ROM with 512KB lead-in.
+# Make room for ATI ES1000 VGA ROM
+option ROM_SIZE=ROM_SIZE-44*1024
 
-# Make room for ES1000 VGA ROM
-option ROM_SIZE=(512-44)*1024
-
-# serengeti_leopard
 romimage "normal"
-#       48K for SCSI FW
-#        option ROM_SIZE = 475136
-#       48K for SCSI FW and 48K for ATI ROM
-#       option ROM_SIZE = 425984 
-#       64K for Etherboot
-#        option ROM_SIZE = 458752 
-#       44k for atixx.rom
-#        option ROM_SIZE = 479232
-        option USE_FAILOVER_IMAGE=0
+	option USE_FAILOVER_IMAGE=0
 	option USE_FALLBACK_IMAGE=0
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x18800
 	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x15800
 	option XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
-#       payload ../../../payloads/tg3--ide_disk.zelf
-#        payload ../../../payloads/filo.elf
-#        payload ../../../payloads/filo_mem.elf
-#        payload ../../../payloads/filo.zelf
-#        payload ../../../payloads/tg3--filo_hda2.zelf
-#	payload ../../../payloads/tg3.zelf
-#	payload ../../../../payloads/tg3_vga.zelf
-#	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
-#	payload ../../../../payloads/tg3--filo_hda2_vga_5_4.zelf
-#	payload ../../../../payloads/forcedeth--filo_hda2_vga.zelf
-	payload ../../../../payloads/forcedeth--filo_hda2_vga_5_4_2_mcp55.zelf
-#	payload ../../../payloads/tg3_com2.zelf
-#       payload ../../../payloads/e1000--filo.zelf
-#        payload ../../../payloads/tg3--e1000--filo.zelf
-#        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
-#	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_5.3.zelf
-#	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_com2.zelf
+#	payload ../../../../payloads/forcedeth--filo_hda2_vga_5_4_2_mcp55.zelf
+	payload ../payload.elf
 end
 
 romimage "fallback" 
         option USE_FAILOVER_IMAGE=0
 	option USE_FALLBACK_IMAGE=1
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x19800
 	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x15800
-	option XIP_ROM_SIZE=0x20000
+	option XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
-#       payload ../../../payloads/tg3--ide_disk.zelf
-#        payload ../../../payloads/filo.elf
-#        payload ../../../payloads/filo_mem.elf
-#        payload ../../../payloads/filo.zelf
-#        payload ../../../payloads/tg3--filo_hda2.zelf
-#	payload ../../../payloads/tg3.zelf
-#	payload ../../../../payloads/tg3_vga.zelf
-#	payload ../../../../payloads/memtest
-#	payload ../../../../payloads/e1000_vga.zelf
-#	payload ../../../../payloads/tg3--filo_hda2_vga.zelf
-#	payload ../../../../payloads/filo_hda.zelf
-#	payload ../../../../payloads/adlo.elf
-#	payload ../../../../payloads/tg3--filo_hda2_vga_5_4.zelf
-#	payload ../../../../payloads/forcedeth_mcp55_filo_hda2.zelf
-	payload ../../../../payloads/forcedeth--filo_hda2_vga_5_4_2_mcp55.zelf
-#	payload ../../../../payloads/forcedeth--filo_hda2_vga.zelf
-#	payload ../../../payloads/tg3_com2.zelf
-#       payload ../../../payloads/e1000--filo.zelf
-#        payload ../../../payloads/tg3--e1000--filo.zelf
-#        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
-#	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_5.3.zelf
-#	payload ../../../payloads/tg3--eepro100--e1000--filo_hda2_com2.zelf
+#	payload ../../../../payloads/forcedeth--filo_hda2_vga_5_4_2_mcp55.zelf
+	payload ../payload.elf
 end
 
 romimage "failover"
@@ -108,5 +55,4 @@ romimage "failover"
         option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
 end
 
-#buildrom ./coreboot.rom ROM_SIZE "normal" "failover"
-buildrom ./coreboot.rom ROM_SIZE "fallback" "failover"
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback" "failover"

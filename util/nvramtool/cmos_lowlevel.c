@@ -28,7 +28,11 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 \*****************************************************************************/
 
-#include <sys/io.h>
+#if defined(__FreeBSD__)
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
 #include "common.h"
 #include "cmos_lowlevel.h"
 
@@ -176,8 +180,8 @@ unsigned char cmos_read_byte (unsigned index)
       port_1 = 0x73;
     }
 
-   outb(index, port_0);
-   return inb(port_1);
+   OUTB(index, port_0);
+   return INB(port_1);
  }
 
 /****************************************************************************
@@ -204,8 +208,8 @@ void cmos_write_byte (unsigned index, unsigned char value)
       port_1 = 0x73;
     }
 
-   outb(index, port_0);
-   outb(value, port_1);
+   OUTB(index, port_0);
+   OUTB(value, port_1);
  }
 
 /****************************************************************************
@@ -248,8 +252,35 @@ void cmos_write_all (unsigned char data[])
  * level is therefore somewhat dangerous.
  ****************************************************************************/
 void set_iopl (int level)
- { assert((level >= 0) && (level <= 3));
+ {
+#if defined(__FreeBSD__)
+   static int io_fd = -1;
+#endif
 
+   assert((level >= 0) && (level <= 3));
+
+#if defined(__FreeBSD__)
+   if (level == 0)
+    {
+      if (io_fd != -1)
+       {
+         close(io_fd);
+         io_fd = -1;
+       }
+    }
+   else
+    {
+      if (io_fd == -1)
+       {
+         io_fd = open("/dev/io", O_RDWR);
+         if (io_fd < 0)
+          {
+            perror("/dev/io");
+            exit(1);
+          }
+       }
+    }
+#else
    if (iopl(level))
     { fprintf(stderr,
               "%s: iopl() system call failed.  You must be root to do "
@@ -257,6 +288,7 @@ void set_iopl (int level)
               prog_name);
       exit(1);
     }
+#endif
  }
 
 /****************************************************************************

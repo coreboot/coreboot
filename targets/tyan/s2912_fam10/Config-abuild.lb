@@ -30,7 +30,7 @@ __COMPRESSION__
 romimage "normal"
 	option USE_FAILOVER_IMAGE=0
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x3F000
+	option ROM_IMAGE_SIZE=0x34000
 	option XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION=".0-Normal"
 	payload __PAYLOAD__
@@ -39,7 +39,7 @@ end
 romimage "fallback" 
 	option USE_FAILOVER_IMAGE=0
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x3F000
+	option ROM_IMAGE_SIZE=0x34000
 	option XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION=".0-Fallback"
 	payload __PAYLOAD__

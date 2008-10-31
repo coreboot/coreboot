@@ -36,7 +36,7 @@ dep:
 install: $(PROGRAM)
 	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
 	mkdir -p $(PREFIX)/share/man/man1
-	$(INSTALL) $(PROGRAM).1 $(PREFIX)/share/man/man1
+	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
 
 .PHONY: all clean distclean dep
 

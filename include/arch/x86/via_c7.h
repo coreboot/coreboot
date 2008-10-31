@@ -25,6 +25,7 @@
 #define SYSCFG_MSR			0xC0010010
 #define SYSCFG_MSR_MtrrFixDramModEn	(1 << 19)
 #define SYSCFG_MSR_MtrrFixDramEn	(1 << 18)
+#define CPU_ADDR_BITS 32
 
 #ifndef __ASSEMBLER__
 

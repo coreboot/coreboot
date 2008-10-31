@@ -288,7 +288,7 @@ endif
 
 kscope: $(obj)/mainboard/$(MAINBOARDDIR)/kscope/cscope.files
 	kscope $(obj)/mainboard/$(MAINBOARDDIR)/kscope
-ALLSRC=$(STAGE0_SRC) $(INITRAM_SRC) $(STAGE2_SRC) $(PCIROM_SRC)
+ALLSRC=$(STAGE0_SRC) $(INITRAM_SRC) $(STAGE2_SRC) $(PCIROM_SRC) $(STAGE2_DYNAMIC_SRC)
 $(obj)/mainboard/$(MAINBOARDDIR)/kscope/cscope.files: $(ALLSRC)
 	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)/kscope
 	$(Q)cp cscope.proj $(obj)/mainboard/$(MAINBOARDDIR)/kscope

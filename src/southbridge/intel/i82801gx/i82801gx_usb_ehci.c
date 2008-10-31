@@ -80,5 +80,5 @@ static struct device_operations usb_ehci_ops = {
 static const struct pci_driver i82801gx_usb_ehci __pci_driver = {
 	.ops	= &usb_ehci_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_EHCI,
+	.device	= 0x27cc,
 };

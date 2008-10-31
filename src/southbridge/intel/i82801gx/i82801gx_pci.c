@@ -129,7 +129,7 @@ static struct device_operations device_ops = {
 static const struct pci_driver i82801g_pci __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_PCI,
+	.device	= 0x244e,
 };
 
 /* Mobile / Ultra Mobile */
@@ -137,5 +137,5 @@ static const struct pci_driver i82801g_pci __pci_driver = {
 static const struct pci_driver i82801gmu_pci __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801FBM_PCI,
+	.device	= 0x2448,
 };

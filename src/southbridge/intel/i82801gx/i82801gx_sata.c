@@ -149,7 +149,7 @@ static struct device_operations sata_ops = {
 static const struct pci_driver i82801gx_sata_normal_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_SATA,
+	.device	= 0x27c0,
 };
 
 /* NOTE: Any of the below are not properly supported yet. */
@@ -159,7 +159,7 @@ static const struct pci_driver i82801gx_sata_normal_driver __pci_driver = {
 static const struct pci_driver i82801gx_sata_ahci_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_SATA_AHCI,
+	.device	= 0x27c1,
 };
 
 /* Desktop RAID mode */
@@ -167,7 +167,7 @@ static const struct pci_driver i82801gx_sata_ahci_driver __pci_driver = {
 static const struct pci_driver i82801gx_sata_raid_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_SATA_RAID,
+	.device	= 0x27c3,
 };
 
 /* Mobile Non-AHCI and Non-RAID Mode */
@@ -175,7 +175,7 @@ static const struct pci_driver i82801gx_sata_raid_driver __pci_driver = {
 static const struct pci_driver i82801gx_sata_mobile_normal_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GBM_SATA,
+	.device	= 0x27c4,
 };
 
 /* Mobile AHCI Mode */
@@ -183,7 +183,7 @@ static const struct pci_driver i82801gx_sata_mobile_normal_driver __pci_driver =
 static const struct pci_driver i82801gx_sata_mobile_ahci_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GBM_SATA_AHCI,
+	.device	= 0x27c5,
 };
 
 /* ICH7M DH Raid Mode */
@@ -191,5 +191,5 @@ static const struct pci_driver i82801gx_sata_mobile_ahci_driver __pci_driver = {
 static const struct pci_driver i82801gx_sata_ich7dh_raid_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GHM_SATA_RAID,
+	.device	= 0x27c6,
 };

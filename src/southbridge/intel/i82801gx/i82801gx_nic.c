@@ -44,5 +44,5 @@ static struct device_operations nic_ops = {
 static const struct pci_driver i82801gx_nic __pci_driver = {
 	.ops	= &nic_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_LAN,
+	.device	= 0x27dc,
 };

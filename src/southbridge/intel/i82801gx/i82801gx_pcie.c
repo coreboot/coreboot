@@ -88,40 +88,40 @@ static struct device_operations device_ops = {
 static const struct pci_driver i82801gx_pcie_port1 __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_PCIE1,
+	.device	= 0x27d0,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
 static const struct pci_driver i82801gx_pcie_port2 __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_PCIE2,
+	.device	= 0x27d2,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
 static const struct pci_driver i82801gx_pcie_port3 __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_PCIE3,
+	.device	= 0x27d4,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
 static const struct pci_driver i82801gx_pcie_port4 __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_PCIE4,
+	.device	= 0x27d6,
 };
 
 /* 82801GR/GDH/GHM (ICH7R/ICH7DH/ICH7-M DH) */
 static const struct pci_driver i82801gx_pcie_port5 __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GR_PCIE5,
+	.device	= 0x27e0,
 };
 
 /* 82801GR/GDH/GHM (ICH7R/ICH7DH/ICH7-M DH) */
 static const struct pci_driver i82801gx_pcie_port6 __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GR_PCIE6,
+	.device	= 0x27e2,
 };

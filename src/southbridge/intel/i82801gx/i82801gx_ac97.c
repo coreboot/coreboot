@@ -57,7 +57,7 @@ static struct device_operations ac97_modem_ops = {
 static const struct pci_driver i82801gx_ac97_audio __pci_driver = {
 	.ops	= &ac97_audio_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_AC97_AUDIO,
+	.device	= 0x27de,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
@@ -65,5 +65,5 @@ static const struct pci_driver i82801gx_ac97_audio __pci_driver = {
 static const struct pci_driver i82801gx_ac97_modem __pci_driver = {
 	.ops	= &ac97_modem_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_AC97_MODEM,
+	.device	= 0x27dd,
 };

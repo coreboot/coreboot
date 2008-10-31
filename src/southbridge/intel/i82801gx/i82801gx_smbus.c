@@ -55,5 +55,5 @@ static struct device_operations smbus_ops = {
 static const struct pci_driver i82801gx_smbus __pci_driver = {
 	.ops	= &smbus_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_SMB,
+	.device	= 0x27da,
 };

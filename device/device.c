@@ -18,10 +18,10 @@
 /*
  *      (c) 1999--2000 Martin Mares <mj@suse.cz>
  */
-/* lots of mods by ron minnich (rminnich@lanl.gov), with 
+/* lots of mods by ron minnich (rminnich@lanl.gov), with
  * the final architecture guidance from Tom Merritt (tjm@codegen.com)
- * In particular, we changed from the one-pass original version to 
- * Tom's recommended multiple-pass version. I wasn't sure about doing 
+ * In particular, we changed from the one-pass original version to
+ * Tom's recommended multiple-pass version. I wasn't sure about doing
  * it with multiple passes, until I actually started doing it and saw
  * the wisdom of Tom's recommendations ...
  *
@@ -67,14 +67,14 @@ struct device **last_dev_p;
 static struct device devs[MAX_DEVICES];
 
 /**
- * the number of devices that have been allocated 
+ * the number of devices that have been allocated
  */
 static int devcnt;
 
 
 /**
  * The device creator.
- * 
+ *
  * reserves a piece of memory for a device in the tree
  *
  * @return Pointer to the newly created device structure.
@@ -95,7 +95,7 @@ static struct device *new_device(void)
 
 /**
  * The default constructor, which simply sets the ops pointer.
- * 
+ *
  * Initialize device->ops of a newly allocated device structure.
  *
  * @param dev Pointer to the newly created device structure.
@@ -136,12 +136,12 @@ struct device_operations *find_device_operations(struct device_id *id)
 }
 
 /**
- * Initialization tasks for the device tree code. 
- * 
+ * Initialization tasks for the device tree code.
+ *
  * Sets up last_dev_p, which used to be done by
- * Fucking Magic (FM) in the config tool. Also, for each of the 
- * devices, tries to find the constructor, and from there, the ops, 
- * for the device. 
+ * Fucking Magic (FM) in the config tool. Also, for each of the
+ * devices, tries to find the constructor, and from there, the ops,
+ * for the device.
  */
 void dev_init(void)
 {
@@ -152,10 +152,10 @@ void dev_init(void)
 		c = dev->ops;
 		if (c)
 			dev->id = c->id;
-		/* note the difference from the constructor function below. 
+		/* note the difference from the constructor function below.
 		 * we are not allocating the device here, just setting the id.
 		 * We set the id here because we don't want to set it in the dts
-		 * as we used to. The user sees none of this work. 
+		 * as we used to. The user sees none of this work.
 		 */
 		if (c)
 			dev->ops = c;
@@ -165,11 +165,11 @@ void dev_init(void)
 }
 
 /**
- * Given a device, find a constructor function and, if found, run it. 
- * 
+ * Given a device, find a constructor function and, if found, run it.
+ *
  * Given a device, use the device id in the device to find a device_operations.
  * Call the device_operations->constructor, with itself as
- * a parameter; return the result. If there is no constructor, 
+ * a parameter; return the result. If there is no constructor,
  * then no constructor is run.
  *
  * @param dev  Pointer to the newly created device structure.
@@ -185,7 +185,7 @@ void constructor(struct device *dev)
 		c = find_device_operations(&dev->id);
 
 	printk(BIOS_SPEW, "%s: constructor is %p\n", __func__, c);
- 
+
 	if(c) {
 		if(c->constructor)
 			c->constructor(dev, c);
@@ -193,7 +193,7 @@ void constructor(struct device *dev)
 			default_device_constructor(dev, c);
 	}
 	else
-		printk(BIOS_INFO, "No ops found and no constructor called for %s.\n", 
+		printk(BIOS_INFO, "No ops found and no constructor called for %s.\n",
 			dev_id_string(&dev->id));
 }
 
@@ -290,7 +290,7 @@ void read_resources(struct bus *bus)
 		int i;
 		printk(BIOS_SPEW,
 		       "%s: %s(%s) dtsname %s have_resources %d enabled %d\n",
-			__func__, bus->dev? bus->dev->dtsname : "NOBUSDEV", 
+			__func__, bus->dev? bus->dev->dtsname : "NOBUSDEV",
 			bus->dev ? dev_path(bus->dev) : "NOBUSDEV",
 			curdev->dtsname,
 			curdev->have_resources, curdev->enabled);
@@ -393,7 +393,7 @@ static struct device *largest_resource(struct bus *bus, struct resource
 
 /**
  * This function is the guts of the resource allocator.
- * 
+ *
  * The problem.
  *  - Allocate resource locations for every device.
  *  - Don't overlap, and follow the rules of bridges.
@@ -456,7 +456,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	/* Remember we haven't found anything yet. */
 	resource = 0;
 
-	/* Walk through all the devices on the current bus and 
+	/* Walk through all the devices on the current bus and
 	 * compute the addresses.
 	 */
 	while ((dev = largest_resource(bus, &resource, type_mask, type))) {
@@ -476,7 +476,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 			align = min_align;
 		}
 
-		/* Propogate the resource alignment to the bridge register  */
+		/* Propagate the resource alignment to the bridge register  */
 		if (align > bridge->align) {
 			bridge->align = align;
 		}
@@ -552,7 +552,7 @@ int vga_inited = 0;
 static void allocate_vga_resource(void)
 {
 #warning Modify allocate_vga_resource so it is less PCI centric.
-	// FIXME: This function knows too much about PCI stuff, 
+	// FIXME: This function knows too much about PCI stuff,
 	// it should just be an iterator/visitor.
 
 	/* FIXME: Handle the VGA palette snooping. */
@@ -653,13 +653,13 @@ void phase4_assign_resources(struct bus *bus)
 		}
 		if (!curdev->ops->phase4_set_resources) {
 			printk(BIOS_WARNING,
-			       "%s(%s) ops has no missing phase4_set_resources\n",
+			       "%s(%s) ops has no phase4_set_resources\n",
 			       curdev->dtsname, dev_path(curdev));
 			continue;
 		}
 		curdev->ops->phase4_set_resources(curdev);
 	}
-	printk(BIOS_SPEW, "%s(%s) assign_resources, bus %d link: %d\n",
+	printk(BIOS_SPEW, "%s(%s) assign_resources done, bus %d link: %d\n",
 	       bus->dev->dtsname, dev_path(bus->dev), bus->secondary,
 	       bus->link);
 }
@@ -700,7 +700,7 @@ void dev_phase5(struct device *dev)
 	dev->ops->phase5_enable_resources(dev);
 }
 
-/** 
+/**
  * Reset all of the devices on a bus and clear the bus's reset_needed flag.
  *
  * @param bus Pointer to the bus structure.
@@ -744,7 +744,7 @@ void dev_phase1(void)
  *
  * Starting at the first device on the global device link list,
  * walk the list and call the device's phase2() method to do
- * early setup. 
+ * early setup.
  */
 void dev_phase2(void)
 {
@@ -755,7 +755,7 @@ void dev_phase2(void)
 	for (dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW,
 			"%s: dev %s: ops %p ops->phase2_fixup %p\n",
-			__FUNCTION__, dev->dtsname, dev->ops, 
+			__FUNCTION__, dev->dtsname, dev->ops,
 			dev->ops? dev->ops->phase2_fixup : NULL);
 		if (dev->ops && dev->ops->phase2_fixup) {
 			printk(BIOS_SPEW,
@@ -770,7 +770,7 @@ void dev_phase2(void)
 	post_code(POST_STAGE2_PHASE2_EXIT);
 }
 
-/** 
+/**
  * Scan for devices on a bus.
  *
  * If there are bridges on the bus, recursively scan the buses behind the
@@ -802,7 +802,7 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 		int link;
 		printk(BIOS_INFO, "%s: scanning %s(%s)\n", __FUNCTION__,
 		       busdevice->dtsname, dev_path(busdevice));
-#warning do we call phase3_enable here. 
+#warning do we call phase3_enable here.
 		new_max = busdevice->ops->phase3_scan(busdevice, max);
 		do_phase3 = 0;
 		/* do we *ever* use this path */
@@ -842,7 +842,7 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
  * This function has no idea how to scan and probe buses and devices at all.
  * It depends on the bus/device specific scan_bus() method to do it. The
  * scan_bus() method also has to create the device structure and attach
- * it to the device tree. 
+ * it to the device tree.
  */
 void dev_root_phase3(void)
 {
@@ -872,7 +872,7 @@ void dev_root_phase3(void)
 
 /**
  * Configure devices on the device tree.
- * 
+ *
  * Starting at the root of the device tree, travel it recursively in two
  * passes. In the first pass, we compute and allocate resources (ranges)
  * required by each device. In the second pass, the resources ranges are
@@ -882,7 +882,7 @@ void dev_root_phase3(void)
  * at DEVICE_MEM_START and grow downward.
  *
  * Since the assignment is hierarchical we set the values into the dev_root
- * struct. 
+ * struct.
  */
 void dev_phase4(void)
 {
@@ -913,13 +913,16 @@ void dev_phase4(void)
 	root->ops->phase4_read_resources(root);
 	printk(BIOS_INFO, "Phase 4: Done reading resources.\n");
 
-	/* we have read the resources. We now compute the global allocation of resources. 
-	 * We have to create a root resource for the base of the tree. The root resource should contain the entire
-	 * address space for IO and MEM resources. The allocation of device resources will be done from this
-	 * resource address space. 
+	/* We have read the resources. We now compute the global allocation of
+	 * resources. We have to create a root resource for the base of the
+	 * tree. The root resource should contain the entire address space for
+	 * IO and MEM resources. The allocation of device resources will be done
+	 * from this resource address space.
 	 */
 
-	/* Allocate a resource from the root device resource pool and initialize the system wide I/O space constraints. */
+	/* Allocate a resource from the root device resource pool and initialize
+	 * the system-wide I/O space constraints.
+	 */
 	io = new_resource(root, 0);
 	io->base = 0x400;
 	io->size = 0;
@@ -928,8 +931,8 @@ void dev_phase4(void)
 	io->limit = 0xffffUL;
 	io->flags = IORESOURCE_IO;
 
-	/* Allocate a resource from the root device resource pool and initialize the system wide 
-	 * memory resources constraints.
+	/* Allocate a resource from the root device resource pool and initialize
+	 * the system-wide memory resources constraints.
 	 */
 	mem = new_resource(root, 1);
 	mem->base = 0;
@@ -945,10 +948,9 @@ void dev_phase4(void)
 	compute_allocate_resource(&root->link[0], mem,
 				  IORESOURCE_MEM, IORESOURCE_MEM);
 
-	/* Now we need to adjust the resources. The issue is that mem grows downward. 
-	io = &root->resource[0];
-	mem = &root->resource[1];
-
+	/* Now we need to adjust the resources. The issue is that mem grows
+	 * downward.
+	 */
 	/* Make certain the I/O devices are allocated somewhere safe. */
 	io->base = DEVICE_IO_START;
 	io->flags |= IORESOURCE_ASSIGNED;

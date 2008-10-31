@@ -18,18 +18,22 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-X86EMU_OBJ  = debug.o decode.o fpu.o ops.o ops2.o prim_ops.o sys.o
-BIOSEMU_OBJ = biosemu.o pcbios/pcibios.o
-VM86_OBJ    = vm86.o vm86_gdt.o
+X86EMU_SRC  = debug.c decode.c fpu.c ops.c ops2.c prim_ops.c sys.c
+BIOSEMU_SRC = biosemu.c pcbios/pcibios.c
+VM86_SRC    = vm86.c vm86_gdt.c b.c corebootonly.c
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
-LIBX86EMU_OBJS = $(patsubst %,$(obj)/util/x86emu/x86emu/%,$(X86EMU_OBJ)) \
-		 $(patsubst %,$(obj)/util/x86emu/%,$(BIOSEMU_OBJ))
+LIBX86EMU_SRC=$(X86EMU_SRC) $(BIOSEMU_SRC)
 endif
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_VM86),y)
-LIBX86EMU_OBJS := $(patsubst %,$(obj)/util/x86emu/%,$(VM86_OBJ))
+LIBX86EMU_SRC=$(VM86_SRC)
 endif
+
+LIBX86EMU_OBJS = $(patsubst %.c,$(obj)/util/x86emu/%.o,$(LIBX86EMU_SRC))
+# needed for kscope
+PCIROM_SRC += $(patsubst %,$(src)/util/x86emu/%,$(LIBX86EMU_SRC)) 
+
 
 $(obj)/util/x86emu/libx86emu.a: $(LIBX86EMU_OBJS) $(src)/.config
 	$(Q)printf "  AR      $(subst $(shell pwd)/,,$(@))\n"

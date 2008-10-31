@@ -156,7 +156,7 @@ unsigned int pci_find_capability(struct device *dev, unsigned int cap)
 struct resource *pci_get_resource(struct device *dev, unsigned long index)
 {
 	struct resource *resource;
-	unsigned long value, attr;
+	unsigned long value, attr, base;
 	resource_t moving, limit;
 
 	/* Initialize the resources to nothing. */
@@ -165,9 +165,15 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	/* Get the initial value. */
 	value = pci_read_config32(dev, index);
 
+	/* save the base address */
+	if (value & PCI_BASE_ADDRESS_SPACE_IO)
+		base &= ~PCI_BASE_ADDRESS_IO_ATTR_MASK;
+	else
+		base &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+
 	/* See which bits move. */
 	moving = pci_moving_config32(dev, index);
-
+	/* Next step: save the base in the dev struct. For later next week */
 	/* Initialize attr to the bits that do not move. */
 	attr = value & ~moving;
 

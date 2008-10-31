@@ -1,17 +1,25 @@
-#LyX 1.4.4 created this file. For more info see http://www.lyx.org/
-\lyxformat 245
+#LyX 1.5.6 created this file. For more info see http://www.lyx.org/
+\lyxformat 276
 \begin_document
 \begin_header
 \textclass article
 \language english
 \inputencoding default
-\fontscheme default
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
 \graphics default
 \paperfontsize 10
 \spacing single
 \papersize default
 \use_geometry false
 \use_amsmath 0
+\use_esint 0
 \cite_engine basic
 \use_bibtopic false
 \paperorientation portrait
@@ -24,7 +32,8 @@
 \papersides 1
 \paperpagestyle empty
 \tracking_changes false
-\output_changes true
+\output_changes false
+\author "" 
 \end_header
 
 \begin_body
@@ -144,7 +153,8 @@ FLASH layout
 
 \begin_layout Standard
 Shown in 
-\begin_inset LatexCommand \ref{fig:FLASH-layout}
+\begin_inset LatexCommand ref
+reference "fig:FLASH-layout"
 
 \end_inset
 
@@ -194,12 +204,21 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
-\begin_inset LatexCommand \label{fig:FLASH-layout}
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
+\begin_inset LatexCommand label
+name "fig:FLASH-layout"
 
 \end_inset
 
 FLASH layout
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -225,8 +244,8 @@ Purpose and function
 \end_layout
 
 \begin_layout Standard
-The coreboot device tree is probably the single most important concept
- in coreboot, and, in V2, was the least understood part of the software.
+The coreboot device tree is probably the single most important concept in
+ coreboot, and, in V2, was the least understood part of the software.
  The device tree provides a tremendous amount of capability to the software.
  The initial tree, which almost always will be an incomplete representation
  of the hardware (consider pluggable devices), is created by the configuration
@@ -353,9 +372,9 @@ path
  But, not all devices have identical capabilities.
  Some PCI devices have IDE controllers, others do not; some can drive the
  legacy PC XBUS, others can not; and so on.
- In coreboot V1, we attempted to create devices that were the union of
- all possible devices, but creating such a union proved to be impossible,
- as new devices with new capabilities came out.
+ In coreboot V1, we attempted to create devices that were the union of all
+ possible devices, but creating such a union proved to be impossible, as
+ new devices with new capabilities came out.
  So, in V2, we split off the device-specific information into a seperate
  structure.
  The generic device structure is defined in include/device/device.h; the
@@ -411,9 +430,17 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 The files in the i440bx directory.
  
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -453,8 +480,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 config.h for the i440bx
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -922,7 +957,10 @@ Exit: 0x2f
 \end_layout
 
 \begin_layout Subparagraph*
-Phase 2 -- preparation for bus scan
+Phase 2 -- fixup.
+ Fix broken devices if needed.
+ Typically used by mainboard device.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -976,8 +1014,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 The dts for the emulation/qemu target
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1017,8 +1063,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Code generated for the dts
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1096,8 +1150,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 What the mainboard file looks like with enable_dev
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1433,8 +1495,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 Sample DTS
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout LyX-Code
@@ -1635,7 +1705,9 @@ Sample DTS
 status collapsed
 
 \begin_layout Standard
-\begin_inset LatexCommand \bibtex[latex8]{yourbibfile}
+\begin_inset LatexCommand bibtex
+options "latex8"
+bibfiles "yourbibfile"
 
 \end_inset
 
@@ -1762,8 +1834,16 @@ wide false
 sideways false
 status open
 
-\begin_layout Caption
+\begin_layout Standard
+\begin_inset Caption
+
+\begin_layout Standard
 How we get from the mainboard DTS to C
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1946,8 +2026,8 @@ One idea is a kind of iterative config with increasing resolution per iteration.
 
 \begin_layout Itemize
 Payload.
- I say something must be included in the coreboot tree or trivially added to a
- tree by download or command.
+ I say something must be included in the coreboot tree or trivially added
+ to a tree by download or command.
  FILO is candidate for inclusion.
  What's up with FILO(EB) and FILO(CB) ? Merge them? Make EB default payload?
  FILO? memtest86? All about making a usable product.
@@ -2122,8 +2202,8 @@ Next we bring in the initram.c from v2.
  It will not build in V3, as the includes are wrong.
  We fix these and, while we are at it, change the entry point to be called
  main().
- This file will be a standalone file in the coreboot Lightweight Archive (LAR), and
- hence needs to have main() as the entry point.
+ This file will be a standalone file in the coreboot Lightweight Archive
+ (LAR), and hence needs to have main() as the entry point.
  
 \end_layout
 

@@ -23,7 +23,6 @@ choice
 
 config BOARD_JETWAY_J7F2
 	bool "J7F2 Series (INCOMPLETE)"
-	depends CONFIG_EXPERIMENTAL
 	select ARCH_X86
 	select CPU_VIA_C7
 	select OPTION_TABLE

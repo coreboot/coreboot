@@ -1,0 +1,76 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2008 Corey Osgood <corey.osgood@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+/*
+-[0000:00]-+-00.0  VIA Technologies, Inc. CN700/VN800/P4M800CE/Pro Host Bridge
+           +-00.1  VIA Technologies, Inc. CN700/VN800/P4M800CE/Pro Host Bridge
+           +-00.2  VIA Technologies, Inc. CN700/VN800/P4M800CE/Pro Host Bridge
+           +-00.3  VIA Technologies, Inc. PT890 Host Bridge
+           +-00.4  VIA Technologies, Inc. CN700/VN800/P4M800CE/Pro Host Bridge
+           +-00.7  VIA Technologies, Inc. CN700/VN800/P4M800CE/Pro Host Bridge
+           +-01.0-[0000:01]----00.0  VIA Technologies, Inc. UniChrome Pro IGP
+           +-08.0  RaLink RT2561/RT61 802.11g PCI
+           +-0a.0  VIA Technologies, Inc. IEEE 1394 Host Controller
+           +-0f.0  VIA Technologies, Inc. VIA VT6420 SATA RAID Controller
+           +-0f.1  VIA Technologies, Inc. VT82C586A/B/VT82C686/A/B/VT823x/A/C PIPC Bus Master IDE
+           +-10.0  VIA Technologies, Inc. VT82xxxxx UHCI USB 1.1 Controller
+           +-10.1  VIA Technologies, Inc. VT82xxxxx UHCI USB 1.1 Controller
+           +-10.2  VIA Technologies, Inc. VT82xxxxx UHCI USB 1.1 Controller
+           +-10.3  VIA Technologies, Inc. VT82xxxxx UHCI USB 1.1 Controller
+           +-10.4  VIA Technologies, Inc. USB 2.0
+           +-11.0  VIA Technologies, Inc. VT8237 ISA bridge [KT600/K8T800/K8T890 South]
+           +-11.5  VIA Technologies, Inc. VT8233/A/8235/8237 AC97 Audio Controller
+           \-12.0  VIA Technologies, Inc. VT6102 [Rhine-II]
+*/
+
+/{
+	mainboard_vendor = "VIA";
+	mainboard_name = "EPIA-CN";
+	mainboard_pci_subsystem_vendor = "0xdead"; /* TODO */
+	mainboard_pci_subsystem_device = "0xbeef"; /* TODO */
+	cpus { };
+	apic@0 {
+	};
+	domain@0 {
+		pci@0,0 {};
+		pci@0,1 {};
+		pci@0,2 {};
+		pci@0,3 {};
+		pci@0,4 {};
+		pci@0,7 {};
+		pci@1,0 {};
+		pci@f,0 {};
+		pci@10,0 {
+			/config/("southbridge/via/vt8237/sata.dts");
+		};
+		pci@10,1 {
+			/config/("southbridge/via/vt8237/ide.dts");
+		};
+		pci@11,0 {
+			/config/("southbridge/via/vt8237/lpc.dts");
+		};
+		ioport@4e {
+/*
+			/config/("superio/via/vt1221/dts");
+			com1enable = "1";
+*/
+		};
+	};
+};

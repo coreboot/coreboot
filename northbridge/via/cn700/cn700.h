@@ -18,8 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef NORTHBRIDGE_VIA_CN700_CN700_H
+#define NORTHBRIDGE_VIA_CN700_CN700_H
+
 #include <types.h>
- 
+
 struct board_info {
 	u32 d0f2, d0f3, d0f4, d0f7, d1f0;
 	u16 spd_channel0[2];
@@ -59,3 +62,5 @@ void ddr2_sdram_enable(struct board_info *);
 #define RAM_COMMAND_PRECHARGE	0x2
 #define RAM_COMMAND_MRS		0x3
 #define RAM_COMMAND_CBR		0x4
+
+#endif

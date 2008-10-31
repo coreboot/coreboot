@@ -53,6 +53,11 @@ config VENDOR_GIGABYTE
 	help
 	  Select this option for various systems from GIGABYTE.
 
+config VENDOR_JETWAY
+	bool "Jetway"
+	help
+	  Select this option for systems from Jetway.
+
 config VENDOR_EMULATION
 	bool "Emulated systems"
 	help
@@ -76,6 +81,7 @@ source "mainboard/amp/Kconfig"
 source "mainboard/artecgroup/Kconfig"
 source "mainboard/emulation/Kconfig"
 source "mainboard/gigabyte/Kconfig"
+source "mainboard/jetway/Kconfig"
 source "mainboard/pcengines/Kconfig"
 source "mainboard/via/Kconfig"
 

@@ -1,0 +1,88 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2008 Corey Osgood <corey.osgood@gmail.com>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_JETWAY
+
+config BOARD_JETWAY_J7F2
+	bool "J7F2 Series (INCOMPLETE)"
+	depends CONFIG_EXPERIMENTAL
+	select ARCH_X86
+	select CPU_VIA_C7
+	select OPTION_TABLE
+	select NORTHBRIDGE_VIA_CN700
+	select SOUTHBRIDGE_VIA_VT8237
+	select SUPERIO_FINTEK_F71805F
+	help
+	  Jetway J7F2-Series board.
+endchoice
+
+##TODO: Make this more generic, perhaps put it in a per-NB Kconfig. This can't
+##	be completely universal, because different video chips support
+##	different video memory sizes.
+
+choice
+	prompt "Video Memory Size"
+	default CN700_VIDEO_MB_32
+	depends NORTHBRIDGE_VIA_CN700
+
+config CN700_VIDEO_MB_NONE
+	bool "none"
+	help
+	  Choose this option to disable the onboard video.
+
+config CN700_VIDEO_MB_32
+	bool "32 MB"
+	help
+	  Choose this option to use 32MB of system memory for onboard video.
+
+config CN700_VIDEO_MB_64
+	bool "64 MB"
+	help
+	  Choose this option to use 64MB of system memory for onboard video.
+
+config CN700_VIDEO_MB_128
+	bool "128 MB"
+	help
+	  Choose this option to use 128MB of system memory for onboard video.
+
+config CN700_VIDEO_MB_256
+	bool "256 MB"
+	help
+	  Choose this option to use 256MB of system memory for onboard video.
+
+
+config CN700_VIDEO_MB
+	int
+	default 0 if CN700_VIDEO_MB_NONE
+	default 32 if CN700_VIDEO_MB_32
+	default 64 if CN700_VIDEO_MB_64
+	default 128 if CN700_VIDEO_MB_128
+	default 256 if CN700_VIDEO_MB_256
+	help
+	  Map the config names to an integer.
+
+endchoice
+
+config MAINBOARD_DIR
+	string
+	default jetway/j7f2
+	depends BOARD_JETWAY_J7F2
+

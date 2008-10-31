@@ -22,16 +22,6 @@
 
 #include <types.h>
 
-/* Static resources for the VT8237R southbridge */
-
-#define VT8237R_APIC_ID			0x2
-#define VT8237R_ACPI_IO_BASE		0x500
-/* 0x0 disabled, 0x2 reserved, 0xf = IRQ15 */
-#define VT8237R_ACPI_IRQ		0x9
-#define VT8237S_SPI_MEM_BASE		0xfed02000ULL
-#define VT8237R_HPET_ADDR		0xfed00000ULL
-#define VT8237R_APIC_BASE		0xfec00000ULL
-
 /* IDE */
 #define IDE_CS				0x40
 #define IDE_CONF_I			0x41
@@ -41,10 +31,12 @@
 #define IDE_MISC_II			0x45
 #define IDE_UDMA			0x50
 
+#define SATA_MISC_CTRL 0x45
+
 /* SMBus */
-#define VT8237R_POWER_WELL		0x94
-#define VT8237R_SMBUS_IO_BASE_REG	0xd0
-#define VT8237R_SMBUS_HOST_CONF		0xd2
+#define VT8237_POWER_WELL		0x94
+#define VT8237_SMBUS_IO_BASE_REG	0xd0
+#define VT8237_SMBUS_HOST_CONF		0xd2
 
 #define SMBHSTSTAT			0x0
 #define SMBSLVSTAT			0x1
@@ -86,5 +78,6 @@ struct vt8237_network_rom {
 
 void enable_smbus(u16);
 u8 smbus_read_byte(u16, u8, u16);
+void vt8237_enable(struct device *);
 
 #endif

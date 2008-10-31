@@ -20,6 +20,9 @@
 
 ifeq ($(CONFIG_SOUTHBRIDGE_VIA_VT8237),y)
 
-STAGE2_CHIPSET_SRC += 
+STAGE2_CHIPSET_SRC += $(src)/southbridge/via/vt8237/vt8237.c \
+			$(src)/southbridge/via/vt8237/lpc.c \
+			$(src)/southbridge/via/vt8237/ide.c \
+			$(src)/southbridge/via/vt8237/sata.c
 
 endif

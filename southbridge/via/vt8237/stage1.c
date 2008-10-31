@@ -170,14 +170,14 @@ void enable_smbus(u16 smbus_io_base)
 	/* 7 = SMBus Clock from RTC 32.768KHz
 	 * 5 = Internal PLL reset from susp
 	 */
-	pci_conf1_write_config8(dev, VT8237R_POWER_WELL, 0xa0);
+	pci_conf1_write_config8(dev, VT8237_POWER_WELL, 0xa0);
 
 	/* Enable SMBus. */
-	pci_conf1_write_config16(dev, VT8237R_SMBUS_IO_BASE_REG,
+	pci_conf1_write_config16(dev, VT8237_SMBUS_IO_BASE_REG,
 			   smbus_io_base | 0x1);
 
 	/* SMBus Host Configuration, enable. */
-	pci_conf1_write_config8(dev, VT8237R_SMBUS_HOST_CONF, 0x01);
+	pci_conf1_write_config8(dev, VT8237_SMBUS_HOST_CONF, 0x01);
 
 	/* Make it work for I/O. */
 	pci_conf1_write_config16(dev, PCI_COMMAND, PCI_COMMAND_IO);

@@ -97,10 +97,10 @@ static void f71805f_init(struct device *dev)
 static void phase2_setup_scan_bus(struct device *dev);
 
 struct device_operations f71805f_ops = {
-	.phase2_setup_scan_bus   = phase2_setup_scan_bus,
+	.phase3_chip_setup_dev   = phase2_setup_scan_bus,
+	.phase3_enable		 = f71805f_pnp_enable_resources,
 	.phase4_read_resources   = pnp_read_resources,
 	.phase4_set_resources    = f71805f_pnp_set_resources,
-	.phase4_enable_disable   = f71805f_pnp_enable_resources,
 	.phase5_enable_resources = f71805f_pnp_enable,
 	.phase6_init             = f71805f_init,
 };

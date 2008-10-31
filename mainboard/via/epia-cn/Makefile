@@ -22,6 +22,7 @@ STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c
 
 INITRAM_SRC =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 		$(src)/northbridge/via/cn700/initram.c \
+		$(src)/southbridge/via/vt8237/stage1.c \
 		$(src)/lib/ramtest.c
 
 STAGE2_MAINBOARD_SRC = 

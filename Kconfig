@@ -122,6 +122,8 @@ config SUPERIO_ITE_IT8716F
 	boolean
 config SUPERIO_ITE_IT8712F
 	boolean
+config SUPERIO_VIA_VT1211
+	boolean
 
 menu "Payload"
 

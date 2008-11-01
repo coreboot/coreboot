@@ -18,7 +18,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c
+STAGE0_MAINBOARD_SRC :=  $(src)/lib/clog2.c \
+			$(src)/arch/x86/stage1_mtrr.c \
+			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c
 
 INITRAM_SRC =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 		$(src)/northbridge/via/cn700/initram.c \

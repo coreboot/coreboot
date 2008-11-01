@@ -30,21 +30,6 @@
 #include <mtrr.h>
 #include <via_c7.h>
 
-#ifdef NO_IDEA_WHETHER_THIS_IS_RELEVANT_ON_C7
-/**
- * Set the MTRR for initial ram access. 
- * be warned, this will be used by core other than core 0/node 0 or core0/node0 when cpu_reset. 
- * This warning has some significance I don't yet understand. 
- */
-void set_init_ram_access(void)
-{
-	set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, MTRR_TYPE_WRBACK);
-}
-#endif
-
-#define __stringify_1(x)	#x
-#define __stringify(x)		__stringify_1(x)
-
 /**
  * Disable Cache As RAM (CAR) after memory is setup.
  */

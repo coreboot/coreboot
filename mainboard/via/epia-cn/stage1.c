@@ -36,10 +36,15 @@ void stop_ap(void)
 
 void hardware_stage1(void)
 {
+	void early_mtrr_init(void);
 	void vt1211_enable_serial(u8 dev, u8 serial, u16 iobase);
 	u32 dev;
 
 	post_code(POST_START_OF_MAIN);
+
+	/* do this or watch the system run slowly */
+	early_mtrr_init();
+
 	vt1211_enable_serial(0x2e, 2, 0x3f8);
 	
 	/* Enable multifunction for northbridge. */

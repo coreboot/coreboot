@@ -106,6 +106,10 @@ void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	
 }
 
+/**
+ * Call this function early in stage1 to enable mtrrs, which will ensure 
+ * caching of ROM 
+ */
 void early_mtrr_init(void)
 {
 	static const unsigned long mtrr_msrs[] = {

@@ -317,6 +317,7 @@ extern struct flashchip flashchips[];
 #define ST_M50FLW040B		0x28
 #define ST_M50FLW080A		0x80
 #define ST_M50FLW080B		0x81
+#define ST_M50FW002		0x29
 #define ST_M50FW040		0x2C
 #define ST_M50FW080		0x2D
 #define ST_M50FW016		0x2E

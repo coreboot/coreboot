@@ -121,6 +121,7 @@ struct flashchip flashchips[] = {
 	{"ST",		"M50FLW040B",		ST_ID,		ST_M50FLW040B,		512,	64 * 1024,	TEST_UNTESTED,	probe_stm50flw0x0x,	erase_stm50flw0x0x,		write_stm50flw0x0x},
 	{"ST",		"M50FLW080A",		ST_ID,		ST_M50FLW080A,		1024,	64 * 1024,	TEST_OK_PREW,	probe_stm50flw0x0x,	erase_stm50flw0x0x,		write_stm50flw0x0x},
 	{"ST",		"M50FLW080B",		ST_ID,		ST_M50FLW080B,		1024,	64 * 1024,	TEST_UNTESTED,	probe_stm50flw0x0x,	erase_stm50flw0x0x,		write_stm50flw0x0x},
+	{"ST",		"M50FW002",		ST_ID,		ST_M50FW002,		256,	64 * 1024,	TEST_UNTESTED,	probe_49lfxxxc,		NULL,			NULL},
 	{"ST",		"M50FW016",		ST_ID,		ST_M50FW016,		2048,	64 * 1024,	TEST_UNTESTED,	probe_82802ab,		erase_82802ab,			write_82802ab},
 	{"ST",		"M50FW040",		ST_ID,		ST_M50FW040,		512,	64 * 1024,	TEST_OK_PREW,	probe_82802ab,		erase_82802ab,			write_82802ab},
 	{"ST",		"M50FW080",		ST_ID,		ST_M50FW080,		1024,	64 * 1024,	TEST_UNTESTED,	probe_82802ab,		erase_82802ab,			write_82802ab},

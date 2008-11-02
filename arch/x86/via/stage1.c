@@ -35,6 +35,7 @@
  */
 void disable_car(void)
 {
+	printk(BIOS_DEBUG, "disable_car entry\n");
 	/* Determine new global variable location. Stack organization from top
 	 * Top 4 bytes are reserved
 	 * Pointer to global variables
@@ -42,19 +43,27 @@ void disable_car(void)
 	 *
  	 * Align the result to 8 bytes
 	 */
-	const struct global_vars *newlocation = (struct global_vars *)((RAM_STACK_BASE - sizeof(struct global_vars *) - sizeof(struct global_vars)) & ~0x7);
+	struct global_vars *const newlocation = (struct global_vars *)((RAM_STACK_BASE - sizeof(struct global_vars *) - sizeof(struct global_vars)) & ~0x7);
 	/* Copy global variables to new location. */
 	memcpy(newlocation, global_vars(), sizeof(struct global_vars));
+	printk(BIOS_DEBUG, "disable_car global_vars copy done\n");
 	/* Set the new global variable pointer. */
 	*(struct global_vars **)(RAM_STACK_BASE - sizeof(struct global_vars *)) = newlocation;
 
+	printk(BIOS_DEBUG, "disable_car global_vars pointer adjusted\n");
+	printk(BIOS_DEBUG, "entering asm code now\n");
+
 	__asm__ __volatile__(
+	"	movl	%[newesp], %%esp	\n"
+
+#if ENABLE_BROKEN_CAR_DISABLING
 	/* We don't need cache as ram for now on */
 	/* disable cache */
 	"	movl    %%cr0, %%eax		\n"
 	"	orl    $(0x1<<30),%%eax		\n"
 	"	movl    %%eax, %%cr0		\n"
 
+	/* The MTRR setup below causes the machine to reset. Must investigate. */
 	/* disable fixed mtrr from now on, it will be enabled by coreboot_ram again*/
 	"	movl    %[_SYSCFG_MSR], %%ecx	\n"
 	"	rdmsr				\n"
@@ -75,10 +84,10 @@ void disable_car(void)
 	"	movl    %%cr0, %%eax		\n"
 	"	andl    $0x9fffffff,%%eax	\n"
 	"	movl    %%eax, %%cr0		\n"
+#endif
 
 	"	wbinvd				\n"
 
-	"	movl	%[newesp], %%esp	\n"
 	"	call stage1_phase3		\n"
 	:: [newesp] "i" (newlocation),
 	 [_SYSCFG_MSR] "i" (SYSCFG_MSR),

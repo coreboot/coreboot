@@ -263,6 +263,7 @@ void stage1_phase2(void)
 #ifdef CONFIG_CONSOLE_BUFFER
 	/* Move the printk buffer to PRINTK_BUF_ADDR_RAM */
 	printk_buffer_move((void *)PRINTK_BUF_ADDR_RAM, PRINTK_BUF_SIZE_RAM);
+	printk(BIOS_DEBUG, "Done printk() buffer move\n");
 #endif
 	/* Turn off Cache-As-Ram */
 	disable_car();

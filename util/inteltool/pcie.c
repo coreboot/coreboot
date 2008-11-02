@@ -36,6 +36,7 @@ int print_epbar(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
+	case PCI_DEVICE_ID_INTEL_82945P:
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		break;
 	case 0x1234: // Dummy for non-existent functionality
@@ -77,6 +78,7 @@ int print_dmibar(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
+	case PCI_DEVICE_ID_INTEL_82945P:
 		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe;
 		break;
 	case 0x1234: // Dummy for non-existent functionality
@@ -120,6 +122,7 @@ int print_pciexbar(struct pci_dev *nb)
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
+	case PCI_DEVICE_ID_INTEL_82945P:
 		pciexbar_reg = pci_read_long(nb, 0x48);
 		break;
 	case 0x1234: // Dummy for non-existent functionality

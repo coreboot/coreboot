@@ -35,6 +35,7 @@
 #define PCI_DEVICE_ID_INTEL_ICH7MDH	0x27bd
 
 #define PCI_DEVICE_ID_INTEL_82845	0x1a30
+#define PCI_DEVICE_ID_INTEL_82945P	0x2770
 #define PCI_DEVICE_ID_INTEL_82945GM	0x27a0
 
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))

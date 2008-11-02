@@ -45,7 +45,7 @@ LIBGCC=$(shell $(CC) -m32 -print-libgcc-file-name)
 LPCC=$(LIBPAYLOAD_DIR)/bin/lpgcc
 
 bayou.elf: $(OBJECTS-y)
-	$(LPCC) -ldscript bayou.ldscript -m32 -o $@ $(OBJECTS-y)
+	$(LPCC) $(LDFLAGS) -m32 -o $@ $(OBJECTS-y)
 	@ strip $@
 
 builtin-lar.o: $(BUILTIN_LAR)
@@ -59,7 +59,9 @@ util/pbuilder/pbuilder:
 	make -C util/pbuilder
 
 %.o: %.c
-	$(LPCC) $(CFLAGS) -c -o $@ $<	
+	$(LPCC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f *.o bayou.elf builtin.lar
+	make -C util/pbuilder clean
+

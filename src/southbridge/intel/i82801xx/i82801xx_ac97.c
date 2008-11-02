@@ -126,19 +126,3 @@ static const struct pci_driver i82801fb_ac97_modem __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801FB_AC97_MODEM,
 };
-
-/* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
-/* Note: 82801GU (ICH7-U) doesn't have AC97 audio/modem. */
-static const struct pci_driver i82801gb_ac97_audio __pci_driver = {
-	.ops	= &ac97_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_AC97_AUDIO,
-};
-
-static const struct pci_driver i82801gb_ac97_modem __pci_driver = {
-	.ops	= &ac97_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_AC97_MODEM,
-};
-
-/* Note: There's no AC97 audio/modem on ICH8/ICH9/C-ICH. */

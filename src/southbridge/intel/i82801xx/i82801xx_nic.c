@@ -63,28 +63,6 @@ static const struct pci_driver i82801fb_nic __pci_driver = {
 	.device	= PCI_DEVICE_ID_INTEL_82801FB_LAN,
 };
 
-/* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
-/* Note: 82801GU (ICH7-U) doesn't have a NIC. */
-static const struct pci_driver i82801gb_nic __pci_driver = {
-	.ops	= &nic_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801GB_LAN,
-};
-
-/* 82801HB/HR/HDH/HDO/HBM/HEM (ICH8/ICH8R/ICH8DH/ICH8DO/ICH8M/ICH8M-E) */
-static const struct pci_driver i82801hb_nic __pci_driver = {
-	.ops	= &nic_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801HB_LAN,
-};
-
-/* 82801IB/IR/IH/IO (ICH9/ICH9R/ICH9DH/ICH9DO) */
-static const struct pci_driver i82801ib_nic __pci_driver = {
-	.ops	= &nic_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= PCI_DEVICE_ID_INTEL_82801IB_LAN,
-};
-
 /* 82801E (C-ICH) */
 static const struct pci_driver i82801e_nic1 __pci_driver = {
 	.ops	= &nic_ops,

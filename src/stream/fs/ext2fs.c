@@ -239,7 +239,7 @@ struct ext2_dir_entry
  * ffz = Find First Zero in word. Undefined if no zero exists,
  * so code should check against ~0UL first..
  */
-#if ARCH == 'i386'
+#ifdef __i386
 static __inline__ unsigned long
 ffz (unsigned long word)
 {

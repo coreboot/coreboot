@@ -18,7 +18,7 @@
 #define autoboot(mem)
 #endif
 
-#ifndef AUTOBOOT_DELAY
+#if !AUTOBOOT_DELAY
 #define autoboot_delay() 0 /* success */
 #endif
 

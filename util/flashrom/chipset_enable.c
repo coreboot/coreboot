@@ -232,9 +232,11 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 {
 	int ret, i;
 	uint8_t old, new, bbs, buc;
-	uint16_t spibar_offset;
+	uint16_t spibar_offset, tmp2;
 	uint32_t tmp, gcs;
 	void *rcrb;
+	//TODO: These names are incorrect for EP80579. For that, the solution would look like the commented line
+	//static const char *straps_names[] = {"SPI", "reserved", "reserved", "LPC" };
 	static const char *straps_names[] = { "reserved", "SPI", "PCI", "LPC" };
 
 	/* Enable Flash Writes */
@@ -334,10 +336,48 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 		}
 		break;
 	case BUS_TYPE_ICH9_SPI:
-		/* TODO: Add dumping function for ICH8/ICH9, or drop the 
-		 * whole SPIBAR dumping from chipset_enable.c - There's 
-		 * inteltool for this task already.
-		 */
+		tmp2 = *(uint16_t *) (spibar + 0);
+		printf_debug("0x00: 0x%04x (HSFS)\n", tmp2);
+		printf_debug("FLOCKDN %i, ", (tmp >> 15 & 1));
+		printf_debug("FDV %i, ", (tmp >> 14) & 1);
+		printf_debug("FDOPSS %i, ", (tmp >> 13) & 1);
+		printf_debug("SCIP %i, ", (tmp >> 5) & 1);
+		printf_debug("BERASE %i, ", (tmp >> 3) & 3);
+		printf_debug("AEL %i, ", (tmp >> 2) & 1);
+		printf_debug("FCERR %i, ", (tmp >> 1) & 1);
+		printf_debug("FDONE %i\n", (tmp >> 0) & 1);
+
+		tmp = *(uint32_t *) (spibar + 0x50);
+		printf_debug("0x50: 0x%08x (FRAP)\n", tmp);
+		printf_debug("BMWAG %i, ", (tmp >> 24) & 0xff);
+		printf_debug("BMRAG %i, ", (tmp >> 16) & 0xff);
+		printf_debug("BRWA %i, ", (tmp >> 8) & 0xff);
+		printf_debug("BRRA %i\n", (tmp >> 0) & 0xff);
+
+		printf_debug("0x54: 0x%08x (FREG0)\n",
+			     *(uint32_t *) (spibar + 0x54));
+		printf_debug("0x58: 0x%08x (FREG1)\n",
+			     *(uint32_t *) (spibar + 0x58));
+		printf_debug("0x5C: 0x%08x (FREG2)\n",
+			     *(uint32_t *) (spibar + 0x5C));
+		printf_debug("0x60: 0x%08x (FREG3)\n",
+			     *(uint32_t *) (spibar + 0x60));
+		printf_debug("0x64: 0x%08x (FREG4)\n",
+			     *(uint32_t *) (spibar + 0x64));
+		printf_debug("0x74: 0x%08x (PR0)\n",
+			     *(uint32_t *) (spibar + 0x74));
+		printf_debug("0x78: 0x%08x (PR1)\n",
+			     *(uint32_t *) (spibar + 0x78));
+		printf_debug("0x7C: 0x%08x (PR2)\n",
+			     *(uint32_t *) (spibar + 0x7C));
+		printf_debug("0x80: 0x%08x (PR3)\n",
+			     *(uint32_t *) (spibar + 0x80));
+		printf_debug("0x84: 0x%08x (PR4)\n",
+			     *(uint32_t *) (spibar + 0x84));
+		/* printf_debug("0xA0: 0x%08x (BBAR)\n",
+			     *(uint32_t *) (spibar + 0xA0)); ICH10 only? */
+		printf_debug("0xB0: 0x%08x (FDOC)\n",
+			     *(uint32_t *) (spibar + 0xB0));
 		break;
 	default:
 		/* Nothing */

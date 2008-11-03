@@ -129,7 +129,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{&ops, IT8712F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0xff8, 0}, {0xff8, 4},},
 	{&ops, IT8712F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0xfff, 0}, {0xfff, 4},},
 	{&ops, IT8712F_KBCM, PNP_IRQ0,},
-	{&ops, IT8712F_GPIO,},
+	{&ops, IT8712F_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0, {0xfff, 0}, {0xff8, 0}, {0xff8, 0},},
 	{&ops, IT8712F_MIDI, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},
 	{&ops, IT8712F_GAME, PNP_IO0, {0xfff, 0},},
 	{&ops, IT8712F_IR, PNP_IO0 | PNP_IRQ0, {0xff8, 0},},

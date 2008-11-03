@@ -32,7 +32,8 @@ romimage "normal"
 	option ROM_IMAGE_SIZE = 128 * 1024
 	option XIP_ROM_SIZE = 256 * 1024
 	option COREBOOT_EXTRA_VERSION = ".0Normal"
-	payload /tmp/filo.elf
+#	payload /tmp/filo.elf
+	payload ../payload.elf
 end
 
 romimage "fallback"
@@ -41,7 +42,8 @@ romimage "fallback"
 	option ROM_IMAGE_SIZE = 128 * 1024
 	option XIP_ROM_SIZE = 256 * 1024
 	option COREBOOT_EXTRA_VERSION = ".0Fallback"
-	payload /tmp/filo.elf
+#	payload /tmp/filo.elf
+	payload ../payload.elf
 end
 
 romimage "failover"

@@ -97,36 +97,43 @@ static unsigned set_fidvid_without_init(unsigned fidvid)
 }
 #endif
 
-static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
+static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 {
-	/* for (cur, new) there is one <1600MHz x8 to find out next_fid */
-	static const uint8_t next_fid_a[] = {
-	/*  x4  x5  x6  x7  x8  x9 x10 x11 x12 x13 x14 x15 */
-/* x4 */    0,  9,  9,  8,  9,  9,  9,  9,  9,  9,  9,  9,
-/* x5 */    9,  0, 11, 11,  9,  9, 10, 11, 11, 11, 11, 11,
-/* x6 */   11, 11,  0, 13, 11, 11, 11, 11, 12, 13, 13, 13,
-/* x7 */   13, 13, 13,  0, 13, 13, 13, 13, 13, 13, 14, 15,
-/* x8 */    4,  9,  9,  9,  0,  9,  9,  9,  9,  9,  9,  9,
-/* x9 */    4,  5, 10, 10,  8,  0,  0,  0,  0,  0,  0,  0,
-/*x10 */    9,  5, 11, 11,  9,  0,  0,  0,  0,  0,  0,  0,
-/*x11 */   10,  5,  6, 12, 10,  0,  0,  0,  0,  0,  0,  0,
-/*x12 */   11, 11,  6, 13, 11,  0,  0,  0,  0,  0,  0,  0,
-/*x13 */   12, 12,  6,  7, 12,  0,  0,  0,  0,  0,  0,  0,
-/*x14 */   13, 13, 13,  7, 13,  0,  0,  0,  0,  0,  0,  0,
-/*x15 */   14, 14, 14,  7, 14,  0,  0,  0,  0,  0,  0,  0,
-/* 0:x4, 2:x5....BASE=4, MIN=4, MAX=25, INC=2 result = (xX-BASE)*INC */
+
+/*  CurrentFID--> 4x(00h)   5x(02h)   6x(04h)   7x(06h) ...
+ *       --------------------------------------
+ * TargetFID   | Next_FID, Next_FID, Next_FID, Next_FID ...
+ *      |      | Next_FID, Next_FID, Next_FID, Next_FID ...
+ *     \|/     | Next_FID, Next_FID, Next_FID, Next_FID ...
+ */
+	static const u8 next_fid_200[] = {
+/*         x4  x5  x6  x7  x8  x9 x10 x11 x12 x13 x14 x15  x16 */
+/* x4 */    0, -1, -1, -1,  0,  0,  9, 10, 11, 12, 13, 14, 15, /*  800 */
+/* x5 */   -1,  0, -1, -1, -1,  5,  5,  5, 11, 12, 13, 14, 15, /* 1000 */
+/* x6 */   -1, -1,  0, -1, -1, -1, -1,  6,  6,  6, 13, 14, 15, /* 1200 */
+/* x7 */   -1, -1, -1,  0, -1, -1, -1, -1, -1,  7,  7,  7, 15, /* 1400 */
+/* lower table to upper table boarder (table 70 and 71 in BKDG) */
+/* x8 */    8, -1, -1, -1,  0,  8,  9, 10, 11, 12, 13, 14, 15, /* 1600 */
+/* x9 */    9,  9, -1, -1,  9,  0,  9, 10, 11, 12, 13, 14, 15, /* 1800 */
+/*x10 */    9, 10, -1, -1,  9, 10,  0, 10, 11, 12, 13, 14, 15, /* 2000 */
+/*x11 */    9, 11, 11, -1,  9, 10, 11,  0, 11, 12, 13, 14, 15, /* 2200 */
+/*x12 */    9, 11, 12, -1,  9, 10, 11, 12,  0, 12, 13, 14, 15, /* 2400 */
+/*x13 */    9, 11, 13, 13,  9, 10, 11, 12, 13,  0, 13, 14, 15, /* 2600 */
+/*x14 */    9, 11, 13, 14,  9, 10, 11, 12, 13, 14,  0, 14, 15, /* 2800 */
+/*x15 */    9, 11, 13, 15,  9, 10, 11, 12, 13, 14, 15,  0, 15, /* 3000 */
+/*x15 */    9, 11, 13, 15,  9, 10, 11, 12, 13, 14, 15, 16,  0, /* 3200 */
 	};
 
 	msr_t msr;
-	uint32_t vid;
-	uint32_t fid;
+	uint32_t vid_new;
+	uint32_t fid_new;
 	uint32_t vid_max;
 	uint32_t fid_max;
 	uint32_t vid_cur;
 	uint32_t fid_cur;
 	unsigned apicidx;
 
-	int steps;
+	int step_limit;
 	int loop;
 
 	apicidx = lapicid();
@@ -140,21 +147,22 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 		return fidvid;
 	}
 
-	fid = (fidvid >> 8) & 0x3f;
-	vid = (fidvid >> 16) & 0x3f;
+	fid_new = (fidvid >> 8) & 0x3f;
+	vid_new = (fidvid >> 16) & 0x3f;
 
 	msr = rdmsr(0xc0010042);
 
 	vid_cur = msr.hi & 0x3f;
 	fid_cur = msr.lo & 0x3f;
 
-	if ((vid_cur==vid) && (fid_cur==fid))
+	if ((vid_cur == vid_new) && (fid_cur == fid_new))
 		return fidvid;
 
-	vid_max = (msr.hi>>(48-32)) & 0x3f;
-	fid_max = ((msr.lo>>16) & 0x3f); /* max fid */
+	vid_max = (msr.hi >> (48-32)) & 0x3f;
+	fid_max = ((msr.lo >> 16) & 0x3f); /* max fid */
+
 #if FX_SUPPORT
-	if (fid_max>=((25-4)*2)) { /* FX max fid is 5G */
+	if (fid_max >= ((25 - 4) * 2)) { /* FX max fid is 5G */
 		fid_max = ((msr.lo >> 8) & 0x3f) + 5 * 2; /* max FID is min fid + 1G */
 		if (fid_max >= ((25-4) * 2)) {
 			fid_max = (10-4) * 2; /* hard set to 2G */
@@ -163,10 +171,20 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 #endif
 
 	/* set vid to max */
+	/* TODO - make this more correct. Not a big deal for setting max...
+	 * BKDG figure 11
+	 * if TargetFID > InitialFID
+	 *	TargetVID = FinalVID - RVO
+	 * else
+	 *	if CurrentVID > FinalVID
+	 *		TargetVID = FinalVID - RVO
+	 *	else
+	 *		TargetVID = CurrentVIDD - RVO
+	 */
 	msr.hi = 1;
 	msr.lo = (vid_max << 8) | (fid_cur);
 #if SB_VFSMAF == 1
-	msr.lo |= (1<<16); /* init changes */
+	msr.lo |= (1 << 16); /* init changes */
 #endif
 	wrmsr(0xc0010041, msr);
 #if SB_VFSMAF == 0
@@ -174,38 +192,92 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 #endif
 
 
-	for (loop=0;loop<100000;loop++){
+	for (loop=0; loop < 100000; loop++){
 		msr = rdmsr(0xc0010042);
-		if (!(msr.lo & (1<<31)))
+		if (!(msr.lo & (1 << 31)))
 			break;
 	}
 	vid_cur = msr.hi & 0x3f;
 
-	steps = 8; //??
-	while ((fid_cur != fid) && (steps-- > 0)) {
-		uint32_t fid_temp;
-		if ((fid_cur > (8-4)*2) && (fid> (8-4)*2)) {
-			if (fid_cur<fid) {
-				fid_temp = fid_cur + 2;
-				} else {
-					fid_temp = fid_cur - 2;
-				}
-		} else {
-			/* there is one < 8, So we need to lookup the table to
-			 * find the fid_cur */
-			int temp;
-			temp = next_fid_a[(fid_cur/2)*12+(fid/2)];
-			if (temp <= 0) break;
-			fid_temp = (temp-4) * 2;
-		}
-		if (fid_temp > fid_max)
-			break;
+	/* BKDG figure 12 and 13
+	 * if current fid is odd
+	 *	current fid -1 (next lower and even fid)(odd fid for rev G)
+	 * if current fid in high-freq table
+	 *	while current fid < target fid
+	 *		transition to next higher fid in table
+	 * else if target fid > VCO portal of current fid
+	 *	transition to highest portal fid in higher fid table
+	 *		while current fid < target fid
+	 *			transition to next higher fid in table
+	 * else
+	 *	transition to target fid
+	 */
 
-		fid_cur = fid_temp;
+	printk_debug("Current fid_cur: 0x%x, fid_max: 0x%x\n", fid_cur, fid_max);
+	printk_debug("Requested fid_new: 0x%x\n", fid_new);
+
+	step_limit = 8; /* max 8 steps just in case... */
+	while ((fid_cur != fid_new) && (step_limit--)) {
+		u32 fid_temp;
+		int step;
+
+		if (fid_cur < fid_new)
+			/* Force Fid steps even. step == 0 means 100MHz step */
+			step = ((fid_new/2) - (fid_cur/2)) * 2;
+		else
+			step = ((fid_cur/2) - (fid_new/2)) * 2;
+
+		/* If 200Mhz step OR past 3200 max table value */
+		if ((step == 2) || (fid_new >= 0x18 || fid_cur >= 0x18)) {
+
+			printk_debug("200MHZ step ");
+
+			/* Step +/- 200MHz at a time */
+			if (fid_cur < fid_new)
+				fid_temp = fid_cur + 2;
+			else
+				fid_temp = fid_cur - 2;
+
+
+		} else if ( step > 2) {	/* If more than a 200Mhz step */
+			int temp;
+
+			/* look it up in the table */
+			printk_debug("FidVid table step ");
+
+			temp = next_fid_200[((fid_new/2) * 13) + (fid_cur/2)];
+
+			if (temp > 0)
+				fid_temp = (temp-4) * 2; /* Table 108 */
+			else if (temp == 0)
+				fid_temp = fid_new;
+			else
+				break; /* table error */
+
+		} else { /* step < 2 (100MHZ) */
+			printk_debug("100MHZ step ");
+
+			/* The table adjust in 200MHz increments. If requested,
+			 * do the 100MHz increment if the CPU supports it.*/
+			if (cpuid_edx(0x80000007) & (1 << 6)) {
+				fid_temp = fid_cur + 1;
+			} else {
+				/* 100 MHZ not supported. Get out of the loop */
+				printk_debug("is not supported.\n");
+				break;
+			}
+		}
+
+		if(fid_temp > fid_max) {
+			printk_debug("fid_temp 0x%x > fid_max 0x%x\n", fid_temp, fid_max);
+			break;
+		}
+
+		printk_debug("fidvid: 0x%x\n", fid_temp);
 
 		/* set target fid */
-		msr.hi = (100000/5);
-		msr.lo = (vid_cur << 8) | fid_cur;
+		msr.hi = 0x190; /* 2 us for AMD NPT Family 0Fh Processors */
+		msr.lo = (vid_cur << 8) | fid_temp;
 #if SB_VFSMAF == 1
 		msr.lo |= (1 << 16); /* init changes */
 #endif
@@ -217,8 +289,8 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 
 #if K8_SET_FIDVID_DEBUG == 1
 		if (showmessage) {
-			print_debug_fv_8("\tapicid in set_fidvid = ", apicid);
-			print_debug_fv_64("ctrl msr fid, vid ", msr.hi, msr.lo);
+			print_debug_fv_8("set_fidvid APICID = ", apicid);
+			print_debug_fv_64("fidvid ctrl msr ", msr.hi, msr.lo);
 		}
 #endif
 
@@ -231,14 +303,24 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 
 #if K8_SET_FIDVID_DEBUG == 1
 		if (showmessage)	{
-			 print_debug_fv_64("status msr fid, vid ", msr.hi, msr.lo);
+			print_debug_fv_64("fidvid status msr ", msr.hi, msr.lo);
 		}
 #endif
 	}
 
 	/* set vid to final */
+	/* TODO - make this more correct. Not a big deal for setting max...
+	 * BKDG figure 11
+	 * if TargetFID > InitialFID
+	 *	TargetVID = FinalVID - RVO
+	 * else
+	 *	if CurrentVID > FinalVID
+	 *		TargetVID = FinalVID - RVO
+	 *	else
+	 *		TargetVID = CurrentVIDD - RVO
+	 */
 	msr.hi = 1;
-	msr.lo = (vid << 8) | (fid_cur);
+	msr.lo = (vid_new << 8) | (fid_cur);
 #if SB_VFSMAF == 1
 	msr.lo |= (1 << 16); // init changes
 #endif
@@ -257,10 +339,10 @@ static unsigned set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	fidvid = (vid_cur << 16) | (fid_cur << 8);
 
 	if (showmessage) {
-		if (vid!=vid_cur) {
+		if (vid_new != vid_cur) {
 			print_err("set vid failed for apicid ="); print_err_hex8(apicidx);  print_err("\r\n");
 		}
-		if (fid!=fid_cur) {
+		if (fid_new != fid_cur) {
 			print_err("set fid failed for apicid ="); print_err_hex8(apicidx); print_err("\r\n");
 		}
 	}

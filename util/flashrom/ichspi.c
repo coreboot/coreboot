@@ -154,7 +154,6 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf,
 			     int offset, int maxdata);
 static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
 			      int offset, int maxdata);
-static int ich_spi_erase_block(struct flashchip *flash, int offset);
 
 OPCODES O_ST_M25P = {
 	{
@@ -479,20 +478,6 @@ static int run_opcode(OPCODE op, uint32_t offset,
 	return -1;
 }
 
-static int ich_spi_erase_block(struct flashchip *flash, int offset)
-{
-	printf_debug("ich_spi_erase_block: offset=%d, sectors=%d\n", offset, 1);
-
-	if (run_opcode(curopcodes->opcode[2], offset, 0, NULL) != 0) {
-		printf_debug("Error erasing sector at 0x%x", offset);
-		return -1;
-	}
-
-	printf("DONE BLOCK 0x%x\n", offset);
-
-	return 0;
-}
-
 static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset,
 			     int maxdata)
 {
@@ -596,7 +581,11 @@ int ich_spi_write(struct flashchip *flash, uint8_t * buf)
 	printf("Programming page: \n");
 
 	for (i = 0; i < total_size / erase_size; i++) {
-		rc = ich_spi_erase_block(flash, i * erase_size);
+		/* FIMXE: call the chip-specific spi_block_erase_XX instead.
+		 * For this, we need to add a block erase function to
+		 * struct flashchip.
+		 */
+		rc = spi_block_erase_d8(flash, i * erase_size);
 		if (rc) {
 			printf("Error erasing block at 0x%x\n", i);
 			break;

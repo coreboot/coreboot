@@ -271,6 +271,22 @@ void spi_prettyprint_status_register(struct flashchip *flash)
 	}
 }
 
+int spi_chip_erase_60(struct flashchip *flash)
+{
+	const unsigned char cmd[JEDEC_CE_60_OUTSIZE] = {JEDEC_CE_60};
+	
+	spi_disable_blockprotect();
+	spi_write_enable();
+	/* Send CE (Chip Erase) */
+	spi_command(sizeof(cmd), 0, cmd, NULL);
+	/* Wait until the Write-In-Progress bit is cleared.
+	 * This usually takes 1-85 s, so wait in 1 s steps.
+	 */
+	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		sleep(1);
+	return 0;
+}
+
 int spi_chip_erase_c7(struct flashchip *flash)
 {
 	const unsigned char cmd[JEDEC_CE_C7_OUTSIZE] = { JEDEC_CE_C7 };
@@ -284,6 +300,24 @@ int spi_chip_erase_c7(struct flashchip *flash)
 	 */
 	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		sleep(1);
+	return 0;
+}
+
+int spi_block_erase_52(const struct flashchip *flash, unsigned long addr)
+{
+	unsigned char cmd[JEDEC_BE_52_OUTSIZE] = {JEDEC_BE_52};
+
+	cmd[1] = (addr & 0x00ff0000) >> 16;
+	cmd[2] = (addr & 0x0000ff00) >> 8;
+	cmd[3] = (addr & 0x000000ff);
+	spi_write_enable();
+	/* Send BE (Block Erase) */
+	spi_command(sizeof(cmd), 0, cmd, NULL);
+	/* Wait until the Write-In-Progress bit is cleared.
+	 * This usually takes 100-4000 ms, so wait in 100 ms steps.
+	 */
+	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		usleep(100 * 1000);
 	return 0;
 }
 

@@ -424,8 +424,11 @@ int spi_command(unsigned int writecnt, unsigned int readcnt,
 		const unsigned char *writearr, unsigned char *readarr);
 void spi_write_enable();
 void spi_write_disable();
+int spi_chip_erase_60(struct flashchip *flash);
 int spi_chip_erase_c7(struct flashchip *flash);
 int spi_chip_erase_d8(struct flashchip *flash);
+int spi_block_erase_52(const struct flashchip *flash, unsigned long addr);
+int spi_block_erase_d8(const struct flashchip *flash, unsigned long addr);
 int spi_chip_write(struct flashchip *flash, uint8_t *buf);
 int spi_chip_read(struct flashchip *flash, uint8_t *buf);
 uint8_t spi_read_status_register();

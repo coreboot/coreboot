@@ -30,11 +30,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+/* We should move these so they're really config options */
 #define CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT 0
 #define CONFIG_PCIX_PLUGIN_SUPPORT 0
 #define CONFIG_PCIE_PLUGIN_SUPPORT 0
 #define CONFIG_CARDBUS_PLUGIN_SUPPORT 0
 #define CONFIG_AGP_PLUGIN_SUPPORT 0
+
 #if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT == 1
 #include <device/hypertransport.h>
 #endif
@@ -100,8 +102,16 @@ u32 pci_moving_config32(struct device *dev, unsigned int reg)
 	return ones ^ zeroes;
 }
 
-unsigned int pci_find_next_capability(struct device *dev, unsigned int cap,
-				      unsigned int last)
+/**
+ * Given a device, a capability type, and a last position, return the next
+ * matching capability. Always start at the head of the list.
+ *
+ * @param dev Pointer to the device structure.
+ * @param cap_type PCI_CAP_LIST_ID of the PCI capability we're looking for.
+ * @param last_pos Location of the PCI capability register to start from.
+ */
+unsigned int pci_find_next_capability(struct device *dev, unsigned int cap_type,
+				      unsigned int last_pos)
 {
 	unsigned int pos;
 	unsigned int status;
@@ -124,27 +134,35 @@ unsigned int pci_find_next_capability(struct device *dev, unsigned int cap,
 	}
 	pos = pci_read_config8(dev, pos);
 	while (reps-- && (pos >= 0x40)) { /* Loop through the linked list. */
-		int this_cap;
+		int this_cap_type;
 		pos &= ~3;
-		this_cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
-		printk(BIOS_SPEW, "Capability: 0x%02x @ 0x%02x\n", cap, pos);
-		if (this_cap == 0xff) {
+		this_cap_type = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
+		printk(BIOS_SPEW, "Capability: 0x%02x @ 0x%02x\n",
+			this_cap_type, pos);
+		if (this_cap_type == 0xff) {
 			break;
 		}
-		if (!last && (this_cap == cap)) {
+		if (!last_pos && (this_cap_type == cap_type)) {
 			return pos;
 		}
-		if (last == pos) {
-			last = 0;
+		if (last_pos == pos) { /* Return the next match. */
+			last_pos = 0;
 		}
 		pos = pci_read_config8(dev, pos + PCI_CAP_LIST_NEXT);
 	}
 	return 0;
 }
 
-unsigned int pci_find_capability(struct device *dev, unsigned int cap)
+/**
+ * Given a device, and a capability type, return the next matching
+ * capability. Always start at the head of the list.
+ *
+ * @param dev Pointer to the device structure.
+ * @param cap_type PCI_CAP_LIST_ID of the PCI capability we're looking for.
+ */
+unsigned int pci_find_capability(struct device *dev, unsigned int cap_type)
 {
-	return pci_find_next_capability(dev, cap, 0);
+	return pci_find_next_capability(dev, cap_type, 0);
 }
 
 /**
@@ -167,9 +185,9 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 
 	/* save the base address */
 	if (value & PCI_BASE_ADDRESS_SPACE_IO)
-		base &= ~PCI_BASE_ADDRESS_IO_ATTR_MASK;
+		base = value & ~PCI_BASE_ADDRESS_IO_ATTR_MASK;
 	else
-		base &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+		base = value & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 
 	/* See which bits move. */
 	moving = pci_moving_config32(dev, index);
@@ -184,6 +202,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		/* Find the high bits that move. */
 		moving |=
 		    ((resource_t) pci_moving_config32(dev, index + 4)) << 32;
+		resource->flags |= IORESOURCE_PCI64;
 	}
 
 	/* Find the resource constraints.
@@ -220,7 +239,11 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 			       "%s register %02lx(%08lx), read-only ignoring it\n",
 			       dev_path(dev), index, value);
 		}
-		resource->flags = 0;
+		/* resource->flags = 0;
+		 * Shouldn't zero because we'll get off with 64-bit BARs.
+		 * Are there any others to save?
+		 */
+		resource->flags &= ~IORESOURCE_PCI64;
 	} else if (attr & PCI_BASE_ADDRESS_SPACE_IO) {
 		/* An I/O mapped base address. */
 		attr &= PCI_BASE_ADDRESS_IO_ATTR_MASK;
@@ -244,7 +267,6 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		} else if (attr == PCI_BASE_ADDRESS_MEM_LIMIT_64) {
 			/* 64bit limit. */
 			resource->limit = 0xffffffffffffffffULL;
-			resource->flags |= IORESOURCE_PCI64;
 		} else {
 			/* Invalid value. */
 			resource->flags = 0;
@@ -258,6 +280,12 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	return resource;
 }
 
+/**
+ * Given a device and an index, read the size of the BAR for that register. 
+ *
+ * @param dev Pointer to the device structure.
+ * @param index Address of the PCI configuration register.
+ */
 static void pci_get_rom_resource(struct device *dev, unsigned long index)
 {
 	struct resource *resource;
@@ -265,8 +293,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	resource_t moving, limit;
 
 	if ((dev->on_mainboard) && (dev->rom_address == 0)) {
-		// Skip it if rom_address is not set in MB Config.lb.
-		// TODO: No more Config.lb in coreboot-v3.
+		// Skip it if rom_address is not set in the mainboard's dts.
 		return;
 	}
 
@@ -278,6 +305,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 
 	/* See which bits move. */
 	moving = pci_moving_config32(dev, index);
+
 	/* Clear the Enable bit. */
 	moving = moving & ~PCI_ROM_ADDRESS_ENABLE;
 
@@ -298,23 +326,19 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 			resource->gran += 1;
 		}
 		resource->limit = limit = moving | (resource->size - 1);
-	}
-
-	if (moving == 0) {
+		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY;
+	} else {
 		if (value != 0) {
 			printk(BIOS_DEBUG,
 			       "%s register %02lx(%08lx), read-only ignoring it\n",
 			       dev_path(dev), index, value);
 		}
 		resource->flags = 0;
-	} else {
-		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY;
 	}
 
 	/* For on board device with embedded ROM image, the ROM image is at
-	 * fixed address specified in the Config.lb, the dev->rom_address is
+	 * fixed address specified in the dts, the dev->rom_address is
 	 * inited by driver_pci_onboard_ops::enable_dev() */
-	/* TODO: No more Config.lb in coreboot-v3. */
 	if ((dev->on_mainboard) && (dev->rom_address != 0)) {
 		resource->base = dev->rom_address;
 		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY |
@@ -718,7 +742,7 @@ void pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
 
 void pci_dev_init(struct device *dev)
 {
-	printk(BIOS_SPEW, "PCI: pci_dev_init\n");
+	printk(BIOS_SPEW, "PCI: pci_dev_init %s\n", dev->dtsname);
 #ifdef CONFIG_PCI_OPTION_ROM_RUN
 	void run_bios(struct device *dev, unsigned long addr);
 	struct rom_header *rom, *ram;
@@ -774,7 +798,7 @@ struct device_operations default_pci_ops_bus = {
  * When only a PCI-Express capability is found the type
  * is examined to see which type of bridge we have.
  *
- * @param dev TODO
+ * @param dev Pointer to the device structure of the bridge.
  * @return Appropriate bridge operations.
  */
 static struct device_operations *get_pci_bridge_ops(struct device *dev)
@@ -831,9 +855,10 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 }
 
 /**
- * Set up PCI device operation.
+ * Set up PCI device operation.  Check if it already has a driver.  If not, use
+ * find_device_operations, or set to a default based on type.
  *
- * @param dev TODO
+ * @param dev Pointer to the device whose pci_ops you want to set.
  * @see pci_drivers
  */
 static void set_pci_ops(struct device *dev)
@@ -842,8 +867,8 @@ static void set_pci_ops(struct device *dev)
 	struct device_id id;
 
 	if (dev->ops) {
-		printk(BIOS_SPEW, "%s: dev %p(%s) already has ops %p\n",
-		       __func__, dev, dev->dtsname, dev->ops);
+		printk(BIOS_SPEW, "%s: dev %s already has ops of type %x\n",
+		       __func__, dev->dtsname, dev->ops->id.type);
 		return;
 	}
 
@@ -888,8 +913,8 @@ static void set_pci_ops(struct device *dev)
 			       dev->hdr_type);
 		}
 	}
-	printk(BIOS_INFO, "%s: dev %p(%s) set ops to %p\n", __func__, dev,
-	       dev->dtsname, dev->ops);
+	printk(BIOS_INFO, "%s: dev %s set ops to type %x\n", __func__,
+	       dev->dtsname, dev->ops->id.type);
 	return;
 }
 
@@ -905,12 +930,12 @@ static void set_pci_ops(struct device *dev)
  * @return Pointer to the device structure found or NULL of we have not
  *	   allocated a device for this devfn yet.
  */
-static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
+static struct device *pci_get_dev(struct device **list, unsigned int devfn)
 {
 	struct device *dev;
 	dev = 0;
-	printk(BIOS_SPEW, "%s: list is %p, *list is %p\n", __func__, list,
-	       *list);
+	printk(BIOS_SPEW, "%s: list is %sNULL, *list is %sNULL\n", __func__,
+		list?"NOT ":"", *list?"NOT ":"");
 	for (; *list; list = &(*list)->sibling) {
 		printk(BIOS_SPEW, "%s: check dev %s \n", __func__,
 		       (*list)->dtsname);
@@ -927,7 +952,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 			/* Unlink from the list. */
 			dev = *list;
 			*list = (*list)->sibling;
-			dev->sibling = 0;
+			dev->sibling = NULL;
 			break;
 		}
 	}
@@ -962,8 +987,8 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
  *
  * @param dev Pointer to the device structure if it already is in the device
  *         tree, i.e. was specified in the dts. It may not exist on hardware,
- *         however. Looking for hardware not yet in the device tree has this
- *         parameter as NULL.
+ *         however. When looking for hardware not yet in the device tree, this
+ *         parameter is NULL.
  * @param bus Pointer to the bus structure.
  * @param devfn A device/function number.
  * @return The device structure for the device if it exists in hardware
@@ -1021,7 +1046,6 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 		 * this also handles optional devices that may not always
 		 * show up.
 		 */
-		/* If the chain is fully enumerated quit. */
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			if (dev->enabled) {
@@ -1034,6 +1058,7 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 		}
 	}
 	/* Read the rest of the PCI configuration information. */
+	/* Store the interesting information in the device structure. */
 	hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
 	class = pci_read_config32(dev, PCI_CLASS_REVISION);
 	dev->status = pci_read_config16(dev, PCI_STATUS);
@@ -1043,15 +1068,22 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 	dev->irq_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 	dev->min_gnt = pci_read_config8(dev, PCI_MIN_GNT);
 	dev->max_lat = pci_read_config8(dev, PCI_MAX_LAT);
-#warning Per-device subsystem ID should only be read from the device if none has been specified for the device in the dts.
-	dev->subsystem_vendor = pci_read_config16(dev, PCI_SUBSYSTEM_VENDOR_ID);
-	dev->subsystem_device = pci_read_config16(dev, PCI_SUBSYSTEM_ID);
 
-	/* Store the interesting information in the device structure. */
+	/*Per-device subsystem ID should only be read from the device if none
+	 * has been specified for the device in the dts.
+	 */
+	if (!dev->subsystem_vendor && !dev->subsystem_device) {
+		dev->subsystem_vendor = 
+				pci_read_config16(dev, PCI_SUBSYSTEM_VENDOR_ID);
+		dev->subsystem_device = 
+				pci_read_config16(dev, PCI_SUBSYSTEM_ID);
+	}
+
 	dev->id.type = DEVICE_ID_PCI;
 	dev->id.pci.vendor = id & 0xffff;
 	dev->id.pci.device = (id >> 16) & 0xffff;
 	dev->hdr_type = hdr_type;
+
 	/* Class code, the upper 3 bytes of PCI_CLASS_REVISION. */
 	dev->class = class >> 8;
 
@@ -1070,9 +1102,7 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
 		dev->ops->phase3_enable(dev);
 	}
 
-	/* Display the device and error if we don't have some PCI operations
-	 * for it.
-	 */
+	/* Display the device. */
 	printk(BIOS_DEBUG, "%s [%s] %s%s\n",
 	       dev_path(dev), dev_id_string(&dev->id),
 	       dev->enabled ? "enabled" : "disabled",
@@ -1093,18 +1123,20 @@ struct device *pci_probe_dev(struct device *dev, struct bus *bus,
  * @param bus Pointer to the bus structure.
  * @param min_devfn Minimum devfn to look at in the scan usually 0x00.
  * @param max_devfn Maximum devfn to look at in the scan usually 0xff.
- * @param max Current bus number.
- * @return The maximum bus number found, after scanning all subordinate buses.
+ * @param curr_bus Current bus number to be assigned.
+ * @return The new curr_bus, after scanning all subordinate buses.
  */
 unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
-			  unsigned int max_devfn, unsigned int max)
+			  unsigned int max_devfn, unsigned int curr_bus)
 {
 	unsigned int devfn;
 	struct device *old_devices;
 	struct device *child;
 
-	printk(BIOS_DEBUG, "%s start bus %p, bus->dev %p\n", __func__, bus,
-	       bus->dev);
+	printk(BIOS_DEBUG, "%s start bus->dev %s bus %x\n", __func__,
+	       bus->dev->dtsname, bus->link);
+
+#warning This check needs checking.
 	if (bus->dev->path.type != DEVICE_PATH_PCI_BUS)
 		printk(BIOS_ERR, "ERROR: pci_scan_bus called with incorrect "
 		       "bus->dev->path.type, path is %s\n", dev_path(bus->dev));
@@ -1116,10 +1148,11 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %02x\n", bus->secondary);
 #endif
 
+	/* Remove children of the bus, so the enumeration starts empty. */
 	old_devices = bus->children;
-	printk(BIOS_DEBUG, "%s: old_devices %p, dev for this bus %p (%s)\n",
-	       __func__, old_devices, bus->dev, bus->dev->dtsname);
-	bus->children = 0;
+	printk(BIOS_DEBUG, "%s: old_devices %s, dev for this bus %s\n",
+	       __func__, old_devices?old_devices->dtsname:"NULL", bus->dev->dtsname);
+	bus->children = NULL;
 
 	post_code(POST_STAGE2_PCISCANBUS_ENTER);
 	printk(BIOS_SPEW, "PCI: scan devfn 0x%x to 0x%x\n", min_devfn,
@@ -1131,17 +1164,18 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 		struct device *dev;
 		printk(BIOS_SPEW, "PCI: devfn 0x%x\n", devfn);
 
-		/* First thing setup the device structure. */
-		dev = pci_scan_get_dev(&old_devices, devfn);
+		/* First thing look in the device tree. */
+		dev = pci_get_dev(&old_devices, devfn);
 
 		printk(BIOS_SPEW,
-		       "PCI: pci_scan_bus pci_scan_get_dev returns dev %s\n",
+		       "PCI: pci_scan_bus pci_get_dev returns dev %s\n",
 		       dev ? dev->dtsname : "None (no dev in tree yet)");
+
 		/* See if a device is present and setup the device structure. */
 		dev = pci_probe_dev(dev, bus, devfn);
 		printk(BIOS_SPEW,
-		       "PCI: pci_scan_bus pci_probe_dev returns dev %p(%s)\n",
-		       dev, dev ? dev->dtsname : "None (not found)");
+		       "PCI: pci_scan_bus pci_probe_dev returns dev %s\n",
+		       dev ? dev->dtsname : "None (no response)");
 
 		/* If this is not a multi function device, or the device is
 		 * not present don't waste time probing another function. 
@@ -1158,9 +1192,8 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	printk(BIOS_SPEW, "PCI: Done for loop\n");
 	post_code(POST_STAGE2_PCISCANBUS_DONEFORLOOP);
 
-	/* Die if any leftover static devices are are found.  
-	 * There's probably a problem in the Config.lb.
-	 * TODO: No more Config.lb in coreboot-v3.
+	/* Warn if any leftover static devices are are found.  
+	 * There's probably a problem in the device tree (dts).
 	 */
 	if (old_devices) {
 		struct device *left;
@@ -1175,16 +1208,17 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
 	 * scan the bus behind that child.
 	 */
 	for (child = bus->children; child; child = child->sibling) {
-		max = dev_phase3_scan(child, max);
+		curr_bus = dev_phase3_scan(child, curr_bus);
 	}
 
 	/* We've scanned the bus and so we know all about what's on the other
 	 * side of any bridges that may be on this bus plus any devices.
 	 * Return how far we've got finding sub-buses.
 	 */
-	printk(BIOS_DEBUG, "PCI: pci_scan_bus returning with max=%03x\n", max);
+	printk(BIOS_DEBUG, "PCI: pci_scan_bus returning with curr_bus=%03x\n",
+		curr_bus);
 	post_code(POST_STAGE2_PCISCANBUS_EXIT);
-	return max;
+	return curr_bus;
 }
 
 /**
@@ -1194,14 +1228,14 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned int min_devfn,
  * This function works for almost all chipsets (AMD K8 is the exception).
  *
  * @param dev The PCI domain device.
- * @param max Maximum number of devices to scan.
- * @return TODO
+ * @param max The current bus number to be assigned.
+ * @return The current bus number returned by pci_scan_bus.
  */
-unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max)
+unsigned int pci_domain_scan_bus(struct device *dev, unsigned int curr_bus)
 {
 	printk(BIOS_SPEW, "pci_domain_scan_bus: calling pci_scan_bus\n");
 	/* There is only one link on this device, and it is always link 0. */
-	return pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
+	return pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, curr_bus);
 }
 
 /**

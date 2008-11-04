@@ -181,13 +181,10 @@ extern struct flashchip flashchips[];
 #define EN_29F002B		0x7F97
 
 #define FUJITSU_ID		0x04	/* Fujitsu */
-/*
- * MBM29F400TC_STRANGE has a value not mentioned in the data sheet and we
- * try to read it from a location not mentioned in the data sheet.
- */
-#define MBM29F400TC_STRANGE	0x23
-#define MBM29F400BC		0x7B
-#define MBM29F400TC		0x77
+#define MBM29F400BC		0xAB
+#define MBM29F400TC		0x23
+#define MBM29F004BC		0x7B
+#define MBM29F004TC		0x77
 
 #define HYUNDAI_ID		0xAD	/* Hyundai */
 
@@ -216,7 +213,8 @@ extern struct flashchip flashchips[];
 #define MX_25L6405		0x2017	/* MX25L3205{,D} */
 #define MX_25L1635D		0x2415
 #define MX_25L3235D		0x2416
-#define MX_29F002		0xB0
+#define MX_29F002B		0x34
+#define MX_29F002T		0xB0
 
 /*
  * Programmable Micro Corp is listed in JEP106W in bank 2, so it should

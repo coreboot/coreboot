@@ -30,7 +30,7 @@
  */
 struct flashchip flashchips[] = {
 	/**********************************************************************************************************************************************************************************************************************/
-	/* Vendor	Chip			Vendor ID	Chip ID			TODO	TODO		Test status	Probe function		Erase function			Write function		Read function */
+	/* Vendor	Chip			Vendor ID	Chip ID		Total size (kB)	Page size (B)	Test status	Probe function		Erase function			Write function		Read function */
 	/**********************************************************************************************************************************************************************************************************************/
 	{"AMD",		"Am29F002(N)BB",	AMD_ID,		AM_29F002BB,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_en29f002a},
 	{"AMD",		"Am29F002(N)BT",	AMD_ID,		AM_29F002BT,		256,	256,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_en29f002a},
@@ -51,14 +51,22 @@ struct flashchip flashchips[] = {
 	{"EMST",	"F49B002UA",		EMST_ID,	EMST_F49B002UA,		256,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"EON",		"EN29F002(A)(N)B",	EON_ID,		EN_29F002B,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_en29f002a},
 	{"EON",		"EN29F002(A)(N)T",	EON_ID,		EN_29F002T,		256,	256,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_en29f002a},
-	{"Fujitsu",	"MBM29F400TC",		FUJITSU_ID,	MBM29F400TC_STRANGE,	512,	64 * 1024,	TEST_UNTESTED,	probe_m29f400bt,	erase_m29f400bt,		write_coreboot_m29f400bt},
+	{"Fujitsu",	"MBM29F004BC",		FUJITSU_ID,	MBM29F004BC,		512,	64 * 1024,	TEST_UNTESTED,	probe_jedec,		NULL,			NULL},
+	{"Fujitsu",	"MBM29F004TC",		FUJITSU_ID,	MBM29F004TC,		512,	64 * 1024,	TEST_UNTESTED,	probe_jedec,		NULL,			NULL},
+	{"Fujitsu",	"MBM29F400BC",		FUJITSU_ID,	MBM29F400BC,		512,	64 * 1024,	TEST_UNTESTED,	probe_m29f400bt,	erase_m29f400bt,		write_coreboot_m29f400bt},
+	{"Fujitsu",	"MBM29F400TC",		FUJITSU_ID,	MBM29F400TC,		512,	64 * 1024,	TEST_UNTESTED,	probe_m29f400bt,	erase_m29f400bt,		write_coreboot_m29f400bt},
 	{"Intel",	"82802AB",		INTEL_ID,	173,			512,	64 * 1024,	TEST_OK_PREW,	probe_82802ab,		erase_82802ab,			write_82802ab},
 	{"Intel",	"82802AC",		INTEL_ID,	172,			1024,	64 * 1024,	TEST_OK_PREW,	probe_82802ab,		erase_82802ab,			write_82802ab},
+	{"Macronix",	"MX25L512",		MX_ID,		MX_25L512,		64,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"Macronix",	"MX25L1005",		MX_ID,		MX_25L1005,		128,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"Macronix",	"MX25L2005",		MX_ID,		MX_25L2005,		256,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L4005",		MX_ID,		MX_25L4005,		512,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L8005",		MX_ID,		MX_25L8005,		1024,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L1605",		MX_ID,		MX_25L1605,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"Macronix",	"MX25L3205",		MX_ID,		MX_25L3205,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
-	{"Macronix",	"MX29F002",		MX_ID,		MX_29F002,		256,	64 * 1024,	TEST_UNTESTED,	probe_29f002,		erase_29f002,			write_29f002},
+	{"Macronix",	"MX25L6405",		MX_ID,		MX_25L6405,		8192,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"Macronix",	"MX29F002B",		MX_ID,		MX_29F002B,		256,	64 * 1024,	TEST_UNTESTED,	probe_29f002,		erase_29f002,			write_29f002},
+	{"Macronix",	"MX29F002T",		MX_ID,		MX_29F002T,		256,	64 * 1024,	TEST_UNTESTED,	probe_29f002,		erase_29f002,			write_29f002},
 	{"Numonyx",	"M25PE10",		ST_ID,		0x8011,			128,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_d8,	spi_chip_write, spi_chip_read},
 	{"Numonyx",	"M25PE20",		ST_ID,		0x8012,			256,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_d8,	spi_chip_write, spi_chip_read},
 	{"Numonyx",	"M25PE40",		ST_ID,		0x8013,			256,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_d8,	spi_chip_write, spi_chip_read},
@@ -140,7 +148,7 @@ struct flashchip flashchips[] = {
 	{"Winbond",	"W29EE011",		WINBOND_ID,	W_29C011,		128,	128,		TEST_OK_PREW,	probe_w29ee011,		erase_chip_jedec,		write_jedec},
 	{"Winbond",	"W39V040A",		WINBOND_ID,	W_39V040A,		512,	64*1024,	TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"Winbond",	"W39V040B",		WINBOND_ID,	W_39V040B,		512,	64*1024,	TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
-	{"Winbond",	"W39V040C",		0xda,		0x50,			512,	64*1024,	TEST_OK_PREW,	probe_w39v040c,		erase_w39v040c,			write_w39v040c},
+	{"Winbond",	"W39V040C",		WINBOND_ID,	0x50,			512,	64*1024,	TEST_OK_PREW,	probe_w39v040c,		erase_w39v040c,			write_w39v040c},
 	{"Winbond",	"W39V040FA",		WINBOND_ID,	W_39V040FA,		512,	64*1024,	TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"Winbond",	"W39V080A",		WINBOND_ID,	W_39V080A,		1024,	64*1024,	TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"Winbond",	"W49F002U",		WINBOND_ID,	W_49F002U,		256,	128,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_49f002},

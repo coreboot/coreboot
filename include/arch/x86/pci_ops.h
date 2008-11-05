@@ -25,6 +25,6 @@ extern const struct pci_bus_operations pci_cf8_conf1;
 extern const struct pci_bus_operations pci_ops_mmconf;
 #endif
 
-void pci_set_method(struct device * dev);
+void pci_check_pci_ops(const struct pci_bus_operations * ops);
 
 #endif /* ARCH_X86_PCI_OPS_H */

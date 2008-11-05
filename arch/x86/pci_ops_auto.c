@@ -15,7 +15,7 @@ const struct pci_bus_operations pci_cf8_conf1 = {
 	.write8  = pci_conf1_write_config8,
 	.write16 = pci_conf1_write_config16,
 	.write32 = pci_conf1_write_config32,
-	.find = 	pci_conf1_find_device,
+	.find = pci_conf1_find_device,
 };
 
 
@@ -53,36 +53,27 @@ static int pci_sanity_check(const struct pci_bus_operations *o)
 	return 0;
 }
 
-const struct pci_bus_operations *pci_check_direct(void)
+void pci_check_pci_ops(const struct pci_bus_operations *ops)
 {
 	unsigned int tmp;
 
 	/*
-	 * Check if configuration type 1 works.
+	 * Check if configuration cycles work.
 	 */
+	if (ops == &pci_cf8_conf1)
 	{
 		outb(0x01, 0xCFB);
 		tmp = inl(0xCF8);
 		outl(0x80000000, 0xCF8);
 		if ((inl(0xCF8) == 0x80000000) && 
-			pci_sanity_check(&pci_cf8_conf1)) 
+			pci_sanity_check(ops)) 
 		{
 			outl(tmp, 0xCF8);
 			printk(BIOS_DEBUG, "PCI: Using configuration type 1\n");
-			return &pci_cf8_conf1;
+			return;
 		}
 		outl(tmp, 0xCF8);
 	}
 
-	die("pci_check_direct failed\n");
-	return NULL;
-}
-
-/** Set the method to be used for PCI, type I or type II
- */
-void pci_set_method(struct device * dev)
-{
-	printk(BIOS_INFO, "Finding PCI configuration type.\n");
-	dev->ops->ops_pci_bus = pci_check_direct();
-	post_code(POST_STAGE2_PHASE2_PCI_SET_METHOD);
+	die("pci_check_pci_ops failed\n");
 }

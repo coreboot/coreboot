@@ -196,7 +196,7 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 	/* print_conf(); */
 	printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", nb_dm->geode_video_mb);
 	graphics_init((u8)nb_dm->geode_video_mb);
-	pci_set_method(dev);
+	pci_check_pci_ops(dev->ops->ops_pci_bus);
 }
 
 /**

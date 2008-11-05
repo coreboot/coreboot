@@ -62,12 +62,11 @@ static const struct pci_operations pcie_bus_ops_pci = {
 };
 
 const struct device_operations default_pcie_ops_bus = {
-	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pcie_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &pcie_bus_ops_pci,
+	.phase3_scan             = pcie_scan_bridge,
+	.phase4_read_resources   = pci_bus_read_resources,
+	.phase4_set_resources    = pci_dev_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init             = 0,
+	.reset_bus               = pci_bus_reset,
+	.ops_pci                 = &pcie_bus_ops_pci,
 };

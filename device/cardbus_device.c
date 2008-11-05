@@ -94,7 +94,6 @@ void cardbus_read_resources(struct device *dev)
 	resource_t moving_base, moving_limit, moving;
 	unsigned long type;
 	u16 ctl;
-	unsigned long index;
 
 	/* See if needs a card control registers base address. */
 
@@ -243,11 +242,10 @@ unsigned int cardbus_scan_bridge(struct device *dev, unsigned int max)
 }
 
 const struct device_operations default_cardbus_ops_bus = {
-	.read_resources   = cardbus_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = cardbus_enable_resources,
-	.init             = 0,
-	.scan_bus         = cardbus_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
+	.phase3_scan             = cardbus_scan_bridge,
+	.phase4_read_resources   = cardbus_read_resources,
+	.phase4_set_resources    = pci_dev_set_resources,
+	.phase5_enable_resources = cardbus_enable_resources,
+	.phase6_init             = 0,
+	.reset_bus               = pci_bus_reset,
 };

@@ -30,28 +30,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-/* We should move these so they're really config options */
-#define CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT 0
-#define CONFIG_PCIX_PLUGIN_SUPPORT 0
-#define CONFIG_PCIE_PLUGIN_SUPPORT 0
-#define CONFIG_CARDBUS_PLUGIN_SUPPORT 0
-#define CONFIG_AGP_PLUGIN_SUPPORT 0
 
-#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT == 1
-#include <device/hypertransport.h>
-#endif
-#if CONFIG_PCIX_PLUGIN_SUPPORT == 1
-#include <device/pcix.h>
-#endif
-#if CONFIG_PCIE_PLUGIN_SUPPORT == 1
-#include <device/pcie.h>
-#endif
-#if CONFIG_AGP_PLUGIN_SUPPORT == 1
-#include <device/agp.h>
-#endif
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1
-#include <device/cardbus.h>
-#endif
 #include <statictree.h>
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
@@ -759,11 +738,11 @@ void pci_dev_init(struct device *dev)
 }
 
 /** Default device operation for PCI devices. */
-struct pci_operations pci_dev_ops_pci = {
+const struct pci_operations pci_dev_ops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
-struct device_operations default_pci_ops_dev = {
+const struct device_operations default_pci_ops_dev = {
 	.phase4_read_resources   = pci_dev_read_resources,
 	.phase4_set_resources    = pci_dev_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
@@ -773,11 +752,11 @@ struct device_operations default_pci_ops_dev = {
 };
 
 /** Default device operations for PCI bridges. */
-struct pci_operations pci_bus_ops_pci = {
+const struct pci_operations pci_bus_ops_pci = {
 	.set_subsystem = 0,
 };
 
-struct device_operations default_pci_ops_bus = {
+const struct device_operations default_pci_ops_bus = {
 	.phase3_scan             = pci_scan_bridge,
 	.phase4_read_resources   = pci_bus_read_resources,
 	.phase4_set_resources    = pci_dev_set_resources,
@@ -801,26 +780,28 @@ struct device_operations default_pci_ops_bus = {
  * @param dev Pointer to the device structure of the bridge.
  * @return Appropriate bridge operations.
  */
-static struct device_operations *get_pci_bridge_ops(struct device *dev)
+static const struct device_operations *get_pci_bridge_ops(struct device *dev)
 {
-	// unsigned int pos;
-
-#if CONFIG_PCIX_PLUGIN_SUPPORT == 1
-	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
-	if (pos) {
+#ifdef DEVICE_PCIX_H
+	unsigned int pcix_pos;
+	pcix_pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
+	if (pcix_pos) {
 		printk(BIOS_DEBUG, "%s subordinate bus PCI-X\n",
 		       dev_path(dev));
 		return &default_pcix_ops_bus;
 	}
 #endif
-#if CONFIG_AGP_PLUGIN_SUPPORT == 1
+#ifdef DEVICE_AGP_H
 	/* How do I detect an PCI to AGP bridge? */
+#warning AGP detection not implemented, so AGP bridge plugin not supported.
+
 #endif
-#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT == 1
-	pos = 0;
-	while ((pos = pci_find_next_capability(dev, PCI_CAP_ID_HT, pos))) {
+#ifdef DEVICE_HYPERTRANSPORT_H
+	unsigned int ht_pos;
+	ht_pos = 0;
+	while ((ht_pos = pci_find_next_capability(dev, PCI_CAP_ID_HT, ht_pos))) {
 		unsigned int flags;
-		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
+		flags = pci_read_config16(dev, ht_pos + PCI_CAP_FLAGS);
 		if ((flags >> 13) == 1) {
 			/* Host or Secondary Interface. */
 			printk(BIOS_DEBUG,
@@ -830,11 +811,12 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 		}
 	}
 #endif
-#if CONFIG_PCIE_PLUGIN_SUPPORT == 1
-	pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
-	if (pos) {
+#ifdef DEVICE_PCIE_H
+	unsigned int pcie_pos;
+	pcie_pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
+	if (pcie_pos) {
 		unsigned int flags;
-		flags = pci_read_config16(dev, pos + PCI_EXP_FLAGS);
+		flags = pci_read_config16(dev, pcie_pos + PCI_EXP_FLAGS);
 		switch ((flags & PCI_EXP_FLAGS_TYPE) >> 4) {
 		case PCI_EXP_TYPE_ROOT_PORT:
 		case PCI_EXP_TYPE_UPSTREAM:
@@ -864,15 +846,12 @@ static struct device_operations *get_pci_bridge_ops(struct device *dev)
 static void set_pci_ops(struct device *dev)
 {
 	struct device_operations *c;
-	struct device_id id;
 
 	if (dev->ops) {
 		printk(BIOS_SPEW, "%s: dev %s already has ops of type %x\n",
 		       __func__, dev->dtsname, dev->ops->id.type);
 		return;
 	}
-
-	id  = dev->id;
 
 	/* Look through the list of setup drivers and find one for
 	 * this PCI device.
@@ -881,7 +860,7 @@ static void set_pci_ops(struct device *dev)
 	if (c) {
 		dev->ops = c;
 		printk(BIOS_SPEW, "%s id %s %sops\n",
-			dev_path(dev), dev_id_string(&id), 
+			dev_path(dev), dev_id_string(&dev->id), 
 			(dev->ops->phase3_scan ? "bus " : ""));
 		return;
 	}
@@ -890,21 +869,30 @@ static void set_pci_ops(struct device *dev)
 	switch (dev->hdr_type & 0x7f) {	/* Header type. */
 	case PCI_HEADER_TYPE_NORMAL:	/* Standard header. */
 		if ((dev->class >> 8) == PCI_CLASS_BRIDGE_PCI)
-			goto bad;
-		dev->ops = &default_pci_ops_dev;
+			printk(BIOS_ERR,
+			       "%s [%s] hdr_type %02x doesn't match"
+			       "class %06x, ignoring.\n", dev_path(dev),
+			       dev_id_string(&dev->id), dev->class >> 8,
+			       dev->hdr_type);
+		else
+			dev->ops = &default_pci_ops_dev;
 		break;
 	case PCI_HEADER_TYPE_BRIDGE:
 		if ((dev->class >> 8) != PCI_CLASS_BRIDGE_PCI)
-			goto bad;
-		dev->ops = get_pci_bridge_ops(dev);
+			printk(BIOS_ERR,
+			       "%s [%s] hdr_type %02x doesn't match"
+			       "class %06x, ignoring.\n", dev_path(dev),
+			       dev_id_string(&dev->id), dev->class >> 8,
+			       dev->hdr_type);
+		else
+			dev->ops = get_pci_bridge_ops(dev);
 		break;
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1
+#ifdef DEVICE_CARDBUS_H
 	case PCI_HEADER_TYPE_CARDBUS:
 		dev->ops = &default_cardbus_ops_bus;
 		break;
 #endif
 	default:
-	      bad:
 		if (dev->enabled) {
 			printk(BIOS_ERR,
 			       "%s [%s/%06x] has unknown header "
@@ -914,7 +902,7 @@ static void set_pci_ops(struct device *dev)
 		}
 	}
 	printk(BIOS_INFO, "%s: dev %s set ops to type %x\n", __func__,
-	       dev->dtsname, dev->ops->id.type);
+	       dev->dtsname, dev->ops? dev->ops->id.type : 0);
 	return;
 }
 

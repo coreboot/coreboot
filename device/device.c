@@ -101,7 +101,7 @@ static struct device *new_device(void)
  * @param dev Pointer to the newly created device structure.
  * @param ops Pointer to device_operations
  */
-void default_device_constructor(struct device *dev, struct device_operations *ops)
+void default_device_constructor(struct device *dev, const struct device_operations *ops)
 {
 	printk(BIOS_DEBUG, "default device constructor called\n");
 	dev->ops = ops;
@@ -146,7 +146,7 @@ struct device_operations *find_device_operations(struct device_id *id)
 void dev_init(void)
 {
 	struct device *dev;
-	struct device_operations *c;
+	const struct device_operations *c;
 
 	for (dev = all_devices; dev; dev = dev->next) {
 		c = dev->ops;
@@ -177,7 +177,7 @@ void dev_init(void)
  */
 void constructor(struct device *dev)
 {
-	struct device_operations *c;
+	const struct device_operations *c;
 
 	c = dev->ops;
 

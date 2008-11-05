@@ -57,7 +57,6 @@ struct smbus_bus_operations;
 struct bus;
 
 
-
 struct pci_domain_id
 {
 	u16 vendor, device;
@@ -137,7 +136,7 @@ struct device_operations {
 	 * constructors->constructor(constructors->constructor) and a new
 	 * device is created. 
 	 */
-	void (*constructor)(struct device *, struct device_operations *);
+	void (*constructor)(struct device *, const struct device_operations *);
 
 	/* set device ops */
 	void (*phase1_set_device_operations)(struct device *dev);
@@ -231,7 +230,7 @@ struct device {
 	/* number of buses attached to the device */
 	unsigned int links;
 
-	struct device_operations *ops;
+	const struct device_operations *ops;
 	void *device_configuration;
 };
 
@@ -273,7 +272,7 @@ struct device * dev_find_class (unsigned int class, struct device * from);
 struct device * dev_find_slot (unsigned int bus, unsigned int devfn);
 EXPORT_SYMBOL(dev_find_slot);
 struct device * dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
-void default_device_constructor(struct device *dev, struct device_operations *constructor);
+void default_device_constructor(struct device *dev, const struct device_operations *constructor);
 
 
 /* Rounding for boundaries. 

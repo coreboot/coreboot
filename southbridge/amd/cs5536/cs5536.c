@@ -563,7 +563,7 @@ void chipsetinit(void)
 	if (!IsS3Resume())
 #endif
 	{
-		struct acpi_init *aci = acpi_init_table;
+		const struct acpi_init *aci = acpi_init_table;
 		for (; aci->ioreg; aci++) {
 			outl(aci->regdata, aci->ioreg);
 			inl(aci->ioreg);

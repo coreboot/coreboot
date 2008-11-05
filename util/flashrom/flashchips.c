@@ -115,7 +115,7 @@ struct flashchip flashchips[] = {
 	{"ST",		"M25P40",		ST_ID,		ST_M25P40,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M25P40-old",		ST_ID,		ST_M25P40_RES,		512,	256,		TEST_UNTESTED,	probe_spi_res,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M25P80",		ST_ID,		ST_M25P80,		1024,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
-	{"ST",		"M25P16",		ST_ID,		ST_M25P16,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
+	{"ST",		"M25P16",		ST_ID,		ST_M25P16,		2048,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M25P32",		ST_ID,		ST_M25P32,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M25P64",		ST_ID,		ST_M25P64,		8192,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"ST",		"M25P128",		ST_ID,		ST_M25P128,		16384,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write, spi_chip_read},

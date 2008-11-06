@@ -68,19 +68,6 @@ static const struct acpi_init acpi_init_table[] = {
 	{0, 0}
 };
 
-struct FLASH_DEVICE {
-	unsigned char fType;		/* Flash type: NOR or NAND */
-	unsigned char fInterface;	/* Flash interface: I/O or memory */
-	unsigned long fMask;		/* Flash size/mask */
-};
-
-static const struct FLASH_DEVICE FlashInitTable[] = {
-	{FLASH_TYPE_NAND, FLASH_IF_MEM, FLASH_MEM_4K},	/* CS0, or Flash Device 0 */
-	{FLASH_TYPE_NONE, 0, 0},	/* CS1, or Flash Device 1 */
-	{FLASH_TYPE_NONE, 0, 0},	/* CS2, or Flash Device 2 */
-	{FLASH_TYPE_NONE, 0, 0},	/* CS3, or Flash Device 3 */
-};
-
 static const u32 FlashPort[] = {
 	MDD_LBAR_FLSH0,
 	MDD_LBAR_FLSH1,
@@ -154,38 +141,31 @@ static void pm_chipset_init(void)
  * correct size info. Call this routine only if flash needs to be
  * configured (don't call it if you want IDE).
  */
-static void chipset_flash_setup(void)
+static void chipset_flash_setup(struct southbridge_amd_cs5536_dts_config *sb)
 {
 	int i;
 	struct msr msr;
 
 	printk(BIOS_DEBUG, "chipset_flash_setup: Start\n");
-	for (i = 0; i < ARRAY_SIZE(FlashInitTable); i++) {
-		if (FlashInitTable[i].fType != FLASH_TYPE_NONE) {
-			printk(BIOS_DEBUG, "Enable CS%d\n", i);
-			/* We need to configure the memory/IO mask. */
-			msr = rdmsr(FlashPort[i]);
-			msr.hi = 0;	/* Start with "enabled" bit clear. */
-			if (FlashInitTable[i].fType == FLASH_TYPE_NAND)
-				msr.hi |= 0x00000002;
-			else
-				msr.hi &= ~0x00000002;
-			if (FlashInitTable[i].fInterface == FLASH_IF_MEM)
-				msr.hi |= 0x00000004;
-			else
-				msr.hi &= ~0x00000004;
-			msr.hi |= FlashInitTable[i].fMask;
-			printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n",
-			       FlashPort[i], msr.hi, msr.lo);
-			wrmsr(FlashPort[i], msr);
+	if (sb->enable_ide_nand_flash <= 4) {
+		i = sb->enable_ide_nand_flash - 1;
+		printk(BIOS_DEBUG, "Enable CS%d\n", i);
+		/* We need to configure the memory/IO mask. */
+		msr = rdmsr(FlashPort[i]);
+		msr.hi = 0;	/* Start with "enabled" bit clear. */
+		msr.hi |= 0x00000002; /* For FLASH_TYPE_NAND */
+		msr.hi |= 0x00000004; /* For FLASH_IF_MEM */
+		msr.hi |= FLASH_MEM_4K;
+		printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n",
+		       FlashPort[i], msr.hi, msr.lo);
+		wrmsr(FlashPort[i], msr);
 
-			/* Now write-enable the device. */
-			msr = rdmsr(MDD_NORF_CNTRL);
-			msr.lo |= (1 << i);
-			printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n",
-			       MDD_NORF_CNTRL, msr.hi, msr.lo);
-			wrmsr(MDD_NORF_CNTRL, msr);
-		}
+		/* Now write-enable the device. */
+		msr = rdmsr(MDD_NORF_CNTRL);
+		msr.lo |= (1 << i);
+		printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n",
+		       MDD_NORF_CNTRL, msr.hi, msr.lo);
+		wrmsr(MDD_NORF_CNTRL, msr);
 	}
 	printk(BIOS_DEBUG, "chipset_flash_setup: Finish\n");
 }
@@ -596,9 +576,9 @@ void chipsetinit(void)
 
 	/* Flash BAR size setup. */
 	printk(BIOS_ERR, "%sDoing chipset_flash_setup()\n",
-	       sb->enable_ide_nand_flash == 1 ? "" : "Not ");
-	if (sb->enable_ide_nand_flash == 1)
-		chipset_flash_setup();
+	       sb->enable_ide_nand_flash != 0 ? "" : "Not ");
+	if (sb->enable_ide_nand_flash != 0)
+		chipset_flash_setup(sb);
 
 	/* Set up hardware clock gating. */
 	/* TODO: Why the extra block here? Can it be removed? */
@@ -680,7 +660,7 @@ static void southbridge_init(struct device *dev)
 
 	printk(BIOS_ERR, "cs5536: %s: enable_ide_nand_flash is %d\n",
 	       __FUNCTION__, sb->enable_ide_nand_flash);
-	if (sb->enable_ide_nand_flash == 1)
+	if (sb->enable_ide_nand_flash != 0)
 		enable_ide_nand_flash_header();
 
 	enable_USB_port4(sb);

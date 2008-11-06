@@ -33,7 +33,7 @@
 	/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none. See virtual PIC spec. */
 	enable_gpio_int_route = "0";
 
-	/* 0:IDE 1:FLASH, if you are using NAND flash instead of IDE drive. */
+	/* 0:IDE; 1:FLASH on CS0, 2:FLASH on CS1, 3:FLASH on CS2, 4:FLASH on CS3. */
 	enable_ide_nand_flash = "0";
 
 	/* Enable USB Port 4 (0:host 1:device). 

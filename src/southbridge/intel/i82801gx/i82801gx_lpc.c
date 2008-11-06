@@ -194,22 +194,7 @@ void i82801gx_rtc_init(struct device *dev)
 
 static void enable_hpet(struct device *dev)
 {
-	u32 reg32;
-	u32 code = (0 & 0x3);
-
-	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (1 << 17);	/* Enable HPET. */
-	/*
-	 * Bits [16:15]	Memory Address Range
-	 * 00		FED0_0000h - FED0_03FFh
-	 * 01		FED0_1000h - FED0_13FFh
-	 * 10		FED0_2000h - FED0_23FFh
-	 * 11		FED0_3000h - FED0_33FFh
-	 */
-	reg32 &= ~(3 << 15);	/* Clear it */
-	reg32 |= (code << 15);
-	/* TODO: reg32 is never written to anywhere? */
-	printk_debug("Enabling HPET @0x%x\n", HPET_ADDR | (code << 12));
+	/* TODO */
 }
 
 static void i82801gx_lock_smm(struct device *dev)

@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* Based on mainboard.c from AMD's DB800 mainboard. */
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <console/console.h>

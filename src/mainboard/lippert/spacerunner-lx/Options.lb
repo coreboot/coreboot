@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+## Based on Options.lb from AMD's DB800 mainboard.
+
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE

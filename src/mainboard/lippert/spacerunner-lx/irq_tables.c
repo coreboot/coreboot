@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* Based on irq_tables.c from AMD's DB800 mainboard. */
+
 #include <arch/pirq_routing.h>
 #include <console/console.h>
 #include <arch/io.h>

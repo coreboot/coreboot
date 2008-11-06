@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* Based on cache_as_ram_auto.c from AMD's DB800 and DBM690T mainboards. */
+
 #define ASSEMBLY 1
 
 #include <stdlib.h>

@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+## Based on Config.lb from AMD's DB800 and DBM690T mainboards.
+
 ##
 ## Compute the location and size of where this firmware image
 ## (coreboot plus bootloader) will live in the boot rom chip.

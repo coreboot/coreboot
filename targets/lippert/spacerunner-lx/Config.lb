@@ -18,6 +18,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+## Based on Config.lb for the AMD Geode LX/5536 DB800 platform.
+
 # Config file for the LiPPERT Cool SpaceRunner-LX.		--JR 10/2008
 
 target spacerunner-lx

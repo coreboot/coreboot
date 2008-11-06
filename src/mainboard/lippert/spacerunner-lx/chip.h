@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* Based on chip.h from AMD's DB800 mainboard. */
+
 #include <stdint.h>
 
 extern struct chip_operations mainboard_lippert_spacerunner_lx_ops;

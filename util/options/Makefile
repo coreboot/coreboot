@@ -21,11 +21,11 @@
 
 OPTIONS_OBJ := $(obj)/util/options/build_opt_tbl.o
 
-$(obj)/util/options/build_opt_tbl: optionsdir $(OPTIONS_OBJ)
+$(obj)/util/options/build_opt_tbl: $(obj)/util/options/ $(OPTIONS_OBJ)
 	$(Q)printf "  HOSTCC  $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) -o $@ $(OPTIONS_OBJ)
 
-optionsdir:
+$(obj)/util/options/:
 	$(Q)mkdir -p $(obj)/util/options/
 
 $(obj)/util/options/%.o: $(src)/util/options/%.c

@@ -19,16 +19,17 @@
 ##
 LAROBJ := lar.o stream.o lib.o
 
-LARDIR := lardir
+LARDIR := $(obj)/util/lar/
 
 COMPRESSOR := $(LZMA_OBJ) $(obj)/util/lzma/lzma-compress.o
-LARDIR     += lzmadir
+LARDIR     += $(obj)/util/lzma/
 
 COMPRESSOR += $(obj)/util/nrv2b/nrv2b-compress.o
-LARDIR     += nrv2bdir
+LARDIR     += $(obj)/util/nrv2b/
 
 LAROBJ_ABS := $(patsubst %,$(obj)/util/lar/%,$(LAROBJ))
-lardir:
+
+$(obj)/util/lar/:
 	$(Q)printf "  BUILD   LAR\n"
 	$(Q)mkdir -p $(obj)/util/lar
 

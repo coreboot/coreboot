@@ -23,13 +23,13 @@ LZMA_OBJ += $(obj)/util/lzma/RangeCoderBit.o $(obj)/util/lzma/StreamUtils.o
 LZMA_OBJ += $(obj)/util/lzma/OutBuffer.o $(obj)/util/lzma/Alloc.o
 LZMA_OBJ += $(obj)/util/lzma/CRC.o
 
-$(obj)/util/lzma/lzma: lzmadir $(LZMA_OBJ) $(obj)/util/lzma/minilzma.o
+$(obj)/util/lzma/lzma: $(obj)/util/lzma/ $(LZMA_OBJ) $(obj)/util/lzma/minilzma.o
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ $(LZMA_OBJ) $(obj)/util/lzma/minilzma.o
 
 $(obj)/util/lzma/lzma-compress.o: $(src)/util/lzma/minilzma.cc
 	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c -DCOMPACT $<
 
-lzmadir:
+$(obj)/util/lzma/:
 	$(Q)printf "  BUILD   LZMA\n"
 	$(Q)mkdir -p $(obj)/util/lzma/
 

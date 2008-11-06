@@ -24,18 +24,20 @@
 #include "chip.h"
 extern void i82801gx_enable(device_t dev);
 
-#define PCI_DMA_CFG		0x90
 #define SERIRQ_CNTL		0x64
-#define GEN_CNTL		0xd0
-#define GEN_STS			0xd4
-#define RTC_CONF		0xd8
+
 #define GEN_PMCON_1		0xa0
 #define GEN_PMCON_2		0xa2
 #define GEN_PMCON_3		0xa4
 
+/* GEN_PMCON_3 bits */
+#define RTC_BATTERY_DEAD	(1 << 2)
+#define RTC_POWER_FAILED	(1 << 1)
+#define SLEEP_AFTER_POWER_FAIL	(1 << 0)
+
 #define PMBASE			0x40
 #define ACPI_CNTL		0x44
-#define BIOS_CNTL		0x4E
+#define BIOS_CNTL		0xDC
 #define GPIO_BASE		0x48 /* LPC GPIO Base Address Register */
 #define GPIO_CNTL		0x4C /* LPC GPIO Control Register */
 
@@ -48,28 +50,10 @@ extern void i82801gx_enable(device_t dev);
 #define PIRQG_ROUT		0x6A
 #define PIRQH_ROUT		0x6B
 
-#define FUNC_DIS		0xF2
-
 #define LPC_IO_DEC		0x80 /* IO Decode Ranges Register */
 #define LPC_EN			0x82 /* LPC IF Enables Register */
 
-#define SBUS_NUM		0x19
-#define SUB_BUS_NUM		0x1A
-#define SMLT			0x1B
-#define IOBASE			0x1C
-#define IOLIM			0x1D
-#define MEMBASE			0x20
-#define MEMLIM			0x22
-#define CNF			0x50
-#define MTT			0x70
-#define PCI_MAST_STS		0x82
-
-/* GEN_PMCON_3 bits */
-#define RTC_BATTERY_DEAD	(1 << 2)
-#define RTC_POWER_FAILED	(1 << 1)
-#define SLEEP_AFTER_POWER_FAIL	(1 << 0)
-
-/* PCI Configuration Space (D31:F1) */
+/* PCI Configuration Space (D31:F1): IDE */
 #define INTR_LN			0x3c
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */
 #define   IDE_DECODE_ENABLE	(1 << 15)
@@ -84,7 +68,7 @@ extern void i82801gx_enable(device_t dev);
 #define   PCB1			(1 <<  1)
 #define   PCB0			(1 <<  0)
 
-/* PCI Configuration Space (D31:F3) */
+/* PCI Configuration Space (D31:F3): SMBus */
 #define SMB_BASE		0x20
 #define HOSTC			0x40
 

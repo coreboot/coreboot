@@ -38,31 +38,39 @@
 #define DIMM0 ((u8) 0xA0)
 #define DIMM1 ((u8) 0xA2)
 
-/* The part is a Hynix hy5du121622ctp-d43.
- *
- * HY 5D U 12 16 2 2 C <blank> T <blank> P D43
- * Hynix
- * DDR SDRAM (5D)
- * VDD 2.5 VDDQ 2.5 (U)
- * 512M 8K REFRESH (12)
- * x16 (16)
- * 4banks (2)
- * SSTL_2 (2)
- * 4th GEN die (C)
- * Normal Power Consumption (<blank> )
- * TSOP (T)
- * Single Die (<blank>)
- * Lead Free (P)
- * DDR400 3-3-3 (D43)
- */
-
 struct spd_entry {
 	u8 address;
 	u8 data;
 };
 
 /* Save space by using a short list of SPD values used by Geode LX Memory init */
+/* Fake SPD for DBE61C - 256MB. Same memory chip, and therefore same SPD entries, as for DBE62. */
+/* Micron MT46V32M16 */
 static const struct spd_entry spd_table[] = {
+	{SPD_MEMORY_TYPE, 7},
+	{SPD_NUM_ROWS, 13},
+	{SPD_tRFC, 0x4b},
+	{SPD_ACCEPTABLE_CAS_LATENCIES, 0x10},
+	{SPD_DENSITY_OF_EACH_ROW_ON_MODULE, 0x40},
+	{SPD_tRAS, 0x2d},
+	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX, 0x7}, /*0x <= 7},*/
+	{SPD_MIN_RAS_TO_CAS_DELAY, 0x58},
+	{SPD_tRRD, 0x3c},
+	{SPD_tRP, 0x58},
+	{SPD_PRIMARY_SDRAM_WIDTH, 8},
+	{SPD_NUM_BANKS_PER_SDRAM, 0x4},
+	{SPD_NUM_COLUMNS, 0xa}, /* 8kB */
+	{SPD_NUM_DIMM_BANKS, 0x1},
+	{SPD_REFRESH, 0x82},
+	{SPD_SDRAM_CYCLE_TIME_2ND, 0x0},
+	{SPD_SDRAM_CYCLE_TIME_3RD, 0x0},
+	{SPD_tRCD, 15},
+};
+
+#if 0
+/* Fake SPD for DBE61A - 128MB. Not working yet */
+/* Micron MT46V16M16 */
+static const struct spd_entry spd_table_dbe61a[] = {
 	{SPD_ACCEPTABLE_CAS_LATENCIES, 0x10},
 	{SPD_BANK_DENSITY, 0x40},
 	{SPD_DEVICE_ATTRIBUTES_GENERAL, 0xff},
@@ -83,6 +91,7 @@ static const struct spd_entry spd_table[] = {
 	{SPD_tRP, 15},
 	{SPD_tRRD, 10},
 };
+#endif
 
 /**
  * Given an SMBUS device, and an address in that device, return the value of SPD

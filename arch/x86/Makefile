@@ -274,6 +274,8 @@ $(obj)/coreboot.initram $(obj)/coreboot.initram.map: $(obj)/stage0.init $(obj)/s
 	$(Q)$(AS) $(obj)/initram_picwrapper.s -o $(obj)/initram_picwrapper.o
 	$(Q)# initram links against stage0
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)# WARNING: Using -N (and not -n or others) for ld is essential to
+	$(Q)# get all important stuff into one segment!
 	$(Q)$(LD) -Ttext 0 --entry main -N -R $(obj)/stage0-prefixed.o \
 		$(obj)/coreboot.initram_partiallylinked.o \
 		$(obj)/initram_picwrapper.o -o $(obj)/coreboot.initram

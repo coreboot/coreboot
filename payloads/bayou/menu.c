@@ -67,8 +67,8 @@ void draw_menu(void)
 
 	wattrset(menuwin, COLOR_PAIR(3));
 	wclear(menuwin);
-	wborder(menuwin, '\263', '\263', '\304', '\304', '\332',
-		'\277', '\300', '\331');
+	wborder(menuwin, ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE,
+		ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
 
 	wattrset(menuwin, COLOR_PAIR(4) | A_BOLD);
 	mvwprintw(menuwin, 0, (menu_width - 17) / 2, " Payload Chooser ");

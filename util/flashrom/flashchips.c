@@ -91,7 +91,7 @@ struct flashchip flashchips[] = {
 	{"SST",		"SST29LE020",		SST_ID,		SST_29LE020,		256,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"SST",		"SST39SF010A",		SST_ID,		SST_39SF010,		128,	4096,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"SST",		"SST39SF020A",		SST_ID,		SST_39SF020,		256,	4096,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
-	{"SST",		"SST39SF040",		SST_ID,		SST_39SF040,		512,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
+	{"SST",		"SST39SF040",		SST_ID,		SST_39SF040,		512,	4096,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"SST",		"SST39VF512",		SST_ID,		SST_39VF512,		64,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"SST",		"SST39VF010",		SST_ID,		SST_39VF010,		128,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"SST",		"SST39VF020",		SST_ID,		SST_39VF020,		256,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},

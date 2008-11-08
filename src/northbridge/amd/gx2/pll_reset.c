@@ -115,7 +115,7 @@ static unsigned int get_memory_speed(void)
 #if USE_GOODRICH_VERSION
 ///////////////////////////////////////////////////////////////////////////////
 // Goodrich Version of pll_reset
-#define POST_CODE(x) outb(0x80, x)
+#define POST_CODE(x) outb(x, 0x80)
 
 // PLLCHECK_COMPLETED is the "we've already done this" flag
 #define PLLCHECK_COMPLETED (1 << RSTPLL_LOWER_SWFLAGS_SHIFT)

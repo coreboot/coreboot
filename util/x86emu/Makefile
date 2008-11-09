@@ -23,7 +23,7 @@ BIOSEMU_SRC = biosemu.c pcbios/pcibios.c
 VM86_SRC    = vm86.c vm86_gdt.c 
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
-LIBX86EMU_SRC=$(X86EMU_SRC) $(BIOSEMU_SRC)
+LIBX86EMU_SRC=$(patsubst %,x86emu/%,$(X86EMU_SRC)) $(BIOSEMU_SRC)
 endif
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_VM86),y)

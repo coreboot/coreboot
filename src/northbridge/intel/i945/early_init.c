@@ -22,14 +22,14 @@
 
 static int i945_silicon_revision(void)
 {
-	return pci_read_config8(PCI_DEV(0, 0x00, 0), 8);
+	return pci_read_config8(PCI_DEV(0, 0x00, 0), PCI_CLASS_REVISION);
 }
 
 static void i945_detect_chipset(void)
 {
 	u8 reg8;
 
-	printk_info("\r\n");
+	printk_info("\n");
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe7) & 0x70) >> 4;
 	switch (reg8) {
 	case 1:
@@ -50,7 +50,7 @@ static void i945_detect_chipset(void)
 	default:
 		printk_info("Unknown (%02x)", reg8);	/* Others reserved. */
 	}
-	printk_info(" Chipset\r\n");
+	printk_info(" Chipset\n");
 
 	printk_debug("(G)MCH capable of up to FSB ");
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe3) & 0xe0) >> 5;
@@ -67,7 +67,7 @@ static void i945_detect_chipset(void)
 	default:
 		printk_debug("N/A MHz (%02x)", reg8);
 	}
-	printk_debug("\r\n");
+	printk_debug("\n");
 
 	printk_debug("(G)MCH capable of ");
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe4) & 0x07);
@@ -84,7 +84,7 @@ static void i945_detect_chipset(void)
 	default:
 		printk_info("unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
 	}
-	printk_debug("\r\n");
+	printk_debug("\n");
 }
 
 static void i945_setup_bars(void)
@@ -94,7 +94,7 @@ static void i945_setup_bars(void)
 	/* As of now, we don't have all the A0 workarounds implemented */
 	if (i945_silicon_revision() == 0)
 		printk_info
-		    ("Warning: i945 silicon revision A0 might not work correctly.\r\n");
+		    ("Warning: i945 silicon revision A0 might not work correctly.\n");
 
 	/* Setting up Southbridge. In the northbridge code. */
 	printk_debug("Setting up static southbridge registers...");
@@ -106,12 +106,12 @@ static void i945_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
 	setup_ich7_gpios();
-	printk_debug(" done.\r\n");
+	printk_debug(" done.\n");
 
 	printk_debug("Disabling Watchdog reboot...");
 	RCBA32(GCS) = (RCBA32(0x3410)) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	printk_debug(" done.\r\n");
+	printk_debug(" done.\n");
 
 	printk_debug("Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
@@ -135,10 +135,8 @@ static void i945_setup_bars(void)
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
 
-	pci_write_config8(PCI_DEV(0, 0x00, 0), TOLUD, 0x40);	/* 1G XXX dynamic! */
-
 	pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
-	printk_debug(" done.\r\n");
+	printk_debug(" done.\n");
 
 	/* Wait for MCH BAR to come up */
 	printk_debug("Waiting for MCHBAR to come up...");
@@ -147,7 +145,7 @@ static void i945_setup_bars(void)
 			reg8 = *(volatile u8 *)0xfed40000;
 		} while (!(reg8 & 0x80));
 	}
-	printk_debug("ok\r\n");
+	printk_debug("ok\n");
 }
 
 static void i945_setup_egress_port(void)
@@ -440,24 +438,23 @@ static void i945_setup_pci_express_x16(void)
 	u32 timeout;
 	u32 reg32;
 	u16 reg16;
-	u8 reg8;
 
 	/* For now we just disable the x16 link */
 	printk_debug("Disabling PCI Express x16 Link\n");
 
 	MCHBAR16(UPMC1) |= (1 << 5) | (1 << 0);
 
-	reg8 = pcie_read_config8(PCI_DEV(0, 0x01, 0), BCTRL1);
-	reg8 |= (1 << 6);
-	pcie_write_config8(PCI_DEV(0, 0x01, 0), BCTRL1, reg8);
+	reg16 = pcie_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
+	reg16 |= (1 << 6);
+	pcie_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
 
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x224);
 	reg32 |= (1 << 8);
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x224, reg32);
 
-	reg8 = pcie_read_config8(PCI_DEV(0, 0x01, 0), BCTRL1);
-	reg8 &= ~(1 << 6);
-	pcie_write_config8(PCI_DEV(0, 0x01, 0), BCTRL1, reg8);
+	reg16 = pcie_read_config16(PCI_DEV(0, 0x01, 0), BCTRL1);
+	reg16 &= ~(1 << 6);
+	pcie_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
 
 	printk_debug("Wait for link to enter detect state... ");
 	timeout = 0x7fffff;

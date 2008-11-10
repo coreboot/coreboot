@@ -67,13 +67,13 @@ static void do_ram_command(u32 command)
 
 	MCHBAR32(DCC) = reg32;  /* This is the actual magic */
 
-	PRINTK_DEBUG("...done\r\n");
+	PRINTK_DEBUG("...done\n");
 }
 
 
 static void ram_read32(u32 offset)
 {
-	PRINTK_DEBUG("   ram read: %08x\r\n", offset);
+	PRINTK_DEBUG("   ram read: %08x\n", offset);
 
 	read32(offset);
 }
@@ -82,12 +82,12 @@ static void ram_read32(u32 offset)
 static void sdram_dump_mchbar_registers(void)
 {
 	int i;
-	printk_debug("Dumping MCHBAR Registers\r\n");
+	printk_debug("Dumping MCHBAR Registers\n");
 
 	for (i=0; i<0xfff; i+=4) {
 		if (MCHBAR32(i) == 0)
 			continue;
-		printk_debug("0x%04x: 0x%08x\r\n", i, MCHBAR32(i));
+		printk_debug("0x%04x: 0x%08x\n", i, MCHBAR32(i));
 	}
 }
 #endif
@@ -181,13 +181,13 @@ static void sdram_detect_errors(void)
 	
 	if (reg8 & ((1<<7)|(1<<2))) {
 		if (reg8 & (1<<2)) {
-			printk_debug("SLP S4# Assertion Width Violation.\r\n");
+			printk_debug("SLP S4# Assertion Width Violation.\n");
 			
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 		}
 
 		if (reg8 & (1<<7)) {
-			printk_debug("DRAM initialization was interrupted.\r\n");
+			printk_debug("DRAM initialization was interrupted.\n");
 			reg8 &= ~(1<<7);
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 		}
@@ -197,7 +197,7 @@ static void sdram_detect_errors(void)
 		reg8 |= (1 << 3);
 		pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, reg8);
 
-		printk_debug("Reset required.\r\n");
+		printk_debug("Reset required.\n");
 		outb(0x00, 0xcf9);
 		outb(0x0e, 0xcf9);
 		for (;;) ; /* Wait for reset! */
@@ -288,52 +288,52 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 
 		reg8 = spd_read_byte(device, SPD_DIMM_CONFIG_TYPE);
 		if (reg8 == ERROR_SCHEME_ECC)
-			die("Error: ECC memory not supported by this chipset\r\n");
+			die("Error: ECC memory not supported by this chipset\n");
 
 		reg8 = spd_read_byte(device, SPD_MODULE_ATTRIBUTES);
 		if (reg8 & MODULE_BUFFERED)
-			die("Error: Buffered memory not supported by this chipset\r\n");
+			die("Error: Buffered memory not supported by this chipset\n");
 		if (reg8 & MODULE_REGISTERED)
-			die("Error: Registered memory not supported by this chipset\r\n");
+			die("Error: Registered memory not supported by this chipset\n");
 
 		switch (spd_read_byte(device, SPD_PRIMARY_SDRAM_WIDTH)) {
 		case 0x08: 
 			switch (spd_read_byte(device, SPD_NUM_DIMM_BANKS) & 0x0f) {
 			case 1:
-				printk_debug("x8DDS\r\n");
+				printk_debug("x8DDS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X8DDS;
 				break;
 			case 0:
-				printk_debug("x8DS\r\n");
+				printk_debug("x8DS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X8DS;
 				break;
 			default:
-				printk_debug ("Unsupported.\r\n");
+				printk_debug ("Unsupported.\n");
 			}
 			break;
 		case 0x10:
 			switch (spd_read_byte(device, SPD_NUM_DIMM_BANKS) & 0x0f) {
 			case 1:
-				printk_debug("x16DS\r\n");
+				printk_debug("x16DS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X16DS;
 				break;
 			case 0:
-				printk_debug("x16SS\r\n");
+				printk_debug("x16SS\n");
 				sysinfo->dimm[i] = SYSINFO_DIMM_X16SS;
 				break;
 			default:
-				printk_debug ("Unsupported.\r\n");
+				printk_debug ("Unsupported.\n");
 			}
 			break;
 		default:
-			die("Unsupported DDR-II memory width.\r\n");
+			die("Unsupported DDR-II memory width.\n");
 		}
 
 		dimm_mask |= (1 << i);
 	}
 
 	if (!dimm_mask) {
-		die("No memory installed.\r\n");
+		die("No memory installed.\n");
 	}
 
 	/* The chipset might be able to do this. What the heck, legacy bios
@@ -341,7 +341,7 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 	 * not bother until someone needs this enough to cope with it.
 	 */
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
-		printk_err("Channel 0 has no memory populated. This setup is not usable. Please move the DIMM.\r\n");
+		printk_err("Channel 0 has no memory populated. This setup is not usable. Please move the DIMM.\n");
 	}
 }
 
@@ -991,18 +991,18 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 
 	/* Dual Channel needs different tables. */
 	if (sdram_capabilities_dual_channel()) {
-		printk_debug("Programming Dual Channel RCOMP\r\n");
+		printk_debug("Programming Dual Channel RCOMP\n");
 		strength_multiplier = dual_channel_strength_multiplier;
 		slew_group_lookup   = dual_channel_slew_group_lookup;
 		idx = 5 * sysinfo->dimm[0] +  sysinfo->dimm[2];
 	} else {
-		printk_debug("Programming Single Channel RCOMP\r\n");
+		printk_debug("Programming Single Channel RCOMP\n");
 		strength_multiplier = single_channel_strength_multiplier;
 		slew_group_lookup   = single_channel_slew_group_lookup;
 		idx = 5 * sysinfo->dimm[0] + sysinfo->dimm[1];
 	}
 
-	printk_debug("Table Index: %d\r\n", idx);
+	printk_debug("Table Index: %d\n", idx);
 
 	MCHBAR8(G1SC) = strength_multiplier[idx * 8 + 0]; 
 	MCHBAR8(G2SC) = strength_multiplier[idx * 8 + 1]; 
@@ -1052,7 +1052,7 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 	u32 chan0dll = 0, chan1dll = 0;
 	int i;
 
-	printk_debug ("Programming DLL Timings... \r\n");
+	printk_debug ("Programming DLL Timings... \n");
 	
 	MCHBAR16(DQSMT) &= ~( (3 << 12) | (1 << 10) | ( 0xf << 0) );
 	MCHBAR16(DQSMT) |= (1 << 13) | (0xc << 0);
@@ -1102,7 +1102,7 @@ static void sdram_initialize_system_memory_io(struct sys_info *sysinfo)
 	u8 reg8;
 	u32 reg32;
 
-	printk_debug ("Initializing System Memory IO... \r\n");
+	printk_debug ("Initializing System Memory IO... \n");
 	
 	reg8 = MCHBAR8(C0HCTC);
 	reg8 &= ~0x1f;
@@ -1141,7 +1141,7 @@ static void sdram_enable_system_memory_io(struct sys_info *sysinfo)
 {
 	u32 reg32;
 
-	printk_debug ("Enabling System Memory IO... \r\n");
+	printk_debug ("Enabling System Memory IO... \n");
 	
 	reg32 = MCHBAR32(RCVENMT);
 	reg32 &= ~(0x3f << 6);
@@ -1261,7 +1261,7 @@ static struct dimm_size sdram_get_dimm_size(u16 device)
 	goto out;
 
  val_err:
-	die("Bad SPD value\r\n");
+	die("Bad SPD value\n");
  hw_err: 
 	/* If a hardware error occurs the spd rom probably does not exist.
 	 * In this case report that there is no memory
@@ -1314,7 +1314,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	int i;
 	int cum0, cum1, tolud;
 
-	printk_debug ("Setting RAM size... \r\n");
+	printk_debug ("Setting RAM size... \n");
 
 	cum0 = 0;
 	for(i = 0; i < 2 * DIMM_SOCKETS; i++) {
@@ -1344,11 +1344,15 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 		tolud = (cum0 + cum1) << 1;
 	else
 		tolud = (cum1 ? cum1 : cum0)  << 1;
-	pci_write_config16(PCI_DEV(0,0,0), TOLUD, tolud);
+
+	/* Some extra checks needed. See 4.1.26 in the 
+	 * 82945G MCH datasheet (30750203)
+	 */
+	pci_write_config8(PCI_DEV(0,0,0), TOLUD, tolud);
 	
-	printk_debug("C0DRB = 0x%08x\r\n", MCHBAR32(C0DRB0));
-	printk_debug("C1DRB = 0x%08x\r\n", MCHBAR32(C1DRB0));
-	printk_debug("TOLUD = 0x%04x\r\n", tolud);
+	printk_debug("C0DRB = 0x%08x\n", MCHBAR32(C0DRB0));
+	printk_debug("C1DRB = 0x%08x\n", MCHBAR32(C1DRB0));
+	printk_debug("TOLUD = 0x%02x\n", tolud);
 
 	pci_write_config16(PCI_DEV(0,0,0), TOM, tolud>>3);
 
@@ -1361,7 +1365,7 @@ static int sdram_set_row_attributes(struct sys_info *sysinfo)
 	int i, value;
 	u16 dra0=0, dra1=0, dra = 0;
 
-	printk_debug ("Setting row attributes... \r\n");
+	printk_debug ("Setting row attributes... \n");
 	for(i=0; i < 2 * DIMM_SOCKETS; i++) {
 		u16 device;
 		u8 columnsrows;
@@ -1402,8 +1406,8 @@ static int sdram_set_row_attributes(struct sys_info *sysinfo)
 	MCHBAR16(C0DRA0) = dra0;
 	MCHBAR16(C1DRA0) = dra1;
 		
-	printk_debug("C0DRA = 0x%04x\r\n", dra0);
-	printk_debug("C1DRA = 0x%04x\r\n", dra1);
+	printk_debug("C0DRA = 0x%04x\n", dra0);
+	printk_debug("C1DRA = 0x%04x\n", dra1);
 
 	return 0;
 }
@@ -1733,7 +1737,7 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 
 	MCHBAR32(DCC) = reg32;
 
-	PRINTK_DEBUG("DCC=0x%08x\r\n", MCHBAR32(DCC));
+	PRINTK_DEBUG("DCC=0x%08x\n", MCHBAR32(DCC));
 }
 
 static void sdram_program_pll_settings(void)
@@ -1778,7 +1782,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 #define CDCLK_200MHz	0x00
 #define CDCLK_320MHz	0x40
 
-	printk_debug ("Setting Graphics Frequency... \r\n");
+	printk_debug ("Setting Graphics Frequency... \n");
 
 	reg16 = pci_read_config16(PCI_DEV(0,2,0), GCFC);
 	reg16 |= (1<<11) | (1<<9); 
@@ -1850,7 +1854,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 	}
 
 	if (second_vco) {
-		printk_debug("Programming second TCO\r\n");
+		printk_debug("Programming second TCO\n");
 		sysinfo->clkcfg_bit7=1;
 	} else {
 		sysinfo->clkcfg_bit7=0;
@@ -1912,7 +1916,7 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 	}
 
 	if (MCHBAR32(CLKCFG) == clkcfg) {
-		printk_debug ("ok (unchanged)\r\n");
+		printk_debug ("ok (unchanged)\n");
 		return;
 	}
 
@@ -1957,7 +1961,7 @@ cache_code:
 out:
 
 	printk_debug("CLKCFG=0x%08x, ", MCHBAR32(CLKCFG));
-	printk_debug ("ok\r\n");
+	printk_debug ("ok\n");
 }
 
 static void sdram_program_clock_crossing(void)
@@ -1997,15 +2001,15 @@ static void sdram_program_clock_crossing(void)
 	case 2:	printk_debug("400"); idx += 0; break;
 	case 3:	printk_debug("533"); idx += 2; break;
 	case 4:	printk_debug("667"); idx += 4; break;
-	default: printk_debug("RSVD\r\n"); return;
+	default: printk_debug("RSVD\n"); return;
 	}
 
 	printk_debug(" FSB=");
 	switch (reg32 & 7) {
-	case 0:	printk_debug("400\r\n"); return;
+	case 0:	printk_debug("400\n"); return;
 	case 1:	printk_debug("533"); idx += 0; break;
 	case 3:	printk_debug("667"); idx += 4; break;
-	default: printk_debug("RSVD\r\n"); return;
+	default: printk_debug("RSVD\n"); return;
 	}
 
 	MCHBAR32(C0DCCFT + 0) = data_clock_crossing[idx];
@@ -2016,7 +2020,7 @@ static void sdram_program_clock_crossing(void)
 	MCHBAR32(CCCFT + 0) = command_clock_crossing[idx];
 	MCHBAR32(CCCFT + 4) = command_clock_crossing[idx + 1];
 
-	printk_debug("... ok\r\n");
+	printk_debug("... ok\n");
 }
 
 static void sdram_disable_fast_dispatch(void)
@@ -2525,27 +2529,27 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		mrsaddr |= MRS_BL8;
 
 		/* Apply NOP */
-		PRINTK_DEBUG("Apply NOP\r\n");
+		PRINTK_DEBUG("Apply NOP\n");
 		do_ram_command(RAM_COMMAND_NOP);
 		ram_read32(bankaddr);
 
 		/* Precharge all banks */
-		PRINTK_DEBUG("All Banks Precharge\r\n");
+		PRINTK_DEBUG("All Banks Precharge\n");
 		do_ram_command(RAM_COMMAND_PRECHARGE);
 		ram_read32(bankaddr);
 
 		/* Extended Mode Register Set (2) */
-		PRINTK_DEBUG("Extended Mode Register Set(2)\r\n");
+		PRINTK_DEBUG("Extended Mode Register Set(2)\n");
 		do_ram_command(RAM_COMMAND_EMRS | RAM_EMRS_2);
 		ram_read32(bankaddr);
 
 		/* Extended Mode Register Set (3) */
-		PRINTK_DEBUG("Extended Mode Register Set(3)\r\n");
+		PRINTK_DEBUG("Extended Mode Register Set(3)\n");
 		do_ram_command(RAM_COMMAND_EMRS | RAM_EMRS_3);
 		ram_read32(bankaddr);
 
 		/* Extended Mode Register Set */
-		PRINTK_DEBUG("Extended Mode Register Set\r\n");
+		PRINTK_DEBUG("Extended Mode Register Set\n");
 		do_ram_command(RAM_COMMAND_EMRS | RAM_EMRS_1);
 		tmpaddr = bankaddr;
 		if (!sdram_capabilities_dual_channel()) {
@@ -2558,7 +2562,7 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		ram_read32(tmpaddr);
 
 		/* Mode Register Set: Reset DLLs */
-		PRINTK_DEBUG("MRS: Reset DLLs\r\n");
+		PRINTK_DEBUG("MRS: Reset DLLs\n");
 		do_ram_command(RAM_COMMAND_MRS);
 		tmpaddr = bankaddr;
 		tmpaddr |= mrsaddr;
@@ -2570,12 +2574,12 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		ram_read32(tmpaddr);
 
 		/* Precharge all banks */
-		PRINTK_DEBUG("All Banks Precharge\r\n");
+		PRINTK_DEBUG("All Banks Precharge\n");
 		do_ram_command(RAM_COMMAND_PRECHARGE);
 		ram_read32(bankaddr);
 
 		/* CAS before RAS Refresh */
-		PRINTK_DEBUG("CAS before RAS\r\n");
+		PRINTK_DEBUG("CAS before RAS\n");
 		do_ram_command(RAM_COMMAND_CBR);
 
 		/* CBR wants two READs */
@@ -2583,7 +2587,7 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		ram_read32(bankaddr);
 
 		/* Mode Register Set: Enable DLLs */
-		PRINTK_DEBUG("MRS: Enable DLLs\r\n");
+		PRINTK_DEBUG("MRS: Enable DLLs\n");
 		do_ram_command(RAM_COMMAND_MRS);
 
 		tmpaddr = bankaddr;
@@ -2591,7 +2595,7 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		ram_read32(tmpaddr);
 	
 		/* Extended Mode Register Set */
-		PRINTK_DEBUG("Extended Mode Register Set: ODT/OCD\r\n");
+		PRINTK_DEBUG("Extended Mode Register Set: ODT/OCD\n");
 		do_ram_command(RAM_COMMAND_EMRS | RAM_EMRS_1);
 		
 		tmpaddr = bankaddr;
@@ -2606,7 +2610,7 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		ram_read32(tmpaddr);
 
 		/* Extended Mode Register Set */
-		PRINTK_DEBUG("Extended Mode Register Set: OCD Exit\r\n");
+		PRINTK_DEBUG("Extended Mode Register Set: OCD Exit\n");
 		do_ram_command(RAM_COMMAND_EMRS | RAM_EMRS_1);
 
 		tmpaddr = bankaddr;
@@ -2623,7 +2627,7 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 
 static void sdram_init_complete(void)
 {
-	PRINTK_DEBUG("Normal Operation\r\n");
+	PRINTK_DEBUG("Normal Operation\n");
 	do_ram_command(RAM_COMMAND_NORMAL);
 }
 
@@ -2651,7 +2655,7 @@ void sdram_initialize(int boot_mode)
 
 	sdram_detect_errors();
 
-	printk_debug ("Setting up RAM controller.\r\n");
+	printk_debug ("Setting up RAM controller.\n");
 
 	memset(&sysinfo, 0, sizeof(sysinfo));
 
@@ -2772,7 +2776,7 @@ void sdram_initialize(int boot_mode)
 	reg8 &= ~(1 << 7);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 
-	printk_debug("RAM initialization finished.\r\n");
+	printk_debug("RAM initialization finished.\n");
 	
 	sdram_setup_processor_side();
 }

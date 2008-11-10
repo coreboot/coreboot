@@ -46,7 +46,7 @@ void code_gen(char *filename, struct irq_routing_table *rt)
 		rt->exclusive_irqs);
 	fprintf(fpir, "\t%#x,		 /* Vendor */\n", rt->rtr_vendor);
 	fprintf(fpir, "\t%#x,		 /* Device */\n", rt->rtr_device);
-	fprintf(fpir, "\t%#x,		 /* Crap (miniport) */\n",
+	fprintf(fpir, "\t%#x,		 /* Miniport */\n",
 		rt->miniport_data);
 	fprintf(fpir, "\t{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */\n");
 	fprintf(fpir, "\t%#x,		 /* u8 checksum. This has to be set to some\n			    value that would give 0 after the sum of all\n			    bytes for this structure (including checksum) */\n",
@@ -54,7 +54,7 @@ void code_gen(char *filename, struct irq_routing_table *rt)
 	fprintf(fpir, "\t{\n");
 	fprintf(fpir, "\t\t/* bus,     dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */\n");
 	for (i = 0; i < ts; i++) {
-		fprintf(fpir, "\t\t{0x%02x,(0x%02x<<3)|0x%01x, {{0x%02x, 0x%04x}, {0x%02x, 0x%04x}, {0x%02x, 0x%04x}, {0x%02x, 0x0%04x}}, 0x%x, 0x%x},\n",
+		fprintf(fpir, "\t\t{0x%02x,(0x%02x<<3)|0x%01x, {{0x%02x, 0x%04x}, {0x%02x, 0x%04x}, {0x%02x, 0x%04x}, {0x%02x, 0x%04x}}, 0x%x, 0x%x},\n",
 			(se_arr+i)->bus, (se_arr+i)->devfn >> 3,
 			(se_arr+i)->devfn & 7, (se_arr+i)->irq[0].link,
 			(se_arr+i)->irq[0].bitmap, (se_arr+i)->irq[1].link,

@@ -108,11 +108,11 @@ static void main(unsigned long bist)
 		pci_write_config8(dev, 0x15, 0x1c);
 	}
 
-	enable_smbus();
-	
 	enable_vt8235_serial();
 	uart_init();
 	console_init();
+
+	enable_smbus();
 
 	print_spew("In auto.c:main()\r\n");
 

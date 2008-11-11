@@ -53,8 +53,6 @@ static void main(unsigned long bist)
 	if (bist == 0)
 		early_mtrr_init();
 
-	enable_smbus();
-
 	/* FIXME */
 	outb(0x87, 0x2e);
 	outb(0x87, 0x2e);
@@ -64,6 +62,9 @@ static void main(unsigned long bist)
 
 	uart_init();
 	console_init();
+
+	enable_smbus();
+
 	report_bist_failure(bist);
 	/* dump_spd_registers(&memctrl[0]); */
 	sdram_initialize(ARRAY_SIZE(memctrl), memctrl);

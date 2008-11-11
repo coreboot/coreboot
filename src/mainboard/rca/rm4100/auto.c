@@ -101,12 +101,12 @@ static void main(unsigned long bist)
 			hard_reset();
 		}
 
-	enable_smbus();
-
 	smscsuperio_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	mb_gpio_init();
 	uart_init();
 	console_init();
+
+	enable_smbus();
 
 	/* Prevent the TCO timer from rebooting us */
 	i82801xx_halt_tco_timer();

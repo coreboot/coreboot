@@ -66,11 +66,11 @@ static void main(unsigned long bist)
 	if (bist == 0)
 		early_mtrr_init();
 
-	enable_smbus();
-
 	lpc47b272_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
+
+	enable_smbus();
 
 	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);

@@ -608,6 +608,11 @@ end
 # Boot options
 ###############################################
 
+define CONFIG_MULTIBOOT
+	default 1
+	export always
+	comment "Use Multiboot (rather than ELF boot notes) to boot the payload"
+end
 define CONFIG_IDE_PAYLOAD
 	default 0
 	export always

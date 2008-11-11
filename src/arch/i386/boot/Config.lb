@@ -1,8 +1,12 @@
 uses HAVE_PIRQ_TABLE
 uses HAVE_ACPI_TABLES
+uses CONFIG_MULTIBOOT
 
 object boot.o
 object coreboot_table.o
+if CONFIG_MULTIBOOT
+object multiboot.o
+end
 object tables.o
 if HAVE_PIRQ_TABLE
 object pirq_routing.o 

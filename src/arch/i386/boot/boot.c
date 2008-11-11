@@ -3,6 +3,7 @@
 #include <boot/elf.h>
 #include <boot/elf_boot.h>
 #include <string.h>
+#include <cpu/x86/multiboot.h>
 
 
 #ifndef CMD_LINE
@@ -139,7 +140,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	rep	movsl\n\t"
 
 		/* Now jump to the loaded image */
-		"	movl	$0x0E1FB007, %%eax\n\t"
+		"	movl	%5, %%eax\n\t"
 		"	movl	 0(%%esp), %%ebx\n\t"
 		"	call	*4(%%esp)\n\t"
 
@@ -175,7 +176,12 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 
 		:: 
 		"g" (lb_start), "g" (buffer), "g" (lb_size),
-		"g" (entry), "g"(adjusted_boot_notes)
+		"g" (entry),
+#if CONFIG_MULTIBOOT
+		"g"(mbi), "g" (MB_MAGIC2)
+#else
+		"g"(adjusted_boot_notes), "g" (0x0E1FB007)
+#endif
 		);
 }
 

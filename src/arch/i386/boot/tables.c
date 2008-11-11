@@ -9,6 +9,7 @@
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
 #include <string.h>
+#include <cpu/x86/multiboot.h>
 #include "coreboot_table.h"
 
 // Global Descriptor Table, defined in c_start.S
@@ -105,6 +106,14 @@ struct lb_memory *write_tables(void)
 	// Relocate the GDT to reserved memory, so it won't get clobbered
 	move_gdt(low_table_end);
 	low_table_end += &gdt_end - &gdt;
+
+#if CONFIG_MULTIBOOT
+	/* The Multiboot information structure */
+	mbi = rom_table_end;
+	rom_table_end = write_multiboot_info(
+				low_table_start, low_table_end,
+				rom_table_start, rom_table_end);
+#endif
 
 	/* The coreboot table must be in 0-4K or 960K-1M */
 	write_coreboot_table(low_table_start, low_table_end,

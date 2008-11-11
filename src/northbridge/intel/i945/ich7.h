@@ -60,7 +60,7 @@
 #define RP2D		0x0130	/* 32bit */
 #define RP2BA		0x0138	/* 64bit */
 #define RP3D		0x0140	/* 32bit */
-#define RP3BA		0x0138	/* 64bit */
+#define RP3BA		0x0148	/* 64bit */
 #define RP4D		0x0150	/* 32bit */
 #define RP4BA		0x0158	/* 64bit */
 #define HDD		0x0160	/* 32bit */

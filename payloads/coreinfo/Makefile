@@ -65,9 +65,9 @@ else
 
 include $(src)/.config
 
-all: prepare $(TARGET)
+all: $(TARGET)
 
-$(TARGET): $(src)/.config $(OBJS)
+$(TARGET): $(src)/.config $(OBJS) prepare
 	$(Q)printf "  LD      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(XCC) -o $@ $(OBJS)
 	$(Q)printf "  STRIP   $(subst $(shell pwd)/,,$(@))\n"

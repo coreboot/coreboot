@@ -101,8 +101,13 @@ if [ $DOLINK -eq 0 ]; then
 else
     _LIBGCC=`$DEFAULT_CC -m32 -print-libgcc-file-name`
     if [ $DEBUGME -eq 1 ]; then
-	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $CMDLINE $_LIBDIR/i386/head.o $_LIBDIR/libpayload.a $_LIBGCC"
+	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $_LIBDIR/i386/head.o $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC"
     fi
 
-    $DEFAULT_CC $_CFLAGS $_LDFLAGS $CMDLINE $_LIBDIR/i386/head.o $_LIBDIR/libpayload.a $_LIBGCC
+    # Note: i386/head.o must be the first object being linked, because it
+    # contains a Multiboot header.  The Multiboot standard requires this
+    # header to be placed below 0x2000 in the resulting image.  See:
+    # http://www.gnu.org/software/grub/manual/multiboot/html_node/OS-image-format.html
+
+    $DEFAULT_CC $_CFLAGS $_LDFLAGS $_LIBDIR/i386/head.o  $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC
 fi

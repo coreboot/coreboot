@@ -421,6 +421,15 @@ int lfclose(struct LFILE *file);
 /** @} */
 
 /**
+ * @defgroup info System information functions
+ * This module contains functions that return information about the system
+ * @{
+ */
+
+int sysinfo_have_multiboot(unsigned long *addr);
+/** @} */
+
+/**
  * @defgroup arch Architecture specific functions
  * This module contains global architecture specific functions.
  * All architectures are expected to define these functions.

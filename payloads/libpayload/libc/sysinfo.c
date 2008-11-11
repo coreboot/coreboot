@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,72 +27,13 @@
  * SUCH DAMAGE.
  */
 
-#include <config.h>
 #include <libpayload.h>
-#include <multiboot_tables.h>
+#include <sysinfo.h>
 
-extern unsigned long loader_eax;
-extern unsigned long loader_ebx;
+extern struct sysinfo_t lib_sysinfo;
 
-static void mb_parse_mmap(struct multiboot_header *table,
-			struct sysinfo_t *info)
+int sysinfo_have_multiboot(unsigned long *addr)
 {
-	u8 *start = (u8 *) phys_to_virt(table->mmap_addr);
-	u8 *ptr = start;
-
-	info->n_memranges = 0;
-
-	while(ptr < (start + table->mmap_length)) {
-		struct multiboot_mmap *mmap = (struct multiboot_mmap *) ptr;
-
-		/* 1 == normal RAM.  Ignore everything else for now */
-
-		if (mmap->type == 1) {
-			info->memrange[info->n_memranges].base = mmap->addr;
-			info->memrange[info->n_memranges].size = mmap->length;
-
-			if (++info->n_memranges == SYSINFO_MAX_MEM_RANGES)
-				return;
-		}
-
-		ptr += (mmap->size + sizeof(mmap->size));
-	}
-}
-
-static void mb_parse_cmdline(struct multiboot_header *table)
-{
-	extern int main_argc;
-	extern char *main_argv[];
-	char *c = phys_to_virt(table->cmdline);
-
-	while(*c != '\0' && main_argc < MAX_ARGC_COUNT) {
-		main_argv[main_argc++] = c;
-
-		for( ; *c != '\0' && !isspace(*c); c++);
-
-		if (*c) {
-			*c = 0;
-			c++;
-		}
-	}
-}
-
-int get_multiboot_info(struct sysinfo_t *info)
-{
-	struct multiboot_header *table;
-
-	if (loader_eax != MULTIBOOT_MAGIC)
-		return -1;
-
-	table = (struct multiboot_header *) phys_to_virt(loader_ebx);
-
-	info->mbtable = phys_to_virt(loader_ebx);
-
-	if (table->flags & MULTIBOOT_FLAGS_MMAP)
-		mb_parse_mmap(table, info);
-
-	if (table->flags & MULTIBOOT_FLAGS_CMDLINE)
-		mb_parse_cmdline(table);
-
-	return 0;
+	*addr = (unsigned long) lib_sysinfo.mbtable;
+	return (lib_sysinfo.mbtable == 0) ? 0 : 1;
 }

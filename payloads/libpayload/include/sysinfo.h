@@ -48,6 +48,8 @@ struct sysinfo_t {
 	u32 cmos_range_start;
 	u32 cmos_range_end;
 	u32 cmos_checksum_location;
+
+	unsigned long *mbtable; /** Pointer to the multiboot table */
 };
 
 extern struct sysinfo_t lib_sysinfo;

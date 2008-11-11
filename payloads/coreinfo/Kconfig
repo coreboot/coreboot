@@ -70,6 +70,12 @@ config MODULE_COREBOOT
 	help
 	  This option will increase the ELF file size by ca. 2250 bytes.
 
+config MODULE_MULTIBOOT
+	bool "Enable the multiboot module"
+	default y
+	help
+	  This option will increase the ELF file size by ca. 1792 bytes.
+
 config MODULE_CPUINFO
 	bool "Enable the cpuinfo module"
 	default y

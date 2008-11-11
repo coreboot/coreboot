@@ -27,6 +27,7 @@
 extern struct coreinfo_module cpuinfo_module;
 extern struct coreinfo_module pci_module;
 extern struct coreinfo_module coreboot_module;
+extern struct coreinfo_module multiboot_module;
 extern struct coreinfo_module nvram_module;
 extern struct coreinfo_module bootlog_module;
 extern struct coreinfo_module ramdump_module;
@@ -47,9 +48,12 @@ struct coreinfo_module *system_modules[] = {
 #endif
 };
 
-struct coreinfo_module *coreboot_modules[] = {
+struct coreinfo_module *firmware_modules[] = {
 #ifdef CONFIG_MODULE_COREBOOT
 	&coreboot_module,
+#endif
+#ifdef CONFIG_MODULE_MULTIBOOT
+	&multiboot_module,
 #endif
 #ifdef CONFIG_MODULE_BOOTLOG
 	&bootlog_module,
@@ -71,9 +75,9 @@ struct coreinfo_cat {
 		.count = ARRAY_SIZE(system_modules),
 	},
 	{
-		.name = "Coreboot",
-		.modules = coreboot_modules,
-		.count = ARRAY_SIZE(coreboot_modules),
+		.name = "Firmware",
+		.modules = firmware_modules,
+		.count = ARRAY_SIZE(firmware_modules),
 	}
 };
 

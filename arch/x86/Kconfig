@@ -56,6 +56,14 @@ config CPU_AMD_K8
 	  arch/x86/Makefile for more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
+config CPU_INTEL_CORE2
+	boolean
+	help
+	  CPU type. At the moment this option selects the reset vector and
+	  Cache-as-RAM (CAR) implementation for a mainboard. See
+	  arch/x86/Makefile for more hints on possible values.
+	  It is usually set in mainboard/*/Kconfig.
+
 config CPU_VIA_C7
 	boolean
 	help
@@ -102,6 +110,7 @@ config K8_ALLOCATE_MMIO_RANGE
 config LOGICAL_CPUS
 	hex
 	depends CPU_AMD_K8
+	depends CPU_INTEL_CORE2
 	default 1
 	help
 	  How many logical CPUs there are. FIXME.
@@ -157,7 +166,7 @@ config SMP
 
 config IOAPIC
 	boolean
-	depends ARCH_X86 && CPU_AMD_K8
+	depends ARCH_X86 && CPU_AMD_K8 || CPU_INTEL_CORE2
 	default 0
 	help
 	  If you want to configure an IOAPIC, set this.
@@ -168,6 +177,7 @@ config CARBASE
 	default 0x80000 if CPU_AMD_GEODELX
 	default 0xc8000 if CPU_AMD_K8
 	default 0xffef0000 if CPU_VIA_C7
+	default 0xffef0000 if CPU_INTEL_CORE2
 	help
 	  This option sets the base address of the area used for CAR.
 
@@ -177,6 +187,7 @@ config CARSIZE
 	default 0x8000 if CPU_AMD_GEODELX
 	default 0x8000 if CPU_AMD_K8
 	default 0x8000 if CPU_VIA_C7
+	default 0x8000 if CPU_INTEL_CORE2
 	help
 	  This option sets the size of the area used for CAR.
 
@@ -186,6 +197,7 @@ config CBMEMK
 	default 0x1000 if CPU_AMD_GEODELX
 	default 0x2000 if CPU_AMD_K8
 	default 0x1000 if CPU_VIA_C7
+	default 0x1000 if CPU_INTEL_CORE2
 	help
 	  This option sets the top of the memory area, in KiB,
 	  used for coreboot.

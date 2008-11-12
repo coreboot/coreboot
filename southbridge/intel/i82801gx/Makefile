@@ -19,7 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ifeq ($(CONFIG_SOUTHBRIDGE_AMD_SB600),y)
+ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801GX),y)
 
 STAGE2_CHIPSET_SRC += $(src)/southbridge/intel/i82801gx/i82801gx.c
 

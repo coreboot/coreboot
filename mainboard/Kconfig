@@ -58,6 +58,11 @@ config VENDOR_JETWAY
 	help
 	  Select this option for systems from Jetway.
 
+config VENDOR_KONTRON
+	bool "Kontron"
+	help
+	  Select this option for systems from Kontron.
+
 config VENDOR_EMULATION
 	bool "Emulated systems"
 	help
@@ -82,6 +87,7 @@ source "mainboard/artecgroup/Kconfig"
 source "mainboard/emulation/Kconfig"
 source "mainboard/gigabyte/Kconfig"
 source "mainboard/jetway/Kconfig"
+source "mainboard/kontron/Kconfig"
 source "mainboard/pcengines/Kconfig"
 source "mainboard/via/Kconfig"
 

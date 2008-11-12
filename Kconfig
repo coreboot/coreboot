@@ -94,6 +94,8 @@ config NORTHBRIDGE_INTEL_I440BXEMULATION
 	boolean
 config NORTHBRIDGE_VIA_CN700
 	boolean
+config NORTHBRIDGE_INTEL_I945
+	boolean
 
 # Southbridges:
 config SOUTHBRIDGE_AMD_CS5536

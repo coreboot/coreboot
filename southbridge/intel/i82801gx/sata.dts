@@ -20,4 +20,9 @@
 
 {
 	device_operations = "i82801gx_sata_normal_driver";
+	ide_legacy_combined = "0";
+	ide_enable_primary = "0";
+	ide_enable_secondary = "0";
+	sata_ahci = "0";
 };
+

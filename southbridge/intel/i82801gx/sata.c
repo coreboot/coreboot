@@ -29,7 +29,7 @@
 #include <config.h>
 #include "i82801gx.h"
 
-typedef struct southbridge_intel_i82801gx_config config_t;
+typedef struct southbridge_intel_i82801gx_sata_config config_t;
 
 static void sata_init(struct device *dev)
 {
@@ -139,16 +139,7 @@ static void sata_init(struct device *dev)
 	pci_write_config32(dev, 0xa4, reg32);
 	pci_write_config8(dev, 0xa0, 0x00);
 }
-
-static struct device_operations sata_ops = {
-	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= ,
-	.init			= ,
-	.scan_bus		= 0,
-	.enable			= i82801gx_enable,
-};
-
+void i82801gx_enable(struct device * dev);
 /* Desktop Non-AHCI and Non-RAID Mode */
 /* 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
 struct device_operations i82801gx_sata_normal_driver = {

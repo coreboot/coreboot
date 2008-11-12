@@ -28,7 +28,7 @@
 #include <config.h>
 #include "i945.h"
 
-static void ram_resource(struct device * dev, unsigned long index, unsigned long basek,
+static void i945_ram_resource(struct device * dev, unsigned long index, unsigned long basek,
 			 unsigned long sizek)
 {
 	struct resource *resource;
@@ -40,7 +40,7 @@ static void ram_resource(struct device * dev, unsigned long index, unsigned long
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-static void pci_domain_read_resources(struct device * dev)
+static void I945_pci_domain_read_resources(struct device * dev)
 {
 	struct resource *resource;
 
@@ -90,7 +90,7 @@ static u32 find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
-static void pci_domain_set_resources(struct device * dev)
+static void I945_pci_domain_set_resources(struct device * dev)
 {
 	u32 pci_tolm;
 	u8 tolud, reg8;
@@ -152,22 +152,22 @@ static void pci_domain_set_resources(struct device * dev)
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0
 	 */
-	printk(BIOS_INFO, "Available memory: %dK", tomk);
-	printk(BIOS_INFO, " (%dM)\n", (tomk >> 10));
+	printk(BIOS_INFO, "Available memory: %lldK", tomk);
+	printk(BIOS_INFO, " (%lldM)\n", (tomk >> 10));
 
 	tolmk = tomk;
 
 	/* Report the memory regions */
-	ram_resource(dev, 3, 0, 640);
-	ram_resource(dev, 4, 768, (tolmk - 768));
+	i945_ram_resource(dev, 3, 0, 640);
+	i945_ram_resource(dev, 4, 768, (tolmk - 768));
 	if (tomk > 4 * 1024 * 1024) {
-		ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
+		i945_ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
 	}
 
 	assign_resources(&dev->link[0]);
 }
 
-static unsigned int pci_domain_scan_bus(struct device * dev, unsigned int max)
+static unsigned int i945_pci_domain_scan_bus(struct device * dev, unsigned int max)
 {
 	max = pci_scan_bus(&dev->link[0], 0, 0xff, max);
 	/* TODO We could determine how many PCIe busses we need in
@@ -176,15 +176,16 @@ static unsigned int pci_domain_scan_bus(struct device * dev, unsigned int max)
 	return max;
 }
 
+#warning get number of 945 pci domain ops
 struct device_operations i945_pci_domain_ops = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
-			      .device = anumber}}},
+			      .device = 0x6789}}},
 	.constructor		 = default_device_constructor,
 	.reset_bus		= pci_bus_reset,
-	.phase3_scan		 = pci_domain_scan_bus,
-	.phase4_read_resources	 = pci_domain_read_resources,
-	.phase4_set_resources	 = pci_domain_set_resources,
+	.phase3_scan		 = i945_pci_domain_scan_bus,
+	.phase4_read_resources	 = I945_pci_domain_read_resources,
+	.phase4_set_resources	 = I945_pci_domain_set_resources,
 	.phase5_enable_resources = enable_childrens_resources,
 	.phase6_init		 = NULL,
 	.ops_pci		 = &pci_dev_ops_pci,
@@ -208,8 +209,8 @@ static void mc_read_resources(struct device * dev)
 	resource->flags =
 	    IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 	    IORESOURCE_ASSIGNED;
-	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08x-0x%08x.\n",
-		     resource->base, (resource->base + resource->size));
+	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08lx-0x%08llx.\n",
+		     (u64) resource->base, (u64) (resource->base + resource->size));
 }
 
 static void mc_set_resources(struct device * dev)
@@ -260,7 +261,7 @@ static void cpu_bus_noop(struct device * dev)
 }
 
 #warning get a number of the 945 mc
-struct device_operations i945_mc_ops = {
+struct device_operations i945_cpu_ops = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
 			      .device = 0x1233}}},
@@ -268,6 +269,6 @@ struct device_operations i945_mc_ops = {
 	.phase4_read_resources	 = cpu_bus_noop,
 	.phase4_set_resources	 = cpu_bus_noop,
 	.phase5_enable_resources = cpu_bus_noop,
-	.phase6_init		 = Ncpu_bus_initULL,
+	.phase6_init		 = cpu_bus_init,
 	.ops_pci		 = &intel_pci_ops,
 };

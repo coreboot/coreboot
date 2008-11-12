@@ -25,12 +25,13 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
+#include <device/smbus.h>
 #include <statictree.h>
 #include <config.h>
 #include "i82801gx.h"
-#include "i82801_smbus.h"
+#include "i82801gx_smbus.h"
 
-int smbus_read_byte(struct bus *bus, device_t dev, u8 address)
+int smbus_read_byte(struct bus *bus, struct device * dev, u8 address)
 {
 	u16 device;
 	struct resource *res;
@@ -44,6 +45,7 @@ int smbus_read_byte(struct bus *bus, device_t dev, u8 address)
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= smbus_read_byte,
 };
+void i82801gx_enable(struct device * dev)
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
 struct device_operations i82801gx_smbus = {

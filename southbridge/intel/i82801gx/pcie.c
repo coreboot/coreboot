@@ -67,7 +67,7 @@ static void pci_init(struct device *dev)
 	printk(BIOS_DEBUG, "    PMLU32 = 0x%08x\n", reg32);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device * dev, u16 vendor, u16 device)
 {
 	u32 pci_id;
 

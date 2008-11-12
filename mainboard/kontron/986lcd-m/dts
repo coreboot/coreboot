@@ -181,6 +181,13 @@ end
  				pci@1f,0{/* which ich? */
 					/config/("southbridge/intel/i82801gx/ich7m_dh_lpc.dts");
 				};
+      				pci@1f,2{
+					/config/("southbridge/intel/i82801gx/sata.dts");
+				};
+        				pci@1f,3{
+					/config/("southbridge/intel/i82801gx/smbus.dts");
+				};
+
 		};
 		ioport@2e {
 			/config/("superio/winbond/w83627thg/dts");

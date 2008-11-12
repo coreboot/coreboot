@@ -38,7 +38,7 @@ static void ac97_modem_init(struct device *dev)
 {
 	// XXX init modem?
 }
-
+void i82801gx_enable(struct device * dev);
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
 /* Note: 82801GU (ICH7-U) doesn't have AC97 audio. */
 struct device_operations ac97audio = {

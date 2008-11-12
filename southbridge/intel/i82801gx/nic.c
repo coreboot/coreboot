@@ -38,7 +38,7 @@ static void nic_init(struct device *dev)
 /* 82801GB/GR/GDH/GBM/GHM (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH) */
 /* Note: 82801GU (ICH7-U) doesn't have a NIC. */
 /* PCI ID loaded from EEPROM. If EEPROM is 0, 0x27dc is used. */
-struct device_operations  = {
+struct device_operations  i82801gx_nic= {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
 			      .device = 0x27dc}}},

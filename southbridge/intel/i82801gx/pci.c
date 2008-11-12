@@ -61,7 +61,7 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	/* Set the subsystem vendor and device id for mainboard devices */
 	ops = ops_pci(dev);
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
-		printk_debug("%s subsystem <- %02x/%02x\n",
+		printk(BIOS_DEBUG, "%s subsystem <- %02x/%02x\n",
 			dev_path(dev), 
 			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
 			MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
@@ -77,7 +77,7 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	 */
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
-	printk_debug("%s cmd <- %02x\n", dev_path(dev), command);
+	printk(BIOS_DEBUG, "%s cmd <- %02x\n", dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
 #endif
 }
@@ -93,7 +93,7 @@ static void ich_pci_bus_enable_resources(struct device *dev)
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	ctrl |= dev->link[0].bridge_ctrl;
 	ctrl |= (PCI_BRIDGE_CTL_PARITY + PCI_BRIDGE_CTL_SERR); /* error check */
-	printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
+	printk(BIOS_DEBUG, "%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
 	/* This is the reason we need our own pci_bus_enable_resources */
@@ -102,7 +102,7 @@ static void ich_pci_bus_enable_resources(struct device *dev)
 	enable_childrens_resources(dev);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device * dev, u16 vendor, u16 device)
 {
 #if 0
 	/* Currently disabled because it causes a "BAR 9" memory resource
@@ -110,7 +110,7 @@ static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	 */
 	u32 pci_id;
 
-	printk_debug("Setting PCI bridge subsystem ID\n");
+	printk(BIOS_DEBUG, "Setting PCI bridge subsystem ID\n");
 	pci_id = pci_read_config32(dev, 0);
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, pci_id );
 #endif

@@ -25,6 +25,7 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
+#include <io.h>
 #include <statictree.h>
 #include <config.h>
 #include "i82801gx.h"
@@ -144,7 +145,7 @@ static void i82801gx_power_options(struct device * dev)
 	reg8 |= (3 << 4);	/* avoid #S4 assertions */
 
 	pci_write_config8(dev, GEN_PMCON_3, reg8);
-	printk_info("Set power %s after power failure.\n", pwr_on ? "on" : "off");
+	printk(BIOS_INFO, "Set power %s after power failure.\n", pwr_on ? "on" : "off");
 
 	/* Set up NMI on errors. */
 	reg8 = inb(0x61);
@@ -329,7 +330,7 @@ static void set_subsystem(struct device * dev, unsigned vendor, unsigned device)
 static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
-
+void i82801gx_enable(struct device * dev);
 /* 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
 struct device_operations ich7_ich7r_ich7dh_lpc = {
 	.id = {.type = DEVICE_ID_PCI,

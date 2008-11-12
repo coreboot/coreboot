@@ -39,6 +39,10 @@
 #include <via_c7.h>
 #endif
 
+#ifdef CONFIG_CPU_INTEL_CORE2
+#include <northbridge/intel/i945/raminit.h>
+#endif
+
 /*
  * struct global_vars is managed entirely from C code. Keep in mind that there
  * is NO buffer at the end of the struct, so having zero-sized arrays at the

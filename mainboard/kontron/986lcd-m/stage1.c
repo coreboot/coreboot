@@ -287,7 +287,6 @@ static void early_ich7_init(void)
 	reg32 |= (5 << 16);
 	RCBA32(0x2034) = reg32;
 }
-#warning need to fix up hardware_stage1 and move parts to initram.c
 void hardware_stage1(void)
 {
 	void 	early_superio_config_w83627thg(void);

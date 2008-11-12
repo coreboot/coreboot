@@ -35,7 +35,7 @@ chip northbridge/intel/i945
 		end
 		device pci 02.1 on end # display controller
 
-                chip southbridge/intel/i82801gx
+                chip southbridge/intel/i82801gx/i82801gx
                         register "ide_legacy_combined" = "0x1"
                         register "ide_enable_primary" = "0x1"
                         register "ide_enable_secondary" = "0x1"
@@ -138,53 +138,52 @@ end
  */
 
 /{
-	device_operations="dbm690t";
-	mainboard_vendor = "AMD";
-	mainboard_name = "Serengeti";
+	mainboard_vendor = "kontron";
+	mainboard_name = "986lcd-m";
 	cpus { };
 	apic@0 {
 	};
 	domain@0 {
-		/config/("northbridge/amd/k8/domain");
-		pci@1,0{
-		};
+		/config/("northbridge/intel/i945/northbridge.dts");
 		/* guesses; we need a real lspci */
-		pci0@18,0 {
-			/config/("northbridge/amd/k8/pci");
-			/* make sure that the ht device is first, as it controls many other things. */
-			pci0 {
-				/config/("southbridge/amd/rs690/ht.dts");
-			};
-			pci1{
-				/config/("southbridge/amd/rs690/gfx.dts");
-			};
-			pci2{
-				/config/("southbridge/amd/rs690/pcie.dts");
-			};
-			pci4{
-				/config/("southbridge/amd/sb600/hda.dts");
-			};
-			pci5{
-				/config/("southbridge/amd/sb600/usb.dts");
-			};
-			pci6{
-				/config/("southbridge/amd/sb600/usb2.dts");
-			};
+			pci@0,0 {
+			/config/("northbridge/intel/i945/bus.dts");
+				pci@1b,0 {
+					/config/("southbridge/intel/i82801gx/ac97audio.dts");
+				};
+				pci@1c,0 {
+					/config/("southbridge/intel/i82801gx/pcie1.dts");
+				};
+				pci@1c,1 {
+					/config/("southbridge/intel/i82801gx/pcie2.dts");
+				};
+				pci@1c,2{
+					/config/("southbridge/intel/i82801gx/pcie3.dts");
+				};
+				pci@1d,0{
+					/config/("southbridge/intel/i82801gx/usb1.dts");
+				};
+				pci@1d,1{
+					/config/("southbridge/intel/i82801gx/usb2.dts");
+				};
+				pci@1d,2{
+					/config/("southbridge/intel/i82801gx/usb3.dts");
+				};
+				pci@1d,3{
+					/config/("southbridge/intel/i82801gx/usb4.dts");
+				};
+ 				pci@1d,7{
+					/config/("southbridge/intel/i82801gx/usb_ehci.dts");
+				};
+  				pci@1e,0{
+					/config/("southbridge/intel/i82801gx/pci.dts");
+				};
+ 				pci@1f,0{/* which ich? */
+					/config/("southbridge/intel/i82801gx/ich7m_dh_lpc.dts");
+				};
 		};
-		pci1@18,0 {
-			/config/("northbridge/amd/k8/pci");
-		};
-		pci2@18,0 {
-			/config/("northbridge/amd/k8/pci");
-			/* just for illustrating link #2 */
-			pci@2,0{
-			};
-		};
-		pci@18,1 {};
-		pci@18,2 {};
-		pci@18,3 {};
 		ioport@2e {
-			/config/("superio/ite/it8712f/dts");
+			/config/("superio/winbond/w83627thg/dts");
 			com1enable = "1";
 		};
 	};

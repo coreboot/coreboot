@@ -233,17 +233,11 @@ int init_processor_name(void)
 			break;
 		/* Socket AM2 */
 		case 0x30044:
-			processor_name_string =
-			    "AMD Athlon(tm) 64 Processor TT00+";
-			break;
 		case 0x30048:
 			processor_name_string =
 			    "AMD Athlon(tm) 64 Processor TT00+";
 			break;
 		case 0x30064:
-			processor_name_string =
-			    "AMD Sempron(tm) Processor TT00+";
-			break;
 		case 0x30068:
 			processor_name_string =
 			    "AMD Sempron(tm) Processor TT00+";
@@ -257,14 +251,9 @@ int init_processor_name(void)
 			    "Dual-Core AMD Opteron(tm) Processor 12RR SE";
 			break;
 		case 0x31042:
-			processor_name_string =
-			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
-			break;
 		case 0x31046:
-			processor_name_string =
-			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
-			break;
 		case 0x31048:
+		case 0x3104c:
 			processor_name_string =
 			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
 			break;

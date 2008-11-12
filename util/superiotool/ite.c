@@ -2,7 +2,7 @@
  * This file is part of the superiotool project.
  *
  * Copyright (C) 2007 Carl-Daniel Hailfinger
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@
 #define ISA_PNP_ADDR		0x279
 
 static const struct superio_registers reg_table[] = {
+	{0x8228, "IT8228E", {
+		{EOT}}},
 	{0x8661, "IT8661F/IT8770F", {
 		{NOLDN, NULL,
 			{0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x20,0x21,0x22,
@@ -173,6 +175,8 @@ static const struct superio_registers reg_table[] = {
 			{0x00,0x03,0x00,0x0a,0x00,EOT}},
 		{EOT}}},
 	{0x8710, "IT8710F", {	/* TODO: Not yet in sensors-detect */
+		{EOT}}},
+	{0x8711, "IT8711F", {	/* 0x8711 is a guess, not found in datasheet. */
 		{EOT}}},
 	{0x8712, "IT8712F", {
 		{NOLDN, NULL,
@@ -325,6 +329,8 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x8720, "IT8720F", {	/* From sensors-detect */
 		{EOT}}},
+	{0x8722, "IT8722F", {
+		{EOT}}},
 	{0x8726, "IT8726F", {
 		/* Datasheet wrongly says that the ID is 0x8716. */
 		{NOLDN, NULL,
@@ -377,6 +383,10 @@ static const struct superio_registers reg_table[] = {
 		{0xa, "Consumer IR",
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x03,0x10,0x0b,0x00,EOT}},
+		{EOT}}},
+	{0x8761, "IT8761E", {
+		{EOT}}},
+	{0x8780, "IT8780F", {
 		{EOT}}},
 	{EOT}
 };
@@ -475,15 +485,26 @@ static void enter_conf_mode_ite_legacy(uint16_t port, const uint8_t init[][4])
 		OUTB(initkey_mbpnp[i], port);
 }
 
-/**
- * IT871[01]F and IT8708F use 0x87, 0x87
- * IT8761F uses 0x87, 0x61, 0x55, 0x55/0xaa
- * IT86xxF series uses different ports
- */
 static void enter_conf_mode_ite(uint16_t port)
 {
 	OUTB(0x87, port);
 	OUTB(0x01, port);
+	OUTB(0x55, port);
+	OUTB((port == 0x2e) ? 0x55 : 0xaa, port);
+}
+
+static void enter_conf_mode_ite_it8761e(uint16_t port)
+{
+	OUTB(0x87, port);
+	OUTB(0x61, port);
+	OUTB(0x55, port);
+	OUTB((port == 0x2e) ? 0x55 : 0xaa, port);
+}
+
+static void enter_conf_mode_ite_it8228e(uint16_t port)
+{
+	OUTB(0x82, port);
+	OUTB(0x28, port);
 	OUTB(0x55, port);
 	OUTB((port == 0x2e) ? 0x55 : 0xaa, port);
 }
@@ -542,7 +563,15 @@ void probe_idregs_ite(uint16_t port)
 		exit_conf_mode_ite(port);
 	} else {
 		enter_conf_mode_ite(port);
-		probe_idregs_ite_helper("(init=0x87,0x01,0x55,0x55/0xaa) ", port);
+		probe_idregs_ite_helper("(init=standard) ", port);
+		exit_conf_mode_ite(port);
+
+		enter_conf_mode_ite_it8761e(port);
+		probe_idregs_ite_helper("(init=it8761e) ", port);
+		exit_conf_mode_ite(port);
+
+		enter_conf_mode_ite_it8228e(port);
+		probe_idregs_ite_helper("(init=it8228e) ", port);
 		exit_conf_mode_ite(port);
 
 		enter_conf_mode_winbond_fintek_ite_8787(port);

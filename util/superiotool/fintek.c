@@ -2,7 +2,7 @@
  * This file is part of the superiotool project.
  *
  * Copyright (C) 2006 coresystems GmbH <info@coresystems.de>
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@
 #define FINTEK_VENDOR_ID	0x3419
 
 static const struct superio_registers reg_table[] = {
-	{0x0106, "F71862FG", {
+	{0x0106, "F71862FG / F71863FG", {	/* Same ID? Datasheet typo? */
 		{EOT}}},
 	{0x4103, "F71872F/FG / F71806F/FG", {	/* Same ID? Datasheet typo? */
 		{EOT}}},

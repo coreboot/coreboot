@@ -150,7 +150,7 @@ config:        DT_CONFIG '('
 				if ((namelen > 4) && (! strncmp(&name[namelen-4], ".dts", 4)))
 					$6->label[namelen-4] = '\0';
 
-				$$ = $6
+				$$ = $6;
 			}
 	|
 	;

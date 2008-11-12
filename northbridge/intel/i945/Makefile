@@ -21,11 +21,6 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I945),y)
 
-STAGE2_CHIPSET_SRC += $(src)/northbridge/intel/i945/get_sblk_pci1234.c \
-					$(src)/northbridge/intel/i945/common.c \
-					$(src)/northbridge/intel/i945/cpu.c \
-					$(src)/northbridge/intel/i945/domain.c \
-					$(src)/northbridge/intel/i945/pci.c \
-					$(src)/northbridge/intel/i945/util.c
+STAGE2_CHIPSET_SRC += $(src)/northbridge/intel/i945/northbridge.c \
 
 endif

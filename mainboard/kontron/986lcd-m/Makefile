@@ -26,7 +26,7 @@ STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
-			$(src)/northbridge/northbridge/intel/i945/raminit.c \
+			$(src)/northbridge/intel/i945/raminit.c \
 
 
 STAGE2_MAINBOARD_SRC = 

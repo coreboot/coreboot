@@ -259,10 +259,11 @@ static void cpu_bus_noop(struct device * dev)
 {
 }
 
+#warning get a number of the 945 mc
 struct device_operations i945_mc_ops = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
-			      .device = anu,ber}}},
+			      .device = 0x1233}}},
 	.constructor		 = default_device_constructor,
 	.phase4_read_resources	 = cpu_bus_noop,
 	.phase4_set_resources	 = cpu_bus_noop,

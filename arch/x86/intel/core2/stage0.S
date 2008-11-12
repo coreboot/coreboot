@@ -18,12 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define CACHE_AS_RAM_SIZE DCACHE_RAM_SIZE
-#define CACHE_AS_RAM_BASE DCACHE_RAM_BASE
-#define post_code(x) intel_chip_post_macro(x)
+#define ASSEMBLY
+#define CACHE_AS_RAM_SIZE CONFIG_CARSIZE
+#define CACHE_AS_RAM_BASE CONFIG_CARBASE
 
-#include <cpu/x86/mtrr.h>
-#include <cpu/amd/mtrr.h>
+#include <mtrr.h>
 
 #include <macros.h>
 
@@ -67,7 +66,7 @@ __protected_stage0:
 cache_as_ram:
 #if USE_FALLBACK_IMAGE == 1
 
-	post_code(0x20)
+	port80_post(0x20)
 
 	/* Send INIT IPI to all excluding ourself */
         movl	$0x000C4500, %eax
@@ -164,11 +163,11 @@ clear_mtrrs:
 	movl	%esp, %ebp
 	pushl	%eax
 
-	post_code(0x23)
+	port80_post(0x23)
 
 	call	stage1_phase1
 
-	post_code(0x2f)
+	port80_post(0x2f)
 error:
 	hlt
 	jmp	error

@@ -46,6 +46,7 @@ static void usb_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "done.\n");
 }
+void i82801gx_enable(struct device * dev);
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
 struct device_operations i82801gb_usb1 = {

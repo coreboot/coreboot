@@ -22,13 +22,7 @@
 
 /*
 		chip southbridge/amd/cs5536_lx
-			register "enable_ide_nand_flash" = "0"
-
-			register "isa_irq" = "0"
 			#register "flash_irq" = "14"
-
-			## IDE IRQ
-			register "enable_ide_irq" = "0"
 
 			register "audio_irq" = "5"
 			register "usb_irq" = "7"
@@ -55,9 +49,6 @@
 			# Configure KEL Emulation IRQ, 0 to disable
 			register "kel_emul_irq" = "0"
 
-		device pci f.0 on end	# ISA Bridge
-			device pci f.1 on end	# Flash controller
-			device pci f.2 off end	# IDE controller
 		device pci f.3 on end	# Audio
 		device pci f.4 on end	# OHCI
 			device pci f.5 on end	# EHCI
@@ -95,12 +86,14 @@ end
 			 *  Each bit is an IRQ 0-15. */
 			lpc_serirq_enable = "0x00001002";
 			/* LPC IRQ polarity. Each bit is an IRQ 0-15. */
-			lpc_serirq_polarity = "0x0000effd";
+			lpc_serirq_polarity = "0x0000EFFD";
 			/* 0:continuous 1:quiet */
 			lpc_serirq_mode = "1";
 			/* GPIO(0-0x20) for INT D:C:B:A, 0xFF=none. 
 			 * See virtual PIC spec. */
 			enable_gpio_int_route = "0x0D0C0700";
+			/* 0:IDE; 1:FLASH on CS0, 2:FLASH on CS1, 3:FLASH on CS2, 4:FLASH on CS3. */
+			enable_ide_nand_flash = "2";
 			/* COM1 settings */
 			com1_enable = "0";
 			com1_address = "0x2f8";
@@ -109,6 +102,8 @@ end
 			com2_enable = "1";
 			com2_address = "0x3f8";
 			com2_irq = "4";
+			/* USB Port Power Handling setting. */
+			pph = "0xf5";
 		};
 		pci@f,2 {
 			/config/("southbridge/amd/cs5536/ide");

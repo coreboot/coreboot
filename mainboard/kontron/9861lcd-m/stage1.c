@@ -24,12 +24,15 @@
 #include <lib.h>
 #include <console.h>
 #include <device/device.h>
+#include <device/pnp.h>
 #include <cpu.h>
 #include <device/pci.h>
 #include <string.h>
 #include <msr.h>
 #include <io.h>
+#include <uart8250.h>
 #include <arch/x86/msr.h>
+#include <arch/x86/lapic.h>
 
 #include "superio/winbond/w83627thg/w83627thg.h"
 
@@ -111,91 +114,93 @@ static void ich7_enable_lpc(void)
  */
 static void early_superio_config_w83627thg(void)
 {
-	u32 dev;
+	u16 port;
+	u8 ldn;
 	
-	dev=PNP_DEV(0x2e, W83627THG_SP1);
-	pnp_enter_ext_func_mode(dev);
+	port = 0x2e;
+	ldn = W83627THG_SP1;
+	rawpnp_enter_ext_func_mode(port);
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
+	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x3f8);
+	rawpnp_set_irq(port, PNP_IDX_IRQ0, 4);
+	rawpnp_set_enable(port, 1);
 
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
-	pnp_set_irq(dev, PNP_IDX_IRQ0, 4);
-	pnp_set_enable(dev, 1);
+	ldn = W83627THG_SP2;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
+	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x2f8);
+	rawpnp_set_irq(port, PNP_IDX_IRQ0, 3);
+	// rawpnp_write_config(dev, 0xf1, 4); // IRMODE0
+	rawpnp_set_enable(port, 1);
 
-	dev=PNP_DEV(0x2e, W83627THG_SP2);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2f8);
-	pnp_set_irq(dev, PNP_IDX_IRQ0, 3);
-	// pnp_write_config(dev, 0xf1, 4); // IRMODE0
-	pnp_set_enable(dev, 1);
+	ldn = W83627THG_KBC;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
+	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x60);
+	rawpnp_set_iobase(port, PNP_IDX_IO1, 0x64);
+	// rawpnp_write_config(port, 0xf0, 0x82);
+	rawpnp_set_enable(port, 1);
 
-	dev=PNP_DEV(0x2e, W83627THG_KBC);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
-	pnp_set_iobase(dev, PNP_IDX_IO1, 0x64);
-	// pnp_write_config(dev, 0xf0, 0x82);
-	pnp_set_enable(dev, 1);
+	ldn = W83627THG_GAME_MIDI_GPIO1;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
+	rawpnp_write_config(port, 0xf5, 0xff); // invert all GPIOs
+	rawpnp_set_enable(port, 1);
 
-	dev=PNP_DEV(0x2e, W83627THG_GAME_MIDI_GPIO1);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0xf5, 0xff); // invert all GPIOs
-	pnp_set_enable(dev, 1);
+	ldn = W83627THG_GPIO2;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 1); // Just enable it
 
-	dev=PNP_DEV(0x2e, W83627THG_GPIO2);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 1); // Just enable it
+	ldn = W83627THG_GPIO3;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
+	rawpnp_write_config(port, 0xf0, 0xfb); // GPIO bit 2 is output
+	rawpnp_write_config(port, 0xf1, 0x00); // GPIO bit 2 is 0
+	rawpnp_write_config(port, 0x30, 0x03); // Enable GPIO3+4. rawpnp_set_enable is not sufficient
 
-	dev=PNP_DEV(0x2e, W83627THG_GPIO3);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_write_config(dev, 0xf0, 0xfb); // GPIO bit 2 is output
-	pnp_write_config(dev, 0xf1, 0x00); // GPIO bit 2 is 0
-	pnp_write_config(dev, 0x30, 0x03); // Enable GPIO3+4. pnp_set_enable is not sufficient
+	ldn = W83627THG_FDC;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
 
-	dev=PNP_DEV(0x2e, W83627THG_FDC);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
+	ldn = W83627THG_PP;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
 
-	dev=PNP_DEV(0x2e, W83627THG_PP);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
+	rawpnp_exit_ext_func_mode(port);
 
-	pnp_exit_ext_func_mode(dev);
+	port = 0x2e;
+	ldn = W83627THG_SP1;
+	rawpnp_enter_ext_func_mode(port);
 
-	dev=PNP_DEV(0x4e, W83627THG_SP1);
-	pnp_enter_ext_func_mode(dev);
+	rawpnp_set_logical_device(port, ldn); // Set COM3 to sane non-conflicting values
+	rawpnp_set_enable(port, 0);
+	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x3e8);
+	rawpnp_set_irq(port, PNP_IDX_IRQ0, 11);
+	rawpnp_set_enable(port, 1);
 
-	pnp_set_logical_device(dev); // Set COM3 to sane non-conflicting values
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3e8);
-	pnp_set_irq(dev, PNP_IDX_IRQ0, 11);
-	pnp_set_enable(dev, 1);
+	ldn = W83627THG_SP2; 
+	rawpnp_set_logical_device(port, ldn); // Set COM4 to sane non-conflicting values
+	rawpnp_set_enable(port, 0);
+	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x2e8);
+	rawpnp_set_irq(port, PNP_IDX_IRQ0, 10);
+	rawpnp_set_enable(port, 1);
 
-	dev=PNP_DEV(0x4e, W83627THG_SP2); 
-	pnp_set_logical_device(dev); // Set COM4 to sane non-conflicting values
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x2e8);
-	pnp_set_irq(dev, PNP_IDX_IRQ0, 10);
-	pnp_set_enable(dev, 1);
+	ldn = W83627THG_FDC;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
 
-	dev=PNP_DEV(0x4e, W83627THG_FDC);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
+	ldn = W83627THG_PP;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
 
-	dev=PNP_DEV(0x4e, W83627THG_PP);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
+	ldn = W83627THG_KBC;
+	rawpnp_set_logical_device(port, ldn);
+	rawpnp_set_enable(port, 0);
+	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x00);
+	rawpnp_set_iobase(port, PNP_IDX_IO1, 0x00);
 
-	dev=PNP_DEV(0x4e, W83627THG_KBC);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x00);
-	pnp_set_iobase(dev, PNP_IDX_IO1, 0x00);
-
-	pnp_exit_ext_func_mode(dev);
+	rawpnp_exit_ext_func_mode(port);
 }
 
 static void rcba_config(void)
@@ -231,8 +236,8 @@ static void rcba_config(void)
 
 static void early_ich7_init(void)
 {
-	uint8_t reg8;
-	uint32_t reg32;
+	u8 reg8;
+	u32 reg32;
 
 	// program secondary mlt XXX byte?
 	pci_conf1_write_config8(PCI_BDF(0, 0x1e, 0), 0x1b, 0x20);
@@ -285,24 +290,22 @@ static void early_ich7_init(void)
 #warning need to fix up hardware_stage1 and move parts to initram.c
 void hardware_stage1(void)
 {
+	void 	early_superio_config_w83627thg(void);
+	void 	ich7_enable_lpc(void);
 	int boot_mode = 0;
 
-	if (bist == 0) {
-		enable_lapic();
-	}
+	enable_lapic();
 
 	ich7_enable_lpc();
 	early_superio_config_w83627thg();
 
 	/* Set up the console */
-	uart_init();
+#warning need to know how to call uart8250_init
+//	uart8250_init();
 	console_init();
 
-	/* Halt if there was a built in self test failure */
-	report_bist_failure(bist);
-
-
 }
+
 void mainboard_pre_payload(void)
 {
 	banner(BIOS_DEBUG, "mainboard_pre_payload: done");

@@ -18,57 +18,66 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  * MA 02110-1301 USA
  */
+#include <types.h>
+#include <lib.h>
+#include <console.h>
+#include <device/pci.h>
+#include <msr.h>
+#include <legacy.h>
+#include <device/pci_ids.h>
+#include <statictree.h>
+#include <config.h>
 
 #define SMBUS_MEM_DEVICE_START 0x50
 #define SMBUS_MEM_DEVICE_END 0x53
 #define SMBUS_MEM_DEVICE_INC 1
 
-static void print_pci_devices(void)
+ void print_pci_devices(void)
 {
-	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
-		dev += PCI_DEV(0,0,1)) {
-		uint32_t id;
-		id = pci_read_config32(dev, PCI_VENDOR_ID);
+	u32 dev;
+	for(dev = PCI_BDF(0, 0, 0); 
+		dev <= PCI_BDF(0, 0x1f, 0x7); 
+		dev += PCI_BDF(0,0,1)) {
+		u32 id;
+		id = pci_conf1_read_config32(dev, PCI_VENDOR_ID);
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0x0000)) {
 			continue;
 		}
-		printk_debug("PCI: %02x:%02x.%02x", (dev >> 20) & 0xff,
+		printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x", (dev >> 20) & 0xff,
 			(dev >> 15) & 0x1f, (dev >> 12) & 7);
-		printk_debug(" [%04x:%04x]\r\n", id &0xffff, id >> 16);
+		printk(BIOS_DEBUG, " [%04x:%04x]\n", id &0xffff, id >> 16);
 	}
 }
 
-static void dump_pci_device(unsigned dev)
+ void dump_pci_device(u32 dev)
 {
 	int i;
 
-	printk_debug("PCI: %02x:%02x.%02x\r\n", (dev >> 20) & 0xff, (dev >> 15) & 0x1f, (dev >> 12) & 7);
+	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x\n", (dev >> 20) & 0xff, (dev >> 15) & 0x1f, (dev >> 12) & 7);
 
 	for(i = 0; i <= 255; i++) {
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
-			printk_debug("%02x:", i);
+			printk(BIOS_DEBUG, "%02x:", i);
 		}
-		val = pci_read_config8(dev, i);
-		printk_debug(" %02x", val);
+		val = pci_conf1_read_config8(dev, i);
+		printk(BIOS_DEBUG, " %02x", val);
 		if ((i & 0x0f) == 0x0f) {
-			printk_debug("\r\n");
+			printk(BIOS_DEBUG, "\n");
 		}
 	}
 }
 
-static void dump_pci_devices(void)
+ void dump_pci_devices(void)
 {
-	device_t dev;
-	for(dev = PCI_DEV(0, 0, 0); 
-		dev <= PCI_DEV(0, 0x1f, 0x7); 
-		dev += PCI_DEV(0,0,1)) {
-		uint32_t id;
-		id = pci_read_config32(dev, PCI_VENDOR_ID);
+	u32 dev;
+	for(dev = PCI_BDF(0, 0, 0); 
+		dev <= PCI_BDF(0, 0x1f, 0x7); 
+		dev += PCI_BDF(0,0,1)) {
+		u32 id;
+		id = pci_conf1_read_config32(dev, PCI_VENDOR_ID);
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0xffff) ||
 			(((id >> 16) & 0xffff) == 0x0000)) {
@@ -78,40 +87,40 @@ static void dump_pci_devices(void)
 	}
 }
 
-void dump_spd_registers(void)
+void dump_spd_registers(u16 start, u16 end, int inc)
 {
-        unsigned device;
-        device = SMBUS_MEM_DEVICE_START;
-        while(device <= SMBUS_MEM_DEVICE_END) {
+        u16 device;
+        device = start;
+        while(device <= end) {
                 int status = 0;
                 int i;
-        	printk_debug("\r\ndimm %02x", device);
+        	printk(BIOS_DEBUG, "\ndimm %02x", device);
 		
                 for(i = 0; (i < 256) ; i++) {
                         if ((i % 16) == 0) {
-				printk_debug("\r\n%02x: ", i);
+				printk(BIOS_DEBUG, "\n%02x: ", i);
                         }
 			status = smbus_read_byte(device, i);
                         if (status < 0) {
-			         printk_debug("bad device: %02x\r\n", -status);
+			         printk(BIOS_DEBUG, "bad device: %02x\n", -status);
 			         break; 
 			}
-			printk_debug("%02x ", status);
+			printk(BIOS_DEBUG, "%02x ", status);
 		}
-		device += SMBUS_MEM_DEVICE_INC;
-		printk_debug("\r\n");
+		device += inc;
+		printk(BIOS_DEBUG, "\n");
 	}
 }
 
-static void dump_mem(unsigned start, unsigned end)
+ void dump_mem(unsigned start, unsigned end)
 {
         unsigned i;
-	print_debug("dump_mem:");
+	printk(BIOS_DEBUG, "dump_mem:");
         for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
-			printk_debug("\r\n%08x:", i);
+			printk(BIOS_DEBUG, "\n%08x:", i);
 		}
-		printk_debug(" %02x", (unsigned char)*((unsigned char *)i));
+		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
         }
-        print_debug("\r\n");
+	printk(BIOS_DEBUG, "\n");
  }

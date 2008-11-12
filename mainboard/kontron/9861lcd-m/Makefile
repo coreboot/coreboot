@@ -22,7 +22,7 @@
 			
 STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
-			$(src)/arch/x86/stage1_debug.c \
+			$(src)/mainboard/$(MAINBOARDDIR)/stage1_debug.c \
 			
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \

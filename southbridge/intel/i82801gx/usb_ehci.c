@@ -72,6 +72,7 @@ static struct pci_operations lops_pci = {
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
+void i82801gx_enable(struct device * dev);
 struct device_operations i82801gx_usb_ehci = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,

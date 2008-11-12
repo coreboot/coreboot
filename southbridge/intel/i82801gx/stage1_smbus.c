@@ -29,7 +29,6 @@
 #include <config.h>
 #include <io.h>
 #include "i82801gx.h"
-#include "i82801gx_smbus.h"
 
 static void enable_smbus(void)
 {
@@ -58,11 +57,13 @@ static void enable_smbus(void)
 
 	/* Clear any lingering errors, so transactions can run. */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-	print_debug("SMBus controller enabled.\r\n");
+	printk(BIOS_DEBUG, "SMBus controller enabled.\r\n");
 }
 
+/* some prototypes are hand-declared since the include files are still a little too stage-2 oriented */
 int smbus_read_byte(u16 device, u16 address)
 {
+	int do_smbus_read_byte(unsigned device, unsigned address);
 	return do_smbus_read_byte(device, address);
 }
 

@@ -89,6 +89,7 @@
 
 void dump_spd_registers(u16 start, u16 end, int inc)
 {
+	int smbus_read_byte(u16 device, u16 address);
         u16 device;
         device = start;
         while(device <= end) {

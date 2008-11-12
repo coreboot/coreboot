@@ -32,11 +32,13 @@ STAGE2_CHIPSET_SRC += \
 					$(src)/southbridge/intel/i82801gx/pcie.c \
 					$(src)/southbridge/intel/i82801gx/sata.c \
 					$(src)/southbridge/intel/i82801gx/smbus.c \
+					$(src)/southbridge/intel/i82801gx/libsmbus.c \
 					$(src)/southbridge/intel/i82801gx/usb_ehci.c \
   					$(src)/southbridge/intel/i82801gx/usb.c	\
   					$(src)/southbridge/intel/i82801gx/watchdog.c
 					
 STAGE0_CHIPSET_SRC += \
-					$(src)/southbridge/intel/i82801gx/stage1_smbus.c
+					$(src)/southbridge/intel/i82801gx/stage1_smbus.c \
+					$(src)/southbridge/intel/i82801gx/libsmbus.c \
 
 endif

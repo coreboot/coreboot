@@ -21,9 +21,7 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
 #define SOUTHBRIDGE_INTEL_I82801GX_I82801GX_H
 
-#include "chip.h"
-extern void i82801gx_enable(device_t dev);
-
+/* warning: included in stage1 and stage2 */
 #define PCI_DMA_CFG		0x90
 #define SERIRQ_CNTL		0x64
 #define GEN_CNTL		0xd0

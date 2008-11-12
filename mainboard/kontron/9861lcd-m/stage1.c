@@ -123,14 +123,14 @@ static void early_superio_config_w83627thg(void)
 	rawpnp_set_logical_device(port, ldn);
 	rawpnp_set_enable(port, 0);
 	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x3f8);
-	rawpnp_set_irq(port, PNP_IDX_IRQ0, 4);
+	rawpnp_write_config(port, PNP_IDX_IRQ0, 4);
 	rawpnp_set_enable(port, 1);
 
 	ldn = W83627THG_SP2;
 	rawpnp_set_logical_device(port, ldn);
 	rawpnp_set_enable(port, 0);
 	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x2f8);
-	rawpnp_set_irq(port, PNP_IDX_IRQ0, 3);
+	rawpnp_write_config(port, PNP_IDX_IRQ0, 3);
 	// rawpnp_write_config(dev, 0xf1, 4); // IRMODE0
 	rawpnp_set_enable(port, 1);
 
@@ -176,14 +176,14 @@ static void early_superio_config_w83627thg(void)
 	rawpnp_set_logical_device(port, ldn); // Set COM3 to sane non-conflicting values
 	rawpnp_set_enable(port, 0);
 	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x3e8);
-	rawpnp_set_irq(port, PNP_IDX_IRQ0, 11);
+	rawpnp_write_config(port, PNP_IDX_IRQ0, 11);
 	rawpnp_set_enable(port, 1);
 
 	ldn = W83627THG_SP2; 
 	rawpnp_set_logical_device(port, ldn); // Set COM4 to sane non-conflicting values
 	rawpnp_set_enable(port, 0);
 	rawpnp_set_iobase(port, PNP_IDX_IO0, 0x2e8);
-	rawpnp_set_irq(port, PNP_IDX_IRQ0, 10);
+	rawpnp_write_config(port, PNP_IDX_IRQ0, 10);
 	rawpnp_set_enable(port, 1);
 
 	ldn = W83627THG_FDC;

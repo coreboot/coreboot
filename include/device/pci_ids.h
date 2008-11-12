@@ -235,6 +235,8 @@
 #define PCI_VENDOR_ID_CIRRUS			0x1013
 #define PCI_DEVICE_ID_CIRRUS_5446		0x00b8	/* Used by QEMU */
 
+#define PCI_VENDOR_ID_INTEL			0x8086
+
 #define PCI_VENDOR_ID_NVIDIA                    0x10de
 #define PCI_DEVICE_ID_NVIDIA_MCP55_LPC          0x0360
 #define PCI_DEVICE_ID_NVIDIA_MCP55_SLAVE        0x0361

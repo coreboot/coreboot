@@ -29,7 +29,7 @@
 #include <config.h>
 #include "i82801gx.h"
 
-typedef struct southbridge_intel_i82801gx_config config_t;
+typedef struct southbridge_intel_i82801gx_ide_dts_config config_t;
 
 static void ide_init(struct device *dev)
 {
@@ -58,7 +58,7 @@ static void ide_init(struct device *dev)
 		ideTimingConfig |= (3 << 8); // RCT = 1 clock
 		ideTimingConfig |= (1 << 1); // IE0
 		ideTimingConfig |= (1 << 0); // TIME0
-		printk_debug("IDE0 ");
+		printk(BIOS_DEBUG, "IDE0 ");
 	}
 	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
 
@@ -72,7 +72,7 @@ static void ide_init(struct device *dev)
 		ideTimingConfig |= (3 << 8); // RCT = 1 clock
 		ideTimingConfig |= (1 << 1); // IE0
 		ideTimingConfig |= (1 << 0); // TIME0
-		printk_debug("IDE1 ");
+		printk(BIOS_DEBUG, "IDE1 ");
 	}
 	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
 
@@ -87,7 +87,7 @@ static void ide_init(struct device *dev)
 	/* Interrupt Pin is set by D31IP.PIP */
 	pci_write_config32(dev, INTR_LN, 0xff); /* Int 15 */
 }
-
+void i82801gx_enable(struct device * dev);
 struct device_operations i82801gx_ide = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,

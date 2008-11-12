@@ -23,6 +23,7 @@
 #include <console.h>
 #include <device/pci.h>
 #include <msr.h>
+#include <io.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
 #include <statictree.h>

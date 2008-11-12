@@ -1,0 +1,44 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2007 Ronald G. Minnich <rminnich@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+{
+	device_operations = "w83627thg_ops";
+	/* To override any of these, put the over-ride in mainboard dts. */
+
+	/* COM1 */
+	com1dev = "2";
+	com1enable = "0";
+	com1io = "0x3f8";
+	com1irq = "4";
+
+	/* COM2 */
+	com2dev = "3";
+	com2enable = "0";
+	com2io = "0x2f8";
+	com2irq = "3";
+
+	/* Keyboard */
+	kbdev = "5";
+	kbenable = "0";
+	kbio = "0x60";
+	kbio2 = "0x62";
+	kbirq = "1";
+	kbirq2 = "12";
+};

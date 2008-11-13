@@ -133,9 +133,6 @@ static void mb_gpio_init(void)
   */
 int main(void)
 {
-	u8 smb_devices[] =  {
-		DIMM0, DIMM1
-	};
 	printk(BIOS_DEBUG, "Hi there from stage1\n");
 	post_code(POST_START_OF_MAIN);
 

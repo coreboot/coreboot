@@ -64,7 +64,6 @@ __protected_stage0:
 	movw	%ax, %gs
 
 cache_as_ram:
-#if USE_FALLBACK_IMAGE == 1
 
 	port80_post(0x20)
 
@@ -129,7 +128,6 @@ clear_mtrrs:
 	//movl	$0x23322332, %eax
 	xorl	%eax, %eax
 	rep	stosl
-#endif
 
 	/* Enable Cache As RAM mode by disabling cache */
 	movl	%cr0, %eax

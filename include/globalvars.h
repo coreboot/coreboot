@@ -63,6 +63,10 @@ struct global_vars {
 	struct sys_info sys_info;
 	/* has the spd hardware been set up? */
 	int spd_inited;
+	int ram_available;
+#ifdef CONFIG_CHECK_STACK_USAGE
+	void *loweststack;
+#endif
 };
 
 #endif /* GLOBALVARS_H */

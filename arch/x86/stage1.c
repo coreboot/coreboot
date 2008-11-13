@@ -105,6 +105,28 @@ void global_vars_init(struct global_vars *globvars)
 
 }
 
+#ifdef CONFIG_CHECK_STACK_USAGE
+/* STACKFILL_BYTE could be a special value like 0x6b. Just make sure the stage0
+ * code fills the complete CAR area with it. And the stack switching needs to
+ * overwrite the unused parts of the stack with STACKFILL_BYTE as well.
+ */
+#define STACKFILL_BYTE 0x0
+void check_stack()
+{
+	unsigned long stacksize, i;
+	char *lowestaddr;
+	if (global_vars()->ram_available)
+		stacksize = RAM_STACK_SIZE;
+	else
+		stacksize = CAR_STACK_SIZE;
+	lowestaddr = bottom_of_stack() - stacksize;
+	for (i = 0; i < stacksize; i++)
+		if (lowestaddr[i] != STACKFILL_BYTE)
+			break;
+	global_vars()->loweststack = lowestaddr + i;
+}
+#endif
+
 void dump_mem_range(int msg_level, unsigned char *buf, int size)
 {
 	int i;
@@ -194,6 +216,10 @@ void __attribute__((stdcall)) stage1_phase1(u32 bist, u32 init_detected)
 	 */
 	console_init();
 
+#ifdef CONFIG_CHECK_STACK_USAGE
+	printk(BIOS_DEBUG, "Initial lowest stack is %p\n",
+		global_vars()->loweststack);
+#endif
 	if (bist!=0) {
 		printk(BIOS_INFO, "BIST FAILED: %08x", bist);
 		die("");
@@ -227,6 +253,10 @@ void __attribute__((stdcall)) stage1_phase1(u32 bist, u32 init_detected)
 		die("Failed RAM init code\n");
 
 	printk(BIOS_DEBUG, "Done RAM init code\n");
+#ifdef CONFIG_CHECK_STACK_USAGE
+	printk(BIOS_DEBUG, "After RAM init, lowest stack is %p\n",
+		global_vars()->loweststack);
+#endif
 
 	/* Switch the stack location from CAR to RAM, rebuild the stack,
 	 * disable CAR and continue at stage1_phase3(). This is all wrapped in
@@ -299,6 +329,9 @@ void __attribute__((stdcall)) stage1_phase3(void)
 	mem->map[0].type = LB_MEM_RAM;
 #endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
+	/* Provide an easy way to check whether RAM is available. */
+	global_vars()->ram_available = 1;
+
 	// location and size of image.
 	init_archive(&archive);
 
@@ -318,6 +351,10 @@ void __attribute__((stdcall)) stage1_phase3(void)
 #endif /* CONFIG_PAYLOAD_ELF_LOADER */
 
 	entry = load_file_segments(&archive, "normal/payload");
+#ifdef CONFIG_CHECK_STACK_USAGE
+	printk(BIOS_DEBUG, "Before handoff to payload, lowest stack is %p\n",
+		global_vars()->loweststack);
+#endif
 	if (entry != (void*)-1) {
 		/* Final coreboot call before handing off to the payload. */
 		mainboard_pre_payload();

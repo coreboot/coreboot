@@ -265,6 +265,7 @@ void * bottom_of_stack(void);
 EXPORT_SYMBOL(bottom_of_stack);
 struct global_vars * global_vars(void);
 EXPORT_SYMBOL(global_vars);
+void check_stack(void);
 
 #define CAR_STACK_BASE (CONFIG_CARBASE + CONFIG_CARSIZE - 4)
 #define RAM_STACK_BASE 0x88ffc
@@ -278,6 +279,8 @@ EXPORT_SYMBOL(global_vars);
 #else
 #define CAR_STACK_SIZE (CONFIG_CARSIZE - 4)
 #endif
+/* To be honest, this limit is arbitrary and only used for stack checking. */
+#define RAM_STACK_SIZE (65536 - 4)
 
 /* resource maps. These started out as special for the K8 but now have more general usage */
 /* it's not totally clear that the type and union are a great idea, but see the v2 code: 

@@ -150,6 +150,9 @@ int printk(int msg_level, const char *fmt, ...)
 	i += vtxprintf(console_tx_byte, (void *)0, fmt, args);
 	va_end(args);
 
+#ifdef CONFIG_CHECK_STACK_USAGE
+	check_stack();
+#endif
 	return i;
 }
 

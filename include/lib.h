@@ -50,6 +50,6 @@ void beep_short(void);
 void beep_long(void);
 
 /* Optional ramtest. */
-void ram_check(unsigned long start, unsigned long stop);
+int ram_check(unsigned long start, unsigned long stop);
 
 #endif /* LIB_H */

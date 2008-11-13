@@ -84,7 +84,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
  * @param start The beginning of the RAM area.
  * @param stop The end of the RAM area.
  */
-static void ram_verify(unsigned long start, unsigned long stop)
+static int ram_verify(unsigned long start, unsigned long stop)
 {
 	unsigned long addr, value;
 	int i = 0;
@@ -112,6 +112,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 
 	/* Print whether or not the verify failed. */
 	printk(BIOS_DEBUG, "\nDRAM range %sverified.", i ? "_NOT_ " : "");
+	return i;
 }
 
 /**
@@ -123,11 +124,14 @@ static void ram_verify(unsigned long start, unsigned long stop)
  *
  * @param start The beginning of the RAM area.
  * @param stop The end of the RAM area.
+ * @return verify failure count
  */
-void ram_check(unsigned long start, unsigned long stop)
+int ram_check(unsigned long start, unsigned long stop)
 {
+	int result;
 	printk(BIOS_DEBUG, "Testing DRAM: %lx-%lx\n", start, stop);
 	ram_fill(start, stop);
-	ram_verify(start, stop);
+	result = ram_verify(start, stop);
 	printk(BIOS_DEBUG, "Done.\n");
+	return result;
 }

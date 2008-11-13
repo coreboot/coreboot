@@ -23,7 +23,8 @@ STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c
 
 INITRAM_SRC =   $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 		$(src)/northbridge/amd/geodelx/raminit.c \
-		$(src)/arch/x86/geodelx/geodelx.c
+		$(src)/arch/x86/geodelx/geodelx.c \
+		$(src)/lib/ramtest.c
 
 STAGE2_MAINBOARD_SRC = 
 

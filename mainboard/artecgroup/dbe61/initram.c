@@ -37,6 +37,7 @@
 #define PLLMSRLO 0x02000030
 #define DIMM_DBE61C ((u8) 0xA0)
 #define DIMM_EMPTY  ((u8) 0xA2)
+#define DIMM_DBE61A ((u8) 0xA4)
 
 struct spd_entry {
 	u8 address;
@@ -44,6 +45,7 @@ struct spd_entry {
 };
 
 /* Save space by using a short list of SPD values used by Geode LX Memory init */
+
 /* Fake SPD for DBE61C - 256MB. Same memory chip, and therefore same SPD entries, as for DBE62. */
 /* Micron MT46V32M16 */
 static const struct spd_entry spd_table_dbe61c[] = {
@@ -67,35 +69,33 @@ static const struct spd_entry spd_table_dbe61c[] = {
 	{SPD_tRCD, 15},
 };
 
-#if 0
-/* Fake SPD for DBE61A - 128MB. Not working yet */
+/* Fake SPD for DBE61A - 128MB */
 /* Micron MT46V16M16 */
 static const struct spd_entry spd_table_dbe61a[] = {
-	{SPD_ACCEPTABLE_CAS_LATENCIES, 0x10},
-	{SPD_BANK_DENSITY, 0x40},
-	{SPD_DEVICE_ATTRIBUTES_GENERAL, 0xff},
 	{SPD_MEMORY_TYPE, 7},
-	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX, 10}, /* A guess for the tRAC value */
-	{SPD_MODULE_ATTRIBUTES, 0xff}, /* FIXME later when we figure out. */
-	{SPD_NUM_BANKS_PER_SDRAM, 4},
+	{SPD_NUM_ROWS, 13},
+	{SPD_tRFC, 0x85},
+	{SPD_ACCEPTABLE_CAS_LATENCIES, 0x10},
+	{SPD_DENSITY_OF_EACH_ROW_ON_MODULE, 0x20},
+	{SPD_tRAS, 0x35},
+	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX, 0x7}, /*0x <= 7},*/
+	{SPD_MIN_RAS_TO_CAS_DELAY, 0x58},
+	{SPD_tRRD, 0x3c},
+	{SPD_tRP, 0x58},
 	{SPD_PRIMARY_SDRAM_WIDTH, 8},
-	{SPD_NUM_DIMM_BANKS, 1}, /* ALIX1.C is 1 bank. */
-	{SPD_NUM_COLUMNS, 0xa},
-	{SPD_NUM_ROWS, 3},
-	{SPD_REFRESH, 0x3a},
-	{SPD_SDRAM_CYCLE_TIME_2ND, 60},
-	{SPD_SDRAM_CYCLE_TIME_3RD, 75},
-	{SPD_tRAS, 40},
+	{SPD_NUM_BANKS_PER_SDRAM, 0x4},
+	{SPD_NUM_COLUMNS, 0x9}, /* 4kB */
+	{SPD_NUM_DIMM_BANKS, 0x1},
+	{SPD_REFRESH, 0x82},
+	{SPD_SDRAM_CYCLE_TIME_2ND, 0x0},
+	{SPD_SDRAM_CYCLE_TIME_3RD, 0x0},
 	{SPD_tRCD, 15},
-	{SPD_tRFC, 70},
-	{SPD_tRP, 15},
-	{SPD_tRRD, 10},
 };
-#endif
 
 /**
  * Given an SMBUS device, and an address in that device, return the value of SPD
- * for that device. In this mainboard, the only one that can return is DIMM_DBE61C.
+ * for that device. In this mainboard, the only one that can return is DIMM_DBE61A
+ * and DIMM_DBE61C.
  * @param device The device number
  * @param address The address in SPD rom to return the value of
  * @returns The value
@@ -111,12 +111,23 @@ u8 spd_read_byte(u16 device, u8 address)
 		for (i = 0; i < ARRAY_SIZE(spd_table_dbe61c); i++) {
 			if (spd_table_dbe61c[i].address == address) {
 				ret = spd_table_dbe61c[i].data;
-                                break;
+				break;
 			}
 		}
 
 		if (i == ARRAY_SIZE(spd_table_dbe61c))
-			printk(BIOS_DEBUG, " addr %02x does not exist in SPD table",
+			printk(BIOS_DEBUG, " addr %02x does not exist in DBE61C SPD table",
+				address);
+	} else if (device == DIMM_DBE61A) {
+		for (i = 0; i < ARRAY_SIZE(spd_table_dbe61a); i++) {
+			if (spd_table_dbe61a[i].address == address) {
+				ret = spd_table_dbe61a[i].data;
+				break;
+			}
+		}
+
+		if (i == ARRAY_SIZE(spd_table_dbe61a))
+			printk(BIOS_DEBUG, " addr %02x does not exist in DBE61A SPD table",
 				address);
 	}
 
@@ -151,8 +162,8 @@ static void initialize_ram(u8 dimm0, u8 dimm1)
 }
 
 /** 
-  * main for initram for the PC Engines Alix 1C.  It might seem that you
-  * could somehow do these functions in, e.g., the cpu code, but the
+  * main for initram for the Artec Group ThinCan DBE61. It might seem that
+  * you could somehow do these functions in, e.g., the cpu code, but the
   * order of operations and what those operations are is VERY strongly
   * mainboard dependent. It's best to leave it in the mainboard code.
   */
@@ -170,7 +181,21 @@ int main(void)
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 	printk(BIOS_DEBUG, "done pll reset\n");
 
+	printk(BIOS_INFO, "Trying 256MB RAM\n");
 	initialize_ram(DIMM_DBE61C, DIMM_EMPTY);
+	/* FIXME: Would like to check around 188MB and 88MB, but that high always
+	   fails, even if everything works fine for a memtest86+ payload */
+	if (ram_check(596*1024, 608*1024) == 0) {
+		printk(BIOS_INFO, "DRAM 256MB configuration OK\n");
+	} else {
+		printk(BIOS_INFO, "Trying 128MB RAM\n");
+		initialize_ram(DIMM_DBE61A, DIMM_EMPTY);
+
+		if (ram_check(596*1024, 608*1024) == 0)
+			printk(BIOS_INFO, "DRAM 128MB configuration OK\n");
+		else
+			printk(BIOS_INFO, "DRAM configuration failed\n");
+	}
 
 	/* Check low memory */
 	/*ram_check(0x00000000, 640*1024); */

@@ -135,6 +135,21 @@ static void mb_gpio_init(void)
 	/* Early mainboard specific GPIO setup */
 }
 
+static void initialize_ram(u8 dimm0, u8 dimm1)
+{
+	cpu_reg_init(0, dimm0, dimm1, DRAM_UNTERMINATED);
+	printk(BIOS_DEBUG, "done cpu reg init\n");
+
+	sdram_set_registers();
+	printk(BIOS_DEBUG, "done sdram set registers\n");
+
+	sdram_set_spd_registers(dimm0, dimm1);
+	printk(BIOS_DEBUG, "done sdram set spd registers\n");
+
+	sdram_enable(dimm0, dimm1);
+	printk(BIOS_DEBUG, "done sdram enable\n");
+}
+
 /** 
   * main for initram for the PC Engines Alix 1C.  It might seem that you
   * could somehow do these functions in, e.g., the cpu code, but the
@@ -155,17 +170,7 @@ int main(void)
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 	printk(BIOS_DEBUG, "done pll reset\n");
 
-	cpu_reg_init(0, DIMM_DBE61C, DIMM_EMPTY, DRAM_UNTERMINATED);
-	printk(BIOS_DEBUG, "done cpu reg init\n");
-
-	sdram_set_registers();
-	printk(BIOS_DEBUG, "done sdram set registers\n");
-
-	sdram_set_spd_registers(DIMM_DBE61C, DIMM_EMPTY);
-	printk(BIOS_DEBUG, "done sdram set spd registers\n");
-
-	sdram_enable(DIMM_DBE61C, DIMM_EMPTY);
-	printk(BIOS_DEBUG, "done sdram enable\n");
+	initialize_ram(DIMM_DBE61C, DIMM_EMPTY);
 
 	/* Check low memory */
 	/*ram_check(0x00000000, 640*1024); */

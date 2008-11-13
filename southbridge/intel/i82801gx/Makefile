@@ -24,9 +24,20 @@ ifeq ($(CONFIG_SOUTHBRIDGE_INTEL_I82801GX),y)
 STAGE2_CHIPSET_SRC += $(src)/southbridge/intel/i82801gx/i82801gx.c
 
 STAGE2_CHIPSET_SRC += \
-					
+			$(src)/southbridge/intel/i82801gx/ac97.c \
+ 			$(src)/southbridge/intel/i82801gx/lpc.c \
+ 			$(src)/southbridge/intel/i82801gx/nic.c \
+			$(src)/southbridge/intel/i82801gx/pci.c \
+			$(src)/southbridge/intel/i82801gx/pcie.c \
+			$(src)/southbridge/intel/i82801gx/sata.c \
+			$(src)/southbridge/intel/i82801gx/smbus.c \
+			$(src)/southbridge/intel/i82801gx/usb_ehci.c \
+  			$(src)/southbridge/intel/i82801gx/usb.c	\
+  			$(src)/southbridge/intel/i82801gx/watchdog.c \
+			$(src)/southbridge/intel/i82801gx/libsmbus.c \
+
 STAGE0_CHIPSET_SRC += \
 					$(src)/southbridge/intel/i82801gx/stage1_smbus.c \
-#					$(src)/southbridge/intel/i82801gx/libsmbus.c \
+					$(src)/southbridge/intel/i82801gx/libsmbus.c \
 
 endif

@@ -35,8 +35,8 @@
 #define MANUALCONF 0		/* Do automatic strapped PLL config */
 #define PLLMSRHI 0x00001490	/* manual settings for the PLL */
 #define PLLMSRLO 0x02000030
-#define DIMM0 ((u8) 0xA0)
-#define DIMM1 ((u8) 0xA2)
+#define DIMM_DBE61C ((u8) 0xA0)
+#define DIMM_EMPTY  ((u8) 0xA2)
 
 struct spd_entry {
 	u8 address;
@@ -46,7 +46,7 @@ struct spd_entry {
 /* Save space by using a short list of SPD values used by Geode LX Memory init */
 /* Fake SPD for DBE61C - 256MB. Same memory chip, and therefore same SPD entries, as for DBE62. */
 /* Micron MT46V32M16 */
-static const struct spd_entry spd_table[] = {
+static const struct spd_entry spd_table_dbe61c[] = {
 	{SPD_MEMORY_TYPE, 7},
 	{SPD_NUM_ROWS, 13},
 	{SPD_tRFC, 0x4b},
@@ -95,7 +95,7 @@ static const struct spd_entry spd_table_dbe61a[] = {
 
 /**
  * Given an SMBUS device, and an address in that device, return the value of SPD
- * for that device. In this mainboard, the only one that can return is DIMM0. 
+ * for that device. In this mainboard, the only one that can return is DIMM_DBE61C.
  * @param device The device number
  * @param address The address in SPD rom to return the value of
  * @returns The value
@@ -107,15 +107,15 @@ u8 spd_read_byte(u16 device, u8 address)
 	u8 ret = 0xff;
 
 	printk(BIOS_DEBUG, "spd_read_byte dev %04x", device);
-	if (device == DIMM0) {
-		for (i = 0; i < ARRAY_SIZE(spd_table); i++) {
-			if (spd_table[i].address == address) {
-				ret = spd_table[i].data;
+	if (device == DIMM_DBE61C) {
+		for (i = 0; i < ARRAY_SIZE(spd_table_dbe61c); i++) {
+			if (spd_table_dbe61c[i].address == address) {
+				ret = spd_table_dbe61c[i].data;
                                 break;
 			}
 		}
 
-		if (i == ARRAY_SIZE(spd_table))
+		if (i == ARRAY_SIZE(spd_table_dbe61c))
 			printk(BIOS_DEBUG, " addr %02x does not exist in SPD table",
 				address);
 	}
@@ -155,16 +155,16 @@ int main(void)
 	pll_reset(MANUALCONF, PLLMSRHI, PLLMSRLO);
 	printk(BIOS_DEBUG, "done pll reset\n");
 
-	cpu_reg_init(0, DIMM0, DIMM1, DRAM_UNTERMINATED);
+	cpu_reg_init(0, DIMM_DBE61C, DIMM_EMPTY, DRAM_UNTERMINATED);
 	printk(BIOS_DEBUG, "done cpu reg init\n");
 
 	sdram_set_registers();
 	printk(BIOS_DEBUG, "done sdram set registers\n");
 
-	sdram_set_spd_registers(DIMM0, DIMM1);
+	sdram_set_spd_registers(DIMM_DBE61C, DIMM_EMPTY);
 	printk(BIOS_DEBUG, "done sdram set spd registers\n");
 
-	sdram_enable(DIMM0, DIMM1);
+	sdram_enable(DIMM_DBE61C, DIMM_EMPTY);
 	printk(BIOS_DEBUG, "done sdram enable\n");
 
 	/* Check low memory */

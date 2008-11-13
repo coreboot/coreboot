@@ -56,22 +56,20 @@ void disable_car(void)
 	__asm__ __volatile__(
 	"	movl	%[newesp], %%esp	\n"
 
-#if ENABLE_BROKEN_CAR_DISABLING
 	/* We don't need cache as ram for now on */
 	/* disable cache */
 	"	movl    %%cr0, %%eax		\n"
 	"	orl    $(0x1<<30),%%eax		\n"
 	"	movl    %%eax, %%cr0		\n"
 
-	/* The MTRR setup below causes the machine to reset. Must investigate. */
 	/* disable fixed mtrr from now on, it will be enabled by coreboot_ram again*/
-	"	movl    %[_SYSCFG_MSR], %%ecx	\n"
-	"	rdmsr				\n"
-	"	andl    %[_SYSCFG_MSR_newval], %%eax\n"
-//	"	andl    $(~(SYSCFG_MSR_MtrrFixDramModEn | SYSCFG_MSR_MtrrFixDramEn)), %%eax\n"
 	/* clear sth */
+	"	xorl    %%eax, %%eax		\n"
+	"	xorl    %%edx, %%edx		\n"
+	"	movl    $0x201, %%ecx		\n"
 	"	wrmsr				\n"
-#warning Must clear MTRR 0x200 and 0x201
+	"	movl    $0x200, %%ecx		\n"
+	"	wrmsr				\n"
 
 	/* Set the default memory type and disable fixed and enable variable MTRRs */
 	"	movl    %[_MTRRdefType_MSR], %%ecx	\n"
@@ -84,16 +82,11 @@ void disable_car(void)
 	"	movl    %%cr0, %%eax		\n"
 	"	andl    $0x9fffffff,%%eax	\n"
 	"	movl    %%eax, %%cr0		\n"
-#endif
 
 	"	wbinvd				\n"
 
 	"	call stage1_phase3		\n"
 	:: [newesp] "i" (newlocation),
-	 [_SYSCFG_MSR] "i" (SYSCFG_MSR),
-	 [_SYSCFG_MSR_newval] "i" (~(SYSCFG_MSR_MtrrFixDramModEn | SYSCFG_MSR_MtrrFixDramEn)),
-	 [_SYSCFG_MSR_MtrrFixDramModEn] "i" (SYSCFG_MSR_MtrrFixDramModEn),
-	 [_SYSCFG_MSR_MtrrFixDramEn] "i" (SYSCFG_MSR_MtrrFixDramEn),
 	 [_MTRRdefType_MSR] "i" (MTRRdefType_MSR)
 	: "memory");
 }

@@ -22,7 +22,7 @@ enum device_path_type {
 	DEVICE_PATH_NONE = 0,
 	DEVICE_PATH_ROOT,
 	DEVICE_PATH_PCI_DOMAIN,
-	DEVICE_PATH_PCI_BUS, 
+	DEVICE_PATH_PCI_BUS,
 	DEVICE_PATH_PCI,
 	DEVICE_PATH_PNP,
 	DEVICE_PATH_I2C,
@@ -33,59 +33,48 @@ enum device_path_type {
 	DEVICE_PATH_IOPORT,
 };
 
-struct pci_domain_path
-{
+struct pci_domain_path {
 	unsigned domain;
 };
 
-struct pci_bus_path
-{
+struct pci_bus_path {
 	unsigned bus;
 };
 
-struct pci_path
-{
+struct pci_path {
 	unsigned devfn;
 };
 
-struct pnp_path
-{
+struct pnp_path {
 	unsigned port;
 	unsigned device;
 };
 
-struct i2c_path
-{
+struct i2c_path {
 	unsigned device;
 };
 
-struct apic_path
-{
+struct apic_path {
 	unsigned apic_id;
 	unsigned node_id;
 	unsigned core_id;
 };
 
-struct apic_cluster_path
-{
+struct apic_cluster_path {
 	unsigned cluster;
 };
 
-struct cpu_path
-{
+struct cpu_path {
 	unsigned id;
 };
 
-struct cpu_bus_path
-{
+struct cpu_bus_path {
 	unsigned id;
 };
 
-struct ioport_path
-{
+struct ioport_path {
 	unsigned iobase;
 };
-
 
 struct device_path {
 	enum device_path_type type;
@@ -103,10 +92,10 @@ struct device_path {
 	};
 };
 
-
 #define DEVICE_PATH_MAX 30
 #define BUS_PATH_MAX (DEVICE_PATH_MAX+10)
 
-extern int path_eq(struct device_path *path1, struct device_path *path2);
+extern int path_eq(const struct device_path *path1,
+		   const struct device_path *path2);
 
-#endif /* DEVICE_PATH_H */
+#endif				/* DEVICE_PATH_H */

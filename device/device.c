@@ -71,7 +71,6 @@ static struct device devs[MAX_DEVICES];
  */
 static int devcnt;
 
-
 /**
  * The device creator.
  *
@@ -86,7 +85,7 @@ static struct device *new_device(void)
 
 	printk(BIOS_SPEW, "%s: devcnt %d\n", __FUNCTION__, devcnt);
 	/* Should we really die here? */
-	if (devcnt>=MAX_DEVICES) {
+	if (devcnt >= MAX_DEVICES) {
 		die("Too many devices. Increase MAX_DEVICES\n");
 	}
 
@@ -101,7 +100,8 @@ static struct device *new_device(void)
  * @param dev Pointer to the newly created device structure.
  * @param ops Pointer to device_operations
  */
-void default_device_constructor(struct device *dev, const struct device_operations *ops)
+void default_device_constructor(struct device *dev,
+				const struct device_operations *ops)
 {
 	printk(BIOS_DEBUG, "default device constructor called\n");
 	dev->ops = ops;
@@ -121,11 +121,11 @@ struct device_operations *find_device_operations(struct device_id *id)
 	int i;
 
 	for (i = 0; all_device_operations[i]; i++) {
-		printk(BIOS_SPEW, "%s: check all_device_operations[i] %p\n",
-		       __func__, all_device_operations[i]);
+		printk(BIOS_SPEW, "%s: check all_device_operations[%d]\n",
+		       __func__, i);
 		c = all_device_operations[i];
-		printk(BIOS_SPEW, "%s: cons %p, cons id %s\n",
-		       __func__, c, dev_id_string(&c->id));
+		printk(BIOS_SPEW, "%s: cons id %s\n",
+		       __func__, dev_id_string(&c->id));
 		if (id_eq(&c->id, id)) {
 			printk(BIOS_SPEW, "%s: match\n", __func__);
 			return c;
@@ -184,17 +184,18 @@ void constructor(struct device *dev)
 	if (!c)
 		c = find_device_operations(&dev->id);
 
-	printk(BIOS_SPEW, "%s: constructor is %p\n", __func__, c);
+	if (c) {
+		printk(BIOS_SPEW, "%s: constructor has ID %s\n", __func__,
+		       dev_id_string(&c->id));
 
-	if(c) {
-		if(c->constructor)
+		if (c->constructor)
 			c->constructor(dev, c);
 		else
 			default_device_constructor(dev, c);
-	}
-	else
-		printk(BIOS_INFO, "No ops found and no constructor called for %s.\n",
-			dev_id_string(&dev->id));
+	} else
+		printk(BIOS_INFO,
+		       "No ops found and no constructor called for %s.\n",
+		       dev_id_string(&dev->id));
 }
 
 spin_define(dev_lock);
@@ -217,7 +218,7 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	spin_lock(&dev_lock);
 
 	/* Find the last child of our parent. */
-	for (child = parent->children; child && child->sibling; /* */) {
+	for (child = parent->children; child && child->sibling; /* */ ) {
 		child = child->sibling;
 	}
 
@@ -261,7 +262,7 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 
 	constructor(dev);
 
-out:
+      out:
 	spin_unlock(&dev_lock);
 	return dev;
 }
@@ -290,10 +291,10 @@ void read_resources(struct bus *bus)
 		int i;
 		printk(BIOS_SPEW,
 		       "%s: %s(%s) dtsname %s have_resources %d enabled %d\n",
-			__func__, bus->dev? bus->dev->dtsname : "NOBUSDEV",
-			bus->dev ? dev_path(bus->dev) : "NOBUSDEV",
-			curdev->dtsname,
-			curdev->have_resources, curdev->enabled);
+		       __func__, bus->dev ? bus->dev->dtsname : "NOBUSDEV",
+		       bus->dev ? dev_path(bus->dev) : "NOBUSDEV",
+		       curdev->dtsname,
+		       curdev->have_resources, curdev->enabled);
 		if (curdev->have_resources) {
 			continue;
 		}
@@ -311,7 +312,7 @@ void read_resources(struct bus *bus)
 
 		/* Read in subtractive resources behind the current device. */
 		links = 0;
-		for (i = 0; i < curdev->resources; i++) {
+		for (i = 0; i < curdev->resources && (curdev->links > 0); i++) {
 			struct resource *resource;
 			unsigned int link;
 			resource = &curdev->resource[i];
@@ -380,8 +381,8 @@ static struct device *largest_resource(struct bus *bus, struct resource
 	struct pick_largest_state state;
 
 	state.last = *result_res;
-	state.result_dev = 0;
-	state.result = 0;
+	state.result_dev = NULL;
+	state.result = NULL;
 	state.seen_last = 0;
 
 	search_bus_resources(bus, type_mask, type, pick_largest_resource,
@@ -434,10 +435,12 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	base = bridge->base;
 
 	printk(BIOS_SPEW,
-	       "%s compute_allocate_%s: base: %08llx size: %08llx align: %d gran: %d\n",
+	       "%s compute_allocate_%s: base: %08llx size: %08llx align: %d gran: %d limit: %08llx\n",
 	       dev_path(bus->dev),
-	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem",
-	       base, bridge->size, bridge->align, bridge->gran);
+	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags &
+							 IORESOURCE_PREFETCH) ?
+	       "prefmem" : "mem", base, bridge->size, bridge->align,
+	       bridge->gran, bridge->limit);
 
 	/* We want different minimum alignments for different kinds of
 	 * resources. These minimums are not device type specific but
@@ -454,7 +457,7 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	read_resources(bus);
 
 	/* Remember we haven't found anything yet. */
-	resource = 0;
+	resource = NULL;
 
 	/* Walk through all the devices on the current bus and
 	 * compute the addresses.
@@ -542,8 +545,10 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	printk(BIOS_SPEW,
 	       "%s compute_allocate_%s: base: %08llx size: %08llx align: %d gran: %d done\n",
 	       dev_path(bus->dev),
-	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem",
-	       base, bridge->size, bridge->align, bridge->gran);
+	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags &
+							 IORESOURCE_PREFETCH) ?
+	       "prefmem" : "mem", base, bridge->size, bridge->align,
+	       bridge->gran);
 }
 
 #ifdef CONFIG_PCI_OPTION_ROM_RUN
@@ -754,12 +759,12 @@ void dev_phase2(void)
 	printk(BIOS_DEBUG, "Phase 2: Early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		printk(BIOS_SPEW,
-			"%s: dev %s: ops %p ops->phase2_fixup %p\n",
-			__FUNCTION__, dev->dtsname, dev->ops,
-			dev->ops? dev->ops->phase2_fixup : NULL);
+		       "%s: dev %s: ops %sNULL ops->phase2_fixup %s\n",
+		       __FUNCTION__, dev->dtsname, dev->ops ? "NOT " : "",
+		       dev->ops ? (dev->ops->phase2_fixup ? "NOT NULL" : "NULL")
+		       : "N/A");
 		if (dev->ops && dev->ops->phase2_fixup) {
-			printk(BIOS_SPEW,
-			       "Calling phase2 phase2_fixup...\n");
+			printk(BIOS_SPEW, "Calling phase2 phase2_fixup...\n");
 			dev->ops->phase2_fixup(dev);
 			printk(BIOS_SPEW, "phase2_fixup done\n");
 		}
@@ -788,10 +793,11 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 	post_code(POST_STAGE2_PHASE3_SCAN_ENTER);
 	if (!busdevice || !busdevice->enabled ||
 	    !busdevice->ops || !busdevice->ops->phase3_scan) {
-		printk(BIOS_INFO, "%s: %s: busdevice %p enabled %d ops %p\n",
-		       __FUNCTION__, busdevice->dtsname, busdevice,
+		printk(BIOS_INFO, "%s: busdevice %s: enabled %d ops %s\n",
+		       __FUNCTION__, busdevice ? busdevice->dtsname : "NULL",
 		       busdevice ? busdevice->enabled : 0,
-		       busdevice ? busdevice->ops : NULL);
+		       busdevice ? (busdevice->ops?
+				    "NOT NULL" : "NULL") : "N/A");
 		printk(BIOS_INFO, "%s: can not scan from here, returning %d\n",
 		       __FUNCTION__, max);
 		return max;
@@ -824,16 +830,14 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 /**
  * Determine the existence of devices and extend the device tree.
  *
- * Most of the devices in the system are listed in the mainboard Config.lb
+ * Most of the devices in the system are listed in the mainboard dts
  * file. The device structures for these devices are generated at compile
- * time by the config tool and are organized into the device tree. This
- * function determines if the devices created at compile time actually exist
- * in the physical system.
- * TODO: Fix comment, v3 doesn't have Config.lb files.
+ * time by the config tool and are organized into the device tree, statictree.c.
+ * This function determines if the devices created at compile time actually
+ * exist in the physical system.
  *
- * For devices in the physical system but not listed in the Config.lb file,
- * the device structures have to be created at run time and attached to the
- * device tree.
+ * For devices in the physical system but not listed in the dts, the device
+ * structures have to be created at run time and attached to the device tree.
  *
  * This function starts from the root device 'dev_root', scan the buses in
  * the system recursively, modify the device tree according to the result of
@@ -868,6 +872,51 @@ void dev_root_phase3(void)
 	}
 	subordinate = dev_phase3_scan(root, 0);
 	printk(BIOS_INFO, "Phase 3: Done.\n");
+}
+
+void resource_tree(const struct device *const root, int debug_level, int depth)
+{
+	int i = 0, link = 0;
+	const struct device const *child;
+	char indent[30];	/* If your tree has more levels, it's wrong. */
+
+	for (i = 0; i < depth + 1 && i < 29; i++)
+		indent[i] = ' ';
+	indent[i] = '\0';
+
+	printk(BIOS_DEBUG, "%s%s links %x child on link 0 %s\n",
+	       indent, dev_path(root), root->links,
+	       root->link[0].children ? root->link[0].children->
+	       dtsname : "NULL");
+	for (i = 0; i < root->resources; i++) {
+		printk(BIOS_DEBUG,
+		       "%s%s resource base %llx size %llx align %x gran %x limit %llx flags %lx index %lx\n",
+		       indent, dev_path(root), root->resource[i].base,
+		       root->resource[i].size, root->resource[i].align,
+		       root->resource[i].gran, root->resource[i].limit,
+		       root->resource[i].flags, root->resource[i].index);
+	}
+
+	for (link = 0; link < root->links; link++) {
+		for (child = root->link[link].children; child;
+		     child = child->sibling)
+			resource_tree(child, debug_level, depth + 1);
+	}
+}
+
+void print_resource_tree(const struct device *const root, int debug_level,
+			 const char *msg)
+{
+	/* Bail if root is null. */
+	if (!root) {
+		printk(debug_level, "%s passed NULL for root!\n", __func__);
+		return;
+	}
+
+	/* Bail if not printing to screen. */
+	if (!printk(debug_level, "Show all resources in tree form...%s\n", msg))
+		return;
+	resource_tree(root, debug_level, 0);
 }
 
 /**
@@ -948,6 +997,8 @@ void dev_phase4(void)
 	compute_allocate_resource(&root->link[0], mem,
 				  IORESOURCE_MEM, IORESOURCE_MEM);
 
+	print_resource_tree(root, BIOS_DEBUG, "After first compute_allocate.");
+
 	/* Now we need to adjust the resources. The issue is that mem grows
 	 * downward.
 	 */
@@ -975,9 +1026,12 @@ void dev_phase4(void)
 	compute_allocate_resource(&root->link[0], mem,
 				  IORESOURCE_MEM, IORESOURCE_MEM);
 
+	print_resource_tree(root, BIOS_DEBUG, "After second compute_allocate.");
+
 	/* Store the computed resource allocations into device registers. */
 	printk(BIOS_INFO, "Phase 4: Setting resources...\n");
 	root->ops->phase4_set_resources(root);
+	print_resource_tree(root, BIOS_DEBUG, "After setting resources.");
 	printk(BIOS_INFO, "Phase 4: Done setting resources.\n");
 #if 0
 	mem->flags |= IORESOURCE_STORED;
@@ -1028,13 +1082,52 @@ void dev_phase6(void)
 	printk(BIOS_INFO, "Phase 6: Devices initialized.\n");
 }
 
-void show_all_devs(void)
+void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
+{
+	char depth_str[20] = "";
+	int i;
+	struct device *sibling;
+	for (i = 0; i < depth; i++)
+		depth_str[i] = ' ';
+	depth_str[i] = '\0';
+	printk(debug_level, "%s%s(%s): enabled %d have_resources %d devfn %x\n",
+	       depth_str, dev->dtsname, dev_path(dev), dev->enabled,
+	       dev->have_resources,
+	       dev->path.type == DEVICE_PATH_PCI ? dev->path.pci.devfn : 0xff);
+	for (i = 0; i < dev->links; i++) {
+		for (sibling = dev->link[i].children; sibling;
+		     sibling = sibling->sibling)
+			show_devs_tree(sibling, debug_level, depth + 1, i);
+	}
+}
+
+void show_all_devs_tree(int debug_level, const char *msg)
+{
+	/* Bail if not printing to screen. */
+	if (!printk(debug_level, "Show all devs in tree form...%s\n", msg))
+		return;
+	show_devs_tree(all_devices, debug_level, 0, -1);
+}
+
+void show_devs_subtree(struct device *root, int debug_level, const char *msg)
+{
+	/* Bail if not printing to screen. */
+	if (!printk(debug_level, "Show all devs in subtree %s...%s\n",
+		    root->dtsname, msg))
+		return;
+	printk(debug_level, "%s\n", msg);
+	show_devs_tree(root, debug_level, 0, -1);
+}
+
+void show_all_devs(int debug_level, const char *msg)
 {
 	struct device *dev;
 
-	printk(BIOS_INFO, "Show all devs...\n");
+	/* Bail if not printing to screen. */
+	if (!printk(debug_level, "Show all devs...%s\n", msg))
+		return;
 	for (dev = all_devices; dev; dev = dev->next) {
-		printk(BIOS_SPEW,
+		printk(debug_level,
 		       "%s(%s): enabled %d have_resources %d\n",
 		       dev->dtsname, dev_path(dev), dev->enabled,
 		       dev->have_resources);
@@ -1042,7 +1135,7 @@ void show_all_devs(void)
 }
 
 void show_one_resource(struct device *dev, struct resource *resource,
-			    const char *comment)
+		       const char *comment)
 {
 	char buf[10];
 	unsigned long long base, end;
@@ -1058,10 +1151,10 @@ void show_one_resource(struct device *dev, struct resource *resource,
 #endif
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] "
-		"size 0x%08Lx gran 0x%02x %s%s%s\n",
-		dev_path(dev), resource->index, base, end,
-		resource->size, resource->gran, buf,
-		resource_type(resource), comment);
+	       "size 0x%08Lx gran 0x%02x %s%s%s\n",
+	       dev_path(dev), resource->index, base, end,
+	       resource->size, resource->gran, buf,
+	       resource_type(resource), comment);
 
 }
 
@@ -1076,7 +1169,7 @@ void show_all_devs_resources(void)
 		       "%s(%s): enabled %d have_resources %d\n",
 		       dev->dtsname, dev_path(dev), dev->enabled,
 		       dev->have_resources);
-		for(i = 0; i < dev->resources; i++)
+		for (i = 0; i < dev->resources; i++)
 			show_one_resource(dev, &dev->resource[i], "");
 	}
 }

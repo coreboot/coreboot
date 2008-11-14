@@ -37,7 +37,8 @@
  * @return Pointer to a device structure for the device on bus at path
  *         or 0/NULL if no device is found.
  */
-struct device *find_dev_path(struct bus *parent, struct device_path *path)
+struct device *find_dev_path(const struct bus *parent,
+			     const struct device_path *path)
 {
 	struct device *child;
 	for (child = parent->children; child; child = child->sibling) {
@@ -130,7 +131,7 @@ struct device *dev_find_device(struct device_id *devid, struct device *from)
 		from = all_devices;
 	else
 		from = from->next;
-	for(;from;from = from->next){
+	for (; from; from = from->next) {
 		printk(BIOS_SPEW, "Check %s\n", dev_id_string(&from->id));
 		if (id_eq(devid, &from->id))
 			break;
@@ -182,7 +183,7 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 }
 
 /* WARNING: NOT SMP-safe! */
-const char *dev_path(struct device *dev)
+const char *dev_path(const struct device *dev)
 {
 	static char buffer[DEVICE_PATH_MAX];
 	buffer[0] = '\0';
@@ -223,8 +224,7 @@ const char *dev_path(struct device *dev)
 				dev->path.pci_domain.domain);
 			break;
 		case DEVICE_PATH_PCI_BUS:
-			sprintf(buffer, "PCI_BUS: %04x",
-				dev->path.pci_bus.bus);
+			sprintf(buffer, "PCI_BUS: %04x", dev->path.pci_bus.bus);
 			break;
 		case DEVICE_PATH_APIC_CLUSTER:
 			sprintf(buffer, "APIC_CLUSTER: %01x",
@@ -234,8 +234,7 @@ const char *dev_path(struct device *dev)
 			sprintf(buffer, "CPU: %02x", dev->path.cpu.id);
 			break;
 		case DEVICE_PATH_CPU_BUS:
-			sprintf(buffer, "CPU_BUS: %02x",
-				dev->path.cpu_bus.id);
+			sprintf(buffer, "CPU_BUS: %02x", dev->path.cpu_bus.id);
 			break;
 		case DEVICE_PATH_IOPORT:
 			sprintf(buffer, "IOPORT: %02x",
@@ -251,7 +250,7 @@ const char *dev_path(struct device *dev)
 }
 
 /* WARNING: NOT SMP-safe! */
-const char *dev_id_string(struct device_id *id)
+const char *dev_id_string(const struct device_id *id)
 {
 	static char buffer[DEVICE_ID_MAX];
 	buffer[0] = '\0';
@@ -278,8 +277,7 @@ const char *dev_id_string(struct device_id *id)
 			break;
 		case DEVICE_ID_PCI_DOMAIN:
 			sprintf(buffer, "PCI_DOMAIN: %04x:%04x",
-				id->pci_domain.vendor,
-				id->pci_domain.device);
+				id->pci_domain.vendor, id->pci_domain.device);
 			break;
 		case DEVICE_ID_APIC_CLUSTER:
 			sprintf(buffer, "APIC_CLUSTER: %02x:%02x",
@@ -304,14 +302,14 @@ const char *dev_id_string(struct device_id *id)
 	return buffer;
 }
 
-const char *bus_path(struct bus *bus)
+const char *bus_path(const struct bus *bus)
 {
 	static char buffer[BUS_PATH_MAX];
 	sprintf(buffer, "%s,%d", dev_path(bus->dev), bus->link);
 	return buffer;
 }
 
-int path_eq(struct device_path *path1, struct device_path *path2)
+int path_eq(const struct device_path *path1, const struct device_path *path2)
 {
 	int equal = 0;
 	if (path1->type == path2->type) {
@@ -332,8 +330,7 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			equal = (path1->i2c.device == path2->i2c.device);
 			break;
 		case DEVICE_PATH_APIC:
-			equal =
-			    (path1->apic.apic_id == path2->apic.apic_id);
+			equal = (path1->apic.apic_id == path2->apic.apic_id);
 			break;
 		case DEVICE_PATH_PCI_DOMAIN:
 			equal =
@@ -402,10 +399,8 @@ int id_eq(struct device_id *path1, struct device_id *path2)
 			equal = (path1->cpu.cpuid == path2->cpu.cpuid);
 			break;
 		case DEVICE_ID_CPU_BUS:
-			equal =
-			    (path1->cpu_bus.vendor == path2->cpu_bus.vendor)
-			    && (path1->cpu_bus.device ==
-				path2->cpu_bus.device);
+			equal = (path1->cpu_bus.vendor == path2->cpu_bus.vendor)
+			    && (path1->cpu_bus.device == path2->cpu_bus.device);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device type: %d\n",
@@ -430,7 +425,8 @@ void compact_resources(struct device *dev)
 	for (i = 0; i < dev->resources;) {
 		resource = &dev->resource[i];
 		if (!resource->flags) {
-			memmove(resource, resource + 1, (dev->resources-i)* sizeof(*resource));
+			memmove(resource, resource + 1,
+				(dev->resources - i) * sizeof(*resource));
 			dev->resources -= 1;
 			memset(&dev->resource[dev->resources], 0,
 			       sizeof(*resource));
@@ -452,7 +448,7 @@ struct resource *probe_resource(struct device *dev, unsigned int index)
 	struct resource *resource;
 	int i;
 	/* See if there is a resource with the appropriate index. */
-	resource = 0;
+	resource = NULL;
 	for (i = 0; i < dev->resources; i++) {
 		if (dev->resource[i].index == index) {
 			resource = &dev->resource[i];
@@ -557,7 +553,7 @@ resource_t align_down(resource_t val, unsigned long gran)
  * @param resource The resource whose limit is desired.
  * @returns The end.
  */
-resource_t resource_end(struct resource *resource)
+resource_t resource_end(struct resource * resource)
 {
 	resource_t base, end;
 
@@ -582,7 +578,7 @@ resource_t resource_end(struct resource *resource)
  * @param resource The resource whose maximum is desired.
  * @returns The maximum.
  */
-resource_t resource_max(struct resource *resource)
+resource_t resource_max(struct resource * resource)
 {
 	resource_t max;
 	max = align_down(resource->limit - resource->size + 1, resource->align);
@@ -634,10 +630,10 @@ void report_resource_stored(struct device *dev, struct resource *resource,
 #endif
 		}
 		printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] "
-			"size 0x%08Lx gran 0x%02x %s%s%s\n",
-			dev_path(dev), resource->index, base, end,
-			resource->size, resource->gran, buf,
-			resource_type(resource), comment);
+		       "size 0x%08Lx gran 0x%02x %s%s%s\n",
+		       dev_path(dev), resource->index, base, end,
+		       resource->size, resource->gran, buf,
+		       resource_type(resource), comment);
 	}
 }
 
@@ -661,7 +657,7 @@ void search_bus_resources(struct bus *bus,
 			if (resource->flags & IORESOURCE_SUBTRACTIVE) {
 				struct bus *subbus;
 				subbus = &curdev->link[IOINDEX_SUBTRACTIVE_LINK
-					 (resource->index)];
+						       (resource->index)];
 				search_bus_resources(subbus, type_mask, type,
 						     search, gp);
 				continue;
@@ -675,7 +671,8 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 			     resource_search_t search, void *gp)
 {
 	struct device *curdev;
-	printk(BIOS_SPEW, "%s: mask %lx type %lx \n", __func__, type_mask, type);
+	printk(BIOS_SPEW, "%s: mask %lx type %lx \n", __func__, type_mask,
+	       type);
 	for (curdev = all_devices; curdev; curdev = curdev->next) {
 		int i;
 		printk(BIOS_SPEW,

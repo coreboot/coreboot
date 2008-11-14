@@ -45,9 +45,6 @@ void *stage2(void)
 {
 	void *mbi;
 
-	/* TODO: Add comment. */
-	void show_all_devs(void);
-
 	post_code(POST_STAGE2_BEGIN);
 	dev_init();
 
@@ -56,7 +53,7 @@ void *stage2(void)
 	 */
 	post_code(POST_STAGE2_PHASE1_START);
 	dev_phase1();
-	show_all_devs();
+	show_all_devs(BIOS_DEBUG, "After phase 1.");
 
 	/* Here is where weird stuff like init_timer handling should be
 	 * done. This is for ANYTHING that might have to happen before
@@ -64,35 +61,36 @@ void *stage2(void)
 	 */
 	post_code(POST_STAGE2_PHASE2_START);
 	dev_phase2();
-	show_all_devs();
+	show_all_devs(BIOS_DEBUG, "After phase 2.");
 
 	/* Walk physical devices and add any dynamic devices to the
 	 * device tree.
 	 */
 	post_code(POST_STAGE2_PHASE3_START);
 	dev_root_phase3();
-	show_all_devs();
+	show_all_devs_tree(BIOS_DEBUG, "After phase 3.");
 
 	/* Compute and assign the bus resources. */
 	post_code(POST_STAGE2_PHASE4_START);
 	dev_phase4();
-	show_all_devs();
+	show_all_devs(BIOS_DEBUG, "After phase 4.");
 
 	/* Now actually enable devices on the bus. */
 	post_code(POST_STAGE2_PHASE5_START);
 	dev_root_phase5();
-	show_all_devs();
+	show_all_devs(BIOS_DEBUG, "After phase 5.");
 
 	/* Initialize devices on the bus. */
 	post_code(POST_STAGE2_PHASE6_START);
 	dev_phase6();
-	show_all_devs();
+	show_all_devs(BIOS_DEBUG, "After phase 6.");
 
-	/* TODO: Add comment. */
+	/* Write tables to pass information to the payloads. */
 	post_code(POST_STAGE2_WRITE_TABLES);
 	mbi = write_tables();
-	show_all_devs();
+	show_all_devs(BIOS_DEBUG, "After writing tables.");
 
 	return mbi;
 }
+
 EXPORT_SYMBOL(stage2);

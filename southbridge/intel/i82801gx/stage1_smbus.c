@@ -30,7 +30,7 @@
 #include <io.h>
 #include "i82801gx.h"
 
-static void enable_smbus(void)
+void enable_smbus(void)
 {
 	u32 dev;
 

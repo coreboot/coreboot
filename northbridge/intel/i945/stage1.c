@@ -550,7 +550,7 @@ static void ich7_setup_pci_express(void)
 	pci_conf1_write_config32(PCI_BDF(0, 0x1c, 0), 0xd8, 0x00110000);
 }
 
-static void i945_early_initialization(void)
+void i945_early_initialization(void)
 {
 	/* Print some chipset specific information */
 	i945_detect_chipset();
@@ -562,7 +562,7 @@ static void i945_early_initialization(void)
 	RCBA32(GCS) &= (~0x04);
 }
 
-static void i945_late_initialization(void)
+void i945_late_initialization(void)
 {
 	i945_setup_egress_port();
 

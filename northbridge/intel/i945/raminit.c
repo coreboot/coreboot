@@ -26,8 +26,6 @@
 #include <spd_ddr2.h>
 #include <cpu.h>
 #include <msr.h>
-#include <amd/k8/k8.h>
-#include <amd/k8/sysconf.h>
 #include <device/pci.h>
 #include <pci_ops.h>
 #include <mc146818rtc.h>

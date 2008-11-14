@@ -209,7 +209,8 @@ static void mc_read_resources(struct device * dev)
 	resource->flags =
 	    IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 	    IORESOURCE_ASSIGNED;
-	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08lx-0x%08llx.\n",
+
+	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
 		     (u64) resource->base, (u64) (resource->base + resource->size));
 }
 
@@ -250,10 +251,12 @@ struct device_operations i945_mc_ops = {
 	.ops_pci		 = &intel_pci_ops,
 };
 
-
+#warning need to write initialize_cpus
 static void cpu_bus_init(struct device * dev)
 {
+	/* what to do here? 
 	initialize_cpus(&dev->link[0]);
+	*/
 }
 
 static void cpu_bus_noop(struct device * dev)

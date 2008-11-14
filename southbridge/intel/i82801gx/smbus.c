@@ -45,7 +45,7 @@ int smbus_read_byte(struct bus *bus, struct device * dev, u8 address)
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= smbus_read_byte,
 };
-void i82801gx_enable(struct device * dev)
+void i82801gx_enable(struct device * dev);
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
 struct device_operations i82801gx_smbus = {

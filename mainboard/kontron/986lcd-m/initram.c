@@ -43,25 +43,6 @@
 #define DIMM0 0x50
 #define DIMM1 0x51
 
-/* this code is very mainboard dependent, sadly. */
-/**
- * no op at present
- */
-static void memreset_setup(void)
-{
-}
-
-/**
- * this is a no op on this platform.
- */
-void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
-
-void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
-
 /**
  * read a byte from spd.
  * @param device device to read from

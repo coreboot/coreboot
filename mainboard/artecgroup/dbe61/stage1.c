@@ -29,22 +29,20 @@
 #include <amd_geodelx.h>
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <northbridge/amd/geodelx/raminit.h>
+#include <arch/x86/msr.h>
 
-static const struct wmsr {
-	u32 reg;
-	struct msr  msr;
-} dbe61_msr[] = {
-	{.reg = 0x10000020, {.lo = 0x00fff80, .hi = 0x20000000}},
-	{.reg = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
-	{.reg = 0x40000020, {.lo = 0x00fff80, .hi = 0x20000000}},
-	{.reg = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
+static const struct msrinit dbe61_msr[] = {
+	{.msrnum = 0x10000020, {.lo = 0x00fff80, .hi = 0x20000000}},
+	{.msrnum = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
+	{.msrnum = 0x40000020, {.lo = 0x00fff80, .hi = 0x20000000}},
+	{.msrnum = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
 };
 
 static void dbe61_msr_init(void)
 {
 	int i;
 	for (i = 0; i < ARRAY_SIZE(dbe61_msr); i++)
-		wrmsr(dbe61_msr[i].reg, dbe61_msr[i].msr);
+		wrmsr(dbe61_msr[i].msrnum, dbe61_msr[i].msr);
 }
 
 void hardware_stage1(void)

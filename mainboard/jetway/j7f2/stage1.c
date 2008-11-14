@@ -28,12 +28,6 @@
 #include <superio/fintek/f71805f/f71805f.h>
 #include <northbridge/via/cn700/cn700.h>
 
-/* Placeholders, build fails without them */
-void stop_ap(void)
-{
-	//int noop;
-}
-
 void hardware_stage1(void)
 {
 	u32 dev;

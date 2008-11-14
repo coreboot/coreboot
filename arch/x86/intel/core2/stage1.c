@@ -28,7 +28,6 @@
 #include <globalvars.h>
 #include <string.h>
 #include <mtrr.h>
-#include <via_c7.h>
 
 /**
  * Disable Cache As RAM (CAR) after memory is setup.

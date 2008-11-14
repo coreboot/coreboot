@@ -33,7 +33,6 @@
 #include <string.h>
 #include <msr.h>
 #include <io.h>
-#include <amd/k8/k8.h>
 #include <mc146818rtc.h>
 #include <spd.h>
 
@@ -73,6 +72,92 @@ u8 spd_read_byte(u16 device, u8 address)
 	return do_smbus_read_byte(device, address);
 }
 
+static void early_ich7_init(void)
+{
+	u8 reg8;
+	u32 reg32;
+
+	// program secondary mlt XXX byte?
+	pci_conf1_write_config8(PCI_BDF(0, 0x1e, 0), 0x1b, 0x20);
+
+	// reset rtc power status
+	reg8 = pci_conf1_read_config8(PCI_BDF(0, 0x1f, 0), 0xa4);
+	reg8 &= ~(1 << 2);
+	pci_conf1_write_config8(PCI_BDF(0, 0x1f, 0), 0xa4, reg8);
+
+	// usb transient disconnect
+	reg8 = pci_conf1_read_config8(PCI_BDF(0, 0x1f, 0), 0xad);
+	reg8 |= (3 << 0);
+	pci_conf1_write_config8(PCI_BDF(0, 0x1f, 0), 0xad, reg8);
+
+	reg32 = pci_conf1_read_config32(PCI_BDF(0, 0x1d, 7), 0xfc);
+	reg32 |= (1 << 29) | (1 << 17);
+	pci_conf1_write_config32(PCI_BDF(0, 0x1d, 7), 0xfc, reg32);
+
+	reg32 = pci_conf1_read_config32(PCI_BDF(0, 0x1d, 7), 0xdc);
+	reg32 |= (1 << 31) | (1 << 27);
+	pci_conf1_write_config32(PCI_BDF(0, 0x1d, 7), 0xdc, reg32);
+
+	RCBA32(0x0088) = 0x0011d000;
+	RCBA16(0x01fc) = 0x060f;
+	RCBA32(0x01f4) = 0x86000040;
+	RCBA32(0x0214) = 0x10030549;
+	RCBA32(0x0218) = 0x00020504;
+	RCBA8(0x0220) = 0xc5;
+	reg32 = RCBA32(0x3410);
+	reg32 |= (1 << 6);
+	RCBA32(0x3410) = reg32;
+	reg32 = RCBA32(0x3430);
+	reg32 &= ~(3 << 0);
+	reg32 |= (1 << 0);
+	RCBA32(0x3430) = reg32;
+	RCBA32(0x3418) |= (1 << 0);
+	RCBA16(0x0200) = 0x2008;
+	RCBA8(0x2027) = 0x0d;
+	RCBA16(0x3e08) |= (1 << 7);
+	RCBA16(0x3e48) |= (1 << 7);
+	RCBA32(0x3e0e) |= (1 << 7);
+	RCBA32(0x3e4e) |= (1 << 7);
+
+	// next step only on ich7m b0 and later:
+	reg32 = RCBA32(0x2034);
+	reg32 &= ~(0x0f << 16);
+	reg32 |= (5 << 16);
+	RCBA32(0x2034) = reg32;
+}
+static void rcba_config(void)
+{
+	/* Set up virtual channel 0 */
+	//RCBA32(0x0014) = 0x80000001;
+	//RCBA32(0x001c) = 0x03128010;
+
+	/* Device 1f interrupt pin register */
+	RCBA32(0x3100) = 0x00042210;
+	/* Device 1d interrupt pin register */
+	RCBA32(0x310c) = 0x00214321;
+
+	/* dev irq route register */
+	RCBA16(0x3140) = 0x0132;
+	RCBA16(0x3142) = 0x3241;
+	RCBA16(0x3144) = 0x0237;
+	RCBA16(0x3146) = 0x3210;
+	RCBA16(0x3148) = 0x3210;
+
+	/* Enable IOAPIC */
+	RCBA8(0x31ff) = 0x03;
+
+	/* Enable upper 128bytes of CMOS */
+	RCBA32(0x3400) = (1 << 2);
+
+	/* Disable unused devices */
+	RCBA32(0x3418) = 0x000e0063;
+
+	/* Enable PCIe Root Port Clock Gate */
+	// RCBA32(0x341c) = 0x00000001;
+}
+
+
+
 /**
   * main for initram for the AMD DBM690T
  * @param init_detected Used to indicate that we have been started via init
@@ -89,6 +174,11 @@ u8 spd_read_byte(u16 device, u8 address)
  */
 int main(void)
 {
+	void i945_early_initialization(void);
+	void enable_smbus(void);
+	int fixup_i945_errata(void);
+	void i945_late_initialization(void);
+
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG, "soft reset detected.\n");
 		boot_mode = 1;
@@ -102,7 +192,7 @@ int main(void)
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();
 	
-#if DEFAULT_CONSOLE_LOGLEVEL > 8
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 	dump_spd_registers();
 #endif
 

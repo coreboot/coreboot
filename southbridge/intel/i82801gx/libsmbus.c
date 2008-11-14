@@ -32,8 +32,8 @@
 #include "i82801gx.h"
 
 /* this is very chipset-specific. */
-#define SMBUS_TIMEOUT (100*1000*10)
 /* These are common functions used in stage 1 and stage2 */
+#warning why do we have an smbus_delay here
 void smbus_delay(void)
 {
 	inb(0x80);

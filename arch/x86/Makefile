@@ -125,7 +125,7 @@ ifeq ($(CONFIG_CPU_AMD_K8),y)
 else
 ifeq ($(CONFIG_CPU_INTEL_CORE2),y)
 	STAGE0_CAR_OBJ = intel/core2/stage0.o
-	#STAGE0_ARCH_X86_SRC += intel/core2/stage1.c
+	STAGE0_ARCH_X86_SRC += intel/core2/stage1.c
 else
 ifeq ($(CONFIG_CPU_VIA_C7),y)
 	STAGE0_CAR_OBJ = via/stage0.o

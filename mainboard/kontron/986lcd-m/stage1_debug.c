@@ -25,7 +25,6 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
-#include <statictree.h>
 #include <config.h>
 
 #define SMBUS_MEM_DEVICE_START 0x50

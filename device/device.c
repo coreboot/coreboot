@@ -254,7 +254,12 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	last_dev_p = &dev->next;
 
 	/* Give the device a name. */
-	sprintf(dev->dtsname, "dynamic %s", dev_path(dev));
+	if (dev->id.type == DEVICE_ID_PNP && 
+	    parent->dev->id.type == DEVICE_ID_PNP)
+		sprintf(dev->dtsname, "%s_pnp_child_%d", parent->dev->dtsname,
+			dev->path.pnp.device);
+	else
+		sprintf(dev->dtsname, "dynamic %s", dev_path(dev));
 
 	/* Run the device specific constructor as last part of the chain
 	 * so it gets the chance to overwrite the "inherited" values above
@@ -1093,7 +1098,8 @@ void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
 	printk(debug_level, "%s%s(%s): enabled %d have_resources %d devfn %x\n",
 	       depth_str, dev->dtsname, dev_path(dev), dev->enabled,
 	       dev->have_resources,
-	       dev->path.type == DEVICE_PATH_PCI ? dev->path.pci.devfn : 0xff);
+	       dev->path.type == DEVICE_PATH_PCI ? dev->path.pci.devfn :
+		dev->path.type == DEVICE_PATH_PNP ? dev->path.pnp.device : 0xff);
 	for (i = 0; i < dev->links; i++) {
 		for (sibling = dev->link[i].children; sibling;
 		     sibling = sibling->sibling)

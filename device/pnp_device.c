@@ -156,7 +156,6 @@ static void pnp_get_ioresource(struct device *dev, unsigned int index,
 	resource = new_resource(dev, index);
 
 	/* Initialize the resource. */
-	resource->limit = 0xffff;
 	resource->flags |= IORESOURCE_IO;
 
 	/* Get the resource size. */
@@ -189,6 +188,8 @@ static void pnp_get_ioresource(struct device *dev, unsigned int index,
 	resource->align = gran;
 	resource->limit = info->mask | (step - 1);
 	resource->size = 1 << gran;
+	resource->base = info->val;
+	resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
 }
 
 static void get_resources(struct device *dev, struct pnp_info *info)
@@ -211,21 +212,29 @@ static void get_resources(struct device *dev, struct pnp_info *info)
 		resource = new_resource(dev, PNP_IDX_IRQ0);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
+		resource->base = info->irq0.val;
+		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
 	}
 	if (info->flags & PNP_IRQ1) {
 		resource = new_resource(dev, PNP_IDX_IRQ1);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
+		resource->base = info->irq1.val;
+		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
 	}
 	if (info->flags & PNP_DRQ0) {
 		resource = new_resource(dev, PNP_IDX_DRQ0);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
+		resource->base = info->drq0.val;
+		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
 	}
 	if (info->flags & PNP_DRQ1) {
 		resource = new_resource(dev, PNP_IDX_DRQ1);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
+		resource->base = info->drq0.val;
+		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
 	}
 }
 
@@ -243,11 +252,22 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 	/* Setup the ops and resources on the newly allocated devices. */
 	for (i = 0; i < functions; i++) {
 		path.pnp.device = info[i].function;
-		dev = alloc_find_dev(base_dev->bus, &path, &id);
 
-		/* Don't initialize a device multiple times. */
-		if (dev->ops)
+		dev = find_dev_path(&base_dev->link[0], &path);
+
+		if (dev) {
+			printk(BIOS_DEBUG,"%s: %s is already at %s.\n",
+			       __func__, dev->dtsname, dev_path(dev));
 			continue;
+		}
+		
+		dev = alloc_dev(&base_dev->link[0], &path, &id);
+
+		if (!dev)
+			printk(BIOS_DEBUG,"%s: Couldn't allocate child %d.\n",
+			       __func__, i);
+
+		dev->enabled = info[i].enable;
 
 		if (info[i].ops == 0) {
 			dev->ops = ops;

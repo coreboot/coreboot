@@ -267,8 +267,7 @@ static void hda_init(struct device *dev)
 	u32 codec_mask;
 
 	/* SM Setting */
-	device_t hda_dev;
-	hda_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
+
 	/* Set routing pin */
 	pci_write_config32(dev, 0xf8, 0x0);
 	pci_write_config8(dev, 0xfc, 0xAA);

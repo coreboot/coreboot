@@ -27,6 +27,7 @@
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include <config.h>
+#include <mainboard.h>
 
 static void pci_init(struct device *dev)
 {

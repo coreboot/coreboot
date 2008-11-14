@@ -28,6 +28,8 @@
 #include <io.h>
 #include <statictree.h>
 #include <config.h>
+#include <mainboard.h>
+#include <mc146818rtc.h>
 #include "i82801gx.h"
 
 #include "../../../northbridge/intel/i945/ich7.h"
@@ -159,10 +161,10 @@ static void i82801gx_power_options(struct device * dev)
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
 	if (nmi_option) {
-		printk_info ("NMI sources enabled.\n");
+		printk(BIOS_INFO, "NMI sources enabled.\n");
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
-		printk_info ("NMI sources disabled.\n");
+		printk(BIOS_INFO, "NMI sources disabled.\n");
 		reg8 |= ( 1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
 	}
 	outb(reg8, 0x70);
@@ -181,7 +183,6 @@ static void i82801gx_power_options(struct device * dev)
 void i82801gx_rtc_init(struct device *dev)
 {
 	u8 reg8;
-	u32 reg32;
 	int rtc_failed;
 
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
@@ -218,8 +219,9 @@ static void enable_hpet(struct device *dev)
 static void i82801gx_lock_smm(struct device *dev)
 {
 	void smm_lock(void);
+#if TEST_SMM_FLASH_LOCKDOWN
 	u8 reg8;
-
+#endif
 #if ENABLE_ACPI_MODE_IN_COREBOOT
 	printk(BIOS_DEBUG, "Enabling ACPI via APMC:\n");
 	outb(0xe1, 0xb2); // Enable ACPI mode

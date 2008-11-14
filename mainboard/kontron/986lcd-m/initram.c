@@ -212,4 +212,5 @@ int main(void)
 	}
 #endif
 	MCHBAR16(SSKPD) = 0xCAFE;
+	return 0;
 }

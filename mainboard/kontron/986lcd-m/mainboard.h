@@ -20,3 +20,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+#define CHANNEL_XOR_RANDOMIZATION 0
+#define ENABLE_ACPI_MODE_IN_COREBOOT 1
+
+/* never defined in v2 */
+#define MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID 0
+#define MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID 0
+
+/* nowhere else to go yet */
+#define TEST_SMM_FLASH_LOCKDOWN 0
+#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL 1

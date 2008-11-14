@@ -109,8 +109,7 @@ config K8_ALLOCATE_MMIO_RANGE
 
 config LOGICAL_CPUS
 	hex
-	depends CPU_AMD_K8
-	depends CPU_INTEL_CORE2
+	depends CPU_AMD_K8 || CPU_INTEL_CORE2
 	default 1
 	help
 	  How many logical CPUs there are. FIXME.

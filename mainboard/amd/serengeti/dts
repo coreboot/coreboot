@@ -51,6 +51,8 @@
 			};
 			pci@1,1 {
 				/config/("southbridge/amd/amd8111/ide.dts");
+				ide0_enable = "1";
+				ide1_enable = "1";
 			};
 			pci@1,2 {
 				/config/("southbridge/amd/amd8111/smbus.dts");

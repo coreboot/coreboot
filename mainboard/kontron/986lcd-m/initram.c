@@ -35,6 +35,8 @@
 #include <io.h>
 #include <mc146818rtc.h>
 #include <spd.h>
+#include "../../../northbridge/intel/i945/ich7.h"
+#include "../../../northbridge/intel/i945/i945.h"
 
 #define RC0 ((1<<0)<<8)
 
@@ -174,10 +176,12 @@ static void rcba_config(void)
  */
 int main(void)
 {
+	int boot_mode;
 	void i945_early_initialization(void);
 	void enable_smbus(void);
 	int fixup_i945_errata(void);
 	void i945_late_initialization(void);
+	void sdram_initialize(int boot_mode);
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG, "soft reset detected.\n");
@@ -212,7 +216,7 @@ int main(void)
 	/* Initialize the internal PCIe links before we go into stage2 */
 	i945_late_initialization();
 
-#if DEFAULT_CONSOLE_LOGLEVEL > 8
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 #if defined(DEBUG_RAM_SETUP)
 	sdram_dump_mchbar_registers();
 #endif

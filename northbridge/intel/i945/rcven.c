@@ -25,14 +25,14 @@
 #include <spd_ddr2.h>
 #include <cpu.h>
 #include <msr.h>
-#include <amd/k8/k8.h>
-#include <amd/k8/sysconf.h>
 #include <device/pci.h>
 #include <pci_ops.h>
 #include <mc146818rtc.h>
 #include <lib.h>
 #include <spd.h>
+#include <io.h>
 #include "raminit.h"
+#include "../../../northbridge/intel/i945/i945.h"
 
 /**
  * sample the strobes signal
@@ -57,8 +57,8 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 	}
 
 	for (i = 0; i < 28; i++) {
-		read32(addr);
-		read32(addr + 0x80);	
+		readl((void *)addr);
+		readl((void *)(addr + 0x80));	
 	}
 
 	reg32 = MCHBAR32(RCVENMT);

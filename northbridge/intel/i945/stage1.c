@@ -33,11 +33,6 @@
 #include <lib.h>
 #include "i945.h"
 
-static int i945_silicon_revision(void)
-{
-	return pci_conf1_read_config8(PCI_BDF(0, 0x00, 0), 8);
-}
-
 static void i945_detect_chipset(void)
 {
 	u8 reg8;

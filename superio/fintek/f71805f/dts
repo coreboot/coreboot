@@ -22,42 +22,35 @@
 	device_operations = "f71805f_ops";
 
 	/* Floppy */
-	floppydev = "0";
 	floppyenable = "0";
 	floppyio = "0x3f0";
 	floppyirq = "6";
 	floppydrq = "2";
 
 	/* COM1 */
-	com1dev = "1";
 	com1enable = "0";
 	com1io = "0x3f8";
 	com1irq = "4";
 
 	/* COM2 */
-	com2dev = "2";
 	com2enable = "0";
 	com2io = "0x2f8";
 	com2irq = "3";
 
 	/* Parallel port */
-	ppdev = "3";
 	ppenable = "0";
 	ppio = "0x378";
 	ppirq = "7";
 	
 	/* Hardware Monitor */
-	hwmdev = "4";
 	hwmenable = "0";
 	hwmio = "0x295";
 	hwmirq = "0";	/* TODO? */
 
 	/* GPIO */
-	gpiodev = "6";
 	gpioenable = "0";
 	gpioirq = "0";	/* TODO? */
 
 	/* PME */
-	pmedev = "10";
 	pmeenable = "0";
 };

@@ -144,32 +144,99 @@ static void it8716f_init(struct device *dev)
 }
 
 static void it8716f_setup_scan_bus(struct device *dev);
+
 struct device_operations it8716f_ops = {
-	.phase2_setup_scan_bus	 = it8716f_setup_scan_bus,
+	.phase3_chip_setup_dev	 = it8716f_setup_scan_bus,
+	.phase3_enable		 = it8716f_pnp_enable_disable,
 	.phase4_read_resources	 = pnp_read_resources,
 	.phase4_set_resources	 = it8716f_pnp_set_resources,
-	.phase4_enable_disable	 = it8716f_pnp_enable_disable,
 	.phase5_enable_resources = it8716f_pnp_enable_resources,
 	.phase6_init		 = it8716f_init,
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{&it8716f_ops, IT8716F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
-	{&it8716f_ops, IT8716F_SP1, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
-	{&it8716f_ops, IT8716F_SP2, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
-	{&it8716f_ops, IT8716F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
-	{&it8716f_ops, IT8716F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0},
+				/* Enable,  All resources need by dev,  io_info_structs */
+	{&it8716f_ops, IT8716F_FDC, 0, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
+	{&it8716f_ops, IT8716F_SP1, 0, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
+	{&it8716f_ops, IT8716F_SP2, 0, PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
+	{&it8716f_ops, IT8716F_PP, 0, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0},},
+	{&it8716f_ops, IT8716F_EC, 0, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0},
 	 {0x7f8, 0x4},},
-	{&it8716f_ops, IT8716F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7ff, 0},
+	{&it8716f_ops, IT8716F_KBCK, 0, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7ff, 0},
 	 {0x7ff, 0x4},},
-	{&it8716f_ops, IT8716F_KBCM, PNP_IRQ0,},
-	{&it8716f_ops, IT8716F_GPIO, PNP_IO1 | PNP_IO2, {0, 0}, {0x7f8, 0}, {0x7f8, 0},},
-	{&it8716f_ops, IT8716F_MIDI, PNP_IO0 | PNP_IRQ0, {0x7fe, 0x4},},
-	{&it8716f_ops, IT8716F_GAME, PNP_IO0, {0x7ff, 0},},
-	{&it8716f_ops, IT8716F_IR,},
+	{&it8716f_ops, IT8716F_KBCM, 0, PNP_IRQ0,},
+	{&it8716f_ops, IT8716F_GPIO, 0, PNP_IO1 | PNP_IO2, {0, 0}, {0x7f8, 0}, {0x7f8, 0},},
+	{&it8716f_ops, IT8716F_MIDI, 0, PNP_IO0 | PNP_IRQ0, {0x7fe, 0x4},},
+	{&it8716f_ops, IT8716F_GAME, 0, PNP_IO0, {0x7ff, 0},},
+	{&it8716f_ops, IT8716F_IR, 0,},
 };
 
 static void it8716f_setup_scan_bus(struct device *dev)
 {
-	pnp_enable_devices(dev, &it8716f_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	const struct superio_ite_it8716f_dts_config * const conf = dev->device_configuration;
+
+	/* Floppy */
+	pnp_dev_info[IT8716F_FDC].enable = conf->floppyenable;
+	pnp_dev_info[IT8716F_FDC].io0.val = conf->floppyio;
+	pnp_dev_info[IT8716F_FDC].irq0.val = conf->floppyirq;
+	pnp_dev_info[IT8716F_FDC].drq0.val = conf->floppydrq;
+
+	/* COM1 */
+	pnp_dev_info[IT8716F_SP1].enable = conf->com1enable;
+	pnp_dev_info[IT8716F_SP1].io0.val = conf->com1io;
+	pnp_dev_info[IT8716F_SP1].irq0.val = conf->com1irq;
+
+	/* COM2 */
+	pnp_dev_info[IT8716F_SP2].enable = conf->com2enable;
+	pnp_dev_info[IT8716F_SP2].io0.val = conf->com2io;
+	pnp_dev_info[IT8716F_SP2].irq0.val = conf->com2irq;
+
+	/* Parallel port */
+	pnp_dev_info[IT8716F_PP].enable = conf->ppenable;
+	pnp_dev_info[IT8716F_PP].io0.val = conf->ppio;
+	pnp_dev_info[IT8716F_PP].irq0.val = conf->ppirq;
+
+	/* Environment controller */
+	pnp_dev_info[IT8716F_EC].enable = conf->ecenable;
+	pnp_dev_info[IT8716F_EC].io0.val = conf->ecio;
+	pnp_dev_info[IT8716F_EC].irq0.val = conf->ecirq;
+
+	/* Keyboard */
+	pnp_dev_info[IT8716F_KBCK].enable = conf->kbenable;
+	pnp_dev_info[IT8716F_KBCK].io0.val = conf->kbio;
+	pnp_dev_info[IT8716F_KBCK].io1.val = conf->kbio2;
+	pnp_dev_info[IT8716F_KBCK].irq0.val = conf->kbirq;
+
+	/* PS/2 mouse */
+	pnp_dev_info[IT8716F_KBCM].enable = conf->mouseenable;
+	pnp_dev_info[IT8716F_KBCM].irq0.val = conf->mouseirq;
+
+	/* GPIO */
+	pnp_dev_info[IT8716F_GPIO].enable = conf->gpioenable;
+
+	/* MIDI port */
+	pnp_dev_info[IT8716F_MIDI].enable = conf->midienable;
+	pnp_dev_info[IT8716F_MIDI].io0.val = conf->midiio;
+	pnp_dev_info[IT8716F_MIDI].irq0.val = conf->midiirq;
+
+	/* Game port */
+	pnp_dev_info[IT8716F_GAME].enable = conf->gameenable;
+	pnp_dev_info[IT8716F_GAME].io0.val = conf->gameio;
+
+	/* Consumer IR */
+	pnp_dev_info[IT8716F_IR].enable = conf->cirenable;
+	pnp_dev_info[IT8716F_IR].io0.val = conf->cirio;
+	pnp_dev_info[IT8716F_IR].irq0.val = conf->cirirq;
+
+	/* Initialize SuperIO for PNP children. */
+	if (!dev->links) {
+		dev->links = 1;
+		dev->link[0].dev = dev;
+		dev->link[0].children = NULL;
+		dev->link[0].link = 0;
+	}
+
+	/* Call init with updated tables to create children. */
+	pnp_enable_devices(dev, &it8716f_ops,
+			   ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

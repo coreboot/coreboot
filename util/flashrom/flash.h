@@ -139,13 +139,45 @@ extern struct flashchip flashchips[];
 #define AT_25DF321		0x4700	/* also 26DF321 */
 #define AT_25DF321A		0x4701
 #define AT_25DF641		0x4800
+#define AT_25F512A		0x65 /* Needs special RDID. AT25F512A_RDID 15 1d */
+#define AT_25F512B		0x6500
+#define AT_25FS010		0x6601
+#define AT_25FS040		0x6604
 #define AT_26DF041		0x4400
 #define AT_26DF081		0x4500	/* guessed, no datasheet available */
 #define AT_26DF081A		0x4501
 #define AT_26DF161		0x4600
 #define AT_26DF161A		0x4601
+#define AT_26DF321		0x4700	/* also 25DF321 */
+#define AT_26F004		0x0400
 #define AT_29C040A		0xA4
 #define AT_29C020		0xDA
+#define AT_45BR3214B		/* No ID available */
+#define AT_45CS1282		0x2920
+#define AT_45D011		/* No ID available */
+#define AT_45D021A		/* No ID available */
+#define AT_45D041A		/* No ID available */
+#define AT_45D081A		/* No ID available */
+#define AT_45D161		/* No ID available */
+#define AT_45DB011		/* No ID available */
+#define AT_45DB011B		/* No ID available */
+#define AT_45DB011D		0x2200
+#define AT_45DB021A		/* No ID available */
+#define AT_45DB021B		/* No ID available */
+#define AT_45DB021D		0x2300
+#define AT_45DB041A		/* No ID available */
+#define AT_45DB041D		0x2400
+#define AT_45DB081A		/* No ID available */
+#define AT_45DB081D		0x2500
+#define AT_45DB161		/* No ID available */
+#define AT_45DB161B		/* No ID available */
+#define AT_45DB161D		0x2600
+#define AT_45DB321		/* No ID available */
+#define AT_45DB321B		/* No ID available */
+#define AT_45DB321C		0x2700
+#define AT_45DB321D		0x2701 /* Buggy data sheet */
+#define AT_45DB642		/* No ID available */
+#define AT_45DB642D		0x2800
 #define AT_49F002N		0x07	/* for AT49F002(N)  */
 #define AT_49F002NT		0x08	/* for AT49F002(N)T */
 

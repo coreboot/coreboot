@@ -54,7 +54,7 @@
 #define JEDEC_CE_C7_OUTSIZE	0x01
 #define JEDEC_CE_C7_INSIZE	0x00
 
-/* Block Erase 0x52 is supported by SST chips. */
+/* Block Erase 0x52 is supported by SST and old Atmel chips. */
 #define JEDEC_BE_52		0x52
 #define JEDEC_BE_52_OUTSIZE	0x04
 #define JEDEC_BE_52_INSIZE	0x00

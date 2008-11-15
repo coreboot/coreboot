@@ -38,11 +38,36 @@ struct flashchip flashchips[] = {
 	{"AMD",		"Am29F040B",		AMD_ID,		AM_29F040B,		512,	64 * 1024,	TEST_OK_PREW,	probe_29f040b,		erase_29f040b,			write_29f040b},
 	{"AMD",		"Am29LV040B",		AMD_ID,		AM_29LV040B,		512,	64 * 1024,	TEST_UNTESTED,	probe_29f040b,		erase_29f040b,			write_29f040b},
 	{"ASD",		"AE49F2008",		ASD_ID,		ASD_AE49F2008,		256,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
+	{"Atmel",	"AT25DF021",		ATMEL_ID,	AT_25DF021,		256,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25DF041A",		ATMEL_ID,	AT_25DF041A,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25DF081",		ATMEL_ID,	AT_25DF081,		1024,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25DF161",		ATMEL_ID,	AT_25DF161,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25DF321",		ATMEL_ID,	AT_25DF321,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"Atmel",	"AT25DF321A",		ATMEL_ID,	AT_25DF321A,		4096,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25DF641",		ATMEL_ID,	AT_25DF641,		8192,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25F512B",		ATMEL_ID,	AT_25F512B,		64,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25FS010",		ATMEL_ID,	AT_25FS010,		128,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT25FS040",		ATMEL_ID,	AT_25FS040,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT26DF041",		ATMEL_ID,	AT_26DF041,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL /* Incompatible Page write */,	NULL},
+	{"Atmel",	"AT26DF081A",		ATMEL_ID,	AT_26DF081A,		1024,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT26DF161",		ATMEL_ID,	AT_26DF161,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	{"Atmel",	"AT26DF161A",		ATMEL_ID,	AT_26DF161A,		2048,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},
+	/*The AT26DF321 has the same ID as the AT25DF321. */
+	/*{"Atmel",	"AT26DF321",		ATMEL_ID,	AT_26DF321,		4096,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL,	NULL},*/
+	{"Atmel",	"AT26F004",		ATMEL_ID,	AT_26F004,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,	NULL /* Incompatible Page write */,	NULL},
 	{"Atmel",	"AT29C020",		ATMEL_ID,	AT_29C020,		256,	256,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"Atmel",	"AT29C040A",		ATMEL_ID,	AT_29C040A,		512,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_jedec},
+	{"Atmel",	"AT45CS1282",		ATMEL_ID,	AT_45CS1282,		16896/*!*/,1056/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL /* Incompatible Page write */,	NULL /* Incompatible read */}, /* No power of two sizes */
+	{"Atmel",	"AT45DB011D",		ATMEL_ID,	AT_45DB011D,		128/*!*/,256/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL}, /* Size can only be determined from status register */
+	{"Atmel",	"AT45DB021D",		ATMEL_ID,	AT_45DB021D,		256/*!*/,256/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL}, /* Size can only be determined from status register */
+	{"Atmel",	"AT45DB041D",		ATMEL_ID,	AT_45DB041D,		512/*!*/,256/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL}, /* Size can only be determined from status register */
+	{"Atmel",	"AT45DB081D",		ATMEL_ID,	AT_45DB081D,		1024/*!*/,256/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL}, /* Size can only be determined from status register */
+	{"Atmel",	"AT45DB161D",		ATMEL_ID,	AT_45DB161D,		2048/*!*/,512/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL}, /* Size can only be determined from status register */
+	{"Atmel",	"AT45DB321C",		ATMEL_ID,	AT_45DB321C,		4224/*!*/,528/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL /* Incompatible read */}, /* No power of two sizes */
+	{"Atmel",	"AT45DB321D",		ATMEL_ID,	AT_45DB321D,		4096/*!*/,512/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL}, /* Size can only be determined from status register */
+	{"Atmel",	"AT45DB642D",		ATMEL_ID,	AT_45DB642D,		8192/*!*/,1024/*!*/,	TEST_BAD_READ,	probe_spi_rdid,		NULL,	NULL,	NULL}, /* Size can only be determined from status register */
 	{"Atmel",	"AT49F002(N)",		ATMEL_ID,	AT_49F002N,		256,	256,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_49f002},
 	{"Atmel",	"AT49F002(N)T",		ATMEL_ID,	AT_49F002NT,		256,	256,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_49f002},
-	{"Atmel",	"AT25DF321",		ATMEL_ID,	AT_25DF321,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"AMIC",	"A25L40P",		AMIC_ID,	AMIC_A25L40P,		512,	256,		TEST_OK_PREW,	probe_spi_rdid4,	spi_chip_erase_c7,	spi_chip_write, spi_chip_read},
 	{"AMIC",	"A29002B",		AMIC_ID_NOPREFIX, AMIC_A29002B,		256,	64 * 1024,	TEST_UNTESTED,	probe_29f002,		erase_29f002,			write_29f002},
 	{"AMIC",	"A29002T",		AMIC_ID_NOPREFIX, AMIC_A29002T,		256,	64 * 1024,	TEST_OK_PREW,	probe_29f002,		erase_29f002,			write_29f002},
@@ -157,6 +182,7 @@ struct flashchip flashchips[] = {
 	{"Winbond",	"W39V080FA",		WINBOND_ID,	W_39V080FA,		1024,	64*1024,	TEST_OK_PREW,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
 	{"Winbond",	"W39V080FA (dual mode)",WINBOND_ID,	W_39V080FA_DM,		512,	64*1024,	TEST_UNTESTED,	probe_winbond_fwhub,	erase_winbond_fwhub,		write_winbond_fwhub},
 
+	{"Atmel",	"unknown Atmel SPI chip",ATMEL_ID,	GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,				NULL},
 	{"EON",		"unknown EON SPI chip",	EON_ID_NOPREFIX,GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,				NULL},
 	{"Macronix",	"unknown Macronix SPI chip",	MX_ID,	GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,				NULL},
 	{"PMC",		"unknown PMC SPI chip",	PMC_ID,		GENERIC_DEVICE_ID,	0,	256,		TEST_UNTESTED,	probe_spi_rdid,		NULL,				NULL},

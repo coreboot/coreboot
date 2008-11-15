@@ -27,7 +27,7 @@ void vt1211_enable_serial(u8 dev, u8 serial, u16 iobase)
 	rawpnp_enter_ext_func_mode(dev);
 	rawpnp_set_logical_device(dev, serial);
 	rawpnp_set_enable(dev, 0);
-	rawpnp_set_iobase(dev, 2, (iobase>>2) & 0xff);
+	rawpnp_set_iobase(dev, 2, (iobase >> 2) & 0xff);
 	rawpnp_set_enable(dev, 1);
 	rawpnp_exit_ext_func_mode(dev);
 }

@@ -29,11 +29,6 @@
 #include <superio/fintek/f71805f/f71805f.h>
 #include <northbridge/via/cn700/cn700.h>
 
-/* Someday, we're all going multicore. */
-void stop_ap(void)
-{
-}
-
 void hardware_stage1(void)
 {
 	void early_mtrr_init(void);

@@ -20,18 +20,20 @@
 
 {
 	device_operations = "w83627hf_ops";
+
 	/* To override any of these, put the over-ride in mainboard dts. */
 
 	/* Floppy */
 	floppyenable = "0";
 	floppyio = "0x3f0";
-	floppyirq = "0x60";
-	floppydrq = "0x02";
+	floppyirq = "6";
+	floppydrq = "2";
 
 	/* Parallel port */
 	ppenable = "0";
 	ppio = "0x378";
 	ppirq = "7";
+	ppdrq = "4";
 
 	/* COM1 */
 	com1enable = "0";
@@ -43,23 +45,23 @@
 	com2io = "0x2f8";
 	com2irq = "3";
 
-	/* Keyboard */
+	/* PS/2 keyboard + PS/2 mouse */
 	kbenable = "0";
 	kbio = "0x60";
-	kbio2 = "0x62";
+	kbio2 = "0x64";
 	kbirq = "1";
 	kbirq2 = "12";
 
 	/* Consumer IR */
 	cirenable = "0";
 
-	/* Game port */
+	/* Game port, MIDI port, GPIO1 */
 	gameenable = "0";
-	gameio = "0x220";
-	gameio2 = "0x400";
+	gameio = "0x201";
+	gameio2 = "0x330";
 	gameirq = "9";
 
-	/* GPIO2 */
+	/* GPIO2, watchdog timer */
 	gpio2enable = "0";
 
 	/* GPIO3 */

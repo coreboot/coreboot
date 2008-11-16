@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <globalvars.h>
+#include <build.h>
 
 int vtxprintf(void (*)(unsigned char, void *arg), 
 		void *arg, const char *, va_list);

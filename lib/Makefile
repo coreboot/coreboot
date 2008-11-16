@@ -44,6 +44,11 @@ else
 nrv2b:
 endif
 
+$(obj)/lib/console.o: $(src)/lib/console.c $(obj)/build.h
+	$(Q)mkdir -p $(dir $@)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
+
 $(obj)/lib/%.o: $(src)/lib/%.c
 	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"

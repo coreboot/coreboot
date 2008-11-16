@@ -31,6 +31,7 @@
 //#include <pirq_routing.h>
 //#include <smp/mpspec.h>
 //#include <acpi.h>
+#include <build.h>
 
 struct lb_header *lb_table_init(unsigned long addr)
 {

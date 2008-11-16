@@ -248,6 +248,11 @@ $(obj)/coreboot.stage2 $(obj)/coreboot.stage2.map: $(obj)/stage0.o $(STAGE2_OBJ_
 # Build rules.
 #
 
+$(obj)/arch/x86/coreboot_table.o: $(src)/arch/x86/coreboot_table.c $(obj)/build.h
+	$(Q)mkdir -p $(dir $@)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
+	
 $(obj)/arch/x86/%.o: $(src)/arch/x86/%.c
 	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"

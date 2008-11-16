@@ -45,7 +45,7 @@
 #include <x86emu/regs.h>
 #include "debug.h"
 #include "prim_ops.h"
-#ifdef COREBOOT_VERSION
+#if 1 /* Coreboot needs to map prinkf to printk. */
 #include "io.h"
 #else
 #include <sys/io.h>

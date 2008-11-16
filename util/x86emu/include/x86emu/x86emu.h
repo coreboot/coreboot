@@ -43,7 +43,7 @@
 #define __X86EMU_X86EMU_H
 
 /* FIXME: undefine printk for the moment */
-#ifdef COREBOOT_VERSION
+#if 1 /* Coreboot needs to map prinkf to printk. */
 #include <console.h>
 #define printk(x...) printk(BIOS_DEBUG, x)
 #else

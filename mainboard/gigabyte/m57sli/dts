@@ -55,5 +55,9 @@
 				/config/("southbridge/nvidia/mcp55/sata.dts");
 			};
 		};
+		ioport@2e {
+			/config/("superio/ite/it8716f/dts");
+			com1enable = "1";
+		};
 	};
 };

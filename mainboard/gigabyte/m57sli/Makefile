@@ -21,6 +21,7 @@
 
 STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
+			$(src)/arch/x86/resourcemap.c \
 			$(src)/arch/x86/stage1_mtrr.c \
 			$(src)/arch/x86/amd/model_fxx/dualcore_id.c \
 			$(src)/arch/x86/amd/model_fxx/stage1.c \

@@ -21,16 +21,17 @@
 #ifndef SUPERIO_VIA_VT1211_VT122_H
 #define SUPERIO_VIA_VT1211_VT122_H
 
-#define VT1211_FDC              0   /* Floppy */
-#define VT1211_PP               1   /* Parallel Port */
-#define VT1211_SP1              2   /* Com1 */
-#define VT1211_SP2              3   /* Com2 */
-#define VT1211_KBC              5   /* Keyboard & Mouse */
-#define VT1211_CIR              6
-#define VT1211_GAME_MIDI_GPIO1  7
-#define VT1211_GPIO2            8
-#define VT1211_GPIO3            9
-#define VT1211_ACPI            10
-#define VT1211_HWM             11   /* Hardware Monitor */
+#define VT1211_FDC       0 /* Floppy */
+#define VT1211_PP        1 /* Parallel port */
+#define VT1211_SP1       2 /* COM1 */
+#define VT1211_SP2       3 /* COM2 */
+#define VT1211_MIDI      6 /* MIDI */
+#define VT1211_GAME      7 /* Game port */
+#define VT1211_GPIO      8 /* GPIO pins */
+#define VT1211_WATCHDOG  9 /* Watchdog timer */
+#define VT1211_WAKEUP   10 /* Wakeup control */
+#define VT1211_HWM      11 /* Hardware monitor */
+#define VT1211_FIR      12 /* IRDA */
+#define VT1211_ROM      13 /* ROM control */
 
 #endif /* SUPERIO_VIA_VT1211_VT122_H */

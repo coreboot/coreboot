@@ -101,8 +101,8 @@ static void i945_setup_bars(void)
 
 	/* As of now, we don't have all the A0 workarounds implemented */
 	if (i945_silicon_revision() == 0)
-		printk_info
-		    ("Warning: i945 silicon revision A0 might not work correctly.\n");
+		printk(BIOS_INFO,
+			"Warning: i945 silicon revision A0 might not work correctly.\n");
 
 	/* Setting up Southbridge. In the northbridge code. */
 	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
@@ -432,8 +432,8 @@ static void i945_setup_dmi_rcrb(void)
 
 	if (i945_silicon_revision() == 1 && ((MCHBAR8(0xe08) & (1 << 5)) == 1)) {
 		if ((MCHBAR32(0x214) & 0xf) != 0x3) {	
-			printk_info
-			    ("DMI link requires A1 stepping workaround. Rebooting.\n");
+			printk(BIOS_INFO,
+				"DMI link requires A1 stepping workaround. Rebooting.\n");
 			reg32 = MCHBAR32(MMARB1);
 			reg32 &= 0xfffffff8;
 			reg32 |= 3;

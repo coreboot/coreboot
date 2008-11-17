@@ -42,12 +42,12 @@ static void ide_init(struct device *dev)
 	if (conf->ide1_enable) {
 		/* Enable secondary ide interface */
 		word |= (1<<0);
-		printk(BIOS_DEBUG, "IDE1 ");
+		printk(BIOS_DEBUG, "%s: IDE1 \n", __func__);
 	}
 	if (conf->ide0_enable) {
 		/* Enable primary ide interface */
 		word |= (1<<1);
-		printk(BIOS_DEBUG, "IDE0 ");
+		printk(BIOS_DEBUG, "%s: IDE0 \n", __func__);
 	}
 
 	word |= (1<<12);

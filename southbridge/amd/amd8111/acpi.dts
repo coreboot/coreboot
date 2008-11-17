@@ -19,6 +19,6 @@
  */
 
 {
-	device_operations = "ac97modem";
+	device_operations = "acpi";
 	/* configuration variables go here */
 };

@@ -116,15 +116,13 @@ static void mb_gpio_init(void)
 }
 
 /** 
-  * main for initram for the PC Engines Alix 1C.  It might seem that you
-  * could somehow do these functions in, e.g., the cpu code, but the
+  * main for initram for the Artec Group ThinCan DBE62. It might seem that
+  * you could somehow do these functions in, e.g., the cpu code, but the
   * order of operations and what those operations are is VERY strongly
   * mainboard dependent. It's best to leave it in the mainboard code.
   */
 int main(void)
 {
-	void dumplxmsrs(void);
-
 	printk(BIOS_DEBUG, "Hi there from stage1\n");
 	post_code(POST_START_OF_MAIN);
 
@@ -148,13 +146,6 @@ int main(void)
 
 	sdram_enable(DIMM0, DIMM1);
 	printk(BIOS_DEBUG, "done sdram enable\n");
-
-	/*dumplxmsrs();*/
-	/* Check low memory */
-	/* The RAM is working now. Leave this test commented out but
-	 * here for reference. 
-	 * Note that the range 0x87000 will fail; that's the stack! */
-	/*	ram_check(0x00000000, 640*1024);*/
 
 	printk(BIOS_DEBUG, "stage1 returns\n");
 	return 0;

@@ -119,7 +119,7 @@ struct flashchip flashchips[] = {
 	{"SST",		"SST39SF040",		SST_ID,		SST_39SF040,		512,	4096,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"SST",		"SST39VF512",		SST_ID,		SST_39VF512,		64,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"SST",		"SST39VF010",		SST_ID,		SST_39VF010,		128,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
-	{"SST",		"SST39VF020",		SST_ID,		SST_39VF020,		256,	4096,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec,		write_39sf020},
+	{"SST",		"SST39VF020",		SST_ID,		SST_39VF020,		256,	4096,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 	{"SST",		"SST39VF040",		SST_ID,		SST_39VF040,		512,	4096,		TEST_OK_PROBE,	probe_jedec,		erase_chip_jedec,		write_39sf020},
 // assume similar to 004B, ignoring data sheet
 	{"SST",		"SST49LF002A/B",	SST_ID,		SST_49LF002A,		256,	16 * 1024,	TEST_OK_PREW,	probe_sst_fwhub,	erase_sst_fwhub,		write_sst_fwhub},

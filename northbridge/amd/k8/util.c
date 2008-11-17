@@ -127,10 +127,11 @@ void showdram(int level, u8 which, u32 base, u32 lim)
 void showconfig(int level, u8 which, u32 reg)
 {
 	/* Don't use node() and link() here. */
-	printk(level, "CONFIG(%02x)%02x-%02x ->(%d,%d),%s %s CE %d\n",
-	       which, BITS(reg, 24, 0xff), BITS(reg, 16, 0xff),
+	printk(level, "CONFIG(%02x)%02x-%02x ->(%d,%d),%s %s (%s numbers)\n",
+	       which, BITS(reg, 16, 0xff), BITS(reg, 24, 0xff),
 	       BITS(reg, 4, 0x7), BITS(reg, 8, 0x3),
-	       re(reg), we(reg), BITS(reg, 2, 0x1));
+	       re(reg), we(reg), 
+	       BITS(reg, 2, 0x1)?"dev":"bus");
 }
 
 /**

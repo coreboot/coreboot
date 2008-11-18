@@ -300,7 +300,7 @@ static int ich7_run_opcode(OPCODE op, uint32_t offset,
 	if (op.atomic != 0) {
 		/* Select atomic command */
 		temp16 |= SPIC_ACS;
-		/* Selct prefix opcode */
+		/* Select prefix opcode */
 		if ((op.atomic - 1) == 1) {
 			/*Select prefix opcode 2 */
 			temp16 |= SPIC_SPOP;
@@ -491,19 +491,15 @@ static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf, int offset,
 	for (a = 0; a < page_size; a += maxdata) {
 		if (remaining < maxdata) {
 
-			if (run_opcode
-			    (curopcodes->opcode[1],
-			     offset + (page_size - remaining), remaining,
-			     &buf[page_size - remaining]) != 0) {
+			if (spi_nbyte_read(offset + (page_size - remaining),
+				&buf[page_size - remaining], remaining)) {
 				printf_debug("Error reading");
 				return 1;
 			}
 			remaining = 0;
 		} else {
-			if (run_opcode
-			    (curopcodes->opcode[1],
-			     offset + (page_size - remaining), maxdata,
-			     &buf[page_size - remaining]) != 0) {
+			if (spi_nbyte_read(offset + (page_size - remaining),
+				&buf[page_size - remaining], maxdata)) {
 				printf_debug("Error reading");
 				return 1;
 			}

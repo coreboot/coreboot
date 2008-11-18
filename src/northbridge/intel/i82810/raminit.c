@@ -47,13 +47,13 @@ Macros and definitions.
 #endif
 
 /* DRAMT[7:5] - SDRAM Mode Select (SMS). */
-#define RAM_COMMAND_SELF_REFRESH 0x0	/* IE disable refresh */
-#define RAM_COMMAND_NORMAL	 0x1	/* Normal refresh, 15.6us/11.7us for 100/133MHz */
-#define RAM_COMMAND_NORMAL_FR	 0x2	/* Fast refresh, 7.8us/5.85us for 100/133MHz */
-#define RAM_COMMAND_NOP		 0x4
-#define RAM_COMMAND_PRECHARGE	 0x5
-#define RAM_COMMAND_MRS		 0x6
-#define RAM_COMMAND_CBR		 0x7
+#define RAM_COMMAND_SELF_REFRESH 0x0 /* Disable refresh */
+#define RAM_COMMAND_NORMAL	 0x1 /* Refresh: 15.6/11.7us for 100/133MHz */
+#define RAM_COMMAND_NORMAL_FR	 0x2 /* Refresh: 7.8/5.85us for 100/133MHz */
+#define RAM_COMMAND_NOP		 0x4 /* NOP command */
+#define RAM_COMMAND_PRECHARGE	 0x5 /* All bank precharge */
+#define RAM_COMMAND_MRS		 0x6 /* Mode register set */
+#define RAM_COMMAND_CBR		 0x7 /* CBR */
 
 /*-----------------------------------------------------------------------------
 SDRAM configuration functions.
@@ -98,6 +98,9 @@ static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
 DIMM-independant configuration functions.
 -----------------------------------------------------------------------------*/
 
+/*
+ * Set DRP - DRAM Row Population Register (Device 0).
+ */
 static void spd_set_dram_size(const struct mem_controller *ctrl,
 			      uint32_t row_offset)
 {
@@ -209,13 +212,35 @@ static void set_dram_timing(const struct mem_controller *ctrl)
 	// pci_write_config8(ctrl->d0, DRAMT, 0x00);
 }
 
+/*
+ * TODO: BUFF_SC needs to be set according to the DRAM tech (x8, x16,
+ * or x32), but the datasheet doesn't list all the detaisl. Currently, it
+ * needs to be pulled from the output of 'lspci -xxx Rx92'.
+ *
+ * Common results (tested on actual hardware) are:
+ *
+ * (DRP: c = 128MB dual sided, d = 128MB single sided, f = 256MB dual sided)
+ *
+ * BUFF_SC  TOM     DRP    DIMM0                DIMM1
+ * ----------------------------------------------------------------------------
+ * 0x3356   128MB   0x0c   128MB dual-sided     -
+ * 0xcc56   128MB   0xc0   -                    128MB dual-sided
+ * 0x77da   128MB   0x0d   128MB single-sided   -
+ * 0xddda   128MB   0xd0   -                    128MB single-sided
+ * 0x0001   256MB   0xcc   128MB dual-sided     128MB dual-sided
+ * 0x55c6   256MB   0xdd   128MB single-sided   128MB single-sided
+ * 0x4445   256MB   0xcd   128MB single-sided   128MB dual-sided
+ * 0x1145   256MB   0xdc   128MB dual-sided     128MB single-sided
+ * 0x3356   256MB   0x0f   256MB dual-sided     -
+ * 0xcc56   256MB   0xf0   -                    256MB dual-sided
+ * 0x0001   384MB   0xcf   256MB dual-sided     128MB dual-sided
+ * 0x0001   384MB   0xfc   128MB dual-sided     256MB dual-sided
+ * 0x1145   384MB   0xdf   256MB dual-sided     128MB single-sided
+ * 0x4445   384MB   0xfd   128MB single-sided   256MB dual-sided
+ * 0x0001   512MB   0xff   256MB dual-sided     256MB dual-sided
+ */
 static void set_dram_buffer_strength(const struct mem_controller *ctrl)
 {
-	/* TODO: This needs to be set according to the DRAM tech
-	 * (x8, x16, or x32). Argh, Intel provides no docs on this!
-	 * Currently, it needs to be pulled from the output of
-	 * lspci -xxx Rx92
-	 */
 	pci_write_config16(ctrl->d0, BUFF_SC, 0x77da);
 }
 

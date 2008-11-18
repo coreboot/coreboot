@@ -30,17 +30,16 @@
 /*
  * PCI Configuration Registers.
  *
- * Any addresses between 0x00 and 0xff not listed below are reserved and
+ * Any addresses between 0x50 and 0xff not listed below are reserved and
  * should not be touched.
  */
 
-/* TODO: Descriptions. */
-#define GMCHCFG	0x50
-#define PAM	0x51
-#define DRP	0x52
-#define DRAMT	0x53
-#define FDHC	0x58
+#define GMCHCFG	0x50		/* GMCH Configuration */
+#define PAM	0x51		/* Programmable Attributes */
+#define DRP	0x52		/* DRAM Row Population */
+#define DRAMT	0x53		/* DRAM Timing */
+#define FDHC	0x58		/* Fixed DRAM Hole Control */
 #define SMRAM	0x70		/* System Management RAM Control */
-#define MISSC	0x72
-#define MISSC2	0x80
-#define BUFF_SC	0x92
+#define MISSC	0x72		/* Miscellaneous Control */
+#define MISSC2	0x80		/* Miscellaneous Control 2 */
+#define BUFF_SC	0x92		/* System Memory Buffer Strength Control */

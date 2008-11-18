@@ -44,11 +44,8 @@
 #include <device/hypertransport.h>
 #include <mc146818rtc.h>
 #include <lib.h>
-#include  <lapic.h>
+#include <lapic.h>
 
-#define FX_DEVS 8
-extern struct device *__f0_dev[FX_DEVS];
-extern void get_fx_devs(void);
 u32 f1_read_config32(unsigned int reg);
 void f1_write_config32(unsigned int reg, u32 value);
 unsigned int amdk8_nodeid(struct device *dev);
@@ -257,26 +254,23 @@ static unsigned int amdk8_scan_chains(struct device *dev, unsigned int max)
  * @param goal_nodeid node number
  * @param goal_link link number
  * @return 0 if not useable, 1 if useable, or 2 if the pair is free
- * __f0 is initialized once in amdk8_read_resources
  */
 static int reg_useable(unsigned reg,
 		       struct device *goal_dev, unsigned goal_nodeid,
 		       unsigned goal_link)
 {
-	struct resource *res;
-	unsigned nodeid, link = 0;
+	struct resource *res = NULL;
+	struct device *dev = NULL;
+	unsigned nodeid = 0, link = 0;
 	int result;
-	res = NULL;
 
 	/* Look for the resource that matches this register. */
-	for (nodeid = 0; !res && (nodeid < CONFIG_MAX_PHYSICAL_CPUS); nodeid++) {
-		struct device *dev;
-		dev = __f0_dev[nodeid];
-		if (!dev)
-			continue;
+	while (!res
+	       && (dev = dev_find_pci_device(PCI_VENDOR_ID_AMD, 0x1100, dev))) {
 		for (link = 0; !res && (link < 3); link++) {
 			res = probe_resource(dev, 0x100 + (reg | link));
 		}
+		nodeid++;
 	}
 
 	/* If no allocated resource was found, it is free - return 2 */
@@ -399,8 +393,6 @@ static void amdk8_read_resources(struct device *dev)
 	printk(BIOS_DEBUG, "amdk8_read_resources\n");
 	unsigned nodeid, link;
 	nodeid = amdk8_nodeid(dev);
-
-	get_fx_devs();		/* Make sure __f0 is initialized */
 
 	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].children) {

@@ -32,17 +32,6 @@
 #include <statictree.h>
 #include "w83627hf.h"
 
-static void pnp_enter_ext_func_mode(struct device * dev)
-{
-	outb(0x87, dev->path.pnp.port);
-	outb(0x87, dev->path.pnp.port);
-}
-
-static void pnp_exit_ext_func_mode(struct device * dev)
-{
-	outb(0xaa, dev->path.pnp.port);
-}
-
 static void pnp_write_index(u16 port_base, u8 reg, u8 value)
 {
 	outb(reg, port_base);
@@ -70,7 +59,7 @@ static void init_acpi(struct device * dev)
 	int power_on = 1;
 #warning Fix CMOS handling
 	// get_option(&power_on, "power_on_after_fail");
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_8787(dev);
 	pnp_write_index(dev->path.pnp.port,7,0x0a);
 	value = pnp_read_config(dev, 0xE4);
 	value &= ~(3<<5);
@@ -78,7 +67,7 @@ static void init_acpi(struct device * dev)
 		value |= (1<<5);
 	}
 	pnp_write_config(dev, 0xE4, value);
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_aa(dev);
 }
 
 static void init_hwm(u16 base)
@@ -148,15 +137,14 @@ static void w83627hf_init_func(struct device * dev)
 
 void w83627hf_pnp_set_resources(struct device * dev)
 {
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_8787(dev);
 	pnp_set_resources(dev);
-	pnp_exit_ext_func_mode(dev);
-
+	pnp_exit_aa(dev);
 }
 
 void w83627hf_pnp_enable_resources(struct device * dev)
 {
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_8787(dev);
 	pnp_enable_resources(dev);
 	switch(dev->path.pnp.device) {
 	case W83627HF_HWM:
@@ -164,8 +152,7 @@ void w83627hf_pnp_enable_resources(struct device * dev)
 		enable_hwm_smbus(dev);
 		break;
 	}
-	pnp_exit_ext_func_mode(dev);
-
+	pnp_exit_aa(dev);
 }
 
 void w83627hf_enable_resources(struct device * dev)
@@ -178,14 +165,11 @@ void w83627hf_enable_resources(struct device * dev)
 
 void w83627hf_pnp_enable(struct device * dev)
 {
-
 	if (!dev->enabled) {
-		pnp_enter_ext_func_mode(dev);
-
+		pnp_enter_8787(dev);
 		pnp_set_logical_device(dev);
 		pnp_set_enable(dev, 0);
-
-		pnp_exit_ext_func_mode(dev);
+		pnp_exit_aa(dev);
 	}
 }
 

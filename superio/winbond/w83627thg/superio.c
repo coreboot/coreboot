@@ -32,16 +32,6 @@
 #include <statictree.h>
 #include "w83627thg.h"
 
-static void w83627thg_enter_ext_func_mode(struct device * dev) 
-{
-        outb(0x87, dev->path.pnp.port);
-        outb(0x87, dev->path.pnp.port);
-}
-static void w83627thg_exit_ext_func_mode(struct device * dev) 
-{
-        outb(0xaa, dev->path.pnp.port);
-}
-
 static void w83627thg_init(struct device * dev)
 {
 	struct superio_winbond_w83627thg_config *conf;
@@ -72,23 +62,23 @@ static void w83627thg_init(struct device * dev)
 
 static void w83627thg_set_resources(struct device * dev)
 {
-	w83627thg_enter_ext_func_mode(dev);
+	pnp_enter_8787(dev);
 	pnp_set_resources(dev);
-	w83627thg_exit_ext_func_mode(dev);
+	pnp_exit_aa(dev);
 }
 
 static void w83627thg_enable_resources(struct device * dev)
 {
-	w83627thg_enter_ext_func_mode(dev);
+	pnp_enter_8787(dev);
 	pnp_enable_resources(dev);
-	w83627thg_exit_ext_func_mode(dev);
+	pnp_exit_aa(dev);
 }
 
 static void w83627thg_enable(struct device * dev)
 {
-	w83627thg_enter_ext_func_mode(dev);   
+	pnp_enter_8787(dev);   
 	pnp_enable(dev);
-	w83627thg_exit_ext_func_mode(dev);  
+	pnp_exit_aa(dev);  
 }
 
 static void phase3_chip_setup_dev(struct device *dev);

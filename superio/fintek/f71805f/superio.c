@@ -35,39 +35,26 @@ void f71805f_pnp_enable_resources(struct device *dev);
 void f71805f_pnp_enable(struct device *dev);
 static void f71805f_init(struct device *dev);
 
-static void pnp_enter_conf_state(struct device *dev);
-static void pnp_exit_conf_state(struct device *dev);
-
-static void pnp_enter_conf_state(struct device *dev)
-{
-	outb(0x87, dev->path.pnp.port);
-}
-
-static void pnp_exit_conf_state(struct device *dev)
-{
-	outb(0xaa, dev->path.pnp.port);
-}
-
 void f71805f_pnp_set_resources(struct device *dev)
 {
-	pnp_enter_conf_state(dev);
+	pnp_enter_8787(dev);
 	pnp_set_resources(dev);
-	pnp_exit_conf_state(dev);
+	pnp_exit_aa(dev);
 }
 
 void f71805f_pnp_enable_resources(struct device *dev)
 {
-	pnp_enter_conf_state(dev);
+	pnp_enter_8787(dev);
 	pnp_enable_resources(dev);
-	pnp_exit_conf_state(dev);
+	pnp_exit_aa(dev);
 }
 
 void f71805f_pnp_enable(struct device *dev)
 {
-	pnp_enter_conf_state(dev);
+	pnp_enter_8787(dev);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, dev->enabled);
-	pnp_exit_conf_state(dev);
+	pnp_exit_aa(dev);
 }
 
 static void f71805f_init(struct device *dev)

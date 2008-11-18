@@ -33,26 +33,6 @@
 #include <statictree.h>
 #include "it8716f.h"
 
-/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
-/* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
-static void pnp_enter_ext_func_mode(struct device *dev)
-{
-	outb(0x87, dev->path.pnp.port);
-	outb(0x01, dev->path.pnp.port);
-	outb(0x55, dev->path.pnp.port);
-
-	if (dev->path.pnp.port == 0x4e) {
-		outb(0xaa, dev->path.pnp.port);
-	} else {
-		outb(0x55, dev->path.pnp.port);
-	}
-}
-
-static void pnp_exit_ext_func_mode(struct device *dev)
-{
-	pnp_write_config(dev, 0x02, 0x02);
-}
-
 #ifdef HAVE_FANCTL
 extern void init_ec(u16 base);
 #else
@@ -85,29 +65,27 @@ static void init_ec(u16 base)
 }
 #endif
 
-
 static void it8716f_pnp_set_resources(struct device *dev)
 {
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_ite(dev);
 	pnp_set_resources(dev);
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_ite(dev);
 }
 
 static void it8716f_pnp_enable_disable(struct device *dev)
 {
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_ite(dev);
 	pnp_enable_resources(dev);
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_ite(dev);
 }
 
 static void it8716f_pnp_enable_resources(struct device *dev)
 {
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_ite(dev);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, dev->enabled);
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_ite(dev);
 }
-
 
 static void it8716f_init(struct device *dev)
 {

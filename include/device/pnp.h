@@ -84,4 +84,20 @@ void pnp_enable_devices(struct device *dev, struct device_operations *ops,
 #define PNP_IDX_DRQ0 0x74
 #define PNP_IDX_DRQ1 0x75
 
+/* PNP functions used to enter/exit PNP config mode */
+void pnp_enter_ite_it8661f(struct device *dev);
+void pnp_enter_ite_it8671f(struct device *dev);
+void pnp_enter_ite(struct device *dev);
+void pnp_enter_ite_it8761e(struct device *dev);
+void pnp_enter_ite_it8228e(struct device *dev);
+void pnp_enter_8787(struct device *dev);
+void pnp_enter_ali(struct device *dev);
+void pnp_enter_smsc(struct device *dev);
+void pnp_enter_88(struct device *dev);
+void pnp_enter_89(struct device *dev);
+void pnp_enter_8686(struct device *dev);
+void pnp_exit_aa(struct device *dev);
+void pnp_exit_ite(struct device *dev);
+void pnp_exit_ali(struct device *dev);
+
 #endif /* DEVICE_PNP_H */

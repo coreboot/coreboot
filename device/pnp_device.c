@@ -6,6 +6,7 @@
  * Copyright (C) 2004 Li-Ta Lo <ollie@lanl.gov>
  * Copyright (C) 2005 Tyan
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
+ * Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,8 @@
 #include <io.h>
 #include <device/device.h>
 #include <device/pnp.h>
+
+#define ISA_PNP_ADDR		0x279
 
 /* PNP fundamental operations: */
 
@@ -276,4 +279,147 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 		}
 		get_resources(dev, &info[i]);
 	}
+}
+
+/*
+ * PNP functions used to enter/exit PNP config mode:
+ */
+
+/* Works for: IT8661F/IT8770F */
+static const u8 initkey_it8661f[][4] = {
+	{0x86, 0x61, 0x55, 0x55},       /* 0x3f0 */
+	{0x86, 0x61, 0x55, 0xaa},       /* 0x3bd */
+	{0x86, 0x61, 0xaa, 0x55},       /* 0x370 */
+};
+
+/* Works for: IT8671F/IT8687R, IT8673F */
+static const u8 initkey_it8671f[][4] = {
+	{0x86, 0x80, 0x55, 0x55},       /* 0x3f0 */
+	{0x86, 0x80, 0x55, 0xaa},       /* 0x3bd */
+	{0x86, 0x80, 0xaa, 0x55},       /* 0x370 */
+};
+
+/* Works for: IT8661F/IT8770F, IT8671F/IT8687R, IT8673F. */
+static const u8 initkey_mbpnp[] = {
+	0x6a, 0xb5, 0xda, 0xed, 0xf6, 0xfb, 0x7d, 0xbe, 0xdf, 0x6f, 0x37,
+	0x1b, 0x0d, 0x86, 0xc3, 0x61, 0xb0, 0x58, 0x2c, 0x16, 0x8b, 0x45,
+	0xa2, 0xd1, 0xe8, 0x74, 0x3a, 0x9d, 0xce, 0xe7, 0x73, 0x39,
+};
+
+static void pnp_enter_ite_legacy(struct device *dev, const u8 init[][4])
+{
+	int i, idx;
+	u16 port = dev->path.pnp.port;
+	
+	/* Determine Super I/O config port. */
+	idx = (port == 0x3f0) ? 0 : ((port == 0x3bd) ? 1 : 2);
+	for (i = 0; i < 4; i++)
+		outb(init[idx][i], ISA_PNP_ADDR);
+	
+	/* Sequentially write the 32 MB PnP init values. */
+	for (i = 0; i < 32; i++)
+		outb(initkey_mbpnp[i], port);
+}
+
+/* Works for: IT8661F/IT8770F */
+void pnp_enter_ite_it8661f(struct device *dev)
+{
+	pnp_enter_ite_legacy(dev, initkey_it8661f);
+}
+
+/* Works for: IT8671F/IT8687R, IT8673F */
+void pnp_enter_ite_it8671f(struct device *dev)
+{
+	pnp_enter_ite_legacy(dev, initkey_it8671f);
+}
+
+/* Works for: Many modern ITE Super I/Os */
+void pnp_enter_ite(struct device *dev)
+{
+	outb(0x87, dev->path.pnp.port);
+	outb(0x01, dev->path.pnp.port);
+	outb(0x55, dev->path.pnp.port);
+	outb((dev->path.pnp.port == 0x2e) ? 0x55 : 0xaa, dev->path.pnp.port);
+}
+
+/* Works for: IT8761E */
+void pnp_enter_ite_it8761e(struct device *dev)
+{
+	outb(0x87, dev->path.pnp.port);
+	outb(0x61, dev->path.pnp.port);
+	outb(0x55, dev->path.pnp.port);
+	outb((dev->path.pnp.port == 0x2e) ? 0x55 : 0xaa, dev->path.pnp.port);
+}
+
+/* Works for: IT8228E */
+void pnp_enter_ite_it8228e(struct device *dev)
+{
+	outb(0x82, dev->path.pnp.port);
+	outb(0x28, dev->path.pnp.port);
+	outb(0x55, dev->path.pnp.port);
+	outb((dev->path.pnp.port == 0x2e) ? 0x55 : 0xaa, dev->path.pnp.port);
+}
+
+/* Works for: Various ITE, Fintek, Winbond Super I/Os */
+void pnp_enter_8787(struct device *dev)
+{
+	outb(0x87, dev->path.pnp.port);
+	outb(0x87, dev->path.pnp.port);
+}
+
+/* Works for: Most/all ALi Super I/Os */
+void pnp_enter_ali(struct device *dev)
+{
+	outb(0x51, dev->path.pnp.port);
+	outb(0x23, dev->path.pnp.port);
+}
+
+/* Works for: Most/all SMSC Super I/Os */
+void pnp_enter_smsc(struct device *dev)
+{
+	/*
+	 * Some of the SMSC Super I/Os have an 0x55,0x55 init, some only
+	 * require one 0x55. We do 0x55,0x55 for all of them at the moment,
+	 * in the assumption that the extra 0x55 won't hurt the other
+	 * Super I/Os. This is verified to be true on (at least) the FDC37N769.
+	 */
+	outb(0x55, dev->path.pnp.port);
+	outb(0x55, dev->path.pnp.port);
+}
+
+/* Works for: Some older Winbond Super I/Os */
+void pnp_enter_88(struct device *dev)
+{
+	outb(0x88, dev->path.pnp.port);
+}
+
+/* Works for: Some older Winbond Super I/Os */
+void pnp_enter_89(struct device *dev)
+{
+	outb(0x89, dev->path.pnp.port);
+}
+
+/* Works for: Some older Winbond Super I/Os */
+void pnp_enter_8686(struct device *dev)
+{
+	outb(0x86, dev->path.pnp.port);
+	outb(0x86, dev->path.pnp.port);
+}
+
+/* Works for: Various ITE, Fintek, Winbond, SMSC Super I/Os */
+void pnp_exit_aa(struct device *dev)
+{
+	outb(0xaa, dev->path.pnp.port);
+}
+
+/* Works for: Most modern ITE Super I/Os */
+void pnp_exit_ite(struct device *dev)
+{
+	pnp_write_config(dev, 0x02, 0x02);
+}
+
+/* Works for: Most/all ALi Super I/Os */
+void pnp_exit_ali(struct device *dev)
+{
+	outb(0xbb, dev->path.pnp.port);
 }

@@ -71,20 +71,20 @@ static int spi_res(unsigned char *readarr)
 	return 0;
 }
 
-void spi_write_enable()
+int spi_write_enable()
 {
 	const unsigned char cmd[JEDEC_WREN_OUTSIZE] = { JEDEC_WREN };
 
 	/* Send WREN (Write Enable) */
-	spi_command(sizeof(cmd), 0, cmd, NULL);
+	return spi_command(sizeof(cmd), 0, cmd, NULL);
 }
 
-void spi_write_disable()
+int spi_write_disable()
 {
 	const unsigned char cmd[JEDEC_WRDI_OUTSIZE] = { JEDEC_WRDI };
 
 	/* Send WRDI (Write Disable) */
-	spi_command(sizeof(cmd), 0, cmd, NULL);
+	return spi_command(sizeof(cmd), 0, cmd, NULL);
 }
 
 static int probe_spi_rdid_generic(struct flashchip *flash, int bytes)
@@ -274,14 +274,28 @@ void spi_prettyprint_status_register(struct flashchip *flash)
 int spi_chip_erase_60(struct flashchip *flash)
 {
 	const unsigned char cmd[JEDEC_CE_60_OUTSIZE] = {JEDEC_CE_60};
+	int result;
 	
-	spi_disable_blockprotect();
-	spi_write_enable();
+	result = spi_disable_blockprotect();
+	if (result) {
+		printf_debug("spi_disable_blockprotect failed\n");
+		return result;
+	}
+	result = spi_write_enable();
+	if (result) {
+		printf_debug("spi_write_enable failed\n");
+		return result;
+	}
 	/* Send CE (Chip Erase) */
-	spi_command(sizeof(cmd), 0, cmd, NULL);
+	result = spi_command(sizeof(cmd), 0, cmd, NULL);
+	if (result) {
+		printf_debug("spi_chip_erase_60 failed sending erase\n");
+		return result;
+	}
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 1-85 s, so wait in 1 s steps.
 	 */
+	/* FIXME: We assume spi_read_status_register will never fail. */
 	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		sleep(1);
 	return 0;
@@ -290,17 +304,42 @@ int spi_chip_erase_60(struct flashchip *flash)
 int spi_chip_erase_c7(struct flashchip *flash)
 {
 	const unsigned char cmd[JEDEC_CE_C7_OUTSIZE] = { JEDEC_CE_C7 };
+	int result;
 
-	spi_disable_blockprotect();
-	spi_write_enable();
+	result = spi_disable_blockprotect();
+	if (result) {
+		printf_debug("spi_disable_blockprotect failed\n");
+		return result;
+	}
+	result = spi_write_enable();
+	if (result) {
+		printf_debug("spi_write_enable failed\n");
+		return result;
+	}
 	/* Send CE (Chip Erase) */
-	spi_command(sizeof(cmd), 0, cmd, NULL);
+	result = spi_command(sizeof(cmd), 0, cmd, NULL);
+	if (result) {
+		printf_debug("spi_chip_erase_60 failed sending erase\n");
+		return result;
+	}
 	/* Wait until the Write-In-Progress bit is cleared.
 	 * This usually takes 1-85 s, so wait in 1 s steps.
 	 */
+	/* FIXME: We assume spi_read_status_register will never fail. */
 	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
 		sleep(1);
 	return 0;
+}
+
+int spi_chip_erase_60_c7(struct flashchip *flash)
+{
+	int result;
+	result = spi_chip_erase_60(flash);
+	if (result) {
+		printf_debug("spi_chip_erase_60 failed, trying c7\n");
+		result = spi_chip_erase_c7(flash);
+	}
+	return result;
 }
 
 int spi_block_erase_52(const struct flashchip *flash, unsigned long addr)
@@ -390,13 +429,13 @@ int spi_sector_erase(const struct flashchip *flash, unsigned long addr)
  * This is according the SST25VF016 datasheet, who knows it is more
  * generic that this...
  */
-void spi_write_status_register(int status)
+int spi_write_status_register(int status)
 {
 	const unsigned char cmd[JEDEC_WRSR_OUTSIZE] =
 	    { JEDEC_WRSR, (unsigned char)status };
 
 	/* Send WRSR (Write Status Register) */
-	spi_command(sizeof(cmd), 0, cmd, NULL);
+	return spi_command(sizeof(cmd), 0, cmd, NULL);
 }
 
 void spi_byte_program(int address, uint8_t byte)
@@ -413,20 +452,30 @@ void spi_byte_program(int address, uint8_t byte)
 	spi_command(sizeof(cmd), 0, cmd, NULL);
 }
 
-void spi_disable_blockprotect(void)
+int spi_disable_blockprotect(void)
 {
 	uint8_t status;
+	int result;
 
 	status = spi_read_status_register();
 	/* If there is block protection in effect, unprotect it first. */
 	if ((status & 0x3c) != 0) {
 		printf_debug("Some block protection in effect, disabling\n");
-		spi_write_enable();
-		spi_write_status_register(status & ~0x3c);
+		result = spi_write_enable();
+		if (result) {
+			printf_debug("spi_write_enable failed\n");
+			return result;
+		}
+		result = spi_write_status_register(status & ~0x3c);
+		if (result) {
+			printf_debug("spi_write_status_register failed\n");
+			return result;
+		}
 	}
+	return 0;
 }
 
-void spi_nbyte_read(int address, uint8_t *bytes, int len)
+int spi_nbyte_read(int address, uint8_t *bytes, int len)
 {
 	const unsigned char cmd[JEDEC_READ_OUTSIZE] = {
 		JEDEC_READ,
@@ -436,7 +485,7 @@ void spi_nbyte_read(int address, uint8_t *bytes, int len)
 	};
 
 	/* Send Read */
-	spi_command(sizeof(cmd), len, cmd, bytes);
+	return spi_command(sizeof(cmd), len, cmd, bytes);
 }
 
 int spi_chip_read(struct flashchip *flash, uint8_t *buf)

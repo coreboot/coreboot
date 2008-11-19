@@ -4,8 +4,6 @@
  * Copyright (C) 2008 LiPPERT Embedded Computers GmbH
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
  *
- * Based on cache_as_ram_auto.c from AMD's DB800 and DBM690T mainboards.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +18,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+/* Based on cache_as_ram_auto.c from AMD's DB800 and DBM690T mainboards. */
 
 #define ASSEMBLY 1
 
@@ -52,7 +52,9 @@
 
 static inline int spd_read_byte(unsigned int device, unsigned int address)
 {
-	if (device != DIMM0) return 0xFF;	// no DIMM1, don't even try
+	if (device != DIMM0)
+		return 0xFF;	/* No DIMM1, don't even try. */
+
 	return smbus_read_byte(device, address);
 }
 
@@ -120,11 +122,12 @@ static void mb_gpio_init(void)
 {
 	int i;
 
-	/* Init SuperIO WDT, GPIOs. Done early, WDT init may trigger reset! */
+	/* Init Super I/O WDT, GPIOs. Done early, WDT init may trigger reset! */
 	it8712f_enter_conf();
-	for (i=0; i<ARRAY_SIZE(sio_init_table); i++) {
+	for (i = 0; i < ARRAY_SIZE(sio_init_table); i++) {
 		u16 val = sio_init_table[i];
-		outb((u8)val, SIO_INDEX); outb(val>>8, SIO_DATA);
+		outb((u8)val, SIO_INDEX);
+		outb(val >> 8, SIO_DATA);
 	}
 	it8712f_exit_conf();
 }
@@ -142,10 +145,11 @@ void cache_as_ram_main(void)
 
 	cs5536_early_setup();
 
-	/* Note: must do this AFTER the early_setup! It is counting on some
+	/*
+	 * Note: must do this AFTER the early_setup! It is counting on some
 	 * early MSR setup for CS5536.
 	 */
-	it8712f_enable_serial(0, TTYS0_BASE); // does not use its 1st parameter
+	it8712f_enable_serial(0, TTYS0_BASE); // Does not use its 1st parameter
 	mb_gpio_init();
 	uart_init();
 	console_init();

@@ -3,8 +3,6 @@
  *
  * Copyright (C) 2008 LiPPERT Embedded Computers GmbH
  *
- * Based on chip.h from AMD's DB800 mainboard.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,10 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* Based on chip.h from AMD's DB800 mainboard. */
+
 #include <stdint.h>
 
 extern struct chip_operations mainboard_lippert_roadrunner_lx_ops;
 
 struct mainboard_lippert_roadrunner_lx_config {
-	u8 sio_gp1x_config;	// bit5=Live LED, bit2=RS485_EN2, bit1=RS485_EN1
+	/* bit5 = Live LED, bit2 = RS485_EN2, bit1 = RS485_EN1 */
+	u8 sio_gp1x_config;
 };

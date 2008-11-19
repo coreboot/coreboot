@@ -3,8 +3,6 @@
  *
  * Copyright (C) 2008 LiPPERT Embedded Computers GmbH
  *
- * Based on irq_tables.c from AMD's DB800 mainboard.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
+/* Based on irq_tables.c from AMD's DB800 mainboard. */
 
 #include <arch/pirq_routing.h>
 #include <console/console.h>
@@ -47,7 +47,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
 	PIRQ_VERSION,		/* u16 version   */
-	32 + 16 * IRQ_SLOT_COUNT,	/* there can be total 7 devices on the bus */
+	32 + 16 * IRQ_SLOT_COUNT,/* there can be total 7 devices on the bus */
 	0x00,			/* Where the interrupt router lies (bus) */
 	(0x0F << 3) | 0x0,	/* Where the interrupt router lies (dev) */
 	0x00,			/* IRQs devoted exclusively to PCI usage */
@@ -55,17 +55,17 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x002B,			/* Device */
 	0,			/* Crap (miniport) */
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},	/* u8 rfu[11] */
-	0xE0,			/*      u8 checksum , this has to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
+	0xE0,			/* u8 checksum, this has to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 	{
-	 /* If you change the number of entries, change the IRQ_SLOT_COUNT above! */
-	 /* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
-	 {0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},       {0x00, 0x00},       {0x00, 0x00}},       0x0, 0x0},	/* cpu */
-	 {0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},	/* chipset */
-	 {0x00, (0x0E << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},       {0x00, 0x00},       {0x00, 0x00}},       0x0, 0x0},	/* ethernet */
-	 {0x00, (0x0B << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x1, 0x0},	/* slot1 */
-	 {0x00, (0x0A << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}}, 0x2, 0x0},	/* slot2 */
-	 {0x00, (0x09 << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}}, 0x3, 0x0},	/* slot3 */
-	 {0x00, (0x08 << 3) | 0x0, {{L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}}, 0x4, 0x0},	/* slot4 */
+		/* If you change the number of entries, change the IRQ_SLOT_COUNT above! */
+		/* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
+		{0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},       {0x00, 0x00},       {0x00, 0x00}},       0x0, 0x0},	/* CPU */
+		{0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},	/* chipset */
+		{0x00, (0x0E << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},       {0x00, 0x00},       {0x00, 0x00}},       0x0, 0x0},	/* ethernet */
+		{0x00, (0x0B << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x1, 0x0},	/* slot1 */
+		{0x00, (0x0A << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}}, 0x2, 0x0},	/* slot2 */
+		{0x00, (0x09 << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}}, 0x3, 0x0},	/* slot3 */
+		{0x00, (0x08 << 3) | 0x0, {{L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}}, 0x4, 0x0},	/* slot4 */
 	}
 };
 

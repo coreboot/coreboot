@@ -1,0 +1,232 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2008 LiPPERT Embedded Computers GmbH
+##
+## Based on Config.lb from AMD's DB800 and DBM690T mainboards.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+##
+## Compute the location and size of where this firmware image
+## (coreboot plus bootloader) will live in the boot rom chip.
+##
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
+else
+	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
+	default ROM_SECTION_OFFSET = 0
+end
+
+##
+## Compute the start location and size size of
+## The coreboot bootloader.
+##
+
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default PAYLOAD_SIZE			= ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+
+##
+## Compute where this copy of coreboot will start in the boot rom
+##
+default _ROMBASE	  = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
+
+##
+## Compute a range of ROM that can cached to speed up coreboot,
+## execution speed.
+##
+## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+##
+default XIP_ROM_SIZE=65536
+default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+
+
+##
+## Set all of the defaults for an x86 architecture
+##
+
+arch i386 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+
+if HAVE_PIRQ_TABLE
+	object irq_tables.o
+end
+
+if USE_DCACHE_RAM
+	#compile cache_as_ram.c to auto.inc
+	makerule ./cache_as_ram_auto.inc
+			depends "$(MAINBOARD)/cache_as_ram_auto.c"
+			action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+			action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+			action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+	end
+end
+
+
+##
+## Build our 16 bit and 32 bit coreboot entry code
+##
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
+
+##
+## Build our reset vector (This is where coreboot is entered)
+##
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
+else
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
+end
+
+### Should this be in the northbridge code?
+#not in serengeti_cheetah mainboardinit arch/i386/lib/cpu_reset.inc
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+###
+### This is the early phase of coreboot startup
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds
+#	mainboardinit ./failover.inc
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+
+if USE_DCACHE_RAM
+	mainboardinit cpu/amd/model_lx/cache_as_ram.inc
+	mainboardinit ./cache_as_ram_auto.inc
+end
+
+##
+## Include the secondary Configuration files
+##
+dir /pc80
+config chip.h
+register "sio_gp1x_config" = "0x20" # bit1 switches Com1 to RS485, bit2 same for Com2, bit5 turns off Live LED
+
+chip northbridge/amd/lx
+	device pci_domain 0 on
+		device pci 1.0 on end				# Northbridge
+		device pci 1.1 on end				# Graphics
+		device pci 1.2 on end				# AES
+		chip southbridge/amd/cs5536
+			# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
+			# SIRQ Mode = Active(Quiet) mode. Save power....
+			# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse, UARTs, etc IRQs. OK
+			register "lpc_serirq_enable"   = "0x000012DA"	# 00010010 11011010
+			register "lpc_serirq_polarity" = "0x0000ED25"	# inverse of above
+			register "lpc_serirq_mode" = "1"
+			register "enable_gpio_int_route" = "0x0D0C0700"
+			register "enable_ide_nand_flash" = "0"	# 0:ide mode, 1:flash
+			register "enable_USBP4_device" = "0"	# 0: host, 1:device
+			register "enable_USBP4_overcurrent" = "0" #0:off, xxxx:overcurrent setting CS5536 Data Book (pages 380-381)
+			register "com1_enable" = "0"
+			register "com1_address" = "0x3E8"
+			register "com1_irq" = "6"
+			register "com2_enable" = "0"
+			register "com2_address" = "0x2E8"
+			register "com2_irq" = "6"
+			register "unwanted_vpci[0]" = "0"	# End of list has a zero
+			device pci 8.0 on end			# Slot4
+			device pci 9.0 on end			# Slot3
+			device pci a.0 on end			# Slot2
+			device pci b.0 on end			# Slot1
+			device pci c.0 on end			# IT8888
+			device pci e.0 on end			# Ethernet
+			device pci f.0 on			# ISA Bridge
+				chip superio/ite/it8712f
+					device pnp 2e.0 off #  Floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 2e.1 on #  Com1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.2 on #  Com2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.3 on #  Parallel Port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 2e.4 on #  EC
+						io 0x60 = 0x290
+						io 0x62 = 0x230
+						irq 0x70 = 9
+					end
+					device pnp 2e.5 on #  Keyboard
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1
+					end
+					device pnp 2e.6 on #  Mouse
+						irq 0x70 = 12
+					end
+					device pnp 2e.7 on #  GPIO
+						io 0x62 = 0x1220
+						#io 0x64 = 0x1200
+					end
+					device pnp 2e.8 off #  MIDI
+						io 0x60 = 0x300
+						irq 0x70 = 9
+					end
+					device pnp 2e.9 off #  GAME
+						io 0x60 = 0x220
+					end
+					device pnp 2e.a off end #  CIR
+				end
+			end
+			device pci f.2 on end			# IDE Controller
+			device pci f.3 on end			# Audio
+			device pci f.4 on end			# OHCI
+			device pci f.5 on end			# EHCI
+		end
+	end
+	# APIC cluster is late CPU init.
+	device apic_cluster 0 on
+		chip cpu/amd/model_lx
+			device apic 0 on end
+		end
+	end
+end

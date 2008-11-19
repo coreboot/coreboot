@@ -22,6 +22,8 @@
 	device_operations="serengeti";
 	mainboard_vendor = "AMD";
 	mainboard_name = "Serengeti";
+	subsystem_vendor = "PCI_VENDOR_ID_AMD";
+	subsystem_device = "0x2b80";
 	cpus { };
 	apic@0 {
 	};

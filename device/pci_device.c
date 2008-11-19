@@ -632,38 +632,36 @@ void ram_resource(struct device *dev, unsigned long index,
 void pci_dev_set_subsystem_wrapper(struct device *dev)
 {
 	const struct pci_operations *ops;
-	u16 vendor = 0;
-	u16 device = 0;
+	u16 vendor = dev->id.pci.vendor;
+	u16 device = dev->id.pci.device;
 
-#warning Per-device subsystem ID has to be set here, but for that we have to extend the dts.
-
-#ifdef HAVE_MAINBOARD_PCI_SUBSYSTEM_ID
-	/* If there's no explicit subsystem ID for this device and the device
-	 * is onboard, use the board defaults. */
-	if (dev->on_mainboard) {
-		if (!vendor)
-			vendor = mainboard_pci_subsystem_vendor;
-		if (!device)
-			device = mainboard_pci_subsystem_device;
-	} else {
-		printk(BIOS_DEBUG, "%s: Device not on_mainboard\n",
-		       dev_path(dev));
-	}
-#endif
-	/* Set the subsystem vendor and device ID for mainboard devices. */
 	ops = ops_pci(dev);
 
 	/* If either vendor or device is zero, we leave it as is. */
 	if (ops && ops->set_subsystem && vendor && device) {
-		printk(BIOS_DEBUG,
-		       "%s: Setting subsystem VID/DID to %02x/%02x\n",
-		       dev_path(dev), vendor, device);
+		/* If there's no explicit subsystem ID for this device and the
+		 * device is onboard, use the board defaults. */
+		vendor = dev->subsystem_vendor;
+		device = dev->subsystem_device;
 
-		ops->set_subsystem(dev,	vendor, device);
-	} else {
-		printk(BIOS_DEBUG, "%s: Not setting subsystem VID/DID\n",
-			dev_path(dev));
-	}
+		/* Set the subsystem vendor and device ID for mainboard devices. */
+		if (dev->on_mainboard) {
+			if (!vendor)
+				vendor = dev_root.subsystem_vendor;
+			if (!device)
+				device = dev_root.subsystem_device;
+
+			printk(BIOS_DEBUG,
+			       "%s: Setting subsystem VID/DID to %02x/%02x\n",
+			       dev_path(dev), vendor, device);
+
+			ops->set_subsystem(dev,	vendor, device);
+
+		} else {
+			printk(BIOS_DEBUG, "%s: Device not on_mainboard\n",
+			       dev_path(dev));
+		}
+	} 
 		
 }
 

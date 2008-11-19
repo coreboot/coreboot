@@ -648,11 +648,13 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	 * then a variable is set to 1 (e.g. on_mainboard); 
 	 * and some are just set directly into the code (e.g. ops_pci).
 	 */
+
+	/* If it's in the tree, it's on the mainboard. */
+	fprintf(f, "\t.on_mainboard = 1,\n");
+
 	for_each_property(tree, prop) {
 		/* to do: check the value, maybe. Kinda pointless though. */
-		if (streq(prop->name, "on_mainboard")){
-			fprintf(f, "\t.on_mainboard = 1,\n");
-		}
+
 		if (streq(prop->name, "subsystem_vendor")){
 			fprintf(f, "\t.subsystem_vendor = %s,\n", prop->val.val);
 		}

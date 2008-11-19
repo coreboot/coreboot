@@ -309,13 +309,11 @@ static void amd8132_pcix_init(struct device * dev)
 	return;
 }
 
-#define BRIDGE_40_BIT_SUPPORT 0
-#if BRIDGE_40_BIT_SUPPORT
 static void bridge_read_resources(struct device *dev)
 {
 	struct resource *res;
 	pci_bus_read_resources(dev);
-	res = find_resource(dev, PCI_MEMORY_BASE);	
+	res = probe_resource(dev, PCI_MEMORY_BASE);	
 	if (res) {
 		res->limit = 0xffffffffffULL;
 	}
@@ -340,11 +338,10 @@ static void bridge_set_resources(struct device *dev)
 		pci_write_config16(dev, PCI_MEMORY_LIMIT, end >> 16);
 		pci_write_config8(dev, NPUMB, (end >> 32) & 0xff);
 
-		report_resource_stored(dev, res, "");
+		report_resource_stored(dev, res, "including NPUML");
 	}
 	pci_dev_set_resources(dev);
 }
-#endif /* BRIDGE_40_BIT_SUPPORT */
 
 struct device_operations amd8132_pcix = {
 	.id = {.type = DEVICE_ID_PCI,
@@ -353,16 +350,11 @@ struct device_operations amd8132_pcix = {
 	.constructor		 = default_device_constructor,
 	.reset_bus		 = pci_bus_reset,
 	.phase3_scan		 = amd8132_scan_bridge,
-#if BRIDGE_40_BIT_SUPPORT
 	.phase4_read_resources	 = bridge_read_resources,
 	.phase4_set_resources	 = bridge_set_resources,
-#else
-	.phase4_read_resources	 = pci_bus_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
-#endif
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = amd8132_pcix_init,
-	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci		 = &pci_bus_ops_pci,
 };
 
 
@@ -429,6 +421,7 @@ struct device_operations amd8132_apic = {
 	.phase3_chip_setup_dev	 = ioapic_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = amd8132_ioapic_init,
 	.ops_pci		 = &pci_ops_pci_dev,
 };

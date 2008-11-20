@@ -52,17 +52,9 @@ void udelay(int usecs)
 
 #include "northbridge/intel/i82810/raminit.c"
 #include "northbridge/intel/i82810/debug.c"
-#include "sdram/generic_sdram.c"
 
 static void main(unsigned long bist)
 {
-	static const struct mem_controller memctrl[] = {
-		{
-		 .d0 = PCI_DEV(0, 0, 0),
-		 .channel0 = {0x50, 0x51},
-		 }
-	};
-
 	if (bist == 0)
 		early_mtrr_init();
 
@@ -75,14 +67,11 @@ static void main(unsigned long bist)
 	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
 
-	/* dump_spd_registers(&memctrl[0]); */
+	/* dump_spd_registers(); */
 
-	/* sdram_initialize() runs out of registers. */
-	/* sdram_initialize(ARRAY_SIZE(memctrl), memctrl); */
-
-	sdram_set_registers(memctrl);
-	sdram_set_spd_registers(memctrl);
-	sdram_enable(0, memctrl);
+	sdram_set_registers();
+	sdram_set_spd_registers();
+	sdram_enable();
 
 	/* Check RAM. */
 	/* ram_check(0, 640 * 1024); */

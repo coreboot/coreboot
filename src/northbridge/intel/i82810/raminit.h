@@ -24,10 +24,8 @@
 /* The 82810 supports max. 2 dual-sided DIMMs. */
 #define DIMM_SOCKETS	2
 
-struct mem_controller {
-	device_t d0;
-	uint16_t channel0[DIMM_SOCKETS];
-};
+/* DIMM0 is at 0x50, DIMM1 is at 0x51. */
+#define DIMM_SPD_BASE 0x50
 
 /* The following table has been bumped over to this header to avoid clutter in 
  * raminit.c. It's used to translate the value read from SPD Byte 31 to a value

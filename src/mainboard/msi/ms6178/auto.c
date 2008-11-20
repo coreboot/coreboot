@@ -37,19 +37,11 @@
 #include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
 #include "pc80/udelay_io.c"
 #include "northbridge/intel/i82810/raminit.c"
-#include "sdram/generic_sdram.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static void main(unsigned long bist)
 {
-	static const struct mem_controller memctrl[] = {
-		{
-			.d0 = PCI_DEV(0, 0, 0),
-			.channel0 = {0x50, 0x51},
-		}
-	};
-
 	if (bist == 0)
 		early_mtrr_init();
 
@@ -66,7 +58,10 @@ static void main(unsigned long bist)
 	enable_smbus();
 
 	report_bist_failure(bist);
-	/* dump_spd_registers(&memctrl[0]); */
-	sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
+
+	/* dump_spd_registers(); */
+	sdram_set_registers();
+	sdram_set_spd_registers();
+	sdram_enable();
 	/* ram_check(0, 640 * 1024); */
 }

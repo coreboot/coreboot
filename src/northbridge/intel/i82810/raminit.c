@@ -62,22 +62,21 @@ SDRAM configuration functions.
 /**
  * Send the specified RAM command to all DIMMs.
  *
- * @param Memory controller
  * @param TODO
  * @param TODO
  */
-static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
-			   uint32_t addr_offset, uint32_t row_offset)
+static void do_ram_command(uint32_t command, uint32_t addr_offset,
+			   uint32_t row_offset)
 {
 	uint8_t reg;
 
 	/* TODO: Support for multiple DIMMs. */
 
 	/* Configure the RAM command. */
-	reg = pci_read_config8(ctrl->d0, DRAMT);
+	reg = pci_read_config8(PCI_DEV(0, 0, 0), DRAMT);
 	reg &= 0x1f;		/* Clear bits 7-5. */
 	reg |= command << 5;
-	pci_write_config8(ctrl->d0, DRAMT, reg);
+	pci_write_config8(PCI_DEV(0, 0, 0), DRAMT, reg);
 
 	/* RAM_COMMAND_NORMAL affects only the memory controller and
 	   doesn't need to be "sent" to the DIMMs. */
@@ -101,8 +100,7 @@ DIMM-independant configuration functions.
 /*
  * Set DRP - DRAM Row Population Register (Device 0).
  */
-static void spd_set_dram_size(const struct mem_controller *ctrl,
-			      uint32_t row_offset)
+static void spd_set_dram_size(uint32_t row_offset)
 {
 	/* The variables drp and dimm_size have to be ints since all the
 	 * SMBus-related functions return ints, and its just easier this way.
@@ -113,12 +111,12 @@ static void spd_set_dram_size(const struct mem_controller *ctrl,
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		/* First check if a DIMM is actually present. */
-		if (smbus_read_byte(ctrl->channel0[i], 2) == 4) {
+		if (smbus_read_byte(DIMM_SPD_BASE + i, 2) == 4) {
 			print_debug("Found DIMM in slot ");
 			print_debug_hex8(i);
 			print_debug("\r\n");
 
-			dimm_size = smbus_read_byte(ctrl->channel0[i], 31);
+			dimm_size = smbus_read_byte(DIMM_SPD_BASE + i, 31);
 
 			/* WISHLIST: would be nice to display it as decimal? */
 			print_debug("DIMM is 0x");
@@ -181,7 +179,7 @@ static void spd_set_dram_size(const struct mem_controller *ctrl,
 
 			/* If the DIMM is dual-sided, the DRP value is +2 */
 			/* TODO: Figure out asymetrical configurations. */
-			if ((smbus_read_byte(ctrl->channel0[i], 127) | 0xf) ==
+			if ((smbus_read_byte(DIMM_SPD_BASE + i, 127) | 0xf) ==
 			    0xff) {
 				print_debug("DIMM is dual-sided\r\n");
 				dimm_size += 2;
@@ -203,13 +201,13 @@ static void spd_set_dram_size(const struct mem_controller *ctrl,
 	print_debug_hex8(drp);
 	print_debug("\r\n");
 
-	pci_write_config8(ctrl->d0, DRP, drp);
+	pci_write_config8(PCI_DEV(0, 0, 0), DRP, drp);
 }
 
-static void set_dram_timing(const struct mem_controller *ctrl)
+static void set_dram_timing(void)
 {
 	/* TODO, for now using default, hopefully safe values. */
-	// pci_write_config8(ctrl->d0, DRAMT, 0x00);
+	// pci_write_config8(PCI_DEV(0, 0, 0), DRAMT, 0x00);
 }
 
 /*
@@ -239,9 +237,9 @@ static void set_dram_timing(const struct mem_controller *ctrl)
  * 0x4445   384MB   0xfd   128MB single-sided   256MB dual-sided
  * 0x0001   512MB   0xff   256MB dual-sided     256MB dual-sided
  */
-static void set_dram_buffer_strength(const struct mem_controller *ctrl)
+static void set_dram_buffer_strength(void)
 {
-	pci_write_config16(ctrl->d0, BUFF_SC, 0x77da);
+	pci_write_config16(PCI_DEV(0, 0, 0), BUFF_SC, 0x77da);
 }
 
 /*-----------------------------------------------------------------------------
@@ -250,15 +248,13 @@ Public interface.
 
 /**
  * TODO.
- *
- * @param Memory controller
  */
-static void sdram_set_registers(const struct mem_controller *ctrl)
+static void sdram_set_registers(void)
 {
 	unsigned long val;
 
 	/* TODO */
-	pci_write_config8(ctrl->d0, GMCHCFG, 0x60);
+	pci_write_config8(PCI_DEV(0, 0, 0), GMCHCFG, 0x60);
 
 	/* PAMR: Programmable Attributes Register
 	 * Every pair of bits controls an address range:
@@ -275,49 +271,44 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 */
 
 	/* Ideally, this should be R/W for as many ranges as possible. */
-	pci_write_config8(ctrl->d0, PAM, 0xff);
+	pci_write_config8(PCI_DEV(0, 0, 0), PAM, 0xff);
 
 	/* Enabling the VGA Framebuffer currently screws up the rest of the boot.
 	 * Disable for now */
 	
 	/* Enable 1MB framebuffer. */
-	//pci_write_config8(ctrl->d0, SMRAM, 0xC0);
+	//pci_write_config8(PCI_DEV(0, 0, 0), SMRAM, 0xC0);
 
-	//val = pci_read_config16(ctrl->d0, MISSC);
+	//val = pci_read_config16(PCI_DEV(0, 0, 0), MISSC);
 	/* Preserve reserved bits. */
 	//val &= 0xff06;
 	/* Set graphics cache window to 32MB, no power throttling. */
 	//val |= 0x0001;
-	//pci_write_config16(ctrl->d0, MISSC, val);
+	//pci_write_config16(PCI_DEV(0, 0, 0), MISSC, val);
 
-	//val = pci_read_config8(ctrl->d0, MISSC2);
+	//val = pci_read_config8(PCI_DEV(0, 0, 0), MISSC2);
 	/* Enable graphics palettes and clock gating (not optional!) */
 	//val |= 0x06;
-	//pci_write_config8(ctrl->d0, MISSC2, val);
+	//pci_write_config8(PCI_DEV(0, 0, 0), MISSC2, val);
 }
 
 /**
  * TODO.
- *
- * @param Memory controller
  */
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
+static void sdram_set_spd_registers(void)
 {
 	/* spd_set_dram_size() moved into sdram_enable() to prevent having
 	 * to pass a variable between here and there.
 	 */
-	set_dram_buffer_strength(ctrl);
+	set_dram_buffer_strength();
 
-	set_dram_timing(ctrl);
+	set_dram_timing();
 }
 
 /**
  * Enable SDRAM.
- *
- * @param Number of controllers
- * @param Memory controller
  */
-static void sdram_enable(int controllers, const struct mem_controller *ctrl)
+static void sdram_enable(void)
 {
 	int i;
 
@@ -327,21 +318,21 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	 */
 	uint32_t row_offset;
 
-	spd_set_dram_size(ctrl, row_offset);
+	spd_set_dram_size(row_offset);
 
 	/* 1. Apply NOP. */
 	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NOP, 0, row_offset);
+	do_ram_command(RAM_COMMAND_NOP, 0, row_offset);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
 	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE, 0, row_offset);
+	do_ram_command(RAM_COMMAND_PRECHARGE, 0, row_offset);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
 	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0, row_offset);
+	do_ram_command(RAM_COMMAND_CBR, 0, row_offset);
 	for (i = 0; i < 8; i++) {
 		read32(0);
 		read32(row_offset);
@@ -350,12 +341,12 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* 4. Mode register set. Wait two memory cycles. */
 	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_MRS, 0x1d0, row_offset);
+	do_ram_command(RAM_COMMAND_MRS, 0x1d0, row_offset);
 	udelay(2);
 
 	/* 5. Normal operation (enables refresh) */
 	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NORMAL, 0, row_offset);
+	do_ram_command(RAM_COMMAND_NORMAL, 0, row_offset);
 	udelay(1);
 
 	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");

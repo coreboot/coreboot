@@ -1,11 +1,11 @@
 
-static void dump_spd_registers(const struct mem_controller *ctrl)
+static void dump_spd_registers(void)
 {
 	int i;
 	print_debug("\r\n");
-	for(i = 0; i < 4; i++) {
+	for(i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned device;
-		device = ctrl->channel0[i];
+		device = DIMM_SPD_BASE + i;
 		if (device) {
 			int j;
 			print_debug("dimm: "); 

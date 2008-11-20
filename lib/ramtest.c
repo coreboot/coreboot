@@ -97,11 +97,11 @@ static int ram_verify(unsigned long start, unsigned long stop)
 		value = ram_read_phys(addr);
 		if (value != addr) {
 			/* Display address with error. */
-			printk(BIOS_ERR, "Fail @%lx Read value=%lx\n",
+			printk(BIOS_DEBUG, "Fail @%lx Read value=%lx\n",
 			       addr, value);
 			/* Abort after 256 verify errors. */
 			if (++i > 256) {
-				printk(BIOS_ERR, "Aborting.\n");
+				printk(BIOS_DEBUG, "256 errors seen, aborting.\n");
 				break;
 			}
 		}
@@ -111,7 +111,7 @@ static int ram_verify(unsigned long start, unsigned long stop)
 	printk(BIOS_DEBUG, "%lx\r", addr);
 
 	/* Print whether or not the verify failed. */
-	printk(BIOS_DEBUG, "\nDRAM range %sverified.", i ? "_NOT_ " : "");
+	printk(BIOS_DEBUG, "\nDRAM range %sverified.\n", i ? "_NOT_ " : "");
 	return i;
 }
 
@@ -121,6 +121,8 @@ static int ram_verify(unsigned long start, unsigned long stop)
  *
  * This is much more of a "Is my DRAM properly configured?" test than
  * a "Is my DRAM faulty?" test, though.
+ * If you want to show a message of the result in non-debug loglevels, be sure
+ * to do so yourself based on the return value.
  *
  * @param start The beginning of the RAM area.
  * @param stop The end of the RAM area.

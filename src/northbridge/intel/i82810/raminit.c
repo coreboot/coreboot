@@ -1,8 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2007 Corey Osgood <corey@slightlyhackish.com>
+ * Copyright (C) 2008 Elia Yehuda <z4ziggy@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,6 +56,22 @@ Macros and definitions.
 #define RAM_COMMAND_MRS		 0x6 /* Mode register set */
 #define RAM_COMMAND_CBR		 0x7 /* CBR */
 
+/*
+ * Table which returns the RAM size in MB when fed the DRP[7:4] or [3:0] value.
+ * Note that 2 is a value which the DRP should never be programmed to.
+ * Some size values appear twice, due to single-sided vs dual-sided banks.
+ */
+static const u16 translate_i82810_to_mb[] = {
+/* DRP	0  1 (2) 3   4   5   6   7   8   9   A   B   C    D    E    F */
+/* MB */0, 8, 0, 16, 16, 24, 32, 32, 48, 64, 64, 96, 128, 128, 192, 256,
+};
+
+/* Size of bank#0 for dual-sided DIMMs */
+static const u8 translate_i82810_to_bank[] = {
+/* DRP	0  1 (2) 3  4  5   6   7  8   9   A  B   C   D  E    F */
+/* MB */0, 0, 0, 8, 0, 16, 16, 0, 32, 32, 0, 64, 64, 0, 128, 128,
+};
+
 /*-----------------------------------------------------------------------------
 SDRAM configuration functions.
 -----------------------------------------------------------------------------*/
@@ -62,35 +79,87 @@ SDRAM configuration functions.
 /**
  * Send the specified RAM command to all DIMMs.
  *
- * @param TODO
- * @param TODO
+ * @param The RAM command to send to the DIMM(s).
  */
-static void do_ram_command(uint32_t command, uint32_t addr_offset,
-			   uint32_t row_offset)
+static void do_ram_command(u8 command)
 {
-	uint8_t reg;
-
-	/* TODO: Support for multiple DIMMs. */
+	u32 addr, addr_offset;
+	u16 dimm_size, dimm_start, dimm_bank;
+	u8 reg8, drp;
+	int i, caslatency;
 
 	/* Configure the RAM command. */
-	reg = pci_read_config8(PCI_DEV(0, 0, 0), DRAMT);
-	reg &= 0x1f;		/* Clear bits 7-5. */
-	reg |= command << 5;
-	pci_write_config8(PCI_DEV(0, 0, 0), DRAMT, reg);
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), DRAMT);
+	reg8 &= 0x1f;		/* Clear bits 7-5. */
+	reg8 |= command << 5;
+	pci_write_config8(PCI_DEV(0, 0, 0), DRAMT, reg8);
 
-	/* RAM_COMMAND_NORMAL affects only the memory controller and
-	   doesn't need to be "sent" to the DIMMs. */
-	/* if (command == RAM_COMMAND_NORMAL) return; */
+	/*
+	 * RAM_COMMAND_NORMAL affects only the memory controller and
+	 * doesn't need to be "sent" to the DIMMs.
+	 */
+	if (command == RAM_COMMAND_NORMAL)
+		return;
 
-	PRINT_DEBUG("    Sending RAM command 0x");
-	PRINT_DEBUG_HEX8(reg);
-	PRINT_DEBUG(" to 0x");
-	PRINT_DEBUG_HEX32(0 + addr_offset);	// FIXME
-	PRINT_DEBUG("\r\n");
+	dimm_start = 0;
+	for (i = 0; i < DIMM_SOCKETS; i++) {
+		/*
+		 * Calculate the address offset where we need to "send" the
+		 * DIMM command to. For most commands the offset is 0, only
+		 * RAM_COMMAND_MRS needs special values, see below.
+		 * The final address offset bits depend on three things:
+		 *
+		 *  (1) Some hardcoded values specified in the datasheet.
+		 *  (2) Which CAS latency we will use/set. This is the SMAA[4]
+		 *      bit, which is 1 for CL3, and 0 for CL2. The bitstring
+		 *      so far has the form '00000001X1010', X being SMAA[4].
+		 *  (3) The DIMM to which we want to send the command. For
+		 *      DIMM0 no special handling is needed, but for DIMM1 we
+		 *      must invert the four bits SMAA[7:4] (see datasheet).
+		 *
+		 * Finally, the bitstring has to be shifted 3 bits to the left.
+		 * See i810 datasheet pages 43, 85, and 86 for details.
+		 */
+		addr_offset = 0;
+		caslatency = 3; /* TODO: Dynamically get CAS latency later. */
+		if (i == 0 && command == RAM_COMMAND_MRS && caslatency == 3)
+			addr_offset = 0x1d0; /* DIMM0, CL3, 0000111010000 */
+		if (i == 1 && command == RAM_COMMAND_MRS && caslatency == 3)
+			addr_offset = 0x650; /* DIMM1, CL3, 0011001010000 */
+		if (i == 0 && command == RAM_COMMAND_MRS && caslatency == 2)
+			addr_offset = 0x150; /* DIMM0, CL2, 0000101010000 */
+		if (i == 1 && command == RAM_COMMAND_MRS && caslatency == 2)
+			addr_offset = 0x1a0; /* DIMM1, CL2, 0000110100000 */
 
-	/* Read from (DIMM start address + addr_offset). */
-	read32(0 + addr_offset);	//first offset is always 0
-	read32(row_offset + addr_offset);
+		drp = pci_read_config8(PCI_DEV(0, 0, 0), DRP);
+		drp = (drp >> (i * 4)) & 0x0f;
+
+		dimm_size = translate_i82810_to_mb[drp];
+		addr = (dimm_start * 1024 * 1024) + addr_offset;
+		if (dimm_size) {
+			PRINT_DEBUG("    Sending RAM command 0x");
+			PRINT_DEBUG_HEX8(reg8);
+			PRINT_DEBUG(" to 0x");
+			PRINT_DEBUG_HEX32(addr);
+			PRINT_DEBUG("\r\n");
+
+			read32(addr);
+		}
+
+		dimm_bank = translate_i82810_to_bank[drp];
+		addr = ((dimm_start + dimm_bank) * 1024 * 1024) + addr_offset;
+		if (dimm_bank) {
+			PRINT_DEBUG("    Sending RAM command 0x");
+			PRINT_DEBUG_HEX8(reg8);
+			PRINT_DEBUG(" to 0x");
+			PRINT_DEBUG_HEX32(addr);
+			PRINT_DEBUG("\r\n");
+
+			read32(addr);
+		}
+
+		dimm_start += dimm_size;
+	}
 }
 
 /*-----------------------------------------------------------------------------
@@ -100,7 +169,7 @@ DIMM-independant configuration functions.
 /*
  * Set DRP - DRAM Row Population Register (Device 0).
  */
-static void spd_set_dram_size(uint32_t row_offset)
+static void spd_set_dram_size(void)
 {
 	/* The variables drp and dimm_size have to be ints since all the
 	 * SMBus-related functions return ints, and its just easier this way.
@@ -136,36 +205,6 @@ static void spd_set_dram_size(uint32_t row_offset)
 				    ("Attempting to treat as 128MB DIMM\r\n");
 				dimm_size = 32;
 			}
-
-			/* Set the row offset, in KBytes (should this be
-			 * Kbits?). Note that this offset is the start of the
-			 * next row.
-			 */
-			row_offset = (dimm_size * 4 * 1024);
-
-			/* This is the way I was doing this, it's provided
-			 * mainly as an alternative to the "new" way.
-			 */
-
-#if 0
-			/* 8MB */
-			if (dimm_size == 0x2)
-				dimm_size = 0x1;
-			/* 16MB */
-			else if (dimm_size == 0x4)
-				dimm_size = 0x4;
-			/* 32MB */
-			else if (dimm_size == 0x8)
-				dimm_size = 0x7;
-			/* 64 MB */
-			else if (dimm_size == 0x10)
-				dimm_size = 0xa;
-			/* 128 MB */
-			else if (dimm_size == 0x20)
-				dimm_size = 0xd;
-			else
-				print_debug("Ram Size not supported\r\n");
-#endif
 
 			/* This array is provided in raminit.h, because it got
 			 * extremely messy. The above way is cleaner, but
@@ -212,7 +251,7 @@ static void set_dram_timing(void)
 
 /*
  * TODO: BUFF_SC needs to be set according to the DRAM tech (x8, x16,
- * or x32), but the datasheet doesn't list all the detaisl. Currently, it
+ * or x32), but the datasheet doesn't list all the details. Currently, it
  * needs to be pulled from the output of 'lspci -xxx Rx92'.
  *
  * Common results (tested on actual hardware) are:
@@ -246,9 +285,6 @@ static void set_dram_buffer_strength(void)
 Public interface.
 -----------------------------------------------------------------------------*/
 
-/**
- * TODO.
- */
 static void sdram_set_registers(void)
 {
 	unsigned long val;
@@ -292,16 +328,10 @@ static void sdram_set_registers(void)
 	//pci_write_config8(PCI_DEV(0, 0, 0), MISSC2, val);
 }
 
-/**
- * TODO.
- */
 static void sdram_set_spd_registers(void)
 {
-	/* spd_set_dram_size() moved into sdram_enable() to prevent having
-	 * to pass a variable between here and there.
-	 */
+	spd_set_dram_size();
 	set_dram_buffer_strength();
-
 	set_dram_timing();
 }
 
@@ -312,41 +342,31 @@ static void sdram_enable(void)
 {
 	int i;
 
-	/* Todo: this will currently work with either one dual sided or two
-	 * single sided DIMMs. Needs to work with 2 dual sided DIMMs in the
-	 * long run.
-	 */
-	uint32_t row_offset;
-
-	spd_set_dram_size(row_offset);
-
 	/* 1. Apply NOP. */
 	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
-	do_ram_command(RAM_COMMAND_NOP, 0, row_offset);
+	do_ram_command(RAM_COMMAND_NOP);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
 	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
-	do_ram_command(RAM_COMMAND_PRECHARGE, 0, row_offset);
+	do_ram_command(RAM_COMMAND_PRECHARGE);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
 	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
-	do_ram_command(RAM_COMMAND_CBR, 0, row_offset);
 	for (i = 0; i < 8; i++) {
-		read32(0);
-		read32(row_offset);
+		do_ram_command(RAM_COMMAND_CBR);
 		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
 	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
-	do_ram_command(RAM_COMMAND_MRS, 0x1d0, row_offset);
+	do_ram_command(RAM_COMMAND_MRS);
 	udelay(2);
 
 	/* 5. Normal operation (enables refresh) */
 	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
-	do_ram_command(RAM_COMMAND_NORMAL, 0, row_offset);
+	do_ram_command(RAM_COMMAND_NORMAL);
 	udelay(1);
 
 	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");

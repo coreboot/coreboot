@@ -25,7 +25,7 @@
 
 static void print_bitdef(FILE *f, const struct msrbits *mb, const char *tail) {
 	uint8_t endbit;
-	if (!reserved && !strcmp(mb->name, "RSVD"))
+	if (!reserved && 0 == strcmp(mb->name, "RSVD"))
 		return;
 	if (1 == mb->size)
 		fprintf(f, "# %5d", mb->start);
@@ -33,7 +33,7 @@ static void print_bitdef(FILE *f, const struct msrbits *mb, const char *tail) {
 		endbit = mb->start - mb->size + 1;
 		fprintf(f, "# %*d:%d", endbit < 10 ? 3 : 2, mb->start, endbit);
 	}
-	if (!strcmp(mb->name, "RSVD"))
+	if (0 == strcmp(mb->name, "RSVD"))
 		fprintf(f, " [%s]", mb->desc);
 	else
 		fprintf(f, " %s %s", mb->name, mb->desc);
@@ -55,7 +55,6 @@ static void print_bitval(FILE *f, const struct msrbits *mb, const struct msr val
 			fprintf(f, "%d", (tmp.hi || tmp.lo) ? 1 : 0);
 			mask = msr_shr(mask, 1);
 		}
-		/* TODO */
 		break;
 	case PRESENT_DEC:
 		fprintf(f, "%d", val.lo);
@@ -141,7 +140,7 @@ const struct msrdef *findmsrdef(const uint32_t addr) {
 void dumpmsrdefs(const struct targetdef *t) {
 	const struct msrdef *m;
 	const struct msrbits *mb;
-	if (!t)
+	if (NULL == t)
 		return;
 	printf("# %s MSRs:\n", t->name);
 	for (m = t->msrs; !MSR_ISEOT(*m); m++) {
@@ -158,7 +157,7 @@ int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu) {
 	struct msr val = MSR1(0);
 	const struct msrdef *m;
 	const struct msrbits *mb;
-	if (!t)
+	if (NULL == t)
 		return 1;
 	fprintf(f, "# %s MSRs:\n", t->name);
 	for (m = t->msrs; !MSR_ISEOT(*m); m++) {
@@ -225,10 +224,10 @@ void decodemsr(const uint8_t cpu, const uint32_t addr, const struct msr val) {
 	const struct msrdef *m = findmsrdef(addr);
 	const struct msrbits *mb;
 
-	if (m)
+	if (NULL != m)
 		printf("# %s ", m->symbol);
 	printf("0x%08x = 0x%08x%08x\n", addr, val.hi, val.lo);
-	if (!m) {
+	if (NULL == m) {
 		fprintf(stderr, "Sorry - no definition exists for this MSR! Please add it and send a signed-off\n");
 		fprintf(stderr, "patch to coreboot@coreboot.org. Thanks for your help!\n");
 		return;
@@ -266,7 +265,7 @@ uint8_t diff_msr(FILE *f, const uint32_t addr, const struct msr a, const struct 
 	if (a.hi == b.hi && a.lo == b.lo)
 		return 0;
 
-	if (!m) {
+	if (NULL == m) {
 		fprintf(stderr, "MSR 0x%08x has no definition! Please add it and send a Signed-off-by patch\n", addr);
 		fprintf(stderr, "to coreboot@coreboot.org. Thank you for your help!\n");
 		return 1;

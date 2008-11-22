@@ -1,0 +1,66 @@
+# Makefile for msrtool
+#
+# This file is part of msrtool.
+#
+# Copyright (c) 2008 Peter Stuge <peter@stuge.se>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+
+PROGRAM = msrtool
+
+CC      = @CC@
+INSTALL = @INSTALL@
+PREFIX  = @PREFIX@
+CFLAGS  = @CFLAGS@
+LDFLAGS = @LDFLAGS@
+
+TARGETS = geodelx.o cs5536.o
+SYSTEMS = linux.o
+OBJS    = $(PROGRAM).o msrutils.o sys.o $(SYSTEMS) $(TARGETS)
+
+all: $(PROGRAM)
+
+$(PROGRAM): $(OBJS) Makefile.deps
+	$(CC) -o $@ $(OBJS) $(LDFLAGS)
+
+$(PROGRAM).o: $(PROGRAM).c
+	$(CC) $(CFLAGS) -DVERSION='"@VERSION@"' -c $< -o $@
+
+install: $(PROGRAM)
+	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
+	mkdir -p $(PREFIX)/share/man/man8
+	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
+
+distprep: distclean Makefile.deps
+
+clean:
+	rm -f $(PROGRAM) $(OBJS)
+
+distclean: clean
+	rm -f Makefile
+
+mrproper: distclean
+	rm -f Makefile.deps
+
+dep:
+	rm -f Makefile.deps
+	$(MAKE) Makefile.deps
+
+Makefile.deps: $(patsubst %.o,%.c,$(OBJS))
+	$(CC) -MM $^ > $@
+
+.PHONY: all distprep clean distclean mrproper dep
+
+-include Makefile.deps

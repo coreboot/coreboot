@@ -1,0 +1,8 @@
+Systems
+-------
+FreeBSD #defines: see svn diff -r 3697:3698 util/
+
+Other ideas
+-----------
+Move MSR definitions and probe instructions into an external text file?
+Handle PCI registers as well?

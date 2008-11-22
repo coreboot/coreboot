@@ -1,0 +1,183 @@
+/*
+ * This file is part of msrtool.
+ *
+ * Copyright (c) 2008 Peter Stuge <peter@stuge.se>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+#ifndef MSRTOOL_H
+#define MSRTOOL_H
+
+#include <stdio.h>
+#include <stdint.h>
+
+#define HEXCHARS "0123456789abcdefABCDEF"
+
+enum {
+	MSRTYPE_RDONLY,
+	MSRTYPE_RDWR,
+	MSRTYPE_WRONLY,
+	MSRTYPE_EOT
+} MsrTypes;
+
+enum {
+	PRESENT_RSVD,
+	PRESENT_DEC,
+	PRESENT_BIN,
+	PRESENT_OCT,
+	PRESENT_HEX,
+	PRESENT_HEXDEC
+} PresentTypes;
+
+struct msr {
+	uint32_t hi;
+	uint32_t lo;
+};
+
+struct msrbitvalues {
+	const struct msr value;
+	const char *text;
+};
+
+struct msrbits {
+	const uint8_t start;
+	const uint8_t size;
+	const char *name;
+	const char *desc;
+	const uint8_t present;
+	const struct msrbitvalues bitval[32];
+};
+
+struct msrdef {
+	const uint32_t addr;
+	const uint8_t type;
+	const struct msr resetval;
+	const char *symbol;
+	const char *desc;
+	const struct msrbits bits[65];
+};
+
+#define MSR1(lo) { 0, (lo) }
+#define MSR2(hi,lo) { (hi), (lo) }
+
+#define BITVAL_EOT .text = NULL
+#define BITVAL_ISEOT(bv) (NULL == (bv).text)
+
+#define BITS_EOT .size = 0
+#define BITS_ISEOT(b) (0 == (b).size)
+
+#define MSR_EOT .type = MSRTYPE_EOT
+#define MSR_ISEOT(m) (MSRTYPE_EOT == (m).type)
+
+#define NOBITS {{ BITVAL_EOT }}
+#define RESERVED "RSVD", "Reserved", PRESENT_HEXDEC, NOBITS
+
+#define MAX_CORES 8
+
+struct targetdef {
+	const char *name;
+	const char *prettyname;
+	int (*probe)(const struct targetdef *target);
+	const struct msrdef *msrs;
+};
+
+#define TARGET_EOT .name = NULL
+#define TARGET_ISEOT(t) (NULL == (t).name)
+
+
+enum SysModes {
+	SYS_RDONLY = 0,
+	SYS_WRONLY,
+	SYS_RDWR
+};
+
+struct sysdef {
+	const char *name;
+	const char *prettyname;
+	int (*probe)(const struct sysdef *system);
+	int (*open)(uint8_t cpu, enum SysModes mode);
+	int (*close)(uint8_t cpu);
+	int (*rdmsr)(uint8_t cpu, uint32_t addr, struct msr *val);
+};
+
+#define SYSTEM_EOT .name = NULL
+#define SYSTEM_ISEOT(s) (NULL == (s).name)
+
+
+struct cpuid_t {
+	uint8_t family;
+	uint8_t model;
+	uint8_t stepping;
+	uint8_t ext_family;
+	uint8_t ext_model;
+};
+
+
+extern const struct sysdef *sys;
+
+extern uint8_t targets_found;
+extern const struct targetdef **targets;
+
+extern uint8_t reserved, verbose, quiet;
+
+#define printf_quiet(x...) do { if (!quiet) fprintf(stderr,x); } while(0)
+#define printf_verbose(x...) do { if (verbose && !quiet) fprintf(stderr,x); } while(0)
+
+#define SYSERROR(call, addr) do { \
+	const struct msrdef *m = findmsrdef(addr); \
+	if (m) \
+		fprintf(stderr, "%s: " #call "(0x%08x) %s: %s\n", __func__, addr, m->symbol, strerror(errno)); \
+	else \
+		fprintf(stderr, "%s: " #call "(0x%08x): %s\n", __func__, addr, strerror(errno)); \
+} while (0);
+
+/* sys.c */
+struct cpuid_t *cpuid(void);
+
+/* msrutils.c */
+void hexprint(FILE *f, const struct msr val, const uint8_t bits);
+int msr_eq(const struct msr a, const struct msr b);
+struct msr msr_shl(const struct msr a, const uint8_t bits);
+struct msr msr_shr(const struct msr a, const uint8_t bits);
+void msr_and(struct msr *a, const struct msr b);
+const struct msrdef *findmsrdef(const uint32_t addr);
+void dumpmsrdefs(const struct targetdef *t);
+int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu);
+uint8_t str2msr(char *str, struct msr *msr);
+void decodemsr(const uint8_t cpu, const uint32_t addr, const struct msr val);
+uint8_t diff_msr(FILE *fout, const uint32_t addr, const struct msr a, const struct msr b);
+
+
+
+/** system externs **/
+
+/* linux.c */
+extern int linux_probe(const struct sysdef *system);
+extern int linux_open(uint8_t cpu, enum SysModes mode);
+extern int linux_close(uint8_t cpu);
+extern int linux_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val);
+
+
+/** target externs **/
+
+/* geodelx.c */
+extern int geodelx_probe(const struct targetdef *t);
+extern const struct msrdef geodelx_msrs[];
+
+/* cs5536.c */
+extern int cs5536_probe(const struct targetdef *t);
+extern const struct msrdef cs5536_msrs[];
+
+#endif /* MSRTOOL_H */

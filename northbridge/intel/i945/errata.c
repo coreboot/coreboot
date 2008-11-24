@@ -17,6 +17,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <mainboard.h>
+#include <console.h>
+#include <string.h>
+#include <mtrr.h>
+#include <macros.h>
+#include <spd_ddr2.h>
+#include <cpu.h>
+#include <msr.h>
+#include <device/pci.h>
+#include <pci_ops.h>
+#include <spd.h>
+#include <io.h>
+#include "raminit.h"
+#include "i945.h"
+#include "pcie_config.h"
+
 int fixup_i945_errata(void)
 {
 	u32 reg32;

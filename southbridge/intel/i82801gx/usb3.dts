@@ -19,5 +19,5 @@
  */
 
 {
-	device_operations = "i82801gb_usb3";
+	device_operations = "i82801gx_usb3";
 };

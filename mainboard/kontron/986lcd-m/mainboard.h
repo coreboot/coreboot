@@ -30,4 +30,4 @@
 
 /* nowhere else to go yet */
 #define TEST_SMM_FLASH_LOCKDOWN 0
-#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL 1
+

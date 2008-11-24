@@ -30,21 +30,6 @@
 #include <config.h>
 #include "i82801gx.h"
 #include "i82801gx_smbus.h"
-
-int smbus_read_byte(struct bus *bus, struct device * dev, u8 address)
-{
-	u16 device;
-	struct resource *res;
-
-	device = dev->path.u.i2c.device;
-	res = find_resource(bus->dev, 0x20);
-
-	return do_smbus_read_byte(res->base, device, address);
-}
-
-static struct smbus_bus_operations lops_smbus_bus = {
-	.read_byte	= smbus_read_byte,
-};
 void i82801gx_enable(struct device * dev);
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
@@ -59,6 +44,5 @@ struct device_operations i82801gx_smbus = {
 	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.ops_pci		 = &pci_dev_ops_pci,
-	.ops_smbus_bus		= &lops_smbus_bus,
 };
 

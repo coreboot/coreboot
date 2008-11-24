@@ -128,6 +128,9 @@ static void i82801gx_power_options(struct device * dev)
 {
 	u8 reg8;
 	u16 reg16;
+#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL 1
+#endif
 
 	int pwr_on=MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	int nmi_option;

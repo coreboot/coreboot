@@ -49,7 +49,7 @@ static void usb_init(struct device *dev)
 void i82801gx_enable(struct device * dev);
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
-struct device_operations i82801gb_usb1 = {
+struct device_operations i82801gx_usb1 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
 			      .device = 0x27c8}}},
@@ -63,7 +63,7 @@ struct device_operations i82801gb_usb1 = {
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
-struct device_operations i82801gb_usb2 = {
+struct device_operations i82801gx_usb2 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
 			      .device = 0x27c9}}},
@@ -77,7 +77,7 @@ struct device_operations i82801gb_usb2 = {
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
-struct device_operations i82801gb_usb3 = {
+struct device_operations i82801gx_usb3 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
 			      .device = 0x27ca}}},
@@ -91,7 +91,7 @@ struct device_operations i82801gb_usb3 = {
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */
-struct device_operations i82801gb_usb4 = {
+struct device_operations i82801gx_usb4 = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
 			      .device = 0x27cb}}},

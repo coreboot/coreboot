@@ -29,7 +29,7 @@
 #include <config.h>
 #include "i82801gx.h"
 
-typedef struct southbridge_intel_i82801gx_ide_dts_config config_t;
+typedef struct southbridge_intel_i82801gx_ide_config config_t;
 
 static void ide_init(struct device *dev)
 {

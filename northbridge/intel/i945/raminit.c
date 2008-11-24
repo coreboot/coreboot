@@ -32,8 +32,10 @@
 #include <lib.h>
 #include <spd.h>
 #include <io.h>
+#include <types.h>
 #include "raminit.h"
 #include "i945.h"
+#include "pcie_config.h"
 
 //#include "lib/memset.c"
 
@@ -808,65 +810,148 @@ static void sdram_write_slew_rates(u32 offset, const u32 *slew_rate_table)
 		MCHBAR32(offset+(i*4)) = slew_rate_table[i];
 }
 
+static const u32 dq2030[] = {
+	0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e, 
+	0x1a181614, 0x22201e1c, 0x2a282624, 0x3934302d,
+	0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f, 
+	0x19171513, 0x211f1d1b, 0x2d292623, 0x3f393531
+};
+	
+static const u32 dq2330[] = {
+	0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e, 
+	0x1a181614, 0x22201e1c, 0x2a282624, 0x3934302d,
+	0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f, 
+	0x19171513, 0x211f1d1b, 0x2d292623, 0x3f393531
+};
+	
+static const u32 cmd2710[] = {
+	0x07060605, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b,	
+	0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f,
+	
+	0x1110100f, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b, 
+	0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f
+};
+	
+static const u32 cmd3210[] = {
+	0x0f0d0b0a, 0x17151311, 0x1f1d1b19, 0x1f1f1f1f, 
+	0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f,
+	0x18171615, 0x1f1f1c1a, 0x1f1f1f1f, 0x1f1f1f1f, 
+	0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f
+};
+	
+static const u32 clk2030[] = {
+	0x0e0d0d0c, 0x100f0f0e, 0x100f0e0d, 0x15131211, 
+	0x1d1b1917, 0x2523211f, 0x2a282927, 0x32302e2c, 
+	0x17161514, 0x1b1a1918, 0x1f1e1d1c, 0x23222120, 
+	0x27262524, 0x2d2b2928, 0x3533312f, 0x3d3b3937
+};
+	
+static const u32 ctl3215[] = {
+	0x01010000, 0x03020101, 0x07060504, 0x0b0a0908, 
+	0x100f0e0d, 0x14131211, 0x18171615, 0x1c1b1a19,
+	0x05040403, 0x07060605, 0x0a090807, 0x0f0d0c0b, 
+	0x14131211, 0x18171615, 0x1c1b1a19, 0x201f1e1d
+};
+	
+static const u32 ctl3220[] = {
+	0x05040403, 0x07060505, 0x0e0c0a08, 0x1a171411, 
+	0x2825221f, 0x35322f2b, 0x3e3e3b38, 0x3e3e3e3e,
+	0x09080807, 0x0b0a0a09, 0x0f0d0c0b, 0x1b171311, 
+	0x2825221f, 0x35322f2b, 0x3e3e3b38, 0x3e3e3e3e
+};
+	
+static const u32 nc[] = {
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x00000000
+};
+enum {NC, DQ2030, CMD3210, CTL3215, CLK2030, CMD2710, DQ2330};
+	
+static const u8 dual_channel_slew_group_lookup[] = {
+	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD2710, 
+	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,      
+	
+	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210, 
+	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD2710, 
+	DQ2030, CMD3210, CTL3215, NC,      CLK2030, NC,      NC,     NC,      
+	
+	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD2710, 
+	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,      
+	
+	DQ2030, CMD2710, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD2710, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210, 
+	DQ2030, CMD2710, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210, 
+	DQ2030, CMD2710, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD2710, 
+	DQ2030, CMD2710, CTL3215, NC,      CLK2030, NC,      NC,     NC,      
+	
+	NC,     NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210, 
+	NC,     NC,      CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210, 
+	NC,     NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210, 
+	NC,     NC,      CTL3215, NC,      CLK2030, CLK2030, DQ2030, CMD2710  
+};
+	
+static const u8 const single_channel_slew_group_lookup[] = {
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,      
+	
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      NC,     NC,      
+	
+	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,      
+	
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210, 
+	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      NC,     NC,      
+	
+	DQ2330, NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210, 
+	DQ2330, NC,      CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210, 
+	DQ2330, NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210, 
+	DQ2330, NC,      CTL3215, NC,      CLK2030, CLK2030, DQ2030, CMD3210  
+};
+
+static const u32 * map(u32 *table, unsigned int i){
+	const u32 *p = NULL;
+	switch(table[i]) {
+		case NC: p = nc; break;
+		case DQ2030: p = dq2030; break;
+		case CMD3210: p = cmd3210; break;
+		case CTL3215: p = ctl3215; break;
+		case CLK2030: p = clk2030; break;
+		case CMD2710: p = cmd2710; break;
+		case DQ2330: p = dq2330; break;
+		default: printk(BIOS_ERR, "Missing table entry %p[0x%x]\n", table, i); die("fix raminit.c");
+	}
+	return p;
+	
+}
+
+
 static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 {
-	static const u32 dq2030[] = {
-		0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e, 
-		0x1a181614, 0x22201e1c, 0x2a282624, 0x3934302d,
-		0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f, 
-		0x19171513, 0x211f1d1b, 0x2d292623, 0x3f393531
-	};
+	u32 *table;
 
-	static const u32 dq2330[] = {
-		0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e, 
-		0x1a181614, 0x22201e1c, 0x2a282624, 0x3934302d,
-		0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f, 
-		0x19171513, 0x211f1d1b, 0x2d292623, 0x3f393531
-	};
-
-	static const u32 cmd2710[] = {
-		0x07060605, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b,	
-		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f,
-		
-		0x1110100f, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b, 
-		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f
-	};
-
-	static const u32 cmd3210[] = {
-		0x0f0d0b0a, 0x17151311, 0x1f1d1b19, 0x1f1f1f1f, 
-		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f,
-		0x18171615, 0x1f1f1c1a, 0x1f1f1f1f, 0x1f1f1f1f, 
-		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f
-	};
-
-	static const u32 clk2030[] = {
-		0x0e0d0d0c, 0x100f0f0e, 0x100f0e0d, 0x15131211, 
-		0x1d1b1917, 0x2523211f, 0x2a282927, 0x32302e2c, 
-		0x17161514, 0x1b1a1918, 0x1f1e1d1c, 0x23222120, 
-		0x27262524, 0x2d2b2928, 0x3533312f, 0x3d3b3937
-	};
-
-	static const u32 ctl3215[] = {
-		0x01010000, 0x03020101, 0x07060504, 0x0b0a0908, 
-		0x100f0e0d, 0x14131211, 0x18171615, 0x1c1b1a19,
-		0x05040403, 0x07060605, 0x0a090807, 0x0f0d0c0b, 
-		0x14131211, 0x18171615, 0x1c1b1a19, 0x201f1e1d
-	};
-
-	static const u32 ctl3220[] = {
-		0x05040403, 0x07060505, 0x0e0c0a08, 0x1a171411, 
-		0x2825221f, 0x35322f2b, 0x3e3e3b38, 0x3e3e3e3e,
-		0x09080807, 0x0b0a0a09, 0x0f0d0c0b, 0x1b171311, 
-		0x2825221f, 0x35322f2b, 0x3e3e3b38, 0x3e3e3e3e
-	};
-
-	static const u32 nc[] = {
-		0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000,
-		0x00000000, 0x00000000, 0x00000000, 0x00000000
-	};
-
+#if 0
 	static const u32 const * const dual_channel_slew_group_lookup[] = {
 		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
 		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
@@ -928,6 +1013,7 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 		dq2330, nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
 		dq2330, nc,      ctl3215, nc,      clk2030, clk2030, dq2030, cmd3210  
 	};
+#endif
 
 
 	/* Strength multiplier tables */
@@ -1016,23 +1102,23 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 	MCHBAR8(G8SC) = strength_multiplier[idx * 8 + 7]; 
 
 	/* Channel 0 */
-	sdram_write_slew_rates(G1SRPUT, slew_group_lookup[idx * 8 + 0]);
-	sdram_write_slew_rates(G2SRPUT, slew_group_lookup[idx * 8 + 1]);
-	if ((slew_group_lookup[idx * 8 + 2] != nc) && (sysinfo->package == SYSINFO_PACKAGE_STACKED)) {
+	sdram_write_slew_rates(G1SRPUT, map(slew_group_lookup, idx * 8 + 0));
+	sdram_write_slew_rates(G2SRPUT, map(slew_group_lookup, idx * 8 + 1));
+	if ((map(slew_group_lookup, idx * 8 + 2) != nc) && (sysinfo->package == SYSINFO_PACKAGE_STACKED)) {
 		
 		
 		sdram_write_slew_rates(G3SRPUT, ctl3220);
 	} else {
-		sdram_write_slew_rates(G3SRPUT, slew_group_lookup[idx * 8 + 2]);
+		sdram_write_slew_rates(G3SRPUT, map(slew_group_lookup, idx * 8 + 2));
 	}
-	sdram_write_slew_rates(G4SRPUT, slew_group_lookup[idx * 8 + 3]);
-	sdram_write_slew_rates(G5SRPUT, slew_group_lookup[idx * 8 + 4]);
-	sdram_write_slew_rates(G6SRPUT, slew_group_lookup[idx * 8 + 5]);
+	sdram_write_slew_rates(G4SRPUT, map(slew_group_lookup, idx * 8 + 3));
+	sdram_write_slew_rates(G5SRPUT, map(slew_group_lookup, idx * 8 + 4));
+	sdram_write_slew_rates(G6SRPUT, map(slew_group_lookup, idx * 8 + 5));
 
 	/* Channel 1 */
 	if (sysinfo->dual_channel) {
-		sdram_write_slew_rates(G7SRPUT, slew_group_lookup[idx * 8 + 6]);
-		sdram_write_slew_rates(G8SRPUT, slew_group_lookup[idx * 8 + 7]);
+		sdram_write_slew_rates(G7SRPUT, map(slew_group_lookup, idx * 8 + 6));
+		sdram_write_slew_rates(G8SRPUT, map(slew_group_lookup, idx * 8 + 7));
 	} else {
 		sdram_write_slew_rates(G7SRPUT, nc);
 		sdram_write_slew_rates(G8SRPUT, nc);
@@ -2644,6 +2730,545 @@ static void sdram_setup_processor_side(void)
 
 	if (i945_silicon_revision() == 0)
 		MCHBAR32(SLPCTL) |= (1 << 8);
+}
+
+static void i945_detect_chipset(void)
+{
+	u8 reg8;
+
+	printk(BIOS_INFO, "\n");
+	reg8 = (pci_conf1_read_config8(PCI_BDF(0, 0x00, 0), 0xe7) & 0x70) >> 4;
+	switch (reg8) {
+	case 1:
+		printk(BIOS_INFO, "Mobile Intel(R) 945GM/GME Express");
+		break;
+	case 2:
+		printk(BIOS_INFO, "Mobile Intel(R) 945GMS/GU Express");
+		break;
+	case 3:
+		printk(BIOS_INFO, "Mobile Intel(R) 945PM Express");
+		break;
+	case 5:
+		printk(BIOS_INFO, "Intel(R) 945GT Express");
+		break;
+	case 6:
+		printk(BIOS_INFO, "Mobile Intel(R) 943/940GML Express");
+		break;
+	default:
+		printk(BIOS_INFO, "Unknown (%02x)", reg8);	/* Others reserved. */
+	}
+	printk(BIOS_INFO, " Chipset\n");
+
+	printk(BIOS_DEBUG, "(G)MCH capable of up to FSB ");
+	reg8 = (pci_conf1_read_config8(PCI_BDF(0, 0x00, 0), 0xe3) & 0xe0) >> 5;
+	switch (reg8) {
+	case 2:
+		printk(BIOS_DEBUG, "800 MHz"); /* According to 965 spec */
+		break;
+	case 3:
+		printk(BIOS_DEBUG, "667 MHz");
+		break;
+	case 4:
+		printk(BIOS_DEBUG, "533 MHz");
+		break;
+	default:
+		printk(BIOS_DEBUG, "N/A MHz (%02x)", reg8);
+	}
+	printk(BIOS_DEBUG, "\n");
+
+	printk(BIOS_DEBUG, "(G)MCH capable of ");
+	reg8 = (pci_conf1_read_config8(PCI_BDF(0, 0x00, 0), 0xe4) & 0x07);
+	switch (reg8) {
+	case 2:
+		printk(BIOS_DEBUG, "up to DDR2-667");
+		break;
+	case 3:
+		printk(BIOS_DEBUG, "up to DDR2-533");
+		break;
+	case 4:
+		printk(BIOS_DEBUG, "DDR2-400");
+		break;
+	default:
+		printk(BIOS_INFO, "unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
+	}
+	printk(BIOS_DEBUG, "\n");
+}
+
+static void i945_setup_bars(void)
+{
+	u8 reg8;
+	void setup_ich7_gpios(void);
+	/* As of now, we don't have all the A0 workarounds implemented */
+	if (i945_silicon_revision() == 0)
+		printk(BIOS_INFO, "Warning: i945 silicon revision A0 might not work correctly.\n");
+
+	/* Setting up Southbridge. In the northbridge code. */
+	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
+	pci_conf1_write_config32(PCI_BDF(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);
+
+	pci_conf1_write_config32(PCI_BDF(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
+	pci_conf1_write_config8(PCI_BDF(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
+
+	pci_conf1_write_config32(PCI_BDF(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
+	pci_conf1_write_config8(PCI_BDF(0, 0x1f, 0), 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
+	setup_ich7_gpios();
+	printk(BIOS_DEBUG, " done.\n");
+
+	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
+	RCBA32(GCS) = (RCBA32(0x3410)) | (1 << 5);	/* No reset */
+	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
+	printk(BIOS_DEBUG, " done.\n");
+
+	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
+	/* Set up all hardcoded northbridge BARs */
+	pci_conf1_write_config32(PCI_BDF(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
+	pci_conf1_write_config32(PCI_BDF(0, 0x00, 0), MCHBAR, DEFAULT_MCHBAR | 1);
+	pci_conf1_write_config32(PCI_BDF(0, 0x00, 0), PCIEXBAR, DEFAULT_PCIEXBAR | 5); /* 64MB - busses 0-63 */
+	pci_conf1_write_config32(PCI_BDF(0, 0x00, 0), DMIBAR, DEFAULT_DMIBAR | 1);
+	pci_conf1_write_config32(PCI_BDF(0, 0x00, 0), X60BAR, DEFAULT_X60BAR | 1);
+
+	/* Hardware default is 8MB UMA. If someone wants to make this a
+	 * CMOS or compile time option, send a patch.
+	 * pci_conf1_write_config16(PCI_BDF(0, 0x00, 0), GGC, 0x30);
+	 */
+
+	/* Set C0000-FFFFF to access RAM on both reads and writes */
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM0, 0x30);
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM1, 0x33);
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM2, 0x33);
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM3, 0x33);
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM4, 0x33);
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM5, 0x33);
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM6, 0x33);
+
+	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), TOLUD, 0x40);	/* 1G XXX dynamic! */
+
+	pci_conf1_write_config32(PCI_BDF(0, 0x00, 0), SKPAD, 0xcafebabe);
+	printk(BIOS_DEBUG, " done.\n");
+
+	/* Wait for MCH BAR to come up */
+	printk(BIOS_DEBUG, "Waiting for MCHBAR to come up...");
+	if ((pci_conf1_read_config8(PCI_BDF(0, 0x0f, 0), 0xe6) & 0x2) == 0x00) { /* Bit 49 of CAPID0 */
+		do {
+			reg8 = *(volatile u8 *)0xfed40000;
+		} while (!(reg8 & 0x80));
+	}
+	printk(BIOS_DEBUG, "ok\n");
+}
+
+static void i945_setup_egress_port(void)
+{
+	u32 reg32;
+	u32 timeout;
+
+	printk(BIOS_DEBUG, "Setting up Egress Port RCRB\n");
+
+	/* Egress Port Virtual Channel 0 Configuration */
+
+	/* map only TC0 to VC0 */
+	reg32 = EPBAR32(EPVC0RCTL);
+	reg32 &= 0xffffff01;
+	EPBAR32(EPVC0RCTL) = reg32;
+
+	
+	reg32 = EPBAR32(EPPVCCAP1);
+	reg32 &= ~(7 << 0);
+	reg32 |= 1;
+	EPBAR32(EPPVCCAP1) = reg32;
+
+	/* Egress Port Virtual Channel 1 Configuration */
+	reg32 = EPBAR32(0x2c);
+	reg32 &= 0xffffff00;
+	if ((MCHBAR32(CLKCFG) & 7) == 1)
+		reg32 |= 0x0d;	/* 533MHz */
+	if ((MCHBAR32(CLKCFG) & 7) == 3)
+		reg32 |= 0x10;	/* 667MHz */
+	EPBAR32(0x2c) = reg32;
+
+	EPBAR32(EPVC1MTS) = 0x0a0a0a0a;
+
+	reg32 = EPBAR32(EPVC1RCAP);
+	reg32 &= ~(0x7f << 16);
+	reg32 |= (0x0a << 16);
+	EPBAR32(EPVC1RCAP) = reg32;
+
+	if ((MCHBAR32(CLKCFG) & 7) == 1) {	/* 533MHz */
+		EPBAR32(EPVC1IST + 0) = 0x009c009c;
+		EPBAR32(EPVC1IST + 4) = 0x009c009c;
+	}
+
+	if ((MCHBAR32(CLKCFG) & 7) == 3) {	/* 667MHz */
+		EPBAR32(EPVC1IST + 0) = 0x00c000c0;
+		EPBAR32(EPVC1IST + 4) = 0x00c000c0;
+	}
+
+	/* Is internal graphics enabled? */
+	if (pci_conf1_read_config8(PCI_BDF(0, 0x0, 0), 54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
+		MCHBAR32(MMARB1) |= (1 << 17);
+	}
+
+	/* Assign Virtual Channel ID 1 to VC1 */
+	reg32 = EPBAR32(EPVC1RCTL);
+	reg32 &= ~(7 << 24);
+	reg32 |= (1 << 24);
+	EPBAR32(EPVC1RCTL) = reg32;
+	
+	reg32 = EPBAR32(EPVC1RCTL);
+	reg32 &= 0xffffff01;
+	reg32 |= (1 << 7);
+	EPBAR32(EPVC1RCTL) = reg32;
+	
+	EPBAR32(PORTARB + 0x00) = 0x01000001;
+	EPBAR32(PORTARB + 0x04) = 0x00040000;
+	EPBAR32(PORTARB + 0x08) = 0x00001000;
+	EPBAR32(PORTARB + 0x0c) = 0x00000040;
+	EPBAR32(PORTARB + 0x10) = 0x01000001;
+	EPBAR32(PORTARB + 0x14) = 0x00040000;
+	EPBAR32(PORTARB + 0x18) = 0x00001000;
+	EPBAR32(PORTARB + 0x1c) = 0x00000040;
+	
+	EPBAR32(EPVC1RCTL) |= (1 << 16);
+	EPBAR32(EPVC1RCTL) |= (1 << 16);
+
+	printk(BIOS_DEBUG, "Loading port arbitration table ...");
+	/* Loop until bit 0 becomes 0 */
+	timeout = 0x7fffff;
+	while ((EPBAR16(EPVC1RSTS) & 1) && --timeout) ;
+	if (!timeout)
+		printk(BIOS_DEBUG, "timeout!\n");
+	else
+		printk(BIOS_DEBUG, "ok\n");
+
+	/* Now enable VC1 */
+	EPBAR32(EPVC1RCTL) |= (1 << 31);
+
+	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
+	/* Wait for VC1 negotiation pending */
+	timeout = 0x7fff;
+	while ((EPBAR16(EPVC1RSTS) & (1 << 1)) && --timeout) ;
+	if (!timeout)
+		printk(BIOS_DEBUG, "timeout!\n");
+	else
+		printk(BIOS_DEBUG, "ok\n");
+
+}
+
+static void ich7_setup_dmi_rcrb(void)
+{
+	u16 reg16;
+
+	
+	reg16 = RCBA16(LCTL);
+	reg16 &= ~(3 << 0);
+	reg16 |= 1;
+	RCBA16(LCTL) = reg16;
+
+	RCBA32(V0CTL) = 0x80000001;
+	RCBA32(V1CAP) = 0x03128010;
+	RCBA32(ESD) = 0x00000810;
+	RCBA32(RP1D) = 0x01000003;
+	RCBA32(RP2D) = 0x02000002;
+	RCBA32(RP3D) = 0x03000002;
+	RCBA32(RP4D) = 0x04000002;
+	RCBA32(HDD) = 0x0f000003;
+	RCBA32(RP5D) = 0x05000002;
+
+	RCBA32(RPFN) = 0x00543210;
+
+	pci_conf1_write_config16(PCI_BDF(0, 0x1c, 0), 0x42, 0x0141);	
+	pci_conf1_write_config16(PCI_BDF(0, 0x1c, 4), 0x42, 0x0141);	
+	pci_conf1_write_config16(PCI_BDF(0, 0x1c, 5), 0x42, 0x0141);	
+
+	pci_conf1_write_config32(PCI_BDF(0, 0x1c, 4), 0x54, 0x00480ce0);	
+	pci_conf1_write_config32(PCI_BDF(0, 0x1c, 5), 0x54, 0x00500ce0);	
+}
+
+static void i945_setup_dmi_rcrb(void)
+{
+	u32 reg32;
+	u32 timeout;
+
+	printk(BIOS_DEBUG, "Setting up DMI RCRB\n");
+
+	/* Virtual Channel 0 Configuration */
+	reg32 = DMIBAR32(DMIVC0RCTL0);
+	reg32 &= 0xffffff01;
+	DMIBAR32(DMIVC0RCTL0) = reg32;
+	
+	reg32 = DMIBAR32(DMIPVCCAP1);
+	reg32 &= ~(7 << 0);
+	reg32 |= 1;
+	DMIBAR32(DMIPVCCAP1) = reg32;
+	
+	reg32 = DMIBAR32(DMIVC1RCTL);
+	reg32 &= ~(7 << 24);
+	reg32 |= (1 << 24);	/* NOTE: This ID must match ICH7 side */
+	DMIBAR32(DMIVC1RCTL) = reg32;
+	
+	reg32 = DMIBAR32(DMIVC1RCTL);
+	reg32 &= 0xffffff01;
+	reg32 |= (1 << 7);
+	DMIBAR32(DMIVC1RCTL) = reg32;
+
+	/* Now enable VC1 */
+	DMIBAR32(DMIVC1RCTL) |= (1 << 31);
+
+	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
+	/* Wait for VC1 negotiation pending */
+	timeout = 0x7ffff;
+	while ((DMIBAR16(DMIVC1RSTS) & (1 << 1)) && --timeout) ;
+	if (!timeout)
+		printk(BIOS_DEBUG, "timeout!\n");
+	else
+		printk(BIOS_DEBUG, "done..\n");
+#if 1
+	/* Enable Active State Power Management (ASPM) L0 state */
+
+	reg32 = DMIBAR32(DMILCAP);
+	reg32 &= ~(7 << 12);
+	reg32 |= (2 << 12);	
+
+	reg32 &= ~(7 << 15);
+	
+	reg32 |= (2 << 15);	
+	DMIBAR32(DMILCAP) = reg32;
+
+	reg32 = DMIBAR32(DMICC);
+	reg32 &= 0x00ffffff;	
+	reg32 &= ~(3 << 0);
+	reg32 |= (1 << 0);	
+	DMIBAR32(DMICC) = reg32;
+
+	if (0) {
+		DMIBAR32(DMILCTL) |= (3 << 0);
+	}
+#endif
+
+	/* Last but not least, some additional steps */
+	reg32 = MCHBAR32(FSBSNPCTL);
+	reg32 &= ~(0xff << 2);
+	reg32 |= (0xaa << 2);
+	MCHBAR32(FSBSNPCTL) = reg32;
+
+	DMIBAR32(0x2c) = 0x86000040;
+
+	reg32 = DMIBAR32(0x204);
+	reg32 &= ~0x3ff;
+#if 1
+	reg32 |= 0x13f;		/* for x4 DMI only */
+#else
+	reg32 |= 0x1e4; /* for x2 DMI only */
+#endif
+	DMIBAR32(0x204) = reg32;
+
+	if (pci_conf1_read_config8(PCI_BDF(0, 0x0, 0), 54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
+		DMIBAR32(0x200) |= (1 << 21);
+	} else {
+		DMIBAR32(0x200) &= ~(1 << 21);
+	}
+
+	reg32 = DMIBAR32(0x204);
+	reg32 &= ~((1 << 11) | (1 << 10));
+	DMIBAR32(0x204) = reg32;
+
+	reg32 = DMIBAR32(0x204);
+	reg32 &= ~(0xff << 12);
+	reg32 |= (0x0d << 12);
+	DMIBAR32(0x204) = reg32;
+
+	DMIBAR32(DMICTL1) |= (3 << 24);
+
+	reg32 = DMIBAR32(0x200);
+	reg32 &= ~(0x3 << 26);
+	reg32 |= (0x02 << 26);
+	DMIBAR32(0x200) = reg32;
+
+	DMIBAR32(DMIDRCCFG) &= ~(1 << 31);
+	DMIBAR32(DMICTL2) |= (1 << 31);
+
+	if (i945_silicon_revision() >= 3) {
+		reg32 = DMIBAR32(0xec0);
+		reg32 &= 0x0fffffff;
+		reg32 |= (2 << 28);
+		DMIBAR32(0xec0) = reg32;
+
+		reg32 = DMIBAR32(0xed4);
+		reg32 &= 0x0fffffff;
+		reg32 |= (2 << 28);
+		DMIBAR32(0xed4) = reg32;
+
+		reg32 = DMIBAR32(0xee8);
+		reg32 &= 0x0fffffff;
+		reg32 |= (2 << 28);
+		DMIBAR32(0xee8) = reg32;
+
+		reg32 = DMIBAR32(0xefc);
+		reg32 &= 0x0fffffff;
+		reg32 |= (2 << 28);
+		DMIBAR32(0xefc) = reg32;
+	}
+
+	/* wait for bit toggle to 0 */
+	printk(BIOS_DEBUG, "Waiting for DMI hardware...");
+	timeout = 0x7fffff;
+	while ((DMIBAR8(0x32) & (1 << 1)) && --timeout) ;
+	if (!timeout)
+		printk(BIOS_DEBUG, "timeout!\n");
+	else
+		printk(BIOS_DEBUG, "ok\n");
+	
+	DMIBAR32(0x1c4) = 0xffffffff;
+	DMIBAR32(0x1d0) = 0xffffffff;
+	DMIBAR32(0x228) = 0xffffffff;
+	
+	DMIBAR32(0x308) = DMIBAR32(0x308);
+	DMIBAR32(0x314) = DMIBAR32(0x314);
+	DMIBAR32(0x324) = DMIBAR32(0x324);
+	DMIBAR32(0x328) = DMIBAR32(0x328);
+	DMIBAR32(0x338) = DMIBAR32(0x334);
+	DMIBAR32(0x338) = DMIBAR32(0x338);
+
+	if (i945_silicon_revision() == 1 && ((MCHBAR8(0xe08) & (1 << 5)) == 1)) {
+		if ((MCHBAR32(0x214) & 0xf) != 0x3) {	
+			printk(BIOS_INFO, "DMI link requires A1 stepping workaround. Rebooting.\n");
+			reg32 = MCHBAR32(MMARB1);
+			reg32 &= 0xfffffff8;
+			reg32 |= 3;
+			outb(0x06, 0xcf9);
+			for (;;) ;	/* wait for reset */
+		}
+	}
+}
+
+static void i945_setup_pci_express_x16(void)
+{
+	u32 timeout;
+	u32 reg32;
+	u16 reg16;
+	u8 reg8;
+
+	/* For now we just disable the x16 link */
+	printk(BIOS_DEBUG, "Disabling PCI Express x16 Link\n");
+
+	MCHBAR16(UPMC1) |= (1 << 5) | (1 << 0);
+
+	reg8 = pcie_read_config8(PCI_BDF(0, 0x01, 0), BCTRL1);
+	reg8 |= (1 << 6);
+	pcie_write_config8(PCI_BDF(0, 0x01, 0), BCTRL1, reg8);
+
+	reg32 = pcie_read_config32(PCI_BDF(0, 0x01, 0), 0x224);
+	reg32 |= (1 << 8);
+	pcie_write_config32(PCI_BDF(0, 0x01, 0), 0x224, reg32);
+
+	reg8 = pcie_read_config8(PCI_BDF(0, 0x01, 0), BCTRL1);
+	reg8 &= ~(1 << 6);
+	pcie_write_config8(PCI_BDF(0, 0x01, 0), BCTRL1, reg8);
+
+	printk(BIOS_DEBUG, "Wait for link to enter detect state... ");
+	timeout = 0x7fffff;
+	for (reg32 = pcie_read_config32(PCI_BDF(0, 0x01, 0), 0x214);
+	     (reg32 & 0x000f0000) && --timeout;) ;
+	if (!timeout)
+		printk(BIOS_DEBUG, "timeout!\n");
+	else
+		printk(BIOS_DEBUG, "ok\n");
+
+	/* Finally: Disable the PCI config header */
+	reg16 = pci_conf1_read_config16(PCI_BDF(0, 0x00, 0), DEVEN);
+	reg16 &= ~DEVEN_D1F0;
+	pci_conf1_write_config16(PCI_BDF(0, 0x00, 0), DEVEN, reg16);
+}
+
+static void i945_setup_root_complex_topology(void)
+{
+	u32 reg32;
+
+	printk(BIOS_DEBUG, "Setting up Root Complex Topology\n");
+	/* Egress Port Root Topology */
+	reg32 = EPBAR32(EPESD);
+	reg32 &= 0xff00ffff;
+	reg32 |= (1 << 16);
+	EPBAR32(EPESD) = reg32;
+	
+	EPBAR32(EPLE1D) |= (1 << 0);
+	
+	EPBAR32(EPLE1A) = DEFAULT_PCIEXBAR + 0x4000;
+	
+	EPBAR32(EPLE2D) |= (1 << 0);
+
+	/* DMI Port Root Topology */
+	reg32 = DMIBAR32(DMILE1D);
+	reg32 &= 0x00ffffff;
+	DMIBAR32(DMILE1D) = reg32;
+	
+	reg32 = DMIBAR32(DMILE1D);
+	reg32 &= 0xff00ffff;
+	reg32 |= (2 << 16);
+	DMIBAR32(DMILE1D) = reg32;
+	
+	DMIBAR32(DMILE1D) |= (1 << 0);
+	
+	DMIBAR32(DMILE1A) = DEFAULT_PCIEXBAR + 0x8000;
+	
+	DMIBAR32(DMILE2D) |= (1 << 0);
+	
+	DMIBAR32(DMILE2A) = DEFAULT_PCIEXBAR + 0x5000;
+
+	/* PCI Express x16 Port Root Topology */
+	if (pci_conf1_read_config8(PCI_BDF(0, 0x00, 0), DEVEN) & DEVEN_D1F0) {
+		pcie_write_config32(PCI_BDF(0, 0x01, 0), 0x158,
+				    DEFAULT_PCIEXBAR + 0x5000);
+
+		reg32 = pcie_read_config32(PCI_BDF(0, 0x01, 0), 0x150);
+		reg32 |= (1 << 0);
+		pcie_write_config32(PCI_BDF(0, 0x01, 0), 0x150, reg32);
+	}
+}
+
+static void ich7_setup_root_complex_topology(void)
+{
+	RCBA32(0x104) = 0x00000802;
+	RCBA32(0x110) = 0x00000001;
+	RCBA32(0x114) = 0x00000000;
+	RCBA32(0x118) = 0x00000000;
+}
+
+static void ich7_setup_pci_express(void)
+{
+	RCBA32(CG) |= (1 << 0);	
+	
+	pci_conf1_write_config32(PCI_BDF(0, 0x1c, 0), 0x54, 0x00000060);
+
+	pci_conf1_write_config32(PCI_BDF(0, 0x1c, 0), 0xd8, 0x00110000);
+}
+
+void i945_early_initialization(void)
+{
+	/* Print some chipset specific information */
+	i945_detect_chipset();
+
+	/* Setup all BARs required for early PCIe and raminit */
+	i945_setup_bars();
+
+	/* Change port80 to LPC */
+	RCBA32(GCS) &= (~0x04);
+}
+
+void i945_late_initialization(void)
+{
+	i945_setup_egress_port();
+
+	ich7_setup_root_complex_topology();
+
+	ich7_setup_pci_express();
+
+	ich7_setup_dmi_rcrb();
+
+	i945_setup_dmi_rcrb();
+
+	i945_setup_pci_express_x16();
+
+	i945_setup_root_complex_topology();
 }
 
 #define BOOT_MODE_RESUME	1

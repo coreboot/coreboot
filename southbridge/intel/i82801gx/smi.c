@@ -20,14 +20,19 @@
  */
 
 
-#include <device/device.h>
+#include <types.h>
+#include <lib.h>
+#include <console.h>
 #include <device/pci.h>
-#include <console/console.h>
-#include <arch/io.h>
-#include <cpu/x86/cache.h>
-#include <cpu/x86/smm.h>
+#include <msr.h>
+#include <legacy.h>
+#include <device/pci_ids.h>
 #include <string.h>
-#include "chip.h"
+#include <io.h>
+#include <cpu.h>
+#include <statictree.h>
+#include <config.h>
+#include "i82801gx.h"
 
 // Future TODO: Move to i82801gx directory
 #include "../../../northbridge/intel/i945/ich7.h"
@@ -245,7 +250,7 @@ static void smi_set_eos(void)
 	outb(reg8, pmbase + SMI_EN);
 }
 
-extern uint8_t smm_relocation_start, smm_relocation_end;
+extern u8 smm_relocation_start, smm_relocation_end;
 
 void smm_relocate(void)
 {

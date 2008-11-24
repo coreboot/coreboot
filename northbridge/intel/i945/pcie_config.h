@@ -17,52 +17,52 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "i945.h"
+#include <io.h>
 
 static inline __attribute__ ((always_inline))
-u8 pcie_read_config8(device_t dev, unsigned int where)
+u8 pcie_read_config8(u32 dev, unsigned int where)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
-	return read8(addr);
+	return readb((void *)addr);
 }
 
 static inline __attribute__ ((always_inline))
-u16 pcie_read_config16(device_t dev, unsigned int where)
+u16 pcie_read_config16(u32 dev, unsigned int where)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
-	return read16(addr);
+	return readw((void *)addr);
 }
 
 static inline __attribute__ ((always_inline))
-u32 pcie_read_config32(device_t dev, unsigned int where)
+u32 pcie_read_config32(u32 dev, unsigned int where)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
-	return read32(addr);
+	return readl((void *)addr);
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config8(device_t dev, unsigned int where, u8 value)
+void pcie_write_config8(u32 dev, unsigned int where, u8 value)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
-	write8(addr, value);
+	writeb(value, (void *)addr);
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config16(device_t dev, unsigned int where, u16 value)
+void pcie_write_config16(u32 dev, unsigned int where, u16 value)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
-	write16(addr, value);
+	writew(value, (void *)addr);
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config32(device_t dev, unsigned int where, u32 value)
+void pcie_write_config32(u32 dev, unsigned int where, u32 value)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
-	write32(addr, value);
+	writel(value, (void *)addr);
 }

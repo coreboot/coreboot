@@ -49,7 +49,7 @@ need these in makefile
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
 #include "northbridge/intel/i945/ich7.h"
-static void setup_ich7_gpios(void)
+void setup_ich7_gpios(void)
 {
 	/* TODO: This is highly board specific and should be moved */
 	printk(BIOS_DEBUG, " GPIOS...");

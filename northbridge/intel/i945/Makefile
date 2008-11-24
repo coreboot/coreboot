@@ -24,6 +24,7 @@ ifeq ($(CONFIG_NORTHBRIDGE_INTEL_I945),y)
 INITRAM_SRC +=   \
 		$(src)/northbridge/intel/i945/raminit.c \
 		$(src)/northbridge/intel/i945/rcven.c \
+		$(src)/northbridge/intel/i945/errata.c \
 		$(src)/lib/clog2.c
 
 

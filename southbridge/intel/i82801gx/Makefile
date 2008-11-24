@@ -25,16 +25,22 @@ STAGE2_CHIPSET_SRC += $(src)/southbridge/intel/i82801gx/i82801gx.c
 
 STAGE2_CHIPSET_SRC += \
 			$(src)/southbridge/intel/i82801gx/ac97.c \
+  			$(src)/southbridge/intel/i82801gx/ide.c \
  			$(src)/southbridge/intel/i82801gx/lpc.c \
- 			$(src)/southbridge/intel/i82801gx/nic.c \
+			$(src)/southbridge/intel/i82801gx/nic.c \
 			$(src)/southbridge/intel/i82801gx/pci.c \
 			$(src)/southbridge/intel/i82801gx/pcie.c \
 			$(src)/southbridge/intel/i82801gx/sata.c \
+			$(src)/southbridge/intel/i82801gx/smi.c \
 			$(src)/southbridge/intel/i82801gx/smbus.c \
 			$(src)/southbridge/intel/i82801gx/usb_ehci.c \
   			$(src)/southbridge/intel/i82801gx/usb.c	\
   			$(src)/southbridge/intel/i82801gx/watchdog.c \
 			$(src)/southbridge/intel/i82801gx/libsmbus.c \
+			$(obj)/southbridge/intel/i82801gx/smmrelocate.o \
+
+$(obj)/southbridge/intel/i82801gx/smmrelocate.o:	$(src)/southbridge/intel/i82801gx/smmrelocate.S
+	as -o $@ $<
 
 STAGE0_CHIPSET_SRC += \
 					$(src)/southbridge/intel/i82801gx/stage1_smbus.c \

@@ -164,7 +164,7 @@ static void I945_pci_domain_set_resources(struct device * dev)
 		i945_ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
 	}
 
-	assign_resources(&dev->link[0]);
+	phase4_assign_resources(&dev->link[0]);
 }
 
 static unsigned int i945_pci_domain_scan_bus(struct device * dev, unsigned int max)
@@ -189,6 +189,7 @@ struct device_operations i945_pci_domain_ops = {
 	.phase5_enable_resources = enable_childrens_resources,
 	.phase6_init		 = NULL,
 	.ops_pci		 = &pci_dev_ops_pci,
+	.ops_pci_bus      = &pci_cf8_conf1,	/* Do we want to use the memory mapped space here? */
 };
 
 static void mc_read_resources(struct device * dev)
@@ -230,14 +231,14 @@ static void mc_set_resources(struct device * dev)
 	pci_set_resources(dev);
 }
 
-static void intel_set_subsystem(struct device * dev, unsigned vendor, unsigned device)
+static void i945_set_subsystem(struct device * dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = intel_set_subsystem,
+	.set_subsystem    = i945_set_subsystem,
 };
 
 struct device_operations i945_mc_ops = {
@@ -265,7 +266,7 @@ static void cpu_bus_noop(struct device * dev)
 }
 
 #warning get a number of the 945 mc
-struct device_operations i945_cpu_ops = {
+struct device_operations i945_cpu_bus_ops = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
 			      .device = 0x1233}}},

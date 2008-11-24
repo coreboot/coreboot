@@ -147,7 +147,6 @@ end
 		/config/("northbridge/intel/i945/northbridge.dts");
 		/* guesses; we need a real lspci */
 			pci@0,0 {
-			/config/("northbridge/intel/i945/bus.dts");
 				pci@1b,0 {
 					/config/("southbridge/intel/i82801gx/ac97audio.dts");
 				};

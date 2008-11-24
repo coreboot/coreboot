@@ -306,7 +306,7 @@ void smm_relocate(void)
 	outb(0x00, 0xb2);
 }
 
-void smm_install(void)
+void smm_install(void *smm, unsigned int smm_len)
 {
 	/* enable the SMM memory window */
 	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
@@ -321,10 +321,10 @@ void smm_install(void)
 			G_SMRAME | C_BASE_SEG);
 }
 
-void smm_init(void)
+void smm_init(void *smm, unsigned int smm_len)
 {
 	smm_relocate();
-	smm_install();
+	smm_install(smm, smm_len);
 }
 
 void smm_lock(void)

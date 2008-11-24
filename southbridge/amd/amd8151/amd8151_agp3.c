@@ -47,7 +47,7 @@ struct device_operations amd8151_agp3bridge = {
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = pci_scan_bridge
 	.phase4_read_resources	 = pci_bus_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = agp3bridge_init,
 };
@@ -82,7 +82,7 @@ struct device_operations amd8151_agp3dev = {
 	.constructor		 = default_device_constructor,
 	.phase4_enable_disable	 = agp3dev_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = NULL,
 	.ops_pci		 = &pci_dev_ops_pci,

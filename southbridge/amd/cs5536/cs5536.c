@@ -696,7 +696,7 @@ struct device_operations cs5536_ops = {
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = scan_static_bus,
 	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = cs5536_pci_dev_enable_resources,
 	.phase6_init		 = southbridge_init,
 };
@@ -709,7 +709,7 @@ struct device_operations cs5536_ide = {
 #warning FIXME: what has to go in phase3_scan?
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = ide_init,
 	.ops_pci		 = &pci_dev_ops_pci,

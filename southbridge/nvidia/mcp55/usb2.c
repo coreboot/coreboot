@@ -56,7 +56,7 @@ static void usb2_set_resources(struct device *dev)
 	old_debug = get_ehci_debug();
 	set_ehci_debug(0);
 #endif
-	pci_dev_set_resources(dev);
+	pci_set_resources(dev);
 
 #ifdef CONFIG_USBDEBUG_DIRECT
 	res = find_resource(dev, 0x10);

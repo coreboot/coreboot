@@ -451,7 +451,7 @@ struct device_operations vt8237r_lpc = {
 	.phase2_fixup			= vt8237_enable,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= vt8237_read_resources,
-	.phase4_set_resources		= pci_dev_set_resources,
+	.phase4_set_resources		= pci_set_resources,
 	.phase5_enable_resources	= vt8237_enable_resources,
 	.phase6_init			= vt8237r_init,
 };
@@ -464,7 +464,7 @@ struct device_operations vt8237s_lpc = {
 	.phase2_fixup			= vt8237_enable,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= vt8237_read_resources,
-	.phase4_set_resources		= pci_dev_set_resources,
+	.phase4_set_resources		= pci_set_resources,
 	.phase5_enable_resources	= vt8237_enable_resources,
 	.phase6_init			= vt8237s_init,
 };

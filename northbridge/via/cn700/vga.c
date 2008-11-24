@@ -73,7 +73,7 @@ struct device_operations cn700_vga = {
 	.constructor			= default_device_constructor,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= vga_read_resources,
-	.phase4_set_resources		= pci_dev_set_resources,
+	.phase4_set_resources		= pci_set_resources,
 	.phase5_enable_resources	= pci_dev_enable_resources,
 	.phase6_init			= vga_init,
 };

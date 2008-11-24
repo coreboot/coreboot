@@ -340,7 +340,7 @@ static void bridge_set_resources(struct device *dev)
 
 		report_resource_stored(dev, res, "including NPUML");
 	}
-	pci_dev_set_resources(dev);
+	pci_set_resources(dev);
 }
 
 struct device_operations amd8132_pcix = {
@@ -420,7 +420,7 @@ struct device_operations amd8132_apic = {
 	.phase3_scan		 = 0,
 	.phase3_chip_setup_dev	 = ioapic_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = amd8132_ioapic_init,
 	.ops_pci		 = &pci_ops_pci_dev,

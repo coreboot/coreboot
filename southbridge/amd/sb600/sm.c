@@ -376,11 +376,12 @@ static void sb600_sm_read_resources(struct device * dev)
 	compact_resources(dev);
 
 }
+
 static void sb600_sm_set_resources(struct device *dev)
 {
 	struct resource *res;
 
-	pci_dev_set_resources(dev);
+	pci_set_resources(dev);
 
 	res = find_resource(dev, 0x74);
 	pci_write_config32(dev, 0x74, res->base | 1 << 3);

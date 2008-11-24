@@ -99,7 +99,7 @@ struct device_operations vt8237_ide = {
 	.phase3_scan			= 0,
 	//.phase4_enable_disable		= vt8237_enable,
 	//.phase4_read_resources		= pci_dev_read_resources,
-	//.phase4_set_resources		= pci_dev_set_resources,
+	//.phase4_set_resources		= pci_set_resources,
 	//.phase5_enable_resources	= pci_dev_enable_resources,
 	.phase6_init			= ide_init,
 };

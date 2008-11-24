@@ -244,7 +244,7 @@ unsigned int cardbus_scan_bridge(struct device *dev, unsigned int max)
 const struct device_operations default_cardbus_ops_bus = {
 	.phase3_scan             = cardbus_scan_bridge,
 	.phase4_read_resources   = cardbus_read_resources,
-	.phase4_set_resources    = pci_dev_set_resources,
+	.phase4_set_resources    = pci_set_resources,
 	.phase5_enable_resources = cardbus_enable_resources,
 	.phase6_init             = 0,
 	.reset_bus               = pci_bus_reset,

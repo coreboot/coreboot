@@ -197,6 +197,7 @@ static void mc_read_resources(struct device * dev)
 
 	pci_dev_read_resources(dev);
 
+#warning After we fix the allocator we need to fix this!
 	/* So, this is one of the big mysteries in the coreboot resource
 	 * allocator. This resource should make sure that the address space
 	 * of the PCIe memory mapped config space bar. But it does not.
@@ -226,7 +227,7 @@ static void mc_set_resources(struct device * dev)
 	}
 
 	/* And call the normal set_resources */
-	pci_dev_set_resources(dev);
+	pci_set_resources(dev);
 }
 
 static void intel_set_subsystem(struct device * dev, unsigned vendor, unsigned device)

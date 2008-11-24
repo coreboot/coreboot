@@ -78,7 +78,7 @@ extern const struct pci_operations pci_bus_ops_pci;
 
 void pci_dev_read_resources(struct device * dev);
 void pci_bus_read_resources(struct device * dev);
-void pci_dev_set_resources(struct device * dev);
+void pci_set_resources(struct device * dev);
 void pci_dev_enable_resources(struct device * dev);
 void pci_bus_enable_resources(struct device * dev);
 void pci_bus_reset(struct bus *bus);

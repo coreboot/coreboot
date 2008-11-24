@@ -267,7 +267,7 @@ struct device_operations nvidia_ops = {
 	.constructor			= default_device_constructor,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= pci_dev_read_resources,
-	.phase4_set_resources		= pci_dev_set_resources,
+	.phase4_set_resources		= pci_set_resources,
 	.phase5_enable_resources	= mcp55_enable,
 	.phase6_init			= NULL,
 };

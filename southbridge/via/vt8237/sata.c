@@ -103,7 +103,7 @@ struct device_operations vt8237r_sata = {
 	.phase3_scan			= 0,
 	//.phase4_enable_disable		= vt8237_enable,
 	//.phase4_read_resources		= pci_dev_read_resources,
-	//.phase4_set_resources		= pci_dev_set_resources,
+	//.phase4_set_resources		= pci_set_resources,
 	//.phase5_enable_resources	= pci_dev_enable_resources,
 	.phase6_init			= sata_i_init,
 };
@@ -117,7 +117,7 @@ struct device_operations vt8237s_sata = {
 	.phase3_scan			= 0,
 	//.phase4_enable_disable		= vt8237_enable,
 	//.phase4_read_resources		= pci_dev_read_resources,
-	//.phase4_set_resources		= pci_dev_set_resources,
+	//.phase4_set_resources		= pci_set_resources,
 	//.phase5_enable_resources	= pci_dev_enable_resources,
 	.phase6_init			= sata_ii_init,
 };

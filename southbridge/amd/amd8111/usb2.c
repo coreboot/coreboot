@@ -51,7 +51,7 @@ struct device_operations amd8111_usb2 = {
 	.phase3_scan		 = scan_static_bus,
 	.phase3_chip_setup_dev	 = amd8111_usb2_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_dev_set_resources,
+	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = NULL,
 };

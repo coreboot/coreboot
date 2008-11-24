@@ -567,7 +567,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	return;
 }
 
-void pci_dev_set_resources(struct device *dev)
+void pci_set_resources(struct device *dev)
 {
 	struct resource *resource, *last;
 	unsigned int link;
@@ -742,7 +742,7 @@ const struct pci_operations pci_dev_ops_pci = {
 
 const struct device_operations default_pci_ops_dev = {
 	.phase4_read_resources   = pci_dev_read_resources,
-	.phase4_set_resources    = pci_dev_set_resources,
+	.phase4_set_resources    = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init             = pci_dev_init,
 	.phase3_scan             = 0,
@@ -757,7 +757,7 @@ const struct pci_operations pci_bus_ops_pci = {
 const struct device_operations default_pci_ops_bus = {
 	.phase3_scan             = pci_scan_bridge,
 	.phase4_read_resources   = pci_bus_read_resources,
-	.phase4_set_resources    = pci_dev_set_resources,
+	.phase4_set_resources    = pci_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init             = 0,
 	.reset_bus               = pci_bus_reset,

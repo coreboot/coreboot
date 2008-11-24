@@ -109,8 +109,9 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 static void rs690_gfx_set_resources(struct device *dev)
 {
+#warning This does nothing.  Implement it or remove it.
 	printk(BIOS_INFO, "rs690_gfx_set_resources.\n");
-	pci_dev_set_resources(dev);
+	pci_set_resources(dev);
 }
 
 /*

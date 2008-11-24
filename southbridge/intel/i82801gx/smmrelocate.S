@@ -19,8 +19,8 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/asm.h>
-#include "../../../../src/northbridge/intel/i945/ich7.h"
+#define ASSEMBLY
+#include <ich7.h>
 
 #undef DEBUG_SMM_RELOCATION
 //#define DEBUG_SMM_RELOCATION

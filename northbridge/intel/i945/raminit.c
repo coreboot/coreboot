@@ -930,7 +930,7 @@ static const u8 const single_channel_slew_group_lookup[] = {
 	DQ2330, NC,      CTL3215, NC,      CLK2030, CLK2030, DQ2030, CMD3210  
 };
 
-static const u32 * map(u32 *table, unsigned int i){
+static const u32 * map(const u8 *table, unsigned int i){
 	const u32 *p = NULL;
 	switch(table[i]) {
 		case NC: p = nc; break;
@@ -949,8 +949,6 @@ static const u32 * map(u32 *table, unsigned int i){
 
 static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 {
-	u32 *table;
-
 #if 0
 	static const u32 const * const dual_channel_slew_group_lookup[] = {
 		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
@@ -1072,7 +1070,7 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 	};
 
 	const u8 * strength_multiplier;
-	const u32* const * slew_group_lookup;
+	const u8* const * slew_group_lookup;
 	int idx;
 
 	/* Set Strength Multipliers */
@@ -1081,12 +1079,12 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 	if (sdram_capabilities_dual_channel()) {
 		printk(BIOS_DEBUG, "Programming Dual Channel RCOMP\n");
 		strength_multiplier = dual_channel_strength_multiplier;
-		slew_group_lookup   = dual_channel_slew_group_lookup;
+		slew_group_lookup  = dual_channel_slew_group_lookup;
 		idx = 5 * sysinfo->dimm[0] +  sysinfo->dimm[2];
 	} else {
 		printk(BIOS_DEBUG, "Programming Single Channel RCOMP\n");
 		strength_multiplier = single_channel_strength_multiplier;
-		slew_group_lookup   = single_channel_slew_group_lookup;
+		slew_group_lookup = single_channel_slew_group_lookup;
 		idx = 5 * sysinfo->dimm[0] + sysinfo->dimm[1];
 	}
 
@@ -1105,8 +1103,6 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 	sdram_write_slew_rates(G1SRPUT, map(slew_group_lookup, idx * 8 + 0));
 	sdram_write_slew_rates(G2SRPUT, map(slew_group_lookup, idx * 8 + 1));
 	if ((map(slew_group_lookup, idx * 8 + 2) != nc) && (sysinfo->package == SYSINFO_PACKAGE_STACKED)) {
-		
-		
 		sdram_write_slew_rates(G3SRPUT, ctl3220);
 	} else {
 		sdram_write_slew_rates(G3SRPUT, map(slew_group_lookup, idx * 8 + 2));

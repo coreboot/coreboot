@@ -39,8 +39,17 @@ STAGE2_CHIPSET_SRC += \
 			$(src)/southbridge/intel/i82801gx/libsmbus.c \
 			$(obj)/southbridge/intel/i82801gx/smmrelocate.o \
 
+ifeq ($(CONFIG_PIRQ_TABLE),y)
+STAGE2_CHIPSET_SRC += $(src)/southbridge/intel/i82801gx/irq_tables.c
+endif
+
 $(obj)/southbridge/intel/i82801gx/smmrelocate.o:	$(src)/southbridge/intel/i82801gx/smmrelocate.S
-	as -o $@ $<
+	$(Q)mkdir -p $(dir $@)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) -E $(COREBOOTINCLUDE) -I$(src)/northbridge/intel/i945 $< \
+		-o $(obj)/southbridge/intel/i82801gx/smmrelocate.s 
+	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(AS) $(obj)/southbridge/intel/i82801gx/smmrelocate.s -o $@
 
 STAGE0_CHIPSET_SRC += \
 					$(src)/southbridge/intel/i82801gx/stage1_smbus.c \

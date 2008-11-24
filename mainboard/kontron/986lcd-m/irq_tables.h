@@ -19,8 +19,6 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/pirq_routing.h>
-
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,  /* u32 signature */
 	PIRQ_VERSION,    /* u16 version   */

@@ -29,6 +29,7 @@
 
 /* Example file for libpayload. */
 
+#include <libpayload-config.h>
 #include <libpayload.h>
 
 int main(void)

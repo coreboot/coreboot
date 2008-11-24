@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include <config.h>
+#include <libpayload-config.h>
 #include <libpayload.h>
 
 #define IOBASE lib_sysinfo.ser_ioport

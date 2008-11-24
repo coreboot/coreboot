@@ -32,7 +32,7 @@
  * General time functions
  */
 
-#include <config.h>
+#include <libpayload-config.h>
 #include <libpayload.h>
 #include <arch/rdtsc.h>
 

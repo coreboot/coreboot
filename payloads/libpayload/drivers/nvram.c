@@ -39,7 +39,7 @@
  * http://bochs.sourceforge.net/techspec/CMOS-reference.txt
  * http://www.bioscentral.com/misc/cmosmap.htm
  */
-#include <config.h>
+#include <libpayload-config.h>
 #include <libpayload.h>
 
 

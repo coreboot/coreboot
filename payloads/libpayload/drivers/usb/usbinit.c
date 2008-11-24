@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include <config.h>
+#include <libpayload-config.h>
 #include <usb/usb.h>
 #include "uhci.h"
 #include <usb/usbdisk.h>

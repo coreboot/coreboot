@@ -37,7 +37,7 @@
  * Actually cook the serial (handle special keys)
  */
 
-#include <config.h>
+#include <libpayload-config.h>
 #include <usb/usb.h>
 #include "local.h"
 

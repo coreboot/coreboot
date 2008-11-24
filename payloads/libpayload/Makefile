@@ -35,7 +35,7 @@ export obj := $(src)/build
 export objk := $(src)/build/util/kconfig
 
 export KERNELVERSION      := 0.1.0
-export KCONFIG_AUTOHEADER := $(obj)/config.h
+export KCONFIG_AUTOHEADER := $(src)/include/libpayload-config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 
 CONFIG_SHELL := sh
@@ -132,7 +132,6 @@ install: lib
 	$(Q)install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
 	$(Q)install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
 	$(Q)install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
-	$(Q)install -m 644 $(KCONFIG_AUTOHEADER) $(DESTDIR)/libpayload/include/libpayload-config.h
 	$(Q)install -m 644 $(KCONFIG_AUTOCONFIG) $(DESTDIR)/libpayload/libpayload.config
 
 prepare:
@@ -158,6 +157,7 @@ clean: doxygen-clean
 distclean: clean
 	$(Q)rm -rf build
 	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
+	$(Q)rm -f $(src)/include/libpayload-config.h
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.

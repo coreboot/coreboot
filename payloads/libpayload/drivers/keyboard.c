@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
+#include <libpayload-config.h>
 #include <libpayload.h>
-#include <config.h>
 #include <curses.h>
 
 #define I8042_CMD_READ_MODE  0x20

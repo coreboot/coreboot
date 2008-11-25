@@ -161,7 +161,10 @@ clear_mtrrs:
 	movl	%esp, %ebp
 	pushl	%eax
 
+#if 0
+	/* this will be interpreted as failed bist */
 	port80_post(0x23)
+#endif
 
 	call	stage1_phase1
 

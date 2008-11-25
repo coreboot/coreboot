@@ -208,12 +208,14 @@ void hardware_stage1(void)
 	void 	early_superio_config_w83627thg(void);
 	void 	ich7_enable_lpc(void);
 	int boot_mode = 0;
+#if 0
 	/* hack */
 	pci_conf1_write_config32(PCI_BDF(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);
 	/* Change port80 to LPC */
 	RCBA32(GCS) &= (~0x04);
 	/* end hack */
-
+#endif
+	post_code(0xcc);
 	enable_lapic();
 
 	ich7_enable_lpc();

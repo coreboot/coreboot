@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <pci/pci.h>
 
 #include "msrtool.h"
 
@@ -35,6 +36,8 @@ uint8_t targets_found = 0;
 const struct targetdef **targets = NULL;
 const struct sysdef *sys = NULL;
 uint8_t reserved = 0, verbose = 0, quiet = 0;
+
+struct pci_access *pacc = NULL;
 
 static struct targetdef alltargets[] = {
 	{ "geodelx", "AMD Geode(tm) LX", geodelx_probe, geodelx_msrs },
@@ -295,6 +298,14 @@ int main(int argc, char *argv[]) {
 		}
 
 	printf_quiet("msrtool %s\n", VERSION);
+
+	pacc = pci_alloc();
+	if (NULL == pacc) {
+		fprintf(stderr, "Could not initialize PCI library! pci_alloc() failed.\n");
+		return 1;
+	}
+	pci_init(pacc);
+	pci_scan_bus(pacc);
 
 	if (!sys && !input && !listknown)
 		for (sys = allsystems; !SYSTEM_ISEOT(*sys); sys++) {

@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <pci/pci.h>
 
 #define HEXCHARS "0123456789abcdefABCDEF"
 
@@ -132,6 +133,8 @@ extern const struct targetdef **targets;
 
 extern uint8_t reserved, verbose, quiet;
 
+extern struct pci_access *pacc;
+
 #define printf_quiet(x...) do { if (!quiet) fprintf(stderr,x); } while(0)
 #define printf_verbose(x...) do { if (verbose && !quiet) fprintf(stderr,x); } while(0)
 
@@ -145,6 +148,7 @@ extern uint8_t reserved, verbose, quiet;
 
 /* sys.c */
 struct cpuid_t *cpuid(void);
+struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
 
 /* msrutils.c */
 void hexprint(FILE *f, const struct msr val, const uint8_t bits);

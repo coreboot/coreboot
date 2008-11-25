@@ -135,6 +135,25 @@ INSTALL=$(findprog "install" "${INSTALL}" install ginstall) || exit
 test -n "$DEBUG" && myCFLAGS="-O2 -g" || myCFLAGS="-Os"
 CFLAGS="${CFLAGS} ${myCFLAGS} -Wall -Werror"
 
+cat > .config.c << EOF
+#include <pci/pci.h>
+struct pci_access *pacc;
+int main(int argc, char *argv[])
+{ pacc = pci_alloc(); return 0; }
+EOF
+
+pc_CFLAGS="$(pkg-config libpci --cflags 2>/dev/null)"
+pc_LDFLAGS="$(pkg-config libpci --libs 2>/dev/null)"
+CFLAGS=$(trycompile "libpci (from pciutils)" "${pc_CFLAGS}" "-I/usr/local/include") || {
+	rm -f .config.c
+	exit 1
+}
+LDFLAGS=$(trylink "libpci (from pciutils)" "${pc_LDFLAGS}" "-lpci -lz" "-L/usr/local/lib -lpci -lz") || {
+	rm -f .config.c .config.o
+	exit 1
+}
+rm -f .config.c .config.o .config
+
 PREFIX="${PREFIX:-/usr/local}"
 
 OS_ARCH=$(uname)

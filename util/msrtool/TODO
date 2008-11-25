@@ -1,8 +1,9 @@
 Systems
 -------
 FreeBSD #defines: see svn diff -r 3697:3698 util/
+i586: assembly instruction system driver, may have to ignore -c CPU # option
 
 Other ideas
 -----------
 Move MSR definitions and probe instructions into an external text file?
-Handle PCI registers as well?
+Handle PCI and port IO registers as well?

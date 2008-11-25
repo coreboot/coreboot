@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <pci/pci.h>
+
 #include "msrtool.h"
 
 static struct cpuid_t id;
@@ -39,4 +41,19 @@ struct cpuid_t *cpuid(void) {
 		id.family += id.ext_family;
 	}
 	return &id;
+}
+
+struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device) {
+	struct pci_dev *temp;
+	struct pci_filter filter;
+
+	pci_filter_init(NULL, &filter);
+	filter.vendor = vendor;
+	filter.device = device;
+
+	for (temp = pacc->devices; temp; temp = temp->next)
+		if (pci_filter_match(&filter, temp))
+			return temp;
+
+	return NULL;
 }

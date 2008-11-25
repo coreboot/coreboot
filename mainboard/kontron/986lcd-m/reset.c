@@ -26,7 +26,6 @@
 #include <msr.h>
 #include <legacy.h>
 #include <device/pci_ids.h>
-#include <statictree.h>
 #include <config.h>
 
 void soft_reset(void)

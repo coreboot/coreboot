@@ -169,7 +169,7 @@ static void early_superio_config_w83627thg(void)
 
 	rawpnp_exit_ext_func_mode(port);
 
-	port = 0x2e;
+	port = 0x4e;
 	ldn = W83627THG_SP1;
 	rawpnp_enter_ext_func_mode(port);
 
@@ -208,7 +208,7 @@ void hardware_stage1(void)
 	void 	early_superio_config_w83627thg(void);
 	void 	ich7_enable_lpc(void);
 	int boot_mode = 0;
-#if 0
+#if 1
 	/* hack */
 	pci_conf1_write_config32(PCI_BDF(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);
 	/* Change port80 to LPC */
@@ -219,13 +219,10 @@ void hardware_stage1(void)
 	enable_lapic();
 
 	ich7_enable_lpc();
+
 	early_superio_config_w83627thg();
 
-	/* Set up the console */
-#warning need to know how to call uart8250_init
-//	uart8250_init();
-	console_init();
-
+	post_code(0xcf);
 }
 
 void mainboard_pre_payload(void)

@@ -187,7 +187,7 @@ static int run_address_multiboot(void *f, struct multiboot_info *mbi)
  * that we are restarting after some sort of reconfiguration. Note that we could use it on geode but 
  * do not at present. 
  */
-void __attribute__((stdcall)) stage1_phase1(u32 bist, u32 init_detected)
+void __attribute__((stdcall,regparm(0))) stage1_phase1(u32 bist, u32 init_detected)
 {
 	struct global_vars globvars;
 	int ret;

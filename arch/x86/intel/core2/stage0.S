@@ -22,6 +22,9 @@
 #define CACHE_AS_RAM_SIZE CONFIG_CARSIZE
 #define CACHE_AS_RAM_BASE CONFIG_CARBASE
 
+#define XIP_ROM_BASE 0xfff00000
+#define XIP_ROM_SIZE 0x00100000
+
 #include <mtrr.h>
 
 #include <macros.h>

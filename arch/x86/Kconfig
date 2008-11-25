@@ -176,7 +176,7 @@ config CARBASE
 	default 0x80000 if CPU_AMD_GEODELX
 	default 0xc8000 if CPU_AMD_K8
 	default 0xffef0000 if CPU_VIA_C7
-	default 0xffef0000 if CPU_INTEL_CORE2
+	default 0xffdf8000 if CPU_INTEL_CORE2
 	help
 	  This option sets the base address of the area used for CAR.
 

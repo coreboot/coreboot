@@ -176,7 +176,10 @@ clear_mtrrs:
 	/* First parameter: bist */
 	pushl	%eax
 
+#if 0
+	/* this will be interpreted as failed bist */
 	port80_post(0x23)
+#endif
 
 	call	stage1_phase1
 	/* We will not go back. */

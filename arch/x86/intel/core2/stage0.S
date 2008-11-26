@@ -3,7 +3,6 @@
  * 
  * Copyright (C) 2000,2007 Ronald G. Minnich <rminnich@gmail.com>
  * Copyright (C) 2007-2008 coresystems GmbH
- * Copyright (C) 2008 Carl-Daniel Hailfinger
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,20 +159,9 @@ clear_mtrrs:
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
 	movl	%eax, %esp
 
-	/* Store zero for the pointer to the global variables. */
-	pushl   $0
-
-	/* Restore the BIST result. */
+	/* Restore the BIST result */
 	movl	%ebp, %eax
-
-	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
-
-	/* Second parameter: init_detected */
-	/* Store zero for the unused init_detected parameter. */
-	pushl	$0
-
-	/* First parameter: bist */
 	pushl	%eax
 
 #if 0
@@ -182,7 +170,6 @@ clear_mtrrs:
 #endif
 
 	call	stage1_phase1
-	/* We will not go back. */
 
 	port80_post(0x2f)
 error:

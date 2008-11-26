@@ -3,7 +3,7 @@
 target qemu-x86
 mainboard emulation/qemu-x86
 
-option ROM_SIZE=256*1024
+option ROM_SIZE=512*1024
 
 option CC="gcc -m32"
 

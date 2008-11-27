@@ -160,13 +160,11 @@ int probe_spi_res(struct flashchip *flash)
 	unsigned char readarr[3];
 	uint32_t model_id;
 
-	if (spi_rdid(readarr, 3))
-		/* We couldn't issue RDID, it's pointless to try RES. */
-		return 0;
-
-	/* Check if RDID returns 0xff 0xff 0xff, then we use RES. */
-	if ((readarr[0] != 0xff) || (readarr[1] != 0xff) ||
-	    (readarr[2] != 0xff))
+	/* Check if RDID was successful and did not return 0xff 0xff 0xff.
+	 * In that case, RES is pointless.
+	 */
+	if (!spi_rdid(readarr, 3) && ((readarr[0] != 0xff) ||
+	    (readarr[1] != 0xff) || (readarr[2] != 0xff)))
 		return 0;
 
 	if (spi_res(readarr))

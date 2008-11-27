@@ -24,10 +24,7 @@
 /* The 440BX supports up to four (single- or double-sided) DIMMs. */
 #define DIMM_SOCKETS 4
 
-/* The 440BX memory controller has one channel only. */
-struct mem_controller {
-	device_t d0;
-	uint16_t channel0[DIMM_SOCKETS];
-};
+/* DIMMs 1-4 are at 0x50, 0x51, 0x52, 0x53. */
+#define DIMM_SPD_BASE 0x50
 
 #endif				/* RAMINIT_H */

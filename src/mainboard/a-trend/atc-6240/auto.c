@@ -48,17 +48,9 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 
 #include "northbridge/intel/i440bx/raminit.c"
 #include "northbridge/intel/i440bx/debug.c"
-#include "sdram/generic_sdram.c"
 
 static void main(unsigned long bist)
 {
-	static const struct mem_controller memctrl[] = {
-		{
-			.d0 = PCI_DEV(0, 0, 0),
-			.channel0 = {0x50, 0x51, 0x52, 0x53},
-		}
-	};
-
 	if (bist == 0)
 		early_mtrr_init();
 
@@ -67,7 +59,9 @@ static void main(unsigned long bist)
 	console_init();
 	report_bist_failure(bist);
 	enable_smbus();
-	/* dump_spd_registers(&memctrl[0]); */
-	sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
+	/* dump_spd_registers(); */
+	sdram_set_registers();
+	sdram_set_spd_registers();
+	sdram_enable();
 	/* ram_check(0, 640 * 1024); */
 }

@@ -1,11 +1,11 @@
 
-static void dump_spd_registers(const struct mem_controller *ctrl)
+static void dump_spd_registers(void)
 {
 	int i;
 	print_debug("\r\n");
-	for(i = 0; i < 4; i++) {
+	for(i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned device;
-		device = ctrl->channel0[i];
+		device = DIMM_SPD_BASE + i;
 		if (device) {
 			int j;
 			print_debug("dimm: "); 
@@ -31,34 +31,6 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 			}
 			print_debug("\r\n");
 		}
-#if 0  /* Enable this if you have 2 memory channels */
-		device = ctrl->channel1[i];
-		if (device) {
-			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
-			print_debug(".1: ");
-			print_debug_hex8(device);
-			for(j = 0; j < 256; j++) {
-				int status;
-				unsigned char byte;
-				if ((j & 0xf) == 0) {
-					print_debug("\r\n");
-					print_debug_hex8(j);
-					print_debug(": ");
-				}
-				status = spd_read_byte(device, j);
-				if (status < 0) {
-					print_debug("bad device\r\n");
-					break;
-				}
-				byte = status & 0xff;
-				print_debug_hex8(byte);
-				print_debug_char(' ');
-			}
-			print_debug("\r\n");
-		}
-#endif		
 	}
 }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,8 @@ Macros and definitions.
 #define PRINT_DEBUG_HEX32(x)
 #define DUMPNORTH()
 #endif
+
+#define NB PCI_DEV(0, 0, 0)
 
 /* SDRAMC[7:5] - SDRAM Mode Select (SMS). */
 #define RAM_COMMAND_NORMAL	0x0
@@ -350,12 +352,10 @@ SDRAM configuration functions.
 /**
  * Send the specified RAM command to all DIMMs.
  *
- * @param Memory controller
  * @param TODO
  * @param TODO
  */
-static void do_ram_command(const struct mem_controller *ctrl,
-			   uint32_t command, uint32_t addr_offset)
+static void do_ram_command(uint32_t command, uint32_t addr_offset)
 {
 	int i;
 	uint16_t reg;
@@ -363,10 +363,10 @@ static void do_ram_command(const struct mem_controller *ctrl,
 	/* TODO: Support for multiple DIMMs. */
 
 	/* Configure the RAM command. */
-	reg = pci_read_config16(ctrl->d0, SDRAMC);
+	reg = pci_read_config16(NB, SDRAMC);
 	reg &= 0xff1f;		/* Clear bits 7-5. */
 	reg |= (uint16_t) (command << 5);
-	pci_write_config16(ctrl->d0, SDRAMC, reg);
+	pci_write_config16(NB, SDRAMC, reg);
 
 	/* RAM_COMMAND_NORMAL affects only the memory controller and
 	   doesn't need to be "sent" to the DIMMs. */
@@ -386,20 +386,15 @@ static void do_ram_command(const struct mem_controller *ctrl,
 DIMM-independant configuration functions.
 -----------------------------------------------------------------------------*/
 
-/**
- * TODO.
- *
- * @param Memory controller
- */
-static void spd_enable_refresh(const struct mem_controller *ctrl)
+static void spd_enable_refresh(void)
 {
 	int i, value;
 	uint8_t reg;
 
-	reg = pci_read_config8(ctrl->d0, DRAMC);
+	reg = pci_read_config8(NB, DRAMC);
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		value = spd_read_byte(ctrl->channel0[i], SPD_REFRESH);
+		value = spd_read_byte(DIMM_SPD_BASE + i, SPD_REFRESH);
 		if (value < 0)
 			continue;
 		reg = (reg & 0xf8) | refresh_rate_map[(value & 0x7f)];
@@ -411,19 +406,14 @@ static void spd_enable_refresh(const struct mem_controller *ctrl)
 		PRINT_DEBUG("\r\n");
 	}
 
-	pci_write_config8(ctrl->d0, DRAMC, reg);
+	pci_write_config8(NB, DRAMC, reg);
 }
 
 /*-----------------------------------------------------------------------------
 Public interface.
 -----------------------------------------------------------------------------*/
 
-/**
- * TODO.
- *
- * @param Memory controller
- */
-static void sdram_set_registers(const struct mem_controller *ctrl)
+static void sdram_set_registers(void)
 {
 	int i, max;
 	uint8_t reg;
@@ -435,10 +425,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 
 	/* Set registers as specified in the register_values[] array. */
 	for (i = 0; i < max; i += 3) {
-		reg = pci_read_config8(ctrl->d0, register_values[i]);
+		reg = pci_read_config8(NB, register_values[i]);
 		reg &= register_values[i + 1];
 		reg |= register_values[i + 2] & ~(register_values[i + 1]);
-		pci_write_config8(ctrl->d0, register_values[i], reg);
+		pci_write_config8(NB, register_values[i], reg);
 
 		PRINT_DEBUG("    Set register 0x");
 		PRINT_DEBUG_HEX8(register_values[i]);
@@ -448,12 +438,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	}
 }
 
-/**
- * TODO.
- *
- * @param Memory controller
- */
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
+static void sdram_set_spd_registers(void)
 {
 	/* TODO: Don't hardcode the values here, get info via SPD. */
 
@@ -462,61 +447,55 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	 * registers are not set here appropriately, the RAM in that region
 	 * will not be accessible, thus a RAM check of it will also fail.
 	 */
-	pci_write_config8(ctrl->d0, PAM0, 0x30);
-	pci_write_config8(ctrl->d0, PAM1, 0x33);
-	pci_write_config8(ctrl->d0, PAM2, 0x33);
-	pci_write_config8(ctrl->d0, PAM3, 0x33);
-	pci_write_config8(ctrl->d0, PAM4, 0x33);
-	pci_write_config8(ctrl->d0, PAM5, 0x33);
-	pci_write_config8(ctrl->d0, PAM6, 0x33);
+	pci_write_config8(NB, PAM0, 0x30);
+	pci_write_config8(NB, PAM1, 0x33);
+	pci_write_config8(NB, PAM2, 0x33);
+	pci_write_config8(NB, PAM3, 0x33);
+	pci_write_config8(NB, PAM4, 0x33);
+	pci_write_config8(NB, PAM5, 0x33);
+	pci_write_config8(NB, PAM6, 0x33);
 
 	/* TODO: Set DRB0-DRB7. */
 	/* Currently this is hardcoded to one 64 MB DIMM in slot 0. */
-	pci_write_config8(ctrl->d0, DRB0, 0x08);
-	pci_write_config8(ctrl->d0, DRB1, 0x08);
-	pci_write_config8(ctrl->d0, DRB2, 0x08);
-	pci_write_config8(ctrl->d0, DRB3, 0x08);
-	pci_write_config8(ctrl->d0, DRB4, 0x08);
-	pci_write_config8(ctrl->d0, DRB5, 0x08);
-	pci_write_config8(ctrl->d0, DRB6, 0x08);
-	pci_write_config8(ctrl->d0, DRB7, 0x08);
+	pci_write_config8(NB, DRB0, 0x08);
+	pci_write_config8(NB, DRB1, 0x08);
+	pci_write_config8(NB, DRB2, 0x08);
+	pci_write_config8(NB, DRB3, 0x08);
+	pci_write_config8(NB, DRB4, 0x08);
+	pci_write_config8(NB, DRB5, 0x08);
+	pci_write_config8(NB, DRB6, 0x08);
+	pci_write_config8(NB, DRB7, 0x08);
 
 	/* TODO: Set DRAMC. Don't enable refresh for now. */
-	pci_write_config8(ctrl->d0, DRAMC, 0x08);
+	pci_write_config8(NB, DRAMC, 0x08);
 
 	/* TODO: Set RPS. */
-	pci_write_config16(ctrl->d0, RPS, 0x0001);
+	pci_write_config16(NB, RPS, 0x0001);
 
 	/* TODO: Set SDRAMC. */
-	// pci_write_config16(ctrl->d0, SDRAMC, 0x010f); // FIXME?
-	pci_write_config16(ctrl->d0, SDRAMC, 0x0003); // FIXME?
+	// pci_write_config16(NB, SDRAMC, 0x010f); // FIXME?
+	pci_write_config16(NB, SDRAMC, 0x0003); // FIXME?
 
 	/* TODO: Set PGPOL. */
-	// pci_write_config16(ctrl->d0, PGPOL, 0x0107);
-	pci_write_config16(ctrl->d0, PGPOL, 0x0123);
+	// pci_write_config16(NB, PGPOL, 0x0107);
+	pci_write_config16(NB, PGPOL, 0x0123);
 
 	/* TODO: Set NBXCFG. */
-	// pci_write_config32(ctrl->d0, NBXCFG, 0x0100220c); // FIXME?
-	pci_write_config32(ctrl->d0, NBXCFG, 0xff00800c);
+	// pci_write_config32(NB, NBXCFG, 0x0100220c); // FIXME?
+	pci_write_config32(NB, NBXCFG, 0xff00800c);
 
 	/* TODO: Set PMCR? */
-	// pci_write_config8(ctrl->d0, PMCR, 0x14);
-	pci_write_config8(ctrl->d0, PMCR, 0x10);
+	// pci_write_config8(NB, PMCR, 0x14);
+	pci_write_config8(NB, PMCR, 0x10);
 
 	/* TODO? */
-	pci_write_config8(ctrl->d0, PCI_LATENCY_TIMER, 0x40);
-	pci_write_config8(ctrl->d0, DRAMT, 0x03);
-	pci_write_config8(ctrl->d0, MBSC, 0x03);
-	pci_write_config8(ctrl->d0, SCRR, 0x38);
+	pci_write_config8(NB, PCI_LATENCY_TIMER, 0x40);
+	pci_write_config8(NB, DRAMT, 0x03);
+	pci_write_config8(NB, MBSC, 0x03);
+	pci_write_config8(NB, SCRR, 0x38);
 }
 
-/**
- * Enable SDRAM.
- *
- * @param Number of controllers
- * @param Memory controller
- */
-static void sdram_enable(int controllers, const struct mem_controller *ctrl)
+static void sdram_enable(void)
 {
 	int i;
 
@@ -525,35 +504,35 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* 1. Apply NOP. Wait 200 clock cycles (200us should do). */
 	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NOP, 0);
+	do_ram_command(RAM_COMMAND_NOP, 0);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
 	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE, 0);
+	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
 	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
 	for (i = 0; i < 8; i++) {
-		do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+		do_ram_command(RAM_COMMAND_CBR, 0);
 		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
 	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_MRS, 0x1d0);
+	do_ram_command(RAM_COMMAND_MRS, 0x1d0);
 	udelay(2);
 
 	/* 5. Normal operation. */
 	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NORMAL, 0);
+	do_ram_command(RAM_COMMAND_NORMAL, 0);
 	udelay(1);
 
 	/* 6. Finally enable refresh. */
 	PRINT_DEBUG("RAM Enable 6: Enable refresh\r\n");
-	// pci_write_config8(ctrl->d0, PMCR, 0x10);
-	spd_enable_refresh(ctrl);
+	// pci_write_config8(NB, PMCR, 0x10);
+	spd_enable_refresh();
 	udelay(1);
 
 	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");

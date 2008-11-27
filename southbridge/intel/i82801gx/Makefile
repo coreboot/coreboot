@@ -55,4 +55,25 @@ STAGE0_CHIPSET_SRC += \
 					$(src)/southbridge/intel/i82801gx/stage1_smbus.c \
 					$(src)/southbridge/intel/i82801gx/libsmbus.c \
 
+$(obj)/southbridge/intel/i82801gx/smmhandler.o:	$(src)/southbridge/intel/i82801gx/smmhandler.S
+	$(Q)mkdir -p $(dir $@)
+	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(CC) -E $(COREBOOTINCLUDE) -I$(src)/northbridge/intel/i945 $< \
+		-o $(obj)/southbridge/intel/i82801gx/smmhandler.s 
+	$(Q)printf "  AS      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)$(AS) $(obj)/southbridge/intel/i82801gx/smmhandler.s -o $@
+
+SMMSRC=$(src)/southbridge/intel/i82801gx/smihandler.c 
+
+SMMOBJ := $(obj)/southbridge/intel/i82801gx/smihandler.o \
+		$(obj)/lib/vtxprintf.o \
+		$(obj)/lib/string.o \
+		$(obj)/lib/mem.o \
+		 $(obj)/southbridge/intel/i82801gx/smmhandler.o
+
+$(obj)/southbridge/intel/i82801gx/smm.elf:$(src)/southbridge/intel/i82801gx/smm.ld \
+			$(SMMOBJ)
+			$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
+			$(Q)$(CC) -nostdlib -static -T $< -o $@ $(SMMOBJ) 
+
 endif

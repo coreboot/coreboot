@@ -19,15 +19,17 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/io.h>
-#include <arch/romcc_io.h>
-#include <console/console.h>
-#include <cpu/x86/cache.h>
-#include <cpu/x86/smm.h>
-#include "chip.h"
+#include <mainboard.h>
+#include <device/pci_def.h>
+#include  <io.h>
+#include <console.h>
+#include <cpu.h>
+#include <smm.h>
+#include <stdarg.h>
 
 // Future TODO: Move to i82801gx directory
 #include "../../../northbridge/intel/i945/ich7.h"
+#include "../../../northbridge/intel/i945/i945.h"
 
 #define DEBUG_SMI
 
@@ -293,6 +295,8 @@ static void dump_tco_status(u32 tco_sts)
 #define UART_MSR 0x06
 #define UART_SCR 0x07
 
+int console_loglevel = BIOS_SPEW;
+
 static int uart_can_tx_byte(void)
 {
 	return inb(TTYS0_BASE + UART_LSR) & 0x20;
@@ -323,18 +327,35 @@ void console_tx_flush(void)
 	uart_wait_to_tx_byte();
 }
 
-void console_tx_byte(unsigned char byte)
+void console_tx_byte(unsigned char byte, void *arg)
 {
 	if (byte == '\n')
 		uart_tx_byte('\r');
 	uart_tx_byte(byte);
 }
 
+int printk(int msg_level, const char *fmt, ...)
+{
+	int vtxprintf(void (*tx_byte)(unsigned char byte, void *arg), void *arg, const char *fmt, va_list args);
+
+	va_list args;
+	int i = 0;
+
+	if (msg_level > console_loglevel) {
+		return 0;
+	}
+
+	va_start(args, fmt);
+	i += vtxprintf(console_tx_byte, (void *)0, fmt, args);
+	va_end(args);
+
+	return i;
+}
 /* We are using PCIe accesses for now
  *  1. the chipset can do it
  *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
  */
-#include "../../../northbridge/intel/i945/pcie_config.c"
+#include "../../../northbridge/intel/i945/pcie_config.h"
 
 /* ********************* smi_util ************************* */
 
@@ -405,11 +426,10 @@ void smi_handler(u32 smm_revision)
 	node=nodeid();
 
 #ifdef DEBUG_SMI
-	console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #else
 	console_loglevel = 1;
 #endif
-
 	printk(BIOS_DEBUG, "\nSMI# #%d\n", node);
 
 	switch (smm_revision) {
@@ -432,7 +452,7 @@ void smi_handler(u32 smm_revision)
 		return;
 	}
 
-	pmbase = pcie_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
+	pmbase = pcie_read_config16(PCI_BDF(0, 0x1f, 0), 0x40) & 0xfffc;
 	printk(BIOS_SPEW, "SMI#: pmbase = 0x%04x\n", pmbase);
 	
 	/* We need to clear the SMI status registers, or we won't see what's
@@ -443,15 +463,17 @@ void smi_handler(u32 smm_revision)
 
 	if (smi_sts & (1 << 21)) { // MONITOR
 		global_nvs_t *gnvs = (global_nvs_t *)0xc00;
-		int i;
 		u32 reg32;
 
 		reg32 = RCBA32(0x1e00); // TRSR - Trap Status Register
 #if 0
-		/* Comment in for some useful debug */
-		for (i=0; i<4; i++) {
-			if (reg32 & (1 << i)) {
-				printk(BIOS_DEBUG, "  io trap #%d\n", i);
+		{
+			int i;
+			/* Comment in for some useful debug */
+			for (i=0; i<4; i++) {
+				if (reg32 & (1 << i)) {
+					printk(BIOS_DEBUG, "  io trap #%d\n", i);
+				}
 			}
 		}
 #endif
@@ -484,7 +506,7 @@ void smi_handler(u32 smm_revision)
 		if (tco_sts & (1 << 8)) { // BIOSWR
 			u8 bios_cntl;
 
-			bios_cntl = pcie_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
+			bios_cntl = pcie_read_config16(PCI_BDF(0, 0x1f, 0), 0xdc);
 
 			if (bios_cntl & 1) {
 				/* BWE is RW, so the SMI was caused by a
@@ -498,7 +520,7 @@ void smi_handler(u32 smm_revision)
 				 * box.
 				 */
 				printk(BIOS_DEBUG, "Switching back to RO\n");
-				pcie_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
+				pcie_write_config32(PCI_BDF(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
 			} /* No else for now? */
 		}
 	}
@@ -536,7 +558,7 @@ void smi_handler(u32 smm_revision)
 	if (smi_sts & (1 << 4)) { // SLP_SMI
 		u32 reg32;
 		reg32 = inl(pmbase + 0x04);
-		printk(BIOS_DEBUG, "SMI#: SLP = 0x%08x\n");
+		printk(BIOS_DEBUG, "SMI#: SLP = 0x%08x\n", reg32);
 		printk(BIOS_DEBUG, "SMI#: Powering off.\n");
 		outl((6 << 10), pmbase + 0x04);
 		outl((1 << 13) | (6 << 10), pmbase + 0x04);

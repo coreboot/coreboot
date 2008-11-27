@@ -52,7 +52,7 @@
  *
  */
 
-#include <arch/asm.h>
+#define ASSEMBLY
 
 #define LAPIC_ID 0xfee00020
 

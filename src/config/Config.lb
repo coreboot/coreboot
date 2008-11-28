@@ -124,6 +124,7 @@ makerule coreboot
 	depends	"crt0.o $(INIT-OBJECTS) $(COREBOOT_APC) $(COREBOOT_RAM_ROM) ldscript.ld"
 	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o $(INIT-OBJECTS)"
 	action	"$(CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
+	action 	"$(CROSS_COMPILE)objdump -dS coreboot > coreboot.disasm"	
 end
 
 # the buildrom tool
@@ -139,9 +140,10 @@ makerule crt0.s
 	action	"$(CPP) $(CPPFLAGS) -I. -I$(TOP)/src  $< > $@.new && mv $@.new $@"
 end
 
+# generate an assembly listing via -a switch.
 makerule crt0.o  
 	depends	"crt0.s" 
-	action	"@$(CC) -c $(CPU_OPT) -o $@ $<"
+	action	"$(CC) -Wa,-acdlns -c $(CPU_OPT) -o $@ $< >crt0.disasm"
 end
 
 makerule etags   

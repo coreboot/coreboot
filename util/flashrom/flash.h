@@ -95,6 +95,7 @@ struct flashchip {
 #define TEST_BAD_READ	(1<<5)
 #define TEST_BAD_ERASE	(1<<6)
 #define TEST_BAD_WRITE	(1<<7)
+#define TEST_BAD_PREW	(TEST_BAD_PROBE|TEST_BAD_READ|TEST_BAD_ERASE|TEST_BAD_WRITE)
 #define TEST_BAD_MASK	0xf0
 
 extern struct flashchip flashchips[];
@@ -106,7 +107,7 @@ extern struct flashchip flashchips[];
  *
  * All LPC/FWH parts (parallel flash) have 8-bit device IDs if there is no
  * continuation code.
- * All SPI parts have 16-bit device IDs.
+ * SPI parts have 16-bit device IDs if they support RDID.
  */
 
 #define GENERIC_DEVICE_ID	0xffff	/* Only match the vendor ID */

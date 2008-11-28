@@ -499,15 +499,19 @@ int main(int argc, char *argv[])
 			if (flash->tested & TEST_BAD_WRITE)
 				printf(" WRITE");
 			printf("\n");
-		} else {
+		}
+		if ((!(flash->tested & TEST_BAD_PROBE) && !(flash->tested & TEST_OK_PROBE)) ||
+		    (!(flash->tested & TEST_BAD_READ) && !(flash->tested & TEST_OK_READ)) ||
+		    (!(flash->tested & TEST_BAD_ERASE) && !(flash->tested & TEST_OK_ERASE)) ||
+		    (!(flash->tested & TEST_BAD_WRITE) && !(flash->tested & TEST_OK_WRITE))) {
 			printf("This flash part has status UNTESTED for operations:");
-			if (!(flash->tested & TEST_OK_PROBE))
+			if (!(flash->tested & TEST_BAD_PROBE) && !(flash->tested & TEST_OK_PROBE))
 				printf(" PROBE");
-			if (!(flash->tested & TEST_OK_READ))
+			if (!(flash->tested & TEST_BAD_READ) && !(flash->tested & TEST_OK_READ))
 				printf(" READ");
-			if (!(flash->tested & TEST_OK_ERASE))
+			if (!(flash->tested & TEST_BAD_ERASE) && !(flash->tested & TEST_OK_ERASE))
 				printf(" ERASE");
-			if (!(flash->tested & TEST_OK_WRITE))
+			if (!(flash->tested & TEST_BAD_WRITE) && !(flash->tested & TEST_OK_WRITE))
 				printf(" WRITE");
 			printf("\n");
 		}

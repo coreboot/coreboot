@@ -179,21 +179,16 @@ makerule build_opt_tbl
 	action	"$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
 end
 
-makerule option_table.c
+makerule option_table.h option_table.c
 	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
-	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout --header option_table.h"
-end
-
-makerule option_table.h
-	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
-	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout --header option_table.h"
+	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout --header option_table.h --option option_table.c"
 end
 
 if HAVE_OPTION_TABLE
 object ./option_table.o 
 end
 
-makerule clean  
+makerule clean 
 	action	"rm -f coreboot.* *~"
 	action	"rm -f coreboot"
 	action	"rm -f ldscript.ld"

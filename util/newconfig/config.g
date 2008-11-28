@@ -1607,6 +1607,7 @@ parser Config:
     token PATH:			r'[-a-zA-Z0-9_.][-a-zA-Z0-9/_.]+[-a-zA-Z0-9_.]+'
     # Dir's on the other hand are abitrary
     # this may all be stupid.
+    token RULE:			r'[-a-zA-Z0-9_$()./]+[-a-zA-Z0-9_ $()./]+[-a-zA-Z0-9_$()./]+'
     token DIRPATH:		r'[-a-zA-Z0-9_$()./]+'
     token ID:			r'[a-zA-Z_.]+[a-zA-Z0-9_.]*'
     token DELEXPR:		r'{([^}]+|\\.)*}'
@@ -1703,13 +1704,10 @@ parser Config:
 			[ ELSE (stmt<<C and not c>>)* ]
 			END
 
-    rule depsacts<<ID, C>>:
-			( DEPENDS STR		{{ if (C): adddep(ID, STR) }}
-			| ACTION STR		{{ if (C): addaction(ID, STR) }}
+    rule makerule<<C>>:	MAKERULE RULE		{{ if (C): addrule(RULE) }}
+			( DEPENDS STR		{{ if (C): adddep(RULE, STR) }}
+			| ACTION STR		{{ if (C): addaction(RULE, STR) }}
 			)*
-
-    rule makerule<<C>>:	MAKERULE DIRPATH	{{ if (C): addrule(DIRPATH) }} 
-			depsacts<<DIRPATH, C>> 
 			END
 
     rule makedefine<<C>>:

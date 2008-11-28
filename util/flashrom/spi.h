@@ -29,6 +29,11 @@
 #define JEDEC_RDID_OUTSIZE	0x01
 #define JEDEC_RDID_INSIZE	0x03
 
+/* Read Electronic Manufacturer Signature */
+#define JEDEC_REMS		0x90
+#define JEDEC_REMS_OUTSIZE	0x04
+#define JEDEC_REMS_INSIZE	0x02
+
 /* Read Electronic Signature */
 #define JEDEC_RES		0xab
 #define JEDEC_RES_OUTSIZE	0x04

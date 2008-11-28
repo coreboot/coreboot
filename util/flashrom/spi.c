@@ -61,6 +61,16 @@ static int spi_rdid(unsigned char *readarr, int bytes)
 	return 0;
 }
 
+static int spi_rems(unsigned char *readarr)
+{
+	const unsigned char cmd[JEDEC_REMS_OUTSIZE] = { JEDEC_REMS, 0, 0, 0 };
+
+	if (spi_command(sizeof(cmd), JEDEC_REMS_INSIZE, cmd, readarr))
+		return 1;
+	printf_debug("REMS returned %02x %02x.\n", readarr[0], readarr[1]);
+	return 0;
+}
+
 static int spi_res(unsigned char *readarr)
 {
 	const unsigned char cmd[JEDEC_RES_OUTSIZE] = { JEDEC_RES, 0, 0, 0 };
@@ -151,6 +161,37 @@ int probe_spi_rdid4(struct flashchip *flash)
 	default:
 		printf_debug("4b ID not supported on this SPI controller\n");
 	}
+
+	return 0;
+}
+
+int probe_spi_rems(struct flashchip *flash)
+{
+	unsigned char readarr[JEDEC_REMS_INSIZE];
+	uint32_t manuf_id, model_id;
+
+	if (spi_rems(readarr))
+		return 0;
+
+	manuf_id = readarr[0];
+	model_id = readarr[1];
+
+	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id,
+		     model_id);
+
+	if (manuf_id == flash->manufacture_id && model_id == flash->model_id) {
+		/* Print the status register to tell the
+		 * user about possible write protection.
+		 */
+		spi_prettyprint_status_register(flash);
+
+		return 1;
+	}
+
+	/* Test if this is a pure vendor match. */
+	if (manuf_id == flash->manufacture_id &&
+	    GENERIC_DEVICE_ID == flash->model_id)
+		return 1;
 
 	return 0;
 }

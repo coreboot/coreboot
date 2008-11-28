@@ -29,6 +29,11 @@
 #define JEDEC_RDID_OUTSIZE	0x01
 #define JEDEC_RDID_INSIZE	0x03
 
+/* AT25F512A has bit 3 as don't care bit in commands */
+#define AT25F512A_RDID		0x15
+#define AT25F512A_RDID_OUTSIZE	0x01
+#define AT25F512A_RDID_INSIZE	0x02
+
 /* Read Electronic Manufacturer Signature */
 #define JEDEC_REMS		0x90
 #define JEDEC_REMS_OUTSIZE	0x04

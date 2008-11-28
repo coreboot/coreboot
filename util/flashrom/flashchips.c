@@ -110,6 +110,7 @@ struct flashchip flashchips[] = {
 	{"SST",		"SST25VF016B",		SST_ID,		SST_25VF016B,		2048,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"SST",		"SST25VF032B",		SST_ID,		SST_25VF032B,		4096,	256,		TEST_OK_PREW,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
 	{"SST",		"SST25VF040B",		SST_ID,		SST_25VF040B,		512,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_c7,	spi_chip_write,	spi_chip_read},
+	{"SST",		"SST25VF080B",		SST_ID,		SST_25VF080B,		1024,	256,		TEST_UNTESTED,	probe_spi_rdid,		spi_chip_erase_60_c7,	spi_chip_write,	spi_chip_read},
 	{"SST",		"SST28SF040A",		SST_ID,		SST_28SF040,		512,	256,		TEST_UNTESTED,	probe_28sf040,		erase_28sf040,			write_28sf040},
 	{"SST",		"SST29EE010",		SST_ID,		SST_29EE010,		128,	128,		TEST_OK_PREW,	probe_jedec,		erase_chip_jedec,		write_jedec},
 	{"SST",		"SST29LE010",		SST_ID,		SST_29LE010,		128,	128,		TEST_UNTESTED,	probe_jedec,		erase_chip_jedec, 		write_jedec},

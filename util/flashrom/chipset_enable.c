@@ -647,20 +647,35 @@ static int enable_flash_amd8111(struct pci_dev *dev, const char *name)
 
 static int enable_flash_sb600(struct pci_dev *dev, const char *name)
 {
-	uint32_t old, new;
+	uint32_t tmp, low_bits, num;
 	uint8_t reg;
 
-	/* Clear ROM Protect 0-3 */
-	for (reg = 0x50; reg < 0x60; reg += 4) {
-		old = pci_read_long(dev, reg);
-		new = old & 0xFFFFFFFC;
-		if (new != old) {
-			pci_write_byte(dev, reg, new);
-			if (pci_read_long(dev, reg) != new) {
-				printf("tried to set 0x%x to 0x%x on %s failed (WARNING ONLY)\n", 0x50, new, name);
-			}
-		}
+	low_bits = tmp = pci_read_long(dev, 0xa0);
+	low_bits &= ~0xffffc000; /* for mmap aligning requirements */
+	low_bits &= 0xfffffff0;	/* remove low 4 bits */
+	tmp &= 0xffffc000;
+	printf_debug("SPI base address is at 0x%x\n", tmp + low_bits);
+
+	sb600_spibar = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED,
+			    fd_mem, (off_t)tmp);
+	if (sb600_spibar == MAP_FAILED) {
+		perror("Can't mmap memory using " MEM_DEV);
+		exit(1);
 	}
+	sb600_spibar += low_bits;
+
+	/* Clear ROM protect 0-3. */
+	for (reg = 0x50; reg < 0x60; reg += 4) {
+		num = pci_read_long(dev, reg);
+		num &= 0xfffffffc;
+		pci_write_byte(dev, reg, num);
+	}
+
+	flashbus = BUS_TYPE_SB600_SPI;
+
+	/* Enable SPI ROM in SB600 PM register. */
+	OUTB(0x8f, 0xcd6);
+	OUTB(0x0e, 0xcd7);
 
 	return 0;
 }

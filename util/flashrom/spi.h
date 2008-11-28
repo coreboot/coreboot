@@ -80,6 +80,11 @@
 #define JEDEC_RDSR_INSIZE	0x01
 #define JEDEC_RDSR_BIT_WIP	(0x01 << 0)
 
+/* Write Status Enable */
+#define JEDEC_EWSR		0x50
+#define JEDEC_EWSR_OUTSIZE	0x01
+#define JEDEC_EWSR_INSIZE	0x00
+
 /* Write Status Register */
 #define JEDEC_WRSR		0x01
 #define JEDEC_WRSR_OUTSIZE	0x02

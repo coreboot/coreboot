@@ -414,6 +414,7 @@ typedef enum {
 	BUS_TYPE_ICH7_SPI,
 	BUS_TYPE_ICH9_SPI,
 	BUS_TYPE_IT87XX_SPI,
+	BUS_TYPE_SB600_SPI,
 	BUS_TYPE_VIA_SPI
 } flashbus_t;
 
@@ -496,6 +497,14 @@ int it8716f_spi_command(unsigned int writecnt, unsigned int readcnt,
 			const unsigned char *writearr, unsigned char *readarr);
 int it8716f_spi_chip_read(struct flashchip *flash, uint8_t *buf);
 int it8716f_spi_chip_write(struct flashchip *flash, uint8_t *buf);
+
+/* sb600spi.c */
+int sb600_spi_command(unsigned int writecnt, unsigned int readcnt,
+		      const unsigned char *writearr, unsigned char *readarr);
+int sb600_spi_read(struct flashchip *flash, uint8_t *buf);
+int sb600_spi_write(struct flashchip *flash, uint8_t *buf);
+uint8_t sb600_read_status_register(void);
+extern uint8_t volatile *sb600_spibar;
 
 /* jedec.c */
 uint8_t oddparity(uint8_t val);

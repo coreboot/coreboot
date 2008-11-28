@@ -42,6 +42,8 @@ int spi_command(unsigned int writecnt, unsigned int readcnt,
 	case BUS_TYPE_ICH9_SPI:
 	case BUS_TYPE_VIA_SPI:
 		return ich_spi_command(writecnt, readcnt, writearr, readarr);
+	case BUS_TYPE_SB600_SPI:
+		return sb600_spi_command(writecnt, readcnt, writearr, readarr);
 	default:
 		printf_debug
 		    ("%s called, but no SPI chipset/strapping detected\n",
@@ -157,6 +159,7 @@ int probe_spi_rdid4(struct flashchip *flash)
 	case BUS_TYPE_ICH7_SPI:
 	case BUS_TYPE_ICH9_SPI:
 	case BUS_TYPE_VIA_SPI:
+	case BUS_TYPE_SB600_SPI:
 		return probe_spi_rdid_generic(flash, 4);
 	default:
 		printf_debug("4b ID not supported on this SPI controller\n");
@@ -229,7 +232,13 @@ uint8_t spi_read_status_register()
 	unsigned char readarr[JEDEC_RDSR_INSIZE];
 
 	/* Read Status Register */
-	spi_command(sizeof(cmd), sizeof(readarr), cmd, readarr);
+	if (flashbus == BUS_TYPE_SB600_SPI) {
+		/* SB600 uses a different way to read status register. */
+		return sb600_read_status_register();
+	} else {
+		spi_command(sizeof(cmd), sizeof(readarr), cmd, readarr);
+	}
+
 	return readarr[0];
 }
 
@@ -464,6 +473,14 @@ int spi_sector_erase(const struct flashchip *flash, unsigned long addr)
 	return 0;
 }
 
+int spi_write_status_enable()
+{
+	const unsigned char cmd[JEDEC_EWSR_OUTSIZE] = { JEDEC_EWSR };
+
+	/* Send EWSR (Enable Write Status Register). */
+	return spi_command(JEDEC_EWSR_OUTSIZE, JEDEC_EWSR_INSIZE, cmd, NULL);
+}
+
 /*
  * This is according the SST25VF016 datasheet, who knows it is more
  * generic that this...
@@ -500,9 +517,9 @@ int spi_disable_blockprotect(void)
 	/* If there is block protection in effect, unprotect it first. */
 	if ((status & 0x3c) != 0) {
 		printf_debug("Some block protection in effect, disabling\n");
-		result = spi_write_enable();
+		result = spi_write_status_enable();
 		if (result) {
-			printf_debug("spi_write_enable failed\n");
+			printf_debug("spi_write_status_enable failed\n");
 			return result;
 		}
 		result = spi_write_status_register(status & ~0x3c);
@@ -532,6 +549,8 @@ int spi_chip_read(struct flashchip *flash, uint8_t *buf)
 	switch (flashbus) {
 	case BUS_TYPE_IT87XX_SPI:
 		return it8716f_spi_chip_read(flash, buf);
+	case BUS_TYPE_SB600_SPI:
+		return sb600_spi_read(flash, buf);
 	case BUS_TYPE_ICH7_SPI:
 	case BUS_TYPE_ICH9_SPI:
 	case BUS_TYPE_VIA_SPI:
@@ -550,6 +569,8 @@ int spi_chip_write(struct flashchip *flash, uint8_t *buf)
 	switch (flashbus) {
 	case BUS_TYPE_IT87XX_SPI:
 		return it8716f_spi_chip_write(flash, buf);
+	case BUS_TYPE_SB600_SPI:
+		return sb600_spi_write(flash, buf);
 	case BUS_TYPE_ICH7_SPI:
 	case BUS_TYPE_ICH9_SPI:
 	case BUS_TYPE_VIA_SPI:

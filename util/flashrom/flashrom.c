@@ -463,7 +463,7 @@ int main(int argc, char *argv[])
 				perror(filename);
 				exit(1);
 			}
-			printf("Force reading flash...");
+			printf("Force reading flash... ");
 			if (!flashes[0]->read)
 				memcpy(buf, (const char *)flashes[0]->virtual_memory, size);
 			else
@@ -476,7 +476,7 @@ int main(int argc, char *argv[])
 
 			fwrite(buf, sizeof(char), size, image);
 			fclose(image);
-			printf("done\n");
+			printf("done.\n");
 			free(buf);
 			exit(0);
 		}
@@ -533,19 +533,20 @@ int main(int argc, char *argv[])
 	buf = (uint8_t *) calloc(size, sizeof(char));
 
 	if (erase_it) {
-		printf("Erasing flash chip.\n");
+		printf("Erasing flash chip... ");
 		if (!flash->erase) {
 			fprintf(stderr, "Error: flashrom has no erase function for this flash chip.\n");
 			return 1;
 		}
 		flash->erase(flash);
+		printf("done.\n");
 		exit(0);
 	} else if (read_it) {
 		if ((image = fopen(filename, "w")) == NULL) {
 			perror(filename);
 			exit(1);
 		}
-		printf("Reading Flash...");
+		printf("Reading flash... ");
 		if (flash->read == NULL)
 			memcpy(buf, (const char *)flash->virtual_memory, size);
 		else
@@ -557,7 +558,7 @@ int main(int argc, char *argv[])
 
 		fwrite(buf, sizeof(char), size, image);
 		fclose(image);
-		printf("done\n");
+		printf("done.\n");
 	} else {
 		struct stat image_stat;
 

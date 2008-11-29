@@ -1,9 +1,9 @@
 /*
  * This file is part of the flashrom project.
  *
- * Copyright (C) 2008 Stefan Wildemann <stefan.wildemann@kontron.com>
- * Copyright (C) 2008 Claus Gindhart <claus.gindhart@kontron.com>
- * Copyright (C) 2008 Dominik Geyer <dominik.geyer@kontron.com>
+ * Copyright (C) 2008 Wang Qingpei <Qingpei.Wang@amd.com>
+ * Copyright (C) 2008 Joe Bao <Zheng.Bao@amd.com>
+ * Copyright (C) Adavanced Micro Devices, Inc
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

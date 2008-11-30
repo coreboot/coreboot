@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
 #include "../../src/include/pc80/mc146818rtc.h"
@@ -10,6 +11,7 @@
 #define INPUT_LINE_MAX 256
 #define MAX_VALUE_BYTE_LENGTH 64
 
+#define TMPFILE_TEMPLATE "/tmp/build_opt_tbl_XXXXXX"
 
 static unsigned char cmos_table[4096];
 
@@ -95,16 +97,15 @@ void test_for_entry_overlaps(void *entry_start, void *entry_end)
 }
 
 /* This routine displays the usage options */
-void display_usage(void)
+void display_usage(char *name)
 {
-        printf("Usage build_opt_table [-b] [--option filename]\n");
-        printf("                [--config filename]\n");
-        printf("                [--header filename]\n");
-        printf("b = build option_table.c\n");
-        printf("--option = name of option table output file\n");
-        printf("--config = build the definitions table from the given file\n");
-	printf("--header = ouput a header file with the definitions\n");
-        exit(1);
+	printf("Usage: %s [--config filename]\n", name);
+	printf("                       [--option filename]\n");
+	printf("                       [--header filename]\n\n");
+	printf("--config = Build the definitions table from the given file.\n");
+	printf("--option = Output a C source file with the definitions.\n");
+	printf("--header = Ouput a C header file with the definitions.\n");
+	exit(1);
 }
 
 
@@ -213,6 +214,8 @@ int main(int argc, char **argv)
 	char *option=0;
 	char *header=0;
 	FILE *fp;
+	int tmpfile;
+	char tmpfilename[32];
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
 	struct cmos_enums *c_enums, *c_enums_start;
@@ -233,39 +236,37 @@ int main(int argc, char **argv)
 
         for(i=1;i<argc;i++) {
                 if(argv[i][0]!='-') {
-                        display_usage();
+                        display_usage(argv[0]);
                 }
                 switch(argv[i][1]) {
-                        case 'b':       /* build the table */
-                                break;
                         case '-':       /* data is requested from a file */
                                 switch(argv[i][2]) {
                                         case 'c':  /* use a configuration file */
                                                 if(strcmp(&argv[i][2],"config")) {
-                                                        display_usage();
+                                                        display_usage(argv[0]);
                                                 }
                                                 config=argv[++i];
                                                 break;
                                         case 'o':  /* use a cmos definitions table file */
                                                 if(strcmp(&argv[i][2],"option")) {
-                                                        display_usage();
+                                                        display_usage(argv[0]);
                                                 }
                                                 option=argv[++i];
                                                 break;
 					case 'h': /* Output a header file */
 						if (strcmp(&argv[i][2], "header") != 0) {
-							display_usage();
+							display_usage(argv[0]);
 						}
 						header=argv[++i];
 						break;
                                         default:
-                                                display_usage();
+                                                display_usage(argv[0]);
                                                 break;
                                 }
                                 break;
 
                         default:
-                                display_usage();
+                                display_usage(argv[0]);
                                 break;
                 }
         }
@@ -482,52 +483,72 @@ int main(int argc, char **argv)
 	ct->size += (cptr - (char *)(cmos_table + ct->size));
 	fclose(fp);
 
-	/* test if an alternate file is to be created */
+	/* See if we want to output a C source file */
 	if(option) {
-		if((fp=fopen(option,"w"))==NULL){
-                        fprintf(stderr, "Error - Can not open %s\n",option);
+	        strcpy(tmpfilename, TMPFILE_TEMPLATE);
+		tmpfile = mkstemp(tmpfilename);
+		if(tmpfile == -1) {
+                        perror("Error - Could not create temporary file");
                         exit(1);
 		}
-	}
-	else {  /* no, so use the default option_table.c */
-                if((fp=fopen("option_table.c","w"))==NULL){
-                        fprintf(stderr, "Error - Can not open option_table.c\n");
-                        exit(1);
-		}
-	}
-	/* write the header */
-        if(!fwrite("unsigned char option_table[] = {",1,32,fp)) {
-                fprintf(stderr, "Error - Could not write image file\n");
-                fclose(fp);
-                exit(1);
-        }
-	/* write the array values */
-	for(i=0;i<(ct->size-1);i++) {
-		if(!(i%10)) fwrite("\n\t",1,2,fp);
-		sprintf(buf,"0x%02x,",cmos_table[i]);
-		fwrite(buf,1,5,fp);
-	}
-	/* write the end */
-	sprintf(buf,"0x%02x",cmos_table[i]);
-	fwrite(buf,1,4,fp);
-        if(!fwrite("};\n",1,3,fp)) {
-                fprintf(stderr, "Error - Could not write image file\n");
-                fclose(fp);
-                exit(1);
-        }
 
-        fclose(fp);
+		if((fp=fdopen(tmpfile,"w"))==NULL){
+			perror("Error - Could not open temporary file");
+			unlink(tmpfilename);
+			exit(1);
+		}
+
+		/* write the header */
+        	if(!fwrite("unsigned char option_table[] = {",1,32,fp)) {
+        	        perror("Error - Could not write image file");
+        	        fclose(fp);
+			unlink(tmpfilename);
+        	        exit(1);
+        	}
+		/* write the array values */
+		for(i=0;i<(ct->size-1);i++) {
+			if(!(i%10)) fwrite("\n\t",1,2,fp);
+			sprintf(buf,"0x%02x,",cmos_table[i]);
+			fwrite(buf,1,5,fp);
+		}
+		/* write the end */
+		sprintf(buf,"0x%02x\n",cmos_table[i]);
+		fwrite(buf,1,4,fp);
+        	if(!fwrite("};\n",1,3,fp)) {
+        	        perror("Error - Could not write image file");
+        	        fclose(fp);
+			unlink(tmpfilename);
+        	        exit(1);
+        	}
+
+        	fclose(fp);
+		if (rename(tmpfilename, option)) {
+			fprintf(stderr, "Error - Could not write %s: ", option);
+			perror(NULL);
+			unlink(tmpfilename);
+			exit(1);
+		}
+	}
 
 	/* See if we also want to output a C header file */
 	if (header) {
 		struct cmos_option_table *hdr;
 		struct lb_record *ptr, *end;
-		fp = fopen(header, "w");
-		if (!fp) {
-			fprintf(stderr, "Error Can not open %s: %s\n", 
-				header, strerror(errno));
+
+		strcpy(tmpfilename, TMPFILE_TEMPLATE);
+		tmpfile = mkstemp(tmpfilename);
+		if(tmpfile == -1) {
+			perror("Error - Could not create temporary file");
 			exit(1);
 		}
+
+		fp = fdopen(tmpfile, "w");
+		if (!fp) {
+			perror("Error - Could not open temporary file");
+			unlink(tmpfilename);
+			exit(1);
+		}
+
 		/* Get the cmos table header */
 		hdr = (struct cmos_option_table *)cmos_table;
 		/* Walk through the entry records */
@@ -544,6 +565,8 @@ int main(int argc, char **argv)
 			if (!is_ident((char *)ce->name)) {
 				fprintf(stderr, "Invalid identifier: %s\n",
 					ce->name);
+				fclose(fp);
+				unlink(tmpfilename);
 				exit(1);
 			}
 			fprintf(fp, "#define CMOS_VSTART_%s %d\n",
@@ -552,6 +575,13 @@ int main(int argc, char **argv)
 				ce->name, ce->length);
 		}
 		fclose(fp);
+
+		if (rename(tmpfilename, header)) {
+			fprintf(stderr, "Error - Could not write %s: ", header);
+			perror(NULL);
+			unlink(tmpfilename);
+			exit(1);
+		}
 	}
 	return(0);
 }

@@ -183,7 +183,7 @@ end
 
 makerule option_table.h option_table.c
 	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
-	action	"./build_opt_tbl -b  --config $(MAINBOARD)/cmos.layout --header option_table.h --option option_table.c"
+	action	"./build_opt_tbl --config $(MAINBOARD)/cmos.layout --header option_table.h --option option_table.c"
 end
 
 if HAVE_OPTION_TABLE

@@ -73,9 +73,13 @@ and print its vendor, name, ID, revision, and config port.\n"
 #define MISC		-5		/* Needs special comment in output */
 #define MAXLDN		0x14		/* Biggest LDN */
 #define LDNSIZE		(MAXLDN + 3)	/* Biggest LDN + 0 + NOLDN + EOT */
-#define MAXNUMIDX	170		/* Maximum number of indexes */
+#define MAXNUMIDX	170		/* Maximum number of indices */
 #define IDXSIZE 	(MAXNUMIDX + 1)
 #define MAXNUMPORTS	(6 + 1)		/* Maximum number of Super I/O ports */
+
+/* Select registers for various components. */
+#define LDN_SEL		0x07		/* LDN select register */
+#define WINBOND_HWM_SEL	0x4e		/* Hardware monitor bank select */
 
 /* Command line parameters. */
 extern int dump, verbose, extra_dump;
@@ -102,7 +106,7 @@ int superio_unknown(const struct superio_registers reg_table[], uint16_t id);
 const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
-		  uint16_t port, uint16_t id);
+		  uint16_t port, uint16_t id, uint8_t ldn_sel);
 void probing_for(const char *vendor, const char *info, uint16_t port);
 void print_vendor_chips(const char *vendor,
 			const struct superio_registers reg_table[]);

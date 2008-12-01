@@ -82,7 +82,7 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 }
 
 static void dump_regs(const struct superio_registers reg_table[],
-		      int i, int j, uint16_t port)
+		      int i, int j, uint16_t port, uint8_t ldn_sel)
 {
 	int k;
 	const int16_t *idx;
@@ -91,7 +91,7 @@ static void dump_regs(const struct superio_registers reg_table[],
 		printf("LDN 0x%02x", reg_table[i].ldn[j].ldn);
 		if (reg_table[i].ldn[j].name != NULL)
 			printf(" (%s)", reg_table[i].ldn[j].name);
-		regwrite(port, 0x07, reg_table[i].ldn[j].ldn);
+		regwrite(port, ldn_sel, reg_table[i].ldn[j].ldn);
 	} else {
 		printf("Register dump:");
 	}
@@ -131,7 +131,7 @@ static void dump_regs(const struct superio_registers reg_table[],
 
 void dump_superio(const char *vendor,
 		  const struct superio_registers reg_table[],
-		  uint16_t port, uint16_t id)
+		  uint16_t port, uint16_t id, uint8_t ldn_sel)
 {
 	int i, j, no_dump_available = 1;
 
@@ -149,7 +149,7 @@ void dump_superio(const char *vendor,
 			if (reg_table[i].ldn[j].ldn == EOT)
 				break;
 			no_dump_available = 0;
-			dump_regs(reg_table, i, j, port);
+			dump_regs(reg_table, i, j, port, ldn_sel);
 		}
 
 		if (no_dump_available)

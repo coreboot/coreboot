@@ -95,7 +95,7 @@ void probe_idregs_ali(uint16_t port)
 	       get_superio_name(reg_table, id), id, rev, port);
 	chip_found = 1;
 
-	dump_superio("ALi", reg_table, port, id);
+	dump_superio("ALi", reg_table, port, id, LDN_SEL);
 
 	exit_conf_mode_ali(port);
 }

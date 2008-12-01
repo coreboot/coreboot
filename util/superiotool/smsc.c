@@ -643,7 +643,8 @@ static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
 	       id, rev, port);
 	chip_found = 1;
 
-	dump_superio((id == 0x77 ? "ASUS" : "SMSC"), reg_table, port, id);
+	dump_superio((id == 0x77 ? "ASUS" : "SMSC"), reg_table, port, id,
+		     LDN_SEL);
 
 	exit_conf_mode_smsc(port);
 }

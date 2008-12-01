@@ -506,7 +506,7 @@ void probe_idregs_nsc(uint16_t port)
 	       get_superio_name(reg_table, id), id, rev, port);
 	chip_found = 1;
 
-	dump_superio("NSC", reg_table, port, id);
+	dump_superio("NSC", reg_table, port, id, LDN_SEL);
 }
 
 void print_nsc_chips(void)

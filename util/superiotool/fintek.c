@@ -137,7 +137,7 @@ void probe_idregs_fintek(uint16_t port)
 	       get_superio_name(reg_table, did), vid, did, port);
 	chip_found = 1;
 
-	dump_superio("Fintek", reg_table, port, did);
+	dump_superio("Fintek", reg_table, port, did, LDN_SEL);
 
 	exit_conf_mode_winbond_fintek_ite_8787(port);
 }

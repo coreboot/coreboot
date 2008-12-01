@@ -534,10 +534,10 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 	       get_superio_name(reg_table, id), id, chipver, port);
 	chip_found = 1;
 
-	dump_superio("ITE", reg_table, port, id);
+	dump_superio("ITE", reg_table, port, id, LDN_SEL);
 
 	if (extra_dump) {
-		regwrite(port, 0x07, 0x04); /* Select LDN 4 (EC). */
+		regwrite(port, LDN_SEL, 0x04); /* Select LDN 4 (EC). */
 
 		/* Get EC base address (stored in LDN 4, index 0x60/0x61). */
 		ecport = regval(port, 0x60) << 8;
@@ -547,7 +547,7 @@ static void probe_idregs_ite_helper(const char *init, uint16_t port)
 		ecport += 5;
 
 		printf("Environment controller (0x%04x)\n", ecport);
-		dump_superio("ITE-EC", ec_table, ecport, id);
+		dump_superio("ITE-EC", ec_table, ecport, id, LDN_SEL);
 	}
 }
 
@@ -583,5 +583,5 @@ void probe_idregs_ite(uint16_t port)
 void print_ite_chips(void)
 {
 	print_vendor_chips("ITE", reg_table);
-	print_vendor_chips("ITE EC", ec_table);
+	print_vendor_chips("ITE-EC", ec_table);
 }

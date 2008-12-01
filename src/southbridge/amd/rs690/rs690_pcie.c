@@ -116,37 +116,6 @@ static void pcie_init(struct device *dev)
 	pci_write_config32(dev, 0x04, dword);
 }
 
-static struct pci_operations lops_pci = {
-	.set_subsystem = 0,
-};
-
-static struct device_operations pcie_ops = {
-	.read_resources = pci_bus_read_resources,
-	.set_resources = pci_dev_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.init = pcie_init,
-	.scan_bus = pci_scan_bridge,
-	/*.enable           = rs690_enable, */
-	.ops_pci = &lops_pci,
-};
-
-static struct pci_driver pcie_driver __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS690_PCIE,
-};
-
-static struct pci_driver pcie_driver_dev7 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV7,
-};
-static struct pci_driver pcie_driver_dev8 __pci_driver = {
-	.ops = &pcie_ops,
-	.vendor = PCI_VENDOR_ID_ATI,
-	.device = PCI_DEVICE_ID_ATI_RS690_PCIE_DEV8,
-};
-
 /**********************************************************************
 **********************************************************************/
 static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)

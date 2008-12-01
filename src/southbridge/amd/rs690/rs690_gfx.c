@@ -72,7 +72,7 @@ static void rs690_gfx_read_resources(device_t dev)
 
 static void internal_gfx_pci_dev_init(struct device *dev)
 {
-	unsigned short deviceid, vendorid;
+	u16 deviceid, vendorid;
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)dev->chip_info;
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
@@ -109,11 +109,6 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	clkind_write(dev, 0x5C, 0x0);
 }
 
-static void rs690_gfx_set_resources(struct device *dev)
-{
-	printk_info("rs690_gfx_set_resources.\n");
-	pci_dev_set_resources(dev);
-}
 
 /*
 * Set registers in RS690 and CPU to enable the internal GFX.
@@ -137,7 +132,7 @@ static void rs690_internal_gfx_enable(device_t dev)
 
 	/* set TOM */
 	rs690_set_tom(nb_dev);
-	
+
 	/* LPC DMA Deadlock workaround? */
 	k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 	l_dword = pci_read_config32(k8_f0, 0x68);
@@ -206,9 +201,9 @@ static struct pci_operations lops_pci = {
 	.set_subsystem = pci_dev_set_subsystem,
 };
 
-static struct device_operations ht_ops = {
+static struct device_operations pcie_ops = {
 	.read_resources = rs690_gfx_read_resources,
-	.set_resources = rs690_gfx_set_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = internal_gfx_pci_dev_init,	/* The option ROM initializes the device. rs690_gfx_init, */
 	.scan_bus = 0,
@@ -216,8 +211,8 @@ static struct device_operations ht_ops = {
 	.ops_pci = &lops_pci,
 };
 
-static struct pci_driver internal_gfx_driver __pci_driver = {
-	.ops = &ht_ops,
+static struct pci_driver pcie_driver __pci_driver = {
+	.ops = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_RS690MT_INT_GFX,
 };
@@ -350,7 +345,7 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 }
 
 
-/* For single port GFX configuration Only 
+/* For single port GFX configuration Only
 * width:
 * 	000 = x16
 * 	001 = x1
@@ -492,7 +487,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	set_pcie_enable_bits(nb_dev, 0x10, 7 << 10, 4 << 10);
 	printk_info("rs690_gfx_init step8.3.\n");
 
-	/* step 8.4 if the LTSSM could not see all 8 TS1 during Polling Active, it can still 
+	/* step 8.4 if the LTSSM could not see all 8 TS1 during Polling Active, it can still
 	 * time out and go back to Detect Idle.*/
 	set_pcie_enable_bits(dev, 0x02, 1 << 14, 1 << 14);
 	printk_info("rs690_gfx_init step8.4.\n");
@@ -510,7 +505,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	set_pcie_enable_bits(dev, 0xa0, 3 << 30, 3 << 30);
 	printk_info("rs690_gfx_init step8.8.\n");
 
-	/* step 8.9 Setting this register to 0x1 will workaround a PCI Compliance failure reported by Vista DTM. 
+	/* step 8.9 Setting this register to 0x1 will workaround a PCI Compliance failure reported by Vista DTM.
 	 * SLOT_IMPLEMENTED@PCIE_CAP */
 	reg16 = pci_read_config16(dev, 0x5a);
 	reg16 |= 0x100;
@@ -563,7 +558,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* step 10.e: LCLK clock gating, done in rs690_config_misc_clk() */
 
-	/* step 11 Poll GPIO to determine whether it is single-port or dual-port configuration.  
+	/* step 11 Poll GPIO to determine whether it is single-port or dual-port configuration.
 	 * While details will be added later in the document, for now assue the single-port configuration. */
 	/* skip */
 

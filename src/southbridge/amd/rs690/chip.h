@@ -21,9 +21,9 @@
 #define RS690_CHIP_H
 
 /* Member variables are defined in Config.lb. */
-struct southbridge_amd_rs690_config 
+struct southbridge_amd_rs690_config
 {
-	unsigned long vga_rom_address;		/* The location that the VGA rom has been appened. */
+	u32 vga_rom_address;		/* The location that the VGA rom has been appened. */
 	u8 gpp_configuration;	/* The configuration of General Purpose Port, A/B/C/D/E. */
 	u8 port_enable;		/* Which port is enabled? GFX(2,3), GPP(4,5,6,7) */
 	u8 gfx_dev2_dev3;	/* for GFX Core initialization REFCLK_SEL */

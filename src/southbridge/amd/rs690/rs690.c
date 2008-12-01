@@ -29,25 +29,6 @@
 #include <cpu/amd/mtrr.h>
 #include "rs690.h"
 
-static device_t find_nb_dev(device_t dev, u32 devfn)
-{
-	device_t nb_dev;
-
-	nb_dev = dev_find_slot(dev->bus->secondary, devfn);
-
-	if (!nb_dev)
-		return nb_dev;
-
-	if ((nb_dev->vendor != PCI_VENDOR_ID_ATI)
-	    || (nb_dev->device != PCI_DEVICE_ID_ATI_RS690_HT)) {
-		u32 id;
-		id = pci_read_config32(nb_dev, PCI_VENDOR_ID);
-		if (id != (PCI_VENDOR_ID_ATI | (PCI_DEVICE_ID_ATI_RS690_HT << 16))) {
-			nb_dev = 0;
-		}
-	}
-	return nb_dev;
-}
 
 /*****************************************
 * Compliant with CIM_33's ATINB_MiscClockCtrl
@@ -65,7 +46,7 @@ void static rs690_config_misc_clk(device_t nb_dev)
 
 	word = pci_cf8_conf1.read16(&pbus, 0, 1, 0xf8);
 	word &= 0xf00;
-	 pci_cf8_conf1.write16(&pbus, 0, 1, 0xf8, word);
+	pci_cf8_conf1.write16(&pbus, 0, 1, 0xf8, word);
 
 	word = pci_cf8_conf1.read16(&pbus, 0, 1, 0xe8);
 	word &= ~((1 << 12) | (1 << 13) | (1 << 14));
@@ -123,6 +104,12 @@ void static rs690_config_misc_clk(device_t nb_dev)
 	set_htiu_enable_bits(nb_dev, 0x05, 7 << 8, 7 << 8);
 }
 
+
+u32 get_vid_did(device_t dev)
+{
+	return pci_read_config32(dev, 0);
+}
+
 /***********************************************
 *	0:00.0  NBCFG	:
 *	0:00.1  CLK	: bit 0 of nb_cfg 0x4c : 0 - disable, default
@@ -140,39 +127,25 @@ void static rs690_config_misc_clk(device_t nb_dev)
 void rs690_enable(device_t dev)
 {
 	device_t nb_dev = 0, sb_dev = 0;
-	int index = -1;
-	u32 i;
-	u32 devfn;
-	u32 deviceid, vendorid;
+	int dev_ind;
 
-	vendorid = pci_read_config32(dev, PCI_VENDOR_ID);
-	deviceid = (vendorid >> 16) & 0xffff;
-	vendorid &= 0xffff;
-	printk_info("rs690_enable VID=0x%x, DID=0x%x\n", vendorid, deviceid);
+	printk_info("rs690_enable: dev=0x%x, VID_DID=0x%x\n", dev, get_vid_did(dev));
 
-	/**********************************************************
-	* Work for bus0, internal GFX located on bus1 and will return after find_nb_dev.
-	**********************************************************/
-	i = (dev->path.u.pci.devfn) & ~7;
-	for (devfn = 0; devfn <= i; devfn += (1 << 3)) {
-		nb_dev = find_nb_dev(dev, devfn);
-		if (nb_dev)
-			break;
-	}
+	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {
-		printk_info("CAN NOT FIND RS690 DEVICE!\n");
-		return;		/* nb_dev is not dev */
+		die("rs690_enable: CAN NOT FIND RS690 DEVICE, HALT!\n");
+		/* NOT REACHED */
 	}
 
 	/* sb_dev (dev 8) is a bridge that links to southbridge. */
 	sb_dev = dev_find_slot(0, PCI_DEVFN(8, 0));
 	if (!sb_dev) {
-		printk_info("rs690_enable CAN NOT FIND SB bridge, HALT!\n");
-		for (;;) ;
+		die("rs690_enable: CAN NOT FIND SB bridge, HALT!\n");
+		/* NOT REACHED */
 	}
 
-	printk_info("rs690_enable bus0, dev=0x%x\n", (dev->path.u.pci.devfn - devfn) >> 3);
-	switch (dev->path.u.pci.devfn - devfn) {
+	dev_ind = dev->path.u.pci.devfn >> 3;
+	switch (dev_ind) {
 	case 0:		/* bus0, dev0, fun0; */
 		printk_info("Bus-0, Dev-0, Fun-0.\n");
 		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
@@ -185,36 +158,34 @@ void rs690_enable(device_t dev)
 		rs690_config_misc_clk(nb_dev);
 		break;
 
-	case 1 << 3:		/* bus0, dev1 */
+	case 1:		/* bus0, dev1 */
 		printk_info("Bus-0, Dev-1, Fun-0.\n");
 		break;
-	case 2 << 3:		/* bus0, dev2,3, two GFX */
-	case 3 << 3:
+	case 2:		/* bus0, dev2,3, two GFX */
+	case 3:
 		printk_info("Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
-		index = (dev->path.u.pci.devfn - devfn) >> 3;
-		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << index,
-				       (dev->enabled ? 0 : 1) << index);
+		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
+				       (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
-			rs690_gfx_init(nb_dev, dev, index);
+			rs690_gfx_init(nb_dev, dev, dev_ind);
 		break;
-	case 4 << 3:		/* bus0, dev4-7, four GPP */
-	case 5 << 3:
-	case 6 << 3:
-	case 7 << 3:
+	case 4:		/* bus0, dev4-7, four GPP */
+	case 5:
+	case 6:
+	case 7:
 		printk_info("Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
 			    dev->enabled);
-		index = (dev->path.u.pci.devfn - devfn) >> 3;
-		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << index,
-				       (dev->enabled ? 0 : 1) << index);
+		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
+				       (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
-			rs690_gpp_sb_init(nb_dev, dev, index);
+			rs690_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;
-	case 8 << 3:		/* bus0, dev8, SB */
+	case 8:		/* bus0, dev8, SB */
 		printk_info("Bus-0, Dev-8, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 6,
 				       (dev->enabled ? 1 : 0) << 6);
 		if (dev->enabled)
-			rs690_gpp_sb_init(nb_dev, dev, index);
+			rs690_gpp_sb_init(nb_dev, dev, dev_ind);
 		disable_pcie_bar3(nb_dev);
 		break;
 	default:

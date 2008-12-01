@@ -61,7 +61,7 @@ static void pcie_init(struct device *dev)
 	dword |= (1 << 30);	/* Clear possible errors */
 	pci_write_config32(dev, 0x04, dword);
 
-	/* 
+	/*
 	 * 1 is APIC enable
 	 * 18 is enable nb to accept A4 interrupt request from SB.
 	 */

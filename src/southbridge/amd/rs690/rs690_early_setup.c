@@ -18,7 +18,6 @@
  */
 
 
- 
 #define NBHTIU_INDEX		0xA8
 #define NBMISC_INDEX		0x60
 #define NBMC_INDEX 		0xE8
@@ -185,7 +184,7 @@ static void rs690_htinit()
 	* get k8's ht freq, in k8's function 0, offset 0x88
 	* bit11-8, specifics the maximum operation frequency of the link's transmitter clock.
 	* The link frequency field (Frq) is cleared by cold reset. SW can write a nonzero
-	* value to this reg, and that value takes effect on the next warm reset or 
+	* value to this reg, and that value takes effect on the next warm reset or
 	* LDTSTOP_L disconnect sequence.
 	* 0000b = 200Mhz
 	* 0010b = 400Mhz
@@ -300,7 +299,7 @@ static void rs690_por_pcicfg_init(device_t nb_dev)
 	/*Reg8Ch[10:9] = 0x3 Enables Gfx Debug BAR,
 	 * force this BAR as mem type in rs690_gfx.c */
 	set_nbcfg_enable_bits_8(nb_dev, 0x8D, (u8)(~0xFF), 0x03);
-	
+
 }
 
 /*****************************************

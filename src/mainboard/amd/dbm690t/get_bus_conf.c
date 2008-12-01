@@ -29,20 +29,20 @@
 
 #include <cpu/amd/amdk8_sysconf.h>
 
-/* Global variables for MB layouts and these will be shared by irqtable mptable 
+/* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
 u8 bus_isa;
 u8 bus_rs690[8];
 u8 bus_sb600[2];
-unsigned long apicid_sb600;
+u32 apicid_sb600;
 
 /*
 * Here you only need to set value in pci1234 for HT-IO that could be installed or not
 * You may need to preset pci1234 for HTIO board,
 * please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 */
-unsigned long pci1234x[] = {
+u32 pci1234x[] = {
 	0x0000ff0,
 };
 
@@ -50,22 +50,22 @@ unsigned long pci1234x[] = {
 * HT Chain device num, actually it is unit id base of every ht device in chain,
 * assume every chain only have 4 ht device at most
 */
-unsigned long hcdnx[] = {
+u32 hcdnx[] = {
 	0x20202020,
 };
 
-unsigned long bus_type[256];
+u32 bus_type[256];
 
-unsigned long sbdn_rs690;
-unsigned long sbdn_sb600;
+u32 sbdn_rs690;
+u32 sbdn_sb600;
 
 extern void get_sblk_pci1234(void);
 
-static unsigned long get_bus_conf_done = 0;
+static u32 get_bus_conf_done = 0;
 
 void get_bus_conf(void)
 {
-	unsigned long apicid_base;
+	u32 apicid_base;
 	device_t dev;
 	int i, j;
 

@@ -130,6 +130,9 @@ default IRQ_SLOT_COUNT=11
 ##
 default HAVE_MP_TABLE=1
 
+## ACPI tables will be included
+default HAVE_ACPI_TABLES=1
+
 ##
 ## Build code to export a CMOS option table
 ##
@@ -232,7 +235,7 @@ default CONFIG_ROM_PAYLOAD = 1
 
 ###
 ### Defaults of options that you may want to override in the target config file
-### 
+###
 
 ##
 ## The default compiler
@@ -242,7 +245,7 @@ default HOSTCC="gcc"
 
 ##
 ## Disable the gdb stub by default
-## 
+##
 default CONFIG_GDB_STUB=0
 
 
@@ -275,15 +278,15 @@ default TTYS0_LCS=0x3
 ##
 ### Select the coreboot loglevel
 ##
-## EMERG      1   system is unusable               
-## ALERT      2   action must be taken immediately 
-## CRIT       3   critical conditions              
-## ERR        4   error conditions                 
-## WARNING    5   warning conditions               
-## NOTICE     6   normal but significant condition 
-## INFO       7   informational                    
-## DEBUG      8   debug-level messages             
-## SPEW       9   Way too many details             
+## EMERG      1   system is unusable
+## ALERT      2   action must be taken immediately
+## CRIT       3   critical conditions
+## ERR        4   error conditions
+## WARNING    5   warning conditions
+## NOTICE     6   normal but significant condition
+## INFO       7   informational
+## DEBUG      8   debug-level messages
+## SPEW       9   Way too many details
 
 ## Request this level of debugging output
 default  DEFAULT_CONSOLE_LOGLEVEL=8

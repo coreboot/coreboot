@@ -31,11 +31,11 @@ extern u8 bus_isa;
 extern u8 bus_rs690[8];
 extern u8 bus_sb600[2];
 
-extern unsigned long apicid_sb600;
+extern u32 apicid_sb600;
 
-extern unsigned long bus_type[256];
-extern unsigned long sbdn_rs690;
-extern unsigned long sbdn_sb600;
+extern u32 bus_type[256];
+extern u32 sbdn_rs690;
+extern u32 sbdn_sb600;
 
 extern void get_bus_conf(void);
 
@@ -102,7 +102,7 @@ void *smp_write_config_table(void *v)
 			/* dword |= 1<<22; PIC and APIC co exists */
 			pci_write_config32(dev, 0xac, dword);
 
-			/* 
+			/*
 			 * 00:12.0: PROG SATA : INT F
 			 * 00:13.0: INTA USB_0
 			 * 00:13.1: INTB USB_1
@@ -121,7 +121,7 @@ void *smp_write_config_table(void *v)
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin) \
 	smp_write_intsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
-	
+
 	IO_LOCAL_INT(mp_ExtINT, 0x0, apicid_sb600, 0x0);
 
 	/* ISA ints are edge-triggered, and usually originate from the ISA bus,
@@ -143,8 +143,12 @@ void *smp_write_config_table(void *v)
 	/* PCI interrupts are level triggered, and are
 	 * associated with a specific bus/device/function tuple.
 	 */
+#if HAVE_ACPI_TABLES == 0
 #define PCI_INT(bus, dev, fn, pin) \
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sb600, (pin))
+#else
+#define PCI_INT(bus, dev, fn, pin)
+#endif
 
 	/* usb */
 	PCI_INT(0x0, 0x13, 0x0, 0x10);

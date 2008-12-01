@@ -16,11 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-	 
+
 extern struct chip_operations mainboard_amd_dbm690t_ops;
 
-struct mainboard_amd_dbm690t_config 
+struct mainboard_amd_dbm690t_config
 {
-	unsigned long uma_size;			/* How many UMA should be used in memory for TOP. */
+	u32 uma_size;			/* How many UMA should be used in memory for TOP. */
 };
 

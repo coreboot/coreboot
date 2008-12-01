@@ -163,6 +163,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	msr_t msr;
 	struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
 
+
 	if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 	}
@@ -203,7 +204,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
 	init_fidvid_bsp(bsp_apicid);
 
-	// show final fid and vid
+	/* show final fid and vid */
 	msr=rdmsr(0xc0010042);
 	printk_debug("end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
 

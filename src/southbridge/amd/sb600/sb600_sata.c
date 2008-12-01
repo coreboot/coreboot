@@ -62,12 +62,12 @@ static void sata_init(struct device *dev)
 	sata_bar3 = pci_read_config16(dev, 0x1C) & ~0x7;
 	sata_bar4 = pci_read_config16(dev, 0x20) & ~0x7;
 
-	printk_debug("sata_bar0=%x\n", sata_bar0);	/* 3030 */
-	printk_debug("sata_bar1=%x\n", sata_bar1);	/* 3070 */
-	printk_debug("sata_bar2=%x\n", sata_bar2);	/* 3040 */
-	printk_debug("sata_bar3=%x\n", sata_bar3);	/* 3080 */
-	printk_debug("sata_bar4=%x\n", sata_bar4);	/* 3000 */
-	printk_debug("sata_bar5=%x\n", sata_bar5);	/* e0309000 */
+	/* printk_debug("sata_bar0=%x\n", sata_bar0); */	/* 3030 */
+	/* printk_debug("sata_bar1=%x\n", sata_bar1); */	/* 3070 */
+	/* printk_debug("sata_bar2=%x\n", sata_bar2); */	/* 3040 */
+	/* printk_debug("sata_bar3=%x\n", sata_bar3); */	/* 3080 */
+	/* printk_debug("sata_bar4=%x\n", sata_bar4); */	/* 3000 */
+	/* printk_debug("sata_bar5=%x\n", sata_bar5); */	/* e0309000 */
 
 	/* Program the 2C to 0x43801002 */
 	dword = 0x43801002;
@@ -142,15 +142,15 @@ static void sata_init(struct device *dev)
 	/* Use BAR5+0x2A8,BAR0+0x6 for Secondary Slave */
 
 	byte = readb(sata_bar5 + 0x128);
-	printk_debug("byte=%x\n", byte);
+	/* printk_debug("byte=%x\n", byte); */
 	byte &= 0xF;
 	if (byte == 0x3) {
 		outb(0xA0, sata_bar0 + 0x6);
 		while ((inb(sata_bar0 + 0x6) != 0xA0)
 		       || ((inb(sata_bar0 + 0x7) & 0x88) != 0)) {
 			mdelay(10);
-			printk_debug("0x6=%x,0x7=%x\n", inb(sata_bar0 + 0x6),
-				     inb(sata_bar0 + 0x7));
+			/* printk_debug("0x6=%x,0x7=%x\n", inb(sata_bar0 + 0x6),
+			   inb(sata_bar0 + 0x7)); */
 			printk_debug("drive detection fail,trying...\n");
 		}
 		printk_debug("Primary master device is ready\n");

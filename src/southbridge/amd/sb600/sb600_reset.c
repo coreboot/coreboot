@@ -24,7 +24,7 @@
 	(((DEV) & 0x1F) << 15) | \
 	(((FN)  & 0x7) << 12))
 
-typedef unsigned device_t;
+typedef u32 device_t;
 
 #include "../../../northbridge/amd/amdk8/reset_test.c"
 

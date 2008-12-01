@@ -82,14 +82,14 @@ static void sb600_lpc_read_resources(device_t dev)
 	compact_resources(dev);
 }
 
-/**     
+/**
  * @brief Enable resources for children devices
- *      
+ *
  * @param dev the device whos children's resources are to be enabled
- *      
+ *
  * This function is call by the global enable_resources() indirectly via the
  * device_operation::enable_resources() method of devices.
- *      
+ *
  * Indirect mutual recursion:
  *      enable_childrens_resources() -> enable_resources()
  *      enable_resources() -> device_operation::enable_resources()
@@ -115,7 +115,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 			    && (child->path.type == DEVICE_PATH_PNP)) {
 				for (i = 0; i < child->resources; i++) {
 					struct resource *res;
-					unsigned long base, end;	/*  don't need long long */
+					u32 base, end;	/*  don't need long long */
 					res = &child->resource[i];
 					if (!(res->flags & IORESOURCE_IO))
 						continue;

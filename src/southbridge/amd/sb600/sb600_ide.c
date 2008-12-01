@@ -38,13 +38,10 @@ static void ide_init(struct device *dev)
 	pci_write_config32(dev, 0x70, dword);
 
 	/* Ultra DMA mode */
+	/* enable UDMA */
 	byte = pci_read_config8(dev, 0x54);
 	byte |= 1 << 0;
 	pci_write_config8(dev, 0x54, byte);
-	byte = pci_read_config8(dev, 0x56);
-	byte &= ~(7 << 0);
-	byte |= 5 << 0;		/* mode 5 */
-	pci_write_config8(dev, 0x56, byte);
 
 	/* Enable I/O Access&& Bus Master */
 	dword = pci_read_config16(dev, 0x4);

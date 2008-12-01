@@ -20,11 +20,11 @@
 #ifndef SB600_CHIP_H
 #define SB600_CHIP_H
 
-struct southbridge_amd_sb600_config 
+struct southbridge_amd_sb600_config
 {
-	unsigned int ide0_enable : 1;
-	unsigned int sata0_enable : 1;
-	unsigned long hda_viddid;
+	u32 ide0_enable : 1;
+	u32 sata0_enable : 1;
+	u32 hda_viddid;
 };
 struct chip_operations;
 extern struct chip_operations southbridge_amd_sb600_ops;

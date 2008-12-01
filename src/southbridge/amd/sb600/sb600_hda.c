@@ -55,7 +55,7 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 	return 0;
 }
 
-static int codec_detect(u8 * base)
+static u32 codec_detect(u8 * base)
 {
 	u32 dword;
 
@@ -148,7 +148,7 @@ static u32 cim_verb_data[] = {
 	0x01f71ec4,
 	0x01f71f01,
 };
-static unsigned find_verb(u32 viddid, u32 ** verb)
+static u32 find_verb(u32 viddid, u32 ** verb)
 {
 	device_t azalia_dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
 	struct southbridge_amd_sb600_config *cfg =

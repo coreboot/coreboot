@@ -24,6 +24,7 @@
 #define SMBUS_IO_BASE 0x1000	/* Is it a temporary SMBus I/O base address? */
 	 /*SIZE 0x40 */
 
+
 static void pmio_write(u8 reg, u8 value)
 {
 	outb(reg, PM_INDEX);
@@ -44,6 +45,7 @@ static u8 get_sb600_revision()
 
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\r\n");
+		/* NOT REACHED */
 	}
 	return pci_read_config8(dev, 0x08);
 }
@@ -259,6 +261,7 @@ static void sb600_devices_por_init()
 
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\r\n");
+		/* NOT REACHED */
 	}
 	printk_info("SMBus controller enabled, sb revision is 0x%x\r\n",
 		    get_sb600_revision());
@@ -317,7 +320,7 @@ static void sb600_devices_por_init()
 	pci_write_config8(dev, 0x62, byte);
 
 	/* Features Enable */
-	pci_write_config32(dev, 0x64, 0x829E79BF);
+	pci_write_config32(dev, 0x64, 0x829E7DBF); /* bit10: Enables the HPET interrupt. */
 
 	/* SerialIrq Control */
 	pci_write_config8(dev, 0x69, 0x90);
@@ -373,7 +376,7 @@ static void sb600_devices_por_init()
 	byte |= ((1 << 1) + (1 << 6));	/*0x42, save the configuraion for port 0x80. */
 	pci_write_config8(dev, 0x4A, byte);
 
-	/* Set LPC ROM size, it has been done in sb600_lpc_init(). 
+	/* Set LPC ROM size, it has been done in sb600_lpc_init().
 	 * enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB;
 	 * enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB
 	 * pci_write_config16(dev, 0x68, 0x000e)
@@ -382,7 +385,7 @@ static void sb600_devices_por_init()
 	/* Enable Tpm12_en and Tpm_legacy. I don't know what is its usage and copied from CIM. */
 	pci_write_config8(dev, 0x7C, 0x05);
 
-	/* P2P Bridge, BDF:0-20-4, the configuration of the registers in this dev are copied from CIM, 
+	/* P2P Bridge, BDF:0-20-4, the configuration of the registers in this dev are copied from CIM,
 	 * TODO: I don't know what are their mean? */
 	printk_info("sb600_devices_por_init(): P2P Bridge, BDF:0-20-4\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
@@ -397,7 +400,7 @@ static void sb600_devices_por_init()
 
 	pci_write_config8(dev, 0x40, 0x26);
 
-	/* I don't know why CIM set reg0x1c as 0x11. 
+	/* I don't know why CIM set reg0x1c as 0x11.
 	 * System will block at sdram_initialize() if I set it before call sdram_initialize().
 	 * If it is necessary to set reg0x1c as 0x11, please call this function after sdram_initialize().
 	 * pci_write_config8(dev, 0x1c, 0x11);
@@ -490,8 +493,10 @@ static void sb600_pmio_por_init()
 	pmio_write(0x9e, byte);
 
 	/* rpr2.14: Hides SM bus controller Bar1 where stores HPET MMIO base address */
+	/* We have to clear this bit here, otherwise the kernel hangs. */
 	byte = pmio_read(0x55);
 	byte |= 1 << 7;
+	byte |= 1 << 1;
 	pmio_write(0x55, byte);
 
 	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridage */
@@ -550,7 +555,7 @@ static void sb600_pci_cfg()
 	byte |= (1 << 3);
 	pci_write_config8(dev, 0x41, byte);
 
-	/* Set to 1 to reset USB on the software (such as IO-64 or IO-CF9 cycles) 
+	/* Set to 1 to reset USB on the software (such as IO-64 or IO-CF9 cycles)
 	 * generated PCIRST#. */
 	byte = pmio_read(0x65);
 	byte |= (1 << 4);

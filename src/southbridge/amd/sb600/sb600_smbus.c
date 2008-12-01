@@ -17,12 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-//#include <arch/io.h>
-//#include <device/device.h>
-//#include <device/pci.h>
-//#include <device/pci_ids.h>
-//#include <device/pci_ops.h>
-//#include <device/smbus_def.h>
 #include "sb600_smbus.h"
 
 static inline void smbus_delay(void)
@@ -32,7 +26,7 @@ static inline void smbus_delay(void)
 
 static int smbus_wait_until_ready(u32 smbus_io_base)
 {
-	unsigned long loops;
+	u32 loops;
 	loops = SMBUS_TIMEOUT;
 	do {
 		u8 val;
@@ -48,7 +42,7 @@ static int smbus_wait_until_ready(u32 smbus_io_base)
 
 static int smbus_wait_until_done(u32 smbus_io_base)
 {
-	unsigned long loops;
+	u32 loops;
 	loops = SMBUS_TIMEOUT;
 	do {
 		u8 val;
@@ -121,7 +115,7 @@ static int do_smbus_send_byte(u32 smbus_io_base, u32 device,
 	return 0;
 }
 
-static int do_smbus_read_byte(u32 smbus_io_base, u32 device,
+int do_smbus_read_byte(u32 smbus_io_base, u32 device,
 			      u32 address)
 {
 	u8 byte;
@@ -152,7 +146,7 @@ static int do_smbus_read_byte(u32 smbus_io_base, u32 device,
 	return byte;
 }
 
-static int do_smbus_write_byte(u32 smbus_io_base, u32 device,
+int do_smbus_write_byte(u32 smbus_io_base, u32 device,
 			       u32 address, u8 val)
 {
 	u8 byte;
@@ -183,10 +177,11 @@ static int do_smbus_write_byte(u32 smbus_io_base, u32 device,
 	return 0;
 }
 
-static void alink_ab_indx(unsigned int reg_space, unsigned int reg_addr,
-			  unsigned int mask, unsigned int val)
+static void alink_ab_indx(u32 reg_space, u32 reg_addr,
+			  u32 mask, u32 val)
 {
-	unsigned int tmp;
+	u32 tmp;
+
 	outl((reg_space & 0x3) << 30 | reg_addr, AB_INDX);
 	tmp = inl(AB_DATA);
 
@@ -201,10 +196,10 @@ static void alink_ab_indx(unsigned int reg_space, unsigned int reg_addr,
 /* space = 0: AX_INDXC, AX_DATAC
 *   space = 1: AX_INDXP, AX_DATAP
  */
-static void alink_ax_indx(unsigned int space /*c or p? */ , unsigned int axindc,
-			  unsigned int mask, unsigned int val)
+static void alink_ax_indx(u32 space /*c or p? */ , u32 axindc,
+			  u32 mask, u32 val)
 {
-	unsigned int tmp;
+	u32 tmp;
 
 	/* read axindc to tmp */
 	outl(space << 30 | space << 3 | 0x30, AB_INDX);
@@ -221,6 +216,3 @@ static void alink_ax_indx(unsigned int space /*c or p? */ , unsigned int axindc,
 	outl(space << 30 | space << 3 | 0x34, AB_INDX);
 	outl(tmp, AB_DATA);
 }
-
-
-

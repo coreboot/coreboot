@@ -41,8 +41,8 @@
 #endif
 
 struct ioapicreg {
-	unsigned int reg;
-	unsigned int value_low, value_high;
+	u32 reg;
+	u32 value_low, value_high;
 };
 
 static struct ioapicreg ioapicregvalues[] = {
@@ -89,18 +89,18 @@ static struct ioapicreg ioapicregvalues[] = {
 	/* Be careful and don't write past the end... */
 };
 
-static void setup_ioapic(unsigned long ioapic_base)
+static void setup_ioapic(u32 ioapic_base)
 {
 	int i;
-	unsigned long value_low, value_high;
-	volatile unsigned long *l;
+	u32 value_low, value_high;
+	volatile u32 *l;
 	struct ioapicreg *a = ioapicregvalues;
 
 	ioapicregvalues[0].value_high = lapicid() << (56 - 32);
 
 	printk_debug("lapicid = %016x\n", ioapicregvalues[0].value_high);
 
-	l = (unsigned long *)ioapic_base;
+	l = (u32 *)ioapic_base;
 
 	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
 	     i++, a++) {
@@ -126,9 +126,9 @@ static void sm_init(device_t dev)
 	u8 byte;
 	u8 byte_old;
 	u32 dword;
-	unsigned long ioapic_base;
-	int on;
-	int nmi_option;
+	u32 ioapic_base;
+	u32 on;
+	u32 nmi_option;
 
 	printk_info("sm_init().\n");
 
@@ -143,6 +143,10 @@ static void sm_init(device_t dev)
 	dword |= 1 << 9;
 	pci_write_config32(dev, 0x78, dword);	/* enable 0xCD6 0xCD7 */
 
+	/* bit 10: MultiMediaTimerIrqEn */
+	dword = pci_read_config8(dev, 0x64);
+	dword |= 1 << 10;
+	pci_write_config8(dev, 0x64, dword);
 	/* enable serial irq */
 	byte = pci_read_config8(dev, 0x69);
 	byte |= 1 << 7;		/* enable serial irq function */
@@ -191,7 +195,20 @@ static void sm_init(device_t dev)
 
 	byte = pm_ioread(0x68);
 	byte &= ~(1 << 1);
+	/* 2.6 */
+	byte |= 1 << 2;
 	pm_iowrite(0x68, byte);
+
+	/* 2.6 */
+	byte = pm_ioread(0x65);
+	byte &= ~(1 << 7);
+	pm_iowrite(0x65, byte);
+
+	/* 2.3.4 */
+	byte = pm_ioread(0x52);
+	byte &= ~0x2F;
+	byte |= 0x8;
+	pm_iowrite(0x52, byte);
 
 	byte = pm_ioread(0x8D);
 	byte &= ~(1 << 6);
@@ -344,9 +361,19 @@ static struct smbus_bus_operations lops_smbus_bus = {
 static void sb600_sm_read_resources(device_t dev)
 {
 	struct resource *res;
+	u8 byte;
+
+	/* rpr2.14: Hides SM bus controller Bar1 where stores HPET MMIO base address */
+	byte = pm_ioread(0x55);
+	byte |= 1 << 7;
+	pm_iowrite(0x55, byte);
 
 	/* Get the normal pci resources of this device */
-	pci_dev_read_resources(dev);
+	/* pci_dev_read_resources(dev); */
+
+	byte = pm_ioread(0x55);
+	byte &= ~(1 << 7);
+	pm_iowrite(0x55, byte);
 
 	/* apic */
 	res = new_resource(dev, 0x74);
@@ -357,7 +384,24 @@ static void sb600_sm_read_resources(device_t dev)
 	res->gran = 8;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
 
+	res = new_resource(dev, 0x14); /* hpet */
+	res->base  = 0xfed00000;	/* reset hpet to widely accepted address */
+	res->size = 0x400;
+	res->limit = 0xFFFFFFFFUL;	/* res->base + res->size -1; */
+	res->align = 8;
+	res->gran = 8;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
 	/* dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER; */
+
+	/* smbus */
+	res = new_resource(dev, 0x10);
+	res->base  = 0xB00;
+	res->size = 0x10;
+	res->limit = 0xFFFFUL;	/* res->base + res->size -1; */
+	res->align = 8;
+	res->gran = 8;
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED;
+
 
 	compact_resources(dev);
 
@@ -365,11 +409,24 @@ static void sb600_sm_read_resources(device_t dev)
 static void sb600_sm_set_resources(struct device *dev)
 {
 	struct resource *res;
+	u8 byte;
 
 	pci_dev_set_resources(dev);
 
+
+	/* rpr2.14: Make HPET MMIO decoding controlled by the memory enable bit in command register of LPC ISA bridage */
+	byte = pm_ioread(0x52);
+	byte |= 1 << 6;
+	pm_iowrite(0x52, byte);
+
 	res = find_resource(dev, 0x74);
 	pci_write_config32(dev, 0x74, res->base | 1 << 3);
+
+	res = find_resource(dev, 0x14);
+	pci_write_config32(dev, 0x14, res->base);
+
+	res = find_resource(dev, 0x10);
+	pci_write_config32(dev, 0x10, res->base | 1);
 }
 
 static struct pci_operations lops_pci = {

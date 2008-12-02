@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <errno.h>
+#include <libgen.h>
 #include "../../src/include/pc80/mc146818rtc.h"
 #include "../../src/include/boot/coreboot_tables.h"
 
@@ -11,7 +12,8 @@
 #define INPUT_LINE_MAX 256
 #define MAX_VALUE_BYTE_LENGTH 64
 
-#define TMPFILE_TEMPLATE "/tmp/build_opt_tbl_XXXXXX"
+#define TMPFILE_LEN 256
+#define TMPFILE_TEMPLATE "/build_opt_tbl_XXXXXX"
 
 static unsigned char cmos_table[4096];
 
@@ -215,7 +217,7 @@ int main(int argc, char **argv)
 	char *header=0;
 	FILE *fp;
 	int tmpfile;
-	char tmpfilename[32];
+	char tmpfilename[TMPFILE_LEN];
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
 	struct cmos_enums *c_enums, *c_enums_start;
@@ -485,7 +487,8 @@ int main(int argc, char **argv)
 
 	/* See if we want to output a C source file */
 	if(option) {
-	        strcpy(tmpfilename, TMPFILE_TEMPLATE);
+		strncpy(tmpfilename, dirname(option), TMPFILE_LEN);
+	        strncat(tmpfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
 		tmpfile = mkstemp(tmpfilename);
 		if(tmpfile == -1) {
                         perror("Error - Could not create temporary file");
@@ -535,7 +538,8 @@ int main(int argc, char **argv)
 		struct cmos_option_table *hdr;
 		struct lb_record *ptr, *end;
 
-		strcpy(tmpfilename, TMPFILE_TEMPLATE);
+		strncpy(tmpfilename, dirname(option), TMPFILE_LEN);
+	        strncat(tmpfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
 		tmpfile = mkstemp(tmpfilename);
 		if(tmpfile == -1) {
 			perror("Error - Could not create temporary file");

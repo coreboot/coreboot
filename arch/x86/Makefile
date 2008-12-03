@@ -259,7 +259,7 @@ $(obj)/arch/x86/%.o: $(src)/arch/x86/%.c
 	$(Q)$(CC) $(INITCFLAGS) -c $< -o $@
 	
 # Building asm stub.
-$(obj)/arch/x86/%/stage0.o: $(src)/arch/x86/%/stage0.S
+$(obj)/arch/x86/%/stage0.o: $(src)/arch/x86/%/stage0.S $(src)/arch/x86/stage0_common.S
 	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -E $(COREBOOTINCLUDE) $< \

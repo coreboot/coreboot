@@ -105,7 +105,7 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 {
 	volatile uint8_t *bios;
 	struct flashchip *flash;
-	unsigned long flash_baseaddr = 0, size;
+	unsigned long size;
 
 	for (flash = first_flash; flash && flash->name; flash++) {
 		if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0)
@@ -133,16 +133,11 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 			 */
 			size = getpagesize();
 		}
-#ifdef TS5300
-		// FIXME: Wrong place for this decision
-		// FIXME: This should be autodetected. It is trivial.
-		flash_baseaddr = 0x9400000;
-#else
-		flash_baseaddr = (0xffffffff - size + 1);
-#endif
+		if (!flashbase)
+			flashbase = (0xffffffff - size + 1);
 
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			    fd_mem, (off_t) flash_baseaddr);
+			    fd_mem, (off_t) flashbase);
 		if (bios == MAP_FAILED) {
 			perror("Can't mmap memory using " MEM_DEV);
 			exit(1);
@@ -167,7 +162,7 @@ notfound:
 		return NULL;
 
 	printf("Found chip \"%s %s\" (%d KB) at physical address 0x%lx.\n",
-	       flash->vendor, flash->name, flash->total_size, flash_baseaddr);
+	       flash->vendor, flash->name, flash->total_size, flashbase);
 	return flash;
 }
 

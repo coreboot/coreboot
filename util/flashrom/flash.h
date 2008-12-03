@@ -410,6 +410,8 @@ void print_supported_boards(void);
 int chipset_flash_enable(void);
 void print_supported_chipsets(void);
 
+extern unsigned long flashbase;
+
 typedef enum {
 	BUS_TYPE_LPC,
 	BUS_TYPE_ICH7_SPI,

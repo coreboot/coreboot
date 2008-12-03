@@ -35,6 +35,8 @@
 #include <unistd.h>
 #include "flash.h"
 
+unsigned long flashbase = 0;
+
 /**
  * flashrom defaults to LPC flash devices. If a known SPI controller is found
  * and the SPI strappings are set, this will be overwritten by the probing code.
@@ -797,6 +799,59 @@ static int enable_flash_ht1000(struct pci_dev *dev, const char *name)
 	return 0;
 }
 
+/**
+ * Usually on the x86 architectures (and on other PC-like platforms like some
+ * Alphas or Itanium) the system flash is mapped right below 4G. On the AMD
+ * Elan SC520 only a small piece of the system flash is mapped there, but the
+ * complete flash is mapped somewhere below 1G. The position can be determined
+ * by the BOOTCS PAR register.
+ */
+static int get_flashbase_sc520(struct pci_dev *dev, const char *name)
+{
+	int i, bootcs_found = 0;
+	uint32_t parx = 0;
+	void *mmcr;
+
+	/* 1. Map MMCR */
+	mmcr = mmap(0, getpagesize(), PROT_WRITE | PROT_READ,
+			MAP_SHARED, fd_mem, (off_t)0xFFFEF000);
+
+	if (mmcr == MAP_FAILED) {
+		perror("Can't mmap Elan SC520 specific registers using " MEM_DEV);
+		exit(1);
+	}
+
+	/* 2. Scan PAR0 (0x88) - PAR15 (0xc4) for
+	 *    BOOTCS region (PARx[31:29] = 100b)e
+	 */
+	for (i = 0x88; i <= 0xc4; i += 4) {
+		parx = *(volatile uint32_t *)(mmcr + i);
+		if ((parx >> 29) == 4) {
+			bootcs_found = 1;
+			break; /* BOOTCS found */
+		}
+	}
+
+	/* 3. PARx[25] = 1b --> flashbase[29:16] = PARx[13:0]
+	 *    PARx[25] = 0b --> flashbase[29:12] = PARx[17:0]
+	 */
+	if (bootcs_found) {
+		if (parx & (1 << 25)) {
+			parx &= (1 << 14) - 1; /* Mask [13:0] */
+			flashbase = parx << 16;
+		} else {
+			parx &= (1 << 18) - 1; /* Mask [17:0] */
+			flashbase = parx << 12;
+		}
+	} else {
+		printf("AMD Elan SC520 detected, but no BOOTCS. Assuming flash at 4G\n");
+	}
+
+	/* 4. Clean up */
+	munmap (mmcr, getpagesize());
+	return 0;
+}
+
 typedef struct penable {
 	uint16_t vendor, device;
 	const char *name;
@@ -875,6 +930,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x10de, 0x0548, "NVIDIA MCP67",	enable_flash_mcp55},
 	{0x1002, 0x4377, "ATI SB400",		enable_flash_sb400},
 	{0x1166, 0x0205, "Broadcom HT-1000",	enable_flash_ht1000},
+	{0x1022, 0x3000, "AMD Elan SC520",	get_flashbase_sc520},
 };
 
 void print_supported_chipsets(void)

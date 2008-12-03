@@ -11,7 +11,7 @@ STRIP	= strip
 INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 #CFLAGS  = -O2 -g -Wall -Werror
-CFLAGS  = -Os -Wall -Werror # -DTS5300
+CFLAGS  = -Os -Wall -Werror
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), SunOS)
 LDFLAGS = -lpci -lz

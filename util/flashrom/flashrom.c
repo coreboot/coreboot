@@ -105,7 +105,7 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 {
 	volatile uint8_t *bios;
 	struct flashchip *flash;
-	unsigned long size;
+	unsigned long base, size;
 
 	for (flash = first_flash; flash && flash->name; flash++) {
 		if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0)
@@ -133,11 +133,10 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 			 */
 			size = getpagesize();
 		}
-		if (!flashbase)
-			flashbase = (0xffffffff - size + 1);
 
+		base = flashbase ? flashbase : (0xffffffff - size + 1);
 		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			    fd_mem, (off_t) flashbase);
+			    fd_mem, (off_t) base);
 		if (bios == MAP_FAILED) {
 			perror("Can't mmap memory using " MEM_DEV);
 			exit(1);
@@ -162,7 +161,8 @@ notfound:
 		return NULL;
 
 	printf("Found chip \"%s %s\" (%d KB) at physical address 0x%lx.\n",
-	       flash->vendor, flash->name, flash->total_size, flashbase);
+	       flash->vendor, flash->name, flash->total_size, base);
+	flashbase = base;
 	return flash;
 }
 

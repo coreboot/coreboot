@@ -105,7 +105,7 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 {
 	volatile uint8_t *bios;
 	struct flashchip *flash;
-	unsigned long base, size;
+	unsigned long base = 0, size;
 
 	for (flash = first_flash; flash && flash->name; flash++) {
 		if (chip_to_probe && strcmp(flash->name, chip_to_probe) != 0)

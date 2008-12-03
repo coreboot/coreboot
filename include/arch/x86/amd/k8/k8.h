@@ -580,7 +580,7 @@ enum {
 /* note: we'd like to have this sysinfo common to all K8, there's no need to
  * have one different kind per different kind of k8 at this point. 
  */
-//#include "raminit.h"
+#include "raminit.h"
 
 struct dimm_size {
         u8 per_rank; // it is rows + col + bank_lines + data lines */
@@ -607,14 +607,6 @@ struct mem_info { // pernode
         u8 memclk_set; // we need to use this to retrieve the mem param
 	u8 rsv[3];
 } __attribute__((packed));
-
-struct mem_controller {
-	unsigned node_id;
-	/* NOTE: these are in "BDF" format -- i.e. bus in upper 16, devfn in upper 8 of lower 16 */
-	u32 f0, f1, f2, f3;
-	u32 channel0[DIMM_SOCKETS];
-	u32 channel1[DIMM_SOCKETS];
-};
 
 struct link_pair_st {
 	u32 udev;
@@ -685,8 +677,9 @@ unsigned int get_core_count(void);
 void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a, 
 		const u16 *spd_addr);
 int lapic_remote_read(int apicid, int reg, unsigned int *pvalue);
-void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id,
+/*void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id,
 				const char *str);
+*/
 unsigned int wait_cpu_state(unsigned apicid, unsigned state);
 void set_apicid_cpuid_lo(void);
 /* fidvid.c */

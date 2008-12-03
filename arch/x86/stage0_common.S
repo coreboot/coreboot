@@ -149,6 +149,7 @@ _resetjump:
 	.byte	0xe9
 	.int	_stage0 - ( . + 2 )
 
+#warning Everything below this line and two bytes above this line is being clobbered by LAR. For the discussion about this, see the thread at www.coreboot.org/pipermail/coreboot/2008-December/042771.html
 	/* Note: The above jump is hand coded to work around bugs in binutils.
 	 * 5 bytes are used for a 3 byte instruction. This works because x86
 	 * is little endian and allows us to use supported 32 bit relocations

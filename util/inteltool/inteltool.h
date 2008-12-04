@@ -18,6 +18,14 @@
  */
 
 #include <stdint.h>
+#ifndef DARWIN
+#include <sys/io.h>
+#else
+/* DirectIO is available here:
+ * http://www.coresystems.de/en/directio
+ */
+#include <DirectIO/darwinio.h>
+#endif
 #include <pci/pci.h>
 
 #define INTELTOOL_VERSION "1.0"
@@ -33,17 +41,23 @@
 #define PCI_DEVICE_ID_INTEL_ICH7	0x27b8
 #define PCI_DEVICE_ID_INTEL_ICH7M	0x27b9
 #define PCI_DEVICE_ID_INTEL_ICH7MDH	0x27bd
+#define PCI_DEVICE_ID_INTEL_ICH8M	0x2815
 
 #define PCI_DEVICE_ID_INTEL_82845	0x1a30
 #define PCI_DEVICE_ID_INTEL_82945P	0x2770
 #define PCI_DEVICE_ID_INTEL_82945GM	0x27a0
+#define PCI_DEVICE_ID_INTEL_PM965	0x2a00
+#define PCI_DEVICE_ID_INTEL_82975X	0x277c
 
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
+#ifndef DARWIN
 typedef struct { uint32_t hi, lo; } msr_t;
+#endif
 typedef struct { uint16_t addr; int size; char *name; } io_register_t;
 
-extern int fd_mem;
+void *map_physical(unsigned long phys_addr, int len);
+void unmap_physical(void *virt_addr, int len);
 
 unsigned int cpuid(unsigned int op);
 int print_intel_core_msrs(void);

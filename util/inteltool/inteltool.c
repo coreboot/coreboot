@@ -21,9 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
-#include <sys/io.h>
 #include <fcntl.h>
-
+#include <sys/mman.h>
 #include "inteltool.h"
 
 static const struct {
@@ -33,6 +32,9 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82845, "i845" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945P, "i945P" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945GM, "i945GM" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_PM965, "PM965" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82975X, "i975X" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH8M, "ICH8-M" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7MDH, "ICH7-M DH" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7M, "ICH7-M" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH7, "ICH7" },
@@ -44,7 +46,29 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
 };
 
-int fd_mem;
+#ifndef DARWIN
+static int fd_mem;
+
+void *map_physical(unsigned long phys_addr, int len)
+{
+	void *virt_addr;
+
+	virt_addr = mmap(0, len, PROT_WRITE | PROT_READ, MAP_SHARED,
+		    fd_mem, (off_t) phys_addr);
+	
+	if (virt_addr == MAP_FAILED) {
+		printf("Error mapping physical memory 0x%08x[0x%x]\n", phys_addr, len);
+		return NULL;
+	}
+
+	return virt_addr;
+}
+
+void unmap_physical(void *virt_addr, int len)
+{
+	munmap(virt_addr, len);
+}
+#endif
 
 void print_version(void)
 {
@@ -164,10 +188,12 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
+#ifndef DARWIN
 	if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
 		perror("Can not open /dev/mem");
 		exit(1);
 	}
+#endif
 
 	pacc = pci_alloc();
 	pci_init(pacc);

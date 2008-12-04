@@ -18,7 +18,6 @@
  */
 
 #include <stdio.h>
-#include <sys/io.h>
 #include "inteltool.h"
 
 static const io_register_t ich0_gpio_registers[] = {
@@ -78,6 +77,26 @@ static const io_register_t ich7_gpio_registers[] = {
 	{ 0x3C, 4, "RESERVED" }
 };
 
+static const io_register_t ich8_gpio_registers[] = {
+	{ 0x00, 4, "GPIO_USE_SEL" },
+	{ 0x04, 4, "GP_IO_SEL" },
+	{ 0x08, 4, "RESERVED" },
+	{ 0x0c, 4, "GP_LVL" },
+	{ 0x10, 4, "GPIO_USE_SEL Override (LOW)" },
+	{ 0x14, 4, "RESERVED" },
+	{ 0x18, 4, "GPO_BLINK" },
+	{ 0x1c, 4, "GP_SER_BLINK" },
+	{ 0x20, 4, "GP_SB_CMDSTS" },
+	{ 0x24, 4, "GP_SB_DATA" },
+	{ 0x28, 4, "RESERVED" },
+	{ 0x2c, 4, "GPI_INV" },
+	{ 0x30, 4, "GPIO_USE_SEL2" },
+	{ 0x34, 4, "GP_IO_SEL2" },
+	{ 0x38, 4, "GP_LVL2" },
+	{ 0x3C, 4, "GPIO_USE_SEL Override (HIGH)" }
+};
+
+
 int print_gpios(struct pci_dev *sb)
 {
 	int i, size;
@@ -87,6 +106,11 @@ int print_gpios(struct pci_dev *sb)
 	printf("\n============= GPIOS =============\n\n");
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_ICH8M:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = ich8_gpio_registers;
+		size = ARRAY_SIZE(ich8_gpio_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_ICH7:
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:

@@ -33,13 +33,18 @@ unsigned int cpuid(unsigned int op)
 	unsigned int ret;
 	unsigned int dummy2, dummy3, dummy4;
 	asm volatile ( 
-		"cpuid" 
-		: "=a" (ret), "=b" (dummy2), "=c" (dummy3), "=d" (dummy4)
+		"pushl %%ebx	\n"
+		"cpuid		\n"
+		"movl %%ebx, %1	\n"
+		"popl %%ebx	\n"
+		: "=a" (ret), "=r" (dummy2), "=c" (dummy3), "=d" (dummy4)
 		: "a" (op)
+		: "cc"
 	);
 	return ret;
 }
 
+#ifndef DARWIN
 int msr_readerror = 0;
 
 msr_t rdmsr(int addr)
@@ -72,6 +77,7 @@ msr_t rdmsr(int addr)
 
 	return msr;
 }
+#endif
 
 int print_intel_core_msrs(void)
 {
@@ -273,12 +279,14 @@ int print_intel_core_msrs(void)
 		return -1;
 	}
 
+#ifndef DARWIN
 	fd_msr = open("/dev/cpu/0/msr", O_RDWR);
 	if (fd_msr < 0) {
 		perror("Error while opening /dev/cpu/0/msr");
 		printf("Did you run 'modprobe msr'?\n");
 		return -1;
 	}
+#endif
 
 	printf("\n===================== SHARED MSRs (All Cores) =====================\n");
 
@@ -292,6 +300,7 @@ int print_intel_core_msrs(void)
 	close(fd_msr);
 
 	for (core = 0; core < 8; core++) {
+#ifndef DARWIN
 		char msrfilename[64];
 		memset(msrfilename, 0, 64);
 		sprintf(msrfilename, "/dev/cpu/%d/msr", core);
@@ -303,7 +312,7 @@ int print_intel_core_msrs(void)
 		 */
 		if (fd_msr < 0)
 			break;
-
+#endif
 		printf("\n====================== UNIQUE MSRs  (core %d) ======================\n", core);
 
 		for (i = 0; i < cpu->num_per_core_msrs; i++) {
@@ -312,13 +321,15 @@ int print_intel_core_msrs(void)
 			       cpu->per_core_msrs[i].number, msr.hi, msr.lo,
 			       cpu->per_core_msrs[i].name);
 		}
-
+#ifndef DARWIN
 		close(fd_msr);
+#endif
 	}
 
+#ifndef DARWIN
 	if (msr_readerror)
 		printf("\n(*) Some MSRs could not be read. The marked values are unreliable.\n");
-
+#endif
 	return 0;
 }
 

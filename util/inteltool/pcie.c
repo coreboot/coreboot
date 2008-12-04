@@ -19,8 +19,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/mman.h>
-
 #include "inteltool.h"
 
 /*
@@ -30,15 +28,20 @@ int print_epbar(struct pci_dev *nb)
 {
 	int i, size = (4 * 1024);
 	volatile uint8_t *epbar;
-	uint32_t epbar_phys;
+	uint64_t epbar_phys;
 
 	printf("\n============= EPBAR =============\n\n");
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
+	case PCI_DEVICE_ID_INTEL_82975X:
 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
 		break;
+ 	case PCI_DEVICE_ID_INTEL_PM965:
+ 		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
+ 		epbar_phys |= ((uint64_t)pci_read_long(nb, 0x44)) << 32;
+ 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This northbrigde does not have EPBAR.\n");
 		return 1;
@@ -47,21 +50,20 @@ int print_epbar(struct pci_dev *nb)
 		return 1;
 	}
 
-	epbar = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		     fd_mem, (off_t) epbar_phys);
+	epbar = map_physical(epbar_phys, size);
 	
-	if (epbar == MAP_FAILED) {
+	if (epbar == NULL) {
 		perror("Error mapping EPBAR");
 		exit(1);
 	}
 
-	printf("EPBAR = 0x%08x (MEM)\n\n", epbar_phys);
+	printf("EPBAR = 0x%08llx (MEM)\n\n", epbar_phys);
 	for (i = 0; i < size; i += 4) {
 		if (*(uint32_t *)(epbar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(epbar+i));
 	}
 
-	munmap((void *)epbar, size);
+	unmap_physical((void *)epbar, size);
 	return 0;
 }
 
@@ -72,15 +74,20 @@ int print_dmibar(struct pci_dev *nb)
 {
 	int i, size = (4 * 1024);
 	volatile uint8_t *dmibar;
-	uint32_t dmibar_phys;
+	uint64_t dmibar_phys;
 
 	printf("\n============= DMIBAR ============\n\n");
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
+	case PCI_DEVICE_ID_INTEL_82975X:
 		dmibar_phys = pci_read_long(nb, 0x4c) & 0xfffffffe;
 		break;
+ 	case PCI_DEVICE_ID_INTEL_PM965:
+ 		dmibar_phys = pci_read_long(nb, 0x68) & 0xfffffffe;
+ 		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
+ 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This northbrigde does not have DMIBAR.\n");
 		return 1;
@@ -89,21 +96,20 @@ int print_dmibar(struct pci_dev *nb)
 		return 1;
 	}
 
-	dmibar = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		      fd_mem, (off_t) dmibar_phys);
+	dmibar = map_physical(dmibar_phys, size);
 	
-	if (dmibar == MAP_FAILED) {
+	if (dmibar == NULL) {
 		perror("Error mapping DMIBAR");
 		exit(1);
 	}
 
-	printf("DMIBAR = 0x%08x (MEM)\n\n", dmibar_phys);
+	printf("DMIBAR = 0x%08llx (MEM)\n\n", dmibar_phys);
 	for (i = 0; i < size; i += 4) {
 		if (*(uint32_t *)(dmibar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(dmibar+i));
 	}
 
-	munmap((void *)dmibar, size);
+	unmap_physical((void *)dmibar, size);
 	return 0;
 }
 
@@ -112,8 +118,8 @@ int print_dmibar(struct pci_dev *nb)
  */
 int print_pciexbar(struct pci_dev *nb)
 {
-	uint32_t pciexbar_reg;
-	uint32_t pciexbar_phys;
+	uint64_t pciexbar_reg;
+	uint64_t pciexbar_phys;
 	volatile uint8_t *pciexbar;
 	int max_busses, devbase, i;
 	int bus, dev, fn;
@@ -123,8 +129,13 @@ int print_pciexbar(struct pci_dev *nb)
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
+	case PCI_DEVICE_ID_INTEL_82975X:
 		pciexbar_reg = pci_read_long(nb, 0x48);
 		break;
+ 	case PCI_DEVICE_ID_INTEL_PM965:
+ 		pciexbar_reg = pci_read_long(nb, 0x60);
+ 		pciexbar_reg |= ((uint64_t)pci_read_long(nb, 0x64)) << 32;
+ 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("Error: This northbrigde does not have PCIEXBAR.\n");
 		return 1;
@@ -140,15 +151,15 @@ int print_pciexbar(struct pci_dev *nb)
 
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: // 256MB
-		pciexbar_phys = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
+		pciexbar_phys = pciexbar_reg & (0xff << 28);
 		max_busses = 256;
 		break;
 	case 1: // 128M
-		pciexbar_phys = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
+		pciexbar_phys = pciexbar_reg & (0x1ff << 27);
 		max_busses = 128;
 		break;
 	case 2: // 64M
-		pciexbar_phys = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
+		pciexbar_phys = pciexbar_reg & (0x3ff << 26);
 		max_busses = 64;
 		break;
 	default: // RSVD
@@ -156,12 +167,11 @@ int print_pciexbar(struct pci_dev *nb)
 		return 1;
 	}	
 
-	printf("PCIEXBAR: 0x%08x\n", pciexbar_phys);
+	printf("PCIEXBAR: 0x%08llx\n", pciexbar_phys);
 
-	pciexbar = mmap(0, (max_busses * 1024 * 1024), PROT_WRITE | PROT_READ,
-		        MAP_SHARED, fd_mem, (off_t) pciexbar_phys);
+	pciexbar = map_physical(pciexbar_phys, (max_busses * 1024 * 1024));
 	
-	if (pciexbar == MAP_FAILED) {
+	if (pciexbar == NULL) {
 		perror("Error mapping PCIEXBAR");
 		exit(1);
 	}
@@ -194,7 +204,7 @@ int print_pciexbar(struct pci_dev *nb)
 		}
 	}
 
-	munmap((void *)pciexbar, (max_busses * 1024 * 1024));
+	unmap_physical((void *)pciexbar, (max_busses * 1024 * 1024));
 
 	return 0;
 }

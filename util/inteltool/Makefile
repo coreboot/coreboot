@@ -29,6 +29,13 @@ LDFLAGS = -lpci -lz
 
 OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o
 
+OS_ARCH	= $(shell uname)
+ifeq ($(OS_ARCH), Darwin)
+CFLAGS += -DDARWIN -I/usr/local/include 
+LDFLAGS = -framework IOKit -framework DirectIO -L/usr/local/lib -lpci -lz
+# OBJS += darwinio.o
+endif
+
 all: pciutils dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
@@ -41,25 +48,25 @@ distclean: clean
 	rm -f .dependencies
 
 dep:
-	@$(CC) -MM *.c > .dependencies
+	@$(CC) $(CFLAGS) -MM *.c > .dependencies
 
 pciutils:
-	@echo; echo -n "Checking for pciutils and zlib... "
-	@$(shell ( echo "#include <pci/pci.h>";		   \
-		   echo "struct pci_access *pacc;";	   \
-		   echo "int main(int argc, char **argv)"; \
-		   echo "{ pacc = pci_alloc(); return 0; }"; ) > .test.c )
-	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) &>/dev/null &&	\
-		echo "found." || ( echo "not found."; echo;		\
-		echo "Please install pciutils-devel and zlib-devel.";	\
-		echo "See README for more information."; echo;		\
+	@printf "\nChecking for pciutils and zlib... "
+	@$(shell ( printf "#include <pci/pci.h>\n";		\
+		   printf "struct pci_access *pacc;\n";		\
+		   printf "int main(int argc, char **argv)\n";	\
+		   printf "{ pacc = pci_alloc(); return 0; }\n"; ) > .test.c )
+	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) &>/dev/null &&	  \
+		printf "found.\n" || ( printf "not found.\n\n"; 	  \
+		printf "Please install pciutils-devel and zlib-devel.\n"; \
+		printf "See README for more information.\n\n";		  \
 		rm -f .test.c .test; exit 1)
-	@rm -f .test.c .test
+	@rm -rf .test.c .test .test.dSYM
 
 install: $(PROGRAM)
-	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
-	mkdir -p $(PREFIX)/share/man/man8
-	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
+	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
+	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
+	$(INSTALL) $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
 .PHONY: all clean distclean dep pciutils
 

@@ -20,8 +20,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/mman.h>
-
 #include "inteltool.h"
 
 /*
@@ -31,15 +29,20 @@ int print_mchbar(struct pci_dev *nb)
 {
 	int i, size = (16 * 1024);
 	volatile uint8_t *mchbar;
-	uint32_t mchbar_phys;
+ 	uint64_t mchbar_phys;
 
 	printf("\n============= MCHBAR ============\n\n");
 
 	switch (nb->device_id) {
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
+ 	case PCI_DEVICE_ID_INTEL_82975X:
 		mchbar_phys = pci_read_long(nb, 0x44) & 0xfffffffe;
 		break;
+ 	case PCI_DEVICE_ID_INTEL_PM965:
+ 		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
+ 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
+ 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This northbrigde does not have MCHBAR.\n");
 		return 1;
@@ -48,22 +51,21 @@ int print_mchbar(struct pci_dev *nb)
 		return 1;
 	}
 
-	mchbar = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		      fd_mem, (off_t) mchbar_phys);
+	mchbar = map_physical(mchbar_phys, size);
 	
-	if (mchbar == MAP_FAILED) {
+	if (mchbar == NULL) {
 		perror("Error mapping MCHBAR");
 		exit(1);
 	}
 
-	printf("MCHBAR = 0x%08x (MEM)\n\n", mchbar_phys);
+	printf("MCHBAR = 0x%08llx (MEM)\n\n", mchbar_phys);
 
 	for (i = 0; i < size; i += 4) {
 		if (*(uint32_t *)(mchbar + i))
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(mchbar+i));
 	}
 
-	munmap((void *)mchbar, size);
+	unmap_physical((void *)mchbar, size);
 	return 0;
 }
 

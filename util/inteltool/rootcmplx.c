@@ -18,18 +18,8 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <getopt.h>
-#include <sys/mman.h>
-#include <sys/io.h>
-#include <pci/pci.h>
-
 #include "inteltool.h"
 
 int print_rcba(struct pci_dev *sb)
@@ -45,6 +35,7 @@ int print_rcba(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:
 	case PCI_DEVICE_ID_INTEL_ICH7MDH:
+	case PCI_DEVICE_ID_INTEL_ICH8M:
 		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH:
@@ -58,10 +49,9 @@ int print_rcba(struct pci_dev *sb)
 		return 1;
 	}
 
-	rcba = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-		    fd_mem, (off_t) rcba_phys);
+	rcba = map_physical(rcba_phys, size);
 	
-	if (rcba == MAP_FAILED) {
+	if (rcba == NULL) {
 		perror("Error mapping RCBA");
 		exit(1);
 	}
@@ -73,7 +63,7 @@ int print_rcba(struct pci_dev *sb)
 			printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(rcba + i));
 	}
 
-	munmap((void *)rcba, size);
+	unmap_physical((void *)rcba, size);
 	return 0;
 }
 

@@ -264,14 +264,10 @@ static void vt8237s_init(struct device *dev)
 	pci_write_config32(dev, 0xbc,
 			   (VT8237S_SPI_MEM_BASE >> 8) | (tmp & 0xFF000000));
 
-	/* Enable SATA LED, VR timer = 100us, VR timer should be fixed. */
-	pci_write_config8(dev, 0xe5, 0x69);
-
 	/*
 	 * REQ5 as PCI request input - should be together with INTE-INTH. 
-	 * Fast VR timer disable - need for LDTSTOP_L signal.
 	 */
-	pci_write_config8(dev, 0xe4, 0xa5);
+	pci_write_config8(dev, 0xe4, 0x04);
 
 	/* Reduce further the STPCLK/LDTSTP signal to 5us. */
 	pci_write_config8(dev, 0xec, 0x4);

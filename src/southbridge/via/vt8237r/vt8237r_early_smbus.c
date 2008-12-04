@@ -236,19 +236,9 @@ void vt8237_sb_enable_fid_vid(void)
 
 		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 					   PCI_DEVICE_ID_VIA_VT8237_VLINK), 0);
+
 		if (devctl == PCI_DEV_INVALID)
 			return;
-
-		/* TODO: Why is this an extra block? */
-		{
-			u8 tmp;
-			tmp = pci_read_config8(devctl, 0xec);
-			print_debug("EC is ");
-			print_debug_hex8(tmp);
-			print_debug(" E5 is ");
-			tmp = pci_read_config8(dev, 0xe5);
-			print_debug_hex8(tmp);
-		}
 
 		/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
 		pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
@@ -261,47 +251,15 @@ void vt8237_sb_enable_fid_vid(void)
 		 * Will work for C3 and for FID/VID change.
 		 */
 
-		/* FIXME */
-		outb(0xff, VT8237R_ACPI_IO_BASE + 0x50); /* Maybe unneeded? */
-//              outb(0x4, VT8237R_ACPI_IO_BASE + 0x50);  /* Maybe unneeded? */
-
-		/* It seems for AMD LDTSTP is connected not to SLP anymore. */
-		/* Enable 0: DPSLP# / DPRSTP# / VRDSLP */
-
-		/*
-		 * Enable SATA LED, VR timer = 100us.
-		 * Enable DPSLP# / DPRSTP# / VRDSLP - WARNING LDTSTP connetcs
-		 * to some of those pins! (and not to SLP as on R ver).
-		 */
-		pci_write_config8(dev, 0xe5, 0x69);	/* FIXME */
-
-		/*
-		 * REQ5 as PCI request input - should be together with
-		 * INTE-INTH. Fast VR timer disable - need for LDTSTP signal.
-		 */
-		pci_write_config8(dev, 0xe4, 0xa5);
+		outb(0xff, VT8237R_ACPI_IO_BASE + 0x50);
 
 		/* Reduce further the STPCLK/LDTSTP signal to 5us. */
 		pci_write_config8(dev, 0xec, 0x4);
 
-		/* Host Bus Power Management Control, maybe not needed. */
-		pci_write_config8(dev, 0x8c, 0x5);
-
 		/* So the chip knows we are on AMD. */
-		pci_write_config8(devctl, 0x7c, 0x77);
+		pci_write_config8(devctl, 0x7c, 0x7f);
 
-		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-						  0x2336), 0);
-		if (devctl == PCI_DEV_INVALID)
-			return;
-
-		/*
-		 * Enable C2NOW delay to PSTATECTL VID / FID Change Delay
-		 * to P-State Control.
-		 */
-		pci_write_config8(devctl, 0xa6, 0x83);
-
-		// return; // FIXME: Fall through some revs have it old way.
+		return;
 	}
 
 	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */

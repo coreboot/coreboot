@@ -92,6 +92,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #define K8_4RANK_DIMM_SUPPORT 1
 
+
+
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -102,6 +104,21 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/copy_and_run.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
+
+#define SB_VFSMAF 0
+
+/* this function might fail on some K8 CPUs with errata #181 */
+static void ldtstop_sb(void)
+{
+	print_debug("toggle LDTSTP#\r\n");
+	u8 reg = inb (VT8237R_ACPI_IO_BASE + 0x5c);
+	reg = reg ^ (1 << 0);
+	outb(reg, VT8237R_ACPI_IO_BASE + 0x5c);
+	reg = inb(VT8237R_ACPI_IO_BASE + 0x15);
+	print_debug("done\r\n");
+}
+
+
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
 

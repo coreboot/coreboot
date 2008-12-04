@@ -290,10 +290,20 @@ extern struct flashchip flashchips[];
 #define SST_25WF010		0x2502
 #define SST_25WF020		0x2503
 #define SST_25WF040		0x2504
+#define SST_25VF512A_REMS	0x48	/* REMS or RES opcode */
+#define SST_25VF010_REMS	0x49	/* REMS or RES opcode */
+#define SST_25VF020_REMS	0x43	/* REMS or RES opcode */
+#define SST_25VF040_REMS	0x44	/* REMS or RES opcode */
+#define SST_25VF040B		0x258D
+#define SST_25VF040B_REMS	0x8D	/* REMS or RES opcode */
+#define SST_25VF080_REMS	0x80	/* REMS or RES opcode */
+#define SST_25VF080B		0x258E
+#define SST_25VF080B_REMS	0x8E	/* REMS or RES opcode */
 #define SST_25VF016B		0x2541
 #define SST_25VF032B		0x254A
-#define SST_25VF040B		0x258D
-#define SST_25VF080B		0x258E
+#define SST_25VF032B_REMS	0x4A	/* REMS or RES opcode */
+#define SST_26VF016		0x2601
+#define SST_26VF032		0x2602
 #define SST_27SF512		0xA4
 #define SST_27SF010		0xA5
 #define SST_27SF020		0xA6
@@ -378,6 +388,9 @@ extern struct flashchip flashchips[];
 #define W_25X20			0x3012
 #define W_25X40			0x3013
 #define W_25X80			0x3014
+#define W_25X16			0x3015
+#define W_25X32			0x3016
+#define W_25X64			0x3017
 #define W_29C011		0xC1
 #define W_29C020C		0x45
 #define W_29C040P		0x46

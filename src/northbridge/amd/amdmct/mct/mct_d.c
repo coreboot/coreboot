@@ -3400,6 +3400,8 @@ static void SetODTTriState(struct MCTStatStruc *pMCTstat,
 	u8 max_dimms;
 
 	// FIXME: skip for Ax
+	
+	dev = pDCTstat->dev_dct;
 
 	/* Tri-state unused ODTs when motherboard termination is available */
 	max_dimms = (u8) mctGet_NVbits(NV_MAX_DIMMS);

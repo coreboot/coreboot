@@ -197,13 +197,16 @@ u16 mctGet_NVbits(u8 index)
 	case NV_CS_SpareCTL:
 		val = 0;	/* Disabled */
 		//val = 1;	/* Enabled */
+		break;
 	case NV_SyncOnUnEccEn:
 		val = 0;	/* Disabled */
 		//val = 1;	/* Enabled */
+		break;
 	case NV_Unganged:
 		/* channel interleave is better performance than ganged mode at this time */
 		val = 1;		/* Enabled */
 		//val = 0;	/* Disabled */
+		break;
 	case NV_ChannelIntlv:
 		val = 5;	/* Not currently checked in mctchi_d.c */
 	/* Bit 0 =     0 - Disable
@@ -213,7 +216,7 @@ u16 mctGet_NVbits(u8 index)
 	 *             10b - Hash*, XOR of address bits [20:16, 6]
 	 *             11b - Hash*, XOR of address bits [20:16, 9]
 	 */
-
+		break;
 	}
 
 	return val;

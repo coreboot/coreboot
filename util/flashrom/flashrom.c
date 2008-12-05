@@ -250,6 +250,7 @@ int main(int argc, char *argv[])
 {
 	uint8_t *buf;
 	unsigned long size;
+	size_t erasedbytes;
 	FILE *image;
 	/* Probe for up to three flash chips. */
 	struct flashchip *flash, *flashes[3];
@@ -533,13 +534,25 @@ int main(int argc, char *argv[])
 
 	if (erase_it) {
 		printf("Erasing flash chip... ");
-		if (!flash->erase) {
-			fprintf(stderr, "Error: flashrom has no erase function for this flash chip.\n");
+		if (NULL == flash->erase) {
+			printf("FAILED!\n");
+			fprintf(stderr, "ERROR: flashrom has no erase function for this flash chip.\n");
 			return 1;
 		}
 		flash->erase(flash);
-		printf("done.\n");
-		exit(0);
+		if (NULL == flash->read)
+			memcpy(buf, (const char *)flash->virtual_memory, size);
+		else
+			flash->read(flash, buf);
+		for (erasedbytes = 0; erasedbytes <= size; erasedbytes++)
+			if (0xff != buf[erasedbytes]) {
+				printf("FAILED!\n");
+				fprintf(stderr, "ERROR at 0x%08x: Expected=0xff, Read=0x%02x\n",
+					erasedbytes, buf[erasedbytes]);
+				return 1;
+			}
+		printf("SUCCESS.\n");
+		return 0;
 	} else if (read_it) {
 		if ((image = fopen(filename, "w")) == NULL) {
 			perror(filename);

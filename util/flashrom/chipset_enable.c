@@ -910,6 +910,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x1022, 0x2080, "AMD CS5536",		enable_flash_cs5536},
 	{0x1022, 0x7468, "AMD8111",		enable_flash_amd8111},
 	{0x1002, 0x438D, "ATI(AMD) SB600",	enable_flash_sb600},
+	{0x1002, 0x439d, "ATI(AMD) SB700",	enable_flash_sb600},
 	{0x10B9, 0x1533, "ALi M1533",		enable_flash_ali_m1533},
 	{0x10de, 0x0050, "NVIDIA CK804",	enable_flash_ck804}, /* LPC */
 	{0x10de, 0x0051, "NVIDIA CK804",	enable_flash_ck804}, /* Pro */

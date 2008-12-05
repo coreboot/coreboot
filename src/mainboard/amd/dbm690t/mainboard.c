@@ -28,6 +28,7 @@
 #include "chip.h"
 
 #define ADT7461_ADDRESS 0x4C
+#define ARA_ADDRESS     0x0C /* Alert Response Address */
 #define SMBUS_IO_BASE 0x1000
 
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
@@ -35,6 +36,8 @@ extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 			       u8 val);
 #define ADT7461_read_byte(address) \
 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
+#define ARA_read_byte(address) \
+	do_smbus_read_byte(SMBUS_IO_BASE, ARA_ADDRESS, address)
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
@@ -132,6 +135,7 @@ static void set_thermal_config()
 	ADT7461_write_byte(0x20, 0x55);	/* Local THERM limit */
 
 	byte = ADT7461_read_byte(0x02);	/* read status register to clear it */
+	ARA_read_byte(0x05); /* A hardware alert can only be cleared by the master sending an ARA as a read command */
 	printk_info("Init adt7461 end , status 0x02 %02x\n", byte);
 
 	/* sb600 settings for thermal config */

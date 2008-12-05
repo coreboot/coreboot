@@ -1,0 +1,135 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = (ROM_SIZE - FALLBACK_SIZE)
+else
+	default ROM_SECTION_SIZE   = (ROM_SIZE - FALLBACK_SIZE)
+	default ROM_SECTION_OFFSET = 0
+end
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default PAYLOAD_SIZE = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+default _ROMBASE = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
+default XIP_ROM_SIZE = 64 * 1024
+default XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
+arch i386 end
+driver mainboard.o
+if HAVE_PIRQ_TABLE object irq_tables.o end
+# object reset.o
+makerule ./failover.E
+	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+end
+makerule ./failover.inc
+	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+end
+makerule ./auto.E
+	# depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
+	depends	"$(MAINBOARD)/auto.c ../romcc"
+	action	"../romcc -E -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+end
+makerule ./auto.inc
+	# depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
+	depends "$(MAINBOARD)/auto.c ../romcc"
+	action	"../romcc    -mcpu=p2 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+end
+mainboardinit cpu/x86/16bit/entry16.inc
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/16bit/entry16.lds
+ldscript /cpu/x86/32bit/entry32.lds
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
+else
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
+end
+mainboardinit arch/i386/lib/cpu_reset.inc
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds
+	mainboardinit ./failover.inc
+end
+mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/mmx/enable_mmx.inc
+mainboardinit ./auto.inc
+mainboardinit cpu/x86/mmx/disable_mmx.inc
+dir /pc80
+config chip.h
+
+chip northbridge/intel/i82810			# Northbridge
+  device apic_cluster 0 on			# APIC cluster
+    chip cpu/intel/socket_PGA370		# CPU
+      device apic 0 on end			# APIC
+    end
+  end
+  device pci_domain 0 on
+    device pci 0.0 on end			# Host bridge
+    device pci 1.0 off				# Onboard video
+      # chip drivers/pci/onboard
+      #   device pci 1.0 on end
+      #   register "rom_address" = "0xfff80000"
+      # end
+    end
+    chip southbridge/intel/i82801xx		# Southbridge
+      device pci 1e.0 on end			# PCI bridge
+      device pci 1f.0 on			# ISA/LPC bridge
+        chip superio/smsc/smscsuperio		# Super I/O (SMSC LPC47B27x)
+          device pnp 2e.0 on			# Floppy
+            io 0x60 = 0x3f0
+            irq 0x70 = 6
+            drq 0x74 = 2
+          end
+          device pnp 2e.3 on			# Parallel port
+            io 0x60 = 0x378
+            irq 0x70 = 7
+            drq 0x74 = 3
+          end
+          device pnp 2e.4 on			# Com1
+            io 0x60 = 0x3f8
+            irq 0x70 = 4
+          end
+          device pnp 2e.5 off end		# Com2 (N/A)
+          device pnp 2e.7 on			# PS/2 keyboard
+            irq 0x70 = 1
+            irq 0x72 = 0
+          end
+          device pnp 2e.9 off end		# Game port (N/A)
+          device pnp 2e.a on			# Power-management events (PME)
+            io 0x60 = 0x800
+          end
+          device pnp 2e.b on			# MIDI port
+            io 0x60 = 0x330
+            irq 0x70 = 5
+          end
+        end
+      end
+      device pci 1f.1 on end			# IDE
+      device pci 1f.2 on end			# USB
+      device pci 1f.3 on end			# SMBus
+      device pci 1f.5 on end			# AC'97 audio
+      device pci 1f.6 off end			# AC'97 modem (N/A)
+    end
+  end
+end
+

@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
 {
 	uint8_t *buf;
 	unsigned long size;
-	size_t erasedbytes;
+	uint32_t erasedbytes;
 	FILE *image;
 	/* Probe for up to three flash chips. */
 	struct flashchip *flash, *flashes[3];

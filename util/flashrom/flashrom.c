@@ -205,14 +205,61 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 	return 0;
 }
 
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define POS_PRINT(x) do { pos += strlen(x); printf(x); } while (0)
+
 void print_supported_chips(void)
 {
-	int i;
+	int okcol = 0, pos = 0;
+	struct flashchip *f;
 
-	printf("Supported ROM chips:\n\n");
+	for (f = flashchips; f->name != NULL; f++) {
+		if (GENERIC_DEVICE_ID == f->model_id)
+			continue;
+		okcol = MAX(okcol, strlen(f->vendor) + 1 + strlen(f->name));
+	}
+	okcol = (okcol + 7) & ~7;
 
-	for (i = 0; flashchips[i].name != NULL; i++)
-		printf("%s %s\n", flashchips[i].vendor, flashchips[i].name);
+	POS_PRINT("Supported flash chips:");
+	while (pos < okcol) {
+		printf("\t");
+		pos += 8 - (pos % 8);
+	}
+	printf("Tested OK operations:\tKnown BAD operations:\n\n");
+
+	for (f = flashchips; f->name != NULL; f++) {
+		printf("%s %s", f->vendor, f->name);
+		pos = strlen(f->vendor) + 1 + strlen(f->name);
+		while (pos < okcol) {
+			printf("\t");
+			pos += 8 - (pos % 8);
+		}
+		if ((f->tested & TEST_OK_MASK)) {
+			if ((f->tested & TEST_OK_PROBE))
+				POS_PRINT("PROBE ");
+			if ((f->tested & TEST_OK_READ))
+				POS_PRINT("READ ");
+			if ((f->tested & TEST_OK_ERASE))
+				POS_PRINT("ERASE ");
+			if ((f->tested & TEST_OK_WRITE))
+				POS_PRINT("WRITE");
+		}
+		while (pos < okcol + 24) {
+			printf("\t");
+			pos += 8 - (pos % 8);
+		}
+		if ((f->tested & TEST_BAD_MASK)) {
+			if ((f->tested & TEST_BAD_PROBE))
+				printf("PROBE ");
+			if ((f->tested & TEST_BAD_READ))
+				printf("READ ");
+			if ((f->tested & TEST_BAD_ERASE))
+				printf("ERASE ");
+			if ((f->tested & TEST_BAD_WRITE))
+				printf("WRITE");
+		}
+		printf("\n");
+	}
 }
 
 void usage(const char *name)

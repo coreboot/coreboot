@@ -35,3 +35,4 @@ $(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"
 	$(Q)dd if=/dev/zero of=$(obj)/coreboot.vpd bs=256 count=1 $(SILENT)
 
+SMM := $(obj)/southbridge/intel/i82801gx/smm.elf

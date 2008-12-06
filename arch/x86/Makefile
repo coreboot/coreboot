@@ -48,7 +48,7 @@ ifeq ($(CONFIG_DEFAULT_COMPRESSION_NRV2B),y)
 COMPRESSFLAG := -C nrv2b
 endif
 
-$(obj)/coreboot.rom $(obj)/coreboot.map: $(obj)/coreboot.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/coreboot.initram $(obj)/coreboot.stage2 $(obj)/option_table
+$(obj)/coreboot.rom $(obj)/coreboot.map: $(obj)/coreboot.bootblock $(obj)/util/lar/lar lzma nrv2b $(obj)/coreboot.initram $(obj)/coreboot.stage2 $(obj)/option_table $(SMM)
 	$(Q)printf "  LAR     $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)rm -f $(obj)/coreboot.rom
 	$(Q)cd $(obj) && \
@@ -73,6 +73,10 @@ endif
 ifeq ($(CONFIG_ZERO_AFTER_PAYLOAD),y)
 	$(Q)printf "  ZEROING lar -z ./coreboot.rom\n"
 	$(Q)cd $(obj) && ./util/lar/lar -z ./coreboot.rom
+endif
+ifeq ($(CONFIG_SMM),y)
+	$(Q)printf "  Adding smm.elf\n"
+	$(Q)cd $(obj) && ./util/lar/lar -e $(COMPRESSFLAG) -a $(obj)/coreboot.rom $(SMM):normal/smm;
 endif
 	$(Q)# QEMU wants bios.bin:
 	$(Q)# Run "qemu -L build/ -serial stdio -hda /dev/zero".

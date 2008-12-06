@@ -72,12 +72,20 @@ config CPU_VIA_C7
 	  arch/x86/Makefile for more hints on possible values.
 	  It is usually set in mainboard/*/Kconfig.
 
-config CONFIG_HPET
+config HPET
 	boolean
 	depends CPU_AMD_K8
 	help
 	  Whether to configure a High Precision Event Timer (HPET). Note that
 	  HPETs are known to be bug-prone.
+
+config SMM
+	boolean
+	help
+	  Whether to configure System Management Mode support. 
+	  This is mainboard-enabled. This is a tricky option that 
+	  should not be enabled/disabled casually, as some chipsets
+	  will not work without some form of SMM enabled.
 
 config K8_REV_F_SUPPORT
 	hex

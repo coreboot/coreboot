@@ -31,3 +31,5 @@
 /* nowhere else to go yet */
 #define TEST_SMM_FLASH_LOCKDOWN 0
 
+#define TTYS0_BASE 0x3f8
+

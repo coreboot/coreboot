@@ -57,7 +57,7 @@ void pnp_set_enable(struct device *dev, int enable)
 
 int pnp_read_enable(struct device *dev)
 {
-	return !!pnp_read_config(dev, 0x30);
+	return (pnp_read_config(dev, 0x30) ? 0x1 : 0x0);
 }
 
 void pnp_set_iobase(struct device *dev, unsigned int index, unsigned int iobase)
@@ -110,7 +110,7 @@ static void pnp_set_resource(struct device *dev, struct resource *resource)
 	}
 	resource->flags |= IORESOURCE_STORED;
 
-	report_resource_stored(dev, resource, "");
+	report_resource_stored(dev, resource, __func__);
 }
 
 void pnp_set_resources(struct device *dev)
@@ -192,7 +192,7 @@ static void pnp_get_ioresource(struct device *dev, unsigned int index,
 	resource->limit = info->mask | (step - 1);
 	resource->size = 1 << gran;
 	resource->base = info->val;
-	resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
+	resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 }
 
 static void get_resources(struct device *dev, struct pnp_info *info)
@@ -215,29 +215,29 @@ static void get_resources(struct device *dev, struct pnp_info *info)
 		resource = new_resource(dev, PNP_IDX_IRQ0);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
-		resource->base = info->irq0.val;
-		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
+		resource->base = info->irq0;
+		resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 	}
 	if (info->flags & PNP_IRQ1) {
 		resource = new_resource(dev, PNP_IDX_IRQ1);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
-		resource->base = info->irq1.val;
-		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
+		resource->base = info->irq1;
+		resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 	}
 	if (info->flags & PNP_DRQ0) {
 		resource = new_resource(dev, PNP_IDX_DRQ0);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
-		resource->base = info->drq0.val;
-		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
+		resource->base = info->drq0;
+		resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 	}
 	if (info->flags & PNP_DRQ1) {
 		resource = new_resource(dev, PNP_IDX_DRQ1);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
-		resource->base = info->drq0.val;
-		resource->flags |= IORESOURCE_FIXED || IORESOURCE_ASSIGNED;
+		resource->base = info->drq0;
+		resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED;
 	}
 }
 
@@ -254,6 +254,7 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 
 	/* Setup the ops and resources on the newly allocated devices. */
 	for (i = 0; i < functions; i++) {
+
 		path.pnp.device = info[i].function;
 
 		dev = find_dev_path(&base_dev->link[0], &path);
@@ -263,7 +264,7 @@ void pnp_enable_devices(struct device *base_dev, struct device_operations *ops,
 			       __func__, dev->dtsname, dev_path(dev));
 			continue;
 		}
-		
+
 		dev = alloc_dev(&base_dev->link[0], &path, &id);
 
 		if (!dev)
@@ -310,12 +311,12 @@ static void pnp_enter_ite_legacy(struct device *dev, const u8 init[][4])
 {
 	int i, idx;
 	u16 port = dev->path.pnp.port;
-	
+
 	/* Determine Super I/O config port. */
 	idx = (port == 0x3f0) ? 0 : ((port == 0x3bd) ? 1 : 2);
 	for (i = 0; i < 4; i++)
 		outb(init[idx][i], ISA_PNP_ADDR);
-	
+
 	/* Sequentially write the 32 MB PnP init values. */
 	for (i = 0; i < 32; i++)
 		outb(initkey_mbpnp[i], port);

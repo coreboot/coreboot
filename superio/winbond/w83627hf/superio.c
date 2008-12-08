@@ -195,21 +195,20 @@ struct device_operations w83627hf_ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-				/* Enable,  All resources need by dev,  io_info_structs */
-	{ &w83627hf_ops, W83627HF_FDC, 0, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &w83627hf_ops, W83627HF_PP, 0,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-	{ &w83627hf_ops, W83627HF_SP1, 0, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &w83627hf_ops, W83627HF_SP2, 0, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ 0,},
-	{ &w83627hf_ops, W83627HF_KBC, 0, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
-	{ &w83627hf_ops, W83627HF_CIR, 0,PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	{ &w83627hf_ops, W83627HF_GAME_MIDI_GPIO1, 0,PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 0x4}, },
-	{ &w83627hf_ops, W83627HF_GPIO2, 0 },
-	{ &w83627hf_ops, W83627HF_GPIO3, 0 },
-	{ &w83627hf_ops, W83627HF_ACPI, 0 },
-	{ &w83627hf_ops, W83627HF_HWM, 0, PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
+		/* Ops, function #, All resources needed by dev,  io_info_structs */
+	{ &w83627hf_ops, W83627HF_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &w83627hf_ops, W83627HF_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &w83627hf_ops, W83627HF_SP1, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &w83627hf_ops, W83627HF_SP2, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ 0, }, /* No function 4. */
+	{ &w83627hf_ops, W83627HF_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
+	{ &w83627hf_ops, W83627HF_CIR, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &w83627hf_ops, W83627HF_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 0x4}, },
+	{ &w83627hf_ops, W83627HF_GPIO2, },
+	{ &w83627hf_ops, W83627HF_GPIO3, },
+	{ &w83627hf_ops, W83627HF_ACPI, },
+	{ &w83627hf_ops, W83627HF_HWM, PNP_IO0 | PNP_IRQ0, { 0xff8, 0 }, },
 };
-
 
 static void phase3_chip_setup_dev(struct device *dev)
 {
@@ -219,30 +218,30 @@ static void phase3_chip_setup_dev(struct device *dev)
 	/* Floppy */
 	pnp_dev_info[W83627HF_FDC].enable = conf->floppyenable;
 	pnp_dev_info[W83627HF_FDC].io0.val = conf->floppyio;
-	pnp_dev_info[W83627HF_FDC].irq0.val = conf->floppyirq;
-	pnp_dev_info[W83627HF_FDC].drq0.val = conf->floppydrq;
+	pnp_dev_info[W83627HF_FDC].irq0 = conf->floppyirq;
+	pnp_dev_info[W83627HF_FDC].drq0 = conf->floppydrq;
 
 	/* Parallel port */
 	pnp_dev_info[W83627HF_PP].enable = conf->ppenable;
 	pnp_dev_info[W83627HF_PP].io0.val = conf->ppio;
-	pnp_dev_info[W83627HF_PP].irq0.val = conf->ppirq;
+	pnp_dev_info[W83627HF_PP].irq0 = conf->ppirq;
 
 	/* COM1 */
 	pnp_dev_info[W83627HF_SP1].enable = conf->com1enable;
 	pnp_dev_info[W83627HF_SP1].io0.val = conf->com1io;
-	pnp_dev_info[W83627HF_SP1].irq0.val = conf->com1irq;
+	pnp_dev_info[W83627HF_SP1].irq0 = conf->com1irq;
 
 	/* COM2 */
 	pnp_dev_info[W83627HF_SP2].enable = conf->com2enable;
 	pnp_dev_info[W83627HF_SP2].io0.val = conf->com2io;
-	pnp_dev_info[W83627HF_SP2].irq0.val = conf->com2irq;
+	pnp_dev_info[W83627HF_SP2].irq0 = conf->com2irq;
 
 	/* Keyboard */
 	pnp_dev_info[W83627HF_KBC].enable = conf->kbenable;
 	pnp_dev_info[W83627HF_KBC].io0.val = conf->kbio;
 	pnp_dev_info[W83627HF_KBC].io1.val = conf->kbio2;
-	pnp_dev_info[W83627HF_KBC].irq0.val = conf->kbirq;
-	pnp_dev_info[W83627HF_KBC].irq1.val = conf->kbirq2;
+	pnp_dev_info[W83627HF_KBC].irq0 = conf->kbirq;
+	pnp_dev_info[W83627HF_KBC].irq1 = conf->kbirq2;
 
 	/* Consumer IR */
 	pnp_dev_info[W83627HF_CIR].enable = conf->cirenable;
@@ -251,7 +250,7 @@ static void phase3_chip_setup_dev(struct device *dev)
 	pnp_dev_info[W83627HF_GAME_MIDI_GPIO1].enable = conf->gameenable;
 	pnp_dev_info[W83627HF_GAME_MIDI_GPIO1].io0.val = conf->gameio;
 	pnp_dev_info[W83627HF_GAME_MIDI_GPIO1].io1.val = conf->gameio2;
-	pnp_dev_info[W83627HF_GAME_MIDI_GPIO1].irq0.val = conf->gameirq;
+	pnp_dev_info[W83627HF_GAME_MIDI_GPIO1].irq0 = conf->gameirq;
 
 	/* GPIO2 */
 	pnp_dev_info[W83627HF_GPIO2].enable = conf->gpio2enable;
@@ -265,7 +264,7 @@ static void phase3_chip_setup_dev(struct device *dev)
 	/* Hardware Monitor */
 	pnp_dev_info[W83627HF_HWM].enable = conf->hwmenable;
 	pnp_dev_info[W83627HF_HWM].io0.val = conf->hwmio;
-	pnp_dev_info[W83627HF_HWM].irq0.val = conf->hwmirq;
+	pnp_dev_info[W83627HF_HWM].irq0 = conf->hwmirq;
 
 	/* Initialize SuperIO for PNP children. */
 	if (!dev->links) {
@@ -275,7 +274,6 @@ static void phase3_chip_setup_dev(struct device *dev)
 		dev->link[0].link = 0;
 	}
 
-	/* Call init with updated tables to create children. */
+	/* Call init with updated tables to create and enable children. */
 	pnp_enable_devices(dev, &w83627hf_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
-

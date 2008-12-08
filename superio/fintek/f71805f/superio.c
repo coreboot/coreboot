@@ -93,6 +93,8 @@ struct device_operations f71805f_ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
+		/* Ops, function #, All resources needed by dev,  io_info */
+	{ NULL, F71805F_FDC, }, /* Place holder. */
 	{ &f71805f_ops, F71805F_COM1, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &f71805f_ops, F71805F_COM2, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	/* TODO: Everything else */
@@ -106,12 +108,12 @@ static void phase2_setup_scan_bus(struct device *dev)
 	/* COM1 */
 	pnp_dev_info[F71805F_COM1].enable = conf->com1enable;
 	pnp_dev_info[F71805F_COM1].io0.val = conf->com1io;
-	pnp_dev_info[F71805F_COM1].irq0.val = conf->com1irq;
+	pnp_dev_info[F71805F_COM1].irq0 = conf->com1irq;
 
 	/* COM2 */
 	pnp_dev_info[F71805F_COM2].enable = conf->com2enable;
 	pnp_dev_info[F71805F_COM2].io0.val = conf->com2io;
-	pnp_dev_info[F71805F_COM2].irq0.val = conf->com2irq;
+	pnp_dev_info[F71805F_COM2].irq0 = conf->com2irq;
 
 	/* Initialize SuperIO for PNP children. */
 	if (!dev->links) {

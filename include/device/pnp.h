@@ -59,7 +59,6 @@ struct io_info {
 struct pnp_info {
 	struct device_operations *ops;
 	unsigned function;
-	unsigned enable;
 	unsigned flags;
 #define PNP_IO0  0x01
 #define PNP_IO1  0x02
@@ -69,11 +68,15 @@ struct pnp_info {
 #define PNP_IRQ1 0x20
 #define PNP_DRQ0 0x40
 #define PNP_DRQ1 0x80
-	struct io_info io0, io1, io2, io3, irq0, irq1, drq0, drq1;
+	struct io_info io0, io1, io2, io3;
+	unsigned irq0, irq1, drq0, drq1;
+	unsigned enable;
 };
+
 struct resource *pnp_get_resource(struct device * dev, unsigned index);
+
 void pnp_enable_devices(struct device *dev, struct device_operations *ops,
-	unsigned functions, struct pnp_info *info);
+			unsigned functions, struct pnp_info *info);
 
 #define PNP_IDX_IO0  0x60
 #define PNP_IDX_IO1  0x62

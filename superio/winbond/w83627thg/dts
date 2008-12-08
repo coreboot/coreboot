@@ -24,33 +24,28 @@
 	/* To override any of these, put the over-ride in mainboard dts. */
 
 	/* Floppy */
-	floppydev = "0";
 	floppyenable = "0";
 	floppyio = "0x3f0";
 	floppyirq = "6";
 	floppydrq = "2";
 
 	/* Parallel port */
-	ppdev = "1";
 	ppenable = "0";
 	ppio = "0x378";
 	ppirq = "7";
 	ppdrq = "4";
 
 	/* COM1 */
-	com1dev = "2";
 	com1enable = "0";
 	com1io = "0x3f8";
 	com1irq = "4";
 
 	/* COM2 */
-	com2dev = "3";
 	com2enable = "0";
 	com2io = "0x2f8";
 	com2irq = "3";
 
 	/* PS/2 keyboard + PS/2 mouse */
-	kbdev = "5";
 	kbenable = "0";
 	kbio = "0x60";
 	kbio2 = "0x64";
@@ -58,26 +53,21 @@
 	kbirq2 = "12";
 
 	/* Game port, MIDI port, GPIO1, GPIO5 */
-	gamedev = "7";
 	gameenable = "0";
 	gameio = "0x201";
 	gameio2 = "0x330";
 	gameirq = "9";
 
 	/* GPIO2 */
-	gpio2dev = "8";
 	gpio2enable = "0";
 
 	/* GPIO3, GPIO4 */
-	gpio34dev = "9";
 	gpio34enable = "0";
 
 	/* ACPI */
-	acpidev = "10";
 	acpienable = "0";
 
 	/* Hardware Monitor */
-	hwmdev = "11";
 	hwmenable = "0";
 	hwmio = "0x290";
 	hwmirq = "5";

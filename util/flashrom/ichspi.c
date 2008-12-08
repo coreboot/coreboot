@@ -101,6 +101,9 @@
 #define ICH7_REG_OPTYPE                0x56	/* 16 Bits */
 #define ICH7_REG_OPMENU                0x58	/* 64 Bits */
 
+/* ICH SPI configuration lock-down. May be set during chipset enabling. */
+int ichspi_lock = 0;
+
 typedef struct _OPCODE {
 	uint8_t opcode;		//This commands spi opcode
 	uint8_t spi_type;	//This commands spi type
@@ -147,7 +150,11 @@ static inline uint16_t REGREAD16(int X)
 #define REGWRITE8(X,Y)  (*(uint8_t *)((uint8_t *)spibar+X)=Y)
 
 /* Common SPI functions */
+static inline int find_opcode(OPCODES *op, uint8_t opcode);
+static inline int find_preop(OPCODES *op, uint8_t preop);
+static int generate_opcodes(struct flashchip * flash, OPCODES * op);
 static int program_opcodes(OPCODES * op);
+int ich_check_opcodes(struct flashchip * flash);
 static int run_opcode(OPCODE op, uint32_t offset,
 		      uint8_t datalength, uint8_t * data);
 static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf,
@@ -170,6 +177,98 @@ OPCODES O_ST_M25P = {
 	 {JEDEC_CE_C7, SPI_OPCODE_TYPE_WRITE_NO_ADDRESS, 1},	// Bulk erase
 	 }
 };
+
+OPCODES O_EXISTING = {};
+
+static inline int find_opcode(OPCODES *op, uint8_t opcode)
+{
+	int a;
+
+	for (a = 0; a < 8; a++) {
+		if (op->opcode[a].opcode == opcode)
+			return a;
+	}
+
+	return -1;
+}
+
+static inline int find_preop(OPCODES *op, uint8_t preop)
+{
+	int a;
+
+	for (a = 0; a < 2; a++) {
+		if (op->preop[a] == preop)
+			return a;
+	}
+
+	return -1;
+}
+
+static int generate_opcodes(struct flashchip * flash, OPCODES * op)
+{
+  int a, b, i;
+	uint16_t preop, optype;
+	uint32_t opmenu[2];
+	struct preop_opcode_pair *pair;
+
+	if (op == NULL) {
+		printf_debug("\n%s: null OPCODES pointer!\n", __FUNCTION__);
+		return -1;
+	}
+
+	switch (flashbus) {
+	case BUS_TYPE_ICH7_SPI:
+	case BUS_TYPE_VIA_SPI:
+		preop = REGREAD16(ICH7_REG_PREOP);
+		optype = REGREAD16(ICH7_REG_OPTYPE);
+		opmenu[0] = REGREAD32(ICH7_REG_OPMENU);
+		opmenu[1] = REGREAD32(ICH7_REG_OPMENU + 4);
+		break;
+	case BUS_TYPE_ICH9_SPI:
+		preop = REGREAD16(ICH9_REG_PREOP);
+		optype = REGREAD16(ICH9_REG_OPTYPE);
+		opmenu[0] = REGREAD32(ICH9_REG_OPMENU);
+		opmenu[1] = REGREAD32(ICH9_REG_OPMENU + 4);
+		break;
+	default:
+		printf_debug("%s: unsupported chipset\n", __FUNCTION__);
+		return -1;
+	}
+
+	op->preop[0] = (uint8_t) preop;
+	op->preop[1] = (uint8_t) (preop >> 8);
+
+	for (a = 0; a < 8; a++) {
+		op->opcode[a].spi_type = (uint8_t) (optype & 0x3);
+		optype >>= 2;
+	}
+
+	for (a = 0; a < 4; a++) {
+		op->opcode[a].opcode = (uint8_t) (opmenu[0] & 0xff);
+		opmenu[0] >>= 8;
+	}
+
+	for (a = 4; a < 8; a++) {
+		op->opcode[a].opcode = (uint8_t) (opmenu[1] & 0xff);
+		opmenu[1] >>= 8;
+	}
+
+	/* atomic (link opcode with required pre-op) */
+	for (a = 4; a < 8; a++)
+		op->opcode[a].atomic = 0;
+
+	pair = flash->preop_opcode_pairs;
+	if (pair) {
+		for (i = 0; pair[i].opcode; i++) {
+			a = find_opcode(op, pair[i].opcode);
+			b = find_preop(op, pair[i].preop);
+			if ((a != -1) && (b != -1))
+				op->opcode[a].atomic = (uint8_t) ++b;
+		}
+	}
+
+	return 0;
+}
 
 int program_opcodes(OPCODES * op)
 {
@@ -222,6 +321,41 @@ int program_opcodes(OPCODES * op)
 	}
 
 	return 0;
+}
+
+/* This function generates OPCODES from or programs OPCODES to the chipset
+ * according to its SPI configuration lock.
+ *
+ * It should be called in the ICH7/ICH9/VIA part of each operation driver(i.e.
+ * probe, read, erase, write, etc.) before any command is sent.
+ */
+int ich_check_opcodes(struct flashchip * flash)
+{
+	int rc = 0;
+	OPCODES *curopcodes_done;
+
+	if (curopcodes)
+		return 0;
+
+	if (ichspi_lock) {
+		printf_debug("Generating OPCODES... ");
+		curopcodes_done = &O_EXISTING;
+		rc = generate_opcodes(flash, curopcodes_done);
+	} else {
+		printf_debug("Programming OPCODES... ");
+		curopcodes_done = &O_ST_M25P;
+		rc = program_opcodes(curopcodes_done);
+	}
+
+	if (rc) {
+		curopcodes = NULL;
+		printf_debug("failed\n");
+		return 1;
+	} else {
+		curopcodes = curopcodes_done;
+		printf_debug("done\n");
+		return 0;
+	}
 }
 
 static int ich7_run_opcode(OPCODE op, uint32_t offset,

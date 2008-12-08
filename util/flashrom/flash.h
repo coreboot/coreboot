@@ -51,6 +51,12 @@
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 
+/* for pairing opcodes with their required preop */
+struct preop_opcode_pair {
+	uint8_t preop;
+	uint8_t opcode;
+};
+
 struct flashchip {
 	const char *vendor;
 	const char *name;
@@ -75,6 +81,8 @@ struct flashchip {
 	int (*erase) (struct flashchip *flash);
 	int (*write) (struct flashchip *flash, uint8_t *buf);
 	int (*read) (struct flashchip *flash, uint8_t *buf);
+
+	struct preop_opcode_pair *preop_opcode_pairs;
 
 	/* Some flash devices have an additional register space. */
 	volatile uint8_t *virtual_memory;

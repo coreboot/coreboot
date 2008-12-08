@@ -47,6 +47,8 @@ unsigned long flashbase = 0;
 flashbus_t flashbus = BUS_TYPE_LPC;
 void *spibar = NULL;
 
+extern int ichspi_lock;
+
 static int enable_flash_ali_m1533(struct pci_dev *dev, const char *name)
 {
 	uint8_t tmp;
@@ -335,6 +337,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 		printf_debug("\n");
 		if ((*(uint16_t *) spibar) & (1 << 15)) {
 			printf("WARNING: SPI Configuration Lockdown activated.\n");
+			ichspi_lock = 1;
 		}
 		break;
 	case BUS_TYPE_ICH9_SPI:

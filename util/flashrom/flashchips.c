@@ -576,7 +576,7 @@ struct flashchip flashchips[] = {
 	 512, 4096,
 	 TEST_OK_PROBE,
 	 probe_jedec, erase_chip_jedec, write_39sf020
-	}, /* assume similar to 004B, ignoring data sheet */
+	},
 
 	{"SST", "SST49LF002A/B", SST_ID, SST_49LF002A,
 	 256, 16 * 1024,

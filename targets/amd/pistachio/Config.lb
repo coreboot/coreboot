@@ -1,0 +1,21 @@
+# This will make a target directory of ./pistachio
+
+target pistachio
+mainboard amd/pistachio
+
+romimage "normal"
+	option ROM_SIZE = 1024*1024 - 55808
+	option USE_FALLBACK_IMAGE=0
+	option ROM_IMAGE_SIZE=0x20000
+	option XIP_ROM_SIZE=0x20000
+	payload ../payload.elf
+end
+
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
+	option ROM_IMAGE_SIZE=0x20000
+	option XIP_ROM_SIZE=0x20000
+	payload ../payload.elf
+end
+
+buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"

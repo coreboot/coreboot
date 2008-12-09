@@ -352,34 +352,66 @@ SDRAM configuration functions.
 /**
  * Send the specified RAM command to all DIMMs.
  *
- * @param TODO
- * @param TODO
+ * @param command The RAM command to send to the DIMM(s).
  */
-static void do_ram_command(uint32_t command, uint32_t addr_offset)
+static void do_ram_command(u32 command)
 {
-	int i;
-	uint16_t reg;
-
-	/* TODO: Support for multiple DIMMs. */
+	int i, caslatency;
+	u8 dimm_start, dimm_end;
+	u16 reg16;
+	u32 addr, addr_offset;
 
 	/* Configure the RAM command. */
-	reg = pci_read_config16(NB, SDRAMC);
-	reg &= 0xff1f;		/* Clear bits 7-5. */
-	reg |= (uint16_t) (command << 5);
-	pci_write_config16(NB, SDRAMC, reg);
+	reg16 = pci_read_config16(NB, SDRAMC);
+	reg16 &= 0xff1f;		/* Clear bits 7-5. */
+	reg16 |= (u16) (command << 5);	/* Write command into bits 7-5. */
+	pci_write_config16(NB, SDRAMC, reg16);
 
-	/* RAM_COMMAND_NORMAL affects only the memory controller and
-	   doesn't need to be "sent" to the DIMMs. */
-	/* if (command == RAM_COMMAND_NORMAL) return; */
+	/*
+	 * RAM_COMMAND_NORMAL affects only the memory controller and
+	 * doesn't need to be "sent" to the DIMMs.
+	 */
+	if (command == RAM_COMMAND_NORMAL)
+		return;
 
-	PRINT_DEBUG("    Sending RAM command 0x");
-	PRINT_DEBUG_HEX16(reg);
-	PRINT_DEBUG(" to 0x");
-	PRINT_DEBUG_HEX32(0 + addr_offset); // FIXME
-	PRINT_DEBUG("\r\n");
+	/* Send the RAM command to each row of memory. */
+	dimm_start = 0;
+	for (i = 0; i < (DIMM_SOCKETS * 2); i++) {
+                addr_offset = 0;
+                caslatency = 3; /* TODO: Dynamically get CAS latency later. */
+		if (command == RAM_COMMAND_MRS) {
+			/*
+			 * MAA[12:11,9:0] must be inverted when sent to DIMM
+			 * 2 or 3 (no inversion if sent to DIMM 0 or 1).
+			 */
+			if ((i >= 0 && i <= 3) && caslatency == 3)
+				addr_offset = 0x1d0;
+			if ((i >= 4 && i <= 7) && caslatency == 3)
+				addr_offset = 0x1e28;
+			if ((i >= 0 && i <= 3) && caslatency == 2)
+				addr_offset = 0x150;
+			if ((i >= 4 && i <= 7) && caslatency == 2)
+				addr_offset = 0x1ea8;
+		}
 
-	/* Read from (DIMM start address + addr_offset). */
-	read32(0 + addr_offset); // FIXME
+		dimm_end = pci_read_config8(NB, DRB + i);
+
+		addr = (dimm_start * 8 * 1024 * 1024) + addr_offset;
+		if (dimm_end > dimm_start) {
+#if 0
+			PRINT_DEBUG("    Sending RAM command 0x");
+			PRINT_DEBUG_HEX16(reg16);
+			PRINT_DEBUG(" to 0x");
+			PRINT_DEBUG_HEX32(addr);
+			PRINT_DEBUG("\r\n");
+#endif
+
+			read32(addr);
+		}
+
+		/* Set the start of the next DIMM. */
+		dimm_start = dimm_end;
+	}
 }
 
 /*-----------------------------------------------------------------------------
@@ -469,12 +501,11 @@ static void sdram_set_spd_registers(void)
 	/* TODO: Set DRAMC. Don't enable refresh for now. */
 	pci_write_config8(NB, DRAMC, 0x08);
 
-	/* TODO: Set RPS. */
+	/* TODO: Set RPS. Needs to be fixed for multiple DIMM support. */
 	pci_write_config16(NB, RPS, 0x0001);
 
 	/* TODO: Set SDRAMC. */
-	// pci_write_config16(NB, SDRAMC, 0x010f); // FIXME?
-	pci_write_config16(NB, SDRAMC, 0x0003); // FIXME?
+	pci_write_config16(NB, SDRAMC, 0x0010);	/* SDRAMPWR=1: 4 DIMM config */
 
 	/* TODO: Set PGPOL. */
 	// pci_write_config16(NB, PGPOL, 0x0107);
@@ -504,29 +535,29 @@ static void sdram_enable(void)
 
 	/* 1. Apply NOP. Wait 200 clock cycles (200us should do). */
 	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
-	do_ram_command(RAM_COMMAND_NOP, 0);
+	do_ram_command(RAM_COMMAND_NOP);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
 	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
-	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
+	do_ram_command(RAM_COMMAND_PRECHARGE);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
 	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
 	for (i = 0; i < 8; i++) {
-		do_ram_command(RAM_COMMAND_CBR, 0);
+		do_ram_command(RAM_COMMAND_CBR);
 		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
 	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
-	do_ram_command(RAM_COMMAND_MRS, 0x1d0);
+	do_ram_command(RAM_COMMAND_MRS);
 	udelay(2);
 
 	/* 5. Normal operation. */
 	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
-	do_ram_command(RAM_COMMAND_NORMAL, 0);
+	do_ram_command(RAM_COMMAND_NORMAL);
 	udelay(1);
 
 	/* 6. Finally enable refresh. */

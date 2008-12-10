@@ -256,6 +256,34 @@ extern struct flashchip flashchips[];
 #define MX_25L3235D		0x2416
 #define MX_29F002B		0x34
 #define MX_29F002T		0xB0
+#define MX_29LV002CB		0x5A
+#define MX_29LV002CT		0x59
+#define MX_29LV004CB		0xB6
+#define MX_29LV004CT		0xB5
+#define MX_29LV008CB		0x37
+#define MX_29LV008CT		0x3E
+#define MX_29F040C		0xA4
+#define MX_29F200CB		0x57
+#define MX_29F200CT		0x51
+#define MX_29F400CB		0xAB
+#define MX_29F400CT		0x23
+#define MX_29LV040C		0x4F
+#define MX_29LV128DB		0x7A
+#define MX_29LV128DT		0x7E
+#define MX_29LV160DB		0x49	/* Same as MX29LV161DB/MX29LV160CB */
+#define MX_29LV160DT		0xC4	/* Same as MX29LV161DT/MX29LV160CT */
+#define MX_29LV320DB		0xA8	/* Same as MX29LV321DB */
+#define MX_29LV320DT		0xA7	/* Same as MX29LV321DT */
+#define MX_29LV400CB		0xBA
+#define MX_29LV400CT		0xB9
+#define MX_29LV800CB		0x5B
+#define MX_29LV800CT		0xDA
+#define MX_29LV640DB		0xCB	/* Same as MX29LV640EB */
+#define MX_29LV640DT		0xC9	/* Same as MX29LV640ET */
+#define MX_29SL402CB		0xF1
+#define MX_29SL402CT		0x70
+#define MX_29SL800CB		0x6B	/* Same as MX29SL802CB */
+#define MX_29SL800CT		0xEA	/* Same as MX29SL802CT */
 
 /*
  * Programmable Micro Corp is listed in JEP106W in bank 2, so it should

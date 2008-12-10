@@ -392,6 +392,12 @@ struct flashchip flashchips[] = {
 	 probe_29f002, erase_29f002, write_29f002
 	},
 
+	{"Macronix", "MX29LV040C", MX_ID, MX_29LV040C,
+	 512, 64 * 1024,
+	 TEST_OK_PR,
+	 probe_29f002, erase_29f002, write_29f002
+	},
+
 	{"Numonyx", "M25PE10", ST_ID, 0x8011,
 	 128, 256,
 	 TEST_UNTESTED,

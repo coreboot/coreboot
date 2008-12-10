@@ -23,6 +23,9 @@
 #include "vt8237.h"
 
 /* TODO: use phase2_fixup to disable SATA */
+
+/* Causes coreboot to hang, so moved to stage1 code 
+   TODO: Fix vt8237s */
 static void sata_i_init(struct device *dev)
 {
 	u8 reg;
@@ -100,12 +103,12 @@ struct device_operations vt8237r_sata = {
 		{.pci = {.vendor = PCI_VENDOR_ID_VIA,
 				.device = PCI_DEVICE_ID_VIA_VT8237R_SATA}}},
 	.constructor			= default_device_constructor,
-	.phase3_scan			= 0,
+	//.phase3_scan			= 0,
 	//.phase4_enable_disable		= vt8237_enable,
 	//.phase4_read_resources		= pci_dev_read_resources,
 	//.phase4_set_resources		= pci_set_resources,
 	//.phase5_enable_resources	= pci_dev_enable_resources,
-	.phase6_init			= sata_i_init,
+	//.phase6_init			= sata_i_init,
 };
 
 struct device_operations vt8237s_sata = {
@@ -113,8 +116,7 @@ struct device_operations vt8237s_sata = {
 		{.pci = {.vendor = PCI_VENDOR_ID_VIA,
 				.device = PCI_DEVICE_ID_VIA_VT8237S_SATA}}},
 	.constructor			= default_device_constructor,
-	.phase2_fixup			= 0,
-	.phase3_scan			= 0,
+	//.phase3_scan			= 0,
 	//.phase4_enable_disable		= vt8237_enable,
 	//.phase4_read_resources		= pci_dev_read_resources,
 	//.phase4_set_resources		= pci_set_resources,

@@ -22,37 +22,28 @@
 #include <types.h>
 #include <lib.h>
 #include <console.h>
-#include <io.h>
-#include <arch/x86/pci_ops.h>
+#include <arch/x86/mtrr.h>
 #include <device/pci.h>
-#include <device/pci_ids.h>
-#include <superio/fintek/f71805f/f71805f.h>
 #include <northbridge/via/cn700/cn700.h>
+#include <southbridge/via/vt8237/vt8237.h>
+#include <superio/via/vt1211/vt1211.h>
+
+#define SMBUS_IO_BASE 0x400
 
 void hardware_stage1(void)
 {
-	void early_mtrr_init(void);
-	void vt1211_enable_serial(u8 dev, u8 serial, u16 iobase);
-	u32 dev;
-
 	post_code(POST_START_OF_MAIN);
 
-	/* do this or watch the system run slowly */
-	early_mtrr_init();
+	/* do this and the system won't run at all */
+	//early_mtrr_init();
 
 	vt1211_enable_serial(0x2e, 2, 0x3f8);
 	
-	/* Enable multifunction for northbridge. */
-	pci_conf1_write_config8(0x00, 0x4f, 0x01);
-
 	printk(BIOS_SPEW, "In hardware_stage1()\n");
-	/* Disabled GP3, to keep the system from rebooting automatically */
-	//pci_conf1_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VT8237R_LPC, &dev);
-	dev = PCI_BDF(0, 17, 0);
-	pci_conf1_write_config8(dev, 0x98, 0x00);
+	cn700_stage1();
+	vt8237_stage1(SMBUS_IO_BASE);
 }
 
 void mainboard_pre_payload(void)
 {
-	//banner(BIOS_DEBUG, "mainboard_pre_payload: done");
 }

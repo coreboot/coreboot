@@ -77,6 +77,7 @@ struct vt8237_network_rom {
 } __attribute__ ((packed));
 
 void enable_smbus(u16);
+void vt8237_stage1(u16);
 u8 smbus_read_byte(u16, u8, u16);
 void vt8237_enable(struct device *);
 

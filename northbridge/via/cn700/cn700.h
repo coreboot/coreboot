@@ -28,7 +28,7 @@ struct board_info {
 	u16 spd_channel0[2];
 };
 
-void c7_cpu_setup(u32);
+void cn700_stage1(void);
 void sdram_set_registers(struct board_info *);
 void sdram_set_spd_registers(struct board_info *);
 void ddr2_sdram_enable(struct board_info *);

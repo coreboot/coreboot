@@ -128,97 +128,6 @@ static void do_ram_command(struct board_info *dev, u8 command, u32 addr_offset)
 }
 
 /**
- * Configure the bus between the cpu and the northbridge. This might be able to 
- * be moved to post-ram code in the future. For the most part, these registers
- * should not be messed around with. These are too complex to explain short of
- * copying the datasheets into the comments, but most of these values are from
- * the BIOS Porting Guide, so they should work on any board. If they don't,
- * try the values from your factory BIOS.
- *
- * TODO: Changing the DRAM frequency doesn't work (hard lockup)
- *
- * @param dev The northbridge's CPU Host Interface (D0F2)
- */
-void c7_cpu_setup(u32 dev)
-{
-	/* Host bus interface registers (D0F2 0x50-0x67) */
-	/* Request phase control */
-	pci_conf1_write_config8(dev, 0x50, 0x88);
-	/* CPU Interface Control */
-	pci_conf1_write_config8(dev, 0x51, 0x7a);
-	pci_conf1_write_config8(dev, 0x52, 0x6f);
-	/* Arbitration */
-	pci_conf1_write_config8(dev, 0x53, 0x88);
-	/* Miscellaneous Control */
-	pci_conf1_write_config8(dev, 0x54, 0x1e);
-	pci_conf1_write_config8(dev, 0x55, 0x16);
-	/* Write Policy */
-	pci_conf1_write_config8(dev, 0x56, 0x01);
-	/* Miscellaneous Control */
-	/* DRAM Operating Frequency (bits 7:5 Rx57)
-	 *      000 : 100MHz    001 : 133MHz
-	 *      010 : 166MHz    011 : 200MHz
-	 *      100 : 266MHz    101 : 333MHz
-	 *      110/111 : Reserved
-	 * bits 4:0: Reserved
-	 */
-	/* CPU Miscellaneous Control */
-	pci_conf1_write_config8(dev, 0x59, 0x44);
-	/* Write Policy */
-	pci_conf1_write_config8(dev, 0x5d, 0xb2);
-	/* Bandwidth Timer */
-	pci_conf1_write_config8(dev, 0x5e, 0x88);
-	/* CPU Miscellaneous Control */
-	pci_conf1_write_config8(dev, 0x5f, 0xc7);
-
-	/* Line DRDY# Timing Control */
-	pci_conf1_write_config8(dev, 0x60, 0xff);
-	pci_conf1_write_config8(dev, 0x61, 0xff);
-	pci_conf1_write_config8(dev, 0x62, 0x0f);
-	/* QW DRDY# Timing Control */
-	pci_conf1_write_config8(dev, 0x63, 0xff);
-	pci_conf1_write_config8(dev, 0x64, 0xff);
-	pci_conf1_write_config8(dev, 0x65, 0x0f);
-	/* Read Line Burst DRDY# Timing Control */
-	pci_conf1_write_config8(dev, 0x66, 0xff);
-	pci_conf1_write_config8(dev, 0x67, 0x30);
-
-	/* Host Bus I/O Circuit (see datasheet) */
-	/* Host Address Pullup/down Driving */
-	pci_conf1_write_config8(dev, 0x70, 0x11);
-	pci_conf1_write_config8(dev, 0x71, 0x11);
-	pci_conf1_write_config8(dev, 0x72, 0x11);
-	pci_conf1_write_config8(dev, 0x73, 0x11);
-	/* Miscellaneous Control */
-	pci_conf1_write_config8(dev, 0x74, 0x35);
-	/* AGTL+ I/O Circuit */
-	pci_conf1_write_config8(dev, 0x75, 0x28);
-	/* AGTL+ Compensation Status */
-	pci_conf1_write_config8(dev, 0x76, 0x74);
-	/* AGTL+ Auto Compensation Offest */
-	pci_conf1_write_config8(dev, 0x77, 0x00);
-	/* Host FSB CKG Control */
-	pci_conf1_write_config8(dev, 0x78, 0x0a);
-	/* Address/Address Clock Output Delay Control */
-	pci_conf1_write_config8(dev, 0x79, 0xaa);
-	/* Address Strobe Input Delay Control */
-	pci_conf1_write_config8(dev, 0x7a, 0x24);
-	/* Address CKG Rising/Falling Time Control */
-	pci_conf1_write_config8(dev, 0x7b, 0xaa);
-	/* Address CKG Clock Rising/Falling Time Control */
-	pci_conf1_write_config8(dev, 0x7c, 0x00);
-	/* Undefined (can't remember why I did this) */
-	pci_conf1_write_config8(dev, 0x7d, 0x6d);
-
-	pci_conf1_write_config8(dev, 0x7e, 0x00);
-	pci_conf1_write_config8(dev, 0x7f, 0x00);
-	pci_conf1_write_config8(dev, 0x80, 0x1b);
-	pci_conf1_write_config8(dev, 0x81, 0x0a);
-	pci_conf1_write_config8(dev, 0x82, 0x0a);
-	pci_conf1_write_config8(dev, 0x83, 0x0a);
-}
-
-/**
  * Set up various ram and other control registers statically. Some of these may 
  * not be needed, other should be done with spd info, but that's a project for
  * the future
@@ -353,10 +262,6 @@ void sdram_set_registers(struct board_info *dev)
 	pci_conf1_write_config8(dev->d0f3, 0x74, 0x04);
 	pci_conf1_write_config8(dev->d0f3, 0x75, 0x04);
 	pci_conf1_write_config8(dev->d0f3, 0x76, 0x00);
-	
-	/* Thanks to Urbez Santana Roma for this */
-	pci_conf1_write_config8(dev->d1f0, 0x19, 0x1);
-	pci_conf1_write_config8(dev->d1f0, 0x1a, 0x1);
 }
 
 /**

@@ -34,4 +34,6 @@
 #define VT1211_FIR      12 /* IRDA */
 #define VT1211_ROM      13 /* ROM control */
 
+void vt1211_enable_serial(u8 dev, u8 serial, u16 iobase);
+
 #endif /* SUPERIO_VIA_VT1211_VT122_H */

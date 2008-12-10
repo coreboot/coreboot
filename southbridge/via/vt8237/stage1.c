@@ -27,12 +27,13 @@
 #include <device/pci_ids.h>
 #include <spd.h>
 #include "vt8237.h"
+#include <config.h>
 
 /* TODO List:
  * * Merge the rest of the functions from v2, except smbus_fixup which doesn't
  *   seem to be necessary any more (?)
  * * Clean up vt8237_early_network_init. 
- *   Comments in code indicate that it's broken?
+ *     Comments in code indicate that it's broken?
  * * Figure out if the smbus actually needs to be reset after every transaction.
  */
 
@@ -187,6 +188,76 @@ void enable_smbus(u16 smbus_io_base)
 
 	/* Reset the internal pointer. */
 	inb(smbus_io_base + SMBHSTCTL);
+}
+
+/* The change from RAID to SATA in phase6 causes coreboot to lock up, so do it
+ * as early as possible. Move back to stage2 later */ 
+static void sata_stage1(void)
+{
+	u32 dev;
+	u8 reg;
+
+	pci_conf1_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_SATA, &dev);
+
+	printk(BIOS_DEBUG, "Configuring VIA SATA controller\n");
+
+	/* Class IDE Disk */
+	reg = pci_conf1_read_config8(dev, SATA_MISC_CTRL);
+	reg &= 0x7f;		/* Sub Class Write Protect off */
+	pci_conf1_write_config8(dev, SATA_MISC_CTRL, reg);
+
+	/* Change the device class to SATA from RAID. */
+	pci_conf1_write_config8(dev, PCI_CLASS_DEVICE, 0x1);
+	reg |= 0x80;		/* Sub Class Write Protect on */
+	pci_conf1_write_config8(dev, SATA_MISC_CTRL, reg);
+}
+
+void vt8237_stage1(u16 smbus_io_base)
+{
+	u32 dev;
+	u32 ide_dev;
+	
+	printk(BIOS_DEBUG, "Doing vt8237r/s stage1 init\n");
+
+	pci_conf1_find_device(0x1106, 0x3227, &dev);
+	pci_conf1_find_device(0x1106, 0x0571, &ide_dev);
+	
+	/* Disable GP3 timer, or else the system reboots when it runs out */
+	pci_conf1_write_config8(dev, 0x98, 0x00);
+	
+	/* Change the ROM size mapping based on where CAR is located */
+#if (CONFIG_CARBASE + CONFIG_CARSIZE) < 0xffc00000
+	pci_conf1_write_config8(dev, 0x41, 0x7f);
+#elif (CONFIG_CARBASE + CONFIG_CARSIZE) < 0xffe00000
+	pci_conf1_write_config8(dev, 0x41, 0x70);
+#elif (CONFIG_CARBASE + CONFIG_CARSIZE) < 0xfff00000
+	pci_conf1_write_config8(dev, 0x41, 0x40);
+#endif
+
+	pci_conf1_write_config8(dev, 0x50, 0x80);//disable mc97
+	pci_conf1_write_config8(dev, 0x51, 0x1f);
+	pci_conf1_write_config8(dev, 0x58, 0x60);
+	pci_conf1_write_config8(dev, 0x59, 0x80);
+	pci_conf1_write_config8(dev, 0x5b, 0x08);
+
+	/* Make it respond to IO space */
+	pci_conf1_write_config8(ide_dev, 0x04, 0x07);
+
+	/* Compatibility mode addresses */
+	//pci_conf1_write_config32(ide_dev, 0x10, 0);
+	//pci_conf1_write_config32(ide_dev, 0x14, 0);
+	//pci_conf1_write_config32(ide_dev, 0x18, 0);
+	//pci_conf1_write_config32(ide_dev, 0x1b, 0);
+
+	/* Native mode base address */
+	//pci_conf1_write_config32(ide_dev, 0x20, BUS_MASTER_ADDR | 1);
+
+	pci_conf1_write_config8(ide_dev, 0x40, 0x3);//was 0x3
+	pci_conf1_write_config8(ide_dev, 0x41, 0xf2);
+	pci_conf1_write_config8(ide_dev, 0x42, 0x09);
+
+	sata_stage1();
+	enable_smbus(smbus_io_base);
 }
 
 /* TODO:

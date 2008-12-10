@@ -21,11 +21,12 @@
 ## TODO
 
 STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
+			$(src)/northbridge/via/cn700/stage1.c \
+			$(src)/southbridge/via/vt8237/stage1.c \
 			$(src)/arch/x86/stage1_mtrr.c
 
 INITRAM_SRC =   	$(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/via/cn700/initram.c \
-			$(src)/southbridge/via/vt8237/stage1.c \
 			$(src)/lib/ramtest.c \
 			$(src)/arch/x86/pci_ops_conf1.c
 

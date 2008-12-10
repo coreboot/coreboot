@@ -35,6 +35,7 @@
 void x86_setup_var_mtrrs(unsigned address_bits);
 void x86_setup_mtrrs(unsigned address_bits);
 int x86_mtrr_check(void);
+void early_mtrr_init(void);
 
 #endif
 

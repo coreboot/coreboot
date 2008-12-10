@@ -67,6 +67,11 @@ void cache_cbmem(int type)
 	enable_cache();
 }
 
+/* early_mtrr_init was only usable for ROMCC compiled code. It nukes CAR.
+ * The only remaining purpose would be to enable ROM caching here instead of
+ * in stage0.S and even that is debatable.
+ */
+#if 0
 /* the fixed and variable MTTRs are power-up with random values,
  * clear them to MTRR_TYPE_UNCACHEABLE for safty.
  */
@@ -130,6 +135,7 @@ void early_mtrr_init(void)
 	do_early_mtrr_init(mtrr_msrs);
 	enable_cache();
 }
+#endif
 
 int early_mtrr_init_detected(void)
 {

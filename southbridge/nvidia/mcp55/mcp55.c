@@ -248,8 +248,7 @@ static void mcp55_enable(struct device *dev)
 
 }
 
-void mcp55_pci_dev_set_subsystem(struct device *dev, unsigned int vendor,
-			   unsigned int device)
+void mcp55_pci_dev_set_subsystem(struct device *dev, u16 vendor, u16 device)
 {
 	pci_write_config32(dev, PCI_MCP55_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));

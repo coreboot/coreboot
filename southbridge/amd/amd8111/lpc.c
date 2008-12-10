@@ -197,7 +197,7 @@ static void amd8111_lpc_enable_resources(struct device * dev)
 	enable_childrens_resources(dev);
 }
 
-static void lpci_set_subsystem(struct device * dev, unsigned vendor, unsigned device)
+static void lpci_set_subsystem(struct device * dev, u16 vendor, u16 device)
 {
 	pci_write_config32(dev, 0x70, 
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));

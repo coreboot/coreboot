@@ -44,7 +44,7 @@
 /* Common pci operations without a standard interface */
 struct pci_operations {
 	/* set the Subsystem IDs for the PCI device */
-	void (*set_subsystem)(struct device * dev, unsigned vendor, unsigned device);
+	void (*set_subsystem)(struct device * dev, u16 vendor, u16 device);
 };
 
 /* Common pci bus operations */
@@ -60,8 +60,8 @@ struct pci_bus_operations {
 
 struct pci_driver {
 	struct device_operations *ops;
-	unsigned short vendor;
-	unsigned short device;
+	u16 vendor;
+	u16 device;
 };
 
 #define __pci_driver __attribute__ ((used,__section__(".rodata.pci_driver")))
@@ -94,7 +94,7 @@ u32 pci_moving_config32(struct device *dev, unsigned reg);
 unsigned pci_find_next_capability(struct device * dev, unsigned cap, unsigned last);
 unsigned pci_find_capability(struct device * dev, unsigned cap);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
-void pci_dev_set_subsystem(struct device * dev, unsigned vendor, unsigned device);
+void pci_dev_set_subsystem(struct device * dev, u16 vendor, u16 device);
 
 void pci_domain_read_resources(struct device *dev);
 void ram_resource(struct device *dev, unsigned long index,

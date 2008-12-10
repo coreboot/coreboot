@@ -49,8 +49,7 @@ static void usb_ehci_init(struct device *dev)
 	printk(BIOS_DEBUG, "done.\n");
 }
 
-static void usb_ehci_set_subsystem(struct device * dev, unsigned vendor,
-				   unsigned device)
+static void usb_ehci_set_subsystem(struct device * dev, u16 vendor, u16 device)
 {
 	u8 access_cntl;
 

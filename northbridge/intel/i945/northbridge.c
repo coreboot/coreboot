@@ -231,7 +231,7 @@ static void mc_set_resources(struct device * dev)
 	pci_set_resources(dev);
 }
 
-static void i945_set_subsystem(struct device * dev, unsigned vendor, unsigned device)
+static void i945_set_subsystem(struct device * dev, u16 vendor, u16 device)
 {
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));

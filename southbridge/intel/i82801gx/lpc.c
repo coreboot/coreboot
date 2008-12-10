@@ -325,7 +325,7 @@ static void i82801gx_lpc_enable_resources(struct device * dev)
 	enable_childrens_resources(dev);
 }
 
-static void set_subsystem(struct device * dev, unsigned vendor, unsigned device)
+static void set_subsystem(struct device * dev, u16 vendor, u16 device)
 {
 	printk(BIOS_DEBUG, "Setting LPC bridge subsystem ID\n");
 	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

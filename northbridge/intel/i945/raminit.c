@@ -1069,8 +1069,8 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 		0x33, 0x00, 0x11, 0x00, 0x44, 0x44, 0x33, 0x11	
 	};
 
-	const u8 * strength_multiplier;
-	const u8* const * slew_group_lookup;
+	const u8 *strength_multiplier;
+	const u8 *slew_group_lookup;
 	int idx;
 
 	/* Set Strength Multipliers */

@@ -179,17 +179,17 @@ static unsigned int i945_pci_domain_scan_bus(struct device * dev, unsigned int m
 #warning get number of 945 pci domain ops
 struct device_operations i945_pci_domain_ops = {
 	.id = {.type = DEVICE_ID_PCI,
-		{.pci = {.vendor = PCI_VENDOR_ID_INTEL,
-			      .device = 0x6789}}},
+	       {.pci = {.vendor = PCI_VENDOR_ID_INTEL,
+			.device = 0x6789}}},
 	.constructor		 = default_device_constructor,
-	.reset_bus		= pci_bus_reset,
+	.reset_bus		 = pci_bus_reset,
 	.phase3_scan		 = i945_pci_domain_scan_bus,
 	.phase4_read_resources	 = I945_pci_domain_read_resources,
 	.phase4_set_resources	 = I945_pci_domain_set_resources,
 	.phase5_enable_resources = enable_childrens_resources,
 	.phase6_init		 = NULL,
 	.ops_pci		 = &pci_dev_ops_pci,
-	.ops_pci_bus      = &pci_cf8_conf1,	/* Do we want to use the memory mapped space here? */
+	.ops_pci_bus		 = &pci_cf8_conf1,	/* Do we want to use the memory mapped space here? */
 };
 
 static void mc_read_resources(struct device * dev)
@@ -212,8 +212,8 @@ static void mc_read_resources(struct device * dev)
 	    IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 	    IORESOURCE_ASSIGNED;
 
-	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
-		     (u64) resource->base, (u64) (resource->base + resource->size));
+	printk(BIOS_DEBUG, "Adding PCIe enhanced config space BAR 0x%08llx-0x%08llx.\n",
+	       resource->base, resource->base + resource->size);
 }
 
 static void mc_set_resources(struct device * dev)

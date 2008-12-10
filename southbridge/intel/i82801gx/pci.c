@@ -57,7 +57,6 @@ static void pci_init(struct device *dev)
 static void ich_pci_dev_enable_resources(struct device *dev)
 {
 	const struct pci_operations *ops;
-	u16 command;
 
 	/* Set the subsystem vendor and device id for mainboard devices */
 	ops = ops_pci(dev);
@@ -72,6 +71,7 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	}
 
 #if 0
+	u16 command;
 	/* If we write to PCI_COMMAND, on some systems 
 	 * this will cause the ROM and APICs not being visible
 	 * anymore.

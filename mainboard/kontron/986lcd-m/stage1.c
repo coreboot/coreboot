@@ -207,7 +207,9 @@ void hardware_stage1(void)
 {
 	void 	early_superio_config_w83627thg(void);
 	void 	ich7_enable_lpc(void);
-	int boot_mode = 0;
+
+#warning Reboot won't work until this is fixed.
+
 #if 1
 	/* hack */
 	pci_conf1_write_config32(PCI_BDF(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);

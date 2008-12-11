@@ -26,6 +26,14 @@
 #include <device/device.h>
 #include <shared.h>
 #include <mtrr.h>
+#include <config.h>
+
+/* Check that the CAR and ROM areas aren't going to collide */
+#if ((0x100000000 - (CONFIG_COREBOOT_ROMSIZE_KB * 1024)) < (CONFIG_CARBASE + CONFIG_CARSIZE))
+#error Your current Cache-As-Ram base does not allow room to map the selected\
+ chip size to memory. Please select a different chip size or move the CAR\
+ base to another sane location.
+#endif
 
 #define X86_VENDOR_INTEL	0
 #define X86_VENDOR_CYRIX	1

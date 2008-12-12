@@ -53,11 +53,17 @@ static u8 get_sb600_revision()
 
 /***************************************
 * Legacy devices are mapped to LPC space.
-*	serial port 0
+*	Serial port 0
 *	KBC Port
 *	ACPI Micro-controller port
-*	LPC ROM size,
+*	LPC ROM size
+*	This function does not change port 0x80 decoding.
+*	Console output through any port besides 0x3f8 is unsupported.
+*	If you use FWH ROMs, you have to setup IDSEL.
 * NOTE: Call me ASAP, because I will reset LPC ROM size!
+* Reviewed-by: Carl-Daniel Hailfinger
+* Reviewed against AMD SB600 Register Reference Manual rev. 3.03, section 3.1
+* 	(LPC ISA Bridge)
 ***************************************/
 static void sb600_lpc_init(void)
 {
@@ -68,32 +74,42 @@ static void sb600_lpc_init(void)
 	/* Enable lpc controller */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);	/* SMBUS controller */
 	reg32 = pci_read_config32(dev, 0x64);
-	reg32 |= 0x00100000;
+	reg32 |= 1 << 20;
 	pci_write_config32(dev, 0x64, reg32);
 
 	dev = pci_locate_device(PCI_ID(0x1002, 0x438d), 0);	/* LPC Controller */
-	/* Serial 0 */
+	/* Decode port 0x3f8-0x3ff (Serial 0) */
+#warning Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
-	reg8 |= (1 << 6);
+	reg8 |= 1 << 6;
 	pci_write_config8(dev, 0x44, reg8);
 
-	/* PS/2 keyboard, ACPI */
+	/* Decode port 0x60 & 0x64 (PS/2 keyboard) and port 0x62 & 0x66 (ACPI)*/
 	reg8 = pci_read_config8(dev, 0x47);
 	reg8 |= (1 << 5) | (1 << 6);
 	pci_write_config8(dev, 0x47, reg8);
 
 	/* SuperIO, LPC ROM */
 	reg8 = pci_read_config8(dev, 0x48);
-	reg8 |= (1 << 1) | (1 << 0);	/* enable Super IO config port 2e-2h, 4e-4f */
-	reg8 |= (1 << 3) | (1 << 4);	/* enable for LPC ROM address range1&2, Enable 512KB rom access at 0xFFF80000 - 0xFFFFFFFF  */
-	reg8 |= 1 << 6;		/* enable for RTC I/O range */
+	/* Decode ports 0x2e-0x2f, 0x4e-0x4f (SuperI/O configuration) */
+	reg8 |= (1 << 1) | (1 << 0);
+	/* Decode variable LPC ROM address ranges 1&2 (see register 0x68-0x6b, 0x6c-0x6f) */
+	reg8 |= (1 << 3) | (1 << 4);
+	/* Decode port 0x70-0x73 (RTC) */
+	reg8 |= 1 << 6;
 	pci_write_config8(dev, 0x48, reg8);
 
-	/* hardware should enable LPC ROM by pin strapes */
-	/*  rom access at 0xFFF80000/0xFFF00000 - 0xFFFFFFFF */
+	/* hardware should enable LPC ROM by pin straps */
+	/* ROM access at 0xFFF80000/0xFFF00000 - 0xFFFFFFFF */
 	/* See detail in BDG-215SB600-03.pdf page 15. */
-	pci_write_config16(dev, 0x68, 0x000e);	/* enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB; */
-	pci_write_config16(dev, 0x6c, 0xfff0);	/* enable LPC ROM range, 0xfff8: 512KB, 0xfff0: 1MB  */
+	/* enable LPC ROM range mirroring start 0x000e(0000) */
+	pci_write_config16(dev, 0x68, 0x000e);
+	/* enable LPC ROM range mirroring end   0x000f(ffff) */
+	pci_write_config16(dev, 0x6a, 0x000f);
+	/* enable LPC ROM range start, 0xfff8(0000): 512KB, 0xfff0(0000): 1MB */
+	pci_write_config16(dev, 0x6c, 0xfff0);
+	/* enable LPC ROM range end at 0xffff(ffff) */
+	pci_write_config16(dev, 0x6e, 0xffff);
 }
 
 /* what is its usage? */
@@ -201,26 +217,36 @@ static void sb600_pci_port80()
 	/* P2P Bridge */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
 
+	/* Chip Control: Enable subtractive decoding */
 	byte = pci_read_config8(dev, 0x40);
 	byte |= 1 << 5;
 	pci_write_config8(dev, 0x40, byte);
 
+	/* Misc Control: Enable subtractive decoding if 0x40 bit 5 is set */
 	byte = pci_read_config8(dev, 0x4B);
 	byte |= 1 << 7;
 	pci_write_config8(dev, 0x4B, byte);
 
+	/* The same IO Base and IO Limit here is meaningful because we set the
+	 * bridge to be subtractive. During early setup stage, we have to make
+	 * sure that data can go through port 0x80.
+	 */
+	/* IO Base: 0xf000 */
 	byte = pci_read_config8(dev, 0x1C);
 	byte |= 0xF << 4;
 	pci_write_config8(dev, 0x1C, byte);
 
+	/* IO Limit: 0xf000 */
 	byte = pci_read_config8(dev, 0x1D);
 	byte |= 0xF << 4;
 	pci_write_config8(dev, 0x1D, byte);
 
+	/* PCI Command: Enable IO response */
 	byte = pci_read_config8(dev, 0x04);
 	byte |= 1 << 0;
 	pci_write_config8(dev, 0x04, byte);
 
+	/* LPC controller */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x438D), 0);
 
 	byte = pci_read_config8(dev, 0x4A);
@@ -234,13 +260,13 @@ static void sb600_lpc_port80(void)
 	device_t dev;
 	u32 reg32;
 
-	/* enable lpc controller */
+	/* Enable LPC controller */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
 	reg32 = pci_read_config32(dev, 0x64);
 	reg32 |= 0x00100000;	/* lpcEnable */
 	pci_write_config32(dev, 0x64, reg32);
 
-	/* enable prot80 LPC decode in pci function 3 configuration space. */
+	/* Enable port 80 LPC decode in pci function 3 configuration space. */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x438d), 0);
 	byte = pci_read_config8(dev, 0x4a);
 	byte |= 1 << 5;		/* enable port 80 */

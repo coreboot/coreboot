@@ -307,6 +307,8 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 */
 void rs690_set_tom(device_t nb_dev)
 {
+	extern unsigned long uma_memory_start;
+
 	/* set TOM */
 	pci_write_config32(nb_dev, 0x90, uma_memory_start);
 	nbmc_write_index(nb_dev, 0x1e, uma_memory_start);

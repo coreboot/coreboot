@@ -1101,6 +1101,12 @@ define CONFIG_GFXUMA
         comment "GFX UMA"
 end
 
+define HAVE_MAINBOARD_RESOURCES
+	default 0
+	export always
+	comment "Enable if the mainboard/chipset requires extra entries in the memory map"
+end
+
 define CONFIG_SPLASH_GRAPHIC
 	default 0
 	export used

@@ -357,7 +357,8 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 	}
 }
 
-static void lb_add_memory_range(struct lb_memory *mem,
+/* This function is used in mainboard specific code, too */
+void lb_add_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
 	lb_remove_memory_range(mem, start, size);
@@ -447,14 +448,9 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
 		rom_table_start, rom_table_end-rom_table_start);
 
-	/* AMD rs690 chip, we should remove the UMA from system memory. */
-#if (CONFIG_GFXUMA == 1) 
-	printk_info("uma_memory_start=0x%x, uma_memory_size=0x%x \n", 
-	uma_memory_start, uma_memory_size);
-	lb_add_memory_range(mem, LB_MEM_TABLE, 
-		uma_memory_start, uma_memory_size);
+#if (HAVE_MAINBOARD_RESOURCES == 1)
+	add_mainboard_resources(mem);
 #endif
-
 
 	/* Note:
 	 * I assume that there is always memory at immediately after

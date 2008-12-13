@@ -41,6 +41,8 @@ extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
+unsigned long uma_memory_start, uma_memory_size;
+
 /********************************************************
 * dbm690t uses a BCM5789 as on-board NIC.
 * It has a pin named LOW_POWER to enable it into LOW POWER state.
@@ -241,13 +243,24 @@ void dbm690t_enable(device_t dev)
 	get_ide_dma66();
 	set_thermal_config();
 }
+ 
+int add_mainboard_resources(struct lb_memory *mem)
+{
+	/* UMA is removed from system memory in the northbridge code, but
+	 * in some circumstances we want the memory mentioned as reserved.
+ 	 */
+#if (CONFIG_GFXUMA == 1) 
+	printk_info("uma_memory_start=0x%x, uma_memory_size=0x%x \n", 
+	uma_memory_start, uma_memory_size);
+	lb_add_memory_range(mem, LB_MEM_RESERVED, 
+		uma_memory_start, uma_memory_size);
+#endif
+}
 
 /*
 * CONFIG_CHIP_NAME defined in Option.lb.
 */
 struct chip_operations mainboard_amd_dbm690t_ops = {
-#if CONFIG_CHIP_NAME == 1
-	CHIP_NAME("AMD Dbm690t   Mainboard")
-#endif
-	    .enable_dev = dbm690t_enable,
+	CHIP_NAME("AMD DBM690T   Mainboard")
+	.enable_dev = dbm690t_enable,
 };

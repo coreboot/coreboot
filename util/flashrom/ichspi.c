@@ -152,15 +152,31 @@ static inline uint16_t REGREAD16(int X)
 /* Common SPI functions */
 static inline int find_opcode(OPCODES *op, uint8_t opcode);
 static inline int find_preop(OPCODES *op, uint8_t preop);
-static int generate_opcodes(struct flashchip * flash, OPCODES * op);
+static int generate_opcodes(OPCODES * op);
 static int program_opcodes(OPCODES * op);
-int ich_check_opcodes(struct flashchip * flash);
 static int run_opcode(OPCODE op, uint32_t offset,
 		      uint8_t datalength, uint8_t * data);
 static int ich_spi_read_page(struct flashchip *flash, uint8_t * buf,
 			     int offset, int maxdata);
 static int ich_spi_write_page(struct flashchip *flash, uint8_t * bytes,
 			      int offset, int maxdata);
+
+/* for pairing opcodes with their required preop */
+struct preop_opcode_pair {
+	uint8_t preop;
+	uint8_t opcode;
+};
+
+struct preop_opcode_pair pops[] = {
+	{JEDEC_WREN, JEDEC_BYTE_PROGRAM},
+	{JEDEC_WREN, JEDEC_SE}, /* sector erase */
+	{JEDEC_WREN, JEDEC_BE_52}, /* block erase */
+	{JEDEC_WREN, JEDEC_BE_D8}, /* block erase */
+	{JEDEC_WREN, JEDEC_CE_60}, /* chip erase */
+	{JEDEC_WREN, JEDEC_CE_C7}, /* chip erase */
+	{JEDEC_EWSR, JEDEC_WRSR},
+	{0,}
+};
 
 OPCODES O_ST_M25P = {
 	{
@@ -204,12 +220,11 @@ static inline int find_preop(OPCODES *op, uint8_t preop)
 	return -1;
 }
 
-static int generate_opcodes(struct flashchip * flash, OPCODES * op)
+static int generate_opcodes(OPCODES * op)
 {
-  int a, b, i;
+	int a, b, i;
 	uint16_t preop, optype;
 	uint32_t opmenu[2];
-	struct preop_opcode_pair *pair;
 
 	if (op == NULL) {
 		printf_debug("\n%s: null OPCODES pointer!\n", __FUNCTION__);
@@ -257,14 +272,11 @@ static int generate_opcodes(struct flashchip * flash, OPCODES * op)
 	for (a = 4; a < 8; a++)
 		op->opcode[a].atomic = 0;
 
-	pair = flash->preop_opcode_pairs;
-	if (pair) {
-		for (i = 0; pair[i].opcode; i++) {
-			a = find_opcode(op, pair[i].opcode);
-			b = find_preop(op, pair[i].preop);
-			if ((a != -1) && (b != -1))
-				op->opcode[a].atomic = (uint8_t) ++b;
-		}
+	for (i = 0; pops[i].opcode; i++) {
+		a = find_opcode(op, pops[i].opcode);
+		b = find_preop(op, pops[i].preop);
+		if ((a != -1) && (b != -1))
+			op->opcode[a].atomic = (uint8_t) ++b;
 	}
 
 	return 0;
@@ -323,13 +335,12 @@ int program_opcodes(OPCODES * op)
 	return 0;
 }
 
-/* This function generates OPCODES from or programs OPCODES to the chipset
- * according to its SPI configuration lock.
+/* This function generates OPCODES from or programs OPCODES to ICH according to
+ * the chipset's SPI configuration lock.
  *
- * It should be called in the ICH7/ICH9/VIA part of each operation driver(i.e.
- * probe, read, erase, write, etc.) before any command is sent.
+ * It should be called before ICH sends any spi command.
  */
-int ich_check_opcodes(struct flashchip * flash)
+int ich_init_opcodes()
 {
 	int rc = 0;
 	OPCODES *curopcodes_done;
@@ -340,7 +351,7 @@ int ich_check_opcodes(struct flashchip * flash)
 	if (ichspi_lock) {
 		printf_debug("Generating OPCODES... ");
 		curopcodes_done = &O_EXISTING;
-		rc = generate_opcodes(flash, curopcodes_done);
+		rc = generate_opcodes(curopcodes_done);
 	} else {
 		printf_debug("Programming OPCODES... ");
 		curopcodes_done = &O_ST_M25P;
@@ -746,14 +757,6 @@ int ich_spi_command(unsigned int writecnt, unsigned int readcnt,
 	uint32_t addr = 0;
 	uint8_t *data;
 	int count;
-
-	/* program opcodes if not already done */
-	if (curopcodes == NULL) {
-		printf_debug("Programming OPCODES... ");
-		curopcodes = &O_ST_M25P;
-		program_opcodes(curopcodes);
-		printf_debug("done\n");
-	}
 
 	/* find cmd in opcodes-table */
 	for (a = 0; a < 8; a++) {

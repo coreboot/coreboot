@@ -339,6 +339,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 			printf("WARNING: SPI Configuration Lockdown activated.\n");
 			ichspi_lock = 1;
 		}
+		ich_init_opcodes();
 		break;
 	case BUS_TYPE_ICH9_SPI:
 		tmp2 = *(uint16_t *) (spibar + 0);

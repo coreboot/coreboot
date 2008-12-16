@@ -46,7 +46,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		 */
 		init_archive(&archive);
 		sprintf(pcifile, "pci%04x,%04x.rom", dev->id.pci.vendor,
-				dev->id.pci.device);
+			dev->id.pci.device);
 
 		ret = find_file(&archive, pcifile, &result);
 		if (ret) {
@@ -100,21 +100,22 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	/* checksum */
 	rom_bytes = (unsigned char *)rom_address;
 	for (i = 0; i < rom_header->size * 512; i++)
-	    sum += *(rom_bytes + i);
+		sum += *(rom_bytes + i);
 
 	if (sum != 0)
-		printk(BIOS_ALERT, "Incorrent Expansion ROM checksum (%02x != 0)\n", sum);
+		printk(BIOS_ALERT, "Expansion ROM checksum %02x != 0!\n", sum);
 
 	rom_data = (struct pci_data *)((unsigned char *)rom_header +
 				       le32_to_cpu(rom_header->data));
 
 	printk(BIOS_SPEW, "PCI ROM Image, @%p, Vendor %04x, Device %04x,\n",
-		&rom_data->vendor,
-	       rom_data->vendor, rom_data->device);
-	if (dev->id.pci.vendor != rom_data->vendor || dev->id.pci.device != rom_data->device) {
-		printk(BIOS_ERR,
-		       "Device or Vendor ID mismatch Vendor %04x, Device %04x\n",
+	       &rom_data->vendor, rom_data->vendor, rom_data->device);
+	if (dev->id.pci.vendor != rom_data->vendor ||
+	    dev->id.pci.device != rom_data->device) {
+		printk(BIOS_ERR, "ROM ID mismatch: Vendor %04x, Device %04x\n",
 		       rom_data->vendor, rom_data->device);
+		printk(BIOS_ERR, "Expected: Vendor %04x, Device %04x\n",
+		       dev->id.pci.vendor, dev->id.pci.device);
 		return NULL;
 	}
 

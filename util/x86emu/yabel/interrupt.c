@@ -10,8 +10,6 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-#include <stdio.h>
-
 #include <rtas.h>
 
 #include "biosemu.h"
@@ -22,6 +20,9 @@
 #include <x86emu/x86emu.h>
 #include <x86emu/prim_ops.h>
 
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#include <device/pci_ops.h>
+#endif
 
 
 //setup to run the code at the address, that the Interrupt Vector points to...
@@ -45,7 +46,7 @@ setupInt(int intNum)
 
 // handle int10 (VGA BIOS Interrupt)
 void
-handleInt10()
+handleInt10(void)
 {
 	// the data for INT10 is stored in BDA (0000:0400h) offset 49h-66h
 	// function number in AH
@@ -109,7 +110,7 @@ handleInt10()
 		//AL: char, BH: page number, BL: attribute, CX: number of times to write
 		//BDA offset 62h is current page number
 		CHECK_DBG(DEBUG_PRINT_INT10) {
-			uint32_t i = 0;
+			u32 i = 0;
 			if (M.x86.R_BH == my_rdb(0x462)) {
 				for (i = 0; i < M.x86.R_CX; i++)
 					printf("%c", M.x86.R_AL);
@@ -121,7 +122,7 @@ handleInt10()
 		//AL: char, BH: page number, BL: attribute, CX: number of times to write
 		//BDA offset 62h is current page number
 		CHECK_DBG(DEBUG_PRINT_INT10) {
-			uint32_t i = 0;
+			u32 i = 0;
 			if (M.x86.R_BH == my_rdb(0x462)) {
 				for (i = 0; i < M.x86.R_CX; i++)
 					printf("%c", M.x86.R_AL);
@@ -164,7 +165,7 @@ handleInt10()
 }
 
 // this table translates ASCII chars into their XT scan codes:
-static uint8_t keycode_table[256] = {
+static u8 keycode_table[256] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// 0 - 7
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// 8 - 15
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	// 16 - 23
@@ -202,13 +203,13 @@ static uint8_t keycode_table[256] = {
 ;
 
 void
-translate_keycode(uint64_t * keycode)
+translate_keycode(u64 * keycode)
 {
-	uint8_t scan_code = 0;
-	uint8_t char_code = 0;
+	u8 scan_code = 0;
+	u8 char_code = 0;
 	if (*keycode < 256) {
 		scan_code = keycode_table[*keycode];
-		char_code = (uint8_t) * keycode & 0xff;
+		char_code = (u8) * keycode & 0xff;
 	} else {
 		switch (*keycode) {
 		case 0x1b50:
@@ -223,23 +224,23 @@ translate_keycode(uint64_t * keycode)
 		}
 	}
 	//assemble scan/char code in keycode
-	*keycode = (uint64_t) ((((uint16_t) scan_code) << 8) | char_code);
+	*keycode = (u64) ((((u16) scan_code) << 8) | char_code);
 }
 
 // handle int16 (Keyboard BIOS Interrupt)
 void
-handleInt16()
+handleInt16(void)
 {
 	// keyboard buffer is in BIOS Memory Area:
 	// offset 0x1a (WORD) pointer to next char in keybuffer
 	// offset 0x1c (WORD) pointer to next insert slot in keybuffer
 	// offset 0x1e-0x3e: 16 WORD Ring Buffer
 	// since we currently always read the char from the FW buffer,
-	// we misuse the ring buffer, we use it as pointer to a uint64_t that stores
+	// we misuse the ring buffer, we use it as pointer to a u64 that stores
 	// multi-byte keys (e.g. special keys in VT100 terminal)
 	// and as long as a key is available (not 0) we dont read further keys
-	uint64_t *keycode = (uint64_t *) (M.mem_base + 0x41e);
-	int8_t c;
+	u64 *keycode = (u64 *) (M.mem_base + 0x41e);
+	s8 c;
 	// function number in AH
 	DEBUG_PRINTF_INTR("%s(): Keyboard Interrupt: function: %x.\n",
 			  __FUNCTION__, M.x86.R_AH);
@@ -249,7 +250,7 @@ handleInt16()
 	case 0x00:
 		// get keystroke
 		if (*keycode) {
-			M.x86.R_AX = (uint16_t) * keycode;
+			M.x86.R_AX = (u16) * keycode;
 			// clear keycode
 			*keycode = 0;
 		} else {
@@ -264,9 +265,10 @@ handleInt16()
 		if (*keycode) {
 			// already read, but not yet taken
 			CLEAR_FLAG(F_ZF);
-			M.x86.R_AX = (uint16_t) * keycode;
+			M.x86.R_AX = (u16) * keycode;
 		} else {
-			c = getchar();
+			/* TODO: we need getchar... */
+			c = -1; //getchar();
 			if (c == -1) {
 				// no key available
 				SET_FLAG(F_ZF);
@@ -279,7 +281,8 @@ handleInt16()
 				// TODO: only after ESC?? what about other multibyte keys
 				printf("tt%c%c", 0x08, 0x08);	// 0x08 == Backspace
 
-				while ((c = getchar()) != -1) {
+				/* TODO: we need getchar... */
+				while ((c = -1 /*getchar()*/) != -1) {
 					*keycode = (*keycode << 8) | c;
 					DEBUG_PRINTF(" key read: %0llx\n",
 						     *keycode);
@@ -292,7 +295,7 @@ handleInt16()
 					SET_FLAG(F_ZF);
 				} else {
 					CLEAR_FLAG(F_ZF);
-					M.x86.R_AX = (uint16_t) * keycode;
+					M.x86.R_AX = (u16) * keycode;
 					//X86EMU_trace_on();
 					//M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F;
 				}
@@ -312,10 +315,10 @@ handleInt16()
 
 // handle int1a (PCI BIOS Interrupt)
 void
-handleInt1a()
+handleInt1a(void)
 {
 	// function number in AX
-	uint8_t bus, devfn, offs;
+	u8 bus, devfn, offs;
 	switch (M.x86.R_AX) {
 	case 0xb101:
 		// Installation check
@@ -376,10 +379,14 @@ handleInt1a()
 			switch (M.x86.R_AX) {
 			case 0xb108:
 				M.x86.R_CL =
-				    (uint8_t) rtas_pci_config_read(bios_device.
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+					pci_read_config8(bios_device.dev, offs);
+#else					
+				    (u8) rtas_pci_config_read(bios_device.
 								   puid, 1,
 								   bus, devfn,
 								   offs);
+#endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Read @%02x --> 0x%02x\n",
 				     __FUNCTION__, M.x86.R_AX, offs,
@@ -387,10 +394,14 @@ handleInt1a()
 				break;
 			case 0xb109:
 				M.x86.R_CX =
-				    (uint16_t) rtas_pci_config_read(bios_device.
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+					pci_read_config16(bios_device.dev, offs);
+#else					
+				    (u16) rtas_pci_config_read(bios_device.
 								    puid, 2,
 								    bus, devfn,
 								    offs);
+#endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Read @%02x --> 0x%04x\n",
 				     __FUNCTION__, M.x86.R_AX, offs,
@@ -398,10 +409,14 @@ handleInt1a()
 				break;
 			case 0xb10a:
 				M.x86.R_ECX =
-				    (uint32_t) rtas_pci_config_read(bios_device.
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+					pci_read_config32(bios_device.dev, offs);
+#else					
+				    (u32) rtas_pci_config_read(bios_device.
 								    puid, 4,
 								    bus, devfn,
 								    offs);
+#endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Read @%02x --> 0x%08x\n",
 				     __FUNCTION__, M.x86.R_AX, offs,
@@ -432,24 +447,36 @@ handleInt1a()
 		} else {
 			switch (M.x86.R_AX) {
 			case 0xb10b:
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+					pci_write_config8(bios_device.dev, offs, M.x86.R_CL);
+#else					
 				rtas_pci_config_write(bios_device.puid, 1, bus,
 						      devfn, offs, M.x86.R_CL);
+#endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%02x\n",
 				     __FUNCTION__, M.x86.R_AX, offs,
 				     M.x86.R_CL);
 				break;
 			case 0xb10c:
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+					pci_write_config16(bios_device.dev, offs, M.x86.R_CX);
+#else					
 				rtas_pci_config_write(bios_device.puid, 2, bus,
 						      devfn, offs, M.x86.R_CX);
+#endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%04x\n",
 				     __FUNCTION__, M.x86.R_AX, offs,
 				     M.x86.R_CX);
 				break;
 			case 0xb10d:
+#ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+					pci_write_config32(bios_device.dev, offs, M.x86.R_ECX);
+#else					
 				rtas_pci_config_write(bios_device.puid, 4, bus,
 						      devfn, offs, M.x86.R_ECX);
+#endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%08x\n",
 				     __FUNCTION__, M.x86.R_AX, offs,
@@ -475,7 +502,7 @@ handleInt1a()
 void
 handleInterrupt(int intNum)
 {
-	uint8_t int_handled = 0;
+	u8 int_handled = 0;
 #ifndef DEBUG_PRINT_INT10
 	// this printf makes output by int 10 unreadable...
 	// so we only enable it, if int10 print is disabled
@@ -531,7 +558,7 @@ handleInterrupt(int intNum)
 
 // prepare and execute Interrupt 10 (VGA Interrupt)
 void
-runInt10()
+runInt10(void)
 {
 	// Initialize stack and data segment
 	M.x86.R_SS = STACK_SEGMENT;
@@ -569,7 +596,7 @@ runInt10()
 
 // prepare and execute Interrupt 13 (Disk Interrupt)
 void
-runInt13()
+runInt13(void)
 {
 	// Initialize stack and data segment
 	M.x86.R_SS = STACK_SEGMENT;

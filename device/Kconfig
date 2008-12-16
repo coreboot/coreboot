@@ -26,7 +26,7 @@ config PCI_OPTION_ROM_RUN
 	  Execute PCI/AGP option ROMs if available. This is required to
 	  enable PCI/AGP VGA plugin cards. This option is not exposed
 	  to the user but set by the options PCI_OPTION_ROM_RUN_VM86
-	  and PCI_OPTION_ROM_RUN_X86EMU.
+	  , PCI_OPTION_ROM_RUN_X86EMU and PCI_OPTION_ROM_RUN_YABEL.
 
 choice
 	prompt "Execute PCI Option ROMs"
@@ -45,6 +45,23 @@ config PCI_OPTION_ROM_RUN_X86EMU
 	
 	  x86emu is slow, big and safe. All 16bit x86 code is executed
 	  in an encapsulated environment where it can not break out.
+
+config PCI_OPTION_ROM_RUN_YABEL
+	bool "YABEL"
+	select PCI_OPTION_ROM_RUN
+	help
+	  YABEL: Yet another BIOS Emulation Layer
+	  If you choose this option, the x86 instruction set emulator
+	  x86emu is used to execute 16bit legacy BIOS option ROMs just
+	  like the "x86emu" choice.
+	  The BIOS Emulation code is very different from the "x86emu" 
+	  choice however, it is a more complete legacy BIOS implementation
+	  and should be able to execute more Option ROMs than the 
+	  "x86emu" choice
+	
+	  YABEL is even slower and bigger than x86emu and just as safe. 
+	  All 16bit x86 code is executed in an encapsulated environment 
+	  where it can not break out.
 
 config PCI_OPTION_ROM_RUN_VM86
 	bool "vm86"
@@ -65,6 +82,30 @@ config PCI_OPTION_ROM_RUN_NONE
 	  If you choose this option, VGA plugin cards will not be initialized.
 
 endchoice
+
+config YABEL_ADVANCED_SETTINGS
+	depends EXPERT && PCI_OPTION_ROM_RUN_YABEL
+	bool "Enable advanced YABEL Settings"
+	default n
+	help
+	  Set this to enable advanced YABEL settings
+
+menu "Advanced YABEL Settings"
+	depends YABEL_ADVANCED_SETTINGS
+
+	config YABEL_VIRTMEM_LOCATION
+		hex "YABEL Virtual Memory Location"
+		help
+		  Set the location that YABEL uses for "virtual" memory. 
+		  YABEL uses its own memory where INT handlers, BIOS Config
+		  Area and Option ROM code is copied to. This is needed to 
+		  keep YABEL in its own environment. This memory area will be
+		  overwritten by YABEL, so no necessary data for coreboot 
+		  must reside here. 
+		  If YABEL_ADVANCED_SETTINGS is not enabled, the code defaults 
+		  to 0x1000000 (16 MB).
+
+endmenu
 
 # TODO: This should probably become a CMOS option.
 config MULTIPLE_VGA_INIT

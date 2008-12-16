@@ -10,12 +10,9 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#include <stdint.h>
+#include <types.h>
 #include <cpu.h>
 
 #include "debug.h"
@@ -32,6 +29,7 @@
 
 #include <rtas.h>
 
+#include <device/device.h>
 
 static X86EMU_memFuncs my_mem_funcs = {
 	my_rdb, my_rdw, my_rdl,
@@ -43,44 +41,30 @@ static X86EMU_pioFuncs my_pio_funcs = {
 	my_outb, my_outw, my_outl
 };
 
-void dump(uint8_t * addr, uint32_t len);
+void dump(u8 * addr, u32 len);
 
-uint32_t
-biosemu(char argc, char **argv)
+u32
+biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev)
 {
-	uint8_t *rom_image;
+	u8 *rom_image;
 	int i = 0;
-	uint8_t *biosmem;
-	uint32_t biosmem_size;
 #ifdef DEBUG
-	debug_flags = DEBUG_PRINT_INT10 | DEBUG_PNP;// | DEBUG_PMM;// | DEBUG_INTR | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;// | DEBUG_TRACE_X86EMU | DEBUG_JMP;
+	debug_flags = DEBUG_PRINT_INT10 | DEBUG_PNP | DEBUG_PMM | DEBUG_INTR;// | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;// | DEBUG_TRACE_X86EMU | DEBUG_JMP;
 #endif
-	if (argc < 3) {
-		printf("Usage %s <vmem_base> <device_path>\n", argv[0]);
-		for (i = 0; i < argc; i++) {
-			printf("argv[%d]: %s\n", i, argv[i]);
-		}
-		return -1;
-	}
-	// argv[1] is address of virtual BIOS mem...
-	// argv[2] is the size
-	biosmem = (uint8_t *) strtoul(argv[1], 0, 16);
-	biosmem_size = strtoul(argv[2], 0, 16);
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",
 		       biosmem_size, MIN_REQUIRED_VMEM_SIZE);
 		return -1;
 	}
-	// argv[3] is the device to open and use...
-	if (dev_init(argv[3]) != 0) {
+	if (biosemu_dev_init(dev) != 0) {
 		printf("Error initializing device!\n");
 		return -1;
 	}
-	if (dev_check_exprom() != 0) {
+	if (biosemu_dev_check_exprom() != 0) {
 		printf("Error: Device Expansion ROM invalid!\n");
 		return -1;
 	}
-	rom_image = (uint8_t *) bios_device.img_addr;
+	rom_image = (u8 *) bios_device.img_addr;
 	DEBUG_PRINTF("executing rom_image from %p\n", rom_image);
 	DEBUG_PRINTF("biosmem at %p\n", biosmem);
 
@@ -98,9 +82,9 @@ biosemu(char argc, char **argv)
 	// copy expansion ROM image to segment OPTION_ROM_CODE_SEGMENT
 	// NOTE: this sometimes fails, some bytes are 0x00... so we compare
 	// after copying and do some retries...
-	uint8_t *mem_img = biosmem + (OPTION_ROM_CODE_SEGMENT << 4);
-	uint8_t copy_count = 0;
-	uint8_t cmp_result = 0;
+	u8 *mem_img = biosmem + (OPTION_ROM_CODE_SEGMENT << 4);
+	u8 copy_count = 0;
+	u8 cmp_result = 0;
 	do {
 #if 0
 		set_ci();
@@ -108,7 +92,7 @@ biosemu(char argc, char **argv)
 		clr_ci();
 #else
 		// memcpy fails... try copy byte-by-byte with set/clr_ci
-		uint8_t c;
+		u8 c;
 		for (i = 0; i < bios_device.img_size; i++) {
 			set_ci();
 			c = *(rom_image + i);

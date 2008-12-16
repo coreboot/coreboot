@@ -10,11 +10,9 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#include <stdint.h>
+#include <types.h>
 #include <cpu.h>
 
 #include "debug.h"
@@ -40,63 +38,63 @@ static X86EMU_pioFuncs my_pio_funcs = {
 };
 
 // pointer to VBEInfoBuffer, set by vbe_prepare
-uint8_t *vbe_info_buffer = 0;
+u8 *vbe_info_buffer = 0;
 // virtual BIOS Memory
-uint8_t *biosmem;
-uint32_t biosmem_size;
+u8 *biosmem;
+u32 biosmem_size;
 
 // these structs are for input from and output to OF
 typedef struct {
-	uint8_t display_type;	// 0=NONE, 1= analog, 2=digital
-	uint16_t screen_width;
-	uint16_t screen_height;
-	uint16_t screen_linebytes;	// bytes per line in framebuffer, may be more than screen_width
-	uint8_t color_depth;	// color depth in bpp
-	uint32_t framebuffer_address;
-	uint8_t edid_block_zero[128];
+	u8 display_type;	// 0=NONE, 1= analog, 2=digital
+	u16 screen_width;
+	u16 screen_height;
+	u16 screen_linebytes;	// bytes per line in framebuffer, may be more than screen_width
+	u8 color_depth;	// color depth in bpp
+	u32 framebuffer_address;
+	u8 edid_block_zero[128];
 } __attribute__ ((__packed__)) screen_info_t;
 
 typedef struct {
-	uint8_t signature[4];
-	uint16_t size_reserved;
-	uint8_t monitor_number;
-	uint16_t max_screen_width;
-	uint8_t color_depth;
+	u8 signature[4];
+	u16 size_reserved;
+	u8 monitor_number;
+	u16 max_screen_width;
+	u8 color_depth;
 } __attribute__ ((__packed__)) screen_info_input_t;
 
 // these structs only store a subset of the VBE defined fields
 // only those needed.
 typedef struct {
 	char signature[4];
-	uint16_t version;
-	uint8_t *oem_string_ptr;
-	uint32_t capabilities;
-	uint16_t video_mode_list[256];	// lets hope we never have more than 256 video modes...
-	uint16_t total_memory;
+	u16 version;
+	u8 *oem_string_ptr;
+	u32 capabilities;
+	u16 video_mode_list[256];	// lets hope we never have more than 256 video modes...
+	u16 total_memory;
 } vbe_info_t;
 
 typedef struct {
-	uint16_t video_mode;
-	uint8_t mode_info_block[256];
-	uint16_t attributes;
-	uint16_t linebytes;
-	uint16_t x_resolution;
-	uint16_t y_resolution;
-	uint8_t x_charsize;
-	uint8_t y_charsize;
-	uint8_t bits_per_pixel;
-	uint8_t memory_model;
-	uint32_t framebuffer_address;
+	u16 video_mode;
+	u8 mode_info_block[256];
+	u16 attributes;
+	u16 linebytes;
+	u16 x_resolution;
+	u16 y_resolution;
+	u8 x_charsize;
+	u8 y_charsize;
+	u8 bits_per_pixel;
+	u8 memory_model;
+	u32 framebuffer_address;
 } vbe_mode_info_t;
 
 typedef struct {
-	uint8_t port_number;	// i.e. monitor number
-	uint8_t edid_transfer_time;
-	uint8_t ddc_level;
-	uint8_t edid_block_zero[128];
+	u8 port_number;	// i.e. monitor number
+	u8 edid_transfer_time;
+	u8 ddc_level;
+	u8 edid_block_zero[128];
 } vbe_ddc_info_t;
 
-static inline uint8_t
+static inline u8
 vbe_prepare()
 {
 	vbe_info_buffer = biosmem + (VBE_SEGMENT << 4);	// segment:offset off VBE Data Area
@@ -115,7 +113,7 @@ vbe_prepare()
 }
 
 // VBE Function 00h
-uint8_t
+u8
 vbe_info(vbe_info_t * info)
 {
 	vbe_prepare();
@@ -162,12 +160,12 @@ vbe_info(vbe_info_t * info)
 	info->capabilities = in32le(vbe_info_buffer + 10);
 
 	// offset 14: 32 bit le containing segment:offset of supported video mode table
-	uint16_t *video_mode_ptr;
+	u16 *video_mode_ptr;
 	video_mode_ptr =
-	    (uint16_t *) (biosmem +
+	    (u16 *) (biosmem +
 			  ((in16le(vbe_info_buffer + 16) << 4) +
 			   in16le(vbe_info_buffer + 14)));
-	uint32_t i = 0;
+	u32 i = 0;
 	do {
 		info->video_mode_list[i] = in16le(video_mode_ptr + i);
 		i++;
@@ -184,7 +182,7 @@ vbe_info(vbe_info_t * info)
 }
 
 // VBE Function 01h
-uint8_t
+u8
 vbe_get_mode_info(vbe_mode_info_t * mode_info)
 {
 	vbe_prepare();
@@ -252,7 +250,7 @@ vbe_get_mode_info(vbe_mode_info_t * mode_info)
 }
 
 // VBE Function 02h
-uint8_t
+u8
 vbe_set_mode(vbe_mode_info_t * mode_info)
 {
 	vbe_prepare();
@@ -289,8 +287,8 @@ vbe_set_mode(vbe_mode_info_t * mode_info)
 }
 
 //VBE Function 08h
-uint8_t
-vbe_set_palette_format(uint8_t format)
+u8
+vbe_set_palette_format(u8 format)
 {
 	vbe_prepare();
 	// call VBE function 09h (Set/Get Palette Data Function)
@@ -325,8 +323,8 @@ vbe_set_palette_format(uint8_t format)
 }
 
 // VBE Function 09h
-uint8_t
-vbe_set_color(uint16_t color_number, uint32_t color_value)
+u8
+vbe_set_color(u16 color_number, u32 color_value)
 {
 	vbe_prepare();
 	// call VBE function 09h (Set/Get Palette Data Function)
@@ -367,8 +365,8 @@ vbe_set_color(uint16_t color_number, uint32_t color_value)
 	return 0;
 }
 
-uint8_t
-vbe_get_color(uint16_t color_number, uint32_t * color_value)
+u8
+vbe_get_color(u16 color_number, u32 * color_value)
 {
 	vbe_prepare();
 	// call VBE function 09h (Set/Get Palette Data Function)
@@ -410,7 +408,7 @@ vbe_get_color(uint16_t color_number, uint32_t * color_value)
 }
 
 // VBE Function 15h
-uint8_t
+u8
 vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 {
 	vbe_prepare();
@@ -484,11 +482,11 @@ vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 	return 0;
 }
 
-uint32_t
-vbe_get_info(uint8_t argc, char ** argv)
+u32
+vbe_get_info(u8 argc, char ** argv)
 {
-	uint8_t rval;
-	uint32_t i;
+	u8 rval;
+	u32 i;
 	if (argc < 4) {
 		printf
 		    ("Usage %s <vmem_base> <device_path> <address of screen_info_t>\n",
@@ -510,7 +508,7 @@ vbe_get_info(uint8_t argc, char ** argv)
 
 	// argv[1] is address of virtual BIOS mem...
 	// argv[2] is the size
-	biosmem = (uint8_t *) strtoul(argv[1], 0, 16);
+	biosmem = (u8 *) strtoul(argv[1], 0, 16);
 	biosmem_size = strtoul(argv[2], 0, 16);;
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",
@@ -592,8 +590,8 @@ vbe_get_info(uint8_t argc, char ** argv)
 		     sizeof(ddc_info.edid_block_zero));
 	}
 #endif
-	if (*((uint64_t *) ddc_info.edid_block_zero) !=
-	    (uint64_t) 0x00FFFFFFFFFFFF00) {
+	if (*((u64 *) ddc_info.edid_block_zero) !=
+	    (u64) 0x00FFFFFFFFFFFF00) {
 		// invalid EDID signature... probably no monitor
 
 		output->display_type = 0x0;
@@ -694,19 +692,19 @@ vbe_get_info(uint8_t argc, char ** argv)
 		//   this way...)
 		// this resembles the palette that the kernel/X Server seems to expect...
 
-		uint8_t mixed_color_values[6] =
+		u8 mixed_color_values[6] =
 		    { 0xFF, 0xDA, 0xB3, 0x87, 0x54, 0x00 };
-		uint8_t primary_color_values[10] =
+		u8 primary_color_values[10] =
 		    { 0xF3, 0xE7, 0xCD, 0xC0, 0xA5, 0x96, 0x77, 0x66, 0x3F,
 			0x27
 		};
-		uint8_t mc_size = sizeof(mixed_color_values);
-		uint8_t prim_size = sizeof(primary_color_values);
+		u8 mc_size = sizeof(mixed_color_values);
+		u8 prim_size = sizeof(primary_color_values);
 
-		uint8_t curr_color_index;
-		uint32_t curr_color;
+		u8 curr_color_index;
+		u32 curr_color;
 
-		uint8_t r, g, b;
+		u8 r, g, b;
 		// 216 mixed colors
 		for (r = 0; r < mc_size; r++) {
 			for (g = 0; g < mc_size; g++) {
@@ -715,9 +713,9 @@ vbe_get_info(uint8_t argc, char ** argv)
 					    (r * mc_size * mc_size) +
 					    (g * mc_size) + b;
 					curr_color = 0;
-					curr_color |= ((uint32_t) mixed_color_values[r]) << 16;	//red value
-					curr_color |= ((uint32_t) mixed_color_values[g]) << 8;	//green value
-					curr_color |= (uint32_t) mixed_color_values[b];	//blue value
+					curr_color |= ((u32) mixed_color_values[r]) << 16;	//red value
+					curr_color |= ((u32) mixed_color_values[g]) << 8;	//green value
+					curr_color |= (u32) mixed_color_values[b];	//blue value
 					vbe_set_color(curr_color_index,
 						      curr_color);
 				}
@@ -728,21 +726,21 @@ vbe_get_info(uint8_t argc, char ** argv)
 		// red
 		for (r = 0; r < prim_size; r++) {
 			curr_color_index = mc_size * mc_size * mc_size + r;
-			curr_color = ((uint32_t) primary_color_values[r]) << 16;
+			curr_color = ((u32) primary_color_values[r]) << 16;
 			vbe_set_color(curr_color_index, curr_color);
 		}
 		//green
 		for (g = 0; g < prim_size; g++) {
 			curr_color_index =
 			    mc_size * mc_size * mc_size + prim_size + g;
-			curr_color = ((uint32_t) primary_color_values[g]) << 8;
+			curr_color = ((u32) primary_color_values[g]) << 8;
 			vbe_set_color(curr_color_index, curr_color);
 		}
 		//blue
 		for (b = 0; b < prim_size; b++) {
 			curr_color_index =
 			    mc_size * mc_size * mc_size + prim_size * 2 + b;
-			curr_color = (uint32_t) primary_color_values[b];
+			curr_color = (u32) primary_color_values[b];
 			vbe_set_color(curr_color_index, curr_color);
 		}
 		// 10 shades of grey
@@ -750,9 +748,9 @@ vbe_get_info(uint8_t argc, char ** argv)
 			curr_color_index =
 			    mc_size * mc_size * mc_size + prim_size * 3 + i;
 			curr_color = 0;
-			curr_color |= ((uint32_t) primary_color_values[i]) << 16;	//red
-			curr_color |= ((uint32_t) primary_color_values[i]) << 8;	//green
-			curr_color |= ((uint32_t) primary_color_values[i]);	//blue
+			curr_color |= ((u32) primary_color_values[i]) << 16;	//red
+			curr_color |= ((u32) primary_color_values[i]) << 8;	//green
+			curr_color |= ((u32) primary_color_values[i]);	//blue
 			vbe_set_color(curr_color_index, curr_color);
 		}
 

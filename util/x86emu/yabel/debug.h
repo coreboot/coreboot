@@ -12,12 +12,24 @@
 #ifndef _BIOSEMU_DEBUG_H_
 #define _BIOSEMU_DEBUG_H_
 
-#include <stdio.h>
-#include <stdint.h>
+#include <types.h>
 
-extern uint32_t debug_flags;
+extern u32 debug_flags;
 // from x86emu...needed for debugging
-extern void x86emu_dump_xregs();
+extern void x86emu_dump_xregs(void);
+
+/* printf is not available in coreboot... use printk */
+#include <console.h>
+/* uurgs... yuck... x86emu/x86emu.h is redefining printk... we include it here
+ * and use its redefinition of printk
+ * TODO: FIX!!!! */
+#include "x86emu/x86emu.h"
+#define printf printk
+
+/* PH: empty versions of set/clr_ci
+ * TODO: remove! */
+static inline void clr_ci(void) {};
+static inline void set_ci(void) {};
 
 #define DEBUG_IO 0x1
 #define DEBUG_MEM 0x2
@@ -35,6 +47,7 @@ extern void x86emu_dump_xregs();
 #define DEBUG_JMP 0x2000
 
 //#define DEBUG
+//#undef DEBUG
 #ifdef DEBUG
 
 #define CHECK_DBG(_flag) if (debug_flags & _flag)
@@ -69,6 +82,6 @@ extern void x86emu_dump_xregs();
 
 #endif				//DEBUG
 
-void dump(uint8_t * addr, uint32_t len);
+void dump(u8 * addr, u32 len);
 
 #endif

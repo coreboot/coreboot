@@ -9,22 +9,13 @@
  * Contributors:
  *     IBM Corporation - initial implementation
  *****************************************************************************/
+#ifndef _BIOSEMU_INTERRUPT_H_
+#define _BIOSEMU_INTERRUPT_H_
 
-#ifndef _BIOSEMU_IO_H_
-#define _BIOSEMU_IO_H_
-#include <x86emu/x86emu.h>
-#include <stdint.h>
+void handleInterrupt(int intNum);
 
-uint8_t my_inb(X86EMU_pioAddr addr);
+void runInt10(void);
 
-uint16_t my_inw(X86EMU_pioAddr addr);
-
-uint32_t my_inl(X86EMU_pioAddr addr);
-
-void my_outb(X86EMU_pioAddr addr, uint8_t val);
-
-void my_outw(X86EMU_pioAddr addr, uint16_t val);
-
-void my_outl(X86EMU_pioAddr addr, uint32_t val);
+void runInt13(void);
 
 #endif

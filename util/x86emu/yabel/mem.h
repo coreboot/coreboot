@@ -13,24 +13,24 @@
 #ifndef _BIOSEMU_MEM_H_
 #define _BIOSEMU_MEM_H_
 #include <x86emu/x86emu.h>
-#include <stdint.h>
+#include <types.h>
 
 // read byte from memory
-uint8_t my_rdb(uint32_t addr);
+u8 my_rdb(u32 addr);
 
 //read word from memory
-uint16_t my_rdw(uint32_t addr);
+u16 my_rdw(u32 addr);
 
 //read long from memory
-uint32_t my_rdl(uint32_t addr);
+u32 my_rdl(u32 addr);
 
 //write byte to memory
-void my_wrb(uint32_t addr, uint8_t val);
+void my_wrb(u32 addr, u8 val);
 
 //write word to memory
-void my_wrw(uint32_t addr, uint16_t val);
+void my_wrw(u32 addr, u16 val);
 
 //write long to memory
-void my_wrl(uint32_t addr, uint32_t val);
+void my_wrl(u32 addr, u32 val);
 
 #endif

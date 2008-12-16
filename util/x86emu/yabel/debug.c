@@ -14,10 +14,10 @@
 
 #include "debug.h"
 
-uint32_t debug_flags = 0;
+u32 debug_flags = 0;
 
 void
-dump(uint8_t * addr, uint32_t len)
+dump(u8 * addr, u32 len)
 {
 	printf("\n\r%s(%p, %x):\n", __FUNCTION__, addr, len);
 	while (len) {

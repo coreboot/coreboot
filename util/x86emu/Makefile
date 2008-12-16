@@ -18,12 +18,32 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+#X86EMU_INCLUDE = -I $(src)/util/x86emu/include  
+
 X86EMU_SRC  = debug.c decode.c fpu.c ops.c ops2.c prim_ops.c sys.c
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
 BIOSEMU_SRC = biosemu.c pcbios/pcibios.c
+endif
+
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_YABEL),y)
+BIOSEMU_SRC  = biosemu.c debug.c device.c mem.c io.c interrupt.c 
+#TODO: add vbe.c, currently not needed...
+#BIOSEMU_SRC +=vbe.c
+#PH: TODO: remove the compat files??
+BIOSEMU_SRC  += compat/functions.c
+X86EMU_INCLUDE += -I $(src)/util/x86emu/yabel
+X86EMU_INCLUDE += -I $(src)/util/x86emu
+#TODO: remove these, these are .h files from slof, to make the merge easier...
+X86EMU_INCLUDE += -I $(src)/util/x86emu/yabel/compat
+endif
 VM86_SRC    = vm86.c vm86_gdt.c 
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
 LIBX86EMU_SRC=$(patsubst %,x86emu/%,$(X86EMU_SRC)) $(BIOSEMU_SRC)
+endif
+
+ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_YABEL),y)
+LIBX86EMU_SRC=$(patsubst %,x86emu/%,$(X86EMU_SRC)) $(patsubst %,yabel/%,$(BIOSEMU_SRC))
 endif
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_VM86),y)
@@ -47,5 +67,5 @@ $(obj)/util/x86emu/libx86emu.a: $(LIBX86EMU_OBJS) $(src)/.config
 $(obj)/util/x86emu/%.o: $(src)/util/x86emu/%.c
 	$(Q)mkdir -p $(dir $@)
 	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
-	$(Q)$(CC) $(INITCFLAGS) -I$(src)/util/x86emu/include -c $< -o $@
+	$(Q)$(CC) -Werror $(INITCFLAGS) $(X86EMU_INCLUDE) -I$(src)/util/x86emu/include -c $< -o $@
 

@@ -405,6 +405,6 @@ void X86EMU_prepareForInt(int num)
 
 void X86EMU_setMemBase(void *base, size_t size)
 {
-	M.mem_base = (int) base;
+	M.mem_base = (unsigned long) base;
 	M.mem_size = size;
 }

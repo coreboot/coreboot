@@ -46,7 +46,7 @@
 
 static void     print_encoded_bytes (u16 s, u16 o);
 static void     print_decoded_instruction (void);
-static int      parse_line (char *s, int *ps, int *n);
+int      parse_line (char *s, int *ps, int *n);
 
 /* should look something like debug's output. */
 void X86EMU_trace_regs (void)
@@ -83,7 +83,7 @@ void x86emu_just_disassemble (void)
     print_decoded_instruction();
 }
 
-static void disassemble_forward (u16 seg, u16 off, int n)
+void disassemble_forward (u16 seg, u16 off, int n)
 {
     X86EMU_sysEnv tregs;
     int i;
@@ -331,7 +331,7 @@ int X86EMU_trace_off(void)
     return M.x86.debug &= ~(DEBUG_STEP_F | DEBUG_DECODE_F | DEBUG_TRACE_F);
 }
 
-static int parse_line (char *s, int *ps, int *n)
+int parse_line (char *s, int *ps, int *n)
 {
 #if 0
     int cmd;
@@ -359,6 +359,8 @@ static int parse_line (char *s, int *ps, int *n)
         sscanf(s,"%x",&ps[*n]);
         *n += 1;
     }
+#else
+    return 0;
 #endif
 }
 

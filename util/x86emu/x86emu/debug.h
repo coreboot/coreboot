@@ -41,7 +41,7 @@
 #define __X86EMU_DEBUG_H
 
 //#define DEBUG 0
-#undef DEBUG
+//#undef DEBUG
 /*---------------------- Macros and type definitions ----------------------*/
 
 /* checks to be enabled for "runtime" */

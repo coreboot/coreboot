@@ -69,7 +69,7 @@ u8 *mem_ptr(u32 addr, int size)
 	u8 *retaddr = 0;
 
 	if (addr > M.mem_size - size) {
-		DB(printk("mem_ptr: address %#lx out of range!\n", addr);)
+		DB(printk("mem_ptr: address %#x out of range!\n", addr);)
 		    HALT_SYS();
 	}
 	if (addr < 0x200) {

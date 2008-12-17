@@ -30,7 +30,7 @@ INITRAM_SRC =   	$(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/lib/ramtest.c \
 			$(src)/arch/x86/pci_ops_conf1.c
 
-STAGE2_MAINBOARD_SRC = 
+STAGE2_MAINBOARD_SRC =  ##$(src)/arch/x86/via/c7.c
 
 $(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"

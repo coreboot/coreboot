@@ -448,11 +448,13 @@ struct device_operations vt8237r_lpc = {
 		{.pci = {.vendor = PCI_VENDOR_ID_VIA,
 				.device = PCI_DEVICE_ID_VIA_VT8237R_LPC}}},
 	.constructor			= default_device_constructor,
+	.phase3_chip_setup_dev		= vt8237r_init,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= vt8237_read_resources,
 	.phase4_set_resources		= pci_set_resources,
 	.phase5_enable_resources	= vt8237_enable_resources,
-	.phase6_init			= vt8237r_init,
+	.phase6_init			= NULL,
+	.ops_pci		 	= &pci_dev_ops_pci,
 };
 
 struct device_operations vt8237s_lpc = {

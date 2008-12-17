@@ -54,8 +54,9 @@ struct device_operations cn700_pci_bridge = {
 				.device = PCI_DEVICE_ID_VIA_CN700_BRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= pci_scan_bridge,
-	.phase4_read_resources		= pci_dev_read_resources,
-	//.phase4_set_resources		= pci_set_resources,
-	//.phase5_enable_resources	= pci_dev_enable_resources,
+	.phase4_read_resources		= NULL,
+	.phase4_set_resources		= pci_set_resources,
+	.phase5_enable_resources	= pci_bus_enable_resources,
 	.phase6_init			= pci_bridge_init,
+	.ops_pci_bus			= &pci_cf8_conf1,
 };

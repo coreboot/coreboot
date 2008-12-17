@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Corey Osgood <corey.osgood@gmail.com>
+ * Copyright (C) 2008 Corey Osgood <corey.osgood@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef NORTHBRIDGE_VIA_CN700_STAGE2_H
-#define NORTHBRIDGE_VIA_CN700_STAGE2_H
-
-extern unsigned int cn700_scan_root_bus(device_t root, unsigned int max);
-
-#endif
+{
+	device_operations = "cn700_north_domain";
+};

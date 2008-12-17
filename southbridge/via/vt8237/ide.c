@@ -42,8 +42,11 @@ static void ide_init(struct device *dev)
 	printk(BIOS_INFO, "%s IDE interface %s\n", "Secondary",
 		    sb->ide1_enable ? "enabled" : "disabled");
 	enables = pci_read_config8(dev, IDE_CS) & ~0x3;
+	printk(BIOS_DEBUG, "POI1");
 	enables |= (sb->ide0_enable << 1) | sb->ide1_enable;
+	printk(BIOS_DEBUG, "POI2");
 	pci_write_config8(dev, IDE_CS, enables);
+	printk(BIOS_DEBUG, "POI3");
 	enables = pci_read_config8(dev, IDE_CS);
 	printk(BIOS_DEBUG, "Enables in reg 0x40 read back as 0x%x\n", enables);
 
@@ -95,11 +98,13 @@ struct device_operations vt8237_ide = {
 		{.pci = {.vendor = PCI_VENDOR_ID_VIA,
 				.device = PCI_DEVICE_ID_VIA_VT8237_PATA}}},
 	.constructor			= default_device_constructor,
-	//.phase2_fixup			= vt8237_enable,
+	//.phase3_chip_setup_dev		= vt8237_init,
 	//.phase3_scan			= 0,
-	//.phase4_enable_disable		= vt8237_enable,
-	//.phase4_read_resources		= pci_dev_read_resources,
-	//.phase4_set_resources		= pci_set_resources,
-	//.phase5_enable_resources	= pci_dev_enable_resources,
+	.phase4_read_resources		= pci_dev_read_resources,
+	.phase4_set_resources		= pci_set_resources,
+	.phase5_enable_resources	= pci_dev_enable_resources,
 	.phase6_init			= ide_init,
+	//.ops_pci		 	= &pci_dev_ops_pci,
+	.ops_pci_bus			= &pci_cf8_conf1,
+
 };

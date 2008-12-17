@@ -133,4 +133,3 @@ config COREBOOT_ROMSIZE_KB
 	  Map the config names to an integer.
 
 endmenu
-

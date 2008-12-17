@@ -33,7 +33,7 @@ static void memctrl_init(struct device *dev)
 	u8 ranks, pagec, paged, pagee, pagef, shadowreg;
 
 	/* Set up the VGA framebuffer size. */
-	reg16 = (log2(CONFIG_CN700_VIDEO_MB_32) << 12) | (1 << 15);
+	reg16 = (log2f(CONFIG_CN700_VIDEO_MB_32) << 12) | (1 << 15);
 	pci_write_config16(dev, 0xa0, reg16);
 
 	/* Set up VGA timers. */
@@ -57,6 +57,7 @@ static void memctrl_init(struct device *dev)
 	/* TODO: This doesn't belong here. At the very least make it a dts
 	 * option */
 
+#if 0	/* Handled in stage1 */
 	/* Shadow RAM */
 	pagec = 0xff, paged = 0xff, pagee = 0xff, pagef = 0x30;
 	/* PAGE C, D, E are all read write enable */
@@ -68,26 +69,25 @@ static void memctrl_init(struct device *dev)
 	shadowreg |= pagef;
 	pci_write_config8(dev, 0x83, shadowreg);
 	/* vlink mirror */
-	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
-				    PCI_DEVICE_ID_VIA_CN700_VLINK, 0);
-	if (vlink_dev) {
-		pci_write_config8(vlink_dev, 0x61, pagec);
-		pci_write_config8(vlink_dev, 0x62, paged);
-		pci_write_config8(vlink_dev, 0x64, pagee);
-
-		shadowreg = pci_read_config8(vlink_dev, 0x63);
-		shadowreg |= pagef;
-		pci_write_config8(vlink_dev, 0x63, shadowreg);
-	}
+	vlink_dev = dev_find_slot(0, PCI_BDF(0, 7, 0))
+	pci_write_config8(vlink_dev, 0x61, pagec);
+	pci_write_config8(vlink_dev, 0x62, paged);
+	pci_write_config8(vlink_dev, 0x64, pagee);
+	shadowreg = pci_read_config8(vlink_dev, 0x63);
+	shadowreg |= pagef;
+	pci_write_config8(vlink_dev, 0x63, shadowreg);
+#endif
 }
 
-static const struct device_operations memctrl_operations = {
-	.read_resources = cn700_noop,
-	.init           = memctrl_init,
-};
-
-static const struct pci_driver memctrl_driver __pci_driver = {
-	.ops    = &memctrl_operations,
-	.vendor = PCI_VENDOR_ID_VIA,
-	.device = PCI_DEVICE_ID_VIA_CN700_MEMCTRL,
+struct device_operations cn700_memctrl = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_VIA,
+				.device = PCI_DEVICE_ID_VIA_CN700_MEMCTRL}}},
+	.constructor			= default_device_constructor,
+	//.phase3_scan			= scan_static_bus,
+	.phase4_read_resources		= pci_dev_read_resources,
+	.phase4_set_resources		= pci_set_resources,
+	.phase5_enable_resources	= pci_dev_enable_resources,
+	.phase6_init			= memctrl_init,
+	.ops_pci		 	= &pci_dev_ops_pci,
 };

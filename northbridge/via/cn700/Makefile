@@ -20,9 +20,12 @@
 
 ifeq ($(CONFIG_NORTHBRIDGE_VIA_CN700),y)
 
-STAGE2_CHIPSET_SRC += 	$(src)/northbridge/via/cn700/stage2.c \
+STAGE2_CHIPSET_SRC += 	$(src)/northbridge/via/cn700/apic.c \
 			$(src)/northbridge/via/cn700/agp.c \
+			$(src)/northbridge/via/cn700/memctrl.c \
 			$(src)/northbridge/via/cn700/pci.c \
-			$(src)/northbridge/via/cn700/vga.c
+			$(src)/northbridge/via/cn700/pci_domain.c \
+			$(src)/northbridge/via/cn700/vga.c \
+			$(src)/arch/x86/via/c7.c
 
 endif

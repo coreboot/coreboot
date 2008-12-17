@@ -45,17 +45,31 @@
 	mainboard_name = "EPIA-CN";
 	mainboard_pci_subsystem_vendor = "0xdead"; /* TODO */
 	mainboard_pci_subsystem_device = "0xbeef"; /* TODO */
-	cpus { };
+	cpus {
+		/config/("arch/x86/via/c7.dts");
+	};
 	apic@0 {
+		/config/("northbridge/via/cn700/apic.dts");
 	};
 	domain@0 {
-		pci@0,0 {};
+		/config/("northbridge/via/cn700/pci_domain.dts");
+		pci@0,0 {
+			/config/("northbridge/via/cn700/agp.dts");
+		};
 		pci@0,1 {};
 		pci@0,2 {};
-		pci@0,3 {};
+		pci@0,3 {
+			/config/("northbridge/via/cn700/memctrl.dts");
+		};
 		pci@0,4 {};
 		pci@0,7 {};
-		pci@1,0 {};
+		/* How do I represent the bus and pci devices hanging here? */
+		pci@1,0 {
+			/config/("northbridge/via/cn700/pci.dts");
+			pci@0,1 {
+				/config/("northbridge/via/cn700/vga.dts");
+			};
+		};
 		pci@f,0 {};
 		pci@10,0 {
 			/config/("southbridge/via/vt8237/sata.dts");

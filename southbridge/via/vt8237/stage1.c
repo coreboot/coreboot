@@ -29,6 +29,8 @@
 #include "vt8237.h"
 #include <config.h>
 
+#define SMBUS_DEBUG 0
+
 /* TODO List:
  * * Merge the rest of the functions from v2, except smbus_fixup which doesn't
  *   seem to be necessary any more (?)
@@ -50,7 +52,9 @@ static void smbus_print_error(u8 host_status, int loops)
 	if ((host_status == 0x00 || host_status == 0x40 ||
 		host_status == 0x42) && (loops < SMBUS_TIMEOUT))
 	{
+#if SMBUS_DEBUG
 		printk(BIOS_SPEW, "SMBus Ready/Completed Successfully\n");
+#endif
 		return;
 	}
 	if (loops >= SMBUS_TIMEOUT)
@@ -85,7 +89,9 @@ static void smbus_wait_until_ready(u16 smbus_io_base)
 {
 	int loops;
 
+#if SMBUS_DEBUG
 	printk(BIOS_SPEW, "Waiting until SMBus ready\n");
+#endif
 
 	loops = 0;
 	while ((inb(smbus_io_base + SMBHSTSTAT) & 1) == 1 && loops <= SMBUS_TIMEOUT)
@@ -105,8 +111,10 @@ u8 smbus_read_byte(u16 dimm, u8 offset, u16 smbus_io_base)
 {
 	u8 val;
 
+#if SMBUS_DEBUG
 	printk(BIOS_SPEW, "SMBus Read from DIMM %d at address 0x%x\n", 
 				(int)dimm, offset);
+#endif
 
 	smbus_reset(smbus_io_base);
 
@@ -129,8 +137,11 @@ u8 smbus_read_byte(u16 dimm, u8 offset, u16 smbus_io_base)
 	smbus_wait_until_ready(smbus_io_base);
 
 	val = inb(smbus_io_base + SMBHSTDAT0);
+
+#if SMBUS_DEBUG
 	printk(BIOS_SPEW, "Read: 0x%x\n", val);
-	
+#endif
+
 	/* TODO: Is this necessary? */
 	smbus_reset(smbus_io_base);
 
@@ -222,15 +233,16 @@ void vt8237_stage1(u16 smbus_io_base)
 	pci_conf1_find_device(0x1106, 0x3227, &dev);
 	pci_conf1_find_device(0x1106, 0x0571, &ide_dev);
 	
-	/* Disable GP3 timer, or else the system reboots when it runs out */
+	/* Disable GP3 timer, or else the system reboots when it runs out.
+	 * Datasheets say this is disabled by default, they're wrong. */
 	pci_conf1_write_config8(dev, 0x98, 0x00);
 	
 	/* Change the ROM size mapping based on where CAR is located */
-#if (CONFIG_CARBASE + CONFIG_CARSIZE) < 0xffc00000
+#if (CONFIG_CARBASE + CONFIG_CARSIZE) <= 0xffc00000
 	pci_conf1_write_config8(dev, 0x41, 0x7f);
-#elif (CONFIG_CARBASE + CONFIG_CARSIZE) < 0xffe00000
+#elif (CONFIG_CARBASE + CONFIG_CARSIZE) <= 0xffe00000
 	pci_conf1_write_config8(dev, 0x41, 0x70);
-#elif (CONFIG_CARBASE + CONFIG_CARSIZE) < 0xfff00000
+#elif (CONFIG_CARBASE + CONFIG_CARSIZE) <= 0xfff00000
 	pci_conf1_write_config8(dev, 0x41, 0x40);
 #endif
 
@@ -256,7 +268,7 @@ void vt8237_stage1(u16 smbus_io_base)
 	pci_conf1_write_config8(ide_dev, 0x41, 0xf2);
 	pci_conf1_write_config8(ide_dev, 0x42, 0x09);
 
-	sata_stage1();
+	//sata_stage1();
 	enable_smbus(smbus_io_base);
 }
 

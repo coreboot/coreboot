@@ -36,6 +36,7 @@
 #include "chip.h"
 #include "northbridge.h"
 #include "cn700.h"
+#include "vgachip.h"
 
 void write_protect_vgabios(void)
 {

@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <pc80/keyboard.h>
 #include "chip.h"
 
 /*

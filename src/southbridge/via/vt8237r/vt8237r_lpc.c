@@ -26,6 +26,7 @@
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
 #include <cpu/x86/lapic.h>
+#include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "vt8237r.h"
 #include "chip.h"
@@ -46,6 +47,7 @@
 #define INT		(1 << 8)
 
 extern void dump_south(device_t dev);
+extern void setup_i8259(void);
 
 static struct ioapicreg {
 	u32 reg;

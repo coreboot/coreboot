@@ -27,7 +27,6 @@ config BOARD_AMD_DB800
 	bool "DB800"
 	select ARCH_X86
 	select CPU_AMD_GEODELX
-	select OPTION_TABLE
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
 	select SUPERIO_WINBOND_W83627HF
@@ -38,7 +37,6 @@ config BOARD_AMD_DB800
 config BOARD_AMD_DBM690T
 	bool "dbm690t"
 	select ARCH_X86
-	select OPTION_TABLE
 	select CPU_AMD_K8
 	select NORTHBRIDGE_AMD_K8
 	select SOUTHBRIDGE_AMD_SB600
@@ -52,7 +50,6 @@ config BOARD_AMD_NORWICH
 	bool "Norwich"
 	select ARCH_X86
 	select CPU_AMD_GEODELX
-	select OPTION_TABLE
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
 	select PIRQ_TABLE
@@ -62,7 +59,6 @@ config BOARD_AMD_NORWICH
 config BOARD_AMD_SERENGETI
 	bool "Serengeti"
 	select ARCH_X86
-	select OPTION_TABLE
 	select CPU_AMD_K8
 	select NORTHBRIDGE_AMD_K8
 	select SOUTHBRIDGE_AMD_AMD8111

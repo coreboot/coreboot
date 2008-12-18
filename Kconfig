@@ -53,6 +53,14 @@ config LOCALVERSION
 	help
 	  Append an extra string to the end of the coreboot version.
 
+config OPTION_TABLE
+	bool "CMOS Option Table"
+	default y
+	help
+	  This option is used to determine whether the mainboard has
+	  a battery backed up real time clock with CMOS NVRAM, or if you want
+	  to use it.
+
 config BEEPS
 	bool "Enable beeps upon certain coreboot events"
 	depends EXPERT

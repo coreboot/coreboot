@@ -196,6 +196,7 @@ struct cmos_option_table *get_option_table(void)
 
 int get_option(void *dest, char *name)
 {
+#if CONFIG_OPTION_TABLE
 	// struct cmos_option_table *option_table;
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
@@ -224,7 +225,6 @@ int get_option(void *dest, char *name)
 	if(!rtc_checksum_valid(CB_CKS_RANGE_START,
 			CB_CKS_RANGE_END,CB_CKS_LOC))
 		return(-4);
-#ifdef CONFIG_OPTION_TABLE
 	return(0);
 #else
 	return -2;

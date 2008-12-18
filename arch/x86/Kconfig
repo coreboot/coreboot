@@ -141,13 +141,6 @@ config CROSS_BAR_47_56
 	help
 	  Configure for the type of crossbar on the mainboard.
 
-config OPTION_TABLE
-	boolean
-	help
-	  This option is used to determine whether the mainboard has
-	  a battery backed up real time clock with CMOS NVRAM.
-	  It is usually set in mainboard/*/Kconfig.
-
 config PIRQ_TABLE
 	boolean
 	help

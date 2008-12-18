@@ -317,6 +317,8 @@ int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_
 unsigned long acpi_create_srat_lapics(unsigned long current);
 void acpi_create_srat(acpi_srat_t *srat);
 
+void acpi_create_slit(acpi_slit_t *slit);
+
 void acpi_create_hpet(acpi_hpet_t *hpet);
 
 void acpi_create_mcfg(acpi_mcfg_t *mcfg);

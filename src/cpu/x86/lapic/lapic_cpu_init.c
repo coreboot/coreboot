@@ -435,6 +435,8 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 
 #if WAIT_BEFORE_CPUS_INIT==0
 	#define cpus_ready_for_init() do {} while(0)
+#else
+	void cpus_ready_for_init(void);
 #endif
 
 #if HAVE_SMI_HANDLER

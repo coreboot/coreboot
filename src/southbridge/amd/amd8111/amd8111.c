@@ -11,7 +11,7 @@ void amd8111_enable(device_t dev)
 	unsigned index;
 	unsigned reg_old, reg;
 
-	/* See if we are on the behind the amd8111 pci bridge */
+	/* See if we are on the bus behind the amd8111 pci bridge */
 	bus_dev = dev->bus->dev;
 	if ((bus_dev->vendor == PCI_VENDOR_ID_AMD) && 
 	    (bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI)) 

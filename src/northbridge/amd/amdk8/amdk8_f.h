@@ -521,6 +521,8 @@ struct sys_info {
 
 #ifdef __ROMCC__
 static void soft_reset(void);
+#else
+void hard_reset(void);
 #endif
 
 static void wait_all_core0_mem_trained(struct sys_info *sysinfo)

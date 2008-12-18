@@ -7,6 +7,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
+#include <delay.h>
 #include "amd8111.h"
 
 

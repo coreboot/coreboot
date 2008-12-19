@@ -38,7 +38,13 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
-#include "southbridge/via/vt8235/vt8235_early_serial.c"
+#include "superio/fintek/f71805f/f71805f_early_serial.c"
+
+#if TTYS0_BASE == 0x2f8
+#define SERIAL_DEV PNP_DEV(0x2e, F71805F_SP2)
+#else
+#define SERIAL_DEV PNP_DEV(0x2e, F71805F_SP1)
+#endif
 
 static void memreset_setup(void)
 {
@@ -54,8 +60,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void enable_mainboard_devices(void)
 {
 	device_t dev;
-	u8 reg;
- 
+
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
@@ -96,7 +101,7 @@ static void main(unsigned long bist)
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
-	enable_vt8235_serial();
+	f71805f_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	uart_init();
 	console_init();
 

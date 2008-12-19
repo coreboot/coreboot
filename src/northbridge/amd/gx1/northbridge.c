@@ -11,6 +11,7 @@
 #include "northbridge.h"
 #include <cpu/amd/gx1def.h>
 #include <cpu/x86/cache.h>
+#include <cpu/cpu.h>
 
 #define NORTHBRIDGE_FILE "northbridge.c"
 /*

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <device/pci_ids.h>
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
@@ -13,7 +14,6 @@
 static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
-        unsigned reg;
 
         /* Initialize the system wide io space constraints */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));

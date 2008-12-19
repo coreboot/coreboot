@@ -14,7 +14,7 @@
 #include <cpu/x86/cache.h>
 #include "../../../southbridge/amd/cs5536/cs5536.h"
 
-
+extern int sizeram(void);
 /* the structs in this file only set msr.lo. But ... that may not always be true */
 
 struct msrinit {

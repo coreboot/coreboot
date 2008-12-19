@@ -1,4 +1,5 @@
 #include <arch/io.h>
+#include <device/pci.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #ifndef __ROMCC__

@@ -35,4 +35,8 @@
 /* the FB size in MB (min is 8MB max is 512MB) */
 #define K8M890_FBSIZEMB		64
 
+#include <device/device.h>
+extern void writeback(struct device *dev, u16 where, u8 what);
+extern void dump_south(device_t dev);
+
 #endif

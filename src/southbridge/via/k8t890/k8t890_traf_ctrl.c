@@ -23,6 +23,8 @@
 #include <console/console.h>
 #include "k8t890.h"
 
+extern unsigned long log2(unsigned long x);
+
 static void mmconfig_set_resources(device_t dev)
 {
 	struct resource *resource;

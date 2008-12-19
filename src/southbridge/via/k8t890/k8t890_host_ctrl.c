@@ -22,6 +22,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include "k8t890.h"
 
 /* this may be later merged */
 

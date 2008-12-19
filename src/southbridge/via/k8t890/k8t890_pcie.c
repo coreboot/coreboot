@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
+#include "k8t890.h"
 
 static void peg_init(struct device *dev)
 {

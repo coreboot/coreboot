@@ -126,6 +126,7 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 {
 }
 
+#warning No hard_reset implemented for this board!
 void hard_reset(void)
 {
 	print_info("NO HARD RESET. FIX ME!\n");

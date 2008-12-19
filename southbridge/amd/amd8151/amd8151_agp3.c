@@ -25,7 +25,6 @@
 #include <device/pci_ids.h>
 #include <statictree.h>
 #include <config.h>
-#include "mcp55.h"
 
 static void agp3bridge_init(struct device * dev)
 {
@@ -45,7 +44,7 @@ struct device_operations amd8151_agp3bridge = {
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			 .device = PCI_DEVICE_ID_AMD_8151_AGP}}},
 	.constructor		 = default_device_constructor,
-	.phase3_scan		 = pci_scan_bridge
+	.phase3_scan		 = pci_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
 	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_bus_enable_resources,
@@ -80,7 +79,7 @@ struct device_operations amd8151_agp3dev = {
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			 .device = PCI_DEVICE_ID_AMD_8151_SYSCTRL}}},
 	.constructor		 = default_device_constructor,
-	.phase4_enable_disable	 = agp3dev_enable,
+	.phase3_enable		 = agp3dev_enable,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,

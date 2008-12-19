@@ -180,7 +180,9 @@ chip northbridge/intel/i945
 		device pci 01.0 off end # i945 PCIe root port
 		chip drivers/pci/onboard
 			device pci 02.0 on end # vga controller
-			register "rom_address" = "0xfff00000"
+			# register "rom_address" = "0xfffc0000"	# 256 KB image
+			# register "rom_address" = "0xfff80000"	# 512 KB image
+			register "rom_address" = "0xfff00000" # 1 MB image
 		end
 		device pci 02.1 on end # display controller
 

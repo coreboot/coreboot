@@ -703,7 +703,7 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 	 * There is a good chance we could expand the for loop to contain this first bit of code. 
 	 * OTOH, the compiler can do it for us, and the initial conditions are clearer this way.
 	 */
-	if ((! tree->linked) && is_bridge(tree)){
+	if (is_bridge(tree)){
 		struct node *siblings; 
 		fprintf(f,"\t.link = {\n");
 		fprintf(f,"\t\t[%d] = {\n", linkcount);
@@ -714,24 +714,6 @@ static void coreboot_emit_special(FILE *e, struct node *tree)
 		fprintf(f,"\t\t},\n");
 		/* now we need to handle our siblings. */
 		linkcount++;
-		for_all_siblings(tree, siblings) {
-			if (is_bridge(siblings) && (!siblings->linked)){
-				fprintf(f,"\t\t[%d] = {\n", linkcount);
-				fprintf(f,"\t\t\t.dev = &dev_%s,\n", siblings->label);
-				fprintf(f,"\t\t\t.link = %d,\n", linkcount);
-				if (siblings->children) {
-					fprintf(f,"\t\t\t.children = &dev_%s\n", siblings->children->label);
-					siblings->children->linked = 1;
-					siblings->children->linknode = tree;
-					siblings->children->whichlink = linkcount;
-				}
-				fprintf(f,"\t\t},\n");
-				siblings->linked = 1;
-				siblings->whichlink = linkcount;
-				siblings->linknode = tree;
-				linkcount++;
-			}
-		}
 		fprintf(f,"\t},\n");
 	}
 	fprintf(f,"\t.links = %d,\n", linkcount);

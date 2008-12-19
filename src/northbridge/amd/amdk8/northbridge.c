@@ -16,7 +16,6 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
-#include <cpu/amd/model_fxx_rev.h>
 
 #include <cpu/x86/lapic.h>
 

@@ -664,7 +664,10 @@ struct board_pciid_enable board_pciid_enables[] = {
 	 "artecgroup", "dbe61", "Artec Group DBE61", board_artecgroup_dbe6x},
 	{0x1022, 0x2090, 0x0000, 0x0000, 0x1022, 0x2080, 0x0000, 0x0000,
 	 "artecgroup", "dbe62", "Artec Group DBE62", board_artecgroup_dbe6x},
+	/* Note: There are >= 2 version of the Kontron 986LCD-M/mITX! */
 	{0x8086, 0x27b8, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+	 "kontron", "986lcd-m", "Kontron 986LCD-M", board_kontron_986lcd_m},
+	{0x10ec, 0x8168, 0x10ec, 0x8168, 0x104c, 0x8023, 0x104c, 0x8019,
 	 "kontron", "986lcd-m", "Kontron 986LCD-M", board_kontron_986lcd_m},
 	{0x1106, 0x3149, 0x1565, 0x3206, 0x1106, 0x3344, 0x1565, 0x1202,
 	 NULL, NULL, "BioStar P4M80-M4", board_biostar_p4m80_m4},

@@ -15,11 +15,12 @@ u8* vmem = (u8 *) CONFIG_YABEL_VIRTMEM_LOCATION;
 u8* vmem = (u8 *) (16*1024*1024); /* default to 16MB */
 #endif
 
-u32 biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev);
+u32 biosemu(u8 *biosmem, u32 biosmem_size, struct device *dev,
+	    unsigned long rom_addr);
 
 void run_bios(struct device * dev, unsigned long addr)
 {
-	biosemu(vmem, VMEM_SIZE, dev);
+	biosemu(vmem, VMEM_SIZE, dev, addr);
 }
 
 u64 get_time(void)

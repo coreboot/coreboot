@@ -281,26 +281,33 @@ biosemu_dev_get_device_vendor_id(void)
 		     bios_device.pci_device_id, bios_device.pci_vendor_id);
 }
 
-/* check, wether the device has a valid Expansion ROM, also search the PCI Data Structure and
- * any Expansion ROM Header (using dev_scan_exp_header()) for needed information */
+/* Check whether the device has a valid Expansion ROM and search the PCI Data
+ * Structure and any Expansion ROM Header (using dev_scan_exp_header()) for
+ * needed information.  If the rom_addr parameter is != 0, it is the address of
+ * the Expansion ROM image and will be used, if it is == 0, the Expansion ROM
+ * BAR address will be used.
+ */
 u8
-biosemu_dev_check_exprom()
+biosemu_dev_check_exprom(unsigned long rom_base_addr)
 {
 	int i = 0;
 	translate_address_t ta;
-	unsigned long rom_base_addr = 0;
 	u16 pci_ds_offset;
 	pci_data_struct_t pci_ds;
-	// check for ExpROM Address (Offset 30) in taa
-	for (i = 0; i <= taa_last_entry; i++) {
-		ta = translate_address_array[i];
-		if (ta.cfg_space_offset == 0x30) {
-			rom_base_addr = ta.address + ta.address_offset;	//translated address
-			break;
+	if (rom_base_addr == 0) {
+		// check for ExpROM Address (Offset 30) in taa
+		for (i = 0; i <= taa_last_entry; i++) {
+			ta = translate_address_array[i];
+			if (ta.cfg_space_offset == 0x30) {
+				//translated address
+				rom_base_addr = ta.address + ta.address_offset;
+				break;
+			}
 		}
 	}
-	// in the ROM there could be multiple Expansion ROM Images... start searching
-	// them for a x86 image
+	/* In the ROM there could be multiple Expansion ROM Images... start
+	 * searching them for an x86 image.
+	 */
 	do {
 		if (rom_base_addr == 0) {
 			printf("Error: no Expansion ROM address found!\n");

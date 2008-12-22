@@ -115,7 +115,7 @@ extern biosemu_device_t bios_device;
 
 u8 biosemu_dev_init(struct device * device);
 // NOTE: for dev_check_exprom to work, biosemu_dev_init MUST be called first!
-u8 biosemu_dev_check_exprom(void);
+u8 biosemu_dev_check_exprom(unsigned long rom_base_addr);
 
 u8 biosemu_dev_translate_address(unsigned long * addr);
 
@@ -166,7 +166,7 @@ in16le(void *addr)
 	return val;
 }
 
-/* debug function, dumps HID1 and HID4 to detect wether caches are on/off */
+/* debug function, dumps HID1 and HID4 to detect whether caches are on/off */
 static inline void
 dumpHID(void)
 {

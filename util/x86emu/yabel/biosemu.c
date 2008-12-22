@@ -43,8 +43,15 @@ static X86EMU_pioFuncs my_pio_funcs = {
 
 void dump(u8 * addr, u32 len);
 
+/* main entry into YABEL biosemu, arguments are:
+ * *biosmem = pointer to virtual memory
+ * biosmem_size = size of the virtual memory
+ * *dev = pointer to the device to be initialised
+ * rom_addr = address of the OptionROM to be executed, if this is = 0, YABEL
+ * 	will look for an ExpansionROM BAR and use the code from there.
+ */
 u32
-biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev)
+biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_addr)
 {
 	u8 *rom_image;
 	int i = 0;
@@ -60,7 +67,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev)
 		printf("Error initializing device!\n");
 		return -1;
 	}
-	if (biosemu_dev_check_exprom() != 0) {
+	if (biosemu_dev_check_exprom(rom_addr) != 0) {
 		printf("Error: Device Expansion ROM invalid!\n");
 		return -1;
 	}
@@ -301,15 +308,17 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev)
 		}
 	}
 #endif
-	// check wether the stack is "clean" i.e. containing the HLT instruction
-	// we pushed before executing, and pointing to the original stack address...
-	// indicating that the initialization probably was successful
+	/* Check whether the stack is "clean" i.e. containing the HLT
+	 * instruction we pushed before executing and pointing to the original
+	 * stack address... indicating that the initialization probably was
+	 * successful
+	 */
 	if ((pop_word() == 0xf4f4) && (M.x86.R_SS == STACK_SEGMENT)
 	    && (M.x86.R_SP == STACK_START_OFFSET)) {
 		DEBUG_PRINTF("Stack is clean, initialization successfull!\n");
 	} else {
 		DEBUG_PRINTF
-		    ("Stack unclean, initialization probably NOT COMPLETE!!!\n");
+		    ("Stack unclean, initialization probably NOT COMPLETE!!\n");
 		DEBUG_PRINTF("SS:SP = %04x:%04x, expected: %04x:%04x\n",
 			     M.x86.R_SS, M.x86.R_SP, STACK_SEGMENT,
 			     STACK_START_OFFSET);

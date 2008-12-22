@@ -3,6 +3,8 @@
 #include <device/pci_ids.h>
 #ifndef __ROMCC__
 #include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ops.h>
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
 #define PCI_DEV_INVALID 0

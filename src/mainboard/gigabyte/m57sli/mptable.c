@@ -33,6 +33,8 @@ extern unsigned apicid_mcp55;
 
 extern unsigned bus_type[256]; 
 
+extern void get_bus_conf(void);
+
 void *smp_write_config_table(void *v)
 {
         static const char sig[4] = "PCMP";

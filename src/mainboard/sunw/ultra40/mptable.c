@@ -32,6 +32,8 @@ extern  unsigned hcdn[];
 extern  unsigned sbdn3;
 extern  unsigned sbdnb;
 
+extern void get_bus_conf(void);
+
 void *smp_write_config_table(void *v)
 {
         static const char sig[4] = "PCMP";

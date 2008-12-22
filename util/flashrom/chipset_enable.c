@@ -384,6 +384,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 			     *(uint32_t *) (spibar + 0xA0)); ICH10 only? */
 		printf_debug("0xB0: 0x%08x (FDOC)\n",
 			     *(uint32_t *) (spibar + 0xB0));
+		ich_init_opcodes();
 		break;
 	default:
 		/* Nothing */

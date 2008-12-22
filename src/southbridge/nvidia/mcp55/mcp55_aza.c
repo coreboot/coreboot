@@ -27,6 +27,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
+#include <delay.h>
 #include "mcp55.h"
 
 static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)

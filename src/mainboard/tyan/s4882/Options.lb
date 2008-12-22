@@ -60,6 +60,7 @@ uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
+uses CONFIG_USE_PRINTK_IN_CAR
 
 uses ENABLE_APIC_EXT_ID
 uses APIC_ID_OFFSET
@@ -206,6 +207,8 @@ default HOSTCC="gcc"
 ## Disable the gdb stub by default
 ## 
 default CONFIG_GDB_STUB=0
+
+default CONFIG_USE_PRINTK_IN_CAR=1
 
 ##
 ## The Serial Console

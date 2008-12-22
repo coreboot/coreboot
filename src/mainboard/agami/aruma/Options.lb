@@ -179,7 +179,7 @@ default DCACHE_RAM_BASE=0xcc000
 default DCACHE_RAM_SIZE=0x4000
 default CONFIG_USE_INIT=0
 #default CONFIG_USE_INIT=1
-#default CONFIG_USE_PRINTK_IN_CAR=1
+default CONFIG_USE_PRINTK_IN_CAR=1
 
 ##
 ## Build code to setup a generic IOAPIC

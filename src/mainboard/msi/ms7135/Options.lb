@@ -87,6 +87,7 @@ uses DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
 uses DCACHE_RAM_GLOBAL_VAR_SIZE
 uses CONFIG_AP_CODE_IN_CAR
+uses CONFIG_USE_PRINTK_IN_CAR
 uses MEM_TRAIN_SEQ
 uses WAIT_BEFORE_CPUS_INIT
 
@@ -270,6 +271,8 @@ default HOSTCC="gcc"
 ## Disable the gdb stub by default
 ## 
 default CONFIG_GDB_STUB=0
+
+default CONFIG_USE_PRINTK_IN_CAR=1
 
 ##
 ## The Serial Console

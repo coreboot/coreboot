@@ -156,6 +156,11 @@ int read_romlayout(char *name)
 #endif
 		tstr1 = strtok(tempstr, ":");
 		tstr2 = strtok(NULL, ":");
+		if (!tstr1 || !tstr2) {
+			fprintf(stderr, "Error parsing layout file.\n");
+			fclose(romlayout);
+			return 1;
+		}
 		rom_entries[romimages].start = strtol(tstr1, (char **)NULL, 16);
 		rom_entries[romimages].end = strtol(tstr2, (char **)NULL, 16);
 		rom_entries[romimages].included = 0;

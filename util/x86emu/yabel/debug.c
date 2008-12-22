@@ -19,13 +19,13 @@ u32 debug_flags = 0;
 void
 dump(u8 * addr, u32 len)
 {
-	printf("\n\r%s(%p, %x):\n", __FUNCTION__, addr, len);
+	printf("\n%s(%p, %x):\n", __FUNCTION__, addr, len);
 	while (len) {
 		unsigned int tmpCnt = len;
 		unsigned char x;
 		if (tmpCnt > 8)
 			tmpCnt = 8;
-		printf("\n\r%p: ", addr);
+		printf("\n%p: ", addr);
 		// print hex
 		while (tmpCnt--) {
 			set_ci();

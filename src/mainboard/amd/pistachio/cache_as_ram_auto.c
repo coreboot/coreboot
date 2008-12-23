@@ -213,6 +213,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
+	rs690_htinit();
 	printk_debug("needs_reset=0x%x\n", needs_reset);
 
 	post_code(0x06);

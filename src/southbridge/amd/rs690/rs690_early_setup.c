@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,8 +176,9 @@ static void rs690_htinit()
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
 	 */
-	device_t k8_f0;
+	device_t k8_f0, rs690_f0;
 	u32 reg;
+	u8 reg8;
 	u8 k8_ht_freq;
 
 	k8_f0 = PCI_DEV(0, 0x18, 0);
@@ -195,7 +197,22 @@ static void rs690_htinit()
 	************************/
 	reg = pci_read_config32(k8_f0, 0x88);
 	k8_ht_freq = (reg & 0xf00) >> 8;
-	printk_info("rs690_ht_init k8_ht_freq=%x.\n", k8_ht_freq);
+	printk_spew("rs690_htinit k8_ht_freq=%x.\n", k8_ht_freq);
+	rs690_f0 = PCI_DEV(0, 0, 0);
+	reg8 = pci_read_config8(rs690_f0, 0x9c);
+	printk_spew("rs690_htinit NB_CFG_Q_F1000_800=%x\n", reg8);
+	/* For 1000 MHz HT, NB_CFG_Q_F1000_800 bit 0 MUST be set.
+	 * For any other HT frequency, NB_CFG_Q_F1000_800 bit 0 MUST NOT be set.
+	 */
+	if (((k8_ht_freq == 0x6) || (k8_ht_freq == 0xf)) && (!(reg8 & 0x1))) {
+		printk_info("rs690_htinit setting bit 0 in NB_CFG_Q_F1000_800 to use 1 GHz HT\n");
+		reg8 |= 0x1;
+		pci_write_config8(rs690_f0, 0x9c, reg8);
+	} else if ((k8_ht_freq != 0x6) && (k8_ht_freq != 0xf) && (reg8 & 0x1)) {
+		printk_info("rs690_htinit clearing bit 0 in NB_CFG_Q_F1000_800 to not use 1 GHz HT\n");
+		reg8 &= ~0x1;
+		pci_write_config8(rs690_f0, 0x9c, reg8);
+	}
 }
 
 /*******************************************************
@@ -462,7 +479,6 @@ static void rs690_early_setup()
 		break;
 	}
 
-	rs690_htinit();
 	k8_optimization();
 	rs690_por_init(nb_dev);
 }

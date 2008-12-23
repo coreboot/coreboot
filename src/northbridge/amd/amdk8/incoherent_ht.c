@@ -24,13 +24,13 @@
 	#define K8_ALLOCATE_MMIO_RANGE 0
 #endif
 
+#if CONFIG_USE_PRINTK_IN_CAR == 0
+#error This file needs CONFIG_USE_PRINTK_IN_CAR
+#endif
+
 static inline void print_linkn_in (const char *strval, uint8_t byteval)
 {
-#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("%s%02x\r\n", strval, byteval);
-#else
-	print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
-#endif
 }
 
 static uint8_t ht_lookup_capability(device_t dev, uint16_t val)
@@ -131,6 +131,7 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 	uint32_t id;
 
 	freq_cap = pci_read_config16(dev, pos);
+	printk_spew("pos=0x%x, unfiltered freq_cap=0x%x\r\n", pos, freq_cap);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
 	id = pci_read_config32(dev, 0);
@@ -160,6 +161,9 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 	#endif
 	}
 
+	printk_spew("pos=0x%x, filtered freq_cap=0x%x\r\n", pos, freq_cap);
+	//printk_spew("capping to 800/600/400/200 MHz\r\n");
+	//freq_cap &= 0x3f;
 	return freq_cap;
 }
 
@@ -220,12 +224,14 @@ static int ht_optimize_link(
 	int needs_reset;
 	/* Set link width and frequency */
 
+	printk_spew("entering ht_optimize_link\r\n");
 	/* Initially assume everything is already optimized and I don't need a reset */
 	needs_reset = 0;
 
 	/* Get the frequency capabilities */
 	freq_cap1 = ht_read_freq_cap(dev1, pos1 + LINK_FREQ_CAP(offs1));
 	freq_cap2 = ht_read_freq_cap(dev2, pos2 + LINK_FREQ_CAP(offs2));
+	printk_spew("freq_cap1=0x%x, freq_cap2=0x%x\r\n", freq_cap1, freq_cap2);
 
 	/* Calculate the highest possible frequency */
 	freq = log2(freq_cap1 & freq_cap2);
@@ -234,48 +240,58 @@ static int ht_optimize_link(
 	old_freq = pci_read_config8(dev1, pos1 + LINK_FREQ(offs1));
 	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
+	printk_spew("dev1 old_freq=0x%x, freq=0x%x, needs_reset=0x%0x\r\n", old_freq, freq, needs_reset);
 	old_freq = pci_read_config8(dev2, pos2 + LINK_FREQ(offs2));
 	old_freq &= 0x0f;
 	needs_reset |= old_freq != freq;
+	printk_spew("dev2 old_freq=0x%x, freq=0x%x, needs_reset=0x%0x\r\n", old_freq, freq, needs_reset);
 
-	/* Set the Calulcated link frequency */
+	/* Set the Calculated link frequency */
 	pci_write_config8(dev1, pos1 + LINK_FREQ(offs1), freq);
 	pci_write_config8(dev2, pos2 + LINK_FREQ(offs2), freq);
 
 	/* Get the width capabilities */
 	width_cap1 = ht_read_width_cap(dev1, pos1 + LINK_WIDTH(offs1));
 	width_cap2 = ht_read_width_cap(dev2, pos2 + LINK_WIDTH(offs2));
+	printk_spew("width_cap1=0x%x, width_cap2=0x%x\r\n", width_cap1, width_cap2);
 
 	/* Calculate dev1's input width */
 	ln_width1 = link_width_to_pow2[width_cap1 & 7];
 	ln_width2 = link_width_to_pow2[(width_cap2 >> 4) & 7];
+	printk_spew("dev1 input ln_width1=0x%x, ln_width2=0x%x\r\n", ln_width1, ln_width2);
 	if (ln_width1 > ln_width2) {
 		ln_width1 = ln_width2;
 	}
 	width = pow2_to_link_width[ln_width1];
+	printk_spew("dev1 input width=0x%x\r\n", width);
 	/* Calculate dev1's output width */
 	ln_width1 = link_width_to_pow2[(width_cap1 >> 4) & 7];
 	ln_width2 = link_width_to_pow2[width_cap2 & 7];
+	printk_spew("dev1 output ln_width1=0x%x, ln_width2=0x%x\r\n", ln_width1, ln_width2);
 	if (ln_width1 > ln_width2) {
 		ln_width1 = ln_width2;
 	}
 	width |= pow2_to_link_width[ln_width1] << 4;
+	printk_spew("dev1 input|output width=0x%x\r\n", width);
 
 	/* See if I am changing dev1's width */
 	old_width = pci_read_config8(dev1, pos1 + LINK_WIDTH(offs1) + 1);
 	old_width &= 0x77;
 	needs_reset |= old_width != width;
+	printk_spew("old dev1 input|output width=0x%x\r\n", width);
 
 	/* Set dev1's widths */
 	pci_write_config8(dev1, pos1 + LINK_WIDTH(offs1) + 1, width);
 
 	/* Calculate dev2's width */
 	width = ((width & 0x70) >> 4) | ((width & 0x7) << 4);
+	printk_spew("dev2 input|output width=0x%x\r\n", width);
 
 	/* See if I am changing dev2's width */
 	old_width = pci_read_config8(dev2, pos2 + LINK_WIDTH(offs2) + 1);
 	old_width &= 0x77;
 	needs_reset |= old_width != width;
+	printk_spew("old dev2 input|output width=0x%x\r\n", width);
 
 	/* Set dev2's widths */
 	pci_write_config8(dev2, pos2 + LINK_WIDTH(offs2) + 1, width);
@@ -966,12 +982,16 @@ static int optimize_link_incoherent_ht(struct sys_info *sysinfo)
 
 	unsigned link_pair_num = sysinfo->link_pair_num;
 
+	printk_spew("entering optimize_link_incoherent_ht\r\n");
+	printk_spew("sysinfo->link_pair_num=0x%x\r\n", link_pair_num);
 	for(i=0; i< link_pair_num; i++) {
 		struct link_pair_st *link_pair= &sysinfo->link_pair[i];
 		reset_needed |= ht_optimize_link(link_pair->udev, link_pair->upos, link_pair->uoffs, link_pair->dev, link_pair->pos, link_pair->offs);
+		printk_spew("after ht_optimize_link for link pair %d, reset_needed=0x%x\r\n", i, reset_needed);
 	}
 
 	reset_needed |= optimize_link_read_pointers_chain(sysinfo->ht_c_num);
+	printk_spew("after optimize_link_read_pointers_chain, reset_needed=0x%x\r\n", reset_needed);
 
 	return reset_needed;
 

@@ -28,6 +28,7 @@ config BOARD_JETWAY_J7F2
 	select NORTHBRIDGE_VIA_CN700
 	select SOUTHBRIDGE_VIA_VT8237
 	select SUPERIO_FINTEK_F71805F
+	select PIRQ_TABLE
 	help
 	  Jetway J7F2-Series board.
 endchoice

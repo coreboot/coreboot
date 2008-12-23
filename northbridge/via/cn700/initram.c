@@ -232,11 +232,11 @@ void sdram_set_registers(struct board_info *dev)
 	 * TODO: #if and option in Kconfig
 	 */
 	/* Set WR=5 and RFC */
-	//pci_conf1_write_config8(dev->d0f3, 0x61, 0x94);
+	pci_conf1_write_config8(dev->d0f3, 0x61, 0x94);
 	/* Set CAS=5 */
-	//pci_conf1_write_config8(dev->d0f3, 0x62, 0x7a);
-	//pci_conf1_write_config8(dev->d0f3, 0x63, 0x00);
-	//pci_conf1_write_config8(dev->d0f3, 0x64, 0x88);
+	pci_conf1_write_config8(dev->d0f3, 0x62, 0x7a);
+	pci_conf1_write_config8(dev->d0f3, 0x63, 0x00);
+	pci_conf1_write_config8(dev->d0f3, 0x64, 0x88);
 
 	/* Set to DDR2 sdram, BL=8 (0xc8, 0xc0 for BL=4) */
 	pci_conf1_write_config8(dev->d0f3, 0x6c, 0xc8);
@@ -404,7 +404,7 @@ static void do_tras_cas(struct board_info *dev, int i, int ram_cycle)
 	spd_data = check_timing(spd_data, 5, 20);
 
 	reg8 = pci_conf1_read_config8(dev->d0f3, 0x62);
-	if ((spd_data - 10) > (reg8 >> 4))
+	if ((spd_data - 5) > (reg8 >> 4))
 	{
 		reg8 &= 0x0f;
 		reg8 |= ((spd_data -10) << 4);

@@ -38,14 +38,14 @@ void vt8237_enable(struct device *dev)
 	const u8 func = dev->path.pci.devfn & 0x7;
 	const u8 device = dev->path.pci.devfn >> 3;
 	const int d16_index[6] = {12, 13, 10, 8, 9, 7};
-	
+
 
 	printk(BIOS_DEBUG, "Enabling/Disabling device 0x%x function 0x%x.\n",
 							device, func);
 
 	if(dev->id.pci.vendor != PCI_VENDOR_ID_VIA)
 		return;
-	
+
 	lpc_dev = dev_find_slot(0, PCI_BDF(0, 17, 0));
 	sb_fn_ctrl = pci_read_config8(lpc_dev, 0x50) << 8;
 	sb_fn_ctrl |= pci_read_config8(lpc_dev, 0x51);

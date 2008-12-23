@@ -155,8 +155,9 @@ u8 smbus_read_byte(u16 dimm, u8 offset, u16 smbus_io_base)
  */
 void enable_smbus(u16 smbus_io_base)
 {
-	u32 dev;
+	u32 dev = PCI_BDF(0, 17, 0);
 
+#if 0
 	/* Power management controller */
 	pci_conf1_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_LPC, 
 				&dev);
@@ -178,6 +179,7 @@ void enable_smbus(u16 smbus_io_base)
 		printk(BIOS_DEBUG, "VT8237R Power management controller found "
 						"at 0x%x\n", dev);
 	}
+#endif
 
 	/* 7 = SMBus Clock from RTC 32.768KHz
 	 * 5 = Internal PLL reset from susp
@@ -201,37 +203,15 @@ void enable_smbus(u16 smbus_io_base)
 	inb(smbus_io_base + SMBHSTCTL);
 }
 
-/* The change from RAID to SATA in phase6 causes coreboot to lock up, so do it
- * as early as possible. Move back to stage2 later */ 
-static void sata_stage1(void)
-{
-	u32 dev;
-	u8 reg;
-
-	pci_conf1_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_SATA, &dev);
-
-	printk(BIOS_DEBUG, "Configuring VIA SATA controller\n");
-
-	/* Class IDE Disk */
-	reg = pci_conf1_read_config8(dev, SATA_MISC_CTRL);
-	reg &= 0x7f;		/* Sub Class Write Protect off */
-	pci_conf1_write_config8(dev, SATA_MISC_CTRL, reg);
-
-	/* Change the device class to SATA from RAID. */
-	pci_conf1_write_config8(dev, PCI_CLASS_DEVICE, 0x1);
-	reg |= 0x80;		/* Sub Class Write Protect on */
-	pci_conf1_write_config8(dev, SATA_MISC_CTRL, reg);
-}
-
 void vt8237_stage1(u16 smbus_io_base)
 {
-	u32 dev;
-	u32 ide_dev;
+	u32 dev = PCI_BDF(0, 17, 0);
+	//u32 ide_dev;
 	
 	printk(BIOS_DEBUG, "Doing vt8237r/s stage1 init\n");
 
-	pci_conf1_find_device(0x1106, 0x3227, &dev);
-	pci_conf1_find_device(0x1106, 0x0571, &ide_dev);
+	//pci_conf1_find_device(0x1106, 0x3227, &dev);
+	//pci_conf1_find_device(0x1106, 0x0571, &ide_dev);
 	
 	/* Disable GP3 timer, or else the system reboots when it runs out.
 	 * Datasheets say this is disabled by default, they're wrong. */
@@ -248,12 +228,12 @@ void vt8237_stage1(u16 smbus_io_base)
 
 	pci_conf1_write_config8(dev, 0x50, 0x80);//disable mc97
 	pci_conf1_write_config8(dev, 0x51, 0x1f);
-	pci_conf1_write_config8(dev, 0x58, 0x60);
-	pci_conf1_write_config8(dev, 0x59, 0x80);
-	pci_conf1_write_config8(dev, 0x5b, 0x08);
+	//pci_conf1_write_config8(dev, 0x58, 0x60);
+	//pci_conf1_write_config8(dev, 0x59, 0x80);
+	//pci_conf1_write_config8(dev, 0x5b, 0x08);
 
 	/* Make it respond to IO space */
-	pci_conf1_write_config8(ide_dev, 0x04, 0x07);
+	//pci_conf1_write_config8(ide_dev, 0x04, 0x07);
 
 	/* Compatibility mode addresses */
 	//pci_conf1_write_config32(ide_dev, 0x10, 0);
@@ -264,9 +244,9 @@ void vt8237_stage1(u16 smbus_io_base)
 	/* Native mode base address */
 	//pci_conf1_write_config32(ide_dev, 0x20, BUS_MASTER_ADDR | 1);
 
-	pci_conf1_write_config8(ide_dev, 0x40, 0x3);//was 0x3
-	pci_conf1_write_config8(ide_dev, 0x41, 0xf2);
-	pci_conf1_write_config8(ide_dev, 0x42, 0x09);
+	//pci_conf1_write_config8(ide_dev, 0x40, 0x3);//was 0x3
+	//pci_conf1_write_config8(ide_dev, 0x41, 0xf2);
+	//pci_conf1_write_config8(ide_dev, 0x42, 0x09);
 
 	//sata_stage1();
 	enable_smbus(smbus_io_base);

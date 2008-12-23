@@ -43,8 +43,8 @@
 /{
 	mainboard_vendor = "Jetway";
 	mainboard_name = "J7F2";
-	mainboard_pci_subsystem_vendor = "0xdead"; /* TODO */
-	mainboard_pci_subsystem_device = "0xbeef"; /* TODO */
+	subsystem_vendor = "0xdead"; /* TODO */
+	subsystem_device = "0xbeef"; /* TODO */
 	cpus {
 		/config/("arch/x86/via/c7.dts");
 	};
@@ -66,23 +66,33 @@
 		/* How do I represent the bus and pci devices hanging here? */
 		pci@1,0 {
 			/config/("northbridge/via/cn700/pci.dts");
-			pci@0,1 {
+			pci@0,0 {
 				/config/("northbridge/via/cn700/vga.dts");
 			};
 		};
-		pci@f,0 {};
-		pci@10,0 {
+		pci@f,0 {
 			/config/("southbridge/via/vt8237/sata.dts");
 		};
-		pci@10,1 {
+		pci@f,1 {
 			/config/("southbridge/via/vt8237/ide.dts");
+			ide0_enable = "1";
+			ide1_enable = "0";
+			ide0_80pin_cable = "1";
+			ide1_80pin_cable = "0";
 		};
+		pci@10,0 { };
+		pci@10,1 { };
+		pci@10,2 { };
+		pci@10,3 { };
+		pci@10,4 { };
 		pci@11,0 {
 			/config/("southbridge/via/vt8237/lpc.dts");
+			ioport@4e {
+				/config/("superio/fintek/f71805f/dts");
+				com2enable = "1";
+			};
 		};
-		ioport@4e {
-			/config/("superio/fintek/f71805f/dts");
-			com2enable = "1";
-		};
+		pci@11,5 { };
+		pci@12,0 { };
 	};
 };

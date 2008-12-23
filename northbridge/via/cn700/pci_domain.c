@@ -86,7 +86,7 @@ static void cn700_pci_domain_set_resources(struct device *dev)
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev_find_pci_device(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_CN700_MEMCTRL, 0);
-	
+
 
 	/*
 	 * Once the register value is not zero, the RAM size is
@@ -108,11 +108,12 @@ static void cn700_pci_domain_set_resources(struct device *dev)
 	}
 	/* Report the memory regions. */
 	idx = 10;
-	/* TODO: Hole needed? */
-	ram_resource(dev, idx++, 0, 640);	/* First 640k */
+
+	ram_resource(dev, idx++, 0, 640);
 	/* Leave a hole for VGA, 0xa0000 - 0xc0000 */
-	ram_resource(dev, idx++, 768,
-		     (tolmk - 768 - (CONFIG_CN700_VIDEO_MB * 1024)));
+	/* TODO: shadow ram needs to be controlled via dts */
+	ram_resource(dev, idx++, 1024,
+		     (tolmk - 1024 - (CONFIG_CN700_VIDEO_MB * 1024)));
 	phase4_assign_resources(&dev->link[0]);
 }
 
@@ -129,5 +130,3 @@ struct device_operations cn700_north_domain = {
 	.phase6_init			= 0,
 	.ops_pci_bus			= &pci_cf8_conf1,
 };
-
-

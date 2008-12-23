@@ -34,12 +34,12 @@ void sdram_set_spd_registers(struct board_info *);
 void ddr2_sdram_enable(struct board_info *);
 
 /* VGA stuff */
-#define SR_INDEX	0x3c4
-#define SR_DATA		0x3c5
-#define CRTM_INDEX	0x3b4
-#define CRTM_DATA	0x3b5
-#define CRTC_INDEX	0x3d4
-#define CRTC_DATA	0x3d5
+#define SR_INDEX		0x3c4
+#define SR_DATA			0x3c5
+#define CRTM_INDEX		0x3b4
+#define CRTM_DATA		0x3b5
+#define CRTC_INDEX		0x3d4
+#define CRTC_DATA		0x3d5
 
 /* Memory Controller Registers */
 #define RANK0_END		0x40

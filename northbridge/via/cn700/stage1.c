@@ -24,59 +24,6 @@
 #include <config.h>
 #include "cn700.h"
 
-static void enable_shadow_ram(void) 
-{
-	u8 shadowreg;
-
-	printk(BIOS_DEBUG, "Enabling shadow ram\n");
-	/* Enable shadow ram as normal dram */
-	/* 0xc0000-0xcffff */
-	pci_conf1_write_config8(PCI_BDF(0, 0, 3), 0x80, 0xff);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x61, 0xff);
-	/* 0xd0000-0xdffff */
-	pci_conf1_write_config8(PCI_BDF(0, 0, 3), 0x81, 0xff);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x62, 0xff);
-	/* 0xe0000-0xeffff */
-	pci_conf1_write_config8(PCI_BDF(0, 0, 3), 0x82, 0xff);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x64, 0xff);
-
-	/* 0xf0000-0xfffff */
-	shadowreg = pci_conf1_read_config8(PCI_BDF(0, 0, 3), 0x83);
-	shadowreg |= 0x30;
-	pci_conf1_write_config8(PCI_BDF(0, 0, 3), 0x83, shadowreg);
-
-	/* Do it again for the vlink controller */
-	shadowreg = pci_conf1_read_config8(PCI_BDF(0, 0, 7), 0x63);
-	shadowreg |= 0x30;
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x63, shadowreg);
-}
-
-static void enable_vlink(void)
-{
-	printk(BIOS_DEBUG, "Enabling Via V-Link\n");
-
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x42, 0x88);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x45, 0x44);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x46, 0x00);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x47, 0x04);
-	//pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x48, 0x13);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x4b, 0x80);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x4c, 0x82);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x4d, 0x44);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x4e, 0x00);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x4f, 0x01);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0xb4, 0x35);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0xb5, 0x66);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0xb6, 0x66);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0xb7, 0x64);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0xb8, 0x45);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0xb9, 0x98);
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0xba, 0x77);
-
-	/* This has to be done last, I think */
-	pci_conf1_write_config8(PCI_BDF(0, 0, 7), 0x48, 0x13);
-}
-
 /**
  * Configure the bus between the cpu and the northbridge. This might be able to 
  * be moved to post-ram code in the future. For the most part, these registers
@@ -92,6 +39,7 @@ static void enable_vlink(void)
 static void c7_cpu_setup(void)
 {
 	u32 dev = PCI_BDF(0, 0, 2);
+	u8 reg8;
 
 	/* Host bus interface registers (D0F2 0x50-0x67) */
 	/* Request phase control */
@@ -114,6 +62,13 @@ static void c7_cpu_setup(void)
 	 *      110/111 : Reserved
 	 * bits 4:0: Reserved
 	 */
+
+	reg8 = pci_conf1_read_config8(dev, 0x57);
+	reg8 &= (0x7 << 5);
+	//reg8 |= (0x4 << 5);
+	reg8 |= (0x3 << 5);
+	pci_conf1_write_config8(dev, 0x57, reg8);
+	
 	/* CPU Miscellaneous Control */
 	pci_conf1_write_config8(dev, 0x59, 0x44);
 	/* Write Policy */
@@ -179,7 +134,5 @@ void cn700_stage1(void)
 	pci_conf1_write_config8(PCI_BDF(0, 1, 0), 0x19, 0x1);
 	pci_conf1_write_config8(PCI_BDF(0, 1, 0), 0x1a, 0x1);
 
-	enable_shadow_ram();
-	enable_vlink();
 	c7_cpu_setup();
 }

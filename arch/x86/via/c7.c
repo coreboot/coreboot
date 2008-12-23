@@ -89,7 +89,7 @@ static void set_c7_speed(int model) {
 		    (int)((msr.lo >> 8) & 0xff),
 		    (int)((msr.hi >> 24) & 0xff), (int)((msr.hi >> 8) & 0xff));
 
-	printk(BIOS_DEBUG, " msr.lo = %x\n", msr.lo);
+	printk(BIOS_DEBUG, " msr.lo = %x, msr.hi = %x\n", msr.lo, msr.hi);
 
 	/* Wait while CPU is busy */
 	cnt = 0;
@@ -109,7 +109,7 @@ static void set_c7_speed(int model) {
 	new = current;
 	switch (model) {
 	case 10:		// model A
-		for (i = 0; i < ARRAY_SIZE(c7a_speed_translation); i += 2) {
+		for (i = 0; i <= ARRAY_SIZE(c7a_speed_translation); i += 2) {
 			if ((c7a_speed_translation[i] == current) &&
 			    ((c7a_speed_translation[i + 1] & 0xff00) ==
 			     (msr.hi & 0xff00))) {
@@ -118,7 +118,7 @@ static void set_c7_speed(int model) {
 		}
 		break;
 	case 13:		// model D
-		for (i = 0; i < ARRAY_SIZE(c7d_speed_translation); i += 2) {
+		for (i = 0; i <= ARRAY_SIZE(c7d_speed_translation); i += 2) {
 			if ((c7d_speed_translation[i] == current) &&
 			    ((c7d_speed_translation[i + 1] & 0xff00) ==
 			     (msr.hi & 0xff00))) {
@@ -203,8 +203,8 @@ static void c7_init(struct device * dev)
 
 	/* Set up Memory Type Range Registers */
 	//these don't exist yet
-	//x86_setup_mtrrs(36);
-	//x86_mtrr_check();
+	x86_setup_mtrrs(36);
+	x86_mtrr_check();
 
 	/* Enable the local cpu apics */
 	//setup_lapic();

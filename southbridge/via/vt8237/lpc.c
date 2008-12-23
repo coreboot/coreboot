@@ -230,44 +230,34 @@ static void vt8237_common_init(struct device *dev)
 {
 	u8 enables, byte;
 
+	/* Enable the RTC. */
+	byte = pci_read_config8(dev, 0x51);
+	byte |= (1 << 3);
+	pci_write_config8(dev, 0x51, byte);
+
 	/* Enable addr/data stepping. */
 	byte = pci_read_config8(dev, PCI_COMMAND);
 	byte |= PCI_COMMAND_WAIT;
 	pci_write_config8(dev, PCI_COMMAND, byte);
 
 	/* Enable the internal I/O decode. */
-	enables = pci_read_config8(dev, 0x6C);
-	enables |= 0x80;
-	pci_write_config8(dev, 0x6C, enables);
-
-	/*
-	 * ROM decode
-	 * bit range
-	 *   7 000E0000h-000EFFFFh
-	 *   6 FFF00000h-FFF7FFFFh
-	 *   5 FFE80000h-FFEFFFFFh
-	 *   4 FFE00000h-FFE7FFFFh
-	 *   3 FFD80000h-FFDFFFFFh
-	 *   2 FFD00000h-FFD7FFFFh
-	 *   1 FFC80000h-FFCFFFFFh
-	 *   0 FFC00000h-FFC7FFFFh
-	 * So 0x7f here sets ROM decode to FFC00000-FFFFFFFF or 4Mbyte.
-	 */
-	pci_write_config8(dev, 0x41, 0x7f);
+	byte = pci_read_config8(dev, 0x6C);
+	byte |= 0x80;
+	pci_write_config8(dev, 0x6C, byte);
 
 	/*
 	 * Set bit 6 of 0x40 (I/O recovery time).
 	 * IMPORTANT FIX - EISA = ECLR reg at 0x4d0! Decoding must be on so
 	 * that PCI interrupts can be properly marked as level triggered.
 	 */
-	enables = pci_read_config8(dev, 0x40);
-	enables |= 0x44;
-	pci_write_config8(dev, 0x40, enables);
+	byte = pci_read_config8(dev, 0x40);
+	byte |= 0x44;
+	pci_write_config8(dev, 0x40, byte);
 
 	/* Line buffer control */
-	enables = pci_read_config8(dev, 0x42);
-	enables |= 0xf8;
-	pci_write_config8(dev, 0x42, enables);
+	byte = pci_read_config8(dev, 0x42);
+	byte |= 0xf8;
+	pci_write_config8(dev, 0x42, byte);
 
 	/* Delay transaction control */
 	pci_write_config8(dev, 0x43, 0xb);
@@ -294,16 +284,14 @@ static void vt8237_common_init(struct device *dev)
 	/* Enable serial IRQ, 6PCI clocks. */
 	pci_write_config8(dev, 0x52, 0x9);
 
-	/* Power management setup */
+	/* Power Management setup. */
 	setup_pm(dev);
-
-	/* Enable the RTC. */
-	enables = pci_read_config8(dev, 0x51);
-	enables |= (1 << 3);
-	pci_write_config8(dev, 0x51, enables);
 
 	/* Start the RTC. */
 	rtc_init(0);
+
+	/* Initialize ISA DMA. */
+	isa_dma_init();
 }
 
 static void vt8237_read_resources(struct device *dev)
@@ -314,6 +302,8 @@ static void vt8237_read_resources(struct device *dev)
 	struct resource *res;
 
 	pci_dev_read_resources(dev);
+
+#ifdef VT8237_APIC_FIXED
 	/* Fixed APIC resource */
 	res = new_resource(dev, 0x44);
 	/* Possible breakage */
@@ -324,6 +314,7 @@ static void vt8237_read_resources(struct device *dev)
 	res->gran = 8;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+#endif
 }
 
 /**
@@ -342,10 +333,10 @@ static void init_keyboard(struct device *dev)
 	struct southbridge_via_vt8237_lpc_config *sb =
 		(struct southbridge_via_vt8237_lpc_config *)dev->device_configuration;
 
-	u8 regval;
-
 	if (sb->enable_keyboard)
 	{
+		u8 regval;
+
 		/* Enable PS/2 mouse, Keyboard, and KBC Config */
 		regval = pci_read_config8(dev, 0x51);
 		regval |= (1 << 2)|(1 << 1)|1;
@@ -359,7 +350,7 @@ static void southbridge_init_common(struct device *dev)
 {
 	vt8237_common_init(dev);
 	pci_routing_fixup(dev);
-	setup_ioapic(dev);
+	//setup_ioapic(dev);
 	setup_i8259();
 	init_keyboard(dev);
 }
@@ -448,7 +439,7 @@ struct device_operations vt8237r_lpc = {
 		{.pci = {.vendor = PCI_VENDOR_ID_VIA,
 				.device = PCI_DEVICE_ID_VIA_VT8237R_LPC}}},
 	.constructor			= default_device_constructor,
-	.phase3_chip_setup_dev		= vt8237r_init,
+	//.phase3_chip_setup_dev		= vt8237r_init,
 	.phase3_scan			= scan_static_bus,
 	.phase4_read_resources		= vt8237_read_resources,
 	.phase4_set_resources		= pci_set_resources,

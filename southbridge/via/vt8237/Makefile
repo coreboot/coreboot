@@ -25,4 +25,9 @@ STAGE2_CHIPSET_SRC += $(src)/southbridge/via/vt8237/vt8237.c \
 			$(src)/southbridge/via/vt8237/ide.c \
 			$(src)/southbridge/via/vt8237/sata.c
 
+ifeq ($(CONFIG_PIRQ_TABLE),y)
+STAGE2_CHIPSET_SRC += $(src)/southbridge/intel/i82801gx/irq_tables.c
+endif
+
+
 endif

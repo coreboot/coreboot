@@ -285,7 +285,7 @@ typedef struct acpi_facs {
 	u32 x_firmware_waking_vector_l;
 	u32 x_firmware_waking_vector_h;
 	u8 version;
-	u8 resv[33];
+	u8 resv[31];
 } __attribute__ ((packed)) acpi_facs_t;
 
 /* These are implemented by the target port */

@@ -299,7 +299,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_fid_change();
 	print_debug("after enable_fid_change\r\n");
 
-	/* FIXME does not work yet */
 	init_fidvid_bsp(bsp_apicid);
 
 	/* Stop the APs so we can start them later in init. */

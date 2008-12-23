@@ -6,7 +6,7 @@
  *
  * Copyright (C) 2004 Stefan Reinauer <stepan@openbios.org>
  * Copyright (C) 2005 Nick Barker <nick.barker9@btinternet.com>
- * Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2007, 2008 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License v2 as published by
@@ -32,6 +32,7 @@
 #include <../../../southbridge/via/k8t890/k8t890.h>
 
 extern unsigned char AmlCode[];
+extern unsigned char AmlCode_ssdt[];
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -91,6 +92,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_madt_t *madt;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
+	acpi_slit_t *slit;
+	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 
 	/* Align ACPI tables to 16 byte. */
@@ -113,6 +116,10 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* We explicitly add these tables later on: */
 	printk_debug("ACPI:     * FACS\n");
+
+	/* we should align FACS to 64B as per ACPI specs */
+
+	current = ALIGN(current, 64);
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
@@ -157,6 +164,24 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_srat(srat);
 	current += srat->header.length;
 	acpi_add_table(rsdt, srat);
+
+	/* SLIT */
+        printk_debug("ACPI:    * SLIT\n");
+        slit = (acpi_slit_t *) current;
+        acpi_create_slit(slit);
+        current+=slit->header.length;
+        acpi_add_table(rsdt,slit);
+
+	/* SSDT */
+	printk_debug("ACPI:    * SSDT\n");
+	ssdt = (acpi_header_t *)current;
+	current += ((acpi_header_t *)AmlCode_ssdt)->length;
+	memcpy((void *)ssdt, (void *)AmlCode_ssdt, ((acpi_header_t *)AmlCode_ssdt)->length);
+	update_ssdt((void*)ssdt);
+        /* recalculate checksum */
+        ssdt->checksum = 0;
+        ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
+	acpi_add_table(rsdt,ssdt);
 
 	printk_info("ACPI: done.\n");
 	return current;

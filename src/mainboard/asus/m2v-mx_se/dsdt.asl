@@ -22,6 +22,9 @@
 
 DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 {
+	 Include ("amdk8_util.asl")
+
+
 	/* Define the main processor.*/
 	Scope (\_PR)
 	{
@@ -47,9 +50,45 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			Name (_ADR, 0x00)
 			Name (_UID, 0x00)
 			Name (_BBN, 0x00)
+			
+		    External (BUSN)
+		    External (MMIO)
+		    External (PCIO)
+		    External (SBLK)
+		    External (TOM1)
+		    External (HCLK)
+		    External (SBDN)
+		    External (HCDN)
+
+		    Method (_CRS, 0, NotSerialized)
+			{
+			    Name (BUF0, ResourceTemplate ()
+			    {
+				IO (Decode16,
+				0x0CF8,             // Address Range Minimum
+				0x0CF8,             // Address Range Maximum
+				0x01,               // Address Alignment
+				0x08,               // Address Length
+				)
+				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
+				0x0000,             // Address Space Granularity
+				0x0000,             // Address Range Minimum
+				0x0CF7,             // Address Range Maximum
+				0x0000,             // Address Translation Offset
+				0x0CF8,             // Address Length
+				,, , TypeStatic)
+			    })
+				/* Methods bellow use SSDT to get actual MMIO regs
+				   The IO ports are from 0xd00, optionally an VGA,
+				   otherwise the info from MMIO is used.
+				 */
+				Concatenate (\_SB.GMEM (0x00, \_SB.PCI0.SBLK), BUF0, Local1)
+				Concatenate (\_SB.GIOR (0x00, \_SB.PCI0.SBLK), Local1, Local2)
+				Concatenate (\_SB.GWBN (0x00, \_SB.PCI0.SBLK), Local2, Local3)
+				Return (Local3) 
+			}
 
 			/* PCI Routing Table */
-			/* aaa */
 			Name (_PRT, Package () {
 				Package (0x04) { 0x000F0000, 0x01, 0x00, 0x15 }, /* 0xf SATA IRQ 21 */
 				Package (0x04) { 0x000F0001, 0x00, 0x00, 0x14 }, /* 0xf Native IDE IRQ 20 */

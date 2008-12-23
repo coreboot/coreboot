@@ -75,10 +75,10 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->day_alrm = 0x7d;
 	fadt->mon_alrm = 0x7e;
 	fadt->century = 0x32;
-	/* fixme 5 - 10 */
-	fadt->iapc_boot_arch = 0x1;
+	/* We have legacy devices, 8042, VGA is ok to probe, MSI are not supported */
+	fadt->iapc_boot_arch = 0xb;
 	/* fixme */
-	fadt->flags = 0x4a5;
+	fadt->flags = 0xa5;
 
 	fadt->reset_reg.space_id = 0;
 	fadt->reset_reg.bit_width = 0;

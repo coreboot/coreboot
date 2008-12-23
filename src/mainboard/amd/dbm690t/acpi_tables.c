@@ -133,7 +133,7 @@ u32 pstates_algorithm(acpi_header_t * dsdt)
 	u32 *v;
 	struct cpuid_result cpuid1;
 
-	typedef struct power_limit_encoding {
+	struct power_limit_encoding {
 		u8 socket_type;
 		u8 cmp_cap;
 		u8 pwr_lmt;

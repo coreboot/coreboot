@@ -82,7 +82,7 @@ void disable_car(void)
 	"	andl    $0x9fffffff,%%eax	\n"
 	"	movl    %%eax, %%cr0		\n"
 
-	"	wbinvd				\n"
+	"	invd				\n"
 
 	"	call stage1_phase3		\n"
 	:: [newesp] "i" (newlocation),

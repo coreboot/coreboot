@@ -29,6 +29,7 @@ ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_YABEL),y)
 BIOSEMU_SRC  = biosemu.c debug.c device.c mem.c io.c interrupt.c 
 #TODO: add vbe.c, currently not needed...
 #BIOSEMU_SRC +=vbe.c
+BIOSEMU_SRC +=pmm.c
 #PH: TODO: remove the compat files??
 BIOSEMU_SRC  += compat/functions.c
 X86EMU_INCLUDE += -I $(src)/util/x86emu/yabel

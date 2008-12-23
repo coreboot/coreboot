@@ -16,6 +16,7 @@
 #include "mem.h"
 #include "device.h"
 #include "debug.h"
+#include "pmm.h"
 
 #include <x86emu/x86emu.h>
 #include <x86emu/prim_ops.h>
@@ -538,6 +539,13 @@ handleInterrupt(int intNum)
 	case 0x1a:
 		// PCI BIOS Interrupt
 		handleInt1a();
+		int_handled = 1;
+		break;
+	case PMM_INT_NUM:
+		/* the selfdefined PMM INT number, this is called by the code in PMM struct, it 
+		 * is handled by pmm_handleInt()
+		 */
+		pmm_handleInt();
 		int_handled = 1;
 		break;
 	default:

@@ -26,6 +26,7 @@
 #include "mem.h"
 #include "interrupt.h"
 #include "device.h"
+#include "pmm.h"
 
 #include <rtas.h>
 
@@ -56,7 +57,9 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	u8 *rom_image;
 	int i = 0;
 #ifdef DEBUG
-	debug_flags = DEBUG_PRINT_INT10 | DEBUG_PNP | DEBUG_PMM | DEBUG_INTR;// | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;// | DEBUG_TRACE_X86EMU | DEBUG_JMP;
+	debug_flags = DEBUG_PRINT_INT10 | DEBUG_PNP | DEBUG_PMM | DEBUG_INTR;
+		// | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;
+		// | DEBUG_TRACE_X86EMU | DEBUG_JMP;
 #endif
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",
@@ -209,6 +212,20 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	X86EMU_setupPioFuncs(&my_pio_funcs);
 	X86EMU_setupMemFuncs(&my_mem_funcs);
 
+	//setup PMM struct in BIOS_DATA_SEGMENT, offset 0x0
+	u8 pmm_length = pmm_setup(BIOS_DATA_SEGMENT, 0x0);	
+	if (pmm_length <= 0) {
+		printf ("\nYABEL: Warning: PMM Area could not be setup. PMM not available (%x)\n",
+		     pmm_length);
+		return 0;
+	} else {
+		CHECK_DBG(DEBUG_PMM) {
+			/* test the PMM */
+			pmm_test();
+			/* and clean it again by calling pmm_setup... */
+			pmm_length = pmm_setup(BIOS_DATA_SEGMENT, 0x0);
+		}
+	}
 	// setup the CPU
 	M.x86.R_AH = bios_device.bus;
 	M.x86.R_AL = bios_device.devfn;
@@ -248,8 +265,9 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	X86EMU_exec();
 	DEBUG_PRINTF("done\n");
 
-	// according to PNP BIOS Spec, Option ROMs should upon exit, return some boot device status in
-	// AX (see PNP BIOS Spec Section 3.3
+	/* According to the PNP BIOS Spec, Option ROMs should upon exit, return
+	 * some boot device status in AX (see PNP BIOS Spec Section 3.3
+	 */
 	DEBUG_PRINTF_CS_IP("Option ROM Exit Status: %04x\n", M.x86.R_AX);
 #ifdef DEBUG
 	DEBUG_PRINTF("Exit Status Decode:\n");

@@ -19,7 +19,6 @@
 ##
 
 STAGE0_MAINBOARD_SRC :=  $(src)/lib/clog2.c \
-			$(src)/arch/x86/stage1_mtrr.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
 			$(src)/southbridge/via/vt8237/stage1.c \
 			$(src)/northbridge/via/cn700/stage1.c \

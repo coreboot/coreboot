@@ -191,6 +191,15 @@ config CARSIZE
 	help
 	  This option sets the size of the area used for CAR.
 
+config MTRR
+	bool
+	default n if CPU_AMD_GEODELX
+	default y if CPU_AMD_K8
+	default y if CPU_VIA_C7
+	default y if CPU_INTEL_CORE2
+	help
+	  This option indicates if a cpu has MTRR support.
+
 config CBMEMK
 	hex
 	default 0x1000 if CPU_I586

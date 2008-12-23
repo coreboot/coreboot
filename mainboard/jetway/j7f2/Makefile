@@ -23,7 +23,6 @@
 STAGE0_MAINBOARD_SRC := $(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
 			$(src)/northbridge/via/cn700/stage1.c \
 			$(src)/southbridge/via/vt8237/stage1.c \
-			$(src)/arch/x86/stage1_mtrr.c
 
 INITRAM_SRC =   	$(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/via/cn700/initram.c \

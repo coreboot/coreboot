@@ -107,7 +107,7 @@ struct node_core_id get_node_core_id(void);
 void set_var_mtrr_x(
         unsigned long reg, u32 base_lo, u32 base_hi, u32 size_lo, u32 size_hi, unsigned long type);
 void set_var_mtrr(
-	unsigned long reg, unsigned long base, unsigned long size, unsigned long type);
+	unsigned int reg, unsigned long basek, unsigned long sizek, unsigned long type, unsigned long address_bits);
 
 /* generic SMP functions required to be supported (even by non-SMP)
  */

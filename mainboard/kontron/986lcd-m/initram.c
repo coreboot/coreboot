@@ -157,7 +157,7 @@ static void rcba_config(void)
  */
 int main(void)
 {
-	int boot_mode;
+	int boot_mode = 0;
 	void i945_early_initialization(void);
 	void enable_smbus(void);
 	int fixup_i945_errata(void);

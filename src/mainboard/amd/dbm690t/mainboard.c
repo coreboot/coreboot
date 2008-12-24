@@ -25,6 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
+#include <../southbridge/amd/sb600/sb600.h>
 #include "chip.h"
 
 #define ADT7461_ADDRESS 0x4C
@@ -34,6 +35,8 @@
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 			       u8 val);
+extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type, 
+				uint64_t start, uint64_t size);
 #define ADT7461_read_byte(address) \
 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
 #define ARA_read_byte(address) \

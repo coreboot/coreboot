@@ -25,8 +25,9 @@
 #include <console/console.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/device.h>
+#include <../southbridge/amd/sb600/sb600.h>
 
-extern void pm_iowrite(u8 reg, u8 value);
 /*extern*/ u16 pm_base = 0x800;
 /* pm_base should be set in sb acpi */
 /* pm_base should be got from bar2 of rs690. Here I compact ACPI

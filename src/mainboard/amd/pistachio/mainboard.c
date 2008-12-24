@@ -25,19 +25,16 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
+#include <../southbridge/amd/sb600/sb600.h>
 #include "chip.h"
 
 #define ADT7475_ADDRESS 0x2E
 #define SMBUS_IO_BASE 0x1000
 
-extern u8 pm_ioread(u8 reg);
-extern void pm_iowrite(u8 reg, u8 value);
-extern u8 pm2_ioread(u8 reg);
-extern void pm2_iowrite(u8 reg, u8 value);
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 			       u8 val);
-extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type, 
+extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
 				uint64_t start, uint64_t size);
 
 #define ADT7475_read_byte(address) \
@@ -332,10 +329,10 @@ int add_mainboard_resources(struct lb_memory *mem)
 	/* UMA is removed from system memory in the northbridge code, but
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
-#if (CONFIG_GFXUMA == 1) 
-	printk_info("uma_memory_start=0x%x, uma_memory_size=0x%x \n", 
+#if (CONFIG_GFXUMA == 1)
+	printk_info("uma_memory_start=0x%x, uma_memory_size=0x%x \n",
 	uma_memory_start, uma_memory_size);
-	lb_add_memory_range(mem, LB_MEM_RESERVED, 
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_start, uma_memory_size);
 #endif
 }

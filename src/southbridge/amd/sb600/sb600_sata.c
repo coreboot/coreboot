@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +27,33 @@
 #include <arch/io.h>
 #include "sb600.h"
 
+int sata_drive_detect(int portnum, u16 iobar)
+{
+	u8 byte, byte2;
+	int i = 0;
+	outb(0xA0 + 0x10 * (portnum % 2), iobar + 0x6);
+	while (byte = inb(iobar + 0x6), byte2 = inb(iobar + 0x7),
+		(byte != (0xA0 + 0x10 * (portnum % 2))) ||
+		((byte2 & 0x88) != 0)) {
+		printk_spew("0x6=%x, 0x7=%x\n", byte, byte2);
+		if (byte != (0xA0 + 0x10 * (portnum % 2))) {
+			/* This will happen at the first iteration of this loop
+			 * if the first SATA port is unpopulated and the
+			 * second SATA port is poulated.
+			 */
+			printk_debug("drive no longer selected after %i ms, "
+				"retrying init\n", i * 10);
+			return 1;
+		} else
+			printk_spew("drive detection not yet completed, "
+				"waiting...\n");
+		mdelay(10);
+		i++;
+	}
+	printk_spew("drive detection done after %i ms\n", i * 10);
+	return 0;
+}
+
 static void sata_init(struct device *dev)
 {
 	u8 byte;
@@ -33,6 +61,7 @@ static void sata_init(struct device *dev)
 	u32 dword;
 	u8 *sata_bar5;
 	u16 sata_bar0, sata_bar1, sata_bar2, sata_bar3, sata_bar4;
+	int i, j;
 
 	struct southbridge_ati_sb600_config *conf;
 	conf = dev->chip_info;
@@ -62,12 +91,12 @@ static void sata_init(struct device *dev)
 	sata_bar3 = pci_read_config16(dev, 0x1C) & ~0x7;
 	sata_bar4 = pci_read_config16(dev, 0x20) & ~0x7;
 
-	/* printk_debug("sata_bar0=%x\n", sata_bar0); */	/* 3030 */
-	/* printk_debug("sata_bar1=%x\n", sata_bar1); */	/* 3070 */
-	/* printk_debug("sata_bar2=%x\n", sata_bar2); */	/* 3040 */
-	/* printk_debug("sata_bar3=%x\n", sata_bar3); */	/* 3080 */
-	/* printk_debug("sata_bar4=%x\n", sata_bar4); */	/* 3000 */
-	/* printk_debug("sata_bar5=%x\n", sata_bar5); */	/* e0309000 */
+	printk_spew("sata_bar0=%x\n", sata_bar0);	/* 3030 */
+	printk_spew("sata_bar1=%x\n", sata_bar1);	/* 3070 */
+	printk_spew("sata_bar2=%x\n", sata_bar2);	/* 3040 */
+	printk_spew("sata_bar3=%x\n", sata_bar3);	/* 3080 */
+	printk_spew("sata_bar4=%x\n", sata_bar4);	/* 3000 */
+	printk_spew("sata_bar5=%x\n", sata_bar5);	/* e0309000 */
 
 	/* Program the 2C to 0x43801002 */
 	dword = 0x43801002;
@@ -131,31 +160,36 @@ static void sata_init(struct device *dev)
 	dword |= 1 << 25;
 	pci_write_config32(dev, 0x40, dword);
 
-	/* Enable the I/O ,MM ,BusMaster access for SATA */
+	/* Enable the I/O, MM, BusMaster access for SATA */
 	byte = pci_read_config8(dev, 0x4);
 	byte |= 7 << 0;
 	pci_write_config8(dev, 0x4, byte);
 
-	/* RPR6.6 SATA drive detection. Currently we detect Primary Master Device only */
-	/* Use BAR5+0x1A8,BAR0+0x6 for Primary Slave */
-	/* Use BAR5+0x228,BAR0+0x6 for Secondary Master */
-	/* Use BAR5+0x2A8,BAR0+0x6 for Secondary Slave */
+	/* RPR6.6 SATA drive detection. */
+	/* Use BAR5+0x128,BAR0 for Primary Slave */
+	/* Use BAR5+0x1A8,BAR0 for Primary Slave */
+	/* Use BAR5+0x228,BAR2 for Secondary Master */
+	/* Use BAR5+0x2A8,BAR2 for Secondary Slave */
 
-	byte = readb(sata_bar5 + 0x128);
-	/* printk_debug("byte=%x\n", byte); */
-	byte &= 0xF;
-	if (byte == 0x3) {
-		outb(0xA0, sata_bar0 + 0x6);
-		while ((inb(sata_bar0 + 0x6) != 0xA0)
-		       || ((inb(sata_bar0 + 0x7) & 0x88) != 0)) {
-			mdelay(10);
-			/* printk_debug("0x6=%x,0x7=%x\n", inb(sata_bar0 + 0x6),
-			   inb(sata_bar0 + 0x7)); */
-			printk_debug("drive detection fail,trying...\n");
+	for (i = 0; i < 4; i++) {
+		byte = readb(sata_bar5 + 0x128 + 0x80 * i);
+		printk_spew("SATA port %i status = %x\n", i, byte);
+		byte &= 0xF;
+		if (byte == 0x3) {
+			for (j = 0; j < 10; j++) {
+				if (!sata_drive_detect(i, ((i / 2) == 0) ? sata_bar0 : sata_bar2))
+					break;
+			}
+			printk_debug("%s %s device is %sready after %i tries\n",
+					(i / 2) ? "Secondary" : "Primary",
+					(i % 2 ) ? "Slave" : "Master",
+					(j == 10) ? "not " : "",
+					(j == 10) ? j : j + 1);
+		} else {
+			printk_debug("No %s %s SATA drive on Slot%i\n",
+					(i / 2) ? "Secondary" : "Primary",
+					(i % 2 ) ? "Slave" : "Master", i);
 		}
-		printk_debug("Primary master device is ready\n");
-	} else {
-		printk_debug("No Primary master SATA drive on Slot0\n");
 	}
 
 	/* Below is CIM InitSataLateFar */

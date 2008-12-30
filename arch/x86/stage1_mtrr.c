@@ -25,7 +25,7 @@ void disable_var_mtrr(unsigned int reg)
 	wrmsr(MTRRphysMask_MSR(reg), zero);
 }
 
-void set_var_mtrr(
+void stage1_set_var_mtrr(
 	unsigned long reg, unsigned long base, unsigned long size, unsigned long type)
 
 {
@@ -63,7 +63,7 @@ void cache_cbmem(int type)
 {
 	/* Enable caching for 0 - 1MB using variable mtrr */
 	disable_cache();
-	set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, type);
+	stage1_set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, type);
 	enable_cache();
 }
 
@@ -98,7 +98,7 @@ void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
-	set_var_mtrr(1, XIP_ROM_BASE, XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+	stage1_set_var_mtrr(1, XIP_ROM_BASE, XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 #endif
 

@@ -35,6 +35,8 @@
 void x86_setup_var_mtrrs(unsigned address_bits);
 void x86_setup_mtrrs(unsigned address_bits);
 int x86_mtrr_check(void);
+void stage1_set_var_mtrr(unsigned long reg, unsigned long base,
+				unsigned long size, unsigned long type);
 
 #endif
 

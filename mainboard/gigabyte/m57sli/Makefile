@@ -29,6 +29,7 @@ STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/northbridge/amd/k8/libstage1.c \
 			$(src)/southbridge/nvidia/mcp55/stage1_smbus.c \
 			$(src)/southbridge/nvidia/mcp55/stage1_enable_rom.c \
+			$(src)/arch/x86/stage1_mtrr.c
 
 STAGE0_DYNAMIC_SRC :=	$(obj)/mainboard/$(MAINBOARDDIR)/option_table.c
 

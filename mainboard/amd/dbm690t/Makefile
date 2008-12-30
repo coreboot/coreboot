@@ -26,6 +26,7 @@ STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/arch/x86/amd/model_fxx/stage1.c \
 			$(src)/northbridge/amd/k8/get_nodes.c \
 			$(src)/northbridge/amd/k8/libstage1.c \
+			$(src)/arch/x86/stage1_mtrr.c
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
 			$(src)/northbridge/amd/k8/raminit.c \

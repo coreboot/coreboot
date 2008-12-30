@@ -35,7 +35,7 @@
  */
 void set_init_ram_access(void)
 {
-	set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, MTRR_TYPE_WRBACK);
+	stage1_set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, MTRR_TYPE_WRBACK);
 }
 
 /**

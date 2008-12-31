@@ -199,12 +199,11 @@ struct device {
 	u16 subsystem_vendor;
 	u16 subsystem_device;
 
-	unsigned int	class;			/* 3 bytes: (base,sub,prog-if) */
-	unsigned int	hdr_type;		/* PCI header type */
-	unsigned int	enabled:1;		/* set if we should enable the device */
-	unsigned int	have_resources:1;	/* Set if we have read the devices resources */
-	unsigned int	on_mainboard:1;
-	unsigned long	rom_address;
+	unsigned int	class;		/* 3 bytes: (base,sub,prog-if) */
+	unsigned int	hdr_type;	/* PCI header type */
+	unsigned int    enabled : 1;	/* set if we should enable the device */
+	unsigned int    on_mainboard : 1;
+	unsigned long   rom_address;
 
 	u8 command;
 
@@ -239,9 +238,7 @@ void dev_optimize(void);
 /* Generic device helper functions */
 int reset_bus(struct bus *bus);
 unsigned int scan_bus(struct device *bus, unsigned int max);
-void compute_allocate_resource(struct bus *bus, struct resource *bridge,
-			       unsigned long type_mask, unsigned long type);
-void assign_resources(struct bus *bus);
+//void assign_resources(struct bus *bus);
 void enable_resources(struct device *dev);
 void enumerate_static_device(void);
 void enumerate_static_devices(void);
@@ -267,12 +264,9 @@ void default_device_constructor(struct device *dev,
 				const struct device_operations *constructor);
 void show_all_devs(int debug_level, const char *msg);
 void show_all_devs_tree(int debug_level, const char *msg);
-
-/* Rounding for boundaries. 
- * Due to some chip bugs, go ahead and round IO to 16
- */
-#define DEVICE_IO_ALIGN 16
-#define DEVICE_MEM_ALIGN 4096
+void show_all_devs(int debug_level, const char *msg);
+void show_all_devs_tree(int debug_level, const char *msg);
+void print_resource_tree(const struct device * const dev, int debug_level, const char* msg);
 
 resource_t align_up(resource_t val, unsigned long gran);
 resource_t align_down(resource_t val, unsigned long gran);
@@ -296,7 +290,7 @@ void dev_phase4(void);
 void dev_root_phase5(void);
 void dev_phase6(void);
 
-void phase4_assign_resources(struct bus *bus);
+void phase4_set_resources(struct bus *bus);
 unsigned int dev_phase3(struct device *bus, unsigned int max);
 void dev_phase5(struct device *dev);
 

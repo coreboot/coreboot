@@ -75,11 +75,10 @@ static void cardbus_size_bridge_resource(struct device *dev,
 {
 	struct resource *resource;
 	resource_t min_size;
-	resource = find_resource(dev, index);
+	resource = probe_resource(dev, index);
 	if (resource) {
 		min_size = resource->size;
-		compute_allocate_resource(&dev->link[0], resource,
-					  resource->flags, resource->flags);
+
 		/* Always allocate at least the minimum size to a
 		 * cardbus bridge in case a new card is plugged in.
 		 */

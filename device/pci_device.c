@@ -11,6 +11,7 @@
  * Copyright (C) 2005-2006 Tyan
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
  * Copyright (C) 2005-2007 Stefan Reinauer <stepan@openbios.org>
+ * Copyright (C) 2008 Myles Watson <mylesgw@gmail.com>
  */
 
 /*
@@ -153,7 +154,7 @@ unsigned int pci_find_capability(struct device *dev, unsigned int cap_type)
 struct resource *pci_get_resource(struct device *dev, unsigned long index)
 {
 	struct resource *resource;
-	unsigned long value, attr, base;
+	unsigned long value, attr;
 	resource_t moving, limit;
 
 	/* Initialize the resources to nothing. */
@@ -162,15 +163,9 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	/* Get the initial value. */
 	value = pci_read_config32(dev, index);
 
-	/* save the base address */
-	if (value & PCI_BASE_ADDRESS_SPACE_IO)
-		base = value & ~PCI_BASE_ADDRESS_IO_ATTR_MASK;
-	else
-		base = value & ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
-
 	/* See which bits move. */
 	moving = pci_moving_config32(dev, index);
-	/* Next step: save the base in the dev struct. For later next week */
+
 	/* Initialize attr to the bits that do not move. */
 	attr = value & ~moving;
 
@@ -222,7 +217,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		 * Shouldn't zero because we'll get off with 64-bit BARs.
 		 * Are there any others to save?
 		 */
-		resource->flags &= ~IORESOURCE_PCI64;
+		resource->flags &= IORESOURCE_PCI64;
 	} else if (attr & PCI_BASE_ADDRESS_SPACE_IO) {
 		/* An I/O mapped base address. */
 		attr &= PCI_BASE_ADDRESS_IO_ATTR_MASK;
@@ -248,6 +243,8 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 			resource->limit = 0xffffffffffffffffULL;
 		} else {
 			/* Invalid value. */
+			printk(BIOS_ERR,"Broken BAR with value %lx\n",attr);
+			printk(BIOS_ERR," on dev %s at index %02lx\n",dev->dtsname,index);
 			resource->flags = 0;
 		}
 	}
@@ -347,15 +344,12 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 	compact_resources(dev);
 }
 
-static void pci_set_resource(struct device *dev, struct resource *resource);
-
 static void pci_record_bridge_resource(struct device *dev, resource_t moving,
-				       unsigned int index, unsigned long mask,
-				       unsigned long type)
+				       unsigned int index, unsigned long type)
 {
 	/* Initialize the constraints on the current bus. */
 	struct resource *resource;
-	resource = 0;
+	resource = NULL;
 	if (moving) {
 		unsigned long gran;
 		resource_t step;
@@ -370,18 +364,7 @@ static void pci_record_bridge_resource(struct device *dev, resource_t moving,
 		resource->gran = gran;
 		resource->align = gran;
 		resource->limit = moving | (step - 1);
-		resource->flags = type | IORESOURCE_PCI_BRIDGE;
-		compute_allocate_resource(&dev->link[0], resource, mask, type);
-		/* If there is nothing behind the resource,
-		 * clear it and forget it.
-		 */
-		if (resource->size == 0) {
-			resource->base = moving;
-			resource->flags |= IORESOURCE_ASSIGNED;
-			resource->flags &= ~IORESOURCE_STORED;
-			pci_set_resource(dev, resource);
-			resource->flags = 0;
-		}
+		resource->flags = type | IORESOURCE_PCI_BRIDGE | IORESOURCE_BRIDGE;
 	}
 	return;
 }
@@ -402,8 +385,7 @@ static void pci_bridge_read_bases(struct device *dev)
 	moving = moving_base & moving_limit;
 
 	/* Initialize the I/O space constraints on the current bus. */
-	pci_record_bridge_resource(dev, moving, PCI_IO_BASE,
-				   IORESOURCE_IO, IORESOURCE_IO);
+	pci_record_bridge_resource(dev, moving, PCI_IO_BASE, IORESOURCE_IO);
 
 	/* See if the bridge prefmem resources are implemented. */
 	moving_base =
@@ -416,7 +398,6 @@ static void pci_bridge_read_bases(struct device *dev)
 	moving = moving_base & moving_limit;
 	/* Initialize the prefetchable memory constraints on the current bus. */
 	pci_record_bridge_resource(dev, moving, PCI_PREF_MEMORY_BASE,
-				   IORESOURCE_MEM | IORESOURCE_PREFETCH,
 				   IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
 	/* See if the bridge mem resources are implemented. */
@@ -427,7 +408,6 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	/* Initialize the memory resources on the current bus. */
 	pci_record_bridge_resource(dev, moving, PCI_MEMORY_BASE,
-				   IORESOURCE_MEM | IORESOURCE_PREFETCH,
 				   IORESOURCE_MEM);
 
 	compact_resources(dev);
@@ -441,9 +421,24 @@ void pci_dev_read_resources(struct device *dev)
 
 void pci_bus_read_resources(struct device *dev)
 {
+	struct device *child;
+
+	printk(BIOS_DEBUG, "%s: %s bus %s\n",
+	       __func__, dev_path(dev), dev->bus? dev_path(dev->bus->dev):"NULL");
 	pci_bridge_read_bases(dev);
 	pci_read_bases(dev, 2);
 	pci_get_rom_resource(dev, PCI_ROM_ADDRESS1);
+	if (!dev->bus){
+		printk(BIOS_ERR, "%s: %s bus %s\n",
+		       __func__, dev_path(dev), dev->bus? dev_path(dev->bus->dev):"NULL");
+	}
+
+	for (child = dev->link[0].children; child; child = child->sibling)
+		if (child->ops && child->ops->phase4_read_resources)
+			child->ops->phase4_read_resources(child);
+		else
+			printk(BIOS_ERR, "%s: %s missing Phase4\n",
+			       __func__, dev_path(child));
 }
 
 /**
@@ -462,22 +457,22 @@ void pci_domain_read_resources(struct device *dev)
 	/* Initialize the system-wide I/O space constraints. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	res->limit = 0xffffUL;
-	res->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_BRIDGE;
 
 	/* Initialize the system-wide memory resources constraints. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
 	res->limit = 0xffffffffULL;
-	res->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_BRIDGE;
 }
 
 static void pci_set_resource(struct device *dev, struct resource *resource)
 {
 	resource_t base, end;
 
-	/* Make certain the resource has actually been set. */
-	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
+	/* Make certain the resource has actually been assigned a value. */
+	if (!(resource->flags & IORESOURCE_ASSIGNED) && resource->size!=0) {
 		printk(BIOS_ERR,
 		       "ERROR: %s %02lx %s size: 0x%010llx not assigned\n",
 		       dev_path(dev), resource->index, resource_type(resource),
@@ -519,6 +514,16 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 
 	/* Now store the resource. */
 	resource->flags |= IORESOURCE_STORED;
+	/* PCI Bridges have no enable bit.  They are disabled if the base of
+	 * the range is greater than the limit.  If the size is zero, disable
+	 * by setting the base = limit and end = limit - 2^gran.
+	 */
+	if (resource->size == 0 && (resource->flags & IORESOURCE_PCI_BRIDGE)) {
+		base = resource->limit;
+		end = resource->limit - (1<<resource->gran);
+		resource->base = base;
+	}
+
 	if (!(resource->flags & IORESOURCE_PCI_BRIDGE)) {
 		unsigned long base_lo, base_hi;
 		/* Some chipsets allow us to set/clear the I/O bit
@@ -535,24 +540,16 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		}
 	} else if (resource->index == PCI_IO_BASE) {
 		/* Set the I/O ranges. */
-		compute_allocate_resource(&dev->link[0], resource,
-					  IORESOURCE_IO, IORESOURCE_IO);
 		pci_write_config8(dev, PCI_IO_BASE, base >> 8);
 		pci_write_config16(dev, PCI_IO_BASE_UPPER16, base >> 16);
 		pci_write_config8(dev, PCI_IO_LIMIT, end >> 8);
 		pci_write_config16(dev, PCI_IO_LIMIT_UPPER16, end >> 16);
 	} else if (resource->index == PCI_MEMORY_BASE) {
 		/* Set the memory range. */
-		compute_allocate_resource(&dev->link[0], resource,
-					  IORESOURCE_MEM | IORESOURCE_PREFETCH,
-					  IORESOURCE_MEM);
 		pci_write_config16(dev, PCI_MEMORY_BASE, base >> 16);
 		pci_write_config16(dev, PCI_MEMORY_LIMIT, end >> 16);
 	} else if (resource->index == PCI_PREF_MEMORY_BASE) {
 		/* Set the prefetchable memory range. */
-		compute_allocate_resource(&dev->link[0], resource,
-					  IORESOURCE_MEM | IORESOURCE_PREFETCH,
-					  IORESOURCE_MEM | IORESOURCE_PREFETCH);
 		pci_write_config16(dev, PCI_PREF_MEMORY_BASE, base >> 16);
 		pci_write_config32(dev, PCI_PREF_BASE_UPPER32, base >> 32);
 		pci_write_config16(dev, PCI_PREF_MEMORY_LIMIT, end >> 16);
@@ -563,7 +560,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		printk(BIOS_ERR, "ERROR: invalid resource->index %lx\n",
 		       resource->index);
 	}
-	report_resource_stored(dev, resource, "");
+	report_resource_stored(dev, resource, __func__);
 	return;
 }
 
@@ -582,7 +579,7 @@ void pci_set_resources(struct device *dev)
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
-			phase4_assign_resources(bus);
+			phase4_set_resources(bus);
 		}
 	}
 

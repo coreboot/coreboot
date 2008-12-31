@@ -35,13 +35,7 @@
  */
 void root_dev_read_resources(struct device *root)
 {
-	void read_resources(struct bus *bus);
-	void show_all_devs_resources(void);
-
-	read_resources(&root->link[0]);
-
-	printk(BIOS_DEBUG, "%s: Done allocating\n", __FUNCTION__);
-	show_all_devs_resources();
+	printk(BIOS_DEBUG, "This shouldn't be called!\n");
 }
 
 /**
@@ -52,7 +46,7 @@ void root_dev_read_resources(struct device *root)
  */
 void root_dev_set_resources(struct device *root)
 {
-	phase4_assign_resources(&root->link[0]);
+	printk(BIOS_DEBUG, "This shouldn't be called!\n");
 }
 
 /**
@@ -193,6 +187,7 @@ void root_dev_reset(struct bus *bus)
  * mainboard directory. 
  */
 struct device_operations default_dev_ops_root = {
+	.id = {.type = DEVICE_ID_ROOT},
 	.phase3_scan             = root_dev_scan_bus,
 	.phase4_read_resources   = root_dev_read_resources,
 	.phase4_set_resources    = root_dev_set_resources,

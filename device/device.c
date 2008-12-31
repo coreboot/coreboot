@@ -13,6 +13,7 @@
  * (Written by Yinghai Lu for Tyan)
  * Copyright (C) 2005-2006 Stefan Reinauer <stepan@openbios.org>
  * Copyright (C) 2007 coresystems GmbH
+ * Copyright (C) 2008 Myles Watson <mylesgw@gmail.com>
  */
 
 /*
@@ -46,18 +47,6 @@ struct device *all_devices = &dev_root;
  * No more config tool magic.
  */
 struct device **last_dev_p;
-
-/**
- * The upper limit of MEM resource of the devices.
- * Reserve 20M for the system.
- */
-#define DEVICE_MEM_HIGH 0xFEBFFFFFUL
-
-/**
- * The lower limit of I/O resource of the devices.
- * Reserve 4K for ISA/Legacy devices.
- */
-#define DEVICE_IO_START 0x1000
 
 /**
  * device memory. All the device tree wil live here
@@ -110,7 +99,7 @@ void default_device_constructor(struct device *dev,
 /**
  * Given a path, locate the device_operations for it from all_device_operations.
  *
- * @param id TODO
+ * @param id a device ID to match
  * @return Pointer to the ops or 0, if none found.
  * @see device_path
  */
@@ -127,7 +116,8 @@ struct device_operations *find_device_operations(struct device_id *id)
 		printk(BIOS_SPEW, "%s: cons id %s\n",
 		       __func__, dev_id_string(&c->id));
 		if (id_eq(&c->id, id)) {
-			printk(BIOS_SPEW, "%s: match\n", __func__);
+			printk(BIOS_SPEW, "%s: match %s\n",
+			       __func__, dev_id_string(&c->id));
 			return c;
 		}
 	}
@@ -138,10 +128,9 @@ struct device_operations *find_device_operations(struct device_id *id)
 /**
  * Initialization tasks for the device tree code.
  *
- * Sets up last_dev_p, which used to be done by
- * Fucking Magic (FM) in the config tool. Also, for each of the
- * devices, tries to find the constructor, and from there, the ops,
- * for the device.
+ * Sets up last_dev_p, which used to be done by magic in the config tool. Also,
+ * for each of the devices, tries to find the constructor, and from there, the
+ * ops, for the device.
  */
 void dev_init(void)
 {
@@ -206,7 +195,7 @@ spin_define(dev_lock);
  *
  * @param parent Parent bus the newly created device is attached to.
  * @param path Path to the device to be created.
- * @param devid TODO
+ * @param devid ID of the device we want allocated.
  * @return Pointer to the newly created device structure.
  * @see device_path
  */
@@ -254,7 +243,7 @@ struct device *alloc_dev(struct bus *parent, struct device_path *path,
 	last_dev_p = &dev->next;
 
 	/* Give the device a name. */
-	if (dev->id.type == DEVICE_ID_PNP && 
+	if (dev->id.type == DEVICE_ID_PNP &&
 	    parent->dev->id.type == DEVICE_ID_PNP)
 		sprintf(dev->dtsname, "%s_pnp_child_%d", parent->dev->dtsname,
 			dev->path.pnp.device);
@@ -292,17 +281,12 @@ void read_resources(struct bus *bus)
 
 	/* Walk through all devices and find which resources they need. */
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
-		unsigned int links;
 		int i;
 		printk(BIOS_SPEW,
-		       "%s: %s(%s) dtsname %s have_resources %d enabled %d\n",
+		       "%s: %s(%s) dtsname %s enabled %d\n",
 		       __func__, bus->dev ? bus->dev->dtsname : "NOBUSDEV",
 		       bus->dev ? dev_path(bus->dev) : "NOBUSDEV",
-		       curdev->dtsname,
-		       curdev->have_resources, curdev->enabled);
-		if (curdev->have_resources) {
-			continue;
-		}
+		       curdev->dtsname, curdev->enabled);
 		if (!curdev->enabled) {
 			continue;
 		}
@@ -313,28 +297,10 @@ void read_resources(struct bus *bus)
 			continue;
 		}
 		curdev->ops->phase4_read_resources(curdev);
-		curdev->have_resources = 1;
 
-		/* Read in subtractive resources behind the current device. */
-		links = 0;
-		for (i = 0; i < curdev->resources && (curdev->links > 0); i++) {
-			struct resource *resource;
-			unsigned int link;
-			resource = &curdev->resource[i];
-			if (!(resource->flags & IORESOURCE_SUBTRACTIVE))
-				continue;
-			link = IOINDEX_SUBTRACTIVE_LINK(resource->index);
-			if (link > MAX_LINKS) {
-				printk(BIOS_ERR,
-				       "%s subtractive index on link: %d\n",
-				       dev_path(curdev), link);
-				continue;
-			}
-			if (!(links & (1 << link))) {
-				links |= (1 << link);
-				read_resources(&curdev->link[link]);
-			}
-		}
+		/* Read in children's resources behind the current device. */
+		for (i = 0; i< curdev->links; i++)
+			read_resources(&curdev->link[i]);
 	}
 	printk(BIOS_SPEW, "%s: %s(%s) read_resources bus %d link: %d done\n",
 	       __func__, bus->dev->dtsname, dev_path(bus->dev), bus->secondary,
@@ -398,7 +364,7 @@ static struct device *largest_resource(struct bus *bus, struct resource
 }
 
 /**
- * This function is the guts of the resource allocator.
+ * This function is the first part of the resource allocator.
  *
  * The problem.
  *  - Allocate resource locations for every device.
@@ -424,73 +390,75 @@ static struct device *largest_resource(struct bus *bus, struct resource
  *   a device with a couple of resources, and not need to special case it in
  *   the allocator. Also this allows handling of other types of bridges.
  *
- * @param bus TODO
- * @param bridge TODO
- * @param type_mask TODO
- * @param type TODO
+ * - This function calculates how large the resources are behind the bridges.
+ *
+ * @param bus The bus we are traversing.
+ * @param bridge The bridge resource which will contain the bus' resources.
+ * @param type_mask This value gets anded with the resource type.
+ * @param type This value must match the result of the and.
  */
-void compute_allocate_resource(struct bus *bus, struct resource *bridge,
+void compute_resource_needs(struct bus *bus, struct resource *bridge,
 			       unsigned long type_mask, unsigned long type)
 {
 	struct device *dev;
 	struct resource *resource;
 	resource_t base;
-	unsigned long align, min_align;
-	min_align = 0;
-	base = bridge->base;
+	base = align_up(bridge->base, bridge->align);
 
 	printk(BIOS_SPEW,
-	       "%s compute_allocate_%s: base: %08llx size: %08llx align: %d gran: %d limit: %08llx\n",
-	       dev_path(bus->dev),
-	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags &
-							 IORESOURCE_PREFETCH) ?
-	       "prefmem" : "mem", base, bridge->size, bridge->align,
+	       "%s %s_%s: base: %llx size: %llx align: %d gran: %d limit: %llx\n",
+	       dev_path(bus->dev), __func__,
+	       (type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
+						"prefmem" : "mem",
+	       base, bridge->size, bridge->align,
 	       bridge->gran, bridge->limit);
 
-	/* We want different minimum alignments for different kinds of
-	 * resources. These minimums are not device type specific but
-	 * resource type specific.
-	 */
-	if (bridge->flags & IORESOURCE_IO) {
-		min_align = log2c(DEVICE_IO_ALIGN);
-	}
-	if (bridge->flags & IORESOURCE_MEM) {
-		min_align = log2c(DEVICE_MEM_ALIGN);
-	}
+	/* For each child which is a bridge, compute_resource_needs. */
+	for (dev = bus->children; dev; dev = dev->sibling) {
+		unsigned i;
+		struct resource *child_bridge;
 
-	/* Make certain we have read in all of the resources. */
-	read_resources(bus);
+		if (!dev->links)
+			continue;
+
+		/* Find the resources with matching type flags. */
+		for (i=0; i< dev->resources; i++){
+			child_bridge = &dev->resource[i];
+
+			if (!(child_bridge->flags & IORESOURCE_BRIDGE) ||
+			     (child_bridge->flags & type_mask) != type)
+				continue;
+
+			/* Split prefetchable memory if combined.  Many domains
+			 * use the same address space for prefetchable memory
+			 * and non-prefetchable memory.  Bridges below them
+			 * need it separated.  Add the PREFETCH flag to the
+			 * type_mask and type.
+			 */
+			compute_resource_needs(&dev->link[0], child_bridge,
+					       type_mask | IORESOURCE_PREFETCH,
+					       type | (child_bridge->flags &
+						       IORESOURCE_PREFETCH));
+		}
+	}
 
 	/* Remember we haven't found anything yet. */
 	resource = NULL;
 
-	/* Walk through all the devices on the current bus and
-	 * compute the addresses.
+	/* Walk through all the resources on the current bus and compute the
+	 * amount of address space taken by them.  Take granularity and
+	 * alignment into account.
 	 */
 	while ((dev = largest_resource(bus, &resource, type_mask, type))) {
-		resource_t size;
 
-		/* Do NOT, I repeat do not, ignore resources which have zero
-		 * size. If they need to be ignored dev->read_resources should
-		 * not even return them. Some resources must be set even when
-		 * they have no size. PCI bridge resources are a good example
-		 * of this.
-		 */
-
-		/* Make certain we are dealing with a good minimum size. */
-		size = resource->size;
-		align = resource->align;
-		if (align < min_align) {
-			align = min_align;
-		}
-
-		/* Propagate the resource alignment to the bridge register  */
-		if (align > bridge->align) {
-			bridge->align = align;
-		}
-
-		if (resource->flags & IORESOURCE_FIXED) {
+		/* Size 0 resources can be skipped. */
+		if (!resource->size) {
 			continue;
+		}
+
+		/* Propagate the resource alignment to the bridge resource. */
+		if (resource->align > bridge->align) {
+			bridge->align = resource->align;
 		}
 
 		/* Propagate the resource limit to the bridge register. */
@@ -498,11 +466,15 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 			bridge->limit = resource->limit;
 		}
 
-		/* Artificially deny limits between DEVICE_MEM_HIGH and 0xffffffff. */
-		if ((bridge->limit > DEVICE_MEM_HIGH)
-		    && (bridge->limit <= 0xffffffff)) {
-			bridge->limit = DEVICE_MEM_HIGH;
-		}
+		/* I'm not sure what to do here.  I'd really like this to go
+		 * away into some PCI-specific file, but I don't see how to do
+		 * it.  I'm also not sure how to guarantee that larger
+		 * allocations don't conflict with this address set.
+		 * The example is 0x1000-0x13ff overlaps, but since the base
+		 * doesn't, then this check doesn't trigger.  It wouldn't do
+		 * any good, though, since you can't move it to avoid the
+		 * conflict.
+		 */
 		if (resource->flags & IORESOURCE_IO) {
 			/* Don't allow potential aliases over the legacy PCI
 			 * expansion card addresses. The legacy PCI decodes
@@ -520,40 +492,316 @@ void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 				base = 0x3e0;
 			}
 		}
-		if (((align_up(base, align) + size) - 1) <= resource->limit) {
-			/* Base must be aligned to size. */
-			base = align_up(base, align);
+		/* Base must be aligned. */
+		base = align_up(base, resource->align);
+		resource->base = base;
+		base += resource->size;
+
+		printk(BIOS_SPEW, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
+		       dev_path(dev), resource->index, resource->base,
+		       resource->base + resource->size - 1,
+		       (resource->flags & IORESOURCE_IO) ? "io" :
+		       (resource-> flags & IORESOURCE_PREFETCH) ? "prefmem" :
+		        "mem");
+	}
+	/* Bridge resources have a minimum granularity. Round the size up to
+	 * that minimum granularity so we know not to place something else at
+	 * an address positively decoded by the bridge.
+	 */
+	bridge->size = align_up(base, bridge->gran) -
+		       align_up(bridge->base, bridge->align);
+
+	printk(BIOS_SPEW,
+	       "%s %s_%s: base: %llx size: %llx align: %d gran: %d limit: %llx done\n",
+	       dev_path(bus->dev), __func__,
+	       (type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
+						"prefmem" : "mem",
+	       base, bridge->size, bridge->align,
+	       bridge->gran, bridge->limit);
+}
+
+/**
+ * This function is the second part of the resource allocator.
+ *
+ * The problem.
+ *  - Allocate resource locations for every device.
+ *  - Don't overlap, and follow the rules of bridges.
+ *  - Don't overlap with resources in fixed locations.
+ *  - Be efficient so we don't have ugly strategies.
+ *
+ * The strategy.
+ * - Devices that have fixed addresses are the minority so don't
+ *   worry about them too much. Instead only use part of the address
+ *   space for devices with programmable addresses. This easily handles
+ *   everything except bridges.
+ *
+ * - PCI devices are required to have their sizes and their alignments
+ *   equal. In this case an optimal solution to the packing problem
+ *   exists. Allocate all devices from highest alignment to least
+ *   alignment or vice versa. Use this.
+ *
+ * - So we can handle more than PCI run two allocation passes on bridges. The
+ *   first to see how large the resources are behind the bridge, and what
+ *   their alignment requirements are. The second to assign a safe address to
+ *   the devices behind the bridge. This allows us to treat a bridge as just
+ *   a device with a couple of resources, and not need to special case it in
+ *   the allocator. Also this allows handling of other types of bridges.
+ *
+ * - This function assigns the resources a value.
+ *
+ * @param bus The bus we are traversing.
+ * @param bridge The bridge resource which must contain the bus' resources.
+ * @param type_mask This value gets anded with the resource type.
+ * @param type This value must match the result of the and.
+ */
+void assign_resource_values(struct bus *bus, struct resource *bridge,
+			       unsigned long type_mask, unsigned long type)
+{
+	struct device *dev;
+	struct resource *resource;
+	resource_t base;
+	base = bridge->base;
+
+	printk(BIOS_SPEW,
+	       "%s %s_%s: base:%llx size:%llx align:%d gran:%d limit:%llx\n",
+	       dev_path(bus->dev), __func__,
+	       (type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
+						"prefmem" : "mem",
+	       base, bridge->size, bridge->align,
+	       bridge->gran, bridge->limit);
+
+	/* Remember we haven't found anything yet. */
+	resource = NULL;
+
+	/* Walk through all the resources on the current bus and allocate them
+	 * address space.
+	 */
+	while ((dev = largest_resource(bus, &resource, type_mask, type))) {
+
+		/* Size 0 resources can be skipped. */
+		if (!resource->size) {
+			continue;
+		}
+
+		if (resource->flags & IORESOURCE_IO) {
+			/* Don't allow potential aliases over the legacy PCI
+			 * expansion card addresses. The legacy PCI decodes
+			 * only 10 bits, uses 0x100 - 0x3ff. Therefore, only
+			 * 0x00 - 0xff can be used out of each 0x400 block of
+			 * I/O space.
+			 */
+			if ((base & 0x300) != 0) {
+				base = (base & ~0x3ff) + 0x400;
+			}
+			/* Don't allow allocations in the VGA I/O range.
+			 * PCI has special cases for that.
+			 */
+			else if ((base >= 0x3b0) && (base <= 0x3df)) {
+				base = 0x3e0;
+			}
+		}
+
+
+		if ((align_up(base, resource->align) + resource->size - 1) <=
+		     resource->limit) {
+			/* Base must be aligned. */
+			base = align_up(base, resource->align);
 			resource->base = base;
 			resource->flags |= IORESOURCE_ASSIGNED;
 			resource->flags &= ~IORESOURCE_STORED;
-			base += size;
-
-			printk(BIOS_SPEW,
-			       "%s %02lx *  [0x%08llx - 0x%08llx] %s\n",
-			       dev_path(dev),
-			       resource->index,
-			       resource->base,
-			       resource->base + resource->size - 1,
-			       (resource->flags & IORESOURCE_IO) ? "io" :
-			       (resource->
-				flags & IORESOURCE_PREFETCH) ? "prefmem" :
-			       "mem");
+			base += resource->size;
+		} else {
+			printk(BIOS_ERR, "!! Resource didn't fit !!\n");
+			printk(BIOS_ERR, "   aligned base %llx size %llx limit %llx\n",
+			       align_up(base, resource->align), resource->size, resource->limit);
+			printk(BIOS_ERR, "   %llx needs to be <= %llx (limit)\n",
+			       (align_up(base, resource->align)+resource->size)-1, resource->limit);
+			printk(BIOS_ERR, "   %s%s %02lx *  [0x%llx - 0x%llx] %s\n",
+		       (resource->flags & IORESOURCE_ASSIGNED) ? "Assigned: "
+							       : "",
+		       dev_path(dev), resource->index, resource->base,
+		       resource->base + resource->size - 1,
+		       (resource->flags & IORESOURCE_IO) ? "io" :
+		       (resource-> flags & IORESOURCE_PREFETCH) ? "prefmem" :
+		        "mem");
 		}
+
+		printk(BIOS_SPEW, "%s%s %02lx *  [0x%llx - 0x%llx] %s\n",
+		       (resource->flags & IORESOURCE_ASSIGNED) ? "Assigned: "
+							       : "",
+		       dev_path(dev), resource->index, resource->base,
+
+			resource->size?  resource->base + resource->size - 1 :
+			resource->base,
+
+		       (resource->flags & IORESOURCE_IO) ? "io" :
+		       (resource-> flags & IORESOURCE_PREFETCH) ? "prefmem" :
+		        "mem");
 	}
 	/* A PCI bridge resource does not need to be a power of two size, but
 	 * it does have a minimum granularity. Round the size up to that
 	 * minimum granularity so we know not to place something else at an
 	 * address positively decoded by the bridge.
 	 */
-	bridge->size = align_up(base, bridge->gran) - bridge->base;
+
+	bridge->flags |= IORESOURCE_ASSIGNED;
 
 	printk(BIOS_SPEW,
-	       "%s compute_allocate_%s: base: %08llx size: %08llx align: %d gran: %d done\n",
-	       dev_path(bus->dev),
-	       (bridge->flags & IORESOURCE_IO) ? "io" : (bridge->flags &
-							 IORESOURCE_PREFETCH) ?
-	       "prefmem" : "mem", base, bridge->size, bridge->align,
+	       "%s %s_%s: next_base: %llx size: %llx align: %d gran: %d done\n",
+	       dev_path(bus->dev), __func__,
+	       (type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
+						"prefmem" : "mem",
+	       base, bridge->size, bridge->align,
 	       bridge->gran);
+
+	/* For each child which is a bridge, assign_resource_values. */
+	for (dev = bus->children; dev; dev = dev->sibling) {
+		unsigned i;
+		struct resource *child_bridge;
+
+		if (!dev->links)
+			continue;
+
+		/* Find the resources with matching type flags. */
+		for (i=0; i< dev->resources; i++){
+			child_bridge = &dev->resource[i];
+
+			if (!(child_bridge->flags & IORESOURCE_BRIDGE) ||
+			     (child_bridge->flags & type_mask) != type)
+				continue;
+
+			/* Split prefetchable memory if combined.  Many domains
+			 * use the same address space for prefetchable memory
+			 * and non-prefetchable memory.  Bridges below them
+			 * need it separated.  Add the PREFETCH flag to the
+			 * type_mask and type.
+			 */
+			assign_resource_values(&dev->link[0], child_bridge,
+					       type_mask | IORESOURCE_PREFETCH,
+					       type | (child_bridge->flags &
+						       IORESOURCE_PREFETCH));
+		}
+	}
+}
+
+struct constraints {
+	struct resource pref, io, mem;
+};
+
+static void constrain_resources(struct device *dev, struct constraints* limits)
+{
+	struct device *child;
+	struct resource *res;
+	struct resource *lim;
+	int i;
+
+#ifdef CONFIG_PCI_64BIT_PREF_MEM
+	#define MEM_MASK (IORESOURCE_PREFETCH | IORESOURCE_MEM)
+#else
+	#define MEM_MASK (IORESOURCE_MEM)
+#endif
+#define IO_MASK (IORESOURCE_IO)
+#define PREF_TYPE (IORESOURCE_PREFETCH | IORESOURCE_MEM)
+#define MEM_TYPE (IORESOURCE_MEM)
+#define IO_TYPE (IORESOURCE_IO)
+
+	/* Descend into every child and look for fixed resources. */
+	for (child=dev->link[0].children; child; child = child->sibling) {
+		constrain_resources(child, limits);
+		for (i = 0; i<child->resources; i++) {
+			res = &child->resource[i];
+			if (!(res->flags & IORESOURCE_FIXED))
+				continue;
+
+			/* PREFETCH, MEM, or I/O - skip any others. */
+			if ((res->flags & MEM_MASK) == PREF_TYPE)
+				lim = &limits->pref;
+			else if ((res->flags & MEM_MASK) == MEM_TYPE)
+				lim = &limits->mem;
+			else if ((res->flags & IO_MASK) == IO_TYPE)
+				lim = &limits->io;
+			else
+				continue;
+
+			/* Is it already outside the limits? */
+			if (res->size &&
+			    (((res->base + res->size -1) < lim->base) ||
+			     (res->base > lim->limit)))
+				continue;
+
+			/* Choose to be above or below fixed resources.  This
+			 * check is signed so that "negative" amounts of space
+			 * are handled correctly.
+			 */
+			if ((s64)(lim->limit - (res->base + res->size -1)) >
+			    (s64)(res->base - lim->base))
+				lim->base = res->base + res->size;
+			else
+				lim->limit = res->base -1;
+		}
+	}
+}
+
+static void avoid_fixed_resources(struct device *dev)
+{
+	struct constraints limits;
+	struct resource *res;
+	int i;
+
+	/* Initialize constraints to maximum size. */
+
+	limits.pref.base = 0;
+	limits.pref.limit = 0xffffffffffffffffULL;
+	limits.io.base = 0;
+	limits.io.limit = 0xffffffffffffffffULL;
+	limits.mem.base = 0;
+	limits.mem.limit = 0xffffffffffffffffULL;
+
+	/* Constrain the limits to dev's initial resources. */
+	for (i = 0; i<dev->resources; i++) {
+		res = &dev->resource[i];
+		if ((res->flags & IORESOURCE_FIXED) ||
+		    !(res->flags & IORESOURCE_BRIDGE))
+			continue;
+		if ((res->flags & MEM_MASK) == PREF_TYPE &&
+		    (res->limit < limits.pref.limit))
+			limits.pref.limit = res->limit;
+		if ((res->flags & MEM_MASK) == MEM_TYPE &&
+		    (res->limit < limits.mem.limit))
+			limits.mem.limit = res->limit;
+		if ((res->flags & IO_MASK) == IO_TYPE &&
+		    (res->limit < limits.io.limit))
+			limits.io.limit = res->limit;
+	}
+
+	/* Look through the tree for fixed resources and update the limits. */
+	constrain_resources(dev, &limits);
+
+	/* Update dev's resources with new limits. */
+	for (i = 0; i<dev->resources; i++) {
+		struct resource *lim;
+		res = &dev->resource[i];
+
+		if ((res->flags & IORESOURCE_FIXED) ||
+		    !(res->flags & IORESOURCE_BRIDGE))
+			continue;
+
+		/* PREFETCH, MEM, or I/O - skip any others. */
+		if ((res->flags & MEM_MASK) == PREF_TYPE)
+			lim = &limits.pref;
+		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+			lim = &limits.mem;
+		else if ((res->flags & IO_MASK) == IO_TYPE)
+			lim = &limits.io;
+		else
+			continue;
+
+		/* Is the resource outside the limits? */
+		if ( lim->base > res->base )
+			res->base = lim->base;
+		if ( res->limit > lim->limit )
+			res->limit = lim->limit;
+	}
 }
 
 #ifdef CONFIG_PCI_OPTION_ROM_RUN
@@ -639,16 +887,16 @@ static void allocate_vga_resource(void)
  * has to recurse into every down stream buses.
  *
  * Mutual recursion:
- *	assign_resources() -> device_operation::set_resources()
- *	device_operation::set_resources() -> assign_resources()
+ *	phase4_set_resources() -> device_operation::set_resources()
+ *	device_operation::set_resources() -> phase4_set_resources()
  *
  * @param bus Pointer to the structure for this bus.
  */
-void phase4_assign_resources(struct bus *bus)
+void phase4_set_resources(struct bus *bus)
 {
 	struct device *curdev;
 
-	printk(BIOS_SPEW, "%s(%s) assign_resources, bus %d link: %d\n",
+	printk(BIOS_SPEW, "%s(%s) %s, bus %d link: %d\n", __func__,
 	       bus->dev->dtsname, dev_path(bus->dev), bus->secondary,
 	       bus->link);
 
@@ -669,7 +917,7 @@ void phase4_assign_resources(struct bus *bus)
 		}
 		curdev->ops->phase4_set_resources(curdev);
 	}
-	printk(BIOS_SPEW, "%s(%s) assign_resources done, bus %d link: %d\n",
+	printk(BIOS_SPEW, "%s(%s) %s done, bus %d link: %d\n", __func__,
 	       bus->dev->dtsname, dev_path(bus->dev), bus->secondary,
 	       bus->link);
 }
@@ -895,7 +1143,7 @@ void resource_tree(const struct device *const root, int debug_level, int depth)
 	       dtsname : "NULL");
 	for (i = 0; i < root->resources; i++) {
 		printk(BIOS_DEBUG,
-		       "%s%s resource base %llx size %llx align %x gran %x limit %llx flags %lx index %lx\n",
+		       "%s%s resource base %llx size %llx align %d gran %d limit %llx flags %lx index %lx\n",
 		       indent, dev_path(root), root->resource[i].base,
 		       root->resource[i].size, root->resource[i].align,
 		       root->resource[i].gran, root->resource[i].limit,
@@ -919,129 +1167,140 @@ void print_resource_tree(const struct device *const root, int debug_level,
 	}
 
 	/* Bail if not printing to screen. */
-	if (!printk(debug_level, "Show all resources in tree form...%s\n", msg))
+	if (!printk(debug_level, "Show resources in subtree (%s)...%s\n",
+		    root->dtsname, msg))
 		return;
 	resource_tree(root, debug_level, 0);
 }
 
 /**
- * Configure devices on the device tree.
+ * Allocate resources.
  *
- * Starting at the root of the device tree, travel it recursively in two
- * passes. In the first pass, we compute and allocate resources (ranges)
- * required by each device. In the second pass, the resources ranges are
- * relocated to their final position and stored to the hardware.
+ * Starting at the root of the device tree, travel it recursively in four
+ * passes. In the first pass, we read all the resources.  In the second pass we
+ * compute the resource needs.  In the third pass we assign final values to the
+ * resources.  In the fourth pass we set them.
  *
- * I/O resources start at DEVICE_IO_START and grow upward. MEM resources start
- * at DEVICE_MEM_START and grow downward.
+ * I/O resources start at the bottom of the domain's resource and grow upward.
+ * MEM resources start at the top of the domain's resource and grow downward.
  *
- * Since the assignment is hierarchical we set the values into the dev_root
- * struct.
  */
 void dev_phase4(void)
 {
-	struct resource *io, *mem;
+	struct resource *res;
 	struct device *root;
+	struct device * child;
+	int i;
 
 	printk(BIOS_INFO, "Phase 4: Allocating resources...\n");
 
 	root = &dev_root;
-	if (!root->ops) {
-		printk(BIOS_ERR,
-		       "Phase 4: dev_root missing ops initialization\nPhase 4: Failed.\n");
-		return;
-	}
-	if (!root->ops->phase4_read_resources) {
-		printk(BIOS_ERR,
-		       "dev_root ops missing read_resources\nPhase 4: Failed.\n");
-		return;
-	}
 
-	if (!root->ops->phase4_set_resources) {
-		printk(BIOS_ERR,
-		       "dev_root ops missing set_resources\nPhase 4: Failed.\n");
-		return;
-	}
+	/* Each domain should create resources which contain the entire address
+	 * space for IO, MEM, and PREFMEM resources in the domain. The
+	 * allocation of device resources will be done from this address space.
+	 */
 
 	printk(BIOS_INFO, "Phase 4: Reading resources...\n");
-	root->ops->phase4_read_resources(root);
+
+	/* Read the resources for the entire tree. */
+	read_resources(&root->link[0]);
+
 	printk(BIOS_INFO, "Phase 4: Done reading resources.\n");
 
-	/* We have read the resources. We now compute the global allocation of
-	 * resources. We have to create a root resource for the base of the
-	 * tree. The root resource should contain the entire address space for
-	 * IO and MEM resources. The allocation of device resources will be done
-	 * from this resource address space.
-	 */
+	printk(BIOS_INFO, "Phase 4: Constrain resources.\n");
 
-	/* Allocate a resource from the root device resource pool and initialize
-	 * the system-wide I/O space constraints.
-	 */
-	io = new_resource(root, 0);
-	io->base = 0x400;
-	io->size = 0;
-	io->align = 0;
-	io->gran = 0;
-	io->limit = 0xffffUL;
-	io->flags = IORESOURCE_IO;
+	/* For all domains. */
+	for (child = root->link[0].children; child;
+	     child=child->sibling)
+		if (child->path.type == DEVICE_PATH_PCI_DOMAIN)
+			avoid_fixed_resources(child);
 
-	/* Allocate a resource from the root device resource pool and initialize
-	 * the system-wide memory resources constraints.
-	 */
-	mem = new_resource(root, 1);
-	mem->base = 0;
-	mem->size = 0;
-	mem->align = 0;
-	mem->gran = 0;
-	mem->limit = 0xffffffffUL;
-	mem->flags = IORESOURCE_MEM;
+	print_resource_tree(root, BIOS_DEBUG, "Original.");
 
-	compute_allocate_resource(&root->link[0], io,
-				  IORESOURCE_IO, IORESOURCE_IO);
+	/* Compute resources for all domains. */
+	for (child = root->link[0].children; child; child=child->sibling) {
+		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
+			continue;
+		for (i=0; i< child->resources; i++) {
+			res = &child->resource[i];
+			if ( res->flags & IORESOURCE_FIXED )
+				continue;
+			if ( res->flags & IORESOURCE_PREFETCH ) {
+				compute_resource_needs(&child->link[0],
+					       res, MEM_MASK, PREF_TYPE);
+				continue;
+			}
+			if ( res->flags & IORESOURCE_MEM ) {
+				compute_resource_needs(&child->link[0],
+					       res, MEM_MASK, MEM_TYPE);
+				continue;
+			}
+			if ( res->flags & IORESOURCE_IO ) {
+				compute_resource_needs(&child->link[0],
+					       res, IO_MASK, IO_TYPE);
+				continue;
+			}
+		}
+	}
 
-	compute_allocate_resource(&root->link[0], mem,
-				  IORESOURCE_MEM, IORESOURCE_MEM);
-
-	print_resource_tree(root, BIOS_DEBUG, "After first compute_allocate.");
+	print_resource_tree(root, BIOS_DEBUG, "After summations.");
 
 	/* Now we need to adjust the resources. The issue is that mem grows
-	 * downward.
+	 * downward. Reallocate the MEM resources with the highest addresses
+	 * I can manage.
 	 */
-	/* Make certain the I/O devices are allocated somewhere safe. */
-	io->base = DEVICE_IO_START;
-	io->flags |= IORESOURCE_ASSIGNED;
-	io->flags &= ~IORESOURCE_STORED;
-
-	/* Now reallocate the PCI resources memory with the
-	 * highest addresses I can manage.
-	 */
-	mem->base = resource_max(&root->resource[1]);
-	mem->flags |= IORESOURCE_ASSIGNED;
-	mem->flags &= ~IORESOURCE_STORED;
+	for (child = root->link[0].children; child; child=child->sibling) {
+		if (child->path.type != DEVICE_PATH_PCI_DOMAIN)
+			continue;
+		for (i=0; i< child->resources; i++) {
+			res = &child->resource[i];
+			if (!(res->flags & IORESOURCE_MEM) ||
+			    res->flags & IORESOURCE_FIXED )
+				continue;
+			res->base = resource_max(res);
+		}
+	}
 
 #ifdef CONFIG_PCI_OPTION_ROM_RUN
 	/* Allocate the VGA I/O resource. */
 	allocate_vga_resource();
+	print_resource_tree(root, BIOS_DEBUG, "After VGA.");
 #endif
 
-	/* now rerun the compute allocate with the adjusted resources */
-	compute_allocate_resource(&root->link[0], io,
-				  IORESOURCE_IO, IORESOURCE_IO);
+	/* Assign values to the resources for all domains. */
+	/* If the domain has a prefetchable memory resource, use it. */
+	for (child = root->link[0].children; child; child=child->sibling) {
+		if (!(child->path.type == DEVICE_PATH_PCI_DOMAIN))
+			continue;
+		for (i=0; i< child->resources; i++) {
+			res = &child->resource[i];
+			if ( res->flags & IORESOURCE_FIXED )
+				continue;
+			if ( res->flags & IORESOURCE_PREFETCH ) {
+				assign_resource_values(&child->link[0],
+					       res, MEM_MASK, PREF_TYPE);
+				continue;
+			}
+			if ( res->flags & IORESOURCE_MEM ) {
+				assign_resource_values(&child->link[0],
+					       res, MEM_MASK, MEM_TYPE);
+				continue;
+			}
+			if ( res->flags & IORESOURCE_IO ) {
+				assign_resource_values(&child->link[0],
+					       res, IO_MASK, IO_TYPE);
+				continue;
+			}
+		}
+	}
 
-	compute_allocate_resource(&root->link[0], mem,
-				  IORESOURCE_MEM, IORESOURCE_MEM);
-
-	print_resource_tree(root, BIOS_DEBUG, "After second compute_allocate.");
+	print_resource_tree(root, BIOS_DEBUG, "After assigning values.");
 
 	/* Store the computed resource allocations into device registers. */
 	printk(BIOS_INFO, "Phase 4: Setting resources...\n");
-	root->ops->phase4_set_resources(root);
+	phase4_set_resources(&root->link[0]);
 	print_resource_tree(root, BIOS_DEBUG, "After setting resources.");
-	printk(BIOS_INFO, "Phase 4: Done setting resources.\n");
-#if 0
-	mem->flags |= IORESOURCE_STORED;
-	report_resource_stored(root, mem, "");
-#endif
 
 	printk(BIOS_INFO, "Phase 4: Done allocating resources.\n");
 }
@@ -1132,21 +1391,21 @@ void show_all_devs(int debug_level, const char *msg)
 		return;
 	for (dev = all_devices; dev; dev = dev->next) {
 		printk(debug_level,
-		       "%s(%s): enabled %d have_resources %d\n",
+		       "%s(%s): enabled %d, %d resources\n",
 		       dev->dtsname, dev_path(dev), dev->enabled,
-		       dev->have_resources);
+		       dev->resources);
 	}
 }
 
-void show_one_resource(struct device *dev, struct resource *resource,
-		       const char *comment)
+void show_one_resource(int debug_level, struct device *dev,
+		       struct resource *resource, const char *comment)
 {
 	char buf[10];
 	unsigned long long base, end;
 	base = resource->base;
 	end = resource_end(resource);
 	buf[0] = '\0';
-	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+	if (resource->flags & IORESOURCE_BRIDGE) {
 #if PCI_BUS_SEGN_BITS
 		sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
 			dev->link[0].secondary & 0xff);
@@ -1154,7 +1413,7 @@ void show_one_resource(struct device *dev, struct resource *resource,
 		sprintf(buf, "bus %02x ", dev->link[0].secondary);
 #endif
 	}
-	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] "
+	printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
 	       "size 0x%08Lx gran 0x%02x %s%s%s\n",
 	       dev_path(dev), resource->index, base, end,
 	       resource->size, resource->gran, buf,
@@ -1162,18 +1421,20 @@ void show_one_resource(struct device *dev, struct resource *resource,
 
 }
 
-void show_all_devs_resources(void)
+void show_all_devs_resources(int debug_level, const char* msg)
 {
 	struct device *dev;
 
-	printk(BIOS_INFO, "Show all devs...\n");
+	if(!printk(debug_level, "Show all devs with resources...%s\n", msg))
+		return;
+
 	for (dev = all_devices; dev; dev = dev->next) {
 		int i;
-		printk(BIOS_SPEW,
-		       "%s(%s): enabled %d have_resources %d\n",
+		printk(debug_level,
+		       "%s(%s): enabled %d, %d resources\n",
 		       dev->dtsname, dev_path(dev), dev->enabled,
-		       dev->have_resources);
+		       dev->resources);
 		for (i = 0; i < dev->resources; i++)
-			show_one_resource(dev, &dev->resource[i], "");
+			show_one_resource(debug_level, dev, &dev->resource[i], "");
 	}
 }

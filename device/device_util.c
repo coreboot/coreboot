@@ -241,7 +241,7 @@ const char *dev_path(const struct device *dev)
 				dev->path.ioport.iobase);
 			break;
 		default:
-			printk(BIOS_ERR, "%s: Unknown device path type: %d\n",
+			printk(BIOS_ERR, "%s: Unknown device path type: %x\n",
 			       dev->dtsname, dev->path.type);
 			break;
 		}
@@ -293,7 +293,7 @@ const char *dev_id_string(const struct device_id *id)
 				id->cpu_bus.vendor, id->cpu_bus.device);
 			break;
 		default:
-			printk(BIOS_ERR, "%s: Unknown device ID type: %d\n",
+			printk(BIOS_ERR, "%s: Unknown device ID type: %x\n",
 			       __func__, id->type);
 			memcpy(buffer, "Unknown", 8);
 			break;
@@ -349,8 +349,8 @@ int path_eq(const struct device_path *path1, const struct device_path *path2)
 			equal = (path1->cpu_bus.id == path2->cpu_bus.id);
 			break;
 		default:
-			printk(BIOS_ERR, "Unknown device type: %d\n",
-			       path1->type);
+			printk(BIOS_ERR, "%s: Unknown device type: %x\n",
+			       __func__, path1->type);
 			break;
 		}
 	}
@@ -403,8 +403,8 @@ int id_eq(struct device_id *path1, struct device_id *path2)
 			    && (path1->cpu_bus.device == path2->cpu_bus.device);
 			break;
 		default:
-			printk(BIOS_ERR, "Unknown device type: %d\n",
-			       path1->type);
+			printk(BIOS_ERR, "%s: Unknown device type: %x\n",
+			       __func__, path1->type);
 			break;
 		}
 	}
@@ -615,26 +615,29 @@ const char *resource_type(struct resource *resource)
 void report_resource_stored(struct device *dev, struct resource *resource,
 			    const char *comment)
 {
-	if (resource->flags & IORESOURCE_STORED) {
-		char buf[10];
-		unsigned long long base, end;
-		base = resource->base;
-		end = resource_end(resource);
-		buf[0] = '\0';
-		if (resource->flags & IORESOURCE_PCI_BRIDGE) {
+	char buf[10];
+	unsigned long long base, end;
+	base = resource->base;
+	end = resource_end(resource);
+	buf[0] = '\0';
+
+	if (!(resource->flags & IORESOURCE_STORED))
+		printk(BIOS_DEBUG, "%s lying: %s(%s) %02lx\n",
+		       __func__, dev_path(dev), dev->dtsname, resource->index);
+
+	if (resource->flags & IORESOURCE_BRIDGE) {
 #if PCI_BUS_SEGN_BITS
-			sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
-				dev->link[0].secondary & 0xff);
+		sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
+			dev->link[0].secondary & 0xff);
 #else
-			sprintf(buf, "bus %02x ", dev->link[0].secondary);
+		sprintf(buf, "bus %02x ", dev->link[0].secondary);
 #endif
-		}
-		printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] "
-		       "size 0x%08Lx gran 0x%02x %s%s%s\n",
-		       dev_path(dev), resource->index, base, end,
-		       resource->size, resource->gran, buf,
-		       resource_type(resource), comment);
 	}
+	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] "
+	       "size 0x%08Lx gran 0x%02x %s%s %s\n",
+	       dev_path(dev), resource->index, base, end,
+	       resource->size, resource->gran, buf,
+	       resource_type(resource), comment);
 }
 
 void search_bus_resources(struct bus *bus,
@@ -644,9 +647,6 @@ void search_bus_resources(struct bus *bus,
 	struct device *curdev;
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		int i;
-		/* Ignore disabled devices. */
-		if (!curdev->have_resources)
-			continue;
 		for (i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			/* If it isn't the right kind of resource ignore it. */
@@ -676,12 +676,8 @@ void search_global_resources(unsigned long type_mask, unsigned long type,
 	for (curdev = all_devices; curdev; curdev = curdev->next) {
 		int i;
 		printk(BIOS_SPEW,
-		       "%s: dev %s, have_resources %d #resources %d\n",
-		       __func__, curdev->dtsname, curdev->have_resources,
-		       curdev->resources);
-		/* Ignore disabled devices. */
-		if (!curdev->have_resources)
-			continue;
+		       "%s: dev %s, #resources %d\n",
+		       __func__, curdev->dtsname, curdev->resources);
 		for (i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			printk(BIOS_SPEW,

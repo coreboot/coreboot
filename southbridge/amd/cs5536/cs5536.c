@@ -676,6 +676,25 @@ static void southbridge_init(struct device *dev)
 }
 
 /**
+ * A slightly different read resources.  We add fixed resources.
+ *
+ * @param dev The device to use.
+ */
+static void cs5536_read_resources(struct device *dev)
+{
+	/* This is a fixed IO resource for legacy decoding.  Its presence moves
+	 * other allocations out of this location. */
+	struct resource *res;
+	res = new_resource(dev, 0);
+	res->base = 0x0UL;
+	res->size = 0x1000UL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
+		     IORESOURCE_STORED;
+
+	pci_dev_read_resources(dev);
+}
+
+/**
  * A slightly different enable resources than the standard.
  * We grab control here as VSA has played in this chip as well.
  *
@@ -695,7 +714,7 @@ struct device_operations cs5536_ops = {
 			 .device = PCI_DEVICE_ID_AMD_CS5536_ISA}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = scan_static_bus,
-	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_read_resources	 = cs5536_read_resources,
 	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = cs5536_pci_dev_enable_resources,
 	.phase6_init		 = southbridge_init,
@@ -706,7 +725,6 @@ struct device_operations cs5536_ide = {
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			 .device = PCI_DEVICE_ID_AMD_CS5536_B0_IDE}}},
 	.constructor		 = default_device_constructor,
-#warning FIXME: what has to go in phase3_scan?
 	.phase3_scan		 = 0,
 	.phase4_read_resources	 = pci_dev_read_resources,
 	.phase4_set_resources	 = pci_set_resources,

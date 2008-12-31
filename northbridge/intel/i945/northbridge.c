@@ -51,8 +51,8 @@ static void I945_pci_domain_read_resources(struct device * dev)
 	resource->align = 0;
 	resource->gran = 0;
 	resource->limit = 0xffffUL;
-	resource->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+			  IORESOURCE_ASSIGNED | IORESOURCE_BRIDGE;
 
 	/* Initialize the system wide memory resources constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
@@ -60,9 +60,10 @@ static void I945_pci_domain_read_resources(struct device * dev)
 	resource->size = 0;
 	resource->align = 0;
 	resource->gran = 0;
-	resource->limit = 0xffffffffUL;
-	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	/* This is a hack.  I don't know all the right reserved regions. */
+	resource->limit = 0xfeffffffUL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+			  IORESOURCE_ASSIGNED | IORESOURCE_BRIDGE;
 }
 
 static void tolm_test(void *gp, struct device *dev, struct resource *new)

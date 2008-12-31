@@ -19,4 +19,5 @@
  */
 {
 	device_operations	= "i945_pci_domain_ops";
+	bridge;
 };

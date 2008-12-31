@@ -83,6 +83,25 @@ static void i82371eb_acpi_init(struct device *dev)
 	pci_write_config8(dev, 0x80, 1);
 }
 
+static void i82371eb_isa_read_resources(struct device *dev)
+{
+	struct resource *res;
+	res = new_resource(dev, 0);
+	res->base = 0x0UL;
+	res->size = 0x1000UL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
+		     IORESOURCE_STORED;
+}
+
+static void i82371eb_isa_set_resources(struct device *dev)
+{
+	/* If the isa resource needed to be set somehow in hardware, we would do
+	 * it here.  We would call probe_resource(dev,0), then set it in
+	 * hardware before calling pci_set_resources.
+	 */
+	pci_set_resources(dev);
+}
+
 /*NOTE: We need our own read and set resources for this part! It has 
  * BARS that are not in the normal place (such as SMBUS)
  */
@@ -92,8 +111,8 @@ struct device_operations i82371eb_isa = {
 		{.pci = {.vendor = 0x8086,.device = 0x7000}}},
 	.constructor		 = default_device_constructor,
 	.phase3_scan		 = 0,
-	.phase4_read_resources	 = pci_dev_read_resources,
-	.phase4_set_resources	 = pci_set_resources,
+	.phase4_read_resources	 = i82371eb_isa_read_resources,
+	.phase4_set_resources	 = i82371eb_isa_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = i82371eb_isa_init,
 	.ops_pci		 = &pci_dev_ops_pci,

@@ -19,7 +19,7 @@
  */
 
 {
-	ide0_enable = "0";
-	ide1_enable = "0";
+	ide0_enable = "1";
+	ide1_enable = "1";
 	device_operations = "i82371eb_ide";
 };

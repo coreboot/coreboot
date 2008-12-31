@@ -92,6 +92,4 @@
 #define PAM5    0x5e
 #define PAM6    0x5f
 
-unsigned int i440bx_scan_root_bus(struct device *root, unsigned int max);
-
 #endif /* NORTHBRIDGE_INTEL_I440BXEMULATION_I440BX_H */

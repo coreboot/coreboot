@@ -18,28 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/{
-	mainboard_vendor = "Emulation";
-	mainboard_name = "QEMU x86";
-	subsystem_vendor = "0x15ad";
-	subsystem_device = "0x1976";
-	device_operations = "qemuvga_pci_ops_dev";
-	cpus {};
-	domain@0 {
-		/config/("northbridge/intel/i440bxemulation/domain");
-		pci@0,0 {
-			/config/("northbridge/intel/i440bxemulation/northbridge");
-		};
-		pci@1,0 {
-			/config/("southbridge/intel/i82371eb/isa");
-		};
-		pci@1,1 {
-			/config/("southbridge/intel/i82371eb/ide");
-		};
-		pci@1,3 {
-			/config/("southbridge/intel/i82371eb/acpi");
-		};
-		/* PCI 2.0 and 3.0 are plugged in. */
-		/* 2.0 is the Cirrus VGA card.  3.0 is a nic. */
-	};
+{
+	device_operations = "i440bx_northbridge";
 };

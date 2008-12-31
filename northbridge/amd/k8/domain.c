@@ -44,11 +44,7 @@
 #include <device/hypertransport.h>
 #include <mc146818rtc.h>
 #include <lib.h>
-#include  <lapic.h>
-
-#ifdef CONFIG_PCI_64BIT_PREF_MEM
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
-#endif
+#include <lapic.h>
 
 #define FX_DEVS 8
 extern struct device * __f0_dev[FX_DEVS];
@@ -140,24 +136,16 @@ static void k8_pci_domain_read_resources(struct device * dev)
 	resource->base  = 0x400;
 	resource->limit = 0xffffUL;
 	resource->flags = IORESOURCE_IO;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_IO, IORESOURCE_IO);
 
 	/* Initialize the system-wide prefetchable memory resource constraints */
 	resource = new_resource(dev, 1);
 	resource->limit = 0xfcffffffffULL;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
 	/* Initialize the system-wide memory resource constraints */
 	resource = new_resource(dev, 2);
 	resource->limit = 0xfcffffffffULL;
 	resource->flags = IORESOURCE_MEM;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH,
-		IORESOURCE_MEM);
 #endif
 	printk(BIOS_DEBUG, "k8_pci_domain_read_resources done\n");
 }
@@ -238,9 +226,6 @@ static void k8_pci_domain_set_resources(struct device * dev)
 		resource->flags |= IORESOURCE_ASSIGNED;
 		resource->flags &= ~IORESOURCE_STORED;
 #endif
-		compute_allocate_resource(&dev->link[0], resource,
-			BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
-
 		resource->flags |= IORESOURCE_STORED;
 		report_resource_stored(dev, resource, "");
 
@@ -360,7 +345,7 @@ static void k8_pci_domain_set_resources(struct device * dev)
 		k8_ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 	}
-	phase4_assign_resources(&dev->link[0]);
+	phase4_set_resources(&dev->link[0]);
 }
 
 static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)

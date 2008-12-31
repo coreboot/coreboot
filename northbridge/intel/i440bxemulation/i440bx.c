@@ -80,7 +80,7 @@ static void pci_domain_set_resources(struct device *dev)
 		/* 768 kB .. Systop (in KB) */
 		ram_resource(dev, idx++, 768, tolmk - 768);
 	}
-	phase4_assign_resources(&dev->link[0]);
+	phase4_set_resources(&dev->link[0]);
 }
 
 /* Here are the operations for when the northbridge is running a PCI domain. */

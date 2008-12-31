@@ -164,7 +164,7 @@ static void I945_pci_domain_set_resources(struct device * dev)
 		i945_ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
 	}
 
-	phase4_assign_resources(&dev->link[0]);
+	phase4_set_resources(&dev->link[0]);
 }
 
 static unsigned int i945_pci_domain_scan_bus(struct device * dev, unsigned int max)

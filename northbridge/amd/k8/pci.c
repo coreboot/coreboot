@@ -355,8 +355,6 @@ static void amdk8_link_read_bases(struct device *dev, unsigned nodeid,
 		resource->gran = log2c(HT_IO_HOST_ALIGN);
 		resource->limit = 0xffffUL;
 		resource->flags = IORESOURCE_IO;
-		compute_allocate_resource(&dev->link[link], resource,
-					  IORESOURCE_IO, IORESOURCE_IO);
 	}
 
 	/* Initialize the prefetchable memory constraints on the current bus */
@@ -368,9 +366,6 @@ static void amdk8_link_read_bases(struct device *dev, unsigned nodeid,
 		resource->gran = log2c(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-		compute_allocate_resource(&dev->link[link], resource,
-					  IORESOURCE_MEM | IORESOURCE_PREFETCH,
-					  IORESOURCE_MEM | IORESOURCE_PREFETCH);
 	}
 
 	/* Initialize the memory constraints on the current bus */
@@ -382,9 +377,6 @@ static void amdk8_link_read_bases(struct device *dev, unsigned nodeid,
 		resource->gran = log2c(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM;
-		compute_allocate_resource(&dev->link[link], resource,
-					  IORESOURCE_MEM | IORESOURCE_PREFETCH,
-					  IORESOURCE_MEM);
 	}
 }
 
@@ -441,8 +433,6 @@ static void amdk8_set_resource(struct device *dev, struct resource *resource,
 
 	if (resource->flags & IORESOURCE_IO) {
 		u32 base, limit;
-		compute_allocate_resource(&dev->link[link], resource,
-					  IORESOURCE_IO, IORESOURCE_IO);
 		base = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x4);
 		base &= 0xfe000fcc;
@@ -467,11 +457,6 @@ static void amdk8_set_resource(struct device *dev, struct resource *resource,
 		f1_write_config32(reg, base);
 	} else if (resource->flags & IORESOURCE_MEM) {
 		u32 base, limit;
-		compute_allocate_resource(&dev->link[link], resource,
-					  IORESOURCE_MEM | IORESOURCE_PREFETCH,
-					  resource->
-					  flags & (IORESOURCE_MEM |
-						   IORESOURCE_PREFETCH));
 		base = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x4);
 		base &= 0x000000f0;
@@ -581,7 +566,7 @@ static void amdk8_set_resources(struct device *dev)
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
-			phase4_assign_resources(bus);
+			phase4_set_resources(bus);
 		}
 	}
 }

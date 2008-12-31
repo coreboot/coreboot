@@ -110,8 +110,7 @@ static void sb600_lpc_enable_childrens_resources(struct device * dev)
 		for (child = dev->link[link].children; child;
 		     child = child->sibling) {
 			dev_phase5(child);
-			if (child->have_resources
-			    && (child->path.type == DEVICE_PATH_PNP)) {
+			if (child->path.type == DEVICE_PATH_PNP) {
 				for (i = 0; i < child->resources; i++) {
 					struct resource *res;
 					unsigned long base, end;	/*  don't need long long */

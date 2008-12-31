@@ -111,8 +111,8 @@ static void geodelx_northbridge_set_resources(struct device *dev)
 	for (link = 0; link < dev->links; link++) {
 		bus = &dev->link[link];
 		if (bus->children) {
-			printk(BIOS_DEBUG, "my_dev_set_resources: phase4_assign_resources %p\n", bus);
-			phase4_assign_resources(bus);
+			printk(BIOS_DEBUG, "my_dev_set_resources: phase4_set_resources %p\n", bus);
+			phase4_set_resources(bus);
 		}
 	}
 
@@ -161,7 +161,7 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
 			     (get_systop(nb_dm) / 1024) - 1024);
 	}
 
-	phase4_assign_resources(&dev->link[0]);
+	phase4_set_resources(&dev->link[0]);
 }
 
 /**

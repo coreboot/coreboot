@@ -184,11 +184,19 @@ static void amd8111_lpc_read_resources(struct device * dev)
 	pci_dev_read_resources(dev);
 
 	/* Add an extra subtractive resource for both memory and I/O */
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res = new_resource(dev, 0);
+	res->base = 0x0;
+	res->size = 0x1000;
+	res->limit = 0xffff;
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED | IORESOURCE_STORED;
 	
-	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res = new_resource(dev, 1);
+	res->base = 0xff000000UL;
+	res->size = 0x01000000UL;
+	res->limit = 0xffffffffUL;
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED | IORESOURCE_STORED;
 }
 
 static void amd8111_lpc_enable_resources(struct device * dev)

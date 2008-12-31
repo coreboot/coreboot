@@ -31,8 +31,13 @@
 
 #define NMI_OFF 0
 
-#define NPUML 0xD9	/* Non prefetchable upper memory limit */
-#define NPUMB 0xD8	/* Non prefetchable upper memory base */
+/* We don't implement this because:
+ * 1. There's only one pair of registers for both devices.
+ *      - This breaks our model for resource allocation.
+ * 2. The datasheet recommends against it.
+ */
+/* #define NPUML 0xD9 Non prefetchable upper memory limit */
+/* #define NPUMB 0xD8 Non prefetchable upper memory base */
 
 static void amd8132_walk_children(struct bus *bus,
 	void (*visit)(struct device * dev, void *ptr), void *ptr)
@@ -165,6 +170,7 @@ static unsigned int amd8132_scan_bus(struct bus *bus,
 	info.master_devices  = 0;
 	amd8132_walk_children(bus, amd8132_count_dev, &info);
 
+#warning Bus disabling disabled for amd8132
 #if 0
 	/* Disable the bus if there are no devices on it 
 	 */
@@ -309,40 +315,6 @@ static void amd8132_pcix_init(struct device * dev)
 	return;
 }
 
-static void bridge_read_resources(struct device *dev)
-{
-	struct resource *res;
-	pci_bus_read_resources(dev);
-	res = probe_resource(dev, PCI_MEMORY_BASE);	
-	if (res) {
-		res->limit = 0xffffffffffULL;
-	}
-}
-
-static void bridge_set_resources(struct device *dev)
-{
-	struct resource *res;
-	res = find_resource(dev, PCI_MEMORY_BASE);
-	if (res) {
-		resource_t base, end;
-		/* set the memory range */
-		dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
-		res->flags |= IORESOURCE_STORED;
-		compute_allocate_resource(&dev->link[0], res,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM);
-		base = res->base;
-		end  = resource_end(res);
-		pci_write_config16(dev, PCI_MEMORY_BASE, base >> 16);
-		pci_write_config8(dev, NPUML, (base >> 32) & 0xff);
-		pci_write_config16(dev, PCI_MEMORY_LIMIT, end >> 16);
-		pci_write_config8(dev, NPUMB, (end >> 32) & 0xff);
-
-		report_resource_stored(dev, res, "including NPUML");
-	}
-	pci_set_resources(dev);
-}
-
 struct device_operations amd8132_pcix = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
@@ -350,8 +322,8 @@ struct device_operations amd8132_pcix = {
 	.constructor		 = default_device_constructor,
 	.reset_bus		 = pci_bus_reset,
 	.phase3_scan		 = amd8132_scan_bridge,
-	.phase4_read_resources	 = bridge_read_resources,
-	.phase4_set_resources	 = bridge_set_resources,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = amd8132_pcix_init,
 	.ops_pci		 = &pci_bus_ops_pci,

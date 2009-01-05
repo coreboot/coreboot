@@ -210,10 +210,10 @@ static const struct rmap register_values[] = {
 	 *	   This field defines the end of PCI I/O region n
 	 * [31:25] Reserved
 	 */
-	PCM(0, 0x18, 1, 0xC4,  0xFE000FC8, 0x01fff000),
+	PCM(0, 0x18, 1, 0xC4,  0xFE000FC8, 0x00000000),
 	PCM(0, 0x18, 1, 0xCC,  0xFE000FC8, 0x00000000),
 	PCM(0, 0x18, 1, 0xD4,  0xFE000FC8, 0x00000000),
-	PCM(0, 0x18, 1, 0xDC,  0xFE000FC8, 0x00000000),
+	PCM(0, 0x18, 1, 0xDC,  0xFE000FC8, 0x01fff000),
 
 	/* PCI I/O Base i Registers
 	 * F1:0xC0 i = 0
@@ -240,10 +240,10 @@ static const struct rmap register_values[] = {
 	 *	   This field defines the start of PCI I/O region n 
 	 * [31:25] Reserved
 	 */
-	PCM(0, 0x18, 1, 0xC0,  0xFE000FCC, 0x00000003),
+	PCM(0, 0x18, 1, 0xC0,  0xFE000FCC, 0x00000000),
 	PCM(0, 0x18, 1, 0xC8,  0xFE000FCC, 0x00000000),
 	PCM(0, 0x18, 1, 0xD0,  0xFE000FCC, 0x00000000),
-	PCM(0, 0x18, 1, 0xD8,  0xFE000FCC, 0x00000000),
+	PCM(0, 0x18, 1, 0xD8,  0xFE000FCC, 0x00000003),
 
 	/* Config Base and Limit i Registers
 	 * F1:0xE0 i = 0

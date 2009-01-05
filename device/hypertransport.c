@@ -287,15 +287,15 @@ static unsigned int ht_lookup_slave_capability(struct device *dev)
 	return pos;
 }
 
-static void ht_collapse_early_enumeration(struct bus *bus,
+static void ht_collapse_early_enumeration(struct bus *bus, struct device* htdev,
 					  unsigned int offset_unitid)
 {
 	unsigned int devfn, ctrl;
 	struct ht_link prev;
 
 	/* Initialize the hypertransport enumeration state. */
-	prev.dev = bus->dev;
-	prev.pos = bus->cap;
+	prev.dev = htdev;
+	prev.pos = htdev->link[0].cap;
 	prev.ctrl_off = PCI_HT_CAP_HOST_CTRL;
 	prev.config_off = PCI_HT_CAP_HOST_WIDTH;
 	prev.freq_off = PCI_HT_CAP_HOST_FREQ;
@@ -384,7 +384,8 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	}
 }
 
-unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
+unsigned int hypertransport_scan_chain(struct device* htdev, struct bus *bus,
+				       unsigned int min_devfn,
 				       unsigned int max_devfn,
 				       unsigned int max,
 				       unsigned int *ht_unitid_base,
@@ -411,15 +412,15 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 #endif
 
 	/* Restore the hypertransport chain to its unitialized state. */
-	ht_collapse_early_enumeration(bus, offset_unitid);
+	ht_collapse_early_enumeration(bus, htdev, offset_unitid);
 
 	/* See which static device nodes I have. */
 	old_devices = bus->children;
-	bus->children = 0;
+	bus->children = NULL;
 
 	/* Initialize the hypertransport enumeration state. */
-	prev.dev = bus->dev;
-	prev.pos = bus->cap;
+	prev.dev = htdev;
+	prev.pos = htdev->link[0].cap;
 	prev.ctrl_off = PCI_HT_CAP_HOST_CTRL;
 	prev.config_off = PCI_HT_CAP_HOST_WIDTH;
 	prev.freq_off = PCI_HT_CAP_HOST_FREQ;
@@ -525,7 +526,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 		next_unitid += count;
 
 		/* Setup the hypertransport link. */
-		bus->reset_needed |= ht_setup_link(&prev, dev, pos);
+		htdev->link[0].reset_needed |= ht_setup_link(&prev, dev, pos);
 
 		printk(BIOS_DEBUG, "%s [%04x/%04x] %s next_unitid: %04x\n",
 			     dev_path(dev),
@@ -537,7 +538,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned int min_devfn,
 		 && (next_unitid <= (max_devfn >> 3)));
       end_of_chain:
 #if OPT_HT_LINK == 1
-	if (bus->reset_needed) {
+	if (htdev->link[0].reset_needed) {
 		printk(BIOS_INFO, "HyperT reset needed\n");
 	} else {
 		printk(BIOS_DEBUG, "HyperT reset not needed\n");
@@ -621,8 +622,9 @@ unsigned int hypertransport_scan_chain_x(struct bus *bus,
 {
 	unsigned int ht_unitid_base[4];
 	unsigned int offset_unitid = 1;
-	return hypertransport_scan_chain(bus, min_devfn, max_devfn, max,
-					 ht_unitid_base, offset_unitid);
+	return hypertransport_scan_chain(bus->dev, bus, min_devfn,
+					 max_devfn, max, ht_unitid_base,
+					 offset_unitid);
 }
 
 unsigned int ht_scan_bridge(struct device *dev, unsigned int max)

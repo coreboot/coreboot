@@ -20,5 +20,4 @@
 
 {
 	device_operations = "k8_ops";
-	bridge;
 };

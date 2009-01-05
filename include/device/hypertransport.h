@@ -21,8 +21,10 @@
 #include <device/device.h>
 #include <device/hypertransport_def.h>
 
-unsigned int hypertransport_scan_chain(struct bus *bus, 
-	unsigned min_devfn, unsigned max_devfn, unsigned int max, unsigned *ht_unit_base, unsigned offset_unitid);
+unsigned int hypertransport_scan_chain(struct device* parent, struct bus *bus,
+				       unsigned min_devfn, unsigned max_devfn,
+				       unsigned int max, unsigned *ht_unit_base,
+				       unsigned offset_unitid);
 unsigned int ht_scan_bridge(struct device *dev, unsigned int max);
 extern const struct device_operations default_ht_ops_bus;
 

@@ -23,13 +23,7 @@
 #include <console.h>
 #include <device/pci.h>
 #include <device/pcix.h>
-#include <msr.h>
-#include <legacy.h>
 #include <device/pci_ids.h>
-#include <statictree.h>
-#include <config.h>
-
-#define NMI_OFF 0
 
 /* We don't implement this because:
  * 1. There's only one pair of registers for both devices.
@@ -324,11 +318,10 @@ struct device_operations amd8132_pcix = {
 	.phase3_scan		 = amd8132_scan_bridge,
 	.phase4_read_resources	 = pci_bus_read_resources,
 	.phase4_set_resources	 = pci_set_resources,
-	.phase5_enable_resources = pci_dev_enable_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
 	.phase6_init		 = amd8132_pcix_init,
 	.ops_pci		 = &pci_bus_ops_pci,
 };
-
 
 static void ioapic_enable(struct device * dev)
 {
@@ -342,6 +335,7 @@ static void ioapic_enable(struct device * dev)
 	}
 	pci_write_config32(dev, 0x44, value);
 }
+
 static void amd8132_ioapic_init(struct device * dev)
 {
         u32 dword;

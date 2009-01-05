@@ -19,8 +19,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ifeq ($(CONFIG_SOUTHBRIDGE_AMD_AMD8132),y)
+ifeq ($(CONFIG_SOUTHBRIDGE_AMD_AMD8131),y)
 
-STAGE2_CHIPSET_SRC += $(src)/southbridge/amd/amd8132/amd8132_bridge.c
+STAGE2_CHIPSET_SRC += $(src)/southbridge/amd/amd8131/amd8131_bridge.c
 
 endif

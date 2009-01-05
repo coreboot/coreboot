@@ -22,15 +22,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 #include <types.h>
-#include <lib.h>
 #include <console.h>
 #include <device/pci.h>
-#include <msr.h>
-#include <legacy.h>
 #include <device/pci_ids.h>
-#include <statictree.h>
-#include <config.h>
-#include "amd8111.h"
 #include "amd8111_smbus.h"
 
 #define SMBUS_IO_BASE 0x0f00

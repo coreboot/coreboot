@@ -472,7 +472,6 @@ void soft_reset(void)
 void sio_setup(u32 devn)
 {
 
-        unsigned value;
         u32 dword;
         u8 byte;
 
@@ -488,5 +487,4 @@ void sio_setup(u32 devn)
         dword |= (1<<16);
         pci_conf1_write_config32(PCI_BDF(0, devn+1 , 0), 0xa4, dword);
 }
-
 

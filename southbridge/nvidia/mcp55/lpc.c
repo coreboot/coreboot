@@ -157,7 +157,7 @@ static void lpc_slave_init(struct device *dev)
 	lpc_common_init(dev, 0);
 }
 
-#if CONFIG_HPET
+#ifdef CONFIG_HPET
 static void enable_hpet(struct device *dev)
 {
 	unsigned long hpet_address;

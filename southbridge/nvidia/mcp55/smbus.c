@@ -104,7 +104,6 @@ unsigned pm_base;
 
 static void mcp55_sm_read_resources(struct device *dev)
 {
-	struct resource *res;
 	unsigned long index;
 
 	/* Get the normal pci resources of this device */

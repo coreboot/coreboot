@@ -28,27 +28,23 @@ STAGE2_DEVICE_SRC = device.c device_util.c root_device.c \
 		    pci_device.c pci_ops.c pci_rom.c pnp_device.c pnp_raw.c \
 			smbus_ops.c
 
-# this is only needed on the K8
-# This could also check for CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
-ifeq ($(CONFIG_NORTHBRIDGE_AMD_K8),y)
+ifeq ($(CONFIG_HYPERTRANSPORT_SUPPORT),y)
 STAGE2_DEVICE_SRC += hypertransport.c
 endif
 
-# this is only needed for pcix devices
-# This should also check for CONFIG_PCIX_PLUGIN_SUPPORT
-ifeq ($(CONFIG_SOUTHBRIDGE_AMD_AMD8132),y)
+ifeq ($(CONFIG_PCIX_SUPPORT),y)
 STAGE2_DEVICE_SRC += pcix_device.c
 endif
 
-ifeq ($(CONFIG_PCIE_PLUGIN_SUPPORT),y)
+ifeq ($(CONFIG_PCIE_SUPPORT),y)
 STAGE2_DEVICE_SRC += pcie_device.c
 endif
 
-ifeq ($(CONFIG_CARDBUS_PLUGIN_SUPPORT),y)
+ifeq ($(CONFIG_CARDBUS_SUPPORT),y)
 STAGE2_DEVICE_SRC += cardbus_device.c
 endif
 
-ifeq ($(CONFIG_AGP_PLUGIN_SUPPORT),y)
+ifeq ($(CONFIG_AGP_SUPPORT),y)
 STAGE2_DEVICE_SRC += agp_device.c
 endif
 

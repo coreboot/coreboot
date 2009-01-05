@@ -125,6 +125,45 @@ config INITIALIZE_ONBOARD_VGA_FIRST
 
 endmenu
 
+menu "Plugin Support"
+
+config PCIX_PLUGIN_SUPPORT
+	bool "Support for devices that provide PCI-X and aren't in the dts."
+	select PCIX_SUPPORT
+	default false
+	help
+	  Compile in the drivers for cards that provide PCI-X.
+
+config PCIE_PLUGIN_SUPPORT
+	bool "Support for devices that provide PCI-e and aren't in the dts."
+	select PCIE_SUPPORT
+	default false
+	help
+	  Compile in the drivers for cards that provide PCI-e.
+
+config HYPERTRANSPORT_PLUGIN_SUPPORT
+	bool "Support for devices that provide HT and aren't in the dts."
+	select HYPERTRANSPORT_SUPPORT
+	default false
+	help
+	  Compile in the drivers for cards that provide HT.
+
+config AGP_PLUGIN_SUPPORT
+	bool "Support for devices that provide AGP and aren't in the dts."
+	select AGP_SUPPORT
+	default false
+	help
+	  Compile in the drivers for cards that provide AGP.
+
+config CARDBUS_PLUGIN_SUPPORT
+	bool "Support for devices that provide Cardbus and aren't in the dts."
+	select CARDBUS_SUPPORT
+	default false
+	help
+	  Compile in the drivers for cards that provide Cardbus.
+
+endmenu
+
 menu "Power management"
 
 config SUSPEND_TO_RAM

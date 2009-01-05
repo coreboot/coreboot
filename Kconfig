@@ -93,10 +93,23 @@ source device/Kconfig
 
 # These are used for internal purposes only:
 
+# Buses:
+config PCIX_SUPPORT
+	boolean
+config PCIE_SUPPORT
+	boolean
+config HYPERTRANSPORT_SUPPORT
+	boolean
+config AGP_SUPPORT
+	boolean
+config CARDBUS_SUPPORT
+	boolean
+
 # Northbridges:
 config NORTHBRIDGE_AMD_GEODELX
 	boolean
 config NORTHBRIDGE_AMD_K8
+	select HYPERTRANSPORT_SUPPORT
 	boolean
 config NORTHBRIDGE_INTEL_I440BXEMULATION
 	boolean
@@ -111,10 +124,13 @@ config SOUTHBRIDGE_AMD_CS5536
 config SOUTHBRIDGE_INTEL_I82371EB
 	boolean
 config SOUTHBRIDGE_NVIDIA_MCP55
+	select PCIE_SUPPORT
 	boolean
 config SOUTHBRIDGE_AMD_AMD8151
+	select AGP_SUPPORT
 	boolean
 config SOUTHBRIDGE_AMD_AMD8132
+	select PCIX_SUPPORT
 	boolean
 config SOUTHBRIDGE_AMD_AMD8111
 	boolean

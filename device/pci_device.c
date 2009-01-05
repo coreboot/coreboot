@@ -32,6 +32,22 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
+#ifdef CONFIG_PCIX_PLUGIN_SUPPORT
+#include <device/pcix.h>
+#endif
+#ifdef CONFIG_AGP_PLUGIN_SUPPORT
+#include <device/agp.h>
+#endif
+#ifdef CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
+#include <device/hypertransport.h>
+#endif
+#ifdef CONFIG_PCIE_PLUGIN_SUPPORT
+#include <device/pcie.h>
+#endif
+#ifdef CONFIG_CARDBUS_PLUGIN_SUPPORT
+#include <device/cardbus.h>
+#endif
+
 #include <statictree.h>
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
@@ -776,7 +792,7 @@ const struct device_operations default_pci_ops_bus = {
  */
 static const struct device_operations *get_pci_bridge_ops(struct device *dev)
 {
-#ifdef DEVICE_PCIX_H
+#ifdef CONFIG_PCIX_PLUGIN_SUPPORT
 	unsigned int pcix_pos;
 	pcix_pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	if (pcix_pos) {
@@ -785,12 +801,12 @@ static const struct device_operations *get_pci_bridge_ops(struct device *dev)
 		return &default_pcix_ops_bus;
 	}
 #endif
-#ifdef DEVICE_AGP_H
+#ifdef CONFIG_AGP_PLUGIN_SUPPORT
 	/* How do I detect an PCI to AGP bridge? */
 #warning AGP detection not implemented, so AGP bridge plugin not supported.
 
 #endif
-#ifdef DEVICE_HYPERTRANSPORT_H
+#ifdef CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
 	unsigned int ht_pos;
 	ht_pos = 0;
 	while ((ht_pos = pci_find_next_capability(dev, PCI_CAP_ID_HT, ht_pos))) {
@@ -805,7 +821,7 @@ static const struct device_operations *get_pci_bridge_ops(struct device *dev)
 		}
 	}
 #endif
-#ifdef DEVICE_PCIE_H
+#ifdef CONFIG_PCIE_PLUGIN_SUPPORT
 	unsigned int pcie_pos;
 	pcie_pos = pci_find_capability(dev, PCI_CAP_ID_PCIE);
 	if (pcie_pos) {
@@ -881,7 +897,7 @@ static void set_pci_ops(struct device *dev)
 		else
 			dev->ops = get_pci_bridge_ops(dev);
 		break;
-#ifdef DEVICE_CARDBUS_H
+#ifdef CONFIG_CARDBUS_PLUGIN_SUPPORT
 	case PCI_HEADER_TYPE_CARDBUS:
 		dev->ops = &default_cardbus_ops_bus;
 		break;

@@ -55,17 +55,13 @@ unsigned int agp_scan_bridge(struct device *dev, unsigned int max)
 }
 
 /** Default device operations for AGP bridges. */
-static const struct pci_operations agp_bus_ops_pci = {
-	.set_subsystem = 0,
-};
 
 const struct device_operations default_agp_ops_bus = {
-	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_set_resources,
-	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = agp_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &agp_bus_ops_pci,
+	.phase3_scan		 = agp_scan_bridge,
+	.phase4_read_resources	 = pci_bus_read_resources,
+	.phase4_set_resources	 = pci_set_resources,
+	.phase5_enable_resources = pci_bus_enable_resources,
+	.phase6_init		 = 0,
+	.phase3_enable		 = 0,
+	.reset_bus		 = pci_bus_reset,
 };

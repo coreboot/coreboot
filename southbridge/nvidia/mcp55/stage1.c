@@ -37,21 +37,22 @@ int set_ht_link_mcp55(u8 ht_c_num)
 	int set_ht_link_buffer_counts_chain(u8 ht_c_num, unsigned vendorid,  unsigned val);
 	unsigned vendorid = 0x10de;
 	unsigned val = 0x01610109;
-	/* Nvidia mcp55 hardcode, hw can not set it automatically */
+	/* Nvidia mcp55 hardcode, hw can not set it automatically. */
 	return set_ht_link_buffer_counts_chain(ht_c_num, vendorid, val);
 }
 
-void setup_ss_table(unsigned index, unsigned where, unsigned control, const unsigned int *register_values, int max)
+void setup_ss_table(unsigned index, unsigned where, unsigned control,
+		    const unsigned int *register_values, int max)
 {
 	int i;
-
 	unsigned val;
 
 	val = inl(control);
 	val &= 0xfffffffe;
 	outl(val, control);
 
-	outl(0, index); //index
+	outl(0, index);
+
 	for(i = 0; i < max; i++) {
 		unsigned long reg;
 		reg = register_values[i];
@@ -61,7 +62,6 @@ void setup_ss_table(unsigned index, unsigned where, unsigned control, const unsi
 	val = inl(control);
 	val |= 1;
 	outl(val, control);
-
 }
 
 /* SIZE 0x100 */
@@ -120,12 +120,13 @@ static void mcp55_early_set_port(unsigned mcp55_num, unsigned *busn, unsigned *d
 	for(j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_x_offset(ctrl_devport_conf,
 			ARRAY_SIZE(ctrl_devport_conf),
-			PCI_BDF(busn[j], devn[j], 0) , io_base[j], 0);
+			PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 	}
 }
-static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base)
-{
 
+static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn,
+				   unsigned *devn, unsigned *io_base)
+{
 	static const struct rmap ctrl_devport_conf_clear[] = {
 	PCM(0, 1, 1, ANACTRL_REG_POS, ~0x0000ff00, 0),
 	PCM(0, 1, 1, SYSCTRL_REG_POS, ~0x0000ff00, 0),
@@ -136,10 +137,8 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned 
 	for(j = 0; j < mcp55_num; j++ ) {
 		setup_resource_map_x_offset(ctrl_devport_conf_clear,
 			ARRAY_SIZE(ctrl_devport_conf_clear),
-			PCI_BDF(busn[j], devn[j], 0) , io_base[j], 0);
+			PCI_BDF(busn[j], devn[j], 0) , io_base[j]);
 	}
-
-
 }
 
 static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io_base, unsigned pci_e_x)
@@ -181,10 +180,18 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 	udelay(100000);
 }
 
-static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base, unsigned *pci_e_x)
-{
+/**
+ * Do early setup
+ * @param mcp55_num the number of mcp55s on the board
+ * @param busn the number of the bus the mcp55 is on
+ * @param io_base
+ * @param pci_e_x
+ */
 
-    static const struct rmap ctrl_conf_1[] = {
+static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn,
+			      unsigned *io_base, unsigned *pci_e_x)
+{
+	static const struct rmap ctrl_conf_1[] = {
 	IO32(ACPICTRL_IO_BASE + 0x10, 0x0007ffff, 0xff78000),
 	IO32(ACPICTRL_IO_BASE + 0xa4, 0xffedffff, 0x0012000),
 	IO32(ACPICTRL_IO_BASE + 0xac, 0xfffffdff, 0x0000200),
@@ -319,9 +326,7 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 	IO8(SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(0<<0))),
 	IO8(SYSCTRL_IO_BASE + 0xc0+ 4, ~(0xff),  ((0<<4)|(1<<2)|(1<<0))),
 #endif
-
-    };
-
+	};
 
 	int j, i;
 
@@ -329,40 +334,45 @@ static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn
 		mcp55_early_pcie_setup(busn[j], devn[j], io_base[j] + ANACTRL_IO_BASE, pci_e_x[j]);
 
 		setup_resource_map_x_offset(ctrl_conf_1, ARRAY_SIZE(ctrl_conf_1),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 		for(i=0; i<3; i++) { // three SATA
 			setup_resource_map_x_offset(ctrl_conf_1_1, ARRAY_SIZE(ctrl_conf_1_1),
-				PCI_BDF(busn[j], devn[j], i), io_base[j], 0);
+				PCI_BDF(busn[j], devn[j], i), io_base[j]);
 		}
 		if(busn[j] == 0) {
 			setup_resource_map_x_offset(ctrl_conf_mcp55_only, ARRAY_SIZE(ctrl_conf_mcp55_only),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 		}
 
 		if( (busn[j] == 0) && (mcp55_num>1) ) {
 			setup_resource_map_x_offset(ctrl_conf_master_only, ARRAY_SIZE(ctrl_conf_master_only),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 		}
 
 		setup_resource_map_x_offset(ctrl_conf_2, ARRAY_SIZE(ctrl_conf_2),
-				PCI_BDF(busn[j], devn[j], 0), io_base[j], 0);
+				PCI_BDF(busn[j], devn[j], 0), io_base[j]);
 
 	}
 
 #if 0
 	for(j=0; j< mcp55_num; j++) {
-		// PCI-E (XSPLL) SS table 0x40, x044, 0x48
-		// SATA  (SPPLL) SS table 0xb0, 0xb4, 0xb8
-		// CPU   (PPLL)  SS table 0xc0, 0xc4, 0xc8
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0x40, io_base[j] + ANACTRL_IO_BASE+0x44,
-			io_base[j] + ANACTRL_IO_BASE+0x48, pcie_ss_tbl, 64);
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0xb0, io_base[j] + ANACTRL_IO_BASE+0xb4,
-			io_base[j] + ANACTRL_IO_BASE+0xb8, sata_ss_tbl, 64);
-		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0xc0, io_base[j] + ANACTRL_IO_BASE+0xc4,
-			io_base[j] + ANACTRL_IO_BASE+0xc8, cpu_ss_tbl, 64);
+		/* PCI-E (XSPLL) SS table 0x40, x044, 0x48 */
+		/* SATA  (SPPLL) SS table 0xb0, 0xb4, 0xb8 */
+		/* CPU   (PPLL)  SS table 0xc0, 0xc4, 0xc8 */
+		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0x40,
+			       io_base[j] + ANACTRL_IO_BASE+0x44,
+			       io_base[j] + ANACTRL_IO_BASE+0x48,
+			       pcie_ss_tbl, 64);
+		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0xb0,
+			       io_base[j] + ANACTRL_IO_BASE+0xb4,
+			       io_base[j] + ANACTRL_IO_BASE+0xb8,
+			       sata_ss_tbl, 64);
+		setup_ss_table(io_base[j] + ANACTRL_IO_BASE+0xc0,
+			       io_base[j] + ANACTRL_IO_BASE+0xc4,
+			       io_base[j] + ANACTRL_IO_BASE+0xc8,
+			       cpu_ss_tbl, 64);
 	}
 #endif
-
 }
 
 #ifndef HT_CHAIN_NUM_MAX
@@ -440,7 +450,6 @@ unsigned int get_sbdn(unsigned int bus)
 	}
 
 	return (bdf>>15) & 0x1f;
-
 }
 
 void set_bios_reset(void);

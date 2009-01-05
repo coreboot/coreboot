@@ -40,8 +40,8 @@
  * @param max The map size
  * @param offset_bdf pci device offset. Note this is a u32 in 
  * 			busdevfn format. See PCI_BDF macro if you are not sure what that is. 
- * @param offset_pciio added to the OR value for setting up PCI IO
- * @param offset_io offset from the io base in the resource map
+ * @param offset_io added to the OR value for setting up PCI IO
+ * 			  or the io base in the resource map
  */
 
 /* NOTE: By doing the config write in this manner we guarantee that this
@@ -49,8 +49,7 @@
  */
 
 void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
-                                 u32 offset_bdf, u32 offset_pciio, 
-                                 u32 offset_io)
+                                 u32 offset_bdf, u32 offset_io)
 {
 	u32 i;
 
@@ -69,7 +68,7 @@ void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
 			  printk(BIOS_DEBUG, "(%x+%x,%x+%x,%x+%x,%x) & %08x | %08x+%08x\n", rm->pcm.bus,
 				offset_bus, rm->pcm.dev, (offset_devfn>>3),
                                  rm->pcm.fn, offset_devfn&3, rm->pcm.reg,
-				 rm->pcm.and,rm->pcm.or, offset_pciio);
+				 rm->pcm.and,rm->pcm.or, offset_io);
                           dev = rm->pcm.dev;
                         where = rm->pcm.reg;
                           dev <<= 3;
@@ -77,7 +76,7 @@ void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
                             dev += offset_devfn;
                           reg = pci_conf1_read_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev),  where);
                           reg &= rm->pcm.and;
-                          reg |= rm->pcm.or + offset_pciio; 
+                          reg |= rm->pcm.or + offset_io;
                           pci_conf1_write_config32(PCI_BDEVFN(rm->pcm.bus + offset_bus, dev), where, reg);
 			}
 			break;
@@ -122,7 +121,6 @@ void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
 
 void setup_resource_map(const struct rmap *rm, u32 max)
 {
-
-  setup_resource_map_x_offset(rm, max, 0, 0, 0);
+	setup_resource_map_x_offset(rm, max, 0, 0);
 }
 

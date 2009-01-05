@@ -330,9 +330,8 @@ struct rmap {
 	};
 };
 
-void setup_resource_map_x_offset(const struct rmap *rm, u32 max,
-                                 u32 offset_dev, u32 offset_pciio, 
-                                 u32 offset_io);
+void setup_resource_map_x_offset(const struct rmap *rm, u32 max, u32 offset_dev,
+				 u32 offset_io);
 EXPORT_SYMBOL(setup_resource_map_x_offset);
 void setup_resource_map(const struct rmap *rm, u32 max);
 EXPORT_SYMBOL(setup_resource_map);

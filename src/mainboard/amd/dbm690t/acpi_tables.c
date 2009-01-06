@@ -258,12 +258,11 @@ u32 pstates_algorithm(acpi_header_t * dsdt)
 		return 0;
 	}
 
-	/*get the multipier of the fid frequency */
+	/* Get the multipier of the fid frequency */
 	/*
-	 * In RevG, 100MHz step is added
+	 * Fid multiplier is always 100 revF and revG.
 	 */
-	cpuid1 = cpuid(0x80000007);
-	fid_multiplier = ((cpuid1.edx & 0x40) >> 6) * 100;
+	fid_multiplier = 100;
 
 	/*
 	 * Formula1:    CPUFreq = FID * fid_multiplier + 800

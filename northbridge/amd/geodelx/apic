@@ -19,6 +19,6 @@
  */
 
 {
-	device_operations = "geodelx_north_apic";
+	device_operations = "geodelx_apic";
 };
 

@@ -19,7 +19,9 @@
  */
 
 {
-	device_operations = "geodelx_north_pci";
-	bridge;
+	device_operations = "geodelx_mc";
+
+	/* Video RAM has to be in 2MB chunks. */
+	geode_video_mb = "0";
 };
 

@@ -48,7 +48,7 @@ static void enable_shadow(struct device *dev)
  *
  * @return TODO.
  */
-u64 get_systop(struct northbridge_amd_geodelx_domain_config *nb_dm)
+u64 get_systop(struct northbridge_amd_geodelx_pci_config *nb_dm)
 {
 	const struct gliutable *gl = NULL;
 	u64 systop;
@@ -94,7 +94,10 @@ static void geodelx_northbridge_init(struct device *dev)
 static void geodelx_northbridge_set_resources(struct device *dev)
 {
 	struct resource *resource, *last;
+	struct northbridge_amd_geodelx_pci_config *nb_dm =
+	 (struct northbridge_amd_geodelx_pci_config *)dev->device_configuration;
 	unsigned int link;
+	int idx;
 	struct bus *bus;
 	u8 line;
 
@@ -116,6 +119,13 @@ static void geodelx_northbridge_set_resources(struct device *dev)
 		}
 	}
 
+	/* Report the memory regions. */
+	idx = 10;
+	/* 0 .. 640 KB */
+	ram_resource(dev, idx++, 0, 640);
+	/* 1 MB .. (Systop - 1 MB) (in KB) */
+	ram_resource(dev, idx++, 1024, (get_systop(nb_dm) / 1024) - 1024);
+
 	/* Set a default latency timer. */
 	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
 
@@ -133,33 +143,25 @@ static void geodelx_northbridge_set_resources(struct device *dev)
 }
 
 /**
- * Set resources in the PCI domain.
+ * Read resources in the PCI domain.
  *
- * Also, as a side effect, create a RAM resource in the child which,
- * interestingly enough, is the northbridge PCI device, for later
- * allocation of address space.
+ * @param dev The device.
+ */
+static void geodelx_pci_domain_read_resources(struct device *dev)
+{
+	/* If the domain has any specific resources, read them here. */
+	pci_domain_read_resources(dev);
+}
+
+/**
+ * Set resources in the PCI domain.
  *
  * @param dev The device.
  */
 static void geodelx_pci_domain_set_resources(struct device *dev)
 {
-	int idx;
-	struct device *mc_dev;
-	struct northbridge_amd_geodelx_domain_config *nb_dm =
-	 (struct northbridge_amd_geodelx_domain_config *)dev->device_configuration;
-
-	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
-
-	mc_dev = dev->link[0].children;
-	if (mc_dev) {
-		/* Report the memory regions. */
-		idx = 10;
-		/* 0 .. 640 KB */
-		ram_resource(dev, idx++, 0, 640);
-		/* 1 MB .. (Systop - 1 MB) (in KB) */
-		ram_resource(dev, idx++, 1024,
-			     (get_systop(nb_dm) / 1024) - 1024);
-	}
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
+	/* This is where we'd set the domain-specific resources. */
 
 	phase4_set_resources(&dev->link[0]);
 }
@@ -178,9 +180,6 @@ static void geodelx_pci_domain_set_resources(struct device *dev)
  */
 static void geodelx_pci_domain_phase2(struct device *dev)
 {
-	struct northbridge_amd_geodelx_domain_config *nb_dm =
-	 (struct northbridge_amd_geodelx_domain_config *)dev->device_configuration;
-
 	void do_vsmbios(void);
 
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
@@ -194,9 +193,20 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 	do_vsmbios(); 
 	printk(BIOS_SPEW, "After VSA:\n");
 	/* print_conf(); */
-	printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", nb_dm->geode_video_mb);
-	graphics_init((u8)nb_dm->geode_video_mb);
-	pci_check_pci_ops(dev->ops->ops_pci_bus);
+}
+
+/**
+ * Do the NB video setup.
+ *
+ * @param dev The device.
+ */
+static void geodelx_mc_phase2(struct device *dev)
+{
+	struct northbridge_amd_geodelx_pci_config *nb_mc =
+	 (struct northbridge_amd_geodelx_pci_config *)dev->device_configuration;
+
+	printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", nb_mc->geode_video_mb);
+	graphics_init((u8)nb_mc->geode_video_mb);
 }
 
 /**
@@ -222,14 +232,14 @@ static void cpu_bus_noop(struct device *dev)
  */
 
 /** Operations for when the northbridge is running a PCI domain. */
-struct device_operations geodelx_north_domain = {
+struct device_operations geodelx_domain = {
 	.id = {.type = DEVICE_ID_PCI_DOMAIN,
-		{.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
-				     .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
+	       {.pci_domain = {.vendor = PCI_VENDOR_ID_AMD,
+			       .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
-	.phase2_fixup		= geodelx_pci_domain_phase2,
+	.phase2_fixup			= geodelx_pci_domain_phase2,
 	.phase3_scan			= pci_domain_scan_bus,
-	.phase4_read_resources		= pci_domain_read_resources,
+	.phase4_read_resources		= geodelx_pci_domain_read_resources,
 	.phase4_set_resources		= geodelx_pci_domain_set_resources,
 	.phase5_enable_resources	= enable_childrens_resources,
 	.phase6_init			= 0,
@@ -237,17 +247,16 @@ struct device_operations geodelx_north_domain = {
 };
 
 /** Operations for when the northbridge is running an APIC cluster. */
-struct device_operations geodelx_north_apic = {
+struct device_operations geodelx_apic = {
 	.id = {.type = DEVICE_ID_APIC_CLUSTER,
-		{.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,
-				       .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
+	       {.apic_cluster = {.vendor = PCI_VENDOR_ID_AMD,
+				 .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
 	.phase3_scan			= 0,
 	.phase4_read_resources		= cpu_bus_noop,
 	.phase4_set_resources		= cpu_bus_noop,
 	.phase5_enable_resources	= cpu_bus_noop,
 	.phase6_init			= cpu_bus_init,
-	.ops_pci_bus			= &pci_cf8_conf1,
 };
 
 /**
@@ -255,15 +264,15 @@ struct device_operations geodelx_north_apic = {
  *
  * Note that phase3 scan is done in the domain, and MUST NOT be done here too.
  */
-struct device_operations geodelx_north_pci = {
+struct device_operations geodelx_mc = {
 	.id = {.type = DEVICE_ID_PCI,
 		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
 			      .device = PCI_DEVICE_ID_AMD_LXBRIDGE}}},
 	.constructor			= default_device_constructor,
+	.phase2_fixup			= geodelx_mc_phase2,
 	.phase3_scan			= 0,
-	.phase4_read_resources		= pci_domain_read_resources,
+	.phase4_read_resources		= pci_dev_read_resources,
 	.phase4_set_resources		= geodelx_northbridge_set_resources,
 	.phase5_enable_resources	= enable_childrens_resources,
 	.phase6_init			= geodelx_northbridge_init,
-	.ops_pci_bus			= &pci_cf8_conf1,
 };

@@ -27,10 +27,18 @@
 	};
 	domain@0 {
 		/config/("northbridge/amd/geodelx/domain");
-		/* Video RAM has to be in 2MB chunks. */
-		geode_video_mb = "16";
 		pci@1,0 {
 			/config/("northbridge/amd/geodelx/pci");
+			/* Video RAM has to be in 2MB chunks. */
+			geode_video_mb = "16";
+		};
+		pci@1,1 {
+			/* This is the graphics device, but since the memory
+			 * controller needs to know geode_video_mb, the
+			 * phase2_init is done there.  The rest are default ops.
+			 */
+		};
+		pci@1,2 { /* AES */
 		};
 		pci@f,0 {
 			/config/("southbridge/amd/cs5536/dts");

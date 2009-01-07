@@ -938,6 +938,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x1002, 0x4377, "ATI SB400",		enable_flash_sb400},
 	{0x1166, 0x0205, "Broadcom HT-1000",	enable_flash_ht1000},
 	{0x1022, 0x3000, "AMD Elan SC520",	get_flashbase_sc520},
+	{0x1022, 0x7440, "AMD AMD-768",         enable_flash_amd8111},
 };
 
 void print_supported_chipsets(void)

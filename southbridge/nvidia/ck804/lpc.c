@@ -124,6 +124,8 @@ static void setup_ioapic(unsigned long ioapic_base)
 #define SLOW_CPU_OFF 0
 #define SLOW_CPU__ON 1
 
+#warning Power on after fail should be a CMOS option.
+
 #ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif

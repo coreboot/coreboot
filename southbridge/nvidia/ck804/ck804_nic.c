@@ -89,6 +89,8 @@ static void nic_init(struct device *dev)
 		}
 	}
 
+#warning This should be fixed.  Can we use a LAR file for the MAC?
+
 	/* If that is invalid we will read that from romstrap. */
 	if (!eeprom_valid) {
 		unsigned long mac_pos;

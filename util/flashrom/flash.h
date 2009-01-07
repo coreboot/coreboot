@@ -356,6 +356,7 @@ extern struct flashchip flashchips[];
 #define SST_39VF040		0xD7
 #define SST_49LF040B		0x50
 #define SST_49LF040		0x51
+#define SST_49LF020		0x61
 #define SST_49LF020A		0x52
 #define SST_49LF080A		0x5B
 #define SST_49LF002A		0x57

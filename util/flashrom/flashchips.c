@@ -626,6 +626,12 @@ struct flashchip flashchips[] = {
 	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc
 	},
 
+	{"SST", "SST49LF020", SST_ID, SST_49LF020,
+	 256, 16 * 1024,
+	 TEST_OK_PR,
+	 probe_jedec, erase_49lf040, write_49lf040
+	},
+
 	{"SST", "SST49LF020A", SST_ID, SST_49LF020A,
 	 256, 16 * 1024,
 	 TEST_UNTESTED,

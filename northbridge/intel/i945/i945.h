@@ -31,15 +31,15 @@
 #define X60BAR		0x60
 
 /* Northbridge BARs */
-#define DEFAULT_PCIEXBAR	0xf0000000
+#define DEFAULT_PCIEXBAR	0xf0000000	/* 4 KB per PCIe device */
 #define DEFAULT_X60BAR		0xfed13000
-#define DEFAULT_MCHBAR		0xfed14000
-#define DEFAULT_DMIBAR		0xfed18000
-#define DEFAULT_EPBAR		0xfed19000
+#define DEFAULT_MCHBAR		0xfed14000	/* 16 KB */
+#define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
+#define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 
-#define GGC		0x52
+#define GGC		0x52			/* GMCH Graphics Control */
 
-#define DEVEN		0x54
+#define DEVEN		0x54			/* Device Enable */
 #define  DEVEN_D0F0 (1 << 0)
 #define  DEVEN_D1F0 (1 << 1)
 #define  DEVEN_D2F0 (1 << 3)
@@ -48,22 +48,22 @@
 #define BOARD_DEVEN ( DEVEN_D0F0 | DEVEN_D2F0 | DEVEN_D2F1 )
 #endif
 
-#define PAM0	0x90
-#define PAM1	0x91
-#define PAM2	0x92
-#define PAM3	0x93
-#define PAM4	0x94
-#define PAM5	0x95
-#define PAM6	0x96
+#define PAM0		0x90
+#define PAM1		0x91
+#define PAM2		0x92
+#define PAM3		0x93
+#define PAM4		0x94
+#define PAM5		0x95
+#define PAM6		0x96
 
-#define LAC	0x97		/* Legacy Access Control */
-#define TOLUD	0x9c		/* Top of Low Used Memory */
-#define SMRAM	0x9d
-#define ESMRAM	0x9e
+#define LAC		0x97	/* Legacy Access Control */
+#define TOLUD		0x9c	/* Top of Low Used Memory */
+#define SMRAM		0x9d	/* System Management RAM Control */
+#define ESMRAM		0x9e	/* Extended System Management RAM Control */
 
-#define TOM	0xa0
+#define TOM		0xa0
 
-#define SKPAD	0xdc		/* Scratchpad */
+#define SKPAD		0xdc	/* Scratchpad Data */
 
 /* Device 0:1.0 PCI configuration space (PCI Express) */
 
@@ -72,7 +72,7 @@
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 
-#define GCFC		0xf0	/* Graphics Clock Frequency and Gating Control */
+#define GCFC		0xf0	/* Graphics Clock Frequency & Gating Control */
 
 
 /*
@@ -119,6 +119,7 @@
 #define C1DRB2		0x182	/*  8bit */
 #define C1DRB3		0x183	/*  8bit */
 #define C1DRA0		0x188	/*  8bit */
+#define C1DRA2		0x189	/*  8bit */
 #define C1DCLKDIS	0x18c	/*  8bit */
 #define C1BNKARC	0x18e	/* 16bit */
 #define C1DRT0		0x190	/* 32bit */
@@ -152,7 +153,7 @@
 #define DQSMT		0x2f4	/* 16bit */
 #define RCVENMT		0x2f8	/* 32bit */
 
-#define C0R0B00DQST	0x300	/*  64bit */
+#define C0R0B00DQST	0x300	/* 64bit */
 
 #define C0WL0REOST	0x340	/*  8bit */
 #define C0WL1REOST	0x341	/*  8bit */
@@ -162,7 +163,7 @@
 #define C0WDLLCMC	0x36c	/* 32bit */
 #define C0HCTC		0x37c	/*  8bit */
 
-#define C1R0B00DQST	0x380	/*  64bit */
+#define C1R0B00DQST	0x380	/* 64bit */
 
 #define C1WL0REOST	0x3c0	/*  8bit */
 #define C1WL1REOST	0x3c1	/*  8bit */

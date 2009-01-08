@@ -989,6 +989,7 @@ void dev_phase1(void)
 	printk(BIOS_DEBUG, "Phase 1: Very early setup...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->ops && dev->ops->phase1_set_device_operations) {
+			printk(BIOS_WARNING, "Phase 1 is obsolete...\n");
 			dev->ops->phase1_set_device_operations(dev);
 		}
 	}
@@ -997,31 +998,37 @@ void dev_phase1(void)
 	post_code(POST_STAGE2_PHASE1_EXIT);
 }
 
+/*
+ * Starting at the root device, walk the tree and call the device's phase2()
+ * method to do early setup.  It's done parents before children in case there
+ * are dependencies.
+ */
+void phase2_tree(struct device *root)
+{
+	struct device *child;
+	unsigned link;
+
+	if (root->ops && root->ops->phase2_fixup) {
+		printk(BIOS_DEBUG, "Phase 2: %s fixup.\n", dev_path(root));
+		root->ops->phase2_fixup(root);
+	}
+	for (link = 0; link < root->links; link++) {
+		for (child = root->link[link].children; child;
+		     child = child->sibling) {
+			phase2_tree(child);
+		}
+	}
+}
+
 /**
- * Do early setup for all devices in the global device list.
- *
- * Starting at the first device on the global device link list,
- * walk the list and call the device's phase2() method to do
- * early setup.
+ * Do early setup for all devices in the global device tree.
  */
 void dev_phase2(void)
 {
-	struct device *dev;
-
 	post_code(POST_STAGE2_PHASE2_ENTER);
 	printk(BIOS_DEBUG, "Phase 2: Early setup...\n");
-	for (dev = all_devices; dev; dev = dev->next) {
-		printk(BIOS_SPEW,
-		       "%s: dev %s: ops %sNULL ops->phase2_fixup %s\n",
-		       __FUNCTION__, dev->dtsname, dev->ops ? "NOT " : "",
-		       dev->ops ? (dev->ops->phase2_fixup ? "NOT NULL" : "NULL")
-		       : "N/A");
-		if (dev->ops && dev->ops->phase2_fixup) {
-			printk(BIOS_SPEW, "Calling phase2 phase2_fixup...\n");
-			dev->ops->phase2_fixup(dev);
-			printk(BIOS_SPEW, "phase2_fixup done\n");
-		}
-	}
+
+	phase2_tree(&dev_root);
 
 	post_code(POST_STAGE2_PHASE2_DONE);
 	printk(BIOS_DEBUG, "Phase 2: Done.\n");
@@ -1321,28 +1328,36 @@ void dev_root_phase5(void)
 	printk(BIOS_INFO, "Phase 5: Done.\n");
 }
 
+/*
+ * Walk the device tree and call the device's phase6_init() method.  It's done
+ * preorder (parents before children) in case there are dependencies.
+ */
+void phase6_tree(struct device *root)
+{
+	struct device *child;
+	unsigned link;
+
+	if (root->enabled && root->ops && root->ops->phase6_init) {
+		printk(BIOS_DEBUG, "Phase 6: %s init.\n", dev_path(root));
+		root->ops->phase6_init(root);
+	}
+	for (link = 0; link < root->links; link++) {
+		for (child = root->link[link].children; child;
+		     child = child->sibling) {
+			phase6_tree(child);
+		}
+	}
+}
+
 /**
- * Initialize all devices in the global device list.
- *
- * Starting at the first device on the global device link list, walk the list
- * and call the device's init() method to do device specific setup.
+ * Initialize all devices in the device tree.
  */
 void dev_phase6(void)
 {
-	struct device *dev;
-
 	printk(BIOS_INFO, "Phase 6: Initializing devices...\n");
-	for (dev = all_devices; dev; dev = dev->next) {
-		if (dev->enabled && dev->ops && dev->ops->phase6_init) {
-			if (dev->path.type == DEVICE_PATH_I2C) {
-				printk(BIOS_DEBUG, "Phase 6: smbus: %s[%d]->",
-				       dev_path(dev->bus->dev), dev->bus->link);
-			}
-			printk(BIOS_DEBUG, "Phase 6: %s init.\n",
-			       dev_path(dev));
-			dev->ops->phase6_init(dev);
-		}
-	}
+
+	phase6_tree(&dev_root);
+
 	printk(BIOS_INFO, "Phase 6: Devices initialized.\n");
 }
 

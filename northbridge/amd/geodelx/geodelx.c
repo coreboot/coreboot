@@ -149,8 +149,27 @@ static void geodelx_northbridge_set_resources(struct device *dev)
  */
 static void geodelx_pci_domain_read_resources(struct device *dev)
 {
+	struct resource *res;
+
 	/* If the domain has any specific resources, read them here. */
 	pci_domain_read_resources(dev);
+
+	/* Reserve space for the IOAPIC.  This should be in the Southbridge,
+	 * but I couldn't tell which device to put it in. */
+	res = new_resource(dev, 2);
+	res->base = 0xfec00000UL;
+	res->size = 0x100000UL;
+	res->limit = 0xffffffffUL;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
+		     IORESOURCE_ASSIGNED;
+
+	/* Reserve space for the ROM. */
+	res = new_resource(dev, 3);
+	res->base = 0xfff00000UL;
+	res->size = 0x100000UL;
+	res->limit = 0xffffffffUL;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
+		     IORESOURCE_ASSIGNED;
 }
 
 /**

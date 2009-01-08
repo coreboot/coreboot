@@ -82,7 +82,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 {
 	u32 reg32;
 
-	printk(BIOS_SPEW, "    set_receive_enable() medium=0x%x, coarse=0x%x\r\n", medium, coarse);
+	printk(BIOS_SPEW, "    set_receive_enable() medium=0x%x, coarse=0x%x\n", medium, coarse);
 	
 	reg32 = MCHBAR32(C0DRT1 + channel_offset);
 	reg32 &= 0xf0ffffff;
@@ -116,7 +116,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 
 static int normalize(int channel_offset, u8 * mediumcoarse, u8 * fine)
 {
-	printk(BIOS_SPEW, "  normalize()\r\n");
+	printk(BIOS_SPEW, "  normalize()\n");
 
 	if (*fine < 0x80)
 		return 0;
@@ -125,7 +125,7 @@ static int normalize(int channel_offset, u8 * mediumcoarse, u8 * fine)
 	*mediumcoarse += 1;
 
 	if (*mediumcoarse >= 0x40) {
-		printk(BIOS_DEBUG, "Normalize Error\r\n");
+		printk(BIOS_DEBUG, "Normalize Error\n");
 		return -1;
 	}
 
@@ -143,12 +143,12 @@ static int find_preamble(int channel_offset, u8 * mediumcoarse,
 	/* find start of the data phase */
 	u32 reg32;
 
-	printk(BIOS_SPEW, "  find_preamble()\r\n");
+	printk(BIOS_SPEW, "  find_preamble()\n");
 
 	do {
 		if (*mediumcoarse < 4) {
 			
-			printk(BIOS_DEBUG, "No Preamble found.\r\n");
+			printk(BIOS_DEBUG, "No Preamble found.\n");
 			return -1;
 		}
 		*mediumcoarse -= 4;
@@ -162,7 +162,7 @@ static int find_preamble(int channel_offset, u8 * mediumcoarse,
 
 	if (!(reg32 & (1 << 18))) {	
 		
-		printk(BIOS_DEBUG, "No Preamble found (neither high nor low).\r\n");
+		printk(BIOS_DEBUG, "No Preamble found (neither high nor low).\n");
 		return -1;
 	}
 
@@ -175,14 +175,14 @@ static int find_preamble(int channel_offset, u8 * mediumcoarse,
 
 static int add_quarter_clock(int channel_offset, u8 * mediumcoarse, u8 * fine)
 {
-	printk(BIOS_SPEW, "  add_quarter_clock() mediumcoarse=%02x fine=%02x\r\n",
+	printk(BIOS_SPEW, "  add_quarter_clock() mediumcoarse=%02x fine=%02x\n",
 			*mediumcoarse, *fine);
 	if (*fine >= 0x80) {
 		*fine -= 0x80;
 
 		*mediumcoarse += 2;
 		if (*mediumcoarse >= 0x40) {
-			printk(BIOS_DEBUG, "clocks at max.\r\n");
+			printk(BIOS_DEBUG, "clocks at max.\n");
 			return -1;
 		}
 
@@ -202,7 +202,7 @@ static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
 {
 	u32 rcvenmt;
 
-	printk(BIOS_SPEW, "  find_strobes_low()\r\n");
+	printk(BIOS_SPEW, "  find_strobes_low()\n");
 	
 	for (;;) {
 		MCHBAR8(C0WL0REOST + channel_offset) = *fine;
@@ -228,7 +228,7 @@ static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
 
 	}
 
-	printk(BIOS_DEBUG, "Could not find low strobe\r\n");
+	printk(BIOS_DEBUG, "Could not find low strobe\n");
 	return 0;
 }
 
@@ -238,7 +238,7 @@ static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
 	int counter;
 	u32 rcvenmt;
 
-	printk(BIOS_SPEW, "  find_strobes_edge()\r\n");
+	printk(BIOS_SPEW, "  find_strobes_edge()\n");
 
 	counter = 8;
 	set_receive_enable(channel_offset, *mediumcoarse & 3,
@@ -273,7 +273,7 @@ static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
 			continue;
 		}
 
-		printk(BIOS_DEBUG, "could not find rising edge.\r\n");
+		printk(BIOS_DEBUG, "could not find rising edge.\n");
 		return -1;
 	}
 	
@@ -302,7 +302,7 @@ static int receive_enable_autoconfig(int channel_offset,
 	u8 mediumcoarse;
 	u8 fine;
 
-	printk(BIOS_SPEW, "receive_enable_autoconfig() for channel %d\r\n",
+	printk(BIOS_SPEW, "receive_enable_autoconfig() for channel %d\n",
 		    channel_offset ? 1 : 0);
 
 	/* Set initial values */

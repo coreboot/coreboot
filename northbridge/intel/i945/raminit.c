@@ -1158,7 +1158,7 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 
 static int i945_silicon_revision(void)
 {
-	return pci_conf1_read_config8(PCI_BDF(0, 0x00, 0), 8);
+	return pci_conf1_read_config8(PCI_BDF(0, 0x00, 0), PCI_CLASS_REVISION);
 }
 
 static void sdram_force_rcomp(void)
@@ -1435,11 +1435,15 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 		tolud = (cum0 + cum1) << 1;
 	else
 		tolud = (cum1 ? cum1 : cum0)  << 1;
-	pci_conf1_write_config16(PCI_BDF(0,0,0), TOLUD, tolud);
-	
+
+	/* Some extra checks needed. See 4.1.26 in the 
+	 * 82945G MCH datasheet (30750203)
+	 */
+	pci_conf1_write_config8(PCI_BDF(0,0,0), TOLUD, tolud);
+
 	printk(BIOS_DEBUG, "C0DRB = 0x%08x\n", MCHBAR32(C0DRB0));
 	printk(BIOS_DEBUG, "C1DRB = 0x%08x\n", MCHBAR32(C1DRB0));
-	printk(BIOS_DEBUG, "TOLUD = 0x%04x\n", tolud);
+	printk(BIOS_DEBUG, "TOLUD = 0x%02x\n", tolud);
 
 	pci_conf1_write_config16(PCI_BDF(0,0,0), TOM, tolud>>3);
 
@@ -2837,8 +2841,6 @@ static void i945_setup_bars(void)
 	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM5, 0x33);
 	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), PAM6, 0x33);
 
-	pci_conf1_write_config8(PCI_BDF(0, 0x00, 0), TOLUD, 0x40);	/* 1G XXX dynamic! */
-
 	pci_conf1_write_config32(PCI_BDF(0, 0x00, 0), SKPAD, 0xcafebabe);
 	printk(BIOS_DEBUG, " done.\n");
 
@@ -3141,24 +3143,23 @@ static void i945_setup_pci_express_x16(void)
 	u32 timeout;
 	u32 reg32;
 	u16 reg16;
-	u8 reg8;
 
 	/* For now we just disable the x16 link */
 	printk(BIOS_DEBUG, "Disabling PCI Express x16 Link\n");
 
 	MCHBAR16(UPMC1) |= (1 << 5) | (1 << 0);
 
-	reg8 = pcie_read_config8(PCI_BDF(0, 0x01, 0), BCTRL1);
-	reg8 |= (1 << 6);
-	pcie_write_config8(PCI_BDF(0, 0x01, 0), BCTRL1, reg8);
+	reg16 = pcie_read_config16(PCI_BDF(0, 0x01, 0), BCTRL1);
+	reg16 |= (1 << 6);
+	pcie_write_config16(PCI_BDF(0, 0x01, 0), BCTRL1, reg16);
 
 	reg32 = pcie_read_config32(PCI_BDF(0, 0x01, 0), 0x224);
 	reg32 |= (1 << 8);
 	pcie_write_config32(PCI_BDF(0, 0x01, 0), 0x224, reg32);
 
-	reg8 = pcie_read_config8(PCI_BDF(0, 0x01, 0), BCTRL1);
-	reg8 &= ~(1 << 6);
-	pcie_write_config8(PCI_BDF(0, 0x01, 0), BCTRL1, reg8);
+	reg16 = pcie_read_config16(PCI_BDF(0, 0x01, 0), BCTRL1);
+	reg16 &= ~(1 << 6);
+	pcie_write_config16(PCI_BDF(0, 0x01, 0), BCTRL1, reg16);
 
 	printk(BIOS_DEBUG, "Wait for link to enter detect state... ");
 	timeout = 0x7fffff;

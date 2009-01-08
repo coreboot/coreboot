@@ -717,6 +717,7 @@ static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)
 {
 	unsigned reg;
 	int i;
+	struct device *last_dev, *children;
 
 	printk(BIOS_DEBUG, "%s: %s \n", __func__, dev->dtsname);
 
@@ -746,7 +747,30 @@ static unsigned int k8_domain_scan_bus(struct device * dev, unsigned int max)
 		}
 	}
 
+	/* Take processors off the list; we always know what link they're on. */
+	for (last_dev = dev->link[0].children; last_dev;
+	     last_dev = last_dev->sibling)
+		if (last_dev && last_dev->sibling == __f0_dev[0])
+			last_dev->sibling = NULL;
+
 	max = amdk8_scan_chains(dev, __f0_dev[0], max);
+
+	/* Save non-processor children. */
+	children = dev->link[0].children;
+
+	/* Probe for processors and disable those that don't respond. */
+	dev->link[0].children = __f0_dev[0];
+	pci_scan_bus(&dev->link[0], PCI_DEVFN(0x18,0), 0xff, 0);
+
+	/* Add them back to the new end of the list. */
+	for (last_dev = children; last_dev && last_dev->sibling;
+	     last_dev = last_dev->sibling);
+
+	if (last_dev) {
+		last_dev->sibling = __f0_dev[0];
+		dev->link[0].children = children;
+	} else
+		dev->link[0].children = __f0_dev[0];
 
 	return max;
 }

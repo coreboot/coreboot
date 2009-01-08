@@ -22,75 +22,81 @@
 	device_operations="serengeti";
 	mainboard_vendor = "AMD";
 	mainboard_name = "Serengeti";
-	subsystem_vendor = "PCI_VENDOR_ID_AMD";
-	subsystem_device = "0x2b80";
+	mainboard_pci_subsystem_vendor = "PCI_VENDOR_ID_AMD";
+	mainboard_pci_subsystem_device = "0x2b80";
 	cpus { };
 	apic@0 {
 		/config/("northbridge/amd/k8/apic");
 	};
 	domain@0 {
 		/config/("northbridge/amd/k8/domain");
+		pci_a@0,0 {
+			/config/("southbridge/amd/amd8132/pcix.dts");
+			};
+		pci_a@0,1 {
+			/config/("southbridge/amd/amd8132/apic.dts");
+			};
+		pci_a@1,0 {
+			/config/("southbridge/amd/amd8132/pcix.dts");
+			};
+		pci_a@1,1 {
+			/config/("southbridge/amd/amd8132/apic.dts");
+			};
+		pci@0,0 {
+			/config/("southbridge/amd/amd8111/pci.dts");
+			pci@0,0{
+				/config/("southbridge/amd/amd8111/usb.dts");
+			};
+			pci@0,1{
+				/config/("southbridge/amd/amd8111/usb.dts");
+			};
+			pci@0,2{
+				/config/("southbridge/amd/amd8111/usb2.dts");
+				disabled;
+			};
+			pci@1,0{
+				/config/("southbridge/amd/amd8111/nic.dts");
+				disabled;
+			};
+		};
+		pci@1,0 {
+			/config/("southbridge/amd/amd8111/lpc.dts");
+			ioport@2e {
+				/config/("superio/winbond/w83627hf/dts");
+				kbenable = "1";
+				com1enable = "1";
+				hwmenable = "1";
+			};
+		};
+		pci@1,1 {
+			/config/("southbridge/amd/amd8111/ide.dts");
+			ide0_enable = "1";
+			ide1_enable = "1";
+		};
+		pci@1,2 {
+			/config/("southbridge/amd/amd8111/smbus.dts");
+		};
+		pci@1,3 {
+			/config/("southbridge/amd/amd8111/acpi.dts");
+		};
+		pci@1,5 {
+			/config/("southbridge/amd/amd8111/ac97audio.dts");
+			disabled;
+		};
+		pci@1,6 {
+			/config/("southbridge/amd/amd8111/ac97modem.dts");
+			disabled;
+		};
+		pci@1,7 {
+		};
+		pci_8@0,0 {
+			/config/("southbridge/amd/amd8151/agpbridge.dts");
+		};
+		pci_8@1,0 {
+			/config/("southbridge/amd/amd8151/agpdev.dts");
+		};
 		pci@18,0 {
 			/config/("northbridge/amd/k8/pci");
-			pci_a@0,0 {
-				/config/("southbridge/amd/amd8132/pcix.dts");
-				};
-			pci_a@0,1 {
-				/config/("southbridge/amd/amd8132/apic.dts");
-				};
-			pci_a@1,0 {
-				/config/("southbridge/amd/amd8132/pcix.dts");
-				};
-			pci_a@1,1 {
-				/config/("southbridge/amd/amd8132/apic.dts");
-				};
-			pci@0,0 {
-				/config/("southbridge/amd/amd8111/pci.dts");
-				pci@0,0{
-					/config/("southbridge/amd/amd8111/usb.dts");
-				};
-				pci@0,1{
-					/config/("southbridge/amd/amd8111/usb.dts");
-				};
-				pci@0,2{
-					/config/("southbridge/amd/amd8111/usb2.dts");
-					disabled;
-				};
-				pci@1,0{
-					/config/("southbridge/amd/amd8111/nic.dts");
-					disabled;
-				};
-			};
-			pci@1,0 {
-				/config/("southbridge/amd/amd8111/lpc.dts");
-				ioport@2e {
-					/config/("superio/winbond/w83627hf/dts");
-					kbenable = "1";
-					com1enable = "1";
-					hwmenable = "1";
-				};
-			};
-			pci@1,1 {
-				/config/("southbridge/amd/amd8111/ide.dts");
-				ide0_enable = "1";
-				ide1_enable = "1";
-			};
-			pci@1,2 {
-				/config/("southbridge/amd/amd8111/smbus.dts");
-			};
-			pci@1,3 {
-				/config/("southbridge/amd/amd8111/acpi.dts");
-			};
-			pci@1,5 {
-				/config/("southbridge/amd/amd8111/ac97audio.dts");
-				disabled;
-			};
-			pci@1,6 {
-				/config/("southbridge/amd/amd8111/ac97modem.dts");
-				disabled;
-			};
-			pci@1,7 {
-			};
 		};
 		pci@18,1 {};
 		pci@18,2 {};
@@ -101,12 +107,6 @@
 			/config/("northbridge/amd/k8/pci");
 		};
 		pci@19,1 {
-			pci@0,0 {
-				/config/("southbridge/amd/amd8151/agpbridge.dts");
-			};
-			pci@1,0 {
-				/config/("southbridge/amd/amd8151/agpdev.dts");
-			};
 		};
 		pci@19,2 {};
 		pci@19,3 {

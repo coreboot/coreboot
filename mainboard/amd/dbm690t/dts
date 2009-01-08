@@ -66,52 +66,75 @@
 /{
 	device_operations="dbm690t";
 	mainboard_vendor = "AMD";
-	mainboard_name = "Serengeti";
+	mainboard_name = "dbm690t";
 	cpus { };
 	apic@0 {
 	};
 	domain@0 {
 		/config/("northbridge/amd/k8/domain");
-		pci@1,0{
+		/* Make sure that the HT device is first; if it isn't found,
+		 * the rest of the devices won't be found.
+		 */
+		pci@0 {
+			/config/("southbridge/amd/rs690/ht.dts");
 		};
-		/* guesses; we need a real lspci */
-		pci0@18,0 {
-			/config/("northbridge/amd/k8/pci");
-			/* make sure that the ht device is first, as it controls many other things. */
-			pci0 {
-				/config/("southbridge/amd/rs690/ht.dts");
-			};
-			pci1{
+		pci@1{
+			/config/("southbridge/amd/sb600/pci.dts");
+			pci@5{
 				/config/("southbridge/amd/rs690/gfx.dts");
 			};
-			pci2{
-				/config/("southbridge/amd/rs690/pcie.dts");
-			};
-			pci4{
-				/config/("southbridge/amd/sb600/hda.dts");
-			};
-			pci5{
-				/config/("southbridge/amd/sb600/usb.dts");
-			};
-			pci6{
-				/config/("southbridge/amd/sb600/usb2.dts");
+		};
+		pci@6{ /* Port 2 */
+			/config/("southbridge/amd/rs690/pcie.dts");
+		};
+		pci@7{ /* Port 3 */
+			/config/("southbridge/amd/rs690/pcie.dts");
+		};
+		pci@12{
+			/config/("southbridge/amd/sb600/hda.dts");
+		};
+		pci@13,0{
+			/config/("southbridge/amd/sb600/usb.dts");
+		};
+		pci@13,1{
+			/config/("southbridge/amd/sb600/usb.dts");
+		};
+		pci@13,2{
+			/config/("southbridge/amd/sb600/usb.dts");
+		};
+		pci@13,3{
+			/config/("southbridge/amd/sb600/usb.dts");
+		};
+		pci@13,4{
+			/config/("southbridge/amd/sb600/usb.dts");
+		};
+		pci@13,5{
+			/config/("southbridge/amd/sb600/usb2.dts");
+		};
+		pci@14,0{
+			/config/("southbridge/amd/sb600/sm.dts");
+		};
+		pci@14,1{
+			/config/("southbridge/amd/sb600/ide.dts");
+		};
+		pci@14,2{
+			/config/("southbridge/amd/sb600/ac97audio.dts");
+		};
+		pci@14,3{
+			/config/("southbridge/amd/sb600/lpc.dts");
+			ioport@2e {
+				/config/("superio/ite/it8712f/dts");
+				com1enable = "1";
 			};
 		};
-		pci1@18,0 {
-			/config/("northbridge/amd/k8/pci");
+		pci@14,4{
+			/config/("southbridge/amd/sb600/pci.dts");
 		};
-		pci2@18,0 {
+		pci@18,0 {
 			/config/("northbridge/amd/k8/pci");
-			/* just for illustrating link #2 */
-			pci@2,0{
-			};
 		};
 		pci@18,1 {};
 		pci@18,2 {};
 		pci@18,3 {};
-		ioport@2e {
-			/config/("superio/ite/it8712f/dts");
-			com1enable = "1";
-		};
 	};
 };

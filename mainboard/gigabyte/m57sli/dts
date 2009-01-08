@@ -44,20 +44,58 @@
 	apic@0 {
 	};
 	domain@0 {
-		pci@1,0{
+		pci@0,0 { /* MCP55 RAM? */
+		};
+		pci@1,0 {
+			/config/("southbridge/nvidia/mcp55/lpc.dts");
+			ioport@2e {
+				/config/("superio/ite/it8716f/dts");
+				com1enable = "1";
+				ecenable = "1";
+				kbenable = "1";
+				mouseenable = "1";
+				gpioenable = "1";
+			};
+		};
+		pci@1,1 { /* smbus */
+		};
+		pci@2,0 { /* usb */
+		};
+		pci@2,1 { /* usb */
+		};
+		pci@4,0 {
+			/config/("southbridge/nvidia/mcp55/ide.dts");
+			ide0_enable = "1";
+		};
+		pci@5,0 {
+			/config/("southbridge/nvidia/mcp55/sata.dts");
+			sata0_enable = "1";
+		};
+		pci@5,1 {
+			/config/("southbridge/nvidia/mcp55/sata.dts");
+			sata1_enable = "1";
+		};
+		pci@6,0 { /* PCI */
+		};
+		pci@6,1 {
+			/*/config/("southbridge/nvidia/mcp55/audio.dts"); */
+		};
+		pci@8,0 {
+		/*
+			/config/("southbridge/nvidia/mcp55/nic.dts");
+			mac_eeprom_smbus = "3";
+			mac_eeprom_addr = "0x51";
+		*/
+		};
+		pci@f,0 { /* PCIe */
 		};
 		pci@18,0 {
 			/config/("northbridge/amd/k8/pci");
-			pci@0,0 {
-				/config/("southbridge/nvidia/mcp55/ide.dts");
-			};
-			pci@0,1 {
-				/config/("southbridge/nvidia/mcp55/sata.dts");
-			};
 		};
-		ioport@2e {
-			/config/("superio/ite/it8716f/dts");
-			com1enable = "1";
+		pci@18,1 {};
+		pci@18,2 {};
+		pci@18,3 {
+			/config/("northbridge/amd/k8/mcf3");
 		};
 	};
 };

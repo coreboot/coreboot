@@ -36,949 +36,2111 @@ struct flashchip flashchips[] = {
 	 * Probe function, Erase function, Write function, Read function
 	 */
 
-	{"AMD", "Am29F002(N)BB", AMD_ID, AM_29F002BB,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_en29f002a
+	{
+		.vendor		= "AMD",
+		.name		= "Am29F002(N)BB",
+		.manufacture_id	= AMD_ID,
+		.model_id	= AM_29F002BB,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_en29f002a,
 	},
 
-	{"AMD", "Am29F002(N)BT", AMD_ID, AM_29F002BT,
-	 256, 256,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_en29f002a
+	{
+		.vendor		= "AMD",
+		.name		= "Am29F002(N)BT",
+		.manufacture_id	= AMD_ID,
+		.model_id	= AM_29F002BT,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_en29f002a,
 	},
 
-	{"AMD", "Am29F016D", AMD_ID, AM_29F016D,
-	 2048, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_29f040b, erase_29f040b, write_29f040b
+	{
+		.vendor		= "AMD",
+		.name		= "Am29F016D",
+		.manufacture_id	= AMD_ID,
+		.model_id	= AM_29F016D,
+		.total_size	= 2048,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_29f040b,
+		.erase		= erase_29f040b,
+		.write		= write_29f040b,
 	},
 
-	{"AMD", "Am29F040B", AMD_ID, AM_29F040B,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_29f040b, erase_29f040b, write_29f040b
+	{
+		.vendor		= "AMD",
+		.name		= "Am29F040B",
+		.manufacture_id	= AMD_ID,
+		.model_id	= AM_29F040B,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_29f040b,
+		.erase		= erase_29f040b,
+		.write		= write_29f040b,
 	},
 
-	{"AMD", "Am29LV040B", AMD_ID, AM_29LV040B,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_29f040b, erase_29f040b, write_29f040b
+	{
+		.vendor		= "AMD",
+		.name		= "Am29LV040B",
+		.manufacture_id	= AMD_ID,
+		.model_id	= AM_29LV040B,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_29f040b,
+		.erase		= erase_29f040b,
+		.write		= write_29f040b,
 	},
 
-	{"ASD", "AE49F2008", ASD_ID, ASD_AE49F2008,
-	 256, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
+	{
+		.vendor		= "ASD",
+		.name		= "AE49F2008",
+		.manufacture_id	= ASD_ID,
+		.model_id	= ASD_AE49F2008,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
 	},
 
-	{"Atmel", "AT25DF021", ATMEL_ID, AT_25DF021,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25DF021",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25DF021,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25DF041A", ATMEL_ID, AT_25DF041A,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25DF041A",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25DF041A,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25DF081", ATMEL_ID, AT_25DF081,
-	 1024, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25DF081",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25DF081,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25DF161", ATMEL_ID, AT_25DF161,
-	 2048, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25DF161",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25DF161,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25DF321", ATMEL_ID, AT_25DF321,
-	 4096, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25DF321",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25DF321,
+		.total_size	= 4096,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25DF321A", ATMEL_ID, AT_25DF321A,
-	 4096, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25DF321A",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25DF321A,
+		.total_size	= 4096,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25DF641", ATMEL_ID, AT_25DF641,
-	 8192, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25DF641",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25DF641,
+		.total_size	= 8192,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25F512B", ATMEL_ID, AT_25F512B,
-	 64, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25F512B",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25F512B,
+		.total_size	= 64,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25FS010", ATMEL_ID, AT_25FS010,
-	 128, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25FS010",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25FS010,
+		.total_size	= 128,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT25FS040", ATMEL_ID, AT_25FS040,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT25FS040",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_25FS040,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT26DF041", ATMEL_ID, AT_26DF041,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL /* Incompatible Page write */,spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT26DF041",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_26DF041,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL /* Incompatible Page write */,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT26DF081A", ATMEL_ID, AT_26DF081A,
-	 1024, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT26DF081A",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_26DF081A,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT26DF161", ATMEL_ID, AT_26DF161,
-	 2048, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT26DF161",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_26DF161,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT26DF161A", ATMEL_ID, AT_26DF161A,
-	 2048, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL, spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT26DF161A",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_26DF161A,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= spi_chip_read,
 	},
 
 	/*The AT26DF321 has the same ID as the AT25DF321. */
-	/*{"Atmel", "AT26DF321", ATMEL_ID, AT_26DF321,
-	  4096, 256,
-	  TEST_UNTESTED,
-	  probe_spi_rdid, NULL, NULL, spi_chip_read
-	  },
-	*/
+	/*{
+		.vendor		= "Atmel",
+		.name		= "AT26DF321",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_26DF321,
+		.total_size	= 4096,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	  },*/
 
-	{"Atmel", "AT26F004", ATMEL_ID, AT_26F004,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL /* Incompatible Page write */,spi_chip_read
+	{
+		.vendor		= "Atmel",
+		.name		= "AT26F004",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_26F004,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL /* Incompatible Page write */,
+		.read		= spi_chip_read,
 	},
 
-	{"Atmel", "AT29C020", ATMEL_ID, AT_29C020,
-	 256, 256,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_jedec
+	{
+		.vendor		= "Atmel",
+		.name		= "AT29C020",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_29C020,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
 	},
 
-	{"Atmel", "AT29C040A", ATMEL_ID, AT_29C040A,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
+	{
+		.vendor		= "Atmel",
+		.name		= "AT29C040A",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_29C040A,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
 	},
 
-	{"Atmel", "AT45CS1282", ATMEL_ID, AT_45CS1282,
-	 16896/*!*/, 1056/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL /* Incompatible Page write */, NULL /* Incompatible read */
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45CS1282",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45CS1282,
+		.total_size	= 16896/*!*/,
+		.page_size	= 1056/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL /* Incompatible Page write */,
+		.read		= NULL /* Incompatible read */,
 	}, /* No power of two sizes */
 
-	{"Atmel", "AT45DB011D", ATMEL_ID, AT_45DB011D,
-	 128/*!*/, 256/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB011D",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB011D,
+		.total_size	= 128/*!*/,
+		.page_size	= 256/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL,
 	}, /* Size can only be determined from status register */
 
-	{"Atmel", "AT45DB021D", ATMEL_ID, AT_45DB021D,
-	 256/*!*/, 256/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB021D",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB021D,
+		.total_size	= 256/*!*/,
+		.page_size	= 256/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL,
 	}, /* Size can only be determined from status register */
 
-	{"Atmel", "AT45DB041D", ATMEL_ID, AT_45DB041D,
-	 512/*!*/, 256/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB041D",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB041D,
+		.total_size	= 512/*!*/,
+		.page_size	= 256/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL,
 	}, /* Size can only be determined from status register */
 
-	{"Atmel", "AT45DB081D", ATMEL_ID, AT_45DB081D,
-	 1024/*!*/, 256/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB081D",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB081D,
+		.total_size	= 1024/*!*/,
+		.page_size	= 256/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL,
 	}, /* Size can only be determined from status register */
 
-	{"Atmel", "AT45DB161D", ATMEL_ID, AT_45DB161D,
-	 2048/*!*/, 512/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB161D",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB161D,
+		.total_size	= 2048/*!*/,
+		.page_size	= 512/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL,
 	}, /* Size can only be determined from status register */
 
-	{"Atmel", "AT45DB321C", ATMEL_ID, AT_45DB321C,
-	 4224/*!*/, 528/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL /* Incompatible read */
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB321C",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB321C,
+		.total_size	= 4224/*!*/,
+		.page_size	= 528/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL /* Incompatible read */,
 	}, /* No power of two sizes */
 
-	{"Atmel", "AT45DB321D", ATMEL_ID, AT_45DB321D,
-	 4096/*!*/, 512/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB321D",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB321D,
+		.total_size	= 4096/*!*/,
+		.page_size	= 512/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL,
 	}, /* Size can only be determined from status register */
 
-	{"Atmel", "AT45DB642D", ATMEL_ID, AT_45DB642D,
-	 8192/*!*/, 1024/*!*/,
-	 TEST_BAD_READ,
-	 probe_spi_rdid, NULL, NULL, NULL
+	{
+		.vendor		= "Atmel",
+		.name		= "AT45DB642D",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_45DB642D,
+		.total_size	= 8192/*!*/,
+		.page_size	= 1024/*!*/,
+		.tested		= TEST_BAD_READ,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+		.read		= NULL,
 	}, /* Size can only be determined from status register */
 
-	{"Atmel", "AT49F002(N)", ATMEL_ID, AT_49F002N,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"Atmel", "AT49F002(N)T", ATMEL_ID, AT_49F002NT,
-	 256, 256,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"AMIC", "A25L40P", AMIC_ID, AMIC_A25L40P,
-	 512, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid4, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"AMIC", "A29002B", AMIC_ID_NOPREFIX, AMIC_A29002B,
-	 256, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_29f002, erase_29f002, write_29f002
-	},
-
-	{"AMIC", "A29002T", AMIC_ID_NOPREFIX, AMIC_A29002T,
-	 256, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_29f002, erase_29f002, write_29f002
-	},
-
-	{"AMIC", "A29040B", AMIC_ID_NOPREFIX, AMIC_A29040B,
-	 512, 64 * 1024,
-	 TEST_OK_PR,
-	 probe_29f040b, erase_29f040b, write_29f040b
-	},
-
-	{"AMIC", "A49LF040A", AMIC_ID_NOPREFIX, AMIC_A49LF040A,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_49fl00x, erase_49fl00x, write_49fl00x
-	},
-
-	{"EMST", "F49B002UA", EMST_ID, EMST_F49B002UA,
-	 256, 4096,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"EON", "EN29F002(A)(N)B", EON_ID, EN_29F002B,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_en29f002a
-	},
-
-	{"EON", "EN29F002(A)(N)T", EON_ID, EN_29F002T,
-	 256, 256,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_en29f002a
-	},
-
-	{"Fujitsu", "MBM29F004BC", FUJITSU_ID, MBM29F004BC,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, NULL, NULL
-	},
-
-	{"Fujitsu", "MBM29F004TC", FUJITSU_ID, MBM29F004TC,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, NULL, NULL
-	},
-
-	{"Fujitsu", "MBM29F400BC", FUJITSU_ID, MBM29F400BC,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_m29f400bt, erase_m29f400bt, write_coreboot_m29f400bt
-	},
-
-	{"Fujitsu", "MBM29F400TC", FUJITSU_ID, MBM29F400TC,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_m29f400bt, erase_m29f400bt, write_coreboot_m29f400bt
-	},
-
-	{"Intel", "82802AB", INTEL_ID, 173,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_82802ab, erase_82802ab, write_82802ab
-	},
-
-	{"Intel", "82802AC", INTEL_ID, 172,
-	 1024, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_82802ab, erase_82802ab, write_82802ab
-	},
-
-	{"Macronix", "MX25L512", MX_ID, MX_25L512,
-	 64, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX25L1005", MX_ID, MX_25L1005,
-	 128, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX25L2005", MX_ID, MX_25L2005,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX25L4005", MX_ID, MX_25L4005,
-	 512, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX25L8005", MX_ID, MX_25L8005,
-	 1024, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX25L1605", MX_ID, MX_25L1605,
-	 2048, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX25L3205", MX_ID, MX_25L3205,
-	 4096, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX25L6405", MX_ID, MX_25L6405,
-	 8192, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Macronix", "MX29F002B", MX_ID, MX_29F002B,
-	 256, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_29f002, erase_29f002, write_29f002
-	},
-
-	{"Macronix", "MX29F002T", MX_ID, MX_29F002T,
-	 256, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_29f002, erase_29f002, write_29f002
-	},
-
-	{"Macronix", "MX29LV040C", MX_ID, MX_29LV040C,
-	 512, 64 * 1024,
-	 TEST_OK_PR,
-	 probe_29f002, erase_29f002, write_29f002
-	},
-
-	{"Numonyx", "M25PE10", ST_ID, 0x8011,
-	 128, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_d8, spi_chip_write, spi_chip_read
-	},
-
-	{"Numonyx", "M25PE20", ST_ID, 0x8012,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_d8, spi_chip_write, spi_chip_read
-	},
-
-	{"Numonyx", "M25PE40", ST_ID, 0x8013,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_d8, spi_chip_write, spi_chip_read
-	},
-
-	{"Numonyx", "M25PE80", ST_ID, 0x8014,
-	 1024, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_d8, spi_chip_write, spi_chip_read
-	},
-
-	{"Numonyx", "M25PE16", ST_ID, 0x8015,
-	 2048, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_d8, spi_chip_write, spi_chip_read
-	},
-
-	{"PMC", "Pm25LV010", PMC_ID, PMC_25LV010,
-	 128, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"PMC", "Pm25LV016B", PMC_ID, PMC_25LV016B,
-	 2048, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"PMC", "Pm25LV020", PMC_ID, PMC_25LV020,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"PMC", "Pm25LV040", PMC_ID, PMC_25LV040,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"PMC", "Pm25LV080B", PMC_ID, PMC_25LV080B,
-	 1024, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"PMC", "Pm25LV512", PMC_ID, PMC_25LV512,
-	 64, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"PMC", "Pm49FL002", PMC_ID_NOPREFIX, PMC_49FL002,
-	 256, 16 * 1024,
-	 TEST_OK_PREW,
-	 probe_49fl00x, erase_49fl00x, write_49fl00x
-	},
-
-	{"PMC", "Pm49FL004", PMC_ID_NOPREFIX,PMC_49FL004,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_49fl00x, erase_49fl00x, write_49fl00x
-	},
-
-	{"Sharp", "LHF00L04", SHARP_ID, SHARP_LHF00L04,
-	 1024, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_lhf00l04, erase_lhf00l04, write_lhf00l04
-	},
-
-	{"Spansion", "S25FL016A", SPANSION_ID, SPANSION_S25FL016A,
-	 2048, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"SST", "SST25VF016B", SST_ID, SST_25VF016B,
-	 2048, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"SST", "SST25VF032B", SST_ID, SST_25VF032B,
-	 4096, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"SST", "SST25VF040B", SST_ID, SST_25VF040B,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"SST", "SST25VF080B", SST_ID, SST_25VF080B,
-	 1024, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_60_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"SST", "SST28SF040A", SST_ID, SST_28SF040,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_28sf040, erase_28sf040, write_28sf040
-	},
-
-	{"SST", "SST29EE010", SST_ID, SST_29EE010,
-	 128, 128,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"SST", "SST29LE010", SST_ID, SST_29LE010,
-	 128, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"SST", "SST29EE020A", SST_ID, SST_29EE020A,
-	 256, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"SST", "SST29LE020", SST_ID, SST_29LE020,
-	 256, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"SST", "SST39SF010A", SST_ID, SST_39SF010,
-	 128, 4096,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"SST", "SST39SF020A", SST_ID, SST_39SF020,
-	 256, 4096,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"SST", "SST39SF040", SST_ID, SST_39SF040,
-	 512, 4096,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"SST", "SST39VF512", SST_ID, SST_39VF512,
-	 64, 4096,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"SST", "SST39VF010", SST_ID, SST_39VF010,
-	 128, 4096,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"SST", "SST39VF020", SST_ID, SST_39VF020,
-	 256, 4096,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"SST", "SST39VF040", SST_ID, SST_39VF040,
-	 512, 4096,
-	 TEST_OK_PROBE,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"SST", "SST49LF002A/B", SST_ID, SST_49LF002A,
-	 256, 16 * 1024,
-	 TEST_OK_PREW,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub
-	},
-
-	{"SST", "SST49LF003A/B", SST_ID, SST_49LF003A,
-	 384, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub
-	},
-
-	{"SST", "SST49LF004A/B", SST_ID, SST_49LF004A,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub
-	},
-
-	{"SST", "SST49LF004C", SST_ID, SST_49LF004C,
-	 512, 4 * 1024,
-	 TEST_UNTESTED,
-	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc
-	},
-
-	{"SST", "SST49LF008A", SST_ID, SST_49LF008A,
-	 1024, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub
-	},
-
-	{"SST", "SST49LF008C", SST_ID, SST_49LF008C,
-	 1024, 4 * 1024,
-	 TEST_UNTESTED,
-	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc
-	},
-
-	{"SST", "SST49LF016C", SST_ID, SST_49LF016C,
-	 2048, 4 * 1024,
-	 TEST_OK_PREW,
-	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc
-	},
-
-	{"SST", "SST49LF020", SST_ID, SST_49LF020,
-	 256, 16 * 1024,
-	 TEST_OK_PR,
-	 probe_jedec, erase_49lf040, write_49lf040
-	},
-
-	{"SST", "SST49LF020A", SST_ID, SST_49LF020A,
-	 256, 16 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_49lf040, write_49lf040
-	},
-
-	{"SST", "SST49LF040", SST_ID, SST_49LF040,
-	 512, 4096,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_49lf040, write_49lf040
-	},
-
-	{"SST", "SST49LF040B", SST_ID, SST_49LF040B,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_sst_fwhub, erase_sst_fwhub, write_sst_fwhub
-	},
-
-	{"SST", "SST49LF080A", SST_ID, SST_49LF080A,
-	 1024, 4096,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_49lf040, write_49lf040
-	},
-
-	{"SST", "SST49LF160C", SST_ID, SST_49LF160C,
-	 2048, 4 * 1024,
-	 TEST_OK_PREW,
-	 probe_49lfxxxc, erase_49lfxxxc, write_49lfxxxc
-	},
-
-	{"ST", "M25P05-A", ST_ID, ST_M25P05A,
-	 64, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P10-A", ST_ID, ST_M25P10A,
-	 128, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P20", ST_ID, ST_M25P20,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P40", ST_ID, ST_M25P40,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P40-old", ST_ID, ST_M25P40_RES,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_spi_res, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P80", ST_ID, ST_M25P80,
-	 1024, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P16", ST_ID, ST_M25P16,
-	 2048, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P32", ST_ID, ST_M25P32,
-	 4096, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P64", ST_ID, ST_M25P64,
-	 8192, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M25P128", ST_ID, ST_M25P128,
-	 16384, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"ST", "M29F002B", ST_ID, ST_M29F002B,
-	 256, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"ST", "M29F002T/NT", ST_ID, ST_M29F002T,
-	 256, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"ST", "M29F040B", ST_ID, ST_M29F040B,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_29f040b, erase_29f040b, write_29f040b
-	},
-
-	{"ST", "M29F400BT", ST_ID, ST_M29F400BT,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_m29f400bt, erase_m29f400bt, write_coreboot_m29f400bt
-	},
-
-	{"ST", "M29W010B", ST_ID, ST_M29W010B,
-	 128, 16 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"ST", "M29W040B", ST_ID, ST_M29W040B,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"ST", "M50FLW040A", ST_ID, ST_M50FLW040A,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_stm50flw0x0x, erase_stm50flw0x0x, write_stm50flw0x0x
-	},
-
-	{"ST", "M50FLW040B", ST_ID, ST_M50FLW040B,
-	 512, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_stm50flw0x0x, erase_stm50flw0x0x, write_stm50flw0x0x
-	},
-
-	{"ST", "M50FLW080A", ST_ID, ST_M50FLW080A,
-	 1024, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_stm50flw0x0x, erase_stm50flw0x0x, write_stm50flw0x0x
-	},
-
-	{"ST", "M50FLW080B", ST_ID, ST_M50FLW080B,
-	 1024, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_stm50flw0x0x, erase_stm50flw0x0x, write_stm50flw0x0x
-	},
-
-	{"ST", "M50FW002", ST_ID, ST_M50FW002,
-	 256, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_49lfxxxc, NULL, NULL
-	},
-
-	{"ST", "M50FW016", ST_ID, ST_M50FW016,
-	 2048, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_82802ab, erase_82802ab, write_82802ab
-	},
-
-	{"ST", "M50FW040", ST_ID, ST_M50FW040,
-	 512, 64 * 1024,
-	 TEST_OK_PREW,
-	 probe_82802ab, erase_82802ab, write_82802ab
-	},
-
-	{"ST", "M50FW080", ST_ID, ST_M50FW080,
-	 1024, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_82802ab, erase_82802ab, write_82802ab
-	},
-
-	{"ST", "M50LPW116", ST_ID, ST_M50LPW116,
-	 2048, 64 * 1024,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"SyncMOS", "S29C31004T", SYNCMOS_ID, S29C31004T,
-	 512, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"SyncMOS", "S29C51001T", SYNCMOS_ID, S29C51001T,
-	 128, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"SyncMOS", "S29C51002T", SYNCMOS_ID, S29C51002T,
-	 256, 128,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"SyncMOS", "S29C51004T", SYNCMOS_ID, S29C51004T,
-	 512, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"Winbond", "W25x10", WINBOND_NEX_ID, W_25X10,
-	 128, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Winbond", "W25x20", WINBOND_NEX_ID, W_25X20,
-	 256, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Winbond", "W25x40", WINBOND_NEX_ID, W_25X40,
-	 512, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Winbond", "W25x80", WINBOND_NEX_ID, W_25X80,
-	 1024, 256,
-	 TEST_OK_PREW,
-	 probe_spi_rdid, spi_chip_erase_c7, spi_chip_write, spi_chip_read
-	},
-
-	{"Winbond", "W29C011", WINBOND_ID, W_29C011,
-	 128, 128,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"Winbond", "W29C020C", WINBOND_ID, W_29C020C,
-	 256, 128,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"Winbond", "W29C040P", WINBOND_ID, W_29C040P,
-	 512, 256,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_jedec
-	},
-
-	{"Winbond", "W29EE011", WINBOND_ID, W_29C011,
-	 128, 128,
-	 TEST_OK_PREW,
-	 probe_w29ee011, erase_chip_jedec, write_jedec
-	},
-
-	{"Winbond", "W39V040A", WINBOND_ID, W_39V040A,
-	 512, 64*1024,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"Winbond", "W39V040B", WINBOND_ID, W_39V040B,
-	 512, 64*1024,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"Winbond", "W39V040C", WINBOND_ID, 0x50,
-	 512, 64*1024,
-	 TEST_OK_PREW,
-	 probe_w39v040c, erase_w39v040c, write_w39v040c
-	},
-
-	{"Winbond", "W39V040FA", WINBOND_ID, W_39V040FA,
-	 512, 64*1024,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"Winbond", "W39V080A", WINBOND_ID, W_39V080A,
-	 1024, 64*1024,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_39sf020
-	},
-
-	{"Winbond", "W49F002U", WINBOND_ID, W_49F002U,
-	 256, 128,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"Winbond", "W49V002A", WINBOND_ID, W_49V002A,
-	 256, 128,
-	 TEST_OK_PREW,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"Winbond", "W49V002FA", WINBOND_ID, W_49V002FA,
-	 256, 128,
-	 TEST_UNTESTED,
-	 probe_jedec, erase_chip_jedec, write_49f002
-	},
-
-	{"Winbond", "W39V080FA", WINBOND_ID, W_39V080FA,
-	 1024, 64*1024,
-	 TEST_OK_PREW,
-	 probe_winbond_fwhub, erase_winbond_fwhub, write_winbond_fwhub
-	},
-
-	{"Winbond", "W39V080FA (dual mode)", WINBOND_ID, W_39V080FA_DM,
-	 512, 64*1024,
-	 TEST_UNTESTED,
-	 probe_winbond_fwhub, erase_winbond_fwhub, write_winbond_fwhub
-	},
-
-	{"Atmel", "unknown Atmel SPI chip", ATMEL_ID, GENERIC_DEVICE_ID,
-	 0, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL
-	},
-
-	{"EON", "unknown EON SPI chip", EON_ID_NOPREFIX, GENERIC_DEVICE_ID,
-	 0, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL
-	},
-
-	{"Macronix", "unknown Macronix SPI chip", MX_ID, GENERIC_DEVICE_ID,
-	 0, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL
-	},
-
-	{"PMC", "unknown PMC SPI chip", PMC_ID, GENERIC_DEVICE_ID,
-	 0, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL
-	},
-
-	{"SST", "unknown SST SPI chip", SST_ID, GENERIC_DEVICE_ID,
-	 0, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL
-	},
-
-	{"ST", "unknown ST SPI chip", ST_ID, GENERIC_DEVICE_ID,
-	 0, 256,
-	 TEST_UNTESTED,
-	 probe_spi_rdid, NULL, NULL
-	},
-
-	{NULL,}
-};
+	{
+		.vendor		= "Atmel",
+		.name		= "AT49F002(N)",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_49F002N,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "Atmel",
+		.name		= "AT49F002(N)T",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= AT_49F002NT,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "AMIC",
+		.name		= "A25L40P",
+		.manufacture_id	= AMIC_ID,
+		.model_id	= AMIC_A25L40P,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid4,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "AMIC",
+		.name		= "A29002B",
+		.manufacture_id	= AMIC_ID_NOPREFIX,
+		.model_id	= AMIC_A29002B,
+		.total_size	= 256,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_29f002,
+		.erase		= erase_29f002,
+		.write		= write_29f002,
+	},
+
+	{
+		.vendor		= "AMIC",
+		.name		= "A29002T",
+		.manufacture_id	= AMIC_ID_NOPREFIX,
+		.model_id	= AMIC_A29002T,
+		.total_size	= 256,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_29f002,
+		.erase		= erase_29f002,
+		.write		= write_29f002,
+	},
+
+	{
+		.vendor		= "AMIC",
+		.name		= "A29040B",
+		.manufacture_id	= AMIC_ID_NOPREFIX,
+		.model_id	= AMIC_A29040B,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PR,
+		.probe		= probe_29f040b,
+		.erase		= erase_29f040b,
+		.write		= write_29f040b,
+	},
+
+	{
+		.vendor		= "AMIC",
+		.name		= "A49LF040A",
+		.manufacture_id	= AMIC_ID_NOPREFIX,
+		.model_id	= AMIC_A49LF040A,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_49fl00x,
+		.erase		= erase_49fl00x,
+		.write		= write_49fl00x,
+	},
+
+	{
+		.vendor		= "EMST",
+		.name		= "F49B002UA",
+		.manufacture_id	= EMST_ID,
+		.model_id	= EMST_F49B002UA,
+		.total_size	= 256,
+		.page_size	= 4096,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "EON",
+		.name		= "EN29F002(A)(N)B",
+		.manufacture_id	= EON_ID,
+		.model_id	= EN_29F002B,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_en29f002a,
+	},
+
+	{
+		.vendor		= "EON",
+		.name		= "EN29F002(A)(N)T",
+		.manufacture_id	= EON_ID,
+		.model_id	= EN_29F002T,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_en29f002a,
+	},
+
+	{
+		.vendor		= "Fujitsu",
+		.name		= "MBM29F004BC",
+		.manufacture_id	= FUJITSU_ID,
+		.model_id	= MBM29F004BC,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "Fujitsu",
+		.name		= "MBM29F004TC",
+		.manufacture_id	= FUJITSU_ID,
+		.model_id	= MBM29F004TC,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "Fujitsu",
+		.name		= "MBM29F400BC",
+		.manufacture_id	= FUJITSU_ID,
+		.model_id	= MBM29F400BC,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_m29f400bt,
+		.erase		= erase_m29f400bt,
+		.write		= write_coreboot_m29f400bt,
+	},
+
+	{
+		.vendor		= "Fujitsu",
+		.name		= "MBM29F400TC",
+		.manufacture_id	= FUJITSU_ID,
+		.model_id	= MBM29F400TC,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_m29f400bt,
+		.erase		= erase_m29f400bt,
+		.write		= write_coreboot_m29f400bt,
+	},
+
+	{
+		.vendor		= "Intel",
+		.name		= "82802AB",
+		.manufacture_id	= INTEL_ID,
+		.model_id	= 173,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_82802ab,
+		.erase		= erase_82802ab,
+		.write		= write_82802ab,
+	},
+
+	{
+		.vendor		= "Intel",
+		.name		= "82802AC",
+		.manufacture_id	= INTEL_ID,
+		.model_id	= 172,
+		.total_size	= 1024,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_82802ab,
+		.erase		= erase_82802ab,
+		.write		= write_82802ab,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L512",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L512,
+		.total_size	= 64,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L1005",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L1005,
+		.total_size	= 128,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L2005",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L2005,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L4005",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L4005,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L8005",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L8005,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L1605",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L1605,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L3205",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L3205,
+		.total_size	= 4096,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX25L6405",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L6405,
+		.total_size	= 8192,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX29F002B",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_29F002B,
+		.total_size	= 256,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_29f002,
+		.erase		= erase_29f002,
+		.write		= write_29f002,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX29F002T",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_29F002T,
+		.total_size	= 256,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_29f002,
+		.erase		= erase_29f002,
+		.write		= write_29f002,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "MX29LV040C",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_29LV040C,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PR,
+		.probe		= probe_29f002,
+		.erase		= erase_29f002,
+		.write		= write_29f002,
+	},
+
+	{
+		.vendor		= "Numonyx",
+		.name		= "M25PE10",
+		.manufacture_id	= ST_ID,
+		.model_id	= 0x8011,
+		.total_size	= 128,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_d8,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Numonyx",
+		.name		= "M25PE20",
+		.manufacture_id	= ST_ID,
+		.model_id	= 0x8012,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_d8,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Numonyx",
+		.name		= "M25PE40",
+		.manufacture_id	= ST_ID,
+		.model_id	= 0x8013,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_d8,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Numonyx",
+		.name		= "M25PE80",
+		.manufacture_id	= ST_ID,
+		.model_id	= 0x8014,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_d8,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Numonyx",
+		.name		= "M25PE16",
+		.manufacture_id	= ST_ID,
+		.model_id	= 0x8015,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_d8,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm25LV010",
+		.manufacture_id	= PMC_ID,
+		.model_id	= PMC_25LV010,
+		.total_size	= 128,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm25LV016B",
+		.manufacture_id	= PMC_ID,
+		.model_id	= PMC_25LV016B,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm25LV020",
+		.manufacture_id	= PMC_ID,
+		.model_id	= PMC_25LV020,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm25LV040",
+		.manufacture_id	= PMC_ID,
+		.model_id	= PMC_25LV040,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm25LV080B",
+		.manufacture_id	= PMC_ID,
+		.model_id	= PMC_25LV080B,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm25LV512",
+		.manufacture_id	= PMC_ID,
+		.model_id	= PMC_25LV512,
+		.total_size	= 64,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm49FL002",
+		.manufacture_id	= PMC_ID_NOPREFIX,
+		.model_id	= PMC_49FL002,
+		.total_size	= 256,
+		.page_size	= 16 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_49fl00x,
+		.erase		= erase_49fl00x,
+		.write		= write_49fl00x,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "Pm49FL004",
+		.manufacture_id	= PMC_ID_NOPREFIX,
+		.model_id	= PMC_49FL004,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_49fl00x,
+		.erase		= erase_49fl00x,
+		.write		= write_49fl00x,
+	},
+
+	{
+		.vendor		= "Sharp",
+		.name		= "LHF00L04",
+		.manufacture_id	= SHARP_ID,
+		.model_id	= SHARP_LHF00L04,
+		.total_size	= 1024,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_lhf00l04,
+		.erase		= erase_lhf00l04,
+		.write		= write_lhf00l04,
+	},
+
+	{
+		.vendor		= "Spansion",
+		.name		= "S25FL016A",
+		.manufacture_id	= SPANSION_ID,
+		.model_id	= SPANSION_S25FL016A,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST25VF016B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_25VF016B,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST25VF032B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_25VF032B,
+		.total_size	= 4096,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST25VF040B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_25VF040B,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST25VF080B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_25VF080B,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_60_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST28SF040A",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_28SF040,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_28sf040,
+		.erase		= erase_28sf040,
+		.write		= write_28sf040,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST29EE010",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_29EE010,
+		.total_size	= 128,
+		.page_size	= 128,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST29LE010",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_29LE010,
+		.total_size	= 128,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST29EE020A",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_29EE020A,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST29LE020",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_29LE020,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST39SF010A",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_39SF010,
+		.total_size	= 128,
+		.page_size	= 4096,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST39SF020A",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_39SF020,
+		.total_size	= 256,
+		.page_size	= 4096,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST39SF040",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_39SF040,
+		.total_size	= 512,
+		.page_size	= 4096,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST39VF512",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_39VF512,
+		.total_size	= 64,
+		.page_size	= 4096,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST39VF010",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_39VF010,
+		.total_size	= 128,
+		.page_size	= 4096,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST39VF020",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_39VF020,
+		.total_size	= 256,
+		.page_size	= 4096,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST39VF040",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_39VF040,
+		.total_size	= 512,
+		.page_size	= 4096,
+		.tested		= TEST_OK_PROBE,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF002A/B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF002A,
+		.total_size	= 256,
+		.page_size	= 16 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_sst_fwhub,
+		.erase		= erase_sst_fwhub,
+		.write		= write_sst_fwhub,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF003A/B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF003A,
+		.total_size	= 384,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_sst_fwhub,
+		.erase		= erase_sst_fwhub,
+		.write		= write_sst_fwhub,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF004A/B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF004A,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_sst_fwhub,
+		.erase		= erase_sst_fwhub,
+		.write		= write_sst_fwhub,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF004C",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF004C,
+		.total_size	= 512,
+		.page_size	= 4 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_49lfxxxc,
+		.erase		= erase_49lfxxxc,
+		.write		= write_49lfxxxc,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF008A",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF008A,
+		.total_size	= 1024,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_sst_fwhub,
+		.erase		= erase_sst_fwhub,
+		.write		= write_sst_fwhub,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF008C",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF008C,
+		.total_size	= 1024,
+		.page_size	= 4 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_49lfxxxc,
+		.erase		= erase_49lfxxxc,
+		.write		= write_49lfxxxc,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF016C",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF016C,
+		.total_size	= 2048,
+		.page_size	= 4 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_49lfxxxc,
+		.erase		= erase_49lfxxxc,
+		.write		= write_49lfxxxc,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF020",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF020,
+		.total_size	= 256,
+		.page_size	= 16 * 1024,
+		.tested		= TEST_OK_PR,
+		.probe		= probe_jedec,
+		.erase		= erase_49lf040,
+		.write		= write_49lf040,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF020A",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF020A,
+		.total_size	= 256,
+		.page_size	= 16 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_49lf040,
+		.write		= write_49lf040,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF040",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF040,
+		.total_size	= 512,
+		.page_size	= 4096,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_49lf040,
+		.write		= write_49lf040,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF040B",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF040B,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_sst_fwhub,
+		.erase		= erase_sst_fwhub,
+		.write		= write_sst_fwhub,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF080A",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF080A,
+		.total_size	= 1024,
+		.page_size	= 4096,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_49lf040,
+		.write		= write_49lf040,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "SST49LF160C",
+		.manufacture_id	= SST_ID,
+		.model_id	= SST_49LF160C,
+		.total_size	= 2048,
+		.page_size	= 4 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_49lfxxxc,
+		.erase		= erase_49lfxxxc,
+		.write		= write_49lfxxxc,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P05-A",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P05A,
+		.total_size	= 64,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P10-A",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P10A,
+		.total_size	= 128,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P20",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P20,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P40",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P40,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P40-old",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P40_RES,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_res,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P80",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P80,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P16",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P16,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P32",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P32,
+		.total_size	= 4096,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P64",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P64,
+		.total_size	= 8192,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M25P128",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M25P128,
+		.total_size	= 16384,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M29F002B",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M29F002B,
+		.total_size	= 256,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M29F002T/NT",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M29F002T,
+		.total_size	= 256,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M29F040B",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M29F040B,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_29f040b,
+		.erase		= erase_29f040b,
+		.write		= write_29f040b,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M29F400BT",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M29F400BT,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_m29f400bt,
+		.erase		= erase_m29f400bt,
+		.write		= write_coreboot_m29f400bt,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M29W010B",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M29W010B,
+		.total_size	= 128,
+		.page_size	= 16 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M29W040B",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M29W040B,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FLW040A",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FLW040A,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_stm50flw0x0x,
+		.erase		= erase_stm50flw0x0x,
+		.write		= write_stm50flw0x0x,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FLW040B",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FLW040B,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_stm50flw0x0x,
+		.erase		= erase_stm50flw0x0x,
+		.write		= write_stm50flw0x0x,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FLW080A",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FLW080A,
+		.total_size	= 1024,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_stm50flw0x0x,
+		.erase		= erase_stm50flw0x0x,
+		.write		= write_stm50flw0x0x,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FLW080B",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FLW080B,
+		.total_size	= 1024,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_stm50flw0x0x,
+		.erase		= erase_stm50flw0x0x,
+		.write		= write_stm50flw0x0x,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FW002",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FW002,
+		.total_size	= 256,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_49lfxxxc,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FW016",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FW016,
+		.total_size	= 2048,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_82802ab,
+		.erase		= erase_82802ab,
+		.write		= write_82802ab,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FW040",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FW040,
+		.total_size	= 512,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_82802ab,
+		.erase		= erase_82802ab,
+		.write		= write_82802ab,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50FW080",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50FW080,
+		.total_size	= 1024,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_82802ab,
+		.erase		= erase_82802ab,
+		.write		= write_82802ab,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "M50LPW116",
+		.manufacture_id	= ST_ID,
+		.model_id	= ST_M50LPW116,
+		.total_size	= 2048,
+		.page_size	= 64 * 1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "SyncMOS",
+		.name		= "S29C31004T",
+		.manufacture_id	= SYNCMOS_ID,
+		.model_id	= S29C31004T,
+		.total_size	= 512,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "SyncMOS",
+		.name		= "S29C51001T",
+		.manufacture_id	= SYNCMOS_ID,
+		.model_id	= S29C51001T,
+		.total_size	= 128,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "SyncMOS",
+		.name		= "S29C51002T",
+		.manufacture_id	= SYNCMOS_ID,
+		.model_id	= S29C51002T,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "SyncMOS",
+		.name		= "S29C51004T",
+		.manufacture_id	= SYNCMOS_ID,
+		.model_id	= S29C51004T,
+		.total_size	= 512,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W25x10",
+		.manufacture_id	= WINBOND_NEX_ID,
+		.model_id	= W_25X10,
+		.total_size	= 128,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W25x20",
+		.manufacture_id	= WINBOND_NEX_ID,
+		.model_id	= W_25X20,
+		.total_size	= 256,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W25x40",
+		.manufacture_id	= WINBOND_NEX_ID,
+		.model_id	= W_25X40,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W25x80",
+		.manufacture_id	= WINBOND_NEX_ID,
+		.model_id	= W_25X80,
+		.total_size	= 1024,
+		.page_size	= 256,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W29C011",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_29C011,
+		.total_size	= 128,
+		.page_size	= 128,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W29C020C",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_29C020C,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W29C040P",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_29C040P,
+		.total_size	= 512,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W29EE011",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_29C011,
+		.total_size	= 128,
+		.page_size	= 128,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_w29ee011,
+		.erase		= erase_chip_jedec,
+		.write		= write_jedec,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W39V040A",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_39V040A,
+		.total_size	= 512,
+		.page_size	= 64*1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W39V040B",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_39V040B,
+		.total_size	= 512,
+		.page_size	= 64*1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W39V040C",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= 0x50,
+		.total_size	= 512,
+		.page_size	= 64*1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_w39v040c,
+		.erase		= erase_w39v040c,
+		.write		= write_w39v040c,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W39V040FA",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_39V040FA,
+		.total_size	= 512,
+		.page_size	= 64*1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W39V080A",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_39V080A,
+		.total_size	= 1024,
+		.page_size	= 64*1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_39sf020,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W49F002U",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_49F002U,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W49V002A",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_49V002A,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W49V002FA",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_49V002FA,
+		.total_size	= 256,
+		.page_size	= 128,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_jedec,
+		.erase		= erase_chip_jedec,
+		.write		= write_49f002,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W39V080FA",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_39V080FA,
+		.total_size	= 1024,
+		.page_size	= 64*1024,
+		.tested		= TEST_OK_PREW,
+		.probe		= probe_winbond_fwhub,
+		.erase		= erase_winbond_fwhub,
+		.write		= write_winbond_fwhub,
+	},
+
+	{
+		.vendor		= "Winbond",
+		.name		= "W39V080FA (dual mode)",
+		.manufacture_id	= WINBOND_ID,
+		.model_id	= W_39V080FA_DM,
+		.total_size	= 512,
+		.page_size	= 64*1024,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_winbond_fwhub,
+		.erase		= erase_winbond_fwhub,
+		.write		= write_winbond_fwhub,
+	},
+
+	{
+		.vendor		= "Atmel",
+		.name		= "unknown Atmel SPI chip",
+		.manufacture_id	= ATMEL_ID,
+		.model_id	= GENERIC_DEVICE_ID,
+		.total_size	= 0,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "EON",
+		.name		= "unknown EON SPI chip",
+		.manufacture_id	= EON_ID_NOPREFIX,
+		.model_id	= GENERIC_DEVICE_ID,
+		.total_size	= 0,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "Macronix",
+		.name		= "unknown Macronix SPI chip",
+		.manufacture_id	= MX_ID,
+		.model_id	= GENERIC_DEVICE_ID,
+		.total_size	= 0,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "PMC",
+		.name		= "unknown PMC SPI chip",
+		.manufacture_id	= PMC_ID,
+		.model_id	= GENERIC_DEVICE_ID,
+		.total_size	= 0,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "SST",
+		.name		= "unknown SST SPI chip",
+		.manufacture_id	= SST_ID,
+		.model_id	= GENERIC_DEVICE_ID,
+		.total_size	= 0,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{
+		.vendor		= "ST",
+		.name		= "unknown ST SPI chip",
+		.manufacture_id	= ST_ID,
+		.model_id	= GENERIC_DEVICE_ID,
+		.total_size	= 0,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= NULL,
+		.write		= NULL,
+	},
+
+	{ NULL 	}
+	};

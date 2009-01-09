@@ -705,41 +705,42 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 #define MEM_TYPE (IORESOURCE_MEM)
 #define IO_TYPE (IORESOURCE_IO)
 
-	/* Descend into every child and look for fixed resources. */
-	for (child=dev->link[0].children; child; child = child->sibling) {
-		constrain_resources(child, limits);
-		for (i = 0; i<child->resources; i++) {
-			res = &child->resource[i];
-			if (!(res->flags & IORESOURCE_FIXED))
-				continue;
+	/* Constrain limits based on the fixed resources of this device. */
+	for (i = 0; i<dev->resources; i++) {
+		res = &dev->resource[i];
+		if (!(res->flags & IORESOURCE_FIXED))
+			continue;
 
-			/* PREFETCH, MEM, or I/O - skip any others. */
-			if ((res->flags & MEM_MASK) == PREF_TYPE)
-				lim = &limits->pref;
-			else if ((res->flags & MEM_MASK) == MEM_TYPE)
-				lim = &limits->mem;
-			else if ((res->flags & IO_MASK) == IO_TYPE)
-				lim = &limits->io;
-			else
-				continue;
+		/* PREFETCH, MEM, or I/O - skip any others. */
+		if ((res->flags & MEM_MASK) == PREF_TYPE)
+			lim = &limits->pref;
+		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+			lim = &limits->mem;
+		else if ((res->flags & IO_MASK) == IO_TYPE)
+			lim = &limits->io;
+		else
+			continue;
 
-			/* Is it already outside the limits? */
-			if (res->size &&
-			    (((res->base + res->size -1) < lim->base) ||
-			     (res->base > lim->limit)))
-				continue;
+		/* Is it already outside the limits? */
+		if (res->size && (((res->base + res->size -1) < lim->base) ||
+				  (res->base > lim->limit)))
+			continue;
 
-			/* Choose to be above or below fixed resources.  This
-			 * check is signed so that "negative" amounts of space
-			 * are handled correctly.
-			 */
-			if ((s64)(lim->limit - (res->base + res->size -1)) >
-			    (s64)(res->base - lim->base))
-				lim->base = res->base + res->size;
-			else
-				lim->limit = res->base -1;
-		}
+		/* Choose to be above or below fixed resources.  This
+		 * check is signed so that "negative" amounts of space
+		 * are handled correctly.
+		 */
+		if ((s64)(lim->limit - (res->base + res->size -1)) >
+		    (s64)(res->base - lim->base))
+			lim->base = res->base + res->size;
+		else
+			lim->limit = res->base -1;
 	}
+
+	/* Descend into every child and look for fixed resources. */
+	for (i = 0; i< dev->links; i++)
+		for (child=dev->link[i].children; child; child = child->sibling)
+			constrain_resources(child, limits);
 }
 
 static void avoid_fixed_resources(struct device *dev)

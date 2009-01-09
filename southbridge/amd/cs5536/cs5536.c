@@ -98,6 +98,23 @@ static void hide_vpci(u32 vpci_devid)
 }
 
 /**
+ * Enables the FLASH PCI header when NAND device existing in mainboard device
+ * tree. Used when the mainboard has a FLASH part instead of an IDE drive and
+ * that fact is expressed in the mainboard device tree.
+ * Must be called after VSA init but before PCI scans to enable the flash
+ * PCI device header early enough - that is .phase2_fixup of the device.
+ *
+ * @param dev The device.
+ */
+static void nand_phase2(struct device *dev)
+{
+	if (dev->enabled) {
+		/* Tell VSA to use FLASH PCI header. Not IDE header. */
+		hide_vpci(0x800079C4);
+	}
+}
+
+/**
  * Power button setup.
  *
  * Setup GPIO24, it is the external signal for CS5536 vsb_work_aux which
@@ -168,16 +185,6 @@ static void chipset_flash_setup(struct southbridge_amd_cs5536_dts_config *sb)
 		wrmsr(MDD_NORF_CNTRL, msr);
 	}
 	printk(BIOS_DEBUG, "chipset_flash_setup: Finish\n");
-}
-
-/**
- * Use this in the event that you have a FLASH part instead of an IDE drive.
- * Run after VSA init to enable the flash PCI device header.
- */
-static void enable_ide_nand_flash_header(void)
-{
-	/* Tell VSA to use FLASH PCI header. Not IDE header. */
-	hide_vpci(0x800079C4);
 }
 
 #define RTC_CENTURY	0x32
@@ -601,8 +608,8 @@ void chipsetinit(void)
 #define IDE_ETC	  0x50
 
 /**
- * Enabled the IDE. This is code that is optionally run if the ide_enable is set
- * in the mainboard dts. 
+ * Enables the IDE. This is code that is run if there is an ide device in the mainboard
+ * device tree and it has set non-zero "enable_ide".
  * 
  * @param dev The device 
  */
@@ -657,11 +664,6 @@ static void southbridge_init(struct device *dev)
 			 (sb->enable_gpio_int_route >> 16));
 		printk(BIOS_SPEW, "cs5536: done second call vr_write\n");
 	}
-
-	printk(BIOS_ERR, "cs5536: %s: enable_ide_nand_flash is %d\n",
-	       __FUNCTION__, sb->enable_ide_nand_flash);
-	if (sb->enable_ide_nand_flash != 0)
-		enable_ide_nand_flash_header();
 
 	enable_USB_port4(sb);
 
@@ -733,3 +735,16 @@ struct device_operations cs5536_ide = {
 	.ops_pci		 = &pci_dev_ops_pci,
 };
 
+struct device_operations cs5536_nand = {
+	.id = {.type = DEVICE_ID_PCI,
+		{.pci = {.vendor = PCI_VENDOR_ID_AMD,
+			 .device = PCI_DEVICE_ID_AMD_CS5536_FLASH}}},
+	.constructor		 = default_device_constructor,
+	.phase2_fixup		 = nand_phase2,
+	.phase3_scan		 = 0,
+	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_set_resources	 = pci_set_resources,
+	.phase5_enable_resources = pci_dev_enable_resources,
+	.phase6_init		 = 0, /* No Option ROMs */
+	.ops_pci		 = &pci_dev_ops_pci,
+};

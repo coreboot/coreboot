@@ -109,6 +109,9 @@ end
 			/* USB Port Power Handling setting. */
 			pph = "0xf5";
 		};
+		pci@f,1 {
+			/config/("southbridge/amd/cs5536/nand");
+		};
 		pci@f,2 {
 			/config/("southbridge/amd/cs5536/ide");
 		};

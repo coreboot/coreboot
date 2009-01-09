@@ -51,7 +51,6 @@
 		};
 		pci@f,2 {
 			/config/("southbridge/amd/cs5536/ide");
-			enable_ide = "1";
 		};
 	};
 };

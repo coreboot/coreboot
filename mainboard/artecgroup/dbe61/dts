@@ -112,8 +112,5 @@ end
 		pci@f,1 {
 			/config/("southbridge/amd/cs5536/nand");
 		};
-		pci@f,2 {
-			/config/("southbridge/amd/cs5536/ide");
-		};
 	};
 };

@@ -20,7 +20,4 @@
 
 {
 	device_operations = "cs5536_ide";
-
-	/* IDE: enable CS5536 IDE. There may be a different IDE controller on board */
-	enable_ide = "0";
 };

@@ -54,7 +54,6 @@
 		};
 		pci@f,2 {
 			/config/("southbridge/amd/cs5536/ide");
-			enable_ide = "1";
 		};
 		ioport@2e {
 			/config/("superio/ite/it8716f/dts");

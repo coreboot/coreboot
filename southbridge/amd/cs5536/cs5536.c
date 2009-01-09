@@ -609,18 +609,13 @@ void chipsetinit(void)
 
 /**
  * Enables the IDE. This is code that is run if there is an ide device in the mainboard
- * device tree and it has set non-zero "enable_ide".
+ * device tree.
  * 
  * @param dev The device 
  */
 static void ide_init(struct device *dev)
 {
 	u32 ide_cfg;
-
-	struct southbridge_amd_cs5536_ide_config *ide =
-	    (struct southbridge_amd_cs5536_ide_config *)dev->device_configuration;
-	if (!ide->enable_ide)
-		return;
 
 	printk(BIOS_DEBUG, "cs5536_ide: %s\n", __func__);
 	/* GPIO and IRQ setup are handled in the main chipset code. */

@@ -21,7 +21,7 @@ To build the flashrom utility you need to install the following packages:
 Usage
 -----
 
- $ flashrom [-rwvEVfh] [-c chipname] [-s exclude_start] [-e exclude_end]
+ $ flashrom [-rwvEVfLhR] [-c chipname] [-s exclude_start] [-e exclude_end]
             [-m [vendor:]part] [-l file.layout] [-i imagename] [file]
    -r | --read:                      read flash and save into file
    -w | --write:                     write file into flash (default when
@@ -36,6 +36,9 @@ Usage
    -f | --force:                     force write without checking image
    -l | --layout <file.layout>:      read rom layout from file
    -i | --image <name>:              only flash image name from flash layout
+   -L | --list-supported:            print supported devices
+   -h | --help:                      print this help text
+   -R | --version:                   print the version (release)
 
  If no file is specified, then all that happens
  is that flash info is dumped and the flash chip is set to writable.

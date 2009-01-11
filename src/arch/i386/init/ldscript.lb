@@ -62,6 +62,8 @@ SECTIONS
 
 	/DISCARD/ : {
 		*(.comment)
+		*(.comment.*)
 		*(.note)
+		*(.note.*)
 	}
 }

@@ -259,6 +259,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         int needs_reset; int i;
         unsigned bsp_apicid = 0;
+	struct cpuid_result cpuid1;
 
         if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
@@ -311,8 +312,13 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
 #if K8_SET_FIDVID == 1
+	/* Check to see if processor is capable of changing FIDVID  */
+	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
+	cpuid1 = cpuid(0x80000007);
+	if( (cpuid1.edx & 0x6) == 0x6 ) {
 
         {
+		/* Read FIDVID_STATUS */
                 msr_t msr;
                 msr=rdmsr(0xc0010042);
                 print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\r\n");
@@ -332,6 +338,11 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\r\n"); 
 
         }
+
+	} else {
+		print_debug("Changing FIDVID not supported\n");
+	}
+
 #endif
 
 #if 1

@@ -161,6 +161,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset = 0;
 	u32 bsp_apicid = 0;
 	msr_t msr;
+	struct cpuid_result cpuid1;
 	struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 
@@ -197,16 +198,26 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	rs690_early_setup();
 	sb600_early_setup();
 
-	msr=rdmsr(0xc0010042);
-	printk_debug("begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
+	/* Check to see if processor is capable of changing FIDVID  */
+	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
+	cpuid1 = cpuid(0x80000007);
+	if( (cpuid1.edx & 0x6) == 0x6 ) {
 
-	enable_fid_change();
-	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
-	init_fidvid_bsp(bsp_apicid);
+		/* Read FIDVID_STATUS */
+		msr=rdmsr(0xc0010042);
+		printk_debug("begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
 
-	/* show final fid and vid */
-	msr=rdmsr(0xc0010042);
-	printk_debug("end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
+		enable_fid_change();
+		enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
+		init_fidvid_bsp(bsp_apicid);
+
+		/* show final fid and vid */
+		msr=rdmsr(0xc0010042);
+		printk_debug("end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
+
+	} else {
+		printk_debug("Changing FIDVID not supported\n");
+	}
 
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);

@@ -80,7 +80,7 @@ static uint16_t find_ite_spi_flash_port(uint16_t port)
 	id |= regval(port, CHIP_ID_BYTE2_REG);
 
 	/* TODO: Handle more IT87xx if they support flash translation */
-	if (id == 0x8716) {
+	if (0x8716 == id || 0x8718 == id) {
 		/* NOLDN, reg 0x24, mask out lowest bit (suspend) */
 		tmp = regval(port, 0x24) & 0xFE;
 		printf("Serial flash segment 0x%08x-0x%08x %sabled\n",

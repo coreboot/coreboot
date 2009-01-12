@@ -146,8 +146,8 @@ int read_romlayout(char *name)
 
 	while (!feof(romlayout)) {
 		char *tstr1, *tstr2;
-		fscanf(romlayout, "%s %s\n", tempstr,
-		       rom_entries[romimages].name);
+		if (2 != fscanf(romlayout, "%s %s\n", tempstr, rom_entries[romimages].name))
+			continue;
 #if 0
 		// fscanf does not like arbitrary comments like that :( later
 		if (tempstr[0] == '#') {

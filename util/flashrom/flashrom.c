@@ -296,7 +296,7 @@ void print_version(void)
 int main(int argc, char *argv[])
 {
 	uint8_t *buf;
-	unsigned long size;
+	unsigned long size, numbytes;
 	uint32_t erasedbytes;
 	FILE *image;
 	/* Probe for up to three flash chips. */
@@ -517,11 +517,11 @@ int main(int argc, char *argv[])
 				       exclude_end_position -
 				       exclude_start_position);
 
-			fwrite(buf, sizeof(char), size, image);
+			numbytes = fwrite(buf, 1, size, image);
 			fclose(image);
-			printf("done.\n");
+			printf("%s.\n", numbytes == size ? "done" : "FAILED");
 			free(buf);
-			exit(0);
+			return numbytes != size;
 		}
 		// FIXME: flash writes stay enabled!
 		exit(1);
@@ -615,9 +615,11 @@ int main(int argc, char *argv[])
 			memset(buf + exclude_start_position, 0,
 			       exclude_end_position - exclude_start_position);
 
-		fwrite(buf, sizeof(char), size, image);
+		numbytes = fwrite(buf, 1, size, image);
 		fclose(image);
-		printf("done.\n");
+		printf("%s.\n", numbytes == size ? "done" : "FAILED");
+		if (numbytes != size)
+			return 1;
 	} else {
 		struct stat image_stat;
 
@@ -634,9 +636,13 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 
-		fread(buf, sizeof(char), size, image);
+		numbytes = fread(buf, 1, size, image);
 		show_id(buf, size, force);
 		fclose(image);
+		if (numbytes != size) {
+			fprintf(stderr, "Error: Failed to read file. Got %ld bytes, wanted %ld!\n", numbytes, size);
+			return 1;
+		}
 	}
 
 	/* exclude range stuff. Nice idea, but at the moment it is only

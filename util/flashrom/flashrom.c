@@ -186,10 +186,11 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 			printf("0x%08x", idx);
 
 		if (*(buf2 + idx) != *(buf + idx)) {
-			if (verbose) {
-				printf("0x%08x ", idx);
-			}
-			printf("FAILED!  Expected=0x%02x, Read=0x%02x\n",
+			if (verbose)
+				printf("0x%08x FAILED!", idx);
+			else
+				printf("FAILED at 0x%08x!", idx);
+			printf("  Expected=0x%02x, Read=0x%02x\n",
 			       *(buf + idx), *(buf2 + idx));
 			return 1;
 		}

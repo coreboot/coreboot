@@ -70,7 +70,6 @@ static const struct spd_entry spd_table[] = {
 	{SPD_REFRESH, 0x82},
 	{SPD_SDRAM_CYCLE_TIME_2ND, 0x0},
 	{SPD_SDRAM_CYCLE_TIME_3RD, 0x0},
-	{SPD_tRCD, 15},
 };
 
 /**

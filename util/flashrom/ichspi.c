@@ -313,6 +313,7 @@ int program_opcodes(OPCODES * op)
 		opmenu[1] |= ((uint32_t) op->opcode[a].opcode) << ((a - 4) * 8);
 	}
 
+	printf_debug("\n%s: preop=%04x optype=%04x opmenu=%08x%08x\n", __func__, preop, optype, opmenu[0], opmenu[1]);
 	switch (flashbus) {
 	case BUS_TYPE_ICH7_SPI:
 	case BUS_TYPE_VIA_SPI:

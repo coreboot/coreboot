@@ -175,6 +175,35 @@ static void sata_init(struct device *dev)
 		byte = readb(sata_bar5 + 0x128 + 0x80 * i);
 		printk_spew("SATA port %i status = %x\n", i, byte);
 		byte &= 0xF;
+
+		if( byte == 0x1 ) {
+			/* If the drive status is 0x1 then we see it but we aren't talking to it. */
+			/* Try to do something about it. */
+			printk_spew("SATA device detected but not talking. Trying lower speed.\n");
+
+			/* Read in Port-N Serial ATA Control Register */
+			byte = readb(sata_bar5 + 0x12C + 0x80 * i);
+
+			/* Set Reset Bit and 1.5g bit */
+			byte |= 0x11; 
+			writeb(byte, (sata_bar5 + 0x12C + 0x80 * i));
+			
+			/* Wait 1ms */			
+			mdelay(1); 
+
+			/* Clear Reset Bit */
+			byte &= ~0x01; 
+			writeb(byte, (sata_bar5 + 0x12C + 0x80 * i));
+
+			/* Wait 1ms */
+			mdelay(1);
+
+			/* Reread status */
+			byte = readb(sata_bar5 + 0x128 + 0x80 * i);
+			printk_spew("SATA port %i status = %x\n", i, byte);
+			byte &= 0xF;
+		}
+
 		if (byte == 0x3) {
 			for (j = 0; j < 10; j++) {
 				if (!sata_drive_detect(i, ((i / 2) == 0) ? sata_bar0 : sata_bar2))

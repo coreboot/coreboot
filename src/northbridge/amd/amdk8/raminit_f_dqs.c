@@ -432,14 +432,27 @@ static uint16_t get_exact_T1000(unsigned i)
 	 /*15*/   5000, 4000, 3000, 2500,
 	};
 
-	unsigned fid_cur;
 	int index;
-
 	msr_t msr;
-	msr = rdmsr(0xc0010042);
-	fid_cur = msr.lo & 0x3f;
 
-	index = fid_cur>>1;
+	/* Check for FID control support */
+	struct cpuid_result cpuid1;
+	cpuid1 = cpuid(0x8000007);
+	if( cpuid1.edx & 0x02 ) {
+		/* Use current FID */
+		unsigned fid_cur;
+		msr = rdmsr(0xc0010042);
+		fid_cur = msr.lo & 0x3f;
+
+		index = fid_cur>>1;
+	} else {
+		/* Use startup FID */
+		unsigned fid_start;
+		msr = rdmsr(0xc0010015);
+		fid_start = (msr.lo & (0x3f << 24));
+		
+		index = fid_start>>25;
+	}
 
 	if(index>12) return T1000_a[i];
 

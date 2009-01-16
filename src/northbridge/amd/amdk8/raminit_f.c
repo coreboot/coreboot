@@ -1823,26 +1823,36 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	 * by both the memory controller and the dimms.
 	 */
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		u32 spd_device = ctrl->channel0[i];
+		u32 spd_device;
 
 		printk_raminit("1.1 dimm_mask: %08x\n", meminfo->dimm_mask);
-		if (!(meminfo->dimm_mask & (1 << i))) {
-			if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
-				spd_device = ctrl->channel1[i];
-			} else {
+		printk_raminit("i: %08x\n",i);
+
+		if (meminfo->dimm_mask & (1 << i)) {
+			spd_device = ctrl->channel0[i];
+			printk_raminit("Channel 0 settings:\n");
+
+			switch (find_optimum_spd_latency(spd_device, &min_latency, &min_cycle_time)) {
+			case -1:
+				goto hw_error;
+				break;
+			case 1:
 				continue;
 			}
 		}
+		if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) {
+			spd_device = ctrl->channel1[i];
+			printk_raminit("Channel 1 settings:\n");
 
-		printk_raminit("i: %08x\n",i);
-
-		switch (find_optimum_spd_latency(spd_device, &min_latency, &min_cycle_time)) {
-		case -1:
-			goto hw_error;
-			break;
-		case 1:
-			continue;
-		}	
+			switch (find_optimum_spd_latency(spd_device, &min_latency, &min_cycle_time)) {
+			case -1:
+				goto hw_error;
+				break;
+			case 1:
+				continue;
+			}
+		}
+		
 	}
 	/* Make a second pass through the dimms and disable
 	 * any that cannot support the selected memclk and cas latency.
@@ -1941,37 +1951,55 @@ static unsigned convert_to_1_4(unsigned value)
 	valuex =  fraction [value & 0x7];
 	return valuex;
 }
+
+int get_dimm_Trc_clocks(u32 spd_device, const struct mem_param *param)
+{
+	int value;
+	int value2;
+	int clocks;
+	value = spd_read_byte(spd_device, SPD_TRC);
+	if (value < 0)
+		return -1;
+	printk_raminit("update_dimm_Trc: tRC (41) = %08x\n", value);
+
+	value2 = spd_read_byte(spd_device, SPD_TRC -1);
+	value <<= 2;
+	value += convert_to_1_4(value2>>4);
+
+	value *= 10;
+	printk_raminit("update_dimm_Trc: tRC final value = %i\n", value);
+
+	clocks = (value + param->divisor - 1)/param->divisor;
+	printk_raminit("update_dimm_Trc: clocks = %i\n", clocks);
+
+	if (clocks < DTL_TRC_MIN) {
+#warning We should die here or at least disable this bank.
+		printk_notice("update_dimm_Trc: can't refresh fast enough, "
+			"want %i clocks, can %i clocks\n", clocks, DTL_TRC_MIN);
+		clocks = DTL_TRC_MIN;
+	}
+	return clocks;
+}
+
 static int update_dimm_Trc(const struct mem_controller *ctrl,
 			    const struct mem_param *param,
 			    int i, long dimm_mask)
 {
-	unsigned clocks, old_clocks;
+	int clocks, old_clocks;
 	uint32_t dtl;
-	int value;
-	int value2;
 	u32 spd_device = ctrl->channel0[i];
 
 	if (!(dimm_mask & (1 << i)) && (dimm_mask & (1 << (DIMM_SOCKETS + i)))) { /* channelB only? */
 		spd_device = ctrl->channel1[i];
 	}
 
-	value = spd_read_byte(spd_device, SPD_TRC);
-	if (value < 0) return -1;
-
-	value2 = spd_read_byte(spd_device, SPD_TRC -1);
-	value <<= 2;
-	value += convert_to_1_4(value2>>4);
-
-	value *=10;
-
-	clocks = (value + param->divisor - 1)/param->divisor;
-
-	if (clocks < DTL_TRC_MIN) {
-		clocks = DTL_TRC_MIN;
-	}
+	clocks = get_dimm_Trc_clocks(spd_device, param);
+	if (clocks == -1)
+		return clocks;
 	if (clocks > DTL_TRC_MAX) {
 		return 0;
 	}
+	printk_raminit("update_dimm_Trc: clocks after adjustment = %i\n", clocks);
 
 	dtl = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW);
 	old_clocks = ((dtl >> DTL_TRC_SHIFT) & DTL_TRC_MASK) + DTL_TRC_BASE;

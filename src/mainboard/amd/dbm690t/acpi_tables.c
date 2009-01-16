@@ -400,10 +400,10 @@ u32 pstates_algorithm(acpi_header_t * dsdt)
 		Pstate_num++;
 	}
 
-	/* Print Pstate feq,vid,volt,power */
+	/* Print Pstate freq,vid,volt,power */
 
 	for (index = 0; index < Pstate_num; index++) {
-		printk_info("Pstate_feq[%d] = %dMHz\t", index,
+		printk_info("Pstate_freq[%d] = %dMHz\t", index,
 			    Pstate_feq[index]);
 		printk_info("Pstate_vid[%d] = %d\t", index, Pstate_vid[index]);
 		printk_info("Pstate_volt[%d] = %dmv\t", index,
@@ -414,8 +414,11 @@ u32 pstates_algorithm(acpi_header_t * dsdt)
 
 	/*
 	 * Modify the DSDT Table to put the actural _PSS package
-	 * corefeq-->Pstate_feq[index] power-->Pstate_power[index] transitionlatency-->0x64 busmasterlatency-->0x7,
-	 * control-->0xE8202C00| Pstate_vid[index]<<6 | Pstate_fid[index]
+	 * corefeq-->Pstate_feq[index]
+	 * power-->Pstate_power[index]
+	 * transitionlatency-->0x64
+	 * busmasterlatency-->0x7,
+	 * control--> 0xE8202800| Pstate_vid[index]<<6 | Pstate_fid[index]
 	 * status --> Pstate_vid[index]<<6 | Pstate_fid[index]
 	 * Get the _PSS control method Sig.
 	 */
@@ -461,7 +464,13 @@ u32 pstates_algorithm(acpi_header_t * dsdt)
 				transitionlatency = 0x64;
 				busmasterlatency = 0x7;
 				control =
-				    0xE8202C00 | (Pstate_vid[index] << 6) |
+				    (0x3 << 30) | /* IRT */
+				    (0x2 << 28) | /* RVO */
+				    (0x1 << 27) | /* ExtType */
+				    (0x2 << 20) | /* PLL_LOCK_TIME */
+				    (0x0 << 18) | /* MVS */
+				    (0x5 << 11) | /* VST */
+				    (Pstate_vid[index] << 6) |
 				    Pstate_fid[index];
 				status =
 				    (Pstate_vid[index] << 6) |

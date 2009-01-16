@@ -1702,6 +1702,96 @@ static unsigned convert_to_linear(unsigned value)
 	return value;
 }
 
+static const uint8_t latency_indicies[] = { 25, 23, 9 };
+
+int find_optimum_spd_latency(u32 spd_device, unsigned *min_latency, unsigned *min_cycle_time)
+{
+	int new_cycle_time, new_latency;
+	int index;
+	int latencies;
+	int latency;
+
+	/* First find the supported CAS latencies
+	 * Byte 18 for DDR SDRAM is interpreted:
+	 * bit 3 == CAS Latency = 3
+	 * bit 4 == CAS Latency = 4
+	 * bit 5 == CAS Latency = 5
+	 * bit 6 == CAS Latency = 6
+	 */
+	new_cycle_time = 0x500;
+	new_latency = 6;
+
+	latencies = spd_read_byte(spd_device, SPD_CAS_LAT);
+	if (latencies <= 0)
+		return 1;
+
+	printk_raminit("\tlatencies: %08x\n", latencies);
+	/* Compute the lowest cas latency which can be expressed in this
+	 * particular SPD EEPROM. You can store at most settings for 3
+	 * contiguous CAS latencies, so by taking the highest CAS
+	 * latency maked as supported in the SPD and subtracting 2 you
+	 * get the lowest expressable CAS latency. That latency is not
+	 * necessarily supported, but a (maybe invalid) entry exists
+	 * for it.
+	 */
+	latency = log2(latencies) - 2;
+
+	/* Loop through and find a fast clock with a low latency */
+	for (index = 0; index < 3; index++, latency++) {
+		int value;
+		if ((latency < 3) || (latency > 6) ||
+			(!(latencies & (1 << latency)))) {
+			continue;
+		}
+		value = spd_read_byte(spd_device, latency_indicies[index]);
+		if (value < 0) {
+			return -1;
+		}
+
+		printk_raminit("\tindex: %08x\n", index);
+		printk_raminit("\t\tlatency: %08x\n", latency);
+		printk_raminit("\t\tvalue1: %08x\n", value);
+
+		value = convert_to_linear(value);
+
+		printk_raminit("\t\tvalue2: %08x\n", value);
+
+		/* Only increase the latency if we decrease the clock */
+		if (value >= *min_cycle_time ) {
+			if (value < new_cycle_time) {
+				new_cycle_time = value;
+				new_latency = latency;
+			} else if (value == new_cycle_time) {
+				if (new_latency > latency) {
+					new_latency = latency;
+				}
+			}
+		}
+		printk_raminit("\t\tnew_cycle_time: %08x\n", new_cycle_time);
+		printk_raminit("\t\tnew_latency: %08x\n", new_latency);
+
+	}
+
+	if (new_latency > 6){
+		return 1;
+	}
+
+	/* Does min_latency need to be increased? */
+	if (new_cycle_time > *min_cycle_time) {
+		*min_cycle_time = new_cycle_time;
+	}
+
+	/* Does min_cycle_time need to be increased? */
+	if (new_latency > *min_latency) {
+		*min_latency = new_latency;
+	}
+
+	printk_raminit("2 min_cycle_time: %08x\n", *min_cycle_time);
+	printk_raminit("2 min_latency: %08x\n", *min_latency);
+
+	return 0;
+}
+
 static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *ctrl, struct mem_info *meminfo)
 {
 	/* Compute the minimum cycle time for these dimms */
@@ -1709,8 +1799,6 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	unsigned min_cycle_time, min_latency, bios_cycle_time;
 	int i;
 	uint32_t value;
-
-	static const uint8_t latency_indicies[] = { 25, 23, 9 };
 
 	static const uint16_t min_cycle_times[] = { // use full speed to compare
 		[NBCAP_MEMCLK_NOLIMIT] = 0x250, /*2.5ns */
@@ -1735,10 +1823,6 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	 * by both the memory controller and the dimms.
 	 */
 	for (i = 0; i < DIMM_SOCKETS; i++) {
-		int new_cycle_time, new_latency;
-		int index;
-		int latencies;
-		int latency;
 		u32 spd_device = ctrl->channel0[i];
 
 		printk_raminit("1.1 dimm_mask: %08x\n", meminfo->dimm_mask);
@@ -1750,83 +1834,15 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 			}
 		}
 
-		/* First find the supported CAS latencies
-		 * Byte 18 for DDR SDRAM is interpreted:
-		 * bit 3 == CAS Latency = 3
-		 * bit 4 == CAS Latency = 4
-		 * bit 5 == CAS Latency = 5
-		 * bit 6 == CAS Latency = 6
-		 */
-		new_cycle_time = 0x500;
-		new_latency = 6;
-
-		latencies = spd_read_byte(spd_device, SPD_CAS_LAT);
-		if (latencies <= 0) continue;
-
 		printk_raminit("i: %08x\n",i);
-		printk_raminit("\tlatencies: %08x\n", latencies);
-		/* Compute the lowest cas latency which can be expressed in this
-		 * particular SPD EEPROM. You can store at most settings for 3
-		 * contiguous CAS latencies, so by taking the highest CAS
-		 * latency maked as supported in the SPD and subtracting 2 you
-		 * get the lowest expressable CAS latency. That latency is not
-		 * necessarily supported, but a (maybe invalid) entry exists
-		 * for it.
-		 */
-		latency = log2(latencies) - 2;
 
-		/* Loop through and find a fast clock with a low latency */
-		for (index = 0; index < 3; index++, latency++) {
-			int value;
-			if ((latency < 3) || (latency > 6) ||
-				(!(latencies & (1 << latency)))) {
-				continue;
-			}
-			value = spd_read_byte(spd_device, latency_indicies[index]);
-			if (value < 0) {
-				goto hw_error;
-			}
-
-			printk_raminit("\tindex: %08x\n", index);
-			printk_raminit("\t\tlatency: %08x\n", latency);
-			printk_raminit("\t\tvalue1: %08x\n", value);
-
-			value = convert_to_linear(value);
-
-			printk_raminit("\t\tvalue2: %08x\n", value);
-
-			/* Only increase the latency if we decrease the clock */
-			if (value >= min_cycle_time ) {
-				if (value < new_cycle_time) {
-					new_cycle_time = value;
-					new_latency = latency;
-				} else if (value == new_cycle_time) {
-					if (new_latency > latency) {
-						new_latency = latency;
-					}
-				}
-			}
-			printk_raminit("\t\tnew_cycle_time: %08x\n", new_cycle_time);
-			printk_raminit("\t\tnew_latency: %08x\n", new_latency);
-
-		}
-
-		if (new_latency > 6){
+		switch (find_optimum_spd_latency(spd_device, &min_latency, &min_cycle_time)) {
+		case -1:
+			goto hw_error;
+			break;
+		case 1:
 			continue;
-		}
-
-		/* Does min_latency need to be increased? */
-		if (new_cycle_time > min_cycle_time) {
-			min_cycle_time = new_cycle_time;
-		}
-
-		/* Does min_cycle_time need to be increased? */
-		if (new_latency > min_latency) {
-			min_latency = new_latency;
-		}
-
-		printk_raminit("2 min_cycle_time: %08x\n", min_cycle_time);
-		printk_raminit("2 min_latency: %08x\n", min_latency);
+		}	
 	}
 	/* Make a second pass through the dimms and disable
 	 * any that cannot support the selected memclk and cas latency.

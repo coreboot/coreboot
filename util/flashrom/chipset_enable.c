@@ -342,16 +342,16 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 		ich_init_opcodes();
 		break;
 	case BUS_TYPE_ICH9_SPI:
-		tmp2 = *(uint16_t *) (spibar + 0);
-		printf_debug("0x00: 0x%04x (HSFS)\n", tmp2);
-		printf_debug("FLOCKDN %i, ", (tmp >> 15 & 1));
-		printf_debug("FDV %i, ", (tmp >> 14) & 1);
-		printf_debug("FDOPSS %i, ", (tmp >> 13) & 1);
-		printf_debug("SCIP %i, ", (tmp >> 5) & 1);
-		printf_debug("BERASE %i, ", (tmp >> 3) & 3);
-		printf_debug("AEL %i, ", (tmp >> 2) & 1);
-		printf_debug("FCERR %i, ", (tmp >> 1) & 1);
-		printf_debug("FDONE %i\n", (tmp >> 0) & 1);
+		tmp2 = *(uint16_t *) (spibar + 4);
+		printf_debug("0x04: 0x%04x (HSFS)\n", tmp2);
+		printf_debug("FLOCKDN %i, ", (tmp2 >> 15 & 1));
+		printf_debug("FDV %i, ", (tmp2 >> 14) & 1);
+		printf_debug("FDOPSS %i, ", (tmp2 >> 13) & 1);
+		printf_debug("SCIP %i, ", (tmp2 >> 5) & 1);
+		printf_debug("BERASE %i, ", (tmp2 >> 3) & 3);
+		printf_debug("AEL %i, ", (tmp2 >> 2) & 1);
+		printf_debug("FCERR %i, ", (tmp2 >> 1) & 1);
+		printf_debug("FDONE %i\n", (tmp2 >> 0) & 1);
 
 		tmp = *(uint32_t *) (spibar + 0x50);
 		printf_debug("0x50: 0x%08x (FRAP)\n", tmp);
@@ -380,10 +380,24 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 			     *(uint32_t *) (spibar + 0x80));
 		printf_debug("0x84: 0x%08x (PR4)\n",
 			     *(uint32_t *) (spibar + 0x84));
-		/* printf_debug("0xA0: 0x%08x (BBAR)\n",
-			     *(uint32_t *) (spibar + 0xA0)); ICH10 only? */
+		printf_debug("0x90: 0x%08x (SSFS, SSFC)\n",
+			     *(uint32_t *) (spibar + 0x90));
+		printf_debug("0x94: 0x%04x     (PREOP)\n",
+			     *(uint16_t *) (spibar + 0x94));
+		printf_debug("0x96: 0x%04x     (OPTYPE)\n",
+			     *(uint16_t *) (spibar + 0x96));
+		printf_debug("0x98: 0x%08x (OPMENU)\n",
+			     *(uint32_t *) (spibar + 0x98));
+		printf_debug("0x9C: 0x%08x (OPMENU+4)\n",
+			     *(uint32_t *) (spibar + 0x9C));
+		printf_debug("0xA0: 0x%08x (BBAR)\n",
+			     *(uint32_t *) (spibar + 0xA0));
 		printf_debug("0xB0: 0x%08x (FDOC)\n",
 			     *(uint32_t *) (spibar + 0xB0));
+		if (tmp2 & (1 << 15)) {
+			printf("WARNING: SPI Configuration Lockdown activated.\n");
+			ichspi_lock = 1;
+		}
 		ich_init_opcodes();
 		break;
 	default:

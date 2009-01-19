@@ -3,4 +3,5 @@ dir /cpu/x86/fpu
 dir /cpu/x86/mmx
 dir /cpu/x86/lapic
 dir /cpu/x86/cache
+dir /cpu/x86/smm
 driver model_gx1_init.o

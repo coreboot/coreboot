@@ -5,5 +5,6 @@ dir /cpu/x86/mmx
 dir /cpu/x86/sse
 dir /cpu/x86/lapic
 dir /cpu/x86/cache
+dir /cpu/x86/smm
 dir /cpu/intel/microcode
 driver model_6dx_init.o

@@ -226,6 +226,9 @@ class romimage:
 		# driver files added by 'driver' directive
 		self.driverrules = {}
 
+		# smm object files added by 'smmobject' directive
+		self.smmobjectrules = {}
+
 		# loader scripts added by 'ldscript' directive
 		self.ldscripts = []
 
@@ -344,6 +347,9 @@ class romimage:
 	def adddriverrule(self, name):
 		self.addobjectdriver(self.driverrules, name)
 
+	def addsmmobjectrule(self, name):
+		self.addobjectdriver(self.smmobjectrules, name)
+
 	def getinitobjectrules(self):
 		return self.initobjectrules
 
@@ -370,6 +376,15 @@ class romimage:
 		if (o):
 			return o
 		fatal("No such driver rule \"%s\"" % name)
+
+	def getsmmobjectrules(self):
+		return self.smmobjectrules
+
+	def getsmmobjectrule(self, name):
+		o = getdict(self.smmobjectrules, name)
+		if (o):
+			return o
+		fatal("No such smm object rule \"%s\"" % name)
 
 	def addldscript(self, path):
 		self.ldscripts.append(path)
@@ -1370,6 +1385,10 @@ def adddriver(driver_name):
 	global curimage
 	curimage.adddriverrule(driver_name)
 
+def addsmmobject(object_name):
+	global curimage
+	curimage.addsmmobjectrule(object_name)
+
 def target(name):
         global target_dir, target_name
 	print "Configuring TARGET %s" % name
@@ -1593,6 +1612,7 @@ parser Config:
     token PRINT:		'print'
     token REGISTER:		'register'
     token ROMIMAGE:		'romimage'
+    token SMMOBJECT:		'smmobject'
     token SOUTHBRIDGE:		'southbridge'
     token SUPERIO:		'superio'
     token TARGET:		'target'
@@ -1692,6 +1712,10 @@ parser Config:
     rule object<<C>>:	OBJECT DIRPATH		{{ if (C): addobject(DIRPATH)}}
 
     rule driver<<C>>:	DRIVER DIRPATH		{{ if (C): adddriver(DIRPATH)}}
+
+    rule smmobject<<C>>:
+    			SMMOBJECT DIRPATH	{{ if (C): addsmmobject(DIRPATH)}}
+
 
     rule dir<<C>>:	DIR DIRPATH 		{{ if (C): dodir(DIRPATH, 'Config.lb') }}
 
@@ -1826,6 +1850,7 @@ parser Config:
 		| 	prtstmt<<C>>		{{ return prtstmt }}
 		|	register<<C>> 		{{ return register }}
 		|	device<<C>>		{{ return device }}
+		|	smmobject<<C>>		{{ return smmobject }}
 
     # ENTRY for parsing Config.lb file
     rule cfgfile:	(uses<<1>>)* 
@@ -2028,6 +2053,13 @@ def writeimagemakefile(image):
 		file.write("OBJECTS += %s\n" % (obj_name))
 		file.write("SOURCES += %s\n" % (obj_source))
 
+	for srule, smm in image.getsmmobjectrules().items():
+		s_name = smm[0]
+		s_source = smm[1]
+		file.write("SMM-OBJECTS += %s\n" % (s_name))
+		file.write("SOURCES += %s\n" % (s_source))
+
+
 	# for chip_target.c
 	file.write("OBJECTS += static.o\n")
 	file.write("SOURCES += static.c\n")
@@ -2103,6 +2135,23 @@ def writeimagemakefile(image):
 		file.write("%s: %s\n" % (driver[0], source))
 		file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 		#file.write("%s\n" % objrule[2])
+
+	file.write("\n# smmobjectrules:\n")
+	for irule, smm in image.getsmmobjectrules().items():
+		source = topify(smm[1])
+		type = smm[2]
+		if (type  == 'S'):
+			# for .S, .o depends on .s
+			file.write("%s: %s.s\n" % (smm[0], smm[3]))
+        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
+			# and .s depends on .S
+			file.write("%s.s: %s\n" % (smm[3], source))
+			# Note: next 2 lines are ONE output line!
+        		file.write("\t$(CPP) $(CPPFLAGS) $< ")
+			file.write(">$@.new && mv $@.new $@\n")
+		else:
+			file.write("%s: %s\n" % (smm[0], source))
+			file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
 
 	# special rule for chip_target.c
 	file.write("static.o: static.c\n")

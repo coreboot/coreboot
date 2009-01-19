@@ -197,6 +197,8 @@ static void enable_hpet(struct device *dev)
 	/* TODO */
 }
 
+
+#if HAVE_SMI_HANDLER
 static void i82801gx_lock_smm(struct device *dev)
 {
 	void smm_lock(void);
@@ -243,6 +245,7 @@ static void i82801gx_lock_smm(struct device *dev)
 	printk_debug("Done.\n");
 #endif
 }
+#endif
 
 static void lpc_init(struct device *dev)
 {
@@ -276,7 +279,9 @@ static void lpc_init(struct device *dev)
 
 	setup_i8259();
 
+#if HAVE_SMI_HANDLER
 	i82801gx_lock_smm(dev);
+#endif
 }
 
 static void i82801gx_lpc_read_resources(device_t dev)

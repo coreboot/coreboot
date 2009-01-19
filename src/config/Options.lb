@@ -862,8 +862,8 @@ define HAVE_HARD_RESET
 	comment "Have hard reset"
 end
 define HAVE_SMI_HANDLER
-	default none
-	export used
+	default 0
+	export always
 	comment "Set, if the board needs an SMI handler"
 end
 define MEMORY_HOLE

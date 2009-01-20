@@ -39,7 +39,7 @@ cache_as_ram:
         movl	%eax, (%esi)
 
 	/* Disable prefetchers */
-	movl	$0x01a0, %eax
+	movl	$0x01a0, %ecx
 	rdmsr
 	orl	$((1 << 9) | (1 << 19)), %eax
 	orl	$((1 << 5) | (1 << 7)), %edx

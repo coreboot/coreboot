@@ -501,8 +501,12 @@ define CONFIG_USE_PRINTK_IN_CAR
 	export always
 	comment "use printk instead of print in CAR stage code"
 end
+define ASSEMBLER_DEBUG
+	default none
+	export used
+	comment "Create disassembly files for debugging"
+end
 
-	
 ###############################################
 # Mainboard options
 ###############################################

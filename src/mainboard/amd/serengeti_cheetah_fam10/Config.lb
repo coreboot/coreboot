@@ -143,7 +143,7 @@ if USE_DCACHE_RAM
 		#compile cache_as_ram.c to auto.inc
 		makerule ./cache_as_ram_auto.inc
 			depends "$(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) option_table.h"
-			action "$(CC) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin -g -dA -fverbose-asm -Wall -c -S -o $@"
+			action "$(CC) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin $(DEBUG_CFLAGS) -Wall -c -S -o $@"
 			action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end

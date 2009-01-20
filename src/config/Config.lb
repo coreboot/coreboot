@@ -10,6 +10,10 @@ makedefine GCC_INC_DIR := $(shell LC_ALL=C $(CC) -print-search-dirs | sed -ne "s
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
 makedefine CFLAGS := $(CPU_OPT) $(DISTRO_CFLAGS) $(CPPFLAGS) -Os -nostdinc -nostdlib -fno-builtin  -Wall
 
+if ASSEMBLER_DEBUG
+makedefine DEBUG_CFLAGS := -g -dA -fverbose-asm
+end
+
 makedefine HOSTCFLAGS:= -Os -Wall
 
 makerule ldscript.ld   

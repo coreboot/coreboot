@@ -2,6 +2,7 @@
 
 uses HAVE_OPTION_TABLE
 uses CONFIG_AP_CODE_IN_CAR
+uses ASSEMBLER_DEBUG
 
 makedefine CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)

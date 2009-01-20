@@ -114,7 +114,7 @@ static void cn700_pci_domain_set_resources(struct device *dev)
 	/* TODO: shadow ram needs to be controlled via dts */
 	ram_resource(dev, idx++, 1024,
 		     (tolmk - 1024 - (CONFIG_CN700_VIDEO_MB * 1024)));
-	phase4_assign_resources(&dev->link[0]);
+	phase4_set_resources(&dev->link[0]);
 }
 
 /** Operations for when the northbridge is running a PCI domain. */

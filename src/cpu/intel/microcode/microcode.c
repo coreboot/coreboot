@@ -51,13 +51,13 @@ static inline uint32_t read_microcode_rev(void)
 	return msr.hi;
 }
 
-void intel_update_microcode(void *microcode_updates)
+void intel_update_microcode(const void *microcode_updates)
 {
 	unsigned int eax;
 	unsigned int pf, rev, sig;
 	unsigned int x86_model, x86_family;
-	struct microcode *m;
-	char *c;
+	const struct microcode *m;
+	const char *c;
 	msr_t msr;
 	
 	/* cpuid sets msr 0x8B iff a microcode update has been loaded. */
@@ -85,7 +85,7 @@ void intel_update_microcode(void *microcode_updates)
 	print_debug("\r\n");
 
 	m = microcode_updates;
-	for(c = microcode_updates; m->hdrver;  m = (struct microcode *)c) {
+	for(c = microcode_updates; m->hdrver;  m = (const struct microcode *)c) {
 		if ((m->sig == sig) && (m->pf & pf)) {
 			unsigned int new_rev;
 			msr.lo = (unsigned long)(&m->bits) & 0xffffffff;

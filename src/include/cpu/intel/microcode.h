@@ -1,1 +1,1 @@
-void intel_update_microcode(void *microcode_updates);
+void intel_update_microcode(const void *microcode_updates);

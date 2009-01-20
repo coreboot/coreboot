@@ -65,7 +65,8 @@ void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
 	printk_warning("ACPI: could not add ACPI table to RSDT. failed.\n");
 }
 
-int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_nr, u8 start, u8 end) {
+int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_nr, u8 start, u8 end)
+{
 	mmconfig->base_address = base;
 	mmconfig->base_reserved = 0;
 	mmconfig->pci_segment_group_number = seg_nr;

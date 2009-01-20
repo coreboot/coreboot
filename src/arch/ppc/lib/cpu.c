@@ -64,6 +64,6 @@ void cpu_initialize(void)
 #endif	
 	/* Turn on caching if we haven't already */
 
-	printk_info("CPU #%d Initialized\n", info->index);
+	printk_info("CPU #%d initialized\n", info->index);
 	return;
 }

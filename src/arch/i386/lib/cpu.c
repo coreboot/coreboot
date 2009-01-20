@@ -250,7 +250,7 @@ void cpu_initialize(void)
 		set_cpu_ops(cpu);
 		cpu->device += c.x86_mask;
 		if(!cpu->ops) die("Unknown cpu");
-		printk_debug("WARNING: Using generic cpu ops\n");
+		printk_debug("Using generic cpu ops (good)\n");
 	}
 	
 
@@ -261,7 +261,7 @@ void cpu_initialize(void)
 		cpu->ops->init(cpu);
 	}
 
-	printk_info("CPU #%d Initialized\n", info->index);
+	printk_info("CPU #%d initialized\n", info->index);
 
 	return;
 }

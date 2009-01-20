@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
+#include <pc80/i8259.h>
 #include <arch/io.h>
 #include "i82801gx.h"
 
@@ -37,6 +38,8 @@
 #endif
 
 #define NMI_OFF 0
+
+typedef struct southbridge_intel_i82801gx_config config_t;
 
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
  * 0x00 - 0000 = Reserved
@@ -108,15 +111,44 @@ static void i82801gx_enable_serial_irqs(struct device *dev)
 
 static void i82801gx_pirq_init(device_t dev)
 {
-	pci_write_config8(dev, PIRQA_ROUT, 0x85);
-	pci_write_config8(dev, PIRQB_ROUT, 0x87);
-	pci_write_config8(dev, PIRQC_ROUT, 0x86);
-	pci_write_config8(dev, PIRQD_ROUT, 0x87);
+	device_t irq_dev;
+	/* Get the chip configuration */
+	config_t *config = dev->chip_info;
 
-	pci_write_config8(dev, PIRQE_ROUT, 0x80);
-	pci_write_config8(dev, PIRQF_ROUT, 0x80);
-	pci_write_config8(dev, PIRQG_ROUT, 0x80);
-	pci_write_config8(dev, PIRQH_ROUT, 0x85);
+	pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
+	pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
+	pci_write_config8(dev, PIRQC_ROUT, config->pirqc_routing);
+	pci_write_config8(dev, PIRQD_ROUT, config->pirqd_routing);
+
+	pci_write_config8(dev, PIRQE_ROUT, config->pirqe_routing);
+	pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
+	pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
+	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
+
+	/* Eric Biederman once said we should let the OS do this.
+	 * I am not so sure anymore he was right.
+	 */
+
+	for(irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+		u8 int_pin=0, int_line=0;
+
+		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
+			continue;
+
+		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
+
+		switch (int_pin) {
+		case 1: /* INTA# */ int_line = config->pirqa_routing; break;
+		case 2: /* INTB# */ int_line = config->pirqb_routing; break;
+		case 3: /* INTC# */ int_line = config->pirqc_routing; break;
+		case 4: /* INTD# */ int_line = config->pirqd_routing; break;
+		}
+
+		if (!int_line)
+			continue;
+
+		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
+	}
 }
 
 static void i82801gx_power_options(device_t dev)
@@ -328,8 +360,8 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
-/* 82801GB/GR/GDH (ICH7/ICH7R/ICH7DH) */
-static const struct pci_driver ich7_ich7r_ich7dh_lpc __pci_driver = {
+/* 82801GB/GR (ICH7/ICH7R) */
+static const struct pci_driver ich7_ich7r_lpc __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x27b8,

@@ -233,7 +233,7 @@ default FALLBACK_SIZE=131072
 ##
 ## coreboot C code runs at this location in RAM
 ##
-default _RAMBASE=0x00004000
+default _RAMBASE=0x00100000
 
 ##
 ## Load the payload from the ROM

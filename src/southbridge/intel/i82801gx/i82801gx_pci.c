@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,9 @@ static void pci_init(struct device *dev)
 	reg16 = pci_read_config16(dev, 0x1e);
 	reg16 |= 0xf900;
 	pci_write_config16(dev, 0x1e, reg16);
+
+	/* Will this improve throughput of bus masters? */
+	pci_write_config8(dev, PCI_MIN_GNT, 0x06);
 }
 
 static void ich_pci_dev_enable_resources(struct device *dev)

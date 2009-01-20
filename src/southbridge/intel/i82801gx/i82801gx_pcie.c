@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,13 +53,13 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, 0x1e, reg16);
 
 	reg32 = pci_read_config32(dev, 0x20);
-	printk_debug("    MBL    = 0x%08x\n", reg32);
+	printk_spew("    MBL    = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x24);
-	printk_debug("    PMBL   = 0x%08x\n", reg32);
+	printk_spew("    PMBL   = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x28);
-	printk_debug("    PMBU32 = 0x%08x\n", reg32);
+	printk_spew("    PMBU32 = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x2c);
-	printk_debug("    PMLU32 = 0x%08x\n", reg32);
+	printk_spew("    PMLU32 = 0x%08x\n", reg32);
 }
 
 static void set_subsystem(device_t dev, unsigned vendor, unsigned device)

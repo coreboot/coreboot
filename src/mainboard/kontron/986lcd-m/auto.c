@@ -169,6 +169,13 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 
+	/* Enable HWM */
+	dev=PNP_DEV(0x2e, W83627THG_HWM);
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 0);
+	pnp_set_iobase(dev, PNP_IDX_IO0, 0xa00);
+	pnp_set_enable(dev, 1);
+
 	pnp_exit_ext_func_mode(dev);
 
 	dev=PNP_DEV(0x4e, W83627THG_SP1);

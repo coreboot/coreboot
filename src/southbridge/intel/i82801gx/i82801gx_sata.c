@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,6 +133,8 @@ static void sata_init(struct device *dev)
 	reg32 |= 0x121200aa;
 	pci_write_config32(dev, 0xa4, reg32);
 	pci_write_config8(dev, 0xa0, 0x00);
+
+	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
 }
 
 static struct device_operations sata_ops = {

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -248,16 +248,26 @@ void southbridge_io_trap_handler(int smif)
 
 	printk_debug("SMI function trap 0x%x: ", smif);
 
-
 	switch (smif) {
 	case 0x32:
 		printk_debug("OS Init\n");
+		//gnvs->smif = 0;
+		break;
+	case 0xd5:
+		printk_debug("Set Brightness\n");
+		reg8 = gnvs->brtl;
+		printk_debug("brtl: %x\n", reg8);
+		outb(0x17, 0x66);
+		outb(reg8, 0x62);
+		//gnvs->smif = 0;
 		break;
 	case 0xd6:
 		printk_debug("Get Brightness\n");
 		outb(0x17, 0x66);
 		reg8 = inb(0x62);
+		printk_debug("brtl: %x\n", reg8);
 		gnvs->brtl = reg8;
+		//gnvs->smif = 0;
 		break;
 	default:
 		printk_debug("Unknown function\n");
@@ -401,12 +411,24 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 
 	if (smi_sts & (1 << 4)) { // SLP_SMI
 		u32 reg32;
+
+		/* First, disable further SMIs */
+		reg8 = inb(pmbase + SMI_EN);
+		reg8 &= ~SLP_SMI_EN;
+		outb(reg8, pmbase + SMI_EN);
+
+		/* Next, do the deed, we should change
+		 * power on after power loss bits here
+		 * if we're going to S5
+		 */
+
+		/* Write back to the SLP register to cause the
+		 * originally intended event again.
+		 */
 		reg32 = inl(pmbase + 0x04);
 		printk_debug("SMI#: SLP = 0x%08x\n");
 		printk_debug("SMI#: Powering off.\n");
-		outl((6 << 10), pmbase + 0x04);
-		outl((1 << 13) | (6 << 10), pmbase + 0x04);
-		printk_debug("....\n");
+		outl(reg32, pmbase + 0x04);
 	}
 
 }

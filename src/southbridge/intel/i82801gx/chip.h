@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,24 @@
 #define SOUTHBRIDGE_INTEL_I82801GX_CHIP_H
 
 struct southbridge_intel_i82801gx_config {
+	/* LPC configuration */
+	uint8_t pirqa_routing;
+	uint8_t pirqb_routing;
+	uint8_t pirqc_routing;
+	uint8_t pirqd_routing;
+	uint8_t pirqe_routing;
+	uint8_t pirqf_routing;
+	uint8_t pirqg_routing;
+	uint8_t pirqh_routing;
+
+	/* IDE configuration */
 	uint32_t ide_legacy_combined;
 	uint32_t ide_enable_primary;
 	uint32_t ide_enable_secondary;
 	uint32_t sata_ahci;
+
+	/* Azalia Configuration */
+	unsigned long hda_viddid;
 };
 
 extern struct chip_operations southbridge_intel_i82801gx_ops;

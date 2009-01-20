@@ -10,11 +10,11 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	uint8_t sum=0;
 	int i;
 
-	printk_info("Checking IRQ routing table consistency...\n");
+	printk_info("Checking Interrupt Routing Table consistency...\n");
 
 #if defined(IRQ_SLOT_COUNT)
 	if (sizeof(struct irq_routing_table) != rt->size) {
-		printk_warning("Inconsistent IRQ routing table size (0x%x/0x%x)\n",
+		printk_warning("Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
 			       sizeof(struct irq_routing_table),
 			       rt->size
 			);
@@ -25,24 +25,21 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	for (i = 0; i < rt->size; i++)
 		sum += addr[i];
 
-	printk_debug("%s() - irq_routing_table located at: 0x%p\n",
+	printk_debug("%s(): Interrupt Routing Table located at 0x%p.\n",
 		     __FUNCTION__, addr);
 
 	
 	sum = rt->checksum - sum;
 
 	if (sum != rt->checksum) {
-		printk_warning("%s:%6d:%s() - "
-			       "checksum is: 0x%02x but should be: 0x%02x\n",
-			       __FILE__, __LINE__, __FUNCTION__, rt->checksum, sum);
+		printk_warning("Interrupt Routing Table checksum is: 0x%02x but should be: 0x%02x.\n",
+			       rt->checksum, sum);
 		rt->checksum = sum;
 	}
 
 	if (rt->signature != PIRQ_SIGNATURE || rt->version != PIRQ_VERSION ||
 	    rt->size % 16 ) {
-		printk_warning("%s:%6d:%s() - "
-			       "Interrupt Routing Table not valid\n",
-			       __FILE__, __LINE__, __FUNCTION__);
+		printk_warning("Interrupt Routing Table not valid.\n");
 		return;
 	}
 
@@ -50,10 +47,13 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	for (i=0; i<rt->size; i++)
 		sum += addr[i];
 
+	/* We're manually fixing the checksum above. This warning can probably
+	 * never happen because if the target location is read-only this
+	 * function would have bailed out earlier.
+	 */
 	if (sum) {
-		printk_warning("%s:%6d:%s() - "
-			       "checksum error in irq routing table\n",
-			       __FILE__, __LINE__, __FUNCTION__);
+		printk_warning("Checksum error in Interrupt Routing Table "
+				"could not be fixed.\n");
 	}
 
 	printk_info("done.\n");
@@ -66,7 +66,7 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 
 	rt_curr = (uint8_t*)addr;
 	rt_orig = (uint8_t*)&intel_irq_routing_table;
-	printk_info("Verifing copy of IRQ routing tables at 0x%x...", addr);
+	printk_info("Verifing copy of Interrupt Routing Table at 0x%08x... ", addr);
 	for (i = 0; i < intel_irq_routing_table.size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
 			printk_info("failed\n");
@@ -91,7 +91,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	addr &= ~15;
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
-	printk_info("Copying IRQ routing tables to 0x%x...", addr);
+	printk_info("Copying Interrupt Routing Table to 0x%08x... ", addr);
 	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk_info("done.\n");
 	verify_copy_pirq_routing_table(addr);
@@ -115,7 +115,7 @@ void pirq_routing_irqs(unsigned long addr)
 	/* Set PCI IRQs. */
 	for (i = 0; i < num_entries; i++) {
 
-		printk_debug("PIR Entry %d Dev/Fn: %X Slot: %d\n", i,
+		printk_debug("PIRQ Entry %d Dev/Fn: %X Slot: %d\n", i,
 			pirq_tbl->slots[i].devfn >> 3, pirq_tbl->slots[i].slot);
 
 		for (j = 0; j < 4; j++) {

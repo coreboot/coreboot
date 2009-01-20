@@ -1,4 +1,5 @@
 #include <arch/io.h>
+#include <pc80/i8259.h>
 /* code taken from: 
 !
 !	setup.S		Copyright (C) 1991, 1992 Linus Torvalds

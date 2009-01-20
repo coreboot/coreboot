@@ -30,8 +30,8 @@ static void udelay(u32 us)
 	tsc_t tsc, tsc1, tscd;
 	msr_t msr;
 	u32 fsb = 0, divisor;
-	u32 d;			
-	u32 dn = 0x1000000 / 2;	
+	u32 d;			/* ticks per us */
+	u32 dn = 0x1000000 / 2;	/* how many us before we need to use hi */
 
 	msr = rdmsr(0xcd);
 	switch (msr.lo & 0x07) {

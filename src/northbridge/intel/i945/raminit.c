@@ -497,7 +497,7 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 	}
 	
 	if (sysinfo->memory_frequency && sysinfo->cas) {
-		printk_debug("Memory will be driven at %dMHz with CAS=%d clocks\n", 
+		printk_debug("Memory will be driven at %dMHz with CAS=%d clocks\n",
 				sysinfo->memory_frequency, sysinfo->cas);
 	} else {
 		die("Could not find common memory frequency and CAS\n");
@@ -1348,11 +1348,11 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	/* Some extra checks needed. See 4.1.26 in the 
 	 * 82945G MCH datasheet (30750203)
 	 */
-	pci_write_config8(PCI_DEV(0,0,0), TOLUD, tolud);
+	pci_write_config16(PCI_DEV(0,0,0), TOLUD, tolud);
 	
 	printk_debug("C0DRB = 0x%08x\n", MCHBAR32(C0DRB0));
 	printk_debug("C1DRB = 0x%08x\n", MCHBAR32(C1DRB0));
-	printk_debug("TOLUD = 0x%02x\n", tolud);
+	printk_debug("TOLUD = 0x%04x\n", tolud);
 
 	pci_write_config16(PCI_DEV(0,0,0), TOM, tolud>>3);
 

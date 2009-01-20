@@ -27,7 +27,7 @@ extern struct console_driver console_drivers[];
 extern struct console_driver econsole_drivers[];
 
 extern int console_loglevel;
-int do_printk(int msg_level, const char *fmt, ...);
+int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
 #define printk_emerg(fmt, arg...)   do_printk(BIOS_EMERG   ,fmt, ##arg)
 #define printk_alert(fmt, arg...)   do_printk(BIOS_ALERT   ,fmt, ##arg)

@@ -42,6 +42,10 @@
 #ifndef __X86EMU_X86EMU_H
 #define __X86EMU_X86EMU_H
 
+#if defined(DEBUG) && (DEBUG == 0)
+#undef DEBUG
+#endif
+
 /* FIXME: undefine printk for the moment */
 #ifdef COREBOOT_VERSION
 #include "console/console.h"
@@ -187,6 +191,8 @@ void 	X86EMU_halt_sys(void);
 #define DEBUG_TRACECALL_REGS_F  0x004000
 #define DEBUG_DECODE_NOPRINT_F  0x008000 
 #define DEBUG_SAVE_IP_CS_F      0x010000
+#define DEBUG_TRACEJMP_F        0x020000
+#define DEBUG_TRACEJMP_REGS_F   0x040000
 #define DEBUG_SYS_F             (DEBUG_SVC_F|DEBUG_FS_F|DEBUG_PROC_F)
 
 void 	X86EMU_trace_regs(void);

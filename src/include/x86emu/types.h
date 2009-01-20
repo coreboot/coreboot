@@ -74,15 +74,15 @@ typedef unsigned int 		u32;
 typedef unsigned long long 	u64;
 #endif
 
-typedef char 				s8;
-typedef short 				s16;
-typedef int 				s32;
+typedef signed char 		s8;
+typedef signed short 		s16;
+typedef signed int 		s32;
 #ifdef __HAS_LONG_LONG__
-typedef long long 			s64;
+typedef signed long long	s64;
 #endif
 
-typedef unsigned int			uint;
-typedef int 				sint;
+typedef unsigned int		uint;
+typedef signed int 		sint;
 
 typedef u16 X86EMU_pioAddr;
 

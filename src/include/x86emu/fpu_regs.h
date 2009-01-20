@@ -39,6 +39,11 @@
 #ifndef __X86EMU_FPU_REGS_H
 #define __X86EMU_FPU_REGS_H
 
+
+#if defined(DEBUG) && (DEBUG == 0)
+#undef DEBUG
+#endif
+
 #ifdef X86_FPU_SUPPORT
 
 #pragma	pack(1)

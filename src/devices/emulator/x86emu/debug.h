@@ -40,8 +40,10 @@
 #ifndef __X86EMU_DEBUG_H
 #define __X86EMU_DEBUG_H
 
-//#define DEBUG 0
+#if defined(DEBUG) && (DEBUG == 0)
 #undef DEBUG
+#endif
+
 /*---------------------- Macros and type definitions ----------------------*/
 
 /* checks to be enabled for "runtime" */
@@ -78,6 +80,8 @@
 # define DEBUG_SYSINT()        	(M.x86.debug & DEBUG_SYSINT_F)
 # define DEBUG_TRACECALL()     	(M.x86.debug & DEBUG_TRACECALL_F)
 # define DEBUG_TRACECALLREGS() 	(M.x86.debug & DEBUG_TRACECALL_REGS_F)
+# define DEBUG_TRACEJMP()       (M.x86.debug & DEBUG_TRACEJMP_F)
+# define DEBUG_TRACEJMPREGS()   (M.x86.debug & DEBUG_TRACEJMP_REGS_F)
 # define DEBUG_SYS()           	(M.x86.debug & DEBUG_SYS_F)
 # define DEBUG_MEM_TRACE()     	(M.x86.debug & DEBUG_MEM_TRACE_F)
 # define DEBUG_IO_TRACE()      	(M.x86.debug & DEBUG_IO_TRACE_F)
@@ -96,6 +100,8 @@
 # define DEBUG_SYSINT()        	0
 # define DEBUG_TRACECALL()     	0
 # define DEBUG_TRACECALLREGS() 	0
+# define DEBUG_TRACEJMP()       0
+# define DEBUG_TRACEJMPREGS()   0
 # define DEBUG_SYS()           	0
 # define DEBUG_MEM_TRACE()     	0
 # define DEBUG_IO_TRACE()      	0
@@ -169,14 +175,20 @@
 		x86emu_dump_regs();                                     \
 	if (DEBUG_TRACECALL())                                     	\
 		printk("%04x:%04x: CALL %s%04x:%04x\n", u , v, s, w, x);
-# define RETURN_TRACE(n,u,v)                                    \
+# define RETURN_TRACE(u,v,w,x,s)                                    \
 	if (DEBUG_TRACECALLREGS())									\
 		x86emu_dump_regs();                                     \
 	if (DEBUG_TRACECALL())                                     	\
-		printk("%04x:%04x: %s\n",u,v,n);
+		printk("%04x:%04x: RET %s %04x:%04x\n",u,v,s,w,x);
+# define  JMP_TRACE(u,v,w,x,s)                                 \
+   if (DEBUG_TRACEJMPREGS()) \
+      x86emu_dump_regs(); \
+   if (DEBUG_TRACEJMP()) \
+      printk("%04x:%04x: JMP %s%04x:%04x\n", u , v, s, w, x);
 #else
 # define CALL_TRACE(u,v,w,x,s)
-# define RETURN_TRACE(n,u,v)
+# define RETURN_TRACE(u,v,w,x,s)
+# define  JMP_TRACE(u,v,w,x,s)
 #endif
 
 #ifdef DEBUG

@@ -149,8 +149,10 @@ void x86emuOp2_long_jump(u8 op2)
     target += (s16) M.x86.R_IP;
     DECODE_PRINTF2("%04x\n", target);
     TRACE_AND_STEP();
-    if (cond)
+    if (cond) {
         M.x86.R_IP = (u16)target;
+        JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, M.x86.R_IP, " LONG COND ");
+    }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
@@ -1485,6 +1487,65 @@ void x86emuOp2_movsx_word_R_RM(u8 X86EMU_UNUSED(op2))
     END_OF_INSTR();
 }
 
+/****************************************************************************
+REMARKS:
+Handles opcode 0x0f,0xC8-0xCF
+****************************************************************************/
+s32 x86emu_bswap(s32 reg)
+{
+   // perform the byte swap
+   s32 temp = reg;
+   reg = (temp & 0xFF000000) >> 24;
+   reg |= (temp & 0xFF0000) >> 8;
+   reg |= (temp & 0xFF00) << 8;
+   reg |= (temp & 0xFF) << 24;
+   return reg;
+}
+
+void x86emuOp2_bswap(u8 op2)
+{
+    /* byte swap 32 bit register */
+    START_OF_INSTR();
+    DECODE_PRINTF("BSWAP\t");
+    switch (op2) {
+      case 0xc8:
+        DECODE_PRINTF("EAX\n");
+        M.x86.R_EAX = x86emu_bswap(M.x86.R_EAX);
+        break;
+      case 0xc9:
+        DECODE_PRINTF("ECX\n");
+        M.x86.R_ECX = x86emu_bswap(M.x86.R_ECX);
+        break;
+      case 0xca:
+        DECODE_PRINTF("EDX\n");
+        M.x86.R_EDX = x86emu_bswap(M.x86.R_EDX);
+        break;
+      case 0xcb:
+        DECODE_PRINTF("EBX\n");
+        M.x86.R_EBX = x86emu_bswap(M.x86.R_EBX);
+        break;
+      case 0xcc:
+        DECODE_PRINTF("ESP\n");
+        M.x86.R_ESP = x86emu_bswap(M.x86.R_ESP);
+        break;
+      case 0xcd:
+        DECODE_PRINTF("EBP\n");
+        M.x86.R_EBP = x86emu_bswap(M.x86.R_EBP);
+        break;
+      case 0xce:
+        DECODE_PRINTF("ESI\n");
+        M.x86.R_ESI = x86emu_bswap(M.x86.R_ESI);
+        break;
+      case 0xcf:
+        DECODE_PRINTF("EDI\n");
+        M.x86.R_EDI = x86emu_bswap(M.x86.R_EDI);
+        break;
+    }
+    TRACE_AND_STEP();
+    DECODE_CLEAR_SEGOVR();
+    END_OF_INSTR();
+}
+
 /***************************************************************************
  * Double byte operation code table:
  **************************************************************************/
@@ -1702,14 +1763,14 @@ void (*x86emu_optab2[256])(u8) =
 /*  0xc5 */ x86emuOp2_illegal_op,
 /*  0xc6 */ x86emuOp2_illegal_op,
 /*  0xc7 */ x86emuOp2_illegal_op,
-/*  0xc8 */ x86emuOp2_illegal_op,  /* TODO: bswap */
-/*  0xc9 */ x86emuOp2_illegal_op,  /* TODO: bswap */
-/*  0xca */ x86emuOp2_illegal_op,  /* TODO: bswap */
-/*  0xcb */ x86emuOp2_illegal_op,  /* TODO: bswap */
-/*  0xcc */ x86emuOp2_illegal_op,  /* TODO: bswap */
-/*  0xcd */ x86emuOp2_illegal_op,  /* TODO: bswap */
-/*  0xce */ x86emuOp2_illegal_op,  /* TODO: bswap */
-/*  0xcf */ x86emuOp2_illegal_op,  /* TODO: bswap */
+/*  0xc8 */ x86emuOp2_bswap,
+/*  0xc9 */ x86emuOp2_bswap,
+/*  0xca */ x86emuOp2_bswap,
+/*  0xcb */ x86emuOp2_bswap,
+/*  0xcc */ x86emuOp2_bswap,
+/*  0xcd */ x86emuOp2_bswap,
+/*  0xce */ x86emuOp2_bswap,
+/*  0xcf */ x86emuOp2_bswap,
 
 /*  0xd0 */ x86emuOp2_illegal_op,
 /*  0xd1 */ x86emuOp2_illegal_op,

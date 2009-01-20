@@ -52,7 +52,11 @@ static int      parse_line (char *s, int *ps, int *n);
 void X86EMU_trace_regs (void)
 {
     if (DEBUG_TRACE()) {
-        x86emu_dump_regs();
+	if (M.x86.mode & (SYSMODE_PREFIX_DATA | SYSMODE_PREFIX_ADDR)) {
+            x86emu_dump_xregs();
+	} else {
+	    x86emu_dump_regs();
+	}
     }
     if (DEBUG_DECODE() && ! DEBUG_DECODE_NOPRINT()) {
         printk("%04x:%04x ",M.x86.saved_cs, M.x86.saved_ip);
@@ -185,7 +189,7 @@ static void print_encoded_bytes (u16 s, u16 o)
     for (i=0; i< M.x86.enc_pos; i++) {
         sprintf(buf1+2*i,"%02x", fetch_data_byte_abs(s,o+i));
     }
-    printk("%-20s",buf1);
+    printk("%-20s ",buf1);
 }
 
 static void print_decoded_instruction (void)
@@ -355,6 +359,8 @@ static int parse_line (char *s, int *ps, int *n)
         sscanf(s,"%x",&ps[*n]);
         *n += 1;
     }
+#else
+    return 0;
 #endif
 }
 

@@ -1921,7 +1921,7 @@ Implements the IMUL instruction and side effects.
 void imul_long_direct(u32 *res_lo, u32* res_hi,u32 d, u32 s)
 {
 #ifdef  __HAS_LONG_LONG__
-    s64 res = (s64)d * (s64)s;
+    s64 res = (s64)(s32)d * (s64)(s32)s;
 
     *res_lo = (u32)res;
     *res_hi = (u32)(res >> 32);
@@ -2013,7 +2013,7 @@ Implements the MUL instruction and side effects.
 void mul_long(u32 s)
 {
 #ifdef  __HAS_LONG_LONG__
-    u64 res = (u32)M.x86.R_EAX * (u32)s;
+    u64 res = (u64)M.x86.R_EAX * s;
 
     M.x86.R_EAX = (u32)res;
     M.x86.R_EDX = (u32)(res >> 32);
@@ -2312,16 +2312,15 @@ void ins(int size)
     }
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
         /* dont care whether REPE or REPNE */
-        /* in until CX is ZERO. */
-        u32 count = ((M.x86.mode & SYSMODE_PREFIX_DATA) ?
+        /* in until (E)CX is ZERO. */
+        u32 count = ((M.x86.mode & SYSMODE_32BIT_REP) ?
                      M.x86.R_ECX : M.x86.R_CX);
-
         while (count--) {
           single_in(size);
           M.x86.R_DI += inc;
           }
         M.x86.R_CX = 0;
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+        if (M.x86.mode & SYSMODE_32BIT_REP) {
             M.x86.R_ECX = 0;
         }
         M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
@@ -2355,15 +2354,15 @@ void outs(int size)
     }
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
         /* dont care whether REPE or REPNE */
-        /* out until CX is ZERO. */
-        u32 count = ((M.x86.mode & SYSMODE_PREFIX_DATA) ?
+        /* out until (E)CX is ZERO. */
+        u32 count = ((M.x86.mode & SYSMODE_32BIT_REP) ?
                      M.x86.R_ECX : M.x86.R_CX);
         while (count--) {
           single_out(size);
           M.x86.R_SI += inc;
           }
         M.x86.R_CX = 0;
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+        if (M.x86.mode & SYSMODE_32BIT_REP) {
             M.x86.R_ECX = 0;
         }
         M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);

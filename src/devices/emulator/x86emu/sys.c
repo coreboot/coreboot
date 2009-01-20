@@ -45,7 +45,7 @@
 #include <x86emu/regs.h>
 #include "debug.h"
 #include "prim_ops.h"
-#ifdef COREBOOT_VERSION
+#ifdef COREBOOT_VERSION /* Coreboot needs to map printf to printk. */
 #include "arch/io.h"
 #else
 #include <sys/io.h>
@@ -69,7 +69,7 @@ u8 *mem_ptr(u32 addr, int size)
 	u8 *retaddr = 0;
 
 	if (addr > M.mem_size - size) {
-		DB(printk("mem_ptr: address %#lx out of range!\n", addr);)
+		DB(printk("mem_ptr: address %#x out of range!\n", addr);)
 		    HALT_SYS();
 	}
 	if (addr < 0x200) {
@@ -405,6 +405,6 @@ void X86EMU_prepareForInt(int num)
 
 void X86EMU_setMemBase(void *base, size_t size)
 {
-	M.mem_base = (int) base;
+	M.mem_base = (unsigned long) base;
 	M.mem_size = size;
 }

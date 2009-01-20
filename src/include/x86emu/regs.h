@@ -40,6 +40,10 @@
 #ifndef __X86EMU_REGS_H
 #define __X86EMU_REGS_H
 
+#if defined(DEBUG) && (DEBUG == 0)
+#undef DEBUG
+#endif
+
 /*---------------------- Macros and type definitions ----------------------*/
 
 #pragma pack(1)
@@ -231,6 +235,9 @@ struct i386_segment_regs {
 #define SYSMODE_PREFIX_REPNE    0x00000100
 #define SYSMODE_PREFIX_DATA     0x00000200
 #define SYSMODE_PREFIX_ADDR     0x00000400
+// for REP(E|NE) Instructions, we need to decide wether it should be using
+// the 32bit ECX register as or the 16bit CX register as count register
+#define SYSMODE_32BIT_REP       0x00000800
 #define SYSMODE_INTR_PENDING    0x10000000
 #define SYSMODE_EXTRN_INTR      0x20000000
 #define SYSMODE_HALTED          0x40000000
@@ -250,7 +257,8 @@ struct i386_segment_regs {
 						 SYSMODE_SEGOVR_GS      | \
 						 SYSMODE_SEGOVR_SS      | \
 						 SYSMODE_PREFIX_DATA    | \
-						 SYSMODE_PREFIX_ADDR)
+						 SYSMODE_PREFIX_ADDR    | \
+						 SYSMODE_32BIT_REP)
 
 #define  INTR_SYNCH           0x1
 #define  INTR_ASYNCH          0x2
@@ -274,9 +282,9 @@ typedef struct {
      */
     u32                         mode;
     volatile int                intr;   /* mask of pending interrupts */
-	int                         debug;
+    volatile int                         debug;
 #ifdef DEBUG
-	int                         check;
+    int                         check;
     u16                         saved_ip;
     u16                         saved_cs;
     int                         enc_pos;

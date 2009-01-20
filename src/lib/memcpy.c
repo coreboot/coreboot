@@ -5,7 +5,7 @@ void *memcpy(void *vdest, const void *vsrc, size_t bytes)
 	char *dest = vdest;
 	int i;
 
-	for (i = 0; i < bytes; i++)
+	for (i = 0; i < (int)bytes; i++)
 		dest[i] = src[i];
 
 	return vdest;

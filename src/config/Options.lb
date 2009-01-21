@@ -408,9 +408,9 @@ end
 ###############################################
 
 define DEBUG
-	default 1
+	default 0
 	export always
-	comment "Enable debugging code"
+	comment "Enable x86emu debugging code"
 end
 define CONFIG_CONSOLE_VGA
 	default 0

@@ -139,6 +139,13 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 			    fd_mem, (off_t) base);
 		if (bios == MAP_FAILED) {
 			perror("Can't mmap memory using " MEM_DEV);
+			if (EINVAL == errno) {
+				fprintf(stderr, "In Linux this error can be caused by the CONFIG_NONPROMISC_DEVMEM (<2.6.27),\n");
+				fprintf(stderr, "CONFIG_STRICT_DEVMEM (>=2.6.27) and CONFIG_X86_PAT kernel options.\n");
+				fprintf(stderr, "Please check if either is enabled in your kernel before reporting a failure.\n");
+				fprintf(stderr, "You can override CONFIG_X86_PAT at boot with the nopat kernel parameter but\n");
+				fprintf(stderr, "disabling the other option unfortunately requires a kernel recompile. Sorry!\n");
+			}
 			exit(1);
 		}
 		flash->virtual_memory = bios;

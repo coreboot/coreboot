@@ -191,6 +191,7 @@ int coreboot_init(void)
 		       0x00000000);
 	if (low_1MB == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
+		mmap_errmsg();
 		exit(-2);
 	}
 	lb_table = 0;

@@ -220,6 +220,7 @@ static int enable_flash_vt8237s_spi(struct pci_dev *dev, const char *name)
 
 	if (spibar == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
+		mmap_errmsg();
 		exit(1);
 	}
 
@@ -255,6 +256,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 		    (off_t) tmp);
 	if (rcrb == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
+		mmap_errmsg();
 		exit(1);
 	}
 
@@ -681,6 +683,7 @@ static int enable_flash_sb600(struct pci_dev *dev, const char *name)
 			    fd_mem, (off_t)tmp);
 	if (sb600_spibar == MAP_FAILED) {
 		perror("Can't mmap memory using " MEM_DEV);
+		mmap_errmsg();
 		exit(1);
 	}
 	sb600_spibar += low_bits;
@@ -837,6 +840,7 @@ static int get_flashbase_sc520(struct pci_dev *dev, const char *name)
 
 	if (mmcr == MAP_FAILED) {
 		perror("Can't mmap Elan SC520 specific registers using " MEM_DEV);
+		mmap_errmsg();
 		exit(1);
 	}
 

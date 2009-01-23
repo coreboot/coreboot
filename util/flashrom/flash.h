@@ -480,6 +480,7 @@ extern int verbose;
 #define printf_debug(x...) { if (verbose) printf(x); }
 
 /* flashrom.c */
+void mmap_errmsg();
 int map_flash_registers(struct flashchip *flash);
 
 /* layout.c */

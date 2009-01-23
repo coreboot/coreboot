@@ -20,7 +20,7 @@
 
 /{
 	mainboard_vendor = "Artec";
-	mainboard_name = "DBE62";
+	mainboard_name = "DBE63";
 	cpus { };
 	apic@0 {
 		/config/("northbridge/amd/geodelx/apic");
@@ -63,8 +63,8 @@
 			/* USB Port Power Handling setting. */
 			pph = "0xf5";
 		};
-		pci@f,1 {
-			/config/("southbridge/amd/cs5536/nand");
+		pci@f,2 {
+			/config/("southbridge/amd/cs5536/ide");
 		};
 	};
 };

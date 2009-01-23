@@ -133,8 +133,8 @@ static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
 
 	/* sets desired GPPSB configurations, bit4-7 */
 	reg = nbmisc_read_index(nb_dev, 0x67);
-	reg &= 0xff0f;		/* clean */
-	reg |= cfg->gpp_configuration;
+	reg &= 0xffffff0f;		/* clean */
+	reg |= cfg->gpp_configuration << 4;
 	nbmisc_write_index(nb_dev, 0x67, reg);
 
 	/* read bit14 and write back its inverst value */

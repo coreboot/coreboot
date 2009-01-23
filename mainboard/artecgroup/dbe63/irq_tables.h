@@ -56,11 +56,11 @@ const struct irq_routing_table intel_irq_routing_table = {
 	{
 		/* If you change the number of entries, change IRQ_SLOT_COUNT above! */
 		/* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
-		// Geode GX3 Host Bridge and VGA Graphics
+		// Geode LX Host Bridge and VGA Graphics
 		{0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
-		// Geode CS5535/CS5536 IO Companion: USB controllers, IDE, Audio.
+		// Geode CS5536 IO Companion: USB controllers, IDE, Audio.
 		{0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},
-		// Realtek RTL8100/8139 Network Controller
+		// VIA Velocity VT6122 Network Controller
 		{0x00, (0x0D << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {0x00, 0x00}, {0x00, 0x00}, {0x00, 0x00}}, 0x0, 0x0},
 	}
 };

@@ -32,25 +32,25 @@
 #include <northbridge/amd/geodelx/raminit.h>
 #include <arch/x86/msr.h>
 
-static const struct msrinit dbe62_msr[] = {
+static const struct msrinit dbe63_msr[] = {
 	{.msrnum = 0x10000020, {.lo = 0x00fff80, .hi = 0x20000000}},
 	{.msrnum = 0x10000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
 	{.msrnum = 0x40000020, {.lo = 0x00fff80, .hi = 0x20000000}},
 	{.msrnum = 0x40000021, {.lo = 0x80fffe0, .hi = 0x20000000}},
 };
 
-static void dbe62_msr_init(void)
+static void dbe63_msr_init(void)
 {
 	int i;
-	for (i = 0; i < ARRAY_SIZE(dbe62_msr); i++)
-		wrmsr(dbe62_msr[i].msrnum, dbe62_msr[i].msr);
+	for (i = 0; i < ARRAY_SIZE(dbe63_msr); i++)
+		wrmsr(dbe63_msr[i].msrnum, dbe63_msr[i].msr);
 }
 
 void hardware_stage1(void)
 {
 	post_code(POST_START_OF_MAIN);
 
-	dbe62_msr_init();
+	dbe63_msr_init();
 
 	cs5536_stage1();
 

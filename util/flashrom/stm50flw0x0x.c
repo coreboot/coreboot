@@ -80,7 +80,7 @@ int probe_stm50flw0x0x(struct flashchip *flash)
 	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
 	myusec_delay(40);
 
-	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, largeid1,
+	printf_debug("%s: id1 0x%02x, id2 0x%02x\n", __FUNCTION__, largeid1,
 		     largeid2);
 
 	if (largeid1 != flash->manufacture_id || largeid2 != flash->model_id)

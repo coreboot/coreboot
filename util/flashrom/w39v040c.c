@@ -44,7 +44,7 @@ int probe_w39v040c(struct flashchip *flash)
 	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
 	myusec_delay(40);
 
-	printf_debug("%s: id1 0x%x, id2 0x%x", __func__, id1, id2);
+	printf_debug("%s: id1 0x%02x, id2 0x%02x", __func__, id1, id2);
 	if (!oddparity(id1))
 		printf_debug(", id1 parity violation");
 	printf_debug("\n");

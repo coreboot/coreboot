@@ -126,7 +126,7 @@ static int probe_spi_rdid_generic(struct flashchip *flash, int bytes)
 		model_id = (readarr[1] << 8) | readarr[2];
 	}
 
-	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, manuf_id,
+	printf_debug("%s: id1 0x%02x, id2 0x%02x\n", __FUNCTION__, manuf_id,
 		     model_id);
 
 	if (manuf_id == flash->manufacture_id && model_id == flash->model_id) {

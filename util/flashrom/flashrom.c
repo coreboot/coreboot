@@ -605,7 +605,7 @@ int main(int argc, char *argv[])
 			memcpy(buf, (const char *)flash->virtual_memory, size);
 		else
 			flash->read(flash, buf);
-		for (erasedbytes = 0; erasedbytes <= size; erasedbytes++)
+		for (erasedbytes = 0; erasedbytes < size; erasedbytes++)
 			if (0xff != buf[erasedbytes]) {
 				printf("FAILED!\n");
 				fprintf(stderr, "ERROR at 0x%08x: Expected=0xff, Read=0x%02x\n",

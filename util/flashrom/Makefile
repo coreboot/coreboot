@@ -55,7 +55,7 @@ dep:
 	@$(CC) -MM *.c > .dependencies
 
 pciutils:
-	@echo; echo -n "Checking for pciutils and zlib... "
+	@echo; printf "Checking for pciutils and zlib... "
 	@$(shell ( echo "#include <pci/pci.h>";		   \
 		   echo "struct pci_access *pacc;";	   \
 		   echo "int main(int argc, char **argv)"; \

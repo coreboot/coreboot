@@ -184,6 +184,7 @@ static void search_lb_records(struct lb_record *rec, struct lb_record *last,
 int coreboot_init(void)
 {
 	uint8_t *low_1MB;
+	unsigned long addr;
 	struct lb_header *lb_table;
 	struct lb_record *rec, *last;
 
@@ -194,26 +195,23 @@ int coreboot_init(void)
 		mmap_errmsg();
 		exit(-2);
 	}
-	lb_table = 0;
-	if (!lb_table)
-		lb_table = find_lb_table(low_1MB, 0x00000, 0x1000);
+	lb_table = find_lb_table(low_1MB, 0x00000, 0x1000);
 	if (!lb_table)
 		lb_table = find_lb_table(low_1MB, 0xf0000, 1024 * 1024);
-	if (lb_table) {
-		unsigned long addr;
-		addr = ((char *)lb_table) - ((char *)low_1MB);
-		printf_debug("Coreboot table found at %p.\n", lb_table);
-		rec = (struct lb_record *)(((char *)lb_table) + lb_table->header_bytes);
-		last = (struct lb_record *)(((char *)rec) + lb_table->table_bytes);
-		printf_debug("Coreboot header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
-		     lb_table->header_bytes, lb_table->header_checksum,
-		     lb_table->table_bytes, lb_table->table_checksum,
-		     lb_table->table_entries);
-		search_lb_records(rec, last, addr + lb_table->header_bytes);
-	} else {
+	if (!lb_table) {
 		printf("No coreboot table found.\n");
 		return -1;
 	}
+
+	addr = ((char *)lb_table) - ((char *)low_1MB);
+	printf_debug("Coreboot table found at %p.\n", lb_table);
+	rec = (struct lb_record *)(((char *)lb_table) + lb_table->header_bytes);
+	last = (struct lb_record *)(((char *)rec) + lb_table->table_bytes);
+	printf_debug("Coreboot header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
+	     lb_table->header_bytes, lb_table->header_checksum,
+	     lb_table->table_bytes, lb_table->table_checksum,
+	     lb_table->table_entries);
+	search_lb_records(rec, last, addr + lb_table->header_bytes);
 
 	return 0;
 }

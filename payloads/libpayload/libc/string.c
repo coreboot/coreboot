@@ -212,10 +212,10 @@ char *strdup(const char *s)
 	int n = strlen(s);
 	char *p = malloc(n + 1);
 
-	if (p != NULL)
+	if (p != NULL) {
 		strncpy(p, s, n);
-
-	p[n] = 0;
+		p[n] = 0;
+	}
 	return p;
 }
 

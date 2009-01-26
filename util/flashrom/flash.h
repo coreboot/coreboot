@@ -30,7 +30,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__)
   #include <machine/cpufunc.h>
   #define off64_t off_t
   #define lseek64 lseek

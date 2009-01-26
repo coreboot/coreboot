@@ -278,7 +278,7 @@ int main(int argc, char *argv[]) {
 			break;
 		case 'i':
 			input = 1;
-			addr = strtoul(optarg, NULL, 16);
+			addr = msraddrbyname(optarg);
 			optarg = strchr(optarg, '=');
 			if (NULL == optarg) {
 				fprintf(stderr, "missing value in -i argument!\n");
@@ -398,7 +398,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	for (; optind < argc; optind++) {
-		addr = strtoul(argv[optind], NULL, 16);
+		addr = msraddrbyname(argv[optind]);
 		if (!sys->rdmsr(cpu, addr, &msrval))
 			break;
 		decodemsr(cpu, addr, msrval);

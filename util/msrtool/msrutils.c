@@ -137,6 +137,22 @@ const struct msrdef *findmsrdef(const uint32_t addr) {
 	return NULL;
 }
 
+const uint32_t msraddrbyname(const char *name) {
+	uint8_t t;
+	const uint32_t addr = strtoul(name, NULL, 16);
+	const struct msrdef *m;
+	if (!targets)
+		return 0;
+	for (t = 0; t < targets_found; t++)
+		for (m = targets[t]->msrs; !MSR_ISEOT(*m); m++) {
+			if (addr == m->addr)
+				return m->addr;
+			if (!strcasecmp(name, m->symbol))
+				return m->addr;
+		}
+	return 0;
+}
+
 void dumpmsrdefs(const struct targetdef *t) {
 	const struct msrdef *m;
 	const struct msrbits *mb;

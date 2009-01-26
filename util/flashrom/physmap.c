@@ -57,7 +57,7 @@ void *sys_physmap(unsigned long phys_addr, size_t len)
 		/* Open the memory device UNCACHED. Important for MMIO. */
 		if (-1 == (fd_mem = open(MEM_DEV, O_RDWR|O_SYNC))) {
 			perror("Critical error: open(" MEM_DEV ")");
-			exit(1);
+			exit(2);
 		}
 	}
 
@@ -87,7 +87,7 @@ void *physmap(const char *descr, unsigned long phys_addr, size_t len)
 			fprintf(stderr, "You can override CONFIG_X86_PAT at boot with the nopat kernel parameter but\n");
 			fprintf(stderr, "disabling the other option unfortunately requires a kernel recompile. Sorry!\n");
 		}
-		exit(1);
+		exit(3);
 	}
 
 	return virt_addr;

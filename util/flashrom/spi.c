@@ -44,6 +44,8 @@ int spi_command(unsigned int writecnt, unsigned int readcnt,
 		return ich_spi_command(writecnt, readcnt, writearr, readarr);
 	case BUS_TYPE_SB600_SPI:
 		return sb600_spi_command(writecnt, readcnt, writearr, readarr);
+	case BUS_TYPE_WBSIO_SPI:
+		return wbsio_spi_command(writecnt, readcnt, writearr, readarr);
 	default:
 		printf_debug
 		    ("%s called, but no SPI chipset/strapping detected\n",
@@ -160,6 +162,7 @@ int probe_spi_rdid4(struct flashchip *flash)
 	case BUS_TYPE_ICH9_SPI:
 	case BUS_TYPE_VIA_SPI:
 	case BUS_TYPE_SB600_SPI:
+	case BUS_TYPE_WBSIO_SPI:
 		return probe_spi_rdid_generic(flash, 4);
 	default:
 		printf_debug("4b ID not supported on this SPI controller\n");
@@ -229,7 +232,7 @@ int probe_spi_res(struct flashchip *flash)
 uint8_t spi_read_status_register()
 {
 	const unsigned char cmd[JEDEC_RDSR_OUTSIZE] = { JEDEC_RDSR };
-	unsigned char readarr[JEDEC_RDSR_INSIZE];
+	unsigned char readarr[2]; /* JEDEC_RDSR_INSIZE=1 but wbsio needs 2 */
 
 	/* Read Status Register */
 	if (flashbus == BUS_TYPE_SB600_SPI) {
@@ -555,6 +558,8 @@ int spi_chip_read(struct flashchip *flash, uint8_t *buf)
 	case BUS_TYPE_ICH9_SPI:
 	case BUS_TYPE_VIA_SPI:
 		return ich_spi_read(flash, buf);
+	case BUS_TYPE_WBSIO_SPI:
+		return wbsio_spi_read(flash, buf);
 	default:
 		printf_debug
 		    ("%s called, but no SPI chipset/strapping detected\n",
@@ -575,6 +580,8 @@ int spi_chip_write(struct flashchip *flash, uint8_t *buf)
 	case BUS_TYPE_ICH9_SPI:
 	case BUS_TYPE_VIA_SPI:
 		return ich_spi_write(flash, buf);
+	case BUS_TYPE_WBSIO_SPI:
+		return wbsio_spi_write(flash, buf);
 	default:
 		printf_debug
 		    ("%s called, but no SPI chipset/strapping detected\n",

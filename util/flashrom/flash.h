@@ -474,7 +474,8 @@ typedef enum {
 	BUS_TYPE_ICH9_SPI,
 	BUS_TYPE_IT87XX_SPI,
 	BUS_TYPE_SB600_SPI,
-	BUS_TYPE_VIA_SPI
+	BUS_TYPE_VIA_SPI,
+	BUS_TYPE_WBSIO_SPI
 } flashbus_t;
 
 extern flashbus_t flashbus;
@@ -646,6 +647,12 @@ int probe_w29ee011(struct flashchip *flash);
 
 /* w49f002u.c */
 int write_49f002(struct flashchip *flash, uint8_t *buf);
+
+/* wbsio_spi.c */
+int wbsio_check_for_spi(const char *name);
+int wbsio_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr);
+int wbsio_spi_read(struct flashchip *flash, uint8_t *buf);
+int wbsio_spi_write(struct flashchip *flash, uint8_t *buf);
 
 /* stm50flw0x0x.c */
 int probe_stm50flw0x0x(struct flashchip *flash);

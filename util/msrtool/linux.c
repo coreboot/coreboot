@@ -76,13 +76,16 @@ int linux_close(uint8_t cpu) {
 }
 
 int linux_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val) {
+	struct msr tmp;
 	if (lseek(msr_fd[cpu], addr, SEEK_SET) == -1) {
 		SYSERROR(lseek, addr);
 		return 0;
 	}
-	if (read(msr_fd[cpu], val, 8) != 8) {
+	if (read(msr_fd[cpu], &tmp, 8) != 8) {
 		SYSERROR(read, addr);
 		return 0;
 	}
+	val->hi = tmp.lo;
+	val->lo = tmp.hi;
 	return 1;
 }

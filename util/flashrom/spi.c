@@ -299,6 +299,24 @@ void spi_prettyprint_status_register_sst25vf016(uint8_t status)
 		     bpt[(status & 0x1c) >> 2]);
 }
 
+void spi_prettyprint_status_register_sst25vf040b(uint8_t status)
+{
+	const char *bpt[] = {
+		"none",
+		"0x70000-0x7ffff",
+		"0x60000-0x7ffff",
+		"0x40000-0x7ffff",
+		"all blocks", "all blocks", "all blocks", "all blocks"
+	};
+	printf_debug("Chip status register: Block Protect Write Disable "
+		"(BPL) is %sset\n", (status & (1 << 7)) ? "" : "not ");
+	printf_debug("Chip status register: Auto Address Increment Programming "
+		"(AAI) is %sset\n", (status & (1 << 6)) ? "" : "not ");
+	spi_prettyprint_status_register_common(status);
+	printf_debug("Resulting block protection : %s\n",
+		bpt[(status & 0x3c) >> 2]);
+}
+
 void spi_prettyprint_status_register(struct flashchip *flash)
 {
 	uint8_t status;
@@ -316,8 +334,15 @@ void spi_prettyprint_status_register(struct flashchip *flash)
 			spi_prettyprint_status_register_st_m25p(status);
 		break;
 	case SST_ID:
-		if (flash->model_id == SST_25VF016B)
+		switch (flash->model_id) {
+		case 0x2541:
 			spi_prettyprint_status_register_sst25vf016(status);
+			break;
+		case 0x8d:
+		case 0x258d:
+			spi_prettyprint_status_register_sst25vf040b(status);
+			break;
+		}
 		break;
 	}
 }

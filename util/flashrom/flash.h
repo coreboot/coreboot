@@ -579,6 +579,11 @@ int erase_block_jedec(volatile uint8_t *bios, unsigned int page);
 int write_sector_jedec(volatile uint8_t *bios, uint8_t *src,
 		       volatile uint8_t *dst, unsigned int page_size);
 
+/* m29f002.c */
+int erase_m29f002(struct flashchip *flash);
+int write_m29f002t(struct flashchip *flash, uint8_t *buf);
+int write_m29f002b(struct flashchip *flash, uint8_t *buf);
+
 /* m29f400bt.c */
 int probe_m29f400bt(struct flashchip *flash);
 int erase_m29f400bt(struct flashchip *flash);

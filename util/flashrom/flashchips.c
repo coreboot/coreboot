@@ -1641,8 +1641,8 @@ struct flashchip flashchips[] = {
 		.page_size	= 64 * 1024,
 		.tested		= TEST_UNTESTED,
 		.probe		= probe_jedec,
-		.erase		= erase_chip_jedec,
-		.write		= write_jedec,
+		.erase		= erase_m29f002,
+		.write		= write_m29f002b,
 	},
 
 	{
@@ -1652,10 +1652,10 @@ struct flashchip flashchips[] = {
 		.model_id	= ST_M29F002T,
 		.total_size	= 256,
 		.page_size	= 64 * 1024,
-		.tested		= TEST_UNTESTED,
+		.tested		= TEST_OK_PREW,
 		.probe		= probe_jedec,
-		.erase		= erase_chip_jedec,
-		.write		= write_jedec,
+		.erase		= erase_m29f002,
+		.write		= write_m29f002t,
 	},
 
 	{

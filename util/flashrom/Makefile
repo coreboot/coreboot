@@ -12,17 +12,18 @@ INSTALL = /usr/bin/install
 PREFIX  = /usr/local
 #CFLAGS  = -O2 -g -Wall -Werror
 CFLAGS  = -Os -Wall -Werror
+LDFLAGS = 
+
 OS_ARCH	= $(shell uname)
-ifeq ($(OS_ARCH), SunOS)
-LDFLAGS = -lpci -lz
-else
-LDFLAGS = -lpci -lz
+ifneq ($(OS_ARCH), SunOS)
 STRIP_ARGS = -s
 endif
 ifeq ($(OS_ARCH), FreeBSD)
 CFLAGS += -I/usr/local/include
 LDFLAGS += -L/usr/local/lib
 endif
+
+LDFLAGS += -lpci -lz
 
 OBJS = chipset_enable.o board_enable.o udelay.o jedec.o stm50flw0x0x.o \
 	sst28sf040.o am29f040b.o mx29f002.o sst39sf020.o m29f400bt.o \

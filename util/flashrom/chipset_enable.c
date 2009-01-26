@@ -898,6 +898,7 @@ static const FLASH_ENABLE enables[] = {
 	{0x1106, 0x8231, "VIA VT8231",		enable_flash_vt823x},
 	{0x1106, 0x3177, "VIA VT8235",		enable_flash_vt823x},
 	{0x1106, 0x3227, "VIA VT8237",		enable_flash_vt823x},
+	{0x1106, 0x3337, "VIA VT8237A",		enable_flash_vt823x},
 	{0x1106, 0x3372, "VIA VT8237S",		enable_flash_vt8237s_spi},
 	{0x1106, 0x8324, "VIA CX700",		enable_flash_vt823x},
 	{0x1106, 0x0586, "VIA VT82C586A/B",	enable_flash_amd8111},

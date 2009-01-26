@@ -184,11 +184,20 @@ static void search_lb_records(struct lb_record *rec, struct lb_record *last,
 int coreboot_init(void)
 {
 	uint8_t *low_1MB;
-	unsigned long addr;
+	unsigned long addr, start;
 	struct lb_header *lb_table;
 	struct lb_record *rec, *last;
 
-	low_1MB = physmap("low megabyte", 0x0, 1024*1024);
+#ifdef __DARWIN__
+	/* This is a hack. DirectIO fails to map physical address 0x00000000.
+	 * Why?
+	 */
+	start = 0x400;
+#else
+	start = 0x0;
+#endif
+	low_1MB = physmap("low megabyte", start, 1024*1024);
+
 	lb_table = find_lb_table(low_1MB, 0x00000, 0x1000);
 	if (!lb_table)
 		lb_table = find_lb_table(low_1MB, 0xf0000, 1024*1024);
@@ -197,8 +206,8 @@ int coreboot_init(void)
 		return -1;
 	}
 
-	addr = ((char *)lb_table) - ((char *)low_1MB);
-	printf_debug("coreboot table found at %p.\n", lb_table);
+	addr = ((char *)lb_table) - ((char *)low_1MB) + start;
+	printf_debug("coreboot table found at %p.\n", lb_table + start);
 	rec = (struct lb_record *)(((char *)lb_table) + lb_table->header_bytes);
 	last = (struct lb_record *)(((char *)rec) + lb_table->table_bytes);
 	printf_debug("coreboot header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",

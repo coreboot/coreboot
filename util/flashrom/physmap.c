@@ -1,10 +1,27 @@
-#include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <errno.h>
 #include "flash.h"
+
+#ifdef __DARWIN__
+#include <DirectIO/darwinio.h>
+
+#define MEM_DEV "DirectIO"
+
+void *sys_physmap(unsigned long phys_addr, size_t len)
+{
+	return map_physical(phys_addr, len);
+}
+
+void physunmap(void *virt_addr, size_t len)
+{
+	unmap_physical(virt_addr, len);
+}
+
+#else
+#include <sys/mman.h>
 
 #if defined (__sun) && (defined(__i386) || defined(__amd64))
 #  define MEM_DEV "/dev/xsvc"
@@ -34,6 +51,7 @@ void physunmap(void *virt_addr, size_t len)
 {
 	munmap(virt_addr, len);
 }
+#endif
 
 void *physmap(const char *descr, unsigned long phys_addr, size_t len)
 {

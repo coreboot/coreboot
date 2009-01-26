@@ -18,6 +18,10 @@ OS_ARCH	= $(shell uname)
 ifneq ($(OS_ARCH), SunOS)
 STRIP_ARGS = -s
 endif
+ifeq ($(OS_ARCH), Darwin)
+CFLAGS += -I/usr/local/include
+LDFLAGS += -framework IOKit -framework DirectIO -L/usr/local/lib
+endif
 ifeq ($(OS_ARCH), FreeBSD)
 CFLAGS += -I/usr/local/include
 LDFLAGS += -L/usr/local/lib

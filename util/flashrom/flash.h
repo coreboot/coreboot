@@ -30,6 +30,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#if (defined(__MACH__) && defined(__APPLE__))
+#define __DARWIN__
+#endif
+
 #if defined(__FreeBSD__)
   #include <machine/cpufunc.h>
   #define off64_t off_t
@@ -41,6 +45,11 @@
   #define INW(x) __extension__ ({ u_int tmp = (x); inw(tmp); })
   #define INL(x) __extension__ ({ u_int tmp = (x); inl(tmp); })
 #else
+#if defined(__DARWIN__)
+    #include <DirectIO/darwinio.h>
+    #define off64_t off_t
+    #define lseek64 lseek
+#endif
   #define OUTB outb
   #define OUTW outw
   #define OUTL outl

@@ -77,6 +77,9 @@ Show a help text and exit.
 .TP
 .B "\-R, \-\-version"
 Show version information and exit.
+.SH EXIT STATUS
+flashrom exits with 0 on success, 1 on most failures but with 2 if /dev/mem
+(/dev/xsvc on Solaris) can not be opened and with 3 if a call to mmap() fails.
 .SH BUGS
 Please report any bugs at
 .BR http://tracker.coreboot.org/trac/coreboot/newticket ","

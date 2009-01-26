@@ -44,6 +44,12 @@ Usage
  is that flash info is dumped and the flash chip is set to writable.
 
 
+Exit status
+-----------
+flashrom exits with 0 on success, 1 on most failures but with 2 if /dev/mem
+(/dev/xsvc on Solaris) can not be opened and with 3 if a call to mmap() fails.
+
+
 coreboot Table and Mainboard Identification
 --------------------------------------------
 

@@ -35,32 +35,32 @@
  * Helper functions for many Winbond Super I/Os of the W836xx range.
  */
 /* Enter extended functions */
-static void w836xx_ext_enter(uint16_t port)
+void w836xx_ext_enter(uint16_t port)
 {
 	OUTB(0x87, port);
 	OUTB(0x87, port);
 }
 
 /* Leave extended functions */
-static void w836xx_ext_leave(uint16_t port)
+void w836xx_ext_leave(uint16_t port)
 {
 	OUTB(0xAA, port);
 }
 
 /* General functions for reading/writing Winbond Super I/Os. */
-static unsigned char wbsio_read(uint16_t index, uint8_t reg)
+unsigned char wbsio_read(uint16_t index, uint8_t reg)
 {
 	OUTB(reg, index);
 	return INB(index + 1);
 }
 
-static void wbsio_write(uint16_t index, uint8_t reg, uint8_t data)
+void wbsio_write(uint16_t index, uint8_t reg, uint8_t data)
 {
 	OUTB(reg, index);
 	OUTB(data, index + 1);
 }
 
-static void wbsio_mask(uint16_t index, uint8_t reg, uint8_t data, uint8_t mask)
+void wbsio_mask(uint16_t index, uint8_t reg, uint8_t data, uint8_t mask)
 {
 	uint8_t tmp;
 

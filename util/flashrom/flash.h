@@ -454,6 +454,11 @@ struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 			      uint16_t card_vendor, uint16_t card_device);
 
 /* board_enable.c */
+void w836xx_ext_enter(uint16_t port);
+void w836xx_ext_leave(uint16_t port);
+unsigned char wbsio_read(uint16_t index, uint8_t reg);
+void wbsio_write(uint16_t index, uint8_t reg, uint8_t data);
+void wbsio_mask(uint16_t index, uint8_t reg, uint8_t data, uint8_t mask);
 int board_flash_enable(const char *vendor, const char *part);
 void print_supported_boards(void);
 

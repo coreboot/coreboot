@@ -466,21 +466,15 @@ typedef enum {
 extern flashbus_t flashbus;
 extern void *spibar;
 
-/* Physical memory mapping device */
-#if defined (__sun) && (defined(__i386) || defined(__amd64))
-#  define MEM_DEV "/dev/xsvc"
-#else
-#  define MEM_DEV "/dev/mem"
-#endif
-
-extern int fd_mem;
-
 /* debug.c */
 extern int verbose;
 #define printf_debug(x...) { if (verbose) printf(x); }
 
+/* physmap.c */
+void *physmap(const char *descr, unsigned long phys_addr, size_t len);
+void physunmap(void *virt_addr, size_t len);
+
 /* flashrom.c */
-void mmap_errmsg();
 void map_flash_registers(struct flashchip *flash);
 
 /* layout.c */

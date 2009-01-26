@@ -22,7 +22,6 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -44,7 +43,6 @@ char *chip_to_probe = NULL;
 struct pci_access *pacc;	/* For board and chipset_enable */
 int exclude_start_page, exclude_end_page;
 int verbose = 0;
-int fd_mem;
 
 struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device)
 {
@@ -84,31 +82,10 @@ struct pci_dev *pci_card_find(uint16_t vendor, uint16_t device,
 	return NULL;
 }
 
-void mmap_errmsg()
-{
-	if (EINVAL == errno) {
-		fprintf(stderr, "In Linux this error can be caused by the CONFIG_NONPROMISC_DEVMEM (<2.6.27),\n");
-		fprintf(stderr, "CONFIG_STRICT_DEVMEM (>=2.6.27) and CONFIG_X86_PAT kernel options.\n");
-		fprintf(stderr, "Please check if either is enabled in your kernel before reporting a failure.\n");
-		fprintf(stderr, "You can override CONFIG_X86_PAT at boot with the nopat kernel parameter but\n");
-		fprintf(stderr, "disabling the other option unfortunately requires a kernel recompile. Sorry!\n");
-	}
-}
-
 void map_flash_registers(struct flashchip *flash)
 {
-	volatile uint8_t *registers;
 	size_t size = flash->total_size * 1024;
-
-	registers = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			 fd_mem, (off_t) (0xFFFFFFFF - 0x400000 - size + 1));
-
-	if (registers == MAP_FAILED) {
-		perror("Can't mmap registers using " MEM_DEV);
-		mmap_errmsg();
-		exit(1);
-	}
-	flash->virtual_registers = registers;
+	flash->virtual_registers = physmap("flash chip registers", (0xFFFFFFFF - 0x400000 - size + 1), size);
 }
 
 struct flashchip *probe_flash(struct flashchip *first_flash, int force)
@@ -145,14 +122,7 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 		}
 
 		base = flashbase ? flashbase : (0xffffffff - size + 1);
-		bios = mmap(0, size, PROT_WRITE | PROT_READ, MAP_SHARED,
-			    fd_mem, (off_t) base);
-		if (bios == MAP_FAILED) {
-			perror("Can't mmap memory using " MEM_DEV);
-			mmap_errmsg();
-			exit(1);
-		}
-		flash->virtual_memory = bios;
+		flash->virtual_memory = bios = physmap("flash chip", base, size);
 
 		if (force)
 			break;
@@ -165,7 +135,7 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 			break;
 
 notfound:
-		munmap((void *)bios, size);
+		physunmap((void *)bios, size);
 	}
 
 	if (!flash || !flash->name)
@@ -450,13 +420,6 @@ int main(int argc, char *argv[])
 	/* Set all options you want -- here we stick with the defaults */
 	pci_init(pacc);		/* Initialize the PCI library */
 	pci_scan_bus(pacc);	/* We want to get the list of devices */
-
-	/* Open the memory device UNCACHED. That's important for MMIO. */
-	if ((fd_mem = open(MEM_DEV, O_RDWR | O_SYNC)) < 0) {
-		perror("Error: Can not access memory using " MEM_DEV
-		       ". You need to be root.");
-		exit(1);
-	}
 
 	myusec_calibrate_delay();
 

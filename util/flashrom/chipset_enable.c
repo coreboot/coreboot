@@ -215,14 +215,7 @@ static int enable_flash_vt8237s_spi(struct pci_dev *dev, const char *name)
 
 	mmio_base = (pci_read_long(dev, 0xbc)) << 8;
 	printf_debug("MMIO base at = 0x%x\n", mmio_base);
-	spibar = mmap(NULL, 0x70, PROT_READ | PROT_WRITE, MAP_SHARED,
-		      fd_mem, mmio_base);
-
-	if (spibar == MAP_FAILED) {
-		perror("Can't mmap memory using " MEM_DEV);
-		mmap_errmsg();
-		exit(1);
-	}
+	spibar = physmap("VT8237S MMIO registers", mmio_base, 0x70);
 
 	printf_debug("0x6c: 0x%04x     (CLOCK/DEBUG)\n",
 		     *(uint16_t *) (spibar + 0x6c));
@@ -252,13 +245,7 @@ static int enable_flash_ich_dc_spi(struct pci_dev *dev, const char *name,
 	printf_debug("\nRoot Complex Register Block address = 0x%x\n", tmp);
 
 	/* Map RCBA to virtual memory */
-	rcrb = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED, fd_mem,
-		    (off_t) tmp);
-	if (rcrb == MAP_FAILED) {
-		perror("Can't mmap memory using " MEM_DEV);
-		mmap_errmsg();
-		exit(1);
-	}
+	rcrb = physmap("ICH RCRB", tmp, 0x4000);
 
 	gcs = *(volatile uint32_t *)(rcrb + 0x3410);
 	printf_debug("GCS = 0x%x: ", gcs);
@@ -679,13 +666,7 @@ static int enable_flash_sb600(struct pci_dev *dev, const char *name)
 	tmp &= 0xffffc000;
 	printf_debug("SPI base address is at 0x%x\n", tmp + low_bits);
 
-	sb600_spibar = mmap(0, 0x4000, PROT_READ | PROT_WRITE, MAP_SHARED,
-			    fd_mem, (off_t)tmp);
-	if (sb600_spibar == MAP_FAILED) {
-		perror("Can't mmap memory using " MEM_DEV);
-		mmap_errmsg();
-		exit(1);
-	}
+	sb600_spibar = physmap("SB600 SPI registers", tmp, 0x4000);
 	sb600_spibar += low_bits;
 
 	/* Clear ROM protect 0-3. */
@@ -835,14 +816,7 @@ static int get_flashbase_sc520(struct pci_dev *dev, const char *name)
 	void *mmcr;
 
 	/* 1. Map MMCR */
-	mmcr = mmap(0, getpagesize(), PROT_WRITE | PROT_READ,
-			MAP_SHARED, fd_mem, (off_t)0xFFFEF000);
-
-	if (mmcr == MAP_FAILED) {
-		perror("Can't mmap Elan SC520 specific registers using " MEM_DEV);
-		mmap_errmsg();
-		exit(1);
-	}
+	mmcr = physmap("Elan SC520 MMCR", 0xfffef000, getpagesize());
 
 	/* 2. Scan PAR0 (0x88) - PAR15 (0xc4) for
 	 *    BOOTCS region (PARx[31:29] = 100b)e

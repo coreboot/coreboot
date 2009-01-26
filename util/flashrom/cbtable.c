@@ -188,13 +188,7 @@ int coreboot_init(void)
 	struct lb_header *lb_table;
 	struct lb_record *rec, *last;
 
-	low_1MB = mmap(0, 1024 * 1024, PROT_READ, MAP_SHARED, fd_mem,
-		       0x00000000);
-	if (low_1MB == MAP_FAILED) {
-		perror("Can't mmap memory using " MEM_DEV);
-		mmap_errmsg();
-		exit(-2);
-	}
+	low_1MB = physmap("low megabyte", 0x0, 1024*1024);
 	lb_table = find_lb_table(low_1MB, 0x00000, 0x1000);
 	if (!lb_table)
 		lb_table = find_lb_table(low_1MB, 0xf0000, 1024*1024);

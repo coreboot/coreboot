@@ -20,8 +20,7 @@
 #include "msrtool.h"
 
 int cs5536_probe(const struct targetdef *target) {
-	/* TODO: PCI 1022:2090 */
-	return 0;
+	return (NULL != pci_dev_find(0x1022, 0x2090));
 }
 
 const struct msrdef cs5536_msrs[] = {

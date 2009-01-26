@@ -615,3 +615,29 @@ int spi_chip_write(struct flashchip *flash, uint8_t *buf)
 
 	return 1;
 }
+
+int spi_aai_write(struct flashchip *flash, uint8_t *buf) {
+	uint32_t pos = 2, size = flash->total_size * 1024;
+	unsigned char w[6] = {0xad, 0, 0, 0, buf[0], buf[1]};
+	switch (flashbus) {
+		case BUS_TYPE_WBSIO_SPI:
+			fprintf(stderr, "%s: impossible with Winbond SPI masters, degrading to byte program\n", __func__);
+			return spi_chip_write(flash, buf);
+		default:
+			break;
+	}
+	flash->erase(flash);
+	spi_write_enable();
+	spi_command(6, 0, w, NULL);
+	while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+		myusec_delay(5); /* SST25VF040B Tbp is max 10us */
+	while (pos < size) {
+		w[1] = buf[pos++];
+		w[2] = buf[pos++];
+		spi_command(3, 0, w, NULL);
+		while (spi_read_status_register() & JEDEC_RDSR_BIT_WIP)
+			myusec_delay(5); /* SST25VF040B Tbp is max 10us */
+	}
+	spi_write_disable();
+	return 0;
+}

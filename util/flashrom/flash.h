@@ -523,6 +523,7 @@ uint8_t spi_read_status_register();
 int spi_disable_blockprotect(void);
 void spi_byte_program(int address, uint8_t byte);
 int spi_nbyte_read(int address, uint8_t *bytes, int len);
+int spi_aai_write(struct flashchip *flash, uint8_t *buf);
 
 /* 82802ab.c */
 int probe_82802ab(struct flashchip *flash);

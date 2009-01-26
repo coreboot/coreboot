@@ -481,7 +481,7 @@ extern int verbose;
 
 /* flashrom.c */
 void mmap_errmsg();
-int map_flash_registers(struct flashchip *flash);
+void map_flash_registers(struct flashchip *flash);
 
 /* layout.c */
 int show_id(uint8_t *bios, int size, int force);

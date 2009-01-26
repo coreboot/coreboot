@@ -95,7 +95,7 @@ void mmap_errmsg()
 	}
 }
 
-int map_flash_registers(struct flashchip *flash)
+void map_flash_registers(struct flashchip *flash)
 {
 	volatile uint8_t *registers;
 	size_t size = flash->total_size * 1024;
@@ -109,8 +109,6 @@ int map_flash_registers(struct flashchip *flash)
 		exit(1);
 	}
 	flash->virtual_registers = registers;
-
-	return 0;
 }
 
 struct flashchip *probe_flash(struct flashchip *first_flash, int force)

@@ -1136,7 +1136,7 @@ struct flashchip flashchips[] = {
 		.tested		= TEST_OK_PR,
 		.probe		= probe_spi_rems,
 		.erase		= spi_chip_erase_c7,
-		.write		= spi_chip_aai_write,
+		.write		= spi_aai_write,
 		.read		= spi_chip_read,
 	},
 

@@ -77,7 +77,7 @@ int write_m29f002t(struct flashchip *flash, uint8_t *buf) {
 	do_block(bios, buf, i++, 0x30000, 32*1024);
 	do_block(bios, buf, i++, 0x38000, 8*1024);
 	do_block(bios, buf, i++, 0x3a000, 8*1024);
-	do_block(bios, buf, i++, 0x3c000, 16*1024);
+	do_block(bios, buf, i, 0x3c000, 16*1024);
 
 	printf("\n");
 	return 0;

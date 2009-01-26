@@ -289,7 +289,6 @@ int program_opcodes(OPCODES * op)
 	uint32_t opmenu[2];
 
 	/* Program Prefix Opcodes */
-	preop = 0;
 	/* 0:7 Prefix Opcode 1 */
 	preop = (op->preop[0]);
 	/* 8:16 Prefix Opcode 2 */

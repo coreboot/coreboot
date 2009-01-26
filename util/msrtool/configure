@@ -19,35 +19,38 @@
 #
 
 # If this is left unset, try to set the version string from the highest
-# revision number of the checked out files later.
+# revision number of the checked out files.
 VERSION=""
 
-REV="$(svnversion -c . 2>/dev/null)"; REV="${REV/*:}"
+REV="`svnversion -c . 2>/dev/null | sed 's,.*:,,' 2>/dev/null`"
 VERSION="${VERSION:-$REV}"
 
-function findprog() {
-	local WHAT FROMENV FILE
+function findprog {
+	NPARMS=$#
 	WHAT="${1}"
 	shift
 	FROMENV="${1}"
 	shift
-	echo -n "searching for ${WHAT} (${*})..." 1>&2
+	printf "searching for ${WHAT} (${*})..." 1>&2
 	test -n "${FROMENV}" && {
 		echo "  using environment: ${FROMENV}" 1>&2
 		echo "${FROMENV}"
 		exit 0
 	}
-	for parm in $(seq 0 $#); do
+	i=2
+	while test $i -lt $NPARMS; do
 		test -z "${1}" && {
 			shift
+			i=$[$i+1]
 			continue
 		}
-		FILE="$(which "${1}" 2>/dev/null)"
+		FILE="`which "${1}" 2>/dev/null`"
 		test $? -eq 0 && {
 			echo "${1}"
 			break
 		}
 		shift
+		i=$[$i+1]
 	done
 	test -z "${1}" && {
 		echo "  not found!" 1>&2
@@ -59,78 +62,82 @@ function findprog() {
 	exit 0
 }
 
-function trycompile() {
-	local WHAT OUT
+function trycompile {
+	NPARMS=$#
 	WHAT="${1}"
 	shift
-	echo -n "finding CFLAGS for ${WHAT}... " 1>&2
+	printf "finding CFLAGS for ${WHAT}... " 1>&2
 	OUT="${OUT}\n${CC} ${CFLAGS} -o .config.o -c .config.c"
-	OUT="${OUT}\n$(${CC} ${CFLAGS} -o .config.o -c .config.c 2>&1)"
+	OUT="${OUT}\n`echo "${CC} ${CFLAGS} -o .config.o -c .config.c"|sh 2>&1`"
 	test $? -eq 0 && {
 		echo " using: ${CFLAGS}" 1>&2
 		echo "${CFLAGS}"
 		exit 0
 	}
-	for parm in $(seq 1 $#); do
+	i=1
+	while test $i -lt $NPARMS; do
 		OUT="${OUT}\n${CC} ${CFLAGS} ${1} -o .config.o -c .config.c 2>&1"
-		OUT="${OUT}\n$(${CC} ${CFLAGS} ${1} -o .config.o -c .config.c 2>&1)"
+		OUT="${OUT}\n`echo "${CC} ${CFLAGS} ${1} -o .config.o -c .config.c"|sh 2>&1`"
 		test $? -eq 0 && {
 			echo " using: ${CFLAGS} ${1}" 1>&2
 			echo "${CFLAGS} ${1}"
 			exit 0
 		} 
 		shift
+		i=$[$i+1]
 	done
 	echo "failed!" 1>&2
 	echo 1>&2
-	echo -n "The following compiler commands were executed:" 1>&2
+	printf "The following compiler commands were executed:" 1>&2
 	echo -e "${OUT}\n" 1>&2
 	echo "This is a fatal error, configure is exiting!" 1>&2
 	echo 1>&2
 	echo "You can try to fix this by manually setting CFLAGS in the environment before" 1>&2
 	echo "running configure. E.g.:" 1>&2
-	echo "CFLAGS=-I/opt/somedir/include ${0}" 1>&2
+	echo "CFLAGS=-I/opt/somedir/include ./configure" 1>&2
 	echo 1>&2
 	exit 1
 }
 
-function trylink() {
-	local WHAT OUT
+function trylink {
+	NPARMS=$#
 	WHAT="${1}"
 	shift
-	echo -n "finding LDFLAGS for ${WHAT}... " 1>&2
+	printf "finding LDFLAGS for ${WHAT}... " 1>&2
 	OUT="${OUT}\n${CC} -o .config .config.o ${LDFLAGS} 2>&1"
-	OUT="${OUT}\n$(${CC} -o .config .config.o ${LDFLAGS} 2>&1)"
+	OUT="${OUT}\n`echo "${CC} -o .config .config.o ${LDFLAGS}"|sh 2>&1`"
 	test $? -eq 0 && {
 		echo " using: ${LDFLAGS}" 1>&2
 		echo "${LDFLAGS}"
 		exit 0
 	}
-	for parm in $(seq 1 $#); do
+	i=1
+	while test $i -lt $NPARMS; do
 		OUT="${OUT}\n${CC} -o .config .config.o ${LDFLAGS} ${1} 2>&1"
-		OUT="${OUT}\n$(${CC} -o .config .config.o ${LDFLAGS} ${1} 2>&1)"
+		OUT="${OUT}\n`echo "${CC} -o .config .config.o ${LDFLAGS} ${1}"|sh 2>&1`"
 		test $? -eq 0 && {
 			echo " using: ${LDFLAGS} ${1}" 1>&2
 			echo "${LDFLAGS} ${1}"
 			exit 0
 		}
 		shift
+		i=$[$i+1]
 	done
 	echo "failed!" 1>&2
 	echo 1>&2
-	echo -n "The following linker commands were executed:" 1>&2
+	printf "The following linker commands were executed:" 1>&2
 	echo -e "${OUT}\n" 1>&2
 	echo "This is a fatal error, configure is exiting!" 1>&2
 	echo 1>&2
 	echo "You can try to fix this by manually setting LDFLAGS in the environment before" 1>&2
 	echo "running configure. E.g.:" 1>&2
-	echo "LDFLAGS=-L/opt/somedir/lib ${0}" 1>&2
+	echo "LDFLAGS=-L/opt/somedir/lib ./configure" 1>&2
 	echo 1>&2
 	exit 1
 }
 
-CC=$(findprog "compiler" "${CC}" gcc cc icc) || exit
-INSTALL=$(findprog "install" "${INSTALL}" install ginstall) || exit
+CC=`findprog "compiler" "${CC}" gcc cc icc` || exit
+INSTALL=`findprog "install" "${INSTALL}" install ginstall` || exit
 
 test -n "$DEBUG" && myCFLAGS="-O2 -g" || myCFLAGS="-Os"
 CFLAGS="${CFLAGS} ${myCFLAGS} -Wall -Werror"
@@ -142,21 +149,19 @@ int main(int argc, char *argv[])
 { pacc = pci_alloc(); return 0; }
 EOF
 
-pc_CFLAGS="$(pkg-config libpci --cflags 2>/dev/null)"
-pc_LDFLAGS="$(pkg-config libpci --libs 2>/dev/null)"
-CFLAGS=$(trycompile "libpci (from pciutils)" "${pc_CFLAGS}" "-I/usr/local/include") || {
+pc_CFLAGS="`pkg-config libpci --cflags 2>/dev/null`"
+pc_LDFLAGS="`pkg-config libpci --libs 2>/dev/null`"
+CFLAGS=`trycompile "libpci (from pciutils)" "${pc_CFLAGS}" "-I/usr/local/include"` || {
 	rm -f .config.c
 	exit 1
 }
-LDFLAGS=$(trylink "libpci (from pciutils)" "${pc_LDFLAGS}" "-lpci -lz" "-L/usr/local/lib -lpci -lz") || {
+LDFLAGS=`trylink "libpci (from pciutils)" "${pc_LDFLAGS}" "-lpci -lz" "-L/usr/local/lib -lpci -lz" "-framework IOKit -L/usr/local/lib -lpci -lz"` || {
 	rm -f .config.c .config.o
 	exit 1
 }
 rm -f .config.c .config.o .config
 
 PREFIX="${PREFIX:-/usr/local}"
-
-OS_ARCH=$(uname)
 
 echo
 echo "configured using the following settings:"
@@ -168,7 +173,7 @@ echo "LDFLAGS=${LDFLAGS}"
 echo "INSTALL=${INSTALL}"
 echo "PREFIX=${PREFIX}"
 echo
-echo -n "creating Makefile..."
+printf "creating Makefile..."
 echo "# This file was automatically generated by configure" > Makefile
 sed -e "s#@VERSION@#${VERSION}#g" \
 	-e "s#@CC@#${CC}#g" \

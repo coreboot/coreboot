@@ -727,7 +727,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	current += dsdt->length;
 	printk_debug("ACPI:    * DSDT @ %08x Length %x\n", dsdt, dsdt->length);
-	/* FDAT */
+	/* FADT */
 	printk_debug("ACPI:    * FADT\n");
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);

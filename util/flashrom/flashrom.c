@@ -187,6 +187,61 @@ int verify_flash(struct flashchip *flash, uint8_t *buf)
 	return 0;
 }
 
+int read_flash(struct flashchip *flash, char *filename, unsigned int exclude_start_position, unsigned int exclude_end_position)
+{
+	unsigned long numbytes;
+	FILE *image;
+	unsigned long size = flash->total_size * 1024;
+	unsigned char *buf = calloc(size, sizeof(char));
+	if ((image = fopen(filename, "w")) == NULL) {
+		perror(filename);
+		exit(1);
+	}
+	printf("Reading flash... ");
+	if (flash->read == NULL)
+		memcpy(buf, (const char *)flash->virtual_memory, size);
+	else
+		flash->read(flash, buf);
+
+	if (exclude_end_position - exclude_start_position > 0)
+		memset(buf + exclude_start_position, 0,
+		       exclude_end_position - exclude_start_position);
+
+	numbytes = fwrite(buf, 1, size, image);
+	fclose(image);
+	printf("%s.\n", numbytes == size ? "done" : "FAILED");
+	if (numbytes != size)
+		return 1;
+	return 0;
+}
+
+int erase_flash(struct flashchip *flash)
+{
+	uint32_t erasedbytes;
+	unsigned long size = flash->total_size * 1024;
+	unsigned char *buf = calloc(size, sizeof(char));
+	printf("Erasing flash chip... ");
+	if (NULL == flash->erase) {
+		printf("FAILED!\n");
+		fprintf(stderr, "ERROR: flashrom has no erase function for this flash chip.\n");
+		return 1;
+	}
+	flash->erase(flash);
+	if (NULL == flash->read)
+		memcpy(buf, (const char *)flash->virtual_memory, size);
+	else
+		flash->read(flash, buf);
+	for (erasedbytes = 0; erasedbytes < size; erasedbytes++)
+		if (0xff != buf[erasedbytes]) {
+			printf("FAILED!\n");
+			fprintf(stderr, "ERROR at 0x%08x: Expected=0xff, Read=0x%02x\n",
+				erasedbytes, buf[erasedbytes]);
+			return 1;
+		}
+	printf("SUCCESS.\n");
+	return 0;
+}
+
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define POS_PRINT(x) do { pos += strlen(x); printf(x); } while (0)
 
@@ -279,7 +334,6 @@ int main(int argc, char *argv[])
 {
 	uint8_t *buf;
 	unsigned long size, numbytes;
-	uint32_t erasedbytes;
 	FILE *image;
 	/* Probe for up to three flash chips. */
 	struct flashchip *flash, *flashes[3];
@@ -555,45 +609,10 @@ int main(int argc, char *argv[])
 	buf = (uint8_t *) calloc(size, sizeof(char));
 
 	if (erase_it) {
-		printf("Erasing flash chip... ");
-		if (NULL == flash->erase) {
-			printf("FAILED!\n");
-			fprintf(stderr, "ERROR: flashrom has no erase function for this flash chip.\n");
+		if (erase_flash(flash))
 			return 1;
-		}
-		flash->erase(flash);
-		if (NULL == flash->read)
-			memcpy(buf, (const char *)flash->virtual_memory, size);
-		else
-			flash->read(flash, buf);
-		for (erasedbytes = 0; erasedbytes < size; erasedbytes++)
-			if (0xff != buf[erasedbytes]) {
-				printf("FAILED!\n");
-				fprintf(stderr, "ERROR at 0x%08x: Expected=0xff, Read=0x%02x\n",
-					erasedbytes, buf[erasedbytes]);
-				return 1;
-			}
-		printf("SUCCESS.\n");
-		return 0;
 	} else if (read_it) {
-		if ((image = fopen(filename, "w")) == NULL) {
-			perror(filename);
-			exit(1);
-		}
-		printf("Reading flash... ");
-		if (flash->read == NULL)
-			memcpy(buf, (const char *)flash->virtual_memory, size);
-		else
-			flash->read(flash, buf);
-
-		if (exclude_end_position - exclude_start_position > 0)
-			memset(buf + exclude_start_position, 0,
-			       exclude_end_position - exclude_start_position);
-
-		numbytes = fwrite(buf, 1, size, image);
-		fclose(image);
-		printf("%s.\n", numbytes == size ? "done" : "FAILED");
-		if (numbytes != size)
+		if (read_flash(flash, filename, exclude_start_position, exclude_end_position))
 			return 1;
 	} else {
 		struct stat image_stat;

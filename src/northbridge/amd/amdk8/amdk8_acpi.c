@@ -45,7 +45,7 @@ acknowledgement of AMD's proprietary rights in them.
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
-//it seems these function can be moved arch/i386/boot/acpi.c
+//it seems some functions can be moved arch/i386/boot/acpi.c
 
 unsigned long acpi_create_madt_lapics(unsigned long current)
 {
@@ -54,8 +54,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-		{
+		    (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled) {
@@ -63,9 +62,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 		}
 		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.u.apic.apic_id);
 		cpu_index++;
-
 	}
-
 	return current;
 }
 
@@ -76,8 +73,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 l
 
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-		{
+		    (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled) {
@@ -85,9 +81,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 l
 		}
 		current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, cpu_index, flags, lint);
 		cpu_index++;
-
 	}
-
 	return current;
 }
 
@@ -98,8 +92,7 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 
 	for(cpu = all_devices; cpu; cpu = cpu->next) {
 		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER))
-		{
+		    (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
 			continue;
 		}
 		if (!cpu->enabled) {
@@ -108,9 +101,7 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
 		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
 		cpu_index++;
-
 	}
-
 	return current;
 }
 
@@ -119,8 +110,7 @@ static unsigned long resk(uint64_t value)
 	unsigned long resultk;
 	if (value < (1ULL << 42)) {
 		resultk = value >> 10;
-	}
-	else {
+	} else {
 		resultk = 0xffffffff;
 	}
 	return resultk;
@@ -140,10 +130,10 @@ void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	printk_debug("set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
 		     dev_path(dev), res->index, basek, sizek);
 	/*
-		0-640K must be on node 0
-		next range is from 1M---
-		So will cut off before 1M in the mem range
-	*/
+	 * 0-640K must be on node 0
+	 * next range is from 1M---
+	 * So will cut off before 1M in the mem range
+	 */
 	if((basek+sizek)<1024) return;
 
 	if(basek<1024) {
@@ -151,7 +141,8 @@ void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 		basek = 1024;
 	}
 
-	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1); // need to figure out NV
+	// need to figure out NV
+	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1);
 }
 
 unsigned long acpi_fill_srat(unsigned long current)
@@ -172,10 +163,8 @@ unsigned long acpi_fill_srat(unsigned long current)
 		set_srat_mem, &srat_mem_state);
 
 	current = srat_mem_state.current;
-
 	return current;
 }
-
 
 unsigned long acpi_fill_slit(unsigned long current)
 {
@@ -184,7 +173,7 @@ unsigned long acpi_fill_slit(unsigned long current)
 	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
 
 	/* because We has assume that we know the topology of the HT connection, So we can have set if we know the node_num */
-	static uint8_t hops_8[] = {   0, 1, 1, 2, 2, 3, 3, 4,
+	static u8 hops_8[] = {   0, 1, 1, 2, 2, 3, 3, 4,
 				      1, 0, 2, 1, 3, 2, 4, 3,
 				      1, 2, 0, 1, 1, 2, 2, 3,
 				      2, 1, 1, 0, 2, 1, 3, 2,
@@ -193,14 +182,14 @@ unsigned long acpi_fill_slit(unsigned long current)
 				      3, 4, 2, 3, 1, 2, 0, 1,
 				      4, 4, 3, 2, 2, 1, 1, 0 };
 
-//	uint8_t outer_node[8];
+//	u8 outer_node[8];
 
-	uint8_t *p = (uint8_t *)current;
+	u8 *p = (u8 *)current;
 	int nodes = sysconf.nodes;
 	int i,j;
 	memset(p, 0, 8+nodes*nodes);
-//	memset((uint8_t *)outer_node, 0, 8);
-	*p = (uint8_t) nodes;
+//	memset((u8 *)outer_node, 0, 8);
+	*p = (u8) nodes;
 	p += 8;
 
 #if 0
@@ -212,11 +201,12 @@ unsigned long acpi_fill_slit(unsigned long current)
 
 	for(i=0;i<nodes;i++) {
 		for(j=0;j<nodes; j++) {
-			if(i==j) { p[i*nodes+j] = 10; }
-			else {
+			if(i==j) {
+				p[i*nodes+j] = 10;
+			} else {
 #if 0
 				int k;
-				uint8_t latency_factor = 0;
+				u8 latency_factor = 0;
 				int k_start, k_end;
 				if(i<j) {
 					k_start = i;
@@ -246,37 +236,36 @@ unsigned long acpi_fill_slit(unsigned long current)
 	return current;
 }
 
-
-//end
-
-
 // moved from mb acpi_tables.c
-static void int_to_stream(uint32_t val, uint8_t *dest)
+static void intx_to_stream(u32 val, u32 len, u8 *dest)
 {
 	int i;
-	for(i=0;i<4;i++) {
+	for(i=0;i<len;i++) {
 		*(dest+i) = (val >> (8*i)) & 0xff;
 	}
 }
 
+static void int_to_stream(u32 val, u8 *dest)
+{
+	return intx_to_stream(val, 4, dest);
+}
 
 // used by acpi_tables.h
-
 void update_ssdt(void *ssdt)
 {
-	uint8_t *BUSN;
-	uint8_t *MMIO;
-	uint8_t *PCIO;
-	uint8_t *SBLK;
-	uint8_t *TOM1;
-	uint8_t *SBDN;
-	uint8_t *HCLK;
-	uint8_t *HCDN;
-	uint8_t *CBST;
+	u8 *BUSN;
+	u8 *MMIO;
+	u8 *PCIO;
+	u8 *SBLK;
+	u8 *TOM1;
+	u8 *SBDN;
+	u8 *HCLK;
+	u8 *HCDN;
+	u8 *CBST;
 
 	int i;
 	device_t dev;
-	uint32_t dword;
+	u32 dword;
 	msr_t msr;
 
 	BUSN = ssdt+0x3a; //+5 will be next BUSN
@@ -303,7 +292,7 @@ void update_ssdt(void *ssdt)
 		int_to_stream(dword, PCIO+i*5);
 	}
 
-	*SBLK = (uint8_t)(sysconf.sblk);
+	*SBLK = (u8)(sysconf.sblk);
 
 	msr = rdmsr(TOP_MEM);
 	int_to_stream(msr.lo, TOM1);
@@ -320,10 +309,10 @@ void update_ssdt(void *ssdt)
 	int_to_stream(sysconf.sbdn, SBDN);
 
 	if((sysconf.pci1234[0] >> 12) & 0xff) { //sb chain on  other than bus 0
-		*CBST = (uint8_t) (0x0f);
+		*CBST = (u8) (0x0f);
 	}
 	else {
-		*CBST = (uint8_t) (0x00);
+		*CBST = (u8) (0x00);
 	}
 
 }

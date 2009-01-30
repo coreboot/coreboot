@@ -66,7 +66,6 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags, u8 l
 	return current;
 }
 
-
 unsigned long acpi_create_srat_lapics(unsigned long current)
 {
 	device_t cpu;
@@ -98,7 +97,6 @@ static unsigned long resk(uint64_t value)
 	return resultk;
 }
 
-
 struct acpi_srat_mem_state {
 	unsigned long current;
 };
@@ -113,10 +111,10 @@ void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	printk_debug("set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
 			dev_path(dev), res->index, basek, sizek);
 	/*
-	 0-640K must be on node 0
-	 next range is from 1M---
-	 So will cut off before 1M in the mem range
-	*/
+	 * 0-640K must be on node 0
+	 * next range is from 1M---
+	 * So will cut off before 1M in the mem range
+	 */
 	if((basek+sizek)<1024) return;
 
 	if(basek<1024) {
@@ -127,7 +125,6 @@ void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	// need to figure out NV
 	state->current += acpi_create_srat_mem((acpi_srat_mem_t *)state->current, (res->index & 0xf), basek, sizek, 1);
 }
-
 
 unsigned long acpi_fill_srat(unsigned long current)
 {
@@ -184,7 +181,6 @@ unsigned long acpi_fill_slit(unsigned long current)
 	return current;
 }
 
-
 // moved from mb acpi_tables.c
 static void intx_to_stream(u32 val, u32 len, u8 *dest)
 {
@@ -194,12 +190,10 @@ static void intx_to_stream(u32 val, u32 len, u8 *dest)
 	}
 }
 
-
 static void int_to_stream(u32 val, u8 *dest)
 {
 	return intx_to_stream(val, 4, dest);
 }
-
 
 // used by acpi_tables.h
 void update_ssdt(void *ssdt)
@@ -292,7 +286,6 @@ void update_ssdt(void *ssdt)
 	}
 
 }
-
 
 void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 {

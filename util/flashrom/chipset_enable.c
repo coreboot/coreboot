@@ -221,6 +221,7 @@ static int enable_flash_vt8237s_spi(struct pci_dev *dev, const char *name)
 		     *(uint16_t *) (spibar + 0x6c));
 
 	flashbus = BUS_TYPE_VIA_SPI;
+	ich_init_opcodes();
 
 	return 0;
 }

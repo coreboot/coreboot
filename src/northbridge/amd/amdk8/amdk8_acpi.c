@@ -226,7 +226,6 @@ unsigned long acpi_fill_slit(unsigned long current)
 				p[i*nodes+j] = hops_8[i*nodes+j] * 2 + 10;
 #endif
 
-
 			}
 		}
 	}
@@ -234,6 +233,80 @@ unsigned long acpi_fill_slit(unsigned long current)
 	current += 8+nodes*nodes;
 
 	return current;
+}
+
+static int k8acpi_write_HT(void) {
+	device_t dev;
+	uint32_t dword;
+	int len, lenp, i;
+
+	len = acpigen_write_name("HCLK");
+	lenp = acpigen_write_package(HC_POSSIBLE_NUM);
+
+	for(i=0;i<sysconf.hc_possible_num;i++) {
+		lenp += acpigen_write_dword(sysconf.pci1234[i]);
+	}
+	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+		lenp += acpigen_write_dword(0x0);
+	}
+
+	acpigen_patch_len(lenp - 1);
+	len += lenp;
+
+	len += acpigen_write_name("HCDN");
+	lenp = acpigen_write_package(HC_POSSIBLE_NUM);
+
+	for(i=0;i<sysconf.hc_possible_num;i++) {
+		lenp += acpigen_write_dword(sysconf.hcdn[i]);
+	}
+	for(i=sysconf.hc_possible_num; i<HC_POSSIBLE_NUM; i++) { // in case we set array size to other than 8
+		lenp += acpigen_write_dword(0x20202020);
+	}
+	acpigen_patch_len(lenp - 1);
+	len += lenp;
+
+	return len;
+}
+
+static int k8acpi_write_pci_data(int dlen, char *name, int offset) {
+	device_t dev;
+	uint32_t dword;
+	int len, lenp, i;
+
+	dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
+
+	len = acpigen_write_name(name);
+	lenp = acpigen_write_package(dlen);
+	for(i=0; i<dlen; i++) {
+		dword = pci_read_config32(dev, offset+i*4);
+		lenp += acpigen_write_dword(dword);
+	}
+	// minus the opcode
+	acpigen_patch_len(lenp - 1);
+	return len + lenp;
+}
+
+int k8acpi_write_vars(void)
+{
+	int lens;
+	msr_t msr;
+	char pscope[] = "\\._SB_PCI0";
+
+	lens = acpigen_write_scope(pscope);
+	lens += k8acpi_write_pci_data(4, "BUSN", 0xe0);
+	lens += k8acpi_write_pci_data(8, "PCIO", 0xc0);
+	lens += k8acpi_write_pci_data(16, "MMIO", 0x80);
+	lens += acpigen_write_name_byte("SBLK", sysconf.sblk);
+	lens += acpigen_write_name_byte("CBST",
+	    ((sysconf.pci1234[0] >> 12) & 0xff) ? 0xf : 0x0);
+	lens += acpigen_write_name_dword("SBDN", sysconf.sbdn);
+	msr = rdmsr(TOP_MEM);
+	lens += acpigen_write_name_dword("TOM1", msr.lo);
+
+	lens += k8acpi_write_HT();
+	//minus opcode
+	acpigen_patch_len(lens - 1);
+	return lens;
 }
 
 // moved from mb acpi_tables.c

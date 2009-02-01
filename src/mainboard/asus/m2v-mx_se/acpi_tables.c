@@ -30,9 +30,9 @@
 #include <device/pci_ids.h>
 #include <../../../southbridge/via/vt8237r/vt8237r.h>
 #include <../../../southbridge/via/k8t890/k8t890.h>
+#include <../../../northbridge/amd/amdk8/amdk8_acpi.h>
 
 extern unsigned char AmlCode[];
-extern unsigned char AmlCode_ssdt[];
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -79,6 +79,12 @@ unsigned long acpi_fill_madt(unsigned long current)
 			MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 1);
 
 	return current;
+}
+
+unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id) {
+	k8acpi_write_vars();
+	/* put PSTATES generator call here */
+	return (unsigned long) (acpigen_get_current());
 }
 
 unsigned long write_acpi_tables(unsigned long start)
@@ -175,13 +181,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* SSDT */
 	printk_debug("ACPI:    * SSDT\n");
 	ssdt = (acpi_header_t *)current;
-	current += ((acpi_header_t *)AmlCode_ssdt)->length;
-	memcpy((void *)ssdt, (void *)AmlCode_ssdt, ((acpi_header_t *)AmlCode_ssdt)->length);
-	update_ssdt((void*)ssdt);
-        /* recalculate checksum */
-        ssdt->checksum = 0;
-        ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
-	acpi_add_table(rsdt,ssdt);
+
+	acpi_create_ssdt_generator(ssdt, "DYNADATA");
+	current += ssdt->length;
+	acpi_add_table(rsdt, ssdt);
 
 	printk_info("ACPI: done.\n");
 	return current;

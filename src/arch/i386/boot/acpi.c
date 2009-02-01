@@ -24,6 +24,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <device/pci.h>
 
 u8 acpi_checksum(u8 *table, u32 length)
@@ -179,6 +180,34 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	header->length= current - (unsigned long)mcfg;
 	
 	header->checksum	= acpi_checksum((void *)mcfg, header->length);
+}
+
+/* this can be overriden by platform ACPI setup code,
+   if it calls acpi_create_ssdt_generator */
+unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(unsigned long current,
+						    char *oem_table_id) {
+	return current;
+}
+
+void acpi_create_ssdt_generator(acpi_header_t *ssdt, char *oem_table_id)
+{
+	unsigned long current=(unsigned long)ssdt+sizeof(acpi_header_t);
+	memset((void *)ssdt, 0, sizeof(acpi_header_t));
+	memcpy(&ssdt->signature, SSDT_NAME, 4);
+	ssdt->revision = 2;
+	memcpy(&ssdt->oem_id, OEM_ID, 6);
+	memcpy(&ssdt->oem_table_id, oem_table_id, 8);
+	ssdt->oem_revision = 42;
+	memcpy(&ssdt->asl_compiler_id, "GENAML", 4);
+	ssdt->asl_compiler_revision = 42;
+	ssdt->length = sizeof(acpi_header_t);
+
+	acpigen_set_current((unsigned char *) current);
+	current = acpi_fill_ssdt_generator(current, oem_table_id);
+
+	/* recalculate length */
+	ssdt->length = current - (unsigned long)ssdt;
+	ssdt->checksum = acpi_checksum((void *)ssdt, ssdt->length);
 }
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic)

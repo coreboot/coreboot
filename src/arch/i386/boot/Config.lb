@@ -13,5 +13,5 @@ object pirq_routing.o
 end
 if HAVE_ACPI_TABLES
 object acpi.o
+object acpigen.o
 end
-

@@ -484,6 +484,14 @@ static int ich2_gpio22_raise(const char *name)
 	return ich_gpio_raise(name, 0x8086, 0x2440, 0x58, 0x0c, 0xffc0, 22);
 }
 
+/**
+ * Suited for MSI MS-7046.
+ */
+static int ich6_gpio19_raise(const char *name)
+{
+	return ich_gpio_raise(name, 0x8086, 0x2640, 0x48, 0x0c, 0xffc0, 19);
+}
+
 static int board_kontron_986lcd_m(const char *name)
 {
 	struct pci_dev *dev;
@@ -990,6 +998,20 @@ struct board_pciid_enable board_pciid_enables[] = {
 		.lb_part		= NULL,
 		.name			= "Intel Desktop Board D201GLY",
 		.enable			= wbsio_check_for_spi,
+	},
+	{
+		.first_vendor		= 0x8086,
+		.first_device		= 0x2658,
+		.first_card_vendor	= 0x1462,
+		.first_card_device	= 0x7046,
+		.second_vendor		= 0x1106,
+		.second_device		= 0x3044,
+		.second_card_vendor	= 0x1462,
+		.second_card_device	= 0x046d,
+		.lb_vendor		= NULL,
+		.lb_part		= NULL,
+		.name			= "MSI MS-7046",
+		.enable			= ich6_gpio19_raise,
 	},
 	{
 		.first_vendor		= 0,

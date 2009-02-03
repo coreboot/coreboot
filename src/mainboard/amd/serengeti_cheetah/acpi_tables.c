@@ -16,6 +16,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdk8_sysconf.h>
+#include <../../../northbridge/amd/amdk8/amdk8_acpi.h>
 
 #include "mb_sysconf.h"
 
@@ -38,8 +39,6 @@ static void dump_mem(unsigned start, unsigned end)
 #endif
 
 extern unsigned char AmlCode[];
-extern unsigned char AmlCode_ssdt[];
-
 #if ACPI_SSDTX_NUM >= 1
 extern unsigned char AmlCode_ssdt2[];
 extern unsigned char AmlCode_ssdt3[];
@@ -157,8 +156,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 extern void get_bus_conf(void);
 
-extern void update_ssdt(void *ssdt);
-
 void update_ssdtx(void *ssdtx, int i)
 {
         uint8_t *PCI;
@@ -180,6 +177,11 @@ void update_ssdtx(void *ssdtx, int i)
 
         /* FIXME: need to update the GSI id in the ssdtx too */
 
+}
+
+unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id) {
+	k8acpi_write_vars();
+	return (unsigned long) (acpigen_get_current());
 }
 
 unsigned long write_acpi_tables(unsigned long start)
@@ -256,14 +258,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* SSDT */
 	printk_debug("ACPI:    * SSDT\n");
 	ssdt = (acpi_header_t *)current;
-	current += ((acpi_header_t *)AmlCode_ssdt)->length;
-	memcpy((void *)ssdt, (void *)AmlCode_ssdt, ((acpi_header_t *)AmlCode_ssdt)->length);
-	//Here you need to set value in pci1234, sblk and sbdn in get_bus_conf.c
-	update_ssdt((void*)ssdt);
-        /* recalculate checksum */
-        ssdt->checksum = 0;
-        ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
-	acpi_add_table(rsdt,ssdt);
+
+	acpi_create_ssdt_generator(ssdt, "DYNADATA");
+	current += ssdt->length;
+	acpi_add_table(rsdt, ssdt);
 
 #if ACPI_SSDTX_NUM >= 1
 

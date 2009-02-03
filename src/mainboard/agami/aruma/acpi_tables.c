@@ -15,6 +15,7 @@
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <../../../northbridge/amd/amdk8/amdk8_acpi.h>
 
 #define DUMP_ACPI_TABLES 0
 
@@ -37,8 +38,6 @@ static void dump_mem(unsigned start, unsigned end)
 
 #define HC_POSSIBLE_NUM 8
 extern unsigned char AmlCode[];
-extern unsigned char AmlCode_ssdt[];
-
 #if ACPI_SSDTX_NUM >= 1
 extern unsigned char AmlCode_ssdt2[];
 extern unsigned char AmlCode_ssdt3[];
@@ -187,77 +186,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-//FIXME: next could be moved to northbridge/amd/amdk8/amdk8_acpi.c or cpu/amd/k8/k8_acpi.c begin
-static void int_to_stream(uint32_t val, uint8_t * dest)
-{
-	int i;
-	for (i = 0; i < 4; i++) {
-		*(dest + i) = (val >> (8 * i)) & 0xff;
-	}
+unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id) {
+	k8acpi_write_vars();
+	return (unsigned long) (acpigen_get_current());
 }
-
-extern void get_bus_conf(void);
-
-static void update_ssdt(void *ssdt)
-{
-	uint8_t *BUSN;
-	uint8_t *MMIO;
-	uint8_t *PCIO;
-	uint8_t *SBLK;
-	uint8_t *TOM1;
-	uint8_t *HCLK;
-	uint8_t *SBDN;
-	uint8_t *HCDN;
-	int i;
-	device_t dev;
-	uint32_t dword;
-	msr_t msr;
-
-	BUSN = ssdt + 0x3a;	//+5 will be next BUSN
-	MMIO = ssdt + 0x57;	//+5 will be next MMIO
-	PCIO = ssdt + 0xaf;	//+5 will be next PCIO
-	SBLK = ssdt + 0xdc;	// one byte
-	TOM1 = ssdt + 0xe3;	//
-	HCLK = ssdt + 0xfa;	//+5 will be next HCLK
-	SBDN = ssdt + 0xed;	//
-	HCDN = ssdt + 0x12a;	//+5 will be next HCDN
-
-	dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
-
-	for (i = 0; i < 4; i++) {
-		dword = pci_read_config32(dev, 0xe0 + i * 4);
-		int_to_stream(dword, BUSN + i * 5);
-	}
-
-	for (i = 0; i < 0x10; i++) {
-		dword = pci_read_config32(dev, 0x80 + i * 4);
-		int_to_stream(dword, MMIO + i * 5);
-	}
-
-	for (i = 0; i < 0x08; i++) {
-		dword = pci_read_config32(dev, 0xc0 + i * 4);
-		int_to_stream(dword, PCIO + i * 5);
-	}
-
-	*SBLK = (uint8_t) (sblk);
-
-	msr = rdmsr(TOP_MEM);
-	int_to_stream(msr.lo, TOM1);
-
-	for (i = 0; i < hc_possible_num; i++) {
-		int_to_stream(pci1234[i], HCLK + i * 5);
-		int_to_stream(hcdn[i], HCDN + i * 5);
-	}
-	for (i = hc_possible_num; i < HC_POSSIBLE_NUM; i++) {	// in case we set array size to other than 8
-		int_to_stream(0x00000000, HCLK + i * 5);
-		int_to_stream(hcdn[i], HCDN + i * 5);
-	}
-
-	int_to_stream(sbdn, SBDN);
-
-}
-
-//end
 
 unsigned long write_acpi_tables(unsigned long start)
 {
@@ -322,16 +254,10 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* SSDT */
 	printk_debug("ACPI:    * SSDT\n");
-	ssdt = (acpi_header_t *) current;
-	current += ((acpi_header_t *) AmlCode_ssdt)->length;
-	memcpy((void *) ssdt, (void *) AmlCode_ssdt,
-	       ((acpi_header_t *) AmlCode_ssdt)->length);
-	//Here you need to set value in pci1234, sblk and sbdn in get_bus_conf.c
-	update_ssdt((void *) ssdt);
-	/* recalculate checksum */
-	ssdt->checksum = 0;
-	ssdt->checksum =
-	    acpi_checksum((unsigned char *) ssdt, ssdt->length);
+	ssdt = (acpi_header_t *)current;
+
+	acpi_create_ssdt_generator(ssdt, "DYNADATA");
+	current += ssdt->length;
 	acpi_add_table(rsdt, ssdt);
 
 #if ACPI_SSDTX_NUM >= 1

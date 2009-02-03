@@ -207,6 +207,18 @@ int init_processor_name(void)
 		switch ((Socket << 16) | (CmpCap << 12) | (BrandTableIndex << 4)
 			| PwrLmt) {
 		/* Socket F */
+		case 0x11002:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 12RR EE";
+			break;
+		case 0x11006:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 12RR HE";
+			break;
+		case 0x11012:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 22RR EE";
+			break;
 		case 0x11016:
 			processor_name_string =
 			    "Dual-Core AMD Opteron(tm) Processor 22RR HE";
@@ -218,6 +230,10 @@ int init_processor_name(void)
 		case 0x1101c:
 			processor_name_string =
 			    "Dual-Core AMD Opteron(tm) Processor 22RR SE";
+			break;
+		case 0x11042:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 82RR EE";
 			break;
 		case 0x11046:
 			processor_name_string =
@@ -231,8 +247,24 @@ int init_processor_name(void)
 			processor_name_string =
 			    "Dual-Core AMD Opteron(tm) Processor 82RR SE";
 			break;
+		case 0x1106e:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 Processor FX-ZZ Processor";
+			break;
 		/* Socket AM2 */
+		case 0x30015:
+			processor_name_string =
+			    "AMD Sempron(tm) Processor LE-1RR0";
+			break;
+		case 0x30026:
+			processor_name_string =
+			    "AMD Athlon(tm) Processor LE-1ZZ0";
+			break;
+		case 0x30041:
+		case 0x30042:
+		case 0x30043:
 		case 0x30044:
+		case 0x30045:
 		case 0x30048:
 			processor_name_string =
 			    "AMD Athlon(tm) 64 Processor TT00+";
@@ -242,6 +274,10 @@ int init_processor_name(void)
 			processor_name_string =
 			    "AMD Sempron(tm) Processor TT00+";
 			break;
+		case 0x31016:
+			processor_name_string =
+			    "Dual-Core AMD Opteron(tm) Processor 12RR HE";
+			break;
 		case 0x3101a:
 			processor_name_string =
 			    "Dual-Core AMD Opteron(tm) Processor 12RR";
@@ -249,6 +285,10 @@ int init_processor_name(void)
 		case 0x3101c:
 			processor_name_string =
 			    "Dual-Core AMD Opteron(tm) Processor 12RR SE";
+			break;
+		case 0x31033:
+			processor_name_string =
+			    "AMD Athlon(tm) X2 Dual Core Processor BE-2TT0";
 			break;
 		case 0x31042:
 		case 0x31046:
@@ -262,9 +302,29 @@ int init_processor_name(void)
 			    "AMD Athlon(tm) 64 FX-ZZ Dual Core Processor";
 			break;
 		/* Socket S1g1 */
+		case 0x00012:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 Processor TT00+";
+			break;
+		case 0x00031:
+			processor_name_string =
+			    "Mobile AMD Sempron(tm) Processor TT00+";
+			break;
+		case 0x00036:
+			processor_name_string =
+			    "Mobile AMD Sempron(tm) Processor PP00+";
+			break;
+		case 0x00042:
+			processor_name_string =
+			    "AMD Sempron(tm) Processor TT00+";
+			break;
 		case 0x0102c:
 			processor_name_string =
 			    "AMD Turion(tm) 64 X2 Mobile Technology TL-YY";
+			break;
+		case 0x01054:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
 			break;
 		default:
 			processor_name_string = "AMD Processor model unknown";

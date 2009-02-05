@@ -35,23 +35,27 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 	u32 dword;
 	int count;
 
+	/* Write (val & ~mask) to port */
 	val &= mask;
 	dword = readl(port);
 	dword &= ~mask;
 	dword |= val;
 	writel(dword, port);
 
+	/* Wait for readback of register to 
+	 * match what was just written to it 
+	 */
 	count = 50;
 	do {
+		/* Wait 1ms based on BKDG wait time */
+		mdelay(1);
 		dword = readl(port);
 		dword &= mask;
-		udelay(100);
 	} while ((dword != val) && --count);
 
+	/* Timeout occured */
 	if (!count)
 		return -1;
-
-	udelay(540);
 	return 0;
 }
 
@@ -59,32 +63,31 @@ static u32 codec_detect(u8 * base)
 {
 	u32 dword;
 
-	/* 1 */
-	set_bits(base + 0x08, 1, 1);
+	/* Set Bit0 to 0 to enter reset state (BAR + 0x8)[0] */
+	if (set_bits(base + 0x08, 1, 0) == -1) 
+		goto no_codec;
 
-	/* 2 */
-	dword = readl(base + 0x0e);
-	dword |= 7;
-	writel(dword, base + 0x0e);
+	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
+	if (set_bits(base + 0x08, 1, 1) == -1) 
+		goto no_codec;
 
-	/* 3 */
-	set_bits(base + 0x08, 1, 0);
+	/* Delay for 1 ms since the BKDG does */
+	mdelay(1);
 
-	/* 4 */
-	set_bits(base + 0x08, 1, 1);
-
-	/* 5 */
+	/* Read in Codec location (BAR + 0xe)[3..0]*/
 	dword = readl(base + 0xe);
-	dword &= 7;
-
-	/* 6 */
-	if (!dword) {
-		set_bits(base + 0x08, 1, 0);
-		printk_debug("No codec!\n");
-		return 0;
-	}
+	dword &= 0x0F;
+	if (!dword)
+		goto no_codec;
+		
 	return dword;
 
+no_codec:
+	/* Codec Not found */
+	/* Put HDA back in reset (BAR + 0x8) [0] */
+	set_bits(base + 0x08, 1, 0);
+	printk_debug("No codec!\n");
+	return 0;
 }
 
 static u32 cim_verb_data[] = {
@@ -262,20 +265,38 @@ static void codecs_init(u8 * base, u32 codec_mask)
 
 static void hda_init(struct device *dev)
 {
+	u8 byte;
+	u32 dword;
 	u8 *base;
 	struct resource *res;
 	u32 codec_mask;
-
-	/* SM Setting */
-
-	/* Set routing pin */
-	pci_write_config32(dev, 0xf8, 0x0);
-	pci_write_config8(dev, 0xfc, 0xAA);
-	/* Set INTA */
-	pci_write_config8(dev, 0x63, 0x0);
-	/* Enable azalia, disable ac97 */
+	device_t sm_dev;
+	
+	/* Enable azalia - PM_io 0x59[4], disable ac97 - PM_io 0x59[1..0] */
 	pm_iowrite(0x59, 0xB);
+	
+	/* Find the SMBus */
+	/* FIXME: Need to find out why the call below crashes. */
+	/*sm_dev = dev_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_ATI_SB600_SM, 0);*/
+	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
+	/* Set routing pin - SMBus ExtFunc (0xf8/0xfc) */
+	pci_write_config32(sm_dev, 0xf8, 0x00);
+	pci_write_config8(sm_dev, 0xfc, 0xAA);
+	/* Set INTA - SMBus 0x63 [2..0] */
+	byte = pci_read_config8(sm_dev, 0x63);
+	byte &= ~0x7;
+	byte |= 0x0; /* INTA:0x0 - INTH:0x7 */
+	pci_write_config8(sm_dev, 0x63, byte);
+
+	/* Program the 2C to 0x437b1002 */
+	dword = 0x437b1002;
+	pci_write_config32(dev, 0x2c, dword);
+
+	/* Read in BAR */
+	/* Is this right? HDA allows for a 64-bit BAR 
+	 * but this is only setup for a 32-bit one 
+	 */
 	res = find_resource(dev, 0x10);
 	if (!res)
 		return;

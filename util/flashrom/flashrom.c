@@ -121,7 +121,7 @@ struct flashchip *probe_flash(struct flashchip *first_flash, int force)
 			size = getpagesize();
 		}
 
-		base = flashbase ? flashbase : (0xffffffff - size + 1);
+		base = flashbase && flashchips == first_flash ? flashbase : (0xffffffff - size + 1);
 		flash->virtual_memory = bios = physmap("flash chip", base, size);
 
 		if (force)

@@ -467,7 +467,7 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 #endif
 		}
 		printk_debug(
-			"%s %02x <- [0x%010Lx - 0x%010Lx] size 0x%08Lx gran 0x%02x %s%s%s\n",
+			"%s %02lx <- [0x%010Lx - 0x%010Lx] size 0x%08Lx gran 0x%02x %s%s%s\n",
 			dev_path(dev),
 			resource->index,
 			base, end,

@@ -85,14 +85,14 @@ static int lapic_start_cpu(unsigned long apicid)
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_err("CPU %d: First apic write timed out. Disabling\n",
+		printk_err("CPU %ld: First apic write timed out. Disabling\n",
 			 apicid);
 		// too bad. 
-		printk_err("ESR is 0x%x\n", lapic_read(LAPIC_ESR));
+		printk_err("ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
 		if (lapic_read(LAPIC_ESR)) {
 			printk_err("Try to reset ESR\n");
 			lapic_write_around(LAPIC_ESR, 0);
-			printk_err("ESR is 0x%x\n", lapic_read(LAPIC_ESR));
+			printk_err("ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
 		}
 		return 0;
 	}
@@ -114,7 +114,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_err("CPU %d: Second apic write timed out. Disabling\n",
+		printk_err("CPU %ld: Second apic write timed out. Disabling\n",
 			 apicid);
 		// too bad. 
 		return 0;
@@ -345,8 +345,6 @@ void stop_this_cpu(void)
 /* C entry point of secondary cpus */
 void secondary_cpu_init(void)
 {
-	unsigned long cpunum;
-
 	atomic_inc(&active_cpus);
 #if SERIAL_CPU_INIT == 1
   #if CONFIG_MAX_CPUS>2

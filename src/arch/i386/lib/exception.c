@@ -481,10 +481,10 @@ void x86_exception(struct eregs *info)
 	}
 #else /* !CONFIG_GDB_STUB */
 	printk_emerg(
-		"Unexpected Exception: %d @ %02x:%08lx - Halting\n"
-		"Code: %d eflags: %08lx\n"
-		"eax: %08lx ebx: %08lx ecx: %08lx edx: %08lx\n"
-		"edi: %08lx esi: %08lx ebp: %08lx esp: %08lx\n",
+		"Unexpected Exception: %d @ %02x:%08x - Halting\n"
+		"Code: %d eflags: %08x\n"
+		"eax: %08x ebx: %08x ecx: %08x edx: %08x\n"
+		"edi: %08x esi: %08x ebp: %08x esp: %08x\n",
 		info->vector, info->cs, info->eip,
 		info->error_code, info->eflags,
 		info->eax, info->ebx, info->ecx, info->edx,

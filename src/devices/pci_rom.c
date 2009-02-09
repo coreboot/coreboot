@@ -45,7 +45,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	printk_debug("rom address for %s = %x\n", dev_path(dev), rom_address);
+	printk_debug("rom address for %s = %lx\n", dev_path(dev), rom_address);
 	
 	if(!dev->on_mainboard) {
 		/* enable expansion ROM address decoding */
@@ -110,12 +110,12 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 		extern device_t vga_pri;	// the primary vga device, defined in device.c
 		if (dev != vga_pri) return NULL; // only one VGA supported
 #endif
-		printk_debug("copying VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
+		printk_debug("copying VGA ROM Image from %p to 0x%x, 0x%x bytes\n",
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 	} else {
-		printk_debug("copying non-VGA ROM Image from 0x%x to 0x%x, 0x%x bytes\n",
+		printk_debug("copying non-VGA ROM Image from %p to %p, 0x%x bytes\n",
 			    rom_header, pci_ram_image_start, rom_size);
 		memcpy(pci_ram_image_start, rom_header, rom_size);
 		pci_ram_image_start += rom_size;

@@ -55,7 +55,7 @@ void setup_lapic(void)
 			LAPIC_DELIVERY_MODE_NMI)
 		);
 
-	printk_debug(" apic_id: 0x%02x ", lapicid());
+	printk_debug(" apic_id: 0x%02lx ", lapicid());
 
 #else /* !NEED_LLAPIC */
 	/* Only Pentium Pro and later have those MSR stuff */

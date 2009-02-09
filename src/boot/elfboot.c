@@ -76,7 +76,7 @@ int verify_ip_checksum(
 		memcpy(n_desc, buff, 2);
 	}
 	if (checksum != cb->ip_checksum) {
-		printk_err("Image checksum: %04x != computed checksum: %04x\n",
+		printk_err("Image checksum: %04x != computed checksum: %04lx\n",
 			cb->ip_checksum, checksum);
 	}
 	return checksum == cb->ip_checksum;
@@ -500,7 +500,7 @@ static int load_elf_segments(
 		/* Zero the extra bytes between middle & end */
 		if (middle < end) {
 			printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
-				(unsigned long)middle, end - middle);
+				(unsigned long)middle, (unsigned long)(end - middle));
 			
 			/* Zero the extra bytes */
 			memset(middle, 0, end - middle);
@@ -590,7 +590,7 @@ int elfload(struct lb_memory *mem,
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
-	printk_debug("Jumping to boot code at 0x%x\n", entry);
+	printk_debug("Jumping to boot code at 0x%p\n", entry);
 	post_code(0xfe);
 
 	/* Jump to kernel */

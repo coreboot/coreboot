@@ -11,6 +11,7 @@
 #include <device/pci_ops.h>
 #include "ck804.h"
 
+#if CK804_SATA_RESET_FOR_ATAPI
 static void sata_com_reset(struct device *dev, unsigned reset)
 // reset = 1 : reset
 // reset = 0 : clear
@@ -21,7 +22,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 
 	base = (uint32_t *) pci_read_config32(dev, 0x24);
 
-	printk_debug("base = %08x\r\n", base);
+	printk_debug("base = %08lx\n", base);
 
 	if (reset) {
 		*(base + 4) = 0xffffffff;
@@ -71,6 +72,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 		printk_debug("loop=%d, *(base+0x44)=%08x\r\n", loop, dword);
 	}
 }
+#endif
 
 static void sata_init(struct device *dev)
 {
@@ -132,7 +134,7 @@ static void sata_init(struct device *dev)
 	dword |= 2;
 	pci_write_config32(dev, 0xf8, dword);
 
-#if 0
+#if CK804_SATA_RESET_FOR_ATAPI
 	dword = pci_read_config32(dev, 0xac);
 	dword &= ~((1 << 13) | (1 << 14));
 	dword |= (1 << 13) | (0 << 14);

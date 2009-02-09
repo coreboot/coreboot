@@ -251,7 +251,7 @@ unsigned long lb_table_fini(struct lb_header *head)
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
-	printk_debug("Wrote coreboot table at: %p - %p  checksum %lx\n",
+	printk_debug("Wrote coreboot table at: %p - %p  checksum %x\n",
 		head, rec, head->table_checksum);
 	return (unsigned long)rec;
 }
@@ -415,16 +415,16 @@ unsigned long write_coreboot_table(
 		low_table_end = (unsigned long)head;
 	}
  
-	printk_debug("Adjust low_table_end from 0x%08x to ", low_table_end);
+	printk_debug("Adjust low_table_end from 0x%08lx to ", low_table_end);
 	low_table_end += 0xfff; // 4K aligned
 	low_table_end &= ~0xfff;
-	printk_debug("0x%08x \n", low_table_end);
+	printk_debug("0x%08lx \n", low_table_end);
 
 	/* The Linux kernel assumes this region is reserved */
-	printk_debug("Adjust rom_table_end from 0x%08x to ", rom_table_end);
+	printk_debug("Adjust rom_table_end from 0x%08lx to ", rom_table_end);
 	rom_table_end += 0xffff; // 64K align
 	rom_table_end &= ~0xffff;
-	printk_debug("0x%08x \n", rom_table_end);
+	printk_debug("0x%08lx \n", rom_table_end);
 
 #if (HAVE_OPTION_TABLE == 1) 
 	{

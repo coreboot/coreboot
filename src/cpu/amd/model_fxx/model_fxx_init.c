@@ -231,7 +231,7 @@ static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_sta
                 size = (limitk - basek) << 10;
                 addr = map_2M_page(basek >> 11);
                 if (addr == MAPPING_ERROR) {
-                        printk_err("Cannot map page: %x\n", basek >> 11);
+                        printk_err("Cannot map page: %lx\n", basek >> 11);
                         return;
                 }
 
@@ -312,7 +312,7 @@ static void init_ecc_memory(unsigned node_id)
 		begink = CONFIG_LB_MEM_TOPK;
 	}
 
-	printk_debug("Clearing memory %uK - %uK: ", begink, endk);
+	printk_debug("Clearing memory %luK - %luK: ", begink, endk);
 
 	/* Save the normal state */
 	save_mtrr_state(&mtrr_state);
@@ -465,7 +465,9 @@ static inline void k8_errata(void)
 extern void model_fxx_update_microcode(unsigned cpu_deviceid);
 int init_processor_name(void);
 
+#if CONFIG_USBDEBUG_DIRECT
 static unsigned ehci_debug_addr;
+#endif
 
 void model_fxx_init(device_t dev)
 {

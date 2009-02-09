@@ -92,7 +92,7 @@ struct lb_memory *write_tables(void)
 			mpc_start &= ~1023;
 			rom_table_start = mpc_start;
 		}
-		printk_debug("move mptable from 0x%0x to 0x%0x, size 0x%0x\n", low_table_end, mpc_start, mptable_size);
+		printk_debug("move mptable from 0x%0lx to 0x%0x, size 0x%0x\n", low_table_end, mpc_start, mptable_size);
 		memcpy((unsigned char *)mpc_start, (unsigned char *)low_table_end, mptable_size);
 		smp_write_floating_table_physaddr(low_table_end - SMP_FLOATING_TABLE_LEN, mpc_start);
 		memset((unsigned char *)low_table_end, '\0', mptable_size);

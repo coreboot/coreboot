@@ -241,7 +241,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 			align = max_align;
 		}
 		sizek = 1 << align;
-		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type %s\n",
+		printk_debug("Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
 			reg, range_startk >>10, sizek >> 10,
 			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
 			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")

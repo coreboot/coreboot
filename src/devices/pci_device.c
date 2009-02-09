@@ -207,7 +207,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	if (moving == 0) {
 		if (value != 0) {
 			printk_debug(
-				"%s register %02x(%08x), read-only ignoring it\n",
+				"%s register %02lx(%08lx), read-only ignoring it\n",
 				dev_path(dev), index, value);
 		}
 		resource->flags = 0;
@@ -311,7 +311,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 
 	if (moving == 0) {
 		if (value != 0) {
-			printk_debug("%s register %02x(%08x), read-only ignoring it\n",
+			printk_debug("%s register %02lx(%08lx), read-only ignoring it\n",
 				     dev_path(dev), index, value);
 		}
 		resource->flags = 0;
@@ -459,7 +459,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 
 	/* Make certain the resource has actually been set */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk_err("ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
+		printk_err("ERROR: %s %02lx %s size: 0x%010Lx not assigned\n",
 			dev_path(dev), resource->index,
 			resource_type(resource),
 			resource->size);
@@ -546,7 +546,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	else {
 		/* Don't let me think I stored the resource */
 		resource->flags &= ~IORESOURCE_STORED;
-		printk_err("ERROR: invalid resource->index %x\n",
+		printk_err("ERROR: invalid resource->index %lx\n",
 			resource->index);
 	}
 	report_resource_stored(dev, resource, "");

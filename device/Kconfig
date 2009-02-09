@@ -123,9 +123,8 @@ config INITIALIZE_ONBOARD_VGA_FIRST
 	  Initialize onboard VGA chips before any plugin VGA cards
 	  are initialized.
 
-endmenu
-
 menu "Plugin Support"
+depends EXPERT
 
 config PCIX_PLUGIN_SUPPORT
 	bool "Support for devices that provide PCI-X and aren't in the dts."
@@ -163,6 +162,8 @@ config CARDBUS_PLUGIN_SUPPORT
 	  Compile in the drivers for cards that provide Cardbus.
 
 endmenu
+
+endmenu #Devices
 
 menu "Power management"
 

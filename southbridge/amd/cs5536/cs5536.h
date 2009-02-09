@@ -147,7 +147,7 @@
 #define MDD_NORF_T01			(MSR_SB_MDD + 0x19)
 #define MDD_NORF_T23			(MSR_SB_MDD + 0x1A)
 #define MDD_NANDF_DATA			(MSR_SB_MDD + 0x1B)
-#define MDD_NADF_CNTL			(MSR_SB_MDD + 0x1C)
+#define MDD_NANDF_CTL			(MSR_SB_MDD + 0x1C)
 #define MDD_AC_DMA			(MSR_SB_MDD + 0x1E)
 #define MDD_KEL_CNTRL			(MSR_SB_MDD + 0x1F)
 #define MDD_IRQM_YLOW			(MSR_SB_MDD + 0x20)

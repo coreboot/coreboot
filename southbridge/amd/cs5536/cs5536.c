@@ -114,6 +114,26 @@ static void nand_phase2(struct device *dev)
 	}
 }
 
+static void nand_read_resources(struct device *dev)
+{
+	pci_dev_read_resources(dev);
+
+	/* All memory accesses in the range of 0xF0000000 - 0xFFFFFFFF routed to
+	 * Diverse Integration Logic (DIVIL) get always sent to the device inside
+	 * DIVIL as set in DIVIL_BALL_OPTS PRI_BOOT_LOC and SEC_BOOT_LOC bits
+	 * (see CS5536 data book chapter 6.6.2.10 DIVIL_BALL_OPTS PRI_BOOT_LOC
+	 * description).
+	 * The virtual PCI address limit test gives us a false upper limit of
+	 * 0xFFFFFFFF for this device, but we do not want NAND Flash to be using
+	 * memory addresses 0xF0000000 and above as those accesses would end up
+	 * somewhere else instead. Therefore if VSA2 gave us a MMIO resource for
+	 * NAND Flash, patch this (fixed) resources higher bound to 0xEFFFFFFF.
+	 */
+	if ((dev->resources >= 1) && (dev->resource[0].flags & IORESOURCE_MEM) &&
+		(dev->resource[0].limit > 0xefffffff))
+		dev->resource[0].limit = 0xefffffff;
+}
+
 /**
  * Power button setup.
  *
@@ -737,7 +757,7 @@ struct device_operations cs5536_nand = {
 	.constructor		 = default_device_constructor,
 	.phase2_fixup		 = nand_phase2,
 	.phase3_scan		 = 0,
-	.phase4_read_resources	 = pci_dev_read_resources,
+	.phase4_read_resources	 = nand_read_resources,
 	.phase4_set_resources	 = pci_set_resources,
 	.phase5_enable_resources = pci_dev_enable_resources,
 	.phase6_init		 = 0, /* No Option ROMs */

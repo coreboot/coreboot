@@ -134,7 +134,6 @@ int main(void)
 		printk(BIOS_INFO, "ht reset -\n");
 		soft_reset();
 	}
-	allow_all_aps_stop(bsp_apicid);
 
 	//It's the time to set ctrl in sysinfo now;
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
@@ -143,11 +142,10 @@ int main(void)
 
 	memreset_setup();
 
-	//do we need apci timer, tsc...., only debug need it for better output
-	/* all ap stopped? */
-//        init_timer(); // Need to use TMICT to synconize FID/VID
-
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
+
+	/* After RAM is setup allow the APs to do RAM and MTRRs setup if needed. */
+	allow_all_aps_stop(bsp_apicid);
 
 	printk(BIOS_DEBUG, "initram returns\n");
 	return 0;

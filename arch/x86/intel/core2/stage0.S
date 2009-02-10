@@ -159,15 +159,25 @@ clear_mtrrs:
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
 	movl	%eax, %esp
 
+	/* Third parameter: cpu #: 0 == BSP all other are APs.
+	 * 0 until SMP support is added.
+	 */
+	pushl	$0
+	/* Second parameter: init_detected */
+	/* Store zero for the unused init_detected parameter. */
+	pushl	$0
+	/* First parameter: bist */
 	/* Restore the BIST result */
 	movl	%ebp, %eax
 	movl	%esp, %ebp
 	pushl	%eax
 
+
 #if 0
 	/* this will be interpreted as failed bist */
 	port80_post(0x23)
 #endif
+
 
 	call	stage1_phase1
 

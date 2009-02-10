@@ -334,6 +334,10 @@ lout:
 	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
 
+	/* Third parameter: cpu #: 0 == BSP all other are APs.
+	 * 0 until SMP support is added.
+	 */
+	pushl	$0
 	/* Second parameter: init_detected */
 	/* Store zero for the unused init_detected parameter. */
 	pushl	$0

@@ -78,11 +78,6 @@ cache_as_ram_setup:
 	movb	$0xA0, %al
 	outb	%al, $0x80
 
-	/* check if cpu_init_detected */
-	movl	$MTRRdefType_MSR, %ecx
-	rdmsr
-	andl	$(1 << 11), %eax
-	movl	%eax, %ebx	/* We store the status */
 
 #ifdef CONFIG_CPU_AMD_K10
 	/* for GH, CAR need to set DRAM Base/Limit Registers to direct that to node0 */
@@ -248,11 +243,14 @@ clear_fixed_var_mtrr_out:
 	movl	%eax, %cr0
 
 
-#ifdef CONFIG_CPU_AMD_K10
-	/* So we need to check if it is BSP/BSC */
+	/* Check if it is BSP/BSC and put the result in ebx. */
 	movl	$0x1b, %ecx /* APIC BAR */
 	rdmsr
-	bt	$8, %eax /* BSC */
+	movl	%eax, %ebx
+	shrl	$8, %ebx
+	andl	$1, %ebx
+	btc		$0, %ebx	/* Flip bit zero from BSP/BSC flag to core ID 0. */
+#ifdef CONFIG_CPU_AMD_K10
 	jnc	CAR_FAM10_ap
 #endif
 
@@ -289,9 +287,6 @@ CAR_FAM10_ap:
 	/* So need to get the NodeID and CoreID at first */
 	/* If NB_CFG bit 54 is set just use initial apicid, otherwise need to reverse it */
 
-	/* store our init detected */
-	movl	%ebx, %esi
-
 	/* get the coreid bits at first */
 	movl	$0x80000008, %eax
 	cpuid
@@ -315,21 +310,23 @@ roll_cfg:
 
 	/* calculate stack pointer */
 	movl	$CacheSizeAPStack, %eax
-	mull	%ebx
+	mull	%ebx	/* core ID. */
 	movl	$(CacheBase + (CacheSize - GlobalVarSize)/2), %esp
 	subl	%eax, %esp
-
-	/* retrive init detected */
-	movl	%esi, %ebx
 
 	movb	$0xA4, %al
 	outb	%al, $0x80
 
-CAR_FAM10_ap_out:
 #endif
 
 	movb	$0xA5, %al
 	outb	%al, $0x80
+
+	/* check if cpu_init_detected */
+	movl	$MTRRdefType_MSR, %ecx
+	rdmsr
+	andl	$(1 << 11), %eax
+	movl	%eax, %edx	/* We store the status */
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
@@ -337,12 +334,18 @@ CAR_FAM10_ap_out:
 	/* We need to set ebp? No need. */
 	movl	%esp, %ebp
 
-	/* Second parameter: init_detected */
+	/* Push the stage1_phase1 variables onto the stack */
+	/* Third parameter: cpu #: 0 == BSP all other are APs.
+	 */
 	pushl	%ebx
+
+	/* Second parameter: init_detected */
+	pushl	%edx
+
 	/* First parameter: bist */
 	pushl	%eax
 	call	stage1_phase1
-	/* We will not go back. */
+	/* We will not come back. */
 
 	movb	$0xAF, %al		/* Should never see this postcode */
 	outb	%al, $0x80

@@ -187,7 +187,7 @@ static int run_address_multiboot(void *f, struct multiboot_info *mbi)
  * that we are restarting after some sort of reconfiguration. Note that we could use it on geode but 
  * do not at present. 
  */
-void __attribute__((stdcall, regparm(0))) stage1_phase1(u32 bist, u32 init_detected)
+void __attribute__((stdcall, regparm(0))) stage1_phase1(u32 bist, u32 init_detected, u32 cpu)
 {
 	struct global_vars globvars;
 	int ret;
@@ -195,40 +195,35 @@ void __attribute__((stdcall, regparm(0))) stage1_phase1(u32 bist, u32 init_detec
 
 	post_code(POST_STAGE1_MAIN);
 
-	/* before we do anything, we want to stop if we do not run
-	 * on the bootstrap processor.
-	 * stop_ap is responsible for NOT stopping the BSP
+	/* Only the BSP/BSC should do the following mainboard and global vars setup.
 	 */
-	stop_ap();
+	if (cpu == 0) {
+		/* Initialize global variables before we can think of using them.
+		 */
+		global_vars_init(&globvars);
+		globvars.init_detected = init_detected;
 
-	/* Initialize global variables before we can think of using them.
-	 */
-	global_vars_init(&globvars);
-	globvars.init_detected = init_detected;
+		hardware_stage1();
 
-	hardware_stage1();
+		uart_init();	// initialize serial port
 
-	//
-	uart_init();	// initialize serial port
-
-	/* Exactly from now on we can use printk to the serial port.
-	 * Celebrate this by printing a LB banner.
-	 */
-	console_init();
+		/* Exactly from now on we can use printk to the serial port.
+		 * Celebrate this by printing a LB banner.
+		 */
+		console_init();
 
 #ifdef CONFIG_CHECK_STACK_USAGE
-	printk(BIOS_DEBUG, "Initial lowest stack is %p\n",
-		global_vars()->loweststack);
+		printk(BIOS_DEBUG, "Initial lowest stack is %p\n",
+			global_vars()->loweststack);
 #endif
-	if (bist!=0) {
-		printk(BIOS_INFO, "BIST FAILED: %08x", bist);
-		die("");
+
+		enable_rom();	// enable entire ROM area
 	}
 
-	// enable rom
-	enable_rom();
-
-	// location and size of image.
+	if (bist != 0) {
+		printk(BIOS_INFO, "BIST FAILED: %08x on CPU: %08x", bist, cpu);
+		die("");
+	}
 
 	init_archive(&archive);
 

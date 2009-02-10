@@ -590,7 +590,7 @@ int elfload(struct lb_memory *mem,
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
-	printk_debug("Jumping to boot code at 0x%p\n", entry);
+	printk_debug("Jumping to boot code at %p\n", entry);
 	post_code(0xfe);
 
 	/* Jump to kernel */

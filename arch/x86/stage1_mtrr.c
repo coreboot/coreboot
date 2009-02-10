@@ -40,23 +40,44 @@ void stage1_set_var_mtrr(
 	wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
 
-void set_var_mtrr_x(
-        unsigned long reg, u32 base_lo, u32 base_hi, u32 size_lo, u32 size_hi, unsigned long type)
+void stage1_set_var_mtrr_x(
+	unsigned long reg, u32 base_lo, u32 base_hi, u32 size_lo, u32 size_hi, unsigned long type)
 
 {
-        /* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
-        struct msr basem, maskm;
-        basem.lo = (base_lo & 0xfffff000) | type;
-        basem.hi = base_hi & ((1<<(CPU_ADDR_BITS-32))-1);
-        wrmsr(MTRRphysBase_MSR(reg), basem);
-       	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
+	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
+	struct msr basem, maskm;
+	basem.lo = (base_lo & 0xfffff000) | type;
+	basem.hi = base_hi & ((1<<(CPU_ADDR_BITS-32))-1);
+	wrmsr(MTRRphysBase_MSR(reg), basem);
+	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
 	if(size_lo) {
-	        maskm.lo = ~(size_lo - 1) | 0x800;
+		maskm.lo = ~(size_lo - 1) | 0x800;
 	} else {
 		maskm.lo = 0x800;
 		maskm.hi &= ~(size_hi - 1);
 	}
-        wrmsr(MTRRphysMask_MSR(reg), maskm);
+	wrmsr(MTRRphysMask_MSR(reg), maskm);
+}
+
+/* Sets the entire fixed mtrr to a cache type. */
+void stage1_set_fix_mtrr(u32 reg, u8 type)
+{
+	struct msr msr;
+
+	/* Enable Modify Extended RdMem and WrMem settings */
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo |= SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, msr);
+
+	msr.lo = (type << 24) | (type << 16) | (type << 8) | type;
+	msr.hi = (type << 24) | (type << 16) | (type << 8) | type;
+	wrmsr(reg, msr);
+
+	/* Disable Modify Extended RdMem and WrMem settings */
+	msr = rdmsr(SYSCFG_MSR);
+	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
+	wrmsr(SYSCFG_MSR, msr);
+
 }
 
 void cache_cbmem(int type)
@@ -92,7 +113,7 @@ void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 		wrmsr(msr_nr, msr);
 	}
 
-#warning fix the XIP bits in stage1_mtrr.c that  enable write through caching so we can do execute in place on the flash rom.
+#warning fix the XIP bits in stage1_mtrr.c that enable write through caching so we can do execute in place on the flash rom.
 #if 0
 #if defined(XIP_ROM_SIZE)
 	/* enable write through caching so we can do execute in place

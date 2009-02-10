@@ -267,7 +267,7 @@ static inline void clear_init_ram(void)
 
 }
 
-void set_init_ram_access(void);
+void set_mtrr_ram_access(void);
 
 void * bottom_of_stack(void);
 EXPORT_SYMBOL(bottom_of_stack);

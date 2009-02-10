@@ -246,27 +246,6 @@ void wait_ap_started(unsigned ap_apicid, void *gp)
 	}
 }
 
-/**
- * disable cache as ram on a BSP.
- * For reasons not totally known we are saving ecx and edx.
- * That will work on k8 as we copy the stack and return in the same stack frame.
- */
-void disable_cache_as_ram_bsp(void)
-{
-	__asm__ volatile (
-//		"pushl %eax\n\t"
-		"pushl %edx\n\t"
-		"pushl %ecx\n\t"
-	);
-
-	disable_cache_as_ram();
-	__asm__ volatile (
-		"popl %ecx\n\t"
-		"popl %edx\n\t"
-//		"popl %eax\n\t"
-	);
-}
-
 
 /**
  * wait for all apics to start. Make sure we don't wait on ourself.
@@ -291,7 +270,7 @@ void wait_all_other_cores_started(unsigned bsp_apicid)	// all aps other than cor
 void STOP_CAR_AND_CPU(void)
 {
 	disable_cache_as_ram();	// inline
-	stop_this_cpu();	// inline, it will stop all cores except node0/core0 the bsp ....
+	stop_this_cpu();	// inline
 }
 
 #ifndef MEM_TRAIN_SEQ
@@ -470,13 +449,18 @@ cpu_init_detectedx = 0;
 			printk(BIOS_DEBUG, "while waiting for BSP signal to STOP, timeout in ap 0x%08x\n",
 				apicid);
 		}
+
 		/* indicate that we are in state 44 as well. We are catching up to the BSP. */
-		// old comment follows -- not sure what this means yet.
-		// bsp can not check it before stop_this_cpu
 		lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x44);
-		/* Now set up so we can use RAM. This will be low memory, i.e. BSP memory, already working. */
-		set_init_ram_access();
-		/* this is not done on Serengeti. */
+
+		/* Now set up so we can use RAM.
+		 * This will be low memory, i.e. BSP memory, already working.
+		 */
+		/* Keep the ap's tom consistent with bsp's */
+		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k);
+		set_mtrr_ram_access();
+
+		/* This is not done on Serengeti. */
 #if MEM_TRAIN_SEQ == 1
 		train_ram_on_node(id.nodeid, id.coreid, sysinfo,
 				  (void *)STOP_CAR_AND_CPU);

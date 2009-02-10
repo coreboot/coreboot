@@ -37,6 +37,10 @@ void x86_setup_mtrrs(unsigned address_bits);
 int x86_mtrr_check(void);
 void stage1_set_var_mtrr(unsigned long reg, unsigned long base,
 				unsigned long size, unsigned long type);
+void stage1_set_fix_mtrr(u32 reg, u8 type);
+void stage1_set_var_mtrr_x(unsigned long reg, u32 base_lo, u32 base_hi,
+				 u32 size_lo, u32 size_hi, unsigned long type);
+
 
 #endif
 

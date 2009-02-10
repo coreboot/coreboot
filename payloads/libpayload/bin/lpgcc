@@ -39,6 +39,8 @@ BASE=`dirname $0`
 # This will set the _LIBDIR and _INCDIR variables used below
 . $BASE/lp.functions
 
+_LDSCRIPT="-Wl,-T,$_LIBDIR/libpayload.ldscript"
+
 trygccoption() {
 	$DEFAULT_CC $1 -S -xc /dev/null -o .$$.tmp &> /dev/null
 	RET=$?
@@ -73,6 +75,11 @@ while [ $# -gt 0 ]; do
 		shift
 		continue
 		;;
+	    -Wl,-T,*)
+		_LDSCRIPT="$1"
+		shift
+		continue
+		;;
 	    *)
 		;;
 	esac
@@ -90,7 +97,7 @@ trygccoption -fno-stack-protector
 
 _CFLAGS="$_CFLAGS -I`$DEFAULT_CC -m32 -print-search-dirs | head -n 1 | cut -d' ' -f2`include"
 
-_LDFLAGS="-Wl,-T,$_LIBDIR/libpayload.ldscript -static"
+_LDFLAGS="$_LDSCRIPT -static"
 
 if [ $DOLINK -eq 0 ]; then
     if [ $DEBUGME -eq 1 ]; then

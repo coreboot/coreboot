@@ -228,7 +228,12 @@ static unsigned int range_to_mtrr(unsigned int reg,
 	unsigned long range_startk, unsigned long range_sizek,
 	unsigned long next_range_startk, unsigned char type, unsigned address_bits)
 {
-	if (!range_sizek || (reg >= BIOS_MTRRS)) {
+	if (!range_sizek) {
+		printk_debug("range_to_mtrr called for empty range\n");
+		return reg;
+	}
+	if (reg >= BIOS_MTRRS) {
+		printk_err("Running out of variable MTRRs!\n");
 		return reg;
 	}
 	while(range_sizek) {
@@ -249,8 +254,10 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		set_var_mtrr(reg++, range_startk, sizek, type, address_bits);
 		range_startk += sizek;
 		range_sizek -= sizek;
-		if (reg >= BIOS_MTRRS)
+		if (reg >= BIOS_MTRRS) {
+			printk_err("Running out of variable MTRRs!\n");
 			break;
+		}
 	}
 	return reg;
 }

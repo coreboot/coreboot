@@ -55,7 +55,6 @@ static void dump_mem(u32 start, u32 end)
 #endif
 
 extern u8 AmlCode[];
-extern u8 AmlCode_ssdt[];
 
 #if ACPI_SSDTX_NUM >= 1
 extern u8 AmlCode_ssdt2[];

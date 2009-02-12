@@ -44,7 +44,7 @@ static void enable_dev(struct device *dev) {
 	 */
 
 	/* currently, nothing in the device to use, so ignore it. */
-	printk_err("digital logic msm586 seg ENTER %s\n", __FUNCTION__);
+	printk_err("digital logic msm586 seg ENTER %s\n", __func__);
 
 
 	/* from fuctory bios */
@@ -93,7 +93,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->sysarb.prictl = 0xc0000f0f;
 	/* this is bios setting, depends on sysarb above */
 	mmcr->hostbridge.ctl = 0x108;
-	printk_err("digital logic msm586 seg EXIT %s\n", __FUNCTION__);
+	printk_err("digital logic msm586 seg EXIT %s\n", __func__);
 
 	/* pio */
 	mmcr->pio.data31_16 = 0xffbf;

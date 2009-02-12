@@ -200,7 +200,7 @@ void smp_write_intsrc(struct mp_config_table *mc,
 #if CONFIG_DEBUG_MPTABLE == 1
 	printk_info("add intsrc srcbus 0x%x srcbusirq 0x%x, dstapic 0x%x, dstirq 0x%x\n",
 				srcbus, srcbusirq, dstapic, dstirq);
-	hexdump(__FUNCTION__, mpc, sizeof(*mpc));
+	hexdump(__func__, mpc, sizeof(*mpc));
 #endif
 }
 

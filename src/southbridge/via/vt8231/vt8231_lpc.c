@@ -24,7 +24,7 @@ static const unsigned char slotIrqs[4] = { 5, 10, 12, 11 };
 static void pci_routing_fixup(struct device *dev)
 {
 
-	printk_info("%s: dev is %p\n", __FUNCTION__, dev);
+	printk_info("%s: dev is %p\n", __func__, dev);
 	if (dev) {
 		/* initialize PCI interupts - these assignments depend
 		   on the PCB routing of PINTA-D 
@@ -50,7 +50,7 @@ static void pci_routing_fixup(struct device *dev)
 	// PCI slot
 	printk_info("setting pci slot\n");
 	pci_assign_irqs(0, 0x14, slotIrqs);
-	printk_info("%s: DONE\n", __FUNCTION__);
+	printk_info("%s: DONE\n", __func__);
 }
 
 static void vt8231_init(struct device *dev)

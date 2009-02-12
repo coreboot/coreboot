@@ -108,7 +108,7 @@ static void writeglmsr(struct gliutable *gl)
 	msr.lo = gl->lo;
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__, gl->desc_name, msr.hi, msr.lo);	// GX3
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);	// GX3
 }
 
 static void ShadowInit(struct gliutable *gl)
@@ -133,7 +133,7 @@ static void SysmemInit(struct gliutable *gl)
 	 * system. We will adjust for SMM now and Frame Buffer later.
 	 */
 	sizembytes = sizeram();
-	printk_debug("%s: enable for %dMBytes\n", __FUNCTION__, sizembytes);
+	printk_debug("%s: enable for %dMBytes\n", __func__, sizembytes);
 	sizebytes = sizembytes << 20;
 
 	sizebytes -= ((SMM_SIZE * 1024) + 1);
@@ -149,7 +149,7 @@ static void SysmemInit(struct gliutable *gl)
 	msr.lo = sizebytes;
 
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__,
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -161,12 +161,12 @@ static void SMMGL0Init(struct gliutable *gl)
 
 	sizebytes -= (SMM_SIZE * 1024);
 
-	printk_debug("%s: %d bytes\n", __FUNCTION__, sizebytes);
+	printk_debug("%s: %d bytes\n", __func__, sizebytes);
 
 	/* calculate the Two's complement offset */
 	offset = sizebytes - SMM_OFFSET;
 	offset = (offset >> 12) & 0x000fffff;
-	printk_debug("%s: offset is 0x%08x\n", __FUNCTION__, SMM_OFFSET);
+	printk_debug("%s: offset is 0x%08x\n", __func__, SMM_OFFSET);
 
 	msr.hi = offset << 8 | gl->hi;
 	msr.hi |= SMM_OFFSET >> 24;
@@ -175,14 +175,14 @@ static void SMMGL0Init(struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__,
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
 static void SMMGL1Init(struct gliutable *gl)
 {
 	msr_t msr;
-	printk_debug("%s:\n", __FUNCTION__);
+	printk_debug("%s:\n", __func__);
 
 	msr.hi = gl->hi;
 	/* I don't think this is needed */
@@ -192,7 +192,7 @@ static void SMMGL1Init(struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __FUNCTION__,
+	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -437,7 +437,7 @@ static void ClockGatingInit(void)
 		msr = rdmsr(gating->msrnum);
 		msr.hi |= gating->msr.hi;
 		msr.lo |= gating->msr.lo;
-		/* printk_debug("%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __FUNCTION__,
+		/* printk_debug("%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __func__,
 		   gating->msrnum, msr.hi, msr.lo); */// GX3
 		wrmsr(gating->msrnum, msr);	// MSR - See the table above
 		gating += 1;
@@ -456,7 +456,7 @@ static void GeodeLinkPriority(void)
 		msr.hi |= prio->msr.hi;
 		msr.lo &= ~0xfff;
 		msr.lo |= prio->msr.lo;
-		/* printk_debug("%s: MSR 0x%08x will be set to 0x%08x:0x%08x\n", __FUNCTION__,
+		/* printk_debug("%s: MSR 0x%08x will be set to 0x%08x:0x%08x\n", __func__,
 		   prio->msrnum, msr.hi, msr.lo);  */// GX3
 		wrmsr(prio->msrnum, msr);	// MSR - See the table above
 		prio += 1;
@@ -751,7 +751,7 @@ void northbridge_init_early(void)
 {
 	msr_t msr;
 	int i;
-	printk_debug("Enter %s\n", __FUNCTION__);
+	printk_debug("Enter %s\n", __func__);
 
 	for (i = 0; gliutables[i]; i++)
 		GLIUInit(gliutables[i]);
@@ -771,5 +771,5 @@ void northbridge_init_early(void)
 	ClockGatingInit();
 
 	__asm__ __volatile__("FINIT\n");
-	printk_debug("Exit %s\n", __FUNCTION__);
+	printk_debug("Exit %s\n", __func__);
 }

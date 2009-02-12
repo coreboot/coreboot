@@ -36,7 +36,7 @@ static void ide_init(struct device *dev)
 {
 	uint32_t ide_cfg;
 
-	printk_spew("cs5536_ide: %s\n", __FUNCTION__);
+	printk_spew("cs5536_ide: %s\n", __func__);
 	/* GPIO and IRQ setup are handled in the main chipset code. */
 
 	// Enable the channel and Post Write Buffer
@@ -49,7 +49,7 @@ static void ide_init(struct device *dev)
 static void ide_enable(struct device *dev)
 {
 
-	printk_spew("cs5536_ide: %s\n", __FUNCTION__);
+	printk_spew("cs5536_ide: %s\n", __func__);
 
 }
 

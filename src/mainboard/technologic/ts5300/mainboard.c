@@ -40,7 +40,7 @@ static void enable_dev(struct device *dev) {
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
 
 	/* currently, nothing in the device to use, so ignore it. */
-	printk_err("Technologic Systems 5300 ENTER %s\n", __FUNCTION__);
+	printk_err("Technologic Systems 5300 ENTER %s\n", __func__);
 
 	/* from fuctory bios */
 	/* NOTE: the following interrupt settings made interrupts work
@@ -144,7 +144,7 @@ static void enable_dev(struct device *dev) {
 	rom_start = 0x09400000 + 0xe0000;
 	rom_end = rom_start + PAYLOAD_SIZE - 1;
 
-	printk_err("TS5300 EXIT %s\n", __FUNCTION__);
+	printk_err("TS5300 EXIT %s\n", __func__);
 	
 }
 

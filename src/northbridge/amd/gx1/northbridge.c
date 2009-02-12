@@ -42,7 +42,7 @@ static void enable_shadow(device_t dev)
 
 static void northbridge_init(device_t dev) 
 {
-	printk_debug("northbridge: %s()\n", __FUNCTION__);
+	printk_debug("northbridge: %s()\n", __func__);
 	
 	optimize_xbus(dev);
 	enable_shadow(dev);
@@ -74,7 +74,7 @@ static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
 
-	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __FUNCTION__);
+	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __func__);
 
         /* Initialize the system wide io space constraints */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
@@ -191,7 +191,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __FUNCTION__);
+	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __func__);
 	initialize_cpus(&dev->link[0]);
 }
 
@@ -209,7 +209,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-        printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __FUNCTION__);
+        printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __func__);
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
         	printk_spew("DEVICE_PATH_PCI_DOMAIN\n");

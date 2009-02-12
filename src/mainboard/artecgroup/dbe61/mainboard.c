@@ -40,11 +40,11 @@ static void init_gpio()
 static void init(struct device *dev)
 {
 	// BOARD-SPECIFIC INIT
-	printk_debug("ARTECGROUP DBE61 ENTER %s\n", __FUNCTION__);
+	printk_debug("ARTECGROUP DBE61 ENTER %s\n", __func__);
 
 	init_gpio();
 
-	printk_debug("ARTECGROUP DBE61 EXIT %s\n", __FUNCTION__);
+	printk_debug("ARTECGROUP DBE61 EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

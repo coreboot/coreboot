@@ -445,7 +445,7 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	}
 	printk_spew("call enable_var_mtrr()\n");
 	enable_var_mtrr();
-	printk_spew("Leave %s\n", __FUNCTION__);
+	printk_spew("Leave %s\n", __func__);
 	post_code(0x6A);
 }
 

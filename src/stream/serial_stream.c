@@ -73,7 +73,7 @@ byte_offset_t stream_skip(byte_offset_t count)
 {
 	if ((stream_start + count) > stream_end) {
 		printk_warning("%6d:%s() - overflowed source buffer\n",
-			__LINE__, __FUNCTION__);
+			__LINE__, __func__);
 		count = 0;
 		if (stream_start <= stream_end) {
 			count = (stream_end - stream_start) + 1;

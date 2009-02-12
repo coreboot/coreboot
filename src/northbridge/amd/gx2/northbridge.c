@@ -127,7 +127,7 @@ static void irq_init_steering(struct device *dev, uint16_t irq_map) {
 	/* Set up IRQ steering */
 	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 
-	printk_debug("%s(%08X [%08X], %04X)\n", __FUNCTION__, dev, pciAddr, irq_map);
+	printk_debug("%s(%08X [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
 
 	/* The IRQ steering values (in hex) are effectively dcba, where:
 	 *    <a> represents the IRQ for INTA, 
@@ -281,7 +281,7 @@ static void northbridge_init(device_t dev)
 	unsigned long m;
 
 	struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
-	printk_debug("northbridge: %s()\n", __FUNCTION__);
+	printk_debug("northbridge: %s()\n", __func__);
 	
 	enable_shadow(dev);
 	irq_init_steering(dev, nb->irqmap);
@@ -362,7 +362,7 @@ static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
 
-	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __FUNCTION__);
+	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __func__);
 
         /* Initialize the system wide io space constraints */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));

@@ -57,7 +57,7 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 
 static void pci_routing_fixup(struct device *dev)
 {
-	printk_info("%s: dev is %p\n", __FUNCTION__, dev);
+	printk_info("%s: dev is %p\n", __func__, dev);
 
 	/* set up PCI IRQ routing */
 	pci_write_config8(dev, 0x55, pciIrqs[0] << 4);
@@ -97,7 +97,7 @@ static void pci_routing_fixup(struct device *dev)
 	printk_info("setting riser slot\n");
 	pci_assign_irqs(0, 0x13, pin_to_irq(riserPins));
 
-	printk_spew("%s: DONE\n", __FUNCTION__);
+	printk_spew("%s: DONE\n", __func__);
 }
 
 /* 

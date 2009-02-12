@@ -49,14 +49,14 @@ static void cpu_init(device_t dev)
 void sc520_enable_resources(struct device *dev) {
 	unsigned char command;
 
-	printk_spew("%s\n", __FUNCTION__);
+	printk_spew("%s\n", __func__);
         command = pci_read_config8(dev, PCI_COMMAND);
-        printk_spew("========>%s, command 0x%x\n", __FUNCTION__, command);
+        printk_spew("========>%s, command 0x%x\n", __func__, command);
         command |= PCI_COMMAND_MEMORY | PCI_COMMAND_PARITY | PCI_COMMAND_SERR;
-        printk_spew("========>%s, command 0x%x\n", __FUNCTION__, command);
+        printk_spew("========>%s, command 0x%x\n", __func__, command);
         pci_write_config8(dev, PCI_COMMAND, command);
         command = pci_read_config8(dev, PCI_COMMAND);
-        printk_spew("========>%s, command 0x%x\n", __FUNCTION__, command);
+        printk_spew("========>%s, command 0x%x\n", __func__, command);
 /*
  */
 
@@ -85,7 +85,7 @@ static const struct pci_driver cpu_driver __pci_driver = {
 static void pci_domain_read_resources(device_t dev)
 {
         struct resource *resource;
-  printk_spew("%s\n", __FUNCTION__);
+  printk_spew("%s\n", __func__);
         /* Initialize the system wide io space constraints */
         resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
         resource->limit = 0xffffUL;
@@ -101,7 +101,7 @@ static void ram_resource(device_t dev, unsigned long index,
         unsigned long basek, unsigned long sizek)
 {
         struct resource *resource;
-  printk_spew("%s sizek 0x%x\n", __FUNCTION__, sizek);
+  printk_spew("%s sizek 0x%x\n", __func__, sizek);
         if (!sizek) {
                 return;
         }
@@ -127,14 +127,14 @@ static uint32_t find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
 	uint32_t tolm;
-  printk_spew("%s\n", __FUNCTION__);
+  printk_spew("%s\n", __func__);
 	min = 0;
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
 	tolm = 0xffffffffUL;
 	if (min && tolm > min->base) {
 		tolm = min->base;
 	}
-  printk_spew("%s returns 0x%x\n", __FUNCTION__, tolm);
+  printk_spew("%s returns 0x%x\n", __func__, tolm);
 	return tolm;
 }
 
@@ -142,7 +142,7 @@ static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
         uint32_t pci_tolm;
-  printk_spew("%s\n", __FUNCTION__);
+  printk_spew("%s\n", __func__);
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
@@ -186,7 +186,7 @@ static void pci_domain_set_resources(device_t dev)
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
-  printk_spew("%s\n", __FUNCTION__);
+  printk_spew("%s\n", __func__);
         max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
         return max;
 }
@@ -195,20 +195,20 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 #if 0
 void sc520_enable_resources(device_t dev) {
 
-	printk_spew("%s\n", __FUNCTION__);
+	printk_spew("%s\n", __func__);
 	printk_spew("THIS IS FOR THE SC520 =============================\n");
 
 /*
 	command = pci_read_config8(dev, PCI_COMMAND);
-	printk_spew("%s, command 0x%x\n", __FUNCTION__, command);
+	printk_spew("%s, command 0x%x\n", __func__, command);
 	command |= PCI_COMMAND_MEMORY;
-	printk_spew("%s, command 0x%x\n", __FUNCTION__, command);
+	printk_spew("%s, command 0x%x\n", __func__, command);
 	pci_write_config8(dev, PCI_COMMAND, command);
 	command = pci_read_config8(dev, PCI_COMMAND);
-	printk_spew("%s, command 0x%x\n", __FUNCTION__, command);
+	printk_spew("%s, command 0x%x\n", __func__, command);
  */
 	enable_childrens_resources(dev);
-	printk_spew("%s\n", __FUNCTION__);
+	printk_spew("%s\n", __func__);
 }
 #endif
 
@@ -247,7 +247,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-  printk_spew("%s\n", __FUNCTION__);
+  printk_spew("%s\n", __func__);
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;

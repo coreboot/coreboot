@@ -46,7 +46,7 @@ static void nvram_on(struct device *dev)
 	
 static void southbridge_init(struct device *dev)
 {
-	printk_spew("cs5535: %s\n", __FUNCTION__);
+	printk_spew("cs5535: %s\n", __func__);
 	nvram_on(dev);
 }
 
@@ -66,12 +66,12 @@ static void dump_south(struct device *dev)
 
 static void southbridge_enable(struct device *dev)
 {
-	printk_spew("%s: dev is %p\n", __FUNCTION__, dev);
+	printk_spew("%s: dev is %p\n", __func__, dev);
 }
 
 static void cs5535_pci_dev_enable_resources(device_t dev)
 {
-	printk_spew("cs5535.c: %s()\n", __FUNCTION__);
+	printk_spew("cs5535.c: %s()\n", __func__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }

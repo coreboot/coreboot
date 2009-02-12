@@ -26,7 +26,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 		sum += addr[i];
 
 	printk_debug("%s(): Interrupt Routing Table located at %p.\n",
-		     __FUNCTION__, addr);
+		     __func__, addr);
 
 	
 	sum = rt->checksum - sum;

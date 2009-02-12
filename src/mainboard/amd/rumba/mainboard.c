@@ -16,11 +16,11 @@ static void init(struct device *dev) {
 	if (mainboard->nicirq)
 		nicirq = mainboard->nicirq;
 
-	printk_debug("AMD RUMBA ENTER %s\n", __FUNCTION__);
+	printk_debug("AMD RUMBA ENTER %s\n", __func__);
 
 	if (nicirq) {
 		printk_debug("%s (%x,%x)SET PCI interrupt line to %d\n", 
-			__FUNCTION__, bus, devfn, nicirq);
+			__func__, bus, devfn, nicirq);
 		nic = dev_find_slot(bus, devfn);
 		if (! nic){
 			printk_err("Could not find NIC\n");
@@ -28,7 +28,7 @@ static void init(struct device *dev) {
 			pci_write_config8(nic, PCI_INTERRUPT_LINE, nicirq);
 		}
 	}
-	printk_debug("AMD RUMBA EXIT %s\n", __FUNCTION__);
+	printk_debug("AMD RUMBA EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

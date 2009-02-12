@@ -169,7 +169,7 @@ eng2900(void)
 {
 	msr_t msr;
 
-	printk_debug("CPU_BUG:%s\n", __FUNCTION__);
+	printk_debug("CPU_BUG:%s\n", __func__);
 	/* Clear bit 43, disables the sysenter/sysexit in CPUID3 */
 	msr = rdmsr(0x3003);
 	msr.hi &= 0xFFFFF7FF;

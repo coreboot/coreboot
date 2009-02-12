@@ -131,7 +131,7 @@ static unsigned long long calibrate_tsc(void)
 	printk_spew("32-bit delta %d\n", (unsigned long) delta);
 	
 	printk_spew("%s 32-bit result is %d\n",
-			__FUNCTION__,
+			__func__,
 			result);
 	return delta;
 }

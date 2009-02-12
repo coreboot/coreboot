@@ -7,12 +7,12 @@
 
 static void ide_init(struct device *dev)
 {
-	printk_spew("cs5535_ide: %s\n", __FUNCTION__);
+	printk_spew("cs5535_ide: %s\n", __func__);
 }
 
 static void ide_enable(struct device *dev)
 {
-	printk_spew("cs5535_ide: %s\n", __FUNCTION__);
+	printk_spew("cs5535_ide: %s\n", __func__);
 }
 
 static struct device_operations ide_ops = {

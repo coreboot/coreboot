@@ -579,7 +579,7 @@ static void southbridge_init(struct device *dev)
 	 * unsigned short gpiobase = MDD_GPIO;
 	 */
 
-	printk_err("cs5536: %s\n", __FUNCTION__);
+	printk_err("cs5536: %s\n", __func__);
 	setup_i8259();
 	lpc_init(sb);
 	uarts_init(sb);
@@ -591,7 +591,7 @@ static void southbridge_init(struct device *dev)
 			(sb->enable_gpio_int_route >> 16));
 	}
 
-	printk_err("cs5536: %s: enable_ide_nand_flash is %d\n", __FUNCTION__,
+	printk_err("cs5536: %s: enable_ide_nand_flash is %d\n", __func__,
 		   sb->enable_ide_nand_flash);
 	if (sb->enable_ide_nand_flash == 1) {
 		enable_ide_nand_flash_header();
@@ -610,13 +610,13 @@ static void southbridge_init(struct device *dev)
 
 static void southbridge_enable(struct device *dev)
 {
-	printk_err("cs5536: %s: dev is %p\n", __FUNCTION__, dev);
+	printk_err("cs5536: %s: dev is %p\n", __func__, dev);
 
 }
 
 static void cs5536_pci_dev_enable_resources(device_t dev)
 {
-	printk_err("cs5536: %s()\n", __FUNCTION__);
+	printk_err("cs5536: %s()\n", __func__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }

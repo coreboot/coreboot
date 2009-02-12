@@ -20,7 +20,7 @@ static void ide_init(struct device *dev)
 		 * reason.
 		 */
 		printk_info("%s: enabling compatibility IDE addresses\n",
-				__FUNCTION__);
+				__func__);
 		enables = pci_read_config8(dev, 0x42);
 		printk_debug("enables in reg 0x42 0x%x\n", enables);
 		enables &= ~0xc0;		// compatability mode

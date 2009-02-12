@@ -210,12 +210,12 @@ void dbm690t_enable(device_t dev)
 	/* TOP_MEM: the top of DRAM below 4G */
 	msr = rdmsr(TOP_MEM);
 	printk_info("%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-		    __FUNCTION__, msr.lo, msr.hi);
+		    __func__, msr.lo, msr.hi);
 
 	/* TOP_MEM2: the top of DRAM above 4G */
 	msr2 = rdmsr(TOP_MEM2);
 	printk_info("%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
-		    __FUNCTION__, msr2.lo, msr2.hi);
+		    __func__, msr2.lo, msr2.hi);
 
 	switch (msr.lo) {
 	case 0x10000000:	/* 256M system memory */
@@ -237,7 +237,7 @@ void dbm690t_enable(device_t dev)
 
 	uma_memory_start = msr.lo - uma_memory_size;	/* TOP_MEM1 */
 	printk_info("%s: uma size 0x%08x, memory start 0x%08x\n",
-		    __FUNCTION__, uma_memory_size, uma_memory_start);
+		    __func__, uma_memory_size, uma_memory_start);
 
 	/* TODO: TOP_MEM2 */
 #else

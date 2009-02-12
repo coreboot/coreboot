@@ -104,7 +104,7 @@ static void init(struct device *dev) {
 	unsigned char usbirq = 0xa;
 */
 
-	printk_debug("OLPC BTEST ENTER %s\n", __FUNCTION__);
+	printk_debug("OLPC BTEST ENTER %s\n", __func__);
 
 #if 0
 	/* I can't think of any reason NOT to just set this. If it turns out we want this to be
@@ -112,7 +112,7 @@ static void init(struct device *dev) {
 	  */
 
 	printk_debug("%s (%x,%x)SET USB PCI interrupt line to %d\n", 
-		__FUNCTION__, bus, devfn, usbirq);
+		__func__, bus, devfn, usbirq);
 	usb = dev_find_slot(bus, devfn);
 	if (! usb){
 		printk_err("Could not find USB\n");
@@ -123,7 +123,7 @@ static void init(struct device *dev) {
 
 	init_dcon();
 	init_cafe_irq();
-	printk_debug("OLPC BTEST EXIT %s\n", __FUNCTION__);
+	printk_debug("OLPC BTEST EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

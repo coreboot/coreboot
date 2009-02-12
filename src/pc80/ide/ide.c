@@ -343,7 +343,7 @@ static inline int ide_read_sector_lba(
 		info->slave | 
 		IDE_DH_LBA;
 	cmd.command = IDE_CMD_READ_SECTORS;
-	//printk_debug("%s: sector= %ld, device command= 0x%x.\n",__FUNCTION__,(unsigned long) sector, cmd.device);
+	//printk_debug("%s: sector= %ld, device command= 0x%x.\n",__func__,(unsigned long) sector, cmd.device);
 #ifdef __BIG_ENDIAN
 	return pio_data_in_sw(info->ctrl, &cmd, buffer, IDE_SECTOR_SIZE);
 #else /* __BIG_ENDIAN */

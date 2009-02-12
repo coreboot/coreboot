@@ -308,7 +308,7 @@ static void northbridge_init(device_t dev)
 {
 	//msr_t msr;
 
-	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk_spew(">> Entering northbridge.c: %s\n", __func__);
 
 	enable_shadow(dev);
 	/*
@@ -385,7 +385,7 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 static void pci_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
-	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk_spew(">> Entering northbridge.c: %s\n", __func__);
 
 	/* Initialize the system wide io space constraints */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
@@ -420,7 +420,7 @@ static void pci_domain_set_resources(device_t dev)
 	int idx;
 	device_t mc_dev;
 
-	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk_spew(">> Entering northbridge.c: %s\n", __func__);
 
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
@@ -436,7 +436,7 @@ static void pci_domain_set_resources(device_t dev)
 static void pci_domain_enable(device_t dev)
 {
 
-	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk_spew(">> Entering northbridge.c: %s\n", __func__);
 
 	// do this here for now -- this chip really breaks our device model
 	northbridge_init_early();
@@ -459,7 +459,7 @@ static void pci_domain_enable(device_t dev)
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
-	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk_spew(">> Entering northbridge.c: %s\n", __func__);
 
 	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
 	return max;
@@ -475,7 +475,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-	printk_spew(">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk_spew(">> Entering northbridge.c: %s\n", __func__);
 
 	initialize_cpus(&dev->link[0]);
 }
@@ -495,7 +495,7 @@ static struct device_operations cpu_bus_ops = {
 static void enable_dev(struct device *dev)
 {
 	printk_spew(">> Entering northbridge.c: %s with path %d\n",
-		    __FUNCTION__, dev->path.type);
+		    __func__, dev->path.type);
 
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN)

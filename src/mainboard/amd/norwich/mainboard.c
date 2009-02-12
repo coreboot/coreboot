@@ -23,8 +23,8 @@
 
 static void init(struct device *dev)
 {
-	printk_debug("Norwich ENTER %s\n", __FUNCTION__);
-	printk_debug("Norwich EXIT %s\n", __FUNCTION__);
+	printk_debug("Norwich ENTER %s\n", __func__);
+	printk_debug("Norwich EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

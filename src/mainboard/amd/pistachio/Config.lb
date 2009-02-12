@@ -215,7 +215,7 @@ chip northbridge/amd/amdk8/root_complex
 					end
 					device pci 2.0 on end # PCIE P2P bridge (external graphics) 0x7913
 					device pci 3.0 off end # PCIE P2P bridge	0x791b
-					device pci 4.0 on end # PCIE P2P bridge 0x1914
+					device pci 4.0 on end # PCIE P2P bridge 0x7914
 					device pci 5.0 on end # PCIE P2P bridge 0x7915
 					device pci 6.0 on end # PCIE P2P bridge 0x7916
 					device pci 7.0 on end # PCIE P2P bridge 0x7917

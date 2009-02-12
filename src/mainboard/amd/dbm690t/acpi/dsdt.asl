@@ -30,8 +30,8 @@ DefinitionBlock (
 	/* Include ("debug.asl") */		/* Include global debug methods if needed */
 
 	/* Data to be patched by the BIOS during POST */
+	/* FIXME the patching is not done yet! */
 	/* Memory related values */
-	Name(TOM, 0x40000000)/* Top of RAM memory below 4GB */
 	Name(TOM2, 0x0)	/* Top of RAM memory above 4GB (>> 16) */
 	Name(LOMH, 0x0)	/* Start of unused memory in C0000-E0000 range */
 	Name(PBAD, 0x0)	/* Address of BIOS area (If TOM2 != 0, Addr >> 16) */
@@ -1171,6 +1171,7 @@ DefinitionBlock (
 		/*  _SB.PCI0 */
 		/* Note: Only need HID on Primary Bus */
 		Device(PCI0) {
+			External (TOM1)
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 			Method(_BBN, 0) { /* Bus number = 0 */
@@ -1433,7 +1434,7 @@ DefinitionBlock (
 				Name(_ADR, 0x00140006)
 			} /* end Ac97modem */
 
-			/* ITE87427 Support */
+			/* ITE IT8712F Support */
 			OperationRegion (IOID, SystemIO, 0x2E, 0x02)	/* sometimes it is 0x4E */
 				Field (IOID, ByteAcc, NoLock, Preserve)
 				{
@@ -1457,15 +1458,15 @@ DefinitionBlock (
 				APC4,	8	/* APC/PME Control Register 2 */
 			}
 
-			/* Enter the 87427 MB PnP Mode */
+			/* Enter the IT8712F MB PnP Mode */
 			Method (EPNP)
 			{
 				Store(0x87, SIOI)
 				Store(0x01, SIOI)
 				Store(0x55, SIOI)
-				Store(0x55, SIOI) /* 87427 magic number */
+				Store(0x55, SIOI) /* IT8712F magic number */
 			}
-			/* Exit the 87427 MB PnP Mode */
+			/* Exit the IT8712F MB PnP Mode */
 			Method (XPNP)
 			{
 				Store (0x02, SIOI)
@@ -1482,7 +1483,7 @@ DefinitionBlock (
 				If (LLess (Arg0, 0x05))
 				{
 					EPNP()
-					/* DBGO("87427F\n") */
+					/* DBGO("IT8712F\n") */
 
 					Store (0x4, LDN)
 					Store (One, ACTR)  /* Enable EC */
@@ -1593,7 +1594,7 @@ DefinitionBlock (
 				}
 
 				/* Set size of memory from 1MB to TopMem */
-				Subtract(TOM, 0x100000, DMLL)
+				Subtract(TOM1, 0x100000, DMLL)
 
 				/*
 				* If(LNotEqual(TOM2, 0x00000000)){

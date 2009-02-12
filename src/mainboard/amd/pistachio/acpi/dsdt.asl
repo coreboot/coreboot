@@ -30,8 +30,8 @@ DefinitionBlock (
 	/* Include ("debug.asl") */		/* Include global debug methods if needed */
 
 	/* Data to be patched by the BIOS during POST */
+	/* FIXME the patching is not done yet! */
 	/* Memory related values */
-	Name(TOM, 0x40000000)/* Top of RAM memory below 4GB */
 	Name(TOM2, 0x0)	/* Top of RAM memory above 4GB (>> 16) */
 	Name(LOMH, 0x0)	/* Start of unused memory in C0000-E0000 range */
 	Name(PBAD, 0x0)	/* Address of BIOS area (If TOM2 != 0, Addr >> 16) */
@@ -1170,6 +1170,7 @@ DefinitionBlock (
 		/*  _SB.PCI0 */
 		/* Note: Only need HID on Primary Bus */
 		Device(PCI0) {
+			External (TOM1)
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 			Method(_BBN, 0) { /* Bus number = 0 */
@@ -1516,7 +1517,7 @@ DefinitionBlock (
 				}
 
 				/* Set size of memory from 1MB to TopMem */
-				Subtract(TOM, 0x100000, DMLL)
+				Subtract(TOM1, 0x100000, DMLL)
 
 				/*
 				* If(LNotEqual(TOM2, 0x00000000)){
@@ -1676,9 +1677,9 @@ DefinitionBlock (
 
 	/* THERMAL */
 	Scope(\_TZ) {
-		Name (KELV, 0x0AAC)
-		Name (THOT, 0x0384)
-		Name (TCRT, 0x03B6)
+		Name (KELV, 2732)
+		Name (THOT, 900)
+		Name (TCRT, 950)
 
 		ThermalZone(TZ00) {
 			Method(_AC0,0) {	/* Active Cooling 0 (0=highest fan speed) */
@@ -1746,7 +1747,7 @@ DefinitionBlock (
 					}
 
 					Subtract (Local1, 0x40, Local1)
-					Multiply (Local1, 0x0A, Local1)
+					Multiply (Local1, 10, Local1)
 					Return (Add (Local1, KELV))
 				}
 				Else {
@@ -1759,4 +1760,3 @@ DefinitionBlock (
 	}
 }
 /* End of ASL file */
-

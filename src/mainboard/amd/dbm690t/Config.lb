@@ -183,7 +183,6 @@ if CONFIG_CHIP_NAME
 end
 
 #The variables belong to mainboard are defined here.
-#Define system_memory_size, the total memory on mainboard.
 
 #Define gpp_configuration,	A=0, B=1, C=2, D=3, E=4(default)
 #Define vga_rom_address = 0xfff0000

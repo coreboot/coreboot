@@ -411,7 +411,7 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	}
 	printk(BIOS_SPEW, "call enable_var_mtrr()\n");
 	enable_var_mtrr();
-	printk(BIOS_SPEW, "Leave %s\n", __FUNCTION__);
+	printk(BIOS_SPEW, "Leave %s\n", __func__);
 	post_code(0x6A);
 }
 

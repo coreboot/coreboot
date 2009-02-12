@@ -40,7 +40,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 		sum += addr[i];
 
 	printk(BIOS_DEBUG, "%s() - irq_routing_table located at: 0x%p\n",
-		     __FUNCTION__, addr);
+		     __func__, addr);
 
 	
 	sum = rt->checksum - sum;
@@ -48,7 +48,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	if (sum != rt->checksum) {
 		printk(BIOS_WARNING, "%s:%6d:%s() - "
 			       "checksum is: 0x%02x but should be: 0x%02x\n",
-			       __FILE__, __LINE__, __FUNCTION__, rt->checksum, sum);
+			       __FILE__, __LINE__, __func__, rt->checksum, sum);
 		rt->checksum = sum;
 	}
 
@@ -56,7 +56,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	    rt->size % 16 ) {
 		printk(BIOS_WARNING, "%s:%6d:%s() - "
 			       "Interrupt Routing Table not valid\n",
-			       __FILE__, __LINE__, __FUNCTION__);
+			       __FILE__, __LINE__, __func__);
 		return;
 	}
 
@@ -67,7 +67,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	if (sum) {
 		printk(BIOS_WARNING, "%s:%6d:%s() - "
 			       "checksum error in irq routing table\n",
-			       __FILE__, __LINE__, __FUNCTION__);
+			       __FILE__, __LINE__, __func__);
 	}
 
 	printk(BIOS_INFO, "done.\n");

@@ -81,7 +81,7 @@ u64 get_systop(struct northbridge_amd_geodelx_pci_config *nb_dm)
  */
 static void geodelx_northbridge_init(struct device *dev)
 {
-	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 	enable_shadow(dev);
 }
 
@@ -201,7 +201,7 @@ static void geodelx_pci_domain_phase2(struct device *dev)
 {
 	void do_vsmbios(void);
 
-	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
 	/* northbridge_init_early(); */
 	chipsetinit();
@@ -237,8 +237,8 @@ static void geodelx_mc_phase2(struct device *dev)
  */
 static void cpu_bus_init(struct device *dev)
 {
-	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
-	printk(BIOS_SPEW, ">> Exiting northbridge.c: %s\n", __FUNCTION__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
+	printk(BIOS_SPEW, ">> Exiting northbridge.c: %s\n", __func__);
 }
 
 static void cpu_bus_noop(struct device *dev)

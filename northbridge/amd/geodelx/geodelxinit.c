@@ -66,7 +66,7 @@ static void writeglmsr(const struct gliutable *gl)
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);
 	printk(BIOS_SPEW, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n",
-	       __FUNCTION__, gl->desc_name, msr.hi, msr.lo);
+	       __func__, gl->desc_name, msr.hi, msr.lo);
 }
 
 /**
@@ -143,7 +143,7 @@ static void sysmem_init(const struct gliutable *gl)
 	 */
 	sizembytes = sizeram();
 	printk(BIOS_DEBUG, "%s: enable for %dMBytes\n",
-	       __FUNCTION__, sizembytes);
+	       __func__, sizembytes);
 	sizebytes = sizembytes << 20;
 
 	sizebytes -= ((SMM_SIZE * 1024) + 1);
@@ -160,7 +160,7 @@ static void sysmem_init(const struct gliutable *gl)
 	msr.lo = sizebytes;
 
 	wrmsr(gl->desc_name, msr);
-	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __FUNCTION__,
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 	       gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -177,12 +177,12 @@ static void SMMGL0Init(const struct gliutable *gl)
 
 	sizebytes -= (SMM_SIZE * 1024);
 
-	printk(BIOS_DEBUG, "%s: %d bytes\n", __FUNCTION__, sizebytes);
+	printk(BIOS_DEBUG, "%s: %d bytes\n", __func__, sizebytes);
 
 	/* Calculate the "two's complement" offset. */
 	offset = sizebytes - SMM_OFFSET;
 	offset = (offset >> 12) & 0x000fffff;
-	printk(BIOS_DEBUG, "%s: offset is 0x%08x\n", __FUNCTION__, SMM_OFFSET);
+	printk(BIOS_DEBUG, "%s: offset is 0x%08x\n", __func__, SMM_OFFSET);
 
 	msr.hi = offset << 8 | gl->hi;
 	msr.hi |= SMM_OFFSET >> 24;
@@ -191,7 +191,7 @@ static void SMMGL0Init(const struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);
-	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __FUNCTION__,
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 	       gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -204,7 +204,7 @@ static void SMMGL1Init(const struct gliutable *gl)
 {
 	struct msr msr;
 
-	printk(BIOS_DEBUG, "%s:\n", __FUNCTION__);
+	printk(BIOS_DEBUG, "%s:\n", __func__);
 
 	msr.hi = gl->hi;
 	/* I don't think this is needed. */
@@ -214,7 +214,7 @@ static void SMMGL1Init(const struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);
-	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __FUNCTION__,
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 	       gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -742,7 +742,7 @@ void northbridge_init_early(void)
 {
 	int i;
 
-	printk(BIOS_DEBUG, "Enter %s\n", __FUNCTION__);
+	printk(BIOS_DEBUG, "Enter %s\n", __func__);
 
 	for (i = 0; gliutables[i]; i++)
 		GLIUInit(gliutables[i]);
@@ -760,7 +760,7 @@ void northbridge_init_early(void)
 
 	__asm__ __volatile__("FINIT\n"); /* TODO: Create finit() function? */
 
-	printk(BIOS_DEBUG, "Exit %s\n", __FUNCTION__);
+	printk(BIOS_DEBUG, "Exit %s\n", __func__);
 }
 
 void geode_pre_payload(void)

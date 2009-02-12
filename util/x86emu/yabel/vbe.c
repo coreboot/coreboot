@@ -129,14 +129,14 @@ vbe_info(vbe_info_t * info)
 
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE("%s: VBE Info Function NOT supported! AL=%x\n",
-				 __FUNCTION__, M.x86.R_AL);
+				 __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Info Function Return Code NOT OK! AH=%x\n",
-		     __FUNCTION__, M.x86.R_AH);
+		     __func__, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 	//printf("VBE Info Dump:");
@@ -200,14 +200,14 @@ vbe_get_mode_info(vbe_mode_info_t * mode_info)
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Return Mode Info Function NOT supported! AL=%x\n",
-		     __FUNCTION__, M.x86.R_AL);
+		     __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Return Mode Info (mode: %04x) Function Return Code NOT OK! AH=%02x\n",
-		     __FUNCTION__, mode_info->video_mode, M.x86.R_AH);
+		     __func__, mode_info->video_mode, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 	//pointer to mode_info_block is in ES:DI
@@ -260,7 +260,7 @@ vbe_set_mode(vbe_mode_info_t * mode_info)
 	M.x86.R_BX |= 0x4000;	// set bit 14 to request linear framebuffer mode
 	M.x86.R_BX &= 0x7FFF;	// clear bit 15 to request clearing of framebuffer
 
-	DEBUG_PRINTF_VBE("%s: setting mode: 0x%04x\n", __FUNCTION__,
+	DEBUG_PRINTF_VBE("%s: setting mode: 0x%04x\n", __func__,
 			 M.x86.R_BX);
 
 	// enable trace
@@ -273,14 +273,14 @@ vbe_set_mode(vbe_mode_info_t * mode_info)
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Set Mode Function NOT supported! AL=%x\n",
-		     __FUNCTION__, M.x86.R_AL);
+		     __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: mode: %x VBE Set Mode Function Return Code NOT OK! AH=%x\n",
-		     __FUNCTION__, mode_info->video_mode, M.x86.R_AH);
+		     __func__, mode_info->video_mode, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 	return 0;
@@ -296,7 +296,7 @@ vbe_set_palette_format(u8 format)
 	M.x86.R_BL = 0x00;	// set format
 	M.x86.R_BH = format;
 
-	DEBUG_PRINTF_VBE("%s: setting palette format: %d\n", __FUNCTION__,
+	DEBUG_PRINTF_VBE("%s: setting palette format: %d\n", __func__,
 			 format);
 
 	// enable trace
@@ -309,14 +309,14 @@ vbe_set_palette_format(u8 format)
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Set Palette Format Function NOT supported! AL=%x\n",
-		     __FUNCTION__, M.x86.R_AL);
+		     __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Set Palette Format Function Return Code NOT OK! AH=%x\n",
-		     __FUNCTION__, M.x86.R_AH);
+		     __func__, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 	return 0;
@@ -339,7 +339,7 @@ vbe_set_color(u16 color_number, u32 color_value)
 	// store color value at ES:DI
 	out32le(biosmem + (M.x86.R_ES << 4) + M.x86.R_DI, color_value);
 
-	DEBUG_PRINTF_VBE("%s: setting color #%x: 0x%04x\n", __FUNCTION__,
+	DEBUG_PRINTF_VBE("%s: setting color #%x: 0x%04x\n", __func__,
 			 color_number, color_value);
 
 	// enable trace
@@ -352,14 +352,14 @@ vbe_set_color(u16 color_number, u32 color_value)
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Set Palette Function NOT supported! AL=%x\n",
-		     __FUNCTION__, M.x86.R_AL);
+		     __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Set Palette Function Return Code NOT OK! AH=%x\n",
-		     __FUNCTION__, M.x86.R_AH);
+		     __func__, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 	return 0;
@@ -388,20 +388,20 @@ vbe_get_color(u16 color_number, u32 * color_value)
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Set Palette Function NOT supported! AL=%x\n",
-		     __FUNCTION__, M.x86.R_AL);
+		     __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Set Palette Function Return Code NOT OK! AH=%x\n",
-		     __FUNCTION__, M.x86.R_AH);
+		     __func__, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 	// read color value from ES:DI
 	*color_value = in32le(biosmem + (M.x86.R_ES << 4) + M.x86.R_DI);
 
-	DEBUG_PRINTF_VBE("%s: getting color #%x --> 0x%04x\n", __FUNCTION__,
+	DEBUG_PRINTF_VBE("%s: getting color #%x --> 0x%04x\n", __func__,
 			 color_number, *color_value);
 
 	return 0;
@@ -429,14 +429,14 @@ vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Get DDC Info Function NOT supported! AL=%x\n",
-		     __FUNCTION__, M.x86.R_AL);
+		     __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: port: %x VBE Get DDC Info Function Return Code NOT OK! AH=%x\n",
-		     __FUNCTION__, ddc_info->port_number, M.x86.R_AH);
+		     __func__, ddc_info->port_number, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 	// BH = approx. time in seconds to transfer one EDID block
@@ -464,14 +464,14 @@ vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 	if (M.x86.R_AL != 0x4f) {
 		DEBUG_PRINTF_VBE
 		    ("%s: VBE Read EDID Function NOT supported! AL=%x\n",
-		     __FUNCTION__, M.x86.R_AL);
+		     __func__, M.x86.R_AL);
 		return -1;
 	}
 
 	if (M.x86.R_AH != 0x0) {
 		DEBUG_PRINTF_VBE
 		    ("%s: port: %x VBE Read EDID Function Return Code NOT OK! AH=%x\n",
-		     __FUNCTION__, ddc_info->port_number, M.x86.R_AH);
+		     __func__, ddc_info->port_number, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
 
@@ -565,13 +565,13 @@ vbe_get_info(u8 argc, char ** argv)
 	if (strncmp((char *) input.signature, "DDC", 4) != 0) {
 		printf
 		    ("%s: Invalid input signature! expected: %s, is: %s\n",
-		     __FUNCTION__, "DDC", input.signature);
+		     __func__, "DDC", input.signature);
 		return -1;
 	}
 	if (input.size_reserved != sizeof(screen_info_t)) {
 		printf
 		    ("%s: Size of return struct is wrong, required: %d, available: %d\n",
-		     __FUNCTION__, (int) sizeof(screen_info_t),
+		     __func__, (int) sizeof(screen_info_t),
 		     input.size_reserved);
 		return -1;
 	}
@@ -765,7 +765,7 @@ vbe_get_info(u8 argc, char ** argv)
 		output->framebuffer_address =
 		    best_mode_info.framebuffer_address;
 	} else {
-		printf("%s: No suitable video mode found!\n", __FUNCTION__);
+		printf("%s: No suitable video mode found!\n", __func__);
 		//unset display_type...
 		output->display_type = 0;
 	}

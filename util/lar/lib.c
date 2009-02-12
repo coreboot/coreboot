@@ -86,7 +86,7 @@ void do_no_uncompress(char *dst, int dst_len, char *src, int src_len)
 	else
 	{
 		fprintf(stderr, "%s: src_len(%d)!=dst_len(%d)\n",
-			__FUNCTION__, src_len, dst_len);
+			__func__, src_len, dst_len);
 		exit(1);
 	}
 }
@@ -208,7 +208,7 @@ static int handle_directory(const char *name, const char *pathname,
 				if (len > MAX_PATHLEN) {
 					fprintf(stderr,
 						"%s: %s+%s exceeds MAX_PATHLEN.\n",
-						__FUNCTION__, name,
+						__func__, name,
 						namelist[n]->d_name);
 					return -1;
 				}
@@ -227,7 +227,7 @@ static int handle_directory(const char *name, const char *pathname,
 				if (len > MAX_PATHLEN) {
 					fprintf(stderr,
 						"%s: %s+%s exceeds MAX_PATHLEN.\n",
-						__FUNCTION__, pathname,
+						__func__, pathname,
 						namelist[n]->d_name);
 					return -1;
 				}
@@ -264,7 +264,7 @@ int add_files(const char *filename, const char * pathname,
 	char *c;
 
 	if (verbose())
-		printf("%s: %s:%s\n", __FUNCTION__, filename, pathname);
+		printf("%s: %s:%s\n", __func__, filename, pathname);
 
 	if (stat(filename, &filestat) == -1) {
 		fprintf(stderr, "Error getting file attributes of %s\n", filename);

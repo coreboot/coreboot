@@ -72,7 +72,7 @@ static struct device *new_device(void)
 {
 	devcnt++;
 
-	printk(BIOS_SPEW, "%s: devcnt %d\n", __FUNCTION__, devcnt);
+	printk(BIOS_SPEW, "%s: devcnt %d\n", __func__, devcnt);
 	/* Should we really die here? */
 	if (devcnt >= MAX_DEVICES) {
 		die("Too many devices. Increase MAX_DEVICES\n");
@@ -946,13 +946,13 @@ void dev_phase5(struct device *dev)
 	}
 	if (!dev->ops) {
 		printk(BIOS_WARNING, "%s: %s(%s) missing ops\n",
-		       __FUNCTION__, dev->dtsname, dev_path(dev));
+		       __func__, dev->dtsname, dev_path(dev));
 		return;
 	}
 	if (!dev->ops->phase5_enable_resources) {
 		printk(BIOS_WARNING,
 		       "%s: %s(%s) ops are missing phase5_enable_resources\n",
-		       __FUNCTION__, dev->dtsname, dev_path(dev));
+		       __func__, dev->dtsname, dev_path(dev));
 		return;
 	}
 
@@ -1055,19 +1055,19 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 	if (!busdevice || !busdevice->enabled ||
 	    !busdevice->ops || !busdevice->ops->phase3_scan) {
 		printk(BIOS_INFO, "%s: busdevice %s: enabled %d ops %s\n",
-		       __FUNCTION__, busdevice ? busdevice->dtsname : "NULL",
+		       __func__, busdevice ? busdevice->dtsname : "NULL",
 		       busdevice ? busdevice->enabled : 0,
 		       busdevice ? (busdevice->ops?
 				    "NOT NULL" : "NULL") : "N/A");
 		printk(BIOS_INFO, "%s: can not scan from here, returning %d\n",
-		       __FUNCTION__, max);
+		       __func__, max);
 		return max;
 	}
 
 	do_phase3 = 1;
 	while (do_phase3) {
 		int link;
-		printk(BIOS_INFO, "%s: scanning %s(%s)\n", __FUNCTION__,
+		printk(BIOS_INFO, "%s: scanning %s(%s)\n", __func__,
 		       busdevice->dtsname, dev_path(busdevice));
 #warning do we call phase3_enable here.
 		new_max = busdevice->ops->phase3_scan(busdevice, max);
@@ -1084,7 +1084,7 @@ unsigned int dev_phase3_scan(struct device *busdevice, unsigned int max)
 		}
 	}
 	post_code(POST_STAGE2_PHASE3_SCAN_EXIT);
-	printk(BIOS_INFO, "%s: returning %d\n", __FUNCTION__, max);
+	printk(BIOS_INFO, "%s: returning %d\n", __func__, max);
 	return new_max;
 }
 

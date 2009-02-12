@@ -561,7 +561,7 @@ void chipsetinit(void)
 			      PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 	if (!dev) {
 		printk(BIOS_ERR, "%s: Could not find the south bridge!\n",
-		       __FUNCTION__);
+		       __func__);
 		return;
 	}
 	sb = (struct southbridge_amd_cs5536_dts_config *)dev->device_configuration;
@@ -663,7 +663,7 @@ static void southbridge_init(struct device *dev)
 	 * unsigned short gpiobase = MDD_GPIO;
 	 */
 
-	printk(BIOS_ERR, "cs5536: %s\n", __FUNCTION__);
+	printk(BIOS_ERR, "cs5536: %s\n", __func__);
 
 	setup_i8259();
 	lpc_init(sb);
@@ -689,7 +689,7 @@ static void southbridge_init(struct device *dev)
 
 	cs5536_setup_power_button(sb);
 
-	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
+	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __func__);
 }
 
 /**
@@ -719,10 +719,10 @@ static void cs5536_read_resources(struct device *dev)
  */
 static void cs5536_pci_dev_enable_resources(struct device *dev)
 {
-	printk(BIOS_SPEW, "cs5536: %s()\n", __FUNCTION__);
+	printk(BIOS_SPEW, "cs5536: %s()\n", __func__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
-	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __FUNCTION__);
+	printk(BIOS_SPEW, "cs5536: %s() Exit\n", __func__);
 }
 
 struct device_operations cs5536_ops = {

@@ -109,13 +109,13 @@ void pmm_handleInt()
 		flags = pop_word();
 		DEBUG_PRINTF_PMM
 		    ("%s: pmmAllocate: Length: %x, Handle: %x, Flags: %x\n",
-		     __FUNCTION__, length, handle, flags);
+		     __func__, length, handle, flags);
 		if ((flags & 0x1) != 0) {
 			/* request to allocate in  conventional memory */
 			if (curr_pmm_allocation_index >= MAX_PMM_AREAS) {
 				printf
 				    ("%s: pmmAllocate: Maximum Number of allocatable areas reached (%d), cannot allocate more memory!\n",
-				     __FUNCTION__, MAX_PMM_AREAS);
+				     __func__, MAX_PMM_AREAS);
 				rval = 0;
 				goto exit;
 			}
@@ -133,7 +133,7 @@ void pmm_handleInt()
 				    [curr_pmm_allocation_index - 1].length;
 			}
 			DEBUG_PRINTF_PMM("%s: next_offset: 0x%x\n",
-					 __FUNCTION__, next_offset);
+					 __func__, next_offset);
 			if (length == 0) {
 				/* largest possible block size requested, we have on segment
 				 * to allocate, so largest possible is segment size (0xFFFF) 
@@ -158,7 +158,7 @@ void pmm_handleInt()
 			if (align < 0x10) {
 				align = 0x10;
 			}
-			DEBUG_PRINTF_PMM("%s: align: 0x%x\n", __FUNCTION__,
+			DEBUG_PRINTF_PMM("%s: align: 0x%x\n", __func__,
 					 align);
 			if ((next_offset & (align - 1)) != 0) {
 				/* not yet aligned... align! */
@@ -169,7 +169,7 @@ void pmm_handleInt()
 				rval = 0;
 				printf
 				    ("%s: pmmAllocate: Not enough memory available for allocation!\n",
-				     __FUNCTION__);
+				     __func__);
 				goto exit;
 			}
 			curr_pmm_allocation_index++;
@@ -181,25 +181,25 @@ void pmm_handleInt()
 			rval = ((u32) (PMM_CONV_SEGMENT << 16)) | next_offset;
 			DEBUG_PRINTF_PMM
 			    ("%s: pmmAllocate: allocated memory at %x\n",
-			     __FUNCTION__, rval);
+			     __func__, rval);
 		} else {
 			rval = 0;
 			printf
 			    ("%s: pmmAllocate: allocation in extended memory not supported!\n",
-			     __FUNCTION__);
+			     __func__);
 		}
 		goto exit;
 	case 1:
 		/* function pmmFind */
 		handle = pop_long();	/* the handle to lookup */
-		DEBUG_PRINTF_PMM("%s: pmmFind: Handle: %x\n", __FUNCTION__,
+		DEBUG_PRINTF_PMM("%s: pmmFind: Handle: %x\n", __func__,
 				 handle);
 		i = 0;
 		for (i = 0; i < curr_pmm_allocation_index; i++) {
 			if (pmm_allocation_array[i].handle == handle) {
 				DEBUG_PRINTF_PMM
 				    ("%s: pmmFind: found allocated memory at %x\n",
-				     __FUNCTION__, rval);
+				     __func__, rval);
 				/* return the 32bit "physical" address, i.e. combination of segment and offset */
 				rval =
 				    ((u32) (PMM_CONV_SEGMENT << 16)) |
@@ -209,7 +209,7 @@ void pmm_handleInt()
 		if (rval == 0) {
 			DEBUG_PRINTF_PMM
 			    ("%s: pmmFind: handle (%x) not found!\n",
-			     __FUNCTION__, handle);
+			     __func__, handle);
 		}
 		goto exit;
 	case 2:
@@ -220,7 +220,7 @@ void pmm_handleInt()
 		 */
 		buffer = buffer ^ ((u32) PMM_CONV_SEGMENT << 16);
 		DEBUG_PRINTF_PMM("%s: pmmDeallocate: PMM segment offset: %x\n",
-				 __FUNCTION__, buffer);
+				 __func__, buffer);
 		i = 0;
 		/* rval = 0 means we deallocated the buffer, so set it to 1 in case we dont find it and
 		 * thus cannot deallocate
@@ -234,7 +234,7 @@ void pmm_handleInt()
 				rval = 0;
 				DEBUG_PRINTF_PMM
 				    ("%s: pmmDeallocate: found allocated memory at index: %d\n",
-				     __FUNCTION__, i);
+				     __func__, i);
 				/* copy the remaining elements in pmm_allocation_array one position up */
 				j = i;
 				for (; j < curr_pmm_allocation_index; j++) {
@@ -256,13 +256,13 @@ void pmm_handleInt()
 		if (rval != 0) {
 			DEBUG_PRINTF_PMM
 			    ("%s: pmmDeallocate: offset (%x) not found, cannot deallocate!\n",
-			     __FUNCTION__, buffer);
+			     __func__, buffer);
 		}
 		goto exit;
 	default:
 		/* invalid/unimplemented function */
 		printf("%s: invalid PMM function (0x%04x) called!\n",
-		       __FUNCTION__, function);
+		       __func__, function);
 		/* PMM spec says if function is invalid, return 0xFFFFFFFF */
 		rval = 0xFFFFFFFF;
 		goto exit;
@@ -274,7 +274,7 @@ void pmm_handleInt()
 	M.x86.R_AX = (u16) (rval & 0xFFFF);
 	CHECK_DBG(DEBUG_PMM) {
 		DEBUG_PRINTF_PMM("%s: dump of pmm_allocation_array:\n",
-				 __FUNCTION__);
+				 __func__);
 		for (i = 0; i < MAX_PMM_AREAS; i++) {
 			DEBUG_PRINTF_PMM
 			    ("%d:\n\thandle: %x\n\toffset: %x\n\tlength: %x\n",
@@ -304,7 +304,7 @@ void pmm_test(void)
 	push_long(0);		/* This is the return address for the ABI, unused in this implementation */
 	pmm_handleInt();
 	addr = ((u32) M.x86.R_DX << 16) | M.x86.R_AX;
-	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __FUNCTION__,
+	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __func__,
 			 M.x86.R_DX, M.x86.R_AX);
 	function = 1;		/* pmmFind */
 	push_long(handle);
@@ -312,7 +312,7 @@ void pmm_test(void)
 	push_long(0);		/* This is the return address for the ABI, unused in this implementation */
 	pmm_handleInt();
 	DEBUG_PRINTF_PMM("%s: found memory at: %04x:%04x (expected: %08x)\n",
-			 __FUNCTION__, M.x86.R_DX, M.x86.R_AX, addr);
+			 __func__, M.x86.R_DX, M.x86.R_AX, addr);
 	function = 2;		/* pmmDeallocate */
 	push_long(addr);
 	push_word(function);
@@ -320,7 +320,7 @@ void pmm_test(void)
 	pmm_handleInt();
 	DEBUG_PRINTF_PMM
 	    ("%s: freed memory rval: %04x:%04x (expected: 0000:0000)\n",
-	     __FUNCTION__, M.x86.R_DX, M.x86.R_AX);
+	     __func__, M.x86.R_DX, M.x86.R_AX);
 	/*-------------------- Test aligned allocation/deallocation ----------------------------- */
 	function = 0;		/* pmmAllocate */
 	handle = 0xdeadbeef;
@@ -334,7 +334,7 @@ void pmm_test(void)
 	push_long(0);		/* This is the return address for the ABI, unused in this implementation */
 	pmm_handleInt();
 	addr = ((u32) M.x86.R_DX << 16) | M.x86.R_AX;
-	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __FUNCTION__,
+	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __func__,
 			 M.x86.R_DX, M.x86.R_AX);
 	function = 0;		/* pmmAllocate */
 	handle = 0xf00d4b0b;
@@ -349,7 +349,7 @@ void pmm_test(void)
 	pmm_handleInt();
 	/* the address should be aligned to 0x800, so probably it is at offset 0x1800... */
 	addr = ((u32) M.x86.R_DX << 16) | M.x86.R_AX;
-	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __FUNCTION__,
+	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __func__,
 			 M.x86.R_DX, M.x86.R_AX);
 	function = 1;		/* pmmFind */
 	push_long(handle);
@@ -364,7 +364,7 @@ void pmm_test(void)
 	pmm_handleInt();
 	DEBUG_PRINTF_PMM
 	    ("%s: freed memory rval: %04x:%04x (expected: 0000:0000)\n",
-	     __FUNCTION__, M.x86.R_DX, M.x86.R_AX);
+	     __func__, M.x86.R_DX, M.x86.R_AX);
 	handle = 0xdeadbeef;
 	function = 1;		/* pmmFind */
 	push_long(handle);
@@ -379,7 +379,7 @@ void pmm_test(void)
 	pmm_handleInt();
 	DEBUG_PRINTF_PMM
 	    ("%s: freed memory rval: %04x:%04x (expected: 0000:0000)\n",
-	     __FUNCTION__, M.x86.R_DX, M.x86.R_AX);
+	     __func__, M.x86.R_DX, M.x86.R_AX);
 	/*-------------------- Test out of memory allocation ----------------------------- */
 	function = 0;		/* pmmAllocate */
 	handle = 0xdeadbeef;
@@ -394,7 +394,7 @@ void pmm_test(void)
 	pmm_handleInt();
 	length = ((u32) M.x86.R_DX << 16) | M.x86.R_AX;
 	length /= 16;		/* length in paragraphs */
-	DEBUG_PRINTF_PMM("%s: largest possible length: %08x\n", __FUNCTION__,
+	DEBUG_PRINTF_PMM("%s: largest possible length: %08x\n", __func__,
 			 length);
 	function = 0;		/* pmmAllocate */
 	flags = 0x1;		/* conventional memory, aligned */
@@ -406,7 +406,7 @@ void pmm_test(void)
 	push_long(0);		/* This is the return address for the ABI, unused in this implementation */
 	pmm_handleInt();
 	addr = ((u32) M.x86.R_DX << 16) | M.x86.R_AX;
-	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __FUNCTION__,
+	DEBUG_PRINTF_PMM("%s: allocated memory at: %04x:%04x\n", __func__,
 			 M.x86.R_DX, M.x86.R_AX);
 	function = 0;		/* pmmAllocate */
 	length = 1;
@@ -423,7 +423,7 @@ void pmm_test(void)
 	addr = ((u32) M.x86.R_DX << 16) | M.x86.R_AX;
 	DEBUG_PRINTF_PMM
 	    ("%s: allocated memory at: %04x:%04x expected: 0000:0000\n",
-	     __FUNCTION__, M.x86.R_DX, M.x86.R_AX);
+	     __func__, M.x86.R_DX, M.x86.R_AX);
 	handle = 0xdeadbeef;
 	function = 1;		/* pmmFind */
 	push_long(handle);
@@ -438,5 +438,5 @@ void pmm_test(void)
 	pmm_handleInt();
 	DEBUG_PRINTF_PMM
 	    ("%s: freed memory rval: %04x:%04x (expected: 0000:0000)\n",
-	     __FUNCTION__, M.x86.R_DX, M.x86.R_AX);
+	     __func__, M.x86.R_DX, M.x86.R_AX);
 }

@@ -73,7 +73,7 @@ biosemu_dev_get_addr_info(void)
 	taa_index++;
 	/* legacy ranges if its a VGA card... */
 	if ((bios_device.dev->class & 0xFF0000) == 0x030000) {
-		DEBUG_PRINTF("%s: VGA device found, adding legacy resources... \n", __FUNCTION__);
+		DEBUG_PRINTF("%s: VGA device found, adding legacy resources... \n", __func__);
 		/* I/O 0x3B0-0x3BB */
 		translate_address_array[taa_index].info = IORESOURCE_FIXED | IORESOURCE_IO;
 		translate_address_array[taa_index].bus = bus;
@@ -237,7 +237,7 @@ biosemu_dev_find_vmem_addr(void)
 		bios_device.vmem_size = ta.size;
 		DEBUG_PRINTF
 		    ("%s: Found prefetchable Virtual Legacy Memory BAR: %llx, size: %llx\n",
-		     __FUNCTION__, bios_device.vmem_addr,
+		     __func__, bios_device.vmem_addr,
 		     bios_device.vmem_size);
 	} else if (tai_np != -1) {
 		ta = translate_address_array[tai_np];
@@ -245,7 +245,7 @@ biosemu_dev_find_vmem_addr(void)
 		bios_device.vmem_size = ta.size;
 		DEBUG_PRINTF
 		    ("%s: Found non-prefetchable Virtual Legacy Memory BAR: %llx, size: %llx",
-		     __FUNCTION__, bios_device.vmem_addr,
+		     __func__, bios_device.vmem_addr,
 		     bios_device.vmem_size);
 	}
 	// disable vmem
@@ -388,7 +388,7 @@ biosemu_dev_init(struct device * device)
 {
 	u8 rval = 0;
 	//init bios_device struct
-	DEBUG_PRINTF("%s(%s)\n", __FUNCTION__, device->dtsname);
+	DEBUG_PRINTF("%s(%s)\n", __func__, device->dtsname);
 	memset(&bios_device, 0, sizeof(bios_device));
 
 #ifndef CONFIG_PCI_OPTION_ROM_RUN_YABEL

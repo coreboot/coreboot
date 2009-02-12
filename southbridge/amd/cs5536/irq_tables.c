@@ -43,7 +43,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	/* Set up chipset IRQ steering. */
 	pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 	chipset_irq_map = (PIRQD << 12 | PIRQC << 8 | PIRQB << 4 | PIRQA);
-	printk(BIOS_DEBUG, "%s(%08X, %04X)\n", __FUNCTION__, pciAddr,
+	printk(BIOS_DEBUG, "%s(%08X, %04X)\n", __func__, pciAddr,
 		     chipset_irq_map);
 	outl(pciAddr & ~3, 0xCF8);
 	outl(chipset_irq_map, 0xCFC);

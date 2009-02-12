@@ -86,7 +86,7 @@ static int load_elf_segments(struct lb_memory *mem,unsigned char *header, int he
         ehdr = (Elf_ehdr *)header;
         phdr = (Elf_phdr *)(&header[ehdr->e_phoff]);
 
-	printk(BIOS_DEBUG, "%s: header %p #headers %d\n", __FUNCTION__, header, headers);
+	printk(BIOS_DEBUG, "%s: header %p #headers %d\n", __func__, header, headers);
 	int i;
 	int size;
 	for(i = 0; i < headers; i++) {

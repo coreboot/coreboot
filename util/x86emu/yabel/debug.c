@@ -19,7 +19,7 @@ u32 debug_flags = 0;
 void
 dump(u8 * addr, u32 len)
 {
-	printf("\n%s(%p, %x):\n", __FUNCTION__, addr, len);
+	printf("\n%s(%p, %x):\n", __func__, addr, len);
 	while (len) {
 		unsigned int tmpCnt = len;
 		unsigned char x;

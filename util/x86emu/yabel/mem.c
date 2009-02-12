@@ -44,26 +44,26 @@ u32 my_rdl(u32);
 			/* check Interrupt Vector Access (0000:0000h - 0000:0400h) */ \
 			if (_addr < 0x400) { \
 				DEBUG_PRINTF_CS_IP("%s: read from Interrupt Vector %x --> %x\n", \
-						__FUNCTION__, _addr / 4, _rval); \
+						__func__, _addr / 4, _rval); \
 			} \
 			/* access to BIOS Data Area (0000:0400h - 0000:0500h)*/ \
 			else if ((_addr >= 0x400) && (addr < 0x500)) { \
 				DEBUG_PRINTF_CS_IP("%s: read from BIOS Data Area: addr: %x --> %x\n", \
-						__FUNCTION__, _addr, _rval); \
+						__func__, _addr, _rval); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
 			/* access to first 64k of memory... */ \
 			else if (_addr < 0x10000) { \
 				DEBUG_PRINTF_CS_IP("%s: read from segment 0000h: addr: %x --> %x\n", \
-						__FUNCTION__, _addr, _rval); \
+						__func__, _addr, _rval); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
 			/* read from PMM_CONV_SEGMENT */ \
 			else if ((_addr <= ((PMM_CONV_SEGMENT << 4) | 0xffff)) && (_addr >= (PMM_CONV_SEGMENT << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: read from PMM Segment %04xh: addr: %x --> %x\n", \
-						__FUNCTION__, PMM_CONV_SEGMENT, _addr, _rval); \
+						__func__, PMM_CONV_SEGMENT, _addr, _rval); \
 				/* HALT_SYS(); */ \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
@@ -71,7 +71,7 @@ u32 my_rdl(u32);
 			/* read from PNP_DATA_SEGMENT */ \
 			else if ((_addr <= ((PNP_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (PNP_DATA_SEGMENT << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: read from PnP Data Segment %04xh: addr: %x --> %x\n", \
-						__FUNCTION__, PNP_DATA_SEGMENT, _addr, _rval); \
+						__func__, PNP_DATA_SEGMENT, _addr, _rval); \
 				/* HALT_SYS(); */ \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
@@ -79,12 +79,12 @@ u32 my_rdl(u32);
 			/* read from EBDA Segment */ \
 			else if ((_addr <= ((ebda_segment << 4) | (ebda_size - 1))) && (_addr >= (ebda_segment << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: read from Extended BIOS Data Area %04xh, size: %04x: addr: %x --> %x\n", \
-						__FUNCTION__, ebda_segment, ebda_size, _addr, _rval); \
+						__func__, ebda_segment, ebda_size, _addr, _rval); \
 			} \
 			/* read from BIOS_DATA_SEGMENT */ \
 			else if ((_addr <= ((BIOS_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (BIOS_DATA_SEGMENT << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: read from BIOS Data Segment %04xh: addr: %x --> %x\n", \
-						__FUNCTION__, BIOS_DATA_SEGMENT, _addr, _rval); \
+						__func__, BIOS_DATA_SEGMENT, _addr, _rval); \
 				/* for PMM debugging */ \
 				/*if (_addr == BIOS_DATA_SEGMENT << 4) { \
 					X86EMU_trace_on(); \
@@ -107,52 +107,52 @@ u32 my_rdl(u32);
 			/* check Interrupt Vector Access (0000:0000h - 0000:0400h) */ \
 			if (_addr < 0x400) { \
 				DEBUG_PRINTF_CS_IP("%s: write to Interrupt Vector %x <-- %x\n", \
-						__FUNCTION__, _addr / 4, _val); \
+						__func__, _addr / 4, _val); \
 			} \
 			/* access to BIOS Data Area (0000:0400h - 0000:0500h)*/ \
 			else if ((_addr >= 0x400) && (addr < 0x500)) { \
 				DEBUG_PRINTF_CS_IP("%s: write to BIOS Data Area: addr: %x <-- %x\n", \
-						__FUNCTION__, _addr, _val); \
+						__func__, _addr, _val); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
 			/* access to first 64k of memory...*/ \
 			else if (_addr < 0x10000) { \
 				DEBUG_PRINTF_CS_IP("%s: write to segment 0000h: addr: %x <-- %x\n", \
-						__FUNCTION__, _addr, _val); \
+						__func__, _addr, _val); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
 			/* write to PMM_CONV_SEGMENT... */ \
 			else if ((_addr <= ((PMM_CONV_SEGMENT << 4) | 0xffff)) && (_addr >= (PMM_CONV_SEGMENT << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: write to PMM Segment %04xh: addr: %x <-- %x\n", \
-						__FUNCTION__, PMM_CONV_SEGMENT, _addr, _val); \
+						__func__, PMM_CONV_SEGMENT, _addr, _val); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
 			/* write to PNP_DATA_SEGMENT... */ \
 			else if ((_addr <= ((PNP_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (PNP_DATA_SEGMENT << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: write to PnP Data Segment %04xh: addr: %x <-- %x\n", \
-						__FUNCTION__, PNP_DATA_SEGMENT, _addr, _val); \
+						__func__, PNP_DATA_SEGMENT, _addr, _val); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
 			/* write to EBDA Segment... */ \
 			else if ((_addr <= ((ebda_segment << 4) | (ebda_size - 1))) && (_addr >= (ebda_segment << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: write to Extended BIOS Data Area %04xh, size: %04x: addr: %x <-- %x\n", \
-						__FUNCTION__, ebda_segment, ebda_size, _addr, _val); \
+						__func__, ebda_segment, ebda_size, _addr, _val); \
 			} \
 			/* write to BIOS_DATA_SEGMENT... */ \
 			else if ((_addr <= ((BIOS_DATA_SEGMENT << 4) | 0xffff)) && (_addr >= (BIOS_DATA_SEGMENT << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: write to BIOS Data Segment %04xh: addr: %x <-- %x\n", \
-						__FUNCTION__, BIOS_DATA_SEGMENT, _addr, _val); \
+						__func__, BIOS_DATA_SEGMENT, _addr, _val); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
 			/* write to current CS segment... */ \
 			else if ((_addr < ((M.x86.R_CS << 4) | 0xffff)) && (_addr > (M.x86.R_CS << 4))) { \
 				DEBUG_PRINTF_CS_IP("%s: write to CS segment %04xh: addr: %x <-- %x\n", \
-						__FUNCTION__, M.x86.R_CS, _addr, _val); \
+						__func__, M.x86.R_CS, _addr, _val); \
 				/* dump registers */ \
 				/* x86emu_dump_xregs(); */ \
 			} \
@@ -178,17 +178,17 @@ my_rdb(u32 addr)
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%08x): access to VGA Memory\n",
-				 __FUNCTION__, addr);
-		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				 __func__, addr);
+		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		set_ci();
 		rval = *((u8 *) translated_addr);
 		clr_ci();
-		DEBUG_PRINTF_MEM("%s(%08x) VGA --> %02x\n", __FUNCTION__, addr,
+		DEBUG_PRINTF_MEM("%s(%08x) VGA --> %02x\n", __func__, addr,
 				 rval);
 		return rval;
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -210,8 +210,8 @@ my_rdw(u32 addr)
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%08x): access to VGA Memory\n",
-				 __FUNCTION__, addr);
-		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				 __func__, addr);
+		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		// check for legacy memory, because of the remapping to BARs, the reads must
 		// be byte reads...
 		if ((addr >= 0xa0000) && (addr < 0xc0000)) {
@@ -234,12 +234,12 @@ my_rdw(u32 addr)
 				clr_ci();
 			}
 		}
-		DEBUG_PRINTF_MEM("%s(%08x) VGA --> %04x\n", __FUNCTION__, addr,
+		DEBUG_PRINTF_MEM("%s(%08x) VGA --> %04x\n", __func__, addr,
 				 rval);
 		return rval;
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -261,8 +261,8 @@ my_rdl(u32 addr)
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x): access to VGA Memory\n",
-				 __FUNCTION__, addr);
-		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				 __func__, addr);
+		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		// check for legacy memory, because of the remapping to BARs, the reads must
 		// be byte reads...
 		if ((addr >= 0xa0000) && (addr < 0xc0000)) {
@@ -289,13 +289,13 @@ my_rdl(u32 addr)
 				clr_ci();
 			}
 		}
-		DEBUG_PRINTF_MEM("%s(%08x) VGA --> %08x\n", __FUNCTION__, addr,
+		DEBUG_PRINTF_MEM("%s(%08x) VGA --> %08x\n", __func__, addr,
 				 rval);
 		//HALT_SYS();
 		return rval;
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -323,14 +323,14 @@ my_wrb(u32 addr, u8 val)
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
-				 __FUNCTION__, addr, val);
-		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				 __func__, addr, val);
+		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		set_ci();
 		*((u8 *) translated_addr) = val;
 		clr_ci();
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -348,8 +348,8 @@ my_wrw(u32 addr, u16 val)
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
-				 __FUNCTION__, addr, val);
-		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				 __func__, addr, val);
+		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		// check for legacy memory, because of the remapping to BARs, the reads must
 		// be byte reads...
 		if ((addr >= 0xa0000) && (addr < 0xc0000)) {
@@ -376,7 +376,7 @@ my_wrw(u32 addr, u16 val)
 		}
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -393,8 +393,8 @@ my_wrl(u32 addr, u32 val)
 	if (translated != 0) {
 		//translation successfull, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x, %x): access to VGA Memory\n",
-				 __FUNCTION__, addr, val);
-		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n",  __FUNCTION__, addr, translated_addr);
+				 __func__, addr, val);
+		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n",  __func__, addr, translated_addr);
 		// check for legacy memory, because of the remapping to BARs, the reads must
 		// be byte reads...
 		if ((addr >= 0xa0000) && (addr < 0xc0000)) {
@@ -427,7 +427,7 @@ my_wrl(u32 addr, u32 val)
 		}
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {

@@ -29,8 +29,8 @@
 static void cpu_bus_init(struct device *dev)
 {
 #warning "cpu_bus_init() empty, what should it do?"
-	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __FUNCTION__);
-	printk(BIOS_SPEW, ">> Exiting northbridge.c: %s\n", __FUNCTION__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
+	printk(BIOS_SPEW, ">> Exiting northbridge.c: %s\n", __func__);
 }
 
 static void cpu_bus_noop(struct device *dev)

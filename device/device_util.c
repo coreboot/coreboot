@@ -125,7 +125,7 @@ struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
  */
 struct device *dev_find_device(struct device_id *devid, struct device *from)
 {
-	printk(BIOS_SPEW, "%s: find %s\n", __FUNCTION__, dev_id_string(devid));
+	printk(BIOS_SPEW, "%s: find %s\n", __func__, dev_id_string(devid));
 
 	if (!from)
 		from = all_devices;

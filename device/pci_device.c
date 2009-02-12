@@ -940,7 +940,7 @@ static struct device *pci_get_dev(struct device **list, unsigned int devfn)
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
 			printk(BIOS_NOTICE,
 			       "%s: child %s(%s) not a pci device: it's type %d\n",
-			       __FUNCTION__, (*list)->dtsname, dev_path(*list),
+			       __func__, (*list)->dtsname, dev_path(*list),
 			       (*list)->path.type);
 			continue;
 		}

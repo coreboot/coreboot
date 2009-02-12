@@ -31,7 +31,7 @@ void
 setupInt(int intNum)
 {
 	DEBUG_PRINTF_INTR("%s(%x): executing interrupt handler @%08x\n",
-			  __FUNCTION__, intNum, my_rdl(intNum * 4));
+			  __func__, intNum, my_rdl(intNum * 4));
 	// push current R_FLG... will be popped by IRET
 	push_word((u16) M.x86.R_FLG);
 	CLEAR_FLAG(F_IF);
@@ -51,7 +51,7 @@ handleInt10(void)
 {
 	// the data for INT10 is stored in BDA (0000:0400h) offset 49h-66h
 	// function number in AH
-	//DEBUG_PRINTF_CS_IP("%s:\n", __FUNCTION__);
+	//DEBUG_PRINTF_CS_IP("%s:\n", __func__);
 	//x86emu_dump_xregs();
 	//if ((M.x86.R_IP == 0x32c2) && (M.x86.R_SI == 0x1ce2)){
 	//X86EMU_trace_on();
@@ -156,7 +156,7 @@ handleInt10(void)
 		break;
 	default:
 		printf("%s(): unknown function (%x) for int10 handler.\n",
-		       __FUNCTION__, M.x86.R_AH);
+		       __func__, M.x86.R_AH);
 		DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 				  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 				  M.x86.R_DX);
@@ -220,7 +220,7 @@ translate_keycode(u64 * keycode)
 			break;
 		default:
 			printf("%s(): unknown multibyte keycode: %llx\n",
-			       __FUNCTION__, *keycode);
+			       __func__, *keycode);
 			break;
 		}
 	}
@@ -244,7 +244,7 @@ handleInt16(void)
 	s8 c;
 	// function number in AH
 	DEBUG_PRINTF_INTR("%s(): Keyboard Interrupt: function: %x.\n",
-			  __FUNCTION__, M.x86.R_AH);
+			  __func__, M.x86.R_AH);
 	DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n", M.x86.R_AX,
 			  M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
 	switch (M.x86.R_AH) {
@@ -305,7 +305,7 @@ handleInt16(void)
 		break;
 	default:
 		printf("%s(): unknown function (%x) for int16 handler.\n",
-		       __FUNCTION__, M.x86.R_AH);
+		       __func__, M.x86.R_AH);
 		DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 				  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 				  M.x86.R_DX);
@@ -337,7 +337,7 @@ handleInt1a(void)
 		// device index in SI (i.e. if multiple devices with same vendor/device id
 		// are connected). We currently only support device index 0
 		DEBUG_PRINTF_INTR("%s(): function: %x: PCI Find Device\n",
-				  __FUNCTION__, M.x86.R_AX);
+				  __func__, M.x86.R_AX);
 		if ((M.x86.R_CX == bios_device.pci_device_id)
 		    && (M.x86.R_DX == bios_device.pci_vendor_id)
 		    // device index must be 0
@@ -348,11 +348,11 @@ handleInt1a(void)
 			M.x86.R_BL = bios_device.devfn;
 			DEBUG_PRINTF_INTR
 			    ("%s(): function %x: PCI Find Device --> 0x%04x\n",
-			     __FUNCTION__, M.x86.R_AX, M.x86.R_BX);
+			     __func__, M.x86.R_AX, M.x86.R_BX);
 		} else {
 			DEBUG_PRINTF_INTR
 			    ("%s(): function %x: invalid device/vendor/device index! (%04x/%04x/%02x expected: %04x/%04x/0) \n",
-			     __FUNCTION__, M.x86.R_AX, M.x86.R_CX, M.x86.R_DX,
+			     __func__, M.x86.R_AX, M.x86.R_CX, M.x86.R_DX,
 			     M.x86.R_SI, bios_device.pci_device_id,
 			     bios_device.pci_vendor_id);
 			SET_FLAG(F_CF);
@@ -370,7 +370,7 @@ handleInt1a(void)
 			// fail accesses to any device but ours...
 			printf
 			    ("%s(): Config read access invalid! bus: %x (%x), devfn: %x (%x), offs: %x\n",
-			     __FUNCTION__, bus, bios_device.bus, devfn,
+			     __func__, bus, bios_device.bus, devfn,
 			     bios_device.devfn, offs);
 			SET_FLAG(F_CF);
 			M.x86.R_AH = 0x87;	//return code: bad pci register
@@ -390,7 +390,7 @@ handleInt1a(void)
 #endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Read @%02x --> 0x%02x\n",
-				     __FUNCTION__, M.x86.R_AX, offs,
+				     __func__, M.x86.R_AX, offs,
 				     M.x86.R_CL);
 				break;
 			case 0xb109:
@@ -405,7 +405,7 @@ handleInt1a(void)
 #endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Read @%02x --> 0x%04x\n",
-				     __FUNCTION__, M.x86.R_AX, offs,
+				     __func__, M.x86.R_AX, offs,
 				     M.x86.R_CX);
 				break;
 			case 0xb10a:
@@ -420,7 +420,7 @@ handleInt1a(void)
 #endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Read @%02x --> 0x%08x\n",
-				     __FUNCTION__, M.x86.R_AX, offs,
+				     __func__, M.x86.R_AX, offs,
 				     M.x86.R_ECX);
 				break;
 			}
@@ -439,7 +439,7 @@ handleInt1a(void)
 			// fail accesses to any device but ours...
 			printf
 			    ("%s(): Config read access invalid! bus: %x (%x), devfn: %x (%x), offs: %x\n",
-			     __FUNCTION__, bus, bios_device.bus, devfn,
+			     __func__, bus, bios_device.bus, devfn,
 			     bios_device.devfn, offs);
 			SET_FLAG(F_CF);
 			M.x86.R_AH = 0x87;	//return code: bad pci register
@@ -456,7 +456,7 @@ handleInt1a(void)
 #endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%02x\n",
-				     __FUNCTION__, M.x86.R_AX, offs,
+				     __func__, M.x86.R_AX, offs,
 				     M.x86.R_CL);
 				break;
 			case 0xb10c:
@@ -468,7 +468,7 @@ handleInt1a(void)
 #endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%04x\n",
-				     __FUNCTION__, M.x86.R_AX, offs,
+				     __func__, M.x86.R_AX, offs,
 				     M.x86.R_CX);
 				break;
 			case 0xb10d:
@@ -480,7 +480,7 @@ handleInt1a(void)
 #endif
 				DEBUG_PRINTF_INTR
 				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%08x\n",
-				     __FUNCTION__, M.x86.R_AX, offs,
+				     __func__, M.x86.R_AX, offs,
 				     M.x86.R_ECX);
 				break;
 			}
@@ -490,7 +490,7 @@ handleInt1a(void)
 		break;
 	default:
 		printf("%s(): unknown function (%x) for int1a handler.\n",
-		       __FUNCTION__, M.x86.R_AX);
+		       __func__, M.x86.R_AX);
 		DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 				  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 				  M.x86.R_DX);
@@ -507,7 +507,7 @@ handleInterrupt(int intNum)
 #ifndef DEBUG_PRINT_INT10
 	// this printf makes output by int 10 unreadable...
 	// so we only enable it, if int10 print is disabled
-	DEBUG_PRINTF_INTR("%s(%x)\n", __FUNCTION__, intNum);
+	DEBUG_PRINTF_INTR("%s(%x)\n", __func__, intNum);
 #endif
 	switch (intNum) {
 	case 0x10:		//BIOS video interrupt
@@ -521,7 +521,7 @@ handleInterrupt(int intNum)
 			// ignore interrupt...
 			DEBUG_PRINTF_INTR
 			    ("%s(%x): invalid interrupt Vector (%08x) found, interrupt ignored...\n",
-			     __FUNCTION__, intNum, my_rdl(intNum * 4));
+			     __func__, intNum, my_rdl(intNum * 4));
 			DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 					  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 					  M.x86.R_DX);
@@ -597,9 +597,9 @@ runInt10(void)
 	}
 	setupInt(0x10);
 	DEBUG_PRINTF_INTR("%s(): starting execution of INT10...\n",
-			  __FUNCTION__);
+			  __func__);
 	X86EMU_exec();
-	DEBUG_PRINTF_INTR("%s(): execution finished\n", __FUNCTION__);
+	DEBUG_PRINTF_INTR("%s(): execution finished\n", __func__);
 }
 
 // prepare and execute Interrupt 13 (Disk Interrupt)
@@ -636,7 +636,7 @@ runInt13(void)
 
 	setupInt(0x13);
 	DEBUG_PRINTF_INTR("%s(): starting execution of INT13...\n",
-			  __FUNCTION__);
+			  __func__);
 	X86EMU_exec();
-	DEBUG_PRINTF_INTR("%s(): execution finished\n", __FUNCTION__);
+	DEBUG_PRINTF_INTR("%s(): execution finished\n", __func__);
 }

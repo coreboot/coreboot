@@ -126,7 +126,7 @@ int output_elf_segments(struct lar *lar, char *name, char *filebuf,
 	shdr = (Elf32_Shdr *)&(header[ehdr->e_shoff]);
 
 	if (verbose())
-		fprintf(stderr, "%s: header %p #headers %d\n", __FUNCTION__, ehdr, headers);
+		fprintf(stderr, "%s: header %p #headers %d\n", __func__, ehdr, headers);
 
 	entry = ehdr->e_entry;
 	/* bss segments are special. They are in the section headers, 

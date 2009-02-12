@@ -89,11 +89,11 @@ my_inb(X86EMU_pioAddr addr)
 	u8 translated = biosemu_dev_translate_address(&translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
-		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __func__,
 				addr);
-		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		rval = read_io((void *)translated_addr, 1);
-		DEBUG_PRINTF_IO("%s(%04x) Device I/O --> %02x\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%04x) Device I/O --> %02x\n", __func__,
 				addr, rval);
 		return rval;
 	} else {
@@ -101,7 +101,7 @@ my_inb(X86EMU_pioAddr addr)
 		case 0x61:
 			//8254 KB Controller / Timer Port
 			rval = handle_port_61h();
-			//DEBUG_PRINTF_IO("%s(%04x) KB / Timer Port B --> %02x\n", __FUNCTION__, addr, rval);
+			//DEBUG_PRINTF_IO("%s(%04x) KB / Timer Port B --> %02x\n", __func__, addr, rval);
 			return rval;
 			break;
 		case 0xCFC:
@@ -121,10 +121,10 @@ my_inb(X86EMU_pioAddr addr)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x) reading from bios_device.io_buffer\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 			rval = *((u8 *) (bios_device.io_buffer + addr));
 			DEBUG_PRINTF_IO("%s(%04x) I/O Buffer --> %02x\n",
-					__FUNCTION__, addr, rval);
+					__func__, addr, rval);
 			return rval;
 			break;
 		}
@@ -138,9 +138,9 @@ my_inw(X86EMU_pioAddr addr)
 	u8 translated = biosemu_dev_translate_address(&translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
-		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __func__,
 				addr);
-		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		u16 rval;
 		if ((translated_addr & (u64) 0x1) == 0) {
 			// 16 bit aligned access...
@@ -152,7 +152,7 @@ my_inw(X86EMU_pioAddr addr)
 			rval = (read_io((void *)translated_addr, 1) << 8)
 				| (read_io((void *)(translated_addr + 1), 1));
 		}
-		DEBUG_PRINTF_IO("%s(%04x) Device I/O --> %04x\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%04x) Device I/O --> %04x\n", __func__,
 				addr, rval);
 		return rval;
 	} else {
@@ -165,11 +165,11 @@ my_inw(X86EMU_pioAddr addr)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x) reading from bios_device.io_buffer\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 			u16 rval =
 			    in16le((void *) bios_device.io_buffer + addr);
 			DEBUG_PRINTF_IO("%s(%04x) I/O Buffer --> %04x\n",
-					__FUNCTION__, addr, rval);
+					__func__, addr, rval);
 			return rval;
 			break;
 		}
@@ -183,9 +183,9 @@ my_inl(X86EMU_pioAddr addr)
 	u8 translated = biosemu_dev_translate_address(&translated_addr);
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
-		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%x): access to Device I/O\n", __func__,
 				addr);
-		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		u32 rval;
 		if ((translated_addr & (u64) 0x3) == 0) {
 			// 32 bit aligned access...
@@ -199,7 +199,7 @@ my_inl(X86EMU_pioAddr addr)
 				| (read_io((void *)(translated_addr + 2), 1) << 8)
 				| (read_io((void *)(translated_addr + 3), 1));
 		}
-		DEBUG_PRINTF_IO("%s(%04x) Device I/O --> %08x\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%04x) Device I/O --> %08x\n", __func__,
 				addr, rval);
 		return rval;
 	} else {
@@ -211,11 +211,11 @@ my_inl(X86EMU_pioAddr addr)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x) reading from bios_device.io_buffer\n",
-			     __FUNCTION__, addr);
+			     __func__, addr);
 			u32 rval =
 			    in32le((void *) bios_device.io_buffer + addr);
 			DEBUG_PRINTF_IO("%s(%04x) I/O Buffer --> %08x\n",
-					__FUNCTION__, addr, rval);
+					__func__, addr, rval);
 			return rval;
 			break;
 		}
@@ -230,10 +230,10 @@ my_outb(X86EMU_pioAddr addr, u8 val)
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x, %x): access to Device I/O\n",
-				__FUNCTION__, addr, val);
-		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				__func__, addr, val);
+		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		write_io((void *) translated_addr, val, 1);
-		DEBUG_PRINTF_IO("%s(%04x) Device I/O <-- %02x\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%04x) Device I/O <-- %02x\n", __func__,
 				addr, val);
 	} else {
 		switch (addr) {
@@ -247,7 +247,7 @@ my_outb(X86EMU_pioAddr addr, u8 val)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x,%02x) writing to bios_device.io_buffer\n",
-			     __FUNCTION__, addr, val);
+			     __func__, addr, val);
 			*((u8 *) (bios_device.io_buffer + addr)) = val;
 			break;
 		}
@@ -262,8 +262,8 @@ my_outw(X86EMU_pioAddr addr, u16 val)
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x, %x): access to Device I/O\n",
-				__FUNCTION__, addr, val);
-		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				__func__, addr, val);
+		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		if ((translated_addr & (u64) 0x1) == 0) {
 			// little-endian conversion
 			u16 tempval = in16le((void *) &val);
@@ -276,7 +276,7 @@ my_outw(X86EMU_pioAddr addr, u16 val)
 			write_io(((void *) translated_addr),
 				(u8) (val & 0x00FF), 1);
 		}
-		DEBUG_PRINTF_IO("%s(%04x) Device I/O <-- %04x\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%04x) Device I/O <-- %04x\n", __func__,
 				addr, val);
 	} else {
 		switch (addr) {
@@ -288,7 +288,7 @@ my_outw(X86EMU_pioAddr addr, u16 val)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x,%04x) writing to bios_device.io_buffer\n",
-			     __FUNCTION__, addr, val);
+			     __func__, addr, val);
 			out16le((void *) bios_device.io_buffer + addr, val);
 			break;
 		}
@@ -303,8 +303,8 @@ my_outl(X86EMU_pioAddr addr, u32 val)
 	if (translated != 0) {
 		//translation successfull, access Device I/O (BAR or Legacy...)
 		DEBUG_PRINTF_IO("%s(%x, %x): access to Device I/O\n",
-				__FUNCTION__, addr, val);
-		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __FUNCTION__, addr, translated_addr);
+				__func__, addr, val);
+		//DEBUG_PRINTF_IO("%s(%04x): translated_addr: %llx\n", __func__, addr, translated_addr);
 		if ((translated_addr & (u64) 0x3) == 0) {
 			// little-endian conversion
 			u32 tempval = in32le((void *) &val);
@@ -321,7 +321,7 @@ my_outl(X86EMU_pioAddr addr, u32 val)
 			write_io(((void *) translated_addr),
 			    (u8) (val & 0x000000FF), 1);
 		}
-		DEBUG_PRINTF_IO("%s(%04x) Device I/O <-- %08x\n", __FUNCTION__,
+		DEBUG_PRINTF_IO("%s(%04x) Device I/O <-- %08x\n", __func__,
 				addr, val);
 	} else {
 		switch (addr) {
@@ -332,7 +332,7 @@ my_outl(X86EMU_pioAddr addr, u32 val)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x,%08x) writing to bios_device.io_buffer\n",
-			     __FUNCTION__, addr, val);
+			     __func__, addr, val);
 			out32le((void *) bios_device.io_buffer + addr, val);
 			break;
 		}
@@ -384,7 +384,7 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 #endif
 				DEBUG_PRINTF_IO
 				    ("%s(%04x) PCI Config Read @%02x, size: %d --> 0x%08x\n",
-				     __FUNCTION__, addr, offs, size, rval);
+				     __func__, addr, offs, size, rval);
 			}
 		}
 	}
@@ -433,7 +433,7 @@ pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 #endif
 				DEBUG_PRINTF_IO
 				    ("%s(%04x) PCI Config Write @%02x, size: %d <-- 0x%08x\n",
-				     __FUNCTION__, addr, offs, size, val);
+				     __func__, addr, offs, size, val);
 			}
 		}
 	}

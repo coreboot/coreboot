@@ -49,8 +49,8 @@ unsigned long uma_memory_start, uma_memory_size;
 /********************************************************
 * dbm690t uses a BCM5789 as on-board NIC.
 * It has a pin named LOW_POWER to enable it into LOW POWER state.
-* In order to run NIC, we should let it out of Low power state. This pin
-* is controlled by sb600 GPM3.
+* In order to run NIC, we should let it out of Low power state. This pin is
+* controlled by sb600 GPM3.
 * RRG4.2.3 GPM as GPIO
 * GPM pins can be used as GPIO. The GPM I/O functions is controlled by three registers:
 * I/O C50, C51, C52, PM I/O94, 95, 96.
@@ -63,22 +63,27 @@ static void enable_onboard_nic()
 
 	printk_info("enable_onboard_nic.\n");
 
-	outb(0x13, 0xC50);
+	/* set index register 0C50h to 13h (miscellaneous control) */
+	outb(0x13, 0xC50);	/* CMIndex */
 
+	/* set CM data register 0C51h bits [7:6] to 01b to set Input/Out control */
 	byte = inb(0xC51);
 	byte &= 0x3F;
 	byte |= 0x40;
 	outb(byte, 0xC51);
 
+	/* set GPM port 0C52h bit 3 to 0 to enable output for GPM3 */
 	byte = inb(0xC52);
 	byte &= ~0x8;
 	outb(byte, 0xC52);
 
+	/* set CM data register 0C51h bits [7:6] to 10b to set Output state control */
 	byte = inb(0xC51);
 	byte &= 0x3F;
 	byte |= 0x80;		/* 7:6=10 */
 	outb(byte, 0xC51);
 
+	/* set GPM port 0C52h bit 3 to 0 to output 0 on GPM3 */
 	byte = inb(0xC52);
 	byte &= ~0x8;
 	outb(byte, 0xC52);
@@ -204,15 +209,13 @@ void dbm690t_enable(device_t dev)
 
 	/* TOP_MEM: the top of DRAM below 4G */
 	msr = rdmsr(TOP_MEM);
-	printk_info
-	    ("dbm690t_enable, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-	     msr.lo, msr.hi);
+	printk_info("%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+		    __FUNCTION__, msr.lo, msr.hi);
 
 	/* TOP_MEM2: the top of DRAM above 4G */
 	msr2 = rdmsr(TOP_MEM2);
-	printk_info
-	    ("dbm690t_enable, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
-	     msr2.lo, msr2.hi);
+	printk_info("%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
+		    __FUNCTION__, msr2.lo, msr2.hi);
 
 	switch (msr.lo) {
 	case 0x10000000:	/* 256M system memory */
@@ -233,8 +236,8 @@ void dbm690t_enable(device_t dev)
 	}
 
 	uma_memory_start = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk_info("dbm690t_enable: uma size 0x%08x, memory start 0x%08x\n",
-		    uma_memory_size, uma_memory_start);
+	printk_info("%s: uma size 0x%08x, memory start 0x%08x\n",
+		    __FUNCTION__, uma_memory_size, uma_memory_start);
 
 	/* TODO: TOP_MEM2 */
 #else

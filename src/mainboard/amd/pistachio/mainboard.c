@@ -49,11 +49,11 @@ unsigned long uma_memory_start, uma_memory_size;
 * It has a pin named LOW_POWER to enable it into LOW POWER state.
 * In order to run NIC, we should let it out of Low power state. This pin is
 * controlled by GPM8.
-* RPR4.2.3 GPM as GPIO
+* RRG4.2.3 GPM as GPIO
 * GPM pins can be used as GPIO. The GPM I/O functions is controlled by three registers:
 * I/O C50, C51, C52, PM I/O94, 95, 96.
-* RPR4.2.3.1 GPM pins as Input
-* RPR4.2.3.2 GPM pins as Output
+* RRG4.2.3.1 GPM pins as Input
+* RRG4.2.3.2 GPM pins as Output
 * The R77 (on BRASS) / R81 (on Bronze) is not load!
 * So NIC can work whether this function runs.
 ********************************************************/
@@ -191,18 +191,18 @@ static void set_thermal_config()
 			     sm_dev->path.u.pci.devfn, 0x41, byte);
 
 	/* set GPM5 as input */
-	/* step1: set index register 0C50h to 13h (miscellaneous control) */
+	/* set index register 0C50h to 13h (miscellaneous control) */
 	outb(0x13, 0xC50);	/* CMIndex */
-	/* step2: set CM data register 0C51h bits [7:6] to 01b to set Input/Out control */
+	/* set CM data register 0C51h bits [7:6] to 01b to set Input/Out control */
 	byte = inb(0xC51);	/* CMData */
 	byte &= 0x3f;
 	byte |= 1 << 6;
 	outb(byte, 0xC51);
-	/* step3: set GPM port 0C52h appropriate bits to 1 to tri-state the GPM port */
+	/* set GPM port 0C52h bit 5 to 1 to tri-state the GPM port */
 	byte = inb(0xc52);	/* GpmPort */
 	byte |= 1 << 5;
 	outb(byte, 0xc52);
-	/* step4: set CM data register 0C51h bits [7:6] to 00b to set GPM port for read */
+	/* set CM data register 0C51h bits [7:6] to 00b to set GPM port for read */
 	byte = inb(0xc51);
 	byte &= 0x3f;
 	outb(byte, 0xc51);
@@ -281,15 +281,13 @@ void pistachio_enable(device_t dev)
 
 	/* TOP_MEM: the top of DRAM below 4G */
 	msr = rdmsr(TOP_MEM);
-	printk_info
-	    ("pistachio_enable, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
-	     msr.lo, msr.hi);
+	printk_info("%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+		    __FUNCTION__, msr.lo, msr.hi);
 
 	/* TOP_MEM2: the top of DRAM above 4G */
 	msr2 = rdmsr(TOP_MEM2);
-	printk_info
-	    ("pistachio_enable, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
-	     msr2.lo, msr2.hi);
+	printk_info("%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
+		    __FUNCTION__, msr2.lo, msr2.hi);
 
 	switch (msr.lo) {
 	case 0x10000000:	/* 256M system memory */
@@ -310,8 +308,8 @@ void pistachio_enable(device_t dev)
 	}
 
 	uma_memory_start = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk_info("pistachio_enable: uma size 0x%08x, memory start 0x%08x\n",
-		    uma_memory_size, uma_memory_start);
+	printk_info("%s: uma size 0x%08x, memory start 0x%08x\n",
+		    __FUNCTION__, uma_memory_size, uma_memory_start);
 
 	/* TODO: TOP_MEM2 */
 #else

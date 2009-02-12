@@ -37,6 +37,10 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 
+#ifdef CONFIG_GFXUMA
+extern uint64_t uma_memory_base, uma_memory_size;
+#endif
+
 static unsigned int mtrr_msr[] = {
 	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
 	MTRRfix4K_C0000_MSR, MTRRfix4K_C8000_MSR, MTRRfix4K_D0000_MSR, MTRRfix4K_D8000_MSR,
@@ -164,7 +168,7 @@ static inline unsigned int fls(unsigned int x)
  *	ramsize = 156MB == 128MB WB (at 0MB) + 32MB WB (at 128MB) + 4MB UC (at 156MB)
  */
 /* 2 MTRRS are reserved for the operating system */
-#if 0
+#if 1
 #define BIOS_MTRRS 6
 #define OS_MTRRS   2
 #else
@@ -229,13 +233,21 @@ static unsigned int range_to_mtrr(unsigned int reg,
 	unsigned long next_range_startk, unsigned char type, unsigned address_bits)
 {
 	if (!range_sizek) {
-		printk_debug("range_to_mtrr called for empty range\n");
+		/* If there's no MTRR hole, this function will bail out
+		 * here when called for the hole.
+		 */
+		printk_spew("Zero-sized MTRR range @%ldKB\n", range_startk);
 		return reg;
 	}
+
 	if (reg >= BIOS_MTRRS) {
-		printk_err("Running out of variable MTRRs!\n");
+		printk_err("Warning: Out of MTRRs for base: %4ldMB, range: %ldMB, type %s\n",
+				range_startk >>10, range_sizek >> 10,
+				(type==MTRR_TYPE_UNCACHEABLE)?"UC":
+				   ((type==MTRR_TYPE_WRBACK)?"WB":"Other") );
 		return reg;
 	}
+
 	while(range_sizek) {
 		unsigned long max_align, align;
 		unsigned long sizek;
@@ -375,6 +387,7 @@ void x86_setup_fixed_mtrrs(void)
         enable_fixed_mtrr();
 
 }
+
 void x86_setup_var_mtrrs(unsigned address_bits)
 /* this routine needs to know how many address bits a given processor
  * supports.  CPUs get grumpy when you set too many bits in 
@@ -401,10 +414,22 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 #endif
 	var_state.reg = 0;
 	var_state.address_bits = address_bits;
+
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
+#ifdef CONFIG_GFXUMA
+	// For now we assume the UMA space is at the end of memory
+	if (var_state.hole_startk || var_state.hole_sizek) {
+		printk_debug("Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");
+	} else {
+		// Increase the base range and set up UMA as an UC hole instead
+		var_state.range_sizek += (uma_memory_size >> 10);
 
+		var_state.hole_startk = (uma_memory_base >> 10);
+		var_state.hole_sizek = (uma_memory_size >> 10);
+	}
+#endif
 	/* Write the last range */
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk, 
 		var_state.range_sizek, 0, MTRR_TYPE_WRBACK, var_state.address_bits);

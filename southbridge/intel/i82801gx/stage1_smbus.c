@@ -57,7 +57,7 @@ void enable_smbus(void)
 
 	/* Clear any lingering errors, so transactions can run. */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-	printk(BIOS_DEBUG, "SMBus controller enabled.\r\n");
+	printk(BIOS_DEBUG, "SMBus controller enabled.\n");
 }
 
 /* some prototypes are hand-declared since the include files are still a little too stage-2 oriented */

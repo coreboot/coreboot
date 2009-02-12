@@ -33,7 +33,7 @@ static void power_down_reset_check(void)
 	u8 cmos;
 
 	cmos=cmos_read(RTC_BOOT_BYTE)>>4 ;
-	printk(BIOS_DEBUG, "Boot byte = %x\r\n", cmos);
+	printk(BIOS_DEBUG, "Boot byte = %x\n", cmos);
 
 	if((cmos>2)&&(cmos&1))  full_reset();
 }

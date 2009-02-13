@@ -38,7 +38,7 @@ static void pci_init(struct device *dev)
 	u32 dword;
 	u16 word;
 #ifdef CONFIG_PCI_64BIT_PREF_MEM
-	struct device pci_domain_dev;
+	struct device *pci_domain_dev;
 	struct resource *mem1, *mem2;
 #endif
 

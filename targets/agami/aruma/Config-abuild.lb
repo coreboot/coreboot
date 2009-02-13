@@ -17,7 +17,7 @@ option FALLBACK_SIZE = (1024*1024)
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x16000
+	option ROM_IMAGE_SIZE=0x16100
 	option XIP_ROM_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__

@@ -31,6 +31,7 @@
 #include <../../../southbridge/via/vt8237r/vt8237r.h>
 #include <../../../southbridge/via/k8t890/k8t890.h>
 #include <../../../northbridge/amd/amdk8/amdk8_acpi.h>
+#include <cpu/amd/model_fxx_powernow.h>
 
 extern unsigned char AmlCode[];
 
@@ -83,7 +84,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id) {
 	k8acpi_write_vars();
-	/* put PSTATES generator call here */
+	amd_model_fxx_generate_powernow(0, 0, 0);
 	return (unsigned long) (acpigen_get_current());
 }
 

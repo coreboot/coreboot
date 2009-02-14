@@ -24,14 +24,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 {
 	 Include ("amdk8_util.asl")
 
-
-	/* Define the main processor.*/
-	Scope (\_PR)
-	{
-		Processor (\_PR.CPU0, 0x00, 0x000000, 0x00) {}
-		Processor (\_PR.CPU1, 0x01, 0x000000, 0x00) {}
-	}
-
 	/* For now only define 2 power states:
 	 *  - S0 which is fully on
 	 *  - S5 which is soft off

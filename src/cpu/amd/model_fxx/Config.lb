@@ -20,3 +20,4 @@ driver model_fxx_init.o
 object apic_timer.o
 object model_fxx_update_microcode.o
 object processor_name.o
+object powernow_acpi.o

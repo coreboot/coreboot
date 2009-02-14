@@ -136,3 +136,103 @@ int acpigen_write_scope(char *name)
 	len = acpigen_write_len_f();
 	return len + acpigen_emit_stream(name, strlen(name)) + 1;
 }
+
+int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
+{
+/*
+        Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
+        {
+*/
+	char pscope[16];
+	int  len;
+	/* processor op */
+	acpigen_emit_byte(0x5b);
+	acpigen_emit_byte(0x83);
+	len = acpigen_write_len_f();
+
+	sprintf(pscope, "\\._PR_CPU%x", (unsigned int) cpuindex);
+	len += acpigen_emit_stream(pscope, strlen(pscope));
+	acpigen_emit_byte(cpuindex);
+	acpigen_emit_byte(pblock_addr & 0xff);
+	acpigen_emit_byte((pblock_addr >> 8) & 0xff);
+	acpigen_emit_byte((pblock_addr >> 16) & 0xff);
+	acpigen_emit_byte((pblock_addr >> 24) & 0xff);
+	acpigen_emit_byte(pblock_len);
+	return 6  + 2 + len;
+}
+
+int acpigen_write_empty_PCT(void)
+{
+/*
+    Name (_PCT, Package (0x02)
+    {
+        ResourceTemplate ()
+        {
+            Register (FFixedHW,
+                0x00,               // Bit Width
+                0x00,               // Bit Offset
+                0x0000000000000000, // Address
+                ,)
+        },
+
+        ResourceTemplate ()
+        {
+            Register (FFixedHW,
+                0x00,               // Bit Width
+                0x00,               // Bit Offset
+                0x0000000000000000, // Address
+                ,)
+        }
+    })
+*/
+	static char stream[] = {
+		0x08, 0x5F, 0x50, 0x43, 0x54, 0x12, 0x2C,	/* 00000030    "0._PCT.," */
+		0x02, 0x11, 0x14, 0x0A, 0x11, 0x82, 0x0C, 0x00,	/* 00000038    "........" */
+		0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	/* 00000040    "........" */
+		0x00, 0x00, 0x00, 0x00, 0x79, 0x00, 0x11, 0x14,	/* 00000048    "....y..." */
+		0x0A, 0x11, 0x82, 0x0C, 0x00, 0x7F, 0x00, 0x00,	/* 00000050    "........" */
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	/* 00000058    "........" */
+		0x00, 0x79, 0x00
+	};
+	return acpigen_emit_stream(stream, ARRAY_SIZE(stream));
+}
+
+/* generates a func with max supported P states */
+int acpigen_write_PPC(u8 nr)
+{
+/*
+    Method (_PPC, 0, NotSerialized)
+    {
+        Return (nr)
+    }
+*/
+	int len;
+	/* method op */
+	acpigen_emit_byte(0x14);
+	len = acpigen_write_len_f();
+	len += acpigen_emit_stream("_PPC", 4);
+	/* no fnarg */
+	acpigen_emit_byte(0x00);
+	/* return */
+	acpigen_emit_byte(0xa4);
+	/* arg */
+	len += acpigen_write_byte(nr);
+	acpigen_patch_len(len - 1);
+	return len + 3;
+}
+
+int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat,
+			u32 control, u32 status)
+{
+	int len;
+	len = acpigen_write_package(6);
+	len += acpigen_write_dword(coreFreq);
+	len += acpigen_write_dword(power);
+	len += acpigen_write_dword(transLat);
+	len += acpigen_write_dword(busmLat);
+	len += acpigen_write_dword(control);
+	len += acpigen_write_dword(status);
+	//pkglen without the len opcode
+	acpigen_patch_len(len - 1);
+	return len;
+}

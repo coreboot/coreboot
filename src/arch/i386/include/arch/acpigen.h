@@ -34,4 +34,9 @@ int acpigen_write_name(char *name);
 int acpigen_write_name_dword(char *name, uint32_t val);
 int acpigen_write_name_byte(char *name, uint8_t val);
 int acpigen_write_scope(char *name);
+int acpigen_write_PPC(u8 nr);
+int acpigen_write_empty_PCT(void);
+int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat,
+			u32 control, u32 status);
+int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
 #endif

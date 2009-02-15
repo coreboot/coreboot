@@ -35,12 +35,10 @@
 void x86_setup_var_mtrrs(unsigned address_bits);
 void x86_setup_mtrrs(unsigned address_bits);
 int x86_mtrr_check(void);
-void stage1_set_var_mtrr(unsigned long reg, unsigned long base,
-				unsigned long size, unsigned long type);
 void stage1_set_fix_mtrr(u32 reg, u8 type);
-void stage1_set_var_mtrr_x(unsigned long reg, u32 base_lo, u32 base_hi,
-				 u32 size_lo, u32 size_hi, unsigned long type);
-
+u8 stage1_range_to_mtrr(u8 reg, u32 range_startk, u32 range_sizek,
+						u8 type, u32 address_bits);
+u32 stage1_resk(u64 value);
 
 #endif
 

@@ -38,6 +38,9 @@
 void set_mtrr_ram_access(void)
 {
 	struct msr msr;
+	u8 mtrr_reg;
+	u32 mem_sizek;
+	u32 mem_basek;
 
 	disable_cache();
 
@@ -68,20 +71,31 @@ void set_mtrr_ram_access(void)
 	stage1_set_fix_mtrr(MTRRfix4K_F8000_MSR,
 						 MTRR_READ_MEM | MTRR_WRITE_MEM | MTRR_TYPE_WRBACK);
 
-	/* 1MB - TOM */
+	/* 0MB - TOM */
+	/* The fixed MTRRS will override 0MB-1MB but because the size needs to
+	 * be power of two aligned we want the base to be power of two aligned(0).
+	 * Otherwise we will use all the MTRRs up.
+	 */
 	msr = rdmsr(TOP_MEM);
-	stage1_set_var_mtrr_x(0, 0x00100000, 0x0, msr.lo, msr.hi, MTRR_TYPE_WRBACK);
+	mem_sizek = stage1_resk((msr.hi << 32) | msr.lo);
+	mem_basek = 0x0;
+	mtrr_reg = 0;
+	mtrr_reg = stage1_range_to_mtrr(mtrr_reg, mem_basek, mem_sizek,
+									MTRR_TYPE_WRBACK, CPU_ADDR_BITS);
 
 	/* System ROM (Assume 1MB) */
-	stage1_set_var_mtrr(1, 0xFFFFFFFF - (u32)((CONFIG_COREBOOT_ROMSIZE_KB << 10) - 1),
-						CONFIG_COREBOOT_ROMSIZE_KB << 10, MTRR_TYPE_WRTHROUGH);
+	mtrr_reg = stage1_range_to_mtrr(mtrr_reg,
+				(u32)(0xFFFFFFFF >> 10) - (u32)(CONFIG_COREBOOT_ROMSIZE_KB - 1),
+				CONFIG_COREBOOT_ROMSIZE_KB, MTRR_TYPE_WRBACK, CPU_ADDR_BITS);
 
 	/* 4GB - TOM2 */
 	msr = rdmsr(SYSCFG_MSR);
 	if (msr.lo & SYSCFG_MSR_TOM2En) {
 		msr = rdmsr(TOP_MEM2);
-		stage1_set_var_mtrr_x(2, 0x0, 0x00000001, msr.lo, msr.hi,
-							  MTRR_TYPE_WRBACK);
+		mem_sizek = stage1_resk((msr.hi << 32) | msr.lo);
+		mem_basek = (0xFFFFFFFF >> 10) + 1; /* 4GB */
+		mtrr_reg = stage1_range_to_mtrr(mtrr_reg, mem_basek, mem_sizek,
+										MTRR_TYPE_WRBACK, CPU_ADDR_BITS);
 	}
 
 	/* Enable Fixed and Variable MTRRs MSRs*/

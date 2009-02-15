@@ -14,49 +14,49 @@
 #include <msr.h>
 #include <mtrr.h>
 
-void disable_var_mtrr(unsigned int reg)
+#if 1
+#define BIOS_MTRRS 6
+#define OS_MTRRS   2
+#else
+#define BIOS_MTRRS 8
+#define OS_MTRRS   0
+#endif
+#define MTRRS (BIOS_MTRRS + OS_MTRRS)
+
+/* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
+static inline u32 fms(u32 x)
 {
-	/* The invalid bit is kept in the mask so we simply
-	 * clear the relevent mask register to disable a
-	 * range.
-	 */
-	struct msr zero;
-	zero.lo = zero.hi = 0;
-	wrmsr(MTRRphysMask_MSR(reg), zero);
+	int r;
+
+	__asm__("bsrl %1,%0\n\t"
+			"jnz 1f\n\t"
+			"movl $0,%0\n"
+			"1:" : "=r" (r) : "g" (x));
+	return r;
 }
 
-void stage1_set_var_mtrr(
-	unsigned long reg, unsigned long base, unsigned long size, unsigned long type)
-
+/* fls: find least sigificant bit set */
+static inline u32 fls(u32 x)
 {
-	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
-	/* FIXME: It only support 4G less range */
-	struct msr basem, maskm;
-	basem.lo = base | type;
-	basem.hi = 0;
-	wrmsr(MTRRphysBase_MSR(reg), basem);
-	maskm.lo = ~(size - 1) | 0x800;
-	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
-	wrmsr(MTRRphysMask_MSR(reg), maskm);
+	int r;
+
+	__asm__("bsfl %1,%0\n\t"
+			"jnz 1f\n\t"
+			"movl $32,%0\n"
+			"1:" : "=r" (r) : "g" (x));
+	return r;
 }
 
-void stage1_set_var_mtrr_x(
-	unsigned long reg, u32 base_lo, u32 base_hi, u32 size_lo, u32 size_hi, unsigned long type)
-
+u32 stage1_resk(u64 value)
 {
-	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
-	struct msr basem, maskm;
-	basem.lo = (base_lo & 0xfffff000) | type;
-	basem.hi = base_hi & ((1<<(CPU_ADDR_BITS-32))-1);
-	wrmsr(MTRRphysBase_MSR(reg), basem);
-	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
-	if(size_lo) {
-		maskm.lo = ~(size_lo - 1) | 0x800;
-	} else {
-		maskm.lo = 0x800;
-		maskm.hi &= ~(size_hi - 1);
+	u32 resultk;
+	if (value < (1ULL << 42)) {
+		resultk = value >> 10;
 	}
-	wrmsr(MTRRphysMask_MSR(reg), maskm);
+	else {
+		resultk = 0xffffffff;
+	}
+	return resultk;
 }
 
 /* Sets the entire fixed mtrr to a cache type. */
@@ -77,14 +77,114 @@ void stage1_set_fix_mtrr(u32 reg, u8 type)
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~SYSCFG_MSR_MtrrFixDramModEn;
 	wrmsr(SYSCFG_MSR, msr);
+}
 
+/* Set a variable MTRR, comes from linux kernel source
+ * use stage1_range_to_mtrr() to set variable MTRRs.
+ */
+static void stage1_set_var_mtrr(u8 reg, u32 basek, u32 sizek,
+								u8 type, u32 address_bits)
+{
+	struct msr base, mask;
+	u32 address_mask_high;
+
+	if (reg >= MTRRS) {
+		printk(BIOS_ERR,"Requested MTRR is out of range!\n");
+		return;
+	}
+
+	if (sizek == 0) {
+		struct msr zero;
+		zero.lo = zero.hi = 0;
+
+		disable_cache();	/* disable/enable cache when setting MTRRs */
+
+		/* The invalid bit is kept in the mask, so we simply clear the
+		relevant mask register to disable a range. */
+		wrmsr (MTRRphysMask_MSR(reg), zero);
+
+		enable_cache();
+		return;
+	}
+
+
+	address_mask_high = ((1u << (address_bits - 32u)) - 1u);
+
+	base.hi = basek >> 22;
+	base.lo  = basek << 10;
+
+	printk(BIOS_SPEW, "ADDRESS_MASK_HIGH=%#x\n", address_mask_high);
+
+	if (sizek < 4*1024*1024) {
+		mask.hi = address_mask_high;
+		mask.lo = ~((sizek << 10) -1);
+	}
+	else {
+		mask.hi = address_mask_high & (~((sizek >> 22) -1));
+		mask.lo = 0;
+	}
+
+	disable_cache();	/* disable/enable cache when setting MTRRs */
+
+	/* Bit 32-35 of MTRRphysMask should be set to 1 */
+	base.lo |= type;
+	mask.lo |= 0x800;
+	wrmsr (MTRRphysBase_MSR(reg), base);
+	wrmsr (MTRRphysMask_MSR(reg), mask);
+
+	enable_cache();
+}
+
+/* Set a memory range to variable MTRRs.
+ * This handles the power of 2 alignment requirement.
+ */
+u8 stage1_range_to_mtrr(u8 reg, u32 range_startk, u32 range_sizek,
+						u8 type, u32 address_bits)
+{
+	if (!range_sizek) {
+		printk(BIOS_SPEW, "Zero-sized MTRR range @%dKB\n", range_startk);
+		return reg;
+	}
+
+	if (reg >= BIOS_MTRRS) {
+		printk(BIOS_ERR, "ERROR: Out of MTRRs for base: %4dMB, range: %dMB, type %s\n",
+				range_startk >>10, range_sizek >> 10,
+				(type==MTRR_TYPE_UNCACHEABLE)?"UC":
+				((type==MTRR_TYPE_WRBACK)?"WB":"Other") );
+		return reg;
+	}
+
+	while(range_sizek) {
+		u32 max_align, align;
+		u32 sizek;
+		/* Compute the maximum size I can make a range */
+		max_align = fls(range_startk);
+		align = fms(range_sizek);
+		if (align > max_align) {
+			align = max_align;
+		}
+		sizek = 1 << align;
+		printk(BIOS_DEBUG,"Setting variable MTRR %d, base: %dKB, range: %dKB, type %s\n",
+			reg, range_startk, sizek,
+			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
+			((type==MTRR_TYPE_WRBACK)?"WB":"Other")
+			);
+		stage1_set_var_mtrr(reg++, range_startk, sizek, type, address_bits);
+		range_startk += sizek;
+		range_sizek -= sizek;
+		if (reg >= BIOS_MTRRS) {
+			printk(BIOS_ERR, "Out of variable MTRRs!\n");
+			break;
+		}
+	}
+	return reg;
 }
 
 void cache_cbmem(int type)
 {
-	/* Enable caching for 0 - 1MB using variable mtrr */
+	/* Enable caching for 0 - 1MB(CONFIG_CBMEMK) using variable mtrr */
 	disable_cache();
-	stage1_set_var_mtrr(0, 0x00000000, CONFIG_CBMEMK << 10, type);
+	stage1_range_to_mtrr(0, 0, CONFIG_CBMEMK, MTRR_TYPE_WRBACK, CPU_ADDR_BITS);
 	enable_cache();
 }
 
@@ -119,7 +219,8 @@ void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
-	stage1_set_var_mtrr(1, XIP_ROM_BASE, XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+	stage1_range_to_mtrr(1, 0, XIP_ROM_BASE >> 10, XIP_ROM_SIZE >> 10,
+						MTRR_TYPE_WRBACK, CPU_ADDR_BITS);
 #endif
 #endif
 

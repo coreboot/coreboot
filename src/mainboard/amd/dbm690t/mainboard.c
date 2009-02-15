@@ -44,7 +44,7 @@ extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
-unsigned long uma_memory_start, uma_memory_size;
+uint64_t uma_memory_base, uma_memory_size;
 
 /********************************************************
 * dbm690t uses a BCM5789 as on-board NIC.
@@ -235,14 +235,14 @@ void dbm690t_enable(device_t dev)
 		break;
 	}
 
-	uma_memory_start = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk_info("%s: uma size 0x%08x, memory start 0x%08x\n",
-		    __func__, uma_memory_size, uma_memory_start);
+	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
+	printk_info("%s: uma size 0x%08lx, memory start 0x%08lx\n",
+		    __func__, uma_memory_size, uma_memory_base);
 
 	/* TODO: TOP_MEM2 */
 #else
 	uma_memory_size = 0x8000000;	/* 128M recommended UMA */
-	uma_memory_start = 0x38000000;	/* 1GB  system memory supposed */
+	uma_memory_base = 0x38000000;	/* 1GB  system memory supposed */
 #endif
 
 	enable_onboard_nic();
@@ -256,10 +256,10 @@ int add_mainboard_resources(struct lb_memory *mem)
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
 #if (CONFIG_GFXUMA == 1)
-	printk_info("uma_memory_start=0x%x, uma_memory_size=0x%x \n",
-	uma_memory_start, uma_memory_size);
+	printk_info("uma_memory_base=0x%lx, uma_memory_size=0x%lx \n",
+	uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		uma_memory_start, uma_memory_size);
+		uma_memory_base, uma_memory_size);
 #endif
 }
 

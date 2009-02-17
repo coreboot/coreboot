@@ -97,6 +97,21 @@ int acpigen_write_dword(unsigned int data)
 	return 5;
 }
 
+int acpigen_write_qword(uint64_t data)
+{
+	/* qword op */
+	acpigen_emit_byte(0xe);
+	acpigen_emit_byte(data & 0xff);
+	acpigen_emit_byte((data >> 8) & 0xff);
+	acpigen_emit_byte((data >> 16) & 0xff);
+	acpigen_emit_byte((data >> 24) & 0xff);
+	acpigen_emit_byte((data >> 32) & 0xff);
+	acpigen_emit_byte((data >> 40) & 0xff);
+	acpigen_emit_byte((data >> 48) & 0xff);
+	acpigen_emit_byte((data >> 56) & 0xff);
+	return 9;
+}
+
 int acpigen_write_name_byte(char *name, uint8_t val) {
 	int len;
 	len = acpigen_write_name(name);
@@ -108,6 +123,13 @@ int acpigen_write_name_dword(char *name, uint32_t val) {
 	int len;
 	len = acpigen_write_name(name);
 	len += acpigen_write_dword(val);
+	return len;
+}
+
+int acpigen_write_name_qword(char *name, uint64_t val) {
+	int len;
+	len = acpigen_write_name(name);
+	len += acpigen_write_qword(val);
 	return len;
 }
 

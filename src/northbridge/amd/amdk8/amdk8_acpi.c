@@ -302,6 +302,8 @@ int k8acpi_write_vars(void)
 	lens += acpigen_write_name_dword("SBDN", sysconf.sbdn);
 	msr = rdmsr(TOP_MEM);
 	lens += acpigen_write_name_dword("TOM1", msr.lo);
+	msr = rdmsr(TOP_MEM2);
+	lens += acpigen_write_name_qword("TOM2", (((uint64_t) msr.hi) << 32) | msr.lo);
 
 	lens += k8acpi_write_HT();
 	//minus opcode

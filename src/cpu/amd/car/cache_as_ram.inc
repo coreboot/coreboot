@@ -24,12 +24,22 @@
 /* leave some space for global variable to pass to RAM stage */
 #define GlobalVarSize DCACHE_RAM_GLOBAL_VAR_SIZE
 
-#if CAR_FAM10 == 1
+/* for CAR_FAM10 */
 #define CacheSizeAPStack 0x400 /* 1K */
-#endif
+
+#define jmp_if_k8(x)	comisd	%xmm2, %xmm1; jb x
+
+#define CPUID_MASK		0x0ff00f00
+#define CPUID_VAL_FAM10_ROTATED	0x0f000010
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
+/*
+ XMM map:
+    xmm1: cpu family
+    xmm2: fam10 comparison value
+    xmm3: backup ebx
+*/
 
 	/* Save the BIST result */
 	movl	%eax, %ebp
@@ -41,6 +51,24 @@ cache_as_ram_setup:
 	movb	$0xA0, %al
 	outb	%al, $0x80
 
+	/* enable SSE */
+	movl %cr4, %eax
+	orl $(3<<9), %eax
+	movl %eax, %cr4
+
+	/* figure out cpu family */
+	cvtsi2sd %ebx, %xmm3
+	movl	$0x01, %eax
+	cpuid
+	/* base family is bits 8..11, extended family is bits 20..27 */
+	andl	$CPUID_MASK, %eax
+	/* reorder bits for easier comparison by value */
+	roll	$0x10, %eax
+	cvtsi2sd %eax, %xmm1
+	movl	$CPUID_VAL_FAM10_ROTATED, %eax
+	cvtsi2sd %eax, %xmm2
+	cvtsd2si %xmm3, %ebx
+
 	/* hope we can skip the double set for normal part */
 #if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 1))
 
@@ -50,7 +78,8 @@ cache_as_ram_setup:
 	andl	$(1 << 11), %eax
 	movl	%eax, %ebx	/* We store the status */
 
-#if CAR_FAM10 == 1
+	jmp_if_k8(CAR_FAM10_out_post_errata)
+
 	/* for GH, CAR need to set DRAM Base/Limit Registers to direct that to node0 */
 
 	/* Only BSP needed, for other nodes set during HT/memory init. */
@@ -86,16 +115,14 @@ cache_as_ram_setup:
 
 CAR_FAM10_out:
 
-#endif
-
-#if CAR_FAM10 == 1
 	/* Errata 193: Disable clean copybacks to L3 cache to allow cached ROM.
 	   Re-enable it in after RAM is initialized and before CAR is disabled */
 	movl	$0xc001102a, %ecx
 	rdmsr
 	bts	$15, %eax
 	wrmsr
-#endif
+
+CAR_FAM10_out_post_errata:
 
 	/* Set MtrrFixDramModEn for clear fixed mtrr */
 enable_fixed_mtrr_dram_modify:
@@ -134,8 +161,10 @@ clear_fixed_var_mtrr_out:
 	 * macro will have a monotonically increasing segs parameter.
 	 */
 	xorl \reg, \reg
-#if CAR_FAM10 == 1
-.elseif \segs == 1
+.else
+	jmp_if_k8(1f)
+
+.if \segs == 1
 	movl $0x1e000000, \reg /* WB MEM type */
 .elseif \segs == 2
 	movl $0x1e1e0000, \reg /* WB MEM type */
@@ -143,8 +172,10 @@ clear_fixed_var_mtrr_out:
 	movl $0x1e1e1e00, \reg /* WB MEM type */
 .elseif \segs >= 4
 	movl $0x1e1e1e1e, \reg /* WB MEM type */
-#else
-.elseif \segs == 1
+.endif
+	jmp 2f
+1:
+.if \segs == 1
 	movl $0x06000000, \reg /* WB IO type */
 .elseif \segs == 2
 	movl $0x06060000, \reg /* WB IO type */
@@ -152,8 +183,9 @@ clear_fixed_var_mtrr_out:
 	movl $0x06060600, \reg /* WB IO type */
 .elseif \segs >= 4
 	movl $0x06060606, \reg /* WB IO type */
-#endif
 .endif
+2:
+.endif /* if \segs <= 0 */
 .endm
 
 /* size is the cache size in bytes we want to use for CAR.
@@ -219,7 +251,10 @@ clear_fixed_var_mtrr_out:
 	wrmsr
 
 	movl	$0x203, %ecx
-	movl	$((1 << (CPU_ADDR_BITS - 32)) - 1), %edx  /* AMD 40 bit for K8, 48 bit for GH */
+	movl	$0xff, %edx /* (1 << (CPU_ADDR_BITS - 32)) - 1 for K8 (CPU_ADDR_BITS = 40) */
+	jmp_if_k8(wbcache_post_fam10_setup)
+	movl	$0xffff, %edx /* (1 << (CPU_ADDR_BITS - 32)) - 1 for FAM10 (CPU_ADDR_BITS = 48) */
+wbcache_post_fam10_setup:
 	movl	$(~(XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
 #endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
@@ -248,13 +283,14 @@ clear_fixed_var_mtrr_out:
 	movl	%eax, %cr0
 
 
-#if CAR_FAM10 == 1
+	jmp_if_k8(fam10_end_part1)
+
 	/* So we need to check if it is BSP */
 	movl	$0x1b, %ecx
 	rdmsr
 	bt	$8, %eax /*BSC */
 	jnc	CAR_FAM10_ap
-#endif
+fam10_end_part1:
 
 	movb	$0xA2, %al
 	outb	%al, $0x80
@@ -279,8 +315,6 @@ clear_fixed_var_mtrr_out:
 
 	movb	$0xA3, %al
 	outb	%al, $0x80
-
-#if CAR_FAM10 == 1
 
 	jmp	CAR_FAM10_ap_out
 CAR_FAM10_ap:
@@ -326,10 +360,14 @@ roll_cfg:
 	outb	%al, $0x80
 
 CAR_FAM10_ap_out:
-#endif
 
 	movb	$0xA5, %al
 	outb	%al, $0x80
+
+	/* disable SSE */
+	movl %cr4, %eax
+	andl $~(3<<9), %eax
+	movl %eax, %cr4
 
 	/* Restore the BIST result */
 	movl	%ebp, %eax

@@ -121,6 +121,7 @@ void loop(void)
 			selected = (selected - 1) % m_entries;
 		else if (key == KEY_ENTER) {
 			run_payload(mpayloads[selected]);
+			clear();
 			refresh();
 		} else
 			continue;

@@ -1,5 +1,5 @@
-struct chip_operations mainboard_supermicro_x6dai_g_ops;
+struct chip_operations mainboard_ops;
 
-struct mainboard_supermicro_x6dai_g_config {
+struct mainboard_config {
 	int nothing;
 };

@@ -40,7 +40,7 @@ static const u16 ec_init_table[] = {	/* hi=data, lo=index */
 
 static void init(struct device *dev)
 {
-	struct mainboard_lippert_roadrunner_lx_config *mb = dev->chip_info;
+	struct mainboard_config *mb = dev->chip_info;
 	unsigned int gpio_base, i;
 	printk_debug("LiPPERT RoadRunner-LX ENTER %s\n", __func__);
 
@@ -70,7 +70,7 @@ static void enable_dev(struct device *dev)
 	dev->ops->init = init;
 }
 
-struct chip_operations mainboard_lippert_roadrunner_lx_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("LiPPERT RoadRunner-LX Mainboard")
 	.enable_dev = enable_dev,
 };

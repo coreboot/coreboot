@@ -1,6 +1,6 @@
-extern struct chip_operations mainboard_iwill_dk8_htx_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_iwill_dk8_htx_config {
+struct mainboard_config {
 //	int fixup_scsi;
 //	int fixup_vga;
 };

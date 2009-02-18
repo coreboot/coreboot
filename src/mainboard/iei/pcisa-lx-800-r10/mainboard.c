@@ -20,6 +20,6 @@
 
 #include <device/device.h>
 
-struct chip_operations mainboard_iei_pcisa_lx_800_r10_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("IEI PCISA-LX-800-R10 Mainboard")
 };

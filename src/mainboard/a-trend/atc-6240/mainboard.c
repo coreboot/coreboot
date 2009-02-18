@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_a_trend_atc_6240_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("A-Trend ATC-6240 Mainboard")
 };

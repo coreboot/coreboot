@@ -18,5 +18,5 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_gigabyte_ga_6bxc_ops;
-struct mainboard_gigabyte_ga_6bxc_config {};
+extern struct chip_operations mainboard_ops;
+struct mainboard_config {};

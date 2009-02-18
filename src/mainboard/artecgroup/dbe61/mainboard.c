@@ -52,7 +52,7 @@ static void enable_dev(struct device *dev)
         dev->ops->init = init;
 }
 
-struct chip_operations mainboard_artecgroup_dbe61_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("Artec Group dbe61 Mainboard")
         .enable_dev = enable_dev,
 };

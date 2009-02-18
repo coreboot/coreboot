@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_artecgroup_dbe61_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_artecgroup_dbe61_config {
+struct mainboard_config {
 	int nothing;
 };

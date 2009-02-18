@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_asi_mb_5blgp_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("ASI MB-5BLGP Mainboard")
 };

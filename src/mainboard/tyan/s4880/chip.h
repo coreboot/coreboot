@@ -1,6 +1,6 @@
-extern struct chip_operations mainboard_tyan_s4880_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_tyan_s4880_config {
+struct mainboard_config {
 	int fixup_scsi;
 //	int fixup_vga;
 };

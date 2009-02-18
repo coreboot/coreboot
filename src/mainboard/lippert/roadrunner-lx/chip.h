@@ -22,9 +22,9 @@
 
 #include <stdint.h>
 
-extern struct chip_operations mainboard_lippert_roadrunner_lx_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_lippert_roadrunner_lx_config {
+struct mainboard_config {
 	/* bit5 = Live LED, bit2 = RS485_EN2, bit1 = RS485_EN1 */
 	u8 sio_gp1x_config;
 };

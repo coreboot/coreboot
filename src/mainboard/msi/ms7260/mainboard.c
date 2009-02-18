@@ -22,7 +22,7 @@
 #include "chip.h"
 
 #if CONFIG_CHIP_NAME == 1
-struct chip_operations mainboard_msi_ms7260_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("MSI K9N Neo (MS-7260) Mainboard")
 };
 #endif

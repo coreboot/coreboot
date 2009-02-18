@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_rca_rm4100_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_rca_rm4100_config {
+struct mainboard_config {
 	int nothing;
 };

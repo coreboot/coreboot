@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_newisys_khepri_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_newisys_khepri_config {
+struct mainboard_config {
 	int nothing;
 };

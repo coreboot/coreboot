@@ -40,7 +40,7 @@ void write_protect_vgabios(void)
  		pci_write_config8(dev, 0x61, 0xaa);
 }
 
-struct chip_operations mainboard_via_epia_m_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("VIA EPIA-M Mainboard")
 };
 

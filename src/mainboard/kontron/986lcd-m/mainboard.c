@@ -23,7 +23,7 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_kontron_986lcd_m_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("Kontron 986LCD-M Mainboard")
 };
 

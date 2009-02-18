@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_azza_pt_6ibd_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("AZZA PT-6IBD Mainboard")
 };

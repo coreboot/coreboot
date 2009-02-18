@@ -271,8 +271,8 @@ static void set_thermal_config()
 *************************************************/
 void pistachio_enable(device_t dev)
 {
-	struct mainboard_amd_pistachio_config *mainboard =
-	    (struct mainboard_amd_pistachio_config *)dev->chip_info;
+	struct mainboard_config *mainboard =
+	    (struct mainboard_config *)dev->chip_info;
 
 	printk_info("Mainboard Pistachio Enable. dev=0x%x\n", dev);
 
@@ -338,7 +338,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 /*
 * CONFIG_CHIP_NAME defined in Option.lb.
 */
-struct chip_operations mainboard_amd_pistachio_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("AMD Pistachio Mainboard")
 	.enable_dev = pistachio_enable,
 };

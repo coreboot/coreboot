@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_via_epia_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_via_epia_config {
+struct mainboard_config {
 	int nothing;
 };

@@ -1353,7 +1353,7 @@ def mainboard():
 	fulldir = os.path.join(srcdir, partdir)
 	type_name = flatten_name(partdir)
 	newpart = partobj(curimage, fulldir, partstack.tos(), 'mainboard', \
-		type_name, 0, 'chip')
+		'mainboard', 0, 'chip')
 	#print "Configuring PART %s" % (type)
 	partstack.push(newpart)
 	#print "  new PART tos is now %s\n" %partstack.tos().info()

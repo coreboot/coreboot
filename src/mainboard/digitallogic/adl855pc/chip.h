@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_digitallogic_adl855pc_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_digitallogic_adl855pc_config {
+struct mainboard_config {
 	int nothing;
 };

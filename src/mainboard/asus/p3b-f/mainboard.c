@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_asus_p3b_f_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("ASUS P3B-F Mainboard")
 };

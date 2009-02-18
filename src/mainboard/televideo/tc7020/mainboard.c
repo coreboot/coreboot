@@ -21,7 +21,7 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_televideo_tc7020_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("TeleVideo TC7020 Mainboard")
 };
 

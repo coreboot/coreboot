@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-struct chip_operations mainboard_kontron_986lcd_m_ops;
-struct mainboard_kontron_986lcd_m_config {
+struct chip_operations mainboard_ops;
+struct mainboard_config {
 	int nothing;
 };

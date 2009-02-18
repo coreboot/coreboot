@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_asus_mew_vm_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_asus_mew_vm_config {
+struct mainboard_config {
 	int nothing;
 };

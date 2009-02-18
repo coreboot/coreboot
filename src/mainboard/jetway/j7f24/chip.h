@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_jetway_j7f24_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_jetway_j7f24_config {
+struct mainboard_config {
 	int nothing;
 };

@@ -27,7 +27,7 @@
 #include "chip.h"
 
 #if CONFIG_CHIP_NAME == 1
-struct chip_operations mainboard_gigabyte_m57sli_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("GIGABYTE GA-M57SLI Mainboard")
 };
 #endif

@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_lippert_frontrunner_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_lippert_frontrunner_config {
+struct mainboard_config {
 	int nothing;
 };

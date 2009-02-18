@@ -32,7 +32,7 @@ static void enable_dev(struct device *dev)
 	dev->ops->init = init;
 }
 
-struct chip_operations mainboard_pcengines_alix1c_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("PC Engines ALIX1.C Mainboard")
 	.enable_dev = enable_dev,
 };

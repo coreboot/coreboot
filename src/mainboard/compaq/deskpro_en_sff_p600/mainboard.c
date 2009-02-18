@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_compaq_deskpro_en_sff_p600_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("Compaq Deskpro EN SFF P600 Mainboard")
 };

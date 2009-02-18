@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_via_pc2500e_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("VIA pc2500e Mainboard")
 };

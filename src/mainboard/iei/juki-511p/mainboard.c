@@ -26,6 +26,6 @@
 #include <arch/io.h>
 #include "chip.h"
 
-struct chip_operations mainboard_iei_juki_511p_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("IEI JUKI-511P Mainboard")
 };

@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_eaglelion_5bcm_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_eaglelion_5bcm_config {
+struct mainboard_config {
 	int nothing;
 };

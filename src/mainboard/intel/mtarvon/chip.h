@@ -18,8 +18,8 @@
  *
  */
 
-struct chip_operations mainboard_intel_mtarvon_ops;
+struct chip_operations mainboard_ops;
 
-struct mainboard_intel_mtarvon_config {
+struct mainboard_config {
 	int nothing;
 };

@@ -18,5 +18,5 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_asus_p2b_ops;
-struct mainboard_asus_p2b_config {};
+extern struct chip_operations mainboard_ops;
+struct mainboard_config {};

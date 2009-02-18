@@ -148,7 +148,7 @@ static void enable_dev(struct device *dev) {
 	
 }
 
-struct chip_operations mainboard_technologic_ts5300_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("Technologic Systems TS-5300 Mainboard")
 	.enable_dev = enable_dev
 };

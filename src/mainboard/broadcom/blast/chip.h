@@ -1,6 +1,6 @@
-extern struct chip_operations mainboard_broadcom_blast_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_broadcom_blast_config {
+struct mainboard_config {
 //	int fixup_scsi;
 //	int fixup_vga;
 };

@@ -7,7 +7,7 @@
 #include "chip.h"
 
 static void init(struct device *dev) {
-	struct mainboard_amd_rumba_config  *mainboard = (struct mainboard_amd_rumba_config*)dev->chip_info;
+	struct mainboard_config  *mainboard = (struct mainboard_config*)dev->chip_info;
 	device_t nic = NULL;
 	unsigned bus = 0;
 	unsigned devfn = PCI_DEVFN(0xd, 0);
@@ -36,7 +36,7 @@ static void enable_dev(struct device *dev)
         dev->ops->init = init;
 }
 
-struct chip_operations mainboard_amd_rumba_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("AMD Rumba Mainboard")
         .enable_dev = enable_dev,
 };

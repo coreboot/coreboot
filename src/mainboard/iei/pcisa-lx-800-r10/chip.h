@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_iei_pcisa_lx_800_r10_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_iei_pcisa_lx_800_r10_config {
+struct mainboard_config {
 	int nothing;
 };

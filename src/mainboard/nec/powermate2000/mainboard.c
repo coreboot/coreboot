@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_nec_powermate2000_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("NEC PowerMate 2000 Mainboard")
 };

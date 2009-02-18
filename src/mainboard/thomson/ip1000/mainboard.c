@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_thomson_ip1000_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("THOMSON IP1000 Mainboard")
 };

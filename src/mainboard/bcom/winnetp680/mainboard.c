@@ -22,6 +22,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_bcom_winnetp680_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("BCOM WinNET P680 Mainboard")
 };

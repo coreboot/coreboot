@@ -23,7 +23,7 @@
 #include "chip.h"
 
 #if CONFIG_CHIP_NAME == 1
-struct chip_operations mainboard_asus_a8n_e_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("ASUS A8N-E Mainboard")
 };
 #endif

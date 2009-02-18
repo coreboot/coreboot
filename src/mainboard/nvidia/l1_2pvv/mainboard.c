@@ -27,7 +27,7 @@
 #include "chip.h"
 
 #if CONFIG_CHIP_NAME == 1
-struct chip_operations mainboard_nvidia_l1_2pvv_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("NVIDIA l1_2pvv Mainboard")
 };
 #endif

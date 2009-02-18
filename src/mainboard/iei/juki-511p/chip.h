@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_iei_juki_511p_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_iei_juki_511p_config {
+struct mainboard_config {
 	int nothing;
 };

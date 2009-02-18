@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_rca_rm4100_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("RCA RM4100 Mainboard")
 };

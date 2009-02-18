@@ -22,6 +22,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_via_epia_cn_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("VIA EPIA-CN Mainboard")
 };

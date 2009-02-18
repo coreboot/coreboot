@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_digitallogic_msm800sev_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_digitallogic_msm800sev_config {
+struct mainboard_config {
 	int nothing;
 };

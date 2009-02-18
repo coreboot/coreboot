@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_iwill_dk8s2_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_iwill_dk8s2_config {
+struct mainboard_config {
 	int nothing;
 };

@@ -1,5 +1,5 @@
-extern struct chip_operations mainboard_ibm_e325_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_ibm_e325_config {
+struct mainboard_config {
 	int nothing;
 };

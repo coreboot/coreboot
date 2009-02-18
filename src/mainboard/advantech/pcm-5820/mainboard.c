@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_advantech_pcm_5820_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("Advantech PCM-5820 Mainboard")
 };

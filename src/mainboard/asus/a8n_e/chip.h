@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern struct chip_operations mainboard_asus_a8n_e_ops;
+extern struct chip_operations mainboard_ops;
 
-struct mainboard_asus_a8n_e_config {
+struct mainboard_config {
 	int nothing;
 };

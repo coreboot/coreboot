@@ -1,5 +1,5 @@
-struct chip_operations mainboard_dell_s1850_ops;
+struct chip_operations mainboard_ops;
 
-struct mainboard_dell_s1850_config {
+struct mainboard_config {
 	int nothing;
 };

@@ -22,6 +22,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_jetway_j7f24_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("Jetway J7F[24]* Mainboard")
 };

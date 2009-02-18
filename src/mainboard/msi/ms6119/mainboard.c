@@ -21,6 +21,6 @@
 #include <device/device.h>
 #include "chip.h"
 
-struct chip_operations mainboard_msi_ms6119_ops = {
+struct chip_operations mainboard_ops = {
 	CHIP_NAME("MSI MS-6119 Mainboard")
 };

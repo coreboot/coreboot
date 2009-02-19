@@ -54,48 +54,6 @@ DefinitionBlock (
 	Name(UOM8, 6)
 	Name(UOM9, 6)
 
-	/*
-	 * Processor Object
-	 *
-	 */
-	Scope (\_PR) {		/* define processor scope */
-		Processor(
-			CPU0,		/* name space name */
-			0,		/* Unique number for this processor */
-			0x808,		/* PBLK system I/O address !hardcoded! */
-			0x06		/* PBLKLEN for boot processor */
-			) {
-			Include ("cpstate.asl")
-		}
-
-		Processor(
-			CPU1,		/* name space name */
-			1,		/* Unique number for this processor */
-			0x0000,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
-			) {
-			Include ("cpstate.asl")
-		}
-
-		Processor(
-			CPU2,		/* name space name */
-			2,		/* Unique number for this processor */
-			0x0000,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
-			) {
-			Include ("cpstate.asl")
-		}
-
-		Processor(
-			CPU3,		/* name space name */
-			3,		/* Unique number for this processor */
-			0x0000,		/* PBLK system I/O address !hardcoded! */
-			0x00		/* PBLKLEN for boot processor */
-			) {
-			Include ("cpstate.asl")
-		}
-	} /* End _PR scope */
-
 	/* Some global data */
 	Name(OSTP, 3)		/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 	Name(OSV, Ones)	/* Assume nothing */

@@ -16,13 +16,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#include <mainboard.h>
+#include <console.h>
+#include <string.h>
+#include <mtrr.h>
+#include <macros.h>
+#include <spd_ddr2.h>
+#include <cpu.h>
+#include <msr.h>
+#include <device/pci.h>
+#include <pci_ops.h>
+#include <mc146818rtc.h>
+#include <lib.h>
+#include <spd.h>
+#include <io.h>
+#include <types.h>
+#include "raminit.h"
+#include "i945.h"
+#include "pcie_config.h"
 
-static int bios_reset_detected(void)
+int is_coldboot(void)
 {
-	/* For now ... 
-	 * DO NOT, I repeat, DO NOT remove this. If you don't like the
-	 * situation, implement this instead.
-	 */
-	return 0;
+	int boot_mode = 0;
+	if (MCHBAR16(SSKPD) == 0xCAFE) {
+		printk(BIOS_DEBUG, "soft reset detected.\n");
+		boot_mode = 1;
+	}
+	return boot_mode;
 }
 

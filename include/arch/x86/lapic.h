@@ -115,7 +115,7 @@ static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int siz
 }
 
 
-extern inline void lapic_write_atomic(unsigned long reg, unsigned long v)
+static inline void lapic_write_atomic(unsigned long reg, unsigned long v)
 {
 	xchg((volatile unsigned long *)(LAPIC_DEFAULT_BASE+reg), v);
 }

@@ -23,9 +23,13 @@
 STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1_debug.c \
-			
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
+			$(src)/northbridge/intel/i945//reset_test.c \
+			$(src)/arch/x86/intel/core2/init_cpus.c \
+
+INITRAM_OBJ = \
+			$(obj)/arch/x86/secondary.o \
 
 STAGE2_CHIPSET_SRC=
 

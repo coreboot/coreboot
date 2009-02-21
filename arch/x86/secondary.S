@@ -26,6 +26,7 @@
 	.balign 4096
 _secondary_start:
 	.code16
+	.long 0
 	cli
 	xorl	%eax, %eax
 	movl	%eax, %cr3    /* Invalidate TLB*/
@@ -58,18 +59,51 @@ _secondary_start:
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg
 
-	/* Set the stack pointer, and flag that we are done */
-	xorl	%eax, %eax
-	movl	secondary_stack, %esp
-	movl	%eax, secondary_stack
+	/* Set the stack pointer */
+	movl	_secondary_start, %esp
 
 	call	secondary_cpu_init
 1:	hlt
 	jmp	1b
+	.align 4
+
+gdt_limit = gdt_end - gdt - 1		/* Compute the table limit. */
+
+gdt:
+gdtptr:
+	.word	gdt_end - gdt -1	/* Compute the table limit. */
+	.long	gdt			/* We know the offset. */
+	.word	0
+
+	/* selgdt 0x08, flat code segment */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00
+
+	/* selgdt 0x10, flat data segment */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x93, 0xcf, 0x00
+
+	/* selgdt 0x18, flat code segment for CAR */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x9b, 0xcf, 0x00
+
+	/* selgdt 0x20, flat data segment for CAR */
+	.word	0xffff, 0x0000
+	.byte	0x00, 0x93, 0xcf, 0x00
+gdt_end:
+
 
 	gdtaddr:
 	.word   gdt_limit	/* the table limit */
 	.long   gdt             /* we know the offset */
+idtarg:
+        .word   _idt_end - _idt - 1     /* limit */
+        .long   _idt
+        .word   0       
+_idt:
+        .fill   20, 8, 0        # idt is unitiailzed
+_idt_end:
+
 
 _secondary_start_end:
 .code32

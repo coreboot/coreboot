@@ -117,14 +117,12 @@ config K8_ALLOCATE_MMIO_RANGE
 
 config LOGICAL_CPUS
 	hex
-	depends CPU_AMD_K8 || CPU_INTEL_CORE2
 	default 1
 	help
 	  How many logical CPUs there are. FIXME.
 
 config MAX_PHYSICAL_CPUS
 	hex
-	depends CPU_AMD_K8
 	default 1
 	help
 	  Maximum number of physical CPUs (sockets).

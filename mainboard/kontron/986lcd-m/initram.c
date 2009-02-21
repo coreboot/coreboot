@@ -157,16 +157,30 @@ static void rcba_config(void)
  */
 int main(void)
 {
+	struct sys_info *sysinfo;
 	int boot_mode = 0;
 	void i945_early_initialization(void);
 	void enable_smbus(void);
 	int fixup_i945_errata(void);
 	void i945_late_initialization(void);
 	void sdram_initialize(int boot_mode);
+	int is_coldboot(void);
+	unsigned int init_cpus(unsigned cpu_init_detectedx,
+                        struct sys_info *sysinfo);
 
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
+
+	struct node_core_id me;
+
+//	me = get_node_core_id();
+	/* hack */
+	memset(&me, 0, sizeof(me));
+	printk(BIOS_DEBUG, "Hi there from stage1, cpu%d, core%d\n", me.nodeid, me.coreid);
+	post_code(POST_START_OF_MAIN);
+	sysinfo = &(global_vars()->sys_info);
+
+	boot_mode = is_coldboot();
+	if (boot_mode) {
 		printk(BIOS_DEBUG, "soft reset detected.\n");
-		boot_mode = 1;
 	}
 
 	/* Perform some early chipset initialization required
@@ -212,5 +226,8 @@ int main(void)
 	}
 #endif
 	MCHBAR16(SSKPD) = 0xCAFE;
+
+	init_cpus(boot_mode, sysinfo);
+	
 	return 0;
 }

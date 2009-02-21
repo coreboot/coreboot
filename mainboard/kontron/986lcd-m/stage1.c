@@ -208,7 +208,7 @@ void hardware_stage1(void)
 	void 	early_superio_config_w83627thg(void);
 	void 	ich7_enable_lpc(void);
 
-#warning Reboot won't work until this is fixed.
+#warning Reboot will not  work until this is fixed.
 
 #if 1
 	/* hack */

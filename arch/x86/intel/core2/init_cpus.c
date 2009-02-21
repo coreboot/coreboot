@@ -77,7 +77,8 @@ unsigned int get_nodes(void)
 	if (siblings < 1) {
 		siblings = 1;
 	}
-	nodes = siblings + 1;
+	/* it seems this is the number of nodes */
+	nodes = siblings;
 	printk(BIOS_DEBUG, "%s: %d\n", __func__, nodes);
 	return nodes;
 }
@@ -260,9 +261,7 @@ static int lapic_start_cpu(unsigned long apicid, u32 *secondary_base)
 		return 0;
 	}
 
-	/* the first 32 bits of secondary_base is the stack pointer */
-	/* N.B.: + 1 because secondary_base is a u32 *! */
-	start_eip = (u32) (secondary_base + 1);
+	start_eip = (u32) secondary_base;
 	num_starts = 2;
 
 	/*
@@ -288,6 +287,7 @@ static int lapic_start_cpu(unsigned long apicid, u32 *secondary_base)
 
 		/* Boot on the stack */
 		/* Kick the second */
+		printk(BIOS_SPEW, "Send start_eip %#lx(%#lx)\n", start_eip, start_eip>>12);
 		lapic_write_around(LAPIC_ICR, LAPIC_DM_STARTUP
 					| (start_eip >> 12));
 
@@ -341,7 +341,7 @@ struct stack {
 	struct atomic *active_cpus;
 	struct spinlock *start_cpu_lock;
 	u32  callerpc;
-	u32 data[16384/sizeof(u32) - 4];
+	u32 data[16384/sizeof(u32) - 7];
 };
 
 struct stackmem {
@@ -352,7 +352,7 @@ struct stackmem {
 int start_cpu(u32 apicid, struct atomic *active_cpus, struct spinlock *start_cpu_lock, int *last_cpu_index, u32 *secondary_base)
 {
 
-	unsigned long stack_end;
+	u32 stack_end;
 	unsigned long index;
 	unsigned long count;
 	int result;
@@ -370,7 +370,7 @@ int start_cpu(u32 apicid, struct atomic *active_cpus, struct spinlock *start_cpu
 	 * can see them. 
 	 */
 	stack_end = (u32)&stackmem->stacks[index].data;
-	printk(BIOS_SPEW, "Stack for AP %ld is %lx\n", index, stack_end);
+	printk(BIOS_SPEW, "Stack for AP %ld is %x\n", index, stack_end);
 	
 	stackmem->stacks[index].index= index;
 	stackmem->stacks[index].apicid   = apicid;
@@ -378,7 +378,8 @@ int start_cpu(u32 apicid, struct atomic *active_cpus, struct spinlock *start_cpu
 	stackmem->stacks[index].active_cpus  = active_cpus;
 	stackmem->stacks[index].start_cpu_lock = start_cpu_lock;
 	/* Advertise the new stack to start_cpu */
-	*secondary_base = stack_end;
+	printk(BIOS_SPEW, "Set stack @ %p to %p\n", &secondary_base[-1], (void *)stack_end);
+	secondary_base[-1] = stack_end;
 
 	/* Start the cpu */
 	result = lapic_start_cpu(apicid, secondary_base);

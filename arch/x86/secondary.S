@@ -23,10 +23,9 @@
  */
 	.text
 	.globl _secondary_start, _secondary_start_end
-	.balign 4096
 _secondary_start:
 	.code16
-	.long 0
+	.balign 4096
 	cli
 	xorl	%eax, %eax
 	movl	%eax, %cr3    /* Invalidate TLB*/
@@ -49,6 +48,7 @@ _secondary_start:
 	ljmpl	$0x10, $1f
 1:	
 	.code32
+secondary32:
 	movw	$0x18, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
@@ -60,7 +60,8 @@ _secondary_start:
 	lidt	idtarg
 
 	/* Set the stack pointer */
-	movl	_secondary_start, %esp
+	movl	$_secondary_start-4,%eax
+	movl	0x0(%eax),%esp
 
 	call	secondary_cpu_init
 1:	hlt

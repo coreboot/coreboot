@@ -146,7 +146,9 @@ static int cook_serial(unsigned char ch)
 
 static int curses_getchar(int delay)
 {
+#if defined(CONFIG_USB_HID) || defined(CONFIG_PC_KEYBOARD) || defined(CONFIG_SERIAL_CONSOLE)
 	unsigned short c;
+#endif
 
 	do {
 #ifdef CONFIG_USB_HID

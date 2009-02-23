@@ -29,6 +29,7 @@ config BOARD_ARTECGROUP_DBE61
 	select CPU_AMD_GEODELX
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
+	select DEVICE_AMD_CS5536_NAND
 	select PIRQ_TABLE
 	help
 	  Artec Group DBE61 ThinCan, also known as Linutop 1.
@@ -39,6 +40,7 @@ config BOARD_ARTECGROUP_DBE62
 	select CPU_AMD_GEODELX
 	select NORTHBRIDGE_AMD_GEODELX
 	select SOUTHBRIDGE_AMD_CS5536
+	select DEVICE_AMD_CS5536_NAND
 	select PIRQ_TABLE
 	help
 	  Artec Group DBE62 ThinCan.

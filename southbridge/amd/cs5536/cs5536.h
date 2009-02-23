@@ -445,5 +445,6 @@
 void cs5536_disable_internal_uart(void);
 void cs5536_setup_onchipuart(int uart);
 void cs5536_stage1(void);
+void hide_vpci(u32 vpci_devid);
 
 #endif /* SOUTHBRIDGE_AMD_CS5536_CS5536_H */

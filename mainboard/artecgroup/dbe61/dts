@@ -109,8 +109,11 @@ end
 			/* USB Port Power Handling setting. */
 			pph = "0xf5";
 		};
-		pci@f,1 {
+		pci@f,1 { /* NAND Flash */
 			/config/("southbridge/amd/cs5536/nand");
+			/* Timings */
+			nandf_data = "0x01200120";
+			nandf_ctl = "0x00000120";
 		};
 	};
 };

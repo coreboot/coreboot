@@ -163,6 +163,11 @@ config SUPERIO_ITE_IT8712F
 config SUPERIO_VIA_VT1211
 	boolean
 
+# Other devices that may be optional for a board:
+config DEVICE_AMD_CS5536_NAND
+	select SOUTHBRIDGE_AMD_CS5536
+	boolean
+
 menu "Payload"
 
 config PAYLOAD_ELF_LOADER

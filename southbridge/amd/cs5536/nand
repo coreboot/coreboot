@@ -20,4 +20,8 @@
 
 {
 	device_operations = "cs5536_nand";
+
+	/* NAND timings per data book and NAND chip on board. 0x0 leaves to reset value. */
+	nandf_data = "0x0";
+	nandf_ctl = "0x0";
 };

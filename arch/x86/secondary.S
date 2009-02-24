@@ -24,12 +24,13 @@
 	.text
 	.globl _secondary_start, _secondary_start_end
 _secondary_start:
+1:
 	.code16
 	.balign 4096
 	cli
+	movl	$1b, %ebx
 	xorl	%eax, %eax
 	movl	%eax, %cr3    /* Invalidate TLB*/
-
 	/* On hyper threaded cpus, invalidating the cache here is
 	 * very very bad.  Don't.
 	 */
@@ -60,8 +61,8 @@ secondary32:
 	lidt	idtarg
 
 	/* Set the stack pointer */
-	movl	$_secondary_start-4,%eax
-	movl	0x0(%eax),%esp
+	movl	-4(%ebx),%esp
+	movl	$0, -4(%ebx)
 
 	call	secondary_cpu_init
 1:	hlt

@@ -287,7 +287,7 @@ static int lapic_start_cpu(unsigned long apicid, u32 *secondary_base)
 
 		/* Boot on the stack */
 		/* Kick the second */
-		printk(BIOS_SPEW, "Send start_eip %#lx(%#lx)\n", start_eip, start_eip>>12);
+		printk(BIOS_SPEW, "Send start_eip %#lx(%#lx) sb[-1] %p\n", start_eip, start_eip>>12, (void *) secondary_base[-1]);
 		lapic_write_around(LAPIC_ICR, LAPIC_DM_STARTUP
 					| (start_eip >> 12));
 
@@ -321,7 +321,7 @@ static int lapic_start_cpu(unsigned long apicid, u32 *secondary_base)
 		if (send_status || accept_status)
 			break;
 	}
-	printk(BIOS_SPEW, "After Startup.\n");
+	printk(BIOS_SPEW, "After Startup.sb[-1] %p\n", (void *) secondary_base[-1]);
 	if (send_status)
 		printk(BIOS_WARNING, "APIC never delivered???\n");
 	if (accept_status)

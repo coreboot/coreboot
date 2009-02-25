@@ -1128,6 +1128,20 @@ struct flashchip flashchips[] = {
 
 	{
 		.vendor		= "SST",
+		.name		= "SST25VF040.REMS",
+		.manufacture_id	= 0xbf,
+		.model_id	= 0x44,
+		.total_size	= 512,
+		.page_size	= 64*1024,
+		.tested		= TEST_OK_PR,
+		.probe		= probe_spi_rems,
+		.erase		= spi_chip_erase_60,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+
+	{
+		.vendor		= "SST",
 		.name		= "SST25VF040B.REMS",
 		.manufacture_id	= 0xbf,
 		.model_id	= 0x8d,

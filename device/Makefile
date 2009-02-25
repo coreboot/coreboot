@@ -32,19 +32,19 @@ ifeq ($(CONFIG_HYPERTRANSPORT_SUPPORT),y)
 STAGE2_DEVICE_SRC += hypertransport.c
 endif
 
-ifeq ($(CONFIG_PCIX_SUPPORT),y)
+ifneq ($(CONFIG_NO_PCIX_SUPPORT),y)
 STAGE2_DEVICE_SRC += pcix_device.c
 endif
 
-ifeq ($(CONFIG_PCIE_SUPPORT),y)
+ifneq ($(CONFIG_NO_PCIE_SUPPORT),y)
 STAGE2_DEVICE_SRC += pcie_device.c
 endif
 
-ifeq ($(CONFIG_CARDBUS_SUPPORT),y)
+ifneq ($(CONFIG_NO_CARDBUS_SUPPORT),y)
 STAGE2_DEVICE_SRC += cardbus_device.c
 endif
 
-ifeq ($(CONFIG_AGP_SUPPORT),y)
+ifneq ($(CONFIG_NO_AGP_SUPPORT),y)
 STAGE2_DEVICE_SRC += agp_device.c
 endif
 

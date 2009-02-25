@@ -123,43 +123,32 @@ config INITIALIZE_ONBOARD_VGA_FIRST
 	  Initialize onboard VGA chips before any plugin VGA cards
 	  are initialized.
 
-menu "Plugin Support"
+menu "Remove Bus Support (for size reasons)"
 depends EXPERT
 
-config PCIX_PLUGIN_SUPPORT
-	bool "Support for devices that provide PCI-X and aren't in the dts."
-	select PCIX_SUPPORT
+config NO_PCIX_SUPPORT
+	bool "Remove support for PCI-X."
 	default false
 	help
-	  Compile in the drivers for cards that provide PCI-X.
+	  Don't compile in the drivers for cards that provide PCI-X.
 
-config PCIE_PLUGIN_SUPPORT
-	bool "Support for devices that provide PCI-e and aren't in the dts."
-	select PCIE_SUPPORT
+config NO_PCIE_SUPPORT
+	bool "Remove support for PCI-Express."
 	default false
 	help
-	  Compile in the drivers for cards that provide PCI-e.
+	  Don't compile in the drivers for cards that provide PCI-e.
 
-config HYPERTRANSPORT_PLUGIN_SUPPORT
-	bool "Support for devices that provide HT and aren't in the dts."
-	select HYPERTRANSPORT_SUPPORT
+config NO_AGP_SUPPORT
+	bool "Remove support for AGP."
 	default false
 	help
-	  Compile in the drivers for cards that provide HT.
+	  Don't compile in the drivers for cards that provide AGP.
 
-config AGP_PLUGIN_SUPPORT
-	bool "Support for devices that provide AGP and aren't in the dts."
-	select AGP_SUPPORT
+config NO_CARDBUS_SUPPORT
+	bool "Remove support for CardBus."
 	default false
 	help
-	  Compile in the drivers for cards that provide AGP.
-
-config CARDBUS_PLUGIN_SUPPORT
-	bool "Support for devices that provide Cardbus and aren't in the dts."
-	select CARDBUS_SUPPORT
-	default false
-	help
-	  Compile in the drivers for cards that provide Cardbus.
+	  Don't compile in the drivers for cards that provide CardBus.
 
 endmenu
 

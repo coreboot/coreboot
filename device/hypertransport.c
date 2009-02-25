@@ -41,6 +41,15 @@
 #include <lib.h>
 #include  <lapic.h>
 
+/* These defines are for PLUGIN_SUPPORT. */
+#ifndef HT_CHAIN_UNITID_BASE
+#define HT_CHAIN_UNITID_BASE 0
+#endif
+
+#ifndef HT_CHAIN_END_UNITID_BASE
+#define HT_CHAIN_END_UNITID_BASE 0
+#endif
+
 #define OPT_HT_LINK 0
 
 static struct device *ht_scan_get_devs(struct device **old_devices)

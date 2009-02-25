@@ -94,15 +94,15 @@ source device/Kconfig
 # These are used for internal purposes only:
 
 # Buses:
-config PCIX_SUPPORT
+config NO_PCIX_SUPPORT
 	boolean
-config PCIE_SUPPORT
+config NO_PCIE_SUPPORT
 	boolean
 config HYPERTRANSPORT_SUPPORT
 	boolean
-config AGP_SUPPORT
+config NO_AGP_SUPPORT
 	boolean
-config CARDBUS_SUPPORT
+config NO_CARDBUS_SUPPORT
 	boolean
 
 # Northbridges:
@@ -124,19 +124,14 @@ config SOUTHBRIDGE_AMD_CS5536
 config SOUTHBRIDGE_INTEL_I82371EB
 	boolean
 config SOUTHBRIDGE_NVIDIA_CK804
-	select PCIE_SUPPORT
 	boolean
 config SOUTHBRIDGE_NVIDIA_MCP55
-	select PCIE_SUPPORT
 	boolean
 config SOUTHBRIDGE_AMD_AMD8151
-	select AGP_SUPPORT
 	boolean
 config SOUTHBRIDGE_AMD_AMD8132
-	select PCIX_SUPPORT
 	boolean
 config SOUTHBRIDGE_AMD_AMD8131
-	select PCIX_SUPPORT
 	boolean
 config SOUTHBRIDGE_AMD_AMD8111
 	boolean
@@ -174,7 +169,7 @@ config PAYLOAD_ELF_LOADER
 	bool "Include ELF payload loader"
 	default n
 	help
-	  This option allows an unparsed ELF paylaod to be added and loaded.
+	  This option allows an unparsed ELF payload to be added and loaded.
 
 choice
 	prompt "Payload type"

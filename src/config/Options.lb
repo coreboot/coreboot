@@ -1111,6 +1111,18 @@ define HAVE_MAINBOARD_RESOURCES
 	comment "Enable if the mainboard/chipset requires extra entries in the memory map"
 end
 
+define HAVE_LOW_TABLES
+	default 1
+	export always
+	comment "Enable if ACPI, PIRQ, MP tables are supposed to live in the low megabyte"
+end
+
+define HAVE_HIGH_TABLES
+	default 0
+	export always
+	comment "Enable if ACPI, PIRQ, MP tables are supposed to live at top of memory"
+end
+
 define CONFIG_SPLASH_GRAPHIC
 	default 0
 	export used

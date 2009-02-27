@@ -29,6 +29,8 @@ uses LB_CKS_RANGE_START
 uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
 uses HAVE_ACPI_TABLES
+uses HAVE_MAINBOARD_RESOURCES
+uses HAVE_HIGH_TABLES
 # SMP
 uses CONFIG_SMP
 uses CONFIG_LOGICAL_CPUS
@@ -160,6 +162,8 @@ default HAVE_MP_TABLE=1
 ## Build code to provide ACPI support
 ##
 default HAVE_ACPI_TABLES=1
+default HAVE_MAINBOARD_RESOURCES=1
+default HAVE_HIGH_TABLES=0
 
 ##
 ## Build code to export a CMOS option table

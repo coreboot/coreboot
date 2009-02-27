@@ -93,12 +93,18 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
+#if HAVE_HIGH_TABLES==1
+#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
+extern uint64_t high_tables_base, high_tables_size;
+#endif
+uint64_t uma_memory_base=0, uma_memory_size=0;
+
 static void pci_domain_set_resources(device_t dev)
 {
 	uint32_t pci_tolm;
 	uint8_t tolud, reg8;
 	uint16_t reg16;
-	unsigned long long tomk, tolmk;
+	unsigned long long tomk;
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 
@@ -120,13 +126,13 @@ static void pci_domain_set_resources(device_t dev)
 		switch (reg8) {
 		case 0:
 			tseg_size = 1024;
-			break;	
+			break;	/* TSEG = 1M */
 		case 1:
 			tseg_size = 2048;
-			break;	
+			break;	/* TSEG = 2M */
 		case 2:
 			tseg_size = 8192;
-			break;	
+			break;	/* TSEG = 8M */
 		}
 
 		printk_debug("%dM\n", tseg_size >> 10);
@@ -150,24 +156,32 @@ static void pci_domain_set_resources(device_t dev)
 
 		printk_debug("%dM UMA\n", uma_size >> 10);
 		tomk -= uma_size;
+
+		/* For reserving UMA memory in the memory map */
+		uma_memory_base = tomk * 1024ULL;
+		uma_memory_size = uma_size * 1024ULL;
 	}
 
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0
 	 */
-	printk_info("Available memory: %dK", tomk);
-	printk_info(" (%dM)\n", (tomk >> 10));
-
-	tolmk = tomk;
+	printk_info("Available memory: %dK", (uint32_t)tomk);
+	printk_info(" (%dM)\n", (uint32_t)(tomk >> 10));
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, 640);
-	ram_resource(dev, 4, 768, (tolmk - 768));
+	ram_resource(dev, 4, 768, (tomk - 768));
 	if (tomk > 4 * 1024 * 1024) {
 		ram_resource(dev, 5, 4096 * 1024, tomk - 4 * 1024 * 1024);
 	}
 
 	assign_resources(&dev->link[0]);
+
+#if HAVE_HIGH_TABLES==1
+	/* Leave some space for ACPI, PIRQ and MP tables */
+	high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
+	high_tables_size = HIGH_TABLES_SIZE * 1024;
+#endif
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)

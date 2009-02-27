@@ -1,3 +1,22 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) .... others
+ * Copyright (C) 2008-2009 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 /* 2006.1 yhlu add mptable cross 0x467 processing */
 
@@ -38,10 +57,31 @@ void move_gdt(unsigned long newgdt)
 	printk_debug("ok\n");
 }
 
+#if HAVE_HIGH_TABLES == 1
+uint64_t high_tables_base = 0;
+uint64_t high_tables_size;
+#endif
+
 struct lb_memory *write_tables(void)
 {
 	unsigned long low_table_start, low_table_end, new_low_table_end;
 	unsigned long rom_table_start, rom_table_end;
+
+#if HAVE_HIGH_TABLES == 1
+	/* Even if high tables are configured, all tables are copied both to the
+	 * low and the high area, so payloads and OSes don't need to know about
+	 * the high tables.
+	 */
+	unsigned long high_table_start, high_table_end=0;
+
+	if (high_tables_base) {
+		printk_debug("High Tables Base is %lx.\n", high_tables_base);
+		high_table_start = high_tables_base;
+		high_table_end = high_tables_base;
+	} else {
+		printk_debug("High Tables Base is not set.\n");
+	}
+#endif
 
 	rom_table_start = 0xf0000; 
 	rom_table_end =   0xf0000;
@@ -53,24 +93,47 @@ struct lb_memory *write_tables(void)
 
 	post_code(0x9a);
 
+#if HAVE_LOW_TABLES == 1
 	/* This table must be betweeen 0xf0000 & 0x100000 */
 	rom_table_end = write_pirq_routing_table(rom_table_end);
 	rom_table_end = (rom_table_end + 1023) & ~1023;
+#endif
+#if HAVE_HIGH_TABLES == 1
+	if (high_tables_base) {
+		high_table_end = write_pirq_routing_table(high_table_end);
+		high_table_end = (high_table_end + 1023) & ~1023;
+	}
+#endif
 
 	/* Write ACPI tables */
 	/* write them in the rom area because DSDT can be large (8K on epia-m) which
 	 * pushes coreboot table out of first 4K if set up in low table area 
 	 */
+#if HAVE_LOW_TABLES == 1
 	rom_table_end = write_acpi_tables(rom_table_end);
 	rom_table_end = (rom_table_end+1023) & ~1023;
-
+#endif
+#if HAVE_HIGH_TABLES == 1
+	if (high_tables_base) {
+		high_table_end = write_acpi_tables(high_table_end);
+		high_table_end = (high_table_end+1023) & ~1023;
+	}
+#endif
 	/* copy the smp block to address 0 */
 	post_code(0x96);
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
+#if HAVE_LOW_TABLES == 1
 	new_low_table_end = write_smp_table(low_table_end); // low_table_end is 0x10 at this point
+#endif
+#if HAVE_HIGH_TABLES == 1
+	if (high_tables_base) {
+		high_table_end = write_smp_table(high_table_end);
+		high_table_end = (high_table_end+1023) & ~1023;
+	}
+#endif
 
-#if HAVE_MP_TABLE==1
+#if HAVE_MP_TABLE == 1
         /* Don't write anything in the traditional x86 BIOS data segment,
          * for example the linux kernel smp need to use 0x467 to pass reset vector
          * or use 0x40e/0x413 for EBDA finding...
@@ -104,8 +167,18 @@ struct lb_memory *write_tables(void)
 	}
 
 	// Relocate the GDT to reserved memory, so it won't get clobbered
-	move_gdt(low_table_end);
-	low_table_end += &gdt_end - &gdt;
+#if HAVE_HIGH_TABLES == 1
+	if (high_tables_base) {
+		move_gdt(high_table_end);
+		high_table_end += &gdt_end - &gdt;
+		high_table_end = (high_table_end+1023) & ~1023;
+	} else {
+#endif
+		move_gdt(low_table_end);
+		low_table_end += &gdt_end - &gdt;
+#if HAVE_HIGH_TABLES == 1
+	}
+#endif
 
 #if CONFIG_MULTIBOOT
 	/* The Multiboot information structure */
@@ -119,5 +192,23 @@ struct lb_memory *write_tables(void)
 	write_coreboot_table(low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);
 
+#if 0 && HAVE_HIGH_TABLES == 1
+	/* This is currently broken and should be severely refactored. Ideally
+	 * we only have a pointer to the coreboot table in the low memory, so
+	 * anyone can find the real position.
+	 * write_coreboot_table does a lot more than just writing the coreboot
+	 * table. It magically decides where the table should go, and therefore
+	 * it consumes two base addresses. If we call write_coreboot_table like
+	 * below, we get weird effects.
+	 */
+	/* And we want another copy in high area because the low area might be
+	 * corrupted
+	 */
+	if (high_tables_base) {
+		write_coreboot_table(high_table_start, high_table_end,
+				      high_table_start, high_table_end);
+	}
+#endif
+ 
 	return get_lb_mem();
 }

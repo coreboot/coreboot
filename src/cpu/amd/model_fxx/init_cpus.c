@@ -72,7 +72,7 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range, process_ap_t p
 	nodes = get_nodes();
 
         disable_siblings = !CONFIG_LOGICAL_CPUS;
-#if CONFIG_LOGICAL_CPUS == 1
+#if CONFIG_LOGICAL_CPUS == 1 && HAVE_OPTION_TABLE == 1
         if(read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) != 0) { // 0 mean dual core
                 disable_siblings = 1;
         }

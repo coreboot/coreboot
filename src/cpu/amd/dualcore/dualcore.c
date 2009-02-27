@@ -56,9 +56,10 @@ static inline void start_other_cores(void)
 	unsigned nodes;
 	unsigned nodeid;
 
-        if(read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) != 0)  { // disable dual_core
-                return;
-        }
+	if (HAVE_OPTION_TABLE &&
+	    read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) != 0)  {
+		return; // disable dual_core
+	}
 
         nodes = get_nodes();
 

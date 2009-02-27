@@ -1597,7 +1597,8 @@ static void coherent_ht_finalize(unsigned nodes)
 #if CONFIG_LOGICAL_CPUS==1
 	unsigned total_cpus;
 
-	if(read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) == 0) { /* dual_core */
+	if ((!HAVE_OPTION_TABLE) ||
+	    read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) == 0) { /* dual_core */
 		total_cpus = verify_dualcore(nodes);
 	}
 	else {

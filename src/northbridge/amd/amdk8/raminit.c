@@ -598,11 +598,11 @@ static void hw_enable_ecc(const struct mem_controller *ctrl)
 	if (nbcap & NBCAP_ECC) {
 		dcl |= DCL_DimmEccEn;
 	}
-	if (read_option(CMOS_VSTART_ECC_memory, CMOS_VLEN_ECC_memory, 1) == 0) {
+	if (HAVE_OPTION_TABLE &&
+	    read_option(CMOS_VSTART_ECC_memory, CMOS_VLEN_ECC_memory, 1) == 0) {
 		dcl &= ~DCL_DimmEccEn;
 	}
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
-
 }
 
 static int is_dual_channel(const struct mem_controller *ctrl)
@@ -1146,7 +1146,8 @@ static void order_dimms(const struct mem_controller *ctrl)
 {
 	unsigned long tom_k, base_k;
 
-	if (read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) != 0) {
+	if ((!HAVE_OPTION_TABLE) ||
+	    read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) != 0) {
 		tom_k = interleave_chip_selects(ctrl);
 	} else {
 		print_debug("Interleaving disabled\r\n");
@@ -1450,7 +1451,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
 	bios_cycle_time = min_cycle_times[
 		read_option(CMOS_VSTART_max_mem_clock, CMOS_VLEN_max_mem_clock, 0)];
-	if (bios_cycle_time > min_cycle_time) {
+	if (HAVE_OPTION_TABLE && bios_cycle_time > min_cycle_time) {
 		min_cycle_time = bios_cycle_time;
 	}
 	min_latency = 2;

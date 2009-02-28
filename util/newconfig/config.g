@@ -330,6 +330,7 @@ class romimage:
 		if (object_name[0] == '.'):
 			source = base + suffix
 			object = base + '.o'
+			rel_base = base
 		else:
 			rel_base = re.sub(treetop, "", os.path.join(dirstack.tos(), base))
 			source = "$(TOP)/" + rel_base + suffix
@@ -337,11 +338,11 @@ class romimage:
 				rel_base = re.sub("^/", "", rel_base)
 			object = rel_base + '.o'
 
-		debug.info(debug.object, "add object %s source %s" % (object_name, source))
-		l = getdict(dict, base)
+		debug.info(debug.object, "add object %s source %s" % (object, source))
+		l = getdict(dict, rel_base)
 		if (l):
-			warning("object/driver %s previously defined" % base)
-		setdict(dict, base, [object, source, type, base])
+			warning("object/driver %s previously defined" % rel_base)
+		setdict(dict, rel_base, [object, source, type, rel_base])
 
 	def addinitobjectrule(self, name):
 		self.addobjectdriver(self.initobjectrules, name)

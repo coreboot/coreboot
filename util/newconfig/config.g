@@ -329,9 +329,14 @@ class romimage:
 		type = object_name[-1:]
 		if (object_name[0] == '.'):
 			source = base + suffix
+			object = base + '.o'
 		else:
-			source = os.path.join(dirstack.tos(), base + suffix)
-		object = base + '.o'
+			rel_base = re.sub(treetop, "", os.path.join(dirstack.tos(), base))
+			source = "$(TOP)/" + rel_base + suffix
+			if (rel_base[0] == '/'):
+				rel_base = re.sub("^/", "", rel_base)
+			object = rel_base + '.o'
+
 		debug.info(debug.object, "add object %s source %s" % (object_name, source))
 		l = getdict(dict, base)
 		if (l):
@@ -2377,6 +2382,30 @@ if __name__=='__main__':
 		if not os.path.isdir(img_dir):
 			print "Creating directory %s" % img_dir
 			os.makedirs(img_dir)
+
+		for objrule, obj in image.getobjectrules().items():
+			sub_dir = img_dir + '/' + os.path.dirname(obj[0])
+			if not os.path.isdir(sub_dir):
+				print "Creating sub directory %s" % sub_dir
+				os.makedirs(sub_dir)
+
+		for driverrule, driver in image.getdriverrules().items():
+			sub_dir = img_dir + '/' + os.path.dirname(driver[0])
+			if not os.path.isdir(sub_dir):
+				print "Creating sub directory %s" % sub_dir
+				os.makedirs(sub_dir)
+
+		for srule, smm in image.getsmmobjectrules().items():
+			sub_dir = img_dir + '/' + os.path.dirname(smm[0])
+			if not os.path.isdir(sub_dir):
+				print "Creating sub directory %s" % sub_dir
+				os.makedirs(sub_dir)
+
+		for irule, init in image.getinitobjectrules().items():
+			sub_dir = img_dir + '/' + os.path.dirname(init[0])
+			if not os.path.isdir(sub_dir):
+				print "Creating sub directory %s" % sub_dir
+				os.makedirs(sub_dir)
 
 		if (debug.level(debug.dump)):
 			for i in image.getinitincludes():

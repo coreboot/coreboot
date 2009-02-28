@@ -20,7 +20,7 @@ static int lsmbus_recv_byte(device_t dev)
 	struct resource *res;
 	struct bus *pbus;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
 	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));
@@ -34,7 +34,7 @@ static int lsmbus_send_byte(device_t dev, uint8_t val)
 	struct resource *res;
 	struct bus *pbus;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
 	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));
@@ -48,7 +48,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 	struct resource *res;
 	struct bus *pbus;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
 	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));
@@ -62,7 +62,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	struct resource *res;
 	struct bus *pbus;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 
 	res = find_resource(pbus->dev, 0x20 + (pbus->link * 4));

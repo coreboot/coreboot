@@ -83,7 +83,7 @@ void sis966_enable(device_t dev)
 		deviceid = dev->device;
 	}
 
-	devfn = (dev->path.u.pci.devfn) & ~7;
+	devfn = (dev->path.pci.devfn) & ~7;
 	switch(deviceid) {
 		case PCI_DEVICE_ID_SIS_SIS966_USB:
 			devfn -= (1<<3);
@@ -115,7 +115,7 @@ void sis966_enable(device_t dev)
 		case PCI_DEVICE_ID_SIS_SIS966_SATA:
 			devfn -= (4<<3);
 			index = 22;
-			i = (dev->path.u.pci.devfn) & 7;
+			i = (dev->path.pci.devfn) & 7;
 			if(i>0) {
 				index -= (i+3);
 			}

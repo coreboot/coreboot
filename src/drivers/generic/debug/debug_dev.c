@@ -234,7 +234,7 @@ static void debug_init(device_t dev)
 #endif
 	if (!dev->enabled)
 		return;
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 #if CONFIG_CHIP_NAME
 	case 0:
 		parent = dev->bus->dev;

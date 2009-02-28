@@ -142,7 +142,7 @@ void amd_sibling_init(device_t cpu)
 
 #if 1
 	printk_debug("CPU: %u %d siblings\n",
-		cpu->path.u.apic.apic_id,
+		cpu->path.apic.apic_id,
 		siblings);
 #endif
 
@@ -151,8 +151,8 @@ void amd_sibling_init(device_t cpu)
 	id = get_node_core_id(nb_cfg_54); // pre e0 nb_cfg_54 can not be set
 
 	/* See if I am a sibling cpu */
-	//if ((cpu->path.u.apic.apic_id>>(nb_cfg_54?0:3)) & siblings ) { // siblings = 1, 3, 7, 15,....
-	//if ( ( (cpu->path.u.apic.apic_id>>(nb_cfg_54?0:3)) % (siblings+1) ) != 0 ) {
+	//if ((cpu->path.apic.apic_id>>(nb_cfg_54?0:3)) & siblings ) { // siblings = 1, 3, 7, 15,....
+	//if ( ( (cpu->path.apic.apic_id>>(nb_cfg_54?0:3)) % (siblings+1) ) != 0 ) {
 	if(id.coreid != 0) {
 	        if (disable_siblings) {
                         cpu->enabled = 0;
@@ -168,12 +168,12 @@ void amd_sibling_init(device_t cpu)
 		device_t new;
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.u.apic.apic_id = cpu->path.u.apic.apic_id + i * (nb_cfg_54?1:8);
+		cpu_path.apic.apic_id = cpu->path.apic.apic_id + i * (nb_cfg_54?1:8);
                 if(id.nodeid == 0) {
                         // need some special processing, because may the bsp is not lifted, but the core1 is lifted
 			//defined in northbridge.c
                         if(sysconf.enabled_apic_ext_id && (!sysconf.lift_bsp_apicid)) {
-                        	cpu->path.u.apic.apic_id += sysconf.apicid_offset;
+                        	cpu->path.apic.apic_id += sysconf.apicid_offset;
                         }
 
                 }
@@ -188,13 +188,13 @@ void amd_sibling_init(device_t cpu)
 			new->initialized = 0;
 		}
 
-                new->path.u.apic.node_id = cpu->path.u.apic.node_id;
-                new->path.u.apic.core_id = i;
+                new->path.apic.node_id = cpu->path.apic.node_id;
+                new->path.apic.core_id = i;
 
 #if 1
 		printk_debug("CPU: %u has sibling %u\n", 
-			cpu->path.u.apic.apic_id,
-			new->path.u.apic.apic_id);
+			cpu->path.apic.apic_id,
+			new->path.apic.apic_id);
 #endif
 
 		if(new->enabled && !new->initialized)

@@ -56,7 +56,7 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	 */
 	while(last && last->sibling && 
 		(last->sibling->path.type == DEVICE_PATH_PCI) &&
-		(last->sibling->path.u.pci.devfn > last->path.u.pci.devfn)) 
+		(last->sibling->path.pci.devfn > last->path.pci.devfn)) 
 	{
 		last = last->sibling;
 	}
@@ -338,7 +338,7 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
                 uint32_t id;
                 dummy.bus              = bus;
                 dummy.path.type        = DEVICE_PATH_PCI;
-                dummy.path.u.pci.devfn = PCI_DEVFN(0, 0);
+                dummy.path.pci.devfn = PCI_DEVFN(0, 0);
                 id = pci_read_config32(&dummy, PCI_VENDOR_ID);
                 if ( ! ( (id == 0xffffffff) || (id == 0x00000000) ||
                     (id == 0x0000ffff) || (id == 0xffff0000) ) ) {
@@ -355,7 +355,7 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
 		unsigned pos, flags;
 		dummy.bus              = bus;
 		dummy.path.type        = DEVICE_PATH_PCI;
-		dummy.path.u.pci.devfn = devfn;
+		dummy.path.pci.devfn = devfn;
 		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
 		if (	(id == 0xffffffff) || (id == 0x00000000) || 
 			(id == 0x0000ffff) || (id == 0xffff0000)) {
@@ -503,9 +503,9 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		/* Update the Unitd id in the device structure */
 		static_count = 1;
 		for(func = dev; func; func = func->sibling) {
-			func->path.u.pci.devfn += (next_unitid << 3);
-			static_count = (func->path.u.pci.devfn >> 3) 
-				- (dev->path.u.pci.devfn >> 3) + 1;
+			func->path.pci.devfn += (next_unitid << 3);
+			static_count = (func->path.pci.devfn >> 3) 
+				- (dev->path.pci.devfn >> 3) + 1;
 			last_func = func;
 		}
 		/* Compute the number of unitids consumed */
@@ -561,7 +561,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
                 pci_write_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS, flags);
 
                 for(func = real_last_dev; func; func = func->sibling) {
-                        func->path.u.pci.devfn -= ((real_last_unitid - HT_CHAIN_END_UNITID_BASE) << 3);
+                        func->path.pci.devfn -= ((real_last_unitid - HT_CHAIN_END_UNITID_BASE) << 3);
 			last_func = func;
                 }
 

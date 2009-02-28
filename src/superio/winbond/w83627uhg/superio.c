@@ -33,13 +33,13 @@
 
 static void w83627uhg_enter_ext_func_mode(device_t dev)
 {
-	outb(0x87, dev->path.u.pnp.port);
-	outb(0x87, dev->path.u.pnp.port);
+	outb(0x87, dev->path.pnp.port);
+	outb(0x87, dev->path.pnp.port);
 }
 
 static void w83627uhg_exit_ext_func_mode(device_t dev)
 {
-	outb(0xaa, dev->path.u.pnp.port);
+	outb(0xaa, dev->path.pnp.port);
 }
 
 /*
@@ -79,7 +79,7 @@ static void w83627uhg_init(device_t dev)
 		return;
 
 	conf = dev->chip_info;
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case W83627UHG_SP1: 
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */

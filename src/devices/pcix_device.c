@@ -67,8 +67,8 @@ unsigned int pcix_scan_bus(struct bus *bus,
 	device_t child;
 	max = pci_scan_bus(bus, min_devfn, max_devfn, max);
 	for(child = bus->children; child; child = child->sibling) {
-		if (	(child->path.u.pci.devfn < min_devfn) ||
-			(child->path.u.pci.devfn > max_devfn))
+		if (	(child->path.pci.devfn < min_devfn) ||
+			(child->path.pci.devfn > max_devfn))
 		{
 			continue;
 		}

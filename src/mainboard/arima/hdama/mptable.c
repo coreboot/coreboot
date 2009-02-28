@@ -45,12 +45,12 @@ void smp_write_processors_inorder(struct mp_config_table *mc)
                         continue;
                 }
                 cpu_flag = MPC_CPU_ENABLED;
-                if (boot_apic_id == cpu->path.u.apic.apic_id) {
+                if (boot_apic_id == cpu->path.apic.apic_id) {
                         cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
                 }
-		if(cpu->path.u.apic.apic_id == order_id) {
+		if(cpu->path.apic.apic_id == order_id) {
                     smp_write_processor(mc,
-                        cpu->path.u.apic.apic_id, apic_version,
+                        cpu->path.apic.apic_id, apic_version,
                         cpu_flag, cpu_features, cpu_feature_flags);
 		    break;
 		}
@@ -100,8 +100,8 @@ unsigned max_apicid(void)
 	for(dev = all_devices; dev; dev = dev->next) {
 		if (dev->path.type != DEVICE_PATH_APIC)
 			continue;
-		if (dev->path.u.apic.apic_id > max_apicid) {
-			max_apicid = dev->path.u.apic.apic_id;
+		if (dev->path.apic.apic_id > max_apicid) {
+			max_apicid = dev->path.apic.apic_id;
 		}
 	}
 	return max_apicid;

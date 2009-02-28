@@ -38,7 +38,7 @@ static void init(device_t dev)
 
 	conf = dev->chip_info;
 
-	switch (dev->path.u.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case IT8705F_FDC: /* TODO. */
 		break;
 	case IT8705F_SP1:

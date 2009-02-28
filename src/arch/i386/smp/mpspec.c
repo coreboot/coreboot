@@ -144,11 +144,11 @@ void smp_write_processors(struct mp_config_table *mc)
 			continue;
 		}
 		cpu_flag = MPC_CPU_ENABLED;
-		if (boot_apic_id == cpu->path.u.apic.apic_id) {
+		if (boot_apic_id == cpu->path.apic.apic_id) {
 			cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
 		}
 		smp_write_processor(mc, 
-			cpu->path.u.apic.apic_id, apic_version,
+			cpu->path.apic.apic_id, apic_version,
 			cpu_flag, cpu_features, cpu_feature_flags
 		);
 	}
@@ -229,7 +229,7 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 			if (child->path.type != DEVICE_PATH_PCI)
 				goto next;
 
-			slot = (child->path.u.pci.devfn >> 3);
+			slot = (child->path.pci.devfn >> 3);
 			/* round pins */
 			for (i = 0; i < 4; i++)
 				dstirq_x[i] = dstirq[(i + slot) % 4];

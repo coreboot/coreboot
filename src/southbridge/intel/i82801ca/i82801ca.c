@@ -22,16 +22,16 @@ void i82801ca_enable(device_t dev)
 	//		 D31:F1, D31:F3, D31:F5, D31:F6, 
 	//		 D29:F0, D29:F1, D29:F2
 
-    if (PCI_SLOT(dev->path.u.pci.devfn) == 31) {
-    	index = PCI_FUNC(dev->path.u.pci.devfn);
+    if (PCI_SLOT(dev->path.pci.devfn) == 31) {
+    	index = PCI_FUNC(dev->path.pci.devfn);
 
 		if ((index == 1) || (index == 3) || (index == 5) || (index == 6))
 			bHasDisableBit = 1;
 
-    } else if (PCI_SLOT(dev->path.u.pci.devfn) == 29) {
-    	index = 8 + PCI_FUNC(dev->path.u.pci.devfn);
+    } else if (PCI_SLOT(dev->path.pci.devfn) == 29) {
+    	index = 8 + PCI_FUNC(dev->path.pci.devfn);
 
-		if (PCI_FUNC(dev->path.u.pci.devfn) < 3)
+		if (PCI_FUNC(dev->path.pci.devfn) < 3)
 			bHasDisableBit = 1;
     }
 

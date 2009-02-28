@@ -60,7 +60,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 		if (!cpu->enabled) {
 			continue;
 		}
-		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.u.apic.apic_id);
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.apic.apic_id);
 		cpu_index++;
 	}
 	return current;
@@ -98,8 +98,8 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 		if (!cpu->enabled) {
 			continue;
 		}
-		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
-		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
+		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.apic.node_id, cpu->path.apic.apic_id);
 		cpu_index++;
 	}
 	return current;

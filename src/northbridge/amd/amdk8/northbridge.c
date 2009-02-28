@@ -98,7 +98,7 @@ static void f1_write_config32(unsigned reg, uint32_t value)
 
 static unsigned int amdk8_nodeid(device_t dev)
 {
-	return (dev->path.u.pci.devfn >> 3) - 0x18;
+	return (dev->path.pci.devfn >> 3) - 0x18;
 }
 
 static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned link, unsigned sblink, unsigned int max, unsigned offset_unitid)
@@ -1277,7 +1277,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 
 			/* Build the cpu device path */
 			cpu_path.type = DEVICE_PATH_APIC;
-			cpu_path.u.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
+			cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
 
 			/* See if I can find the cpu */
 			cpu = find_dev_path(cpu_bus, &cpu_path);
@@ -1299,15 +1299,15 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 
 			/* Report what I have done */
 			if (cpu) {
-				cpu->path.u.apic.node_id = i;
-				cpu->path.u.apic.core_id = j;
+				cpu->path.apic.node_id = i;
+				cpu->path.apic.core_id = j;
 				if(sysconf.enabled_apic_ext_id) {
 					if(sysconf.lift_bsp_apicid) {
-						cpu->path.u.apic.apic_id += sysconf.apicid_offset;
+						cpu->path.apic.apic_id += sysconf.apicid_offset;
 					} else
 					{
-					       if (cpu->path.u.apic.apic_id != 0)
-						       cpu->path.u.apic.apic_id += sysconf.apicid_offset;
+					       if (cpu->path.apic.apic_id != 0)
+						       cpu->path.apic.apic_id += sysconf.apicid_offset;
 					}
 				}
 				printk_debug("CPU: %s %s\n",

@@ -17,17 +17,17 @@ void amd8111_enable(device_t dev)
 	    (bus_dev->device == PCI_DEVICE_ID_AMD_8111_PCI)) 
 	{
 		unsigned devfn;
-		devfn = bus_dev->path.u.pci.devfn + (1 << 3);
+		devfn = bus_dev->path.pci.devfn + (1 << 3);
 		lpc_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
-		index = ((dev->path.u.pci.devfn & ~7) >> 3) + 8;
-		if (dev->path.u.pci.devfn == 2) { /* EHCI */
+		index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
+		if (dev->path.pci.devfn == 2) { /* EHCI */
 			index = 16;
 		}
 	} else {
 		unsigned devfn;
-		devfn = (dev->path.u.pci.devfn) & ~7;
+		devfn = (dev->path.pci.devfn) & ~7;
 		lpc_dev = dev_find_slot(dev->bus->secondary, devfn);
-		index = dev->path.u.pci.devfn & 7;
+		index = dev->path.pci.devfn & 7;
 	}
 	if ((!lpc_dev) || (index >= 17)) {
 		return;

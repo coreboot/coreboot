@@ -25,7 +25,7 @@ static void sata_init(struct device *dev)
         volatile unsigned int *mmio_reg;
 	int i;
 
-	if(!(dev->path.u.pci.devfn & 7)) { // only set it in Func0
+	if(!(dev->path.pci.devfn & 7)) { // only set it in Func0
 		byte = pci_read_config8(dev, 0x78);
 		byte |= (1<<7);
         	pci_write_config8(dev, 0x78, byte);

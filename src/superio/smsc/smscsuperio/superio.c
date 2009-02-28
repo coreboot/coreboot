@@ -143,7 +143,7 @@ static const struct logical_devices {
  */
 static inline void smsc_pnp_enter_conf_state(device_t dev)
 {
-	outb(0x55, dev->path.u.pnp.port);
+	outb(0x55, dev->path.pnp.port);
 }
 
 /**
@@ -155,7 +155,7 @@ static inline void smsc_pnp_enter_conf_state(device_t dev)
  */
 static inline void smsc_pnp_exit_conf_state(device_t dev)
 {
-	outb(0xaa, dev->path.u.pnp.port);
+	outb(0xaa, dev->path.pnp.port);
 }
 
 /** Wrapper for pnp_set_resources(). */
@@ -213,7 +213,7 @@ static void smsc_init(device_t dev)
 		return;
 
 	/* A Super I/O was found, so initialize the respective device. */
-	ld = dev->path.u.pnp.device;
+	ld = dev->path.pnp.device;
 	if (ld == logical_device_table[i].devs[LD_SP1]) {
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);

@@ -18,7 +18,7 @@ static void init(device_t dev)
 		return;
 	}
 	conf = dev->chip_info;
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case PC97317_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);

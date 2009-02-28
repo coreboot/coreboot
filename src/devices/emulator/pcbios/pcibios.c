@@ -27,7 +27,7 @@ int pcibios_handler(void)
 		dev = dev_find_device(X86_DX, X86_CX, dev);
 		if (dev != 0) {
 			X86_BH = dev->bus->secondary;
-			X86_BL = dev->path.u.pci.devfn;
+			X86_BL = dev->path.pci.devfn;
 			X86_AH = SUCCESSFUL;
 			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
 			ret = 1;
@@ -42,7 +42,7 @@ int pcibios_handler(void)
 		dev = dev_find_class(X86_ECX, dev);
 		if (dev != 0) {
 			X86_BH = dev->bus->secondary;
-			X86_BL = dev->path.u.pci.devfn;
+			X86_BL = dev->path.pci.devfn;
 			X86_AH = SUCCESSFUL;
 			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
 			ret = 1;

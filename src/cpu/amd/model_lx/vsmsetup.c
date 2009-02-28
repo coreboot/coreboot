@@ -661,7 +661,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 				// busnum is an unsigned char;
 				// devfn is an int, so we mask it off.
 				busdevfn = (dev->bus->secondary << 8)
-				    | (dev->path.u.pci.devfn & 0xff);
+				    | (dev->path.pci.devfn & 0xff);
 				printk_debug("0x%x: return 0x%x\n", func,
 					     busdevfn);
 				*pebx = busdevfn;

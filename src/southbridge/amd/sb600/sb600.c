@@ -146,13 +146,13 @@ void sb600_enable(device_t dev)
 	bus_dev = dev->bus->dev;
 	if ((bus_dev->vendor == PCI_VENDOR_ID_ATI) &&
 	    (bus_dev->device == PCI_DEVICE_ID_ATI_SB600_PCI)) {
-		devfn = (bus_dev->path.u.pci.devfn) & ~7;
+		devfn = (bus_dev->path.pci.devfn) & ~7;
 		sm_dev = find_sm_dev(bus_dev, devfn);
 		if (!sm_dev)
 			return;
 
 		/* something under 00:01.0 */
-		switch (dev->path.u.pci.devfn) {
+		switch (dev->path.pci.devfn) {
 		case 5 << 3:
 			;
 		}
@@ -160,7 +160,7 @@ void sb600_enable(device_t dev)
 		return;
 	}
 
-	i = (dev->path.u.pci.devfn) & ~7;
+	i = (dev->path.pci.devfn) & ~7;
 	i += (2 << 3);
 	for (devfn = (0x14 << 3); devfn <= i; devfn += (1 << 3)) {
 		sm_dev = find_sm_dev(dev, devfn);
@@ -170,7 +170,7 @@ void sb600_enable(device_t dev)
 	if (!sm_dev)
 		return;
 
-	switch (dev->path.u.pci.devfn - (devfn - (0x14 << 3))) {
+	switch (dev->path.pci.devfn - (devfn - (0x14 << 3))) {
 	case (0x12 << 3) | 0:
 		index = 8;
 		set_sm_enable_bits(sm_dev, 0xac, 1 << index,
@@ -183,7 +183,7 @@ void sb600_enable(device_t dev)
 	case (0x13 << 3) | 3:
 	case (0x13 << 3) | 4:
 	case (0x13 << 3) | 5:
-		index = dev->path.u.pci.devfn & 7;
+		index = dev->path.pci.devfn & 7;
 		index++;
 		index %= 6;
 		set_sm_enable_bits(sm_dev, 0x68, 1 << index,
@@ -213,7 +213,7 @@ void sb600_enable(device_t dev)
 		break;
 	case (0x14 << 3) | 5:
 	case (0x14 << 3) | 6:
-		index = dev->path.u.pci.devfn & 7;
+		index = dev->path.pci.devfn & 7;
 		index -= 5;
 		set_pmio_enable_bits(sm_dev, 0x59, 1 << index,
 				     (dev->enabled ? 0 : 1) << index);

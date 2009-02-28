@@ -41,35 +41,35 @@ static struct bus *get_pbus(device_t dev)
 uint8_t pci_read_config8(device_t dev, unsigned where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read8(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
+	return ops_pci_bus(pbus)->read8(pbus, dev->bus->secondary, dev->path.pci.devfn, where);
 }
 
 uint16_t pci_read_config16(device_t dev, unsigned where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read16(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
+	return ops_pci_bus(pbus)->read16(pbus, dev->bus->secondary, dev->path.pci.devfn, where);
 }
 
 uint32_t pci_read_config32(device_t dev, unsigned where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read32(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where);
+	return ops_pci_bus(pbus)->read32(pbus, dev->bus->secondary, dev->path.pci.devfn, where);
 }
 
 void pci_write_config8(device_t dev, unsigned where, uint8_t val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write8(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
+	ops_pci_bus(pbus)->write8(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
 }
 
 void pci_write_config16(device_t dev, unsigned where, uint16_t val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write16(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
+	ops_pci_bus(pbus)->write16(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
 }
 
 void pci_write_config32(device_t dev, unsigned where, uint32_t val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary, dev->path.u.pci.devfn, where, val);
+	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
 }

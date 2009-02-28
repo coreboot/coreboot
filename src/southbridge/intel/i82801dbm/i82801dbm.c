@@ -21,8 +21,8 @@ void i82801dbm_enable(device_t dev)
 	//		 D31: F0, F1, F3, F5, F6, 
 	//		 D29: F0, F1, F2, F7
 
-    if (PCI_SLOT(dev->path.u.pci.devfn) == 31) {
-    	index = PCI_FUNC(dev->path.u.pci.devfn);
+    if (PCI_SLOT(dev->path.pci.devfn) == 31) {
+    	index = PCI_FUNC(dev->path.pci.devfn);
 
 		switch (index) {
 			case 0:
@@ -40,10 +40,10 @@ void i82801dbm_enable(device_t dev)
 		if (index == 0)
 			index = 14;		// D31:F0 bit is an exception
 
-    } else if (PCI_SLOT(dev->path.u.pci.devfn) == 29) {
-    	index = 8 + PCI_FUNC(dev->path.u.pci.devfn);
+    } else if (PCI_SLOT(dev->path.pci.devfn) == 29) {
+    	index = 8 + PCI_FUNC(dev->path.pci.devfn);
 
-		if ((PCI_FUNC(dev->path.u.pci.devfn) < 3) || (PCI_FUNC(dev->path.u.pci.devfn) == 7))
+		if ((PCI_FUNC(dev->path.pci.devfn) < 3) || (PCI_FUNC(dev->path.pci.devfn) == 7))
 			bHasDisableBit = 1;
     }
 

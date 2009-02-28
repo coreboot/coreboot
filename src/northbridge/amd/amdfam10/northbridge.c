@@ -114,13 +114,13 @@ static u32 amdfam10_nodeid(device_t dev)
 	unsigned busn;
 	busn = dev->bus->secondary;
 	if(busn != CBB) {
-		return (dev->path.u.pci.devfn >> 3) - CDB + 32;
+		return (dev->path.pci.devfn >> 3) - CDB + 32;
 	} else {
-		return (dev->path.u.pci.devfn >> 3) - CDB;
+		return (dev->path.pci.devfn >> 3) - CDB;
 	}
 
 #else
-	return (dev->path.u.pci.devfn >> 3) - CDB;
+	return (dev->path.pci.devfn >> 3) - CDB;
 #endif
 }
 
@@ -1289,7 +1289,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 					printk_debug("%s\n",dev_path(dev_mc));
 					while(dev_mc){
 						printk_debug("%s move to ",dev_path(dev_mc));
-						dev_mc->path.u.pci.devfn -= PCI_DEVFN(0x18,0);
+						dev_mc->path.pci.devfn -= PCI_DEVFN(0x18,0);
 						printk_debug("%s\n",dev_path(dev_mc));
 						dev_mc = dev_mc->sibling;
 					}
@@ -1395,7 +1395,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 			/* Build the cpu device path */
 			cpu_path.type = DEVICE_PATH_APIC;
-			cpu_path.u.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
+			cpu_path.apic.apic_id = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:64); // ?
 
 			/* See if I can find the cpu */
 			cpu = find_dev_path(cpu_bus, &cpu_path);
@@ -1417,16 +1417,16 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 			/* Report what I have done */
 			if (cpu) {
-				cpu->path.u.apic.node_id = i;
-				cpu->path.u.apic.core_id = j;
+				cpu->path.apic.node_id = i;
+				cpu->path.apic.core_id = j;
 	#if (ENABLE_APIC_EXT_ID == 1) && (APIC_ID_OFFSET>0)
 				 if(sysconf.enabled_apic_ext_id) {
 					if(sysconf.lift_bsp_apicid) {
-						cpu->path.u.apic.apic_id += sysconf.apicid_offset;
+						cpu->path.apic.apic_id += sysconf.apicid_offset;
 					} else
 					{
-						if (cpu->path.u.apic.apic_id != 0)
-							cpu->path.u.apic.apic_id += sysconf.apicid_offset;
+						if (cpu->path.apic.apic_id != 0)
+							cpu->path.apic.apic_id += sysconf.apicid_offset;
 					 }
 				}
 	#endif

@@ -158,7 +158,7 @@ static void lpc47n217_init(device_t dev)
 	if (!dev->enabled)
 		return;
 
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case LPC47N217_SP1: 
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
@@ -211,7 +211,7 @@ void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
 {
 	ASSERT(!(iobase & 0x3));
 	
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case LPC47N217_PP: 
 		pnp_write_config(dev, 0x23, (iobase >> 2) & 0xff);
 		break;
@@ -232,7 +232,7 @@ void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
 
 void lpc47n217_pnp_set_drq(device_t dev, unsigned drq)
 {
-	if (dev->path.u.pnp.device == LPC47N217_PP) {
+	if (dev->path.pnp.device == LPC47N217_PP) {
 		const uint8_t PP_DMA_MASK = 0x0F;
 		const uint8_t PP_DMA_SELECTION_REGISTER = 0x26;
 		uint8_t current_config = pnp_read_config(dev, PP_DMA_SELECTION_REGISTER);
@@ -253,7 +253,7 @@ void lpc47n217_pnp_set_irq(device_t dev, unsigned irq)
 	uint8_t current_config;
 	uint8_t new_config;
 	
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case LPC47N217_PP: 
 		irq_config_register = 0x27;
 		irq_config_mask = 0x0F;
@@ -289,7 +289,7 @@ void lpc47n217_pnp_set_enable(device_t dev, int enable)
 	uint8_t current_power;
 	uint8_t new_power;
 	
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case LPC47N217_PP: 
 		power_register = 0x01;
 		power_mask = 0x04;
@@ -334,7 +334,7 @@ void lpc47n217_pnp_set_enable(device_t dev, int enable)
 //
 static void pnp_enter_conf_state(device_t dev) 
 {
-	outb(0x55, dev->path.u.pnp.port);
+	outb(0x55, dev->path.pnp.port);
 }
 
 //----------------------------------------------------------------------------------
@@ -345,7 +345,7 @@ static void pnp_enter_conf_state(device_t dev)
 //
 static void pnp_exit_conf_state(device_t dev) 
 {
-    outb(0xaa, dev->path.u.pnp.port);
+    outb(0xaa, dev->path.pnp.port);
 }
 
 #if 0

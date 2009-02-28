@@ -34,19 +34,19 @@
 
 void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
 {
-	outb(reg, dev->path.u.pnp.port);
-	outb(value, dev->path.u.pnp.port + 1);
+	outb(reg, dev->path.pnp.port);
+	outb(value, dev->path.pnp.port + 1);
 }
 
 uint8_t pnp_read_config(device_t dev, uint8_t reg)
 {
-	outb(reg, dev->path.u.pnp.port);
-	return inb(dev->path.u.pnp.port + 1);
+	outb(reg, dev->path.pnp.port);
+	return inb(dev->path.pnp.port + 1);
 }
 
 void pnp_set_logical_device(device_t dev)
 {
-	pnp_write_config(dev, 0x07, dev->path.u.pnp.device & 0xff);
+	pnp_write_config(dev, 0x07, dev->path.pnp.device & 0xff);
 }
 
 void pnp_set_enable(device_t dev, int enable)
@@ -55,7 +55,7 @@ void pnp_set_enable(device_t dev, int enable)
 
 	tmp = pnp_read_config(dev, 0x30);
 	/* handle the virtual devices, which share same LDN register */
-	bitpos = (dev->path.u.pnp.device >> 8) & 0x7;
+	bitpos = (dev->path.pnp.device >> 8) & 0x7;
 
 	if (enable) {
 		tmp |= (1 << bitpos);
@@ -70,7 +70,7 @@ int pnp_read_enable(device_t dev)
 	uint8_t tmp, bitpos;
 	tmp = pnp_read_config(dev, 0x30);
 	/* handle the virtual devices, which share same LDN register */
-	bitpos = (dev->path.u.pnp.device >> 8) & 0x7;
+	bitpos = (dev->path.pnp.device >> 8) & 0x7;
 	return !!(tmp & (1 << bitpos));
 }
 
@@ -251,7 +251,7 @@ void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 	int i;
 
 	path.type       = DEVICE_PATH_PNP;
-	path.u.pnp.port = base_dev->path.u.pnp.port;
+	path.pnp.port = base_dev->path.pnp.port;
 	
 	/* Setup the ops and resources on the newly allocated devices */
 	for(i = 0; i < functions; i++) {
@@ -259,7 +259,7 @@ void pnp_enable_devices(device_t base_dev, struct device_operations *ops,
 		if (info[i].function == -1)
 			continue;
 
-		path.u.pnp.device = info[i].function;
+		path.pnp.device = info[i].function;
 		dev = alloc_find_dev(base_dev->bus, &path);
 		
 		/* Don't initialize a device multiple times */

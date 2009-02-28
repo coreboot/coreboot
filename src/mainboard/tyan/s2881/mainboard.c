@@ -45,7 +45,7 @@ static void adt7463_init(device_t dev)
 
 	/* Find the ADT7463 device. */
 	path.type = DEVICE_PATH_I2C;
-	path.u.i2c.device = 0x2d;
+	path.i2c.device = 0x2d;
 	adt7463 = find_dev_path(smbus_dev->link, &path);
 	if (!adt7463)
 		die("ADT7463 not found\n");
@@ -137,8 +137,8 @@ static unsigned int scan_root_bus(device_t root, unsigned int max)
 	root->links++;
 
 	path.type = DEVICE_PATH_PNP;
-	path.u.pnp.port = 0;
-	path.u.pnp.device = 0;
+	path.pnp.port = 0;
+	path.pnp.device = 0;
 	dummy = alloc_dev(&root->link[link_i], &path);
 	dummy->ops = &dummy_operations;
 

@@ -35,14 +35,14 @@
 /* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
 static void pnp_enter_ext_func_mode(device_t dev)
 {
-	outb(0x87, dev->path.u.pnp.port);
-	outb(0x01, dev->path.u.pnp.port);
-	outb(0x55, dev->path.u.pnp.port);
+	outb(0x87, dev->path.pnp.port);
+	outb(0x01, dev->path.pnp.port);
+	outb(0x55, dev->path.pnp.port);
 
-	if (dev->path.u.pnp.port == 0x4e) {
-		outb(0xaa, dev->path.u.pnp.port);
+	if (dev->path.pnp.port == 0x4e) {
+		outb(0xaa, dev->path.pnp.port);
 	} else {
-		outb(0x55, dev->path.u.pnp.port);
+		outb(0x55, dev->path.pnp.port);
 	}
 }
 
@@ -95,7 +95,7 @@ static void it8716f_init(device_t dev)
 	conf = dev->chip_info;
 
 	/* TODO: FDC, PP, KBCM, MIDI, GAME, IR. */
-	switch (dev->path.u.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case IT8716F_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);

@@ -93,6 +93,7 @@ class debug_info:
 	dict = 4
 	statement = 5
 	dump = 6
+	gengraph = 7
 
 	def __init__(self, *level):
 		self.__level = level
@@ -108,7 +109,8 @@ class debug_info:
 			print str
 
 global debug
-debug = debug_info(debug_info.none)
+debug = debug_info(debug_info.dumptree)
+debug = debug_info(debug_info.object)
 
 # -----------------------------------------------------------------------------
 #                    Error Handling
@@ -703,6 +705,18 @@ class partobj:
 		else:
 			name = "%s %s" % (name, self.path)
 		return name
+
+	def graph_name(self):
+		name = "{ {_dev%d|" % self.instance
+		if (self.part):
+			name = "%s%s" % (name, self.part)
+		else:
+			name = "%s%s" % (name, self.chip_or_device)
+		if (self.type_name):
+			name = "%s}|%s}" % (name, self.type_name)
+		else:
+			name = "%s}|%s}" % (name, self.parent.type_name)
+		return name
 			
 	def dumpme(self, lvl):
 		"""Dump information about this part for debugging"""
@@ -938,7 +952,7 @@ class partobj:
 			fatal("Invalid device id")
 		if ((function < 0) or (function > 7)):
 			fatal("Invalid pci function %s" % function )
-		self.set_path(".type=DEVICE_PATH_PCI,.u={.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}" % (slot, function))
+		self.set_path(".type=DEVICE_PATH_PCI,{.pci={ .devfn = PCI_DEVFN(0x%x,%d)}}" % (slot, function))
 
 	def addpnppath(self, port, device):
 		""" Add a relative path to a pnp device hanging off our parent """
@@ -946,44 +960,44 @@ class partobj:
 			fatal("Invalid port")
 		if ((device < 0) or (device > 0xffff)):
 			fatal("Invalid device")
-		self.set_path(".type=DEVICE_PATH_PNP,.u={.pnp={ .port = 0x%x, .device = 0x%x }}" % (port, device))
+		self.set_path(".type=DEVICE_PATH_PNP,{.pnp={ .port = 0x%x, .device = 0x%x }}" % (port, device))
 		
 	def addi2cpath(self, device):
 		""" Add a relative path to a i2c device hanging off our parent """
 		if ((device < 0) or (device > 0x7f)):
 			fatal("Invalid device")
-		self.set_path(".type=DEVICE_PATH_I2C,.u={.i2c={ .device = 0x%x }}" % (device))
+		self.set_path(".type=DEVICE_PATH_I2C,{.i2c={ .device = 0x%x }}" % (device))
 
 	def addapicpath(self, apic_id):
 		""" Add a relative path to a cpu device hanging off our parent """
 		if ((apic_id < 0) or (apic_id > 255)):
 			fatal("Invalid device")
-		self.set_path(".type=DEVICE_PATH_APIC,.u={.apic={ .apic_id = 0x%x }}" % (apic_id))
+		self.set_path(".type=DEVICE_PATH_APIC,{.apic={ .apic_id = 0x%x }}" % (apic_id))
     
 	def addpci_domainpath(self, pci_domain):
 		""" Add a pci_domain number to a chip """
 		if ((pci_domain < 0) or (pci_domain > 0xffff)):
 			fatal("Invalid pci_domain: 0x%x is out of the range 0 to 0xffff" % pci_domain)
-		self.set_path(".type=DEVICE_PATH_PCI_DOMAIN,.u={.pci_domain={ .domain = 0x%x }}" % (pci_domain))
+		self.set_path(".type=DEVICE_PATH_PCI_DOMAIN,{.pci_domain={ .domain = 0x%x }}" % (pci_domain))
     
 	def addapic_clusterpath(self, cluster):
 		""" Add an apic cluster to a chip """
 		if ((cluster < 0) or (cluster > 15)):
 			fatal("Invalid apic cluster: %d is out of the range 0 to ff" % cluster)
-		self.set_path(".type=DEVICE_PATH_APIC_CLUSTER,.u={.apic_cluster={ .cluster = 0x%x }}" % (cluster))
+		self.set_path(".type=DEVICE_PATH_APIC_CLUSTER,{.apic_cluster={ .cluster = 0x%x }}" % (cluster))
     
 	def addcpupath(self, cpu_id):
 		""" Add a relative path to a cpu device hanging off our parent """
 		if ((cpu_id < 0) or (cpu_id > 255)):
 			fatal("Invalid device")
-		self.set_path(".type=DEVICE_PATH_CPU,.u={.cpu={ .id = 0x%x }}" % (cpu_id))
+		self.set_path(".type=DEVICE_PATH_CPU,{.cpu={ .id = 0x%x }}" % (cpu_id))
     
 
 	def addcpu_buspath(self, id):
 		""" Add a cpu_bus to a chip """
 		if ((id < 0) or (id > 255)):
 			fatal("Invalid device")
-		self.set_path(".type=DEVICE_PATH_CPU_BUS,.u={.cpu_bus={ .id = 0x%x }}" % (id))
+		self.set_path(".type=DEVICE_PATH_CPU_BUS,{.cpu_bus={ .id = 0x%x }}" % (id))
     
 	def usesoption(self, name):
 		"""Declare option that can be used by this part"""
@@ -1011,6 +1025,8 @@ def getdict(dict, name):
 
 def setdict(dict, name, value):
 	debug.info(debug.dict, "setdict sets %s to %s" % (name, value))
+	if name in dict.keys():
+		print "Duplicate in dict: %s" % name
 	dict[name] = value
 
 # options. 
@@ -2310,7 +2326,9 @@ def writecode(image):
 	file.write("#include <device/pci.h>\n")
 	for path in image.getconfigincludes().values():
 		file.write("#include \"%s\"\n" % path)
+	file.write("\n/* pass 0 */\n")
 	gencode(image.getroot(), file, 0)
+	file.write("\n/* pass 1 */\n")
 	gencode(image.getroot(), file, 1)
 	file.close()
 
@@ -2333,6 +2351,75 @@ def gencode(part, file, pass_num):
 			gencode(kid.children, file, pass_num)
 		kid = kid.next_sibling
 	debug.info(debug.gencode, "DONE GENCODE")
+
+def writegraph(image):
+	filename = os.path.join(img_dir, "static.dot")
+	print "Creating", filename
+	file = safe_open(filename, 'w+')
+	file.write("digraph devicetree {\n")
+	file.write("	rankdir=LR\n")
+	genranks(image.getroot(), file, 0)
+	gennodes(image.getroot(), file)
+	gengraph(image.getroot(), file)
+	file.write("}\n")
+	file.close()
+
+def genranks(part, file, level):
+	#file.write("	# Level %d\n" % level )
+	file.write("	{ rank = same; \"dev_%s_%d\"" % (part.type_name,part.instance ))
+	sib = part.next_sibling
+	while (sib):
+		file.write("; \"dev_%s_%d\"" % (sib.type_name, sib.instance))
+		sib = sib.next_sibling
+	file.write("}\n" )
+	# now dump the children 
+	if (part.children):
+		genranks(part.children, file, level + 1)
+
+	kid = part.next_sibling
+	while (kid):
+		if (kid.children):
+			genranks(kid.children, file, level + 1)
+		kid = kid.next_sibling
+
+
+def gennodes(part, file):
+	file.write("	dev_%s_%d[shape=record, label=\"%s\"];\n" % (part.type_name,part.instance,part.graph_name() ))
+	sib = part.next_sibling
+	while (sib):
+		file.write("	dev_%s_%d[shape=record, label=\"%s\"];\n" % (sib.type_name,sib.instance,sib.graph_name() ))
+		sib = sib.next_sibling
+	# now dump the children
+	if (part.children):
+		gennodes(part.children, file)
+
+	kid = part.next_sibling
+	while (kid):
+		if (kid.children):
+			gennodes(kid.children, file)
+		kid = kid.next_sibling
+
+
+def gengraph(part, file):
+	if (part.parent != part):
+		file.write("	dev_%s_%d -> dev_%s_%d;\n" % \
+				(part.parent.type_name, part.parent.instance, \
+				 part.type_name, part.instance ))
+	sib = part.next_sibling
+	while (sib):
+		file.write("	dev_%s_%d -> dev_%s_%d;\n" % \
+				(sib.parent.type_name, sib.parent.instance, \
+				 sib.type_name, sib.instance ))
+		sib = sib.next_sibling
+
+	kid = part.next_sibling
+	while (kid):
+		if (kid.children):
+			gengraph(kid.children, file)
+		kid = kid.next_sibling
+
+	if (part.children):
+		gengraph(part.children, file)
 
 def verifyparse():
 	"""Add any run-time checks to verify that parsing the configuration
@@ -2423,6 +2510,7 @@ if __name__=='__main__':
 		writeinitincludes(image)
 		writeimagemakefile(image)
 		writeldoptions(image)
+		writegraph(image)
 
 	writemakefilesettings(target_dir)
 	writemakefile(target_dir)

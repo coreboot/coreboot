@@ -297,7 +297,7 @@ void do_vgabios(device_t dev)
 	  	// check signature again
 		buf = (unsigned char *) 0xc0000;
 		if (buf[0]==0x55 && buf[1]==0xAA) {
-			busdevfn = (dev->bus->secondary << 8) | dev->path.u.pci.devfn;
+			busdevfn = (dev->bus->secondary << 8) | dev->path.pci.devfn;
 			printk_debug("bus/devfn = %#x\n", busdevfn);
 
 		    	real_mode_switch_call_vga(busdevfn);
@@ -725,7 +725,7 @@ pcibios_vga(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 			// busnum is an unsigned char;
 			// devfn is an int, so we mask it off. 
 			busdevfn = (dev->bus->secondary << 8)
-				| (dev->path.u.pci.devfn & 0xff);
+				| (dev->path.pci.devfn & 0xff);
 			printk_debug("0x%x: return 0x%x\n", func, busdevfn);
 			*pebx = busdevfn;
 			retval = 0;

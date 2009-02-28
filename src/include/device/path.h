@@ -69,7 +69,7 @@ struct device_path {
 		struct apic_cluster_path apic_cluster;
 		struct cpu_path          cpu;
 		struct cpu_bus_path      cpu_bus;
-	} u;
+	};
 };
 
 

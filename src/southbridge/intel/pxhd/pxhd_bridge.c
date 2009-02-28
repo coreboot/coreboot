@@ -15,11 +15,11 @@ static void pxhd_enable(device_t dev)
 {
 	device_t bridge;
 	uint16_t value;
-	if ((dev->path.u.pci.devfn & 1) == 0) {
+	if ((dev->path.pci.devfn & 1) == 0) {
 		/* Can we enable/disable the bridges? */
 	  	return;
 	}
-	bridge = dev_find_slot(dev->bus->secondary, dev->path.u.pci.devfn & ~1);
+	bridge = dev_find_slot(dev->bus->secondary, dev->path.pci.devfn & ~1);
 	if (!bridge) {
 		printk_err("Cannot find bridge for ioapic: %s\n",
 			   dev_path(dev));

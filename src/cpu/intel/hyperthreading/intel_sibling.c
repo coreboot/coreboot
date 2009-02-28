@@ -32,12 +32,12 @@ void intel_sibling_init(device_t cpu)
 
 #if 1
 	printk_debug("CPU: %u %d siblings\n",
-		cpu->path.u.apic.apic_id,
+		cpu->path.apic.apic_id,
 		siblings);
 #endif
 
 	/* See if I am a sibling cpu */
-	if (cpu->path.u.apic.apic_id & (siblings -1)) {
+	if (cpu->path.apic.apic_id & (siblings -1)) {
 		if (disable_siblings) {
 			cpu->enabled = 0;
 		}
@@ -50,7 +50,7 @@ void intel_sibling_init(device_t cpu)
 		device_t new;
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
-		cpu_path.u.apic.apic_id = cpu->path.u.apic.apic_id + i;
+		cpu_path.apic.apic_id = cpu->path.apic.apic_id + i;
 
 
 		/* Allocate the new cpu device structure */
@@ -62,14 +62,14 @@ void intel_sibling_init(device_t cpu)
 
 #if 1
 		printk_debug("CPU: %u has sibling %u\n", 
-			cpu->path.u.apic.apic_id,
-			new->path.u.apic.apic_id);
+			cpu->path.apic.apic_id,
+			new->path.apic.apic_id);
 #endif
 		/* Start the new cpu */
 		if (!start_cpu(new)) {
 			/* Record the error in cpu? */
 			printk_err("CPU %u would not start!\n",
-				new->path.u.apic.apic_id);
+				new->path.apic.apic_id);
 		}
 	}
 	

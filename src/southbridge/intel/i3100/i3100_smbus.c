@@ -34,7 +34,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	struct resource *res;
 	struct bus *pbus;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
 	res = find_resource(pbus->dev, 0x20);
 

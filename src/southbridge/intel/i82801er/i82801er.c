@@ -12,11 +12,11 @@ void i82801er_enable(device_t dev)
 
 	/* See if we are behind the i82801er pci bridge */
 	lpc_dev = dev_find_slot(dev->bus->secondary, PCI_DEVFN(0x1f, 0));
-	if((dev->path.u.pci.devfn &0xf8)== 0xf8) {
-		index = dev->path.u.pci.devfn & 7;
+	if((dev->path.pci.devfn &0xf8)== 0xf8) {
+		index = dev->path.pci.devfn & 7;
 	}
-	else if((dev->path.u.pci.devfn &0xf8)== 0xe8) {
-		index = (dev->path.u.pci.devfn & 7) +8;
+	else if((dev->path.pci.devfn &0xf8)== 0xe8) {
+		index = (dev->path.pci.devfn & 7) +8;
 	}
 	if ((!lpc_dev) || (index >= 16) || ((1<<index)&0x3091)) {
 		return;

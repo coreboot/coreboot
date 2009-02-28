@@ -61,7 +61,7 @@ void ck804_enable(device_t dev)
 		deviceid = dev->device;
 	}
 
-	devfn = (dev->path.u.pci.devfn) & ~7;
+	devfn = (dev->path.pci.devfn) & ~7;
 	switch (deviceid) {
 	case PCI_DEVICE_ID_NVIDIA_CK804_SM:
 		index = 16;

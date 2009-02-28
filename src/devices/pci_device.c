@@ -868,7 +868,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 				dev_path(*list));
 			continue;
 		}
-		if ((*list)->path.u.pci.devfn == devfn) {
+		if ((*list)->path.pci.devfn == devfn) {
 			/* Unlink from the list */
 			dev = *list;
 			*list = (*list)->sibling;
@@ -919,7 +919,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 		struct device dummy;
 		dummy.bus              = bus;
 		dummy.path.type        = DEVICE_PATH_PCI;
-		dummy.path.u.pci.devfn = devfn;
+		dummy.path.pci.devfn = devfn;
 		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
 		/* Have we found somthing?
 		 * Some broken boards return 0 if a slot is empty.

@@ -144,7 +144,7 @@ void rs690_enable(device_t dev)
 		/* NOT REACHED */
 	}
 
-	dev_ind = dev->path.u.pci.devfn >> 3;
+	dev_ind = dev->path.pci.devfn >> 3;
 	switch (dev_ind) {
 	case 0:		/* bus0, dev0, fun0; */
 		printk_info("Bus-0, Dev-0, Fun-0.\n");

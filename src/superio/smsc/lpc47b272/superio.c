@@ -140,7 +140,7 @@ static void lpc47b272_init(device_t dev)
 	if (!dev->enabled)
 		return;
 	
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case LPC47B272_SP1: 
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
@@ -171,7 +171,7 @@ static void lpc47b272_init(device_t dev)
 //
 static void pnp_enter_conf_state(device_t dev) 
 {
-	outb(0x55, dev->path.u.pnp.port);
+	outb(0x55, dev->path.pnp.port);
 }
 
 //----------------------------------------------------------------------------------
@@ -182,7 +182,7 @@ static void pnp_enter_conf_state(device_t dev)
 //
 static void pnp_exit_conf_state(device_t dev) 
 {
-    outb(0xaa, dev->path.u.pnp.port);
+    outb(0xaa, dev->path.pnp.port);
 }
 
 #if 0

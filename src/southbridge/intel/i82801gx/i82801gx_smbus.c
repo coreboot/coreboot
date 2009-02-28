@@ -31,7 +31,7 @@ static int smbus_read_byte(struct bus *bus, device_t dev, u8 address)
 	u16 device;
 	struct resource *res;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 	res = find_resource(bus->dev, 0x20);
 
 	return do_smbus_read_byte(res->base, device, address);

@@ -63,8 +63,8 @@ static void p64h2_ioapic_init(device_t dev)
     pWindowRegister = (volatile uint32_t*)(memoryBase + 0x10);
 
     printk_debug("IOAPIC %d at %02x:%02x.%01x  MBAR = %x DataAddr = %x\n",
-                 apic_id, dev->bus->secondary, PCI_SLOT(dev->path.u.pci.devfn), 
-                 PCI_FUNC(dev->path.u.pci.devfn), pIndexRegister, pWindowRegister);
+                 apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn), 
+                 PCI_FUNC(dev->path.pci.devfn), pIndexRegister, pWindowRegister);
 
     apic_id <<= 24;             // Convert ID to bitmask
 

@@ -37,7 +37,7 @@ static void init(device_t dev)
 
 	conf = dev->chip_info;
 
-	switch (dev->path.u.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case FDC37M60X_FDC: /* TODO. */
 		break;
 	case FDC37M60X_PP: /* TODO. */

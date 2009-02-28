@@ -20,10 +20,10 @@
 
 
 static void pnp_enter_conf_state(device_t dev) {
-	outb(0x55, dev->path.u.pnp.port);
+	outb(0x55, dev->path.pnp.port);
 }
 static void pnp_exit_conf_state(device_t dev) {
-	outb(0xaa, dev->path.u.pnp.port);
+	outb(0xaa, dev->path.pnp.port);
 }
 
 static void pnp_write_index(unsigned long port_base, uint8_t reg, uint8_t value)
@@ -56,7 +56,7 @@ static void lpc47b397_init(device_t dev)
 		return;
 	}
 	conf = dev->chip_info;
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case LPC47B397_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
@@ -96,7 +96,7 @@ void lpc47b397_pnp_enable_resources(device_t dev)
 
 	pnp_enable_resources(dev);
 
-	switch(dev->path.u.pnp.device) {
+	switch(dev->path.pnp.device) {
 	case LPC47B397_HWM:
 		printk_debug("lpc47b397 SensorBus Register Access enabled\r\n");
 		pnp_set_logical_device(dev);
@@ -153,7 +153,7 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 	struct resource *res;
 	int result;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 
 	res = find_resource(get_pbus_smbus(dev)->dev, PNP_IDX_IO0);
 
@@ -169,7 +169,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	unsigned device;
 	struct resource *res;
 
-	device = dev->path.u.i2c.device;
+	device = dev->path.i2c.device;
 	res = find_resource(get_pbus_smbus(dev)->dev, PNP_IDX_IO0);
 
 	pnp_write_index(res->base+HWM_INDEX, 0, device); // why 0?

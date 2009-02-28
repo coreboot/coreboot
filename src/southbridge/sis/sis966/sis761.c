@@ -80,7 +80,7 @@ static void sis761_read_resources(device_t dev)
 	pci_dev_read_resources(dev);
 
 	/* If we are not the first processor don't allocate the gart apeture */
-	if (dev->path.u.pci.devfn != PCI_DEVFN(0x0, 0)) {
+	if (dev->path.pci.devfn != PCI_DEVFN(0x0, 0)) {
 		printk_debug("sis761_not_the_first_processor !!!\n");
 		return;
 	}

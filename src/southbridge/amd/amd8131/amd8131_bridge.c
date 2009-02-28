@@ -46,8 +46,8 @@ static void amd8131_count_dev(device_t dev, void *ptr)
 	if (dev->hdr_type != PCI_HEADER_TYPE_BRIDGE) {
 		info->master_devices++;
 	}
-	if (PCI_FUNC(dev->path.u.pci.devfn) > info->max_func) {
-		info->max_func = PCI_FUNC(dev->path.u.pci.devfn);
+	if (PCI_FUNC(dev->path.pci.devfn) > info->max_func) {
+		info->max_func = PCI_FUNC(dev->path.pci.devfn);
 	}
 }
 
@@ -76,7 +76,7 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 		if (sib == dev) {
 			continue;
 		}
-		if (PCI_SLOT(sib->path.u.pci.devfn) != PCI_SLOT(dev->path.u.pci.devfn)) {
+		if (PCI_SLOT(sib->path.pci.devfn) != PCI_SLOT(dev->path.pci.devfn)) {
 			continue;
 		}
 		sib_funcs++;

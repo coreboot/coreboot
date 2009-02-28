@@ -41,7 +41,7 @@ unsigned long acpi_create_madt_lapics(unsigned long current)
 		if (!cpu->enabled) {
 			continue;
 		}
-		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.u.apic.apic_id);
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.apic.apic_id);
 		cpu_index++;
 	}
 	return current;
@@ -79,8 +79,8 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 		if (!cpu->enabled) {
 			continue;
 		}
-		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
-		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.u.apic.node_id, cpu->path.u.apic.apic_id);
+		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.apic.node_id, cpu->path.apic.apic_id);
 		cpu_index++;
 	}
 	return current;
@@ -357,13 +357,13 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current)
 		if (!cpu->enabled) {
 			 continue;
 		}
-		printk_debug("ACPI: pstate cpu_index=%02x, node_id=%02x, core_id=%02x\n", cpu_index, cpu->path.u.apic.node_id, cpu->path.u.apic.core_id);
+		printk_debug("ACPI: pstate cpu_index=%02x, node_id=%02x, core_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.core_id);
 
 		current	  = ( current + 0x0f) & -0x10;
 		ssdt = (acpi_header_t *)current;
 		current += ((acpi_header_t *)AmlCode_sspr)->length;
 		memcpy((void *)ssdt, (void *)AmlCode_sspr, ((acpi_header_t *)AmlCode_sspr)->length);
-		update_sspr((void*)ssdt,cpu->path.u.apic.node_id, cpu_index);
+		update_sspr((void*)ssdt,cpu->path.apic.node_id, cpu_index);
 		/* recalculate checksum */
 		ssdt->checksum = 0;
 		ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);

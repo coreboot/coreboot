@@ -50,19 +50,19 @@ static unsigned char vt1211hwmonitorinits[]={
 
 static void pnp_enter_ext_func_mode(device_t dev) 
 {
-	outb(0x87, dev->path.u.pnp.port);
-	outb(0x87, dev->path.u.pnp.port);
+	outb(0x87, dev->path.pnp.port);
+	outb(0x87, dev->path.pnp.port);
 }
 
 static void pnp_exit_ext_func_mode(device_t dev) 
 {
-	outb(0xaa, dev->path.u.pnp.port);
+	outb(0xaa, dev->path.pnp.port);
 }
 
 static void vt1211_set_iobase(device_t dev, unsigned index, unsigned iobase)
 {
 
-	switch (dev->path.u.pnp.device) {
+	switch (dev->path.pnp.device) {
 		case VT1211_FDC:
 		case VT1211_PP:
 		case VT1211_SP1:
@@ -98,7 +98,7 @@ static void vt1211_init(struct device *dev)
 		return;
 	}
 
-	switch (dev->path.u.pnp.device) {
+	switch (dev->path.pnp.device) {
 	case VT1211_FDC:
 	case VT1211_PP:
 		break;
@@ -135,7 +135,7 @@ void vt1211_pnp_set_resources(struct device *dev)
 	struct resource *resource;
 
 #if CONFIG_CONSOLE_SERIAL8250 == 1
-	if( dev->path.u.pnp.device == 2 ){
+	if( dev->path.pnp.device == 2 ){
 		for( i = 0 ; i < dev->resources; i++){
 			resource = &dev->resource[i];
 			resource->flags |= IORESOURCE_STORED;

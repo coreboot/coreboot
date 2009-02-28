@@ -43,7 +43,7 @@ static void mcf3_read_resources(device_t dev)
 	pci_dev_read_resources(dev);
 
 	/* If we are not the first processor don't allocate the gart apeture */
-	if (dev->path.u.pci.devfn != PCI_DEVFN(0x18, 3)) {
+	if (dev->path.pci.devfn != PCI_DEVFN(0x18, 3)) {
 		return;
 	}
 
@@ -162,7 +162,7 @@ static void misc_control_init(struct device *dev)
 	}
 	else if(is_cpu_pre_d0()) {
 		uint32_t dcl;
-		f2_dev = dev_find_slot(0, dev->path.u.pci.devfn - 3 + 2);
+		f2_dev = dev_find_slot(0, dev->path.pci.devfn - 3 + 2);
 		/* Errata 98 
 		 * Set Clk Ramp Hystersis to 7
 		 * Clock Power/Timing Low
@@ -180,7 +180,7 @@ static void misc_control_init(struct device *dev)
 	}
 #endif
 	/* Optimize the Link read pointers */
-	f0_dev = dev_find_slot(0, dev->path.u.pci.devfn - 3);
+	f0_dev = dev_find_slot(0, dev->path.pci.devfn - 3);
 	if (f0_dev) {
 		int link;
 		cmd_ref = cmd = pci_read_config32(dev, 0xdc);

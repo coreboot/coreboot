@@ -286,7 +286,7 @@ void run_bios(struct device * dev, unsigned long addr)
 	int i;
 	unsigned short initialcs = (addr & 0xF0000) >> 4;
 	unsigned short initialip = (addr + 3) & 0xFFFF;
-	unsigned short devfn = dev->bus->secondary << 8 | dev->path.u.pci.devfn;
+	unsigned short devfn = dev->bus->secondary << 8 | dev->path.pci.devfn;
 	X86EMU_intrFuncs intFuncs[256];
 
 	X86EMU_setMemBase(0, 0x100000);

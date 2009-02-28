@@ -169,26 +169,26 @@ static void set_thermal_config()
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	dword =
 	    pci_cf8_conf1.read32(&pbus, sm_dev->bus->secondary,
-				 sm_dev->path.u.pci.devfn, 0x64);
+				 sm_dev->path.pci.devfn, 0x64);
 	dword |= 1 << 19;
 	pci_cf8_conf1.write32(&pbus, sm_dev->bus->secondary,
-			      sm_dev->path.u.pci.devfn, 0x64, dword);
+			      sm_dev->path.pci.devfn, 0x64, dword);
 
 	/* Enable Client Management Index/Data registers */
 	dword =
 	    pci_cf8_conf1.read32(&pbus, sm_dev->bus->secondary,
-				 sm_dev->path.u.pci.devfn, 0x78);
+				 sm_dev->path.pci.devfn, 0x78);
 	dword |= 1 << 11;	/* Cms_enable */
 	pci_cf8_conf1.write32(&pbus, sm_dev->bus->secondary,
-			      sm_dev->path.u.pci.devfn, 0x78, dword);
+			      sm_dev->path.pci.devfn, 0x78, dword);
 
 	/* MiscfuncEnable */
 	byte =
 	    pci_cf8_conf1.read8(&pbus, sm_dev->bus->secondary,
-				sm_dev->path.u.pci.devfn, 0x41);
+				sm_dev->path.pci.devfn, 0x41);
 	byte |= (1 << 5);
 	pci_cf8_conf1.write8(&pbus, sm_dev->bus->secondary,
-			     sm_dev->path.u.pci.devfn, 0x41, byte);
+			     sm_dev->path.pci.devfn, 0x41, byte);
 
 	/* set GPM5 as input */
 	/* set index register 0C50h to 13h (miscellaneous control) */
@@ -230,10 +230,10 @@ static void set_thermal_config()
 	/* set GPIO 64 to input */
 	word =
 	    pci_cf8_conf1.read16(&pbus, sm_dev->bus->secondary,
-				 sm_dev->path.u.pci.devfn, 0x56);
+				 sm_dev->path.pci.devfn, 0x56);
 	word |= 1 << 7;
 	pci_cf8_conf1.write16(&pbus, sm_dev->bus->secondary,
-			      sm_dev->path.u.pci.devfn, 0x56, word);
+			      sm_dev->path.pci.devfn, 0x56, word);
 
 	/* set GPIO 64 internal pull-up */
 	byte = pm2_ioread(0xf0);

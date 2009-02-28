@@ -54,7 +54,7 @@ static void rl5c476_init(device_t dev)
 	pci_write_config16(dev,0x82,0x00a0);
 
 	/* set up second slot as compact flash port if asked to do so */
-	if( enable_cf_boot && (PCI_FUNC(dev->path.u.pci.devfn) == 1)){ 
+	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){ 
 
 		/* make sure isa interrupts are enabled */
 		pci_write_config16(dev,0x3e,0x0780);
@@ -154,7 +154,7 @@ void rl5c476_read_resources(device_t dev)
 	struct resource *resource;
 
    	 /* for cf socket we need an extra memory window for the control structure of the cf itself */
-	if( enable_cf_boot && (PCI_FUNC(dev->path.u.pci.devfn) == 1)){ 
+	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){ 
 		resource = new_resource(dev,1);    /* fake index as it isn't in pci config space */
 		resource->flags |= IORESOURCE_MEM ;
 		resource->size = 0x1000;
@@ -168,7 +168,7 @@ void rl5c476_set_resources(device_t dev)
 {
 	struct resource *resource;
 	printk_debug("%s In set resources \n",dev_path(dev));
-	if( enable_cf_boot && (PCI_FUNC(dev->path.u.pci.devfn) == 1)){
+	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
 		resource = find_resource(dev,1);
 		if( !(resource->flags & IORESOURCE_STORED) ){
 			resource->flags |= IORESOURCE_STORED ;

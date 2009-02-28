@@ -223,7 +223,7 @@ int start_cpu(device_t cpu)
 	spin_lock(&start_cpu_lock);
 
 	/* Get the cpu's apicid */
-	apicid = cpu->path.u.apic.apic_id;
+	apicid = cpu->path.apic.apic_id;
 
 	/* Get an index for the new processor */
 	index = ++last_cpu_index;
@@ -389,7 +389,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 		if (!start_cpu(cpu)) {
 			/* Record the error in cpu? */
 			printk_err("CPU 0x%02x would not start!\n",
-				cpu->path.u.apic.apic_id);
+				cpu->path.apic.apic_id);
 		}
 #if SERIAL_CPU_INIT == 1
   #if CONFIG_MAX_CPUS>2
@@ -421,7 +421,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 		}
 		if (!cpu->initialized) {
 			printk_err("CPU 0x%02x did not initialize!\n", 
-				cpu->path.u.apic.apic_id);
+				cpu->path.apic.apic_id);
 		}
 	}
 	printk_debug("All AP CPUs stopped\n");
@@ -455,11 +455,11 @@ void initialize_cpus(struct bus *cpu_bus)
 
 	/* Get the device path of the boot cpu */
 	cpu_path.type           = DEVICE_PATH_APIC;
-	cpu_path.u.apic.apic_id = lapicid();
+	cpu_path.apic.apic_id = lapicid();
 #else
 	/* Get the device path of the boot cpu */
 	cpu_path.type           = DEVICE_PATH_CPU;
-	cpu_path.u.cpu.id       = 0;
+	cpu_path.cpu.id       = 0;
 #endif
 
 	/* Find the device structure for the boot cpu */

@@ -40,10 +40,10 @@ void i82801xx_enable(device_t dev)
 	 * exists it can be disabled. Workarounds for ICH variants that don't
 	 * follow this should be done by checking the device ID.
 	 */
-	if (PCI_SLOT(dev->path.u.pci.devfn) == 31) {
-		index = PCI_FUNC(dev->path.u.pci.devfn);
-	} else if (PCI_SLOT(dev->path.u.pci.devfn) == 29) {
-		index = 8 + PCI_FUNC(dev->path.u.pci.devfn);
+	if (PCI_SLOT(dev->path.pci.devfn) == 31) {
+		index = PCI_FUNC(dev->path.pci.devfn);
+	} else if (PCI_SLOT(dev->path.pci.devfn) == 29) {
+		index = 8 + PCI_FUNC(dev->path.pci.devfn);
 	}
 
 	/* Function 0 is a bit of an exception. */

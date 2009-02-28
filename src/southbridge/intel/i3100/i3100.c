@@ -41,8 +41,8 @@ void i3100_enable(device_t dev)
 	lpc_dev = dev_find_slot(0x0, PCI_DEVFN(0x1f, 0x0));
 	pci_write_config32(lpc_dev, 0xf0, 0xa0000000 | (1 << 0));
 	disable = (volatile u32 *) 0xa0003418;
-	func = PCI_FUNC(dev->path.u.pci.devfn);
-	switch (PCI_SLOT(dev->path.u.pci.devfn)) {
+	func = PCI_FUNC(dev->path.pci.devfn);
+	switch (PCI_SLOT(dev->path.pci.devfn)) {
 	case 0x1f: /* LPC (fn0), SATA (fn2), SMBus (fn3) */
 		*disable |= (1 << (func == 0x0 ? 14 : func));
 		break;

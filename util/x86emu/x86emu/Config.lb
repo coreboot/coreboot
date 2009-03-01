@@ -1,0 +1,7 @@
+object debug.o
+object decode.o
+object fpu.o
+object ops.o
+object ops2.o
+object prim_ops.o
+object sys.o

@@ -14,11 +14,16 @@
 #define DEVICE_LIB_H
 
 #include <types.h>
+#if COREBOOT_V2
+#include <arch/byteorder.h>
+#include "compat/of.h"
+#else
 #include <cpu.h>
+#include <byteorder.h>
 #include "of.h"
+#endif
 #include "debug.h"
 
-#include <byteorder.h>
 
 // a Expansion Header Struct as defined in Plug and Play BIOS Spec 1.0a Chapter 3.2
 typedef struct {

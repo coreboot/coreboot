@@ -11,12 +11,18 @@
  *****************************************************************************/
 
 #include <types.h>
+#if !COREBOOT_V2
 #include <cpu.h>
+#endif
 #include "debug.h"
 #include "device.h"
 #include "x86emu/x86emu.h"
 #include "biosemu.h"
+#if COREBOOT_V2
+#include "compat/time.h"
+#else
 #include <time.h>
+#endif
 
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
 #ifdef DEBUG

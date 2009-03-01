@@ -10,7 +10,9 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
+#if !COREBOOT_V2
 #include <cpu.h>
+#endif
 
 #include "debug.h"
 

@@ -4,7 +4,7 @@
  *  Copyright (C) 2000 Scyld Computing Corporation
  *  Copyright (C) 2001 University of California.  LA-CC Number 01-67.
  *  Copyright (C) 2005 Nick.Barker9@btinternet.com
- *  Copyright (C) 2007 coresystems GmbH
+ *  Copyright (C) 2007-2009 coresystems GmbH
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,9 +25,15 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <console.h>
 #include <string.h>
+#if COREBOOT_V2
+#include <console/console.h>
+#include <arch/io.h>
+#define printk(lvl, x...) printk_debug(x)
+#else
+#include <console.h>
 #include <io.h>
+#endif
 
 /* The address arguments to this function are PHYSICAL ADDRESSES */
 static void real_mode_switch_call_vga(unsigned long devfn)
@@ -539,7 +545,6 @@ void run_bios(struct device *dev, unsigned long addr)
 		*(unsigned char *) i = 0;
 	}
 	setup_realmode_idt();
-
 	real_mode_switch_call_vga((dev->bus->secondary << 8) | dev->path.pci.devfn);
 }
 
@@ -586,7 +591,11 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 		vendorid = *pedx;
 		devindex = *pesi;
 		dev = 0;
+#if COREBOOT_V2
+		while ((dev = dev_find_device(vendorid, devid, dev))) {
+#else
 		while ((dev = dev_find_pci_device(vendorid, devid, dev))) {
+#endif
 			if (devindex <= 0)
 				break;
 			devindex--;

@@ -33,7 +33,11 @@ __asm__ (
 	"	.globl gdtarg\n"
 	"gdtarg:			\n"
 	"	.word	gdt_limit	\n"
+#if COREBOOT_V2
+	"	.long	gdt	       	\n"		
+#else
 	"	.long	gdtptr	       	\n"		
+#endif
 
 	/* compute the table limit */
 	"__mygdt_limit = __mygdt_end - __mygdt - 1	\n"
@@ -74,6 +78,7 @@ __asm__ (
 
 	"__mygdt_end:				\n"
 
+#if !COREBOOT_V2
 	/* FIXME: This does probably not belong here */
 	"	.globl idtarg\n"
 	"idtarg:\n"
@@ -83,6 +88,7 @@ __asm__ (
 	"_idt:\n"
 	"	.fill   20, 8, 0\n" //       # idt is unitiailzed
 	"_idt_end:\n"
+#endif
 
 	/* Declare a pointer to where our idt is going to be i.e. at mem zero */
 	"	.globl __myidt\n"

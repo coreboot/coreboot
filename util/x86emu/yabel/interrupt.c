@@ -10,7 +10,11 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
+#if COREBOOT_V2
+#include "compat/rtas.h"
+#else
 #include <rtas.h>
+#endif
 
 #include "biosemu.h"
 #include "mem.h"
@@ -19,9 +23,14 @@
 #include "pmm.h"
 
 #include <x86emu/x86emu.h>
+#if COREBOOT_V2
+#include "../x86emu/prim_ops.h"
+#else
 #include <x86emu/prim_ops.h>
+#endif
 
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#include <device/pci.h>
 #include <device/pci_ops.h>
 #endif
 

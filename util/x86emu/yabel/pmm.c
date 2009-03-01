@@ -10,7 +10,11 @@
  ****************************************************************************/
 
 #include <x86emu/x86emu.h>
+#if COREBOOT_V2
+#include "../x86emu/prim_ops.h"
+#else
 #include <x86emu/prim_ops.h>
+#endif
 #include <string.h>
 
 #include "biosemu.h"

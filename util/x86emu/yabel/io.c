@@ -10,16 +10,21 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-#include <cpu.h>
-#include "device.h"
-#include "rtas.h"
-#include "debug.h"
-#include "device.h"
 #include <types.h>
-#include <x86emu/x86emu.h>
+#if COREBOOT_V2
+#include "compat/rtas.h"
+#include "compat/time.h"
+#else
+#include <cpu.h>
+#include "rtas.h"
 #include <time.h>
+#endif
+#include "device.h"
+#include "debug.h"
+#include <x86emu/x86emu.h>
 
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#include <device/pci.h>
 #include <device/pci_ops.h>
 #endif
 
@@ -359,10 +364,15 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 			    || (devfn != bios_device.devfn)) {
 				// fail accesses to any device but ours...
 				printf
-				    ("Config access invalid! bus: %x, devfn: %x, offs: %x\n",
-				     bus, devfn, offs);
+				    ("Config read access invalid! PCI device %x:%x.%x, offs: %x\n",
+				     bus, devfn >> 3, devfn & 7, offs);
+#ifdef CONFIG_YABEL_NO_ILLEGAL_ACCESS
 				HALT_SYS();
 			} else {
+#else
+			}
+			{
+#endif
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 				switch (size) {
 					case 1:
@@ -410,8 +420,8 @@ pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 			    || (devfn != bios_device.devfn)) {
 				// fail accesses to any device but ours...
 				printf
-				    ("Config access invalid! bus: %x, devfn: %x, offs: %x\n",
-				     bus, devfn, offs);
+				    ("Config write access invalid! PCI device %x:%x.%x, offs: %x\n",
+				     bus, devfn >> 3, devfn & 7, offs);
 				HALT_SYS();
 			} else {
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL

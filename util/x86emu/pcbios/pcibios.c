@@ -35,7 +35,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#if COREBOOT_V2
+#include <console/console.h>
+#else
 #include <console.h>
+#endif
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -61,7 +65,11 @@ int pcibios_handler(void)
 		break;
 	case FIND_PCI_DEVICE:
 		/* FixME: support SI != 0 */
+#if COREBOOT_V2
+		dev = dev_find_device(X86_DX, X86_CX, dev);
+#else
 		dev = dev_find_pci_device(X86_DX, X86_CX, dev);
+#endif
 		if (dev != 0) {
 			X86_BH = dev->bus->secondary;
 			X86_BL = dev->path.pci.devfn;

@@ -12,13 +12,17 @@
 
 
 #include "device.h"
+#if COREBOOT_V2
+#include "compat/rtas.h"
+#else
 #include "rtas.h"
+#endif
 #include <string.h>
 #include "debug.h"
 
 #include <device/device.h>
-#include <device/pci_ops.h>
 #include <device/pci.h>
+#include <device/pci_ops.h>
 #include <device/resource.h>
 
 /* the device we are working with... */
@@ -47,6 +51,10 @@ biosemu_dev_get_addr_info(void)
 	struct resource *r;
 	u8 bus = bios_device.dev->bus->link;
 	u16 devfn = bios_device.dev->path.pci.devfn;
+
+	bios_device.bus =  bus;
+	bios_device.devfn = devfn;
+
 	DEBUG_PRINTF("bus: %x, devfn: %x\n", bus, devfn);
 	for (i = 0; i < bios_device.dev->resources; i++) {
 		r = &bios_device.dev->resource[i];
@@ -388,7 +396,11 @@ biosemu_dev_init(struct device * device)
 {
 	u8 rval = 0;
 	//init bios_device struct
+#if COREBOOT_V2
+	DEBUG_PRINTF("%s\n", __func__);
+#else
 	DEBUG_PRINTF("%s(%s)\n", __func__, device->dtsname);
+#endif
 	memset(&bios_device, 0, sizeof(bios_device));
 
 #ifndef CONFIG_PCI_OPTION_ROM_RUN_YABEL

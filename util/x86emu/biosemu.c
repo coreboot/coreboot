@@ -20,6 +20,7 @@
  * This file is part of the coreboot project.
  *
  *  (c) Copyright 2000, Ron Minnich, Advanced Computing Lab, LANL
+ *  Copyright (C) 2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by 
@@ -35,8 +36,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#if COREBOOT_V2
+#include <arch/io.h>
+#include <console/console.h>
+#else
 #include <io.h>
 #include <console.h>
+#endif
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -96,9 +102,10 @@ u8 x_inb(u16 port)
 	u8 val;
 
 	val = inb(port);
-
+#ifdef DEBUG
 	if (port != 0x40)
 	    printk("inb(0x%04x) = 0x%02x\n", port, val);
+#endif
 
 	return val;
 }
@@ -109,7 +116,9 @@ u16 x_inw(u16 port)
 
 	val = inw(port);
 
+#ifdef DEBUG
 	printk("inw(0x%04x) = 0x%04x\n", port, val);
+#endif
 	return val;
 }
 
@@ -119,26 +128,34 @@ u32 x_inl(u16 port)
 
 	val = inl(port);
 
+#ifdef DEBUG
 	printk("inl(0x%04x) = 0x%08x\n", port, val);
+#endif
 	return val;
 }
 
 void x_outb(u16 port, u8 val)
 {
+#ifdef DEBUG
 	if (port != 0x43)
 		printk("outb(0x%02x, 0x%04x)\n", val, port);
+#endif
 	outb(val, port);
 }
 
 void x_outw(u16 port, u16 val)
 {
+#ifdef DEBUG
 	printk("outw(0x%04x, 0x%04x)\n", val, port);
+#endif
 	outw(val, port);
 }
 
 void x_outl(u16 port, u32 val)
 {
+#ifdef DEBUG
 	printk("outl(0x%08x, 0x%04x)\n", val, port);
+#endif
 	outl(val, port);
 }
 
@@ -324,6 +341,7 @@ void run_bios(struct device * dev, unsigned long addr)
 	unsigned short initialcs = (addr & 0xF0000) >> 4;
 	unsigned short initialip = (addr + 3) & 0xFFFF;
 	unsigned short devfn = dev->bus->secondary << 8 | dev->path.pci.devfn;
+
 	X86EMU_intrFuncs intFuncs[256];
 
 	X86EMU_setMemBase(0, 0x100000);

@@ -14,8 +14,10 @@
  */
 
 #include <types.h>
-#include <device/device.h>
+#if !COREBOOT_V2
 #include <config.h>
+#endif
+#include <device/device.h>
 
 #define VMEM_SIZE 1024 *1024 /* 1 MB */
 

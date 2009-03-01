@@ -11,7 +11,7 @@
  *****************************************************************************/
 
 #include <types.h>
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "compat/rtas.h"
 #include "compat/time.h"
 #else

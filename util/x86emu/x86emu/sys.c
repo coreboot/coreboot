@@ -46,7 +46,7 @@
 #include "debug.h"
 #include "prim_ops.h"
 #if 1 /* Coreboot needs to map prinkf to printk. */
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "arch/io.h"
 #else
 #include "io.h"

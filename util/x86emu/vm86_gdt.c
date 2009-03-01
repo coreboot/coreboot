@@ -33,7 +33,7 @@ __asm__ (
 	"	.globl gdtarg\n"
 	"gdtarg:			\n"
 	"	.word	gdt_limit	\n"
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 	"	.long	gdt	       	\n"		
 #else
 	"	.long	gdtptr	       	\n"		
@@ -78,7 +78,7 @@ __asm__ (
 
 	"__mygdt_end:				\n"
 
-#if !COREBOOT_V2
+#ifndef COREBOOT_V2
 	/* FIXME: This does probably not belong here */
 	"	.globl idtarg\n"
 	"idtarg:\n"

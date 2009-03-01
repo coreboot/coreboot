@@ -14,7 +14,7 @@
  */
 
 #include <types.h>
-#if !COREBOOT_V2
+#ifndef COREBOOT_V2
 #include <config.h>
 #endif
 #include <device/device.h>

@@ -10,7 +10,7 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "compat/rtas.h"
 #else
 #include <rtas.h>
@@ -23,7 +23,7 @@
 #include "pmm.h"
 
 #include <x86emu/x86emu.h>
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "../x86emu/prim_ops.h"
 #else
 #include <x86emu/prim_ops.h>

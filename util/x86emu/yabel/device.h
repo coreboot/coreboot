@@ -14,7 +14,7 @@
 #define DEVICE_LIB_H
 
 #include <types.h>
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 #include <arch/byteorder.h>
 #include "compat/of.h"
 #else

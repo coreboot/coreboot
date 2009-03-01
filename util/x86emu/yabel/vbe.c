@@ -12,7 +12,7 @@
 
 #include <string.h>
 #include <types.h>
-#if !COREBOOT_V2
+#ifndef COREBOOT_V2
 #include <cpu.h>
 #endif
 
@@ -20,7 +20,7 @@
 
 #include <x86emu/x86emu.h>
 #include <x86emu/regs.h>
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "../x86emu/prim_ops.h"
 #else
 #include <x86emu/prim_ops.h>	// for push_word

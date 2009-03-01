@@ -26,7 +26,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <string.h>
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 #include <console/console.h>
 #include <arch/io.h>
 #define printk(lvl, x...) printk_debug(x)
@@ -591,7 +591,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 		vendorid = *pedx;
 		devindex = *pesi;
 		dev = 0;
-#if COREBOOT_V2
+#ifdef COREBOOT_V2
 		while ((dev = dev_find_device(vendorid, devid, dev))) {
 #else
 		while ((dev = dev_find_pci_device(vendorid, devid, dev))) {

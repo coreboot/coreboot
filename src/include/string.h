@@ -81,6 +81,18 @@ static inline int strcmp(const char *s1, const char *s2)
 	return r;
 }  
 
+static inline int strncmp(const char *s1, const char *s2, int maxlen)
+{
+	int i;
+
+	for (i = 0; i < maxlen; i++) {
+		if (s1[i] != s2[i])
+			return s1[i] - s2[i];
+	}
+
+	return 0;
+}
+
 static inline int isspace(int c)
 {
 	switch (c) {

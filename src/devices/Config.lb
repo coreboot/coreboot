@@ -1,5 +1,6 @@
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_VGA_ROM_RUN
+
 object device.o
 object root_device.o
 object device_util.o
@@ -15,10 +16,10 @@ object smbus_ops.o
 
 if CONFIG_PCI_ROM_RUN
 	object pci_rom.o
-	dir emulator
+	dir ../../util/x86emu
 else
 if CONFIG_VGA_ROM_RUN
 	object pci_rom.o
-	dir emulator
+	dir ../../util/x86emu
 end
 end

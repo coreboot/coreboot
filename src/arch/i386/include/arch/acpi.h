@@ -18,7 +18,6 @@
 #if HAVE_ACPI_TABLES==1
 
 #include <stdint.h>
-typedef unsigned long long u64;
 
 #define RSDP_SIG              "RSD PTR "  /* RSDT Pointer signature */
 #define RSDP_NAME             "RSDP"

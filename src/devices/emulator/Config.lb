@@ -1,4 +1,0 @@
-object biosemu.o
-
-dir pcbios
-dir x86emu

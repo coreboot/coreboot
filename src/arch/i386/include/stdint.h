@@ -65,11 +65,13 @@ typedef long int           intmax_t;
 typedef unsigned long int  uintmax_t;
 #endif
 
-#undef __HAVE_LONG_LONG__
-
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
+#if __HAVE_LONG_LONG__
+typedef uint64_t u64;
+#endif
 
+#undef __HAVE_LONG_LONG__
 
 #endif /* I386_STDINT_H */

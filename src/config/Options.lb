@@ -168,6 +168,12 @@ define CONFIG_USE_INIT
 	comment "Use stage 1 initialization code"
 end
 
+define COREBOOT_V2
+	default 1
+	export always
+	comment "This is used by code to determine v2 vs v3"
+end
+
 ###############################################
 # ROM image options
 ###############################################
@@ -1066,6 +1072,18 @@ define CONFIG_PCI_ROM_RUN
 	default 0
 	export always
 	comment "Init x86 ROMs on all PCI devices"
+end
+
+define CONFIG_PCI_OPTION_ROM_RUN_YABEL
+	default 0
+	export used
+	comment "Use Yabel instead of old bios emulator"
+end
+
+define CONFIG_PCI_OPTION_ROM_RUN_VM86
+	default 0
+	export used
+	comment "Use Yabel instead of old bios emulator"
 end
 
 define CONFIG_PCI_64BIT_PREF_MEM

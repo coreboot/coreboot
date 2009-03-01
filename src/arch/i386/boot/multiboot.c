@@ -23,8 +23,6 @@
 #include <device/resource.h>
 #include <console/console.h>
 
-typedef unsigned long long u64;
-
 static struct multiboot_mmap_entry *mb_mem;
 struct multiboot_info *mbi;
 

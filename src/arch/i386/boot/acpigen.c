@@ -239,8 +239,10 @@ int acpigen_write_PPC(u8 nr)
 	acpigen_emit_byte(0xa4);
 	/* arg */
 	len += acpigen_write_byte(nr);
+	/* add all single bytes */
+	len += 3;
 	acpigen_patch_len(len - 1);
-	return len + 3;
+	return len;
 }
 
 int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat,

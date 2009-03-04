@@ -128,7 +128,7 @@ void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	basek = resk(res->base);
 	sizek = resk(res->size);
 
-	printk_debug("set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
+	printk_debug("set_srat_mem: dev %s, res->index=%04lx startk=%08lx, sizek=%08lx\n",
 		     dev_path(dev), res->index, basek, sizek);
 	/*
 	 * 0-640K must be on node 0

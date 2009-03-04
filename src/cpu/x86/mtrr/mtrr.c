@@ -357,7 +357,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 #endif
 	}
 	/* Allocate an msr */  
-	printk_spew(" Allocate an msr - basek = %08x, sizek = %08x,\n", basek, sizek);
+	printk_spew(" Allocate an msr - basek = %08lx, sizek = %08lx,\n", basek, sizek);
 	state->range_startk = basek;
 	state->range_sizek  = sizek;
 }

@@ -203,7 +203,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	device_t sb_dev;
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
-	printk_debug("gpp_sb_init nb_dev=0x%x, dev=0x%x, port=0x%x\n", nb_dev, dev, port);
+	printk_debug("gpp_sb_init nb_dev=0x%p, dev=0x%p, port=0x%x\n", nb_dev, dev, port);
 
 	/* init GPP core */
 	set_pcie_enable_bits(nb_dev, 0x20 | PCIE_CORE_INDEX_GPPSB, 1 << 8,

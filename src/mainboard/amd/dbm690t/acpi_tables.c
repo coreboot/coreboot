@@ -254,7 +254,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy((void *)dsdt, (void *)AmlCode,
 	       ((acpi_header_t *) AmlCode)->length);
 	current += dsdt->length;
-	printk_debug("ACPI:    * DSDT @ %08x Length %x\n", dsdt, dsdt->length);
+	printk_debug("ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
 	/* FADT */
 	printk_debug("ACPI:    * FADT\n");
 	fadt = (acpi_fadt_t *) current;

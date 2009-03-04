@@ -136,7 +136,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	maxlvt = 4;
 
 	for (j = 1; j <= num_starts; j++) {
-		printk_spew("Sending STARTUP #%d to %u.\n", j, apicid);
+		printk_spew("Sending STARTUP #%d to %lu.\n", j, apicid);
 		lapic_read_around(LAPIC_SPIV);
 		lapic_write(LAPIC_ESR, 0);
 		lapic_read(LAPIC_ESR);
@@ -239,7 +239,7 @@ int start_cpu(device_t cpu)
 		#warning "We may need to increase CONFIG_LB_MEM_TOPK, it need to be more than (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPU)\n"
 #endif
 		if(stack_end > (CONFIG_LB_MEM_TOPK<<10)) {
-			printk_debug("start_cpu: Please increase the CONFIG_LB_MEM_TOPK more than %dK\n", stack_end>>10);
+			printk_debug("start_cpu: Please increase the CONFIG_LB_MEM_TOPK more than %luK\n", stack_end>>10);
 			die("Can not go on\n");
 		}
 		stack_end -= sizeof(struct cpu_info);

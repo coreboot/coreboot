@@ -27,7 +27,7 @@ void *malloc(size_t size)
 {
 	void *p;
 
-	MALLOCDBG(("%s Enter, size %d, free_mem_ptr %p\n", __func__, size, free_mem_ptr));
+	MALLOCDBG(("%s Enter, size %ld, free_mem_ptr 0x%08lx\n", __func__, size, free_mem_ptr));
 	if (size < 0)
 		die("Error! malloc: Size < 0");
 	if (free_mem_ptr <= 0)

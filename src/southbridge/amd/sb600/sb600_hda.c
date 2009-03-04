@@ -302,7 +302,7 @@ static void hda_init(struct device *dev)
 		return;
 
 	base = (u8 *) ((u32)res->base);
-	printk_debug("base = %08x\n", base);
+	printk_debug("base = %p\n", base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {

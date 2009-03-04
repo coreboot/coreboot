@@ -473,7 +473,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit |= (nodeid & 7);
 
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-			printk_spew("%s, enabling legacy VGA IO forwarding for %s link %s\n",
+			printk_spew("%s, enabling legacy VGA IO forwarding for %s link 0x%x\n",
 				    __func__, dev_path(dev), link);
 			base |= PCI_IO_BASE_VGA_EN;
 		}

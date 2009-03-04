@@ -61,7 +61,7 @@ static void enable_onboard_nic()
 {
 	u8 byte;
 
-	printk_info("enable_onboard_nic.\n");
+	printk_info("%s.\n", __func__);
 
 	/* set index register 0C50h to 13h (miscellaneous control) */
 	outb(0x13, 0xC50);	/* CMIndex */
@@ -202,7 +202,7 @@ void dbm690t_enable(device_t dev)
 	struct mainboard_config *mainboard =
 	    (struct mainboard_config *)dev->chip_info;
 
-	printk_info("Mainboard DBM690T Enable. dev=0x%x\n", dev);
+	printk_info("Mainboard DBM690T Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;
@@ -236,7 +236,7 @@ void dbm690t_enable(device_t dev)
 	}
 
 	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk_info("%s: uma size 0x%08lx, memory start 0x%08lx\n",
+	printk_info("%s: uma size 0x%08llx, memory start 0x%08llx\n",
 		    __func__, uma_memory_size, uma_memory_base);
 
 	/* TODO: TOP_MEM2 */
@@ -256,7 +256,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
 #if (CONFIG_GFXUMA == 1)
-	printk_info("uma_memory_base=0x%lx, uma_memory_size=0x%lx \n",
+	printk_info("uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
 	uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);

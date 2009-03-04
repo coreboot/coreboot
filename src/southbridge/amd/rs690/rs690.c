@@ -129,7 +129,7 @@ void rs690_enable(device_t dev)
 	device_t nb_dev = 0, sb_dev = 0;
 	int dev_ind;
 
-	printk_info("rs690_enable: dev=0x%x, VID_DID=0x%x\n", dev, get_vid_did(dev));
+	printk_info("rs690_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
 
 	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {

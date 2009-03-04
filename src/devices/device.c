@@ -358,7 +358,7 @@ void compute_allocate_resource(
 			base += size;
 			
 			printk_spew(
-				"%s %02x *  [0x%08Lx - 0x%08Lx] %s\n",
+				"%s %02lx *  [0x%08Lx - 0x%08Lx] %s\n",
 				dev_path(dev),
 				resource->index, 
 				resource->base, 

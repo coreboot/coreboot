@@ -121,7 +121,7 @@ static void rs690_internal_gfx_enable(device_t dev)
 	device_t k8_f0 = 0, k8_f2 = 0;
 	device_t nb_dev = dev_find_slot(0, 0);
 
-	printk_info("rs690_internal_gfx_enable dev=0x%x, nb_dev=0x%x.\n", dev,
+	printk_info("rs690_internal_gfx_enable dev=0x%p, nb_dev=0x%p.\n", dev,
 		    nb_dev);
 
 	/* set APERTURE_SIZE, 128M. */
@@ -417,7 +417,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
 
-	printk_info("rs690_gfx_init, nb_dev=0x%x, dev=0x%x, port=0x%x.\n",
+	printk_info("rs690_gfx_init, nb_dev=0x%p, dev=0x%p, port=0x%x.\n",
 		    nb_dev, dev, port);
 
 	/* step 0, REFCLK_SEL, skip A11 revision */

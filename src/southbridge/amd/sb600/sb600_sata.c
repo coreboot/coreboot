@@ -96,7 +96,7 @@ static void sata_init(struct device *dev)
 	printk_spew("sata_bar2=%x\n", sata_bar2);	/* 3040 */
 	printk_spew("sata_bar3=%x\n", sata_bar3);	/* 3080 */
 	printk_spew("sata_bar4=%x\n", sata_bar4);	/* 3000 */
-	printk_spew("sata_bar5=%x\n", sata_bar5);	/* e0309000 */
+	printk_spew("sata_bar5=%p\n", sata_bar5);	/* e0309000 */
 
 	/* Program the 2C to 0x43801002 */
 	dword = 0x43801002;

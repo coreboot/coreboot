@@ -196,6 +196,8 @@ object ./option_table.o
 end
 
 makerule clean 
+	action  "rm -f $(OBJECTS)"
+	action  "rm -f $(DRIVER)"
 	action	"rm -f coreboot.* *~"
 	action	"rm -f coreboot"
 	action	"rm -f ldscript.ld"

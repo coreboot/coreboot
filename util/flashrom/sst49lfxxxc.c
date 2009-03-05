@@ -50,20 +50,20 @@ static __inline__ int write_lockbits_49lfxxxc(volatile uint8_t *bios, int size,
 	//printf("bios=0x%08lx\n", (unsigned long)bios);
 	for (i = 0; left > 65536; i++, left -= 65536) {
 		//printf("lockbits at address=0x%08lx is 0x%01x\n", (unsigned long)0xFFC00000 - size + (i * 65536) + 2, *(bios + (i * 65536) + 2) );
-		*(bios + (i * 65536) + 2) = bits;
+		writeb(bits, bios + (i * 65536) + 2);
 	}
 	address = i * 65536;
 	//printf("lockbits at address=0x%08lx is 0x%01x\n", (unsigned long)0xFFc00000 - size + address + 2, *(bios + address + 2) );
-	*(bios + address + 2) = bits;
+	writeb(bits, bios + address + 2);
 	address += 32768;
 	//printf("lockbits at address=0x%08lx is 0x%01x\n", (unsigned long)0xFFc00000 - size + address + 2, *(bios + address + 2) );
-	*(bios + address + 2) = bits;
+	writeb(bits, bios + address + 2);
 	address += 8192;
 	//printf("lockbits at address=0x%08lx is 0x%01x\n", (unsigned long)0xFFc00000 - size + address + 2, *(bios + address + 2) );
-	*(bios + address + 2) = bits;
+	writeb(bits, bios + address + 2);
 	address += 8192;
 	//printf("lockbits at address=0x%08lx is 0x%01x\n", (unsigned long)0xFFc00000 - size + address + 2, *(bios + address + 2) );
-	*(bios + address + 2) = bits;
+	writeb(bits, bios + address + 2);
 
 	return 0;
 }
@@ -73,14 +73,14 @@ static __inline__ int erase_sector_49lfxxxc(volatile uint8_t *bios,
 {
 	unsigned char status;
 
-	*bios = SECTOR_ERASE;
-	*(bios + address) = ERASE;
+	writeb(SECTOR_ERASE, bios);
+	writeb(ERASE, bios + address);
 
 	do {
-		status = *bios;
+		status = readb(bios);
 		if (status & (STATUS_ESS | STATUS_BPS)) {
 			printf("sector erase FAILED at address=0x%08lx status=0x%01x\n", (unsigned long)bios + address, status);
-			*bios = CLEAR_STATUS;
+			writeb(CLEAR_STATUS, bios);
 			return (-1);
 		}
 	} while (!(status & STATUS_WSMS));
@@ -96,7 +96,7 @@ static __inline__ int write_sector_49lfxxxc(volatile uint8_t *bios,
 	int i;
 	unsigned char status;
 
-	*bios = CLEAR_STATUS;
+	writeb(CLEAR_STATUS, bios);
 	for (i = 0; i < page_size; i++) {
 		/* transfer data from source to destination */
 		if (*src == 0xFF) {
@@ -105,14 +105,14 @@ static __inline__ int write_sector_49lfxxxc(volatile uint8_t *bios,
 			continue;
 		}
 		/*issue AUTO PROGRAM command */
-		*bios = AUTO_PGRM;
-		*dst++ = *src++;
+		writeb(AUTO_PGRM, bios);
+		writeb(*src++, dst++);
 
 		do {
-			status = *bios;
+			status = readb(bios);
 			if (status & (STATUS_ESS | STATUS_BPS)) {
 				printf("sector write FAILED at address=0x%08lx status=0x%01x\n", (unsigned long)dst, status);
-				*bios = CLEAR_STATUS;
+				writeb(CLEAR_STATUS, bios);
 				return (-1);
 			}
 		} while (!(status & STATUS_WSMS));
@@ -127,13 +127,13 @@ int probe_49lfxxxc(struct flashchip *flash)
 
 	uint8_t id1, id2;
 
-	*bios = RESET;
+	writeb(RESET, bios);
 
-	*bios = READ_ID;
-	id1 = *(volatile uint8_t *)bios;
-	id2 = *(volatile uint8_t *)(bios + 0x01);
+	writeb(READ_ID, bios);
+	id1 = readb(bios);
+	id2 = readb(bios + 0x01);
 
-	*bios = RESET;
+	writeb(RESET, bios);
 
 	printf_debug("%s: id1 0x%02x, id2 0x%02x\n", __FUNCTION__, id1, id2);
 
@@ -157,7 +157,7 @@ int erase_49lfxxxc(struct flashchip *flash)
 		if (erase_sector_49lfxxxc(bios, i) != 0)
 			return (-1);
 
-	*bios = RESET;
+	writeb(RESET, bios);
 
 	return 0;
 }
@@ -183,7 +183,7 @@ int write_49lfxxxc(struct flashchip *flash, uint8_t *buf)
 	}
 	printf("\n");
 
-	*bios = RESET;
+	writeb(RESET, bios);
 
 	return 0;
 }

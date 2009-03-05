@@ -25,12 +25,12 @@
 static __inline__ int erase_sector_29f040b(volatile uint8_t *bios,
 					   unsigned long address)
 {
-	*(bios + 0x555) = 0xAA;
-	*(bios + 0x2AA) = 0x55;
-	*(bios + 0x555) = 0x80;
-	*(bios + 0x555) = 0xAA;
-	*(bios + 0x2AA) = 0x55;
-	*(bios + address) = 0x30;
+	writeb(0xAA, bios + 0x555);
+	writeb(0x55, bios + 0x2AA);
+	writeb(0x80, bios + 0x555);
+	writeb(0xAA, bios + 0x555);
+	writeb(0x55, bios + 0x2AA);
+	writeb(0x30, bios + address);
 
 	sleep(2);
 
@@ -52,10 +52,10 @@ static __inline__ int write_sector_29f040b(volatile uint8_t *bios,
 			printf("0x%08lx", (unsigned long)dst -
 			       (unsigned long)bios);
 
-		*(bios + 0x555) = 0xAA;
-		*(bios + 0x2AA) = 0x55;
-		*(bios + 0x555) = 0xA0;
-		*dst++ = *src++;
+		writeb(0xAA, bios + 0x555);
+		writeb(0x55, bios + 0x2AA);
+		writeb(0xA0, bios + 0x555);
+		writeb(*src++, dst++);
 
 		/* wait for Toggle bit ready */
 		toggle_ready_jedec(bios);
@@ -72,14 +72,14 @@ int probe_29f040b(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
-	*(bios + 0x555) = 0xAA;
-	*(bios + 0x2AA) = 0x55;
-	*(bios + 0x555) = 0x90;
+	writeb(0xAA, bios + 0x555);
+	writeb(0x55, bios + 0x2AA);
+	writeb(0x90, bios + 0x555);
 
-	id1 = *bios;
-	id2 = *(bios + 0x01);
+	id1 = readb(bios);
+	id2 = readb(bios + 0x01);
 
-	*bios = 0xF0;
+	writeb(0xF0, bios);
 
 	myusec_delay(10);
 
@@ -94,12 +94,12 @@ int erase_29f040b(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	*(bios + 0x555) = 0xAA;
-	*(bios + 0x2AA) = 0x55;
-	*(bios + 0x555) = 0x80;
-	*(bios + 0x555) = 0xAA;
-	*(bios + 0x2AA) = 0x55;
-	*(bios + 0x555) = 0x10;
+	writeb(0xAA, bios + 0x555);
+	writeb(0x55, bios + 0x2AA);
+	writeb(0x80, bios + 0x555);
+	writeb(0xAA, bios + 0x555);
+	writeb(0x55, bios + 0x2AA);
+	writeb(0x10, bios + 0x555);
 
 	myusec_delay(10);
 	toggle_ready_jedec(bios);

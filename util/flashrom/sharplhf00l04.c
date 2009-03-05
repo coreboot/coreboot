@@ -41,23 +41,23 @@ int probe_lhf00l04(struct flashchip *flash)
 
 #if 0
 	/* Enter ID mode */
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0x90;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0x90, bios + 0x5555);
 #endif
 
-	*bios = 0xff;
+	writeb(0xff, bios);
 	myusec_delay(10);
-	*bios = 0x90;
+	writeb(0x90, bios);
 	myusec_delay(10);
 
-	id1 = *(volatile uint8_t *)bios;
-	id2 = *(volatile uint8_t *)(bios + 0x01);
+	id1 = readb(bios);
+	id2 = readb(bios + 0x01);
 
 	/* Leave ID mode */
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0xF0, bios + 0x5555);
 
 	myusec_delay(10);
 
@@ -76,25 +76,25 @@ uint8_t wait_lhf00l04(volatile uint8_t *bios)
 	uint8_t status;
 	uint8_t id1, id2;
 
-	*bios = 0x70;
-	if ((*bios & 0x80) == 0) {	// it's busy
-		while ((*bios & 0x80) == 0) ;
+	writeb(0x70, bios);
+	if ((readb(bios) & 0x80) == 0) {	// it's busy
+		while ((readb(bios) & 0x80) == 0) ;
 	}
 
-	status = *bios;
+	status = readb(bios);
 
 	// put another command to get out of status register mode
 
-	*bios = 0x90;
+	writeb(0x90, bios);
 	myusec_delay(10);
 
-	id1 = *(volatile uint8_t *)bios;
-	id2 = *(volatile uint8_t *)(bios + 0x01);
+	id1 = readb(bios);
+	id2 = readb(bios + 0x01);
 
 	// this is needed to jam it out of "read id" mode
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0xF0, bios + 0x5555);
 
 	return status;
 }
@@ -106,19 +106,19 @@ int erase_lhf00l04_block(struct flashchip *flash, int offset)
 	uint8_t status;
 
 	// clear status register
-	*bios = 0x50;
+	writeb(0x50, bios);
 	printf("Erase at %p\n", bios);
 	status = wait_lhf00l04(flash->virtual_memory);
 	print_lhf00l04_status(status);
 	// clear write protect
 	printf("write protect is at %p\n", (wrprotect));
-	printf("write protect is 0x%x\n", *(wrprotect));
-	*(wrprotect) = 0;
-	printf("write protect is 0x%x\n", *(wrprotect));
+	printf("write protect is 0x%x\n", readb(wrprotect));
+	writeb(0, wrprotect);
+	printf("write protect is 0x%x\n", readb(wrprotect));
 
 	// now start it
-	*(volatile uint8_t *)(bios) = 0x20;
-	*(volatile uint8_t *)(bios) = 0xd0;
+	writeb(0x20, bios);
+	writeb(0xd0, bios);
 	myusec_delay(10);
 	// now let's see what the register is
 	status = wait_lhf00l04(flash->virtual_memory);
@@ -149,8 +149,8 @@ void write_page_lhf00l04(volatile uint8_t *bios, uint8_t *src,
 
 	for (i = 0; i < page_size; i++) {
 		/* transfer data from source to destination */
-		*dst = 0x40;
-		*dst++ = *src++;
+		writeb(0x40, dst);
+		writeb(*src++, dst++);
 		wait_lhf00l04(bios);
 	}
 }
@@ -163,7 +163,7 @@ int write_lhf00l04(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	erase_lhf00l04(flash);
-	if (*bios != 0xff) {
+	if (readb(bios) != 0xff) {
 		printf("ERASE FAILED!\n");
 		return -1;
 	}

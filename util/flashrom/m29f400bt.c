@@ -22,9 +22,9 @@
 
 void protect_m29f400bt(volatile uint8_t *bios)
 {
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x555) = 0x55;
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xA0;
+	writeb(0xAA, bios + 0xAAA);
+	writeb(0x55, bios + 0x555);
+	writeb(0xA0, bios + 0xAAA);
 
 	usleep(200);
 }
@@ -35,18 +35,18 @@ void write_page_m29f400bt(volatile uint8_t *bios, uint8_t *src,
 	int i;
 
 	for (i = 0; i < page_size; i++) {
-		*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-		*(volatile uint8_t *)(bios + 0x555) = 0x55;
-		*(volatile uint8_t *)(bios + 0xAAA) = 0xA0;
+		writeb(0xAA, bios + 0xAAA);
+		writeb(0x55, bios + 0x555);
+		writeb(0xA0, bios + 0xAAA);
 
 		/* transfer data from source to destination */
-		*dst = *src;
+		writeb(*src, dst);
 		//*(volatile char *) (bios) = 0xF0;
 		//usleep(5);
 		toggle_ready_jedec(dst);
 		printf
 		    ("Value in the flash at address %p = %#x, want %#x\n",
-		     (uint8_t *) (dst - bios), *dst, *src);
+		     (uint8_t *) (dst - bios), readb(dst), *src);
 		dst++;
 		src++;
 	}
@@ -57,21 +57,21 @@ int probe_m29f400bt(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x555) = 0x55;
-	*(volatile uint8_t *)(bios + 0xAAA) = 0x90;
+	writeb(0xAA, bios + 0xAAA);
+	writeb(0x55, bios + 0x555);
+	writeb(0x90, bios + 0xAAA);
 
 	myusec_delay(10);
 
-	id1 = *(volatile uint8_t *)bios;
+	id1 = readb(bios);
 	/* The data sheet says id2 is at (bios + 0x01) and id2 listed in
 	 * flash.h does not match. It should be possible to use JEDEC probe.
 	 */
-	id2 = *(volatile uint8_t *)(bios + 0x02);
+	id2 = readb(bios + 0x02);
 
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x555) = 0x55;
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xF0;
+	writeb(0xAA, bios + 0xAAA);
+	writeb(0x55, bios + 0x555);
+	writeb(0xF0, bios + 0xAAA);
 
 	myusec_delay(10);
 
@@ -87,13 +87,13 @@ int erase_m29f400bt(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x555) = 0x55;
-	*(volatile uint8_t *)(bios + 0xAAA) = 0x80;
+	writeb(0xAA, bios + 0xAAA);
+	writeb(0x55, bios + 0x555);
+	writeb(0x80, bios + 0xAAA);
 
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x555) = 0x55;
-	*(volatile uint8_t *)(bios + 0xAAA) = 0x10;
+	writeb(0xAA, bios + 0xAAA);
+	writeb(0x55, bios + 0x555);
+	writeb(0x10, bios + 0xAAA);
 
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
@@ -104,14 +104,14 @@ int erase_m29f400bt(struct flashchip *flash)
 int block_erase_m29f400bt(volatile uint8_t *bios, volatile uint8_t *dst)
 {
 
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x555) = 0x55;
-	*(volatile uint8_t *)(bios + 0xAAA) = 0x80;
+	writeb(0xAA, bios + 0xAAA);
+	writeb(0x55, bios + 0x555);
+	writeb(0x80, bios + 0xAAA);
 
-	*(volatile uint8_t *)(bios + 0xAAA) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x555) = 0x55;
+	writeb(0xAA, bios + 0xAAA);
+	writeb(0x55, bios + 0x555);
 	//*(volatile uint8_t *) (bios + 0xAAA) = 0x10;
-	*dst = 0x30;
+	writeb(0x30, dst);
 
 	myusec_delay(10);
 	toggle_ready_jedec(bios);

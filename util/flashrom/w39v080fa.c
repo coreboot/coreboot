@@ -27,19 +27,19 @@ int probe_winbond_fwhub(struct flashchip *flash)
 	uint8_t vid, did;
 
 	/* Product Identification Entry */
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0x90;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0x90, bios + 0x5555);
 	myusec_delay(10);
 
 	/* Read product ID */
-	vid = *(volatile uint8_t *)bios;
-	did = *(volatile uint8_t *)(bios + 0x01);
+	vid = readb(bios);
+	did = readb(bios + 0x01);
 
 	/* Product Identifixation Exit */
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0xF0, bios + 0x5555);
 	myusec_delay(10);
 
 	printf_debug("%s: vid 0x%x, did 0x%x\n", __FUNCTION__, vid, did);
@@ -58,16 +58,16 @@ static int unlock_block_winbond_fwhub(struct flashchip *flash, int offset)
 	uint8_t locking;
 
 	printf_debug("Trying to unlock block @0x%08x = 0x%02x\n", offset,
-		     *wrprotect);
+		     readb(wrprotect));
 
-	locking = *wrprotect;
+	locking = readb(wrprotect);
 	switch (locking & 0x7) {
 	case 0:
 		printf_debug("Full Access.\n");
 		return 0;
 	case 1:
 		printf_debug("Write Lock (Default State).\n");
-		*wrprotect = 0;
+		writeb(0, wrprotect);
 		return 0;
 	case 2:
 		printf_debug("Locked Open (Full Access, Lock Down).\n");
@@ -77,11 +77,11 @@ static int unlock_block_winbond_fwhub(struct flashchip *flash, int offset)
 		return -1;
 	case 4:
 		printf_debug("Read Lock.\n");
-		*wrprotect = 0;
+		writeb(0, wrprotect);
 		return 0;
 	case 5:
 		printf_debug("Read/Write Lock.\n");
-		*wrprotect = 0;
+		writeb(0, wrprotect);
 		return 0;
 	case 6:
 		fprintf(stderr, "Error: Read Lock, Locked Down.\n");
@@ -106,18 +106,18 @@ int unlock_winbond_fwhub(struct flashchip *flash)
 	 */
 
 	/* Product Identification Entry */
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0x90;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0x90, bios + 0x5555);
 	myusec_delay(10);
 
 	/* Read Hardware Lock Bits */
-	locking = *(volatile uint8_t *)(bios + 0xffff2);
+	locking = readb(bios + 0xffff2);
 
 	/* Product Identification Exit */
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0xF0;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0xF0, bios + 0x5555);
 	myusec_delay(10);
 
 	printf_debug("Lockout bits:\n");
@@ -151,13 +151,13 @@ static int erase_sector_winbond_fwhub(volatile uint8_t *bios,
 	printf("0x%08x\b\b\b\b\b\b\b\b\b\b", sector);
 
 	/* Sector Erase */
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + 0x5555) = 0x80;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0x80, bios + 0x5555);
 
-	*(volatile uint8_t *)(bios + 0x5555) = 0xAA;
-	*(volatile uint8_t *)(bios + 0x2AAA) = 0x55;
-	*(volatile uint8_t *)(bios + sector) = 0x30;
+	writeb(0xAA, bios + 0x5555);
+	writeb(0x55, bios + 0x2AAA);
+	writeb(0x30, bios + sector);
 
 	/* wait for Toggle bit ready */
 	toggle_ready_jedec(bios);

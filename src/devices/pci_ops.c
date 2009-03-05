@@ -28,6 +28,12 @@ static struct bus *get_pbus(device_t dev)
 {
 	struct bus *pbus = dev->bus;
 	while(pbus && pbus->dev && !ops_pci_bus(pbus)) {
+		if (pbus == pbus->dev->bus) {
+			printk_alert("%s in endless loop looking for a parent "
+				"bus with ops_pci_bus for %s, breaking out\n",
+				 __func__, dev_path(dev));
+			break;
+		}
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {

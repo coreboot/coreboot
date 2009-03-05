@@ -348,7 +348,7 @@ u32
 pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 {
 	u32 rval = 0xFFFFFFFF;
-	if ((addr >= 0xCFC) && ((addr + size) <= 0xCFF)) {
+	if ((addr >= 0xCFC) && ((addr + size) <= 0xD00)) {
 		// PCI Configuration Mechanism 1 step 1
 		// write to 0xCF8, sets bus, device, function and Config Space offset
 		// later read from 0xCFC-0xCFF returns the value...
@@ -404,7 +404,7 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 void
 pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 {
-	if ((addr >= 0xCFC) && ((addr + size) <= 0xCFF)) {
+	if ((addr >= 0xCFC) && ((addr + size) <= 0xD00)) {
 		// PCI Configuration Mechanism 1 step 1
 		// write to 0xCF8, sets bus, device, function and Config Space offset
 		// later write to 0xCFC-0xCFF sets the value...

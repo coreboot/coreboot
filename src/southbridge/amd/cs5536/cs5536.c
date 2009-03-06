@@ -26,14 +26,13 @@
 #include <stdint.h>
 #include <pc80/isa-dma.h>
 #include <pc80/mc146818rtc.h>
+#include <pc80/i8259.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/vr.h>
 #include <cpu/amd/geode_post_code.h>
 #include <stdlib.h>
 #include "chip.h"
 #include "cs5536.h"
-
-extern void setup_i8259(void);
 
 struct msrinit {
 	uint32_t msrnum;

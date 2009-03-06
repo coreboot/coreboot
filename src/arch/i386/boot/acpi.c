@@ -202,7 +202,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, char *oem_table_id)
 	ssdt->asl_compiler_revision = 42;
 	ssdt->length = sizeof(acpi_header_t);
 
-	acpigen_set_current((unsigned char *) current);
+	acpigen_set_current((char *) current);
 	current = acpi_fill_ssdt_generator(current, oem_table_id);
 
 	/* recalculate length */

@@ -104,6 +104,7 @@ static unsigned long long calibrate_tsc(void)
 	unsigned long long start, end, delta;
 	unsigned long result, count;
 	
+	printk_spew("Calibrating delay loop...\n");
 	start = rdtscll();
 	// no udivdi3, dammit.
 	// so we count to 1<< 20 and then right shift 20
@@ -127,10 +128,10 @@ static unsigned long long calibrate_tsc(void)
 	delta >>= 20;
 	// save this for microsecond timing.
 	result = delta;
-	printk_spew("end %x, start %x\n", end, start);
-	printk_spew("32-bit delta %d\n", (unsigned long) delta);
+	printk_spew("end %llx, start %llx\n", end, start);
+	printk_spew("32-bit delta %ld\n", (unsigned long) delta);
 	
-	printk_spew("%s 32-bit result is %d\n",
+	printk_spew("%s 32-bit result is %ld\n",
 			__func__,
 			result);
 	return delta;
@@ -143,7 +144,7 @@ void init_timer(void)
 {
 	if (!clocks_per_usec) {
 		clocks_per_usec = calibrate_tsc();
-		printk_info("clocks_per_usec: %u\n", clocks_per_usec);
+		printk_info("clocks_per_usec: %lu\n", clocks_per_usec);
 	}
 }
 

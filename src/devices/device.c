@@ -357,8 +357,7 @@ void compute_allocate_resource(
 			resource->flags &= ~IORESOURCE_STORED;
 			base += size;
 			
-			printk_spew(
-				"%s %02lx *  [0x%08Lx - 0x%08Lx] %s\n",
+			printk_spew("%s %02lx *  [0x%08Lx - 0x%08Lx] %s\n",
 				dev_path(dev),
 				resource->index, 
 				resource->base, 

@@ -72,7 +72,7 @@ static void build_mb_mem_range(void *gp, struct device *dev, struct resource *re
 	build_mb_mem_range_nooverlap(res->base, res->size);
 }
 
-#define ROUND(_r,_a) ((_r) + (((_a) - 1)) & ~((_a) - 1))
+#define ROUND(_r,_a) (((_r) + (((_a) - 1))) & ~((_a) - 1))
 
 unsigned long write_multiboot_info(
 	unsigned long low_table_start, unsigned long low_table_end,
@@ -81,12 +81,12 @@ unsigned long write_multiboot_info(
 	struct multiboot_info *mbi;
 	int i;
 
-	mbi = rom_table_end;
+	mbi = (struct multiboot_info *)rom_table_end;
 	memset(mbi, 0, sizeof(*mbi));
 	rom_table_end += sizeof(*mbi);
 
 	mbi->mmap_addr = (u32) rom_table_end;
-	mb_mem = rom_table_end;
+	mb_mem = (struct multiboot_mmap_entry *)rom_table_end;
 
 	/* reserved regions */
 	reserved_mem[0].addr = low_table_start;
@@ -111,5 +111,5 @@ unsigned long write_multiboot_info(
 
 	printk_info("Multiboot Information structure has been written.\n");
 
-	return mb_mem;
+	return (unsigned long)mb_mem;
 }

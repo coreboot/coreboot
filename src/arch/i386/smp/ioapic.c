@@ -55,11 +55,11 @@ void setup_ioapic(void)
 {
 	int i;
 	unsigned long value_low, value_high;
-	unsigned long nvram = 0xfec00000;
+	unsigned long ioapicaddr = 0xfec00000;
 	volatile unsigned long *l;
 	struct ioapicreg *a = ioapicregvalues;
 
-	l = (unsigned long *) nvram;
+	l = (unsigned long *) ioapicaddr;
 #if defined(i786)
 	/* For the pentium 4 and above apic deliver their interrupts
 	 * on the front side bus, enable that.

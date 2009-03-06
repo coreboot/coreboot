@@ -295,7 +295,7 @@ void stop_this_cpu(void)
 
 	lapicid = lapic_read(LAPIC_ID) >> 24;
 
-	printk_debug("CPU %d going down...\n", lapicid);
+	printk_debug("CPU %ld going down...\n", lapicid);
 
 	/* send an LAPIC INIT to myself */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid));

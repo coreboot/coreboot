@@ -234,7 +234,7 @@ char *strstr(const char *h, const char *n)
 	int i;
 
 	for (i = 0; i <= hn - nn; i++)
-		if (!strcmp(&h[i], n))
+		if (!memcmp(&h[i], n, nn))
 			return (char *)&h[i];
 
 	return NULL;

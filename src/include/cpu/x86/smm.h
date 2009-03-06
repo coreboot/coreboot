@@ -249,3 +249,8 @@ typedef struct {
 	};
 } smm_state_save_area_t;
 
+
+/* SMI handler function prototypes */
+int southbridge_io_trap_handler(int smif);
+int mainboard_io_trap_handler(int smif);
+

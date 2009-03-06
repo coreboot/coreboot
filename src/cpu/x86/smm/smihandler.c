@@ -129,7 +129,18 @@ void console_tx_byte(unsigned char byte)
 
 void io_trap_handler(int smif)
 {
-	southbridge_io_trap_handler(smif);
+	/* If a handler function handled a given IO trap, it
+	 * shall return a non-zero value
+	 */
+        printk_debug("SMI function trap 0x%x: ", smif);
+
+	if (southbridge_io_trap_handler(smif))
+		return;
+
+	if (mainboard_io_trap_handler(smif))
+		return;
+
+	printk_debug("Unknown function\n");
 }
 
 /**

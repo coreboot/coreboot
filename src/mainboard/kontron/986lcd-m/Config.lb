@@ -76,6 +76,7 @@ driver mainboard.o
 driver rtl8168.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
+if HAVE_SMI_HANDLER smmobject mainboard_smi.o end
 
 if HAVE_ACPI_TABLES
 	object fadt.o

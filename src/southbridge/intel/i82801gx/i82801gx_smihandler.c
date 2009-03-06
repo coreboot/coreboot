@@ -31,9 +31,10 @@
 
 #define DEBUG_SMI
 
-#define ACPI_DISABLE	0x1e
-#define ACPI_ENABLE	0xe1
-
+#define APM_CNT		0xb2
+#define APM_STS		0xb3
+#define   ACPI_DISABLE	0x1e
+#define   ACPI_ENABLE	0xe1
 
 /* I945 */
 #define SMRAM		0x9d
@@ -241,37 +242,18 @@ static void dump_tco_status(u32 tco_sts)
  */
 #include "../../../northbridge/intel/i945/pcie_config.c"
 
-void southbridge_io_trap_handler(int smif)
+int southbridge_io_trap_handler(int smif)
 {
-	u8 reg8;
 	global_nvs_t *gnvs = (global_nvs_t *)0xc00;
-
-	printk_debug("SMI function trap 0x%x: ", smif);
 
 	switch (smif) {
 	case 0x32:
 		printk_debug("OS Init\n");
 		//gnvs->smif = 0;
 		break;
-	case 0xd5:
-		printk_debug("Set Brightness\n");
-		reg8 = gnvs->brtl;
-		printk_debug("brtl: %x\n", reg8);
-		outb(0x17, 0x66);
-		outb(reg8, 0x62);
-		//gnvs->smif = 0;
-		break;
-	case 0xd6:
-		printk_debug("Get Brightness\n");
-		outb(0x17, 0x66);
-		reg8 = inb(0x62);
-		printk_debug("brtl: %x\n", reg8);
-		gnvs->brtl = reg8;
-		//gnvs->smif = 0;
-		break;
 	default:
-		printk_debug("Unknown function\n");
-		break;
+		/* Not handled */
+		return 0;
 	}
 
 	/* On success, the IO Trap Handler returns 0
@@ -281,6 +263,7 @@ void southbridge_io_trap_handler(int smif)
 	 * see what's going on.
 	 */
 	//gnvs->smif = 0;
+	return 1; /* IO trap handled */
 }
 
 /**
@@ -423,12 +406,13 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 		 */
 
 		/* Write back to the SLP register to cause the
-		 * originally intended event again.
+		 * originally intended event again. We need to set BIT13
+		 * (SLP_EN) though to make the sleep happen.
 		 */
 		reg32 = inl(pmbase + 0x04);
-		printk_debug("SMI#: SLP = 0x%08x\n");
+		printk_debug("SMI#: SLP = 0x%08x\n", reg32);
 		printk_debug("SMI#: Powering off.\n");
-		outl(reg32, pmbase + 0x04);
+		outl(reg32 | (1 << 13), pmbase + 0x04);
 	}
 
 }

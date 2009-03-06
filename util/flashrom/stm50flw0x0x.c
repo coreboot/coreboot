@@ -33,9 +33,9 @@
 
 void protect_stm50flw0x0x(volatile uint8_t *bios)
 {
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0xA0, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0xA0, bios + 0x5555);
 
 	usleep(200);
 }
@@ -47,37 +47,37 @@ int probe_stm50flw0x0x(struct flashchip *flash)
 	uint32_t largeid1, largeid2;
 
 	/* Issue JEDEC Product ID Entry command */
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x90, bios + 0x5555);
+	chip_writeb(0x90, bios + 0x5555);
 	myusec_delay(40);
 
 	/* Read product ID */
-	id1 = readb(bios);
-	id2 = readb(bios + 0x01);
+	id1 = chip_readb(bios);
+	id2 = chip_readb(bios + 0x01);
 	largeid1 = id1;
 	largeid2 = id2;
 
 	/* Check if it is a continuation ID, this should be a while loop. */
 	if (id1 == 0x7F) {
 		largeid1 <<= 8;
-		id1 = readb(bios + 0x100);
+		id1 = chip_readb(bios + 0x100);
 		largeid1 |= id1;
 	}
 	if (id2 == 0x7F) {
 		largeid2 <<= 8;
-		id2 = readb(bios + 0x101);
+		id2 = chip_readb(bios + 0x101);
 		largeid2 |= id2;
 	}
 
 	/* Issue JEDEC Product ID Exit command */
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0xF0, bios + 0x5555);
+	chip_writeb(0xF0, bios + 0x5555);
 	myusec_delay(40);
 
 	printf_debug("%s: id1 0x%02x, id2 0x%02x\n", __FUNCTION__, largeid1,
@@ -96,21 +96,21 @@ static void wait_stm50flw0x0x(volatile uint8_t *bios)
 	uint8_t id1;
 	// id2;
 
-	writeb(0x70, bios);
-	if ((readb(bios) & 0x80) == 0) {	// it's busy
-		while ((readb(bios) & 0x80) == 0) ;
+	chip_writeb(0x70, bios);
+	if ((chip_readb(bios) & 0x80) == 0) {	// it's busy
+		while ((chip_readb(bios) & 0x80) == 0) ;
 	}
 	// put another command to get out of status register mode
 
-	writeb(0x90, bios);
+	chip_writeb(0x90, bios);
 	myusec_delay(10);
 
-	id1 = readb(bios);
+	id1 = chip_readb(bios);
 
 	// this is needed to jam it out of "read id" mode
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0xF0, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0xF0, bios + 0x5555);
 }
 
 /*
@@ -142,8 +142,8 @@ int unlock_block_stm50flw0x0x(struct flashchip *flash, int offset)
 		// unlock each 4k-sector
 		for (j = 0; j < 0x10000; j += 0x1000) {
 			printf_debug("unlocking at 0x%x\n", offset + j);
-			writeb(unlock_sector, flash_addr + offset + j);
-			if (readb(flash_addr + offset + j) != unlock_sector) {
+			chip_writeb(unlock_sector, flash_addr + offset + j);
+			if (chip_readb(flash_addr + offset + j) != unlock_sector) {
 				printf("Cannot unlock sector @ 0x%x\n",
 				       offset + j);
 				return -1;
@@ -151,8 +151,8 @@ int unlock_block_stm50flw0x0x(struct flashchip *flash, int offset)
 		}
 	} else {
 		printf_debug("unlocking at 0x%x\n", offset);
-		writeb(unlock_sector, flash_addr + offset);
-		if (readb(flash_addr + offset) != unlock_sector) {
+		chip_writeb(unlock_sector, flash_addr + offset);
+		if (chip_readb(flash_addr + offset) != unlock_sector) {
 			printf("Cannot unlock sector @ 0x%x\n", offset);
 			return -1;
 		}
@@ -167,17 +167,17 @@ int erase_block_stm50flw0x0x(struct flashchip *flash, int offset)
 	int j;
 
 	// clear status register
-	writeb(0x50, bios);
+	chip_writeb(0x50, bios);
 	printf_debug("Erase at %p\n", bios);
 	// now start it
-	writeb(0x20, bios);
-	writeb(0xd0, bios);
+	chip_writeb(0x20, bios);
+	chip_writeb(0xd0, bios);
 	myusec_delay(10);
 
 	wait_stm50flw0x0x(flash->virtual_memory);
 
 	for (j = 0; j < flash->page_size; j++) {
-		if (readb(bios + j) != 0xFF) {
+		if (chip_readb(bios + j) != 0xFF) {
 			printf("Erase failed at 0x%x\n", offset + j);
 			return -1;
 		}
@@ -197,8 +197,8 @@ int write_page_stm50flw0x0x(volatile uint8_t *bios, uint8_t *src,
 
 	/* transfer data from source to destination */
 	for (i = 0; i < page_size; i++) {
-		writeb(0x40, dst);
-		writeb(*src++, dst++);
+		chip_writeb(0x40, dst);
+		chip_writeb(*src++, dst++);
 		wait_stm50flw0x0x(bios);
 	}
 
@@ -210,7 +210,7 @@ int write_page_stm50flw0x0x(volatile uint8_t *bios, uint8_t *src,
 	dst = d;
 	src = s;
 	for (i = 0; i < page_size; i++) {
-		if (readb(dst) != *src) {
+		if (chip_readb(dst) != *src) {
 			rc = -1;
 			break;
 		}

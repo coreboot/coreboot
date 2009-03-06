@@ -27,14 +27,14 @@ int probe_29f002(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0x90, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x90, bios + 0x5555);
 
-	id1 = readb(bios);
-	id2 = readb(bios + 0x01);
+	id1 = chip_readb(bios);
+	id2 = chip_readb(bios + 0x01);
 
-	writeb(0xF0, bios);
+	chip_writeb(0xF0, bios);
 
 	myusec_delay(10);
 
@@ -49,13 +49,13 @@ int erase_29f002(struct flashchip *flash)
 {
 	volatile uint8_t *bios = flash->virtual_memory;
 
-	writeb(0xF0, bios + 0x555);
-	writeb(0xAA, bios + 0x555);
-	writeb(0x55, bios + 0x2AA);
-	writeb(0x80, bios + 0x555);
-	writeb(0xAA, bios + 0x555);
-	writeb(0x55, bios + 0x2AA);
-	writeb(0x10, bios + 0x555);
+	chip_writeb(0xF0, bios + 0x555);
+	chip_writeb(0xAA, bios + 0x555);
+	chip_writeb(0x55, bios + 0x2AA);
+	chip_writeb(0x80, bios + 0x555);
+	chip_writeb(0xAA, bios + 0x555);
+	chip_writeb(0x55, bios + 0x2AA);
+	chip_writeb(0x10, bios + 0x555);
 
 	myusec_delay(100);
 	toggle_ready_jedec(bios);
@@ -65,12 +65,12 @@ int erase_29f002(struct flashchip *flash)
 
 #if 0
 	toggle_ready_jedec(bios);
-	writeb(0x30, bios + 0x0ffff);
-	writeb(0x30, bios + 0x1ffff);
-	writeb(0x30, bios + 0x2ffff);
-	writeb(0x30, bios + 0x37fff);
-	writeb(0x30, bios + 0x39fff);
-	writeb(0x30, bios + 0x3bfff);
+	chip_writeb(0x30, bios + 0x0ffff);
+	chip_writeb(0x30, bios + 0x1ffff);
+	chip_writeb(0x30, bios + 0x2ffff);
+	chip_writeb(0x30, bios + 0x37fff);
+	chip_writeb(0x30, bios + 0x39fff);
+	chip_writeb(0x30, bios + 0x3bfff);
 #endif
 
 	return 0;
@@ -83,7 +83,7 @@ int write_29f002(struct flashchip *flash, uint8_t *buf)
 	volatile uint8_t *bios = flash->virtual_memory;
 	volatile uint8_t *dst = bios;
 
-	writeb(0xF0, bios);
+	chip_writeb(0xF0, bios);
 	myusec_delay(10);
 	erase_29f002(flash);
 	//*bios = 0xF0;
@@ -93,10 +93,10 @@ int write_29f002(struct flashchip *flash, uint8_t *buf)
 		/* write to the sector */
 		if ((i & 0xfff) == 0)
 			printf("address: 0x%08lx", (unsigned long)i);
-		writeb(0xAA, bios + 0x5555);
-		writeb(0x55, bios + 0x2AAA);
-		writeb(0xA0, bios + 0x5555);
-		writeb(*buf++, dst++);
+		chip_writeb(0xAA, bios + 0x5555);
+		chip_writeb(0x55, bios + 0x2AAA);
+		chip_writeb(0xA0, bios + 0x5555);
+		chip_writeb(*buf++, dst++);
 
 		/* wait for Toggle bit ready */
 		toggle_ready_jedec(dst);

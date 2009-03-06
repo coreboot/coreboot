@@ -35,7 +35,7 @@ void write_lockbits_49fl00x(volatile uint8_t *bios, int size,
 		if (block_size == 16384 && i % 2)
 			continue;
 
-		writeb(bits, bios + (i * block_size) + 2);
+		chip_writeb(bits, bios + (i * block_size) + 2);
 	}
 }
 

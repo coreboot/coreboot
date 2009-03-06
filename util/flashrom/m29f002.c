@@ -22,12 +22,12 @@
 
 int erase_m29f002(struct flashchip *flash) {
 	volatile uint8_t *bios = flash->virtual_memory;
-	writeb(0xaa, bios + 0x555);
-	writeb(0x55, bios + 0xaaa);
-	writeb(0x80, bios + 0x555);
-	writeb(0xaa, bios + 0x555);
-	writeb(0x55, bios + 0xaaa);
-	writeb(0x10, bios + 0x555);
+	chip_writeb(0xaa, bios + 0x555);
+	chip_writeb(0x55, bios + 0xaaa);
+	chip_writeb(0x80, bios + 0x555);
+	chip_writeb(0xaa, bios + 0x555);
+	chip_writeb(0x55, bios + 0xaaa);
+	chip_writeb(0x10, bios + 0x555);
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
 	return 0;
@@ -35,21 +35,21 @@ int erase_m29f002(struct flashchip *flash) {
 
 static void rewrite_block(volatile uint8_t *bios, uint8_t *src, volatile uint8_t *dst, int size) {
 	/* erase */
-	writeb(0xaa, bios + 0x555);
-	writeb(0x55, bios + 0xaaa);
-	writeb(0x80, bios + 0x555);
-	writeb(0xaa, bios + 0x555);
-	writeb(0x55, bios + 0xaaa);
-	writeb(0x30, dst);
+	chip_writeb(0xaa, bios + 0x555);
+	chip_writeb(0x55, bios + 0xaaa);
+	chip_writeb(0x80, bios + 0x555);
+	chip_writeb(0xaa, bios + 0x555);
+	chip_writeb(0x55, bios + 0xaaa);
+	chip_writeb(0x30, dst);
 	myusec_delay(10);
 	toggle_ready_jedec(bios);
 
 	/* program */
 	while (size--) {
-		writeb(0xaa, bios + 0x555);
-		writeb(0x55, bios + 0xaaa);
-		writeb(0xa0, bios + 0x555);
-		writeb(*src, dst);
+		chip_writeb(0xaa, bios + 0x555);
+		chip_writeb(0x55, bios + 0xaaa);
+		chip_writeb(0xa0, bios + 0x555);
+		chip_writeb(*src, dst);
 		toggle_ready_jedec(dst);
 		dst++;
 		src++;

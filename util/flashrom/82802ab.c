@@ -49,23 +49,23 @@ int probe_82802ab(struct flashchip *flash)
 	uint8_t id1, id2;
 
 #if 0
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0x90, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x90, bios + 0x5555);
 #endif
 
-	writeb(0xff, bios);
+	chip_writeb(0xff, bios);
 	myusec_delay(10);
-	writeb(0x90, bios);
+	chip_writeb(0x90, bios);
 	myusec_delay(10);
 
-	id1 = readb(bios);
-	id2 = readb(bios + 0x01);
+	id1 = chip_readb(bios);
+	id2 = chip_readb(bios + 0x01);
 
 	/* Leave ID mode */
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0xF0, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0xF0, bios + 0x5555);
 
 	myusec_delay(10);
 
@@ -84,25 +84,25 @@ uint8_t wait_82802ab(volatile uint8_t *bios)
 	uint8_t status;
 	uint8_t id1, id2;
 
-	writeb(0x70, bios);
-	if ((readb(bios) & 0x80) == 0) {	// it's busy
-		while ((readb(bios) & 0x80) == 0) ;
+	chip_writeb(0x70, bios);
+	if ((chip_readb(bios) & 0x80) == 0) {	// it's busy
+		while ((chip_readb(bios) & 0x80) == 0) ;
 	}
 
-	status = readb(bios);
+	status = chip_readb(bios);
 
 	// put another command to get out of status register mode
 
-	writeb(0x90, bios);
+	chip_writeb(0x90, bios);
 	myusec_delay(10);
 
-	id1 = readb(bios);
-	id2 = readb(bios + 0x01);
+	id1 = chip_readb(bios);
+	id2 = chip_readb(bios + 0x01);
 
 	// this is needed to jam it out of "read id" mode
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0xF0, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0xF0, bios + 0x5555);
 
 	return status;
 }
@@ -115,23 +115,23 @@ int erase_82802ab_block(struct flashchip *flash, int offset)
 	uint8_t status;
 
 	// clear status register
-	writeb(0x50, bios);
+	chip_writeb(0x50, bios);
 	//printf("Erase at %p\n", bios);
 	// clear write protect
 	//printf("write protect is at %p\n", (wrprotect));
 	//printf("write protect is 0x%x\n", *(wrprotect));
-	writeb(0, wrprotect);
+	chip_writeb(0, wrprotect);
 	//printf("write protect is 0x%x\n", *(wrprotect));
 
 	// now start it
-	writeb(0x20, bios);
-	writeb(0xd0, bios);
+	chip_writeb(0x20, bios);
+	chip_writeb(0xd0, bios);
 	myusec_delay(10);
 	// now let's see what the register is
 	status = wait_82802ab(flash->virtual_memory);
 	//print_82802ab_status(status);
 	for (j = 0; j < flash->page_size; j++) {
-		if (readb(bios + j) != 0xFF) {
+		if (chip_readb(bios + j) != 0xFF) {
 			printf("BLOCK ERASE failed at 0x%x\n", offset);
 			return -1;
 		}
@@ -162,8 +162,8 @@ void write_page_82802ab(volatile uint8_t *bios, uint8_t *src,
 
 	for (i = 0; i < page_size; i++) {
 		/* transfer data from source to destination */
-		writeb(0x40, dst);
-		writeb(*src++, dst++);
+		chip_writeb(0x40, dst);
+		chip_writeb(*src++, dst++);
 		wait_82802ab(bios);
 	}
 }

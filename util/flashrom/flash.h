@@ -58,32 +58,32 @@
   #define INL  inl
 #endif
 
-static inline void writeb(uint8_t b, volatile void *addr)
+static inline void chip_writeb(uint8_t b, volatile void *addr)
 {
 	*(volatile uint8_t *) addr = b;
 }
 
-static inline void writew(uint16_t b, volatile void *addr)
+static inline void chip_writew(uint16_t b, volatile void *addr)
 {
 	*(volatile uint16_t *) addr = b;
 }
 
-static inline void writel(uint32_t b, volatile void *addr)
+static inline void chip_writel(uint32_t b, volatile void *addr)
 {
 	*(volatile uint32_t *) addr = b;
 }
 
-static inline uint8_t readb(const volatile void *addr)
+static inline uint8_t chip_readb(const volatile void *addr)
 {
 	return *(volatile uint8_t *) addr;
 }
 
-static inline uint16_t readw(const volatile void *addr)
+static inline uint16_t chip_readw(const volatile void *addr)
 {
 	return *(volatile uint16_t *) addr;
 }
 
-static inline uint32_t readl(const volatile void *addr)
+static inline uint32_t chip_readl(const volatile void *addr)
 {
 	return *(volatile uint32_t *) addr;
 }

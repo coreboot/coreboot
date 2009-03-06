@@ -35,19 +35,19 @@ int probe_en29f512(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
-	writeb(0xAA, bios + 0x555);
-	writeb(0x55, bios + 0x2AA);
-	writeb(0x90, bios + 0x555);
+	chip_writeb(0xAA, bios + 0x555);
+	chip_writeb(0x55, bios + 0x2AA);
+	chip_writeb(0x90, bios + 0x555);
 
 	myusec_delay(10);
 
-	id1 = readb(bios + 0x100);
-	id2 = readb(bios + 0x101);
+	id1 = chip_readb(bios + 0x100);
+	id2 = chip_readb(bios + 0x101);
 
 	/* exit by writing F0 anywhere? or the code below */
-	writeb(0xAA, bios + 0x555);
-	writeb(0x55, bios + 0x2AA);
-	writeb(0xF0, bios + 0x555);
+	chip_writeb(0xAA, bios + 0x555);
+	chip_writeb(0x55, bios + 0x2AA);
+	chip_writeb(0xF0, bios + 0x555);
 
 	printf_debug("%s: id1 0x%02x, id2 0x%02x\n", __FUNCTION__, id1, id2);
 
@@ -68,19 +68,19 @@ int probe_en29f002a(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virtual_memory;
 	uint8_t id1, id2;
 
-	writeb(0xAA, bios + 0x555);
-	writeb(0x55, bios + 0xAAA);
-	writeb(0x90, bios + 0x555);
+	chip_writeb(0xAA, bios + 0x555);
+	chip_writeb(0x55, bios + 0xAAA);
+	chip_writeb(0x90, bios + 0x555);
 
 	myusec_delay(10);
 
-	id1 = readb(bios + 0x100);
-	id2 = readb(bios + 0x101);
+	id1 = chip_readb(bios + 0x100);
+	id2 = chip_readb(bios + 0x101);
 
 	/* exit by writing F0 anywhere? or the code below */
-	writeb(0xAA, bios + 0x555);
-	writeb(0x55, bios + 0xAAA);
-	writeb(0xF0, bios + 0x555);
+	chip_writeb(0xAA, bios + 0x555);
+	chip_writeb(0x55, bios + 0xAAA);
+	chip_writeb(0xF0, bios + 0x555);
 
 	printf_debug("%s: id1 0x%x, id2 0x%x\n", __FUNCTION__, id1, id2);
 
@@ -107,10 +107,10 @@ int write_en29f002a(struct flashchip *flash, uint8_t *buf)
 		/* write to the sector */
 		if ((i & 0xfff) == 0)
 			printf("address: 0x%08lx", (unsigned long)i);
-		writeb(0xAA, bios + 0x5555);
-		writeb(0x55, bios + 0x2AAA);
-		writeb(0xA0, bios + 0x5555);
-		writeb(*buf++, dst++);
+		chip_writeb(0xAA, bios + 0x5555);
+		chip_writeb(0x55, bios + 0x2AAA);
+		chip_writeb(0xA0, bios + 0x5555);
+		chip_writeb(*buf++, dst++);
 
 		/* wait for Toggle bit ready */
 		toggle_ready_jedec(dst);

@@ -40,10 +40,10 @@ void toggle_ready_jedec(volatile uint8_t *dst)
 	unsigned int i = 0;
 	uint8_t tmp1, tmp2;
 
-	tmp1 = readb(dst) & 0x40;
+	tmp1 = chip_readb(dst) & 0x40;
 
 	while (i++ < 0xFFFFFFF) {
-		tmp2 = readb(dst) & 0x40;
+		tmp2 = chip_readb(dst) & 0x40;
 		if (tmp1 == tmp2) {
 			break;
 		}
@@ -59,7 +59,7 @@ void data_polling_jedec(volatile uint8_t *dst, uint8_t data)
 	data &= 0x80;
 
 	while (i++ < 0xFFFFFFF) {
-		tmp = readb(dst) & 0x80;
+		tmp = chip_readb(dst) & 0x80;
 		if (tmp == data) {
 			break;
 		}
@@ -68,21 +68,21 @@ void data_polling_jedec(volatile uint8_t *dst, uint8_t data)
 
 void unprotect_jedec(volatile uint8_t *bios)
 {
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0x80, bios + 0x5555);
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0x20, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x80, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x20, bios + 0x5555);
 
 	usleep(200);
 }
 
 void protect_jedec(volatile uint8_t *bios)
 {
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0xA0, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0xA0, bios + 0x5555);
 
 	usleep(200);
 }
@@ -94,40 +94,40 @@ int probe_jedec(struct flashchip *flash)
 	uint32_t largeid1, largeid2;
 
 	/* Issue JEDEC Product ID Entry command */
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x90, bios + 0x5555);
+	chip_writeb(0x90, bios + 0x5555);
 	/* Older chips may need up to 100 us to respond. The ATMEL 29C020
 	 * needs 10 ms according to the data sheet.
 	 */
 	myusec_delay(10000);
 
 	/* Read product ID */
-	id1 = readb(bios);
-	id2 = readb(bios + 0x01);
+	id1 = chip_readb(bios);
+	id2 = chip_readb(bios + 0x01);
 	largeid1 = id1;
 	largeid2 = id2;
 
 	/* Check if it is a continuation ID, this should be a while loop. */
 	if (id1 == 0x7F) {
 		largeid1 <<= 8;
-		id1 = readb(bios + 0x100);
+		id1 = chip_readb(bios + 0x100);
 		largeid1 |= id1;
 	}
 	if (id2 == 0x7F) {
 		largeid2 <<= 8;
-		id2 = readb(bios + 0x101);
+		id2 = chip_readb(bios + 0x101);
 		largeid2 |= id2;
 	}
 
 	/* Issue JEDEC Product ID Exit command */
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0xF0, bios + 0x5555);
+	chip_writeb(0xF0, bios + 0x5555);
 	myusec_delay(40);
 
 	printf_debug("%s: id1 0x%02x, id2 0x%02x", __FUNCTION__, largeid1, largeid2);
@@ -143,18 +143,18 @@ int probe_jedec(struct flashchip *flash)
 int erase_sector_jedec(volatile uint8_t *bios, unsigned int page)
 {
 	/*  Issue the Sector Erase command   */
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x80, bios + 0x5555);
+	chip_writeb(0x80, bios + 0x5555);
 	myusec_delay(10);
 
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x30, bios + page);
+	chip_writeb(0x30, bios + page);
 	myusec_delay(10);
 
 	/* wait for Toggle bit ready         */
@@ -166,18 +166,18 @@ int erase_sector_jedec(volatile uint8_t *bios, unsigned int page)
 int erase_block_jedec(volatile uint8_t *bios, unsigned int block)
 {
 	/*  Issue the Sector Erase command   */
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x80, bios + 0x5555);
+	chip_writeb(0x80, bios + 0x5555);
 	myusec_delay(10);
 
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x50, bios + block);
+	chip_writeb(0x50, bios + block);
 	myusec_delay(10);
 
 	/* wait for Toggle bit ready         */
@@ -191,18 +191,18 @@ int erase_chip_jedec(struct flashchip *flash)
 	volatile uint8_t *bios = flash->virtual_memory;
 
 	/*  Issue the JEDEC Chip Erase command   */
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x80, bios + 0x5555);
+	chip_writeb(0x80, bios + 0x5555);
 	myusec_delay(10);
 
-	writeb(0xAA, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
 	myusec_delay(10);
-	writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0x55, bios + 0x2AAA);
 	myusec_delay(10);
-	writeb(0x10, bios + 0x5555);
+	chip_writeb(0x10, bios + 0x5555);
 	myusec_delay(10);
 
 	toggle_ready_jedec(bios);
@@ -219,15 +219,15 @@ int write_page_write_jedec(volatile uint8_t *bios, uint8_t *src,
 
 retry:
 	/* Issue JEDEC Data Unprotect comand */
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0xA0, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0xA0, bios + 0x5555);
 
 	/* transfer data from source to destination */
 	for (i = start_index; i < page_size; i++) {
 		/* If the data is 0xFF, don't program it */
 		if (*src != 0xFF)
-			writeb(*src, dst);
+			chip_writeb(*src, dst);
 		dst++;
 		src++;
 	}
@@ -238,7 +238,7 @@ retry:
 	src = s;
 	ok = 1;
 	for (i = 0; i < page_size; i++) {
-		if (readb(dst) != *src) {
+		if (chip_readb(dst) != *src) {
 			ok = 0;
 			break;
 		}
@@ -269,15 +269,15 @@ int write_byte_program_jedec(volatile uint8_t *bios, uint8_t *src,
 
 retry:
 	/* Issue JEDEC Byte Program command */
-	writeb(0xAA, bios + 0x5555);
-	writeb(0x55, bios + 0x2AAA);
-	writeb(0xA0, bios + 0x5555);
+	chip_writeb(0xAA, bios + 0x5555);
+	chip_writeb(0x55, bios + 0x2AAA);
+	chip_writeb(0xA0, bios + 0x5555);
 
 	/* transfer data from source to destination */
-	writeb(*src, dst);
+	chip_writeb(*src, dst);
 	toggle_ready_jedec(bios);
 
-	if (readb(dst) != *src && tried++ < MAX_REFLASH_TRIES) {
+	if (chip_readb(dst) != *src && tried++ < MAX_REFLASH_TRIES) {
 		goto retry;
 	}
 

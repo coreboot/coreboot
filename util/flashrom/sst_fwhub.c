@@ -51,7 +51,7 @@ int erase_sst_fwhub_block(struct flashchip *flash, int offset)
 	volatile uint8_t *wrprotect = flash->virtual_registers + offset + 2;
 
 	// clear write protect
-	writeb(0, wrprotect);
+	chip_writeb(0, wrprotect);
 
 	erase_block_jedec(flash->virtual_memory, offset);
 	toggle_ready_jedec(flash->virtual_memory);

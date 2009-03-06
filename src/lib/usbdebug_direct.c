@@ -92,7 +92,7 @@ static void dbgp_mdelay(int ms)
 	int i;
 	while (ms--) {
 		for (i = 0; i < 1000; i++)
-			outb(0x1, 0x80);
+			inb(0x80);
 	}
 }
 

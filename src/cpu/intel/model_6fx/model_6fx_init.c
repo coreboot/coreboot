@@ -12,7 +12,8 @@
 #include <cpu/x86/mtrr.h>
 
 static const uint32_t microcode_updates[] = {
-	// #include "microcode_m206e839.h"
+	#include "microcode_m206f257.h"
+	#include "microcode_m206f6c7.h"
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
@@ -52,7 +53,121 @@ static void fill_processor_name(char *processor_name)
 	strcpy(processor_name, processor_name_start);
 }
 
-static void model_6ex_init(device_t cpu)
+#define IA32_FEATURE_CONTROL 0x003a
+
+#define CPUID_VMX (1 << 5)
+#define CPUID_SMX (1 << 6)
+static void enable_vmx(void)
+{
+	struct cpuid_result regs;
+	msr_t msr;
+
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	if (msr.lo & (1 << 0)) {
+		/* VMX locked. If we set it again we get an illegal
+		 * instruction
+		 */
+		return;
+	}
+
+	regs = cpuid(1);
+	if (regs.ecx & CPUID_VMX) {
+		msr.lo |= (1 << 2);
+		if (regs.ecx & CPUID_SMX)
+			msr.lo |= (1 << 1);
+	}
+
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+
+	msr.lo |= (1 << 0); /* Set lock bit */
+
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+}
+
+#define PMG_CST_CONFIG_CONTROL	0xe2
+#define PMG_IO_BASE_ADDR	0xe3
+#define PMG_IO_CAPTURE_ADDR	0xe4
+
+#define PMB0_BASE		0x580
+#define PMB1_BASE		0x800
+#define CST_RANGE		2
+static void configure_c_states(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
+
+	msr.lo |= (1 << 15); // config lock until next reset
+	msr.lo |= (1 << 14); // Deeper Sleep
+	msr.lo |= (1 << 10); // Enable IO MWAIT redirection
+	msr.lo &= ~(1 << 9); // Issue a  single stop grant cycle upon stpclk
+	msr.lo |= (1 << 3); // Dynamic L2
+
+	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
+
+	/* Set Processor MWAIT IO BASE */
+	msr.hi = 0;
+	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
+	wrmsr(PMG_IO_BASE_ADDR, msr);
+
+	/* Set IO Capture Address */
+	msr.hi = 0;
+	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (( CST_RANGE & 0xffff) << 16);
+	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
+}
+
+#define IA32_MISC_ENABLE	0x1a0
+static void configure_misc(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(IA32_MISC_ENABLE);
+	msr.lo |= (1 << 3); 	/* TM1 enable */
+	msr.lo |= (1 << 13);	/* TM2 enable */
+	msr.lo |= (1 << 17);	/* Bidirectional PROCHOT# */
+
+	msr.lo |= (1 << 10);	/* FERR# multiplexing */
+
+	// TODO: Only if  IA32_PLATFORM_ID[17] = 0 and IA32_PLATFORM_ID[50] = 1
+	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+
+	/* Enable C2E */
+	msr.lo |= (1 << 26);
+
+	/* Enable C4E */
+	/* TODO This should only be done on mobile CPUs, see cpuid 5 */
+	msr.hi |= (1 << (32 - 32)); // C4E
+	msr.hi |= (1 << (33 - 32)); // Hard C4E
+
+	/* Enable EMTTM. */
+	/* NOTE: We leave the EMTTM_CR_TABLE0-5 at their default values */
+	msr.hi |= (1 << (36 - 32));
+
+	wrmsr(IA32_MISC_ENABLE, msr);
+
+	msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */
+	wrmsr(IA32_MISC_ENABLE, msr);
+}
+
+#define PIC_SENS_CFG	0x1aa
+static void configure_pic_thermal_sensors(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(PIC_SENS_CFG);
+
+	msr.lo |= (1 << 21); // inter-core lock TM1
+	msr.lo |= (1 << 4); // Enable bypass filter
+
+	wrmsr(PIC_SENS_CFG, msr);
+}
+
+#if CONFIG_USBDEBUG_DIRECT
+static unsigned ehci_debug_addr;
+#endif
+		
+static void model_6fx_init(device_t cpu)
 {
 	char processor_name[49];
 
@@ -66,19 +181,42 @@ static void model_6ex_init(device_t cpu)
 	fill_processor_name(processor_name);
 	printk_info("CPU: %s.\n", processor_name);
 
+#if CONFIG_USBDEBUG_DIRECT
+	// Is this caution really needed?
+	if(!ehci_debug_addr) 
+		ehci_debug_addr = get_ehci_debug();
+	set_ehci_debug(0);
+#endif
+
 	/* Setup MTRRs */
 	x86_setup_mtrrs(36);
 	x86_mtrr_check();
-	
+
+#if CONFIG_USBDEBUG_DIRECT
+	set_ehci_debug(ehci_debug_addr);
+#endif
+
 	/* Enable the local cpu apics */
 	setup_lapic();
+
+	/* Enable virtualization */
+	enable_vmx();
+
+	/* Configure C States */
+	configure_c_states();
+
+	/* Configure Enhanced SpeedStep and Thermal Sensors */
+	configure_misc();
+
+	/* PIC thermal sensor control */
+	configure_pic_thermal_sensors();
 
 	/* Start up my cpu siblings */
 	intel_sibling_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_6ex_init,
+	.init     = model_6fx_init,
 };
 
 static struct cpu_device_id cpu_table[] = {

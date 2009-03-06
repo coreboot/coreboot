@@ -32,8 +32,7 @@
 
 static __inline__ void protect_28sf040(volatile uint8_t *bios)
 {
-	/* ask compiler not to optimize this */
-	volatile uint8_t tmp;
+	uint8_t tmp;
 
 	tmp = readb(bios + 0x1823);
 	tmp = readb(bios + 0x1820);
@@ -46,8 +45,7 @@ static __inline__ void protect_28sf040(volatile uint8_t *bios)
 
 static __inline__ void unprotect_28sf040(volatile uint8_t *bios)
 {
-	/* ask compiler not to optimize this */
-	volatile uint8_t tmp;
+	uint8_t tmp;
 
 	tmp = readb(bios + 0x1823);
 	tmp = readb(bios + 0x1820);

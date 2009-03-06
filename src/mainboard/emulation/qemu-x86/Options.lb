@@ -70,9 +70,8 @@ default HAVE_HARD_RESET=0
 ##
 ## Build code to export a programmable irq routing table
 ##
-default HAVE_PIRQ_TABLE=0
-default IRQ_SLOT_COUNT=5
-#object irq_tables.o
+default HAVE_PIRQ_TABLE=1
+default IRQ_SLOT_COUNT=6
 
 ##
 ## Build code to export a CMOS option table

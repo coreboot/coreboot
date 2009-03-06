@@ -1,22 +1,20 @@
-# This will make a target directory of ./emulation_qemu-x86
+target VENDOR_MAINBOARD
+mainboard VENDOR/MAINBOARD
 
-target emulation_qemu-x86
-mainboard emulation/qemu-x86
+option CC="CROSSCC"
+option CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
 
 option ROM_SIZE=256*1024
 
-option CC="gcc -m32"
-
-option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=6
-
-romimage "image" 
+romimage "fallback" 
+	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x10000
-	option COREBOOT_EXTRA_VERSION="-OpenBIOS"
+	option COREBOOT_EXTRA_VERSION=".0"
 	payload __PAYLOAD__
 end
 
-buildrom ./coreboot.rom ROM_SIZE "image"
+buildrom ./coreboot.rom ROM_SIZE "fallback"
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -199,7 +199,11 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = enable_childrens_resources,
 	.init             = 0,
 	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus      = &pci_cf8_conf1,	/* Do we want to use the memory mapped space here? */
+#if MMCONF_SUPPORT_DEFAULT
+	.ops_pci_bus	  = &pci_ops_mmconf,
+#else
+	.ops_pci_bus	  = &pci_cf8_conf1,
+#endif
 };
 
 static void mc_read_resources(device_t dev)

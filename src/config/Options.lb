@@ -983,6 +983,13 @@ define MMCONF_SUPPORT_DEFAULT
 	comment "enable mmconfig for pci conf"
 end
 
+define MMCONF_BASE_ADDRESS
+	default none
+	format "0x%x"
+	export used
+	comment "enable mmconfig base address"
+end
+
 define HW_MEM_HOLE_SIZEK
         default 0
         export always

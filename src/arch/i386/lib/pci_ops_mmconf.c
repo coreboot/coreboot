@@ -13,6 +13,7 @@
  */
 
 #define PCI_MMIO_ADDR(SEGBUS, DEVFN, WHERE) ( \
+	MMCONF_BASE_ADDRESS | \
         (((SEGBUS) & 0xFFF) << 20) | \
         (((DEVFN) & 0xFF) << 12) | \
         ((WHERE) & 0xFFF))

@@ -1176,7 +1176,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = enable_childrens_resources,
 	.init		  = 0,
 	.scan_bus	  = pci_domain_scan_bus,
-#if MMCONF_SUPPORT
+#if MMCONF_SUPPORT_DEFAULT
 	.ops_pci_bus	  = &pci_ops_mmconf,
 #else
 	.ops_pci_bus	  = &pci_cf8_conf1,

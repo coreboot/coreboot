@@ -105,13 +105,13 @@ static inline __attribute__((always_inline)) uint8_t pci_io_read_config8(device_
 static inline __attribute__((always_inline)) uint8_t pci_mmio_read_config8(device_t dev, unsigned where)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = MMCONF_BASE_ADDRESS | dev | where;
         return read8x(addr);
 }
 #endif
 static inline __attribute__((always_inline)) uint8_t pci_read_config8(device_t dev, unsigned where)
 {
-#if MMCONF_SUPPORT
+#if MMCONF_SUPPORT_DEFAULT
 	return pci_mmio_read_config8(dev, where);
 #else
 	return pci_io_read_config8(dev, where);
@@ -134,14 +134,14 @@ static inline __attribute__((always_inline)) uint16_t pci_io_read_config16(devic
 static inline __attribute__((always_inline)) uint16_t pci_mmio_read_config16(device_t dev, unsigned where)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = MMCONF_BASE_ADDRESS | dev | where;
         return read16x(addr);
 }
 #endif
 
 static inline __attribute__((always_inline)) uint16_t pci_read_config16(device_t dev, unsigned where)
 {
-#if MMCONF_SUPPORT
+#if MMCONF_SUPPORT_DEFAULT
 	return pci_mmio_read_config16(dev, where);
 #else
         return pci_io_read_config16(dev, where);
@@ -165,14 +165,14 @@ static inline __attribute__((always_inline)) uint32_t pci_io_read_config32(devic
 static inline __attribute__((always_inline)) uint32_t pci_mmio_read_config32(device_t dev, unsigned where)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = MMCONF_BASE_ADDRESS | dev | where;
         return read32x(addr);
 }
 #endif
 
 static inline __attribute__((always_inline)) uint32_t pci_read_config32(device_t dev, unsigned where)
 {
-#if MMCONF_SUPPORT
+#if MMCONF_SUPPORT_DEFAULT
 	return pci_mmio_read_config32(dev, where);
 #else
         return pci_io_read_config32(dev, where);
@@ -195,14 +195,14 @@ static inline __attribute__((always_inline)) void pci_io_write_config8(device_t 
 static inline __attribute__((always_inline)) void pci_mmio_write_config8(device_t dev, unsigned where, uint8_t value)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = MMCONF_BASE_ADDRESS | dev | where;
         write8x(addr, value);
 }
 #endif
 
 static inline __attribute__((always_inline)) void pci_write_config8(device_t dev, unsigned where, uint8_t value)
 {
-#if MMCONF_SUPPORT
+#if MMCONF_SUPPORT_DEFAULT
 	pci_mmio_write_config8(dev, where, value);
 #else
         pci_io_write_config8(dev, where, value);
@@ -226,14 +226,14 @@ static inline __attribute__((always_inline)) void pci_io_write_config16(device_t
 static inline __attribute__((always_inline)) void pci_mmio_write_config16(device_t dev, unsigned where, uint16_t value)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = MMCONF_BASE_ADDRESS | dev | where;
         write16x(addr, value);
 }
 #endif
 
 static inline __attribute__((always_inline)) void pci_write_config16(device_t dev, unsigned where, uint16_t value)
 {
-#if MMCONF_SUPPORT
+#if MMCONF_SUPPORT_DEFAULT
 	pci_mmio_write_config16(dev, where, value);
 #else
 	pci_io_write_config16(dev, where, value);
@@ -257,14 +257,14 @@ static inline __attribute__((always_inline)) void pci_io_write_config32(device_t
 static inline __attribute__((always_inline)) void pci_mmio_write_config32(device_t dev, unsigned where, uint32_t value)
 {
         unsigned addr;
-        addr = dev | where;
+        addr = MMCONF_BASE_ADDRESS | dev | where;
         write32x(addr, value);
 }
 #endif
 
 static inline __attribute__((always_inline)) void pci_write_config32(device_t dev, unsigned where, uint32_t value)
 {
-#if MMCONF_SUPPORT
+#if MMCONF_SUPPORT_DEFAULT
 	pci_mmio_write_config32(dev, where, value);
 #else
         pci_io_write_config32(dev, where, value);

@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2004 Linux Networx
  * (Written by Eric Biederman <ebiederman@lnxi.com> for Linux Networx)
+ * Copyright (C) 2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,3 +80,41 @@ void pci_write_config32(device_t dev, unsigned where, uint32_t val)
 	struct bus *pbus = get_pbus(dev);
 	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
 }
+
+#if MMCONF_SUPPORT
+uint8_t pci_mmio_read_config8(device_t dev, unsigned where)
+{
+	struct bus *pbus = get_pbus(dev);
+	return pci_ops_mmconf.read8(pbus, dev->bus->secondary, dev->path.pci.devfn, where);
+}
+
+uint16_t pci_mmio_read_config16(device_t dev, unsigned where)
+{
+	struct bus *pbus = get_pbus(dev);
+	return pci_ops_mmconf.read16(pbus, dev->bus->secondary, dev->path.pci.devfn, where);
+}
+
+uint32_t pci_mmio_read_config32(device_t dev, unsigned where)
+{
+	struct bus *pbus = get_pbus(dev);
+	return pci_ops_mmconf.read32(pbus, dev->bus->secondary, dev->path.pci.devfn, where);
+}
+
+void pci_mmio_write_config8(device_t dev, unsigned where, uint8_t val)
+{
+	struct bus *pbus = get_pbus(dev);
+	pci_ops_mmconf.write8(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
+}
+
+void pci_mmio_write_config16(device_t dev, unsigned where, uint16_t val)
+{
+	struct bus *pbus = get_pbus(dev);
+	pci_ops_mmconf.write16(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
+}
+
+void pci_mmio_write_config32(device_t dev, unsigned where, uint32_t val)
+{
+	struct bus *pbus = get_pbus(dev);
+	pci_ops_mmconf.write32(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
+}
+#endif

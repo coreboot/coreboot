@@ -157,7 +157,7 @@ struct msr msr_shl(const struct msr a, const uint8_t bits);
 struct msr msr_shr(const struct msr a, const uint8_t bits);
 void msr_and(struct msr *a, const struct msr b);
 const struct msrdef *findmsrdef(const uint32_t addr);
-const uint32_t msraddrbyname(const char *name);
+uint32_t msraddrbyname(const char *name);
 void dumpmsrdefs(const struct targetdef *t);
 int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu);
 uint8_t str2msr(char *str, struct msr *msr);
@@ -184,5 +184,9 @@ extern const struct msrdef geodelx_msrs[];
 /* cs5536.c */
 extern int cs5536_probe(const struct targetdef *t);
 extern const struct msrdef cs5536_msrs[];
+
+/* k8.c */
+extern int k8_probe(const struct targetdef *t);
+extern const struct msrdef k8_msrs[];
 
 #endif /* MSRTOOL_H */

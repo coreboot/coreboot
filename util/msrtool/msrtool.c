@@ -42,6 +42,7 @@ struct pci_access *pacc = NULL;
 static struct targetdef alltargets[] = {
 	{ "geodelx", "AMD Geode(tm) LX", geodelx_probe, geodelx_msrs },
 	{ "cs5536", "AMD Geode(tm) CS5536", cs5536_probe, cs5536_msrs },
+	{ "K8", "AMD K8 Family", k8_probe, k8_msrs },
 	{ TARGET_EOT }
 };
 

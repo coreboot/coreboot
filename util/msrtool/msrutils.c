@@ -137,7 +137,7 @@ const struct msrdef *findmsrdef(const uint32_t addr) {
 	return NULL;
 }
 
-const uint32_t msraddrbyname(const char *name) {
+uint32_t msraddrbyname(const char *name) {
 	uint8_t t;
 	const uint32_t addr = strtoul(name, NULL, 16);
 	const struct msrdef *m;

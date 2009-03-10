@@ -212,6 +212,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, char *oem_table_id)
 
 int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic)
 {
+	memset((void *)lapic, 0, sizeof(acpi_srat_lapic_t));
         lapic->type=0;
         lapic->length=sizeof(acpi_srat_lapic_t);
         lapic->flags=1;
@@ -284,7 +285,7 @@ void acpi_create_slit(acpi_slit_t *slit)
         header->length = sizeof(acpi_slit_t);
         header->revision = 1;
 
-//        current = acpi_fill_slit(current);
+        current = acpi_fill_slit(current);
 
         /* recalculate length */
         header->length= current - (unsigned long)slit;

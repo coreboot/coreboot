@@ -206,7 +206,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
         Z00A,   8
     }
 
-    Include ("amdk8_util.asl")
+    Include ("../../../../../src/northbridge/amd/amdk8/amdk8_util.asl")
 
 }
 

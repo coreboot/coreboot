@@ -50,7 +50,7 @@ Scope (\_SB)
 			Store (DerefOf (Index (BUF1, Local2)), Local4)
 			If (LNot (LEqual (Local3, Local4))) { Return (Zero) }
 
-		Increment (Local2)
+			Increment (Local2)
 		}
 
 		Return (One)
@@ -194,6 +194,7 @@ Scope (\_SB)
 						Store (ShiftLeft (And (Local2, 0xFFFFFF00), 0x08), MMAX)
 						Or (MMAX, 0xFFFF, MMAX)
 						Subtract (MMAX, MMIN, MLEN)
+						Increment (MLEN)
 
 						If (Local4)
 						{
@@ -202,13 +203,6 @@ Scope (\_SB)
 						}
 						Else
 						{
-							If (LOr (LAnd (LEqual (Arg1, 0xFF), LEqual (Arg0, 0x00)), LEqual (Arg1, \_SB.PCI0.SBLK)))
-							{
-								Store (\_SB.PCI0.TOM1, MMIN)
-								Subtract (MMAX, MMIN, MLEN)
-								Increment (MLEN)
-							}
-
 							Store (RTAG (BUF0), Local3)
 						}
 
@@ -246,7 +240,7 @@ Scope (\_SB)
 		Store (0x00, Local0)
 		Store (0x00, Local4)
 		Store (0x00, Local3)
-		While (LLess (Local0, 0x40)) // 0x20 ht links  * 2 ( base, limit)
+		While (LLess (Local0, 0x40)) // 0x20 ht links * 2 ( base, limit)
 		{
 			Store (DerefOf (Index (\_SB.PCI0.PCIO, Local0)), Local1)
 			Increment (Local0)
@@ -288,6 +282,7 @@ Scope (\_SB)
 								Store (0x03B0, PMIN)
 								Store (0x03DF, PMAX)
 								Store (0x30, PLEN)
+
 								If (Local4)
 								{
 									Concatenate (RTAG (BUF0), Local3, Local5)

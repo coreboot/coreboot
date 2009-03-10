@@ -292,7 +292,8 @@ typedef struct acpi_facs {
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
-unsigned long acpi_fill_srat(unsigned long current); 
+unsigned long acpi_fill_srat(unsigned long current);
+unsigned long acpi_fill_slit(unsigned long current);
 unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt);

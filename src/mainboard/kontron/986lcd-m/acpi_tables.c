@@ -171,6 +171,12 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
+unsigned long acpi_fill_slit(unsigned long current)
+{
+	// Not implemented
+	return current;
+}
+
 unsigned long acpi_fill_srat(unsigned long current)
 {
 	/* No NUMA, no SRAT */

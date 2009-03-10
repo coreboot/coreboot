@@ -121,13 +121,13 @@ void *smp_write_config_table(void *v)
 				smp_write_ioapic(mc, apicid_ck804b, 0x11, res->base);
 			}
 
-			dword = 0x0000d218;
+			dword = 0x0000d218; // Why does the factory BIOS have 0?
 			pci_write_config32(dev, 0x7c, dword);
 
 			dword = 0x00000000;
 			pci_write_config32(dev, 0x80, dword);
 
-			dword = 0x00000d00;
+			dword = 0x00000d00; // Same here.
 			pci_write_config32(dev, 0x84, dword);
 
 		}
@@ -171,7 +171,7 @@ void *smp_write_config_table(void *v)
 // Onboard ck804 NIC
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_0, ((sbdn +0x0a)<<2)|0, apicid_ck804, 0x15); // 21
 
-//Slot 1 PCIE x16
+//Slot PCIE x16
 	for(i=0;i<4;i++) {
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_5, (0x00<<2)|i, apicid_ck804, 0x10 + (2+i+4-sbdn%4)%4);
 	}
@@ -181,7 +181,7 @@ void *smp_write_config_table(void *v)
 
 //Slot 2 PCI 32
 	for(i=0;i<4;i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|i, apicid_ck804, 0x10 + (0+i)%4);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (0x04<<2)|i, apicid_ck804, 0x10 + (0+i)%4); //16
 	}
 
 	if(sysconf.pci1234[2] & 0xf) {

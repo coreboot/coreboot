@@ -51,6 +51,18 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
+if HAVE_ACPI_TABLES
+        object acpi_tables.o
+	makerule dsdt.c
+		depends "$(MAINBOARD)/dsdt.dsl"
+		action  "iasl -p $(PWD)/dsdt -tc $(MAINBOARD)/dsdt.dsl"
+		action  "mv dsdt.hex dsdt.c"
+	end
+        object ./dsdt.o
+	#./ssdt.o is moved to northbridge/amd/amdk8/Config.lb
+	#./fadt.o is moved to southbridge/nvidia/ck804/Config.lb
+end
+
 if USE_DCACHE_RAM
 
 if CONFIG_USE_INIT
@@ -218,9 +230,10 @@ chip northbridge/amd/amdk8/root_complex
 								irq 0x70 = 6
 								drq 0x74 = 2
 							end
-							device pnp 2e.1 off #  Parallel Port
+							device pnp 2e.1 on #  Parallel Port
 								io 0x60 = 0x378
 								irq 0x70 = 7
+								drq 0x74 = 3
 							end
 							device pnp 2e.2 on #  Com1
 								io 0x60 = 0x3f8

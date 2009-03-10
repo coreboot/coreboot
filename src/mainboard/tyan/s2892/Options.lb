@@ -30,6 +30,12 @@ uses USE_OPTION_TABLE
 uses LB_CKS_RANGE_START
 uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
+uses HAVE_ACPI_TABLES
+uses HAVE_MAINBOARD_RESOURCES
+uses HAVE_HIGH_TABLES
+uses HAVE_LOW_TABLES
+uses CONFIG_MULTIBOOT
+uses HAVE_SMI_HANDLER
 uses MAINBOARD
 uses MAINBOARD_PART_NUMBER
 uses MAINBOARD_VENDOR
@@ -54,6 +60,7 @@ uses HAVE_INIT_TIMER
 uses CONFIG_GDB_STUB
 uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
+uses CONFIG_VGA_ROM_RUN
 uses CONFIG_PCI_ROM_RUN
 uses HW_MEM_HOLE_SIZEK
 
@@ -71,11 +78,7 @@ uses SB_HT_CHAIN_UNITID_OFFSET_ONLY
 uses CONFIG_LB_MEM_TOPK
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
-#512K bytes 
-default ROM_SIZE=524288
-
-#1M bytes
-#default ROM_SIZE=1048576
+default ROM_SIZE=1024*1024
 
 ##
 ## FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
@@ -99,6 +102,11 @@ default HAVE_FALLBACK_BOOT=1
 default HAVE_HARD_RESET=1
 
 ##
+## Build SMI handler
+##
+default HAVE_SMI_HANDLER=0
+
+##
 ## Build code to export a programmable irq routing table
 ##
 default HAVE_PIRQ_TABLE=1
@@ -111,6 +119,15 @@ default IRQ_SLOT_COUNT=11
 default HAVE_MP_TABLE=1
 
 ##
+## Build code to provide ACPI support
+##
+default HAVE_ACPI_TABLES=1
+default HAVE_LOW_TABLES=1
+default HAVE_MAINBOARD_RESOURCES=1
+default HAVE_HIGH_TABLES=0
+default CONFIG_MULTIBOOT=0
+
+##
 ## Build code to export a CMOS option table
 ##
 default HAVE_OPTION_TABLE=1
@@ -121,6 +138,11 @@ default HAVE_OPTION_TABLE=1
 default LB_CKS_RANGE_START=49
 default LB_CKS_RANGE_END=122
 default LB_CKS_LOC=123
+
+#VGA Console
+default CONFIG_CONSOLE_VGA=1
+default CONFIG_PCI_ROM_RUN=1
+default CONFIG_VGA_ROM_RUN=1
 
 ##
 ## Build code for SMP support

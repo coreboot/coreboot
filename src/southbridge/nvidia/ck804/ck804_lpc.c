@@ -165,7 +165,6 @@ static void rom_dummy_write(device_t dev)
 		pci_write_config8(dev, 0x6d, new);
 }
 
-#if 0
 static void enable_hpet(struct device *dev)
 {
 	unsigned long hpet_address;
@@ -174,7 +173,8 @@ static void enable_hpet(struct device *dev)
 	hpet_address = pci_read_config32(dev, 0x44) & 0xfffffffe;
 	printk_debug("Enabling HPET @0x%x\n", hpet_address);
 }
-#endif
+
+unsigned pm_base=0;
 
 static void lpc_init(device_t dev)
 {
@@ -182,6 +182,9 @@ static void lpc_init(device_t dev)
 	int on, nmi_option;
 
 	lpc_common_init(dev);
+
+	pm_base = pci_read_config32(dev, 0x60) & 0xff00;
+	printk_info("%s: pm_base = %lx \n", __func__, pm_base);
 
 #if CK804_CHIP_REV==1
 	if (dev->bus->secondary != 1)
@@ -251,7 +254,7 @@ static void lpc_init(device_t dev)
 	isa_dma_init();
 
 	/* Initialize the High Precision Event Timers (HPET). */
-	/* enable_hpet(dev); */
+	enable_hpet(dev);
 
 	rom_dummy_write(dev);
 }

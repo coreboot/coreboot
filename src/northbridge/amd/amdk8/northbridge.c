@@ -896,6 +896,11 @@ static uint32_t hoist_memory(unsigned long hole_startk, int i)
 }
 #endif
 
+#if HAVE_HIGH_TABLES==1
+#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
+extern uint64_t high_tables_base, high_tables_size;
+#endif
+
 static void pci_domain_set_resources(device_t dev)
 {
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
@@ -1075,6 +1080,15 @@ static void pci_domain_set_resources(device_t dev)
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
+#if HAVE_HIGH_TABLES==1
+					if (i==0 && high_tables_base==0) {
+					/* Leave some space for ACPI, PIRQ and MP tables */
+						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
+						high_tables_size = HIGH_TABLES_SIZE * 1024;
+						printk_debug("(split)%xK table at =%08llx\n", HIGH_TABLES_SIZE,
+							     high_tables_base);
+					}
+#endif
 				}
 				#if HW_MEM_HOLE_SIZEK != 0
 				if(reset_memhole)
@@ -1094,10 +1108,24 @@ static void pci_domain_set_resources(device_t dev)
 				sizek -= (4*1024*1024 - mmio_basek);
 			}
 		}
-		ram_resource(dev, (idx | i), basek, sizek);
+		/* If sizek == 0, it was split at mmio_basek without a hole.
+		 * Don't create an empty ram_resource.
+		 */
+		if (sizek)
+			ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
+#if HAVE_HIGH_TABLES==1
+		printk_debug("%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
+			     i, mmio_basek, basek, limitk);
+		if (i==0 && high_tables_base==0) {
+		/* Leave some space for ACPI, PIRQ and MP tables */
+			high_tables_base = (limitk - HIGH_TABLES_SIZE) * 1024;
+			high_tables_size = HIGH_TABLES_SIZE * 1024;
+		}
+#endif
 	}
 	assign_resources(&dev->link[0]);
+
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)

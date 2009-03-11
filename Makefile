@@ -36,14 +36,14 @@ export src obj
 # Do not print "Entering directory ...".
 MAKEFLAGS += --no-print-directory
 
-CC         := gcc
+CC         ?= gcc
 CFLAGS     := -Os -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 	      -Werror-implicit-function-declaration -Wstrict-aliasing \
 	      -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer \
 	      -mpreferred-stack-boundary=2 -mregparm=3 -pipe
 # FIXME: Does stack boundary or regparm break the code on real hardware?
 
-HOSTCC     := gcc
+HOSTCC     := $(CC)
 HOSTCXX    := g++
 HOSTCFLAGS := -Wall -Wstrict-prototypes -g -fomit-frame-pointer \
 	      -Wno-unused -Wno-sign-compare
@@ -61,9 +61,6 @@ endif
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 export KERNELVERSION
 
-include $(shell $(src)/util/xcompile/xcompile > $(src)/.xcompile || \
-	{ echo "complete\\ toolchain" && rm -f $(src)/.xcompile && exit 1; }; echo $(src)/.xcompile)
-
 ifeq ($(strip $(have_dotconfig)),)
 
 all:
@@ -72,6 +69,9 @@ all:
 else
 
 include $(src)/.config
+
+include $(shell scanbuild=$(CONFIG_SCAN_BUILD) $(src)/util/xcompile/xcompile > $(src)/.xcompile || \
+	{ echo "complete\\ toolchain" && rm -f $(src)/.xcompile && exit 1; }; echo $(src)/.xcompile)
 
 ifneq ($(CONFIG_LOCALVERSION),"")
 COREBOOT_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))

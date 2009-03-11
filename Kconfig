@@ -84,6 +84,14 @@ config WHOLE_PROGRAM_COMPILE
 	  Say No.
 	  If you are a Gentoo user, say NO!
 
+config SCAN_BUILD
+	bool "Use clang's scan-build utility for static analysis"
+	depends EXPERT && EXPERIMENTAL && !WHOLE_PROGRAM_COMPILE
+	default n
+	help
+	  Change the compiler configuration so that a 'scan-build make'
+	  has a chance to succeed.
+
 endmenu
 
 source mainboard/Kconfig

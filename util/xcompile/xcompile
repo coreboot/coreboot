@@ -55,8 +55,20 @@ searchgnu()
 
 case  "$ARCH" in
 "x86_64")
-	echo "CC_x86 := gcc -m32"
-	CC="gcc -m32"
+	if [ "$scanbuild" = "y" ]; then
+		ccwrap=`mktemp`
+		mkdir -p build
+		mv $ccwrap build
+		ccwrap=$PWD/build/`basename $ccwrap`
+		echo '#!/bin/bash' > $ccwrap
+		echo $CC' -m32 "$@"' >> $ccwrap
+		chmod +x $ccwrap
+		echo "CC_x86 := $ccwrap"
+		CC=$ccwrap
+	else
+		echo "CC_x86 := gcc -m32"
+		CC="gcc -m32"
+	fi
 
 	searchgnu ar >/dev/null && echo "AR_x86 := $(searchgnu ar)"
 	searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as) --32"
@@ -68,8 +80,13 @@ case  "$ARCH" in
 	;;
 "x86")
 	if [ "$OS" != "Darwin" ]; then
-		echo "CC_x86 := gcc"
-		CC="gcc"
+		if [ "$scanbuild" = "y" ]; then
+			echo 'CC_x86 := $(CC)'
+			if [ "$CC" = "" ]; then CC=gcc; fi
+		else
+			echo "CC_x86 := gcc"
+			CC="gcc"
+		fi
 
 		searchgnu ar >/dev/null && echo "AR_x86 := $(searchgnu ar)"
 		searchgnu as >/dev/null && echo "AS_x86 := $(searchgnu as)"

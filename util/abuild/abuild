@@ -32,6 +32,9 @@ TESTSUBMISSION="http://qa.coreboot.org/deployment/send.php"
 # Number of CPUs to compile on per default
 cpus=1
 
+# Configure-only mode
+configureonly=0
+
 # One might want to adjust these in case of cross compiling
 MAKE="make"
 PYTHON=python
@@ -47,6 +50,7 @@ silent=
 stackprotect=false
 
 ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
+	-e s/i86pc/i386/ \
 	-e s/arm.*/arm/ -e s/sa110/arm/ -e s/x86_64/amd64/ \
 	-e "s/Power Macintosh/ppc/"`
 
@@ -183,14 +187,15 @@ EOF
 		COMPRESSION="# no compression"
 	fi
 
-	sed -i.pre -e s:VENDOR:$VENDOR:g \
+	cp $TARGET/Config-${VENDOR}_${MAINBOARD}.lb $TARGET/Config-${VENDOR}_${MAINBOARD}.lb.pre
+	sed -e s:VENDOR:$VENDOR:g \
 		-e s:MAINBOARD:$MAINBOARD:g \
 		-e s:payload\ __PAYLOAD__:payload\ $PAYLOAD:g \
 		-e s:CROSSCC:"$CC":g \
 		-e s:CROSS_PREFIX:"$CROSS_COMPILE":g \
 		-e s:CROSS_HOSTCC:"$HOSTCC":g \
 		-e s:__COMPRESSION__:"$COMPRESSION":g \
-		$TARGET/Config-${VENDOR}_${MAINBOARD}.lb
+		$TARGET/Config-${VENDOR}_${MAINBOARD}.lb.pre > $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
 	printf " ok\n"
 }
 
@@ -260,10 +265,10 @@ function compile_target
 
 	CURR=$( pwd )
 	cd $TARGET/${VENDOR}_${MAINBOARD}
-	stime=`date +%s`
+	stime=`perl -e 'print time();'`
 	eval $MAKE $silent -j $cpus &> make.log
 	ret=$?
-	etime=`date +%s`
+	etime=`perl -e 'print time();'`
 	duration=$(( $etime - $stime ))
 	if [ $ret -eq 0 ]; then
 		xml "  <compile>ok</compile>"
@@ -316,22 +321,24 @@ function build_target
 
 	# default setting
 
-	if [ "`uname -s`" == Darwin ]; then
-		# Darwin requires i386-elf-[binuitils|gcc] from MacPorts
-		# and a link from i386-elf-gcc-<version> to i386-elf-gcc
-		CC="$TARCH-elf-gcc -Wa,--divide"
+	CC="${CROSS_COMPILE}gcc"
+	CROSS_COMPILE=""
+	found_crosscompiler=false
+	if which $TARCH-elf-gcc 2>/dev/null >/dev/null; then
+		# i386-elf target needs --divide, for i386-linux, that's the default
+		CC="$TARCH-elf-gcc"
+		if [ "$TARCH" = "i386" ]; then
+			CC="$CC -Wa,--divide"
+		fi
+		echo using $CC
 		CROSS_COMPILE="$TARCH-elf-"
-	else 
-		CC='$(CROSS_COMPILE)gcc'
-		CROSS_COMPILE=''
+		found_crosscompiler=true
 	fi
-	
 	if  [ "$stackprotect" = "true" ]; then
 		CC="$CC -fno-stack-protector"
 	fi
+ 	HOSTCC='gcc'
 
-	HOSTCC='gcc'
-	
 	printf "Processing mainboard/$VENDOR/$MAINBOARD"
 
 	xml "<mainboard>"
@@ -345,7 +352,7 @@ function build_target
 	[ -r "$LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info" ] && \
 		source $LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info
 	
-	if [ "$ARCH" == "$TARCH" ]; then
+	if [ "$ARCH" = "$TARCH" -o $found_crosscompiler = true ]; then
 		printf " ($TARCH: ok)\n"
 	else
 		found_crosscompiler=false
@@ -408,7 +415,7 @@ function build_target
 	}
 	
 	create_buildenv $VENDOR $MAINBOARD
-	if [ $? -eq 0 ]; then
+	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
 		compile_target $VENDOR $MAINBOARD && 
 			xml "  <status>ok</status>" ||
 			xml "<status>broken</status>"
@@ -477,6 +484,7 @@ function myhelp
 	printf "    [-c|--cpus <numcpus>]         build on <numcpus> at the same time\n"
 	printf "    [-s|--silent]                 omit compiler calls in logs\n"
 	printf "    [-ns|--nostackprotect]        use gcc -fno-stack-protector option\n"
+	printf "    [-C|--config]                 configure-only mode\n"
 	printf "    [lbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $LBROOT)\n\n"
 }
@@ -507,11 +515,11 @@ verbose=false
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml Vvhat:bp:Tc:sx -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config Vvhat:bp:Tc:sxC -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvhat:bp:Tc:sx $*`
+	args=`getopt Vvhat:bp:Tc:sxC $*`
 	set -- $args
 fi
 
@@ -534,6 +542,7 @@ while true ; do
 		-c|--cpus)	shift; cpus="$1"; test "$cpus" == "max" && cpus=""; shift;;
 		-s|--silent)    shift; silent="-s";;
 		-ns|--nostackprotect) shift; stackprotect=true;;
+		-C|--config)    shift; configureonly=1;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;

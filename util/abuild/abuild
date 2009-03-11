@@ -46,6 +46,9 @@ mode=text
 # this is disabled per default but can be enabled with -s
 silent=
 
+# clang mode enabled by -sb option.
+scanbuild=false
+
 # stackprotect mode enabled by -ns option.
 stackprotect=false
 
@@ -334,9 +337,7 @@ function build_target
 		CROSS_COMPILE="$TARCH-elf-"
 		found_crosscompiler=true
 	fi
-	if  [ "$stackprotect" = "true" ]; then
-		CC="$CC -fno-stack-protector"
-	fi
+
  	HOSTCC='gcc'
 
 	printf "Processing mainboard/$VENDOR/$MAINBOARD"
@@ -396,6 +397,25 @@ function build_target
 		fi
 	fi
 
+	if  [ "$stackprotect" = "true" ]; then
+		CC="$CC -fno-stack-protector"
+	fi
+
+	if  [ "$scanbuild" = "true" ]; then
+		ccwrap=`mktemp`
+		mkdir -p $TARGET/${VENDOR}_${MAINBOARD}
+		mkdir -p $TARGET/scan-build-results-tmp
+		mv $ccwrap $TARGET/${VENDOR}_${MAINBOARD}
+		ccwrap=$TARGET/${VENDOR}_${MAINBOARD}/`basename $ccwrap`
+		echo '#!/bin/sh' > $ccwrap
+		echo $CC' "$@"' >> $ccwrap
+		chmod +x $ccwrap
+		origMAKE=$MAKE
+		MAKE="scan-build --use-cc=$ccwrap -o $TARGET/scan-build-results-tmp -analyze-headers $MAKE GCC=$ccwrap"
+		CC="\$(CC)"
+		HOSTCC="CCC_CC=$HOSTCC \$(CC)"
+	fi
+
 	built_successfully $VENDOR $MAINBOARD && \
 	{
 		printf " ( mainboard/$VENDOR/$MAINBOARD previously ok )\n\n"
@@ -419,6 +439,10 @@ function build_target
 		compile_target $VENDOR $MAINBOARD && 
 			xml "  <status>ok</status>" ||
 			xml "<status>broken</status>"
+		if [ "$scanbuild" = "true" ]; then
+			mv `dirname $TARGET/scan-build-results-tmp/*/index.html` $TARGET/${VENDOR}_${MAINBOARD}-scanbuild
+			MAKE=$origMAKE
+		fi
 	fi
 
 	xml ""
@@ -484,6 +508,7 @@ function myhelp
 	printf "    [-c|--cpus <numcpus>]         build on <numcpus> at the same time\n"
 	printf "    [-s|--silent]                 omit compiler calls in logs\n"
 	printf "    [-ns|--nostackprotect]        use gcc -fno-stack-protector option\n"
+	printf "    [-sb|--scan-build]            use clang's static analyzer\n"
 	printf "    [-C|--config]                 configure-only mode\n"
 	printf "    [lbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $LBROOT)\n\n"
@@ -542,6 +567,7 @@ while true ; do
 		-c|--cpus)	shift; cpus="$1"; test "$cpus" == "max" && cpus=""; shift;;
 		-s|--silent)    shift; silent="-s";;
 		-ns|--nostackprotect) shift; stackprotect=true;;
+		-sb|--scan-build) shift; scanbuild=true;;
 		-C|--config)    shift; configureonly=1;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;

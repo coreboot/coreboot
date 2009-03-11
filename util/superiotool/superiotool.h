@@ -107,6 +107,7 @@ const char *get_superio_name(const struct superio_registers reg_table[],
 			     uint16_t id);
 void dump_superio(const char *name, const struct superio_registers reg_table[],
 		  uint16_t port, uint16_t id, uint8_t ldn_sel);
+void dump_io(uint16_t iobase, uint16_t length);
 void probing_for(const char *vendor, const char *info, uint16_t port);
 void print_vendor_chips(const char *vendor,
 			const struct superio_registers reg_table[]);

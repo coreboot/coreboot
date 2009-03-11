@@ -157,6 +157,20 @@ void dump_superio(const char *vendor,
 	}
 }
 
+void dump_io(uint16_t iobase, uint16_t length)
+{
+	uint16_t i;
+
+	printf("Dumping %d IO mapped registers at base 0x%04x:\n", 
+			length, iobase);
+	for (i=0; i<length; i++)
+		printf ("%02x ", i);
+	printf("\n");
+	for (i=0; i<length; i++)
+		printf ("%02x ", INB(iobase +i));
+	printf("\n");
+}
+
 void probing_for(const char *vendor, const char *info, uint16_t port)
 {
 	if (!verbose)

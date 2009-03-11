@@ -100,12 +100,18 @@ void *smp_write_config_table(void *v)
 	/* Firewire 4:0.0 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x0, 0x2, 0x10);
 
+	/* Old riser card */
 	// riser slot top 5:8.0
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x20, 0x2, 0x14);
 	// riser slot middle 5:9.0
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x24, 0x2, 0x15);
 	// riser slot bottom 5:a.0
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x28, 0x2, 0x16);
+
+	/* New Riser Card */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x30, 0x2, 0x14);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x34, 0x2, 0x15);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x38, 0x2, 0x16);
 
 	/* Onboard Ethernet */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x1, 0x0, 0x2, 0x10);

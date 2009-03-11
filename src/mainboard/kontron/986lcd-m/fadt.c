@@ -31,15 +31,16 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	memset((void *) fadt, 0, sizeof(acpi_fadt_t));
 	memcpy(header->signature, "FACP", 4);
 	header->length = 132;
-	header->revision = 1;
+	header->revision = 2;
 	memcpy(header->oem_id, "CORE  ", 6);
 	memcpy(header->oem_table_id, "COREBOOT", 8);
 	memcpy(header->asl_compiler_id, "CORE", 4);
-	header->asl_compiler_revision = 0;
+	header->asl_compiler_revision = 1;
 
 	fadt->firmware_ctrl = (unsigned long) facs;
 	fadt->dsdt = (unsigned long) dsdt;
-	fadt->preferred_pm_profile = 0;
+	fadt->model = 1;
+	fadt->preferred_pm_profile = 2;
 	fadt->sci_int = 0x9;
 	fadt->smi_cmd = 0xb2;
 	fadt->acpi_enable = 0xe1;
@@ -58,7 +59,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
-	fadt->pm2_cnt_len = 1;
+	fadt->pm2_cnt_len = 0;
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 8;
 	fadt->gpe1_blk_len = 0;
@@ -79,6 +80,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	// all cpus support c1
 	// sleep button is generic
 	// rtc wakeup/s4 not possible
+	// use platform timer
 	
 	header->checksum =
 	    acpi_checksum((void *) fadt, header->length);

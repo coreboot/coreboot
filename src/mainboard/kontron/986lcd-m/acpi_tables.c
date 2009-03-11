@@ -96,30 +96,50 @@ void acpi_create_oemb(acpi_oemb_t *oemb)
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
-#if 0
 	device_t dev;
-	u64 mmcfg;
+	u32 pciexbar = 0;
+	u32 pciexbar_reg;
+	int max_buses;
 
-	dev = dev_find_device(0x1106, 0x324b, 0);	// 0:0x13.0
+	dev = dev_find_device(0x8086, 0x27a0, 0);
 	if (!dev)
 		return current;
 
 	// MMCFG not supported or not enabled.
-	if ((pci_read_config8(dev, 0x40) & 0xC0) != 0xC0)
+	pciexbar_reg=pci_read_config32(dev, 0x48);
+
+	if (!(pciexbar_reg & (1 << 0)))
 		return current;
 
-	mmcfg = ((u64) pci_read_config8(dev, 0x41)) << 28;
-	if (!mmcfg)
+	switch ((pciexbar_reg >> 1) & 3) {
+	case 0: // 256MB
+		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
+		max_buses = 256;
+		break;
+	case 1: // 128M
+		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
+		max_buses = 128;
+		break;
+	case 2: // 64M
+		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
+		max_buses = 64;
+		break;
+	default: // RSVD
+		return current;
+	}
+
+	if (!pciexbar)
 		return current;
 
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current, mmcfg, 0x0, 0x0, 0xff);
-#endif
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
+			pciexbar, 0x0, 0x0, max_buses - 1);
+
 	return current;
 }
 
 void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 {
-#define HPET_ADDR  0xfe800000ULL
+#define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header = &(hpet->header);
 	acpi_addr_t *addr = &(hpet->addr);
 
@@ -135,16 +155,15 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	header->revision = 1;
 
 	/* fill out HPET address */
-	// XXX factory bios just puts an address here -- who's right?
 	addr->space_id = 0;	/* Memory */
 	addr->bit_width = 64;
 	addr->bit_offset = 0;
 	addr->addrl = HPET_ADDR & 0xffffffff;
 	addr->addrh = HPET_ADDR >> 32;
 
-	hpet->id = 0x80861234;	/* VIA */
+	hpet->id = 0x8086a201;	/* Intel */
 	hpet->number = 0x00;
-	hpet->min_tick = 0x0090;
+	hpet->min_tick = 0x0080;
 
 	header->checksum =
 	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
@@ -199,9 +218,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_oemb_t *oemb;
 	acpi_header_t *dsdt;
 
-	/* Align ACPI tables to 16byte */
-	start = (start + 0x0f) & -0x10;
 	current = start;
+
+	/* Align ACPI tables to 16byte */
+	ALIGN_CURRENT;
 
 	printk_info("ACPI: Writing ACPI tables at %lx.\n", start);
 
@@ -222,7 +242,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	/*
 	 * We explicitly add these tables later on:
 	 */
-#if 0
 	printk_debug("ACPI:    * HPET\n");
 
 	hpet = (acpi_hpet_t *) current;
@@ -230,7 +249,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_create_intel_hpet(hpet);
 	acpi_add_table(rsdt, hpet);
-#endif
+
 	/* If we want to use HPET Timers Linux wants an MADT */
 	printk_debug("ACPI:    * MADT\n");
 
@@ -239,14 +258,13 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += madt->header.length;
 	ALIGN_CURRENT;
 	acpi_add_table(rsdt, madt);
-#if 0
+
 	printk_debug("ACPI:    * MCFG\n");
 	mcfg = (acpi_mcfg_t *) current;
 	acpi_create_mcfg(mcfg);
 	current += mcfg->header.length;
 	ALIGN_CURRENT;
 	acpi_add_table(rsdt, mcfg);
-#endif
 
 	printk_debug("ACPI:    * OEMB\n");
 	oemb=(acpi_oemb_t *)current;
@@ -278,10 +296,10 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* We patched up the DSDT, so we need to recalculate the checksum */
 	dsdt->checksum = 0;
-	dsdt->checksum = acpi_checksum(dsdt, dsdt->length);
+	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
 #endif
 
-	printk_debug("ACPI:     * DSDT @ %08x Length %x\n", dsdt,
+	printk_debug("ACPI:     * DSDT @ %p Length %x\n", dsdt,
 		     dsdt->length);
 
 	printk_debug("ACPI:     * FADT\n");
@@ -291,7 +309,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	acpi_create_fadt(fadt, facs, dsdt);
 	acpi_add_table(rsdt, fadt);
-	printk_debug("current = %x\n", current);
+	printk_debug("current = %lx\n", current);
 
 	printk_debug("ACPI:     * DMI (Linux workaround)\n");
 	memcpy((void *)0xfff80, dmi_table, DMI_TABLE_SIZE);

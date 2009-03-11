@@ -64,7 +64,7 @@ static void setup_ich7_gpios(void)
 	outl(0x00000000, DEFAULT_GPIOBASE + 0x18);	/* GPO_BLINK */
 	/* Input Control Registers */
 	outl(0x00002180, DEFAULT_GPIOBASE + 0x2c);	/* GPI_INV */
-	outl(0x000000ff, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
+	outl(0x000100ff, DEFAULT_GPIOBASE + 0x30);	/* GPIO_USE_SEL2 */
 	outl(0x00000030, DEFAULT_GPIOBASE + 0x34);	/* GP_IO_SEL2 */
 	outl(0x00010035, DEFAULT_GPIOBASE + 0x38);	/* GP_LVL */
 }
@@ -85,6 +85,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
  * #define will do.
  */
 #define OVERRIDE_CLOCK_DISABLE 1
+
+#define CHANNEL_XOR_RANDOMIZATION 1
 #include "northbridge/intel/i945/raminit.h"
 #include "northbridge/intel/i945/raminit.c"
 #include "northbridge/intel/i945/reset_test.c"
@@ -100,7 +102,7 @@ static void ich7_enable_lpc(void)
 	// Enable COM1/COM2/KBD/SuperIO1+2
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x340b);
 	// Enable HWM at 0xa00
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x0a01);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x00fc0a01);
 	// COM3 decode
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x88, 0x000403e9);
 	// COM4 decode
@@ -236,7 +238,8 @@ static void rcba_config(void)
 	RCBA32(0x3400) = (1 << 2);
 
 	/* Disable unused devices */
-	RCBA32(0x3418) = 0x000e0063;
+	RCBA32(0x3418) = FD_PCIE6|FD_PCIE5|FD_PCIE4|FD_ACMOD|FD_ACAUD|FD_PATA;
+	RCBA32(0x3418) |= (1 << 0); // Required.
 
 	/* Enable PCIe Root Port Clock Gate */
 	// RCBA32(0x341c) = 0x00000001;

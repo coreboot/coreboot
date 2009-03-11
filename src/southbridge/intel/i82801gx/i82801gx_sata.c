@@ -3,10 +3,10 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,16 +29,29 @@ typedef struct southbridge_intel_i82801gx_config config_t;
 static void sata_init(struct device *dev)
 {
 	u32 reg32;
+	u16 reg16;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
 	printk_debug("i82801gx_sata: initializing...\n");
+
+	if (config == NULL)
+		printk_err("i82801gx_sata: error: device not in Config.lb!\n");
+
 	/* SATA configuration */
 
 	/* Enable BARs */
-	pci_write_config16(dev, 0x04, 0x0007);
+	pci_write_config16(dev, PCI_COMMAND, 0x0007);
 
 	if (config->ide_legacy_combined) {
+		printk_debug("SATA controller in combined mode.\n");
+		/* No AHCI: clear AHCI base */
+		pci_write_config32(dev, 0x24, 0x00000000);
+		/* And without AHCI BAR no memory decoding */
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~PCI_COMMAND_MEMORY;
+		pci_write_config16(dev, PCI_COMMAND, reg16);
+
 		pci_write_config8(dev, 0x09, 0x80);
 
 		/* Set timings */
@@ -49,6 +62,10 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, 0x48, 0x0004);
 		pci_write_config16(dev, 0x4a, 0x0200);
 
+		/* Set IDE I/O Configuration */
+		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
+		pci_write_config32(dev, IDE_CONFIG, reg32);
+
 		/* Combine IDE - SATA configuration */
 		pci_write_config8(dev, 0x90, 0x02);
 
@@ -56,8 +73,9 @@ static void sata_init(struct device *dev)
 		pci_write_config8(dev, 0x92, 0x0f);
 
 		/* SATA Initialization register */
-		pci_write_config32(dev, 0x94, 0x40000180);
+		pci_write_config32(dev, 0x94, 0x5a000180);
 	} else if(config->sata_ahci) {
+		printk_debug("SATA controller in AHCI mode.\n");
 		/* Allow both Legacy and Native mode */
 		pci_write_config8(dev, 0x09, 0x8f);
 
@@ -86,6 +104,18 @@ static void sata_init(struct device *dev)
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94, 0x1a000180);
 	} else {
+		printk_debug("SATA controller in plain mode.\n");
+		/* Set Sata Controller Mode. No Mapping(?) */
+		pci_write_config8(dev, 0x90, 0x00);
+
+		/* No AHCI: clear AHCI base */
+		pci_write_config32(dev, 0x24, 0x00000000);
+
+		/* And without AHCI BAR no memory decoding */
+		reg16 = pci_read_config16(dev, PCI_COMMAND);
+		reg16 &= ~PCI_COMMAND_MEMORY;
+		pci_write_config16(dev, PCI_COMMAND, reg16);
+
 		/* Native mode capable on both primary and secondary (0xa)
 		 * or'ed with enabled (0x50) = 0xf
 		 */
@@ -106,9 +136,6 @@ static void sata_init(struct device *dev)
 		/* Set IDE I/O Configuration */
 		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
 		pci_write_config32(dev, IDE_CONFIG, reg32);
-	
-		/* Set Sata Controller Mode. */
-		pci_write_config8(dev, 0x90, 0x02);
 	
 		/* Port 0 & 1 enable XXX */
 		pci_write_config8(dev, 0x92, 0x15);
@@ -135,7 +162,27 @@ static void sata_init(struct device *dev)
 	pci_write_config8(dev, 0xa0, 0x00);
 
 	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
+
+	/* Sata Initialization Register */
+	reg32 = pci_read_config32(dev, 0x94);
+	reg32 |= (1 << 30); // due to some bug
+	pci_write_config32(dev, 0x94, reg32);
 }
+
+static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	if (!vendor || !device) {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				pci_read_config32(dev, PCI_VENDOR_ID));
+	} else {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
+}
+
+static struct pci_operations sata_pci_ops = {
+	.set_subsystem    = sata_set_subsystem,
+};
 
 static struct device_operations sata_ops = {
 	.read_resources		= pci_dev_read_resources,
@@ -144,6 +191,7 @@ static struct device_operations sata_ops = {
 	.init			= sata_init,
 	.scan_bus		= 0,
 	.enable			= i82801gx_enable,
+	.ops_pci		= &sata_pci_ops,
 };
 
 /* Desktop Non-AHCI and Non-RAID Mode */
@@ -153,6 +201,15 @@ static const struct pci_driver i82801gx_sata_normal_driver __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x27c0,
 };
+
+/* Mobile Non-AHCI and Non-RAID Mode */
+/* 82801GBM/GHM (ICH7-M/ICH7-M DH) */
+static const struct pci_driver i82801gx_sata_mobile_normal_driver __pci_driver = {
+	.ops	= &sata_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x27c4,
+};
+
 
 /* NOTE: Any of the below are not properly supported yet. */
 
@@ -170,14 +227,6 @@ static const struct pci_driver i82801gx_sata_raid_driver __pci_driver = {
 	.ops	= &sata_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x27c3,
-};
-
-/* Mobile Non-AHCI and Non-RAID Mode */
-/* 82801GBM/GHM (ICH7-M/ICH7-M DH) */
-static const struct pci_driver i82801gx_sata_mobile_normal_driver __pci_driver = {
-	.ops	= &sata_ops,
-	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x27c4,
 };
 
 /* Mobile AHCI Mode */

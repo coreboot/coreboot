@@ -1,12 +1,12 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -30,12 +30,20 @@ static void ide_init(struct device *dev)
 {
 	u16 ideTimingConfig;
 	u32 reg32;
+	u32 enable_primary, enable_secondary;
 
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	int enable_primary = config->ide_enable_primary;
-	int enable_secondary = config->ide_enable_secondary;
+	printk_debug("i82801gx_ide: initializing... ");
+	if (config == NULL) {
+		printk_err("\ni82801gx_ide: Not mentioned in mainboard's Config.lb!\n");
+		// Trying to set somewhat save defaults instead of bailing out.
+		enable_primary = enable_secondary = 1;
+	} else {
+		enable_primary = config->ide_enable_primary;
+		enable_secondary = config->ide_enable_secondary;
+	}
 
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_IO | PCI_COMMAND_MASTER);
@@ -81,7 +89,24 @@ static void ide_init(struct device *dev)
 	/* Set Interrupt Line */
 	/* Interrupt Pin is set by D31IP.PIP */
 	pci_write_config32(dev, INTR_LN, 0xff); /* Int 15 */
+
+	printk_debug("\n");
 }
+
+static void ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	if (!vendor || !device) {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				pci_read_config32(dev, PCI_VENDOR_ID));
+	} else {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
+}
+
+static struct pci_operations ide_pci_ops = {
+	.set_subsystem    = ide_set_subsystem,
+};
 
 static struct device_operations ide_ops = {
 	.read_resources		= pci_dev_read_resources,
@@ -90,6 +115,7 @@ static struct device_operations ide_ops = {
 	.init			= ide_init,
 	.scan_bus		= 0,
 	.enable			= i82801gx_enable,
+	.ops_pci		= &ide_pci_ops,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */

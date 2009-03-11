@@ -3,10 +3,10 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -119,7 +119,6 @@ static void program_sigid(struct device *dev, u32 id)
 
 static void ac97_audio_init(struct device *dev)
 {
-	u8 reg8;
 	u16 reg16;
 	u32 reg32;
 	int i;

@@ -69,6 +69,9 @@ uses XIP_ROM_SIZE
 uses HAVE_HARD_RESET
 uses HAVE_SMI_HANDLER
 uses CONFIG_PCIE_CONFIGSPACE_HOLE
+uses MMCONF_SUPPORT
+uses MMCONF_BASE_ADDRESS
+uses CONFIG_GFXUMA
 #
 uses MAINBOARD
 uses MAINBOARD_PART_NUMBER
@@ -86,7 +89,9 @@ uses TTYS0_LCS
 uses DEFAULT_CONSOLE_LOGLEVEL
 uses MAXIMUM_CONSOLE_LOGLEVEL
 uses CONFIG_CONSOLE_VGA
+uses CONFIG_VGA_ROM_RUN
 uses CONFIG_PCI_ROM_RUN
+uses DEBUG
 # Toolchain
 uses CC
 uses HOSTCC
@@ -145,6 +150,13 @@ default HAVE_SMI_HANDLER=1
 ##
 
 default CONFIG_PCIE_CONFIGSPACE_HOLE=1
+default MMCONF_SUPPORT=1
+default MMCONF_BASE_ADDRESS=0xf0000000
+
+##
+## UMA
+##
+default CONFIG_GFXUMA=1
 
 ##
 ## Build code to export a programmable irq routing table
@@ -163,7 +175,7 @@ default HAVE_MP_TABLE=1
 ##
 default HAVE_ACPI_TABLES=1
 default HAVE_MAINBOARD_RESOURCES=1
-default HAVE_HIGH_TABLES=0
+default HAVE_HIGH_TABLES=1
 
 ##
 ## Build code to export a CMOS option table
@@ -179,7 +191,12 @@ default LB_CKS_LOC=123
 
 #VGA Console
 default CONFIG_CONSOLE_VGA=1
-default CONFIG_PCI_ROM_RUN=1
+# There are some network option roms that don't work with
+# coreboot's x86emu. Thus, we only execute the VGA option rom
+# for now:
+default CONFIG_VGA_ROM_RUN=1
+default CONFIG_PCI_ROM_RUN=0
+default DEBUG=0
 
 ##
 ## Build code for SMP support

@@ -190,12 +190,18 @@ chip northbridge/intel/i945
                 chip southbridge/intel/i82801gx
 			register "pirqa_routing" = "0x05"
 			register "pirqb_routing" = "0x07"
-			register "pirqc_routing" = "0x06"
+			register "pirqc_routing" = "0x05"
 			register "pirqd_routing" = "0x07"
 			register "pirqe_routing" = "0x80"
 			register "pirqf_routing" = "0x80"
 			register "pirqg_routing" = "0x80"
-			register "pirqh_routing" = "0x05"
+			register "pirqh_routing" = "0x06"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi13_routing" = "1"
 
                         register "ide_legacy_combined" = "0x1"
                         register "ide_enable_primary" = "0x1"

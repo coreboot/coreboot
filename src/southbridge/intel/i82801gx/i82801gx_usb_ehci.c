@@ -1,12 +1,12 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,14 +23,23 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "i82801gx.h"
+#if CONFIG_USBDEBUG_DIRECT
+#include <usbdebug_direct.h>
+#endif
+#include <arch/io.h>
 
 static void usb_ehci_init(struct device *dev)
 {
+	struct resource *res;
+	u8 *base;
 	u32 reg32;
+	u8 reg8;
 
 	printk_debug("EHCI: Setting up controller.. ");
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
+	reg32 |= PCI_COMMAND_MASTER;
+	reg32 |= PCI_COMMAND_SERR;
+	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	reg32 = pci_read_config32(dev, 0xdc);
 	reg32 |= (1 << 31) | (1 << 27);
@@ -41,11 +50,21 @@ static void usb_ehci_init(struct device *dev)
 	reg32 |= (2 << 2) | (1 << 29) | (1 << 17);
 	pci_write_config32(dev, 0xfc, reg32);
 
+	/* Clear any pending port changes */
+	res = find_resource(dev, 0x10);
+	base =(u8 *)res->base;
+	reg32 = readl(base + 0x24) | (1 << 2);
+	writel(base + 0x24, reg32);
+
+	/* workaround */
+	reg8 = pci_read_config8(dev, 0x84);
+	reg8 |= (1 << 4);
+	pci_write_config8(dev, 0x84, reg8);
+
 	printk_debug("done.\n");
 }
 
-static void usb_ehci_set_subsystem(device_t dev, unsigned vendor,
-				   unsigned device)
+static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	u8 access_cntl;
 
@@ -54,13 +73,41 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor,
 	/* Enable writes to protected registers. */
 	pci_write_config8(dev, 0x80, access_cntl | 1);
 
-	/* Write the subsystem vendor and device ID. */
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
+	if (!vendor || !device) {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				pci_read_config32(dev, PCI_VENDOR_ID));
+	} else {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
 
 	/* Restore protection. */
 	pci_write_config8(dev, 0x80, access_cntl);
 }
+
+static void usb_ehci_set_resources(struct device *dev)
+{
+#if CONFIG_USBDEBUG_DIRECT
+	struct resource *res;
+	u32 base;
+	u32 usb_debug;
+
+	usb_debug = get_ehci_debug();
+	set_ehci_debug(0);
+#endif
+	pci_dev_set_resources(dev);
+
+#if CONFIG_USBDEBUG_DIRECT
+	res = find_resource(dev, 0x10);
+	set_ehci_debug(usb_debug);
+	if (!res) return;
+	base = res->base;
+	set_ehci_base(base);
+	report_resource_stored(dev, res, "");
+#endif
+}
+
+
 
 static struct pci_operations lops_pci = {
 	.set_subsystem	= &usb_ehci_set_subsystem,

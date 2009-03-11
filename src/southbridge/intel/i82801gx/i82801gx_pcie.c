@@ -3,10 +3,10 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,29 +29,53 @@ static void pci_init(struct device *dev)
 	u32 reg32;
 
 	printk_debug("Initializing ICH7 PCIe bridge.\n");
-#if 0
-	// When the latency of the PCIe(!) bridge is set to 0x20
-	// all devices on the secondary bus of the PCI(!) bridge
-	// suddenly vanish. If you know why, please explain here.
+	
+	/* Enable Bus Master */
+	reg32 = pci_read_config32(dev, PCI_COMMAND);
+	reg32 |= PCI_COMMAND_MASTER;
+	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-	/* Set latency timer to 32. */
-	pci_write_config16(dev, 0x1b, 0x20);
-#endif
+	/* Set Cache Line Size to 0x10 */
+	// This has no effect but the OS might expect it
+	pci_write_config8(dev, 0x0c, 0x10);
 
-	/* disable parity error response */
 	reg16 = pci_read_config16(dev, 0x3e);
-	reg16 &= ~(1 << 0);
+	reg16 &= ~(1 << 0); /* disable parity error response */
+	// reg16 &= ~(1 << 1); /* disable SERR */
+	reg16 |= (1 << 2); /* ISA enable */
 	pci_write_config16(dev, 0x3e, reg16);
 
-	/* Clear errors in status registers */
-	reg16 = pci_read_config16(dev, 0x06);
-	reg16 |= 0xf900;
-	pci_write_config16(dev, 0x06, reg16);
+	/* Enable IO xAPIC on this PCIe port */
+	reg32 = pci_read_config32(dev, 0xd8);
+	reg32 |= (1 << 7);
+	pci_write_config32(dev, 0xd8, reg32);
 
-	reg16 = pci_read_config16(dev, 0x1e);
-	reg16 |= 0xf900;
-	pci_write_config16(dev, 0x1e, reg16);
+	/* Enable Backbone Clock Gating */
+	reg32 = pci_read_config32(dev, 0xe1);
+	reg32 |= (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0);
+	pci_write_config32(dev, 0xe1, reg32);
 
+#if MMCONF_SUPPORT
+	/* Set VC0 transaction class */
+	reg32 = pci_mmio_read_config32(dev, 0x114);
+	reg32 &= 0xffffff00;
+	reg32 |= 1;
+	pci_mmio_write_config32(dev, 0x114, reg32);
+
+	/* Mask completion timeouts */
+	reg32 = pci_mmio_read_config32(dev, 0x148);
+	reg32 |= (1 << 14);
+	pci_mmio_write_config32(dev, 0x148, reg32);
+#else
+#error "MMIO needed for ICH7 PCIe"
+#endif
+	/* Enable common clock configuration */
+	// Are there cases when we don't want that?
+	reg16 = pci_read_config16(dev, 0x50);
+	reg16 |= (1 << 6);
+	pci_write_config16(dev, 0x50, reg16);
+
+#if EVEN_MORE_DEBUG
 	reg32 = pci_read_config32(dev, 0x20);
 	printk_spew("    MBL    = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x24);
@@ -60,19 +84,32 @@ static void pci_init(struct device *dev)
 	printk_spew("    PMBU32 = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x2c);
 	printk_spew("    PMLU32 = 0x%08x\n", reg32);
+#endif
+
+	/* Clear errors in status registers */
+	reg16 = pci_read_config16(dev, 0x06);
+	//reg16 |= 0xf900;
+	pci_write_config16(dev, 0x06, reg16);
+
+	reg16 = pci_read_config16(dev, 0x1e);
+	//reg16 |= 0xf900;
+	pci_write_config16(dev, 0x1e, reg16);
 }
 
-static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
+static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	u32 pci_id;
-
-	printk_debug("Setting PCIe bridge subsystem ID.\n");
-	pci_id = pci_read_config32(dev, 0);
-	pci_write_config32(dev, 0x94, pci_id );
+	/* NOTE: This is not the default position! */
+	if (!vendor || !device) {
+		pci_write_config32(dev, 0x94,
+				pci_read_config32(dev, 0));
+	} else {
+		pci_write_config32(dev, 0x94,
+				((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
 }
 
 static struct pci_operations pci_ops = {
-	.set_subsystem = set_subsystem,
+	.set_subsystem = pcie_set_subsystem,
 };
 
 static struct device_operations device_ops = {

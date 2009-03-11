@@ -3,10 +3,10 @@
  *
  * Copyright (C) 2008-2009 coresystems GmbH
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -151,6 +151,35 @@ static void i82801gx_pirq_init(device_t dev)
 	}
 }
 
+static void i82801gx_gpi_routing(device_t dev)
+{
+	/* Get the chip configuration */
+	config_t *config = dev->chip_info;
+	u32 reg32 = 0;
+
+	/* An array would be much nicer here, or some
+	 * other method of doing this.
+	 */
+	reg32 |= (config->gpi0_routing & 0x03) << 0;
+	reg32 |= (config->gpi1_routing & 0x03) << 2;
+	reg32 |= (config->gpi2_routing & 0x03) << 4;
+	reg32 |= (config->gpi3_routing & 0x03) << 6;
+	reg32 |= (config->gpi4_routing & 0x03) << 8;
+	reg32 |= (config->gpi5_routing & 0x03) << 10;
+	reg32 |= (config->gpi6_routing & 0x03) << 12;
+	reg32 |= (config->gpi7_routing & 0x03) << 14;
+	reg32 |= (config->gpi8_routing & 0x03) << 16;
+	reg32 |= (config->gpi9_routing & 0x03) << 18;
+	reg32 |= (config->gpi10_routing & 0x03) << 20;
+	reg32 |= (config->gpi11_routing & 0x03) << 22;
+	reg32 |= (config->gpi12_routing & 0x03) << 24;
+	reg32 |= (config->gpi13_routing & 0x03) << 26;
+	reg32 |= (config->gpi14_routing & 0x03) << 28;
+	reg32 |= (config->gpi15_routing & 0x03) << 30;
+
+	pci_write_config32(dev, 0xb8, reg32);
+}
+
 static void i82801gx_power_options(device_t dev)
 {
 	u8 reg8;
@@ -172,6 +201,7 @@ static void i82801gx_power_options(device_t dev)
 		reg8 |= 1;
 	}
 	reg8 |= (3 << 4);	/* avoid #S4 assertions */
+	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
 
 	pci_write_config8(dev, GEN_PMCON_3, reg8);
 	printk_info("Set power %s after power failure.\n", pwr_on ? "on" : "off");
@@ -198,19 +228,34 @@ static void i82801gx_power_options(device_t dev)
 
 	// Enable CPU_SLP# and Intel Speedstep, set SMI# rate down
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
-	reg16 &= ~3;
-	reg16 |= (1 << 3) | (1 << 5) | (1 << 10);
+	reg16 &= ~((3 << 0) | (1 << 10));
+	reg16 |= (1 << 3) | (1 << 5);
+	reg16 |= (1 << 2); // CLKRUN_EN
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
-	// Set GPIO13 to SCI (?)
-	// This might be board specific
-	pci_write_config32(dev, 0xb8, 0x08000000);
+	// Set the board's GPI routing.
+	i82801gx_gpi_routing(dev);
 }
 
-void i82801gx_rtc_init(struct device *dev)
+static void i82801gx_configure_cstates(device_t dev)
 {
 	u8 reg8;
-	u32 reg32;
+	
+	reg8 = pci_read_config8(dev, 0xa9); // Cx state configuration
+	reg8 |= (1 << 4) | (1 << 3) | (1 << 2);	// Enable Popup & Popdown
+	pci_write_config8(dev, 0xa9, reg8);
+
+	// Set Deeper Sleep configuration to recommended values
+	reg8 = pci_read_config8(dev, 0xaa);
+	reg8 &= 0xf0;
+	reg8 |= (2 << 2);	// Deeper Sleep to Stop CPU: 34-40us
+	reg8 |= (2 << 0);	// Deeper Sleep to Sleep: 15us
+	pci_write_config8(dev, 0xaa, reg8);
+}
+
+static void i82801gx_rtc_init(struct device *dev)
+{
+	u8 reg8;
 	int rtc_failed;
 
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
@@ -224,17 +269,40 @@ void i82801gx_rtc_init(struct device *dev)
 	rtc_init(rtc_failed);
 }
 
-static void enable_hpet(struct device *dev)
+static void enable_hpet(void)
 {
-	/* TODO */
+	u32 reg32;
+	
+	/* Leave HPET at default address, but enable it */
+	reg32 = RCBA32(0x3404);
+	reg32 |= (1 << 7); // HPET Address Enable
+	RCBA32(0x3404) = reg32;
 }
 
+static void enable_clock_gating(void)
+{
+	u32 reg32;
+	
+	/* Enable Clock Gating for most devices */
+	reg32 = RCBA32(0x341c);
+	reg32 |= (1 << 31);	// LPC clock gating
+	reg32 |= (1 << 30);	// PATA clock gating
+	// SATA clock gating
+	reg32 |= (1 << 27) | (1 << 26) | (1 << 25) | (1 << 24);
+	reg32 |= (1 << 23);	// AC97 clock gating
+	reg32 |= (1 << 20) | (1 << 19);	// USB EHCI clock gating
+	reg32 |= (1 << 3) | (1 << 1);	// DMI clock gating
+	reg32 |= (1 << 2);	// PCIe clock gating;
+	RCBA32(0x341c) = reg32;
+}
 
 #if HAVE_SMI_HANDLER
 static void i82801gx_lock_smm(struct device *dev)
 {
 	void smm_lock(void);
+#if TEST_SMM_FLASH_LOCKDOWN
 	u8 reg8;
+#endif
 
 #if ENABLE_ACPI_MODE_IN_COREBOOT
 	printk_debug("Enabling ACPI via APMC:\n");
@@ -279,6 +347,22 @@ static void i82801gx_lock_smm(struct device *dev)
 }
 #endif
 
+#define SPIBASE 0x3020
+static void i82801gx_spi_init(void)
+{
+	u16 spicontrol;
+
+	spicontrol = RCBA16(SPIBASE + 2);
+	spicontrol &= ~(1 << 0); // SPI Access Request
+	RCBA16(SPIBASE + 2) = spicontrol;
+}
+
+static void i82801gx_fixups(void)
+{
+	/* This needs to happen after PCI enumeration */
+	RCBA32(0x1d40) |= 1;
+}
+
 static void lpc_init(struct device *dev)
 {
 	printk_debug("i82801gx: lpc_init\n");
@@ -297,6 +381,9 @@ static void lpc_init(struct device *dev)
 	/* Setup power options. */
 	i82801gx_power_options(dev);
 
+	/* Configure Cx state registers */
+	i82801gx_configure_cstates(dev);
+
 	/* Set the state of the GPIO lines. */
 	//gpio_init(dev);
 
@@ -307,13 +394,20 @@ static void lpc_init(struct device *dev)
 	isa_dma_init();
 
 	/* Initialize the High Precision Event Timers, if present. */
-	enable_hpet(dev);
+	enable_hpet();
+
+	/* Initialize Clock Gating */
+	enable_clock_gating();
 
 	setup_i8259();
 
 #if HAVE_SMI_HANDLER
 	i82801gx_lock_smm(dev);
 #endif
+
+	i82801gx_spi_init();
+
+	i82801gx_fixups();
 }
 
 static void i82801gx_lpc_read_resources(device_t dev)
@@ -341,9 +435,13 @@ static void i82801gx_lpc_enable_resources(device_t dev)
 
 static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	printk_debug("Setting LPC bridge subsystem ID\n");
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-			pci_read_config32(dev, 0));
+	if (!vendor || !device) {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				pci_read_config32(dev, PCI_VENDOR_ID));
+	} else {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
 }
 
 static struct pci_operations pci_ops = {

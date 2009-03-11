@@ -1,12 +1,12 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -42,6 +42,21 @@ static void usb_init(struct device *dev)
 	printk_debug("done.\n");
 }
 
+static void usb_set_subsystem(device_t dev, unsigned vendor, unsigned device)
+{
+	if (!vendor || !device) {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				pci_read_config32(dev, PCI_VENDOR_ID));
+	} else {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
+}
+
+static struct pci_operations usb_pci_ops = {
+	.set_subsystem    = usb_set_subsystem,
+};
+
 static struct device_operations usb_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
@@ -49,6 +64,7 @@ static struct device_operations usb_ops = {
 	.init			= usb_init,
 	.scan_bus		= 0,
 	.enable			= i82801gx_enable,
+	.ops_pci		= &usb_pci_ops,
 };
 
 /* 82801GB/GR/GDH/GBM/GHM/GU (ICH7/ICH7R/ICH7DH/ICH7-M/ICH7-M DH/ICH7-U) */

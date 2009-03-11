@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,7 +162,6 @@ static void i945_setup_egress_port(void)
 	reg32 &= 0xffffff01;
 	EPBAR32(EPVC0RCTL) = reg32;
 
-	
 	reg32 = EPBAR32(EPPVCCAP1);
 	reg32 &= ~(7 << 0);
 	reg32 |= 1;
@@ -195,7 +194,7 @@ static void i945_setup_egress_port(void)
 	}
 
 	/* Is internal graphics enabled? */
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 0x54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
 		MCHBAR32(MMARB1) |= (1 << 17);
 	}
 
@@ -204,12 +203,12 @@ static void i945_setup_egress_port(void)
 	reg32 &= ~(7 << 24);
 	reg32 |= (1 << 24);
 	EPBAR32(EPVC1RCTL) = reg32;
-	
+
 	reg32 = EPBAR32(EPVC1RCTL);
 	reg32 &= 0xffffff01;
 	reg32 |= (1 << 7);
 	EPBAR32(EPVC1RCTL) = reg32;
-	
+
 	EPBAR32(PORTARB + 0x00) = 0x01000001;
 	EPBAR32(PORTARB + 0x04) = 0x00040000;
 	EPBAR32(PORTARB + 0x08) = 0x00001000;
@@ -218,7 +217,7 @@ static void i945_setup_egress_port(void)
 	EPBAR32(PORTARB + 0x14) = 0x00040000;
 	EPBAR32(PORTARB + 0x18) = 0x00001000;
 	EPBAR32(PORTARB + 0x1c) = 0x00000040;
-	
+
 	EPBAR32(EPVC1RCTL) |= (1 << 16);
 	EPBAR32(EPVC1RCTL) |= (1 << 16);
 
@@ -248,11 +247,11 @@ static void i945_setup_egress_port(void)
 static void ich7_setup_dmi_rcrb(void)
 {
 	u16 reg16;
+	u32 reg32;
 
-	
 	reg16 = RCBA16(LCTL);
 	reg16 &= ~(3 << 0);
-	reg16 |= 1;
+	reg16 |= 3;
 	RCBA16(LCTL) = reg16;
 
 	RCBA32(V0CTL) = 0x80000001;
@@ -267,12 +266,33 @@ static void ich7_setup_dmi_rcrb(void)
 
 	RCBA32(RPFN) = 0x00543210;
 
-	pci_write_config16(PCI_DEV(0, 0x1c, 0), 0x42, 0x0141);	
-	pci_write_config16(PCI_DEV(0, 0x1c, 4), 0x42, 0x0141);	
-	pci_write_config16(PCI_DEV(0, 0x1c, 5), 0x42, 0x0141);	
+	pci_write_config16(PCI_DEV(0, 0x1c, 0), 0x42, 0x0141);
+	pci_write_config16(PCI_DEV(0, 0x1c, 4), 0x42, 0x0141);
+	pci_write_config16(PCI_DEV(0, 0x1c, 5), 0x42, 0x0141);
 
-	pci_write_config32(PCI_DEV(0, 0x1c, 4), 0x54, 0x00480ce0);	
-	pci_write_config32(PCI_DEV(0, 0x1c, 5), 0x54, 0x00500ce0);	
+	pci_write_config32(PCI_DEV(0, 0x1c, 4), 0x54, 0x00480ce0);
+	pci_write_config32(PCI_DEV(0, 0x1c, 5), 0x54, 0x00500ce0);
+
+	reg32 = RCBA32(V1CTL);
+	reg32 &= ~( (0x7f << 1) | (7 << 17) | (7 << 24) );
+	reg32 |= (0x40 << 1) | (4 << 17) | (1 << 24) | (1 << 31);
+	RCBA32(V1CTL) = reg32;
+
+	RCBA32(ESD) |= (2 << 16);
+
+	RCBA32(ULD) |= (1 << 24) | (1 << 16);
+
+	RCBA32(ULBA) = DEFAULT_DMIBAR;
+
+	RCBA32(RP1D) |= (2 << 16);
+	RCBA32(RP2D) |= (2 << 16);
+	RCBA32(RP3D) |= (2 << 16);
+	RCBA32(RP4D) |= (2 << 16);
+	RCBA32(HDD)  |= (2 << 16);
+	RCBA32(RP5D) |= (2 << 16);
+	RCBA32(RP6D) |= (2 << 16);
+
+	RCBA32(LCAP) |= (3 << 10);
 }
 
 static void i945_setup_dmi_rcrb(void)
@@ -280,23 +300,25 @@ static void i945_setup_dmi_rcrb(void)
 	u32 reg32;
 	u32 timeout;
 
+	int activate_aspm = 1;
+
 	printk_debug("Setting up DMI RCRB\n");
 
 	/* Virtual Channel 0 Configuration */
 	reg32 = DMIBAR32(DMIVC0RCTL0);
 	reg32 &= 0xffffff01;
 	DMIBAR32(DMIVC0RCTL0) = reg32;
-	
+
 	reg32 = DMIBAR32(DMIPVCCAP1);
 	reg32 &= ~(7 << 0);
 	reg32 |= 1;
 	DMIBAR32(DMIPVCCAP1) = reg32;
-	
+
 	reg32 = DMIBAR32(DMIVC1RCTL);
 	reg32 &= ~(7 << 24);
 	reg32 |= (1 << 24);	/* NOTE: This ID must match ICH7 side */
 	DMIBAR32(DMIVC1RCTL) = reg32;
-	
+
 	reg32 = DMIBAR32(DMIVC1RCTL);
 	reg32 &= 0xffffff01;
 	reg32 |= (1 << 7);
@@ -318,20 +340,23 @@ static void i945_setup_dmi_rcrb(void)
 
 	reg32 = DMIBAR32(DMILCAP);
 	reg32 &= ~(7 << 12);
-	reg32 |= (2 << 12);	
+	reg32 |= (2 << 12);
 
 	reg32 &= ~(7 << 15);
-	
-	reg32 |= (2 << 15);	
+	reg32 |= (2 << 15);
 	DMIBAR32(DMILCAP) = reg32;
 
 	reg32 = DMIBAR32(DMICC);
-	reg32 &= 0x00ffffff;	
+	reg32 &= 0x00ffffff;
 	reg32 &= ~(3 << 0);
-	reg32 |= (1 << 0);	
+	reg32 |= (1 << 0);
+
+	reg32 &= ~(3 << 20);
+	reg32 |= (1 << 20);
+
 	DMIBAR32(DMICC) = reg32;
 
-	if (0) {
+	if (activate_aspm) {
 		DMIBAR32(DMILCTL) |= (3 << 0);
 	}
 #endif
@@ -353,7 +378,7 @@ static void i945_setup_dmi_rcrb(void)
 #endif
 	DMIBAR32(0x204) = reg32;
 
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 0x54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
 		DMIBAR32(0x200) |= (1 << 21);
 	} else {
 		DMIBAR32(0x200) &= ~(1 << 21);
@@ -408,11 +433,11 @@ static void i945_setup_dmi_rcrb(void)
 		printk_debug("timeout!\n");
 	else
 		printk_debug("ok\n");
-	
+
 	DMIBAR32(0x1c4) = 0xffffffff;
 	DMIBAR32(0x1d0) = 0xffffffff;
 	DMIBAR32(0x228) = 0xffffffff;
-	
+
 	DMIBAR32(0x308) = DMIBAR32(0x308);
 	DMIBAR32(0x314) = DMIBAR32(0x314);
 	DMIBAR32(0x324) = DMIBAR32(0x324);
@@ -421,7 +446,7 @@ static void i945_setup_dmi_rcrb(void)
 	DMIBAR32(0x338) = DMIBAR32(0x338);
 
 	if (i945_silicon_revision() == 1 && ((MCHBAR8(0xe08) & (1 << 5)) == 1)) {
-		if ((MCHBAR32(0x214) & 0xf) != 0x3) {	
+		if ((MCHBAR32(0x214) & 0xf) != 0x3) {
 			printk_info
 			    ("DMI link requires A1 stepping workaround. Rebooting.\n");
 			reg32 = MCHBAR32(MMARB1);
@@ -438,7 +463,191 @@ static void i945_setup_pci_express_x16(void)
 	u32 timeout;
 	u32 reg32;
 	u16 reg16;
+#if SETUP_PCIE_X16_LINK
+	u8 reg8;
 
+	printk_debug("Enabling PCI Express x16 Link\n");
+
+	reg16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DEVEN);
+	reg16 |= DEVEN_D1F0;
+	pci_write_config16(PCI_DEV(0, 0x00, 0), DEVEN, reg16);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x208);
+	reg32 &= ~(1 << 8);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x208, reg32);
+
+	MCHBAR16(UPMC1) &= ~( (1 << 5) | (1 << 0) );
+
+	/* Initialze PEG_CAP */
+	reg16 = pcie_read_config16(PCI_DEV(0, 0x01, 0), 0xa2);
+	reg16 |= (1 << 8);
+	pcie_write_config16(PCI_DEV(0, 0x01, 0), 0xa2, reg16);
+
+	/* Setup SLOTCAP */
+	/* TODO: These values are mainboard dependent and should
+	 * be set from Config.lb or Options.lb.
+	 */
+	/* NOTE: SLOTCAP becomes RO after the first write! */
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xb4);
+	reg32 &= 0x0007ffff; // TODO
+	reg32 &= 0xfffe007f; // TODO
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xb4, reg32);
+
+	/* Wait for training to succeed */
+	printk_debug("Wait for PCIe x16 link training ...");
+	timeout = 0x7fffff;
+	while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
+	if (!timeout) {
+		printk_debug("timeout!\n");
+
+		printk_debug("Restrain PCIe port to x1\n");
+
+		reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214);
+		reg32 &= ~(0xf << 1);
+		reg32 |=1;
+		pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x214, reg32);
+
+		reg16 = pcie_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
+
+		reg16 |= (1 << 6);
+		pcie_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+		reg16 &= ~(1 << 6);
+		pcie_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+
+		printk_debug("Wait for PCIe x1 link training ...");
+		timeout = 0x7fffff;
+		while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
+		if (!timeout) {
+			printk_debug("timeout!\n");
+			printk_debug("Disabling PCIe x16 port completely.\n");
+			goto disable_pciexpress_x16_link;
+		} else {
+			printk_debug("ok\n");
+		}
+	} else {
+		printk_debug("ok\n");
+	}
+
+	reg16 = pcie_read_config16(PCI_DEV(0, 0x01, 0), 0xb2);
+	reg16 >>= 4;
+	reg16 &= 0x3f;
+
+	printk_debug("PCIe x%d link training succeeded.\n", reg16);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x204);
+	reg32 &= 0xfffffc00;
+	if (reg16 == 1) {
+		reg32 |= 0x32b;
+		// TODO
+	} else if (reg16 == 16) {
+		reg32 |= 0x0f4;
+		// TODO
+	}
+
+	/* Enable GPEs */
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xec);
+	reg32 |= (1 << 2) | (1 << 1) | (1 << 0); /* PMEGPE, HPGPE, GENGPE */
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x114, reg32);
+
+	/* Virtual Channel Configuration: Only VC0 on PCIe x16 */
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x114);
+	reg32 &= 0xffffff01;
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x114, reg32);
+
+	/* Extended VC count */
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x104);
+	reg32 &= ~(7 << 0);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x104, reg32);
+
+	/* Active State Power Management ASPM */
+
+	/* TODO */
+
+	/* Clear error bits */
+	pcie_write_config16(PCI_DEV(0, 0x01, 0), 0x06, 0xffff);
+	pcie_write_config16(PCI_DEV(0, 0x01, 0), 0x1e, 0xffff);
+	pcie_write_config16(PCI_DEV(0, 0x01, 0), 0xaa, 0xffff);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x1c4, 0xffffffff);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x1d0, 0xffffffff);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x1f0, 0xffffffff);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x228, 0xffffffff);
+
+	/* Program R/WO registers */
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x308);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x308, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x314);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x314, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x324);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x324, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x328);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x328, reg32);
+
+	reg8 = pcie_read_config8(PCI_DEV(0, 0x01, 0), 0xb4);
+	pcie_write_config8(PCI_DEV(0, 0x01, 0), 0xb4, reg8);
+
+	/* Additional PCIe graphics setup */
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xf0);
+	reg32 |= (3 << 26);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xf0, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xf0);
+	reg32 |= (3 << 24);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xf0, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x200);
+	reg32 &= ~(3 << 26);
+	reg32 |= (2 << 26);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x200, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xe80);
+	if (i945_silicon_revision() >= 2) {
+		reg32 |= (1 << 12);
+	} else {
+		reg32 &= ~(1 << 12);
+	}
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xe80, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xeb4);
+	reg32 &= ~(1 << 31);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xeb4, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xfc);
+	reg32 |= (1 << 31);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xfc, reg32);
+
+	if (i945_silicon_revision() >= 3) {
+		static const u32 reglist[] = {
+			0xec0, 0xed4, 0xee8, 0xefc, 0xf10, 0xf24,
+			0xf38, 0xf4c, 0xf60, 0xf74, 0xf88, 0xf9c,
+			0xfb0, 0xfc4, 0xfd8, 0xfec
+		};
+
+		int i;
+		for (i=0; i<ARRAY_SIZE(reglist); i++) {
+			reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), reglist[i]);
+			reg32 &= 0x0fffffff;
+			reg32 |= (2 << 28);
+			pcie_write_config32(PCI_DEV(0, 0x01, 0), reglist[i], reg32);
+		}
+	}
+
+	if (i945_silicon_revision() <= 2 ) {
+		/* Set voltage specific parameters */
+		reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xe80);
+		reg32 &= (0xf << 4);
+		if ((MCHBAR32(0xe08) & (1 << 20)) == 0) {
+			reg32 |= (7 << 4);
+		}
+		pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xe80, reg32);
+	}
+
+	return;
+
+disable_pciexpress_x16_link:
+#endif
 	/* For now we just disable the x16 link */
 	printk_debug("Disabling PCI Express x16 Link\n");
 
@@ -477,40 +686,44 @@ static void i945_setup_root_complex_topology(void)
 
 	printk_debug("Setting up Root Complex Topology\n");
 	/* Egress Port Root Topology */
+
 	reg32 = EPBAR32(EPESD);
 	reg32 &= 0xff00ffff;
 	reg32 |= (1 << 16);
 	EPBAR32(EPESD) = reg32;
-	
+
+	EPBAR32(EPLE1D) |= (1 << 16);
+
 	EPBAR32(EPLE1D) |= (1 << 0);
-	
-	EPBAR32(EPLE1A) = DEFAULT_PCIEXBAR + 0x4000;
-	
+
+	EPBAR32(EPLE1A) = DEFAULT_DMIBAR;
+#if 0
+	EPBAR32(EPLE2D) |= (1 << 16);
+#endif
+
 	EPBAR32(EPLE2D) |= (1 << 0);
 
 	/* DMI Port Root Topology */
 	reg32 = DMIBAR32(DMILE1D);
 	reg32 &= 0x00ffffff;
 	DMIBAR32(DMILE1D) = reg32;
-	
+
 	reg32 = DMIBAR32(DMILE1D);
 	reg32 &= 0xff00ffff;
 	reg32 |= (2 << 16);
 	DMIBAR32(DMILE1D) = reg32;
-	
+
 	DMIBAR32(DMILE1D) |= (1 << 0);
-	
-	DMIBAR32(DMILE1A) = DEFAULT_PCIEXBAR + 0x8000;
-	
+
+	DMIBAR32(DMILE1A) = DEFAULT_RCBA;
+
 	DMIBAR32(DMILE2D) |= (1 << 0);
-	
-	DMIBAR32(DMILE2A) = DEFAULT_PCIEXBAR + 0x5000;
+
+	DMIBAR32(DMILE2A) = DEFAULT_EPBAR;
 
 	/* PCI Express x16 Port Root Topology */
 	if (pci_read_config8(PCI_DEV(0, 0x00, 0), DEVEN) & DEVEN_D1F0) {
-		pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x158,
-				    DEFAULT_PCIEXBAR + 0x5000);
-
+		pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x158, DEFAULT_EPBAR);
 		reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x150);
 		reg32 |= (1 << 0);
 		pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x150, reg32);
@@ -527,8 +740,8 @@ static void ich7_setup_root_complex_topology(void)
 
 static void ich7_setup_pci_express(void)
 {
-	RCBA32(CG) |= (1 << 0);	
-	
+	RCBA32(CG) |= (1 << 0);
+
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0x54, 0x00000060);
 
 	pci_write_config32(PCI_DEV(0, 0x1c, 0), 0xd8, 0x00110000);
@@ -544,6 +757,9 @@ static void i945_early_initialization(void)
 
 	/* Change port80 to LPC */
 	RCBA32(GCS) &= (~0x04);
+
+	/* Just do it that way */
+	RCBA32(0x2010) |= (1 << 10);
 }
 
 static void i945_late_initialization(void)

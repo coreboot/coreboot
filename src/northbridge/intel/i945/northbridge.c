@@ -224,8 +224,8 @@ static void mc_read_resources(device_t dev)
 	resource->flags =
 	    IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 	    IORESOURCE_ASSIGNED;
-	printk_debug("Adding PCIe enhanced config space BAR 0x%08x-0x%08x.\n",
-		     resource->base, (resource->base + resource->size));
+	printk_debug("Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
+		     (unsigned long)(resource->base), (unsigned long)(resource->base + resource->size));
 }
 
 static void mc_set_resources(device_t dev)
@@ -245,8 +245,13 @@ static void mc_set_resources(device_t dev)
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
-			   ((device & 0xffff) << 16) | (vendor & 0xffff));
+	if (!vendor || !device) {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				pci_read_config32(dev, PCI_VENDOR_ID));
+	} else {
+		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
+				((device & 0xffff) << 16) | (vendor & 0xffff));
+	}
 }
 
 static struct pci_operations intel_pci_ops = {

@@ -2160,8 +2160,10 @@ static void sdram_post_jedec_initialization(struct sys_info *sysinfo)
 		reg32 = MCHBAR32(DCC);
 #if CHANNEL_XOR_RANDOMIZATION
 		reg32 &= ~(1 << 10);
-#endif
+		reg32 |= (1 << 9);
+#else
 		reg32 &= ~(1 << 9);
+#endif
 		MCHBAR32(DCC) = reg32;
 	}
 
@@ -2242,7 +2244,12 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	}
 	MCHBAR16(CPCTL) = reg16;
 
+#if 0
+	/* This is set later in the game */
 	if ((MCHBAR32(ECO) & (1 << 16)) != 0) {
+#else
+	if (i945_silicon_revision() != 0) {
+#endif
 		switch (sysinfo->fsb_frequency) {
 		case 667: MCHBAR32(HGIPMC2) = 0x0d590d59; break;
 		case 533: MCHBAR32(HGIPMC2) = 0x155b155b; break;
@@ -2306,7 +2313,7 @@ static void sdram_power_management(struct sys_info *sysinfo)
 		/* stepping 0 and 1 */
 		MCHBAR32(FSBPMC4) &= ~(1 << 4);
 	} else {
-		MCHBAR32(FSBPMC4) &= ~(1 << 4);
+		MCHBAR32(FSBPMC4) |= (1 << 4);
 	}
 
 	reg8 = pci_read_config8(PCI_DEV(0,0x0,0), 0xfc);

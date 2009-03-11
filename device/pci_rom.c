@@ -47,7 +47,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		init_archive(&archive);
 		sprintf(pcifile, "pci%04x,%04x.rom", dev->id.pci.vendor,
 			dev->id.pci.device);
-
+		printk(BIOS_DEBUG, "pci_rom_probe: search for %s\n", pcifile);
 		ret = find_file(&archive, pcifile, &result);
 		if (ret) {
 			printk(BIOS_INFO, "No option rom for onboard device.\n");

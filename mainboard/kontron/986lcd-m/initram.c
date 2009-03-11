@@ -226,8 +226,5 @@ int main(void)
 	}
 #endif
 	MCHBAR16(SSKPD) = 0xCAFE;
-
-	init_cpus(boot_mode, sysinfo);
-	
 	return 0;
 }

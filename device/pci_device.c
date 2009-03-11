@@ -1304,7 +1304,8 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
 	pci_write_config16(dev, PCI_COMMAND, cr);
 
-	printk(BIOS_DEBUG, "%s DONE\n", __func__);
+	printk(BIOS_DEBUG, "%s DONE: [%x, %x, %x]\n", __func__, 
+		dev->bus->secondary, bus->secondary, bus->subordinate);
 	printk(BIOS_SPEW, "%s returns max %d\n", __func__, max);
 	return max;
 }

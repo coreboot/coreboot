@@ -152,7 +152,6 @@ end
 			disabled;
 		};
 		pci@2,0 { /* Onboard VGA. */
-			rom_address = "0xfff00000"; /* Shouldn't this be a lar path? */
 		};
 		pci@2,1 { /* Display controller. */
 		};
@@ -169,8 +168,8 @@ end
 			/config/("southbridge/intel/i82801gx/pcie3.dts");
 		};
 		pci@1c,3{ disabled; }; /* PCIe port 4 */
-		pci@1c,4{ disabled; }; /* PCIe port 5 */
-		pci@1c,5{ disabled; }; /* PCIe port 6 */
+		pci@1c,4{ /config/("southbridge/intel/i82801gx/pcie5.dts"); }; /* PCIe port 5 */
+		pci@1c,5{ /config/("southbridge/intel/i82801gx/pcie6.dts"); }; /* PCIe port 6 */
 		pci@1d,0{
 			/config/("southbridge/intel/i82801gx/usb1.dts");
 		};

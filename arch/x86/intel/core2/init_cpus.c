@@ -21,7 +21,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-#include <mainboard.h>
 #include <types.h>
 #include <lib.h>
 #include <console.h>
@@ -73,6 +72,7 @@ unsigned int get_nodes(void)
 	int nodes, siblings;
 	result = cpuid(1);
 	/* See how many sibling cpus we have */
+	printk(BIOS_DEBUG, "cpuid(1) ebx is %08x\n", result.ebx);
 	siblings = (result.ebx >> 16) & 0xff;
 	if (siblings < 1) {
 		siblings = 1;
@@ -204,6 +204,9 @@ static int lapic_start_cpu(unsigned long apicid, u32 *secondary_base)
 	 * Starting actual IPI sequence...
 	 */
 
+	printk(BIOS_SPEW, "Before Startup.apicid %ld\n",  apicid);
+	printk(BIOS_SPEW, "Before Startup.sb[0] %p @0 %08x\n",
+			(void *) secondary_base[0], *(u32 *) 0);
 	printk(BIOS_SPEW, "Asserting INIT.\n");
 
 	/*
@@ -321,7 +324,11 @@ static int lapic_start_cpu(unsigned long apicid, u32 *secondary_base)
 		if (send_status || accept_status)
 			break;
 	}
+	printk(BIOS_SPEW, "udelay(1000000)\n");
+	udelay(1000000);
 	printk(BIOS_SPEW, "After Startup.sb[-1] %p\n", (void *) secondary_base[-1]);
+	printk(BIOS_SPEW, "After Startup.sb[0] %p @0 %08x\n", 
+			 (void *) secondary_base[0],  *(u32 *) 0);
 	if (send_status)
 		printk(BIOS_WARNING, "APIC never delivered???\n");
 	if (accept_status)
@@ -335,13 +342,13 @@ static int lapic_start_cpu(unsigned long apicid, u32 *secondary_base)
 /* we compile the secondary start code such that this looks like a stack frame
  */
 struct stack {
-	u32 post;
-	u32 index;
-	u32 apicid;
-	struct atomic *active_cpus;
-	struct spinlock *start_cpu_lock;
-	u32  callerpc;
 	u32 data[16384/sizeof(u32) - 7];
+	struct spinlock *start_cpu_lock;
+	struct atomic *active_cpus;
+	u32 apicid;
+	u32 index;
+	u32 post;
+	u32  callerpc;
 };
 
 struct stackmem {
@@ -377,18 +384,25 @@ int start_cpu(u32 apicid, struct atomic *active_cpus, struct spinlock *start_cpu
 	stackmem->stacks[index].post   = 0;
 	stackmem->stacks[index].active_cpus  = active_cpus;
 	stackmem->stacks[index].start_cpu_lock = start_cpu_lock;
+	printk(BIOS_SPEW, "stack[index, apicid, post, active_cpus, start_cpu_lock] = [%lx, %x, %d, %p, %p]\n", index, apicid, 0, active_cpus, start_cpu_lock);
 	/* Advertise the new stack to start_cpu */
 	printk(BIOS_SPEW, "Set stack @ %p to %p\n", &secondary_base[-1], (void *)stack_end);
 	secondary_base[-1] = stack_end;
 
 	/* Start the cpu */
 	result = lapic_start_cpu(apicid, secondary_base);
+	printk(BIOS_SPEW, "we think we started it. The stack value is 0x%p (should be 0)\n", (void *)secondary_base[-1]);
 
 	if (result) {
+		printk(BIOS_SPEW, "Spinning on post which is now 0x%x\n", 
+				stackmem->stacks[index].post);
 		result = 0;
 		/* Wait 1s or until the new the new cpu calls in */
-		for(count = 0; count < 100000 ; count++) {
-			if (stackmem->stacks[index].post) {
+		for(count = 0; count < 1000000 ; count++) {
+			printk(BIOS_SPEW, 
+				"BSP post 0x%x\n", 
+				stackmem->stacks[index].post);
+			if (stackmem->stacks[index].post >= AP_STOP_OK) {
 				result = 1;
 				break;
 			}
@@ -476,9 +490,13 @@ void __attribute__((regparm(0))) secondary_cpu_init(
 	struct atomic *active_cpus,
 	struct spinlock *start_cpu_lock)
 {
+//printk(BIOS_SPEW, "secondary start\n");
+//printk(BIOS_SPEW, "[post, index, apicid,active_cpus, start_cpu_lock] = [%x, %x, %d, %p, %p]\n", post, index, apicid, active_cpus, start_cpu_lock);
 	post = AP_START;
+//printk(BIOS_SPEW, "secondary post %d\n", post);
 	atomic_inc(active_cpus);
 	post = AP_ACTIVEUP;
+//printk(BIOS_SPEW, "secondary post %d\n", post);
 	if (SERIAL_CPU_INIT && (CONFIG_MAX_PHYSICAL_CPUS > 2))
 		spin_lock(start_cpu_lock);
 	post = AP_LOCKED;
@@ -531,6 +549,104 @@ static void wait_other_cpus_stop(struct atomic *active_cpus)
 	printk(BIOS_DEBUG, "All AP CPUs stopped\n");
 }
 
+/* this should be a library call. */
+static void fill_processor_name(char *processor_name, int len)
+{
+	struct cpuid_result regs;
+	char temp_processor_name[49];
+	char *processor_name_start;
+	unsigned int *name_as_ints = (unsigned int *)temp_processor_name;
+	int i;
+
+	if (len > sizeof(temp_processor_name))
+		len = sizeof(temp_processor_name);
+
+	for (i=0; i<3; i++) {
+		regs = cpuid(0x80000002 + i);
+		name_as_ints[i*4 + 0] = regs.eax;
+		name_as_ints[i*4 + 1] = regs.ebx;
+		name_as_ints[i*4 + 2] = regs.ecx;
+		name_as_ints[i*4 + 3] = regs.edx;
+	}
+
+	temp_processor_name[48] = 0;
+
+	/* Skip leading spaces */
+	processor_name_start = temp_processor_name;
+	while (*processor_name_start == ' ') 
+		processor_name_start++;
+
+	memset(processor_name, 0, 49);
+	memcpy(processor_name, processor_name_start, len);
+}
+
+#define IA32_FEATURE_CONTROL 0x003a
+
+#define CPUID_VMX (1 << 5)
+#define CPUID_SMX (1 << 6)
+static void enable_vmx(void)
+{
+	struct cpuid_result regs;
+	struct msr msr;
+
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	if (msr.lo & (1 << 0)) {
+		/* VMX locked. If we set it again we get an illegal
+		 * instruction
+		 */
+		return;
+	}
+
+	regs = cpuid(1);
+	if (regs.ecx & CPUID_VMX) {
+		msr.lo |= (1 << 2);
+		if (regs.ecx & CPUID_SMX)
+			msr.lo |= (1 << 1);
+	}
+
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+
+	msr.lo |= (1 << 0); /* Set lock bit */
+
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+}
+
+#define PMG_CST_CONFIG_CONTROL	0xe2
+static void configure_c_states(void)
+{
+	struct msr msr;
+
+	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
+	msr.lo &= ~(1 << 9); // Issue a  single stop grant cycle upon stpclk
+
+	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
+	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
+}
+
+#define IA32_MISC_ENABLE	0x1a0
+static void configure_misc(void)
+{
+	struct msr msr;
+
+	msr = rdmsr(IA32_MISC_ENABLE);
+	msr.lo |= (1 << 3); 	/* TM1 enable */
+	msr.lo |= (1 << 13);	/* TM2 enable */
+	msr.lo |= (1 << 17);	/* Bidirectional PROCHOT# */
+
+	msr.lo |= (1 << 10);	/* FERR# multiplexing */
+
+	// TODO: Only if  IA32_PLATFORM_ID[17] = 0 and IA32_PLATFORM_ID[50] = 1
+	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
+
+	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
+	wrmsr(IA32_MISC_ENABLE, msr);
+
+	msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */
+	wrmsr(IA32_MISC_ENABLE, msr);
+}
+
+
 /**
  * Init all the CPUs. 
  * this was unnecessarily tricky in v2 (surprise!)
@@ -559,12 +675,13 @@ static void wait_other_cpus_stop(struct atomic *active_cpus)
  * @param sysinfo The sys_info pointer
  * @returns the BSP APIC ID
  */
-unsigned int init_cpus(unsigned cpu_init_detectedx,
+unsigned int cpu_phase1(unsigned cpu_init_detectedx,
 			struct sys_info *sysinfo)
 {
 	/* Number of cpus that are currently running in coreboot */
 	struct atomic active_cpus;
 	u32 *secondary_base;
+	char processor_name[49];
 
 	/* every AP gets a stack. The stacks are linear and start at 0x100000 */
 	struct spinlock start_cpu_lock;
@@ -579,10 +696,55 @@ unsigned int init_cpus(unsigned cpu_init_detectedx,
 	// why here? In case some day we can start core1 in amd_sibling_init
 	secondary_base = copy_secondary_start_to_1m_below(); 
 
+	/* Turn on caching if we haven't already */
+	enable_cache();
+
+	/* Update the microcode *
+	intel_update_microcode(microcode_updates);
+	 * needs to be rewritten to use LAR, not code include hacks
+	 */
+
+	/* Print processor name */
+	fill_processor_name(processor_name, sizeof(processor_name));
+	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
+
+#ifdef CONFIG_USBDEBUG_DIRECT
+	// Is this caution really needed?
+	if(!ehci_debug_addr) 
+		ehci_debug_addr = get_ehci_debug();
+	set_ehci_debug(0);
+#endif
+
+	/* Setup MTRRs */
+	x86_setup_mtrrs(36);
+	x86_mtrr_check();
+
+#ifdef CONFIG_USBDEBUG_DIRECT
+	set_ehci_debug(ehci_debug_addr);
+#endif
+
+	/* Enable the local cpu apics */
+	/* do we need this in v3? not sure
+	setup_lapic();
+	 */
+
+	/* Enable virtualization */
+	enable_vmx();
+
+	/* Configure C States */
+	configure_c_states();
+
+	/* Configure Enhanced SpeedStep and Thermal Sensors */
+	configure_misc();
+
+	/* TODO: PIC thermal sensor control */
+
+
 #ifdef CONFIG_SMM
 	smm_init();
 #endif
 
+	/* Start up my cpu siblings */
 	if (! SERIAL_CPU_INIT)
 	/* start all aps at first, so we can init ECC all together */
     	    start_other_cpus(get_nodes(), &active_cpus, &start_cpu_lock, &last_cpu_index, secondary_base);

@@ -23,17 +23,16 @@
 STAGE0_MAINBOARD_SRC := $(src)/lib/clog2.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1.c \
 			$(src)/mainboard/$(MAINBOARDDIR)/stage1_debug.c \
+			$(src)/northbridge/intel/i945//reset_test.c \
 
 INITRAM_SRC= $(src)/mainboard/$(MAINBOARDDIR)/initram.c \
-			$(src)/northbridge/intel/i945//reset_test.c \
-			$(src)/arch/x86/intel/core2/init_cpus.c \
 
 INITRAM_OBJ = \
-			$(obj)/arch/x86/secondary.o \
 
-STAGE2_CHIPSET_SRC=
-
-STAGE2_MAINBOARD_SRC = 
+STAGE2_CHIPSET_SRC= \
+			$(src)/northbridge/intel/i945//reset_test.c \
+			$(src)/arch/x86/intel/core2/init_cpus.c \
+			$(src)/arch/x86/secondary.o \
 
 $(obj)/coreboot.vpd:
 	$(Q)printf "  BUILD   DUMMY VPD\n"

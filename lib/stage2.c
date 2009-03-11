@@ -27,6 +27,38 @@
 #include <console.h>
 #include <device/device.h>
 #include <tables.h>
+#include <globalvars.h>
+#include <lib.h>
+
+/**
+ * CPU init code which runs BEFORE any stage2 dev_phase1 is run. 
+ * This code might, for example, init ECC on all cores. 
+ *
+ * @param coldboot Is this a power-on coldboot 
+ * @param sysinfo sysinfo pointer
+ * @returns 0 on success; error number otherwise
+ */
+unsigned int __attribute__((weak)) cpu_phase1(unsigned int coldboot,
+			struct sys_info *sysinfo)
+{
+	printk(BIOS_SPEW, "cpu_phase1: %s: nothing to do.\n", coldboot? "Coldboot" : "Warmboot");
+	return 0;
+}
+
+/**
+ * CPU init code which runs AFTER ALL stage2 dev_phases are run. 
+ * This code might, for example, install an SMI handler
+ *
+ * @param coldboot Is this a power-on coldboot 
+ * @param sysinfo sysinfo pointer
+ * @returns 0 on success; error number otherwise
+ */
+unsigned int __attribute__((weak)) cpu_phase2(unsigned int coldboot,
+			struct sys_info *sysinfo)
+{
+	printk(BIOS_SPEW, "cpu_phase2: %s: nothing to do.\n", coldboot? "Coldboot" : "Warmboot");
+	return 0;
+}
 
 /**
  * Main function of the DRAM part of coreboot.
@@ -44,8 +76,11 @@
 void *stage2(void)
 {
 	void *mbi;
-
+	struct sys_info *sysinfo;
+	struct global_vars *global_vars(void);
 	post_code(POST_STAGE2_BEGIN);
+	sysinfo = &(global_vars()->sys_info);
+	cpu_phase1(is_coldboot(), sysinfo);
 	dev_init();
 
 	/* Phase 1 was console init and making printk work. Both functions are
@@ -84,6 +119,8 @@ void *stage2(void)
 	post_code(POST_STAGE2_PHASE6_START);
 	dev_phase6();
 	show_all_devs(BIOS_DEBUG, "After phase 6.");
+
+	cpu_phase2(is_coldboot(), sysinfo);
 
 	/* Write tables to pass information to the payloads. */
 	post_code(POST_STAGE2_WRITE_TABLES);

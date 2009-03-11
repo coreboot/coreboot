@@ -52,4 +52,10 @@ void beep_long(void);
 /* Optional ramtest. */
 int ram_check(unsigned long start, unsigned long stop);
 
+/* required: a way to tell if this is a:
+ * power-on/reset (coldboot) OR 
+ * coreboot has initiated a reset (warmboot). 
+ */
+int is_coldboot(void);
+
 #endif /* LIB_H */

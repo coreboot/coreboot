@@ -21,6 +21,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
+
+/* POST_ZERO writes a POST_CODE at zero. Note that once we load %ds from %cs, "0" is at the start of this function!
+ * This is debug only; you can't use it on systems with more than one core. It should be left off by default. 
+ */
+#define NO_POST_ZERO
+
+#ifdef NO_POST_ZERO
+#define POST_ZERO(x)
+#else
+#define POST_ZERO(x) movw	x, 0
+#endif
 	.text
 	.globl _secondary_start, _secondary_start_end
 _secondary_start:
@@ -28,58 +39,57 @@ _secondary_start:
 	.code16
 	.balign 4096
 	cli
-	movw	$0xdead, 0
-	movw	$0xbeef, 2
+	POST_ZERO($0xdead)
 	xorl	%eax, %eax
 	movl	%eax, %cr3    /* Invalidate TLB*/
 	/* On hyper threaded cpus, invalidating the cache here is
 	 * very very bad.  Don't.
 	 */
-	movw	$0, 0
+	POST_ZERO($0)
 	movl	$1b, %ebx
-	movw	$1, 0
-	movw	$2, 0
+	POST_ZERO($1)
+	POST_ZERO($2)
 
 	/* setup the data segment */
 	movw	%cs, %ax
 	movw	%ax, 2
-	movw	$3, 0
+	POST_ZERO($3)
 	movw	%ax, %ds
-	movw	$4, 0
+	POST_ZERO($4)
 	/* past this point, "0" means ds:0, i.e. cs:0, or the 
 	 * segment part of the address. 
 	 */
 
 	data32	lgdt	gdtaddr  - _secondary_start
 //	data32 lgdt %cs:gdtptr
-	movw	$5, 0
+	POST_ZERO($5)
 
 	movl	%cr0, %eax
-	movw	$6, 0
+	POST_ZERO($6)
 	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
-	movw	$7, 0
+	POST_ZERO($7)
 	orl	$0x60000001, %eax /* CD, NW, PE = 1 */
-	movw	$8, 0
+	POST_ZERO($8)
 	movl	%eax, %cr0
-	movw	$9, 0
-	hlt
-	/* tested to this point but not past it */
+	POST_ZERO($9)
 
-	/* I am pretty sure this just jumps back into 
-	 * ROM; it's an abs jump
-	 */
-	data32 ljmp	$0x10, $secondary32
-	movw	$0xa, 0
+	/* This jump pops us into 32-bit protected mode */
+	data32 ljmp	$0x8, $secondary32
+	POST_ZERO($0xa)
 1:	
 	.code32
 secondary32:
-	hlt
-	movw	$0x18, %ax
+	POST_ZERO($0x11)
+	movw	$0x10, %ax
 	movw	%ax, %ds
+	/* having a post here for testing is useful. 
+	 *If ds is bad for some reason, we'll reboot */
+	POST_ZERO($0x13)
 	movw	%ax, %es
 	movw	%ax, %ss
 	movw	%ax, %fs
 	movw	%ax, %gs
+	POST_ZERO($0x17)
 
 	/* Load the Interrupt descriptor table */
 	lidt	idtarg
@@ -87,6 +97,8 @@ secondary32:
 	/* Set the stack pointer */
 	movl	-4(%ebx),%esp
 	movl	$0, -4(%ebx)
+	/* tested to this point but not past it */
+	/* AP sees the stack value set to 0 */
 
 	call	secondary_cpu_init
 1:	hlt
@@ -106,14 +118,6 @@ gdtptr:
 	.byte	0x00, 0x9b, 0xcf, 0x00
 
 	/* selgdt 0x10, flat data segment */
-	.word	0xffff, 0x0000
-	.byte	0x00, 0x93, 0xcf, 0x00
-
-	/* selgdt 0x18, flat code segment for CAR */
-	.word	0xffff, 0x0000
-	.byte	0x00, 0x9b, 0xcf, 0x00
-
-	/* selgdt 0x20, flat data segment for CAR */
 	.word	0xffff, 0x0000
 	.byte	0x00, 0x93, 0xcf, 0x00
 gdt_end:

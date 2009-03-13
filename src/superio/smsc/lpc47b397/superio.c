@@ -202,7 +202,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, LPC47B397_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, LPC47B397_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
 	{ &ops_hwm, LPC47B397_HWM,  PNP_IO0, { 0x7f0, 0 }, },
-	{ &ops, LPC47B397_RT,   PNP_IO0 | PNP_IRQ0, { 0x7fc, 0 }, },
+	{ &ops, LPC47B397_RT,   PNP_IO0, { 0x780, 0 }, },
 };
 
 static void enable_dev(struct device *dev)

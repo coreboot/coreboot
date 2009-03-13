@@ -188,7 +188,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "CB-DSDT ", 1)
 					Method (_CRS, 0, NotSerialized)
 					{
 						Name (TMP, ResourceTemplate () {
-							FixedIO (0x0090, 0x02)
+							FixedIO (0x0070, 0x02)
 							IRQNoFlags () {8}
 						})
 						Return (TMP)

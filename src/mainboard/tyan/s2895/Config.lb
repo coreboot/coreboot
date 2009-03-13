@@ -269,7 +269,7 @@ chip northbridge/amd/amdk8/root_complex
 							device pnp 2e.3 on #  Parallel Port
 								io 0x60 = 0x378
 								irq 0x70 = 7
-								drq 0x74 = 3
+								drq 0x74 = 4
 							end
 							device pnp 2e.4 on #  Com1
 								io 0x60 = 0x3f8
@@ -286,7 +286,7 @@ chip northbridge/amd/amdk8/root_complex
 								irq 0x72 = 12
 							end
 							device pnp 2e.8 on # HW Monitor
-								io 0x60 = 0x290
+								io 0x60 = 0x480
 								chip drivers/generic/generic # LM95221 CPU temp
 									device i2c 2b on end
 								end
@@ -295,8 +295,7 @@ chip northbridge/amd/amdk8/root_complex
 								end
 							end
 							device	pnp 2e.a on #  RT
-								io 0x60 = 0x90
-								irq 0x70 = 8
+								io 0x60 = 0x400
 							end
 						end
 					end

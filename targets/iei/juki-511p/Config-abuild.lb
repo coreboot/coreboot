@@ -1,7 +1,9 @@
-# abuild config file for JUKI-511P 
+target VENDOR_MAINBOARD
+mainboard VENDOR/MAINBOARD
 
-target iei_juki-511p
-mainboard iei/juki-511p
+option CC="CROSSCC"
+option CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
 

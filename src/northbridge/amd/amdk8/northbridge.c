@@ -19,8 +19,8 @@
 
 #include <cpu/x86/lapic.h>
 
-#if CONFIG_LOGICAL_CPUS==1
 #include <cpu/amd/dualcore.h>
+#if CONFIG_LOGICAL_CPUS==1
 #include <pc80/mc146818rtc.h>
 #endif
 
@@ -30,9 +30,7 @@
 
 #include "amdk8.h"
 
-#if HW_MEM_HOLE_SIZEK != 0
 #include <cpu/amd/model_fxx_rev.h>
-#endif
 
 #include <cpu/amd/amdk8_sysconf.h>
 

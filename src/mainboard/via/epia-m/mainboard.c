@@ -5,6 +5,7 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include "chip.h"
+#include "vgachip.h"
 
 void vga_enable_console();
 

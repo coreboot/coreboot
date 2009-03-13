@@ -18,8 +18,13 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-target gigabyte_ga_2761gxdk
-mainboard gigabyte/ga_2761gxdk
+
+target VENDOR_MAINBOARD
+mainboard VENDOR/MAINBOARD
+
+option CC="CROSSCC"
+option CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
 

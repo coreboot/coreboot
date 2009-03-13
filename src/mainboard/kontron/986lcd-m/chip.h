@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-struct chip_operations mainboard_ops;
+extern struct chip_operations mainboard_ops;
 struct mainboard_config {
 	int nothing;
 };

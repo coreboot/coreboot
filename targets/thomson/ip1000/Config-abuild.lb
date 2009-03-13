@@ -18,8 +18,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-target thomson_ip1000
-mainboard thomson/ip1000
+target VENDOR_MAINBOARD
+mainboard VENDOR/MAINBOARD
+
+option CC="CROSSCC"
+option CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
+
+__COMPRESSION__
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1

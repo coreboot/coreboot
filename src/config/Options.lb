@@ -146,7 +146,7 @@ define COREBOOT_COMPILER
 	comment "Build compiler"
 end
 define COREBOOT_LINKER
-	default "$(shell  $(CC) -Wl,--version 2>&1 | grep version | tail -n 1)"
+	default "$(shell  $(CC) -Wl,--version 2>&1 | grep \" ld\")"
 	export always
 	format "\"%s\""
 	comment "Build linker"

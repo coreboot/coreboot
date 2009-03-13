@@ -137,5 +137,9 @@ default HOSTCC="gcc"
 ##
 default CONFIG_MAX_PCI_BUSES = 5	 
 
+default  MAXIMUM_CONSOLE_LOGLEVEL=8
+default  DEFAULT_CONSOLE_LOGLEVEL=8
+default  CONFIG_CONSOLE_SERIAL8250=1
+
 end
 

@@ -251,6 +251,9 @@ typedef struct {
 
 
 /* SMI handler function prototypes */
+void io_trap_handler(int smif);
 int southbridge_io_trap_handler(int smif);
 int mainboard_io_trap_handler(int smif);
+
+void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 

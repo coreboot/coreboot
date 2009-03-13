@@ -102,26 +102,26 @@ extern struct device	*all_devices;	/* list of all devices */
 
 
 /* Generic device interface functions */
-extern device_t alloc_dev(struct bus *parent, struct device_path *path);
-extern void dev_enumerate(void);
-extern void dev_configure(void);
-extern void dev_enable(void);
-extern void dev_initialize(void);
-extern void dev_optimize(void);
+device_t alloc_dev(struct bus *parent, struct device_path *path);
+void dev_enumerate(void);
+void dev_configure(void);
+void dev_enable(void);
+void dev_initialize(void);
+void dev_optimize(void);
 
 /* Generic device helper functions */
-extern int reset_bus(struct bus *bus);
-extern unsigned int scan_bus(struct device *bus, unsigned int max);
-extern void compute_allocate_resource(struct bus *bus, struct resource *bridge,
+int reset_bus(struct bus *bus);
+unsigned int scan_bus(struct device *bus, unsigned int max);
+void compute_allocate_resource(struct bus *bus, struct resource *bridge,
 	unsigned long type_mask, unsigned long type);
-extern void assign_resources(struct bus *bus);
-extern void enable_resources(struct device *dev);
-extern void enumerate_static_device(void);
-extern void enumerate_static_devices(void);
-extern const char *dev_path(device_t dev);
+void assign_resources(struct bus *bus);
+void enable_resources(struct device *dev);
+void enumerate_static_device(void);
+void enumerate_static_devices(void);
+const char *dev_path(device_t dev);
 const char *bus_path(struct bus *bus);
-extern void dev_set_enabled(device_t dev, int enable);
-extern void disable_children(struct bus *bus);
+void dev_set_enabled(device_t dev, int enable);
+void disable_children(struct bus *bus);
 
 /* Helper functions */
 device_t find_dev_path(struct bus *parent, struct device_path *path);
@@ -138,12 +138,12 @@ device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 #define DEVICE_IO_ALIGN 16 
 #define DEVICE_MEM_ALIGN 4096
 
-struct device_operations default_dev_ops_root;
-extern void root_dev_read_resources(device_t dev);
-extern void root_dev_set_resources(device_t dev);
-extern unsigned int scan_static_bus(device_t bus, unsigned int max);
-extern void enable_childrens_resources(device_t dev);
-extern void root_dev_enable_resources(device_t dev);
-extern unsigned int root_dev_scan_bus(device_t root, unsigned int max);
-extern void root_dev_init(device_t dev);
+extern struct device_operations default_dev_ops_root;
+void root_dev_read_resources(device_t dev);
+void root_dev_set_resources(device_t dev);
+unsigned int scan_static_bus(device_t bus, unsigned int max);
+void enable_childrens_resources(device_t dev);
+void root_dev_enable_resources(device_t dev);
+unsigned int root_dev_scan_bus(device_t root, unsigned int max);
+void root_dev_init(device_t dev);
 #endif /* DEVICE_H */

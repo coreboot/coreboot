@@ -69,9 +69,13 @@ static void post_code(u8 value) {
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #endif
 
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
+
+#include <console/loglevel.h>
+void die(const char *msg);
+int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+#define printk_emerg(fmt, arg...)   do_printk(BIOS_EMERG   ,fmt, ##arg)
 #include "cpu/x86/bist.h"
 
 

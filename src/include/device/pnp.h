@@ -21,7 +21,7 @@ void pnp_set_resources(device_t dev);
 void pnp_enable_resources(device_t dev);
 void pnp_enable(device_t dev);
 
-struct device_operations pnp_ops;
+extern struct device_operations pnp_ops;
 
 /* PNP helper operations */
 

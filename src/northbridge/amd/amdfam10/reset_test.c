@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <cpu/x86/lapic.h>
+#include "amdfam10.h"
 
 #define NODE_ID		0x60
 #define HT_INIT_CONTROL	0x6c

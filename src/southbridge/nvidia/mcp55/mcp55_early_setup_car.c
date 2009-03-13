@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, unsigned val);
+
 static int set_ht_link_mcp55(uint8_t ht_c_num)
 {
 	unsigned vendorid = 0x10de;

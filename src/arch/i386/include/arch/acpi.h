@@ -5,9 +5,7 @@
  * (C) 2004 SUSE LINUX AG
  *
  * The ACPI table structs are based on the Linux kernel sources.
- * 
- */
-/* ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
+ * ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
  * those parts (C) 2004 Nick Barker
  */
 
@@ -330,6 +328,8 @@ void acpi_create_facs(acpi_facs_t *facs);
 
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
+
+unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current);
 
 #define ACPI_WRITE_MADT_IOAPIC(dev,id)        		\
 do {                                                    \

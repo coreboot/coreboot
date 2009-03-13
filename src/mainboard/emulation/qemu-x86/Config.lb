@@ -39,7 +39,6 @@ arch i386 end
 ##
 
 driver mainboard.o
-object vgabios.o
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 

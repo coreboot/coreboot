@@ -35,6 +35,8 @@ uses CROSS_COMPILE
 uses CC
 uses HOSTCC
 uses OBJCOPY
+uses CONFIG_PCI_ROM_RUN
+uses CONFIG_PCI_OPTION_ROM_RUN_VM86
 
 uses CONFIG_CONSOLE_SERIAL8250
 
@@ -78,6 +80,12 @@ default IRQ_SLOT_COUNT=6
 ##
 default HAVE_OPTION_TABLE=1
 
+##
+## Option ROM init
+##
+default CONFIG_PCI_ROM_RUN=1
+default CONFIG_PCI_OPTION_ROM_RUN_VM86=1
+
 ###
 ### coreboot layout values
 ###
@@ -113,5 +121,3 @@ default CC="$(CROSS_COMPILE)gcc -m32"
 default HOSTCC="gcc"
 
 end
-
-

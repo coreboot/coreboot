@@ -3,21 +3,24 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <pc80/keyboard.h>
 #include <arch/io.h>
 #include "chip.h"
 
-void vga_enable_console();
-
 static void vga_init(device_t dev)
 {
-	/* code to make vga init run in real mode - does work but against the current coreboot philosophy */
-	printk_debug("INSTALL REAL-MODE IDT\n");
-        setup_realmode_idt();
-        printk_debug("DO THE VGA BIOS\n");
-        do_vgabios();
+	/* The VGA OPROM already lives at 0xc0000,
+	 * force coreboot to use it.
+	 */
+	dev->on_mainboard = 1;
+	dev->rom_address = 0xc0000;
 
-	vga_enable_console();
+	/* Now do the usual initialization */
+	pci_dev_init(dev);
 
+	/* This sneaked in here, because Qemu does not
+	 * emulate a SuperIO chip
+	 */
 	init_pc_keyboard(0x60, 0x64, 0);
 }
 

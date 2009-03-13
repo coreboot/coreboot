@@ -234,6 +234,9 @@ function create_builddir
 	if [ $? -eq 0 ]; then
 		printf "ok\n"
 		xml "  <builddir>ok</builddir>"
+		xml "  <log>"
+		xmlfile $build_dir/config.log
+		xml "  </log>"
 		xml ""
 		return 0
 	else
@@ -276,6 +279,9 @@ function compile_target
 	if [ $ret -eq 0 ]; then
 		xml "  <compile>ok</compile>"
 		xml "  <compiletime>${duration}s</compiletime>"
+		xml "  <log>"
+		xmlfile make.log
+		xml "  </log>"
 		printf "ok\n" > compile.status
 		printf "ok. (took ${duration}s)\n"
 		cd $CURR

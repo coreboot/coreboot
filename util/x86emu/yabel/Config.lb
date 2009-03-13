@@ -5,5 +5,5 @@ object interrupt.o
 object io.o
 object mem.o
 object pmm.o
-object vbe.o
+#object vbe.o
 dir compat

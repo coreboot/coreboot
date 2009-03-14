@@ -1087,6 +1087,12 @@ define CONFIG_PCI_OPTION_ROM_RUN_YABEL
 	comment "Use Yabel instead of old bios emulator"
 end
 
+define CONFIG_YABEL_DEBUG_FLAGS
+	default 0
+	export used
+	comment "YABEL debug flags, for possible values, see util/x86emu/yabel/debug.h"
+end
+
 define CONFIG_PCI_OPTION_ROM_RUN_VM86
 	default 0
 	export used

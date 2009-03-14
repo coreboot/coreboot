@@ -105,6 +105,12 @@ menu "Advanced YABEL Settings"
 		  If YABEL_ADVANCED_SETTINGS is not enabled, the code defaults 
 		  to 0x1000000 (16 MB).
 
+	config YABEL_DEBUG_FLAGS
+		hex "YABEL Debug Flags"
+		default 0
+		help
+		  Set YABEL debug flags, for possible values, see util/x86emu/yabel/debug.h
+
 endmenu
 
 # TODO: This should probably become a CMOS option.

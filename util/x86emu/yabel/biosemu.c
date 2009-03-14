@@ -67,9 +67,12 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	u8 *rom_image;
 	int i = 0;
 #ifdef DEBUG
-	debug_flags = DEBUG_PRINT_INT10 | DEBUG_PNP | DEBUG_PMM | DEBUG_INTR;
+	debug_flags = 0;//DEBUG_PRINT_INT10 | DEBUG_PNP | DEBUG_INTR | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;
 		// | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;
 		// | DEBUG_TRACE_X86EMU | DEBUG_JMP;
+
+	/* use CONFIG_YABEL_DEBUG_FLAGS, too... */
+	debug_flags |= CONFIG_YABEL_DEBUG_FLAGS;
 #endif
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",

@@ -518,54 +518,61 @@ handleInterrupt(int intNum)
 	// so we only enable it, if int10 print is disabled
 	DEBUG_PRINTF_INTR("%s(%x)\n", __func__, intNum);
 #endif
-	switch (intNum) {
-	case 0x10:		//BIOS video interrupt
-	case 0x42:		// INT 10h relocated by EGA/VGA BIOS
-	case 0x6d:		// INT 10h relocated by VGA BIOS
-		// get interrupt vector from IDT (4 bytes per Interrupt starting at address 0
-		if ((my_rdl(intNum * 4) == 0xF000F065) ||	//F000:F065 is default BIOS interrupt handler address
-		    (my_rdl(intNum * 4) == 0xF4F4F4F4))	//invalid
-		{
+
+	/* check wether this interrupt has a function pointer set in yabel_intFuncArray and run that */
+	if (yabel_intFuncArray[intNum]) {
+		DEBUG_PRINTF_INTR("%s(%x) intHandler overridden, calling it...\n", __func__, intNum);
+		int_handled = (*yabel_intFuncArray[intNum])();
+	} else {
+		switch (intNum) {
+		case 0x10:		//BIOS video interrupt
+		case 0x42:		// INT 10h relocated by EGA/VGA BIOS
+		case 0x6d:		// INT 10h relocated by VGA BIOS
+			// get interrupt vector from IDT (4 bytes per Interrupt starting at address 0
+			if ((my_rdl(intNum * 4) == 0xF000F065) ||	//F000:F065 is default BIOS interrupt handler address
+			    (my_rdl(intNum * 4) == 0xF4F4F4F4))	//invalid
+			{
 #if 0
-			// ignore interrupt...
-			DEBUG_PRINTF_INTR
-			    ("%s(%x): invalid interrupt Vector (%08x) found, interrupt ignored...\n",
-			     __func__, intNum, my_rdl(intNum * 4));
+				// ignore interrupt...
+				DEBUG_PRINTF_INTR
+				    ("%s(%x): invalid interrupt Vector (%08x) found, interrupt ignored...\n",
+				     __func__, intNum, my_rdl(intNum * 4));
+				DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
+						  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
+						  M.x86.R_DX);
+				//HALT_SYS();
+#endif
+				handleInt10();
+				int_handled = 1;
+			}
+			break;
+		case 0x16:
+			// Keyboard BIOS Interrupt
+			handleInt16();
+			int_handled = 1;
+			break;
+		case 0x1a:
+			// PCI BIOS Interrupt
+			handleInt1a();
+			int_handled = 1;
+			break;
+		case PMM_INT_NUM:
+			/* the selfdefined PMM INT number, this is called by the code in PMM struct, it 
+			 * is handled by pmm_handleInt()
+			 */
+			pmm_handleInt();
+			int_handled = 1;
+			break;
+		default:
+			printf("Interrupt %#x (Vector: %x) not implemented\n", intNum,
+			       my_rdl(intNum * 4));
 			DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 					  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 					  M.x86.R_DX);
-			//HALT_SYS();
-#endif
-			handleInt10();
 			int_handled = 1;
+			HALT_SYS();
+			break;
 		}
-		break;
-	case 0x16:
-		// Keyboard BIOS Interrupt
-		handleInt16();
-		int_handled = 1;
-		break;
-	case 0x1a:
-		// PCI BIOS Interrupt
-		handleInt1a();
-		int_handled = 1;
-		break;
-	case PMM_INT_NUM:
-		/* the selfdefined PMM INT number, this is called by the code in PMM struct, it 
-		 * is handled by pmm_handleInt()
-		 */
-		pmm_handleInt();
-		int_handled = 1;
-		break;
-	default:
-		printf("Interrupt %#x (Vector: %x) not implemented\n", intNum,
-		       my_rdl(intNum * 4));
-		DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
-				  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
-				  M.x86.R_DX);
-		int_handled = 1;
-		HALT_SYS();
-		break;
 	}
 	// if we did not handle the interrupt, jump to the interrupt vector...
 	if (!int_handled) {

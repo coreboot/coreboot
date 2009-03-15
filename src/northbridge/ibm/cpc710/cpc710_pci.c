@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include <arch/io.h>
+#include <arch/pciconf.h>
+#include <delay.h>
 #include "cpc710.h"
 #include "cpc710_pci.h"
 

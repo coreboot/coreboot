@@ -389,10 +389,12 @@ typedef Elf64_Ehdr Elf_ehdr;
 typedef Elf64_Phdr Elf_phdr;
 #endif
 
-extern int elf_check_arch(Elf_ehdr *ehdr);
-extern void jmp_to_elf_entry(void *entry, unsigned long buffer);
+int elf_check_arch(Elf_ehdr *ehdr);
+void jmp_to_elf_entry(void *entry, unsigned long buffer);
 struct lb_memory;
-extern int elfboot(struct lb_memory *mem);
+int elfboot(struct lb_memory *mem);
+/* Temporary compile fix, FILO should be dropped from coreboot */
+int filo(struct lb_memory *mem);
 
 #define FIRMWARE_TYPE "coreboot"
 #define BOOTLOADER "elfboot"

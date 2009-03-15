@@ -28,6 +28,7 @@
 #include <ppc.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <uart8250.h>
 
 void
 board_init(void)

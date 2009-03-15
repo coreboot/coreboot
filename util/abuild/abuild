@@ -394,7 +394,7 @@ function build_target
 		
 			return 0
 		else
-			printf " ($TARCH: ok, we're $ARCH)\n"
+			printf " ($TARCH: ok, we're $ARCH with a ${CROSS_COMPILE} cross compiler)\n"
 			xml "  <compiler>"
 			xml "    <path>`which ${CROSS_COMPILE}gcc`</path>"
 			xml "    <version>`${CROSS_COMPILE}gcc --version | head -1`</version>"
@@ -402,6 +402,8 @@ function build_target
 			xml ""
 		fi
 	fi
+
+	CC=${CROSS_COMPILE}$CC
 
 	if  [ "$stackprotect" = "true" ]; then
 		CC="$CC -fno-stack-protector"

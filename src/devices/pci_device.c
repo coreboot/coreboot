@@ -43,7 +43,7 @@
 #if CONFIG_PCIEXP_PLUGIN_SUPPORT == 1
 #include <device/pciexp.h>
 #endif
-#if CONFGI_AGP_PLUGIN_SUPPORT == 1
+#if CONFIG_AGP_PLUGIN_SUPPORT == 1
 #include <device/agp.h>
 #endif
 #if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1

@@ -4989,7 +4989,9 @@ void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
     int mod, rh, rl;
     uint destoffset = 0;
 	u16 *destreg;
+	u32 *destreg32;
 	u16 destval,destval2;
+	u32 destval32;
 
     /* Yet another special case instruction. */
     START_OF_INSTR();
@@ -5044,15 +5046,11 @@ void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
         switch (rh) {
         case 0:         /* inc word ptr ... */
             if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                u32 destval;
-
-                destval = fetch_data_long(destoffset);
+                destval32 = fetch_data_long(destoffset);
                 TRACE_AND_STEP();
-                destval = inc_long(destval);
-                store_data_long(destoffset, destval);
+                destval32 = inc_long(destval32);
+                store_data_long(destoffset, destval32);
             } else {
-                u16 destval;
-
                 destval = fetch_data_word(destoffset);
                 TRACE_AND_STEP();
                 destval = inc_word(destval);
@@ -5061,15 +5059,11 @@ void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
             break;
         case 1:         /* dec word ptr ... */
             if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                u32 destval;
-
-                destval = fetch_data_long(destoffset);
+                destval32 = fetch_data_long(destoffset);
                 TRACE_AND_STEP();
-                destval = dec_long(destval);
-                store_data_long(destoffset, destval);
+                destval32 = dec_long(destval32);
+                store_data_long(destoffset, destval32);
             } else {
-                u16 destval;
-
                 destval = fetch_data_word(destoffset);
                 TRACE_AND_STEP();
                 destval = dec_word(destval);
@@ -5107,14 +5101,10 @@ void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
             break;
         case 6:         /*  push word ptr ... */
             if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                u32 destval;
-
-                destval = fetch_data_long(destoffset);
+                destval32 = fetch_data_long(destoffset);
                 TRACE_AND_STEP();
-                push_long(destval);
+                push_long(destval32);
             } else {
-                u16 destval;
-
                 destval = fetch_data_word(destoffset);
                 TRACE_AND_STEP();
                 push_word(destval);
@@ -5125,15 +5115,11 @@ void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
         switch (rh) {
         case 0:
             if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                u32 *destreg;
-
-                destreg = DECODE_RM_LONG_REGISTER(rl);
+                destreg32 = DECODE_RM_LONG_REGISTER(rl);
                 DECODE_PRINTF("\n");
                 TRACE_AND_STEP();
-                *destreg = inc_long(*destreg);
+                *destreg32 = inc_long(*destreg32);
             } else {
-                u16 *destreg;
-
                 destreg = DECODE_RM_WORD_REGISTER(rl);
                 DECODE_PRINTF("\n");
                 TRACE_AND_STEP();
@@ -5142,15 +5128,11 @@ void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
             break;
         case 1:
             if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                u32 *destreg;
-
-                destreg = DECODE_RM_LONG_REGISTER(rl);
+                destreg32 = DECODE_RM_LONG_REGISTER(rl);
                 DECODE_PRINTF("\n");
                 TRACE_AND_STEP();
-                *destreg = dec_long(*destreg);
+                *destreg32 = dec_long(*destreg32);
             } else {
-                u16 *destreg;
-
                 destreg = DECODE_RM_WORD_REGISTER(rl);
                 DECODE_PRINTF("\n");
                 TRACE_AND_STEP();
@@ -5183,15 +5165,11 @@ void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
             break;
         case 6:
             if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                u32 *destreg;
-
-                destreg = DECODE_RM_LONG_REGISTER(rl);
+                destreg32 = DECODE_RM_LONG_REGISTER(rl);
                 DECODE_PRINTF("\n");
                 TRACE_AND_STEP();
-                push_long(*destreg);
+                push_long(*destreg32);
             } else {
-                u16 *destreg;
-
                 destreg = DECODE_RM_WORD_REGISTER(rl);
                 DECODE_PRINTF("\n");
                 TRACE_AND_STEP();

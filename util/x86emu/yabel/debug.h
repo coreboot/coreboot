@@ -35,6 +35,28 @@ extern void x86emu_dump_xregs(void);
 static inline void clr_ci(void) {};
 static inline void set_ci(void) {};
 
+/* Set CONFIG_YABEL_DEBUG_FLAGS is a binary switch that allows you
+ * to select the following items to debug. 1=on 0=off. After you
+ * decide what you want to debug create the binary value, convert to hex
+ * and set the Option (Ex. CONFIG_YABEL_DEBUG_FLAGS = 0x31FF //Debug All).
+ *
+ * |-DEBUG_JMP - print info about JMP and RETF opcodes from x86emu
+ * ||-DEBUG_TRACE_X86EMU - print _all_ opcodes that are executed by x86emu (WARNING: this will produce a LOT of output)
+ * |||-Currently unused
+ * ||||-Currently unused
+ * |||||-Currently unused
+ * ||||||-DEBUG_PNP - Print Plug And Play access made by option rom 
+ * |||||||-DEBUG_DISK - Print Disk I/O related messages, currently unused
+ * ||||||||-DEBUG_PMM - Print messages related to POST Memory Manager (PMM)
+ * |||||||||-DEBUG_VBE - Print messages related to VESA BIOS Extension (VBE) functions
+ * ||||||||||-DEBUG_PRINT_INT10 - let INT10 (i.e. character output) calls print messages to Debug output
+ * |||||||||||-DEBUG_INTR - Print messages related to interrupt handling
+ * ||||||||||||-DEBUG_CHECK_VMEM_ACCESS - Print messages related to accesse to certain areas of the virtual Memory (e.g. BDA (BIOS Data Area) or Interrupt Vectors)
+ * |||||||||||||-DEBUG_MEM - Print memory access made by option rom (NOTE: this also includes accesses to fetch instructions)
+ * ||||||||||||||-DEBUG_IO - Print I/O access made by option rom 
+ * 11000111111111 - Max Binary Value, Debug All (WARNING: - This could run for hours)
+ */
+
 #define DEBUG_IO 0x1
 #define DEBUG_MEM 0x2
 // set this to print messages for certain virtual memory accesses (Interrupt Vectors, ...)

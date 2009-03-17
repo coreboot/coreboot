@@ -128,6 +128,14 @@ struct cb_console {
 #define CB_TAG_CONSOLE_SROM       4
 #define CB_TAG_CONSOLE_EHCI       5
 
+#define CB_TAG_FORWARD       0x00011
+
+struct cb_forward {
+	u32 tag;
+	u32 size;
+	u64 forward;
+};
+
 #define CB_TAG_CMOS_OPTION_TABLE 0x00c8
 struct cb_cmos_option_table {
 	u32 tag;

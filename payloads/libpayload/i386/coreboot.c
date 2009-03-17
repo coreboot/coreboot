@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2009 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -125,6 +126,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 		/* We only care about a few tags here (maybe more later). */
 		switch (rec->tag) {
+		case CB_TAG_FORWARD:
+			return cb_parse_header((void *)(unsigned long)((struct cb_forward *)rec)->forward, len, info);
+			continue;
 		case CB_TAG_MEMORY:
 			cb_parse_memory(ptr, info);
 			break;

@@ -155,6 +155,13 @@ struct lb_console {
 	uint16_t type;
 };
 
+#define LB_TAG_FORWARD		0x0011
+struct lb_forward {
+	uint32_t tag;
+	uint32_t size;
+	uint64_t forward;
+};
+
 #define LB_TAG_CONSOLE_SERIAL8250	0
 #define LB_TAG_CONSOLE_VGA		1
 #define LB_TAG_CONSOLE_BTEXT		2

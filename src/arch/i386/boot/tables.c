@@ -75,7 +75,7 @@ struct lb_memory *write_tables(void)
 	unsigned long high_table_start, high_table_end=0;
 
 	if (high_tables_base) {
-		printk_debug("High Tables Base is %lx.\n", high_tables_base);
+		printk_debug("High Tables Base is %llx.\n", high_tables_base);
 		high_table_start = high_tables_base;
 		high_table_end = high_tables_base;
 	} else {
@@ -189,26 +189,19 @@ struct lb_memory *write_tables(void)
 				rom_table_start, rom_table_end);
 #endif
 
+#if HAVE_HIGH_TABLES == 1
+	if (high_tables_base) {
+		write_coreboot_table(low_table_start, low_table_end,
+				high_table_start, high_table_end);
+	} else {
+		printk_err("ERROR: No high_tables_base.\n");
+		write_coreboot_table(low_table_start, low_table_end,
+			      rom_table_start, rom_table_end);
+	}
+#else
 	/* The coreboot table must be in 0-4K or 960K-1M */
 	write_coreboot_table(low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);
-
-#if 0 && HAVE_HIGH_TABLES == 1
-	/* This is currently broken and should be severely refactored. Ideally
-	 * we only have a pointer to the coreboot table in the low memory, so
-	 * anyone can find the real position.
-	 * write_coreboot_table does a lot more than just writing the coreboot
-	 * table. It magically decides where the table should go, and therefore
-	 * it consumes two base addresses. If we call write_coreboot_table like
-	 * below, we get weird effects.
-	 */
-	/* And we want another copy in high area because the low area might be
-	 * corrupted
-	 */
-	if (high_tables_base) {
-		write_coreboot_table(high_table_start, high_table_end,
-				      high_table_start, high_table_end);
-	}
 #endif
  
 	return get_lb_mem();

@@ -196,6 +196,18 @@ void lb_strings(struct lb_header *header)
 
 }
 
+struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
+{
+	struct lb_record *rec;
+	struct lb_forward *forward;
+	rec = lb_new_record(header);
+	forward = (struct lb_forward *)rec;
+	forward->tag = LB_TAG_FORWARD;
+	forward->size = sizeof(*forward);
+	forward->forward = (uint64_t) next_header;
+	return forward;
+}
+
 void lb_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
@@ -239,14 +251,17 @@ static void lb_reserve_table_memory(struct lb_header *head)
 	}
 }
 
-unsigned long lb_table_fini(struct lb_header *head)
+static unsigned long lb_table_fini(struct lb_header *head, int fixup)
 {
 	struct lb_record *rec, *first_rec;
 	rec = lb_last_record(head);
 	if (head->table_entries) {
 		head->table_bytes += rec->size;
 	}
-	lb_reserve_table_memory(head);
+
+	if (fixup)
+		lb_reserve_table_memory(head);
+
 	first_rec = lb_first_record(head);
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
 	head->header_checksum = 0;
@@ -406,6 +421,22 @@ unsigned long write_coreboot_table(
 	struct lb_header *head;
 	struct lb_memory *mem;
 
+#if HAVE_HIGH_TABLES == 1
+	printk_debug("Writing high table forward entry at 0x%08lx\n",
+			low_table_end);
+	head = lb_table_init(low_table_end);
+	lb_forward(head, rom_table_end);
+	lb_table_fini(head, 0);
+
+	low_table_end = (unsigned long)head;
+	printk_debug("New low_table_end: 0x%08lx\n", low_table_end);
+	printk_debug("Now going to write high coreboot table at 0x%08lx\n",
+			rom_table_end);
+	
+	head = lb_table_init(rom_table_end);
+	rom_table_end = (unsigned long)head;
+	printk_debug("rom_table_end = 0x%08lx\n", rom_table_end);
+#else
 	if(low_table_end > (0x1000 - sizeof(struct lb_header))) { /* after 4K */
 		/* We need to put lbtable on  to [0xf0000,0x100000) */
 		head = lb_table_init(rom_table_end);
@@ -414,6 +445,7 @@ unsigned long write_coreboot_table(
 		head = lb_table_init(low_table_end);
 		low_table_end = (unsigned long)head;
 	}
+#endif
  
 	printk_debug("Adjust low_table_end from 0x%08lx to ", low_table_end);
 	low_table_end += 0xfff; // 4K aligned
@@ -469,6 +501,6 @@ unsigned long write_coreboot_table(
 	lb_strings(head);
 
 	/* Remember where my valid memory ranges are */
-	return lb_table_fini(head);
+	return lb_table_fini(head, 1);
 	
 }

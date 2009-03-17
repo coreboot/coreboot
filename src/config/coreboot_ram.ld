@@ -75,6 +75,17 @@ SECTIONS
 		*(.data)
 		_edata = .;
 	}
+
+	.sdata : {
+		_SDA_BASE_ = .;
+		*(.sdata)
+	}
+
+	.sdata2 : {
+		_SDA2_BASE_ = .;
+		*(.sdata2)
+	}
+
 	/*
 	 * bss does not contain data, it is just a space that should be zero
 	 * initialized on startup. (typically uninitialized global variables)

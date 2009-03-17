@@ -79,6 +79,18 @@ SECTIONS
 		_eram = . ;
 	}
 
+	.sdata : {
+		_SDA_BASE_ = .;
+		*(.sdata)
+	}
+
+	.sdata2 : {
+		_SDA2_BASE_ = .;
+		*(.sdata2)
+	}
+
+
+
 	/*
 	 * Absolute location of where coreboot will be relocated in RAM.
 	 */

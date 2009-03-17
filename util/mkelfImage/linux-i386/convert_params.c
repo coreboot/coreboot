@@ -978,6 +978,13 @@ static int find_lb_table(struct param_info *info)
 		head = __find_lb_table((void *)0xf0000, (void *)0x100000);
 	}
 	if (head) {
+		struct lb_forward *forward = (struct lb_forward *)(((char *)head) + head->header_bytes);
+		if (forward->tag == LB_TAG_FORWARD) {
+			head = __find_lb_table(forward->forward,
+					forward->forward + 0x1000);
+		}
+	}
+	if (head) {
 		info->has_linuxbios = 1;
 		info->lb_table = head;
 		return 1;

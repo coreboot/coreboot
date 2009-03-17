@@ -149,6 +149,8 @@ static const char nofound_msg_option_checksum[] =
 "%s: Item %s not found in coreboot table. Apparently, you are "
 "using coreboot v1.\n";
 
+int fd;
+
 /* This is the number of items from the coreboot table that may be displayed
  * using the -l option.
  */
@@ -240,6 +242,7 @@ static const size_t BYTES_TO_MAP = (1024 * 1024);
  * /dev/mem.
  */
 static const void *low_phys_mem;
+static unsigned long low_phys_base = 0;
 
 /* Pointer to coreboot table. */
 static const struct lb_header *lbtable = NULL;
@@ -261,7 +264,7 @@ static const hexdump_format_t format =
  * /dev/mem.  This macro converts 'vaddr' to a physical address.
  ****************************************************************************/
 #define vtophys(vaddr) (((unsigned long) vaddr) -       \
-                        ((unsigned long) low_phys_mem))
+                        ((unsigned long) low_phys_mem) + low_phys_base)
 
 /****************************************************************************
  * phystov
@@ -272,7 +275,7 @@ static const hexdump_format_t format =
  * by calling mmap() on /dev/mem.
  ****************************************************************************/
 #define phystov(paddr) (((unsigned long) low_phys_mem) + \
-                        ((unsigned long) paddr))
+                        ((unsigned long) paddr) - low_phys_base)
 
 /****************************************************************************
  * get_lbtable
@@ -280,7 +283,7 @@ static const hexdump_format_t format =
  * Find the coreboot table and set global variable lbtable to point to it.
  ****************************************************************************/
 void get_lbtable (void)
- { int fd, i, bad_header_count, bad_table_count, bad_headers, bad_tables;
+ { int i, bad_header_count, bad_table_count, bad_headers, bad_tables;
 
    if (lbtable != NULL)
       return;
@@ -494,6 +497,7 @@ static const struct lb_header * lbtable_scan (unsigned long start,
                                               int *bad_table_count)
  { static const char signature[] = { 'L', 'B', 'I', 'O' };
    const struct lb_header *table;
+   const struct lb_forward *forward;
    const uint32_t *p;
    uint32_t sig;
 
@@ -534,6 +538,25 @@ static const struct lb_header * lbtable_scan (unsigned long start,
        }
 
       /* checksums are ok: we found it! */
+      /* But it may just be a forwarding table, so look if there's a forwarder */
+      lbtable = table;
+      forward = (struct lb_forward *)find_lbrec(LB_TAG_FORWARD);
+      lbtable = NULL;
+
+      if (forward) {
+        uint64_t new_phys = forward->forward;
+
+	new_phys &= ~(getpagesize()-1);
+	
+        munmap((void *)low_phys_mem, BYTES_TO_MAP);
+        if ((low_phys_mem = mmap(NULL, BYTES_TO_MAP, PROT_READ, MAP_SHARED, fd, (off_t)new_phys)) == MAP_FAILED)
+        { fprintf(stderr, "%s: Failed to mmap /dev/mem: %s\n", prog_name,
+              strerror(errno));
+          exit(1);
+        }
+	low_phys_base = new_phys;
+	table = lbtable_scan(phystov(low_phys_base), phystov(low_phys_base + BYTES_TO_MAP), bad_header_count, bad_table_count);
+      }
       return table;
     }
 
@@ -864,6 +887,15 @@ static const char * lbrec_tag_to_str (uint32_t tag)
 
       case LB_TAG_ASSEMBLER:
          return "ASSEMBLER";
+
+      case LB_TAG_SERIAL:
+         return "SERIAL";
+
+      case LB_TAG_CONSOLE:
+	 return "CONSOLE";
+
+      case LB_TAG_FORWARD:
+	 return "FORWARD";
 
       case LB_TAG_CMOS_OPTION_TABLE:
          return "CMOS_OPTION_TABLE";

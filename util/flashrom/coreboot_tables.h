@@ -135,6 +135,13 @@ struct lb_string {
 	uint8_t string[0];
 };
 
+#define LB_TAG_FORWARD		0x0011
+struct lb_forward {
+	uint32_t tag;
+	uint32_t size;
+	uint64_t forward;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

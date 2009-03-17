@@ -21,7 +21,7 @@
 DefinitionBlock (
 	"DSDT.AML",           /* Output filename */
 	"DSDT",                 /* Signature */
-	0x01,               	 /* DSDT Revision */
+	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
 	"AMD   ",               /* OEMID */
 	"DBM690T ",          /* TABLE ID */
 	0x00010001	/* OEM Revision */
@@ -32,7 +32,6 @@ DefinitionBlock (
 	/* Data to be patched by the BIOS during POST */
 	/* FIXME the patching is not done yet! */
 	/* Memory related values */
-	Name(TOM2, 0x0)	/* Top of RAM memory above 4GB (>> 16) */
 	Name(LOMH, 0x0)	/* Start of unused memory in C0000-E0000 range */
 	Name(PBAD, 0x0)	/* Address of BIOS area (If TOM2 != 0, Addr >> 16) */
 	Name(PBLN, 0x0)	/* Length of BIOS area */
@@ -1130,6 +1129,7 @@ DefinitionBlock (
 		/* Note: Only need HID on Primary Bus */
 		Device(PCI0) {
 			External (TOM1)
+			External (TOM2)
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 			Method(_BBN, 0) { /* Bus number = 0 */
@@ -1476,7 +1476,7 @@ DefinitionBlock (
 					0x0000,			/* range minimum */
 					0x0CF7,			/* range maximum */
 					0x0000,			/* translation */
-					0x0CF8			/* Resource source index */
+					0x0CF8			/* length */
 				)
 
 				WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,

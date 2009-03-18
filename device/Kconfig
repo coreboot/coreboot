@@ -111,6 +111,14 @@ menu "Advanced YABEL Settings"
 		help
 		  Set YABEL debug flags, for possible values, see util/x86emu/yabel/debug.h
 
+	config YABEL_PCI_ACCESS_OTHER_DEVICES
+		bool "Allow PCI Config Access to other devices"
+		default n
+		help
+		  Allow Option ROMs executed by YABEL to access the config
+		  space of devices other than the one YABEL is running for.
+		  This may be needed by some onboard Graphics cards ROMs.
+
 endmenu
 
 # TODO: This should probably become a CMOS option.

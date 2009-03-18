@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.opensource.org/licenses/bsd-license.php
  *
- * Copyright 2008 Pattrick Hueper <phueper@hueper.net>
+ * Copyright (c) 2008 Pattrick Hueper <phueper@hueper.net>
  ****************************************************************************/
 
 /* this file contains functions provided by SLOF, that the current biosemu implementation needs

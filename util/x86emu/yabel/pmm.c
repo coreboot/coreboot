@@ -6,7 +6,7 @@
  * which accompanies this distribution, and is available at
  * http://www.opensource.org/licenses/bsd-license.php
  *
- * Copyright 2008 Pattrick Hueper <phueper@hueper.net>
+ * Copyright (c) 2008 Pattrick Hueper <phueper@hueper.net>
  ****************************************************************************/
 
 #include <x86emu/x86emu.h>

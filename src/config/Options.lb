@@ -1093,6 +1093,13 @@ define CONFIG_YABEL_DEBUG_FLAGS
 	comment "YABEL debug flags, for possible values, see util/x86emu/yabel/debug.h"
 end
 
+define CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES
+	default 0
+	export used
+	comment "Allow Option ROMs executed by YABEL to access the config space of devices other than the one YABEL is running for. This may be needed by some onboard Graphics cards ROMs."
+
+end
+
 define CONFIG_PCI_OPTION_ROM_RUN_VM86
 	default 0
 	export used

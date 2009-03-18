@@ -349,6 +349,7 @@ u32
 pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 {
 	u32 rval = 0xFFFFFFFF;
+	struct device * dev;
 	if ((addr >= 0xCFC) && ((addr + size) <= 0xD00)) {
 		// PCI Configuration Mechanism 1 step 1
 		// write to 0xCF8, sets bus, device, function and Config Space offset
@@ -361,29 +362,38 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 			devfn = (port_cf8_val & 0x0000FF00) >> 8;
 			offs = (port_cf8_val & 0x000000FF);
 			offs += (addr - 0xCFC);	// if addr is not 0xcfc, the offset is moved accordingly
-			if ((bus != bios_device.bus)
-			    || (devfn != bios_device.devfn)) {
-				// fail accesses to any device but ours...
-				printf
-				    ("Config read access invalid! PCI device %x:%x.%x, offs: %x\n",
-				     bus, devfn >> 3, devfn & 7, offs);
-#ifdef CONFIG_YABEL_NO_ILLEGAL_ACCESS
-				HALT_SYS();
-			} else {
+			DEBUG_PRINTF_INTR("%s(): PCI Config Read from device: bus: %02x, devfn: %02x, offset: %02x\n",
+				__func__, bus, devfn, offs);
+#if defined(CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES) && CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES==1
+			dev = dev_find_slot(bus, devfn);
+			DEBUG_PRINTF_INTR("%s(): dev_find_slot() returned: %s\n",
+				__func__, dev_path(dev));
+			if (dev == 0) {
+				// fail accesses to non-existent devices...
 #else
-			}
-			{
+			dev = bios_device.dev;
+			if ((bus != bios_device.bus)
+			     || (devfn != bios_device.devfn)) {
+				// fail accesses to any device but ours...
 #endif
+				printf
+				    ("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
+				     __func__, bus, bios_device.bus, devfn,
+				     bios_device.devfn, offs);
+				SET_FLAG(F_CF);
+				HALT_SYS();
+				return 0;
+			} else {
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 				switch (size) {
 					case 1:
-						rval = pci_read_config8(bios_device.dev, offs);
+						rval = pci_read_config8(dev, offs);
 						break;
 					case 2:
-						rval = pci_read_config16(bios_device.dev, offs);
+						rval = pci_read_config16(dev, offs);
 						break;
 					case 4:
-						rval = pci_read_config32(bios_device.dev, offs);
+						rval = pci_read_config32(dev, offs);
 						break;
 				}
 #else

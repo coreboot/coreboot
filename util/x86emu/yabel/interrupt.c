@@ -330,6 +330,7 @@ handleInt1a(void)
 {
 	// function number in AX
 	u8 bus, devfn, offs;
+	struct device* dev;
 	switch (M.x86.R_AX) {
 	case 0xb101:
 		// Installation check
@@ -341,30 +342,46 @@ handleInt1a(void)
 		break;
 	case 0xb102:
 		// Find PCI Device
-		// NOTE: we currently only allow the device to find itself...
-		// it SHOULD be all we ever need...
 		// device_id in CX, vendor_id in DX
 		// device index in SI (i.e. if multiple devices with same vendor/device id
 		// are connected). We currently only support device index 0
+		//
 		DEBUG_PRINTF_INTR("%s(): function: %x: PCI Find Device\n",
 				  __func__, M.x86.R_AX);
-		if ((M.x86.R_CX == bios_device.pci_device_id)
-		    && (M.x86.R_DX == bios_device.pci_vendor_id)
-		    // device index must be 0
-		    && (M.x86.R_SI == 0)) {
-			CLEAR_FLAG(F_CF);
-			M.x86.R_AH = 0x00;	// return code: success
-			M.x86.R_BH = bios_device.bus;
-			M.x86.R_BL = bios_device.devfn;
+		/* FixME: support SI != 0 */
+#if defined(CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES) && CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES==1
+#ifdef COREBOOT_V2
+		dev = dev_find_device(M.x86.R_DX, M.x86.R_CX, 0);
+#else
+		dev = dev_find_pci_device(M.x86.R_DX, M.x86.R_CX, 0);
+#endif
+		if (dev != 0) {
 			DEBUG_PRINTF_INTR
 			    ("%s(): function %x: PCI Find Device --> 0x%04x\n",
 			     __func__, M.x86.R_AX, M.x86.R_BX);
+
+			M.x86.R_BH = dev->bus->secondary;
+			M.x86.R_BL = dev->path.pci.devfn;
+			M.x86.R_AH = 0x00; // return code: success
+			CLEAR_FLAG(F_CF);
+#else
+		// only allow the device to find itself...
+		if ((M.x86.R_CX == bios_device.pci_device_id)
+		   && (M.x86.R_DX == bios_device.pci_vendor_id)
+		   // device index must be 0
+		   && (M.x86.R_SI == 0)) {
+			CLEAR_FLAG(F_CF);
+			M.x86.R_AH = 0x00;      // return code: success
+			M.x86.R_BH = bios_device.bus;
+			M.x86.R_BL = bios_device.devfn;
+#endif
 		} else {
 			DEBUG_PRINTF_INTR
-			    ("%s(): function %x: invalid device/vendor/device index! (%04x/%04x/%02x expected: %04x/%04x/0) \n",
+			    ("%s(): function %x: invalid device/vendor/device index! (%04x/%04x/%02x expected: %04x/%04x/00) \n",
 			     __func__, M.x86.R_AX, M.x86.R_CX, M.x86.R_DX,
 			     M.x86.R_SI, bios_device.pci_device_id,
 			     bios_device.pci_vendor_id);
+
 			SET_FLAG(F_CF);
 			M.x86.R_AH = 0x86;	// return code: device not found
 		}
@@ -375,11 +392,22 @@ handleInt1a(void)
 		bus = M.x86.R_BH;
 		devfn = M.x86.R_BL;
 		offs = M.x86.R_DI;
+		DEBUG_PRINTF_INTR("%s(): function: %x: PCI Config Read from device: bus: %02x, devfn: %02x, offset: %02x\n",
+				  __func__, M.x86.R_AX, bus, devfn, offs);
+#if defined(CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES) && CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES==1
+		dev = dev_find_slot(bus, devfn);
+		DEBUG_PRINTF_INTR("%s(): function: %x: dev_find_slot() returned: %s\n",
+				  __func__, M.x86.R_AX, dev_path(dev));
+		if (dev == 0) {
+			// fail accesses to non-existent devices...
+#else
+		dev = bios_device.dev;
 		if ((bus != bios_device.bus)
-		    || (devfn != bios_device.devfn)) {
+		     || (devfn != bios_device.devfn)) {
 			// fail accesses to any device but ours...
+#endif
 			printf
-			    ("%s(): Config read access invalid! bus: %x (%x), devfn: %x (%x), offs: %x\n",
+			    ("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
 			     __func__, bus, bios_device.bus, devfn,
 			     bios_device.devfn, offs);
 			SET_FLAG(F_CF);
@@ -391,7 +419,7 @@ handleInt1a(void)
 			case 0xb108:
 				M.x86.R_CL =
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
-					pci_read_config8(bios_device.dev, offs);
+					pci_read_config8(dev, offs);
 #else					
 				    (u8) rtas_pci_config_read(bios_device.
 								   puid, 1,
@@ -406,7 +434,7 @@ handleInt1a(void)
 			case 0xb109:
 				M.x86.R_CX =
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
-					pci_read_config16(bios_device.dev, offs);
+					pci_read_config16(dev, offs);
 #else					
 				    (u16) rtas_pci_config_read(bios_device.
 								    puid, 2,
@@ -421,7 +449,7 @@ handleInt1a(void)
 			case 0xb10a:
 				M.x86.R_ECX =
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
-					pci_read_config32(bios_device.dev, offs);
+					pci_read_config32(dev, offs);
 #else					
 				    (u32) rtas_pci_config_read(bios_device.
 								    puid, 4,

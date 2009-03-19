@@ -16,6 +16,7 @@
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
 #define is_digit isdigit
 #define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
+#define isprint(c)	((c) == '\n' || ((c) >= ' ' && (c) <= '~'))
 
 static int skip_atoi(const char **s)
 {
@@ -87,7 +88,7 @@ static int number(void (*tx_byte)(unsigned char byte, void *arg), void *arg,
 			tx_byte('0', arg), count++;
 		else if (base==16) {
 			tx_byte('0', arg), count++;
-			tx_byte(digits[33], arg), count++;
+			tx_byte('x', arg), count++;
 		}
 	}
 	if (!(type & LEFT))
@@ -194,9 +195,15 @@ int vtxprintf(void (*tx_byte)(unsigned char byte, void *arg), void *arg, const c
 			s = va_arg(args, char *);
 			if (!s)
 				s = "<NULL>";
+			/* Catch almost-NULL pointers as well */
+			if ((size_t)s < 0x400)
+				s = "<near NULL>";
 
 			len = strnlen(s, precision);
 
+			for (i = 0; i < len; ++i)
+				if (!isprint(*s[i]))
+					s = "<non-ASCII characters>";
 			if (!(flags & LEFT))
 				while (len < field_width--)
 					tx_byte(' ', arg), count++;

@@ -4,6 +4,7 @@
  * Copyright (C) 2000 Silicon Integrated System Corporation
  * Copyright (C) 2004 Tyan Corp
  * Copyright (C) 2005-2008 coresystems GmbH <stepan@openbios.org>
+ * Copyright (C) 2006-2009 Carl-Daniel Hailfinger
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -396,126 +397,126 @@ struct flashchip flashchips[] = {
 		.name		= "AT45CS1282",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45CS1282,
-		.total_size	= 16896/*!*/,
-		.page_size	= 1056/*!*/,
+		.total_size	= 16896 /* No power of two sizes */,
+		.page_size	= 1056 /* No power of two sizes */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL /* Incompatible Page write */,
 		.read		= NULL /* Incompatible read */,
-	}, /* No power of two sizes */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB011D",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB011D,
-		.total_size	= 128/*!*/,
-		.page_size	= 256/*!*/,
+		.total_size	= 128 /* Size can only be determined from status register */,
+		.page_size	= 256 /* Size can only be determined from status register */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL,
-	}, /* Size can only be determined from status register */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB021D",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB021D,
-		.total_size	= 256/*!*/,
-		.page_size	= 256/*!*/,
+		.total_size	= 256 /* Size can only be determined from status register */,
+		.page_size	= 256 /* Size can only be determined from status register */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL,
-	}, /* Size can only be determined from status register */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB041D",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB041D,
-		.total_size	= 512/*!*/,
-		.page_size	= 256/*!*/,
+		.total_size	= 512 /* Size can only be determined from status register */,
+		.page_size	= 256 /* Size can only be determined from status register */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL,
-	}, /* Size can only be determined from status register */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB081D",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB081D,
-		.total_size	= 1024/*!*/,
-		.page_size	= 256/*!*/,
+		.total_size	= 1024 /* Size can only be determined from status register */,
+		.page_size	= 256 /* Size can only be determined from status register */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL,
-	}, /* Size can only be determined from status register */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB161D",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB161D,
-		.total_size	= 2048/*!*/,
-		.page_size	= 512/*!*/,
+		.total_size	= 2048 /* Size can only be determined from status register */,
+		.page_size	= 512 /* Size can only be determined from status register */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL,
-	}, /* Size can only be determined from status register */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB321C",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB321C,
-		.total_size	= 4224/*!*/,
-		.page_size	= 528/*!*/,
+		.total_size	= 4224 /* No power of two sizes */,
+		.page_size	= 528 /* No power of two sizes */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL /* Incompatible read */,
-	}, /* No power of two sizes */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB321D",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB321D,
-		.total_size	= 4096/*!*/,
-		.page_size	= 512/*!*/,
+		.total_size	= 4096 /* Size can only be determined from status register */,
+		.page_size	= 512 /* Size can only be determined from status register */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL,
-	}, /* Size can only be determined from status register */
+	},
 
 	{
 		.vendor		= "Atmel",
 		.name		= "AT45DB642D",
 		.manufacture_id	= ATMEL_ID,
 		.model_id	= AT_45DB642D,
-		.total_size	= 8192/*!*/,
-		.page_size	= 1024/*!*/,
+		.total_size	= 8192 /* Size can only be determined from status register */,
+		.page_size	= 1024 /* Size can only be determined from status register */,
 		.tested		= TEST_BAD_READ,
 		.probe		= probe_spi_rdid,
 		.erase		= NULL,
 		.write		= NULL,
 		.read		= NULL,
-	}, /* Size can only be determined from status register */
+	},
 
 	{
 		.vendor		= "Atmel",

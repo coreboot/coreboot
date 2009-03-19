@@ -187,11 +187,11 @@ static void auto_size_dimm(unsigned int dimm, u8 dimm0, u8 dimm1)
 	 * 
 	 * ma  12 11 10 09 08 07 06 05 04 03 02 01 00
 	 * -------------------------------------------
-	 * pa					09 08 07 06 05 04 03	(7 col addr bits = 1K page size)
-	 * pa				 10 09 08 07 06 05 04 03	(8 col addr bits = 2K page size)
-	 * pa			  11 10 09 08 07 06 05 04 03	(9 col addr bits = 4K page size)
-	 * pa		   12 11 10 09 08 07 06 05 04 03	(10 col addr bits = 8K page size)
-	 * pa	 13 AP 12 11 10 09 08 07 06 05 04 03	(11 col addr bits = 16K page size)
+	 * pa                    09 08 07 06 05 04 03	(7 col addr bits = 1K page size)
+	 * pa                 10 09 08 07 06 05 04 03	(8 col addr bits = 2K page size)
+	 * pa              11 10 09 08 07 06 05 04 03	(9 col addr bits = 4K page size)
+	 * pa           12 11 10 09 08 07 06 05 04 03	(10 col addr bits = 8K page size)
+	 * pa     13 AP 12 11 10 09 08 07 06 05 04 03	(11 col addr bits = 16K page size)
 	 * pa  14 13 AP 12 11 10 09 08 07 06 05 04 03	(12 col addr bits = 32K page size)
 	 *
 	 * (AP = autoprecharge bit)
@@ -260,7 +260,7 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 		spd_byte0 = spd_byte1;
 
 	/* Turn SPD ns time into MHz. Check what the asm does to this math. */
-	speed = 2 * ((10000 / (((spd_byte0 >> 4) * 10) + (spd_byte0 & 0x0F))));
+	speed = 20000 / (((spd_byte0 >> 4) * 10) + (spd_byte0 & 0x0F));
 
 	printk(BIOS_DEBUG, "ddr max speed is %d\n", speed);
 	/* Current speed > max speed? */
@@ -353,15 +353,14 @@ static void set_cas(u8 dimm0, u8 dimm1)
 			/* Turn SPD ns time into MHz. Check what the asm does
 			 * to this math.
 			 */
-			dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) +
-						(spd_byte & 0x0F)));
+			dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 			if (dimm_speed >= glspeed) {
 				/* If -1 timing is supported, check -1 timing > GeodeLink. */
 				/* EEPROM byte usage: (25) SDRAM Minimum Clock Cycle Time @ CLX -1 */
 				spd_byte = spd_read_byte(dimm0, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHz. Check what the asm does to this math. */
-					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
+					dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 					if (dimm_speed <= glspeed) {
 						/* Set we can use -.5 timing but not -1. */
 						spd_byte = 31 - __builtin_clz((u32) casmap0);
@@ -388,14 +387,14 @@ static void set_cas(u8 dimm0, u8 dimm1)
 		spd_byte = spd_read_byte(dimm1, SPD_SDRAM_CYCLE_TIME_2ND);
 		if (spd_byte != 0) {
 			/* Turn SPD ns time into MHz. Check what the asm does to this math. */
-			dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
+			dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 			if (dimm_speed >= glspeed) {
 				/* If -1 timing is supported, check -1 timing > GeodeLink. */
 				/* EEPROM byte usage: (25) SDRAM Minimum Clock Cycle Time @ CLX -1 */
 				spd_byte = spd_read_byte(dimm1, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
 					/* Turn SPD ns time into MHz. Check what the asm does to this math. */
-					dimm_speed = 2 * (10000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F)));
+					dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 					if (dimm_speed <= glspeed) {
 						/* Set we can use -.5 timing but not -1. */
 						spd_byte = 31 - __builtin_clz((u32) casmap1);

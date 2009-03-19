@@ -267,6 +267,7 @@ static void check_ddr_max(u8 dimm0, u8 dimm1)
 	if (geode_link_speed() > speed) {
 		printk(BIOS_EMERG, "DIMM overclocked. Check GeodeLink speed.\n");
 		post_code(POST_PLL_MEM_FAIL);
+		printk(BIOS_EMERG, "GeodeLink speed: %u\nIntended RAM speed: %u\n", geode_link_speed(), speed);
 		hlt();
 	}
 }

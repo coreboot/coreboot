@@ -202,8 +202,11 @@ int vtxprintf(void (*tx_byte)(unsigned char byte, void *arg), void *arg, const c
 			len = strnlen(s, precision);
 
 			for (i = 0; i < len; ++i)
-				if (!isprint(*s[i]))
+				if (!isprint(*s[i])) {
 					s = "<non-ASCII characters>";
+					len = strlen(s);
+					break;
+				}
 			if (!(flags & LEFT))
 				while (len < field_width--)
 					tx_byte(' ', arg), count++;

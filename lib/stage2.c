@@ -31,6 +31,17 @@
 #include <lib.h>
 
 /**
+ * Note that this function has exactly the opposite return code of
+ * northbridge/intel/i945/reset_test.c which returns 0 on cold boot.
+ *
+ * @returns always 1
+ */
+int __attribute__((weak)) is_coldboot(void)
+{
+	return 1;
+}
+
+/**
  * CPU init code which runs BEFORE any stage2 dev_phase1 is run. 
  * This code might, for example, init ECC on all cores. 
  *

@@ -1,0 +1,45 @@
+##
+## This file is part of the coreboot project.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+target h8dme
+mainboard supermicro/h8dme
+
+option ROM_SIZE=0x200000
+option FALLBACK_SIZE=(ROM_SIZE-0x1000)
+
+romimage "fallback"
+	option USE_FAILOVER_IMAGE=0
+	option USE_FALLBACK_IMAGE=1
+	option CONFIG_COMPRESSED_PAYLOAD_LZMA=1
+	option CONFIG_PRECOMPRESSED_PAYLOAD=1
+	option ROM_IMAGE_SIZE=0x18000
+	option XIP_ROM_SIZE=0x40000
+	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
+
+end
+
+romimage "failover"
+	option USE_FAILOVER_IMAGE=1
+        option USE_FALLBACK_IMAGE=0
+        option ROM_IMAGE_SIZE=FAILOVER_SIZE
+        option XIP_ROM_SIZE=FAILOVER_SIZE
+        option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
+end
+
+
+buildrom ./coreboot.rom ROM_SIZE "fallback" "failover"

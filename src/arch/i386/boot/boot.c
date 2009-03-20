@@ -175,12 +175,12 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	popl	%%esi\n\t"
 
 		:: 
-		"g" (lb_start), "g" (buffer), "g" (lb_size),
-		"g" (entry),
+		"ri" (lb_start), "ri" (buffer), "ri" (lb_size),
+		"ri" (entry),
 #if CONFIG_MULTIBOOT
-		"g"(mbi), "g" (MB_MAGIC2)
+		"ri"(mbi), "ri" (MB_MAGIC2)
 #else
-		"g"(adjusted_boot_notes), "g" (0x0E1FB007)
+		"ri"(adjusted_boot_notes), "ri" (0x0E1FB007)
 #endif
 		);
 }

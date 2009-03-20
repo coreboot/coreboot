@@ -1655,7 +1655,7 @@ static uint8_t get_exact_divisor(int i, uint8_t divisor)
 
 	/* Check for FID control support */
 	struct cpuid_result cpuid1;
-	cpuid1 = cpuid(0x8000007);
+	cpuid1 = cpuid(0x80000007);
 	if( cpuid1.edx & 0x02 ) {
 		/* Use current FID */
 		unsigned fid_cur;

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+## Copyright (C) 2007, 2009 Rudolf Marek <r.marek@assembler.cz>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License v2 as published by
@@ -44,8 +44,11 @@ uses XIP_ROM_BASE
 uses STACK_SIZE
 uses HEAP_SIZE
 # uses USE_OPTION_TABLE
-# uses CONFIG_LB_MEM_TOPK
+uses CONFIG_LB_MEM_TOPK
 uses HAVE_ACPI_TABLES
+uses HAVE_MAINBOARD_RESOURCES
+uses HAVE_HIGH_TABLES
+uses HAVE_LOW_TABLES
 uses LB_CKS_RANGE_START
 uses LB_CKS_RANGE_END
 uses LB_CKS_LOC
@@ -110,6 +113,10 @@ default CONFIG_MAX_CPUS = 2
 default CONFIG_MAX_PHYSICAL_CPUS = 1
 default CONFIG_LOGICAL_CPUS = 1
 default HAVE_ACPI_TABLES = 1
+default HAVE_MAINBOARD_RESOURCES = 1
+default HAVE_HIGH_TABLES = 1
+default HAVE_LOW_TABLES = 0
+
 # default CONFIG_CHIP_NAME = 1
 
 # 1G memory hole
@@ -152,8 +159,9 @@ default ROM_IMAGE_SIZE = 64 * 1024
 default STACK_SIZE = 8 * 1024
 default HEAP_SIZE = 256 * 1024
 # More 1M for pgtbl.
-# default CONFIG_LB_MEM_TOPK = 2048
-default _RAMBASE = 0x00004000
+default CONFIG_LB_MEM_TOPK = 2048
+# to 1MB
+default _RAMBASE = 0x100000
 # default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
 default CONFIG_ROM_PAYLOAD = 1
 default CC = "$(CROSS_COMPILE)gcc -m32"

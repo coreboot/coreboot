@@ -34,7 +34,8 @@ default CONFIG_ROM_PAYLOAD       = 1
 default _ROMBASE     = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
 
 ##WARNING enable caching of whole ROM during CAR
-default XIP_ROM_SIZE =  ROM_SIZE
+##for 512KB flash
+default XIP_ROM_SIZE =  0x80000
 default XIP_ROM_BASE =  0xffffffff + 1 - XIP_ROM_SIZE
 
 arch i386 end 

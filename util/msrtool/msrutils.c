@@ -142,7 +142,7 @@ uint32_t msraddrbyname(const char *name) {
 	const uint32_t addr = strtoul(name, NULL, 16);
 	const struct msrdef *m;
 	if (!targets)
-		return 0;
+		return addr;
 	for (t = 0; t < targets_found; t++)
 		for (m = targets[t]->msrs; !MSR_ISEOT(*m); m++) {
 			if (addr == m->addr)
@@ -150,7 +150,7 @@ uint32_t msraddrbyname(const char *name) {
 			if (!strcasecmp(name, m->symbol))
 				return m->addr;
 		}
-	return 0;
+	return addr;
 }
 
 void dumpmsrdefs(const struct targetdef *t) {

@@ -8,7 +8,7 @@ if CONFIG_CHIP_NAME
 	config chip.h
 end
 
-object northbridge.o
+driver northbridge.o
 driver misc_control.o
 
 makerule raminit_test

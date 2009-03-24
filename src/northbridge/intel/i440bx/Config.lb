@@ -19,4 +19,4 @@
 ##
 
 config chip.h
-object northbridge.o
+driver northbridge.o

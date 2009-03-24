@@ -20,6 +20,6 @@
 
 config chip.h
 object vgabios.o
-object northbridge.o
+driver northbridge.o
 driver agp.o
 driver vga.o

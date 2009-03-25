@@ -438,7 +438,7 @@ static const struct superio_registers reg_table[] = {
 	{0x6f, "LPC47B397", {
 		{EOT}}},
 	{0x74, "LPC47M182", { /* Only for LD_NUM = 0 */
-		{NOLDN, NULL, 
+		{NOLDN, NULL,
 			{0x02,0x03,0x07,0x20,0x21,0x22,0x23,0x24,0x26,0x27,
 			 0x28,0x29,0x2a,0x2b,0x2c,0x2d,0x2e,0x2f,EOT},
 			{0x00,RSVD,0x00,0x74,RSVD,0x00,RSVD,0x44,MISC,0x00,
@@ -655,6 +655,7 @@ static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
 				     uint8_t revreg)
 {
 	uint8_t id, rev;
+	uint16_t runtime_base;
 	const char *info = (idreg == 0x20) ? "(idregs=0x20/0x21) "
 					   : "(idregs=0x0d/0x0e) ";
 
@@ -681,18 +682,16 @@ static void probe_idregs_smsc_helper(uint16_t port, uint8_t idreg,
 		     LDN_SEL);
 
 	if (extra_dump) {
-		uint16_t runtime_base;
 		switch (id) {
-		case 0x5a:
+		case 0x5a: /* LPC47N227 */
 			runtime_base = regval(port, 0x30) << 4;
 			if (runtime_base)
 				dump_io(runtime_base, 16);
 			else
-				printf("Runtime Register Block not mapped on this SuperIO.\n");
-			
+				printf("Runtime Register Block not mapped on this Super I/O.\n");
 			break;
 		default:
-			printf("No extra registers known for this chip\n");
+			printf("No extra registers known for this chip.\n");
 		}
 	}
 
@@ -708,4 +707,5 @@ void probe_idregs_smsc(uint16_t port)
 void print_smsc_chips(void)
 {
 	print_vendor_chips("SMSC", reg_table);
+	printf("SMSC LPC47N227 runtime register block\n\n");
 }

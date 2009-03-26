@@ -338,6 +338,8 @@ static int reg_useable(u32 reg,device_t goal_dev, u32 goal_nodeid,
 	for(nodeid = 0; !res && (nodeid < NODE_NUMS); nodeid++) {
 		device_t dev;
 		dev = __f0_dev[nodeid];
+		if (!dev)
+			continue;
 		for(link = 0; !res && (link < 8); link++) {
 			res = probe_resource(dev, 0x1000 + reg + (link<<16)); // 8 links, 0x1000 man f1,
 		}

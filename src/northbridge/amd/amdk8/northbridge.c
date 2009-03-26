@@ -291,9 +291,11 @@ static int reg_useable(unsigned reg,
 	unsigned nodeid, link;
 	int result;
 	res = 0;
-	for(nodeid = 0; !res && (nodeid < 8); nodeid++) {
+	for(nodeid = 0; !res && (nodeid < FX_DEVS); nodeid++) {
 		device_t dev;
 		dev = __f0_dev[nodeid];
+		if (!dev)
+			continue;
 		for(link = 0; !res && (link < 3); link++) {
 			res = probe_resource(dev, 0x100 + (reg | link));
 		}
@@ -760,14 +762,15 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		mem_hole.hole_startk = HW_MEM_HOLE_SIZEK;
 		mem_hole.node_id = -1;
 
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < FX_DEVS; i++) {
 			uint32_t base;
 			uint32_t hole;
 			base  = f1_read_config32(0x40 + (i << 3));
 			if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
 				continue;
 			}
-
+			if (!__f1_dev[i])
+				continue;
 			hole = pci_read_config32(__f1_dev[i], 0xf0);
 			if(hole & 1) { // we find the hole
 				mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
@@ -834,15 +837,15 @@ static void disable_hoist_memory(unsigned long hole_startk, int i)
 	limit = f1_read_config32(0x44 + (i << 3));
 	f1_write_config32(0x44 + (i << 3),limit - (hole_sizek << 2));
 	dev = __f1_dev[i];
-	hoist = pci_read_config32(dev, 0xf0);
-	if(hoist & 1) {
-		pci_write_config32(dev, 0xf0, 0);
+	if (dev) {
+		hoist = pci_read_config32(dev, 0xf0);
+		if(hoist & 1) {
+			pci_write_config32(dev, 0xf0, 0);
+		} else {
+			base = pci_read_config32(dev, 0x40 + (i << 3));
+			f1_write_config32(0x40 + (i << 3),base - (hole_sizek << 2));
+		}
 	}
-	else {
-		base = pci_read_config32(dev, 0x40 + (i << 3));
-		f1_write_config32(0x40 + (i << 3),base - (hole_sizek << 2));
-	}
-
 }
 
 static uint32_t hoist_memory(unsigned long hole_startk, int i)
@@ -878,7 +881,7 @@ static uint32_t hoist_memory(unsigned long hole_startk, int i)
 		base |= (4*1024*1024)<<2;
 		f1_write_config32(0x40 + (i<<3), base);
 	}
-	else
+	else if (dev)
 	{
 		hoist = /* hole start address */
 			((hole_startk << 10) & 0xff000000) +
@@ -1020,7 +1023,7 @@ static void pci_domain_set_resources(device_t dev)
 		#if HW_MEM_HOLE_SIZE_AUTO_INC == 1
 			//We need to double check if the mmio_basek is valid for hole setting, if it is equal to basek, we need to decrease it some
 			uint32_t basek_pri;
-			for (i = 0; i < 8; i++) {
+			for (i = 0; i < FX_DEVS; i++) {
 				uint32_t base;
 				uint32_t basek;
 				base  = f1_read_config32(0x40 + (i << 3));
@@ -1045,7 +1048,7 @@ static void pci_domain_set_resources(device_t dev)
 #endif
 
 	idx = 0x10;
-	for(i = 0; i < 8; i++) {
+	for(i = 0; i < FX_DEVS; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
 		base  = f1_read_config32(0x40 + (i << 3));

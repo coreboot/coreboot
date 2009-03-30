@@ -329,6 +329,19 @@ static int board_ibm_x3455(const char *name)
 	return 0;
 }
 
+static int board_hp_dl145_g3_enable(const char *name)
+{
+	uint8_t byte;
+
+	/* Set GPIO lines in the Broadcom HT-1000 southbridge. */
+	OUTB(0x44, 0xcd6);	/* GPIO 0 reg from PM regs */
+	byte = INB(0xcd7);
+	/* Set GPIO 2 and 5 high, connected to flash WP# and TBL# pins. */
+	OUTB(byte | 0x24, 0xcd7);
+
+	return 0;
+}
+
 /**
  * Suited for EPoX EP-BX3, and maybe some other Intel 440BX based boards.
  */
@@ -1012,6 +1025,20 @@ struct board_pciid_enable board_pciid_enables[] = {
 		.lb_part		= NULL,
 		.name			= "MSI MS-7046",
 		.enable			= ich6_gpio19_raise,
+	},
+	{
+		.first_vendor		= 0x1166,
+		.first_device		= 0x0223,
+		.first_card_vendor	= 0x103c,
+		.first_card_device	= 0x320d,
+		.second_vendor		= 0x102b,
+		.second_device		= 0x0522,
+		.second_card_vendor	= 0x103c,
+		.second_card_device	= 0x31fa,
+		.lb_vendor		= "hp",
+		.lb_part		= "dl145_g3",
+		.name			= "HP DL145 G3",
+		.enable			= board_hp_dl145_g3_enable,
 	},
 	{
 		.first_vendor		= 0,

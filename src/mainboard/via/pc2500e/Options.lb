@@ -19,6 +19,7 @@
 ##
 
 uses CONFIG_SMP
+uses CONFIG_ROMFS
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
@@ -112,5 +113,10 @@ default TTYS0_LCS = 0x3
 default MAXIMUM_CONSOLE_LOGLEVEL = 9
 default DEFAULT_CONSOLE_LOGLEVEL = 9
 
-end
 
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
+end

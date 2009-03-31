@@ -3,6 +3,7 @@
 ##
 
 uses PCIC0_CFGADDR 
+uses CONFIG_ROMFS
 uses PCIC0_CFGDATA 
 uses ISA_IO_BASE 
 uses ISA_MEM_BASE 
@@ -140,4 +141,9 @@ default _ROMSTART=0xfff03000
 default _RAMBASE=0x00100000
 
 ### End Options.lb
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
 end

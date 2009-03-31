@@ -1,4 +1,5 @@
 uses HAVE_MP_TABLE
+uses CONFIG_ROMFS
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
@@ -163,5 +164,10 @@ default  MAXIMUM_CONSOLE_LOGLEVEL=8
 
 default CONFIG_VIDEO_MB = 0
 
-end
 
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
+end

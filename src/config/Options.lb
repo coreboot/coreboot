@@ -679,6 +679,11 @@ define CONFIG_FS_FAT
 	export always
 	comment "Enable FAT filesystem support"
 end
+define CONFIG_ROMFS
+	default 0
+	export always
+	comment "The new ROMFS file system"
+end
 define AUTOBOOT_DELAY
 	default 2
 	export always

@@ -1,4 +1,5 @@
 uses HAVE_MP_TABLE
+uses CONFIG_ROMFS
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
@@ -227,4 +228,9 @@ default  CONFIG_CONSOLE_BTEXT=0
 
 
 ### End Options.lb
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
 end

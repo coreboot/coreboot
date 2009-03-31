@@ -1,4 +1,5 @@
 uses HAVE_MP_TABLE
+uses CONFIG_ROMFS
 uses HAVE_ACPI_TABLES
 uses HAVE_PIRQ_TABLE
 uses HAVE_FALLBACK_BOOT
@@ -240,4 +241,9 @@ default DEBUG=1
 default CONFIG_CHIP_NAME=1
 
 ### End Options.lb
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
 end

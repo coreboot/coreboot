@@ -1,4 +1,5 @@
 uses MAXIMUM_CONSOLE_LOGLEVEL
+uses CONFIG_ROMFS
 uses DEFAULT_CONSOLE_LOGLEVEL
 uses CONFIG_CONSOLE_SERIAL8250
 uses TTYS0_BAUD
@@ -142,5 +143,10 @@ default CC="$(CROSS_COMPILE)gcc -m32"
 default HOSTCC="gcc"
 
 
-end
 
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
+end

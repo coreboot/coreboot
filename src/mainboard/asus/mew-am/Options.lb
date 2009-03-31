@@ -19,6 +19,7 @@
 ##
 
 uses HAVE_MP_TABLE
+uses CONFIG_ROMFS
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
@@ -96,4 +97,9 @@ default MAXIMUM_CONSOLE_LOGLEVEL = 9	# Override this in targets/*/Config.lb.
 default CONFIG_CONSOLE_VGA = 1		# Override this in targets/*/Config.lb.
 default CONFIG_PCI_ROM_RUN = 1		# Override this in targets/*/Config.lb.
 
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
 end

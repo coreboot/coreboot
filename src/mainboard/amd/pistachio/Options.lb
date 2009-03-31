@@ -20,6 +20,7 @@
 ##
 
 uses HAVE_MP_TABLE
+uses CONFIG_ROMFS
 uses HAVE_PIRQ_TABLE
 uses HAVE_ACPI_TABLES
 uses USE_FALLBACK_IMAGE
@@ -303,4 +304,9 @@ default CONFIG_GFXUMA=1
 default HAVE_MAINBOARD_RESOURCES=1
 
 ### End Options.lb
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
 end

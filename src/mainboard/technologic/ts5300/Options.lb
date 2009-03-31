@@ -1,4 +1,5 @@
 uses HAVE_MP_TABLE
+uses CONFIG_ROMFS
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
@@ -138,6 +139,11 @@ default HOSTCC="gcc"
 
 default CONFIG_CHIP_NAME = 1
 
+
+
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
 end
-
-

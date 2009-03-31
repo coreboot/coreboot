@@ -1,4 +1,5 @@
 uses HAVE_MP_TABLE
+uses CONFIG_ROMFS
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
@@ -158,5 +159,10 @@ default  DEFAULT_CONSOLE_LOGLEVEL=8
 ## At a maximum only compile in this level of debugging
 default  MAXIMUM_CONSOLE_LOGLEVEL=8
 
-end
 
+#
+# ROMFS
+#
+#
+default CONFIG_ROMFS=0
+end

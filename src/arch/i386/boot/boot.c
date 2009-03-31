@@ -114,7 +114,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 		"	addl	12(%%esp), %%eax\n\t"
 		"	addl	 8(%%esp), %%eax\n\t"
 		"	movl	%%eax, 20(%%esp)\n\t"
-		/* Place a copy of coreboot in it's new location */
+		/* Place a copy of coreboot in its new location */
 		/* Move ``longs'' the coreboot size is 4 byte aligned */
 		"	movl	12(%%esp), %%edi\n\t"
 		"	addl	 8(%%esp), %%edi\n\t"

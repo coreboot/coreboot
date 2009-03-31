@@ -78,10 +78,8 @@ unsigned long write_multiboot_info(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end)
 {
-	struct multiboot_info *mbi;
 	int i;
 
-	mbi = (struct multiboot_info *)rom_table_end;
 	memset(mbi, 0, sizeof(*mbi));
 	rom_table_end += sizeof(*mbi);
 

@@ -16,13 +16,13 @@ unsigned long compute_ip_checksum(void *addr, unsigned long length)
 	sum = 0;
 	ptr = addr;
 	for(i = 0; i < length; i++) {
-		unsigned long value;
-		value = ptr[i];
+		unsigned long v;
+		v = ptr[i];
 		if (i & 1) {
-			value <<= 8;
+			v <<= 8;
 		}
 		/* Add the new value */
-		sum += value;
+		sum += v;
 		/* Wrap around the carry */
 		if (sum > 0xFFFF) {
 			sum = (sum + (sum >> 16)) & 0xFFFF;

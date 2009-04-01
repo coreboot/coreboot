@@ -629,14 +629,10 @@ static const struct pci_driver mcf0_driver __pci_driver = {
 	.device = 0x1100,
 };
 
-#if CONFIG_CHIP_NAME == 1
-
 struct chip_operations northbridge_amd_amdk8_ops = {
 	CHIP_NAME("AMD K8 Northbridge")
 	.enable_dev = 0,
 };
-
-#endif
 
 static void pci_domain_read_resources(device_t dev)
 {

@@ -15,16 +15,10 @@ struct smbus_bus_operations;
 /* Chip operations */
 struct chip_operations {
 	void (*enable_dev)(struct device *dev);
-#if CONFIG_CHIP_NAME == 1
 	char *name;
-#endif
 };
 
-#if CONFIG_CHIP_NAME == 1
 #define CHIP_NAME(X) .name = X,
-#else
-#define CHIP_NAME(X)
-#endif
 
 struct bus;
 

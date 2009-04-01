@@ -242,9 +242,7 @@ end
 ##
 ## Include the secondary Configuration files
 ##
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 
 # sample config for tyan/s2895
 chip northbridge/amd/amdk8/root_complex

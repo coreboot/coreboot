@@ -172,9 +172,7 @@ end
 ##
 ## Include the secondary Configuration files
 ##
-if CONFIG_CHIP_NAME
-       config chip.h
-end
+config chip.h
 
 # sample config for amd/serengeti_cheetah
 chip northbridge/amd/amdk8/root_complex

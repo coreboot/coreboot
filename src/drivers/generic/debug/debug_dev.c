@@ -231,13 +231,11 @@ static void print_tsc(void) {
 
 static void debug_init(device_t dev)
 {
-#if CONFIG_CHIP_NAME
 	device_t parent;
-#endif
+
 	if (!dev->enabled)
 		return;
 	switch(dev->path.pnp.device) {
-#if CONFIG_CHIP_NAME
 	case 0:
 		parent = dev->bus->dev;
 		printk_debug("DEBUG: %s", dev_path(parent));
@@ -247,7 +245,6 @@ static void debug_init(device_t dev)
 			printk_debug("\n");
 		}
 		break;
-#endif
 		
 	case 1:
 		print_pci_regs_all();

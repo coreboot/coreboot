@@ -142,9 +142,7 @@ mainboardinit cpu/x86/mmx/disable_mmx.inc
 ##
 dir /pc80
 
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 
 # based on sample config for tyan/s2735
 chip northbridge/intel/e7501

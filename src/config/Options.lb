@@ -854,12 +854,6 @@ end
 # Misc options
 ###############################################
 
-define CONFIG_CHIP_NAME
-	default 0
-	export always
-	comment "Compile in the chip name"
-end
-
 define CONFIG_GDB_STUB
 	default 0
 	export used

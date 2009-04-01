@@ -40,7 +40,6 @@ uses CROSS_COMPILE
 uses CC
 uses HOSTCC
 uses OBJCOPY
-uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses DEBUG
@@ -238,7 +237,6 @@ default CONFIG_IDE=1
 
 default DEBUG=1
 # default CPU_OPT="-g"
-default CONFIG_CHIP_NAME=1
 
 ### End Options.lb
 #

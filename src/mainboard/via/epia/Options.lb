@@ -5,7 +5,6 @@ uses CONFIG_CONSOLE_SERIAL8250
 uses TTYS0_BAUD
 uses TTYS0_BASE
 uses TTYS0_LCS
-uses CONFIG_CHIP_NAME
 uses HAVE_MP_TABLE
 uses HAVE_PIRQ_TABLE
 uses USE_FALLBACK_IMAGE
@@ -64,7 +63,6 @@ default TTYS0_BASE=0x3f8
 # This defaults to 8 data bits, 1 stop bit, and no parity
 default TTYS0_LCS=0x3
 
-default CONFIG_CHIP_NAME=1
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024
 

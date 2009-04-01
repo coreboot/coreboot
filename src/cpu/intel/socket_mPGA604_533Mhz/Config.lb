@@ -1,6 +1,3 @@
-uses CONFIG_CHIP_NAME
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 object socket_mPGA604_533Mhz.o
 dir /cpu/intel/model_f2x

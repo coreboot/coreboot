@@ -23,8 +23,6 @@
 #include <device/pci_ids.h>
 #include "chip.h"
 
-#if CONFIG_CHIP_NAME == 1
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("ASUS A8V-E SE Mainboard")
 };
-#endif

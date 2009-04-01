@@ -175,10 +175,7 @@ end
 ##
 ## Include the secondary Configuration files 
 ##
-if CONFIG_CHIP_NAME
-	config chip.h
-end
-
+config chip.h
 
 # sample config for tyan/s2735
 chip northbridge/intel/e7501

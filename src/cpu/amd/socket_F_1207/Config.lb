@@ -17,7 +17,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-uses CONFIG_CHIP_NAME
 uses PCI_IO_CFG_EXT
 uses MMCONF_SUPPORT
 uses HT3_SUPPORT
@@ -30,9 +29,7 @@ uses CDB
 uses PCI_BUS_SEGN_BITS
 uses CAR_FAM10
 
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 
 default PCI_IO_CFG_EXT=1
 

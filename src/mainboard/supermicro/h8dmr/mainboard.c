@@ -26,8 +26,6 @@
 #include <device/pci_ops.h>
 #include "chip.h"
 
-#if CONFIG_CHIP_NAME == 1
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Supermicro H8DMR Mainboard")
 };
-#endif

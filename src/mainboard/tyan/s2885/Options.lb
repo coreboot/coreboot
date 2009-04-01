@@ -52,7 +52,6 @@ uses CROSS_COMPILE
 uses CC
 uses HOSTCC
 uses OBJCOPY
-uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses HW_MEM_HOLE_SIZEK
@@ -132,9 +131,6 @@ default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=4
 default CONFIG_MAX_PHYSICAL_CPUS=2
 default CONFIG_LOGICAL_CPUS=1
-
-#CHIP_NAME ?
-default CONFIG_CHIP_NAME=1
 
 ##HT Unit ID offset, default is 1, the typical one
 default HT_CHAIN_UNITID_BASE=0x0a

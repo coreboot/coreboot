@@ -58,7 +58,6 @@ uses _RAMBASE
 uses _ROMBASE
 uses STACK_SIZE
 uses HEAP_SIZE
-uses CONFIG_CHIP_NAME
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
@@ -323,11 +322,6 @@ default  MAXIMUM_CONSOLE_LOGLEVEL=9
 ##
 ## Select power on after power fail setting
 default MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
-
-##
-## chip name
-##
-default  CONFIG_CHIP_NAME=1
 
 #
 # ROMFS

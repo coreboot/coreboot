@@ -1,12 +1,9 @@
-uses CONFIG_CHIP_NAME
 uses K8_REV_F_SUPPORT
 uses K8_HT_FREQ_1G_SUPPORT
 uses DIMM_SUPPORT
 uses CPU_SOCKET_TYPE
 
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 
 default K8_REV_F_SUPPORT=1
 #Opteron K8 1G HT Support

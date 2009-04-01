@@ -222,9 +222,7 @@ end
 ##
 ## Include the secondary Configuration files
 ##
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 
 chip northbridge/amd/amdk8/root_complex
 	device apic_cluster 0 on

@@ -39,7 +39,6 @@ uses OBJCOPY
 uses TTYS0_BAUD
 uses TTYS0_BASE
 uses TTYS0_LCS
-uses CONFIG_CHIP_NAME
 
 
 uses CONFIG_CONSOLE_SERIAL8250
@@ -136,10 +135,6 @@ default CONFIG_ROM_PAYLOAD     = 1
 ##
 default CC="$(CROSS_COMPILE)gcc -m32"
 default HOSTCC="gcc"
-
-default CONFIG_CHIP_NAME = 1
-
-
 
 #
 # ROMFS

@@ -17,15 +17,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-uses CONFIG_CHIP_NAME
 uses AGP_APERTURE_SIZE
 uses HAVE_ACPI_TABLES
 
 default AGP_APERTURE_SIZE=0x4000000
 
-if CONFIG_CHIP_NAME
-	config chip.h
-end
+config chip.h
 
 driver northbridge.o
 driver misc_control.o

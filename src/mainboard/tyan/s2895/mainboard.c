@@ -17,9 +17,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 }
 
 
-#if CONFIG_CHIP_NAME == 1
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("Tyan S2895 Mainboard")
 };
-#endif
 

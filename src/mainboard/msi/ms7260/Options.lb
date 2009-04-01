@@ -74,7 +74,6 @@ uses CROSS_COMPILE
 uses CC
 uses HOSTCC
 uses OBJCOPY
-uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_USBDEBUG_DIRECT
@@ -120,7 +119,6 @@ default CONFIG_LOGICAL_CPUS = 1
 default ENABLE_APIC_EXT_ID = 0
 default APIC_ID_OFFSET = 0x10
 default LIFT_BSP_APIC_ID = 1
-default CONFIG_CHIP_NAME = 1
 
 # Move the default coreboot CMOS range off of AMD RTC registers.
 default LB_CKS_RANGE_START = 49

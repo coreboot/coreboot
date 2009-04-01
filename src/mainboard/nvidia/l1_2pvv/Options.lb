@@ -79,7 +79,6 @@ uses CROSS_COMPILE
 uses CC
 uses HOSTCC
 uses OBJCOPY
-uses CONFIG_CHIP_NAME
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_USBDEBUG_DIRECT
 uses CONFIG_PCI_ROM_RUN
@@ -192,9 +191,6 @@ default CONFIG_LOGICAL_CPUS=1
 default ENABLE_APIC_EXT_ID=0
 default APIC_ID_OFFSET=0x10
 default LIFT_BSP_APIC_ID=1
-
-#CHIP_NAME ?
-default CONFIG_CHIP_NAME=1
 
 #memory hole size, 0 mean disable, others will enable the hole, at that case if it is small than mmio_basek, it will use mmio_basek instead.
 #2G

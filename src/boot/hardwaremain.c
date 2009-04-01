@@ -88,10 +88,21 @@ void hardwaremain(int boot_complete)
 	 */
 	lb_mem = write_tables();
 
-#if CONFIG_FS_PAYLOAD == 1
-	filo(lb_mem);
+#if CONFIG_ROMFS == 1
+	printk_err("=================================================\n");
+#if USE_FALLBACK_IMAGE == 1
+	void (*pl)(void) = romfs_load_payload(lb_mem, "fallback/payload");
 #else
-	elfboot(lb_mem);
+	void (*pl)(void) = romfs_load_payload(lb_mem, "normal/payload");
 #endif
+#endif
+
+#warning elfboot will soon be deprecated
+
+	printk_err("Trying elfboot, but that will be gone soon!\n");
+	elfboot(lb_mem);
+
+	printk_err("NO BOOT METHOD succeeded\n");
+
 }
 

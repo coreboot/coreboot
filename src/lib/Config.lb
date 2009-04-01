@@ -27,3 +27,7 @@ if CONFIG_USE_INIT
 	initobject memcpy.o
 	initobject memcmp.o
 end
+
+if CONFIG_ROMFS
+	object romfs.o
+end

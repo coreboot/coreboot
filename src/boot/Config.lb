@@ -1,5 +1,8 @@
 object elfboot.o
 object hardwaremain.o
+if CONFIG_ROMFS
+	object selfboot.o
+end
 if CONFIG_FS_PAYLOAD
 	object filo.o
 end

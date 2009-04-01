@@ -134,7 +134,7 @@ static inline unsigned int fms(unsigned int x)
 	return r;
 }
 
-/* fms: find least sigificant bit set */
+/* fls: find least sigificant bit set */
 static inline unsigned int fls(unsigned int x)
 {
 	int r;

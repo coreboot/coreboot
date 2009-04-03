@@ -159,10 +159,6 @@ static void smi_set_eos(void)
 
 void smi_handler(u32 smm_revision)
 {
-	u8 reg8;
-	u16 pmctrl;
-	u16 pm1_sts;
-	u32 smi_sts, gpe0_sts, tco_sts;
 	unsigned int node;
 	smm_state_save_area_t state_save;
 

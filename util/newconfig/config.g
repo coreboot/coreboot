@@ -22,7 +22,9 @@ global_uses_options = {}
 global_exported_options = []
 romimages = {}
 buildroms = []
+rommapping = {}
 curimage = 0
+bootblocksize = 0
 alloptions = 0 # override uses at top level
 
 local_path = re.compile(r'^\.')
@@ -277,7 +279,10 @@ class romimage:
 		self.arch = arch
 
 	def setpayload(self, payload):
+		global rommapping
 		self.payload = payload
+
+		rommapping[self.name] = payload
 
 	def setinitfile(self, initfile):
 		self.initfile = initfile
@@ -1351,7 +1356,10 @@ def startromimage(name):
 
 def endromimage():
 	global curimage
+	global bootblocksize
 	mainboard()
+	imagesize = getoption("ROM_IMAGE_SIZE", curimage)
+	bootblocksize += imagesize
 	print "End ROMIMAGE"
 	curimage = 0
 	#curpart = 0
@@ -2209,16 +2217,22 @@ def writeimagemakefile(image):
 
 #
 def writemakefile(path):
+	global rommapping
+	global bootblocksize
 	makefilepath = os.path.join(path, "Makefile")
 	print "Creating", makefilepath
 	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
 
 	# main rule
-	file.write("\nall:")
+	file.write("\nall: romtool")
 	for i in buildroms:
-		file.write(" %s" % i.name)
+		file.write(" %sfs" % i.name)
 	file.write("\n\n")	
+
+	# romtool rules
+	file.write("\nromtool:\n\tcd $(TOP)/util/romtool; make\n")
+
 	file.write("include Makefile.settings\n\n")
 	for i, o in romimages.items():
 		file.write("%s/coreboot.rom:\n" % o.getname())
@@ -2245,9 +2259,26 @@ def writemakefile(path):
 		for j in i.roms:
 			file.write(" %s/coreboot.rom " % j)
 		file.write("> %s\n\n" %i.name)
+		# build the bootblock here as well. 
+		file.write("\n")
+		file.write("\t cat ")
+		for j in i.roms:
+			file.write(" %s/coreboot.strip " % j)
+		file.write("> %s.bootblock\n\n" %i.name)
 
+	romsize = getoption("ROM_SIZE", image)
+	# i.name? That can not be right, can it? 
+	file.write("%sfs: %s $(TOP)/util/romtool/romtool\n" %(i.name,i.name));
+	file.write("\trm -f coreboot.romfs\n");
+	file.write("\t$(TOP)/util/romtool/romtool %sfs create %s %s %s.bootblock\n" % (i.name, romsize, bootblocksize, i.name))
+	for i in buildroms:
+		for j in i.roms:
+			#failover is a hack that will go away soon. 
+			if (j != "failover") and (rommapping[j] != "/dev/null"):
+				file.write("\t $(TOP)/util/romtool/romtool %sfs add-payload %s %s/payload\n" % (i.name, rommapping[j], j))
+		file.write("\t $(TOP)/util/romtool/romtool %sfs print\n" % i.name)
 
-	file.write(".PHONY: all clean")
+	file.write(".PHONY: all clean romtool")
 	for i in romimages.keys():
 		file.write(" %s-clean" % i)
 	for i, o in romimages.items():

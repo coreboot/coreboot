@@ -79,8 +79,8 @@ if USE_FAILOVER_IMAGE
 	end
 else
 	makerule coreboot.rom 
-		depends	"coreboot.strip buildrom $(PAYLOAD-1)" 
-		action "./buildrom $< $@ $(PAYLOAD-1) $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
+		depends	"coreboot.strip buildrom $(PAYLOAD-1)"
+		action "PAYLOAD=$(PAYLOAD-1); if [ $(CONFIG_ROMFS) -eq 1 ]; then PAYLOAD=/dev/null; fi; ./buildrom $< $@ $$PAYLOAD $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
 	end
 end
 

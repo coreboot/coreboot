@@ -36,6 +36,7 @@ it with the version available from LANL.
 #include <part/hard_reset.h>
 #include <part/init_timer.h>
 #include <boot/elf.h>
+#include <romfs.h>
 
 /**
  * @brief Main function of the DRAM part of coreboot.

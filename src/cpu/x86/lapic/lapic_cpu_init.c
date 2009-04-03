@@ -291,14 +291,14 @@ void stop_this_cpu(void)
 {
 	int timeout;
 	unsigned long send_status;
-	unsigned long lapicid;
+	unsigned long id;
 
-	lapicid = lapic_read(LAPIC_ID) >> 24;
+	id = lapic_read(LAPIC_ID) >> 24;
 
-	printk_debug("CPU %ld going down...\n", lapicid);
+	printk_debug("CPU %ld going down...\n", id);
 
 	/* send an LAPIC INIT to myself */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid));
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT | LAPIC_DM_INIT);
 
 	/* wait for the ipi send to finish */
@@ -322,7 +322,7 @@ void stop_this_cpu(void)
 
 	printk_spew("Deasserting INIT.\n");
 	/* Deassert the LAPIC INIT */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid));	
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));	
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
 
 	printk_spew("Waiting for send to finish...\n");

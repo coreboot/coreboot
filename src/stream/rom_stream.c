@@ -94,7 +94,7 @@ int stream_init(void)
 	 * long term, this has got to be fixed. 
 	 */
 	dest  = (unsigned char *) (16 * 1024 * 1024);
-        printk_debug("Uncompressing to RAM 0x%08lx ", dest);
+        printk_debug("Uncompressing to RAM %p ", dest);
         olen = uncompress((uint8_t *) rom_start, (uint8_t *)dest );
 	printk_debug(" olen = 0x%08lx done.\n", olen);
 	if (olen != 0) {

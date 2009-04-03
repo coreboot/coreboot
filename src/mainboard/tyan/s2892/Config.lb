@@ -63,8 +63,6 @@ if HAVE_ACPI_TABLES
 	#./fadt.o is moved to southbridge/nvidia/ck804/Config.lb
 end
 
-if USE_DCACHE_RAM
-
 if CONFIG_USE_INIT
 	makerule ./auto.o
 		depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
@@ -79,32 +77,6 @@ else
 	end
 end
 
-else
-	##
-	## Romcc output
-	##
-	makerule ./failover.E
-		depends "$(MAINBOARD)/failover.c ../romcc"
-		action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-	end
-
-	makerule ./failover.inc
-		depends "$(MAINBOARD)/failover.c ../romcc"
-		action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-	end
-
-	makerule ./auto.E
-		depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
-		action  "../romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-	end
-
-	makerule ./auto.inc
-		depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
-		action  "../romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-	end
-
-end
-
 ##
 ## Build our 16 bit and 32 bit coreboot entry code
 ##
@@ -115,7 +87,6 @@ end
 
 mainboardinit cpu/x86/32bit/entry32.inc
 
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		ldscript /cpu/x86/32bit/entry32.lds
 	end
@@ -123,7 +94,6 @@ if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		ldscript /cpu/amd/car/cache_as_ram.lds
 	end
-end
 
 ##
 ## Build our reset vector (This is where coreboot is entered)
@@ -134,12 +104,6 @@ if USE_FALLBACK_IMAGE
 else
 	mainboardinit cpu/x86/32bit/reset32.inc
 	ldscript /cpu/x86/32bit/reset32.lds
-end
-
-if USE_DCACHE_RAM
-else
-	### Should this be in the northbridge code?
-	mainboardinit arch/i386/lib/cpu_reset.inc
 end
 
 ##
@@ -156,12 +120,10 @@ if USE_FALLBACK_IMAGE
 	ldscript /southbridge/nvidia/ck804/romstrap.lds
 end
 
-if USE_DCACHE_RAM
 	##
 	## Setup Cache-As-Ram
 	##
 	mainboardinit cpu/amd/car/cache_as_ram.inc
-end
 
 ###
 ### This is the early phase of coreboot startup
@@ -169,12 +131,7 @@ end
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	if USE_DCACHE_RAM
 		ldscript /arch/i386/lib/failover.lds
-	else
-		ldscript /arch/i386/lib/failover.lds
-		mainboardinit ./failover.inc
-	end
 end
 
 ###
@@ -184,24 +141,11 @@ end
 ##
 ## Setup RAM
 ##
-if USE_DCACHE_RAM
-
 	if CONFIG_USE_INIT
 		initobject auto.o
 	else
 		mainboardinit ./auto.inc
 	end
-
-else
-	# ROMCC
-	mainboardinit cpu/x86/fpu/enable_fpu.inc
-	mainboardinit cpu/x86/mmx/enable_mmx.inc
-	mainboardinit cpu/x86/sse/enable_sse.inc
-	mainboardinit ./auto.inc
-	mainboardinit cpu/x86/sse/disable_sse.inc
-	mainboardinit cpu/x86/mmx/disable_mmx.inc
-
-end
 
 ##
 ## Include the secondary Configuration files

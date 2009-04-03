@@ -2275,7 +2275,7 @@ def writemakefile(path):
 		for j in i.roms:
 			#failover is a hack that will go away soon. 
 			if (j != "failover") and (rommapping[j] != "/dev/null"):
-				file.write("\t $(TOP)/util/romtool/romtool %sfs add-payload %s %s/payload\n" % (i.name, rommapping[j], j))
+				file.write("\tif [ -f %s/romfs-support ]; then $(TOP)/util/romtool/romtool %sfs add-payload %s %s/payload `cat %s/romfs-support`; fi\n" % (j, i.name, rommapping[j], j, j))
 		file.write("\t $(TOP)/util/romtool/romtool %sfs print\n" % i.name)
 
 	file.write(".PHONY: all clean romtool")

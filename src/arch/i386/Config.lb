@@ -80,7 +80,8 @@ if USE_FAILOVER_IMAGE
 else
 	makerule coreboot.rom 
 		depends	"coreboot.strip buildrom $(PAYLOAD-1)"
-		action "PAYLOAD=$(PAYLOAD-1); if [ $(CONFIG_ROMFS) -eq 1 ]; then PAYLOAD=/dev/null; fi; ./buildrom $< $@ $$PAYLOAD $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
+		action "PAYLOAD=$(PAYLOAD-1); if [ $(CONFIG_ROMFS) -eq 1 ]; then PAYLOAD=/dev/null; touch romfs-support; fi; ./buildrom $< $@ $$PAYLOAD $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
+		action "if [ $(CONFIG_COMPRESSED_PAYLOAD_LZMA) -eq 1 -a $(CONFIG_ROMFS) -eq 1 ]; then echo l > romfs-support; fi"
 	end
 end
 

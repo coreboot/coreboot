@@ -48,7 +48,7 @@ end
 # unlike nrv2b, lzma is a huge build mess. If they want lzma, they have to have built it
 makerule payload.lzma
 	depends "$(PAYLOAD) "
-	action  "lzma e $(PAYLOAD) $@"
+	action  "lzma -zc $(PAYLOAD) > $@ || lzma e $(PAYLOAD) $@"
 end
 
 

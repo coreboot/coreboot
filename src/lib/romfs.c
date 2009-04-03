@@ -73,7 +73,7 @@ struct romfs_header *romfs_master_header(void)
 {
 	struct romfs_header *header;
 
-	unsigned long ptr = *((unsigned long *) ROMFS_HEADPTR_ADDR);
+	void *ptr = (void *)*((unsigned long *) ROMFS_HEADPTR_ADDR);
 	printk_debug("Check ROMFS header at %p\n", ptr);
 	header = (struct romfs_header *) ptr;
 
@@ -130,22 +130,39 @@ struct romfs_stage *romfs_find_file(const char *name, int type)
 	return (void *) ROMFS_SUBHEADER(file);
 }
 
-int romfs_load_optionrom(const char *name, u32 dest)
+void *romfs_load_optionrom(u16 vendor, u16 device, void * dest)
 {
-	struct romfs_optionrom *orom = (struct romfs_optionrom *)
+	char name[17];
+	struct romfs_optionrom *orom;
+	u8 *src;
+
+	sprintf(name,"pci%04x,%04x.rom", vendor, device);
+
+	orom = (struct romfs_optionrom *)
 		romfs_find_file(name, ROMFS_TYPE_OPTIONROM);
 
 	if (orom == NULL)
-		return -1;
+		return NULL;
+
+	/* They might have specified a dest address. If so, we can decompress. 
+	 * If not, there's not much hope of decompressing or relocating the rom.
+	 * in the common case, the expansion rom is uncompressed, we
+	 * pass 0 in for the dest, and all we have to do is find the rom and 
+	 * return a pointer to it. 
+ 	 */
+
+	src = ((unsigned char *) orom) + sizeof(struct romfs_optionrom);
+
+	if (! dest)
+		return src;
 
 	if (romfs_decompress(ntohl(orom->compression),
-			     ((unsigned char *) orom) +
-			     sizeof(struct romfs_optionrom),
-			     (void *) dest,
+			     src,
+			     dest,
 			     ntohl(orom->len)))
-		return -1;
+		return NULL;
 
-	return 0;
+	return dest;
 }
 
 void * romfs_load_payload(struct lb_memory *lb_mem, const char *name)

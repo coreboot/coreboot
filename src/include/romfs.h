@@ -162,8 +162,7 @@ void * romfs_load_payload(struct lb_memory *lb_mem, const char *name);
 void * romfs_load_stage(const char *name);
 int romfs_execute_stage(const char *name);
 void * romfs_get_file(const char *name);
-int romfs_load_optionrom(const char *name, u32 dest);
-
+void *romfs_load_optionrom(u16 vendor, u16 device, void * dest);
 int run_address(void *f);
 
 #endif

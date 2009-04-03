@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "70"
-#define RELEASE_DATE "23 October 2007"
+#define VERSION_MINOR "71"
+#define RELEASE_DATE "03 April 2009"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -24925,7 +24925,7 @@ static void print_preprocessed_tokens(struct compile_state *state)
 	}
 }
 
-static void compile(const char *filename, 
+static void compile(const char *filename, const char *includefile,
 	struct compiler_state *compiler, struct arch_state *arch)
 {
 	int i;
@@ -24998,7 +24998,10 @@ static void compile(const char *filename,
 	/* Enter the globl definition scope */
 	start_scope(&state);
 	register_builtins(&state);
+
 	compile_file(&state, filename, 1);
+	if (includefile)
+		compile_file(&state, includefile, 1);
 
 	/* Stop if all we want is preprocessor output */
 	if (state.compiler->flags & COMPILER_PP_ONLY) {
@@ -25065,6 +25068,7 @@ static void arg_error(char *fmt, ...)
 int main(int argc, char **argv)
 {
 	const char *filename;
+	const char *includefile = NULL;
 	struct compiler_state compiler;
 	struct arch_state arch;
 	int all_opts;
@@ -25114,6 +25118,14 @@ int main(int argc, char **argv)
 			else if (strncmp(argv[1], "-m", 2) == 0) {
 				result = arch_encode_flag(&arch, argv[1]+2);
 			}
+			else if (strncmp(argv[1], "--include=", 10) == 0) {
+				if (includefile) {
+					arg_error("Only one --include option may be specified.\n");
+				} else {
+					includefile = argv[1] + 10;
+					result = 0;
+				}
+			}
 			if (result < 0) {
 				arg_error("Invalid option specified: %s\n",
 					argv[1]);
@@ -25133,7 +25145,7 @@ int main(int argc, char **argv)
 	if (!filename) {
 		arg_error("No filename specified\n");
 	}
-	compile(filename, &compiler, &arch);
+	compile(filename, includefile, &compiler, &arch);
 
 	return 0;
 }

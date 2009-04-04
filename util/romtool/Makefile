@@ -21,7 +21,7 @@ $(obj)/romtool: $(patsubst %,$(obj)/%,$(OBJ))
 tobj = $(obj)/tools
 tsrc = $(shell pwd)/tools
 
-include tools/Makefile
+include $(tsrc)/Makefile
 
 $(obj)/%.o: %.c $(INC)
 	$(CC) $(CFLAGS) -c -o $@ $<

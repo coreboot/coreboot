@@ -5,7 +5,7 @@ TARGETS += $(tobj)/rom-mkstage $(tobj)/rom-mkpayload
 
 tools: $(tobj)/rom-mkstage $(tobj)/rom-mkpayload
 
-include $(tobj)/lzma/Makefile
+include $(tsrc)/lzma/Makefile
 
 COMMON = common.o compress.o $(LZMA_OBJ)
 

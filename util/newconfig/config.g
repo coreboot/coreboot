@@ -2231,8 +2231,7 @@ def writemakefile(path):
 	file.write("\n\n")	
 
 	# romtool rules
-	file.write("\nromtool:\n\t$(MAKE) -C $(TOP)/util/romtool\n\tmkdir -p tools\n")
-	file.write("\tcp $(TOP)/util/romtool/tools/rom-mkpayload $(TOP)/util/romtool/tools/rom-mkstage tools\n\tcp $(TOP)/util/romtool/romtool romtool\n")
+	file.write("\nromtool:\n\tmkdir -p tools/lzma\n\t$(MAKE) -C $(TOP)/util/romtool obj=$(shell pwd)\n\n")
 
 	file.write("include Makefile.settings\n\n")
 	for i, o in romimages.items():

@@ -24,27 +24,27 @@ LZMA_OBJ += lzma/OutBuffer.o lzma/Alloc.o
 LZMA_OBJ += lzma/CRC.o
 LZMA_OBJ += lzma/lzma-compress.o
 
-lzma/lzma-compress.o: lzma/minilzma.cc
+$(obj)/lzma/lzma-compress.o: lzma/minilzma.cc
 	g++ -o $@ -c -DCOMPACT $<
 
-lzma/%.o: lzma/C/7zip/Compress/LZMA/%.cpp
+$(obj)/lzma/%.o: lzma/C/7zip/Compress/LZMA/%.cpp
 	g++ -o $@ -c $<
 
-lzma/%.o: lzma/C/7zip/Compress/LZ/%.cpp
+$(obj)/lzma/%.o: lzma/C/7zip/Compress/LZ/%.cpp
 	g++ -o $@ -c $<
 
-lzma/%.o: lzma/C/7zip/Compress/RangeCoder/%.cpp
+$(obj)/lzma/%.o: lzma/C/7zip/Compress/RangeCoder/%.cpp
 	g++ -o $@ -c $<
 
-lzma/%.o: lzma/C/7zip/Decompress/%.cpp
+$(obj)/lzma/%.o: lzma/C/7zip/Decompress/%.cpp
 	g++ -o $@ -c $<
 
-lzma/%.o: lzma/C/7zip/Common/%.cpp
+$(obj)/lzma/%.o: lzma/C/7zip/Common/%.cpp
 	g++ -o $@ -c $<
 
-lzma/%.o: lzma/C/Common/%.cpp
+$(obj)/lzma/%.o: lzma/C/Common/%.cpp
 	g++ -o $@ -c $<
 
-lzma/%.o: lzma/%.cc
+$(obj)/lzma/%.o: lzma/%.cc
 	g++ -o $@ -c $<
 

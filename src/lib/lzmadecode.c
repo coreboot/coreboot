@@ -53,7 +53,7 @@
 
 #define RangeDecoderBitTreeDecode(probs, numLevels, res) \
   { int i = numLevels; res = 1; \
-  do { CProb *p = probs + res; RC_GET_BIT(p, res) } while(--i != 0); \
+  do { CProb *cp = probs + res; RC_GET_BIT(cp, res) } while(--i != 0); \
   res -= (1 << numLevels); }
 
 

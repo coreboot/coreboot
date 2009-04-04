@@ -5,7 +5,7 @@
 #  This script builds coreboot images for all available targets.
 #
 #  (C) 2004 by Stefan Reinauer <stepan@openbios.org>
-#  (C) 2006-2008 by coresystems GmbH <info@coresystems.de>
+#  (C) 2006-2009 by coresystems GmbH <info@coresystems.de>
 #
 #  This file is subject to the terms and conditions of the GNU General
 #  Public License. See the file COPYING in the main directory of this
@@ -14,8 +14,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="May 27th, 2008"
-ABUILD_VERSION="0.7"
+ABUILD_DATE="April 3rd, 2009"
+ABUILD_VERSION="0.8"
 
 # Where shall we place all the build trees?
 TARGET=$( pwd )/coreboot-builds
@@ -110,8 +110,9 @@ function architecture
 {
 	VENDOR=$1
 	MAINBOARD=$2
-	cat $LBROOT/src/mainboard/$VENDOR/$MAINBOARD/Config.lb | \
-		grep ^arch | cut -f 2 -d\ 
+	ARCH=`cat $LBROOT/src/mainboard/$VENDOR/$MAINBOARD/Config.lb | \
+		grep ^arch | cut -f 2 -d\ `
+	echo $ARCH | sed s/ppc/powerpc/
 }
 
 function create_config
@@ -335,12 +336,11 @@ function build_target
 	found_crosscompiler=false
 	if which $TARCH-elf-gcc 2>/dev/null >/dev/null; then
 		# i386-elf target needs --divide, for i386-linux, that's the default
-		CC="$TARCH-elf-gcc"
 		if [ "$TARCH" = "i386" ]; then
 			CC="$CC -Wa,--divide"
 		fi
-		echo using $CC
 		CROSS_COMPILE="$TARCH-elf-"
+		echo using $CROSS_COMPILE$CC
 		found_crosscompiler=true
 	fi
 

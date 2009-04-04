@@ -188,7 +188,7 @@ static void w83c553_enable_resources(device_t dev)
 	enable_childrens_resources(dev);
 }
 
-struct device_operations w83c553_ops  = {
+static struct device_operations w83c553_ops  = {
         .read_resources   = pci_dev_read_resources,
         .set_resources    = pci_dev_set_resources,
         .enable_resources = w83c553_enable_resources,
@@ -196,7 +196,7 @@ struct device_operations w83c553_ops  = {
         .scan_bus         = scan_static_bus,
 };
 
-struct pci_driver w83c553f_pci_driver __pci_driver = {
+static const struct pci_driver w83c553f_pci_driver __pci_driver = {
 	/* w83c553f */
 	.ops = &w83c553_ops,
 	.device = PCI_DEVICE_ID_WINBOND_83C553,

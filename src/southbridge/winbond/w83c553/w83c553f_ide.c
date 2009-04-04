@@ -97,7 +97,7 @@ w83c553_ide_init(struct device *dev)
 	printk_info("IDE configuration complete\n");
 }
 
-struct device_operations w83c553_ide_ops  = {
+static struct device_operations w83c553_ide_ops  = {
         .read_resources   = pci_dev_read_resources,
         .set_resources    = pci_dev_set_resources,
         .enable_resources = pci_dev_enable_resources,
@@ -105,7 +105,7 @@ struct device_operations w83c553_ide_ops  = {
         .scan_bus         = 0,
 };
 
-struct pci_driver w83c553f_ide_pci_driver __pci_driver = {
+static const struct pci_driver w83c553f_ide_pci_driver __pci_driver = {
 	/* w83c553f_ide */
 	.ops = &w83c553_ide_ops,
 	.device = PCI_DEVICE_ID_WINBOND_82C105,

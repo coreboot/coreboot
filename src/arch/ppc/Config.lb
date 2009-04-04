@@ -1,8 +1,13 @@
 ldscript init/ldscript.lb
 
-makerule coreboot.rom 
+makerule coreboot.strip 
 	depends	"coreboot" 
 	action	"cp $< $@"
+end
+
+makerule coreboot.rom 
+	depends	"coreboot.strip" 
+	action "cp $< $@"
 end
 
 dir init

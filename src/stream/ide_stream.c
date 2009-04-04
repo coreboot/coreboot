@@ -11,6 +11,7 @@
 #endif
 
 static unsigned long offset;
+
 int stream_init(void)
 {
 	int i,res;
@@ -44,7 +45,8 @@ void stream_fini(void)
 static unsigned char buffer[512];
 static unsigned int block_num = 0;
 static unsigned int first_fill = 1;
-static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offset, byte_offset_t count)
+
+static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offs, byte_offset_t count)
 {
 	byte_offset_t bytes = 0;
 	unsigned char *dest = vdest;
@@ -54,14 +56,14 @@ static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offset, byte_off
 		unsigned int byte_offset, len;
 
 		/* The block is not cached in memory or frist time called */
-		if (block_num != offset / 512 || first_fill) {
-			block_num  = offset / 512;
+		if (block_num != offs / 512 || first_fill) {
+			block_num  = offs / 512;
 			printk_notice (".");
 			ide_read(IDE_BOOT_DRIVE, block_num, buffer);
 			first_fill = 0;
 		}
 
-		byte_offset = offset % 512;
+		byte_offset = offs % 512;
 		len = 512 - byte_offset;
 		if (len > (count - bytes)) {
 			len = (count - bytes);
@@ -69,7 +71,7 @@ static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offset, byte_off
 
 		memcpy(dest, buffer + byte_offset, len);
 
-		offset += len;
+		offs += len;
 		bytes += len;
 		dest += len;
 

@@ -6,11 +6,11 @@ obj ?= $(shell pwd)
 
 COMMANDS=create.o bootblock.o delete.o add.o print.o resize.o
 OBJ=$(COMMANDS) romtool.o util.o fs.o
+INC=romtool.h romfs.h
 
 CC=gcc
-CFLAGS=-g -Wall -W #-Werror
+CFLAGS=-g -Wall # -W -Werror
 
-H=romtool.h
 DESTDIR ?= /usr/local/bin
 
 all: $(obj)/romtool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
@@ -18,10 +18,12 @@ all: $(obj)/romtool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
 $(obj)/romtool: $(patsubst %,$(obj)/%,$(OBJ))
 	$(CC) -o $@ $(patsubst %,$(obj)/%,$(OBJ))
 
-$(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage:
-	$(MAKE) -C tools/ obj=$(obj)/tools $(patsubst tools/%, %, $@)
+tobj = $(obj)/tools
+tsrc = $(shell pwd)/tools
 
-$(obj)/%.o: %.c
+include tools/Makefile
+
+$(obj)/%.o: %.c $(INC)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 install: $(obj)/romtool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
@@ -33,6 +35,6 @@ install: $(obj)/romtool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
 tags: 
 	ctags *.[ch] */*.[ch]
 
-clean:
-	$(MAKE) -C tools/ clean
+clean: tools-clean
 	rm -f $(patsubst %,$(obj)/%,$(OBJ)) $(obj)/romtool
+

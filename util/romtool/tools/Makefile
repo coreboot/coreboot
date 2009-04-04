@@ -1,25 +1,24 @@
-obj ?= $(shell pwd)
+tobj ?= $(shell pwd)
+tsrc ?= $(shell pwd)
 
-CC=gcc
-CFLAGS=-Wall -W -Werror -g
+TARGETS += $(tobj)/rom-mkstage $(tobj)/rom-mkpayload
 
-all: rom-mkstage rom-mkpayload
+tools: $(tobj)/rom-mkstage $(tobj)/rom-mkpayload
 
-include lzma/Makefile
+include $(tobj)/lzma/Makefile
 
-COMMON= common.o compress.o $(LZMA_OBJ)
+COMMON = common.o compress.o $(LZMA_OBJ)
 
+$(tobj)/rom-mkstage: $(tobj)/rom-mkstage.o $(patsubst %,$(tobj)/%,$(COMMON))
+	$(CXX) $(CFLAGS) -o $@ $^
 
-$(obj)/rom-mkstage: $(obj)/rom-mkstage.o $(patsubst %,$(obj)/%,$(COMMON))
-	$(CXX) -g -o $@ $(obj)/rom-mkstage.o $(patsubst %,$(obj)/%,$(COMMON))
+$(tobj)/rom-mkpayload: $(tobj)/rom-mkpayload.o $(patsubst %,$(tobj)/%,$(COMMON))
+	$(CXX) $(CFLAGS) -o $@ $^
 
-$(obj)/rom-mkpayload: $(obj)/rom-mkpayload.o $(patsubst %,$(obj)/%,$(COMMON))
-	$(CXX) -o $@ $(obj)/rom-mkpayload.o $(patsubst %,$(obj)/%,$(COMMON))
+$(tobj)/%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(obj)/%.o: %.c
-	$(CC) -Wall -Werror -g -c -o $@ $<
-
-clean:
-	@ rm -f rom-mkpayload.o rom-mkstage.o $(COMMON)
-	@ rm -f rom-mkpayload rom-mkstage
+tools-clean:
+	rm -f $(tobj)/rom-mkpayload.o $(tobj)/rom-mkstage.o $(patsubst %,$(tobj)/%,$(COMMON))
+	rm -f $(tobj)/rom-mkpayload $(tobj)/rom-mkstage
 

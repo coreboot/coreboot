@@ -163,7 +163,7 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 		/* If the compressed section is larger, then use the
 		   original stuff */
 
-		if (len > phdr[i].p_filesz) {
+		if ((unsigned int)len > phdr[i].p_filesz) {
 			segs[segments].compression = 0;
 			segs[segments].len = htonl(phdr[i].p_filesz);
 

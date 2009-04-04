@@ -9,7 +9,7 @@ romtool: $(OBJ)
 	$(CC) -o $@ $(OBJ)
 
 tools/rom-mkpayload tools/rom-mkstage:
-	make -C tools/ $(patsubst tools/%, %, $@)
+	$(MAKE) -C tools/ $(patsubst tools/%, %, $@)
 
 %.o: %.c
 	$(CC) -g -Wall -Werror -c -o $@ $<
@@ -23,5 +23,5 @@ install: romtool tools/rom-mkpayload tools/rom-mkstage
 tags: 
 	ctags *.[ch] */*.[ch]
 clean:
-	make -C tools/ clean
+	$(MAKE) -C tools/ clean
 	rm -f *.o romtool

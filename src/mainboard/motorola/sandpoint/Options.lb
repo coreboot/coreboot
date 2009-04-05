@@ -60,7 +60,11 @@ default PNP_CFGADDR=0x15c
 default PNP_CFGDATA=0x15d
 default _IO_BASE=ISA_IO_BASE
 
-
+##
+## The default compiler
+##
+default CC="$(CROSS_COMPILE)gcc"
+default HOSTCC="gcc"
 ## use a cross compiler
 #default CROSS_COMPILE="powerpc-eabi-"
 #default CROSS_COMPILE="ppc_74xx-"

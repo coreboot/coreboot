@@ -195,6 +195,4 @@
 #define W83C553F_DMA2_CM		0xDC
 #define W83C553F_DMA2_RWAMB		0xDE
 
-extern struct device_operations w83c553_ops;
-
 #endif /* _W83C553_H */

@@ -64,6 +64,11 @@ default TTYS0_DIV=4
 ##
 default TTYS0_BASE=0x3f8
 
+##
+## The default compiler
+##
+default CC="$(CROSS_COMPILE)gcc"
+default HOSTCC="gcc"
 ## use a cross compiler
 #default CROSS_COMPILE="powerpc-eabi-"
 #default CROSS_COMPILE="ppc_74xx-"

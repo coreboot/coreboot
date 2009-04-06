@@ -64,8 +64,11 @@ uint64_t high_tables_size;
 
 struct lb_memory *write_tables(void)
 {
-	unsigned long low_table_start, low_table_end, new_low_table_end;
+	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
+#if HAVE_MP_TABLE == 1
+	unsigned long new_low_table_end;
+#endif
 
 #if HAVE_HIGH_TABLES == 1
 	/* Even if high tables are configured, all tables are copied both to the

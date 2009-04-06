@@ -204,7 +204,7 @@ struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_h
 	forward = (struct lb_forward *)rec;
 	forward->tag = LB_TAG_FORWARD;
 	forward->size = sizeof(*forward);
-	forward->forward = (uint64_t) next_header;
+	forward->forward = (uint64_t)(unsigned long)next_header;
 	return forward;
 }
 

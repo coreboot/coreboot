@@ -144,7 +144,7 @@ static void ide_init_i82371ab_eb_mb(struct device *dev)
 }
 
 /* Intel 82371FB/SB */
-static const struct device_operations ide_ops_fb_sb = {
+static struct device_operations ide_ops_fb_sb = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
@@ -155,7 +155,7 @@ static const struct device_operations ide_ops_fb_sb = {
 };
 
 /* Intel 82371AB/EB/MB */
-static const struct device_operations ide_ops_ab_eb_mb = {
+static struct device_operations ide_ops_ab_eb_mb = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,

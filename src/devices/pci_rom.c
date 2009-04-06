@@ -31,32 +31,40 @@
 
 struct rom_header * pci_rom_probe(struct device *dev)
 {
-	unsigned long rom_address;
+	unsigned long rom_address = 0;
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
 
 	if (CONFIG_ROMFS) {
-		rom_address = (unsigned long) romfs_load_optionrom(dev->vendor, dev->device, NULL);
+		void *v;
 		/* if it's in FLASH, then it's as if dev->on_mainboard was true */
-		dev->on_mainboard = 1;
-		/* and we might as well set the address correctly */
-		dev->rom_address = rom_address;
-	} else if (dev->on_mainboard) {
+		v = romfs_load_optionrom(dev->vendor, dev->device, NULL);
+		printk_debug("In cbfs, rom address for %s = %lx\n", 
+				dev_path(dev), rom_address);
+		if (v) {
+			dev->rom_address = v;
+			dev->on_mainboard = 1;
+		}
+	} 
+
+	if (dev->on_mainboard) {
 		/* this is here as a legacy path. We hope it goes away soon. Users should not have to 
 		 * compute the ROM address at build time!
 		 */
                 // in case some device PCI_ROM_ADDRESS can not be set or readonly 
 		rom_address = dev->rom_address;
+		printk_debug("On mainboard, rom address for %s = %lx\n", 
+			dev_path(dev), rom_address);
         } else {
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
+		printk_debug("On card, rom address for %s = %lx\n", 
+				dev_path(dev), rom_address);
 	}
 
 	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
 		return NULL;
 	}
 
-	printk_debug("rom address for %s = %lx\n", dev_path(dev), rom_address);
-	
 	if(!dev->on_mainboard) {
 		/* enable expansion ROM address decoding */
 		pci_write_config32(dev, PCI_ROM_ADDRESS,

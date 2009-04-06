@@ -151,7 +151,8 @@ void *romfs_load_optionrom(u16 vendor, u16 device, void * dest)
 	 * return a pointer to it. 
  	 */
 
-	src = ((unsigned char *) orom) + sizeof(struct romfs_optionrom);
+	/* BUG: the romtool is (not yet) including a romfs_optionrom header */
+	src = ((unsigned char *) orom); // + sizeof(struct romfs_optionrom);
 
 	if (! dest)
 		return src;

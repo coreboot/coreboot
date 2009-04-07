@@ -7,7 +7,10 @@
 #include <arch/io.h>
 #include "chip.h"
 
-static void vga_init(device_t dev)
+/* not sure how these are routed in qemu */
+static const unsigned char enetIrqs[4] = { 11, 0, 0, 0 };
+
+static void qemu_init(device_t dev)
 {
 	/* The VGA OPROM already lives at 0xc0000,
 	 * force coreboot to use it.
@@ -22,13 +25,19 @@ static void vga_init(device_t dev)
 	 * emulate a SuperIO chip
 	 */
 	init_pc_keyboard(0x60, 0x64, 0);
+
+	/* The PIRQ table is not working well for interrupt routing purposes. 
+	 * so we'll just set the IRQ directly. 
+	*/
+	printk_info("setting ethernet\n");
+	pci_assign_irqs(0, 3, enetIrqs);
 }
 
 static struct device_operations vga_operations = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = vga_init,
+	.init             = qemu_init,
 	.ops_pci          = 0,
 };
 

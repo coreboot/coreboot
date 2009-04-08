@@ -237,16 +237,16 @@ int romfs_execute_stage(const char *name)
 }
 
 /**
- *  * run_address is passed the address of a function taking no parameters and
- *   * jumps to it, returning the result. 
- *    * @param f the address to call as a function. 
- *     * returns value returned by the function. 
- *      */
+ * run_address is passed the address of a function taking no parameters and
+ * jumps to it, returning the result. 
+ * @param f the address to call as a function. 
+ * returns value returned by the function. 
+ */
 
 int run_address(void *f)
 {
-        int (*v) (void);
-        v = f;
-        return v();
+	int (*v) (void);
+	v = f;
+	return v();
 }
 

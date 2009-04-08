@@ -1,0 +1,409 @@
+
+Received: from www.crouse-house.com ([199.45.160.146]
+	for coreboot@coreboot.org; Fri, 19 Dec 2008 23:11:59 +0100
+From: Jordan Crouse <jordan@cosmicpenguin.net>
+
+
+Greetings.  I apologize for the incompleteness of what I am about to 
+discuss.  I was planning on working on it leisurely, but my employment 
+circumstances changed and I've been trying to get it completed in a 
+hurry before I had to leave it behind.
+
+I've been thinking a lot about LAR lately, and ways to make it more 
+extensible and robust.  Marc and I have been trading ideas back and 
+forth for a number of months, and over time a clear idea of what I 
+wanted to do started to take shape.
+
+My goal was to add small things to LAR while retaining the overall 
+scheme.  Over time, the scheme evolved slightly, but I think you'll find 
+that it remains true to the original idea.  Below is the beginnings of 
+an architecture document - I did it in text form, but if met with 
+aclaim, it should be wikified.  This presents what I call ROMFS - the 
+next generation LAR for next generation Coreboot.  Its easier to 
+describe what it is by describing what changed:
+
+A header has been added somewhere in the bootblock similar to Carl 
+Daniel's scheme.  In addition to the coreboot information, the header 
+reports the size of the ROM, the alignment of the blocks, and the offset 
+of the first component in the ROMFS.   The master header provides all 
+the information LAR needs plus the magic number information flashrom needs.
+
+Each "file" (or component, as I style them) now has a type associated 
+with it. The type is used by coreboot to identify the type of file that 
+it is loading, and it can also be used by payloads to group items in the 
+ROMFS by type (i.e - bayou can ask for all components that are payloads).
+
+The header on each "file" (or component, as I like to style them) has 
+been simplified - We now only store the length, the type, the checksum, 
+and the offset to the data.  The name scheme remains the same.  The 
+addtional information, which is component specific, has been moved to 
+the component itself (see below).
+
+The components are arranged in the ROM aligned along the specified 
+alignment from the master header - this is to facilitate partial re-write.
+
+Other then that, the LAR ideas remain pretty much the same.
+
+The plan for moving the metadata to the components is to allow many 
+different kinds of components, not all of which are groked by coreboot. 
+  However, there are three essential component types that are groked by 
+coreboot, and they are defined:
+
+stage - the stage is being parsed from the original ELF, and stored in 
+the ROM as a single blob of binary data.  The load address, start 
+address, compression type and length are stored in the component sub-header.
+
+payload - this is essentially SELF in different clothing - same idea as 
+SELF, with the sub-header as above.
+
+optionrom - This is in flux - right now, the optionrom is stored 
+unadulterated and uncompressed, but that is likely to be changed.
+
+Following this email are two replies containing the v3 code and a new 
+ROM tool to implement this respectively.  I told you that I was trying 
+to get this out before I disappear, and I'm not kidding - the code is 
+compile tested and not run-tested.  I hope that somebody will embrace 
+this code and take it the rest of the way, otherwise it will die a 
+pretty short death.
+
+I realize that this will start an awesome flamewar, and I'm looking 
+forward to it.  Thanks for listening to me over the years - and good 
+luck with coreboot.  When you all make a million dollars, send me a few 
+bucks, will you?
+
+Jordan
+
+Coreboot ROMFS Specification
+Jordan Crouse <jordan@cosmicpenguin.net>
+
+= Introduction =
+
+This document describes the coreboot ROMFS specification (from here
+referred to as ROMFS).  ROMFS is a scheme for managing independent chunks
+of data in a system ROM.  Though not a true filesystem, the style and
+concepts are similar.
+
+
+= Architecture =
+
+The ROMFS architecture looks like the following:
+
+/---------------\ <-- Start of ROM
+| /-----------\ | --|
+| | Header    | |   |
+| |-----------| |   |
+| | Name      | |   |-- Component
+| |-----------| |   |
+| |Data       | |   |
+| |..         | |   |
+| \-----------/ | --|
+|               |
+| /-----------\ |
+| | Header    | |
+| |-----------| |
+| | Name      | |
+| |-----------| |
+| |Data       | |
+| |..         | |
+| \-----------/ |
+|               |
+| ...           |
+| /-----------\ |
+| |           | |
+| | Bootblock | |
+| | --------- | |
+| | Reset     | | <- 0xFFFFFFF0
+| \-----------/ |
+\---------------/
+
+
+The ROMFS architecture consists of a binary associated with a physical
+ROM disk referred hereafter as the ROM. A number of independent of
+components, each with a  header prepended on to data are located within
+the ROM.  The components are nominally arranged sequentially, though they
+are aligned along a pre-defined boundary.
+
+The bootblock occupies the last 20k of the ROM.  Within
+the bootblock is a master header containing information about the ROM
+including the size, alignment of the components, and the offset of the
+start of the first ROMFS component within the ROM.
+
+= Master Header =
+
+The master header contains essential information about the ROM that is
+used by both the ROMFS implementation within coreboot at runtime as well
+as host based utilities to create and manage the ROM.  The master header
+will be located somewhere within the bootblock (last 20k of the ROM).  A
+pointer to the location of the header will be located at offset
+-12 from the end of the ROM.  This translates to address 0xFFFFFFF4 on a
+normal x86 system.  The pointer will be to physical memory somewhere
+between - 0xFFFFB000 and 0xFFFFFFF0.  This makes it easier for coreboot
+to locate the header at run time.  Build time utilities will
+need to read the pointer and do the appropriate math to locate the header.
+
+The following is the structure of the master header:
+
+struct romfs_header {
+	unsigned int magic;
+	unsigned int size;
+	unsigned int align;
+	unsigned int offset;
+};
+
+The meaning of each member is as follows:
+
+'magic' is a 32 bit number that identifies the ROM as a ROMFS type.  The 
+magic
+number is 0x4F524243, which is 'ORBC' in ASCII.
+
+'size' is the size of the ROM in bytes.  Coreboot will subtract 'size' from
+0xFFFFFFFF to locate the beginning of the ROM in memory.
+
+'align' is the number of bytes that each component is aligned to within the
+ROM.  This is used to make sure that each component is aligned correctly 
+with
+regards to the erase block sizes on the ROM - allowing one to replace a
+component at runtime without disturbing the others.
+
+'offset' is the offset of the the first ROMFS component (from the start of
+the ROM).  This is to allow for arbitrary space to be left at the beginning
+of the ROM for things like embedded controller firmware.
+
+= Bootblock =
+The bootblock is a mandatory component in the ROM.  It is located in the 
+last
+20k of the ROM space, and contains, among other things, the location of the
+master header and the entry point for the loader firmware.  The bootblock
+does not have a component header attached to it.
+
+= Components =
+
+ROMFS components are placed in the ROM starting at 'offset' specified in
+the master header and ending at the bootblock.  Thus the total size 
+available
+for components in the ROM is (ROM size - 20k - 'offset').  Each ROMFS
+component is to be aligned according to the 'align' value in the header.
+Thus, if a component of size 1052 is located at offset 0 with an 'align' 
+value
+of 1024, the next component will be located at offset 2048.
+
+Each ROMFS component will be indexed with a unique ASCII string name of
+unlimited size.
+
+Each ROMFS component starts with a header:
+
+struct ROMFS_file {
+         char magic[8];
+         unsigned int len;
+         unsigned int type;
+         unsigned int checksum;
+         unsigned int offset;
+};
+
+'magic' is a magic value used to identify the header.  During runtime,
+coreboot will scan the ROM looking for this value.  The default magic is
+the string 'LARCHIVE'.
+
+'len' is the length of the data, not including the size of the header and
+the size of the name.
+
+'type' is a 32 bit number indicating the type of data that is attached.
+The data type is used in a number of ways, as detailed in the section
+below.
+
+'checksum' is a 32bit checksum of the entire component, including the
+header and name.
+
+'offset' is the start of the component data, based off the start of the 
+header.
+The difference between the size of the header and offset is the size of the
+component name.
+
+Immediately following the header will be the name of the component, 
+which will
+null terminated and 16 byte aligned.   The following picture shows the
+structure of the header:
+
+/--------\  <- start
+| Header |
+|--------|  <- sizeof(struct romfs_file)
+| Name   |
+|--------|  <- 'offset'
+| Data   |
+| ...    |
+\--------/  <- start + 'offset' + 'len'
+
+== Searching Alogrithm ==
+
+To locate a specific component in the ROM, one starts at the 'offset'
+specified in the ROMFS master header.  For this example, the offset will
+be 0.
+
+ From that offset, the code should search for the magic string on the
+component, jumping 'align' bytes each time.  So, assuming that 'align' is
+16, the code will search for the string 'LARCHIVE' at offset 0, 16, 32, etc.
+If the offset ever exceeds the allowable range for ROMFS components, then no
+component was found.
+
+Upon recognizing a component, the software then has to search for the
+specific name of the component.  This is accomplished by comparing the
+desired name with the string on the component located at
+offset + sizeof(struct romfs_file).  If the string matches, then the 
+component
+has been located, otherwise the software should add 'offset' + 'len' to
+the offset and resume the search for the magic value.
+
+== Data Types ==
+
+The 'type' member of struct romfs_file is used to identify the content
+of the component data, and is used by coreboot and other
+run-time entities to make decisions about how to handle the data.
+
+There are three component types that are essential to coreboot, and so
+are defined here.
+
+=== Stages ===
+
+Stages are code loaded by coreboot during the boot process.  They are
+essential to a successful boot.   Stages are comprised of a single blob
+of binary data that is to be loaded into a particular location in memory
+and executed.   The uncompressed header contains information about how
+large the data is, and where it should be placed, and what additional memory
+needs to be cleared.
+
+Stages are assigned a component value of 0x10.  When coreboot sees this
+component type, it knows that it should pass the data to a sub-function
+that will process the stage.
+
+The following is the format of a stage component:
+
+/--------\
+| Header |
+|--------|
+| Binary |
+| ..     |
+\--------/
+
+The header is defined as:
+
+struct romfs_stage {
+         unsigned int compression;
+         unsigned long long entry;
+         unsigned long long load;
+         unsigned int len;
+         unsigned int memlen;
+};
+
+'compression' is an integer defining how the data is compressed.  There
+are three compression types defined by this version of the standard:
+none (0x0), lzma (0x1), and nrv2b (0x02), though additional types may be
+added assuming that coreboot understands how to handle the scheme.
+
+'entry' is a 64 bit value indicating the location where  the program
+counter should jump following the loading of the stage.  This should be
+an absolute physical memory address.
+
+'load' is a 64 bit value indicating where the subsequent data should be
+loaded.  This should be an absolute physical memory address.
+
+'len' is the length of the compressed data in the component.
+
+'memlen' is the amount of memory that will be used by the component when
+it is loaded.
+
+The component data will start immediately following the header.
+
+When coreboot loads a stage, it will first zero the memory from 'load' to
+'memlen'.  It will then decompress the component data according to the
+specified scheme and place it in memory starting at 'load'.  Following that,
+it will jump execution to the address specified by 'entry'.
+Some components are designed to execute directly from the ROM - coreboot
+knows which components must do that and will act accordingly.
+
+=== Payloads ===
+
+Payloads are loaded by coreboot following the boot process.
+
+Stages are assigned a component value of 0x20.  When coreboot sees this
+component type, it knows that it should pass the data to a sub-function
+that will process the payload.  Furthermore, other run time
+applications such as 'bayou' may easily index all available payloads
+on the system by searching for the payload type.
+
+
+The following is the format of a stage component:
+
+/-----------\
+| Header    |
+| Segment 1 |
+| Segment 2 |
+| ...       |
+|-----------|
+| Binary    |
+| ..        |
+\-----------/
+
+The header is as follows:
+
+struct romfs_payload {
+         struct romfs_payload_segment segments;
+}
+
+The header contains a number of segments corresponding to the segments
+that need to be loaded for the payload.
+
+The following is the structure of each segment header:
+
+struct romfs_payload_segment {
+         unsigned int type;
+         unsigned int compression;
+         unsigned int offset;
+         unsigned long long load_addr;
+         unsigned int len;
+         unsigned int mem_len;
+};
+
+'type' is the type of segment, one of the following:
+
+PAYLOAD_SEGMENT_CODE   0x45444F43   The segment contains executable code
+PAYLOAD_SEGMENT_DATA   0x41544144   The segment contains data
+PAYLOAD_SEGMENT_BSS    0x20535342   The memory speicfied by the segment
+                                     should be zeroed
+PAYLOAD_SEGMENT_PARAMS 0x41524150   The segment contains information for
+                                     the payload
+PAYLOAD_SEGMENT_ENTRY  0x52544E45   The segment contains the entry point
+		       		    for the payload
+
+'compression' is the compression scheme for the segment.  Each segment can
+be independently compressed. There are three compression types defined by
+this version of the standard: none (0x0), lzma (0x1), and nrv2b (0x02),
+though additional types may be added assuming that coreboot understands
+how to handle the scheme.
+
+'offset' is the address of the data within the component, starting from
+the component header.
+
+'load_addr' is a 64 bit value indicating where the segment should be placed
+in memory.
+
+'len' is a 32 bit value indicating the size of the segment within the
+component.
+
+'mem_len' is the size of the data when it is placed into memory.
+
+The data will located immediately following the last segment.
+
+=== Option ROMS ===
+
+The third specified component type will be Option ROMs.  Option ROMS will
+have component type '0x30'.  They will have no additional header, the
+uncompressed binary data will be located in the data portion of the
+component.
+
+=== NULL ===
+
+There is a 4th component type ,defined as NULL (0xFFFFFFFF).  This is
+the "don't care" component type.  This can be used when the component
+type is not necessary (such as when the name of the component is unique.
+i.e. option_table).  It is recommended that all components be assigned a
+unique type, but NULL can be used when the type does not matter.

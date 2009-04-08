@@ -2034,7 +2034,7 @@ def writeimagesettings(image):
 	for o in exported:
 		file.write("export VARIABLES += %s\n" % o.name)
 	file.write("\n")
-	writemakefilefooter(file,filename)
+	# writemakefilefooter(file,filename)
 	file.close()
 
 # write the romimage makefile
@@ -2224,11 +2224,21 @@ def writemakefile(path):
 	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
 
+	# Hack to get the necessary settings (CONFIG_ROMFS):
+	file.write("include %s/Makefile.settings\n\n" % romimages.keys()[0])
+
 	# main rule
+	file.write("ifeq \"$(CONFIG_ROMFS)\" \"1\"\n")
 	file.write("\nall: ")
 	for i in buildroms:
 		file.write(" %sfs" % i.name)
-	file.write("\n\n")	
+	file.write("\n")
+	file.write("else")
+	file.write("\nall: ")
+	for i in buildroms:
+		file.write(" %s" % i.name)
+	file.write("\n")
+	file.write("endif\n\n")
 
 	# romtool rules
 	file.write("\nromtool:\n\tmkdir -p tools/lzma\n\t$(MAKE) -C $(TOP)/util/romtool obj=$(shell pwd)\n\n")

@@ -106,8 +106,7 @@ static int w83627hf_gpio24_raise(uint16_t index, const char *name)
 
 static int w83627hf_gpio24_raise_2e(const char *name)
 {
-	/* TODO: Typo? Shouldn't this be 0x2e? */
-	return w83627hf_gpio24_raise(0x2d, name);
+	return w83627hf_gpio24_raise(0x2e, name);
 }
 
 /**

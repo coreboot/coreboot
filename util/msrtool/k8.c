@@ -38,7 +38,7 @@ const struct msrdef k8_msrs[] = {
 		}},
 		{ 13, 1, "LMSLE:", "Long Mode Segment Limit Enable", PRESENT_DEC, {
 			{ MSR1(0), "Long mode segment limit check disabled" },
-			{ MSR1(1), "Long mode segment limit check enalbed" },
+			{ MSR1(1), "Long mode segment limit check enabled" },
 			{ BITVAL_EOT }
 		}},
 		{ 12, 1, "SVME:", "SVM Enable", PRESENT_DEC, {
@@ -134,7 +134,7 @@ const struct msrdef k8_msrs[] = {
 		{ BITS_EOT }
 	}},
 
-	{ 0xC0010015, MSRTYPE_RDWR, MSR2(0, 0), "HWCR Register", "This register controls the harware configuration", {
+	{ 0xC0010015, MSRTYPE_RDWR, MSR2(0, 0), "HWCR Register", "This register controls the hardware configuration", {
 		{ 63, 32, RESERVED },
 		{ 31, 2, RESERVED },
 		{ 29, 6, "START_FID:", "Status of the startup FID", PRESENT_HEX, {

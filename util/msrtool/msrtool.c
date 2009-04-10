@@ -350,6 +350,7 @@ int main(int argc, char *argv[]) {
 
 	if (sys && !sys->name) {
 		fprintf(stderr, "Unable to detect the current operating system!\n");
+		fprintf(stderr, "On Linux, please do 'modprobe msr' and retry.\n");
 		fprintf(stderr, "Please send a report or patch to coreboot@coreboot.org. Thanks for your help!\n");
 		fprintf(stderr, "\n");
 	}

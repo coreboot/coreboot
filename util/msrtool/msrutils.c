@@ -191,7 +191,7 @@ int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu) {
 
 /**
  * Parse a hexadecimal string into an MSR value.
- * 
+ *
  * Leading 0x or 0X is optional, the string is always parsed as hexadecimal.
  * Any non-hexadecimal character can be used to separate the high 32 bits and
  * the low 32 bits. If there is such a separator, high and low values do not

@@ -14,8 +14,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="April 3rd, 2009"
-ABUILD_VERSION="0.8"
+ABUILD_DATE="April 10th, 2009"
+ABUILD_VERSION="0.8.1"
 
 # Where shall we place all the build trees?
 TARGET=$( pwd )/coreboot-builds
@@ -329,6 +329,12 @@ function build_target
 	MAINBOARD=$2
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
+	# Allow architecture override in an abuild.info file.
+	# This is used for the Motorola Sandpoint, which is not a real target
+	# but a skeleton target for the Sandpoint X3.
+	[ -r "$LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info" ] && \
+		source $LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info
+
 	# default setting
 
 	CC="${CROSS_COMPILE}gcc"
@@ -355,10 +361,7 @@ function build_target
 	xml ""
 	xml "  <architecture>$TARCH</architecture>"
 	xml ""
-	
-	[ -r "$LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info" ] && \
-		source $LBROOT/src/mainboard/${VENDOR}/${MAINBOARD}/abuild.info
-	
+
 	if [ "$ARCH" = "$TARCH" -o $found_crosscompiler = true ]; then
 		printf " ($TARCH: ok)\n"
 	else

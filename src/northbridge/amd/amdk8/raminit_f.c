@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include "raminit.h"
 #include "amdk8_f.h"
-#include "spd_ddr2.h"
+#include <spd_ddr2.h>
 
 #ifndef QRANK_DIMM_SUPPORT
 #define QRANK_DIMM_SUPPORT 0

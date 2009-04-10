@@ -1,14 +1,17 @@
 .TH FLASHROM 8 "January 5, 2009"
 .SH NAME
-flashrom \- a universal BIOS/ROM/flash programming utility
+flashrom \- utility for reading, writing, and erasong BIOS/ROM/flash chips
 .SH SYNOPSIS
 .B flashrom \fR[\fB\-rwvEVfLhR\fR] [\fB\-c\fR chipname] [\fB\-s\fR exclude_start] [\fB\-e\fR exclude_end]
          [\fB-m\fR vendor:part] [\fB-l\fR file.layout] [\fB-i\fR image_name] [file]
 .SH DESCRIPTION
 .B flashrom
-is a universal flash programming utility for DIP, PLCC, or SPI flash ROM
-chips. It can be used to flash BIOS/coreboot/firmware images, for example.
-.sp
+is a utility for reading, writing, and erasing flash ROM chips.
+It's often used to flash BIOS/coreboot/firmware images.
+.PP
+It supports a wide range of DIP32, PLCC32, DIP8, and TSOP chips, which use
+various protocols such as LPC, FWH, parallel flash, or SPI.
+.PP
 (see
 .B http://coreboot.org
 for details on coreboot)
@@ -16,17 +19,21 @@ for details on coreboot)
 If no file is specified, then all that happens
 is that flash info is dumped and the flash chip is set to writable.
 .TP
-.B "\-r, \-\-read"
-Read flash ROM contents and save them into the given file.
+.B "\-r, \-\-read <file>"
+Read flash ROM contents and save them into the given
+.BR <file> .
 .TP
-.B "\-w, \-\-write"
-Write file into flash ROM (default when file is specified).
+.B "\-w, \-\-write <file>"
+Write file into flash ROM (default when
+.B <file>
+is specified).
 .TP
-.B "\-v, \-\-verify"
-Verify the flash ROM contents against the given file.
+.B "\-v, \-\-verify <file>"
+Verify the flash ROM contents against the given
+.BR <file> .
 .TP
 .B "\-E, \-\-erase"
-Erase the flash ROM device.
+Erase the flash ROM chip.
 .TP
 .B "\-V, \-\-verbose"
 More verbose output.
@@ -53,10 +60,11 @@ to be used on this board.
 Note: This check only works while coreboot is running, and only for those
 boards where the coreboot code supports it.
 .TP
-.B "\-l, \-\-layout" <layout.file>
-Read ROM layout from file.
+.B "\-l, \-\-layout <file>"
+Read ROM layout from
+.BR <file> .
 .TP
-.B "\-i, \-\-image" <name>
+.B "\-i, \-\-image <name>"
 Only flash image
 .B <name>
 from flash layout.
@@ -71,6 +79,9 @@ special support in flashrom. Some of the known-good/known-bad and tested ones
 are listed at
 .BR http://coreboot.org/Flashrom#Supported_mainboards ,
 but the list is not exhaustive, of course.
+.sp
+Please let us know if you can verify other boards to work or not work out
+of the box.
 .TP
 .B "\-h, \-\-help"
 Show a help text and exit.

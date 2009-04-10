@@ -2,8 +2,11 @@
 Flashrom README
 -------------------------------------------------------------------------------
 
-Flashrom is a universal flash programming utility for DIP, PLCC, or SPI
-flash ROM chips. It can be used to flash BIOS/coreboot/firmware images.
+Flashrom is a utility for reading, writing, and erasing flash ROM chips.
+It's often used to flash BIOS/coreboot/firmware images.
+
+It supports a wide range of DIP32, PLCC32, DIP8, and TSOP chips, which use
+various protocols such as LPC, FWH, parallel flash, or SPI.
 
 (see http://coreboot.org for details on coreboot)
 
@@ -46,16 +49,17 @@ Usage
 
 Exit status
 -----------
-flashrom exits with 0 on success, 1 on most failures but with 2 if /dev/mem
+
+Flashrom exits with 0 on success, 1 on most failures but with 2 if /dev/mem
 (/dev/xsvc on Solaris) can not be opened and with 3 if a call to mmap() fails.
 
 
 coreboot Table and Mainboard Identification
 --------------------------------------------
 
-Flashrom reads the coreboot table to determine the current mainboard
-(parse DMI as well in future?). If no coreboot table could be read
-or if you want to override these values, you can specify -m, e.g.:
+Flashrom reads the coreboot table to determine the current mainboard. If no
+coreboot table could be read or if you want to override these values, you can
+specify -m, e.g.:
 
  $ flashrom -w --mainboard AGAMI:ARUMA agami_aruma.rom
 
@@ -92,15 +96,6 @@ Currently overlapping sections are not supported.
 ROM layouts should replace the -s and -e option since they are more 
 flexible and they should lead to a ROM update file format with the 
 ROM layout and the ROM image in one file (cpio, zip or something?).
-
-
-Disk on Chip support
---------------------
-
-Disk on Chip support was removed from flashrom in r3382. It had already
-been disabled by default in flashrom for several years because the code
-was considered unstable and incomplete. The products intended to work
-have been End-Of-Lifed by the manufacturer for a long time.
 
 
 Supported Flash Chips / Chipsets / Mainboards

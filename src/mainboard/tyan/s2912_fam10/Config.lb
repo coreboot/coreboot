@@ -263,7 +263,7 @@ chip northbridge/amd/amdfam10/root_complex
 							device pnp 2e.9 off end #  GPIO_SUSLED
 							device pnp 2e.a off end #  ACPI
 							device pnp 2e.b on #  HW Monitor
- 								io 0x60 = 0x290
+								io 0x60 = 0x290
 								irq 0x70 = 5
 							end
 						end
@@ -330,7 +330,7 @@ chip northbridge/amd/amdfam10/root_complex
 							device pci 4.0 on end
 							register "rom_address" = "0xfff00000"
 						end
-					 end # PCI
+					end # PCI
 					device pci 6.1 off end # AZA
 					device pci 8.0 on end # NIC
 					device pci 9.0 on end # NIC

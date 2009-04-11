@@ -81,15 +81,17 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
+	makedefine CACHE_AS_RAM_AUTO_C:=cache_as_ram_auto.c
+
 	if CONFIG_USE_INIT
 		makerule ./cache_as_ram_auto.o
-			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			depends "$(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) option_table.h"
 			action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
 		end
 	else
 		makerule ./cache_as_ram_auto.inc
-			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-			action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall $(DEBUG_CFLAGS) -c -S -o $@"
+			depends "$(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) option_table.h"
+			action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CFLAGS) $(CPPFLAGS) $(MAINBOARD)/$(CACHE_AS_RAM_AUTO_C) -Os -nostdinc -nostdlib -fno-builtin $(DEBUG_CFLAGS) -Wall -c -S -o $@"
 			action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end
@@ -100,7 +102,7 @@ else
     if CONFIG_AP_CODE_IN_CAR
 	makerule ./apc_auto.o
 		depends "$(MAINBOARD)/apc_auto.c option_table.h"
-		action "$(CC) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+		action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/apc_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
 	end
 	ldscript /arch/i386/init/ldscript_apc.lb
     end
@@ -259,7 +261,7 @@ chip northbridge/amd/amdk8/root_complex
 							device pnp 2e.9 off end #  GPIO_SUSLED
 							device pnp 2e.a off end #  ACPI
 							device pnp 2e.b on #  HW Monitor
- 								io 0x60 = 0x290
+								io 0x60 = 0x290
 								irq 0x70 = 5
 							end
 						end
@@ -345,16 +347,16 @@ chip northbridge/amd/amdk8/root_complex
 
 	end # PCI domain
 
-#       chip drivers/generic/debug
-#	       device pnp 0.0 off end # chip name
+#	chip drivers/generic/debug
+#		device pnp 0.0 off end # chip name
 #		device pnp 0.1 on end # pci_regs_all
 #		device pnp 0.2 on end # mem
 #		device pnp 0.3 off end # cpuid
 #		device pnp 0.4 on end # smbus_regs_all
 #		device pnp 0.5 off end # dual core msr
 #		device pnp 0.6 off end # cache size
-#	       device pnp 0.7 off end # tsc
+#		device pnp 0.7 off end # tsc
 #		device pnp 0.8 off  end # io
 #		device pnp 0.9 off end # io
-#       end
+#	end
 end #root_complex

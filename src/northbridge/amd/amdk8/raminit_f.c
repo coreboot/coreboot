@@ -2071,7 +2071,8 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 	}
 	
 	if (clocks > TT_MAX) {
-		return 0;
+		printk_info("warning spd byte : %x = %x > TT_MAX: %x, setting TT_MAX", SPD_TT, value, TT_MAX);
+		clocks = TT_MAX;
 	}
 
 	dtl = pci_read_config32(ctrl->f2, TT_REG);

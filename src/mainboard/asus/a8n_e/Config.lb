@@ -54,7 +54,6 @@ driver mainboard.o
 object get_bus_conf.o
 if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		makerule ./auto.o
 			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
@@ -68,7 +67,6 @@ if USE_DCACHE_RAM
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end
 	end
-end
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
 		mainboardinit cpu/x86/16bit/entry16.inc
@@ -81,12 +79,10 @@ else
 	end
 end
 mainboardinit cpu/x86/32bit/entry32.inc
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		ldscript /cpu/x86/32bit/entry32.lds
 		ldscript /cpu/amd/car/cache_as_ram.lds
 	end
-end
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
 		mainboardinit cpu/x86/16bit/reset16.inc
@@ -103,10 +99,6 @@ else
 		mainboardinit cpu/x86/32bit/reset32.inc
 		ldscript /cpu/x86/32bit/reset32.lds
 	end
-end
-if USE_DCACHE_RAM
-else
-	mainboardinit arch/i386/lib/cpu_reset.inc
 end
 # Include an ID string (for safe flashing).
 mainboardinit southbridge/nvidia/ck804/id.inc
@@ -123,29 +115,21 @@ else
 		ldscript /southbridge/nvidia/ck804/romstrap.lds
 	end
 end
-if USE_DCACHE_RAM
 	mainboardinit cpu/amd/car/cache_as_ram.inc
-end
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
-		if USE_DCACHE_RAM
 			ldscript /arch/i386/lib/failover_failover.lds
-		end
 	end
 else
 	if USE_FALLBACK_IMAGE
-		if USE_DCACHE_RAM
 			ldscript /arch/i386/lib/failover.lds
-		end
 	end
 end
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		initobject auto.o
 	else
 		mainboardinit ./auto.inc
 	end
-end
 config chip.h
 
 chip northbridge/amd/amdk8/root_complex		# Root complex

@@ -90,7 +90,6 @@ if HAVE_PIRQ_TABLE
 	object irq_tables.o
 end
 
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		makerule ./auto.o
 			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
@@ -104,7 +103,6 @@ if USE_DCACHE_RAM
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end
 	end
-end
 
 ##
 ## Build our 16 bit and 32 bit coreboot entry code.
@@ -123,12 +121,10 @@ end
 
 mainboardinit cpu/x86/32bit/entry32.inc
 
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		ldscript /cpu/x86/32bit/entry32.lds
 		ldscript /cpu/amd/car/cache_as_ram.lds
 	end
-end
 
 ##
 ## Build our reset vector (this is where coreboot is entered).
@@ -149,12 +145,6 @@ else
 		mainboardinit cpu/x86/32bit/reset32.inc
 		ldscript /cpu/x86/32bit/reset32.lds
 	end
-end
-
-if USE_DCACHE_RAM
-else
-	### Should this be in the northbridge code?
-	mainboardinit arch/i386/lib/cpu_reset.inc
 end
 
 ##
@@ -178,13 +168,10 @@ else
 	end
 end
 
-if USE_DCACHE_RAM
 	##
 	## Setup Cache-As-Ram
 	##
 	mainboardinit cpu/amd/car/cache_as_ram.inc
-end
-
 
 ###
 ### This is the early phase of coreboot startup.
@@ -193,15 +180,11 @@ end
 ###
 if HAVE_FAILOVER_BOOT
 	if USE_FAILOVER_IMAGE
-		if USE_DCACHE_RAM
 			ldscript /arch/i386/lib/failover_failover.lds
-		end
 	end
 else
 	if USE_FALLBACK_IMAGE
-		if USE_DCACHE_RAM
 			ldscript /arch/i386/lib/failover.lds
-		end
 	end
 end
 
@@ -212,13 +195,11 @@ end
 ##
 ## Setup RAM
 ##
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		initobject auto.o
 	else
 		mainboardinit ./auto.inc
 	end
-end
 
 ##
 ## Include the secondary configuration files

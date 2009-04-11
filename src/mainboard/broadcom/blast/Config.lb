@@ -50,8 +50,6 @@ end
 
 #object reset.o
 
-if USE_DCACHE_RAM
-
 	if CONFIG_USE_INIT
 
 		makerule ./cache_as_ram_auto.o
@@ -70,14 +68,12 @@ if USE_DCACHE_RAM
 
 	end
 
-end
 ##
 ## Build our 16 bit and 32 bit coreboot entry code
 ##
 mainboardinit cpu/x86/16bit/entry16.inc
 mainboardinit cpu/x86/32bit/entry32.inc
 ldscript /cpu/x86/16bit/entry16.lds
-if USE_DCACHE_RAM
         if CONFIG_USE_INIT
                 ldscript /cpu/x86/32bit/entry32.lds
         end
@@ -85,7 +81,6 @@ if USE_DCACHE_RAM
         if CONFIG_USE_INIT
                 ldscript      /cpu/amd/car/cache_as_ram.lds
         end
-end
 
 ##
 ## Build our reset vector (This is where coreboot is entered)
@@ -104,12 +99,10 @@ end
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
 
-if USE_DCACHE_RAM
 	##
 	## Setup Cache-As-Ram
 	##
 	mainboardinit cpu/amd/car/cache_as_ram.inc
-end
 
 ###
 ### This is the early phase of coreboot startup 
@@ -117,12 +110,7 @@ end
 ### failover to another image.
 ###
 if USE_FALLBACK_IMAGE
-	if USE_DCACHE_RAM
 	       ldscript /arch/i386/lib/failover.lds
-	else
-	       ldscript /arch/i386/lib/failover.lds
-		mainboardinit ./failover.inc
-	end
 end
 
 ###
@@ -132,15 +120,11 @@ end
 ##
 ## Setup RAM
 ##
-if USE_DCACHE_RAM
-
 	if CONFIG_USE_INIT
 		initobject cache_as_ram_auto.o
 	else
 		mainboardinit ./cache_as_ram_auto.inc
 	end
-
-end
 
 ##
 ## Include the secondary Configuration files 

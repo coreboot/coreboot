@@ -111,8 +111,6 @@ if HAVE_ACPI_TABLES
 	end
 end
 
-if USE_DCACHE_RAM
-
 	if CONFIG_USE_INIT
 		makerule ./cache_as_ram_auto.o
 			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
@@ -126,8 +124,6 @@ if USE_DCACHE_RAM
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end
 	end
-
-end
 
 if USE_FAILOVER_IMAGE
 else
@@ -158,7 +154,6 @@ end
 
 mainboardinit cpu/x86/32bit/entry32.inc
 
-if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		ldscript /cpu/x86/32bit/entry32.lds
 	end
@@ -166,8 +161,6 @@ if USE_DCACHE_RAM
 	if CONFIG_USE_INIT
 		ldscript /cpu/amd/car/cache_as_ram.lds
 	end
-end
-
 
 ##
 ## Build our reset vector (This is where coreboot is entered)
@@ -211,12 +204,10 @@ else
     end
 end
 
-if USE_DCACHE_RAM
 	##
 	## Setup Cache-As-Ram
 	##
 	mainboardinit cpu/amd/car/cache_as_ram.inc
-end
 
 ###
 ### This is the early phase of coreboot startup
@@ -225,29 +216,22 @@ end
 ###
 if HAVE_FAILOVER_BOOT
     if USE_FAILOVER_IMAGE
-	if USE_DCACHE_RAM
 		ldscript /arch/i386/lib/failover_failover.lds
-	end
     end
 else
     if USE_FALLBACK_IMAGE
-	if USE_DCACHE_RAM
 		ldscript /arch/i386/lib/failover.lds
-	end
     end
 end
 
 ##
 ## Setup RAM
 ##
-if USE_DCACHE_RAM
-
 	if CONFIG_USE_INIT
 		initobject cache_as_ram_auto.o
 	else
 		mainboardinit ./cache_as_ram_auto.inc
 	end
-end
 
 ##
 ## Include the secondary Configuration files

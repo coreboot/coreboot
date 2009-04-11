@@ -52,7 +52,6 @@ end
 
 #object reset.o
 
-if USE_DCACHE_RAM
 	#compile cache_as_ram.c to auto.inc
 	makerule ./cache_as_ram_auto.inc
 			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
@@ -60,8 +59,6 @@ if USE_DCACHE_RAM
 			action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 	end
-end
-
 
 ##
 ## Build our 16 bit and 32 bit coreboot entry code
@@ -110,10 +107,8 @@ end
 ##
 mainboardinit cpu/x86/fpu/enable_fpu.inc
 
-if USE_DCACHE_RAM
 	mainboardinit cpu/amd/model_lx/cache_as_ram.inc
 	mainboardinit ./cache_as_ram_auto.inc
-end
 
 ##
 ## Include the secondary Configuration files

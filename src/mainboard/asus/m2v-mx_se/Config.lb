@@ -55,7 +55,6 @@ if HAVE_MP_TABLE object mptable.o end
 if HAVE_PIRQ_TABLE object irq_tables.o end
 # object reset.o
 
-if USE_DCACHE_RAM
   if CONFIG_USE_INIT
     makerule ./cache_as_ram_auto.o
       depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
@@ -69,7 +68,6 @@ if USE_DCACHE_RAM
       action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
     end
   end
-end
 
 if USE_FALLBACK_IMAGE
   mainboardinit cpu/x86/16bit/entry16.inc
@@ -80,14 +78,12 @@ end
 
 mainboardinit cpu/x86/32bit/entry32.inc
 
-if USE_DCACHE_RAM
   if CONFIG_USE_INIT
     ldscript /cpu/x86/32bit/entry32.lds
   end
   if CONFIG_USE_INIT
     ldscript /cpu/amd/car/cache_as_ram.lds
   end
-end
 
 if USE_FALLBACK_IMAGE
   mainboardinit cpu/x86/16bit/reset16.inc
@@ -97,23 +93,17 @@ else
   ldscript /cpu/x86/32bit/reset32.lds
 end
 
-if USE_DCACHE_RAM
   mainboardinit cpu/amd/car/cache_as_ram.inc
-end
 
 if USE_FALLBACK_IMAGE
-  if USE_DCACHE_RAM
     ldscript /arch/i386/lib/failover.lds
-  end
 end
 
-if USE_DCACHE_RAM
   if CONFIG_USE_INIT
     initobject cache_as_ram_auto.o
   else
     mainboardinit ./cache_as_ram_auto.inc
   end
-end
 
 config chip.h
 

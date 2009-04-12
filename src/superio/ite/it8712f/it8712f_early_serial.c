@@ -32,6 +32,7 @@
 #define IT8712F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
 #define IT8712F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8712F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
+#define IT8712F_CONFIG_REG_MFC       0x2a /* Multi-function control */
 #define IT8712F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
 
 #define IT8712F_CONFIGURATION_PORT   0x2e /* Write-only. */
@@ -77,6 +78,21 @@ static void it8712f_24mhz_clkin(void)
 	it8712f_exit_conf();
 
 }
+
+static void it8712f_enable_3vsbsw(void) {
+
+	/* We need to set enable 3VSBSW#, this was documented only in IT8712F_V0.9.2!
+	 LDN 7, reg 0x2a - needed for S3, or memory power will be cut off.
+	 Enable 3VSBSW#. (For System Suspend-to-RAM)
+	 0: 3VSBSW# will be always inactive.
+	 1: 3VSBSW# enabled. It will be (NOT SUSB#) NAND SUSC#.
+	*/
+
+	it8712f_enter_conf();
+	it8712f_sio_write(0x07, IT8712F_CONFIG_REG_MFC, 0x80);
+	it8712f_exit_conf();
+}
+
 
 static void it8712f_kill_watchdog(void)
 {

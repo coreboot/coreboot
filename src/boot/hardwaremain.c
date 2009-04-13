@@ -52,7 +52,9 @@ it with the version available from LANL.
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
+#if HAVE_ACPI_RESUME == 1
 	void *wake_vec;
+#endif
 
 	post_code(0x80);
 

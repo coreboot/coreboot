@@ -97,14 +97,13 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 #define K8_4RANK_DIMM_SUPPORT 1
 
 
-
+#include "southbridge/via/k8t890/k8t890_early_car.c"
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "sdram/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
-#include "southbridge/via/k8t890/k8t890_early_car.c"
 #include "cpu/amd/car/copy_and_run.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -242,10 +241,12 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct sys_info *sysinfo =
 	    (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
 	char *p;
+	u8 reg;
 
 	sio_init();
 	it8712f_enable_serial(SERIAL_DEV, TTYS0_BASE);
 	it8712f_kill_watchdog();
+	it8712f_enable_3vsbsw();
 	uart_init();
 	console_init();
 	enable_rom_decode();

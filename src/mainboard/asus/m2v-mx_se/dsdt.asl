@@ -30,7 +30,23 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 	 * Any others would involve declaring the wake up methods.
 	 */
 	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
+	Name (\_S3, Package () { 0x01, 0x01, 0x00, 0x00 })
 	Name (\_S5, Package () { 0x02, 0x02, 0x00, 0x00 })
+
+
+	/* blink a LED when entering the sleep (any type) */
+	Method (_PTS, 1, NotSerialized)
+	{
+		Store (0x1, \_SB.PCI0.ISA.LEDR)
+	}
+
+	/* cancel a LED blinking when waking from sleep (any type) */
+	Method (_WAK, 1, NotSerialized)
+	{
+		Store (0x0, \_SB.PCI0.ISA.LEDR)
+		/* wake OK */
+		Return(Package(0x02){0x00, 0x00})
+	}
 
 	/* Root of the bus hierarchy */
 	Scope (\_SB)
@@ -160,7 +176,14 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 			}
 			Device (ISA) {
 				Name (_ADR, 0x00110000)
-
+				OperationRegion (PCIC, PCI_Config, 0x0, 0xff)
+				Field (PCIC, ByteAcc, NoLock, Preserve)
+				{
+					Offset (0x94),
+					/* two LSB bits are blink rate */
+					LEDR,   2,
+				}
+				
 				/* PS/2 keyboard (seems to be important for WinXP install) */
 				Device (KBD)
 				{

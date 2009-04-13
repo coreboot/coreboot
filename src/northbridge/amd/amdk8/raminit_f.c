@@ -3009,12 +3009,18 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 }
 #endif
 
+#include "exit_from_self.c"
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 			  struct sys_info *sysinfo)
 {
 	int i;
-
+#ifdef ACPI_IS_WAKEUP_EARLY
+	int suspend = acpi_is_wakeup_early();
+#else
+	int suspend = 0;
+#endif
+ 
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 	 unsigned cpu_f0_f1[8];
 	/* FIXME: How about 32 node machine later? */
@@ -3059,6 +3065,14 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 	}
 	printk_debug("\n");
 #endif
+
+	/* lets override the rest of the routine */
+	if (suspend) {
+		printk_debug("Wakeup!\n");
+		exit_from_self(controllers, ctrl, sysinfo);
+		printk_debug("Mem running !\n");
+		return;
+	}
 
 	for (i = 0; i < controllers; i++) {
 		uint32_t dcl, dch;

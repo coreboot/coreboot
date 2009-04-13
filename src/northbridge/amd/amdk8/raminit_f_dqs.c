@@ -1821,10 +1821,94 @@ static void set_sysinfo_in_ram(unsigned val)
 	set_htic_bit(0, val, 9);
 }
 
+#ifdef S3_NVRAM_EARLY
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
+#else
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
+}
+
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
+die("No memory NVRAM loader for DQS data! Unable to restore memory state\n");
+}
+#endif
+
+static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos) {
+	u32 dword = pci_read_config32_index_wait(dev, 0x98, index);
+
+	return s3_save_nvram_early(dword, size, nvram_pos);
+}
+
+static int load_index_to_pos(unsigned int dev, int size, int index, int nvram_pos) {
+
+	u32 old_dword = pci_read_config32_index_wait(dev, 0x98, index);
+	nvram_pos = s3_load_nvram_early(size, &old_dword, nvram_pos);
+	pci_write_config32_index_wait(dev, 0x98, index, old_dword);
+	return nvram_pos;
+}
+
+static int dqs_load_MC_NVRAM_ch(unsigned int dev, int ch, int pos) {
+	/* 30 bytes per channel */
+	ch *= 0x20;
+	pos = load_index_to_pos(dev, 4, 0x00 + ch, pos);
+	pos = load_index_to_pos(dev, 4, 0x01 + ch, pos);
+	pos = load_index_to_pos(dev, 4, 0x02 + ch, pos);
+	pos = load_index_to_pos(dev, 1, 0x03 + ch, pos);
+	pos = load_index_to_pos(dev, 4, 0x04 + ch, pos);
+	pos = load_index_to_pos(dev, 4, 0x05 + ch, pos);
+	pos = load_index_to_pos(dev, 4, 0x06 + ch, pos);
+	pos = load_index_to_pos(dev, 1, 0x07 + ch, pos);
+	pos = load_index_to_pos(dev, 1, 0x10 + ch, pos);
+	pos = load_index_to_pos(dev, 1, 0x13 + ch, pos);
+	pos = load_index_to_pos(dev, 1, 0x16 + ch, pos);
+	pos = load_index_to_pos(dev, 1, 0x19 + ch, pos);
+	return pos;
+}
+
+static int dqs_save_MC_NVRAM_ch(unsigned int dev, int ch, int pos) {
+	/* 30 bytes per channel */
+	ch *= 0x20;
+	pos = save_index_to_pos(dev, 4, 0x00 + ch, pos);
+	pos = save_index_to_pos(dev, 4, 0x01 + ch, pos);
+	pos = save_index_to_pos(dev, 4, 0x02 + ch, pos);
+	pos = save_index_to_pos(dev, 1, 0x03 + ch, pos);
+	pos = save_index_to_pos(dev, 4, 0x04 + ch, pos);
+	pos = save_index_to_pos(dev, 4, 0x05 + ch, pos);
+	pos = save_index_to_pos(dev, 4, 0x06 + ch, pos);
+	pos = save_index_to_pos(dev, 1, 0x07 + ch, pos);
+	pos = save_index_to_pos(dev, 1, 0x10 + ch, pos);
+	pos = save_index_to_pos(dev, 1, 0x13 + ch, pos);
+	pos = save_index_to_pos(dev, 1, 0x16 + ch, pos);
+	pos = save_index_to_pos(dev, 1, 0x19 + ch, pos);
+	return pos;
+}
+
+static void dqs_save_MC_NVRAM(unsigned int dev) {
+	int pos = 0;
+	u32 reg;
+	printk_debug("DQS SAVE NVRAM: %x\n", dev);
+	pos = dqs_save_MC_NVRAM_ch(dev, 0, pos);
+	pos = dqs_save_MC_NVRAM_ch(dev, 1, pos);
+	/* save the maxasync lat here */
+	reg = pci_read_config32(dev, DRAM_CONFIG_HIGH);
+	pos = s3_save_nvram_early(reg, 4, pos);
+}
+
+static void dqs_restore_MC_NVRAM(unsigned int dev) {
+	int pos = 0;
+	u32 reg;
+
+	printk_debug("DQS RESTORE FROM NVRAM: %x\n", dev);
+	pos = dqs_load_MC_NVRAM_ch(dev, 0, pos);
+	pos = dqs_load_MC_NVRAM_ch(dev, 1, pos);
+	/* load the maxasync lat here */
+	pos = s3_load_nvram_early(4, &reg, pos);
+	reg &= (DCH_MaxAsyncLat_MASK <<DCH_MaxAsyncLat_SHIFT);
+	reg |= pci_read_config32(dev, DRAM_CONFIG_HIGH);
+	pci_write_config32(dev, DRAM_CONFIG_HIGH, reg);
+}
 
 #if MEM_TRAIN_SEQ == 0
-
-
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 static void dqs_timing(int controllers, const struct mem_controller *ctrl, tsc_t *tsc0, struct sys_info *sysinfo)
 #else
@@ -1891,6 +1975,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 		if(train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
 		printk_debug(" done\r\n");
 		sysinfo->mem_trained[i]=1;
+		dqs_save_MC_NVRAM((ctrl+i)->f2);
 	}
 
 out:

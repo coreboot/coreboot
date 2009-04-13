@@ -927,6 +927,12 @@ define HAVE_ACPI_TABLES
 	comment "Define to build ACPI tables"
 end
 
+define HAVE_ACPI_RESUME
+	default 0
+	export always
+	comment "Define to build ACPI with resume support"
+end
+
 define ACPI_SSDTX_NUM
 	default 0
 	export always

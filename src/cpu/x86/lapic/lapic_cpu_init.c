@@ -31,6 +31,12 @@ static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 }
 #endif
 
+#if HAVE_ACPI_RESUME == 1
+char *lowmem_backup;
+char *lowmem_backup_ptr;
+int  lowmem_backup_size;
+#endif
+
 static void copy_secondary_start_to_1m_below(void) 
 {
 #if _RAMBASE >= 0x100000
@@ -45,6 +51,17 @@ static void copy_secondary_start_to_1m_below(void)
         start_eip = get_valid_start_eip((unsigned long)_secondary_start);
         code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 
+#if HAVE_ACPI_RESUME == 1
+	/* need to save it for RAM resume */
+	lowmem_backup_size = code_size;
+	lowmem_backup = malloc(code_size);
+	lowmem_backup_ptr = (unsigned char *)start_eip;
+	
+	if (lowmem_backup == NULL)
+		die("Out of backup memory\n");
+
+        memcpy(lowmem_backup, lowmem_backup_ptr, lowmem_backup_size);
+#endif
         /* copy the _secondary_start to the ram below 1M*/
         memcpy((unsigned char *)start_eip, (unsigned char *)_secondary_start, code_size);
 

@@ -37,6 +37,7 @@ it with the version available from LANL.
 #include <part/init_timer.h>
 #include <boot/elf.h>
 #include <romfs.h>
+#include <arch/acpi.h>
 
 /**
  * @brief Main function of the DRAM part of coreboot.
@@ -47,9 +48,11 @@ it with the version available from LANL.
  * Device Enumeration:
  *	In the dev_enumerate() phase, 
  */
+
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;
+	void *wake_vec;
 
 	post_code(0x80);
 
@@ -84,11 +87,27 @@ void hardwaremain(int boot_complete)
 	dev_initialize();
 	post_code(0x89);
 
+#if HAVE_ACPI_RESUME == 1
+
+#if MEM_TRAIN_SEQ != 0
+	#error "So far it works on AMD and MEM_TRAIN_SEQ == 0"
+#endif
+
+#if _RAMBASE < 0x1F00000
+	#error "For ACPI RESUME you need to have _RAMBASE at least 31MB"
+	#error "Chipset support (S3_NVRAM_EARLY and ACPI_IS_WAKEUP_EARLY functions and memory ctrl)"
+	#error "And coreboot memory reserved in mainboard.c"
+#endif
+	/* if we happen to be resuming find wakeup vector and jump to OS */
+	wake_vec = acpi_find_wakeup_vector();
+	if (wake_vec)
+		acpi_jump_to_wakeup(wake_vec);
+#endif
+
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
-
 #if CONFIG_ROMFS == 1
 # if USE_FALLBACK_IMAGE == 1
 	void (*pl)(void) = romfs_load_payload(lb_mem, "fallback/payload");

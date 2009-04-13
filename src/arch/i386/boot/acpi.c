@@ -27,6 +27,11 @@
 #include <arch/acpigen.h>
 #include <device/pci.h>
 
+#if HAVE_ACPI_RESUME == 1
+/* this is to be filled by SB code - startup value what was found */
+u8 acpi_slp_type;
+#endif
+
 u8 acpi_checksum(u8 *table, u32 length)
 {
 	u8 ret=0;
@@ -323,12 +328,12 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	
 	header->checksum	= acpi_checksum((void *)hpet, sizeof(acpi_hpet_t));
 }
-
 void acpi_create_facs(acpi_facs_t *facs)
 {
+	
 	memset( (void *)facs,0, sizeof(acpi_facs_t));
 
-	memcpy(facs->signature,"FACS",4);
+	memcpy(facs->signature, FACS_NAME, 4);
 	facs->length = sizeof(acpi_facs_t);
 	facs->hardware_signature = 0;
 	facs->firmware_waking_vector = 0;
@@ -365,11 +370,114 @@ void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
 {
 	memcpy(rsdp->signature, RSDP_SIG, 8);
 	memcpy(rsdp->oem_id, OEM_ID, 6);
-	
 	rsdp->length		= sizeof(acpi_rsdp_t);
 	rsdp->rsdt_address	= (u32)rsdt;
+	rsdp->revision		= 2;
 	rsdp->checksum		= acpi_checksum((void *)rsdp, 20);
 	rsdp->ext_checksum	= acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
 }
 
+#if HAVE_ACPI_RESUME == 1
 
+int acpi_get_sleep_type(void)
+{
+	return acpi_slp_type;
+}
+
+int acpi_is_wakeup(void)
+{
+	return (acpi_slp_type == 3);
+}
+
+static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)
+{
+	if (strncmp((char *)rsdp, RSDP_SIG, sizeof(RSDP_SIG) - 1) != 0)
+		return NULL;
+
+	printk_debug("Looking on %p for valid checksum\n", rsdp);
+
+	if (acpi_checksum((void *)rsdp, 20) != 0)
+		return NULL;
+	printk_debug("Checksum 1 passed\n");
+
+	if ((rsdp->revision > 1) && (acpi_checksum((void *)rsdp,
+						rsdp->length) != 0))
+		return NULL;
+
+	printk_debug("Checksum 2 passed all OK\n");
+
+	return rsdp;
+}
+
+static acpi_rsdp_t *rsdp;
+
+void *acpi_get_wakeup_rsdp(void)
+{
+	return rsdp;
+}
+
+void *acpi_find_wakeup_vector(void)
+{
+	char *p, *end;
+
+	acpi_rsdt_t *rsdt;
+	acpi_facs_t *facs;
+	acpi_fadt_t *fadt;
+	void  *wake_vec;
+	int i;
+
+	rsdp = NULL;
+
+	if (!acpi_is_wakeup())
+		return NULL;
+
+	printk_debug("Trying to find the wakeup vector ...\n");
+
+	/* find RSDP */
+	for (p = (char *) 0xe0000; p <  (char *) 0xfffff; p+=16) {
+		if ((rsdp = valid_rsdp((acpi_rsdp_t *) p)))
+			break;
+	}
+
+	if (rsdp == NULL)
+		return NULL;
+
+	printk_debug("RSDP found at %p\n", rsdp);
+	rsdt = (acpi_rsdt_t *) rsdp->rsdt_address;
+	
+	end = (char *) rsdt + rsdt->header.length;
+	printk_debug("RSDT found at %p ends at %p\n", rsdt, end);
+
+	for (i = 0; ((char *) &rsdt->entry[i]) < end; i++) {
+		fadt = (acpi_fadt_t *) rsdt->entry[i];
+		if (strncmp((char *)fadt, FADT_NAME, sizeof(FADT_NAME) - 1) == 0)
+			break;
+		fadt = NULL;
+	}
+
+	if (fadt == NULL)
+		return NULL;
+
+	printk_debug("FADT found at %p\n", fadt);
+	facs = fadt->firmware_ctrl;
+
+	if (facs == NULL)
+		return NULL;
+
+	printk_debug("FACS found at %p\n", facs);
+	wake_vec = (void *) facs->firmware_waking_vector;
+	printk_debug("OS waking vector is %p\n", wake_vec);
+	return wake_vec;
+}
+
+extern char *lowmem_backup;
+extern char *lowmem_backup_ptr;
+extern int lowmem_backup_size;
+
+void acpi_jump_to_wakeup(void *vector)
+{
+	/* just restore the SMP trampoline and continue with wakeup on assembly level */
+	memcpy(lowmem_backup_ptr, lowmem_backup, lowmem_backup_size);
+	acpi_jmp_to_realm_wakeup((u32) vector);
+}
+#endif

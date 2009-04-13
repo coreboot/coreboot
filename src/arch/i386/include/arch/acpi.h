@@ -16,6 +16,9 @@
 #if HAVE_ACPI_TABLES==1
 
 #include <stdint.h>
+ 
+/* 0 = S0, 1 = S1 ...*/
+extern u8 acpi_slp_type;
 
 #define RSDP_SIG              "RSD PTR "  /* RSDT Pointer signature */
 #define RSDP_NAME             "RSDP"
@@ -27,6 +30,8 @@
 #define SRAT_NAME             "SRAT"
 #define SLIT_NAME	      "SLIT"
 #define SSDT_NAME	      "SSDT"
+#define FACS_NAME	      "FACS"
+#define FADT_NAME	      "FACP"
 
 #define RSDT_TABLE            "RSDT    "
 #define HPET_TABLE            "AMD64   "
@@ -328,6 +333,10 @@ void acpi_create_facs(acpi_facs_t *facs);
 
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
+void *acpi_find_wakeup_vector(void);
+void *acpi_get_wakeup_rsdp(void);
+extern void acpi_jmp_to_realm_wakeup(u32 linear_addr);
+void acpi_jump_to_wakeup(void *wakeup_addr);
 
 unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current);
 

@@ -225,8 +225,10 @@ static void setup_pm(device_t dev)
 
 	/* SCI is generated for RTC/pwrBtn/slpBtn. */
 	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
+#if HAVE_ACPI_RESUME == 1
 	acpi_slp_type = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
 	printk_debug("SLP_TYP type was %x %x\n", tmp, acpi_slp_type);
+#endif
 	/* clear sleep */
 	tmp &= ~(7 << 10);
 	tmp |= 1;

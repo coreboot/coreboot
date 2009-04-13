@@ -90,6 +90,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+void activate_spd_rom(const struct mem_controller *ctrl)
+{
+}
+
 #define K8_4RANK_DIMM_SUPPORT 1
 
 
@@ -121,10 +125,6 @@ static void ldtstop_sb(void)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
-
-void activate_spd_rom(const struct mem_controller *ctrl)
-{
-}
 
 #warning No hard_reset implemented for this board!
 void hard_reset(void)

@@ -87,28 +87,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#define K8_4RANK_DIMM_SUPPORT 1
-
-#include "northbridge/amd/amdk8/amdk8.h"
-#include "northbridge/amd/amdk8/raminit.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-#include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "sdram/generic_sdram.c"
-#include "cpu/amd/dualcore/dualcore.c"
-#include "southbridge/via/k8t890/k8t890_early_car.c"
-#include "cpu/amd/car/copy_and_run.c"
-#include "cpu/amd/car/post_cache_as_ram.c"
-#include "cpu/amd/model_fxx/init_cpus.c"
-#include "cpu/amd/model_fxx/fidvid.c"
-#include "northbridge/amd/amdk8/resourcemap.c"
-
 void activate_spd_rom(const struct mem_controller *ctrl)
 {
-}
-
-void hard_reset(void)
-{
-	print_info("NO HARD RESET. FIX ME!\n");
 }
 
 void soft_reset(void)
@@ -127,6 +107,26 @@ void soft_reset(void)
 		/* daisy daisy ... */
 		hlt();
 	}
+}
+
+#define K8_4RANK_DIMM_SUPPORT 1
+
+#include "northbridge/amd/amdk8/amdk8.h"
+#include "northbridge/amd/amdk8/raminit.c"
+#include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
+#include "sdram/generic_sdram.c"
+#include "cpu/amd/dualcore/dualcore.c"
+#include "southbridge/via/k8t890/k8t890_early_car.c"
+#include "cpu/amd/car/copy_and_run.c"
+#include "cpu/amd/car/post_cache_as_ram.c"
+#include "cpu/amd/model_fxx/init_cpus.c"
+#include "cpu/amd/model_fxx/fidvid.c"
+#include "northbridge/amd/amdk8/resourcemap.c"
+
+void hard_reset(void)
+{
+	print_info("NO HARD RESET. FIX ME!\n");
 }
 
 unsigned int get_sbdn(unsigned bus)

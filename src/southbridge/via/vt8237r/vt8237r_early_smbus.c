@@ -294,6 +294,37 @@ void enable_rom_decode(void)
 	pci_write_config8(dev, 0x41, 0x7f);
 }
 
+#define ACPI_IS_WAKEUP_EARLY 1
+
+int acpi_is_wakeup_early(void) {
+	device_t dev;
+	u16 tmp;
+
+	print_debug("IN TEST WAKEUP\n");
+
+	/* Power management controller */
+	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+	if (dev == PCI_DEV_INVALID) {
+		/* Power management controller */
+		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+					PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+		if (dev == PCI_DEV_INVALID)
+			die("Power management controller not found\r\n");
+	}
+
+	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
+	pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
+
+	/* Enable ACPI accessm RTC signal gated with PSON. */
+	pci_write_config8(dev, 0x81, 0x84);
+
+	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
+
+	print_debug_hex8(tmp);
+	return ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
+}
+
 #if defined(__GNUC__)
 void vt8237_early_spi_init(void)
 {

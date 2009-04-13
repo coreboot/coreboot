@@ -37,14 +37,14 @@ static void host_ctrl_enable_k8t890(struct device *dev)
 	 */
 	pci_write_config8(dev, 0xa0, 0x13);
 
-	/* Disable NVRAM and enable non-posted PCI writes. */
-	pci_write_config8(dev, 0xa1, 0x8e);
-
 	/*
-	 * NVRAM I/O base 0xe00-0xeff, but it is disabled.
+	 * NVRAM I/O base at K8T890_NVRAM_IO_BASE
 	 * Some bits are set and reserved.
 	 */
-	pci_write_config8(dev, 0xa2, 0x0e);
+	pci_write_config8(dev, 0xa2, (K8T890_NVRAM_IO_BASE >> 8));
+
+	/* enable NB NVRAM and enable non-posted PCI writes. */
+	pci_write_config8(dev, 0xa1, 0x8f);
 	/* Arbitration control, some bits are reserved. */
 	pci_write_config8(dev, 0xa5, 0x3c);
 
@@ -95,14 +95,15 @@ static void host_ctrl_enable_k8m890(struct device *dev) {
 	 */
 	pci_write_config8(dev, 0xa0, 0x13);
 
-	/* Disable NVRAM and enable non-posted PCI writes. */
-	pci_write_config8(dev, 0xa1, 0x8e);
-
 	/*
-	 * NVRAM I/O base 0xe00-0xeff, but it is disabled.
+	 * NVRAM I/O base at K8T890_NVRAM_IO_BASE
 	 */
 
-	pci_write_config8(dev, 0xa2, 0x0e);
+	pci_write_config8(dev, 0xa2, (K8T890_NVRAM_IO_BASE >> 8));
+
+	/* Enable NVRAM and enable non-posted PCI writes. */
+	pci_write_config8(dev, 0xa1, 0x8f);
+
 	/* Arbitration control  */
 	pci_write_config8(dev, 0xa5, 0x3c);
 

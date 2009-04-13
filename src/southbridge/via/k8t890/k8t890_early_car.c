@@ -23,6 +23,15 @@
  */
 
 #include <stdlib.h>
+//include "k8t890.h"
+#warning hack the right header here
+
+/* The 256 bytes of NVRAM for S3 storage, 256B aligned */
+#define K8T890_NVRAM_IO_BASE	0xf00
+#define K8T890_MULTIPLE_FN_EN	0x4f
+/* we provide S3 NVRAM to system */
+#define S3_NVRAM_EARLY	1
+
 
 /* AMD K8 LDT0, LDT1, LDT2 Link Control Registers */
 static ldtreg[3] = {0x86, 0xa6, 0xc6};
@@ -33,9 +42,21 @@ static ldtreg[3] = {0x86, 0xa6, 0xc6};
 
 u8 k8t890_early_setup_ht(void)
 {
-	u8 awidth, afreq, cldtfreq; 
+	u8 awidth, afreq, cldtfreq, reg;
 	u8 cldtwidth_in, cldtwidth_out, vldtwidth_in, vldtwidth_out, ldtnr, width;
 	u16 vldtcaps;
+
+	/* hack, enable NVRAM in chipset */
+	pci_write_config8(PCI_DEV(0, 0x0, 0), K8T890_MULTIPLE_FN_EN, 0x01);
+
+	/*
+	 * NVRAM I/O base at K8T890_NVRAM_IO_BASE
+	 */
+
+	pci_write_config8(PCI_DEV(0, 0x0, 2), 0xa2, (K8T890_NVRAM_IO_BASE >> 8));
+	reg = pci_read_config8(PCI_DEV(0, 0x0, 2), 0xa1);
+	reg |= 0x1;
+	pci_write_config8(PCI_DEV(0, 0x0, 2), 0xa1, reg);
 
 	/* check if connected non coherent, initcomplete (find the SB on K8 side) */
 	if (0x7 == pci_read_config8(PCI_DEV(0, 0x18, 0), 0x98)) {
@@ -89,4 +110,45 @@ u8 k8t890_early_setup_ht(void)
 	}
 
 	return 1;
+}
+
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
+	
+	printk_debug("Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
+	switch (size) {
+	case 1:
+		outb((dword & 0xff), K8T890_NVRAM_IO_BASE+nvram_pos);
+		nvram_pos +=1;
+		break;
+	case 2:
+		outw((dword & 0xffff), K8T890_NVRAM_IO_BASE+nvram_pos);
+		nvram_pos +=2;
+		break;
+	default:
+		outl(dword, K8T890_NVRAM_IO_BASE+nvram_pos);
+		nvram_pos +=4;
+		break;
+	}
+	return nvram_pos;
+}
+
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
+	switch (size) {
+	case 1:
+		*old_dword &= ~0xff;
+		*old_dword |= inb(K8T890_NVRAM_IO_BASE+nvram_pos);
+		nvram_pos +=1;
+		break;
+	case 2:
+		*old_dword &= ~0xffff;
+		*old_dword |= inw(K8T890_NVRAM_IO_BASE+nvram_pos);
+		nvram_pos +=2;
+		break;
+	default:
+		*old_dword = inl(K8T890_NVRAM_IO_BASE+nvram_pos);
+		nvram_pos +=4;
+		break;
+	}
+	printk_debug("Loading %x of size %d to nvram pos:%d\n", * old_dword, size, nvram_pos-size);
+	return nvram_pos;
 }

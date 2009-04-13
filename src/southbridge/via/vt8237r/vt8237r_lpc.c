@@ -149,8 +149,13 @@ static void pci_routing_fixup(struct device *dev)
  * Set up the power management capabilities directly into ACPI mode.
  * This avoids having to handle any System Management Interrupts (SMIs).
  */
+
+extern u8 acpi_slp_type;
+
+
 static void setup_pm(device_t dev)
 {
+	u16 tmp;
 	/* Debounce LID and PWRBTN# Inputs for 16ms. */
 	pci_write_config8(dev, 0x80, 0x20);
 
@@ -171,10 +176,10 @@ static void setup_pm(device_t dev)
 
 	/*
 	 * 7 = SMBus clock from RTC 32.768KHz
-	 * 5 = Internal PLL reset from susp
-	 * 2 = GPO2 is GPIO
+	 * 5 = Internal PLL reset from susp disabled
+	 * 2 = GPO2 is SUSA#
 	 */
-	pci_write_config8(dev, 0x94, 0xa4);
+	pci_write_config8(dev, 0x94, 0xa0);
 
 	/*
 	 * 7 = stp to sust delay 1msec
@@ -219,7 +224,17 @@ static void setup_pm(device_t dev)
 	outb(0x0, VT8237R_ACPI_IO_BASE + 0x42);
 
 	/* SCI is generated for RTC/pwrBtn/slpBtn. */
-	outw(0x001, VT8237R_ACPI_IO_BASE + 0x04);
+	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
+	acpi_slp_type = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
+	printk_debug("SLP_TYP type was %x %x\n", tmp, acpi_slp_type);
+	/* clear sleep */
+	tmp &= ~(7 << 10);
+	tmp |= 1;
+	outw(tmp, VT8237R_ACPI_IO_BASE + 0x04);
+
+
+
+
 }
 
 static void vt8237r_init(struct device *dev)

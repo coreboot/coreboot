@@ -29,6 +29,9 @@
  */
 #define K8T890_APIC_BASE	0xfecc0000
 
+/* The 256 bytes of NVRAM for S3 storage, 256B aligned */
+#define K8T890_NVRAM_IO_BASE	0xf00
+
 #define K8T890_MMCONFIG_MBAR	0x61
 #define K8T890_MULTIPLE_FN_EN	0x4f
 
@@ -36,6 +39,7 @@
 #define K8M890_FBSIZEMB		64
 
 #include <device/device.h>
+
 extern void writeback(struct device *dev, u16 where, u8 what);
 extern void dump_south(device_t dev);
 

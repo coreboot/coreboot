@@ -48,7 +48,6 @@ void of_release(void *, unsigned int );
 int of_yield(void);
 void * of_set_callback(void *);
 
-unsigned int romfs_lookup(const char *, void **);
 int vpd_read(unsigned int , unsigned int , char *);
 int vpd_write(unsigned int , unsigned int , char *);
 int write_mm_log(char *, unsigned int , unsigned short );

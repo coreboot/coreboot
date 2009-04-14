@@ -37,7 +37,9 @@ it with the version available from LANL.
 #include <part/init_timer.h>
 #include <boot/elf.h>
 #include <romfs.h>
+#if HAVE_ACPI_RESUME == 1
 #include <arch/acpi.h>
+#endif
 
 /**
  * @brief Main function of the DRAM part of coreboot.

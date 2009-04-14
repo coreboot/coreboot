@@ -1,5 +1,5 @@
 /*
- * rom-mkstage
+ * cbfs-mkstage
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *

@@ -13,7 +13,7 @@ CFLAGS=-g -Wall # -W -Werror
 
 DESTDIR ?= /usr/local/bin
 
-all: $(obj)/cbfstool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
+all: $(obj)/cbfstool $(obj)/tools/cbfs-mkpayload $(obj)/tools/cbfs-mkstage
 
 $(obj)/cbfstool: $(patsubst %,$(obj)/%,$(OBJ))
 	$(CC) -o $@ $(patsubst %,$(obj)/%,$(OBJ))
@@ -26,11 +26,11 @@ include $(tsrc)/Makefile
 $(obj)/%.o: %.c $(INC)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-install: $(obj)/cbfstool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
+install: $(obj)/cbfstool $(obj)/tools/cbfs-mkpayload $(obj)/tools/cbfs-mkstage
 	@ install -d $(DESTDIR)
 	@ install -m 0755 $(obj)/cbfstool $(DESTDIR)/cbfstool
-	@ install -m 0755 $(obj)/tools/rom-mkstage $(DESTDIR)/rom-mkstage
-	@ install -m 0755 $(obj)/tools/rom-mkpayload $(DESTDIR)/rom-mkpayload
+	@ install -m 0755 $(obj)/tools/cbfs-mkstage $(DESTDIR)/cbfs-mkstage
+	@ install -m 0755 $(obj)/tools/cbfs-mkpayload $(DESTDIR)/cbfs-mkpayload
 
 tags: 
 	ctags *.[ch] */*.[ch]

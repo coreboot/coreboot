@@ -270,7 +270,7 @@ char *find_tool(char *tool)
 	return toolpath;
 }
 
-/* Invoke the rom-mkpayload utility */
+/* Invoke the cbfs-mkpayload utility */
 
 int add_payload_handler(struct rom *rom, int argc, char **argv)
 {
@@ -293,12 +293,12 @@ int add_payload_handler(struct rom *rom, int argc, char **argv)
 		return -1;
 	}
 
-	return fork_tool_and_add(rom, find_tool("rom-mkpayload"), argv[0],
+	return fork_tool_and_add(rom, find_tool("cbfs-mkpayload"), argv[0],
 				 argv[1], CBFS_COMPONENT_PAYLOAD, argc - 2,
 				 argc > 2 ? &argv[2] : NULL);
 }
 
-/* Invoke the rom-mkstage utility */
+/* Invoke the cbfs-mkstage utility */
 
 int add_stage_handler(struct rom *rom, int argc, char **argv)
 {
@@ -321,7 +321,7 @@ int add_stage_handler(struct rom *rom, int argc, char **argv)
 		return -1;
 	}
 
-	return fork_tool_and_add(rom, find_tool("rom-mkstage"), argv[0],
+	return fork_tool_and_add(rom, find_tool("cbfs-mkstage"), argv[0],
 				 argv[1], CBFS_COMPONENT_STAGE, argc - 2,
 				 argc > 2 ? &argv[2] : NULL);
 }

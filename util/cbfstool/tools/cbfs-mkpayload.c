@@ -1,5 +1,5 @@
 /*
- * rom-mkpayload
+ * cbfs-mkpayload
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *

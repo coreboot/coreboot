@@ -1,8 +1,0 @@
- rm coreboot.rom; 
-./romtool coreboot.rom create 0x80000 0x10000 /tmp/coreboot.strip
-./romtool coreboot.rom add-payload /tmp/filo.elf normal/payload l
-./romtool coreboot.rom print
-#./romtool coreboot.rom add-stage /tmp/filo.elf normal/payload
-
-./romtool coreboot.rom print
-cp coreboot.rom /home/rminnich/qemutest/

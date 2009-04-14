@@ -28,7 +28,7 @@
 #include <arpa/inet.h>
 
 #include "common.h"
-#include "../romfs.h"
+#include "../cbfs.h"
 
 int parse_elf(unsigned char *input, unsigned char **output, int algo,
 	      void (*compress) (char *, int, char *, int *))
@@ -43,7 +43,7 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 	int segments = 1;
 	int isize = 0, osize = 0;
 	int doffset = 0;
-	struct romfs_payload_segment *segs;
+	struct cbfs_payload_segment *segs;
 	int i;
 
 	ehdr = (Elf32_Ehdr *) input;
@@ -93,14 +93,14 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 	/* Allocate a block of memory to store the data in */
 
 	sptr =
-	    calloc((segments * sizeof(struct romfs_payload_segment)) + isize,
+	    calloc((segments * sizeof(struct cbfs_payload_segment)) + isize,
 		   1);
-	doffset = (segments * sizeof(struct romfs_payload_segment));
+	doffset = (segments * sizeof(struct cbfs_payload_segment));
 
 	if (sptr == NULL)
 		goto err;
 
-	segs = (struct romfs_payload_segment *)sptr;
+	segs = (struct cbfs_payload_segment *)sptr;
 	segments = 0;
 
 	for (i = 0; i < ehdr->e_shnum; i++) {
@@ -182,7 +182,7 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 
 	*output = sptr;
 
-	return (segments * sizeof(struct romfs_payload_segment)) + osize;
+	return (segments * sizeof(struct cbfs_payload_segment)) + osize;
 
 err:
 	return -1;
@@ -218,10 +218,10 @@ int main(int argc, char **argv)
 			output = optarg;
 			break;
 		case 'l':
-			algo = ROMFS_COMPRESS_LZMA;
+			algo = CBFS_COMPRESS_LZMA;
 			break;
 		case 'n':
-			algo = ROMFS_COMPRESS_NONE;
+			algo = CBFS_COMPRESS_NONE;
 			break;
 		default:
 			//usage();
@@ -245,10 +245,10 @@ int main(int argc, char **argv)
 	}
 
 	switch (algo) {
-	case ROMFS_COMPRESS_NONE:
+	case CBFS_COMPRESS_NONE:
 		compress = none_compress;
 		break;
-	case ROMFS_COMPRESS_LZMA:
+	case CBFS_COMPRESS_LZMA:
 		compress = lzma_compress;
 		break;
 	}

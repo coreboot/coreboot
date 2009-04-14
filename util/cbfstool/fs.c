@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -18,13 +18,13 @@
  */
 
 #include <string.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
-struct romfs_file *rom_find(struct rom *rom, unsigned int offset)
+struct cbfs_file *rom_find(struct rom *rom, unsigned int offset)
 {
 	while (offset < rom->fssize) {
-		struct romfs_file *c =
-		    (struct romfs_file *)ROM_PTR(rom, offset);
+		struct cbfs_file *c =
+		    (struct cbfs_file *)ROM_PTR(rom, offset);
 
 		if (!strcmp(c->magic, COMPONENT_MAGIC))
 			return c;
@@ -35,12 +35,12 @@ struct romfs_file *rom_find(struct rom *rom, unsigned int offset)
 	return NULL;
 }
 
-struct romfs_file *rom_find_first(struct rom *rom)
+struct cbfs_file *rom_find_first(struct rom *rom)
 {
 	return rom_find(rom, ntohl(rom->header->offset));
 }
 
-struct romfs_file *rom_find_next(struct rom *rom, struct romfs_file *prev)
+struct cbfs_file *rom_find_next(struct rom *rom, struct cbfs_file *prev)
 {
 	unsigned int offset = ROM_OFFSET(rom, prev);
 
@@ -49,15 +49,15 @@ struct romfs_file *rom_find_next(struct rom *rom, struct romfs_file *prev)
 			      ntohl(rom->header->align)));
 }
 
-struct romfs_file *rom_find_empty(struct rom *rom)
+struct cbfs_file *rom_find_empty(struct rom *rom)
 {
 	unsigned int offset = ntohl(rom->header->offset);
 	unsigned int ret = ntohl(rom->header->offset);
 
 	while (offset < rom->fssize) {
 
-		struct romfs_file *c =
-		    (struct romfs_file *)ROM_PTR(rom, offset);
+		struct cbfs_file *c =
+		    (struct cbfs_file *)ROM_PTR(rom, offset);
 
 		if (!strcmp(c->magic, COMPONENT_MAGIC)) {
 			offset += ALIGN(ntohl(c->offset) + ntohl(c->len),
@@ -69,15 +69,15 @@ struct romfs_file *rom_find_empty(struct rom *rom)
 	}
 
 	return (ret < rom->fssize) ?
-	    (struct romfs_file *)ROM_PTR(rom, ret) : NULL;
+	    (struct cbfs_file *)ROM_PTR(rom, ret) : NULL;
 }
 
-struct romfs_file *rom_find_by_name(struct rom *rom, const char *name)
+struct cbfs_file *rom_find_by_name(struct rom *rom, const char *name)
 {
-	struct romfs_file *c = rom_find_first(rom);
+	struct cbfs_file *c = rom_find_first(rom);
 
 	while (c) {
-		if (!strcmp((char *)ROMFS_NAME(c), name))
+		if (!strcmp((char *)CBFS_NAME(c), name))
 			return c;
 
 		c = rom_find_next(rom, c);
@@ -88,7 +88,7 @@ struct romfs_file *rom_find_by_name(struct rom *rom, const char *name)
 
 unsigned int rom_used_space(struct rom *rom)
 {
-	struct romfs_file *c = rom_find_first(rom);
+	struct cbfs_file *c = rom_find_first(rom);
 	unsigned int ret = 0;
 
 	while (c) {
@@ -101,8 +101,8 @@ unsigned int rom_used_space(struct rom *rom)
 
 int rom_remove(struct rom *rom, const char *name)
 {
-	struct romfs_file *c = rom_find_by_name(rom, name);
-	struct romfs_file *n;
+	struct cbfs_file *c = rom_find_by_name(rom, name);
+	struct cbfs_file *n;
 	int clear;
 
 	if (c == NULL) {
@@ -126,7 +126,7 @@ int rom_remove(struct rom *rom, const char *name)
 
 int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 {
-	struct romfs_file *c = rom_find_empty(rom);
+	struct cbfs_file *c = rom_find_empty(rom);
 	unsigned int offset;
 	unsigned int csize;
 
@@ -140,7 +140,7 @@ int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 		return -1;
 	}
 
-	csize = sizeof(struct romfs_file) + ALIGN(strlen(name), 16) + size;
+	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name), 16) + size;
 
 	offset = ROM_OFFSET(rom, c);
 
@@ -154,14 +154,14 @@ int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 
 	strcpy(c->magic, COMPONENT_MAGIC);
 
-	csize = sizeof(struct romfs_file) + ALIGN(strlen(name) + 1, 16);
+	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
 
 	c->len = htonl(size);
 	c->offset = htonl(csize);
 	c->type = htonl(type);
 
-	memset(ROMFS_NAME(c), 0, ALIGN(strlen(name) + 1, 16));
-	strcpy((char *)ROMFS_NAME(c), name);
+	memset(CBFS_NAME(c), 0, ALIGN(strlen(name) + 1, 16));
+	strcpy((char *)CBFS_NAME(c), name);
 
 	memcpy(((unsigned char *)c) + csize, buffer, size);
 	return 0;

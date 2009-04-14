@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
 void create_usage(void)
 {

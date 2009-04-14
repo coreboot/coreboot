@@ -1,4 +1,4 @@
 Add interactive mode
-Add script mode (./romtool [ROM] -s script)
+Add script mode (./cbfstool [ROM] -s script)
 Support compression for stages and payloads
 Add nrv2b

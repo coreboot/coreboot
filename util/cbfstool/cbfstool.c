@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -18,9 +18,9 @@
  */
 
 /* v2 compat: First, assumes a 64K bootblock. 
- * romtool coreboot.rom create 0x80000 coreboot.strip 
- * romtool coreboot.rom add-payload /tmp/filo.elf payload 
- * romtool coreboot.rom print
+ * cbfstool coreboot.rom create 0x80000 coreboot.strip 
+ * cbfstool coreboot.rom add-payload /tmp/filo.elf payload 
+ * cbfstool coreboot.rom print
  */
 
 
@@ -28,7 +28,7 @@
 #include <unistd.h>
 #include <libgen.h>
 #include <sys/mman.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
 extern int create_handler(struct rom *, int, char **);
 extern int bootblock_handler(struct rom *, int, char **);
@@ -66,13 +66,13 @@ struct {
 
 static struct rom rom;
 
-char romtool_bindir[255];
+char cbfstool_bindir[255];
 
 void show_help(void)
 {
 	int i;
 
-	printf("romtool [OPTION] [[FILE] [COMMAND] [PARAMETERS]...\n");
+	printf("cbfstool [OPTION] [[FILE] [COMMAND] [PARAMETERS]...\n");
 	printf("Apply COMMANDS with PARAMETERS to FILE.  If no COMMAND is\n");
 	printf("given, run in interactive mode\n\n");
 	printf("OPTIONs:\n");
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
 	char *cmd;
 	int ret = -1, i;
 
-	strncpy(romtool_bindir, dirname(argv[0]), 254);
+	strncpy(cbfstool_bindir, dirname(argv[0]), 254);
 
 	while (1) {
 		signed ch = getopt(argc, argv, "hC:");

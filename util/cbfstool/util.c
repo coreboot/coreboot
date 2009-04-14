@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
 int get_size(const char *size)
 {
@@ -127,7 +127,7 @@ int open_rom(struct rom *rom, const char *filename)
 
 	offset = ROM_READL(rom, s.st_size - 4);
 
-	rom->header = (struct romfs_header *)
+	rom->header = (struct cbfs_header *)
 	    ROM_PTR(rom, s.st_size - (0xFFFFFFFF - offset) - 1);
 
 	if (ntohl(rom->header->magic) != HEADER_MAGIC) {
@@ -205,11 +205,11 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 	memset(rom->ptr + rom->size - 16, 0, 16);
 
 	ROM_WRITEL(rom, rom->size - 4,
-		   0xFFFFFFF0 - sizeof(struct romfs_header));
+		   0xFFFFFFF0 - sizeof(struct cbfs_header));
 
 	/* This is a pointer to the header for easy access */
-	rom->header = (struct romfs_header *)
-	    ROM_PTR(rom, rom->size - 16 - sizeof(struct romfs_header));
+	rom->header = (struct cbfs_header *)
+	    ROM_PTR(rom, rom->size - 16 - sizeof(struct cbfs_header));
 
 	rom->header->magic = htonl(HEADER_MAGIC);
 	rom->header->romsize = htonl(romsize);
@@ -226,7 +226,7 @@ int add_bootblock(struct rom *rom, const char *filename)
 	//unsigned int offset;
 	int fd = size_and_open(filename, &size);
 	int ret;
-	struct romfs_header tmp;
+	struct cbfs_header tmp;
 
 	if (fd == -1)
 		return -1;
@@ -238,7 +238,7 @@ int add_bootblock(struct rom *rom, const char *filename)
 	}
 
 	/* Copy the current header into a temporary buffer */
-	memcpy(&tmp, rom->header, sizeof(struct romfs_header));
+	memcpy(&tmp, rom->header, sizeof(struct cbfs_header));
 
 	/* Copy the bootblock into place at the end of the file */
 
@@ -254,22 +254,22 @@ int add_bootblock(struct rom *rom, const char *filename)
 	/* FIXME: This should point to a location defined by coreboot */
 
 	ROM_WRITEL(rom, rom->size - 4,
-		   0xFFFFFFF0 - sizeof(struct romfs_header));
+		   0xFFFFFFF0 - sizeof(struct cbfs_header));
 
 	/* This is a pointer to the header for easy access */
-	rom->header = (struct romfs_header *)
-	    ROM_PTR(rom, rom->size - 16 - sizeof(struct romfs_header));
+	rom->header = (struct cbfs_header *)
+	    ROM_PTR(rom, rom->size - 16 - sizeof(struct cbfs_header));
 
 #if 0
 	/* Figure out the new location for the header */
 	offset = ROM_READL(rom, rom->size - 4);
 
-	rom->header = (struct romfs_header *)
+	rom->header = (struct cbfs_header *)
 	    ROM_PTR(rom, offset - (0xFFFFFFFF - rom->size));
 #endif
 
 	/* Replace the LAR header */
-	memcpy(rom->header, &tmp, sizeof(struct romfs_header));
+	memcpy(rom->header, &tmp, sizeof(struct cbfs_header));
 
 	return 0;
 }

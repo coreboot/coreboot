@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -18,7 +18,7 @@
  */
 
 #include <string.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
 static const struct {
 	char *type;

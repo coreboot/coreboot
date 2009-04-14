@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -17,28 +17,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#include <ctype.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
-void delete_usage(void)
+void bootblock_usage(void)
 {
-	printf("delete [NAME] ...\t\tDelete a component\n");
+	printf("bootblock [FILE]\t\tAdd a bootblock to the ROM\n");
 }
 
-int delete_handler(struct rom *rom, int argc, char **argv)
+int bootblock_handler(struct rom *rom, int argc, char **argv)
 {
-	int i;
-	int ret = 0;
-
 	if (argc < 1) {
-		delete_usage();
+		bootblock_usage();
 		return -1;
 	}
 
-	for (i = 0; i < argc; i++)
-		ret |= rom_remove(rom, argv[i]);
-
-	return ret;
+	return add_bootblock(rom, argv[0]);
 }

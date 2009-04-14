@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 #include <arpa/inet.h>
-#include "romfs.h"
+#include "cbfs.h"
 
 /* Definitions */
 
@@ -36,7 +36,7 @@ struct rom {
 	int size;
 	int fssize;
 
-	struct romfs_header *header;
+	struct cbfs_header *header;
 };
 
 /* Macros */
@@ -47,8 +47,8 @@ struct rom {
 #define ROM_WRITEL(_r, _o, _v) do { *((unsigned int *) ROM_PTR((_r), (_o))) = (_v); } while(0)
 #define ROM_READL(_r, _o) *((unsigned int *) (ROM_PTR((_r), (_o))))
 
-#define ERROR(err, args...) fprintf(stderr, "(romtool) E: " err, ##args)
-#define WARN(err, args...) fprintf(stderr, "(romtool) W: " err, ##args)
+#define ERROR(err, args...) fprintf(stderr, "(cbfstool) E: " err, ##args)
+#define WARN(err, args...) fprintf(stderr, "(cbfstool) W: " err, ##args)
 #define VERBOSE(str, args...) printf(str, ##args)
 
 #define ALIGN(_v, _a) ( ( (_v) + ( (_a) - 1 ) ) & ~( (_a) - 1 ) )
@@ -66,9 +66,9 @@ int add_bootblock(struct rom *rom, const char *filename);
 
 /* fs.c */
 
-struct romfs_file *rom_find(struct rom *rom, unsigned int offset);
-struct romfs_file *rom_find_first(struct rom *);
-struct romfs_file *rom_find_next(struct rom *, struct romfs_file *);
+struct cbfs_file *rom_find(struct rom *rom, unsigned int offset);
+struct cbfs_file *rom_find_first(struct rom *);
+struct cbfs_file *rom_find_next(struct rom *, struct cbfs_file *);
 int rom_add(struct rom *rom, const char *name, void *, int size, int type);
 int rom_remove(struct rom *rom, const char *name);
 unsigned int rom_used_space(struct rom *rom);

@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -17,22 +17,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include "romtool.h"
+#ifndef _COMMON_H_
+#define _COMMON_H_
 
-void bootblock_usage(void)
-{
-	printf("bootblock [FILE]\t\tAdd a bootblock to the ROM\n");
-}
+int iself(unsigned char *input);
+unsigned char *file_read(const char *filename, int *fsize);
+void file_write(const char *filename, unsigned char *buffer, int size);
+unsigned char *file_read_to_buffer(int fd, int *fsize);
+void file_write_from_buffer(int fd, unsigned char *buffer, int size);
 
-int bootblock_handler(struct rom *rom, int argc, char **argv)
-{
-	if (argc < 1) {
-		bootblock_usage();
-		return -1;
-	}
+/* compress.c */
 
-	return add_bootblock(rom, argv[0]);
-}
+void lzma_compress(char *in, int in_len, char *out, int *out_len);
+void none_compress(char *in, int in_len, char *out, int *out_len);
+
+#endif

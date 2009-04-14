@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -17,18 +17,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#ifndef _COMMON_H_
-#define _COMMON_H_
+#include <ctype.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include "cbfstool.h"
 
-int iself(unsigned char *input);
-unsigned char *file_read(const char *filename, int *fsize);
-void file_write(const char *filename, unsigned char *buffer, int size);
-unsigned char *file_read_to_buffer(int fd, int *fsize);
-void file_write_from_buffer(int fd, unsigned char *buffer, int size);
+void delete_usage(void)
+{
+	printf("delete [NAME] ...\t\tDelete a component\n");
+}
 
-/* compress.c */
+int delete_handler(struct rom *rom, int argc, char **argv)
+{
+	int i;
+	int ret = 0;
 
-void lzma_compress(char *in, int in_len, char *out, int *out_len);
-void none_compress(char *in, int in_len, char *out, int *out_len);
+	if (argc < 1) {
+		delete_usage();
+		return -1;
+	}
 
-#endif
+	for (i = 0; i < argc; i++)
+		ret |= rom_remove(rom, argv[i]);
+
+	return ret;
+}

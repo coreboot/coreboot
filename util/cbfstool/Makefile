@@ -5,17 +5,17 @@
 obj ?= $(shell pwd)
 
 COMMANDS=create.o bootblock.o delete.o add.o print.o resize.o
-OBJ=$(COMMANDS) romtool.o util.o fs.o
-INC=romtool.h romfs.h
+OBJ=$(COMMANDS) cbfstool.o util.o fs.o
+INC=cbfstool.h cbfs.h
 
 CC=gcc
 CFLAGS=-g -Wall # -W -Werror
 
 DESTDIR ?= /usr/local/bin
 
-all: $(obj)/romtool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
+all: $(obj)/cbfstool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
 
-$(obj)/romtool: $(patsubst %,$(obj)/%,$(OBJ))
+$(obj)/cbfstool: $(patsubst %,$(obj)/%,$(OBJ))
 	$(CC) -o $@ $(patsubst %,$(obj)/%,$(OBJ))
 
 tobj = $(obj)/tools
@@ -26,9 +26,9 @@ include $(tsrc)/Makefile
 $(obj)/%.o: %.c $(INC)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-install: $(obj)/romtool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
+install: $(obj)/cbfstool $(obj)/tools/rom-mkpayload $(obj)/tools/rom-mkstage
 	@ install -d $(DESTDIR)
-	@ install -m 0755 $(obj)/romtool $(DESTDIR)/romtool
+	@ install -m 0755 $(obj)/cbfstool $(DESTDIR)/cbfstool
 	@ install -m 0755 $(obj)/tools/rom-mkstage $(DESTDIR)/rom-mkstage
 	@ install -m 0755 $(obj)/tools/rom-mkpayload $(DESTDIR)/rom-mkpayload
 
@@ -36,5 +36,5 @@ tags:
 	ctags *.[ch] */*.[ch]
 
 clean: tools-clean
-	rm -f $(patsubst %,$(obj)/%,$(OBJ)) $(obj)/romtool
+	rm -f $(patsubst %,$(obj)/%,$(OBJ)) $(obj)/cbfstool
 

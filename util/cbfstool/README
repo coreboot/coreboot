@@ -1,16 +1,16 @@
-Coreboot ROMFS Specification
+Coreboot CBFS Specification
 Jordan Crouse <jordan@cosmicpenguin.net>
 
 = Introduction =
 
-This document describes the coreboot ROMFS specification (from here referred 
-to as ROMFS).  ROMFS is a scheme for managing independent chunks of data in
+This document describes the coreboot CBFS specification (from here referred 
+to as CBFS).  CBFS is a scheme for managing independent chunks of data in
 a system ROM.  Though not a true filesystem, the style and concepts are
 similar.
 
 = Architecture =
 
-The ROMFS architecture looks like the following:
+The CBFS architecture looks like the following:
 
 /---------------\ <-- Start of ROM
 | /-----------\ | --|
@@ -41,7 +41,7 @@ The ROMFS architecture looks like the following:
 \---------------/ 
 
 
-The ROMFS architecture consists of a binary associated with a physical
+The CBFS architecture consists of a binary associated with a physical
 ROM disk referred hereafter as the ROM. A number of independent of
 components, each with a  header prepended on to data are located within
 the ROM.  The components are nominally arranged sequentially, though they
@@ -50,12 +50,12 @@ are aligned along a pre-defined boundary.
 The bootblock occupies the last 20k of the ROM.  Within
 the bootblock is a master header containing information about the ROM
 including the size, alignment of the components, and the offset of the
-start of the first ROMFS component within the ROM.
+start of the first CBFS component within the ROM.
 
 = Master Header =
 
 The master header contains essential information about the ROM that is
-used by both the ROMFS implementation within coreboot at runtime as well
+used by both the CBFS implementation within coreboot at runtime as well
 as host based utilities to create and manage the ROM.  The master header
 will be located somewhere within the bootblock (high end of the ROM).  A
 pointer to the location of the header will be located at offset
@@ -67,7 +67,7 @@ need to read the pointer and do the appropriate math to locate the header.
 
 The following is the structure of the master header:
 
-struct romfs_header {
+struct cbfs_header {
 	unsigned int magic;
 	unsigned int version; 
 	unsigned int romsize;
@@ -79,10 +79,10 @@ struct romfs_header {
 
 The meaning of each member is as follows:
 
-'magic' is a 32 bit number that identifies the ROM as a ROMFS type.  The magic
+'magic' is a 32 bit number that identifies the ROM as a CBFS type.  The magic
 number is 0x4F524243, which is 'ORBC' in ASCII. 
 
-'version' is a 32 bit number that identifies the version of ROMFS. The current
+'version' is a 32 bit number that identifies the version of CBFS. The current
 version is 0x31313131 ('1111' in ASCII) which is endian-independent. 
 
 'romsize' is the size of the ROM in bytes.  Coreboot will subtract 'size' from
@@ -96,7 +96,7 @@ ROM.  This is used to make sure that each component is aligned correctly with
 regards to the erase block sizes on the ROM - allowing one to replace a
 component at runtime without disturbing the others.
 
-'offset' is the offset of the the first ROMFS component (from the start of
+'offset' is the offset of the the first CBFS component (from the start of
 the ROM).  This is to allow for arbitrary space to be left at the beginning
 of the ROM for things like embedded controller firmware.
 
@@ -111,19 +111,19 @@ firmware.  The bootblock does not have a component header attached to it.
 
 = Components =
 
-ROMFS components are placed in the ROM starting at 'offset' specified in
+CBFS components are placed in the ROM starting at 'offset' specified in
 the master header and ending at the bootblock.  Thus the total size available
-for components in the ROM is (ROM size - bootblocksize - 'offset').  Each ROMFS
+for components in the ROM is (ROM size - bootblocksize - 'offset').  Each CBFS
 component is to be aligned according to the 'align' value in the header.
 Thus, if a component of size 1052 is located at offset 0 with an 'align' value
 of 1024, the next component will be located at offset 2048.
 
-Each ROMFS component will be indexed with a unique ASCII string name of
+Each CBFS component will be indexed with a unique ASCII string name of
 unlimited size. 
 
-Each ROMFS component starts with a header:
+Each CBFS component starts with a header:
 
-struct ROMFS_file {
+struct CBFS_file {
         char magic[8];
         unsigned int len;
         unsigned int type;
@@ -155,7 +155,7 @@ structure of the header:
 
 /--------\  <- start
 | Header |
-|--------|  <- sizeof(struct romfs_file)
+|--------|  <- sizeof(struct cbfs_file)
 | Name   |
 |--------|  <- 'offset'
 | Data   |
@@ -165,25 +165,25 @@ structure of the header:
 == Searching Alogrithm ==
 
 To locate a specific component in the ROM, one starts at the 'offset'
-specified in the ROMFS master header.  For this example, the offset will
+specified in the CBFS master header.  For this example, the offset will
 be 0.  
 
 From that offset, the code should search for the magic string on the
 component, jumping 'align' bytes each time.  So, assuming that 'align' is
 16, the code will search for the string 'LARCHIVE' at offset 0, 16, 32, etc.
-If the offset ever exceeds the allowable range for ROMFS components, then no
+If the offset ever exceeds the allowable range for CBFS components, then no
 component was found.
 
 Upon recognizing a component, the software then has to search for the
 specific name of the component.  This is accomplished by comparing the
 desired name with the string on the component located at
-offset + sizeof(struct romfs_file).  If the string matches, then the component
+offset + sizeof(struct cbfs_file).  If the string matches, then the component
 has been located, otherwise the software should add 'offset' + 'len' to
 the offset and resume the search for the magic value.
 
 == Data Types ==
 
-The 'type' member of struct romfs_file is used to identify the content
+The 'type' member of struct cbfs_file is used to identify the content
 of the component data, and is used by coreboot and other
 run-time entities to make decisions about how to handle the data.
 
@@ -214,7 +214,7 @@ The following is the format of a stage component:
 
 The header is defined as:
 
-struct romfs_stage {
+struct cbfs_stage {
         unsigned int compression;
         unsigned long long entry;
         unsigned long long load;
@@ -273,8 +273,8 @@ The following is the format of a stage component:
 
 The header is as follows:
 
-struct romfs_payload {
-        struct romfs_payload_segment segments;
+struct cbfs_payload {
+        struct cbfs_payload_segment segments;
 }
 
 The header contains a number of segments corresponding to the segments
@@ -282,7 +282,7 @@ that need to be loaded for the payload.
 
 The following is the structure of each segment header:
 
-struct romfs_payload_segment {
+struct cbfs_payload_segment {
         unsigned int type;
         unsigned int compression;
         unsigned int offset;

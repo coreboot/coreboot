@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -18,7 +18,7 @@
  */
 
 #include <string.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
 void print_usage(void)
 {
@@ -31,7 +31,7 @@ int print_handler(struct rom *rom, int argc, char **argv)
 				ntohl(rom->header->bootblocksize), ntohl(rom->header->romsize), ntohl(rom->header->offset));
 	printf("Alignment: %d bytes\n\n", ntohl(rom->header->align));
 
-	struct romfs_file *c = rom_find_first(rom);
+	struct cbfs_file *c = rom_find_first(rom);
 
 	printf("%-30s Offset     %-12s Size\n", "Name", "Type");
 
@@ -39,13 +39,13 @@ int print_handler(struct rom *rom, int argc, char **argv)
 		char type[12];
 
 		switch (htonl(c->type)) {
-		case ROMFS_COMPONENT_STAGE:
+		case CBFS_COMPONENT_STAGE:
 			strcpy(type, "stage");
 			break;
-		case ROMFS_COMPONENT_PAYLOAD:
+		case CBFS_COMPONENT_PAYLOAD:
 			strcpy(type, "payload");
 			break;
-		case ROMFS_COMPONENT_OPTIONROM:
+		case CBFS_COMPONENT_OPTIONROM:
 			strcpy(type, "optionrom");
 			break;
 		default:
@@ -53,7 +53,7 @@ int print_handler(struct rom *rom, int argc, char **argv)
 			break;
 		}
 
-		printf("%-30s 0x%-8x %-12s %d\n", ROMFS_NAME(c),
+		printf("%-30s 0x%-8x %-12s %d\n", CBFS_NAME(c),
 		       ROM_OFFSET(rom, c), type, htonl(c->len));
 
 		c = rom_find_next(rom, c);

@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-#include "romtool.h"
+#include "cbfstool.h"
 
 void resize_usage(void)
 {
@@ -89,7 +89,7 @@ int resize_handler(struct rom *rom, int argc, char **argv)
 	/* We only have to rewrite the entries if the alignment changed */
 
 	if (align != ntohl(rom->header->align)) {
-		struct romfs_file *c;
+		struct cbfs_file *c;
 
 		/* The first entry doesn't have to move */
 
@@ -97,7 +97,7 @@ int resize_handler(struct rom *rom, int argc, char **argv)
 		offset = rom->header->offset;
 
 		while (c) {
-			struct romfs_file *n = rom_find_next(rom, c);
+			struct cbfs_file *n = rom_find_next(rom, c);
 			unsigned int next;
 
 			if (n == NULL)
@@ -113,7 +113,7 @@ int resize_handler(struct rom *rom, int argc, char **argv)
 			memmove(ROM_PTR(rom, next), n,
 				ntohl(n->offset) + ntohl(n->len));
 
-			c = (struct romfs_file *)ROM_PTR(rom, next);
+			c = (struct cbfs_file *)ROM_PTR(rom, next);
 
 			/* If the previous header wasn't overwritten by the change,
 			   corrupt the header so we don't accidently find it */
@@ -133,7 +133,7 @@ int resize_handler(struct rom *rom, int argc, char **argv)
 
 	offset = ROM_READL(rom, size - 12);
 
-	rom->header = (struct romfs_header *)
+	rom->header = (struct cbfs_header *)
 	    ROM_PTR(rom, size - (0xFFFFFFFF - offset) - 1);
 
 	/* Put the new values in the header */

@@ -27,7 +27,7 @@
 #include <sys/stat.h>
 
 #include "common.h"
-#include "../romfs.h"
+#include "../cbfs.h"
 
 int parse_elf(unsigned char *input, unsigned char **output,
 	      int mode, void (*compress) (char *, int, char *, int *))
@@ -40,7 +40,7 @@ int parse_elf(unsigned char *input, unsigned char **output,
 
 	int headers;
 	int i;
-	struct romfs_stage *stage;
+	struct cbfs_stage *stage;
 	unsigned int data_start, data_end, mem_end;
 
 	headers = ehdr->e_phnum;
@@ -107,14 +107,14 @@ int parse_elf(unsigned char *input, unsigned char **output,
 	}
 
 	/* Now make the output buffer */
-	out = calloc(sizeof(struct romfs_stage) + data_end - data_start, 1);
+	out = calloc(sizeof(struct cbfs_stage) + data_end - data_start, 1);
 
 	if (out == NULL) {
 		fprintf(stderr, "E: Unable to allocate memory: %m\n");
 		return -1;
 	}
 
-	stage = (struct romfs_stage *)out;
+	stage = (struct cbfs_stage *)out;
 
 	stage->load = data_start;
 	stage->memlen = mem_end - data_start;
@@ -122,18 +122,18 @@ int parse_elf(unsigned char *input, unsigned char **output,
 	stage->entry = ehdr->e_entry;
 
 	compress(buffer, data_end - data_start,
-		 (char *)(out + sizeof(struct romfs_stage)),
+		 (char *)(out + sizeof(struct cbfs_stage)),
 		 (int *)&stage->len);
 
 	*output = out;
 
-	return sizeof(struct romfs_stage) + stage->len;
+	return sizeof(struct cbfs_stage) + stage->len;
 }
 
 int main(int argc, char **argv)
 {
 	void (*compress) (char *, int, char *, int *);
-	int algo = ROMFS_COMPRESS_LZMA;
+	int algo = CBFS_COMPRESS_LZMA;
 
 	char *output = NULL;
 	char *input = NULL;
@@ -160,10 +160,10 @@ int main(int argc, char **argv)
 			output = optarg;
 			break;
 		case 'l':
-			algo = ROMFS_COMPRESS_LZMA;
+			algo = CBFS_COMPRESS_LZMA;
 			break;
 		case 'n':
-			algo = ROMFS_COMPRESS_NONE;
+			algo = CBFS_COMPRESS_NONE;
 			break;
 		default:
 			//usage();
@@ -185,10 +185,10 @@ int main(int argc, char **argv)
 	}
 
 	switch (algo) {
-	case ROMFS_COMPRESS_NONE:
+	case CBFS_COMPRESS_NONE:
 		compress = none_compress;
 		break;
-	case ROMFS_COMPRESS_LZMA:
+	case CBFS_COMPRESS_LZMA:
 		compress = lzma_compress;
 		break;
 	}

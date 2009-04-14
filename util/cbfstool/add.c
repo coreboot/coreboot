@@ -1,5 +1,5 @@
 /*
- * romtool
+ * cbfstool
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
  *
@@ -26,7 +26,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
-#include "romtool.h"
+#include "cbfstool.h"
 
 #define MAX_PATH 255
 
@@ -221,7 +221,7 @@ void add_payload_usage(void)
 
 int add_handler(struct rom *rom, int argc, char **argv)
 {
-	unsigned int type = ROMFS_COMPONENT_NULL;
+	unsigned int type = CBFS_COMPONENT_NULL;
 
 	if (argc < 2) {
 		add_usage();
@@ -240,7 +240,7 @@ int add_handler(struct rom *rom, int argc, char **argv)
 			type = strtoul(argv[2], 0, 0);
 	}
 
-	if (type == ROMFS_COMPONENT_NULL)
+	if (type == CBFS_COMPONENT_NULL)
 		WARN("No file type was given for %s - using default\n",
 		     argv[0]);
 
@@ -250,18 +250,18 @@ int add_handler(struct rom *rom, int argc, char **argv)
 char *find_tool(char *tool)
 {
 	static char toolpath[MAX_PATH];
-	extern char romtool_bindir[];
+	extern char cbfstool_bindir[];
 
 	snprintf(toolpath, MAX_PATH - 1, "tools/%s", tool);
 	if (!access(toolpath, X_OK))
 		return toolpath;
 
-	snprintf(toolpath, MAX_PATH - 1, "%s/tools/%s", romtool_bindir, tool);
+	snprintf(toolpath, MAX_PATH - 1, "%s/tools/%s", cbfstool_bindir, tool);
 
 	if (!access(toolpath, X_OK))
 		return toolpath;
 
-	snprintf(toolpath, MAX_PATH - 1, "%s/%s", romtool_bindir, tool);
+	snprintf(toolpath, MAX_PATH - 1, "%s/%s", cbfstool_bindir, tool);
 
 	if (!access(toolpath, X_OK))
 		return toolpath;
@@ -294,7 +294,7 @@ int add_payload_handler(struct rom *rom, int argc, char **argv)
 	}
 
 	return fork_tool_and_add(rom, find_tool("rom-mkpayload"), argv[0],
-				 argv[1], ROMFS_COMPONENT_PAYLOAD, argc - 2,
+				 argv[1], CBFS_COMPONENT_PAYLOAD, argc - 2,
 				 argc > 2 ? &argv[2] : NULL);
 }
 
@@ -322,6 +322,6 @@ int add_stage_handler(struct rom *rom, int argc, char **argv)
 	}
 
 	return fork_tool_and_add(rom, find_tool("rom-mkstage"), argv[0],
-				 argv[1], ROMFS_COMPONENT_STAGE, argc - 2,
+				 argv[1], CBFS_COMPONENT_STAGE, argc - 2,
 				 argc > 2 ? &argv[2] : NULL);
 }

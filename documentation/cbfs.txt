@@ -18,20 +18,20 @@ My goal was to add small things to LAR while retaining the overall
 scheme.  Over time, the scheme evolved slightly, but I think you'll find 
 that it remains true to the original idea.  Below is the beginnings of 
 an architecture document - I did it in text form, but if met with 
-aclaim, it should be wikified.  This presents what I call ROMFS - the 
+aclaim, it should be wikified.  This presents what I call CBFS - the 
 next generation LAR for next generation Coreboot.  Its easier to 
 describe what it is by describing what changed:
 
 A header has been added somewhere in the bootblock similar to Carl 
 Daniel's scheme.  In addition to the coreboot information, the header 
 reports the size of the ROM, the alignment of the blocks, and the offset 
-of the first component in the ROMFS.   The master header provides all 
+of the first component in the CBFS.   The master header provides all 
 the information LAR needs plus the magic number information flashrom needs.
 
 Each "file" (or component, as I style them) now has a type associated 
 with it. The type is used by coreboot to identify the type of file that 
 it is loading, and it can also be used by payloads to group items in the 
-ROMFS by type (i.e - bayou can ask for all components that are payloads).
+CBFS by type (i.e - bayou can ask for all components that are payloads).
 
 The header on each "file" (or component, as I like to style them) has 
 been simplified - We now only store the length, the type, the checksum, 
@@ -73,20 +73,20 @@ bucks, will you?
 
 Jordan
 
-Coreboot ROMFS Specification
+Coreboot CBFS Specification
 Jordan Crouse <jordan@cosmicpenguin.net>
 
 = Introduction =
 
-This document describes the coreboot ROMFS specification (from here
-referred to as ROMFS).  ROMFS is a scheme for managing independent chunks
+This document describes the coreboot CBFS specification (from here
+referred to as CBFS).  CBFS is a scheme for managing independent chunks
 of data in a system ROM.  Though not a true filesystem, the style and
 concepts are similar.
 
 
 = Architecture =
 
-The ROMFS architecture looks like the following:
+The CBFS architecture looks like the following:
 
 /---------------\ <-- Start of ROM
 | /-----------\ | --|
@@ -117,7 +117,7 @@ The ROMFS architecture looks like the following:
 \---------------/
 
 
-The ROMFS architecture consists of a binary associated with a physical
+The CBFS architecture consists of a binary associated with a physical
 ROM disk referred hereafter as the ROM. A number of independent of
 components, each with a  header prepended on to data are located within
 the ROM.  The components are nominally arranged sequentially, though they
@@ -126,12 +126,12 @@ are aligned along a pre-defined boundary.
 The bootblock occupies the last 20k of the ROM.  Within
 the bootblock is a master header containing information about the ROM
 including the size, alignment of the components, and the offset of the
-start of the first ROMFS component within the ROM.
+start of the first CBFS component within the ROM.
 
 = Master Header =
 
 The master header contains essential information about the ROM that is
-used by both the ROMFS implementation within coreboot at runtime as well
+used by both the CBFS implementation within coreboot at runtime as well
 as host based utilities to create and manage the ROM.  The master header
 will be located somewhere within the bootblock (last 20k of the ROM).  A
 pointer to the location of the header will be located at offset
@@ -143,7 +143,7 @@ need to read the pointer and do the appropriate math to locate the header.
 
 The following is the structure of the master header:
 
-struct romfs_header {
+struct cbfs_header {
 	unsigned int magic;
 	unsigned int size;
 	unsigned int align;
@@ -152,7 +152,7 @@ struct romfs_header {
 
 The meaning of each member is as follows:
 
-'magic' is a 32 bit number that identifies the ROM as a ROMFS type.  The 
+'magic' is a 32 bit number that identifies the ROM as a CBFS type.  The 
 magic
 number is 0x4F524243, which is 'ORBC' in ASCII.
 
@@ -165,7 +165,7 @@ with
 regards to the erase block sizes on the ROM - allowing one to replace a
 component at runtime without disturbing the others.
 
-'offset' is the offset of the the first ROMFS component (from the start of
+'offset' is the offset of the the first CBFS component (from the start of
 the ROM).  This is to allow for arbitrary space to be left at the beginning
 of the ROM for things like embedded controller firmware.
 
@@ -178,21 +178,21 @@ does not have a component header attached to it.
 
 = Components =
 
-ROMFS components are placed in the ROM starting at 'offset' specified in
+CBFS components are placed in the ROM starting at 'offset' specified in
 the master header and ending at the bootblock.  Thus the total size 
 available
-for components in the ROM is (ROM size - 20k - 'offset').  Each ROMFS
+for components in the ROM is (ROM size - 20k - 'offset').  Each CBFS
 component is to be aligned according to the 'align' value in the header.
 Thus, if a component of size 1052 is located at offset 0 with an 'align' 
 value
 of 1024, the next component will be located at offset 2048.
 
-Each ROMFS component will be indexed with a unique ASCII string name of
+Each CBFS component will be indexed with a unique ASCII string name of
 unlimited size.
 
-Each ROMFS component starts with a header:
+Each CBFS component starts with a header:
 
-struct ROMFS_file {
+struct cbfs_file {
          char magic[8];
          unsigned int len;
          unsigned int type;
@@ -226,7 +226,7 @@ structure of the header:
 
 /--------\  <- start
 | Header |
-|--------|  <- sizeof(struct romfs_file)
+|--------|  <- sizeof(struct cbfs_file)
 | Name   |
 |--------|  <- 'offset'
 | Data   |
@@ -236,26 +236,26 @@ structure of the header:
 == Searching Alogrithm ==
 
 To locate a specific component in the ROM, one starts at the 'offset'
-specified in the ROMFS master header.  For this example, the offset will
+specified in the CBFS master header.  For this example, the offset will
 be 0.
 
  From that offset, the code should search for the magic string on the
 component, jumping 'align' bytes each time.  So, assuming that 'align' is
 16, the code will search for the string 'LARCHIVE' at offset 0, 16, 32, etc.
-If the offset ever exceeds the allowable range for ROMFS components, then no
+If the offset ever exceeds the allowable range for CBFS components, then no
 component was found.
 
 Upon recognizing a component, the software then has to search for the
 specific name of the component.  This is accomplished by comparing the
 desired name with the string on the component located at
-offset + sizeof(struct romfs_file).  If the string matches, then the 
+offset + sizeof(struct cbfs_file).  If the string matches, then the 
 component
 has been located, otherwise the software should add 'offset' + 'len' to
 the offset and resume the search for the magic value.
 
 == Data Types ==
 
-The 'type' member of struct romfs_file is used to identify the content
+The 'type' member of struct cbfs_file is used to identify the content
 of the component data, and is used by coreboot and other
 run-time entities to make decisions about how to handle the data.
 
@@ -286,7 +286,7 @@ The following is the format of a stage component:
 
 The header is defined as:
 
-struct romfs_stage {
+struct cbfs_stage {
          unsigned int compression;
          unsigned long long entry;
          unsigned long long load;
@@ -345,8 +345,8 @@ The following is the format of a stage component:
 
 The header is as follows:
 
-struct romfs_payload {
-         struct romfs_payload_segment segments;
+struct cbfs_payload {
+         struct cbfs_payload_segment segments;
 }
 
 The header contains a number of segments corresponding to the segments
@@ -354,7 +354,7 @@ that need to be loaded for the payload.
 
 The following is the structure of each segment header:
 
-struct romfs_payload_segment {
+struct cbfs_payload_segment {
          unsigned int type;
          unsigned int compression;
          unsigned int offset;

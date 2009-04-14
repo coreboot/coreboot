@@ -27,7 +27,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <string.h>
-#include <romfs.h>
+#include <cbfs.h>
 
 struct rom_header * pci_rom_probe(struct device *dev)
 {
@@ -35,10 +35,10 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
 
-	if (CONFIG_ROMFS) {
+	if (CONFIG_CBFS) {
 		void *v;
 		/* if it's in FLASH, then it's as if dev->on_mainboard was true */
-		v = romfs_load_optionrom(dev->vendor, dev->device, NULL);
+		v = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
 		printk_debug("In cbfs, rom address for %s = %lx\n", 
 				dev_path(dev), rom_address);
 		if (v) {

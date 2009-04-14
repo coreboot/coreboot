@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <romfs.h>
+#include <cbfs.h>
 
 #ifndef CONFIG_BIG_ENDIAN
 #define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \
@@ -70,12 +70,12 @@ struct ip_checksum_vcb {
 	unsigned short ip_checksum;
 };
 
-int romfs_self_decompress(int algo, void *src,struct segment *new)
+int cbfs_self_decompress(int algo, void *src,struct segment *new)
 {
 	u8 *dst;
 
 	/* for uncompressed, it's easy: just point at the area in ROM */
-	if (algo ==  ROMFS_COMPRESS_NONE) {
+	if (algo ==  CBFS_COMPRESS_NONE) {
 		new->s_srcaddr = (u32) src;
 		new->s_filesz =  new->s_memsz;
 		return 0;
@@ -91,21 +91,21 @@ int romfs_self_decompress(int algo, void *src,struct segment *new)
 
 	switch(algo) {
 #ifdef CONFIG_COMPRESSION_LZMA
-	case ROMFS_COMPRESS_LZMA: {
+	case CBFS_COMPRESS_LZMA: {
 		unsigned long ulzma(unsigned char *src, unsigned char *dst);		
 		ulzma(src, dst);
 	}
 #endif
 
 #ifdef CONFIG_COMPRESSION_NRV2B
-	case ROMFS_COMPRESS_NRV2B: {
+	case CBFS_COMPRESS_NRV2B: {
 		unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
 		unsigned long tmp;
 		unrv2b(src, dst, &tmp);
 	}
 #endif
 	default:
-		printk_info( "ROMFS:  Unknown compression type %d\n",
+		printk_info( "CBFS:  Unknown compression type %d\n",
 		       algo);
 		return -1;
 	}
@@ -341,13 +341,13 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 static int build_self_segment_list(
 	struct segment *head, 
 	unsigned long bounce_buffer, struct lb_memory *mem,
-	struct romfs_payload *payload, u32 *entry)
+	struct cbfs_payload *payload, u32 *entry)
 {
 	struct segment *new;
 	struct segment *ptr;
 	u8 *data;
 	int datasize;
-	struct romfs_payload_segment *segment, *first_segment;
+	struct cbfs_payload_segment *segment, *first_segment;
 	memset(head, 0, sizeof(*head));
 	head->phdr_next = head->phdr_prev = head;
 	head->next = head->prev = head;
@@ -372,10 +372,10 @@ static int build_self_segment_list(
 
 		datasize = ntohl(segment->len);
 		/* figure out decompression, do it, get pointer to the area */
-		if (romfs_self_decompress(ntohl(segment->compression),
+		if (cbfs_self_decompress(ntohl(segment->compression),
 					     ((unsigned char *) first_segment) +
 					     ntohl(segment->offset), new)) {
-			printk_emerg("romfs_self_decompress failed\n");
+			printk_emerg("cbfs_self_decompress failed\n");
 			return;
 		}
 		printk_debug("New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
@@ -432,7 +432,7 @@ static int build_self_segment_list(
 }
 
 static int load_self_segments(
-	struct segment *head, struct romfs_payload *payload)
+	struct segment *head, struct cbfs_payload *payload)
 {
 	unsigned long offset;
 	struct segment *ptr;
@@ -478,7 +478,7 @@ static int load_self_segments(
 	return 0;
 }
 
-int selfboot(struct lb_memory *mem, struct romfs_payload *payload)
+int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 {
 	void *entry;
 	struct segment head;

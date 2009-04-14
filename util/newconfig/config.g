@@ -2224,11 +2224,11 @@ def writemakefile(path):
 	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
 
-	# Hack to get the necessary settings (CONFIG_ROMFS):
+	# Hack to get the necessary settings (CONFIG_CBFS):
 	file.write("include %s/Makefile.settings\n\n" % romimages.keys()[0])
 
 	# main rule
-	file.write("ifeq \"$(CONFIG_ROMFS)\" \"1\"\n")
+	file.write("ifeq \"$(CONFIG_CBFS)\" \"1\"\n")
 	file.write("\nall: ")
 	for i in buildroms:
 		file.write(" %sfs" % i.name)
@@ -2240,8 +2240,8 @@ def writemakefile(path):
 	file.write("\n")
 	file.write("endif\n\n")
 
-	# romtool rules
-	file.write("\nromtool:\n\tmkdir -p tools/lzma\n\t$(MAKE) -C $(TOP)/util/romtool obj=$(shell pwd)\n\n")
+	# cbfstool rules
+	file.write("\ncbfstool:\n\tmkdir -p tools/lzma\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)\n\n")
 
 	file.write("include Makefile.settings\n\n")
 	for i, o in romimages.items():
@@ -2278,17 +2278,17 @@ def writemakefile(path):
 
 	romsize = getoption("ROM_SIZE", image)
 	# i.name? That can not be right, can it? 
-	file.write("%sfs: %s romtool\n" %(i.name,i.name));
-	file.write("\trm -f coreboot.romfs\n");
-	file.write("\t./romtool %sfs create %s %s %s.bootblock\n" % (i.name, romsize, bootblocksize, i.name))
+	file.write("%sfs: %s cbfstool\n" %(i.name,i.name));
+	file.write("\trm -f coreboot.cbfs\n");
+	file.write("\t./cbfstool %sfs create %s %s %s.bootblock\n" % (i.name, romsize, bootblocksize, i.name))
 	for i in buildroms:
 		for j in i.roms:
 			#failover is a hack that will go away soon. 
 			if (j != "failover") and (rommapping[j] != "/dev/null"):
-				file.write("\tif [ -f %s/romfs-support ]; then ./romtool %sfs add-payload %s %s/payload `cat %s/romfs-support`; fi\n" % (j, i.name, rommapping[j], j, j))
-		file.write("\t ./romtool %sfs print\n" % i.name)
+				file.write("\tif [ -f %s/cbfs-support ]; then ./cbfstool %sfs add-payload %s %s/payload `cat %s/cbfs-support`; fi\n" % (j, i.name, rommapping[j], j, j))
+		file.write("\t ./cbfstool %sfs print\n" % i.name)
 
-	file.write(".PHONY: all clean romtool")
+	file.write(".PHONY: all clean cbfstool")
 	for i in romimages.keys():
 		file.write(" %s-clean" % i)
 	for i, o in romimages.items():

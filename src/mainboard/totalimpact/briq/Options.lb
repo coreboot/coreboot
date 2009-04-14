@@ -3,7 +3,7 @@
 ##
 
 uses TTYS0_DIV
-uses CONFIG_ROMFS
+uses CONFIG_CBFS
 uses TTYS0_BASE
 uses CONFIG_BRIQ_750FX
 uses CONFIG_BRIQ_7400
@@ -127,8 +127,8 @@ default CONFIG_BRIQ_750FX=1
 
 ### End Options.lb
 #
-# ROMFS
+# CBFS
 #
 #
-default CONFIG_ROMFS=0
+default CONFIG_CBFS=0
 end

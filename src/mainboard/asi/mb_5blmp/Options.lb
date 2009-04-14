@@ -1,5 +1,5 @@
 uses HAVE_PIRQ_TABLE
-uses CONFIG_ROMFS
+uses CONFIG_CBFS
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
 uses HAVE_HARD_RESET
@@ -163,8 +163,8 @@ default CONFIG_VIDEO_MB = 0
 
 
 #
-# ROMFS
+# CBFS
 #
 #
-default CONFIG_ROMFS=0
+default CONFIG_CBFS=0
 end

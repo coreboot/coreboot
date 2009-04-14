@@ -1,5 +1,5 @@
 uses HAVE_MP_TABLE
-uses CONFIG_ROMFS
+uses CONFIG_CBFS
 uses HAVE_ACPI_TABLES
 uses HAVE_ACPI_RESUME
 uses HAVE_PIRQ_TABLE
@@ -241,8 +241,8 @@ default DEBUG=1
 
 ### End Options.lb
 #
-# ROMFS
+# CBFS
 #
 #
-default CONFIG_ROMFS=0
+default CONFIG_CBFS=0
 end

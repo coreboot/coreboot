@@ -1,6 +1,6 @@
 object elfboot.o
 object hardwaremain.o
-if CONFIG_ROMFS
+if CONFIG_CBFS
 	object selfboot.o
 end
 if CONFIG_FS_PAYLOAD

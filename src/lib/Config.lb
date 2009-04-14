@@ -28,6 +28,6 @@ if CONFIG_USE_INIT
 	initobject memcmp.o
 end
 
-if CONFIG_ROMFS
-	object romfs.o
+if CONFIG_CBFS
+	object cbfs.o
 end

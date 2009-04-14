@@ -36,7 +36,7 @@ it with the version available from LANL.
 #include <part/hard_reset.h>
 #include <part/init_timer.h>
 #include <boot/elf.h>
-#include <romfs.h>
+#include <cbfs.h>
 #if HAVE_ACPI_RESUME == 1
 #include <arch/acpi.h>
 #endif
@@ -112,11 +112,11 @@ void hardwaremain(int boot_complete)
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
-#if CONFIG_ROMFS == 1
+#if CONFIG_CBFS == 1
 # if USE_FALLBACK_IMAGE == 1
-	void (*pl)(void) = romfs_load_payload(lb_mem, "fallback/payload");
+	void (*pl)(void) = cbfs_load_payload(lb_mem, "fallback/payload");
 # else
-	void (*pl)(void) = romfs_load_payload(lb_mem, "normal/payload");
+	void (*pl)(void) = cbfs_load_payload(lb_mem, "normal/payload");
 # endif
 #endif
 

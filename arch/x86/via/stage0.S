@@ -35,6 +35,11 @@
 #define CACHE_RAM_CODE_SEG 0x18
 #define CACHE_RAM_DATA_SEG 0x20
 
+/* Note: disable this only if you want the system to boot REEEEALLY slow for debugging */
+#ifndef CACHE_CBROM
+#define CACHE_CBROM
+#endif
+
 	.align  4
 	.globl protected_stage0
 protected_stage0:
@@ -101,39 +106,37 @@ clear_fixed_var_mtrr:
 	jmp     clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 	/* MTRRPhysBase */
-	movl    $0x200, %ecx
+	movl    $(MTRRphysBase_MSR(0)), %ecx
 	xorl    %edx, %edx
 	movl    $(CacheBase|MTRR_TYPE_WRBACK),%eax
 	wrmsr
 
 	/* MTRRPhysMask */
-	movl    $0x201, %ecx
+	movl    $(MTRRphysMask_MSR(0)), %ecx
 	/* This assumes we never access addresses above 2^36 in CAR. */
 	movl    $0x0000000f,%edx
-	movl    $(~(CacheSize-1)|0x800),%eax
+	movl    $(~(CacheSize-1)|(1<<11)), %eax
 	wrmsr
 
-#if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
-        /* enable write base caching so we can do execute in place
-         * on the flash rom.
-         */
+#ifdef CACHE_CBROM
+	/* enable write base caching. */
 	/* MTRRPhysBase */
-	movl    $0x202, %ecx
+	movl    $(MTRRphysBase_MSR(1)), %ecx
 	xorl    %edx, %edx
-	movl    $(XIP_ROM_BASE|MTRR_TYPE_WRBACK),%eax
+	movl    $((0x100000000 - (CONFIG_COREBOOT_ROMSIZE_KB * 1024))|MTRR_TYPE_WRBACK),%eax
 	wrmsr
 
 	/* MTRRPhysMask */
-	movl    $0x203, %ecx
+	movl    $(MTRRphysMask_MSR(1)), %ecx
 	movl    $0x0000000f,%edx
-	movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
+	movl    $(~((CONFIG_COREBOOT_ROMSIZE_KB * 1024) - 1) | (1<<11)), %eax
 	wrmsr
-#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+#endif /* CACHE_CBROM */
 
 	movl    $MTRRdefType_MSR, %ecx
 	xorl    %edx, %edx
 	/* Enable Variable and Fixed MTRRs */
-	movl    $0x00000800, %eax
+	movl    $(1<<11), %eax
 	wrmsr
 
 	/* enable cache */
@@ -153,12 +156,12 @@ clear_fixed_var_mtrr_out:
 	xorl    %eax, %eax
 	rep     stosl
 
-#if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
-	/* Read the XIP area */
-	movl    XIP_ROM_BASE, %esi
-	movl    $(XIP_ROM_SIZE>>2), %ecx
+#ifdef CACHE_CBROM
+	/* Read the ROM area */
+	movl    (0x100000000 - (CONFIG_COREBOOT_ROMSIZE_KB * 1024)), %esi
+	movl    $((CONFIG_COREBOOT_ROMSIZE_KB * 1024) >> 2), %ecx
 	rep     lodsl
-#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+#endif /* CACHE_CBROM */
 
 	/* The key point of this CAR code is C7 cache does not turn into
 	 * "no fill" mode, which is not compatible with general CAR code.

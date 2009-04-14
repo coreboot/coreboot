@@ -26,7 +26,7 @@
 #include <console.h>
 #include <device/device.h>
 #include <tables.h>
-#include <pirq_routing.h>
+#include <arch/x86/pirq_routing.h>
 
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {

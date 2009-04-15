@@ -47,8 +47,9 @@ static inline unsigned get_core_num(void)
 	return (cpuid_ecx(0x80000008) & 0xff);
 }
 
-static inline struct node_core_id get_node_core_id_x(void) {
+static inline struct node_core_id get_node_core_id_x(void)
+{
 
-	return get_node_core_id( read_nb_cfg_54() ); // for pre_e0() nb_cfg_54 always be 0
+	return get_node_core_id(read_nb_cfg_54()); // for pre_e0() nb_cfg_54 always be 0
 }
 

@@ -82,6 +82,11 @@ static void post_code(uint8_t value) {
 #include "northbridge/amd/amdk8/amdk8_f_pci.c"
 #include "northbridge/amd/amdk8/raminit_f_dqs.c"
 
+static inline unsigned get_nodes(void)
+{
+	return ((pci_read_config32(PCI_DEV(0, 0x18, 0), 0x60)>>4) & 7) + 1;
+}
+
 #include "cpu/amd/dualcore/dualcore.c"
 
 void hardwaremain(int ret_addr)

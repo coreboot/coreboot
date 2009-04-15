@@ -1,8 +1,6 @@
 #ifndef __ASM_MPSPEC_H
 #define __ASM_MPSPEC_H
 
-#if HAVE_MP_TABLE==1
-
 /*
  * Structure definitions for SMP machines following the
  * Intel Multiprocessing Specification 1.1 and 1.4.
@@ -271,17 +269,6 @@ void *smp_write_floating_table(unsigned long addr);
 void *smp_write_floating_table_physaddr(unsigned long addr, 
 		unsigned long mpf_physptr);
 unsigned long write_smp_table(unsigned long addr);
-
-#else /* HAVE_MP_TABLE */
-#if 0
-static inline 
-unsigned long write_smp_table(unsigned long addr)
-{
-	return addr;
-}
-#endif
-#define write_smp_table(addr)	(addr)
-#endif /* HAVE_MP_TABLE */
 
 #endif
 

@@ -31,7 +31,7 @@ void myusec_delay(int time)
 	for (i = 0; i < time * micro; i++) ;
 }
 
-void myusec_calibrate_delay()
+void myusec_calibrate_delay(void)
 {
 	int count = 1000;
 	unsigned long timeusec;

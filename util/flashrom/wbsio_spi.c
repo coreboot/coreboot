@@ -29,13 +29,14 @@
 
 static uint16_t wbsio_spibase = 0;
 
-static uint16_t wbsio_get_spibase(uint16_t port) {
+static uint16_t wbsio_get_spibase(uint16_t port)
+{
 	uint8_t id;
 	uint16_t flashport = 0;
 
 	w836xx_ext_enter(port);
 	id = wbsio_read(port, 0x20);
-	if(id != 0xa0) {
+	if (id != 0xa0) {
 		fprintf(stderr, "\nW83627 not found at 0x%x, id=0x%02x want=0xa0.\n", port, id);
 		goto done;
 	}
@@ -58,7 +59,8 @@ done:
 	return flashport;
 }
 
-int wbsio_check_for_spi(const char *name) {
+int wbsio_check_for_spi(const char *name)
+{
 	if (0 == (wbsio_spibase = wbsio_get_spibase(WBSIO_PORT1)))
 		if (0 == (wbsio_spibase = wbsio_get_spibase(WBSIO_PORT2)))
 			return 1;
@@ -88,7 +90,9 @@ int wbsio_check_for_spi(const char *name) {
  * Would one more byte of RAM in the chip (to get all 24 bits) really make
  * such a big difference?
  */
-int wbsio_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigned char *writearr, unsigned char *readarr) {
+int wbsio_spi_command(unsigned int writecnt, unsigned int readcnt,
+		      const unsigned char *writearr, unsigned char *readarr)
+{
 	int i;
 	uint8_t mode = 0;
 
@@ -169,7 +173,8 @@ int wbsio_spi_command(unsigned int writecnt, unsigned int readcnt, const unsigne
 	return 0;
 }
 
-int wbsio_spi_read(struct flashchip *flash, uint8_t *buf) {
+int wbsio_spi_read(struct flashchip *flash, uint8_t *buf)
+{
 	int size = flash->total_size * 1024;
 
 	if (flash->total_size > 1024) {
@@ -181,7 +186,8 @@ int wbsio_spi_read(struct flashchip *flash, uint8_t *buf) {
 	return 0;
 }
 
-int wbsio_spi_write(struct flashchip *flash, uint8_t *buf) {
+int wbsio_spi_write(struct flashchip *flash, uint8_t *buf)
+{
 	int pos, size = flash->total_size * 1024;
 
 	if (flash->total_size > 1024) {

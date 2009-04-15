@@ -1,5 +1,5 @@
 /*
- * This file is part of flashrom.
+ * This file is part of the flashrom project.
  *
  * Copyright (C) 2009 Peter Stuge <peter@stuge.se>
  *
@@ -20,7 +20,8 @@
 
 #include "flash.h"
 
-int erase_m29f002(struct flashchip *flash) {
+int erase_m29f002(struct flashchip *flash)
+{
 	volatile uint8_t *bios = flash->virtual_memory;
 	chip_writeb(0xaa, bios + 0x555);
 	chip_writeb(0x55, bios + 0xaaa);
@@ -33,7 +34,9 @@ int erase_m29f002(struct flashchip *flash) {
 	return 0;
 }
 
-static void rewrite_block(volatile uint8_t *bios, uint8_t *src, volatile uint8_t *dst, int size) {
+static void rewrite_block(volatile uint8_t *bios, uint8_t *src,
+			  volatile uint8_t *dst, int size)
+{
 	/* erase */
 	chip_writeb(0xaa, bios + 0x555);
 	chip_writeb(0x55, bios + 0xaaa);
@@ -56,13 +59,16 @@ static void rewrite_block(volatile uint8_t *bios, uint8_t *src, volatile uint8_t
 	}
 }
 
-static void do_block(volatile uint8_t *bios, uint8_t *src, int i, unsigned long start, int size) {
+static void do_block(volatile uint8_t *bios, uint8_t *src, int i,
+		     unsigned long start, int size)
+{
 	printf("%d at address: 0x%08lx", i, start);
 	rewrite_block(bios, src + start, bios + start, size);
 	printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
 }
 
-int write_m29f002t(struct flashchip *flash, uint8_t *buf) {
+int write_m29f002t(struct flashchip *flash, uint8_t *buf)
+{
 	int i, page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
@@ -73,17 +79,18 @@ int write_m29f002t(struct flashchip *flash, uint8_t *buf) {
 
 	printf("Programming block: ");
 	for (i = 0; i < 3; i++)
-		do_block(bios, buf, i, i*page_size, page_size);
-	do_block(bios, buf, i++, 0x30000, 32*1024);
-	do_block(bios, buf, i++, 0x38000, 8*1024);
-	do_block(bios, buf, i++, 0x3a000, 8*1024);
-	do_block(bios, buf, i, 0x3c000, 16*1024);
+		do_block(bios, buf, i, i * page_size, page_size);
+	do_block(bios, buf, i++, 0x30000, 32 * 1024);
+	do_block(bios, buf, i++, 0x38000, 8 * 1024);
+	do_block(bios, buf, i++, 0x3a000, 8 * 1024);
+	do_block(bios, buf, i, 0x3c000, 16 * 1024);
 
 	printf("\n");
 	return 0;
 }
 
-int write_m29f002b(struct flashchip *flash, uint8_t *buf) {
+int write_m29f002b(struct flashchip *flash, uint8_t *buf)
+{
 	int i = 0, page_size = flash->page_size;
 	volatile uint8_t *bios = flash->virtual_memory;
 
@@ -93,12 +100,12 @@ int write_m29f002b(struct flashchip *flash, uint8_t *buf) {
 	 */
 
 	printf("Programming block: ");
-	do_block(bios, buf, i++, 0x00000, 16*1024);
-	do_block(bios, buf, i++, 0x04000, 8*1024);
-	do_block(bios, buf, i++, 0x06000, 8*1024);
-	do_block(bios, buf, i++, 0x08000, 32*1024);
+	do_block(bios, buf, i++, 0x00000, 16 * 1024);
+	do_block(bios, buf, i++, 0x04000, 8 * 1024);
+	do_block(bios, buf, i++, 0x06000, 8 * 1024);
+	do_block(bios, buf, i++, 0x08000, 32 * 1024);
 	for (; i < 7; i++)
-		do_block(bios, buf, i, (i-3)*page_size, page_size);
+		do_block(bios, buf, i, (i - 3) * page_size, page_size);
 
 	printf("\n");
 	return 0;

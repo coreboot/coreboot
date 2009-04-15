@@ -16,6 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -55,13 +56,14 @@ void *sys_physmap(unsigned long phys_addr, size_t len)
 
 	if (-1 == fd_mem) {
 		/* Open the memory device UNCACHED. Important for MMIO. */
-		if (-1 == (fd_mem = open(MEM_DEV, O_RDWR|O_SYNC))) {
+		if (-1 == (fd_mem = open(MEM_DEV, O_RDWR | O_SYNC))) {
 			perror("Critical error: open(" MEM_DEV ")");
 			exit(2);
 		}
 	}
 
-	virt_addr = mmap(0, len, PROT_WRITE|PROT_READ, MAP_SHARED, fd_mem, (off_t)phys_addr);
+	virt_addr = mmap(0, len, PROT_WRITE | PROT_READ, MAP_SHARED,
+			 fd_mem, (off_t)phys_addr);
 	return MAP_FAILED == virt_addr ? NULL : virt_addr;
 }
 

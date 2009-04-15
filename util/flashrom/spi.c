@@ -85,7 +85,7 @@ static int spi_res(unsigned char *readarr)
 	return 0;
 }
 
-int spi_write_enable()
+int spi_write_enable(void)
 {
 	const unsigned char cmd[JEDEC_WREN_OUTSIZE] = { JEDEC_WREN };
 
@@ -93,7 +93,7 @@ int spi_write_enable()
 	return spi_command(sizeof(cmd), 0, cmd, NULL);
 }
 
-int spi_write_disable()
+int spi_write_disable(void)
 {
 	const unsigned char cmd[JEDEC_WRDI_OUTSIZE] = { JEDEC_WRDI };
 
@@ -229,7 +229,7 @@ int probe_spi_res(struct flashchip *flash)
 	return 1;
 }
 
-uint8_t spi_read_status_register()
+uint8_t spi_read_status_register(void)
 {
 	const unsigned char cmd[JEDEC_RDSR_OUTSIZE] = { JEDEC_RDSR };
 	unsigned char readarr[2]; /* JEDEC_RDSR_INSIZE=1 but wbsio needs 2 */
@@ -245,8 +245,7 @@ uint8_t spi_read_status_register()
 	return readarr[0];
 }
 
-/* Prettyprint the status register. Common definitions.
- */
+/* Prettyprint the status register. Common definitions. */
 void spi_prettyprint_status_register_common(uint8_t status)
 {
 	printf_debug("Chip status register: Bit 5 / Block Protect 3 (BP3) is "
@@ -501,7 +500,7 @@ int spi_sector_erase(const struct flashchip *flash, unsigned long addr)
 	return 0;
 }
 
-int spi_write_status_enable()
+int spi_write_status_enable(void)
 {
 	const unsigned char cmd[JEDEC_EWSR_OUTSIZE] = { JEDEC_EWSR };
 
@@ -616,15 +615,17 @@ int spi_chip_write(struct flashchip *flash, uint8_t *buf)
 	return 1;
 }
 
-int spi_aai_write(struct flashchip *flash, uint8_t *buf) {
+int spi_aai_write(struct flashchip *flash, uint8_t *buf)
+{
 	uint32_t pos = 2, size = flash->total_size * 1024;
 	unsigned char w[6] = {0xad, 0, 0, 0, buf[0], buf[1]};
 	switch (flashbus) {
-		case BUS_TYPE_WBSIO_SPI:
-			fprintf(stderr, "%s: impossible with Winbond SPI masters, degrading to byte program\n", __func__);
-			return spi_chip_write(flash, buf);
-		default:
-			break;
+	case BUS_TYPE_WBSIO_SPI:
+		fprintf(stderr, "%s: impossible with Winbond SPI masters,"
+				" degrading to byte program\n", __func__);
+		return spi_chip_write(flash, buf);
+	default:
+		break;
 	}
 	flash->erase(flash);
 	spi_write_enable();

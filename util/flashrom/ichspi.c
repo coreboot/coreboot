@@ -19,7 +19,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
  */
 
 /*
@@ -340,7 +339,7 @@ int program_opcodes(OPCODES * op)
  *
  * It should be called before ICH sends any spi command.
  */
-int ich_init_opcodes()
+int ich_init_opcodes(void)
 {
 	int rc = 0;
 	OPCODES *curopcodes_done;
@@ -429,8 +428,8 @@ static int ich7_run_opcode(OPCODE op, uint32_t offset,
 	opmenu = REGREAD32(ICH7_REG_OPMENU);
 	opmenu |= ((uint64_t)REGREAD32(ICH7_REG_OPMENU + 4)) << 32;
 
-	for (opcode_index=0; opcode_index<8; opcode_index++) {
-		if((opmenu & 0xff) == op.opcode) {
+	for (opcode_index = 0; opcode_index < 8; opcode_index++) {
+		if ((opmenu & 0xff) == op.opcode) {
 			break;
 		}
 		opmenu >>= 8;
@@ -525,7 +524,6 @@ static int ich9_run_opcode(OPCODE op, uint32_t offset,
 			REGWRITE32(ICH9_REG_FDATA0 +
 				   ((a - 1) - ((a - 1) % 4)), temp32);
 		}
-
 	}
 
 	/* Assemble SSFS + SSFC */
@@ -547,8 +545,8 @@ static int ich9_run_opcode(OPCODE op, uint32_t offset,
 	opmenu = REGREAD32(ICH9_REG_OPMENU);
 	opmenu |= ((uint64_t)REGREAD32(ICH9_REG_OPMENU + 4)) << 32;
 
-	for (opcode_index=0; opcode_index<8; opcode_index++) {
-		if((opmenu & 0xff) == op.opcode) {
+	for (opcode_index = 0; opcode_index < 8; opcode_index++) {
+		if ((opmenu & 0xff) == op.opcode) {
 			break;
 		}
 		opmenu >>= 8;

@@ -207,7 +207,7 @@ int coreboot_init(void)
 			(((char *)lb_table) + lb_table->header_bytes);
 		if (forward->tag == LB_TAG_FORWARD) {
 			start = forward->forward;
-			start &= ~(getpagesize()-1);
+			start &= ~(getpagesize() - 1);
 			physunmap(table_area, BYTES_TO_MAP);
 			table_area = physmap("high tables", start, BYTES_TO_MAP);
 			lb_table = find_lb_table(table_area, 0x00000, 0x1000);

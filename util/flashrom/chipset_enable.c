@@ -846,7 +846,7 @@ static int get_flashbase_sc520(struct pci_dev *dev, const char *name)
 	}
 
 	/* 4. Clean up */
-	munmap (mmcr, getpagesize());
+	munmap(mmcr, getpagesize());
 	return 0;
 }
 

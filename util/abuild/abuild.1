@@ -3,7 +3,7 @@
 abuild \- build coreboot images for all available targets
 .SH SYNOPSIS
 .B abuild
-\fR[\fB\-abvxsTVh\fR] [\fB\-c\fR numcpus|max] [\fB\-t\fR vendor/board] [\fB\-p\fR dir]
+\fR[\fB\-abrvxsTVh\fR] [\fB\-c\fR numcpus|max] [\fB\-t\fR vendor/board] [\fB\-p\fR dir]
 [LBROOT]
 .SH DESCRIPTION
 .B abuild
@@ -35,6 +35,12 @@ path of the payload.
 .TP
 .B "\-t, \-\-target <vendor/board>"
 Attempt to build target vendor/board only.
+.TP
+.B "\-r, \-\-remove"
+Remove mainboard build directory after the respective target has been
+built. This is mainly used for development purposes, when you don't need
+the actual build output, but rather only want to know if a build failed
+or not.
 .TP
 .B "\-x, \-\-xml"
 Write an XML log file instead of a plain-text one.

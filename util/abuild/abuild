@@ -499,9 +499,30 @@ function test_target
 	return 0
 }
 
+function remove_target
+{
+	if [ "$remove" != "true" ]; then
+		return 0
+	fi
+
+	VENDOR=$1
+	MAINBOARD=$2
+
+	# Save the generated coreboot.rom file of each board.
+	if [ -r "$TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom" ]; then
+		cp $TARGET/${VENDOR}_${MAINBOARD}/coreboot.rom \
+		   ${VENDOR}_${MAINBOARD}_coreboot.rom
+	fi
+
+	printf "Removing build dir for board $VENDOR $MAINBOARD...\n"
+	rm -rf $TARGET/${VENDOR}_${MAINBOARD}
+
+	return 0
+}
+
 function myhelp
 {
-	printf "Usage: $0 [-v] [-a] [-b] [-t <vendor/board>] [-p <dir>] [lbroot]\n"
+	printf "Usage: $0 [-v] [-a] [-b] [-r] [-t <vendor/board>] [-p <dir>] [lbroot]\n"
 	printf "       $0 [-V|--version]\n"
 	printf "       $0 [-h|--help]\n\n"
 
@@ -509,6 +530,7 @@ function myhelp
 	printf "    [-v|--verbose]		  print more messages\n"
 	printf "    [-a|--all]			  build previously succeeded ports as well\n"
 	printf "    [-b|--broken]		  attempt to build ports that are known broken\n"
+	printf "    [-r|--remove]                 remove output dir after build\n"
 	printf "    [-t|--target <vendor/board>]  attempt to build target vendor/board only\n"
 	printf "    [-p|--payloads <dir>]         use payloads in <dir> to build images\n"
 	printf "    [-V|--version]		  print version number and exit\n"
@@ -570,6 +592,7 @@ while true ; do
 		-t|--target)	shift; target="$1"; shift;;
 		-a|--all)	shift; buildall=true;;
 		-b|--broken)	shift; buildbroken=true;;
+		-r|--remove)	shift; remove=true; shift;;
 		-v|--verbose)	shift; verbose=true;;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;
@@ -606,6 +629,7 @@ else
 		for MAINBOARD in $( mainboards $VENDOR ); do
 			build_target $VENDOR $MAINBOARD
 			test_target $VENDOR $MAINBOARD
+			remove_target $VENDOR $MAINBOARD
 		done
 	done
 fi

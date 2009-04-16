@@ -45,6 +45,8 @@ reload_cs:
 	movl	%cr0, %eax
 	andb	$0xfe,%al
 	movl	%eax, %cr0
+	ljmpl $0x0, $cpu_flushed
+cpu_flushed:
 	movw	$0x0, %ax
 	movw	%ax, %ds
 	movw	%ax, %es

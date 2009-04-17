@@ -56,6 +56,11 @@ static void copy_and_run(unsigned cpu_reset)
 #else
 	print_spew("coreboot_ram.bin length = "); print_spew_hex32(olen); print_spew("\r\n");
 #endif
+#ifdef CONFIG_DEACTIVATE_CAR
+	print_debug("Deactivating CAR");
+#include CONFIG_DEACTIVATE_CAR_FILE
+	print_debug(" - Done.\r\n");
+#endif
 	print_debug("Jumping to coreboot.\r\n");
 
 	if(cpu_reset == 1 ) {

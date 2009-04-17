@@ -17,9 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef PC80_I8259_H
-#define PC80_I8259_H
+struct northbridge_via_cx700_config {
+};
 
-void setup_i8259(void);
-
-#endif /* PC80_I8259_H */
+extern struct chip_operations northbridge_via_cx700_ops;

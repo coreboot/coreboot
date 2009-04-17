@@ -17,9 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef PC80_I8259_H
-#define PC80_I8259_H
+#ifndef RAMINIT_H
+#define RAMINIT_H
 
-void setup_i8259(void);
+#define DIMM_SOCKETS 2
 
-#endif /* PC80_I8259_H */
+struct mem_controller {
+	u16 channel0[DIMM_SOCKETS];
+};
+#endif

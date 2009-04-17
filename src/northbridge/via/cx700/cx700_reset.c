@@ -17,9 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef PC80_I8259_H
-#define PC80_I8259_H
+#include <arch/io.h>
 
-void setup_i8259(void);
-
-#endif /* PC80_I8259_H */
+void hard_reset(void)
+{
+	outb((1 << 2) | (1 << 1), 0xcf9);
+}

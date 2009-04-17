@@ -1,12 +1,12 @@
 /*
  * This file is part of the coreboot project.
  * 
- * (C) 2007-2008 coresystems GmbH
+ * (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -194,6 +194,11 @@ static void model_c7_init(device_t dev)
 
 	/* Gear up */
 	set_c7_speed(c.x86_model);
+
+	/* Enable APIC */
+	msr = rdmsr(0x1107);
+	msr.lo |= 1<<24;
+	wrmsr(0x1107, msr);
 
 	/* Turn on cache */
 	x86_enable_cache();

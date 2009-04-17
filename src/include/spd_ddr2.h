@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@
 	#define SPD_DIMM_TYPE_uDIMM	(1<<3)
 	#define SPD_DIMM_TYPE_mRDIMM	(1<<4)
 	#define SPD_DIMM_TYPE_mUDIMM	(1<<5)
+
 #define SPD_MOD_ATTRIB	21
 	#define SPD_MOD_ATTRIB_DIFCK	0x20
 	#define SPD_MOD_ATTRIB_REGADC	0x11   /* x */
@@ -38,6 +40,15 @@
 #define SPD_DIMM_CONF_TYPE	11
 	#define SPD_DIMM_CONF_TYPE_ECC		0x02
 	#define SPD_DIMM_CONF_TYPE_ADDR_PARITY	0x04	 /* ? */
+
+#define SPD_CAS_LAT_MIN_X_1	23
+#define SPD_CAS_LAT_MAX_X_1	24
+#define SPD_CAS_LAT_MIN_X_2	25
+#define SPD_CAS_LAT_MAX_X_2	26
+
+#define SPD_BURST_LENGTHS	16
+	#define SPD_BURST_LENGTHS_4	(1<<2)
+	#define SPD_BURST_LENGTHS_8	(1<<3)
 
 #define SPD_ROW_NUM	3	/* Number of Row addresses */
 #define SPD_COL_NUM	4	/* Number of Column addresses */
@@ -82,6 +93,7 @@
 #define SPD_TWTR	37	/* x */
 #define SPD_TRTP	38	/* x */
 
+#define SPD_EX_TRC_TRFC 40
 #define SPD_TRC	41	/* add byte 0x40 bit [3:1] , so final val41+ table[((val40>>1) & 0x7)]  ... table[]={0, 0.25, 0.33, 0.5, 0.75, 0, 0}*/
 #define SPD_TRFC	42	/* add byte 0x40 bit [6:4] , so final val42+ table[((val40>>4) & 0x7)] + (val40 & 1)*256*/
 

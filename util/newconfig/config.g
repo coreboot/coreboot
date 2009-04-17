@@ -1514,6 +1514,20 @@ def dodir(path, file):
 	doconfigfile(fullpath, path, file, 'cfgfile')
 	dirstack.pop()
 
+def dofile(path):
+	"""dofile is a simple include for single files"""
+	# if the first char is '/', it is relative to treetop, 
+	# else relative to curdir
+	# os.path.join screws up if the name starts with '/', sigh.
+	if (path[0] == '/'):
+		fullpath = os.path.join(treetop, 'src')
+		path = re.sub('^/*', '', path)
+	else:
+		fullpath = dirstack.tos()
+	print "INCLUDE %s" %path
+	debug.info(debug.statement, "DOFILE: path %s, fullpath %s" % (path, fullpath))
+	doconfigfile(fullpath, '', path, 'cfgfile')
+
 def lookup(name):
 	global curimage
 	return getoption(name, curimage)
@@ -1638,6 +1652,7 @@ parser Config:
     token INIT:			'init'
     token INITOBJECT:		'initobject'
     token INITINCLUDE:		'initinclude'
+    token INCLUDE:		'include'
     token IO:			'io'
     token IRQ:			'irq'
     token LDSCRIPT:		'ldscript'
@@ -1841,6 +1856,8 @@ parser Config:
 			HEX_NUM			{{ cluster = int(HEX_NUM, 16) }}
 						{{ if (C): partstack.tos().addapic_clusterpath(cluster) }}
 
+    rule include<<C>>:	INCLUDE DIRPATH 	{{ dofile(DIRPATH) }}
+
     rule cpu<<C>>:	CPU			{{ if (C): devicepart('cpu') }}
     			HEX_NUM			{{ id = int(HEX_NUM, 16) }}
 						{{ if (C): partstack.tos().addcpupath(id) }}
@@ -1886,6 +1903,7 @@ parser Config:
 		|	iif<<C>>	 	{{ return iif }}
 		|	init<<C>>	 	{{ return init }}
 		|	initinclude<<C>>	{{ return initinclude }}
+		|	include<<C>>		{{ return include }}
 		|	initobject<<C>>		{{ return initobject }}
 		|	ldscript<<C>>		{{ return ldscript}}
 		|	mainboardinit<<C>>	{{ return mainboardinit }}

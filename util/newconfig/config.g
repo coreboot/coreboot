@@ -1904,10 +1904,6 @@ parser Config:
     			(stmt<<1>>)*
 			EOF			{{ return 1 }}
 
-    rule cfgfile:	(uses<<1>>)* 
-    			(stmt<<1>>)*
-			EOF			{{ return 1 }}
-
     rule usesid<<C>>:	ID			{{ if (C): usesoption(ID) }}
 
     rule uses<<C>>:	USES (usesid<<C>>)+

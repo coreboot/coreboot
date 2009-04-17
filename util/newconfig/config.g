@@ -22,6 +22,7 @@ global_uses_options = {}
 global_exported_options = []
 romimages = {}
 buildroms = []
+pciroms = []
 rommapping = {}
 curimage = 0
 bootblocksize = 0
@@ -480,6 +481,13 @@ class buildrom:
 	def __getitem__(self,i):
 		return self.roms[i]
 
+class pci_rom:
+	"""A pci_rom statement"""
+	def __init__ (self, filename, vendor, device):
+		self.name = filename
+		self.pci_vid = vendor
+		self.pci_did = device
+	
 class initinclude:
 	"""include file for initialization code"""
 	def __init__ (self, str, path):
@@ -1403,6 +1411,12 @@ def addbuildrom(filename, size, roms):
 	b = buildrom(filename, size, roms)
 	buildroms.append(b)
 
+def addpci_rom(filename, vendor, device):
+	global pciroms
+	print "Add PCI ROM %s" %filename
+	p = pci_rom(filename, vendor, device)
+	pciroms.append(p)
+
 def addinitobject(object_name):
 	global curimage
 	curimage.addinitobjectrule(object_name)
@@ -1610,6 +1624,7 @@ parser Config:
     token DEFINE:		'define'
     token DEPENDS:		'depends'
     token DEVICE:		'device'
+    token DEVICE_ID:		'device_id'
     token DIR:			'dir'
     token DRIVER:		'driver'
     token DRQ:			'drq'
@@ -1638,6 +1653,7 @@ parser Config:
     token OBJECT:		'object'
     token OPTION:		'option'
     token PAYLOAD:		'payload'
+    token PCI_ROM:		'pci_rom'
     token PMC:			'pmc'
     token PRINT:		'print'
     token REGISTER:		'register'
@@ -1648,6 +1664,7 @@ parser Config:
     token TARGET:		'target'
     token USED:			'used'
     token USES:			'uses'
+    token VENDOR_ID:		'vendor_id'
     token WRITE:		'write'
     token NUM:			'[0-9]+'
     token HEX_NUM:		'[0-9a-fA-F]+'
@@ -1939,9 +1956,17 @@ parser Config:
 
     rule buildrom:	BUILDROM DIRPATH expr roms	{{ addbuildrom(DIRPATH, expr, roms) }}
 
+    rule pci_vid:	VENDOR_ID EQ term	{{ return term }}
+
+    rule pci_did:	DEVICE_ID EQ term	{{ return term }}
+
+
+    rule pci_rom:	PCI_ROM DIRPATH pci_vid pci_did	{{ addpci_rom(DIRPATH, pci_vid, pci_did) }}
+
     rule romstmts:	romimage 
 		|	buildrom
 		|	opstmt<<1>>
+		|	pci_rom
 
     # ENTRY for parsing root part
     rule board:		{{ loadoptions("config", "Options.lb", "options") }}
@@ -2281,6 +2306,8 @@ def writemakefile(path):
 	file.write("%sfs: %s cbfstool\n" %(i.name,i.name));
 	file.write("\trm -f coreboot.cbfs\n");
 	file.write("\t./cbfstool %sfs create %s %s %s.bootblock\n" % (i.name, romsize, bootblocksize, i.name))
+	for i in pciroms:
+		file.write("\tif [ -f coreboot.romfs ]; then ./cbfstool coreboot.romfs add %s pci%04x,%04x.rom 48; fi\n" % (i.name, i.pci_vid, i.pci_did))
 	for i in buildroms:
 		for j in i.roms:
 			#failover is a hack that will go away soon. 

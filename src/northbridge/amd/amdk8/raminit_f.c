@@ -2205,9 +2205,10 @@ static int update_dimm_Tref(const struct mem_controller *ctrl,
 static void set_4RankRDimm(const struct mem_controller *ctrl,
 			const struct mem_param *param, struct mem_info *meminfo)
 {
-#if QRANK_DIMM_SUPPRT == 1
+#if QRANK_DIMM_SUPPORT == 1
 	int value;
 	int i;
+	long dimm_mask = meminfo->dimm_mask;
 
 
 	if (!(meminfo->is_registered)) return;
@@ -2219,7 +2220,7 @@ static void set_4RankRDimm(const struct mem_controller *ctrl,
 			continue;
 		}
 
-		if (meminfo->sz.rank == 4) {
+		if (meminfo->sz[i].rank == 4) {
 			value = 1;
 			break;
 		}

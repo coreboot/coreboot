@@ -1,5 +1,5 @@
 #
-# Makefile for LinuxBIOS paper.
+# Makefile for coreboot paper.
 # hacked together by Stefan Reinauer <stepan@openbios.org>
 #
 

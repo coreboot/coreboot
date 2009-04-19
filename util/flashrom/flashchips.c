@@ -813,6 +813,19 @@ struct flashchip flashchips[] = {
 
 	{
 		.vendor		= "Macronix",
+		.name		= "MX25L1635D",
+		.manufacture_id	= MX_ID,
+		.model_id	= MX_25L1635D,
+		.total_size	= 2048,
+		.page_size	= 256,
+		.tested		= TEST_UNTESTED,
+		.probe		= probe_spi_rdid,
+		.erase		= spi_chip_erase_c7,
+		.write		= spi_chip_write,
+		.read		= spi_chip_read,
+	},
+	{
+		.vendor		= "Macronix",
 		.name		= "MX25L3205",
 		.manufacture_id	= MX_ID,
 		.model_id	= MX_25L3205,

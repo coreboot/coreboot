@@ -1554,7 +1554,7 @@ aid comprehension.
 
 A coreboot rom file consists of one or more \textit{images}. All images consist of a part that runs in ROM, and a part that runs in RAM. The RAM can be in  compressed form and is decompressed when needed by the ROM code. The main function of the ROM code is to get memory working. Both ROM and RAM consist of a very small amount of assembly code and mostly C code. 
 
-\subsection{romcc images}
+\subsection{romcc images (from emulation/qemu)}
 ROMCC images are so-called because C code for the ROM part is compiled with romcc. romcc is an optimizing C compiler which compiles one, and only 
 one file; to get more than one file, one must include the C code via include statements. The main ROM code .c file is usually called auto.c. 
 \subsubsection{how it is built}
@@ -1596,7 +1596,7 @@ As we mentioned, the ROM file consists of multiple images. In the basic file, th
 Each image (normal or fallback) is built completely independently and does not get linked to the other. They are assembled into one ROM image by the (soon to be deprecated) buildrom tool, or by the cbfs tool. 
 
 \subsubsection{boot sequence}
-We boot and start at fffffff0. We then jump to the entry point at \_start.  Protected\_start does some machine init and an lgdt and jumps to \_\_protected\_start, at which point we are in protected mode. The code does a bit more machine setup and then starts executing the romcc code. 
+We boot and start at fffffff0. We then jump to the entry point at \_start.  \_start does some machine init and an lgdt and jumps to \_\_protected\_start, at which point we are in protected mode. The code does a bit more machine setup and then starts executing the romcc code. 
 
 If fallback has been built in, some setup needs to be done. On some machines, it is extensive. Full rom decoding must be enabled. This may in turn require additional PCI setup to enable decoding to be enabled (!). To decided which image to use, hardware registers (cold boot on the Opteron) or CMOS are checked. Finally, once the image to use has been decided, a jmp is performed, viz: 
 \begin{verbatim}
@@ -1623,17 +1623,35 @@ If fallback has been built in, some setup needs to be done. On some machines, it
         ;
 \end{verbatim}
 How does the fallback image get the symbol for normal entry? Via magic in the ldscript.ld -- remember, the images are not linked to each other. 
-\subsection{car images}
+Finally, we can see this in the Config.lb for most mainboards: 
+\begin{verbatim}
+if USE_FALLBACK_IMAGE
+        mainboardinit cpu/x86/16bit/reset16.inc
+        ldscript /cpu/x86/16bit/reset16.lds
+else
+        mainboardinit cpu/x86/32bit/reset32.inc
+        ldscript /cpu/x86/32bit/reset32.lds
+end
+\end{verbatim}
+What does this mean? the non-fallback image has a 32-bit entry point; fallback has a 16-bit entry point. The reason for this is that some code from fallback always runs, so as to pick fallback or normal; but the normal is always called from 32-bit code. 
+\subsection{car images (from lippert/roadrunner-lx)}
+CAR images in their simplest form are modified romcc images. The file is usually cache\_as\_ram\_auto.c. C inclusion is still used. The main difference is in the build sequence. The compiler command line is a very slight changed: instead of using romcc to generate an auto.inc include file, gcc us used. Then, two perl scripts are used to rename the .text and .data sections to .rom.text and .rom.data respectively. 
+\subsubsection{how it is built}
+The build is almost identical to the romcc build. Since the auto.inc file exists, it can be included as before. The crt0\_includes.h file has one addition: a file that enables CAR, in this case it is \textit{src/cpu/amd/model\_lx/cache\_as\_ram.inc}. 
+\subsubsection{layout}
+No significant change from romcc code. 
+\subsubsection{boot sequence}
+No significant change from romcc code, except that the CAR code has to set up a stack. 
+
+\subsection{car + CONFIG\_USE\_INIT images}
 \subsubsection{how it is built}
 \subsubsection{layout}
 \subsubsection{boot sequence}
 We boot and start at fffffff0. We then jump to the entry point at protected\_start (a clear misnomer, since we're not in protected mode at that 
 point). Protected\_start does an lgdt and jumps to \_\_protected\_start, at which point we are in protected mode. 
 
-\subsection{car + config\_use\_init images}
-\subsubsection{how it is built}
-\subsubsection{layout}
-\subsubsection{boot sequence}
+\subsection{car + CONFIG\_USE\_PRINTK\_IN\_CAR images}
+When CONFIG\_USE\_PRINTK\_IN\_CAR is set, the CAR code can use printk instead of the primitive print functions. 
 
 \subsection{failover}
 

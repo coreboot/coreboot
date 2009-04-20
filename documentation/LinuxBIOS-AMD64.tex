@@ -1643,16 +1643,55 @@ No significant change from romcc code.
 \subsubsection{boot sequence}
 No significant change from romcc code, except that the CAR code has to set up a stack. 
 
-\subsection{car + CONFIG\_USE\_INIT images}
+\subsection{car + CONFIG\_USE\_INIT images (new emulation/qemu}
+This type of image makes more use of the C compiler. In this type of image, in fact, 
+seperate compilation is possible but is not always used. Oddly enough, this option is only used in PPC boards. That said, we need to move to this way of building. Including C code is poor style. 
 \subsubsection{how it is built}
+There is a make variable, INIT-OBJECTS, that for all our other targets is empty. In this type of build, INIT-OBJECTS is a list of C files that are created from the config tool initobject command. Again, with INIT-OBJECTS we can finally stop including .c files and go with seperate compilation.
 \subsubsection{layout}
+No significant change from romcc code. 
 \subsubsection{boot sequence}
-We boot and start at fffffff0. We then jump to the entry point at protected\_start (a clear misnomer, since we're not in protected mode at that 
-point). Protected\_start does an lgdt and jumps to \_\_protected\_start, at which point we are in protected mode. 
-
+No significant change from romcc code, except that the CAR code has to set up a stack. 
 \subsection{car + CONFIG\_USE\_PRINTK\_IN\_CAR images}
-When CONFIG\_USE\_PRINTK\_IN\_CAR is set, the CAR code can use printk instead of the primitive print functions. 
+When CONFIG\_USE\_PRINTK\_IN\_CAR is set, the CAR code can use printk instead of the primitive print functions. This config variable is used in one of two ways. If CONFIG\_USE\_INIT is 0, then different .c files just include other .c files, as in console.c: 
+\begin{verbatim}
+#if CONFIG_USE_PRINTK_IN_CAR == 0
+static void __console_tx_byte(unsigned char byte)
+{
+        uart_tx_byte(byte);
+}
 
+#include "console_print.c"
+
+#else
+/* CONFIG_USE_PRINTK_IN_CAR == 1 */
+
+#include "console_printk.c"
+
+#if CONFIG_USE_INIT == 0
+// do_printk
+#include "../../../console/vtxprintf.c"
+#include "printk_init.c"
+#endif
+
+#endif /* CONFIG_USE_PRINTK_IN_CAR */
+
+\end{verbatim}\footnote{yuck!} 
+
+If CONFIG\_USE\_INIT is 1, then the Config.lb is configured differently: 
+\begin{verbatim}
+if CONFIG_USE_INIT
+        if CONFIG_USE_PRINTK_IN_CAR
+                initobject printk_init.o
+        end
+end
+
+\end{verbatim}\footnote{see previous footnote} 
+
+\subsubsection{layout}
+No significant change from romcc code. 
+\subsubsection{boot sequence}
+No significant change from romcc code, except that the CAR code has to set up a stack. 
 \subsection{failover}
 
 %

@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
-Flashrom README
+flashrom README
 -------------------------------------------------------------------------------
 
-Flashrom is a utility for reading, writing, and erasing flash ROM chips.
+flashrom is a utility for reading, writing, and erasing flash ROM chips.
 It's often used to flash BIOS/coreboot/firmware images.
 
 It supports a wide range of DIP32, PLCC32, DIP8, SO8/SOIC8, TSOP32, and
@@ -51,14 +51,14 @@ Usage
 Exit status
 -----------
 
-Flashrom exits with 0 on success, 1 on most failures but with 2 if /dev/mem
+flashrom exits with 0 on success, 1 on most failures but with 2 if /dev/mem
 (/dev/xsvc on Solaris) can not be opened and with 3 if a call to mmap() fails.
 
 
 coreboot Table and Mainboard Identification
 --------------------------------------------
 
-Flashrom reads the coreboot table to determine the current mainboard. If no
+flashrom reads the coreboot table to determine the current mainboard. If no
 coreboot table could be read or if you want to override these values, you can
 specify -m, e.g.:
 
@@ -72,7 +72,7 @@ coreboot table is found.
 ROM Layout Support
 ------------------
 
-Flashrom supports ROM layouts. This allows you to flash certain parts of
+flashrom supports ROM layouts. This allows you to flash certain parts of
 the flash chip only. A ROM layout file looks like follows:
 
   00000000:00008fff gfxrom

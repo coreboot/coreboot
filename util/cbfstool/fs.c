@@ -110,17 +110,43 @@ int rom_remove(struct rom *rom, const char *name)
 		return -1;
 	}
 
-	/* Get the next component - and copy it into the current
-	   space */
+	/* Get the next component - and copy it into the current space if it
+ 	 * exists.  If there is no next component, just delete c. */
 
 	n = rom_find_next(rom, c);
+	
+	if (n != NULL) {
+		memcpy(c, n, rom->fssize - ROM_OFFSET(rom, n));
+		clear = ROM_OFFSET(rom, n) - ROM_OFFSET(rom, c);
+	}
+	else { /* No component after this one. */
+		unsigned int csize;
+		csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
+		clear = ntohl(c->len) + csize;
+		memcpy(c, ((void*)c) + clear, 
+		       rom->fssize - (ROM_OFFSET(rom, c)+clear));
+	}
 
-	memcpy(c, n, rom->fssize - ROM_OFFSET(rom, n));
-
-	clear = ROM_OFFSET(rom, n) - ROM_OFFSET(rom, c);
-
-	/* Zero the new space */
+	/* Zero the new space, which is always at the end. */
 	memset(ROM_PTR(rom, rom->fssize - clear), 0, clear);
+
+	return 0;
+}
+
+int rom_extract(struct rom *rom, const char *name, void** buf, unsigned long *size )
+{
+	struct cbfs_file *c = rom_find_by_name(rom, name);
+	unsigned int csize;
+
+	if (c == NULL) {
+		ERROR("Component %s does not exist\n", name);
+		return -1;
+	}
+
+	*size = ntohl(c->len);
+
+	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
+	*buf = ((unsigned char *)c) + csize;
 	return 0;
 }
 
@@ -140,21 +166,19 @@ int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 		return -1;
 	}
 
-	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name), 16) + size;
+	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
 
 	offset = ROM_OFFSET(rom, c);
 
-	if (offset + csize >= rom->fssize) {
+	if (offset + csize + size > rom->fssize) {
 		ERROR("There is not enough room in this ROM for this\n");
 		ERROR("component. I need %d bytes, only have %d bytes avail\n",
-		      csize, rom->fssize - offset);
+		      csize + size, rom->fssize - offset);
 
 		return -1;
 	}
 
 	strcpy(c->magic, COMPONENT_MAGIC);
-
-	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
 
 	c->len = htonl(size);
 	c->offset = htonl(csize);

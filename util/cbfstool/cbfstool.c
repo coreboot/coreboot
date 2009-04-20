@@ -20,6 +20,7 @@
 /* v2 compat: First, assumes a 64K bootblock. 
  * cbfstool coreboot.rom create 0x80000 coreboot.strip 
  * cbfstool coreboot.rom add-payload /tmp/filo.elf payload 
+ * cbfstool coreboot.rom extract new_filo.elf payload 
  * cbfstool coreboot.rom print
  */
 
@@ -34,6 +35,7 @@ extern int create_handler(struct rom *, int, char **);
 extern int bootblock_handler(struct rom *, int, char **);
 extern int print_handler(struct rom *, int, char **);
 extern int add_handler(struct rom *, int, char **);
+extern int extract_handler(struct rom *, int, char **);
 extern int delete_handler(struct rom *, int, char **);
 extern int resize_handler(struct rom *, int, char **);
 extern int add_payload_handler(struct rom *, int, char **);
@@ -44,6 +46,7 @@ extern void bootblock_usage(void);
 extern void print_usage(void);
 extern void add_usage(void);
 extern void delete_usage(void);
+extern void extract_usage(void);
 extern void resize_usage(void);
 extern void add_payload_usage(void);
 extern void add_stage_usage(void);
@@ -60,6 +63,7 @@ struct {
 	"bootblock", bootblock_handler, bootblock_usage}, {
 	"create", create_handler, create_usage}, {
 	"delete", delete_handler, delete_usage}, {
+	"extract", extract_handler, extract_usage}, {
 	"print", print_handler, print_usage}, {
 	"resize", resize_handler, resize_usage}, {
 "", NULL},};

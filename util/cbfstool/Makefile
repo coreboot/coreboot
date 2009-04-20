@@ -4,7 +4,7 @@
 
 obj ?= $(shell pwd)
 
-COMMANDS=create.o bootblock.o delete.o add.o print.o resize.o
+COMMANDS=create.o bootblock.o delete.o extract.o add.o print.o resize.o
 OBJ=$(COMMANDS) cbfstool.o util.o fs.o
 INC=cbfstool.h cbfs.h
 

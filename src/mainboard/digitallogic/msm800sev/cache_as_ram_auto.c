@@ -114,5 +114,6 @@ void cache_as_ram_main(void)
 	/* we are finding the return does not work on this board. Explicitly call the label that is 
 	 * after the call to us. This is gross, but sometimes at this level it is the only way out
 	 */
+	void done_cache_as_ram_main(void);
 	done_cache_as_ram_main();
 }

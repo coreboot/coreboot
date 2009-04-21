@@ -661,6 +661,8 @@ struct board_pciid_enable board_pciid_enables[] = {
 	{0x10de, 0x0360,      0,      0,       0,      0,      0,      0, "gigabyte",   "m57sli",   "GIGABYTE GA-M57SLI-S4",  it87xx_probe_spi_flash},
 	{0x10de, 0x03e0,      0,      0,       0,      0,      0,      0, "gigabyte",   "m61p",     "GIGABYTE GA-M61P-S3",    it87xx_probe_spi_flash},
 	{0x1002, 0x4398, 0x1458, 0x5004,  0x1002, 0x4385, 0x1458, 0x4385, NULL,         NULL,       "GIGABYTE GA-MA78G-DS3H", it87xx_probe_spi_flash},
+	/* SB600 LPC, RD790 North. Neither are specific to the GA-MA790FX-DQ6. The coreboot ID is here to be able to trigger the board enable more easily. */
+	{0x1002, 0x438d, 0x1458, 0x5001,  0x1002, 0x5956, 0x1002, 0x5956, "gigabyte",   "ma790fx-dq6", "GIGABYTE GA-MA790FX-DQ6", it87xx_probe_spi_flash},
 	{0x1039, 0x0761,      0,      0,       0,      0,      0,      0, "gigabyte",   "2761gxdk", "GIGABYTE GA-2761GXDK",   it87xx_probe_spi_flash},
 	{0x1022, 0x7468,      0,      0,       0,      0,      0,      0, "iwill",      "dk8_htx",  "IWILL DK8-HTX",          w83627hf_gpio24_raise_2e},
 	{0x10de, 0x005e,      0,      0,       0,      0,      0,      0, "msi",        "k8n-neo3", "MSI K8N Neo3",           w83627thf_gpio4_4_raise_4e},

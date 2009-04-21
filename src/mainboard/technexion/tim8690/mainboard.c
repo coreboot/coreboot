@@ -218,9 +218,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 #endif
 }
 
-/*
-* CONFIG_CHIP_NAME defined in Option.lb.
-*/
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("TechNexion TIM-8690   Mainboard")
 	.enable_dev = tim8690_enable,

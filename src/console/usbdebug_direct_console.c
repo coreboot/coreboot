@@ -1,3 +1,4 @@
+#include <string.h>
 #include <console/console.h>
 #include <usbdebug_direct.h>
 #include <pc80/mc146818rtc.h>

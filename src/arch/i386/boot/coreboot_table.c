@@ -93,9 +93,8 @@ struct lb_serial *lb_serial(struct lb_header *header)
 
 void add_console(struct lb_header *header, u16 consoletype)
 {
-	struct lb_record *rec;
 	struct lb_console *console;
-	rec = lb_new_record(header);
+
 	console = (struct lb_console *)lb_new_record(header);
 	console->tag = LB_TAG_CONSOLE;
 	console->size = sizeof(*console);

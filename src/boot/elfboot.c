@@ -362,9 +362,6 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 		seg->phdr_next->phdr_prev = new;
 		seg->phdr_next = new;
 
-		/* compute the new value of end */
-		end = start + len;
-		
 		printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
 			new->s_addr, 
 			new->s_addr + new->s_filesz,

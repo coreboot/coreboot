@@ -10,7 +10,8 @@
  * Copyright (C) 2004-2005 Li-Ta Lo <ollie@lanl.gov>
  * Copyright (C) 2005-2006 Tyan
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
- * Copyright (C) 2005-2007 Stefan Reinauer <stepan@openbios.org>
+ * Copyright (C) 2005-2009 coresystems GmbH
+ * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
  */
 
 /*
@@ -271,7 +272,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 {
 	struct resource *resource;
 	unsigned long value;
-	resource_t  moving, limit;
+	resource_t  moving;
 
         if ((dev->on_mainboard) && (dev->rom_address == 0)) {
 		//skip it if rom_address is not set in MB Config.lb
@@ -296,8 +297,6 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	 * - Limit is all of the bits that move plus all of the lower bits.
 	 * See PCI Spec 6.2.5.1 ...
 	 */
-	limit = 0;
-
 	if (moving) {
 		resource->size = 1;
 		resource->align = resource->gran = 0;
@@ -306,7 +305,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 			resource->align += 1;
 			resource->gran  += 1;
 		}
-		resource->limit = limit = moving | (resource->size - 1);
+		resource->limit = moving | (resource->size - 1);
 	}
 
 	if (moving == 0) {

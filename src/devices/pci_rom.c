@@ -42,7 +42,7 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		printk_debug("In cbfs, rom address for %s = %lx\n", 
 				dev_path(dev), rom_address);
 		if (v) {
-			dev->rom_address = v;
+			dev->rom_address = (u32)v;
 			dev->on_mainboard = 1;
 		}
 	} 

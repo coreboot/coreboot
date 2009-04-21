@@ -24,7 +24,7 @@ void usage()
 	exit(1);
 }
 
-void fatal(char *s)
+void __attribute__((noreturn)) fatal(char *s)
 {
 	perror(s);
 	exit(2);

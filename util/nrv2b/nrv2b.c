@@ -65,7 +65,7 @@ FILE  *infile, *outfile;
 #define BITSIZE 32
 #endif
 
-static __inline__ void Error(char *message)
+static __inline__ __attribute__((noreturn)) void Error(char *message)
 {
 	Fprintf((stderr, "\n%s\n", message));
 	exit(EXIT_FAILURE);

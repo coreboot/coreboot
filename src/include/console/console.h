@@ -10,7 +10,7 @@ void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
 void post_code(uint8_t value);
-void die(const char *msg);
+void __attribute__ ((noreturn)) die(const char *msg);
 
 struct console_driver {
 	void (*init)(void);

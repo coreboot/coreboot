@@ -283,6 +283,7 @@ extern struct flashchip flashchips[];
 #define MX_25L1605		0x2015	/* MX25L1605{,A,D} */
 #define MX_25L3205		0x2016	/* MX25L3205{,A} */
 #define MX_25L6405		0x2017	/* MX25L3205{,D} */
+#define MX_25L12805		0x2018	/* MX25L12805 */
 #define MX_25L1635D		0x2415
 #define MX_25L3235D		0x2416
 #define MX_29F002B		0x34

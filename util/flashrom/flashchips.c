@@ -2225,4 +2225,4 @@ struct flashchip flashchips[] = {
 	},
 
 	{ NULL 	}
-	};
+};

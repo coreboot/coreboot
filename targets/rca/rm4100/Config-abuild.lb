@@ -26,6 +26,7 @@ option CROSS_COMPILE="CROSS_PREFIX"
 option HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
+__LOGLEVEL__
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1

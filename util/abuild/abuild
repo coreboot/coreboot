@@ -52,6 +52,9 @@ scanbuild=false
 # stackprotect mode enabled by -ns option.
 stackprotect=false
 
+# loglevel changed with -l / --loglevel option
+loglevel=default
+
 ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 	-e s/i86pc/i386/ \
 	-e s/arm.*/arm/ -e s/sa110/arm/ -e s/x86_64/amd64/ \
@@ -154,6 +157,7 @@ option CROSS_COMPILE="CROSS_PREFIX"
 option HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
+__LOGLEVEL__
 
 EOF
 		if [ "$TARCH" == i386 ] ; then
@@ -185,6 +189,14 @@ EOF
 		) > $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
 	fi
 
+	if [ "$loglevel" != "default" ]; then
+		LOGLEVEL1="option MAXIMUM_CONSOLE_LOGLEVEL=$loglevel"
+		LOGLEVEL2="option DEFAULT_CONSOLE_LOGLEVEL=$loglevel"
+	else
+		LOGLEVEL1="# no loglevel override"
+		LOGLEVEL2=""
+	fi
+
 	if [ "`which lzma`" != "" -a "$PAYLOAD" != /dev/null ]; then
 		COMPRESSION="option CONFIG_COMPRESSED_PAYLOAD_LZMA=1"
 	else
@@ -199,6 +211,8 @@ EOF
 		-e s:CROSS_PREFIX:"$CROSS_COMPILE":g \
 		-e s:CROSS_HOSTCC:"$HOSTCC":g \
 		-e s:__COMPRESSION__:"$COMPRESSION":g \
+		-e s:__LOGLEVEL__:"$LOGLEVEL1"\
+"$LOGLEVEL2":g \
 		$TARGET/Config-${VENDOR}_${MAINBOARD}.lb.pre > $TARGET/Config-${VENDOR}_${MAINBOARD}.lb
 	printf " ok\n"
 }
@@ -573,11 +587,11 @@ verbose=false
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config Vvhat:bp:Tc:sxC -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config,loglevel Vvhat:bp:Tc:sxCl: -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvhat:bp:Tc:sxC $*`
+	args=`getopt Vvhat:bp:Tc:sxCl: $*`
 	set -- $args
 fi
 
@@ -603,6 +617,7 @@ while true ; do
 		-ns|--nostackprotect) shift; stackprotect=true;;
 		-sb|--scan-build) shift; scanbuild=true;;
 		-C|--config)    shift; configureonly=1;;
+		-l|--loglevel)  shift; loglevel="$1"; shift;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;

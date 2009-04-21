@@ -1,6 +1,6 @@
 %
 % This document is released under the GPL
-% Initially written by Stefan Reinauer, <stepan@openbios.org>
+% Initially written by Stefan Reinauer, <stepan@coresystems.de>
 % 
 
 \documentclass[titlepage,12pt]{article}
@@ -18,10 +18,10 @@
 	colorlinks=false,
 	% pdfpagemode=None,  % PDF-Viewer starts without TOC
 	% pdfstartview=FitH,
-	pdftitle={LinuxBIOS on AMD64},
+	pdftitle={coreboot on AMD64},
 	pdfauthor={Stefan Reinauer},
-	pdfsubject={LinuxBIOS configuration and build process},
-	pdfkeywords={LinuxBIOS, Opteron, AMD64, Athlon64, Build}
+	pdfsubject={coreboot configuration and build process},
+	pdfkeywords={coreboot, Opteron, AMD64, configuration, Build}
 }
 
 
@@ -30,9 +30,9 @@
 
 \setlength{\parindent}{0pt}
 
-\title{LinuxBIOS on AMD64}
-\author{Stefan Reinauer $<$stepan@openbios.org$>$}
-\date{June 2nd, 2004}
+\title{coreboot on AMD64}
+\author{Stefan Reinauer $<$stepan@coresystems.de$>$}
+\date{April 19th, 2009}
 
 \begin{document}
 
@@ -50,12 +50,12 @@
 
 \section{Abstract}
 
-This document targets porting LinuxBIOS to new mainboards and creating
-custom firmware images using LinuxBIOS. It describes how to build
-LinuxBIOS images for the AMD64 platform, including hypertransport
+This document targets porting coreboot to new mainboards and creating
+custom firmware images using coreboot. It describes how to build
+coreboot images for the AMD64 platform, including hypertransport
 configuration and pertinent utilities. If you are missing information or
 find errors in the following descriptions, contact
-\href{mailto:stepan@openbios.org}{\textit{Stefan Reinauer $<$stepan@openbios.org$>$}}
+\href{mailto:stepan@coresystems.de}{\textit{Stefan Reinauer $<$stepan@coresystems.de$>$}}
 
 
 %
@@ -64,6 +64,7 @@ find errors in the following descriptions, contact
 
 \section{Changes}
  \begin{itemize}
+ \item 2009/04/19 replace LinuxBIOS with coreboot
  \item 2004/06/02 url and language fixes from Ken Fuchs $<$kfuchs@winternet.com$>$
  \item 2004/02/10 acpi and option rom updates
  \item 2003/11/18 initial release 
@@ -72,22 +73,22 @@ find errors in the following descriptions, contact
 
 
 %
-% 3 What is LinuxBIOS
+% 3 What is coreboot
 %
 
-\section{What is LinuxBIOS?}
+\section{What is coreboot?}
 
-LinuxBIOS aims to replace the normal BIOS found on PCs, Alphas, and
-other machines with a Linux kernel that can boot Linux from a cold
-start. The startup code of an average LinuxBIOS port is about 500 lines
-of assembly and 5000 lines of C. It executes 16 instructions to get into
-32bit mode and then performs DRAM and other hardware initializations
+coreboot aims to replace the normal BIOS found on x86, AMD64, PPC, 
+Alpha, and other machines with a Linux kernel that can boot Linux from a cold
+start. The startup code of an average coreboot port is about 500 lines of
+assembly and 5000 lines of C. It executes 16 instructions to get into 32bit
+protected mode and then performs DRAM and other hardware initializations
 required before Linux can take over.
 
 The projects primary motivation initially was maintenance of large
 clusters. Not surprisingly interest and contributions have come from
 people with varying backgrounds.  Nowadays a large and growing number of
-Systems can be booted with LinuxBIOS, including embedded systems,
+Systems can be booted with coreboot, including embedded systems,
 Desktop PCs and Servers.
 
 %
@@ -95,7 +96,7 @@ Desktop PCs and Servers.
 %
 
 \section{Build Requirements}
-To build LinuxBIOS for AMD64 from the sources you need a recent Linux
+To build coreboot for AMD64 from the sources you need a recent Linux
 system for x86 or AMD64. SUSE Linux 8.2 or 9.0 are known to work fine.
 The following toolchain is recommended:
 
@@ -116,31 +117,23 @@ The following toolchain is recommended:
 
 \section{Getting the Sources}
 
-The latest LinuxBIOS sources are available via CVS. The CVS repository
-is maintained at SourceForge.net (the project name is \emph{FreeBIOS}). 
-First you should create a directory for your LinuxBIOS trees:
+The latest coreboot sources are available via subversion. The subversion
+repository is maintained at SourceForge.net (the project name is
+\emph{FreeBIOS}).  First you should create a directory for your
+coreboot trees:
 
 { \small
 \begin{verbatim}
-$ mkdir linuxbios
-$ cd linuxbios
+$ mkdir coreboot
+$ cd coreboot
 \end{verbatim}
 }
 
-You can get the entire source tree via CVS:
+You can get the entire source tree via SVN:
 
 { \small 
 \begin{verbatim}
-$ cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/freebios login
-\end{verbatim}
-}
-
-Hit return when you are asked for a password. Then checkout (or update)
-the freebios source tree as follows:
-
-{ \small
-\begin{verbatim}
-$ cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/freebios co freebios2
+$ svn co svn://coreboot.org/repos/trunk/coreboot-v2
 \end{verbatim}
 }
 
@@ -148,76 +141,76 @@ Once the source tree is checked out, it can be updated with:
 
 { \small
 \begin{verbatim}
-% cvs update -Pd
+% svn update
 \end{verbatim}
 }
 
-Due to recent problems with SourceForge's CVS infrastructure we set up a
-snapshot site that keeps hourly source trees of the last four days. It
-is available at \url{http://snapshots.linuxbios.org/}.
-Due to major structural enhancements to \hbox{LinuxBIOS}, AMD64 support
-is only available in the \texttt{freebios2} tree. This tree reflects (as
-of November 2003) LinuxBIOS version 1.1.5 and will lead to LinuxBIOS 2.0
+For the case your corporate firewall blocks port 3690 (subversion) we set up a
+snapshot site that keeps the last few hundred source code revisions. It
+is available at \url{http://qa.coreboot.org/}.
+Due to major structural enhancements to \hbox{coreboot}, AMD64 support
+is only available in the \texttt{coreboot-v2} tree. This tree reflects (as
+of November 2003) coreboot version 1.1.5 and will lead to coreboot 2.0
 when finished.  Most x86 hardware is currently only supported by the 
-LinuxBIOS 1.0 tree.
+coreboot 1.0 tree.
 
 %
-% 6 LinuxBIOS configuration overview
+% 6 coreboot configuration overview
 %
 
-\section{LinuxBIOS configuration overview}
-To support a large variety of existing hardware LinuxBIOS allows for a
+\section{coreboot configuration overview}
+To support a large variety of existing hardware coreboot allows for a
 lot of configuration options that can be tweaked in several ways:
 
 \begin{itemize}
 \item 
 Firmware image specific configuration options can be set in the image
 configuration file which is usually found in
-\texttt{freebios2/targets/$<$vendor$>$/$<$mainboard$>$/}.  Such
+\texttt{coreboot-v2/targets/$<$vendor$>$/$<$mainboard$>$/}.  Such
 options are the default amount of output verbosity during bootup, image
 size, use of fallback mechanisms, firmware image size and payloads
 (Linux Kernel, Bootloader...) The default configuration file name is
-\texttt{Config.lb}, but LinuxBIOS allows multiple configurations to
+\texttt{Config.lb}, but coreboot allows multiple configurations to
 reside in that directory.
 
 \item Mainboard specific configuration options can be set in the
 mainboard configuration file placed in
-\texttt{freebios2/src/mainboard/$<$vendor$>$/$<$mainboard$>$}. The
+\texttt{coreboot-v2/src/mainboard/$<$vendor$>$/$<$mainboard$>$}. The
 mainboard configuration file is always called \texttt{Config.lb}. It
 contains information on the onboard components of the mainboard like
 CPU type, northbridge, southbridge, hypertransport configuration and
 SuperIO configuration.  This configuration file also allows to include
-addon code to hook into the LinuxBIOS initialization mechanism at
+addon code to hook into the coreboot initialization mechanism at
 basically any point.
 
 \end{itemize}
 
 This document describes different approaches of changing and configuring the
-LinuxBIOS source tree when building for AMD64.
+coreboot source tree when building for AMD64.
 
 %
-% 7 Building LinuxBIOS
+% 7 Building coreboot
 %
 
-\section{Building LinuxBIOS}
-One of the design goals for building LinuxBIOS was to keep object files
+\section{Building coreboot}
+One of the design goals for building coreboot was to keep object files
 out of the source tree in a separate place. This is mandatory for
-building parallel LinuxBIOS images for several distinct mainboards
-and/or platforms. Therefore building LinuxBIOS consists of two steps:
+building parallel coreboot images for several distinct mainboards
+and/or platforms. Therefore building coreboot consists of two steps:
 \begin{itemize}
 \item
 creating a build tree which holds all files automatically created by the
 configuration utility and the object files
 \item
-compiling the LinuxBIOS code and creating a flashable firmware image.
+compiling the coreboot code and creating a flashable firmware image.
 \end{itemize}
 
 The first of these two steps is accomplished by the \texttt{buildtarget}
-script found in \texttt{freebios2/targets/}. To build LinuxBIOS for
+script found in \texttt{coreboot-v2/targets/}. To build coreboot for
 instance for the AMD Solo Athlon64 mainboard enter:
 
 \begin{verbatim}
-% cd freebios2/targets
+% cd coreboot-v2/targets
 % ./buildtarget amd/solo
 \end{verbatim}
 
@@ -225,23 +218,23 @@ This will create a directory containing a Makefile and other software
 components needed for this build. The directory name is defined in the
 firmware image specific configuration file. In the case of AMD's Solo
 mainboard the default directory resides in 
-\texttt{freebios2/targets/amd/solo/solo}. To build the LinuxBIOS image, do
+\texttt{coreboot-v2/targets/amd/solo/solo}. To build the coreboot image, do
 
 \begin{verbatim}
 % cd amd/solo/solo
 % make
 \end{verbatim}
 
-The LinuxBIOS image filename is specified in the firmware image specific
+The coreboot image filename is specified in the firmware image specific
 configuration file. The default filename for AMD's Solo mainboard is
 \texttt{solo.rom}.
 
 %
-% 8 Programming LinuxBIOS to flash memory
+% 8 Programming coreboot to flash memory
 %
 
-\section{Programming LinuxBIOS to flash memory}
-The image resulting from a LinuxBIOS build can be directly programmed to
+\section{Programming coreboot to flash memory}
+The image resulting from a coreboot build can be directly programmed to
 a flash device, either using a hardware flash programmer or by using the
 Linux flash driver devbios or mtd. This document assumes that you use a
 hardware flash programmer. If you are interested in doing in-system
@@ -255,15 +248,15 @@ software flash programming, find detailed information:
 \newpage
 
 %
-% 9 LinuxBIOS configuration
+% 9 coreboot configuration
 %
 
-\section{LinuxBIOS configuration}
-The following chapters will cope with configuring LinuxBIOS. All
+\section{coreboot configuration}
+The following chapters will cope with configuring coreboot. All
 configuration files share some basic rules
 \begin{itemize}
 \item
-The default configuration file name in LinuxBIOS is \texttt{Config.lb}.
+The default configuration file name in coreboot is \texttt{Config.lb}.
 \item 
 All variables used in a configuration file have to be declared in this
 file with \texttt{uses VARNAME} before usage.
@@ -271,8 +264,8 @@ file with \texttt{uses VARNAME} before usage.
 Comments can be added on a new line by using the comment identifier
 \texttt{\#} at the beginning of the line.
 \item
-LinuxBIOS distinguishes between statements and options. Statements cause
-the LinuxBIOS configuration mechanism to act, whereas options set
+coreboot distinguishes between statements and options. Statements cause
+the coreboot configuration mechanism to act, whereas options set
 variables that are used by the build scripts or source code.
 \item 
 Default configuration values can be set in the mainboard configuration
@@ -280,7 +273,7 @@ files (keyword default)
 \item 
 Option overrides to the default configuration can only be specified in
 the build target configuration file
-\texttt{freebios2/targets/$<$vendor$>$/$<$mainboard$>$/Config.lb} 
+\texttt{coreboot-v2/targets/$<$vendor$>$/$<$mainboard$>$/Config.lb} 
 (keyword option)
 \end{itemize}
 
@@ -297,8 +290,8 @@ used. Example:
 \end{verbatim}
 
 \textbf{NOTE:} Only configuration variables known to the configuration
-system can be used in configuration files. LinuxBIOS checks 
-\texttt{freebios2/src/config/Options.lb} to see whether a configuration
+system can be used in configuration files. coreboot checks 
+\texttt{coreboot-v2/src/config/Options.lb} to see whether a configuration
 variable is known.
 
 \item \begin{verbatim}default\end{verbatim}
@@ -338,7 +331,7 @@ quotation marks:
 The \texttt{option} statement basically behaves identically to the
 \texttt{default} statement. But unlike default it can only be used in
 build target configuration files
-(\texttt{freebios2/targets/$<$vendor$>$/$<$mainboard$>$}). The option
+(\texttt{coreboot-v2/targets/$<$vendor$>$/$<$mainboard$>$}). The option
 statement allows either to set new options or to override default values
 set with the default statement in a mainboard configuration file.
 Syntax and application are the same as with default.
@@ -346,12 +339,12 @@ Syntax and application are the same as with default.
 \end{itemize}
 
 \subsection{Firmware image specific configuration}
-LinuxBIOS allows to create different firmware images for the same
+coreboot allows to create different firmware images for the same
 hardware. Such images can differ in the amount of output they produce,
 the payload, the number of subimages they consist of etc.
 
 The firmware image specific configuration file can be found in \\
-\texttt{freebios2/targets/$<$vendor$>$/<mainboard$>$}.
+\texttt{coreboot-v2/targets/$<$vendor$>$/<mainboard$>$}.
 
 \subsubsection{Firmware image specific keywords}
 In addition to the above described keywords the following statements are
@@ -361,13 +354,13 @@ available in firmware image specific configuration files:
 \item \begin{verbatim}romimage\end{verbatim}
 
 The \texttt{romimage} definition describes a single rom build within the
-final LinuxBIOS image. Normally there are two romimage definitions per
-LinuxBIOS build: \texttt{normal} and \texttt{fallback}.
+final coreboot image. Normally there are two romimage definitions per
+coreboot build: \texttt{normal} and \texttt{fallback}.
 
 Each \texttt{romimage} section needs to specify a mainboard directory and a
 payload. The mainboard directory contains the mainboard specific
 configuration file and source code. It is specified relatively to
-\texttt{freebios2/src/mainboard}. The payload definition is an absolute
+\texttt{coreboot-v2/src/mainboard}. The payload definition is an absolute
 path to a static elf binary (i.e Linux kernel or etherboot)
 
 \begin{verbatim}
@@ -384,8 +377,8 @@ end
 \item \begin{verbatim}buildrom\end{verbatim}
 
 The \texttt{buildrom} statement is used to determine which of the
-LinuxBIOS image builds (created using \texttt{romimage}) are packed
-together to the final LinuxBIOS image. It also specifies the order of
+coreboot image builds (created using \texttt{romimage}) are packed
+together to the final coreboot image. It also specifies the order of
 the images and the final image size:
 
 \begin{verbatim}
@@ -407,7 +400,7 @@ option on how to set them.
 \item \begin{verbatim}CC\end{verbatim}
 
 Target C Compiler. Default is \texttt{\$(CROSS\_COMPILE)gcc}. Set to
-\texttt{gcc -m32} for compiling AMD64 LinuxBIOS images on an AMD64 
+\texttt{gcc -m32} for compiling AMD64 coreboot images on an AMD64 
 machine.
 
 \item \begin{verbatim}CONFIG_CHIP_CONFIGURE \end{verbatim}
@@ -444,7 +437,7 @@ This does not include the fallback payload.
 
 Export CMOS option table. Default is \texttt{0}. Set to \texttt{1} if
 your mainboard has CMOS memory and you want to use it to store
-LinuxBIOS parameters (Loglevel, serial line speed, ...)
+coreboot parameters (Loglevel, serial line speed, ...)
 
 \item \begin{verbatim}CONFIG_ROM_PAYLOAD\end{verbatim}
 
@@ -473,8 +466,8 @@ Default image size. Defaults to \texttt{65535} bytes.
 
 \item \begin{verbatim}COREBOOT_EXTRA_VERSION\end{verbatim}
 
-LinuxBIOS extra version. This option has an empty string as default. Set
-to any string to add an extra version string to your LinuxBIOS build.
+coreboot extra version. This option has an empty string as default. Set
+to any string to add an extra version string to your coreboot build.
 
 \end{itemize}
 
@@ -521,7 +514,7 @@ one-node system, write:
 \item \begin{verbatim}driver\end{verbatim}
 
 The \texttt{driver} keyword adds an object file to the driver section of a
-LinuxBIOS image.  This means it can be used by the PCI device
+coreboot image.  This means it can be used by the PCI device
 initialization code. Example:
 
 \begin{verbatim}
@@ -530,7 +523,7 @@ initialization code. Example:
 
 \item \begin{verbatim}object\end{verbatim}
 
-The \texttt{object} keyword adds an object file to the LinuxBIOS image.
+The \texttt{object} keyword adds an object file to the coreboot image.
 Per default the object file will be compiled from a \texttt{.c} file
 with the same name. Symbols defined in such an object file can be used
 in other object files and drivers. Example:
@@ -543,7 +536,7 @@ in other object files and drivers. Example:
 
 This keyword can be used to extend the existing file creation rules
 during the build process. This is useful if external utilities have to
-be used for the build. LinuxBIOS on AMD64 uses romcc for it's early
+be used for the build. coreboot on AMD64 uses romcc for it's early
 startup code placed in auto.c.
 
 To tell the configuration mechanism how to build \texttt{romcc} files, 
@@ -569,7 +562,7 @@ are satisfied (using the \texttt{action} keyword).
 \item \begin{verbatim}mainboardinit\end{verbatim}
 
 With the mainboardinit keyword it's possible to include assembler code
-directly into the LinuxBIOS image. This is used for early infrastructure
+directly into the coreboot image. This is used for early infrastructure
 initialization, i.e. to switch to protected mode. Example:
 
 \begin{verbatim}
@@ -578,12 +571,12 @@ initialization, i.e. to switch to protected mode. Example:
 
 \item \begin{verbatim}ldscript\end{verbatim}
 
-The GNU linker ld is used to link object files together to a LinuxBIOS
+The GNU linker ld is used to link object files together to a coreboot
 ROM image.
 
 Since it is a lot more comfortable and flexible to use the GNU linker
 with linker scripts (ldscripts) than to create complex command line
-calls, LinuxBIOS features including linker scripts to control image
+calls, coreboot features including linker scripts to control image
 creation. Example:
 
 \begin{verbatim}
@@ -593,12 +586,12 @@ creation. Example:
 
 \item \begin{verbatim}dir\end{verbatim}
 
-LinuxBIOS reuses as much code between the different ports as possible.
+coreboot reuses as much code between the different ports as possible.
 To achieve this, commonly used code can be stored in a separate
 directory. For a new mainboard, it is enough to know that the code in
 that directory can be used as is.
 
-LinuxBIOS will also read a \texttt{Config.lb} file stored in that
+coreboot will also read a \texttt{Config.lb} file stored in that
 directory. This happens with:
 
 \begin{verbatim}
@@ -630,7 +623,7 @@ Example:
 The \texttt{northbridge} keyword describes a system northbridge. Some
 systems, like AMD64, can have more than one northbridge, i.e. one per
 CPU node. Each northbridge is described by the path to the northbridge
-code in LinuxBIOS (relative to \texttt{freebios2/src/northbridge}), i.e.
+code in coreboot (relative to \texttt{coreboot-v2/src/northbridge}), i.e.
 \texttt{amd/amdk8} and a unique name (i.e \texttt{mc0}) \\
 Example:
 
@@ -642,7 +635,7 @@ Example:
 
 \item \begin{verbatim}southbridge\end{verbatim}
 
-To simplify the handling of bus bridges in a LinuxBIOS system, all
+To simplify the handling of bus bridges in a coreboot system, all
 bridges available in a system that are not northbridges (i.e AGP, IO,
 PCIX) are seen as southbridges.
 
@@ -672,7 +665,7 @@ The \texttt{pci} keyword can only occur within a \texttt{northbridge} or
 that are provided by the bridge.  Generally all bridge sections have a
 couple of \texttt{pci} keywords.
 
-The first occurrence of the \texttt{pci} keyword tells LinuxBIOS where
+The first occurrence of the \texttt{pci} keyword tells coreboot where
 the bridge devices start, relative to the PCI configuration space used
 by the bridge. The following occurences of the \texttt{pci} keyword
 describe the provided devices. 
@@ -716,7 +709,7 @@ end
 \item \begin{verbatim}superio\end{verbatim}
 
 SuperIO devices are basically handled like brigdes. They are taking
-their driver code from \texttt{freebios2/src/superio/}. They don't
+their driver code from \texttt{coreboot-v2/src/superio/}. They don't
 provide a PCI compatible configuration interface, but instead are ISA
 PnP devices. Normally they are connected to a southbridge. If this is
 the case, the \texttt{superio} section will be a subsection of the
@@ -796,23 +789,23 @@ mandatory if you want to boot a 64bit Linux kernel on an AMD64 system.
 
 \item \begin{verbatim}STACK_SIZE\end{verbatim}
 
-LinuxBIOS stack size. The size of the function call stack defaults to
+coreboot stack size. The size of the function call stack defaults to
 \texttt{0x2000} (8k).
 
 \item \begin{verbatim}HEAP_SIZE\end{verbatim}
 
-LinuxBIOS heap size. The heap is used when LinuxBIOS allocates memory
+coreboot heap size. The heap is used when coreboot allocates memory
 with malloc(). The default heap size is \texttt{0x2000}, but AMD64 boards
 generally set it to \texttt{0x4000} (16k)
 
 \item \begin{verbatim}XIP_ROM_BASE\end{verbatim}
 
-Start address of area to cache during LinuxBIOS execution directly from
+Start address of area to cache during coreboot execution directly from
 ROM.
 
 \item \begin{verbatim}XIP_ROM_SIZE\end{verbatim}
 
-Size of area to cache during LinuxBIOS execution directly from ROM
+Size of area to cache during coreboot execution directly from ROM
 
 \item \begin{verbatim}CONFIG_COMPRESS\end{verbatim}
 
@@ -831,19 +824,19 @@ decompression is needed).
 
 \section{Tweaking the source code}
 Besides configuring the existing code it is sometimes necessary or
-desirable to tweak certain parts of LinuxBIOS by direct changes to the
+desirable to tweak certain parts of coreboot by direct changes to the
 code. This chapter covers some possible enhancements and changes that
-are needed when porting LinuxBIOS to a new mainboard or just come
+are needed when porting coreboot to a new mainboard or just come
 handy now and then.
 
 \subsection{Hypertransport configuration}
-Before LinuxBIOS is able to activate all CPUs and detect bridges
+Before coreboot is able to activate all CPUs and detect bridges
 attached to these CPUs (and thus, see all devices attached to the
 system) it has to initialize the coherent hypertransport devices.
 
 The current algorithms to do coherent hypertransport initialization are
 not fully, automatically evaluating the hypertransport chain graph.
-Therefore the code needs to be adapted when porting LinuxBIOS to a new
+Therefore the code needs to be adapted when porting coreboot to a new
 AMD64 mainboard. An example arrangement of hypertransport devices
 looks like this:
 
@@ -867,7 +860,7 @@ two steps.
 \item Setting outgoing connections
 The algorithm needs to know which outgoing port of a CPU node is
 connected to the directly succeeding node. This is done in
-\texttt{freebios2/src/mainboard/$<$vendor$>$/$<$mainboard$>$/auto.c}
+\texttt{coreboot-v2/src/mainboard/$<$vendor$>$/$<$mainboard$>$/auto.c}
 with a number of preprocessor defines (one define for two-node systems,
 three defines for four-node systems).
 
@@ -895,7 +888,7 @@ These three message types are routed using different hypertransport
 ports. The routing information is written to the AMD K8 routing table.
 In an Nnode system this routing table consists of 3*N*N entries , one
 for each message type and for each possible CPU --> CPU communication. For
-simplicity LinuxBIOS keeps the 3 routing entries for each CPU --> CPU
+simplicity coreboot keeps the 3 routing entries for each CPU --> CPU
 communication in one machine word.  The routing table of each node looks
 like this:
 
@@ -996,7 +989,7 @@ static unsigned int generate_row
 
 \subsection{DRAM configuration}
 Setting up the RAM controller(s) is probably the most complex part of
-LinuxBIOS.  Basically LinuxBIOS serially initializes all RAM controllers
+coreboot.  Basically coreboot serially initializes all RAM controllers
 in the system, using SPDROM (serial presence detect) data to set
 timings, size and other properties.  The SPD data is usually read
 utilizing the I2C SMBUS interface of the southbridge.
@@ -1015,7 +1008,7 @@ struct mem_controller {
 
 Available mainboard implementations and CPUs create the need to add
 special setup code to RAM initialization in a number of places.
-LinuxBIOS provides hooks to easily add code in these places without
+coreboot provides hooks to easily add code in these places without
 having to change the generic code.  Whether these hooks have to be used
 depends on the mainboard design. In many cases the functions executed
 by the hooks just carry out trivial default settings or they are even
@@ -1024,7 +1017,7 @@ empty.
 Some mainboard/CPU combinations need to trigger an additional memory
 controller reset before the memory can be initialized properly. This is,
 for example, used to get memory working on preC stepping AMD64
-processors. LinuxBIOS provides two hooks for triggering onboard memory
+processors. coreboot provides two hooks for triggering onboard memory
 reset logic:
 
 \begin{itemize}
@@ -1046,10 +1039,10 @@ static inline void activate_spd_rom (const struct mem_controller *ctrl)
 
 The way SMBUS hub information is coded into the \texttt{mem\_controller}
 structure is mainboard implementation specific and not
-described here.  See \texttt{freebios2/src/mainboard/amd/quartet/auto.c}
+described here.  See \texttt{coreboot-v2/src/mainboard/amd/quartet/auto.c}
 for an example.
 
-LinuxBIOS folks have agreed on SPD data being the central information
+coreboot folks have agreed on SPD data being the central information
 source for RAM specific information. But not all mainboards/RAM
 modules feature a physical SPD ROM. To still allow an easy to use SPD
 driven setup, there is a hook that abstracts reading the SPD ROM
@@ -1086,9 +1079,9 @@ default HAVE_PIRQ_TABLE=1
 default IRQ_SLOT_COUNT=7
 \end{verbatim}
 
-This will make LinuxBIOS look for the file \\
-\texttt{freebios2/src/mainboard/<vendor>/<mainboard>/irq\_tables.c} which
-contains the source code definition of the IRQ table. LinuxBIOS corrects
+This will make coreboot look for the file \\
+\texttt{coreboot-v2/src/mainboard/<vendor>/<mainboard>/irq\_tables.c} which
+contains the source code definition of the IRQ table. coreboot corrects
 small inconsistencies in the IRQ table during startup (checksum and
 number of entries), but it is not yet writing IRQ tables in a completely 
 dynamic way.
@@ -1104,11 +1097,11 @@ controller instead (vendor id=\texttt{0x1022}, device id=\texttt{0x7443})
 
 \subsection {MP Tables}
 
-LinuxBIOS contains code to create MP tables conforming the
-Multiprocessor Specification V1.4. To include an MP Table in a LinuxBIOS
+coreboot contains code to create MP tables conforming the
+Multiprocessor Specification V1.4. To include an MP Table in a coreboot
 image, the following configuration variables have to be set (in the
 mainboard specific configuration file
-\texttt{freebios2/src/mainboard/<vendor><mainboard>/Config.lb}):
+\texttt{coreboot-v2/src/mainboard/<vendor><mainboard>/Config.lb}):
 
 \begin{verbatim}
 default CONFIG_SMP=1
@@ -1116,8 +1109,8 @@ default CONFIG_MAX_CPUS=1 # 2,4,..
 default HAVE_MP_TABLE=1
 \end{verbatim}
 
-LinuxBIOS will then look for a function for setting up the MP table in
-the file \texttt{freebios2/src/mainboard<vendor>/<mainboard>/mptable.c}:
+coreboot will then look for a function for setting up the MP table in
+the file \texttt{coreboot-v2/src/mainboard<vendor>/<mainboard>/mptable.c}:
 
 \begin{verbatim}
 void *smp_write_config_table(void *v, unsigned long * processor_map)
@@ -1130,7 +1123,7 @@ revisions.
 
 \subsection {ACPI Tables}
 
-There is initial ACPI support in LinuxBIOS now. Currently the only gain with
+There is initial ACPI support in coreboot now. Currently the only gain with
 this is the ability to use HPET timers in Linux. To achieve this, there is a
 framework that can generate the following tables: 
 \begin{itemize}
@@ -1140,7 +1133,7 @@ framework that can generate the following tables:
 \item HPET
 \end{itemize}
 
-To enable ACPI in your LinuxBIOS build, add the following lines to your
+To enable ACPI in your coreboot build, add the following lines to your
 configuration files:
 \begin{verbatim}
 uses HAVE_ACPI_TABLES
@@ -1155,16 +1148,16 @@ It's likely that more ACPI support will follow, when there is need for certain
 features.
 
 \subsection{POST}
-LinuxBIOS has three different methods of handling POST codes. They can
+coreboot has three different methods of handling POST codes. They can
 be triggered using configuration file options.
 \begin{itemize}
 \item
 \emph{Ignore POST completely}. No early code debugging is possible with
 this setting.  Set the configuration variable \texttt{NO\_POST} to
-\texttt{1} to switch off all POST handling in LinuxBIOS.
+\texttt{1} to switch off all POST handling in coreboot.
 \item
 \emph{Normal IO port 80 POST}. This is the default behavior of
-LinuxBIOS. No configuration variables have to be set. To be able to see
+coreboot. No configuration variables have to be set. To be able to see
 port 80 POST output, you need a POST expansion card for ISA or PCI. Port
 80 POST allows simple debugging without any other output method
 available (serial interface or VGA display)
@@ -1178,7 +1171,7 @@ configuration variable \texttt{CONFIG\_SERIAL\_POST} to the value 1.
 
 
 \subsection{HDT Debugging}
-If you are debugging your LinuxBIOS code with a Hardware Debug Tool
+If you are debugging your coreboot code with a Hardware Debug Tool
 (HDT), you can find the source code line for a given physical EIP
 address as follows: Look the address up in the file linuxbios.map. Then
 search the label Lxx in the file auto.inc created by romcc. The original
@@ -1186,7 +1179,7 @@ source code file and line number is mentioned in auto.inc.
 
 
 \subsection{Device Drivers}
-With only a few data structures LinuxBIOS features a simple but flexible
+With only a few data structures coreboot features a simple but flexible
 device driver interface. This interface is not intended for autonomously
 driving the devices but to initialize all system components so that they
 can be used by the booted operating system.
@@ -1220,9 +1213,9 @@ initialize and operate the device:
 
 By separating the two structures above, M:N relations between compatible
 devices and drivers can be described. The driver source code containing
-above data structures and code have to be added to a LinuxBIOS image
+above data structures and code have to be added to a coreboot image
 using the driver keyword in the mainboard specific configuration file \\
-\texttt{freebios2/src/mainboard/<vendor>/<mainboard>/Config.lb}:
+\texttt{coreboot-v2/src/mainboard/<vendor>/<mainboard>/Config.lb}:
 
 \begin{verbatim}
         driver lsi_scsi.o
@@ -1230,20 +1223,20 @@ using the driver keyword in the mainboard specific configuration file \\
 
 \subsection{Bus Bridges}
 
-Currently all bridges supported in the LinuxBIOS2 tree are transparent
+Currently all bridges supported in the coreboot-v2 tree are transparent
 bridges. This means, once the bridge is initialized, it's remote devices
-are visible on one of the PCI buses without special probing. LinuxBIOS
+are visible on one of the PCI buses without special probing. coreboot
 supports also bridges that are nontransparent.  The driver support code
 can provide a \texttt{scan\_bus} function to scan devices behind the bridge.
 
 \subsection{CPU Reset}
 When changing speed and width of hypertransport chain connections
-LinuxBIOS has to either assert an LDTSTOP or a reset to make the changes
-become active.  Additionally Linux can do a firmware reset, if LinuxBIOS
+coreboot has to either assert an LDTSTOP or a reset to make the changes
+become active.  Additionally Linux can do a firmware reset, if coreboot
 provides the needed infrastructure. To use this capability, define the
 option \texttt{HAVE\_HARD\_RESET} and add an object file specifying the
 reset code in your mainboard specific configuration file
-\texttt{freebios2/src/mainboard/$<$vendor$>$/$<$mainboard$>$/Config.lb}:
+\texttt{coreboot-v2/src/mainboard/$<$vendor$>$/$<$mainboard$>$/Config.lb}:
 
 \begin{verbatim}
         default HAVE_HARD_RESET=1
@@ -1258,41 +1251,41 @@ of the system reset:
         void hard_reset(void);
 \end{verbatim}
 
-See \texttt{freebios2/src/mainboard/arima/hdama/reset.c} for an example
+See \texttt{coreboot-v2/src/mainboard/arima/hdama/reset.c} for an example
 implementation.
 
 \newpage
 
 %
-% 11. LinuxBIOS Internals
+% 11. coreboot Internals
 %
 
-\section{LinuxBIOS Internals}
+\section{coreboot Internals}
 This chapter covers some of the internal structures and algorithms of
-LinuxBIOS that have not been mentioned so far.
+coreboot that have not been mentioned so far.
 
 \subsection{Code Flow}
 
 \begin{figure}[htb]
 \centering
 \includegraphics[scale=0.7]{codeflow.pdf}
-\caption{LinuxBIOS rough Code Flow}
+\caption{coreboot rough Code Flow}
 \label{fix:codeflow}
 \end{figure}
 
 \newpage
 
 \subsection{Fallback mechanism}
-LinuxBIOS provides a mechanism to pack two different LinuxBIOS builds
-within one LinuxBIOS ROM image. Using the system CMOS memory LinuxBIOS
+coreboot provides a mechanism to pack two different coreboot builds
+within one coreboot ROM image. Using the system CMOS memory coreboot
 determines whether the last boot with a default image succeeded and
 boots a failsafe image on failure. This allows insystem testing without
 the risk to render the system unusable. See
-\texttt{freebios2/src/mainboard/arima/hdama/failover.c} for example
+\texttt{coreboot-v2/src/mainboard/arima/hdama/failover.c} for example
 code. The fallback mechanism can be used with the \texttt{cmos\_util}.
 
 \subsection{(Un) Supported Standards}
-LinuxBIOS supports the following standards
+coreboot supports the following standards
 \begin{itemize}
 \item Multiprocessing Specification (MPSPEC) 1.4
 \item IRQ Tables (PIRQ)
@@ -1305,18 +1298,18 @@ probably not be supported in future revisions:
 \item APM
 \end{itemize}
 
-\subsection{LinuxBIOS table}
-LinuxBIOS stores information about the system in a data structure called
-the LinuxBIOS table. This table can be read under Linux using the tool
-lxbios from the Lawrence Livermore National Laboratory.
+\subsection{coreboot table}
+coreboot stores information about the system in a data structure called
+the coreboot table. This table can be read under Linux using the tool
+nvramtool from the Lawrence Livermore National Laboratory.
 
 Get more information about lxbios and the utility itself at
 \url{http://www.llnl.gov/linux/lxbios/lxbios.html}
 
 \subsection{ROMCC limitations}
-ROMCC, part of the LinuxBIOS project, is a C compiler that translates to
+ROMCC, part of the coreboot project, is a C compiler that translates to
 completely rommable code. This means the resulting code does not need
-any memory to work. This is one of the major improvements in LinuxBIOS
+any memory to work. This is one of the major improvements in coreboot
 V2, since it allows almost all code to be written in C. DRAM
 initialization can be factored and reused more easily among mainboards
 and platforms.
@@ -1331,12 +1324,12 @@ time. If you run out of registers during compilation, try to refactor
 your code.
 
 \subsection{CMOS handling}
-LinuxBIOS can use the mainboard's CMOS memory to store information
+coreboot can use the mainboard's CMOS memory to store information
 defined in a data structure called the CMOS table . This information
 contains serial line speed, fallback boot control, output verbosity,
 default boot device, ECC control, and more. It can be easily enhanced by
 enhancing the CMOS table. This table, if present, is found at
-\texttt{freebios2/src/mainboard/$<$vendor$>$/$<$mainboard$>$/cmos.layout}.
+\texttt{coreboot-v2/src/mainboard/$<$vendor$>$/$<$mainboard$>$/cmos.layout}.
 It describes the available options, their possible values and their
 position within the CMOS memory. The layout file looks as follows:
 \begin{verbatim}
@@ -1358,16 +1351,16 @@ position within the CMOS memory. The layout file looks as follows:
 \end{verbatim}
 
 To change CMOS values from a running Linux system, use the
-\texttt{cmos\_util}, provided by Linux Networks as part of the LinuxBIOS
+\texttt{cmos\_util}, provided by Linux Networks as part of the coreboot
 utilities suite. Get it at
 \textit{ftp://ftp.lnxi.com/pub/linuxbios/utilities/}
 
 \subsection {Booting Payloads}
-LinuxBIOS can load a payload binary from a Flash device or IDE. This
+coreboot can load a payload binary from a Flash device or IDE. This
 payload can be a boot loader, like FILO or Etherboot, a kernel image, or
 any other static ELF binary.
 
-To create a Linux kernel image, that is bootable in LinuxBIOS, you have
+To create a Linux kernel image, that is bootable in coreboot, you have
 to use mkelfImage. The command line I used, looks like follows:
 
 \begin{verbatim}
@@ -1436,9 +1429,9 @@ controller firmware and similar. Without this initialization, an
 operating system can not take advantage of the hardware, so there needs
 to be a way to address this issue. There are several alternatives:
 
-\subsection{Native LinuxBIOS Support}
+\subsection{Native coreboot Support}
 
-For some devices (ie Trident Cyberblade 3d) there is native LinuxBIOS
+For some devices (ie Trident Cyberblade 3d) there is native coreboot
 support This means there is a small driver bound to the PCI id of the
 device that is called after PCI device ressources are allotted.
 
@@ -1458,7 +1451,7 @@ CONs:
 
 \subsection{Using Native Linux Support}
 
-A simple way of getting a whole lot of drivers available for LinuxBIOS
+A simple way of getting a whole lot of drivers available for coreboot
 is to reuse Linux drivers by putting a Linux kernel to flash. This
 works, because no drivers are needed to get the Linux kernel (as opposed
 to store the kernel on a harddisk connected to isa/scsi/raid storage)
@@ -1510,7 +1503,7 @@ bytecode that runs with minimal footprint on all architectures that have
 an Open Firmware implementation.
 
 There is a free Open Firmware implementation available, called OpenBIOS,
-that runs on top of LinuxBIOS. See www.openbios.org
+that runs on top of coreboot. See www.openbios.org
 
 PROs:
  \begin{itemize}
@@ -1529,7 +1522,7 @@ CONs:
 %
 
 \section{Image types}
-There used to be one image type for LinuxBIOS, as described above. Since this paper was written (2004) there have been many changes. First, the name 
+There used to be one image type for coreboot, as described above. Since this paper was written (2004) there have been many changes. First, the name 
 was changed to coreboot, for many reasons. Second, Ying-Hai Liu, then of AMD, now of Sun, added Cache As Ram support (CAR) for many AMD CPUs, which both simplified and complicated things. Simplification came with the removal of romcc; complication came with the addition of new ways to build. 
 
 There are two big additions to the build process and, furthermore, more than two new CONFIG variables to control them. 
@@ -1702,7 +1695,7 @@ No significant change from romcc code, except that the CAR code has to set up a 
 \begin{itemize}
 \item payload
 
-LinuxBIOS only cares about low level machine initialization, but also has
+coreboot only cares about low level machine initialization, but also has
 very simple mechanisms to boot a file either from FLASHROM or IDE. That
 file, possibly a Linux Kernel, a boot loader or Etherboot, are called
 payload, since it is the first software executed that does not cope with
@@ -1721,14 +1714,11 @@ ROMs they can be electronically erased and reprogrammed.
 %
 
 \section{Bibliography}
-\subsection{Additional Papers on LinuxBIOS}
+\subsection{Additional Papers on coreboot}
 
 \begin{itemize}
- \item { \small
- \textit{\url{http://www.linuxnetworx.com/products/linuxbios_white_paper.pdf}}
- }
  \item 
- \textit{\url{http://www.linuxbios.org/papers/}}
+ \textit{\url{http://www.coreboot.org/Documentation}}
  \item 
  \textit{\url{http://www.lysator.liu.se/upplysning/fa/linuxbios.pdf}}
  \item 
@@ -1739,7 +1729,7 @@ ROMs they can be electronically erased and reprogrammed.
 
 \begin{itemize}
  \item Etherboot: \textit{\url{http://www.etherboot.org/}}
- \item Filo: \textit{\url{http://te.to/~ts1/filo/}}
+ \item Filo: \textit{\url{http://www.coreboot.org/FILO}}
  \item OpenBIOS: \textit{\url{http://www.openbios.org/}}
 \end{itemize}
 

@@ -10,11 +10,11 @@ FIGS=codeflow.pdf hypertransport.pdf
 all: LinuxBIOS-AMD64.pdf 
 
 
-codeflow.pdf: codeflow.eps
-	epstopdf $< -o=$@
+codeflow.pdf: codeflow.svg
+	svg2pdf $< $@
 
-hypertransport.pdf: hypertransport.eps
-	epstopdf $< -o=$@
+hypertransport.pdf: hypertransport.svg
+	svg2pdf $< $@
 
 LinuxBIOS-AMD64.toc: $(FIGS) LinuxBIOS-AMD64.tex 
 	# 2 times to make sure we have a current toc.

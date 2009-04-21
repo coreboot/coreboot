@@ -21,33 +21,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-if USE_FAILOVER_IMAGE
-	default ROM_SECTION_SIZE   = FAILOVER_SIZE
-	default ROM_SECTION_OFFSET = (ROM_SIZE - FAILOVER_SIZE)
-else
-	if USE_FALLBACK_IMAGE
-		default ROM_SECTION_SIZE   = FALLBACK_SIZE
-		default ROM_SECTION_OFFSET = (ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE)
-	else
-		default ROM_SECTION_SIZE   = (ROM_SIZE - FALLBACK_SIZE - FAILOVER_SIZE)
-		default ROM_SECTION_OFFSET = 0
-	end
-end
-default PAYLOAD_SIZE = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
-default _ROMBASE = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
-# XIP_ROM_SIZE must be a power of 2.
-# XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE.
-default XIP_ROM_SIZE = 64 * 1024
-if USE_FAILOVER_IMAGE
-	default XIP_ROM_BASE = (_ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
-else
-	if USE_FALLBACK_IMAGE
-		default XIP_ROM_BASE = (_ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE + FAILOVER_SIZE)
-	else
-		default XIP_ROM_BASE = (_ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)
-	end
-end
+include /config/failovercalculation.lb
+
 arch i386 end
 driver mainboard.o
 # Needed by irq_tables and mptable and acpi_tables.

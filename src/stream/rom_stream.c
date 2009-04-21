@@ -17,16 +17,14 @@ extern unsigned char _heap, _eheap;
 
 #if (CONFIG_COMPRESSED_PAYLOAD_NRV2B) 
 #define HAVE_UNCOMPRESSER 1
-// include generic nrv2b
 #include "../lib/nrv2b.c"
 #endif
 
 #if (CONFIG_COMPRESSED_PAYLOAD_LZMA)
 #if HAVE_UNCOMPRESSER
-#error "You're defining more than one compression type, which is not allowed (of course)"
+#error "You're defining more than one compression type, which is not allowed."
 #endif
 #define HAVE_UNCOMPRESSER 1
-// include generic lzma
 #include "../lib/lzma.c"
 #endif
 
@@ -43,13 +41,13 @@ extern unsigned char _heap, _eheap;
  */
 
 /*XXXXXXXXXXXXXX */
-/*static const */unsigned char *rom_start = (unsigned char *)CONFIG_ROM_PAYLOAD_START;
-/*static const */unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE - 1);
+unsigned char *rom_start = (unsigned char *)CONFIG_ROM_PAYLOAD_START;
+unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE - 1);
 /*XXXXXXXXXXXXXX */
 
 static const unsigned char *rom;
 
-#if UNCOMPRESSER
+#ifdef UNCOMPRESSER
 unsigned long 
 uncompress(uint8_t * rom_start, uint8_t *dest )
 {
@@ -64,7 +62,7 @@ uncompress(uint8_t * rom_start, uint8_t *dest )
 #endif
 int stream_init(void)
 {
-#if (UNCOMPRESSER)
+#ifdef UNCOMPRESSER
         unsigned char *dest;
         unsigned long olen;
 #endif
@@ -73,7 +71,7 @@ int stream_init(void)
 		(unsigned long)rom_start,
 		(unsigned long)rom_end);
 
-#if (UNCOMPRESSER) 
+#ifdef UNCOMPRESSER
 
         dest = &_eheap; /* need a good address on RAM */
 

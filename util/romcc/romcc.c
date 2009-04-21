@@ -25118,11 +25118,13 @@ int main(int argc, char **argv)
 			else if (strncmp(argv[1], "-m", 2) == 0) {
 				result = arch_encode_flag(&arch, argv[1]+2);
 			}
-			else if (strncmp(argv[1], "--include=", 10) == 0) {
+			else if (strncmp(argv[1], "-include", 10) == 0) {
 				if (includefile) {
-					arg_error("Only one --include option may be specified.\n");
+					arg_error("Only one -include option may be specified.\n");
 				} else {
-					includefile = argv[1] + 10;
+					argv++;
+					argc--;
+					includefile = argv[1];
 					result = 0;
 				}
 			}

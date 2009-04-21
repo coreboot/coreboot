@@ -260,3 +260,21 @@ int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat
 	acpigen_patch_len(len - 1);
 	return len;
 }
+
+int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype)
+{
+	int len, lenh, lenp;
+	lenh = acpigen_write_name("_PSD");
+	lenp = acpigen_write_package(1);
+	len = acpigen_write_package(5);
+	len += acpigen_write_byte(5); // 5 values
+	len += acpigen_write_byte(0); // revision 0
+	len += acpigen_write_dword(domain);
+	len += acpigen_write_dword(coordtype);
+	len += acpigen_write_dword(numprocs);
+	acpigen_patch_len(len-1);
+	len += lenp;
+	acpigen_patch_len(len-1);
+	return len + lenh;
+}
+

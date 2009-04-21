@@ -40,5 +40,7 @@ int acpigen_write_PPC(u8 nr);
 int acpigen_write_empty_PCT(void);
 int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat,
 			u32 control, u32 status);
+typedef enum { SW_ALL=0xfc, SW_ANY=0xfd, HW_ALL=0xfe } PSD_coord;
+int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
 int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
 #endif

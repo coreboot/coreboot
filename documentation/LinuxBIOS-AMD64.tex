@@ -514,7 +514,7 @@ one-node system, write:
 \item \begin{verbatim}driver\end{verbatim}
 
 The \texttt{driver} keyword adds an object file to the driver section of a
-coreboot image.  This means it can be used by the PCI device
+coreboot image.  This means it can be used by the PCI device
 initialization code. Example:
 
 \begin{verbatim}
@@ -1523,7 +1523,8 @@ CONs:
 
 \section{Image types}
 There used to be one image type for coreboot, as described above. Since this paper was written (2004) there have been many changes. First, the name 
-was changed to coreboot, for many reasons. Second, Ying-Hai Liu, then of AMD, now of Sun, added Cache As Ram support (CAR) for many AMD CPUs, which both simplified and complicated things. Simplification came with the removal of romcc; complication came with the addition of new ways to build. 
+was changed to coreboot, for many reasons. Second, Cache As Ram support (CAR)
+was added for many AMD CPUs, which both simplified and complicated things. Simplification came with the removal of romcc; complication came with the addition of new ways to build. 
 
 There are two big additions to the build process and, furthermore, more than two new CONFIG variables to control them. 
 

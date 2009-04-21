@@ -368,13 +368,14 @@ try_next_port:
 	debug_port = HCS_DEBUG_PORT(hcs_params);
 	n_ports    = HCS_N_PORTS(hcs_params);
 
+	dbgp_printk("ehci_bar: 0x%x\n", ehci_bar);
 	dbgp_printk("debug_port: %d\n", debug_port);
 	dbgp_printk("n_ports:    %d\n", n_ports);
 
-#if 0
+#if 1
         for (i = 1; i <= n_ports; i++) {
                 portsc = readl(&ehci_regs->port_status[i-1]);
-                dbgp_printk("portstatus%d: %08x\n", i, portsc);
+                dbgp_printk("PORTSC #%d: %08x\n", i, portsc);
         }
 #endif
 
@@ -396,10 +397,10 @@ try_next_port:
 	} while ((cmd & CMD_RESET) && (--loop > 0));
 
 	if(!loop) {
-		dbgp_printk("can not reset ehci\n");
+		dbgp_printk("Could not reset EHCI controller.\n");
 		return;
 	}
-	dbgp_printk("ehci reset done\n");
+	dbgp_printk("EHCI controller reset successfully.\n");
 
 	/* Claim ownership, but do not enable yet */
 	ctrl = readl(&ehci_debug->control);
@@ -423,10 +424,10 @@ try_next_port:
 	} while ((status & STS_HALT) && (--loop>0));
 
 	if(!loop) {
-		dbgp_printk("ehci can be started\n");
+		dbgp_printk("EHCI could not be started.\n");
 		return;
 	}
-	dbgp_printk("ehci started\n");
+	dbgp_printk("EHCI started.\n");
 
 	/* Wait for a device to show up in the debug port */
 	ret = ehci_wait_for_port(ehci_regs, debug_port);
@@ -434,7 +435,7 @@ try_next_port:
 		dbgp_printk("No device found in debug port %d\n", debug_port);
 		goto next_debug_port;
 	}
-	dbgp_printk("ehci wait for port done\n");
+	dbgp_printk("EHCI done waiting for port.\n");
 
 	/* Enable the debug port */
 	ctrl = readl(&ehci_debug->control);
@@ -442,11 +443,11 @@ try_next_port:
 	writel(ctrl, &ehci_debug->control);
 	ctrl = readl(&ehci_debug->control);
 	if ((ctrl & DBGP_CLAIM) != DBGP_CLAIM) {
-		dbgp_printk("No device in debug port\n");
+		dbgp_printk("No device in EHCI debug port.\n");
 		writel(ctrl & ~DBGP_CLAIM, &ehci_debug->control);
 		goto err;
 	}
-	dbgp_printk("debug ported enabled\n");
+	dbgp_printk("EHCI debug port enabled.\n");
 
 	/* Completely transfer the debug device to the debug controller */
 	portsc = readl(&ehci_regs->port_status[debug_port - 1]);
@@ -465,11 +466,11 @@ try_next_port:
 			break;
 	}
 	if (devnum > 127) {
-		dbgp_printk("Could not find attached debug device\n");
+		dbgp_printk("Could not find attached debug device.\n");
 		goto err;
 	}
 	if (ret < 0) {
-		dbgp_printk("Attached device is not a debug device\n");
+		dbgp_printk("Attached device is not a debug device.\n");
 		goto err;
 	}
 	dbgp_endpoint_out = dbgp_desc.bDebugOutEndpoint;
@@ -481,12 +482,12 @@ try_next_port:
 			USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
 			USB_REQ_SET_ADDRESS, USB_DEBUG_DEVNUM, 0, (void *)0, 0);
 		if (ret < 0) {
-			dbgp_printk("Could not move attached device to %d\n", 
+			dbgp_printk("Could not move attached device to %d.\n", 
 				USB_DEBUG_DEVNUM);
 			goto err;
 		}
 		devnum = USB_DEBUG_DEVNUM;
-		dbgp_printk("debug device renamed to 127\n");
+		dbgp_printk("EHCI debug device renamed to 127.\n");
 	}
 
 	/* Enable the debug interface */
@@ -494,10 +495,10 @@ try_next_port:
 		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
 		USB_REQ_SET_FEATURE, USB_DEVICE_DEBUG_MODE, 0, (void *)0, 0);
 	if (ret < 0) {
-		dbgp_printk(" Could not enable the debug device\n");
+		dbgp_printk("Could not enable EHCI debug device.\n");
 		goto err;
 	}
-	dbgp_printk("debug interface enabled\n");
+	dbgp_printk("EHCI debug interface enabled.\n");
 
 	/* Perform a small write to get the even/odd data state in sync
 	 */
@@ -506,7 +507,7 @@ try_next_port:
 		dbgp_printk("dbgp_bulk_write failed: %d\n", ret);
 		goto err;
 	}
-	dbgp_printk("small write doned\n");
+	dbgp_printk("Test write done\n");
 
 	info->ehci_caps = ehci_caps;
 	info->ehci_regs = ehci_regs;

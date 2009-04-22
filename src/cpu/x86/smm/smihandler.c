@@ -174,7 +174,7 @@ void smi_handler(u32 smm_revision)
 	console_loglevel = 1;
 #endif
 
-	printk_debug("\nSMI# #%d\n", node);
+	printk_spew("\nSMI# #%d\n", node);
 
 	switch (smm_revision) {
 	case 0x00030007:
@@ -200,6 +200,10 @@ void smi_handler(u32 smm_revision)
 		 */
 		return;
 	}
+
+	/* Call chipset specific SMI handlers. This would be the place to
+	 * add a CPU or northbridge specific SMI handler, too
+	 */
 
 	southbridge_smi_handler(node, &state_save);
 

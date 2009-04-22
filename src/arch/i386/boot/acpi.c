@@ -1,8 +1,8 @@
 /*
  * coreboot ACPI Table support
  * written by Stefan Reinauer <stepan@openbios.org>
- *  (C) 2004 SUSE LINUX AG
- *  (C) 2005 Stefan Reinauer
+ *  Copyright (C) 2004 SUSE LINUX AG
+ *  Copyright (C) 2005-2009 coresystems GmbH
  *
  * ACPI FADT, FACS, and DSDT table support added by 
  * Nick Barker <nick.barker9@btinternet.com>, and those portions
@@ -26,11 +26,6 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <device/pci.h>
-
-#if HAVE_ACPI_RESUME == 1
-/* this is to be filled by SB code - startup value what was found */
-u8 acpi_slp_type;
-#endif
 
 u8 acpi_checksum(u8 *table, u32 length)
 {
@@ -80,7 +75,6 @@ int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_
 	mmconfig->end_bus_number = end;
 	return (sizeof(acpi_mcfg_mmconfig_t));
 }
-
 
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 {
@@ -378,6 +372,29 @@ void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
 }
 
 #if HAVE_ACPI_RESUME == 1
+void suspend_resume(void)
+{
+	void *wake_vec;
+
+#if 0
+#if MEM_TRAIN_SEQ != 0
+	#error "So far it works on AMD and MEM_TRAIN_SEQ == 0"
+#endif
+
+#if _RAMBASE < 0x1F00000
+	#error "For ACPI RESUME you need to have _RAMBASE at least 31MB"
+	#error "Chipset support (S3_NVRAM_EARLY and ACPI_IS_WAKEUP_EARLY functions and memory ctrl)"
+	#error "And coreboot memory reserved in mainboard.c"
+#endif
+#endif
+	/* if we happen to be resuming find wakeup vector and jump to OS */
+	wake_vec = acpi_find_wakeup_vector();
+	if (wake_vec)
+		acpi_jump_to_wakeup(wake_vec);
+}
+
+/* this is to be filled by SB code - startup value what was found */
+u8 acpi_slp_type = 0;
 
 int acpi_get_sleep_type(void)
 {
@@ -461,8 +478,10 @@ void *acpi_find_wakeup_vector(void)
 	printk_debug("FADT found at %p\n", fadt);
 	facs = fadt->firmware_ctrl;
 
-	if (facs == NULL)
+	if (facs == NULL) {
+		printk_debug("No FACS found, wake up from S3 not possible.\n");
 		return NULL;
+	}
 
 	printk_debug("FACS found at %p\n", facs);
 	wake_vec = (void *) facs->firmware_waking_vector;

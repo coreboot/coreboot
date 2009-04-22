@@ -17,8 +17,10 @@
 
 #include <stdint.h>
  
+#if HAVE_ACPI_RESUME
 /* 0 = S0, 1 = S1 ...*/
 extern u8 acpi_slp_type;
+#endif
 
 #define RSDP_SIG              "RSD PTR "  /* RSDT Pointer signature */
 #define RSDP_NAME             "RSDP"
@@ -277,6 +279,37 @@ typedef struct acpi_fadt {
 	struct acpi_gen_regaddr x_gpe1_blk;
 } __attribute__ ((packed)) acpi_fadt_t;
 
+#define ACPI_FADT_WBINVD		(1 << 0)
+#define ACPI_FADT_WBINVD_FLUSH		(1 << 1)
+#define ACPI_FADT_C1_SUPPORTED		(1 << 2)
+#define ACPI_FADT_C2_MP_SUPPORTED	(1 << 3)
+#define ACPI_FADT_POWER_BUTTON		(1 << 4)
+#define ACPI_FADT_SLEEP_BUTTON		(1 << 5)
+#define ACPI_FADT_FIXED_RTC		(1 << 6)
+#define ACPI_FADT_S4_RTC_WAKE		(1 << 7)
+#define ACPI_FADT_32BIT_TIMER		(1 << 8)
+#define ACPI_FADT_DOCKING_SUPPORTED	(1 << 9)
+#define ACPI_FADT_RESET_REGISTER	(1 << 10)
+#define ACPI_FADT_SEALED_CASE		(1 << 11)
+#define ACPI_FADT_HEADLESS		(1 << 12)
+#define ACPI_FADT_SLEEP_TYPE		(1 << 13)
+#define ACPI_FADT_PCI_EXPRESS_WAKE	(1 << 14)
+#define ACPI_FADT_PLATFORM_CLOCK	(1 << 15)
+#define ACPI_FADT_S4_RTC_VALID		(1 << 16)
+#define ACPI_FADT_REMOTE_POWER_ON	(1 << 17)
+#define ACPI_FADT_APIC_CLUSTER		(1 << 18)
+#define ACPI_FADT_APIC_PHYSICAL		(1 << 19)
+
+enum acpi_preferred_pm_profiles {
+	PM_UNSPECIFIED	= 0,
+	PM_DESKTOP	= 1,
+	PM_MOBILE	= 2,
+	PM_WORKSTATION	= 3,
+	PM_ENTERPRISE	= 4,
+	PM_SOHO_SERVER  = 5,
+	PM_APPLIANCE_PC	= 6
+};
+
 /* FACS */
 typedef struct acpi_facs {
 	char signature[4];
@@ -333,10 +366,14 @@ void acpi_create_facs(acpi_facs_t *facs);
 
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
+
+#if HAVE_ACPI_RESUME
+void suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
-extern void acpi_jmp_to_realm_wakeup(u32 linear_addr);
+void acpi_jmp_to_realm_wakeup(u32 linear_addr);
 void acpi_jump_to_wakeup(void *wakeup_addr);
+#endif
 
 unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current);
 

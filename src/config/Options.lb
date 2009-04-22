@@ -97,7 +97,7 @@ define OBJCOPY
 	comment "Objcopy command"
 end
 define COREBOOT_VERSION
-	default "2.0.0"
+	default "2.0.0-r$(shell if [ -f `which svnversion` ]; then svnversion $(TOP); fi)"
 	export always
 	format "\"%s\""
 	comment "coreboot version"

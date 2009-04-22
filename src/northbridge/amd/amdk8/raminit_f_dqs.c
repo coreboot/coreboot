@@ -1732,7 +1732,8 @@ static void set_top_mem_ap(unsigned tom_k, unsigned tom2_k)
 	wrmsr(TOP_MEM, msr);
 }
 
-static void setup_mtrr_dqs(unsigned tom_k, unsigned tom2_k){
+static void setup_mtrr_dqs(unsigned tom_k, unsigned tom2_k)
+{
 	unsigned reg;
 	msr_t msr;
 
@@ -1762,7 +1763,8 @@ static void setup_mtrr_dqs(unsigned tom_k, unsigned tom2_k){
 
 }
 
-static void clear_mtrr_dqs(unsigned tom2_k){
+static void clear_mtrr_dqs(unsigned tom2_k)
+{
 	msr_t msr;
 	unsigned i;
 
@@ -1825,21 +1827,28 @@ static void set_sysinfo_in_ram(unsigned val)
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 #else
-int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
+int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
+{
+	return nvram_pos;
 }
 
-int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
-die("No memory NVRAM loader for DQS data! Unable to restore memory state\n");
+int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
+{
+	die("No memory NVRAM loader for DQS data! Unable to restore memory state\n");
+
+	return nvram_pos; /* Make GCC happy */
 }
 #endif
 
-static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos) {
+static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
+{
 	u32 dword = pci_read_config32_index_wait(dev, 0x98, index);
 
 	return s3_save_nvram_early(dword, size, nvram_pos);
 }
 
-static int load_index_to_pos(unsigned int dev, int size, int index, int nvram_pos) {
+static int load_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
+{
 
 	u32 old_dword = pci_read_config32_index_wait(dev, 0x98, index);
 	nvram_pos = s3_load_nvram_early(size, &old_dword, nvram_pos);
@@ -1847,7 +1856,8 @@ static int load_index_to_pos(unsigned int dev, int size, int index, int nvram_po
 	return nvram_pos;
 }
 
-static int dqs_load_MC_NVRAM_ch(unsigned int dev, int ch, int pos) {
+static int dqs_load_MC_NVRAM_ch(unsigned int dev, int ch, int pos)
+{
 	/* 30 bytes per channel */
 	ch *= 0x20;
 	pos = load_index_to_pos(dev, 4, 0x00 + ch, pos);
@@ -1865,7 +1875,8 @@ static int dqs_load_MC_NVRAM_ch(unsigned int dev, int ch, int pos) {
 	return pos;
 }
 
-static int dqs_save_MC_NVRAM_ch(unsigned int dev, int ch, int pos) {
+static int dqs_save_MC_NVRAM_ch(unsigned int dev, int ch, int pos)
+{
 	/* 30 bytes per channel */
 	ch *= 0x20;
 	pos = save_index_to_pos(dev, 4, 0x00 + ch, pos);
@@ -1883,7 +1894,8 @@ static int dqs_save_MC_NVRAM_ch(unsigned int dev, int ch, int pos) {
 	return pos;
 }
 
-static void dqs_save_MC_NVRAM(unsigned int dev) {
+static void dqs_save_MC_NVRAM(unsigned int dev)
+{
 	int pos = 0;
 	u32 reg;
 	printk_debug("DQS SAVE NVRAM: %x\n", dev);
@@ -1894,7 +1906,8 @@ static void dqs_save_MC_NVRAM(unsigned int dev) {
 	pos = s3_save_nvram_early(reg, 4, pos);
 }
 
-static void dqs_restore_MC_NVRAM(unsigned int dev) {
+static void dqs_restore_MC_NVRAM(unsigned int dev)
+{
 	int pos = 0;
 	u32 reg;
 

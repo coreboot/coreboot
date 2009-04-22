@@ -5,8 +5,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * published by the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,8 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- * MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #include <stdio.h>
@@ -40,8 +38,8 @@ int send_ec_command(uint8_t command)
 			debug(".");
 	}
 	if (!timeout) {
-		printf("Timeout while sending command 0x%02x to EC!\n", 
-				command);
+		printf("Timeout while sending command 0x%02x to EC!\n",
+		       command);
 		// return -1;
 	}
 
@@ -54,14 +52,13 @@ int send_ec_data(uint8_t data)
 	int timeout;
 
 	timeout = 0x7ff;
-	while ((inb(EC_SC) & EC_IBF) && --timeout) { // wait for IBF = 0
+	while ((inb(EC_SC) & EC_IBF) && --timeout) {	// wait for IBF = 0
 		usleep(10);
 		if ((timeout & 0xff) == 0)
 			debug(".");
 	}
 	if (!timeout) {
-		printf("Timeout while sending data 0x%02x to EC!\n",
-				data);
+		printf("Timeout while sending data 0x%02x to EC!\n", data);
 		// return -1;
 	}
 
@@ -83,7 +80,7 @@ uint8_t recv_ec_data(void)
 	uint8_t data;
 
 	timeout = 0x7fff;
-	while (--timeout) { // Wait for OBF = 1
+	while (--timeout) {	// Wait for OBF = 1
 		if (inb(EC_SC) & EC_OBF) {
 			break;
 		}
@@ -114,6 +111,6 @@ int ec_write(uint8_t addr, uint8_t data)
 {
 	send_ec_command(0x81);
 	send_ec_data(addr);
+
 	return send_ec_data(data);
 }
-

@@ -32,6 +32,7 @@ unsigned int cpuid(unsigned int op)
 {
 	unsigned int ret;
 	unsigned int dummy2, dummy3, dummy4;
+#if DARWIN
 	asm volatile ( 
 		"pushl %%ebx	\n"
 		"cpuid		\n"
@@ -41,6 +42,14 @@ unsigned int cpuid(unsigned int op)
 		: "a" (op)
 		: "cc"
 	);
+#else
+	asm volatile ( 
+		"cpuid"
+		: "=a" (ret), "=b" (dummy2), "=c" (dummy3), "=d" (dummy4)
+		: "a" (op)
+		: "cc"
+	);
+#endif
 	return ret;
 }
 

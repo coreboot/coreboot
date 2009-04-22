@@ -88,6 +88,25 @@ int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic)
 	return(lapic->length);
 }
 
+unsigned long acpi_create_madt_lapics(unsigned long current)
+{
+	device_t cpu;
+	int cpu_index = 0;
+
+	for(cpu = all_devices; cpu; cpu = cpu->next) {
+		if ((cpu->path.type != DEVICE_PATH_APIC) ||
+		   (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
+			continue;
+		}
+		if (!cpu->enabled) {
+			continue;
+		}
+		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current, cpu_index, cpu->path.apic.apic_id);
+		cpu_index++;
+	}
+	return current;
+}
+
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base) 
 {
 	ioapic->type=1;

@@ -187,10 +187,10 @@ chip northbridge/intel/e7525 # mch
 		device pci 08.0 on end
 	end
 	device apic_cluster 0 on
-		chip cpu/intel/socket_mPGA604_800Mhz # cpu0
+		chip cpu/intel/socket_mPGA604 # cpu0
 			device apic 0 on end
 		end
-		chip cpu/intel/socket_mPGA604_800Mhz # cpu1
+		chip cpu/intel/socket_mPGA604 # cpu1
 			device apic 6 on end
 		end
 	end

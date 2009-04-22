@@ -3,5 +3,5 @@
 
 
 struct chip_operations cpu_intel_socket_mPGA604_800Mhz_ops = {
-	CHIP_NAME("Socket mPGA604 800Mhz CPU")
+	CHIP_NAME("Socket mPGA604 CPU")
 };

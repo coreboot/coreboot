@@ -172,10 +172,10 @@ chip northbridge/intel/e7501
 		end # SB
         end # PCI_DOMAIN
         device apic_cluster 0 on
-                chip cpu/intel/socket_mPGA604_533Mhz
+                chip cpu/intel/socket_mPGA604
                         device apic 0 on end
                 end
-                chip cpu/intel/socket_mPGA604_533Mhz
+                chip cpu/intel/socket_mPGA604
                         device apic 6 on end
                 end
         end

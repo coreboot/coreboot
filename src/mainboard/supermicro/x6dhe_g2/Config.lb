@@ -210,10 +210,10 @@ chip northbridge/intel/e7520  # MCH
 	end
 
 	device apic_cluster 0 on
-		chip cpu/intel/socket_mPGA604_800Mhz  	# CPU 0
+		chip cpu/intel/socket_mPGA604  	# CPU 0
 			device apic 0 on end
 		end
-		chip cpu/intel/socket_mPGA604_800Mhz 	# CPU 1
+		chip cpu/intel/socket_mPGA604 	# CPU 1
 			device apic 6 on end
 		end
 	end

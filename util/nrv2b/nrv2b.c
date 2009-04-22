@@ -1265,6 +1265,9 @@ void Encode(void)  /* compression */
 		Error("Can't read");
 	}
 	r = ucl_nrv2b_99_compress(in, in_len, out, &out_len, 0 );
+	if (r != UCL_E_OK) {
+		Error("Error during compression.");
+	}
 #if UCLPACK_COMPAT
 	tw = htonl(out_len);
 	if (fwrite(&tw, sizeof(tw), 1, outfile) != 1)

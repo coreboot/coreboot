@@ -1,0 +1,224 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2006 AMD
+## Written by Yinghai Lu <yinghailu@gmail.com> for AMD.
+##
+## Copyright (C) 2007 University of Mannheim
+## Written by Philipp Degler <pdegler@rumms.uni-mannheim.e> for Uni of Mannheim
+##
+## Copyright (C) 2009 University of Heidelberg
+## Written by Mondrian Nuessle <nuessle@uni-hd.de> for Uni of Heidelberg
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+include /config/nofailovercalculation.lb
+
+arch i386 end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+driver mainboard.o
+
+#needed by irq_tables and mptable and acpi_tables
+object get_bus_conf.o
+
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_PIRQ_TABLE object irq_tables.o end
+
+if CONFIG_USE_INIT
+	makerule ./auto.o
+		depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+	end
+else
+	makerule ./auto.inc
+		depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+		action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
+		action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
+	end
+end
+
+##
+## Build our 16 bit and 32 bit coreboot entry code
+##
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+end
+
+mainboardinit cpu/x86/32bit/entry32.inc
+
+	if CONFIG_USE_INIT
+		ldscript /cpu/x86/32bit/entry32.lds
+	end
+
+	if CONFIG_USE_INIT
+		ldscript /cpu/amd/car/cache_as_ram.lds
+	end
+
+##
+## Build our reset vector (This is where coreboot is entered)
+##
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
+else
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
+end
+
+##
+## Include an id string (For safe flashing)
+##
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+	##
+	## Setup Cache-As-Ram
+	##
+	mainboardinit cpu/amd/car/cache_as_ram.inc
+
+###
+### This is the early phase of coreboot startup
+### Things are delicate and we test to see if we should
+### failover to another image.
+###
+if USE_FALLBACK_IMAGE
+		ldscript /arch/i386/lib/failover.lds
+end
+
+###
+### O.k. We aren't just an intermediary anymore!
+###
+
+##
+## Setup RAM
+##
+	if CONFIG_USE_INIT
+		initobject auto.o
+	else
+		mainboardinit ./auto.inc
+	end
+
+
+# config for hp/dl145_g3
+chip northbridge/amd/amdk8/root_complex
+	device apic_cluster 0 on
+		chip cpu/amd/socket_F
+			device apic 0 on end
+		end
+	end
+	device pci_domain 0 on
+		chip northbridge/amd/amdk8  # northbridge
+			device pci 18.0 on  # devices on link 0
+				chip southbridge/broadcom/bcm21000 # HT2100
+					device pci 0.0 on
+					end   # bridge to slot PCI-E 4x ??
+					device pci 1.0 on
+					end
+					device pci 2.0 on
+					end  # unused
+					device pci 3.0 on  	# bridge to slot PCI-E 16x ??
+					end
+					device pci 4.0 on
+					end  # unused
+					device pci 5.0 on
+						device pci 4.0 on end # BCM5715 NIC
+						device pci 4.1 on end # BCM5715 NIC
+					end
+				end
+				chip southbridge/broadcom/bcm5785 # HT1000
+					device pci 0.0 on  # HT PXB  0x0036
+						device pci d.0 on end # PCI/PCI-X bridge 0x0104
+						device pci e.0 on end # SATA 0x024a
+					end
+					device pci 1.0 on end # Legacy  pci main  0x0205
+					device pci 1.1 on end # IDE	0x0214
+					device pci 1.2 on     # LPC	0x0234
+						chip superio/nsc/pc87417
+							device  pnp 4e.0 off  # Floppy
+								io 0x60 = 0x3f0
+								irq 0x70 = 6
+								drq 0x74 = 2
+							end
+							device pnp 4e.1 off  # Parallel Port
+									io 0x60 = 0x378
+								irq 0x70 = 7
+							end
+							device pnp 4e.2 off # Com 2
+									io 0x60 = 0x2f8
+								irq 0x70 = 3
+							end
+							device pnp 4e.3 off  # Com 1
+									io 0x60 = 0x3f8
+								irq 0x70 = 4
+							end
+							device pnp 4e.4 off end # SWC
+							device pnp 4e.5 off end # Mouse
+							device pnp 4e.6 off  # Keyboard
+									io 0x60 = 0x60
+									io 0x62 = 0x64
+								irq 0x70 = 1
+							end
+							device pnp 4e.7 off end # GPIO
+							device pnp 4e.f off end # XBUS
+							device pnp 4e.10 on #RTC
+								io 0x60 = 0x70
+								io 0x62 = 0x72
+							end
+						end # end superio
+					end # end pci 1.2
+					device pci 1.3 off end # WDTimer    0x0238
+					device pci 1.4 on end # XIOAPIC0   0x0235
+					device pci 1.5 on end # XIOAPIC1
+					device pci 1.6 on end # XIOAPIC2
+					device pci 2.0 on end # USB	0x0223
+					device pci 2.1 on end # USB
+					device pci 2.2 on end # USB
+ 					chip drivers/pci/onboard
+						# it is in bcm5785_0 bus, but the device id can
+						# not be changed even unitid is changed, fake one
+						# to get the rom_address
+						# if HT_CHAIN_END_UNITID_BASE=0, it is 4,
+						# if HT_CHAIN_END_UNITID_BASE=1, it is 3
+ 						device pci 4.0 on end
+ 						register "rom_address" = "0xfff00000"
+ 					end
+					#bx_a013+ start
+					#chip drivers/pci/onboard    #SATA2
+					#	device pci 5.0 on end
+					#	device pci 5.1 on end
+					#	device pci 5.2 on end
+					#	device pci 5.3 on end
+					#end
+					#bx_a013+ end
+				end
+			end
+			device pci 18.0 on end
+			device pci 18.0 on end
+			device pci 18.1 on end
+			device pci 18.2 on end
+			device pci 18.3 on end
+      end # amdk8
+
+   end #pci_domain
+end
+
+

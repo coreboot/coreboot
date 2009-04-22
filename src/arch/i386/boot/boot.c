@@ -73,12 +73,10 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer)
 	extern unsigned char _ram_seg, _eram_seg;
 	unsigned long lb_start, lb_size;
 	unsigned long adjust, adjusted_boot_notes;
-	unsigned long type;
 
 	elf_boot_notes.hdr.b_checksum = 
 		compute_ip_checksum(&elf_boot_notes, sizeof(elf_boot_notes));
 
-	type = 0x0E1FB007;
 	lb_start = (unsigned long)&_ram_seg;
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
 	adjust = buffer + lb_size - lb_start;

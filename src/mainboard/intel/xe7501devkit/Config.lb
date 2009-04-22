@@ -1,39 +1,4 @@
-##################################################################
-## BEGIN BOILERPLATE - DO NOT EDIT
-##
-## Compute the location and size of where this firmware image
-## (coreboot plus payload) will live in the boot rom chip.
-##
-if USE_FALLBACK_IMAGE
-# The fallback image uses FALLBACK_SIZE bytes at the end of the ROM
-
-	default ROM_SECTION_SIZE   = FALLBACK_SIZE
-	default ROM_SECTION_OFFSET = ( ROM_SIZE - FALLBACK_SIZE )
-
-else
-# The normal image goes at the beginning of the coreboot ROM region
-# and uses all the remaining space
-
-	default ROM_SECTION_SIZE   = ( ROM_SIZE - FALLBACK_SIZE )
-	default ROM_SECTION_OFFSET = 0
-end
-
-##
-## Compute where this copy of coreboot will start in the boot rom
-##
-default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
-
-##
-## Compute a range of ROM that can cached to speed up coreboot,
-## execution speed.
-##
-## XIP_ROM_SIZE must be a power of 2.
-## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
-default XIP_ROM_SIZE = 65536
-default XIP_ROM_BASE = ((( _ROMBASE + ROM_IMAGE_SIZE ) / XIP_ROM_SIZE ) * XIP_ROM_SIZE - XIP_ROM_SIZE )
-
-## END BOILERPLATE
-##################################################################
+include /config/nofailovercalculation128.lb
 
 arch i386 end 
 

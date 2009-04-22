@@ -39,8 +39,8 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		void *v;
 		/* if it's in FLASH, then it's as if dev->on_mainboard was true */
 		v = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
-		printk_debug("In cbfs, rom address for %s = %lx\n", 
-				dev_path(dev), rom_address);
+		printk_debug("In cbfs, rom address for %s = %p\n", 
+				dev_path(dev), v);
 		if (v) {
 			dev->rom_address = (u32)v;
 			dev->on_mainboard = 1;
@@ -107,11 +107,8 @@ static void *pci_ram_image_start = (void *)PCI_RAM_IMAGE_START;
 struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_header)
 {
 	struct pci_data * rom_data;
-	unsigned long rom_address;
 	unsigned int rom_size;
 	unsigned int image_size=0;
-
-	rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
 
 	do {
 		rom_header = (struct rom_header *)((void *) rom_header + image_size); // get next image
@@ -119,7 +116,8 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
         	image_size = le32_to_cpu(rom_data->ilen) * 512;
 	} while ((rom_data->type!=0) && (rom_data->indicator!=0));  // make sure we got x86 version
 
-	if(rom_data->type!=0) return NULL;
+	if (rom_data->type != 0)
+		return NULL;
 
 	rom_size = rom_header->size * 512;
 
@@ -132,15 +130,12 @@ struct rom_header *pci_rom_load(struct device *dev, struct rom_header *rom_heade
 			    rom_header, PCI_VGA_RAM_IMAGE_START, rom_size);
 		memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header, rom_size);
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
-	} else {
-		printk_debug("copying non-VGA ROM Image from %p to %p, 0x%x bytes\n",
-			    rom_header, pci_ram_image_start, rom_size);
-		memcpy(pci_ram_image_start, rom_header, rom_size);
-		pci_ram_image_start += rom_size;
-		return (struct rom_header *) (pci_ram_image_start-rom_size);
 	}
-	/* disable expansion ROM address decoding */
-	pci_write_config32(dev, PCI_ROM_ADDRESS, rom_address & ~PCI_ROM_ADDRESS_ENABLE);
-	
-	return NULL;
+
+	printk_debug("copying non-VGA ROM Image from %p to %p, 0x%x bytes\n",
+		    rom_header, pci_ram_image_start, rom_size);
+
+	memcpy(pci_ram_image_start, rom_header, rom_size);
+	pci_ram_image_start += rom_size;
+	return (struct rom_header *) (pci_ram_image_start-rom_size);
 }

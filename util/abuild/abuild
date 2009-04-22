@@ -127,12 +127,12 @@ function create_config
 
         # get a working payload for the board if we have one.
         # the --payload option expects a directory containing 
-	# an executable shell script payload.sh
+	# a shell script payload.sh
 	#   Usage: payload.sh [VENDOR] [DEVICE]
 	# the script returns an absolute path to the payload binary.
 
-	if [ -x $payloads/payload.sh ]; then
-		PAYLOAD=`$payloads/payload.sh $VENDOR $MAINBOARD`
+	if [ -f $payloads/payload.sh ]; then
+		PAYLOAD=`sh $payloads/payload.sh $VENDOR $MAINBOARD`
 		printf "Using payload $PAYLOAD\n"
 	fi
 	

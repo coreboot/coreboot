@@ -69,8 +69,7 @@ static int do_normal_boot(void)
 	unsigned char byte;
 
 	if (cmos_error() || !cmos_chksum_valid()) {
-		unsigned char byte;
-		/* There are no impossible values, no cheksums so just
+		/* There are no impossible values, no checksums so just
 		 * trust whatever value we have in the the cmos,
 		 * but clear the fallback bit.
 		 */

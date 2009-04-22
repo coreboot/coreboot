@@ -75,7 +75,7 @@ struct lb_memory *write_tables(void)
 	 * low and the high area, so payloads and OSes don't need to know about
 	 * the high tables.
 	 */
-	unsigned long high_table_start, high_table_end=0;
+	unsigned long high_table_start=0, high_table_end=0;
 
 	if (high_tables_base) {
 		printk_debug("High Tables Base is %llx.\n", high_tables_base);

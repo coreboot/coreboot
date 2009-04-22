@@ -21,7 +21,7 @@ extern unsigned char _heap, _eheap;
 #endif
 
 #if (CONFIG_COMPRESSED_PAYLOAD_LZMA)
-#if HAVE_UNCOMPRESSER
+#ifdef HAVE_UNCOMPRESSER
 #error "You're defining more than one compression type, which is not allowed."
 #endif
 #define HAVE_UNCOMPRESSER 1
@@ -49,17 +49,18 @@ static const unsigned char *rom;
 
 #ifdef UNCOMPRESSER
 unsigned long 
-uncompress(uint8_t * rom_start, uint8_t *dest )
+uncompress(uint8_t * start_addr, uint8_t *dest_addr)
 {
 #if (CONFIG_COMPRESSED_PAYLOAD_NRV2B) 
 	unsigned long ilen; // used compressed stream length
-	return unrv2b(rom_start, dest, &ilen);
+	return unrv2b(start_addr, dest_addr, &ilen);
 #endif
 #if (CONFIG_COMPRESSED_PAYLOAD_LZMA)
-	return ulzma(rom_start, dest);
+	return ulzma(start_addr, dest_addr);
 #endif
 }
 #endif
+
 int stream_init(void)
 {
 #ifdef UNCOMPRESSER

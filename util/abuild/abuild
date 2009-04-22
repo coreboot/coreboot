@@ -122,8 +122,13 @@ function create_config
 {
 	VENDOR=$1
 	MAINBOARD=$2
+	CONFIG=$3
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 	TARGCONFIG=$LBROOT/targets/$VENDOR/$MAINBOARD/Config-abuild.lb
+
+	if [ "$CONFIG" != "" ]; then
+		TARGCONFIG=$LBROOT/targets/$VENDOR/$MAINBOARD/$CONFIG
+	fi
 
         # get a working payload for the board if we have one.
         # the --payload option expects a directory containing 
@@ -270,7 +275,8 @@ function create_buildenv
 {
 	VENDOR=$1
 	MAINBOARD=$2
-	create_config $VENDOR $MAINBOARD
+	CONFIG=$3
+	create_config $VENDOR $MAINBOARD $CONFIG
 	create_builddir $VENDOR $MAINBOARD
 }
 
@@ -341,6 +347,7 @@ function build_target
 {
 	VENDOR=$1
 	MAINBOARD=$2
+	CONFIG=$3
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
 	# Allow architecture override in an abuild.info file.
@@ -459,7 +466,7 @@ function build_target
 		return 0
 	}
 	
-	create_buildenv $VENDOR $MAINBOARD
+	create_buildenv $VENDOR $MAINBOARD $CONFIG
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
 		compile_target $VENDOR $MAINBOARD && 
 			xml "  <status>ok</status>" ||
@@ -557,6 +564,7 @@ function myhelp
 	printf "    [-ns|--nostackprotect]        use gcc -fno-stack-protector option\n"
 	printf "    [-sb|--scan-build]            use clang's static analyzer\n"
 	printf "    [-C|--config]                 configure-only mode\n"
+	printf "    [-l|--loglevel <num>]         set loglevel\n"
 	printf "    [lbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $LBROOT)\n\n"
 }
@@ -636,7 +644,8 @@ if [ "$target" != "" ]; then
 	# build a single board
 	VENDOR=`printf $target|cut -f1 -d/`
 	MAINBOARD=`printf $target|cut -f2 -d/`
-	build_target $VENDOR $MAINBOARD
+	CONFIG=`printf $target|cut -f3 -d/`
+	build_target $VENDOR $MAINBOARD $CONFIG
 	test_target $VENDOR $MAINBOARD
 else
 	# build all boards per default

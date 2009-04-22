@@ -4,16 +4,6 @@
 #include <boot/coreboot_tables.h>
 #include <string.h>
 
-#define CMOS_READ(addr) ({ \
-outb((addr),RTC_PORT(0)); \
-inb(RTC_PORT(1)); \
-})
-
-#define CMOS_WRITE(val, addr) ({ \
-outb((addr),RTC_PORT(0)); \
-outb((val),RTC_PORT(1)); \
-})
-
 /* control registers - Moto names
  */
 #define RTC_REG_A		10
@@ -83,7 +73,27 @@ outb((val),RTC_PORT(1)); \
 # define RTC_VRT 0x80		/* valid RAM and time */
 /**********************************************************************/
 
+static inline unsigned char cmos_read(unsigned char addr)
+{
+	int offs = 0;
+	if (addr >= 128) {
+		offs = 2;
+		addr -= 128;
+	}
+	outb(addr, RTC_BASE_PORT + offs + 0);
+	return inb(RTC_BASE_PORT + offs + 1);
+}
 
+static inline void cmos_write(unsigned char val, unsigned char addr)
+{
+	int offs = 0;
+	if (addr >= 128) {
+		offs = 2;
+		addr -= 128;
+	}
+	outb(addr, RTC_BASE_PORT + offs + 0);
+	outb(val, RTC_BASE_PORT + offs + 1);
+}
 
 static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 {
@@ -91,10 +101,10 @@ static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 	unsigned sum, old_sum;
 	sum = 0;
 	for(i = range_start; i <= range_end; i++) {
-		sum += CMOS_READ(i);
+		sum += cmos_read(i);
 	}
 	sum = (~sum)&0x0ffff;
-	old_sum = ((CMOS_READ(cks_loc)<<8) | CMOS_READ(cks_loc+1))&0x0ffff;
+	old_sum = ((cmos_read(cks_loc)<<8) | cmos_read(cks_loc+1))&0x0ffff;
 	return sum == old_sum;
 }
 
@@ -104,11 +114,11 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 	unsigned sum;
 	sum = 0;
 	for(i = range_start; i <= range_end; i++) {
-		sum += CMOS_READ(i);
+		sum += cmos_read(i);
 	}
 	sum = ~(sum & 0x0ffff);
-	CMOS_WRITE(((sum >> 8) & 0x0ff), cks_loc);
-	CMOS_WRITE(((sum >> 0) & 0x0ff), cks_loc+1);
+	cmos_write(((sum >> 8) & 0x0ff), cks_loc);
+	cmos_write(((sum >> 0) & 0x0ff), cks_loc+1);
 }
 
 #define RTC_CONTROL_DEFAULT (RTC_24H)
@@ -130,7 +140,7 @@ void rtc_init(int invalid)
 
 #if HAVE_OPTION_TABLE
 	/* See if there has been a CMOS power problem. */
-	x = CMOS_READ(RTC_VALID);
+	x = cmos_read(RTC_VALID);
 	cmos_invalid = !(x & RTC_VRT);
 
 	/* See if there is a CMOS checksum error */
@@ -143,31 +153,31 @@ void rtc_init(int invalid)
 			cmos_invalid?" Power Problem":"",
 			checksum_invalid?" Checksum invalid":"");
 #if 0
-		CMOS_WRITE(0, 0x01);
-		CMOS_WRITE(0, 0x03);
-		CMOS_WRITE(0, 0x05);
+		cmos_write(0, 0x01);
+		cmos_write(0, 0x03);
+		cmos_write(0, 0x05);
 		for(i = 10; i < 48; i++) {
-			CMOS_WRITE(0, i);
+			cmos_write(0, i);
 		}
 		
 		if (cmos_invalid) {
 			/* Now setup a default date of Sat 1 January 2000 */
-			CMOS_WRITE(0, 0x00); /* seconds */
-			CMOS_WRITE(0, 0x02); /* minutes */
-			CMOS_WRITE(1, 0x04); /* hours */
-			CMOS_WRITE(7, 0x06); /* day of week */
-			CMOS_WRITE(1, 0x07); /* day of month */
-			CMOS_WRITE(1, 0x08); /* month */
-			CMOS_WRITE(0, 0x09); /* year */
+			cmos_write(0, 0x00); /* seconds */
+			cmos_write(0, 0x02); /* minutes */
+			cmos_write(1, 0x04); /* hours */
+			cmos_write(7, 0x06); /* day of week */
+			cmos_write(1, 0x07); /* day of month */
+			cmos_write(1, 0x08); /* month */
+			cmos_write(0, 0x09); /* year */
 		}
 #endif
 	}
 #endif
 
 	/* Setup the real time clock */
-	CMOS_WRITE(RTC_CONTROL_DEFAULT, RTC_CONTROL);
+	cmos_write(RTC_CONTROL_DEFAULT, RTC_CONTROL);
 	/* Setup the frequency it operates at */
-	CMOS_WRITE(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
+	cmos_write(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
 
 #if HAVE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */
@@ -182,7 +192,7 @@ void rtc_init(int invalid)
 #endif
 
 	/* Clear any pending interrupts */
-	(void) CMOS_READ(RTC_INTR_FLAGS);
+	(void) cmos_read(RTC_INTR_FLAGS);
 }
 
 
@@ -207,7 +217,7 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 	byte=bit/8;	/* find the byte where the data starts */
 	byte_bit=bit%8; /* find the bit in the byte where the data starts */
 	if(length<9) {	/* one byte or less */
-		uchar = CMOS_READ(byte); /* load the byte */
+		uchar = cmos_read(byte); /* load the byte */
 		uchar >>= byte_bit;	/* shift the bits to byte align */
 		/* clear unspecified bits */
 		ret[0] = uchar & ((1 << length) -1);
@@ -215,7 +225,7 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 	else {	/* more that one byte so transfer the whole bytes */
 		for(i=0;length;i++,length-=8,byte++) {
 			/* load the byte */
-			ret[i]=CMOS_READ(byte);
+			ret[i]=cmos_read(byte);
 		}
 	}
 	return 0;

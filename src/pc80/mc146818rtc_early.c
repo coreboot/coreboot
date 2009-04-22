@@ -10,14 +10,24 @@
 
 static unsigned char cmos_read(unsigned char addr)
 {
-	outb(addr, RTC_BASE_PORT + 0);
-	return inb(RTC_BASE_PORT + 1);
+	int offs = 0;
+	if (addr >= 128) {
+		offs = 2;
+		addr -= 128;
+	}
+	outb(addr, RTC_BASE_PORT + offs + 0);
+	return inb(RTC_BASE_PORT + offs + 1);
 }
 
 static void cmos_write(unsigned char val, unsigned char addr)
 {
-	outb(addr, RTC_BASE_PORT + 0);
-	outb(val, RTC_BASE_PORT + 1);
+	int offs = 0;
+	if (addr >= 128) {
+		offs = 2;
+		addr -= 128;
+	}
+	outb(addr, RTC_BASE_PORT + offs + 0);
+	outb(val, RTC_BASE_PORT + offs + 1);
 }
 
 static int cmos_error(void)

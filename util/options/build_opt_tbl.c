@@ -8,7 +8,7 @@
 #include "../../src/include/pc80/mc146818rtc.h"
 #include "../../src/include/boot/coreboot_tables.h"
 
-#define CMOS_IMAGE_BUFFER_SIZE 128
+#define CMOS_IMAGE_BUFFER_SIZE 256
 #define INPUT_LINE_MAX 256
 #define MAX_VALUE_BYTE_LENGTH 64
 
@@ -563,9 +563,7 @@ int main(int argc, char **argv)
 				continue;
 			}
 			ce = (struct cmos_entries *)ptr;
-			if (ce->config == 'r') {
-				continue;
-			}
+
 			if (!is_ident((char *)ce->name)) {
 				fprintf(stderr, "Invalid identifier: %s\n",
 					ce->name);

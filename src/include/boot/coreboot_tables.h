@@ -223,7 +223,7 @@ struct cmos_defaults {
 	uint32_t size;               /* length of this record */
 	uint32_t name_length;        /* length of the following name field */
 	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name identifying the default */
-#define CMOS_IMAGE_BUFFER_SIZE 128
+#define CMOS_IMAGE_BUFFER_SIZE 256
 	uint8_t default_set[CMOS_IMAGE_BUFFER_SIZE]; /* default settings */
 };
 

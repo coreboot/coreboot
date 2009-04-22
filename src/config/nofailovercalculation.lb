@@ -31,8 +31,3 @@ default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
 ##
 default XIP_ROM_SIZE = 64 * 1024
 default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE )
-
-## This is needed to work around a parser bug.
-if USE_FALLBACK_IMAGE
-end
-

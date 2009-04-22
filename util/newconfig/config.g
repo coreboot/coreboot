@@ -1709,7 +1709,7 @@ parser Config:
 
     rule expr:		logical			{{ l = logical }}
 			( "&&" logical		{{ l = l and logical }}
-			| "||"  logical		{{ l = l or logical }}
+			| "[|][|]" logical	{{ l = l or logical }}
 			)*			{{ return l }}
 
     rule logical:	factor			{{ n = factor }}

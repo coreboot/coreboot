@@ -20,7 +20,7 @@ void intel_sibling_init(device_t cpu)
 		get_option(&disable_siblings, "hyper_threading");
 	}
 	result = cpuid(1);
-	/* Is hypethreading supported */
+	/* Is hyperthreading supported */
 	if (!(result.edx & (1 << 28))) {
 		return;
 	}

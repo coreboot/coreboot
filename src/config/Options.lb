@@ -96,8 +96,11 @@ define OBJCOPY
 	export always
 	comment "Objcopy command"
 end
+
+# Try to determine svn revision first.
+# If that fails, try last svn revision in git log.
 define COREBOOT_VERSION
-	default "2.0.0-r$(shell if [ -f `which svnversion` ]; then svnversion $(TOP); fi)"
+	default "2.0.0-r$(shell if [ -d $(TOP)/.svn -a -f `which svnversion` ]; then svnversion $(TOP); else if [ -d $(TOP)/.git -a -f `which git` ]; then git --git-dir=/$(TOP)/.git log|grep git-svn-id|cut -f 2 -d@|cut -f 1 -d' '|sort -g|tail -1; fi; fi)"
 	export always
 	format "\"%s\""
 	comment "coreboot version"

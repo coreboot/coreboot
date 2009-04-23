@@ -19,16 +19,22 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 
-CC=gcc
-CFLAGS=-O2 -Wall -W
+CC = gcc
+CFLAGS = -O2 -Wall -W
+PROGRAM = ectool
+INSTALL = /usr/bin/install
+PREFIX  = /usr/local
 
-all: ectool
+all: $(PROGRAM)
 
-ectool: ec.o ectool.o
+$(PROGRAM): ec.o ectool.o
 	$(CC) $(CFLAGS) -o $@ $^
 
+install: $(PROGRAM)
+	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
+
 clean:
-	rm *.o ectool
+	rm *.o $(PROGRAM)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $^ -I. -o $@

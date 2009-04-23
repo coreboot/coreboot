@@ -2267,17 +2267,10 @@ def writemakefile(path):
 	file.write("include %s/Makefile.settings\n\n" % romimages.keys()[0])
 
 	# main rule
-	file.write("ifeq \"$(CONFIG_CBFS)\" \"1\"\n")
-	file.write("\nall: ")
-	for i in buildroms:
-		file.write(" %sfs" % i.name)
-	file.write("\n")
-	file.write("else")
 	file.write("\nall: ")
 	for i in buildroms:
 		file.write(" %s" % i.name)
 	file.write("\n")
-	file.write("endif\n\n")
 
 	# cbfstool rules
 	file.write("\ncbfstool:\n\tmkdir -p tools/lzma\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)\n\n")
@@ -2299,6 +2292,35 @@ def writemakefile(path):
 	file.write("base-clean:\n")
 	file.write("\trm -f romcc*\n\n")
 
+	file.write("ifeq \"$(CONFIG_CBFS)\" \"1\"\n\n")
+
+	for i in buildroms:
+		file.write("%s: cbfstool" %(i.name))
+		for j in i.roms:
+			file.write(" %s/coreboot.rom " % j)
+		file.write("\n")
+
+		romsize = getoption("ROM_SIZE", image)
+
+		file.write("\n\trm -f %s\n" %(i.name))
+
+		# build the bootblock here.
+		file.write("\n\tcat")
+		for j in i.roms:
+			file.write(" %s/coreboot.strip " % j)
+		file.write("> %s.bootblock\n\n" %i.name)
+		file.write("\t./cbfstool %s create %s %s %s.bootblock\n"
+			   %(i.name, romsize, bootblocksize, i.name))
+		for j in pciroms:
+			file.write("\t./cbfstool %s add %s pci%04x,%04x.rom 48\n" % (i.name, j.name, j.pci_vid, j.pci_did))
+		for j in i.roms:
+			#failover is a hack that will go away soon. 
+			if (j != "failover") and (rommapping[j] != "/dev/null"):
+				file.write("\t./cbfstool %s add-payload %s %s/payload\n" % (i.name, rommapping[j], j,))
+		file.write("\t./cbfstool %s print\n" % i.name)
+		file.write("\n")
+	file.write("else\n\n")
+
 	for i in buildroms:
 		file.write("%s:" % i.name)
 		for j in i.roms:
@@ -2308,26 +2330,8 @@ def writemakefile(path):
 		for j in i.roms:
 			file.write(" %s/coreboot.rom " % j)
 		file.write("> %s\n\n" %i.name)
-		# build the bootblock here as well. 
-		file.write("\n")
-		file.write("\t cat ")
-		for j in i.roms:
-			file.write(" %s/coreboot.strip " % j)
-		file.write("> %s.bootblock\n\n" %i.name)
 
-	romsize = getoption("ROM_SIZE", image)
-	# i.name? That can not be right, can it? 
-	file.write("%sfs: %s cbfstool\n" %(i.name,i.name));
-	file.write("\trm -f coreboot.cbfs\n");
-	file.write("\t./cbfstool %sfs create %s %s %s.bootblock\n" % (i.name, romsize, bootblocksize, i.name))
-	for i in pciroms:
-		file.write("\tif [ -f coreboot.romfs ]; then ./cbfstool coreboot.romfs add %s pci%04x,%04x.rom 48; fi\n" % (i.name, i.pci_vid, i.pci_did))
-	for i in buildroms:
-		for j in i.roms:
-			#failover is a hack that will go away soon. 
-			if (j != "failover") and (rommapping[j] != "/dev/null"):
-				file.write("\tif [ -f %s/cbfs-support ]; then ./cbfstool %sfs add-payload %s %s/payload `cat %s/cbfs-support`; fi\n" % (j, i.name, rommapping[j], j, j))
-		file.write("\t ./cbfstool %sfs print\n" % i.name)
+	file.write("endif\n\n")
 
 	file.write(".PHONY: all clean cbfstool")
 	for i in romimages.keys():

@@ -191,7 +191,7 @@ err:
 int main(int argc, char **argv)
 {
 	void (*compress) (char *, int, char *, int *);
-	int algo;
+	int algo = CBFS_COMPRESS_NONE;
 
 	char *output = NULL;
 	char *input = NULL;
@@ -251,6 +251,9 @@ int main(int argc, char **argv)
 	case CBFS_COMPRESS_LZMA:
 		compress = lzma_compress;
 		break;
+	default:
+		fprintf(stderr, "E: Unknown compression algorithm %d!\n", algo);
+		return -1;
 	}
 
 	osize = parse_elf(buffer, &obuffer, algo, compress);

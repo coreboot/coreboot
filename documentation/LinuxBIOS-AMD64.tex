@@ -1551,7 +1551,7 @@ A coreboot rom file consists of one or more \textit{images}. All images consist 
 \subsection{romcc images (from emulation/qemu)}
 ROMCC images are so-called because C code for the ROM part is compiled with romcc. romcc is an optimizing C compiler which compiles one, and only 
 one file; to get more than one file, one must include the C code via include statements. The main ROM code .c file is usually called auto.c. 
-\subsubsection{how it is built}
+\subsubsection{How it is built}
 Romcc compiles auto.c to produce auto.inc. auto.inc is included in the main crt0.S, which is then preprocessed to produce crt0.s. The inclusion of files into crt0.S is controlled by the CRT0\_INCLUDES variable. crt0.s is then assembled. 
 
 File for the ram part are compiled in a conventional manner. 
@@ -1630,7 +1630,7 @@ end
 What does this mean? the non-fallback image has a 32-bit entry point; fallback has a 16-bit entry point. The reason for this is that some code from fallback always runs, so as to pick fallback or normal; but the normal is always called from 32-bit code. 
 \subsection{car images (from lippert/roadrunner-lx)}
 CAR images in their simplest form are modified romcc images. The file is usually cache\_as\_ram\_auto.c. C inclusion is still used. The main difference is in the build sequence. The compiler command line is a very slight changed: instead of using romcc to generate an auto.inc include file, gcc us used. Then, two perl scripts are used to rename the .text and .data sections to .rom.text and .rom.data respectively. 
-\subsubsection{how it is built}
+\subsubsection{How it is built}
 The build is almost identical to the romcc build. Since the auto.inc file exists, it can be included as before. The crt0\_includes.h file has one addition: a file that enables CAR, in this case it is \textit{src/cpu/amd/model\_lx/cache\_as\_ram.inc}. 
 \subsubsection{layout}
 No significant change from romcc code. 
@@ -1640,7 +1640,7 @@ No significant change from romcc code, except that the CAR code has to set up a 
 \subsection{car + CONFIG\_USE\_INIT images (new emulation/qemu}
 This type of image makes more use of the C compiler. In this type of image, in fact, 
 seperate compilation is possible but is not always used. Oddly enough, this option is only used in PPC boards. That said, we need to move to this way of building. Including C code is poor style. 
-\subsubsection{how it is built}
+\subsubsection{How it is built}
 There is a make variable, INIT-OBJECTS, that for all our other targets is empty. In this type of build, INIT-OBJECTS is a list of C files that are created from the config tool initobject command. Again, with INIT-OBJECTS we can finally stop including .c files and go with seperate compilation.
 \subsubsection{layout}
 No significant change from romcc code. 
@@ -1687,7 +1687,128 @@ No significant change from romcc code.
 \subsubsection{boot sequence}
 No significant change from romcc code, except that the CAR code has to set up a stack. 
 \subsection{failover}
+Failover is the newest way to lay out a ROM. The choice of which image to run is removed from the fallback image and moved into a small, standalone piece of code. The code is simple enough to show here: 
+\begin{verbatim}
+static unsigned long main(unsigned long bist)
+{
+	if (do_normal_boot())
+		goto normal_image;
+	else
+		goto fallback_image;
 
+normal_image:
+	__asm__ __volatile__("jmp __normal_image" : : "a" (bist) : );
+
+cpu_reset:
+	__asm__ __volatile__("jmp __cpu_reset" : : "a" (bist) : );
+
+fallback_image:
+	return bist;
+}
+
+\end{verbatim}
+Some motherboards have a more complex bus structure (e.g. Opteron). In those cases, the failover can be more complex, as it requires some hardware initialization to work correctly. As of this writing (April 2009), these boards have their own failover: 
+\begin{quote}
+./src/mainboard/iei/nova4899r/failover.c
+./src/mainboard/emulation/qemu-x86/failover.c
+./src/mainboard/supermicro/x6dhr_ig/failover.c
+./src/mainboard/supermicro/x6dai_g/failover.c
+./src/mainboard/supermicro/x6dhe_g2/failover.c
+./src/mainboard/supermicro/x6dhr_ig2/failover.c
+./src/mainboard/supermicro/x6dhe_g/failover.c
+./src/mainboard/dell/s1850/failover.c
+./src/mainboard/intel/xe7501devkit/failover.c
+./src/mainboard/intel/jarrell/failover.c
+./src/mainboard/olpc/btest/failover.c
+./src/mainboard/olpc/rev_a/failover.c
+./src/mainboard/via/epia-m/failover.c
+\end{quote}
+Here is one of the more complicated ones: 
+\begin{verbatim}
+static unsigned long main(unsigned long bist)
+{
+        /* Did just the cpu reset? */
+        if (memory_initialized()) {
+                if (last_boot_normal()) {
+                        goto normal_image;
+                } else {
+                        goto cpu_reset;
+                }
+        }
+
+        /* This is the primary cpu how should I boot? */
+        else if (do_normal_boot()) {
+                goto normal_image;
+        }
+        else {
+                goto fallback_image;
+        }
+ normal_image:
+        asm volatile ("jmp __normal_image"
+                : /* outputs */
+                : "a" (bist) /* inputs */
+                : /* clobbers */
+                );
+ cpu_reset:
+        asm volatile ("jmp __cpu_reset"
+                : /* outputs */
+                : "a"(bist) /* inputs */
+                : /* clobbers */
+                );
+ fallback_image:
+        return bist;
+}
+
+\end{verbatim}
+They're not that different, in fact. So why are there different copies all over the tree? Simple: code inclusion. Most of the failover.c are different because they include different bits of code. Here is a key reason for killing C code inclusion in the tree. 
+\subsubsection{How it is built}
+There two additional config variables: 
+\begin{itemize}
+\item HAVE\_FAILOVER\_IMAGE Has to be defined when certain files are included. 
+\item USE\_FAILOVER\_IMAGE Enables the use of the failover image
+\end{itemize}
+Confusingly enough, almost all the uses of these two variables are either nested or both required to be set, e.g. 
+The fallback and normal builds are the same. The target config has a new clause that looks like this: 
+\begin{verbatim}
+romimage "failover"
+        option USE_FAILOVER_IMAGE=1
+        option USE_FALLBACK_IMAGE=0
+        option ROM_IMAGE_SIZE=FAILOVER_SIZE
+        option XIP_ROM_SIZE=FAILOVER_SIZE
+        option COREBOOT_EXTRA_VERSION="\$(shell cat ../../VERSION)\_Failover"
+end
+\end{verbatim}
+This new section uses some constructs not yet discussed in detail. XIP\_ROM\_SIZE just refers to the 
+fact that the failover code is eXecute In Place, i.e. not copied to RAM. Of course, the ROM part of normal/fallback is as well, so the usage of XIP here is somewhat confusing. Finally, the USE\_FAILOVER\_IMAGE variable is set, which changes code compilation in a few places. If we just consider non-mainbard files, there are: 
+\begin{verbatim}
+src/cpu/amd/car/cache_as_ram.inc
+src/arch/i386/Config.lb
+\end{verbatim}
+For the cache\_as\_ram.inc file, the changes relate to the fact that failover code sets up CAR, so that fallback code need not.
+
+For the Config.lb, several aspects of build change. 
+When USE\_FAILOVER\_IMAGE, entry into both normal and fallback bios images is via a 32-bit entry point (when not defined, entry into fallback is a 16-entry point at the power-on reset vector). 
+\subsubsection{layout}
+Failover.c becomes the new bootblock at the top of memory. It calls either normal or fallback. The address of normal and fallback is determined by ldscript magic. 
+\subsubsection{boot sequence}
+failover.c tests a few variables and the calls the normal or fallback payload depending on those variables; usually they are CMOS settings. 
+\subsection{Proposed new image forat}
+The new image format will use seperate compilation -- no C code included! -- on all files. 
+
+The new design has a few key goals: 
+\begin{itemize}
+\item Always use a bootblock (currently called failover). 
+The name failover.c, being utterly obscure, will not be used; instead, we will name the file bootblock.c. Instead of having a different copy for each mainboard, we can have just one copy. 
+\item Always use seperate compilation
+\item Always use printk etc. in the ROM code
+\item (longer term) from the bootblock, always use cbfs to locate the normal/fallback etc. code. This code will be XIP. 
+\end{itemize}
+
+\subsubsection{How it is built}
+For now, since we are still using the config tool, we'll need a new command: bootblockobject, which creates a list of files to be included in the bootblock.   Not a lot else will have to change. We are going to move to using the v3 CAR code assembly code (one or two files at most, instead of many) and, instead of the thicket of little ldscript files, one ldscript file. This strategy is subject to modification as events dictate. 
+\subsubsection{layout}
+Almost the same, for now, as the current failover code. 
+\subsubsection{boot sequence}
 %
 % 14 Glossary
 %

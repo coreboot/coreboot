@@ -108,8 +108,7 @@ int show_id(uint8_t *bios, int size, int force)
 	 */
 	if (!strcasecmp(mainboard_vendor, lb_vendor) &&
 	    !strcasecmp(mainboard_part, lb_part)) {
-		printf_debug("This firmware image matches "
-			     "this motherboard.\n");
+		printf_debug("This firmware image matches this mainboard.\n");
 	} else {
 		if (force) {
 			printf("WARNING: This firmware image does not "

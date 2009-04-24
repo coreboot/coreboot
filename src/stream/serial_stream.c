@@ -19,7 +19,7 @@
 #error "You're defining more than one compression type, which is not allowed (of course)"
 #endif
 #define HAVE_UNCOMPRESSER 1
-#include "../lib/lzma.c"
+unsigned long ulzma(unsigned char *src, unsigned char *dst);
 #endif
 
 #include "../lib/xmodem.c"

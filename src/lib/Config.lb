@@ -31,3 +31,7 @@ end
 if CONFIG_CBFS
 	object cbfs.o
 end
+
+if CONFIG_COMPRESSED_PAYLOAD_LZMA
+	object lzma.o
+end

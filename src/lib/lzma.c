@@ -11,9 +11,11 @@ SDK 4.42, which is written and distributed to public domain by Igor Pavlov.
 */
 
 #include "lzmadecode.c"
+#include <console/console.h>
+#include <string.h>
 
 
-static unsigned long ulzma(unsigned char * src, unsigned char * dst)
+unsigned long ulzma(unsigned char * src, unsigned char * dst)
 {
 	unsigned char properties[LZMA_PROPERTIES_SIZE];
 	UInt32 outSize;

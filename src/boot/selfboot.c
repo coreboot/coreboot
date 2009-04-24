@@ -90,7 +90,7 @@ int cbfs_self_decompress(int algo, void *src,struct segment *new)
 		return -1;
 
 	switch(algo) {
-#ifdef CONFIG_COMPRESSION_LZMA
+#if CONFIG_COMPRESSED_PAYLOAD_LZMA==1
 	case CBFS_COMPRESS_LZMA: {
 		unsigned long ulzma(unsigned char *src, unsigned char *dst);		
 		ulzma(src, dst);
@@ -98,7 +98,7 @@ int cbfs_self_decompress(int algo, void *src,struct segment *new)
 	}
 #endif
 
-#ifdef CONFIG_COMPRESSION_NRV2B
+#if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
 	case CBFS_COMPRESS_NRV2B: {
 		unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
 		unsigned long tmp;

@@ -94,6 +94,7 @@ int cbfs_self_decompress(int algo, void *src,struct segment *new)
 	case CBFS_COMPRESS_LZMA: {
 		unsigned long ulzma(unsigned char *src, unsigned char *dst);		
 		ulzma(src, dst);
+		break;
 	}
 #endif
 
@@ -102,6 +103,7 @@ int cbfs_self_decompress(int algo, void *src,struct segment *new)
 		unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
 		unsigned long tmp;
 		unrv2b(src, dst, &tmp);
+		break;
 	}
 #endif
 	default:

@@ -28,24 +28,7 @@ void *smp_write_floating_table(unsigned long addr)
 	
 	/* 16 byte align the table address */
 	addr = (addr + 0xf) & (~0xf);
-	v = (void *)addr;
-
-	mf = v;
-	mf->mpf_signature[0] = '_';
-	mf->mpf_signature[1] = 'M';
-	mf->mpf_signature[2] = 'P';
-	mf->mpf_signature[3] = '_';
-	mf->mpf_physptr = (unsigned long)(((char *)v) + SMP_FLOATING_TABLE_LEN);
-	mf->mpf_length = 1;
-	mf->mpf_specification = 4;
-	mf->mpf_checksum = 0;
-	mf->mpf_feature1 = 0;
-	mf->mpf_feature2 = 0;
-	mf->mpf_feature3 = 0;
-	mf->mpf_feature4 = 0;
-	mf->mpf_feature5 = 0;
-	mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
-	return v;
+	return smp_write_floating_table_physaddr(addr, addr + SMP_FLOATING_TABLE_LEN);
 }
 
 void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_physptr)

@@ -242,7 +242,9 @@ int erase_flash(struct flashchip *flash)
 	return 0;
 }
 
+#ifndef MAX
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 #define POS_PRINT(x) do { pos += strlen(x); printf(x); } while (0)
 
 void print_supported_chips(void)

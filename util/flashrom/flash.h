@@ -512,15 +512,13 @@ typedef enum {
 extern flashbus_t flashbus;
 extern void *spibar;
 
-/* debug.c */
-extern int verbose;
-#define printf_debug(x...) { if (verbose) printf(x); }
-
 /* physmap.c */
 void *physmap(const char *descr, unsigned long phys_addr, size_t len);
 void physunmap(void *virt_addr, size_t len);
 
 /* flashrom.c */
+extern int verbose;
+#define printf_debug(x...) { if (verbose) printf(x); }
 void map_flash_registers(struct flashchip *flash);
 
 /* layout.c */
@@ -529,7 +527,7 @@ int read_romlayout(char *name);
 int find_romentry(char *name);
 int handle_romentries(uint8_t *buffer, uint8_t *content);
 
-/* lbtable.c */
+/* cbtable.c */
 int coreboot_init(void);
 extern char *lb_part, *lb_vendor;
 

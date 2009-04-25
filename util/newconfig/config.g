@@ -2293,6 +2293,8 @@ def writemakefile(path):
 	file.write("\trm -f romcc*\n\n")
 
 	file.write("ifeq \"$(CONFIG_CBFS)\" \"1\"\n\n")
+	file.write("CBFS_COMPRESS_FLAG:=\n")
+	file.write("ifeq \"$(CONFIG_COMPRESSED_PAYLOAD_LZMA)\" \"1\"\nCBFS_COMPRESS_FLAG:=l\nendif\n\n")
 
 	for i in buildroms:
 		file.write("%s: cbfstool" %(i.name))
@@ -2316,7 +2318,7 @@ def writemakefile(path):
 		for j in i.roms:
 			#failover is a hack that will go away soon. 
 			if (j != "failover") and (rommapping[j] != "/dev/null"):
-				file.write("\t./cbfstool %s add-payload %s %s/payload\n" % (i.name, rommapping[j], j,))
+				file.write("\t./cbfstool %s add-payload %s %s/payload $(CBFS_COMPRESS_FLAG)\n" % (i.name, rommapping[j], j,))
 		file.write("\t./cbfstool %s print\n" % i.name)
 		file.write("\n")
 	file.write("else\n\n")

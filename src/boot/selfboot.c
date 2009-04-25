@@ -55,6 +55,7 @@ struct segment {
 	unsigned long s_srcaddr;
 	unsigned long s_memsz;
 	unsigned long s_filesz;
+	int compression;
 };
 
 struct verify_callback {
@@ -69,54 +70,6 @@ struct ip_checksum_vcb {
 	struct verify_callback data;
 	unsigned short ip_checksum;
 };
-
-int cbfs_self_decompress(int algo, void *src,struct segment *new)
-{
-	u8 *dst;
-
-	/* for uncompressed, it's easy: just point at the area in ROM */
-	if (algo ==  CBFS_COMPRESS_NONE) {
-		new->s_srcaddr = (u32) src;
-		new->s_filesz =  new->s_memsz;
-		return 0;
-	}
-
-	/* for compression, let's keep it simple. We'll malloc the destination 
-	 * area and decompress to there. The compression overhead far outweighs
-	 * any overhead for an extra copy. 
-	 */
-	dst = malloc(new->s_memsz);
-	if (! dst)
-		return -1;
-
-	switch(algo) {
-#if CONFIG_COMPRESSED_PAYLOAD_LZMA==1
-	case CBFS_COMPRESS_LZMA: {
-		unsigned long ulzma(unsigned char *src, unsigned char *dst);		
-		ulzma(src, dst);
-		break;
-	}
-#endif
-
-#if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
-	case CBFS_COMPRESS_NRV2B: {
-		unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
-		unsigned long tmp;
-		unrv2b(src, dst, &tmp);
-		break;
-	}
-#endif
-	default:
-		printk_info( "CBFS:  Unknown compression type %d\n",
-		       algo);
-		return -1;
-	}
-
-	new->s_srcaddr = (u32) dst;
-	new->s_filesz =  new->s_memsz;
-	return 0;
-	
-}
 
 /* The problem:  
  * Static executables all want to share the same addresses
@@ -249,82 +202,84 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 	printk_spew("segment: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
 		start, middle, end);
 
-	/* Slice off a piece at the beginning
-	 * that doesn't conflict with coreboot.
-	 */
-	if (start < lb_start) {
-		struct segment *new;
-		unsigned long len = lb_start - start;
-		new = malloc(sizeof(*new));
-		*new = *seg;
-		new->s_memsz = len;
-		seg->s_memsz -= len;
-		seg->s_dstaddr += len;
-		seg->s_srcaddr += len;
-		if (seg->s_filesz > len) {
-			new->s_filesz = len;
-			seg->s_filesz -= len;
-		} else {
-			seg->s_filesz = 0;
+	if (seg->compression == CBFS_COMPRESS_NONE) {
+		/* Slice off a piece at the beginning
+		 * that doesn't conflict with coreboot.
+		 */
+		if (start < lb_start) {
+			struct segment *new;
+			unsigned long len = lb_start - start;
+			new = malloc(sizeof(*new));
+			*new = *seg;
+			new->s_memsz = len;
+			seg->s_memsz -= len;
+			seg->s_dstaddr += len;
+			seg->s_srcaddr += len;
+			if (seg->s_filesz > len) {
+				new->s_filesz = len;
+				seg->s_filesz -= len;
+			} else {
+				seg->s_filesz = 0;
+			}
+
+			/* Order by stream offset */
+			new->next = seg;
+			new->prev = seg->prev;
+			seg->prev->next = new;
+			seg->prev = new;
+			/* Order by original program header order */
+			new->phdr_next = seg;
+			new->phdr_prev = seg->phdr_prev;
+			seg->phdr_prev->phdr_next = new;
+			seg->phdr_prev = new;
+
+			/* compute the new value of start */
+			start = seg->s_dstaddr;
+			
+			printk_spew("   early: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
+				new->s_dstaddr, 
+				new->s_dstaddr + new->s_filesz,
+				new->s_dstaddr + new->s_memsz);
+			}
+			
+			/* Slice off a piece at the end 
+		 * that doesn't conflict with coreboot 
+		 */
+		if (end > lb_end) {
+			unsigned long len = lb_end - start;
+			struct segment *new;
+			new = malloc(sizeof(*new));
+			*new = *seg;
+			seg->s_memsz = len;
+			new->s_memsz -= len;
+			new->s_dstaddr += len;
+			new->s_srcaddr += len;
+			if (seg->s_filesz > len) {
+				seg->s_filesz = len;
+				new->s_filesz -= len;
+			} else {
+				new->s_filesz = 0;
+			}
+			/* Order by stream offset */
+			new->next = seg->next;
+			new->prev = seg;
+			seg->next->prev = new;
+			seg->next = new;
+			/* Order by original program header order */
+			new->phdr_next = seg->phdr_next;
+			new->phdr_prev = seg;
+			seg->phdr_next->phdr_prev = new;
+			seg->phdr_next = new;
+
+			/* compute the new value of end */
+			end = start + len;
+			
+			printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
+				new->s_dstaddr, 
+				new->s_dstaddr + new->s_filesz,
+				new->s_dstaddr + new->s_memsz);
+			
 		}
-
-		/* Order by stream offset */
-		new->next = seg;
-		new->prev = seg->prev;
-		seg->prev->next = new;
-		seg->prev = new;
-		/* Order by original program header order */
-		new->phdr_next = seg;
-		new->phdr_prev = seg->phdr_prev;
-		seg->phdr_prev->phdr_next = new;
-		seg->phdr_prev = new;
-
-		/* compute the new value of start */
-		start = seg->s_dstaddr;
-		
-		printk_spew("   early: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-			new->s_dstaddr, 
-			new->s_dstaddr + new->s_filesz,
-			new->s_dstaddr + new->s_memsz);
-	}
-	
-	/* Slice off a piece at the end 
-	 * that doesn't conflict with coreboot 
-	 */
-	if (end > lb_end) {
-		unsigned long len = lb_end - start;
-		struct segment *new;
-		new = malloc(sizeof(*new));
-		*new = *seg;
-		seg->s_memsz = len;
-		new->s_memsz -= len;
-		new->s_dstaddr += len;
-		new->s_srcaddr += len;
-		if (seg->s_filesz > len) {
-			seg->s_filesz = len;
-			new->s_filesz -= len;
-		} else {
-			new->s_filesz = 0;
-		}
-		/* Order by stream offset */
-		new->next = seg->next;
-		new->prev = seg;
-		seg->next->prev = new;
-		seg->next = new;
-		/* Order by original program header order */
-		new->phdr_next = seg->phdr_next;
-		new->phdr_prev = seg;
-		seg->phdr_next->phdr_prev = new;
-		seg->phdr_next = new;
-
-		/* compute the new value of end */
-		end = start + len;
-		
-		printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-			new->s_dstaddr, 
-			new->s_dstaddr + new->s_filesz,
-			new->s_dstaddr + new->s_memsz);
-		
 	}
 	/* Now retarget this segment onto the bounce buffer */
 	/* sort of explanation: the buffer is a 1:1 mapping to coreboot. 
@@ -371,15 +326,11 @@ static int build_self_segment_list(
 		new = malloc(sizeof(*new));
 		new->s_dstaddr = ntohl((u32) segment->load_addr);
 		new->s_memsz = ntohl(segment->mem_len);
+		new->compression = ntohl(segment->compression);
 
 		datasize = ntohl(segment->len);
-		/* figure out decompression, do it, get pointer to the area */
-		if (cbfs_self_decompress(ntohl(segment->compression),
-					     ((unsigned char *) first_segment) +
-					     ntohl(segment->offset), new)) {
-			printk_emerg("cbfs_self_decompress failed\n");
-			return;
-		}
+		new->s_srcaddr = (u32) ((unsigned char *) first_segment) + ntohl(segment->offset);
+		new->s_filesz = ntohl(segment->len);
 		printk_debug("New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
 			new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
 		/* Clean up the values */
@@ -449,23 +400,47 @@ static int load_self_segments(
 		
 		/* Compute the boundaries of the segment */
 		dest = (unsigned char *)(ptr->s_dstaddr);
-		end = dest + ptr->s_memsz;
-		middle = dest + ptr->s_filesz;
 		src = ptr->s_srcaddr;
-		printk_spew("[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
-			(unsigned long)dest,
-			(unsigned long)middle,
-			(unsigned long)end,
-			(unsigned long)src);
 		
 		/* Copy data from the initial buffer */
 		if (ptr->s_filesz) {
 			size_t len;
 			len = ptr->s_filesz;
-			memcpy(dest, src, len);
-			dest += len;
+			switch(ptr->compression) {
+#if CONFIG_COMPRESSED_PAYLOAD_LZMA==1
+				case CBFS_COMPRESS_LZMA: {
+					printk_debug("using LZMA\n");
+					unsigned long ulzma(unsigned char *src, unsigned char *dst);		
+					len = ulzma(src, dest);
+					break;
+				}
+#endif
+#if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
+				case CBFS_COMPRESS_NRV2B: {
+					printk_debug("using NRV2B\n");
+					unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
+					unsigned long tmp;
+					len = unrv2b(src, dest, &tmp);
+					break;
+				}
+#endif
+				case CBFS_COMPRESS_NONE: {
+					printk_debug("it's not compressed!\n");
+					memcpy(dest, src, len);
+					break;
+				}
+				default:
+					printk_info( "CBFS:  Unknown compression type %d\n", ptr->compression);
+					return -1;
+			}
+			end = dest + ptr->s_memsz;
+			middle = dest + len;
+			printk_spew("[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
+				(unsigned long)dest,
+				(unsigned long)middle,
+				(unsigned long)end,
+				(unsigned long)src);
 		}
-		
 		/* Zero the extra bytes between middle & end */
 		if (middle < end) {
 			printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",

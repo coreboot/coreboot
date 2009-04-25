@@ -96,14 +96,23 @@ struct cbfs_file *cbfs_find(const char *name)
 		return NULL;
 	offset = 0 - ntohl(header->romsize) + ntohl(header->offset);
 
+	int align= ntohl(header->align);
+
 	while(1) {
 		struct cbfs_file *file = (struct cbfs_file *) offset;
-		if (cbfs_check_magic(file)) printk_info("Check %s\n", CBFS_NAME(file));
-		if (cbfs_check_magic(file) &&
-		    !strcmp(CBFS_NAME(file), name))
+		if (!cbfs_check_magic(file)) return NULL;
+		printk_info("Check %s\n", CBFS_NAME(file));
+		if (!strcmp(CBFS_NAME(file), name))
 			return file;
 
-		offset += ntohl(header->align);
+		int flen = ntohl(file->len);
+		int foffset = ntohl(file->offset);
+		printk_spew("CBFS: follow chain: %p + %x + %x + align -> ", offset, foffset, flen);
+
+		unsigned long oldoffset = offset;
+		offset = ALIGN(offset + foffset + flen, align);
+		printk_spew("%p\n", offset);
+		if (offset <= oldoffset) return NULL;
 
 		if (offset < 0xFFFFFFFF - ntohl(header->romsize))
 			return NULL;

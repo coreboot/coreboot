@@ -10,19 +10,22 @@ option HOSTCC="CROSS_HOSTCC"
 __COMPRESSION__
 __LOGLEVEL__
 
-option ROM_SIZE=1024*(1024-64)
+option ROM_SIZE=1024*1024
 option FALLBACK_SIZE=1024*512
+
+# add optionroms with:
+# coreboot-builds/kontron_986lcd-m/cbfstool coreboot-builds/kontron_986lcd-m/coreboot.rom add $pathto/pci8086,27a2.rom pci8086,27a2.rom 0x30
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x19000
+	option ROM_IMAGE_SIZE=0x1a000
 	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x19000
+	option ROM_IMAGE_SIZE=0x1a000
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end

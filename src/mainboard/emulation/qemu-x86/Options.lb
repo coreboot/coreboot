@@ -50,7 +50,7 @@ uses CONFIG_CBFS
 default CONFIG_CONSOLE_SERIAL8250=1
 default DEFAULT_CONSOLE_LOGLEVEL=8
 default MAXIMUM_CONSOLE_LOGLEVEL=8
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
 default ROM_SIZE  = 256*1024

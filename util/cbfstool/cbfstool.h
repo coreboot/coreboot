@@ -58,7 +58,8 @@ struct rom {
 /* util.c */
 int open_rom(struct rom *rom, const char *filename);
 int create_rom(struct rom *rom, const unsigned char *filename, int size,
-	int bootblocksize,  int align);
+	       const unsigned char *bootblockname, int bootblocksize,
+	       int align);
 int size_and_open(const char *filename, unsigned int *size);
 int copy_from_fd(int fd, void *ptr, int size);
 int get_size(const char *size);

@@ -168,7 +168,8 @@ err:
 }
 
 int create_rom(struct rom *rom, const unsigned char *filename,
-	       int romsize, int bootblocksize, int align)
+	       int romsize, const unsigned char *bootblockname,
+	       int bootblocksize, int align)
 {
 	unsigned char null = '\0';
 
@@ -180,8 +181,9 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 	/* Remember the size of the entire ROM */
 	rom->size = romsize;
 
-	/* The size of the archive section is everything but the bootblock */
-	rom->fssize = romsize - bootblocksize;
+	/* The size of the archive section is everything but the bootblock and
+	 * the cbfs master header. */
+	rom->fssize = romsize - bootblocksize - sizeof(struct cbfs_header);
 
 	/* Open the file descriptor */
 
@@ -201,29 +203,27 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 		return -1;
 	}
 
-	/* Clear the reset vector */
-	memset(rom->ptr + rom->size - 16, 0, 16);
-
-	ROM_WRITEL(rom, rom->size - 4,
-		   0xFFFFFFF0 - sizeof(struct cbfs_header));
-
 	/* This is a pointer to the header for easy access */
 	rom->header = (struct cbfs_header *)
-	    ROM_PTR(rom, rom->size - 16 - sizeof(struct cbfs_header));
-
+	    ROM_PTR(rom, rom->size - 16 - bootblocksize - sizeof(struct cbfs_header));
 	rom->header->magic = htonl(HEADER_MAGIC);
 	rom->header->romsize = htonl(romsize);
 	rom->header->bootblocksize = htonl(bootblocksize);
 	rom->header->align = htonl(align);
 	rom->header->offset = htonl(0);
 
+	add_bootblock(rom, bootblockname);
+
+	/* Write the cbfs master header address at the end of the ROM. */
+
+	ROM_WRITEL(rom, rom->size - 4,
+		   0xFFFFFFF0 - bootblocksize - sizeof(struct cbfs_header));
 	return 0;
 }
 
 int add_bootblock(struct rom *rom, const char *filename)
 {
 	unsigned int size;
-	//unsigned int offset;
 	int fd = size_and_open(filename, &size);
 	int ret;
 	struct cbfs_header tmp;
@@ -237,11 +237,7 @@ int add_bootblock(struct rom *rom, const char *filename)
 		return -1;
 	}
 
-	/* Copy the current header into a temporary buffer */
-	memcpy(&tmp, rom->header, sizeof(struct cbfs_header));
-
 	/* Copy the bootblock into place at the end of the file */
-
 	ret = copy_from_fd(fd, ROM_PTR(rom, rom->size - ntohl(rom->header->bootblocksize)), size);
 
 	close(fd);
@@ -250,26 +246,6 @@ int add_bootblock(struct rom *rom, const char *filename)
 		ERROR("Unable to add %s to the bootblock\n", filename);
 		return -1;
 	}
-
-	/* FIXME: This should point to a location defined by coreboot */
-
-	ROM_WRITEL(rom, rom->size - 4,
-		   0xFFFFFFF0 - sizeof(struct cbfs_header));
-
-	/* This is a pointer to the header for easy access */
-	rom->header = (struct cbfs_header *)
-	    ROM_PTR(rom, rom->size - 16 - sizeof(struct cbfs_header));
-
-#if 0
-	/* Figure out the new location for the header */
-	offset = ROM_READL(rom, rom->size - 4);
-
-	rom->header = (struct cbfs_header *)
-	    ROM_PTR(rom, offset - (0xFFFFFFFF - rom->size));
-#endif
-
-	/* Replace the LAR header */
-	memcpy(rom->header, &tmp, sizeof(struct cbfs_header));
 
 	return 0;
 }

@@ -59,11 +59,8 @@ int create_handler(struct rom *rom, int argc, char **argv)
 		return -1;
 	}
 
-	if (create_rom(rom, rom->name, size, bootblocksize, align))
+	if (create_rom(rom, rom->name, size, bootblock, bootblocksize, align))
 		return -1;
-
-	if (bootblock != NULL)
-		return add_bootblock(rom, bootblock);
 
 	return 0;
 }

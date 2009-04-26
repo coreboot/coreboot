@@ -1,0 +1,5 @@
+The repository can now be found at
+svn://svn.coreboot.org/flashrom
+
+The main line of development is at
+svn://svn.coreboot.org/flashrom/trunk

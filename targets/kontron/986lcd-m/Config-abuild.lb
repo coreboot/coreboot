@@ -13,9 +13,6 @@ __LOGLEVEL__
 option ROM_SIZE=1024*1024
 option FALLBACK_SIZE=1024*512
 
-# add optionroms with:
-# coreboot-builds/kontron_986lcd-m/cbfstool coreboot-builds/kontron_986lcd-m/coreboot.rom add $pathto/pci8086,27a2.rom pci8086,27a2.rom 0x30
-
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
 	option ROM_IMAGE_SIZE=0x1a000
@@ -31,4 +28,5 @@ romimage "fallback"
 end
 
 buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+#pci_rom ../../../misc/kontron-pci8086,27a2.rom vendor_id=0x8086 device_id=0x27a2
 

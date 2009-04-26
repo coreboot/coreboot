@@ -1690,7 +1690,7 @@ parser Config:
     # Dir's on the other hand are abitrary
     # this may all be stupid.
     token RULE:			r'[-a-zA-Z0-9_$()./]+[-a-zA-Z0-9_ $()./]+[-a-zA-Z0-9_$()./]+'
-    token DIRPATH:		r'[-a-zA-Z0-9_$()./]+'
+    token DIRPATH:		r'[-a-zA-Z0-9_$()./,]+'
     token ID:			r'[a-zA-Z_.]+[a-zA-Z0-9_.]*'
     token DELEXPR:		r'{([^}]+|\\.)*}'
     token STR:			r'"([^\\"]+|\\.)*"'

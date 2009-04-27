@@ -99,8 +99,11 @@ and in x86_setup_fixed_mtrrs()(mtrr.c), 0-256M is set cacheable.*/
         "movl    %eax, %cr0\n\t"
 	 			"invd\n\t"
 
-	/* 
-	FIXME: I hope we don't need to change esp and ebp value here, so we can restore value from mmx sse back
-		But the problem is the range is some io related, So don't go back
-	*/
+	/* FIXME: These values might have to change for suspend-to-ram.
+	   the 0x00400000 was chosen as this is a place in memory that
+	   should exist in all contemporary configurations (ie. large
+	   enough RAM), but doesn't collide with anything coreboot does.
+	   Other than that, it's arbitrary. */
+	"movl	$0x00400000,%esp\n\t"
+	"movl	%esp,%ebp\n\t"
         );

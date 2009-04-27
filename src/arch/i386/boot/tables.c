@@ -137,14 +137,6 @@ struct lb_memory *write_tables(void)
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 #if HAVE_LOW_TABLES == 1
 	new_low_table_end = write_smp_table(low_table_end); // low_table_end is 0x10 at this point
-#endif
-#if HAVE_HIGH_TABLES == 1
-	if (high_tables_base) {
-		high_table_end = write_smp_table(high_table_end);
-		high_table_end = (high_table_end+1023) & ~1023;
-	}
-#endif
-
         /* Don't write anything in the traditional x86 BIOS data segment,
          * for example the linux kernel smp need to use 0x467 to pass reset vector
          * or use 0x40e/0x413 for EBDA finding...
@@ -171,6 +163,14 @@ struct lb_memory *write_tables(void)
 		smp_write_floating_table_physaddr(low_table_end - SMP_FLOATING_TABLE_LEN, mpc_start);
 		memset((unsigned char *)low_table_end, '\0', mptable_size);
 	}
+#endif /* HAVE_LOW_TABLES */
+
+#if HAVE_HIGH_TABLES == 1
+	if (high_tables_base) {
+		high_table_end = write_smp_table(high_table_end);
+		high_table_end = (high_table_end+1023) & ~1023;
+	}
+#endif
 #endif /* HAVE_MP_TABLE */
 
 	if (low_table_end < 0x500) {

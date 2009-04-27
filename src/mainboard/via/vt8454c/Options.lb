@@ -240,7 +240,7 @@ default  MAXIMUM_CONSOLE_LOGLEVEL=5
 #
 # CBFS
 # 
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
 
 end
 

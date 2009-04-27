@@ -28,10 +28,11 @@ option CC="CROSSCC"
 option CROSS_COMPILE="CROSS_PREFIX"
 option HOSTCC="CROSS_HOSTCC"
 
-option ROM_SIZE=(512-64)*1024
-option FALLBACK_SIZE=(512-64)*1024
+option ROM_SIZE=512*1024
+option FALLBACK_SIZE=512*1024
 
 __COMPRESSION__
+__LOGLEVEL__
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
@@ -41,4 +42,4 @@ romimage "fallback"
 end
 
 buildrom ./coreboot.rom ROM_SIZE "fallback" 
-
+#pci_rom $(TOP)/via-cx700.rom vendor_id=0x1106 device_id=0x3157

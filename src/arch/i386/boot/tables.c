@@ -112,6 +112,7 @@ struct lb_memory *write_tables(void)
 	/* write them in the rom area because DSDT can be large (8K on epia-m) which
 	 * pushes coreboot table out of first 4K if set up in low table area 
 	 */
+#if HAVE_ACPI_TABLES == 1
 #if HAVE_HIGH_TABLES == 1
 	unsigned long high_rsdp=ALIGN(high_table_end, 16);
 	if (high_tables_base) {
@@ -127,6 +128,7 @@ struct lb_memory *write_tables(void)
 #if HAVE_LOW_TABLES == 1
 	rom_table_end = write_acpi_tables(rom_table_end);
 	rom_table_end = (rom_table_end+1023) & ~1023;
+#endif
 #endif
 #endif
 	/* copy the smp block to address 0 */

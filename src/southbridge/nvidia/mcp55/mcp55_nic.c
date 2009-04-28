@@ -56,7 +56,7 @@ static int phy_read(uint8_t *base, unsigned phy_addr, unsigned phy_reg)
 
 }
 
-static int phy_detect(uint8_t *base)
+static void phy_detect(uint8_t *base)
 {
 	uint32_t dword;
 	int i;
@@ -91,8 +91,8 @@ static int phy_detect(uint8_t *base)
 	if(i>32) {
 		printk_debug("MCP55 MAC PHY not found\n");
 	}
-
 }
+
 static void nic_init(struct device *dev)
 {
 	uint32_t dword, old;

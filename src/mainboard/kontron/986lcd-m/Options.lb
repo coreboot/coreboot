@@ -31,7 +31,6 @@ uses LB_CKS_LOC
 uses HAVE_ACPI_TABLES
 uses HAVE_ACPI_RESUME
 uses HAVE_MAINBOARD_RESOURCES
-uses HAVE_HIGH_TABLES
 # SMP
 uses CONFIG_SMP
 uses CONFIG_LOGICAL_CPUS
@@ -177,7 +176,6 @@ default HAVE_MP_TABLE=1
 ##
 default HAVE_ACPI_TABLES=1
 default HAVE_MAINBOARD_RESOURCES=1
-default HAVE_HIGH_TABLES=1
 
 ##
 ## Build code to export a CMOS option table

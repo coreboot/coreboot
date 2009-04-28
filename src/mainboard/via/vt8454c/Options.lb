@@ -26,7 +26,6 @@ uses HAVE_ACPI_TABLES
 uses HAVE_OPTION_TABLE
 uses USE_OPTION_TABLE
 uses HAVE_LOW_TABLES
-uses HAVE_HIGH_TABLES
 
 uses USE_FALLBACK_IMAGE
 uses HAVE_FALLBACK_BOOT
@@ -145,7 +144,6 @@ default HAVE_OPTION_TABLE=1
 ## Build code to fill in tables both in low and high memory
 ##
 default HAVE_LOW_TABLES=1
-default HAVE_HIGH_TABLES=1
 
 
 ##

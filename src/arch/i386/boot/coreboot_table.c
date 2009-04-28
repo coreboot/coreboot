@@ -413,6 +413,10 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	return mem;
 }
 
+#if HAVE_HIGH_TABLES == 1
+extern uint64_t high_tables_base, high_tables_size;
+#endif
+
 unsigned long write_coreboot_table( 
 	unsigned long low_table_start, unsigned long low_table_end, 
 	unsigned long rom_table_start, unsigned long rom_table_end)
@@ -478,6 +482,12 @@ unsigned long write_coreboot_table(
 	/* Record the pirq table, acpi tables, and maybe the mptable */
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
 		rom_table_start, rom_table_end-rom_table_start);
+
+#if HAVE_HIGH_TABLES == 1
+	printk_debug("Adding high table area\n");
+	lb_add_memory_range(mem, LB_MEM_TABLE,
+		high_tables_base, high_tables_size);
+#endif
 
 #if (HAVE_MAINBOARD_RESOURCES == 1)
 	add_mainboard_resources(mem);

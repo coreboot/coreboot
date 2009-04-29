@@ -110,7 +110,7 @@ int getchar(void)
 #ifdef CONFIG_USB
 		usb_poll();
 #endif
-		struct console_input_driver *in = console_in;
+		struct console_input_driver *in;
 		for (in = console_in; in != 0; in = in->next)
 			if (in->havechar())
 				return in->getchar();

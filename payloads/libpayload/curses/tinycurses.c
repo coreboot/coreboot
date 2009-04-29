@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2008 Ulf Jordan <jordan@chalmers.se>
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -232,6 +232,7 @@ int delwin(WINDOW *win)
 }
 WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 {
+#if 0
 	WINDOW *win = NULL;
 	int i;
 	int flags = _SUBWIN;
@@ -255,9 +256,9 @@ WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 		flags |= _ISPAD;
 
 	// FIXME
-	//// if ((win = _nc_makenew(num_lines, num_columns, orig->_begy + begy,
-	////                        orig->_begx + begx, flags)) == 0)
-	////     return NULL;
+	if ((win = _nc_makenew(num_lines, num_columns, orig->_begy + begy,
+	                        orig->_begx + begx, flags)) == 0)
+	     return NULL;
 
 	win->_pary = begy;
 	win->_parx = begx;
@@ -270,6 +271,9 @@ WINDOW *derwin(WINDOW *orig, int num_lines, int num_columns, int begy, int begx)
 	win->_parent = orig;
 
 	return win;
+#else
+	return NULL;
+#endif
 }
 int doupdate(void) { /* TODO */ return(0); }
 // WINDOW * dupwin (WINDOW *) {}
@@ -614,7 +618,7 @@ int wborder(WINDOW *win, chtype ls, chtype rs, chtype ts, chtype bs,
 	return OK;
 }
 // int wclrtobot (WINDOW *) {}
-int wclrtoeol(WINDOW *win) { /* TODO */ return(*(int *)0); }
+int wclrtoeol(WINDOW *win) { /* TODO */ return ERR; }
 int wcolor_set(WINDOW *win, short color_pair_number, void *opts)
 {
 	if (!opts && (color_pair_number >= 0)

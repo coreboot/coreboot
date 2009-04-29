@@ -63,6 +63,7 @@ typedef unsigned int hdrtype_t;
 #define IS_FREE(_h) (((_h) & (MAGIC | FLAG_FREE)) == (MAGIC | FLAG_FREE))
 #define HAS_MAGIC(_h) (((_h) & MAGIC) == MAGIC)
 
+static int free_aligned(void* addr);
 void print_malloc_map(void);
 
 static void setup(void)
@@ -72,7 +73,7 @@ static void setup(void)
 	*((hdrtype_t *) hstart) = FREE_BLOCK(size);
 }
 
-static void *alloc(int len, int align)
+static void *alloc(int len)
 {
 	hdrtype_t header;
 	void *ptr = hstart;
@@ -92,20 +93,13 @@ static void *alloc(int len, int align)
 		header = *((hdrtype_t *) ptr);
 		int size = SIZE(header);
 
-		if (!HAS_MAGIC(header)) {
+		if (!HAS_MAGIC(header) || size == 0) {
 			printf("memory allocator panic.\n");
 			halt();
 		}
 
 		if (header & FLAG_FREE) {
-			int realaddr = (int)(ptr + HDRSIZE);
-			int overhead = ((realaddr+align-1) & ~(align-1)) - realaddr;
-			if (len + overhead <= size) {
-				if (overhead != 0) {
-					*((hdrtype_t *) ptr) = FREE_BLOCK(overhead - HDRSIZE);
-					ptr += overhead;
-					size -= overhead;
-				}
+			if (len <= size) {
 				void *nptr = ptr + (HDRSIZE + len);
 				int nsize = size - (HDRSIZE + len);
 
@@ -171,6 +165,8 @@ void free(void *ptr)
 {
 	hdrtype_t hdr;
 
+	if (free_aligned(ptr)) return;
+
 	ptr -= HDRSIZE;
 
 	/* Sanity check. */
@@ -193,13 +189,13 @@ void free(void *ptr)
 
 void *malloc(size_t size)
 {
-	return alloc(size, 1);
+	return alloc(size);
 }
 
 void *calloc(size_t nmemb, size_t size)
 {
 	size_t total = nmemb * size;
-	void *ptr = alloc(total, 1);
+	void *ptr = alloc(total);
 
 	if (ptr)
 		memset(ptr, 0, total);
@@ -213,7 +209,7 @@ void *realloc(void *ptr, size_t size)
 	unsigned int osize;
 
 	if (ptr == NULL)
-		return alloc(size, 1);
+		return alloc(size);
 
 	pptr = ptr - HDRSIZE;
 
@@ -229,7 +225,7 @@ void *realloc(void *ptr, size_t size)
 	 * reallocated the new space.
 	 */
 	free(ptr);
-	ret = alloc(size, 1);
+	ret = alloc(size);
 
 	/*
 	 * if ret == NULL, then doh - failure.
@@ -244,23 +240,114 @@ void *realloc(void *ptr, size_t size)
 	return ret;
 }
 
-/**
- * Allocate an aligned chunk of memory
- *
- * @param align alignment, must be power of two
- * @param size size of chunk in bytes
- * @return Return the address of such a memory region or NULL
- */
+struct align_region_t
+{
+	int alignment;
+	/* start in memory, and size in bytes */
+	void* start;
+	int size;
+	/* layout within a region:
+	  - num_elements bytes, 0: free, 1: used, 2: used, combines with next
+	  - padding to alignment
+	  - data section
+	  - waste space
+
+	  start_data points to the start of the data section
+	*/
+	void* start_data;
+	/* number of free blocks sized "alignment" */
+	int free;
+	struct align_region_t *next;
+};
+
+static struct align_region_t* align_regions = 0;
+
+static struct align_region_t *allocate_region(struct align_region_t *old_first, int alignment, int num_elements)
+{
+	struct align_region_t *new_region = malloc(sizeof(struct align_region_t));
+	new_region->alignment = alignment;
+	new_region->start = malloc((num_elements+1) * alignment + num_elements);
+	new_region->start_data = (void*)((u32)(new_region->start + num_elements + alignment - 1) & (~(alignment-1)));
+	new_region->size = num_elements * alignment;
+	new_region->free = num_elements;
+	new_region->next = old_first;
+	memset(new_region->start, 0, num_elements);
+	return new_region;
+}
+
+
+static int free_aligned(void* addr)
+{
+	struct align_region_t *reg = align_regions;
+	while (reg != 0)
+	{
+		if ((addr >= reg->start_data) && (addr < reg->start_data + reg->size))
+		{
+			int i = (addr-reg->start_data)/reg->alignment;
+			while (((u8*)reg->start)[i]==2)
+			{
+				((u8*)reg->start)[i++]=0;
+				reg->free++;
+			}
+			((u8*)reg->start)[i]=0;
+			reg->free++;
+			return 1;
+		}
+		reg = reg->next;
+	}
+	return 0;
+}
+
 void *memalign(size_t align, size_t size)
 {
-	return alloc(size, align);
+	if (size == 0) return 0;
+	if (align_regions == 0) {
+		align_regions = malloc(sizeof(struct align_region_t));
+		memset(align_regions, 0, sizeof(struct align_region_t));
+	}
+	struct align_region_t *reg = align_regions;
+look_further:	
+	while (reg != 0)
+	{
+		if ((reg->alignment == align) && (reg->free >= (size + align - 1)/align))
+		{
+			break;
+		}
+		reg = reg->next;
+	}
+	if (reg == 0)
+	{
+		align_regions = allocate_region(align_regions, align, (size/align<99)?100:((size/align)+1));
+		reg = align_regions;
+	}
+	int i, count = 0, target = (size+align-1)/align;
+	for (i = 0; i < (reg->size/align); i++)
+	{
+		if (((u8*)reg->start)[i] == 0)
+		{
+			count++;
+			if (count == target) {
+				count = i+1-count;
+				for (i=0; i<target-1; i++)
+				{
+					((u8*)reg->start)[count+i]=2;
+				}
+				((u8*)reg->start)[count+target-1]=1;
+				reg->free -= target;
+				return reg->start_data+(align*count);
+			}
+		} else {
+			count = 0;
+		}
+	}
+	goto look_further; // end condition is once a new region is allocated - it always has enough space
 }
 
 /* This is for debugging purposes. */
 #ifdef TEST
 void print_malloc_map(void)
 {
-void *ptr = hstart;
+	void *ptr = hstart;
 
 	while (ptr < hend) {
 		hdrtype_t hdr = *((hdrtype_t *) ptr);

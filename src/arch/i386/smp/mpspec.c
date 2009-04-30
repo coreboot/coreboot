@@ -1,5 +1,4 @@
 #include <console/console.h>
-#include <device/device.h>
 #include <device/path.h>
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
@@ -23,9 +22,6 @@ unsigned char smp_compute_checksum(void *v, int len)
 
 void *smp_write_floating_table(unsigned long addr)
 {
-	struct intel_mp_floating *mf;
-	void *v;
-	
 	/* 16 byte align the table address */
 	addr = (addr + 0xf) & (~0xf);
 	return smp_write_floating_table_physaddr(addr, addr + SMP_FLOATING_TABLE_LEN);

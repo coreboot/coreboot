@@ -11,6 +11,10 @@
 	#define K8_HT_FREQ_1G_SUPPORT 0
 #endif
 
+#ifndef RAMINIT_SYSINFO
+	#define RAMINIT_SYSINFO 0
+#endif
+
 #ifndef K8_SCAN_PCI_BUS
 	#define K8_SCAN_PCI_BUS 0
 #endif
@@ -79,7 +83,6 @@ static uint8_t ht_lookup_host_capability(device_t dev)
 static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid)
 {
 	device_t dev;
-	uint32_t id;
 
 	//actually, only for one HT device HT chain, and unitid is 0
 #if HT_CHAIN_UNITID_BASE == 0
@@ -90,6 +93,7 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 
 	/* Check if is already collapsed */
 	if((!offset_unitid) || (offset_unitid && (!((HT_CHAIN_END_UNITID_BASE == 0) && (HT_CHAIN_END_UNITID_BASE <HT_CHAIN_UNITID_BASE))))) {
+		uint32_t id;
 		dev = PCI_DEV(bus, 0, 0);
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if (!((id == 0xffffffff) || (id == 0x00000000) ||
@@ -556,7 +560,9 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 	} while (last_unitid != next_unitid );
 
+#if HT_CHAIN_END_UNITID_BASE != 0x20
 out:
+#endif
 end_of_chain: ;
 
 #if HT_CHAIN_END_UNITID_BASE != 0x20

@@ -487,6 +487,7 @@ int main(int argc, char **argv)
 
 	/* See if we want to output a C source file */
 	if(option) {
+		int err=0;
 		strncpy(tmpfilename, dirname(option), TMPFILE_LEN);
 	        strncat(tmpfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
 		tmpfile = mkstemp(tmpfilename);
@@ -510,13 +511,13 @@ int main(int argc, char **argv)
         	}
 		/* write the array values */
 		for(i=0;i<(ct->size-1);i++) {
-			if(!(i%10)) fwrite("\n\t",1,2,fp);
+			if(!(i%10) && !err) err=fwrite("\n\t",1,2,fp);
 			sprintf(buf,"0x%02x,",cmos_table[i]);
-			fwrite(buf,1,5,fp);
+			if(!err) err=fwrite(buf,1,5,fp);
 		}
 		/* write the end */
 		sprintf(buf,"0x%02x\n",cmos_table[i]);
-		fwrite(buf,1,4,fp);
+		if(!err) err=fwrite(buf,1,4,fp);
         	if(!fwrite("};\n",1,3,fp)) {
         	        perror("Error - Could not write image file");
         	        fclose(fp);

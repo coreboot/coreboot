@@ -11,6 +11,10 @@
 #include <device/pci_ops.h>
 #include "ck804.h"
 
+#ifndef CK804_SATA_RESET_FOR_ATAPI
+#define CK804_SATA_RESET_FOR_ATAPI 0
+#endif
+
 #if CK804_SATA_RESET_FOR_ATAPI
 static void sata_com_reset(struct device *dev, unsigned reset)
 // reset = 1 : reset

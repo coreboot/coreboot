@@ -218,8 +218,6 @@ unsigned long acpi_fill_slit(unsigned long current)
 }
 
 static int k8acpi_write_HT(void) {
-	device_t dev;
-	uint32_t dword;
 	int len, lenp, i;
 
 	len = acpigen_write_name("HCLK");

@@ -66,7 +66,7 @@ struct lb_memory *write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
-#if HAVE_MP_TABLE == 1
+#if HAVE_MP_TABLE == 1 && HAVE_LOW_TABLES == 1
 	unsigned long new_low_table_end;
 #endif
 
@@ -114,16 +114,16 @@ struct lb_memory *write_tables(void)
 	 */
 #if HAVE_ACPI_TABLES == 1
 #if HAVE_HIGH_TABLES == 1
-	unsigned long high_rsdp=ALIGN(high_table_end, 16);
-	if (high_tables_base) {
-		high_table_end = write_acpi_tables(high_table_end);
-		high_table_end = (high_table_end+1023) & ~1023;
-	}
 #if HAVE_LOW_TABLES == 1
+	unsigned long high_rsdp=ALIGN(high_table_end, 16);
 	unsigned long rsdt_location=(unsigned long*)(((acpi_rsdp_t*)high_rsdp)->rsdt_address);
 	acpi_write_rsdp(rom_table_end, rsdt_location);
 	rom_table_end = ALIGN(ALIGN(rom_table_end, 16) + sizeof(acpi_rsdp_t), 16);
 #endif
+	if (high_tables_base) {
+		high_table_end = write_acpi_tables(high_table_end);
+		high_table_end = (high_table_end+1023) & ~1023;
+	}
 #else
 #if HAVE_LOW_TABLES == 1
 	rom_table_end = write_acpi_tables(rom_table_end);

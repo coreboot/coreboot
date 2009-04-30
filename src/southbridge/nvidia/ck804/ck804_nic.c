@@ -22,7 +22,7 @@ static void nic_init(struct device *dev)
 	struct resource *res;
 
 	res = find_resource(dev, 0x10);
-	base = res->base;
+	base = (uint8_t*)(unsigned long)res->base;
 
 #define NvRegPhyInterface  0xC0
 #define PHY_RGMII          0x10000000
@@ -76,8 +76,8 @@ static void nic_init(struct device *dev)
 	if (!eeprom_valid) {
 		unsigned long mac_pos;
 		mac_pos = 0xffffffd0; /* See romstrap.inc and romstrap.lds. */
-		mac_l = readl(mac_pos) + nic_index;
-		mac_h = readl(mac_pos + 4);
+		mac_l = readl((uint8_t*)mac_pos) + nic_index;
+		mac_h = readl((uint8_t*)mac_pos + 4);
 	}
 #if 1
 	/* Set that into NIC MMIO. */

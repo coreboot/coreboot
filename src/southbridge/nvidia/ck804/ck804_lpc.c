@@ -171,7 +171,7 @@ static void enable_hpet(struct device *dev)
 
 	pci_write_config32(dev, 0x44, 0xfed00001);
 	hpet_address = pci_read_config32(dev, 0x44) & 0xfffffffe;
-	printk_debug("Enabling HPET @0x%x\n", hpet_address);
+	printk_debug("Enabling HPET @0x%lx\n", hpet_address);
 }
 
 unsigned pm_base=0;
@@ -184,7 +184,7 @@ static void lpc_init(device_t dev)
 	lpc_common_init(dev);
 
 	pm_base = pci_read_config32(dev, 0x60) & 0xff00;
-	printk_info("%s: pm_base = %lx \n", __func__, pm_base);
+	printk_info("%s: pm_base = %x \n", __func__, pm_base);
 
 #if CK804_CHIP_REV==1
 	if (dev->bus->secondary != 1)

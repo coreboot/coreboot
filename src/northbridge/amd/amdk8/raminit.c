@@ -805,7 +805,6 @@ static void set_dimm_map(const struct mem_controller *ctrl, struct dimm_size sz,
 	};
 
 	uint32_t map;
-	uint32_t dch;
 
 	map = pci_read_config32(ctrl->f2, DRAM_BANK_ADDR_MAP);
 	map &= ~(0xf << (index * 4));
@@ -1491,19 +1490,19 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 
 		/* Loop through and find a fast clock with a low latency */
 		for(index = 0; index < 3; index++, latency++) {
-			int value;
+			int spd_value;
 			if ((latency < 2) || (latency > 4) ||
 				(!(latencies & (1 << latency)))) {
 				continue;
 			}
-			value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
-			if (value < 0) {
+			spd_value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
+			if (spd_value < 0) {
 				goto hw_error;
 			}
 
 			/* Only increase the latency if we decreas the clock */
-			if ((value >= min_cycle_time) && (value < new_cycle_time)) {
-				new_cycle_time = value;
+			if ((spd_value >= min_cycle_time) && (spd_value < new_cycle_time)) {
+				new_cycle_time = spd_value;
 				new_latency = latency;
 			}
 		}
@@ -1527,7 +1526,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		int latencies;
 		int latency;
 		int index;
-		int value;
+		int spd_value;
 		if (!(dimm_mask & (1 << i))) {
 			continue;
 		}
@@ -1554,13 +1553,13 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		}
 
 		/* Read the min_cycle_time for this latency */
-		value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
-		if (value < 0) goto hw_error;
+		spd_value = spd_read_byte(ctrl->channel0[i], latency_indicies[index]);
+		if (spd_value < 0) goto hw_error;
 
 		/* All is good if the selected clock speed
 		 * is what I need or slower.
 		 */
-		if (value <= min_cycle_time) {
+		if (spd_value <= min_cycle_time) {
 			continue;
 		}
 		/* Otherwise I have an error, disable the dimm */

@@ -428,7 +428,7 @@ unsigned long write_coreboot_table(
 	printk_debug("Writing high table forward entry at 0x%08lx\n",
 			low_table_end);
 	head = lb_table_init(low_table_end);
-	lb_forward(head, rom_table_end);
+	lb_forward(head, (struct lb_header*)rom_table_end);
 	lb_table_fini(head, 0);
 
 	low_table_end = (unsigned long)head;

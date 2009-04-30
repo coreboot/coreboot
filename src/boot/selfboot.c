@@ -302,7 +302,6 @@ static int build_self_segment_list(
 {
 	struct segment *new;
 	struct segment *ptr;
-	u8 *data;
 	int datasize;
 	struct cbfs_payload_segment *segment, *first_segment;
 	memset(head, 0, sizeof(*head));
@@ -352,7 +351,7 @@ static int build_self_segment_list(
 
 		case PAYLOAD_SEGMENT_ENTRY:
 			printk_info("Entry %p\n", (void *) ntohl((u32) segment->load_addr));
-			*entry =  (void *) ntohl((u32) segment->load_addr);
+			*entry =  ntohl((u32) segment->load_addr);
 			return 1;
 		}
 		segment++;
@@ -392,15 +391,13 @@ static int load_self_segments(
 	
 	offset = 0;
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
-		unsigned long skip_bytes, read_bytes;
 		unsigned char *dest, *middle, *end, *src;
-		byte_offset_t result;
 		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 		
 		/* Compute the boundaries of the segment */
 		dest = (unsigned char *)(ptr->s_dstaddr);
-		src = ptr->s_srcaddr;
+		src = (unsigned char *)(ptr->s_srcaddr);
 		
 		/* Copy data from the initial buffer */
 		if (ptr->s_filesz) {
@@ -451,13 +448,11 @@ static int load_self_segments(
 		}
 	}
 	return 1;
- out:
-	return 0;
 }
 
 int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 {
-	void *entry;
+	u32 entry=0;
 	struct segment head;
 	unsigned long bounce_buffer;
 
@@ -481,11 +476,11 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
-	printk_debug("Jumping to boot code at %p\n", entry);
+	printk_debug("Jumping to boot code at %x\n", entry);
 	post_code(0xfe);
 
 	/* Jump to kernel */
-	jmp_to_elf_entry(entry, bounce_buffer);
+	jmp_to_elf_entry((void*)entry, bounce_buffer);
 	return 1;
 
  out:

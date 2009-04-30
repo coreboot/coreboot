@@ -252,8 +252,8 @@ int start_cpu(device_t cpu)
 	} else {
 		// for all APs, let use stack after pgtbl, 20480 is the pgtbl size for every cpu
 		stack_end = 0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPUS - (STACK_SIZE*index);
-#if (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPU) > (CONFIG_LB_MEM_TOPK<<10)
-		#warning "We may need to increase CONFIG_LB_MEM_TOPK, it need to be more than (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPU)\n"
+#if (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPUS) > (CONFIG_LB_MEM_TOPK<<10)
+		#warning "We may need to increase CONFIG_LB_MEM_TOPK, it need to be more than (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPUS)\n"
 #endif
 		if(stack_end > (CONFIG_LB_MEM_TOPK<<10)) {
 			printk_debug("start_cpu: Please increase the CONFIG_LB_MEM_TOPK more than %luK\n", stack_end>>10);

@@ -99,9 +99,9 @@ void hardwaremain(int boot_complete)
 	lb_mem = write_tables();
 #if CONFIG_CBFS == 1
 # if USE_FALLBACK_IMAGE == 1
-	void (*pl)(void) = cbfs_load_payload(lb_mem, "fallback/payload");
+	cbfs_load_payload(lb_mem, "fallback/payload");
 # else
-	void (*pl)(void) = cbfs_load_payload(lb_mem, "normal/payload");
+	cbfs_load_payload(lb_mem, "normal/payload");
 # endif
 #else
 

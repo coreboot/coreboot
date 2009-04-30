@@ -168,7 +168,7 @@ err:
 }
 
 int create_rom(struct rom *rom, const unsigned char *filename,
-	       int romsize, const unsigned char *bootblockname,
+	       int romsize, const char *bootblockname,
 	       int bootblocksize, int align)
 {
 	unsigned char null = '\0';
@@ -226,7 +226,6 @@ int add_bootblock(struct rom *rom, const char *filename)
 	unsigned int size;
 	int fd = size_and_open(filename, &size);
 	int ret;
-	struct cbfs_header tmp;
 
 	if (fd == -1)
 		return -1;

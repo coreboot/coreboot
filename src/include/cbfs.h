@@ -49,6 +49,7 @@
 #ifndef _CBFS_H_
 #define _CBFS_H_
 
+#include <boot/coreboot_tables.h>
 /** These are standard values for the known compression
     alogrithms that coreboot knows about for stages and
     payloads.  Of course, other LAR users can use whatever

@@ -20,7 +20,6 @@
 #include <types.h>
 #include <string.h>
 #include <console/console.h>
-#include <boot/coreboot_tables.h>
 #include <cbfs.h>
 
 #ifndef CONFIG_BIG_ENDIAN

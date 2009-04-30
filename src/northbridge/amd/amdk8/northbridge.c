@@ -288,7 +288,7 @@ static int reg_useable(unsigned reg,
 	device_t goal_dev, unsigned goal_nodeid, unsigned goal_link)
 {
 	struct resource *res;
-	unsigned nodeid, link;
+	unsigned nodeid, link=0;
 	int result;
 	res = 0;
 	for(nodeid = 0; !res && (nodeid < FX_DEVS); nodeid++) {
@@ -648,16 +648,16 @@ static void pci_domain_read_resources(device_t dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned nodeid, link;
-			device_t dev;
+			device_t reg_dev;
 			nodeid = limit & 7;
 			link   = (limit >> 4) & 3;
-			dev = __f0_dev[nodeid];
-			if (dev) {
+			reg_dev = __f0_dev[nodeid];
+			if (reg_dev) {
 				/* Reserve the resource  */
-				struct resource *resource;
-				resource = new_resource(dev, 0x100 + (reg | link));
-				if (resource) {
-					resource->flags = 1;
+				struct resource *reg_resource;
+				reg_resource = new_resource(reg_dev, 0x100 + (reg | link));
+				if (reg_resource) {
+					reg_resource->flags = 1;
 				}
 			}
 		}
@@ -1222,20 +1222,20 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
 	for(i = 0; i < sysconf.nodes; i++) {
-		device_t dev, cpu;
+		device_t cpu_dev, cpu;
 		struct device_path cpu_path;
 
 		/* Find the cpu's pci device */
-		dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
-		if (!dev) {
+		cpu_dev = dev_find_slot(0, PCI_DEVFN(0x18 + i, 3));
+		if (!cpu_dev) {
 			/* If I am probing things in a weird order
 			 * ensure all of the cpu's pci devices are found.
 			 */
-			int j;
+			int local_j;
 			device_t dev_f0;
-			for(j = 0; j <= 3; j++) {
-				dev = pci_probe_dev(NULL, dev_mc->bus,
-					PCI_DEVFN(0x18 + i, j));
+			for(local_j = 0; local_j <= 3; local_j++) {
+				cpu_dev = pci_probe_dev(NULL, dev_mc->bus,
+					PCI_DEVFN(0x18 + i, local_j));
 			}
 			/* Ok, We need to set the links for that device.
 			 * otherwise the device under it will not be scanned
@@ -1243,19 +1243,19 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 			dev_f0 = dev_find_slot(0, PCI_DEVFN(0x18+i,0));
 			if(dev_f0) {
 				dev_f0->links = 3;
-				for(j=0;j<3;j++) {
-					dev_f0->link[j].link = j;
-					dev_f0->link[j].dev = dev_f0;
+				for(local_j=0;local_j<3;local_j++) {
+					dev_f0->link[local_j].link = local_j;
+					dev_f0->link[local_j].dev = dev_f0;
 				}
 			}
 
 		}
 
 		e0_later_single_core = 0;
-		if (dev && dev->enabled) {
-			j = pci_read_config32(dev, 0xe8);
+		if (cpu_dev && cpu_dev->enabled) {
+			j = pci_read_config32(cpu_dev, 0xe8);
 			j = (j >> 12) & 3; // dev is func 3
-			printk_debug("  %s siblings=%d\n", dev_path(dev), j);
+			printk_debug("  %s siblings=%d\n", dev_path(cpu_dev), j);
 
 			if(nb_cfg_54) {
 				// For e0 single core if nb_cfg_54 is set, apicid will be 0, 2, 4....
@@ -1308,7 +1308,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 			cpu = find_dev_path(cpu_bus, &cpu_path);
 
 			/* Enable the cpu if I have the processor */
-			if (dev && dev->enabled) {
+			if (cpu_dev && cpu_dev->enabled) {
 				if (!cpu) {
 					cpu = alloc_dev(cpu_bus, &cpu_path);
 				}
@@ -1318,7 +1318,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 			}
 
 			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!dev || !dev->enabled)) {
+			if (cpu && (!cpu_dev || !cpu_dev->enabled)) {
 				cpu->enabled = 0;
 			}
 

@@ -244,7 +244,6 @@
 #include "raminit.h"
 //struct definitions
 
-#if RAMINIT_SYSINFO==1
 struct link_pair_st {
         device_t udev;
         uint32_t upos;
@@ -267,8 +266,6 @@ struct sys_info {
         uint32_t sblk;
         uint32_t sbbusn;
 } __attribute__((packed));
-#endif
-
 
 #endif
 

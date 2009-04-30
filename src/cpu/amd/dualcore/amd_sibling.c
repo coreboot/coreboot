@@ -62,9 +62,6 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	unsigned nb_cfg_54;
         int bsp_apic_id = lapicid(); // bsp apicid
 
-        int disable_siblings = !CONFIG_LOGICAL_CPUS;
-
-
         get_option(&disable_siblings, "dual_core");
 
         //get the nodes number

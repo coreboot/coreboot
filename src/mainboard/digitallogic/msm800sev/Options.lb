@@ -49,6 +49,7 @@ uses CONFIG_VIDEO_MB
 uses USE_DCACHE_RAM
 uses DCACHE_RAM_BASE
 uses DCACHE_RAM_SIZE
+uses CONFIG_USE_PRINTK_IN_CAR
 uses PIRQ_ROUTE
 
 ## ROM_SIZE is the size of boot ROM that this board will use.
@@ -108,6 +109,7 @@ default FALLBACK_SIZE = 131072
 default USE_DCACHE_RAM=1
 default DCACHE_RAM_BASE=0xc8000
 default DCACHE_RAM_SIZE=0x08000
+default CONFIG_USE_PRINTK_IN_CAR=1
 
 ##
 ## Use a small 8K stack

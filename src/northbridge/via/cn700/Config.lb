@@ -18,8 +18,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+uses HAVE_HIGH_TABLES
+
 config chip.h
+
 object vgabios.o
+
 driver northbridge.o
 driver agp.o
 driver vga.o
+
+default HAVE_HIGH_TABLES=1

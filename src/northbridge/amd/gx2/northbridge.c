@@ -501,6 +501,11 @@ static struct device_operations cpu_bus_ops = {
 
 void chipsetInit (void);
 
+#if HAVE_HIGH_TABLES==1
+#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
+extern uint64_t high_tables_base, high_tables_size;
+#endif
+
 static void enable_dev(struct device *dev)
 {
 	printk_debug("gx2 north: enable_dev\n");
@@ -512,6 +517,7 @@ static void enable_dev(struct device *dev)
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 		extern void cpubug(void);
+		u32 tomk;
 		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
 		northbridgeinit();
@@ -524,7 +530,13 @@ static void enable_dev(struct device *dev)
 		graphics_init();
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
-		ram_resource(dev, 0, 0, ((sizeram() - VIDEO_MB) * 1024) - SMM_SIZE);
+		tomk = ((sizeram() - VIDEO_MB) * 1024) - SMM_SIZE;
+#if HAVE_HIGH_TABLES==1
+		/* Leave some space for ACPI, PIRQ and MP tables */
+		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
+		high_tables_size = HIGH_TABLES_SIZE * 1024;
+#endif
+		ram_resource(dev, 0, 0, tomk);
         } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
 		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;

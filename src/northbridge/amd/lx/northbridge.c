@@ -415,19 +415,32 @@ static void ram_resource(device_t dev, unsigned long index,
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
+#if HAVE_HIGH_TABLES==1
+#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
+extern uint64_t high_tables_base, high_tables_size;
+#endif
+
 static void pci_domain_set_resources(device_t dev)
 {
 	int idx;
+	u32 tomk;
 	device_t mc_dev;
 
 	printk_spew(">> Entering northbridge.c: %s\n", __func__);
 
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
+		tomk = get_systop() / 1024;
 		/* Report the memory regions */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 1024, (get_systop() - 0x100000) / 1024);	// Systop - 1 MB -> KB
+		ram_resource(dev, idx++, 1024, tomk - 1024);	// Systop - 1 MB -> KB
+
+#if HAVE_HIGH_TABLES==1
+		/* Leave some space for ACPI, PIRQ and MP tables */
+		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
+		high_tables_size = HIGH_TABLES_SIZE * 1024;
+#endif
 	}
 
 	assign_resources(&dev->link[0]);

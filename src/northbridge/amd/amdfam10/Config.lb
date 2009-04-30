@@ -19,8 +19,10 @@
 
 uses AGP_APERTURE_SIZE
 uses HAVE_ACPI_TABLES
+uses HAVE_HIGH_TABLES
 
 default AGP_APERTURE_SIZE=0x4000000
+default HAVE_HIGH_TABLES=1
 
 config chip.h
 

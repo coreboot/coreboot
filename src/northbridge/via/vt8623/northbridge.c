@@ -15,25 +15,11 @@
 #include "northbridge.h"
 
 /*
- * This fixup is based on capturing values from an Award bios.  Without
+ * This fixup is based on capturing values from an Award BIOS.  Without
  * this fixup the DMA write performance is awful (i.e. hdparm -t /dev/hda is 20x
  * slower than normal, ethernet drops packets).
  * Apparently these registers govern some sort of bus master behavior.
  */
-#if 0
-static void dump_dev(device_t dev)
-{
-	int i,j;
-	
-	for(i = 0; i < 256; i += 16) {
-		printk_debug("0x%x: ", i);
-		for(j = 0; j < 16; j++) {
-			printk_debug("%02x ", pci_read_config8(dev, i+j));
-		}
-		printk_debug("\n");
-	}
-}
-#endif
 
 static void northbridge_init(device_t dev) 
 {
@@ -72,7 +58,6 @@ static void northbridge_init(device_t dev)
 		pci_write_config8(dev, 0xe0, c);
 		pci_write_config8(dev, 0xe2, 0x42);      /* 'cos award does */
 	}
-	//dump_dev(dev);
 }
 
 static void nullfunc(){}
@@ -100,7 +85,6 @@ static void agp_init(device_t dev)
 	pci_write_config8(dev, 0x43, 0x44);
 	pci_write_config8(dev, 0x44, 0x34);
 	pci_write_config8(dev, 0x83, 0x02);
-	//dump_dev(dev);
 }
 
 static struct device_operations agp_operations = {
@@ -129,8 +113,6 @@ static void vga_init(device_t dev)
 	pci_write_config32(dev,0x10,0xd8000008);
 	pci_write_config32(dev,0x14,0xdc000000);
 
-	//dump_dev(dev);
-	
 	// set up performnce counters for debugging vga init sequence
 	//setup.lo = 0x1c0; // count instructions
 	//wrmsr(0x187,setup);
@@ -174,7 +156,6 @@ static void vga_init(device_t dev)
         vga_enable_console();
 	
 #endif
-
 
 	pci_write_config32(dev,0x30,0);
 
@@ -272,6 +253,12 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
+#if HAVE_HIGH_TABLES==1
+/* maximum size of high tables in KB */
+#define HIGH_TABLES_SIZE 64
+extern uint64_t high_tables_base, high_tables_size;
+#endif
+
 static void pci_domain_set_resources(device_t dev)
 {
 	static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d };
@@ -311,6 +298,13 @@ static void pci_domain_set_resources(device_t dev)
 			 */
 			tolmk = tomk;
 		}
+
+#if HAVE_HIGH_TABLES == 1
+		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
+		high_tables_size = HIGH_TABLES_SIZE* 1024;
+		printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+#endif
+
 		/* Report the memory regions */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);		/* first 640k */

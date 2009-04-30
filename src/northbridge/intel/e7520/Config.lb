@@ -1,9 +1,13 @@
+uses HAVE_HIGH_TABLES
+
 config chip.h
 driver northbridge.o
 driver pciexp_porta.o
 driver pciexp_porta1.o
 driver pciexp_portb.o
 driver pciexp_portc.o
+
+default HAVE_HIGH_TABLES=1
 
 makerule raminit_test
 	depends "$(TOP)/src/northbridge/intel/e7520/raminit_test.c"

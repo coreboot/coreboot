@@ -123,12 +123,6 @@ static void pci_domain_set_resources(device_t dev)
 	else
 		tomk = (((rambits << 6) - (4 << reg) - 1) * 1024);
 
-#if HAVE_HIGH_TABLES == 1
-	high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
-	high_tables_size = HIGH_TABLES_SIZE* 1024;
-	printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
-#endif
-
 	/* Compute the top of Low memory */
 	tolmk = pci_tolm >> 10;
 	if (tolmk >= tomk) {
@@ -136,6 +130,12 @@ static void pci_domain_set_resources(device_t dev)
 		tolmk = tomk;
 		tolmk -= 1024;	// TOP 1M SM Memory
 	}
+
+#if HAVE_HIGH_TABLES == 1
+	high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
+	high_tables_size = HIGH_TABLES_SIZE* 1024;
+	printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+#endif
 
 	/* Report the memory regions */
 	idx = 10;

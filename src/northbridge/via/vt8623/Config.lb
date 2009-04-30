@@ -1,2 +1,7 @@
+uses HAVE_HIGH_TABLES
+
 config chip.h
+
 driver northbridge.o
+
+default HAVE_HIGH_TABLES=1

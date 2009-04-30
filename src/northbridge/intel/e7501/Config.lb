@@ -1,3 +1,7 @@
+uses HAVE_HIGH_TABLES
+
 config chip.h
 
 object northbridge.o
+
+default HAVE_HIGH_TABLES=1

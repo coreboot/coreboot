@@ -178,7 +178,7 @@ usb_hid_init (usbdev_t *dev)
 			dev->destroy = usb_hid_destroy;
 			dev->poll = usb_hid_poll;
 			int i;
-			for (i = 1; i <= dev->num_endp; i++) {
+			for (i = 0; i <= dev->num_endp; i++) {
 				if (dev->endpoints[i].endpoint == 0)
 					continue;
 				if (dev->endpoints[i].type != INTERRUPT)
@@ -187,6 +187,7 @@ usb_hid_init (usbdev_t *dev)
 					continue;
 				break;
 			}
+			printf ("  found endpoint %x for interrupt-in\n", i);
 			/* 20 buffers of 8 bytes, for every 10 msecs */
 			HID_INST(dev)->queue = dev->controller->create_intr_queue (&dev->endpoints[i], 8, 20, 10);
 			count = 0;

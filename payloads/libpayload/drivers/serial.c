@@ -55,7 +55,7 @@ void serial_hardware_init(int port, int speed, int word_bits, int parity, int st
 	outb(DIVISOR(speed) >> 8 & 0xFF, port + 1);
 
 	/* Restore the previous value of the divisor. */
-	outb(reg &= ~0x80, port + 0x03);
+	outb(reg & ~0x80, port + 0x03);
 }
 
 static struct console_input_driver consin = {

@@ -55,8 +55,6 @@ static int get_cmos_value(u32 bitnum, u32 len, void *valptr)
 	u32 addr, bit;
 	u8 reg8;
 
-	value = valptr;
-
 	/* Convert to byte borders */
 	addr=(bitnum / 8);
 	bit=(bitnum % 8);
@@ -85,7 +83,6 @@ int get_option(void *dest, char *name)
 	int len = strnlen(name, CMOS_MAX_NAME_LENGTH);
 	
 	/* cmos entries are located right after the option table */
-	cmos_entry=(struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);
 
 	for (   cmos_entry = (struct cb_cmos_entries*)((unsigned char *)option_table + option_table->header_length);
 		cmos_entry->tag == CB_TAG_OPTION;

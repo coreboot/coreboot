@@ -63,7 +63,23 @@ uhci_dump (hci_t *controller)
 static void
 td_dump (td_t *td)
 {
-	printf ("%x packet (at %lx) to %x.%x failed\n", td->pid,
+	char td_value[3];
+	char *td_type;
+	switch (td->pid) {
+		case SETUP:
+			td_type="SETUP";
+			break;
+		case IN:
+			td_type="IN";
+			break;
+		case OUT:
+			td_type="OUT";
+			break;
+		default:
+			sprintf(td_value, "%x", td->pid);
+			td_type=td_value;
+	}
+	printf ("%s packet (at %lx) to %x.%x failed\n", td_type,
 		virt_to_phys (td), td->dev_addr, td->endp);
 	printf ("td (counter at %x) returns: ", td->counter);
 	printf (" bitstuff err: %x, ", td->status_bitstuff_err);
@@ -493,6 +509,7 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 	qh_t *qh = memalign(16, sizeof(qh_t));
 
 	qh->elementlinkptr.ptr = virt_to_phys(tds);
+	qh->elementlinkptr.queue_head = 0;
 	qh->elementlinkptr.terminate = 0;
 
 	intr_q *q = malloc(sizeof(intr_q));

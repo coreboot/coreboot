@@ -299,6 +299,8 @@ read_capacity (usbdev_t *dev)
 	memset (&cb, 0, sizeof (cb));
 	cb.command = 0x25;	// read capacity
 	u8 buf[8];
+
+	printf ("Reading capacity of mass storage device.\n");
 	int count = 0;
 	while ((count++ < 20)
 	       &&
@@ -306,8 +308,8 @@ read_capacity (usbdev_t *dev)
 		(dev, cbw_direction_data_in, (u8 *) &cb, sizeof (cb), buf,
 		 8) == 1));
 	if (count >= 20) {
-		// still not successful, assume 2tb in 512byte sectors, which is just the same garbage as any other number, but probably reasonable.
-		printf ("assuming 2TB in 512byte sectors as READ CAPACITY didn't answer.\n");
+		// still not successful, assume 2tb in 512byte sectors, which is just the same garbage as any other number, but probably more usable.
+		printf ("Assuming 2TB in 512byte sectors as READ CAPACITY didn't answer.\n");
 		MSC_INST (dev)->numblocks = 0xffffffff;
 		MSC_INST (dev)->blocksize = 512;
 	} else {

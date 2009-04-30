@@ -281,7 +281,16 @@ set_address (hci_t *controller, int lowspeed)
 		int num = cd->bNumInterfaces;
 		interface_descriptor_t *current = interface;
 		printf ("device has %x interfaces\n", num);
-		num = (num > 5) ? 5 : num;
+		if (num>1)
+			printf ("NOTICE: This driver defaults to using the first interface.\n"
+				"This might be the wrong choice and lead to limited functionality\n"
+				"of the device. Please report such a case to coreboot@coreboot.org\n"
+				"as you might be the first.\n");
+		/* we limit to the first interface, as there was no need to
+		   implement something else for the time being. If you need
+		   it, see the SetInterface and GetInterface functions in
+		   the USB specification, and adapt appropriately. */
+		num = (num > 1) ? 1 : num;
 		for (i = 0; i < num; i++) {
 			int j;
 			printf (" #%x has %x endpoints, interface %x:%x, protocol %x\n", current->bInterfaceNumber, current->bNumEndpoints, current->bInterfaceClass, current->bInterfaceSubClass, current->bInterfaceProtocol);

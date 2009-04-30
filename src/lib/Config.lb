@@ -21,12 +21,10 @@ object version.o
 # Force version.o to recompile every time
 makedefine .PHONY : version.o
 
-if CONFIG_USE_INIT
-	initobject uart8250.c
-	initobject memset.o
-	initobject memcpy.o
-	initobject memcmp.o
-end
+initobject uart8250.c
+initobject memset.o
+initobject memcpy.o
+initobject memcmp.o
 
 if CONFIG_CBFS
 	object cbfs.o

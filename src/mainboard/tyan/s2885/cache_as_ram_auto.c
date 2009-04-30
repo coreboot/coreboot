@@ -2,6 +2,7 @@
 #define __ROMCC__
  
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
@@ -31,10 +32,6 @@ static void post_code(uint8_t value) {
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-
-#if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
-#endif
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"

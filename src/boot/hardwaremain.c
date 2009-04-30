@@ -103,7 +103,7 @@ void hardwaremain(int boot_complete)
 # else
 	void (*pl)(void) = cbfs_load_payload(lb_mem, "normal/payload");
 # endif
-#endif
+#else
 
 #if CONFIG_FS_PAYLOAD == 1
 #warning "CONFIG_FS_PAYLOAD is deprecated."
@@ -111,6 +111,7 @@ void hardwaremain(int boot_complete)
 #else
 #warning "elfboot will soon be deprecated."
 	elfboot(lb_mem);
+#endif
 #endif
 	printk_err("Boot failed.\n");
 }

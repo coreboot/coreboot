@@ -45,6 +45,7 @@
 #define FAM10_SET_FIDVID_CORE_RANGE 0
 
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
@@ -80,10 +81,6 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 
 
 #if (USE_FAILOVER_IMAGE == 0)
-
- #if CONFIG_USE_INIT == 0
- #include "lib/memcpy.c"
- #endif
 
 #include "northbridge/amd/amdfam10/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"

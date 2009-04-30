@@ -44,6 +44,7 @@
 #endif
  
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
@@ -78,10 +79,6 @@
 #if USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
-
-#if CONFIG_USE_INIT == 0
-        #include "lib/memcpy.c"
-#endif
 
 #include "northbridge/amd/amdk8/debug.c"
 

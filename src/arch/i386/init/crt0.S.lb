@@ -69,106 +69,18 @@ __main:
 	 * the location it is compiled to run at.
 	 * Normally this is copying from FLASH ROM to RAM.
 	 */
-#if !CONFIG_COMPRESS
+	movl	%ebp, %esi
+	movl	$0x4000000, %esp
+	movl	%esp, %ebp
+	pushl %esi
 	movl	$_liseg, %esi
 	movl	$_iseg,  %edi
 	movl	$_eiseg, %ecx
 	subl	%edi, %ecx
-	movb	%cl, %al
-	shrl	$2, %ecx
-	andb	$3, %al
-	rep	movsl
-	movb	%al, %cl
-	rep	movsb
-#else
-	leal	4+_liseg, %esi
-	leal	_iseg, %edi
-	movl	%ebp, %esp	/* preserve %ebp */
-	movl	$-1, %ebp	/* last_m_off = -1 */
-	jmp	dcl1_n2b
-
-/* ------------- DECOMPRESSION -------------
-
- Input:
-   %esi - source
-   %edi - dest
-   %ebp - -1
-   cld
-
- Output:
-   %eax - 0
-   %ecx - 0
-*/
-
-.macro getbit bits
-.if	\bits == 1
-	addl	%ebx, %ebx
-	jnz	1f
-.endif
-	movl	(%esi), %ebx
-	subl	$-4, %esi	/* sets carry flag */
-	adcl	%ebx, %ebx
-1:
-.endm
-
-decompr_literals_n2b:
-	movsb
-
-decompr_loop_n2b:
-	addl	%ebx, %ebx
-	jnz	dcl2_n2b
-dcl1_n2b:
-	getbit	32
-dcl2_n2b:
-	jc	decompr_literals_n2b
-	xorl	%eax, %eax
-	incl	%eax		/* m_off = 1 */
-loop1_n2b:
-	getbit	1
-	adcl	%eax, %eax	/* m_off = m_off*2 + getbit() */
-	getbit	1
-	jnc	loop1_n2b	/* while(!getbit()) */
-	xorl	%ecx, %ecx
-	subl	$3, %eax
-	jb	decompr_ebpeax_n2b	/* if (m_off == 2) goto decompr_ebpeax_n2b ? */
-	shll	$8, %eax	
-	movb	(%esi), %al	/* m_off = (m_off - 3)*256 + src[ilen++] */
-	incl	%esi
-	xorl	$-1, %eax	
-	jz	decompr_end_n2b	/* if (m_off == 0xffffffff) goto decomp_end_n2b */
-	movl	%eax, %ebp	/* last_m_off = m_off ?*/
-decompr_ebpeax_n2b:
-	getbit	1		
-	adcl	%ecx, %ecx	/* m_len = getbit() */
-	getbit	1
-	adcl	%ecx, %ecx	/* m_len = m_len*2 + getbit()) */
-	jnz	decompr_got_mlen_n2b	/* if (m_len == 0) goto decompr_got_mlen_n2b */
-	incl	%ecx		/* m_len++ */
-loop2_n2b:
-	getbit	1	
-	adcl	%ecx, %ecx	/* m_len = m_len*2 + getbit() */
-	getbit	1
-	jnc	loop2_n2b	/* while(!getbit()) */
-	incl	%ecx
-	incl	%ecx		/* m_len += 2 */
-decompr_got_mlen_n2b:
-	cmpl	$-0xd00, %ebp
-	adcl	$1, %ecx	/* m_len = m_len + 1 + (last_m_off > 0xd00) */
-	movl	%esi, %edx
-	leal	(%edi,%ebp), %esi	/* m_pos = dst + olen + -m_off  */
-	rep
-	movsb			/* dst[olen++] = *m_pos++ while(m_len > 0) */
-	movl	%edx, %esi
-	jmp	decompr_loop_n2b
-decompr_end_n2b:
-	intel_chip_post_macro(0x12)		/* post 12 */
-
-	movl	%esp, %ebp
-#endif
-
-	CONSOLE_DEBUG_TX_STRING($str_pre_main)
-	leal	_iseg, %edi
-	jmp	*%edi
+	pushl %ecx
+	pushl %edi
+	pushl %esi
+	call copy_and_run_core
 
 .Lhlt:	
 	intel_chip_post_macro(0xee)	/* post fe */

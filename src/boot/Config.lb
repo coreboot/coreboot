@@ -1,7 +1,8 @@
-object elfboot.o
 object hardwaremain.o
 if CONFIG_CBFS
 	object selfboot.o
+else
+	object elfboot.o
 end
 if CONFIG_FS_PAYLOAD
 	object filo.o

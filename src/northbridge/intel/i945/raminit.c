@@ -25,8 +25,6 @@
 #include "raminit.h"
 #include "i945.h"
 
-#include "lib/memset.c"
-
 #define DEBUG_RAM_SETUP 
 
 /* Debugging macros. */

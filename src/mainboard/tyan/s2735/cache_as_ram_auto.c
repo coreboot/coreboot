@@ -2,6 +2,7 @@
 #define __ROMCC__
  
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
@@ -26,10 +27,6 @@ static void post_code(uint8_t value) {
 
 #include "southbridge/intel/i82801er/i82801er_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
-
-#if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
-#endif
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/debug.c"
@@ -259,6 +256,11 @@ cpu_reset_x:
                 print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\r\n");
 #endif
 	
+#ifdef CONFIG_DEACTIVATE_CAR
+		print_debug("Deactivating CAR");
+#include CONFIG_DEACTIVATE_CAR_FILE
+		print_debug(" - Done.\r\n");
+#endif
 		/*copy and execute coreboot_ram */
 		copy_and_run(new_cpu_reset);
 		/* We will not return */

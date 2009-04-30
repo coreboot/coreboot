@@ -21,12 +21,15 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
+#include "./arch/i386/lib/printk_init.c"
 
 #if CONFIG_USE_INIT == 0
 	#include "lib/memcpy.c"
 #endif
 
 #include "arch/i386/lib/console.c"
+#include "lib/uart8250.c"
+#include "console/vtxprintf.c"
 
 #if 0 
 static void post_code(uint8_t value) {

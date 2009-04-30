@@ -28,8 +28,4 @@ object console.o
 object vtxprintf.o
 object vsprintf.o
 
-if CONFIG_USE_INIT
-#	if CONFIG_USE_PRINTK_IN_CAR
-	initobject vtxprintf.o
-#	end
-end
+initobject vtxprintf.o

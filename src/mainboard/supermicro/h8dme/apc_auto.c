@@ -48,6 +48,9 @@
 #endif
 
 #include "arch/i386/lib/console.c"
+#include "lib/uart8250.c"
+#include "console/vtxprintf.c"
+#include "./arch/i386/lib/printk_init.c"
 
 #if 0 
 static void post_code(uint8_t value) {

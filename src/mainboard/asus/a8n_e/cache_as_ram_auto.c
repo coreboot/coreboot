@@ -38,6 +38,7 @@
 #endif
 
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
@@ -53,10 +54,6 @@
 
 /* Used by ck894_early_setup(). */
 #define CK804_NUM 1
-
-#if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
-#endif
 
 #include <cpu/amd/model_fxx_rev.h>
 #include "pc80/serial.c"

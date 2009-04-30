@@ -39,6 +39,7 @@
 #define DBGP_DEFAULT 7
 
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
@@ -77,10 +78,6 @@ static void post_code(u8 value) {
 #if USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
-
-#if CONFIG_USE_INIT == 0
-	#include "lib/memcpy.c"
-#endif
 
 #include "northbridge/amd/amdfam10/debug.c"
 

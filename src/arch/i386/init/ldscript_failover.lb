@@ -42,6 +42,7 @@ SECTIONS
 		*(.rom.text);
 		*(.rom.data);
 		*(.rom.data.*);
+		*(.rodata.*);
 		. = ALIGN(16);
 		_erom = .;
 	}

@@ -119,6 +119,12 @@ static void main(unsigned long bist)
 	sdram_set_registers(cx700);
 	enable_shadow_ram(cx700);
 	sdram_enable(cx700);
+
+#ifdef CONFIG_DEACTIVATE_CAR
+	print_debug("Deactivating CAR");
+#include CONFIG_DEACTIVATE_CAR_FILE
+	print_debug(" - Done.\r\n");
+#endif
 	copy_and_run(0);
 }
 

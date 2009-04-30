@@ -3,7 +3,10 @@ uses CONFIG_IDE_PAYLOAD
 uses CONFIG_FS_PAYLOAD
 uses CONFIG_IDE
 uses CONFIG_SERIAL_PAYLOAD
+uses CONFIG_CBFS
 
+if CONFIG_CBFS
+else
 if CONFIG_ROM_PAYLOAD
   object rom_stream.o
 end
@@ -20,4 +23,5 @@ end
 
 if CONFIG_SERIAL_PAYLOAD
   object serial_stream.o
+end
 end

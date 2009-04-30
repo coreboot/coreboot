@@ -102,6 +102,11 @@ cpu_reset_x:
 			:"=a" (new_cpu_reset)
 		);
 
+#ifdef CONFIG_DEACTIVATE_CAR
+		print_debug("Deactivating CAR");
+#include CONFIG_DEACTIVATE_CAR_FILE
+		print_debug(" - Done.\r\n");
+#endif
 		/* Copy and execute coreboot_ram */
 		copy_and_run(new_cpu_reset);
 		/* We will not return */

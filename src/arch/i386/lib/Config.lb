@@ -1,5 +1,6 @@
 uses CONFIG_USE_INIT
 uses CONFIG_USE_PRINTK_IN_CAR
+uses USE_FAILOVER_IMAGE
 
 object c_start.S
 object cpu.c
@@ -9,9 +10,9 @@ object pci_ops_mmconf.c
 object pci_ops_auto.c
 object exception.c
 
-if CONFIG_USE_INIT
-	if CONFIG_USE_PRINTK_IN_CAR
-		initobject printk_init.o
-	end
-end
+initobject printk_init.o
 
+if USE_FAILOVER_IMAGE
+else
+	initobject copy_and_run.o
+end

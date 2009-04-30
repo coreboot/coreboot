@@ -24,6 +24,7 @@
 #endif
 
 #include <stdint.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
@@ -63,9 +64,6 @@ static void post_code(uint8_t value) {
 
 #include "lib/delay.c"
 
-#if CONFIG_USE_INIT == 0
-	#include "lib/memcpy.c"
-#endif
 #include "northbridge/amd/amdk8/debug.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"

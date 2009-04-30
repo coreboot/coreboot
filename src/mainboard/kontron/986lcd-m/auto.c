@@ -23,6 +23,7 @@
 #define __ROMCC__ 
 
 #include <stdint.h>
+#include <string.h>
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 #include <device/pci_def.h>
@@ -44,10 +45,6 @@
 #include "superio/winbond/w83627thg/w83627thg_early_serial.c"
 
 #include "northbridge/intel/i945/udelay.c"
-
-#if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
-#endif
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 

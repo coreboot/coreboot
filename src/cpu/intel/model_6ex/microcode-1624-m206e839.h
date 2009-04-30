@@ -1,5 +1,5 @@
 //+++
-//       Copyright (c) <1995-2008>, Intel Corporation.
+//       Copyright (c) <1995-2009>, Intel Corporation.
 //	All rights reserved.
 //
 //	Redistribution. Redistribution and use in binary form, without modification, are
@@ -29,8 +29,9 @@
 //	STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 //	ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 //	ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
 //---
-/*  Tue Apr 1 14:14:15 CST 2008  */
+/*  Mon Mar 30 13:42:53 CST 2009  */
 /*  1624-m206e839.inc  */
 0x00000001,	0x00000039,	0x11152005,	0x000006e8,
 0x00e9d6a3,	0x00000001,	0x00000020,	0x00000fd0,
@@ -288,4 +289,3 @@
 0x6155c033,	0x4e2fa6ac,	0x42ace700,	0x8d64f97c,
 0xaf9ced17,	0xb2a5cb92,	0xa558582d,	0x88705de7,
 0x9e528d59,	0x84bd45e4,	0x5cb680c0,	0xcd48fa5c,
-

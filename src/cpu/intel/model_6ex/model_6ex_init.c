@@ -1,3 +1,24 @@
+/*
+ * This file is part of the coreboot project.
+ * 
+ * Copyright (C) 2007-2009 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -10,9 +31,12 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
+#include <usbdebug_direct.h>
 
 static const uint32_t microcode_updates[] = {
-	#include "microcode_m206e839.h"
+	#include "microcode-1624-m206e839.h"
+	#include "microcode-1729-m206ec54.h"
+	#include "microcode-1869-m806ec59.h"
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
@@ -85,15 +109,33 @@ static void enable_vmx(void)
 }
 
 #define PMG_CST_CONFIG_CONTROL	0xe2
+#define PMG_IO_BASE_ADDR	0xe3
+#define PMG_IO_CAPTURE_ADDR	0xe4
+#define PMB0 0x510 /* analogous to P_BLK in cpu.asl */
+#define PMB1 0x0	/* IO port that triggers SMI once cores are in the same state.
+			See CSM Trigger, at PMG_CST_CONFIG_CONTROL[6:4] */
+#define HIGHEST_CLEVEL		3
 static void configure_c_states(void)
 {
 	msr_t msr;
 
 	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
-	msr.lo &= ~(1 << 9); // Issue a  single stop grant cycle upon stpclk
-
+	msr.lo |= (1 << 15); // Lock configuration
+	msr.lo |= (1 << 10); // redirect IO-based CState transition requests to MWAIT
+	msr.lo &= ~(1 << 9); // Issue a single stop grant cycle upon stpclk
+	msr.lo &= ~7; msr.lo |= HIGHEST_CLEVEL; // support at most C3
 	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
 	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
+
+	// set P_BLK address
+	msr = rdmsr(PMG_IO_BASE_ADDR);
+	msr.lo = PMB0+4 | (PMB1<<16);
+	wrmsr(PMG_IO_BASE_ADDR, msr);
+
+	// set C_LVL controls
+	msr = rdmsr(PMG_IO_CAPTURE_ADDR);
+	msr.lo = PMB0+4 | (HIGHEST_CLEVEL-2)<<16; // -2 because LVL0+1 aren't counted
+	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
 }
 
 #define IA32_MISC_ENABLE	0x1a0
@@ -176,6 +218,7 @@ static struct device_operations cpu_dev_ops = {
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x06e0 }, /* Intel Core Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06e8 }, /* Intel Core Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06ec }, /* Intel Core Solo/Core Duo */
 	{ 0, 0 },
 };
 

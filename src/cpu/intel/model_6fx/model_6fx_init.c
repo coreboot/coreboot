@@ -1,3 +1,24 @@
+/*
+ * This file is part of the coreboot project.
+ * 
+ * Copyright (C) 2007-2009 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -10,10 +31,26 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
+#include <usbdebug_direct.h>
 
 static const uint32_t microcode_updates[] = {
-	#include "microcode_m206f257.h"
-	#include "microcode_m206f6c7.h"
+	#include "microcode-2127-m206f6c7.h"
+	#include "microcode-2129-m206f257.h"
+	#include "microcode-2334-m016fbB6.h"
+	#include "microcode-2335-m086fbB6.h"
+	#include "microcode-2336-m106fbB6.h"
+	#include "microcode-2337-m806fbB6.h"
+	#include "microcode-2339-m046fbB7.h"
+	#include "microcode-2340-m406fbB7.h"
+	#include "microcode-2346-m16fda3.h"
+	#include "microcode-2347-m206fda3.h"
+	#include "microcode-2348-m806fda3.h"
+	#include "microcode-2374-m16f6cb.h"
+	#include "microcode-2376-m46f6cd.h"
+	#include "microcode-2380-m106f768.h"
+	#include "microcode-2381-m406f769.h"
+	#include "microcode-2385-m806fa94.h"
+	#include "microcode-2389-m16f25a.h"
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,
         0x0, 0x0, 0x0, 0x0,
@@ -221,7 +258,12 @@ static struct device_operations cpu_dev_ops = {
 
 static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, 0x06f0 }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06f2 }, /* Intel Core 2 Solo/Core Duo */
 	{ X86_VENDOR_INTEL, 0x06f6 }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06f7 }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06fa }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06fb }, /* Intel Core 2 Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x06fd }, /* Intel Core 2 Solo/Core Duo */
 	{ 0, 0 },
 };
 

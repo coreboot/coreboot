@@ -58,13 +58,15 @@
  */
 
 #define PIRQA 0x03
-#define PIRQB 0x05
-#define PIRQC 0x06
-#define PIRQD 0x07
-#define PIRQE 0x09
-#define PIRQF 0x0A
-#define PIRQG 0x0B
-#define PIRQH 0x0C
+#define PIRQB 0x04
+#define PIRQC 0x05
+#define PIRQD 0x06
+#define PIRQE 0x07
+#define PIRQF 0x09
+#define PIRQG 0x0A
+#define PIRQH 0x0B
+
+/* Use 0x0ef8 for a bitmap to cover all these IRQ's. */
 
 void i82801xx_enable_apic(struct device *dev)
 {

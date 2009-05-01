@@ -112,11 +112,10 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 		outb(0x60, 0x64);
 		if (!kbc_input_buffer_empty()) return;
 		outb(0x20, 0x60);	/* send cmd: enable keyboard and IRQ 1 */
-		u8 broken_resend = 10;
 		if ((inb(0x64) & 0x01)) {
 			regval = inb(0x60);
 		}
-		--broken_resend;
+		--resend;
 	} while (regval == 0xFE && resend > 0);
 
 	/* clean up any junk that might have been in the keyboard */

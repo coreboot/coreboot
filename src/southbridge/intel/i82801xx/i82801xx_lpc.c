@@ -36,6 +36,8 @@
 
 #define NMI_OFF 0
 
+typedef struct southbridge_intel_i82801xx_config config_t;
+
 /* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
  * 0x00 - 0000 = Reserved
  * 0x01 - 0001 = Reserved
@@ -66,7 +68,11 @@
 #define PIRQG 0x0A
 #define PIRQH 0x0B
 
-/* Use 0x0ef8 for a bitmap to cover all these IRQ's. */
+/* 
+ * Use 0x0ef8 for a bitmap to cover all these IRQ's. 
+ * Use the defined IRQ values above or set mainboard
+ * specific IRQ values in your mainboards Config.lb.
+*/
 
 void i82801xx_enable_apic(struct device *dev)
 {
@@ -114,18 +120,59 @@ void i82801xx_enable_serial_irqs(struct device *dev)
 
 static void i82801xx_pirq_init(device_t dev, uint16_t ich_model)
 {
-	/* Route PIRQA - PIRQD. */
-	pci_write_config8(dev, PIRQA_ROUT, PIRQA);
-	pci_write_config8(dev, PIRQB_ROUT, PIRQB);
-	pci_write_config8(dev, PIRQC_ROUT, PIRQC);
-	pci_write_config8(dev, PIRQD_ROUT, PIRQD);
+	/* Get the chip configuration */
+	config_t *config = dev->chip_info;
+
+	if (config->pirqa_routing) {
+		pci_write_config8(dev, PIRQA_ROUT, config->pirqa_routing);
+	} else {
+		pci_write_config8(dev, PIRQA_ROUT, PIRQA);
+	}
+
+	if (config->pirqb_routing) {
+		pci_write_config8(dev, PIRQB_ROUT, config->pirqb_routing);
+	} else {
+		pci_write_config8(dev, PIRQB_ROUT, PIRQB);
+	}
+
+	if (config->pirqc_routing) {
+		pci_write_config8(dev, PIRQC_ROUT, config->pirqc_routing);
+	} else {
+		pci_write_config8(dev, PIRQC_ROUT, PIRQC);
+	}
+
+	if (config->pirqd_routing) {
+		pci_write_config8(dev, PIRQD_ROUT, config->pirqd_routing);
+	} else {
+		pci_write_config8(dev, PIRQD_ROUT, PIRQD);
+	}
 
 	/* Route PIRQE - PIRQH (for ICH2-ICH9). */
 	if (ich_model >= 0x2440) {
-		pci_write_config8(dev, PIRQE_ROUT, PIRQE);
-		pci_write_config8(dev, PIRQF_ROUT, PIRQF);
-		pci_write_config8(dev, PIRQG_ROUT, PIRQG);
-		pci_write_config8(dev, PIRQH_ROUT, PIRQH);
+
+		if (config->pirqe_routing) {
+			pci_write_config8(dev, PIRQE_ROUT, config->pirqe_routing);
+		} else {
+			pci_write_config8(dev, PIRQE_ROUT, PIRQE);
+		}
+
+		if (config->pirqf_routing) {
+			pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
+		} else {
+			pci_write_config8(dev, PIRQF_ROUT, PIRQF);
+		}
+
+		if (config->pirqg_routing) {
+			pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
+		} else {
+			pci_write_config8(dev, PIRQG_ROUT, PIRQG);
+		}
+
+		if (config->pirqh_routing) {
+			pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
+		} else {
+			pci_write_config8(dev, PIRQH_ROUT, PIRQH);
+		}
 	}
 }
 

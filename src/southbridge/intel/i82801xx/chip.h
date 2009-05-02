@@ -31,6 +31,18 @@
 #define SOUTHBRIDGE_INTEL_I82801XX_CHIP_H
 
 struct southbridge_intel_i82801xx_config {
+	/**
+	 * Interrupt Routing configuration
+	 * If bit7 is 1, the interrupt is disabled.
+	 */
+	uint8_t pirqa_routing;
+	uint8_t pirqb_routing;
+	uint8_t pirqc_routing;
+	uint8_t pirqd_routing;
+	uint8_t pirqe_routing;
+	uint8_t pirqf_routing;
+	uint8_t pirqg_routing;
+	uint8_t pirqh_routing;
 };
 
 extern struct chip_operations southbridge_intel_i82801xx_ops;

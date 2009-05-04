@@ -323,6 +323,22 @@ class romimage:
 			return
 		fatal("No such rule \"%s\" for addmakedepend" % id)
 
+	def addmakeobject(self, file, obj):
+		source = topify(obj[1])
+		type = obj[2]
+		if (type  == 'S'):
+			# for .S, .o depends on .s
+			file.write("%s: %s.s\n" % (obj[0], obj[3]))
+        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
+			# and .s depends on .S
+			file.write("%s.s: %s\n" % (obj[3], source))
+			# Note: next 2 lines are ONE output line!
+        		file.write("\t$(CPP) $(CPPFLAGS) $< ")
+			file.write(">$@.new && mv $@.new $@\n")
+		else:
+			file.write("%s: %s\n" % (obj[0], source))
+			file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
+
 	# this is called with an an object name. 
 	# the easiest thing to do is add this object to the current 
 	# component.
@@ -608,8 +624,12 @@ class option_value:
 class partobj:
 	"""A configuration part"""
 	def __init__ (self, image, dir, parent, part, type_name, instance_name, chip_or_device):
-		debug.info(debug.object, "partobj dir %s parent %s part %s" \
-				% (dir, parent, part))
+		if (parent):
+			debug.info(debug.object, "partobj dir %s parent %s part %s" \
+				% (dir, parent.instance_name, part))
+		else:
+			debug.info(debug.object, "partobj dir %s part %s" \
+				% (dir, part))
 
 		# romimage that is configuring this part
 		self.image = image
@@ -2166,38 +2186,15 @@ def writeimagemakefile(image):
 
 	file.write("\n# initobjectrules:\n")
 	for irule, init in image.getinitobjectrules().items():
-		source = topify(init[1])
-		type = init[2]
-		if (type  == 'S'):
-			# for .S, .o depends on .s
-			file.write("%s: %s.s\n" % (init[0], init[3]))
-        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
-			# and .s depends on .S
-			file.write("%s.s: %s\n" % (init[3], source))
-			# Note: next 2 lines are ONE output line!
-        		file.write("\t$(CPP) $(CPPFLAGS) $< ")
-			file.write(">$@.new && mv $@.new $@\n")
-		else:
-			file.write("%s: %s\n" % (init[0], source))
-			file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
+		image.addmakeobject(file, init);
 
-	file.write("\n# objectrules:\n")
+	file.write("\n# objectrules (don't duplicate initobjects):\n")
 	for objrule, obj in image.getobjectrules().items():
-		source = topify(obj[1])
-		type = obj[2]
-		if (type  == 'S'):
-			# for .S, .o depends on .s
-			file.write("%s: %s.s\n" % (obj[0], obj[3]))
-        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
-			# and .s depends on .S
-			file.write("%s.s: %s\n" % (obj[3], source))
-			# Note: next 2 lines are ONE output line!
-        		file.write("\t$(CPP) $(CPPFLAGS) $< ")
-			file.write(">$@.new && mv $@.new $@\n")
+
+		if (getdict(image.getinitobjectrules(), obj[3])):
+			debug.info(debug.object, "skipping %s" % (obj[3]))
 		else:
-			file.write("%s: %s\n" % (obj[0], source))
-			file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
-		#file.write("%s\n" % objrule[2])
+			image.addmakeobject(file, obj);
 
 	for driverrule, driver in image.getdriverrules().items():
 		source = topify(driver[1])
@@ -2207,20 +2204,7 @@ def writeimagemakefile(image):
 
 	file.write("\n# smmobjectrules:\n")
 	for irule, smm in image.getsmmobjectrules().items():
-		source = topify(smm[1])
-		type = smm[2]
-		if (type  == 'S'):
-			# for .S, .o depends on .s
-			file.write("%s: %s.s\n" % (smm[0], smm[3]))
-        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
-			# and .s depends on .S
-			file.write("%s.s: %s\n" % (smm[3], source))
-			# Note: next 2 lines are ONE output line!
-        		file.write("\t$(CPP) $(CPPFLAGS) $< ")
-			file.write(">$@.new && mv $@.new $@\n")
-		else:
-			file.write("%s: %s\n" % (smm[0], source))
-			file.write("\t$(CC) -c $(CFLAGS) -o $@ $<\n")
+		image.addmakeobject(file, smm);
 
 	# special rule for chip_target.c
 	file.write("static.o: static.c\n")

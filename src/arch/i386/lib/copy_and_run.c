@@ -44,11 +44,10 @@ void copy_and_run_core(u8 *src, u8 *dst, unsigned long ilen, unsigned ebp)
 	print_debug("Jumping to image.\r\n");
 
 	__asm__ volatile (
-		"movl %0, %%ebp\n\t"
+		"movl %%eax, %%ebp\n\t"
 		"cli\n\t"
-		"leal    _iseg, %%edi\n\t"
 		"jmp     *%%edi\n\t"
-		:: "a"(ebp)
+		:: "a"(ebp), "D"(dst)
 	);
 
 }

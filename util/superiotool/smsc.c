@@ -531,7 +531,7 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0x79, "SCH5504", {	/* From sensors-detect (no datasheet) */
 		{EOT}}},
-	{0x7a, "FDC37N869", {	/* Found in Toshiba Satellite A80-117. */
+	{0x7a, "LPC47N217", {	/* Found in Toshiba Satellite A80-117. */
 		{EOT}}},
 	{0x7c, "SCH3112", {
 		{EOT}}},

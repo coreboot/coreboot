@@ -31,7 +31,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x24c0,		 /* Device */
 	0,		 /* Crap (miniport) */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0xcd,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
+	0x07,         /*  u8 checksum , this hase to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 	{
 		/* bus,     dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
 		{0x00,(0x02<<3)|0x0, {{0x60, 0x0ef8}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, /* [A] IGD VGA */

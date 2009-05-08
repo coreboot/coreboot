@@ -27,8 +27,11 @@ void print_usage(void)
 
 int print_handler(struct rom *rom, int argc, char **argv)
 {
-	if (argc > 0 || argv[1] != NULL)
-		printf("print\t\t\t\tShow the contents of the ROM\n");
+	if ( argc > 0 ) {
+		ERROR("print %s? print takes no arguments.\n", argv[0]);
+		print_usage();
+		return -1;
+	}
 
 	printf("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n", rom->name, rom->size / 1024, 
 				ntohl(rom->header->bootblocksize), ntohl(rom->header->romsize), ntohl(rom->header->offset));

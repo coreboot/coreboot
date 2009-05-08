@@ -43,6 +43,9 @@ static void mb_gpio_init(void)
 	set_gpio |= 1 << 23;
 	outl(set_gpio, ICH_IO_BASE_ADDR + 0x0c);
 
+	/* Disable AC97 Modem */
+	pci_write_config8(dev, 0xf2, 0x40);
+
 	/* Super I/O GPIOs. */
 	dev = PME_DEV;
 	port = dev >> 8;

@@ -67,15 +67,15 @@ int add_bootblock(struct rom *rom, const char *filename);
 
 /* fs.c */
 
-struct cbfs_file *rom_find(struct rom *rom, unsigned int offset);
+struct cbfs_file *rom_find(struct rom *rom, int offset);
 struct cbfs_file *rom_find_first(struct rom *);
 struct cbfs_file *rom_find_next(struct rom *, struct cbfs_file *);
 int rom_add(struct rom *rom, const char *name, void *, int size, int type);
 int rom_set_header(struct rom *rom, struct cbfs_file *c, 
 	const char*name, int size, int type);
-int rom_extract(struct rom *rom, const char *name, void **buf, unsigned long *size);
+int rom_extract(struct rom *rom, const char *name, void **buf, int *size);
 int rom_remove(struct rom *rom, const char *name);
-unsigned int rom_used_space(struct rom *rom);
+int rom_used_space(struct rom *rom);
 int rom_exists(struct rom *rom);
 
 #endif

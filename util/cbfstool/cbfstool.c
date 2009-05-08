@@ -66,7 +66,7 @@ struct {
 	"extract", extract_handler, extract_usage}, {
 	"print", print_handler, print_usage}, {
 	"resize", resize_handler, resize_usage}, {
-"", NULL},};
+"", NULL, NULL},};
 
 static struct rom rom;
 

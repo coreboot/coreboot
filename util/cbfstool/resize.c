@@ -32,7 +32,8 @@ void resize_usage(void)
 
 int resize_handler(struct rom *rom, int argc, char **argv)
 {
-	unsigned int size, align, offset;
+	unsigned int align, offset;
+	int size;
 	char null = '\0';
 	int bootblocksize = ntohl(rom->header->bootblocksize);
 

@@ -28,7 +28,7 @@ static int extract_blob(struct rom *rom, const char *filename, const char *name)
 {
 	void *buf;
 	int fd, ret;
-	unsigned long size;
+	int size;
 
 	ret = rom_extract(rom, name, &buf, &size);
 
@@ -43,7 +43,7 @@ static int extract_blob(struct rom *rom, const char *filename, const char *name)
 	}
 
 	if (write(fd, buf, size) != size) {
-		ERROR("Couldn't write %ld bytes!\n", size);
+		ERROR("Couldn't write %d bytes!\n", size);
 		ret = -1;
 	}
 

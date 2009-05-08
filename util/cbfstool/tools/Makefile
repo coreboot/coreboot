@@ -1,6 +1,8 @@
 tobj ?= $(shell pwd)
 tsrc ?= $(shell pwd)
 
+CFLAGS=-g -Wall
+
 TARGETS += $(tobj)/cbfs-mkstage $(tobj)/cbfs-mkpayload
 
 tools: $(tobj)/cbfs-mkstage $(tobj)/cbfs-mkpayload

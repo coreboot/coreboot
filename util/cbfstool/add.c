@@ -205,25 +205,25 @@ static int add_blob(struct rom *rom, const char *filename,
 
 void add_usage(void)
 {
-	printf("add [FILE] [NAME] [TYPE]\tAdd a component\n");
+	printf("add FILE NAME TYPE\tAdd a component\n");
 }
 
 void add_stage_usage(void)
 {
-	printf("add-stage [FILE] [NAME] [OPTIONS]\tAdd a stage to the ROM\n");
+	printf("add-stage FILE NAME [OPTIONS]\tAdd a stage to the ROM\n");
 }
 
 void add_payload_usage(void)
 {
 	printf
-	    ("add-payload [FILE] [NAME] [OPTIONS]\tAdd a payload to the ROM\n");
+	    ("add-payload FILE NAME [OPTIONS]\tAdd a payload to the ROM\n");
 }
 
 int add_handler(struct rom *rom, int argc, char **argv)
 {
 	unsigned int type = CBFS_COMPONENT_NULL;
 
-	if (argc < 2) {
+	if (argc != 3) {
 		add_usage();
 		return -1;
 	}
@@ -235,14 +235,12 @@ int add_handler(struct rom *rom, int argc, char **argv)
 
 	/* There are two ways to specify the type - a string or a number */
 
-	if (argc == 3) {
-		if (isdigit(*(argv[2])))
-			type = strtoul(argv[2], 0, 0);
+	if (isdigit(*(argv[2])))
+		type = strtoul(argv[2], 0, 0);
+	else {
+		ERROR("String types (%s) aren't implemented yet.\n", argv[2]);
+		return -1;
 	}
-
-	if (type == CBFS_COMPONENT_NULL)
-		WARN("No file type was given for %s - using default\n",
-		     argv[0]);
 
 	return add_blob(rom, argv[0], argv[1], type);
 }

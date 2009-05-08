@@ -152,7 +152,7 @@ struct cbfs_file * rom_alloc(struct rom *rom, unsigned long size)
 	return ((struct cbfs_file *)ROM_PTR(rom, ret));
 }
 
-struct cbfs_file *rom_find(struct rom *rom, unsigned int offset)
+struct cbfs_file *rom_find(struct rom *rom, int offset)
 {
 	while (offset < rom->fssize) {
 		struct cbfs_file *c =
@@ -195,7 +195,7 @@ struct cbfs_file *rom_find_by_name(struct rom *rom, const char *name)
 	return NULL;
 }
 
-unsigned int rom_used_space(struct rom *rom)
+int rom_used_space(struct rom *rom)
 {
 	struct cbfs_file *c = rom_find_first(rom);
 	unsigned int ret = 0;
@@ -235,7 +235,7 @@ int rom_remove(struct rom *rom, const char *name)
 	return 0;
 }
 
-int rom_extract(struct rom *rom, const char *name, void** buf, unsigned long *size )
+int rom_extract(struct rom *rom, const char *name, void** buf, int *size )
 {
 	struct cbfs_file *c = rom_find_by_name(rom, name);
 	unsigned int csize;
@@ -265,8 +265,8 @@ int rom_extract(struct rom *rom, const char *name, void** buf, unsigned long *si
 int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 {
 	struct cbfs_file *c = rom_alloc(rom, size);
-	unsigned int offset;
-	unsigned int csize;
+	int offset;
+	int csize;
 
 	if (rom_find_by_name(rom, name)) {
 		ERROR("Component %s already exists in this rom\n", name);

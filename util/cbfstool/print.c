@@ -27,6 +27,9 @@ void print_usage(void)
 
 int print_handler(struct rom *rom, int argc, char **argv)
 {
+	if (argc > 0 || argv[1] != NULL)
+		printf("print\t\t\t\tShow the contents of the ROM\n");
+
 	printf("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n", rom->name, rom->size / 1024, 
 				ntohl(rom->header->bootblocksize), ntohl(rom->header->romsize), ntohl(rom->header->offset));
 	printf("Alignment: %d bytes\n\n", ntohl(rom->header->align));
@@ -47,6 +50,9 @@ int print_handler(struct rom *rom, int argc, char **argv)
 			break;
 		case CBFS_COMPONENT_OPTIONROM:
 			strcpy(type, "optionrom");
+			break;
+		case CBFS_COMPONENT_NULL:
+			strcpy(type, "free");
 			break;
 		default:
 			sprintf(type, "0x%8.8x", htonl(c->type));

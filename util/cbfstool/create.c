@@ -24,7 +24,7 @@
 
 void create_usage(void)
 {
-	printf("create SIZE BOOTBLOCKSIZE [ALIGN] [BOOTBLOCK]\tCreate a ROM file\n");
+	printf("create SIZE BOOTBLOCKSIZE BOOTBLOCK [ALIGN]\tCreate a ROM file\n");
 }
 
 int create_handler(struct rom *rom, int argc, char **argv)
@@ -33,7 +33,7 @@ int create_handler(struct rom *rom, int argc, char **argv)
 	char *bootblock = NULL;
 	int bootblocksize;
 
-	if (argc < 2) {
+	if (argc < 3) {
 		create_usage();
 		return -1;
 	}
@@ -42,11 +42,10 @@ int create_handler(struct rom *rom, int argc, char **argv)
 
 	bootblocksize = get_size(argv[1]);
 
-	if (argc == 3) {
-		bootblock = argv[2];
-	} else if (argc >= 4) {
-		align = strtoul(argv[2], NULL, 0);
-		bootblock = argv[3];
+	bootblock = argv[2];
+
+	if (argc >= 4) {
+		align = strtoul(argv[3], NULL, 0);
 	}
 
 	if (size < bootblocksize) {

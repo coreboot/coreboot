@@ -9,7 +9,7 @@ OBJ=$(COMMANDS) cbfstool.o util.o fs.o
 INC=cbfstool.h cbfs.h
 
 CC=gcc
-CFLAGS=-g -Wall # -W -Werror
+CFLAGS=-g -Wall -W -Werror
 
 DESTDIR ?= /usr/local/bin
 

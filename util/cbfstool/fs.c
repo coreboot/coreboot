@@ -18,7 +18,139 @@
  */
 
 #include <string.h>
+#include <stdlib.h>
 #include "cbfstool.h"
+
+int namelen(const char *name)
+{
+	return ALIGN(strlen(name) + 1, 16);
+}
+
+/**
+ * Given a name, return the header size for that name. 
+ * @param name The name
+ * @returns The header size given that name
+ */
+int headersize(const char *name)
+{
+	return sizeof(struct cbfs_file) + namelen(name);
+}
+
+/**
+ * Given a name, set it into the header in a standard way
+ * @param file the cbfs file
+ * @param name The name
+ */
+void setname(struct cbfs_file *file, const char *name)
+{
+	memset(CBFS_NAME(file), 0, namelen(name));
+	strcpy((char *)CBFS_NAME(file), name);
+}
+
+/**
+ * Given a name, size, and type, set them into the header in a standard way. 
+ * Special case of size of -1: set the size to all of ROM
+ * @param rom The rom
+ * @param c The cbfs file
+ * @param name The name
+ * @param size The size
+ * @param type The type
+ * @returns Always 0 for now
+ */
+int rom_set_header(struct rom *rom, struct cbfs_file *c, const char *name, int size, int type)
+{
+	unsigned int csize;
+	csize = headersize(name);
+
+	strcpy(c->magic, COMPONENT_MAGIC);
+
+	/* special case -- if size is -1, means "as much as you can"
+	 * it's usually only used in init. 
+	 */
+	if (size < 0)
+		size = rom->fssize - csize;
+	c->len = htonl(size);
+	c->offset = htonl(csize);
+	c->type = htonl(type);
+
+	setname(c, name);
+	return 0;
+}
+
+int nextfile(struct rom *rom, struct cbfs_file *c, int offset)
+{
+	return ALIGN(offset + ntohl(c->len),
+					ntohl(rom->header->align));
+}
+
+/**
+ * rom_alloc
+ * Given a rom, walk the headers and find the first header of type 
+ * CBFS_COMPONENT_NULL that is >= the desired size. 
+ * If the CBFS_COMPONENT_NULL is 'align' bytes > size, 
+ * create a new header of CBFS_COMPONENT_NULL following the file. 
+ * The 'len' structure member of the desired file is initialized, but 
+ * nothing else is. 
+ * @param rom The rom
+ * @param size the size of the file needed
+ * @returns pointer to a cbfs_file struct. 
+ */
+struct cbfs_file * rom_alloc(struct rom *rom, unsigned long size)
+{
+	/* walk the rom and find an empty file with a base > base, and a large enough size */
+	unsigned int offset = ntohl(rom->header->offset);
+	unsigned int ret = -1;
+	struct cbfs_file *c = NULL;
+	unsigned long nextoffset, truncoffset;
+	struct cbfs_file *newfile = NULL;
+
+	while (offset < rom->fssize) {
+
+		c = (struct cbfs_file *)ROM_PTR(rom, offset);
+
+		if (!strcmp(c->magic, COMPONENT_MAGIC)) {
+			if (c->type != CBFS_COMPONENT_NULL) {
+				offset += ALIGN(ntohl(c->offset) + ntohl(c->len),
+					ntohl(rom->header->align));
+				continue;
+		}
+			/* Is this file big enough for our needs? */
+			if (ntohl(c->len) >= size){
+				ret = offset;
+				break;
+			}
+			offset += ALIGN(ntohl(c->offset) + ntohl(c->len),
+					ntohl(rom->header->align));
+		} else {
+			fprintf(stderr, "Corrupt rom -- found no header at %d\n", offset);
+			exit(1);
+		}
+	}
+
+	if (ret < 0)
+		return NULL;
+
+	/* figure out the real end of this file, and hence the size */
+	/* compute where the next file is */
+	nextoffset = ALIGN(ret + ntohl(c->len) + headersize((char *)CBFS_NAME(c)),
+				ntohl(rom->header->align));
+	/* compute where the end of this new file might be */
+	truncoffset = ALIGN(ret + size + headersize((char *)CBFS_NAME(c)),
+				ntohl(rom->header->align));
+	/* If there is more than align bytes difference, create a new empty file */
+	/* later, we can add code to merge all empty files. */
+	if (nextoffset - truncoffset > ntohl(rom->header->align)) {
+		unsigned int csize;
+		csize = headersize("");
+		newfile = (struct cbfs_file *)ROM_PTR(rom, truncoffset);
+		rom_set_header(rom, newfile, "", 
+			nextoffset - truncoffset - csize, CBFS_COMPONENT_NULL);
+	} else truncoffset = nextoffset;
+
+	c->len = htonl(size);
+
+	return ((struct cbfs_file *)ROM_PTR(rom, ret));
+}
 
 struct cbfs_file *rom_find(struct rom *rom, unsigned int offset)
 {
@@ -49,29 +181,6 @@ struct cbfs_file *rom_find_next(struct rom *rom, struct cbfs_file *prev)
 			      ntohl(rom->header->align)));
 }
 
-struct cbfs_file *rom_find_empty(struct rom *rom)
-{
-	unsigned int offset = ntohl(rom->header->offset);
-	unsigned int ret = ntohl(rom->header->offset);
-
-	while (offset < rom->fssize) {
-
-		struct cbfs_file *c =
-		    (struct cbfs_file *)ROM_PTR(rom, offset);
-
-		if (!strcmp(c->magic, COMPONENT_MAGIC)) {
-			offset += ALIGN(ntohl(c->offset) + ntohl(c->len),
-					ntohl(rom->header->align));
-
-			ret = offset;
-		} else
-			offset += ntohl(rom->header->align);
-	}
-
-	return (ret < rom->fssize) ?
-	    (struct cbfs_file *)ROM_PTR(rom, ret) : NULL;
-}
-
 struct cbfs_file *rom_find_by_name(struct rom *rom, const char *name)
 {
 	struct cbfs_file *c = rom_find_first(rom);
@@ -92,43 +201,36 @@ unsigned int rom_used_space(struct rom *rom)
 	unsigned int ret = 0;
 
 	while (c) {
-		ret = ROM_OFFSET(rom, c) + ntohl(c->offset) + ntohl(c->len);
+		int type;
+		type = ntohl(c->type);
+		if ((c->type == CBFS_COMPONENT_DELETED) ||
+			(c->type == CBFS_COMPONENT_NULL))
+			continue;
+		ret += ROM_OFFSET(rom, c) + ntohl(c->offset) + ntohl(c->len);
 		c = rom_find_next(rom, c);
 	}
 
 	return ret;
 }
 
+/** 
+ * delete an item. This is a flash-friendly version -- it just blows the 
+ * type to 0. Nothing else is changed. 
+ * N.B. We no longer shuffle contents of ROM. That will come later. 
+ * @param rom The rom
+ * @param name Name of file to remove. 
+ * @return -1 on error, 0 if a file was set to deleted. 
+ */
 int rom_remove(struct rom *rom, const char *name)
 {
 	struct cbfs_file *c = rom_find_by_name(rom, name);
-	struct cbfs_file *n;
-	int clear;
 
 	if (c == NULL) {
 		ERROR("Component %s does not exist\n", name);
 		return -1;
 	}
 
-	/* Get the next component - and copy it into the current space if it
- 	 * exists.  If there is no next component, just delete c. */
-
-	n = rom_find_next(rom, c);
-	
-	if (n != NULL) {
-		memcpy(c, n, rom->fssize - ROM_OFFSET(rom, n));
-		clear = ROM_OFFSET(rom, n) - ROM_OFFSET(rom, c);
-	}
-	else { /* No component after this one. */
-		unsigned int csize;
-		csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
-		clear = ntohl(c->len) + csize;
-		memcpy(c, ((void*)c) + clear, 
-		       rom->fssize - (ROM_OFFSET(rom, c)+clear));
-	}
-
-	/* Zero the new space, which is always at the end. */
-	memset(ROM_PTR(rom, rom->fssize - clear), 0, clear);
+	c->type = CBFS_COMPONENT_DELETED; 
 
 	return 0;
 }
@@ -145,14 +247,24 @@ int rom_extract(struct rom *rom, const char *name, void** buf, unsigned long *si
 
 	*size = ntohl(c->len);
 
-	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
+	csize = headersize(name);
 	*buf = ((unsigned char *)c) + csize;
 	return 0;
 }
 
+/**
+ * Add a new file named 'name', of type 'type', size 'size'. Initialize that file
+ * with the contents of 'buffer'. 
+ * @param rom The rom
+ * @param name file name
+ * @param buffer file data
+ * @param size Amount of data
+ * @param type File type
+ * @returns -1 on failure, 0 on success
+ */
 int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 {
-	struct cbfs_file *c = rom_find_empty(rom);
+	struct cbfs_file *c = rom_alloc(rom, size);
 	unsigned int offset;
 	unsigned int csize;
 
@@ -166,27 +278,18 @@ int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 		return -1;
 	}
 
-	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
+	csize = headersize(name);
 
 	offset = ROM_OFFSET(rom, c);
 
-	if (offset + csize + size > rom->fssize) {
-		ERROR("There is not enough room in this ROM for this\n");
-		ERROR("component. I need %d bytes, only have %d bytes avail\n",
-		      csize + size, rom->fssize - offset);
-
-		return -1;
-	}
-
 	strcpy(c->magic, COMPONENT_MAGIC);
 
-	c->len = htonl(size);
 	c->offset = htonl(csize);
 	c->type = htonl(type);
 
-	memset(CBFS_NAME(c), 0, ALIGN(strlen(name) + 1, 16));
-	strcpy((char *)CBFS_NAME(c), name);
+	setname(c, name);
 
 	memcpy(((unsigned char *)c) + csize, buffer, size);
 	return 0;
 }
+

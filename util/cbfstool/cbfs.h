@@ -38,6 +38,16 @@
 #define CBFS_COMPONENT_PAYLOAD   0x20
 #define CBFS_COMPONENT_OPTIONROM 0x30
 
+/* The deleted type is chosen to be a value
+ * that can be written in a FLASH from all other
+ * values. 
+ */
+#define CBFS_COMPONENT_DELETED 0
+
+/* for all known FLASH, this value can be changed 
+ * to all other values. This allows NULL files to be 
+ * changed without a block erase
+ */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
 /** this is the master cbfs header - it need to be

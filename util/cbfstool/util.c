@@ -218,6 +218,9 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 
 	ROM_WRITEL(rom, rom->size - 4,
 		   0xFFFFFFF0 - bootblocksize - sizeof(struct cbfs_header));
+
+	/* write the empty header */
+	rom_set_header(rom, (struct cbfs_file *)rom->ptr, "", -1, CBFS_COMPONENT_NULL);
 	return 0;
 }
 

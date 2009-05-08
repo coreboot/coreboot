@@ -80,6 +80,15 @@ chip northbridge/intel/i82830		# Northbridge
       register "rom_address" = "0xfff00000"
     end
     chip southbridge/intel/i82801xx	# Southbridge
+      register "pirqa_routing" = "0x07"
+      register "pirqb_routing" = "0x09"
+      register "pirqc_routing" = "0x0a"
+      register "pirqd_routing" = "0x09"
+      register "pirqe_routing" = "0x05"
+      register "pirqf_routing" = "0x80"
+      register "pirqg_routing" = "0x80"
+      register "pirqh_routing" = "0x0b"
+
       device pci 1d.0 on end		# USB UHCI Controller #1
       device pci 1d.1 on end		# USB UHCI Controller #2
       device pci 1d.2 on end		# USB UHCI Controller #3

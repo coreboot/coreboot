@@ -60,11 +60,6 @@ static void no_op(struct device *dev)
 {
 }
 
-int is_coldboot(void)
-{
-	return 1;
-}
-
 static void i440bx_read_resources(struct device *dev)
 {
 	struct resource *res;

@@ -20,19 +20,35 @@
 target asus_m2v-mx_se
 mainboard asus/m2v-mx_se
 
-romimage "normal"
-	option ROM_SIZE = 512 * 1024
-	option USE_FALLBACK_IMAGE = 0
-	option ROM_IMAGE_SIZE = 128 * 1024
-	option COREBOOT_EXTRA_VERSION=".0Normal"
-	payload ../payload.elf
-end
+## ROM_SIZE is the total number of bytes allocated for coreboot use
+## (normal AND fallback images and payloads).
+
+# The board comes with 512KB SPI flash (DIP8), 128KB is for coreboot binary
+# 384KB of flash is for payload/roms.
+
+option ROM_SIZE = 512 * 1024
+
+# Use following line instead if you want to use onboard VGA -
+# padd the rom size to 64KB or XIP won't work, complaining about
+# not good base.
+
+#option ROM_SIZE = (512 * 1024) - (64 * 1024)
+
+## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
+## not including any payload.
+
+# Please note that 128KB is cached for (XIP) too
+
+option ROM_IMAGE_SIZE = 128 * 1024
+
+## FALLBACK_SIZE is the amount of the ROM the complete fallback image 
+## (including payload) will use.
+
+option FALLBACK_SIZE = ROM_SIZE
 
 romimage "fallback"
-	option USE_FALLBACK_IMAGE = 1
-	option ROM_IMAGE_SIZE = 128 * 1024
-	option COREBOOT_EXTRA_VERSION=".0Fallback"
+	option USE_FALLBACK_IMAGE=1
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "fallback"

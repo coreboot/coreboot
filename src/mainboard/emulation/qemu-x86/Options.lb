@@ -31,6 +31,7 @@ uses _RAMBASE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses HAVE_MP_TABLE
+uses HAVE_HIGH_TABLES
 uses CROSS_COMPILE
 uses CC
 uses HOSTCC
@@ -79,6 +80,8 @@ default HAVE_HARD_RESET=0
 ##
 default HAVE_PIRQ_TABLE=1
 default IRQ_SLOT_COUNT=6
+
+default HAVE_HIGH_TABLES=1
 
 ##
 ## Build code to export a CMOS option table

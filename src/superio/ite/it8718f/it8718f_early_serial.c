@@ -45,10 +45,9 @@ static void it8718f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 	outb(value, SIO_DATA);
 }
 
-/* Enable the peripheral devices on the IT8718F Super I/O chip. */
-static void it8718f_enable_serial(device_t dev, unsigned iobase)
+static void it8718f_enter_conf(void)
 {
-	/* (1) Enter the configuration state (MB PnP mode). */
+	/*  Enter the configuration state (MB PnP mode). */
 
 	/* Perform MB PnP setup to put the SIO chip at 0x2e. */
 	/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
@@ -57,6 +56,29 @@ static void it8718f_enable_serial(device_t dev, unsigned iobase)
 	outb(0x01, IT8718F_CONFIGURATION_PORT);
 	outb(0x55, IT8718F_CONFIGURATION_PORT);
 	outb(0x55, IT8718F_CONFIGURATION_PORT);
+}
+
+static void it8718f_exit_conf(void)
+{
+	/* Exit the configuration state (MB PnP mode). */
+	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CC, 0x02);
+}
+
+static void it8718f_24mhz_clkin(void)
+{
+	it8718f_enter_conf();
+
+	/* Select 24MHz CLKIN (48MHZ default)*/
+	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CLOCKSEL, 0x1);
+
+	it8718f_exit_conf();
+}
+
+/* Enable the peripheral devices on the IT8718F Super I/O chip. */
+static void it8718f_enable_serial(device_t dev, unsigned iobase)
+{
+	/* (1) Enter the configuration state (MB PnP mode). */
+	it8718f_enter_conf();
 
 	/* (2) Modify the data of configuration registers. */
 
@@ -65,17 +87,14 @@ static void it8718f_enable_serial(device_t dev, unsigned iobase)
            If this register is not written, both chips are configured. */
 	/* it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CONFIGSEL, 0x00); */
 
-	/* Enable all devices. */
+	/* Enable serial port(s). */
 	it8718f_sio_write(IT8718F_SP1,  0x30, 0x1); /* Serial port 1 */
 	it8718f_sio_write(IT8718F_SP2,  0x30, 0x1); /* Serial port 2 */
-
-	/* Select 24MHz CLKIN (set bit 0). */
-	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CLOCKSEL, 0x01);
 
 	/* Clear software suspend mode (clear bit 0). TODO: Needed? */
 	/* it8718f_sio_write(0x00, IT8718F_CONFIG_REG_SWSUSP, 0x00); */
 
 	/* (3) Exit the configuration state (MB PnP mode). */
-	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CC, 0x02);
+	it8718f_exit_conf();
 }
 

@@ -17,7 +17,8 @@ option ROM_IMAGE_SIZE = 128 * 1024
 option FALLBACK_SIZE = ROM_SIZE
 
 romimage "fallback"
-	option USE_FALLBACK_IMAGE=1
+	option USE_FALLBACK_IMAGE = 1
+	option ROM_IMAGE_SIZE = 144 * 1024
 	payload ../payload.elf
 end
 

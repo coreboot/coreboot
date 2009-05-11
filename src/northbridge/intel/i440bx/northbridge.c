@@ -13,7 +13,7 @@
 #include "northbridge.h"
 #include "i440bx.h"
 
-static void northbridge_init(device_t dev) 
+static void northbridge_init(device_t dev)
 {
 	printk_spew("Northbridge Init\n");
 }
@@ -30,7 +30,7 @@ static struct device_operations northbridge_operations = {
 static const struct pci_driver northbridge_driver __pci_driver = {
 	.ops = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = 0x7190, 
+	.device = 0x7190,
 };
 
 
@@ -38,33 +38,32 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 
 static void pci_domain_read_resources(device_t dev)
 {
-        struct resource *resource;
-        unsigned reg;
+	struct resource *resource;
 
-        /* Initialize the system wide io space constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-        resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	/* Initialize the system wide io space constraints */
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
+	resource->limit = 0xffffUL;
+	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-        /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-        resource->limit = 0xffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	/* Initialize the system wide memory resources constraints */
+	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
+	resource->limit = 0xffffffffULL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 }
 
 static void ram_resource(device_t dev, unsigned long index,
-        unsigned long basek, unsigned long sizek)
+	unsigned long basek, unsigned long sizek)
 {
-        struct resource *resource;
+	struct resource *resource;
 
-        if (!sizek) {
-                return;
-        }
-        resource = new_resource(dev, index);
-        resource->base  = ((resource_t)basek) << 10;
-        resource->size  = ((resource_t)sizek) << 10;
-        resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
-                IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	if (!sizek) {
+		return;
+	}
+	resource = new_resource(dev, index);
+	resource->base	= ((resource_t)basek) << 10;
+	resource->size	= ((resource_t)sizek) << 10;
+	resource->flags =  IORESOURCE_MEM | IORESOURCE_CACHEABLE | \
+		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
@@ -95,6 +94,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
+
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
@@ -102,7 +102,6 @@ static void pci_domain_set_resources(device_t dev)
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
-
 	if (mc_dev) {
 		uint16_t tolm_r;
 		unsigned long tomk, tolmk;
@@ -123,7 +122,7 @@ static void pci_domain_set_resources(device_t dev)
 		tolmk = pci_tolm / 1024;
 
 		if (tolmk >= tomk) {
-			/* The PCI hole does does not overlap the memory. */
+			/* The PCI hole does not overlap the memory. */
 			tolmk = tomk;
 		}
 
@@ -131,34 +130,33 @@ static void pci_domain_set_resources(device_t dev)
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 768, tolmk - 768);
- 
+
 #if HAVE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE * 1024;
 #endif
 	}
-
 	assign_resources(&dev->link[0]);
 }
 
 static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
-        max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-        return max;
+	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
+	return max;
 }
 
 static struct device_operations pci_domain_ops = {
-        .read_resources   = pci_domain_read_resources,
-        .set_resources    = pci_domain_set_resources,
-        .enable_resources = enable_childrens_resources,
-        .init             = 0,
-        .scan_bus         = pci_domain_scan_bus,
-};  
+	.read_resources		= pci_domain_read_resources,
+	.set_resources		= pci_domain_set_resources,
+	.enable_resources	= enable_childrens_resources,
+	.init			= 0,
+	.scan_bus		= pci_domain_scan_bus,
+};
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(&dev->link[0]);
+	initialize_cpus(&dev->link[0]);
 }
 
 static void cpu_bus_noop(device_t dev)
@@ -166,25 +164,23 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = cpu_bus_noop,
-        .set_resources    = cpu_bus_noop,
-        .enable_resources = cpu_bus_noop,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources   = cpu_bus_noop,
+	.set_resources    = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init             = cpu_bus_init,
+	.scan_bus         = 0,
 };
 
 static void enable_dev(struct device *dev)
 {
-        struct device_path path;
-
-        /* Set the operations if it is a special bus type */
-        if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
-                dev->ops = &pci_domain_ops;
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
+		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
-        }
-        else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
-                dev->ops = &cpu_bus_ops;
-        }
+	}
+	else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
+	}
 }
 
 struct chip_operations northbridge_intel_i440bx_ops = {

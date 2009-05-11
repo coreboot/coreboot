@@ -83,16 +83,16 @@ static void pci_domain_set_resources(device_t dev)
 		for(rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
 			unsigned char reg;
 			reg = pci_read_config8(mc_dev, ramregs[i]);
-			/* these are ENDING addresses, not sizes. 
+			/* these are ENDING addresses, not sizes.
 			 * if there is memory in this slot, then reg will be > rambits.
-			 * So we just take the max, that gives us total. 
+			 * So we just take the max, that gives us total.
 			 * We take the highest one to cover for once and future coreboot
 			 * bugs. We warn about bugs.
 			 */
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk_err("ERROR! register 0x%x is not set!\n", 
+				printk_err("ERROR! register 0x%x is not set!\n",
 					ramregs[i]);
 		}
 		if (rambits == 0) {
@@ -104,11 +104,11 @@ static void pci_domain_set_resources(device_t dev)
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
-			/* The PCI hole does not overlap memory.
-			 */
+			/* The PCI hole does not overlap the memory. */
 			tolmk = tomk;
 		}
-		/* Report the memory regions */
+
+		/* Report the memory regions. */
 		idx = 10;
 		ram_resource(dev, idx++, 0, tolmk);
 	}
@@ -122,12 +122,12 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources	  = pci_domain_read_resources,
-	.set_resources	  = pci_domain_set_resources,
-	.enable_resources = enable_childrens_resources,
-	.init		  = 0,
-	.scan_bus	  = pci_domain_scan_bus,
-};  
+	.read_resources		= pci_domain_read_resources,
+	.set_resources		= pci_domain_set_resources,
+	.enable_resources	= enable_childrens_resources,
+	.init			= 0,
+	.scan_bus		= pci_domain_scan_bus,
+};
 
 static void enable_dev(struct device *dev)
 {

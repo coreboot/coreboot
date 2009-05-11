@@ -55,7 +55,7 @@ uint8_t pci_moving_config8(struct device *dev, unsigned reg)
 {
 	uint8_t value, ones, zeroes;
 	value = pci_read_config8(dev, reg);
-	
+
 	pci_write_config8(dev, reg, 0xff);
 	ones = pci_read_config8(dev, reg);
 
@@ -71,7 +71,7 @@ uint16_t pci_moving_config16(struct device *dev, unsigned reg)
 {
 	uint16_t value, ones, zeroes;
 	value = pci_read_config16(dev, reg);
-	
+
 	pci_write_config16(dev, reg, 0xffff);
 	ones = pci_read_config16(dev, reg);
 
@@ -87,7 +87,7 @@ uint32_t pci_moving_config32(struct device *dev, unsigned reg)
 {
 	uint32_t value, ones, zeroes;
 	value = pci_read_config32(dev, reg);
-	
+
 	pci_write_config32(dev, reg, 0xffffffff);
 	ones = pci_read_config32(dev, reg);
 
@@ -146,7 +146,7 @@ unsigned pci_find_capability(device_t dev, unsigned cap)
 
 }
 
-/** Given a device and register, read the size of the BAR for that register. 
+/** Given a device and register, read the size of the BAR for that register.
  * @param dev       Pointer to the device structure
  * @param resource  Pointer to the resource structure
  * @param index     Address of the pci configuration register
@@ -176,7 +176,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		/* Find the high bits that move */
 		moving |= ((resource_t)pci_moving_config32(dev, index + 4)) << 32;
 	}
-	/* Find the resource constraints. 
+	/* Find the resource constraints.
 	 *
 	 * Start by finding the bits that move. From there:
 	 * - Size is the least significant bit of the bits that move.
@@ -195,12 +195,12 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		resource->limit = limit = moving | (resource->size - 1);
 	}
 	/*
-	 * some broken hardware has read-only registers that do not 
+	 * some broken hardware has read-only registers that do not
 	 * really size correctly.
-	 * Example: the acer m7229 has BARs 1-4 normally read-only. 
+	 * Example: the acer m7229 has BARs 1-4 normally read-only.
 	 * so BAR1 at offset 0x10 reads 0x1f1. If you size that register
-	 * by writing 0xffffffff to it, it will read back as 0x1f1 -- a 
-	 * violation of the spec. 
+	 * by writing 0xffffffff to it, it will read back as 0x1f1 -- a
+	 * violation of the spec.
 	 * We catch this case and ignore it by observing which bits move,
 	 * This also catches the common case unimplemented registers
 	 * that always read back as 0.
@@ -219,7 +219,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 		resource->flags |= IORESOURCE_IO;
 		/* I don't want to deal with 32bit I/O resources */
 		resource->limit = 0xffff;
-	} 
+	}
 	else {
 		/* A Memory mapped base address */
 		attr &= PCI_BASE_ADDRESS_MEM_ATTR_MASK;
@@ -290,7 +290,7 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	/* clear the Enable bit */
 	moving = moving & ~PCI_ROM_ADDRESS_ENABLE;
 
-	/* Find the resource constraints. 
+	/* Find the resource constraints.
 	 *
 	 * Start by finding the bits that move. From there:
 	 * - Size is the least significant bit of the bits that move.
@@ -325,12 +325,12 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 		resource->base   = dev->rom_address;
 		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY |
 			IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-	}  
+	}
 
 	compact_resources(dev);
 }
 
-/** Read the base address registers for a given device. 
+/** Read the base address registers for a given device.
  * @param dev Pointer to the dev structure
  * @param howmany How many registers to read (6 for device, 2 for bridge)
  */
@@ -405,7 +405,7 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	/* Initialize the io space constraints on the current bus */
 	pci_record_bridge_resource(
-		dev, moving, PCI_IO_BASE, 
+		dev, moving, PCI_IO_BASE,
 		IORESOURCE_IO, IORESOURCE_IO);
 
 
@@ -415,14 +415,14 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	moving_limit =  ((resource_t)pci_moving_config16(dev, PCI_PREF_MEMORY_LIMIT)) << 16;
 	moving_limit |= ((resource_t)pci_moving_config32(dev, PCI_PREF_LIMIT_UPPER32)) << 32;
-	
+
 	moving = moving_base & moving_limit;
 	/* Initiliaze the prefetchable memory constraints on the current bus */
 	pci_record_bridge_resource(
-		dev, moving, PCI_PREF_MEMORY_BASE, 
+		dev, moving, PCI_PREF_MEMORY_BASE,
 		IORESOURCE_MEM | IORESOURCE_PREFETCH,
 		IORESOURCE_MEM | IORESOURCE_PREFETCH);
-	
+
 
 	/* See if the bridge mem resources are implemented */
 	moving_base = ((uint32_t)pci_moving_config16(dev, PCI_MEMORY_BASE)) << 16;
@@ -432,7 +432,7 @@ static void pci_bridge_read_bases(struct device *dev)
 
 	/* Initialize the memory resources on the current bus */
 	pci_record_bridge_resource(
-		dev, moving, PCI_MEMORY_BASE, 
+		dev, moving, PCI_MEMORY_BASE,
 		IORESOURCE_MEM | IORESOURCE_PREFETCH,
 		IORESOURCE_MEM);
 
@@ -496,13 +496,13 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 
 	/* Get the end */
 	end = resource_end(resource);
-	
+
 	/* Now store the resource */
 	resource->flags |= IORESOURCE_STORED;
 	if (!(resource->flags & IORESOURCE_PCI_BRIDGE)) {
 		unsigned long base_lo, base_hi;
 		/*
-		 * some chipsets allow us to set/clear the IO bit. 
+		 * some chipsets allow us to set/clear the IO bit.
 		 * (e.g. VIA 82c686a.) So set it to be safe)
 		 */
 		base_lo = base & 0xffffffff;
@@ -517,7 +517,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	}
 	else if (resource->index == PCI_IO_BASE) {
 		/* set the IO ranges */
-		compute_allocate_resource(&dev->link[0], resource, 
+		compute_allocate_resource(&dev->link[0], resource,
 			IORESOURCE_IO, IORESOURCE_IO);
 		pci_write_config8(dev,  PCI_IO_BASE, base >> 8);
 		pci_write_config16(dev, PCI_IO_BASE_UPPER16, base >> 16);
@@ -527,7 +527,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	else if (resource->index == PCI_MEMORY_BASE) {
 		/* set the memory range	 */
 		compute_allocate_resource(&dev->link[0], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH, 
+			IORESOURCE_MEM | IORESOURCE_PREFETCH,
 			IORESOURCE_MEM);
 		pci_write_config16(dev, PCI_MEMORY_BASE, base >> 16);
 		pci_write_config16(dev, PCI_MEMORY_LIMIT, end >> 16);
@@ -535,7 +535,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	else if (resource->index == PCI_PREF_MEMORY_BASE) {
 		/* set the prefetchable memory range */
 		compute_allocate_resource(&dev->link[0], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH, 
+			IORESOURCE_MEM | IORESOURCE_PREFETCH,
 			IORESOURCE_MEM | IORESOURCE_PREFETCH);
 		pci_write_config16(dev, PCI_PREF_MEMORY_BASE, base >> 16);
 		pci_write_config32(dev, PCI_PREF_BASE_UPPER32, base >> 32);
@@ -597,10 +597,10 @@ void pci_dev_enable_resources(struct device *dev)
 	ops = ops_pci(dev);
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		printk_debug("%s subsystem <- %02x/%02x\n",
-			dev_path(dev), 
+			dev_path(dev),
 			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
 			MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
-		ops->set_subsystem(dev, 
+		ops->set_subsystem(dev,
 			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
 			MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
 	}
@@ -642,7 +642,7 @@ void pci_bus_reset(struct bus *bus)
 
 void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID, 
+	pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,
 		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
@@ -722,12 +722,12 @@ struct device_operations default_pci_ops_bus = {
  * to figure out the type of downstream bridge.  PCI-X
  * PCI-E, and Hypertransport all seem to have appropriate
  * capabilities.
- * 
+ *
  * When only a PCI-Express capability is found the type
  * is examined to see which type of bridge we have.
  *
  * @param dev
- * 
+ *
  * @return appropriate bridge operations
  */
 static struct device_operations *get_pci_bridge_ops(device_t dev)
@@ -751,7 +751,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		if ((flags >> 13) == 1) {
 			/* Host or Secondary Interface */
-			printk_debug("%s subbordinate bus Hypertransport\n", 
+			printk_debug("%s subbordinate bus Hypertransport\n",
 				dev_path(dev));
 			return &default_ht_ops_bus;
 		}
@@ -766,11 +766,11 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		case PCI_EXP_TYPE_ROOT_PORT:
 		case PCI_EXP_TYPE_UPSTREAM:
 		case PCI_EXP_TYPE_DOWNSTREAM:
-			printk_debug("%s subbordinate bus PCI Express\n", 
+			printk_debug("%s subbordinate bus PCI Express\n",
 				dev_path(dev));
 			return &default_pciexp_ops_bus;
 		case PCI_EXP_TYPE_PCI_BRIDGE:
-			printk_debug("%s subbordinate PCI\n", 
+			printk_debug("%s subbordinate PCI\n",
 				dev_path(dev));
 			return &default_pci_ops_bus;
 		default:
@@ -785,7 +785,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
  * @brief Set up PCI device operation
  *
  *
- * @param dev 
+ * @param dev
  *
  * @see pci_drivers
  */
@@ -797,14 +797,14 @@ static void set_pci_ops(struct device *dev)
 	}
 
 	/* Look through the list of setup drivers and find one for
-	 * this pci device 
+	 * this pci device
 	 */
 	for(driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
 		if ((driver->vendor == dev->vendor) &&
-			(driver->device == dev->device)) 
+			(driver->device == dev->device))
 		{
 			dev->ops = driver->ops;
-			printk_spew("%s [%04x/%04x] %sops\n", 
+			printk_spew("%s [%04x/%04x] %sops\n",
 				dev_path(dev),
 				driver->vendor, driver->device,
 				(driver->ops->scan_bus?"bus ":""));
@@ -835,7 +835,7 @@ static void set_pci_ops(struct device *dev)
 			printk_err("%s [%04x/%04x/%06x] has unknown header "
 				"type %02x, ignoring.\n",
 				dev_path(dev),
-				dev->vendor, dev->device, 
+				dev->vendor, dev->device,
 				dev->class >> 8, dev->hdr_type);
 		}
 	}
@@ -875,9 +875,9 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 			break;
 		}
 	}
-	/* Just like alloc_dev add the device to the  list of device on the bus.  
-	 * When the list of devices was formed we removed all of the parents 
-	 * children, and now we are interleaving static and dynamic devices in 
+	/* Just like alloc_dev add the device to the  list of device on the bus.
+	 * When the list of devices was formed we removed all of the parents
+	 * children, and now we are interleaving static and dynamic devices in
 	 * order on the bus.
 	 */
 	if (dev) {
@@ -897,7 +897,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 	return dev;
 }
 
-/** 
+/**
  * @brief Scan a PCI bus.
  *
  * Determine the existence of a given PCI device.
@@ -936,13 +936,13 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 		 * found the device specific operations this
 		 * operations we will disable the device with
 		 * those as well.
-		 * 
+		 *
 		 * This is geared toward devices that have subfunctions
 		 * that do not show up by default.
-		 * 
+		 *
 		 * If a device is a stuff option on the motherboard
 		 * it may be absent and enable_dev must cope.
-		 * 
+		 *
 		 */
 		/* Run the magice enable sequence for the device */
 		if (dev->chip_ops && dev->chip_ops->enable_dev) {
@@ -950,8 +950,8 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 		}
 		/* Now read the vendor and device id */
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
-		
-		
+
+
 		/* If the device does not have a pci id disable it.
 		 * Possibly this is because we have already disabled
 		 * the device.  But this also handles optional devices
@@ -959,7 +959,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 		 */
 		/* If the chain is fully enumerated quit */
 		if (	(id == 0xffffffff) || (id == 0x00000000) ||
-			(id == 0x0000ffff) || (id == 0xffff0000)) 
+			(id == 0x0000ffff) || (id == 0xffff0000))
 		{
 			if (dev->enabled) {
 				printk_info("Disabling static device: %s\n",
@@ -972,14 +972,14 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 	/* Read the rest of the pci configuration information */
 	hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
 	class = pci_read_config32(dev, PCI_CLASS_REVISION);
-	
+
 	/* Store the interesting information in the device structure */
 	dev->vendor = id & 0xffff;
 	dev->device = (id >> 16) & 0xffff;
 	dev->hdr_type = hdr_type;
 	/* class code, the upper 3 bytes of PCI_CLASS_REVISION */
 	dev->class = class >> 8;
-	
+
 
 	/* Architectural/System devices always need to
 	 * be bus masters.
@@ -987,7 +987,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 	if ((dev->class >> 16) == PCI_BASE_CLASS_SYSTEM) {
 		dev->command |= PCI_COMMAND_MASTER;
 	}
-	/* Look at the vendor and device id, or at least the 
+	/* Look at the vendor and device id, or at least the
 	 * header type and class and figure out which set of
 	 * configuration methods to use.  Unless we already
 	 * have some pci ops.
@@ -998,14 +998,14 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 	if (dev->ops && dev->ops->enable) {
 		dev->ops->enable(dev);
 	}
-	
+
 
 	/* Display the device and error if we don't have some pci operations
 	 * for it.
 	 */
 	printk_debug("%s [%04x/%04x] %s%s\n",
 		dev_path(dev),
-		dev->vendor, dev->device, 
+		dev->vendor, dev->device,
 		dev->enabled?"enabled": "disabled",
 		dev->ops?"" : " No operations"
 		);
@@ -1013,7 +1013,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 	return dev;
 }
 
-/** 
+/**
  * @brief Scan a PCI bus.
  *
  * Determine the existence of devices and bridges on a PCI bus. If there are
@@ -1059,14 +1059,14 @@ unsigned int pci_scan_bus(struct bus *bus,
 		/* See if a device is present and setup the device
 		 * structure.
 		 */
-		dev = pci_probe_dev(dev, bus, devfn); 
+		dev = pci_probe_dev(dev, bus, devfn);
 
-		/* if this is not a multi function device, 
+		/* if this is not a multi function device,
 		 * or the device is not present don't waste
-		 * time probing another function. 
-		 * Skip to next device. 
+		 * time probing another function.
+		 * Skip to next device.
 		 */
-		if ((PCI_FUNC(devfn) == 0x00) && 
+		if ((PCI_FUNC(devfn) == 0x00) &&
 			(!dev || (dev->enabled && ((dev->hdr_type & 0x80) != 0x80))))
 		{
 			devfn += 0x07;
@@ -1074,7 +1074,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 	}
 	post_code(0x25);
 
-	/* Die if any left over static devices are are found.  
+	/* Die if any left over static devices are are found.
 	 * There's probably a problem in the Config.lb.
 	*/
 	if(old_devices) {
@@ -1118,8 +1118,8 @@ unsigned int pci_scan_bus(struct bus *bus,
  *
  * @return The maximum bus number found, after scanning all subordinate busses
  */
-unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max, 
-	unsigned int (*do_scan_bus)(struct bus *bus, 
+unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
+	unsigned int (*do_scan_bus)(struct bus *bus,
 		unsigned min_devfn, unsigned max_devfn, unsigned int max))
 {
 	struct bus *bus;
@@ -1134,7 +1134,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 
 	/* Set up the primary, secondary and subordinate bus numbers. We have
 	 * no idea how many buses are behind this bridge yet, so we set the
-	 * subordinate bus number to 0xff for the moment. 
+	 * subordinate bus number to 0xff for the moment.
 	 */
 	bus->secondary = ++max;
 	bus->subordinate = 0xff;
@@ -1160,7 +1160,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 		((unsigned int) (bus->subordinate) << 16));
 	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
 
-	/* Now we can scan all subordinate buses 
+	/* Now we can scan all subordinate buses
 	 * i.e. the bus behind the bridge.
 	 */
 	max = do_scan_bus(bus, 0x00, 0xff, max);
@@ -1173,7 +1173,7 @@ unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 		((unsigned int) (bus->subordinate) << 16);
 	pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
 	pci_write_config16(dev, PCI_COMMAND, cr);
-	
+
 	printk_spew("%s returns max %d\n", __func__, max);
 	return max;
 }
@@ -1231,10 +1231,10 @@ void pci_level_irq(unsigned char intNum)
     the indicated device address.  If the device does not exist or does
     not require interrupts then this function has no effect.
 
-    This function should be called for each PCI slot in your system.  
+    This function should be called for each PCI slot in your system.
 
     pIntAtoD is an array of IRQ #s that are assigned to PINTA through PINTD of
-    this slot.  
+    this slot.
     The particular irq #s that are passed in depend on the routing inside
     your southbridge and on your motherboard.
 
@@ -1256,7 +1256,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		if (pdev) {
 		  line = pci_read_config8(pdev, PCI_INTERRUPT_PIN);
 
-			// PCI spec says all other values are reserved 
+			// PCI spec says all other values are reserved
 			if ((line >= 1) && (line <= 4)) {
 				irq = pIntAtoD[line - 1];
 

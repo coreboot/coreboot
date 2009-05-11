@@ -125,9 +125,19 @@ device_t dev_find_class (unsigned int class, device_t from);
 device_t dev_find_slot (unsigned int bus, unsigned int devfn);
 device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 
+/* Debug functions */
+void resource_tree(struct device * root, int debug_level, int depth);
+void print_resource_tree(struct device * root, int debug_level,
+			 const char *msg);
+void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum);
+void show_devs_subtree(struct device *root, int debug_level, const char *msg);
+void show_all_devs(int debug_level, const char *msg);
+void show_one_resource(int debug_level, struct device *dev,
+		       struct resource *resource, const char *comment);
+void show_all_devs_resources(int debug_level, const char* msg);
 
 /* Rounding for boundaries. 
- * Due to some chip bugs, go ahead and roung IO to 16
+ * Due to some chip bugs, go ahead and round IO to 16
  */
 #define DEVICE_IO_ALIGN 16 
 #define DEVICE_MEM_ALIGN 4096

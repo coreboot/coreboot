@@ -554,3 +554,143 @@ void disable_children(struct bus *bus)
 		dev_set_enabled(child, 0);
 	}
 }
+
+void resource_tree(struct device *root, int debug_level, int depth)
+{
+	int i = 0, link = 0;
+	struct device *child;
+	char indent[30];	/* If your tree has more levels, it's wrong. */
+
+	for (i = 0; i < depth + 1 && i < 29; i++)
+		indent[i] = ' ';
+	indent[i] = '\0';
+
+	do_printk(BIOS_DEBUG, "%s%s links %x child on link 0 %s\n",
+		  indent, dev_path(root), root->links,
+		  root->link[0].children ? dev_path(root->link[0].children) :
+	    				  "NULL");
+	for (i = 0; i < root->resources; i++) {
+		do_printk(BIOS_DEBUG,
+			  "%s%s resource base %llx size %llx align %d gran %d limit %llx flags %lx index %lx\n",
+			  indent, dev_path(root), root->resource[i].base,
+			  root->resource[i].size, root->resource[i].align,
+			  root->resource[i].gran, root->resource[i].limit,
+			  root->resource[i].flags, root->resource[i].index);
+	}
+
+	for (link = 0; link < root->links; link++) {
+		for (child = root->link[link].children; child;
+		     child = child->sibling)
+			resource_tree(child, debug_level, depth + 1);
+	}
+}
+
+void print_resource_tree(struct device * root, int debug_level,
+			 const char *msg)
+{
+	/* Bail if root is null. */
+	if (!root) {
+		do_printk(debug_level, "%s passed NULL for root!\n", __func__);
+		return;
+	}
+
+	/* Bail if not printing to screen. */
+	if (!do_printk(debug_level, "Show resources in subtree (%s)...%s\n",
+		    dev_path(root), msg))
+		return;
+	resource_tree(root, debug_level, 0);
+}
+
+void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
+{
+	char depth_str[20] = "";
+	int i;
+	struct device *sibling;
+	for (i = 0; i < depth; i++)
+		depth_str[i] = ' ';
+	depth_str[i] = '\0';
+	do_printk(debug_level, "%s%s: enabled %d, %d resources\n",
+		  depth_str, dev_path(dev), dev->enabled, dev->resources);
+	for (i = 0; i < dev->links; i++) {
+		for (sibling = dev->link[i].children; sibling;
+		     sibling = sibling->sibling)
+			show_devs_tree(sibling, debug_level, depth + 1, i);
+	}
+}
+
+void show_all_devs_tree(int debug_level, const char *msg)
+{
+	/* Bail if not printing to screen. */
+	if (!do_printk(debug_level, "Show all devs in tree form...%s\n", msg))
+		return;
+	show_devs_tree(all_devices, debug_level, 0, -1);
+}
+
+void show_devs_subtree(struct device *root, int debug_level, const char *msg)
+{
+	/* Bail if not printing to screen. */
+	if (!do_printk(debug_level, "Show all devs in subtree %s...%s\n",
+		    dev_path(root), msg))
+		return;
+	do_printk(debug_level, "%s\n", msg);
+	show_devs_tree(root, debug_level, 0, -1);
+}
+
+void show_all_devs(int debug_level, const char *msg)
+{
+	struct device *dev;
+
+	/* Bail if not printing to screen. */
+	if (!do_printk(debug_level, "Show all devs...%s\n", msg))
+		return;
+	for (dev = all_devices; dev; dev = dev->next) {
+		do_printk(debug_level,
+			  "%s: enabled %d, %d resources\n",
+			  dev_path(dev), dev->enabled,
+			  dev->resources);
+	}
+}
+
+void show_one_resource(int debug_level, struct device *dev,
+		       struct resource *resource, const char *comment)
+{
+	char buf[10];
+	unsigned long long base, end;
+	base = resource->base;
+	end = resource_end(resource);
+	buf[0] = '\0';
+/*
+	if (resource->flags & IORESOURCE_BRIDGE) {
+#if PCI_BUS_SEGN_BITS
+		sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
+			dev->link[0].secondary & 0xff);
+#else
+		sprintf(buf, "bus %02x ", dev->link[0].secondary);
+#endif
+	}
+*/
+	do_printk(debug_level, "%s %02lx <- [0x%010llx - 0x%010llx] "
+		  "size 0x%08Lx gran 0x%02x %s%s%s\n",
+		  dev_path(dev), resource->index, base, end,
+		  resource->size, resource->gran, buf,
+		  resource_type(resource), comment);
+
+}
+
+void show_all_devs_resources(int debug_level, const char* msg)
+{
+	struct device *dev;
+
+	if(!do_printk(debug_level, "Show all devs with resources...%s\n", msg))
+		return;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		int i;
+		do_printk(debug_level,
+			  "%s: enabled %d, %d resources\n",
+			  dev_path(dev), dev->enabled,
+			  dev->resources);
+		for (i = 0; i < dev->resources; i++)
+			show_one_resource(debug_level, dev, &dev->resource[i], "");
+	}
+}

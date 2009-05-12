@@ -1,0 +1,48 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007 Rudolf Marek <r.marek@assembler.cz>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License v2 as published by
+## the Free Software Foundation.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+target asus_m2v-mx_se
+mainboard asus/m2v-mx_se
+
+## ROM_SIZE is the total number of bytes allocated for coreboot use
+## (normal AND fallback images and payloads).
+
+# The board comes with 512KB SPI flash (DIP8), 128KB is for coreboot binary
+# 384KB of flash is for payload/roms.
+
+option ROM_SIZE = 512 * 1024
+
+## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
+## not including any payload.
+
+# Please note that 128KB is cached for (XIP) too
+
+option ROM_IMAGE_SIZE = 128 * 1024
+
+## FALLBACK_SIZE is the amount of the ROM the complete fallback image 
+## (including payload) will use.
+
+option FALLBACK_SIZE = ROM_SIZE
+
+romimage "fallback"
+	option USE_FALLBACK_IMAGE=1
+	payload __PAYLOAD__
+end
+
+buildrom ./coreboot.rom ROM_SIZE "fallback"

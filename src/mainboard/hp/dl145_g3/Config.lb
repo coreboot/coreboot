@@ -192,15 +192,8 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 2.0 on end # USB	0x0223
 					device pci 2.1 on end # USB
 					device pci 2.2 on end # USB
- 					chip drivers/pci/onboard
-						# it is in bcm5785_0 bus, but the device id can
-						# not be changed even unitid is changed, fake one
-						# to get the rom_address
-						# if HT_CHAIN_END_UNITID_BASE=0, it is 4,
-						# if HT_CHAIN_END_UNITID_BASE=1, it is 3
- 						device pci 4.0 on end
- 						register "rom_address" = "0xfff00000"
- 					end
+					device pci 3.0 on end # VGA
+					
 					#bx_a013+ start
 					#chip drivers/pci/onboard    #SATA2
 					#	device pci 5.0 on end

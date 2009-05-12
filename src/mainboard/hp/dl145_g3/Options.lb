@@ -194,7 +194,7 @@ default K8_HT_FREQ_1G_SUPPORT=1
 
 #VGA Console
 default CONFIG_CONSOLE_VGA=1
-default CONFIG_PCI_ROM_RUN=1
+default CONFIG_PCI_ROM_RUN=0
 
 #HT Unit ID offset, default is 1, the typical one
 default HT_CHAIN_UNITID_BASE=0x06

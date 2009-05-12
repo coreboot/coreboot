@@ -24,23 +24,18 @@
 target dl145_g3
 mainboard hp/dl145_g3
 
-# Leave 32K for VGA ROM
-option ROM_SIZE= 1024*1024 - 32*1024
-
-romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
-	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
-	payload ../payload.elf
-end
+option ROM_SIZE= 1024*1024
+option CONFIG_CBFS = 1
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
 	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
-	payload ../payload.elf
+	payload ./bios.bin.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom ROM_SIZE "fallback"
+
+pci_rom ./matrox.rom vendor_id=0x102b device_id=0x0522
+

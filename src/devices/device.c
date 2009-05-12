@@ -618,6 +618,12 @@ void dev_enumerate(void)
 	unsigned subordinate;
 	printk_info("Enumerating buses...\n");
 	root = &dev_root;
+
+	show_all_devs(BIOS_DEBUG, "Before Phase 3.");
+	printk_debug("Compare with tree...\n");
+
+	show_devs_tree(root, BIOS_DEBUG, 0, 0);
+
 	if (root->chip_ops && root->chip_ops->enable_dev) {
 		root->chip_ops->enable_dev(root);
 	}
@@ -651,6 +657,9 @@ void dev_configure(void)
 	printk_info("Allocating resources...\n");
 
 	root = &dev_root;
+
+	print_resource_tree(root, BIOS_DEBUG, "Original.");
+
 	if (!root->ops || !root->ops->read_resources) {
 		printk_err("dev_root missing read_resources\n");
 		return;
@@ -663,6 +672,8 @@ void dev_configure(void)
 	printk_info("Reading resources...\n");
 	root->ops->read_resources(root);
 	printk_info("Done reading resources.\n");
+
+	print_resource_tree(root, BIOS_DEBUG, "After reading.");
 
 	/* Get the resources */
 	io  = &root->resource[0];
@@ -681,6 +692,7 @@ void dev_configure(void)
 #if CONFIG_CONSOLE_VGA == 1
 	/* Allocate the VGA I/O resource.. */
 	allocate_vga_resource();
+	print_resource_tree(root, BIOS_DEBUG, "After VGA.");
 #endif
 
 	/* Store the computed resource allocations into device registers ... */
@@ -691,6 +703,7 @@ void dev_configure(void)
 	mem->flags |= IORESOURCE_STORED;
 	report_resource_stored(root, mem, "");
 #endif
+	print_resource_tree(root, BIOS_DEBUG, "After assigning values.");
 
 	printk_info("Done allocating resources.\n");
 }
@@ -737,5 +750,6 @@ void dev_initialize(void)
 		}
 	}
 	printk_info("Devices initialized\n");
+	show_all_devs(BIOS_DEBUG, "After init.");
 }
 

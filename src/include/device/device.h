@@ -126,7 +126,6 @@ device_t dev_find_slot (unsigned int bus, unsigned int devfn);
 device_t dev_find_slot_on_smbus (unsigned int bus, unsigned int addr);
 
 /* Debug functions */
-void resource_tree(struct device * root, int debug_level, int depth);
 void print_resource_tree(struct device * root, int debug_level,
 			 const char *msg);
 void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum);

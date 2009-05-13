@@ -390,7 +390,7 @@ typedef Elf64_Phdr Elf_phdr;
 #endif
 
 int elf_check_arch(Elf_ehdr *ehdr);
-void jmp_to_elf_entry(void *entry, unsigned long buffer);
+void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long bounce_size);
 struct lb_memory;
 int elfboot(struct lb_memory *mem);
 /* Temporary compile fix, FILO should be dropped from coreboot */

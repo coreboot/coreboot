@@ -122,6 +122,8 @@ int verify_ip_checksum(
  * 
  */
 
+static unsigned long bounce_size;
+
 static unsigned long get_bounce_buffer(struct lb_memory *mem)
 {
 	unsigned long lb_size;
@@ -130,7 +132,8 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 	int i;
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
 	/* Double coreboot size so I have somewhere to place a copy to return to */
-	lb_size = lb_size + lb_size;
+	bounce_size = lb_size;
+	lb_size = bounce_size + lb_size;
 	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	buffer = 0;
 	for(i = 0; i < mem_entries; i++) {
@@ -610,7 +613,7 @@ int elfload(struct lb_memory *mem,
 	post_code(0xfe);
 
 	/* Jump to kernel */
-	jmp_to_elf_entry(entry, bounce_buffer);
+	jmp_to_elf_entry(entry, bounce_buffer, bounce_size);
 	return 1;
 
  out:

@@ -16,7 +16,7 @@ int elf_check_arch(Elf_ehdr *ehdr)
 	
 }
 
-void jmp_to_elf_entry(void *entry, unsigned long buffer)
+void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long bounce_size)
 {
 	void (*kernel_entry)(void);       
 

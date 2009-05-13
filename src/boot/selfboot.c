@@ -92,7 +92,9 @@ struct ip_checksum_vcb {
  * 
  */
 
-static unsigned long get_bounce_buffer(struct lb_memory *mem)
+static unsigned long bounce_size, bounce_buffer;
+
+static void get_bounce_buffer(struct lb_memory *mem, unsigned long bounce_size)
 {
 	unsigned long lb_size;
 	unsigned long mem_entries;
@@ -100,7 +102,7 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 	int i;
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
 	/* Double coreboot size so I have somewhere to place a copy to return to */
-	lb_size = lb_size + lb_size;
+	lb_size = bounce_size + lb_size;
 	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	buffer = 0;
 	for(i = 0; i < mem_entries; i++) {
@@ -123,7 +125,7 @@ static unsigned long get_bounce_buffer(struct lb_memory *mem)
 			continue;
 		buffer = tbuffer;
 	}
-	return buffer;
+	bounce_buffer = buffer;
 }
 
 static int valid_area(struct lb_memory *mem, unsigned long buffer,
@@ -180,24 +182,34 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 	return 1;
 }
 
+static const unsigned long lb_start = (unsigned long)&_ram_seg;
+static const unsigned long lb_end = (unsigned long)&_eram_seg;
+
+static int overlaps_coreboot(struct segment *seg)
+{
+	unsigned long start, end;
+	start = seg->s_dstaddr;
+	end = start + seg->s_memsz;
+	return !((end <= lb_start) || (start >= lb_end));
+}
+
 static void relocate_segment(unsigned long buffer, struct segment *seg)
 {
 	/* Modify all segments that want to load onto coreboot
 	 * to load onto the bounce buffer instead.
 	 */
-	unsigned long lb_start = (unsigned long)&_ram_seg;
-	unsigned long lb_end = (unsigned long)&_eram_seg;
 	unsigned long start, middle, end;
 
 	printk_spew("lb: [0x%016lx, 0x%016lx)\n", 
 		lb_start, lb_end);
 
+	/* I don't conflict with coreboot so get out of here */
+	if (!overlaps_coreboot(seg))
+		return;
+
 	start = seg->s_dstaddr;
 	middle = start + seg->s_filesz;
 	end = start + seg->s_memsz;
-	/* I don't conflict with coreboot so get out of here */
-	if ((end <= lb_start) || (start >= lb_end))
-		return;
 
 	printk_spew("segment: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
 		start, middle, end);
@@ -297,7 +309,7 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 
 static int build_self_segment_list(
 	struct segment *head, 
-	unsigned long bounce_buffer, struct lb_memory *mem,
+	struct lb_memory *mem,
 	struct cbfs_payload *payload, u32 *entry)
 {
 	struct segment *new;
@@ -369,32 +381,47 @@ static int build_self_segment_list(
 		new->phdr_prev = head->phdr_prev;
 		head->phdr_prev->phdr_next  = new;
 		head->phdr_prev = new;
-
-		/* Verify the memory addresses in the segment are valid */
-		if (!valid_area(mem, bounce_buffer, new->s_dstaddr, new->s_memsz)) 
-			goto out;
-
-		/* Modify the segment to load onto the bounce_buffer if necessary.
-		 */
-		relocate_segment(bounce_buffer, new);
 	}
 	return 1;
- out:
-	return 0;
 }
 
 static int load_self_segments(
-	struct segment *head, struct cbfs_payload *payload)
+	struct segment *head,
+	struct lb_memory *mem,
+	struct cbfs_payload *payload)
 {
 	unsigned long offset;
 	struct segment *ptr;
 	
 	offset = 0;
+	unsigned long required_bounce_size = lb_end - lb_start;
+	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+		if (!overlaps_coreboot(ptr)) continue;
+		unsigned long bounce = ptr->s_dstaddr + ptr->s_memsz - lb_start;
+		if (bounce > required_bounce_size) required_bounce_size = bounce;
+	}
+	get_bounce_buffer(mem, required_bounce_size);
+	if (!bounce_buffer) {
+		printk_err("Could not find a bounce buffer...\n");
+		return 0;
+	}
+	for(ptr = head->next; ptr != head; ptr = ptr->next) {
+		/* Verify the memory addresses in the segment are valid */
+		if (!valid_area(mem, bounce_buffer, ptr->s_dstaddr, ptr->s_memsz))
+			return 0;
+	}
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		unsigned char *dest, *middle, *end, *src;
 		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 		
+		/* Modify the segment to load onto the bounce_buffer if necessary.
+		 */
+		relocate_segment(bounce_buffer, ptr);
+
+		printk_debug("Post relocation: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
+
 		/* Compute the boundaries of the segment */
 		dest = (unsigned char *)(ptr->s_dstaddr);
 		src = (unsigned char *)(ptr->s_srcaddr);
@@ -454,21 +481,13 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 {
 	u32 entry=0;
 	struct segment head;
-	unsigned long bounce_buffer;
-
-	/* Find a bounce buffer so I can load to coreboot's current location */
-	bounce_buffer = get_bounce_buffer(mem);
-	if (!bounce_buffer) {
-		printk_err("Could not find a bounce buffer...\n");
-		goto out;
-	}
 
 	/* Preprocess the self segments */
-	if (!build_self_segment_list(&head, bounce_buffer, mem, payload, &entry))
+	if (!build_self_segment_list(&head, mem, payload, &entry))
 		goto out;
 
 	/* Load the segments */
-	if (!load_self_segments(&head, payload))
+	if (!load_self_segments(&head, mem, payload))
 		goto out;
 
 	printk_spew("Loaded segments\n");
@@ -480,7 +499,7 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	post_code(0xfe);
 
 	/* Jump to kernel */
-	jmp_to_elf_entry((void*)entry, bounce_buffer);
+	jmp_to_elf_entry((void*)entry, bounce_buffer, bounce_size);
 	return 1;
 
  out:

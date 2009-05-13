@@ -219,6 +219,22 @@ void add_payload_usage(void)
 	    ("add-payload FILE NAME [OPTIONS]\tAdd a payload to the ROM\n");
 }
 
+int select_component_type(char *s)
+{
+	int i = 0;
+	char *accepted_strings[] = {
+		"stage",
+		"payload",
+		"optionrom",
+		"deleted",
+		"free",
+	};
+	for (i=0; i < 5; i++)
+		if (!strcmp(s, accepted_strings[i]))
+			return i;
+	return -1;
+}
+
 int add_handler(struct rom *rom, int argc, char **argv)
 {
 	unsigned int type = CBFS_COMPONENT_NULL;
@@ -233,13 +249,33 @@ int add_handler(struct rom *rom, int argc, char **argv)
 		return -1;
 	}
 
+	int component_type;
+
 	/* There are two ways to specify the type - a string or a number */
 
 	if (isdigit(*(argv[2])))
 		type = strtoul(argv[2], 0, 0);
 	else {
-		ERROR("String types (%s) aren't implemented yet.\n", argv[2]);
-		return -1;
+		switch( component_type = select_component_type(argv[2])) {
+			case 0:
+				type = CBFS_COMPONENT_STAGE;
+				break;
+			case 1:
+				type = CBFS_COMPONENT_PAYLOAD;
+				break;
+			case 2:
+				type = CBFS_COMPONENT_OPTIONROM;
+				break;
+			case 3:
+				type = CBFS_COMPONENT_DELETED;
+				break;
+			case 4:
+				type = CBFS_COMPONENT_NULL;
+				break;
+			default:
+				ERROR("Unrecognized component type %s.\nValid options are: stage, payload, optionrom, deleted, free.\n", argv[2]);
+				return -1;
+		}
 	}
 
 	return add_blob(rom, argv[0], argv[1], type);

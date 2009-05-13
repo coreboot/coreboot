@@ -2298,7 +2298,7 @@ def writemakefile(path):
 		file.write("\t./cbfstool %s create %s %s %s.bootblock\n"
 			   %(i.name, romsize, bootblocksize, i.name))
 		for j in pciroms:
-			file.write("\t./cbfstool %s add %s pci%04x,%04x.rom 48\n" % (i.name, j.name, j.pci_vid, j.pci_did))
+			file.write("\t./cbfstool %s add %s pci%04x,%04x.rom optionrom\n" % (i.name, j.name, j.pci_vid, j.pci_did))
 		for j in i.roms:
 			#failover is a hack that will go away soon. 
 			if (j != "failover") and (rommapping[j] != "/dev/null"):

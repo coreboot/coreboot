@@ -18,6 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+config chip.h
 driver i82801xx.o
 driver i82801xx_usb.o
 driver i82801xx_lpc.o

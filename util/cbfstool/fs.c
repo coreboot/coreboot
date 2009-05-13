@@ -103,7 +103,6 @@ struct cbfs_file * rom_alloc(struct rom *rom, const char *name, unsigned long si
 	struct cbfs_file *c = NULL;
 	unsigned long nextoffset, truncoffset;
 	struct cbfs_file *newfile = NULL;
-	unsigned int csize;
 
 	while (offset < rom->fssize) {
 
@@ -150,11 +149,9 @@ struct cbfs_file * rom_alloc(struct rom *rom, const char *name, unsigned long si
 
 	c->len = htonl(size);
 
-	csize = headersize(name);
-
 	strcpy(c->magic, COMPONENT_MAGIC);
 
-	c->offset = htonl(csize);
+	c->offset = htonl(headersize(name));
 
 	c->type = htonl(type);
 
@@ -249,7 +246,6 @@ int rom_remove(struct rom *rom, const char *name)
 int rom_extract(struct rom *rom, const char *name, void** buf, int *size )
 {
 	struct cbfs_file *c = rom_find_by_name(rom, name);
-	unsigned int csize;
 
 	if (c == NULL) {
 		ERROR("Component %s does not exist\n", name);
@@ -257,9 +253,7 @@ int rom_extract(struct rom *rom, const char *name, void** buf, int *size )
 	}
 
 	*size = ntohl(c->len);
-
-	csize = headersize(name);
-	*buf = ((unsigned char *)c) + csize;
+	*buf = ((unsigned char *)c) + headersize(name);
 	return 0;
 }
 

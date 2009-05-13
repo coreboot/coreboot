@@ -99,7 +99,7 @@ struct cbfs_file * rom_alloc(struct rom *rom, const char *name, unsigned long si
 {
 	/* walk the rom and find an empty file with a base > base, and a large enough size */
 	unsigned int offset = ntohl(rom->header->offset);
-	unsigned int ret = -1;
+	int ret = -1;
 	struct cbfs_file *c = NULL;
 	unsigned long nextoffset, truncoffset;
 	struct cbfs_file *newfile = NULL;

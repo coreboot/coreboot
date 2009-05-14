@@ -57,6 +57,9 @@ int print_handler(struct rom *rom, int argc, char **argv)
 		case CBFS_COMPONENT_NULL:
 			strcpy(type, "free");
 			break;
+		case CBFS_COMPONENT_DELETED:
+			strcpy(type, "deleted");
+			break;
 		default:
 			sprintf(type, "0x%8.8x", htonl(c->type));
 			break;

@@ -39,11 +39,12 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
  * 00100F00h             1000h                  01000020h
  * 00100F01h             1000h                  01000020h
  * 00100F02h             1000h                  01000020h
- * 00100F20h             1020h                  01000084h
- * 00100F21h             1020h                  01000084h
- * 00100F2Ah             1020h                  01000084h
- * 00100F22h             1022h                  01000083h
- * 00100F23h             1022h                  01000083h
+ * 00100F20h             1020h                  01000096h
+ * 00100F21h (DR-B1)     1020h                  01000096h
+ * 00100F2Ah (DR-BA)     1020h                  01000096h
+ * 00100F22h (DR-B2)     1022h                  01000095h
+ * 00100F23h (DR-B3)     1022h                  01000095h
+ * 00100F62h (DA-C2)     1062h                  0100009Fh
  */
 
 #include AMD_UCODE_PATCH_FILE
@@ -66,6 +67,7 @@ static u32 get_equivalent_processor_rev_id(u32 orig_id) {
 		0x100f2A, 0x1020,
 		0x100f22, 0x1022,
 		0x100f23, 0x1022,
+		0x100f62, 0x1062,
 	};
 
 	u32 new_id;

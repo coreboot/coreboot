@@ -40,6 +40,7 @@
 #define	AMD_DR_B2	0x00200000	/* Barcelona B2 */
 #define	AMD_DR_BA	0x00400000	/* Barcelona BA */
 #define	AMD_DR_B3	0x00800000	/* Barcelona B3 */
+#define	AMD_RB_C2	0x01000000	/* Shanghai C2 */
 
 /*
  * Groups - Create as many as you wish, from the above public values
@@ -57,6 +58,8 @@
 #define	AMD_DR_LT_B3	(AMD_DR_B0 | AMD_DR_B1 | AMD_DR_B2 | AMD_DR_BA)
 #define	AMD_DR_GT_B0	(AMD_DR_ALL & ~(AMD_DR_B0))
 #define	AMD_DR_ALL	(AMD_DR_Bx)
+#define	AMD_FAM10_ALL	(AMD_DR_ALL | AMD_RB_C2)
+#define	AMD_FAM10_GT_B0	(AMD_FAM10_ALL & ~(AMD_DR_B0))
 
 /*
  *  Public Platforms - USE THESE VERSIONS TO MAKE COMPARE WITH CPUPLATFORMTYPE RETURN VALUE

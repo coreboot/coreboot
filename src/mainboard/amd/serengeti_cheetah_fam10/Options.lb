@@ -261,11 +261,12 @@ default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x2b80
 ##
 ## Set microcode patch file name
 ##
-##	Barcelona rev Ax:  "mc_patch_01000020.h"
-##	Barcelona rev B0, B1, BA: "mc_patch_01000084.h"
-##	Barcelona rev B2, B3: "mc_patch_01000083.h"
+##	Barcelona rev DR-Ax:  "mc_patch_01000020.h"
+##	Barcelona rev DR-B0, B1, BA: "mc_patch_01000096.h"
+##	Barcelona rev DR-B2, B3: "mc_patch_01000095.h"
+##	Shanghai rev DA-C2: "mc_patch_0100009f.h"
 ##
-default AMD_UCODE_PATCH_FILE="mc_patch_01000083.h"
+default AMD_UCODE_PATCH_FILE="mc_patch_01000095.h"
 
 ###
 ### coreboot layout values

@@ -411,7 +411,7 @@ static int load_self_segments(
 			return 0;
 	}
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
-		unsigned char *dest, *middle, *end, *src;
+		unsigned char *dest,*src;
 		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 		
@@ -428,6 +428,7 @@ static int load_self_segments(
 		
 		/* Copy data from the initial buffer */
 		if (ptr->s_filesz) {
+			unsigned char *middle, *end;
 			size_t len;
 			len = ptr->s_filesz;
 			switch(ptr->compression) {
@@ -464,14 +465,15 @@ static int load_self_segments(
 				(unsigned long)middle,
 				(unsigned long)end,
 				(unsigned long)src);
-		}
-		/* Zero the extra bytes between middle & end */
-		if (middle < end) {
-			printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
-				(unsigned long)middle, (unsigned long)(end - middle));
+
+			/* Zero the extra bytes between middle & end */
+			if (middle < end) {
+				printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
+					(unsigned long)middle, (unsigned long)(end - middle));
 			
-			/* Zero the extra bytes */
-			memset(middle, 0, end - middle);
+				/* Zero the extra bytes */
+				memset(middle, 0, end - middle);
+			}
 		}
 	}
 	return 1;

@@ -30,7 +30,7 @@ mainboard amd/serengeti_cheetah_fam10
 	option  MAXIMUM_CONSOLE_LOGLEVEL=9
 
 # 512KB ROM
-option ROM_SIZE=512*1024
+option ROM_SIZE=1024*1024
 
 # Cheetah Family 10
 #romimage "normal"
@@ -50,9 +50,9 @@ romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
 #	option ROM_IMAGE_SIZE=0x13800
 #	option ROM_IMAGE_SIZE=0x19800
-	option ROM_IMAGE_SIZE=0x3f000
+	option ROM_IMAGE_SIZE=0x7f000
 #	option ROM_IMAGE_SIZE=0x15800
-	option XIP_ROM_SIZE=0x40000
+	option XIP_ROM_SIZE=0x80000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 	payload ../payload.elf
 end

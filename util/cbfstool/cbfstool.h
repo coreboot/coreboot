@@ -56,6 +56,7 @@ struct rom {
 /* Function prototypes */
 
 /* util.c */
+void flashinit(void *ptr, size_t len);
 int open_rom(struct rom *rom, const char *filename);
 int create_rom(struct rom *rom, const unsigned char *filename, int size,
 	       const char *bootblockname, int bootblocksize,

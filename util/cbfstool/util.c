@@ -25,6 +25,13 @@
 #include <sys/mman.h>
 #include "cbfstool.h"
 
+int uninitialized_flash_value = 0xff;
+
+void flashinit(void *ptr, size_t len)
+{
+	memset(ptr, uninitialized_flash_value, len);
+}
+
 int get_size(const char *size)
 {
 	char *next;
@@ -202,6 +209,9 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 		close(rom->fd);
 		return -1;
 	}
+
+	/* mmap'ed pages are by default zero-filled. Fix that. */
+	flashinit(rom->ptr, romsize);
 
 	/* This is a pointer to the header for easy access */
 	rom->header = (struct cbfs_header *)

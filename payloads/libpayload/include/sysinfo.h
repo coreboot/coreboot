@@ -42,6 +42,7 @@ struct sysinfo_t {
 	struct memrange {
 		unsigned long long base;
 		unsigned long long size;
+		unsigned int type;
 	} memrange[SYSINFO_MAX_MEM_RANGES];
 
 	struct cb_cmos_option_table *option_table;

@@ -45,15 +45,20 @@ static void mb_parse_mmap(struct multiboot_header *table,
 	while(ptr < (start + table->mmap_length)) {
 		struct multiboot_mmap *mmap = (struct multiboot_mmap *) ptr;
 
+#if MEMMAP_RAM_ONLY
 		/* 1 == normal RAM.  Ignore everything else for now */
 
 		if (mmap->type == 1) {
+#endif
 			info->memrange[info->n_memranges].base = mmap->addr;
 			info->memrange[info->n_memranges].size = mmap->length;
+			info->memrange[info->n_memranges].type = mmap->type;
 
 			if (++info->n_memranges == SYSINFO_MAX_MEM_RANGES)
 				return;
+#if MEMMAP_RAM_ONLY
 		}
+#endif
 
 		ptr += (mmap->size + sizeof(mmap->size));
 	}

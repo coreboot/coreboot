@@ -29,6 +29,7 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
+#include <coreboot_tables.h>
 #include <multiboot_tables.h>
 
 /**
@@ -63,9 +64,13 @@ void lib_get_sysinfo(void)
 	if (!lib_sysinfo.n_memranges) {
 		/* If we can't get a good memory range, use the default. */
 		lib_sysinfo.n_memranges = 2;
+
 		lib_sysinfo.memrange[0].base = 0;
 		lib_sysinfo.memrange[0].size = 640 * 1024;
+		lib_sysinfo.memrange[0].type = CB_MEM_RAM;
+
 		lib_sysinfo.memrange[1].base = 1024 * 1024;
 		lib_sysinfo.memrange[1].size = 31 * 1024 * 1024;
+		lib_sysinfo.memrange[1].type = CB_MEM_RAM;
 	}
 }

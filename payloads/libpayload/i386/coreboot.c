@@ -57,14 +57,18 @@ static void cb_parse_memory(unsigned char *ptr, struct sysinfo_t *info)
 		struct cb_memory_range *range =
 		    (struct cb_memory_range *)MEM_RANGE_PTR(mem, i);
 
+#if MEMMAP_RAM_ONLY
 		if (range->type != CB_MEM_RAM)
 			continue;
+#endif
 
 		info->memrange[info->n_memranges].base =
 		    UNPACK_CB64(range->start);
 
 		info->memrange[info->n_memranges].size =
 		    UNPACK_CB64(range->size);
+
+		info->memrange[info->n_memranges].type = range->type;
 
 		info->n_memranges++;
 	}

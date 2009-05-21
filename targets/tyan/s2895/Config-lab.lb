@@ -5,7 +5,6 @@
 target s2895
 mainboard tyan/s2895
 
-option ROM_SIZE = 512*1024
 option CONFIG_CONSOLE_SERIAL8250 = 1
 option CONFIG_CONSOLE_VGA = 1
 option XIP_ROM_SIZE = 0x20000

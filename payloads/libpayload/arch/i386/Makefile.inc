@@ -27,9 +27,9 @@
 ## SUCH DAMAGE.
 ##
 
-TARGETS-y += i386/head.S.o i386/main.o i386/sysinfo.o
-TARGETS-y += i386/timer.o i386/coreboot.o i386/util.S.o
-TARGETS-y += i386/exec.S.o i386/virtual.o
+TARGETS-y += arch/i386/head.S.o arch/i386/main.o arch/i386/sysinfo.o
+TARGETS-y += arch/i386/timer.o arch/i386/coreboot.o arch/i386/util.S.o
+TARGETS-y += arch/i386/exec.S.o arch/i386/virtual.o
 
 # Multiboot support is configurable
-TARGETS-$(CONFIG_MULTIBOOT) += i386/multiboot.o
+TARGETS-$(CONFIG_MULTIBOOT) += arch/i386/multiboot.o

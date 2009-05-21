@@ -34,7 +34,9 @@
 
 #include <libpayload-config.h>
 #include <libpayload.h>
+#ifdef CONFIG_TARGET_I386
 #include <arch/rdtsc.h>
+#endif
 
 extern u32 cpu_khz;
 
@@ -47,6 +49,7 @@ static struct {
 #define TICKS_PER_SEC (cpu_khz * 1000)
 #define TICKS_PER_USEC (cpu_khz / 1000)
 
+#ifdef CONFIG_TARGET_I386
 static void update_clock(void)
 {
 	u64 delta = rdtsc() - clock.ticks;
@@ -114,7 +117,16 @@ static void gettimeofday_init(void)
 	clock.ticks = rdtsc();
 }
 #endif
+#endif
+#ifdef CONFIG_TARGET_POWERPC
+static void update_clock(void)
+{
+}
 
+static void gettimeofday_init(void)
+{
+}
+#endif
 /**
  * Return the current time broken into a timeval structure.
  *

@@ -34,7 +34,7 @@ export srck := $(src)/util/kconfig
 export obj := $(src)/build
 export objk := $(src)/build/util/kconfig
 
-export KERNELVERSION      := 0.1.0
+export KERNELVERSION      := 0.2.0
 export KCONFIG_AUTOHEADER := $(src)/include/libpayload-config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 
@@ -68,9 +68,10 @@ else
 
 include $(src)/.config
 
-ARCHDIR-$(CONFIG_TARGET_I386) := i386
+ARCHDIR-$(CONFIG_TARGET_I386)    := i386
+ARCHDIR-$(CONFIG_TARGET_POWERPC) := powerpc
 
-PLATFORM-y += $(ARCHDIR-y)/Makefile.inc
+PLATFORM-y += arch/$(ARCHDIR-y)/Makefile.inc
 TARGETS-y :=
 
 BUILD-y := crypto/Makefile.inc libc/Makefile.inc drivers/Makefile.inc
@@ -84,7 +85,7 @@ all: lib
 include $(PLATFORM-y) $(BUILD-y)
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
-INCLUDES := -Iinclude -Ibuild
+INCLUDES := -Iinclude -Ibuild -Iinclude/$(ARCHDIR-y)
 INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
 
 try-run= $(shell set -e; \
@@ -107,8 +108,8 @@ all: lib
 lib: $(obj)/lib/libpayload.a copystuff
 
 # Copy libpayload.a and head.o into $(src)/lib where lpgcc et al expect them.
-copystuff: $(obj)/$(ARCHDIR-y)/head.S.o $(obj)/lib/libpayload.a
-	$(Q)cp $(obj)/$(ARCHDIR-y)/head.S.o $(src)/lib/$(ARCHDIR-y)/head.o
+copystuff: $(obj)/arch/$(ARCHDIR-y)/head.S.o $(obj)/lib/libpayload.a
+	$(Q)cp $(obj)/arch/$(ARCHDIR-y)/head.S.o $(src)/lib/$(ARCHDIR-y)/head.o
 	$(Q)cp $(obj)/lib/libpayload.a $(src)/lib
 
 $(obj)/lib/libpayload.a: prepare $(OBJS)
@@ -138,7 +139,7 @@ prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
 	$(Q)mkdir -p $(obj)/crypto $(obj)/curses $(obj)/drivers/video
 	$(Q)mkdir -p $(obj)/drivers/usb
-	$(Q)mkdir -p $(obj)/i386 $(obj)/lib/$(ARCHDIR-y) $(obj)/libc 
+	$(Q)mkdir -p $(obj)/arch/$(ARCHDIR-y) $(obj)/lib/$(ARCHDIR-y) $(obj)/libc 
 	$(Q)mkdir -p $(src)/lib/$(ARCHDIR-y)
 
 doxy: doxygen
@@ -151,8 +152,8 @@ doxygen-clean:
 
 clean: doxygen-clean
 	$(Q)rm -rf $(obj)/crypto $(obj)/curses $(obj)/drivers
-	$(Q)rm -rf $(obj)/i386 $(obj)/lib $(obj)/libc 
-	$(Q)rm -rf $(src)/lib/i386 $(src)/lib/libpayload.a
+	$(Q)rm -rf $(obj)/i386 $(obj)/powerpc $(obj)/lib $(obj)/libc 
+	$(Q)rm -rf $(src)/lib/i386 $(src)/lib/powerpc $(src)/lib/libpayload.a
 
 distclean: clean
 	$(Q)rm -rf build

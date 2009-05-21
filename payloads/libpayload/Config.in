@@ -30,15 +30,27 @@
 
 mainmenu "Libpayload Configuration"
 
-# When (if) we support multiple architectures, this will become an option.
-config TARGET_I386
-	bool
-	default y
-
 menu "Architecture Options"
+
+choice
+        prompt "Target Architecture"
+        default TARGET_I386
+
+config TARGET_I386
+        bool "x86"
+        help
+          Support the x86 architecture
+
+config TARGET_POWERPC
+        bool "PowerPC"
+        help
+	  Support the PowerPC architecture
+
+endchoice
 
 config MULTIBOOT
 	bool "Multiboot header support"
+	depends on TARGET_I386
 	default y
 
 endmenu

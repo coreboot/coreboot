@@ -103,16 +103,22 @@ static void *alloc(int len)
 				void *nptr = ptr + (HDRSIZE + len);
 				int nsize = size - (HDRSIZE + len);
 
-				/* Mark the block as used. */
-				*((hdrtype_t *) ptr) = USED_BLOCK(len);
-
 				/* If there is still room in this block,
-				 * then mark it as such.
+				 * then mark it as such otherwise account
+				 * the whole space for that block.
 				 */
 
-				if (nsize > 0)
+				if (nsize > 0) {
+					/* Mark the block as used. */
+					*((hdrtype_t *) ptr) = USED_BLOCK(len);
+
+					/* Create a new free block. */
 					*((hdrtype_t *) nptr) =
 					    FREE_BLOCK(nsize);
+				} else {
+					/* Mark the block as used. */
+					*((hdrtype_t *) ptr) = USED_BLOCK(size);
+				}
 
 				return (void *)(ptr + HDRSIZE);
 			}

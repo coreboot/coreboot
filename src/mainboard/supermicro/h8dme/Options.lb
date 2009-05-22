@@ -251,7 +251,7 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="h8dmr"
+default MAINBOARD_PART_NUMBER="h8dme"
 default MAINBOARD_VENDOR="Supermicro"
 default MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x15d9
 default MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x1511

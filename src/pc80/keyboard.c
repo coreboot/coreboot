@@ -111,7 +111,7 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 		if (!kbc_input_buffer_empty()) return;
 		outb(0x60, 0x64);
 		if (!kbc_input_buffer_empty()) return;
-		outb(0x20, 0x60);	/* send cmd: enable keyboard and IRQ 1 */
+		outb(0x20, 0x60);	/* send cmd: enable keyboard */
 		if ((inb(0x64) & 0x01)) {
 			regval = inb(0x60);
 		}

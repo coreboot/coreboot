@@ -194,7 +194,7 @@ void init_pc_keyboard(unsigned port0, unsigned port1, struct pc_keyboard *kbd)
  * Not well documented. Google - 0xcb keyboard controller
  * This is called before pc_keyboard_init().
  */
-void set_kbc_ps2_mode()
+void set_kbc_ps2_mode(void)
 {
 	/* clean up any junk that might have been in the kbc */
 	if (!kbc_cleanup_buffers()) return;

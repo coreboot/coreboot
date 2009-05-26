@@ -13,22 +13,22 @@
 
 int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args);
 
-/* FIXME this global makes vsprintf non-reentrant */
-
-static char *str_buf;
-static void str_tx_byte(unsigned char byte)
-{
-	*str_buf = byte;
-	str_buf++;
-}
-
 int vsprintf(char * buf, const char *fmt, va_list args)
 {
+	char *str_buf;
+
+	/* this function is only used by vsprint.
+	   To keep str_buf local (for reentrancy
+	   and to avoid .bss use, nest it */
+	void str_tx_byte(unsigned char byte)
+	{
+		*str_buf = byte;
+		str_buf++;
+	}
+
 	int i;
 	str_buf = buf;
 	i = vtxprintf(str_tx_byte, fmt, args);
-	/* maeder/Ispiri -- The null termination was missing a deference */
-	/*                  and was just zeroing out the pointer instead */
 	*str_buf = '\0';
 	return i;
 }

@@ -134,11 +134,9 @@ static const char *cpu_vendor_name(int vendor)
 static void identify_cpu(struct device *cpu)
 {
 	char vendor_name[16];
-	int  cpuid_level;
 	int i;
 
 	vendor_name[0] = '\0'; /* Unset */
-	cpuid_level    = -1;   /* Maximum supported CPUID level, -1=no CPUID */
 
 	/* Find the id and vendor_name */
 	if (!have_cpuid_p()) {
@@ -158,6 +156,7 @@ static void identify_cpu(struct device *cpu)
 		}
 	}
 	if (have_cpuid_p()) {
+		int  cpuid_level;
 		struct cpuid_result result;
 		result = cpuid(0x00000000);
 		cpuid_level    = result.eax;

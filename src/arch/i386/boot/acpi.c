@@ -495,7 +495,7 @@ void *acpi_find_wakeup_vector(void)
 		return NULL;
 
 	printk_debug("FADT found at %p\n", fadt);
-	facs = fadt->firmware_ctrl;
+	facs = (acpi_facs_t *)fadt->firmware_ctrl;
 
 	if (facs == NULL) {
 		printk_debug("No FACS found, wake up from S3 not possible.\n");

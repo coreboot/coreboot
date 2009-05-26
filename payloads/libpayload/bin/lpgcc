@@ -48,6 +48,9 @@ BASE=`dirname $0`
 # This will set the _LIBDIR and _INCDIR variables used below
 . $BASE/lp.functions
 
+# include libpayload config
+. $BASE/../libpayload.config
+
 _LDSCRIPT="-Wl,-T,$_LIBDIR/libpayload.ldscript"
 
 trygccoption() {
@@ -97,7 +100,15 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-_CFLAGS="-m32 -nostdinc -nostdlib -I$_INCDIR"
+if [ "$CONFIG_TARGET_I386" = "y" ]; then
+  _ARCHINCDIR=$_INCDIR/i386
+fi
+
+if [ "$CONFIG_TARGET_POWERPC" = "y" ]; then
+  _ARCHINCDIR=$_INCDIR/powerpc
+fi
+
+_CFLAGS="-m32 -nostdinc -nostdlib -I$_INCDIR -I$_ARCHINCDIR"
 
 # Check for the -fno-stack-protector silliness
 

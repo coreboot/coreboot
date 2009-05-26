@@ -166,5 +166,7 @@ void * cbfs_get_file(const char *name);
 void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest);
 int run_address(void *f);
 
+struct cbfs_stage *cbfs_find_file(const char *name, int type);
+
 #endif
 

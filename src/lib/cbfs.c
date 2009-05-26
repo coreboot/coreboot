@@ -174,24 +174,6 @@ void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 	return dest;
 }
 
-void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
-{
-	int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
-	struct cbfs_payload *payload = (struct cbfs_payload *)
-		cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
-
-	struct cbfs_payload_segment *segment, *first_segment;
-
-	if (payload == NULL)
-		return (void *) -1;
-	printk_debug("Got a payload\n");
-	first_segment = segment = &payload->segments;
-	selfboot(lb_mem, payload);
-	printk_emerg("SELFBOOT RETURNED!\n");
-
-	return (void *) -1;
-}
-
 void * cbfs_load_stage(const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)

@@ -63,20 +63,15 @@ struct lb_memory *write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
-#if HAVE_MP_TABLE == 1
-	unsigned long new_low_table_end;
-#endif
 
 	/* Even if high tables are configured, some tables are copied both to
 	 * the low and the high area, so payloads and OSes don't need to know
 	 * about the high tables.
 	 */
-	unsigned long high_rsdp;
-	unsigned long high_table_start=0, high_table_end=0;
+	unsigned long high_table_end=0;
 
 	if (high_tables_base) {
 		printk_debug("High Tables Base is %llx.\n", high_tables_base);
-		high_table_start = high_tables_base;
 		high_table_end = high_tables_base;
 	} else {
 		printk_err("ERROR: High Tables Base is not set.\n");
@@ -111,14 +106,22 @@ struct lb_memory *write_tables(void)
 	/* Write ACPI tables to F segment and high tables area */
 #if HAVE_ACPI_TABLES == 1
 	if (high_tables_base) {
-		unsigned long rsdt_location;
-		high_rsdp = ALIGN(high_table_end, 16);
+		unsigned long acpi_start = high_table_end;
+		rom_table_end = ALIGN(rom_table_end, 16);
 		high_table_end = write_acpi_tables(high_table_end);
+		while (acpi_start < high_table_end) {
+			if (memcmp(((acpi_rsdp_t *)acpi_start)->signature, RSDP_SIG, 8) == 0) {
+				break;
+			}
+			acpi_start++;
+		}
+		if (acpi_start != high_table_end) {
+			acpi_write_rsdp((acpi_rsdp_t *)rom_table_end, ((acpi_rsdp_t *)acpi_start)->rsdt_address);
+		} else {
+			printk_err("ERROR: Didn't find RSDP in high table.\n");
+		}
 		high_table_end = ALIGN(high_table_end, 1024);
-		rsdt_location = (unsigned long)(((acpi_rsdp_t*)high_rsdp)->rsdt_address);
-		printk_debug("high mem RSDP at %x, RSDT at %x\n", high_rsdp, rsdt_location);
-		acpi_write_rsdp((acpi_rsdp_t *)rom_table_end, (acpi_rsdt_t *)rsdt_location);
-		rom_table_end = ALIGN(ALIGN(rom_table_end, 16) + sizeof(acpi_rsdp_t), 16);
+		rom_table_end = ALIGN(rom_table_end + sizeof(acpi_rsdp_t), 16);
 	} else {
 		rom_table_end = write_acpi_tables(rom_table_end);
 		rom_table_end = ALIGN(rom_table_end, 1024);
@@ -164,7 +167,11 @@ struct lb_memory *write_tables(void)
 	if (high_tables_base) {
 		/* Also put a forwarder entry into 0-4K */
 		write_coreboot_table(low_table_start, low_table_end,
-				high_table_start, high_table_end);
+				high_tables_base, high_table_end);
+		if (high_table_end > high_tables_base + high_tables_size)
+			printk_err("%s: High tables didn't fit in %llx (%llx)\n",
+				   __func__, high_tables_size, high_table_end -
+				   high_tables_base);
 	} else {
 		/* The coreboot table must be in 0-4K or 960K-1M */
 		write_coreboot_table(low_table_start, low_table_end,

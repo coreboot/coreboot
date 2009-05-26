@@ -126,8 +126,8 @@ chip northbridge/intel/i82810		# Northbridge
       device pci 1f.3 on end		# SMbus
       device pci 1f.5 off end		# AC'97 audio (N/A, uses CS4280 chip)
       device pci 1f.6 off end		# AC'97 modem (N/A)
-      register "ide0_enable" = "1"
-      register "ide1_enable" = "1"
+      #register "ide0_enable" = "1"
+      #register "ide1_enable" = "1"
     end
   end
 end

@@ -27,7 +27,7 @@
 #include <device/pci_ids.h>
 #include "i82801xx.h"
 
-static const struct device_operations ac97_ops = {
+static struct device_operations ac97_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,

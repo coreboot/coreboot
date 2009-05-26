@@ -38,7 +38,7 @@ static int smbus_read_byte(struct bus *bus, device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
-static const struct smbus_bus_operations lops_smbus_bus = {
+static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= smbus_read_byte,
 };
 

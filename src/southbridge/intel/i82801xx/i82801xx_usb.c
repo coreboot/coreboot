@@ -31,7 +31,7 @@ static void usb_init(struct device *dev)
 	/* TODO: Any init needed? Some ports have it, others don't. */
 }
 
-static const struct device_operations usb_ops = {
+static struct device_operations usb_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,

@@ -95,7 +95,6 @@ int resize_handler(struct rom *rom, int argc, char **argv)
 		/* The first entry doesn't have to move */
 
 		c = rom_find(rom, rom->header->offset);
-		offset = rom->header->offset;
 
 		while (c) {
 			struct cbfs_file *n = rom_find_next(rom, c);
@@ -105,10 +104,8 @@ int resize_handler(struct rom *rom, int argc, char **argv)
 				break;
 
 			/* Calculate a new location for the entry */
-			next =
-			    ROM_OFFSET(rom,
-				       c) + ALIGN(ntohl(c->offset) +
-						  ntohl(c->len), align);
+			next = ROM_OFFSET(rom, c) + 
+				ALIGN(ntohl(c->offset) + ntohl(c->len), align);
 
 			/* Copy the next entry there */
 			memmove(ROM_PTR(rom, next), n,
@@ -116,8 +113,10 @@ int resize_handler(struct rom *rom, int argc, char **argv)
 
 			c = (struct cbfs_file *)ROM_PTR(rom, next);
 
-			/* If the previous header wasn't overwritten by the change,
-			   corrupt the header so we don't accidently find it */
+			/* If the previous header wasn't overwritten by 
+			 * the change, corrupt the header so we don't 
+			 * accidently find it
+			 */
 
 			if (ROM_OFFSET(rom, n) >
 			    next + ntohl(c->len) + ntohl(c->offset))

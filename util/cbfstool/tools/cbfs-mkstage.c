@@ -34,7 +34,6 @@ int parse_elf(unsigned char *input, unsigned char **output,
 {
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
-	Elf32_Shdr *shdr;
 	char *header, *buffer;
 	unsigned char *out;
 
@@ -47,7 +46,6 @@ int parse_elf(unsigned char *input, unsigned char **output,
 	header = (char *)ehdr;
 
 	phdr = (Elf32_Phdr *) & (header[ehdr->e_phoff]);
-	shdr = (Elf32_Shdr *) & (header[ehdr->e_shoff]);
 
 	/* Now, regular headers - we only care about PT_LOAD headers,
 	 * because thats what we're actually going to load

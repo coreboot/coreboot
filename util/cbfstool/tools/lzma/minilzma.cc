@@ -303,12 +303,12 @@ void do_lzma_compress(char *in, int in_len, char *out, int *out_len) {
 void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len) {
 	std::vector<unsigned char> result;
 	result = LZMADeCompress(std::vector<unsigned char>(src, src + src_len));
-	if (result.size() <= dst_len)
+	if (result.size() <= (SizeT)dst_len)
 		std::memcpy(dst, &result[0], result.size());
 	else
 	{
 		fprintf(stderr, "Not copying %d bytes to %d-byte buffer!\n",
-			result.size(), dst_len);
+			(unsigned int)result.size(), dst_len);
 		exit(1);
 	}
 }

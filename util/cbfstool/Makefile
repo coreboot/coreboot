@@ -8,7 +8,9 @@ COMMANDS=create.o bootblock.o delete.o extract.o add.o print.o resize.o
 OBJ=$(COMMANDS) cbfstool.o util.o fs.o
 INC=cbfstool.h cbfs.h
 
-CC=gcc
+HOSTCC ?= gcc
+HOSTCXX ?= g++
+
 CFLAGS=-g -Wall -W -Werror
 
 DESTDIR ?= /usr/local/bin
@@ -16,7 +18,7 @@ DESTDIR ?= /usr/local/bin
 all: $(obj)/cbfstool $(obj)/tools/cbfs-mkpayload $(obj)/tools/cbfs-mkstage
 
 $(obj)/cbfstool: $(patsubst %,$(obj)/%,$(OBJ))
-	$(CC) -o $@ $(patsubst %,$(obj)/%,$(OBJ))
+	$(HOSTCC) -o $@ $(patsubst %,$(obj)/%,$(OBJ))
 
 tobj = $(obj)/tools
 tsrc = $(shell pwd)/tools
@@ -24,7 +26,7 @@ tsrc = $(shell pwd)/tools
 include $(tsrc)/Makefile
 
 $(obj)/%.o: %.c $(INC)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(HOSTCC) $(CFLAGS) -c -o $@ $<
 
 install: $(obj)/cbfstool $(obj)/tools/cbfs-mkpayload $(obj)/tools/cbfs-mkstage
 	@ install -d $(DESTDIR)

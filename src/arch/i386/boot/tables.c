@@ -154,7 +154,6 @@ struct lb_memory *write_tables(void)
 
 #if CONFIG_MULTIBOOT
 	/* The Multiboot information structure */
-	mbi = (struct multiboot_info *)rom_table_end;
 	rom_table_end = write_multiboot_info(
 				low_table_start, low_table_end,
 				rom_table_start, rom_table_end);

@@ -24,7 +24,7 @@
 #include <console/console.h>
 
 static struct multiboot_mmap_entry *mb_mem;
-struct multiboot_info *mbi;
+struct multiboot_info *mbi = NULL;
 
 static struct {
 	u64 addr;
@@ -80,12 +80,17 @@ unsigned long write_multiboot_info(
 {
 	int i;
 
+	mbi = (struct multiboot_info *)rom_table_end;
+
 	memset(mbi, 0, sizeof(*mbi));
 	rom_table_end += sizeof(*mbi);
 
 	mbi->mmap_addr = (u32) rom_table_end;
 	mb_mem = (struct multiboot_mmap_entry *)rom_table_end;
 
+	/* FIXME This code is broken, it does not know about high memory
+	 * tables, nor does it reserve the coreboot table area.
+	 */
 	/* reserved regions */
 	reserved_mem[0].addr = low_table_start;
 	reserved_mem[0].len = ROUND(low_table_end - low_table_start, 4096);

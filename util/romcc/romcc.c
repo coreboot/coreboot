@@ -280,7 +280,7 @@ typedef uint16_t ushort_t;
 typedef int32_t  int_t;
 typedef uint32_t uint_t;
 typedef int32_t  long_t;
-typedef uint32_t ulong_t;
+#define ulong_t uint32_t
 
 #define SCHAR_T_MIN (-128)
 #define SCHAR_T_MAX 127
@@ -24819,8 +24819,8 @@ static void print_instructions(struct compile_state *state)
 			last_occurance != ins->occurance) {
 			if (!ins->occurance->parent) {
 				fprintf(fp, "\t/* %s,%s:%d.%d */\n",
-					ins->occurance->function,
-					ins->occurance->filename,
+					ins->occurance->function?ins->occurance->function:"(null)",
+					ins->occurance->filename?ins->occurance->filename:"(null)",
 					ins->occurance->line,
 					ins->occurance->col);
 			}

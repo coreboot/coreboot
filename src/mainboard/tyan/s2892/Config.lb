@@ -23,7 +23,7 @@ if HAVE_ACPI_TABLES
         object acpi_tables.o
 	makerule dsdt.c
 		depends "$(MAINBOARD)/dsdt.dsl"
-		action  "iasl -p $(PWD)/dsdt -tc $(MAINBOARD)/dsdt.dsl"
+		action  "iasl -p $(CURDIR)/dsdt -tc $(MAINBOARD)/dsdt.dsl"
 		action  "mv dsdt.hex dsdt.c"
 	end
         object ./dsdt.o

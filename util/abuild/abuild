@@ -36,7 +36,14 @@ cpus=1
 configureonly=0
 
 # One might want to adjust these in case of cross compiling
-MAKE="make"
+for i in make gmake gnumake nonexistant_make; do
+	$i --version 2>/dev/null |grep "GNU Make" >/dev/null && break
+done
+if [ "$i" = "nonexistant_make" ]; then
+	echo No GNU Make found.
+	exit 1
+fi
+MAKE=$i
 PYTHON=python
 
 # this can be changed to xml by -x
@@ -202,10 +209,11 @@ EOF
 		LOGLEVEL2=""
 	fi
 
-	if [ "`which lzma`" != "" -a "$PAYLOAD" != /dev/null ]; then
-		COMPRESSION="option CONFIG_COMPRESSED_PAYLOAD_LZMA=1"
-	else
-		COMPRESSION="# no compression"
+	COMPRESSION="# no compression"
+	if which lzma >/dev/null 2>/dev/null; then
+		if [ "$PAYLOAD" != /dev/null ]; then
+			COMPRESSION="option CONFIG_COMPRESSED_PAYLOAD_LZMA=1"
+		fi
 	fi
 
 	cp $TARGET/Config-${VENDOR}_${MAINBOARD}.lb $TARGET/Config-${VENDOR}_${MAINBOARD}.lb.pre
@@ -266,7 +274,7 @@ function create_builddir
 		xmlfile $build_dir/config.log
 		xml "  </log>"
 		xml ""
-		tail -n $CONTEXT $build_dir/config.log
+		tail -n $CONTEXT $build_dir/config.log 2> /dev/null || tail -$CONTEXT $build_dir/config.log
 		return 1
 	fi
 }
@@ -315,7 +323,7 @@ function compile_target
 		xml "  </log>"
 
 		printf "FAILED after ${duration}s! Log excerpt:\n"
-		tail -n $CONTEXT make.log
+		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
 		cd $CURR
 		return 1
 	fi

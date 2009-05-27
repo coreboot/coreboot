@@ -73,7 +73,7 @@ __main:
 	movl	$0x4000000, %esp
 	movl	%esp, %ebp
 	pushl %esi
-#ifdef CONFIG_CBFS
+#if CONFIG_CBFS == 1
 	pushl $str_coreboot_ram_name
 	call cbfs_and_run_core
 #else

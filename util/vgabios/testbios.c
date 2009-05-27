@@ -11,6 +11,7 @@
 #define warn(x) { perror(x);  }
 
 #include <x86emu.h>
+#include "helper_exec.h"
 #include "test.h"
 #include "pci-userspace.h"
 

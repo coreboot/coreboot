@@ -50,6 +50,7 @@
 #include "xf86_ansic.h"
 #else
 #include <string.h>
+#include <stdio.h>
 #endif
 /*------------------------- Global Variables ------------------------------*/
 
@@ -186,7 +187,7 @@ u8 *mem_ptr(u32 addr, int size)
 	u8 *retaddr = 0;
 
 	if (addr > M.mem_size - size) {
-		DB(printk("mem_ptr: address %#lx out of range!\n", addr);
+		DB(printk("mem_ptr: address %#x out of range!\n", addr);
 		    )
 		    HALT_SYS();
 	}
@@ -596,11 +597,11 @@ void X86EMU_prepareForInt(int num)
 
 void X86EMU_setMemBase(void *base, size_t size)
 {
-	M.mem_base = (int) base;
+	M.mem_base = base;
 	M.mem_size = size;
 }
 
 void X86EMU_setabseg(void *abseg)
 {
-	M.abseg = (unsigned long) abseg;
+	M.abseg = abseg;
 }

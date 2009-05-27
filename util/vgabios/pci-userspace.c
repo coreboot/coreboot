@@ -2,11 +2,16 @@
 #include <pci/pci.h>
 #include "pci.h"
 
+#ifdef PCI_LIB_VERSION
+#define LIBPCI_CHECK_VERSION(major,minor,micro) \
+    ((((major) << 16) | ((minor) << 8) | (micro)) <= PCI_LIB_VERSION)
+#else
 #define LIBPCI_CHECK_VERSION(major,minor,micro) \
  ( (LIBPCI_MAJOR_VERSION > (major)) || \
    (LIBPCI_MAJOR_VERSION == (major) && LIBPCI_MINOR_VERSION > (minor)) || \
  (LIBPCI_MAJOR_VERSION == (major) && LIBPCI_MINOR_VERSION == (minor)) && \
  LIBPCI_MICRO_VERSION >= (micro) )
+#endif
 
 #define PCITAG struct pci_filter *
 

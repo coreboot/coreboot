@@ -15,9 +15,12 @@
  * on PIO.
  */
 #include <x86emu.h>
+#include "helper_exec.h"
 #include "test.h"
-#include <asm/io.h>
+#include <sys/io.h>
 #include <sys/time.h>
+#include <stdio.h>
+
 
 int port_rep_inb(u16 port, u32 base, int d_f, u32 count);
 u8 x_inb(u16 port);

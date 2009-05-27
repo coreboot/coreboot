@@ -4,6 +4,8 @@
  *   execute BIOS int 10h calls in x86 real mode environment
  *                 Copyright 1999 Egbert Eich
  */
+#include <stdio.h>
+
 #define _INT10_PRIVATE
 
 #define REG pInt
@@ -35,7 +37,7 @@ void dprint(unsigned long start, unsigned long size)
 			printf("%2.2x ", (unsigned char) (*(c++)));
 		c = d;
 		for (i = 0; i < 16; i++) {
-			printf("%c", ((((u8) (*c)) > 32) && (((u8) (*c)) < 128)) ?
+			printf("%c", ((((unsigned char) (*c)) > 32) && (((unsigned char) (*c)) < 128)) ?
 			       (unsigned char) (*(c)) : '.');
 			c++;
 		}
@@ -122,7 +124,7 @@ void reset_int_vect(void)
 	 * 64kB.  Note that because this data doesn't survive POST, int 0x42 should
 	 * only be used during EGA/VGA BIOS initialisation.
 	 */
-	static const u8 VideoParms[] = {
+	static const unsigned char VideoParms[] = {
 		/* Timing for modes 0x00 & 0x01 */
 		0x38, 0x28, 0x2d, 0x0a, 0x1f, 0x06, 0x19, 0x1c,
 		0x02, 0x07, 0x06, 0x07, 0x00, 0x00, 0x00, 0x00,

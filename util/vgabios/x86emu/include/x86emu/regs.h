@@ -300,9 +300,9 @@ private			- private data pointer
 x86			- X86 registers
 ****************************************************************************/
 typedef struct {
-	unsigned long	mem_base;
-	unsigned long	mem_size;
-	unsigned long	abseg;
+	void *	mem_base;
+	unsigned int	mem_size;
+	void *	abseg;
 	void*        	private;
 	X86EMU_regs		x86;
 	} X86EMU_sysEnv;

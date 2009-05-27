@@ -197,59 +197,59 @@ typedef struct _DRAM_SIZE_INFO {
 //detection.c
 /*Step1 detect DRAM type, Read SPD data,command rate*/
 CB_STATUS DRAMDetect(DRAM_SYS_ATTR * DramAttr);
-//FreqSetting.c
+//freq_setting.c
 /*Step2 set Frequency, calculate CAL*/
 void DRAMFreqSetting(DRAM_SYS_ATTR * DramAttr);
-//TimingSetting.c
+//timing_setting.c
 /*Step3 Set DRAM	Timing*/
 void DRAMTimingSetting(DRAM_SYS_ATTR * DramAttr);
-//DRDY_BL.c
+//drdy_bl.c
 /*Step4 DRDY*/
 void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr);
-//DRDY_BL.c
+//drdy_bl.c
 /*Step5 Burst Length*/
 void DRAMBurstLength(DRAM_SYS_ATTR * DramAttr);
-//DrivingSetting.c
+//driving_setting.c
 /*Step6 DRAM Driving Adjustment*/
 void DRAMDriving(DRAM_SYS_ATTR * DramAttr);
 
-//ClkCtrl.c
+//clk_ctrl.c
 /*Step7 duty cycle control*/
 void DutyCycleCtrl(DRAM_SYS_ATTR * DramAttr);
-//ClkCtrl.c
+//clk_ctrl.c
 /*Step8 DRAM clock phase and delay control*/
 void DRAMClkCtrl(DRAM_SYS_ATTR * DramAttr);
 
-//DevInit.c
+//dev_init.c
 /*Step9 set register before init DRAM device*/
 void DRAMRegInitValue(DRAM_SYS_ATTR * DramAttr);
 
-//DevInit.c
+//dev_init.c
 /*Step10 DDR and DDR2 initialize process*/
 void DRAMInitializeProc(DRAM_SYS_ATTR * DramAttr);
 
-//DQSSearch.c
+//dqs_search.c
 /*Step11 Search DQS and DQ output delay*/
 void DRAMDQSOutputSearch(DRAM_SYS_ATTR * DramAttr);
 
-//DQSSearch.c
+//dqs_search.c
 /*Step12 Search DQS  input delay*/
 void DRAMDQSInputSearch(DRAM_SYS_ATTR * DramAttr);
 
-//RankMap.c
+//rank_map.c
 /*Step13 Interleav function in rankmap.c*/
 void DRAMBankInterleave(DRAM_SYS_ATTR * DramAttr);
 
-//RankMap.c
+//rank_map.c
 /*Step14 Sizing*/
 void DRAMSizingMATypeM(DRAM_SYS_ATTR * DramAttr);
 
 
-//FinalSetting.c
+//final_setting.c
 /*Step15 DDR fresh counter setting*/
 void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr);
 
-//FinnalSetting.c
+//final_setting.c
 /*Step16 Final register setting for improve performance*/
 void DRAMRegFinalValue(DRAM_SYS_ATTR * DramAttr);
 

@@ -43,7 +43,7 @@
 #endif
 #include "cpu/x86/lapic/boot_cpu.c"
 
-#include "DrivingClkPhaseData.c"
+#include "driving_clk_phase_data.c"
 
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
@@ -423,7 +423,7 @@ g)      Rx73h = 32h
 
 		DRAMDRDYSetting(&DramAttr);
 
-		Data = 0x80;	// this value is same with DevInit.c
+		Data = 0x80;	// this value is same with dev_init.c
 		pci_write_config8(PCI_DEV(0, 0, 4), 0xa3, Data);
 		pci_write_config8(PCI_DEV(0, 17, 7), 0x60, rambits << 2);
 		Data = pci_read_config8(MEMCTRL, 0x88);

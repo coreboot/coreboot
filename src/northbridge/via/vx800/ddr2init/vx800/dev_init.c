@@ -396,7 +396,7 @@ void InitDDR2CHA(DRAM_SYS_ATTR * DramAttr)
 
 
 	// Step 9,10. check ODT value for EMRS(1) command
-	// according to  ODTLookUp_TBL in DrivingSetting.c if there is one dimm in MB's one channel , the DDR2's ODT is 150ohm
+	// according to  ODTLookUp_TBL in driving_setting.c if there is one dimm in MB's one channel , the DDR2's ODT is 150ohm
 	// if there is two dimm in MB's one channel, the DDR2's ODT is 75 ohm
 	DimmNum = DramAttr->DimmNumChA;
 

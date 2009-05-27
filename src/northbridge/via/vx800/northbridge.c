@@ -38,7 +38,7 @@
 static void memctrl_init(device_t dev)
 {
 /*
-  set VGA in UMARamSetting.c, not in this function.
+  set VGA in uma_ram_setting.c, not in this function.
 */
 #if 0
 	pci_write_config8(dev, 0x85, 0x20);

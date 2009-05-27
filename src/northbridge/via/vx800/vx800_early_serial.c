@@ -27,48 +27,46 @@
 #define SIO_BASE 0x3f0
 #define SIO_DATA  SIO_BASE+1
 
-static void vx800_writesuper(uint8_t reg, uint8_t val) 
+static void vx800_writesuper(uint8_t reg, uint8_t val)
 {
 	outb(reg, SIO_BASE);
 	outb(val, SIO_DATA);
 }
 
-static void vx800_writepnpaddr(uint8_t val) 
+static void vx800_writepnpaddr(uint8_t val)
 {
 	outb(val, 0x2e);
 	outb(val, 0xeb);
 }
 
-static void vx800_writepnpdata(uint8_t val) 
+static void vx800_writepnpdata(uint8_t val)
 {
 	outb(val, 0x2f);
 	outb(val, 0xeb);
 }
 
-static void vx800_writesiobyte(uint16_t reg, uint8_t val) 
+static void vx800_writesiobyte(uint16_t reg, uint8_t val)
 {
 	outb(val, reg);
 }
 
-static void vx800_writesioword(uint16_t reg, uint16_t val) 
+static void vx800_writesioword(uint16_t reg, uint16_t val)
 {
 	outw(val, reg);
 }
-
 
 /* regs we use: 85, and the southbridge devfn is defined by the
    mainboard
  */
 
-static void enable_vx800_serial(void) 
+static void enable_vx800_serial(void)
 {
 	outb(6, 0x80);
 	outb(0x03, 0x22);
 
-
 	//pci_write_config8(PCI_DEV(0,17,0),0xb4,0x7e);
 	//pci_write_config8(PCI_DEV(0,17,0),0xb0,0x10);
-	
+
 	// turn on pnp
 	vx800_writepnpaddr(0x87);
 	vx800_writepnpaddr(0x87);
@@ -96,7 +94,7 @@ static void enable_vx800_serial(void)
 	// Set 115 kb
 	vx800_writesioword(0x3f8, 1);
 	// Set 9.6 kb
-	//	WRITESIOWORD(0x3f8, 12)
+	//      WRITESIOWORD(0x3f8, 12)
 	// now set no parity, one stop, 8 bits
 	vx800_writesiobyte(0x3fb, 3);
 	// now turn on RTS, DRT
@@ -107,4 +105,3 @@ static void enable_vx800_serial(void)
 	vx800_writesiobyte(0x3f8, 48);
 	outb(7, 0x80);
 }
-

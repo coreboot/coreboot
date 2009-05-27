@@ -51,8 +51,7 @@ void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr)
 
 	Dram_256_Mb = 0;
 	for (i = 0; i < MAX_SOCKETS; i++) {
-		if (DramAttr->DimmInfo[i].SPDDataBuf[SPD_SDRAM_ROW_ADDR] ==
-		    13) {
+		if (DramAttr->DimmInfo[i].SPDDataBuf[SPD_SDRAM_ROW_ADDR] == 13) {
 			Dram_256_Mb = 1;
 			break;
 		}
@@ -62,7 +61,6 @@ void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr)
 
 	pci_write_config8(MEMCTRL, 0x6a, Data);
 }
-
 
 /*===================================================================
 Function   : DRAMRegFinalValue()

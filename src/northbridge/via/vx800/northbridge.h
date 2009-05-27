@@ -22,4 +22,4 @@
 
 extern unsigned int vx800_scan_root_bus(device_t root, unsigned int max);
 
-#endif /* NORTHBRIDGE_VIA_VX800_H */
+#endif				/* NORTHBRIDGE_VIA_VX800_H */

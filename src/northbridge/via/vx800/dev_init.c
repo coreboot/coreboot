@@ -17,21 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-void DRAMSetVRNum(DRAM_SYS_ATTR * DramAttr, u8 PhyRank,	// Physical Rank
-		  u8 VirRank,	// Virtual Rank
-		  BOOLEAN Enable);
-
-void SetEndingAddr(DRAM_SYS_ATTR * DramAttr, u8 VirRank,	// Ending address register      number indicator (INDEX
-		   INT8 Value	// (value) add or subtract value to this and after banks
-    );
-
-void InitDDR2CHA(DRAM_SYS_ATTR * DramAttr);
-
-void InitDDR2CHB(DRAM_SYS_ATTR * DramAttr);
-
-void InitDDR2CHC(DRAM_SYS_ATTR * DramAttr);
+void DRAMSetVRNum(DRAM_SYS_ATTR *DramAttr, u8 PhyRank /* physical rank */,
+		  u8 VirRank /* virtual rank */, BOOLEAN Enable);
+void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank /* Ending address
+                   register number indicator (INDEX */, INT8 Value /* (value)
+                   add or subtract value to this and after banks. */);
+void InitDDR2CHA(DRAM_SYS_ATTR *DramAttr);
+void InitDDR2CHB(DRAM_SYS_ATTR *DramAttr);
+void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr);
 
 CB_STATUS VerifyChc();
+
 /*===================================================================
 Function   : DRAMRegInitValue()
 Precondition : 
@@ -43,7 +39,7 @@ Purpose   : Set necessary register before DRAM initialize
 ===================================================================*/
 
 static const u8 DramRegTbl[][3] = {
-	//Register     AND             OR
+	/* Reg AND   OR */
 	{0x50, 0x11, 0xEE},	// DDR default MA7 for DRAM init
 	{0x51, 0x11, 0x60},	// DDR default MA3 for CHB init
 	{0x52, 0x00, 0x33},	// DDR use BA0=M17, BA1=M18,
@@ -56,26 +52,31 @@ static const u8 DramRegTbl[][3] = {
 
 	{0x60, 0x00, 0x00},	// disable fast turn-around
 	{0x65, 0x00, 0xD9},	// AGP timer = 0XD; Host timer = 8;
-	{0x66, 0x00, 0x88},	//DRAMC Queue Size = 4; park at the last bus owner,Priority promotion timer = 8
+	{0x66, 0x00, 0x88},	// DRAMC Queue Size = 4; park at the last bus
+				// owner,Priority promotion timer = 8
 	{0x68, 0x00, 0x0C},
 	{0x69, 0xF0, 0x04},	// set RX69[3:0]=0000b
 	{0x6A, 0x00, 0x00},	// refresh counter
-	{0x6E, 0xF8, 0x80},	//must set 6E[7],or else DDR2  probe test will fail
-	// In here, we not set RX70~RX74,       because we just init DRAM but no need R/W DRAM,
-	// when we check DQS input/output       delay, then we need R/W DRAM.
+	{0x6E, 0xF8, 0x80},	// must set 6E[7], or else DDR2 probe test
+				// will fail
+	/*
+	 * In here, we not set RX70~RX74, because we just init DRAM but no
+	 * need R/W DRAM, when we check DQS input/output delay, then we need
+	 * R/W DRAM.
+	 */
 
-	//{0x79,         0x00,         0x8F },
+	// {0x79, 0x00, 0x8F },
 	{0x85, 0x00, 0x00},
-	// {0x90,         0x87,        0x78 },
-	// {0x91,         0x00,        0x46 }, 
+	// {0x90, 0x87, 0x78 },
+	// {0x91, 0x00, 0x46 }, 
 	{0x40, 0x00, 0x00},
+
 	{0, 0, 0}
 };
 
-void DRAMRegInitValue(DRAM_SYS_ATTR * DramAttr)
+void DRAMRegInitValue(DRAM_SYS_ATTR *DramAttr)
 {
-	u8 Idx, CL;
-	u8 Data;
+	u8 Idx, CL, Data;
 
 	for (Idx = 0; DramRegTbl[Idx][0] != 0; Idx++) {
 		Data = pci_read_config8(MEMCTRL, DramRegTbl[Idx][0]);
@@ -87,68 +88,69 @@ void DRAMRegInitValue(DRAM_SYS_ATTR * DramAttr)
 	Data = 0x80;
 	pci_write_config8(PCI_DEV(0, 0, 4), 0xa3, Data);
 
-	//set Dram Controllor mode 
+	// Set DRAM controller mode. */
 	Data = pci_read_config8(MEMCTRL, 0x6c);
 	Data &= 0xFB;
 	if (ENABLE_CHC == 0) {
-		Data |= 0x4;	//only CHA 64 bit mode
+		Data |= 0x4;	/* Only CHA 64 bit mode */
 		pci_write_config8(MEMCTRL, 0x6c, Data);
 	} else {
-		Data |= 0x0;	//CHA + CHC 
+		Data |= 0x0;	/* CHA + CHC */
 		pci_write_config8(MEMCTRL, 0x6c, Data);
 
-		//Data = 0xAA;
-		//pci_write_config8(MEMCTRL, 0xb1, Data);
+		// Data = 0xAA;
+		// pci_write_config8(MEMCTRL, 0xb1, Data);
 
-		//set CHB DQSB input delay, or else will meet error which is some byte is right
-		//but another bit is error
+		// set CHB DQSB input delay, or else will meet error which
+		// is some byte is right but another bit is error.
 		Data = pci_read_config8(MEMCTRL, 0xff);
 		Data = (Data & 0x03) | 0x3D;
 		pci_write_config8(MEMCTRL, 0xff, Data);
 
-		//enable CHC  RXDB[7]
-		//Data=pci_read_config8(MEMCTRL, 0xdb);
-		//  Data = (Data & 0x7F) | 0x80;
-		//pci_write_config8(MEMCTRL, 0xdb, Data);
+		// enable CHC  RXDB[7]
+		// Data = pci_read_config8(MEMCTRL, 0xdb);
+		// Data = (Data & 0x7F) | 0x80;
+		// pci_write_config8(MEMCTRL, 0xdb, Data);
 
-		//rx62[2:0],CHA and CHB CL
+		// rx62[2:0], CHA and CHB CL
 		Data = pci_read_config8(MEMCTRL, 0x62);
 		CL = Data & 0x07;
 
-		//if CL = 6 , so I set CHB CL = 5 default
+		// If CL = 6, so I set CHB CL = 5 default.
 		if (CL >= 4)
 			CL = 3;
 
-		// set CHC  Read CL rxDC[6:7]
+		/* Set CHC Read CL rxDC[6:7]. */
 		Data = pci_read_config8(MEMCTRL, 0xdc);
 		Data = (Data & 0x3F) | (CL << 6);
 		pci_write_config8(MEMCTRL, 0xdc, Data);
-		// set CHC  write CL rxDF[6:7]
+
+		/* Set CHC write CL rxDF[6:7]. */
 		Data = pci_read_config8(MEMCTRL, 0xdf);
 		Data = (Data & 0x3F) | (CL << 6);
 		pci_write_config8(MEMCTRL, 0xdf, Data);
-		// set CHC ODT  RxDC[5:0]
+
+		/* Set CHC ODT RxDC[5:0] */
 		Data = pci_read_config8(MEMCTRL, 0xdc);
 		Data = (Data & 0xC0) | 0x03;
 		pci_write_config8(MEMCTRL, 0xdc, Data);
 
-		//set column type RXDD[6] and enable ODT PAD  RXDD[7]
+		/* Set column type RXDD[6] and enable ODT PAD RXDD[7]. */
 		Data = pci_read_config8(MEMCTRL, 0xdd);
 		Data |= 0x80;
 		Idx = DramAttr->DimmInfo[2].SPDDataBuf[SPD_SDRAM_COL_ADDR];
 		if ((Idx & 0x0F) == 10)
-			Data |= 0x40;	//MA9~MA0
+			Data |= 0x40;	/* MA9~MA0 */
 		else
-			Data &= 0xBF;	//MA8~MA0
+			Data &= 0xBF;	/* MA8~MA0 */
 		pci_write_config8(MEMCTRL, 0xdd, Data);
 	}
 
-	// Disable read DRAM fast   ready   ;Rx51[7]
-	// Disable Read Around Write                ;Rx51[6]
+	// Disable Read DRAM fast ready ;Rx51[7]
+	// Disable Read Around Write    ;Rx51[6]
 
-	// Disable Consecutive Read                 ;RX52[1:0]
-	// disable speculative read
-
+	// Disable Consecutive Read     ;RX52[1:0]
+	// Disable Speculative Read
 }
 
 /*===================================================================
@@ -163,18 +165,18 @@ Purpose   : DRAM initialize according to the bios porting guid
 
 #define EXIST_TEST_PATTERN		0x55555555
 #define NOT_EXIST_TEST_PATTERN		0xAAAAAAAA
-BOOLEAN ChkForExistLowBank()
+
+BOOLEAN ChkForExistLowBank(void)
 {
 	u32 *Address, data32;
 
-	// Check Pattern
-
+	/* Check pattern */
 	Address = (u32 *) 8;
 	*Address = EXIST_TEST_PATTERN;
 	Address = (u32 *) 4;
 	*Address = EXIST_TEST_PATTERN;
 
-//      _asm {WBINVD}   
+	// _asm {WBINVD}   
 	WaitMicroSec(100);
 	Address = (u32 *) 8;
 	data32 = *Address;
@@ -185,14 +187,13 @@ BOOLEAN ChkForExistLowBank()
 	if (data32 != EXIST_TEST_PATTERN)
 		return FALSE;
 
-	// Check not Pattern
+	/* Check not Pattern */
 	Address = (u32 *) 8;
 	*Address = NOT_EXIST_TEST_PATTERN;
 	Address = (u32 *) 4;
 	*Address = NOT_EXIST_TEST_PATTERN;
-	//_asm {WBINVD}
+	// _asm {WBINVD}
 	WaitMicroSec(100);
-
 
 	Address = (u32 *) 8;
 	data32 = *Address;
@@ -206,9 +207,10 @@ BOOLEAN ChkForExistLowBank()
 	return TRUE;
 }
 
-void InitDDR2CHC(DRAM_SYS_ATTR * DramAttr);
-void InitDDR2CHB(DRAM_SYS_ATTR * DramAttr);
-void DRAMInitializeProc(DRAM_SYS_ATTR * DramAttr)
+void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr);
+void InitDDR2CHB(DRAM_SYS_ATTR *DramAttr);
+
+void DRAMInitializeProc(DRAM_SYS_ATTR *DramAttr)
 {
 	u8 shift, idx;
 	BOOLEAN Status;
@@ -216,11 +218,14 @@ void DRAMInitializeProc(DRAM_SYS_ATTR * DramAttr)
 	shift = 1;
 	for (idx = 0; idx < MAX_RANKS; idx++) {
 		if ((DramAttr->RankPresentMap & shift) != 0) {
-			// Set VR# to physical rank indicated = PR + physical rank enable bit
+			/*
+			 * Set VR# to physical rank indicated = PR + physical
+			 * rank enable bit.
+			 */
 			DRAMSetVRNum(DramAttr, idx, idx, TRUE);
-			SetEndingAddr(DramAttr, idx, 0x10);	// assume 1G size
-			if (idx < 4)	//CHA init
-				InitDDR2CHA(DramAttr);	//temp wjb 2007/1 only for compiling
+			SetEndingAddr(DramAttr, idx, 0x10); /* Assume 1G size */
+			if (idx < 4) /* CHA init */
+				InitDDR2CHA(DramAttr);	// temp wjb 2007/1 only for compiling
 			// in the function InitDDR2,the parameter is no need   
 			Status = ChkForExistLowBank();
 			if (Status == TRUE) {
@@ -228,7 +233,11 @@ void DRAMInitializeProc(DRAM_SYS_ATTR * DramAttr)
 			} else {
 				PRINT_DEBUG_MEM(" F\r");
 			}
-			// Set VR# to physical rank indicated = 00h + physical rank enable bit
+
+			/*
+			 * Set VR# to physical rank indicated = 00h + physical
+			 * rank enable bit.
+			 */
 			DRAMSetVRNum(DramAttr, idx, 0, FALSE);
 			SetEndingAddr(DramAttr, idx, -16);
 		}
@@ -238,7 +247,6 @@ void DRAMInitializeProc(DRAM_SYS_ATTR * DramAttr)
 		InitDDR2CHC(DramAttr);
 
 }
-
 
 /*===================================================================
 Function   : DRAMSetVRNUM()
@@ -255,12 +263,11 @@ Purpose   : Set virtual rank number for physical rank
                  Program when necessary, otherwise don't touch the pr-vr-mapping registers
 ===================================================================*/
 
-void DRAMSetVRNum(DRAM_SYS_ATTR * DramAttr, u8 PhyRank,	// Physical Rank
-		  u8 VirRank,	// Virtual Rank
-		  BOOLEAN Enable)
+void DRAMSetVRNum(DRAM_SYS_ATTR *DramAttr, u8 PhyRank /* physical rank */,
+		  u8 VirRank /* virtual rank */, BOOLEAN Enable)
 {
-	u8 Data;
-	u8 AndData, OrData;
+	u8 Data, AndData, OrData;
+
 	Data = pci_read_config8(MEMCTRL, (0x54 + (PhyRank >> 1)));
 
 	OrData = 0;
@@ -268,16 +275,16 @@ void DRAMSetVRNum(DRAM_SYS_ATTR * DramAttr, u8 PhyRank,	// Physical Rank
 		OrData |= 0x08;
 	OrData |= VirRank;
 	if ((PhyRank & 0x01) == 0x00) {
-		AndData = 0x0F;	//  keep the value of odd rank on PR # is even(keep 1,3,5,7)
+		AndData = 0x0F;	// keep the value of odd rank on PR # is even(keep 1,3,5,7)
 		OrData <<= 4;	// VR #, value to be set
 	} else {
 		AndData = 0xF0;	// keep the value of even rank on PR # is odd(keep 0,2,4,6)
 	}
+
 	Data &= AndData;
 	Data |= OrData;
 	pci_write_config8(MEMCTRL, (0x54 + (PhyRank >> 1)), Data);
 }
-
 
 /*===================================================================
 Function   : SetEndingAddr()
@@ -291,17 +298,17 @@ Output     : Void
 Purpose   : Set ending address of virtual rank specified by VirRank 
 ===================================================================*/
 
-void SetEndingAddr(DRAM_SYS_ATTR * DramAttr, u8 VirRank,	// Ending address register      number indicator (INDEX
-		   INT8 Value	// (value) add or subtract value to this and after banks
-    ) {
+void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank,	/* ending address
+		   register number indicator (INDEX */, INT8 Value /* (value)
+		   add or subtract value to this and after banks */) {
 	u8 Data;
 
-	// Read register,Rx40-Rx47(0,1,2,3,4,5,6,7) and set the ending address
+	/* Read register,Rx40-Rx47(0,1,2,3,4,5,6,7) and set ending address. */
 	Data = pci_read_config8(MEMCTRL, 0x40 + VirRank);
 	Data = (u8) (Data + Value);
 	pci_write_config8(MEMCTRL, 0x40 + VirRank, Data);
 
-	//program the virank's begining address to zero
+	/* Program the virank's begining address to zero. */
 	Data = 0x00;
 	pci_write_config8(MEMCTRL, 0x48 + VirRank, Data);
 }
@@ -335,48 +342,51 @@ static const u16 CHA_DDR2_MRS_table[5] = { 0x0150, 0x01D0, 0x0250, 0x02D0, 0x350
 #define CHA_MRS_DDR2_TWR6		(1 << 13) + (0 << 20) + (1 << 12)	// Value = 003000h
 
 //                              DDR2             Twr=2                  Twr=3              Twr=4                  Twr=5
-static const u32 CHA_DDR2_Twr_table[5] =
-    { CHA_MRS_DDR2_TWR2, CHA_MRS_DDR2_TWR3, CHA_MRS_DDR2_TWR4,
-CHA_MRS_DDR2_TWR5, CHA_MRS_DDR2_TWR6 };
+static const u32 CHA_DDR2_Twr_table[5] = {
+	CHA_MRS_DDR2_TWR2, CHA_MRS_DDR2_TWR3, CHA_MRS_DDR2_TWR4,
+	CHA_MRS_DDR2_TWR5, CHA_MRS_DDR2_TWR6
+};
 
 #define CHA_OCD_Exit_150ohm		0x20200	// EMRS(1), BA0=1, MA9=MA8=MA7=0,MA6=1,MA2=0 (DRAM bus address)
 //                A17=1, A12=A11=A10=0,A9=1 ,A5=0  (CPU address)
-#define CHA_OCD_Default_150ohm	      0x21E00	// EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=1,MA2=0 (DRAM bus address)
+#define CHA_OCD_Default_150ohm		0x21E00	// EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=1,MA2=0 (DRAM bus address)
 //               A17=1, A12=A11=A10=1,A9=1 ,A5=0  (CPU address)
 #define CHA_OCD_Exit_75ohm		0x20020	// EMRS(1), BA0=1, MA9=MA8=MA7=0,MA6=0,MA2=1 (DRAM bus address)
 //              A17=1, A12=A11=A10=0,A9=0 ,A5=1  (CPU address)
-#define CHA_OCD_Default_75ohm	0x21C20	// EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=0,MA2=1 (DRAM bus address)
+#define CHA_OCD_Default_75ohm		0x21C20	// EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=0,MA2=1 (DRAM bus address)
 //              A17=1, A12=A11=A10=1,A9=0 ,A5=1  (CPU address)
 
-void InitDDR2CHA(DRAM_SYS_ATTR * DramAttr)
+void InitDDR2CHA(DRAM_SYS_ATTR *DramAttr)
 {
-	u8 Data;
-	u8 Reg6BVal;
-	u8 Idx, CL, BL, Twr;
+	u8 Data, Reg6BVal, Idx, CL, BL, Twr, DimmNum;
 	u32 AccessAddr;
-	u8 DimmNum;
 
-	// step2.
-	//disable bank paging and multi page
+	/* Step 2 */
+	/* Disable bank paging and multi page. */
 	Data = pci_read_config8(MEMCTRL, 0x69);
 	Data &= ~0x03;
 	pci_write_config8(MEMCTRL, 0x69, Data);
 
 	Reg6BVal = pci_read_config8(MEMCTRL, 0x6b);
 	Reg6BVal &= ~0x07;
-	// Step 3.
-	// At least one NOP cycle   will be issued after the 1m sec device deselect.
+
+	/* Step 3 */
+	/* At least one NOP cycle will be issued after the 1m sec device
+	 * deselect.
+	 */
 	Data = Reg6BVal | 0x01;
 	pci_write_config8(MEMCTRL, 0x6b, Data);
 
-	// step4.
-	//Read a double word from any address of the DIMM
+	/* Step 4 */
+	/* Read a double word from any address of the DIMM. */
 	DimmRead(0x0);
 
-	// Step 5.
-	// A minimum pause of 200u sec will be provided after the NOP.
-	// - <<<    reduce BOOT UP time >>> -
-	// Loop 200us
+	/* Step 5 */
+	/*
+	 * A minimum pause of 200u sec will be provided after the NOP.
+	 * - <<<    reduce BOOT UP time >>> -
+	 * Loop 200us
+	 */
 	for (Idx = 0; Idx < 0x10; Idx++)
 		WaitMicroSec(100);
 
@@ -386,7 +396,7 @@ void InitDDR2CHA(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x6b, Data);
 
 	// Step7.
-	//Read a double word from any address of the DIMM
+	// Read a double word from any address of the DIMM
 	DimmRead(0x0);
 
 	// Step 8.
@@ -394,48 +404,46 @@ void InitDDR2CHA(DRAM_SYS_ATTR * DramAttr)
 	Data = Reg6BVal | 0x03;
 	pci_write_config8(MEMCTRL, 0x6b, Data);
 
-
-	// Step 9,10. check ODT value for EMRS(1) command
-	// according to  ODTLookUp_TBL in driving_setting.c if there is one dimm in MB's one channel , the DDR2's ODT is 150ohm
-	// if there is two dimm in MB's one channel, the DDR2's ODT is 75 ohm
+	/* Step 9, 10.
+	 *
+	 * Check ODT value for EMRS(1) command according to ODTLookUp_TBL
+	 * in driving_setting.c if there is one DIMM in MB's one channel,
+	 * the DDR2's ODT is 150ohm if there is two DIMM in MB's one channel,
+	 * the DDR2's ODT is 75 ohm.
+	 */
 	DimmNum = DramAttr->DimmNumChA;
 
-	if (DimmNum == 1)	//DDR's ODT is 150ohm
-	{
+	if (DimmNum == 1) { /* DDR's ODT is 150ohm */
 		AccessAddr = (u32) CHA_MRS_DLL_150[0];
-		DimmRead(AccessAddr);	//issue EMRS  DLL  Enable
+		DimmRead(AccessAddr); /* Issue EMRS DLL Enable. */
 		PRINT_DEBUG_MEM("Step 9 Address ");
 		PRINT_DEBUG_MEM_HEX32(AccessAddr);
 		PRINT_DEBUG_MEM("\r");
 
 		AccessAddr = (u32) CHA_MRS_DLL_150[1];
-		DimmRead(AccessAddr);	//issue MRS    DLL   Reset
+		DimmRead(AccessAddr); /* Issue MRS DLL Reset. */
 		PRINT_DEBUG_MEM("Step 10 Address ");
 		PRINT_DEBUG_MEM_HEX32(AccessAddr);
 		PRINT_DEBUG_MEM("\r");
-	} else if (DimmNum == 2)	//DDR's ODT is 75ohm
-	{
+	} else if (DimmNum == 2) { /* DDR's ODT is 75ohm */
 		AccessAddr = (u32) CHA_MRS_DLL_75[0];
-		DimmRead(AccessAddr);	//issue EMRS  DLL  Enable
+		DimmRead(AccessAddr); /* Issue EMRS DLL Enable. */
 		AccessAddr = (u32) CHA_MRS_DLL_75[1];
-		DimmRead(AccessAddr);	//issue MRS    DLL   Reset
+		DimmRead(AccessAddr); /* Issue MRS DLL Reset. */
 	} else {
 		PRINT_DEBUG_MEM("Dimm NUM ERROR:");
 		PRINT_DEBUG_MEM_HEX8(DimmNum);
 		PRINT_DEBUG_MEM("\r");
 	}
 
-	// Step 11.
-	// Precharge all (PALL) will be issued to the DDR.
+	/* Step 11. Precharge all (PALL) will be issued to the DDR. */
 	Data = Reg6BVal | 0x02;
 	pci_write_config8(MEMCTRL, 0x6b, Data);
 
-	// Step12.
-	//Read a double word from any address of the DIMM
+	/* Step 12. Read a double word from any address of the DIMM. */
 	DimmRead(0x0);
 
-	// Step 13.
-	// Execute 8 CBR refresh
+	/* Step 13. Execute 8 CBR refresh. */
 	Data = Reg6BVal | 0x04;
 	pci_write_config8(MEMCTRL, 0x6b, Data);
 
@@ -446,70 +454,70 @@ void InitDDR2CHA(DRAM_SYS_ATTR * DramAttr)
 		WaitMicroSec(100);
 	}
 
-	// Step 17.
-	//  enable  MRS for MAA
+	/* Step 17. Enable MRS for MAA. */
 	Data = Reg6BVal | 0x03;
 	pci_write_config8(MEMCTRL, 0x6b, Data);
 
-	//Step 18
-	//the SDRAM parameters.(Burst Length, CAS# Latency , Write recovery etc.)
-	//-------------------------------------------------------------
-	//Burst Length : really offset Rx6c[3]
+	/*
+	 * Step 18. The SDRAM parameters (Burst Length, CAS# Latency,
+	 * Write recovery etc.)
+	 */
+
+	/* Burst Length: really offset Rx6c[3] */
 	Data = pci_read_config8(MEMCTRL, 0x6c);
 	BL = (Data & 0x08) >> 3;
 
-	// CL = really offset RX62[2:0]
+	/* CL: really offset RX62[2:0] */
 	Data = pci_read_config8(MEMCTRL, 0x62);
 	CL = Data & 0x03;
 
 	AccessAddr = (u32) (CHA_DDR2_MRS_table[CL]);
-	if (BL) {
+	if (BL)
 		AccessAddr += 8;
-	}
-	//Write recovery  : really offset Rx63[7-5]
+
+	/* Write recovery: really offset Rx63[7-5] */
 	Data = pci_read_config8(MEMCTRL, 0x63);
 	Twr = (Data & 0xE0) >> 5;
 
 	AccessAddr += CHA_DDR2_Twr_table[Twr];
 	// AccessAddr = 0x1012D8;
-	DimmRead(AccessAddr);	// Set MRS command
+	DimmRead(AccessAddr); /* Set MRS command. */
 	PRINT_DEBUG_MEM("Step 18 Address");
 	PRINT_DEBUG_MEM_HEX32(AccessAddr);
 	PRINT_DEBUG_MEM("\r");
 
-	//Step 19,20
-	if (DimmNum == 1)	//DDR's ODT is 150ohm
-	{
+	/* Step 19, 20 */
+	if (DimmNum == 1) { /* DDR's ODT is 150ohm */
 		AccessAddr = (u32) CHA_OCD_Default_150ohm;
-		DimmRead(AccessAddr);	//issue EMRS OCD Default
+		DimmRead(AccessAddr);	/* Issue EMRS OCD Default. */
 		PRINT_DEBUG_MEM("Step 19 Address ");
 		PRINT_DEBUG_MEM_HEX32(AccessAddr);
 		PRINT_DEBUG_MEM("\r");
 
 		AccessAddr = (u32) CHA_OCD_Exit_150ohm;
-		DimmRead(AccessAddr);	//issue EMRS OCD Calibration Mode Exit
+		DimmRead(AccessAddr); /* Issue EMRS OCD Calibration Mode Exit. */
 		PRINT_DEBUG_MEM("Step 20 Address ");
 		PRINT_DEBUG_MEM_HEX32(AccessAddr);
 		PRINT_DEBUG_MEM("\r");
-	} else if (DimmNum == 2)	//DDR's ODT is 75ohm
-	{
+	} else if (DimmNum == 2) { /* DDR's ODT is 75ohm */
 		AccessAddr = (u32) CHA_OCD_Default_75ohm;
-		DimmRead(AccessAddr);	//issue EMRS OCD Default
+		DimmRead(AccessAddr); /* Issue EMRS OCD Default. */
 		AccessAddr = (u32) CHA_OCD_Exit_75ohm;
-		DimmRead(AccessAddr);	//issue EMRS OCD Calibration Mode Exit
+		DimmRead(AccessAddr); /* Issue EMRS OCD Calibration Mode Exit. */
 	} else {
 		PRINT_DEBUG_MEM("Dimm NUM ERROR: ");
 		PRINT_DEBUG_MEM_HEX8(DimmNum);
 		PRINT_DEBUG_MEM("\r");
 	}
 
-	//Step 21
-	//After MRS the device should be    ready for full functionality within 3 clocks
-	// after Tmrd is met.
+	/*
+	 * Step 21. After MRS the device should be ready for full
+	 * functionality within 3 clocks after Tmrd is met.
+	 */
 	Data = Reg6BVal;
 	pci_write_config8(MEMCTRL, 0x6b, Data);
 
-	// Enable bank paging and multi page
+	/* Enable bank paging and multi page. */
 	Data = pci_read_config8(MEMCTRL, 0x69);
 	Data |= 0x03;
 	pci_write_config8(MEMCTRL, 0x69, Data);
@@ -593,7 +601,6 @@ void InitDDR2CHB(
     Data |=  0x80;
     pci_write_config8(MEMCTRL, 0xd3, Data);
 
-
     // Step 7.
     // A minimum pause of 200u sec will be provided after the NOP.
     // - <<<	reduce BOOT UP time >>>	-
@@ -656,7 +663,6 @@ void InitDDR2CHB(
     Data &= 0xC7;
     Data |= 0x00;
     pci_write_config8(MEMCTRL, 0xd3, Data);
-
 
     //step 14. MSR DLL Reset 
     AccessAddr = CHB_MRS_DLL_150[1] >> 3;
@@ -727,7 +733,6 @@ void InitDDR2CHB(
     Data |= 0x00;
     pci_write_config8(MEMCTRL, 0xd3, Data);
 
-
   
     //the SDRAM parameters.(Burst Length, CAS# Latency , Write recovery etc.)
     //-------------------------------------------------------------
@@ -738,7 +743,6 @@ void InitDDR2CHB(
     // CL = really offset RX62[2:0]
     Data=pci_read_config8(MEMCTRL, 0x62);
     CL = Data & 0x03;
-
 
     AccessAddr  = (u32)(CHB_DDR2_MRS_table[CL]);
     if (BL)
@@ -798,7 +802,6 @@ void InitDDR2CHB(
     Data |= (u8)((AccessAddr & 0x30000) >> 15);
     pci_write_config8(MEMCTRL, 0xd7, Data);
 
-
     //step 27.  issue EMRS cycle
     Data=pci_read_config8(MEMCTRL, 0xd3);
     Data &= 0x7F;
@@ -848,7 +851,6 @@ void InitDDR2CHB(
     Data &= 0xF9;
     pci_write_config8(MEMCTRL, 0xd7, Data);
 
-
     //step 30. normal SDRAM Mode
     Data=pci_read_config8(MEMCTRL, 0xd7);
     Data &= 0xC7;
@@ -872,6 +874,7 @@ void InitDDR2CHB(
     pci_write_config8(MEMCTRL, 0x69, Data);
 }
 */
+
 /*===================================================================
 Function   : InitDDR2CHC()
 Precondition : 
@@ -885,132 +888,128 @@ Reference  :
 //                      DDR2                 CL=2          CL=3 CL=4   CL=5     (Burst type=interleave)(WR fine tune in code)
 static const u16 CHC_MRS_table[4] = { 0x22B, 0x23B, 0x24B, 0x25B };	// Use 1X-bandwidth MA table to init DRAM
 
-void InitDDR2CHC(DRAM_SYS_ATTR * DramAttr)
+void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr)
 {
-	u8 Data;
-	u8 Idx, CL, Twr;
+	u8 Data, Idx, CL, Twr;
 	u32 AccessAddr;
 	CB_STATUS Status;
 
-	// step3.
-	//clear RxDF[2] to disable Tri-state output 
+	/* Step 3. Clear RxDF[2] to disable Tri-state output. */
 	Data = pci_read_config8(MEMCTRL, 0xdf);
 	Data &= 0xFB;
 	pci_write_config8(MEMCTRL, 0xdf, Data);
 
-
-
-	//step 4. Enable the initialization mode of DRAM Controller C with NB's PLL clock
+	/*
+	 * Step 4. Enable the initialization mode of DRAM Controller C with
+	 * NB's PLL clock.
+	 */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data |= 0x60;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//Step 5. NOP command enable
+	/* Step 5. NOP command enable. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data &= 0xE3;
 	Data |= 0x00;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-
-	//Step 6.  issue a nop cycle,RegDB[1]  0 -> 1
+	/* Step 6. Issue a nop cycle, RegDB[1] 0 -> 1. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data |= 0x2;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 	Data &= 0xFD;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-
-	// Step 7.
-	// A minimum pause of 200u sec will be provided after the NOP.
-	// - <<<    reduce BOOT UP time >>> -
-	// Loop 200us
+	/*
+	 * Step 7.
+	 * A minimum pause of 200u sec will be provided after the NOP.
+	 * - <<<    reduce BOOT UP time >>> -
+	 * Loop 200us
+	 */
 	for (Idx = 0; Idx < 0x10; Idx++)
 		WaitMicroSec(100);
 
-	// Step 8.
-	// signal bank  precharge command enable
+	/* Step 8. Signal bank precharge command enable. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data &= 0xE3;
 	Data |= 0x14;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//set  MA10 =1, precharge all bank
+	/* Set MA10 = 1, precharge all bank. */
 	Data = 0x00;
 	pci_write_config8(MEMCTRL, 0xf8, Data);
-
 
 	Data = 0x04;
 	pci_write_config8(MEMCTRL, 0xf9, Data);
 
-	//step 9. issue a precharge all cycle,RegD3[7]  0 -> 1
+	/* step 9. Issue a precharge all cycle, RegD3[7] 0 -> 1. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data |= 0x2;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 	Data &= 0xFD;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//step10. MRS enable
+	/* Step 10. MRS enable. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data &= 0xE3;
 	Data |= 0x1C;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-
-	//step11. EMRS DLL enable and Disable DQS
+	/* Step 11. EMRS DLL enable and Disable DQS. */
 	Data = 0x40;
 	pci_write_config8(MEMCTRL, 0xf8, Data);
 
 	Data = 0x24;
 	pci_write_config8(MEMCTRL, 0xf9, Data);
 
-	//step12.  issue EMRS cycle
+	/* Step 12. Issue EMRS cycle. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data |= 0x2;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 	Data &= 0xFD;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//step13. MSR enable
+	/* Step 13. MSR enable. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data &= 0xE3;
 	Data |= 0x1C;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//step 14. MSR DLL Reset 
+	/* Step 14. MSR DLL Reset. */
 	Data = 0x00;
 	pci_write_config8(MEMCTRL, 0xf8, Data);
 
 	Data = 0x01;
 	pci_write_config8(MEMCTRL, 0xf9, Data);
 
-	//step15.  issue MRS cycle
+	/* Step 15. Issue MRS cycle. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data |= 0x2;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 	Data &= 0xFD;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//step16.  signal banks precharge command enable
+	/* Step 16. Signal banks precharge command enable. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data &= 0xE3;
 	Data |= 0x14;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//set  MA10 =1, precharge all bank
+	/* Set MA10 = 1, precharge all bank. */
 	Data = 0x00;
 	pci_write_config8(MEMCTRL, 0xf8, Data);
 
 	Data = 0x04;
 	pci_write_config8(MEMCTRL, 0xf9, Data);
 
-	// step17. issue precharge all cycle
+	/* Step 17. Issue precharge all cycle. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data |= 0x2;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 	Data &= 0xFD;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-	//step18.  CBR cycle enable
+	/* Step 18. CBR cycle enable. */
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data &= 0xE3;
 	Data |= 0x18;
@@ -1075,7 +1074,6 @@ void InitDDR2CHC(DRAM_SYS_ATTR * DramAttr)
 	Data |= 0x1C;
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 
-
 	//step 26. OCD default
 	Data = 0xC0;
 	pci_write_config8(MEMCTRL, 0xf8, Data);
@@ -1097,7 +1095,6 @@ void InitDDR2CHC(DRAM_SYS_ATTR * DramAttr)
 	Data = 0x24;
 	pci_write_config8(MEMCTRL, 0xf9, Data);
 
-
 	//step 29. issue EMRS cycle
 	Data = pci_read_config8(MEMCTRL, 0xdb);
 	Data |= 0x2;
@@ -1114,7 +1111,7 @@ void InitDDR2CHC(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0xdb, Data);
 }
 
-CB_STATUS VerifyChc()
+CB_STATUS VerifyChc(void)
 {
 	u8 Data, ByteVal, Index, pad;
 	u16 row;
@@ -1125,18 +1122,15 @@ CB_STATUS VerifyChc()
 	//verify each MA[0:12],BA[0:1]
 	pad = 1;
 	for (row = 0; row < 0x8000; row++) {
-		//set the write value;
-		//verify each MD[15:0]
+		/* Set the write value, Verify each MD[15:0]. */
 		for (Data = pad, Index = 0; Index < 16; Index++) {
 			Data <<= 1;
 			if (Data == 0)
 				Data = 1;
-			pci_write_config8(PCI_DEV(0, 0, 7), 0xC0 + Index,
-					  Data);
-
+			pci_write_config8(PCI_DEV(0, 0, 7), 0xC0 + Index, Data);
 		}
 
-		//issue the bank active command
+		/* Issue the bank active command. */
 		// bank active command enable
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data &= 0xE3;
@@ -1149,14 +1143,14 @@ CB_STATUS VerifyChc()
 		Data = (u8) ((row && 0xFF) >> 8);
 		pci_write_config8(MEMCTRL, 0xf9, Data);
 
-		//  issue active cycle
+		/* Issue active cycle. */
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data |= 0x2;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 		Data &= 0xFD;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 
-		//issue ready/completion for read/write
+		/* Issue ready/completion for read/write. */
 		// read/completion command enable
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data &= 0xE3;
@@ -1169,14 +1163,14 @@ CB_STATUS VerifyChc()
 		Data = 0x00;
 		pci_write_config8(MEMCTRL, 0xf9, Data);
 
-		//  issue read/completion cycle
+		/* Issue read/completion cycle. */
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data |= 0x2;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 		Data &= 0xFD;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 
-		//issue write command
+		/* Issue write command. */
 		// write command enable
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data &= 0xE3;
@@ -1189,7 +1183,7 @@ CB_STATUS VerifyChc()
 		Data = (u8) ((row & 0x60) << 5);
 		pci_write_config8(MEMCTRL, 0xf9, Data);
 
-		//  issue write cycle
+		/* Issue write cycle. */
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data |= 0x2;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
@@ -1209,14 +1203,14 @@ CB_STATUS VerifyChc()
 		Data = 0x00;
 		pci_write_config8(MEMCTRL, 0xf9, Data);
 
-		//  issue read/completion cycle
+		/* Issue read/completion cycle. */
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data |= 0x2;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 		Data &= 0xFD;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 
-		//issue the bank active command
+		/* Issue the bank active command. */
 		// bank active command enable
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data &= 0xE3;
@@ -1289,21 +1283,19 @@ CB_STATUS VerifyChc()
 		Data = 0x00;
 		pci_write_config8(MEMCTRL, 0xf9, Data);
 
-		//  issue read/completion cycle
+		/* Issue read/completion cycle. */
 		Data = pci_read_config8(MEMCTRL, 0xdb);
 		Data |= 0x2;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 		Data &= 0xFD;
 		pci_write_config8(MEMCTRL, 0xdb, Data);
 
-		//verify the  value;
+		/* Verify the value. */
 		for (ByteVal = pad, Index = 0; Index < 16; Index++) {
-			Data =
-			    pci_read_config8(PCI_DEV(0, 0, 7),
-					     0xD0 + Index);
+			Data = pci_read_config8(PCI_DEV(0, 0, 7), 0xD0 + Index);
 			if (ByteVal != Data) {
-				PRINT_DEBUG_MEM
-				    ("error!!!! row = %x,Index =%x,Data = %x,ByteVal=%x\r");
+				PRINT_DEBUG_MEM("Error! row = %x, index =%x, "
+						"data = %x, byteval=%x\r");
 			}
 			ByteVal <<= 1;
 			if (ByteVal == 0)

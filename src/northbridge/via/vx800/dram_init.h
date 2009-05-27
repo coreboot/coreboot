@@ -74,7 +74,6 @@
 //#define  DATAWIDTHX8       8
 //#define  DATAWIDTHX4       4
 
-
 #define SPD_MEMORY_TYPE              2	/*Memory type FPM,EDO,SDRAM,DDR,DDR2 */
 #define SPD_SDRAM_ROW_ADDR           3	/*Number of row addresses on this assembly */
 #define SPD_SDRAM_COL_ADDR           4	/*Number of column addresses on this assembly */
@@ -244,7 +243,6 @@ void DRAMBankInterleave(DRAM_SYS_ATTR * DramAttr);
 /*Step14 Sizing*/
 void DRAMSizingMATypeM(DRAM_SYS_ATTR * DramAttr);
 
-
 //final_setting.c
 /*Step15 DDR fresh counter setting*/
 void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr);
@@ -252,7 +250,6 @@ void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr);
 //final_setting.c
 /*Step16 Final register setting for improve performance*/
 void DRAMRegFinalValue(DRAM_SYS_ATTR * DramAttr);
-
 
 /*set UMA*/
 void SetUMARam();

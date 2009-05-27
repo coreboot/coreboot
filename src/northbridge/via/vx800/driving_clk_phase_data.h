@@ -67,4 +67,4 @@
 
 //extern u8 Fixed_DQSB_1_2_Rank_Table[4][2];
 //extern u8 Fixed_DQSB_3_4_Rank_Table[4][2];
-#endif /* DRIVINGCLKPHASEDATA_H */
+#endif				/* DRIVINGCLKPHASEDATA_H */

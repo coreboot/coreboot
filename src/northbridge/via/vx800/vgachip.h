@@ -31,4 +31,4 @@ void do_vgabios(void);
 void setup_realmode_idt(void);
 void write_protect_vgabios(void);
 
-#endif /* _PC80_VGABIOS */
+#endif				/* _PC80_VGABIOS */

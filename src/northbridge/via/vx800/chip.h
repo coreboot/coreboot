@@ -17,8 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-struct northbridge_via_vx800_config
-{
+struct northbridge_via_vx800_config {
 };
 
 extern struct chip_operations northbridge_via_vx800_ops;

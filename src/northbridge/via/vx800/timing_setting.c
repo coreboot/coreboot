@@ -70,7 +70,6 @@ void DRAMTimingSetting(DRAM_SYS_ATTR * DramAttr)
 	SetTrtp(DramAttr);
 }
 
-
 /*
 Set DRAM Timing: CAS Latency for DDR1
 D0F3RX62 bit[0:2] for CAS Latency; 
@@ -91,7 +90,6 @@ void SetCL(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x62, Data);
 }
 
-
 /*
  Minimum row precharge time, Trp for DDR1/DDR2
  D0F3Rx64[3:2] for Trp 2T~5T
@@ -105,15 +103,14 @@ void SetTrp(DRAM_SYS_ATTR * DramAttr)
 	u16 Max, Tmp;
 	u8 Socket;
 
-
 	/*get the max Trp value from SPD data
 	   SPD Byte27, Bit7:2->1ns~63ns, Bit1:0->0ns, 0.25ns, 0.50ns, 0.75ns */
 	Max = 0;
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u16) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TRP]);
+			    (u16) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRP]);
 			if (Tmp > Max)
 				Max = Tmp;
 		}
@@ -144,7 +141,6 @@ void SetTrp(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x62, Data);
 }
 
-
 /*
 Minimum RAS to CAS dely,Trcd for DDR1/DDR2
 D0F3Rx64[7:6] for Trcd
@@ -158,15 +154,14 @@ void SetTrcd(DRAM_SYS_ATTR * DramAttr)
 	u16 Max, Tmp;
 	u8 Socket;
 
-
 	/*get the max Trcd value from SPD data
 	   SPD Byte29, Bit7:2->1ns~63ns, Bit1:0->0ns, 0.25ns, 0.50ns, 0.75ns */
 	Max = 0;
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u16) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TRCD]);
+			    (u16) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRCD]);
 			if (Tmp > Max)
 				Max = Tmp;
 		}
@@ -204,24 +199,21 @@ void SetTras(DRAM_SYS_ATTR * DramAttr)
 	u16 Max, Tmp;
 	u8 Socket;
 
-
 	/*get the max Tras value from SPD data
 	   SPD byte30: bit0:7 1ns~255ns */
 	Max = 0;
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u16) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TRAS]);
+			    (u16) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRAS]);
 			if (Tmp > Max)
 				Max = Tmp;
 		}
 	}
 
 	/*Calculate clock,value range 5T-20T */
-	Tmp =
-	    (u16) ((Max * 100 + DramAttr->DramCyc -
-		    1) / (DramAttr->DramCyc));
+	Tmp = (u16) ((Max * 100 + DramAttr->DramCyc - 1) / (DramAttr->DramCyc));
 	PRINT_DEBUG_MEM("Tras =");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
 	PRINT_DEBUG_MEM("\r");
@@ -259,12 +251,13 @@ void SetTrfc(DRAM_SYS_ATTR * DramAttr)
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u32) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TRFC]) * 100;
+			    (u32) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRFC])
+			    * 100;
 			/*only DDR2 need to add byte 40 bit[7:4] */
 			Byte40 =
-			    (DramAttr->DimmInfo[Socket].
-			     SPDDataBuf[SPD_SDRAM_TRFC2]);
+			    (DramAttr->
+			     DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRFC2]);
 			/*if bit0 = 1, byte42(RFC)+256ns, SPD spec JEDEC standard No.21.c */
 			if (Byte40 & 0x01)
 				Tmp += (256 * 100);
@@ -313,7 +306,6 @@ void SetTrfc(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x61, Data);
 }
 
-
 /*
 Minimum row active to row active delay: Trrd for DDR1/DDR2
 D0F3Rx61[7:6]:Trrd  00->2T, 01->3T, 10->4T, 11->5T
@@ -327,15 +319,14 @@ void SetTrrd(DRAM_SYS_ATTR * DramAttr)
 	u16 Max, Tmp;
 	u8 Socket;
 
-
 	/*get the max Trrd value from SPD data
 	   SPD Byte28, Bit7:2->1ns~63ns, Bit1:0->0ns, 0.25ns, 0.50ns, 0.75ns */
 	Max = 0;
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u16) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TRRD]);
+			    (u16) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRRD]);
 			if (Tmp > Max)
 				Max = Tmp;
 		}
@@ -361,7 +352,6 @@ void SetTrrd(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x61, Data);
 }
 
-
 /*
 Write recovery time: Twr for DDR1/DDR2
 Device 0 Function 3:REG63[7:5]:Twr 00->2T 01->3T 10->4T 11->5T
@@ -381,8 +371,8 @@ void SetTwr(DRAM_SYS_ATTR * DramAttr)
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u16) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TWR]);
+			    (u16) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TWR]);
 			if (Tmp > Max)
 				Max = Tmp;
 		}
@@ -405,7 +395,6 @@ void SetTwr(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x63, Data);
 }
 
-
 /*
 Internal write to read command delay: Twtr for DDR1/DDR2
 Device 0 Function 3:REG63[1,0]:Twtr   DDR: 1T or 2T; DDR2 2T or 3T
@@ -425,8 +414,8 @@ void SetTwtr(DRAM_SYS_ATTR * DramAttr)
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u16) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TWTR]);
+			    (u16) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TWTR]);
 			if (Tmp > Max)
 				Max = Tmp;
 		}
@@ -448,7 +437,6 @@ void SetTwtr(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x63, Data);
 }
 
-
 /*
 Internal read to precharge command delay, Trtp for DDR1/DDR2
 Device 0 Function 3:REG63[3]:Trtp  2T or 3T
@@ -462,15 +450,14 @@ void SetTrtp(DRAM_SYS_ATTR * DramAttr)
 	u16 Max, Tmp;
 	u8 Socket;
 
-
 	/*get the max Trtp value from SPD data
 	   SPD Byte38, Bit7:2->1ns~63ns, Bit1:0->0ns, 0.25ns, 0.50ns, 0.75ns */
 	Max = 0;
 	for (Socket = 0; Socket < MAX_SOCKETS; Socket++) {
 		if (DramAttr->DimmInfo[Socket].bPresence) {
 			Tmp =
-			    (u16) (DramAttr->DimmInfo[Socket].
-				   SPDDataBuf[SPD_SDRAM_TRTP]);
+			    (u16) (DramAttr->
+				   DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRTP]);
 			if (Tmp > Max)
 				Max = Tmp;
 		}

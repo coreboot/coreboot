@@ -84,7 +84,6 @@ static void vga_init(device_t dev)
 	//*/
 	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
 
-
 #if 1
 	printk_debug("INSTALL REAL-MODE IDT\n");
 	setup_realmode_idt();
@@ -126,11 +125,10 @@ static void vga_init(device_t dev)
 
 static void vga_read_resources(device_t dev)
 {
-	dev->rom_address = (void *) (0xffffffff - FULL_ROM_SIZE + 1);
+	dev->rom_address = (void *)(0xffffffff - FULL_ROM_SIZE + 1);
 	dev->on_mainboard = 1;
 	pci_dev_read_resources(dev);
 }
-
 
 static struct device_operations vga_operations = {
 	.read_resources = vga_read_resources,
@@ -139,7 +137,6 @@ static struct device_operations vga_operations = {
 	.init = vga_init,
 	.ops_pci = 0,
 };
-
 
 static const struct pci_driver vga_driver __pci_driver = {
 	.ops = &vga_operations,

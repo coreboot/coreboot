@@ -74,7 +74,6 @@ void SetDQSOutputCHA(DRAM_SYS_ATTR * DramAttr)
 	pci_write_config8(MEMCTRL, 0x71, Reg71);
 }
 
-
 //################
 //     STEP 12   #
 //################

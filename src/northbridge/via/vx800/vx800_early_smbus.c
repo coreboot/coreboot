@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
- #include <device/pci_ids.h>
- #include "vx800.h"
-#define SMBUS_IO_BASE		0x0500 //from award bios
-#define PMIO_BASE		VX800_ACPI_IO_BASE //might as well set this while we're here
+#include <device/pci_ids.h>
+#include "vx800.h"
+#define SMBUS_IO_BASE		0x0500	//from award bios
+#define PMIO_BASE		VX800_ACPI_IO_BASE	//might as well set this while we're here
 
 #define SMBHSTSTAT		SMBUS_IO_BASE + 0x0
 #define SMBSLVSTAT		SMBUS_IO_BASE + 0x1
@@ -64,10 +64,11 @@
 /* Internal functions */
 static void smbus_print_error(unsigned char host_status_register, int loops)
 {
-//		print_err("some i2c error\r\n");
+//              print_err("some i2c error\r\n");
 	/* Check if there actually was an error */
-	if ( host_status_register == 0x00 || host_status_register == 0x40 ||
-					host_status_register == 0x42) return;
+	if (host_status_register == 0x00 || host_status_register == 0x40 ||
+	    host_status_register == 0x42)
+		return;
 	print_err("smbus_error: ");
 	print_err_hex8(host_status_register);
 	print_err("\r\n");
@@ -98,7 +99,7 @@ static void smbus_wait_until_ready(void)
 
 	loops = 0;
 	/* Yes, this is a mess, but it's the easiest way to do it */
-	while(((inb(SMBHSTSTAT) & 1) == 1) && (loops <= SMBUS_TIMEOUT)) {
+	while (((inb(SMBHSTSTAT) & 1) == 1) && (loops <= SMBUS_TIMEOUT)) {
 		SMBUS_DELAY();
 		++loops;
 	}
@@ -124,37 +125,37 @@ static unsigned int set_ics_data(unsigned char dev, int data, char len)
 	inb(SMBHSTCTL);
 
 	/* fill blocktransfer array */
-	if (dev=0xd2) {
+	if (dev = 0xd2) {
 		//char d2_data[] = {0x0d,0x00,0x3f,0xcd,0x7f,0xbf,0x1a,0x2a,0x01,0x0f,0x0b,0x00,0x8d,0x9b};
-		outb(0x0d,SMBBLKDAT);
-		outb(0x00,SMBBLKDAT);
-		outb(0x3f,SMBBLKDAT);
-		outb(0xcd,SMBBLKDAT);
-		outb(0x7f,SMBBLKDAT);
-		outb(0xbf,SMBBLKDAT);
-		outb(0x1a,SMBBLKDAT);
-		outb(0x2a,SMBBLKDAT);
-		outb(0x01,SMBBLKDAT);
-		outb(0x0f,SMBBLKDAT);
-		outb(0x0b,SMBBLKDAT);
-		outb(0x80,SMBBLKDAT);
-		outb(0x8d,SMBBLKDAT);
-		outb(0x9b,SMBBLKDAT);
+		outb(0x0d, SMBBLKDAT);
+		outb(0x00, SMBBLKDAT);
+		outb(0x3f, SMBBLKDAT);
+		outb(0xcd, SMBBLKDAT);
+		outb(0x7f, SMBBLKDAT);
+		outb(0xbf, SMBBLKDAT);
+		outb(0x1a, SMBBLKDAT);
+		outb(0x2a, SMBBLKDAT);
+		outb(0x01, SMBBLKDAT);
+		outb(0x0f, SMBBLKDAT);
+		outb(0x0b, SMBBLKDAT);
+		outb(0x80, SMBBLKDAT);
+		outb(0x8d, SMBBLKDAT);
+		outb(0x9b, SMBBLKDAT);
 	} else {
 		//char d4_data[] = {0x08,0xff,0x3f,0x00,0x00,0xff,0xff,0xff,0xff};
-		outb(0x08,SMBBLKDAT);
-		outb(0xff,SMBBLKDAT);
-		outb(0x3f,SMBBLKDAT);
-		outb(0x00,SMBBLKDAT);
-		outb(0x00,SMBBLKDAT);
-		outb(0xff,SMBBLKDAT);
-		outb(0xff,SMBBLKDAT);
-		outb(0xff,SMBBLKDAT);
-		outb(0xff,SMBBLKDAT);
+		outb(0x08, SMBBLKDAT);
+		outb(0xff, SMBBLKDAT);
+		outb(0x3f, SMBBLKDAT);
+		outb(0x00, SMBBLKDAT);
+		outb(0x00, SMBBLKDAT);
+		outb(0xff, SMBBLKDAT);
+		outb(0xff, SMBBLKDAT);
+		outb(0xff, SMBBLKDAT);
+		outb(0xff, SMBBLKDAT);
 	}
 
 	//for (i=0; i < len; i++)
-	//	outb(data[i],SMBBLKDAT);
+	//      outb(data[i],SMBBLKDAT);
 
 	outb(dev, SMBXMITADD);
 	outb(0, SMBHSTCMD);
@@ -184,7 +185,7 @@ static unsigned int get_spd_data(unsigned int dimm, unsigned int offset)
 	dimm &= 0x0E;
 	dimm |= 0xA0;
 
-	outb(dimm|0x1, SMBXMITADD);
+	outb(dimm | 0x1, SMBXMITADD);
 	outb(offset, SMBHSTCMD);
 	outb(0x48, SMBHSTCTL);
 
@@ -201,9 +202,12 @@ static void enable_smbus(void)
 {
 	device_t dev;
 
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_LPC), 0);
+	dev =
+	    pci_locate_device(PCI_ID
+			      (PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_LPC),
+			      0);
 
-	if (dev == PCI_DEV_INVALID)	{
+	if (dev == PCI_DEV_INVALID) {
 		/* This won't display text if enable_smbus() is before serial init */
 		die("Power Managment Controller not found\r\n");
 	}
@@ -217,21 +221,21 @@ static void enable_smbus(void)
 	/* Set to Award value */
 	pci_write_config8(dev, 0xd2, 0x05);
 
-	/* Make it work for I/O ...*/
+	/* Make it work for I/O ... */
 	pci_write_config16(dev, 0x04, 0x0003);
 
-        /*
-            coreboot hangs at this two lines after os reboot(this even happen after I change os 
-            reboot to cold reboot, this also interfere S3 wakeup)*/
+	/*
+	   coreboot hangs at this two lines after os reboot(this even happen after I change os 
+	   reboot to cold reboot, this also interfere S3 wakeup) */
 	/* Setup clock chips */
 	//set_ics_data(0xd2, 0, 14);
 	//set_ics_data(0xd4, 0, 9);
-	
+
 	smbus_reset();
 	/* clear host data port */
 	outb(0x00, SMBHSTDAT0);
 	SMBUS_DELAY();
- 	smbus_wait_until_ready();
+	smbus_wait_until_ready();
 }
 
 /**
@@ -266,13 +270,15 @@ void smbus_fixup(const struct mem_controller *ctrl)
 	 * VT8237R has only been seen on DDR and DDR2 based systems, so far.
 	 */
 	for (i = 0; (i < SMBUS_TIMEOUT && ((result < SPD_MEMORY_TYPE_SDRAM) ||
-				(result > SPD_MEMORY_TYPE_SDRAM_DDR3))); i++) {
+					   (result >
+					    SPD_MEMORY_TYPE_SDRAM_DDR3)));
+	     i++) {
 
 		if (current_slot > ram_slots)
 			current_slot = 0;
 
 		result = get_spd_data(ctrl->channel0[current_slot],
-					 SPD_MEMORY_TYPE);
+				      SPD_MEMORY_TYPE);
 		current_slot++;
 		PRINT_DEBUG(".");
 	}
@@ -290,24 +296,21 @@ static void dump_spd_data(void)
 	int dimm, offset, regs;
 	unsigned int val;
 
-	for(dimm = 0; dimm < 8; dimm++)
-	{
+	for (dimm = 0; dimm < 8; dimm++) {
 		print_debug("SPD Data for DIMM ");
 		print_debug_hex8(dimm);
 		print_debug("\r\n");
 
 		val = get_spd_data(dimm, 0);
-		if(val == 0xff)
-		{
+		if (val == 0xff) {
 			regs = 256;
-		} else if(val == 0x80) {
+		} else if (val == 0x80) {
 			regs = 128;
 		} else {
 			print_debug("No DIMM present\r\n");
 			regs = 0;
 		}
-		for(offset = 0; offset < regs; offset++)
-		{
+		for (offset = 0; offset < regs; offset++) {
 			print_debug("  Offset ");
 			print_debug_hex8(offset);
 			print_debug(" = 0x");

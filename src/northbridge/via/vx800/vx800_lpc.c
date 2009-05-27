@@ -30,28 +30,28 @@
 #include "vx800.h"
 #include "chip.h"
 
-static const unsigned char pciIrqs[4] = {0xa, 0x9, 0xb, 0xa};
+static const unsigned char pciIrqs[4] = { 0xa, 0x9, 0xb, 0xa };
 
-static const unsigned char vgaPins[4] = { 'A', 'B', 'C', 'D' };//only INTA
+static const unsigned char vgaPins[4] = { 'A', 'B', 'C', 'D' };	//only INTA
 
-static const unsigned char slotPins[4] = { 'A', 'A', 'A', 'A'};//all 4
+static const unsigned char slotPins[4] = { 'A', 'A', 'A', 'A' };	//all 4
 
-static const unsigned char usbdevicePins[4] = { 'A', 'B', 'C', 'D' };//only INTA
-static const unsigned char sdioPins[4] = { 'A', 'B', 'C', 'D' };//only INTA
-static const unsigned char sd_ms_ctrl_Pins[4] = { 'B', 'C', 'D', 'A' };//only INTA
-static const unsigned char ce_ata_nf_ctrl_Pins[4] = { 'C', 'C', 'D', 'A' };//only INTA
-static const unsigned char idePins[4] = { 'B', 'C', 'D', 'A' };//only INTA
+static const unsigned char usbdevicePins[4] = { 'A', 'B', 'C', 'D' };	//only INTA
+static const unsigned char sdioPins[4] = { 'A', 'B', 'C', 'D' };	//only INTA
+static const unsigned char sd_ms_ctrl_Pins[4] = { 'B', 'C', 'D', 'A' };	//only INTA
+static const unsigned char ce_ata_nf_ctrl_Pins[4] = { 'C', 'C', 'D', 'A' };	//only INTA
+static const unsigned char idePins[4] = { 'B', 'C', 'D', 'A' };	//only INTA
 
-static const unsigned char usbPins[4] = { 'A', 'B', 'C', 'D' };//all 4 
+static const unsigned char usbPins[4] = { 'A', 'B', 'C', 'D' };	//all 4 
 
-static const unsigned char hdacaudioPins[4] = { 'B', 'C', 'D', 'A' };//only INTA 
+static const unsigned char hdacaudioPins[4] = { 'B', 'C', 'D', 'A' };	//only INTA 
 
 static unsigned char *pin_to_irq(const unsigned char *pin)
 {
 	static unsigned char Irqs[4];
 	int i;
-	for (i = 0 ; i < 4 ; i++)
-		Irqs[i] = pciIrqs[ pin[i] - 'A' ];
+	for (i = 0; i < 4; i++)
+		Irqs[i] = pciIrqs[pin[i] - 'A'];
 
 	return Irqs;
 }
@@ -62,7 +62,7 @@ static void pci_routing_fixup(struct device *dev)
 
 	/* set up PCI IRQ routing */
 	pci_write_config8(dev, 0x55, pciIrqs[0] << 4);
-	pci_write_config8(dev, 0x56, pciIrqs[1] | (pciIrqs[2] << 4) );
+	pci_write_config8(dev, 0x56, pciIrqs[1] | (pciIrqs[2] << 4));
 	pci_write_config8(dev, 0x57, pciIrqs[3] << 4);
 
 	/* VGA */
@@ -95,7 +95,7 @@ static void pci_routing_fixup(struct device *dev)
 
 	/* Standard usb components */
 	printk_info("setting usb1-2\n");
-//	pci_assign_irqs(0, 0x10, pin_to_irq(usbPins));
+//      pci_assign_irqs(0, 0x10, pin_to_irq(usbPins));
 
 	/* sound hardware */
 	printk_info("setting hdac audio\n");
@@ -111,27 +111,27 @@ void setup_pm(device_t dev)
 	pci_write_config8(dev, 0x80, 0x20);
 
 	/* Set ACPI base address to IO VX800_ACPI_IO_BASE */
-	pci_write_config16(dev, 0x88, VX800_ACPI_IO_BASE|1);
+	pci_write_config16(dev, 0x88, VX800_ACPI_IO_BASE | 1);
 
 	/* set ACPI irq to 9 */
 	pci_write_config8(dev, 0x82, 0x49);
 
 	/* Primary interupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
-//	pci_write_config16(dev, 0x84, 0x30f2);
-	pci_write_config16(dev, 0x84, 0x609a); // 0x609a??
+//      pci_write_config16(dev, 0x84, 0x30f2);
+	pci_write_config16(dev, 0x84, 0x609a);	// 0x609a??
 
 	/* SMI output level to low, 7.5us throttle clock */
 	pci_write_config8(dev, 0x8d, 0x18);
 
 	/* GP Timer Control 1s */
 	pci_write_config8(dev, 0x93, 0x88);
-	
+
 	/* Power Well */
 	pci_write_config8(dev, 0x94, 0x20);	// 0x20??
 
 	/* 7 = stp to sust delay 1msec
-         * 6 = SUSST# Deasserted Before PWRGD for STD
-         */
+	 * 6 = SUSST# Deasserted Before PWRGD for STD
+	 */
 	pci_write_config8(dev, 0x95, 0xc0);	// 0xc1??
 
 	/* Disable GP2 & GP3 Timer */
@@ -146,7 +146,6 @@ void setup_pm(device_t dev)
 	pci_write_config8(dev, 0xe4, 0x00);
 	/* Multi Function Select 2 */
 	pci_write_config8(dev, 0xe5, 0x41);	//??
-
 
 	/* Enable ACPI access (and setup like award) */
 	pci_write_config8(dev, 0x81, 0x84);
@@ -198,38 +197,40 @@ void setup_pm(device_t dev)
 	outw(0x001, 0x404);
 */
 }
+
 void S3_ps2_kb_ms_wakeup(struct device *dev)
-{	u8 enables;
+{
+	u8 enables;
 	enables = pci_read_config8(dev, 0x51);
 	enables |= 2;
 	pci_write_config8(dev, 0x51, enables);
-	
-	outb(0xe0, 0x2e);
-	outb(0x0b, 0x2f);//if 09,then only support kb wakeup
 
-	outb(0xe1, 0x2e);//set any key scan code can wakeup
+	outb(0xe0, 0x2e);
+	outb(0x0b, 0x2f);	//if 09,then only support kb wakeup
+
+	outb(0xe1, 0x2e);	//set any key scan code can wakeup
 	outb(0x00, 0x2f);
-	
-	outb(0xe9, 0x2e);//set any mouse scan code can wakeup
+
+	outb(0xe9, 0x2e);	//set any mouse scan code can wakeup
 	outb(0x00, 0x2f);
 
 	enables &= 0xd;
 	pci_write_config8(dev, 0x51, enables);
 
-	outb(inb(VX800_ACPI_IO_BASE+0x02)|0x20, VX800_ACPI_IO_BASE+0x02);//ACPI golabe enable for sci smi trigger
-	outw(inw(VX800_ACPI_IO_BASE+0x22)|0x204, VX800_ACPI_IO_BASE+0x22);//ACPI SCI on Internal KBC PME and mouse PME	
-		
+	outb(inb(VX800_ACPI_IO_BASE + 0x02) | 0x20, VX800_ACPI_IO_BASE + 0x02);	//ACPI golabe enable for sci smi trigger
+	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x204, VX800_ACPI_IO_BASE + 0x22);	//ACPI SCI on Internal KBC PME and mouse PME  
+
 }
+
 void S3_usb_wakeup(struct device *dev)
 {
-	outw(inw(VX800_ACPI_IO_BASE+0x22)|0x4000, VX800_ACPI_IO_BASE+0x22);//SCI on USB PME
+	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x4000, VX800_ACPI_IO_BASE + 0x22);	//SCI on USB PME
 }
 
 void S3_lid_wakeup(struct device *dev)
 {
-	outw(inw(VX800_ACPI_IO_BASE+0x22)|0x800, VX800_ACPI_IO_BASE+0x22);//SCI on LID PME
+	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x800, VX800_ACPI_IO_BASE + 0x22);	//SCI on LID PME
 }
-
 
 /* This looks good enough to work, maybe */
 static void vx800_sb_init(struct device *dev)
@@ -242,7 +243,7 @@ static void vx800_sb_init(struct device *dev)
 	pci_write_config8(dev, 0x6C, enables);
 
 	// Map 4MB of FLASH into the address space
-//	pci_write_config8(dev, 0x41, 0x7f);
+//      pci_write_config8(dev, 0x41, 0x7f);
 
 	// Set bit 6 of 0x40, because Award does it (IO recovery time)
 	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI
@@ -260,7 +261,7 @@ static void vx800_sb_init(struct device *dev)
 	pci_write_config8(dev, 0x4c, 0x44);
 
 	/* ROM memory cycles go to LPC. */
-        pci_write_config8(dev, 0x59, 0x80);
+	pci_write_config8(dev, 0x59, 0x80);
 
 	/* Set 0x5b to 0x01 to match Award */
 	//pci_write_config8(dev, 0x5b, 0x01);
@@ -268,16 +269,14 @@ static void vx800_sb_init(struct device *dev)
 	enables |= 0x01;
 	pci_write_config8(dev, 0x5b, enables);
 
-
 	/* Set Read Pass Write Control Enable */
 	pci_write_config8(dev, 0x48, 0x0c);
 
 	/* Set 0x58 to 0x42 APIC and RTC. */
 	//pci_write_config8(dev, 0x58, 0x42); this cmd cause the irq0 can not be triggerd,since bit 5 was set to 0.
-	enables=pci_read_config8(dev, 0x58); 
-	enables|=0x41;//
-	pci_write_config8(dev, 0x58,enables); 
-
+	enables = pci_read_config8(dev, 0x58);
+	enables |= 0x41;	//
+	pci_write_config8(dev, 0x58, enables);
 
 	/* Set bit 3 of 0x4f to match award (use INIT# as cpu reset) */
 	enables = pci_read_config8(dev, 0x4f);
@@ -308,21 +307,24 @@ void vx800_read_resources(device_t dev)
 	struct resource *resource;
 	pci_dev_read_resources(dev);
 	resource = new_resource(dev, 1);
-	resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_IO | IORESOURCE_STORED;
+	resource->flags |=
+	    IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_IO |
+	    IORESOURCE_STORED;
 	resource->size = 2;
 	resource->base = 0x2e;
 
 }
+
 void vx800_set_resources(device_t dev)
 {
 	struct resource *resource;
-	resource = find_resource(dev,1);
+	resource = find_resource(dev, 1);
 	resource->flags |= IORESOURCE_STORED;
 	pci_dev_set_resources(dev);
 }
 
 void vx800_enable_resources(device_t dev)
- {
+{
 	/* vx800 is not a pci bridge and has no resources of its own (other than
 	   standard PC i/o addresses). however it does control the isa bus and so
 	   we need to manually call enable childrens resources on that bus */
@@ -332,18 +334,19 @@ void vx800_enable_resources(device_t dev)
 }
 
 static void southbridge_init(struct device *dev)
-{ 
+{
 	printk_debug("vx800 sb init\n");
 	vx800_sb_init(dev);
 	pci_routing_fixup(dev);
 
-	setup_i8259();   // make sure interupt controller is configured before keyboard init
+	setup_i8259();		// make sure interupt controller is configured before keyboard init
 
-  /* turn on keyboard and RTC, no need to visit this reg twice */
+	/* turn on keyboard and RTC, no need to visit this reg twice */
 	init_pc_keyboard(0x60, 0x64, 0);
-	printk_debug("ps2 usb lid, you  set who can wakeup system from s3 sleep\n");		
+	printk_debug
+	    ("ps2 usb lid, you  set who can wakeup system from s3 sleep\n");
 	S3_ps2_kb_ms_wakeup(dev);
-	S3_usb_wakeup(dev); 
+	S3_usb_wakeup(dev);
 
 /*	enable acpi cpu c3 state. (c2 state need not do anything.)
 	#1
@@ -370,15 +373,15 @@ static void southbridge_init(struct device *dev)
 }
 
 static struct device_operations vx800_lpc_ops = {
-	.read_resources   = vx800_read_resources,
-	.set_resources    = vx800_set_resources,
+	.read_resources = vx800_read_resources,
+	.set_resources = vx800_set_resources,
 	.enable_resources = vx800_enable_resources,
-	.init             = &southbridge_init,
-	.scan_bus         = scan_static_bus,
+	.init = &southbridge_init,
+	.scan_bus = scan_static_bus,
 };
 
 static struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &vx800_lpc_ops,
+	.ops = &vx800_lpc_ops,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_VX855_LPC,
 };

@@ -24,7 +24,6 @@
 #define TRUE  1
 #define FALSE 0
 
-
 typedef int8_t INT8;
 typedef unsigned long uintn_t;
 typedef uintn_t UINTN;

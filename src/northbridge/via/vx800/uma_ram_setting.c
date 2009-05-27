@@ -32,7 +32,6 @@ typedef struct __UMA_RAM_tag {
 #define UMARAM_8M	1
 #define UMARAM_0M	0
 
-
 #define FB_512M		0
 #define FB_256M		0x40
 #define FB_128M		0x60
@@ -76,7 +75,6 @@ void SetUMARam(void)
 	SLD0F3Val = 0;
 	SLD1F0Val = 0;
 	VgaPortVal = 0;
-
 
 	ByteVal = pci_read_config8(MEMCTRL, 0xa1);
 	ByteVal |= 0x80;
@@ -134,14 +132,12 @@ void SetUMARam(void)
 	ByteVal = (ByteVal & 0x8f) | (SLD0F3Val << 4);
 	pci_write_config8(MEMCTRL, 0xa1, ByteVal);
 
-
 //      vga_dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VGA, 0);
 
 	//RxB2 may be for S.L. and RxB1 may be for L. L. 
 	// It is different from Spec.
 	ByteVal = SLD1F0Val;
 	pci_write_config8(vga_dev, 0xb2, ByteVal);
-
 
 	//set M1 size
 	//ByteVal=pci_read_config8(MEMCTRL, 0xa3);
@@ -150,15 +146,9 @@ void SetUMARam(void)
 
 	PRINT_DEBUG_MEM("UMA setting - 3\n");
 
-
-
-
 	//Enable p2p  IO/mem
 	ByteVal = 0x07;
 	pci_write_config8(vga_dev, 0x04, ByteVal);
-
-
-
 
 	//must set SL and MMIO base, or else when enable GFX memory space, system will hang
 	//set S.L base
@@ -177,13 +167,11 @@ void SetUMARam(void)
 	Tmp = VIACONFIG_VGA_PCI_14;
 	pci_write_config32(vga_dev, 0x14, Tmp);
 
-
 //enable direct cpu frame buffer access
 	i = pci_rawread_config8(PCI_RAWDEV(0, 0, 3), 0xa1);
 	i = (i & 0xf0) | (VIACONFIG_VGA_PCI_10 >> 28);
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0xa1, i);
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0xa0, 0x01);
-
 
 	//enable GFx memory space access control for S.L and mmio
 	ByteVal = pci_read_config8(d0f0_dev, 0xD4);
@@ -191,12 +179,10 @@ void SetUMARam(void)
 	//ByteVal |= 0x01;
 	pci_write_config8(d0f0_dev, 0xD4, ByteVal);
 
-
 	//enable Base VGA 16 Bits Decode
 	ByteVal = pci_read_config8(d0f0_dev, 0xfe);
 	ByteVal |= 0x10;
 	pci_write_config8(d0f0_dev, 0xfe, ByteVal);
-
 
 	//disable CHB L.L
 	//set VGA memory selection
@@ -232,7 +218,6 @@ void SetUMARam(void)
 	//  ByteVal=inb(0x03C2);
 	//   ByteVal |= 0x01;
 	//   outb(ByteVal,0x03C2);
-
 
 #if 1				//bios porting guide has no this two defination:  3d  on 3d4/3d5 and  39 on 3c4/3c5
 	//set frequence 0x3D5.3d[7:4]
@@ -304,7 +289,6 @@ void SetUMARam(void)
 	//calculate SL Base Address
 	SLBase = (RamSize << 26) - (UmaSize << 20);
 
-
 	outb(0x6D, 0x03c4);
 	//SL Base[28:21] 
 	outb((u8) ((SLBase >> 21) & 0xFF), 0x03c5);
@@ -338,7 +322,6 @@ void SetUMARam(void)
 	ByteVal = inb(0x03c5);
 	ByteVal = (ByteVal & 0xE5) | 0x1A;
 	outb(ByteVal, 0x03c5);
-
 
 	outb(0xf3, 0x03d4);
 	ByteVal = inb(0x03d5);
@@ -381,7 +364,6 @@ void SetUMARam(void)
 		0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D, 0x1D,
 	};
 
-
 	u8 table3c0space[0xc0] = {
 		0x11, 0x00, 0x10, 0x01, 0x26, 0x3D, 0xFF, 0x00,
 		0x10, 0x3F, 0x00, 0x00, 0x2F, 0x00, 0x22, 0x00,
@@ -414,7 +396,6 @@ void SetUMARam(void)
 	{
 		outb(table3c0space[i], 0x03c0 + i);
 	}
-
 
 	for (i = 0; i < 0x70; i++) {
 		outb(i, 0x03c4);

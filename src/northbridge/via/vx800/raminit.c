@@ -24,7 +24,6 @@
 
 #define DEBUG_RAM_SETUP 1
 
-
 #ifdef DEBUG_RAM_SETUP
 #define PRINT_DEBUG_MEM(x)		print_debug(x)
 #define PRINT_DEBUG_MEM_HEX8(x)		print_debug_hex8(x)

@@ -55,7 +55,6 @@ void DRAMDriving(DRAM_SYS_ATTR * DramAttr)
 	DrivingDCLK(DramAttr);
 }
 
-
 /*
 ODT	Control	for DQ/DQS/CKE/SCMD/DCLKO in ChA & ChB
 which include driving enable/range and strong/weak selection
@@ -158,7 +157,6 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 		Data |= 0;
 	pci_write_config8(MEMCTRL, 0x9e, Data);
 
-
 	if (DIMMFREQ_400 == DramAttr->DramFreq)
 		Data = 0x0;
 	else if (DIMMFREQ_533 == DramAttr->DramFreq)
@@ -170,7 +168,6 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 	else
 		Data = 0;
 	pci_write_config8(MEMCTRL, 0x9f, Data);
-
 
 	/*channel A ODT select */
 	if (DramAttr->DimmNumChA > 0) {
@@ -189,7 +186,6 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 		else
 			Data |= 0x00;	/*if rank number is 1or2,  clear bit7 */
 		pci_write_config8(MEMCTRL, 0xd7, Data);
-
 
 		/*channel A */
 		Data = pci_read_config8(MEMCTRL, 0xd5);
@@ -212,11 +208,9 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 			}
 			if (!bFound) {	/*set default value */
 				Data =
-				    ODTLookup_TBL[ODTLookup_Tbl_count -
-						  1][1];
+				    ODTLookup_TBL[ODTLookup_Tbl_count - 1][1];
 			}
 			pci_write_config8(MEMCTRL, 0x9c, Data);
-
 
 			//set CHA MD ODT control State Dynamic-on
 			Data = pci_read_config8(MEMCTRL, 0xD4);
@@ -252,7 +246,6 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 			Data |= 0x00;	/*if rank number is 1or2,  clear bit7 */
 		pci_write_config8(MEMCTRL, 0xd7, Data);
 
-
 		Data = pci_read_config8(MEMCTRL, 0xd5);
 		Data &= 0xFC;
 		if (DramAttr->DimmNumChB == 2)	/*2 Dimm, 3or4 Ranks */
@@ -266,7 +259,6 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 		Data &= 0xF6;
 		Data |= 0x08;
 		pci_write_config8(MEMCTRL, 0xD4, Data);
-
 
 		//enable CHB differential DQS input
 		Data = pci_read_config8(MEMCTRL, 0x9E);

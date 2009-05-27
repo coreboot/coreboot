@@ -99,7 +99,6 @@ void DRAMFreqSetting(DRAM_SYS_ATTR * DramAttr)
 
 }
 
-
 /*
  calculate CL and dram freq
  DDR1
@@ -134,13 +133,13 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 	for (SckId = 0; SckId < MAX_SOCKETS; SckId++) {
 		if (DramAttr->DimmInfo[SckId].bPresence) {	/*all DIMM supported CL */
 			AllDimmSupportedCL &=
-			    (DramAttr->DimmInfo[SckId].
-			     SPDDataBuf[SPD_SDRAM_CAS_LATENCY]);
+			    (DramAttr->
+			     DimmInfo[SckId].SPDDataBuf[SPD_SDRAM_CAS_LATENCY]);
 		}
 	}
 	if (!AllDimmSupportedCL) {	/*if equal 0, no supported CL */
 		PRINT_DEBUG_MEM("SPD Data Error, Can not get CL !!!! \r");
-		for (;;);
+		for (;;) ;
 	}
 
 	/*Get CL Value */
@@ -164,8 +163,8 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 	for (SckId = 0; SckId < MAX_SOCKETS; SckId++) {
 		if (DramAttr->DimmInfo[SckId].bPresence) {
 			Tmp =
-			    (DramAttr->DimmInfo[SckId].
-			     SPDDataBuf[SPD_SDRAM_CAS_LATENCY]);
+			    (DramAttr->
+			     DimmInfo[SckId].SPDDataBuf[SPD_SDRAM_CAS_LATENCY]);
 			tmpMask = 0x40;
 			for (TmpId = 7; TmpId > 0; TmpId--) {
 				if ((Tmp & tmpMask) == tmpMask)
@@ -174,16 +173,19 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 			}
 			if (TmpId - BitId == 0) {	/*get Cycle time for X, SPD BYTE9 */
 				TmpCycTime =
-				    DramAttr->DimmInfo[SckId].
-				    SPDDataBuf[SPD_SDRAM_TCLK_X];
+				    DramAttr->
+				    DimmInfo[SckId].SPDDataBuf
+				    [SPD_SDRAM_TCLK_X];
 			} else if (TmpId - BitId == 1) {	/*get Cycle time for X-1, SPD BYTE23 */
 				TmpCycTime =
-				    DramAttr->DimmInfo[SckId].
-				    SPDDataBuf[SPD_SDRAM_TCLK_X_1];
+				    DramAttr->
+				    DimmInfo[SckId].SPDDataBuf
+				    [SPD_SDRAM_TCLK_X_1];
 			} else if (TmpId - BitId == 2) {	/*get cycle time for X-2, SPD BYTE25 */
 				TmpCycTime =
-				    DramAttr->DimmInfo[SckId].
-				    SPDDataBuf[SPD_SDRAM_TCLK_X_2];
+				    DramAttr->
+				    DimmInfo[SckId].SPDDataBuf
+				    [SPD_SDRAM_TCLK_X_2];
 			} else {
 				//error!!!
 			}
@@ -194,7 +196,7 @@ void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 
 	if (CycTime <= 0) {
 		//error!
-		for (;;);
+		for (;;) ;
 	}
 
 	/* cycle time value

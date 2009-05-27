@@ -23,7 +23,6 @@ extern void DRAMSetVRNum(DRAM_SYS_ATTR * DramAttr,
 extern void SetEndingAddr(DRAM_SYS_ATTR * DramAttr, u8 VirRank,	// Ending address register      number indicator (INDEX
 			  INT8 Value);	// (value) add or subtract value to this and after banks
 
-
 void DRAMClearEndingAddress(DRAM_SYS_ATTR * DramAttr);
 
 void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr);
@@ -57,8 +56,8 @@ void DRAMBankInterleave(DRAM_SYS_ATTR * DramAttr)
 		if ((DramAttr->RankPresentMap & Shift) != 0) {
 			CurrentDimminfo = &(DramAttr->DimmInfo[RankNO >> 1]);	//this Rank in a dimm
 			SpdBAData =
-			    (u8) (CurrentDimminfo->
-				  SPDDataBuf[SPD_SDRAM_NO_OF_BANKS]);
+			    (u8) (CurrentDimminfo->SPDDataBuf
+				  [SPD_SDRAM_NO_OF_BANKS]);
 			if (SpdBAData == 4)
 				Count = 2;
 			else if (SpdBAData == 8)
@@ -76,12 +75,10 @@ void DRAMBankInterleave(DRAM_SYS_ATTR * DramAttr)
 	Data |= (Bank << 6);
 	pci_write_config8(MEMCTRL, 0x69, Data);
 
-
 	if (DramAttr->DimmNumChB > 0) {
 		CurrentDimminfo = &(DramAttr->DimmInfo[3]);	//this Rank in a dimm
 		SpdBAData =
-		    (u8) (CurrentDimminfo->
-			  SPDDataBuf[SPD_SDRAM_NO_OF_BANKS]);
+		    (u8) (CurrentDimminfo->SPDDataBuf[SPD_SDRAM_NO_OF_BANKS]);
 		if (SpdBAData == 4)
 			Bank = 2;
 		else if (SpdBAData == 2)
@@ -147,12 +144,9 @@ void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr)
 	for (Slot = 0; Slot < 2; Slot++) {
 		if (!DramAttr->DimmInfo[Slot].bPresence)
 			continue;
-		Rows =
-		    DramAttr->DimmInfo[Slot].
-		    SPDDataBuf[SPD_SDRAM_ROW_ADDR];
+		Rows = DramAttr->DimmInfo[Slot].SPDDataBuf[SPD_SDRAM_ROW_ADDR];
 		Columns =
-		    DramAttr->DimmInfo[Slot].
-		    SPDDataBuf[SPD_SDRAM_COL_ADDR];
+		    DramAttr->DimmInfo[Slot].SPDDataBuf[SPD_SDRAM_COL_ADDR];
 		Banks = DramAttr->DimmInfo[Slot].SPDDataBuf[SPD_SDRAM_NO_OF_BANKS];	//this is Bank number not Bank address bit
 		if (Banks == 4)
 			Banks = 2;
@@ -164,8 +158,9 @@ void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr)
 		RankIndex = 2 * Slot;
 		DramAttr->RankSize[RankIndex] = Size;
 		//if this module have two ranks
-		if ((DramAttr->DimmInfo[Slot].
-		     SPDDataBuf[SPD_SDRAM_DIMM_RANKS] & 0x07) == 0x01) {
+		if ((DramAttr->
+		     DimmInfo[Slot].SPDDataBuf[SPD_SDRAM_DIMM_RANKS] & 0x07) ==
+		    0x01) {
 			RankIndex++;
 			DramAttr->RankSize[RankIndex] = Size;
 		}
@@ -189,8 +184,7 @@ void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr)
 		pci_write_config8(MEMCTRL, 0x53, Data);
 	}
 #if 1
-	for (RankIndex = 0; DramAttr->RankSize[RankIndex] != 0;
-	     RankIndex++) {
+	for (RankIndex = 0; DramAttr->RankSize[RankIndex] != 0; RankIndex++) {
 		PRINT_DEBUG_MEM("Rank:");
 		PRINT_DEBUG_MEM_HEX8(RankIndex);
 		PRINT_DEBUG_MEM(", Size:");
@@ -235,11 +229,13 @@ void DRAMSetRankMAType(DRAM_SYS_ATTR * DramAttr)
 		if (DramAttr->DimmInfo[SlotNum].bPresence) {
 			for (j = 0; MAMapTypeTbl[j] != 0; j += 3) {
 				if ((1 << MAMapTypeTbl[j]) ==
-				    DramAttr->DimmInfo[SlotNum].
-				    SPDDataBuf[SPD_SDRAM_NO_OF_BANKS]
+				    DramAttr->
+				    DimmInfo[SlotNum].SPDDataBuf
+				    [SPD_SDRAM_NO_OF_BANKS]
 				    && MAMapTypeTbl[j + 1] ==
-				    DramAttr->DimmInfo[SlotNum].
-				    SPDDataBuf[SPD_SDRAM_COL_ADDR]) {
+				    DramAttr->
+				    DimmInfo[SlotNum].SPDDataBuf
+				    [SPD_SDRAM_COL_ADDR]) {
 					break;
 				}
 			}
@@ -286,11 +282,9 @@ void DRAMSetEndingAddress(DRAM_SYS_ATTR * DramAttr)
 				End = End + Size;	// calculate current ending address,   add the current Size to ending
 				Vrank = RankNO;	// get virtual Rank
 				Data = End;	// set begin/End address register to correspondig virtual       Rank #
-				pci_write_config8(MEMCTRL, 0x40 + Vrank,
-						  Data);
+				pci_write_config8(MEMCTRL, 0x40 + Vrank, Data);
 				Data = Start;
-				pci_write_config8(MEMCTRL, 0x48 + Vrank,
-						  Data);
+				pci_write_config8(MEMCTRL, 0x48 + Vrank, Data);
 				PRINT_DEBUG_MEM("Rank: ");
 				PRINT_DEBUG_MEM_HEX8(Vrank);
 				PRINT_DEBUG_MEM(", Start:");

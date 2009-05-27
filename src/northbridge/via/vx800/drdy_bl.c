@@ -102,7 +102,6 @@
 #define Rx54L1T			P6IF_Misc_RFASTH
 #define Rx55L1T			P6IF_Misc2_RHTSEL
 
-
 #define PH0_0_0_0	0x00
 #define PH0_0_0_1	0x01
 #define PH0_0_0_2	0x02
@@ -276,7 +275,6 @@ static const u8 PT894_128bit_DELAYMD1_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 	 }
 };
 
-
 static const u8 PT894_64bit_DELAYMD0_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 //    -----------------------------------------------------------------------------------------------------------------
 //    RX60           RX61           RX62            RX63           RX64       RX65           RX66  RX67   RX54[3,1]  RX55[3,1]    CPU/DRAM
@@ -340,7 +338,6 @@ static const u8 PT894_64bit_DELAYMD0_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 	 {PH2_2_2_2, PH2_2_2_2, PH0_0_2_2, PH2_2_2_2, PH2_2_2_2, PH0_0_2_2, 0xff, 0x03, Rx54E3T, Rx55E3T}	// 333/333
 	 }
 };
-
 
 static const u8 PT894_64bit_DELAYMD1_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 //    -----------------------------------------------------------------------------------------------------------------
@@ -418,7 +415,7 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 	   this function has 3 switchs, correspond to 3 level of Drdy setting.
 	   0:Slowest, 1:Default, 2:Optimize
 	   you can only open one switch
-	    */
+	 */
 #if 1				//this is slowest
 	//  0 -> Slowest
 	//Write slowest value to register
@@ -541,7 +538,6 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 #endif
 }
 
-
 /*This routine process the ability for North Bridge side burst functionality
 There are 3 variances that are valid:
 	1. DIMM	BL=8, chipset BL=8
@@ -568,8 +564,9 @@ void DRAMBurstLength(DRAM_SYS_ATTR * DramAttr)
 	for (Sockets = 0; Sockets < 2; Sockets++) {
 		if (DramAttr->DimmInfo[Sockets].bPresence) {
 			BL &=
-			    (DramAttr->DimmInfo[Sockets].
-			     SPDDataBuf[SPD_SDRAM_BURSTLENGTH]);
+			    (DramAttr->
+			     DimmInfo[Sockets].SPDDataBuf
+			     [SPD_SDRAM_BURSTLENGTH]);
 		}
 	}
 
@@ -585,8 +582,7 @@ void DRAMBurstLength(DRAM_SYS_ATTR * DramAttr)
 
 #if ENABLE_CHB
 	if (DramAttr->RankNumChB > 0) {
-		BL = DramAttr->DimmInfo[2].
-		    SPDDataBuf[SPD_SDRAM_BURSTLENGTH];
+		BL = DramAttr->DimmInfo[2].SPDDataBuf[SPD_SDRAM_BURSTLENGTH];
 		//Rx6c[1], CHB burst length
 		if (BL & 0x08)	/*CHB support BL=8 */
 			BL = 0x2;	/*set bit1 */

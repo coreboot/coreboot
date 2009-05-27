@@ -21,4 +21,4 @@
 #define RAMINIT_H
 
 #define MEMCTRL	PCI_DEV(0,0,3)
-#endif /* RAMINIT_H */
+#endif				/* RAMINIT_H */

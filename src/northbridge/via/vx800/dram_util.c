@@ -41,8 +41,8 @@ Reference  : None
 void via_write_phys(volatile u32 addr, volatile u32 value)
 {
 	volatile u32 *ptr;
-	ptr = (volatile u32 *) addr;
-	*ptr = (volatile u32) value;
+	ptr = (volatile u32 *)addr;
+	*ptr = (volatile u32)value;
 }
 
 /*===================================================================
@@ -59,11 +59,10 @@ u32 via_read_phys(volatile u32 addr)
 	volatile u32 *ptr;
 	volatile u32 y;
 //    ptr = (volatile u32 *)addr;
-	y = *(volatile u32 *) addr;
+	y = *(volatile u32 *)addr;
 //    return *ptr;
 	return y;
 }
-
 
 /*===================================================================
 Function   : DimmRead()
@@ -77,11 +76,10 @@ Reference  : None
 u32 DimmRead(volatile u32 x)
 {				//  volatile u32 z;
 	volatile u32 y;
-	y = *(volatile u32 *) x;
+	y = *(volatile u32 *)x;
 
 	return y;
 }
-
 
 /*===================================================================
 Function   : DramBaseTest()
@@ -116,8 +114,7 @@ BOOLEAN DramBaseTest(u32 BaseAdd, u32 Length,
 	}
 
 	//write each test unit the value with TEST_PATTERN
-	for (Address = BaseAdd; Address < BaseAdd + Length;
-	     Address += TestSpan) {
+	for (Address = BaseAdd; Address < BaseAdd + Length; Address += TestSpan) {
 		for (i = 0; i < TestCount; i++)
 			via_write_phys(Address + i * 4, TEST_PATTERN);
 		if (PrintFlag) {
@@ -131,15 +128,12 @@ BOOLEAN DramBaseTest(u32 BaseAdd, u32 Length,
 
 	//compare each test unit with the value of TEST_PATTERN
 	//and write it with compliment of TEST_PATTERN
-	for (Address = BaseAdd; Address < BaseAdd + Length;
-	     Address += TestSpan) {
+	for (Address = BaseAdd; Address < BaseAdd + Length; Address += TestSpan) {
 		for (i = 0; i < TestCount; i++) {
 			Data = via_read_phys(Address + i * 4);
-			via_write_phys(Address + i * 4,
-				       (u32) (~TEST_PATTERN));
+			via_write_phys(Address + i * 4, (u32) (~TEST_PATTERN));
 			if (Data != TEST_PATTERN) {
-				PRINT_DEBUG_MEM
-				    ("TEST_PATTERN ERROR !!!!! ");
+				PRINT_DEBUG_MEM("TEST_PATTERN ERROR !!!!! ");
 				Address2 = Address + i * 4;
 				PRINT_DEBUG_MEM_HEX32(Address2);
 				PRINT_DEBUG_MEM(" : ");
@@ -157,16 +151,13 @@ BOOLEAN DramBaseTest(u32 BaseAdd, u32 Length,
 		}
 	}
 
-
 	//compare each test unit with the value of ~TEST_PATTERN
-	for (Address = BaseAdd; Address < BaseAdd + Length;
-	     Address += TestSpan) {
+	for (Address = BaseAdd; Address < BaseAdd + Length; Address += TestSpan) {
 		for (i = (u8) (TestCount); i > 0; i--) {
 			Data = via_read_phys(Address + (i - 1) * 4);
 			if (Data != ~TEST_PATTERN) {
 
-				PRINT_DEBUG_MEM
-				    ("~TEST_PATTERN ERROR !!!!! ");
+				PRINT_DEBUG_MEM("~TEST_PATTERN ERROR !!!!! ");
 				Address2 = Address + (i - 1) * 4;
 				PRINT_DEBUG_MEM_HEX32(Address2);
 				PRINT_DEBUG_MEM(" : ");
@@ -218,7 +209,6 @@ void DumpRegisters(INTN DevNum, INTN FuncNum)
 	}
 	return;
 }
-
 
 /*===================================================================
 Function   : dumpnorth()

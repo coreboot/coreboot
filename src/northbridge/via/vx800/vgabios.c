@@ -7,7 +7,6 @@
 #include <string.h>
 #include "vgachip.h"
 
-
 /* vgabios.c. Derived from: */
 
 /*------------------------------------------------------------ -*- C -*-
@@ -306,7 +305,7 @@ void do_vgabios(void)
 
 	/* clear vga bios data area */
 	for (i = 0x400; i < 0x500; i++) {
-		*(unsigned char *) i = 0;
+		*(unsigned char *)i = 0;
 	}
 
 	dev = dev_find_class(PCI_CLASS_DISPLAY_VGA << 8, 0);
@@ -315,8 +314,7 @@ void do_vgabios(void)
 		printk_debug("NO VGA FOUND\n");
 		return;
 	}
-	printk_debug("found VGA: vid=%x, did=%x\n", dev->vendor,
-		     dev->device);
+	printk_debug("found VGA: vid=%x, did=%x\n", dev->vendor, dev->device);
 
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
@@ -324,28 +322,25 @@ void do_vgabios(void)
 	rom = 0xffffffff - FULL_ROM_SIZE + 1;
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom | 1);
 	printk_debug("rom base: %x\n", rom);
-	buf = (unsigned char *) rom;
+	buf = (unsigned char *)rom;
 	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
 
 	if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {
-		memcpy((void *) 0xc0000, buf, size);
-
+		memcpy((void *)0xc0000, buf, size);
 
 		printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
 
 		write_protect_vgabios();	// in northbridge
 
 		// check signature again
-		buf = (unsigned char *) 0xc0000;
+		buf = (unsigned char *)0xc0000;
 		if (buf[0] == 0x55 && buf[1] == 0xAA) {
 			busdevfn =
-			    (dev->bus->secondary << 8) | dev->path.pci.
-			    devfn;
+			    (dev->bus->secondary << 8) | dev->path.pci.devfn;
 			printk_debug("bus/devfn = %#x\n", busdevfn);
 			real_mode_switch_call_vga(busdevfn);
 		} else
-			printk_debug
-			    ("Failed to copy VGA BIOS to 0xc0000\n");
+			printk_debug("Failed to copy VGA BIOS to 0xc0000\n");
 	} else
 		printk_debug("BAD SIGNATURE 0x%x 0x%x\n", buf[0], buf[1]);
 
@@ -353,7 +348,6 @@ void do_vgabios(void)
 
 	pci_write_config32(dev, PCI_ROM_ADDRESS, 0);
 }
-
 
 // we had hoped to avoid this. 
 // this is a stub IDT only. It's main purpose is to ignore calls 
@@ -399,8 +393,7 @@ void debughandler(void)
 			     "	loop	dbh1	\n"
 			     "	popw	%cx	\n"
 			     "	iret		\n"
-			     "end_debughandle:	\n"
-			     ".code32		\n");
+			     "end_debughandle:	\n" ".code32		\n");
 }
 
 // Calling conventions. The first C function is called with this stuff
@@ -492,8 +485,7 @@ enum {
 
 int pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 	    unsigned long *pesp, unsigned long *pebx, unsigned long *pedx,
-	    unsigned long *pecx, unsigned long *peax,
-	    unsigned long *pflags);
+	    unsigned long *pecx, unsigned long *peax, unsigned long *pflags);
 
 int handleint21(unsigned long *pedi, unsigned long *pesi,
 		unsigned long *pebp, unsigned long *pesp,
@@ -536,8 +528,7 @@ int biosint(unsigned long intnumber,
 		if (esp < 0x1000) {
 			printk_debug("Stack contents: ");
 			while (esp < 0x1000) {
-				printk_debug("0x%04x ",
-					     *(unsigned short *) esp);
+				printk_debug("0x%04x ", *(unsigned short *)esp);
 				esp += 2;
 			}
 			printk_debug("\n");
@@ -573,14 +564,13 @@ int biosint(unsigned long intnumber,
 	return ret;
 }
 
-
 void setup_realmode_idt(void)
 {
 	extern unsigned char idthandle, end_idthandle;
 	extern unsigned char debughandle, end_debughandle;
 
 	int i;
-	struct realidt *idts = (struct realidt *) 0;
+	struct realidt *idts = (struct realidt *)0;
 	int codesize = &end_idthandle - &idthandle;
 	unsigned char *intbyte, *codeptr;
 
@@ -595,8 +585,8 @@ void setup_realmode_idt(void)
 	// and get it that way. But that's really disgusting.
 	for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
-		codeptr = (char *) 4096 + i * codesize;
-		idts[i].offset = (unsigned) codeptr;
+		codeptr = (char *)4096 + i * codesize;
+		idts[i].offset = (unsigned)codeptr;
 		memcpy(codeptr, &idthandle, codesize);
 		intbyte = codeptr + 3;
 		*intbyte = i;
@@ -608,7 +598,7 @@ void setup_realmode_idt(void)
 	// int10. 
 	// calling convention here is the same as INTs, we can reuse
 	// the int entry code.
-	codeptr = (char *) 0xff065;
+	codeptr = (char *)0xff065;
 	memcpy(codeptr, &idthandle, codesize);
 	intbyte = codeptr + 3;
 	*intbyte = 0x42;	/* int42 is the relocated int10 */
@@ -617,7 +607,7 @@ void setup_realmode_idt(void)
   VBIOS will call f000:f859 instead of sending int15.
  calling convertion here is the same as INTs, we can reuse the int entry code.
 */
-	codeptr = (char *) 0xff859;
+	codeptr = (char *)0xff859;
 	memcpy(codeptr, &idthandle, codesize);
 	intbyte = codeptr + 3;
 	*intbyte = 0x15;
@@ -628,10 +618,7 @@ void setup_realmode_idt(void)
 	idts[1].offset = 16384;
 	memcpy(16384, &debughandle, &end_debughandle - &debughandle);
 
-
 }
-
-
 
 enum {
 	CHECK = 0xb001,
@@ -665,7 +652,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 	unsigned long ecx = *pecx;
 	unsigned long eax = *peax;
 	unsigned long flags = *pflags;
-	unsigned short func = (unsigned short) eax;
+	unsigned short func = (unsigned short)eax;
 	int retval = 0;
 	unsigned short devid, vendorid, devfn;
 	short devindex;		/* Use short to get rid of garbage in upper half of 32-bit register */
@@ -684,8 +671,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 			vendorid = *pedx;
 			devindex = *pesi;
 			dev = 0;
-			while ((dev =
-				dev_find_device(vendorid, devid, dev))) {
+			while ((dev = dev_find_device(vendorid, devid, dev))) {
 				if (devindex <= 0)
 					break;
 				devindex--;
@@ -775,7 +761,6 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 	return retval;
 }
 
-
 /* return value of int0x15(int21)
 AH  AL  		Completion status 
 ??  5Fh  		Function call supported 
@@ -785,8 +770,7 @@ AH  AL  		Completion status
 */
 int handleint21(unsigned long *edi, unsigned long *esi, unsigned long *ebp,
 		unsigned long *esp, unsigned long *ebx, unsigned long *edx,
-		unsigned long *ecx, unsigned long *eax,
-		unsigned long *flags)
+		unsigned long *ecx, unsigned long *eax, unsigned long *flags)
 {
 	int res = -1;
 	switch (*eax & 0xffff) {

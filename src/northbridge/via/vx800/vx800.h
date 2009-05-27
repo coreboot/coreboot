@@ -20,13 +20,14 @@
 #ifndef VX800_H
 #define  VX800_H 1
 
-
 #ifndef __ROMCC__
-static void vx800_noop(){}
+static void vx800_noop()
+{
+}
 #endif
 #define REV_B0  0x10
 #define REV_B1 0x11
-#define REV_B2 0x12 
+#define REV_B2 0x12
 #define REV_B3 0x13
 #define REV_B4 0x14
 #define REV_B2 0xB4
@@ -63,9 +64,6 @@ static void vx800_noop(){}
 #define RAM_COMMAND_MRS		0x3
 #define RAM_COMMAND_CBR		0x4
 
-
-
-
 /* IDE specific bits */
 #define IDE_MODE_REG		0x09
 #define IDE0_NATIVE_MODE	(1 << 0)
@@ -77,7 +75,6 @@ static void vx800_noop(){}
 #define IDE1_DATA_ADDR		0x170
 #define IDE1_CONTROL_ADDR	0x370
 
-
 /* By Award default, Via default is 0xCC0 */
 #define BUS_MASTER_ADDR		0xfe00
 
@@ -85,14 +82,11 @@ static void vx800_noop(){}
 #define ENABLE_IDE0		(1 << 0)
 #define ENABLE_IDE1		(1 << 1)
 
-
-
 #define VX800_ACPI_IO_BASE	0x0400
 
-
 #define NB_APIC_REG 0,0,5,
-#define NB_PXPTRF_REG  NB_APIC_REG 
-#define NB_MSGC_REG NB_APIC_REG 
+#define NB_PXPTRF_REG  NB_APIC_REG
+#define NB_MSGC_REG NB_APIC_REG
 #define NB_HOST_REG 0,0,2,
 #define NB_P6IF_REG NB_HOST_REG
 
@@ -103,7 +97,6 @@ static void vx800_noop(){}
 #define NB_D3F0_REG 0,3, 0,
 #define NB_D3F1_REG 0,3, 1,
 
-
 #define SB_LPC_REG 0,0x11,0,
 #define SB_VLINK_REG 0,0x11,7,
 #define SB_SATA_REG 0,0xf, 0,
@@ -113,7 +106,6 @@ static void vx800_noop(){}
 #define SB_USB1_REG 0,0x10, 1,
 #define SB_USB2_REG 0,0x10, 2,
 #define SB_EHCI_REG 0,0x10, 4,
-
 
 #define VX800SB_APIC_ID			0x4
 #define VX800SB_APIC_BASE		0xfec00000ULL

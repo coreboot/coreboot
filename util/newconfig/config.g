@@ -2303,6 +2303,9 @@ def writemakefile(path):
 			#failover is a hack that will go away soon. 
 			if (j != "failover") and (rommapping[j] != "/dev/null"):
 				file.write("\t./cbfstool %s add-payload %s %s/payload $(CBFS_COMPRESS_FLAG)\n" % (i.name, rommapping[j], j,))
+			if (j != "failover"):
+				file.write("\t./cbfstool %s add-stage %s/coreboot_ram %s/coreboot_ram $(CBFS_COMPRESS_FLAG)\n" % (i.name, j, j,))
+			file.write("\tif [ -f %s/coreboot_apc ]; then ./cbfstool %s add-stage %s/coreboot_apc %s/coreboot_apc $(CBFS_COMPRESS_FLAG); fi\n" % (j, i.name, j, j,))
 		file.write("\t./cbfstool %s print\n" % i.name)
 		file.write("\n")
 	file.write("else\n\n")

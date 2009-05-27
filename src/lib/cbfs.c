@@ -38,14 +38,11 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 		memcpy(dst, src, len);
 		return 0;
 
-#if CONFIG_COMPRESSED_PAYLOAD_LZMA==1
-
 	case CBFS_COMPRESS_LZMA: {
 		unsigned long ulzma(unsigned char *src, unsigned char *dst);
 		ulzma(src, dst);
 	}
 		return 0;
-#endif
 
 #if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
 	case CBFS_COMPRESS_NRV2B: {
@@ -186,16 +183,17 @@ void * cbfs_load_stage(const char *name)
 		return (void *) -1;
 
 	printk_info("Stage: load @ %d/%d bytes, enter @ %llx\n", 
-			ntohl((u32) stage->load), ntohl(stage->memlen), 
+			(u32) stage->load, stage->memlen, 
 			stage->entry);
-	memset((void *) ntohl((u32) stage->load), 0, ntohl(stage->memlen));
+	memset((void *) (u32) stage->load, 0, stage->memlen);
 
-	if (cbfs_decompress(ntohl(stage->compression),
+	if (cbfs_decompress(stage->compression,
 			     ((unsigned char *) stage) +
 			     sizeof(struct cbfs_stage),
-			     (void *) ntohl((u32) stage->load),
-			     ntohl(stage->len)))
+			     (void *) (u32) stage->load,
+			     stage->len))
 		return (void *) -1;
+	printk_info("Stage: done loading.\n");
 
 	entry = stage->entry;
 //	return (void *) ntohl((u32) stage->entry);

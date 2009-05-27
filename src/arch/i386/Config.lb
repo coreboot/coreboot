@@ -1,3 +1,4 @@
+uses CONFIG_CBFS
 uses CONFIG_SMP
 uses CONFIG_PRECOMPRESSED_PAYLOAD
 uses CONFIG_USE_INIT
@@ -7,18 +8,39 @@ uses USE_FALLBACK_IMAGE
 
 init init/crt0.S.lb
 
+if CONFIG_CBFS
+	if USE_FAILOVER_IMAGE
+	else
+		initobject /src/lib/cbfs.o
+		initobject /src/console/vsprintf.o
+		initobject /src/lib/lzma.o
+	end
+end
+
 if HAVE_FAILOVER_BOOT
-      if USE_FAILOVER_IMAGE
-              ldscript init/ldscript_failover.lb
-      else
-              ldscript init/ldscript.lb
-      end
+	if USE_FAILOVER_IMAGE
+		ldscript init/ldscript_failover.lb
+	else
+		if CONFIG_CBFS
+			ldscript init/ldscript_cbfs.lb
+		else
+			ldscript init/ldscript.lb
+		end
+	end
 else
-      if USE_FALLBACK_IMAGE
-              ldscript init/ldscript_fallback.lb
-      else
-              ldscript init/ldscript.lb
-      end
+	if CONFIG_CBFS
+		if USE_FALLBACK_IMAGE
+			ldscript init/ldscript_fallback_cbfs.lb
+		else
+			ldscript init/ldscript_cbfs.lb
+		end
+	else
+		if USE_FALLBACK_IMAGE
+			ldscript init/ldscript_fallback.lb
+		else
+			ldscript init/ldscript.lb
+		end
+	end
 end
 
 makerule all

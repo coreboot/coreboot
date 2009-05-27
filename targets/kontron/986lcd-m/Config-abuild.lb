@@ -11,18 +11,18 @@ __COMPRESSION__
 __LOGLEVEL__
 
 option ROM_SIZE=1024*1024
-option FALLBACK_SIZE=1024*512
+option FALLBACK_SIZE=1024*64
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x24000
+	option ROM_IMAGE_SIZE=0x10000
 	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x24000
+	option ROM_IMAGE_SIZE=0x10000
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end

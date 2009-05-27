@@ -73,6 +73,10 @@ __main:
 	movl	$0x4000000, %esp
 	movl	%esp, %ebp
 	pushl %esi
+#ifdef CONFIG_CBFS
+	pushl $str_coreboot_ram_name
+	call cbfs_and_run_core
+#else
 	movl	$_liseg, %esi
 	movl	$_iseg,  %edi
 	movl	$_eiseg, %ecx
@@ -81,6 +85,7 @@ __main:
 	pushl %edi
 	pushl %esi
 	call copy_and_run_core
+#endif
 
 .Lhlt:	
 	intel_chip_post_macro(0xee)	/* post fe */
@@ -136,6 +141,13 @@ crt_console_tx_string:
 str_copying_to_ram:  .string "Uncompressing coreboot to RAM.\r\n"
 #else
 str_copying_to_ram:  .string "Copying coreboot to RAM.\r\n"
+#endif
+#if CONFIG_CBFS
+# if USE_FALLBACK_IMAGE == 1
+str_coreboot_ram_name:	.string "fallback/coreboot_ram"
+# else
+str_coreboot_ram_name:	.string "normal/coreboot_ram"
+# endif
 #endif
 str_pre_main:        .string "Jumping to coreboot.\r\n"
 .previous

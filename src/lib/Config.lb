@@ -1,4 +1,3 @@
-uses HAVE_FALLBACK_BOOT
 uses CONFIG_USE_INIT
 uses CONFIG_USBDEBUG_DIRECT
 
@@ -28,6 +27,7 @@ initobject memcmp.o
 
 if CONFIG_CBFS
 	object cbfs.o
+	object lzma.o
 end
 
 if CONFIG_COMPRESSED_PAYLOAD_LZMA

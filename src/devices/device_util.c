@@ -272,7 +272,8 @@ void compact_resources(device_t dev)
 	for(i = 0; i < dev->resources;) {
 		resource = &dev->resource[i];
 		if (!resource->flags) {
-			memmove(resource, resource + 1, dev->resources - i);
+			memmove(resource, resource + 1, (dev->resources - i) *
+				sizeof(*resource));
 			dev->resources -= 1;
 			memset(&dev->resource[dev->resources], 0, sizeof(*resource));
 		} else {

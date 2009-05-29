@@ -37,7 +37,7 @@ option ROM_SIZE = (1024 * 1024) - (64 * 1024)
 ##
 option CONFIG_CONSOLE_VGA = 1
 option CONFIG_PCI_ROM_RUN = 1
-option CONFIG_PCI_OPTION_ROM_RUN_VM86 = 1
+option CONFIG_PCI_OPTION_ROM_RUN_REALMODE = 1
 
 ##
 ## Choose the amount of memory pre-allocated for VGA

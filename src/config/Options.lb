@@ -1114,7 +1114,7 @@ define CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES
 
 end
 
-define CONFIG_PCI_OPTION_ROM_RUN_VM86
+define CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	default 0
 	export used
 	comment "Use Yabel instead of old bios emulator"

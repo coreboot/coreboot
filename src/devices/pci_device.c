@@ -674,7 +674,7 @@ void pci_dev_init(struct device *dev)
 
 #if CONFIG_CONSOLE_VGA == 1
 	if ((dev->class>>8) == PCI_CLASS_DISPLAY_VGA)
-	    vga_console_init(void);
+		vga_console_init();
 #endif /* CONFIG_CONSOLE_VGA */
 #endif /* CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN */
 }

@@ -213,6 +213,7 @@ void do_int(int num)
 		ret = run_bios_int(num);
 
 }
+
 #if 0
 #define SYS_BIOS 0xf0000
 /*
@@ -386,7 +387,7 @@ void run_bios(struct device * dev, unsigned long addr)
 	pushw(X86_SS);
 	pushw(X86_SP + 2);
 
-#ifndef NO_TRACE
+#ifdef DEBUG
 	//X86EMU_trace_on();
 #endif
 

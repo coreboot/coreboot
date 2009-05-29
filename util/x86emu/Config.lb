@@ -6,8 +6,9 @@ if CONFIG_PCI_OPTION_ROM_RUN_YABEL
   dir x86emu
 else
   if CONFIG_PCI_OPTION_ROM_RUN_VM86
-    object vm86.o
-    object vm86_gdt.o
+    object x86.o
+    object x86_interrupts.o
+    object x86_asm.S
   else
     object biosemu.o
     dir pcbios

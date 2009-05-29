@@ -27,29 +27,36 @@
 #include <device/pci_ids.h>
 #include "i82801xx.h"
 
+typedef struct southbridge_intel_i82801xx_config config_t;
+
 static void ide_init(struct device *dev)
 {
+	/* Get the chip configuration */
+	config_t *config = dev->chip_info; 
+
 	/* TODO: Needs to be tested for compatibility with ICH5(R). */
 	/* Enable IDE devices so the Linux IDE driver will work. */
 	uint16_t ideTimingConfig;
-	int enable_primary = 1;
-	int enable_secondary = 1;
 
 	ideTimingConfig = pci_read_config16(dev, IDE_TIM_PRI);
 	ideTimingConfig &= ~IDE_DECODE_ENABLE;
-	if (enable_primary) {
+	if (!config || config->ide0_enable) {
 		/* Enable primary IDE interface. */
 		ideTimingConfig |= IDE_DECODE_ENABLE;
-		printk_debug("IDE0 ");
+		printk_debug("IDE0: Primary IDE interface is enabled\n");
+	} else {
+		printk_info("IDE0: Primary IDE interface is disabled\n");
 	}
 	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
 
 	ideTimingConfig = pci_read_config16(dev, IDE_TIM_SEC);
 	ideTimingConfig &= ~IDE_DECODE_ENABLE;
-	if (enable_secondary) {
+	if (!config || config->ide1_enable) {
 		/* Enable secondary IDE interface. */
 		ideTimingConfig |= IDE_DECODE_ENABLE;
-		printk_debug("IDE1 ");
+		printk_debug("IDE1: Secondary IDE interface is enabled\n");
+	} else {
+		printk_info("IDE1: Secondary IDE interface is disabled\n");
 	}
 	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
 }

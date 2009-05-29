@@ -82,6 +82,9 @@ chip northbridge/intel/i82810		# Northbridge
     device pci 0.0 on end		# Graphics Memory Controller Hub (GMCH)
     device pci 1.0 on end		# Chipset Graphics Controller (CGC)
     chip southbridge/intel/i82801xx	# Southbridge
+      register "ide0_enable" = "1"
+      register "ide1_enable" = "1"
+
       device pci 1e.0 on end		# PCI bridge
       device pci 1f.0 on		# ISA bridge
         chip superio/smsc/smscsuperio	# Super I/O
@@ -126,8 +129,6 @@ chip northbridge/intel/i82810		# Northbridge
       device pci 1f.3 on end		# SMbus
       device pci 1f.5 off end		# AC'97 audio (N/A, uses CS4280 chip)
       device pci 1f.6 off end		# AC'97 modem (N/A)
-      #register "ide0_enable" = "1"
-      #register "ide1_enable" = "1"
     end
   end
 end

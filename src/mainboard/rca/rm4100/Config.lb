@@ -89,6 +89,9 @@ chip northbridge/intel/i82830		# Northbridge
       register "pirqg_routing" = "0x80"
       register "pirqh_routing" = "0x0b"
 
+      register "ide0_enable" = "1"
+      register "ide1_enable" = "1"
+
       device pci 1d.0 on end		# USB UHCI Controller #1
       device pci 1d.1 on end		# USB UHCI Controller #2
       device pci 1d.2 on end		# USB UHCI Controller #3

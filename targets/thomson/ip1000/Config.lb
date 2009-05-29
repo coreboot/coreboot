@@ -51,7 +51,7 @@ option CONFIG_VIDEO_MB = 8
 ##
 ## Request this level of debugging output
 ##
-option DEFAULT_CONSOLE_LOGLEVEL = 9
+option DEFAULT_CONSOLE_LOGLEVEL = 7
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1

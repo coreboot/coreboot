@@ -82,6 +82,9 @@ chip northbridge/intel/i82810			# Northbridge
       # end
     end
     chip southbridge/intel/i82801xx		# Southbridge
+      register "ide0_enable" = "1"
+      register "ide1_enable" = "1"
+
       device pci 1e.0 on end			# PCI bridge
       device pci 1f.0 on			# ISA/LPC bridge
         chip superio/winbond/w83627hf		# Super I/O

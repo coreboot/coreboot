@@ -103,6 +103,9 @@ chip northbridge/intel/i82810
 		        #end
 		end
 		chip southbridge/intel/i82801xx # Southbridge
+      			register "ide0_enable" = "1"
+      			register "ide1_enable" = "1"
+
 			device pci 1e.0 on # PCI Bridge
 				#chip drivers/pci/onboard
 				#	device pci 1.0 on end

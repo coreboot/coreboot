@@ -43,6 +43,8 @@ struct southbridge_intel_i82801xx_config {
 	uint8_t pirqf_routing;
 	uint8_t pirqg_routing;
 	uint8_t pirqh_routing;
+	uint8_t ide0_enable;
+	uint8_t ide1_enable;
 };
 
 extern struct chip_operations southbridge_intel_i82801xx_ops;

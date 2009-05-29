@@ -253,7 +253,7 @@ gdtaddr:
 
 	/* This is the gdt for GCC part of coreboot.
 	 * It is different from the gdt in ROMCC/ASM part of coreboot
-	 * which is defined in entry32.inc */
+	 * which is defined in entry32.inc */ /* BUT WHY?? */
 gdt:
 	/* selgdt 0, unused */
 	.word	0x0000, 0x0000		/* dummy */
@@ -275,6 +275,13 @@ gdt:
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
+	/* selgdt 0x28 16-bit 64k code at 0x00000000 */
+	.word   0xffff, 0x0000
+	.byte   0, 0x9a, 0, 0
+
+	/* selgdt 0x30 16-bit 64k data at 0x00000000 */
+	.word   0xffff, 0x0000
+	.byte   0, 0x92, 0, 0
 gdt_end:
 
 idtarg:

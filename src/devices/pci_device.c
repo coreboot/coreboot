@@ -673,11 +673,8 @@ void pci_dev_init(struct device *dev)
 	run_bios(dev, (unsigned long)ram);
 
 #if CONFIG_CONSOLE_VGA == 1
-	/* vga_inited is a trigger of the VGA console code. */
-	if ((dev->class>>8) == PCI_CLASS_DISPLAY_VGA) {
-	    extern int vga_inited;
-	    vga_inited = 1;
-	}
+	if ((dev->class>>8) == PCI_CLASS_DISPLAY_VGA)
+	    vga_console_init(void);
 #endif /* CONFIG_CONSOLE_VGA */
 #endif /* CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN */
 }

@@ -1077,6 +1077,12 @@ define CPU_ADDR_BITS
 	comment "CPU hardware address lines num, for AMD K8 could be 40, and AMD family 10 could be 48"
 end
 
+define CONFIG_VGA
+	default 0
+	export always
+	comment "Include VGA initialisation code"
+end
+
 define CONFIG_VGA_ROM_RUN
 	default 0
 	export always

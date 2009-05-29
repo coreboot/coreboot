@@ -5,105 +5,95 @@
  *
  */
 
+/*
+ * TODO:
+ * * make vga_console_init take FB location, columns, lines and starting
+ *   column/line.
+ * * track a word offset, and not columns/lines. The offset is needed more
+ *   often than columns/lines and the latter two can be calculated easily.
+ * * then implement real vga scrolling, instead of memcpying stuff around.
+ *
+ * -- libv.
+ */
+
 #include <arch/io.h>
 #include <string.h>
+#include <pc80/vga_io.h>
 #include <pc80/vga.h>
 #include <console/console.h>
 
 /* The video buffer, should be replaced by symbol in ldscript.ld */
 static char *vidmem;
-
-int vga_line, vga_col;
-
-int vga_inited = 0; // it will be changed in pci_rom.c
-
+static int total_lines, total_columns;
+static int current_line, current_column;
 static int vga_console_inited = 0;
 
-#define VIDBUFFER 0xB8000;
-
-static void memsetw(void *s, int c, unsigned int n)
+/*
+ *
+ */
+void vga_console_init(void)
 {
-	int i;
-	 u16 *ss = (u16 *) s;
+	vidmem = (char *) VGA_FB;
+	total_columns = VGA_COLUMNS;
+	total_lines = VGA_LINES;
+	current_column = 0;
+	current_line = 0;
 
-	for (i = 0; i < n; i++) {
-		ss[i] = ( u16 ) c;
-	}
-}
-
-static void vga_init(void)
-{
-	// these are globals
-	vga_line = 0;
-	vga_col = 0;
-	vidmem = (char *) VIDBUFFER;
-	
-	// mainboard or chip specific init routines
-	// also loads font
-	vga_hardware_fixup();
-	
-	// set attributes, char for entire screen
-	// font should be previously loaded in 
-	// device specific code (vga_hardware_fixup)
-	 memsetw(vidmem, VGA_ATTR_CLR_WHT, 2*1024); //
+	vga_console_inited = 1;
 }
 
 static void vga_scroll(void)
 {
 	int i;
 
-	memcpy(vidmem, vidmem + COLS * 2, (LINES - 1) * COLS * 2);
-	for (i = (LINES - 1) * COLS * 2; i < LINES * COLS * 2; i += 2)
+	memcpy(vidmem, vidmem + total_columns * 2, (total_lines - 1) * total_columns * 2);
+	for (i = (total_lines - 1) * total_columns * 2; i < total_lines * total_columns * 2; i += 2)
 		vidmem[i] = ' ';
 }
 
-static void vga_tx_byte(unsigned char byte)
+static void
+vga_tx_byte(unsigned char byte)
 {
-	if (!vga_inited) {
-		return;
-	}
- 
-	if(!vga_console_inited) {
-		vga_init();
-		vga_console_inited = 1;
+	if (!vga_console_inited)
+	    return;
+
+	switch (byte) {
+	case '\n':
+		current_line++;
+		current_column = 0;
+		break;
+	case '\r':
+		current_column = 0;
+		break;
+	case '\b':
+		current_column--;
+		break;
+	case '\t':
+		current_column += 4;
+		break;
+	case '\a': /* beep */
+		break;
+	default:
+		vidmem[((current_column + (current_line * total_columns)) * 2)] = byte;
+		vidmem[((current_column + (current_line * total_columns)) * 2) +1] = 0x07;
+		current_column++;
+		break;
 	}
 
-	if (byte == '\n') {
-		vga_line++;
-		vga_col = 0;
-
-	} else if (byte == '\r') {
-		vga_col = 0;
-
-	} else if (byte == '\b') {
-		vga_col--;
-
-	} else if (byte == '\t') {
-		vga_col += 4;
-
-	} else if (byte == '\a') {
-		//beep
-//		beep(500);
-		;
-	} else {
-		vidmem[((vga_col + (vga_line *COLS)) * 2)] = byte;
-		vidmem[((vga_col + (vga_line *COLS)) * 2) +1] = VGA_ATTR_CLR_WHT;
-		vga_col++;
+	if (current_column < 0)
+		current_column = 0;
+	if (current_column >= total_columns) {
+		current_line++;
+		current_column = 0;
 	}
-	if (vga_col < 0) {
-		vga_col = 0;
-	}
-	if (vga_col >= COLS) {
-		vga_line++;
-		vga_col = 0;
-	}
-	if (vga_line >= LINES) {
+	if (current_line >= total_lines) {
 		vga_scroll();
-		vga_line--;
+		current_line--;
 	}
-	// move the cursor
-	write_crtc((vga_col + (vga_line *COLS)) >> 8, CRTC_CURSOR_HI);
-	write_crtc((vga_col + (vga_line *COLS)) & 0x0ff, CRTC_CURSOR_LO);
+
+	/* move the cursor */
+	vga_cr_write(0x0E, (current_column + (current_line * total_columns)) >> 8);
+	vga_cr_write(0x0F, (current_column + (current_line * total_columns)) & 0x0ff);
 }
 
 static const struct console_driver vga_console __console ={

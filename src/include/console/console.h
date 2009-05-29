@@ -126,4 +126,8 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #define print_debug_hex32(HEX)   printk_debug  ("%08x", (HEX))
 #define print_spew_hex32(HEX)    printk_spew   ("%08x", (HEX))
 
+#if CONFIG_CONSOLE_VGA == 1
+void vga_console_init(void);
+#endif
+
 #endif /* CONSOLE_CONSOLE_H_ */

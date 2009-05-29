@@ -1,5 +1,4 @@
 uses CONFIG_IDE
-uses CONFIG_CONSOLE_VGA
 uses CONFIG_UDELAY_IO
 
 object mc146818rtc.o
@@ -14,5 +13,7 @@ end
 if CONFIG_IDE
 	dir ide
 end
+
+dir vga
 
 object keyboard.o

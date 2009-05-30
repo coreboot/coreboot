@@ -8,6 +8,7 @@ object ppc.o
 object timebase.S
 object floats.S
 object div64.S
+object abort.o
 initobject pci_dev.o
 initobject printk_init.o
 initobject timebase.S
@@ -15,3 +16,4 @@ initobject timer.o
 initobject floats.S
 initobject div64.S
 initobject ppc.o
+initobject abort.o

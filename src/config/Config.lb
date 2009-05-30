@@ -47,7 +47,7 @@ end
 
 makerule coreboot_ram.o
 	depends	"src/arch/$(ARCH)/lib/c_start.o $(DRIVER) coreboot.a $(LIBGCC_FILE_NAME)" 
-	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ $^"
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ src/arch/$(ARCH)/lib/c_start.o $(DRIVER) -Wl,-\( coreboot.a $(LIBGCC_FILE_NAME) -Wl,-\)"
 end
 
 makerule coreboot_ram

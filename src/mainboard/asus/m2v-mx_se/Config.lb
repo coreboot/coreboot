@@ -27,7 +27,6 @@ arch i386 end
 driver mainboard.o
 if HAVE_ACPI_TABLES
   object acpi_tables.o
-  object fadt.o
   makerule dsdt.c
     depends "$(MAINBOARD)/dsdt.asl"
     action  "iasl -p $(CURDIR)/dsdt -tc $(MAINBOARD)/dsdt.asl"

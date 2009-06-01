@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2009 University of Heidelberg
- * Written by Mondrian Nuessle <nuessle@uni-heidelberg.de> for University of Heidelberg
+ * Written by Mondrian Nuessle <nuessle@uni-heidelberg.de> for Univ. Heidelberg
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,15 +19,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* PILOT SuperIO is only based on LPC observation done on factory system. */
+/* PILOT Super I/O is only based on LPC observation done on factory system. */
 
-#define PILOT_SP1 0x02
-// Serial port COM1
-#define PILOT_LD1 0x01
-// logical device 1
-#define PILOT_LD4 0x04
-// logical device 4
-#define PILOT_LD5 0x05
-// logical device 5
-#define PILOT_LD7 0x07
-// logical device 7
+#define PILOT_SP1 0x02 /* Com1 */
+#define PILOT_LD1 0x01 /* Logical device 1 */
+#define PILOT_LD4 0x04 /* Logical device 4 */
+#define PILOT_LD5 0x05 /* Logical device 5 */
+#define PILOT_LD7 0x07 /* Logical device 7 */

@@ -222,7 +222,8 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 	rom->header->align = htonl(align);
 	rom->header->offset = htonl(0);
 
-	add_bootblock(rom, bootblockname);
+	if (add_bootblock(rom, bootblockname) == -1)
+		return -1;
 
 	/* Write the cbfs master header address at the end of the ROM. */
 

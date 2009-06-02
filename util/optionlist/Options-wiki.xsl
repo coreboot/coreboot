@@ -25,29 +25,22 @@
             indent="yes" />
 
 <xsl:template match="/">
-This is an automatically generated list of '''coreboot compile-time options'''.
+This is an automatically generated list of '''coreboot v2 compile-time options'''.
 
 Last update: <xsl:value-of select="//creationdate"/>.
 
-{| border="0"
+{| border="0" style="font-size: smaller"
 |- bgcolor="#6699dd"
 ! align="left" | Option
 ! align="left" | Comment
 ! align="left" | Default
 ! align="left" | Export
-! align="left" | Format<xsl:for-each select="options/option">
+! align="left" | Format
+<xsl:for-each select="options/option">
 |- bgcolor="#eeeeee"
-|
-<xsl:value-of select="@name"/>
-|
-<xsl:value-of select="comment"/>
-|
-<xsl:value-of select="default"/>
-|
-<xsl:value-of select="export"/>
-|
-<xsl:value-of select="format"/>
+| <xsl:value-of select="@name"/> || <xsl:value-of select="comment"/> || <xsl:value-of select="default"/> || <xsl:value-of select="export"/> || <xsl:value-of select="format"/>
 </xsl:for-each>
+
 |}
 
 </xsl:template>

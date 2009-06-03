@@ -89,8 +89,8 @@ entries
 409          1       e       1        power_on_after_fail
 #410          6       r       0        unused
 
-# coreboot config options: bootloader
-416        512       s       0        boot_devices
+# coreboot config options: bootloader : unused -> reserved.
+416        512       r       0        boot_devices
 #928         80       r       0        unused
 
 # coreboot config options: check sums

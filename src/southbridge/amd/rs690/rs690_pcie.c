@@ -148,7 +148,7 @@ static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
 	/* waits until SB has trained to L0, poll for bit0-5 = 0x10 */
 	do {
 		reg = nbpcie_p_read_index(sb_dev, PCIE_LC_STATE0);
-		reg &= 0x1f;	/* remain LSB 5 bits */
+		reg &= 0x3f;	/* remain LSB [5:0] bits */
 	} while (LC_STATE_RECONFIG_GPPSB != reg);
 
 	/* ensures that virtual channel negotiation is completed. poll for bit1 = 0 */

@@ -14,7 +14,7 @@
 #include <cpu/amd/amdk8_sysconf.h>
 
 static int first_time = 1;
-static uint32_t disable_siblings = !CONFIG_LOGICAL_CPUS;
+static int disable_siblings = !CONFIG_LOGICAL_CPUS;
 
 #include "dualcore_id.c"
 
@@ -62,7 +62,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	unsigned nb_cfg_54;
         int bsp_apic_id = lapicid(); // bsp apicid
 
-        get_option("dual_core", &disable_siblings);
+        get_option(&disable_siblings, "dual_core");
 
         //get the nodes number
         dev = dev_find_slot(0, PCI_DEVFN(0x18,0));
@@ -127,7 +127,7 @@ void amd_sibling_init(device_t cpu)
 	/* On the bootstrap processor see if I want sibling cpus enabled */
 	if (first_time) {
 		first_time = 0;
-		get_option("dual_core", &disable_siblings);
+		get_option(&disable_siblings, "dual_core");
 	}
 	result = cpuid(0x80000008);
 	/* See how many sibling cpus we have */

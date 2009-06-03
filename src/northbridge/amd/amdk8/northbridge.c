@@ -1177,7 +1177,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 	unsigned nb_cfg_54;
 	unsigned siblings;
 	int e0_later_single_core;
-	uint32_t disable_siblings;
+	int disable_siblings;
 
 	nb_cfg_54 = 0;
 	sysconf.enabled_apic_ext_id = 0;
@@ -1190,7 +1190,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
 #if CONFIG_LOGICAL_CPUS == 1
-	get_option("dual_core", &disable_siblings);
+	get_option(&disable_siblings, "dual_core");
 #endif
 
 	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it still be 0)

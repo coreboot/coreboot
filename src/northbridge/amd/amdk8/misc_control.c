@@ -48,7 +48,7 @@ static void mcf3_read_resources(device_t dev)
 	}
 
 	iommu = 1;
-	get_option("iommu", &iommu);
+	get_option(&iommu, "iommu");
 
 	if (iommu) {
 		/* Add a Gart apeture resource */

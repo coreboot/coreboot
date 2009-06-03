@@ -1258,7 +1258,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	unsigned nb_cfg_54;
 	unsigned siblings;
 	int cores_found;
-	uint32_t disable_siblings;
+	int disable_siblings;
 	unsigned ApicIdCoreIdSize;
 
 	nb_cfg_54 = 0;
@@ -1271,7 +1271,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
 #if CONFIG_LOGICAL_CPUS == 1
-	get_option("quad_core", &disable_siblings);
+	get_option(&disable_siblings, "quad_core");
 #endif
 
 	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it

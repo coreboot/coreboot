@@ -283,7 +283,7 @@ static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	uint32_t value;
-	uint32_t pwr_on=MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on=MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
 	/* IO APIC initialization */
 	value = pci_read_config32(dev, 0xd0);
@@ -303,7 +303,7 @@ static void lpc_init(struct device *dev)
 	/* Clear SATA to non raid */
 	pci_write_config8(dev, 0xae, 0x00);
 
-        get_option("power_on_after_fail", &pwr_on);
+        get_option(&pwr_on, "power_on_after_fail");
 	byte = pci_read_config8(dev, 0xa4);
 	byte &= 0xfe;
 	if (!pwr_on) {

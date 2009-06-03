@@ -278,7 +278,7 @@ static void amd8131_pcix_init(device_t dev)
 	uint32_t dword;
 	uint16_t word;
 	uint8_t byte;
-	uint32_t nmi_option;
+	int nmi_option;
 
 	/* Enable memory write and invalidate ??? */
 	byte = pci_read_config8(dev, 0x04);
@@ -323,7 +323,7 @@ static void amd8131_pcix_init(device_t dev)
  	
 	/* NMI enable */
 	nmi_option = NMI_OFF;
-	get_option("nmi", &nmi_option);
+	get_option(&nmi_option, "nmi");
 	if(nmi_option) {
 		dword = pci_read_config32(dev, 0x44);
         	dword |= (1<<0);

@@ -17,52 +17,85 @@
 
 static unsigned char cmos_table[4096];
 
+/* This array is used to isolate bits that are to be changed in a byte */
+static unsigned char clip[9]={0,1,3,7,0x0f,0x1f,0x3f,0x7f,0xff};
+
+
 /* This routine loops through the entried and tests if any of the fields overlap
 	input entry_start = the memory pointer to the start of the entries.
 	      entry_end = the byte past the entries.
 	output  none
 		if there is an overlap, the routine exits, other wise it returns.
 */
-
 void test_for_entry_overlaps(void *entry_start, void *entry_end)
 {
+	int ptr;
 	char *cptr;
-        struct cmos_entries *ce = NULL;
+	int buffer_bit_size;
+	int offset;
+	int byte;
+	int byte_length;
+        struct cmos_entries *ce;
 	unsigned char test[CMOS_IMAGE_BUFFER_SIZE];
-	int i;
+	unsigned char set;
 
-	memset(test, 0, CMOS_IMAGE_BUFFER_SIZE);
+	/* calculate the size of the cmos buffer in bits */
+	buffer_bit_size=(CMOS_IMAGE_BUFFER_SIZE*8);
+	/* clear the temporary test buffer */
+	for(ptr=0; ptr < CMOS_IMAGE_BUFFER_SIZE; ptr++)
+		test[ptr]=0;
 
-	for (cptr = entry_start; cptr < (char *)entry_end; cptr += ce->size) {
-		ce = (struct cmos_entries *)cptr;
-
-		/* Only reserved space can be larger than 32bits */
-		if ((ce->length > 32) && (ce->config != 'r')) {
-			fprintf(stderr, "Error: Entry %s is longer than"
-				" 32bits.\n", ce->name);
-			exit(1);
-		}
-
+	/* loop through each entry in the table testing for errors */
+	for(cptr = entry_start; cptr < (char *)entry_end; cptr += ce->size) {
+		ce=(struct cmos_entries *)cptr;
 		/* test if entry goes past the end of the buffer */
-		if ((ce->bit + ce->length) > (CMOS_IMAGE_BUFFER_SIZE * 8)) {
-			fprintf(stderr, "Error: Entry %s exceeds CMOS"
-				" space.\n", ce->name);
+		if((ce->bit+ce->length)>buffer_bit_size) {
+			printf("Error - Entry %s start bit + length must be less than %d\n",
+				ce->name,buffer_bit_size);
 			exit(1);
 		}
-
-		/* see whether our bits were marked before */
-		for (i = ce->bit; i < (ce->bit + ce->length); i++)
-			if (test[i / 8] & (0x01 << (i % 8))) {
-				printf("Error: Entry %s overlaps at bit %d.\n",
-				       ce->name, i);
+		byte=ce->bit/8;
+		offset=ce->bit%8;
+		byte_length=ce->length/8;
+		if(byte_length) {	/* entry is 8 bits long or more */
+			if(offset) { /* if 8 bits or more long, it must be byte aligned */
+				printf("Error - Entry %s length over 8 must be byte aligned\n",
+					ce->name);
 				exit(1);
 			}
-
-		/* now mark our bits */
-		for (i = ce->bit; i < (ce->bit + ce->length); i++)
-			test[i / 8] |= 0x01 << (i % 8);
-
+			/* test if entries 8 or more in length are even bytes */ 
+			if(ce->length%8){
+                                printf("Error - Entry %s length over 8 must be a multiple of 8\n",
+                                        ce->name);
+                                exit(1);
+                        }
+			/* test if any of the bits have been previously used */
+			for(;byte_length;byte_length--,byte++) {
+				if(test[byte]) {
+					printf("Error - Entry %s uses same bits previously used\n",
+						ce->name);
+					exit(1);
+	                        }
+				test[byte]=clip[8]; /* set the bits defined in test */
+			}
+		} else {
+			/* test if bits overlap byte boundaries */
+			if(ce->length>(8-offset)) {
+                                printf("Error - Entry %s length overlaps a byte boundry\n",
+					ce->name);
+                                exit(1);
+                        }
+			/* test for bits previously used */
+			set=(clip[ce->length]<<offset);
+			if(test[byte]&set) {
+                        	printf("Error - Entry %s uses same bits previously used\n",
+                                                ce->name);
+                                exit(1);
+                        }
+                        test[byte]|=set;  /* set the bits defined in test */
+		}
 	}
+	return;
 }
 
 /* This routine displays the usage options */
@@ -103,14 +136,48 @@ static unsigned long get_number(char *line, char **ptr, int base)
 	return value;
 }
 
+static int is_ident_digit(int c)
+{
+	int result;
+	switch(c) {
+	case '0':	case '1':	case '2':	case '3':
+	case '4':	case '5':	case '6':	case '7':
+	case '8':	case '9':
+		result = 1;
+		break;
+	default:
+		result = 0;
+		break;
+	}
+	return result;
+}
+
 static int is_ident_nondigit(int c)
 {
-	if (((c >= 'A') && (c <='Z')) ||
-	    ((c >= 'a') && (c <='z')) ||
-	    (c == '_'))
-		return 1;
-	else
-		return 0;
+	int result;
+	switch(c) {
+	case 'A':	case 'B':	case 'C':	case 'D':
+	case 'E':	case 'F':	case 'G':	case 'H':
+	case 'I':	case 'J':	case 'K':	case 'L':
+	case 'M':	case 'N':	case 'O':	case 'P':
+	case 'Q':	case 'R':	case 'S':	case 'T':
+	case 'U':	case 'V':	case 'W':	case 'X':
+	case 'Y':	case 'Z':
+	case 'a':	case 'b':	case 'c':	case 'd':
+	case 'e':	case 'f':	case 'g':	case 'h':
+	case 'i':	case 'j':	case 'k':	case 'l':
+	case 'm':	case 'n':	case 'o':	case 'p':
+	case 'q':	case 'r':	case 's':	case 't':
+	case 'u':	case 'v':	case 'w':	case 'x':
+	case 'y':	case 'z':
+	case '_':
+		result = 1;
+		break;
+	default:
+		result = 0;
+		break;
+	}
+	return result;
 }
 
 static int is_ident(char *str)
@@ -123,7 +190,7 @@ static int is_ident(char *str)
 		do {
 			str++;
 			ch = *str;
-		} while(ch && (is_ident_nondigit(ch) || isdigit(ch)));
+		} while(ch && (is_ident_nondigit(ch) || (is_ident_digit(ch))));
 		result = (ch == '\0');
 	}
 	return result;
@@ -316,7 +383,7 @@ int main(int argc, char **argv)
 		c_enums->config_id=strtol(&line[ptr],(char**)NULL,10);
 		for(;(line[ptr]!=' ')&&(line[ptr]!='\t');ptr++);
 		for(;(line[ptr]==' ')||(line[ptr]=='\t');ptr++);
-		c_enums->value = strtoul(&line[ptr],(char**)NULL,0);
+		c_enums->value=strtol(&line[ptr],(char**)NULL,10);
 		for(;(line[ptr]!=' ')&&(line[ptr]!='\t');ptr++);
 		for(;(line[ptr]==' ')||(line[ptr]=='\t');ptr++);
 		for(cnt=0;(line[ptr]!='\n')&&(cnt<31);ptr++,cnt++)

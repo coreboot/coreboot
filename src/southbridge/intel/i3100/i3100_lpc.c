@@ -297,7 +297,7 @@ static void i3100_gpio_init(device_t dev)
 static void lpc_init(struct device *dev)
 {
 	u8 byte;
-	uint32_t pwr_on = MAINBOARD_POWER_ON_AFTER_FAIL;
+	int pwr_on = MAINBOARD_POWER_ON_AFTER_FAIL;
 
 	setup_ioapic(dev);
 
@@ -306,7 +306,7 @@ static void lpc_init(struct device *dev)
 
 	i3100_enable_serial_irqs(dev);
 
-	get_option("power_on_after_fail", &pwr_on);
+	get_option(&pwr_on, "power_on_after_fail");
 	byte = pci_read_config8(dev, 0xa4);
 	byte &= 0xfe;
 	if (!pwr_on) {

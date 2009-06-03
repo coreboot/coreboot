@@ -29,10 +29,10 @@
 static void ttyS0_init(void)
 {
 	static const unsigned char div[8]={1,2,3,6,12,24,48,96};
-	unsigned int b_index=0;
+	int b_index=0;
 	unsigned int divisor=TTYS0_DIV;
 
-	if(!get_option("baud_rate", &b_index)) {
+	if(get_option(&b_index,"baud_rate")==0) {
 		divisor=div[b_index];
 	}
 	uart8250_init(TTYS0_BASE, divisor, TTYS0_LCS);

@@ -248,7 +248,7 @@ static void init_ecc_memory(unsigned node_id)
 	struct mtrr_state mtrr_state;
 
 	device_t f1_dev, f2_dev, f3_dev;
-	uint32_t enable_scrubbing;
+	int enable_scrubbing;
 	uint32_t dcl;
 
 	f1_dev = dev_find_slot(0, PCI_DEVFN(0x18 + node_id, 1));
@@ -266,7 +266,7 @@ static void init_ecc_memory(unsigned node_id)
 
 	/* See if we scrubbing should be enabled */
 	enable_scrubbing = 1;
-	get_option("hw_scrubber", &enable_scrubbing);
+	get_option(&enable_scrubbing, "hw_scrubber");
 
 	/* Enable cache scrubbing at the lowest possible rate */
 	if (enable_scrubbing) {

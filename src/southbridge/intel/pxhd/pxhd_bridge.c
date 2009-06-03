@@ -38,12 +38,12 @@ static void pxhd_enable(device_t dev)
 
 static unsigned int pxhd_scan_bridge(device_t dev, unsigned int max)
 {
-	uint32_t bus_100Mhz = 0;
+	int bus_100Mhz = 0;
 
 	dev->link[0].dev = dev;
 	dev->links = 1;
 
-	get_option("pxhd_bus_speed_100", &bus_100Mhz);
+	get_option(&bus_100Mhz, "pxhd_bus_speed_100");
 	if(bus_100Mhz) {
 		uint16_t word;
 
@@ -66,7 +66,7 @@ static void pcix_init(device_t dev)
 	uint32_t dword;
 	uint16_t word;
 	uint8_t byte;
-	uint32_t nmi_option;
+	int nmi_option;
 
 	/* Bridge control ISA enable */
 	pci_write_config8(dev, 0x3e, 0x07);
@@ -115,7 +115,7 @@ static void pcix_init(device_t dev)
  	
 	/* NMI enable */
 	nmi_option = NMI_OFF;
-	get_option("nmi", &nmi_option);
+	get_option(&nmi_option, "nmi");
 	if(nmi_option) {
 		dword = pci_read_config32(dev, 0x44);
         	dword |= (1<<0);

@@ -277,7 +277,7 @@ static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	uint32_t value;
-	uint32_t pwr_on=MAINBOARD_POWER_ON_AFTER_FAIL;
+	int pwr_on=MAINBOARD_POWER_ON_AFTER_FAIL;
 
 	/* sata settings */
 	pci_write_config32(dev, 0x58, 0x00001181);
@@ -326,7 +326,7 @@ static void lpc_init(struct device *dev)
 
 	esb6300_enable_lpc(dev);
 
-        get_option("power_on_after_fail", &pwr_on);
+        get_option(&pwr_on, "power_on_after_fail");
 	byte = pci_read_config8(dev, 0xa4);
 	byte &= 0xfe;
 	if (!pwr_on) {

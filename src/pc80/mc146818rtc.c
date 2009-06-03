@@ -197,69 +197,41 @@ void rtc_init(int invalid)
 
 
 #if USE_OPTION_TABLE == 1
-/*
- * Functions to save/return values stored in the 256byte cmos.
- *
- * To be able to use space maximally we want to only store as many bits as
- * needed, and not be limited by byte boundaries. We therefor clamp the size
- * down to an unsigned int. Since the values that we are allowed to touch are
- * either an enum or a hexadecimal value, this size should suit most purposes.
- *
- * These two functions are doing bitshifting, and are therefor a bit
- * nontrivial. To understand these operations, first read the ones outside the
- * loop. The ones inside the loop are just adding i to the same calculations,
- * with the shift twice inverted, as negative shifts aren't nice.
- */
-static unsigned int
-get_cmos_value(int bit, int length)
+/* This routine returns the value of the requested bits
+	input bit = bit count from the beginning of the cmos image
+	      length = number of bits to include in the value
+	      ret = a character pointer to where the value is to be returned
+	output the value placed in ret
+	      returns 0 = successful, -1 = an error occurred
+*/
+static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 {
-    unsigned int tmp;
-    int i;
+	unsigned char *ret;
+	unsigned long byte,byte_bit;
+	unsigned long i;
+	unsigned char uchar;
 
-    /* negative left shift --> right shift */
-    tmp = cmos_read(bit / 8) >> (bit % 8);
-
-    for (i = 1; (8 * i) < ((bit % 8) + length); i++)
-	tmp |= cmos_read((bit / 8) + i) << ((8 * i) - (bit % 8));
-
-    /* 1 << 32 - 1 isn't cool inside an int */
-    if (length != 32)
-	tmp &= (1 << length) - 1;
-
-    return tmp;
-}
-
-static void
-set_cmos_value(int bit, int length, unsigned int value)
-{
-	unsigned int mask;
-	unsigned char cmos;
-	int i;
-
-	/* 1 << 32 - 1 isn't cool inside an int */
-	if (length != 32)
-	    mask = (1 << length) - 1;
-	else
-	    mask = -1;
-
-	value &= mask;
-
-	/* negative right shifts --> left shifts */
-	cmos = cmos_read(bit / 8);
-	cmos &= ~(mask << (bit % 8));
-	cmos |= value << (bit % 8);
-	cmos_write(cmos, bit / 8);
-
-	for (i = 1; (8 * i) < ((bit % 8) + length); i++) {
-		cmos = cmos_read((bit / 8) + i);
-		cmos &= ~(mask >> ((8 * i) - (bit % 8)));
-		cmos |= value >> ((8 * i) - (bit % 8));
-		cmos_write(cmos, (bit / 8) + i);
+	/* The table is checked when it is built to ensure all 
+		values are valid. */
+	ret = vret;
+	byte=bit/8;	/* find the byte where the data starts */
+	byte_bit=bit%8; /* find the bit in the byte where the data starts */
+	if(length<9) {	/* one byte or less */
+		uchar = cmos_read(byte); /* load the byte */
+		uchar >>= byte_bit;	/* shift the bits to byte align */
+		/* clear unspecified bits */
+		ret[0] = uchar & ((1 << length) -1);
 	}
+	else {	/* more that one byte so transfer the whole bytes */
+		for(i=0;length;i++,length-=8,byte++) {
+			/* load the byte */
+			ret[i]=cmos_read(byte);
+		}
+	}
+	return 0;
 }
 
-int
-get_option(char *name, unsigned int *value)
+int get_option(void *dest, char *name)
 {
 	extern struct cmos_option_table option_table;
 	struct cmos_option_table *ct;
@@ -269,7 +241,7 @@ get_option(char *name, unsigned int *value)
 
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
-
+	
 	/* find the requested entry record */
 	ct=&option_table;
 	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
@@ -284,72 +256,12 @@ get_option(char *name, unsigned int *value)
 		printk_err("ERROR: No cmos option '%s'\n", name);
 		return(-2);
 	}
-
-	if (ce->length > 32) {
-		printk_err("ERROR: cmos option '%s' is too large.\n", name);
-		return -3;
-	}
-
-
-	*value = get_cmos_value(ce->bit, ce->length);
-
+	
+	if(get_cmos_value(ce->bit, ce->length, dest))
+		return(-3);
 	if(!rtc_checksum_valid(LB_CKS_RANGE_START,
-			       LB_CKS_RANGE_END,LB_CKS_LOC))
+			LB_CKS_RANGE_END,LB_CKS_LOC))
 		return(-4);
 	return(0);
 }
-
-int
-set_option(char *name, unsigned int value)
-{
-	extern struct cmos_option_table option_table;
-	struct cmos_option_table *ct;
-	struct cmos_entries *ce;
-	size_t namelen;
-	int found = 0;
-
-	/* Figure out how long name is */
-	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
-
-	/* find the requested entry record */
-	ct = &option_table;
-	ce = (struct cmos_entries*) ((unsigned char *) ct + ct->header_length);
-
-	for(;ce->tag==LB_TAG_OPTION;
-		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {
-		if (memcmp(ce->name, name, namelen) == 0) {
-			found=1;
-			break;
-		}
-	}
-
-	if (!found) {
-		printk_err("ERROR: Unknown cmos option '%s'\n", name);
-		return(-2);
-	}
-
-	if (ce->length > 32) {
-		printk_err("ERROR: cmos option '%s' is too large.\n", name);
-		return -3;
-	}
-
-	set_cmos_value(ce->bit, ce->length, value);
-
-	/* We should not update the checksum here. */
-
-	return 0;
-}
-#else
-int
-get_option(char *name, unsigned int *value)
-{
-	return -2;
-}
-
-int
-set_option(char *name, unsigned int value)
-{
-	return -2;
-}
-
 #endif /* USE_OPTION_TABLE */

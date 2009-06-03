@@ -14,9 +14,10 @@ static int initialized;
 void console_init(void)
 {
 	struct console_driver *driver;
-	if(get_option(&console_loglevel, "debug_level"))
-		console_loglevel=DEFAULT_CONSOLE_LOGLEVEL;
-	
+
+	if (get_option("debug_level", &console_loglevel))
+		console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (!driver->init)
 			continue;

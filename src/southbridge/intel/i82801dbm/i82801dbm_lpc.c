@@ -119,7 +119,7 @@ static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	int pwr_on=-1;
-	int nmi_option;
+	uint32_t nmi_option;
 
 	/* IO APIC initialization */
 	i82801dbm_enable_ioapic(dev);
@@ -159,7 +159,7 @@ static void lpc_init(struct device *dev)
     outb(byte, 0x61);
     byte = inb(0x70);
 	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
+	get_option("nmi", &nmi_option);
 	if (nmi_option) {			
         byte &= ~(1 << 7); /* set NMI */
         outb(byte, 0x70);

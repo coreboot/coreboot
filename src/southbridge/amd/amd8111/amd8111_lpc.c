@@ -108,7 +108,7 @@ static void enable_hpet(struct device *dev)
 static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
-	int nmi_option;
+	uint32_t nmi_option;
 
 	/* IO APIC initialization */
 	byte = pci_read_config8(dev, 0x4B);
@@ -142,7 +142,7 @@ static void lpc_init(struct device *dev)
 	byte |= (1 << 6); /* clear LPCERR */
 	pci_write_config8(dev, 0x40, byte);
 	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
+	get_option("nmi", &nmi_option);
 	if (nmi_option) {			
 		byte |= (1 << 7); /* set NMI */
 		pci_write_config8(dev, 0x40, byte);

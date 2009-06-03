@@ -165,7 +165,7 @@ static void sm_init(device_t dev)
 
 	/* power after power fail */
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
-	get_option(&on, "power_on_after_fail");
+	get_option("power_on_after_fail", &on);
 	byte = pm_ioread(0x74);
 	byte &= ~0x03;
 	if (on) {
@@ -226,7 +226,7 @@ static void sm_init(device_t dev)
 	byte = inb(0x70);	/* RTC70 */
 	byte_old = byte;
 	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
+	get_option("nmi", &nmi_option);
 	if (nmi_option) {
 		byte &= ~(1 << 7);	/* set NMI */
 		printk_info("++++++++++set NMI+++++\n");

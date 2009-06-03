@@ -52,9 +52,9 @@ static void enable_hwm_smbus(device_t dev) {
 static void init_acpi(device_t dev)
 {
 	uint8_t  value = 0x20;
-	int power_on = 1;
+	uint32_t power_on = 1;
 
-	get_option(&power_on, "power_on_after_fail");
+	get_option("power_on_after_fail", &power_on);
 	pnp_enter_ext_func_mode(dev);
 	pnp_write_index(dev->path.pnp.port,7,0x0a);
 	value = pnp_read_config(dev, 0xE4);

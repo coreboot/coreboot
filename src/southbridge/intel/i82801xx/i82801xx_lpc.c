@@ -180,7 +180,7 @@ static void i82801xx_power_options(device_t dev)
 {
 	uint8_t byte;
 	int pwr_on = -1;
-	int nmi_option;
+	uint32_t nmi_option;
 
 	/* power after power fail */
 	/* FIXME this doesn't work! */
@@ -199,7 +199,7 @@ static void i82801xx_power_options(device_t dev)
 	byte = inb(0x70);
 
 	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
+	get_option("nmi", &nmi_option);
 	if (nmi_option) {
 		byte &= ~(1 << 7);	/* Set NMI. */
 		outb(byte, 0x70);

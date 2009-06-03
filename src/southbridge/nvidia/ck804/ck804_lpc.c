@@ -179,7 +179,7 @@ unsigned pm_base=0;
 static void lpc_init(device_t dev)
 {
 	uint8_t byte, byte_old;
-	int on, nmi_option;
+	uint32_t on, nmi_option;
 
 	lpc_common_init(dev);
 
@@ -199,7 +199,7 @@ static void lpc_init(device_t dev)
 
 	/* power after power fail */
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
-	get_option(&on, "power_on_after_fail");
+	get_option("power_on_after_fail", &on);
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x40;
 	if (!on)
@@ -209,7 +209,7 @@ static void lpc_init(device_t dev)
 
 	/* Throttle the CPU speed down for testing. */
 	on = SLOW_CPU_OFF;
-	get_option(&on, "slow_cpu");
+	get_option("slow_cpu", &on);
 	if (on) {
 		uint16_t pm10_bar;
 		uint32_t dword;
@@ -238,7 +238,7 @@ static void lpc_init(device_t dev)
 	byte = inb(0x70);		/* RTC70 */
 	byte_old = byte;
 	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
+	get_option("nmi", &nmi_option);
 	if (nmi_option) {
 		byte &= ~(1 << 7); /* Set NMI. */
 	} else {

@@ -7,7 +7,7 @@
 #include <smp/spinlock.h>
 
 static int first_time = 1;
-static int disable_siblings = !CONFIG_LOGICAL_CPUS;
+static uint32_t disable_siblings = !CONFIG_LOGICAL_CPUS;
 
 void intel_sibling_init(device_t cpu)
 {
@@ -17,7 +17,7 @@ void intel_sibling_init(device_t cpu)
 	/* On the bootstrap processor see if I want sibling cpus enabled */
 	if (first_time) {
 		first_time = 0;
-		get_option(&disable_siblings, "hyper_threading");
+		get_option("hyper_threading", &disable_siblings);
 	}
 	result = cpuid(1);
 	/* Is hyperthreading supported */

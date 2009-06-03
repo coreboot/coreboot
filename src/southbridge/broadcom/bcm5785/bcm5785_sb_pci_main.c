@@ -23,7 +23,7 @@ static void sb_init(device_t dev)
 {
 	uint8_t byte;
 	uint8_t byte_old;
-	int nmi_option;
+	uint32_t nmi_option;
 
 	uint32_t dword;
 
@@ -31,8 +31,8 @@ static void sb_init(device_t dev)
 	byte = inb(0x70); // RTC70
 	byte_old = byte;
 	nmi_option = NMI_OFF;
-	get_option(&nmi_option, "nmi");
-	if (nmi_option) {			
+	get_option("nmi", &nmi_option);
+	if (nmi_option) {
 		byte &= ~(1 << 7); /* set NMI */
 	} else {
 		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW

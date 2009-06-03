@@ -9,18 +9,9 @@
 #include <smp/spinlock.h>
 #include <console/console.h>
 
-/* printk's without a loglevel use this.. */
-#define DEFAULT_MESSAGE_LOGLEVEL 4 /* BIOS_WARNING */
-
-/* We show everything that is MORE important than this.. */
-#define MINIMUM_CONSOLE_LOGLEVEL 1 /* Minimum loglevel we let people use */
-
 /* Keep together for sysctl support */
 
-int console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
-int default_message_loglevel = DEFAULT_MESSAGE_LOGLEVEL;
-int minimum_console_loglevel = MINIMUM_CONSOLE_LOGLEVEL;
-int default_console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+unsigned int console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
 
 void display(char*);
 extern int vtxprintf(void (*)(unsigned char), const char *, va_list);

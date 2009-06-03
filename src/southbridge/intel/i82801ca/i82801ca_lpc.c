@@ -88,7 +88,7 @@ void i82801ca_rtc_init(struct device *dev)
 {
     uint32_t dword;
     int rtc_failed;
-	int pwr_on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+    uint32_t pwr_on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
     uint8_t pmcon3 = pci_read_config8(dev, GEN_PMCON_3);
 
     rtc_failed = pmcon3 & RTC_BATTERY_DEAD;
@@ -99,7 +99,7 @@ void i82801ca_rtc_init(struct device *dev)
         pmcon3 &= ~RTC_POWER_FAILED;
     }
 
-    get_option(&pwr_on, "power_on_after_fail");
+    get_option("power_on_after_fail", &pwr_on);
 	pmcon3 &= ~SLEEP_AFTER_POWER_FAIL;
 	if (!pwr_on) {
 		pmcon3 |= SLEEP_AFTER_POWER_FAIL;
@@ -158,7 +158,7 @@ static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	int pwr_on=-1;
-	int nmi_option;
+	uint32_t nmi_option;
 
 	/* IO APIC initialization */
 	i82801ca_enable_ioapic(dev);
@@ -186,7 +186,7 @@ static void lpc_init(struct device *dev)
     outb(byte, 0x61);
     byte = inb(0x70);
     nmi_option = NMI_OFF;
-    get_option(&nmi_option, "nmi");
+    get_option("nmi", &nmi_option);
     if (nmi_option) {			
         byte &= ~(1 << 7); /* set NMI */
         outb(byte, 0x70);

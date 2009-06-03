@@ -76,7 +76,7 @@ static void acpi_init(struct device *dev)
 	uint16_t word;
 	uint16_t pm10_bar;
 	uint32_t dword;
-	int on;
+	uint32_t on;
 
 #if 0
 	printk_debug("ACPI: disabling NMI watchdog.. ");
@@ -113,7 +113,7 @@ static void acpi_init(struct device *dev)
 	
 	/* power on after power fail */
 	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
-	get_option(&on, "power_on_after_fail");
+	get_option("power_on_after_fail", &on);
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x40;
 	if (!on) {
@@ -130,7 +130,7 @@ static void acpi_init(struct device *dev)
 	
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
-	get_option(&on, "slow_cpu");
+	get_option("slow_cpu", &on);
 	if(on) {
 		pm10_bar = (pci_read_config16(dev, 0x58)&0xff00);
 		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));

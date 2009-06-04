@@ -456,7 +456,6 @@ that are corresponding to 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x10, 
 #define NonCoherent       (1 << 2)
 #define ConnectionPending (1 << 4)
 
-
 #include "raminit.h"
 //struct definitions
 

@@ -712,10 +712,8 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-
 	printk_spew("done.\n");
 }
-
 
 static int is_dual_channel(const struct mem_controller *ctrl)
 {
@@ -723,7 +721,6 @@ static int is_dual_channel(const struct mem_controller *ctrl)
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	return dcl & DCL_Width128;
 }
-
 
 static int is_opteron(const struct mem_controller *ctrl)
 {
@@ -737,7 +734,6 @@ static int is_opteron(const struct mem_controller *ctrl)
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	return !!(nbcap & NBCAP_128Bit);
 }
-
 
 static int is_registered(const struct mem_controller *ctrl)
 {
@@ -834,7 +830,8 @@ static void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 
 
 static void set_dimm_size(const struct mem_controller *ctrl,
-			 struct dimm_size *sz, unsigned index, struct mem_info *meminfo)
+			  struct dimm_size *sz, unsigned index,
+			  struct mem_info *meminfo)
 {
 	uint32_t base0, base1;
 
@@ -1009,14 +1006,13 @@ static long spd_set_ram_size(const struct mem_controller *ctrl,
 			return -1; /* Report SPD error */
 		}
 		set_dimm_size(ctrl, sz, i, meminfo);
-		set_dimm_cs_map (ctrl, sz, i, meminfo);
+		set_dimm_cs_map(ctrl, sz, i, meminfo);
 	}
 	return meminfo->dimm_mask;
 }
 
-
 static void route_dram_accesses(const struct mem_controller *ctrl,
-		                 unsigned long base_k, unsigned long limit_k)
+				unsigned long base_k, unsigned long limit_k)
 {
 	/* Route the addresses to the controller node */
 	unsigned node_id;
@@ -1045,7 +1041,6 @@ static void route_dram_accesses(const struct mem_controller *ctrl,
 	}
 }
 
-
 static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 {
 	/* Error if I don't have memory */
@@ -1056,9 +1051,9 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	/* Report the amount of memory. */
 	printk_debug("RAM: 0x%08x kB\n", tom_k);
 
+	/* Now set top of memory */
 	msr_t msr;
 	if (tom_k > (4*1024*1024)) {
-		/* Now set top of memory */
 		msr.lo = (tom_k & 0x003fffff) << 10;
 		msr.hi = (tom_k & 0xffc00000) >> 22;
 		wrmsr(TOP_MEM2, msr);
@@ -1161,7 +1156,6 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 		csbase_inc <<=1;
 	}
 
-
 	/* Compute the initial values for csbase and csbask.
 	 * In csbase just set the enable bit and the base to zero.
 	 * In csmask set the mask bits for the size and page level interleave.
@@ -1189,6 +1183,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 	/* Return the memory size in K */
 	return common_size << ((27-10) + bits);
 }
+
 static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 {
 	unsigned long tom;
@@ -1278,7 +1273,6 @@ unsigned long memory_end_k(const struct mem_controller *ctrl, int max_node_id)
 	return end_k;
 }
 
-
 static void order_dimms(const struct mem_controller *ctrl,
 			 struct mem_info *meminfo)
 {
@@ -1291,18 +1285,17 @@ static void order_dimms(const struct mem_controller *ctrl,
 		printk_debug("Interleaving disabled\n");
 		tom_k = 0;
 	}
-	
+
 	if (!tom_k) {
 		tom_k = order_chip_selects(ctrl);
 	}
-	
+
 	/* Compute the memory base address */
 	base_k = memory_end_k(ctrl, ctrl->node_id);
 	tom_k += base_k;
 	route_dram_accesses(ctrl, base_k, tom_k);
 	set_top_mem(tom_k, 0);
 }
-
 
 static long disable_dimm(const struct mem_controller *ctrl, unsigned index,
 			  struct mem_info *meminfo)
@@ -1325,7 +1318,6 @@ static long disable_dimm(const struct mem_controller *ctrl, unsigned index,
 	meminfo->dimm_mask &= ~(1 << index);
 	return meminfo->dimm_mask;
 }
-
 
 static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 					 struct mem_info *meminfo)
@@ -1380,16 +1372,13 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	}
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 
-#if 1
 	if (meminfo->is_registered) {
-		printk_debug("Registered\n");
+		printk_spew("Registered\n");
 	} else {
-		printk_debug("Unbuffered\n");
+		printk_spew("Unbuffered\n");
 	}
-#endif
 	return meminfo->dimm_mask;
 }
-
 
 static unsigned int spd_detect_dimms(const struct mem_controller *ctrl)
 {
@@ -1624,7 +1613,7 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 	if (!param->cycle_time) {
 		die("min_cycle_time to low");
 	}
-	printk_debug("%s\n", param->name);
+	printk_spew("%s\n", param->name);
 	return param;
 }
 
@@ -2088,7 +2077,6 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 	return 1;
 }
 
-
 static int update_dimm_Trcd(const struct mem_controller *ctrl,
 			     const struct mem_param *param, int i, long dimm_mask)
 {
@@ -2126,17 +2114,14 @@ static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_
 	if (clocks < DTL_TRAS_MIN) {
 		clocks = DTL_TRAS_MIN;
 	}
-
 	if (clocks > DTL_TRAS_MAX) {
 		return 0;
 	}
-
 	dtl = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW);
 	old_clocks = ((dtl >> DTL_TRAS_SHIFT) & DTL_TRAS_MASK) + DTL_TRAS_BASE;
 	if (old_clocks >= clocks) { // someone did it?
 		return 1;
 	}
-
 	dtl &= ~(DTL_TRAS_MASK << DTL_TRAS_SHIFT);
 	dtl |= ((clocks - DTL_TRAS_BASE) << DTL_TRAS_SHIFT);
 	pci_write_config32(ctrl->f2, DRAM_TIMING_LOW, dtl);
@@ -2201,7 +2186,6 @@ static int update_dimm_Tref(const struct mem_controller *ctrl,
 	return 1;
 }
 
-
 static void set_4RankRDimm(const struct mem_controller *ctrl,
 			const struct mem_param *param, struct mem_info *meminfo)
 {
@@ -2234,7 +2218,6 @@ static void set_4RankRDimm(const struct mem_controller *ctrl,
 	}
 #endif
 }
-
 
 static uint32_t get_extra_dimm_mask(const struct mem_controller *ctrl,
 				     struct mem_info *meminfo)
@@ -2363,7 +2346,6 @@ static void set_DramTerm(const struct mem_controller *ctrl,
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 }
 
-
 static void set_ecc(const struct mem_controller *ctrl,
 	const struct mem_param *param, struct mem_info *meminfo)
 {
@@ -2456,18 +2438,15 @@ static void set_Twrwr(const struct mem_controller *ctrl, const struct mem_param 
 	set_TT(ctrl, param, DRAM_TIMING_HIGH, DTH_TWRWR_SHIFT, DTH_TWRWR_MASK,DTH_TWRWR_BASE, DTH_TWRWR_MIN, DTH_TWRWR_MAX, param->Twrwr, "Twrwr");
 }
 
-
 static void set_Trdrd(const struct mem_controller *ctrl, const struct mem_param *param)
 {
 	set_TT(ctrl, param, DRAM_TIMING_HIGH, DTH_TRDRD_SHIFT, DTH_TRDRD_MASK,DTH_TRDRD_BASE, DTH_TRDRD_MIN, DTH_TRDRD_MAX, param->Trdrd, "Trdrd");
 }
 
-
 static void set_DcqBypassMax(const struct mem_controller *ctrl, const struct mem_param *param)
 {
 	set_TT(ctrl, param, DRAM_CONFIG_HIGH, DCH_DcqBypassMax_SHIFT, DCH_DcqBypassMax_MASK,DCH_DcqBypassMax_BASE, DCH_DcqBypassMax_MIN, DCH_DcqBypassMax_MAX, param->DcqByPassMax, "DcqBypassMax"); // value need to be in CMOS
 }
-
 
 static void set_Tfaw(const struct mem_controller *ctrl, const struct mem_param *param, struct mem_info *meminfo)
 {
@@ -2486,9 +2465,7 @@ static void set_Tfaw(const struct mem_controller *ctrl, const struct mem_param *
 	}
 
 	set_TT(ctrl, param, DRAM_CONFIG_HIGH, DCH_FourActWindow_SHIFT, DCH_FourActWindow_MASK, DCH_FourActWindow_BASE, DCH_FourActWindow_MIN, DCH_FourActWindow_MAX, faw, "FourActWindow");
-
 }
-
 
 static void set_max_async_latency(const struct mem_controller *ctrl, const struct mem_param *param)
 {
@@ -2507,7 +2484,6 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
 }
 
-
 static void set_SlowAccessMode(const struct mem_controller *ctrl)
 {
 	uint32_t dch;
@@ -2518,7 +2494,6 @@ static void set_SlowAccessMode(const struct mem_controller *ctrl)
 
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
 }
-
 
 /*
 	DRAM_OUTPUT_DRV_COMP_CTRL 0, 0x20
@@ -2724,7 +2699,6 @@ static void set_RDqsEn(const struct mem_controller *ctrl,
 #endif
 }
 
-
 static void set_idle_cycle_limit(const struct mem_controller *ctrl,
 				  const struct mem_param *param)
 {
@@ -2737,13 +2711,11 @@ static void set_idle_cycle_limit(const struct mem_controller *ctrl,
 	pci_write_config32(ctrl->f2, DRAM_CTRL_MISC, dcm);
 }
 
-
 static void set_RdWrQByp(const struct mem_controller *ctrl,
 			  const struct mem_param *param)
 {
 	set_TT(ctrl, param, DRAM_CTRL_MISC, DCM_RdWrQByp_SHIFT, DCM_RdWrQByp_MASK,0, 0, 3, 2, "RdWrQByp");
 }
-
 
 static long spd_set_dram_timing(const struct mem_controller *ctrl,
 				 const struct mem_param *param,
@@ -3058,14 +3030,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 
 	/* We need to wait a minimum of 20 MEMCLKS to enable the InitDram */
 	memreset(controllers, ctrl);
-#if 0
-	printk_debug("prepare to InitDram:");
-	for (i=0; i<10; i++) {
-		printk_debug("%08x", i);
-		print_debug("\b\b\b\b\b\b\b\b");
-	}
-	printk_debug("\n");
-#endif
 
 	/* lets override the rest of the routine */
 	if (suspend) {
@@ -3241,9 +3205,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 
 }
 
-
 static void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
-			   const uint16_t *spd_addr)
+			  const uint16_t *spd_addr)
 {
 	int i;
 	int j;

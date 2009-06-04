@@ -1,6 +1,7 @@
 uses AGP_APERTURE_SIZE
 uses HAVE_ACPI_TABLES
 uses HAVE_HIGH_TABLES
+uses K8_REV_F_SUPPORT
 
 default AGP_APERTURE_SIZE=0x4000000
 default HAVE_HIGH_TABLES=1
@@ -10,11 +11,24 @@ config chip.h
 driver northbridge.o
 driver misc_control.o
 
+if K8_REV_F_SUPPORT
+
+makerule raminit_test
+	depends "$(TOP)/src/northbridge/amd/amdk8/raminit_test.c"
+	depends "$(TOP)/src/northbridge/amd/amdk8/raminit_f.c"
+	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
+end
+
+else
+
 makerule raminit_test
 	depends "$(TOP)/src/northbridge/amd/amdk8/raminit_test.c"
 	depends "$(TOP)/src/northbridge/amd/amdk8/raminit.c"
 	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
 end
+
+end
+
 
 if HAVE_ACPI_TABLES
 	object amdk8_acpi.o

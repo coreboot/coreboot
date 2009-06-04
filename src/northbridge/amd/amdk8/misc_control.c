@@ -169,7 +169,7 @@ static void misc_control_init(struct device *dev)
 		 */
 		cmd_ref = 0x04e20707; /* Registered */
 		dcl = pci_read_config32(f2_dev, DRAM_CONFIG_LOW);
-		if (dcl & DCL_UnBufDimm) {
+		if (dcl & DCL_UnBuffDimm) {
 			cmd_ref = 0x000D0701; /* Unbuffered */
 		}
 		cmd = pci_read_config32(dev, 0xd4);

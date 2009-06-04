@@ -212,8 +212,8 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	set_pcie_enable_bits(nb_dev, 0x02 | PCIE_CORE_INDEX_GPPSB, 1 << 0, 1 << 0);	/* no description in datasheet. */
 
 	/* init GPPSB port */
-	/* Sets RCB timeout to be 100ms by setting bits[18:16] to 3 b101 and shortens the enumeration timer by setting bit[19] to 0*/
-	set_pcie_enable_bits(dev, 0x70, 7 << 16, 0xd << 16);
+	/* Sets RCB timeout to be 100ms by setting bits[18:16] to 3 b101 and shortens the enumeration timer by setting bit[19] to 1*/
+	set_pcie_enable_bits(dev, 0x70, 0xF << 16, 0xd << 16);
 	/* PCIE initialization 5.10.2: rpr 2.4 */
 	set_pcie_enable_bits(dev, 0x02, ~0xffffffff, 1 << 14);
 	/* Do not gate the electrical idle from the PHY and enables the escape from L1L23 */
@@ -240,7 +240,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	}
 
 	/* step 5: dynamic slave CPL buffer allocation */
-	set_pcie_enable_bits(dev, 0x20, 1 << 11, 1 << 11);
+	set_pcie_enable_bits(nb_dev, 0x20 | PCIE_CORE_INDEX_GPPSB, 1 << 11, 1 << 11);
 
 	/* step 5a: Training for GPP devices */
 	/* init GPP */

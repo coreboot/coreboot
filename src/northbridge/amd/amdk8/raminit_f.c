@@ -1049,14 +1049,17 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	}
 
 	/* Report the amount of memory. */
-	printk_debug("RAM: 0x%08x kB\n", tom_k);
+	printk_debug("RAM end at 0x%08x kB\n", tom_k);
 
 	/* Now set top of memory */
 	msr_t msr;
 	if (tom_k > (4*1024*1024)) {
+		printk_raminit("Handling memory mapped above 4 GB\n");
+		printk_raminit("Upper RAM end at 0x%08x kB\n", tom_k);
 		msr.lo = (tom_k & 0x003fffff) << 10;
 		msr.hi = (tom_k & 0xffc00000) >> 22;
 		wrmsr(TOP_MEM2, msr);
+		printk_raminit("Correcting memory amount mapped below 4 GB\n");
 	}
 
 	/* Leave a 64M hole between TOP_MEM and TOP_MEM2
@@ -1069,7 +1072,9 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 		} else
 #endif
 		tom_k = 0x3f0000;
+		printk_raminit("Adjusting lower RAM end\n");
 	}
+	printk_raminit("Lower RAM end at 0x%08x kB\n", tom_k);
 	msr.lo = (tom_k & 0x003fffff) << 10;
 	msr.hi = (tom_k & 0xffc00000) >> 22;
 	wrmsr(TOP_MEM, msr);
@@ -2938,6 +2943,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 
 	hole_startk = 4*1024*1024 - HW_MEM_HOLE_SIZEK;
 
+	printk_raminit("Handling memory hole at 0x%08x (default)\n", hole_startk);
 #if HW_MEM_HOLE_SIZE_AUTO_INC == 1
 	/* We need to double check if the hole_startk is valid, if it is equal
 	   to basek, we need to decrease it some */
@@ -2958,6 +2964,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 			}
 			basek_pri = base_k;
 	}
+	printk_raminit("Handling memory hole at 0x%08x (adjusted)\n", hole_startk);
 #endif
 	/* find node index that need do set hole */
 	for (i=0; i < controllers; i++) {

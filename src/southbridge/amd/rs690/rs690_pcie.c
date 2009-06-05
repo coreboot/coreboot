@@ -276,6 +276,9 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	/* step 6a: VCI */
 	sb_dev = dev_find_slot(0, PCI_DEVFN(8, 0));
 	if (port == 8) {
+		/* The code below between #if and #endif causes a hang on HDA init.
+		 * So we skip it. */
+#if 0
 		/* Clear bits 7:1 */
 		pci_ext_write_config32(nb_dev, sb_dev, 0x114, 0x3f << 1, 0 << 1);
 		/* Maps Traffic Class 1-7 to VC1 */
@@ -284,7 +287,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 		pci_ext_write_config32(nb_dev, sb_dev, 0x120, 7 << 24, 1 << 24);
 		/* Enables VC1 */
 		pci_ext_write_config32(nb_dev, sb_dev, 0x120, 1 << 31, 1 << 31);
-#if 0
+
 		do {
 			reg16 = pci_ext_read_config32(nb_dev, sb_dev, 0x124);
 			reg16 &= 0x2;

@@ -1,0 +1,146 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 One Laptop per Child, Association, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+if USE_FALLBACK_IMAGE
+	default ROM_SECTION_SIZE   = FALLBACK_SIZE
+	default ROM_SECTION_OFFSET = (ROM_SIZE - FALLBACK_SIZE)
+else
+	default ROM_SECTION_SIZE   = (ROM_SIZE - FALLBACK_SIZE)
+	default ROM_SECTION_OFFSET = 0
+end
+default PAYLOAD_SIZE = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default _ROMBASE = (CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE)
+default XIP_ROM_SIZE = 64 * 1024
+#default XIP_ROM_SIZE = ROM_IMAGE_SIZE
+#default XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
+default XIP_ROM_BASE = (_ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE)
+
+
+arch i386 end
+driver mainboard.o
+driver wakeup.o
+if HAVE_PIRQ_TABLE object irq_tables.o end
+if HAVE_MP_TABLE object mptable.o end
+if HAVE_ACPI_TABLES
+	object fadt.o
+	object dsdt.o
+#	object ssdt.o
+	object acpi_tables.o
+end
+# these lines maybe noused
+makerule ./failover.E
+	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ./romcc"
+	action "./romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+end
+makerule ./failover.inc
+	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ./romcc"
+	action "./romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+end
+if USE_DCACHE_RAM
+  if CONFIG_USE_INIT
+    makerule ./cache_as_ram_auto.o
+      depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+      action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -o $@"
+    end
+  else
+    makerule ./cache_as_ram_auto.inc
+      depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
+      action "$(CC) $(DISTRO_CFLAGS) -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/cache_as_ram_auto.c -Os -nostdinc -nostdlib -fno-builtin -Wall -c -S -o $@"
+      action "perl -e 's/.rodata/.rom.data/g' -pi $@"
+      action "perl -e 's/.text/.section .rom.text/g' -pi $@"
+    end
+  end
+end
+mainboardinit cpu/via/16bit/entry16.inc
+ldscript /cpu/via/16bit/entry16.lds
+
+mainboardinit northbridge/via/vx800/romstrap.inc  
+ldscript /northbridge/via/vx800/romstrap.lds
+
+mainboardinit cpu/x86/32bit/entry32.inc
+ldscript /cpu/x86/32bit/entry32.lds
+if USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
+else
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
+end
+
+#mainboardinit arch/i386/lib/cpu_reset.inc    
+#here cpu_reset.inc have label _cpu_reset, which is needed in failover,c, but cpu_reset.inc also has code to jump to __main() which is not included in cache_as_ram_auto_auto.c 
+
+
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
+
+if USE_DCACHE_RAM
+  mainboardinit cpu/via/car/cache_as_ram.inc
+end
+
+if USE_FALLBACK_IMAGE
+	ldscript /arch/i386/lib/failover.lds
+# failover.inc need defination in cpu_reset.inc, but we do not include cpu_reset.inc,so ...
+#  mainboardinit ./failover.inc  
+end
+#mainboardinit cpu/x86/fpu/enable_fpu.inc
+#mainboardinit cpu/x86/mmx/enable_mmx.inc
+
+
+if USE_DCACHE_RAM
+  if CONFIG_USE_INIT
+    initobject cache_as_ram_auto.o
+  else
+    mainboardinit ./cache_as_ram_auto.inc
+  end
+end
+ 
+#mainboardinit cpu/x86/mmx/disable_mmx.inc
+dir /pc80
+
+config chip.h
+
+
+chip northbridge/via/vx800	# Northbridge
+	device pci_domain 0 on
+		device pci 0.0 on end # AGP Bridge
+		device pci 0.1 on end # Error Reporting
+		device pci 0.2 on end # Host Bus Control		
+		device pci 0.3 on end # Memory Controller
+		device pci 0.4 on end # Power Management
+		device pci 0.7 on end # V-Link Controller
+		device pci 1.0 on end # PCI Bridge
+			#device pci f.0 on end # IDE/SATA
+			#device pci f.1 on end # IDE
+			#device pci 10.0 on end # USB 1.1
+			#device pci 10.1 on end # USB 1.1
+			#device pci 10.2 on end # USB 1.1
+			#device pci 10.4 on end # USB 2.0
+			#device pci 11.0 on      # Southbridge LPC
+			#end # pci 11.0		
+			
+	end # pci domain 0
+	device apic_cluster 0 on		# APIC cluster
+		chip cpu/via/model_c7			# VIA C7
+			device apic 0 on end		# APIC
+		end
+	end	
+end # vx800

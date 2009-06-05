@@ -1,0 +1,158 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 One Laptop per Child, Association, Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+uses HAVE_MP_TABLE
+uses CONFIG_CBFS
+uses HAVE_PIRQ_TABLE
+uses USE_FALLBACK_IMAGE
+uses HAVE_FALLBACK_BOOT
+uses HAVE_HARD_RESET
+uses HAVE_OPTION_TABLE
+uses USE_OPTION_TABLE
+uses CONFIG_ROM_PAYLOAD
+uses IRQ_SLOT_COUNT
+uses MAINBOARD
+uses MAINBOARD_VENDOR
+uses MAINBOARD_PART_NUMBER
+uses COREBOOT_EXTRA_VERSION
+uses ARCH
+uses FALLBACK_SIZE
+uses STACK_SIZE
+uses HEAP_SIZE
+uses ROM_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_IMAGE_SIZE
+uses ROM_SECTION_SIZE
+uses ROM_SECTION_OFFSET
+uses CONFIG_ROM_PAYLOAD_START
+uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
+uses CONFIG_COMPRESSED_PAYLOAD_LZMA
+uses PAYLOAD_SIZE
+uses _ROMBASE
+uses _RAMBASE
+uses XIP_ROM_SIZE
+uses XIP_ROM_BASE
+uses HAVE_MP_TABLE
+uses HAVE_ACPI_TABLES
+uses CROSS_COMPILE
+uses CC
+uses HOSTCC
+uses OBJCOPY
+uses DEFAULT_CONSOLE_LOGLEVEL
+uses MAXIMUM_CONSOLE_LOGLEVEL
+uses CONFIG_CONSOLE_SERIAL8250
+uses CONFIG_UDELAY_TSC
+uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+uses CONFIG_PCI_ROM_RUN
+uses CONFIG_CONSOLE_VGA
+uses CONFIG_MAX_PCI_BUSES
+uses TTYS0_BAUD
+uses CONFIG_VIDEO_MB
+uses CONFIG_IOAPIC
+
+
+
+##
+## new options
+##
+uses USE_DCACHE_RAM
+uses DCACHE_RAM_BASE
+uses DCACHE_RAM_SIZE
+uses CONFIG_USE_INIT
+uses MAX_RAM_SLOTS
+uses USB_ENABLE
+uses EHCI_ENABLE
+uses HPET_ENABLE
+uses USB_PORTNUM
+uses FULL_ROM_SIZE
+uses FULL_ROM_BASE
+uses PAYLOAD_IS_SEABIOS
+uses VIACONFIG_TOP_SM_SIZE_MB
+uses VIACONFIG_VGA_PCI_10
+uses VIACONFIG_VGA_PCI_14
+
+##
+## new options
+##
+default USE_DCACHE_RAM=1
+default DCACHE_RAM_BASE=0xffef0000
+#default DCACHE_RAM_BASE=0xffbf0000
+#default DCACHE_RAM_BASE=0xfec00000 //hpet may use this 
+default DCACHE_RAM_SIZE=0x2000
+default CONFIG_USE_INIT=0
+default MAX_RAM_SLOTS=2
+default USB_ENABLE=1
+default EHCI_ENABLE=1
+default HPET_ENABLE=1
+default USB_PORTNUM=2
+default FULL_ROM_SIZE = 512 * 1024
+default FULL_ROM_BASE = (0xffffffff - FULL_ROM_SIZE+ 1)
+default VIACONFIG_TOP_SM_SIZE_MB=0
+#default VIACONFIG_VGA_PCI_10=0xd0000008
+#default VIACONFIG_VGA_PCI_14=0xfd000000
+default VIACONFIG_VGA_PCI_10=0xf8000008
+default VIACONFIG_VGA_PCI_14=0xfc000000
+
+
+default ROM_SIZE = 512 * 1024
+default CONFIG_IOAPIC = 1
+
+#define framebuffer size of VX800's integrated graphics card. support 32 64 128 256
+default CONFIG_VIDEO_MB = 64
+
+default CONFIG_CONSOLE_SERIAL8250 = 1
+default CONFIG_PCI_ROM_RUN = 0
+default CONFIG_CONSOLE_VGA = 0
+default HAVE_FALLBACK_BOOT = 1
+default HAVE_MP_TABLE = 0
+default CONFIG_UDELAY_TSC = 1
+default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 = 1
+default HAVE_HARD_RESET = 0
+default HAVE_PIRQ_TABLE = 0
+default IRQ_SLOT_COUNT = 10
+default HAVE_ACPI_TABLES = 1
+default HAVE_OPTION_TABLE = 1
+default ROM_IMAGE_SIZE = 128 * 1024
+default FALLBACK_SIZE = ROM_SIZE
+default USE_FALLBACK_IMAGE = 1
+default STACK_SIZE = 16 * 1024
+default HEAP_SIZE = 20 * 1024
+#default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+default USE_OPTION_TABLE = 0
+default _RAMBASE = 0x00004000
+default CONFIG_ROM_PAYLOAD = 1
+default CROSS_COMPILE = ""
+default CC = "$(CROSS_COMPILE)gcc -m32"
+default HOSTCC = "gcc"
+
+##
+## Set this to the max PCI bus number you would ever use for PCI config I/O.
+## Setting this number very high will make pci_locate_device() take a long
+## time when it can't find a device.
+##
+default CONFIG_MAX_PCI_BUSES = 3
+end
+
+#
+# CBFS
+#
+#
+default CONFIG_CBFS=0
+end

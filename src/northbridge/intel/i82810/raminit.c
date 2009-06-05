@@ -72,6 +72,12 @@ static const u8 translate_i82810_to_bank[] = {
 /* MB */0, 0, 0, 8, 0, 16, 16, 0, 32, 32, 0, 64, 64, 0, 128, 128,
 };
 
+struct dimm_info {
+	u8 ds;		/* dual-sided */
+	u8 ss;		/* single-sided */
+	u8 size;
+};
+
 /*-----------------------------------------------------------------------------
 SDRAM configuration functions.
 -----------------------------------------------------------------------------*/
@@ -275,10 +281,77 @@ static void set_dram_timing(void)
  * 0x1145   384MB   0xdf   256MB dual-sided     128MB single-sided
  * 0x4445   384MB   0xfd   128MB single-sided   256MB dual-sided
  * 0x0001   512MB   0xff   256MB dual-sided     256MB dual-sided
+ *
+ * See also:
+ * http://www.coreboot.org/pipermail/coreboot/2009-May/047966.html
  */
 static void set_dram_buffer_strength(void)
 {
-	pci_write_config16(PCI_DEV(0, 0, 0), BUFF_SC, 0x77da);
+	struct dimm_info d0, d1;
+	u16 buff_sc;
+
+	/* Check first slot. */
+	d0.size = d0.ds = d0.ss = 0;
+	if (smbus_read_byte(DIMM_SPD_BASE, SPD_MEMORY_TYPE)
+	    == SPD_MEMORY_TYPE_SDRAM) {
+		d0.size = smbus_read_byte(DIMM_SPD_BASE, SPD_BANK_DENSITY);
+		d0.ds = smbus_read_byte(DIMM_SPD_BASE, SPD_NUM_DIMM_BANKS) > 1;
+		d0.ss = !d0.ds;
+	}
+
+	/* Check second slot. */
+	d1.size = d1.ds = d1.ss = 0;
+	if (smbus_read_byte(DIMM_SPD_BASE + 1, SPD_MEMORY_TYPE)
+	    == SPD_MEMORY_TYPE_SDRAM) {
+		d1.size = smbus_read_byte(DIMM_SPD_BASE + 1, SPD_BANK_DENSITY);
+		d1.ds = smbus_read_byte(DIMM_SPD_BASE + 1,
+					SPD_NUM_DIMM_BANKS) > 1;
+		d1.ss = !d1.ds;
+	}
+	
+	buff_sc = 0;
+
+	/* Tame the beast... */
+	if ((d0.ds && d1.ds) || (d0.ds && d1.ss) || (d0.ss && d1.ds))
+		buff_sc |= 1;
+	if ((d0.size && !d1.size) || (!d0.size && d1.size) || (d0.ss && d1.ss))
+		buff_sc |= 1 << 1;
+	if ((d0.ds && !d1.size) || (!d0.size && d1.ds) || (d0.ss && d1.ss)
+	   || (d0.ds && d1.ss) || (d0.ss && d1.ds))
+		buff_sc |= 1 << 2;
+	if ((d0.ss && !d1.size) || (!d0.size && d1.ss))
+		buff_sc |= 1 << 3;
+	if ((d0.size && !d1.size) || (!d0.size && d1.size))
+		buff_sc |= 1 << 4;
+	if ((d0.ds && !d1.size) || (!d0.size && d1.ds) || (d0.ds && d1.ss)
+	   || (d0.ss && d1.ds))
+		buff_sc |= 1 << 6;
+	if ((d0.ss && !d1.size) || (!d0.size && d1.ss) || (d0.ss && d1.ss))
+		buff_sc |= 3 << 6;
+	if ((!d0.size && d1.ss) || (d0.ds && d1.ss) || (d0.ss && d1.ss))
+		buff_sc |= 1 << 8;
+	if (d0.size && !d1.size)
+		buff_sc |= 3 << 8;
+	if ((d0.ss && !d1.size) || (d0.ss && d1.ss) || (d0.ss && d1.ds))
+		buff_sc |= 1 << 10;
+	if (!d0.size && d1.size)
+		buff_sc |= 3 << 10;
+	if ((d0.size && !d1.size) || (d0.ss && !d1.size) || (!d0.size && d1.ss)
+	   || (d0.ss && d1.ss) || (d0.ds && d1.ss))
+		buff_sc |= 1 << 12;
+	if (d0.size && !d1.size)
+		buff_sc |= 1 << 13;
+	if ((!d0.size && d1.size) || (d0.ss && !d1.size) || (d0.ss && d1.ss)
+	   || (d0.ss && d1.ds))
+		buff_sc |= 1 << 14;
+	if (!d0.size && d1.size)
+		buff_sc |= 1 << 15;
+	
+	print_debug("BUFF_SC calculated to 0x");
+	print_debug_hex16(buff_sc);
+	print_debug("\r\n");
+
+	pci_write_config16(PCI_DEV(0, 0, 0), BUFF_SC, buff_sc);
 }
 
 /*-----------------------------------------------------------------------------

@@ -37,12 +37,12 @@ void i82801dbm_enable_ioapic( struct device *dev)
         dword=*ioapic_sbd;
         printk_debug("Southbridge apic id = %x\n",dword);
         if(dword!=(2<<24))
-                for(;;);
+                die("");
         //lyh *ioapic_sba=3;
         //lyh dword=*ioapic_sbd;
         //lyh printk_debug("Southbridge apic DT = %x\n",dword);
         //lyh if(dword!=1)
-        //lyh   for(;;);
+        //lyh   die("");
 
 
 }

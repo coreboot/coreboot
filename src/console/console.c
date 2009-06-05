@@ -92,7 +92,7 @@ void post_code(uint8_t value)
 }
 
 /* Report a fatal error */
-void die(const char *msg)
+void __attribute__((noreturn)) die(const char *msg)
 {
 	printk_emerg("%s", msg);
 	post_code(0xff);

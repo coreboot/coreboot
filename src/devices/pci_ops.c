@@ -30,7 +30,7 @@ static struct bus *get_pbus(device_t dev)
 	struct bus *pbus;
 
 	if (!dev)
-		printk_alert("get_pbus: dev is NULL!\n");
+		die("get_pbus: dev is NULL!\n");
 
 	pbus = dev->bus;
 
@@ -44,9 +44,8 @@ static struct bus *get_pbus(device_t dev)
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {
-		printk_alert("%s Cannot find pci bus operations", dev_path(dev));
+		printk_emerg("%s Cannot find pci bus operations\n", dev_path(dev));
 		die("");
-		for(;;);
 	}
 	return pbus;
 }

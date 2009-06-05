@@ -34,7 +34,6 @@ struct bus *get_pbus_smbus(device_t dev)
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_smbus_bus) {
 		printk_alert("%s Cannot find smbus bus operations", dev_path(dev));
 		die("");
-		for(;;);
 	}
 	return pbus;
 }

@@ -3,14 +3,14 @@
 ## (coreboot plus bootloader) will live in the boot rom chip.
 ##
 default ROM_SIZE = 256 * 1024 
-default ROM_SECTION_SIZE   = ROM_SIZE
+default ROM_SECTION_SIZE   = ROM_IMAGE_SIZE
 default ROM_SECTION_OFFSET = 0
 
 ##
 ## Compute the start location and size size of
 ## The coreboot bootloader.
 ##
-default PAYLOAD_SIZE            = ( ROM_SECTION_SIZE - ROM_IMAGE_SIZE )
+default PAYLOAD_SIZE            = ( ROM_SIZE - ROM_IMAGE_SIZE )
 default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
 
 ##

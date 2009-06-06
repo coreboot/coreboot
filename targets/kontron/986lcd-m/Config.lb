@@ -5,20 +5,8 @@ mainboard kontron/986lcd-m
 ## (normal AND fallback images and payloads).
 option ROM_SIZE = 1024 * 1024
 
-# Use this line instead if you want to use onboard VGA:
-# option ROM_SIZE = (1024 * 1024) - (64 * 1024)
-
-## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
-## not including any payload.
-option ROM_IMAGE_SIZE = 128 * 1024
-
-## FALLBACK_SIZE is the amount of the ROM the complete fallback image 
-## (including payload) will use.
-option FALLBACK_SIZE = ROM_SIZE
-
 romimage "fallback"
 	option USE_FALLBACK_IMAGE = 1
-	option ROM_IMAGE_SIZE = 144 * 1024
 	payload ../payload.elf
 end
 

@@ -30,14 +30,12 @@ option ROM_SIZE=(512-64)*1024
 
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x14000
 	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload $(HOME)/payload.elf
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x14000
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload $(HOME)/payload.elf
 end

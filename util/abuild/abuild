@@ -176,14 +176,20 @@ EOF
 			cat <<EOF
 romimage "normal"
 	option USE_FALLBACK_IMAGE=0
+if CONFIG_CBFS
+else
 	option ROM_IMAGE_SIZE=0x17000
+end
 	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
+if CONFIG_CBFS
+else
 	option ROM_IMAGE_SIZE=0x17000
+end
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end
@@ -375,6 +381,7 @@ function build_target
 			CC="$CC -Wa,--divide"
 		fi
 		CROSS_COMPILE="$TARCH-elf-"
+		CC=gcc
 		echo using $CROSS_COMPILE$CC
 		found_crosscompiler=true
 	fi

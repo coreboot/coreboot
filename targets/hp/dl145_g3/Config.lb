@@ -25,11 +25,9 @@ target dl145_g3
 mainboard hp/dl145_g3
 
 option ROM_SIZE= 1024*1024
-option CONFIG_CBFS = 1
 
 romimage "fallback"
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x20000
 	option XIP_ROM_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 	payload ./bios.bin.elf

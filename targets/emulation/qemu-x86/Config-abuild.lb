@@ -8,11 +8,8 @@ option HOSTCC="CROSS_HOSTCC"
 __COMPRESSION__
 __LOGLEVEL__
 
-option ROM_SIZE=256*1024
-
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x10000
 	option COREBOOT_EXTRA_VERSION=".0"
 	payload __PAYLOAD__
 end

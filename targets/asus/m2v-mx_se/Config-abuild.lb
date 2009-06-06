@@ -20,6 +20,10 @@
 target asus_m2v-mx_se
 mainboard asus/m2v-mx_se
 
+option CC="CROSSCC"
+option CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
+
 ## ROM_SIZE is the total number of bytes allocated for coreboot use
 ## (normal AND fallback images and payloads).
 

@@ -11,7 +11,6 @@ option HAVE_PIRQ_TABLE=1
 option IRQ_SLOT_COUNT=6
 
 romimage "normal" 
-	option ROM_IMAGE_SIZE=0x10000
 	option COREBOOT_EXTRA_VERSION="-GRUB2"
 #	payload /home/stepan/core.img
 	payload ../payload.elf

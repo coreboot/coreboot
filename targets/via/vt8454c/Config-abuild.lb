@@ -29,14 +29,12 @@ option CROSS_COMPILE="CROSS_PREFIX"
 option HOSTCC="CROSS_HOSTCC"
 
 option ROM_SIZE=512*1024
-option FALLBACK_SIZE=512*1024
 
 __COMPRESSION__
 __LOGLEVEL__
 
 romimage "fallback" 
 	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x15000
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end

@@ -2293,7 +2293,7 @@ def writemakefile(path):
 		# build the bootblock here.
 		file.write("\n\tcat")
 		for j in i.roms:
-			file.write(" %s/coreboot.strip " % j)
+			file.write(" %s/coreboot.rom " % j)
 		file.write("> %s.bootblock\n\n" %i.name)
 		file.write("\t./cbfstool %s create %s %s %s.bootblock\n"
 			   %(i.name, romsize, bootblocksize, i.name))

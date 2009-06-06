@@ -100,7 +100,7 @@ default CONFIG_PCI_OPTION_ROM_RUN_REALMODE=1
 
 ## ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
 default ROM_IMAGE_SIZE = 65536
-default FALLBACK_SIZE = 131072
+default FALLBACK_SIZE = ROM_IMAGE_SIZE
 
 ##
 ## Use a small 8K stack

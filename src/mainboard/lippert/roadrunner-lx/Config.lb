@@ -20,6 +20,8 @@
 
 ## Based on Config.lb from AMD's DB800 and DBM690T mainboards.
 
+## XIP_ROM_SIZE must be a power of 2.
+default XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 ##

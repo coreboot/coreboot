@@ -1,3 +1,5 @@
+## XIP_ROM_SIZE must be a power of 2.
+default XIP_ROM_SIZE = 64 * 1024
 include /config/failovercalculation.lb
 
 arch i386 end 

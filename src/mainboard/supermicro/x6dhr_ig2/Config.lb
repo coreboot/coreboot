@@ -3,7 +3,9 @@
 ##
 default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
 
-include /config/nofailovercalculation128.lb
+## XIP_ROM_SIZE must be a power of 2.
+default XIP_ROM_SIZE = 128 * 1024
+include /config/nofailovercalculation.lb
 
 ##
 ## Set all of the defaults for an x86 architecture

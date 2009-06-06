@@ -36,10 +36,9 @@ default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
 ## Compute a range of ROM that can cached to speed up coreboot,
 ## execution speed.
 ##
-## XIP_ROM_SIZE must be a power of 2.
+## XIP_ROM_SIZE must be a power of 2 and is set in mainboard Config.lb
 ## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
 ##
-default XIP_ROM_SIZE = 64 * 1024
 
 if USE_FAILOVER_IMAGE
 	default XIP_ROM_BASE = ( _ROMBASE - XIP_ROM_SIZE + ROM_IMAGE_SIZE)

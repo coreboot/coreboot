@@ -356,7 +356,7 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 	phyAssistedMemFnceTraining(pMCTstat, pDCTstatA);
 
 	if (nv_DQSTrainCTL) {
-		mctHookBeforeAnyTraining();
+		mctHookBeforeAnyTraining(pMCTstat, pDCTstatA);
 
 		print_t("DQSTiming_D: TrainReceiverEn_D FirstPass:\n");
 		TrainReceiverEn_D(pMCTstat, pDCTstatA, FirstPass);

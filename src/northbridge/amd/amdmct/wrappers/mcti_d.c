@@ -18,7 +18,7 @@
  */
 
 /* Call-backs */
-
+#include <delay.h>
 u16 mctGet_NVbits(u8 index)
 {
 	u16 val = 0;
@@ -326,9 +326,77 @@ void mctHookAfterDramInit(void)
 {
 }
 
+static void coreDelay (void);
 
-void mctHookBeforeAnyTraining(void)
+
+/* Erratum 350 */
+void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 {
+	u8 u8Channel;
+	u8 u8Receiver;
+	u32 u32Addr;
+	u8 u8Valid;
+	u32 u32DctDev;
+
+	// 1. dummy read for each installed DIMM */
+	for (u8Channel = 0; u8Channel < 2; u8Channel++) {
+		// This will be 0 for vaild DIMMS, eles 8
+		u8Receiver = mct_InitReceiver_D(pDCTstat, u8Channel);
+
+		for (; u8Receiver < 8; u8Receiver += 2) {
+			u32Addr = mct_GetRcvrSysAddr_D(pMCTstat, pDCTstat, u8Channel, u8Receiver, &u8Valid);
+
+			if(!u8Valid) {	/* Address not supported on current CS */
+				print_t("vErrara350: Address not supported on current CS\n");
+				continue;
+			}
+			print_t("vErrara350: dummy read \n");
+			read32_fs(u32Addr);
+		}
+	}
+
+	print_t("vErrara350: step 2a\n");
+
+	/* 2. Write 0000_8000h to register F2x[1, 0]9C_xD080F0C. */
+	u32DctDev = pDCTstat->dev_dct;
+	Set_NB32_index_wait(u32DctDev, 0x098, 0x0c, 0x00008000);
+	/*                                                ^--- value
+	                                        ^---F2x[1, 0]9C_x0C DRAM Phy Miscellaneous Register
+	                                 ^----F2x[1, 0]98 DRAM Controller Additional Data Offset Register */
+
+	if(!pDCTstat->GangedMode) {
+		print_t("vErrara350: step 2b\n");
+		Set_NB32_index_wait(u32DctDev, 0x198, 0x0c, 0x00008000);
+		/*                                                ^--- value
+		                                        ^---F2x[1, 0]9C_x0C DRAM Phy Miscellaneous Register
+		                                ^----F2x[1, 0]98 DRAM Controller Additional Data Offset Register */
+	}
+
+	print_t("vErrara350: step 3\n");
+	/* 3. Wait at least 300 nanoseconds. */
+	coreDelay();
+
+	print_t("vErrara350: step 4\n");
+	/* 4. Write 0000_0000h to register F2x[1, 0]9C_xD080F0C. */
+	Set_NB32_index_wait(u32DctDev, 0x098, 0x0c, 0x00000000);
+
+	if(!pDCTstat->GangedMode) {
+		print_t("vErrara350: step 4b\n");
+		Set_NB32_index_wait(u32DctDev, 0x198, 0x0c, 0x00000000);
+	}
+
+	print_t("vErrara350: step 5\n");
+	/* 5. Wait at least 2 microseconds. */
+	coreDelay();
+
+}
+
+
+void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
+{
+	if (pDCTstatA->LogicalCPUID & AMD_RB_C2) {
+		vErrata350(pMCTstat, pDCTstatA);
+	}
 }
 
 void mctHookAfterAnyTraining(void)

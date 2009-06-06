@@ -23,7 +23,19 @@ static void inline __attribute__((always_inline))  memcopy(void *dest, const voi
                 : "S" (src), "D" (dest), "c" ((bytes)>>2)
                 );
 }
+/* Disable Erratum 343 Workaround, see RevGuide for Fam10h, Pub#41322 Rev 3.33 */
 
+static void vErrata343(void)
+{
+    msr_t msr;
+    unsigned int uiMask = 0xFFFFFFF7;
+
+#ifdef BU_CFG2_MSR
+    msr = rdmsr(BU_CFG2_MSR);
+    msr.hi &= uiMask; // set bit 35 to 0
+    wrmsr(BU_CFG2_MSR, msr);
+#endif
+}
 
 static void post_cache_as_ram(void)
 {
@@ -56,6 +68,8 @@ static void post_cache_as_ram(void)
 	print_debug("Copying data from cache to RAM -- switching to use RAM as stack... ");
 
 	/* from here don't store more data in CAR */
+	vErrata343();
+
 #if 0
         __asm__ volatile (
         	"pushl  %eax\n\t"

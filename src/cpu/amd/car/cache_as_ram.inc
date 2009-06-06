@@ -27,6 +27,8 @@
 /* for CAR_FAM10 */
 #define CacheSizeAPStack 0x400 /* 1K */
 
+#define MSR_FAM10      0xC001102A
+
 #define jmp_if_k8(x)	comisd	%xmm2, %xmm1; jb x
 
 #define CPUID_MASK		0x0ff00f00
@@ -121,6 +123,22 @@ CAR_FAM10_out:
 	rdmsr
 	bts	$15, %eax
 	wrmsr
+
+	/* Erratum 343, RevGuide for Fam10h, Pub#41322 Rev. 3.33 */
+
+	/* read-address has to be stored in the ecx register */
+	movl    $MSR_FAM10, %ecx
+
+	/* execute special read command for msr-register. Result is then in the EDX:EAX-registers (MSBs in EDX) */
+	rdmsr
+
+	/* Set bit 35 to 1 in EAX */
+	bts     $35, %eax
+
+	/* write back the modified register EDX:EAX to the MSR specified in ECX */
+	wrmsr
+
+	/* Erratum 343 end */
 
 CAR_FAM10_out_post_errata:
 

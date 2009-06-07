@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-unsigned char AmlCode_ssdt[] =
-{
-	0x53,0x53,0x44,0x54,0xA7,0x01,0x00,0x00,  /* 00000000    "SSDT...." */
+unsigned char AmlCode_ssdt[] = {
+	0x53, 0x53, 0x44, 0x54, 0xA7, 0x01, 0x00, 0x00,
 	/* Removed for licese issue. */
 };

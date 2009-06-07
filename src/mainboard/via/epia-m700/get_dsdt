@@ -19,25 +19,25 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-# Simple script to dump the factory ACPI DSDT and convert it to C
-# Needs to be run as root on some systems, and always run on the target machine
+# Simple script to dump the factory ACPI DSDT and convert it to C.
+# Must be run as root on some systems, and always run on the target machine.
 
-if [ ! iasl ]
-then echo "Intel ASL Compiler required to recompile DSDT table"
+if [ ! iasl ]; then
+	echo "Intel ASL Compiler required to recompile DSDT table."
 fi
 
-if [ ! -f /proc/acpi/dsdt ]
-then echo "Cannot find DSDT table, check that your kernel supports and uses ACPI"
+if [ ! -f /proc/acpi/dsdt ]; then
+	echo "Cannot find DSDT table, check that your kernel supports and uses ACPI."
 fi
 
 cat /proc/acpi/dsdt > dsdt
-if [ ! -f dsdt ]
-then echo "Failed copying DSDT, please check your permissions"
+if [ ! -f dsdt ]; then
+	echo "Failed copying DSDT, please check your permissions."
 fi
 
 iasl -d -vr -vs dsdt
 iasl -tc -vr -vs dsdt.dsl
 mv dsdt.hex dsdt.c
-echo "Done, cleaning up"
+echo "Done, cleaning up."
 rm -f dsdt dsdt.dsl dsdt.aml dsdt.hex
 exit

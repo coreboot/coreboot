@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-unsigned char AmlCode_dsdt[] =
-{
-	0x44,0x53,0x44,0x54,0x0F,0x3C,0x00,0x00,
+unsigned char AmlCode_dsdt[] = {
+	0x44, 0x53, 0x44, 0x54, 0x0F, 0x3C, 0x00, 0x00,
 	/* Removed for lincense issue. See get_dsdt script. */
 };

@@ -23,8 +23,9 @@
 #include <arch/acpi.h>
 #include <../../../northbridge/via/vx800/vx800.h>
 
-void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
-	acpi_header_t *header =& (fadt->header);
+void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
+{
+	acpi_header_t *header = &(fadt->header);
 
 	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
 	memcpy(header->signature, "FACP", 4);
@@ -40,54 +41,55 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->preferred_pm_profile = 0;
 	fadt->sci_int = 0x9;
 
-	fadt->smi_cmd = VX800_ACPI_IO_BASE+0x2F;  
+	fadt->smi_cmd = VX800_ACPI_IO_BASE + 0x2F;
 	fadt->acpi_enable = 0xA1;
 	fadt->acpi_disable = 0xA0;
 
-		 /* value 42F,A1,A0, if we dont want SMI, then set them to zero.
-	fadt->smi_cmd = 0x0; 
-	fadt->acpi_enable = 0x0;
-	fadt->acpi_disable = 0x0;
-        */
-	
+	/*
+	 * Value 42F,A1,A0, if we don't want SMI, then set them to zero.
+	 * fadt->smi_cmd = 0x0;
+	 * fadt->acpi_enable = 0x0;
+	 * fadt->acpi_disable = 0x0;
+	 */
+
 	fadt->s4bios_req = 0x0;
 	fadt->pstate_cnt = 0x0;
 
 	fadt->pm1a_evt_blk = VX800_ACPI_IO_BASE;
 	fadt->pm1b_evt_blk = 0x0;
-	fadt->pm1a_cnt_blk = VX800_ACPI_IO_BASE+0x4;
+	fadt->pm1a_cnt_blk = VX800_ACPI_IO_BASE + 0x4;
 	fadt->pm1b_cnt_blk = 0x0;
-	fadt->pm2_cnt_blk = 0x22;//to support cpu-c3
-//	fadt->pm2_cnt_blk = 0x0;
-	fadt->pm_tmr_blk = VX800_ACPI_IO_BASE+0x8;
-	fadt->gpe0_blk = VX800_ACPI_IO_BASE+0x20;
-	fadt->gpe1_blk = VX800_ACPI_IO_BASE+0x50;
+	fadt->pm2_cnt_blk = 0x22;	/* To support cpu-c3. */
+	/* fadt->pm2_cnt_blk = 0x0; */
+	fadt->pm_tmr_blk = VX800_ACPI_IO_BASE + 0x8;
+	fadt->gpe0_blk = VX800_ACPI_IO_BASE + 0x20;
+	fadt->gpe1_blk = VX800_ACPI_IO_BASE + 0x50;
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
-	fadt->pm2_cnt_len = 1;//to support cpu-c3
-//	fadt->pm2_cnt_len = 0;
+	fadt->pm2_cnt_len = 1;	/* To support cpu-c3. */
+	/* fadt->pm2_cnt_len = 0; */
 
 	fadt->pm_tmr_len = 4;
 	fadt->gpe0_blk_len = 4;
 	fadt->gpe1_blk_len = 4;
 	fadt->gpe1_base = 0x10;
 	fadt->cst_cnt = 0;
-	
-	fadt->p_lvl2_lat = 0x50; //this is the coreboot source
-	fadt->p_lvl3_lat = 0x320;//
-//	fadt->p_lvl2_lat = 0x80; //
-//	fadt->p_lvl3_lat = 0x800;//
-//	fadt->p_lvl2_lat = 0x1; //
-//	fadt->p_lvl3_lat = 0x23;
 
-//	fadt->p_lvl2_lat = 0x200; //disable
-//	fadt->p_lvl3_lat = 0x2000;
+	fadt->p_lvl2_lat = 0x50;	/* This is the coreboot source. */
+	fadt->p_lvl3_lat = 0x320;
+	/* fadt->p_lvl2_lat = 0x80; */
+	/* fadt->p_lvl3_lat = 0x800; */
+	/* fadt->p_lvl2_lat = 0x1; */
+	/* fadt->p_lvl3_lat = 0x23; */
+
+	/* fadt->p_lvl2_lat = 0x200; */	/* Disable. */
+	/* fadt->p_lvl3_lat = 0x2000; */
 
 	fadt->flush_size = 0;
 	fadt->flush_stride = 0;
 	fadt->duty_offset = 0;
-//	fadt->duty_width = 1;
+	/* fadt->duty_width = 1; */
 	fadt->duty_width = 4;
 	fadt->day_alrm = 0x7d;
 	fadt->mon_alrm = 0x7e;
@@ -126,7 +128,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->x_pm1a_cnt_blk.bit_width = 2;
 	fadt->x_pm1a_cnt_blk.bit_offset = 0;
 	fadt->x_pm1a_cnt_blk.resv = 0;
-	fadt->x_pm1a_cnt_blk.addrl = VX800_ACPI_IO_BASE+0x4;
+	fadt->x_pm1a_cnt_blk.addrl = VX800_ACPI_IO_BASE + 0x4;
 	fadt->x_pm1a_cnt_blk.addrh = 0x0;
 
 	fadt->x_pm1b_cnt_blk.space_id = 1;
@@ -136,8 +138,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->x_pm1b_cnt_blk.addrl = 0x0;
 	fadt->x_pm1b_cnt_blk.addrh = 0x0;
 
-
-//	fadt->x_pm2_cnt_blk.space_id = 1;
+	/* fadt->x_pm2_cnt_blk.space_id = 1; */
 	fadt->x_pm2_cnt_blk.space_id = 0;
 	fadt->x_pm2_cnt_blk.bit_width = 0;
 	fadt->x_pm2_cnt_blk.bit_offset = 0;
@@ -149,14 +150,14 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->x_pm_tmr_blk.bit_width = 4;
 	fadt->x_pm_tmr_blk.bit_offset = 0;
 	fadt->x_pm_tmr_blk.resv = 0;
-	fadt->x_pm_tmr_blk.addrl = VX800_ACPI_IO_BASE+0x8;
+	fadt->x_pm_tmr_blk.addrl = VX800_ACPI_IO_BASE + 0x8;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
 	fadt->x_gpe0_blk.space_id = 1;
 	fadt->x_gpe0_blk.bit_width = 0;
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.resv = 0;
-	fadt->x_gpe0_blk.addrl = VX800_ACPI_IO_BASE+0x20;
+	fadt->x_gpe0_blk.addrl = VX800_ACPI_IO_BASE + 0x20;
 	fadt->x_gpe0_blk.addrh = 0x0;
 
 	fadt->x_gpe1_blk.space_id = 1;

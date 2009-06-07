@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* reboot.c from Linux. */
+/* Parts of this code is taken from reboot.c from Linux. */
 
 /*
  * This file mostly copied from Rudolf's S3 patch, some changes in
@@ -57,12 +57,12 @@ struct Xgt_desc_struct {
 	unsigned short pad;
 } __attribute__ ((packed));
 
-static struct Xgt_desc_struct
-    real_mode_gdt =
-    { sizeof(real_mode_gdt_entries) - 1, (long)real_mode_gdt_entries },
-    real_mode_idt = {
-0x3ff, 0}, no_idt = {
-0, 0};
+static struct Xgt_desc_struct real_mode_gdt = {
+	sizeof(real_mode_gdt_entries) - 1,
+	(long)real_mode_gdt_entries
+},
+real_mode_idt = {0x3ff, 0},
+no_idt = { 0, 0 };
 
 /*
  * This is 16-bit protected mode code to disable paging and the cache,
@@ -85,16 +85,16 @@ static struct Xgt_desc_struct
  * occurred; hopefully real BIOSs don't assume much.
  */
 
-//      0x66, 0x0d, 0x00, 0x00, 0x00, 0x60,     /*    orl   $0x60000000,%eax */
+//      0x66, 0x0d, 0x00, 0x00, 0x00, 0x60,     /* orl $0x60000000, %eax */
 
 static unsigned char real_mode_switch[] = {
-	0x66, 0x0f, 0x20, 0xc0,	/* movl %cr0,%eax */
-	0x24, 0xfe,		/* andb $0xfe,al */
-	0x66, 0x0f, 0x22, 0xc0	/* movl %eax,%cr0 */
+	0x66, 0x0f, 0x20, 0xc0,			/* movl %cr0,%eax */
+	0x24, 0xfe,				/* andb $0xfe,al */
+	0x66, 0x0f, 0x22, 0xc0			/* movl %eax,%cr0 */
 };
 
 static unsigned char jump_to_wakeup[] = {
-	0xea, 0x00, 0x00, 0x00, 0xe0 /* ljmp $0xffff, $0x0000 */
+	0xea, 0x00, 0x00, 0x00, 0xe0		/* ljmp $0xffff, $0x0000 */
 };
 
 /*
@@ -103,18 +103,17 @@ static unsigned char jump_to_wakeup[] = {
  * We assume that length will aways be less that 100!
  */
 static unsigned char show31[6] = {
-	0xb0, 0x31, 0xe6, 0x80, 0xeb, 0xFA	/*    ljmp  $0xffff,$0x0000  */
+	0xb0, 0x31, 0xe6, 0x80, 0xeb, 0xFA	/* ljmp $0xffff, $0x0000 */
 };
 
 static unsigned char show32[6] = {
-	0xb0, 0x32, 0xe6, 0x80, 0xeb, 0xFA	/*    ljmp  $0xffff,$0x0000  */
+	0xb0, 0x32, 0xe6, 0x80, 0xeb, 0xFA	/* ljmp $0xffff, $0x0000 */
 };
 
 void acpi_jump_wake(u32 vector)
 {
-	u32 tmp;
+	u32 tmp, dwEip;
 	u16 tmpvector;
-	u32 dwEip;
 	u8 Data;
 	struct Xgt_desc_struct *wake_thunk16_Xgt_desc;
 
@@ -137,7 +136,7 @@ void acpi_jump_wake(u32 vector)
 	jason_tsc_count_end();
 
 	unsigned long long *real_mode_gdt_entries_at_eseg;
-	real_mode_gdt_entries_at_eseg = WAKE_THUNK16_GDT;	//copy from real_mode_gdt_entries and change limition to 1M and data base to 0;
+	real_mode_gdt_entries_at_eseg = WAKE_THUNK16_GDT;		/* Copy from real_mode_gdt_entries and change limition to 1M and data base to 0; */
 	real_mode_gdt_entries_at_eseg[0] = 0x0000000000000000ULL;	/* Null descriptor */
 	real_mode_gdt_entries_at_eseg[1] = 0x000f9a000000ffffULL;	/* 16-bit real-mode 1M code at 0x00000000 */
 	real_mode_gdt_entries_at_eseg[2] = 0x000f93000000ffffULL;	/* 16-bit real-mode 1M data at 0x00000000 */
@@ -150,24 +149,25 @@ void acpi_jump_wake(u32 vector)
 	wake_thunk16_Xgt_desc[2].size = 0;
 	wake_thunk16_Xgt_desc[2].address = 0;
 
-	/*added this code to get current value of EIP
-	 */
-	__asm__ volatile ("calll   geip\n\t"
-			  "geip: \n\t" "popl %0\n\t":"=a" (dwEip)
-	    );
+	/* Added this code to get current value of EIP. */
+	__asm__ volatile (
+		"calll geip\n\t"
+		"geip: \n\t"
+		"popl %0\n\t"
+		: "=a" (dwEip)
+	);
 
-	unsigned char *dest;
-	unsigned char *src;
+	unsigned char *dest, *src;
 	src = (unsigned char *)dwEip;
 	dest = WAKE_RECOVER1M_CODE;
 	u32 i;
 	for (i = 0; i < 0x200; i++)
 		dest[i] = src[i];
 
-	__asm__ __volatile__("ljmp $0x0010,%0"	//08 error
+	__asm__ __volatile__("ljmp $0x0010,%0"	/* 08 error */
 			     ::"i"((void *)(WAKE_RECOVER1M_CODE + 0x20)));
 
-	/*added 0x20 "nop" to make sure the ljmp will not jump then halt */
+	/* Added 0x20 "nop" to make sure the ljmp will not jump then halt. */
 	asm volatile ("nop");
 	asm volatile ("nop");
 	asm volatile ("nop");
@@ -202,104 +202,126 @@ void acpi_jump_wake(u32 vector)
 	asm volatile ("nop");
 
 	__asm__ volatile (
-				 /* set new esp, maybe ebp should not equal to esp?, 
-				    due to the variable in acpi_jump_wake?, anyway, this may be not a big problem.
-				    and I didnt clear the area (ef000+-0x200) to zero.
-				  */
-				 "movl %0, %%ebp\n\t"
-				 "movl %0, %%esp\n\t"::"a" (WAKE_THUNK16_STACK)
-	    );
+		/*
+		 * Set new esp, maybe ebp should not equal to esp?, due to the
+		 * variable in acpi_jump_wake?, anyway, this may be not a big
+		 * problem. and I didn't clear the area (ef000+-0x200) to zero.
+		 */
+		"movl %0, %%ebp\n\t"
+		"movl %0, %%esp\n\t"::"a" (WAKE_THUNK16_STACK)
+	);
 
-	/* added this
-	   only "src" and "dest" use the new stack, and the esp maybe also used in resumevector
+	/*
+	 * Only "src" and "dest" use the new stack, and the esp maybe also
+	 * used in resumevector.
 	 */
-#if PAYLOAD_IS_SEABIOS==1
-	// WAKE_MEM_INFO inited in get_set_top_available_mem in tables.c
+#if PAYLOAD_IS_SEABIOS == 1
+	/* WAKE_MEM_INFO inited in get_set_top_available_mem in tables.c. */
 	src =
 	    (unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 - 0x100000);
 	dest = 0;
-	for (i = 0; i < 0xa0000; i++)	//if recovered 0-e0000, then  when resume, before winxp turn on the desktop screen ,there is gray background which last 1sec.
+
+	/*
+	 * If recovered 0-e0000, then when resume, before WinXP turn on the
+	 * desktop screen, there is gray background which last 1sec.
+	 */
+	for (i = 0; i < 0xa0000; i++)
 		dest[i] = src[i];
-		/*__asm__ volatile (		
-	 			"movl    %0, %%esi\n\t"
-        "movl    $0, %%edi\n\t"
-       	"movl    $0xa0000, %%ecx\n\t"
-       	"shrl    $2, %%ecx\n\t"
-        "rep movsd\n\t"    
-        ::"a"(src)        
-   	);*/
-	src =
-	    (unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 - 0x100000 +
-			      0xc0000);
-	//dest = 0xc0000;
-	//for (i = 0; i < 0x20000; i++)
-	//      dest[i] = src[i];               
-	/*      __asm__ volatile (              
-	   "movl    %0, %%esi\n\t"
-	   "movl    $0xc0000, %%edi\n\t"
-	   "movl    $0x20000, %%ecx\n\t"
-	   "shrl    $2, %%ecx\n\t"
-	   "rep movsd\n\t"    
-	   ::"a"(src)        
-	   ); */
 
-	src =
-	    (unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 - 0x100000 +
-			      0xe0000 + WAKE_SPECIAL_SIZE);
-	//dest = 0xf0000;
-	//for (i = 0; i < 0x10000; i++)
-	//      dest[i] = src[i];               
-	__asm__ volatile ("movl    %0, %%esi\n\t"
-			  "movl    %1, %%edi\n\t"
-			  "movl    %2, %%ecx\n\t"
-			  "shrl    $2, %%ecx\n\t"
-			  "rep movsd\n\t"::"r" (src),
-			  "r"(0xe0000 + WAKE_SPECIAL_SIZE),
-			  "r"(0x10000 - WAKE_SPECIAL_SIZE)
-	    );
+#if 0
+	__asm__ volatile (
+		"movl %0, %%esi\n\t"
+		"movl $0, %%edi\n\t"
+		"movl $0xa0000, %%ecx\n\t"
+		"shrl $2, %%ecx\n\t"
+		"rep movsd\n\t"
+		::"a"(src)
+	);
+#endif
+	src = (unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024
+			- 0x100000 + 0xc0000);
 
-	src =
-	    (unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 - 0x100000 +
-			      0xf0000);
-	//dest = 0xf0000;
-	//for (i = 0; i < 0x10000; i++)
-	//      dest[i] = src[i];               
-	__asm__ volatile ("movl    %0, %%esi\n\t"
-			  "movl    $0xf0000, %%edi\n\t"
-			  "movl    $0x10000, %%ecx\n\t"
-			  "shrl    $2, %%ecx\n\t" "rep movsd\n\t"::"a" (src)
-	    );
+#if 0
+	dest = 0xc0000;
+	for (i = 0; i < 0x20000; i++)
+	      dest[i] = src[i];
+
+	__asm__ volatile (
+		"movl %0, %%esi\n\t"
+		"movl $0xc0000, %%edi\n\t"
+		"movl $0x20000, %%ecx\n\t"
+		"shrl $2, %%ecx\n\t"
+		"rep movsd\n\t"
+		::"a"(src)
+	);
+#endif
+
+	src = (unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024
+			- 0x100000 + 0xe0000 + WAKE_SPECIAL_SIZE);
+
+	/* dest = 0xf0000; */
+	/* for (i = 0; i < 0x10000; i++) */
+	/* 	dest[i] = src[i]; */
+	__asm__ volatile (
+		"movl %0, %%esi\n\t"
+		"movl %1, %%edi\n\t"
+		"movl %2, %%ecx\n\t"
+		"shrl $2, %%ecx\n\t"
+		"rep movsd\n\t"::"r" (src),
+		"r"(0xe0000 + WAKE_SPECIAL_SIZE),
+		"r"(0x10000 - WAKE_SPECIAL_SIZE)
+	);
+
+	src = (unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024
+			- 0x100000 + 0xf0000);
+	/* dest = 0xf0000; */
+	/* for (i = 0; i < 0x10000; i++) */
+	/* 	dest[i] = src[i]; */
+	__asm__ volatile (
+		"movl %0, %%esi\n\t"
+		"movl $0xf0000, %%edi\n\t"
+		"movl $0x10000, %%ecx\n\t"
+		"shrl $2, %%ecx\n\t" "rep movsd\n\t"::"a" (src)
+	);
 
 	asm volatile ("wbinvd");
 #endif
 	/* Set up the IDT for real mode. */
 	asm volatile ("lidt %0"::"m" (wake_thunk16_Xgt_desc[1]));
 
-	/* Set up a GDT from which we can load segment descriptors for real
-	   mode.  The GDT is not used in real mode; it is just needed here to
-	   prepare the descriptors. */
+	/*
+	 * Set up a GDT from which we can load segment descriptors for real
+	 * mode. The GDT is not used in real mode; it is just needed here to
+	 * prepare the descriptors.
+	 */
 	asm volatile ("lgdt %0"::"m" (wake_thunk16_Xgt_desc[0]));
 
-	/* Load the data segment registers, and thus the descriptors ready for
-	   real mode.  The base address of each segment is 0x100, 16 times the
-	   selector value being loaded here.  This is so that the segment
-	   registers don't have to be reloaded after switching to real mode:
-	   the values are consistent for real mode operation already. */
+	/*
+	 * Load the data segment registers, and thus the descriptors ready for
+	 * real mode.  The base address of each segment is 0x100, 16 times the
+	 * selector value being loaded here.  This is so that the segment
+	 * registers don't have to be reloaded after switching to real mode:
+	 * the values are consistent for real mode operation already.
+	 */
+	__asm__ __volatile__(
+		"movl $0x0010,%%eax\n"
+		"\tmovl %%eax,%%ds\n"
+		"\tmovl %%eax,%%es\n"
+		"\tmovl %%eax,%%fs\n"
+		"\tmovl %%eax,%%gs\n"
+		"\tmovl %%eax,%%ss":::"eax"
+	);
 
-	__asm__ __volatile__("movl $0x0010,%%eax\n"
-			     "\tmovl %%eax,%%ds\n"
-			     "\tmovl %%eax,%%es\n"
-			     "\tmovl %%eax,%%fs\n"
-			     "\tmovl %%eax,%%gs\n" "\tmovl %%eax,%%ss":::"eax");
+	/*
+	 * Jump to the 16-bit code that we copied earlier. It disables paging
+	 * and the cache, switches to real mode, and jumps to the BIOS reset
+	 * entry point.
+	 */
 
-	/* Jump to the 16-bit code that we copied earlier.  It disables paging
-	   and the cache, switches to real mode, and jumps to the BIOS reset
-	   entry point. */
-
-	__asm__
-	    __volatile__("ljmp $0x0008,%0"::"i"
-			 ((void *)(WAKE_THUNK16_ADDR -
-				   sizeof(real_mode_switch) - 100)));
+	__asm__ __volatile__(
+		"ljmp $0x0008,%0"::"i"
+		((void *)(WAKE_THUNK16_ADDR - sizeof(real_mode_switch) - 100))
+	);
 }
 
 /* -*- linux-c -*- ------------------------------------------------------- *
@@ -318,7 +340,7 @@ void acpi_jump_wake(u32 vector)
  * Enable A20 gate (return -1 on failure)
  */
 
-//#include "boot.h"
+// #include "boot.h"
 
 #define MAX_8042_LOOPS	100000
 
@@ -429,8 +451,9 @@ int enable_a20(void)
 
 		/* Try enabling A20 through the keyboard controller */
 		empty_8042();
-//if (a20_test_short())
-//      return 0; /* BIOS worked, but with delayed reaction */
+
+		// if (a20_test_short())
+		// 	return 0; /* BIOS worked, but with delayed reaction */
 
 		enable_a20_kbc();
 		if (a20_test_long())

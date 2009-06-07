@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "northbridge/via/vx800/DrivingClkPhaseData.h"
+#include "northbridge/via/vx800/driving_clk_phase_data.h"
 
 // DQS Driving
 // Reg0xE0, 0xE1

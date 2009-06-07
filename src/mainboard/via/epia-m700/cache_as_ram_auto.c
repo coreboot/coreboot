@@ -48,12 +48,12 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 
 /* This file contains the board-special SI value for raminit.c. */
-#include "mainboard/via/6413e/DrivingClkPhaseData.c"
+#include "driving_clk_phase_data.c"
 
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
 #include "cpu/x86/car/copy_and_run.c"
-#include "mainboard/via/6413e/wakeup.h"
+#include "wakeup.h"
 
 /*
  * This acpi_is_wakeup_early_via_VX800 is from Rudolf's patch on the list:
@@ -217,7 +217,7 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 	/* VT3409 no PCI-E */
 	0x00, 0xFF, NB_APIC_REG(0x61), 0xFF, 0x0E,	// Set Exxxxxxx as pcie mmio config range
 	0x00, 0xFF, NB_APIC_REG(0x60), 0xF4, 0x0B,	// Support extended cfg address of pcie
-	//0x00, 0xFF, NB_APIC_REG(0x42), 0xF9, 0x02, // APIC Interrupt((BT_INTR)) Control
+	// 0x00, 0xFF, NB_APIC_REG(0x42), 0xF9, 0x02, // APIC Interrupt((BT_INTR)) Control
 	// Set ROMSIP value by software
 
 	/*
@@ -248,26 +248,27 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 	0x00, 0xFF, NB_HOST_REG(0x84), 0xFF, 0x44, // Host Data / Strobe CKG Control (Group 0)
 	0x00, 0xFF, NB_HOST_REG(0x85), 0xFF, 0x44, // Host Data / Strobe CKG Control (Group 1)
 	0x00, 0xFF, NB_HOST_REG(0x86), 0xFF, 0x44, // Host Data / Strobe CKG Control (Group 2)
-	0x00, 0xFF, NB_HOST_REG(0x87), 0xFF, 0x44, // Host Data / Strobe CKG Control (Group 3) */
+	0x00, 0xFF, NB_HOST_REG(0x87), 0xFF, 0x44, // Host Data / Strobe CKG Control (Group 3)
+	*/
 
 	// CPU Host Bus Control
 	0x00, 0xFF, NB_HOST_REG(0x50), 0x1F, 0x08,	// Request phase ctrl: Dynamic Defer Snoop Stall Count = 8
-	//0x00, 0xFF, NB_HOST_REG(0x51), 0xFF, 0x7F, // CPU I/F Ctrl-1: Disable Fast DRDY and RAW
+	// 0x00, 0xFF, NB_HOST_REG(0x51), 0xFF, 0x7F,	// CPU I/F Ctrl-1: Disable Fast DRDY and RAW
 	0x00, 0xFF, NB_HOST_REG(0x51), 0xFF, 0x7C,	// CPU I/F Ctrl-1: Disable Fast DRDY and RAW
 	0x00, 0xFF, NB_HOST_REG(0x52), 0xCB, 0xCB,	// CPU I/F Ctrl-2: Enable all for performance
-	//0x00, 0xFF, NB_HOST_REG(0x53), 0xFF, 0x88, // Arbitration: Host/Master Occupancy timer = 8*4 HCLK
+	// 0x00, 0xFF, NB_HOST_REG(0x53), 0xFF, 0x88,	// Arbitration: Host/Master Occupancy timer = 8*4 HCLK
 	0x00, 0xFF, NB_HOST_REG(0x53), 0xFF, 0x44,	// Arbitration: Host/Master Occupancy timer = 4*4 HCLK
 	0x00, 0xFF, NB_HOST_REG(0x54), 0x1E, 0x1C,	// Misc Ctrl: Enable 8QW burst Mem Access
-	//0x00, 0xFF, NB_HOST_REG(0x55), 0x06, 0x06, // Miscellaneous Control 2
+	// 0x00, 0xFF, NB_HOST_REG(0x55), 0x06, 0x06,	// Miscellaneous Control 2
 	0x00, 0xFF, NB_HOST_REG(0x55), 0x06, 0x04,	// Miscellaneous Control 2
 	0x00, 0xFF, NB_HOST_REG(0x56), 0xF7, 0x63,	// Write Policy 1
-	//0x00, 0xFF, NB_HOST_REG(0x59), 0x3D, 0x01, // CPU Miscellaneous Control 1, enable Lowest-Priority IPL
-	//0x00, 0xFF, NB_HOST_REG(0x5c), 0xFF, 0x00, // CPU Miscellaneous Control 2
+	// 0x00, 0xFF, NB_HOST_REG(0x59), 0x3D, 0x01,	// CPU Miscellaneous Control 1, enable Lowest-Priority IPL
+	// 0x00, 0xFF, NB_HOST_REG(0x5c), 0xFF, 0x00,	// CPU Miscellaneous Control 2
 	0x00, 0xFF, NB_HOST_REG(0x5D), 0xFF, 0xA2,	// Write Policy
 	0x00, 0xFF, NB_HOST_REG(0x5E), 0xFF, 0x88,	// Bandwidth Timer
 	0x00, 0xFF, NB_HOST_REG(0x5F), 0x46, 0x46,	// CPU Misc Ctrl
-	// 0x00, 0xFF, NB_HOST_REG(0x90), 0xFF, 0x0B, // CPU Miscellaneous Control 3
-	//0x00, 0xFF, NB_HOST_REG(0x96), 0x0B, 0x0B, // CPU Miscellaneous Control 2
+	// 0x00, 0xFF, NB_HOST_REG(0x90), 0xFF, 0x0B,	// CPU Miscellaneous Control 3
+	// 0x00, 0xFF, NB_HOST_REG(0x96), 0x0B, 0x0B,	// CPU Miscellaneous Control 2
 	0x00, 0xFF, NB_HOST_REG(0x96), 0x0B, 0x0A,	// CPU Miscellaneous Control 2
 	0x00, 0xFF, NB_HOST_REG(0x98), 0xC1, 0x41,	// CPU Miscellaneous Control 3
 	0x00, 0xFF, NB_HOST_REG(0x99), 0x0E, 0x06,	// CPU Miscellaneous Control 4
@@ -285,7 +286,7 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 #define gCom1Base   0x3f8
 #define gCom2Base   0x2f8
 
-void EmbedComInit()
+void EmbedComInit(void)
 {
 	u8 ByteVal;
 	u16 ComBase;
@@ -351,9 +352,7 @@ void EmbedComInit()
 
 //noharddrive
 
-	/* Set embedded COM1 I/O base = 0x3E8 */
-	//D17F0RB4
-	//ByteVal = 0xFD;
+	/* Set embedded COM1 I/O base = 0x3E8 (D17F0RB4, ByteVal = 0xFD) */
 	if (USE_COM1 == 1) {
 		ByteVal = (u8) ((gCom1Base >> 3) | 0x80);
 		pci_write_config8(PCI_DEV(0, 17, 0), 0xB4, ByteVal);
@@ -362,9 +361,7 @@ void EmbedComInit()
 		pci_write_config8(PCI_DEV(0, 17, 0), 0xB2, ByteVal);
 	}
 
-	/* Set embedded COM2 I/O base = 0x2E8. */
-	//D17F0RB5
-	//ByteVal = 0xDD;
+	/* Set embedded COM2 I/O base = 0x2E8 (D17F0RB5, ByteVal = 0xDD). */
 	if (USE_COM2 == 1) {
 		ByteVal = (u8) ((gCom2Base >> 3) | 0x80);
 		pci_write_config8(PCI_DEV(0, 17, 0), 0xB5, ByteVal);

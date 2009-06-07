@@ -23,7 +23,7 @@
 #include <arch/acpi.h>
 #include <../../../northbridge/via/vx800/vx800.h>
 
-void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
+void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 

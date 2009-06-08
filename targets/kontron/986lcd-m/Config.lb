@@ -11,3 +11,8 @@ romimage "fallback"
 end
 
 buildrom ./coreboot.rom ROM_SIZE "fallback"
+
+# Uncomment this and fix the path to your VGA BIOS blob (~/amipci_01.20 here) for on-board VGA support.
+# See http://www.coreboot.org/Kontron_986LCD-M_mITX for details.
+# pci_rom ~/amipci_01.20 vendor_id=0x8086 device_id=0x27a2
+

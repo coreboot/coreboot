@@ -76,7 +76,7 @@ static int add_from_fd(struct rom *rom, const char *name, int type, int fd)
 		return -1;
 	}
 
-	ret = rom_add(rom, name, buffer, size, type);
+	ret = rom_add(rom, name, buffer, 0, size, type);
 	free(buffer);
 
 	return ret;
@@ -165,7 +165,7 @@ int fork_tool_and_add(struct rom *rom, const char *tool, const char *input,
 }
 
 static int add_blob(struct rom *rom, const char *filename,
-		    const char *name, int type)
+		    const char *name, unsigned long address, int type)
 {
 	void *ptr;
 	struct stat s;
@@ -195,7 +195,7 @@ static int add_blob(struct rom *rom, const char *filename,
 		return -1;
 	}
 
-	ret = rom_add(rom, name, ptr, s.st_size, type);
+	ret = rom_add(rom, name, ptr, address, s.st_size, type);
 
 	munmap(ptr, s.st_size);
 	close(fd);
@@ -205,7 +205,7 @@ static int add_blob(struct rom *rom, const char *filename,
 
 void add_usage(void)
 {
-	printf("add FILE NAME TYPE\tAdd a component\n");
+	printf("add FILE NAME TYPE [base address]\tAdd a component\n");
 }
 
 void add_stage_usage(void)
@@ -238,10 +238,15 @@ int select_component_type(char *s)
 int add_handler(struct rom *rom, int argc, char **argv)
 {
 	unsigned int type = CBFS_COMPONENT_NULL;
+	unsigned long address;
 
-	if (argc != 3) {
+	if ((argc < 3) || (argc >  4)) {
 		add_usage();
 		return -1;
+	}
+
+	if (argc > 3) {
+		address = strtoul(argv[3], 0, 0);
 	}
 
 	if (!rom_exists(rom)) {
@@ -278,7 +283,7 @@ int add_handler(struct rom *rom, int argc, char **argv)
 		}
 	}
 
-	return add_blob(rom, argv[0], argv[1], type);
+	return add_blob(rom, argv[0], argv[1], address, type);
 }
 
 char *find_tool(char *tool)

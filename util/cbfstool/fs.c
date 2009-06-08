@@ -83,6 +83,129 @@ int nextfile(struct rom *rom, struct cbfs_file *c, int offset)
 					ntohl(rom->header->align));
 }
 
+
+/* split
+ * split is a basic primitive in cbfs. Over time, it should be the main operator
+ * used to allocate space. For now for testing we are only using it in the 
+ * fixed-address allocation. 
+ * Split takes a cbfs_file and splits it into two pieces, as determined 
+ * by the size of the file desired. Split only makes sense on CBFS_COMPONENT_NULL
+ * files -- splitting real files is an error, but no checking is done. 
+ * @param file cbfs_file to split
+ * @param size Size of the file desired. 
+ * @returns pointer to a cbfs_file stuct. 
+ */
+static struct cbfs_file *split(struct rom *rom, struct cbfs_file *file, int size)
+{
+	struct cbfs_file *newfile = NULL;
+	unsigned long align = ntohl(rom->header->align);
+	unsigned long nextoffset, truncoffset;
+	unsigned long offset = ROM_OFFSET(rom, file);
+	/* figure out the real end of this file, and hence the size */
+	/* compute where the next file is */
+	nextoffset = ALIGN(offset + ntohl(file->len) + headersize(""), align);
+	/* compute where the end of this new file might be */
+	truncoffset = ALIGN(offset + size + headersize(""), align);
+	/* If there is more than align bytes difference, create a new empty file */
+	/* later, we can add code to merge all empty files. */
+	if (nextoffset - truncoffset > align) {
+		unsigned int csize;
+		csize = headersize("");
+		newfile = (struct cbfs_file *)ROM_PTR(rom, truncoffset);
+		rom_set_header(rom, newfile, "", 
+			nextoffset - truncoffset - csize, CBFS_COMPONENT_NULL);
+		file->len = htonl(size);
+	}
+	return newfile;
+}
+
+
+/**
+ * rom_alloc_fixed
+ * Given a rom, walk the headers and find the first header of type 
+ * CBFS_COMPONENT_NULL that is >= the desired size and 
+ * contains the (address, length) desired. 
+ * If the CBFS_COMPONENT_NULL is 'align' bytes > size, 
+ * create a new header of CBFS_COMPONENT_NULL following the file. 
+ * The 'len' structure member of the desired file is initialized, but 
+ * nothing else is. 
+ * Simple algorithm: walk until we find an empty file that contains our area, 
+ * and then allocate out of it. 
+ * @param rom The rom
+ * @param size the size of the file needed
+ * @returns pointer to a cbfs_file struct. 
+ */
+struct cbfs_file * rom_alloc_fixed(struct rom *rom, const char *name, unsigned long start, unsigned long size, int type)
+{
+	/* walk the rom and find an empty file with a base > base, 
+	 * and a large enough size
+	 */
+	unsigned long base, end, alen, baseoff;
+	unsigned int offset = ntohl(rom->header->offset);
+	int ret = -1;
+	struct cbfs_file *c = NULL;
+	unsigned long align = ntohl(rom->header->align);
+
+	/* compute a base that is aligned to align */
+	base = TRUNCATE(start, align);
+	/* have to leave room for a header! */
+	base -= headersize(name);
+	/* get an offset for that base */
+	baseoff = base - rom->rombase;
+	end = ALIGN(start + size, align);
+	alen = end - base;
+	while (offset < rom->fssize) {
+
+		c = (struct cbfs_file *)ROM_PTR(rom, offset);
+
+		if (!strcmp(c->magic, COMPONENT_MAGIC)) {
+			if (c->type != CBFS_COMPONENT_NULL) {
+				offset += ALIGN(ntohl(c->offset) + ntohl(c->len),
+					align);
+				continue;
+			}
+			/* could turn this into a function. */
+			/* is the start of this file < our desired start? */
+			if (offset > baseoff)
+				break;
+			/* Is this file big enough for our needs? */
+			if (ntohl(c->len) >= alen){
+				ret = offset;
+				break;
+			}
+			offset += ALIGN(ntohl(c->offset) + ntohl(c->len),
+					align);
+		} else {
+			fprintf(stderr, "Corrupt rom -- found no header at %d\n", offset);
+			exit(1);
+		}
+	}
+
+	if (ret < 0)
+		return NULL;
+
+	/* we have the base offset of our location, and we have the offset for the file we are going to 
+	 * split. Split it. 
+	 */
+	if (baseoff > offset)
+		c = split(rom, c, baseoff - offset - headersize(""));
+	/* split off anything left at the end that we don't need */
+	split(rom, c, size);
+
+	c->len = htonl(size);
+
+	strcpy(c->magic, COMPONENT_MAGIC);
+
+	c->offset = htonl(headersize(name));
+
+	c->type = htonl(type);
+
+	setname(c, name);
+
+	return ((struct cbfs_file *)ROM_PTR(rom, ret));
+}
+
+
 /**
  * rom_alloc
  * Given a rom, walk the headers and find the first header of type 
@@ -263,11 +386,12 @@ int rom_extract(struct rom *rom, const char *name, void** buf, int *size )
  * @param rom The rom
  * @param name file name
  * @param buffer file data
+ * @param address base address. 0 means 'whereever it fits'
  * @param size Amount of data
  * @param type File type
  * @returns -1 on failure, 0 on success
  */
-int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
+int rom_add(struct rom *rom, const char *name, void *buffer, unsigned long address, int size, int type)
 {
 	struct cbfs_file *c;
 
@@ -276,7 +400,10 @@ int rom_add(struct rom *rom, const char *name, void *buffer, int size, int type)
 		return -1;
 	}
 
-	c = rom_alloc(rom, name, size, type);
+	if (address)
+		c = rom_alloc_fixed(rom, name, address, size, type);
+	else
+		c = rom_alloc(rom, name, size, type);
 
 	if (c == NULL) {
 		ERROR("There is no more room in this ROM\n");

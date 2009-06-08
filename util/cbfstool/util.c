@@ -158,6 +158,11 @@ int open_rom(struct rom *rom, const char *filename)
 	}
 
 	rom->size = ntohl(rom->header->romsize);
+	/* compute a 32-bit value of rombase. 
+	 * This does the right thing on 64-bit machines. 
+	 */
+	rom->rombase = 0-rom->size;
+	rom->rombase &= 0xffffffff;
 	rom->fssize = rom->size - ntohl(rom->header->bootblocksize);
 
 	return 0;

@@ -31,6 +31,10 @@
 struct rom {
 	unsigned char *name;
 	unsigned char *ptr;
+	/* this will *almost* *always* be 0-rom->size, save for some really 
+	 * misdesigned systems (which have existed)
+	 */
+	unsigned long rombase;
 
 	int fd;
 	int size;
@@ -51,6 +55,7 @@ struct rom {
 #define WARN(err, args...) fprintf(stderr, "(cbfstool) W: " err, ##args)
 #define VERBOSE(str, args...) printf(str, ##args)
 
+#define TRUNCATE(_v, _a)  ( (_v) & ~( (_a) - 1 ) )
 #define ALIGN(_v, _a) ( ( (_v) + ( (_a) - 1 ) ) & ~( (_a) - 1 ) )
 
 /* Function prototypes */
@@ -71,7 +76,7 @@ int add_bootblock(struct rom *rom, const char *filename);
 struct cbfs_file *rom_find(struct rom *rom, int offset);
 struct cbfs_file *rom_find_first(struct rom *);
 struct cbfs_file *rom_find_next(struct rom *, struct cbfs_file *);
-int rom_add(struct rom *rom, const char *name, void *, int size, int type);
+int rom_add(struct rom *rom, const char *name, void *, unsigned long address, int size, int type);
 int rom_set_header(struct rom *rom, struct cbfs_file *c, 
 	const char*name, int size, int type);
 int rom_extract(struct rom *rom, const char *name, void **buf, int *size);

@@ -71,11 +71,6 @@ __run_optionrom = RELOCATED(.)
 	// FIXME: Should this function be called with regparm=0?
 	movl    8(%ebp), %ecx
 
-	/* Clear interrupts before making a
-	 * transition to Real Mode
-	 */
-	cli
-
 	/* Activate the right segment descriptor real mode. */
 	ljmp	$0x28, $RELOCATED(1f)
 1:
@@ -111,13 +106,10 @@ __run_optionrom = RELOCATED(.)
 	movl	$0x1000, %eax
 	movl	%eax, %esp
 
-	/* Load our 16 it idt */
+	/* Load our 16 bit idt */
 	xor	%ax, %ax
 	mov	%ax, %ds
 	lidt	__realmode_idt
-
-	/* All critical work is done, allow interrupts again */
-	sti
 
 	/* Set all segments to 0x0000, ds to 0x0040 */
 	mov	%ax, %es       
@@ -132,11 +124,6 @@ __run_optionrom = RELOCATED(.)
 	/* run VGA BIOS at 0xc000:0003 */
 	lcall	$0xc000, $0x0003
 	/* ************************************ */
-
-	/* Clear interrupts before making a 
-	 * transition to Protected Mode
-	 */
-	cli
 
 	/* If we got here, just about done.
 	 * Need to get back to protected mode
@@ -161,9 +148,6 @@ __run_optionrom = RELOCATED(.)
 	/* restore proper idt */
 	lidt	idtarg
 
-	/* All critical work is done, allow interrupts again */
-	sti
-
 	/* and exit */
 	mov	__stack, %esp
 	popal
@@ -178,11 +162,6 @@ __run_interrupt = RELOCATED(.)
 	/* save the stack */
 	mov	%esp, __stack
 
-
-	/* Clear interrupts before making a 
-	 * transition to Real Mode
-	 */
-	cli
 
 	/*  This configures CS properly for real mode. */
 	ljmp 	$0x28, $RELOCATED(1f)
@@ -228,9 +207,6 @@ __run_interrupt = RELOCATED(.)
 	mov	%ax, %ds
 	lidt	__realmode_idt
 
-	/* All critical work is done, allow interrupts again */
-	sti
-
 	/* Set all segments to 0x0000 */
 	mov	%ax, %ds
 	mov	%ax, %es
@@ -250,11 +226,6 @@ __run_interrupt = RELOCATED(.)
 	movw	$0, %di
 	int	$0x10
 
-	/* Clear interrupts before making a 
-	 * transition to Protected Mode
-	 */
-	cli
-
 	/* Ok, the job is done, now go back to protected mode coreboot */
 	movl	%cr0, %eax
 	orl	$PE, %eax
@@ -273,9 +244,6 @@ __run_interrupt = RELOCATED(.)
 
 	/* restore coreboot's 32-bit IDT */
 	lidt	idtarg
-
-	/* All critical work is done, allow interrupts again */
-	sti
 
 	/* Exit */
 	mov	__stack, %esp
@@ -299,11 +267,6 @@ __interrupt_handler_16bit = RELOCATED(.)
 	andl	$0xff, %eax
 	pushl	%eax		/* ... and make it the first parameter */
 
-	/* Clear interrupts before making a 
-	 * transition to Protected Mode
-	 */
-	cli
-
 	/* Switch to protected mode */
 	movl    %cr0, %eax
 	orl	$PE, %eax
@@ -321,9 +284,6 @@ __interrupt_handler_16bit = RELOCATED(.)
 	mov	%ax, %ss
 
 	lidt	idtarg
-
-	/* All critical work is done, allow interrupts again */
-	sti
 
 	/* Call the C interrupt handler */
 	movl	$interrupt_handler, %eax
@@ -344,11 +304,6 @@ __interrupt_handler_16bit = RELOCATED(.)
 	mov	%ax, %gs
 	mov	%ax, %ss
 
-	/* Clear interrupts before making a 
-	 * transition to Real Mode
-	 */
-	cli
-
 	/* Disable Protected Mode */
 	movl	%cr0, %eax
 	andl	$~PE, %eax
@@ -365,9 +320,6 @@ __interrupt_handler_16bit = RELOCATED(.)
 	xor	%ax, %ax
 	mov	%ax, %ds
 	lidt	__realmode_idt
-
-	/* All critical work is done, allow interrupts again */
-	sti
 
 	/* Set up our segment registers to segment 0x0000 */
 	mov	%ax, %es

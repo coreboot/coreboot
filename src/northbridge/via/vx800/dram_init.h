@@ -110,7 +110,8 @@
 #define  SPD_DATA_SIZE 44
 //Dram cofig are
 /*the most number of socket*/
-//#define  MAX_RAM_SLOTS  2
+#define  MAX_RAM_SLOTS  2
+
 #define MAX_SOCKETS MAX_RAM_SLOTS
 #define  MAX_DIMMS     MAX_SOCKETS	/*every sockets can plug one DIMM */
 /*the most number of RANKs on a DIMM*/

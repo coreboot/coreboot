@@ -214,6 +214,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #if HAVE_FAILOVER_BOOT==1
 	#if USE_FAILOVER_IMAGE==1
 	failover_process(bist, cpu_init_detectedx);
+	#else
+	real_main(bist, cpu_init_detectedx);
 	#endif
 #else
 	#if USE_FALLBACK_IMAGE == 1

@@ -719,11 +719,13 @@ BOOL AMD_CpuFindCapability (u8 node, u8 cap_count, u8 *offset)
 	do {
 		val = pci_read_config32(NODE_PCI(node, 0), val);
 		/* Is the capability block a HyperTransport capability block? */
-		if ((val & 0xFF) == 0x08)
+		if ((val & 0xFF) == 0x08) {
 			/* Is the HT capability block an HT Host Capability? */
 			if ((val & 0xE0000000) == (1 << 29))
 				cap_count--;
-		val = (val >> 8) & 0xFF;
+		}
+		if (cap_count)
+			val = (val >> 8) & 0xFF;
 	} while (cap_count && val);
 
 	*offset = (u8) val;
@@ -745,9 +747,9 @@ BOOL AMD_CpuFindCapability (u8 node, u8 cap_count, u8 *offset)
 u32 AMD_checkLinkType (u8 node, u8 link, u8 regoff)
 {
 	u32 val;
-	u32 linktype;
+	u32 linktype = 0;
 
-	/* Check coherency */
+	/* Check connect, init and coherency */
 	val = pci_read_config32(NODE_PCI(node, 0), regoff + 0x18);
 	val &= 0x1F;
 
@@ -757,23 +759,24 @@ u32 AMD_checkLinkType (u8 node, u8 link, u8 regoff)
 	if (val == 7)
 		linktype |= HTPHY_LINKTYPE_NONCOHERENT;
 
-	/* Check gen3 */
-	val = pci_read_config32(NODE_PCI(node, 0), regoff + 0x08);
+	if (linktype) {
+		/* Check gen3 */
+		val = pci_read_config32(NODE_PCI(node, 0), regoff + 0x08);
 
-	if (((val >> 8) & 0x0F) > 6)
-		linktype |= HTPHY_LINKTYPE_HT3;
-	else
-		linktype |= HTPHY_LINKTYPE_HT1;
+		if (((val >> 8) & 0x0F) > 6)
+			linktype |= HTPHY_LINKTYPE_HT3;
+		else
+			linktype |= HTPHY_LINKTYPE_HT1;
 
 
-	/* Check ganged */
-	val = pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170);
+		/* Check ganged */
+		val = pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170);
 
-	if ( val & 1)
-		linktype |= HTPHY_LINKTYPE_GANGED;
-	else
-		linktype |= HTPHY_LINKTYPE_UNGANGED;
-
+		if ( val & 1)
+			linktype |= HTPHY_LINKTYPE_GANGED;
+		else
+			linktype |= HTPHY_LINKTYPE_UNGANGED;
+	}
 	return linktype;
 }
 

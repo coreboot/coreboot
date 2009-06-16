@@ -17,3 +17,7 @@ end
 dir vga
 
 object keyboard.o
+
+if CONFIG_USE_INIT
+	initobject serial.o
+end

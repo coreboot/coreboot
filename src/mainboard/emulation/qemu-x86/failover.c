@@ -1,16 +1,14 @@
-#define ASSEMBLY 1
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include "arch/romcc_io.h"
-#include "pc80/mc146818rtc_early.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+/* no code inclusion allowed */
+//#include "pc80/mc146818rtc_early.c"
+//#include "cpu/x86/lapic/boot_cpu.c"
 
 static void main(void)
 {
-  /* for now, just always assume failure */
-
 #if 0
 	/* Is this a cpu reset? */
 	if (cpu_init_detected()) {
@@ -27,3 +25,4 @@ static void main(void)
 	}
 #endif
 }
+

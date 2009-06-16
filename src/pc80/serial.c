@@ -96,7 +96,7 @@ static void uart_init(void)
 /* CONFIG_USE_PRINTK_IN_CAR == 1 */
 
 extern void uart8250_init(unsigned base_port, unsigned divisor, unsigned lcs);
-static void uart_init(void)
+void uart_init(void)
 {
 #if USE_OPTION_TABLE == 1
         static const unsigned char divisor[] = { 1,2,3,6,12,24,48,96 };

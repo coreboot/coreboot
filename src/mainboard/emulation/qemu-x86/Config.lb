@@ -1,3 +1,5 @@
+## we don't use USE_DCACHE_RAM by default
+default USE_DCACHE_RAM=0
 ##
 ## Compute the location and size of where this firmware image
 ## (coreboot plus bootloader) will live in the boot rom chip.
@@ -42,60 +44,77 @@ driver mainboard.o
 if HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
+
+## ALL dependencies for USE_DCACHE_RAM go here. 
+## That way, later, we can simply yank them if we wish. 
+## We include the old-fashioned entry code in the ! USE_DCACHE_RAM case. 
+## we do not use failover yet in this case. This is a work in progress. 
+if USE_DCACHE_RAM
+	##
+	##
+	mainboardinit arch/i386/init/entry.S
+	mainboardinit arch/i386/init/car.S
+	ldscript  /arch/i386/init/ldscript.ld
+
+	## The main code for the rom section is called rom.c
+	initobject rom.o
+else
+	##
+	## Romcc output
+	##
+	makerule ./failover.E
+		depends "$(MAINBOARD)/failover.c ../romcc" 
+		action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+	
+	makerule ./failover.inc
+		depends "$(MAINBOARD)/failover.c ../romcc"
+		action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	end
+	
+	makerule ./auto.E 
+		depends	"$(MAINBOARD)/auto.c option_table.h ../romcc" 
+		action	"../romcc -E -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+	makerule ./auto.inc 
+		depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
+		action	"../romcc    -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	end
+	
+	##
+	## Build our 16 bit and 32 bit coreboot entry code
+	##
+	mainboardinit cpu/x86/16bit/entry16.inc
+	mainboardinit cpu/x86/32bit/entry32.inc
+	ldscript /cpu/x86/16bit/entry16.lds
+	ldscript /cpu/x86/32bit/entry32.lds
+
+	##
+	## Build our reset vector (This is where coreboot is entered)
+	##
+	mainboardinit cpu/x86/16bit/reset16.inc 
+	ldscript /cpu/x86/16bit/reset16.lds 
+	
+	### Should this be in the northbridge code?
+	mainboardinit arch/i386/lib/cpu_reset.inc
+
+	##
+	## Setup RAM
+	##
+	mainboardinit cpu/x86/fpu/enable_fpu.inc
+	mainboardinit ./auto.inc
+	
+	## the id string will be in cbfs. We will expect flashrom to parse cbfs for the idstring in future. 
+	##
+	## Include an id string (For safe flashing)
+	##
+	mainboardinit arch/i386/lib/id.inc
+	ldscript /arch/i386/lib/id.lds
+	
 ##
-## Romcc output
+## end of USE_DCACHE_RAM bits. 
 ##
-makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c ../romcc" 
-	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
 end
-
-makerule ./failover.inc
-	depends "$(MAINBOARD)/failover.c ../romcc"
-	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
-end
-
-makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c option_table.h ../romcc" 
-	action	"../romcc -E -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
-makerule ./auto.inc 
-	depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
-	action	"../romcc    -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
-end
-
-##
-## Build our 16 bit and 32 bit coreboot entry code
-##
-mainboardinit cpu/x86/16bit/entry16.inc
-mainboardinit cpu/x86/32bit/entry32.inc
-ldscript /cpu/x86/16bit/entry16.lds
-ldscript /cpu/x86/32bit/entry32.lds
-
-##
-## Build our reset vector (This is where coreboot is entered)
-##
-mainboardinit cpu/x86/16bit/reset16.inc 
-ldscript /cpu/x86/16bit/reset16.lds 
-
-### Should this be in the northbridge code?
-mainboardinit arch/i386/lib/cpu_reset.inc
-
-##
-## Include an id string (For safe flashing)
-##
-mainboardinit arch/i386/lib/id.inc
-ldscript /arch/i386/lib/id.lds
-
-###
-### O.k. We aren't just an intermediary anymore!
-###
-
-##
-## Setup RAM
-##
-mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit ./auto.inc
 
 ##
 ## Include the secondary Configuration files 

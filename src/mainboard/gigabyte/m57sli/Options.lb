@@ -87,6 +87,8 @@ uses HW_MEM_HOLE_SIZEK
 uses HW_MEM_HOLE_SIZE_AUTO_INC
 uses K8_HT_FREQ_1G_SUPPORT
 
+uses HAVE_HIGH_TABLES
+
 uses HT_CHAIN_UNITID_BASE
 uses HT_CHAIN_END_UNITID_BASE
 uses SB_HT_CHAIN_ON_BUS0
@@ -168,6 +170,9 @@ default IRQ_SLOT_COUNT=11
 ## Useful for specifying IRQ routing values
 ##
 default HAVE_MP_TABLE=1
+
+## HIGH tables support
+default HAVE_HIGH_TABLES=1
 
 ## ACPI tables will be included
 default HAVE_ACPI_TABLES=0
@@ -356,10 +361,10 @@ default  MAXIMUM_CONSOLE_LOGLEVEL=8
 ## Select power on after power fail setting
 default MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
 
-### End Options.lb
 #
 # CBFS
 #
 #
 default CONFIG_CBFS=0
+### End Options.lb
 end

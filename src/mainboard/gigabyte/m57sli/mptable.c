@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2007 AMD
  * Written by Yinghai Lu <yinghailu@amd.com> for AMD.
+ * Copyright (C) 2009 Harald Gutmann <harald.gutmann@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +44,7 @@ void *smp_write_config_table(void *v)
         struct mp_config_table *mc;
 	unsigned sbdn;
 
-	int i,j;
+	int i,j,k;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
@@ -79,7 +80,6 @@ void *smp_write_config_table(void *v)
         {
                 device_t dev;
 		struct resource *res;
-		uint32_t dword;
 
                 dev = dev_find_slot(bus_mcp55[0], PCI_DEVFN(sbdn+ 0x1,0));
                 if (dev) {
@@ -87,19 +87,13 @@ void *smp_write_config_table(void *v)
 			if (res) {
 				smp_write_ioapic(mc, apicid_mcp55, 0x11, res->base);
 			}
-
-			dword = 0x43c6c643;
-	        	pci_write_config32(dev, 0x7c, dword);
-
-		        dword = 0x81001a00;
-		        pci_write_config32(dev, 0x80, dword);
-
-	        	dword = 0xd0001202;
-		        pci_write_config32(dev, 0x84, dword);
-
+			/* set up the interrupt registers of mcp55 */
+	        	pci_write_config32(dev, 0x7c, 0xc643c643);
+		        pci_write_config32(dev, 0x80, 0x8da01009);
+		        pci_write_config32(dev, 0x84, 0x200018d2);
                 }
 	}
-  
+
 	/*I/O Ints:	     Type	Trigger    Polarity	                  Bus ID   IRQ	APIC ID	      PIN# */	
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, apicid_mcp55, 0x0);
 
@@ -128,31 +122,39 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW,\
 			 bus_mcp55[bus], (((dev)<<2)|(fn)), apicid_mcp55, (pin))
 
-        PCI_INT(0,sbdn+1,1, 10); /* SMBus */
-        PCI_INT(0,sbdn+2,0, 22); /* USB */
-        PCI_INT(0,sbdn+2,1, 23); /* USB */
-        PCI_INT(0,sbdn+6,1, 23); /* HD Audio */
-        PCI_INT(0,sbdn+5,0, 20); /* SATA */
-        PCI_INT(0,sbdn+5,1, 23); /* SATA */
-        PCI_INT(0,sbdn+5,2, 21); /* SATA */
-
-        PCI_INT(0,sbdn+8,0, 22); /* GBit Ether */
+	PCI_INT(0,sbdn+1,1, 10); /* SMBus */ 
+	PCI_INT(0,sbdn+2,0, 22); /* USB */
+	PCI_INT(0,sbdn+2,1, 23); /* USB */
+	PCI_INT(0,sbdn+4,0, 21); /* IDE */
+	PCI_INT(0,sbdn+5,0, 20); /* SATA */
+	PCI_INT(0,sbdn+5,1, 21); /* SATA */
+	PCI_INT(0,sbdn+5,2, 22); /* SATA */
+	PCI_INT(0,sbdn+6,1, 23); /* HD Audio */
+	PCI_INT(0,sbdn+8,0, 20); /* GBit Ethernet */
 
 	/* The PCIe slots, each on its own bus */
-	for(j=7; j>=2; j--) {
-		if(!bus_mcp55[j]) continue;
-	        for(i=0;i<4;i++) { /* map all functions */
-        	        PCI_INT(j,0,i, 16+(1+j+i)%4);
-        	}
-	}
+        k = 1;
+        for(i=0; i<4; i++){
+                for(j=7; j>1; j--){
+                        if(k>3) k=0;
+                        PCI_INT(j,0,i, 16+k);
+                        k++;
+                }
+                k--;
+        }
 
-	/* On bus 1: the physical PCI bus slots...  */
-	for(j=0; j<2; j++) /* on a Rev 1.x board, they are devs 7 and 8 */
-	        for(i=0;i<4;i++) { /* map all functions */
-        	        PCI_INT(1,7+j,i, 16+(3+i+j)%4);
-	        }
-	/* ... and OB FireWire */
-	PCI_INT(1,0x0a,0, 18);
+	/* On bus 1: the PCI bus slots...
+	   pyhsical PCI slots are j = 7,8 
+	   FireWire is j = 10		
+	*/
+        k=2;
+        for(i=0; i<4; i++){
+                for(j=6; j<11; j++){
+                        if(k>3) k=0;
+                        PCI_INT(1,j,i, 16+k);
+                        k++;
+                }
+        }
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, bus_isa, 0x0, MP_APIC_ALL, 0x0);

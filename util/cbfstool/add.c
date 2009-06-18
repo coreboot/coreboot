@@ -238,7 +238,7 @@ int select_component_type(char *s)
 int add_handler(struct rom *rom, int argc, char **argv)
 {
 	unsigned int type = CBFS_COMPONENT_NULL;
-	unsigned long address;
+	unsigned long address = 0;
 
 	if ((argc < 3) || (argc >  4)) {
 		add_usage();

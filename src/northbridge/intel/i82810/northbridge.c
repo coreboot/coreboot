@@ -170,7 +170,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* Report the memory regions. */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 1024, tolmk - 1024);
+		ram_resource(dev, idx++, 768, tolmk - 768);
 
 #if HAVE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */

@@ -22,7 +22,6 @@ target ms6178
 mainboard msi/ms6178
 
 option ROM_SIZE = 512 * 1024
-# option ROM_SIZE = (512 * 1024) - (32 * 1024)
 
 option MAINBOARD_VENDOR = "MSI"
 option MAINBOARD_PART_NUMBER = "MS-6178"
@@ -48,3 +47,6 @@ romimage "fallback"
 end
 
 buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+
+# pci_rom i810.vga vendor_id=0x8086 device_id=0x7120
+

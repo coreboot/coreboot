@@ -164,6 +164,19 @@ end
 	end
 
 ##
+## ACPI Support
+##
+if HAVE_ACPI_TABLES
+	object acpi_tables.o
+	makerule dsdt.c
+		depends "$(MAINBOARD)/dsdt.asl"
+		action  "iasl -p $(PWD)/dsdt -tc $(MAINBOARD)/dsdt.asl"
+		action  "mv dsdt.hex dsdt.c"
+	end
+	object ./dsdt.o
+end
+
+##
 ## Include the secondary Configuration files 
 ##
 config chip.h

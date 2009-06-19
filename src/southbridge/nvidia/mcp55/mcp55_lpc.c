@@ -155,7 +155,6 @@ static void lpc_slave_init(device_t dev)
 	lpc_common_init(dev, 0);
 }
 
-#if 0
 static void enable_hpet(struct device *dev)
 {
 	unsigned long hpet_address;
@@ -164,7 +163,6 @@ static void enable_hpet(struct device *dev)
 	hpet_address=pci_read_config32(dev,0x44)& 0xfffffffe;
 	printk_debug("enabling HPET @0x%x\n", hpet_address);
 }
-#endif
 
 static void lpc_init(device_t dev)
 {
@@ -242,7 +240,7 @@ static void lpc_init(device_t dev)
 	isa_dma_init();
 
 	/* Initialize the High Precision Event Timers */
-//	enable_hpet(dev);
+	enable_hpet(dev);
 
 }
 

@@ -18,6 +18,13 @@ dir vga
 
 object keyboard.o
 
-if CONFIG_USE_INIT
-	initobject serial.o
+if CONFIG_CONSOLE_SERIAL8250
+	if CONFIG_USE_INIT
+		# We should check whether we're on x86, but our
+		# config tool has a problem with that. So we check
+		# for a flag that is only used when we want this symbol:
+		if USE_DCACHE_RAM
+			initobject serial.o
+		end
+	end
 end

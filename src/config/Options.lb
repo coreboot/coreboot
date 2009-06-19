@@ -56,6 +56,11 @@
 # Architecture options
 ###############################################
 
+define CONFIG_ARCH_X86
+	default 1
+	export always
+	comment "X86 is the default"
+end
 define ARCH
 	default "i386"
 	export always

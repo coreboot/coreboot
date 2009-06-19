@@ -4,6 +4,7 @@
 
 uses TTYS0_DIV
 uses CONFIG_CBFS
+uses CONFIG_ARCH_X86
 uses TTYS0_BASE
 uses CONFIG_BRIQ_750FX
 uses CONFIG_BRIQ_7400
@@ -72,6 +73,7 @@ default HOSTCC="gcc"
 ## use a cross compiler
 #default CROSS_COMPILE="powerpc-eabi-"
 #default CROSS_COMPILE="ppc_74xx-"
+default CONFIG_ARCH_X86=0
 
 ## Use stage 1 initialization code
 default CONFIG_USE_INIT=1

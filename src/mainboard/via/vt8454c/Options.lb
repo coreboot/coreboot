@@ -56,7 +56,6 @@ uses _RAMBASE
 uses XIP_ROM_SIZE
 uses XIP_ROM_BASE
 uses CONFIG_CBFS
-uses CONFIG_USE_INIT
 
 # compiler specifics
 uses CROSS_COMPILE

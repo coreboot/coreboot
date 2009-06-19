@@ -1,5 +1,6 @@
 uses CONFIG_SANDPOINT_ALTIMUS
 uses CONFIG_CBFS
+uses CONFIG_ARCH_X86
 uses CONFIG_SANDPOINT_TALUS
 uses CONFIG_SANDPOINT_UNITY
 uses CONFIG_SANDPOINT_VALIS
@@ -68,6 +69,7 @@ default HOSTCC="gcc"
 ## use a cross compiler
 #default CROSS_COMPILE="powerpc-eabi-"
 #default CROSS_COMPILE="ppc_74xx-"
+default CONFIG_ARCH_X86=0
 
 ## Use stage 1 initialization code
 default CONFIG_USE_INIT=1

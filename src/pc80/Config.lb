@@ -1,5 +1,7 @@
 uses CONFIG_IDE
 uses CONFIG_UDELAY_IO
+uses CONFIG_USE_INIT
+uses CONFIG_ARCH_X86
 
 object mc146818rtc.o
 object isa-dma.o
@@ -18,13 +20,8 @@ dir vga
 
 object keyboard.o
 
-if CONFIG_CONSOLE_SERIAL8250
+if CONFIG_ARCH_X86
 	if CONFIG_USE_INIT
-		# We should check whether we're on x86, but our
-		# config tool has a problem with that. So we check
-		# for a flag that is only used when we want this symbol:
-		if USE_DCACHE_RAM
-			initobject serial.o
-		end
+		initobject serial.o
 	end
 end

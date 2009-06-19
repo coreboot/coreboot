@@ -4,6 +4,7 @@
 
 uses PCIC0_CFGADDR 
 uses CONFIG_CBFS
+uses CONFIG_ARCH_X86
 uses PCIC0_CFGDATA 
 uses ISA_IO_BASE 
 uses ISA_MEM_BASE 
@@ -75,6 +76,7 @@ default TTYS0_BASE=0xef600300-ISA_IO_BASE
 ## Enable PPC405 instructions
 default CPU_OPT="-mcpu=405"
 #default CPU_OPT=""
+default CONFIG_ARCH_X86=0
 
 ## Use stage 1 initialization code
 default CONFIG_USE_INIT=1

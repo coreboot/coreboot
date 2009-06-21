@@ -376,7 +376,7 @@ write_pstates:
 
 int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP) {
 	int lens;
-	char pscope[] = "\\_PR_";
+	char pscope[] = "\\_PR";
 
 	lens = acpigen_write_scope(pscope);
 	lens += pstates_algorithm(pcontrol_blk, plen, onlyBSP);

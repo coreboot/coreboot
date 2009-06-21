@@ -29,6 +29,7 @@ int acpigen_write_package(int nr_el);
 int acpigen_write_byte(unsigned int data);
 int acpigen_emit_byte(unsigned char data);
 int acpigen_emit_stream(char *data, int size);
+int acpigen_emit_namestring(char *namepath);
 int acpigen_write_dword(unsigned int data);
 int acpigen_write_qword(uint64_t data);
 int acpigen_write_name(char *name);

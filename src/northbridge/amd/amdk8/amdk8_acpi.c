@@ -270,7 +270,7 @@ int k8acpi_write_vars(void)
 {
 	int lens;
 	msr_t msr;
-	char pscope[] = "\\._SB_PCI0";
+	char pscope[] = "\\_SB.PCI0";
 
 	lens = acpigen_write_scope(pscope);
 	lens += k8acpi_write_pci_data(4, "BUSN", 0xe0);

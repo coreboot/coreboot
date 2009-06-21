@@ -147,22 +147,111 @@ int acpigen_emit_stream(char *data, int size)
 	return size;
 }
 
+/* The NameString are bit tricky, each element can be 4 chars, if 
+   less its padded with underscore. Check 18.2.2 and 18.4 
+   and 5.3 of ACPI specs 3.0 for details
+*/
+
+static int acpigen_emit_simple_namestring(char *name) {
+	int i, len = 0;
+	char ud[] = "____";
+	for (i = 0; i < 4; i++) {
+		if ((name[i] == '\0') || (name[i] == '.')) {
+			len += acpigen_emit_stream(ud, 4 - i);
+			break;
+		} else {
+			len += acpigen_emit_byte(name[i]);				
+		}
+	}
+	return len;
+}
+
+static int acpigen_emit_double_namestring(char *name, int dotpos) {
+	int len = 0; 
+	/* mark dual name prefix */
+	len += acpigen_emit_byte(0x2e);
+	len += acpigen_emit_simple_namestring(name);
+	len += acpigen_emit_simple_namestring(&name[dotpos + 1]);
+	return len;
+}
+
+static int acpigen_emit_multi_namestring(char *name) {
+	int len = 0, count = 0;
+	unsigned char *pathlen; 
+	/* mark multi name prefix */
+	len += acpigen_emit_byte(0x2f);
+	len += acpigen_emit_byte(0x0);
+	pathlen = ((unsigned char *) acpigen_get_current()) - 1;
+
+	while (name[0] != '\0') {
+		len += acpigen_emit_simple_namestring(name);
+		/* find end or next entity */
+		while ((name[0] != '.') && (name[0] != '\0'))
+			name++;
+		/* forward to next */
+		if (name[0] == '.')
+			name++;
+		count++;
+	}
+
+	pathlen[0] = count;
+	return len;
+}
+
+
+int acpigen_emit_namestring(char *namepath) {
+	int dotcount = 0, i;
+	int dotpos;
+	int len = 0;
+
+	/* we can start with a \ */
+	if (namepath[0] == '\\') {
+		len += acpigen_emit_byte('\\');
+		namepath++;
+	}
+
+	/* and there can be any number of ^ */
+	while (namepath[0] == '^') {
+		len += acpigen_emit_byte('^');
+		namepath++;
+	}
+
+	ASSERT(namepath[0] != '\0');
+
+	i = 0;
+	while (namepath[i] != '\0') {
+		if (namepath[i] == '.') {
+			dotcount++;
+			dotpos = i;
+		}
+		i++;
+	}
+
+	if (dotcount == 0) {
+		len += acpigen_emit_simple_namestring(namepath);
+	} else if (dotcount == 1) { 
+		len += acpigen_emit_double_namestring(namepath, dotpos);
+	} else {
+		len += acpigen_emit_multi_namestring(namepath);
+	}
+	return len;
+}
+
 int acpigen_write_name(char *name)
 {
-	int len = strlen(name);
+	int len;
 	/* name op */
-	acpigen_emit_byte(0x8);
-	acpigen_emit_stream(name, len);
-	return len + 1;
+	len = acpigen_emit_byte(0x8);
+	return len + acpigen_emit_namestring(name);
 }
 
 int acpigen_write_scope(char *name)
 {
 	int len;
 	/* scope op */
-	acpigen_emit_byte(0x10);
-	len = acpigen_write_len_f();
-	return len + acpigen_emit_stream(name, strlen(name)) + 1;
+	len = acpigen_emit_byte(0x10);
+	len += acpigen_write_len_f();
+	return len + acpigen_emit_namestring(name);
 }
 
 int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
@@ -178,8 +267,8 @@ int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_emit_byte(0x83);
 	len = acpigen_write_len_f();
 
-	sprintf(pscope, "\\._PR_CPU%x", (unsigned int) cpuindex);
-	len += acpigen_emit_stream(pscope, strlen(pscope));
+	sprintf(pscope, "\\_PR.CPU%x", (unsigned int) cpuindex);
+	len += acpigen_emit_namestring(pscope);
 	acpigen_emit_byte(cpuindex);
 	acpigen_emit_byte(pblock_addr & 0xff);
 	acpigen_emit_byte((pblock_addr >> 8) & 0xff);
@@ -238,7 +327,7 @@ int acpigen_write_PPC(u8 nr)
 	/* method op */
 	acpigen_emit_byte(0x14);
 	len = acpigen_write_len_f();
-	len += acpigen_emit_stream("_PPC", 4);
+	len += acpigen_emit_namestring("_PPC");
 	/* no fnarg */
 	acpigen_emit_byte(0x00);
 	/* return */

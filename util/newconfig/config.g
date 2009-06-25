@@ -2257,7 +2257,8 @@ def writemakefile(path):
 	file.write("\n")
 
 	# cbfstool rules
-	file.write("\ncbfstool:\n\tmkdir -p tools/lzma\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)\n\n")
+	file.write("\ncbfstool:\n\tmkdir -p cbfs/tools/lzma\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)/cbfs\n")
+	file.write("\ncbfstool-clean:\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)/cbfs clean\n\n")
 
 	file.write("include Makefile.settings\n\n")
 	for i, o in romimages.items():
@@ -2295,18 +2296,18 @@ def writemakefile(path):
 		for j in i.roms:
 			file.write(" %s/coreboot.rom " % j)
 		file.write("> %s.bootblock\n\n" %i.name)
-		file.write("\t./cbfstool %s create %s %s %s.bootblock\n"
+		file.write("\t./cbfs/cbfstool %s create %s %s %s.bootblock\n"
 			   %(i.name, romsize, bootblocksize, i.name))
 		for j in pciroms:
-			file.write("\t./cbfstool %s add %s pci%04x,%04x.rom optionrom\n" % (i.name, j.name, j.pci_vid, j.pci_did))
+			file.write("\t./cbfs/cbfstool %s add %s pci%04x,%04x.rom optionrom\n" % (i.name, j.name, j.pci_vid, j.pci_did))
 		for j in i.roms:
 			#failover is a hack that will go away soon. 
 			if (j != "failover") and (rommapping[j] != "/dev/null"):
-				file.write("\t./cbfstool %s add-payload %s %s/payload $(CBFS_COMPRESS_FLAG)\n" % (i.name, rommapping[j], j,))
+				file.write("\t./cbfs/cbfstool %s add-payload %s %s/payload $(CBFS_COMPRESS_FLAG)\n" % (i.name, rommapping[j], j,))
 			if (j != "failover"):
-				file.write("\t./cbfstool %s add-stage %s/coreboot_ram %s/coreboot_ram $(CBFS_COMPRESS_FLAG)\n" % (i.name, j, j,))
-			file.write("\tif [ -f %s/coreboot_apc ]; then ./cbfstool %s add-stage %s/coreboot_apc %s/coreboot_apc $(CBFS_COMPRESS_FLAG); fi\n" % (j, i.name, j, j,))
-		file.write("\t./cbfstool %s print\n" % i.name)
+				file.write("\t./cbfs/cbfstool %s add-stage %s/coreboot_ram %s/coreboot_ram $(CBFS_COMPRESS_FLAG)\n" % (i.name, j, j,))
+			file.write("\tif [ -f %s/coreboot_apc ]; then ./cbfs/cbfstool %s add-stage %s/coreboot_apc %s/coreboot_apc $(CBFS_COMPRESS_FLAG); fi\n" % (j, i.name, j, j,))
+		file.write("\t./cbfs/cbfstool %s print\n" % i.name)
 		file.write("\n")
 	file.write("else\n\n")
 

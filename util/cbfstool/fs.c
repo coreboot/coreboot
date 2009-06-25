@@ -227,7 +227,7 @@ struct cbfs_file * rom_alloc(struct rom *rom, const char *name, unsigned long si
 	unsigned long nextoffset, truncoffset;
 	struct cbfs_file *newfile = NULL;
 
-	while (offset < rom->fssize) {
+	while ((offset + size) < rom->fssize) {
 
 		c = (struct cbfs_file *)ROM_PTR(rom, offset);
 
@@ -406,7 +406,7 @@ int rom_add(struct rom *rom, const char *name, void *buffer, unsigned long addre
 		c = rom_alloc(rom, name, size, type);
 
 	if (c == NULL) {
-		ERROR("There is no more room in this ROM\n");
+		ERROR("There is not enough room in this ROM\n");
 		return -1;
 	}
 

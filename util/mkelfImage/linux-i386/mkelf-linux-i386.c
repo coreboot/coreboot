@@ -157,14 +157,16 @@ char *linux_i386_probe(char *kernel_buf, off_t kernel_size)
 	return result;
 }
 
+#define NR_SECTIONS 16
+
 struct kernel_info
 {
 	int phdrs;
-	void *kernel[4];
-	size_t filesz[4];
-	size_t memsz[4];
-	size_t paddr[4];
-	size_t vaddr[4];
+	void *kernel[NR_SECTIONS];
+	size_t filesz[NR_SECTIONS];
+	size_t memsz[NR_SECTIONS];
+	size_t paddr[NR_SECTIONS];
+	size_t vaddr[NR_SECTIONS];
 	size_t entry;
 	size_t switch_64;
 	char *version;
@@ -182,6 +184,8 @@ static void parse_elf32_kernel(struct kernel_info *info, char *kernel_buf, size_
 	for(i = 0; i < le16_to_cpu(ehdr->e_phnum); i++) {
 		if (le32_to_cpu(phdr[i].p_type) != PT_LOAD)
 			continue;
+		if(phdrs == NR_SECTIONS)
+			die("NR_SECTIONS is too small\n");
 		info->kernel[phdrs]  = kernel_buf + le32_to_cpu(phdr[i].p_offset);
 		info->filesz[phdrs]  = le32_to_cpu(phdr[i].p_filesz);
 		info->memsz[phdrs]   = le32_to_cpu(phdr[i].p_memsz);
@@ -212,10 +216,12 @@ static void parse_elf64_kernel(struct kernel_info *info, char *kernel_buf, size_
 	for(i = 0; i < le16_to_cpu(ehdr->e_phnum); i++) {
 		if (le32_to_cpu(phdr[i].p_type) != PT_LOAD)
 			continue;
+		if(phdrs == NR_SECTIONS)
+			die("NR_SECTIONS is too small\n");
 		info->kernel[phdrs]  = kernel_buf + le64_to_cpu(phdr[i].p_offset);
 		info->filesz[phdrs]  = le64_to_cpu(phdr[i].p_filesz);
 		info->memsz[phdrs]   = le64_to_cpu(phdr[i].p_memsz);
-		info->paddr[phdrs]   = le64_to_cpu(phdr[i].p_paddr) & 0xffffff;
+		info->paddr[phdrs]   = le64_to_cpu(phdr[i].p_paddr) & 0xfffffff;
 		info->vaddr[phdrs]   = le64_to_cpu(phdr[i].p_vaddr);
 		phdrs++;
 	}

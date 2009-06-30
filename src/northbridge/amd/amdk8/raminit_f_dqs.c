@@ -78,7 +78,7 @@ static unsigned Get_MCTSysAddr(const struct mem_controller *ctrl,  unsigned cs_i
 	uint32_t mem_base;
 	unsigned nodeid = ctrl->node_id;
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	uint32_t hole_reg;
 #endif
 
@@ -91,7 +91,7 @@ static unsigned Get_MCTSysAddr(const struct mem_controller *ctrl,  unsigned cs_i
 	mem_base &= 0xffff0000;
 
 	dword += mem_base;
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	hole_reg = sysinfo->hole_reg[nodeid];
 	if(hole_reg & 1) {
 		unsigned hole_startk;
@@ -855,7 +855,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	//restore SSE2 setting
 	disable_sse2();
 
-#if MEM_TRAIN_SEQ != 1
+#if CONFIG_MEM_TRAIN_SEQ != 1
 	/* We need tidy output for type 1 */
 	printk_debug(" CTLRMaxDelay=%02x\n", CTLRMaxDelay);
 #endif
@@ -1702,7 +1702,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 			align = max_align;
 		}
 		sizek = 1 << align;
-#if MEM_TRAIN_SEQ != 1
+#if CONFIG_MEM_TRAIN_SEQ != 1
 		printk_debug("Setting variable MTRR %d, base: %4dMB, range: %4dMB, type %s\r\n",
 			reg, range_startk >>10, sizek >> 10,
 			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
@@ -1921,7 +1921,7 @@ static void dqs_restore_MC_NVRAM(unsigned int dev)
 	pci_write_config32(dev, DRAM_CONFIG_HIGH, reg);
 }
 
-#if MEM_TRAIN_SEQ == 0
+#if CONFIG_MEM_TRAIN_SEQ == 0
 #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 static void dqs_timing(int controllers, const struct mem_controller *ctrl, tsc_t *tsc0, struct sys_info *sysinfo)
 #else
@@ -2007,7 +2007,7 @@ out:
 #endif
 
 
-#if MEM_TRAIN_SEQ > 0
+#if CONFIG_MEM_TRAIN_SEQ > 0
 
 static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info *sysinfo, unsigned v)
 {
@@ -2018,7 +2018,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 
 	if(sysinfo->mem_trained[i] != 0x80) return;
 
-#if MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ == 1
 	//need to enable mtrr, so dqs training could access the test address
 	setup_mtrr_dqs(sysinfo->tom_k, sysinfo->tom2_k);
 #endif
@@ -2064,7 +2064,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	}
 
 out:
-#if MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ == 1
 	clear_mtrr_dqs(sysinfo->tom2_k);
 #endif
 
@@ -2081,7 +2081,7 @@ out:
 }
 #endif
 
-#if MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ == 1
 static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info *sysinfox)
 {
 	dqs_timing(nodeid, &sysinfo->ctrl[nodeid], sysinfo, 0); // keep the output tidy
@@ -2094,7 +2094,7 @@ static void copy_and_run_ap_code_in_car(unsigned ret_addr);
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
 {
 	if(coreid) return; // only do it on core0
-	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
 	if(sysinfox->mem_trained[nodeid] == 0x80) {
@@ -2105,7 +2105,7 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 		sysinfo->mem_trained[nodeid] = sysinfox->mem_trained[nodeid];
 		memcpy(&sysinfo->ctrl[nodeid], &sysinfox->ctrl[nodeid], sizeof(struct mem_controller));
 	#else
-		memcpy(sysinfo, sysinfox, DCACHE_RAM_GLOBAL_VAR_SIZE);
+		memcpy(sysinfo, sysinfox, CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
 	#if CONFIG_AP_CODE_IN_CAR == 0

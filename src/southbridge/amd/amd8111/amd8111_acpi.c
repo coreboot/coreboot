@@ -16,8 +16,8 @@
 #define SLOW_CPU_OFF 0
 #define SLOW_CPU__ON 1
 
-#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
 
@@ -66,7 +66,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
-#if HAVE_ACPI_TABLES == 1
+#if CONFIG_HAVE_ACPI_TABLES == 1
 unsigned pm_base;
 #endif
 
@@ -112,7 +112,7 @@ static void acpi_init(struct device *dev)
 	pci_write_config8(dev, 0x41, byte | (1<<6)|(1<<5));
 	
 	/* power on after power fail */
-	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x40;
@@ -140,7 +140,7 @@ static void acpi_init(struct device *dev)
 				(on*12)+(on>>1),(on&1)*5);
 	}
 
-#if HAVE_ACPI_TABLES == 1
+#if CONFIG_HAVE_ACPI_TABLES == 1
 	pm_base = pci_read_config16(dev, 0x58) & 0xff00;
 	printk_debug("pm_base: 0x%04x\n",pm_base);
 #endif

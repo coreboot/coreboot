@@ -1,11 +1,11 @@
 #include <pc80/mc146818rtc.h>
 #include <part/fallback_boot.h>
 
-#ifndef MAX_REBOOT_CNT
-#error "MAX_REBOOT_CNT not defined"
+#ifndef CONFIG_MAX_REBOOT_CNT
+#error "CONFIG_MAX_REBOOT_CNT not defined"
 #endif
-#if  MAX_REBOOT_CNT > 15
-#error "MAX_REBOOT_CNT too high"
+#if  CONFIG_MAX_REBOOT_CNT > 15
+#error "CONFIG_MAX_REBOOT_CNT too high"
 #endif
 
 static unsigned char cmos_read(unsigned char addr)
@@ -44,14 +44,14 @@ static int cmos_chksum_valid(void)
 	unsigned long sum, old_sum;
 	sum = 0;
 	/* Comput the cmos checksum */
-	for(addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
+	for(addr = CONFIG_LB_CKS_RANGE_START; addr <= CONFIG_LB_CKS_RANGE_END; addr++) {
 		sum += cmos_read(addr);
 	}
 	sum = (sum & 0xffff) ^ 0xffff;
 
 	/* Read the stored checksum */
-	old_sum = cmos_read(LB_CKS_LOC) << 8;
-	old_sum |=  cmos_read(LB_CKS_LOC+1);
+	old_sum = cmos_read(CONFIG_LB_CKS_LOC) << 8;
+	old_sum |=  cmos_read(CONFIG_LB_CKS_LOC+1);
 
 	return sum == old_sum;
 }
@@ -75,7 +75,7 @@ static int do_normal_boot(void)
 		 */
 		byte = cmos_read(RTC_BOOT_BYTE);
 		byte &= 0x0c;
-		byte |= MAX_REBOOT_CNT << 4;
+		byte |= CONFIG_MAX_REBOOT_CNT << 4;
 		cmos_write(byte, RTC_BOOT_BYTE);
 	}
 
@@ -89,12 +89,12 @@ static int do_normal_boot(void)
 
 	/* Properly set the last boot flag */
 	byte &= 0xfc;
-	if ((byte >> 4) < MAX_REBOOT_CNT) {
+	if ((byte >> 4) < CONFIG_MAX_REBOOT_CNT) {
 		byte |= (1<<1);
 	}
 
 	/* Are we already at the max count? */
-	if ((byte >> 4) < MAX_REBOOT_CNT) {
+	if ((byte >> 4) < CONFIG_MAX_REBOOT_CNT) {
 		byte += 1 << 4; /* No, add 1 to the count */
 	}
 	else {
@@ -109,7 +109,7 @@ static int do_normal_boot(void)
 
 static unsigned read_option(unsigned start, unsigned size, unsigned def)
 {
-#if USE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE == 1
 	unsigned byte;
 	byte = cmos_read(start/8);
 	return (byte >> (start & 7U)) & ((1U << size) - 1U);

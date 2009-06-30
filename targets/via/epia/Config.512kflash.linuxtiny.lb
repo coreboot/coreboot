@@ -4,18 +4,18 @@
 target epia.512kflash.linuxtiny
 mainboard via/epia
 
-option ROM_SIZE=512*1024
-option FALLBACK_SIZE=ROM_SIZE
-option MAXIMUM_CONSOLE_LOGLEVEL=9
-option DEFAULT_CONSOLE_LOGLEVEL=9
+option CONFIG_ROM_SIZE=512*1024
+option CONFIG_FALLBACK_SIZE=CONFIG_ROM_SIZE
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=9
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=9
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=64*1024
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=64*1024
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
 	payload /tmp/linux.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE  "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE  "fallback"

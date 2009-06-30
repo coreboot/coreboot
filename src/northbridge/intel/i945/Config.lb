@@ -17,9 +17,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
 
-uses HAVE_HIGH_TABLES
+uses CONFIG_HAVE_HIGH_TABLES
 
-default HAVE_HIGH_TABLES=1
+default CONFIG_HAVE_HIGH_TABLES=1
 
 config chip.h
 driver northbridge.o

@@ -1,6 +1,6 @@
-uses HAVE_MP_TABLE
+uses CONFIG_HAVE_MP_TABLE
 
-if HAVE_MP_TABLE
+if CONFIG_HAVE_MP_TABLE
   object mpspec.o 
 end
 #object ioapic.o CONFIG_IOAPIC

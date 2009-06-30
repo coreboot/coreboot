@@ -958,9 +958,9 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #ifdef __ROMCC__
 #if NODE_NUMS==64
-	 #define NODE_PCI(x, fn) ((x<32)?(PCI_DEV(CBB,(CDB+x),fn)):(PCI_DEV((CBB-1),(CDB+x-32),fn)))
+	 #define NODE_PCI(x, fn) ((x<32)?(PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)):(PCI_DEV((CONFIG_CBB-1),(CONFIG_CDB+x-32),fn)))
 #else
-	 #define NODE_PCI(x, fn) PCI_DEV(CBB,(CDB+x),fn)
+	 #define NODE_PCI(x, fn) PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)
 #endif
 #endif
 
@@ -1025,7 +1025,7 @@ struct nodes_info_t {
 //#define MEM_CS_COPY 1
 #define MEM_CS_COPY NODE_NUMS
 
-#if MEM_TRAIN_SEQ == 0
+#if CONFIG_MEM_TRAIN_SEQ == 0
 	#define DQS_DELAY_COPY NODE_NUMS
 #else
 //	#define DQS_DELAY_COPY 1

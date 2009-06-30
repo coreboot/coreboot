@@ -94,15 +94,15 @@
 	isync
 
 	/*
-	 * Enable dcache region containing DCACHE_RAM_BASE
+	 * Enable dcache region containing CONFIG_DCACHE_RAM_BASE
 	 * On reset all regions are set to write-back, so we
 	 * just leave them alone.
 	 *
-	 * dccr = (1 << (0x1F - (DCACHE_RAM_BASE >> 27))
+	 * dccr = (1 << (0x1F - (CONFIG_DCACHE_RAM_BASE >> 27))
 	 */
 
-        lis     r4, DCACHE_RAM_BASE@ha
-	ori     r4, r4, DCACHE_RAM_BASE@l
+        lis     r4, CONFIG_DCACHE_RAM_BASE@ha
+	ori     r4, r4, CONFIG_DCACHE_RAM_BASE@l
 	srwi	r4, r4, 27
 	subfic	r4, r4, 31
 	li	r0, 1

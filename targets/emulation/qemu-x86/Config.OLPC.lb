@@ -3,19 +3,19 @@
 target qemu-x86-OLPC
 mainboard emulation/qemu-x86
 
-option ROM_SIZE=1024*1024 - (128 * 1024)
+option CONFIG_ROM_SIZE=1024*1024 - (128 * 1024)
 option CONFIG_COMPRESSED_PAYLOAD_LZMA=1
 option CONFIG_PRECOMPRESSED_PAYLOAD=0
 
 option CC="gcc -m32"
 
-option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=6
+option CONFIG_HAVE_PIRQ_TABLE=1
+option CONFIG_IRQ_SLOT_COUNT=6
 
 romimage "image" 
 	option COREBOOT_EXTRA_VERSION="-OpenBIOS"
 	payload /tmp/olpcpayload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"
 

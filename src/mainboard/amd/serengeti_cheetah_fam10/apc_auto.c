@@ -50,9 +50,9 @@
 #include "lib/delay.c"
 
 #if NODE_NUMS == 64
-	 #define NODE_PCI(x,fn) ((x<32)?PCI_DEV(CBB,CDB+x,fn):PCI_DEV(CBB-1, CDB+x-32, fn))
+	 #define NODE_PCI(x,fn) ((x<32)?PCI_DEV(CONFIG_CBB,CONFIG_CDB+x,fn):PCI_DEV(CONFIG_CBB-1, CONFIG_CDB+x-32, fn))
 #else
-	 #define NODE_PCI(x, fn) PCI_DEV(CBB,CDB+x,fn)
+	 #define NODE_PCI(x, fn) PCI_DEV(CONFIG_CBB,CONFIG_CDB+x,fn)
 #endif
 
 //#include "cpu/x86/lapic/boot_cpu.c"
@@ -73,8 +73,8 @@
 
 void hardwaremain(int ret_addr)
 {
-	struct sys_info *sysinfo = (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE); // in CACHE
-	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
+	struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in CACHE
+	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE); // in RAM
 
 	struct node_core_id id;
 

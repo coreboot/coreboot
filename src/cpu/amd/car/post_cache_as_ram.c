@@ -64,7 +64,7 @@ static void post_cache_as_ram(void)
 	
 	set_init_ram_access(); /* So we can access RAM from [1M, CONFIG_LB_MEM_TOPK) */
 
-//	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x8000, DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x7c00);
+//	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x8000, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x7c00);
 	print_debug("Copying data from cache to RAM -- switching to use RAM as stack... ");
 
 	/* from here don't store more data in CAR */
@@ -76,14 +76,14 @@ static void post_cache_as_ram(void)
         );
 #endif
 
-        memcopy((void *)((CONFIG_LB_MEM_TOPK<<10)-DCACHE_RAM_SIZE), (void *)DCACHE_RAM_BASE, DCACHE_RAM_SIZE); //inline
+        memcopy((void *)((CONFIG_LB_MEM_TOPK<<10)-CONFIG_DCACHE_RAM_SIZE), (void *)CONFIG_DCACHE_RAM_BASE, CONFIG_DCACHE_RAM_SIZE); //inline
 //        dump_mem((CONFIG_LB_MEM_TOPK<<10) - 0x8000, (CONFIG_LB_MEM_TOPK<<10) - 0x7c00);
 
         __asm__ volatile (
-                /* set new esp */ /* before _RAMBASE */
+                /* set new esp */ /* before CONFIG_RAMBASE */
                 "subl   %0, %%ebp\n\t"
                 "subl   %0, %%esp\n\t"
-                ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- (CONFIG_LB_MEM_TOPK<<10) )
+                ::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- (CONFIG_LB_MEM_TOPK<<10) )
         ); // We need to push %eax to the stack (CAR) before copy stack and pop it later after copy stack and change esp
 #if 0
         __asm__ volatile (
@@ -102,18 +102,18 @@ static void post_cache_as_ram(void)
 	disable_cache_as_ram_bsp();  
 
         print_debug("Clearing initial memory region: ");
-        clear_init_ram(); //except the range from [(CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_SIZE, (CONFIG_LB_MEM_TOPK<<10))
+        clear_init_ram(); //except the range from [(CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_SIZE, (CONFIG_LB_MEM_TOPK<<10))
         print_debug("Done\r\n");
 
 //	dump_mem((CONFIG_LB_MEM_TOPK<<10) - 0x8000, (CONFIG_LB_MEM_TOPK<<10) - 0x7c00);
 
-#ifndef MEM_TRAIN_SEQ
-#define MEM_TRAIN_SEQ 0
+#ifndef CONFIG_MEM_TRAIN_SEQ
+#define CONFIG_MEM_TRAIN_SEQ 0
 #endif
         set_sysinfo_in_ram(1); // So other core0 could start to train mem
 
-#if MEM_TRAIN_SEQ == 1
-//	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
+#if CONFIG_MEM_TRAIN_SEQ == 1
+//	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
         // wait for ap memory to trained
 //        wait_all_core0_mem_trained(sysinfox); // moved to lapic_init_cpus.c

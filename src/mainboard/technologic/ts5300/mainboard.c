@@ -142,7 +142,7 @@ static void enable_dev(struct device *dev) {
 	/* hack for IDIOTIC need to fix rom_start */
 	printk_err("Patching rom_start due to sc520 limits\n");
 	rom_start = 0x09400000 + 0xe0000;
-	rom_end = rom_start + PAYLOAD_SIZE - 1;
+	rom_end = rom_start + CONFIG_PAYLOAD_SIZE - 1;
 
 	printk_err("TS5300 EXIT %s\n", __func__);
 	

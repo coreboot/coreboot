@@ -122,7 +122,7 @@ static int translate_i82810_to_mb[] = {
 /* MB */0, 8, 0, 16, 16, 24, 32, 32, 48, 64, 64, 96, 128, 128, 192, 256,
 };
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
@@ -172,7 +172,7 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 768, tolmk - 768);
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE * 1024;

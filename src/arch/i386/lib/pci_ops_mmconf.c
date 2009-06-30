@@ -1,4 +1,4 @@
-#if MMCONF_SUPPORT
+#if CONFIG_MMCONF_SUPPORT
 
 #include <console/console.h>
 #include <arch/io.h>
@@ -13,7 +13,7 @@
  */
 
 #define PCI_MMIO_ADDR(SEGBUS, DEVFN, WHERE) ( \
-	MMCONF_BASE_ADDRESS | \
+	CONFIG_MMCONF_BASE_ADDRESS | \
         (((SEGBUS) & 0xFFF) << 20) | \
         (((DEVFN) & 0xFF) << 12) | \
         ((WHERE) & 0xFFF))

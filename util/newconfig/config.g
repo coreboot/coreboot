@@ -329,7 +329,7 @@ class romimage:
 		if (type  == 'S'):
 			# for .S, .o depends on .s
 			file.write("%s: %s.s\n" % (obj[0], obj[3]))
-        		file.write("\t$(CC) -c $(CPU_OPT) -o $@ $<\n")
+        		file.write("\t$(CC) -c $(CONFIG_CPU_OPT) -o $@ $<\n")
 			# and .s depends on .S
 			file.write("%s.s: %s\n" % (obj[3], source))
 			# Note: next 2 lines are ONE output line!
@@ -1386,7 +1386,7 @@ def endromimage():
 	global curimage
 	global bootblocksize
 	mainboard()
-	imagesize = getoption("ROM_IMAGE_SIZE", curimage)
+	imagesize = getoption("CONFIG_ROM_IMAGE_SIZE", curimage)
 	bootblocksize += imagesize
 	print "End ROMIMAGE"
 	curimage = 0
@@ -1399,9 +1399,9 @@ def mainboardsetup(path):
 	full_mainboard_path = os.path.join(treetop, 'src', 'mainboard', path)
 	vendor = re.sub("/.*", "", path)
         part_number = re.sub("[^/]*/", "", path)
-	setdefault('MAINBOARD', full_mainboard_path, 0)
-	setdefault('MAINBOARD_VENDOR', vendor, 0)
-	setdefault('MAINBOARD_PART_NUMBER', part_number, 0)
+	setdefault('CONFIG_MAINBOARD', full_mainboard_path, 0)
+	setdefault('CONFIG_MAINBOARD_VENDOR', vendor, 0)
+	setdefault('CONFIG_MAINBOARD_PART_NUMBER', part_number, 0)
 
 def mainboard():
 	global curimage, dirstack, partstack
@@ -1571,9 +1571,9 @@ def adddep(id, str):
 def setarch(my_arch):
 	"""arch is 'different' ... darn it."""
 	global curimage
-	print "SETTING ARCH %s\n" % my_arch
+	print "SETTING CONFIG_ARCH %s\n" % my_arch
 	curimage.setarch(my_arch)
-	setdefault('ARCH', my_arch, 1)
+	setdefault('CONFIG_ARCH', my_arch, 1)
 	part('arch', my_arch, 'Config.lb', 0)
 
 def doconfigfile(path, confdir, file, rule):
@@ -1647,7 +1647,7 @@ parser Config:
     token ACTION:		'action'
     token ADDACTION:		'addaction'
     token ALWAYS:		'always'
-    token ARCH:			'arch'
+    token CONFIG_ARCH:			'arch'
     token BUILDROM:		'buildrom'
     token COMMENT:		'comment'
     token CONFIG:		'config'
@@ -1677,7 +1677,7 @@ parser Config:
     token IRQ:			'irq'
     token LDSCRIPT:		'ldscript'
     token LOADOPTIONS:		'loadoptions'
-    token MAINBOARD:		'mainboard'
+    token CONFIG_MAINBOARD:		'mainboard'
     token MAINBOARDINIT:	'mainboardinit'
     token MAKEDEFINE:		'makedefine'
     token MAKERULE:		'makerule'
@@ -1777,7 +1777,7 @@ parser Config:
 			]                       {{ if (C): part(parttype, partid, 'Config.lb', name) }}
 			partend<<C>> 		
 
-    rule arch<<C>>:	ARCH ID			{{ if (C): setarch(ID) }}
+    rule arch<<C>>:	CONFIG_ARCH ID			{{ if (C): setarch(ID) }}
 			partend<<C>>
     
     rule mainboardinit<<C>>:
@@ -1969,7 +1969,7 @@ parser Config:
     rule payload<<C>>:	PAYLOAD DIRPATH		{{ if (C): payload(DIRPATH) }}
 
     rule mainboard:
-			MAINBOARD PATH		{{ mainboardsetup(PATH) }}
+			CONFIG_MAINBOARD PATH		{{ mainboardsetup(PATH) }}
 
     rule romif<<C>>:	IF ID			{{ c = lookup(ID) }}
 			(romstmt<<C and c>>)* 
@@ -2287,7 +2287,7 @@ def writemakefile(path):
 			file.write(" %s/coreboot.rom " % j)
 		file.write("\n")
 
-		romsize = getoption("ROM_SIZE", image)
+		romsize = getoption("CONFIG_ROM_SIZE", image)
 
 		file.write("\n\trm -f %s\n" %(i.name))
 

@@ -1,5 +1,5 @@
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 arch i386 end 
@@ -12,8 +12,8 @@ driver mainboard.o
 
 #dir /drivers/si/3114
 
-if HAVE_MP_TABLE object mptable.o end
-if HAVE_PIRQ_TABLE 
+if CONFIG_HAVE_MP_TABLE object mptable.o end
+if CONFIG_HAVE_PIRQ_TABLE 
 	object get_bus_conf.o
 	object irq_tables.o 
 end
@@ -23,15 +23,15 @@ end
 	if CONFIG_USE_INIT
 
 		makerule ./cache_as_ram_auto.o
-			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+			depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 		end
 
 	else    
                 
 		makerule ./cache_as_ram_auto.inc
-			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+			depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 			action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end
@@ -55,7 +55,7 @@ ldscript /cpu/x86/16bit/entry16.lds
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if USE_FALLBACK_IMAGE 
+if CONFIG_USE_FALLBACK_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc 
 	ldscript /cpu/x86/16bit/reset16.lds 
 else
@@ -79,7 +79,7 @@ ldscript /arch/i386/lib/id.lds
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	       ldscript /arch/i386/lib/failover.lds
 end
 
@@ -209,14 +209,14 @@ chip northbridge/amd/amdk8/root_complex
                                         device pci 2.0 on end # USB        0x0223
                                         device pci 2.1 on end # USB
                                         device pci 2.2 on end # USB
-                                        #when HT_CHAIN_END_UNITID_BASE (0,1) < HT_CHAIN_UNITID_BASE (6,,,,),
+                                        #when CONFIG_HT_CHAIN_END_UNITID_BASE (0,1) < CONFIG_HT_CHAIN_UNITID_BASE (6,,,,),
                                         chip drivers/pci/onboard
                                               device pci 4.0 on end # it is in bcm5785_0 bus, but the device id can not be changed even unitid is changed, fake one to get the rom_address
-                                                                    # if HT_CHAIN_END_UNITID_BASE=0, it is 5, if HT_CHAIN_END_UNITID_BASE=1, it is 4
+                                                                    # if CONFIG_HT_CHAIN_END_UNITID_BASE=0, it is 5, if CONFIG_HT_CHAIN_END_UNITID_BASE=1, it is 4
                                               register "rom_address" = "0xfff80000"
                                         end
                                 end
-                                        #when HT_CHAIN_END_UNITID_BASE > HT_CHAIN_UNITID_BASE (6, ,,,,)
+                                        #when CONFIG_HT_CHAIN_END_UNITID_BASE > CONFIG_HT_CHAIN_UNITID_BASE (6, ,,,,)
 #                                        chip drivers/pci/onboard
 #                                              device pci 0.0 on end # fake, will be disabled
 #                                        end

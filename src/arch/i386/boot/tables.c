@@ -104,7 +104,7 @@ struct lb_memory *write_tables(void)
 	post_code(0x9a);
 
 	/* Write ACPI tables to F segment and high tables area */
-#if HAVE_ACPI_TABLES == 1
+#if CONFIG_HAVE_ACPI_TABLES == 1
 	if (high_tables_base) {
 		unsigned long acpi_start = high_table_end;
 		rom_table_end = ALIGN(rom_table_end, 16);
@@ -129,7 +129,7 @@ struct lb_memory *write_tables(void)
 #endif
 	post_code(0x9b);
 
-#if HAVE_MP_TABLE == 1
+#if CONFIG_HAVE_MP_TABLE == 1
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 	rom_table_end = write_smp_table(rom_table_end);
 	rom_table_end = ALIGN(rom_table_end, 1024);
@@ -139,7 +139,7 @@ struct lb_memory *write_tables(void)
 		high_table_end = write_smp_table(high_table_end);
 		high_table_end = ALIGN(high_table_end, 1024);
 	}
-#endif /* HAVE_MP_TABLE */
+#endif /* CONFIG_HAVE_MP_TABLE */
 
 	post_code(0x9c);
 

@@ -77,7 +77,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -165,7 +165,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 		failover_process(bist, cpu_init_detectedx);
 #endif
 	real_main(bist, cpu_init_detectedx);
@@ -195,7 +195,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 //	post_code(0x32);
 
- 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+ 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

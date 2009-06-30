@@ -55,7 +55,7 @@ static void pci_init(struct device *dev)
 	reg32 |= (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0);
 	pci_write_config32(dev, 0xe1, reg32);
 
-#if MMCONF_SUPPORT
+#if CONFIG_MMCONF_SUPPORT
 	/* Set VC0 transaction class */
 	reg32 = pci_mmio_read_config32(dev, 0x114);
 	reg32 &= 0xffffff00;

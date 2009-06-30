@@ -3,7 +3,7 @@
 #include <string.h>
 #include <device/pci.h>
 
-#if (DEBUG==1 && HAVE_PIRQ_TABLE==1)
+#if (CONFIG_DEBUG==1 && CONFIG_HAVE_PIRQ_TABLE==1)
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
 	uint8_t *addr = (uint8_t *)rt;
@@ -12,7 +12,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 
 	printk_info("Checking Interrupt Routing Table consistency...\n");
 
-#if defined(IRQ_SLOT_COUNT)
+#if defined(CONFIG_IRQ_SLOT_COUNT)
 	if (sizeof(struct irq_routing_table) != rt->size) {
 		printk_warning("Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
 			       sizeof(struct irq_routing_table),
@@ -83,7 +83,7 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 #define verify_copy_pirq_routing_table(addr)
 #endif
 
-#if HAVE_PIRQ_TABLE==1
+#if CONFIG_HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long addr)
 {
 	/* Align the table to be 16 byte aligned. */
@@ -100,7 +100,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 }
 #endif
 
-#if (PIRQ_ROUTE==1 && HAVE_PIRQ_TABLE==1)
+#if (CONFIG_PIRQ_ROUTE==1 && CONFIG_HAVE_PIRQ_TABLE==1)
 void pirq_routing_irqs(unsigned long addr)
 {
 	int i, j, k, num_entries;

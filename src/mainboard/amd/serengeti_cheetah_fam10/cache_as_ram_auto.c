@@ -60,7 +60,7 @@ static void post_code(u8 value) {
 	outb(value, 0x80);
 }
 
-#if (USE_FAILOVER_IMAGE == 0)
+#if (CONFIG_USE_FAILOVER_IMAGE == 0)
 #include "arch/i386/lib/console.c"
 #include "pc80/serial.c"
 #include "ram/ramtest.c"
@@ -80,7 +80,7 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #include "cpu/x86/bist.h"
 
 
-#if (USE_FAILOVER_IMAGE == 0)
+#if (CONFIG_USE_FAILOVER_IMAGE == 0)
 
 #include "northbridge/amd/amdfam10/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
@@ -142,10 +142,10 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "cpu/amd/model_10xxx/fidvid.c"
 
-#endif /* (USE_FAILOVER_IMAGE == 0) */
+#endif /* (CONFIG_USE_FAILOVER_IMAGE == 0) */
 
 
-#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
@@ -190,7 +190,7 @@ normal_image:
 		);
 
 fallback_image:
- #if HAVE_FAILOVER_BOOT==1
+ #if CONFIG_HAVE_FAILOVER_BOOT==1
 	__asm__ volatile ("jmp __fallback_image"
 		 : /* outputs */
 		 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
@@ -198,22 +198,22 @@ fallback_image:
  #endif
 	;
 }
-#endif /* ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1)) */
+#endif /* ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1)) */
 
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-//FIXME: I think that there is a hole here with the real_main() logic realmain is inside a USE_FAILOVER_IMAGE=0.
-#if HAVE_FAILOVER_BOOT==1
- #if USE_FAILOVER_IMAGE==1
+//FIXME: I think that there is a hole here with the real_main() logic realmain is inside a CONFIG_USE_FAILOVER_IMAGE=0.
+#if CONFIG_HAVE_FAILOVER_BOOT==1
+ #if CONFIG_USE_FAILOVER_IMAGE==1
 	failover_process(bist, cpu_init_detectedx);
  #else
 	real_main(bist, cpu_init_detectedx);
  #endif
 #else
- #if USE_FALLBACK_IMAGE == 1
+ #if CONFIG_USE_FALLBACK_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
  #endif
 	real_main(bist, cpu_init_detectedx);
@@ -221,7 +221,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 }
 
 
-#if (USE_FAILOVER_IMAGE==0)
+#if (CONFIG_USE_FAILOVER_IMAGE==0)
 #include "spd_addr.h"
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
@@ -229,7 +229,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
-	struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	u32 bsp_apicid = 0;
 	u32 val;
 	msr_t msr;
@@ -243,12 +243,12 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x32);
 
-	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 	printk_debug("\n");
 
-//	dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
+//	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
@@ -380,4 +380,4 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 }
 
 
-#endif /* USE_FAILOVER_IMAGE==0 */
+#endif /* CONFIG_USE_FAILOVER_IMAGE==0 */

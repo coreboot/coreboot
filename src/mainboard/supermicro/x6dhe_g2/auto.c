@@ -103,7 +103,7 @@ static void main(unsigned long bist)
 	outb(0x87,0x2e);
 	outb(0x87,0x2e);
 	pnp_write_config(CONSOLE_SERIAL_DEV, 0x24, 0x84 | (1 << 6));
-	pc87427_enable_dev(CONSOLE_SERIAL_DEV, TTYS0_BASE);
+	pc87427_enable_dev(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

@@ -14,7 +14,7 @@
 /* Keep together for sysctl support */
 /* Using an global varible can cause problem when we reset the stack from cache as ram to ram*/
 #if 0
-int console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #else
 #define console_loglevel ASM_CONSOLE_LOGLEVEL
 #endif
@@ -25,8 +25,8 @@ extern void uart8250_tx_byte(unsigned, unsigned char);
 void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')
-		uart8250_tx_byte(TTYS0_BASE, '\r');
-	uart8250_tx_byte(TTYS0_BASE, byte);
+		uart8250_tx_byte(CONFIG_TTYS0_BASE, '\r');
+	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
 }
 
 int do_printk(int msg_level, const char *fmt, ...)

@@ -12,7 +12,7 @@
 
 /* Keep together for sysctl support */
 
-int console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 extern int vtxprintf(void (*)(unsigned char), const char *, va_list);
 extern void uart8250_tx_byte(unsigned, unsigned char);
@@ -20,8 +20,8 @@ extern void uart8250_tx_byte(unsigned, unsigned char);
 void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')
-		uart8250_tx_byte(TTYS0_BASE, '\r');
-	uart8250_tx_byte(TTYS0_BASE, byte);
+		uart8250_tx_byte(CONFIG_TTYS0_BASE, '\r');
+	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
 }
 
 int do_printk(int msg_level, const char *fmt, ...)

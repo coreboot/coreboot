@@ -20,18 +20,18 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ## 
 
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 128 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 128 * 1024
 include /config/nofailovercalculation.lb
 
 arch i386 end 
 
 driver mainboard.o
-if HAVE_ACPI_TABLES
+if CONFIG_HAVE_ACPI_TABLES
   object acpi_tables.o
   makerule dsdt.c
-    depends "$(MAINBOARD)/dsdt.asl"
-    action  "iasl -p $(CURDIR)/dsdt -tc $(MAINBOARD)/dsdt.asl"
+    depends "$(CONFIG_MAINBOARD)/dsdt.asl"
+    action  "iasl -p $(CURDIR)/dsdt -tc $(CONFIG_MAINBOARD)/dsdt.asl"
     action  "mv dsdt.hex dsdt.c"
   end
   object ./dsdt.o
@@ -39,19 +39,19 @@ end
 
   if CONFIG_USE_INIT
     makerule ./cache_as_ram_auto.o
-      depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-      action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+      depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+      action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
     end
   else
     makerule ./cache_as_ram_auto.inc
-      depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-      action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+      depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+      action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
       action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
       action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
     end
   end
 
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
   mainboardinit cpu/x86/16bit/entry16.inc
   ldscript /cpu/x86/16bit/entry16.lds
   mainboardinit southbridge/via/k8t890/romstrap.inc
@@ -67,7 +67,7 @@ mainboardinit cpu/x86/32bit/entry32.inc
     ldscript /cpu/amd/car/cache_as_ram.lds
   end
 
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
   mainboardinit cpu/x86/16bit/reset16.inc
   ldscript /cpu/x86/16bit/reset16.lds
 else
@@ -77,7 +77,7 @@ end
 
   mainboardinit cpu/amd/car/cache_as_ram.inc
 
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
     ldscript /arch/i386/lib/failover.lds
 end
 

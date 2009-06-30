@@ -128,8 +128,8 @@ static void setup_ioapic(unsigned long ioapic_base)
 #define SLOW_CPU_OFF	0
 #define SLOW_CPU__ON	1
 
-#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL	MAINBOARD_POWER_ON
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL	MAINBOARD_POWER_ON
 #endif
 
 static void lpc_common_init(device_t dev)
@@ -179,7 +179,7 @@ static void lpc_init(device_t dev)
 	/* power after power fail */
 
 
-	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pci_read_config8(dev, PREVIOUS_POWER_STATE);
 	byte &= ~0x40;

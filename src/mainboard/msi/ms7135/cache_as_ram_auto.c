@@ -50,7 +50,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
-#if USE_FAILOVER_IMAGE == 0
+#if CONFIG_USE_FAILOVER_IMAGE == 0
 
 /* Used by ck804_early_setup(). */
 #define CK804_NUM 1
@@ -101,10 +101,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-#endif	/* USE_FAILOVER_IMAGE */
+#endif	/* CONFIG_USE_FAILOVER_IMAGE */
 
-#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) \
-	|| ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) \
+	|| ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -169,7 +169,7 @@ normal_image:
 
 fallback_image:
 
-#if HAVE_FAILOVER_BOOT == 1
+#if CONFIG_HAVE_FAILOVER_BOOT == 1
 	__asm__ volatile ("jmp __fallback_image"
 		:					/* outputs */
 		:"a" (bist), "b"(cpu_init_detectedx)	/* inputs */
@@ -178,27 +178,27 @@ fallback_image:
 	;
 }
 
-#endif /* ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) ... */
+#endif /* ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) ... */
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if HAVE_FAILOVER_BOOT == 1
-#if USE_FAILOVER_IMAGE == 1
+#if CONFIG_HAVE_FAILOVER_BOOT == 1
+#if CONFIG_USE_FAILOVER_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
 #else
 	real_main(bist, cpu_init_detectedx);
 #endif
 #else
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
 #endif
 	real_main(bist, cpu_init_detectedx);
 #endif
 }
 
-#if USE_FAILOVER_IMAGE == 0
+#if CONFIG_USE_FAILOVER_IMAGE == 0
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
@@ -218,7 +218,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
 	}
 
-	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 
@@ -270,4 +270,4 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
-#endif /* USE_FAILOVER_IMAGE */
+#endif /* CONFIG_USE_FAILOVER_IMAGE */

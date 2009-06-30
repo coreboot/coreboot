@@ -89,7 +89,7 @@ static inline __attribute__((always_inline)) unsigned long nodeid(void)
 
 static int uart_can_tx_byte(void)
 {
-	return inb(TTYS0_BASE + UART_LSR) & 0x20;
+	return inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x20;
 }
 
 static void uart_wait_to_tx_byte(void)
@@ -100,14 +100,14 @@ static void uart_wait_to_tx_byte(void)
 
 static void uart_wait_until_sent(void)
 {
-	while(!(inb(TTYS0_BASE + UART_LSR) & 0x40))
+	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40))
 	; 
 }
 
 static void uart_tx_byte(unsigned char data)
 {
 	uart_wait_to_tx_byte();
-	outb(data, TTYS0_BASE + UART_TBR);
+	outb(data, CONFIG_TTYS0_BASE + UART_TBR);
 	/* Make certain the data clears the fifos */
 	uart_wait_until_sent();
 }
@@ -169,7 +169,7 @@ void smi_handler(u32 smm_revision)
 	node=nodeid();
 
 #ifdef DEBUG_SMI
-	console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #else
 	console_loglevel = 1;
 #endif

@@ -23,7 +23,7 @@
  * 2. Reduce the size of your normal (or fallback) image, by adding the
  *    following lines to your target Config.lb, after romimage "normal"
  *      # 48K for SCSI FW or ATI ROM
- *      option ROM_SIZE = 512*1024-48*1024
+ *      option CONFIG_ROM_SIZE = 512*1024-48*1024
  * 3. Create your vgabios.bin, for example using awardeco and put it in the
  *    directory of your target Config.lb. You can also read an option rom from
  *    a running system, but this is unreliable, as some option roms are changed

@@ -11,8 +11,8 @@
 
 #define SLOW_DOWN_IO
 
-#ifndef _IO_BASE
-#define _IO_BASE	0
+#ifndef CONFIG_IO_BASE
+#define CONFIG_IO_BASE	0
 #endif
 
 #define readb(addr) in_8((volatile uint8_t *)(addr))
@@ -36,15 +36,15 @@
  * are arrays of bytes, and byte-swapping is not appropriate in
  * that case.  - paulus
  */
-#define insw(port, buf, ns)	_insw_ns((uint16_t *)((port)+_IO_BASE), (buf), (ns))
-#define outsw(port, buf, ns)	_outsw_ns((uint16_t *)((port)+_IO_BASE), (buf), (ns))
+#define insw(port, buf, ns)	_insw_ns((uint16_t *)((port)+CONFIG_IO_BASE), (buf), (ns))
+#define outsw(port, buf, ns)	_outsw_ns((uint16_t *)((port)+CONFIG_IO_BASE), (buf), (ns))
 
-#define inb(port)		in_8((uint8_t *)((port)+_IO_BASE))
-#define outb(val, port)		out_8((uint8_t *)((port)+_IO_BASE), (val))
-#define inw(port)		in_le16((uint16_t *)((port)+_IO_BASE))
-#define outw(val, port)		out_le16((uint16_t *)((port)+_IO_BASE), (val))
-#define inl(port)		in_le32((uint32_t *)((port)+_IO_BASE))
-#define outl(val, port)		out_le32((uint32_t *)((port)+_IO_BASE), (val))
+#define inb(port)		in_8((uint8_t *)((port)+CONFIG_IO_BASE))
+#define outb(val, port)		out_8((uint8_t *)((port)+CONFIG_IO_BASE), (val))
+#define inw(port)		in_le16((uint16_t *)((port)+CONFIG_IO_BASE))
+#define outw(val, port)		out_le16((uint16_t *)((port)+CONFIG_IO_BASE), (val))
+#define inl(port)		in_le32((uint32_t *)((port)+CONFIG_IO_BASE))
+#define outl(val, port)		out_le32((uint32_t *)((port)+CONFIG_IO_BASE), (val))
 
 #define inb_p(port)		inb((port))
 #define outb_p(val, port)	outb((val), (port))
@@ -56,8 +56,8 @@
 /*
  * The *_ns versions below do byte-swapping.
  */
-#define insw_ns(port, buf, ns)	_insw((uint16_t *)((port)+_IO_BASE), (buf), (ns))
-#define outsw_ns(port, buf, ns)	_outsw((uint16_t *)((port)+_IO_BASE), (buf), (ns))
+#define insw_ns(port, buf, ns)	_insw((uint16_t *)((port)+CONFIG_IO_BASE), (buf), (ns))
+#define outsw_ns(port, buf, ns)	_outsw((uint16_t *)((port)+CONFIG_IO_BASE), (buf), (ns))
 
 
 #define IO_SPACE_LIMIT ~0

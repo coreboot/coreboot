@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define CACHE_AS_RAM_SIZE DCACHE_RAM_SIZE
-#define CACHE_AS_RAM_BASE DCACHE_RAM_BASE
+#define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
+#define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 #define post_code(x) intel_chip_post_macro(x)
 
 #include <cpu/x86/mtrr.h>
@@ -29,7 +29,7 @@
 	movl    %eax, %ebp
 
 cache_as_ram:
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 	post_code(0x20)
 
@@ -101,18 +101,18 @@ clear_mtrrs:
 	orl	$(1 << 30), %eax
 	movl	%eax, %cr0
 
-#if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
+#if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 	/* Enable cache for our code in Flash because we do XIP here */
         movl    $MTRRphysBase_MSR(1), %ecx
         xorl    %edx, %edx
-        movl    $(XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+        movl    $(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
         wrmsr
 
         movl    $MTRRphysMask_MSR(1), %ecx
         movl    $0x0000000f, %edx
-        movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
+        movl    $(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
         wrmsr
-#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+#endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
         /* enable cache */
         movl	%cr0, %eax

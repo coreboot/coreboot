@@ -13,11 +13,11 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
-#if HAVE_ACPI_TABLES==1
+#if CONFIG_HAVE_ACPI_TABLES==1
 
 #include <stdint.h>
  
-#if HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME
 /* 0 = S0, 1 = S1 ...*/
 extern u8 acpi_slp_type;
 #endif
@@ -88,13 +88,13 @@ typedef struct acpi_table_header         /* ACPI common table header */
 /* RSDT */
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
-	u32 entry[7+ACPI_SSDTX_NUM+CONFIG_MAX_CPUS]; /* MCONFIG, HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU pstate*/
+	u32 entry[7+CONFIG_ACPI_SSDTX_NUM+CONFIG_MAX_CPUS]; /* MCONFIG, HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU pstate*/
 } __attribute__ ((packed)) acpi_rsdt_t;
 
 /* XSDT */
 typedef struct acpi_xsdt {
 	struct acpi_table_header header;
-	u64 entry[6+ACPI_SSDTX_NUM];
+	u64 entry[6+CONFIG_ACPI_SSDTX_NUM];
 } __attribute__ ((packed)) acpi_xsdt_t;
 
 /* HPET TIMERS */
@@ -367,7 +367,7 @@ void acpi_create_facs(acpi_facs_t *facs);
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
 
-#if HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME
 void suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
@@ -390,7 +390,7 @@ do {                                                    \
 
 #define IO_APIC_ADDR	0xfec00000UL
 
-#else // HAVE_ACPI_TABLES
+#else // CONFIG_HAVE_ACPI_TABLES
 
 #define write_acpi_tables(start) (start)
 

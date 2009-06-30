@@ -47,7 +47,7 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
  * 00100F62h (DA-C2)     1062h                  0100009Fh
  */
 
-#include AMD_UCODE_PATCH_FILE
+#include CONFIG_AMD_UCODE_PATCH_FILE
 
 #endif
 	/*  Dummy terminator  */

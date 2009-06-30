@@ -24,7 +24,7 @@ static const OptionInfoRec INT10Options[] = {
 };
 #endif
 
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 void dprint(unsigned long start, unsigned long size)
 {
 	int i, j;
@@ -44,7 +44,7 @@ void dprint(unsigned long start, unsigned long size)
 	}
 	printf("\n");
 }
-#endif /* DEBUG */
+#endif /* CONFIG_DEBUG */
 
 #if 0
 #ifndef _PC

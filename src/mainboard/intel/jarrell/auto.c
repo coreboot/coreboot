@@ -81,7 +81,7 @@ static void main(unsigned long bist)
 	/* Setup the console */
 	pc87427_disable_dev(CONSOLE_SERIAL_DEV);
 	pc87427_disable_dev(HIDDEN_SERIAL_DEV);
-	pc87427_enable_dev(CONSOLE_SERIAL_DEV, TTYS0_BASE);
+	pc87427_enable_dev(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
         /* Enable Serial 2 lines instead of GPIO */
         outb(0x2c, 0x2e);
         outb((inb(0x2f) & (~1<<1)), 0x2f);

@@ -4,20 +4,20 @@
 target adl855pc
 mainboard digitallogic/adl855pc
 
-option DEFAULT_CONSOLE_LOGLEVEL=9
-option MAXIMUM_CONSOLE_LOGLEVEL=9
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=9
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=9
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x10000
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x10000
 	option COREBOOT_EXTRA_VERSION=".0Normal"
 	payload /etc/hosts
 end
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x10000
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x10000
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload /etc/hosts
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

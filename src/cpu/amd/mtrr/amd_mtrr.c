@@ -180,7 +180,7 @@ void amd_setup_mtrrs(void)
 	/* FIXME we should probably query the cpu for this
 	 * but so far this is all any recent AMD cpu has supported.
 	 */
-	address_bits = CPU_ADDR_BITS; //K8 could be 40, and GH could be 48
+	address_bits = CONFIG_CPU_ADDR_BITS; //K8 could be 40, and GH could be 48
 
 	/* Now that I have mapped what is memory and what is not
 	 * Setup the mtrrs so we can cache the memory.

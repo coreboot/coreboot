@@ -109,7 +109,7 @@ void *smp_write_config_table(void *v)
 		}
 		else {
 			printk_debug("ERROR - could not find IOAPIC PCI 1:00.1\n");
-			printk_debug("DEBUG: Dev= %p\n", dev);
+			printk_debug("CONFIG_DEBUG: Dev= %p\n", dev);
 		}
 		/* PXHd apic 5 */
 		dev = dev_find_slot(1, PCI_DEVFN(0x00,3));
@@ -121,7 +121,7 @@ void *smp_write_config_table(void *v)
 		}
 		else {
 			printk_debug("ERROR - could not find IOAPIC PCI 1:00.3\n");
-			printk_debug("DEBUG: Dev= %p\n", dev);
+			printk_debug("CONFIG_DEBUG: Dev= %p\n", dev);
 		}
 	}
 

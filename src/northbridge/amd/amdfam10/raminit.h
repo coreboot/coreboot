@@ -21,7 +21,7 @@
 #define RAMINIT_H
 
 #if 0
-#if DIMM_SUPPORT==0x0110
+#if CONFIG_DIMM_SUPPORT==0x0110
 //FBDIMM REG
 /* each channel can have 8 fbdimm */
 #define DIMM_SOCKETS 8
@@ -42,7 +42,7 @@ struct mem_controller {
 #endif
 #endif
 
-//#if (DIMM_SUPPORT & 0x00ff)==0x0004
+//#if (CONFIG_DIMM_SUPPORT & 0x00ff)==0x0004
 //DDR2 REG and unbuffered : Socket F 1027 and AM3
 /* every channel have 4 DDR2 DIMM for socket F
  *		       2 for socket M2/M3

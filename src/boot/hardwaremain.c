@@ -37,7 +37,7 @@ it with the version available from LANL.
 #include <boot/tables.h>
 #include <boot/elf.h>
 #include <cbfs.h>
-#if HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
 
@@ -88,7 +88,7 @@ void hardwaremain(int boot_complete)
 	dev_initialize();
 	post_code(0x89);
 
-#if HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME == 1
 	suspend_resume();
 	post_code(0x8a);
 #endif
@@ -98,7 +98,7 @@ void hardwaremain(int boot_complete)
 	 */
 	lb_mem = write_tables();
 #if CONFIG_CBFS == 1
-# if USE_FALLBACK_IMAGE == 1
+# if CONFIG_USE_FALLBACK_IMAGE == 1
 	cbfs_load_payload(lb_mem, "fallback/payload");
 # else
 	cbfs_load_payload(lb_mem, "normal/payload");

@@ -23,39 +23,39 @@ target VENDOR_MAINBOARD
 mainboard VENDOR/MAINBOARD
 
 option CC="CROSSCC"
-option CROSS_COMPILE="CROSS_PREFIX"
-option HOSTCC="CROSS_HOSTCC"
+option CONFIG_CROSS_COMPILE="CROSS_PREFIX"
+option CONFIG_HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
 __LOGLEVEL__
 
-option ROM_SIZE = 512*1024
+option CONFIG_ROM_SIZE = 512*1024
 
 romimage "normal"
-        option USE_FAILOVER_IMAGE=0
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x28000
-	option XIP_ROM_SIZE=0x40000
+        option CONFIG_USE_FAILOVER_IMAGE=0
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x28000
+	option CONFIG_XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION=".0-Normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
-        option USE_FAILOVER_IMAGE=0
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x40000
+        option CONFIG_USE_FAILOVER_IMAGE=0
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+	option CONFIG_XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION=".0-Fallback"
 	payload __PAYLOAD__
 end
 
 romimage "failover"
-        option USE_FAILOVER_IMAGE=1
-        option USE_FALLBACK_IMAGE=0
-        option ROM_IMAGE_SIZE=FAILOVER_SIZE
-        option XIP_ROM_SIZE=FAILOVER_SIZE
+        option CONFIG_USE_FAILOVER_IMAGE=1
+        option CONFIG_USE_FALLBACK_IMAGE=0
+        option CONFIG_ROM_IMAGE_SIZE=CONFIG_FAILOVER_SIZE
+        option CONFIG_XIP_ROM_SIZE=CONFIG_FAILOVER_SIZE
         option COREBOOT_EXTRA_VERSION=".0-Failover"
 end
 
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback" "failover"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback" "failover"

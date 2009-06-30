@@ -21,7 +21,7 @@
 // mmconf is not ready yet
 static  void set_bsp_node_CHtExtNodeCfgEn(void)
 {
-#if EXT_RT_TBL_SUPPORT == 1
+#if CONFIG_EXT_RT_TBL_SUPPORT == 1
 	u32 dword;
 	dword = pci_io_read_config32(PCI_DEV(0, 0x18, 0), 0x68);
 	dword |= (1<<27) | (1<<25);
@@ -34,14 +34,14 @@ static  void set_bsp_node_CHtExtNodeCfgEn(void)
 
 	/* CHtExtAddrEn */
 	pci_io_write_config32(PCI_DEV(0, 0x18, 0), 0x68, dword);
-	// CPU on bus 0xff and 0xfe now. For now on we can use CBB and CDB.
+	// CPU on bus 0xff and 0xfe now. For now on we can use CONFIG_CBB and CONFIG_CDB.
 #endif
 }
 
 static void enumerate_ht_chain(void)
 {
-#if HT_CHAIN_UNITID_BASE != 0
-/* HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain),
+#if CONFIG_HT_CHAIN_UNITID_BASE != 0
+/* CONFIG_HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain),
    if so, don't need to go through the chain  */
 
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
@@ -50,16 +50,16 @@ static void enumerate_ht_chain(void)
 	 * links needs to be programed to point at bus 0.
 	 */
 	unsigned next_unitid, last_unitid = 0;
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 	// let't record the device of last ht device, So we can set the
-	// Unitid to HT_CHAIN_END_UNITID_BASE
+	// Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
 	unsigned real_last_unitid = 0;
 	u8 real_last_pos = 0;
 	int ht_dev_num = 0; // except host_bridge
 	u8 end_used = 0;
 #endif
 
-	next_unitid = HT_CHAIN_UNITID_BASE;
+	next_unitid = CONFIG_HT_CHAIN_UNITID_BASE;
 	do {
 		u32 id;
 		u8 hdr_type, pos;
@@ -99,10 +99,10 @@ static void enumerate_ht_chain(void)
 					unsigned ctrl, ctrl_off;
 					device_t devx;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 					if(next_unitid>=0x18) {
 						if(!end_used) {
-							next_unitid = HT_CHAIN_END_UNITID_BASE;
+							next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 							end_used = 1;
 						} else {
 							goto out;
@@ -112,7 +112,7 @@ static void enumerate_ht_chain(void)
 					real_last_pos = pos;
 					ht_dev_num++ ;
 #endif
-		#if HT_CHAIN_END_UNITID_BASE == 0
+		#if CONFIG_HT_CHAIN_END_UNITID_BASE == 0
 					if (!next_unitid)
 						goto out;
 		#endif
@@ -161,12 +161,12 @@ static void enumerate_ht_chain(void)
 	} while(last_unitid != next_unitid);
 
 out:	;
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-	if((ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) && !end_used) {
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+	if((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
 		u16 flags;
 		flags = pci_io_read_config16(PCI_DEV(0,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
-		flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+		flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_io_write_config16(PCI_DEV(0, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
 	}
 #endif

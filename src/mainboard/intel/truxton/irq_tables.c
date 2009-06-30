@@ -23,7 +23,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE, /* u32 signature */
 	PIRQ_VERSION,   /* u16 version   */
-	32+16*IRQ_SLOT_COUNT, /* u16 Table size 32+(16*devices)  */
+	32+16*CONFIG_IRQ_SLOT_COUNT, /* u16 Table size 32+(16*devices)  */
 	0x00,       /* u8 Bus 0 */
 	(0x1f << 3) | 0x0, /* u8 Device 1f, Function 0 */
 	0x0000,     /* u16 reserve IRQ for PCI */

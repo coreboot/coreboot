@@ -21,29 +21,29 @@
 target be6-ii_v2_0
 mainboard abit/be6-ii_v2_0
 
-option ROM_SIZE = 256 * 1024
+option CONFIG_ROM_SIZE = 256 * 1024
 
-option MAINBOARD_VENDOR = "Abit"
-option MAINBOARD_PART_NUMBER = "BE6-II V2.0"
+option CONFIG_MAINBOARD_VENDOR = "Abit"
+option CONFIG_MAINBOARD_PART_NUMBER = "BE6-II V2.0"
 
-option IRQ_SLOT_COUNT = 9
+option CONFIG_IRQ_SLOT_COUNT = 9
 
-option DEFAULT_CONSOLE_LOGLEVEL = 9
-option MAXIMUM_CONSOLE_LOGLEVEL = 9
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL = 9
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL = 9
 
 option CONFIG_CONSOLE_VGA = 1
 option CONFIG_PCI_ROM_RUN = 1
 
 romimage "normal"
-	option USE_FALLBACK_IMAGE = 0
+	option CONFIG_USE_FALLBACK_IMAGE = 0
 	option COREBOOT_EXTRA_VERSION = ".0Normal"
 	payload /tmp/filo.elf
 end
 
 romimage "fallback"
-	option USE_FALLBACK_IMAGE = 1
+	option CONFIG_USE_FALLBACK_IMAGE = 1
 	option COREBOOT_EXTRA_VERSION = ".0Fallback"
 	payload /tmp/filo.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

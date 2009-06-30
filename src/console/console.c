@@ -15,7 +15,7 @@ void console_init(void)
 {
 	struct console_driver *driver;
 	if(get_option(&console_loglevel, "debug_level"))
-		console_loglevel=DEFAULT_CONSOLE_LOGLEVEL;
+		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 	
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (!driver->init)
@@ -83,7 +83,7 @@ int console_tst_byte(void)
  */
 void post_code(uint8_t value)
 {
-#if !defined(NO_POST) || NO_POST==0
+#if !defined(CONFIG_NO_POST) || CONFIG_NO_POST==0
 #if CONFIG_SERIAL_POST==1
 	printk_emerg("POST: 0x%02x\n", value);
 #endif

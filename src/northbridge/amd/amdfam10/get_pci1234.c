@@ -49,7 +49,7 @@
  * reset HC_POSSIBLE_NUM and update ssdt.dsl (hcdn, hclk)
  *
  * Put all the possible ht node/link to the list tp pci1234[] in  get_bus_conf.c
- * on MB dir. Also, don't forget to increase the ACPI_SSDTX_NUM etc if you have
+ * on MB dir. Also, don't forget to increase the CONFIG_ACPI_SSDTX_NUM etc if you have
  * too much SSDT. How about co-processor on socket 1 on 2 way system.
  * or socket 2, and socket3 on 4 way system? treat that as one hc too!
  *

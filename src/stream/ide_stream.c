@@ -6,8 +6,8 @@
 #include <string.h>
 #include <pc80/ide.h>
 
-#ifndef IDE_BOOT_DRIVE
-#define IDE_BOOT_DRIVE 0
+#ifndef CONFIG_IDE_BOOT_DRIVE
+#define CONFIG_IDE_BOOT_DRIVE 0
 #endif
 
 static unsigned long offset;
@@ -27,12 +27,12 @@ int stream_init(void)
 
 #ifdef ONE_TRACK
 	offset = (ONE_TRACK*512);
-#elif defined(IDE_OFFSET)
-	offset = IDE_OFFSET;
+#elif defined(CONFIG_IDE_OFFSET)
+	offset = CONFIG_IDE_OFFSET;
 #else
 	offset = 0x7e00;
 #endif
-	res = ide_probe(IDE_BOOT_DRIVE);
+	res = ide_probe(CONFIG_IDE_BOOT_DRIVE);
 	delay(1);
 	return res;
 }
@@ -59,7 +59,7 @@ static byte_offset_t stream_ide_read(void *vdest, byte_offset_t offs, byte_offse
 		if (block_num != offs / 512 || first_fill) {
 			block_num  = offs / 512;
 			printk_notice (".");
-			ide_read(IDE_BOOT_DRIVE, block_num, buffer);
+			ide_read(CONFIG_IDE_BOOT_DRIVE, block_num, buffer);
 			first_fill = 0;
 		}
 

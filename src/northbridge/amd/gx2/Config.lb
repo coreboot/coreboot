@@ -1,7 +1,7 @@
-uses HAVE_HIGH_TABLES
+uses CONFIG_HAVE_HIGH_TABLES
 config chip.h
 driver northbridge.o
 object northbridgeinit.o
 object chipsetinit.o
 object grphinit.o
-default HAVE_HIGH_TABLES=1
+default CONFIG_HAVE_HIGH_TABLES=1

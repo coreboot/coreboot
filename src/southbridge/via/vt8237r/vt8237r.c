@@ -33,7 +33,7 @@ void hard_reset(void)
 	printk_err("NO HARD RESET ON VT8237R! FIX ME!\n");
 }
 
-#if DEFAULT_CONSOLE_LOGLEVEL > 7
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 7
 void writeback(struct device *dev, u16 where, u8 what)
 {
 	u8 regval;

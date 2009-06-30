@@ -21,10 +21,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-	#define MCP55_DEVN_BASE	HT_CHAIN_END_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+	#define MCP55_DEVN_BASE	CONFIG_HT_CHAIN_END_UNITID_BASE
 #else
-	#define MCP55_DEVN_BASE	HT_CHAIN_UNITID_BASE
+	#define MCP55_DEVN_BASE	CONFIG_HT_CHAIN_UNITID_BASE
 #endif
 
 static void mcp55_enable_rom(void)

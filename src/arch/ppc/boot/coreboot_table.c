@@ -340,7 +340,7 @@ unsigned long write_coreboot_table(
 
 	head = lb_table_init(low_table_end);
 	low_table_end = (unsigned long)head;
-	if (HAVE_OPTION_TABLE == 1) {
+	if (CONFIG_HAVE_OPTION_TABLE == 1) {
 		struct lb_record *rec_dest, *rec_src;
 		/* Write the option config table... */
 		rec_dest = lb_new_record(head);

@@ -19,8 +19,8 @@
 ## MA 02110-1301 USA
 ##
 
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 ##
@@ -35,20 +35,20 @@ arch i386 end
 
 driver mainboard.o
 
-if HAVE_MP_TABLE 
+if CONFIG_HAVE_MP_TABLE 
 	object mptable.o 
 end
 
-if HAVE_PIRQ_TABLE 
+if CONFIG_HAVE_PIRQ_TABLE 
 	object irq_tables.o 
 end
 
-if HAVE_ACPI_TABLES
+if CONFIG_HAVE_ACPI_TABLES
 	object fadt.o
 	object acpi_tables.o
 	makerule dsdt.c
-		depends "$(MAINBOARD)/dsdt.dsl"
-		action  "iasl -p dsdt -tc $(MAINBOARD)/dsdt.dsl"
+		depends "$(CONFIG_MAINBOARD)/dsdt.dsl"
+		action  "iasl -p dsdt -tc $(CONFIG_MAINBOARD)/dsdt.dsl"
 		action  "mv dsdt.hex dsdt.c"
 	end
 	object ./dsdt.o
@@ -58,8 +58,8 @@ end
 ## Romcc output
 ##
 makerule ./auto.inc
-        depends "$(MAINBOARD)/auto.c option_table.h"
-	action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/auto.c -o $@"
+        depends "$(CONFIG_MAINBOARD)/auto.c option_table.h"
+	action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/auto.c -o $@"
         action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
         action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 end
@@ -75,7 +75,7 @@ ldscript /cpu/x86/32bit/entry32.lds
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	mainboardinit cpu/x86/16bit/reset16.inc
 	ldscript /cpu/x86/16bit/reset16.lds
 else

@@ -21,18 +21,18 @@ target asus_a8v-e_se
 mainboard asus/a8v-e_se
 
 romimage "normal"
-	option ROM_SIZE = 512 * 1024
-	option USE_FALLBACK_IMAGE = 0
-	option ROM_IMAGE_SIZE = 128 * 1024
+	option CONFIG_ROM_SIZE = 512 * 1024
+	option CONFIG_USE_FALLBACK_IMAGE = 0
+	option CONFIG_ROM_IMAGE_SIZE = 128 * 1024
 	option COREBOOT_EXTRA_VERSION=".0Normal"
 	payload ../payload.elf
 end
 
 romimage "fallback"
-	option USE_FALLBACK_IMAGE = 1
-	option ROM_IMAGE_SIZE = 128 * 1024
+	option CONFIG_USE_FALLBACK_IMAGE = 1
+	option CONFIG_ROM_IMAGE_SIZE = 128 * 1024
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

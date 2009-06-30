@@ -18,9 +18,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-uses HAVE_SMI_HANDLER
+uses CONFIG_HAVE_SMI_HANDLER
 
-if HAVE_SMI_HANDLER
+if CONFIG_HAVE_SMI_HANDLER
 	object smmrelocate.S
 
 	smmobject smmhandler.S
@@ -34,8 +34,8 @@ if HAVE_SMI_HANDLER
 	makerule smm
 		depends	"smm.o $(TOP)/src/cpu/x86/smm/smm.ld ldoptions" 
 		action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o smm.elf -T $(TOP)/src/cpu/x86/smm/smm.ld smm.o"
-		action 	"$(CROSS_COMPILE)nm -n smm.elf | sort > smm.map"
-		action  "$(OBJCOPY) -O binary smm.elf smm"
+		action 	"$(CONFIG_CROSS_COMPILE)nm -n smm.elf | sort > smm.map"
+		action  "$(CONFIG_OBJCOPY) -O binary smm.elf smm"
 	end
 
 	makerule smm_bin.c

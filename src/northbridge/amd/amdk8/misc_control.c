@@ -53,7 +53,7 @@ static void mcf3_read_resources(device_t dev)
 	if (iommu) {
 		/* Add a Gart apeture resource */
 		resource = new_resource(dev, 0x94);
-		resource->size = iommu?AGP_APERTURE_SIZE:1;
+		resource->size = iommu?CONFIG_AGP_APERTURE_SIZE:1;
 		resource->align = log2(resource->size);
 		resource->gran  = log2(resource->size);
 		resource->limit = 0xffffffff; /* 4G */
@@ -121,7 +121,7 @@ static void misc_control_init(struct device *dev)
 	cmd = pci_read_config32(dev, 0x44);
 	cmd |= (1<<6) | (1<<25);
 	pci_write_config32(dev, 0x44, cmd );
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	if (is_cpu_pre_c0()) {
 
 		/* Errata 58

@@ -18,38 +18,38 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 arch i386 end
 driver mainboard.o
-if HAVE_PIRQ_TABLE
+if CONFIG_HAVE_PIRQ_TABLE
 	object irq_tables.o
 end
 makerule ./failover.E
-	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
-	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 makerule ./failover.inc
-	depends "$(MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
-	action "../romcc -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+	action "../romcc -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 makerule ./auto.E
-	# depends	"$(MAINBOARD)/auto.c option_table.h ../romcc"
-	depends	"$(MAINBOARD)/auto.c ../romcc"
-	action	"../romcc -E -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	# depends	"$(CONFIG_MAINBOARD)/auto.c option_table.h ../romcc"
+	depends	"$(CONFIG_MAINBOARD)/auto.c ../romcc"
+	action	"../romcc -E -O -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc
-	# depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
-	depends "$(MAINBOARD)/auto.c ../romcc"
-	action	"../romcc -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	# depends "$(CONFIG_MAINBOARD)/auto.c option_table.h ../romcc"
+	depends "$(CONFIG_MAINBOARD)/auto.c ../romcc"
+	action	"../romcc -O -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/auto.c -o $@"
 end
 mainboardinit cpu/x86/16bit/entry16.inc
 mainboardinit cpu/x86/32bit/entry32.inc
 ldscript /cpu/x86/16bit/entry16.lds
 ldscript /cpu/x86/32bit/entry32.lds
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	mainboardinit cpu/x86/16bit/reset16.inc
 	ldscript /cpu/x86/16bit/reset16.lds
 else
@@ -59,7 +59,7 @@ end
 mainboardinit arch/i386/lib/cpu_reset.inc
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds
 	mainboardinit ./failover.inc
 end

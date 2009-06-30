@@ -296,7 +296,7 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 #include "southbridge/intel/i82801gx/cmos_failover.c"
 #endif
 
@@ -331,7 +331,7 @@ void real_main(unsigned long bist)
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();
 	
-#if DEFAULT_CONSOLE_LOGLEVEL > 8
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 	dump_spd_registers();
 #endif
 
@@ -351,7 +351,7 @@ void real_main(unsigned long bist)
 	/* Initialize the internal PCIe links before we go into stage2 */
 	i945_late_initialization();
 
-#if DEFAULT_CONSOLE_LOGLEVEL > 8
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 #if defined(DEBUG_RAM_SETUP)
 	sdram_dump_mchbar_registers();
 #endif

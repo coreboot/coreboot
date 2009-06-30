@@ -1,7 +1,7 @@
 /*
  *	Memory map:
  *
- *	DCACHE_RAM_BASE		
+ *	CONFIG_DCACHE_RAM_BASE		
  *				: data segment
  *				: bss segment
  *				: heap
@@ -28,7 +28,7 @@ ENTRY(_start)
 
 SECTIONS
 {
-	. = DCACHE_RAM_BASE;
+	. = CONFIG_DCACHE_RAM_BASE;
 	/*
 	 * First we place the code and read only data (typically const declared).
 	 * This get placed in rom.
@@ -90,7 +90,7 @@ SECTIONS
 	_ram_seg = _text; 
 	_eram_seg = _eheap;
 
-	_bogus = ASSERT( ( _eram_seg <= ((DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE))) , "coreboot_apc is too big");
+	_bogus = ASSERT( ( _eram_seg <= ((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE))) , "coreboot_apc is too big");
 
 	/DISCARD/ : {
 		*(.comment)

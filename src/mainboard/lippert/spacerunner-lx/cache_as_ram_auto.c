@@ -89,7 +89,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	if (device != DIMM0)
 		return 0xFF;	/* No DIMM1, don't even try. */
 
-#if DEBUG
+#if CONFIG_DEBUG
 	if (address >= sizeof(spdbytes) || spdbytes[address] == 0xFF) {
 		print_err("ERROR: spd_read_byte(DIMM0, 0x");
 		print_err_hex8(address);
@@ -165,7 +165,7 @@ static const u16 sio_init_table[] = { // hi=data, lo=index
 	0x1E2C,		// disable ATXPowerGood
 	0x0423,		// don't delay POWerOK1/2
 	0x9072,		// watchdog triggers POWOK, counts seconds
-#if !USE_WATCHDOG_ON_BOOT
+#if !CONFIG_USE_WATCHDOG_ON_BOOT
 	0x0073, 0x0074,	// disable watchdog by setting timeout to 0
 #endif
 	0xBF25, 0x172A, 0xF326,	// select GPIO function for most pins
@@ -211,7 +211,7 @@ void cache_as_ram_main(void)
 	 * Note: Must do this AFTER the early_setup! It is counting on some
 	 * early MSR setup for CS5536.
 	 */
-	it8712f_enable_serial(0, TTYS0_BASE); // Does not use its 1st parameter
+	it8712f_enable_serial(0, CONFIG_TTYS0_BASE); // Does not use its 1st parameter
 	mb_gpio_init();
 	uart_init();
 	console_init();

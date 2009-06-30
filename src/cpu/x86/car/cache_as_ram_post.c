@@ -16,7 +16,7 @@
         "xorl    %edx, %edx\n\t"
         "xorl    %eax, %eax\n\t"
 	"wrmsr\n\t"
-#if DCACHE_RAM_SIZE > 0x8000
+#if CONFIG_DCACHE_RAM_SIZE > 0x8000
 	"movl    $0x268, %ecx\n\t"  /* fix4k_c0000*/
         "wrmsr\n\t"
 #endif

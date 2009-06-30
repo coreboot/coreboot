@@ -73,7 +73,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,
 	PIRQ_VERSION,
-	32 + 16 * IRQ_SLOT_COUNT,/* Max. number of devices on the bus */
+	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* Max. number of devices on the bus */
 	0x00,			/* Where the interrupt router lies (bus) */
 	(0x0F << 3) | 0x0,      /* Where the interrupt router lies (dev) */
 	0x00,			/* IRQs devoted exclusively to PCI usage */
@@ -83,7 +83,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},	/* u8 rfu[11] */
 	0x00,			/* Checksum */
 	{
-		/* If you change the number of entries, change IRQ_SLOT_COUNT above! */
+		/* If you change the number of entries, change CONFIG_IRQ_SLOT_COUNT above! */
 
 		/* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
 

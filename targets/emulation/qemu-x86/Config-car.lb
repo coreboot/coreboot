@@ -3,24 +3,24 @@
 target qemu-x86-car
 mainboard emulation/qemu-x86
 
-option USE_DCACHE_RAM=1
+option CONFIG_USE_DCACHE_RAM=1
 option CONFIG_USE_INIT=1
-option ROM_SIZE=512*1024
+option CONFIG_ROM_SIZE=512*1024
 option CONFIG_USE_INIT=1
 option CONFIG_USE_PRINTK_IN_CAR=1
 
 option CC="gcc -m32"
 
-option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=6
+option CONFIG_HAVE_PIRQ_TABLE=1
+option CONFIG_IRQ_SLOT_COUNT=6
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x10000
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x10000
 	option COREBOOT_EXTRA_VERSION="-GRUB2"
 #	payload /home/stepan/core.img
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"
 

@@ -53,7 +53,7 @@ static void post_code(u8 value) {
 	outb(value, 0x80);
 }
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #if CONFIG_USBDEBUG_DIRECT
@@ -75,7 +75,7 @@ static void post_code(u8 value) {
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
 
@@ -145,7 +145,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #endif
 
-#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
@@ -215,7 +215,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 		);
 
  fallback_image:
-#if HAVE_FAILOVER_BOOT==1
+#if CONFIG_HAVE_FAILOVER_BOOT==1
 	__asm__ volatile ("jmp __fallback_image"
 		: /* outputs */
 		: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
@@ -228,28 +228,28 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if HAVE_FAILOVER_BOOT==1
-    #if USE_FAILOVER_IMAGE==1
+#if CONFIG_HAVE_FAILOVER_BOOT==1
+    #if CONFIG_USE_FAILOVER_IMAGE==1
 	failover_process(bist, cpu_init_detectedx);
     #else
 	real_main(bist, cpu_init_detectedx);
     #endif
 #else
-    #if USE_FALLBACK_IMAGE == 1
+    #if CONFIG_USE_FALLBACK_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
     #endif
 	real_main(bist, cpu_init_detectedx);
 #endif
 }
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "spd_addr.h"
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	u32 bsp_apicid = 0;
 	u32 val;
@@ -264,7 +264,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x32);
 
-	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 	printk_debug("\n");

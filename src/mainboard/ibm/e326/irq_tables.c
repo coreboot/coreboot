@@ -1,7 +1,7 @@
 #include <arch/pirq_routing.h>
 #include <device/pci.h>
 
-#define IRQ_SLOT_COUNT 12
+#define CONFIG_IRQ_SLOT_COUNT 12
 #define IRQ_ROUTER_BUS		0
 #define IRQ_ROUTER_DEVFN	PCI_DEVFN(4,3)
 #define IRQ_ROUTER_VENDOR	0x1022
@@ -19,7 +19,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
 	PIRQ_VERSION,           /* u16 version   */
-	32+16*IRQ_SLOT_COUNT,	/* there can be total IRQ_SLOT_COUNT table entries */
+	32+16*CONFIG_IRQ_SLOT_COUNT,	/* there can be total CONFIG_IRQ_SLOT_COUNT table entries */
 	IRQ_ROUTER_BUS,		/* Where the interrupt router lies (bus) */
 	IRQ_ROUTER_DEVFN,	/* Where the interrupt router lies (dev) */
 	0x00,			/* IRQs devoted exclusively to PCI usage */

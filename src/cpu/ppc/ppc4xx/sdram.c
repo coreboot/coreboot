@@ -98,17 +98,17 @@ void memory_init(void)
 /* TODO: work out why this trashes cache ram */
 	//mtsdram0(mem_mcopt1, 0x00000000);
 
-#if EMBEDDED_RAM_SIZE==128*1024*1024
+#if CONFIG_EMBEDDED_RAM_SIZE==128*1024*1024
 	/* TODO */
-#elif EMBEDDED_RAM_SIZE==64*1024*1024
+#elif CONFIG_EMBEDDED_RAM_SIZE==64*1024*1024
 	set_sdram0(mem_sdtr1, TR);
 	set_sdram0(mem_mb0cf, B0CR);
 	set_sdram0(mem_rtr, RTR);
 	set_sdram0(mem_ecccf, ECCCF);
 	set_sdram0(mem_pmit, PMIT);
-#elif EMBEDDED_RAM_SIZE==32*1024*1024
+#elif CONFIG_EMBEDDED_RAM_SIZE==32*1024*1024
 	/* TODO */
-#elif EMBEDDED_RAM_SIZE==16*1024*1024
+#elif CONFIG_EMBEDDED_RAM_SIZE==16*1024*1024
 	/* TODO */
 #endif
 

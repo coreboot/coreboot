@@ -39,39 +39,39 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #define printk_debug(fmt, arg...)   do_printk(BIOS_DEBUG   ,fmt, ##arg)
 #define printk_spew(fmt, arg...)    do_printk(BIOS_SPEW    ,fmt, ##arg)
 
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_EMERG
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_EMERG
 #undef  printk_emerg
 #define printk_emerg(fmt, arg...)   do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_ALERT
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_ALERT
 #undef  printk_alert
 #define printk_alert(fmt, arg...)   do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_CRIT
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_CRIT
 #undef  printk_crit
 #define printk_crit(fmt, arg...)    do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_ERR
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_ERR
 #undef  printk_err
 #define printk_err(fmt, arg...)     do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_WARNING
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_WARNING
 #undef  printk_warning
 #define printk_warning(fmt, arg...) do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_NOTICE
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_NOTICE
 #undef  printk_notice
 #define printk_notice(fmt, arg...)  do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_INFO
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_INFO
 #undef  printk_info
 #define printk_info(fmt, arg...)    do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_DEBUG
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_DEBUG
 #undef  printk_debug
 #define printk_debug(fmt, arg...)   do {} while(0)
 #endif
-#if MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_SPEW
+#if CONFIG_MAXIMUM_CONSOLE_LOGLEVEL <= BIOS_SPEW
 #undef  printk_spew
 #define printk_spew(fmt, arg...)    do {} while(0)
 #endif

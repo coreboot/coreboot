@@ -110,7 +110,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -161,14 +161,14 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 //        post_code(0x25);
 	;
 }
-#endif /* USE_FALLBACK_IMAGE == 1 */
+#endif /* CONFIG_USE_FALLBACK_IMAGE == 1 */
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
         failover_process(bist, cpu_init_detectedx);
 #endif
         real_main(bist, cpu_init_detectedx);
@@ -197,7 +197,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         }
 //	post_code(0x32);
 
-	pc87417_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 //	post_code(0x33);
 	
         uart_init();

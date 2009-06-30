@@ -54,7 +54,7 @@ void *map_2M_page(unsigned long page)
 		struct pde pdp[512];
 	} __attribute__ ((packed));
 
-#if (CONFIG_LB_MEM_TOPK>1024) && (_RAMBASE<0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
+#if (CONFIG_LB_MEM_TOPK>1024) && (CONFIG_RAMBASE<0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
 	/*
 	 pgtbl is too big, so use last one 1M before CONFIG_LB_MEM_TOP, otherwise for 8 way dual core with vga support will push stack and heap cross 0xa0000, 
 	 and that region need to be used as vga font buffer. Please make sure set CONFIG_LB_MEM_TOPK=2048 in MB Config

@@ -26,10 +26,10 @@
 ##
 ## Only use the option table in a normal image
 ##
-default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+default CONFIG_USE_OPTION_TABLE = !CONFIG_USE_FALLBACK_IMAGE
 
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 ##
@@ -44,16 +44,16 @@ arch i386 end
 
 driver mainboard.o
 driver rtl8168.o
-if HAVE_MP_TABLE object mptable.o end
-if HAVE_PIRQ_TABLE object irq_tables.o end
-if HAVE_SMI_HANDLER smmobject mainboard_smi.o end
+if CONFIG_HAVE_MP_TABLE object mptable.o end
+if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_HAVE_SMI_HANDLER smmobject mainboard_smi.o end
 
-if HAVE_ACPI_TABLES
+if CONFIG_HAVE_ACPI_TABLES
 	object fadt.o
 	object acpi_tables.o
 	makerule dsdt.c
-		depends "$(MAINBOARD)/dsdt.asl"
-		action  "iasl -p dsdt -tc $(MAINBOARD)/dsdt.asl"
+		depends "$(CONFIG_MAINBOARD)/dsdt.asl"
+		action  "iasl -p dsdt -tc $(CONFIG_MAINBOARD)/dsdt.asl"
 		action  "mv $(CURDIR)/dsdt.hex dsdt.c"
 	end
 	object ./dsdt.o
@@ -64,15 +64,15 @@ object reset.o
 if CONFIG_USE_INIT
 
 makerule ./auto.o
-	depends "$(MAINBOARD)/auto.c option_table.h"
-	action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(MAINBOARD)/auto.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/auto.c option_table.h"
+	action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/auto.c -o $@"
 end
 
 else
 
 makerule ./auto.inc
-	depends "$(MAINBOARD)/auto.c option_table.h"
-	action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/auto.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/auto.c option_table.h"
+	action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/auto.c -o $@"
 	action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 	action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 end
@@ -93,7 +93,7 @@ end
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if USE_FALLBACK_IMAGE 
+if CONFIG_USE_FALLBACK_IMAGE 
         mainboardinit cpu/x86/16bit/reset16.inc
         ldscript /cpu/x86/16bit/reset16.lds
 else
@@ -118,7 +118,7 @@ mainboardinit cpu/intel/model_6ex/cache_as_ram.inc
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds
 end
 

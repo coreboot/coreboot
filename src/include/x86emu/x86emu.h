@@ -42,8 +42,8 @@
 #ifndef __X86EMU_X86EMU_H
 #define __X86EMU_X86EMU_H
 
-#if defined(DEBUG) && (DEBUG == 0)
-#undef DEBUG
+#if defined(CONFIG_DEBUG) && (CONFIG_DEBUG == 0)
+#undef CONFIG_DEBUG
 #endif
 
 /* FIXME: undefine printk for the moment */
@@ -165,7 +165,7 @@ void 	X86EMU_prepareForInt(int num);
 void 	X86EMU_exec(void);
 void 	X86EMU_halt_sys(void);
 
-#ifdef	DEBUG
+#ifdef	CONFIG_DEBUG
 #define	HALT_SYS()	\
     	printk("halt_sys: file %s, line %d\n", __FILE__, __LINE__);	\
 	X86EMU_halt_sys();

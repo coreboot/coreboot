@@ -4,27 +4,27 @@ target VENDOR_MAINBOARD
 mainboard VENDOR/MAINBOARD
 
 option CC="CROSSCC"
-option CROSS_COMPILE="CROSS_PREFIX"
-option HOSTCC="CROSS_HOSTCC"
+option CONFIG_CROSS_COMPILE="CROSS_PREFIX"
+option CONFIG_HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
 __LOGLEVEL__
 
-option ROM_SIZE=1024*1024
+option CONFIG_ROM_SIZE=1024*1024
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+	option CONFIG_XIP_ROM_SIZE=0x20000
         option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
 
 romimage "failover"
-        option USE_FALLBACK_IMAGE=1
-        option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
+        option CONFIG_USE_FALLBACK_IMAGE=1
+        option CONFIG_ROM_IMAGE_SIZE=0x20000
+	option CONFIG_XIP_ROM_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION=".0-failover"
 	payload __PAYLOAD__
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "failover"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "failover"

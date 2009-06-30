@@ -78,16 +78,16 @@ and in x86_setup_fixed_mtrrs()(mtrr.c), 0-256M is set cacheable.*/
  	 			"movl    $((~(( 0 + 0x40000) - 1)) | 0x800), %eax\n\t"
         "wrmsr\n\t"        
         
-	/*jasonzhao@viatech.com.cn add this 2008-11-27, cache XIP_ROM_BASE-SIZE to speedup the coreboot code*/
+	/*jasonzhao@viatech.com.cn add this 2008-11-27, cache CONFIG_XIP_ROM_BASE-SIZE to speedup the coreboot code*/
 	 			"movl    $0x206, %ecx\n\t"
         "xorl    %edx, %edx\n\t"
-        "movl     $XIP_ROM_BASE,%eax\n\t"
+        "movl     $CONFIG_XIP_ROM_BASE,%eax\n\t"
         "orl     $(0 | 6), %eax\n\t"
         "wrmsr\n\t"
 
 	 			"movl    $0x207, %ecx\n\t"
         "xorl    %edx, %edx\n\t"
-        "movl     $XIP_ROM_SIZE,%eax\n\t"
+        "movl     $CONFIG_XIP_ROM_SIZE,%eax\n\t"
         "decl	%eax\n\t"
         "notl	%eax\n\t"
         "orl     $(0 | 0x800), %eax\n\t"

@@ -26,4 +26,4 @@ romimage "image"
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"

@@ -7,8 +7,8 @@
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
 
-#ifndef K8_HT_FREQ_1G_SUPPORT
-	#define K8_HT_FREQ_1G_SUPPORT 0
+#ifndef CONFIG_K8_HT_FREQ_1G_SUPPORT
+	#define CONFIG_K8_HT_FREQ_1G_SUPPORT 0
 #endif
 
 #ifndef RAMINIT_SYSINFO
@@ -85,14 +85,14 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 	device_t dev;
 
 	//actually, only for one HT device HT chain, and unitid is 0
-#if HT_CHAIN_UNITID_BASE == 0
+#if CONFIG_HT_CHAIN_UNITID_BASE == 0
 	if(offset_unitid) {
 		return;
 	}
 #endif
 
 	/* Check if is already collapsed */
-	if((!offset_unitid) || (offset_unitid && (!((HT_CHAIN_END_UNITID_BASE == 0) && (HT_CHAIN_END_UNITID_BASE <HT_CHAIN_UNITID_BASE))))) {
+	if((!offset_unitid) || (offset_unitid && (!((CONFIG_HT_CHAIN_END_UNITID_BASE == 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE <CONFIG_HT_CHAIN_UNITID_BASE))))) {
 		uint32_t id;
 		dev = PCI_DEV(bus, 0, 0);
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
@@ -154,8 +154,8 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 
 	/* AMD K8 Unsupported 1Ghz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
-	#if K8_HT_FREQ_1G_SUPPORT == 1
-		#if K8_REV_F_SUPPORT == 0
+	#if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1
+		#if CONFIG_K8_REV_F_SUPPORT == 0
 		if (is_cpu_pre_e0()) {  // only E0 later support 1GHz
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 		}
@@ -303,7 +303,7 @@ static int ht_optimize_link(
 	return needs_reset;
 }
 
-#if (USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
+#if (CONFIG_USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
 
 #if RAMINIT_SYSINFO == 1
 static void ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid, struct sys_info *sysinfo);
@@ -425,7 +425,7 @@ static void ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned o
 static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid)
 #endif
 {
-	//even HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
+	//even CONFIG_HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
 
 	uint8_t next_unitid, last_unitid;
 	unsigned uoffs;
@@ -434,8 +434,8 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 	int reset_needed = 0;
 #endif
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-	//let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+	//let't record the device of last ht device, So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
 	unsigned real_last_unitid;
 	uint8_t real_last_pos;
 	int ht_dev_num = 0;
@@ -443,7 +443,7 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 #endif
 
 	uoffs = PCI_HT_HOST_OFFS;
-	next_unitid = (offset_unitid) ? HT_CHAIN_UNITID_BASE:1;
+	next_unitid = (offset_unitid) ? CONFIG_HT_CHAIN_UNITID_BASE:1;
 
 	do {
 		uint32_t id;
@@ -500,11 +500,11 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 		}
 
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 		if(offset_unitid) {
 			if(next_unitid>= (bus ? 0x20:0x18) ) {
 				if(!end_used) {
-					next_unitid = HT_CHAIN_END_UNITID_BASE;
+					next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 					end_used = 1;
 				} else {
 					goto out;
@@ -560,18 +560,18 @@ static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned of
 
 	} while (last_unitid != next_unitid );
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 out:
 #endif
 end_of_chain: ;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-	if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) && !end_used ) {
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+	if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used ) {
 		uint16_t flags;
 		int i;
 		flags = pci_read_config16(PCI_DEV(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
-		flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+		flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_write_config16(PCI_DEV(bus, real_last_unitid, 0), real_last_pos + PCI_CAP_FLAGS, flags);
 
 		#if RAMINIT_SYSINFO == 1
@@ -580,11 +580,11 @@ end_of_chain: ;
 		{
 			struct link_pair_st *link_pair = &sysinfo->link_pair[i];
 			if(link_pair->udev == PCI_DEV(bus, real_last_unitid, 0)) {
-				link_pair->udev = PCI_DEV(bus, HT_CHAIN_END_UNITID_BASE, 0);
+				link_pair->udev = PCI_DEV(bus, CONFIG_HT_CHAIN_END_UNITID_BASE, 0);
 				continue;
 			}
 			if(link_pair->dev == PCI_DEV(bus, real_last_unitid, 0)) {
-				link_pair->dev = PCI_DEV(bus, HT_CHAIN_END_UNITID_BASE, 0);
+				link_pair->dev = PCI_DEV(bus, CONFIG_HT_CHAIN_END_UNITID_BASE, 0);
 			}
 		}
 		#endif
@@ -605,7 +605,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 #endif
 {
 	unsigned offset_unitid = 0;
-#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
+#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
 	offset_unitid = 1;
 #endif
 
@@ -618,7 +618,7 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	/* Make certain the HT bus is not enumerated */
 	ht_collapse_previous_enumeration(0, 0);
 
-#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
+#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
 	offset_unitid = 1;
 #endif
 
@@ -666,11 +666,11 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 		uint8_t val;
 		unsigned devn = 1;
 
-	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
-		#if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
+		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
 		if(i==0) // to check if it is sb ht chain
 		#endif
-			devn = HT_CHAIN_UNITID_BASE;
+			devn = CONFIG_HT_CHAIN_UNITID_BASE;
 	#endif
 
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
@@ -781,7 +781,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		unsigned regpos;
 		uint32_t dword;
 		uint8_t busn;
-		#if (USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
+		#if (CONFIG_USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
 		unsigned bus;
 		#endif
 		unsigned offset_unitid = 0;
@@ -799,8 +799,8 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		pci_write_config32( PCI_DEV(0, devpos,0), regpos , dword);
 
 
-	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
-		#if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
+		#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
 		if(i==0) // to check if it is sb ht chain
 		#endif
 			offset_unitid = 1;
@@ -818,7 +818,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		reset_needed |= ht_setup_chainx(udev,upos,busn, offset_unitid); //all not
 #endif
 
-		#if (USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
+		#if (CONFIG_USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
 		/* You can use use this in romcc, because there is function call in romcc, recursive will kill you */
 		bus = busn; // we need 32 bit
 #if RAMINIT_SYSINFO == 1

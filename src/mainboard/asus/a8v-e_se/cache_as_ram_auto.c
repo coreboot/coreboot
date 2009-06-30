@@ -178,7 +178,7 @@ void sio_init(void)
 	pnp_exit_ext_func_mode(GPIO_DEV);
 }
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -187,7 +187,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 	unsigned last_boot_normal_x = 1;
 
 	sio_init();
-	w83627ehg_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 	enable_rom_decode();
@@ -232,7 +232,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
 #endif
 	real_main(bist, cpu_init_detectedx);
@@ -251,11 +251,11 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	unsigned bsp_apicid = 0;
 	int needs_reset = 0;
 	struct sys_info *sysinfo =
-	    (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	char *p;
 
 	sio_init();
-	w83627ehg_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 	enable_rom_decode();

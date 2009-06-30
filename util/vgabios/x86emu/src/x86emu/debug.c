@@ -42,7 +42,7 @@
 
 /*----------------------------- Implementation ----------------------------*/
 
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 
 static void     print_encoded_bytes (u16 s, u16 o);
 static void     print_decoded_instruction (void);
@@ -90,7 +90,7 @@ static void disassemble_forward (u16 seg, u16 off, int n)
      * flag associated with the "execution", and we are using a copy
      * of the register struct.  All the major opcodes, once fully
      * decoded, have the following two steps: TRACE_REGS(r,m);
-     * SINGLE_STEP(r,m); which disappear if DEBUG is not defined to
+     * SINGLE_STEP(r,m); which disappear if CONFIG_DEBUG is not defined to
      * the preprocessor.  The TRACE_REGS macro expands to:
      *
      * if (debug&DEBUG_DISASSEMBLE)
@@ -354,7 +354,7 @@ static int parse_line (char *s, int *ps, int *n)
     }
 }
 
-#endif /* DEBUG */
+#endif /* CONFIG_DEBUG */
 
 void x86emu_dump_regs (void)
 {

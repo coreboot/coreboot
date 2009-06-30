@@ -100,7 +100,7 @@ static inline int spd_read_byte(u32 device, u32 address)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -139,14 +139,14 @@ normal_image:
 fallback_image:
 	post_code(0x25);
 }
-#endif				/* USE_FALLBACK_IMAGE == 1 */
+#endif				/* CONFIG_USE_FALLBACK_IMAGE == 1 */
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
 #endif
 	real_main(bist, cpu_init_detectedx);
@@ -159,7 +159,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 bsp_apicid = 0;
 	msr_t msr;
 	struct cpuid_result cpuid1;
-	struct sys_info *sysinfo = (struct sys_info *)(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 
 	if (bist == 0) {
@@ -170,7 +170,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb600_lpc_init();
 
 	/* it8712f_enable_serial does not use its 1st parameter. */
-	it8712f_enable_serial(0, TTYS0_BASE);
+	it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
 	uart_init();
 	console_init();

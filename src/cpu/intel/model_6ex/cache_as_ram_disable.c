@@ -27,7 +27,7 @@ void stage1_main(unsigned long bist)
 {
 	unsigned int cpu_reset = 0;
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
         /* Is this a deliberate reset by the bios */
         if (bios_reset_detected() && last_boot_normal()) {
                 goto normal_image;
@@ -87,10 +87,10 @@ cpu_reset_x:
 	}
 
 	__asm__ volatile (
-                /* set new esp */ /* before _RAMBASE */
+                /* set new esp */ /* before CONFIG_RAMBASE */
                 "subl   %0, %%ebp\n\t"
                 "subl   %0, %%esp\n\t"
-                ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- _RAMBASE )
+                ::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- CONFIG_RAMBASE )
 	);
 
 	{

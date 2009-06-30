@@ -23,7 +23,7 @@ $(foreach VENDOR, $(VENDORS), $(eval $(VENDOR)_BOARDS := $(shell ls $(TOP)/targe
 TARGETS := $(foreach VENDOR, $(VENDORS), $(addprefix $(VENDOR)/, $($(VENDOR)_BOARDS)))
 
 # The following delayed-evalutate variables are only to be used in rule commands.
-MAINBOARD = $(TOP)/src/mainboard/$(shell grep ^mainboard $(dir $*)/Config.lb|grep -Eo [-[:alnum:]_/]+[[:space:]]?$$)
+CONFIG_MAINBOARD = $(TOP)/src/mainboard/$(shell grep ^mainboard $(dir $*)/Config.lb|grep -Eo [-[:alnum:]_/]+[[:space:]]?$$)
 IMAGE_DIR = $(firstword $(shell grep -Eo ^romimage[[:space:]]+\"[[:alnum:]_-/]+ $(dir $*)/Config.lb|sed -r s/romimage[[:space:]]+\"//))
 
 # Evaluate one assignment to variable "$1" from file "$2"

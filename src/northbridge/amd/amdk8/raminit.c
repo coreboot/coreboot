@@ -553,7 +553,7 @@ static void hw_enable_ecc(const struct mem_controller *ctrl)
 	if (nbcap & NBCAP_ECC) {
 		dcl |= DCL_DimmEccEn;
 	}
-	if (HAVE_OPTION_TABLE &&
+	if (CONFIG_HAVE_OPTION_TABLE &&
 	    read_option(CMOS_VSTART_ECC_memory, CMOS_VLEN_ECC_memory, 1) == 0) {
 		dcl &= ~DCL_DimmEccEn;
 	}
@@ -867,7 +867,7 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	 * so I can see my rom chip and other I/O devices.
 	 */
 	if (tom_k >= 0x003f0000) {
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 		if (hole_startk != 0) {
 			tom_k = hole_startk;
 		} else
@@ -1104,7 +1104,7 @@ static void order_dimms(const struct mem_controller *ctrl)
 {
 	unsigned long tom_k, base_k;
 
-	if ((!HAVE_OPTION_TABLE) ||
+	if ((!CONFIG_HAVE_OPTION_TABLE) ||
 	    read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) != 0) {
 		tom_k = interleave_chip_selects(ctrl);
 	} else {
@@ -1408,7 +1408,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
 	bios_cycle_time = min_cycle_times[
 		read_option(CMOS_VSTART_max_mem_clock, CMOS_VLEN_max_mem_clock, 0)];
-	if (HAVE_OPTION_TABLE && bios_cycle_time > min_cycle_time) {
+	if (CONFIG_HAVE_OPTION_TABLE && bios_cycle_time > min_cycle_time) {
 		min_cycle_time = bios_cycle_time;
 	}
 	min_latency = 2;
@@ -2111,7 +2111,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	return;
 }
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,unsigned hole_startk, int i)
 {
 	int ii;
@@ -2170,10 +2170,10 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	uint32_t hole_startk;
 	int i;
 
-	hole_startk = 4*1024*1024 - HW_MEM_HOLE_SIZEK;
+	hole_startk = 4*1024*1024 - CONFIG_HW_MEM_HOLE_SIZEK;
 
 	printk_spew("Handling memory hole at 0x%08x (default)\n", hole_startk);
-#if HW_MEM_HOLE_SIZE_AUTO_INC == 1
+#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
 	/* We need to double check if hole_startk is valid.
 	 * If it is equal to the dram base address in K (base_k),
 	 * we need to decrease it.
@@ -2328,7 +2328,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		printk_debug(" done\n");
 	}
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	 // init hw mem hole here
 	/* DramHoleValid bit only can be set after MemClrStatus is set by Hardware */
 	if (!is_cpu_pre_e0())

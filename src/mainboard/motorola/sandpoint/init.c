@@ -38,8 +38,8 @@
 
 void pnp_output(char address, char data)
 {
-	outb(address, PNP_CFGADDR);
-	outb(data, PNP_CFGDATA);
+	outb(address, CONFIG_PNP_CFGADDR);
+	outb(data, CONFIG_PNP_CFGDATA);
 }
 
 void
@@ -55,10 +55,10 @@ board_init(void)
 	 */
 	pnp_output(0x07, 6); /* LD 6 = UART0 */
 	pnp_output(0x30, 0); /* Dectivate */
-	pnp_output(0x60, TTYS0_BASE >> 8); /* IO Base */
-	pnp_output(0x61, TTYS0_BASE & 0xFF); /* IO Base */
+	pnp_output(0x60, CONFIG_TTYS0_BASE >> 8); /* IO Base */
+	pnp_output(0x61, CONFIG_TTYS0_BASE & 0xFF); /* IO Base */
 	pnp_output(0x30, 1); /* Activate */
-	uart8250_init(TTYS0_BASE, 115200/TTYS0_BAUD, TTYS0_LCS);
+	uart8250_init(CONFIG_TTYS0_BASE, 115200/CONFIG_TTYS0_BAUD, CONFIG_TTYS0_LCS);
 }
 
 void

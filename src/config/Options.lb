@@ -61,12 +61,12 @@ define CONFIG_ARCH_X86
 	export always
 	comment "X86 is the default"
 end
-define ARCH
+define CONFIG_ARCH
 	default "i386"
 	export always
 	comment "Default architecture is i386, options are alpha and ppc"
 end
-define HAVE_MOVNTI
+define CONFIG_HAVE_MOVNTI
 	default 0
 	export always
 	comment "This cpu supports the MOVNTI directive"
@@ -76,28 +76,28 @@ end
 # Build options
 ###############################################
 
-define CROSS_COMPILE
+define CONFIG_CROSS_COMPILE
 	default ""
 	export always
 	comment "Cross compiler prefix"
 end
 define CC
-	default "$(CROSS_COMPILE)gcc"
+	default "$(CONFIG_CROSS_COMPILE)gcc"
 	export always
 	comment "Target C Compiler"
 end
-define HOSTCC
+define CONFIG_HOSTCC
 	default "gcc"
 	export always
 	comment "Host C Compiler"
 end
-define CPU_OPT
+define CONFIG_CPU_OPT
 	default none
 	export used
 	comment "Additional per-cpu CFLAGS"
 end
-define OBJCOPY
-	default "$(CROSS_COMPILE)objcopy --gap-fill 0xff"
+define CONFIG_OBJCOPY
+	default "$(CONFIG_CROSS_COMPILE)objcopy --gap-fill 0xff"
 	export always
 	comment "Objcopy command"
 end
@@ -186,143 +186,143 @@ end
 # ROM image options
 ###############################################
 
-define HAVE_FALLBACK_BOOT
+define CONFIG_HAVE_FALLBACK_BOOT
 	format "%d"
 	default 0
 	export always
 	comment "Set if fallback booting required"
 end
-define HAVE_FAILOVER_BOOT
+define CONFIG_HAVE_FAILOVER_BOOT
 	format "%d"
 	default 0
 	export always
 	comment "Set if failover booting required"
 end
-define USE_FALLBACK_IMAGE
+define CONFIG_USE_FALLBACK_IMAGE
 	format "%d"
 	default 0
 	export used
 	comment "Set to build a fallback image"
 end
-define USE_FAILOVER_IMAGE
+define CONFIG_USE_FAILOVER_IMAGE
         format "%d"
         default 0
         export used
         comment "Set to build a failover image"
 end
-define FALLBACK_SIZE
+define CONFIG_FALLBACK_SIZE
 	default 65536
 	format "0x%x"
 	export used
 	comment "Default fallback image size"
 end
-define FAILOVER_SIZE
+define CONFIG_FAILOVER_SIZE
         default 0
         format "0x%x"
         export used
         comment "Default failover image size"
 end
-define ROM_SIZE
+define CONFIG_ROM_SIZE
 	default none
 	format "0x%x"
 	export used
 	comment "Size of your ROM"
 end
-define ROM_IMAGE_SIZE
+define CONFIG_ROM_IMAGE_SIZE
 	default 65535
 	format "0x%x"
 	export always
 	comment "Default image size"
 end
-define ROM_SECTION_SIZE
-	default {FALLBACK_SIZE}
+define CONFIG_ROM_SECTION_SIZE
+	default {CONFIG_FALLBACK_SIZE}
 	format "0x%x"
 	export used
 	comment "Default rom section size"
 end
-define ROM_SECTION_OFFSET
-	default {ROM_SIZE - FALLBACK_SIZE}
+define CONFIG_ROM_SECTION_OFFSET
+	default {CONFIG_ROM_SIZE - CONFIG_FALLBACK_SIZE}
 	format "0x%x"
 	export used
 	comment "Default rom section offset"
 end
-define PAYLOAD_SIZE
-	default {ROM_SECTION_SIZE - ROM_IMAGE_SIZE}
+define CONFIG_PAYLOAD_SIZE
+	default {CONFIG_ROM_SECTION_SIZE - CONFIG_ROM_IMAGE_SIZE}
 	format "0x%x"
 	export always
 	comment "Default payload size"
 end
-define _ROMBASE
-	default {PAYLOAD_SIZE}
+define CONFIG_ROMBASE
+	default {CONFIG_PAYLOAD_SIZE}
 	format "0x%x"
 	export always
 	comment "Base address of coreboot in ROM"
 end
-define _ROMSTART
+define CONFIG_ROMSTART
 	default none
 	format "0x%x"
 	export used
 	comment "Start address of coreboot in ROM"
 end
-define _RESET
-	default {_ROMBASE}
+define CONFIG_RESET
+	default {CONFIG_ROMBASE}
 	format "0x%x"
 	export always
 	comment "Hardware reset vector address"
 end
-define _EXCEPTION_VECTORS
-	default {_ROMBASE+0x100}
+define CONFIG_EXCEPTION_VECTORS
+	default {CONFIG_ROMBASE+0x100}
 	format "0x%x"
 	export always
 	comment "Address of exception vector table"
 end
-define STACK_SIZE
+define CONFIG_STACK_SIZE
 	default 0x2000
 	format "0x%x"
 	export always
 	comment "Default stack size"
 end
-define HEAP_SIZE
+define CONFIG_HEAP_SIZE
 	default 0x2000
 	format "0x%x"
 	export always
 	comment "Default heap size"
 end
-define _RAMBASE
+define CONFIG_RAMBASE
 	default none
 	format "0x%x"
 	export always
 	comment "Base address of coreboot in RAM"
 end
-define _RAMSTART
+define CONFIG_RAMSTART
 	default none
 	format "0x%x"
 	export used
 	comment "Start address of coreboot in RAM"
 end
-define USE_DCACHE_RAM
+define CONFIG_USE_DCACHE_RAM
 	default 0
 	export always
 	comment "Use data cache as temporary RAM if possible"
 end
-define CAR_FAM10
+define CONFIG_CAR_FAM10
 	default 0
 	export always
 	comment "AMD family 10 CAR requires additional setup"
 end
-define DCACHE_RAM_BASE
+define CONFIG_DCACHE_RAM_BASE
 	default 0xc0000
 	format "0x%x"
 	export always
 	comment "Base address of data cache when using it for temporary RAM"
 end
-define DCACHE_RAM_SIZE
+define CONFIG_DCACHE_RAM_SIZE
 	default 0x1000
 	format "0x%x"
 	export always
 	comment "Size of data cache when using it for temporary RAM"
 end
-define DCACHE_RAM_GLOBAL_VAR_SIZE
+define CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE
 	default 0
 	format "0x%x"
 	export always
@@ -333,23 +333,23 @@ define CONFIG_AP_CODE_IN_CAR
         export always
         comment "will copy coreboot_apc to AP cache ane execute in AP"
 end
-define MEM_TRAIN_SEQ
+define CONFIG_MEM_TRAIN_SEQ
         default 0
         export always
         comment "0: three for in bsp, 1: on every core0, 2: one for on bsp"
 end
-define WAIT_BEFORE_CPUS_INIT
+define CONFIG_WAIT_BEFORE_CPUS_INIT
         default 0
         export always
         comment "execute cpus_ready_for_init if it is set to 1"
 end
-define XIP_ROM_BASE
+define CONFIG_XIP_ROM_BASE
 	default 0
 	format "0x%x"
 	export used
 	comment "Start address of area to cache during coreboot execution directly from ROM"
 end
-define XIP_ROM_SIZE
+define CONFIG_XIP_ROM_SIZE
 	default 0
 	format "0x%x"
 	export used
@@ -372,14 +372,14 @@ define CONFIG_LB_MEM_TOPK
 	export always
 	comment "Kilobytes of memory to initialized before executing code from RAM"
 end
-define HAVE_OPTION_TABLE
+define CONFIG_HAVE_OPTION_TABLE
 	default 0
 	export always
 	comment "Export CMOS option table"
 end
-define USE_OPTION_TABLE
+define CONFIG_USE_OPTION_TABLE
 	format "%d"
-	default {HAVE_OPTION_TABLE && !USE_FALLBACK_IMAGE}
+	default {CONFIG_HAVE_OPTION_TABLE && !CONFIG_USE_FALLBACK_IMAGE}
 	export always
 	comment "Use option table"
 end
@@ -387,19 +387,19 @@ end
 ###############################################
 # CMOS variable options
 ###############################################
-define LB_CKS_RANGE_START
+define CONFIG_LB_CKS_RANGE_START
 	default 49
 	format "%d"
 	export always
 	comment "First CMOS byte to use for coreboot options"
 end
-define LB_CKS_RANGE_END
+define CONFIG_LB_CKS_RANGE_END
 	default 125
 	format "%d"
 	export always
 	comment "Last CMOS byte to use for coreboot options"
 end
-define LB_CKS_LOC
+define CONFIG_LB_CKS_LOC
 	default 126
 	format "%d"
 	export always
@@ -411,8 +411,8 @@ end
 # Build targets
 ###############################################
 
-define CRT0
-	default "$(TOP)/src/arch/$(ARCH)/init/crt0.S.lb"
+define CONFIG_CRT0
+	default "$(TOP)/src/arch/$(CONFIG_ARCH)/init/crt0.S.lb"
 	export always
 	comment "Main initialization target"
 end
@@ -421,7 +421,7 @@ end
 # Debugging/Logging options
 ###############################################
 
-define DEBUG
+define CONFIG_DEBUG
 	default 0
 	export always
 	comment "Enable x86emu debugging code"
@@ -466,12 +466,12 @@ define CONFIG_USBDEBUG_DIRECT
 	export always
 	comment "Log messages to ehci debug port console"
 end
-define DEFAULT_CONSOLE_LOGLEVEL
+define CONFIG_DEFAULT_CONSOLE_LOGLEVEL
 	default 7
 	export always
 	comment "Console will log at this level unless changed"
 end
-define MAXIMUM_CONSOLE_LOGLEVEL
+define CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
 	default 8
 	export always
  	comment "Error messages up to this level can be printed"
@@ -481,29 +481,29 @@ define CONFIG_SERIAL_POST
 	export always
 	comment "Enable SERIAL POST codes"
 end
-define NO_POST
+define CONFIG_NO_POST
 	default none
 	export used
 	comment "Disable POST codes"
 end
-define TTYS0_BASE
+define CONFIG_TTYS0_BASE
 	default 0x3f8
 	format "0x%x"
 	export always
 	comment "Base address for 8250 uart for the serial console"
 end
-define TTYS0_BAUD
+define CONFIG_TTYS0_BAUD
 	default 115200
 	export always
 	comment "Default baud rate for serial console"
 end
-define TTYS0_DIV
+define CONFIG_TTYS0_DIV
 	default none
 	format "%d"
 	export used
 	comment "Allow UART divisor to be set explicitly"
 end
-define TTYS0_LCS
+define CONFIG_TTYS0_LCS
 	default 0x3
 	format "0x%x"
 	export always
@@ -515,7 +515,7 @@ define CONFIG_USE_PRINTK_IN_CAR
 	export always
 	comment "use printk instead of print in CAR stage code"
 end
-define ASSEMBLER_DEBUG
+define CONFIG_ASSEMBLER_DEBUG
 	default 0
 	export always
 	comment "Create disassembly files for debugging"
@@ -525,35 +525,35 @@ end
 # Mainboard options
 ###############################################
 
-define MAINBOARD
+define CONFIG_MAINBOARD
 	default "Mainboard_not_set"
 	export always
 	comment "Mainboard name"
 end
-define MAINBOARD_PART_NUMBER
+define CONFIG_MAINBOARD_PART_NUMBER
 	default "Part_number_not_set"
 	export always
 	format "\"%s\""
 	comment "Part number of mainboard"
 end
-define MAINBOARD_VENDOR
+define CONFIG_MAINBOARD_VENDOR
 	default "Vendor_not_set"
 	export always
 	format "\"%s\""
 	comment "Vendor of mainboard"
 end
-define MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+define CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	default 0
 	export always
 	comment "PCI Vendor ID of mainboard manufacturer"
 end
-define MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+define CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	default 0
 	format "0x%x"
 	export always
 	comment "PCI susbsystem device id assigned my mainboard manufacturer"
 end
-define MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 	default none
 	export used
 	comment "Default power on after power fail setting"
@@ -597,27 +597,27 @@ define CONFIG_AP_IN_SIPI_WAIT
 	export always
 	comment "Should application processors go to SIPI wait state after initialization? (Required for Intel Core Duo)"
 end
-define HAVE_MP_TABLE
+define CONFIG_HAVE_MP_TABLE
 	default none
 	export used
 	comment "Define to build an MP table"
 end
-define SERIAL_CPU_INIT
+define CONFIG_SERIAL_CPU_INIT
         default 1
         export always
         comment "Serialize CPU init"
 end
-define APIC_ID_OFFSET
+define CONFIG_APIC_ID_OFFSET
 	default 0
 	export always
 	comment "We need to share this value between cache_as_ram_auto.c and northbridge.c"
 end
-define ENABLE_APIC_EXT_ID
+define CONFIG_ENABLE_APIC_EXT_ID
 	default 0
 	export always
 	comment "Enable APIC ext id mode 8 bit"
 end
-define LIFT_BSP_APIC_ID
+define CONFIG_LIFT_BSP_APIC_ID
 	default 0
 	export always
 	comment "decide if we lift bsp apic id while ap apic id"
@@ -642,7 +642,7 @@ define CONFIG_ROM_PAYLOAD
 	comment "Boot image is located in ROM" 
 end
 define CONFIG_ROM_PAYLOAD_START
-	default {0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1}
+	default {0xffffffff - CONFIG_ROM_SIZE + CONFIG_ROM_SECTION_OFFSET + 1}
 	format "0x%x"
 	export always
 	comment "ROM stream start location"
@@ -692,19 +692,19 @@ define CONFIG_CBFS
 	export always
 	comment "The new CBFS file system"
 end
-define AUTOBOOT_DELAY
+define CONFIG_AUTOBOOT_DELAY
 	default 2
 	export always
 	comment "Delay (in seconds) before autobooting"
 end
-define AUTOBOOT_CMDLINE
+define CONFIG_AUTOBOOT_CMDLINE
 	default "hdc1:/vmlinuz root=/dev/hdc3 console=tty0 console=ttyS0,115200"
 	export always
 	format "\"%s\""
 	comment "Default command line when autobooting"
 end
 
-define USE_WATCHDOG_ON_BOOT
+define CONFIG_USE_WATCHDOG_ON_BOOT
 	default 0
 	export always
 	comment "Use the watchdog on booting"
@@ -744,17 +744,17 @@ end
 # IRQ options
 ###############################################
 
-define HAVE_PIRQ_TABLE
+define CONFIG_HAVE_PIRQ_TABLE
 	default none
 	export used
 	comment "Define if we have a PIRQ table"
 end
-define PIRQ_ROUTE
+define CONFIG_PIRQ_ROUTE
 	default 0
 	export always
 	comment "Define if we have a PIRQ table and want routing IRQs"
 end
-define IRQ_SLOT_COUNT
+define CONFIG_IRQ_SLOT_COUNT
 	default none
 	export used
 	comment "Number of IRQ slots"
@@ -779,17 +779,17 @@ define CONFIG_IDE
 	export always
 	comment "Define to include IDE support"
 end
-define IDE_BOOT_DRIVE
+define CONFIG_IDE_BOOT_DRIVE
 	default 0
 	export always
 	comment "Disk number of boot drive"
 end
-define IDE_SWAB
+define CONFIG_IDE_SWAB
 	default none
 	export used
 	comment "Swap bytes when reading from IDE device"
 end
-define IDE_OFFSET
+define CONFIG_IDE_OFFSET
 	default 0
 	export always
 	comment "Sector at which to start searching for boot image"
@@ -799,49 +799,49 @@ end
 # Options for memory mapped I/O
 ###############################################
 
-define PCI_IO_CFG_EXT
+define CONFIG_PCI_IO_CFG_EXT
 	default 0
 	export always
 	comment "allow 4K register space via io CFG port"
 end
 
-define PCIC0_CFGADDR
+define CONFIG_PCIC0_CFGADDR
 	default none
 	format "0x%x"
 	export used
 	comment "Address of PCI Configuration Address Register"
 end
-define PCIC0_CFGDATA
+define CONFIG_PCIC0_CFGDATA
 	default none
 	format "0x%x"
 	export used
 	comment "Address of PCI Configuration Data Register"
 end
-define ISA_IO_BASE
+define CONFIG_ISA_IO_BASE
 	default none
 	format "0x%x"
 	export used
 	comment "Base address of PCI/ISA I/O address range"
 end
-define ISA_MEM_BASE
+define CONFIG_ISA_MEM_BASE
 	default none
 	format "0x%x"
 	export used
 	comment "Base address of PCI/ISA memory address range"
 end
-define PNP_CFGADDR
+define CONFIG_PNP_CFGADDR
 	default none
 	format "0x%x"
 	export used
 	comment "PNP Configuration Address Register offset"
 end
-define PNP_CFGDATA
+define CONFIG_PNP_CFGDATA
 	default none
 	format "0x%x"
 	export used
 	comment "PNP Configuration Data Register offset"
 end
-define _IO_BASE
+define CONFIG_IO_BASE
 	default none
 	format "0x%x"
 	export used
@@ -852,7 +852,7 @@ end
 # Options for embedded systems
 ###############################################
 
-define EMBEDDED_RAM_SIZE
+define CONFIG_EMBEDDED_RAM_SIZE
 	default none
 	export used
 	comment "Embedded boards generally have fixed RAM size"
@@ -868,27 +868,27 @@ define CONFIG_GDB_STUB
 	comment "Compile in gdb stub support?"
 end
 
-define HAVE_INIT_TIMER
+define CONFIG_HAVE_INIT_TIMER
 	default 0
 	export always
 	comment "Have a init_timer function"
 end
-define HAVE_HARD_RESET
+define CONFIG_HAVE_HARD_RESET
 	default none
 	export used
 	comment "Have hard reset"
 end
-define HAVE_SMI_HANDLER
+define CONFIG_HAVE_SMI_HANDLER
 	default 0
 	export always
 	comment "Set, if the board needs an SMI handler"
 end
-define MEMORY_HOLE
+define CONFIG_MEMORY_HOLE
 	default none
 	export used
 	comment "Set to deal with memory hole"
 end
-define MAX_REBOOT_CNT
+define CONFIG_MAX_REBOOT_CNT
 	default 3
 	export always
 	comment "Set maximum reboots"
@@ -898,7 +898,7 @@ end
 # Misc device options
 ###############################################
 
-define HAVE_FANCTL
+define CONFIG_HAVE_FANCTL
 	default 0
 	export used
 	comment "Include board specific FAN control initialization"
@@ -908,7 +908,7 @@ define CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 	export used
 	comment "Use timer2 to callibrate the x86 time stamp counter"
 end
-define INTEL_PPRO_MTRR
+define CONFIG_INTEL_PPRO_MTRR
 	default none
 	export used
 	comment ""
@@ -923,93 +923,93 @@ define CONFIG_UDELAY_IO
 	export used
 	comment "Implement udelay with x86 io registers"
 end
-define FAKE_SPDROM
+define CONFIG_FAKE_SPDROM
 	default 0
 	export always
 	comment "Use this to fake spd rom values"
 end
 
-define HAVE_ACPI_TABLES
+define CONFIG_HAVE_ACPI_TABLES
 	default 0
 	export always
 	comment "Define to build ACPI tables"
 end
 
-define HAVE_ACPI_RESUME
+define CONFIG_HAVE_ACPI_RESUME
 	default 0
 	export always
 	comment "Define to build ACPI with resume support"
 end
 
-define ACPI_SSDTX_NUM
+define CONFIG_ACPI_SSDTX_NUM
 	default 0
 	export always
 	comment "extra ssdt num for PCI Device"
 end
 
-define AGP_APERTURE_SIZE
+define CONFIG_AGP_APERTURE_SIZE
 	default none
 	export used
 	format "0x%x"
 	comment "AGP graphics virtual memory aperture size"
 end
 
-define HT_CHAIN_UNITID_BASE
+define CONFIG_HT_CHAIN_UNITID_BASE
 	default 1
 	export always
 	comment "this will be first hypertransport device's unitid base, if sb ht chain only has one ht device, it could be 0"
 end
 
-define HT_CHAIN_END_UNITID_BASE
+define CONFIG_HT_CHAIN_END_UNITID_BASE
         default 0x20
         export always
-        comment "this will be unit id of the end of hypertransport chain (usually the real SB) if it is small than HT_CHAIN_UNITID_BASE, it could be 0"
+        comment "this will be unit id of the end of hypertransport chain (usually the real SB) if it is small than CONFIG_HT_CHAIN_UNITID_BASE, it could be 0"
 end
 
-define SB_HT_CHAIN_UNITID_OFFSET_ONLY
+define CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
         default 1
         export always
         comment "this will decided if only offset SB hypertransport chain"
 end
 
-define SB_HT_CHAIN_ON_BUS0
+define CONFIG_SB_HT_CHAIN_ON_BUS0
         default 0 
         export always
         comment "this will make SB hypertransport chain sit on bus 0, if it is 1, will put sb ht chain on bus 0, if it is 2 will put other chain on 0x40, 0x80, 0xc0"
 end
 
-define PCI_BUS_SEGN_BITS
+define CONFIG_PCI_BUS_SEGN_BITS
         default 0
         export always
         comment "It could be 0, 1, 2, 3 and 4 only"
 end
 
-define MMCONF_SUPPORT
+define CONFIG_MMCONF_SUPPORT
 	default 0
 	export always
 	comment "enable mmconfig for pci conf"
 end
 
-define MMCONF_SUPPORT_DEFAULT
+define CONFIG_MMCONF_SUPPORT_DEFAULT
 	default 0
 	export always
 	comment "enable mmconfig for pci conf"
 end
 
-define MMCONF_BASE_ADDRESS
+define CONFIG_MMCONF_BASE_ADDRESS
 	default none
 	format "0x%x"
 	export used
 	comment "enable mmconfig base address"
 end
 
-define HW_MEM_HOLE_SIZEK
+define CONFIG_HW_MEM_HOLE_SIZEK
         default 0
         export always
         comment "Opteron E0 later memory hole size in K, 0 mean disable"
 end
 
-define HW_MEM_HOLE_SIZE_AUTO_INC
+define CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC
         default 0
         export always
         comment "Opteron E0 later memory hole size auto increase to avoid hole startk equal to basek"
@@ -1021,62 +1021,62 @@ define CONFIG_VAR_MTRR_HOLE
 	comment "using hole in MTRR instead of increasing method"
 end
 
-define K8_HT_FREQ_1G_SUPPORT
+define CONFIG_K8_HT_FREQ_1G_SUPPORT
 	default 0 
 	export always
 	comment "Optern E0 later could support 1G HT, but still depends MB design"
 end
 
-define K8_REV_F_SUPPORT
+define CONFIG_K8_REV_F_SUPPORT
         default 0
         export always
         comment "Opteron Rev F (DDR2) support"
 end
 
-define CBB
+define CONFIG_CBB
 	default 0
 	export always
 	comment "Opteron cpu bus num base"
 end
 
-define CDB
+define CONFIG_CDB
 	default 0x18
 	export always
 	comment "Opteron cpu device num base"
 end
 
-define HT3_SUPPORT
+define CONFIG_HT3_SUPPORT
 	default 0
 	export always
 	comment "Hypertransport 3 support, include ac HT and unganged sublink feature"
 end
 
-define EXT_RT_TBL_SUPPORT
+define CONFIG_EXT_RT_TBL_SUPPORT
 	default 0
 	export always
 	comment "support AMD family 10 extended routing table via F0x158, normally is enabled when node nums is greater than 8"
 end
 
-define EXT_CONF_SUPPORT
+define CONFIG_EXT_CONF_SUPPORT
 	default 0
 	export always
 	comment "support AMD family 10 extended config space for ram, bus, io, mmio via F1x110, normally is enabled when HT3 is enabled and non ht chain nums is greater than 4"
 end
 
-define DIMM_SUPPORT
+define CONFIG_DIMM_SUPPORT
         default 0x0108
 	format "0x%x"
         export always
         comment "DIMM support: bit 0 - sdram, bit 1: ddr1, bit 2: ddr2, bit 3: ddr3, bit 4: fbdimm, bit 8: reg"
 end
 
-define CPU_SOCKET_TYPE
+define CONFIG_CPU_SOCKET_TYPE
 	default 0x10
 	export always
 	comment "cpu socket type, 0x10 mean Socket F, 0x11 mean socket M2, 0x20, Soxket G, and 0x21 mean socket M3"
 end
 
-define CPU_ADDR_BITS
+define CONFIG_CPU_ADDR_BITS
 	default 36
 	export always
 	comment "CPU hardware address lines num, for AMD K8 could be 40, and AMD family 10 could be 48"
@@ -1137,14 +1137,14 @@ define CONFIG_AMDMCT
 	comment "use AMD MCT to init RAM instead of native code"
 end
 
-define AMD_UCODE_PATCH_FILE
+define CONFIG_AMD_UCODE_PATCH_FILE
 	default none
 	export used
 	format "\"%s\""
 	comment "name of the microcode patch file"	
 end
 
-define K8_MEM_BANK_B_ONLY
+define CONFIG_K8_MEM_BANK_B_ONLY
 	default 0
 	export always
 	comment "use AMD K8's memory bank B only to make a 64bit memory system and memory bank A is free, such as Filbert."
@@ -1162,19 +1162,19 @@ define CONFIG_GFXUMA
         comment "GFX UMA"
 end
 
-define HAVE_MAINBOARD_RESOURCES
+define CONFIG_HAVE_MAINBOARD_RESOURCES
 	default 0
 	export always
 	comment "Enable if the mainboard/chipset requires extra entries in the memory map"
 end
 
-define HAVE_LOW_TABLES
+define CONFIG_HAVE_LOW_TABLES
 	default 1
 	export always
 	comment "Enable if ACPI, PIRQ, MP tables are supposed to live in the low megabyte"
 end
 
-define HAVE_HIGH_TABLES
+define CONFIG_HAVE_HIGH_TABLES
 	default 0
 	export always
 	comment "Enable if ACPI, PIRQ, MP tables are supposed to live at top of memory"

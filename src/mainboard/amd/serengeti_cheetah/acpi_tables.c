@@ -39,7 +39,7 @@ static void dump_mem(unsigned start, unsigned end)
 #endif
 
 extern unsigned char AmlCode[];
-#if ACPI_SSDTX_NUM >= 1
+#if CONFIG_ACPI_SSDTX_NUM >= 1
 extern unsigned char AmlCode_ssdt2[];
 extern unsigned char AmlCode_ssdt3[];
 extern unsigned char AmlCode_ssdt4[];
@@ -263,7 +263,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += ssdt->length;
 	acpi_add_table(rsdt, ssdt);
 
-#if ACPI_SSDTX_NUM >= 1
+#if CONFIG_ACPI_SSDTX_NUM >= 1
 
         //same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table
 

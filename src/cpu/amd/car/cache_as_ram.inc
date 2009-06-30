@@ -18,13 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define CacheSize DCACHE_RAM_SIZE
+#define CacheSize CONFIG_DCACHE_RAM_SIZE
 #define CacheBase (0xd0000 - CacheSize)
 
 /* leave some space for global variable to pass to RAM stage */
-#define GlobalVarSize DCACHE_RAM_GLOBAL_VAR_SIZE
+#define GlobalVarSize CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE
 
-/* for CAR_FAM10 */
+/* for CONFIG_CAR_FAM10 */
 #define CacheSizeAPStack 0x400 /* 1K */
 
 #define MSR_FAM10      0xC001102A
@@ -72,7 +72,7 @@ cache_as_ram_setup:
 	cvtsd2si %xmm3, %ebx
 
 	/* hope we can skip the double set for normal part */
-#if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 
 	/* check if cpu_init_detected */
 	movl	$MTRRdefType_MSR, %ecx
@@ -248,10 +248,10 @@ clear_fixed_var_mtrr_out:
 	xorl	%edx, %edx
 	movl	$(((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
 	wrmsr
-#endif /*  USE_FAILOVER_IMAGE == 1*/
+#endif /*  CONFIG_USE_FAILOVER_IMAGE == 1*/
 
 
-#if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 0)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 0))
+#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 0)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 0))
 	/* disable cache */
 	movl	%cr0, %eax
 	orl		$(1 << 30),%eax
@@ -259,25 +259,25 @@ clear_fixed_var_mtrr_out:
 
 #endif
 
-#if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
+#if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 	/* enable write base caching so we can do execute in place
 	 * on the flash rom.
 	 */
 	movl	$0x202, %ecx
 	xorl	%edx, %edx
-	movl	$(XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	movl	$(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl	$0x203, %ecx
-	movl	$0xff, %edx /* (1 << (CPU_ADDR_BITS - 32)) - 1 for K8 (CPU_ADDR_BITS = 40) */
+	movl	$0xff, %edx /* (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1 for K8 (CONFIG_CPU_ADDR_BITS = 40) */
 	jmp_if_k8(wbcache_post_fam10_setup)
-	movl	$0xffff, %edx /* (1 << (CPU_ADDR_BITS - 32)) - 1 for FAM10 (CPU_ADDR_BITS = 48) */
+	movl	$0xffff, %edx /* (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1 for FAM10 (CONFIG_CPU_ADDR_BITS = 48) */
 wbcache_post_fam10_setup:
-	movl	$(~(XIP_ROM_SIZE - 1) | 0x800), %eax
+	movl	$(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
-#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+#endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
-#if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 	/* Set the default memory type and enable fixed and variable MTRRs */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
@@ -313,7 +313,7 @@ fam10_end_part1:
 	movb	$0xA2, %al
 	outb	%al, $0x80
 
-#if ((HAVE_FAILOVER_BOOT == 1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT == 0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 		/* Read the range with lodsl*/
 	cld
 	movl	$CacheBase, %esi
@@ -325,7 +325,7 @@ fam10_end_part1:
 	xorl	%eax, %eax
 	rep		stosl
 
-#endif /*USE_FAILOVER_IMAGE == 1*/
+#endif /*CONFIG_USE_FAILOVER_IMAGE == 1*/
 
 	/* set up the stack pointer */
 	movl	$(CacheBase + CacheSize - GlobalVarSize), %eax

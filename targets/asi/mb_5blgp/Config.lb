@@ -21,12 +21,12 @@
 target mb_5blgp
 mainboard asi/mb_5blgp
 
-option ROM_SIZE = 256 * 1024
+option CONFIG_ROM_SIZE = 256 * 1024
 
-option MAINBOARD_VENDOR = "ASI"
-option MAINBOARD_PART_NUMBER = "MB-5BLGP"
+option CONFIG_MAINBOARD_VENDOR = "ASI"
+option CONFIG_MAINBOARD_PART_NUMBER = "MB-5BLGP"
 
-option IRQ_SLOT_COUNT = 3
+option CONFIG_IRQ_SLOT_COUNT = 3
 
 ## Enable VGA with a splash screen (only 640x480 to run on most monitors).
 ## We want to support up to 1024x768@16 so we need 2MiB video memory.
@@ -36,19 +36,19 @@ option CONFIG_GX1_VIDEOMODE = 0
 option CONFIG_SPLASH_GRAPHIC = 1
 option CONFIG_VIDEO_MB = 2
 
-option DEFAULT_CONSOLE_LOGLEVEL = 9
-option MAXIMUM_CONSOLE_LOGLEVEL = 9
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL = 9
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL = 9
 
 romimage "normal"
-	option USE_FALLBACK_IMAGE = 0
+	option CONFIG_USE_FALLBACK_IMAGE = 0
 	option COREBOOT_EXTRA_VERSION = ".0Normal"
 	payload ../payload.elf
 end
 
 romimage "fallback"
-	option USE_FALLBACK_IMAGE = 1
+	option CONFIG_USE_FALLBACK_IMAGE = 1
 	option COREBOOT_EXTRA_VERSION = ".0Fallback"
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

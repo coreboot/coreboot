@@ -155,12 +155,12 @@ static unsigned int amdk8_scan_chain(device_t dev, unsigned nodeid, unsigned lin
 		 * We have no idea how many busses are behind this bridge yet,
 		 * so we set the subordinate bus number to 0xff for the moment.
 		 */
-#if SB_HT_CHAIN_ON_BUS0 > 0
+#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
 		// first chain will on bus 0
 		if((nodeid == 0) && (sblink==link)) { // actually max is 0 here
 			min_bus = max;
 		}
-	#if SB_HT_CHAIN_ON_BUS0 > 1
+	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
 		// second chain will be on 0x40, third 0x80, forth 0xc0
 		else {
 			min_bus = ((max>>6) + 1) * 0x40;
@@ -257,8 +257,8 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 
 	if(nodeid==0) {
 		sblink = (pci_read_config32(dev, 0x64)>>8) & 3;
-#if SB_HT_CHAIN_ON_BUS0 > 0
-	#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
+#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
+	#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
 		offset_unitid = 1;
 	#endif
 		max = amdk8_scan_chain(dev, nodeid, sblink, sblink, max, offset_unitid ); // do sb ht chain at first, in case s2885 put sb chain (8131/8111) on link2, but put 8151 on link0
@@ -266,12 +266,12 @@ static unsigned int amdk8_scan_chains(device_t dev, unsigned int max)
 	}
 
 	for(link = 0; link < dev->links; link++) {
-#if SB_HT_CHAIN_ON_BUS0 > 0
+#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 0
 		if( (nodeid == 0) && (sblink == link) ) continue; //already done
 #endif
 		offset_unitid = 0;
-		#if ((HT_CHAIN_UNITID_BASE != 1) || (HT_CHAIN_END_UNITID_BASE != 0x20))
-			#if SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
+		#if ((CONFIG_HT_CHAIN_UNITID_BASE != 1) || (CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20))
+			#if CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY == 1
 			if((nodeid == 0) && (sblink == link))
 			#endif
 				offset_unitid = 1;
@@ -743,7 +743,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 #define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
 #endif
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 
 struct hw_mem_hole_info {
 	unsigned hole_startk;
@@ -755,7 +755,7 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		struct hw_mem_hole_info mem_hole;
 		int i;
 
-		mem_hole.hole_startk = HW_MEM_HOLE_SIZEK;
+		mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
 		mem_hole.node_id = -1;
 
 		for (i = 0; i < FX_DEVS; i++) {
@@ -893,7 +893,7 @@ static uint32_t hoist_memory(unsigned long hole_startk, int i)
 }
 #endif
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
@@ -907,7 +907,7 @@ static void pci_domain_set_resources(device_t dev)
 	unsigned long mmio_basek;
 	uint32_t pci_tolm;
 	int i, idx;
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	struct hw_mem_hole_info mem_hole;
 	unsigned reset_memhole = 1;
 #endif
@@ -991,12 +991,12 @@ static void pci_domain_set_resources(device_t dev)
 	mmio_basek &= ~((64*1024) - 1);
 #endif
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* if the hw mem hole is already set in raminit stage, here we will compare mmio_basek and hole_basek
 	 * if mmio_basek is bigger that hole_basek and will use hole_basek as mmio_basek and we don't need to reset hole.
 	 * otherwise We reset the hole to the mmio_basek
 	 */
-	#if K8_REV_F_SUPPORT == 0
+	#if CONFIG_K8_REV_F_SUPPORT == 0
 		if (!is_cpu_pre_e0()) {
 	#endif
 
@@ -1010,13 +1010,13 @@ static void pci_domain_set_resources(device_t dev)
 		//mmio_basek = 3*1024*1024; // for debug to meet boundary
 
 		if(reset_memhole) {
-			if(mem_hole.node_id!=-1) { // We need to select HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
+			if(mem_hole.node_id!=-1) { // We need to select CONFIG_HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
 			       // We need to reset our Mem Hole, because We want more big HOLE than we already set
 			       //Before that We need to disable mem hole at first, becase memhole could already be set on i+1 instead
 				disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
 			}
 
-		#if HW_MEM_HOLE_SIZE_AUTO_INC == 1
+		#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
 			//We need to double check if the mmio_basek is valid for hole setting, if it is equal to basek, we need to decrease it some
 			uint32_t basek_pri;
 			for (i = 0; i < FX_DEVS; i++) {
@@ -1037,7 +1037,7 @@ static void pci_domain_set_resources(device_t dev)
 		#endif
 		}
 
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	} // is_cpu_pre_e0
 #endif
 
@@ -1077,7 +1077,7 @@ static void pci_domain_set_resources(device_t dev)
 					ram_resource(dev, (idx | i), basek, pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 					if (i==0 && high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
 						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
@@ -1087,9 +1087,9 @@ static void pci_domain_set_resources(device_t dev)
 					}
 #endif
 				}
-				#if HW_MEM_HOLE_SIZEK != 0
+				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 				if(reset_memhole)
-					#if K8_REV_F_SUPPORT == 0
+					#if CONFIG_K8_REV_F_SUPPORT == 0
 					if(!is_cpu_pre_e0() )
 					#endif
 		       				 sizek += hoist_memory(mmio_basek,i);
@@ -1111,7 +1111,7 @@ static void pci_domain_set_resources(device_t dev)
 		if (sizek)
 			ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 		printk_debug("%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
 			     i, mmio_basek, basek, limitk);
 		if (i==0 && high_tables_base==0) {
@@ -1211,7 +1211,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		sysconf.enabled_apic_ext_id = 1;
 		if(bsp_apicid == 0) {
 			/* bsp apic id is not changed */
-			sysconf.apicid_offset = APIC_ID_OFFSET;
+			sysconf.apicid_offset = CONFIG_APIC_ID_OFFSET;
 		} else
 		{
 			sysconf.lift_bsp_apicid = 1;
@@ -1263,7 +1263,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 				// That is the typical case
 
 				if(j == 0 ){
-				       #if K8_REV_F_SUPPORT == 0
+				       #if CONFIG_K8_REV_F_SUPPORT == 0
 		 		       	e0_later_single_core = is_e0_later_in_bsp(i);  // single core
 				       #else
 				       	e0_later_single_core = is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3

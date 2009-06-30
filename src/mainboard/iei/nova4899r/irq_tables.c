@@ -51,7 +51,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	.signature = PIRQ_SIGNATURE,	/* u32 signature */
 	.version = PIRQ_VERSION,	/* u16 version   */
-	.size = 32+16*IRQ_SLOT_COUNT,	/* There can be total 4 devices on the bus */
+	.size = 32+16*CONFIG_IRQ_SLOT_COUNT,	/* There can be total 4 devices on the bus */
 	.rtr_bus = 0x00,		/* Where the interrupt router lies (bus) */
 	.rtr_devfn = (0x12<<3)|0x0,	/* Where the interrupt router lies (dev) */
 	.exclusive_irqs = 0x4C20,	/* IRQs devoted exclusively to PCI usage */

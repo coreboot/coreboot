@@ -6,10 +6,10 @@ mainboard embeddedplanet/ep405pc
 
 romimage "normal"
         ## Enable PPC405 instructions
-        option CPU_OPT="-mcpu=405"
+        option CONFIG_CPU_OPT="-mcpu=405"
 
         ## use a cross compiler
-        #option CROSS_COMPILE="powerpc-ibm-eabi-"
+        #option CONFIG_CROSS_COMPILE="powerpc-ibm-eabi-"
 
         ## Use stage 1 initialization code
         option CONFIG_USE_INIT=1
@@ -21,14 +21,14 @@ romimage "normal"
         option CONFIG_COMPRESS=0
 
         ## Turn off POST codes
-        option NO_POST=1
+        option CONFIG_NO_POST=1
 
         ## Enable serial console
-        option DEFAULT_CONSOLE_LOGLEVEL=8
+        option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=8
         option CONFIG_CONSOLE_SERIAL8250=1
         # Divisor of 69 == 9600 baud due to weird clocking
-        option TTYS0_DIV=69
-        option TTYS0_BAUD=9600
+        option CONFIG_TTYS0_DIV=69
+        option CONFIG_TTYS0_BAUD=9600
 
         ## Boot linux from IDE
         option CONFIG_IDE=1
@@ -36,25 +36,25 @@ romimage "normal"
         option CONFIG_FS_EXT2=1
         option CONFIG_FS_ISO9660=1
         option CONFIG_FS_FAT=1
-        option AUTOBOOT_CMDLINE="hda1:/vmlinuz"
+        option CONFIG_AUTOBOOT_CMDLINE="hda1:/vmlinuz"
 
-        option ROM_SIZE=1024*1024
+        option CONFIG_ROM_SIZE=1024*1024
 
         ## Board has fixed size RAM
-        option EMBEDDED_RAM_SIZE=64*1024*1024
+        option CONFIG_EMBEDDED_RAM_SIZE=64*1024*1024
 
         ## Coreboot C code runs at this location in RAM
-        option _RAMBASE=0x00100000
+        option CONFIG_RAMBASE=0x00100000
 
         ##
         ## Use a 64K stack
         ##
-        option STACK_SIZE=0x10000
+        option CONFIG_STACK_SIZE=0x10000
 
         ##
         ## Use a 64K heap
         ##
-        option HEAP_SIZE=0x10000
+        option CONFIG_HEAP_SIZE=0x10000
 
         ##
         ## System clock
@@ -62,20 +62,20 @@ romimage "normal"
         option CONFIG_SYS_CLK_FREQ=33
 
 	##
-	option _ROMBASE=0xfff00000
+	option CONFIG_ROMBASE=0xfff00000
 
 	## Reset vector address
-	option _RESET=0xfffffffc
+	option CONFIG_RESET=0xfffffffc
 
 	## Exception vectors
-	option _EXCEPTION_VECTORS=_ROMBASE+0x100
+	option CONFIG_EXCEPTION_VECTORS=CONFIG_ROMBASE+0x100
 
 	## coreboot ROM start address
-	option _ROMSTART=0xfff03000
+	option CONFIG_ROMSTART=0xfff03000
 
 	## coreboot C code runs at this location in RAM
-	option _RAMBASE=0x00100000
+	option CONFIG_RAMBASE=0x00100000
 
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"

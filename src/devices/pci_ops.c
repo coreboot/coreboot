@@ -86,7 +86,7 @@ void pci_write_config32(device_t dev, unsigned where, uint32_t val)
 	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary, dev->path.pci.devfn, where, val);
 }
 
-#if MMCONF_SUPPORT
+#if CONFIG_MMCONF_SUPPORT
 uint8_t pci_mmio_read_config8(device_t dev, unsigned where)
 {
 	struct bus *pbus = get_pbus(dev);

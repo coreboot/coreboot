@@ -882,11 +882,11 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 	if (base0) {
 		uint32_t dword;
 		uint32_t ClkDis0;
-#if CPU_SOCKET_TYPE == 0x10 /* L1 */
+#if CONFIG_CPU_SOCKET_TYPE == 0x10 /* L1 */
 		ClkDis0 = DTL_MemClkDis0;
-#elif CPU_SOCKET_TYPE == 0x11 /* AM2 */
+#elif CONFIG_CPU_SOCKET_TYPE == 0x11 /* AM2 */
 		ClkDis0 = DTL_MemClkDis0_AM2;
-#elif CPU_SOCKET_TYPE == 0x12	/* S1G1 */
+#elif CONFIG_CPU_SOCKET_TYPE == 0x12	/* S1G1 */
 		ClkDis0 = DTL_MemClkDis0_S1g1;
 #endif
 
@@ -1066,7 +1066,7 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	 * so I can see my rom chip and other I/O devices.
 	 */
 	if (tom_k >= 0x003f0000) {
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 		if (hole_startk != 0) {
 			tom_k = hole_startk;
 		} else
@@ -1452,7 +1452,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 	u8 common_cl;
 
 /* S1G1 and AM2 sockets are Mod64BitMux capable. */
-#if CPU_SOCKET_TYPE == 0x11 || CPU_SOCKET_TYPE == 0x12
+#if CONFIG_CPU_SOCKET_TYPE == 0x11 || CONFIG_CPU_SOCKET_TYPE == 0x12
 	u8 mux_cap = 1;
 #else
 	u8 mux_cap = 0;
@@ -2341,7 +2341,7 @@ static void set_DramTerm(const struct mem_controller *ctrl,
 	}
 
 
-#if DIMM_SUPPORT == 0x0204
+#if CONFIG_DIMM_SUPPORT == 0x0204
 	odt = 0x2;		/* 150 ohms */
 #endif
 
@@ -2512,7 +2512,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 
 	long dimm_mask = meminfo->dimm_mask & 0x0f;
 
-#if DIMM_SUPPORT==0x0104   /* DDR2 and REG */
+#if CONFIG_DIMM_SUPPORT==0x0104   /* DDR2 and REG */
 	/* for REG DIMM */
 	dword = 0x00111222;
 	dwordx = 0x002f0000;
@@ -2536,7 +2536,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 
 #endif
 
-#if DIMM_SUPPORT==0x0204	/* DDR2 and SO-DIMM, S1G1 */
+#if CONFIG_DIMM_SUPPORT==0x0204	/* DDR2 and SO-DIMM, S1G1 */
 	dword = 0x00111222;
 	dwordx = 0x002F2F00;
 
@@ -2576,7 +2576,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 	}
 #endif
 
-#if DIMM_SUPPORT==0x0004  /* DDR2 and unbuffered */
+#if CONFIG_DIMM_SUPPORT==0x0004  /* DDR2 and unbuffered */
 	/* for UNBUF DIMM */
 	dword = 0x00111222;
 	dwordx = 0x002f2f00;
@@ -2658,7 +2658,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 	printk_raminit("\tAddr Timing= %08x\n", dwordx);
 #endif
 
-#if (DIMM_SUPPORT & 0x0100)==0x0000 /* 2T mode only used for unbuffered DIMM */
+#if (CONFIG_DIMM_SUPPORT & 0x0100)==0x0000 /* 2T mode only used for unbuffered DIMM */
 	if (SlowAccessMode) {
 		set_SlowAccessMode(ctrl);
 	}
@@ -2689,7 +2689,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 static void set_RDqsEn(const struct mem_controller *ctrl,
 			const struct mem_param *param, struct mem_info *meminfo)
 {
-#if CPU_SOCKET_TYPE==0x10
+#if CONFIG_CPU_SOCKET_TYPE==0x10
 	//only need to set for reg and x8
 	uint32_t dch;
 
@@ -2880,7 +2880,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 
 #include "raminit_f_dqs.c"
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 static uint32_t hoist_memory(int controllers, const struct mem_controller *ctrl,unsigned hole_startk, int i)
 {
 	int ii;
@@ -2941,10 +2941,10 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 	uint32_t hole_startk;
 	int i;
 
-	hole_startk = 4*1024*1024 - HW_MEM_HOLE_SIZEK;
+	hole_startk = 4*1024*1024 - CONFIG_HW_MEM_HOLE_SIZEK;
 
 	printk_raminit("Handling memory hole at 0x%08x (default)\n", hole_startk);
-#if HW_MEM_HOLE_SIZE_AUTO_INC == 1
+#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
 	/* We need to double check if the hole_startk is valid, if it is equal
 	   to basek, we need to decrease it some */
 	uint32_t basek_pri;
@@ -3143,7 +3143,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 		printk_debug(" done\n");
 	}
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* init hw mem hole here */
 	/* DramHoleValid bit only can be set after MemClrStatus is set by Hardware */
 	set_hw_mem_hole(controllers, ctrl);
@@ -3175,7 +3175,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 	}
 
 
-#if MEM_TRAIN_SEQ ==  0
+#if CONFIG_MEM_TRAIN_SEQ ==  0
    #if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 	dqs_timing(controllers, ctrl, tsc0, sysinfo);
    #else
@@ -3183,7 +3183,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
    #endif
 #else
 
-#if MEM_TRAIN_SEQ == 2
+#if CONFIG_MEM_TRAIN_SEQ == 2
 	/* need to enable mtrr, so dqs training could access the test address  */
 	setup_mtrr_dqs(sysinfo->tom_k, sysinfo->tom2_k);
 #endif
@@ -3195,18 +3195,18 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 
 		dqs_timing(i, &ctrl[i], sysinfo, 1);
 
-#if MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ == 1
 		break; // only train the first node with ram
 #endif
 	}
 
-#if MEM_TRAIN_SEQ == 2
+#if CONFIG_MEM_TRAIN_SEQ == 2
 	clear_mtrr_dqs(sysinfo->tom2_k);
 #endif
 
 #endif
 
-#if MEM_TRAIN_SEQ != 1
+#if CONFIG_MEM_TRAIN_SEQ != 1
 	wait_all_core0_mem_trained(sysinfo);
 #endif
 

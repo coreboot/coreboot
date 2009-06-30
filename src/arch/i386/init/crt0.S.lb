@@ -37,14 +37,14 @@
 
 #include "crt0_includes.h"
 
-#if USE_DCACHE_RAM == 0
+#if CONFIG_USE_DCACHE_RAM == 0
 #ifndef CONSOLE_DEBUG_TX_STRING
 	/* uses:	 esp, ebx, ax, dx */
 # define __CRT_CONSOLE_TX_STRING(string) \
 	mov	string, %ebx	; \
 	CALLSP(crt_console_tx_string)
 
-# if defined(TTYS0_BASE) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
+# if defined(CONFIG_TTYS0_BASE) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
 #  define CONSOLE_DEBUG_TX_STRING(string)        __CRT_CONSOLE_TX_STRING(string)
 # else
 #  define CONSOLE_DEBUG_TX_STRING(string)
@@ -102,26 +102,26 @@ crt_console_tx_string:
 	RETSP
 9:
 /* Base Address */
-#ifndef TTYS0_BASE
-#define TTYS0_BASE	0x3f8
+#ifndef CONFIG_TTYS0_BASE
+#define CONFIG_TTYS0_BASE	0x3f8
 #endif
 /* Data */
-#define TTYS0_RBR (TTYS0_BASE+0x00)
+#define TTYS0_RBR (CONFIG_TTYS0_BASE+0x00)
 
 /* Control */
 #define TTYS0_TBR TTYS0_RBR
-#define TTYS0_IER (TTYS0_BASE+0x01)
-#define TTYS0_IIR (TTYS0_BASE+0x02)
+#define TTYS0_IER (CONFIG_TTYS0_BASE+0x01)
+#define TTYS0_IIR (CONFIG_TTYS0_BASE+0x02)
 #define TTYS0_FCR TTYS0_IIR
-#define TTYS0_LCR (TTYS0_BASE+0x03)
-#define TTYS0_MCR (TTYS0_BASE+0x04)
+#define TTYS0_LCR (CONFIG_TTYS0_BASE+0x03)
+#define TTYS0_MCR (CONFIG_TTYS0_BASE+0x04)
 #define TTYS0_DLL TTYS0_RBR
 #define TTYS0_DLM TTYS0_IER
 
 /* Status */
-#define TTYS0_LSR (TTYS0_BASE+0x05)
-#define TTYS0_MSR (TTYS0_BASE+0x06)
-#define TTYS0_SCR (TTYS0_BASE+0x07)
+#define TTYS0_LSR (CONFIG_TTYS0_BASE+0x05)
+#define TTYS0_MSR (CONFIG_TTYS0_BASE+0x06)
+#define TTYS0_SCR (CONFIG_TTYS0_BASE+0x07)
 	
 	mov	%al, %ah
 10:	mov	$TTYS0_LSR, %dx
@@ -143,7 +143,7 @@ str_copying_to_ram:  .string "Uncompressing coreboot to RAM.\r\n"
 str_copying_to_ram:  .string "Copying coreboot to RAM.\r\n"
 #endif
 #if CONFIG_CBFS
-# if USE_FALLBACK_IMAGE == 1
+# if CONFIG_USE_FALLBACK_IMAGE == 1
 str_coreboot_ram_name:	.string "fallback/coreboot_ram"
 # else
 str_coreboot_ram_name:	.string "normal/coreboot_ram"
@@ -154,4 +154,4 @@ str_pre_main:        .string "Jumping to coreboot.\r\n"
 
 #endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
 
-#endif /* USE_DCACHE_RAM */
+#endif /* CONFIG_USE_DCACHE_RAM */

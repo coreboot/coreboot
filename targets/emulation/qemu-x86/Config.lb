@@ -3,14 +3,14 @@
 target qemu-x86
 mainboard emulation/qemu-x86
 
-option ROM_SIZE=512*1024
+option CONFIG_ROM_SIZE=512*1024
 
 option CC="gcc -m32"
 
-option HAVE_PIRQ_TABLE=1
-option IRQ_SLOT_COUNT=6
-option DEFAULT_CONSOLE_LOGLEVEL=9
-option MAXIMUM_CONSOLE_LOGLEVEL=9
+option CONFIG_HAVE_PIRQ_TABLE=1
+option CONFIG_IRQ_SLOT_COUNT=6
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=9
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=9
 
 romimage "normal" 
 	option COREBOOT_EXTRA_VERSION="-GRUB2"
@@ -18,5 +18,5 @@ romimage "normal"
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"
 

@@ -286,7 +286,7 @@ the build target configuration file
 All local configuration variables have to be declared before they can be
 used. Example:
 \begin{verbatim}
-        uses ROM_IMAGE_SIZE
+        uses CONFIG_ROM_IMAGE_SIZE
 \end{verbatim}
 
 \textbf{NOTE:} Only configuration variables known to the configuration
@@ -303,20 +303,20 @@ configuration files.
 Example:
 
 \begin{verbatim}
-        default ROM_IMAGE_SIZE=0x10000
+        default CONFIG_ROM_IMAGE_SIZE=0x10000
 \end{verbatim}
 
 It is also possible to assign the value of one configuration variable to
 another one, i.e.:
 
 \begin{verbatim}
-        default FALLBACK_SIZE=ROM_SIZE
+        default CONFIG_FALLBACK_SIZE=CONFIG_ROM_SIZE
 \end{verbatim}
 
 Also, simple expressions are allowed:
 
 \begin{verbatim}
-        default FALLBACK_SIZE=(ROM_SIZE -  NORMAL_SIZE)
+        default CONFIG_FALLBACK_SIZE=(CONFIG_ROM_SIZE -  NORMAL_SIZE)
 \end{verbatim}
 
 If an option contains a string, this string has to be protected with
@@ -365,8 +365,8 @@ path to a static elf binary (i.e Linux kernel or etherboot)
 
 \begin{verbatim}
 romimage "normal"
-        option USE_FALLBACK_IMAGE=0
-        option ROM_IMAGE_SIZE=0x10000
+        option CONFIG_USE_FALLBACK_IMAGE=0
+        option CONFIG_ROM_IMAGE_SIZE=0x10000
         option COREBOOT_EXTRA_VERSION=".0Normal"
         mainboard amd/solo
         payload /suse/stepan/tg3ide_
@@ -382,7 +382,7 @@ together to the final coreboot image. It also specifies the order of
 the images and the final image size:
 
 \begin{verbatim}
-        buildrom ./solo.rom ROM_SIZE "normal" "fallback"
+        buildrom ./solo.rom CONFIG_ROM_SIZE "normal" "fallback"
 \end{verbatim}
 
 \end{itemize}
@@ -408,12 +408,12 @@ machine.
 Use new \textit{chip\_configure} method for configuring (nonpci)
 devices. Set to \texttt{1} for all AMD64 mainboards.
 
-\item \begin{verbatim}MAXIMUM_CONSOLE_LOGLEVEL\end{verbatim}
+\item \begin{verbatim}CONFIG_MAXIMUM_CONSOLE_LOGLEVEL\end{verbatim}
 
 Errors or log messages up to this level can be printed. Default is
 \texttt{8}, minimum is \texttt{0}, maximum is \texttt{10}.
 
-\item \begin{verbatim}DEFAULT_CONSOLE_LOGLEVEL\end{verbatim}
+\item \begin{verbatim}CONFIG_DEFAULT_CONSOLE_LOGLEVEL\end{verbatim}
 
 Console will log at this level unless changed. Default is \texttt{7}, 
 minimum is \texttt{0}, maximum is \texttt{10}.
@@ -424,16 +424,16 @@ Log messages to 8250 uart based serial console. Default is \texttt{0}
 (don't log to serial console). This value should be set to \texttt{1}
 for all AMD64 builds.
 
-\item \begin{verbatim}ROM_SIZE\end{verbatim}
+\item \begin{verbatim}CONFIG_ROM_SIZE\end{verbatim}
 
 Size of final ROM image. This option has no default value.
 
-\item \begin{verbatim}FALLBACK_SIZE\end{verbatim}
+\item \begin{verbatim}CONFIG_FALLBACK_SIZE\end{verbatim}
 
 Fallback image size. Defaults to \texttt{65536} bytes. \textbf{NOTE:} 
 This does not include the fallback payload.
 
-\item \begin{verbatim}HAVE_OPTION_TABLE\end{verbatim}
+\item \begin{verbatim}CONFIG_HAVE_OPTION_TABLE\end{verbatim}
 
 Export CMOS option table. Default is \texttt{0}. Set to \texttt{1} if
 your mainboard has CMOS memory and you want to use it to store
@@ -444,7 +444,7 @@ coreboot parameters (Loglevel, serial line speed, ...)
 Boot image is located in ROM (as opposed to \texttt{CONFIG\_IDE\_PAYLOAD}, which
 will boot from an IDE disk)
 
-\item \begin{verbatim}HAVE_FALLBACK_BOOT\end{verbatim}
+\item \begin{verbatim}CONFIG_HAVE_FALLBACK_BOOT\end{verbatim}
 
 Set to \texttt{1} if fallback booting is required. Defaults to
 \texttt{0}.
@@ -456,11 +456,11 @@ The following options should be used within a romimage section:
 
 \begin{itemize}
 
-\item \begin{verbatim}USE_FALLBACK_IMAGE\end{verbatim}
+\item \begin{verbatim}CONFIG_USE_FALLBACK_IMAGE\end{verbatim}
 
 Set to \texttt{1} to build a fallback image. Defaults to \texttt{0}
 
-\item \begin{verbatim}ROM_IMAGE_SIZE\end{verbatim}
+\item \begin{verbatim}CONFIG_ROM_IMAGE_SIZE\end{verbatim}
 
 Default image size. Defaults to \texttt{65535} bytes.
 
@@ -544,14 +544,14 @@ do:
 
 \begin{verbatim}
 makerule ./auto.E
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        depends "$(CONFIG_MAINBOARD)/auto.c option_table.h ./romcc"
         action "./romcc -E -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) \
-		$(MAINBOARD)/auto.c -o $@"
+		$(CONFIG_MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc
-        depends "$(MAINBOARD)/auto.c option_table.h ./romcc"
+        depends "$(CONFIG_MAINBOARD)/auto.c option_table.h ./romcc"
         action "./romcc    -mcpu=k8 -O2 -I$(TOP)/src -I. $(CPPFLAGS) \
-                $(MAINBOARD)/auto.c -o $@"
+                $(CONFIG_MAINBOARD)/auto.c -o $@"
 end
 \end{verbatim}
 
@@ -747,26 +747,26 @@ They should be set using the \texttt{default} keyword:
 
 \begin{itemize}
 
-\item \begin{verbatim}HAVE_HARD_RESET\end{verbatim}
+\item \begin{verbatim}CONFIG_HAVE_HARD_RESET\end{verbatim}
 
 If set to \texttt{1}, this option defines that there is a hard reset
 function for this mainboard.  This option is not defined per default.
 
-\item \begin{verbatim}HAVE_PIRQ_TABLE\end{verbatim}
+\item \begin{verbatim}CONFIG_HAVE_PIRQ_TABLE\end{verbatim}
 
 If set to \texttt{1}, this option defines that there is an IRQ Table for
 this mainboard. This option is not defined per default.
 
-\item \begin{verbatim}IRQ_SLOT_COUNT\end{verbatim}
+\item \begin{verbatim}CONFIG_IRQ_SLOT_COUNT\end{verbatim}
 
 Number of IRQ slots. This option is not defined per default.
 
-\item \begin{verbatim}HAVE_MP_TABLE\end{verbatim}
+\item \begin{verbatim}CONFIG_HAVE_MP_TABLE\end{verbatim}
 
 Define this option to build an MP table (v1.4). The default is not to
 build an MP table.
 
-\item \begin{verbatim}HAVE_OPTION_TABLE\end{verbatim}
+\item \begin{verbatim}CONFIG_HAVE_OPTION_TABLE\end{verbatim}
 
 Define this option to export a CMOS option table. The default is not to
 export a CMOS option table.
@@ -787,23 +787,23 @@ system. Defaults to \texttt{1}.
 Set this option to \texttt{1} to enable IOAPIC support. This is
 mandatory if you want to boot a 64bit Linux kernel on an AMD64 system.
 
-\item \begin{verbatim}STACK_SIZE\end{verbatim}
+\item \begin{verbatim}CONFIG_STACK_SIZE\end{verbatim}
 
 coreboot stack size. The size of the function call stack defaults to
 \texttt{0x2000} (8k).
 
-\item \begin{verbatim}HEAP_SIZE\end{verbatim}
+\item \begin{verbatim}CONFIG_HEAP_SIZE\end{verbatim}
 
 coreboot heap size. The heap is used when coreboot allocates memory
 with malloc(). The default heap size is \texttt{0x2000}, but AMD64 boards
 generally set it to \texttt{0x4000} (16k)
 
-\item \begin{verbatim}XIP_ROM_BASE\end{verbatim}
+\item \begin{verbatim}CONFIG_XIP_ROM_BASE\end{verbatim}
 
 Start address of area to cache during coreboot execution directly from
 ROM.
 
-\item \begin{verbatim}XIP_ROM_SIZE\end{verbatim}
+\item \begin{verbatim}CONFIG_XIP_ROM_SIZE\end{verbatim}
 
 Size of area to cache during coreboot execution directly from ROM
 
@@ -1075,8 +1075,8 @@ Mainboards that provide an IRQ table should have the following two
 variables set in their \texttt{Config.lb} file:
 
 \begin{verbatim}
-default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=7
+default CONFIG_HAVE_PIRQ_TABLE=1
+default CONFIG_IRQ_SLOT_COUNT=7
 \end{verbatim}
 
 This will make coreboot look for the file \\
@@ -1106,7 +1106,7 @@ mainboard specific configuration file
 \begin{verbatim}
 default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=1 # 2,4,..
-default HAVE_MP_TABLE=1
+default CONFIG_HAVE_MP_TABLE=1
 \end{verbatim}
 
 coreboot will then look for a function for setting up the MP table in
@@ -1136,9 +1136,9 @@ framework that can generate the following tables:
 To enable ACPI in your coreboot build, add the following lines to your
 configuration files:
 \begin{verbatim}
-uses HAVE_ACPI_TABLES
+uses CONFIG_HAVE_ACPI_TABLES
 [..]
-option HAVE_ACPI_TABLES=1
+option CONFIG_HAVE_ACPI_TABLES=1
 \end{verbatim}
 
 To keep Linux doing it's pci ressource allocation based on IRQ tables and MP
@@ -1234,12 +1234,12 @@ When changing speed and width of hypertransport chain connections
 coreboot has to either assert an LDTSTOP or a reset to make the changes
 become active.  Additionally Linux can do a firmware reset, if coreboot
 provides the needed infrastructure. To use this capability, define the
-option \texttt{HAVE\_HARD\_RESET} and add an object file specifying the
+option \texttt{HAVE\_HARD\CONFIG_RESET} and add an object file specifying the
 reset code in your mainboard specific configuration file
 \texttt{coreboot-v2/src/mainboard/$<$vendor$>$/$<$mainboard$>$/Config.lb}:
 
 \begin{verbatim}
-        default HAVE_HARD_RESET=1
+        default CONFIG_HAVE_HARD_RESET=1
         object reset.o
 \end{verbatim}
 
@@ -1529,7 +1529,7 @@ was added for many AMD CPUs, which both simplified and complicated things. Simpl
 There are two big additions to the build process and, furthermore, more than two new CONFIG variables to control them. 
 
 \begin{itemize}
-\item \begin{verbatim}USE_DCACHE_RAM\end{verbatim}
+\item \begin{verbatim}CONFIG_USE_DCACHE_RAM\end{verbatim}
 
 Set to \texttt{1} to use Cache As Ram (CAR). Defaults to \texttt{0}
 
@@ -1552,7 +1552,7 @@ A coreboot rom file consists of one or more \textit{images}. All images consist 
 ROMCC images are so-called because C code for the ROM part is compiled with romcc. romcc is an optimizing C compiler which compiles one, and only 
 one file; to get more than one file, one must include the C code via include statements. The main ROM code .c file is usually called auto.c. 
 \subsubsection{How it is built}
-Romcc compiles auto.c to produce auto.inc. auto.inc is included in the main crt0.S, which is then preprocessed to produce crt0.s. The inclusion of files into crt0.S is controlled by the CRT0\_INCLUDES variable. crt0.s is then assembled. 
+Romcc compiles auto.c to produce auto.inc. auto.inc is included in the main crt0.S, which is then preprocessed to produce crt0.s. The inclusion of files into crt0.S is controlled by the CONFIG_CRT0\_INCLUDES variable. crt0.s is then assembled. 
 
 File for the ram part are compiled in a conventional manner. 
 
@@ -1575,8 +1575,8 @@ As we mentioned, the ROM file consists of multiple images. In the basic file, th
 
 \begin{itemize}
 \item PAYLOAD\_SIZE. Each image may have a different payload size. 
-\item \_ROMBASE Each image must have a different base in rom. 
-\item \_RESET Unclear what this is used for. 
+\item \CONFIG_ROMBASE Each image must have a different base in rom. 
+\item \CONFIG_RESET Unclear what this is used for. 
 \item \_EXCEPTION\_VECTORS where an optional IDT might go.
 \item USE\_OPTION\_TABLE if set, an option table section will be linked in. 
 \item CONFIG\_ROM\_PAYLOAD\_START This is the soon-to-be-deprecated way of locating a payload. cbfs eliminates this. 
@@ -1608,7 +1608,7 @@ If fallback has been built in, some setup needs to be done. On some machines, it
                 );
 
  fallback_image:
-#if HAVE_FAILOVER_BOOT==1
+#if CONFIG_HAVE_FAILOVER_BOOT==1
         __asm__ volatile ("jmp __fallback_image"
                 : /* outputs */
                 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
@@ -1619,7 +1619,7 @@ If fallback has been built in, some setup needs to be done. On some machines, it
 How does the fallback image get the symbol for normal entry? Via magic in the ldscript.ld -- remember, the images are not linked to each other. 
 Finally, we can see this in the Config.lb for most mainboards: 
 \begin{verbatim}
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
         mainboardinit cpu/x86/16bit/reset16.inc
         ldscript /cpu/x86/16bit/reset16.lds
 else
@@ -1771,10 +1771,10 @@ Confusingly enough, almost all the uses of these two variables are either nested
 The fallback and normal builds are the same. The target config has a new clause that looks like this: 
 \begin{verbatim}
 romimage "failover"
-        option USE_FAILOVER_IMAGE=1
-        option USE_FALLBACK_IMAGE=0
-        option ROM_IMAGE_SIZE=FAILOVER_SIZE
-        option XIP_ROM_SIZE=FAILOVER_SIZE
+        option CONFIG_USE_FAILOVER_IMAGE=1
+        option CONFIG_USE_FALLBACK_IMAGE=0
+        option CONFIG_ROM_IMAGE_SIZE=CONFIG_FAILOVER_SIZE
+        option CONFIG_XIP_ROM_SIZE=CONFIG_FAILOVER_SIZE
         option COREBOOT_EXTRA_VERSION="\$(shell cat ../../VERSION)\_Failover"
 end
 \end{verbatim}

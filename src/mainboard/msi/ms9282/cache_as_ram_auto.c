@@ -135,7 +135,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -208,7 +208,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
         failover_process(bist, cpu_init_detectedx);
 #endif
         real_main(bist, cpu_init_detectedx);
@@ -232,7 +232,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        unsigned bsp_apicid = 0;
         int needs_reset;
-       struct sys_info *sysinfo = (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+       struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
        char *p ;
 
         if (bist == 0) {
@@ -240,7 +240,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
                bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
         }
 
-       w83627ehg_enable_serial(SERIAL_DEV, TTYS0_BASE);
+       w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
 

@@ -43,7 +43,7 @@ static u32 cpu_init_detected(u8 nodeid)
 static u32 bios_reset_detected(void)
 {
 	u32 htic;
-	htic = pci_io_read_config32(PCI_DEV(CBB, CDB, 0), HT_INIT_CONTROL);
+	htic = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), HT_INIT_CONTROL);
 
 	return (htic & HTIC_ColdR_Detect) && !(htic & HTIC_BIOSR_Detect);
 }
@@ -51,7 +51,7 @@ static u32 bios_reset_detected(void)
 static u32 cold_reset_detected(void)
 {
 	u32 htic;
-	htic = pci_io_read_config32(PCI_DEV(CBB, CDB, 0), HT_INIT_CONTROL);
+	htic = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), HT_INIT_CONTROL);
 
 	return !(htic & HTIC_ColdR_Detect);
 }
@@ -59,7 +59,7 @@ static u32 cold_reset_detected(void)
 static u32 other_reset_detected(void)	// other warm reset not started by BIOS
 {
 	u32 htic;
-	htic = pci_io_read_config32(PCI_DEV(CBB, CDB, 0), HT_INIT_CONTROL);
+	htic = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), HT_INIT_CONTROL);
 
 	return (htic & HTIC_ColdR_Detect) && (htic & HTIC_BIOSR_Detect);
 }
@@ -91,7 +91,7 @@ static void set_bios_reset(void)
 	device_t dev;
 	int i;
 
-	nodes = ((pci_read_config32(PCI_DEV(CBB, CDB, 0), 0x60) >> 4) & 7) + 1;
+	nodes = ((pci_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), 0x60) >> 4) & 7) + 1;
 
 	for(i = 0; i < nodes; i++) {
 		dev = NODE_PCI(i,0);
@@ -115,7 +115,7 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 
 	for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
 		u32 config_map;
-		config_map = pci_io_read_config32(PCI_DEV(CBB, CDB, 1), reg);
+		config_map = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1), reg);
 		if ((config_map & 3) != 3) {
 			continue;
 		}
@@ -126,7 +126,7 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 		}
 	}
 
-#if EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT == 1
 	// let's check that in extend space
 	// use the nodeid extend space to find out the bus for the linkn
 	u32 tempreg;
@@ -157,8 +157,8 @@ static u8 node_link_to_bus(u8 node, u8 link) // node are 6 bit, and link three b
 static u32 get_sblk(void)
 {
 	u32 reg;
-	/* read PCI_DEV(CBB,CDB,0) 0x64 bit [8:9] to find out SbLink m */
-	reg = pci_io_read_config32(PCI_DEV(CBB, CDB, 0), 0x64);
+	/* read PCI_DEV(CONFIG_CBB,CONFIG_CDB,0) 0x64 bit [8:9] to find out SbLink m */
+	reg = pci_io_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), 0x64);
 	return ((reg>>8) & 3) ;
 }
 

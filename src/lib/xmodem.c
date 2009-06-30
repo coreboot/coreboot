@@ -26,17 +26,17 @@ extern unsigned char uart8250_rx_byte(unsigned);
 
 static int _inbyte(int msec)
 {
-	while (!uart8250_can_rx_byte(TTYS0_BASE)) {
+	while (!uart8250_can_rx_byte(CONFIG_TTYS0_BASE)) {
 		udelay(1000);
 		if (msec-- <= 0)
 			return -1;
 	}
-	return uart8250_rx_byte(TTYS0_BASE);
+	return uart8250_rx_byte(CONFIG_TTYS0_BASE);
 }
 
 static void _outbyte(unsigned char c)
 {
-	uart8250_tx_byte(TTYS0_BASE, c);
+	uart8250_tx_byte(CONFIG_TTYS0_BASE, c);
 }
 
 static unsigned short crc16_ccitt(const unsigned char *buf, int sz)

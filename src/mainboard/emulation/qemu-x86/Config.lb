@@ -1,34 +1,34 @@
-## we don't use USE_DCACHE_RAM by default
-default USE_DCACHE_RAM=0
+## we don't use CONFIG_USE_DCACHE_RAM by default
+default CONFIG_USE_DCACHE_RAM=0
 ##
 ## Compute the location and size of where this firmware image
 ## (coreboot plus bootloader) will live in the boot rom chip.
 ##
-default ROM_SIZE = 256 * 1024 
-default ROM_SECTION_SIZE   = ROM_IMAGE_SIZE
-default ROM_SECTION_OFFSET = 0
+default CONFIG_ROM_SIZE = 256 * 1024 
+default CONFIG_ROM_SECTION_SIZE   = CONFIG_ROM_IMAGE_SIZE
+default CONFIG_ROM_SECTION_OFFSET = 0
 
 ##
 ## Compute the start location and size size of
 ## The coreboot bootloader.
 ##
-default PAYLOAD_SIZE            = ( ROM_SIZE - ROM_IMAGE_SIZE )
-default CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+default CONFIG_PAYLOAD_SIZE            = ( CONFIG_ROM_SIZE - CONFIG_ROM_IMAGE_SIZE )
+default CONFIG_ROM_PAYLOAD_START = (0xffffffff - CONFIG_ROM_SIZE + CONFIG_ROM_SECTION_OFFSET + 1)
 
 ##
 ## Compute where this copy of coreboot will start in the boot rom
 ##
-default _ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE )
+default CONFIG_ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + CONFIG_PAYLOAD_SIZE )
 
 ##
 ## Compute a range of ROM that can cached to speed up coreboot,
 ## execution speed.
 ##
-## XIP_ROM_SIZE must be a power of 2.
-## XIP_ROM_BASE must be a multiple of XIP_ROM_SIZE
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+## CONFIG_XIP_ROM_BASE must be a multiple of CONFIG_XIP_ROM_SIZE
 ##
-default XIP_ROM_SIZE=32*1024
-default XIP_ROM_BASE = ( _ROMBASE + ROM_IMAGE_SIZE - XIP_ROM_SIZE )
+default CONFIG_XIP_ROM_SIZE=32*1024
+default CONFIG_XIP_ROM_BASE = ( CONFIG_ROMBASE + CONFIG_ROM_IMAGE_SIZE - CONFIG_XIP_ROM_SIZE )
 
 ##
 ## Set all of the defaults for an x86 architecture
@@ -41,15 +41,15 @@ arch i386 end
 ##
 
 driver mainboard.o
-if HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
 
-## ALL dependencies for USE_DCACHE_RAM go here. 
+## ALL dependencies for CONFIG_USE_DCACHE_RAM go here. 
 ## That way, later, we can simply yank them if we wish. 
-## We include the old-fashioned entry code in the ! USE_DCACHE_RAM case. 
+## We include the old-fashioned entry code in the ! CONFIG_USE_DCACHE_RAM case. 
 ## we do not use failover yet in this case. This is a work in progress. 
-if USE_DCACHE_RAM
+if CONFIG_USE_DCACHE_RAM
 	##
 	##
 	mainboardinit arch/i386/init/entry.S
@@ -63,22 +63,22 @@ else
 	## Romcc output
 	##
 	makerule ./failover.E
-		depends "$(MAINBOARD)/failover.c ../romcc" 
-		action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+		depends "$(CONFIG_MAINBOARD)/failover.c ../romcc" 
+		action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/failover.c -o $@"
 	end
 	
 	makerule ./failover.inc
-		depends "$(MAINBOARD)/failover.c ../romcc"
-		action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+		depends "$(CONFIG_MAINBOARD)/failover.c ../romcc"
+		action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/failover.c -o $@"
 	end
 	
 	makerule ./auto.E 
-		depends	"$(MAINBOARD)/auto.c option_table.h ../romcc" 
-		action	"../romcc -E -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+		depends	"$(CONFIG_MAINBOARD)/auto.c option_table.h ../romcc" 
+		action	"../romcc -E -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/auto.c -o $@"
 	end
 	makerule ./auto.inc 
-		depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
-		action	"../romcc    -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+		depends "$(CONFIG_MAINBOARD)/auto.c option_table.h ../romcc"
+		action	"../romcc    -mcpu=i386 -O -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/auto.c -o $@"
 	end
 	
 	##
@@ -112,7 +112,7 @@ else
 	ldscript /arch/i386/lib/id.lds
 	
 ##
-## end of USE_DCACHE_RAM bits. 
+## end of CONFIG_USE_DCACHE_RAM bits. 
 ##
 end
 

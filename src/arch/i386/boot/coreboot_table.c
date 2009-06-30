@@ -76,15 +76,15 @@ struct lb_memory *lb_memory(struct lb_header *header)
 
 struct lb_serial *lb_serial(struct lb_header *header)
 {
-#if defined(TTYS0_BASE)
+#if defined(CONFIG_TTYS0_BASE)
 	struct lb_record *rec;
 	struct lb_serial *serial;
 	rec = lb_new_record(header);
 	serial = (struct lb_serial *)rec;
 	serial->tag = LB_TAG_SERIAL;
 	serial->size = sizeof(*serial);
-	serial->ioport = TTYS0_BASE;
-	serial->baud = TTYS0_BAUD;
+	serial->ioport = CONFIG_TTYS0_BASE;
+	serial->baud = CONFIG_TTYS0_BAUD;
 	return serial;
 #else
 	return header;
@@ -157,9 +157,9 @@ struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 
 	cmos_checksum->size = (sizeof(*cmos_checksum));
 
-	cmos_checksum->range_start = LB_CKS_RANGE_START * 8;
-	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
-	cmos_checksum->location = LB_CKS_LOC * 8;
+	cmos_checksum->range_start = CONFIG_LB_CKS_RANGE_START * 8;
+	cmos_checksum->range_end = ( CONFIG_LB_CKS_RANGE_END * 8 ) + 7;
+	cmos_checksum->location = CONFIG_LB_CKS_LOC * 8;
 	cmos_checksum->type = CHECKSUM_PCBIOS;
 	
 	return cmos_checksum;
@@ -413,7 +413,7 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	return mem;
 }
 
-#if HAVE_HIGH_TABLES == 1
+#if CONFIG_HAVE_HIGH_TABLES == 1
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
@@ -424,7 +424,7 @@ unsigned long write_coreboot_table(
 	struct lb_header *head;
 	struct lb_memory *mem;
 
-#if HAVE_HIGH_TABLES == 1
+#if CONFIG_HAVE_HIGH_TABLES == 1
 	printk_debug("Writing high table forward entry at 0x%08lx\n",
 			low_table_end);
 	head = lb_table_init(low_table_end);
@@ -460,7 +460,7 @@ unsigned long write_coreboot_table(
 	rom_table_end &= ~0xffff;
 	printk_debug("0x%08lx \n", rom_table_end);
 
-#if (HAVE_OPTION_TABLE == 1) 
+#if (CONFIG_HAVE_OPTION_TABLE == 1) 
 	{
 		struct lb_record *rec_dest, *rec_src;
 		/* Write the option config table... */
@@ -482,13 +482,13 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE, 
 		rom_table_start, rom_table_end-rom_table_start);
 
-#if HAVE_HIGH_TABLES == 1
+#if CONFIG_HAVE_HIGH_TABLES == 1
 	printk_debug("Adding high table area\n");
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		high_tables_base, high_tables_size);
 #endif
 
-#if (HAVE_MAINBOARD_RESOURCES == 1)
+#if (CONFIG_HAVE_MAINBOARD_RESOURCES == 1)
 	add_mainboard_resources(mem);
 #endif
 

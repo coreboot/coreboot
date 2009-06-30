@@ -65,7 +65,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
@@ -146,7 +146,7 @@ static void pci_domain_set_resources(device_t dev)
 				(remaplimitk + 64*1024) - remapbasek);
 		}
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE * 1024;

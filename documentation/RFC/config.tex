@@ -173,7 +173,7 @@ A sample file:
 target x
 
 # over-ride the default rom size in the mainboard file
-option ROM_SIZE=1024*1024
+option CONFIG_ROM_SIZE=1024*1024
 mainboard amd/solo
 end
 
@@ -188,8 +188,8 @@ Sample mainboard file
 arch i386 end
 cpu k8 end
 #
-option DEBUG=1
-default USE_FALLBACK_IMAGE=1
+option CONFIG_DEBUG=1
+default CONFIG_USE_FALLBACK_IMAGE=1
 option A=(1+2)
 option B=0xa
 #
@@ -204,7 +204,7 @@ ldscript cpu/i386/entry32.lds
 ###
 ### Build our reset vector (This is where linuxBIOS is entered)
 ###
-if USE_FALLBACK_IMAGE 
+if CONFIG_USE_FALLBACK_IMAGE 
 	mainboardinit cpu/i386/reset16.inc 
 	ldscript cpu/i386/reset16.lds 
 else
@@ -214,15 +214,15 @@ end
 .
 .
 .
-if USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
+if CONFIG_USE_FALLBACK_IMAGE mainboardinit arch/i386/lib/noop_failover.inc  end
 #
 ###
 ### Romcc output
 ###
-#makerule ./failover.E dep "$(MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(MAINBOARD)/failover.c > ./failever.E"
+#makerule ./failover.E dep "$(CONFIG_MAINBOARD)/failover.c" act "$(CPP) -I$(TOP)/src $(CPPFLAGS) $(CONFIG_MAINBOARD)/failover.c > ./failever.E"
 #makerule ./failover.inc dep "./romcc ./failover.E" act "./romcc -O ./failover.E > failover.inc"
 #mainboardinit ./failover.inc
-makerule ./auto.E dep "$(MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(MAINBOARD)/auto.c > ./auto.E"
+makerule ./auto.E dep "$(CONFIG_MAINBOARD)/auto.c" act "$(CPP) -I$(TOP)/src -$(ROMCCPPFLAGS) $(CPPFLAGS) $(CONFIG_MAINBOARD)/auto.c > ./auto.E"
 makerule ./auto.inc dep "./romcc ./auto.E" act "./romcc -O ./auto.E > auto.inc"
 mainboardinit ./auto.inc
 #
@@ -250,8 +250,8 @@ cpu k8 end
 ##object mainboard.o
 driver mainboard.o
 object static_devices.o
-if HAVE_MP_TABLE object mptable.o end
-if HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_HAVE_MP_TABLE object mptable.o end
+if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
 ### Location of the DIMM EEPROMS on the SMBUS
 ### This is fixed into a narrow range by the DIMM package standard.
 ###
@@ -261,8 +261,8 @@ option SMBUS_MEM_DEVICE_INC=1
 #
 ### The linuxBIOS bootloader.
 ###
-option PAYLOAD_SIZE            = (ROM_SECTION_SIZE - ROM_IMAGE_SIZE)
-option CONFIG_ROM_PAYLOAD_START = (0xffffffff - ROM_SIZE + ROM_SECTION_OFFSET + 1)
+option CONFIG_PAYLOAD_SIZE            = (CONFIG_ROM_SECTION_SIZE - CONFIG_ROM_IMAGE_SIZE)
+option CONFIG_ROM_PAYLOAD_START = (0xffffffff - CONFIG_ROM_SIZE + CONFIG_ROM_SECTION_OFFSET + 1)
 #
 
 \end{verbatim}
@@ -272,17 +272,17 @@ handle. Makefile.settings looks like this, for example:
 \begin{verbatim}
 TOP:=/home/rminnich/src/yapps2/freebios2
 TARGET_DIR:=x
-export MAINBOARD:=/home/rminnich/src/yapps2/freebios2/src/mainboard/amd/solo
-export ARCH:=i386
-export _RAMBASE:=0x4000
-export ROM_IMAGE_SIZE:=65535
-export PAYLOAD_SIZE:=131073
+export CONFIG_MAINBOARD:=/home/rminnich/src/yapps2/freebios2/src/mainboard/amd/solo
+export CONFIG_ARCH:=i386
+export CONFIG_RAMBASE:=0x4000
+export CONFIG_ROM_IMAGE_SIZE:=65535
+export CONFIG_PAYLOAD_SIZE:=131073
 export CONFIG_MAX_CPUS:=1
-export HEAP_SIZE:=8192
-export STACK_SIZE:=8192
-export MEMORY_HOLE:=0
+export CONFIG_HEAP_SIZE:=8192
+export CONFIG_STACK_SIZE:=8192
+export CONFIG_MEMORY_HOLE:=0
 export COREBOOT_VERSION:=1.1.0
-export CC:=$(CROSS_COMPILE)gcc
+export CC:=$(CONFIG_CROSS_COMPILE)gcc
 
 \end{verbatim}
 

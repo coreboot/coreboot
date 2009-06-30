@@ -79,7 +79,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/x86/car/copy_and_run.c"
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 #include "southbridge/intel/i82801er/cmos_failover.c"
 
@@ -147,7 +147,7 @@ void amd64_main(unsigned long bist)
 
 //	post_code(0x32);
 	
- 	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+ 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
 
@@ -228,10 +228,10 @@ cpu_reset_x:
 	}
 
 	__asm__ volatile (
-                /* set new esp */ /* before _RAMBASE */
+                /* set new esp */ /* before CONFIG_RAMBASE */
                 "subl   %0, %%ebp\n\t"
                 "subl   %0, %%esp\n\t"
-                ::"a"( (DCACHE_RAM_BASE + DCACHE_RAM_SIZE)- _RAMBASE )
+                ::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- CONFIG_RAMBASE )
 	);
 
 	{

@@ -91,7 +91,7 @@ static void dump_pci_device(unsigned dev)
 	print_debug("\r\n");
 }
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 static uint32_t pci_read_config32_index_wait(device_t dev, uint32_t index_reg, uint32_t index);
 static void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 {

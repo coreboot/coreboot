@@ -40,8 +40,8 @@
 #ifndef __X86EMU_REGS_H
 #define __X86EMU_REGS_H
 
-#if defined(DEBUG) && (DEBUG == 0)
-#undef DEBUG
+#if defined(CONFIG_DEBUG) && (CONFIG_DEBUG == 0)
+#undef CONFIG_DEBUG
 #endif
 
 /*---------------------- Macros and type definitions ----------------------*/
@@ -283,7 +283,7 @@ typedef struct {
     u32                         mode;
     volatile int                intr;   /* mask of pending interrupts */
     volatile int                         debug;
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
     int                         check;
     u16                         saved_ip;
     u16                         saved_cs;

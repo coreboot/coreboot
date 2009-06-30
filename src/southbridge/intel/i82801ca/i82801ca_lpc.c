@@ -15,8 +15,8 @@
 
 #define NMI_OFF 0
 
-#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
 #define MAINBOARD_POWER_OFF 0
@@ -88,7 +88,7 @@ void i82801ca_rtc_init(struct device *dev)
 {
     uint32_t dword;
     int rtc_failed;
-	int pwr_on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
     uint8_t pmcon3 = pci_read_config8(dev, GEN_PMCON_3);
 
     rtc_failed = pmcon3 & RTC_BATTERY_DEAD;

@@ -14,16 +14,16 @@ mainboard ibm/e325
 #
 # Arima hdama
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x20000
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION=".0Normal"
 #	payload ../../filo.elf
 	payload ../../../payloads/filo.elf
 end
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x20000
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 #	payload ../../filo.elf
 	payload ../../../payloads/filo.elf
@@ -31,4 +31,4 @@ romimage "fallback"
 #	payload /etc/hosts
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

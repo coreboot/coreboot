@@ -1,18 +1,18 @@
 ## This is Architecture independant part of the makefile
 
-uses HAVE_OPTION_TABLE
+uses CONFIG_HAVE_OPTION_TABLE
 uses CONFIG_AP_CODE_IN_CAR
-uses ASSEMBLER_DEBUG
+uses CONFIG_ASSEMBLER_DEBUG
 
 makedefine CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
 makedefine LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 makedefine GCC ?= $(CC)
 makedefine GCC_INC_DIR := $(shell LC_ALL=C $(GCC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
-makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
-makedefine CFLAGS := $(CPU_OPT) $(DISTRO_CFLAGS) $(CPPFLAGS) -Os -nostdinc -nostdlib -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -Werror-implicit-function-declaration -Wstrict-aliasing -Wshadow -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
+makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(CONFIG_ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
+makedefine CFLAGS := $(CONFIG_CPU_OPT) $(DISTRO_CFLAGS) $(CPPFLAGS) -Os -nostdinc -nostdlib -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -Werror-implicit-function-declaration -Wstrict-aliasing -Wshadow -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
-if ASSEMBLER_DEBUG
+if CONFIG_ASSEMBLER_DEBUG
 makedefine DEBUG_CFLAGS := -g -dA -fverbose-asm
 end
 
@@ -35,25 +35,25 @@ end
 
 makerule coreboot.strip  
 	depends	"coreboot" 
-	action	"$(OBJCOPY) -O binary coreboot coreboot.strip"
+	action	"$(CONFIG_OBJCOPY) -O binary coreboot coreboot.strip"
 end
 
 makerule coreboot.a
         depends "$(OBJECTS)"
         action  "rm -f coreboot.a"
-        action  "$(CROSS_COMPILE)ar cr coreboot.a $(OBJECTS)"
+        action  "$(CONFIG_CROSS_COMPILE)ar cr coreboot.a $(OBJECTS)"
 end
 
 
 makerule coreboot_ram.o
-	depends	"src/arch/$(ARCH)/lib/c_start.o $(DRIVER) coreboot.a $(LIBGCC_FILE_NAME)" 
-	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ src/arch/$(ARCH)/lib/c_start.o $(DRIVER) -Wl,-\( coreboot.a $(LIBGCC_FILE_NAME) -Wl,-\)"
+	depends	"src/arch/$(CONFIG_ARCH)/lib/c_start.o $(DRIVER) coreboot.a $(LIBGCC_FILE_NAME)" 
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ src/arch/$(CONFIG_ARCH)/lib/c_start.o $(DRIVER) -Wl,-\( coreboot.a $(LIBGCC_FILE_NAME) -Wl,-\)"
 end
 
 makerule coreboot_ram
 	depends	"coreboot_ram.o $(TOP)/src/config/coreboot_ram.ld ldoptions" 
 	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_ram.ld coreboot_ram.o"
-	action 	"$(CROSS_COMPILE)nm -n coreboot_ram | sort > coreboot_ram.map"
+	action 	"$(CONFIG_CROSS_COMPILE)nm -n coreboot_ram | sort > coreboot_ram.map"
 end
 
 ##
@@ -64,7 +64,7 @@ makedefine COREBOOT_RAM-$(CONFIG_UNCOMPRESSED):=coreboot_ram.bin
 
 makerule coreboot_ram.bin 
 	depends	"coreboot_ram" 
-	action	"$(OBJCOPY) -O binary $< $@"
+	action	"$(CONFIG_OBJCOPY) -O binary $< $@"
 end
 
 makerule coreboot_ram.nrv2b 
@@ -85,18 +85,18 @@ if CONFIG_AP_CODE_IN_CAR
 	makerule coreboot_apc.a
 		depends "apc_auto.o"
 		action  "rm -f coreboot_apc.a"
-		action  "$(CROSS_COMPILE)ar cr coreboot_apc.a apc_auto.o"
+		action  "$(CONFIG_CROSS_COMPILE)ar cr coreboot_apc.a apc_auto.o"
 	end
 
 	makerule coreboot_apc.o
-		depends "src/arch/$(ARCH)/lib/c_start.o coreboot_apc.a $(LIBGCC_FILE_NAME)"
+		depends "src/arch/$(CONFIG_ARCH)/lib/c_start.o coreboot_apc.a $(LIBGCC_FILE_NAME)"
         	action  "$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ $^"
 	end
 
 	makerule coreboot_apc
 		depends "coreboot_apc.o $(TOP)/src/config/coreboot_apc.ld ldoptions"
 		action  "$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o $@ -T $(TOP)/src/config/coreboot_apc.ld coreboot_apc.o"
-		action  "$(CROSS_COMPILE)nm -n coreboot_apc | sort > coreboot_apc.map"
+		action  "$(CONFIG_CROSS_COMPILE)nm -n coreboot_apc | sort > coreboot_apc.map"
 	end
 
 	##
@@ -107,7 +107,7 @@ if CONFIG_AP_CODE_IN_CAR
 
 	makerule coreboot_apc.bin
 		depends "coreboot_apc"
-		action  "$(OBJCOPY) -O binary $< $@"
+		action  "$(CONFIG_OBJCOPY) -O binary $< $@"
 	end
 
 	makerule coreboot_apc.nrv2b
@@ -129,14 +129,14 @@ makedefine COREBOOT_RAM_ROM:=coreboot_ram.rom
 makerule coreboot   
 	depends	"crt0.o $(INIT-OBJECTS) $(COREBOOT_APC) $(COREBOOT_RAM_ROM) ldscript.ld"
 	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o $(INIT-OBJECTS)"
-	action	"$(CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
-	action 	"$(CROSS_COMPILE)objdump -dS coreboot > coreboot.disasm"	
+	action	"$(CONFIG_CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
+	action 	"$(CONFIG_CROSS_COMPILE)objdump -dS coreboot > coreboot.disasm"	
 end
 
 # the buildrom tool
 makerule buildrom 
 	depends	"$(TOP)/util/buildrom/buildrom.c" 
-	action	"$(HOSTCC) -o $@ $<"
+	action	"$(CONFIG_HOSTCC) -o $@ $<"
 end
 
 # Force crt0.s (which has build time version code in it to rebuild every time)
@@ -149,7 +149,7 @@ end
 # generate an assembly listing via -a switch.
 makerule crt0.o  
 	depends	"crt0.s" 
-	action	"$(CC) -Wa,-acdlns -c $(CPU_OPT) -o $@ $< >crt0.disasm"
+	action	"$(CC) -Wa,-acdlns -c $(CONFIG_CPU_OPT) -o $@ $< >crt0.disasm"
 end
 
 makerule etags   
@@ -178,21 +178,21 @@ end
 # be in a correct and valid state if it exists because the move is atomic.
 makerule ../romcc   
 	depends	"$(TOP)/util/romcc/romcc.c" 
-	action	"$(HOSTCC) -g $(HOSTCFLAGS) $< -o romcc.tmpfile"
+	action	"$(CONFIG_HOSTCC) -g $(HOSTCFLAGS) $< -o romcc.tmpfile"
 	action	"mv romcc.tmpfile $@"
 end
 
 makerule build_opt_tbl   
 	depends	"$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/coreboot_tables.h Makefile.settings Makefile"
-	action	"$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
+	action	"$(CONFIG_HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
 end
 
 makerule option_table.h option_table.c
-	depends	"build_opt_tbl $(MAINBOARD)/cmos.layout" 
-	action	"./build_opt_tbl --config $(MAINBOARD)/cmos.layout --header option_table.h --option option_table.c"
+	depends	"build_opt_tbl $(CONFIG_MAINBOARD)/cmos.layout" 
+	action	"./build_opt_tbl --config $(CONFIG_MAINBOARD)/cmos.layout --header option_table.h --option option_table.c"
 end
 
-if HAVE_OPTION_TABLE
+if CONFIG_HAVE_OPTION_TABLE
 object ./option_table.o 
 end
 

@@ -33,12 +33,12 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 	device_t dev;
 	struct dram_base_mask_t d;
 #if defined(__ROMCC__)
-	dev = PCI_DEV(CBB, CDB, 1);
+	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1);
 #else
 	dev = __f1_dev[0];
 #endif
 
-#if EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT == 1
 	// I will use ext space only for simple
 	pci_write_config32(dev, 0x110, nodeid | (1<<28)); // [47:27] at [28:8]
 	d.mask = pci_read_config32(dev, 0x114);  // enable is bit 0
@@ -65,7 +65,7 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 {
 	u32 i;
 	device_t dev;
-#if EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT == 1
 	// I will use ext space only for simple
 	u32 d_base_i, d_base_d, d_mask_i, d_mask_d;
 	d_base_i = nodeid | (0<<28);
@@ -94,7 +94,7 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 		dev = __f1_dev[i];
 #endif
 
-#if EXT_CONF_SUPPORT == 1
+#if CONFIG_EXT_CONF_SUPPORT == 1
 		// I will use ext space only for simple
 		pci_write_config32(dev, 0x110, d_base_i);
 		pci_write_config32(dev, 0x114, d_base_d); //[47:27] at [28:8];
@@ -232,7 +232,7 @@ static u32 get_one_DCT(struct mem_info *meminfo)
 	return one_DCT;
 }
 #endif
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 
 static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
 {
@@ -316,7 +316,7 @@ static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
 #endif
 
 
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 static void set_addr_map_reg_4_6_in_one_node(u32 nodeid, u32 cfg_map_dest,
 						u32 busn_min, u32 busn_max,
 						u32 type)
@@ -388,7 +388,7 @@ static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	busn_min>>=segbit;
 	busn_max>>=segbit;
 
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(ht_c_index < 4) {
 #endif
 		tempreg = 3 | ((nodeid&0xf)<<4) | ((nodeid & 0x30)<<(12-4))|(linkn<<8)|((busn_min & 0xff)<<16)|((busn_max&0xff)<<24);
@@ -400,7 +400,7 @@ static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 		#endif
 			pci_write_config32(dev, 0xe0 + ht_c_index * 4, tempreg);
 		}
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 
 		return;
 	}
@@ -429,7 +429,7 @@ static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	u32 i;
 	device_t dev;
 
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(ht_c_index<4) {
 #endif
 		for(i=0; i<nodes; i++) {
@@ -440,7 +440,7 @@ static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 		#endif
 			pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 		}
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 		return;
 	}
 
@@ -458,7 +458,7 @@ static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 
 }
 
-#if PCI_BUS_SEGN_BITS
+#if CONFIG_PCI_BUS_SEGN_BITS
 static u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
 			sys_info_conf_t *sysinfo)
 {
@@ -488,7 +488,7 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	u32 tempreg;
 	device_t dev;
 
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(ht_c_index<4) {
 #endif
 		/* io range allocation */
@@ -510,7 +510,7 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 		#endif
 			pci_write_config32(dev, 0xC0 + ht_c_index * 8, tempreg);
 		}
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 		return;
 	}
 
@@ -541,7 +541,7 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 {
 	u32 i;
 	device_t dev;
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(ht_c_index<4) {
 #endif
 		 /* io range allocation */
@@ -554,7 +554,7 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 			pci_write_config32(dev, 0xC4 + ht_c_index * 8, 0);
 			pci_write_config32(dev, 0xC0 + ht_c_index * 8, 0);
 		}
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 		return;
 	}
 	// : if hc_c_index > 3, We should use io_min, io_max to clear extend space
@@ -592,7 +592,7 @@ static void re_set_all_config_map_reg(u32 nodes, u32 segbit,
 			pci_write_config32(dev, 0xe0 + ht_c_index * 4, 0);
 		}
 	}
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	u32 j;
 	// clear the extend space
 	for(j = 0; j< nodes; j++) {
@@ -624,7 +624,7 @@ static u32 get_ht_c_index(u32 nodeid, u32 linkn, sys_info_conf_t *sysinfo)
 	tempreg = 3 | ((nodeid & 0xf) <<4) | ((nodeid & 0x30)<<(12-4)) | (linkn<<8);
 
 	for(ht_c_index=0;ht_c_index<4; ht_c_index++) {
-		reg = pci_read_config32(PCI_DEV(CBB, CDB, 1), 0xe0 + ht_c_index * 4);
+		reg = pci_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1), 0xe0 + ht_c_index * 4);
 		if(((reg & 0xffff) == 0x0000)) {  /*found free*/
 			break;
 		}
@@ -660,7 +660,7 @@ static void store_ht_c_conf_bus(u32 nodeid, u32 linkn, u32 ht_c_index,
 
 static  void set_BusSegmentEn(u32 node, u32 segbit)
 {
-#if PCI_BUS_SEGN_BITS
+#if CONFIG_PCI_BUS_SEGN_BITS
 	u32 dword;
 	device_t dev;
 
@@ -715,12 +715,12 @@ static void store_conf_io_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 				u32 io_min, u32 io_max)
 {
 	u32 val;
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(reg!=0x110) {
 #endif
 		/* io range allocation */
 		index = (reg-0xc0)>>3;
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	} else {
 		index+=4;
 	}
@@ -740,12 +740,12 @@ static void store_conf_mmio_addr(u32 nodeid, u32 linkn, u32 reg, u32 index,
 					u32 mmio_min, u32 mmio_max)
 {
 	u32 val;
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(reg!=0x110) {
 #endif
 		/* io range allocation */
 		index = (reg-0x80)>>3;
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	} else {
 		index+=8;
 	}
@@ -767,7 +767,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 
 	u32 i;
 	u32 tempreg;
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(reg!=0x110) {
 #endif
 		/* io range allocation */
@@ -789,7 +789,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 #endif
 		for(i=0; i<sysconf.nodes; i++)
 			pci_write_config32(__f1_dev[i], reg, tempreg);
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 		return;
 	}
 
@@ -816,7 +816,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 
 	u32 i;
 	u32 tempreg;
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 	if(reg!=0x110) {
 #endif
 		/* io range allocation */
@@ -826,7 +826,7 @@ static void set_mmio_addr_reg(u32 nodeid, u32 linkn, u32 reg, u32 index, u32 mmi
 		tempreg = 3 | (nodeid & 0x30) | (mmio_min&0xffffff00);
 		for(i=0; i<sysconf.nodes; i++)
 			pci_write_config32(__f1_dev[i], reg, tempreg);
-#if EXT_CONF_SUPPORT
+#if CONFIG_EXT_CONF_SUPPORT
 		return;
 	}
 

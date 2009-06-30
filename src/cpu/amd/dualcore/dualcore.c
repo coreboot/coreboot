@@ -19,7 +19,7 @@ static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 #if SET_NB_CFG_54 == 1
 static inline uint8_t set_apicid_cpuid_lo(void)
 {
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
         if(is_cpu_pre_e0()) return 0; // pre_e0 can not be set
 #endif
 
@@ -56,7 +56,7 @@ static inline void start_other_cores(void)
 	unsigned nodes;
 	unsigned nodeid;
 
-	if (HAVE_OPTION_TABLE &&
+	if (CONFIG_HAVE_OPTION_TABLE &&
 	    read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) != 0)  {
 		return; // disable dual_core
 	}
@@ -70,7 +70,7 @@ static inline void start_other_cores(void)
 	}
 
 }
-#if USE_DCACHE_RAM == 0
+#if CONFIG_USE_DCACHE_RAM == 0
 static void do_k8_init_and_stop_secondaries(void)
 {
 	struct node_core_id id;
@@ -106,22 +106,22 @@ static void do_k8_init_and_stop_secondaries(void)
 	pci_write_config32(dev_f0, 0x68, val);
 
 	/* Set the lapicid */
-        #if (ENABLE_APIC_EXT_ID == 1)
+        #if (CONFIG_ENABLE_APIC_EXT_ID == 1)
                 unsigned initial_apicid = get_initial_apicid();
-                #if LIFT_BSP_APIC_ID == 0
+                #if CONFIG_LIFT_BSP_APIC_ID == 0
                 if( initial_apicid != 0 ) // other than bsp
                 #endif
                 {
                                 /* use initial apic id to lift it */
                                 uint32_t dword = lapic_read(LAPIC_ID);
                                 dword &= ~(0xff<<24);
-                                dword |= (((initial_apicid + APIC_ID_OFFSET) & 0xff)<<24);
+                                dword |= (((initial_apicid + CONFIG_APIC_ID_OFFSET) & 0xff)<<24);
 
                                 lapic_write(LAPIC_ID, dword);
                 }
 
-                #if LIFT_BSP_APIC_ID == 1
-                bsp_apicid += APIC_ID_OFFSET;
+                #if CONFIG_LIFT_BSP_APIC_ID == 1
+                bsp_apicid += CONFIG_APIC_ID_OFFSET;
                 #endif
 
         #endif

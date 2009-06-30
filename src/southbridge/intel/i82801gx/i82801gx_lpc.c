@@ -185,7 +185,7 @@ static void i82801gx_power_options(device_t dev)
 	u8 reg8;
 	u16 reg16;
 
-	int pwr_on=MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	int nmi_option;
 
 	/* Which state do we want to goto after g3 (power restored)?
@@ -296,7 +296,7 @@ static void enable_clock_gating(void)
 	RCBA32(0x341c) = reg32;
 }
 
-#if HAVE_SMI_HANDLER
+#if CONFIG_HAVE_SMI_HANDLER
 static void i82801gx_lock_smm(struct device *dev)
 {
 	void smm_lock(void);
@@ -401,7 +401,7 @@ static void lpc_init(struct device *dev)
 
 	setup_i8259();
 
-#if HAVE_SMI_HANDLER
+#if CONFIG_HAVE_SMI_HANDLER
 	i82801gx_lock_smm(dev);
 #endif
 

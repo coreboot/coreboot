@@ -127,7 +127,7 @@ static void main(unsigned long bist)
 	SystemPreInit();
 	
 
-	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

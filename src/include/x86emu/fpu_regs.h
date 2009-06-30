@@ -40,8 +40,8 @@
 #define __X86EMU_FPU_REGS_H
 
 
-#if defined(DEBUG) && (DEBUG == 0)
-#undef DEBUG
+#if defined(CONFIG_DEBUG) && (DEBUG == 0)
+#undef CONFIG_DEBUG
 #endif
 
 #ifdef X86_FPU_SUPPORT
@@ -107,7 +107,7 @@ struct x86_fpu_registers {
 
 #endif /* X86_FPU_SUPPORT */
 
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 # define DECODE_PRINTINSTR32(t,mod,rh,rl)     	\
 	DECODE_PRINTF(t[(mod<<3)+(rh)]);
 # define DECODE_PRINTINSTR256(t,mod,rh,rl)    	\

@@ -45,7 +45,7 @@ static void main(unsigned long bist)
 	if (bist == 0)
 		early_mtrr_init();
 
-	smscsuperio_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

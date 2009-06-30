@@ -30,7 +30,7 @@
  * - enable L1 I/D caches, otherwise performance will be slow
  * - set up DBATs for the following regions:
  *   - RAM (generally 0x00000000 -> 0x7fffffff)
- *   - ROM (_ROMBASE -> _ROMBASE + ROM_SIZE)
+ *   - ROM (CONFIG_ROMBASE -> CONFIG_ROMBASE + CONFIG_ROM_SIZE)
  *   - I/O (generally 0xfc000000 -> 0xfdffffff)
  *   - the main purpose for setting up the DBATs is so the I/O region
  *     can be marked cache inhibited/write through
@@ -113,7 +113,7 @@
 	 * IBATS
 	 *
 	 * IBAT0 covers RAM (0 -> 256Mb)
-	 * IBAT1 covers ROM (_ROMBASE -> _ROMBASE+ROM_SIZE)
+	 * IBAT1 covers ROM (CONFIG_ROMBASE -> CONFIG_ROMBASE+CONFIG_ROM_SIZE)
 	 */
         lis     r2, 0@h
         ori     r3, r2, BAT_BL_256M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
@@ -122,8 +122,8 @@
         mtibatl 0, r2
 	isync
 
-        lis     r2, _ROMBASE@h
-#if ROM_SIZE > 1048576
+        lis     r2, CONFIG_ROMBASE@h
+#if CONFIG_ROM_SIZE > 1048576
         ori     r3, r2, BAT_BL_16M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
 #else
         ori     r3, r2, BAT_BL_1M | BAT_VALID_SUPERVISOR | BAT_VALID_USER
@@ -161,9 +161,9 @@
 	 * Initialize data cache blocks 
 	 * (assumes cache block size of 32 bytes)
 	 */
-	lis	r1, DCACHE_RAM_BASE@h
-	ori	r1, r1, DCACHE_RAM_BASE@l
-	li 	r3, (DCACHE_RAM_SIZE / 32)
+	lis	r1, CONFIG_DCACHE_RAM_BASE@h
+	ori	r1, r1, CONFIG_DCACHE_RAM_BASE@l
+	li 	r3, (CONFIG_DCACHE_RAM_SIZE / 32)
 	mtctr	r3
 0:	dcbz	r0, r1
 	addi	r1, r1, 32

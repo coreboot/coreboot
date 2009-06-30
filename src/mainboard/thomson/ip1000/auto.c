@@ -101,7 +101,7 @@ static void main(unsigned long bist)
 			hard_reset();
 		}
 
-	smscsuperio_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	mb_gpio_init();
 	uart_init();
 	console_init();

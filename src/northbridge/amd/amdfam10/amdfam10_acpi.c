@@ -134,7 +134,7 @@ unsigned long acpi_fill_slit(unsigned long current)
 	/* fill the first 8 byte with that num */
 	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
 
-	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	u8 *ln = sysinfox->ln;
 
 
@@ -190,7 +190,7 @@ void update_ssdt(void *ssdt)
 	u8 *CBST;
 	u8 *CBBX;
 	u8 *CBS2;
-	u8 *CBB2;
+	u8 *CONFIG_CBB2;
 
 
 	int i;
@@ -208,7 +208,7 @@ void update_ssdt(void *ssdt)
 	HCDN = ssdt+0x57a; //+5 will be next HCDN
 	CBBX = ssdt+0x61f; //
 	CBST = ssdt+0x626;
-	CBB2 = ssdt+0x62d; //
+	CONFIG_CBB2 = ssdt+0x62d; //
 	CBS2 = ssdt+0x634;
 
 	for(i=0;i<HC_NUMS;i++) {
@@ -245,9 +245,9 @@ void update_ssdt(void *ssdt)
 		int_to_stream(0x20202020, HCDN + i*5);
 	}
 
-	*CBBX = (u8)(CBB);
+	*CBBX = (u8)(CONFIG_CBB);
 
-	if(CBB == 0xff) {
+	if(CONFIG_CBB == 0xff) {
 		*CBST = (u8) (0x0f);
 	} else {
 		if((sysconf.pci1234[0] >> 12) & 0xff) { //sb chain on  other than bus 0
@@ -258,12 +258,12 @@ void update_ssdt(void *ssdt)
 		}
 	}
 
-	if((CBB == 0xff) && (sysconf.nodes>32)) {
+	if((CONFIG_CBB == 0xff) && (sysconf.nodes>32)) {
 		 *CBS2 = 0x0f;
-		 *CBB2 = (u8)(CBB-1);
+		 *CONFIG_CBB2 = (u8)(CONFIG_CBB-1);
 	} else {
 		*CBS2 = 0x00;
-		*CBB2 = 0x00;
+		*CONFIG_CBB2 = 0x00;
 	}
 
 }

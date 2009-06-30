@@ -4,7 +4,7 @@
 extern const struct pci_bus_operations pci_cf8_conf1;
 extern const struct pci_bus_operations pci_cf8_conf2;
 
-#if MMCONF_SUPPORT==1
+#if CONFIG_MMCONF_SUPPORT==1
 extern const struct pci_bus_operations pci_ops_mmconf;
 #endif
 

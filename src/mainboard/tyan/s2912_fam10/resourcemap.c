@@ -49,14 +49,14 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the upper address bits of a 40 bit  address
 		 *	   that define the end of the DRAM region.
 		 */
-		// PCI_ADDR(CBB, CDB, 1, 0x44), 0x0000f8f8, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x4C), 0x0000f8f8, 0x00000001,
-		PCI_ADDR(CBB, CDB, 1, 0x54), 0x0000f8f8, 0x00000002,
-		PCI_ADDR(CBB, CDB, 1, 0x5C), 0x0000f8f8, 0x00000003,
-		PCI_ADDR(CBB, CDB, 1, 0x64), 0x0000f8f8, 0x00000004,
-		PCI_ADDR(CBB, CDB, 1, 0x6C), 0x0000f8f8, 0x00000005,
-		PCI_ADDR(CBB, CDB, 1, 0x74), 0x0000f8f8, 0x00000006,
-		PCI_ADDR(CBB, CDB, 1, 0x7C), 0x0000f8f8, 0x00000007,
+		// PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x44), 0x0000f8f8, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x4C), 0x0000f8f8, 0x00000001,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x54), 0x0000f8f8, 0x00000002,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x5C), 0x0000f8f8, 0x00000003,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x64), 0x0000f8f8, 0x00000004,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x6C), 0x0000f8f8, 0x00000005,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x74), 0x0000f8f8, 0x00000006,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x7C), 0x0000f8f8, 0x00000007,
 
 		/* DRAM Base i Registers
 		 * F1:0x40 i = 0
@@ -88,14 +88,14 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the upper address bits of a 40-bit address
 		 *	   that define the start of the DRAM region.
 		 */
-		// PCI_ADDR(CBB, CDB, 1, 0x40), 0x0000f8fc, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x48), 0x0000f8fc, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x50), 0x0000f8fc, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x58), 0x0000f8fc, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x60), 0x0000f8fc, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x68), 0x0000f8fc, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x70), 0x0000f8fc, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x78), 0x0000f8fc, 0x00000000,
+		// PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x40), 0x0000f8fc, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x48), 0x0000f8fc, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x50), 0x0000f8fc, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x58), 0x0000f8fc, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x60), 0x0000f8fc, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x68), 0x0000f8fc, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x70), 0x0000f8fc, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x78), 0x0000f8fc, 0x00000000,
 
 		/* Memory-Mapped I/O Limit i Registers
 		 * F1:0x84 i = 0
@@ -129,14 +129,14 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the upp adddress bits of a 40-bit address that
 		 *	   defines the end of a memory-mapped I/O region n
 		 */
-		PCI_ADDR(CBB, CDB, 1, 0x84), 0x00000048, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x8C), 0x00000048, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x94), 0x00000048, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x9C), 0x00000048, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xA4), 0x00000048, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xAC), 0x00000048, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xB4), 0x00000048, 0x00000000,
-//		PCI_ADDR(CBB, CDB, 1, 0xBC), 0x00000048, 0x00ffff00,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x84), 0x00000048, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x8C), 0x00000048, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x94), 0x00000048, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x9C), 0x00000048, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xA4), 0x00000048, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xAC), 0x00000048, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xB4), 0x00000048, 0x00000000,
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xBC), 0x00000048, 0x00ffff00,
 
 		/* Memory-Mapped I/O Base i Registers
 		 * F1:0x80 i = 0
@@ -164,14 +164,14 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the upper address bits of a 40bit address
 		 *	   that defines the start of memory-mapped I/O region i
 		 */
-		PCI_ADDR(CBB, CDB, 1, 0x80), 0x000000f0, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x88), 0x000000f0, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x90), 0x000000f0, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0x98), 0x000000f0, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xA0), 0x000000f0, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xA8), 0x000000f0, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xB0), 0x000000f0, 0x00000000,
-//		PCI_ADDR(CBB, CDB, 1, 0xB8), 0x000000f0, 0x00fc0003,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x80), 0x000000f0, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x88), 0x000000f0, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x90), 0x000000f0, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x98), 0x000000f0, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xA0), 0x000000f0, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xA8), 0x000000f0, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xB0), 0x000000f0, 0x00000000,
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xB8), 0x000000f0, 0x00fc0003,
 
 		/* PCI I/O Limit i Registers
 		 * F1:0xC4 i = 0
@@ -198,10 +198,10 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the end of PCI I/O region n
 		 * [31:25] Reserved
 		 */
-//		PCI_ADDR(CBB, CDB, 1, 0xC4), 0xFE000FC8, 0x00007000,
-//		PCI_ADDR(CBB, CDB, 1, 0xCC), 0xFE000FC8, 0x01fff020, // need to talk to ANALOG of second CK804 to release PCI E reset
-		PCI_ADDR(CBB, CDB, 1, 0xD4), 0xFE000FC8, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xDC), 0xFE000FC8, 0x00000000,
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xC4), 0xFE000FC8, 0x00007000,
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xCC), 0xFE000FC8, 0x01fff020, // need to talk to ANALOG of second CK804 to release PCI E reset
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xD4), 0xFE000FC8, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xDC), 0xFE000FC8, 0x00000000,
 
 		/* PCI I/O Base i Registers
 		 * F1:0xC0 i = 0
@@ -228,10 +228,10 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the start of PCI I/O region n
 		 * [31:25] Reserved
 		 */
-//		PCI_ADDR(CBB, CDB, 1, 0xC0), 0xFE000FCC, 0x00000033,
-//		PCI_ADDR(CBB, CDB, 1, 0xC8), 0xFE000FCC, 0x00008033,
-		PCI_ADDR(CBB, CDB, 1, 0xD0), 0xFE000FCC, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xD8), 0xFE000FCC, 0x00000000,
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xC0), 0xFE000FCC, 0x00000033,
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xC8), 0xFE000FCC, 0x00008033,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xD0), 0xFE000FCC, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xD8), 0xFE000FCC, 0x00000000,
 
 		/* Config Base and Limit i Registers
 		 * F1:0xE0 i = 0
@@ -269,10 +269,10 @@ static void setup_mb_resource_map(void)
 		 * [31:24] Bus Number Limit i
 		 *	   This field defines the highest bus number in configuration region i
 		 */
-//		PCI_ADDR(CBB, CDB, 1, 0xE0), 0x0000FC88, 0x3f000003, /* link 0 of cpu 0 --> Nvidia MCP55 Pro */
-//		PCI_ADDR(CBB, CDB, 1, 0xE4), 0x0000FC88, 0x7f400203, /* link 2 of cpu 0 --> nvidia io55 	*/
-		PCI_ADDR(CBB, CDB, 1, 0xE8), 0x0000FC88, 0x00000000,
-		PCI_ADDR(CBB, CDB, 1, 0xEC), 0x0000FC88, 0x00000000,
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xE0), 0x0000FC88, 0x3f000003, /* link 0 of cpu 0 --> Nvidia MCP55 Pro */
+//		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xE4), 0x0000FC88, 0x7f400203, /* link 2 of cpu 0 --> nvidia io55 	*/
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xE8), 0x0000FC88, 0x00000000,
+		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0xEC), 0x0000FC88, 0x00000000,
 
 	};
 

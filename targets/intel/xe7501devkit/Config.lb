@@ -1,22 +1,22 @@
 target xe7501devkit
 mainboard intel/xe7501devkit
 
-## ROM_SIZE is the total number of bytes allocated for coreboot use
+## CONFIG_ROM_SIZE is the total number of bytes allocated for coreboot use
 ## (normal AND fallback images and payloads).
-option ROM_SIZE = 192*1024
+option CONFIG_ROM_SIZE = 192*1024
 
-## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
+## CONFIG_ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
 ## not including any payload.
-option ROM_IMAGE_SIZE = 0x1B000
+option CONFIG_ROM_IMAGE_SIZE = 0x1B000
 
-## FALLBACK_SIZE is the amount of the ROM the complete fallback image 
+## CONFIG_FALLBACK_SIZE is the amount of the ROM the complete fallback image 
 ## (including payload) will use
-option FALLBACK_SIZE = 0
+option CONFIG_FALLBACK_SIZE = 0
 
 
 
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
+	option CONFIG_USE_FALLBACK_IMAGE=0
 #	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 #       payload ../../../../../../../memtest86/memtest
 #       payload ../../../../../../../etherboot/src/bin/e1000.zelf
@@ -27,11 +27,11 @@ end
 #NOTE: CMOS currently not supported due to conflicts with factory BIOS
 #      Thus no support for fallback boot.
 #romimage "fallback" 
-#	option USE_FALLBACK_IMAGE=1
+#	option CONFIG_USE_FALLBACK_IMAGE=1
 #	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 #       payload ../../../../../../../memtest86/memtest
 #       payload ../../../../../../../etherboot/src/bin/e1000.zelf
 #       payload ../../../../../../../etherboot/src/bin/e1000--filo.zelf
 #end
 
-buildrom ./coreboot.rom ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"

@@ -18,20 +18,20 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 arch i386 end
 driver mainboard.o
-if HAVE_PIRQ_TABLE
+if CONFIG_HAVE_PIRQ_TABLE
 	object irq_tables.o
 end
 	# Compile cache_as_ram.c to auto.inc.
 	makerule ./cache_as_ram_auto.inc
-			# depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-			depends "$(MAINBOARD)/cache_as_ram_auto.c"
-			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+			# depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c"
+			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 			action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 	end
@@ -39,7 +39,7 @@ mainboardinit cpu/x86/16bit/entry16.inc
 mainboardinit cpu/x86/32bit/entry32.inc
 ldscript /cpu/x86/16bit/entry16.lds
 ldscript /cpu/x86/32bit/entry32.lds
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	mainboardinit cpu/x86/16bit/reset16.inc
 	ldscript /cpu/x86/16bit/reset16.lds
 else
@@ -48,7 +48,7 @@ else
 end
 mainboardinit arch/i386/lib/id.inc
 ldscript /arch/i386/lib/id.lds
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds
 #	mainboardinit ./failover.inc
 end

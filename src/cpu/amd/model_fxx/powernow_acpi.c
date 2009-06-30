@@ -169,7 +169,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	cpuid1 = cpuid(0x80000001);
 	pwr_lmt = ((cpuid1.ebx & 0x1C0) >> 5) | ((cpuid1.ebx & 0x4000) >> 14);
 	for (index = 0; index <= sizeof(TDP) / sizeof(TDP[0]); index++)
-		if (TDP[index].socket_type == CPU_SOCKET_TYPE &&
+		if (TDP[index].socket_type == CONFIG_CPU_SOCKET_TYPE &&
 		    TDP[index].cmp_cap == cmp_cap &&
 		    TDP[index].pwr_lmt == pwr_lmt) {
 			power_limit = TDP[index].power_limit;

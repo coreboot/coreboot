@@ -14,11 +14,11 @@
 #define ENTER '\r'
 #define ESCAPE '\x1b'
 
-#ifndef AUTOBOOT_CMDLINE
+#ifndef CONFIG_AUTOBOOT_CMDLINE
 #define autoboot(mem)
 #endif
 
-#if !AUTOBOOT_DELAY
+#if !CONFIG_AUTOBOOT_DELAY
 #define autoboot_delay() 0 /* success */
 #endif
 
@@ -115,8 +115,8 @@ static void boot(struct lb_memory *mem, const char *line)
     free(boot_file);
 }
 
-#ifdef AUTOBOOT_CMDLINE
-#if AUTOBOOT_DELAY
+#ifdef CONFIG_AUTOBOOT_CMDLINE
+#if CONFIG_AUTOBOOT_DELAY
 static inline int autoboot_delay(void)
 {
     unsigned int timeout;
@@ -126,7 +126,7 @@ static inline int autoboot_delay(void)
     key = 0;
 
     printk_info("Press <Enter> for default boot, or <Esc> for boot prompt... ");
-    for (sec = AUTOBOOT_DELAY; sec>0 && key==0; sec--) {
+    for (sec = CONFIG_AUTOBOOT_DELAY; sec>0 && key==0; sec--) {
 	printk_info("%d", sec);
 	timeout = 10;
 	while (timeout-- > 0) {
@@ -151,7 +151,7 @@ static inline int autoboot_delay(void)
 	    return 0; /* default accepted */
     }
 }
-#endif /* AUTOBOOT_DELAY */
+#endif /* CONFIG_AUTOBOOT_DELAY */
 
 static void autoboot(struct lb_memory *mem)
 {
@@ -160,11 +160,11 @@ static void autoboot(struct lb_memory *mem)
 	return;
 
     if (autoboot_delay()==0) {
-	printk_info("boot: %s\n", AUTOBOOT_CMDLINE);
-	boot(mem, AUTOBOOT_CMDLINE);
+	printk_info("boot: %s\n", CONFIG_AUTOBOOT_CMDLINE);
+	boot(mem, CONFIG_AUTOBOOT_CMDLINE);
     }
 }
-#endif /* AUTOBOOT_CMDLINE */
+#endif /* CONFIG_AUTOBOOT_CMDLINE */
 
 /* The main routine */
 int filo(struct lb_memory *mem)
@@ -179,8 +179,8 @@ int filo(struct lb_memory *mem)
     /* The above didn't work, ask user */
     while (havechar())
 	getchar();
-#ifdef AUTOBOOT_CMDLINE
-    strncpy(line, AUTOBOOT_CMDLINE, sizeof(line)-1);
+#ifdef CONFIG_AUTOBOOT_CMDLINE
+    strncpy(line, CONFIG_AUTOBOOT_CMDLINE, sizeof(line)-1);
     line[sizeof(line)-1] = '\0';
 #else
     line[0] = '\0';

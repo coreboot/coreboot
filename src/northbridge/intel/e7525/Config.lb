@@ -1,4 +1,4 @@
-uses HAVE_HIGH_TABLES
+uses CONFIG_HAVE_HIGH_TABLES
 
 config chip.h
 driver northbridge.o
@@ -7,10 +7,10 @@ driver pciexp_porta1.o
 driver pciexp_portb.o
 driver pciexp_portc.o
 
-default HAVE_HIGH_TABLES=1
+default CONFIG_HAVE_HIGH_TABLES=1
 
 makerule raminit_test
 	depends "$(TOP)/src/northbridge/intel/e7525/raminit_test.c"
 	depends "$(TOP)/src/northbridge/intel/e7525/raminit.c"
-	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
+	action "$(CONFIG_HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
 end

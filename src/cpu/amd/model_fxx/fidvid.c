@@ -73,7 +73,7 @@ static void enable_fid_change(void)
 //		dword = 0x00070000; /* enable FID/VID change */
 		pci_write_config32(PCI_DEV(0, 0x18+i, 3), 0x80, dword);
 
-#if HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME
 		dword = 0x21132113;
 #else
 		dword = 0x00132113;

@@ -563,7 +563,7 @@ the following code is  copied from src\mainboard\tyan\s2735\cache_as_ram_auto.c
 Only the code around CLEAR_FIRST_1M_RAM is changed.
 I remove all the code around CLEAR_FIRST_1M_RAM and #include "cpu/x86/car/cache_as_ram_post.c"
 the CLEAR_FIRST_1M_RAM seems to make cpu/x86/car/cache_as_ram_post.c stop at somewhere, 
-and cpu/x86/car/cache_as_ram_post.c  do not cache my $XIP_ROM_BASE+SIZE area.
+and cpu/x86/car/cache_as_ram_post.c  do not cache my $CONFIG_XIP_ROM_BASE+SIZE area.
 
 So,I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c have some diff withx86-version
 */
@@ -621,11 +621,11 @@ So,I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c have
 #include "cpu/via/car/cache_as_ram_post.c"
 //#include "cpu/x86/car/cache_as_ram_post.c"    
 	__asm__ volatile (
-				 /* set new esp *//* before _RAMBASE */
+				 /* set new esp *//* before CONFIG_RAMBASE */
 				 "subl   %0, %%ebp\n\t"
 				 "subl   %0, %%esp\n\t"::
-				 "a" ((DCACHE_RAM_BASE + DCACHE_RAM_SIZE) -
-				      _RAMBASE)
+				 "a" ((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) -
+				      CONFIG_RAMBASE)
 	    );
 
 	{

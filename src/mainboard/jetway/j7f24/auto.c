@@ -40,7 +40,7 @@
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
 #include "superio/fintek/f71805f/f71805f_early_serial.c"
 
-#if TTYS0_BASE == 0x2f8
+#if CONFIG_TTYS0_BASE == 0x2f8
 #define SERIAL_DEV PNP_DEV(0x2e, F71805F_SP2)
 #else
 #define SERIAL_DEV PNP_DEV(0x2e, F71805F_SP1)
@@ -101,7 +101,7 @@ static void main(unsigned long bist)
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
-	f71805f_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	f71805f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

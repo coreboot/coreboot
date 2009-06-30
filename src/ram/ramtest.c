@@ -1,6 +1,6 @@
 static void write_phys(unsigned long addr, unsigned long value)
 {
-#if HAVE_MOVNTI
+#if CONFIG_HAVE_MOVNTI
 	asm volatile(
 		"movnti %1, (%0)"
 		: /* outputs */

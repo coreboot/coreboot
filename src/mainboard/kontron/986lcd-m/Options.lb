@@ -20,17 +20,17 @@
 ##
 
 # Tables
-uses HAVE_MP_TABLE
-uses HAVE_PIRQ_TABLE
-uses IRQ_SLOT_COUNT
-uses HAVE_OPTION_TABLE
-uses USE_OPTION_TABLE
-uses LB_CKS_RANGE_START
-uses LB_CKS_RANGE_END
-uses LB_CKS_LOC
-uses HAVE_ACPI_TABLES
-uses HAVE_ACPI_RESUME
-uses HAVE_MAINBOARD_RESOURCES
+uses CONFIG_HAVE_MP_TABLE
+uses CONFIG_HAVE_PIRQ_TABLE
+uses CONFIG_IRQ_SLOT_COUNT
+uses CONFIG_HAVE_OPTION_TABLE
+uses CONFIG_USE_OPTION_TABLE
+uses CONFIG_LB_CKS_RANGE_START
+uses CONFIG_LB_CKS_RANGE_END
+uses CONFIG_LB_CKS_LOC
+uses CONFIG_HAVE_ACPI_TABLES
+uses CONFIG_HAVE_ACPI_RESUME
+uses CONFIG_HAVE_MAINBOARD_RESOURCES
 # SMP
 uses CONFIG_SMP
 uses CONFIG_LOGICAL_CPUS
@@ -39,71 +39,71 @@ uses CONFIG_MAX_CPUS
 uses CONFIG_MAX_PHYSICAL_CPUS
 uses CONFIG_IOAPIC
 # Image Size
-uses USE_FALLBACK_IMAGE
-uses HAVE_FALLBACK_BOOT
-uses FALLBACK_SIZE
-uses ROM_SIZE
-uses ROM_SECTION_SIZE
-uses ROM_IMAGE_SIZE
-uses ROM_SECTION_SIZE
-uses ROM_SECTION_OFFSET
+uses CONFIG_USE_FALLBACK_IMAGE
+uses CONFIG_HAVE_FALLBACK_BOOT
+uses CONFIG_FALLBACK_SIZE
+uses CONFIG_ROM_SIZE
+uses CONFIG_ROM_SECTION_SIZE
+uses CONFIG_ROM_IMAGE_SIZE
+uses CONFIG_ROM_SECTION_SIZE
+uses CONFIG_ROM_SECTION_OFFSET
 # Payload
 uses CONFIG_ROM_PAYLOAD
 uses CONFIG_ROM_PAYLOAD_START
 uses CONFIG_COMPRESSED_PAYLOAD_LZMA
 uses CONFIG_PRECOMPRESSED_PAYLOAD
-uses PAYLOAD_SIZE
+uses CONFIG_PAYLOAD_SIZE
 # Build Internals
-uses _RAMBASE
-uses _ROMBASE
-uses STACK_SIZE
-uses HEAP_SIZE
-uses USE_DCACHE_RAM
-uses DCACHE_RAM_BASE
-uses DCACHE_RAM_SIZE
+uses CONFIG_RAMBASE
+uses CONFIG_ROMBASE
+uses CONFIG_STACK_SIZE
+uses CONFIG_HEAP_SIZE
+uses CONFIG_USE_DCACHE_RAM
+uses CONFIG_DCACHE_RAM_BASE
+uses CONFIG_DCACHE_RAM_SIZE
 uses CONFIG_USE_INIT
 uses CONFIG_USE_PRINTK_IN_CAR
-uses XIP_ROM_BASE
-uses XIP_ROM_SIZE
-uses HAVE_HARD_RESET
-uses HAVE_SMI_HANDLER
+uses CONFIG_XIP_ROM_BASE
+uses CONFIG_XIP_ROM_SIZE
+uses CONFIG_HAVE_HARD_RESET
+uses CONFIG_HAVE_SMI_HANDLER
 uses CONFIG_PCIE_CONFIGSPACE_HOLE
-uses MMCONF_SUPPORT
-uses MMCONF_BASE_ADDRESS
+uses CONFIG_MMCONF_SUPPORT
+uses CONFIG_MMCONF_BASE_ADDRESS
 uses CONFIG_GFXUMA
 uses CONFIG_CBFS
 
 #
-uses MAINBOARD
-uses MAINBOARD_PART_NUMBER
-uses MAINBOARD_VENDOR
-uses MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-uses MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+uses CONFIG_MAINBOARD
+uses CONFIG_MAINBOARD_PART_NUMBER
+uses CONFIG_MAINBOARD_VENDOR
+uses CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+uses CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 # Timers
 uses CONFIG_UDELAY_TSC
 uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 # Console
 uses CONFIG_CONSOLE_SERIAL8250
-uses TTYS0_BAUD
-uses TTYS0_BASE
-uses TTYS0_LCS
-uses DEFAULT_CONSOLE_LOGLEVEL
-uses MAXIMUM_CONSOLE_LOGLEVEL
+uses CONFIG_TTYS0_BAUD
+uses CONFIG_TTYS0_BASE
+uses CONFIG_TTYS0_LCS
+uses CONFIG_DEFAULT_CONSOLE_LOGLEVEL
+uses CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
 uses CONFIG_CONSOLE_VGA
 uses CONFIG_VGA_ROM_RUN
 uses CONFIG_PCI_ROM_RUN
-uses DEBUG
+uses CONFIG_DEBUG
 # Toolchain
 uses CC
-uses HOSTCC
-uses CROSS_COMPILE
-uses OBJCOPY
+uses CONFIG_HOSTCC
+uses CONFIG_CROSS_COMPILE
+uses CONFIG_OBJCOPY
 # Tweaks
 uses CONFIG_GDB_STUB
-uses MAX_REBOOT_CNT
-uses USE_WATCHDOG_ON_BOOT
+uses CONFIG_MAX_REBOOT_CNT
+uses CONFIG_USE_WATCHDOG_ON_BOOT
 uses COREBOOT_EXTRA_VERSION
-uses MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+uses CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 
 ###
 ### Build options
@@ -111,23 +111,23 @@ uses MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 
 ##
 ##
-default MAX_REBOOT_CNT=3
+default CONFIG_MAX_REBOOT_CNT=3
 
 ##
 ## Use the watchdog to break out of a lockup condition
 ##
-default USE_WATCHDOG_ON_BOOT=0
+default CONFIG_USE_WATCHDOG_ON_BOOT=0
 
 ##
-## ROM_SIZE is the size of boot ROM that this board will use.
+## CONFIG_ROM_SIZE is the size of boot ROM that this board will use.
 ##
-default ROM_SIZE=1024*1024
+default CONFIG_ROM_SIZE=1024*1024
 
 
 ##
 ## Build code for the fallback boot
 ##
-default HAVE_FALLBACK_BOOT=1
+default CONFIG_HAVE_FALLBACK_BOOT=1
 
 ##
 ## Delay timer options
@@ -139,20 +139,20 @@ default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 ##
 ## Build code to reset the motherboard from coreboot
 ##
-default HAVE_HARD_RESET=1
+default CONFIG_HAVE_HARD_RESET=1
 
 ##
 ## Build SMI handler
 ##
-default HAVE_SMI_HANDLER=1
+default CONFIG_HAVE_SMI_HANDLER=1
 
 ##
 ## Leave a hole for mmapped PCIe config space
 ##
 
 default CONFIG_PCIE_CONFIGSPACE_HOLE=1
-default MMCONF_SUPPORT=1
-default MMCONF_BASE_ADDRESS=0xf0000000
+default CONFIG_MMCONF_SUPPORT=1
+default CONFIG_MMCONF_BASE_ADDRESS=0xf0000000
 
 ##
 ## UMA
@@ -162,32 +162,32 @@ default CONFIG_GFXUMA=1
 ##
 ## Build code to export a programmable irq routing table
 ##
-default HAVE_PIRQ_TABLE=1
-default IRQ_SLOT_COUNT=18
+default CONFIG_HAVE_PIRQ_TABLE=1
+default CONFIG_IRQ_SLOT_COUNT=18
 
 ##
 ## Build code to export an x86 MP table
 ## Useful for specifying IRQ routing values
 ##
-default HAVE_MP_TABLE=1
+default CONFIG_HAVE_MP_TABLE=1
 
 ##
 ## Build code to provide ACPI support
 ##
-default HAVE_ACPI_TABLES=1
-default HAVE_MAINBOARD_RESOURCES=1
+default CONFIG_HAVE_ACPI_TABLES=1
+default CONFIG_HAVE_MAINBOARD_RESOURCES=1
 
 ##
 ## Build code to export a CMOS option table
 ##
-default HAVE_OPTION_TABLE=1
+default CONFIG_HAVE_OPTION_TABLE=1
 
 ##
 ## Move the default coreboot cmos range off of AMD RTC registers
 ##
-default LB_CKS_RANGE_START=49
-default LB_CKS_RANGE_END=122
-default LB_CKS_LOC=123
+default CONFIG_LB_CKS_RANGE_START=49
+default CONFIG_LB_CKS_RANGE_END=122
+default CONFIG_LB_CKS_LOC=123
 
 #VGA Console
 default CONFIG_CONSOLE_VGA=1
@@ -196,7 +196,7 @@ default CONFIG_CONSOLE_VGA=1
 # for now:
 default CONFIG_VGA_ROM_RUN=1
 default CONFIG_PCI_ROM_RUN=0
-default DEBUG=0
+default CONFIG_DEBUG=0
 
 ##
 ## Build code for SMP support
@@ -211,9 +211,9 @@ default CONFIG_AP_IN_SIPI_WAIT=1
 ##
 ## enable CACHE_AS_RAM specifics
 ##
-default USE_DCACHE_RAM=1
-default DCACHE_RAM_SIZE=0x8000
-default DCACHE_RAM_BASE=( 0xfff00000 - DCACHE_RAM_SIZE - 1024*1024)
+default CONFIG_USE_DCACHE_RAM=1
+default CONFIG_DCACHE_RAM_SIZE=0x8000
+default CONFIG_DCACHE_RAM_BASE=( 0xfff00000 - CONFIG_DCACHE_RAM_SIZE - 1024*1024)
 default CONFIG_USE_PRINTK_IN_CAR=1
 
 ##
@@ -224,37 +224,37 @@ default CONFIG_IOAPIC=1
 ##
 ## Clean up the motherboard id strings
 ##
-default MAINBOARD_PART_NUMBER="986LCD-M"
-default MAINBOARD_VENDOR=     "KONTRON"
+default CONFIG_MAINBOARD_PART_NUMBER="986LCD-M"
+default CONFIG_MAINBOARD_VENDOR=     "KONTRON"
 
 ###
 ### coreboot layout values
 ###
 
-## ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
-default ROM_IMAGE_SIZE = 65536
+## CONFIG_ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
+default CONFIG_ROM_IMAGE_SIZE = 65536
 
 ##
 ## Use a small 8K stack
 ##
-default STACK_SIZE=0x2000
+default CONFIG_STACK_SIZE=0x2000
 
 ##
 ## Use a small 32K heap
 ##
-default HEAP_SIZE=0x8000
+default CONFIG_HEAP_SIZE=0x8000
 
 
 ###
 ### Compute the location and size of where this firmware image
 ### (coreboot plus bootloader) will live in the boot rom chip.
 ###
-default FALLBACK_SIZE=ROM_IMAGE_SIZE
+default CONFIG_FALLBACK_SIZE=CONFIG_ROM_IMAGE_SIZE
 
 ##
 ## coreboot C code runs at this location in RAM
 ##
-default _RAMBASE=0x00100000
+default CONFIG_RAMBASE=0x00100000
 
 ##
 ## Load the payload from the ROM
@@ -268,8 +268,8 @@ default CONFIG_ROM_PAYLOAD=1
 ##
 ## The default compiler
 ##
-default CC="$(CROSS_COMPILE)gcc -m32"
-default HOSTCC="gcc"
+default CC="$(CONFIG_CROSS_COMPILE)gcc -m32"
+default CONFIG_HOSTCC="gcc"
 
 ##
 ## Disable the gdb stub by default
@@ -284,21 +284,21 @@ default CONFIG_GDB_STUB=0
 default CONFIG_CONSOLE_SERIAL8250=1
 
 ## Select the serial console baud rate
-default TTYS0_BAUD=115200
-#default TTYS0_BAUD=57600
-#default TTYS0_BAUD=38400
-#default TTYS0_BAUD=19200
-#default TTYS0_BAUD=9600
-#default TTYS0_BAUD=4800
-#default TTYS0_BAUD=2400
-#default TTYS0_BAUD=1200
+default CONFIG_TTYS0_BAUD=115200
+#default CONFIG_TTYS0_BAUD=57600
+#default CONFIG_TTYS0_BAUD=38400
+#default CONFIG_TTYS0_BAUD=19200
+#default CONFIG_TTYS0_BAUD=9600
+#default CONFIG_TTYS0_BAUD=4800
+#default CONFIG_TTYS0_BAUD=2400
+#default CONFIG_TTYS0_BAUD=1200
 
 # Select the serial console base port
-default TTYS0_BASE=0x3f8
+default CONFIG_TTYS0_BASE=0x3f8
 
 # Select the serial protocol
 # This defaults to 8 data bits, 1 stop bit, and no parity
-default TTYS0_LCS=0x3
+default CONFIG_TTYS0_LCS=0x3
 
 ##
 ### Select the coreboot loglevel
@@ -310,17 +310,17 @@ default TTYS0_LCS=0x3
 ## WARNING    5   warning conditions               
 ## NOTICE     6   normal but significant condition 
 ## INFO       7   informational                    
-## DEBUG      8   debug-level messages             
+## CONFIG_DEBUG      8   debug-level messages             
 ## SPEW       9   Way too many details             
 
 ## Request this level of debugging output
-default  DEFAULT_CONSOLE_LOGLEVEL=5
+default  CONFIG_DEFAULT_CONSOLE_LOGLEVEL=5
 ## At a maximum only compile in this level of debugging
-default  MAXIMUM_CONSOLE_LOGLEVEL=9
+default  CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=9
 
 ##
 ## Select power on after power fail setting
-default MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
+default CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
 
 #
 # CBFS

@@ -93,7 +93,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
@@ -177,7 +177,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	assign_resources(&dev->link[0]);
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
 	high_tables_size = HIGH_TABLES_SIZE * 1024;
@@ -199,7 +199,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = enable_childrens_resources,
 	.init             = 0,
 	.scan_bus         = pci_domain_scan_bus,
-#if MMCONF_SUPPORT_DEFAULT
+#if CONFIG_MMCONF_SUPPORT_DEFAULT
 	.ops_pci_bus	  = &pci_ops_mmconf,
 #else
 	.ops_pci_bus	  = &pci_cf8_conf1,

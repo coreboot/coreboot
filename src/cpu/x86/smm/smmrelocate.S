@@ -140,7 +140,7 @@ smm_relocate:
 	/* End of hardware specific section. */
 #ifdef DEBUG_SMM_RELOCATION
 	/* print [SMM-x] so we can determine if CPUx went to SMM */
-	movw $TTYS0_BASE, %dx
+	movw $CONFIG_TTYS0_BASE, %dx
 	mov $'[', %al
 	outb %al, %dx
 	mov $'S', %al

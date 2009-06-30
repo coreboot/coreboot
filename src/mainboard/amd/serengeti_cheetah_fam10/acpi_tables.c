@@ -49,7 +49,7 @@ static void dump_mem(u32 start, u32 end)
 extern u8 AmlCode[];
 extern u8 AmlCode_ssdt[];
 
-#if ACPI_SSDTX_NUM >= 1
+#if CONFIG_ACPI_SSDTX_NUM >= 1
 extern u8 AmlCode_ssdt2[];
 extern u8 AmlCode_ssdt3[];
 extern u8 AmlCode_ssdt4[];
@@ -276,7 +276,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk_debug("ACPI:    * SSDT for PState at %lx\n", current);
 	current = acpi_add_ssdt_pstates(rsdt, current);
 
-#if ACPI_SSDTX_NUM >= 1
+#if CONFIG_ACPI_SSDTX_NUM >= 1
 
 	/* same htio, but different possition? We may have to copy,
 	change HCIN, and recalculate the checknum and add_table */

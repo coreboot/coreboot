@@ -165,8 +165,8 @@ target VENDOR_MAINBOARD
 mainboard VENDOR/MAINBOARD
 
 option CC="CROSSCC"
-option CROSS_COMPILE="CROSS_PREFIX"
-option HOSTCC="CROSS_HOSTCC"
+option CONFIG_CROSS_COMPILE="CROSS_PREFIX"
+option CONFIG_HOSTCC="CROSS_HOSTCC"
 
 __COMPRESSION__
 __LOGLEVEL__
@@ -175,25 +175,25 @@ EOF
 		if [ "$TARCH" == i386 ] ; then
 			cat <<EOF
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
+	option CONFIG_USE_FALLBACK_IMAGE=0
 if CONFIG_CBFS
 else
-	option ROM_IMAGE_SIZE=0x17000
+	option CONFIG_ROM_IMAGE_SIZE=0x17000
 end
 	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
+	option CONFIG_USE_FALLBACK_IMAGE=1
 if CONFIG_CBFS
 else
-	option ROM_IMAGE_SIZE=0x17000
+	option CONFIG_ROM_IMAGE_SIZE=0x17000
 end
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"
 EOF
 		else
 			cat <<EOF
@@ -208,8 +208,8 @@ EOF
 	fi
 
 	if [ "$loglevel" != "default" ]; then
-		LOGLEVEL1="option MAXIMUM_CONSOLE_LOGLEVEL=$loglevel"
-		LOGLEVEL2="option DEFAULT_CONSOLE_LOGLEVEL=$loglevel"
+		LOGLEVEL1="option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=$loglevel"
+		LOGLEVEL2="option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$loglevel"
 	else
 		LOGLEVEL1="# no loglevel override"
 		LOGLEVEL2=""

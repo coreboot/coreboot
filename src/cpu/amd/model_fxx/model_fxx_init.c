@@ -32,15 +32,15 @@
 
 void cpus_ready_for_init(void)
 {
-#if MEM_TRAIN_SEQ == 1
-        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - DCACHE_RAM_GLOBAL_VAR_SIZE);
+#if CONFIG_MEM_TRAIN_SEQ == 1
+        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
         // wait for ap memory to trained
         wait_all_core0_mem_trained(sysinfox);
 #endif
 }
 
 
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 int is_e0_later_in_bsp(int nodeid)
 {
         uint32_t val;
@@ -67,7 +67,7 @@ int is_e0_later_in_bsp(int nodeid)
 }
 #endif
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 int is_cpu_f0_in_bsp(int nodeid)
 {
         uint32_t dword;
@@ -289,8 +289,8 @@ static void init_ecc_memory(unsigned node_id)
 	startk = (pci_read_config32(f1_dev, 0x40 + (node_id*8)) & 0xffff0000) >> 2;
 	endk   = ((pci_read_config32(f1_dev, 0x44 + (node_id*8)) & 0xffff0000) >> 2) + 0x4000;
 
-#if HW_MEM_HOLE_SIZEK != 0
-	#if K8_REV_F_SUPPORT == 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
+	#if CONFIG_K8_REV_F_SUPPORT == 0
         if (!is_cpu_pre_e0()) 
 	{
 	#endif
@@ -300,7 +300,7 @@ static void init_ecc_memory(unsigned node_id)
                 if(val & 1) {
         	        hole_startk = ((val & (0xff<<24)) >> 10);
                 }
-	#if K8_REV_F_SUPPORT == 0
+	#if CONFIG_K8_REV_F_SUPPORT == 0
         }
 	#endif
 #endif
@@ -322,7 +322,7 @@ static void init_ecc_memory(unsigned node_id)
 	disable_lapic();
 
 	/* Walk through 2M chunks and zero them */
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* here hole_startk can not be equal to begink, never. Also hole_startk is in 2M boundary, 64M? */
         if ( (hole_startk != 0) && ((begink < hole_startk) && (endk>(4*1024*1024)))) {
 		        for(basek = begink; basek < hole_startk;
@@ -368,7 +368,7 @@ static void init_ecc_memory(unsigned node_id)
 static inline void k8_errata(void)
 {
 	msr_t msr;
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	if (is_cpu_pre_c0()) {
 		/* Erratum 63... */
 		msr = rdmsr(HWCR_MSR);
@@ -438,7 +438,7 @@ static inline void k8_errata(void)
  	}
 #endif
 
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	if (!is_cpu_pre_e0()) 
 #endif
 	{
@@ -453,7 +453,7 @@ static inline void k8_errata(void)
 	msr.lo |= 1 << 6;
 	wrmsr(HWCR_MSR, msr);
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
         /* Erratum 131... */
         msr = rdmsr(NB_CFG_MSR);
         msr.lo |= 1 << 20;
@@ -478,7 +478,7 @@ void model_fxx_init(device_t dev)
 	unsigned siblings;
 #endif
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 	struct cpuinfo_x86 c;
 	
 	get_fms(&c, dev->device);
@@ -564,7 +564,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	{ X86_VENDOR_AMD, 0xf40 },   /* SH-B0 (socket 754) */
 	{ X86_VENDOR_AMD, 0xf50 },   /* SH-B0 (socket 940) */
 	{ X86_VENDOR_AMD, 0xf51 },   /* SH-B3 (socket 940) */
@@ -606,7 +606,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x30ff2 }, /* E4 ? */
 #endif
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 	/*
 	 * AMD F0 support.
 	 *

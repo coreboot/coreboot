@@ -19,7 +19,7 @@
 
 #include "defaults.h"
 
-//it takes the ENABLE_APIC_EXT_ID and APIC_ID_OFFSET and LIFT_BSP_APIC_ID
+//it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
 #ifndef FAM10_SET_FIDVID
 	#define FAM10_SET_FIDVID 1
 #endif
@@ -58,13 +58,13 @@ static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
 void cpuSetAMDMSR(void);
 
-#if PCI_IO_CFG_EXT == 1
+#if CONFIG_PCI_IO_CFG_EXT == 1
 static void set_EnableCf8ExtCfg(void)
 {
 	// set the NB_CFG[46]=1;
 	msr_t msr;
 	msr = rdmsr(NB_CFG_MSR);
-	// EnableCf8ExtCfg: We need that to access PCI_IO_CFG_EXT 4K range
+	// EnableCf8ExtCfg: We need that to access CONFIG_PCI_IO_CFG_EXT 4K range
 	msr.hi |= (1<<(46-32));
 	wrmsr(NB_CFG_MSR, msr);
 }
@@ -80,12 +80,12 @@ static void set_EnableCf8ExtCfg(void) { }
 
 static void set_pci_mmio_conf_reg(void)
 {
-#if MMCONF_SUPPORT
+#if CONFIG_MMCONF_SUPPORT
 	msr_t msr;
 	msr = rdmsr(0xc0010058);
 	msr.lo &= ~(0xfff00000 | (0xf << 2));
 	// 256 bus per segment, MMIO reg will be 4G , enable MMIO Config space
-	msr.lo |= ((8+PCI_BUS_SEGN_BITS) << 2) | (1 << 0);
+	msr.lo |= ((8+CONFIG_PCI_BUS_SEGN_BITS) << 2) | (1 << 0);
 	msr.hi &= ~(0x0000ffff);
 	msr.hi |= (PCI_MMIO_BASE >> (32-8));
 	wrmsr(0xc0010058, msr); // MMIO Config Base Address Reg
@@ -168,11 +168,11 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 		for (j = jstart; j <= jend; j++) {
 			ap_apicid = i * (nb_cfg_54 ? (siblings + 1):1) + j * (nb_cfg_54 ? 1:64);
 
-		#if (ENABLE_APIC_EXT_ID == 1) && (APIC_ID_OFFSET > 0)
-			#if LIFT_BSP_APIC_ID == 0
+		#if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
+			#if CONFIG_LIFT_BSP_APIC_ID == 0
 			if( (i != 0) || (j != 0)) /* except bsp */
 			#endif
-				ap_apicid += APIC_ID_OFFSET;
+				ap_apicid += CONFIG_APIC_ID_OFFSET;
 		#endif
 
 			if(ap_apicid == bsp_apicid) continue;
@@ -307,8 +307,8 @@ static void STOP_CAR_AND_CPU()
 }
 
 
-#ifndef MEM_TRAIN_SEQ
-#define MEM_TRAIN_SEQ 0
+#ifndef CONFIG_MEM_TRAIN_SEQ
+#define CONFIG_MEM_TRAIN_SEQ 0
 #endif
 
 #if RAMINIT_SYSINFO == 1
@@ -337,7 +337,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	if(id.coreid == 0) {
 		set_apicid_cpuid_lo(); /* only set it on core0 */
 		set_EnableCf8ExtCfg(); /* only set it on core0 */
-		#if (ENABLE_APIC_EXT_ID == 1)
+		#if (CONFIG_ENABLE_APIC_EXT_ID == 1)
 		enable_apic_ext_id(id.nodeid);
 		#endif
 	}
@@ -345,23 +345,23 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	enable_lapic();
 
 
-#if (ENABLE_APIC_EXT_ID == 1) && (APIC_ID_OFFSET > 0)
+#if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
 	u32 initial_apicid = get_initial_apicid();
 
-	#if LIFT_BSP_APIC_ID == 0
+	#if CONFIG_LIFT_BSP_APIC_ID == 0
 	if( initial_apicid != 0 ) // other than bsp
 	#endif
 	{
 		/* use initial apic id to lift it */
 		u32 dword = lapic_read(LAPIC_ID);
 		dword &= ~(0xff << 24);
-		dword |= (((initial_apicid + APIC_ID_OFFSET) & 0xff) << 24);
+		dword |= (((initial_apicid + CONFIG_APIC_ID_OFFSET) & 0xff) << 24);
 
 		lapic_write(LAPIC_ID, dword);
 	}
 
-	#if LIFT_BSP_APIC_ID == 1
-	bsp_apicid += APIC_ID_OFFSET;
+	#if CONFIG_LIFT_BSP_APIC_ID == 1
+	bsp_apicid += CONFIG_APIC_ID_OFFSET;
 	#endif
 
 #endif
@@ -478,8 +478,8 @@ static void start_node(u8 node)
 	/* Enable routing table */
 	printk_debug("Start node %02x", node);
 
-#if CAR_FAM10 == 1
-	/* For CAR_FAM10 support, we need to set Dram base/limit for the new node */
+#if CONFIG_CAR_FAM10 == 1
+	/* For CONFIG_CAR_FAM10 support, we need to set Dram base/limit for the new node */
 	pci_write_config32(NODE_MP(node), 0x44, 0);
 	pci_write_config32(NODE_MP(node), 0x40, 3);
 #endif

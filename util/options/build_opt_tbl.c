@@ -459,17 +459,17 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 		/* And since we are not ready to be fully general purpose yet.. */
-		if ((cs->range_start/8) != LB_CKS_RANGE_START) {
+		if ((cs->range_start/8) != CONFIG_LB_CKS_RANGE_START) {
 			fprintf(stderr, "Error - Range start(%d) does not match define(%d) in line\n%s\n", 
-				cs->range_start/8, LB_CKS_RANGE_START, line);
+				cs->range_start/8, CONFIG_LB_CKS_RANGE_START, line);
 			exit(1);
 		}
-		if ((cs->range_end/8) != LB_CKS_RANGE_END) {
+		if ((cs->range_end/8) != CONFIG_LB_CKS_RANGE_END) {
 			fprintf(stderr, "Error - Range end (%d) does not match define (%d) in line\n%s\n", 
-					(cs->range_end/8), LB_CKS_RANGE_END, line);
+					(cs->range_end/8), CONFIG_LB_CKS_RANGE_END, line);
 			exit(1);
 		}
-		if ((cs->location/8) != LB_CKS_LOC) {
+		if ((cs->location/8) != CONFIG_LB_CKS_LOC) {
 			fprintf(stderr, "Error - Location does not match define in line\n%s\n", line);
 			exit(1);
 		}

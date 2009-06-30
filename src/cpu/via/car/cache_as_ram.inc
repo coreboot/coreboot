@@ -25,8 +25,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define	CacheSize DCACHE_RAM_SIZE
-#define	CacheBase DCACHE_RAM_BASE
+#define	CacheSize CONFIG_DCACHE_RAM_SIZE
+#define	CacheBase CONFIG_DCACHE_RAM_BASE
 
 
 #include	<cpu/x86/mtrr.h>
@@ -82,13 +82,13 @@ clear_fixed_var_mtrr_out:
 	/* MTRRPhysBase */
 	movl    $0x202, %ecx
 	xorl    %edx, %edx
-	movl    $(XIP_ROM_BASE|MTRR_TYPE_WRBACK),%eax
+	movl    $(CONFIG_XIP_ROM_BASE|MTRR_TYPE_WRBACK),%eax
 	wrmsr
 
 	/* MTRRPhysMask */
 	movl    $0x203, %ecx
 	movl    $0x0000000f,%edx
-	movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
+	movl    $(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
 
 
@@ -119,9 +119,9 @@ clear_fixed_var_mtrr_out:
 	xorl    $0x5c5c5c5c,%eax
 	rep     stosl
 
-	movl    XIP_ROM_BASE, %esi
+	movl    CONFIG_XIP_ROM_BASE, %esi
 	movl    %esi, %edi
-	movl    $(XIP_ROM_SIZE>>2), %ecx
+	movl    $(CONFIG_XIP_ROM_SIZE>>2), %ecx
 	rep     lodsl
 
 	/* The key point of this CAR code is C7 cache does not turn into

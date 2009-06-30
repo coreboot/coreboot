@@ -125,7 +125,7 @@ struct msr_defaults {
  */
 void print_conf(void)
 {
-#if DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
+#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
 	int i;
 	unsigned long iol;
 	msr_t msr;
@@ -266,7 +266,7 @@ void print_conf(void)
 	iol = inl(GPIO_MAPPER_X);
 	printk_debug("IOR 0x%08X is now 0x%08X\n", GPIO_IO_BASE + GPIO_MAPPER_X,
 		     iol);
-#endif				//DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
+#endif				//CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
 }
 
 /* todo: add a resource record. We don't do this here because this may be called when 
@@ -415,7 +415,7 @@ static void ram_resource(device_t dev, unsigned long index,
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
@@ -436,7 +436,7 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, 640);
 		ram_resource(dev, idx++, 1024, tomk - 1024);	// Systop - 1 MB -> KB
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE * 1024;

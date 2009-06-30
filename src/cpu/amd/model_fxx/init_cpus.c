@@ -1,6 +1,6 @@
-//it takes the ENABLE_APIC_EXT_ID and APIC_ID_OFFSET and LIFT_BSP_APIC_ID
+//it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
 #ifndef K8_SET_FIDVID
-	#if K8_REV_F_SUPPORT == 0
+	#if CONFIG_K8_REV_F_SUPPORT == 0
 		#define K8_SET_FIDVID 0
 	#else
 		// for rev F, need to set FID to max
@@ -72,7 +72,7 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range, process_ap_t p
 	nodes = get_nodes();
 
         disable_siblings = !CONFIG_LOGICAL_CPUS;
-#if CONFIG_LOGICAL_CPUS == 1 && HAVE_OPTION_TABLE == 1
+#if CONFIG_LOGICAL_CPUS == 1 && CONFIG_HAVE_OPTION_TABLE == 1
         if(read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) != 0) { // 0 mean dual core
                 disable_siblings = 1;
         }
@@ -87,7 +87,7 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range, process_ap_t p
                 j = ((pci_read_config32(PCI_DEV(0, 0x18+i, 3), 0xe8) >> 12) & 3);
                 if(nb_cfg_54) {
  	               if(j == 0 ){ // if it is single core, we need to increase siblings for apic calculation 
-                       #if K8_REV_F_SUPPORT == 0
+                       #if CONFIG_K8_REV_F_SUPPORT == 0
         	               e0_later_single_core = is_e0_later_in_bsp(i);  // single core
                        #else
                                e0_later_single_core = is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3
@@ -119,11 +119,11 @@ static void for_each_ap(unsigned bsp_apicid, unsigned core_range, process_ap_t p
 
                         ap_apicid = i * (nb_cfg_54?(siblings+1):1) + j * (nb_cfg_54?1:8);
 
-                #if (ENABLE_APIC_EXT_ID == 1)
-			#if LIFT_BSP_APIC_ID == 0
+                #if (CONFIG_ENABLE_APIC_EXT_ID == 1)
+			#if CONFIG_LIFT_BSP_APIC_ID == 0
 			if( (i!=0) || (j!=0)) /* except bsp */
 			#endif
-                        	ap_apicid += APIC_ID_OFFSET;
+                        	ap_apicid += CONFIG_APIC_ID_OFFSET;
                 #endif
 
 			if(ap_apicid == bsp_apicid) continue;
@@ -238,12 +238,12 @@ static void STOP_CAR_AND_CPU(void)
 	stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp ....
 }
 
-#ifndef MEM_TRAIN_SEQ
-#define MEM_TRAIN_SEQ 0
+#ifndef CONFIG_MEM_TRAIN_SEQ
+#define CONFIG_MEM_TRAIN_SEQ 0
 #endif
 
 
-#if MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ == 1
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall); 
 #endif
 
@@ -268,7 +268,7 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
                 /* NB_CFG MSR is shared between cores, so we need make sure core0 is done at first --- use wait_all_core0_started  */
 		if(id.coreid == 0) {
                 	set_apicid_cpuid_lo(); /* only set it on core0 */
-			#if ENABLE_APIC_EXT_ID == 1
+			#if CONFIG_ENABLE_APIC_EXT_ID == 1
                         enable_apic_ext_id(id.nodeid);
 			#endif
                 }
@@ -276,22 +276,22 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 		enable_lapic();
 //              init_timer(); // We need TMICT to pass msg for FID/VID change
 
-        #if (ENABLE_APIC_EXT_ID == 1)
+        #if (CONFIG_ENABLE_APIC_EXT_ID == 1)
 		unsigned initial_apicid = get_initial_apicid();	
-                #if LIFT_BSP_APIC_ID == 0
+                #if CONFIG_LIFT_BSP_APIC_ID == 0
                 if( initial_apicid != 0 ) // other than bsp
                 #endif
                 {
                                 /* use initial apic id to lift it */
                                 uint32_t dword = lapic_read(LAPIC_ID);
                                 dword &= ~(0xff<<24);
-                                dword |= (((initial_apicid + APIC_ID_OFFSET) & 0xff)<<24);
+                                dword |= (((initial_apicid + CONFIG_APIC_ID_OFFSET) & 0xff)<<24);
 
                                 lapic_write(LAPIC_ID, dword);
                 }
 
-                #if LIFT_BSP_APIC_ID == 1
-                bsp_apicid += APIC_ID_OFFSET;
+                #if CONFIG_LIFT_BSP_APIC_ID == 1
+                bsp_apicid += CONFIG_APIC_ID_OFFSET;
                 #endif
 
         #endif
@@ -346,7 +346,7 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 			}
                         lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
                         set_init_ram_access();
-	#if MEM_TRAIN_SEQ == 1
+	#if CONFIG_MEM_TRAIN_SEQ == 1
 			train_ram_on_node(id.nodeid, id.coreid, sysinfo, STOP_CAR_AND_CPU);
 	#endif
 

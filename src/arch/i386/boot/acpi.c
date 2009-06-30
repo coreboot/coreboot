@@ -390,18 +390,18 @@ void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
 	rsdp->ext_checksum	= acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
 }
 
-#if HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME == 1
 void suspend_resume(void)
 {
 	void *wake_vec;
 
 #if 0
-#if MEM_TRAIN_SEQ != 0
-	#error "So far it works on AMD and MEM_TRAIN_SEQ == 0"
+#if CONFIG_MEM_TRAIN_SEQ != 0
+	#error "So far it works on AMD and CONFIG_MEM_TRAIN_SEQ == 0"
 #endif
 
-#if _RAMBASE < 0x1F00000
-	#error "For ACPI RESUME you need to have _RAMBASE at least 31MB"
+#if CONFIG_RAMBASE < 0x1F00000
+	#error "For ACPI RESUME you need to have CONFIG_RAMBASE at least 31MB"
 	#error "Chipset support (S3_NVRAM_EARLY and ACPI_IS_WAKEUP_EARLY functions and memory ctrl)"
 	#error "And coreboot memory reserved in mainboard.c"
 #endif

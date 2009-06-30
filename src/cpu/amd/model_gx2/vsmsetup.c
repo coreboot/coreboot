@@ -271,7 +271,7 @@ void do_vsmbios(void)
 	//rom = 0xfff80000;
 	//rom = 0xfffc0000;
 	/* the VSA starts at the base of rom - 64 */
-	rom = ((unsigned long) 0) - (ROM_SIZE  + 64*1024);
+	rom = ((unsigned long) 0) - (CONFIG_ROM_SIZE  + 64*1024);
 
 	buf = (unsigned char *) 0x60000;
 	olen = unrv2b((uint8_t *)rom, buf, &ilen);

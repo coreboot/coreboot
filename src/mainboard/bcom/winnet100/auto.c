@@ -38,7 +38,7 @@
 static void main(unsigned long bist)
 {
 	/* Initialize the serial console. */
-	pc97317_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	pc97317_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

@@ -19,7 +19,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ## 
 
-uses HAVE_ACPI_TABLES
+uses CONFIG_HAVE_ACPI_TABLES
 
 config chip.h
 driver mcp55.o
@@ -35,6 +35,6 @@ driver mcp55_pci.o
 driver mcp55_pcie.o
 driver mcp55_ht.o
 object mcp55_reset.o
-if HAVE_ACPI_TABLES
+if CONFIG_HAVE_ACPI_TABLES
 	object mcp55_fadt.o
 end

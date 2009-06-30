@@ -15,7 +15,7 @@ initobject clock.o
 object clock.o
 
 ##
-## Set our ARCH
+## Set our CONFIG_ARCH
 ##
 arch ppc end
 
@@ -26,5 +26,5 @@ arch ppc end
 dir nvram
 dir flash
 
-addaction coreboot.a "$(CROSS_COMPILE)ranlib coreboot.a"
+addaction coreboot.a "$(CONFIG_CROSS_COMPILE)ranlib coreboot.a"
 makedefine CFLAGS += -g

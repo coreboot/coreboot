@@ -25,27 +25,27 @@ static unsigned int config_cmd2(unsigned char bus, unsigned devfn, unsigned wher
 }
 
 /* Base Address */
-#ifndef TTYS0_BASE
-#define TTYS0_BASE 0x3f8
+#ifndef CONFIG_TTYS0_BASE
+#define CONFIG_TTYS0_BASE 0x3f8
 #endif
 
-#ifndef TTYS0_BAUD
-#define TTYS0_BAUD 115200
+#ifndef CONFIG_TTYS0_BAUD
+#define CONFIG_TTYS0_BAUD 115200
 #endif
 
-#if ((115200%TTYS0_BAUD) != 0)
+#if ((115200%CONFIG_TTYS0_BAUD) != 0)
 #error Bad ttys0 baud rate
 #endif
 
-#define TTYS0_DIV	(115200/TTYS0_BAUD)
+#define CONFIG_TTYS0_DIV	(115200/CONFIG_TTYS0_BAUD)
 
 /* Line Control Settings */
-#ifndef TTYS0_LCS
+#ifndef CONFIG_TTYS0_LCS
 /* Set 8bit, 1 stop bit, no parity */
-#define TTYS0_LCS	0x3
+#define CONFIG_TTYS0_LCS	0x3
 #endif
 
-#define UART_LCS	TTYS0_LCS
+#define UART_LCS	CONFIG_TTYS0_LCS
 
 /* Data */
 #define UART_RBR 0x00
@@ -67,7 +67,7 @@ static unsigned int config_cmd2(unsigned char bus, unsigned devfn, unsigned wher
 
 int uart_can_tx_byte(void)
 {
-	return inb(TTYS0_BASE + UART_LSR) & 0x20;
+	return inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x20;
 }
 
 void uart_wait_to_tx_byte(void)
@@ -78,14 +78,14 @@ void uart_wait_to_tx_byte(void)
 
 void uart_wait_until_sent(void)
 {
-	while(!(inb(TTYS0_BASE + UART_LSR) & 0x40)) 
+	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40)) 
 		;
 }
 
 void uart_tx_byte(unsigned char data)
 {
 	uart_wait_to_tx_byte();
-	outb(data, TTYS0_BASE + UART_TBR);
+	outb(data, CONFIG_TTYS0_BASE + UART_TBR);
 	/* Make certain the data clears the fifos */
 	uart_wait_until_sent();
 }

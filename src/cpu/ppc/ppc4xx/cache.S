@@ -57,7 +57,7 @@ invalidate_icache:
 invalidate_dcache:
 	li	r6,0x0000		/* clear GPR 6 */
 	/* Do loop for # of dcache congruence classes. */
-	li	r7,(DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
+	li	r7,(CONFIG_DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
 					/* NOTE: dccci invalidates both */
 	mtctr	r7			/* ways in the D cache */
 1:
@@ -79,8 +79,8 @@ flush_dcache:
 	mtdccr	r10
 
 	/* do loop for # of congruence classes. */
-	li	r10,(DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
-	li	r11,(DCACHE_RAM_SIZE / 2) /* D cache set size - 2 way sets */
+	li	r10,(CONFIG_DCACHE_RAM_SIZE / CACHELINE_SIZE / 2)
+	li	r11,(CONFIG_DCACHE_RAM_SIZE / 2) /* D cache set size - 2 way sets */
 	mtctr	r10
 	li	r10,(0xE000-0x10000)	/* start at 0xFFFFE000 */
 	add	r11,r10,r11		/* add to get to other side of cache line */

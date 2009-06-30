@@ -49,7 +49,7 @@ static void main(unsigned long bist)
 	outb(0x87, 0x2e);
 	outb(0x87, 0x2e);
 	pnp_write_config(SERIAL_DEV, 0x24, 0x84 | (1 << 6));
-	w83627hf_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	outb(0x87, 0xaa);
 
 	uart_init();

@@ -86,7 +86,7 @@ static void main(unsigned long bist)
 	}
 	/* Set up the console */
 	i3100_enable_superio();
-	i3100_enable_serial(0x4e, I3100_SP1, TTYS0_BASE);
+	i3100_enable_serial(0x4e, I3100_SP1, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

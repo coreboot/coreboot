@@ -1,5 +1,5 @@
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 ##
@@ -14,7 +14,7 @@ arch i386 end
 
 driver mainboard.o
 
-if HAVE_PIRQ_TABLE
+if CONFIG_HAVE_PIRQ_TABLE
 	object irq_tables.o
 end
 
@@ -22,8 +22,8 @@ end
 
 	#compile cache_as_ram.c to auto.inc
 	makerule ./cache_as_ram_auto.inc
-			depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+			depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 			action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 	end
@@ -39,7 +39,7 @@ ldscript /cpu/x86/32bit/entry32.lds
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	mainboardinit cpu/x86/16bit/reset16.inc
 	ldscript /cpu/x86/16bit/reset16.lds
 else
@@ -61,7 +61,7 @@ ldscript /arch/i386/lib/id.lds
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds
 #	mainboardinit ./failover.inc
 end

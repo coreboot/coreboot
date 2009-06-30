@@ -19,7 +19,7 @@
  */
 
 SECTIONS {
-	. = (_ROMBASE + ROM_IMAGE_SIZE - 0x2c) - (__romstrap_end - __romstrap_start);
+	. = (CONFIG_ROMBASE + CONFIG_ROM_IMAGE_SIZE - 0x2c) - (__romstrap_end - __romstrap_start);
 	.romstrap (.): {
 		*(.romstrap)
 	}

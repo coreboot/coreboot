@@ -27,7 +27,7 @@
 /* disable HyperThreading is done by eswar*/
 /* other's is the same as AMD except remove amd specific msr */
 
-#define CacheSize DCACHE_RAM_SIZE
+#define CacheSize CONFIG_DCACHE_RAM_SIZE
 #define CacheBase (0xd0000 - CacheSize) 
 
 #include <cpu/x86/mtrr.h>
@@ -37,7 +37,7 @@
 
 CacheAsRam:
 	/* hope we can skip the double set for normal part */
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
         // Check whether the processor has HT capability
         movl    $01, %eax
@@ -197,29 +197,29 @@ clear_fixed_var_mtrr_out:
         orl    $(0x1<<30),%eax
         movl    %eax, %cr0
 
-#endif /*  USE_FALLBACK_IMAGE == 1*/
+#endif /*  CONFIG_USE_FALLBACK_IMAGE == 1*/
 
-#if defined(XIP_ROM_SIZE) && defined(XIP_ROM_BASE)
+#if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
         /* enable write base caching so we can do execute in place
          * on the flash rom.
          */
         movl    $0x202, %ecx
         xorl    %edx, %edx
-        movl    $(XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+        movl    $(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
         wrmsr
 
         movl    $0x203, %ecx
         movl    $0x0000000f, %edx
-        movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
+        movl    $(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
         wrmsr
-#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+#endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
         /* enable cache */
         movl    %cr0, %eax
         andl    $0x9fffffff,%eax
         movl    %eax, %cr0
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 	/* Read the range with lodsl*/
         movl    $CacheBase, %esi
@@ -277,7 +277,7 @@ clear_fixed_var_mtrr_out:
 .xout1x:
 
 #endif
-#endif /*USE_FALLBACK_IMAGE == 1*/
+#endif /*CONFIG_USE_FALLBACK_IMAGE == 1*/
 
 
 	movl	$(CacheBase+CacheSize-4), %eax
@@ -314,7 +314,7 @@ var_mtrr_msr:
         .long   0x20C, 0x20D, 0x20E, 0x20F
         .long   0x000 /* NULL, end of table */
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
         .align 0x1000
         .code16
 .global LogicalAP_SIPI
@@ -344,5 +344,5 @@ Halt_LogicalAP:
         hlt
         jmp     Halt_LogicalAP
         .code32
-#endif /*USE_FALLBACK_IMAGE == 1*/
+#endif /*CONFIG_USE_FALLBACK_IMAGE == 1*/
 .CacheAsRam_out:

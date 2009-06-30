@@ -13,24 +13,24 @@ struct cpu_driver {
 	struct cpu_device_id *id_table;
 };
 
-#ifndef STACK_SIZE
-#error STACK_SIZE not defined
+#ifndef CONFIG_STACK_SIZE
+#error CONFIG_STACK_SIZE not defined
 #endif
 
 /* The basic logic comes from the Linux kernel.
- * The invariant is that (1 << 31 - STACK_BITS) == STACK_SIZE
+ * The invariant is that (1 << 31 - STACK_BITS) == CONFIG_STACK_SIZE
  * I wish there was simpler way to support multiple stack sizes.
  * Oh well.
  */
-#if STACK_SIZE == 4096
+#if CONFIG_STACK_SIZE == 4096
 #define STACK_BITS "19"
-#elif STACK_SIZE == 8192
+#elif CONFIG_STACK_SIZE == 8192
 #define STACK_BITS "18"
-#elif STACK_SIZE == 16384
+#elif CONFIG_STACK_SIZE == 16384
 #define STACK_BITS "17"
-#elif STACK_SIZE == 32768
+#elif CONFIG_STACK_SIZE == 32768
 #define STACK_BITS "16"
-#elif STACK_SIZE == 65536
+#elif CONFIG_STACK_SIZE == 65536
 #define STACK_BITS "15"
 #else
 #error Unimplemented stack size

@@ -16,8 +16,8 @@ struct irq_info {
 	uint8_t rfu;
 } __attribute__((packed));
 
-#if defined(IRQ_SLOT_COUNT)
-#define IRQ_SLOTS_COUNT IRQ_SLOT_COUNT
+#if defined(CONFIG_IRQ_SLOT_COUNT)
+#define IRQ_SLOTS_COUNT CONFIG_IRQ_SLOT_COUNT
 #elif (__GNUC__ < 3)
 #define IRQ_SLOTS_COUNT 1
 #else
@@ -39,10 +39,10 @@ struct irq_routing_table {
 
 extern const struct irq_routing_table intel_irq_routing_table;
 
-#if HAVE_PIRQ_TABLE==1
+#if CONFIG_HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long start);
 unsigned long write_pirq_routing_table(unsigned long start);
-#if PIRQ_ROUTE==1
+#if CONFIG_PIRQ_ROUTE==1
 void pirq_routing_irqs(unsigned long start);
 void pirq_assign_irqs(const unsigned char pIntAtoD[4]);
 #else

@@ -155,7 +155,7 @@ void 	X86EMU_prepareForInt(int num);
 void 	X86EMU_exec(void);
 void 	X86EMU_halt_sys(void);
 
-#ifdef	DEBUG
+#ifdef	CONFIG_DEBUG
 #define	HALT_SYS()	\
 	printk("halt_sys: file %s, line %d\n", __FILE__, __LINE__), \
 	X86EMU_halt_sys()

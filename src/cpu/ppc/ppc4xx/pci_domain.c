@@ -47,7 +47,7 @@ static void pci_domain_set_resources(device_t dev)
 {
 	int idx = 3; /* who knows? */
 
-	ram_resource(dev, idx, 0, EMBEDDED_RAM_SIZE>>10);
+	ram_resource(dev, idx, 0, CONFIG_EMBEDDED_RAM_SIZE>>10);
 	assign_resources(&dev->link[0]);
 }
 

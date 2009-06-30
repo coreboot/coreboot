@@ -88,8 +88,8 @@
 	#define TRY_HIGH_FIRST 0
 #endif
 
-#ifndef K8_HT_FREQ_1G_SUPPORT
-	#define K8_HT_FREQ_1G_SUPPORT 0
+#ifndef CONFIG_K8_HT_FREQ_1G_SUPPORT
+	#define CONFIG_K8_HT_FREQ_1G_SUPPORT 0
 #endif
 
 #ifndef K8_HT_CHECK_PENDING_LINK
@@ -104,8 +104,8 @@
 	#define CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED 0
 #endif
 
-#ifndef ENABLE_APIC_EXT_ID
-	#define ENABLE_APIC_EXT_ID 0
+#ifndef CONFIG_ENABLE_APIC_EXT_ID
+	#define CONFIG_ENABLE_APIC_EXT_ID 0
 #endif
 
 
@@ -161,7 +161,7 @@ static void disable_probes(void)
 
 static void enable_apic_ext_id(u8 node)
 {
-#if ENABLE_APIC_EXT_ID==1
+#if CONFIG_ENABLE_APIC_EXT_ID==1
 #warning "FIXME Is the right place to enable apic ext id here?"
 
       u32 val;
@@ -284,8 +284,8 @@ static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 	freq_cap = pci_read_config16(dev, pos);
 	freq_cap &= ~(1 << HT_FREQ_VENDOR); /* Ignore Vendor HT frequencies */
 
-#if K8_HT_FREQ_1G_SUPPORT == 1
-    #if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1
+    #if CONFIG_K8_REV_F_SUPPORT == 0
 	if (!is_cpu_pre_e0())
     #endif
 	{
@@ -1591,13 +1591,13 @@ static unsigned verify_dualcore(unsigned nodes)
 static void coherent_ht_finalize(unsigned nodes)
 {
 	unsigned node;
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	int rev_a0;
 #endif
 #if CONFIG_LOGICAL_CPUS==1
 	unsigned total_cpus;
 
-	if ((!HAVE_OPTION_TABLE) ||
+	if ((!CONFIG_HAVE_OPTION_TABLE) ||
 	    read_option(CMOS_VSTART_dual_core, CMOS_VLEN_dual_core, 0) == 0) { /* dual_core */
 		total_cpus = verify_dualcore(nodes);
 	}
@@ -1613,7 +1613,7 @@ static void coherent_ht_finalize(unsigned nodes)
 	 */
 
 	print_spew("coherent_ht_finalize\r\n");
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	rev_a0 = is_cpu_rev_a0();
 #endif
 	for (node = 0; node < nodes; node++) {
@@ -1644,7 +1644,7 @@ static void coherent_ht_finalize(unsigned nodes)
 			(3 << HTTC_HI_PRI_BYP_CNT_SHIFT);
 		pci_write_config32(dev, HT_TRANSACTION_CONTROL, val);
 
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 		if (rev_a0) {
 			pci_write_config32(dev, 0x94, 0);
 			pci_write_config32(dev, 0xb4, 0);
@@ -1664,7 +1664,7 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 		device_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 		if (is_cpu_pre_c0()) {
 
 			/* Errata 66

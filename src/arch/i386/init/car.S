@@ -72,8 +72,8 @@ __protected_stage0:
  * the other is very similar to the AMD CAR, except remove amd specific msr
  */
 
-#define CacheSize DCACHE_RAM_SIZE
-#define CacheBase DCACHE_RAM_BASE
+#define CacheSize CONFIG_DCACHE_RAM_SIZE
+#define CacheBase CONFIG_DCACHE_RAM_BASE
 
 #include <cpu/x86/mtrr.h>
 
@@ -241,14 +241,14 @@ clear_fixed_var_mtrr_out:
 	 */
 	movl    $0x202, %ecx
 	xorl    %edx, %edx
-	movl    $(XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	movl    $(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
 	wrmsr
 
 	movl    $0x203, %ecx
 	movl    $0x0000000f, %edx
-	movl    $(~(XIP_ROM_SIZE - 1) | 0x800), %eax
+	movl    $(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
 	wrmsr
-#endif /* XIP_ROM_SIZE && XIP_ROM_BASE */
+#endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
 	/* enable cache */
 	movl    %cr0, %eax

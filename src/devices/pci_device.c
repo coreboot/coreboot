@@ -598,11 +598,11 @@ void pci_dev_enable_resources(struct device *dev)
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		printk_debug("%s subsystem <- %02x/%02x\n",
 			dev_path(dev),
-			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
 		ops->set_subsystem(dev,
-			MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
-			MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
+			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
 	}
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
@@ -1034,7 +1034,7 @@ unsigned int pci_scan_bus(struct bus *bus,
 	device_t old_devices;
 	device_t child;
 
-#if PCI_BUS_SEGN_BITS
+#if CONFIG_PCI_BUS_SEGN_BITS
 	printk_debug("PCI: pci_scan_bus for bus %04x:%02x\n", bus->secondary >> 8, bus->secondary & 0xff);
 #else
 	printk_debug("PCI: pci_scan_bus for bus %02x\n", bus->secondary);

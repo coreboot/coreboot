@@ -17,10 +17,10 @@
 
 /* Keep together for sysctl support */
 
-int console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 int default_message_loglevel = DEFAULT_MESSAGE_LOGLEVEL;
 int minimum_console_loglevel = MINIMUM_CONSOLE_LOGLEVEL;
-int default_console_loglevel = DEFAULT_CONSOLE_LOGLEVEL;
+int default_console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 void display(char*);
 extern int vtxprintf(void (*)(unsigned char), const char *, va_list);

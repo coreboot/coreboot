@@ -156,7 +156,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		printk_debug(" done\n");
 	}
 
-#if HW_MEM_HOLE_SIZEK != 0
+#if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* init hw mem hole here */
 	/* DramHoleValid bit only can be set after MemClrStatus is set by Hardware */
 	set_hw_mem_hole(controllers, ctrl);

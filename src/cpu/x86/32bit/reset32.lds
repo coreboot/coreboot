@@ -4,7 +4,7 @@
  */
 
 SECTIONS {
-	_ROMTOP = _ROMBASE + ROM_IMAGE_SIZE - 0x10;
+	_ROMTOP = CONFIG_ROMBASE + CONFIG_ROM_IMAGE_SIZE - 0x10;
 	. = _ROMTOP;
 	.reset (.): {
 		*(.reset)

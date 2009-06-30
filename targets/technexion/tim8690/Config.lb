@@ -5,23 +5,23 @@ mainboard technexion/tim8690
 
 
 romimage "normal"
-	option ROM_SIZE = 1024*512 - 55808
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
+	option CONFIG_ROM_SIZE = 1024*512 - 55808
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+	option CONFIG_XIP_ROM_SIZE=0x20000
 	payload /home/daniel/mypayloads/link
 end
 
 romimage "fallback" 
-	option FALLBACK_SIZE= 1024*512 - 55808
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x20000
-	option XIP_ROM_SIZE=0x20000
+	option CONFIG_FALLBACK_SIZE= 1024*512 - 55808
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+	option CONFIG_XIP_ROM_SIZE=0x20000
 	payload /home/daniel/mypayloads/link
 
 end
 
-buildrom ./coreboot.rom ROM_SIZE "fallback" 
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback" 
 
 
 

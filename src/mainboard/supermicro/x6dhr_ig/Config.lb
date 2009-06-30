@@ -1,10 +1,10 @@
 ##
 ## Only use the option table in a normal image
 ##
-default USE_OPTION_TABLE = !USE_FALLBACK_IMAGE
+default CONFIG_USE_OPTION_TABLE = !CONFIG_USE_FALLBACK_IMAGE
 
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 128 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 128 * 1024
 include /config/nofailovercalculation.lb
 
 ##
@@ -18,30 +18,30 @@ arch i386 end
 ##
 
 driver mainboard.o
-if HAVE_MP_TABLE object mptable.o end
-if HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_HAVE_MP_TABLE object mptable.o end
+if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
 object reset.o
 
 ##
 ## Romcc output
 ##
 makerule ./failover.E
-	depends "$(MAINBOARD)/failover.c ../romcc" 
-	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/failover.c ../romcc" 
+	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/failover.c -o $@"
 end
 
 makerule ./failover.inc
-	depends "$(MAINBOARD)/failover.c ../romcc"
-	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/failover.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/failover.c ../romcc"
+	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/failover.c -o $@"
 end
 
 makerule ./auto.E 
-	depends	"$(MAINBOARD)/auto.c option_table.h ../romcc" 
-	action	"../romcc -E -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	depends	"$(CONFIG_MAINBOARD)/auto.c option_table.h ../romcc" 
+	action	"../romcc -E -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/auto.c -o $@"
 end
 makerule ./auto.inc 
-	depends "$(MAINBOARD)/auto.c option_table.h ../romcc"
-	action	"../romcc    -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(MAINBOARD)/auto.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/auto.c option_table.h ../romcc"
+	action	"../romcc    -mcpu=p4 -O2 -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/auto.c -o $@"
 end
 
 ##
@@ -55,7 +55,7 @@ ldscript /cpu/x86/32bit/entry32.lds
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if USE_FALLBACK_IMAGE 
+if CONFIG_USE_FALLBACK_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc
 	ldscript /cpu/x86/16bit/reset16.lds
 else
@@ -77,7 +77,7 @@ ldscript /arch/i386/lib/id.lds
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds 
 	mainboardinit ./failover.inc
 end

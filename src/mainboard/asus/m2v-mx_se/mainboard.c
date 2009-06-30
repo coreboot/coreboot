@@ -25,11 +25,11 @@
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-#if HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME == 1
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		_RAMBASE, ((CONFIG_LB_MEM_TOPK<<10) - _RAMBASE));
+		CONFIG_RAMBASE, ((CONFIG_LB_MEM_TOPK<<10) - CONFIG_RAMBASE));
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
-		DCACHE_RAM_BASE, DCACHE_RAM_SIZE);
+		CONFIG_DCACHE_RAM_BASE, CONFIG_DCACHE_RAM_SIZE);
 #endif
 	return 0;
 }

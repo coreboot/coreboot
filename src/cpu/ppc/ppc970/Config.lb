@@ -1,15 +1,15 @@
 ##
 ## CPU initialization
 ##
-uses _RAMBASE
-uses USE_DCACHE_RAM
+uses CONFIG_RAMBASE
+uses CONFIG_USE_DCACHE_RAM
 
 ##
 ## Assumes RAM already initialiazed
 ## This is true for the Apache board, but may
 ## not be for other 970 systems.
 ##
-default USE_DCACHE_RAM=0
+default CONFIG_USE_DCACHE_RAM=0
 
 initinclude "FAMILY_INIT" cpu/ppc/ppc970/ppc970.inc
 

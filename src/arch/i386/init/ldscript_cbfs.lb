@@ -1,12 +1,12 @@
 /*
  *	Memory map:
  *
- *	_RAMBASE		
+ *	CONFIG_RAMBASE		
  *				: data segment
  *				: bss segment
  *				: heap
  *				: stack
- *	_ROMBASE
+ *	CONFIG_ROMBASE
  *				: coreboot text 
  *				: readonly text
  */
@@ -34,7 +34,7 @@ ENTRY(_start)
 TARGET(binary)
 SECTIONS
 {
-	. = _ROMBASE;
+	. = CONFIG_ROMBASE;
 
 	/* This section might be better named .setup */
 	.rom . : {

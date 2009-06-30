@@ -66,7 +66,7 @@ static  u32 get_nodes(void)
 	device_t dev;
 	u32 nodes;
 
-	dev = PCI_DEV(CBB, CDB, 0);
+	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0);
 	nodes = ((pci_read_config32(dev, 0x60)>>4) & 7) ;
 #if CONFIG_MAX_PHYSICAL_CPUS > 8
 	nodes += (((pci_read_config32(dev, 0x160)>>4) & 7)<<3);
@@ -116,9 +116,9 @@ void AMD_CB_EventNotify (u8 evtClass, u16 event, u8 *pEventData0)
  */
 BOOL AMD_CB_ManualBUIDSwapList (u8 node, u16 link, u8 **List)
 {
-	const u8 swaplist[] = { 0xFF, HT_CHAIN_UNITID_BASE, HT_CHAIN_END_UNITID_BASE, 0xFF };
+	const u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
 	/* If the BUID was adjusted in early_ht we need to do the manual override */
-	if ((HT_CHAIN_UNITID_BASE != 0) && (HT_CHAIN_END_UNITID_BASE != 0)) {
+	if ((CONFIG_HT_CHAIN_UNITID_BASE != 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE != 0)) {
 		printk_debug("AMD_CB_ManualBUIDSwapList()\n");
 		if ((node == 0) && (link == 0)) {	/* BSP SB link */
 			*List = swaplist;

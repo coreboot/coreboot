@@ -23,5 +23,5 @@ end
 ## Build the objects we have code for in this directory.
 ##
 
-addaction coreboot.a "$(CROSS_COMPILE)ranlib coreboot.a"
+addaction coreboot.a "$(CONFIG_CROSS_COMPILE)ranlib coreboot.a"
 makedefine CFLAGS += -msoft-float

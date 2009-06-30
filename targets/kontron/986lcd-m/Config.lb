@@ -1,16 +1,16 @@
 target kontron_986lcd_m
 mainboard kontron/986lcd-m
 
-## ROM_SIZE is the total number of bytes allocated for coreboot use
+## CONFIG_ROM_SIZE is the total number of bytes allocated for coreboot use
 ## (normal AND fallback images and payloads).
-option ROM_SIZE = 1024 * 1024
+option CONFIG_ROM_SIZE = 1024 * 1024
 
 romimage "fallback"
-	option USE_FALLBACK_IMAGE = 1
+	option CONFIG_USE_FALLBACK_IMAGE = 1
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"
 
 # Uncomment this and fix the path to your VGA BIOS blob (~/amipci_01.20 here) for on-board VGA support.
 # See http://www.coreboot.org/Kontron_986LCD-M_mITX for details.

@@ -21,7 +21,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
@@ -44,7 +44,7 @@
 
 #define SUPERIO_GPIO_IO_BASE 0x400
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
 
@@ -120,7 +120,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #endif
 
-#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -197,7 +197,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
  fallback_image:
 //	post_code(0x25);
-#if HAVE_FAILOVER_BOOT==1
+#if CONFIG_HAVE_FAILOVER_BOOT==1
 	__asm__ volatile ("jmp __fallback_image"
 	: /* outputs */
 	: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
@@ -211,21 +211,21 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if HAVE_FAILOVER_BOOT==1
-	#if USE_FAILOVER_IMAGE==1
+#if CONFIG_HAVE_FAILOVER_BOOT==1
+	#if CONFIG_USE_FAILOVER_IMAGE==1
 	failover_process(bist, cpu_init_detectedx);
 	#else
 	real_main(bist, cpu_init_detectedx);
 	#endif
 #else
-	#if USE_FALLBACK_IMAGE == 1
+	#if CONFIG_USE_FALLBACK_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
 	#endif
 	real_main(bist, cpu_init_detectedx);
 #endif
 }
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -250,7 +250,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 //	post_code(0x32);
 
-	lpc47b397_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	lpc47b397_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

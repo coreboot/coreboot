@@ -5,7 +5,7 @@
 #include <arch/io.h>
 
 
-#if HAVE_FALLBACK_BOOT == 1
+#if CONFIG_HAVE_FALLBACK_BOOT == 1
 void set_boot_successful(void)
 {
 	/* Remember I succesfully booted by setting

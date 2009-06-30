@@ -36,8 +36,8 @@
 #define MAINBOARD_POWER_OFF 0
 #define MAINBOARD_POWER_ON 1
 
-#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
 struct ioapicreg {
@@ -164,7 +164,7 @@ static void sm_init(device_t dev)
 	pm_iowrite(0x53, byte);
 
 	/* power after power fail */
-	on = MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	get_option(&on, "power_on_after_fail");
 	byte = pm_ioread(0x74);
 	byte &= ~0x03;

@@ -1,5 +1,5 @@
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/nofailovercalculation.lb
 
 ##
@@ -13,22 +13,22 @@ arch i386 end
 ##
 
 driver mainboard.o
-if HAVE_MP_TABLE object mptable.o end
-if HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_HAVE_MP_TABLE object mptable.o end
+if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
 #object reset.o
 
 if CONFIG_USE_INIT
 
 makerule ./auto.o
-        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+        depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 end
 
 else    
                 
 makerule ./auto.inc
-        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+        depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
         action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
         action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 end
@@ -38,7 +38,7 @@ end
 ##
 ## Build our 16 bit and 32 bit coreboot entry code
 ##
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
         mainboardinit cpu/x86/16bit/entry16.inc
         ldscript /cpu/x86/16bit/entry16.lds
 end
@@ -56,7 +56,7 @@ mainboardinit cpu/x86/32bit/entry32.inc
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if USE_FALLBACK_IMAGE 
+if CONFIG_USE_FALLBACK_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc 
 	ldscript /cpu/x86/16bit/reset16.lds 
 else
@@ -80,7 +80,7 @@ mainboardinit cpu/amd/car/cache_as_ram.inc
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if USE_FALLBACK_IMAGE
+if CONFIG_USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds
 end
 

@@ -66,7 +66,7 @@ static void main(unsigned long bist)
 
 	// Get the serial port running and print a welcome banner
 
-    lpc47b272_enable_serial(SERIAL_DEV, TTYS0_BASE);
+    lpc47b272_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
     uart_init();
     console_init();
 

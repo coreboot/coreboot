@@ -1,6 +1,6 @@
 /*
 	2005.12 yhlu add coreboot_ram cross the vga font buffer handling
-	2005.12 yhlu add _RAMBASE above 1M support for SMP
+	2005.12 yhlu add CONFIG_RAMBASE above 1M support for SMP
 	2008.05 stepan add support for going back to sipi wait state
 */
 
@@ -17,7 +17,7 @@
 
 #if CONFIG_SMP == 1
 
-#if _RAMBASE >= 0x100000
+#if CONFIG_RAMBASE >= 0x100000
 /* This is a lot more paranoid now, since Linux can NOT handle
  * being told there is a CPU when none exists. So any errors 
  * will return 0, meaning no CPU. 
@@ -31,7 +31,7 @@ static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 }
 #endif
 
-#if HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME == 1
 char *lowmem_backup;
 char *lowmem_backup_ptr;
 int  lowmem_backup_size;
@@ -39,7 +39,7 @@ int  lowmem_backup_size;
 
 static void copy_secondary_start_to_1m_below(void) 
 {
-#if _RAMBASE >= 0x100000
+#if CONFIG_RAMBASE >= 0x100000
         extern char _secondary_start[];
         extern char _secondary_start_end[];
         unsigned long code_size;
@@ -51,7 +51,7 @@ static void copy_secondary_start_to_1m_below(void)
         start_eip = get_valid_start_eip((unsigned long)_secondary_start);
         code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 
-#if HAVE_ACPI_RESUME == 1
+#if CONFIG_HAVE_ACPI_RESUME == 1
 	/* need to save it for RAM resume */
 	lowmem_backup_size = code_size;
 	lowmem_backup = malloc(code_size);
@@ -137,7 +137,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		return 0;
 	}
 
-#if _RAMBASE >= 0x100000
+#if CONFIG_RAMBASE >= 0x100000
 	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
 #else
 	start_eip = (unsigned long)_secondary_start;
@@ -246,14 +246,14 @@ int start_cpu(device_t cpu)
 	index = ++last_cpu_index;
 	
 	/* Find end of the new processors stack */
-#if (CONFIG_LB_MEM_TOPK>1024) && (_RAMBASE < 0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
+#if (CONFIG_LB_MEM_TOPK>1024) && (CONFIG_RAMBASE < 0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
 	if(index<1) { // only keep bsp on low 
-		stack_end = ((unsigned long)_estack) - (STACK_SIZE*index) - sizeof(struct cpu_info);
+		stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
 	} else {
 		// for all APs, let use stack after pgtbl, 20480 is the pgtbl size for every cpu
-		stack_end = 0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPUS - (STACK_SIZE*index);
-#if (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPUS) > (CONFIG_LB_MEM_TOPK<<10)
-		#warning "We may need to increase CONFIG_LB_MEM_TOPK, it need to be more than (0x100000+(20480 + STACK_SIZE)*CONFIG_MAX_CPUS)\n"
+		stack_end = 0x100000+(20480 + CONFIG_STACK_SIZE)*CONFIG_MAX_CPUS - (CONFIG_STACK_SIZE*index);
+#if (0x100000+(20480 + CONFIG_STACK_SIZE)*CONFIG_MAX_CPUS) > (CONFIG_LB_MEM_TOPK<<10)
+		#warning "We may need to increase CONFIG_LB_MEM_TOPK, it need to be more than (0x100000+(20480 + CONFIG_STACK_SIZE)*CONFIG_MAX_CPUS)\n"
 #endif
 		if(stack_end > (CONFIG_LB_MEM_TOPK<<10)) {
 			printk_debug("start_cpu: Please increase the CONFIG_LB_MEM_TOPK more than %luK\n", stack_end>>10);
@@ -262,7 +262,7 @@ int start_cpu(device_t cpu)
 		stack_end -= sizeof(struct cpu_info);
 	}
 #else
-	stack_end = ((unsigned long)_estack) - (STACK_SIZE*index) - sizeof(struct cpu_info);
+	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
 #endif
 
 	
@@ -363,13 +363,13 @@ void stop_this_cpu(void)
 void secondary_cpu_init(void)
 {
 	atomic_inc(&active_cpus);
-#if SERIAL_CPU_INIT == 1
+#if CONFIG_SERIAL_CPU_INIT == 1
   #if CONFIG_MAX_CPUS>2
 	spin_lock(&start_cpu_lock);
   #endif
 #endif
 	cpu_initialize();
-#if SERIAL_CPU_INIT == 1
+#if CONFIG_SERIAL_CPU_INIT == 1
   #if CONFIG_MAX_CPUS>2
 	spin_unlock(&start_cpu_lock);
   #endif
@@ -389,7 +389,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
-	#if SERIAL_CPU_INIT == 0
+	#if CONFIG_SERIAL_CPU_INIT == 0
 		if(cpu==bsp_cpu) {
 			continue; 
 		}
@@ -408,7 +408,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 			printk_err("CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
 		}
-#if SERIAL_CPU_INIT == 1
+#if CONFIG_SERIAL_CPU_INIT == 1
   #if CONFIG_MAX_CPUS>2
 		udelay(10);
   #endif
@@ -448,13 +448,13 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 #define initialize_other_cpus(root) do {} while(0)
 #endif /* CONFIG_SMP */
 
-#if WAIT_BEFORE_CPUS_INIT==0
+#if CONFIG_WAIT_BEFORE_CPUS_INIT==0
 	#define cpus_ready_for_init() do {} while(0)
 #else
 	void cpus_ready_for_init(void);
 #endif
 
-#if HAVE_SMI_HANDLER
+#if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);
 #endif
 
@@ -486,14 +486,14 @@ void initialize_cpus(struct bus *cpu_bus)
 	copy_secondary_start_to_1m_below(); // why here? In case some day we can start core1 in amd_sibling_init
 #endif
 
-#if HAVE_SMI_HANDLER
+#if CONFIG_HAVE_SMI_HANDLER
 	smm_init();
 #endif
 
         cpus_ready_for_init(); 
 
 #if CONFIG_SMP == 1
-	#if SERIAL_CPU_INIT == 0
+	#if CONFIG_SERIAL_CPU_INIT == 0
 	/* start all aps at first, so we can init ECC all together */
         start_other_cpus(cpu_bus, info->cpu);
 	#endif
@@ -503,7 +503,7 @@ void initialize_cpus(struct bus *cpu_bus)
         cpu_initialize();
 
 #if CONFIG_SMP == 1
-        #if SERIAL_CPU_INIT == 1
+        #if CONFIG_SERIAL_CPU_INIT == 1
         start_other_cpus(cpu_bus, info->cpu);
         #endif
 

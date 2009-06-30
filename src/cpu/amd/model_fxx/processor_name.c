@@ -41,7 +41,7 @@
  * your mainboard will not be posted on the AMD Recommended Motherboard Website
  */
 
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 static char *processor_names[]={
 	/* 0x00 */ "AMD Engineering Sample",
 	/* 0x01-0x03 */ NULL, NULL, NULL,
@@ -163,7 +163,7 @@ int init_processor_name(void)
 	char program_string[48];
 	unsigned int *program_values = (unsigned int *)program_string;
 
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	/* Find out which CPU brand it is */
 	EightBitBrandId = cpuid_ebx(0x00000001) & 0xff;
 	BrandId = cpuid_ebx(0x80000001) & 0xffff;
@@ -187,7 +187,7 @@ int init_processor_name(void)
 		processor_name_string = "AMD Processor model unknown";
 #endif
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 	u32 Socket;
 	u32 CmpCap;
 	u32 PwrLmt;
@@ -343,7 +343,7 @@ int init_processor_name(void)
 	for (i=0; i<47; i++) { // 48 -1 
 		if(program_string[i] == program_string[i+1]) {
 			switch (program_string[i]) {
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 			case 'X': ModelNumber = 22+ NN; break;
 			case 'Y': ModelNumber = 38 + (2*NN); break;
 			case 'Z':
@@ -352,7 +352,7 @@ int init_processor_name(void)
 			case 'V': ModelNumber =  9 + NN; break;
 #endif
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 			case 'R': ModelNumber = NN - 1; break;
 			case 'P': ModelNumber = 26 + NN; break;
 			case 'T': ModelNumber = 15 + (CmpCap * 10) + NN; break;

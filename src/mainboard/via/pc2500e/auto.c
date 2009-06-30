@@ -65,7 +65,7 @@ static void main(unsigned long bist)
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
-	it8716f_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	it8716f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

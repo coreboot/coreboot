@@ -283,7 +283,7 @@ static void azalia_init(struct device *dev)
 	u8 reg8;
 	u32 reg32;
 
-#if MMCONF_SUPPORT
+#if CONFIG_MMCONF_SUPPORT
 	// ESD
 	reg32 = pci_mmio_read_config32(dev, 0x134);
 	reg32 &= 0xff00ffff;
@@ -314,7 +314,7 @@ static void azalia_init(struct device *dev)
 	reg32 |= (0x80 << 0); // VCi map
 	pci_mmio_write_config32(dev, 0x120, reg32);
 #else
-#error ICH7 Azalia required MMCONF_SUPPORT
+#error ICH7 Azalia required CONFIG_MMCONF_SUPPORT
 #endif
 
 	/* Set Bus Master */

@@ -41,11 +41,11 @@ static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
         msr.lo = (((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK);
         wrmsr(TOP_MEM, msr);
 
-#if defined(XIP_ROM_SIZE)
+#if defined(CONFIG_XIP_ROM_SIZE)
         /* enable write through caching so we can do execute in place
          * on the flash rom.
          */
-        set_var_mtrr(1, XIP_ROM_BASE, XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+        set_var_mtrr(1, CONFIG_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 
         /* Set the default memory type and enable fixed and variable MTRRs 

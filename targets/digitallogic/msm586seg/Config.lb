@@ -3,30 +3,30 @@ mainboard digitallogic/msm586seg
 
 
 
-option DEFAULT_CONSOLE_LOGLEVEL=3
-option MAXIMUM_CONSOLE_LOGLEVEL=3
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=3
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=3
 option CONFIG_COMPRESS=0
 
 option CONFIG_CONSOLE_VGA=0
 
 #romimage "normal"
-#	option USE_FALLBACK_IMAGE=0
-#	option ROM_IMAGE_SIZE=0x10000
+#	option CONFIG_USE_FALLBACK_IMAGE=0
+#	option CONFIG_ROM_IMAGE_SIZE=0x10000
 #	option COREBOOT_EXTRA_VERSION=".0Normal"
 #	payload /etc/hosts
 #end
 
 romimage "fallback" 
-	option FALLBACK_SIZE = 256 * 1024
-#	option ROM_SIZE=512*1024
-#	option ROM_SECTION_SIZE=512*1024
-	option USE_FALLBACK_IMAGE=1
-#	option ROM_IMAGE_SIZE=32 * 1024 # 0x8000
-	option ROM_IMAGE_SIZE=128 * 1024 # 0x10000
-#	option ROM_IMAGE_SIZE=512 * 1024 # 0x10000
+	option CONFIG_FALLBACK_SIZE = 256 * 1024
+#	option CONFIG_ROM_SIZE=512*1024
+#	option CONFIG_ROM_SECTION_SIZE=512*1024
+	option CONFIG_USE_FALLBACK_IMAGE=1
+#	option CONFIG_ROM_IMAGE_SIZE=32 * 1024 # 0x8000
+	option CONFIG_ROM_IMAGE_SIZE=128 * 1024 # 0x10000
+#	option CONFIG_ROM_IMAGE_SIZE=512 * 1024 # 0x10000
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload ../../filo.elf
 #	payload ../../eepro100--ide_disk.zelf
 end
 
-buildrom ./coreboot.rom ROM_SIZE  "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE  "fallback"

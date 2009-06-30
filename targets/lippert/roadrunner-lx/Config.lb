@@ -35,28 +35,28 @@ option CONFIG_COMPRESSED_PAYLOAD_LZMA = 0
 #option CONFIG_IDE = 1
 #option CONFIG_FS_PAYLOAD = 1
 #option CONFIG_FS_EXT2 = 1
-#option AUTOBOOT_DELAY = 0
-#option AUTOBOOT_CMDLINE = "hda1:/payload.elf"
+#option CONFIG_AUTOBOOT_DELAY = 0
+#option CONFIG_AUTOBOOT_CMDLINE = "hda1:/payload.elf"
 
 # Leave 36k for VSA. Usually board is equipped with a 512 KB FWH (LPC) flash,
 # however it can be replaced with a 1 MB chip.
-option ROM_SIZE = (512 * 1024) - (36 * 1024)
-#option ROM_SIZE = (1024 * 1024) - (36 * 1024)
-option FALLBACK_SIZE = ROM_SIZE
+option CONFIG_ROM_SIZE = (512 * 1024) - (36 * 1024)
+#option CONFIG_ROM_SIZE = (1024 * 1024) - (36 * 1024)
+option CONFIG_FALLBACK_SIZE = CONFIG_ROM_SIZE
 
-#option DEFAULT_CONSOLE_LOGLEVEL = 4
-#option MAXIMUM_CONSOLE_LOGLEVEL = 4
+#option CONFIG_DEFAULT_CONSOLE_LOGLEVEL = 4
+#option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL = 4
 
-# Saves space on ROM_IMAGE_SIZE, but decompression costs a second on boot.
+# Saves space on CONFIG_ROM_IMAGE_SIZE, but decompression costs a second on boot.
 option CONFIG_COMPRESS = 1
 
 romimage "image"
-	option USE_FALLBACK_IMAGE = 1
-	option ROM_IMAGE_SIZE = 64 * 1024
+	option CONFIG_USE_FALLBACK_IMAGE = 1
+	option CONFIG_ROM_IMAGE_SIZE = 64 * 1024
 	option COREBOOT_EXTRA_VERSION = ".0"
 	payload ../payload.elf
 	# If getting payload from IDE
 	# payload /dev/null
 end
 
-buildrom ./coreboot.rom ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"

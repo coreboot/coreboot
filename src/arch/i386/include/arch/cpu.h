@@ -128,8 +128,8 @@ static inline struct cpu_info *cpu_info(void)
 	__asm__("andl %%esp,%0; "
 		"orl  %2, %0 "
 		:"=r" (ci) 
-		: "0" (~(STACK_SIZE - 1)), 
-		"r" (STACK_SIZE - sizeof(struct cpu_info))
+		: "0" (~(CONFIG_STACK_SIZE - 1)), 
+		"r" (CONFIG_STACK_SIZE - sizeof(struct cpu_info))
 	);
 	return ci;
 }

@@ -52,13 +52,13 @@ $1.0$
 
 static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
 
-#if K8_REV_F_SUPPORT == 0
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	#include "microcode_rev_c.h"
 	#include "microcode_rev_d.h"
 	#include "microcode_rev_e.h"
 #endif
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 //	#include "microcode_rev_f.h"
 #endif
         /*  Dummy terminator  */
@@ -70,7 +70,7 @@ static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
 
 static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	static unsigned id_mapping_table[] = {
-	#if K8_REV_F_SUPPORT == 0
+	#if CONFIG_K8_REV_F_SUPPORT == 0
 	        0x0f48, 0x0048,
 	        0x0f58, 0x0048,
 
@@ -93,7 +93,7 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	        0x20fb1, 0x0210,
 	#endif
 
-	#if K8_REV_F_SUPPORT == 1
+	#if CONFIG_K8_REV_F_SUPPORT == 1
 	
 	#endif
 

@@ -2,14 +2,14 @@ uses CONFIG_CBFS
 uses CONFIG_SMP
 uses CONFIG_PRECOMPRESSED_PAYLOAD
 uses CONFIG_USE_INIT
-uses HAVE_FAILOVER_BOOT
-uses USE_FAILOVER_IMAGE
-uses USE_FALLBACK_IMAGE
+uses CONFIG_HAVE_FAILOVER_BOOT
+uses CONFIG_USE_FAILOVER_IMAGE
+uses CONFIG_USE_FALLBACK_IMAGE
 
 init init/crt0.S.lb
 
 if CONFIG_CBFS
-	if USE_FAILOVER_IMAGE
+	if CONFIG_USE_FAILOVER_IMAGE
 	else
 		initobject /src/lib/cbfs.o
 		initobject /src/console/vsprintf.o
@@ -17,8 +17,8 @@ if CONFIG_CBFS
 	end
 end
 
-if HAVE_FAILOVER_BOOT
-	if USE_FAILOVER_IMAGE
+if CONFIG_HAVE_FAILOVER_BOOT
+	if CONFIG_USE_FAILOVER_IMAGE
 		ldscript init/ldscript_failover.lb
 	else
 		if CONFIG_CBFS
@@ -29,13 +29,13 @@ if HAVE_FAILOVER_BOOT
 	end
 else
 	if CONFIG_CBFS
-		if USE_FALLBACK_IMAGE
+		if CONFIG_USE_FALLBACK_IMAGE
 			ldscript init/ldscript_fallback_cbfs.lb
 		else
 			ldscript init/ldscript_cbfs.lb
 		end
 	else
-		if USE_FALLBACK_IMAGE
+		if CONFIG_USE_FALLBACK_IMAGE
 			ldscript init/ldscript_fallback.lb
 		else
 			ldscript init/ldscript.lb
@@ -54,7 +54,7 @@ end
 
 makerule nrv2b 
 	depends	"$(TOP)/util/nrv2b/nrv2b.c"
-	action	"$(HOSTCC) -O2 -DENCODE -DDECODE -DMAIN -DVERBOSE -DNDEBUG -DBITSIZE=32 -DENDIAN=0 $< -o $@"
+	action	"$(CONFIG_HOSTCC) -O2 -DENCODE -DDECODE -DMAIN -DVERBOSE -DNDEBUG -DBITSIZE=32 -DENDIAN=0 $< -o $@"
 end
 
 makerule payload
@@ -91,7 +91,7 @@ if CONFIG_PRECOMPRESSED_PAYLOAD
 	makedefine PAYLOAD-1:=payload
 end
 
-if USE_FAILOVER_IMAGE
+if CONFIG_USE_FAILOVER_IMAGE
 	makedefine COREBOOT_APC:=
 	makedefine COREBOOT_RAM_ROM:=
 
@@ -102,13 +102,13 @@ if USE_FAILOVER_IMAGE
 else
 	makerule coreboot.rom 
 		depends	"coreboot.strip buildrom $(PAYLOAD-1)"
-		action "PAYLOAD=$(PAYLOAD-1); if [ $(CONFIG_CBFS) -eq 1 ]; then PAYLOAD=/dev/null; touch cbfs-support; fi; ./buildrom $< $@ $$PAYLOAD $(ROM_IMAGE_SIZE) $(ROM_SECTION_SIZE)"
+		action "PAYLOAD=$(PAYLOAD-1); if [ $(CONFIG_CBFS) -eq 1 ]; then PAYLOAD=/dev/null; touch cbfs-support; fi; ./buildrom $< $@ $$PAYLOAD $(CONFIG_ROM_IMAGE_SIZE) $(CONFIG_ROM_SECTION_SIZE)"
 		action "if [ $(CONFIG_COMPRESSED_PAYLOAD_LZMA) -eq 1 -a $(CONFIG_CBFS) -eq 1 ]; then echo l > cbfs-support; fi"
 	end
 end
 
 makerule crt0.S
-	depends "$(CRT0)"
+	depends "$(CONFIG_CRT0)"
 	action  "cp $< $@"
 end
 
@@ -118,13 +118,13 @@ if CONFIG_USE_INIT
 	makerule init.o
         	depends "$(INIT-OBJECTS)"
 	        action  "$(LD) -melf_i386 -r -o init.pre.o $(INIT-OBJECTS)"
-	        action  "$(OBJCOPY) --rename-section .text=.init.text --rename-section .data=.init.data --rename-section .rodata=.init.rodata --rename-section .rodata.str1.1=.init.rodata.str1.1 init.pre.o init.o"
+	        action  "$(CONFIG_OBJCOPY) --rename-section .text=.init.text --rename-section .data=.init.data --rename-section .rodata=.init.rodata --rename-section .rodata.str1.1=.init.rodata.str1.1 init.pre.o init.o"
 	end
 
         makerule coreboot   
 		depends	"crt0.o init.o $(COREBOOT_APC) $(COREBOOT_RAM_ROM) ldscript.ld"
 		action	"$(CC) -nostdlib -nostartfiles -static -o $@ -T ldscript.ld crt0.o init.o"
-		action	"$(CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
+		action	"$(CONFIG_CROSS_COMPILE)nm -n coreboot | sort > coreboot.map"
         end
 
 end

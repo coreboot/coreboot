@@ -138,7 +138,7 @@ void rtc_init(int invalid)
 
 	printk_debug("RTC Init\n");
 
-#if HAVE_OPTION_TABLE
+#if CONFIG_HAVE_OPTION_TABLE
 	/* See if there has been a CMOS power problem. */
 	x = cmos_read(RTC_VALID);
 	cmos_invalid = !(x & RTC_VRT);
@@ -179,10 +179,10 @@ void rtc_init(int invalid)
 	/* Setup the frequency it operates at */
 	cmos_write(RTC_FREQ_SELECT_DEFAULT, RTC_FREQ_SELECT);
 
-#if HAVE_OPTION_TABLE
+#if CONFIG_HAVE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
-			LB_CKS_RANGE_END,LB_CKS_LOC);
+	checksum_invalid = !rtc_checksum_valid(CONFIG_LB_CKS_RANGE_START,
+			CONFIG_LB_CKS_RANGE_END,CONFIG_LB_CKS_LOC);
 	if(checksum_invalid)
 		printk_debug("Invalid CMOS LB checksum\n");
 
@@ -196,7 +196,7 @@ void rtc_init(int invalid)
 }
 
 
-#if USE_OPTION_TABLE == 1
+#if CONFIG_USE_OPTION_TABLE == 1
 /* This routine returns the value of the requested bits
 	input bit = bit count from the beginning of the cmos image
 	      length = number of bits to include in the value
@@ -259,9 +259,9 @@ int get_option(void *dest, char *name)
 	
 	if(get_cmos_value(ce->bit, ce->length, dest))
 		return(-3);
-	if(!rtc_checksum_valid(LB_CKS_RANGE_START,
-			LB_CKS_RANGE_END,LB_CKS_LOC))
+	if(!rtc_checksum_valid(CONFIG_LB_CKS_RANGE_START,
+			CONFIG_LB_CKS_RANGE_END,CONFIG_LB_CKS_LOC))
 		return(-4);
 	return(0);
 }
-#endif /* USE_OPTION_TABLE */
+#endif /* CONFIG_USE_OPTION_TABLE */

@@ -8,18 +8,18 @@ mainboard tyan/s2880
 # Tyan s2880
 romimage "normal"
 #       48K for SCSI FW or ATI ROM
-        option ROM_SIZE = 512*1024-48*1024
+        option CONFIG_ROM_SIZE = 512*1024-48*1024
 #       48K for SCSI FW and 48K for ATI ROM
-#        option ROM_SIZE = 512*1024-48*1024-48*1024
+#        option CONFIG_ROM_SIZE = 512*1024-48*1024-48*1024
 #       64K for Etherboot
-#        option ROM_SIZE = 512*1024-64*1024
-	option USE_FALLBACK_IMAGE=0
-#	option ROM_IMAGE_SIZE=0x11800
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x16000
-	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x17800
-	option XIP_ROM_SIZE=0x20000
+#        option CONFIG_ROM_SIZE = 512*1024-64*1024
+	option CONFIG_USE_FALLBACK_IMAGE=0
+#	option CONFIG_ROM_IMAGE_SIZE=0x11800
+#	option CONFIG_ROM_IMAGE_SIZE=0x13800
+#	option CONFIG_ROM_IMAGE_SIZE=0x16000
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+#	option CONFIG_ROM_IMAGE_SIZE=0x17800
+	option CONFIG_XIP_ROM_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
@@ -35,13 +35,13 @@ romimage "normal"
 end
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
-#	option ROM_IMAGE_SIZE=0x11800
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x16000
-	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x17800
-	option XIP_ROM_SIZE=0x20000
+	option CONFIG_USE_FALLBACK_IMAGE=1
+#	option CONFIG_ROM_IMAGE_SIZE=0x11800
+#	option CONFIG_ROM_IMAGE_SIZE=0x13800
+#	option CONFIG_ROM_IMAGE_SIZE=0x16000
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+#	option CONFIG_ROM_IMAGE_SIZE=0x17800
+	option CONFIG_XIP_ROM_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 #       payload ../../../payloads/tg3--ide_disk.zelf
 #        payload ../../../payloads/filo.elf
@@ -56,4 +56,4 @@ romimage "fallback"
 #        payload ../../../payloads/tg3--eepro100--e1000--filo_hda2.zelf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

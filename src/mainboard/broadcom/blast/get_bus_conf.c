@@ -83,7 +83,7 @@ void get_bus_conf(void)
 		dev = dev_find_slot(bus_bcm5785_1, PCI_DEVFN(0x0d,0));
 		if(dev) {
 			bus_bcm5785_1_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if HT_CHAIN_END_UNITID_BASE >= HT_CHAIN_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE >= CONFIG_HT_CHAIN_UNITID_BASE
 	                bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 	                bus_isa++;
 //        	        printk_debug("bus_isa=%d\n",bus_isa);
@@ -99,7 +99,7 @@ void get_bus_conf(void)
 	        dev = dev_find_slot(bus_bcm5780[0], PCI_DEVFN(sbdn2 + i - 1,0));
 	        if(dev) {
         	        bus_bcm5780[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-#if HT_CHAIN_END_UNITID_BASE < HT_CHAIN_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_isa++;
 //                      printk_debug("bus_isa=%d\n",bus_isa);

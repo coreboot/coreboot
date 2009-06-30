@@ -4,8 +4,8 @@
 // only for sb ht chain
 static void enumerate_ht_chain(void)
 {
-#if HT_CHAIN_UNITID_BASE != 0
-/* HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */
+#if CONFIG_HT_CHAIN_UNITID_BASE != 0
+/* CONFIG_HT_CHAIN_UNITID_BASE could be 0 (only one ht device in the ht chain), if so, don't need to go through the chain  */
 
 	/* Assumption the HT chain that is bus 0 has the HT I/O Hub on it.
 	 * On most boards this just happens.  If a cpu has multiple
@@ -14,8 +14,8 @@ static void enumerate_ht_chain(void)
 	 */
 	unsigned next_unitid, last_unitid;
 	device_t dev;
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-	//let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+	//let't record the device of last ht device, So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
 	unsigned real_last_unitid;
 	uint8_t real_last_pos;
 	int ht_dev_num = 0; // except host_bridge
@@ -23,7 +23,7 @@ static void enumerate_ht_chain(void)
 #endif
 
 	dev = PCI_DEV(0,0,0);
-	next_unitid = HT_CHAIN_UNITID_BASE;
+	next_unitid = CONFIG_HT_CHAIN_UNITID_BASE;
 	do {
 		uint32_t id;
 		uint8_t hdr_type, pos;
@@ -63,10 +63,10 @@ static void enumerate_ht_chain(void)
 					unsigned ctrl, ctrl_off;
 					device_t devx;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 					if(next_unitid>=0x18) { // don't get mask out by k8, at this time BSP, RT is not enabled, it will response from 0x18,0--0x1f.
 						if(!end_used) {
-							next_unitid = HT_CHAIN_END_UNITID_BASE;
+							next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 							end_used = 1;
 						} else {
 							goto out;
@@ -126,13 +126,13 @@ static void enumerate_ht_chain(void)
 out:
 	;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-	if((ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE) && !end_used) {
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+	if((ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used) {
 		uint16_t flags;
 		dev = PCI_DEV(0,real_last_unitid, 0);
 		flags = pci_read_config16(dev, real_last_pos + PCI_CAP_FLAGS);
 	        flags &= ~0x1f;
-	        flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+	        flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_write_config16(dev, real_last_pos + PCI_CAP_FLAGS, flags);
 	}
 #endif

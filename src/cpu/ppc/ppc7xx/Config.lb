@@ -1,19 +1,19 @@
 ##
 ## CPU initialization
 ##
-uses _RAMBASE
-uses USE_DCACHE_RAM
-uses DCACHE_RAM_BASE
-uses DCACHE_RAM_SIZE
+uses CONFIG_RAMBASE
+uses CONFIG_USE_DCACHE_RAM
+uses CONFIG_DCACHE_RAM_BASE
+uses CONFIG_DCACHE_RAM_SIZE
 
 ##
 ## PPC7XX always uses cache ram for initial setup
 ##
-default USE_DCACHE_RAM=1
+default CONFIG_USE_DCACHE_RAM=1
 ## Set dcache ram above coreboot image
-default DCACHE_RAM_BASE=_RAMBASE+0x100000
+default CONFIG_DCACHE_RAM_BASE=CONFIG_RAMBASE+0x100000
 ## Dcache size is 16Kb
-default DCACHE_RAM_SIZE=16384
+default CONFIG_DCACHE_RAM_SIZE=16384
 
 initinclude "FAMILY_INIT" cpu/ppc/ppc7xx/ppc7xx.inc
 

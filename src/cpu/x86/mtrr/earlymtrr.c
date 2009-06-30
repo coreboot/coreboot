@@ -4,22 +4,22 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 
-/* Validate XIP_ROM_SIZE and XIP_ROM_BASE */
-#if defined(XIP_ROM_SIZE) && !defined(XIP_ROM_BASE)
-# error "XIP_ROM_SIZE without XIP_ROM_BASE"
+/* Validate CONFIG_XIP_ROM_SIZE and CONFIG_XIP_ROM_BASE */
+#if defined(CONFIG_XIP_ROM_SIZE) && !defined(CONFIG_XIP_ROM_BASE)
+# error "CONFIG_XIP_ROM_SIZE without CONFIG_XIP_ROM_BASE"
 #endif
-#if defined(XIP_ROM_BASE) && !defined(XIP_ROM_SIZE)
-# error "XIP_ROM_BASE without XIP_ROM_SIZE"
+#if defined(CONFIG_XIP_ROM_BASE) && !defined(CONFIG_XIP_ROM_SIZE)
+# error "CONFIG_XIP_ROM_BASE without CONFIG_XIP_ROM_SIZE"
 #endif
 #if !defined(CONFIG_LB_MEM_TOPK)
 # error "CONFIG_LB_MEM_TOPK not defined"
 #endif
 
-#if defined(XIP_ROM_SIZE) && ((XIP_ROM_SIZE & (XIP_ROM_SIZE -1)) != 0)
-# error "XIP_ROM_SIZE is not a power of 2"
+#if defined(CONFIG_XIP_ROM_SIZE) && ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE -1)) != 0)
+# error "CONFIG_XIP_ROM_SIZE is not a power of 2"
 #endif
-#if defined(XIP_ROM_SIZE) && ((XIP_ROM_BASE % XIP_ROM_SIZE) != 0)
-# error "XIP_ROM_BASE is not a multiple of XIP_ROM_SIZE"
+#if defined(CONFIG_XIP_ROM_SIZE) && ((CONFIG_XIP_ROM_BASE % CONFIG_XIP_ROM_SIZE) != 0)
+# error "CONFIG_XIP_ROM_BASE is not a multiple of CONFIG_XIP_ROM_SIZE"
 #endif
 
 #if (CONFIG_LB_MEM_TOPK & (CONFIG_LB_MEM_TOPK -1)) != 0
@@ -48,7 +48,7 @@ static void set_var_mtrr(
 	basem.hi = 0;
 	wrmsr(MTRRphysBase_MSR(reg), basem);
 	maskm.lo = ~(size - 1) | 0x800;
-	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
+	maskm.hi = (1<<(CONFIG_CPU_ADDR_BITS-32))-1;
 	wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
 
@@ -59,9 +59,9 @@ static void set_var_mtrr_x(
         /* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
         msr_t basem, maskm;
         basem.lo = (base_lo & 0xfffff000) | type;
-        basem.hi = base_hi & ((1<<(CPU_ADDR_BITS-32))-1);
+        basem.hi = base_hi & ((1<<(CONFIG_CPU_ADDR_BITS-32))-1);
         wrmsr(MTRRphysBase_MSR(reg), basem);
-       	maskm.hi = (1<<(CPU_ADDR_BITS-32))-1;
+       	maskm.hi = (1<<(CONFIG_CPU_ADDR_BITS-32))-1;
 	if(size_lo) {
 	        maskm.lo = ~(size_lo - 1) | 0x800;
 	} else {
@@ -99,11 +99,11 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 		wrmsr(msr_nr, msr);
 	}
 
-#if defined(XIP_ROM_SIZE)
+#if defined(CONFIG_XIP_ROM_SIZE)
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
-	set_var_mtrr(1, XIP_ROM_BASE, XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+	set_var_mtrr(1, CONFIG_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 
 	/* Set the default memory type and enable fixed and variable MTRRs 

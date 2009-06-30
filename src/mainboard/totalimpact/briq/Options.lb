@@ -2,77 +2,77 @@
 ## Config file for the Total Impact briQ
 ##
 
-uses TTYS0_DIV
+uses CONFIG_TTYS0_DIV
 uses CONFIG_CBFS
 uses CONFIG_ARCH_X86
-uses TTYS0_BASE
+uses CONFIG_TTYS0_BASE
 uses CONFIG_BRIQ_750FX
 uses CONFIG_BRIQ_7400
-uses ISA_IO_BASE
-uses ISA_MEM_BASE
-uses PCIC0_CFGADDR
-uses PCIC0_CFGDATA
-uses _IO_BASE
-uses HAVE_OPTION_TABLE
+uses CONFIG_ISA_IO_BASE
+uses CONFIG_ISA_MEM_BASE
+uses CONFIG_PCIC0_CFGADDR
+uses CONFIG_PCIC0_CFGDATA
+uses CONFIG_IO_BASE
+uses CONFIG_HAVE_OPTION_TABLE
 uses CONFIG_COMPRESS 
-uses DEFAULT_CONSOLE_LOGLEVEL 
+uses CONFIG_DEFAULT_CONSOLE_LOGLEVEL 
 uses CONFIG_USE_INIT
-uses NO_POST
+uses CONFIG_NO_POST
 uses CONFIG_CONSOLE_SERIAL8250 
 uses CONFIG_IDE_PAYLOAD 
 uses CONFIG_COMPRESSED_PAYLOAD_LZMA
 uses CONFIG_PRECOMPRESSED_PAYLOAD
-uses IDE_BOOT_DRIVE
-uses IDE_SWAB IDE_OFFSET 
-uses ROM_SIZE
-uses ROM_IMAGE_SIZE
-uses _RESET
-uses _EXCEPTION_VECTORS
-uses _ROMBASE
-uses _ROMSTART
-uses _RAMBASE
-uses _RAMSTART
-uses STACK_SIZE
-uses HEAP_SIZE
+uses CONFIG_IDE_BOOT_DRIVE
+uses CONFIG_IDE_SWAB CONFIG_IDE_OFFSET 
+uses CONFIG_ROM_SIZE
+uses CONFIG_ROM_IMAGE_SIZE
+uses CONFIG_RESET
+uses CONFIG_EXCEPTION_VECTORS
+uses CONFIG_ROMBASE
+uses CONFIG_ROMSTART
+uses CONFIG_RAMBASE
+uses CONFIG_RAMSTART
+uses CONFIG_STACK_SIZE
+uses CONFIG_HEAP_SIZE
 uses CONFIG_BRIQ_750FX 
 uses CONFIG_BRIQ_7400
 uses CONFIG_SYS_CLK_FREQ
 
-uses MAINBOARD
-uses MAINBOARD_VENDOR
-uses MAINBOARD_PART_NUMBER
+uses CONFIG_MAINBOARD
+uses CONFIG_MAINBOARD_VENDOR
+uses CONFIG_MAINBOARD_PART_NUMBER
 uses COREBOOT_EXTRA_VERSION
-uses CROSS_COMPILE
+uses CONFIG_CROSS_COMPILE
 uses CC
-uses HOSTCC
-uses OBJCOPY
+uses CONFIG_HOSTCC
+uses CONFIG_OBJCOPY
 
 ##
 ## Set memory map
 ##
-default ISA_IO_BASE=0x80000000
-default ISA_MEM_BASE=0xc0000000
-default PCIC0_CFGADDR=0xff5f8000
-default PCIC0_CFGDATA=0xff5f8010
-default _IO_BASE=ISA_IO_BASE
+default CONFIG_ISA_IO_BASE=0x80000000
+default CONFIG_ISA_MEM_BASE=0xc0000000
+default CONFIG_PCIC0_CFGADDR=0xff5f8000
+default CONFIG_PCIC0_CFGDATA=0xff5f8010
+default CONFIG_IO_BASE=CONFIG_ISA_IO_BASE
 
 ##
 ## The briQ uses weird clocking, 4 = 115200
 ##
-default TTYS0_DIV=4
+default CONFIG_TTYS0_DIV=4
 ##
 ## Set UART base address
 ##
-default TTYS0_BASE=0x3f8
+default CONFIG_TTYS0_BASE=0x3f8
 
 ##
 ## The default compiler
 ##
-default CC="$(CROSS_COMPILE)gcc"
-default HOSTCC="gcc"
+default CC="$(CONFIG_CROSS_COMPILE)gcc"
+default CONFIG_HOSTCC="gcc"
 ## use a cross compiler
-#default CROSS_COMPILE="powerpc-eabi-"
-#default CROSS_COMPILE="ppc_74xx-"
+#default CONFIG_CROSS_COMPILE="powerpc-eabi-"
+#default CONFIG_CROSS_COMPILE="ppc_74xx-"
 default CONFIG_ARCH_X86=0
 
 ## Use stage 1 initialization code
@@ -82,24 +82,24 @@ default CONFIG_USE_INIT=1
 default CONFIG_COMPRESS=0
 
 ## Turn off POST codes
-default NO_POST=1
+default CONFIG_NO_POST=1
 
 ## Enable serial console
-default DEFAULT_CONSOLE_LOGLEVEL=8
+default CONFIG_DEFAULT_CONSOLE_LOGLEVEL=8
 default CONFIG_CONSOLE_SERIAL8250=1
 
 ## Boot linux from IDE
 default CONFIG_IDE_PAYLOAD=1
-default IDE_BOOT_DRIVE=0
-default IDE_SWAB=1
-default IDE_OFFSET=0
+default CONFIG_IDE_BOOT_DRIVE=0
+default CONFIG_IDE_SWAB=1
+default CONFIG_IDE_OFFSET=0
 
 # ROM is 1Mb
-default ROM_SIZE=1048576
+default CONFIG_ROM_SIZE=1048576
 
 # Set stack and heap sizes (stage 2)
-default STACK_SIZE=0x10000
-default HEAP_SIZE=0x10000
+default CONFIG_STACK_SIZE=0x10000
+default CONFIG_HEAP_SIZE=0x10000
 
 ##
 ## System clock
@@ -108,21 +108,21 @@ default CONFIG_SYS_CLK_FREQ=33
 
 # Sandpoint Demo Board
 ## Base of ROM
-default _ROMBASE=0xfff00000
+default CONFIG_ROMBASE=0xfff00000
 
 ## Sandpoint reset vector
-default _RESET=_ROMBASE+0x100
+default CONFIG_RESET=CONFIG_ROMBASE+0x100
 
 ## Exception vectors (other than reset vector)
-default _EXCEPTION_VECTORS=_RESET+0x100
+default CONFIG_EXCEPTION_VECTORS=CONFIG_RESET+0x100
 
 ## Start of coreboot in the boot rom
-## = _RESET + exeception vector table size
-default _ROMSTART=_RESET+0x3100
+## = CONFIG_RESET + exeception vector table size
+default CONFIG_ROMSTART=CONFIG_RESET+0x3100
 
 ## Coreboot C code runs at this location in RAM
-default _RAMBASE=0x00100000
-default _RAMSTART=0x00100000
+default CONFIG_RAMBASE=0x00100000
+default CONFIG_RAMSTART=0x00100000
 
 default CONFIG_BRIQ_750FX=1
 #default CONFIG_BRIQ_7400=1

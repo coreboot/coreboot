@@ -42,7 +42,7 @@ unsigned long ulzma(unsigned char *src, unsigned char *dst);
 
 /*XXXXXXXXXXXXXX */
 unsigned char *rom_start = (unsigned char *)CONFIG_ROM_PAYLOAD_START;
-unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_PAYLOAD_START + PAYLOAD_SIZE - 1);
+unsigned char *rom_end   = (unsigned char *)(CONFIG_ROM_PAYLOAD_START + CONFIG_PAYLOAD_SIZE - 1);
 /*XXXXXXXXXXXXXX */
 
 static const unsigned char *rom;
@@ -76,7 +76,7 @@ int stream_init(void)
 
         dest = &_eheap; /* need a good address on RAM */
 
-#if _RAMBASE<0x00100000
+#if CONFIG_RAMBASE<0x00100000
 	olen = *(unsigned int *)dest;
 #if (CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1)
 	if((dest < (unsigned char *)0xa0000) && ((dest+olen)>(unsigned char *)0xa0000)) {

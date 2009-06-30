@@ -80,7 +80,7 @@ void init_uart8250(unsigned base_port, struct uart8250 *uart)
 	int lcs;
 	divisor = 115200/(uart->baud ? uart->baud: 1);
 	lcs = 3;
-	if (base_port == TTYS0_BASE) {
+	if (base_port == CONFIG_TTYS0_BASE) {
 		/* Don't reinitialize the console serial port,
 		 * This is espeically nasty in SMP.
 		 */

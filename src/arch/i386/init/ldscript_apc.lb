@@ -6,7 +6,7 @@ SECTIONS
                 coreboot_apc.rom(*)
                 _eapcrom = .;
         }
-        _iseg_apc = DCACHE_RAM_BASE;
+        _iseg_apc = CONFIG_DCACHE_RAM_BASE;
         _eiseg_apc = _iseg_apc + SIZEOF(.apcrom);
         _liseg_apc = _apcrom;
         _eliseg_apc = _eapcrom;

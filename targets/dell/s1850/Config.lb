@@ -1,24 +1,24 @@
 target s1850
 mainboard dell/s1850
 
-option ROM_SIZE=1024*1024
-option MAXIMUM_CONSOLE_LOGLEVEL=9
-option DEFAULT_CONSOLE_LOGLEVEL=9
+option CONFIG_ROM_SIZE=1024*1024
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=9
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=9
 
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x16000
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x16000
 	option COREBOOT_EXTRA_VERSION=".0Normal"
 #	payload ../../../payloads/filo.elf
 	payload /tmp/filo.elf
 end
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x16000
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x16000
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 #	payload ../../../payloads/filo.elf
 	payload /tmp/filo.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

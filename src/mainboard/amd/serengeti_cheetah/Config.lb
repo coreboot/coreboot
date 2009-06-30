@@ -1,5 +1,5 @@
-## XIP_ROM_SIZE must be a power of 2.
-default XIP_ROM_SIZE = 64 * 1024
+## CONFIG_XIP_ROM_SIZE must be a power of 2.
+default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/failovercalculation.lb
 
 arch i386 end 
@@ -15,25 +15,25 @@ driver mainboard.o
 #needed by irq_tables and mptable and acpi_tables
 object get_bus_conf.o
 
-if HAVE_MP_TABLE 
+if CONFIG_HAVE_MP_TABLE 
 	object mptable.o 
 end
 
-if HAVE_PIRQ_TABLE 
+if CONFIG_HAVE_PIRQ_TABLE 
 	object irq_tables.o 
 end
 
-#if HAVE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 #       object acpi_tables.o
 #       object fadt.o
-#       if SB_HT_CHAIN_ON_BUS0
+#       if CONFIG_SB_HT_CHAIN_ON_BUS0
 #               object dsdt_bus0.o
 #       else
 #               object dsdt.o
 #       end
 #       object ssdt.o
-#       if ACPI_SSDTX_NUM
-#                if SB_HT_CHAIN_ON_BUS0
+#       if CONFIG_ACPI_SSDTX_NUM
+#                if CONFIG_SB_HT_CHAIN_ON_BUS0
 #                 object ssdt2_bus0.o
 #                else
 #                 object ssdt2.o
@@ -41,36 +41,36 @@ end
 #       end
 #end
 
-if HAVE_ACPI_TABLES
+if CONFIG_HAVE_ACPI_TABLES
         object acpi_tables.o
         object fadt.o
 	makerule dsdt.c
-		depends "$(MAINBOARD)/dx/dsdt_lb.dsl"
-		action  "iasl -p $(CURDIR)/dsdt_lb -tc $(MAINBOARD)/dx/dsdt_lb.dsl"
+		depends "$(CONFIG_MAINBOARD)/dx/dsdt_lb.dsl"
+		action  "iasl -p $(CURDIR)/dsdt_lb -tc $(CONFIG_MAINBOARD)/dx/dsdt_lb.dsl"
 		action  "mv dsdt_lb.hex dsdt.c"
 	end
         object ./dsdt.o
 
 	#./ssdt.o is moved to northbridge/amd/amdk8/Config.lb
 	
-        if ACPI_SSDTX_NUM
+        if CONFIG_ACPI_SSDTX_NUM
             makerule ssdt2.c
-                        depends "$(MAINBOARD)/dx/pci2.asl"
-                        action  "iasl -p $(CURDIR)/pci2 -tc $(MAINBOARD)/dx/pci2.asl"
+                        depends "$(CONFIG_MAINBOARD)/dx/pci2.asl"
+                        action  "iasl -p $(CURDIR)/pci2 -tc $(CONFIG_MAINBOARD)/dx/pci2.asl"
                         action  "perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex"
                         action  "mv pci2.hex ssdt2.c"
             end
             object ./ssdt2.o
             makerule ssdt3.c
-                        depends "$(MAINBOARD)/dx/pci3.asl"
-                        action  "iasl -p $(CURDIR)/pci3 -tc $(MAINBOARD)/dx/pci3.asl"
+                        depends "$(CONFIG_MAINBOARD)/dx/pci3.asl"
+                        action  "iasl -p $(CURDIR)/pci3 -tc $(CONFIG_MAINBOARD)/dx/pci3.asl"
                         action  "perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex"
                         action  "mv pci3.hex ssdt3.c"
             end
             object ./ssdt3.o
             makerule ssdt4.c
-                        depends "$(MAINBOARD)/dx/pci4.asl"
-                        action  "iasl -p $(CURDIR)/pci4 -tc $(MAINBOARD)/dx/pci4.asl"
+                        depends "$(CONFIG_MAINBOARD)/dx/pci4.asl"
+                        action  "iasl -p $(CURDIR)/pci4 -tc $(CONFIG_MAINBOARD)/dx/pci4.asl"
                         action  "perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex"
                         action  "mv pci4.hex ssdt4.c"
             end
@@ -81,26 +81,26 @@ end
 	if CONFIG_USE_INIT
 		# compile cache_as_ram.c to auto.o
 		makerule ./cache_as_ram_auto.o
-		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-		        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+		        depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 		end
 
 	else   
 		#compile cache_as_ram.c to auto.inc 
 		makerule ./cache_as_ram_auto.inc
-		        depends "$(MAINBOARD)/cache_as_ram_auto.c option_table.h"
-		        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(MAINBOARD)/cache_as_ram_auto.c -o $@"
+		        depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+		        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 		        action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
 		        action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end
 	end
 
-if USE_FAILOVER_IMAGE
+if CONFIG_USE_FAILOVER_IMAGE
 else
     if CONFIG_AP_CODE_IN_CAR
 	makerule ./apc_auto.o
-		depends "$(MAINBOARD)/apc_auto.c option_table.h"
-		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(MAINBOARD)/apc_auto.c -o $@"
+		depends "$(CONFIG_MAINBOARD)/apc_auto.c option_table.h"
+		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/apc_auto.c -o $@"
 	end
 	ldscript /arch/i386/init/ldscript_apc.lb
     end
@@ -110,13 +110,13 @@ end
 ## Build our 16 bit and 32 bit coreboot entry code
 ##
 
-if HAVE_FAILOVER_BOOT
-    if USE_FAILOVER_IMAGE
+if CONFIG_HAVE_FAILOVER_BOOT
+    if CONFIG_USE_FAILOVER_IMAGE
 	mainboardinit cpu/x86/16bit/entry16.inc
 	ldscript /cpu/x86/16bit/entry16.lds
     end
 else
-    if USE_FALLBACK_IMAGE
+    if CONFIG_USE_FALLBACK_IMAGE
 	mainboardinit cpu/x86/16bit/entry16.inc
 	ldscript /cpu/x86/16bit/entry16.lds
     end
@@ -134,8 +134,8 @@ mainboardinit cpu/x86/32bit/entry32.inc
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if HAVE_FAILOVER_BOOT
-    if USE_FAILOVER_IMAGE 
+if CONFIG_HAVE_FAILOVER_BOOT
+    if CONFIG_USE_FAILOVER_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc 
 	ldscript /cpu/x86/16bit/reset16.lds 
     else
@@ -143,7 +143,7 @@ if HAVE_FAILOVER_BOOT
 	ldscript /cpu/x86/32bit/reset32.lds 
     end
 else
-    if USE_FALLBACK_IMAGE 
+    if CONFIG_USE_FALLBACK_IMAGE 
 	mainboardinit cpu/x86/16bit/reset16.inc 
 	ldscript /cpu/x86/16bit/reset16.lds 
     else
@@ -168,12 +168,12 @@ ldscript /arch/i386/lib/id.lds
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if HAVE_FAILOVER_BOOT
-    if USE_FAILOVER_IMAGE
+if CONFIG_HAVE_FAILOVER_BOOT
+    if CONFIG_USE_FAILOVER_IMAGE
 		ldscript /arch/i386/lib/failover_failover.lds
     end
 else
-    if USE_FALLBACK_IMAGE
+    if CONFIG_USE_FALLBACK_IMAGE
 		ldscript /arch/i386/lib/failover.lds
     end
 end

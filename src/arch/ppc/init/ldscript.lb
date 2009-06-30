@@ -1,14 +1,14 @@
 /*
  *	Memory map:
  *
- *	_ROMBASE		: start of ROM
- *	_RESET			: reset vector (may be at top of ROM)
+ *	CONFIG_ROMBASE		: start of ROM
+ *	CONFIG_RESET			: reset vector (may be at top of ROM)
  *	_EXCEPTIONS_VECTORS	: exception table
  *
- *	_ROMSTART 		: coreboot text 
+ *	CONFIG_ROMSTART 		: coreboot text 
  *				: payload text
  *
- *	_RAMBASE		: address to copy payload
+ *	CONFIG_RAMBASE		: address to copy payload
  */
 
 /*
@@ -32,13 +32,13 @@ SECTIONS
 	/* 
 	 * Absolute location of base of ROM 
 	 */
-	. = _ROMBASE;
+	. = CONFIG_ROMBASE;
 
 	/*
 	 * Absolute location of reset vector. This may actually be at the
 	 * the top of ROM.
 	 */
-	. = _RESET;
+	. = CONFIG_RESET;
 	.reset . : {
 		*(.rom.reset);
 		. = ALIGN(16);
@@ -47,7 +47,7 @@ SECTIONS
 	/*
 	 * Absolute location of exception vector table.
 	 */
-	. = _EXCEPTION_VECTORS;
+	. = CONFIG_EXCEPTION_VECTORS;
 	.exception_vectors . : {
 		*(.rom.exception_vectors);
 		. = ALIGN(16);
@@ -56,7 +56,7 @@ SECTIONS
 	/*
 	 * Absolute location of coreboot initialization code in ROM.
 	 */
-	. = _ROMSTART;
+	. = CONFIG_ROMSTART;
 	.rom . : {
 		_rom = .;
 		*(.rom.text);
@@ -94,7 +94,7 @@ SECTIONS
 	/*
 	 * Absolute location of where coreboot will be relocated in RAM.
 	 */
-	_iseg = _RAMBASE;
+	_iseg = CONFIG_RAMBASE;
 	_eiseg = _iseg + SIZEOF(.ram);
 	_liseg = _ram;
 	_eliseg = _eram;

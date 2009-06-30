@@ -434,7 +434,7 @@ static void sb600_devices_por_init()
 
 	/*CIM set this register; but I didn't find its description in RPR.
 	On DBM690T platform, I didn't find different between set and skip this register.
-	But on Filbert platform, the DEBUG message from serial port on Peanut board can't be displayed
+	But on Filbert platform, the CONFIG_DEBUG message from serial port on Peanut board can't be displayed
 	after the bit0 of this register is set.
 	pci_write_config8(dev, 0x04, 0x21);
 	*/

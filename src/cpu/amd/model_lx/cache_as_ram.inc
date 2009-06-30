@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define	LX_STACK_BASE		DCACHE_RAM_BASE		/* this is where the DCache will be mapped and be used as stack, It would be cool if it was the same base as coreboot normal stack */
-#define	LX_STACK_END		LX_STACK_BASE+(DCACHE_RAM_SIZE-1)
+#define	LX_STACK_BASE		CONFIG_DCACHE_RAM_BASE		/* this is where the DCache will be mapped and be used as stack, It would be cool if it was the same base as coreboot normal stack */
+#define	LX_STACK_END		LX_STACK_BASE+(CONFIG_DCACHE_RAM_SIZE-1)
 
 #define	LX_NUM_CACHELINES	0x080	/* there are 128lines per way */
 #define	LX_CACHELINE_SIZE	0x020	/* there are 32bytes per line */
@@ -82,7 +82,7 @@ DCacheSetup:
 	xorl	%esi, %esi
 	xorl	%ebp, %ebp
 
-	/* DCache Ways0 through Ways7 will be tagged for LX_STACK_BASE + DCACHE_RAM_SIZE for holding stack */
+	/* DCache Ways0 through Ways7 will be tagged for LX_STACK_BASE + CONFIG_DCACHE_RAM_SIZE for holding stack */
 	/* remember,  there is NO stack yet... */
 
 	/* Tell cache we want to fill WAY 0 starting at the top */
@@ -192,7 +192,7 @@ done_cache_as_ram_main:
 	mov	string, %ebx	; \
 	CALLSP(crt_console_tx_string)
 
-# if defined(TTYS0_BASE) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
+# if defined(CONFIG_TTYS0_BASE) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
 #  define CONSOLE_DEBUG_TX_STRING(string)        __CRT_CONSOLE_TX_STRING(string)
 # else
 #  define CONSOLE_DEBUG_TX_STRING(string)
@@ -333,26 +333,26 @@ crt_console_tx_string:
 	RETSP
 9:
 /* Base Address */
-#ifndef TTYS0_BASE
-#define TTYS0_BASE	0x3f8
+#ifndef CONFIG_TTYS0_BASE
+#define CONFIG_TTYS0_BASE	0x3f8
 #endif
 /* Data */
-#define TTYS0_RBR (TTYS0_BASE+0x00)
+#define TTYS0_RBR (CONFIG_TTYS0_BASE+0x00)
 
 /* Control */
 #define TTYS0_TBR TTYS0_RBR
-#define TTYS0_IER (TTYS0_BASE+0x01)
-#define TTYS0_IIR (TTYS0_BASE+0x02)
+#define TTYS0_IER (CONFIG_TTYS0_BASE+0x01)
+#define TTYS0_IIR (CONFIG_TTYS0_BASE+0x02)
 #define TTYS0_FCR TTYS0_IIR
-#define TTYS0_LCR (TTYS0_BASE+0x03)
-#define TTYS0_MCR (TTYS0_BASE+0x04)
+#define TTYS0_LCR (CONFIG_TTYS0_BASE+0x03)
+#define TTYS0_MCR (CONFIG_TTYS0_BASE+0x04)
 #define TTYS0_DLL TTYS0_RBR
 #define TTYS0_DLM TTYS0_IER
 
 /* Status */
-#define TTYS0_LSR (TTYS0_BASE+0x05)
-#define TTYS0_MSR (TTYS0_BASE+0x06)
-#define TTYS0_SCR (TTYS0_BASE+0x07)
+#define TTYS0_LSR (CONFIG_TTYS0_BASE+0x05)
+#define TTYS0_MSR (CONFIG_TTYS0_BASE+0x06)
+#define TTYS0_SCR (CONFIG_TTYS0_BASE+0x07)
 
 	mov	%al, %ah
 10:	mov	$TTYS0_LSR, %dx

@@ -41,7 +41,7 @@
 //if we want to wait for core1 done before DQS training, set it to 0
 #define K8_SET_FIDVID_CORE0_ONLY 1
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
 
@@ -58,7 +58,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #if CONFIG_USBDEBUG_DIRECT
@@ -82,7 +82,7 @@
 #include "superio/ite/it8716f/it8716f_early_serial.c"
 #include "superio/ite/it8716f/it8716f_early_init.c"
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
 
@@ -154,7 +154,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #endif
 
-#if ((HAVE_FAILOVER_BOOT==1) && (USE_FAILOVER_IMAGE == 1)) || ((HAVE_FAILOVER_BOOT==0) && (USE_FALLBACK_IMAGE == 1))
+#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 
 #include "southbridge/sis/sis966/sis966_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -221,7 +221,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
                 );
 
  fallback_image:
-#if HAVE_FAILOVER_BOOT==1
+#if CONFIG_HAVE_FAILOVER_BOOT==1
         __asm__ volatile ("jmp __fallback_image"
                 : /* outputs */
                 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
@@ -234,21 +234,21 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-#if HAVE_FAILOVER_BOOT==1
-    #if USE_FAILOVER_IMAGE==1
+#if CONFIG_HAVE_FAILOVER_BOOT==1
+    #if CONFIG_USE_FAILOVER_IMAGE==1
 	failover_process(bist, cpu_init_detectedx);
     #else
 	real_main(bist, cpu_init_detectedx);
     #endif
 #else
-    #if USE_FALLBACK_IMAGE == 1
+    #if CONFIG_USE_FALLBACK_IMAGE == 1
 	failover_process(bist, cpu_init_detectedx);
     #endif
 	real_main(bist, cpu_init_detectedx);
 #endif
 }
 
-#if USE_FAILOVER_IMAGE==0
+#if CONFIG_USE_FAILOVER_IMAGE==0
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -261,7 +261,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 	};
 
-        struct sys_info *sysinfo = (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+        struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
         int needs_reset = 0;
         unsigned bsp_apicid = 0;
@@ -272,7 +272,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	pnp_enter_ext_func_mode(SERIAL_DEV);
         pnp_write_config(SERIAL_DEV, 0x23, 0);
- 	it8716f_enable_dev(SERIAL_DEV, TTYS0_BASE);
+ 	it8716f_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 
         setup_mb_resource_map();
@@ -292,7 +292,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\r\n");
 
-#if MEM_TRAIN_SEQ == 1
+#if CONFIG_MEM_TRAIN_SEQ == 1
         set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
 #endif
         setup_coherent_ht_domain(); // routing table and start other core0

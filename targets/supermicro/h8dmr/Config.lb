@@ -24,43 +24,43 @@ mainboard supermicro/h8dmr
 
 romimage "normal"
 #       48K for SCSI FW
-#        option ROM_SIZE = 475136
+#        option CONFIG_ROM_SIZE = 475136
 #       48K for SCSI FW and 48K for ATI ROM
-#       option ROM_SIZE = 425984 
+#       option CONFIG_ROM_SIZE = 425984 
 #       64K for Etherboot
-#        option ROM_SIZE = 458752 
+#        option CONFIG_ROM_SIZE = 458752 
 #       44k for atixx.rom
-#        option ROM_SIZE = 479232
-        option USE_FAILOVER_IMAGE=0
-	option USE_FALLBACK_IMAGE=0
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x18800
-	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x15800
-	option XIP_ROM_SIZE=0x40000
+#        option CONFIG_ROM_SIZE = 479232
+        option CONFIG_USE_FAILOVER_IMAGE=0
+	option CONFIG_USE_FALLBACK_IMAGE=0
+#	option CONFIG_ROM_IMAGE_SIZE=0x13800
+#	option CONFIG_ROM_IMAGE_SIZE=0x18800
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+#	option CONFIG_ROM_IMAGE_SIZE=0x15800
+	option CONFIG_XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 	payload ../payload.elf
 end
 
 romimage "fallback" 
-	option USE_FAILOVER_IMAGE=0
-	option USE_FALLBACK_IMAGE=1
-#	option ROM_IMAGE_SIZE=0x13800
-#	option ROM_IMAGE_SIZE=0x19800
-	option ROM_IMAGE_SIZE=0x20000
-#	option ROM_IMAGE_SIZE=0x15800
-	option XIP_ROM_SIZE=0x40000
+	option CONFIG_USE_FAILOVER_IMAGE=0
+	option CONFIG_USE_FALLBACK_IMAGE=1
+#	option CONFIG_ROM_IMAGE_SIZE=0x13800
+#	option CONFIG_ROM_IMAGE_SIZE=0x19800
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+#	option CONFIG_ROM_IMAGE_SIZE=0x15800
+	option CONFIG_XIP_ROM_SIZE=0x40000
 	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Fallback"
 	payload ../payload.elf
 end
 
 romimage "failover"
-        option USE_FAILOVER_IMAGE=1
-        option USE_FALLBACK_IMAGE=0
-        option ROM_IMAGE_SIZE=FAILOVER_SIZE
-        option XIP_ROM_SIZE=FAILOVER_SIZE
+        option CONFIG_USE_FAILOVER_IMAGE=1
+        option CONFIG_USE_FALLBACK_IMAGE=0
+        option CONFIG_ROM_IMAGE_SIZE=CONFIG_FAILOVER_SIZE
+        option CONFIG_XIP_ROM_SIZE=CONFIG_FAILOVER_SIZE
         option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Failover"
 end
 
-#buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback" "failover"
+#buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback" "failover"

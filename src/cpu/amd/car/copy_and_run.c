@@ -8,7 +8,7 @@ void cbfs_and_run_core(char*, unsigned ebp);
 
 static void copy_and_run(void)
 {
-# if USE_FALLBACK_IMAGE == 1
+# if CONFIG_USE_FALLBACK_IMAGE == 1
 	cbfs_and_run_core("fallback/coreboot_ram", 0);
 # else
       	cbfs_and_run_core("normal/coreboot_ram", 0);
@@ -19,7 +19,7 @@ static void copy_and_run(void)
 
 static void copy_and_run_ap_code_in_car(unsigned ret_addr)
 {
-# if USE_FALLBACK_IMAGE == 1
+# if CONFIG_USE_FALLBACK_IMAGE == 1
 	cbfs_and_run_core("fallback/coreboot_apc", ret_addr);
 # else
       	cbfs_and_run_core("normal/coreboot_apc", ret_addr);

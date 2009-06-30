@@ -292,7 +292,7 @@ void do_vsmbios(void)
 	 */
 
 	//VSA is cat onto the end after LB builds
-	rom = ((unsigned long)0) - (ROM_SIZE + 36 * 1024);
+	rom = ((unsigned long)0) - (CONFIG_ROM_SIZE + 36 * 1024);
 	buf = (unsigned char *)VSA2_BUFFER;
 	olen = unrv2b((uint8_t *) rom, buf, &ilen);
 	printk_debug("buf ilen %d olen%d\n", ilen, olen);

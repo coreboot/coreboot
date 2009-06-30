@@ -17,7 +17,7 @@
 #define CFG1_THERM_HOT   0x10
 #define CFT1_DAC_AFC     0x20
 #define CFG1_PWM_AFC     0x40
-#define CFG1_RESET       0x80
+#define CFG1CONFIG_RESET       0x80
 #define ADM1026_REG_CONFIG2 0x01
 #define ADM1026_REG_CONFIG3 0x07
 
@@ -40,7 +40,7 @@ static void adm1026_enable_monitoring(device_t dev)
         int result;
         result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);
 
-        result = (result | CFG1_MONITOR) & ~(CFG1_INT_CLEAR | CFG1_RESET);
+        result = (result | CFG1_MONITOR) & ~(CFG1_INT_CLEAR | CFG1CONFIG_RESET);
         result = smbus_write_byte(dev, ADM1026_REG_CONFIG1, result);
 
         result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);

@@ -103,8 +103,8 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 	}
 	/* AMD K8 Unsupported 1Ghz? */
 	if ((dev->vendor == PCI_VENDOR_ID_AMD) && (dev->device == 0x1100)) {
-#if K8_HT_FREQ_1G_SUPPORT == 1 
-	#if K8_REV_F_SUPPORT == 0 
+#if CONFIG_K8_HT_FREQ_1G_SUPPORT == 1 
+	#if CONFIG_K8_REV_F_SUPPORT == 0 
 		if (is_cpu_pre_e0()) { // only e0 later suupport 1GHz HT
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 		} 
@@ -326,14 +326,14 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
 	} while((ctrl & (1 << 5)) == 0);
 
 	        //actually, only for one HT device HT chain, and unitid is 0
-#if HT_CHAIN_UNITID_BASE == 0
+#if CONFIG_HT_CHAIN_UNITID_BASE == 0
         if(offset_unitid) {
                 return;
         }
 #endif
 
         /* Check if is already collapsed */
-        if((!offset_unitid)|| (offset_unitid && (!((HT_CHAIN_END_UNITID_BASE == 0) && (HT_CHAIN_END_UNITID_BASE <HT_CHAIN_UNITID_BASE))))) {
+        if((!offset_unitid)|| (offset_unitid && (!((CONFIG_HT_CHAIN_END_UNITID_BASE == 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE <CONFIG_HT_CHAIN_UNITID_BASE))))) {
                 struct device dummy;
                 uint32_t id;
                 dummy.bus              = bus;
@@ -381,17 +381,17 @@ static void ht_collapse_early_enumeration(struct bus *bus, unsigned offset_uniti
 unsigned int hypertransport_scan_chain(struct bus *bus, 
 	unsigned min_devfn, unsigned max_devfn, unsigned int max, unsigned *ht_unitid_base, unsigned offset_unitid)
 {
-	//even HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
+	//even CONFIG_HT_CHAIN_UNITID_BASE == 0, we still can go through this function, because of end_of_chain check, also We need it to optimize link
 	unsigned next_unitid, last_unitid;
 	device_t old_devices, dev, func;
-	unsigned min_unitid = (offset_unitid) ? HT_CHAIN_UNITID_BASE:1;
+	unsigned min_unitid = (offset_unitid) ? CONFIG_HT_CHAIN_UNITID_BASE:1;
 	struct ht_link prev;
 	device_t last_func = 0;
 	int ht_dev_num = 0;
 	unsigned max_unitid;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-        //let't record the device of last ht device, So we can set the Unitid to HT_CHAIN_END_UNITID_BASE
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+        //let't record the device of last ht device, So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
         unsigned real_last_unitid; 
         uint8_t real_last_pos;
 	device_t real_last_dev;
@@ -483,11 +483,11 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		flags &= ~0x1f; /* mask out base Unit ID */
 
 		count = (flags >> 5) & 0x1f; /* get unit count */
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 		if(offset_unitid) {
 			if(next_unitid > (max_devfn>>3)) { // max_devfn will be (0x17<<3)|7 or (0x1f<<3)|7
 				if(!end_used) {
-			                next_unitid = HT_CHAIN_END_UNITID_BASE;
+			                next_unitid = CONFIG_HT_CHAIN_END_UNITID_BASE;
 					end_used = 1;
 				} else {
 					goto end_of_chain;
@@ -519,7 +519,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 		ht_unitid_base[ht_dev_num] = next_unitid;
 		ht_dev_num++;
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 		if (offset_unitid) {
         	        real_last_pos = pos;
 			real_last_unitid = next_unitid;
@@ -550,25 +550,25 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 	}
 #endif
 
-#if HT_CHAIN_END_UNITID_BASE != 0x20
-        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != HT_CHAIN_END_UNITID_BASE)  && !end_used) {
+#if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
+        if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE)  && !end_used) {
                 uint16_t flags;
                 int i;
 		device_t last_func = 0;
                 flags = pci_read_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS);
                 flags &= ~0x1f;
-                flags |= HT_CHAIN_END_UNITID_BASE & 0x1f;
+                flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
                 pci_write_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS, flags);
 
                 for(func = real_last_dev; func; func = func->sibling) {
-                        func->path.pci.devfn -= ((real_last_unitid - HT_CHAIN_END_UNITID_BASE) << 3);
+                        func->path.pci.devfn -= ((real_last_unitid - CONFIG_HT_CHAIN_END_UNITID_BASE) << 3);
 			last_func = func;
                 }
 
-		ht_unitid_base[ht_dev_num-1] = HT_CHAIN_END_UNITID_BASE; // update last one
+		ht_unitid_base[ht_dev_num-1] = CONFIG_HT_CHAIN_END_UNITID_BASE; // update last one
 		
 		printk_debug(" unitid: %04x --> %04x\n",
-				real_last_unitid, HT_CHAIN_END_UNITID_BASE);
+				real_last_unitid, CONFIG_HT_CHAIN_END_UNITID_BASE);
 
         }
 #endif

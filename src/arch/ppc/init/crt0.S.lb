@@ -30,8 +30,8 @@ system_reset:
 	 */
 %%PROCESSOR_INIT%%
 
-#if USE_DCACHE_RAM == 1
-#define DCACHE_RAM_END	(DCACHE_RAM_BASE + DCACHE_RAM_SIZE - 1)
+#if CONFIG_USE_DCACHE_RAM == 1
+#define DCACHE_RAM_END	(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - 1)
 	/*
 	 * Initialize data cache blocks 
 	 * (assumes cache block size of 32 bytes)
@@ -39,9 +39,9 @@ system_reset:
 	 * NOTE: This may need to be moved to FAMILY_INIT if
 	 *       dcbz is not supported on all CPU's
 	 */
-	lis     r1, DCACHE_RAM_BASE@h
-	ori     r1, r1, DCACHE_RAM_BASE@l
-	li      r3, (DCACHE_RAM_SIZE / 32)
+	lis     r1, CONFIG_DCACHE_RAM_BASE@h
+	ori     r1, r1, CONFIG_DCACHE_RAM_BASE@l
+	li      r3, (CONFIG_DCACHE_RAM_SIZE / 32)
 	mtctr   r3
 0:      dcbz    r0, r1
 	addi    r1, r1, 32
@@ -53,8 +53,8 @@ system_reset:
 	 * it 16-byte aligned to cover both cases. Also we have to ensure that
 	 * the first word is located within the cache.
 	 */
-	lis     r1, (DCACHE_RAM_BASE+DCACHE_RAM_SIZE)@h
-	ori     r1, r1, (DCACHE_RAM_BASE+DCACHE_RAM_SIZE)@l
+	lis     r1, (CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE)@h
+	ori     r1, r1, (CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE)@l
 	lis	r0, 0
 	stwu	r0, -4(r1)
 	stwu	r0, -4(r1)
@@ -65,8 +65,8 @@ system_reset:
 	/*
 	 * Clear stack
 	 */
-	lis	r4, DCACHE_RAM_BASE@h
-	ori	r4, r4, DCACHE_RAM_BASE@l
+	lis	r4, CONFIG_DCACHE_RAM_BASE@h
+	ori	r4, r4, CONFIG_DCACHE_RAM_BASE@l
 	lis	r7, DCACHE_RAM_END@h
 	ori	r7, r7, DCACHE_RAM_END@l
 	lis	r5, 0
@@ -110,7 +110,7 @@ system_reset:
 	 * Complete rest of initialization in C (ppc_main)
 	 */
 	rfi
-#endif /* USE_DCACHE_RAM */
+#endif /* CONFIG_USE_DCACHE_RAM */
 
 	/*
 	 * Stop here if something goes wrong

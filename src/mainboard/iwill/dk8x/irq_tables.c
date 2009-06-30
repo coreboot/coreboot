@@ -18,7 +18,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
 	PIRQ_VERSION,		/* u16 version   */
-	32+16*IRQ_SLOT_COUNT,	/* there can be total IRQ_SLOT_COUNT 
+	32+16*CONFIG_IRQ_SLOT_COUNT,	/* there can be total CONFIG_IRQ_SLOT_COUNT 
 				 * devices on the bus */
 	IRQ_ROUTER_BUS,		/* Where the interrupt router lies (bus) */
 	IRQ_ROUTER_DEVFN,	/* Where the interrupt router lies (dev) */

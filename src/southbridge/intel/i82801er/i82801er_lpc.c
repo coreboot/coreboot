@@ -18,8 +18,8 @@
 #define MAINBOARD_POWER_OFF 0
 #define MAINBOARD_POWER_ON  1
 
-#ifndef MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
 #define ALL		(0xff << 24)
@@ -283,7 +283,7 @@ static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	uint32_t value;
-	int pwr_on=MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
 	/* IO APIC initialization */
 	value = pci_read_config32(dev, 0xd0);

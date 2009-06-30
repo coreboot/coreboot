@@ -59,7 +59,7 @@ static void mcf3_read_resources(device_t dev)
 	pci_dev_read_resources(dev);
 
 	/* If we are not the first processor don't allocate the gart apeture */
-	if (dev->path.pci.devfn != PCI_DEVFN(CDB, 3)) {
+	if (dev->path.pci.devfn != PCI_DEVFN(CONFIG_CDB, 3)) {
 		return;
 	}
 
@@ -69,7 +69,7 @@ static void mcf3_read_resources(device_t dev)
 	if (iommu) {
 		/* Add a Gart apeture resource */
 		resource = new_resource(dev, 0x94);
-		resource->size = iommu?AGP_APERTURE_SIZE:1;
+		resource->size = iommu?CONFIG_AGP_APERTURE_SIZE:1;
 		resource->align = log2(resource->size);
 		resource->gran  = log2(resource->size);
 		resource->limit = 0xffffffff; /* 4G */

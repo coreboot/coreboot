@@ -26,7 +26,7 @@ static void check_cmos_failed(void)
 		//clear bit 1 and bit 2
 		byte = cmos_read(RTC_BOOT_BYTE);
 		byte &= 0x0c;
-		byte |= MAX_REBOOT_CNT << 4;
+		byte |= CONFIG_MAX_REBOOT_CNT << 4;
 		cmos_write(byte, RTC_BOOT_BYTE);
 	}
 }

@@ -1,5 +1,5 @@
-uses HAVE_MOVNTI
-default HAVE_MOVNTI=1
+uses CONFIG_HAVE_MOVNTI
+default CONFIG_HAVE_MOVNTI=1
 
 dir /cpu/x86/tsc
 dir /cpu/x86/mtrr

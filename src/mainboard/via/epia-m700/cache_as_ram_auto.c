@@ -708,7 +708,7 @@ void amd64_main(unsigned long bist)
  * around CLEAR_FIRST_1M_RAM and #include "cpu/x86/car/cache_as_ram_post.c".
  * The CLEAR_FIRST_1M_RAM seems to make cpu/x86/car/cache_as_ram_post.c stop
  * at somewhere, and cpu/x86/car/cache_as_ram_post.c do not cache my
- * $XIP_ROM_BASE+SIZE area.
+ * $CONFIG_XIP_ROM_BASE+SIZE area.
  *
  * Use #include "cpu/via/car/cache_as_ram_post.c". This version post.c have
  * some diff with x86-version.
@@ -772,10 +772,10 @@ cpu_reset_x:
 #include "cpu/via/car/cache_as_ram_post.c"
 /* #include "cpu/x86/car/cache_as_ram_post.c" */
 	__asm__ volatile (
-		/* Set new esp *//* before _RAMBASE */
+		/* Set new esp *//* before CONFIG_RAMBASE */
 		"subl %0, %%ebp\n\t"
 		"subl %0, %%esp\n\t"::
-		"a" ((DCACHE_RAM_BASE + DCACHE_RAM_SIZE) - _RAMBASE)
+		"a" ((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) - CONFIG_RAMBASE)
 	);
 
 	{

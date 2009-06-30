@@ -4,11 +4,11 @@
 target frontrunner
 mainboard lippert/frontrunner
 
-option ROM_SIZE=256*1024
+option CONFIG_ROM_SIZE=256*1024
 
 romimage "normal"
-	option USE_FALLBACK_IMAGE=0
-	option ROM_IMAGE_SIZE=0x16000
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x16000
 	option COREBOOT_EXTRA_VERSION=".0Normal"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
@@ -19,8 +19,8 @@ romimage "normal"
 end
 
 romimage "fallback" 
-	option USE_FALLBACK_IMAGE=1
-	option ROM_IMAGE_SIZE=0x16000
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x16000
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 #	payload /usr/share/etherboot/5.1.9pre2-lnxi-lb/tg3--ide_disk.zelf
 #	payload ../../../../tg3--ide_disk.zelf	
@@ -30,4 +30,4 @@ romimage "fallback"
 	payload /tmp/filo.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "normal" "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

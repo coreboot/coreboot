@@ -157,7 +157,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -215,7 +215,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
-#if USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
        failover_process(bist, cpu_init_detectedx);
 #endif
        real_main(bist, cpu_init_detectedx);
@@ -236,7 +236,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        };
 
-       struct sys_info *sysinfo = (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+       struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
         int needs_reset;
         unsigned bsp_apicid = 0;
@@ -247,11 +247,11 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 //     post_code(0x32);
 
-       pc87417_enable_serial(SERIAL_DEV, TTYS0_BASE);
+       pc87417_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
 
-//     dump_mem(DCACHE_RAM_BASE+DCACHE_RAM_SIZE-0x200, DCACHE_RAM_BASE+DCACHE_RAM_SIZE);
+//     dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
 
        /* Halt if there was a built in self test failure */
        report_bist_failure(bist);

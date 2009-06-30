@@ -40,7 +40,7 @@ unsigned int get_sbdn(unsigned bus);
 /* If we want to wait for core1 done before DQS training, set it to 0. */
 #define K8_SET_FIDVID_CORE0_ONLY 1
 
-#if K8_REV_F_SUPPORT == 1
+#if CONFIG_K8_REV_F_SUPPORT == 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
 
@@ -183,12 +183,12 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	unsigned bsp_apicid = 0;
 	int needs_reset = 0;
 	struct sys_info *sysinfo =
-	    (DCACHE_RAM_BASE + DCACHE_RAM_SIZE - DCACHE_RAM_GLOBAL_VAR_SIZE);
+	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	char *p;
 	u8 reg;
 
 	sio_init();
-	it8712f_enable_serial(SERIAL_DEV, TTYS0_BASE);
+	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
 	it8712f_enable_3vsbsw();
 	uart_init();

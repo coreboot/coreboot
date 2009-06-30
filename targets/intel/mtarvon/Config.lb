@@ -20,21 +20,21 @@
 target mtarvon
 mainboard intel/mtarvon
 
-## ROM_SIZE is the total number of bytes allocated for coreboot use
+## CONFIG_ROM_SIZE is the total number of bytes allocated for coreboot use
 ## (normal AND fallback images and payloads).
-option ROM_SIZE = 2 * 1024 * 1024
+option CONFIG_ROM_SIZE = 2 * 1024 * 1024
 
-## ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
+## CONFIG_ROM_IMAGE_SIZE is the maximum number of bytes allowed for a coreboot image,
 ## not including any payload.
-option ROM_IMAGE_SIZE = 128 * 1024
+option CONFIG_ROM_IMAGE_SIZE = 128 * 1024
 
-## FALLBACK_SIZE is the amount of the ROM the complete fallback image
+## CONFIG_FALLBACK_SIZE is the amount of the ROM the complete fallback image
 ## (including payload) will use
-option FALLBACK_SIZE = ROM_SIZE
+option CONFIG_FALLBACK_SIZE = CONFIG_ROM_SIZE
 
 romimage "fallback"
-	option USE_FALLBACK_IMAGE=1
+	option CONFIG_USE_FALLBACK_IMAGE=1
 	payload /tmp/filo.elf
 end
 
-buildrom ./coreboot.rom ROM_SIZE "fallback"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

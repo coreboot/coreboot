@@ -1,12 +1,12 @@
 /*
  *	Memory map:
  *
- *	_RAMBASE		
+ *	CONFIG_RAMBASE		
  *				: data segment
  *				: bss segment
  *				: heap
  *				: stack
- *	_ROMBASE
+ *	CONFIG_ROMBASE
  *				: coreboot text 
  *				: readonly text
  */
@@ -35,7 +35,7 @@ TARGET(binary)
 INPUT(coreboot_ram.rom)
 SECTIONS
 {
-	. = _ROMBASE;
+	. = CONFIG_ROMBASE;
 
 	.ram . : {
 		_ram = . ;
@@ -45,7 +45,7 @@ SECTIONS
 
 	/* cut _start into last 64k*/
 	_x = .;
-	. = (_x < (_ROMBASE - 0x10000 +  ROM_IMAGE_SIZE)) ? (_ROMBASE - 0x10000 +  ROM_IMAGE_SIZE) : _x;
+	. = (_x < (CONFIG_ROMBASE - 0x10000 +  CONFIG_ROM_IMAGE_SIZE)) ? (CONFIG_ROMBASE - 0x10000 +  CONFIG_ROM_IMAGE_SIZE) : _x;
 
 	/* This section might be better named .setup */
 	.rom . : {
@@ -61,7 +61,7 @@ SECTIONS
 
 	_lrom = LOADADDR(.rom);
 	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
-	_iseg = _RAMBASE;
+	_iseg = CONFIG_RAMBASE;
 	_eiseg = _iseg + SIZEOF(.ram);
 	_liseg = _ram;
 	_eliseg = _eram;

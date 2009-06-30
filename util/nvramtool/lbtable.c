@@ -143,7 +143,7 @@ static const char generic_nofound_msg[] =
 static const char nofound_msg_cmos_opt_table[] =
 "%s: Item %s not found in coreboot table.  Apparently, the "
 "coreboot installed on this system was built without specifying "
-"HAVE_OPTION_TABLE.\n";
+"CONFIG_HAVE_OPTION_TABLE.\n";
 
 static const char nofound_msg_option_checksum[] =
 "%s: Item %s not found in coreboot table. Apparently, you are "
@@ -350,7 +350,7 @@ void get_layout_from_cmos_table (void)
     { fprintf(stderr,
               "%s: CMOS option table not found in coreboot table.  "
               "Apparently, the coreboot installed on this system was "
-              "built without specifying HAVE_OPTION_TABLE.\n",
+              "built without specifying CONFIG_HAVE_OPTION_TABLE.\n",
               prog_name);
       exit(1);
     }

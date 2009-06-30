@@ -168,7 +168,7 @@ __run_interrupt = RELOCATED(.)
 1:
 	.code16 /* 16 bit code from here on... */
 
-	// DEBUG
+	// CONFIG_DEBUG
 	movb    $0xec, %al
 	outb    %al, $0x80
 

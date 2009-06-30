@@ -116,7 +116,7 @@ biosemu_dev_get_addr_info(void)
 	}
 	// store last entry index of translate_address_array
 	taa_last_entry = taa_index - 1;
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	//dump translate_address_array
 	printf("translate_address_array: \n");
 	translate_address_t ta;
@@ -199,7 +199,7 @@ biosemu_dev_get_addr_info(void)
 	}
 	// store last entry index of translate_address_array
 	taa_last_entry = taa_index - 1;
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	//dump translate_address_array
 	printf("translate_address_array: \n");
 	translate_address_t ta;
@@ -338,7 +338,7 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 		memcpy(&pci_ds, (void *) (rom_base_addr + pci_ds_offset),
 		       sizeof(pci_ds));
 		clr_ci();
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 		DEBUG_PRINTF("PCI Data Structure @%lx:\n",
 			     rom_base_addr + pci_ds_offset);
 		dump((void *) &pci_ds, sizeof(pci_ds));

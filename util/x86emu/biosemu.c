@@ -102,7 +102,7 @@ u8 x_inb(u16 port)
 	u8 val;
 
 	val = inb(port);
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	if (port != 0x40)
 	    printk("inb(0x%04x) = 0x%02x\n", port, val);
 #endif
@@ -116,7 +116,7 @@ u16 x_inw(u16 port)
 
 	val = inw(port);
 
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	printk("inw(0x%04x) = 0x%04x\n", port, val);
 #endif
 	return val;
@@ -128,7 +128,7 @@ u32 x_inl(u16 port)
 
 	val = inl(port);
 
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	printk("inl(0x%04x) = 0x%08x\n", port, val);
 #endif
 	return val;
@@ -136,7 +136,7 @@ u32 x_inl(u16 port)
 
 void x_outb(u16 port, u8 val)
 {
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	if (port != 0x43)
 		printk("outb(0x%02x, 0x%04x)\n", val, port);
 #endif
@@ -145,7 +145,7 @@ void x_outb(u16 port, u8 val)
 
 void x_outw(u16 port, u16 val)
 {
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	printk("outw(0x%04x, 0x%04x)\n", val, port);
 #endif
 	outw(val, port);
@@ -153,7 +153,7 @@ void x_outw(u16 port, u16 val)
 
 void x_outl(u16 port, u32 val)
 {
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	printk("outl(0x%08x, 0x%04x)\n", val, port);
 #endif
 	outl(val, port);
@@ -387,7 +387,7 @@ void run_bios(struct device * dev, unsigned long addr)
 	pushw(X86_SS);
 	pushw(X86_SP + 2);
 
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 	//X86EMU_trace_on();
 #endif
 

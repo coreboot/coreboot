@@ -26,7 +26,7 @@
 #endif
 
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
-#ifdef DEBUG
+#ifdef CONFIG_DEBUG
 static u8 in_check = 0;	// to avoid recursion...
 u16 ebda_segment;
 u32 ebda_size;

@@ -12,5 +12,5 @@ default CONFIG_HAVE_HIGH_TABLES=1
 makerule raminit_test
 	depends "$(TOP)/src/northbridge/intel/e7520/raminit_test.c"
 	depends "$(TOP)/src/northbridge/intel/e7520/raminit.c"
-	action "$(CONFIG_HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
+	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
 end

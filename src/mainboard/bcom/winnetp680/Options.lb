@@ -55,7 +55,7 @@ uses CONFIG_HAVE_ACPI_TABLES
 uses CONFIG_HAVE_ACPI_RESUME
 uses CONFIG_CROSS_COMPILE
 uses CC
-uses CONFIG_HOSTCC
+uses HOSTCC
 uses CONFIG_OBJCOPY
 uses CONFIG_DEFAULT_CONSOLE_LOGLEVEL
 uses CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
@@ -94,7 +94,7 @@ default CONFIG_RAMBASE = 0x00004000
 default CONFIG_ROM_PAYLOAD = 1
 default CONFIG_CROSS_COMPILE = ""
 default CC = "$(CONFIG_CROSS_COMPILE)gcc -m32 -fno-stack-protector"
-default CONFIG_HOSTCC = "gcc"
+default HOSTCC = "gcc"
 
 ##
 ## Set this to the max PCI bus number you would ever use for PCI config I/O.

@@ -61,7 +61,7 @@ uses CONFIG_XIP_ROM_BASE
 uses CONFIG_HAVE_MP_TABLE
 uses CONFIG_CROSS_COMPILE
 uses CC
-uses CONFIG_HOSTCC
+uses HOSTCC
 uses CONFIG_OBJCOPY
 uses CONFIG_DEBUG
 uses CONFIG_DEFAULT_CONSOLE_LOGLEVEL
@@ -164,7 +164,7 @@ default CONFIG_ROM_PAYLOAD = 1
 ##
 default CONFIG_CROSS_COMPILE = ""
 default CC = "$(CONFIG_CROSS_COMPILE)gcc -m32"
-default CONFIG_HOSTCC = "gcc"
+default HOSTCC = "gcc"
 
 ##
 ## The Serial Console

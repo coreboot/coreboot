@@ -136,7 +136,7 @@ end
 # the buildrom tool
 makerule buildrom 
 	depends	"$(TOP)/util/buildrom/buildrom.c" 
-	action	"$(CONFIG_HOSTCC) -o $@ $<"
+	action	"$(HOSTCC) -o $@ $<"
 end
 
 # Force crt0.s (which has build time version code in it to rebuild every time)
@@ -178,13 +178,13 @@ end
 # be in a correct and valid state if it exists because the move is atomic.
 makerule ../romcc   
 	depends	"$(TOP)/util/romcc/romcc.c" 
-	action	"$(CONFIG_HOSTCC) -g $(HOSTCFLAGS) $< -o romcc.tmpfile"
+	action	"$(HOSTCC) -g $(HOSTCFLAGS) $< -o romcc.tmpfile"
 	action	"mv romcc.tmpfile $@"
 end
 
 makerule build_opt_tbl   
 	depends	"$(TOP)/util/options/build_opt_tbl.c $(TOP)/src/include/pc80/mc146818rtc.h $(TOP)/src/include/boot/coreboot_tables.h Makefile.settings Makefile"
-	action	"$(CONFIG_HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
+	action	"$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) $< -o $@" 
 end
 
 makerule option_table.h option_table.c

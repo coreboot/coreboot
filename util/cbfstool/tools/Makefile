@@ -18,7 +18,7 @@ $(tobj)/cbfs-mkpayload: $(tobj)/cbfs-mkpayload.o $(patsubst %,$(tobj)/%,$(COMMON
 	$(HOSTCXX) $(CFLAGS) -o $@ $^
 
 $(tobj)/%.o: %.c
-	$(CONFIG_HOSTCC) $(CFLAGS) -c -o $@ $<
+	$(HOSTCC) $(CFLAGS) -c -o $@ $<
 
 tools-clean:
 	rm -f $(tobj)/cbfs-mkpayload.o $(tobj)/cbfs-mkstage.o $(patsubst %,$(tobj)/%,$(COMMON))

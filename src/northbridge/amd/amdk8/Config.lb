@@ -16,7 +16,7 @@ if CONFIG_K8_REV_F_SUPPORT
 makerule raminit_test
 	depends "$(TOP)/src/northbridge/amd/amdk8/raminit_test.c"
 	depends "$(TOP)/src/northbridge/amd/amdk8/raminit_f.c"
-	action "$(CONFIG_HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
+	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
 end
 
 else
@@ -24,7 +24,7 @@ else
 makerule raminit_test
 	depends "$(TOP)/src/northbridge/amd/amdk8/raminit_test.c"
 	depends "$(TOP)/src/northbridge/amd/amdk8/raminit.c"
-	action "$(CONFIG_HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
+	action "$(HOSTCC) $(HOSTCFLAGS) $(CPUFLAGS) -Wno-unused-function -I$(TOP)/src/include -g  $< -o $@"
 end
 
 end

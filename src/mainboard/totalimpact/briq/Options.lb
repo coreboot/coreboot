@@ -44,7 +44,7 @@ uses CONFIG_MAINBOARD_PART_NUMBER
 uses COREBOOT_EXTRA_VERSION
 uses CONFIG_CROSS_COMPILE
 uses CC
-uses CONFIG_HOSTCC
+uses HOSTCC
 uses CONFIG_OBJCOPY
 
 ##
@@ -69,7 +69,7 @@ default CONFIG_TTYS0_BASE=0x3f8
 ## The default compiler
 ##
 default CC="$(CONFIG_CROSS_COMPILE)gcc"
-default CONFIG_HOSTCC="gcc"
+default HOSTCC="gcc"
 ## use a cross compiler
 #default CONFIG_CROSS_COMPILE="powerpc-eabi-"
 #default CONFIG_CROSS_COMPILE="ppc_74xx-"

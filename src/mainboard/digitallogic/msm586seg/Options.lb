@@ -34,7 +34,7 @@ uses CONFIG_XIP_ROM_BASE
 uses CONFIG_HAVE_MP_TABLE
 uses CONFIG_CROSS_COMPILE
 uses CC
-uses CONFIG_HOSTCC
+uses HOSTCC
 uses CONFIG_OBJCOPY
 
 uses CONFIG_CONSOLE_SERIAL8250
@@ -119,7 +119,7 @@ default CONFIG_ROM_PAYLOAD     = 1
 ## The default compiler
 ##
 default CC="$(CONFIG_CROSS_COMPILE)gcc -m32"
-default CONFIG_HOSTCC="gcc"
+default HOSTCC="gcc"
 
 
 

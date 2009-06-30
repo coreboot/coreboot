@@ -86,7 +86,7 @@ define CC
 	export always
 	comment "Target C Compiler"
 end
-define CONFIG_HOSTCC
+define HOSTCC
 	default "gcc"
 	export always
 	comment "Host C Compiler"

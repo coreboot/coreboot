@@ -49,7 +49,7 @@ uses CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
 uses CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 uses CONFIG_CONSOLE_BTEXT
 uses CC
-uses CONFIG_HOSTCC
+uses HOSTCC
 uses CONFIG_CROSS_COMPILE
 uses CONFIG_OBJCOPY
 
@@ -168,7 +168,7 @@ default CONFIG_ROM_PAYLOAD=1
 ## The default compiler
 ##
 default CC="$(CONFIG_CROSS_COMPILE)gcc -m32"
-default CONFIG_HOSTCC="gcc"
+default HOSTCC="gcc"
 
 ##
 ## Disable the gdb stub by default

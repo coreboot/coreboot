@@ -201,7 +201,7 @@ romimage "only"
 	option COREBOOT_EXTRA_VERSION=".0"
 	payload __PAYLOAD__
 end
-buildrom ./coreboot.rom ROM_SIZE "only"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "only"
 EOF
 		fi 
 		) > $TARGET/Config-${VENDOR}_${MAINBOARD}.lb

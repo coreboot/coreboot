@@ -25,7 +25,7 @@ target s2912_fam10
 mainboard tyan/s2912_fam10
 
 # Make room for ATI ES1000 VGA ROM
-option CONFIG_ROM_SIZE=ROM_SIZE-44*1024
+option CONFIG_ROM_SIZE=CONFIG_ROM_SIZE-44*1024
 
 romimage "normal"
 	option CONFIG_USE_FAILOVER_IMAGE=0

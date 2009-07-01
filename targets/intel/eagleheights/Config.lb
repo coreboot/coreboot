@@ -17,13 +17,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-config chip.h
-driver i3100.o
-driver i3100_uhci.o
-driver i3100_lpc.o
-driver i3100_sata.o
-driver i3100_ehci.o
-driver i3100_smbus.o
-driver i3100_pci.o
-object i3100_reset.o
-object i3100_pciexp_portb.o
+target eagleheights
+mainboard intel/eagleheights
+
+## CONFIG_ROM_SIZE is the total number of bytes allocated for coreboot use
+## (normal AND fallback images and payloads).
+option CONFIG_ROM_SIZE = 1024 * 1024
+
+romimage "fallback"
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	payload ../payload.elf
+end
+
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

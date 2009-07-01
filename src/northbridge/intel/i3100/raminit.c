@@ -963,8 +963,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	{{ 0x00000120, 0x00000000, 0x00000032, 0x00000010}},
 		/* FSB 167 */
 	{{ 0x00154320, 0x00000000, 0x00065432, 0x00010000}},
-		/* N/A */
-	{{ 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff}},
+		/* FSB 200 DIMM 400 */
+	{{ 0x00000001, 0x00000000, 0x00000001, 0x00000000}},
 	};
 
 	static const u32 dqs_data[] = {
@@ -1220,5 +1220,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	pci_write_config16(ctrl->f0, MCHSCRB, data16);
 
 	/* The memory is now setup, use it */
+#if CONFIG_USE_DCACHE_RAM == 0
 	cache_lbmem(MTRR_TYPE_WRBACK);
+#endif
 }

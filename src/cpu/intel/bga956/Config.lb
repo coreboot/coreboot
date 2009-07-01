@@ -1,0 +1,3 @@
+config chip.h
+object bga956.o
+dir /cpu/intel/model_1067x

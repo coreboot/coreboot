@@ -44,6 +44,7 @@
 #include "chip.h"
 
 /* The following Super I/O chips are currently supported by this driver: */
+#define LPC47M172	0x14
 #define FDC37B80X	0x42	/* Same ID: FDC37M70X (a.k.a. FDC37M707) */
 #define FDC37B78X	0x44
 #define FDC37B72X	0x4c
@@ -62,6 +63,7 @@
 /* Register defines */
 #define DEVICE_ID_REG	0x20	/* Device ID register */
 #define DEVICE_REV_REG	0x21	/* Device revision register */
+#define DEVICE_TEST7_REG 0x29   /* Device test 7 register */
 
 /* Static variables for the Super I/O device ID and revision. */
 static int first_time = 1;
@@ -116,6 +118,7 @@ static const struct logical_devices {
 	int devs[MAX_LOGICAL_DEVICES];
 } logical_device_table[] = {
 	// Chip   FDC PP SP1 SP2 RTC KBC AUX XBUS HWM GAME PME MPU RT ACPI SMB
+	{LPC47M172,{0, 3, 4,  2, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, -1}},
 	{FDC37B80X,{0, 3, 4,  5, -1,  7,  8,  -1, -1,  -1, -1, -1, -1, -1, -1}},
 	{FDC37B78X,{0, 3, 4,  5,  6,  7,  8,  -1, -1,  -1, -1, -1, -1, 10, -1}},
 	{FDC37B72X,{0, 3, 4,  5, -1,  7,  8,  -1, -1,  -1, -1, -1, -1, 10, -1}},
@@ -284,6 +287,7 @@ static void enable_dev(device_t dev)
 {
 	int i, j, fn;
 	int tmp[MAX_LOGICAL_DEVICES];
+	uint8_t test7;
 
 	if (first_time) {
 		/* Read the device ID and revision of the Super I/O chip. */
@@ -297,6 +301,19 @@ static void enable_dev(device_t dev)
 		printk_info("Found SMSC Super I/O (ID=0x%02x, rev=0x%02x)\n",
 			    superio_id, superio_rev);
 		first_time = 0;
+
+		if(superio_id == LPC47M172) {
+		  /* Do not use the default logical device number
+		   * but instead the standard smsc registers set
+		   */
+
+		  /* TEST7 configuration register (0x29)
+		   * bit 0 : LD_NUM (0 = new, 1 = std smsc)
+		   */
+		  test7 = pnp_read_config(dev, DEVICE_TEST7_REG);
+		  test7 |= 1;
+		  pnp_write_config(dev, DEVICE_TEST7_REG, test7);
+		}
 	}
 
 	/* Find the correct Super I/O. */

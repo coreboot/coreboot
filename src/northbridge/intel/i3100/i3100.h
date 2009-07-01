@@ -57,3 +57,7 @@
 #define  DEVPRES1_D0F1 (1 << 5)
 #define  DEVPRES1_D8F0 (1 << 1)
 #define MSCFG	0XF6
+
+/* DRC */
+#define DRC_NOECC_MODE        (0 << 20)
+#define DRC_72BIT_ECC         (1 << 20)

@@ -27,32 +27,76 @@
 #include <device/pci_ops.h>
 #include "i3100.h"
 
+#define SATA_CMD     0x04
+#define SATA_PI      0x09
+#define SATA_PTIM    0x40
+#define SATA_STIM    0x42
+#define SATA_D1TIM   0x44
+#define SATA_SYNCC   0x48
+#define SATA_SYNCTIM 0x4A
+#define SATA_IIOC    0x54
+#define SATA_MAP     0x90
+#define SATA_PCS     0x91
+#define SATA_ACR0    0xA8
+#define SATA_ACR1    0xAC
+#define SATA_ATC     0xC0
+#define SATA_ATS     0xC4
+#define SATA_SP      0xD0
+
+typedef struct southbridge_intel_i3100_config config_t;
+
 static void sata_init(struct device *dev)
 {
+        u8 ahci;
+
+	/* Get the chip configuration */
+	ahci = (pci_read_config8(dev, SATA_MAP) >> 6) & 0x03;
+
 	/* Enable SATA devices */
+	printk_info("SATA init (%s mode)\n", ahci ? "AHCI" : "Legacy");
 
-	printk_debug("SATA init\n");
-	/* SATA configuration */
-	pci_write_config8(dev, 0x04, 0x07);
-	pci_write_config8(dev, 0x09, 0x8f);
+	if(ahci) {
+	  /* AHCI mode */
+	  pci_write_config8(dev, SATA_MAP, (1 << 6) | (0 << 0));
 
-	/* Set timings */
-	pci_write_config16(dev, 0x40, 0x0a307);
-	pci_write_config16(dev, 0x42, 0x0a307);
+	  /* Enable ports */
+	  pci_write_config8(dev, SATA_PCS, 0x03);
+	  pci_write_config8(dev, SATA_PCS + 1, 0x0F);
 
-	/* Sync DMA */
-	pci_write_config16(dev, 0x48, 0x000f);
-	pci_write_config16(dev, 0x4a, 0x1111);
+	  /* Setup timings */
+	  pci_write_config16(dev, SATA_PTIM, 0x8000);
+	  pci_write_config16(dev, SATA_STIM, 0x8000);
 
-	/* Fast ATA */
-	pci_write_config16(dev, 0x54, 0x1000);
+	  /* Synchronous DMA */
+	  pci_write_config8(dev, SATA_SYNCC, 0);
+	  pci_write_config16(dev, SATA_SYNCTIM, 0);
 
-	/* Select IDE mode */
-	pci_write_config8(dev, 0x90, 0x00);
-
-	/* Enable ports 0-3 */
-	pci_write_config8(dev, 0x92, 0x0f);
-
+	  /* IDE I/O configuration */
+	  pci_write_config32(dev, SATA_IIOC, 0);
+	  
+	} else {
+	  /* SATA configuration */
+	  pci_write_config8(dev, SATA_CMD, 0x07);
+	  pci_write_config8(dev, SATA_PI, 0x8f);
+	  
+	  /* Set timings */
+	  pci_write_config16(dev, SATA_PTIM, 0x0a307);
+	  pci_write_config16(dev, SATA_STIM, 0x0a307);
+	  
+	  /* Sync DMA */
+	  pci_write_config8(dev, SATA_SYNCC, 0x0f);
+	  pci_write_config16(dev, SATA_SYNCTIM, 0x1111);
+	  
+	  /* Fast ATA */
+	  pci_write_config16(dev, SATA_IIOC, 0x1000);
+	  
+	  /* Select IDE mode */
+	  pci_write_config8(dev, SATA_MAP, 0x00);
+	  
+	  /* Enable ports 0-3 */
+	  pci_write_config8(dev, SATA_PCS + 1, 0x0f);
+	  
+	}
 	printk_debug("SATA Enabled\n");
 }
 

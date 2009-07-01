@@ -35,12 +35,18 @@
 #define GPIO_BAR 0x48
 #define RCBA 0xf0
 
+#define SERIRQ_CNTL 0x64
+
+#define GEN_PMCON_1 0xA0
+#define GEN_PMCON_2 0xA2
+#define GEN_PMCON_3 0xA4
+
 #define NMI_OFF 0
 #define MAINBOARD_POWER_OFF 0
 #define MAINBOARD_POWER_ON  1
 
-#ifndef MAINBOARD_POWER_ON_AFTER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_FAIL MAINBOARD_POWER_ON
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
 #define ALL		(0xff << 24)
@@ -93,11 +99,10 @@ static void setup_ioapic(device_t dev)
 	}
 
 	/* Put the APIC in virtual wire mode */
-	l[0] = 0x10;
+	l[0] = 0x12;
 	l[4] = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
 }
 
-#define SERIRQ_CNTL 0x64
 static void i3100_enable_serial_irqs(device_t dev)
 {
 	/* set packet length and toggle silent mode bit */
@@ -257,6 +262,68 @@ static void i3100_pirq_init(device_t dev)
 	}
 }
 
+static void i3100_power_options(device_t dev) {
+  u8 reg8;
+  u16 reg16;
+  int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
+  int nmi_option;
+
+  /* Which state do we want to goto after g3 (power restored)?
+   * 0 == S0 Full On
+   * 1 == S5 Soft Off
+   */
+  get_option(&pwr_on, "power_on_after_fail");
+  reg8 = pci_read_config8(dev, GEN_PMCON_3);
+  reg8 &= 0xfe;
+  if (pwr_on) {
+    reg8 &= ~1;
+  } else {
+    reg8 |= 1;
+  }
+  /* avoid #S4 assertions */
+  reg8 |= (3 << 4);
+  /* minimum asssertion is 1 to 2 RTCCLK */
+  reg8 &= ~(1 << 3);	
+  pci_write_config8(dev, GEN_PMCON_3, reg8);
+  printk_info("set power %s after power fail\n", pwr_on ? "on" : "off");  
+
+  /* Set up NMI on errors. */
+  reg8 = inb(0x61);
+  /* Higher Nibble must be 0 */
+  reg8 &= 0x0f;
+  /* IOCHK# NMI Enable */
+  reg8 &= ~(1 << 3);
+  /* PCI SERR# Enable */
+  // reg8 &= ~(1 << 2);
+  /* PCI SERR# Disable for now */
+  reg8 |= (1 << 2);
+  outb(reg8, 0x61);
+  
+  reg8 = inb(0x70);
+  nmi_option = NMI_OFF;
+  get_option(&nmi_option, "nmi");
+  if (nmi_option) {
+    /* Set NMI. */
+    printk_info ("NMI sources enabled.\n");
+    reg8 &= ~(1 << 7);	
+  } else {
+    /* Can't mask NMI from PCI-E and NMI_NOW */
+    printk_info ("NMI sources disabled.\n");
+    reg8 |= ( 1 << 7);
+  }
+  outb(reg8, 0x70);
+
+  // Enable CPU_SLP# and Intel Speedstep, set SMI# rate down
+  reg16 = pci_read_config16(dev, GEN_PMCON_1);
+  reg16 &= ~((3 << 0) | (1 << 10));
+  reg16 |= (1 << 3) | (1 << 5);
+  /* CLKRUN_EN */
+  // reg16 |= (1 << 2);
+  pci_write_config16(dev, GEN_PMCON_1, reg16);
+  
+  // Set the board's GPI routing.
+  // i82801gx_gpi_routing(dev);
+}
 
 static void i3100_gpio_init(device_t dev)
 {
@@ -296,9 +363,6 @@ static void i3100_gpio_init(device_t dev)
 
 static void lpc_init(struct device *dev)
 {
-	u8 byte;
-	int pwr_on = MAINBOARD_POWER_ON_AFTER_FAIL;
-
 	setup_ioapic(dev);
 
 	/* Decode 0xffc00000 - 0xffffffff to fwh idsel 0 */
@@ -306,17 +370,11 @@ static void lpc_init(struct device *dev)
 
 	i3100_enable_serial_irqs(dev);
 
-	get_option(&pwr_on, "power_on_after_fail");
-	byte = pci_read_config8(dev, 0xa4);
-	byte &= 0xfe;
-	if (!pwr_on) {
-		byte |= 1;
-	}
-	pci_write_config8(dev, 0xa4, byte);
-	printk_info("set power %s after power fail\n", pwr_on ? "on" : "off");
-
 	/* Set up the PIRQ */
 	i3100_pirq_init(dev);
+
+	/* Setup power options */
+	i3100_power_options(dev);
 
 	/* Set the state of the gpio lines */
 	i3100_gpio_init(dev);

@@ -50,9 +50,9 @@
 	"wrmsr\n"
 	"movl	$MTRRphysMask_MSR(1), %ecx\n"
 	"wrmsr\n"
-#endif
 
 	"movb	$0x33, %al\noutb %al, $0x80\n"
+#endif
 #ifdef CLEAR_FIRST_1M_RAM
 	"movb	$0x34, %al\noutb %al, $0x80\n"
 	/* Enable Write Combining and Speculative Reads for the first 1MB */
@@ -120,7 +120,7 @@
 	"movb	$0x3b, %al\noutb %al, $0x80\n"
 
 	/* Enable prefetchers */
-	"movl	$0x01a0, %eax\n"
+	"movl	$0x01a0, %ecx\n"
 	"rdmsr\n"
 	"andl	$~((1 << 9) | (1 << 19)), %eax\n"
 	"andl	$~((1 << 5) | (1 << 7)), %edx\n"

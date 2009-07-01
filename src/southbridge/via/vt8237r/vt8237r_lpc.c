@@ -91,7 +91,7 @@ static void setup_ioapic(u32 ioapic_base)
 
 	/* All delivered to CPU0. */
 	ioapic_table[0].value_high = (lapicid()) << (56 - 32);
-	l = (unsigned long *)ioapic_base;
+	l = (u32 *)ioapic_base;
 
 	/* Set APIC to FSB message bus. */
 	l[0] = 0x3;
@@ -243,26 +243,56 @@ static void vt8237r_init(struct device *dev)
 {
 	u8 enables;
 
+	printk_spew("Entering vt8237r_init.\n");
+	
+#ifdef CONFIG_EPIA_VT8237R_INIT
+	printk_spew("vt8237r_init SATA LED.\n");
+	/*
+	 * TODO: Looks like stock BIOS can do this but causes a hang
+	 * Enable SATA LED, disable special CPU Frequency Change -
+	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
+	 * Setup to match EPIA default
+	 * PCS0# on Pin U1
+	 */
+	enables = pci_read_config8(dev, 0xe5);
+	enables |= 0x02;
+	pci_write_config8(dev, 0xe5, enables);
+	
+	printk_spew("vt8237r_init PCI Req.\n");
+	/* 
+	 * Enable Flash Write Access. 
+	 * Note EPIA-N Does not use REQ5 or PCISTP#(Hang)
+	 */
+	enables = pci_read_config8(dev, 0xe4);
+	enables |= 0x2B;
+	pci_write_config8(dev, 0xe4, enables);
+
+#else 
 	/*
 	 * Enable SATA LED, disable special CPU Frequency Change -
 	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
 	 */
-	pci_write_config8(dev, 0xe5, 0x9);
-
+	pci_write_config8(dev, 0xe5, 0x09);
+	
 	/* REQ5 as PCI request input - should be together with INTE-INTH. */
 	pci_write_config8(dev, 0xe4, 0x4);
+#endif
 
+
+	printk_spew("vt8237r_init CPU Rst.\n");
 	/* Set bit 3 of 0x4f (use INIT# as CPU reset). */
 	enables = pci_read_config8(dev, 0x4f);
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4f, enables);
 
+	printk_spew("vt8237r_init Read Pass Write Ctrl.\n");
 	/*
 	 * Set Read Pass Write Control Enable
 	 * (force A2 from APIC FSB to low).
 	 */
 	pci_write_config8(dev, 0x48, 0x8c);
 
+	printk_spew("vt8237r_init calling southbridge_init_common.\n");
 	southbridge_init_common(dev);
 
 	/* FIXME: Intel needs more bit set for C2/C3. */
@@ -272,6 +302,8 @@ static void vt8237r_init(struct device *dev)
 	 * Will work for C3 and for FID/VID change.
 	 */
 	outb(0x1, VT8237R_ACPI_IO_BASE + 0x11);
+	
+	printk_spew("Leaving vt8237r_init.\n");
 }
 
 static void vt8237s_init(struct device *dev)

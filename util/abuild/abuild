@@ -603,8 +603,11 @@ EOF
 # default options
 target=""
 buildall=false
-LBROOT=$( cd ../..; pwd )
 verbose=false
+
+test -f util/newconfig/config.g && LBROOT=$( pwd )
+test -f ../util/newconfig/config.g && LBROOT=$( cd ..; pwd )
+test "$LBROOT" = "" && LBROOT=$( cd ../..; pwd )
 
 # parse parameters.. try to find out whether we're running GNU getopt
 getoptbrand="`getopt -V`"

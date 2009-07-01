@@ -57,7 +57,7 @@ if CONFIG_USE_DCACHE_RAM
     end
   end
 end
-mainboardinit cpu/via/16bit/entry16.inc
+mainboardinit cpu/x86/16bit/entry16.inc
 ldscript /cpu/via/16bit/entry16.lds
 
 mainboardinit northbridge/via/vx800/romstrap.inc

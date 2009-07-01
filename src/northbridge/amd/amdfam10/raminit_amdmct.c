@@ -63,10 +63,10 @@ static  void print_t(const char *strval)
 #include "../amdmct/mct/mctndi_d.c"
 #include "../amdmct/mct/mctchi_d.c"
 
-#if SYSTEM_TYPE == SERVER
+#if CONFIG_CPU_SOCKET_TYPE == 0x10
 //L1
 #include "../amdmct/mct/mctardk3.c"
-#elif SYSTEM_TYPE == DESKTOP
+#elif CONFIG_CPU_SOCKET_TYPE == 0x11
 //AM2
 #include "../amdmct/mct/mctardk4.c"
 //#elif SYSTEM_TYPE == MOBILE

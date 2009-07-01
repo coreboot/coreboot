@@ -25,9 +25,9 @@ u16 mctGet_NVbits(u8 index)
 
 	switch (index) {
 	case NV_PACK_TYPE:
-#if SYSTEM_TYPE == SERVER
+#if CONFIG_CPU_SOCKET_TYPE == 0x10	/* Socket F */
 		val = 0;
-#elif SYSTEM_TYPE == DESKTOP
+#elif CONFIG_CPU_SOCKET_TYPE == 0x11   /* AM2r2 */
 		val = 1;
 //#elif SYSTEM_TYPE == MOBILE
 //		val = 2;

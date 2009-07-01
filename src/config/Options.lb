@@ -568,6 +568,11 @@ define CONFIG_MAX_PCI_BUSES
 	export always
 	comment "Maximum number of PCI buses to search for devices"
 end
+define CONFIG_EPIA_VT8237R_INIT
+	default none
+	export used
+	comment "Enable EPIA Specific Initialisation of VT8237R SB" 
+end
 ###############################################
 # SMP options
 ###############################################

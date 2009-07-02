@@ -126,13 +126,9 @@ uses CONFIG_USE_PRINTK_IN_CAR
 default CONFIG_ROM_SIZE=0x100000
 
 ##
-## CONFIG_FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
+## CONFIG_FALLBACK_SIZE is the amount of the ROM the ROM part of the fallback image will use
 ##
-#default CONFIG_FALLBACK_SIZE=131072
-#default CONFIG_FALLBACK_SIZE=0x40000
-
-#FALLBACK: 256K-4K
-default CONFIG_FALLBACK_SIZE=0x3f000
+default CONFIG_FALLBACK_SIZE=CONFIG_ROM_IMAGE_SIZE
 #FAILOVER: 4K
 default CONFIG_FAILOVER_SIZE=0x01000
 
@@ -234,7 +230,7 @@ default CONFIG_DCACHE_RAM_SIZE=0x08000
 default CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE=0x01000
 default CONFIG_USE_INIT=0
 
-default CONFIG_AP_CODE_IN_CAR=1
+default CONFIG_AP_CODE_IN_CAR=0
 default CONFIG_MEM_TRAIN_SEQ=1
 default CONFIG_WAIT_BEFORE_CPUS_INIT=1
 
@@ -256,7 +252,8 @@ default CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x1511
 ###
 
 ## CONFIG_ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
-default CONFIG_ROM_IMAGE_SIZE = 65536
+default CONFIG_ROM_IMAGE_SIZE = 0xf000
+
 
 ##
 ## Use a small 8K stack
@@ -347,10 +344,15 @@ default  CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=8
 ## Select power on after power fail setting
 default CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
 
-### End Options.lb
+default CONFIG_USE_FAILOVER_IMAGE=0
+default CONFIG_USE_FALLBACK_IMAGE=0
+default CONFIG_XIP_ROM_SIZE=CONFIG_FAILOVER_SIZE
+
 #
 # CBFS
 #
 #
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
+
+### End Options.lb
 end

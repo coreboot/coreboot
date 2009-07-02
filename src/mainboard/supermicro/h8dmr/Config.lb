@@ -58,7 +58,6 @@ else
                 depends "$(CONFIG_MAINBOARD)/apc_auto.c option_table.h"
                 action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/apc_auto.c -o $@"
         end
-        ldscript /arch/i386/init/ldscript_apc.lb
     end
 end
 

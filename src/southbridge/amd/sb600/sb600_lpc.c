@@ -70,14 +70,23 @@ static void sb600_lpc_read_resources(device_t dev)
 
 	pci_get_resource(dev, 0xA0); /* SPI ROM base address */
 
-	/* Add an extra subtractive resource for both memory and I/O */
+	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	res->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->base = 0;
+	res->size = 0x1000;
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->base = 0xff800000;
+	res->size = 0x00800000; /* 8 MB for flash */
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	compact_resources(dev);
 }
@@ -111,7 +120,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 		for (child = dev->link[link].children; child;
 		     child = child->sibling) {
 			enable_resources(child);
-			if (child->have_resources
+			if (child->enabled
 			    && (child->path.type == DEVICE_PATH_PNP)) {
 				for (i = 0; i < child->resources; i++) {
 					struct resource *res;

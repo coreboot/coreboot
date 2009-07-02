@@ -297,7 +297,7 @@ static int reg_useable(unsigned reg,
 		if (!dev)
 			continue;
 		for(link = 0; !res && (link < 3); link++) {
-			res = probe_resource(dev, 0x100 + (reg | link));
+			res = probe_resource(dev, IOINDEX(0x100 + reg, link));
 		}
 	}
 	result = 2;
@@ -335,7 +335,7 @@ static struct resource *amdk8_find_iopair(device_t dev, unsigned nodeid, unsigne
 		reg = free_reg;
 	}
 	if (reg > 0) {
-		resource = new_resource(dev, 0x100 + (reg | link));
+		resource = new_resource(dev, IOINDEX(0x100 + reg, link));
 	}
 	return resource;
 }
@@ -362,7 +362,7 @@ static struct resource *amdk8_find_mempair(device_t dev, unsigned nodeid, unsign
 		reg = free_reg;
 	}
 	if (reg > 0) {
-		resource = new_resource(dev, 0x100 + (reg | link));
+		resource = new_resource(dev, IOINDEX(0x100 + reg, link));
 	}
 	return resource;
 }
@@ -379,9 +379,7 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 		resource->align = log2(HT_IO_HOST_ALIGN);
 		resource->gran  = log2(HT_IO_HOST_ALIGN);
 		resource->limit = 0xffffUL;
-		resource->flags = IORESOURCE_IO;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_IO, IORESOURCE_IO);
+		resource->flags = IORESOURCE_IO | IORESOURCE_BRIDGE;
 	}
 
 	/* Initialize the prefetchable memory constraints on the current bus */
@@ -393,9 +391,9 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 		resource->gran  = log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH);
+#ifdef CONFIG_PCI_64BIT_PREF_MEM
+		resource->flags |= IORESOURCE_BRIDGE;
+#endif
 	}
 
 	/* Initialize the memory constraints on the current bus */
@@ -405,11 +403,8 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 		resource->size  = 0;
 		resource->align = log2(HT_MEM_HOST_ALIGN);
 		resource->gran  = log2(HT_MEM_HOST_ALIGN);
-		resource->limit = 0xffffffffffULL;
-		resource->flags = IORESOURCE_MEM;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM);
+		resource->limit = 0xffffffffULL;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
 	}
 }
 
@@ -432,11 +427,15 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 
 	/* Make certain the resource has actually been set */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
+		printk_err("%s: can't set unassigned resource @%lx %lx\n",
+			   __func__, resource->index, resource->flags);
 		return;
 	}
 
 	/* If I have already stored this resource don't worry about it */
 	if (resource->flags & IORESOURCE_STORED) {
+		printk_err("%s: can't set stored resource @%lx %lx\n", __func__,
+			   resource->index, resource->flags);
 		return;
 	}
 
@@ -448,6 +447,10 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	if (resource->index < 0x100) {
 		return;
 	}
+
+	if (resource->size == 0)
+		return;
+
 	/* Get the base address */
 	rbase = resource->base;
 
@@ -456,12 +459,10 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 
 	/* Get the register and link */
 	reg  = resource->index & 0xfc;
-	link = resource->index & 3;
+	link = IOINDEX_LINK(resource->index);
 
 	if (resource->flags & IORESOURCE_IO) {
 		uint32_t base, limit;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_IO, IORESOURCE_IO);
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x4);
 		base  &= 0xfe000fcc;
@@ -486,9 +487,6 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	}
 	else if (resource->flags & IORESOURCE_MEM) {
 		uint32_t base, limit;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			resource->flags & (IORESOURCE_MEM | IORESOURCE_PREFETCH));
 		base  = f1_read_config32(reg);
 		limit = f1_read_config32(reg + 0x4);
 		base  &= 0x000000f0;
@@ -634,7 +632,7 @@ struct chip_operations northbridge_amd_amdk8_ops = {
 	.enable_dev = 0,
 };
 
-static void pci_domain_read_resources(device_t dev)
+static void amdk8_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
 	unsigned reg;
@@ -655,48 +653,21 @@ static void pci_domain_read_resources(device_t dev)
 			if (reg_dev) {
 				/* Reserve the resource  */
 				struct resource *reg_resource;
-				reg_resource = new_resource(reg_dev, 0x100 + (reg | link));
+				reg_resource = new_resource(reg_dev, IOINDEX(0x100 + reg, link));
 				if (reg_resource) {
 					reg_resource->flags = 1;
 				}
 			}
 		}
 	}
-#if CONFIG_PCI_64BIT_PREF_MEM == 0
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	resource->base  = 0x400;
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-#else
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, 0);
-	resource->base  = 0x400;
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_IO, IORESOURCE_IO);
+	pci_domain_read_resources(dev);
 
+#if CONFIG_PCI_64BIT_PREF_MEM == 1
 	/* Initialize the system wide prefetchable memory resources constraints */
-	resource = new_resource(dev, 1);
-	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH);
-
-	/* Initialize the system wide memory resources constraints */
 	resource = new_resource(dev, 2);
 	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM;
-	compute_allocate_resource(&dev->link[0], resource,
-		IORESOURCE_MEM | IORESOURCE_PREFETCH,
-		IORESOURCE_MEM);
+	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
 #endif
 }
 
@@ -738,10 +709,6 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	}
 	return tolm;
 }
-
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
-#endif
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 
@@ -898,7 +865,7 @@ static uint32_t hoist_memory(unsigned long hole_startk, int i)
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
-static void pci_domain_set_resources(device_t dev)
+static void amdk8_domain_set_resources(device_t dev)
 {
 #if CONFIG_PCI_64BIT_PREF_MEM == 1
 	struct resource *io, *mem1, *mem2;
@@ -964,13 +931,7 @@ static void pci_domain_set_resources(device_t dev)
 	last = &dev->resource[dev->resources];
 	for(resource = &dev->resource[0]; resource < last; resource++)
 	{
-#if 1
 		resource->flags |= IORESOURCE_ASSIGNED;
-		resource->flags &= ~IORESOURCE_STORED;
-#endif
-		compute_allocate_resource(&dev->link[0], resource,
-			BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
-
 		resource->flags |= IORESOURCE_STORED;
 		report_resource_stored(dev, resource, "");
 
@@ -1125,7 +1086,7 @@ static void pci_domain_set_resources(device_t dev)
 
 }
 
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
+static unsigned int amdk8_domain_scan_bus(device_t dev, unsigned int max)
 {
 	unsigned reg;
 	int i;
@@ -1160,11 +1121,11 @@ static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.read_resources   = amdk8_domain_read_resources,
+	.set_resources    = amdk8_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
 	.init             = 0,
-	.scan_bus         = pci_domain_scan_bus,
+	.scan_bus         = amdk8_domain_scan_bus,
 	.ops_pci_bus      = &pci_cf8_conf1,
 };
 

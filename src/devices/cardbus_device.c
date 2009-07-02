@@ -77,8 +77,6 @@ static void cardbus_size_bridge_resource(device_t dev, unsigned index)
 	resource = find_resource(dev, index);
 	if (resource) {
 		min_size = resource->size;
-		compute_allocate_resource(&dev->link[0], resource, 
-			resource->flags, resource->flags);
 		/* Allways allocate at least the miniumum size to a
 		 * cardbus bridge in case a new card is plugged in.
 		 */

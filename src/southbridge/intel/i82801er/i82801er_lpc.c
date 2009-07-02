@@ -334,7 +334,7 @@ static void i82801er_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
 
-	/* Get the normal pci resources of this device */
+	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
 	/* Add the ACPI BAR */
@@ -343,12 +343,23 @@ static void i82801er_lpc_read_resources(device_t dev)
 	/* Add the GPIO BAR */
 	res = pci_get_resource(dev, GPIO_BAR);
 
-	/* Add an extra subtractive resource for both memory and I/O */
+	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->base = 0;
+	res->size = 0x1000;
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	res->base = 0xff800000;
+	res->size = 0x00800000; /* 8 MB for flash */
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 static void i82801er_lpc_enable_resources(device_t dev)

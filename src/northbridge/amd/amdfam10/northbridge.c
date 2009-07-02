@@ -341,7 +341,7 @@ static int reg_useable(u32 reg,device_t goal_dev, u32 goal_nodeid,
 		if (!dev)
 			continue;
 		for(link = 0; !res && (link < 8); link++) {
-			res = probe_resource(dev, 0x1000 + reg + (link<<16)); // 8 links, 0x1000 man f1,
+			res = probe_resource(dev, IOINDEX(0x1000 + reg, link));
 		}
 	}
 	result = 2;
@@ -385,7 +385,7 @@ static struct resource *amdfam10_find_iopair(device_t dev, u32 nodeid, u32 link)
 		reg = 0x110+ (index<<24) + (4<<20); // index could be 0, 255
 	}
 
-	resource = new_resource(dev, 0x1000 + reg + (link<<16));
+		resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
 
 	return resource;
 }
@@ -421,7 +421,7 @@ static struct resource *amdfam10_find_mempair(device_t dev, u32 nodeid, u32 link
 		reg = 0x110+ (index<<24) + (6<<20); // index could be 0, 63
 
 	}
-	resource = new_resource(dev, 0x1000 + reg + (link<<16));
+	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
 	return resource;
 }
 
@@ -447,8 +447,6 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->gran	= align;
 		resource->limit = 0xffffUL;
 		resource->flags = IORESOURCE_IO;
-		compute_allocate_resource(&dev->link[link], resource,
-					IORESOURCE_IO, IORESOURCE_IO);
 	}
 
 	/* Initialize the prefetchable memory constraints on the current bus */
@@ -460,9 +458,6 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->gran	= log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
 #if CONFIG_EXT_CONF_SUPPORT == 1
 		if((resource->index & 0x1fff) == 0x1110) { // ext
@@ -481,9 +476,6 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->gran	= log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM);
 
 #if CONFIG_EXT_CONF_SUPPORT == 1
 		if((resource->index & 0x1fff) == 0x1110) { // ext
@@ -541,19 +533,14 @@ static void amdfam10_set_resource(device_t dev, struct resource *resource,
 
 	/* Get the register and link */
 	reg  = resource->index & 0xfff; // 4k
-	link = ( resource->index>> 16)& 0x7; // 8 links
+	link = IOINDEX_LINK(resource->index);
 
 	if (resource->flags & IORESOURCE_IO) {
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_IO, IORESOURCE_IO);
 
 		set_io_addr_reg(dev, nodeid, link, reg, rbase>>8, rend>>8);
 		store_conf_io_addr(nodeid, link, reg, (resource->index >> 24), rbase>>8, rend>>8);
 	}
 	else if (resource->flags & IORESOURCE_MEM) {
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			resource->flags & (IORESOURCE_MEM | IORESOURCE_PREFETCH));
 		set_mmio_addr_reg(nodeid, link, reg, (resource->index >>24), rbase>>8, rend>>8, sysconf.nodes) ;// [39:8]
 		store_conf_mmio_addr(nodeid, link, reg, (resource->index >>24), rbase>>8, rend>>8);
 	}
@@ -657,7 +644,7 @@ struct chip_operations northbridge_amd_amdfam10_ops = {
 	.enable_dev = 0,
 };
 
-static void pci_domain_read_resources(device_t dev)
+static void amdfam10_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
 	unsigned reg;
@@ -672,20 +659,20 @@ static void pci_domain_read_resources(device_t dev)
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
 			unsigned nodeid, link;
-			device_t dev;
+			device_t reg_dev;
 			if(reg<0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
 				nodeid =  (limit & 0xf) + ((base>>4)&0x30);
 			}
 			link   = (limit >> 4) & 7;
-			dev = __f0_dev[nodeid];
-			if (dev) {
-				/* Reserve the resource	 */
-				struct resource *resource;
-				resource = new_resource(dev, 0x1000 + reg + (link<<16));
-				if (resource) {
-					resource->flags = 1;
+			reg_dev = __f0_dev[nodeid];
+			if (reg_dev) {
+				/* Reserve the resource  */
+				struct resource *reg_resource;
+				reg_resource = new_resource(reg_dev, IOINDEX(0x1000 + reg, link));
+				if (reg_resource) {
+					reg_resource->flags = 1;
 				}
 			}
 		}
@@ -711,24 +698,16 @@ static void pci_domain_read_resources(device_t dev)
 		resource->base	= 0x400;
 		resource->limit = 0xffffUL;
 		resource->flags = IORESOURCE_IO;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_IO, IORESOURCE_IO);
 
 		/* Initialize the system wide prefetchable memory resources constraints */
 		resource = new_resource(dev, 1|(link<<2));
 		resource->limit = 0xfcffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH);
 
 		/* Initialize the system wide memory resources constraints */
 		resource = new_resource(dev, 2|(link<<2));
 		resource->limit = 0xfcffffffffULL;
 		resource->flags = IORESOURCE_MEM;
-		compute_allocate_resource(&dev->link[link], resource,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM);
 	}
 #endif
 }
@@ -769,10 +748,6 @@ static u32 find_pci_tolm(struct bus *bus, u32 tolm)
 	}
 	return tolm;
 }
-
-#if CONFIG_PCI_64BIT_PREF_MEM == 1
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM | IORESOURCE_PREFETCH)
-#endif
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 
@@ -980,9 +955,6 @@ static void pci_domain_set_resources(device_t dev)
 		resource->flags |= IORESOURCE_ASSIGNED;
 		resource->flags &= ~IORESOURCE_STORED;
 		link = (resource>>2) & 3;
-		compute_allocate_resource(&dev->link[link], resource,
-			BRIDGE_IO_MASK, resource->flags & BRIDGE_IO_MASK);
-
 		resource->flags |= IORESOURCE_STORED;
 		report_resource_stored(dev, resource, "");
 
@@ -1142,7 +1114,7 @@ static void pci_domain_set_resources(device_t dev)
 	}
 }
 
-static u32 pci_domain_scan_bus(device_t dev, u32 max)
+static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 {
 	u32 reg;
 	int i;
@@ -1192,11 +1164,11 @@ static u32 pci_domain_scan_bus(device_t dev, u32 max)
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources	  = pci_domain_read_resources,
+	.read_resources	  = amdfam10_domain_read_resources,
 	.set_resources	  = pci_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
 	.init		  = 0,
-	.scan_bus	  = pci_domain_scan_bus,
+	.scan_bus	  = amdfam10_domain_scan_bus,
 #if CONFIG_MMCONF_SUPPORT_DEFAULT
 	.ops_pci_bus	  = &pci_ops_mmconf,
 #else

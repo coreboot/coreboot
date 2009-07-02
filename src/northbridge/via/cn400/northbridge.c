@@ -101,11 +101,11 @@ static const struct pci_driver memctrl_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_VIA_CN400_MEMCTRL,
 };
 
-static void pci_domain_read_resources(device_t dev)
+static void cn400_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
 
-	printk_spew("Entering cn400 pci_domain_read_resources.\n");
+	printk_spew("Entering %s.\n", __func__);
 
 	/* Initialize the system wide I/O space constraints. */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
@@ -119,7 +119,7 @@ static void pci_domain_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 	    IORESOURCE_ASSIGNED;
 
-	printk_spew("Leaving cn400 pci_domain_read_resources.\n");
+	printk_spew("Leaving %s.\n", __func__);
 }
 
 static void ram_resource(device_t dev, unsigned long index,
@@ -173,14 +173,14 @@ static u32 find_pci_tolm(struct bus *bus)
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
-static void pci_domain_set_resources(device_t dev)
+static void cn400_domain_set_resources(device_t dev)
 {
 	/* The order is important to find the correct RAM size. */
 	static const u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
 	device_t mc_dev;
 	u32 pci_tolm;
 
-	printk_spew("Entering cn400 pci_domain_set_resources.\n");
+	printk_spew("Entering %s.\n", __func__);
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
@@ -226,23 +226,23 @@ static void pci_domain_set_resources(device_t dev)
 	}
 	assign_resources(&dev->link[0]);
 	
-	printk_spew("Leaving cn400 pci_domain_set_resources.\n");
+	printk_spew("Leaving %s.\n", __func__);
 }
 
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
+static unsigned int cn400_domain_scan_bus(device_t dev, unsigned int max)
 {
-	printk_debug("Entering cn400 pci_domain_scan_bus.\n");
+	printk_debug("Entering %s.\n", __func__);
 
 	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
 	return max;
 }
 
 static const struct device_operations pci_domain_ops = {
-	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.read_resources   = cn400_domain_read_resources,
+	.set_resources    = cn400_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
 	.init             = 0,
-	.scan_bus         = pci_domain_scan_bus,
+	.scan_bus         = cn400_domain_scan_bus,
 };
 
 static void cpu_bus_init(device_t dev)

@@ -69,6 +69,24 @@ static void southbridge_enable(struct device *dev)
 	printk_spew("%s: dev is %p\n", __func__, dev);
 }
 
+static void cs5535_read_resources(device_t dev)
+{
+	struct resource* res;
+
+	pci_dev_read_resources(dev);
+
+	res = new_resource(dev, 1);
+	res->base = 0x0UL;
+	res->size = 0x400UL;
+	res->limit = 0xffffUL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
 static void cs5535_pci_dev_enable_resources(device_t dev)
 {
 	printk_spew("cs5535.c: %s()\n", __func__);
@@ -77,7 +95,7 @@ static void cs5535_pci_dev_enable_resources(device_t dev)
 }
 
 static struct device_operations southbridge_ops = {
-	.read_resources   = pci_dev_read_resources,
+	.read_resources   = cs5535_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = cs5535_pci_dev_enable_resources,
 	.init             = southbridge_init,

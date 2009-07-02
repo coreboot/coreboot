@@ -69,27 +69,6 @@ static const struct pci_driver memctrl_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_VIA_VX855_MEMCTRL,
 };
 
-static void pci_domain_read_resources(device_t dev)
-{
-	struct resource *resource;
-
-	printk_spew("Entering vx800 pci_domain_read_resources.\n");
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
-	    IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->limit = 0xffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
-	    IORESOURCE_ASSIGNED;
-
-	printk_spew("Leaving vx800 pci_domain_read_resources.\n");
-}
-
 static void ram_resource(device_t dev, unsigned long index,
 			 unsigned long basek, unsigned long sizek)
 {
@@ -193,14 +172,6 @@ if register with invalid value we set frame buffer size to 32M for default, but 
 		ram_resource(dev, idx++, 768, (tolmk - 768));
 	}
 	assign_resources(&dev->link[0]);
-}
-
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
-{
-	printk_debug("Entering vx800 pci_domain_scan_bus.\n");
-
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-	return max;
 }
 
 static const struct device_operations pci_domain_ops = {

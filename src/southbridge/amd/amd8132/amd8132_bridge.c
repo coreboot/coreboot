@@ -350,9 +350,6 @@ static void bridge_set_resources(struct device *dev)
 		/* set the memory range */
 		dev->command |= PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
 		res->flags |= IORESOURCE_STORED;
-		compute_allocate_resource(&dev->link[0], res,
-			IORESOURCE_MEM | IORESOURCE_PREFETCH,
-			IORESOURCE_MEM);
 		base = res->base;
 		end  = resource_end(res);
 		pci_write_config16(dev, PCI_MEMORY_BASE, base >> 16);

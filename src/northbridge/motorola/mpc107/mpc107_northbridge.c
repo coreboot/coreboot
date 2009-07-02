@@ -16,7 +16,7 @@
  * be large enough to hold all expected resources for all PCI
  * devices.
  */
-static void pci_domain_read_resources(device_t dev)
+static void mpc107_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
 
@@ -101,15 +101,8 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
-{
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-	return max;
-}
-
 static struct device_operations pci_domain_ops = {
-	.read_resources	  = pci_domain_read_resources,
+	.read_resources	  = mpc107_domain_read_resources,
 	.set_resources	  = pci_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
 	.init		  = 0,

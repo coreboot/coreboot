@@ -172,7 +172,6 @@ void rl5c476_set_resources(device_t dev)
 		resource = find_resource(dev,1);
 		if( !(resource->flags & IORESOURCE_STORED) ){
 			resource->flags |= IORESOURCE_STORED ;
-			compute_allocate_resource(&dev->link[0],resource,resource->flags,resource->flags);
 			printk_debug("%s 1 ==> %x\n",dev_path(dev),resource->base); 
 			cf_base = resource->base;
 		}

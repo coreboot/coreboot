@@ -9,23 +9,6 @@
 #include "chip.h"
 #include "northbridge.h"
 
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
-
-static void pci_domain_read_resources(device_t dev)
-{
-	struct resource *resource;
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
-	resource->limit = 0xffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
 static void ram_resource(device_t dev, unsigned long index,
 	unsigned long basek, unsigned long sizek)
 {
@@ -70,7 +53,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
-static void pci_domain_set_resources(device_t dev)
+static void cpu_pci_domain_set_resources(device_t dev)
 {
 	static const uint8_t ramregs[] = {
 		0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x56, 0x57
@@ -127,15 +110,34 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
+static void cpu_pci_domain_read_resources(struct device *dev)
 {
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-	return max;
+	struct resource *res;
+
+	pci_domain_read_resources(dev);
+
+	/* Reserve space for the IOAPIC.  This should be in the Southbridge,
+	 * but I couldn't tell which device to put it in. */
+	res = new_resource(dev, 2);
+	res->base = 0xfec00000UL;
+	res->size = 0x100000UL;
+	res->limit = 0xffffffffUL;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
+		     IORESOURCE_ASSIGNED;
+
+	/* Reserve space for the LAPIC.  There's one in every processor, but
+	 * the space only needs to be reserved once, so we do it here. */
+	res = new_resource(dev, 3);
+	res->base = 0xfee00000UL;
+	res->size = 0x10000UL;
+	res->limit = 0xffffffffUL;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
+		     IORESOURCE_ASSIGNED;
 }
 
 static struct device_operations pci_domain_ops = {
-	.read_resources		= pci_domain_read_resources,
-	.set_resources		= pci_domain_set_resources,
+	.read_resources		= cpu_pci_domain_read_resources,
+	.set_resources		= cpu_pci_domain_set_resources,
 	.enable_resources	= enable_childrens_resources,
 	.init			= 0,
 	.scan_bus		= pci_domain_scan_bus,

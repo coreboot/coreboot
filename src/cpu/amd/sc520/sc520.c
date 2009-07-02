@@ -62,9 +62,27 @@ void sc520_enable_resources(struct device *dev) {
 
 }
 
+static void sc520_read_resources(device_t dev)
+{
+	struct resource* res;
+
+	pci_dev_read_resources(dev);
+
+	res = new_resource(dev, 1);
+	res->base = 0x0UL;
+	res->size = 0x400UL;
+	res->limit = 0xffffUL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
 
 static struct device_operations cpu_operations = {
-	.read_resources   = pci_dev_read_resources,
+	.read_resources   = sc520_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = sc520_enable_resources,
 	.init             = cpu_init,
@@ -77,25 +95,6 @@ static const struct pci_driver cpu_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x3000
 };
-
-
-
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
-
-static void pci_domain_read_resources(device_t dev)
-{
-        struct resource *resource;
-  printk_spew("%s\n", __func__);
-        /* Initialize the system wide io space constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
-        resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-        /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
-        resource->limit = 0xffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
 
 static void ram_resource(device_t dev, unsigned long index,
         unsigned long basek, unsigned long sizek)
@@ -184,14 +183,6 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
-{
-  printk_spew("%s\n", __func__);
-        max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-        return max;
-}
-
-
 #if 0
 void sc520_enable_resources(device_t dev) {
 
@@ -219,7 +210,7 @@ static struct device_operations pci_domain_ops = {
 	 * If enable_resources is set to the generic enable_resources
 	 * function the whole thing will hang in an endless loop on
 	 * the ts5300. If this is really needed on another platform,
-	 * something is conceptionally wrong.
+	 * something is conceptually wrong.
 	 */
         .enable_resources = 0, //enable_resources,
         .init             = 0,

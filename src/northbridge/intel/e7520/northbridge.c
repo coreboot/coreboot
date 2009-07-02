@@ -28,30 +28,6 @@ static void ram_resource(device_t dev, unsigned long index,
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-
-static void pci_domain_read_resources(device_t dev)
-{
-	struct resource *resource;
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
-	resource->base  = 0;
-	resource->size  = 0;
-	resource->align = 0;
-	resource->gran  = 0;
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
-	resource->base  = 0;
-	resource->size  = 0;
-	resource->align = 0;
-	resource->gran  = 0;
-	resource->limit = 0xffffffffUL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
 {
 	struct resource **best_p = gp;
@@ -90,7 +66,7 @@ static void pci_domain_set_resources(device_t dev)
 
 #if 1
 	printk_debug("PCI mem marker = %x\n", pci_tolm);
-#endif	
+#endif
 	/* FIXME Me temporary hack */
 	if(pci_tolm > 0xe0000000)
 		pci_tolm = 0xe0000000;
@@ -122,7 +98,7 @@ static void pci_domain_set_resources(device_t dev)
 			remapbasek   = 0x3ff << 16;
 			remaplimitk  = 0 << 16;
 			remapoffsetk = 0 << 16;
-		} 
+		}
 		else {
 			/* The PCI memory hole overlaps memory
 			 * setup the remap window.
@@ -165,7 +141,7 @@ static void pci_domain_set_resources(device_t dev)
 			ram_resource(dev, 5, 4096*1024, tomk - 4*1024*1024);
 		}
 		if (remaplimitk >= remapbasek) {
-			ram_resource(dev, 6, remapbasek, 
+			ram_resource(dev, 6, remapbasek,
 				(remaplimitk + 64*1024) - remapbasek);
 		}
 
@@ -178,13 +154,10 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
+static u32 e7520_domain_scan_bus(device_t dev, u32 max)
 {
-	max = pci_scan_bus(&dev->link[0], 0, 0xff, max);
-	if (max > max_bus) {
-		max_bus = max;
-	}
-	return max;
+	max_bus = pci_domain_scan_bus(dev, max);
+	return max_bus;
 }
 
 static struct device_operations pci_domain_ops = {
@@ -192,7 +165,7 @@ static struct device_operations pci_domain_ops = {
 	.set_resources    = pci_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
 	.init             = 0,
-	.scan_bus         = pci_domain_scan_bus,
+	.scan_bus         = e7520_domain_scan_bus,
 	.ops_pci_bus      = &pci_cf8_conf1, /* Do we want to use the memory mapped space here? */
 };
 

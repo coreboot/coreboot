@@ -219,15 +219,22 @@ static void vt8235_init(struct device *dev)
    device has a resource to set - so set a dummy one */
 void vt8235_read_resources(device_t dev)
 {
+	struct resource *res;
 
-	struct resource *resource;
 	pci_dev_read_resources(dev);
-	resource = new_resource(dev, 1);
-	resource->flags |= IORESOURCE_FIXED | IORESOURCE_ASSIGNED | IORESOURCE_IO | IORESOURCE_STORED;
-	resource->size = 2;
-	resource->base = 0x2e;
 
+	res = new_resource(dev, 1);
+	res->base = 0x0UL;
+	res->size = 0x400UL;
+	res->limit = 0xffffUL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
+
 void vt8235_set_resources(device_t dev)
 {
 	struct resource *resource;

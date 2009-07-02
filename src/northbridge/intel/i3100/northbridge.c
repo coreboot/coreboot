@@ -49,30 +49,6 @@ static void ram_resource(device_t dev, u32 index,
 		IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-
-static void pci_domain_read_resources(device_t dev)
-{
-	struct resource *resource;
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
-	resource->base  = 0;
-	resource->size  = 0;
-	resource->align = 0;
-	resource->gran  = 0;
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
-	resource->base  = 0;
-	resource->size  = 0;
-	resource->align = 0;
-	resource->gran  = 0;
-	resource->limit = 0xffffffffUL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
 {
 	struct resource **best_p = gp;
@@ -199,13 +175,10 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-static u32 pci_domain_scan_bus(device_t dev, u32 max)
+static u32 i3100_domain_scan_bus(device_t dev, u32 max)
 {
-	max = pci_scan_bus(&dev->link[0], 0, 0xff, max);
-	if (max > max_bus) {
-		max_bus = max;
-	}
-	return max;
+	max_bus = pci_domain_scan_bus(dev, max);
+	return max_bus;
 }
 
 static struct device_operations pci_domain_ops = {
@@ -213,7 +186,7 @@ static struct device_operations pci_domain_ops = {
 	.set_resources    = pci_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
 	.init             = 0,
-	.scan_bus         = pci_domain_scan_bus,
+	.scan_bus         = i3100_domain_scan_bus,
 	.ops_pci_bus      = &pci_cf8_conf1, /* Do we want to use the memory mapped space here? */
 };
 

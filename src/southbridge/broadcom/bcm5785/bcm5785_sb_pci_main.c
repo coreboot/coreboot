@@ -51,7 +51,6 @@ static void bcm5785_sb_read_resources(device_t dev)
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev); 		
-	
 	/* Get Resource for SMBUS */	
 	pci_get_resource(dev, 0x90);	
 

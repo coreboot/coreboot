@@ -43,31 +43,6 @@ static void ram_resource(device_t dev, unsigned long index, unsigned long basek,
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
-static void pci_domain_read_resources(device_t dev)
-{
-	struct resource *resource;
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	resource->base = 0;
-	resource->size = 0;
-	resource->align = 0;
-	resource->gran = 0;
-	resource->limit = 0xffffUL;
-	resource->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->base = 0;
-	resource->size = 0;
-	resource->align = 0;
-	resource->gran = 0;
-	resource->limit = 0xffffffffUL;
-	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
 {
 	struct resource **best_p = gp;
@@ -184,15 +159,10 @@ static void pci_domain_set_resources(device_t dev)
 #endif
 }
 
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
-{
-	max = pci_scan_bus(&dev->link[0], 0, 0xff, max);
 	/* TODO We could determine how many PCIe busses we need in
 	 * the bar. For now that number is hardcoded to a max of 64.
+	 * See e7525/northbridge.c for an example.
 	 */
-	return max;
-}
-
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
 	.set_resources    = pci_domain_set_resources,

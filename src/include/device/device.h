@@ -69,17 +69,16 @@ struct device {
 	unsigned int	hdr_type;	/* PCI header type */
 	unsigned int    enabled : 1;	/* set if we should enable the device */
 	unsigned int    initialized : 1; /* set if we have initialized the device */
-	unsigned int    have_resources : 1; /* Set if we have read the devices resources */
 	unsigned int    on_mainboard : 1;
 	unsigned long   rom_address;
 
-	uint8_t command;
+	u8 command;
 
 	/* Base registers for this device. I/O, MEM and Expansion ROM */
 	struct resource resource[MAX_RESOURCES];
 	unsigned int resources;
 
-	/* link are (down stream) buses attached to the device, usually a leaf
+	/* links are (downstream) buses attached to the device, usually a leaf
 	 * device with no children have 0 buses attached and a bridge has 1 bus 
 	 */
 	struct bus link[MAX_LINKS];
@@ -106,8 +105,6 @@ void dev_optimize(void);
 /* Generic device helper functions */
 int reset_bus(struct bus *bus);
 unsigned int scan_bus(struct device *bus, unsigned int max);
-void compute_allocate_resource(struct bus *bus, struct resource *bridge,
-	unsigned long type_mask, unsigned long type);
 void assign_resources(struct bus *bus);
 void enable_resources(struct device *dev);
 void enumerate_static_device(void);
@@ -142,6 +139,8 @@ void show_all_devs_resources(int debug_level, const char* msg);
 #define DEVICE_MEM_ALIGN 4096
 
 extern struct device_operations default_dev_ops_root;
+void pci_domain_read_resources(struct device *dev);
+unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max);
 void root_dev_read_resources(device_t dev);
 void root_dev_set_resources(device_t dev);
 unsigned int scan_static_bus(device_t bus, unsigned int max);

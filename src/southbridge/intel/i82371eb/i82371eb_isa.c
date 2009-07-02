@@ -55,8 +55,31 @@ static void isa_init(struct device *dev)
 	isa_dma_init();
 }
 
-static const struct device_operations isa_ops = {
-	.read_resources		= pci_dev_read_resources,
+static void sb_read_resources(struct device *dev)
+{
+	struct resource *res;
+
+	pci_dev_read_resources(dev);
+
+	res = new_resource(dev, 1);
+	res->base = 0x0UL;
+	res->size = 0x1000UL;
+	res->limit = 0xffffUL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 2);
+	res->base = 0xff800000UL;
+	res->size = 0x00800000UL; /* 8 MB for flash */
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
+const struct device_operations isa_ops = {
+	.read_resources		= sb_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= isa_init,

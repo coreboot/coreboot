@@ -34,29 +34,7 @@
  */
 void root_dev_read_resources(device_t root)
 {
-	struct resource *resource;
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(root, 0);
-	resource->base  = 0x400;
-	resource->size  = 0;
-	resource->align = 0;
-	resource->gran  = 0;
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO;
-	compute_allocate_resource(&root->link[0], resource, 
-		IORESOURCE_IO, IORESOURCE_IO);
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(root, 1);
-	resource->base  = 0;
-	resource->size  = 0;
-	resource->align = 0;
-	resource->gran  = 0;
-	resource->limit = 0xffffffffUL;
-	resource->flags = IORESOURCE_MEM;
-	compute_allocate_resource(&root->link[0], resource,
-		IORESOURCE_MEM, IORESOURCE_MEM);
+	printk_err("%s should never be called.\n", __func__);
 }
 
 /**
@@ -68,14 +46,7 @@ void root_dev_read_resources(device_t root)
  */
 void root_dev_set_resources(device_t root)
 {
-	struct bus *bus;
-
-	bus = &root->link[0];
-	compute_allocate_resource(bus,
-		&root->resource[0], IORESOURCE_IO, IORESOURCE_IO);
-	compute_allocate_resource(bus, 
-		&root->resource[1], IORESOURCE_MEM, IORESOURCE_MEM);
-	assign_resources(bus);
+	printk_err("%s should never be called.\n", __func__);
 }
 
 /**

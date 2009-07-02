@@ -33,24 +33,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = 0x7190,
 };
 
-
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
-
-static void pci_domain_read_resources(device_t dev)
-{
-	struct resource *resource;
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0,0));
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1,0));
-	resource->limit = 0xffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
 static void ram_resource(device_t dev, unsigned long index,
 	unsigned long basek, unsigned long sizek)
 {
@@ -95,7 +77,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
-static void pci_domain_set_resources(device_t dev)
+static void i440bx_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
 	uint32_t pci_tolm;
@@ -140,15 +122,9 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
-{
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-	return max;
-}
-
 static struct device_operations pci_domain_ops = {
 	.read_resources		= pci_domain_read_resources,
-	.set_resources		= pci_domain_set_resources,
+	.set_resources		= i440bx_domain_set_resources,
 	.enable_resources	= enable_childrens_resources,
 	.init			= 0,
 	.scan_bus		= pci_domain_scan_bus,

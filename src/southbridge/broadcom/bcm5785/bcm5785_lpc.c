@@ -29,18 +29,27 @@ static void lpc_init(device_t dev)
 static void bcm5785_lpc_read_resources(device_t dev)
 {
 	struct resource *res;
-	unsigned long index;
 
 	/* Get the normal pci resources of this device */
-	pci_dev_read_resources(dev); 
-	
-        /* Add an extra subtractive resource for both memory and I/O */
-        res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-        res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-        
-        res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-        res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	pci_dev_read_resources(dev);
 
+	/* Add an extra subtractive resource for both memory and I/O. */
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
+	res->base = 0;
+	res->size = 0x1000;
+	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
+	res->base = 0xff800000;
+	res->size = 0x00800000; /* 8 MB for flash */
+	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 /**     
@@ -69,7 +78,7 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
                 device_t child;
                 for (child = dev->link[link].children; child; child = child->sibling) {
                         enable_resources(child);
-			if(child->have_resources && (child->path.type == DEVICE_PATH_PNP)) {
+			if(child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				for(i=0;i<child->resources;i++) {
 					struct resource *res;
 			                unsigned long base, end; // don't need long long

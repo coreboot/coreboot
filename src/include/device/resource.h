@@ -1,5 +1,5 @@
-#ifndef RESOURCE_H
-#define RESOURCE_H
+#ifndef DEVICE_RESOURCE_H
+#define DEVICE_RESOURCE_H
 
 #include <stdint.h>
 
@@ -19,6 +19,7 @@
 #define IORESOURCE_SUBTRACTIVE  0x00040000	/* This resource filters all of the unclaimed transactions
 						 * to the bus below.
 						 */
+#define IORESOURCE_BRIDGE	0x00080000	/* The IO resource has a bus below it. */
 #define IORESOURCE_STORED	0x20000000	/* The IO resource assignment has been stored in the device */
 #define IORESOURCE_ASSIGNED	0x40000000	/* An IO resource that has been assigned a value */
 #define IORESOURCE_FIXED	0x80000000	/* An IO resource the allocator must not change */
@@ -62,7 +63,7 @@
 #define IORESOURCE_MEM_EXPANSIONROM	(1<<6)
 
 
-typedef uint64_t resource_t;
+typedef u64 resource_t;
 struct resource {
 	resource_t base;	/* Base address of the resource */
 	resource_t size;	/* Size of the resource */
@@ -74,9 +75,13 @@ struct resource {
 	/* Alignment must be >= the granularity of the resource */
 };
 
-/* Macros to generate index values for subtractive resources */
+/* Macros to generate index values for resources */
 #define IOINDEX_SUBTRACTIVE(IDX,LINK) (0x10000000 + ((IDX) << 8) + LINK)
 #define IOINDEX_SUBTRACTIVE_LINK(IDX) (IDX & 0xff)
+
+#define IOINDEX(IDX,LINK) (((LINK) << 16) + IDX)
+#define IOINDEX_LINK(IDX) (( IDX & 0xf0000) >> 16)
+#define IOINDEX_IDX(IDX) (IDX & 0xffff)
 
 /* Generic resource helper functions */
 struct device;
@@ -101,4 +106,4 @@ extern void search_global_resources(
 #define RESOURCE_TYPE_MAX 20
 extern const char *resource_type(struct resource *resource);
 
-#endif /* RESOURCE_H */
+#endif /* DEVICE_RESOURCE_H */

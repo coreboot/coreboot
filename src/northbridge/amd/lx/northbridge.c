@@ -74,8 +74,6 @@
 #define IOD_BM(msr, pdid1, bizarro, ibase, imask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(ibase>>12), .lo=(ibase<<20)|imask}}
 #define IOD_SC(msr, pdid1, bizarro, en, wen, ren, ibase) {msr, {.hi=(pdid1<<29)|(bizarro<<28), .lo=(en<<24)|(wen<<21)|(ren<<20)|(ibase<<3)}}
 
-#define BRIDGE_IO_MASK (IORESOURCE_IO | IORESOURCE_MEM)
-
 extern void graphics_init(void);
 extern void cpubug(void);
 extern void chipsetinit(void);
@@ -382,24 +380,6 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_AMD_LXBRIDGE,
 };
 
-static void pci_domain_read_resources(device_t dev)
-{
-	struct resource *resource;
-	printk_spew(">> Entering northbridge.c: %s\n", __func__);
-
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	resource->limit = 0xffffUL;
-	resource->flags =
-	    IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->limit = 0xffffffffULL;
-	resource->flags =
-	    IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-}
-
 static void ram_resource(device_t dev, unsigned long index,
 			 unsigned long basek, unsigned long sizek)
 {
@@ -468,14 +448,6 @@ static void pci_domain_enable(device_t dev)
 
 	graphics_init();
 	pci_set_method(dev);
-}
-
-static unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
-{
-	printk_spew(">> Entering northbridge.c: %s\n", __func__);
-
-	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
-	return max;
 }
 
 static struct device_operations pci_domain_ops = {

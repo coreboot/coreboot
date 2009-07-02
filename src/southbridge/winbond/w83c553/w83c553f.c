@@ -188,8 +188,26 @@ static void w83c553_enable_resources(device_t dev)
 	enable_childrens_resources(dev);
 }
 
+static void w83c553_read_resources(device_t dev)
+{
+	struct resource* res;
+
+	pci_dev_read_resources(dev);
+
+	res = new_resource(dev, 1);
+	res->base = 0x0UL;
+	res->size = 0x400UL;
+	res->limit = 0xffffUL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = 0xfec00000;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+}
+
 static struct device_operations w83c553_ops  = {
-        .read_resources   = pci_dev_read_resources,
+        .read_resources   = w83c553_read_resources,
         .set_resources    = pci_dev_set_resources,
         .enable_resources = w83c553_enable_resources,
         .init             = w83c553_init,

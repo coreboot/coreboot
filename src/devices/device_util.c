@@ -487,7 +487,7 @@ void search_bus_resources(struct bus *bus,
 	for(curdev = bus->children; curdev; curdev = curdev->sibling) {
 		int i;
 		/* Ignore disabled devices */
-		if (!curdev->have_resources) continue;
+		if (!curdev->enabled) continue;
 		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			/* If it isn't the right kind of resource ignore it */
@@ -514,7 +514,7 @@ void search_global_resources(
 	for(curdev = all_devices; curdev; curdev = curdev->next) {
 		int i;
 		/* Ignore disabled devices */
-		if (!curdev->have_resources) continue;
+		if (!curdev->enabled) continue;
 		for(i = 0; i < curdev->resources; i++) {
 			struct resource *resource = &curdev->resource[i];
 			/* If it isn't the right kind of resource ignore it */

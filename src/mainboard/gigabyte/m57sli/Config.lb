@@ -196,7 +196,7 @@ chip northbridge/amd/amdk8/root_complex
                 			device pci 1.0 on # LPC
 						chip superio/ite/it8716f
 							# Floppy and any LDN
-							device pnp 2e.0 off
+							device pnp 2e.0 on
                 	               			# Watchdog from CLKIN, CLKIN = 24 MHz
                 	                 			irq 0x23 = 0x11 
 							# Serial Flash (SPI only)
@@ -213,7 +213,7 @@ chip northbridge/amd/amdk8/root_complex
                 	                 			io 0x60 = 0x2f8
                 	                			irq 0x70 = 3
 							end
-                	        			device pnp 2e.3 off #  Parallel Port
+                	        			device pnp 2e.3 on #  Parallel Port
                 	                 			io 0x60 = 0x378
                 	                			irq 0x70 = 7
 							end

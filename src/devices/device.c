@@ -663,9 +663,9 @@ static void avoid_fixed_resources(struct device *dev)
 
 #if CONFIG_CONSOLE_VGA == 1
 device_t vga_pri = 0;
-static void allocate_vga_resource(void)
+static void set_vga_bridge_bits(void)
 {
-#warning "FIXME modify allocate_vga_resource so it is less pci centric!"
+#warning "FIXME modify set_vga_bridge so it is less pci centric!"
 #warning "This function knows too much about PCI stuff, it should be just a iterator/visitor."
 
 	/* FIXME: Handle the VGA palette snooping. */
@@ -716,7 +716,7 @@ static void allocate_vga_resource(void)
 
 	if (vga) {
 		/* VGA is first add on card or the only onboard VGA. */
-		printk_debug("Allocating VGA resource %s\n", dev_path(vga));
+		printk_debug("Setting up VGA for %s\n", dev_path(vga));
 		/* All legacy VGA cards have MEM & I/O space registers. */
 		vga->command |= (PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		vga_pri = vga;
@@ -921,6 +921,10 @@ void dev_configure(void)
 	struct device *child;
 	int i;
 
+#if CONFIG_CONSOLE_VGA == 1
+	set_vga_bridge_bits();
+#endif
+
 	printk_info("Allocating resources...\n");
 
 	root = &dev_root;
@@ -983,12 +987,6 @@ void dev_configure(void)
 			res->base = resource_max(res);
 		}
 	}
-
-#if CONFIG_CONSOLE_VGA == 1
-	/* Allocate the VGA I/O resource. */
-	allocate_vga_resource();
-	print_resource_tree(root, BIOS_DEBUG, "After VGA.");
-#endif
 
 	/* Store the computed resource allocations into device registers ... */
 	printk_info("Setting resources...\n");

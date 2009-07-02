@@ -36,56 +36,38 @@
 
 struct amdk8_sysconf_t sysconf;
 
-#define FX_DEVS 8
-static device_t __f0_dev[FX_DEVS];
-static device_t __f1_dev[FX_DEVS];
-
-#if 0
-static void debug_fx_devs(void)
-{
-	int i;
-	for(i = 0; i < FX_DEVS; i++) {
-		device_t dev;
-		dev = __f0_dev[i];
-		if (dev) {
-			printk_debug("__f0_dev[%d]: %s bus: %p\n",
-				i, dev_path(dev), dev->bus);
-		}
-		dev = __f1_dev[i];
-		if (dev) {
-			printk_debug("__f1_dev[%d]: %s bus: %p\n",
-				i, dev_path(dev), dev->bus);
-		}
-	}
-}
-#endif
+#define MAX_FX_DEVS 8
+static device_t __f0_dev[MAX_FX_DEVS];
+static device_t __f1_dev[MAX_FX_DEVS];
+static unsigned fx_devs=0;
 
 static void get_fx_devs(void)
 {
 	int i;
-	if (__f1_dev[0]) {
-		return;
-	}
-	for(i = 0; i < FX_DEVS; i++) {
+	for(i = 0; i < MAX_FX_DEVS; i++) {
 		__f0_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 0));
 		__f1_dev[i] = dev_find_slot(0, PCI_DEVFN(0x18 + i, 1));
+		if (__f0_dev[i] != NULL && __f1_dev[i] != NULL)
+			fx_devs = i+1;
 	}
-	if (!__f1_dev[0]) {
-		die("Cannot find 0:0x18.1\n");
+	if (__f1_dev[0] == NULL || __f0_dev[0] == NULL || fx_devs == 0) {
+		die("Cannot find 0:0x18.[0|1]\n");
 	}
 }
 
 static uint32_t f1_read_config32(unsigned reg)
 {
-	get_fx_devs();
+	if ( fx_devs == 0)
+		get_fx_devs();
 	return pci_read_config32(__f1_dev[0], reg);
 }
 
 static void f1_write_config32(unsigned reg, uint32_t value)
 {
 	int i;
-	get_fx_devs();
-	for(i = 0; i < FX_DEVS; i++) {
+	if ( fx_devs == 0)
+		get_fx_devs();
+	for(i = 0; i < fx_devs; i++) {
 		device_t dev;
 		dev = __f1_dev[i];
 		if (dev && dev->enabled) {
@@ -291,7 +273,7 @@ static int reg_useable(unsigned reg,
 	unsigned nodeid, link=0;
 	int result;
 	res = 0;
-	for(nodeid = 0; !res && (nodeid < FX_DEVS); nodeid++) {
+	for(nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
 		device_t dev;
 		dev = __f0_dev[nodeid];
 		if (!dev)
@@ -313,13 +295,14 @@ static int reg_useable(unsigned reg,
 	return result;
 }
 
-static struct resource *amdk8_find_iopair(device_t dev, unsigned nodeid, unsigned link)
+static unsigned amdk8_find_reg(device_t dev, unsigned nodeid, unsigned link,
+			       unsigned min, unsigned max)
 {
-	struct resource *resource;
+	unsigned resource;
 	unsigned free_reg, reg;
 	resource = 0;
 	free_reg = 0;
-	for(reg = 0xc0; reg <= 0xd8; reg += 0x8) {
+	for(reg = min; reg <= max; reg += 0x8) {
 		int result;
 		result = reg_useable(reg, dev, nodeid, link);
 		if (result == 1) {
@@ -331,40 +314,23 @@ static struct resource *amdk8_find_iopair(device_t dev, unsigned nodeid, unsigne
 			free_reg = reg;
 		}
 	}
-	if (reg > 0xd8) {
+	if (reg > max) {
 		reg = free_reg;
 	}
 	if (reg > 0) {
-		resource = new_resource(dev, IOINDEX(0x100 + reg, link));
+		resource = IOINDEX(0x100 + reg, link);
 	}
 	return resource;
 }
 
-static struct resource *amdk8_find_mempair(device_t dev, unsigned nodeid, unsigned link)
+static unsigned amdk8_find_iopair(device_t dev, unsigned nodeid, unsigned link)
 {
-	struct resource *resource;
-	unsigned free_reg, reg;
-	resource = 0;
-	free_reg = 0;
-	for(reg = 0x80; reg <= 0xb8; reg += 0x8) {
-		int result;
-		result = reg_useable(reg, dev, nodeid, link);
-		if (result == 1) {
-			/* I have been allocated this one */
-			break;
-		}
-		else if (result > 1) {
-			/* I have a free register pair */
-			free_reg = reg;
-		}
-	}
-	if (reg > 0xb8) {
-		reg = free_reg;
-	}
-	if (reg > 0) {
-		resource = new_resource(dev, IOINDEX(0x100 + reg, link));
-	}
-	return resource;
+	return amdk8_find_reg(dev, nodeid, link, 0xc0, 0xd8);
+}
+
+static unsigned amdk8_find_mempair(device_t dev, unsigned nodeid, unsigned link)
+{
+	return amdk8_find_reg(dev, nodeid, link, 0x80, 0xb8);
 }
 
 static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
@@ -372,7 +338,7 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 	struct resource *resource;
 
 	/* Initialize the io space constraints on the current bus */
-	resource =  amdk8_find_iopair(dev, nodeid, link);
+	resource = new_resource(dev, IOINDEX(0, link));
 	if (resource) {
 		resource->base  = 0;
 		resource->size  = 0;
@@ -383,7 +349,7 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 	}
 
 	/* Initialize the prefetchable memory constraints on the current bus */
-	resource = amdk8_find_mempair(dev, nodeid, link);
+	resource = new_resource(dev, IOINDEX(2, link));
 	if (resource) {
 		resource->base  = 0;
 		resource->size  = 0;
@@ -397,7 +363,7 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 	}
 
 	/* Initialize the memory constraints on the current bus */
-	resource = amdk8_find_mempair(dev, nodeid, link);
+	resource = new_resource(dev, IOINDEX(1, link));
 	if (resource) {
 		resource->base  = 0;
 		resource->size  = 0;
@@ -408,6 +374,8 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 	}
 }
 
+static void amdk8_create_vga_resource(device_t dev, unsigned nodeid);
+
 static void amdk8_read_resources(device_t dev)
 {
 	unsigned nodeid, link;
@@ -417,6 +385,8 @@ static void amdk8_read_resources(device_t dev)
 			amdk8_link_read_bases(dev, nodeid, link);
 		}
 	}
+
+	amdk8_create_vga_resource(dev, nodeid);
 }
 
 static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned nodeid)
@@ -518,8 +488,6 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 {
 	struct resource *resource;
 	unsigned link;
-	uint32_t base, limit;
-	unsigned reg;
 
 	/* find out which link the VGA card is connected,
 	 * we only deal with the 'first' vga card */
@@ -543,31 +511,17 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 
 	printk_debug("VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link);
 
-	/* allocate a temp resrouce for legacy VGA buffer */
-	resource = amdk8_find_mempair(dev, nodeid, link);
+	/* allocate a temp resource for the legacy VGA buffer */
+	resource = new_resource(dev, IOINDEX(4, link));
 	if(!resource){
-		printk_debug("VGA: Can not find free mmio reg for legacy VGA buffer\n");
+		printk_debug("VGA: %s out of resources.\n", dev_path(dev));
 		return;
 	}
 	resource->base = 0xa0000;
 	resource->size = 0x20000;
-
-	/* write the resource to the hardware */
-	reg  = resource->index & 0xfc;
-	base  = f1_read_config32(reg);
-	limit = f1_read_config32(reg + 0x4);
-	base  &= 0x000000f0;
-	base  |= (resource->base >> 8) & 0xffffff00;
-	base  |= 3;
-	limit &= 0x00000048;
-	limit |= (resource_end(resource) >> 8) & 0xffffff00;
-	limit |= (resource->index & 3) << 4;
-	limit |= (nodeid & 7);
-	f1_write_config32(reg + 0x4, limit);
-	f1_write_config32(reg, base);
-
-	/* release the temp resource */
-	resource->flags = 0;
+	resource->limit = 0xffffffff;
+	resource->flags = IORESOURCE_FIXED | IORESOURCE_MEM |
+			  IORESOURCE_ASSIGNED;
 }
 
 static void amdk8_set_resources(device_t dev)
@@ -578,12 +532,35 @@ static void amdk8_set_resources(device_t dev)
 	/* Find the nodeid */
 	nodeid = amdk8_nodeid(dev);
 
-	amdk8_create_vga_resource(dev, nodeid);
-
 	/* Set each resource we have found */
 	for(i = 0; i < dev->resources; i++) {
-		amdk8_set_resource(dev, &dev->resource[i], nodeid);
+		struct resource *res = &dev->resource[i];
+		struct resource *old = NULL;
+		unsigned index;
+
+		if (res->size == 0) /* No need to allocate registers. */
+			continue;
+
+		if (res->flags & IORESOURCE_IO)
+			index = amdk8_find_iopair(dev, nodeid,
+						  IOINDEX_LINK(res->index));
+		else
+			index = amdk8_find_mempair(dev, nodeid,
+						   IOINDEX_LINK(res->index));
+
+		old = probe_resource(dev, index);
+		if (old) {
+			res->index = old->index;
+			old->index = 0;
+			old->flags = 0;
+		}
+		else
+			res->index = index;
+
+		amdk8_set_resource(dev, res, nodeid);
 	}
+
+	compact_resources(dev);
 
 	for(link = 0; link < dev->links; link++) {
 		struct bus *bus;
@@ -634,7 +611,6 @@ struct chip_operations northbridge_amd_amdk8_ops = {
 
 static void amdk8_domain_read_resources(device_t dev)
 {
-	struct resource *resource;
 	unsigned reg;
 
 	/* Find the already assigned resource pairs */
@@ -652,10 +628,12 @@ static void amdk8_domain_read_resources(device_t dev)
 			reg_dev = __f0_dev[nodeid];
 			if (reg_dev) {
 				/* Reserve the resource  */
-				struct resource *reg_resource;
-				reg_resource = new_resource(reg_dev, IOINDEX(0x100 + reg, link));
-				if (reg_resource) {
-					reg_resource->flags = 1;
+				struct resource *res;
+				res = new_resource(reg_dev, IOINDEX(0x100 + reg, link));
+				if (res) {
+					res->base = base;
+					res->limit = limit;
+					res->flags = 1;
 				}
 			}
 		}
@@ -691,7 +669,8 @@ static void tolm_test(void *gp, struct device *dev, struct resource *new)
 	struct resource **best_p = gp;
 	struct resource *best;
 	best = *best_p;
-	if (!best || (best->base > new->base)) {
+	/* Skip VGA. */
+	if (!best || (best->base > new->base && new->base > 0xa0000)) {
 		best = new;
 	}
 	*best_p = best;
@@ -725,15 +704,14 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
 		mem_hole.node_id = -1;
 
-		for (i = 0; i < FX_DEVS; i++) {
+		for (i = 0; i < fx_devs; i++) {
 			uint32_t base;
 			uint32_t hole;
 			base  = f1_read_config32(0x40 + (i << 3));
 			if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
 				continue;
 			}
-			if (!__f1_dev[i])
-				continue;
+
 			hole = pci_read_config32(__f1_dev[i], 0xf0);
 			if(hole & 1) { // we find the hole
 				mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
@@ -769,9 +747,10 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		return mem_hole;
 
 }
-static void disable_hoist_memory(unsigned long hole_startk, int i)
+
+static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 {
-	int ii;
+	int i;
 	device_t dev;
 	uint32_t base, limit;
 	uint32_t hoist;
@@ -787,33 +766,35 @@ static void disable_hoist_memory(unsigned long hole_startk, int i)
 
 	hole_sizek = (4*1024*1024) - hole_startk;
 
-	for(ii=7;ii>i;ii--) {
+	for(i=7;i>node_id;i--) {
 
-		base  = f1_read_config32(0x40 + (ii << 3));
+		base  = f1_read_config32(0x40 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
 			continue;
 		}
-		limit = f1_read_config32(0x44 + (ii << 3));
-		f1_write_config32(0x44 + (ii << 3),limit - (hole_sizek << 2));
-		f1_write_config32(0x40 + (ii << 3),base - (hole_sizek << 2));
+		limit = f1_read_config32(0x44 + (i << 3));
+		f1_write_config32(0x44 + (i << 3),limit - (hole_sizek << 2));
+		f1_write_config32(0x40 + (i << 3),base - (hole_sizek << 2));
 	}
-	limit = f1_read_config32(0x44 + (i << 3));
-	f1_write_config32(0x44 + (i << 3),limit - (hole_sizek << 2));
-	dev = __f1_dev[i];
-	if (dev) {
-		hoist = pci_read_config32(dev, 0xf0);
-		if(hoist & 1) {
-			pci_write_config32(dev, 0xf0, 0);
-		} else {
-			base = pci_read_config32(dev, 0x40 + (i << 3));
-			f1_write_config32(0x40 + (i << 3),base - (hole_sizek << 2));
-		}
+	limit = f1_read_config32(0x44 + (node_id << 3));
+	f1_write_config32(0x44 + (node_id << 3),limit - (hole_sizek << 2));
+	dev = __f1_dev[node_id];
+	if (dev == NULL) {
+		printk_err("%s: node %x is NULL!\n", __func__, node_id);
+		return;
+	}
+	hoist = pci_read_config32(dev, 0xf0);
+	if(hoist & 1)
+		pci_write_config32(dev, 0xf0, 0);
+	else {
+		base = pci_read_config32(dev, 0x40 + (node_id << 3));
+		f1_write_config32(0x40 + (node_id << 3),base - (hole_sizek << 2));
 	}
 }
 
-static uint32_t hoist_memory(unsigned long hole_startk, int i)
+static uint32_t hoist_memory(unsigned long hole_startk, int node_id)
 {
-	int ii;
+	int i;
 	uint32_t carry_over;
 	device_t dev;
 	uint32_t base, limit;
@@ -822,27 +803,27 @@ static uint32_t hoist_memory(unsigned long hole_startk, int i)
 
 	carry_over = (4*1024*1024) - hole_startk;
 
-	for(ii=7;ii>i;ii--) {
+	for(i=7;i>node_id;i--) {
 
-		base  = f1_read_config32(0x40 + (ii << 3));
+		base  = f1_read_config32(0x40 + (i << 3));
 		if ((base & ((1<<1)|(1<<0))) != ((1<<1)|(1<<0))) {
 			continue;
 		}
-		limit = f1_read_config32(0x44 + (ii << 3));
-		f1_write_config32(0x44 + (ii << 3),limit + (carry_over << 2));
-		f1_write_config32(0x40 + (ii << 3),base + (carry_over << 2));
+		limit = f1_read_config32(0x44 + (i << 3));
+		f1_write_config32(0x44 + (i << 3),limit + (carry_over << 2));
+		f1_write_config32(0x40 + (i << 3),base + (carry_over << 2));
 	}
-	limit = f1_read_config32(0x44 + (i << 3));
-	f1_write_config32(0x44 + (i << 3),limit + (carry_over << 2));
-	dev = __f1_dev[i];
-	base  = pci_read_config32(dev, 0x40 + (i << 3));
+	limit = f1_read_config32(0x44 + (node_id << 3));
+	f1_write_config32(0x44 + (node_id << 3),limit + (carry_over << 2));
+	dev = __f1_dev[node_id];
+	base  = pci_read_config32(dev, 0x40 + (node_id << 3));
 	basek  = (base & 0xffff0000) >> 2;
 	if(basek == hole_startk) {
 		//don't need set memhole here, because hole off set will be 0, overflow
 		//so need to change base reg instead, new basek will be 4*1024*1024
 		base &= 0x0000ffff;
 		base |= (4*1024*1024)<<2;
-		f1_write_config32(0x40 + (i<<3), base);
+		f1_write_config32(0x40 + (node_id<<3), base);
 	}
 	else if (dev)
 	{
@@ -980,7 +961,7 @@ static void amdk8_domain_set_resources(device_t dev)
 		#if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
 			//We need to double check if the mmio_basek is valid for hole setting, if it is equal to basek, we need to decrease it some
 			uint32_t basek_pri;
-			for (i = 0; i < FX_DEVS; i++) {
+			for (i = 0; i < fx_devs; i++) {
 				uint32_t base;
 				uint32_t basek;
 				base  = f1_read_config32(0x40 + (i << 3));
@@ -1005,7 +986,7 @@ static void amdk8_domain_set_resources(device_t dev)
 #endif
 
 	idx = 0x10;
-	for(i = 0; i < FX_DEVS; i++) {
+	for(i = 0; i < fx_devs; i++) {
 		uint32_t base, limit;
 		unsigned basek, limitk, sizek;
 		base  = f1_read_config32(0x40 + (i << 3));
@@ -1043,7 +1024,7 @@ static void amdk8_domain_set_resources(device_t dev)
 					/* Leave some space for ACPI, PIRQ and MP tables */
 						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
 						high_tables_size = HIGH_TABLES_SIZE * 1024;
-						printk_debug("(split)%xK table at =%08llx\n", HIGH_TABLES_SIZE,
+						printk_debug(" split: %dK table at =%08llx\n", HIGH_TABLES_SIZE,
 							     high_tables_base);
 					}
 #endif
@@ -1100,7 +1081,7 @@ static unsigned int amdk8_domain_scan_bus(device_t dev, unsigned int max)
 	 * Including enabling relaxed ordering if it is safe.
 	 */
 	get_fx_devs();
-	for(i = 0; i < FX_DEVS; i++) {
+	for(i = 0; i < fx_devs; i++) {
 		device_t f0_dev;
 		f0_dev = __f0_dev[i];
 		if (f0_dev && f0_dev->enabled) {

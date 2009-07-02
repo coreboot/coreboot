@@ -45,19 +45,22 @@
 #define CRTC_INDEX	0x3d4
 #define CRTC_DATA	0x3d5
 
+/* !!FIXME!! These were CONFIG_ options.  Fix it in uma_ram_setting.c too. */
+#define VIACONFIG_VGA_PCI_10 0xf8000008
+#define VIACONFIG_VGA_PCI_14 0xfc000000
+
 void write_protect_vgabios(void)
 {
 	device_t dev;
 
 	printk_info("write_protect_vgabios\n");
 	/* there are two possible devices. Just do both. */
-	dev =
-	    dev_find_device(PCI_VENDOR_ID_VIA,
-			    PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
+	dev = dev_find_device(PCI_VENDOR_ID_VIA,
+			      PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
 	if (dev)
 		pci_write_config8(dev, 0x80, 0xff);
 	/*vx855 no th 0x61 reg */
-	/*dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_NB_VLINK, 0);
+	/*dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VLINK, 0);
 	   //if(dev)
 	   //   pci_write_config8(dev, 0x61, 0xff); */
 }
@@ -90,7 +93,7 @@ static void vga_init(device_t dev)
 	printk_debug("DO THE VGA BIOS\n");
 
 	do_vgabios();
-	if ((acpi_sleep_type == 3) || (PAYLOAD_IS_SEABIOS == 0)) {
+	if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/) {
 		printk_debug("Enable VGA console\n");
 		// remove this function since in cn700 it is said "VGA seems to work without this, but crash & burn with it"
 		//but the existense of  vga_enable_console()  seems do not hurt my coreboot. XP+ubuntu s3 can resume with and without this function.
@@ -103,7 +106,7 @@ static void vga_init(device_t dev)
 	pci_rom_load(dev, 0xfff80000);
 	run_bios(dev, 0xc0000);
 #endif
-	if ((acpi_sleep_type == 3) || (PAYLOAD_IS_SEABIOS == 0)) {
+	if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/) {
 		/* It's not clear if these need to be programmed before or after
 		 * the VGA bios runs. Try both, clean up later */
 		/* Set memory rate to 200MHz */
@@ -125,7 +128,7 @@ static void vga_init(device_t dev)
 
 static void vga_read_resources(device_t dev)
 {
-	dev->rom_address = (void *)(0xffffffff - FULL_ROM_SIZE + 1);
+	dev->rom_address = (void *)(0xffffffff - CONFIG_ROM_SIZE + 1);
 	dev->on_mainboard = 1;
 	pci_dev_read_resources(dev);
 }

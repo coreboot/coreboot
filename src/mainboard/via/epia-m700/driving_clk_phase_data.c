@@ -204,7 +204,7 @@ static const u8 DDR2_ChA_DQS_Input_Capture_Tbl[DQS_INPUT_CAPTURE_REG_NUM ][DQS_I
 #endif
 
 /* vt6413D */
-static const u8DDR2_ChA_DQS_Input_Capture_Tbl[DQS_INPUT_CAPTURE_REG_NUM][DQS_INPUT_CAPTURE_FREQ_NUM] = {
+static const u8 DDR2_ChA_DQS_Input_Capture_Tbl[DQS_INPUT_CAPTURE_REG_NUM][DQS_INPUT_CAPTURE_FREQ_NUM] = {
 	//    (And NOT) DDR800 DDR667 DDR533 DDR400
 	//Reg  Mask  Value Value Value Value
 	{0x78, 0xC0, 0x0D, 0x07, 0x03, 0x01},	// 1Rank

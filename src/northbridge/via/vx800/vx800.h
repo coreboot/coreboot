@@ -25,12 +25,12 @@ static void vx800_noop()
 {
 }
 #endif
-#define REV_B0  0x10
+//#define REV_B0 0x10
 #define REV_B1 0x11
-#define REV_B2 0x12
+//#define REV_B2 0x12
 #define REV_B3 0x13
 #define REV_B4 0x14
-#define REV_B2 0xB4
+//#define REV_B2 0xB4
 #define REV_B0 0x00
 #define REV_B2 0x01
 

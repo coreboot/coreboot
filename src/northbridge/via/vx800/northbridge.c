@@ -35,6 +35,11 @@
 #include "northbridge.h"
 #include "vx800.h"
 
+/* !!FIXME!!  This was meant to be a CONFIG option */
+#define VIACONFIG_TOP_SM_SIZE_MB 32	// Set frame buffer 32M for default
+/* !!FIXME!!  I declared this to fix the build. */
+u8 acpi_sleep_type = 0;
+
 static void memctrl_init(device_t dev)
 {
 /*

@@ -298,7 +298,7 @@ Output     : Void
 Purpose   : Set ending address of virtual rank specified by VirRank 
 ===================================================================*/
 
-void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank,	/* ending address
+void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank /* ending address
 		   register number indicator (INDEX */, INT8 Value /* (value)
 		   add or subtract value to this and after banks */) {
 	u8 Data;

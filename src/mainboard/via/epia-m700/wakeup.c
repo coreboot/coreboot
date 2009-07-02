@@ -131,9 +131,9 @@ void acpi_jump_wake(u32 vector)
 	memcpy((void *)(WAKE_THUNK16_ADDR - 100), jump_to_wakeup,
 	       sizeof(jump_to_wakeup));
 
-	jason_tsc_count();
+	//jason_tsc_count();
 	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
-	jason_tsc_count_end();
+	//jason_tsc_count_end();
 
 	unsigned long long *real_mode_gdt_entries_at_eseg;
 	real_mode_gdt_entries_at_eseg = WAKE_THUNK16_GDT;		/* Copy from real_mode_gdt_entries and change limition to 1M and data base to 0; */

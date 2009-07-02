@@ -59,25 +59,6 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_create_madt_lapics(unsigned long current)
-{
-	device_t cpu;
-	int cpu_index = 0;
-
-	for (cpu = all_devices; cpu; cpu = cpu->next) {
-		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-		    (cpu->bus->dev->path.type != DEVICE_PATH_APIC_CLUSTER)) {
-			continue;
-		}
-		if (!cpu->enabled)
-			continue;
-		current += acpi_create_madt_lapic((acpi_madt_lapic_t *)current,
-					   cpu_index, cpu->path.apic.apic_id);
-		cpu_index++;
-	}
-	return current;
-}
-
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
 					  u8 lint)
 {

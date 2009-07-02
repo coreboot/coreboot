@@ -118,7 +118,7 @@ extern u8 acpi_sleep_type;
 
 static void real_mode_switch_call_vga(unsigned long devfn)
 {
-	if ((acpi_sleep_type == 0) && (PAYLOAD_IS_SEABIOS == 1))
+	if ((acpi_sleep_type == 0)/* && (PAYLOAD_IS_SEABIOS == 1)*/)
 		return;
 	__asm__ __volatile__(
 				    // paranoia -- does ecx get saved? not sure. This is 
@@ -205,7 +205,7 @@ extern char real_mode_switch_end[];
    epia-m does not always autosence the main console so forcing it on is good !! */
 void vga_enable_console()
 {
-	if ((acpi_sleep_type == 0) && (PAYLOAD_IS_SEABIOS == 1))
+	if ((acpi_sleep_type == 0)/* && (PAYLOAD_IS_SEABIOS == 1)*/)
 		return;
 	__asm__ __volatile__(
 				    /* paranoia -- does ecx get saved? not sure. This is 
@@ -319,7 +319,7 @@ void do_vgabios(void)
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
 
-	rom = 0xffffffff - FULL_ROM_SIZE + 1;
+	rom = 0xffffffff - CONFIG_ROM_SIZE + 1;
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom | 1);
 	printk_debug("rom base: %x\n", rom);
 	buf = (unsigned char *)rom;
@@ -522,7 +522,9 @@ int biosint(unsigned long intnumber,
 
 	// cases in a good compiler are just as good as your own tables. 
 	switch (intnumber) {
-	case 0...15:
+	case 0: case 1: case 2: case 3: case 4: case 5:
+	case 6: case 7: case 8: case 9: case 10:
+	case 11: case 12: case 13: case 14: case 15:
 		// These are not BIOS service, but the CPU-generated exceptions
 		printk_info("biosint: Oops, exception %u\n", intnumber);
 		if (esp < 0x1000) {
@@ -535,7 +537,7 @@ int biosint(unsigned long intnumber,
 		}
 		printk_debug("biosint: Bailing out\n");
 		// "longjmp"
-		if ((acpi_sleep_type == 3) || (PAYLOAD_IS_SEABIOS == 0))	// add this to keep same with kevin's seabios patch in 2008-9-8
+		if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/)	// add this to keep same with kevin's seabios patch in 2008-9-8
 			vga_exit();
 		break;
 

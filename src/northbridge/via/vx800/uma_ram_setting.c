@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include "pci_rawops.h"
+
 typedef struct __UMA_RAM_tag {
 	u16 DramSize;
 	u8 D0F3Val;
@@ -47,6 +49,9 @@ typedef struct __UMA_RAM_tag {
 #define VGA_PORT_64M	0xE0
 #define VGA_PORT_32M	0xF0
 #define VGA_PORT_16M	0xF8
+
+#define VIACONFIG_VGA_PCI_10 0xf8000008
+#define VIACONFIG_VGA_PCI_14 0xfc000000
 
 static const UMARAM UMARamArr[] = {
 	{0, UMARAM_0M, FB_4M, 0xFE},
@@ -168,10 +173,10 @@ void SetUMARam(void)
 	pci_write_config32(vga_dev, 0x14, Tmp);
 
 //enable direct cpu frame buffer access
-	i = pci_rawread_config8(PCI_RAWDEV(0, 0, 3), 0xa1);
+	i = pci_conf1_read8(PCI_DEV(0, 0, 3), 0xa1);
 	i = (i & 0xf0) | (VIACONFIG_VGA_PCI_10 >> 28);
-	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0xa1, i);
-	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0xa0, 0x01);
+	pci_conf1_write8(PCI_DEV(0, 0, 3), 0xa1, i);
+	pci_conf1_write8(PCI_DEV(0, 0, 3), 0xa0, 0x01);
 
 	//enable GFx memory space access control for S.L and mmio
 	ByteVal = pci_read_config8(d0f0_dev, 0xD4);

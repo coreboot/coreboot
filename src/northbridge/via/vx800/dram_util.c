@@ -56,11 +56,8 @@ Reference  : None
 
 u32 via_read_phys(volatile u32 addr)
 {
-	volatile u32 *ptr;
 	volatile u32 y;
-//    ptr = (volatile u32 *)addr;
 	y = *(volatile u32 *)addr;
-//    return *ptr;
 	return y;
 }
 

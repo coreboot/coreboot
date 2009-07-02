@@ -20,7 +20,6 @@
 #include <spd.h>
 #include <sdram_mode.h>
 #include <delay.h>
-#include <arch/pci_rawops.h>
 
 #define DEBUG_RAM_SETUP 1
 

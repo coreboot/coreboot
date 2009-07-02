@@ -208,6 +208,21 @@ static void enable_shadow_ram(void)
 #endif
 }
 
+/* !!FIXME!!
+ * This is a bogus definition to get it to compile.
+ */
+
+struct VIA_PCI_REG_INIT_TABLE {
+	u8 and_val;
+	u8 or_val;
+	u8 bus;
+	u8 dev;
+	u8 func;
+	u8 reg;
+	u8 v1;
+	u8 v2;
+};
+
 /*
  * Added this table 2008-11-28.
  * This table contains the value needed to be set before begin to init DRAM.

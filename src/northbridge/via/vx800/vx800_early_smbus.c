@@ -114,7 +114,6 @@ static void smbus_reset(void)
 /* Public functions */
 static unsigned int set_ics_data(unsigned char dev, int data, char len)
 {
-	int i;
 	smbus_reset();
 	/* clear host data port */
 	outb(0x00, SMBHSTDAT0);
@@ -125,7 +124,7 @@ static unsigned int set_ics_data(unsigned char dev, int data, char len)
 	inb(SMBHSTCTL);
 
 	/* fill blocktransfer array */
-	if (dev = 0xd2) {
+	if (dev == 0xd2) {
 		//char d2_data[] = {0x0d,0x00,0x3f,0xcd,0x7f,0xbf,0x1a,0x2a,0x01,0x0f,0x0b,0x00,0x8d,0x9b};
 		outb(0x0d, SMBBLKDAT);
 		outb(0x00, SMBBLKDAT);

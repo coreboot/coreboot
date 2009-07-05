@@ -46,10 +46,18 @@ static struct device_operations northbridge_operations = {
 	.ops_pci		= 0,
 };
 
-static const struct pci_driver northbridge_driver __pci_driver = {
+/* Intel 82810/82810-DC100 */
+static const struct pci_driver i810_northbridge_driver __pci_driver = {
 	.ops	= &northbridge_operations,
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x7120,
+};
+
+/* Intel 82810E */
+static const struct pci_driver i810e_northbridge_driver __pci_driver = {
+	.ops    = &northbridge_operations,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x7124,
 };
 
 static void ram_resource(device_t dev, unsigned long index,
@@ -138,6 +146,19 @@ static void pci_domain_set_resources(device_t dev)
 
 		/* Convert tomk from MB to KB. */
 		tomk = tomk << 10;
+
+#ifdef CONFIG_VIDEO_MB
+		/* Check for VGA reserved memory. */
+		if (CONFIG_VIDEO_MB == 512) {
+			tomk -= 512;
+			printk_debug("Allocating %s RAM for VGA\n", "512KB");
+		} else if (CONFIG_VIDEO_MB == 1) {
+			tomk -= 1024 ;
+			printk_debug("Allocating %s RAM for VGA\n", "1MB");
+		} else {
+			printk_debug("Allocating %s RAM for VGA\n", "0MB");
+		}
+#endif
 
 		/* Compute the top of Low memory. */
 		tolmk = pci_tolm >> 10;

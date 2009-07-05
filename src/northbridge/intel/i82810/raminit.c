@@ -1,9 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2007-2009 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2007 Corey Osgood <corey@slightlyhackish.com>
- * Copyright (C) 2008 Elia Yehuda <z4ziggy@gmail.com>
+ * Copyright (C) 2008-2009 Elia Yehuda <z4ziggy@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -360,45 +360,33 @@ Public interface.
 
 static void sdram_set_registers(void)
 {
-	unsigned long val;
+	u8 reg8;
+	u16 reg16, did;
 
-	/* TODO */
-	pci_write_config8(PCI_DEV(0, 0, 0), GMCHCFG, 0x60);
-
-	/* PAMR: Programmable Attributes Register
-	 * Every pair of bits controls an address range:
-	 * 00 = Disabled, all accesses are forwarded to the ICH
-	 * 01 = Read Only
-	 * 10 = Write Only
-	 * 11 = Read/Write
-
-	 * Bit  Range
-	 * 7:6  000F0000 - 000FFFFF
-	 * 5:4  000E0000 - 000EFFFF
-	 * 3:2  000D0000 - 000DFFFF
-	 * 1:0  000C0000 - 000CFFFF
-	 */
+	did = pci_read_config16(PCI_DEV(0, 0, 0), PCI_DEVICE_ID);
 
 	/* Ideally, this should be R/W for as many ranges as possible. */
-	pci_write_config8(PCI_DEV(0, 0, 0), PAM, 0xff);
-
-	/* Enabling the VGA Framebuffer currently screws up the rest of the boot.
-	 * Disable for now */
+	pci_write_config8(PCI_DEV(0, 0, 0), PAMR, 0xff);
 	
-	/* Enable 1MB framebuffer. */
-	//pci_write_config8(PCI_DEV(0, 0, 0), SMRAM, 0xC0);
+	/* Set size for onboard-VGA framebuffer. */
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), SMRAM);
+	reg8 &= 0x3f;			     /* Disable graphics (for now). */
+	if (CONFIG_VIDEO_MB == 512)
+		reg8 |= (1 << 7);	     /* Enable graphics (512KB RAM). */
+	else if (CONFIG_VIDEO_MB == 1)
+		reg8 |= (1 << 7) | (1 << 6); /* Enable graphics (1MB RAM). */
+	pci_write_config8(PCI_DEV(0, 0, 0), SMRAM, reg8);
 
-	//val = pci_read_config16(PCI_DEV(0, 0, 0), MISSC);
-	/* Preserve reserved bits. */
-	//val &= 0xff06;
-	/* Set graphics cache window to 32MB, no power throttling. */
-	//val |= 0x0001;
-	//pci_write_config16(PCI_DEV(0, 0, 0), MISSC, val);
-
-	//val = pci_read_config8(PCI_DEV(0, 0, 0), MISSC2);
-	/* Enable graphics palettes and clock gating (not optional!) */
-	//val |= 0x06;
-	//pci_write_config8(PCI_DEV(0, 0, 0), MISSC2, val);
+	/* MISSC2: Bits 1, 2, 6, 7 must be set for VGA (see datasheet). */
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), MISSC2);
+	reg8 |= (1 << 1); /* Instruction Parser Unit-Level Clock Gating */
+	reg8 |= (1 << 2); /* Palette Load Select */
+	if (did == 0x7124) {
+		/* Bits 6 and 7 are only available on 82810E (not 82810). */
+		reg8 |= (1 << 6); /* Text Immediate Blit */
+		reg8 |= (1 << 7); /* Must be 1 as per datasheet. */
+	}
+	pci_write_config8(PCI_DEV(0, 0, 0), MISSC2, reg8);
 }
 
 static void sdram_set_spd_registers(void)
@@ -437,7 +425,7 @@ static void sdram_enable(void)
 	do_ram_command(RAM_COMMAND_MRS);
 	udelay(2);
 
-	/* 5. Normal operation (enables refresh) */
+	/* 5. Normal operation (enables refresh at 15.6usec). */
 	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
 	do_ram_command(RAM_COMMAND_NORMAL);
 	udelay(1);

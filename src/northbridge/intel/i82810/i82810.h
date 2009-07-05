@@ -35,7 +35,7 @@
  */
 
 #define GMCHCFG	0x50		/* GMCH Configuration */
-#define PAM	0x51		/* Programmable Attributes */
+#define PAMR	0x51		/* Programmable Attributes */
 #define DRP	0x52		/* DRAM Row Population */
 #define DRAMT	0x53		/* DRAM Timing */
 #define FDHC	0x58		/* Fixed DRAM Hole Control */

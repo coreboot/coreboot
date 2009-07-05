@@ -371,10 +371,12 @@ static void sdram_set_registers(void)
 	/* Set size for onboard-VGA framebuffer. */
 	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), SMRAM);
 	reg8 &= 0x3f;			     /* Disable graphics (for now). */
+#ifdef CONFIG_VIDEO_MB
 	if (CONFIG_VIDEO_MB == 512)
 		reg8 |= (1 << 7);	     /* Enable graphics (512KB RAM). */
 	else if (CONFIG_VIDEO_MB == 1)
 		reg8 |= (1 << 7) | (1 << 6); /* Enable graphics (1MB RAM). */
+#endif
 	pci_write_config8(PCI_DEV(0, 0, 0), SMRAM, reg8);
 
 	/* MISSC2: Bits 1, 2, 6, 7 must be set for VGA (see datasheet). */

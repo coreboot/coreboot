@@ -33,6 +33,7 @@ option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL = 9
 
 option CONFIG_CONSOLE_VGA = 1
 option CONFIG_PCI_ROM_RUN = 1
+option CONFIG_VIDEO_MB = 1
 
 romimage "normal"
 	option CONFIG_USE_FALLBACK_IMAGE = 0
@@ -48,5 +49,5 @@ end
 
 buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"
 
-# pci_rom i810.vga vendor_id=0x8086 device_id=0x7120
+pci_rom /tmp/i810.vga vendor_id=0x8086 device_id=0x7121
 

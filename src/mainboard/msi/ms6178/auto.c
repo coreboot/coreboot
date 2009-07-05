@@ -36,6 +36,7 @@
 #include "cpu/x86/bist.h"
 #include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
 #include "pc80/udelay_io.c"
+#include "lib/debug.c"
 #include "northbridge/intel/i82810/raminit.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)

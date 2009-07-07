@@ -446,7 +446,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->align = align;
 		resource->gran	= align;
 		resource->limit = 0xffffUL;
-		resource->flags = IORESOURCE_IO;
+		resource->flags = IORESOURCE_IO | IORESOURCE_BRIDGE;
 	}
 
 	/* Initialize the prefetchable memory constraints on the current bus */
@@ -457,7 +457,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->align = log2(HT_MEM_HOST_ALIGN);
 		resource->gran	= log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
-		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH | IORESOURCE_BRIDGE;
 
 #if CONFIG_EXT_CONF_SUPPORT == 1
 		if((resource->index & 0x1fff) == 0x1110) { // ext
@@ -475,7 +475,7 @@ static void amdfam10_link_read_bases(device_t dev, u32 nodeid, u32 link)
 		resource->align = log2(HT_MEM_HOST_ALIGN);
 		resource->gran	= log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
-		resource->flags = IORESOURCE_MEM;
+		resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
 
 #if CONFIG_EXT_CONF_SUPPORT == 1
 		if((resource->index & 0x1fff) == 0x1110) { // ext
@@ -681,16 +681,7 @@ static void amdfam10_domain_read_resources(device_t dev)
 	   I don't believe that much preset value */
 
 #if CONFIG_PCI_64BIT_PREF_MEM == 0
-	/* Initialize the system wide io space constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
-	resource->base	= 0x400;
-	resource->limit = 0xffffUL;
-	resource->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
-
-	/* Initialize the system wide memory resources constraints */
-	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(1, 0));
-	resource->limit = 0xfcffffffffULL;
-	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
+	pci_domain_read_resources(dev);
 #else
 	for(link=0; link<dev->links; link++) {
 		/* Initialize the system wide io space constraints */

@@ -1,3 +1,4 @@
+uses CONFIG_ARCH_X86
 uses CONFIG_ISA_IO_BASE
 uses CONFIG_CBFS
 uses CONFIG_ISA_MEM_BASE
@@ -65,6 +66,7 @@ default HOSTCC="gcc"
 ## use a cross compiler
 #default CONFIG_CROSS_COMPILE="powerpc-eabi-"
 #default CONFIG_CROSS_COMPILE="ppc_74xx-"
+default CONFIG_ARCH_X86=0
 
 ## Use stage 1 initialization code
 default CONFIG_USE_INIT=1

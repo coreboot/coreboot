@@ -214,12 +214,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				}
 				Method (_CRS, 0, NotSerialized)
 				{
-					Name (TMP, ResourceTemplate () {
+					Name (TMP0, ResourceTemplate () {
 						IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
 						IO (Decode16, 0x0064, 0x0064, 0x01, 0x01)
 						IRQNoFlags () {1}
 					})
-					Return (TMP)
+					Return (TMP0)
 				}
 			}
 
@@ -233,12 +233,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				}
 				Method (_CRS, 0, NotSerialized)
 				{
-					Name (TMP, ResourceTemplate () {
+					Name (TMP1, ResourceTemplate () {
 						IO (Decode16, 0x0060, 0x0060, 0x01, 0x01)
 						IO (Decode16, 0x0064, 0x0064, 0x01, 0x01)
 						IRQNoFlags () {12}
 					})
-					Return (TMP)
+					Return (TMP1)
 				}
 			}
 
@@ -254,11 +254,47 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 				{
 					Name (BUF0, ResourceTemplate () {
 						IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x06)
-						IO (Decode16, 0x03F7, 0x03F7, 0x00, 0x01)
+						IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
 						IRQNoFlags () {6}
 						DMA (Compatibility, NotBusMaster, Transfer8) {2}
 					})
 					Return (BUF0)
+				}
+			}
+			/* Parallel Port */
+			Device (LPT1)
+			{
+				Name (_HID, EisaId ("PNP0400"))
+				Method (_STA, 0, NotSerialized)
+				{
+					Return (0x0f)
+				}
+				Method (_CRS, 0, NotSerialized)
+				{
+					Name (BUF1, ResourceTemplate () {
+						IO (Decode16, 0x0378, 0x0378, 0x01, 0x08) 
+						IRQNoFlags () {7}
+					})
+					Return (BUF1)
+				}
+			}
+			/* Parallel Port ECP */
+			Device (ECP1)
+			{
+				Name (_HID, EisaId ("PNP0401"))
+				Method (_STA, 0, NotSerialized)
+				{
+					Return (0x0f)
+				}
+				Method (_CRS, 0, NotSerialized)
+				{
+					Name (BUF1, ResourceTemplate () {
+						IO (Decode16, 0x0378, 0x0378, 0x01, 0x04) 
+						IO (Decode16, 0x0778, 0x0778, 0x01, 0x04)
+						IRQNoFlags() {7}
+						DMA (Compatibility, NotBusMaster, Transfer8) {0,1,3}
+					})
+					Return (BUF1)
 				}
 			}
 		}

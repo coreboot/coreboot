@@ -34,7 +34,7 @@ config SHOW_DATE_TIME
 	  Show the current date and time in the lower-right corner of
 	  the coreinfo menu.
 
-	  This option will increase the ELF file size by ca. 256 bytes.
+	  This option will increase the ELF file size by ca. 250 bytes.
 
 config PAYLOAD_INFO_NAME
 	string "Payload name"
@@ -74,7 +74,7 @@ config MODULE_MULTIBOOT
 	bool "Enable the multiboot module"
 	default y
 	help
-	  This option will increase the ELF file size by ca. 1792 bytes.
+	  This option will increase the ELF file size by ca. 1790 bytes.
 
 config MODULE_CPUINFO
 	bool "Enable the cpuinfo module"
@@ -105,6 +105,12 @@ config MODULE_RAMDUMP
 config MODULE_LAR
 	bool "Enable the coreboot LAR module"
 	default y
+
+config MODULE_CBFS
+	bool "Enable the coreboot CBFS module"
+	default y
+	help
+	  This option will increase the ELF file size by ca. 1440 bytes.
 
 endmenu
 

@@ -43,7 +43,7 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
+#include <string.h>
 #endif
 #include "cpu/x86/lapic/boot_cpu.c"
 
@@ -207,21 +207,6 @@ static void enable_shadow_ram(void)
 	pci_write_config8(PCI_DEV(0, 0, 7), 0x63, shadowreg);
 #endif
 }
-
-/* !!FIXME!!
- * This is a bogus definition to get it to compile.
- */
-
-struct VIA_PCI_REG_INIT_TABLE {
-	u8 and_val;
-	u8 or_val;
-	u8 bus;
-	u8 dev;
-	u8 func;
-	u8 reg;
-	u8 v1;
-	u8 v2;
-};
 
 /*
  * Added this table 2008-11-28.

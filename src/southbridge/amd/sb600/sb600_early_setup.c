@@ -125,11 +125,7 @@ static u32 get_sbdn(u32 bus)
 
 static u8 dual_core()
 {
-	if(((cpuid_eax(0x80000000) & ~0xff) >= 8)) {
-		if(cpuid_ecx(0x80000008) & 1)
-			return 1;
-	}
-	return 0;
+	return (pci_read_config32(PCI_DEV(0, 0x18, 3), 0xE8) & (0x3<<12)) != 0;
 }
 
 /*

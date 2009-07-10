@@ -183,16 +183,16 @@ void setupsc520(void)
 
 /* Stepan says: This needs to go to the msm586seg code */
 /* "enumerate" the PCI. Mainly set the interrupt bits on the PCnetFast. */
-	outl(0xcf8, 0x08000683c);
-	outl(0xcfc, 0xc); /* set the interrupt line */
+	outl(0x08000683c, 0xcf8);
+	outl(0xc, 0xcfc); /* set the interrupt line */
 
 	
 	/* Set the SC520 PCI host bridge to target mode to 
 	 * allow external bus mastering events
 	 */
 	/* index the status command register on device 0*/
-	outl(0x0cf8,0x080000004);
-	outl(0xcfc, 0x2);		/*set the memory access enable bit*/
+	outl(0x080000004, 0x0cf8);
+	outl(0x2, 0xcfc);		/*set the memory access enable bit*/
 	OUTC(0x0fffef072, 1);		/* enable req bits in SYSARBMENB */
 }
 	

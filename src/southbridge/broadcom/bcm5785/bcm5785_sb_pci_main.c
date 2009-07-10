@@ -38,7 +38,7 @@ static void sb_init(device_t dev)
 		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
 	}
 	if( byte != byte_old) {
-		outb(0x70, byte);
+		outb(byte, 0x70);
 	}
 
 

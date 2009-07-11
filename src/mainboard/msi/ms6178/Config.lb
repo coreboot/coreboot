@@ -112,7 +112,7 @@ chip northbridge/intel/i82810			# Northbridge
             irq 0x70 = 1			# Keyboard interrupt
             irq 0x72 = 12			# Mouse interrupt
           end
-          device pnp 2e.6 on end		# Consumer IR (TODO)
+          device pnp 2e.6 off end		# Consumer IR (TODO)
           device pnp 2e.7 on			# Game port / MIDI / GPIO 1
             io 0x60 = 0x201
             io 0x62 = 0x330

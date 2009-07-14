@@ -38,7 +38,7 @@ static u8 pmio_read(u8 reg)
 }
 
 /* Get SB ASIC Revision.*/
-static u8 get_sb600_revision()
+static u8 get_sb600_revision(void)
 {
 	device_t dev;
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
@@ -123,7 +123,7 @@ static u32 get_sbdn(u32 bus)
 }
 
 
-static u8 dual_core()
+static u8 dual_core(void)
 {
 	return (pci_read_config32(PCI_DEV(0, 0x18, 3), 0xE8) & (0x3<<12)) != 0;
 }
@@ -205,7 +205,7 @@ static void soft_reset(void)
 }
 
 
-static void sb600_pci_port80()
+static void sb600_pci_port80(void)
 {
 	u8 byte;
 	device_t dev;
@@ -271,7 +271,7 @@ static void sb600_lpc_port80(void)
 
 
 /* sbDevicesPorInitTable */
-static void sb600_devices_por_init()
+static void sb600_devices_por_init(void)
 {
 	device_t dev;
 	u8 byte;
@@ -467,7 +467,7 @@ static void sb600_devices_por_init()
 * The index address is first programmed into IO reg 0xcd6.
 * Read or write values are accessed through IO reg 0xcd7.
 */
-static void sb600_pmio_por_init()
+static void sb600_pmio_por_init(void)
 {
 	u8 byte;
 
@@ -556,7 +556,7 @@ static void sb600_pmio_por_init()
 * Compliant with CIM_48's sbPciCfg.
 * Add any south bridge setting.
 */
-static void sb600_pci_cfg()
+static void sb600_pci_cfg(void)
 {
 	device_t dev;
 	u8 byte;
@@ -645,7 +645,7 @@ static void sb600_pci_cfg()
 /*
 * Compliant with CIM_48's ATSBPowerOnResetInitJSP
 */
-static void sb600_por_init()
+static void sb600_por_init(void)
 {
 	/* sbDevicesPorInitTable + sbK8PorInitTable */
 	sb600_devices_por_init();
@@ -658,7 +658,7 @@ static void sb600_por_init()
 * Compliant with CIM_48's AtiSbBeforePciInit
 * It should be called during early POST after memory detection and BIOS shadowing but before PCI bus enumeration.
 */
-static void sb600_before_pci_init()
+static void sb600_before_pci_init(void)
 {
 	sb600_pci_cfg();
 }

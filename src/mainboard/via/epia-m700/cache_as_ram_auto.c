@@ -55,6 +55,10 @@
 #include "cpu/x86/car/copy_and_run.c"
 #include "wakeup.h"
 
+#include "superio/winbond/w83697hf/w83697hf_early_serial.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
+
 /*
  * This acpi_is_wakeup_early_via_VX800 is from Rudolf's patch on the list:
  * http://www.coreboot.org/pipermail/coreboot/2008-January/028787.html.
@@ -407,7 +411,10 @@ void amd64_main(unsigned long bist)
 	 * console_init()) are the same with epia-cn port.
 	 */
 	pci_write_config8(PCI_DEV(0, 0, 0), 0x4f, 0x01);
-	EmbedComInit();
+	/* EmbedComInit(); */
+	w83697hf_set_clksel_48(SERIAL_DEV);
+	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	uart_init();
 	/* enable_vx800_serial(); */
 	/* uart_init(); */
 

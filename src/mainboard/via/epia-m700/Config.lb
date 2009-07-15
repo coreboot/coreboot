@@ -109,21 +109,54 @@ config chip.h
 
 chip northbridge/via/vx800	# Northbridge
   device pci_domain 0 on
-    device pci 0.0 on end	# AGP Bridge
+    device pci 0.0 on end	# Host Bridge
     device pci 0.1 on end	# Error Reporting
     device pci 0.2 on end	# Host Bus Control
-    device pci 0.3 on end	# Memory Controller
+    device pci 0.3 on end	# PCI to PCI Bridge
     device pci 0.4 on end	# Power Management
-    device pci 0.7 on end	# V-Link Controller
+    device pci 0.5 on end	# APIC and Central Traffic Control
+    device pci 0.6 on end	# Scratch Registers
+    device pci 0.7 on end	# North-South Module Interface Control
     device pci 1.0 on end	# PCI Bridge
-    # device pci f.0 on end	# IDE/SATA
+    device pci f.0 on end	# IDE/SATA
     # device pci f.1 on end	# IDE
-    # device pci 10.0 on end	# USB 1.1
-    # device pci 10.1 on end	# USB 1.1
-    # device pci 10.2 on end	# USB 1.1
-    # device pci 10.4 on end	# USB 2.0
-    # device pci 11.0 on	# Southbridge LPC
-    # end
+    device pci 10.0 on end	# USB 1.1
+    device pci 10.1 on end	# USB 1.1
+    device pci 10.2 on end	# USB 1.1
+    device pci 10.4 on end	# USB 2.0
+    device pci 11.0 on		# Bus Control and Power Management (SB, LPC)
+      chip superio/winbond/w83697hf
+	# TODO: Check all devices, this may need some more work.
+        device pnp 2e.0 off                   # Floppy (N/A?)
+          io 0x60 = 0x3f0
+          irq 0x70 = 6
+          drq 0x74 = 2
+        end
+        device pnp 2e.1 off                   # Parallel Port (N/A?)
+          io 0x60 = 0x378
+          irq 0x70 = 7
+          drq 0x74 = 4
+        end
+        device pnp 2e.2 on                    # COM1
+          io 0x60 = 0x3f8
+          irq 0x70 = 4
+        end
+        device pnp 2e.3 on                    # COM2
+          io 0x60 = 0x2f8
+          irq 0x70 = 3
+        end
+        device pnp 2e.6 off end               # Consumer IR
+        device pnp 2e.7 off end               # Game port, GPIO 1
+        device pnp 2e.8 off end               # MIDI port, GPIO 5
+        device pnp 2e.9 off end               # GPIO 2-4
+        device pnp 2e.a off end               # ACPI
+        device pnp 2e.b on                    # HWM
+          io 0x60 = 0x290
+        end
+      end
+    end
+    device pci 11.7 on end	# North-South Module Interface Control
+    device pci 14.0 on end	# HD Audio (Azalia)
   end
   device apic_cluster 0 on	# APIC cluster
     chip cpu/via/model_c7	# VIA C7

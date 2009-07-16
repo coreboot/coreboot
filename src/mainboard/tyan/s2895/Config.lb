@@ -29,9 +29,24 @@ if CONFIG_HAVE_ACPI_TABLES
 end
 
 if CONFIG_USE_INIT
+if CONFIG_USE_FAILOVER_IMAGE
+	makerule ./auto.o
+		depends "$(CONFIG_MAINBOARD)/failover.c option_table.h"
+		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/failover.c -o $@"
+	end
+else
 	makerule ./auto.o
 		depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
 		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
+	end
+end
+else #CONFIG_USE_INIT
+if CONFIG_USE_FAILOVER_IMAGE
+	makerule ./auto.inc
+		depends "$(CONFIG_MAINBOARD)/failover.c option_table.h"
+		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/failover.c -o $@"
+		action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
+		action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 	end
 else
 	makerule ./auto.inc
@@ -41,51 +56,32 @@ else
 		action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 	end
 end
+end #CONFIG_USE_INIT
 
 ##
 ## Build our 16 bit and 32 bit coreboot entry code
 ##
-if CONFIG_HAVE_FAILOVER_BOOT
-	if CONFIG_USE_FAILOVER_IMAGE
-		mainboardinit cpu/x86/16bit/entry16.inc
-		ldscript /cpu/x86/16bit/entry16.lds
-	end
-else
-	if CONFIG_USE_FALLBACK_IMAGE
-		mainboardinit cpu/x86/16bit/entry16.inc
-		ldscript /cpu/x86/16bit/entry16.lds
-	end
+if CONFIG_USE_FAILOVER_IMAGE
+	mainboardinit cpu/x86/16bit/entry16.inc
+	ldscript /cpu/x86/16bit/entry16.lds
 end
 
 mainboardinit cpu/x86/32bit/entry32.inc
 
 	if CONFIG_USE_INIT
 		ldscript /cpu/x86/32bit/entry32.lds
-	end
-
-	if CONFIG_USE_INIT
 		ldscript /cpu/amd/car/cache_as_ram.lds
 	end
 
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
-if CONFIG_HAVE_FAILOVER_BOOT
-    if CONFIG_USE_FAILOVER_IMAGE
+if CONFIG_USE_FAILOVER_IMAGE
 	mainboardinit cpu/x86/16bit/reset16.inc
 	ldscript /cpu/x86/16bit/reset16.lds
-    else
-	mainboardinit cpu/x86/32bit/reset32.inc
-	ldscript /cpu/x86/32bit/reset32.lds
-    end
 else
-    if CONFIG_USE_FALLBACK_IMAGE
-	mainboardinit cpu/x86/16bit/reset16.inc
-	ldscript /cpu/x86/16bit/reset16.lds
-    else
 	mainboardinit cpu/x86/32bit/reset32.inc
 	ldscript /cpu/x86/32bit/reset32.lds
-    end
 end
 
 ##
@@ -97,21 +93,14 @@ ldscript /southbridge/nvidia/ck804/id.lds
 ##
 ## ROMSTRAP table for CK804
 ##
-if CONFIG_HAVE_FAILOVER_BOOT
-	if CONFIG_USE_FAILOVER_IMAGE
-		mainboardinit southbridge/nvidia/ck804/romstrap.inc
-		ldscript /southbridge/nvidia/ck804/romstrap.lds
-	end
-else
-	if CONFIG_USE_FALLBACK_IMAGE
-		mainboardinit southbridge/nvidia/ck804/romstrap.inc
-		ldscript /southbridge/nvidia/ck804/romstrap.lds
-	end
+if CONFIG_USE_FAILOVER_IMAGE
+	mainboardinit southbridge/nvidia/ck804/romstrap.inc
+	ldscript /southbridge/nvidia/ck804/romstrap.lds
 end
 
-	##
-	## Setup Cache-As-Ram
-	##
+##
+## Setup Cache-As-Ram
+##
 	mainboardinit cpu/amd/car/cache_as_ram.inc
 
 ###
@@ -119,14 +108,8 @@ end
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
-if CONFIG_HAVE_FAILOVER_BOOT
-	if CONFIG_USE_FAILOVER_IMAGE
-			ldscript /arch/i386/lib/failover_failover.lds
-	end
-else
-	if CONFIG_USE_FALLBACK_IMAGE
-			ldscript /arch/i386/lib/failover.lds
-	end
+if CONFIG_USE_FAILOVER_IMAGE
+	ldscript /arch/i386/lib/failover_failover.lds
 end
 
 ##

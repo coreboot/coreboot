@@ -207,6 +207,10 @@ int init_processor_name(void)
 		switch ((Socket << 16) | (CmpCap << 12) | (BrandTableIndex << 4)
 			| PwrLmt) {
 		/* Socket F */
+		case 0x10012:
+			processor_name_string =
+			    "AMD Opteron(tm) Processor 22RR EE";
+			break;
 		case 0x11002:
 			processor_name_string =
 			    "Dual-Core AMD Opteron(tm) Processor 12RR EE";

@@ -351,9 +351,14 @@ int init_processor_name(void)
 			    "AMD Athlon(tm) X2 Dual Core Processor TT50e";
 			break;
 		/* Socket S1g1 */
+		/* single core */
 		case 0x00012:
 			processor_name_string =
 			    "AMD Athlon(tm) 64 Processor TT00+";
+			break;
+		case 0x0002c:
+			processor_name_string =
+			    "AMD Turion(tm) 64 Mobile Technology MK-YY";
 			break;
 		case 0x00031:
 			processor_name_string =
@@ -363,13 +368,33 @@ int init_processor_name(void)
 			processor_name_string =
 			    "Mobile AMD Sempron(tm) Processor PP00+";
 			break;
+		case 0x0003c:
+			processor_name_string =
+			    "Mobile AMD Sempron(tm) Processor PP00+";
+			break;
 		case 0x00042:
 			processor_name_string =
 			    "AMD Sempron(tm) Processor TT00+";
 			break;
+		case 0x00064:
+		case 0x00066:
+		case 0x0006c:
+			processor_name_string =
+			    "AMD Athlon(tm) Processor TF-TT";
+			break;
+		/* dual-core */
+		case 0x0101c:
+			processor_name_string =
+			    "AMD Sempron(tm) Dual Core Processor TJ-YY";
+			break;
 		case 0x0102c:
 			processor_name_string =
 			    "AMD Turion(tm) 64 X2 Mobile Technology TL-YY";
+			break;
+		case 0x01034:
+		case 0x0103c:
+			processor_name_string =
+			    "AMD Athlon(tm) 64 X2 Dual-Core Processor TK-YY";
 			break;
 		case 0x01054:
 			processor_name_string =

@@ -121,7 +121,7 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 			*AddrTmgCTL = 0x002F2F00;
 		else if (Speed == 4)
 			*AddrTmgCTL = 0x00202520;
-		else if (Speed == 4)
+		else if (Speed == 5)
 			*AddrTmgCTL = 0x002F2020;
 		else
 			*AddrTmgCTL = 0x002F2F2F;
@@ -130,7 +130,7 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 			*CMDmode = 2;
 			*AddrTmgCTL = 0x00202520;
 			*ODC_CTL = 0x00113222;
-		} else if(Speed == 4) {
+		} else if(Speed == 5) {
 			*CMDmode = 2;
 			*AddrTmgCTL = 0x002F2020;
 			*ODC_CTL = 0x00113222;

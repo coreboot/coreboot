@@ -252,6 +252,7 @@ int init_processor_name(void)
 			    "AMD Athlon(tm) 64 Processor FX-ZZ Processor";
 			break;
 		/* Socket AM2 */
+		/* single core */
 		case 0x30015:
 			processor_name_string =
 			    "AMD Sempron(tm) Processor LE-1RR0";
@@ -259,6 +260,10 @@ int init_processor_name(void)
 		case 0x30026:
 			processor_name_string =
 			    "AMD Athlon(tm) Processor LE-1ZZ0";
+			break;
+		case 0x30036:
+			processor_name_string =
+			    "AMD Athlon(tm) Processor 1ZZ0B";
 			break;
 		case 0x30041:
 		case 0x30042:
@@ -269,11 +274,29 @@ int init_processor_name(void)
 			processor_name_string =
 			    "AMD Athlon(tm) 64 Processor TT00+";
 			break;
+		case 0x30052:
+			processor_name_string =
+			    "AMD Sempron(tm) Processor RR50p";
 		case 0x30064:
 		case 0x30068:
 			processor_name_string =
 			    "AMD Sempron(tm) Processor TT00+";
 			break;
+		case 0x30071:
+		case 0x30072:
+			processor_name_string =
+			    "AMD Sempron(tm) Processor TT0U";
+			break;
+		case 0x30082:
+		case 0x30083:
+			processor_name_string =
+			    "AMD Athlon(tm) Processor TT50e";
+			break;
+		case 0x30092:
+			processor_name_string =
+			    "AMD Athlon(tm) Neo Processor MV-TT";
+			break;
+		/* dual-core */
 		case 0x31016:
 			processor_name_string =
 			    "Dual-Core AMD Opteron(tm) Processor 12RR HE";
@@ -290,6 +313,7 @@ int init_processor_name(void)
 			processor_name_string =
 			    "AMD Athlon(tm) X2 Dual Core Processor BE-2TT0";
 			break;
+		case 0x31041:
 		case 0x31042:
 		case 0x31046:
 		case 0x31048:
@@ -300,6 +324,27 @@ int init_processor_name(void)
 		case 0x3105c:
 			processor_name_string =
 			    "AMD Athlon(tm) 64 FX-ZZ Dual Core Processor";
+			break;
+		case 0x31066:
+			processor_name_string =
+			    "AMD Sempron(tm) Dual Core Processor RR00";
+			break;
+		case 0x31073:
+			processor_name_string =
+			    "AMD Athlon(tm) Dual Core Processor TT50e";
+			break;
+		case 0x31076:
+		case 0x31077:
+			processor_name_string =
+			    "AMD Athlon(tm) Dual Core Processor TT00B";
+			break;
+		case 0x31083:
+			processor_name_string =
+			    "AMD Athlon(tm) Dual Core Processor TT50B";
+			break;
+		case 0x31091:
+			processor_name_string =
+			    "AMD Athlon(tm) X2 Dual Core Processor TT50e";
 			break;
 		/* Socket S1g1 */
 		case 0x00012:

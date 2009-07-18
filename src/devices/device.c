@@ -881,7 +881,6 @@ unsigned int scan_bus(struct device *busdev, unsigned int max)
 void dev_enumerate(void)
 {
 	struct device *root;
-	unsigned subordinate;
 	printk_info("Enumerating buses...\n");
 	root = &dev_root;
 
@@ -897,7 +896,7 @@ void dev_enumerate(void)
 		printk_err("dev_root missing scan_bus operation");
 		return;
 	}
-	subordinate = scan_bus(root, 0);
+	scan_bus(root, 0);
 	printk_info("done\n");
 }
 

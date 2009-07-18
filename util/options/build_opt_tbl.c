@@ -488,7 +488,7 @@ int main(int argc, char **argv)
 	/* See if we want to output a C source file */
 	if(option) {
 		int err=0;
-		strncpy(tmpfilename, dirname(option), TMPFILE_LEN);
+		strncpy(tmpfilename, dirname(strdup(option)), TMPFILE_LEN);
 	        strncat(tmpfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
 		tmpfile = mkstemp(tmpfilename);
 		if(tmpfile == -1) {
@@ -539,7 +539,7 @@ int main(int argc, char **argv)
 		struct cmos_option_table *hdr;
 		struct lb_record *ptr, *end;
 
-		strncpy(tmpfilename, dirname(option), TMPFILE_LEN);
+		strncpy(tmpfilename, dirname(strdup(option)), TMPFILE_LEN);
 	        strncat(tmpfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
 		tmpfile = mkstemp(tmpfilename);
 		if(tmpfile == -1) {

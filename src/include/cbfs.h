@@ -57,7 +57,6 @@
 
 #define CBFS_COMPRESS_NONE  0
 #define CBFS_COMPRESS_LZMA  1
-#define CBFS_COMPRESS_NRV2B 2
 
 /** These are standard component types for well known
     components (i.e - those that coreboot needs to consume.
@@ -165,8 +164,12 @@ int cbfs_execute_stage(const char *name);
 void * cbfs_get_file(const char *name);
 void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest);
 int run_address(void *f);
-
+int cbfs_decompress(int algo, void *src, void *dst, int len);
 struct cbfs_stage *cbfs_find_file(const char *name, int type);
+int cbfs_check_magic(struct cbfs_file *file);
+struct cbfs_header *cbfs_master_header(void);
+struct cbfs_file *cbfs_find(const char *name);
+void cbfs_and_run_core(char* filename, unsigned int ebp);
 
 #endif
 

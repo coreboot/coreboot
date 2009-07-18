@@ -29,8 +29,6 @@
 #define ntohl(x) (x)
 #endif
 
-int run_address(void *f);
-
 int cbfs_decompress(int algo, void *src, void *dst, int len)
 {
 	switch(algo) {
@@ -44,15 +42,6 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 	}
 		return 0;
 
-#if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
-	case CBFS_COMPRESS_NRV2B: {
-		unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
-		unsigned long tmp;
-
-		unrv2b(src, dst, &tmp);
-	}
-		return 0;
-#endif
 	default:
 		printk_info( "CBFS:  Unknown compression type %d\n",
 		       algo);
@@ -103,11 +92,11 @@ struct cbfs_file *cbfs_find(const char *name)
 
 		int flen = ntohl(file->len);
 		int foffset = ntohl(file->offset);
-		printk_spew("CBFS: follow chain: %p + %x + %x + align -> ", offset, foffset, flen);
+		printk_spew("CBFS: follow chain: %p + %x + %x + align -> ", (void *)offset, foffset, flen);
 
 		unsigned long oldoffset = offset;
 		offset = ALIGN(offset + foffset + flen, align);
-		printk_spew("%p\n", offset);
+		printk_spew("%p\n", (void *)offset);
 		if (offset <= oldoffset) return NULL;
 
 		if (offset < 0xFFFFFFFF - ntohl(header->romsize))
@@ -182,7 +171,8 @@ void * cbfs_load_stage(const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	printk_info("Stage: load @ %d/%d bytes, enter @ %llx\n", 
+	printk_info("Stage: load %s @ %d/%d bytes, enter @ %llx\n", 
+			name,
 			(u32) stage->load, stage->memlen, 
 			stage->entry);
 	memset((void *) (u32) stage->load, 0, stage->memlen);

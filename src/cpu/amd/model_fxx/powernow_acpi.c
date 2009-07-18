@@ -32,7 +32,8 @@
 
 static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid,
 				u8 *pstate_fid, u32 *pstate_power, int coreID,
-				u32 pcontrol_blk, u8 plen, u8 onlyBSP)  {
+				u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+{
 	int lenp, lenpr, i;
 
 	if ((onlyBSP) && (coreID != 0)) {
@@ -374,7 +375,8 @@ write_pstates:
 	return len;
 }
 
-int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP) {
+int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
+{
 	int lens;
 	char pscope[] = "\\_PR";
 

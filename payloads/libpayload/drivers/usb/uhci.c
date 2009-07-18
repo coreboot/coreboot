@@ -141,7 +141,7 @@ uhci_init (pcidev_t addr)
 	controller->create_intr_queue = uhci_create_intr_queue;
 	controller->destroy_intr_queue = uhci_destroy_intr_queue;
 	controller->poll_intr_queue = uhci_poll_intr_queue;
-	for (i = 1; i < 128; i++) {
+	for (i = 0; i < 128; i++) {
 		controller->devices[i] = 0;
 	}
 	init_device_entry (controller, 0);

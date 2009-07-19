@@ -149,8 +149,9 @@ void run_bios(struct device *dev, unsigned long addr)
 	printk(BIOS_SPEW, "Real mode stub @%p: %d bytes\n", REALMODE_BASE,
 			(u32)&__realmode_code_size);
 
-	printk(BIOS_DEBUG, "Calling Option Rom...\n");
+	printk(BIOS_DEBUG, "Calling Option ROM...\n");
 	run_optionrom((dev->bus->secondary << 8) | dev->path.pci.devfn);
+	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 }
 
 int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,

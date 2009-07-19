@@ -8,7 +8,6 @@ void *memcpy(void *dest, const void *src, size_t n);
 void *memmove(void *dest, const void *src, size_t n);
 void *memset(void *s, int c, size_t n);
 int memcmp(const void *s1, const void *s2, size_t n);
-void *malloc(size_t size);
 int sprintf(char * buf, const char *fmt, ...);
 
 // yes, linux has fancy ones. We don't care. This stuff gets used 
@@ -45,6 +44,7 @@ static inline char *strchr(const char *s, int c)
 	return 0;
 }
 
+#ifndef __ROMCC__
 static inline char *strdup(const char *s)
 {   
 	size_t sz = strlen(s) + 1;
@@ -52,6 +52,7 @@ static inline char *strdup(const char *s)
 	memcpy(d, s, sz);
 	return d;
 }
+#endif
 
 static inline char *strncpy(char *to, const char *from, int count)
 {

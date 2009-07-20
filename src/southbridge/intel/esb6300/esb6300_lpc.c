@@ -18,8 +18,8 @@
 #define MAINBOARD_POWER_OFF 0
 #define MAINBOARD_POWER_ON  1
 
-#ifndef MAINBOARD_POWER_ON_AFTER_FAIL
-#define MAINBOARD_POWER_ON_AFTER_FAIL MAINBOARD_POWER_ON
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
 
 #define ALL		(0xff << 24)
@@ -277,7 +277,7 @@ static void lpc_init(struct device *dev)
 {
 	uint8_t byte;
 	uint32_t value;
-	int pwr_on=MAINBOARD_POWER_ON_AFTER_FAIL;
+	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 
 	/* sata settings */
 	pci_write_config32(dev, 0x58, 0x00001181);

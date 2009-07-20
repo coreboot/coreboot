@@ -40,7 +40,7 @@
 #define __X86EMU_FPU_REGS_H
 
 
-#if defined(CONFIG_DEBUG) && (DEBUG == 0)
+#if defined(CONFIG_DEBUG) && (CONFIG_DEBUG == 0)
 #undef CONFIG_DEBUG
 #endif
 

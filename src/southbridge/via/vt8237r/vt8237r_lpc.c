@@ -426,11 +426,15 @@ static void vt8237r_read_resources(device_t dev)
 	res = new_resource(dev, 0x44);
 	res->base = VT8237R_APIC_BASE;
 	res->size = 256;
-	res->limit = res->base + res->size - 1;
-	res->align = 8;
-	res->gran = 8;
+	res->limit = 0xffffffffUL;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+
+	res = new_resource(dev, 1);
+	res->base = 0x0UL;
+	res->size = 0x1000UL;
+	res->limit = 0xffffUL;
+	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
 /**

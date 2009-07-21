@@ -41,29 +41,50 @@ u8 acpi_checksum(u8 *table, u32 length)
  * add an acpi table to rsdt structure, and recalculate checksum
  */
 
-void acpi_add_table(acpi_rsdt_t *rsdt, void *table)
+void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 {
 	int i;
+	acpi_rsdt_t *rsdt;
+	acpi_xsdt_t *xsdt = NULL;
+
+	rsdt = (acpi_rsdt_t *)rsdp->rsdt_address;
+	if (rsdp->xsdt_address) {
+		xsdt = (acpi_xsdt_t *)((u32)rsdp->xsdt_address);
+	}
 	
 	int entries_num = ARRAY_SIZE(rsdt->entry);
 	
 	for (i=0; i<entries_num; i++) {
 		if(rsdt->entry[i]==0) {
 			rsdt->entry[i]=(u32)table;
-			/* fix length to stop kernel winging about invalid entries */
+			/* fix length to stop kernel whining about invalid entries */
 			rsdt->header.length = sizeof(acpi_header_t) + (sizeof(u32) * (i+1));
 			/* fix checksum */
 			/* hope this won't get optimized away */
 			rsdt->header.checksum=0;
 			rsdt->header.checksum=acpi_checksum((u8 *)rsdt,
 					rsdt->header.length);
+
+			/* And now the same thing for the XSDT. We use the same
+			 * index as we want the XSDT and RSDT to always be in
+			 * sync in coreboot.
+			 */
+			if (xsdt) {
+				xsdt->entry[i]=(u64)(u32)table;
+				xsdt->header.length = sizeof(acpi_header_t) +
+					(sizeof(u64) * (i+1));
+				xsdt->header.checksum=0;
+				xsdt->header.checksum=acpi_checksum((u8 *)xsdt,
+						xsdt->header.length);
+			}
 			
-			printk_debug("ACPI: added table %d/%d Length now %d\n",i+1, entries_num, rsdt->header.length);
+			printk_debug("ACPI: added table %d/%d Length now %d\n",
+					i+1, entries_num, rsdt->header.length);
 			return;
 		}
 	}
 
-	printk_warning("ACPI: could not add ACPI table to RSDT. failed.\n");
+	printk_err("ACPI: Error: Could not add ACPI table, too many tables.\n");
 }
 
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_nr, u8 start, u8 end)
@@ -216,7 +237,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, char *oem_table_id)
 	memcpy(&ssdt->oem_id, OEM_ID, 6);
 	memcpy(&ssdt->oem_table_id, oem_table_id, 8);
 	ssdt->oem_revision = 42;
-	memcpy(&ssdt->asl_compiler_id, "GENAML", 4);
+	memcpy(&ssdt->asl_compiler_id, "CORE", 4);
 	ssdt->asl_compiler_revision = 42;
 	ssdt->length = sizeof(acpi_header_t);
 
@@ -376,16 +397,47 @@ void acpi_write_rsdt(acpi_rsdt_t *rsdt)
 	
 	/* fix checksum */
 	
-	header->checksum	= acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
+	header->checksum = acpi_checksum((void *)rsdt, sizeof(acpi_rsdt_t));
 }
 
-void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt)
+void acpi_write_xsdt(acpi_xsdt_t *xsdt)
+{ 
+	acpi_header_t *header=&(xsdt->header);
+	
+	/* fill out header fields */
+	memcpy(header->signature, XSDT_NAME, 4);
+	memcpy(header->oem_id, OEM_ID, 6);
+	memcpy(header->oem_table_id, RSDT_TABLE, 8);
+	memcpy(header->asl_compiler_id, ASLC, 4);
+	
+	header->length = sizeof(acpi_xsdt_t);
+	header->revision = 1;
+	
+	/* fill out entries */
+
+	// entries are filled in later, we come with an empty set.
+	
+	/* fix checksum */
+	
+	header->checksum = acpi_checksum((void *)xsdt, sizeof(acpi_xsdt_t));
+}
+
+void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt)
 {
 	memcpy(rsdp->signature, RSDP_SIG, 8);
 	memcpy(rsdp->oem_id, OEM_ID, 6);
 	rsdp->length		= sizeof(acpi_rsdp_t);
 	rsdp->rsdt_address	= (u32)rsdt;
-	rsdp->revision		= 2;
+	/* Some OSes expect an XSDT to be present for RSD PTR 
+	 * revisions >= 2. If we don't have an ACPI XSDT, force
+	 * ACPI 1.0 (and thus RSD PTR revision 0)
+	 */
+	if (xsdt == NULL) {
+		rsdp->revision		= 0;
+	} else {
+		rsdp->xsdt_address	= (u64)(u32)xsdt;
+		rsdp->revision		= 2;
+	}
 	rsdp->checksum		= acpi_checksum((void *)rsdp, 20);
 	rsdp->ext_checksum	= acpi_checksum((void *)rsdp, sizeof(acpi_rsdp_t));
 }
@@ -414,11 +466,6 @@ void suspend_resume(void)
 
 /* this is to be filled by SB code - startup value what was found */
 u8 acpi_slp_type = 0;
-
-int acpi_get_sleep_type(void)
-{
-	return acpi_slp_type;
-}
 
 int acpi_is_wakeup(void)
 {

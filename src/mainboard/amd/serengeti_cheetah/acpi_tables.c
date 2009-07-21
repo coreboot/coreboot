@@ -221,7 +221,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* clear all table memory */
 	memset((void *)start, 0, current - start);
 	
-	acpi_write_rsdp(rsdp, rsdt);
+	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
 	/*
@@ -231,14 +231,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
-	acpi_add_table(rsdt,hpet);
+	acpi_add_table(rsdp,hpet);
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	printk_debug("ACPI:    * MADT\n");
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current+=madt->header.length;
-	acpi_add_table(rsdt,madt);
+	acpi_add_table(rsdp,madt);
 
 
 	/* SRAT */
@@ -246,14 +246,14 @@ unsigned long write_acpi_tables(unsigned long start)
         srat = (acpi_srat_t *) current;
         acpi_create_srat(srat);
         current+=srat->header.length;
-        acpi_add_table(rsdt,srat);
+        acpi_add_table(rsdp,srat);
 
 	/* SLIT */
         printk_debug("ACPI:    * SLIT\n");
         slit = (acpi_slit_t *) current;
         acpi_create_slit(slit);
         current+=slit->header.length;
-        acpi_add_table(rsdt,slit);
+        acpi_add_table(rsdp,slit);
 
 	/* SSDT */
 	printk_debug("ACPI:    * SSDT\n");
@@ -261,7 +261,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	acpi_create_ssdt_generator(ssdt, "DYNADATA");
 	current += ssdt->length;
-	acpi_add_table(rsdt, ssdt);
+	acpi_add_table(rsdp, ssdt);
 
 #if CONFIG_ACPI_SSDTX_NUM >= 1
 
@@ -297,7 +297,7 @@ unsigned long write_acpi_tables(unsigned long start)
                 update_ssdtx((void *)ssdtx, i);
                 ssdtx->checksum = 0;
                 ssdtx->checksum = acpi_checksum((unsigned char *)ssdtx,ssdtx->length);
-                acpi_add_table(rsdt,ssdtx);
+                acpi_add_table(rsdp,ssdtx);
         }
 #endif
 
@@ -321,7 +321,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_fadt_t);
 
 	acpi_create_fadt(fadt,facs,dsdt);
-	acpi_add_table(rsdt,fadt);
+	acpi_add_table(rsdp,fadt);
 
 #if DUMP_ACPI_TABLES == 1
 	printk_debug("rsdp\n");

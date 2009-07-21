@@ -95,9 +95,13 @@ struct lb_memory_range {
 	struct lb_uint64 start;
 	struct lb_uint64 size;
 	uint32_t type;
-#define LB_MEM_RAM       1	/* Memory anyone can use */
-#define LB_MEM_RESERVED  2	/* Don't use this memory region */
-#define LB_MEM_TABLE     16	/* Ram configuration tables are kept in */
+#define LB_MEM_RAM		 1	/* Memory anyone can use */
+#define LB_MEM_RESERVED		 2	/* Don't use this memory region */
+#define LB_MEM_ACPI		 3	/* ACPI Tables */
+#define LB_MEM_NVS		 4	/* ACPI NVS Memory */
+#define LB_MEM_UNUSABLE		 5	/* Unusable address space */
+#define LB_MEM_VENDOR_RSVD	 6	/* Vendor Reserved */
+#define LB_MEM_TABLE		16	/* Ram configuration tables are kept in */
 };
 
 struct lb_memory {

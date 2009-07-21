@@ -1,8 +1,9 @@
 /*
  * coreboot ACPI Support - headers and defines.
  * 
- * written by Stefan Reinauer <stepan@openbios.org>
- * (C) 2004 SUSE LINUX AG
+ * written by Stefan Reinauer <stepan@coresystems.de>
+ * Copyright (C) 2004 SUSE LINUX AG
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * The ACPI table structs are based on the Linux kernel sources.
  * ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
@@ -17,41 +18,42 @@
 
 #include <stdint.h>
  
-#if CONFIG_HAVE_ACPI_RESUME
-/* 0 = S0, 1 = S1 ...*/
-extern u8 acpi_slp_type;
-#endif
+#define RSDP_SIG	"RSD PTR "  /* RSDT Pointer signature */
+#define RSDP_NAME	"RSDP"
 
-#define RSDP_SIG              "RSD PTR "  /* RSDT Pointer signature */
-#define RSDP_NAME             "RSDP"
+#define RSDT_NAME	"RSDT"
+#define HPET_NAME	"HPET"
+#define MADT_NAME	"APIC"
+#define MCFG_NAME	"MCFG"
+#define SRAT_NAME	"SRAT"
+#define SLIT_NAME	"SLIT"
+#define SSDT_NAME	"SSDT"
+#define FACS_NAME	"FACS"
+#define FADT_NAME	"FACP"
+#define XSDT_NAME	"XSDT"
 
-#define RSDT_NAME             "RSDT"
-#define HPET_NAME             "HPET"
-#define MADT_NAME             "APIC"
-#define MCFG_NAME             "MCFG"
-#define SRAT_NAME             "SRAT"
-#define SLIT_NAME	      "SLIT"
-#define SSDT_NAME	      "SSDT"
-#define FACS_NAME	      "FACS"
-#define FADT_NAME	      "FACP"
+// Misnomer, the NAME above is the 4 byte signature, this (TABLE) is the
+// OEM_TABLE_ID.
+//
+#define ACPI_TABLE_CREATOR	"COREBOOT"
+#define RSDT_TABLE	ACPI_TABLE_CREATOR
+#define HPET_TABLE	ACPI_TABLE_CREATOR
+#define MCFG_TABLE	ACPI_TABLE_CREATOR
+#define MADT_TABLE	ACPI_TABLE_CREATOR
+#define SRAT_TABLE	ACPI_TABLE_CREATOR
+#define SLIT_TABLE	ACPI_TABLE_CREATOR
+#define XSDT_TABLE	ACPI_TABLE_CREATOR
 
-#define RSDT_TABLE            "RSDT    "
-#define HPET_TABLE            "AMD64   "
-#define MCFG_TABLE            "MCFG    "
-#define MADT_TABLE            "MADT    "
-#define SRAT_TABLE	      "SRAT    "
-#define SLIT_TABLE	      "SLIT    "
+#define OEM_ID		"CORE  "
+#define ASLC		"CORE"
 
-#define OEM_ID                "CORE  "
-#define ASLC                  "CORE"
-
-/* ACPI 2.0 table RSDP */
+/* ACPI 3.0 table RSDP */
 
 typedef struct acpi_rsdp {
 	char  signature[8];	/* RSDP signature "RSD PTR" */
 	u8    checksum;		/* checksum of the first 20 bytes */
 	char  oem_id[6];	/* OEM ID, "LXBIOS" */
-	u8    revision;		/* 0 for APCI 1.0, 2 for ACPI 2.0 */
+	u8    revision;		/* 0 for APCI 1.0, 2 for ACPI 2.0/3.0 */
 	u32   rsdt_address;	/* physical address of RSDT */
 	u32   length;		/* total length of RSDP (including extended part) */
 	u64   xsdt_address;	/* physical address of XSDT */
@@ -85,16 +87,23 @@ typedef struct acpi_table_header         /* ACPI common table header */
 	u32  asl_compiler_revision;  /* ASL compiler revision number */
 } __attribute__ ((packed)) acpi_header_t;
 
+/* FIXME: This is very fragile:
+ * MCONFIG, HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU
+ * pstate
+ */
+
+#define MAX_ACPI_TABLES (7 + CONFIG_ACPI_SSDTX_NUM + CONFIG_MAX_CPUS)
+
 /* RSDT */
 typedef struct acpi_rsdt {
 	struct acpi_table_header header;
-	u32 entry[7+CONFIG_ACPI_SSDTX_NUM+CONFIG_MAX_CPUS]; /* MCONFIG, HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU pstate*/
+	u32 entry[MAX_ACPI_TABLES];
 } __attribute__ ((packed)) acpi_rsdt_t;
 
 /* XSDT */
 typedef struct acpi_xsdt {
 	struct acpi_table_header header;
-	u64 entry[6+CONFIG_ACPI_SSDTX_NUM];
+	u64 entry[MAX_ACPI_TABLES];
 } __attribute__ ((packed)) acpi_xsdt_t;
 
 /* HPET TIMERS */
@@ -107,7 +116,7 @@ typedef struct acpi_hpet {
 	u8 attributes;
 } __attribute__ ((packed)) acpi_hpet_t;
 
-/* MCFG taken from include/linux/acpi.h */
+/* MCFG */
 typedef struct acpi_mcfg {
 	struct acpi_table_header header;
 	u8 reserved[8];
@@ -279,6 +288,9 @@ typedef struct acpi_fadt {
 	struct acpi_gen_regaddr x_gpe1_blk;
 } __attribute__ ((packed)) acpi_fadt_t;
 
+//
+// FADT Feature Flags
+//
 #define ACPI_FADT_WBINVD		(1 << 0)
 #define ACPI_FADT_WBINVD_FLUSH		(1 << 1)
 #define ACPI_FADT_C1_SUPPORTED		(1 << 2)
@@ -300,14 +312,27 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_APIC_CLUSTER		(1 << 18)
 #define ACPI_FADT_APIC_PHYSICAL		(1 << 19)
 
+//
+// FADT Boot Architecture Flags
+//
+#define ACPI_FADT_LEGACY_DEVICES	(1 << 0)
+#define ACPI_FADT_8042			(1 << 1)
+#define ACPI_FADT_VGA_NOT_PRESENT	(1 << 2)
+#define ACPI_FADT_MSI_NOT_SUPPORTED	(1 << 3)
+#define ACPI_FADT_NO_PCIE_ASPM_CONTROL	(1 << 4)
+
+//
+// FADT Preferred Power Management Profile
+//
 enum acpi_preferred_pm_profiles {
-	PM_UNSPECIFIED	= 0,
-	PM_DESKTOP	= 1,
-	PM_MOBILE	= 2,
-	PM_WORKSTATION	= 3,
-	PM_ENTERPRISE	= 4,
-	PM_SOHO_SERVER  = 5,
-	PM_APPLIANCE_PC	= 6
+	PM_UNSPECIFIED		= 0,
+	PM_DESKTOP		= 1,
+	PM_MOBILE		= 2,
+	PM_WORKSTATION		= 3,
+	PM_ENTERPRISE_SERVER	= 4,
+	PM_SOHO_SERVER  	= 5,
+	PM_APPLIANCE_PC		= 6,
+	PM_PERFORMANCE_SERVER	= 7
 };
 
 /* FACS */
@@ -324,6 +349,11 @@ typedef struct acpi_facs {
 	u8 resv[31];
 } __attribute__ ((packed)) acpi_facs_t;
 
+//
+// FACS Flags
+//
+#define ACPI_FACS_S4BIOS_F	(1 << 0)
+
 /* These are implemented by the target port */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
@@ -337,7 +367,8 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt);
 /* These can be used by the target port */
 u8 acpi_checksum(u8 *table, u32 length);
 
-void acpi_add_table(acpi_rsdt_t *rsdt, void *table);
+void acpi_add_table(acpi_rsdp_t *rsdp, void *table);
+
 
 int acpi_create_madt_lapic(acpi_madt_lapic_t *lapic, u8 cpu, u8 apic);
 int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,u32 gsi_base);
@@ -365,14 +396,21 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg);
 void acpi_create_facs(acpi_facs_t *facs);
 
 void acpi_write_rsdt(acpi_rsdt_t *rsdt);
-void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt);
+void acpi_write_xsdt(acpi_xsdt_t *xsdt);
+void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt);
 
 #if CONFIG_HAVE_ACPI_RESUME
+/* 0 = S0, 1 = S1 ...*/
+extern u8 acpi_slp_type;
+
 void suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
 void acpi_jmp_to_realm_wakeup(u32 linear_addr);
 void acpi_jump_to_wakeup(void *wakeup_addr);
+
+int acpi_get_sleep_type(void);
+
 #endif
 
 unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current);

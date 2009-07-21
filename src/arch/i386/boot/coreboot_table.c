@@ -479,11 +479,12 @@ unsigned long write_coreboot_table(
 		low_table_start, low_table_end - low_table_start);
 
 	/* Record the pirq table, acpi tables, and maybe the mptable */
-	lb_add_memory_range(mem, LB_MEM_TABLE, 
+	lb_add_memory_range(mem, LB_MEM_TABLE,
 		rom_table_start, rom_table_end-rom_table_start);
 
 #if CONFIG_HAVE_HIGH_TABLES == 1
 	printk_debug("Adding high table area\n");
+	// should this be LB_MEM_ACPI?
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		high_tables_base, high_tables_size);
 #endif

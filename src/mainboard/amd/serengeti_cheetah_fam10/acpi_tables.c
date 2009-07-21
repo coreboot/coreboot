@@ -223,7 +223,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* clear all table memory */
 	memset((void *)start, 0, current - start);
 
-	acpi_write_rsdp(rsdp, rsdt);
+	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
 	/*
@@ -234,7 +234,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
-	acpi_add_table(rsdt,hpet);
+	acpi_add_table(rsdp,hpet);
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	current	  = ( current + 0x07) & -0x08;
@@ -242,7 +242,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current+=madt->header.length;
-	acpi_add_table(rsdt,madt);
+	acpi_add_table(rsdp,madt);
 
 	/* SRAT */
 	current	  = ( current + 0x07) & -0x08;
@@ -250,7 +250,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	srat = (acpi_srat_t *) current;
 	acpi_create_srat(srat);
 	current+=srat->header.length;
-	acpi_add_table(rsdt,srat);
+	acpi_add_table(rsdp,srat);
 
 	/* SLIT */
 	current	  = ( current + 0x07) & -0x08;
@@ -258,7 +258,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	slit = (acpi_slit_t *) current;
 	acpi_create_slit(slit);
 	current+=slit->header.length;
-	acpi_add_table(rsdt,slit);
+	acpi_add_table(rsdp,slit);
 
 	/* SSDT */
 	current	  = ( current + 0x0f) & -0x10;
@@ -271,7 +271,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* recalculate checksum */
 	ssdt->checksum = 0;
 	ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
-	acpi_add_table(rsdt,ssdt);
+	acpi_add_table(rsdp,ssdt);
 
 	printk_debug("ACPI:    * SSDT for PState at %lx\n", current);
 	current = acpi_add_ssdt_pstates(rsdt, current);
@@ -312,7 +312,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		update_ssdtx((void *)ssdtx, i);
 		ssdtx->checksum = 0;
 		ssdtx->checksum = acpi_checksum((unsigned char *)ssdtx,ssdtx->length);
-		acpi_add_table(rsdt,ssdtx);
+		acpi_add_table(rsdp,ssdtx);
 	}
 #endif
 
@@ -339,7 +339,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_fadt_t);
 
 	acpi_create_fadt(fadt,facs,dsdt);
-	acpi_add_table(rsdt,fadt);
+	acpi_add_table(rsdp,fadt);
 
 #if DUMP_ACPI_TABLES == 1
 	printk_debug("rsdp\n");

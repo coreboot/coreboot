@@ -119,7 +119,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Clear all table memory. */
 	memset((void *) start, 0, current - start);
 
-	acpi_write_rsdp(rsdp, rsdt);
+	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
 	/* We explicitly add these tables later on: */
@@ -146,39 +146,39 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_fadt_t);
 
 	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdt, fadt);
+	acpi_add_table(rsdp, fadt);
 
 	printk_debug("ACPI:    * HPET\n");
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
-	acpi_add_table(rsdt, hpet);
+	acpi_add_table(rsdp, hpet);
 
 	/* If we want to use HPET timers Linux wants an MADT. */
 	printk_debug("ACPI:    * MADT\n");
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current += madt->header.length;
-	acpi_add_table(rsdt, madt);
+	acpi_add_table(rsdp, madt);
 
 	printk_debug("ACPI:    * MCFG\n");
 	mcfg = (acpi_mcfg_t *) current;
 	acpi_create_mcfg(mcfg);
 	current += mcfg->header.length;
-	acpi_add_table(rsdt, mcfg);
+	acpi_add_table(rsdp, mcfg);
 
 	printk_debug("ACPI:    * SRAT\n");
 	srat = (acpi_srat_t *) current;
 	acpi_create_srat(srat);
 	current += srat->header.length;
-	acpi_add_table(rsdt, srat);
+	acpi_add_table(rsdp, srat);
 
 	/* SLIT */
         printk_debug("ACPI:    * SLIT\n");
         slit = (acpi_slit_t *) current;
         acpi_create_slit(slit);
         current+=slit->header.length;
-        acpi_add_table(rsdt,slit);
+        acpi_add_table(rsdp,slit);
 
 	/* SSDT */
 	printk_debug("ACPI:    * SSDT\n");
@@ -186,7 +186,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	acpi_create_ssdt_generator(ssdt, "DYNADATA");
 	current += ssdt->length;
-	acpi_add_table(rsdt, ssdt);
+	acpi_add_table(rsdp, ssdt);
 
 	printk_info("ACPI: done.\n");
 	return current;

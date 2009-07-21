@@ -357,7 +357,7 @@ class romimage:
 			rel_base = base
 		else:
 			rel_base = re.sub(treetop, "", os.path.join(dirstack.tos(), base))
-			source = "$(TOP)/" + rel_base + suffix
+			source = "$(TOP)" + rel_base + suffix
 			if (rel_base[0] == '/'):
 				rel_base = re.sub("^/", "", rel_base)
 			object = rel_base + '.o'
@@ -2263,9 +2263,7 @@ def writemakefile(path):
 	file.write("include Makefile.settings\n\n")
 	for i, o in romimages.items():
 		file.write("%s/coreboot.rom:\n" % o.getname())
-		file.write("\tif (cd %s; \\\n" % o.getname())
-		file.write("\t\t$(MAKE) coreboot.rom)\\\n")
-		file.write("\tthen true; else exit 1; fi;\n\n")
+		file.write("\t$(MAKE) -C %s coreboot.rom\n" % o.getname())
 	file.write("clean: ")
 	for i in romimages.keys():
 		file.write(" %s-clean" % i)

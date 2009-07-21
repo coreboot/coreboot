@@ -928,6 +928,11 @@ define CONFIG_UDELAY_IO
 	export used
 	comment "Implement udelay with x86 io registers"
 end
+define CONFIG_UDELAY_LAPIC
+	default 0
+	export used
+	comment "Implement udelay with the x86 Local APIC"
+end
 define CONFIG_FAKE_SPDROM
 	default 0
 	export always

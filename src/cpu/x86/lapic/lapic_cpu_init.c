@@ -55,7 +55,7 @@ static void copy_secondary_start_to_1m_below(void)
 	/* need to save it for RAM resume */
 	lowmem_backup_size = code_size;
 	lowmem_backup = malloc(code_size);
-	lowmem_backup_ptr = (unsigned char *)start_eip;
+	lowmem_backup_ptr = (char *)start_eip;
 	
 	if (lowmem_backup == NULL)
 		die("Out of backup memory\n");

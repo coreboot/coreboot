@@ -1,3 +1,11 @@
+uses CONFIG_UDELAY_LAPIC
+
 object lapic.o
 object lapic_cpu_init.o
 object secondary.S
+
+if CONFIG_UDELAY_LAPIC
+	default HAVE_INIT_TIMER=1
+	object apic_timer.o
+end
+

@@ -106,10 +106,10 @@ static unsigned long long calibrate_tsc(void)
 	
 	printk_spew("Calibrating delay loop...\n");
 	start = rdtscll();
-	// no udivdi3, dammit.
+	// no udivdi3 because we don't like libgcc. (only in x86emu)
 	// so we count to 1<< 20 and then right shift 20
 	for(count = 0; count < (1<<20); count ++)
-		outb(0x80, 0x80);
+		inb(0x80);
 	end = rdtscll();
 
 #if 0

@@ -25,7 +25,7 @@ static int i945_silicon_revision(void)
 	return pci_read_config8(PCI_DEV(0, 0x00, 0), PCI_CLASS_REVISION);
 }
 
-static void i945_detect_chipset(void)
+static void i945m_detect_chipset(void)
 {
 	u8 reg8;
 
@@ -33,19 +33,19 @@ static void i945_detect_chipset(void)
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe7) & 0x70) >> 4;
 	switch (reg8) {
 	case 1:
-		printk_info("Mobile Intel(R) 945GM/GME Express");
+		printk_info("Mobile Intel(R) 82945GM/GME Express");
 		break;
 	case 2:
-		printk_info("Mobile Intel(R) 945GMS/GU Express");
+		printk_info("Mobile Intel(R) 82945GMS/GU Express");
 		break;
 	case 3:
-		printk_info("Mobile Intel(R) 945PM Express");
+		printk_info("Mobile Intel(R) 82945PM Express");
 		break;
 	case 5:
-		printk_info("Intel(R) 945GT Express");
+		printk_info("Intel(R) 82945GT Express");
 		break;
 	case 6:
-		printk_info("Mobile Intel(R) 943/940GML Express");
+		printk_info("Mobile Intel(R) 82943/82940GML Express");
 		break;
 	default:
 		printk_info("Unknown (%02x)", reg8);	/* Others reserved. */
@@ -80,6 +80,45 @@ static void i945_detect_chipset(void)
 		break;
 	case 4:
 		printk_debug("DDR2-400");
+		break;
+	default:
+		printk_info("unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
+	}
+	printk_debug("\n");
+}
+
+static void i945_detect_chipset(void)
+{
+	u8 reg8;
+
+	printk_info("\nIntel(R) ");
+	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0x8);
+	switch (reg8) {
+	case 0:
+	case 1:
+		printk_info("82945G");
+		break;
+	case 2:
+		printk_info("82945G/GZ/GC");
+		break;
+	case 0x80:
+	case 0x81:
+	case 0x82:
+		printk_info("82945P/PL");
+		break;
+	default:
+		printk_info("Unknown (%02x)", reg8);	/* Others unknown. */
+	}
+	printk_info(" Chipset\n");
+
+	printk_debug("(G)MCH capable of ");
+	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe4) & 0x07);
+	switch (reg8) {
+	case 0:
+		printk_debug("up to DDR2-667");
+		break;
+	case 3:
+		printk_debug("up to DDR2-533");
 		break;
 	default:
 		printk_info("unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
@@ -343,6 +382,7 @@ static void i945_setup_dmi_rcrb(void)
 	reg32 |= (2 << 12);
 
 	reg32 &= ~(7 << 15);
+
 	reg32 |= (2 << 15);
 	DMIBAR32(DMILCAP) = reg32;
 
@@ -350,7 +390,6 @@ static void i945_setup_dmi_rcrb(void)
 	reg32 &= 0x00ffffff;
 	reg32 &= ~(3 << 0);
 	reg32 |= (1 << 0);
-
 	reg32 &= ~(3 << 20);
 	reg32 |= (1 << 20);
 
@@ -379,8 +418,10 @@ static void i945_setup_dmi_rcrb(void)
 	DMIBAR32(0x204) = reg32;
 
 	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 0x54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
+		printk_debug("Internal graphics: enabled\n");
 		DMIBAR32(0x200) |= (1 << 21);
 	} else {
+		printk_debug("Internal graphics: disabled\n");
 		DMIBAR32(0x200) &= ~(1 << 21);
 	}
 
@@ -449,9 +490,10 @@ static void i945_setup_dmi_rcrb(void)
 		if ((MCHBAR32(0x214) & 0xf) != 0x3) {
 			printk_info
 			    ("DMI link requires A1 stepping workaround. Rebooting.\n");
-			reg32 = MCHBAR32(MMARB1);
-			reg32 &= 0xfffffff8;
-			reg32 |= 3;
+			reg32 = DMIBAR32(0x224);
+			reg32 &= ~(7 << 0);
+			reg32 |= (3 << 0);
+			DMIBAR32(0x224) = reg32;
 			outb(0x06, 0xcf9);
 			for (;;) ;	/* wait for reset */
 		}
@@ -463,7 +505,7 @@ static void i945_setup_pci_express_x16(void)
 	u32 timeout;
 	u32 reg32;
 	u16 reg16;
-#if SETUP_PCIE_X16_LINK
+
 	u8 reg8;
 
 	printk_debug("Enabling PCI Express x16 Link\n");
@@ -475,6 +517,10 @@ static void i945_setup_pci_express_x16(void)
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x208);
 	reg32 &= ~(1 << 8);
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x208, reg32);
+
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x224);
+	reg32 &= ~(1 << 8);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x224, reg32);
 
 	MCHBAR16(UPMC1) &= ~( (1 << 5) | (1 << 0) );
 
@@ -489,13 +535,15 @@ static void i945_setup_pci_express_x16(void)
 	 */
 	/* NOTE: SLOTCAP becomes RO after the first write! */
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xb4);
-	reg32 &= 0x0007ffff; // TODO
-	reg32 &= 0xfffe007f; // TODO
+	reg32 &= 0x0007ffff;
+
+	reg32 &= 0xfffe007f;
+
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xb4, reg32);
 
 	/* Wait for training to succeed */
 	printk_debug("Wait for PCIe x16 link training ...");
-	timeout = 0x7fffff;
+	timeout = 0x7fff;
 	while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
 	if (!timeout) {
 		printk_debug("timeout!\n");
@@ -515,7 +563,7 @@ static void i945_setup_pci_express_x16(void)
 		pcie_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
 
 		printk_debug("Wait for PCIe x1 link training ...");
-		timeout = 0x7fffff;
+		timeout = 0x7fff;
 		while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
 		if (!timeout) {
 			printk_debug("timeout!\n");
@@ -531,11 +579,11 @@ static void i945_setup_pci_express_x16(void)
 	reg16 = pcie_read_config16(PCI_DEV(0, 0x01, 0), 0xb2);
 	reg16 >>= 4;
 	reg16 &= 0x3f;
-
+	/* reg16 == 1 -> x1; reg16 == 16 -> x16 */
 	printk_debug("PCIe x%d link training succeeded.\n", reg16);
 
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x204);
-	reg32 &= 0xfffffc00;
+	reg32 &= 0xfffffc00; /* clear [9:0] */
 	if (reg16 == 1) {
 		reg32 |= 0x32b;
 		// TODO
@@ -597,6 +645,10 @@ static void i945_setup_pci_express_x16(void)
 	reg32 |= (3 << 24);
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xf0, reg32);
 
+	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0xf0);
+	reg32 |= (1 << 5);
+	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xf0, reg32);
+
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x200);
 	reg32 &= ~(3 << 26);
 	reg32 |= (2 << 26);
@@ -647,7 +699,6 @@ static void i945_setup_pci_express_x16(void)
 	return;
 
 disable_pciexpress_x16_link:
-#endif
 	/* For now we just disable the x16 link */
 	printk_debug("Disabling PCI Express x16 Link\n");
 
@@ -750,7 +801,15 @@ static void ich7_setup_pci_express(void)
 static void i945_early_initialization(void)
 {
 	/* Print some chipset specific information */
-	i945_detect_chipset();
+	switch (pci_read_config32(PCI_DEV(0, 0x00, 0), 0)) {
+	case 0x27708086:
+		i945_detect_chipset();
+		break;
+	case 0x27a08086:
+	case 0x27ac8086:
+		i945m_detect_chipset();
+		break;
+	}
 
 	/* Setup all BARs required for early PCIe and raminit */
 	i945_setup_bars();
@@ -778,3 +837,4 @@ static void i945_late_initialization(void)
 
 	i945_setup_root_complex_topology();
 }
+

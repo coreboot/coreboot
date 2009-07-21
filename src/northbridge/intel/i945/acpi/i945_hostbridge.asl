@@ -35,18 +35,18 @@ Device (MCHC)
 		,	11,	//
 		EPBR,	20,	// EPBAR
 
-		Offset (0x48),	// MCHBAR
+		Offset (0x44),	// MCHBAR
 		MHEN,	 1,	// Enable
 		,	13,	//
 		MHBR,	18,	// MCHBAR
 
-		Offset (0x60),	// PCIe BAR
+		Offset (0x48),	// PCIe BAR
 		PXEN,	 1,	// Enable
 		PXSZ,	 2,	// BAR size
 		,	23,	//
 		PXBR,	 6,	// PCIe BAR
 
-		Offset (0x68),	// DMIBAR
+		Offset (0x4c),	// DMIBAR
 		DMEN,	 1,	// Enable
 		,	11,	//
 		DMBR,	20,	// DMIBAR
@@ -87,11 +87,13 @@ Device (MCHC)
 		,	 2,
 		PM6H,	 2,
 		,	 2,
-		Offset (0xa2),	// Top of upper used dram
-		TUUD,	16,
-		Offset (0xb0),
-		,	 4,
-		TLUD,	12	// TOLUD
+
+		Offset (0x9c),	// Top of Low Used Memory
+		,	 3,
+		TLUD,	 5,
+
+		Offset (0xa0),	// Top of Used Memory
+		TOM,	16,
 	}
 
 }
@@ -172,11 +174,29 @@ Method (_CRS, 0, Serialized)
 				0x00000000, 0x000dc000, 0x000dffff, 0x00000000,
 				0x00004000,,, OPR7)
 
-		// Bios Extension (0xe0000-0xeffff)
+		// BIOS Extension (0xe0000-0xe3fff)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
-				0x00000000, 0x000e0000, 0x000effff, 0x00000000,
-				0x00010000,,, ESEG)
+				0x00000000, 0x000e0000, 0x000e3fff, 0x00000000,
+				0x00004000,,, ESG0)
+
+		// BIOS Extension (0xe4000-0xe7fff)
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				Cacheable, ReadWrite,
+				0x00000000, 0x000e4000, 0x000e7fff, 0x00000000,
+				0x00004000,,, ESG1)
+
+		// BIOS Extension (0xe8000-0xebfff)
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				Cacheable, ReadWrite,
+				0x00000000, 0x000e8000, 0x000ebfff, 0x00000000,
+				0x00004000,,, ESG2)
+
+		// BIOS Extension (0xec000-0xeffff)
+		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				Cacheable, ReadWrite,
+				0x00000000, 0x000ec000, 0x000effff, 0x00000000,
+				0x00004000,,, ESG3)
 
 		// System BIOS (0xf0000-0xfffff)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
@@ -189,6 +209,12 @@ Method (_CRS, 0, Serialized)
 				 Cacheable, ReadWrite,
 				 0x00000000, 0x00000000, 0xfebfffff, 0x00000000,
 				 0x00000000,,, PM01)
+
+		 // TPM Area (0xfed40000-0xfed44fff)
+		 DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
+				 Cacheable, ReadWrite,
+				 0x00000000, 0xfed40000, 0xfed44fff, 0x00000000,
+				 0x00000000,,, TPMR)
 	})
 
 	// Find PCI resource area in MCRS
@@ -197,64 +223,15 @@ Method (_CRS, 0, Serialized)
 	CreateDwordField(MCRS, PM01._LEN, PLEN)
 
 	// Fix up PCI memory region:
-	// Enter actual TOLUD. The TOLUD register contains bits 20-31 of
+	// Enter actual TOLUD. The TOLUD register contains bits 27-31 of
 	// the top of memory address.
-	ShiftLeft (^MCHC.TLUD, 20, PMIN)
+	ShiftLeft (^MCHC.TLUD, 27, PMIN)
 	Add(Subtract(PMAX, PMIN), 1, PLEN)
 
 	Return (MCRS)
 }
 
-// PCI Interrupt Routing
-Method(_PRT)
-{
-	If (PICM) {
-		Return (Package() {
-			// PCIe Graphics		0:1.0
-			Package() { 0x0001ffff, 0, 0, 16 },
-			// Onboard graphics (IGD)	0:2.0
-			Package() { 0x0002ffff, 0, 0, 16 },
-			// High Definition Audio	0:1b.0
-			Package() { 0x001bffff, 0, 0, 16 },
-			// PCIe Root Ports		0:1c.x
-			Package() { 0x001cffff, 0, 0, 16 },
-			Package() { 0x001cffff, 1, 0, 17 },
-			Package() { 0x001cffff, 2, 0, 18 },
-			Package() { 0x001cffff, 3, 0, 19 },
-			// USB and EHCI			0:1d.x
-			Package() { 0x001dffff, 0, 0, 23 },
-			Package() { 0x001dffff, 1, 0, 19 },
-			Package() { 0x001dffff, 2, 0, 18 },
-			Package() { 0x001dffff, 3, 0, 16 },
-			// LPC device			0:1f.0
-			Package() { 0x001fffff, 0, 0, 19 },
-			Package() { 0x001fffff, 1, 0, 19},
-			Package() { 0x001fffff, 2, 0, 19 },
-			Package() { 0x001fffff, 3, 0, 16 }
-		})
-	} Else {
-		Return (Package() {
-			// PCIe Graphics		0:1.0
-			Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
-			// Onboard graphics (IGD)	0:2.0
-			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
-			// High Definition Audio	0:1b.0
-			Package() { 0x001bffff, 0, \_SB.PCI0.LPCB.LNKG, 0 },
-			// PCIe Root Ports		0:1c.x
-			Package() { 0x001cffff, 0, \_SB.PCI0.LPCB.LNKB, 0 },
-			Package() { 0x001cffff, 1, \_SB.PCI0.LPCB.LNKA, 0 },
-			Package() { 0x001cffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
-			Package() { 0x001cffff, 3, \_SB.PCI0.LPCB.LNKD, 0 },
-			// USB and EHCI			0:1d.x
-			Package() { 0x001dffff, 0, \_SB.PCI0.LPCB.LNKH, 0 },
-			Package() { 0x001dffff, 1, \_SB.PCI0.LPCB.LNKD, 0 },
-			Package() { 0x001dffff, 2, \_SB.PCI0.LPCB.LNKC, 0 },
-			// LPC device			0:1f.0
-			Package() { 0x001fffff, 0, \_SB.PCI0.LPCB.LNKD, 0 },
-			Package() { 0x001fffff, 1, \_SB.PCI0.LPCB.LNKD, 0 },
-			Package() { 0x001fffff, 2, \_SB.PCI0.LPCB.LNKD, 0 },
-			Package() { 0x001fffff, 3, \_SB.PCI0.LPCB.LNKA, 0 }
-		})
-	}
+/* IRQ assignment is mainboard specific. Get it from mainboard ACPI code */
+Include ("acpi/i945_pci_irqs.asl")
 
-}
+

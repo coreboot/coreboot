@@ -28,7 +28,7 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 	int i;
 
 	MCHBAR32(C0DRC1 + channel_offset) |= (1 << 6);
-	
+
 	MCHBAR32(C0DRC1 + channel_offset) &= ~(1 << 6);
 
 	addr = 0;
@@ -43,7 +43,7 @@ static u32 sample_strobes(int channel_offset, struct sys_info *sysinfo)
 
 	for (i = 0; i < 28; i++) {
 		read32(addr);
-		read32(addr + 0x80);	
+		read32(addr + 0x80);
 	}
 
 	reg32 = MCHBAR32(RCVENMT);
@@ -68,12 +68,13 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 	u32 reg32;
 
 	printk_spew("    set_receive_enable() medium=0x%x, coarse=0x%x\n", medium, coarse);
-	
+
 	reg32 = MCHBAR32(C0DRT1 + channel_offset);
 	reg32 &= 0xf0ffffff;
 	reg32 |= ((u32)coarse & 0x0f) << 24;
 	MCHBAR32(C0DRT1 + channel_offset) = reg32;
-	
+
+	/* This should never happen: */
 	if (coarse > 0x0f)
 		printk_debug("set_receive_enable: coarse overflow: 0x%02x.\n", coarse);
 
@@ -87,11 +88,11 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 
 	reg32 = MCHBAR32(RCVENMT);
 	if (!channel_offset) {
-		
+		/* Channel 0 */
 		reg32 &= ~(3 << 2);
 		reg32 |= medium << 2;
 	} else {
-		
+		/* Channel 1 */
 		reg32 &= ~(3 << 0);
 		reg32 |= medium;
 	}
@@ -132,7 +133,6 @@ static int find_preamble(int channel_offset, u8 * mediumcoarse,
 
 	do {
 		if (*mediumcoarse < 4) {
-			
 			printk_debug("No Preamble found.\n");
 			return -1;
 		}
@@ -143,10 +143,9 @@ static int find_preamble(int channel_offset, u8 * mediumcoarse,
 
 		reg32 = sample_strobes(channel_offset, sysinfo);
 
-	} while (reg32 & (1 << 19));	
+	} while (reg32 & (1 << 19));
 
-	if (!(reg32 & (1 << 18))) {	
-		
+	if (!(reg32 & (1 << 18))) {
 		printk_debug("No Preamble found (neither high nor low).\n");
 		return -1;
 	}
@@ -188,7 +187,7 @@ static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
 	u32 rcvenmt;
 
 	printk_spew("  find_strobes_low()\n");
-	
+
 	for (;;) {
 		MCHBAR8(C0WL0REOST + channel_offset) = *fine;
 
@@ -200,13 +199,12 @@ static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
 		if (((rcvenmt & (1 << 18)) != 0))
 			return 0;
 
-		
 		*fine -= 0x80;
 		if (*fine == 0)
 			continue;
 
 		*mediumcoarse -= 2;
-		if (*mediumcoarse < 0xfe) 
+		if (*mediumcoarse < 0xfe)
 			continue;
 
 		break;
@@ -220,6 +218,7 @@ static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
 static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
 			     struct sys_info *sysinfo)
 {
+
 	int counter;
 	u32 rcvenmt;
 
@@ -249,7 +248,7 @@ static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
 			}
 			continue;
 		}
-		
+
 		*fine = 0;
 		*mediumcoarse += 2;
 		if (*mediumcoarse <= 0x40) {
@@ -258,25 +257,25 @@ static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
 			continue;
 		}
 
-		printk_debug("could not find rising edge.\n");
+		printk_debug("Could not find rising edge.\n");
 		return -1;
 	}
-	
+
 	*fine -= 7;
-	if (*fine >= 0xf9) {	
+	if (*fine >= 0xf9) {
 		*mediumcoarse -= 2;
 		set_receive_enable(channel_offset, *mediumcoarse & 3,
 				   *mediumcoarse >> 2);
 	}
 
-	*fine &= ~(1 << 3);	
+	*fine &= ~(1 << 3);
 	MCHBAR8(C0WL0REOST + channel_offset) = *fine;
 
 	return 0;
 }
 
 /**
- * Here we use a trick. The RCVEN channel 0 registers are all at an 
+ * Here we use a trick. The RCVEN channel 0 registers are all at an
  * offset of 0x80 to the channel 0 registers. We don't want to waste
  * a lot of if()s so let's just pass 0 or 0x80 for the channel offset.
  */
@@ -291,7 +290,7 @@ static int receive_enable_autoconfig(int channel_offset,
 		    channel_offset ? 1 : 0);
 
 	/* Set initial values */
-	mediumcoarse = (sysinfo->cas << 2) | 3;	
+	mediumcoarse = (sysinfo->cas << 2) | 3;
 	fine = 0;
 
 	if (find_strobes_low(channel_offset, &mediumcoarse, &fine, sysinfo))
@@ -336,3 +335,4 @@ void receive_enable_adjust(struct sys_info *sysinfo)
 		if (receive_enable_autoconfig(0x80, sysinfo))
 			return;
 }
+

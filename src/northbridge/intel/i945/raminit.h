@@ -47,6 +47,9 @@ struct sys_info {
 	u8 mvco4x;		/* 0 (8x) or 1 (4x) */
 	u8 clkcfg_bit7;
 	u8 boot_path;
+#define BOOT_PATH_NORMAL	0
+#define BOOT_PATH_RESET		1
+#define BOOT_PATH_RESUME	2
 
 	u8 package;		/* 0 = planar, 1 = stacked */
 #define SYSINFO_PACKAGE_PLANAR		0x00

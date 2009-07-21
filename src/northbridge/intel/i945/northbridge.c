@@ -28,8 +28,66 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/cpu.h>
+#include <boot/tables.h>
 #include "chip.h"
 #include "i945.h"
+
+int get_pcie_bar(u32 *base, u32 *len)
+{
+	device_t dev;
+	u32 pciexbar_reg;
+
+	*base = 0;
+	*len = 0;
+
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	if (!dev)
+		return 0;
+	
+	pciexbar_reg = pci_read_config32(dev, 0x48);
+
+	if (!(pciexbar_reg & (1 << 0)))
+		return 0;
+
+	switch ((pciexbar_reg >> 1) & 3) {
+	case 0: // 256MB
+		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
+		*len = 256 * 1024 * 1024;
+		return 1;
+	case 1: // 128M
+		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
+		*len = 128 * 1024 * 1024;
+		return 1;
+	case 2: // 64M
+		*base = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
+		*len = 64 * 1024 * 1024;
+		return 1;
+	}
+
+	return 0;
+}
+
+/* in arch/i386/boot/tables.c */
+extern uint64_t high_tables_base, high_tables_size;
+
+/* IDG memory */
+uint64_t uma_memory_base=0, uma_memory_size=0;
+
+int add_northbridge_resources(struct lb_memory *mem)
+{
+	u32 pcie_config_base, pcie_config_size;
+
+	printk_debug("Adding UMA memory area\n");
+	lb_add_memory_range(mem, LB_MEM_RESERVED, 
+		uma_memory_base, uma_memory_size);
+
+	printk_debug("Adding PCIe config bar\n");
+	get_pcie_bar(&pcie_config_base, &pcie_config_size);
+	lb_add_memory_range(mem, LB_MEM_RESERVED, 
+		pcie_config_base, pcie_config_size);
+
+	return 0;
+}
 
 static void ram_resource(device_t dev, unsigned long index, unsigned long basek,
 			 unsigned long sizek)
@@ -72,7 +130,6 @@ static uint32_t find_pci_tolm(struct bus *bus)
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
-uint64_t uma_memory_base=0, uma_memory_size=0;
 
 static void pci_domain_set_resources(device_t dev)
 {
@@ -81,7 +138,11 @@ static void pci_domain_set_resources(device_t dev)
 	uint16_t reg16;
 	unsigned long long tomk;
 
+	/* Can we find out how much memory we can use at most
+	 * this way?
+	 */
 	pci_tolm = find_pci_tolm(&dev->link[0]);
+	printk_debug("pci_tolm: 0x%x\n", pci_tolm);
 
 	printk_spew("Base of stolen memory: 0x%08x\n",
 		    pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c));
@@ -200,10 +261,9 @@ static void mc_read_resources(device_t dev)
 
 static void mc_set_resources(device_t dev)
 {
-	struct resource *resource, *last;
+	struct resource *resource;
 
 	/* Report the PCIe BAR */
-	last = &dev->resource[dev->resources];
 	resource = find_resource(dev, 0xcf);
 	if (resource) {
 		report_resource_stored(dev, resource, "<mmconfig>");

@@ -20,7 +20,7 @@
 #ifndef __NORTHBRIDGE_INTEL_I945_I945_H__
 #define __NORTHBRIDGE_INTEL_I945_I945_H__ 1
 
-#include "ich7.h"
+#include "../../../southbridge/intel/i82801gx/i82801gx.h"
 
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 

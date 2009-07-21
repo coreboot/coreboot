@@ -22,5 +22,8 @@ uses CONFIG_HAVE_HIGH_TABLES
 default CONFIG_HAVE_HIGH_TABLES=1
 
 config chip.h
+
+object acpi.o
+
 driver northbridge.o
 driver gma.o

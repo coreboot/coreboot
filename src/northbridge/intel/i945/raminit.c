@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 #include <cpu/x86/mem.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
@@ -25,7 +24,7 @@
 #include "raminit.h"
 #include "i945.h"
 
-#define DEBUG_RAM_SETUP 
+#define DEBUG_RAM_SETUP
 
 /* Debugging macros. */
 #if defined(DEBUG_RAM_SETUP)
@@ -33,7 +32,6 @@
 #else
 #define PRINTK_DEBUG(x...)
 #endif
-
 
 #define RAM_INITIALIZATION_COMPLETE	(1 << 19)
 
@@ -68,7 +66,6 @@ static void do_ram_command(u32 command)
 	PRINTK_DEBUG("...done\n");
 }
 
-
 static void ram_read32(u32 offset)
 {
 	PRINTK_DEBUG("   ram read: %08x\n", offset);
@@ -94,7 +91,11 @@ static int sdram_capabilities_max_supported_memory_frequency(void)
 {
 	u32 reg32;
 
-	reg32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xe4); 
+#ifdef MAXIMUM_SUPPORTED_FREQUENCY
+	return MAXIMUM_SUPPORTED_FREQUENCY;
+#endif
+
+	reg32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xe4);
 	reg32 &= (7 << 0);
 
 	switch (reg32) {
@@ -147,7 +148,7 @@ static int sdram_capabilities_enhanced_addressing_xor(void)
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe5); /* CAPID0 + 5 */
 	reg8 &= (1 << 7);
-	
+
 	return (!reg8);
 }
 
@@ -157,7 +158,7 @@ static int sdram_capabilities_two_dimms_per_channel(void)
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe8); /* CAPID0 + 8 */
 	reg8 &= (1 << 0);
-	
+
 	return (reg8 != 0);
 }
 
@@ -165,29 +166,48 @@ static int sdram_capabilities_MEM4G_disable(void)
 {
 	u8 reg8;
 
-	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe5); 
+	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe5);
 	reg8 &= (1 << 0);
-	
+
 	return (reg8 != 0);
+}
+
+#define GFX_FREQUENCY_CAP_166MHZ	0x04
+#define GFX_FREQUENCY_CAP_200MHZ	0x03
+#define GFX_FREQUENCY_CAP_250MHZ	0x02
+#define GFX_FREQUENCY_CAP_ALL		0x00
+
+static int sdram_capabilities_core_frequencies(void)
+{
+	u8 reg8;
+
+	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe5); /* CAPID0 + 5 */
+	reg8 &= (1 << 3) | (1 << 2) | (1 << 1);
+	reg8 >>= 1;
+
+	return (reg8);
 }
 
 static void sdram_detect_errors(void)
 {
 	u8 reg8;
+	u8 do_reset = 0;
 
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
-	
+
 	if (reg8 & ((1<<7)|(1<<2))) {
 		if (reg8 & (1<<2)) {
 			printk_debug("SLP S4# Assertion Width Violation.\n");
-			
+
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+
 		}
 
 		if (reg8 & (1<<7)) {
 			printk_debug("DRAM initialization was interrupted.\n");
 			reg8 &= ~(1<<7);
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+			do_reset = 1;
 		}
 
 		/* Set SLP_S3# Assertion Stretch Enable */
@@ -195,19 +215,20 @@ static void sdram_detect_errors(void)
 		reg8 |= (1 << 3);
 		pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa4, reg8);
 
-		printk_debug("Reset required.\n");
-		outb(0x00, 0xcf9);
-		outb(0x0e, 0xcf9);
-		for (;;) ; /* Wait for reset! */
+		if (do_reset) {
+			printk_debug("Reset required.\n");
+			outb(0x00, 0xcf9);
+			outb(0x0e, 0xcf9);
+			for (;;) ; /* Wait for reset! */
+		}
 	}
 
 	/* Set DRAM initialization bit in ICH7 */
 	reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2);
 	reg8 |= (1<<7);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
-	
-}
 
+}
 
 /**
  * @brief Get generic DIMM parameters.
@@ -233,7 +254,7 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 	 *
 	 * In practice dual channel mainboards have their spd at 0x50, 0x52
 	 * whereas single channel configurations have their spd at 0x50/x51
-	 * 
+	 *
 	 * The capability register knows a lot about the channel configuration
 	 * but for now we stick with the information we gather from the SPD
 	 * ROMs
@@ -249,7 +270,7 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 
 	/**
 	 * Since we only support two DIMMs in total, there is a limited number
-	 * of combinations. This function returns the type of DIMMs. 
+	 * of combinations. This function returns the type of DIMMs.
 	 * return value:
 	 *   [0:7]  lower DIMM population
 	 *   [8-15] higher DIMM population
@@ -272,9 +293,12 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 		/* Initialize the socket information with a sane value */
 		sysinfo->dimm[i] = SYSINFO_DIMM_NOT_POPULATED;
 
-		if (!sdram_capabilities_dual_channel() && (i >> 1)) 
+		/* Dual Channel not supported, but Channel 1? Bail out */
+		if (!sdram_capabilities_dual_channel() && (i >> 1))
 			continue;
-		if (!sdram_capabilities_two_dimms_per_channel() && (i& 1)) 
+
+		/* Two DIMMs per channel not supported, but odd DIMM number? */
+		if (!sdram_capabilities_two_dimms_per_channel() && (i& 1))
 			continue;
 
 		printk_debug("DDR II Channel %d Socket %d: ", (i >> 1), (i & 1));
@@ -295,7 +319,7 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 			die("Error: Registered memory not supported by this chipset\n");
 
 		switch (spd_read_byte(device, SPD_PRIMARY_SDRAM_WIDTH)) {
-		case 0x08: 
+		case 0x08:
 			switch (spd_read_byte(device, SPD_NUM_DIMM_BANKS) & 0x0f) {
 			case 1:
 				printk_debug("x8DDS\n");
@@ -428,7 +452,7 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 		PRINTK_DEBUG("Probing Speed %d\n", j);
 		for (i=0; i<2*DIMM_SOCKETS; i++) {
 			int current_cas_mask;
-			
+
 			PRINTK_DEBUG("  DIMM: %d\n", i);
 			if (sysinfo->dimm[i] == SYSINFO_DIMM_NOT_POPULATED) {
 				continue;
@@ -463,13 +487,13 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 						spd_read_byte(DIMM_SPD_BASE + i, spd_lookup_table[(2*idx)+1]) <= ddr2_speeds_table[(2*j)+1]) {
 					PRINTK_DEBUG(":    OK\n");
 					break;
-				} 
-				
+				}
+
 				PRINTK_DEBUG(":    Not fast enough!\n");
 
 				current_cas_mask &= ~(1 << (current_cas));
 			}
-			
+
 			freq_cas_mask &= current_cas_mask;
 			if (!current_cas_mask) {
 				PRINTK_DEBUG("    No valid CAS for this speed on DIMM %d\n", i);
@@ -493,7 +517,7 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 			break;
 		}
 	}
-	
+
 	if (sysinfo->memory_frequency && sysinfo->cas) {
 		printk_debug("Memory will be driven at %dMHz with CAS=%d clocks\n",
 				sysinfo->memory_frequency, sysinfo->cas);
@@ -596,7 +620,7 @@ static void sdram_detect_smallest_tRCD(struct sys_info * sysinfo)
 	case 667: freq_multiplier = 0x0c; break; /* 3ns */
 	}
 
-	tRCD_cycles = 2; 
+	tRCD_cycles = 2; /* 2 clocks minimum */
 	tRCD_time = tRCD_cycles * freq_multiplier;
 
 	for (i=0; i<2*DIMM_SOCKETS; i++) {
@@ -705,8 +729,8 @@ static void sdram_detect_smallest_tRFC(struct sys_info * sysinfo)
 	}
 	index--;
 	switch (sysinfo->memory_frequency) {
-	case 667: index += 3;
-	case 533: index += 3;
+	case 667: index += 3; /* Fallthrough */
+	case 533: index += 3; /* Fallthrough */
 	case 400: break;
 	}
 
@@ -714,11 +738,10 @@ static void sdram_detect_smallest_tRFC(struct sys_info * sysinfo)
 	printk_debug("tRFC = %d cycles\n", tRFC_cycles[index]);
 }
 
-
 static void sdram_detect_smallest_refresh(struct sys_info * sysinfo)
 {
 	int i;
-	
+
 	sysinfo->refresh = 0;
 
 	for (i=0; i<2*DIMM_SOCKETS; i++) {
@@ -807,52 +830,51 @@ static void sdram_write_slew_rates(u32 offset, const u32 *slew_rate_table)
 static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 {
 	static const u32 dq2030[] = {
-		0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e, 
+		0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e,
 		0x1a181614, 0x22201e1c, 0x2a282624, 0x3934302d,
-		0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f, 
+		0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f,
 		0x19171513, 0x211f1d1b, 0x2d292623, 0x3f393531
 	};
 
 	static const u32 dq2330[] = {
-		0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e, 
+		0x08070706, 0x0a090908, 0x0d0c0b0a, 0x12100f0e,
 		0x1a181614, 0x22201e1c, 0x2a282624, 0x3934302d,
-		0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f, 
+		0x0a090908, 0x0c0b0b0a, 0x0e0d0d0c, 0x1211100f,
 		0x19171513, 0x211f1d1b, 0x2d292623, 0x3f393531
 	};
 
 	static const u32 cmd2710[] = {
-		0x07060605, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b,	
+		0x07060605, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b,
 		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f,
-		
-		0x1110100f, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b, 
+		0x1110100f, 0x0f0d0b09, 0x19171411, 0x1f1f1d1b,
 		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f
 	};
 
 	static const u32 cmd3210[] = {
-		0x0f0d0b0a, 0x17151311, 0x1f1d1b19, 0x1f1f1f1f, 
+		0x0f0d0b0a, 0x17151311, 0x1f1d1b19, 0x1f1f1f1f,
 		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f,
-		0x18171615, 0x1f1f1c1a, 0x1f1f1f1f, 0x1f1f1f1f, 
+		0x18171615, 0x1f1f1c1a, 0x1f1f1f1f, 0x1f1f1f1f,
 		0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f, 0x1f1f1f1f
 	};
 
 	static const u32 clk2030[] = {
-		0x0e0d0d0c, 0x100f0f0e, 0x100f0e0d, 0x15131211, 
-		0x1d1b1917, 0x2523211f, 0x2a282927, 0x32302e2c, 
-		0x17161514, 0x1b1a1918, 0x1f1e1d1c, 0x23222120, 
+		0x0e0d0d0c, 0x100f0f0e, 0x100f0e0d, 0x15131211,
+		0x1d1b1917, 0x2523211f, 0x2a282927, 0x32302e2c,
+		0x17161514, 0x1b1a1918, 0x1f1e1d1c, 0x23222120,
 		0x27262524, 0x2d2b2928, 0x3533312f, 0x3d3b3937
 	};
 
 	static const u32 ctl3215[] = {
-		0x01010000, 0x03020101, 0x07060504, 0x0b0a0908, 
+		0x01010000, 0x03020101, 0x07060504, 0x0b0a0908,
 		0x100f0e0d, 0x14131211, 0x18171615, 0x1c1b1a19,
-		0x05040403, 0x07060605, 0x0a090807, 0x0f0d0c0b, 
+		0x05040403, 0x07060605, 0x0a090807, 0x0f0d0c0b,
 		0x14131211, 0x18171615, 0x1c1b1a19, 0x201f1e1d
 	};
 
 	static const u32 ctl3220[] = {
-		0x05040403, 0x07060505, 0x0e0c0a08, 0x1a171411, 
+		0x05040403, 0x07060505, 0x0e0c0a08, 0x1a171411,
 		0x2825221f, 0x35322f2b, 0x3e3e3b38, 0x3e3e3e3e,
-		0x09080807, 0x0b0a0a09, 0x0f0d0c0b, 0x1b171311, 
+		0x09080807, 0x0b0a0a09, 0x0f0d0c0b, 0x1b171311,
 		0x2825221f, 0x35322f2b, 0x3e3e3b38, 0x3e3e3e3e
 	};
 
@@ -864,121 +886,120 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 	};
 
 	static const u32 const * const dual_channel_slew_group_lookup[] = {
-		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd2710, 
-		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,      
+		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd2710,
+		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,
 
-		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, ctl3215, nc,      clk2030, nc,      dq2030, cmd3210, 
-		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, ctl3215, nc,      clk2030, nc,      dq2030, cmd2710, 
-		dq2030, cmd3210, ctl3215, nc,      clk2030, nc,      nc,     nc,      
+		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, ctl3215, nc,      clk2030, nc,      dq2030, cmd3210,
+		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, ctl3215, nc,      clk2030, nc,      dq2030, cmd2710,
+		dq2030, cmd3210, ctl3215, nc,      clk2030, nc,      nc,     nc,
 
-		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
-		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd2710, 
-		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,      
+		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, dq2030, cmd3210,
+		dq2030, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd2710,
+		dq2030, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,
 
-		dq2030, cmd2710, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
-		dq2030, cmd2710, ctl3215, nc,      clk2030, nc,      dq2030, cmd3210, 
-		dq2030, cmd2710, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210, 
-		dq2030, cmd2710, ctl3215, nc,      clk2030, nc,      dq2030, cmd2710, 
-		dq2030, cmd2710, ctl3215, nc,      clk2030, nc,      nc,     nc,      
+		dq2030, cmd2710, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210,
+		dq2030, cmd2710, ctl3215, nc,      clk2030, nc,      dq2030, cmd3210,
+		dq2030, cmd2710, ctl3215, ctl3215, clk2030, clk2030, dq2030, cmd3210,
+		dq2030, cmd2710, ctl3215, nc,      clk2030, nc,      dq2030, cmd2710,
+		dq2030, cmd2710, ctl3215, nc,      clk2030, nc,      nc,     nc,
 
-		nc,     nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
-		nc,     nc,      ctl3215, nc,      clk2030, nc,      dq2030, cmd3210, 
-		nc,     nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
-		nc,     nc,      ctl3215, nc,      clk2030, clk2030, dq2030, cmd2710  
+		nc,     nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210,
+		nc,     nc,      ctl3215, nc,      clk2030, nc,      dq2030, cmd3210,
+		nc,     nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210,
+		nc,     nc,      ctl3215, nc,      clk2030, clk2030, dq2030, cmd2710
 	};
 
 	static const u32 const * const single_channel_slew_group_lookup[] = {
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,      
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,
 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      nc,     nc,      
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      nc,     nc,
 
-		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,      
+		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, nc,      ctl3215, nc,      clk2030, nc,     nc,
 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210, 
-		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      nc,     nc,      
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, ctl3215, clk2030, clk2030, dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      dq2330, cmd3210,
+		dq2330, cmd3210, ctl3215, nc,      clk2030, nc,      nc,     nc,
 
-		dq2330, nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
-		dq2330, nc,      ctl3215, nc,      clk2030, nc,      dq2030, cmd3210, 
-		dq2330, nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210, 
-		dq2330, nc,      ctl3215, nc,      clk2030, clk2030, dq2030, cmd3210  
+		dq2330, nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210,
+		dq2330, nc,      ctl3215, nc,      clk2030, nc,      dq2030, cmd3210,
+		dq2330, nc,      nc,      ctl3215, nc,      clk2030, dq2030, cmd3210,
+		dq2330, nc,      ctl3215, nc,      clk2030, clk2030, dq2030, cmd3210
 	};
-
 
 	/* Strength multiplier tables */
 	static const u8 dual_channel_strength_multiplier[] = {
-		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,	
-		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11, 
-		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11, 
-		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x22, 
-		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00, 
-		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,	
-		0x44, 0x11, 0x11, 0x00, 0x44, 0x00, 0x44, 0x11,	
-		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,	
-		0x44, 0x11, 0x11, 0x00, 0x44, 0x00, 0x44, 0x22,	
-		0x44, 0x11, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,	
-		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,	
-		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,	
-		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,	
-		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x22,	
-		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00,	
-		0x44, 0x22, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,	
-		0x44, 0x22, 0x11, 0x00, 0x44, 0x00, 0x44, 0x11,	
-		0x44, 0x22, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,	
-		0x44, 0x22, 0x11, 0x00, 0x44, 0x00, 0x44, 0x22,	
-		0x44, 0x22, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,	
-		0x00, 0x00, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,	
-		0x00, 0x00, 0x11, 0x00, 0x44, 0x00, 0x44, 0x11,	
-		0x00, 0x00, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,	
-		0x00, 0x00, 0x11, 0x00, 0x44, 0x44, 0x44, 0x22	
+		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x22,
+		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00,
+		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x11, 0x00, 0x44, 0x00, 0x44, 0x11,
+		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x11, 0x00, 0x44, 0x00, 0x44, 0x22,
+		0x44, 0x11, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,
+		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,
+		0x44, 0x11, 0x11, 0x11, 0x44, 0x44, 0x44, 0x22,
+		0x44, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00,
+		0x44, 0x22, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
+		0x44, 0x22, 0x11, 0x00, 0x44, 0x00, 0x44, 0x11,
+		0x44, 0x22, 0x11, 0x11, 0x44, 0x44, 0x44, 0x11,
+		0x44, 0x22, 0x11, 0x00, 0x44, 0x00, 0x44, 0x22,
+		0x44, 0x22, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,
+		0x00, 0x00, 0x11, 0x00, 0x44, 0x00, 0x44, 0x11,
+		0x00, 0x00, 0x00, 0x11, 0x00, 0x44, 0x44, 0x11,
+		0x00, 0x00, 0x11, 0x00, 0x44, 0x44, 0x44, 0x22
 	};
 
 	static const u8 single_channel_strength_multiplier[] = {
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11, 
-		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11, 
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11, 
-		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00, 
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,	
-		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00,	
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,	
-		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,	
-		0x33, 0x00, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,	
-		0x33, 0x00, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,	
-		0x33, 0x00, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,	
-		0x33, 0x00, 0x11, 0x00, 0x44, 0x44, 0x33, 0x11	
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,
+		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x00, 0x11, 0x00, 0x44, 0x00, 0x00,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x11, 0x44, 0x44, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,
+		0x33, 0x11, 0x11, 0x00, 0x44, 0x00, 0x00, 0x00,
+		0x33, 0x00, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,
+		0x33, 0x00, 0x11, 0x00, 0x44, 0x00, 0x33, 0x11,
+		0x33, 0x00, 0x00, 0x11, 0x00, 0x44, 0x33, 0x11,
+		0x33, 0x00, 0x11, 0x00, 0x44, 0x44, 0x33, 0x11
 	};
 
 	const u8 * strength_multiplier;
@@ -1002,21 +1023,20 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 
 	printk_debug("Table Index: %d\n", idx);
 
-	MCHBAR8(G1SC) = strength_multiplier[idx * 8 + 0]; 
-	MCHBAR8(G2SC) = strength_multiplier[idx * 8 + 1]; 
-	MCHBAR8(G3SC) = strength_multiplier[idx * 8 + 2]; 
-	MCHBAR8(G4SC) = strength_multiplier[idx * 8 + 3]; 
-	MCHBAR8(G5SC) = strength_multiplier[idx * 8 + 4]; 
-	MCHBAR8(G6SC) = strength_multiplier[idx * 8 + 5]; 
-	MCHBAR8(G7SC) = strength_multiplier[idx * 8 + 6]; 
-	MCHBAR8(G8SC) = strength_multiplier[idx * 8 + 7]; 
+	MCHBAR8(G1SC) = strength_multiplier[idx * 8 + 0];
+	MCHBAR8(G2SC) = strength_multiplier[idx * 8 + 1];
+	MCHBAR8(G3SC) = strength_multiplier[idx * 8 + 2];
+	MCHBAR8(G4SC) = strength_multiplier[idx * 8 + 3];
+	MCHBAR8(G5SC) = strength_multiplier[idx * 8 + 4];
+	MCHBAR8(G6SC) = strength_multiplier[idx * 8 + 5];
+	MCHBAR8(G7SC) = strength_multiplier[idx * 8 + 6];
+	MCHBAR8(G8SC) = strength_multiplier[idx * 8 + 7];
 
 	/* Channel 0 */
 	sdram_write_slew_rates(G1SRPUT, slew_group_lookup[idx * 8 + 0]);
 	sdram_write_slew_rates(G2SRPUT, slew_group_lookup[idx * 8 + 1]);
 	if ((slew_group_lookup[idx * 8 + 2] != nc) && (sysinfo->package == SYSINFO_PACKAGE_STACKED)) {
-		
-		
+
 		sdram_write_slew_rates(G3SRPUT, ctl3220);
 	} else {
 		sdram_write_slew_rates(G3SRPUT, slew_group_lookup[idx * 8 + 2]);
@@ -1038,7 +1058,7 @@ static void sdram_rcomp_buffer_strength_and_slew(struct sys_info *sysinfo)
 static void sdram_enable_rcomp(void)
 {
 	u32 reg32;
-	
+	/* Enable Global Periodic RCOMP */
 	udelay(300);
 	reg32 = MCHBAR32(GBRCOMPCTL);
 	reg32 &= ~(1 << 23);
@@ -1051,7 +1071,7 @@ static void sdram_program_dll_timings(struct sys_info *sysinfo)
 	int i;
 
 	printk_debug ("Programming DLL Timings... \n");
-	
+
 	MCHBAR16(DQSMT) &= ~( (3 << 12) | (1 << 10) | ( 0xf << 0) );
 	MCHBAR16(DQSMT) |= (1 << 13) | (0xc << 0);
 
@@ -1074,7 +1094,7 @@ static void sdram_force_rcomp(void)
 {
 	u32 reg32;
 	u8 reg8;
-	
+
 	reg32 = MCHBAR32(ODTC);
 	reg32 |= (1 << 28);
 	MCHBAR32(ODTC) = reg32;
@@ -1083,6 +1103,7 @@ static void sdram_force_rcomp(void)
 	reg32 |= (1 << 0);
 	MCHBAR32(SMSRCTL) = reg32;
 
+	/* Start initial RCOMP */
 	reg32 = MCHBAR32(GBRCOMPCTL);
 	reg32 |= (1 << 8);
 	MCHBAR32(GBRCOMPCTL) = reg32;
@@ -1101,7 +1122,7 @@ static void sdram_initialize_system_memory_io(struct sys_info *sysinfo)
 	u32 reg32;
 
 	printk_debug ("Initializing System Memory IO... \n");
-	
+	/* Enable Data Half Clock Pushout */
 	reg8 = MCHBAR8(C0HCTC);
 	reg8 &= ~0x1f;
 	reg8 |= ( 1 << 0);
@@ -1112,17 +1133,18 @@ static void sdram_initialize_system_memory_io(struct sys_info *sysinfo)
 	reg8 |= ( 1 << 0);
 	MCHBAR8(C1HCTC) = reg8;
 
-	
 	MCHBAR16(WDLLBYPMODE) &= ~( (1 << 9) | (1 << 6) | (1 << 4) | (1 << 3) | (1 << 1) );
 	MCHBAR16(WDLLBYPMODE) |= (1 << 8) | (1 << 7) | (1 << 5) | (1 << 2) | (1 << 0);
 
 	MCHBAR8(C0WDLLCMC) = 0;
 	MCHBAR8(C1WDLLCMC) = 0;
 
+	/* Program RCOMP Settings */
 	sdram_program_dram_width(sysinfo);
 
 	sdram_rcomp_buffer_strength_and_slew(sysinfo);
 
+	/* Indicate that RCOMP programming is done */
 	reg32 = MCHBAR32(GBRCOMPCTL);
 	reg32 &= ~( (1 << 29) | (1 << 26) | (3 << 21) | (3 << 2) );
 	reg32 |= (3 << 27) | (3 << 0);
@@ -1130,8 +1152,10 @@ static void sdram_initialize_system_memory_io(struct sys_info *sysinfo)
 
 	MCHBAR32(GBRCOMPCTL) |= (1 << 10);
 
+	/* Program DLL Timings */
 	sdram_program_dll_timings(sysinfo);
 
+	/* Force RCOMP cycle */
 	sdram_force_rcomp();
 }
 
@@ -1140,10 +1164,10 @@ static void sdram_enable_system_memory_io(struct sys_info *sysinfo)
 	u32 reg32;
 
 	printk_debug ("Enabling System Memory IO... \n");
-	
+
 	reg32 = MCHBAR32(RCVENMT);
 	reg32 &= ~(0x3f << 6);
-	MCHBAR32(RCVENMT) = reg32; 
+	MCHBAR32(RCVENMT) = reg32; /* [11:6] = 0 */
 
 	reg32 |= (1 << 11) | (1 << 9);
 	MCHBAR32(RCVENMT) = reg32;
@@ -1176,6 +1200,7 @@ static void sdram_enable_system_memory_io(struct sys_info *sysinfo)
 
 	MCHBAR32(DRTST) = reg32;
 
+	/* Activate DRAM Channel IO Buffers */
 	if (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED ||
 			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED) {
 		reg32 = MCHBAR32(C0DRC1);
@@ -1224,7 +1249,7 @@ static struct dimm_size sdram_get_dimm_size(u16 device)
 	if (value < 0) goto hw_err;
 	value &= 0xff;
 	value <<= 8;
-	
+
 	low = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_LSB);	/* (low byte) */
 	if (low < 0) goto hw_err;
 	value = value | (low & 0xff);
@@ -1260,7 +1285,7 @@ static struct dimm_size sdram_get_dimm_size(u16 device)
 
  val_err:
 	die("Bad SPD value\n");
- hw_err: 
+ hw_err:
 	/* If a hardware error occurs the spd rom probably does not exist.
 	 * In this case report that there is no memory
 	 */
@@ -1290,10 +1315,10 @@ static void sdram_detect_dimm_size(struct sys_info * sysinfo)
 		if (sz.side1 < 30)
 			die("DDR-II rank size smaller than 128MB is not supported.\n");
 
-		sysinfo->banksize[i * 2] = sz.side1 - 30;
+		sysinfo->banksize[i * 2] = 1 << (sz.side1 - 28);
 
-		printk_debug("DIMM %d side 0 = %d MB\n", i, (1 << sysinfo->banksize[i * 2]) * 128 );
-	
+		printk_debug("DIMM %d side 0 = %d MB\n", i, sysinfo->banksize[i * 2] * 32 );
+
 		if (!sz.side2)
 			continue;
 
@@ -1301,22 +1326,22 @@ static void sdram_detect_dimm_size(struct sys_info * sysinfo)
 		if (sz.side2 < 30)
 			die("DDR-II rank size smaller than 128MB is not supported.\n");
 
-		sysinfo->banksize[(i * 2) + 1] = sz.side2 - 30;
+		sysinfo->banksize[(i * 2) + 1] = 1 << (sz.side2 - 28);
 
-		printk_debug("DIMM %d side 1 = %d MB\n", i, (1 << sysinfo->banksize[(i * 2) + 1]) * 128);
+		printk_debug("DIMM %d side 1 = %d MB\n", i, sysinfo->banksize[(i * 2) + 1] * 32);
 	}
 }
 
 static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 {
 	int i;
-	int cum0, cum1, tolud;
+	int cum0, cum1, tolud, tom;
 
 	printk_debug ("Setting RAM size... \n");
 
 	cum0 = 0;
 	for(i = 0; i < 2 * DIMM_SOCKETS; i++) {
-		cum0 += (sysinfo->banksize[i] << 3);
+		cum0 += sysinfo->banksize[i];
 		MCHBAR8(C0DRB0+i) = cum0;
 	}
 
@@ -1333,7 +1358,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 		cum1 = 0;
 
 	for(i = 0; i < 2 * DIMM_SOCKETS; i++) {
-		cum1 += (sysinfo->banksize[i + 4] << 3);
+		cum1 += sysinfo->banksize[i + 4];
 		MCHBAR8(C1DRB0+i) = cum1;
 	}
 
@@ -1343,20 +1368,23 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	else
 		tolud = (cum1 ? cum1 : cum0)  << 1;
 
-	/* Some extra checks needed. See 4.1.26 in the 
-	 * 82945G MCH datasheet (30750203)
-	 */
-	pci_write_config16(PCI_DEV(0,0,0), TOLUD, tolud);
-	
+	/* The TOM register has a different format */
+	tom = tolud >> 3;
+
+	/* Limit the value of TOLUD to leave some space for PCI memory. */
+	if (tolud > 0xd0)
+		tolud = 0xd0;	/* 3.25GB : 0.75GB */
+
+	pci_write_config8(PCI_DEV(0,0,0), TOLUD, tolud);
+
 	printk_debug("C0DRB = 0x%08x\n", MCHBAR32(C0DRB0));
 	printk_debug("C1DRB = 0x%08x\n", MCHBAR32(C1DRB0));
-	printk_debug("TOLUD = 0x%04x\n", tolud);
+	printk_debug("TOLUD = 0x%04x\n", pci_read_config8(PCI_DEV(0,0,0), TOLUD));
 
-	pci_write_config16(PCI_DEV(0,0,0), TOM, tolud>>3);
+	pci_write_config16(PCI_DEV(0,0,0), TOM, tom);
 
 	return 0;
 }
-
 
 static int sdram_set_row_attributes(struct sys_info *sysinfo)
 {
@@ -1373,7 +1401,6 @@ static int sdram_set_row_attributes(struct sys_info *sysinfo)
 		}
 
 		device = DIMM_SPD_BASE + i;
-		columnsrows = 0;
 
 		value = spd_read_byte(device, SPD_NUM_ROWS);	/* rows */
 		columnsrows = (value & 0x0f);
@@ -1394,7 +1421,7 @@ static int sdram_set_row_attributes(struct sys_info *sysinfo)
 		if (sysinfo->banksize[(2 * i) + 1] != 0) {
 			dra = (dra << 4) | dra;
 		}
-		
+
 		if (i < DIMM_SOCKETS)
 			dra0 |= (dra << (i*8));
 		else
@@ -1403,7 +1430,7 @@ static int sdram_set_row_attributes(struct sys_info *sysinfo)
 
 	MCHBAR16(C0DRA0) = dra0;
 	MCHBAR16(C1DRA0) = dra1;
-		
+
 	printk_debug("C0DRA = 0x%04x\n", dra0);
 	printk_debug("C1DRA = 0x%04x\n", dra1);
 
@@ -1444,7 +1471,7 @@ static void sdram_set_bank_architecture(struct sys_info *sysinfo)
 static void sdram_program_refresh_rate(struct sys_info *sysinfo)
 {
 	u32 reg32;
-	
+
 	if (sysinfo->refresh == REFRESH_7_8US) {
 		reg32 = (2 << 8); /* Refresh enabled at 7.8us */
 	} else {
@@ -1464,29 +1491,29 @@ static void sdram_program_cke_tristate(struct sys_info *sysinfo)
 	int i;
 
 	reg32 = MCHBAR32(C0DRC1);
-	
+
 	for (i=0; i < 4; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (16 + i));
 		}
 	}
-	
+
 	reg32 |= (1 << 12);
-	
+
 	reg32 |= (1 << 11);
 	MCHBAR32(C0DRC1) = reg32;
 
 	/* Do we have to do this if we're in Single Channel Mode?  */
 	reg32 = MCHBAR32(C1DRC1);
-	
+
 	for (i=4; i < 8; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (12 + i));
 		}
 	}
-	
+
 	reg32 |= (1 << 12);
-	
+
 	reg32 |= (1 << 11);
 	MCHBAR32(C1DRC1) = reg32;
 }
@@ -1497,7 +1524,7 @@ static void sdram_program_odt_tristate(struct sys_info *sysinfo)
 	int i;
 
 	reg32 = MCHBAR32(C0DRC2);
-	
+
 	for (i=0; i < 4; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (24 + i));
@@ -1506,7 +1533,7 @@ static void sdram_program_odt_tristate(struct sys_info *sysinfo)
 	MCHBAR32(C0DRC2) = reg32;
 
 	reg32 = MCHBAR32(C1DRC2);
-	
+
 	for (i=4; i < 8; i++) {
 		if (sysinfo->banksize[i] == 0) {
 			reg32 |= (1 << (20 + i));
@@ -1535,18 +1562,18 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 
 	reg32 = MCHBAR32(C0DRC0);
 	reg32 |= (1 << 2);	/* Burst Length 8 */
-	reg32 &= ~( (1 << 13) | (1 << 12) ); 
+	reg32 &= ~( (1 << 13) | (1 << 12) );
 	MCHBAR32(C0DRC0) = reg32;
 
 	reg32 = MCHBAR32(C1DRC0);
 	reg32 |= (1 << 2);	/* Burst Length 8 */
-	reg32 &= ~( (1 << 13) | (1 << 12) ); 
+	reg32 &= ~( (1 << 13) | (1 << 12) );
 	MCHBAR32(C1DRC0) = reg32;
 
 	if (!sysinfo->dual_channel && sysinfo->dimm[1] !=
 			SYSINFO_DIMM_NOT_POPULATED) {
 		reg32 = MCHBAR32(C0DRC0);
-		reg32 |= (1 << 15);	
+		reg32 |= (1 << 15);
 		MCHBAR32(C0DRC0) = reg32;
 	}
 
@@ -1578,7 +1605,7 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 	reg32 = (sysinfo->cas - 1) + (BURSTLENGTH / 2) + tWTR;
 	temp_drt |= (reg32 << 24);
 
-	
+	/* CxDRT0 [23:22], [21:20], [19:18] [16] have fixed values */
 	temp_drt |= ( (1 << 22) | (3 << 20) | (1 << 18) | (0 << 16) );
 
 	/* Program Write Auto Precharge to Activate */
@@ -1594,14 +1621,14 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 	temp_drt |= (reg32 << 11);
 
 	/* Read Auto Precharge to Activate */
-	
+
 	temp_drt |= (8 << 0);
 
 	MCHBAR32(C0DRT0) = temp_drt;
 	MCHBAR32(C1DRT0) = temp_drt;
 
 	/* Calculate DRT1 */
-	
+
 	temp_drt = MCHBAR32(C0DRT1) & 0x00020088;
 
 	/* DRAM RASB Precharge */
@@ -1615,13 +1642,13 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 
 	/* Refresh Cycle Time */
 	temp_drt |= (sysinfo->trfc) << 10;
-	
+
 	/* Pre-All to Activate Delay */
 	temp_drt |= (0 << 16);
-	
+
 	/* Precharge to Precharge Delay stays at 1 clock */
 	temp_drt |= (0 << 18);
-	
+
 	/* Activate to Precharge Delay */
 	temp_drt |= (sysinfo->tras << 19);
 
@@ -1647,7 +1674,7 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 	if (sysinfo->memory_frequency == 667) {
 		reg32 = page_size;
 	}
-	
+
 	temp_drt |= (reg32 << 30);
 
 	MCHBAR32(C0DRT1) = temp_drt;
@@ -1697,13 +1724,12 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 
 	printk_debug("Setting mode of operation for memory channels...");
 
-	if (sdram_capabilities_interleave() && 
+	if (sdram_capabilities_interleave() &&
 		    ( ( sysinfo->banksize[0] + sysinfo->banksize[1] +
 			sysinfo->banksize[2] + sysinfo->banksize[3] ) ==
 		      ( sysinfo->banksize[4] + sysinfo->banksize[5] +
 			sysinfo->banksize[6] + sysinfo->banksize[7] ) ) ) {
 		/* Both channels equipped with DIMMs of the same size */
-		
 		sysinfo->interleaved = 1;
 	} else {
 		sysinfo->interleaved = 0;
@@ -1731,46 +1757,44 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 		printk_debug("Single Channel 0 only.\n");
 	}
 
-	reg32 |= (1 << 10); 
+	reg32 |= (1 << 10);
 
 	MCHBAR32(DCC) = reg32;
 
 	PRINTK_DEBUG("DCC=0x%08x\n", MCHBAR32(DCC));
 }
 
-static void sdram_program_pll_settings(void)
+static void sdram_program_pll_settings(struct sys_info *sysinfo)
 {
 	volatile u16 reg16;
-	volatile u32 reg32;
-
-	const u8 HPLLGPLLPowerDown[] = {
-		0x90, /* 400MHz */
-		0x95, /* 533MHz */
-		0x00, /* --- */
-		0x8d, /* 667MHz */
-	};
 
 	MCHBAR32(PLLMON) = 0x80800000;
 
-	reg32 = MCHBAR32(CLKCFG);
-	reg32 &= (7 << 0);
+	switch (MCHBAR32(CLKCFG) & 0x7) {
+	case 0: sysinfo->fsb_frequency = 400; break;	/* FSB400 */
+	case 1: sysinfo->fsb_frequency = 533; break;	/* FSB533 */
+	case 3: sysinfo->fsb_frequency = 667; break;	/* FSB667 */
+	default: die("Unsupported FSB speed");
+	}
 
-	reg16 = MCHBAR16(CPCTL);
-	reg16 &= 0xff00;
-	reg16 |= HPLLGPLLPowerDown[reg32];
-	MCHBAR16(CPCTL) = reg16;
+	/* Program CPCTL according to FSB speed */
+	/* Only write the lower byte */
+	switch (sysinfo->fsb_frequency) {
+	case 400: MCHBAR8(CPCTL) = 0x90; break; /* FSB400 */
+	case 533: MCHBAR8(CPCTL) = 0x95; break;	/* FSB533 */
+	case 667: MCHBAR8(CPCTL) = 0x8d; break;	/* FSB667 */
+	}
 
-	reg16 &= ~(1 << 11);
-	MCHBAR16(CPCTL) = reg16;
+	MCHBAR16(CPCTL) &= ~(1 << 11);
 
-	reg16 = MCHBAR16(CPCTL); 
+	reg16 = MCHBAR16(CPCTL); /* Read back register to activate settings */
 }
 
 static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 {
 	u8  reg8;
 	u16 reg16;
-	u8  freq, second_vco;
+	u8  freq, second_vco, voltage;
 
 #define CRCLK_166MHz	0x00
 #define CRCLK_200MHz	0x01
@@ -1780,50 +1804,52 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 #define CDCLK_200MHz	0x00
 #define CDCLK_320MHz	0x40
 
+#define VOLTAGE_1_05	0x00
+#define VOLTAGE_1_50	0x01
+
 	printk_debug ("Setting Graphics Frequency... \n");
 
-	reg16 = pci_read_config16(PCI_DEV(0,2,0), GCFC);
-	reg16 |= (1<<11) | (1<<9); 
-	pci_write_config16(PCI_DEV(0,2,0), GCFC, reg16);
+	printk_debug("FSB: %d MHz ", sysinfo->fsb_frequency);
 
-	/* Program CPCTL according to FSB speed */
-	reg16 = MCHBAR16(CPCTL);
-	reg16 &= 0xff00; 
+	voltage = VOLTAGE_1_05;
+	if (MCHBAR32(DFT_STRAP1) & (1 << 20))
+		voltage = VOLTAGE_1_50;
+	printk_debug("Voltage: %s ", (voltage==VOLTAGE_1_05)?"1.05V":"1.5V");
 
-	switch (MCHBAR32(CLKCFG) & 0x7) {
-	case 0: sysinfo->fsb_frequency = 400; break;	/* FSB400 */
-	case 1: sysinfo->fsb_frequency = 533; break;	/* FSB533 */
-	case 3: sysinfo->fsb_frequency = 667; break;	/* FSB667 */
-	default: die("Unsupported FSB speed");
-	}
-
-	switch (sysinfo->fsb_frequency) {
-	case 533: reg16 |= 0x95; break;	/* FSB533 */
-	case 667: reg16 |= 0x8d; break;	/* FSB667 */
-	}
-	MCHBAR16(CPCTL) = reg16;
+	/* Gate graphics hardware for frequency change */
+	reg8 = pci_read_config16(PCI_DEV(0,2,0), GCFC + 1);
+	reg8 = (1<<3) | (1<<1); /* disable crclk, gate cdclk */
+	pci_write_config8(PCI_DEV(0,2,0), GCFC + 1, reg8);
 
 	/* Get graphics frequency capabilities */
-	reg8 = (pci_read_config8(PCI_DEV(0, 0x00,0), 0xe5) & 0x0e) >> 1;
-	
+	reg8 = sdram_capabilities_core_frequencies();
+
 	freq = CRCLK_250MHz;
 	switch (reg8) {
-	case 0:
-		if (MCHBAR32(DFT_STRAP1) & (1 << 20))
+	case GFX_FREQUENCY_CAP_ALL:
+		if (voltage == VOLTAGE_1_05)
 			freq = CRCLK_250MHz;
 		else
 			freq = CRCLK_400MHz;
 		break;
-	case 2: freq = CRCLK_250MHz; break;
-	case 3: freq = CRCLK_200MHz; break;
-	case 4: freq = CRCLK_166MHz; break;
+	case GFX_FREQUENCY_CAP_250MHZ: freq = CRCLK_250MHz; break;
+	case GFX_FREQUENCY_CAP_200MHZ: freq = CRCLK_200MHz; break;
+	case GFX_FREQUENCY_CAP_166MHZ: freq = CRCLK_166MHz; break;
 	}
 
 	if (freq != CRCLK_400MHz) {
-		
+		/* What chipset are we? Force 166MHz for GMS */
 		reg8 = (pci_read_config8(PCI_DEV(0, 0x00,0), 0xe7) & 0x70) >> 4;
 		if (reg8==2)
 			freq = CRCLK_166MHz;
+	}
+
+	printk_debug("Render: ");
+	switch (freq) {
+	case CRCLK_166MHz: printk_debug("166Mhz"); break;
+	case CRCLK_200MHz: printk_debug("200Mhz"); break;
+	case CRCLK_250MHz: printk_debug("250Mhz"); break;
+	case CRCLK_400MHz: printk_debug("400Mhz"); break;
 	}
 
 	if (i945_silicon_revision() == 0) {
@@ -1832,10 +1858,9 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 		sysinfo->mvco4x = 0;
 	}
 
-	
 	second_vco = 0;
 
-	if (MCHBAR32(DFT_STRAP1) & (1 << 20)) {
+	if (voltage == VOLTAGE_1_50) {
 		second_vco = 1;
 	} else if ((i945_silicon_revision() > 0) && (freq == CRCLK_250MHz))  {
 		u16 mem = sysinfo->memory_frequency;
@@ -1852,34 +1877,41 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 	}
 
 	if (second_vco) {
-		printk_debug("Programming second TCO\n");
 		sysinfo->clkcfg_bit7=1;
 	} else {
 		sysinfo->clkcfg_bit7=0;
 	}
 
+	/* Graphics Core Render Clock */
 	reg16 = pci_read_config16(PCI_DEV(0,2,0), GCFC);
 	reg16 &= ~( (7 << 0) | (1 << 13) );
 	reg16 |= freq;
 	pci_write_config16(PCI_DEV(0,2,0), GCFC, reg16);
 
-	reg16 = pci_read_config16(PCI_DEV(0,2,0), GCFC);
-	reg16 &= ~( (1<<7) | (7<<4) );
-	if (MCHBAR32(DFT_STRAP1) & (1 << 20)) {
-		reg16 |= CDCLK_200MHz; 
+	/* Graphics Core Display Clock */
+	reg8 = pci_read_config8(PCI_DEV(0,2,0), GCFC);
+	reg8 &= ~( (1<<7) | (7<<4) );
+
+	if (voltage == VOLTAGE_1_05) {
+		reg8 |= CDCLK_200MHz;
+		printk_debug(" Display: 200MHz\n");
 	} else {
-		reg16 |= CDCLK_320MHz; 
+		reg8 |= CDCLK_320MHz;
+		printk_debug(" Display: 320MHz\n");
 	}
-	pci_write_config16(PCI_DEV(0,2,0), GCFC, reg16);
+	pci_write_config8(PCI_DEV(0,2,0), GCFC, reg8);
 
-	reg16 = pci_read_config16(PCI_DEV(0,2,0), GCFC);
-	reg16 &= ~( (1<<10) | (1<<8) );
-	pci_write_config16(PCI_DEV(0,2,0), GCFC, reg16);
-	reg16 |= (1<<10) | (1<<8);
-	pci_write_config16(PCI_DEV(0,2,0), GCFC, reg16);
+	reg8 = pci_read_config8(PCI_DEV(0,2,0), GCFC + 1);
 
-	reg16 &= 0xf0ff;
-	pci_write_config16(PCI_DEV(0,2,0), GCFC, reg16);
+	reg8 |= (1<<3) | (1<<1);
+	pci_write_config8(PCI_DEV(0,2,0), GCFC + 1, reg8);
+
+	reg8 |= 0x0f;
+	pci_write_config8(PCI_DEV(0,2,0), GCFC + 1, reg8);
+
+	/* Ungate core render and display clocks */
+	reg8 &= 0xf0;
+	pci_write_config8(PCI_DEV(0,2,0), GCFC + 1, reg8);
 }
 
 static void sdram_program_memory_frequency(struct sys_info *sysinfo)
@@ -1888,7 +1920,7 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 	u8 reg8;
 
 	printk_debug ("Setting Memory Frequency... ");
-	
+
 	clkcfg = MCHBAR32(CLKCFG);
 
 	printk_debug("CLKCFG=0x%08x, ", clkcfg);
@@ -1902,7 +1934,7 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 
 	if (sysinfo->clkcfg_bit7) {
 		printk_debug("second VCO, ");
-		
+
 		clkcfg |= (1 << 7);
 	}
 
@@ -1920,7 +1952,7 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 
 	MCHBAR32(CLKCFG) = clkcfg;
 
-	/* Make sure the following code is in the 
+	/* Make sure the following code is in the
 	 * cache before we execute it.
 	 */
 	goto cache_code;
@@ -1929,13 +1961,11 @@ vco_update:
 	reg8 &= ~(1 << 7);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 
-	
 	clkcfg &= ~(1 << 10);
 	MCHBAR32(CLKCFG) = clkcfg;
 	clkcfg |= (1 << 10);
 	MCHBAR32(CLKCFG) = clkcfg;
 
-	
 	__asm__ __volatile__ (
 		"	movl $0x100, %%ecx\n"
 		"delay_update:\n"
@@ -1949,7 +1979,6 @@ vco_update:
 		: "%ecx"
 		);
 
-	
 	clkcfg &= ~(1 << 10);
 	MCHBAR32(CLKCFG) = clkcfg;
 
@@ -1968,12 +1997,12 @@ static void sdram_program_clock_crossing(void)
 	int idx = 0;
 
 	/**
-	 * The first two lines of each of these tables are for FSB533,
-	 * the following three lines are for FSB667. We ignore FSB400.
-	 * Thus we add the indices according to our clocks from CLKCFG.
+	 * We add the indices according to our clocks from CLKCFG.
 	 */
 
 	static const u32 data_clock_crossing[] = {
+		0x00100401, 0x00000000, /* DDR400 FSB400 */
+
 		0x08040120, 0x00000000,	/* DDR400 FSB533 */
 		0x00100401, 0x00000000, /* DDR533 FSB533 */
 
@@ -1983,6 +2012,8 @@ static void sdram_program_clock_crossing(void)
 	};
 
 	static const u32 command_clock_crossing[] = {
+		0x04020208, 0x00000000, /* DDR400 FSB400 */
+
 		0x00060108, 0x00000000,	/* DDR400 FSB533 */
 		0x04020108, 0x00000000, /* DDR533 FSB533 */
 
@@ -2004,19 +2035,19 @@ static void sdram_program_clock_crossing(void)
 
 	printk_debug(" FSB=");
 	switch (reg32 & 7) {
-	case 0:	printk_debug("400\n"); return;
-	case 1:	printk_debug("533"); idx += 0; break;
-	case 3:	printk_debug("667"); idx += 4; break;
+	case 0:	printk_debug("400\n"); idx += 0; break;
+	case 1:	printk_debug("533"); idx += 2; break;
+	case 3:	printk_debug("667"); idx += 6; break;
 	default: printk_debug("RSVD\n"); return;
 	}
+
+	MCHBAR32(CCCFT + 0) = command_clock_crossing[idx];
+	MCHBAR32(CCCFT + 4) = command_clock_crossing[idx + 1];
 
 	MCHBAR32(C0DCCFT + 0) = data_clock_crossing[idx];
 	MCHBAR32(C0DCCFT + 4) = data_clock_crossing[idx + 1];
 	MCHBAR32(C1DCCFT + 0) = data_clock_crossing[idx];
 	MCHBAR32(C1DCCFT + 4) = data_clock_crossing[idx + 1];
-
-	MCHBAR32(CCCFT + 0) = command_clock_crossing[idx];
-	MCHBAR32(CCCFT + 4) = command_clock_crossing[idx + 1];
 
 	printk_debug("... ok\n");
 }
@@ -2037,7 +2068,7 @@ static void sdram_disable_fast_dispatch(void)
 static void sdram_pre_jedec_initialization(void)
 {
 	u32 reg32;
-	
+
 	reg32 = MCHBAR32(WCC);
 	reg32 &= 0x113ff3ff;
 	reg32 |= (4 << 29) | (3 << 25) | (1 << 10);
@@ -2051,6 +2082,7 @@ static void sdram_pre_jedec_initialization(void)
 	MCHBAR32(MMARB1) &= ~(7 << 8);
 	MCHBAR32(MMARB1) |= (3 << 8);
 
+	/* Adaptive Idle Timer Control */
 	MCHBAR32(C0AIT) = 0x000006c4;
 	MCHBAR32(C0AIT+4) = 0x871a066d;
 
@@ -2072,9 +2104,9 @@ static void sdram_enhanced_addressing_mode(struct sys_info *sysinfo)
 	u32 chan0 = 0, chan1 = 0;
 	int chan0_dualsided, chan1_dualsided, chan0_populated, chan1_populated;
 
-	chan0_populated =  (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED || 
+	chan0_populated =  (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED ||
 			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED);
-	chan1_populated = (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED || 
+	chan1_populated = (sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED ||
 			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED);
 	chan0_dualsided = (sysinfo->banksize[1] || sysinfo->banksize[3]);
 	chan1_dualsided = (sysinfo->banksize[5] || sysinfo->banksize[7]);
@@ -2155,6 +2187,7 @@ static void sdram_post_jedec_initialization(struct sys_info *sysinfo)
 
 	/* Enable Channel XORing for Dual Channel Interleave */
 	if (sysinfo->interleaved) {
+
 		reg32 = MCHBAR32(DCC);
 #if CHANNEL_XOR_RANDOMIZATION
 		reg32 &= ~(1 << 10);
@@ -2189,34 +2222,40 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	u32 reg32;
 	int integrated_graphics = 1;
 	int i;
-	
+
 	reg32 = MCHBAR32(C0DRT2);
 	reg32 &= 0xffffff00;
 	/* Idle timer = 8 clocks, CKE idle timer = 16 clocks */
-	reg32 |= (1 << 5) | (1 << 4); 
+	reg32 |= (1 << 5) | (1 << 4);
 	MCHBAR32(C0DRT2) = reg32;
 
 	reg32 = MCHBAR32(C1DRT2);
 	reg32 &= 0xffffff00;
 	/* Idle timer = 8 clocks, CKE idle timer = 16 clocks */
-	reg32 |= (1 << 5) | (1 << 4); 
+	reg32 |= (1 << 5) | (1 << 4);
 	MCHBAR32(C1DRT2) = reg32;
 
 	reg32 = MCHBAR32(C0DRC1);
-	
-	reg32 |= (1 << 12) | (1 << 11); 
+
+	reg32 |= (1 << 12) | (1 << 11);
 	MCHBAR32(C0DRC1) = reg32;
 
 	reg32 = MCHBAR32(C1DRC1);
-	
-	reg32 |= (1 << 12) | (1 << 11); 
+
+	reg32 |= (1 << 12) | (1 << 11);
 	MCHBAR32(C1DRC1) = reg32;
 
 	if (i945_silicon_revision()>1) {
-		MCHBAR16(UPMC1) = 0x1010;
+		/* FIXME bits 5 and 0 only if PCIe graphics is disabled */
+		u16 peg_bits = (1 << 5) | (1 << 0);
+
+		MCHBAR16(UPMC1) = 0x1010 | peg_bits;
 	} else {
+		/* FIXME bits 5 and 0 only if PCIe graphics is disabled */
+		u16 peg_bits = (1 << 5) | (1 << 0);
+
 		/* Rev 0 and 1 */
-		MCHBAR16(UPMC1) = 0x0010;
+		MCHBAR16(UPMC1) = 0x0010 | peg_bits;
 	}
 
 	reg16 = MCHBAR16(UPMC2);
@@ -2225,7 +2264,7 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	MCHBAR16(UPMC2) = reg16;
 
 	MCHBAR32(UPMC3) = 0x000f06ff;
-	
+
 	for (i=0; i<5; i++) {
 		MCHBAR32(UPMC3) &= ~(1 << 16);
 		MCHBAR32(UPMC3) |= (1 << 16);
@@ -2233,7 +2272,7 @@ static void sdram_power_management(struct sys_info *sysinfo)
 
 	MCHBAR32(GIPMC1) = 0x8000000c;
 
-	reg16 = MCHBAR16(CPCTL); 
+	reg16 = MCHBAR16(CPCTL);
 	reg16 &= ~(7 << 11);
 	if (i945_silicon_revision()>2) {
 		reg16 |= (6 << 11);
@@ -2243,7 +2282,6 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	MCHBAR16(CPCTL) = reg16;
 
 #if 0
-	/* This is set later in the game */
 	if ((MCHBAR32(ECO) & (1 << 16)) != 0) {
 #else
 	if (i945_silicon_revision() != 0) {
@@ -2284,6 +2322,7 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	}
 
 #if 0
+
 	if (i945_silicon_revision() == 0) {
 		MCHBAR32(FSBPMC3) &= ~(1 << 29);
 	} else {
@@ -2307,8 +2346,8 @@ static void sdram_power_management(struct sys_info *sysinfo)
 
 	MCHBAR32(FSBPMC4) |= (1 << 5);
 
-	if (i945_silicon_revision() < 2) {
-		/* stepping 0 and 1 */
+	if ((i945_silicon_revision() < 2) /* || cpuid() = 0x6e8 */ ) {
+		/* stepping 0 and 1 or CPUID 6e8 */
 		MCHBAR32(FSBPMC4) &= ~(1 << 4);
 	} else {
 		MCHBAR32(FSBPMC4) |= (1 << 4);
@@ -2322,7 +2361,10 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	reg8 |= (1 << 2);
 	pci_write_config8(PCI_DEV(0, 0x2, 0), 0xc1, reg8);
 
+#if C2_SELF_REFRESH_DISABLE
+
 	if (integrated_graphics) {
+		printk_debug("C2 self-refresh with IGD\n");
 		MCHBAR16(MIPMC4) = 0x0468;
 		MCHBAR16(MIPMC5) = 0x046c;
 		MCHBAR16(MIPMC6) = 0x046c;
@@ -2331,12 +2373,25 @@ static void sdram_power_management(struct sys_info *sysinfo)
 		MCHBAR16(MIPMC5) = 0x646c;
 		MCHBAR16(MIPMC6) = 0x646c;
 	}
+#else
+	if (integrated_graphics) {
+		MCHBAR16(MIPMC4) = 0x04f8;
+		MCHBAR16(MIPMC5) = 0x04fc;
+		MCHBAR16(MIPMC6) = 0x04fc;
+	} else {
+		MCHBAR16(MIPMC4) = 0x64f8;
+		MCHBAR16(MIPMC5) = 0x64fc;
+		MCHBAR16(MIPMC6) = 0x64fc;
+	}
+
+#endif
 
 	reg32 = MCHBAR32(PMCFG);
 	reg32 &= ~(3 << 17);
 	reg32 |= (2 << 17);
-	reg32 |= (1 << 4);
 	MCHBAR32(PMCFG) = reg32;
+
+	MCHBAR32(PMCFG) |= (1 << 4);
 
 	reg32 = MCHBAR32(0xc30);
 	reg32 &= 0xffffff00;
@@ -2348,13 +2403,76 @@ static void sdram_power_management(struct sys_info *sysinfo)
 
 static void sdram_thermal_management(void)
 {
-	/* The Thermal Sensors for DIMMs at 0x50, 0x52 are at I2C addr
-	 * 0x30/0x32. 
-	 */
 
-	/* Explicitly set to 0 */
 	MCHBAR8(TCO1) = 0x00;
 	MCHBAR8(TCO0) = 0x00;
+
+	/* The Thermal Sensors for DIMMs at 0x50, 0x52 are at I2C addr
+	 * 0x30/0x32.
+	 */
+
+}
+
+static void sdram_save_receive_enable(void)
+{
+	int i;
+	u32 reg32;
+	u8 values[4];
+
+	/* The following values are stored to an unused CMOS
+	 * area and restored instead of recalculated in case
+	 * of an S3 resume.
+	 *
+	 * C0WL0REOST [7:0] 		-> 8 bit
+	 * C1WL0REOST [7:0] 		-> 8 bit
+	 * RCVENMT    [11:8] [3:0]	-> 8 bit
+	 * C0DRT1     [27:24]		-> 4 bit
+	 * C1DRT1     [27:24]		-> 4 bit
+	 */
+
+	values[0] = MCHBAR8(C0WL0REOST);
+	values[1] = MCHBAR8(C1WL0REOST);
+
+	reg32 = MCHBAR32(RCVENMT);
+	values[2] = (u8)((reg32 >> (8 - 4)) & 0xf0) | (reg32 & 0x0f);
+
+	reg32 = MCHBAR32(C0DRT1);
+	values[3] = (reg32 >> 24) & 0x0f;
+	reg32 = MCHBAR32(C1DRT1);
+	values[3] |= (reg32 >> (24 - 4)) & 0xf0;
+
+	/* coreboot only uses bytes 0 - 127 for its CMOS values so far
+	 * so we grad bytes 128 - 131 to save the receive enable values
+	 */
+
+	for (i=0; i<4; i++)
+		cmos_write(values[i], 128 + i);
+}
+
+static void sdram_recover_receive_enable(void)
+{
+	int i;
+	u32 reg32;
+	u8 values[4];
+
+	for (i=0; i<4; i++)
+		values[i] = cmos_read(128 + i);
+
+	MCHBAR8(C0WL0REOST) = values[0];
+	MCHBAR8(C1WL0REOST) = values[1];
+
+	reg32 = MCHBAR32(RCVENMT);
+	reg32 &= ~((0x0f << 8) | (0x0f << 0));
+	reg32 |= ((u32)(values[2] & 0xf0) << (8 - 4)) | (values[2] & 0x0f);
+	MCHBAR32(RCVENMT) = reg32;
+
+	reg32 = MCHBAR32(C0DRT1) & ~(0x0f << 24);
+	reg32 |= (u32)(values[3] & 0x0f) << 24;
+	MCHBAR32(C0DRT1) = reg32;
+
+	reg32 = MCHBAR32(C1DRT1) & ~(0x0f << 24);
+	reg32 |= (u32)(values[3] & 0xf0) << (24 - 4);
+	MCHBAR32(C1DRT1) = reg32;
 }
 
 #include "rcven.c"
@@ -2363,14 +2481,20 @@ static void sdram_program_receive_enable(struct sys_info *sysinfo)
 {
 	MCHBAR32(REPC) |= (1 << 0);
 
-	receive_enable_adjust(sysinfo);
+	/* Program Receive Enable Timings */
+	if (sysinfo->boot_path == BOOT_PATH_RESUME) {
+		sdram_recover_receive_enable();
+	} else {
+		receive_enable_adjust(sysinfo);
+		sdram_save_receive_enable();
+	}
 
 	MCHBAR32(C0DRC1) |= (1 << 6);
 	MCHBAR32(C1DRC1) |= (1 << 6);
 	MCHBAR32(C0DRC1) &= ~(1 << 6);
 	MCHBAR32(C1DRC1) &= ~(1 << 6);
 
-	MCHBAR32(MIPMC3) |= (0x0f << 0); 
+	MCHBAR32(MIPMC3) |= (0x0f << 0);
 }
 
 /**
@@ -2381,9 +2505,9 @@ static void sdram_program_receive_enable(struct sys_info *sysinfo)
 static void sdram_on_die_termination(struct sys_info *sysinfo)
 {
 	static const u32 odt[] = {
-		0x00024911, 0xe0010000, 
-		0x00049211, 0xe0020000, 
-		0x0006db11, 0xe0030000, 
+		0x00024911, 0xe0010000,
+		0x00049211, 0xe0020000,
+		0x0006db11, 0xe0030000,
 	};
 
 	u32 reg32;
@@ -2397,7 +2521,7 @@ static void sdram_on_die_termination(struct sys_info *sysinfo)
 	if ( !(sysinfo->dimm[0] != SYSINFO_DIMM_NOT_POPULATED &&
 			sysinfo->dimm[1] != SYSINFO_DIMM_NOT_POPULATED) ) {
 		printk_debug("one dimm per channel config.. \n");
-		
+
 		reg32 = MCHBAR32(C0ODT);
 		reg32 &= ~(7 << 28);
 		MCHBAR32(C0ODT) = reg32;
@@ -2446,14 +2570,26 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 		clocks[1] |= (1 << 2) | (1 << 3);
 
 #ifdef OVERRIDE_CLOCK_DISABLE
-	clocks[0] = 0xf; 
-	clocks[1] = 0xf; 
+	/* Usually system firmware turns off system memory clock signals
+	 * to unused SO-DIMM slots to reduce EMI and power consumption.
+	 * However, the Kontron 986LCD-M does not like unused clock
+	 * signals to be disabled.
+	 * If other similar mainboard occur, it would make sense to make
+	 * this an entry in the sysinfo structure, and pre-initialize that
+	 * structure in the mainboard's auto.c main() function.
+	 * For now an #ifdef will do.
+	 */
+
+	clocks[0] = 0xf; /* force all clock gate pairs to enable */
+	clocks[1] = 0xf; /* force all clock gate pairs to enable */
 #endif
 
 	MCHBAR8(C0DCLKDIS) = clocks[0];
 	MCHBAR8(C1DCLKDIS) = clocks[1];
 }
 
+#define RTT_ODT_NONE	0
+#define RTT_ODT_50_OHM  ( (1 << 9) | (1 << 5) )
 #define RTT_ODT_75_OHM	(1 << 5)
 #define RTT_ODT_150_OHM	(1 << 9)
 
@@ -2481,7 +2617,7 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		if (sysinfo->banksize[i]  == 0) {
 			continue;
 		}
-		
+
 		printk_debug("jedec enable sequence: bank %d\n", i);
 		switch (i) {
 		case 0:
@@ -2496,14 +2632,15 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		default:
 			if (nonzero != -1) {
 				printk_debug("bankaddr from bank size of rank %d\n", nonzero);
-				bankaddr += (1 << sysinfo->banksize[nonzero]) << (sysinfo->interleaved?28:27);
+				bankaddr += sysinfo->banksize[nonzero] <<
+					(sysinfo->interleaved ? 26 : 25);
 				break;
 			}
 			/* No populated bank hit before. Start at address 0 */
 			bankaddr = 0;
 		}
 
-		/* We have a bank with a non-zero size.. Remember it 
+		/* We have a bank with a non-zero size.. Remember it
 		 * for the next offset we have to calculate
 		 */
 		nonzero = i;
@@ -2524,9 +2661,11 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		default: die("Jedec Error (tWR).\n");
 		}
 
+		/* Set "Burst Type" */
+		mrsaddr |= MRS_BT;
+
 		/* Interleaved */
 		if (sysinfo->interleaved) {
-			mrsaddr |= MRS_BT;
 			mrsaddr = mrsaddr << 1;
 		}
 
@@ -2572,7 +2711,7 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		tmpaddr = bankaddr;
 		tmpaddr |= mrsaddr;
 		/* Set DLL reset bit */
-		if (sysinfo->interleaved) 
+		if (sysinfo->interleaved)
 			tmpaddr |= (1 << 12);
 		else
 			tmpaddr |= (1 << 11);
@@ -2598,14 +2737,14 @@ static void sdram_jedec_enable(struct sys_info *sysinfo)
 		tmpaddr = bankaddr;
 		tmpaddr |= mrsaddr;
 		ram_read32(tmpaddr);
-	
+
 		/* Extended Mode Register Set */
 		PRINTK_DEBUG("Extended Mode Register Set: ODT/OCD\n");
 		do_ram_command(RAM_COMMAND_EMRS | RAM_EMRS_1);
-		
+
 		tmpaddr = bankaddr;
 		if (!sdram_capabilities_dual_channel()) {
-			
+
 			tmpaddr |= RTT_ODT_75_OHM | EMRS_OCD_DEFAULT;
 		} else if (sysinfo->interleaved) {
 			tmpaddr |= ((RTT_ODT_150_OHM | EMRS_OCD_DEFAULT) << 1);
@@ -2647,13 +2786,10 @@ static void sdram_setup_processor_side(void)
 		MCHBAR32(SLPCTL) |= (1 << 8);
 }
 
-#define BOOT_MODE_RESUME	1
-#define BOOT_MODE_NORMAL	0
-
 /**
- * @param boot_mode: 0 = normal, 1 = resume
+ * @param boot_path: 0 = normal, 1 = reset, 2 = resume from s3
  */
-void sdram_initialize(int boot_mode)
+void sdram_initialize(int boot_path)
 {
 	struct sys_info sysinfo;
 	u8 reg8, cas_mask;
@@ -2664,6 +2800,8 @@ void sdram_initialize(int boot_mode)
 
 	memset(&sysinfo, 0, sizeof(sysinfo));
 
+	sysinfo.boot_path = boot_path;
+
 	/* Look at the type of DIMMs and verify all DIMMs are x8 or x16 width */
 	sdram_get_dram_configuration(&sysinfo);
 
@@ -2672,36 +2810,36 @@ void sdram_initialize(int boot_mode)
 
 	/* Determine common CAS */
 	cas_mask = sdram_possible_cas_latencies(&sysinfo);
-	
+
 	/* Choose Common Frequency */
 	sdram_detect_cas_latency_and_ram_speed(&sysinfo, cas_mask);
-	
+
 	/* Determine smallest common tRAS */
 	sdram_detect_smallest_tRAS(&sysinfo);
-	
+
 	/* Determine tRP */
 	sdram_detect_smallest_tRP(&sysinfo);
-	
+
 	/* Determine tRCD */
 	sdram_detect_smallest_tRCD(&sysinfo);
-	
+
 	/* Determine smallest refresh period */
 	sdram_detect_smallest_refresh(&sysinfo);
-	
+
 	/* Verify all DIMMs support burst length 8 */
 	sdram_verify_burst_length(&sysinfo);
-	
+
 	/* determine tWR */
 	sdram_detect_smallest_tWR(&sysinfo);
 
 	/* Determine DIMM size parameters (rows, columns banks) */
 	sdram_detect_dimm_size(&sysinfo);
-	
+
 	/* determine tRFC */
 	sdram_detect_smallest_tRFC(&sysinfo);
-	 
+
 	/* Program PLL settings */
-	sdram_program_pll_settings();
+	sdram_program_pll_settings(&sysinfo);
 
 	/* Program Graphics Frequency */
 	sdram_program_graphics_frequency(&sysinfo);
@@ -2711,10 +2849,10 @@ void sdram_initialize(int boot_mode)
 
 	/* Determine Mode of Operation (Interleaved etc) */
 	sdram_set_channel_mode(&sysinfo);
-	
+
 	/* Program Clock Crossing values */
 	sdram_program_clock_crossing();
-	
+
 	/* Disable fast dispatch */
 	sdram_disable_fast_dispatch();
 
@@ -2724,13 +2862,11 @@ void sdram_initialize(int boot_mode)
 
 	/* Program DRAM Row Boundary/Attribute Registers */
 
-	if (boot_mode != BOOT_MODE_RESUME) {
-		/* program row size DRB and set TOLUD */
-		sdram_program_row_boundaries(&sysinfo);
-	
-		/* program page size DRA */
-		sdram_set_row_attributes(&sysinfo);
-	}
+	/* program row size DRB and set TOLUD */
+	sdram_program_row_boundaries(&sysinfo);
+
+	/* program page size DRA */
+	sdram_set_row_attributes(&sysinfo);
 
 	/* Program CxBNKARC */
 	sdram_set_bank_architecture(&sysinfo);
@@ -2753,7 +2889,7 @@ void sdram_initialize(int boot_mode)
 	/* Enable System Memory Clocks */
 	sdram_enable_memory_clocks(&sysinfo);
 
-	if (boot_mode != BOOT_MODE_RESUME) {
+	if (boot_path == BOOT_PATH_NORMAL) {
 		/* Jedec Initialization sequence */
 		sdram_jedec_enable(&sysinfo);
 	}
@@ -2766,9 +2902,11 @@ void sdram_initialize(int boot_mode)
 
 	/* Program DRAM Throttling */
 	sdram_thermal_management();
-	
+
 	/* Normal Operations */
-	sdram_init_complete();
+	if (boot_path == BOOT_PATH_NORMAL) {
+		sdram_init_complete();
+	}
 
 	/* Program Receive Enable Timings */
 	sdram_program_receive_enable(&sysinfo);
@@ -2782,7 +2920,7 @@ void sdram_initialize(int boot_mode)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
 
 	printk_debug("RAM initialization finished.\n");
-	
+
 	sdram_setup_processor_side();
 }
 

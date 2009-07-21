@@ -133,7 +133,7 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	memset((void *) hpet, 0, sizeof(acpi_hpet_t));
 
 	/* fill out header fields */
-	memcpy(header->signature, HPET_NAME, 4);
+	memcpy(header->signature, "HPET", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
 	memcpy(header->oem_table_id, "COREBOOT", 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);

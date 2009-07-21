@@ -177,9 +177,9 @@ void acpi_create_madt(acpi_madt_t *madt)
 	memset((void *)madt, 0, sizeof(acpi_madt_t));
 	
 	/* fill out header fields */
-	memcpy(header->signature, MADT_NAME, 4);
+	memcpy(header->signature, "APIC", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, MADT_TABLE, 8);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	
 	header->length = sizeof(acpi_madt_t);
@@ -205,9 +205,9 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 	memset((void *)mcfg, 0, sizeof(acpi_mcfg_t));
 	
 	/* fill out header fields */
-	memcpy(header->signature, MCFG_NAME, 4);
+	memcpy(header->signature, "MCFG", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, MCFG_TABLE, 8);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	
 	header->length = sizeof(acpi_mcfg_t);
@@ -232,7 +232,7 @@ void acpi_create_ssdt_generator(acpi_header_t *ssdt, char *oem_table_id)
 {
 	unsigned long current=(unsigned long)ssdt+sizeof(acpi_header_t);
 	memset((void *)ssdt, 0, sizeof(acpi_header_t));
-	memcpy(&ssdt->signature, SSDT_NAME, 4);
+	memcpy(&ssdt->signature, "SSDT", 4);
 	ssdt->revision = 2;
 	memcpy(&ssdt->oem_id, OEM_ID, 6);
 	memcpy(&ssdt->oem_table_id, oem_table_id, 8);
@@ -289,9 +289,9 @@ void acpi_create_srat(acpi_srat_t *srat)
         memset((void *)srat, 0, sizeof(acpi_srat_t));
 
         /* fill out header fields */
-        memcpy(header->signature, SRAT_NAME, 4);
+        memcpy(header->signature, "SRAT", 4);
         memcpy(header->oem_id, OEM_ID, 6);
-        memcpy(header->oem_table_id, SRAT_TABLE, 8);
+        memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
         memcpy(header->asl_compiler_id, ASLC, 4);
 
         header->length = sizeof(acpi_srat_t);
@@ -316,9 +316,9 @@ void acpi_create_slit(acpi_slit_t *slit)
         memset((void *)slit, 0, sizeof(acpi_slit_t));
 
         /* fill out header fields */
-        memcpy(header->signature, SLIT_NAME, 4);
+        memcpy(header->signature, "SLIT", 4);
         memcpy(header->oem_id, OEM_ID, 6);
-        memcpy(header->oem_table_id, SLIT_TABLE, 8);
+        memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
         memcpy(header->asl_compiler_id, ASLC, 4);
 
         header->length = sizeof(acpi_slit_t);
@@ -343,7 +343,7 @@ void acpi_create_hpet(acpi_hpet_t *hpet)
 	/* fill out header fields */
 	memcpy(header->signature, HPET_NAME, 4);
 	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, HPET_TABLE, 8);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	
 	header->length = sizeof(acpi_hpet_t);
@@ -367,7 +367,7 @@ void acpi_create_facs(acpi_facs_t *facs)
 	
 	memset( (void *)facs,0, sizeof(acpi_facs_t));
 
-	memcpy(facs->signature, FACS_NAME, 4);
+	memcpy(facs->signature, "FACS", 4);
 	facs->length = sizeof(acpi_facs_t);
 	facs->hardware_signature = 0;
 	facs->firmware_waking_vector = 0;
@@ -383,9 +383,9 @@ void acpi_write_rsdt(acpi_rsdt_t *rsdt)
 	acpi_header_t *header=&(rsdt->header);
 	
 	/* fill out header fields */
-	memcpy(header->signature, RSDT_NAME, 4);
+	memcpy(header->signature, "RSDT", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, RSDT_TABLE, 8);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	
 	header->length = sizeof(acpi_rsdt_t);
@@ -405,9 +405,9 @@ void acpi_write_xsdt(acpi_xsdt_t *xsdt)
 	acpi_header_t *header=&(xsdt->header);
 	
 	/* fill out header fields */
-	memcpy(header->signature, XSDT_NAME, 4);
+	memcpy(header->signature, "XSDT", 4);
 	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, RSDT_TABLE, 8);
+	memcpy(header->oem_table_id, ACPI_TABLE_CREATOR, 8);
 	memcpy(header->asl_compiler_id, ASLC, 4);
 	
 	header->length = sizeof(acpi_xsdt_t);
@@ -533,7 +533,7 @@ void *acpi_find_wakeup_vector(void)
 
 	for (i = 0; ((char *) &rsdt->entry[i]) < end; i++) {
 		fadt = (acpi_fadt_t *) rsdt->entry[i];
-		if (strncmp((char *)fadt, FADT_NAME, sizeof(FADT_NAME) - 1) == 0)
+		if (strncmp((char *)fadt, "FACP", 4) == 0)
 			break;
 		fadt = NULL;
 	}

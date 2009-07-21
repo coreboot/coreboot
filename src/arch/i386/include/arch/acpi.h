@@ -18,34 +18,10 @@
 
 #include <stdint.h>
  
-#define RSDP_SIG	"RSD PTR "  /* RSDT Pointer signature */
-#define RSDP_NAME	"RSDP"
-
-#define RSDT_NAME	"RSDT"
-#define HPET_NAME	"HPET"
-#define MADT_NAME	"APIC"
-#define MCFG_NAME	"MCFG"
-#define SRAT_NAME	"SRAT"
-#define SLIT_NAME	"SLIT"
-#define SSDT_NAME	"SSDT"
-#define FACS_NAME	"FACS"
-#define FADT_NAME	"FACP"
-#define XSDT_NAME	"XSDT"
-
-// Misnomer, the NAME above is the 4 byte signature, this (TABLE) is the
-// OEM_TABLE_ID.
-//
+#define RSDP_SIG		"RSD PTR "  /* RSDT Pointer signature */
 #define ACPI_TABLE_CREATOR	"COREBOOT"
-#define RSDT_TABLE	ACPI_TABLE_CREATOR
-#define HPET_TABLE	ACPI_TABLE_CREATOR
-#define MCFG_TABLE	ACPI_TABLE_CREATOR
-#define MADT_TABLE	ACPI_TABLE_CREATOR
-#define SRAT_TABLE	ACPI_TABLE_CREATOR
-#define SLIT_TABLE	ACPI_TABLE_CREATOR
-#define XSDT_TABLE	ACPI_TABLE_CREATOR
-
-#define OEM_ID		"CORE  "
-#define ASLC		"CORE"
+#define OEM_ID			"CORE  "
+#define ASLC			"CORE"
 
 /* ACPI 3.0 table RSDP */
 

@@ -475,11 +475,6 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 	report_resource_stored(dev, resource, buf);
 }
 
-/**
- *
- * I tried to reuse the resource allocation code in amdk8_set_resource()
- * but it is too diffcult to deal with the resource allocation magic.
- */
 #if CONFIG_CONSOLE_VGA_MULTI == 1
 extern device_t vga_pri;	// the primary vga device, defined in device.c
 #endif

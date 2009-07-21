@@ -20,7 +20,13 @@
  */
 
 #include <arch/asm.h>
-#include "../../../../src/northbridge/intel/i945/ich7.h"
+
+// Make sure no stage 2 code is included:
+#define __ROMCC__
+
+// FIXME: Is this piece of code southbridge specific, or 
+// can it be cleaned up so this include is not required?
+#include "../../../southbridge/intel/i82801gx/i82801gx.h"
 
 #undef DEBUG_SMM_RELOCATION
 //#define DEBUG_SMM_RELOCATION

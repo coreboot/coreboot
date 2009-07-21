@@ -111,30 +111,41 @@ static void enable_vmx(void)
 #define PMG_CST_CONFIG_CONTROL	0xe2
 #define PMG_IO_BASE_ADDR	0xe3
 #define PMG_IO_CAPTURE_ADDR	0xe4
-#define PMB0 0x510 /* analogous to P_BLK in cpu.asl */
-#define PMB1 0x0	/* IO port that triggers SMI once cores are in the same state.
-			See CSM Trigger, at PMG_CST_CONFIG_CONTROL[6:4] */
+
+/* MWAIT coordination I/O base address. This must match
+ * the \_PR_.CPU0 PM base address.
+ */
+#define PMB0_BASE 0x510
+
+/* PMB1: I/O port that triggers SMI once cores are in the same state.
+ * See CSM Trigger, at PMG_CST_CONFIG_CONTROL[6:4]
+ */
+#define PMB1_BASE 0x800
 #define HIGHEST_CLEVEL		3
 static void configure_c_states(void)
 {
 	msr_t msr;
 
 	msr = rdmsr(PMG_CST_CONFIG_CONTROL);
-	msr.lo |= (1 << 15); // Lock configuration
-	msr.lo |= (1 << 10); // redirect IO-based CState transition requests to MWAIT
+	msr.lo |= (1 << 15); // config lock until next reset.
+	msr.lo |= (1 << 10); // Enable I/O MWAIT redirection for C-States
 	msr.lo &= ~(1 << 9); // Issue a single stop grant cycle upon stpclk
-	msr.lo &= ~7; msr.lo |= HIGHEST_CLEVEL; // support at most C3
 	// TODO Do we want Deep C4 and  Dynamic L2 shrinking?
+
+	/* Number of supported C-States */
+	msr.lo &= ~7;
+	msr.lo |= HIGHEST_CLEVEL; // support at most C3
+
 	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
 
-	// set P_BLK address
-	msr = rdmsr(PMG_IO_BASE_ADDR);
-	msr.lo = PMB0+4 | (PMB1<<16);
+	/* Set Processor MWAIT IO BASE (P_BLK) */
+	msr.hi = 0;
+	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
 	wrmsr(PMG_IO_BASE_ADDR, msr);
 
-	// set C_LVL controls
-	msr = rdmsr(PMG_IO_CAPTURE_ADDR);
-	msr.lo = PMB0+4 | (HIGHEST_CLEVEL-2)<<16; // -2 because LVL0+1 aren't counted
+	/* set C_LVL controls */
+	msr.hi = 0;
+	msr.lo = (PMB0_BASE + 4) | ((HIGHEST_CLEVEL - 2) << 16); // -2 because LVL0+1 aren't counted
 	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
 }
 
@@ -158,6 +169,19 @@ static void configure_misc(void)
 
 	msr.lo |= (1 << 20);	/* Lock Enhanced SpeedStep Enable */
 	wrmsr(IA32_MISC_ENABLE, msr);
+}
+
+#define PIC_SENS_CFG	0x1aa
+static void configure_pic_thermal_sensors(void)
+{
+	msr_t msr;
+
+	msr = rdmsr(PIC_SENS_CFG);
+
+	msr.lo |= (1 << 21); // inter-core lock TM1
+	msr.lo |= (1 << 4); // Enable bypass filter
+
+	wrmsr(PIC_SENS_CFG, msr);
 }
 
 #if CONFIG_USBDEBUG_DIRECT
@@ -205,7 +229,8 @@ static void model_6ex_init(device_t cpu)
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();
 
-	/* TODO: PIC thermal sensor control */
+	/* PIC thermal sensor control */
+	configure_pic_thermal_sensors();
 
 	/* Start up my cpu siblings */
 	intel_sibling_init(cpu);

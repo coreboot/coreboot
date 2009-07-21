@@ -126,9 +126,16 @@ static void enable_vmx(void)
 #define PMG_IO_BASE_ADDR	0xe3
 #define PMG_IO_CAPTURE_ADDR	0xe4
 
-#define PMB0_BASE		0x580
+/* MWAIT coordination I/O base address. This must match
+ * the \_PR_.CPU0 PM base address.
+ */
+#define PMB0_BASE		0x510
+
+/* PMB1: I/O port that triggers SMI once cores are in the same state.
+ * See CSM Trigger, at PMG_CST_CONFIG_CONTROL[6:4]
+ */
 #define PMB1_BASE		0x800
-#define CST_RANGE		2
+#define HIGHEST_CLEVEL		3
 static void configure_c_states(void)
 {
 	msr_t msr;
@@ -141,6 +148,10 @@ static void configure_c_states(void)
 	msr.lo &= ~(1 << 9); // Issue a  single stop grant cycle upon stpclk
 	msr.lo |= (1 << 3); // Dynamic L2
 
+        /* Number of supported C-States */
+	msr.lo &= ~7;
+	msr.lo |= HIGHEST_CLEVEL; // support at most C3
+
 	wrmsr(PMG_CST_CONFIG_CONTROL, msr);
 
 	/* Set Processor MWAIT IO BASE */
@@ -148,9 +159,9 @@ static void configure_c_states(void)
 	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (((PMB1_BASE + 9) & 0xffff) << 16);
 	wrmsr(PMG_IO_BASE_ADDR, msr);
 
-	/* Set IO Capture Address */
+	/* Set C_LVL controls and IO Capture Address */
 	msr.hi = 0;
-	msr.lo = ((PMB0_BASE + 4) & 0xffff) | (( CST_RANGE & 0xffff) << 16);
+	msr.lo = (PMB0_BASE + 4) | ((HIGHEST_CLEVEL - 2) << 16); // -2 because LVL0+1 aren't counted
 	wrmsr(PMG_IO_CAPTURE_ADDR, msr);
 }
 
@@ -228,6 +239,9 @@ static void model_6fx_init(device_t cpu)
 	/* Setup MTRRs */
 	x86_setup_mtrrs(36);
 	x86_mtrr_check();
+
+	/* Setup Page Attribute Tables (PAT) */
+	// TODO set up PAT
 
 #if CONFIG_USBDEBUG_DIRECT
 	set_ehci_debug(ehci_debug_addr);

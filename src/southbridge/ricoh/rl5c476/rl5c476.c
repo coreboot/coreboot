@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2004 Nick Barker <nick.barker9@btinternet.com>
+ * (C) Copyright 2004-2005 Nick Barker <nick.barker@btinternet.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -16,8 +16,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
  * MA 02110-1301 USA
  */
-/* (C) Copyright 2005 Nick Barker <nick.barker@btinternet.com
-   brought into line with the current architecture of coreboot */ 
 
 #include <arch/io.h>
 #include <device/device.h>
@@ -32,21 +30,13 @@
 static int enable_cf_boot = 0;
 static unsigned int cf_base;
 
-static void udelay(int i)
-{
-	for(; i > 0 ; i--)
-		inb(0x80);
-}
-
 static void rl5c476_init(device_t dev)
 {
-	//unsigned char enables;
 	pc16reg_t *pc16;
-
 	unsigned char *base;
 
 	/* cardbus controller function 1 for CF Socket */
-	printk_debug("rl5c476 init\n");
+	printk_debug("Ricoh RL5c476: Initializing.\n");
 
 	printk_debug("CF Base = %0x\n",cf_base);
 
@@ -54,98 +44,120 @@ static void rl5c476_init(device_t dev)
 	pci_write_config16(dev,0x82,0x00a0);
 
 	/* set up second slot as compact flash port if asked to do so */
-	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){ 
 
-		/* make sure isa interrupts are enabled */
-		pci_write_config16(dev,0x3e,0x0780);
-
-		/* pick up where 16 bit card control structure is (0x800 bytes into config structure) */
-		base = (unsigned char *)pci_read_config32(dev,0x10);
-		pc16 = (pc16reg_t *)(base + 0x800);
-
-		/* disable memory and io windows and turn off socket power */
-		pc16->pwctrl = 0;
-
-		/* disable irq lines */
-		pc16->igctrl = 0;
-
-		/* disable memory and I/O windows */
-		pc16->awinen = 0;
-
-		/* reset card, configure for I/O and set IRQ line */
-		pc16->igctrl = 0x69;
-
-		// set io window 0 for 1e0 - 1ef
- 		/* note this now sets CF up on a contiguous I/O window of 16 bytes, 0x1e0 to 0x1ef
-                   Be warned that this is not a standard IDE address as automatically detected by the likes
-                   of Filo, and would need patching to recognise these addresses as an IDE drive */
-		/* an earlier version of this driver set up 2 io windows to emulate the expected addresses
-                   for IDE2, however the pcmcia package within Linux then could not re-initiailse the
-                   device as it tried to take control of it. So I belive it is easier to patch Filo or the like
-                   to pick up this drive rather than playing silly games as the kernel tries to boot.
-		*/
-		pc16->iostl0 = 0xe0;
-		pc16->iosth0 = 1;
-
-		pc16->iospl0 = 0xef;
-		pc16->iosph0 = 1;
-
-		pc16->ioffl0 = 0;
-		pc16->ioffh0 = 0;
-
-		// clear window 1
-		pc16->iostl1 = 0;
-		pc16->iosth1 = 0;
-
-		pc16->iospl1 = 0;
-		pc16->iosph1 = 0;
-
-		pc16->ioffl1 = 0x0;
-		pc16->ioffh1 = 0;
-
-		// set up CF config window
-		pc16->smpga0 = cf_base>>24;
-		pc16->smsth0 = (cf_base>>20)&0x0f;
-		pc16->smstl0 = (cf_base>>12)&0xff;
-		pc16->smsph0 = ((cf_base>>20)&0x0f) | 0x80;
-		pc16->smspl0 = (cf_base>>12)&0xff;
-		pc16->moffl0 = 0;
-		pc16->moffh0 = 0x40;
-
-
-		// set I/O width for Auto Data width
-		pc16->ioctrl = 0x22;
-
-
-		// enable I/O window 0 and 1
-		pc16->awinen = 0xc1;
-
-
-		pc16->miscc1 = 1;
-
-		// apply power and enable outputs
-		pc16->pwctrl = 0xb0;
+	if (!enable_cf_boot) {
+		printk_debug("CF boot not enabled.\n");
+		return;
+	}
 	
-
-		// delay could be optimised, but this works
-		udelay(100000);
-	
-		pc16->igctrl = 0x69;
-
-
-		// 16 bit CF always have first config byte at 0x200 into Config structure,
-        	// but CF+ May Not according to spec - should locate through reading tuple data,
-        	// but this will do for now !!!
-		unsigned char *cptr;
-		cptr = (unsigned char *)(cf_base + 0x200);
-		printk_debug("CF Config = %x\n",*cptr);
-
-		// set CF to decode 16 IO bytes on any 16 byte boundary - rely on the io
-		// windows of the bridge set up above to map those bytes into the 
-		// addresses for ide controller 3 (0x1e8 - 0x1ef and 0x3ed - 0x3ee)
-		*cptr = 0x41;
+	if (PCI_FUNC(dev->path.pci.devfn) != 1) {
+		// Only configure if second CF slot.
+		return;
 	}
 
+	/* make sure isa interrupts are enabled */
+	pci_write_config16(dev,0x3e,0x0780);
+
+	/* pick up where 16 bit card control structure is
+	 * (0x800 bytes into config structure)
+	 */
+	base = (unsigned char *)pci_read_config32(dev,0x10);
+	pc16 = (pc16reg_t *)(base + 0x800);
+
+	/* disable memory and io windows and turn off socket power */
+	pc16->pwctrl = 0;
+
+	/* disable irq lines */
+	pc16->igctrl = 0;
+
+	/* disable memory and I/O windows */
+	pc16->awinen = 0;
+
+	/* reset card, configure for I/O and set IRQ line */
+	pc16->igctrl = 0x69;
+
+	/* set io window 0 for 1e0 - 1ef */
+	/* NOTE: This now sets CF up on a contiguous I/O window of
+	 * 16 bytes, 0x1e0 to 0x1ef.
+	 * Be warned that this is not a standard IDE address as
+	 * automatically detected by the likes of FILO, and would need
+	 * patching to recognise these addresses as an IDE drive.
+	 *
+	 * An earlier version of this driver set up 2 I/O windows to
+	 * emulate the expected addresses for IDE2, however the PCMCIA
+	 * package within Linux then could not re-initialize the
+	 * device as it tried to take control of it. So I believe it is
+	 * easier to patch Filo or the like to pick up this drive
+	 * rather than playing silly games as the kernel tries to
+	 * boot.
+	 *
+	 * Nonetheless, FILO needs a special option enabled to boot
+	 * from this configuration, and it needs to clean up
+	 * afterwards. Please refer to FILO documentation and source
+	 * code for more details.
+	 */
+	pc16->iostl0 = 0xe0;
+	pc16->iosth0 = 1;
+
+	pc16->iospl0 = 0xef;
+	pc16->iosph0 = 1;
+
+	pc16->ioffl0 = 0;
+	pc16->ioffh0 = 0;
+
+	/* clear window 1 */
+	pc16->iostl1 = 0;
+	pc16->iosth1 = 0;
+
+	pc16->iospl1 = 0;
+	pc16->iosph1 = 0;
+
+	pc16->ioffl1 = 0x0;
+	pc16->ioffh1 = 0;
+
+	/* set up CF config window */
+	pc16->smpga0 = cf_base>>24;
+	pc16->smsth0 = (cf_base>>20)&0x0f;
+	pc16->smstl0 = (cf_base>>12)&0xff;
+	pc16->smsph0 = ((cf_base>>20)&0x0f) | 0x80;
+	pc16->smspl0 = (cf_base>>12)&0xff;
+	pc16->moffl0 = 0;
+	pc16->moffh0 = 0x40;
+
+
+	/* set I/O width for Auto Data width */
+	pc16->ioctrl = 0x22;
+
+
+	/* enable I/O window 0 and 1 */
+	pc16->awinen = 0xc1;
+
+	pc16->miscc1 = 1;
+
+	/* apply power and enable outputs */
+	pc16->pwctrl = 0xb0;
+
+	// delay could be optimised, but this works
+	udelay(100000);
+
+	pc16->igctrl = 0x69;
+
+
+	/* 16 bit CF always have first config byte at 0x200 into
+	 * Config structure, but CF+ may not according to spec -
+	 * should locate through reading tuple data, but this should
+	 * do for now.
+	 */
+	unsigned char *cptr;
+	cptr = (unsigned char *)(cf_base + 0x200);
+	printk_debug("CF Config = %x\n",*cptr);
+
+	/* Set CF to decode 16 IO bytes on any 16 byte boundary - 
+	 * rely on the io windows of the bridge set up above to 
+	 * map those bytes into the addresses for IDE controller 3
+	 * (0x1e8 - 0x1ef and 0x3ed - 0x3ee)
+	 */
+	*cptr = 0x41;
 }
 
 void rl5c476_read_resources(device_t dev)
@@ -153,9 +165,12 @@ void rl5c476_read_resources(device_t dev)
 
 	struct resource *resource;
 
-   	 /* for cf socket we need an extra memory window for the control structure of the cf itself */
+	 /* For CF socket we need an extra memory window for 
+	  * the control structure of the CF itself
+	  */
 	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){ 
-		resource = new_resource(dev,1);    /* fake index as it isn't in pci config space */
+		/* fake index as it isn't in PCI config space */
+		resource = new_resource(dev, 1);
 		resource->flags |= IORESOURCE_MEM ;
 		resource->size = 0x1000;
 		resource->align = resource->gran = 12;

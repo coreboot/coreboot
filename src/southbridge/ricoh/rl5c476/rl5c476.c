@@ -24,6 +24,7 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <device/cardbus.h>
+#include <delay.h>
 #include "rl5c476.h"
 #include "chip.h"
 

@@ -1,8 +1,9 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2009 coresystems GmbH
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
- * Copyright (C) ???? Ollie Lo <ollielo@hotmail.com>
+ * Copyright (C) 2003 Ollie Lo <ollielo@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,16 +24,20 @@
 #include <pc80/keyboard.h>
 #include <device/device.h>
 #include <arch/io.h>
+#include <delay.h>
+
+/* Wait 200ms for keyboard controller answers */
+#define KBC_TIMEOUT_IN_MS 200
 
 static int kbc_input_buffer_empty(void)
 {
 	u32 timeout;
-	for(timeout = 1000000; timeout && (inb(0x64) & 0x02); timeout--) {
-		inb(0x80);
+	for(timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(0x64) & 0x02); timeout--) {
+		mdelay(1);
 	}
 
 	if (!timeout) {
-		printk_err("Unexpected Keyboard controller input buffer full\n");
+		printk_warning("Unexpected Keyboard controller input buffer full\n");
 	}
 	return !!timeout;
 }
@@ -41,12 +46,12 @@ static int kbc_input_buffer_empty(void)
 static int kbc_output_buffer_full(void)
 {
 	u32 timeout;
-	for(timeout = 1000000; timeout && ((inb(0x64) & 0x01) == 0); timeout--) {
-		inb(0x80);
+	for(timeout = KBC_TIMEOUT_IN_MS; timeout && ((inb(0x64) & 0x01) == 0); timeout--) {
+		mdelay(1);
 	}
 
 	if (!timeout) {
-		printk_err("Keyboard controller output buffer result timeout\n");
+		printk_warning("Keyboard controller output buffer result timeout\n");
 	}
 	return !!timeout;
 }
@@ -55,7 +60,8 @@ static int kbc_output_buffer_full(void)
 static int kbc_cleanup_buffers(void)
 {
 	u32 timeout;
-	for(timeout = 1000000; timeout && (inb(0x64) & 0x03); timeout--) {
+	for(timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(0x64) & 0x03); timeout--) {
+		mdelay(1);
 		inb(0x60);
 	}
 
@@ -75,7 +81,11 @@ static u8 send_keyboard(u8 command)
 	do {
 		if (!kbc_input_buffer_empty()) return 0;
 		outb(command, 0x60);
-		if (!kbc_output_buffer_full()) return 0;
+		if (!kbc_output_buffer_full()) {
+			printk_err("Could not send keyboard command %02x\n",
+					command);
+			return 0;
+		}
 		regval = inb(0x60);
 		--resend;
 	} while (regval == 0xFE && resend > 0);
@@ -93,18 +103,21 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 	/* clean up any junk that might have been in the kbc */
 	if (!kbc_cleanup_buffers()) return;
 
-	/* reset/self test 8042 - send cmd 0xAA,  */
+	/* reset/self test 8042 - send cmd 0xAA */
 	if (!kbc_input_buffer_empty()) return;
 	outb(0xAA, 0x64);
-	if (!kbc_output_buffer_full()) return;
-
-	/* read self-test result, 0x55 is returned in the output buffer (0x60) */
-	if ((regval = inb(0x60) != 0x55)) {
-		printk_err("Keyboard Controller selftest failed: 0x%x\n", regval);
+	if (!kbc_output_buffer_full()) {
+		printk_err("Could not reset keyboard controller.\n");
 		return;
 	}
 
-	/* Enable keyboard interface - No IRQ*/
+	/* read self-test result, 0x55 is returned in the output buffer (0x60) */
+	if ((regval = inb(0x60) != 0x55)) {
+		printk_err("Keyboard Controller self-test failed: 0x%x\n", regval);
+		return;
+	}
+
+	/* Enable keyboard interface - No IRQ */
 	resend = 10;
 	regval = 0;
 	do {
@@ -112,8 +125,11 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 		outb(0x60, 0x64);
 		if (!kbc_input_buffer_empty()) return;
 		outb(0x20, 0x60);	/* send cmd: enable keyboard */
-		if ((inb(0x64) & 0x01)) {
+		if (kbc_output_buffer_full()) {
 			regval = inb(0x60);
+		} else {
+			printk_info("Timeout while enabling keyboard. (No keyboard present?)\n");
+			regval = inb(0x60); /* Better than 0 ? */
 		}
 		--resend;
 	} while (regval == 0xFE && resend > 0);
@@ -127,7 +143,11 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 		printk_err("Keyboard selftest failed ACK: 0x%x\n", regval);
 		return;
 	}
-	if (!kbc_output_buffer_full()) return;
+	if (!kbc_output_buffer_full()) {
+		printk_err("Timeout waiting for keyboard after reset.\n");
+		return;
+	}
+		
 	regval = inb(0x60);
 	if (regval != 0xAA) {
 		printk_err("Keyboard selftest failed: 0x%x\n", regval);
@@ -174,7 +194,7 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 		outb(0x60, 0x64);
 		if (!kbc_input_buffer_empty()) return;
 		outb(0x61, 0x60);	/* send cmd: enable keyboard and IRQ 1 */
-		if ((inb(0x64) & 0x01)) {
+		if (kbc_output_buffer_full()) {
 			regval = inb(0x60);
 		}
 		--resend;

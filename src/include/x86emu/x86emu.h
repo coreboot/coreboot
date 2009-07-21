@@ -49,7 +49,8 @@
 /* FIXME: undefine printk for the moment */
 #ifdef COREBOOT_VERSION
 #include "console/console.h"
-#define printk printk_debug
+#undef printk
+#define printk(x...) do_printk(BIOS_DEBUG, x)
 #else
 #define printk printf
 #endif 

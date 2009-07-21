@@ -25,7 +25,6 @@ it with the version available from LANL.
  * C Bootstrap code for the coreboot
  */
 
-
 #include <console/console.h>
 #include <version.h>
 #include <device/device.h>
@@ -62,7 +61,7 @@ void hardwaremain(int boot_complete)
 	
 	post_code(0x39);
 
-	printk_notice("coreboot-%s%s %s %s...\n", 
+	printk(BIOS_NOTICE, "coreboot-%s%s %s %s...\n", 
 		      coreboot_version, coreboot_extra_version, coreboot_build,
 		      (boot_complete)?"rebooting":"booting");
 
@@ -113,6 +112,6 @@ void hardwaremain(int boot_complete)
 	elfboot(lb_mem);
 #endif
 #endif
-	printk_err("Boot failed.\n");
+	printk(BIOS_ERR, "Boot failed.\n");
 }
 

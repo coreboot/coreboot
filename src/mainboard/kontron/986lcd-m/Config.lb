@@ -28,8 +28,10 @@
 ##
 default CONFIG_USE_OPTION_TABLE = !CONFIG_USE_FALLBACK_IMAGE
 
-## CONFIG_XIP_ROM_SIZE must be a power of 2.
-default CONFIG_XIP_ROM_SIZE = 64 * 1024
+##
+## Image size calculation
+##
+
 include /config/nofailovercalculation.lb
 
 ##
@@ -175,7 +177,7 @@ chip northbridge/intel/i945
 
                         register "ide_legacy_combined" = "0x1"
                         register "ide_enable_primary" = "0x1"
-                        register "ide_enable_secondary" = "0x0"
+                        register "ide_enable_secondary" = "0x1"
                         register "sata_ahci" = "0x0"
 
                 	device pci 1b.0 on end # High Definition Audio

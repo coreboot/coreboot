@@ -80,8 +80,7 @@ uses CONFIG_MAINBOARD_VENDOR
 uses CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 uses CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 # Timers
-uses CONFIG_UDELAY_TSC
-uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+uses CONFIG_UDELAY_LAPIC
 # Console
 uses CONFIG_CONSOLE_SERIAL8250
 uses CONFIG_TTYS0_BAUD
@@ -131,10 +130,8 @@ default CONFIG_HAVE_FALLBACK_BOOT=1
 
 ##
 ## Delay timer options
-## Use timer2
 ## 
-default CONFIG_UDELAY_TSC=1
-default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
+default CONFIG_UDELAY_LAPIC=1
 
 ##
 ## Build code to reset the motherboard from coreboot
@@ -176,6 +173,7 @@ default CONFIG_HAVE_MP_TABLE=1
 ##
 default CONFIG_HAVE_ACPI_TABLES=1
 default CONFIG_HAVE_MAINBOARD_RESOURCES=1
+default CONFIG_HAVE_ACPI_RESUME=1
 
 ##
 ## Build code to export a CMOS option table
@@ -217,6 +215,13 @@ default CONFIG_DCACHE_RAM_BASE=( 0xfff00000 - CONFIG_DCACHE_RAM_SIZE - 1024*1024
 default CONFIG_USE_PRINTK_IN_CAR=1
 
 ##
+## Execute In Place settings
+##
+
+default CONFIG_XIP_ROM_SIZE = 128 * 1024
+default CONFIG_XIP_ROM_BASE = ( CONFIG_ROMBASE - CONFIG_XIP_ROM_SIZE + CONFIG_ROM_IMAGE_SIZE )
+
+##
 ## Build code to setup a generic IOAPIC
 ##
 default CONFIG_IOAPIC=1
@@ -232,12 +237,12 @@ default CONFIG_MAINBOARD_VENDOR=     "KONTRON"
 ###
 
 ## CONFIG_ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
-default CONFIG_ROM_IMAGE_SIZE = 65536
+default CONFIG_ROM_IMAGE_SIZE = 0x10000
 
 ##
-## Use a small 8K stack
+## Use a small 32K stack
 ##
-default CONFIG_STACK_SIZE=0x2000
+default CONFIG_STACK_SIZE=0x8000
 
 ##
 ## Use a small 32K heap

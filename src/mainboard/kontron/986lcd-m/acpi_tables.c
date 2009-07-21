@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  * 
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,16 +19,28 @@
  * MA 02110-1301 USA
  */
 
+#include <types.h>
 #include <string.h>
 #include <console/console.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <arch/smp/mpspec.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <cpu/x86/msr.h>
 #include "dmi.h"
 
-extern unsigned char AmlCode[];
+#define OLD_ACPI 0
 
+extern unsigned char AmlCode[];
+#if HAVE_ACPI_SLIC
+unsigned long acpi_create_slic(unsigned long current);
+#endif
+void generate_cpu_entries(void); // from cpu/intel/speedstep
+unsigned long acpi_fill_mcfg(unsigned long current); // from northbridge/intel/i945
+
+#if OLD_ACPI
 typedef struct acpi_oemb {
 	acpi_header_t header;
 	u8  ss;
@@ -55,13 +67,24 @@ typedef struct acpi_oemb {
 	u8  dts2;
 	u8  mpen;
 } __attribute__((packed)) acpi_oemb_t;
+#endif
 
+typedef struct acpi_gnvs {
+	// 0x00
+	u16 osys;
+	u8  smif;
+	u8  reserved[13];
+	// 0x10
+	u8  mpen;
+} __attribute__((packed)) acpi_gnvs_t;
+
+#if OLD_ACPI
 void acpi_create_oemb(acpi_oemb_t *oemb)
 {
 	acpi_header_t *header = &(oemb->header);
 	unsigned long tolud;
 
-	memset (oemb, 0, sizeof(oemb));
+	memset (oemb, 0, sizeof(*oemb));
 
 	/* fill out header fields */
 	memcpy(header->signature, "OEMB", 4);
@@ -93,48 +116,12 @@ void acpi_create_oemb(acpi_oemb_t *oemb)
 	    acpi_checksum((void *) oemb, sizeof(acpi_oemb_t));
 
 };
+#endif
 
-unsigned long acpi_fill_mcfg(unsigned long current)
+void acpi_create_gnvs(acpi_gnvs_t *gnvs)
 {
-	device_t dev;
-	u32 pciexbar = 0;
-	u32 pciexbar_reg;
-	int max_buses;
-
-	dev = dev_find_device(0x8086, 0x27a0, 0);
-	if (!dev)
-		return current;
-
-	// MMCFG not supported or not enabled.
-	pciexbar_reg=pci_read_config32(dev, 0x48);
-
-	if (!(pciexbar_reg & (1 << 0)))
-		return current;
-
-	switch ((pciexbar_reg >> 1) & 3) {
-	case 0: // 256MB
-		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28));
-		max_buses = 256;
-		break;
-	case 1: // 128M
-		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27));
-		max_buses = 128;
-		break;
-	case 2: // 64M
-		pciexbar = pciexbar_reg & ((1 << 31)|(1 << 30)|(1 << 29)|(1 << 28)|(1 << 27)|(1 << 26));
-		max_buses = 64;
-		break;
-	default: // RSVD
-		return current;
-	}
-
-	if (!pciexbar)
-		return current;
-
-	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
-			pciexbar, 0x0, 0x0, max_buses - 1);
-
-	return current;
+	memset((void *)gnvs, 0, sizeof(*gnvs));
+	gnvs->mpen = 1;
 }
 
 void acpi_create_intel_hpet(acpi_hpet_t * hpet)
@@ -169,25 +156,30 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
 }
 
-
-
 #define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	/* Local Apic */
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *) current, 1, 0);
-	// This one is for the second core... Will it hurt?
-	current += acpi_create_madt_lapic((acpi_madt_lapic_t *) current, 2, 1);
+	/* Local APICs */
+	current = acpi_create_madt_lapics(current);
 
 	/* IOAPIC */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2, IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
+				2, IO_APIC_ADDR, 0);
 
 	/* INT_SRC_OVR */
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *) current, 0, 0, 2, 0);
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *) current, 0, 9, 9, 0x000d);	// high/level
+	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
+		 current, 0, 0, 2, 0);
+	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
+		 current, 0, 9, 9, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH);
 
 	return current;
+}
+
+unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id)
+{
+	generate_cpu_entries();
+	return (unsigned long) (acpigen_get_current());
 }
 
 unsigned long acpi_fill_slit(unsigned long current)
@@ -202,6 +194,7 @@ unsigned long acpi_fill_srat(unsigned long current)
 	return current;
 }
 
+void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 
 #define ALIGN_CURRENT current = ((current + 0x0f) & -0x10)
 unsigned long write_acpi_tables(unsigned long start)
@@ -210,12 +203,20 @@ unsigned long write_acpi_tables(unsigned long start)
 	int i;
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
+	acpi_xsdt_t *xsdt;
 	acpi_hpet_t *hpet;
 	acpi_madt_t *madt;
 	acpi_mcfg_t *mcfg;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
+#if HAVE_ACPI_SLIC
+	acpi_header_t *slic;
+#endif
+#if OLD_ACPI
 	acpi_oemb_t *oemb;
+#endif
+	acpi_gnvs_t *gnvs;
+	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 
 	current = start;
@@ -232,12 +233,16 @@ unsigned long write_acpi_tables(unsigned long start)
 	rsdt = (acpi_rsdt_t *) current;
 	current += sizeof(acpi_rsdt_t);
 	ALIGN_CURRENT;
+	xsdt = (acpi_xsdt_t *) current;
+	current += sizeof(acpi_xsdt_t);
+	ALIGN_CURRENT;
 
 	/* clear all table memory */
 	memset((void *) start, 0, current - start);
 
-	acpi_write_rsdp(rsdp, rsdt);
+	acpi_write_rsdp(rsdp, rsdt, xsdt);
 	acpi_write_rsdt(rsdt);
+	acpi_write_xsdt(xsdt);
 
 	/*
 	 * We explicitly add these tables later on:
@@ -248,7 +253,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_hpet_t);
 	ALIGN_CURRENT;
 	acpi_create_intel_hpet(hpet);
-	acpi_add_table(rsdt, hpet);
+	acpi_add_table(rsdp, hpet);
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	printk_debug("ACPI:    * MADT\n");
@@ -257,21 +262,23 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_madt(madt);
 	current += madt->header.length;
 	ALIGN_CURRENT;
-	acpi_add_table(rsdt, madt);
+	acpi_add_table(rsdp, madt);
 
 	printk_debug("ACPI:    * MCFG\n");
 	mcfg = (acpi_mcfg_t *) current;
 	acpi_create_mcfg(mcfg);
 	current += mcfg->header.length;
 	ALIGN_CURRENT;
-	acpi_add_table(rsdt, mcfg);
+	acpi_add_table(rsdp, mcfg);
 
+#if OLD_ACPI
 	printk_debug("ACPI:    * OEMB\n");
 	oemb=(acpi_oemb_t *)current;
 	current += sizeof(acpi_oemb_t);
 	ALIGN_CURRENT;
 	acpi_create_oemb(oemb);
-	acpi_add_table(rsdt, oemb);
+	acpi_add_table(rsdp, oemb);
+#endif
 
 	printk_debug("ACPI:     * FACS\n");
 	facs = (acpi_facs_t *) current;
@@ -281,26 +288,53 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	dsdt = (acpi_header_t *) current;
 	current += ((acpi_header_t *) AmlCode)->length;
-	ALIGN_CURRENT;
 	memcpy((void *) dsdt, (void *) AmlCode,
 	       ((acpi_header_t *) AmlCode)->length);
 
-#if 1
+#if OLD_ACPI
 	for (i=0; i < dsdt->length; i++) {
-		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
+		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBEEF) {
 			printk_debug("ACPI: Patching up DSDT at offset 0x%04x -> 0x%08x\n", i, 0x24 + (u32)oemb);
 			*(u32*)(((u32)dsdt) + i) = 0x24 + (u32)oemb;
 			break;
 		}
 	}
+#endif
+
+	ALIGN_CURRENT;
+
+	/* Pack GNVS into the ACPI table area */
+	for (i=0; i < dsdt->length; i++) {
+		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
+			printk_debug("ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08x\n", i, current);
+			*(u32*)(((u32)dsdt) + i) = current; // 0x92 bytes
+			break;
+		}
+	}
+
+	/* And fill it */
+	acpi_create_gnvs(current);
+
+	current += 0x100;
+	ALIGN_CURRENT;
+
+	/* And tell SMI about it */
+	smm_setup_structures((void *)current, NULL, NULL);
 
 	/* We patched up the DSDT, so we need to recalculate the checksum */
 	dsdt->checksum = 0;
 	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
-#endif
 
 	printk_debug("ACPI:     * DSDT @ %p Length %x\n", dsdt,
 		     dsdt->length);
+
+#if HAVE_ACPI_SLIC
+	printk_debug("ACPI:     * SLIC\n");
+	slic = (acpi_header_t *)current;
+	current += acpi_create_slic(current);
+	ALIGN_CURRENT;
+	acpi_add_table(rsdp, slic);
+#endif
 
 	printk_debug("ACPI:     * FADT\n");
 	fadt = (acpi_fadt_t *) current;
@@ -308,7 +342,15 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 
 	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdt, fadt);
+	acpi_add_table(rsdp, fadt);
+
+	printk_debug("ACPI:     * SSDT\n");
+	ssdt = (acpi_header_t *)current;
+	acpi_create_ssdt_generator(ssdt, "COREBOOT");
+	current += ssdt->length;
+	acpi_add_table(rsdp, ssdt);
+	ALIGN_CURRENT;
+
 	printk_debug("current = %lx\n", current);
 
 	printk_debug("ACPI:     * DMI (Linux workaround)\n");

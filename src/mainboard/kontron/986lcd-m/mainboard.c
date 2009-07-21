@@ -25,16 +25,11 @@
 #include <boot/tables.h>
 #include "chip.h"
 
-/* in northbridge/intel/i945/northbridge.c */
-extern uint64_t uma_memory_base, uma_memory_size;
+int add_northbridge_resources(struct lb_memory *mem);
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
-	printk_debug("Adding UMA memory area\n");
-	lb_add_memory_range(mem, LB_MEM_RESERVED, 
-		uma_memory_base, uma_memory_size);
-
-	return 0;
+	return add_northbridge_resources(mem);
 }
 
 struct chip_operations mainboard_ops = {

@@ -25,21 +25,18 @@ DefinitionBlock(
 	0x02,		// DSDT revision: ACPI v2.0
 	"COREv2",	// OEM id
 	"COREBOOT",     // OEM table id
-	0x00000001	// OEM revision
+	0x20090419	// OEM revision
 )
 {
 	// Some generic macros
 	Include ("acpi/platform.asl")
 
 	// global NVS and variables
-	Include ("acpi/globalnvs.asl")
+	Include ("../../../southbridge/intel/i82801gx/acpi/globalnvs.asl")
 
 	// General Purpose Events
 	//include ("acpi/gpe.asl")
 	
-	/* CPU node(s) */
-	include ("acpi/cpu.asl")
-
 	//include ("acpi/thermal.asl")
 
 	Scope (\_SB) {
@@ -50,6 +47,6 @@ DefinitionBlock(
 		}
 	}
 
-	/* Board and Chipset specific sleep states */
-	include ("acpi/sleepstates.asl")
+	/* Chipset specific sleep states */
+	include ("../../../southbridge/intel/i82801gx/acpi/sleepstates.asl")
 }

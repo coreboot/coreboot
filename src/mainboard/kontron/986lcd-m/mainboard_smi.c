@@ -24,10 +24,13 @@
 #include <console/console.h>
 #include "../../../southbridge/intel/i82801gx/i82801gx_nvs.h"
 
+/* The southbridge SMI handler checks whether gnvs has a 
+ * valid pointer before calling the trap handler
+ */
+extern global_nvs_t *gnvs;
+
 int mainboard_io_trap_handler(int smif)
 {
-	global_nvs_t *gnvs = (global_nvs_t *)0xc00;
-
 	switch (smif) {
 	case 0x99:
 		printk_debug("Sample\n");

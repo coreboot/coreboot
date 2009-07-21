@@ -39,6 +39,12 @@
 #include "arch/i386/lib/console.c"
 #include <cpu/x86/bist.h>
 
+#if CONFIG_USBDEBUG_DIRECT
+#define DBGP_DEFAULT 1
+#include "southbridge/intel/i82801gx/i82801gx_usb_debug.c"
+#include "pc80/usbdebug_direct_serial.c"
+#endif
+
 #include "ram/ramtest.c"
 #include "southbridge/intel/i82801gx/i82801gx_early_smbus.c"
 #include "reset.c"
@@ -48,7 +54,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
-#include "northbridge/intel/i945/ich7.h"
+#include "southbridge/intel/i82801gx/i82801gx.h"
 static void setup_ich7_gpios(void)
 {
 	/* TODO: This is highly board specific and should be moved */
@@ -302,6 +308,7 @@ static void early_ich7_init(void)
 
 void real_main(unsigned long bist)
 {
+	u32 reg32;
 	int boot_mode = 0;
 
 	if (bist == 0) {
@@ -313,6 +320,12 @@ void real_main(unsigned long bist)
 
 	/* Set up the console */
 	uart_init();
+
+#if CONFIG_USBDEBUG_DIRECT
+	i82801gx_enable_usbdebug_direct(DBGP_DEFAULT);
+	early_usbdebug_direct_init();
+#endif
+
 	console_init();
 
 	/* Halt if there was a built in self test failure */
@@ -327,6 +340,22 @@ void real_main(unsigned long bist)
 	 * before RAM initialization can work
 	 */
 	i945_early_initialization();
+
+	/* Read PM1_CNT */
+	reg32 = inl(DEFAULT_PMBASE + 0x04);
+	printk_debug("PM1_CNT: %08x\n", reg32);
+	if (((reg32 >> 10) & 7) == 5) {
+#if HAVE_ACPI_RESUME
+		printk_debug("Resume from S3 detected.\n");
+		boot_mode = 2;
+		/* Clear SLP_TYPE. This will break stage2 but
+		 * we care for that when we get there.
+		 */
+		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
+#else
+		printk_debug("Resume from S3 detected, but disabled.\n");
+#endif
+	}
 
 	/* Enable SPD ROMs and DDR-II DRAM */
 	enable_smbus();

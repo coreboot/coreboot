@@ -22,4 +22,8 @@
 
 void setup_i8259(void);
 
+#define IRQ_LEVEL_TRIGGERED	1
+#define IRQ_EDGE_TRIGGERED	0
+void i8259_configure_irq_trigger(int int_num, int is_level_triggered);
+
 #endif /* PC80_I8259_H */

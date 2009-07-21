@@ -50,6 +50,10 @@
 #if CONFIG_CARDBUS_PLUGIN_SUPPORT == 1
 #include <device/cardbus.h>
 #endif
+#define CONFIG_PC80_SYSTEM 1
+#if CONFIG_PC80_SYSTEM == 1
+#include <pc80/i8259.h>
+#endif
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {
@@ -110,10 +114,10 @@ u32 pci_moving_config32(struct device * dev, unsigned int reg)
 unsigned pci_find_next_capability(struct device *dev, unsigned cap,
 				  unsigned last)
 {
-	unsigned pos;
+	unsigned pos = 0;
 	unsigned status;
 	unsigned reps = 48;
-	pos = 0;
+
 	status = pci_read_config16(dev, PCI_STATUS);
 	if (!(status & PCI_STATUS_CAP_LIST)) {
 		return 0;
@@ -1193,86 +1197,62 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 	return max;
 }
 
+#if CONFIG_PC80_SYSTEM == 1
 /**
- * Tell the EISA int controller this int must be level triggered.
+ * 
+ * @brief Assign IRQ numbers
  *
- * THIS IS A KLUDGE -- sorry, this needs to get cleaned up.
- */
-void pci_level_irq(unsigned char intNum)
-{
-	unsigned short intBits = inb(0x4d0) | (((unsigned)inb(0x4d1)) << 8);
-
-	printk_spew("%s: current ints are 0x%x\n", __func__, intBits);
-	intBits |= (1 << intNum);
-
-	printk_spew("%s: try to set ints 0x%x\n", __func__, intBits);
-
-	/* Write new values. */
-	outb((unsigned char)intBits, 0x4d0);
-	outb((unsigned char)(intBits >> 8), 0x4d1);
-
-	/* This seems like an error but is not. */
-	if (inb(0x4d0) != (intBits & 0xff)) {
-		printk_err(
-			   "%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
-			   __func__, intBits & 0xff, inb(0x4d0));
-	}
-	if (inb(0x4d1) != ((intBits >> 8) & 0xff)) {
-		printk_err(
-			   "%s: lower order bits are wrong: want 0x%x, got 0x%x\n",
-			   __func__, (intBits >> 8) & 0xff, inb(0x4d1));
-	}
-}
-
-/**
- * This function assigns IRQs for all functions contained within the
- * indicated device address. If the device does not exist or does not
- * require interrupts then this function has no effect.
+ * This function assigns IRQs for all functions contained within the indicated
+ * device address.  If the device does not exist or does not require interrupts
+ * then this function has no effect.
  *
  * This function should be called for each PCI slot in your system.
  *
- * pIntAtoD is an array of IRQ #s that are assigned to PINTA through PINTD of
- * this slot.
- *
- * The particular irq #s that are passed in depend on the routing inside
- * your southbridge and on your motherboard.
- *
- * -kevinh@ispiri.com
- *
-*/
+ * @param bus
+ * @param slot
+ * @param pIntAtoD is an array of IRQ #s that are assigned to PINTA through
+ *        PINTD of this slot.  The particular irq #s that are passed in 
+ *        depend on the routing inside your southbridge and on your 
+ *        motherboard.
+ */
 void pci_assign_irqs(unsigned bus, unsigned slot,
-		     const unsigned char pIntAtoD[4])
+	const unsigned char pIntAtoD[4])
 {
-	unsigned functNum;
-	struct device *pdev;
-	unsigned char line;
-	unsigned char irq;
-	unsigned char readback;
+	unsigned int funct;
+	device_t pdev;
+	u8 line;
+	u8 irq;
+	u8 readback;
 
-	/* Each slot may contain up to eight functions. */
-	for (functNum = 0; functNum < 8; functNum++) {
-		pdev = dev_find_slot(bus, (slot << 3) + functNum);
+	/* Each slot may contain up to eight functions */
+	for (funct = 0; funct < 8; funct++) {
+		pdev = dev_find_slot(bus, (slot << 3) + funct);
 
-		if (pdev) {
-			line = pci_read_config8(pdev, PCI_INTERRUPT_PIN);
+		if (!pdev)
+			continue;
 
-			/* PCI spec says all other values are reserved. */
-			if ((line >= 1) && (line <= 4)) {
-				irq = pIntAtoD[line - 1];
+		line = pci_read_config8(pdev, PCI_INTERRUPT_PIN);
 
-				printk_debug("Assigning IRQ %d to %d:%x.%d\n",
-					     irq, bus, slot, functNum);
+		// PCI spec says all values except 1..4 are reserved.
+		if ((line < 1) || (line > 4))
+			continue;
 
-				pci_write_config8(pdev, PCI_INTERRUPT_LINE,
-						  pIntAtoD[line - 1]);
+		irq = pIntAtoD[line - 1];
 
-				readback =
-				    pci_read_config8(pdev, PCI_INTERRUPT_LINE);
-				printk_debug("  Readback = %d\n", readback);
+		printk_debug("Assigning IRQ %d to %d:%x.%d\n",
+			irq, bus, slot, funct);
 
-				// Change to level triggered.
-				pci_level_irq(pIntAtoD[line - 1]);
-			}
-		}
+		pci_write_config8(pdev, PCI_INTERRUPT_LINE, 
+			pIntAtoD[line - 1]);
+
+#ifdef PARANOID_IRQ_ASSIGNMENTS
+		readback = pci_read_config8(pdev, PCI_INTERRUPT_LINE);
+		printk_debug("  Readback = %d\n", readback);
+#endif
+
+		// Change to level triggered
+		i8259_configure_irq_trigger(pIntAtoD[line - 1], IRQ_LEVEL_TRIGGERED);
 	}
 }
+#endif
+

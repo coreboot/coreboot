@@ -33,7 +33,8 @@ Device (SBUS)
 		I2CE,	1
 	}
 
-	OperationRegion (SMBI, SystemIO, 0x500, 0x20)
+	/*
+	OperationRegion (SMBI, SystemIO, 0x400, 0x20)
 	Field (SMBI, ByteAcc, NoLock, Preserve)
 	{
 		HSTS,	8,	// Host Status
@@ -236,6 +237,7 @@ Device (SBUS)
 
 		Return (0xffff)
 	}
+	*/
 
 	// Todo: Does anyone ever use these?
 	// Missing: Read / Write Word

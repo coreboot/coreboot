@@ -31,7 +31,7 @@
 static void usb_ehci_init(struct device *dev)
 {
 	struct resource *res;
-	u8 *base;
+	u32 base;
 	u32 reg32;
 	u8 reg8;
 
@@ -52,9 +52,9 @@ static void usb_ehci_init(struct device *dev)
 
 	/* Clear any pending port changes */
 	res = find_resource(dev, 0x10);
-	base =(u8 *)res->base;
-	reg32 = readl(base + 0x24) | (1 << 2);
-	writel(base + 0x24, reg32);
+	base = res->base;
+	reg32 = readl((u8 *)base + 0x24) | (1 << 2);
+	writel(reg32, (u8 *)base + 0x24);
 
 	/* workaround */
 	reg8 = pci_read_config8(dev, 0x84);
@@ -115,7 +115,7 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations usb_ehci_ops = {
 	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
+	.set_resources		= usb_ehci_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= usb_ehci_init,
 	.scan_bus		= 0,

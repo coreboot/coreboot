@@ -27,10 +27,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
-#include "chip.h"
-
-// Future TODO: Move to i82801gx directory
-#include "../../../northbridge/intel/i945/ich7.h"
+#include "i82801gx.h"
 
 extern unsigned char smm[];
 extern unsigned int smm_len;
@@ -318,8 +315,12 @@ void smm_install(void)
 
 void smm_init(void)
 {
+	// FIXME is this a race condition?
 	smm_relocate();
 	smm_install();
+
+	// We're done. Make sure SMIs can happen!
+	smi_set_eos();
 }
 
 void smm_lock(void)
@@ -333,3 +334,13 @@ void smm_lock(void)
 			D_LCK | G_SMRAME | C_BASE_SEG);
 }
 
+void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
+{
+	/* The GDT or coreboot table is going to live here. But a long time
+	 * after we relocated the GNVS, so this is not troublesome.
+	 */
+	*(u32 *)0x500 = (u32)gnvs;
+	*(u32 *)0x504 = (u32)tcg;
+	*(u32 *)0x508 = (u32)smi1;
+	outb(0xea, 0xb2);
+}

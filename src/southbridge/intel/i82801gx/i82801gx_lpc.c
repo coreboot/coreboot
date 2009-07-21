@@ -27,17 +27,12 @@
 #include <pc80/i8259.h>
 #include <arch/io.h>
 #include "i82801gx.h"
+#include "i82801gx_power.h"
 
-#include "../../../northbridge/intel/i945/ich7.h"
+#define NMI_OFF	0
 
-#define MAINBOARD_POWER_OFF 0
-#define MAINBOARD_POWER_ON  1
-
-#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
-#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
-#endif
-
-#define NMI_OFF 0
+#define ENABLE_ACPI_MODE_IN_COREBOOT	0
+#define TEST_SMM_FLASH_LOCKDOWN		0
 
 typedef struct southbridge_intel_i82801gx_config config_t;
 
@@ -78,7 +73,9 @@ static void i82801gx_enable_apic(struct device *dev)
 	volatile u32 *ioapic_index = (volatile u32 *)0xfec00000;
 	volatile u32 *ioapic_data = (volatile u32 *)0xfec00010;
 
-	/* Enable ACPI I/O and power management. */
+	/* Enable ACPI I/O and power management. 
+	 * Set SCI IRQ to IRQ9
+	 */
 	pci_write_config8(dev, ACPI_CNTL, 0x80);
 
 	*ioapic_index = 0;
@@ -108,6 +105,27 @@ static void i82801gx_enable_serial_irqs(struct device *dev)
 	pci_write_config8(dev, SERIRQ_CNTL,
 			  (1 << 7) | (1 << 6) | ((21 - 17) << 2) | (0 << 0));
 }
+
+/* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
+ * 0x00 - 0000 = Reserved
+ * 0x01 - 0001 = Reserved
+ * 0x02 - 0010 = Reserved
+ * 0x03 - 0011 = IRQ3
+ * 0x04 - 0100 = IRQ4
+ * 0x05 - 0101 = IRQ5
+ * 0x06 - 0110 = IRQ6
+ * 0x07 - 0111 = IRQ7
+ * 0x08 - 1000 = Reserved
+ * 0x09 - 1001 = IRQ9
+ * 0x0A - 1010 = IRQ10
+ * 0x0B - 1011 = IRQ11
+ * 0x0C - 1100 = IRQ12
+ * 0x0D - 1101 = Reserved
+ * 0x0E - 1110 = IRQ14
+ * 0x0F - 1111 = IRQ15
+ * PIRQ[n]_ROUT[7] - PIRQ Routing Control
+ * 0x80 - The PIRQ is not routed.
+ */
 
 static void i82801gx_pirq_init(device_t dev)
 {
@@ -180,10 +198,14 @@ static void i82801gx_gpi_routing(device_t dev)
 	pci_write_config32(dev, 0xb8, reg32);
 }
 
+extern u8 acpi_slp_type;
+
 static void i82801gx_power_options(device_t dev)
 {
 	u8 reg8;
-	u16 reg16;
+	u16 reg16, pmbase;
+	u32 reg32;
+	char *state;
 
 	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	int nmi_option;
@@ -195,16 +217,28 @@ static void i82801gx_power_options(device_t dev)
         get_option(&pwr_on, "power_on_after_fail");
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
 	reg8 &= 0xfe;
-	if (pwr_on) {
-		reg8 &= ~1;
-	} else {
+	switch (pwr_on) {
+	case MAINBOARD_POWER_OFF:
 		reg8 |= 1;
+		state = "off";
+		break;
+	case MAINBOARD_POWER_ON:
+		reg8 &= ~1;
+		state = "on";
+		break;
+	case MAINBOARD_POWER_KEEP:
+		reg8 &= ~1;
+		state = "state keep";
+		break;
+	default:
+		state = "undefined";
 	}
+
 	reg8 |= (3 << 4);	/* avoid #S4 assertions */
 	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
 
 	pci_write_config8(dev, GEN_PMCON_3, reg8);
-	printk_info("Set power %s after power failure.\n", pwr_on ? "on" : "off");
+	printk_info("Set power %s after power failure.\n", state);
 
 	/* Set up NMI on errors. */
 	reg8 = inb(0x61);
@@ -226,15 +260,27 @@ static void i82801gx_power_options(device_t dev)
 	}
 	outb(reg8, 0x70);
 
-	// Enable CPU_SLP# and Intel Speedstep, set SMI# rate down
+	/* Enable CPU_SLP# and Intel Speedstep, set SMI# rate down */
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
 	reg16 &= ~((3 << 0) | (1 << 10));
 	reg16 |= (1 << 3) | (1 << 5);
-	reg16 |= (1 << 2); // CLKRUN_EN
+	reg16 |= (1 << 2);			// CLKRUN_EN
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
 	// Set the board's GPI routing.
 	i82801gx_gpi_routing(dev);
+
+	/* Set up power management block and determine sleep mode */
+	pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
+	reg32 = inl(pmbase + 0x04); // PM1_CNT
+#if HAVE_ACPI_RESUME
+	acpi_slp_type = (((reg32 >> 10) & 7) == 5) ? 3 : 0;
+	printk_debug("PM1_CNT: 0x%08x --> acpi_sleep_type: %x\n", 
+			reg32, acpi_slp_type);
+#endif
+	reg32 |= (1 << 1); // enable C3->C0 transition on bus master
+	reg32 |= 1; // SCI_EN
+	outl(reg32, pmbase + 0x04);
 }
 
 static void i82801gx_configure_cstates(device_t dev)
@@ -273,9 +319,10 @@ static void enable_hpet(void)
 {
 	u32 reg32;
 	
-	/* Leave HPET at default address, but enable it */
+	/* Move HPET to default address 0xfed00000 and enable it */
 	reg32 = RCBA32(0x3404);
 	reg32 |= (1 << 7); // HPET Address Enable
+	reg32 &= ~(3 << 0);
 	RCBA32(0x3404) = reg32;
 }
 
@@ -465,6 +512,13 @@ static struct device_operations device_ops = {
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801gx_enable,
 	.ops_pci		= &pci_ops,
+};
+
+/* 82801GH (ICH7 DH) */
+static const struct pci_driver ich7_dh_lpc __pci_driver = {
+	.ops	= &device_ops,
+	.vendor	= PCI_VENDOR_ID_INTEL,
+	.device	= 0x27b0,
 };
 
 /* 82801GB/GR (ICH7/ICH7R) */

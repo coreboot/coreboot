@@ -19,18 +19,22 @@
  * MA 02110-1301 USA
  */
 
-/* Intel i82801G HDA */
+/* Intel i82801G AC'97 Audio and Modem */
 
-// Intel High Definition Audio (Azalia) 0:1b.0
+// Intel AC'97 Audio 0:1e.2
 
-Device (HDEF)
+Device (AUD0)
 {
-	Name (_ADR, 0x001b0000)
-
-	// Power Resources for Wake
-	Name (_PRW, Package(){ 
-		5,  // Bit 5 of GPE
-		4   // Can wake from S4 state.
-	})
+	Name (_ADR, 0x001e0002)
 }
+
+// Intel AC'97 Modem 0:1e.3
+
+Device (MODM)
+{
+	Name (_ADR, 0x001e0003)
+	
+	Name (_PRW, Package(){ 5, 4 })
+}
+
 

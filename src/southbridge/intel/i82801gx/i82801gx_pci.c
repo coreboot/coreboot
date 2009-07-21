@@ -81,7 +81,7 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
-#if PCI_BRIDGE_UPDATE_COMMAND
+#ifdef PCI_BRIDGE_UPDATE_COMMAND
 	/* If we write to PCI_COMMAND, on some systems 
 	 * this will cause the ROM and APICs not being visible
 	 * anymore.

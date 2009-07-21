@@ -68,7 +68,7 @@ Device (LPCB)
 		})
 	}
 
-	Device (FWHD)		// Firmware Hub
+	Device (FWH)		// Firmware Hub
 	{
 		Name (_HID, EISAID("INT0800"))
 		Name (_CRS, ResourceTemplate()
@@ -80,7 +80,7 @@ Device (LPCB)
 	Device (HPET)
 	{
 		Name (_HID, EISAID("PNP0103"))
-		Name (_CID, EISAID("PNP0C01"))
+		Name (_CID, 0x010CD041)
 
 		Name(BUF0, ResourceTemplate()
 		{
@@ -92,18 +92,32 @@ Device (LPCB)
 			If (HPTE) {
 				// Note: Ancient versions of Windows don't want
 				// to see the HPET in order to work right
-				// Return (0xb)	// Enable and don't show device
-
-				Return (0xf)	// Enable and show device
+				If (LGreaterEqual(OSYS, 2001)) {
+					Return (0xf)	// Enable and show device
+				} Else {
+					Return (0xb)	// Enable and don't show device
+				}
 			}
 
 			Return (0x0)	// Not enabled, don't show.
 		}
 
-		Method (_CRS, 0, Serialized)
+		Method (_CRS, 0, Serialized) // Current resources
 		{
-			// Here we could do crazy stuff like move the HPET. Why
-			// should we?
+			If (HPTE) {
+				CreateDWordField(BUF0, \_SB.PCI0.LPCB.HPET.FED0._BAS, HPT0)
+				If (Lequal(HPAS, 1)) {
+					Store(0xfed01000, HPT0)
+				}
+
+				If (Lequal(HPAS, 2)) {
+					Store(0xfed02000, HPT0)
+				}
+
+				If (Lequal(HPAS, 3)) {
+					Store(0xfed03000, HPT0)
+				}
+			}
 
 			Return (BUF0)
 		}
@@ -130,7 +144,7 @@ Device (LPCB)
 			IO (Decode16, 0xb4, 0xb4, 0x01, 0x02)
 			IO (Decode16, 0xb8, 0xb8, 0x01, 0x02)
 			IO (Decode16, 0xbc, 0xbc, 0x01, 0x02)
-			IO (Decode16, 0x4d0, 0x4b0, 0x01, 0x02)
+			IO (Decode16, 0x4d0, 0x4d0, 0x01, 0x02)
 			IRQNoFlags () { 2 }
 		})
 	}
@@ -145,7 +159,7 @@ Device (LPCB)
 		})
 	}
 
-	Device(MISC)	// Various other devices
+	Device(LDRC)	// LPC device: Resource consumption
 	{
 		Name (_HID, EISAID("PNP0C02"))
 		Name (_UID, 2)
@@ -153,18 +167,18 @@ Device (LPCB)
 		{
 			IO (Decode16, 0x2e, 0x2e, 0x1, 0x02)		// First SuperIO
 			IO (Decode16, 0x4e, 0x4e, 0x1, 0x02)		// Second SuperIO
-			IO (Decode16, 0x61, 0x61, 0x1, 0x1)		// NMI Status
-			IO (Decode16, 0x63, 0x63, 0x1, 0x1)		// CPU Reserved
-			IO (Decode16, 0x65, 0x65, 0x1, 0x1)		// CPU Reserved
-			IO (Decode16, 0x67, 0x67, 0x1, 0x1)		// CPU Reserved
-			IO (Decode16, 0x80, 0x80, 0x1, 0x1)		// Port 80 Post
-			IO (Decode16, 0x92, 0x92, 0x1, 0x1)		// CPU Reserved
+			IO (Decode16, 0x61, 0x61, 0x1, 0x01)		// NMI Status
+			IO (Decode16, 0x63, 0x63, 0x1, 0x01)		// CPU Reserved
+			IO (Decode16, 0x65, 0x65, 0x1, 0x01)		// CPU Reserved
+			IO (Decode16, 0x67, 0x67, 0x1, 0x01)		// CPU Reserved
+			IO (Decode16, 0x80, 0x80, 0x1, 0x01)		// Port 80 Post
+			IO (Decode16, 0x92, 0x92, 0x1, 0x01)		// CPU Reserved
 			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02)		// SWSMI
-			IO (Decode16, 0x680, 0x680, 0x1, 0x70)		// IO ???
+			// IO (Decode16, 0x680, 0x680, 0x1, 0x70)	// IO ???
 			IO (Decode16, 0x800, 0x800, 0x1, 0x10)		// ACPI I/O trap
 			IO (Decode16, 0x0500, 0x0500, 0x1, 0x80)	// ICH7-M ACPI
-			IO (Decode16, 0x1180, 0x1180, 0x1, 0x40)	// ICH7-M GPIO
-			IO (Decode16, 0x1640, 0x1640, 0x1, 0x10)	// IO ???
+			IO (Decode16, 0x0480, 0x0480, 0x1, 0x40)	// ICH7-M GPIO
+			// IO (Decode16, 0x1640, 0x1640, 0x1, 0x10)	// IO ???
 		})
 	}
 
@@ -194,12 +208,19 @@ Device (LPCB)
 	Device (PS2K)		// Keyboard
 	{
 		Name(_HID, EISAID("PNP0303"))
+		Name(_CID, EISAID("PNP030B"))
+
 		Name(_CRS, ResourceTemplate()
 		{
 			IO (Decode16, 0x60, 0x60, 0x01, 0x01)
 			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
 			IRQ (Edge, ActiveHigh, Exclusive) { 0x01 } // IRQ 1
 		})
+
+		Method (_STA, 0)
+		{
+			Return (0xf)
+		}
 	}
 
 	Device (PS2M)		// Mouse
@@ -209,5 +230,36 @@ Device (LPCB)
 		{
 			IRQ (Edge, ActiveHigh, Exclusive) { 0x0c } // IRQ 12
 		})
+
+		Method(_STA, 0)
+		{
+			Return (0xf)
+		}
+	}
+
+	Device (FDC0)		// Floppy controller
+	{
+		Name (_HID, EisaId ("PNP0700"))
+		Method (_STA, 0, NotSerialized)
+		{
+			Return (0x0f) // FIXME
+		}
+
+		Name(_CRS, ResourceTemplate()
+		{
+			IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x06)
+			IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
+			IRQNoFlags () {6}
+			DMA (Compatibility, NotBusMaster, Transfer8) {2}
+		})
+
+		Name(_PRS, ResourceTemplate()
+		{
+			IO (Decode16, 0x03F0, 0x03F0, 0x01, 0x06)
+			IO (Decode16, 0x03F7, 0x03F7, 0x01, 0x01)
+			IRQNoFlags () {6}
+			DMA (Compatibility, NotBusMaster, Transfer8) {2}
+		})
+
 	}
 }

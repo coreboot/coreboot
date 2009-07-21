@@ -19,18 +19,9 @@
  * MA 02110-1301 USA
  */
 
-/* Intel i82801G HDA */
-
-// Intel High Definition Audio (Azalia) 0:1b.0
-
-Device (HDEF)
-{
-	Name (_ADR, 0x001b0000)
-
-	// Power Resources for Wake
-	Name (_PRW, Package(){ 
-		5,  // Bit 5 of GPE
-		4   // Can wake from S4 state.
-	})
-}
+Name(\_S0, Package(4){0x0,0x0,0,0})
+Name(\_S1, Package(4){0x1,0x0,0,0})
+Name(\_S3, Package(4){0x5,0x0,0,0})
+Name(\_S4, Package(4){0x6,0x0,0,0})
+Name(\_S5, Package(4){0x7,0x0,0,0})
 

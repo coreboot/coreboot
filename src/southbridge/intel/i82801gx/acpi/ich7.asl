@@ -92,7 +92,8 @@ Scope(\)
 		Offset(0x38),	// GPIO Level 2
 		, 5,
 		GP37, 1,	// PATA_PWR_EN
-		, 2,
+		GP38, 1,	// Battery / Power (?)
+		GP39, 1,	// ??
 		GL05, 8,
 		GL06, 8,
 		GL07, 8
@@ -100,7 +101,7 @@ Scope(\)
 
 
 	// ICH7 Root Complex Register Block. Memory Mapped through RCBA)
-	OperationRegion(RCRB, SystemMemory, 0xfff1000, 0x4000)
+	OperationRegion(RCRB, SystemMemory, 0xfed1c000, 0x4000)
 	Field(RCRB, DWordAcc, Lock, Preserve)
 	{
 		Offset(0x0000), // Backbone
@@ -111,12 +112,22 @@ Scope(\)
 		, 5,
 		HPTE, 1,	// Address Enable
 		Offset(0x3418), // FD (Function Disable)
-		, 1,
+		, 1,		// Reserved
 		PATD, 1,	// PATA disable
 		SATD, 1,	// SATA disable
 		SMBD, 1,	// SMBUS disable
 		HDAD, 1,	// Azalia disable
-		, 11,		// ... FIXME
+		A97D, 1,	// AC'97 disable
+		M97D, 1,	// AC'97 disable
+		ILND, 1,	// Internal LAN disable
+		US1D, 1,	// UHCI #1 disable
+		US2D, 1,	// UHCI #2 disable
+		US3D, 1,	// UHCI #3 disable
+		US4D, 1,	// UHCI #4 disable
+		, 2,		// Reserved
+		LPBD, 1,	// LPC bridge disable
+		EHCD, 1,	// EHCI disable
+		Offset(0x341a), // FD Root Ports
 		RP1D, 1,	// Root Port 1 disable
 		RP2D, 1,	// Root Port 2 disable
 		RP3D, 1,	// Root Port 3 disable
@@ -138,6 +149,9 @@ Include ("../../../southbridge/intel/i82801gx/acpi/ich7_usb.asl")
 
 // PCI Bridge
 Include ("../../../southbridge/intel/i82801gx/acpi/ich7_pci.asl")
+
+// AC97 Audio and Modem
+Include ("../../../southbridge/intel/i82801gx/acpi/ich7_ac97.asl")
 
 // LPC Bridge
 Include ("../../../southbridge/intel/i82801gx/acpi/ich7_lpc.asl")

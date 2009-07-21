@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,18 +19,11 @@
  * MA 02110-1301 USA
  */
 
-/* Intel i82801G HDA */
+#define MAINBOARD_POWER_OFF	0
+#define MAINBOARD_POWER_ON	1
+#define MAINBOARD_POWER_KEEP	2
 
-// Intel High Definition Audio (Azalia) 0:1b.0
-
-Device (HDEF)
-{
-	Name (_ADR, 0x001b0000)
-
-	// Power Resources for Wake
-	Name (_PRW, Package(){ 
-		5,  // Bit 5 of GPE
-		4   // Can wake from S4 state.
-	})
-}
+#ifndef MAINBOARD_POWER_ON_AFTER_FAIL
+#define MAINBOARD_POWER_ON_AFTER_FAIL MAINBOARD_POWER_ON
+#endif
 

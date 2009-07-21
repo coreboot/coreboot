@@ -29,6 +29,19 @@
 #include "i82801gx.h"
 #include "i82801gx_smbus.h"
  
+#define SMB_BASE 0x20
+static void smbus_init(struct device *dev)
+{
+	u32 smb_base;
+
+	smb_base = pci_read_config32(dev, SMB_BASE);
+	printk_debug("Initializing SMBus device:\n");
+	printk_debug("  Old SMBUS Base Address: 0x%04x\n", smb_base);
+	pci_write_config32(dev, SMB_BASE, 0x00000401);
+	smb_base = pci_read_config32(dev, SMB_BASE);
+	printk_debug("  New SMBUS Base Address: 0x%04x\n", smb_base);
+}
+
 static int lsmbus_read_byte(device_t dev, u8 address)
 {
 	u16 device;
@@ -65,7 +78,7 @@ static struct device_operations smbus_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
-	.init			= 0,
+	.init			= smbus_init,
 	.scan_bus		= scan_static_bus,
 	.enable			= i82801gx_enable,
 	.ops_smbus_bus		= &lops_smbus_bus,

@@ -43,6 +43,24 @@ Device (PCIB)
 		Name (_PRW, Package(){ 11, 4 })
 	}
 
+	Device (SLT6)
+	{
+		Name (_ADR, 0x00050000)
+		Name (_PRW, Package(){ 11, 4 })
+	}
+
+	Device (LANC)
+	{
+		Name (_ADR, 0x00080000)
+		Name (_PRW, Package(){ 11, 3 })
+	}
+
+	Device (LANR)
+	{
+		Name (_ADR, 0x00000000)
+		Name (_PRW, Package(){ 11, 3 })
+	}
+
 	// TODO: How many slots, where?
 
 	// PCI Interrupt Routing.
@@ -52,47 +70,7 @@ Device (PCIB)
 
 	Method (_PRT)
 	{
-		If (PICM) {
-			Return (Package() {
-				// PCI Slot 1 routes FGHE
-				Package() { 0x0000ffff, 0, 0, 16}, /* Firewire */
-				Package() { 0x0000ffff, 1, 0, 22},
-				Package() { 0x0000ffff, 2, 0, 23},
-				Package() { 0x0000ffff, 3, 0, 20},
-
-				// PCI Slot 2 routes GFEH (but is EFGH now, because that actually works)
-				Package() { 0x0001ffff, 0, 0, 20},
-				Package() { 0x0001ffff, 1, 0, 21},
-				Package() { 0x0001ffff, 2, 0, 22},
-				Package() { 0x0001ffff, 3, 0, 23},
-
-				// PCI Slot 3 routes CDBA
-				Package() { 0x0002ffff, 0, 0, 18},
-				Package() { 0x0002ffff, 1, 0, 19},
-				Package() { 0x0002ffff, 2, 0, 17},
-				Package() { 0x0002ffff, 3, 0, 16}
-			})
-		} Else {
-			Return (Package() {
-				// PCI Slot 1 routes FGHE
-				Package() { 0x0000ffff, 0, \_SB.PCI0.LPCB.LNKF, 0},
-				Package() { 0x0000ffff, 1, \_SB.PCI0.LPCB.LNKE, 0},
-				Package() { 0x0000ffff, 2, \_SB.PCI0.LPCB.LNKH, 0},
-				Package() { 0x0000ffff, 3, \_SB.PCI0.LPCB.LNKG, 0},
-
-				// PCI Slot 2 routes GFEH
-				Package() { 0x0001ffff, 0, \_SB.PCI0.LPCB.LNKG, 0},
-				Package() { 0x0001ffff, 1, \_SB.PCI0.LPCB.LNKF, 0},
-				Package() { 0x0001ffff, 2, \_SB.PCI0.LPCB.LNKE, 0},
-				Package() { 0x0001ffff, 3, \_SB.PCI0.LPCB.LNKH, 0},
-
-				// PCI Slot 3 routes CDBA
-				Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKC, 0},
-				Package() { 0x0002ffff, 1, \_SB.PCI0.LPCB.LNKD, 0},
-				Package() { 0x0002ffff, 2, \_SB.PCI0.LPCB.LNKB, 0},
-				Package() { 0x0002ffff, 3, \_SB.PCI0.LPCB.LNKA, 0},
-			})
-		}
+		Include ("acpi/ich7_pci_irqs.asl")
 	}
 
 }

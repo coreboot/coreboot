@@ -169,7 +169,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* clear all table memory */
 	memset((void *) start, 0, current - start);
 
-	acpi_write_rsdp(rsdp, rsdt);
+	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
 	/*
@@ -181,7 +181,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_hpet_t);
 	ALIGN_CURRENT;
 	acpi_create_intel_hpet(hpet);
-	acpi_add_table(rsdt, hpet);
+	acpi_add_table(rsdp, hpet);
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	printk_debug("ACPI:    * MADT\n");
@@ -190,14 +190,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_madt(madt);
 	current += madt->header.length;
 	ALIGN_CURRENT;
-	acpi_add_table(rsdt, madt);
+	acpi_add_table(rsdp, madt);
 
 	printk_debug("ACPI:    * MCFG\n");
 	mcfg = (acpi_mcfg_t *) current;
 	acpi_create_mcfg(mcfg);
 	current += mcfg->header.length;
 	ALIGN_CURRENT;
-	acpi_add_table(rsdt, mcfg);
+	acpi_add_table(rsdp, mcfg);
 
 	printk_debug("ACPI:     * FACS\n");
 	facs = (acpi_facs_t *) current;
@@ -220,7 +220,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 
 	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdt, fadt);
+	acpi_add_table(rsdp, fadt);
 
 	printk_info("ACPI: done.\n");
 	return current;

@@ -312,7 +312,7 @@ extern unsigned char AmlCode_sspr2[];
 extern unsigned char AmlCode_sspr1[];
 
 /* fixme: find one good way for different p_state_num */
-unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current)
+unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current)
 {
 	device_t cpu;
 	int cpu_index = 0;
@@ -348,7 +348,7 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current)
 		/* recalculate checksum */
 		ssdt->checksum = 0;
 		ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
-		acpi_add_table(rsdt,ssdt);
+		acpi_add_table(rsdp, ssdt);
 
 		cpu_index++;
 	}

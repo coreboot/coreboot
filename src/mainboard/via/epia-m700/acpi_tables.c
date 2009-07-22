@@ -147,7 +147,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Clear all table memory. */
 	memset((void *)start, 0, current - start);
 
-	acpi_write_rsdp(rsdp, rsdt);
+	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
 	/* We explicitly add these tables later on: */
@@ -171,14 +171,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_fadt_t);
 
 	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdt, fadt);
+	acpi_add_table(rsdp, fadt);
 
 	/* If we want to use HPET timers Linux wants it in MADT. */
 	printk_debug("ACPI:    * MADT\n");
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current += madt->header.length;
-	acpi_add_table(rsdt, madt);
+	acpi_add_table(rsdp, madt);
 
 	/* NO MCFG in VX855, no PCI-E. */
 
@@ -186,7 +186,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	hpet = (acpi_mcfg_t *) current;
 	acpi_create_hpet(hpet);
 	current += hpet->header.length;
-	acpi_add_table(rsdt, hpet);
+	acpi_add_table(rsdp, hpet);
 
 #if 0
 	printk_debug("ACPI:     * SSDT\n");
@@ -195,7 +195,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy((void *)ssdt,(void *)AmlCode_ssdt, ((acpi_header_t *)AmlCode_ssdt)->length);
 	ssdt->checksum = 0; /* Don't trust iasl to get this right. */
 	ssdt->checksum = acpi_checksum(ssdt, ssdt->length);
-	acpi_add_table(rsdt, ssdt);
+	acpi_add_table(rsdp, ssdt);
 	printk_debug("ACPI:     * SSDT @ %08x Length %x\n", ssdt, ssdt->length);
 #endif
 

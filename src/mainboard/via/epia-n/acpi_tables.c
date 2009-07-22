@@ -63,7 +63,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* clear all table memory */
 	memset((void *)start, 0, current - start);
 	
-	acpi_write_rsdp(rsdp, rsdt);
+	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 	
 	/*
@@ -86,7 +86,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += sizeof(acpi_fadt_t);
 
 	acpi_create_fadt(fadt,facs,dsdt);
-	acpi_add_table(rsdt,fadt);
+	acpi_add_table(rsdp,fadt);
 
 	printk_info("ACPI: done.\n");
 	return current;

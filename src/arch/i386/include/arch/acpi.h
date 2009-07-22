@@ -389,7 +389,7 @@ int acpi_get_sleep_type(void);
 
 #endif
 
-unsigned long acpi_add_ssdt_pstates(acpi_rsdt_t *rsdt, unsigned long current);
+unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
 
 #define ACPI_WRITE_MADT_IOAPIC(dev,id)        		\
 do {                                                    \

@@ -274,7 +274,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp,ssdt);
 
 	printk_debug("ACPI:    * SSDT for PState at %lx\n", current);
-	current = acpi_add_ssdt_pstates(rsdt, current);
+	current = acpi_add_ssdt_pstates(rsdp, current);
 
 #if CONFIG_ACPI_SSDTX_NUM >= 1
 

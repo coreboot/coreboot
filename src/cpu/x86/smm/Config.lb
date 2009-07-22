@@ -27,7 +27,7 @@ if CONFIG_HAVE_SMI_HANDLER
 	smmobject smihandler.o
 
 	makerule smm.o
-		depends	"$(SMM-OBJECTS) $(TOP)/src/console/printk.o $(TOP)/src/console/vtxprintf.o $(LIBGCC_FILE_NAME)" 
+		depends	"$(SMM-OBJECTS) src/console/printk.o src/console/vtxprintf.o $(LIBGCC_FILE_NAME)" 
 		action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ $^"
 	end
 

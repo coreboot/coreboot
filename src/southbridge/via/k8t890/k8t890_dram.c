@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
+#include <pc80/mc146818rtc.h>
 #include <bitops.h>
 #include "k8t890.h"
 
@@ -104,18 +105,52 @@ extern uint64_t high_tables_base, high_tables_size;
 #endif
 }
 
+/*
+ *
+ */
+int
+k8m890_host_fb_size_get(void)
+{
+	struct device *dev = dev_find_device(PCI_VENDOR_ID_VIA,
+					     PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
+	unsigned char tmp;
+
+	tmp = pci_read_config8(dev, 0xA1);
+	tmp >>= 4;
+	if (tmp & 0x08)
+		return 4 << (tmp & 7);
+	else
+		return 0;
+}
 
 static void dram_init_fb(struct device *dev)
 {
 	/* Important bits:
 	 * Enable the internal GFX bit 7 of reg 0xa1 plus in same reg:
-	 * bits 6:4 X fbuffer size will be  2^(X+2) or 100 = 64MB, 101 = 128MB 
+	 * bits 6:4 X fbuffer size will be  2^(X+2) or 100 = 64MB, 101 = 128MB
 	 * bits 3:0 BASE [31:28]
 	 * reg 0xa0 bits 7:1 BASE [27:21] bit0 enable CPU access
 	 */
 	u8 tmp;
 	uint64_t proposed_base;
-	unsigned int fbsize = (K8M890_FBSIZEMB * 1024 * 1024);
+	unsigned int fbbits = 0;
+	unsigned int fbsize;
+	int ret;
+
+
+	ret = get_option(&fbbits, "videoram_size");
+	if (ret) {
+		printk_warning("Failed to get videoram size (error %d), using default.\n", ret);
+		fbbits = 5;
+ 	}
+
+	if ((fbbits < 1) || (fbbits > 7)) {
+		printk_warning("Invalid videoram size (%d), using default.\n",
+			       4 << fbbits);
+		fbbits = 5;
+	}
+
+	fbsize = 4 << (fbbits + 20);
 
 	resmax = NULL;
 	search_global_resources(
@@ -131,13 +166,13 @@ static void dram_init_fb(struct device *dev)
 	proposed_base = resmax->base + resmax->size - fbsize;
 	resmax->size -= fbsize;
 
-	printk_debug("VIA FB proposed base: %llx\n", proposed_base);
+	printk_info("K8M890: Using a %dMB framebuffer.\n", 4 << fbbits);
 
 	/* Step 1: enable UMA but no FB */
 	pci_write_config8(dev, 0xa1, 0x80);
 
 	/* Step 2: enough is just the FB size, the CPU accessible address is not needed */
-	tmp = ((log2(K8M890_FBSIZEMB) - 2) << 4) | 0x80;
+	tmp = (fbbits << 4) | 0x80;
 	pci_write_config8(dev, 0xa1, tmp);
 
 	/* TODO K8 needs some UMA fine tuning too maybe call some generic routine here? */

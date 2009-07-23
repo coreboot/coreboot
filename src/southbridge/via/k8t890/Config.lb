@@ -25,3 +25,4 @@ driver k8t890_host_ctrl.o
 driver k8t890_pcie.o
 driver k8t890_traf_ctrl.o
 driver k8t890_error.o
+driver k8m890_chrome.o

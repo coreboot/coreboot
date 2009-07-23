@@ -43,4 +43,7 @@
 extern void writeback(struct device *dev, u16 where, u8 what);
 extern void dump_south(device_t dev);
 
+int k8m890_host_fb_size_get(void);
+//void k8m890_host_fb_direct_set(uint32_t fb_address);
+
 #endif

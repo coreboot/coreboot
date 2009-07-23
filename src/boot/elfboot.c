@@ -107,11 +107,11 @@ int verify_ip_checksum(
  * a machine, and implementing general relocation is hard.
  *
  * The solution:
- * - Allocate a buffer twice the size of the coreboot image.
- * - Anything that would overwrite coreboot copy into the lower half of
+ * - Allocate a buffer the size of the coreboot image plus additional
+ *   required space.
+ * - Anything that would overwrite coreboot copy into the lower part of
  *   the buffer. 
- * - After loading an ELF image copy coreboot to the upper half of the
- *   buffer.
+ * - After loading an ELF image copy coreboot to the top of the buffer.
  * - Then jump to the loaded image.
  * 
  * Benefits:

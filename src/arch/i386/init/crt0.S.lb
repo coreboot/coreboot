@@ -142,7 +142,7 @@ str_copying_to_ram:  .string "Uncompressing coreboot to RAM.\r\n"
 #else
 str_copying_to_ram:  .string "Copying coreboot to RAM.\r\n"
 #endif
-#if CONFIG_CBFS
+#if CONFIG_CBFS == 1
 # if CONFIG_USE_FALLBACK_IMAGE == 1
 str_coreboot_ram_name:	.string "fallback/coreboot_ram"
 # else

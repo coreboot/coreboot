@@ -59,16 +59,16 @@ struct cbfs_header *cbfs_master_header(void)
 	struct cbfs_header *header;
 
 	void *ptr = (void *)*((unsigned long *) CBFS_HEADPTR_ADDR);
-	printk_debug("Check CBFS header at %p\n", ptr);
+	printk_spew("Check CBFS header at %p\n", ptr);
 	header = (struct cbfs_header *) ptr;
 
-	printk_debug("magic is %08x\n", ntohl(header->magic));
+	printk_spew("magic is %08x\n", ntohl(header->magic));
 	if (ntohl(header->magic) != CBFS_HEADER_MAGIC) {
-		printk_err("NO CBFS HEADER\n");
+		printk_err("ERROR: No valid CBFS header found!\n");
 		return NULL;
 	}
 
-	printk_debug("Found CBFS header at %p\n", ptr);
+	printk_spew("Found CBFS header at %p\n", ptr);
 	return header;
 }
 
@@ -86,7 +86,7 @@ struct cbfs_file *cbfs_find(const char *name)
 	while(1) {
 		struct cbfs_file *file = (struct cbfs_file *) offset;
 		if (!cbfs_check_magic(file)) return NULL;
-		printk_info("Check %s\n", CBFS_NAME(file));
+		printk_debug("Check %s\n", CBFS_NAME(file));
 		if (!strcmp(CBFS_NAME(file), name))
 			return file;
 

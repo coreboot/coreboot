@@ -312,6 +312,29 @@ struct cbfs_file *rom_find_next(struct rom *rom, struct cbfs_file *prev)
 			      ntohl(rom->header->align)));
 }
 
+struct cbfs_file *rom_find_empty(struct rom *rom)
+{
+	unsigned int offset = ntohl(rom->header->offset);
+	unsigned int ret = ntohl(rom->header->offset);
+
+	while (offset < rom->fssize) {
+
+		struct cbfs_file *c =
+		    (struct cbfs_file *)ROM_PTR(rom, offset);
+
+		if (!strcmp(c->magic, COMPONENT_MAGIC)) {
+			offset += ALIGN(ntohl(c->offset) + ntohl(c->len),
+					ntohl(rom->header->align));
+
+			ret = offset;
+		} else
+			offset += ntohl(rom->header->align);
+	}
+
+	return (ret < rom->fssize) ?
+	    (struct cbfs_file *)ROM_PTR(rom, ret) : NULL;
+}
+
 struct cbfs_file *rom_find_by_name(struct rom *rom, const char *name)
 {
 	struct cbfs_file *c = rom_find_first(rom);
@@ -363,6 +386,24 @@ int rom_remove(struct rom *rom, const char *name)
 
 	c->type = CBFS_COMPONENT_DELETED; 
 
+	void *n = rom_find_next(rom, c);
+	int clear;
+	
+	if (n != NULL) {
+		memcpy(c, n, rom->fssize - ROM_OFFSET(rom, n));
+		clear = ROM_OFFSET(rom, n) - ROM_OFFSET(rom, c);
+	}
+	else { /* No component after this one. */
+		unsigned int csize;
+		csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
+		clear = ntohl(c->len) + csize;
+		memcpy(c, ((void*)c) + clear, 
+		       rom->fssize - (ROM_OFFSET(rom, c)+clear));
+	}
+
+	/* Zero the new space, which is always at the end. */
+	memset(ROM_PTR(rom, rom->fssize - clear), 0, clear);
+
 	return 0;
 }
 
@@ -394,6 +435,7 @@ int rom_extract(struct rom *rom, const char *name, void** buf, int *size )
 int rom_add(struct rom *rom, const char *name, void *buffer, unsigned long address, int size, int type)
 {
 	struct cbfs_file *c;
+	int csize;
 
 	if (rom_find_by_name(rom, name)) {
 		ERROR("Component %s already exists in this rom\n", name);
@@ -410,7 +452,28 @@ int rom_add(struct rom *rom, const char *name, void *buffer, unsigned long addre
 		return -1;
 	}
 
-	memcpy(((unsigned char *)c) + ntohl(c->offset), buffer, size);
+	csize = sizeof(struct cbfs_file) + ALIGN(strlen(name) + 1, 16);
+
+	int offset = ROM_OFFSET(rom, c);
+
+	if (offset + csize + size > rom->fssize) {
+		ERROR("There is not enough room in this ROM for this\n");
+		ERROR("component. I need %d bytes, only have %d bytes avail\n",
+		      csize + size, rom->fssize - offset);
+
+		return -1;
+	}
+
+	strcpy(c->magic, COMPONENT_MAGIC);
+
+	c->len = htonl(size);
+	c->offset = htonl(csize);
+	c->type = htonl(type);
+
+	memset(CBFS_NAME(c), 0, ALIGN(strlen(name) + 1, 16));
+	strcpy((char *)CBFS_NAME(c), name);
+
+	memcpy(((unsigned char *)c) + csize, buffer, size);
 	return 0;
 }
 

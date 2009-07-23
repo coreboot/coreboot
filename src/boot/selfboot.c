@@ -74,15 +74,13 @@ struct ip_checksum_vcb {
 void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
 {
 	int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
-	struct cbfs_payload *payload = (struct cbfs_payload *)
-		cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
+	struct cbfs_payload *payload;
 
-	struct cbfs_payload_segment *segment, *first_segment;
-
+	payload = (struct cbfs_payload *)cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
 	if (payload == NULL)
 		return (void *) -1;
 	printk_debug("Got a payload\n");
-	first_segment = segment = &payload->segments;
+
 	selfboot(lb_mem, payload);
 	printk_emerg("SELFBOOT RETURNED!\n");
 
@@ -95,11 +93,11 @@ void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
  * a machine, and implementing general relocation is hard.
  *
  * The solution:
- * - Allocate a buffer twice the size of the coreboot image.
- * - Anything that would overwrite coreboot copy into the lower half of
+ * - Allocate a buffer the size of the coreboot image plus additional
+ *   required space.
+ * - Anything that would overwrite coreboot copy into the lower part of
  *   the buffer. 
- * - After loading an ELF image copy coreboot to the upper half of the
- *   buffer.
+ * - After loading an ELF image copy coreboot to the top of the buffer.
  * - Then jump to the loaded image.
  * 
  * Benefits:
@@ -270,9 +268,9 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 				new->s_dstaddr, 
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
-			}
+		}
 			
-			/* Slice off a piece at the end 
+		/* Slice off a piece at the end 
 		 * that doesn't conflict with coreboot 
 		 */
 		if (end > lb_end) {
@@ -301,16 +299,13 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 			seg->phdr_next->phdr_prev = new;
 			seg->phdr_next = new;
 
-			/* compute the new value of end */
-			end = start + len;
-			
 			printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
 				new->s_dstaddr, 
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
-			
 		}
 	}
+
 	/* Now retarget this segment onto the bounce buffer */
 	/* sort of explanation: the buffer is a 1:1 mapping to coreboot. 
 	 * so you will make the dstaddr be this buffer, and it will get copied
@@ -332,7 +327,6 @@ static int build_self_segment_list(
 {
 	struct segment *new;
 	struct segment *ptr;
-	int datasize;
 	struct cbfs_payload_segment *segment, *first_segment;
 	memset(head, 0, sizeof(*head));
 	head->phdr_next = head->phdr_prev = head;
@@ -340,66 +334,82 @@ static int build_self_segment_list(
 	first_segment = segment = &payload->segments;
 
 	while(1) {
-		printk_debug("Segment %p\n", segment);
+		printk_debug("Loading segment from rom address 0x%p\n", segment);
 		switch(segment->type) {
-		default: printk_emerg("Bad segment type %x\n", segment->type);
-			return -1;
 		case PAYLOAD_SEGMENT_PARAMS:
-			printk_info("found param section\n");
+			printk_debug("  parameter section (skipped)\n");
 			segment++;
 			continue;
+
 		case PAYLOAD_SEGMENT_CODE:
 		case PAYLOAD_SEGMENT_DATA:
-			printk_info( "%s: ", segment->type == PAYLOAD_SEGMENT_CODE ? 
-				"code" : "data");
-		new = malloc(sizeof(*new));
-		new->s_dstaddr = ntohl((u32) segment->load_addr);
-		new->s_memsz = ntohl(segment->mem_len);
-		new->compression = ntohl(segment->compression);
+			printk_debug("  %s (compression=%x)\n", 
+					segment->type == PAYLOAD_SEGMENT_CODE ?  "code" : "data",
+					ntohl(segment->compression));
+			new = malloc(sizeof(*new));
+			new->s_dstaddr = ntohl((u32) segment->load_addr);
+			new->s_memsz = ntohl(segment->mem_len);
+			new->compression = ntohl(segment->compression);
 
-		datasize = ntohl(segment->len);
-		new->s_srcaddr = (u32) ((unsigned char *) first_segment) + ntohl(segment->offset);
-		new->s_filesz = ntohl(segment->len);
-		printk_debug("New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
-			new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
-		/* Clean up the values */
-		if (new->s_filesz > new->s_memsz)  {
-			new->s_filesz = new->s_memsz;
-		}
-		printk_debug("(cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
-			new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
-		break;
+			new->s_srcaddr = (u32) ((unsigned char *) first_segment) + ntohl(segment->offset);
+			new->s_filesz = ntohl(segment->len);
+			printk_debug("  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
+				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
+			/* Clean up the values */
+			if (new->s_filesz > new->s_memsz)  {
+				new->s_filesz = new->s_memsz;
+			}
+			printk_debug("  (cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
+				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
+			break;
+
 		case PAYLOAD_SEGMENT_BSS:
-			printk_info("BSS %p/%d\n", (void *) ntohl((u32) segment->load_addr),
+			printk_debug("  BSS 0x%p (%d byte)\n", (void *) ntohl((u32) segment->load_addr),
 				 ntohl(segment->mem_len));
 			new = malloc(sizeof(*new));
 			new->s_filesz = 0;
 			new->s_dstaddr = ntohl((u32) segment->load_addr);
 			new->s_memsz = ntohl(segment->mem_len);
-
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
-			printk_info("Entry %p\n", (void *) ntohl((u32) segment->load_addr));
+			printk_debug("  Entry Point 0x%p\n", (void *) ntohl((u32) segment->load_addr));
 			*entry =  ntohl((u32) segment->load_addr);
+			/* Per definition, a payload always has the entry point
+			 * as last segment. Thus, we use the occurence of the
+			 * entry point as break condition for the loop.
+			 * Can we actually just look at the number of section?
+			 */
 			return 1;
+
+		default:
+			/* We found something that we don't know about. Throw
+			 * hands into the sky and run away!
+			 */
+			printk_emerg("Bad segment type %x\n", segment->type);
+			return -1;
 		}
+
 		segment++;
+
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
 			if (new->s_srcaddr < ntohl((u32) segment->load_addr))
 				break;
 		}
+
 		/* Order by stream offset */
 		new->next = ptr;
 		new->prev = ptr->prev;
 		ptr->prev->next = new;
 		ptr->prev = new;
+
 		/* Order by original program header order */
 		new->phdr_next = head;
 		new->phdr_prev = head->phdr_prev;
 		head->phdr_prev->phdr_next  = new;
 		head->phdr_prev = new;
 	}
+
 	return 1;
 }
 
@@ -408,10 +418,8 @@ static int load_self_segments(
 	struct lb_memory *mem,
 	struct cbfs_payload *payload)
 {
-	unsigned long offset;
 	struct segment *ptr;
 	
-	offset = 0;
 	unsigned long required_bounce_size = lb_end - lb_start;
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (!overlaps_coreboot(ptr)) continue;
@@ -429,7 +437,7 @@ static int load_self_segments(
 			return 0;
 	}
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
-		unsigned char *dest,*src;
+		unsigned char *dest, *src;
 		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 		

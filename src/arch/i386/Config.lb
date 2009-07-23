@@ -5,6 +5,7 @@ uses CONFIG_USE_INIT
 uses CONFIG_HAVE_FAILOVER_BOOT
 uses CONFIG_USE_FAILOVER_IMAGE
 uses CONFIG_USE_FALLBACK_IMAGE
+uses CONFIG_CBFS
 
 init init/crt0.S.lb
 
@@ -82,9 +83,12 @@ end
 # catch the case where there is no compression
 makedefine PAYLOAD-1:=payload
 
+if CONFIG_CBFS
+else
 # match the case where a compression type is specified.
 makedefine PAYLOAD-$(CONFIG_COMPRESSED_PAYLOAD_NRV2B):=payload.nrv2b
 makedefine PAYLOAD-$(CONFIG_COMPRESSED_PAYLOAD_LZMA):=payload.lzma
+end
 
 # catch the case where there is precompression. Yes, this bites. 
 if CONFIG_PRECOMPRESSED_PAYLOAD 

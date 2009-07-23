@@ -40,7 +40,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	device_t dev;
 	struct resource *res;
 
-	dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_K8T890CE_5, 0);
+	dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_K8M890CE_5, 0);
 	if (!dev)
 		return current;
 

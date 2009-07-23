@@ -22,9 +22,22 @@
 #include <device/pci_ids.h>
 #include <boot/tables.h>
 #include "chip.h"
+#include <../../../southbridge/via/k8t890/k8t890.h>
 
 int add_mainboard_resources(struct lb_memory *mem)
 {
+	device_t dev;
+
+	dev = dev_find_device(PCI_VENDOR_ID_VIA,
+			      PCI_DEVICE_ID_VIA_K8M890CE_5, 0);
+	if (dev) {
+		struct resource *res =
+			find_resource(dev, K8T890_MMCONFIG_MBAR);
+		if (res)
+			lb_add_memory_range(mem, LB_MEM_RESERVED, res->base,
+					    res->size);
+	}
+
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		CONFIG_RAMBASE, ((CONFIG_LB_MEM_TOPK<<10) - CONFIG_RAMBASE));

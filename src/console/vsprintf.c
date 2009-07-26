@@ -17,7 +17,7 @@ int vsprintf(char * buf, const char *fmt, va_list args)
 {
 	char *str_buf;
 
-	/* this function is only used by vsprint.
+	/* this function is only used by vsprintf.
 	   To keep str_buf local (for reentrancy
 	   and to avoid .bss use, nest it */
 	void str_tx_byte(unsigned char byte)

@@ -254,14 +254,12 @@ int add_handler(struct rom *rom, int argc, char **argv)
 		return -1;
 	}
 
-	int component_type;
-
 	/* There are two ways to specify the type - a string or a number */
 
 	if (isdigit(*(argv[2])))
 		type = strtoul(argv[2], 0, 0);
 	else {
-		switch( component_type = select_component_type(argv[2])) {
+		switch(select_component_type(argv[2])) {
 			case 0:
 				type = CBFS_COMPONENT_STAGE;
 				break;

@@ -332,7 +332,7 @@ default CONFIG_TTYS0_LCS=0x3
 ## WARNING    5   warning conditions               
 ## NOTICE     6   normal but significant condition 
 ## INFO       7   informational                    
-## CONFIG_DEBUG      8   debug-level messages             
+## DEBUG      8   debug-level messages             
 ## SPEW       9   Way too many details             
 
 ## Request this level of debugging output

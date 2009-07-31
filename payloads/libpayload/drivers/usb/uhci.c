@@ -130,7 +130,13 @@ uhci_init (pcidev_t addr)
 	int i;
 	hci_t *controller = new_controller ();
 
+	if (!controller)
+		usb_fatal("Could not create USB controller instance.\n");
+
 	controller->instance = malloc (sizeof (uhci_t));
+	if(!controller->instance)
+		usb_fatal("Not enough memory creating USB controller instance.\n");
+
 	controller->start = uhci_start;
 	controller->stop = uhci_stop;
 	controller->reset = uhci_reset;
@@ -157,6 +163,9 @@ uhci_init (pcidev_t addr)
 	pci_write_config32 (controller->bus_address, 0xc0, 0x8f00);
 
 	UHCI_INST (controller)->framelistptr = memalign (0x1000, 1024 * sizeof (flistp_t *));	/* 4kb aligned to 4kb */
+	if (! UHCI_INST (controller)->framelistptr)
+		usb_fatal("Not enough memory for USB frame list pointer.\n");
+
 	memset (UHCI_INST (controller)->framelistptr, 0,
 		1024 * sizeof (flistp_t));
 
@@ -168,12 +177,20 @@ uhci_init (pcidev_t addr)
 	          for some reason. Not a problem now.
 	   */
 	td_t *antiberserk = memalign(16, sizeof(td_t));
+	if (!antiberserk)
+		usb_fatal("Not enough memory for chipset workaround.\n");
 	memset(antiberserk, 0, sizeof(td_t));
 
 	UHCI_INST (controller)->qh_prei = memalign (16, sizeof (qh_t));
 	UHCI_INST (controller)->qh_intr = memalign (16, sizeof (qh_t));
 	UHCI_INST (controller)->qh_data = memalign (16, sizeof (qh_t));
 	UHCI_INST (controller)->qh_last = memalign (16, sizeof (qh_t));
+
+	if (! UHCI_INST (controller)->qh_prei ||
+	    ! UHCI_INST (controller)->qh_intr ||
+	    ! UHCI_INST (controller)->qh_data ||
+	    ! UHCI_INST (controller)->qh_last)
+		usb_fatal ("Not enough memory for USB controller queues.\n");
 
 	UHCI_INST (controller)->qh_prei->headlinkptr.ptr =
 		virt_to_phys (UHCI_INST (controller)->qh_intr);
@@ -508,11 +525,16 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 	td_t *tds = memalign(16, sizeof(td_t) * reqcount);
 	qh_t *qh = memalign(16, sizeof(qh_t));
 
+	if (!data || !tds || !qh)
+		usb_fatal ("Not enough memory to create USB intr queue prerequisites.\n");
+
 	qh->elementlinkptr.ptr = virt_to_phys(tds);
 	qh->elementlinkptr.queue_head = 0;
 	qh->elementlinkptr.terminate = 0;
 
 	intr_q *q = malloc(sizeof(intr_q));
+	if (!q)
+		usb_fatal ("Not enough memory to create USB intr queue.\n");
 	q->qh = qh;
 	q->tds = tds;
 	q->data = data;

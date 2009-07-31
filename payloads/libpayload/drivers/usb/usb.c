@@ -33,14 +33,16 @@
 hci_t *usb_hcs = 0;
 
 hci_t *
-new_controller ()
+new_controller (void)
 {
 	hci_t *controller = malloc (sizeof (hci_t));
 
-	/* atomic */
-	controller->next = usb_hcs;
-	usb_hcs = controller;
-	/* atomic end */
+	if (controller) {
+		/* atomic */
+		controller->next = usb_hcs;
+		usb_hcs = controller;
+		/* atomic end */
+	}
 
 	return controller;
 }
@@ -48,13 +50,13 @@ new_controller ()
 void
 detach_controller (hci_t *controller)
 {
-	if (controller == 0)
+	if (controller == NULL)
 		return;
 	if (usb_hcs == controller) {
 		usb_hcs = controller->next;
 	} else {
 		hci_t *it = usb_hcs;
-		while (it != 0) {
+		while (it != NULL) {
 			if (it->next == controller) {
 				it->next = controller->next;
 				return;
@@ -385,4 +387,11 @@ usb_attach_device(hci_t *controller, int hubaddress, int port, int lowspeed)
 	// determine responsible driver - current done in set_address
 	newdev_t->init (newdev_t);
 	return newdev;
+}
+
+void
+usb_fatal (const char *message)
+{
+	printf(message);
+	for (;;) ;
 }

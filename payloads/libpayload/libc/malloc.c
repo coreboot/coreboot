@@ -309,6 +309,8 @@ void *memalign(size_t align, size_t size)
 	if (size == 0) return 0;
 	if (align_regions == 0) {
 		align_regions = malloc(sizeof(struct align_region_t));
+		if (align_regions == NULL)
+			return NULL;
 		memset(align_regions, 0, sizeof(struct align_region_t));
 	}
 	struct align_region_t *reg = align_regions;

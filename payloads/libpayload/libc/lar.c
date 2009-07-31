@@ -113,6 +113,10 @@ struct LAR *openlar(void *addr)
 	 * tear on the heap */
 
 	lar->headers = malloc(16 * sizeof(void *));
+
+	if (!lar->headers)
+		return NULL;
+
 	lar->alloc = 16;
 	lar->count = lar->eof = 0;
 	lar->cindex = 0;

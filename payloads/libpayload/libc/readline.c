@@ -55,6 +55,8 @@ char *readline(const char *prompt)
 	if (!readline_buffer || !readline_bufferlen) {
 #define READLINE_BUFFERSIZE	256
 		readline_buffer = malloc(READLINE_BUFFERSIZE);
+		if (!readline_buffer)
+			return NULL;
 		readline_bufferlen = READLINE_BUFFERSIZE;
 		memset(readline_buffer, 0, readline_bufferlen);
 	}

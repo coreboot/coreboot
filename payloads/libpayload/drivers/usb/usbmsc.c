@@ -346,6 +346,9 @@ usb_msc_init (usbdev_t *dev)
 	}
 
 	dev->data = malloc (sizeof (usbmsc_inst_t));
+	if (!dev->data)
+		usb_fatal("Not enough memory for USB MSC device.\n");
+
 	MSC_INST (dev)->bulk_in = 0;
 	MSC_INST (dev)->bulk_out = 0;
 

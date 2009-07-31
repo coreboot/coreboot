@@ -157,6 +157,9 @@ uhci_rh_init (usbdev_t *dev)
 	uhci_rh_enable_port (dev, 1);
 	uhci_rh_enable_port (dev, 2);
 	dev->data = malloc (sizeof (rh_inst_t));
+	if (!dev->data)
+		usb_fatal ("Not enough memory for UHCI RH.\n");
+
 	RH_INST (dev)->port[0] = -1;
 	RH_INST (dev)->port[1] = -1;
 

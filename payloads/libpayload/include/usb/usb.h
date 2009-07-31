@@ -226,4 +226,6 @@ gen_bmRequestType (dev_req_dir dir, dev_req_type type, dev_req_recp recp)
 
 void usb_detach_device(hci_t *controller, int devno);
 int usb_attach_device(hci_t *controller, int hubaddress, int port, int lowspeed);
+
+void usb_fatal(const char *message) __attribute__ ((noreturn));
 #endif

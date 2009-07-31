@@ -271,8 +271,14 @@ static struct align_region_t* align_regions = 0;
 static struct align_region_t *allocate_region(struct align_region_t *old_first, int alignment, int num_elements)
 {
 	struct align_region_t *new_region = malloc(sizeof(struct align_region_t));
+	if (!new_region)
+		return NULL;
 	new_region->alignment = alignment;
 	new_region->start = malloc((num_elements+1) * alignment + num_elements);
+	if (!new_region->start) {
+		free(new_region);
+		return NULL;
+	}
 	new_region->start_data = (void*)((u32)(new_region->start + num_elements + alignment - 1) & (~(alignment-1)));
 	new_region->size = num_elements * alignment;
 	new_region->free = num_elements;

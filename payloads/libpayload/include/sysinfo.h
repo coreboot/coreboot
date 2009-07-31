@@ -54,7 +54,6 @@ struct sysinfo_t {
 };
 
 extern struct sysinfo_t lib_sysinfo;
-void lib_get_sysinfo(void);
 
 #endif
 

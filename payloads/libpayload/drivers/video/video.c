@@ -66,7 +66,7 @@ static void video_console_fixup_cursor(void)
 	if (cursory < 0)
 		cursory = 0;
 
-	if (cursorx > VIDEO_COLS) {
+	if (cursorx >= VIDEO_COLS) {
 		cursorx = 0;
 		cursory++;
 	}

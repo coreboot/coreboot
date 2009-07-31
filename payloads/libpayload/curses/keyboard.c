@@ -179,7 +179,7 @@ static int curses_getchar(int delay)
 			break;
 
 		if (delay > 0) {
-			mdelay(100);
+			mdelay(1);
 			delay--;
 		}
 
@@ -195,15 +195,17 @@ int wgetch(WINDOW *win)
 {
 	int delay = -1;
 
-	if (_halfdelay || win->_delay)
-		delay = win->_delay ? 0 : _halfdelay;
+	if (_halfdelay)
+		delay = _halfdelay;
+	else 
+		delay = win->_delay;
 
 	return curses_getchar(delay);
 }
 
 int nodelay(WINDOW *win, NCURSES_BOOL flag)
 {
-	win->_delay = flag ? 1 : 0;
+	win->_delay = flag ? 0 : -1;
 	return 0;
 }
 

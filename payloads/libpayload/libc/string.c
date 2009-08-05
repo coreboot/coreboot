@@ -165,7 +165,7 @@ char *strcpy(char *d, const char *s)
  *
  * @param d The destination string.
  * @param s The source string.
- * @param n The target string will have a length of n characters at most.
+ * @param n Not more than n characters from s will be appended to d.
  * @return A pointer to the destination string.
  */
 char *strncat(char *d, const char *s, size_t n)

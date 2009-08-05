@@ -176,7 +176,7 @@ define CONFIG_USE_INIT
 	comment "Use stage 1 initialization code"
 end
 
-define COREBOOT_V2
+define CONFIG_COREBOOT_V2
 	default 1
 	export always
 	comment "This is used by code to determine v2 vs v3"

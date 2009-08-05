@@ -273,7 +273,7 @@ static void i82801gx_power_options(device_t dev)
 	/* Set up power management block and determine sleep mode */
 	pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
 	reg32 = inl(pmbase + 0x04); // PM1_CNT
-#if HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME
 	acpi_slp_type = (((reg32 >> 10) & 7) == 5) ? 3 : 0;
 	printk_debug("PM1_CNT: 0x%08x --> acpi_sleep_type: %x\n", 
 			reg32, acpi_slp_type);

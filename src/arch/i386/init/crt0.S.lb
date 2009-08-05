@@ -70,6 +70,7 @@ __main:
 	 * Normally this is copying from FLASH ROM to RAM.
 	 */
 	movl	%ebp, %esi
+	/* FIXME: look for a proper place for the stack */
 	movl	$0x4000000, %esp
 	movl	%esp, %ebp
 	pushl %esi
@@ -142,6 +143,11 @@ str_copying_to_ram:  .string "Uncompressing coreboot to RAM.\r\n"
 #else
 str_copying_to_ram:  .string "Copying coreboot to RAM.\r\n"
 #endif
+str_pre_main:        .string "Jumping to coreboot.\r\n"
+.previous
+
+#endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
+
 #if CONFIG_CBFS == 1
 # if CONFIG_USE_FALLBACK_IMAGE == 1
 str_coreboot_ram_name:	.string "fallback/coreboot_ram"
@@ -149,9 +155,5 @@ str_coreboot_ram_name:	.string "fallback/coreboot_ram"
 str_coreboot_ram_name:	.string "normal/coreboot_ram"
 # endif
 #endif
-str_pre_main:        .string "Jumping to coreboot.\r\n"
-.previous
-
-#endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
 
 #endif /* CONFIG_USE_DCACHE_RAM */

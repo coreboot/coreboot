@@ -35,7 +35,9 @@ static void irqdump()
    - set ADDDECTL (now done in raminit.c in cpu/amd/sc520
 */
 static void enable_dev(struct device *dev) {
+#if !CONFIG_CBFS
 	extern unsigned char *rom_start, *rom_end;
+#endif
 	volatile struct mmcrpic *pic = MMCRPIC;
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
 
@@ -134,10 +136,12 @@ static void enable_dev(struct device *dev) {
 	/* follow fuctory here */
 	mmcr->dmacontrol.extchanmapa = 0x3210;
 
+#if !CONFIG_CBFS
 	/* hack for IDIOTIC need to fix rom_start */
 	printk_err("Patching rom_start due to sc520 limits\n");
 	rom_start = 0x2000000 + 0x40000;
 	rom_end = rom_start + CONFIG_PAYLOAD_SIZE - 1;
+#endif
 
 	
 }

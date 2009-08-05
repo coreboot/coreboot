@@ -11,7 +11,7 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-#ifndef COREBOOT_V2
+#ifndef CONFIG_COREBOOT_V2
 #include <cpu.h>
 #endif
 

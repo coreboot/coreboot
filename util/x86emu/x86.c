@@ -20,7 +20,7 @@
 #include <device/pci.h>
 #include <string.h>
 
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include <arch/io.h>
 #include <console/console.h>
 #define printk(x...) do_printk(x)

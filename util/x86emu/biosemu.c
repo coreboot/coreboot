@@ -36,7 +36,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include <arch/io.h>
 #include <console/console.h>
 #else

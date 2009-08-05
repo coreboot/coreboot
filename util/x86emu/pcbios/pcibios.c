@@ -35,7 +35,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include <console/console.h>
 #else
 #include <console.h>
@@ -65,7 +65,7 @@ int pcibios_handler(void)
 		break;
 	case FIND_PCI_DEVICE:
 		/* FixME: support SI != 0 */
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 		dev = dev_find_device(X86_DX, X86_CX, dev);
 #else
 		dev = dev_find_pci_device(X86_DX, X86_CX, dev);

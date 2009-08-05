@@ -12,7 +12,7 @@
  *****************************************************************************/
 
 #include <types.h>
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include "compat/rtas.h"
 #include "compat/time.h"
 #else

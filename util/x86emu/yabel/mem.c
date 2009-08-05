@@ -12,14 +12,14 @@
  *****************************************************************************/
 
 #include <types.h>
-#ifndef COREBOOT_V2
+#ifndef CONFIG_COREBOOT_V2
 #include <cpu.h>
 #endif
 #include "debug.h"
 #include "device.h"
 #include "x86emu/x86emu.h"
 #include "biosemu.h"
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include "compat/time.h"
 #else
 #include <time.h>

@@ -11,7 +11,7 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include "compat/rtas.h"
 #else
 #include <rtas.h>
@@ -24,7 +24,7 @@
 #include "pmm.h"
 
 #include <x86emu/x86emu.h>
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include "../x86emu/prim_ops.h"
 #else
 #include <x86emu/prim_ops.h>
@@ -350,7 +350,7 @@ handleInt1a(void)
 				  __func__, M.x86.R_AX);
 		/* FixME: support SI != 0 */
 #if defined(CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES) && CONFIG_YABEL_PCI_ACCESS_OTHER_DEVICES==1
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 		dev = dev_find_device(M.x86.R_DX, M.x86.R_CX, 0);
 #else
 		dev = dev_find_pci_device(M.x86.R_DX, M.x86.R_CX, 0);

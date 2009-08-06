@@ -13,7 +13,9 @@
 #error Bad ttys0 baud rate
 #endif
 
+#ifndef CONFIG_TTYS0_DIV
 #define CONFIG_TTYS0_DIV	(115200/CONFIG_TTYS0_BAUD)
+#endif
 
 /* Line Control Settings */
 #ifndef CONFIG_TTYS0_LCS

@@ -418,7 +418,7 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_var_mtrr_resource, &var_state);
-#ifdef CONFIG_GFXUMA
+#if (CONFIG_GFXUMA == 1) /* UMA or SP. */
 	// For now we assume the UMA space is at the end of memory
 	if (var_state.hole_startk || var_state.hole_sizek) {
 		printk_debug("Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");

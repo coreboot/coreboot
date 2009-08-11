@@ -1,0 +1,9 @@
+object biosemu.o
+object debug.o
+object device.o
+object interrupt.o
+object io.o
+object mem.o
+object pmm.o
+#object vbe.o
+dir compat

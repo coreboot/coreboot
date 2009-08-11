@@ -132,5 +132,5 @@ default CONFIG_BRIQ_750FX=1
 # CBFS
 #
 #
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
 end

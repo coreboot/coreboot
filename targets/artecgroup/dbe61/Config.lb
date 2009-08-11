@@ -21,8 +21,6 @@ option CONFIG_ROM_SIZE = 1024*512 - 36*1024
 ## not including any payload.
 option CONFIG_ROM_IMAGE_SIZE=64*1024
 
-option CONFIG_FALLBACK_SIZE = CONFIG_ROM_SIZE
-
 option CONFIG_DEFAULT_CONSOLE_LOGLEVEL = 9
 option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL = 9
 romimage "fallback" 

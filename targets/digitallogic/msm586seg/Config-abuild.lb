@@ -9,9 +9,7 @@ __COMPRESSION__
 __LOGLEVEL__
 
 romimage "fallback" 
-	option CONFIG_FALLBACK_SIZE = 256 * 1024
 	option CONFIG_USE_FALLBACK_IMAGE=1
-	option CONFIG_ROM_IMAGE_SIZE= 128 * 1024
 	option COREBOOT_EXTRA_VERSION=".0Fallback"
 	payload __PAYLOAD__
 end

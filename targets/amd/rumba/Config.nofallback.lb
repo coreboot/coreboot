@@ -5,8 +5,6 @@ target rumba
 mainboard amd/rumba
 
 option CONFIG_ROM_SIZE=128*1024
-option CONFIG_FALLBACK_SIZE=CONFIG_ROM_SIZE
-#option CONFIG_FALLBACK_SIZE=65535
 
 #romimage "normal"
 #	option CONFIG_USE_FALLBACK_IMAGE=0

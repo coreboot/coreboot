@@ -3,8 +3,6 @@
 ## (coreboot plus bootloader) will live in the boot rom chip.
 ##
 default CONFIG_ROM_SIZE = 256 * 1024 
-default CONFIG_ROM_SECTION_SIZE   = CONFIG_ROM_SIZE
-default CONFIG_ROM_SECTION_OFFSET = 0
 
 ##
 ## Compute the start location and size size of

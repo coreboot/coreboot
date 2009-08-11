@@ -125,5 +125,5 @@ default CONFIG_RAMSTART=0x00100000
 # CBFS
 #
 #
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
 end

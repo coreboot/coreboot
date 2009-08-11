@@ -1,5 +1,4 @@
 default CONFIG_ROM_SIZE = 512 * 1024 
-default CONFIG_FALLBACK_SIZE = 0x10000
 
 ## CONFIG_XIP_ROM_SIZE must be a power of 2.
 default CONFIG_XIP_ROM_SIZE = 32 * 1024

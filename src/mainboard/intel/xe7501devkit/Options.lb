@@ -79,7 +79,7 @@ default CONFIG_ROM_IMAGE_SIZE = 65536
 ## Build code for the fallback boot?
 ##
 default CONFIG_HAVE_FALLBACK_BOOT=1
-default CONFIG_FALLBACK_SIZE=131072
+default CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 
 
 ## Delay timer options
@@ -244,5 +244,5 @@ default CONFIG_DEBUG=1
 # CBFS
 #
 #
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
 end

@@ -31,7 +31,6 @@ mainboard amd/serengeti_cheetah_fam10
 
 # 1024KB ROM
 option CONFIG_ROM_SIZE=1024*1024
-option CONFIG_FALLBACK_SIZE=CONFIG_ROM_SIZE-CONFIG_FAILOVER_SIZE
 
 romimage "fallback"
 	option CONFIG_USE_FAILOVER_IMAGE=0

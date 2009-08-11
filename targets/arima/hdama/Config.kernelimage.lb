@@ -13,7 +13,6 @@ uses CONFIG_ROM_PAYLOAD
 uses CONFIG_ROM_PAYLOAD_START
 uses CONFIG_UDELAY_TSC
 uses CPU_FIXUP
-uses CONFIG_FALLBACK_SIZE
 uses CONFIG_HAVE_FALLBACK_BOOT
 uses CONFIG_HAVE_MP_TABLE
 uses CONFIG_HAVE_PIRQ_TABLE
@@ -70,12 +69,6 @@ option CONFIG_ROM_SIZE=1024*1024
 option CONFIG_HAVE_OPTION_TABLE=1
 option CONFIG_ROM_PAYLOAD=1
 option CONFIG_HAVE_FALLBACK_BOOT=1
-
-###
-### Compute the location and size of where this firmware image
-### (coreboot plus bootloader) will live in the boot rom chip.
-###
-option CONFIG_FALLBACK_SIZE=CONFIG_ROM_SIZE
 
 ## Coreboot C code runs at this location in RAM
 option CONFIG_RAMBASE=0x00004000

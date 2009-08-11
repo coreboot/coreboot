@@ -112,9 +112,7 @@ default CONFIG_ROM_SIZE=524288
 ##
 ## CONFIG_FALLBACK_SIZE is the amount of the ROM the complete fallback image will use
 ##
-#default CONFIG_FALLBACK_SIZE=131072
-#256K
-default CONFIG_FALLBACK_SIZE=0x40000
+default CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 
 ###
 ### Build options
@@ -313,5 +311,5 @@ default CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
 # CBFS
 #
 #
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
 end

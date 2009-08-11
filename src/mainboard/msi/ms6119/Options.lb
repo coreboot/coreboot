@@ -77,7 +77,7 @@ default CONFIG_IRQ_SLOT_COUNT = 0		# Override this in targets/*/Config.lb.
 default CONFIG_MAINBOARD_VENDOR = "N/A"	# Override this in targets/*/Config.lb.
 default CONFIG_MAINBOARD_PART_NUMBER = "N/A"	# Override this in targets/*/Config.lb.
 default CONFIG_ROM_IMAGE_SIZE = 64 * 1024
-default CONFIG_FALLBACK_SIZE = 128 * 1024
+default CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 default CONFIG_STACK_SIZE = 8 * 1024
 default CONFIG_HEAP_SIZE = 16 * 1024
 default CONFIG_HAVE_OPTION_TABLE = 0
@@ -101,5 +101,5 @@ default CONFIG_PCI_ROM_RUN = 1
 # CBFS
 #
 #
-default CONFIG_CBFS=0
+default CONFIG_CBFS=1
 end

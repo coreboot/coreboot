@@ -13,7 +13,6 @@ __LOGLEVEL__
 romimage "normal"
         option CONFIG_USE_FAILOVER_IMAGE=0
 	option CONFIG_USE_FALLBACK_IMAGE=0
-	option CONFIG_ROM_IMAGE_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
@@ -21,7 +20,6 @@ end
 romimage "fallback"
 	option CONFIG_USE_FAILOVER_IMAGE=0
 	option CONFIG_USE_FALLBACK_IMAGE=1
-	option CONFIG_ROM_IMAGE_SIZE=0x20000
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end

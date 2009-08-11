@@ -693,7 +693,7 @@ define CONFIG_FS_FAT
 	comment "Enable FAT filesystem support"
 end
 define CONFIG_CBFS
-	default 0
+	default 1
 	export always
 	comment "The new CBFS file system"
 end

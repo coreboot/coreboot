@@ -1,0 +1,59 @@
+chip northbridge/via/cx700
+	device apic_cluster 0 on
+		chip cpu/via/model_c7
+			device apic 0 on end
+		end
+	end
+	device pci_domain 0 on
+		device pci 0.0 on end # AGP Bridge
+		device pci 0.1 on end # Error Reporting
+		device pci 0.2 on end # Host Bus Control
+		device pci 0.3 on end # Memory Controller
+		device pci 0.4 on end # Power Management
+		device pci 0.7 on end # V-Link Controller
+		device pci 1.0 on     # PCI Bridge
+			chip drivers/pci/onboard
+				device pci 0.0 on end
+				#register "rom_address" = "0xfffc0000" #256k image
+				register "rom_address" = "0xfff80000" #512k image
+				#register "rom_address" = "0xfff00000" #1024k image
+			end # Onboard Video
+		end # PCI Bridge
+		device pci f.0 on end # IDE/SATA
+		#device pci f.1 on end # IDE
+		device pci 10.0 on end # USB 1.1
+		device pci 10.1 on end # USB 1.1
+		device pci 10.2 on end # USB 1.1
+		device pci 10.4 on end # USB 2.0
+		device pci 11.0 on      # Southbridge LPC
+			chip superio/via/vt1211
+				device pnp 2e.0 on	# Floppy
+					io 0x60 = 0x3f0
+					irq 0x70 = 6
+					drq 0x74 = 2
+				end
+				device pnp 2e.1 on	# Parallel Port
+					io 0x60 = 0x378
+					irq 0x70 = 7
+					drq 0x74 = 3
+				end
+				device pnp 2e.2 on	# COM1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+				end
+				device pnp 2e.3 on	# COM2
+					io 0x60 = 0x2f8
+					irq 0x70 = 3
+				end
+				device pnp 2e.b on	# HWM
+					io 0x60 = 0xec00
+				end
+			end # superio
+		end # pci 11.0
+		# 1-4 non existant
+		#device pci 11.5 on end # AC97 Audio
+		#device pci 11.6 off end # AC97 Modem
+		#device pci 12.0 on end  # Ethernet
+	end # pci domain 0
+end # cx700
+

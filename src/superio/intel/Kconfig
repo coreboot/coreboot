@@ -1,0 +1,2 @@
+config SUPERIO_FINTEK_I3100
+	bool

@@ -1,0 +1,3 @@
+config CPU_AMD_SOCKET_F
+	bool
+	default false

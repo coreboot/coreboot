@@ -1,0 +1,65 @@
+chip northbridge/via/vt8601
+	device pci_domain 0 on
+    		device pci 0.0 on end			# Northbridge
+#		device pci 0.1 on			# AGP bridge
+		#	chip drivers/pci/onboard	# Integrated VGA
+		#		device pci 0.0 on end
+		#		register "rom_adress" = "0xfff80000"
+		#	end
+#		end
+		chip southbridge/via/vt8231
+			register "enable_native_ide" = "0"
+			register "enable_com_ports" = "1"
+			register "enable_keyboard" = "0"
+			device pci 11.0 on              # Southbrdge
+				chip superio/winbond/w83627hf
+					device pnp 2e.0 on      #  Floppy
+					   io 0x60 = 0x3f0
+					  irq 0x70 = 6
+					  drq 0x74 = 2
+					end
+					device pnp 2e.1 off     #  Parallel Port
+					   io 0x60 = 0x378
+					  irq 0x70 = 7
+					end
+					device pnp 2e.2 on      #  Com1
+					   io 0x60 = 0x3f8
+					  irq 0x70 = 4
+					end
+					device pnp 2e.3 off     #  Com2
+					   io 0x60 = 0x2f8
+					  irq 0x70 = 3
+					end
+					device pnp 2e.5 on      #  Keyboard
+					   io 0x60 = 0x60
+					   io 0x62 = 0x64
+					  irq 0x70 = 1
+					  irq 0x72 = 12
+	      				end
+				register "com1" = "{CONFIG_TTYS0_BAUD}"
+				end
+				device pnp 2e.6 off end 	#  CIR
+				device pnp 2e.7 off end 	#  GAME_MIDI_GIPO1
+				device pnp 2e.8 off end		#  GPIO2
+				device pnp 2e.9 off end 	#  GPIO3
+				device pnp 2e.a off end		#  ACPI
+				device pnp 2e.b on		#  HW Monitor
+					io 0x60 = 0x290
+				end
+			end
+			device pci 11.1 on  end		# Ide
+			device pci 11.2 off end		# Usb port 0-1
+			device pci 11.3 off end		# Usb port 2-3
+			device pci 11.4 off end		# ACPI
+			device pci 11.5 off end		# AC97 Audio
+			device pci 11.6 on  end		# AC97 Modem
+          		device pci 12.0 on  end		# Ethernet
+        	end
+	end
+
+        device apic_cluster 0 on
+                chip cpu/via/model_c3
+                        device apic 0 on end
+                end
+        end
+end

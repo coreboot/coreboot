@@ -103,7 +103,7 @@ function vendors
 {
 	# make this a function so we can easily select
 	# without breaking readability
-	ls -1 "$LBROOT/src/mainboard" | grep -v CVS
+	ls -1 "$LBROOT/src/mainboard" | grep -v Kconfig
 }
 
 function mainboards
@@ -113,7 +113,7 @@ function mainboards
 	
 	VENDOR=$1
 	
-	ls -1 $LBROOT/src/mainboard/$VENDOR | grep -v CVS 
+	ls -1 $LBROOT/src/mainboard/$VENDOR | grep -v Kconfig
 }
 
 function architecture

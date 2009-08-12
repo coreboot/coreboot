@@ -1,0 +1,59 @@
+config ARCH_X86
+	boolean
+	help
+	  This option is used to set the architecture of a mainboard.
+	  It is usually set in mainboard/*/Kconfig.
+
+config ARCH
+	string
+	default i386
+	depends on ARCH_X86
+	help
+	  This is the name of the respective subdirectory in arch/.
+
+config ROMBASE
+	hex 
+	default 0xffe00000 if COREBOOT_ROMSIZE_KB_2048
+	default 0xfff00000 if COREBOOT_ROMSIZE_KB_1024
+	default 0xfff80000 if COREBOOT_ROMSIZE_KB_512
+	default 0xfffc0000 if COREBOOT_ROMSIZE_KB_256
+	default 0xfffe0000 if COREBOOT_ROMSIZE_KB_128
+
+config PAYLOAD_SIZE
+	hex
+	default 0
+
+config ROM_PAYLOAD_START
+	hex
+	default 0xffe00000 if COREBOOT_ROMSIZE_KB_2048
+	default 0xfff00000 if COREBOOT_ROMSIZE_KB_1024
+	default 0xfff80000 if COREBOOT_ROMSIZE_KB_512
+	default 0xfffc0000 if COREBOOT_ROMSIZE_KB_256
+	default 0xfffe0000 if COREBOOT_ROMSIZE_KB_128
+
+config ROM_IMAGE_SIZE
+	hex
+	default 0x200000 if COREBOOT_ROMSIZE_KB_2048
+	default 0x100000 if COREBOOT_ROMSIZE_KB_1024
+	default 0x80000 if COREBOOT_ROMSIZE_KB_512
+	default 0x40000 if COREBOOT_ROMSIZE_KB_256
+	default 0x20000 if COREBOOT_ROMSIZE_KB_128
+
+config RAMBASE
+	hex
+	default 0x100000
+
+config STACK_SIZE
+	hex
+	default 0x8000
+
+
+menu "Misc Options"
+
+config MAX_REBOOT_CNT
+	int "Maximum Reboot Count"
+	default 3
+
+endmenu
+
+

@@ -1,0 +1,2 @@
+config SUPERIO_VIA_VT1211
+	bool

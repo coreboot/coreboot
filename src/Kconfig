@@ -1,0 +1,275 @@
+##
+## This file is part of the coreboot repair project.
+##
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions
+## are met:
+## 1. Redistributions of source code must retain the above copyright
+##    notice, this list of conditions and the following disclaimer.
+## 2. Redistributions in binary form must reproduce the above copyright
+##    notice, this list of conditions and the following disclaimer in the
+##    documentation and/or other materials provided with the distribution.
+## 3. The name of the author may not be used to endorse or promote products
+##    derived from this software without specific prior written permission.
+##
+## THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+## ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+## IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+## ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+## FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+## DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+## OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+## HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+## LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+## OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+## SUCH DAMAGE.
+##
+
+mainmenu "Coreboot Configuration"
+
+source src/mainboard/Kconfig
+source src/arch/i386/Kconfig
+source src/arch/ppc/Kconfig
+source src/devices/Kconfig
+source src/northbridge/Kconfig
+source src/southbridge/Kconfig
+source src/superio/Kconfig
+source src/cpu/Kconfig
+
+config CBFS
+	bool
+	default y
+
+config HAVE_HIGH_TABLES
+	bool
+	default y
+
+config PCI_BUS_SEGN_BITS
+	int
+	default 0
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+        hex
+        default 0
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+        hex
+        default 0
+
+config CPU_ADDR_BITS
+	int
+	default 36
+
+config XIP_ROM_BASE
+	hex
+	default 0xfffe0000
+
+config XIP_ROM_SIZE
+	hex
+	default 0x20000
+
+config LB_CKS_RANGE_START
+	int
+	default 49
+
+config LB_CKS_RANGE_END
+	int
+	default 125
+
+config LB_CKS_LOC
+	int
+	default 126
+
+config LOGICAL_CPUS
+	int
+	default 1
+
+config PCI_ROM_RUN
+	int
+	default 0
+
+config HT_CHAIN_UNITID_BASE
+	int
+	default 1
+
+config HT_CHAIN_END_UNITID_BASE
+	int
+	default 32
+
+config HEAP_SIZE
+	hex
+	default 0x2000
+
+config COREBOOT_V2
+	bool
+	default y
+
+config COREBOOT_V4
+	bool
+	default y
+
+config DEBUG
+	bool
+	default n
+
+config USE_PRINTK_IN_CAR
+	bool
+	default n
+
+config USE_OPTION_TABLE
+	bool
+	default n
+
+config MAX_CPUS
+	int
+	default 1
+
+config MMCONF_SUPPORT_DEFAULT
+	bool
+	default n
+
+config MMCONF_SUPPORT
+	bool
+	default n
+
+config LB_MEM_TOPK
+	int
+	default 2048
+
+config MULTIBOOT
+	bool
+	default n
+
+config COMPRESSED_PAYLOAD_LZMA
+	bool
+	default y
+
+config COMPRESSED_PAYLOAD_NRV2B
+	bool
+	default n
+
+source src/console/Kconfig
+
+config HAVE_ACPI_RESUME
+	bool
+	default n
+
+config ACPI_SSDTX_NUM
+	int
+	default 0
+
+config HAVE_ACPI_TABLES
+	bool
+	default n
+
+config HAVE_FALLBACK_BOOT
+	bool
+	default y
+
+config USE_FALLBACK_IMAGE
+	bool
+	default y
+
+config HAVE_HARD_RESET
+	bool
+	default n
+
+config HAVE_INIT_TIMER
+	bool
+	default n
+
+config HAVE_MAINBOARD_RESOURCES
+	bool
+	default n
+
+config HAVE_MOVNTI
+	bool
+	default y
+
+config HAVE_MP_TABLE
+	bool
+	default n
+
+config HAVE_OPTION_TABLE
+	bool
+	default y
+
+config HAVE_PIRQ_TABLE
+	bool
+	default n
+
+config PIRQ_ROUTE
+	bool
+	default n
+
+config HAVE_SMI_HANDLER
+	bool
+	default n
+
+config PCI_IO_CFG_EXT
+	bool
+	default n
+
+config IOAPIC
+	bool
+	default n
+
+menu "Drivers"
+
+endmenu
+
+menu "Payload"
+
+config COMPRESSED_PAYLOAD_LZMA
+	bool "Use LZMA compression for payloads"
+	default yes
+
+choice
+	prompt "Payload type"
+	default PAYLOAD_NONE
+
+config PAYLOAD_ELF
+	bool "An ELF executable payload file"
+	help
+	  Select this option if you have a payload image (an ELF file)
+	  which coreboot should run as soon as the basic hardware
+	  initialization is completed.
+
+	  You will be able to specify the location and file name of the
+	  payload image later.
+
+config PAYLOAD_NONE
+	bool "No payload"
+	help
+	  Select this option if you want to create an "empty" coreboot
+	  ROM image for a certain mainboard, i.e. a coreboot ROM image
+	  which does not yet contain a payload.
+
+	  For such an image to be useful, you have to use the 'lar' tool
+	  to add a payload to the ROM image later.
+
+endchoice
+
+config NORMAL_PAYLOAD_FILE
+	string "Normal payload path and filename"
+	depends on PAYLOAD_ELF
+	default "payload.elf"
+	help
+	  The path and filename of the ELF executable file to use as normal payload.
+
+config FALLBACK_PAYLOAD_FILE
+	string "Fallback payload path and filename"
+	depends on PAYLOAD_ELF
+	default "payload.elf"
+	help
+	  The path and filename of the ELF executable file to use as fallback payload.
+
+endmenu
+
+config GDB_STUB
+	bool "Enable GDB debugging support"
+	default y
+	help
+	  If this is set, then you will be able to set breakpoints for gdb debugging. 
+	  See: src/arch/i386/lib/c_start.S
+

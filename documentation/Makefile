@@ -7,7 +7,7 @@ PDFLATEX=pdflatex -t a4
 
 FIGS=codeflow.pdf hypertransport.pdf
 
-all: LinuxBIOS-AMD64.pdf 
+all: LinuxBIOS-AMD64.pdf Kconfig.pdf
 
 SVG2PDF=$(shell which svg2pdf)
 INKSCAPE=$(shell which inkscape)
@@ -39,9 +39,34 @@ LinuxBIOS-AMD64.toc: $(FIGS) LinuxBIOS-AMD64.tex
 LinuxBIOS-AMD64.pdf: $(FIGS) LinuxBIOS-AMD64.tex LinuxBIOS-AMD64.toc
 	$(PDFLATEX) LinuxBIOS-AMD64.tex
 
+Kconfig.pdf: Kconfig.tex mainboardkconfig.tex cpukconfig.tex socketfkconfig.tex
+	$(PDFLATEX) $<
+
+# quick, somebody! make me a macro!
+mainboardkconfig.tex: ../src/mainboard/Kconfig
+	echo '\begin{verbatim}' > $@
+	grep '^config' $< | awk '{print $2}'  >>$@
+	echo '\end{verbatim}' >> $@
+
+skconfig.tex: ../src/mainboard/amd/serengeti_cheetah/Kconfig
+	echo '\begin{verbatim}' > $@
+	grep '^config' $< | awk '{print $2}'  >>$@
+	echo '\end{verbatim}' >> $@
+
+cpukconfig.tex: ../src/cpu/Kconfig
+	echo '\begin{verbatim}' > $@
+	grep '^config' $< | awk '{print $2}'  >>$@
+	echo '\end{verbatim}' >> $@
+
+socketfkconfig.tex: ../src/cpu/amd/socket_F/Kconfig
+	echo '\begin{verbatim}' > $@
+	grep '^config' $< | awk '{print $2}'  >>$@
+	echo '\end{verbatim}' >> $@
+
+
 clean:
-	rm -f *.aux *.idx *.log *.toc *.out $(FIGS)
+	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex
 
 distclean: clean
-	rm -f LinuxBIOS-AMD64.pdf
+	rm -f LinuxBIOS-AMD64.pdf mainboardkconfig.tex
 	

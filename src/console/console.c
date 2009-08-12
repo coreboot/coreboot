@@ -8,8 +8,6 @@
 #include <pc80/mc146818rtc.h>
 
 
-static int initialized;
-
 /* initialize the console */
 void console_init(void)
 {
@@ -22,7 +20,6 @@ void console_init(void)
 			continue;
 		driver->init();
 	}
-	initialized = 1;
 }
 
 static void __console_tx_byte(unsigned char byte)
@@ -45,8 +42,6 @@ void console_tx_flush(void)
 
 void console_tx_byte(unsigned char byte)
 {
-	if (!initialized)
-		return;
 	if (byte == '\n')
 		__console_tx_byte('\r');
 	__console_tx_byte(byte);
@@ -55,8 +50,6 @@ void console_tx_byte(unsigned char byte)
 unsigned char console_rx_byte(void)
 {
 	struct console_driver *driver;
-	if (!initialized)
-		return 0;
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (driver->tst_byte)
 			break;
@@ -70,8 +63,6 @@ unsigned char console_rx_byte(void)
 int console_tst_byte(void)
 {
 	struct console_driver *driver;
-	if (!initialized)
-		return 0;
 	for(driver = console_drivers; driver < econsole_drivers; driver++)
 		if (driver->tst_byte)
 			return driver->tst_byte();

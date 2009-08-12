@@ -1,0 +1,9 @@
+subdirs-y += pc8374
+subdirs-y += pc87309
+subdirs-y += pc87351
+subdirs-y += pc87360
+subdirs-y += pc87366
+subdirs-y += pc87417
+subdirs-y += pc87427
+subdirs-y += pc97307
+subdirs-y += pc97317

@@ -1,0 +1,3 @@
+config NORTHBRIDGE_VIA_CX700
+	bool
+	default n

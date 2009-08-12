@@ -1,0 +1,46 @@
+April 14, 2002:
+
+I haven't worked on Yapps for a while, mainly because I spent all my energy
+on trying to graduate.  Now that I've finished school, I have several projects
+I want to start working on again, including Yapps.
+
+Notes for myself:
+
+Add a debugging mode that helps you understand how the grammar
+  is constructed and how things are being parsed
+Look into an English output mode that would use natural language
+  to describe a grammar
+Optimize unused variables
+Add a convenience to automatically gather up the values returned 
+  from subpatterns, put them into a list, and return them
+Improve the documentation
+Write some larger examples
+Get rid of old-style regex support
+Use SRE's lex support to speed up lexing (this may be hard given that
+  yapps allows for context-sensitive lexers)
+Look over Dan Connoly's experience with Yapps (bugs, frustrations, etc.)
+  and see what improvements could be made
+Add something to pretty-print the grammar (without the actions)
+Maybe conditionals?  Follow this rule only if <condition> holds.
+  But this would be useful mainly when multiple rules match, and we
+  want the first matching rule.  The conditional would mean we skip to
+  the next rule.  Maybe this is part of the attribute grammar system,
+  where rule X<0> can be specified separately from X<N>.
+Convenience functions that could build return values for all rules
+  without specifying the code for each rule individually
+Patterns (abstractions over rules) -- for example, comma separated values
+  have a certain rule pattern that gets replicated all over the place
+"Gather" mode that simply outputs the return values for certain nodes.
+  For example, if you just want all expressions, you could ask yapps
+  to gather the results of the 'expr' rule into a list.  This would 
+  ignore all the higher level structure.
+Look at everyone's Yapps grammars, and come up with larger examples
+  http://www.w3.org/2000/10/swap/SemEnglish.g
+  http://www.w3.org/2000/10/swap/kifExpr.g
+  http://www.w3.org/2000/10/swap/rdfn3.g
+It would be nice if you could feed text into Yapps (push model) instead
+  of Yapps reading text out of a string (pull model).  However, I think
+  that would make the resulting parser code mostly unreadable 
+  (like yacc, etc.).  Coroutines/stacklesspython may be the answer.
+
+

@@ -1,0 +1,45 @@
+chip northbridge/amd/gx2
+	register "irqmap" = "0xaa5b"
+	register "setupflash" = "0"
+	device apic_cluster 0 on
+		chip cpu/amd/model_gx2
+			device apic 0 on end
+		end
+	end
+  	device pci_domain 0 on 
+    		device pci 1.0 on end
+		device pci 1.1 on end
+      		chip southbridge/amd/cs5536
+		# 0x51400025 (IRQ Mapper LPC Mask)= 0x00001002
+		# IRQ 12 and 1 unmasked,  Keyboard and Mouse IRQs. OK
+		# 0x5140004E (LPC Serial IRQ Control) = 0xEFFD0080.
+		# Frame Pulse Width = 4clocks
+		# IRQ Data Frames = 17Frames
+		# SIRQ Mode = continous , It would be better if the EC could operate in
+		# Active(Quiet) mode. Save power....
+		# SIRQ Enable = Enabled
+		# Invert mask = IRQ 12 and 1 are active high. Keyboard and Mouse IRQs. OK 
+			#register "lpc_irq" = "0x00001002"
+			#register "lpc_serirq_enable" = "0xEFFD0080"
+			#register "enable_gpio0_inta" = "1"
+			#register "enable_ide_nand_flash" = "1"
+			#register "enable_uarta" = "1"
+			#register "enable_USBP4_host" = "1"
+			#register "audio_irq" = "5"
+			#register "usbf4_irq" = "10"
+			#register "usbf5_irq" = "10"
+			#register "usbf6_irq" = "0"
+			#register "usbf7_irq" = "0"
+        		device pci d.0 on end	# Realtek 8139 LAN
+        		device pci f.0 on end	# ISA Bridge
+        		device pci f.2 on end	# IDE Controller
+        		device pci f.3 on end 	# Audio
+        		device pci f.4 on end	# OHCI
+			device pci f.5 on end	# EHCI
+			register "unwanted_vpci[0]" = "0x80007E00"	# USB/UDC
+			register "unwanted_vpci[1]" = "0x80007F00"	# USB/OTG
+			register "unwanted_vpci[2]" = "0"	# End of list has a zero
+      		end
+    	end
+end
+

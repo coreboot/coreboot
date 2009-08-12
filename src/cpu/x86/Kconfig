@@ -1,0 +1,11 @@
+config SERIAL_CPU_INIT
+	bool
+	default y
+
+config XIP_ROM_BASE
+	hex
+	default 0xfffe0000
+
+config XIP_ROM_BASE
+	hex
+	default 0x2000

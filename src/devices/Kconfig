@@ -1,0 +1,53 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007 coresystems GmbH
+## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+menu "Devices"
+
+config VGA_ROM_RUN
+	bool
+	help
+	  Execute PCI/AGP option ROMs if available. This is required to
+	  enable PCI/AGP VGA plugin cards. 
+
+choice
+        prompt "Execute PCI Option ROMs"
+        default  PCI_OPTION_ROM_RUN_REALMODE
+        help
+          Execute PCI/AGP option ROMs if available. You can choose to
+          execute PCI option ROMs natively (32bit x86 system required),
+          in an emulator (x86emu), or ignore option ROM execution.
+
+	config PCI_OPTION_ROM_RUN_REALMODE
+		prompt "Run VGA ROMs"
+		bool
+		select VGA_ROM_RUN
+		help
+	  	Execute PCI/AGP option ROMs if available. This is required to
+	  	enable PCI/AGP VGA plugin cards. 
+
+	config NO_RUN
+		prompt "DO NOT Run VGA ROMs"
+		bool
+		help
+	  	Execute PCI/AGP option ROMs if available. This is required to
+	  	enable PCI/AGP VGA plugin cards. 
+
+endchoice
+endmenu

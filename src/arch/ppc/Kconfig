@@ -1,0 +1,13 @@
+config ARCH_POWERPC
+	boolean
+	help
+	  This option is used to set the architecture of a mainboard.
+	  It is usually set in mainboard/*/Kconfig.
+
+config ARCH
+	string
+	default ppc
+	depends on ARCH_POWERPC
+	help
+	  This is the name of the respective subdirectory in arch/.
+

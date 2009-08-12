@@ -1,0 +1,45 @@
+
+for make in make gmake gnumake; do
+	if [ "`$make --version 2>/dev/null | grep -c GNU`" -gt 0 ]; then
+		MAKE=$make
+		break
+	fi
+done
+
+GCCPREFIX=invalid
+TMP=`mktemp /tmp/temp.XXXX`
+echo "mov %eax, %eax" > ${TMP}.s
+printf "\x7fELF" > ${TMP}.compare
+for gccprefixes in `pwd`/../crossgcc/xgcc/bin/i386-elf- i386-elf- ""; do
+	if which ${gccprefixes}as 2>/dev/null >/dev/null; then
+		printf ""
+	else
+		continue
+	fi
+	rm -f ${TMP}.o
+	if ${gccprefixes}as --32 -o ${TMP}.o ${TMP}.s; then
+		dd bs=4 count=1 if=${TMP}.o > ${TMP}.test 2>/dev/null
+		if cmp ${TMP}.test ${TMP}.compare; then
+			GCCPREFIX=$gccprefixes
+			break
+		fi
+	fi
+done
+rm -f $TMP ${TMP}.s ${TMP}.o ${TMP}.compare ${TMP}.test
+
+if [ "$GCCPREFIX" = "invalid" ]; then
+	echo '$(error no suitable gcc found)'
+	exit 1
+fi
+
+cat << afteroptions
+AS:=${GCCPREFIX}as --32
+CC:=${GCCPREFIX}gcc -m32
+AR:=${GCCPREFIX}ar
+LD:=${GCCPREFIX}ld -b elf32-i386
+STRIP:=${GCCPREFIX}strip
+NM:=${GCCPREFIX}nm
+OBJCOPY:=${GCCPREFIX}objcopy
+OBJDUMP:=${GCCPREFIX}objdump
+HOSTCC:=gcc
+afteroptions

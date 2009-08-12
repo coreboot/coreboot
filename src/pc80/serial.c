@@ -71,7 +71,7 @@ static void uart_tx_byte(unsigned char data)
 	uart_wait_until_sent();
 }
 
-static void uart_init(void)
+void uart_init(void)
 {
 	/* disable interrupts */
 	outb(0x0, CONFIG_TTYS0_BASE + UART_IER);

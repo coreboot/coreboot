@@ -1,0 +1,8 @@
+source src/superio/fintek/Kconfig
+source src/superio/intel/Kconfig
+source src/superio/ite/Kconfig
+source src/superio/nsc/Kconfig
+source src/superio/serverengines/Kconfig
+source src/superio/smsc/Kconfig
+source src/superio/via/Kconfig
+source src/superio/winbond/Kconfig

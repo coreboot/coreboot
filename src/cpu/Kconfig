@@ -1,0 +1,18 @@
+#source src/cpu/amd/Kconfig
+source src/cpu/emulation/Kconfig
+source src/cpu/intel/Kconfig
+source src/cpu/via/Kconfig
+source src/cpu/x86/Kconfig
+source src/cpu/ppc/Kconfig
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000 if CPU_INTEL_CORE
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000 if CPU_INTEL_CORE
+
+config SMP
+	bool
+	default n

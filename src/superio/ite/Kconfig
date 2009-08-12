@@ -1,0 +1,14 @@
+config SUPERIO_ITE_IT8661F
+	bool
+config SUPERIO_ITE_IT8671F
+	bool
+config SUPERIO_ITE_IT8673F
+	bool
+config SUPERIO_ITE_IT8705F
+	bool
+config SUPERIO_ITE_IT8712F
+	bool
+config SUPERIO_ITE_IT8716F
+	bool
+config SUPERIO_ITE_IT8718F
+	bool

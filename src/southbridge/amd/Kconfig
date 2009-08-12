@@ -1,0 +1,10 @@
+source src/southbridge/amd/amd8111/Kconfig
+source src/southbridge/amd/amd8131/Kconfig
+source src/southbridge/amd/amd8131-disable/Kconfig
+source src/southbridge/amd/amd8132/Kconfig
+source src/southbridge/amd/amd8151/Kconfig
+source src/southbridge/amd/cs5530/Kconfig
+source src/southbridge/amd/cs5535/Kconfig
+source src/southbridge/amd/cs5536/Kconfig
+source src/southbridge/amd/rs690/Kconfig
+source src/southbridge/amd/sb600/Kconfig

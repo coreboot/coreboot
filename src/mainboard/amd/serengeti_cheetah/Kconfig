@@ -1,0 +1,49 @@
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_AMD
+
+config BOARD_AMD_SERENGETI_CHEETAH
+	bool "SERENGETI_CHEETAH"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_F
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_AMD8111
+	select SUPERIO_WINBOND_W83627THF
+	select PIRQ_TABLE
+	select MMCONF_SUPPORT
+	select USE_PRINTK_IN_CAR
+	help
+	AMD Serengeti Series mainboards
+endchoice
+
+config MAINBOARD_DIR
+	string
+	default amd/serengeti_cheetah
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+#config DCACHE_RAM_BASE
+#	hex
+#	default 0xffdf8000
+#	depends on BOARD_AMD_SERENGETI_CHEETAH
+#	
+#config DCACHE_RAM_SIZE
+#	hex
+#	default 0x8000
+#	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Serengeti-Cheetah"
+	depends on BOARD_AMD_SERENGETI_CHEETAH

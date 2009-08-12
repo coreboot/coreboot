@@ -1,0 +1,22 @@
+chip northbridge/ibm/cpc710
+	device pci_domain 0 on # 32bit pci bridge
+		device pci 0.0 on 
+			chip southbridge/winbond/w83c553
+				# FIXME  The function numbers are ok but the device id is wrong here!
+				device pci 0.0 on end # pci to isa bridge
+				device pci 0.1 on end # pci ide controller
+			end
+		end
+	end
+	device cpu_bus 0 on 
+	#	chip cpu/ppc/ppc7xx
+	#		device cpu 0 on end
+	#	end
+	end
+end
+
+##
+## Build the objects we have code for in this directory.
+##
+
+addaction coreboot.a "$(CONFIG_CROSS_COMPILE)ranlib coreboot.a"

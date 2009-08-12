@@ -1,0 +1,343 @@
+
+menu "Mainboard"
+
+choice
+	prompt "Mainboard vendor"
+	default VENDOR_EMULATION
+
+config VENDOR_ATREND
+	bool "A-Trend"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_ABIT
+	bool "ABIT"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_ADVANTECH
+	bool "Advantech"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_AGAMI
+	bool "Agami"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_AMD
+	bool "AMD"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_ARIMA
+	bool "Arima"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_ARTEC
+	bool "Artec Group"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_ASI
+	bool "ASI"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_ASUS
+	bool "ASUS"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_AXUS
+	bool "AXUS"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_AZZA
+	bool "Azza"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_BCOM
+	bool "BCOM"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_BIOSTAR
+	bool "Biostar"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_BROADCOM
+	bool "Broadcom"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_COMPAQ
+	bool "Compaq"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_DELL
+	bool "DELL"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_DIGITALLOGIC
+	bool "Digital Logic"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_EAGLELION
+	bool "Eagle Lion"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_EMBEDDEDPLANET
+	bool "Embedded Planet"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_EMULATION
+	bool "Emulation"
+	help
+	  Select this option for various system emulators, such as QEMU.
+
+config VENDOR_GIGABYTE
+	bool "Gigabyte"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_HP
+	bool "HP"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_IBM
+	bool "IBM"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_IEI
+	bool "IEI"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_INTEL
+	bool "Intel"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_IWILL
+	bool "Iwill"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_JETWAY
+	bool "Jetway"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_KONTRON
+	bool "Kontron"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_LIPPERT
+	bool "Lippert"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_MOTOROLA
+	bool "Motorola"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_MSI
+	bool "MSI"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_NEC
+	bool "NEC"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_NEWISYS
+	bool "Newisys"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_NVIDIA
+	bool "NVidia"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_OLPC
+	bool "OLPC"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_PCENGINES
+	bool "PC Engines"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_RCA
+	bool "RCA"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_SUNW
+	bool "SUN Microsystems"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_SUPERMICRO
+	bool "Supermicro"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_TECHNEXION
+	bool "Technexion"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_THOMSON
+	bool "Thomson"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_TOTALIMPACT
+	bool "Total Impact"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_TYAN
+	bool "Tyan"
+	help
+	  Select this option for systems from the vendor.
+
+config VENDOR_VIA
+	bool "VIA"
+	help
+	  Select this option for systems from the vendor.
+
+endchoice
+
+config MAINBOARD_VENDOR
+        string
+        default "EMULATION"
+        depends on VENDOR_EMULATION
+
+config MAINBOARD_VENDOR
+        string
+        default "KONTRON"
+        depends on VENDOR_KONTRON
+
+config MAINBOARD_VENDOR
+        string
+        default "VIA"
+        depends on VENDOR_VIA
+
+config MAINBOARD_VENDOR
+        string
+        default "AMD"
+        depends on VENDOR_AMD
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1019
+        depends on VENDOR_VIA
+
+source "src/mainboard/a-trend/Kconfig"
+source "src/mainboard/abit/Kconfig"
+source "src/mainboard/advantech/Kconfig"
+source "src/mainboard/amd/Kconfig"
+source "src/mainboard/arima/Kconfig"
+source "src/mainboard/artecgroup/Kconfig"
+source "src/mainboard/asi/Kconfig"
+source "src/mainboard/asus/Kconfig"
+source "src/mainboard/axus/Kconfig"
+source "src/mainboard/azza/Kconfig"
+source "src/mainboard/bcom/Kconfig"
+source "src/mainboard/biostar/Kconfig"
+source "src/mainboard/broadcom/Kconfig"
+source "src/mainboard/compaq/Kconfig"
+source "src/mainboard/dell/Kconfig"
+source "src/mainboard/digitallogic/Kconfig"
+source "src/mainboard/eaglelion/Kconfig"
+source "src/mainboard/embeddedplanet/Kconfig"
+source "src/mainboard/emulation/Kconfig"
+source "src/mainboard/gigabyte/Kconfig"
+source "src/mainboard/hp/Kconfig"
+source "src/mainboard/ibm/Kconfig"
+source "src/mainboard/iei/Kconfig"
+source "src/mainboard/intel/Kconfig"
+source "src/mainboard/iwill/Kconfig"
+source "src/mainboard/jetway/Kconfig"
+source "src/mainboard/kontron/Kconfig"
+source "src/mainboard/lippert/Kconfig"
+source "src/mainboard/motorola/Kconfig"
+source "src/mainboard/msi/Kconfig"
+source "src/mainboard/nec/Kconfig"
+source "src/mainboard/newisys/Kconfig"
+source "src/mainboard/nvidia/Kconfig"
+source "src/mainboard/olpc/Kconfig"
+source "src/mainboard/pcengines/Kconfig"
+source "src/mainboard/rca/Kconfig"
+source "src/mainboard/sunw/Kconfig"
+source "src/mainboard/supermicro/Kconfig"
+source "src/mainboard/technexion/Kconfig"
+source "src/mainboard/technologic/Kconfig"
+source "src/mainboard/televideo/Kconfig"
+source "src/mainboard/thomson/Kconfig"
+source "src/mainboard/totalimpact/Kconfig"
+source "src/mainboard/tyan/Kconfig"
+source "src/mainboard/via/Kconfig"
+
+choice
+	prompt "ROM chip size"
+	default COREBOOT_ROMSIZE_KB_256
+
+config COREBOOT_ROMSIZE_KB_128
+	bool "128 KB"
+	help
+	  Choose this option if you have a 128 KB ROM chip.
+
+config COREBOOT_ROMSIZE_KB_256
+	bool "256 KB"
+	help
+	  Choose this option if you have a 256 KB ROM chip.
+
+config COREBOOT_ROMSIZE_KB_512
+	bool "512 KB"
+	help
+	  Choose this option if you have a 512 KB ROM chip.
+
+config COREBOOT_ROMSIZE_KB_1024
+	bool "1024 KB (1 MB)"
+	help
+	  Choose this option if you have a 1024 KB (1 MB) ROM chip.
+
+config COREBOOT_ROMSIZE_KB_2048
+	bool "2048 KB (2 MB)"
+	help
+	  Choose this option if you have a 2048 KB (2 MB) ROM chip.
+
+endchoice
+
+config COREBOOT_ROMSIZE_KB
+	int
+	default 128 if COREBOOT_ROMSIZE_KB_128
+	default 256 if COREBOOT_ROMSIZE_KB_256
+	default 512 if COREBOOT_ROMSIZE_KB_512
+	default 1024 if COREBOOT_ROMSIZE_KB_1024
+	default 2048 if COREBOOT_ROMSIZE_KB_2048
+	help
+	  Map the config names to an integer.
+
+endmenu
+

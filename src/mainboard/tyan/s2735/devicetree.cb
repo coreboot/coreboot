@@ -1,0 +1,91 @@
+chip northbridge/intel/e7501
+        device pci_domain 0 on
+		device pci 0.0 on end
+        	device pci 0.1 on end
+        	device pci 2.0 on
+        		chip southbridge/intel/i82870
+        	        	device pci 1c.0 on end
+		                device pci 1d.0 on 
+					chip drivers/pci/onboard
+                                        	device pci 1.0 on end # intel lan
+                                                device pci 1.1 on end
+                                        end
+				end
+        	                device pci 1e.0 on end
+        	                device pci 1f.0 on end
+        		end
+		end
+        	device pci 6.0 on end
+        	chip southbridge/intel/i82801er
+        		device pci 1d.0 on end
+		        device pci 1d.1 on end
+        	        device pci 1d.2 on end
+        	        device pci 1d.3 on end
+		        device pci 1d.7 on end
+		        device pci 1e.0 on 
+                        	chip drivers/pci/onboard
+                                	device pci 1.0 on end # intel lan 10/100
+                                end
+                                chip drivers/pci/onboard
+                                        device pci 2.0 on end # ati 
+                                end
+			end
+		        device pci 1f.0 on
+				chip superio/winbond/w83627hf
+                                	device pnp 2e.0 on #  Floppy
+                                        	io 0x60 = 0x3f0
+                                                irq 0x70 = 6
+                                                drq 0x74 = 2
+                                        end
+	                                device pnp 2e.1 off #  Parallel Port
+                                                io 0x60 = 0x378
+                                                irq 0x70 = 7
+                                        end
+                                        device pnp 2e.2 on #  Com1
+        	                                io 0x60 = 0x3f8
+                                                irq 0x70 = 4
+                                        end
+                                        device pnp 2e.3 on #  Com2
+                                                io 0x60 = 0x2f8
+                                                irq 0x70 = 3
+                                        end
+                                        device pnp 2e.5 on #  Keyboard
+                                                io 0x60 = 0x60
+                                                io 0x62 = 0x64
+                                                irq 0x70 = 1
+                                                irq 0x72 = 12
+                                        end
+                                        device pnp 2e.6 off #  CIR
+                                                io 0x60 = 0x100
+                                        end
+                                        device pnp 2e.7 off #  GAME_MIDI_GIPO1
+                                                io 0x60 = 0x220
+                                                io 0x62 = 0x300
+                                                irq 0x70 = 9
+                                        end                               
+                                        device pnp 2e.8 off end #  GPIO2
+                                        device pnp 2e.9 off end #  GPIO3
+                                        device pnp 2e.a off end #  ACPI
+                                        device pnp 2e.b on #  HW Monitor
+                                                io 0x60 = 0x290
+                                                irq 0x70 = 5
+                                        end
+				end
+		        end
+		        device pci 1f.1 off end
+        	        device pci 1f.2 on end
+        	        device pci 1f.3 on end
+        		device pci 1f.5 off end
+		        device pci 1f.6 off end
+		end # SB
+        end # PCI_DOMAIN
+        device apic_cluster 0 on
+                chip cpu/intel/socket_mPGA604
+                        device apic 0 on end
+                end
+                chip cpu/intel/socket_mPGA604
+                        device apic 6 on end
+                end
+        end
+end
+

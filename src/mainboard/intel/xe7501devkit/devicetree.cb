@@ -1,0 +1,75 @@
+chip northbridge/intel/e7501
+	device pci_domain 0 on
+		device pci 0.0 on end # Chipset host controller
+		device pci 0.1 on end # Host RASUM controller
+		device pci 2.0 on # Hub interface B
+			chip southbridge/intel/i82870 # P64H2
+				device pci 1c.0 on end # IOAPIC - bus B
+				device pci 1d.0 on end # Hub to PCI-B bridge
+				device pci 1e.0 on end # IOAPIC - bus A
+				device pci 1f.0 on end # Hub to PCI-A bridge
+			end
+		end
+		device pci 3.0 off end # Hub interface C (82808AA connector - disable for now)
+		device pci 4.0 on # Hub interface D
+			chip southbridge/intel/i82870 # P64H2
+				device pci 1c.0 on end # IOAPIC - bus B
+				device pci 1d.0 on end # Hub to PCI-B bridge
+				device pci 1e.0 on end # IOAPIC - bus A
+				device pci 1f.0 on end # Hub to PCI-A bridge
+			end
+		end
+		device pci 6.0 on end # E7501 Power management registers? (undocumented)
+		chip southbridge/intel/i82801ca
+			device pci 1d.0 off end # USB (might not work, Southbridge code needs looking at)
+			device pci 1d.1 off end # USB (not populated)
+			device pci 1d.2 off end # USB (not populated)
+			device pci 1e.0 on # Hub to PCI bridge
+				chip drivers/pci/onboard # VGA ROM
+					device pci 0.0 on end
+				register "rom_address" = "_vgarom_start"
+				end
+			end
+			device pci 1f.0 on # LPC bridge
+				chip superio/smsc/lpc47b272
+					device pnp 2e.0 off # Floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 2e.3 off # Parallel Port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+					end
+					device pnp 2e.4 on # Com1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.5 off # Com2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.7 on # Keyboard
+						io 0x60 = 0x60
+						io 0x62 = 0x64
+						irq 0x70 = 1 # Keyboard interrupt
+						irq 0x72 = 12 # Mouse interrupt
+					end
+					device pnp 2e.a off end # ACPI
+				end
+			end
+			device pci 1f.1 on end # IDE
+			device pci 1f.3 on end # SMBus
+			device pci 1f.5 off end # AC97 Audio
+			device pci 1f.6 off end # AC97 Modem
+		end # SB
+	end # PCI_DOMAIN
+	device apic_cluster 0 on
+		chip cpu/intel/socket_mPGA604
+			device apic 0 on end
+		end
+		chip cpu/intel/socket_mPGA604
+			device apic 6 on end
+		end
+	end
+end

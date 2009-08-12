@@ -1,0 +1,54 @@
+chip northbridge/amd/gx1
+  device pci_domain 0 on 
+    device pci 0.0 on end
+      chip southbridge/amd/cs5530
+        device pci 12.0 on
+          chip superio/nsc/pc97317
+            device pnp 2e.0 on		# Keyboard
+               io 0x60 = 0x60
+               io 0x62 = 0x64
+              irq 0x70 = 1
+            end
+            device pnp 2e.1 on		# Mouse
+              irq 0x70 = 12
+            end
+            device pnp 2e.2 on		# RTC
+               io 0x60 = 0x70
+              irq 0x70 = 8
+            end
+            device pnp 2e.3 off		# FDC
+            end
+            device pnp 2e.4 on		# Parallel Port
+               io 0x60 = 0x378
+              irq 0x70 = 7
+            end
+            device pnp 2e.5 on		# COM2
+               io 0x60 = 0x2f8
+              irq 0x70 = 3
+            end
+            device pnp 2e.6 on		# COM1
+               io 0x60 = 0x3f8
+              irq 0x70 = 4
+            end
+            device pnp 2e.7 on		# GPIO
+               io 0x60 = 0xe0
+            end
+            device pnp 2e.8 on		# Power Management
+               io 0x60 = 0xe800
+            end
+            register "com1" = "{115200}"
+            register "com2" = "{38400}"
+          end
+        device pci 12.1 off end		# SMI
+        device pci 12.2 on  end		# IDE
+        device pci 12.3 off end 	# Audio
+        device pci 12.4 off end		# VGA
+      end
+    end
+  end
+
+  chip cpu/amd/model_gx1
+  end
+
+end
+

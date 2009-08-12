@@ -1,0 +1,2 @@
+#source src/northbridge/ibm/cpc710/Kconfig
+#source src/northbridge/ibm/cpc925/Kconfig

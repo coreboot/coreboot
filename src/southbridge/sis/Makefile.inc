@@ -1,0 +1,2 @@
+subdirs-y += sis966
+

@@ -1,0 +1,3 @@
+source src/southbridge/broadcom/bcm21000/Kconfig
+source src/southbridge/broadcom/bcm5780/Kconfig
+source src/southbridge/broadcom/bcm5785/Kconfig

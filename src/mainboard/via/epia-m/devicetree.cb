@@ -1,0 +1,57 @@
+chip northbridge/via/vt8623
+
+	device apic_cluster 0 on
+		chip cpu/via/model_c3
+			device apic 0 on  end 
+		end
+	end
+
+	device pci_domain 0 on
+		chip southbridge/via/vt8235
+
+			device pci 10.0 on end # USB 1.1
+			device pci 10.1 on end # USB 1.1
+			device pci 10.2 on end # USB 1.1
+			device pci 10.3 on end # USB 2
+
+			device pci 11.0 on      # Southbridge
+				chip superio/via/vt1211
+					device pnp 2e.0 on	# Floppy
+						io 0x60 = 0x3f0
+						irq 0x70 = 6
+						drq 0x74 = 2
+					end
+					device pnp 2e.1 on	# Parallel Port
+						io 0x60 = 0x378
+						irq 0x70 = 7
+						drq 0x74 = 3
+					end
+					device pnp 2e.2 on	# COM1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 on	# COM2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.b on	# HWM
+						io 0x60 = 0xec00
+					end
+
+				end
+			end
+			
+			device pci 11.1 on  end # IDE
+			# 2-4 non existant?
+			device pci 11.5 on  end # AC97 Audio
+			device pci 11.6 off end # AC97 Modem
+			device pci 12.0 on end  # Ethernet
+		end
+#		This is on the EPIA MII, not the M.
+		chip southbridge/ricoh/rl5c476
+			register "enable_cf" = "1"
+			device pci 0a.0 on end
+			device pci 0a.1 on end	
+		end
+	end
+end

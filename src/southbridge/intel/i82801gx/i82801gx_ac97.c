@@ -145,7 +145,7 @@ static void ac97_audio_init(struct device *dev)
 		printk_debug("No primary codec. Disabling AC'97 Audio.\n");
 		return;
 	}
-	
+
 	ac97_semaphore();
 
 	/* Detect if codec is programmable */

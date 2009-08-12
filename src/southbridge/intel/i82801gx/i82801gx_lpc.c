@@ -73,7 +73,7 @@ static void i82801gx_enable_apic(struct device *dev)
 	volatile u32 *ioapic_index = (volatile u32 *)0xfec00000;
 	volatile u32 *ioapic_data = (volatile u32 *)0xfec00010;
 
-	/* Enable ACPI I/O and power management. 
+	/* Enable ACPI I/O and power management.
 	 * Set SCI IRQ to IRQ9
 	 */
 	pci_write_config8(dev, ACPI_CNTL, 0x80);
@@ -275,7 +275,7 @@ static void i82801gx_power_options(device_t dev)
 	reg32 = inl(pmbase + 0x04); // PM1_CNT
 #if CONFIG_HAVE_ACPI_RESUME
 	acpi_slp_type = (((reg32 >> 10) & 7) == 5) ? 3 : 0;
-	printk_debug("PM1_CNT: 0x%08x --> acpi_sleep_type: %x\n", 
+	printk_debug("PM1_CNT: 0x%08x --> acpi_sleep_type: %x\n",
 			reg32, acpi_slp_type);
 #endif
 	reg32 |= (1 << 1); // enable C3->C0 transition on bus master
@@ -286,7 +286,7 @@ static void i82801gx_power_options(device_t dev)
 static void i82801gx_configure_cstates(device_t dev)
 {
 	u8 reg8;
-	
+
 	reg8 = pci_read_config8(dev, 0xa9); // Cx state configuration
 	reg8 |= (1 << 4) | (1 << 3) | (1 << 2);	// Enable Popup & Popdown
 	pci_write_config8(dev, 0xa9, reg8);
@@ -318,7 +318,7 @@ static void i82801gx_rtc_init(struct device *dev)
 static void enable_hpet(void)
 {
 	u32 reg32;
-	
+
 	/* Move HPET to default address 0xfed00000 and enable it */
 	reg32 = RCBA32(0x3404);
 	reg32 |= (1 << 7); // HPET Address Enable
@@ -329,7 +329,7 @@ static void enable_hpet(void)
 static void enable_clock_gating(void)
 {
 	u32 reg32;
-	
+
 	/* Enable Clock Gating for most devices */
 	reg32 = RCBA32(0x341c);
 	reg32 |= (1 << 31);	// LPC clock gating
@@ -360,7 +360,7 @@ static void i82801gx_lock_smm(struct device *dev)
 	outb(0x1e, 0xb2); // Disable ACPI mode
 	printk_debug("done.\n");
 #endif
-	/* Don't allow evil boot loaders, kernels, or 
+	/* Don't allow evil boot loaders, kernels, or
 	 * userspace applications to deceive us:
 	 */
 	smm_lock();

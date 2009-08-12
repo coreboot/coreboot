@@ -28,7 +28,7 @@
 #include <arch/io.h>
 #include "i82801gx.h"
 #include "i82801gx_smbus.h"
- 
+
 #define SMB_BASE 0x20
 static void smbus_init(struct device *dev)
 {

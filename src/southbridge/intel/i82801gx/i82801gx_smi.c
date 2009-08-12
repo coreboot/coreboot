@@ -81,17 +81,17 @@ extern unsigned int smm_len;
 static u16 pmbase = DEFAULT_PMBASE;
 
 /**
- * @brief read and clear PM1_STS 
+ * @brief read and clear PM1_STS
  * @return PM1_STS register
  */
 static u16 reset_pm1_status(void)
 {
 	u16 reg16;
-	
+
 	reg16 = inw(pmbase + PM1_STS);
 	/* set status bits are cleared by writing 1 to them */
 	outw(reg16, pmbase + PM1_STS);
-	
+
 	return reg16;
 }
 
@@ -110,17 +110,17 @@ static void dump_pm1_status(u16 pm1_sts)
 }
 
 /**
- * @brief read and clear SMI_STS 
+ * @brief read and clear SMI_STS
  * @return SMI_STS register
  */
 static u32 reset_smi_status(void)
 {
 	u32 reg32;
-	
+
 	reg32 = inl(pmbase + SMI_STS);
 	/* set status bits are cleared by writing 1 to them */
 	outl(reg32, pmbase + SMI_STS);
-	
+
 	return reg32;
 }
 
@@ -158,11 +158,11 @@ static void dump_smi_status(u32 smi_sts)
 static u32 reset_gpe0_status(void)
 {
 	u32 reg32;
-	
+
 	reg32 = inl(pmbase + GPE0_STS);
 	/* set status bits are cleared by writing 1 to them */
 	outl(reg32, pmbase + GPE0_STS);
-	
+
 	return reg32;
 }
 
@@ -191,20 +191,20 @@ static void dump_gpe0_status(u32 gpe0_sts)
 }
 
 /**
- * @brief read and clear TCOx_STS 
+ * @brief read and clear TCOx_STS
  * @return TCOx_STS registers
  */
 static u32 reset_tco_status(void)
 {
 	u32 tcobase = pmbase + 0x60;
 	u32 reg32;
-	
+
 	reg32 = inl(tcobase + 0x04);
 	/* set status bits are cleared by writing 1 to them */
 	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
 	if (reg32 & (1 << 18))
 		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
-	
+
 	return reg32;
 }
 
@@ -236,7 +236,7 @@ static void dump_tco_status(u32 tco_sts)
 static void smi_set_eos(void)
 {
 	u8 reg8;
-	
+
 	reg8 = inb(pmbase + SMI_EN);
 	reg8 |= EOS;
 	outb(reg8, pmbase + SMI_EN);
@@ -286,8 +286,8 @@ void smm_relocate(void)
 	 *  - Writes to io 0xb2 (APMC)
 	 *  - Writes to the Local Apic ICR with Delivery mode SMI.
 	 *
-	 * Using the local apic is a bit more tricky. According to 
-	 * AMD Family 11 Processor BKDG no destination shorthand must be 
+	 * Using the local apic is a bit more tricky. According to
+	 * AMD Family 11 Processor BKDG no destination shorthand must be
 	 * used.
 	 * The whole SMM initialization is quite a bit hardware specific, so
 	 * I'm not too worried about the better of the methods at the moment

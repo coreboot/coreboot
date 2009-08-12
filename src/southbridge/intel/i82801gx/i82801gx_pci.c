@@ -71,10 +71,10 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	ops = ops_pci(dev);
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		printk_debug("%s subsystem <- %02x/%02x\n",
-			dev_path(dev), 
+			dev_path(dev),
 			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
 			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
-		ops->set_subsystem(dev, 
+		ops->set_subsystem(dev,
 			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
 			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
 	}
@@ -82,7 +82,7 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
 #ifdef PCI_BRIDGE_UPDATE_COMMAND
-	/* If we write to PCI_COMMAND, on some systems 
+	/* If we write to PCI_COMMAND, on some systems
 	 * this will cause the ROM and APICs not being visible
 	 * anymore.
 	 */

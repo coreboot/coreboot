@@ -109,11 +109,11 @@ extern void i82801gx_enable(device_t dev);
 #define HST_EN			(1 << 0)
 
 /* SMBus I/O bits.
- * It does not matter where we put the SMBus I/O base, as long as we 
+ * It does not matter where we put the SMBus I/O base, as long as we
  * keep it consistent and don't interfere with other devices.  Stage2
  * will relocate this anyways.
  * Our solution is to have SMB initialization move the I/O to SMBUS_IO_BASE
- * again. But handling static BARs is a generic problem that should be 
+ * again. But handling static BARs is a generic problem that should be
  * solved in the device allocator.
  */
 #define SMBUS_IO_BASE		0x0400

@@ -29,7 +29,7 @@ Device (PDRC)
 
 	// This does not seem to work correctly yet - set values statically for
 	// now.
-	
+
 	//Name (PDRS, ResourceTemplate() {
 	//	Memory32Fixed(ReadWrite, 0x00000000, 0x00004000, RCRB) // RCBA
 	//	Memory32Fixed(ReadWrite, 0x00000000, 0x00004000, MCHB) // MCHBAR

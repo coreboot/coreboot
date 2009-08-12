@@ -132,26 +132,26 @@ static void sata_init(struct device *dev)
 		/* Set Interrupt Line */
 		/* Interrupt Pin is set by D31IP.PIP */
 		pci_write_config8(dev, INTR_LN, 0xff);
-	
+
 		/* Set timings */
 		pci_write_config16(dev, IDE_TIM_PRI, IDE_DECODE_ENABLE |
 				IDE_ISP_3_CLOCKS | IDE_RCT_1_CLOCKS |
 				IDE_PPE0 | IDE_IE0 | IDE_TIME0);
 		pci_write_config16(dev, IDE_TIM_SEC, IDE_DECODE_ENABLE |
-				IDE_SITRE | IDE_ISP_3_CLOCKS | 
+				IDE_SITRE | IDE_ISP_3_CLOCKS |
 				IDE_RCT_1_CLOCKS | IDE_IE0 | IDE_TIME0);
-	
+
 		/* Sync DMA */
 		pci_write_config16(dev, IDE_SDMA_CNT, IDE_SSDE0 | IDE_PSDE0);
 		pci_write_config16(dev, IDE_SDMA_TIM, 0x0201);
-	
+
 		/* Set IDE I/O Configuration */
 		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
 		pci_write_config32(dev, IDE_CONFIG, reg32);
-	
+
 		/* Port 0 & 1 enable XXX */
 		pci_write_config8(dev, 0x92, 0x15);
-	
+
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94, 0x1a000180);
 	}

@@ -45,8 +45,8 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 	reg32 |= val;
 	writel(reg32, port);
 
-	/* Wait for readback of register to 
-	 * match what was just written to it 
+	/* Wait for readback of register to
+	 * match what was just written to it
 	 */
 	count = 50;
 	do {
@@ -67,11 +67,11 @@ static int codec_detect(u8 * base)
 	u32 reg32;
 
 	/* Set Bit0 to 0 to enter reset state (BAR + 0x8)[0] */
-	if (set_bits(base + 0x08, 1, 0) == -1) 
+	if (set_bits(base + 0x08, 1, 0) == -1)
 		goto no_codec;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + 0x08, 1, 1) == -1) 
+	if (set_bits(base + 0x08, 1, 1) == -1)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0]*/
@@ -79,7 +79,7 @@ static int codec_detect(u8 * base)
 	reg32 &= 0x0f;
 	if (!reg32)
 		goto no_codec;
-		
+
 	return reg32;
 
 no_codec:
@@ -161,7 +161,7 @@ static u32 cim_verb_data[] = {
 static unsigned find_verb(struct device *dev, u32 viddid, u32 ** verb)
 {
 	config_t *config = dev->chip_info;
-	
+
 	if (config == NULL) {
 		printk_err("\ni82801gx_azalia: Not mentioned in mainboard's Config.lb!\n");
 		return 0;
@@ -309,7 +309,7 @@ static void azalia_init(struct device *dev)
 
 	// VCi Resource Control
 	reg32 = pci_mmio_read_config32(dev, 0x120);
-	reg32 |= (1 << 31); 
+	reg32 |= (1 << 31);
 	reg32 |= (1 << 24); // VCi ID
 	reg32 |= (0x80 << 0); // VCi map
 	pci_mmio_write_config32(dev, 0x120, reg32);

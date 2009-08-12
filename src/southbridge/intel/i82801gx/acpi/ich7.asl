@@ -108,7 +108,7 @@ Scope(\)
 		Offset(0x1000), // Chipset
 		Offset(0x3000), // Legacy Configuration Registers
 		Offset(0x3404), // High Performance Timer Configuration
-		HPAS, 2, 	// Address Select 
+		HPAS, 2, 	// Address Select
 		, 5,
 		HPTE, 1,	// Address Enable
 		Offset(0x3418), // FD (Function Disable)
@@ -135,7 +135,7 @@ Scope(\)
 		RP5D, 1,	// Root Port 5 disable
 		RP6D, 1		// Root Port 6 disable
 	}
-	
+
 }
 
 // 0:1b.0 High Definition Audio (Azalia)

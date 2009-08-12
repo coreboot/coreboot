@@ -102,17 +102,17 @@ void *tcg = (void *)0x0;
 void *smi1 = (void *)0x0;
 
 /**
- * @brief read and clear PM1_STS 
+ * @brief read and clear PM1_STS
  * @return PM1_STS register
  */
 static u16 reset_pm1_status(void)
 {
 	u16 reg16;
-	
+
 	reg16 = inw(pmbase + PM1_STS);
 	/* set status bits are cleared by writing 1 to them */
 	outw(reg16, pmbase + PM1_STS);
-	
+
 	return reg16;
 }
 
@@ -131,17 +131,17 @@ static void dump_pm1_status(u16 pm1_sts)
 }
 
 /**
- * @brief read and clear SMI_STS 
+ * @brief read and clear SMI_STS
  * @return SMI_STS register
  */
 static u32 reset_smi_status(void)
 {
 	u32 reg32;
-	
+
 	reg32 = inl(pmbase + SMI_STS);
 	/* set status bits are cleared by writing 1 to them */
 	outl(reg32, pmbase + SMI_STS);
-	
+
 	return reg32;
 }
 
@@ -179,11 +179,11 @@ static void dump_smi_status(u32 smi_sts)
 static u32 reset_gpe0_status(void)
 {
 	u32 reg32;
-	
+
 	reg32 = inl(pmbase + GPE0_STS);
 	/* set status bits are cleared by writing 1 to them */
 	outl(reg32, pmbase + GPE0_STS);
-	
+
 	return reg32;
 }
 
@@ -213,20 +213,20 @@ static void dump_gpe0_status(u32 gpe0_sts)
 
 
 /**
- * @brief read and clear TCOx_STS 
+ * @brief read and clear TCOx_STS
  * @return TCOx_STS registers
  */
 static u32 reset_tco_status(void)
 {
 	u32 tcobase = pmbase + 0x60;
 	u32 reg32;
-	
+
 	reg32 = inl(tcobase + 0x04);
 	/* set status bits are cleared by writing 1 to them */
 	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
 	if (reg32 & (1 << 18))
 		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
-	
+
 	return reg32;
 }
 
@@ -296,7 +296,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	u8 reg8;
 	u32 reg32;
 	u8 slp_typ;
-	/* FIXME: the power state on boot should be read from 
+	/* FIXME: the power state on boot should be read from
 	 * CMOS or even better from GNVS. Right now it's hard
 	 * coded at compile time.
 	 */
@@ -347,7 +347,7 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	}
 
 	/* Write back to the SLP register to cause the originally intended
-	 * event again. We need to set BIT13 (SLP_EN) though to make the 
+	 * event again. We need to set BIT13 (SLP_EN) though to make the
 	 * sleep happen.
 	 */
 	outl(reg32 | SLP_EN, pmbase + PM1_CNT);
@@ -545,7 +545,7 @@ static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *st
 #undef IOTRAP
 }
 
-typedef void (*smi_handler)(unsigned int node, 
+typedef void (*smi_handler)(unsigned int node,
 		smm_state_save_area_t *state_save);
 
 smi_handler southbridge_smi[32] = {
@@ -580,7 +580,7 @@ smi_handler southbridge_smi[32] = {
 	NULL,			  // [28] reserved
 	NULL,			  // [29] reserved
 	NULL,			  // [30] reserved
-	NULL			  // [31] reserved 
+	NULL			  // [31] reserved
 };
 
 /**
@@ -601,14 +601,14 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	 * happening in the following calls.
 	 */
 	smi_sts = reset_smi_status();
-	
+
 	/* Filter all non-enabled SMI events */
 	// FIXME Double check, this clears MONITOR
 	// smi_sts &= inl(pmbase + SMI_EN);
 
 	/* Call SMI sub handler for each of the status bits */
 	for (i = 0; i < 31; i++) {
-		if (smi_sts & (1 << i)) { 
+		if (smi_sts & (1 << i)) {
 			if (southbridge_smi[i])
 				southbridge_smi[i](node, state_save);
 			else {

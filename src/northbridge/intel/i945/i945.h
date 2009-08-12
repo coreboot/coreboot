@@ -290,7 +290,7 @@
 
 #define PORTARB		0x100	/* 256bit */
 
-/* 
+/*
  * DMIBAR
  */
 

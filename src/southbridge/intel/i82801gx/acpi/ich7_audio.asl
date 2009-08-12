@@ -28,7 +28,7 @@ Device (HDEF)
 	Name (_ADR, 0x001b0000)
 
 	// Power Resources for Wake
-	Name (_PRW, Package(){ 
+	Name (_PRW, Package(){
 		5,  // Bit 5 of GPE
 		4   // Can wake from S4 state.
 	})

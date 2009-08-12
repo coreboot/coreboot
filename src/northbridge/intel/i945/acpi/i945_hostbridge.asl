@@ -26,7 +26,7 @@ Name(_CID,EISAID("PNP0A03"))	// PCI
 Device (MCHC)
 {
 	Name(_ADR, 0x00000000)	// 0:0.0
-	
+
 	OperationRegion(MCHP, PCI_Config, 0x00, 0x100)
 	Field (MCHP, DWordAcc, NoLock, Preserve)
 	{

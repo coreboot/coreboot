@@ -33,7 +33,7 @@ Device (AUD0)
 Device (MODM)
 {
 	Name (_ADR, 0x001e0003)
-	
+
 	Name (_PRW, Package(){ 5, 4 })
 }
 

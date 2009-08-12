@@ -24,7 +24,7 @@
 Device (LPCB)
 {
 	Name(_ADR, 0x001f0000)
-	
+
 	OperationRegion(LPC0, PCI_Config, 0x00, 0x100)
 	Field (LPC0, AnyAcc, NoLock, Preserve)
 	{
@@ -52,7 +52,7 @@ Device (LPCB)
 	}
 
 	Include ("../../../southbridge/intel/i82801gx/acpi/ich7_irqlinks.asl")
-	
+
 	Include ("acpi/ec.asl")
 
 	Device (DMAC)		// DMA Controller

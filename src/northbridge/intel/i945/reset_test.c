@@ -19,7 +19,7 @@
 
 static int bios_reset_detected(void)
 {
-	/* For now ... 
+	/* For now ...
 	 * DO NOT, I repeat, DO NOT remove this. If you don't like the
 	 * situation, implement this instead.
 	 */

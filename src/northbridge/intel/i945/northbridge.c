@@ -43,7 +43,7 @@ int get_pcie_bar(u32 *base, u32 *len)
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!dev)
 		return 0;
-	
+
 	pciexbar_reg = pci_read_config32(dev, 0x48);
 
 	if (!(pciexbar_reg & (1 << 0)))
@@ -78,12 +78,12 @@ int add_northbridge_resources(struct lb_memory *mem)
 	u32 pcie_config_base, pcie_config_size;
 
 	printk_debug("Adding UMA memory area\n");
-	lb_add_memory_range(mem, LB_MEM_RESERVED, 
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);
 
 	printk_debug("Adding PCIe config bar\n");
 	get_pcie_bar(&pcie_config_base, &pcie_config_size);
-	lb_add_memory_range(mem, LB_MEM_RESERVED, 
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		pcie_config_base, pcie_config_size);
 
 	return 0;

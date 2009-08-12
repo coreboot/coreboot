@@ -26,7 +26,7 @@
 Device (USB1)
 {
 	Name(_ADR, 0x001d0000)
-	
+
 	OperationRegion(U01P, PCI_Config, 0, 256)
 	Field(U01P, DWordAcc, NoLock, Preserve)
 	{
@@ -35,7 +35,7 @@ Device (USB1)
 	}
 
 	Name (_PRW, Package(){ 3, 4 }) // Power Resources for Wake
-	
+
 	Method (_PSW, 1)	// Power State Wake method
 	{
 		// USB Controller can wake OS from Sleep State
@@ -65,7 +65,7 @@ Device (USB1)
 Device (USB2)
 {
 	Name(_ADR, 0x001d0001)
-	
+
 	OperationRegion(U02P, PCI_Config, 0, 256)
 	Field(U02P, DWordAcc, NoLock, Preserve)
 	{
@@ -74,7 +74,7 @@ Device (USB2)
 	}
 
 	Name (_PRW, Package(){ 3, 4 }) // Power Resources for Wake
-	
+
 	Method (_PSW, 1)	// Power State Wake method
 	{
 		// USB Controller can wake OS from Sleep State
@@ -105,7 +105,7 @@ Device (USB2)
 Device (USB3)
 {
 	Name(_ADR, 0x001d0002)
-	
+
 	OperationRegion(U03P, PCI_Config, 0, 256)
 	Field(U03P, DWordAcc, NoLock, Preserve)
 	{
@@ -114,7 +114,7 @@ Device (USB3)
 	}
 
 	Name (_PRW, Package(){ 3, 4 }) // Power Resources for Wake
-	
+
 	Method (_PSW, 1)	// Power State Wake method
 	{
 		// USB Controller can wake OS from Sleep State
@@ -145,7 +145,7 @@ Device (USB3)
 Device (USB4)
 {
 	Name(_ADR, 0x001d0003)
-	
+
 	OperationRegion(U04P, PCI_Config, 0, 256)
 	Field(U04P, DWordAcc, NoLock, Preserve)
 	{
@@ -154,7 +154,7 @@ Device (USB4)
 	}
 
 	Name (_PRW, Package(){ 3, 4 }) // Power Resources for Wake
-	
+
 	Method (_PSW, 1)	// Power State Wake method
 	{
 		// USB Controller can wake OS from Sleep State
@@ -185,9 +185,9 @@ Device (USB4)
 Device (EHC1)
 {
 	Name(_ADR, 0x001d0007)
-	
+
 	Name (_PRW, Package(){ 13, 4 }) // Power Resources for Wake
-	
+
 	// Leave USB ports on for to allow Wake from USB
 
 	Method(_S3D,0)	// Highest D State in S3 State

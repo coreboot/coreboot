@@ -101,7 +101,7 @@ Device (GFX0)
 		/* Some error happened, but we have to return something */
 		Return (Package() {0x00000400})
 	}
-	
+
 	Device(DD01)
 	{
 		/* Device Unique ID */
@@ -136,7 +136,7 @@ Device (GFX0)
 		/* Device Set State */
 		Method(_DSS, 1)
 		{
-			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the 
+			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the
 			 * display switch was completed
 			 */
 			If (LEqual(And(Arg0, 0xc0000000), 0xc0000000)) {
@@ -179,7 +179,7 @@ Device (GFX0)
 		/* Device Set State */
 		Method(_DSS, 1)
 		{
-			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the 
+			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the
 			 * display switch was completed
 			 */
 			If (LEqual(And(Arg0, 0xc0000000), 0xc0000000)) {
@@ -223,7 +223,7 @@ Device (GFX0)
 		/* Device Set State */
 		Method(_DSS, 1)
 		{
-			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the 
+			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the
 			 * display switch was completed
 			 */
 			If (LEqual(And(Arg0, 0xc0000000), 0xc0000000)) {
@@ -267,7 +267,7 @@ Device (GFX0)
 		/* Device Set State */
 		Method(_DSS, 1)
 		{
-			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the 
+			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the
 			 * display switch was completed
 			 */
 			If (LEqual(And(Arg0, 0xc0000000), 0xc0000000)) {
@@ -311,7 +311,7 @@ Device (GFX0)
 		/* Device Set State */
 		Method(_DSS, 1)
 		{
-			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the 
+			/* If Parameter Arg0 is (1 << 31) | (1 << 30), the
 			 * display switch was completed
 			 */
 			If (LEqual(And(Arg0, 0xc0000000), 0xc0000000)) {

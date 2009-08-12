@@ -24,7 +24,7 @@
 Name(\PICM, 0)		// IOAPIC/8259
 Name(\DSEN, 1)		// Display Output Switching Enable
 
-/* Global ACPI memory region. This region is used for passing information 
+/* Global ACPI memory region. This region is used for passing information
  * between coreboot (aka "the system bios"), ACPI, and the SMI handler.
  * Since we don't know where this will end up in memory at ACPI compile time,
  * we have to fix it up in coreboot's ACPI creation phase.

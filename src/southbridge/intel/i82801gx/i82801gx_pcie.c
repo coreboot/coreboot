@@ -29,7 +29,7 @@ static void pci_init(struct device *dev)
 	u32 reg32;
 
 	printk_debug("Initializing ICH7 PCIe bridge.\n");
-	
+
 	/* Enable Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER;

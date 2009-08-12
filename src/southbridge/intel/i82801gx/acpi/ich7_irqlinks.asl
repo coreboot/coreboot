@@ -36,7 +36,7 @@ Device (LNKA)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{
@@ -95,7 +95,7 @@ Device (LNKB)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{
@@ -154,7 +154,7 @@ Device (LNKC)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{
@@ -213,7 +213,7 @@ Device (LNKD)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{
@@ -272,7 +272,7 @@ Device (LNKE)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{
@@ -331,7 +331,7 @@ Device (LNKF)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{
@@ -390,7 +390,7 @@ Device (LNKG)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 10, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{
@@ -449,7 +449,7 @@ Device (LNKH)
 		IRQ(Level, ActiveLow, Shared)
 			{ 1, 3, 4, 5, 6, 7, 11, 12, 14, 15 }
 	})
-	
+
 	// Current Resource Settings for this link
 	Method (_CRS, 0, Serialized)
 	{

@@ -44,7 +44,7 @@ Device (SATA)
 			CreateDwordField (PBUF,  4, DMA0)
 			CreateDwordField (PBUF,  8, PIO1)
 			CreateDwordField (PBUF, 12, DMA1)
-			CreateDwordField (PBUF, 16, FLAG) 
+			CreateDwordField (PBUF, 16, FLAG)
 
 			// TODO fill return structure
 
@@ -58,7 +58,7 @@ Device (SATA)
 			CreateDwordField (Arg0,  4, DMA0)
 			CreateDwordField (Arg0,  8, PIO1)
 			CreateDwordField (Arg0, 12, DMA1)
-			CreateDwordField (Arg0, 16, FLAG) 
+			CreateDwordField (Arg0, 16, FLAG)
 
 			// TODO: Do the deed
 		}

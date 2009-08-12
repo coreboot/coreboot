@@ -24,7 +24,7 @@
 Device (SBUS)
 {
 	Name (_ADR, 0x001f0003)
-	
+
 	OperationRegion (SMBP, PCI_Config, 0x00, 0x100)
 	Field(SMBP, DWordAcc, NoLock, Preserve)
 	{
@@ -102,7 +102,7 @@ Device (SBUS)
 				Store (0, Local0)	// We're ready
 			}
 		}
-		
+
 		Store (4000, Local0)	// Timeout 200ms (50us * 4000)
 		While (Local0) {
 			If (And (HSTS, 0x01)) {		// Host Busy?

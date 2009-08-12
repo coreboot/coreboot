@@ -1,0 +1,11 @@
+driver-y += amd8111.o
+driver-y += amd8111_usb.o
+driver-y += amd8111_lpc.o
+driver-y += amd8111_ide.o
+driver-y += amd8111_acpi.o
+driver-y += amd8111_usb2.o
+driver-y += amd8111_ac97.o
+driver-y += amd8111_nic.o
+driver-y += amd8111_pci.o
+driver-y += amd8111_smbus.o
+obj-y += amd8111_reset.o

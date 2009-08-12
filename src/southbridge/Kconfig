@@ -1,4 +1,4 @@
-#source src/southbridge/amd/Kconfig
+source src/southbridge/amd/Kconfig
 #source src/southbridge/broadcom/Kconfig
 source src/southbridge/intel/Kconfig
 #source src/southbridge/nvidia/Kconfig

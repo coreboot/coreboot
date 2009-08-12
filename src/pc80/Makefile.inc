@@ -6,4 +6,4 @@ obj-$(CONFIG_UDELAY_IO) +=  udelay_io.o
 obj-y +=  keyboard.o
 
 #initobj-y +=  serial.o
-
+subdirs-y += vga

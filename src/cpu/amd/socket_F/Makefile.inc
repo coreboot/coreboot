@@ -1,0 +1,14 @@
+obj-$(CONFIG_CPU_AMD_SOCKET_F) += socket_F.o
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../model_fxx
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../dualcore
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../mtrr
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/tsc
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/mtrr
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/fpu
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/mmx
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/sse
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/lapic
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/cache
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/mtrr
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/pae
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += ../../x86/smm

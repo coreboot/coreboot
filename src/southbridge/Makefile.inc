@@ -1,4 +1,4 @@
-#subdirs-y += amd
+subdirs-y += amd
 #subdirs-y += broadcom
 subdirs-y += intel
 #subdirs-y += nvidia

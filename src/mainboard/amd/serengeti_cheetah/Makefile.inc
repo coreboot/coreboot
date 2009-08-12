@@ -37,6 +37,7 @@ obj-$(CONFIG_HAVE_ACPI_TABLES) +=  fadt.o
 obj-$(CONFIG_ACPI_SSDTX_NUM) +=  ssdt2.o
 obj-$(CONFIG_ACPI_SSDTX_NUM) +=  ssdt3.o
 obj-$(CONFIG_HAVE_ACPI_TABLES) +=  ssdt4.o
+driver-y += ../../../drivers/i2c/i2cmux/i2cmux.o
 
 # This is part of the conversion to init-obj and away from included code. 
 
@@ -58,11 +59,9 @@ ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 ifdef POST_EVALUATION
 
 MAINBOARD_OPTIONS=\
-	-DCONFIG_AP_IN_SIPI_WAIT=1 \
+	-DCONFIG_AP_IN_SIPI_WAIT=0 \
 	-DCONFIG_USE_PRINTK_IN_CAR=1 \
-	-DCONFIG_HAVE_HIGH_TABLES=1 \
-	-DCONFIG_MMCONF_SUPPORT=1 \
-	-DCONFIG_MMCONF_BASE_ADDRESS=0xf0000000
+	-DCONFIG_HAVE_HIGH_TABLES=1
 
 $(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
 	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
@@ -86,8 +85,8 @@ $(obj)/ssdt4.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci4.asl"
 	perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex
 	mv pci4.hex ssdt4.c
 
-$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/option_table.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/rom.c $(obj)/option_table.h
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/rom.c -o $@
 	perl -e 's/\.rodata/.rom.data/g' -pi $@
 	perl -e 's/\.text/.section .rom.text/g' -pi $@
 

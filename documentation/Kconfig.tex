@@ -458,7 +458,12 @@ obj-$(CONFIG_HAVE_ACPI_TABLES) +=  amdk8_acpi.o
 \subsection{southbridge}
 \subsubsection{vendor and part}
 \subsection{superio}
-\subsection{i2cmux}
+\subsection{drivers/i2c}
+This is a rather special case. There are no Kconfig files or Makefile.inc files here. They are notneeed. 
+To compile in one of these files, name the .o directory. E.g. in serengeti_cheetah we have: 
+\begin{verbatim}
+\end{verbatim}
+
 \subsubsection{vendor and part}
 
 \end{document}

@@ -10,9 +10,9 @@ config BOARD_AMD_SERENGETI_CHEETAH
 	select NORTHBRIDGE_AMD_AMDK8
 	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
 	select SOUTHBRIDGE_AMD_AMD8111
-	select SUPERIO_WINBOND_W83627THF
+	select SOUTHBRIDGE_AMD_AMD8131
+	select SUPERIO_WINBOND_W83627HF
 	select PIRQ_TABLE
-	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
 	help
 	AMD Serengeti Series mainboards
@@ -23,15 +23,45 @@ config MAINBOARD_DIR
 	default amd/serengeti_cheetah
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-#config DCACHE_RAM_BASE
-#	hex
-#	default 0xffdf8000
-#	depends on BOARD_AMD_SERENGETI_CHEETAH
-#	
-#config DCACHE_RAM_SIZE
-#	hex
-#	default 0x8000
-#	depends on BOARD_AMD_SERENGETI_CHEETAH
+config USE_DCACHE_RAM
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+	
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+	
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config APIC_ID_OFFSET
+	int
+	default 8
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config HAVE_HARD_RESET
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config IOAPIC
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config LB_CKS_RANGE_END
 	int
@@ -47,3 +77,119 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Serengeti-Cheetah"
 	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config PCI_64BIT_PREF_MEM
+	int
+        default 0
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config USE_DCACHE_RAM
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config USE_FAILOVER_IMAGE
+	int
+	default 0
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config MEM_TRAIN_SEQ
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config HAVE_FAILOVER_BOOT
+	int
+	default 0
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config USE_FAILOVER_IMAGE
+	int
+	default 0
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config MAX_CPUS
+	int
+	default 8
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 4
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config MEM_TRAIN_SEQ
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config AP_CODE_IN_CAR
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	int
+	default 0
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config HT_CHAIN_END_UNITID_BASE
+	int
+	default 0x6
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config USE_INIT
+	int
+	default 0
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config SERIAL_CPU_INIT
+	int
+	default 0
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config AP_CODE_IN_CAR
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config WAIT_BEFORE_CPUS_INIT
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config CONSOLE_VGA
+	bool
+	default y
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config PCI_ROM_RUN
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+

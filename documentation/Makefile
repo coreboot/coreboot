@@ -44,29 +44,29 @@ Kconfig.pdf: Kconfig.tex mainboardkconfig.tex cpukconfig.tex socketfkconfig.tex
 
 # quick, somebody! make me a macro!
 mainboardkconfig.tex: ../src/mainboard/Kconfig
-	echo '\begin{verbatim}' > $@
+	cat beginverbatim.tex  > $@
 	grep '^config' $< | awk '{print $2}'  >>$@
-	echo '\end{verbatim}' >> $@
+	cat endverbatim.tex  >> $@
 
 skconfig.tex: ../src/mainboard/amd/serengeti_cheetah/Kconfig
-	echo '\begin{verbatim}' > $@
+	cat beginverbatim.tex  > $@
 	grep '^config' $< | awk '{print $2}'  >>$@
-	echo '\end{verbatim}' >> $@
+	cat endverbatim.tex  >> $@
 
 cpukconfig.tex: ../src/cpu/Kconfig
-	echo '\begin{verbatim}' > $@
+	cat beginverbatim.tex  > $@
 	grep '^config' $< | awk '{print $2}'  >>$@
-	echo '\end{verbatim}' >> $@
+	cat endverbatim.tex  >> $@
 
 socketfkconfig.tex: ../src/cpu/amd/socket_F/Kconfig
-	echo '\begin{verbatim}' > $@
+	cat beginverbatim.tex  > $@
 	grep '^config' $< | awk '{print $2}'  >>$@
-	echo '\end{verbatim}' >> $@
+	cat endverbatim.tex  >> $@
 
 
 clean:
-	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex
+	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex skconfig.tex cpukconfig.tex socketkconfig.tex
 
 distclean: clean
-	rm -f LinuxBIOS-AMD64.pdf mainboardkconfig.tex
+	rm -f LinuxBIOS-AMD64.pdf 
 	

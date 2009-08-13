@@ -8,12 +8,14 @@ subdirs-y += smp
 obj-y += ../../option_table.o
 
 ifdef POST_EVALUATION
+BOOTBLOCK_SIZE=65536
+
 #######################################################################
 # Build the final rom image
 
 $(obj)/coreboot.rom: $(obj)/coreboot.bootblock $(obj)/coreboot_ram $(CBFSTOOL)
 	$(Q)rm -f $@
-	$(Q)$(CBFSTOOL) $@ create $(shell expr 1024 \* $(CONFIG_COREBOOT_ROMSIZE_KB)) 131072 $(obj)/coreboot.bootblock
+	$(Q)$(CBFSTOOL) $@ create $(shell expr 1024 \* $(CONFIG_COREBOOT_ROMSIZE_KB)) $(BOOTBLOCK_SIZE) $(obj)/coreboot.bootblock
 	$(Q)if [ -f fallback/coreboot_apc ]; \
 	then \
 		$(CBFSTOOL) $@ add-stage fallback/coreboot_apc fallback/coreboot_apc $(CBFS_COMPRESS_FLAG); \
@@ -31,14 +33,7 @@ endif
 #######################################################################
 # Build the bootblock
 
-BOOTBLOCK_SIZE=65536
-
-$(obj)/coreboot.bootblock: $(obj)/coreboot.strip
-	$(Q)printf "    CREATE     $(subst $(obj)/,,$(@))\n"
-	$(Q)dd if=$< of=$(obj)/coreboot.bootblock.one obs=$(BOOTBLOCK_SIZE) conv=sync
-	$(Q)cat $(obj)/coreboot.bootblock.one $(obj)/coreboot.bootblock.one > $(obj)/coreboot.bootblock
-
-$(obj)/coreboot.strip: $(obj)/coreboot
+$(obj)/coreboot.bootblock: $(obj)/coreboot
 	$(Q)printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	$(Q)$(OBJCOPY) -O binary $< $@
 

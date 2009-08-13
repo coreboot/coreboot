@@ -256,7 +256,7 @@ int add_bootblock(struct rom *rom, const char *filename)
 	}
 
 	/* Copy the bootblock into place at the end of the file */
-	ret = copy_from_fd(fd, ROM_PTR(rom, rom->size - ntohl(rom->header->bootblocksize)), size);
+	ret = copy_from_fd(fd, ROM_PTR(rom, rom->size - size), size);
 
 	close(fd);
 

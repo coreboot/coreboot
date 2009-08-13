@@ -14,7 +14,6 @@ ifdef POST_EVALUATION
 $(obj)/coreboot.rom: $(obj)/coreboot.bootblock $(obj)/coreboot_ram $(CBFSTOOL)
 	$(Q)rm -f $@
 	$(Q)$(CBFSTOOL) $@ create $(shell expr 1024 \* $(CONFIG_COREBOOT_ROMSIZE_KB)) 131072 $(obj)/coreboot.bootblock
-	$(Q)$(CBFSTOOL) $@ add-stage  $(obj)/coreboot_ram normal/coreboot_ram $(CBFS_COMPRESS_FLAG)
 	$(Q)if [ -f fallback/coreboot_apc ]; \
 	then \
 		$(CBFSTOOL) $@ add-stage fallback/coreboot_apc fallback/coreboot_apc $(CBFS_COMPRESS_FLAG); \
@@ -25,8 +24,6 @@ ifeq ($(CONFIG_PAYLOAD_NONE),y)
 else
 	printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(COMPRESSFLAG)\n"
 	$(Q)$(CBFSTOOL) ./build/coreboot.rom add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE)  fallback/payload $(CBFS_COMPRESS_FLAG)
-	printf "    PAYLOAD    $(CONFIG_NORMAL_PAYLOAD_FILE) $(COMPRESSFLAG)\n"
-	$(Q)$(CBFSTOOL) ./build/coreboot.rom add-payload $(CONFIG_NORMAL_PAYLOAD_FILE)  normal/payload $(CBFS_COMPRESS_FLAG)
 	$(CBFSTOOL) ./build/coreboot.rom print
 endif
 

@@ -1,10 +1,10 @@
 config HAVE_INIT_TIMER
-	int
-	default 1
+	bool
+	default y
 
 config HAVE_MOVNTI
-	int
-	default 1
+	bool
+	default y
 
 config CPU_ADDR_BITS
 	int

@@ -26,8 +26,8 @@ config AGP_APERTURE_SIZE
 	default 0x4000000
 
 config HAVE_HIGH_TABLES
-	int
-	default 1
+	bool
+	default y
 
 
 source src/northbridge/amd/amdk8/root_complex/Kconfig

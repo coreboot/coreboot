@@ -327,6 +327,11 @@ config COREBOOT_ROMSIZE_KB_2048
 	help
 	  Choose this option if you have a 2048 KB (2 MB) ROM chip.
 
+config COREBOOT_ROMSIZE_KB_4096
+	bool "4096 KB (4 MB)"
+	help
+	  Choose this option if you have a 4096 KB (4 MB) ROM chip.
+
 endchoice
 
 config COREBOOT_ROMSIZE_KB
@@ -336,6 +341,7 @@ config COREBOOT_ROMSIZE_KB
 	default 512 if COREBOOT_ROMSIZE_KB_512
 	default 1024 if COREBOOT_ROMSIZE_KB_1024
 	default 2048 if COREBOOT_ROMSIZE_KB_2048
+	default 4096 if COREBOOT_ROMSIZE_KB_4096
 	help
 	  Map the config names to an integer.
 

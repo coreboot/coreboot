@@ -18,15 +18,20 @@ $(obj)/coreboot.rom: $(obj)/coreboot.bootblock $(obj)/coreboot_ram $(CBFSTOOL)
 	$(Q)$(CBFSTOOL) $@ create $(shell expr 1024 \* $(CONFIG_COREBOOT_ROMSIZE_KB)) $(BOOTBLOCK_SIZE) $(obj)/coreboot.bootblock
 	$(Q)if [ -f fallback/coreboot_apc ]; \
 	then \
-		$(CBFSTOOL) $@ add-stage fallback/coreboot_apc fallback/coreboot_apc $(CBFS_COMPRESS_FLAG); \
+		$(Q) $(CBFSTOOL) $@ add-stage fallback/coreboot_apc fallback/coreboot_apc $(CBFS_COMPRESS_FLAG); \
 	fi
 	$(Q)$(CBFSTOOL) $@ add-stage  $(obj)/coreboot_ram fallback/coreboot_ram $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	$(Q)printf "    PAYLOAD    none (as specified by user)\n"
 else
-	printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(COMPRESSFLAG)\n"
+	$(Q) printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(COMPRESSFLAG)\n"
 	$(Q)$(CBFSTOOL) ./build/coreboot.rom add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE)  fallback/payload $(CBFS_COMPRESS_FLAG)
-	$(CBFSTOOL) ./build/coreboot.rom print
+ifeq ($(CONFIG_VGA_BIOS),y)
+	$(Q) printf "    VGABIOS    $(CONFIG_FALLBACK_VGA_BIOS_FILE) $(CONFIG_FALLBACK_VGA_BIOS_ID) $(COMPRESSFLAG)\n"
+	$(Q) $(CBFSTOOL) ./build/coreboot.rom add $(CONFIG_FALLBACK_VGA_BIOS_FILE) "pci$(CONFIG_FALLBACK_VGA_BIOS_ID).rom" optionrom 
+endif
+	$(Q) printf "    CBFSPRINT  ./build/coreboot.rom\n\n"
+	$(CBFSTOOL) build/coreboot.rom print
 endif
 
 

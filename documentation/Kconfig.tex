@@ -449,10 +449,50 @@ obj-y +=  get_sblk_pci1234.o
 obj-$(CONFIG_HAVE_ACPI_TABLES) +=  amdk8_acpi.o
 \end{verbatim}
 
-\subsubsection{northbridge/Kconfig}
+\subsection{southbridge}
+\subsubsection{southbridge/Kconfig}
+No variables. Source all vendor directory Kconfigs.
+\subsubsection{southbridge/Makefile.inc}
+No variables. {\em Unconditionally} include all vendor Makefile.inc
+\subsubsection{southbridge/$<$vendor$>$/Kconfig}
+No variables. Source all chip directory Kconfigs.
+\subsubsection{southbridge/$<$vendor$>$/Makefile.inc}
+No variables. {\em Conditionally} include all chipset Makefile.inc. The variable
+is the name of the part, e.g.
+\begin{verbatim}
+subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AMD8111) += amd8111
+\end{verbatim}
+.
+\subsubsection{southbridge/$<$vendor$>$/$<$chip$>$/Kconfig}
+Typically a small number of variables. One defines the part name. Here is an example
+of the variables defined for the K8.
+\begin{verbatim}
+config SOUTHBRIDGE_AMD_AMD8111
+	bool
+	default n
 
-
-
+\end{verbatim}
+\subsubsection{southbridge/$<$vendor$>$/$<$chip$>$/Makefile.inc}
+Typically very small set of rules, and very simple.
+Since this file is already conditionally included,
+we don't need to test for the chipset CONFIG variable. We
+can therefore test other variables (which is part of the reason
+we set up conditional inclusion of this file, instead
+of unconditionally including it). Here is an example from AMD 8111.
+No conditionals in this one yet. 
+\begin{verbatim}
+driver-y += amd8111.o
+driver-y += amd8111_usb.o
+driver-y += amd8111_lpc.o
+driver-y += amd8111_ide.o
+driver-y += amd8111_acpi.o
+driver-y += amd8111_usb2.o
+driver-y += amd8111_ac97.o
+driver-y += amd8111_nic.o
+driver-y += amd8111_pci.o
+driver-y += amd8111_smbus.o
+obj-y += amd8111_reset.o
+\end{verbatim}
 
 \subsubsection{vendor and part}
 \subsection{southbridge}

@@ -42,7 +42,12 @@ if CONFIG_HAVE_MP_TABLE object mptable.o end
 
 if CONFIG_HAVE_ACPI_TABLES
 #acpi_create_fadt is located in VT8237R code
-	object dsdt.o
+	makerule dsdt.c
+		depends "$(CONFIG_MAINBOARD)/dsdt.asl"
+		action  "iasl -p $(CURDIR)/dsdt -tc $(CONFIG_MAINBOARD)/dsdt.asl"
+		action  "mv dsdt.hex dsdt.c"
+	end
+	object ./dsdt.o
 	object acpi_tables.o
 end
 makerule ./failover.E
@@ -141,13 +146,14 @@ chip northbridge/via/cn400			# Northbridge
       register "ide1_80pin_cable" = "0"
       device pci f.0 on end			# IDE/SATA
 	  device pci f.1 on end			# IDE
-      register "fn_ctrl_lo" = "0x80"
-      register "fn_ctrl_hi" = "0x1d"
+      register "fn_ctrl_lo" = "0xC0"    # Disable AC/MC97
+      register "fn_ctrl_hi" = "0x9d"    # Disable USB Direct & LAN Gating
       device pci 10.0 on end			# OHCI
       device pci 10.1 on end			# OHCI
       device pci 10.2 on end			# OHCI
       device pci 10.3 on end			# OHCI
       device pci 10.4 on end			# EHCI
+      device pci 10.5 off end			# USB Direct
       device pci 11.0 on			# Southbridge LPC
         chip superio/winbond/w83697hf		# Super I/O
           device pnp 2e.0 off			# Floppy
@@ -190,7 +196,7 @@ chip northbridge/via/cn400			# Northbridge
         end
       end
       device pci 11.5 off end			# AC'97 audio
-      # device pci 11.6 off end			# AC'97 Modem
+      device pci 11.6 off end			# AC'97 Modem
       device pci 12.0 on end			# Ethernet
     end
   end

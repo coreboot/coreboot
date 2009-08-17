@@ -26,6 +26,8 @@ driver vt8237_ctrl.o
 driver vt8237r_ide.o
 driver vt8237r_lpc.o
 driver vt8237r_sata.o
+driver vt8237r_usb.o
+driver vt8237r_nic.o
 if CONFIG_HAVE_ACPI_TABLES
 	object vt8237_fadt.o
 end

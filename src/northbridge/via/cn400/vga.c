@@ -47,6 +47,9 @@ static void vga_init(device_t dev)
 {
 	u8 reg8;
 	u32 temp;
+#ifdef DEBUG_CN400
+	int i, j;
+#endif
 
 	temp = (0xffffffff - CONFIG_FALLBACK_SIZE - 0xffff);
 	printk_debug("Copying BOCHS BIOS from 0x%08X	to 0xf000\n", temp);
@@ -73,8 +76,8 @@ static void vga_init(device_t dev)
 
 	pci_write_config8(dev, 0x04, 0x07);
 	pci_write_config8(dev, 0x0d, 0x20);
-	pci_write_config32(dev, 0x10, 0xf4000008);
-	pci_write_config32(dev, 0x14, 0xfb000000);
+	pci_write_config32(dev, 0x10, 0xf0000008);
+	pci_write_config32(dev, 0x14, 0xf4000000);
 
 	printk_debug("INSTALL REAL-MODE IDT\n");
 	setup_realmode_idt();
@@ -101,6 +104,21 @@ static void vga_init(device_t dev)
 
 	/* Clear the BOCHS BIOS out of memory, so it doesn't confuse Linux. */
 	memset(0xf0000, 0, 0x10000);
+
+#ifdef DEBUG_CN400
+	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+
+	for (i = 0 ; i < 16; i++)
+	{
+		printk_spew("%02X: ", i*16);
+		for (j = 0; j < 16; j++)
+		{
+			reg8 = pci_read_config8(dev, j+(i*16));
+			printk_spew("%02X ", reg8);
+		}
+		printk_spew("\n");
+	}
+#endif
 }
 
 static void vga_read_resources(device_t dev)

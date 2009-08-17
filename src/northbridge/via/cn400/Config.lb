@@ -19,6 +19,7 @@
 ##
 
 uses CONFIG_HAVE_HIGH_TABLES
+uses CONFIG_IOAPIC
 
 config chip.h
 
@@ -27,5 +28,6 @@ object vgabios.o
 driver northbridge.o
 driver agp.o
 driver vga.o
+driver vlink.o
 
 default CONFIG_HAVE_HIGH_TABLES=1

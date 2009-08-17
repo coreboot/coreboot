@@ -24,6 +24,8 @@ static void cn400_noop()
 }
 #endif
 
+#define DEBUG_CN400
+
 /* VGA stuff */
 #define SR_INDEX		0x3c4
 #define SR_DATA			0x3c5

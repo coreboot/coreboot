@@ -35,8 +35,10 @@ static void ide_init(struct device *dev)
 	struct southbridge_via_vt8237r_config *sb =
 	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
 
-	u8 enables;
+	u8 enables, reg8;
 	u32 cablesel;
+	device_t lpc_dev;
+	int i, j;
 
 	printk_info("%s IDE interface %s\n", "Primary",
 		    sb->ide0_enable ? "enabled" : "disabled");
@@ -49,6 +51,10 @@ static void ide_init(struct device *dev)
 	printk_debug("Enables in reg 0x40 read back as 0x%x\n", enables);
 
 	/* Enable only compatibility mode. */
+	enables = pci_read_config8(dev, 0x09);
+	enables &= 0xFA;
+	pci_write_config8(dev, 0x09, enables);
+
 	enables = pci_read_config8(dev, IDE_CONF_II);
 	enables &= ~0xc0;
 	pci_write_config8(dev, IDE_CONF_II, enables);
@@ -74,6 +80,7 @@ static void ide_init(struct device *dev)
 
 	/* Use memory read multiple, Memory-Write-and-Invalidate. */
 	enables = pci_read_config8(dev, IDE_MISC_II);
+	enables &= 0xEF;
 	enables |= (1 << 2) | (1 << 3);
 	pci_write_config8(dev, IDE_MISC_II, enables);
 
@@ -89,6 +96,14 @@ static void ide_init(struct device *dev)
 		    (sb->ide1_80pin_cable << 12) |
 		    (sb->ide1_80pin_cable << 4);
 	pci_write_config32(dev, IDE_UDMA, cablesel);
+
+#ifdef CONFIG_EPIA_VT8237R_INIT
+	/* Set PATA Output Drive Strength */
+	lpc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
+				    PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
+	if (lpc_dev)
+		pci_write_config8(lpc_dev, 0x7C, 0x20);
+#endif
 }
 
 static const struct device_operations ide_ops = {

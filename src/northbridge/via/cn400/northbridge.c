@@ -38,16 +38,28 @@ static void memctrl_init(device_t dev)
 {
 	device_t vlink_dev;
 	u16 reg16;
-	u8 ranks, pagec, paged, pagee, pagef, shadowreg;
+	u8 ranks, pagec, paged, pagee, pagef, shadowreg, reg8;
+	int i, j;
 
 	printk_spew("Entering cn400 memctrl_init.\n");
+	/* vlink mirror */
+	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
+				    PCI_DEVICE_ID_VIA_CN400_VLINK, 0);
 	
-	/* Set up the VGA framebuffer size. */
-	reg16 = (log2(CONFIG_VIDEO_MB) << 12) | (1 << 15);
+	/* Setup Low Memory Top 						*/
+	/* 0x47 == HA(32:25)						    */
+	/* 0x84/85 == HA(31:20) << 4 | DRAM Granularity */
+	ranks = pci_read_config8(dev, 0x47);
+	reg16 = (((u16)(ranks - 1) << 9) & 0xFFF0) | 0x01F0;
+
+	pci_write_config16(dev, 0x84, reg16);
+	printk_spew("Low Top Address = 0x%04X\n", reg16);
+
+	/* Set up the VGA framebuffer size and Base Address   */
+	/* Note dependencies between agp.c and vga.c and here */
+	reg16 = (log2(CONFIG_VIDEO_MB) << 12) | (1 << 15) | 0xF00;
 	pci_write_config16(dev, 0xa0, reg16);
 
-	/* Set up VGA timers. */
-	pci_write_config8(dev, 0xa2, 0x44);
 
 	for (ranks = 0x4b; ranks >= 0x48; ranks--) {
 		if (pci_read_config8(dev, ranks)) {
@@ -64,6 +76,15 @@ static void memctrl_init(device_t dev)
 	/* AGPCINT Misc. */
 	pci_write_config8(dev, 0xb8, 0x08);
 
+	/* Arbritation Counters */
+	pci_write_config8(dev, 0xb2, 0xaa);
+
+	/* Write FIFO Setup */
+	pci_write_config8(dev, 0xb3, 0x5a);
+
+	/* Graphics control optimisation */
+	pci_write_config8(dev, 0xb4, 0x0f);
+
 	/* Shadow RAM */
 	pagec = 0xff, paged = 0xff, pagee = 0xff, pagef = 0x30;
 	/* PAGE C, D, E are all read write enable */
@@ -74,10 +95,6 @@ static void memctrl_init(device_t dev)
 	shadowreg = pci_read_config8(dev, 0x82);
 	shadowreg |= pagef;
 	pci_write_config8(dev, 0x82, shadowreg);
-	/* vlink mirror */
-	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
-				    PCI_DEVICE_ID_VIA_CN400_VLINK, 0);
-	if (vlink_dev) {
 		pci_write_config8(vlink_dev, 0x61, pagec);
 		pci_write_config8(vlink_dev, 0x62, paged);
 		pci_write_config8(vlink_dev, 0x64, pagee);
@@ -85,14 +102,36 @@ static void memctrl_init(device_t dev)
 		shadowreg = pci_read_config8(vlink_dev, 0x63);
 		shadowreg |= pagef;
 		pci_write_config8(vlink_dev, 0x63, shadowreg);
-	}
+
+	/* Activate VGA Frame Buffer */
 	
-	printk_spew("Leaving cn400 memctrl_init.\n");
+	reg8 = pci_read_config8(dev, 0xA0);
+	reg8 |= 0x01;
+	pci_write_config8(dev, 0xA0, reg8);
+
+#ifdef DEBUG_CN400
+	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+
+	for (i = 0 ; i < 16; i++)
+	{
+		printk_spew("%02X: ", i*16);
+		for (j = 0; j < 16; j++)
+		{
+			reg8 = pci_read_config8(dev, j+(i*16));
+			printk_spew("%02X ", reg8);
+		}
+		printk_spew("\n");
+	}
+#endif
+	printk_spew("Leaving cn400 %s.\n", __func__);
 }
 
 static const struct device_operations memctrl_operations = {
 	.read_resources = cn400_noop,
+	.set_resources    = cn400_noop,
+	.enable_resources = cn400_noop,
 	.init           = memctrl_init,
+	.ops_pci          = 0,
 };
 
 static const struct pci_driver memctrl_driver __pci_driver = {
@@ -129,12 +168,25 @@ static void ram_resource(device_t dev, unsigned long index,
 
 	if (!sizek)
 		return;
-
 	resource = new_resource(dev, index);
-	resource->base = ((resource_t) basek) << 10;
-	resource->size = ((resource_t) sizek) << 10;
+	resource->base = (resource_t) (basek << 10);
+	resource->size = (resource_t) (sizek << 10);
 	resource->flags = IORESOURCE_MEM | IORESOURCE_CACHEABLE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+}
+
+static void ram_reservation(device_t dev, unsigned long index,
+			 unsigned long base, unsigned long size)
+{
+	struct resource *res;
+
+	printk_spew("Configuring Via C3 LAPIC Fixed Resource\n");
+	/* Fixed LAPIC resource */
+	res = new_resource(dev, 1);
+	res->base = (resource_t) base;
+	res->size = size;
+	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
@@ -150,24 +202,23 @@ static void tolm_test(void *gp, struct device *dev, struct resource *new)
 
 static u32 find_pci_tolm(struct bus *bus)
 {
-	struct resource *min;
+	struct resource *min = NULL;
 	u32 tolm;
 
-	print_debug("Entering CN400 find_pci_tolm\n");
+	printk_spew("Entering CN400 find_pci_tolm\n");
 
-	min = 0;
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM,
 			     tolm_test, &min);
 	tolm = 0xffffffffUL;
 	if (min && tolm > min->base)
 		tolm = min->base;
 
-	print_debug("Leaving find_pci_tolm\n");
+	printk_spew("Leaving CN400 find_pci_tolm\n");
 
 	return tolm;
 }
 
-#if HAVE_HIGH_TABLES==1
+#if CONFIG_HAVE_HIGH_TABLES==1
 /* maximum size of high tables in KB */
 #define HIGH_TABLES_SIZE 64
 extern uint64_t high_tables_base, high_tables_size;
@@ -175,8 +226,6 @@ extern uint64_t high_tables_base, high_tables_size;
 
 static void cn400_domain_set_resources(device_t dev)
 {
-	/* The order is important to find the correct RAM size. */
-	static const u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
 	device_t mc_dev;
 	u32 pci_tolm;
 
@@ -191,29 +240,21 @@ static void cn400_domain_set_resources(device_t dev)
 		unsigned char rambits;
 		int i, idx;
 
-		/*
-		 * Once the register value is not zero, the RAM size is
-		 * this register's value multiply 64 * 1024 * 1024.
-		 */
-		for (rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
-			rambits = pci_read_config8(mc_dev, ramregs[i]);
-			if (rambits != 0)
-				break;
-		}
-
-		tomk = rambits * 64 * 1024;
-		printk_spew("tomk is 0x%x\n", tomk);
+		rambits = pci_read_config8(mc_dev, 0x47);
+		tomk = rambits * 32 * 1024;
 		/* Compute the Top Of Low Memory (TOLM), in Kb. */
 		tolmk = pci_tolm >> 10;
+		printk_spew("tomk is 0x%x, tolmk is 0x%08X\n", tomk, tolmk);
 		if (tolmk >= tomk) {
 			/* The PCI hole does does not overlap the memory. */
 			tolmk = tomk;
 		}
 
-#if HAVE_HIGH_TABLES == 1
-		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
-		high_tables_size = HIGH_TABLES_SIZE* 1024;
-		printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+#if CONFIG_HAVE_HIGH_TABLES == 1
+		/* Locate the High Tables at the Top of Low Memory below the Video RAM */
+		high_tables_base = (uint64_t) (tolmk - (CONFIG_VIDEO_MB *1024) - HIGH_TABLES_SIZE) * 1024;
+		high_tables_size = (uint64_t) HIGH_TABLES_SIZE* 1024;
+		printk_spew("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
 #endif
 
 		/* Report the memory regions. */

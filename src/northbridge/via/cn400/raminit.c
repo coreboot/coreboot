@@ -1,5 +1,6 @@
 /*
  * (C) Copyright 2005 Nick Barker <nick.barker9@btinternet.com>
+ * (C) Copyright 2009 Jon Harrison <bothlyn@blueyonder.co.uk
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -19,16 +20,13 @@
  */
 
 /* 
-  Automatically detect and set up ddr dram on the CLE266 chipset.
-  Assumes DDR memory, though chipset also supports SDRAM
-  Assumes at least 266Mhz memory as no attempt is made to clock
+  Automatically detect and set up ddr dram on the CN400 chipset.
+  Assumes DDR400 memory as no attempt is made to clock
   the chipset down if slower memory is installed.
   So far tested on:
-	256 Mb 266Mhz 1 Bank (i.e. single sided)
-	256 Mb 266Mhz 2 Bank (i.e. double sided)
-	512 Mb 266Mhz 2 Bank (i.e. double sided)
+	512 Mb DDR400 4 Bank / 2 Rank (1GB) (i.e. double sided)
 */
-/* ported and enhanced from assembler level code in coreboot v1 */
+/* ported from Via VT8263 Code*/
 
 #include <spd.h>
 #include <sdram_mode.h>
@@ -68,6 +66,7 @@ static void c3_cpu_setup(device_t dev)
 {
 	/* Host bus interface registers (D0F2 0x50-0x67) */
 	/* Taken from CN700 and updated from running CN400 */
+	uint8_t reg8;
 	
 	/* Host Bus I/O Circuit (see datasheet) */
 	/* Host Address Pullup/down Driving */
@@ -87,6 +86,7 @@ static void c3_cpu_setup(device_t dev)
 	
 	/* AGTL+ Auto Compensation Offest */
 	pci_write_config8(dev, 0x77, 0x00);
+	pci_write_config8(dev, 0x78, 0x94);
 	
 	/* Request phase control */
 	pci_write_config8(dev, 0x50, 0xA8);
@@ -135,7 +135,13 @@ static void c3_cpu_setup(device_t dev)
 	
 	/* CPU Miscellaneous Control */
 	pci_write_config8(dev, 0x55, 0x28);
+	pci_write_config8(dev, 0x57, 0x69);
 	
+	/* CPU Host Bus Final Setup */
+	reg8 = pci_read_config8(dev, 0x54);
+	reg8 |= 0x08;
+	pci_write_config8(dev, 0x54, reg8);
+
 }
  
 static void ddr_ram_setup(void) 
@@ -177,7 +183,7 @@ static void ddr_ram_setup(void)
 		/*
     		Read SPD byte 3, Number of row addresses.
 		*/
-		c = 0;
+		c = 0x01;
 		bank = 0x40;
 		b = smbus_read_byte(0x50, SPD_NUM_ROWS);
 		//print_val("\r\nNumber of Rows ", b);
@@ -195,7 +201,7 @@ static void ddr_ram_setup(void)
 			b = smbus_read_byte(0x50, SPD_PRIMARY_SDRAM_WIDTH);
 			//print_val("\r\nPrimary DRAM width", b);
 			if( b != 4 )   // not 64/128Mb (x4)
-				c = 0x80;  // 256Mb
+				c = 0x81;  // 256Mb
 		}
 
 		/*
@@ -211,6 +217,10 @@ static void ddr_ram_setup(void)
 		pci_write_config8(ctrl.d0f3, 0x50, c);
 
 	}
+
+	/* Disable Upper Banks */
+	pci_write_config8(ctrl.d0f3, 0x51, 0x00);
+
 /*	else
 	{
 		die("DRAM module size is not supported by CN400\r\n");
@@ -265,8 +275,6 @@ static void ddr_ram_setup(void)
 	else if( b & 0x08) c = 0x01;    	// 32MB
 	else c = 0x01;                  	// Error, use default
 
-	//print_val("\r\nBank 0 (*32 Mb) ",c);
-
 	// set bank zero size
 	pci_write_config8(ctrl.d0f3, 0x40, c);
 	
@@ -278,7 +286,6 @@ static void ddr_ram_setup(void)
 	{
 		c <<=1;
 		bank |= 0x80;
-		//print_val("\r\nTotal Memory (*32 Mb) ",c);
 	}
 /*	else
 	{
@@ -294,6 +301,10 @@ static void ddr_ram_setup(void)
 	pci_write_config8(ctrl.d0f3, 0x46,c);
 	pci_write_config8(ctrl.d0f3, 0x47,c);
 	
+	/* Top Rank Address Mirrored to the South Bridge */
+	/* over the VLink								 */
+	pci_write_config8(ctrl.d0f7, 0x57, (c << 1));
+
 	ma = bank;
 		
 	/* Read SPD byte 18 CAS Latency */
@@ -313,13 +324,11 @@ static void ddr_ram_setup(void)
 	c = smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_3RD);
 	print_val("\r\nCycle time at CL X-1   (nS)", c);
 */	
+	/* Scaling of Cycle Time SPD data */
+	/* 7      4 3       0             */
+	/*    ns     x0.1ns               */
 	bank = smbus_read_byte(0x50, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 
-	/* Setup DRAM Cycle Time */
-	if ( bank <= 0x50 ) bank = 0x14;
-	else if (bank <= 0x60) bank = 0x18;
-	else bank = 0x1E;
-		
 	if( b & 0x10 ){             // DDR offering optional CAS 3
 		//print_debug("\r\nStarting at CAS 3");
 		c = 0x30;
@@ -346,6 +355,13 @@ static void ddr_ram_setup(void)
 			}
 		}
 	}	
+
+	/* Scale DRAM Cycle Time to tRP/tRCD */
+	/* 7      2 1       0             */
+	/*    ns     x0.25ns               */
+	if ( bank <= 0x50 ) bank = 0x14;
+	else if (bank <= 0x60) bank = 0x18;
+	else bank = 0x1E;
 
 /*
     DRAM Timing  Device 0  Fn 3 Offset 56
@@ -401,8 +417,12 @@ static void ddr_ram_setup(void)
     Read SPD byte 30, device min active to pre-charge time.
 */
 
+	/* tRAS is in whole ns */
+	bank = bank >> 2;
+
 	b = smbus_read_byte(0x50, SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY);
 	//print_val("\r\ntRAS ",b);
+	//print_val("\r\nBank ", bank);
 	if ( b >= (9 * bank)) c |= 0xC0;		// set tRAS = 9T
 	else if ( b >= (8 * bank)) c |= 0x80;	// set tRAS = 8T
 	else if ( b >= (7 * bank)) c |= 0x40;	// set tRAS = 7T
@@ -457,15 +477,20 @@ static void ddr_ram_setup(void)
 	/* 4-Way Interleave With Multi-Paging (From Running System)*/
 	pci_write_config8(ctrl.d0f3, 0x69, c);
 	
+	/*DRAM Controller Internal Options */
+	pci_write_config8(ctrl.d0f3, 0x54, 0x01);
+
 	/* DRAM Arbitration Control */
 	pci_write_config8(ctrl.d0f3, 0x66, 0x82);
 
 	/* DRAM Control */
-	pci_write_config8(ctrl.d0f3, 0x6e, 0x00);
+	pci_write_config8(ctrl.d0f3, 0x6e, 0x80);
 	
 	/* Disable refresh for now */
 	pci_write_config8(ctrl.d0f3, 0x6a, 0x00);
 
+	/* DDR Clock Gen Duty Cycle Control */
+	pci_write_config8(ctrl.d0f3, 0xEE, 0x01);
 
 
 	/* DRAM Clock Control */
@@ -484,8 +509,9 @@ static void ddr_ram_setup(void)
 	pci_write_config8(ctrl.d0f3, 0xe4, 0x99);
 
 	/* DRAM signal timing control */
-	pci_write_config8(ctrl.d0f3, 0x74, 0x99);	
+	pci_write_config8(ctrl.d0f3, 0x74, 0x99);
 	pci_write_config8(ctrl.d0f3, 0x76, 0x09);
+	pci_write_config8(ctrl.d0f3, 0x77, 0x12);
 
 	pci_write_config8(ctrl.d0f3, 0xe0, 0xAA);
 	pci_write_config8(ctrl.d0f3, 0xe1, 0x00);
@@ -500,6 +526,9 @@ static void ddr_ram_setup(void)
 
 	pci_write_config8(ctrl.d0f3, 0xb0, c);
 	
+	/* Set RAM Decode method */
+	pci_write_config8(ctrl.d0f3, 0x55, 0x0a);
+
 	/* Enable DIMM Ranks */
 	pci_write_config8(ctrl.d0f3, 0x48, ma);
 	udelay(200);
@@ -528,7 +557,7 @@ static void ddr_ram_setup(void)
 		i = 0x008; 		// Used later to set SDRAM MSR
 	}
 
-		
+
 	for( bank = 0 , bank_address=0; bank <= b ; bank++) {
 /*
     DDR init described in Via VT8623 BIOS Porting Guide.  Pg 28 (4.2.3.1)
@@ -641,6 +670,9 @@ static void ddr_ram_setup(void)
 	pci_write_config8(ctrl.d0f3, 0x7A, 0xA1);
 	pci_write_config8(ctrl.d0f3, 0x7B, 0x62);	
 
+	/* DQS Duty Cycle Control */
+	pci_write_config8(ctrl.d0f3, 0xED, 0x11);
+
 	/* SPD byte 5  # of physical banks */
 	b = smbus_read_byte(0x50, SPD_NUM_DIMM_BANKS) -1;
 	
@@ -650,7 +682,7 @@ static void ddr_ram_setup(void)
 	else
 		bank_address = 0;
 
-	for(i = 0x40 ; i < 0x0ff; i++){
+	for(i = 0x30 ; i < 0x0ff; i++){
 		pci_write_config8(ctrl.d0f3,0x70,i);
 		// clear
 		*(volatile unsigned long*)(0x4000) = 0;
@@ -741,13 +773,15 @@ static void ddr_ram_setup(void)
 		pci_write_config8(ctrl.d0f3,0x70,0x67);
 	}
 
-	/* Set DQS ChB Output to the default */
-	pci_write_config8(ctrl.d0f3, 0x71, 0x6c);
+	/* Set DQS ChA Data Output Delay to the default */
+	pci_write_config8(ctrl.d0f3, 0x71, 0x65);
 	
-	/* Set DQS Input Delays */
-	pci_write_config8(ctrl.d0f3, 0x72, 0x29);
-	pci_write_config8(ctrl.d0f3, 0x73, 0x99);	
+	/* Set Ch B DQS Output Delays */
+	pci_write_config8(ctrl.d0f3, 0x72, 0x2a);
+	pci_write_config8(ctrl.d0f3, 0x73, 0x29);
 	
+	pci_write_config8(ctrl.d0f3, 0x78, 0x03);
+
 	/* Mystery Value */
 	pci_write_config8(ctrl.d0f3, 0x67, 0x50);
 	
@@ -765,14 +799,14 @@ static void ddr_ram_setup(void)
 	//b = smbus_read_byte(0x50, SPD_REFRESH);
 	//print_val("SPD_REFRESH = ", b);
 
-	pci_write_config8(ctrl.d0f3,0x6a,0x6C);
+	pci_write_config8(ctrl.d0f3,0x6a,0x65);
 	
+	/* SMM and APIC decoding, we do not use SMM */
+	b = 0x29;
+	pci_write_config8(ctrl.d0f3, 0x86, b);
+	/* SMM and APIC decoding mirror */
+	pci_write_config8(ctrl.d0f7, 0xe6, b);
 	
-	/* Enable TLB Auto refresh */
-	b = pci_read_config8(ctrl.d0f3, 0x69);
-	b |= 0x10;
-	pci_write_config8(ctrl.d0f3, 0x69, b);
-
 	/* Open Up the Rest of the Shadow RAM */
 	pci_write_config8(ctrl.d0f3,0x80,0xff);
 	pci_write_config8(ctrl.d0f3,0x81,0xff);
@@ -784,26 +818,9 @@ static void ddr_ram_setup(void)
 
 	pci_write_config8(ctrl.d0f7,0x71,0xc8);
 	
-    print_debug("CN400 Init done\r\n");
 
 	/* VGA device. */
 	pci_write_config16(ctrl.d0f3, 0xa0, (1 << 15));
 	pci_write_config16(ctrl.d0f3, 0xa4, 0x0010);
-	
-	/* Graphics Control Basic Init. */
-	//pci_write_config8(ctrl.d0f3, 0xb0, 0xFf);
-	//pci_write_config8(ctrl.d0f3, 0xb1, 0xAA);
-	//pci_write_config8(ctrl.d0f3, 0xb2, 0xAA);
-	//pci_write_config8(ctrl.d0f3, 0xb3, 0x5A);
-	//pci_write_config8(ctrl.d0f3, 0xb4, 0x0f);
-	
-	/* AGP Controller Interface Basic Init */
-	//pci_write_config8(ctrl.d0f3, 0xc0, 0x3b);
-	
-	/* VGA device, Basic frame Buffer Init. */
-	//pci_write_config8(ctrl.d0f3, 0xa0, 0x01);
-	/* Bit 7 = Enable VGA When Set to 1 */
-	//pci_write_config8(ctrl.d0f3, 0xa1, 0xef);
-	//pci_write_config8(ctrl.d0f3, 0xa4, 0x00);
-
+    print_debug("CN400 raminit.c done\r\n");
 }	

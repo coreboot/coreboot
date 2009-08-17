@@ -20,7 +20,24 @@
  */
 
 #include <device/device.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
+#include <boot/tables.h>
 #include "chip.h"
+#include "../../../southbridge/via/vt8237r/vt8237r.h"
+
+int add_mainboard_resources(struct lb_memory *mem)
+{
+#if CONFIG_IOAPIC == 1
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		VT8237R_APIC_BASE, 0x1000);
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		0xFEE00000ULL, 0x1000);
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		0xFFFF0000ULL, 0x10000);
+#endif
+	return 0;
+}
 
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("VIA EPIA-N Mainboard")

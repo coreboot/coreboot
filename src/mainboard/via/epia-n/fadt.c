@@ -1,6 +1,7 @@
 /*
  * ACPI - create the Fixed ACPI Description Tables (FADT)
  * (C) Copyright 2004 Nick Barker <nick.barker9@btinternet.com>
+ * (C) Copyright 2009 Jon Harrison <bothlyn@blueyonder.co.uk>
  *
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +23,7 @@
 
 #include <string.h>
 #include <arch/acpi.h>
+#include "../../../southbridge/via/vt8237r/vt8237r.h"
 
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	acpi_header_t *header=&(fadt->header);
@@ -38,7 +40,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->firmware_ctrl=facs;
 	fadt->dsdt= dsdt;
 	fadt->preferred_pm_profile=0;
-	fadt->sci_int=5;
+	fadt->sci_int=VT8237R_ACPI_IRQ;
 	fadt->smi_cmd = 0;
 	fadt->acpi_enable = 0;
 	fadt->acpi_disable = 0;

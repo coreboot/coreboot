@@ -73,13 +73,6 @@ static void enable_mainboard_devices(void)
 	device_t dev;
 	u8 reg;
  
- 	dev = pci_locate_device(PCI_ID(0x1106, 0x7259), 0);
-	if (dev == PCI_DEV_INVALID)
-		die("Northbridge V-Link not found!!!\n");
-	pci_write_config8(dev, 0x4F, 0x01);
-	pci_write_config8(dev, 0x48, 0x13);
-	
-	
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
@@ -93,7 +86,7 @@ static void enable_mainboard_devices(void)
 	 *   2 16.2 USB 3
 	 *   1 16.4 USB EHCI
 	 */
-	pci_write_config8(dev, 0x50, 0x80);
+	pci_write_config8(dev, 0x50, 0xC0);
 
 	/*bit=0 means enable internal function (per VT8237R datasheet)
 	 *   7 USB Device Mode
@@ -106,7 +99,7 @@ static void enable_mainboard_devices(void)
 	 *   1 Internal KBC Configuration
 	 *   0 Internal Keyboard Controller
 	 */
-	pci_write_config8(dev, 0x51, 0x1d);
+	pci_write_config8(dev, 0x51, 0x9d);
 }
 
 static void enable_shadow_ram(void) 

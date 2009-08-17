@@ -220,7 +220,7 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 
 	/* This is a pointer to the header for easy access */
 	rom->header = (struct cbfs_header *)
-	    ROM_PTR(rom, rom->size - 16 - bootblocksize - sizeof(struct cbfs_header));
+	    ROM_PTR(rom, rom->size - bootblocksize - sizeof(struct cbfs_header));
 	rom->header->magic = htonl(HEADER_MAGIC);
 	rom->header->romsize = htonl(romsize);
 	rom->header->bootblocksize = htonl(bootblocksize);
@@ -233,7 +233,7 @@ int create_rom(struct rom *rom, const unsigned char *filename,
 	/* Write the cbfs master header address at the end of the ROM. */
 
 	ROM_WRITEL(rom, rom->size - 4,
-		   0xFFFFFFF0 - bootblocksize - sizeof(struct cbfs_header));
+		   0xFFFFFFFF - bootblocksize - sizeof(struct cbfs_header) + 1);
 
 	/* write the empty header */
 	rom_set_header(rom, (struct cbfs_file *)rom->ptr, "", -1, CBFS_COMPONENT_NULL);

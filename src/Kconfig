@@ -262,15 +262,8 @@ config PAYLOAD_NONE
 
 endchoice
 
-config NORMAL_PAYLOAD_FILE
-	string "Normal payload path and filename"
-	depends on PAYLOAD_ELF
-	default "payload.elf"
-	help
-	  The path and filename of the ELF executable file to use as normal payload.
-
 config FALLBACK_PAYLOAD_FILE
-	string "Fallback payload path and filename"
+	string "Payload path and filename"
 	depends on PAYLOAD_ELF
 	default "payload.elf"
 	help

@@ -556,6 +556,8 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 	/* Constrain limits based on the fixed resources of this device. */
 	for (i = 0; i < dev->resources; i++) {
 		res = &dev->resource[i];
+		if (!res->size)
+			continue;
 		if (!(res->flags & IORESOURCE_FIXED))
 			continue;
 

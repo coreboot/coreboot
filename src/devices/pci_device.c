@@ -332,6 +332,8 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	 * inited by driver_pci_onboard_ops::enable_dev() */
 	if ((dev->on_mainboard) && (dev->rom_address != 0)) {
 		resource->base = dev->rom_address;
+		/* The resource allocator needs the size to be non-zero. */
+		resource->size = 0x100;
 		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY |
 		    IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 	}

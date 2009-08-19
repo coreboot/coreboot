@@ -97,7 +97,7 @@ default CONFIG_HAVE_OPTION_TABLE=1
 ###
 
 ## CONFIG_ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
-default CONFIG_ROM_IMAGE_SIZE = 65536
+default CONFIG_ROM_IMAGE_SIZE = 36 * 1024
 default CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 
 ##

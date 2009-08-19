@@ -19,8 +19,9 @@
 ##
 
 ## CONFIG_XIP_ROM_SIZE must be a power of 2.
-default CONFIG_XIP_ROM_SIZE = 64 * 1024
+default CONFIG_XIP_ROM_SIZE = 128 * 1024
 include /config/nofailovercalculation.lb
+default CONFIG_XIP_ROM_BASE = 0xffffffff - CONFIG_XIP_ROM_SIZE + 1
 
 arch i386 end
 driver mainboard.o

@@ -12,14 +12,12 @@ option CONFIG_ROM_SIZE=256*1024
 
 romimage "normal"
 	option CONFIG_USE_FALLBACK_IMAGE=0
-	option CONFIG_ROM_IMAGE_SIZE=64*1024
 	option COREBOOT_EXTRA_VERSION=".0-Normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
 	option CONFIG_USE_FALLBACK_IMAGE=1
-	option CONFIG_ROM_IMAGE_SIZE=64*1024
 	option COREBOOT_EXTRA_VERSION=".0-Fallback"
 	payload __PAYLOAD__
 end

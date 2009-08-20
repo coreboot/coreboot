@@ -1,5 +1,6 @@
 #source src/northbridge/via/cn700/Kconfig
 source src/northbridge/via/cx700/Kconfig
+source src/northbridge/via/cn400/Kconfig
 #source src/northbridge/via/vt8601/Kconfig
 #source src/northbridge/via/vt8623/Kconfig
 #source src/northbridge/via/vx800/Kconfig

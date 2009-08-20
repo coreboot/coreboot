@@ -8,4 +8,4 @@ subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 subdirs-y += ../../intel/microcode
 
-obj-y += model_c7_init.o
+obj-y += model_c3_init.o

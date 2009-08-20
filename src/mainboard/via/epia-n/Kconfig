@@ -1,0 +1,37 @@
+config BOARD_VIA_EPIA_N
+        bool "via epia-n"
+        select ARCH_X86
+        select CPU_VIA_C3
+        select NORTHBRIDGE_VIA_CN400
+	select SOUTHBRIDGE_VIA_VT8237R
+        select SUPERIO_WINBOND_W83697HF
+        select PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+        help
+          VIA Epia-n mainboards
+
+config MAINBOARD_DIR
+	string
+	default via/epia-n
+	depends on BOARD_VIA_EPIA_N
+
+#config DCACHE_RAM_BASE
+#	hex
+#	default 0xffef0000
+#	depends on BOARD_VIA_EPIA_N
+#
+#config DCACHE_RAM_SIZE
+#	hex
+#	default 0x8000
+#	depends on BOARD_VIA_EPIA_N
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EPIA_N"
+	depends on BOARD_VIA_EPIA_N
+
+config VIDEO_MB
+	int
+	default 32
+	depends on BOARD_VIA_EPIA_N
+

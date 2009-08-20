@@ -19,7 +19,7 @@
  */
 
 #ifndef __ROMCC__
-static void cn400_noop()
+static void cn400_noop(void)
 {
 }
 #endif

@@ -1,3 +1,4 @@
+uses CONFIG_CBFS
 ldscript init/ldscript.lb
 
 makerule coreboot.strip 
@@ -8,6 +9,11 @@ end
 makerule coreboot.rom 
 	depends	"coreboot.strip" 
 	action "cp $< $@"
+end
+
+if CONFIG_CBFS
+	initobject /src/lib/cbfs.o
+	initobject /src/lib/lzma.o
 end
 
 dir init

@@ -96,6 +96,7 @@ default CONFIG_IDE_OFFSET=0
 
 # ROM is 1Mb
 default CONFIG_ROM_SIZE=1048576
+default CONFIG_ROM_IMAGE_SIZE=128*1024
 
 # Set stack and heap sizes (stage 2)
 default CONFIG_STACK_SIZE=0x10000

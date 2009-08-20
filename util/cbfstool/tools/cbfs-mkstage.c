@@ -29,6 +29,18 @@
 #include "common.h"
 #include "../cbfs.h"
 
+unsigned int idemp(unsigned int x)
+{
+	return x;
+}
+
+unsigned int swap32(unsigned int x)
+{
+	return ((x>>24) | ((x>>8) & 0xff00) | ((x<<8) & 0xff0000) | (x<<24));
+}
+
+unsigned int (*elf32_to_native)(unsigned int)=idemp;
+
 int parse_elf(unsigned char *input, unsigned char **output,
 	      int mode, void (*compress) (char *, int, char *, int *))
 {
@@ -42,10 +54,22 @@ int parse_elf(unsigned char *input, unsigned char **output,
 	struct cbfs_stage *stage;
 	unsigned int data_start, data_end, mem_end;
 
+	int elf_bigendian = 0;
+	int host_bigendian = 0;
+	if (ehdr->e_ident[EI_DATA]==ELFDATA2MSB) {
+		elf_bigendian = 1;
+	}
+	if ((unsigned int)"1234"==0x31323334) {
+		host_bigendian = 1;
+	}
+	if (elf_bigendian != host_bigendian) {
+		elf32_to_native = swap32;
+	}
+
 	headers = ehdr->e_phnum;
 	header = (char *)ehdr;
 
-	phdr = (Elf32_Phdr *) & (header[ehdr->e_phoff]);
+	phdr = (Elf32_Phdr *) & header[elf32_to_native(ehdr->e_phoff)];
 
 	/* Now, regular headers - we only care about PT_LOAD headers,
 	 * because thats what we're actually going to load
@@ -58,19 +82,19 @@ int parse_elf(unsigned char *input, unsigned char **output,
 	for (i = 0; i < headers; i++) {
 		unsigned int start, mend, rend;
 
-		if (phdr[i].p_type != PT_LOAD)
+		if (elf32_to_native(phdr[i].p_type) != PT_LOAD)
 			continue;
 
 		/* Empty segments are never interesting */
-		if (phdr[i].p_memsz == 0)
+		if (elf32_to_native(phdr[i].p_memsz) == 0)
 			continue;
 
 		/* BSS */
 
-		start = phdr[i].p_paddr;
+		start = elf32_to_native(phdr[i].p_paddr);
 
-		mend = start + phdr[i].p_memsz;
-		rend = start + phdr[i].p_filesz;
+		mend = start + elf32_to_native(phdr[i].p_memsz);
+		rend = start + elf32_to_native(phdr[i].p_filesz);
 
 		if (start < data_start)
 			data_start = start;
@@ -94,14 +118,14 @@ int parse_elf(unsigned char *input, unsigned char **output,
 
 	for (i = 0; i < headers; i++) {
 
-		if (phdr[i].p_type != PT_LOAD)
+		if (elf32_to_native(phdr[i].p_type) != PT_LOAD)
 			continue;
 
-		if (phdr[i].p_memsz == 0)
+		if (elf32_to_native(phdr[i].p_memsz) == 0)
 			continue;
 
-		memcpy(buffer + (phdr[i].p_paddr - data_start),
-		       &header[phdr[i].p_offset], phdr[i].p_filesz);
+		memcpy(buffer + (elf32_to_native(phdr[i].p_paddr) - data_start),
+		       &header[elf32_to_native(phdr[i].p_offset)], elf32_to_native(phdr[i].p_filesz));
 	}
 
 	/* Now make the output buffer */

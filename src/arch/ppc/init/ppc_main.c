@@ -5,12 +5,7 @@
 
 #include <board.h>
 #include <sdram.h>
-
-extern unsigned _iseg[];
-extern unsigned _liseg[];
-extern unsigned _eliseg[];
-
-void (*payload)(void) = (void (*)(void))_iseg;
+#include <cbfs.h>
 
 /*
  * At this point we're running out of flash with our
@@ -25,8 +20,7 @@ extern void flush_dcache(void);
 
 void ppc_main(void)
 {
-	unsigned *from;
-	unsigned *to;
+	void (*payload)(void);
 
 	/*
  	 * very early board initialization
@@ -49,15 +43,9 @@ void ppc_main(void)
 	flush_dcache();
 
 	/*
-	 * Relocate payload (text & data) if necessary
+	 * Relocate payload (text & data)
 	 */
-	if (_liseg != _iseg) {	
-		from = _liseg;
-		to = _iseg;
-		while (from < _eliseg)
-			*to++ = *from++;
-	}
-
+	payload = cbfs_load_stage("fallback/coreboot_ram");
 	payload();
 
 	/* NOT REACHED */

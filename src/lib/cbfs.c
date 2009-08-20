@@ -124,13 +124,27 @@ struct cbfs_stage *cbfs_find_file(const char *name, int type)
 	return (void *) CBFS_SUBHEADER(file);
 }
 
+static int tohex4(unsigned int c)
+{
+	return (c<=9)?(c+'0'):(c-10+'a');
+}
+
+static void tohex16(unsigned int val, char* dest)
+{
+	dest[0]=tohex4(val>>12);
+	dest[1]=tohex4((val>>8) & 0xf);
+	dest[2]=tohex4((val>>4) & 0xf);
+	dest[3]=tohex4(val & 0xf);
+}
+
 void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest)
 {
-	char name[17];
+	char name[17]="pciXXXX,XXXX.rom";
 	struct cbfs_optionrom *orom;
 	u8 *src;
 
-	sprintf(name,"pci%04x,%04x.rom", vendor, device);
+	tohex16(vendor, name+3);
+	tohex16(device, name+8);
 
 	orom = (struct cbfs_optionrom *)
 		cbfs_find_file(name, CBFS_TYPE_OPTIONROM);

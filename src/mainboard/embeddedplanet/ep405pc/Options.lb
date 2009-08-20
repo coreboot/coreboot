@@ -106,6 +106,7 @@ default CONFIG_FS_FAT=1
 default CONFIG_AUTOBOOT_CMDLINE="hda1:/vmlinuz"
 
 default CONFIG_ROM_SIZE=1048576
+default CONFIG_ROM_IMAGE_SIZE=160*1024
 
 ## Board has fixed size RAM
 default CONFIG_EMBEDDED_RAM_SIZE=64*1024*1024

@@ -1768,7 +1768,7 @@ static void loc(FILE *fp, struct compile_state *state, struct triple *triple)
 		state->file->report_name, state->file->report_line, col);
 }
 
-static void internal_error(struct compile_state *state, struct triple *ptr, 
+static void __attribute__ ((noreturn)) internal_error(struct compile_state *state, struct triple *ptr, 
 	const char *fmt, ...)
 {
 	FILE *fp = state->errout;
@@ -1806,7 +1806,7 @@ static void internal_warning(struct compile_state *state, struct triple *ptr,
 
 
 
-static void error(struct compile_state *state, struct triple *ptr, 
+static void __attribute__ ((noreturn)) error(struct compile_state *state, struct triple *ptr, 
 	const char *fmt, ...)
 {
 	FILE *fp = state->errout;

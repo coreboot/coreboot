@@ -13,7 +13,6 @@ if CONFIG_CBFS
 	if CONFIG_USE_FAILOVER_IMAGE
 	else
 		initobject /src/lib/cbfs.o
-		initobject /src/console/vsprintf.o
 		initobject /src/lib/lzma.o
 	end
 end

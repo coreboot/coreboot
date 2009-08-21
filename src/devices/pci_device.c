@@ -747,7 +747,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 #if CONFIG_PCIX_PLUGIN_SUPPORT == 1
 	pos = pci_find_capability(dev, PCI_CAP_ID_PCIX);
 	if (pos) {
-		printk_debug("%s subbordinate bus PCI-X\n", dev_path(dev));
+		printk_debug("%s subordinate bus PCI-X\n", dev_path(dev));
 		return &default_pcix_ops_bus;
 	}
 #endif
@@ -761,7 +761,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		flags = pci_read_config16(dev, pos + PCI_CAP_FLAGS);
 		if ((flags >> 13) == 1) {
 			/* Host or Secondary Interface */
-			printk_debug("%s subbordinate bus Hypertransport\n",
+			printk_debug("%s subordinate bus Hypertransport\n",
 				     dev_path(dev));
 			return &default_ht_ops_bus;
 		}
@@ -776,11 +776,11 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		case PCI_EXP_TYPE_ROOT_PORT:
 		case PCI_EXP_TYPE_UPSTREAM:
 		case PCI_EXP_TYPE_DOWNSTREAM:
-			printk_debug("%s subbordinate bus PCI Express\n",
+			printk_debug("%s subordinate bus PCI Express\n",
 				     dev_path(dev));
 			return &default_pciexp_ops_bus;
 		case PCI_EXP_TYPE_PCI_BRIDGE:
-			printk_debug("%s subbordinate PCI\n", dev_path(dev));
+			printk_debug("%s subordinate PCI\n", dev_path(dev));
 			return &default_pci_ops_bus;
 		default:
 			break;

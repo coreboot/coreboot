@@ -18,17 +18,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ifeq ($(CONFIG_CPU_INTEL_SOCKET_PGA370),y)
-	obj-y += socket_PGA370.o
-	subdirs-y += ../model_6xx
-	subdirs-y += ../../x86/tsc
-	subdirs-y += ../../x86/mtrr
-	subdirs-y += ../../x86/fpu
-	subdirs-y += ../../x86/mmx
-	subdirs-y += ../../x86/sse
-	subdirs-y += ../../x86/lapic
-	subdirs-y += ../../x86/cache
-	subdirs-y += ../../x86/smm
-	subdirs-y += ../microcode
-endif
+obj-y += socket_PGA370.o
+subdirs-y += ../model_6xx
+subdirs-y += ../../x86/tsc
+subdirs-y += ../../x86/mtrr
+subdirs-y += ../../x86/fpu
+subdirs-y += ../../x86/mmx
+subdirs-y += ../../x86/sse
+subdirs-y += ../../x86/lapic
+subdirs-y += ../../x86/cache
+subdirs-y += ../../x86/smm
+subdirs-y += ../microcode
+
 

@@ -2,9 +2,8 @@
 # Therefore:
 # ONLY include Makefile.inc from socket directories!
 
-subdirs-y += speedstep
-subdirs-y += socket_mFCPGA478
-subdirs-y += socket_PGA370
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_MFCPGA478) += socket_mFCPGA478
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_PGA370) += socket_PGA370
 
 #socket_mPGA478
 #socket_mPGA479M

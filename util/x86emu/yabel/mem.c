@@ -12,21 +12,21 @@
  *****************************************************************************/
 
 #include <types.h>
-#ifndef CONFIG_COREBOOT_V2
+#ifndef COREBOOT_V2
 #include <cpu.h>
 #endif
 #include "debug.h"
 #include "device.h"
 #include "x86emu/x86emu.h"
 #include "biosemu.h"
-#ifdef CONFIG_COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "compat/time.h"
 #else
 #include <time.h>
 #endif
 
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 static u8 in_check = 0;	// to avoid recursion...
 u16 ebda_segment;
 u32 ebda_size;

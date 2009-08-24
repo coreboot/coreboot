@@ -37,7 +37,7 @@ X86EMU_INCLUDE += -I $(src)/util/x86emu
 #TODO: remove these, these are .h files from slof, to make the merge easier...
 X86EMU_INCLUDE += -I $(src)/util/x86emu/yabel/compat
 endif
-REALMODE_SRC    = x86.c x86_asm.S
+VM86_SRC    = vm86.c vm86_gdt.c 
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
 LIBX86EMU_SRC=$(patsubst %,x86emu/%,$(X86EMU_SRC)) $(BIOSEMU_SRC)
@@ -48,7 +48,7 @@ LIBX86EMU_SRC=$(patsubst %,x86emu/%,$(X86EMU_SRC)) $(patsubst %,yabel/%,$(BIOSEM
 endif
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_REALMODE),y)
-LIBX86EMU_SRC=$(REALMODE_SRC)
+LIBX86EMU_SRC=$(VM86_SRC)
 endif
 
 LIBX86EMU_OBJS = $(patsubst %.c,$(obj)/util/x86emu/%.o,$(LIBX86EMU_SRC))

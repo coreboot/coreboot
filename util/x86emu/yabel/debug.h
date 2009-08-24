@@ -20,7 +20,7 @@ extern u32 debug_flags;
 extern void x86emu_dump_xregs(void);
 
 /* printf is not available in coreboot... use printk */
-#ifdef CONFIG_COREBOOT_V2
+#ifdef COREBOOT_V2
 #include <console/console.h>
 #else
 #include <console.h>
@@ -73,9 +73,9 @@ static inline void set_ci(void) {};
 // set to enable tracing of JMPs in x86emu
 #define DEBUG_JMP 0x2000
 
-//#define CONFIG_DEBUG
-//#undef CONFIG_DEBUG
-#ifdef CONFIG_DEBUG
+//#define DEBUG
+//#undef DEBUG
+#ifdef DEBUG
 
 #define CHECK_DBG(_flag) if (debug_flags & _flag)
 
@@ -107,7 +107,7 @@ static inline void set_ci(void) {};
 #define DEBUG_PRINTF_DISK(_x...)
 #define DEBUG_PRINTF_PNP(_x...)
 
-#endif				//CONFIG_DEBUG
+#endif				//DEBUG
 
 void dump(u8 * addr, u32 len);
 

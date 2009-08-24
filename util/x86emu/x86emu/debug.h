@@ -40,8 +40,8 @@
 #ifndef __X86EMU_DEBUG_H
 #define __X86EMU_DEBUG_H
 
-//#define CONFIG_DEBUG 0
-//#undef CONFIG_DEBUG
+//#define DEBUG 0
+//#undef DEBUG
 /*---------------------- Macros and type definitions ----------------------*/
 
 /* checks to be enabled for "runtime" */
@@ -51,7 +51,7 @@
 #define CHECK_MEM_ACCESS_F              0x4 /*using regular linear pointer */
 #define CHECK_DATA_ACCESS_F             0x8 /*using segment:offset*/
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 # define CHECK_IP_FETCH()              	(M.x86.check & CHECK_IP_FETCH_F)
 # define CHECK_SP_ACCESS()             	(M.x86.check & CHECK_SP_ACCESS_F)
 # define CHECK_MEM_ACCESS()            	(M.x86.check & CHECK_MEM_ACCESS_F)
@@ -63,7 +63,7 @@
 # define CHECK_DATA_ACCESS()
 #endif
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 # define DEBUG_INSTRUMENT()    	(M.x86.debug & DEBUG_INSTRUMENT_F)
 # define DEBUG_DECODE()        	(M.x86.debug & DEBUG_DECODE_F)
 # define DEBUG_TRACE()         	(M.x86.debug & DEBUG_TRACE_F)
@@ -106,7 +106,7 @@
 # define DEBUG_DECODE_NOPRINT() 0
 #endif
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 
 # define DECODE_PRINTF(x)     	if (DEBUG_DECODE()) \
 									x86emu_decode_printf(x)
@@ -136,7 +136,7 @@
 # define SAVE_IP_CS(x,y)
 #endif
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 #define TRACE_REGS()                                   		\
 	if (DEBUG_DISASSEMBLE()) {                         		\
 		x86emu_just_disassemble();                        	\
@@ -147,7 +147,7 @@
 # define TRACE_REGS()
 #endif
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 # define SINGLE_STEP()		if (DEBUG_STEP()) x86emu_single_step()
 #else
 # define SINGLE_STEP()
@@ -157,7 +157,7 @@
 	TRACE_REGS();			\
 	SINGLE_STEP()
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 # define START_OF_INSTR()
 # define END_OF_INSTR()		EndOfTheInstructionProcedure: x86emu_end_instr();
 # define END_OF_INSTR_NO_TRACE()	x86emu_end_instr();
@@ -167,7 +167,7 @@
 # define END_OF_INSTR_NO_TRACE()
 #endif
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 # define  CALL_TRACE(u,v,w,x,s)                                 \
 	if (DEBUG_TRACECALLREGS())									\
 		x86emu_dump_regs();                                     \
@@ -189,7 +189,7 @@
 # define  JMP_TRACE(u,v,w,x,s)
 #endif
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 #define	DB(x)	x
 #else
 #define	DB(x)

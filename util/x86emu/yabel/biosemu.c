@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include <types.h>
-#ifndef CONFIG_COREBOOT_V2
+#ifndef COREBOOT_V2
 #include <cpu.h>
 #endif
 
@@ -22,7 +22,7 @@
 
 #include <x86emu/x86emu.h>
 #include <x86emu/regs.h>
-#ifdef CONFIG_COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "../x86emu/prim_ops.h"
 #else
 #include <x86emu/prim_ops.h>	// for push_word
@@ -35,7 +35,7 @@
 #include "device.h"
 #include "pmm.h"
 
-#ifdef CONFIG_COREBOOT_V2
+#ifdef COREBOOT_V2
 #include "compat/rtas.h"
 #else
 #include <rtas.h>
@@ -70,7 +70,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 {
 	u8 *rom_image;
 	int i = 0;
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	debug_flags = 0;//DEBUG_PRINT_INT10 | DEBUG_PNP | DEBUG_INTR | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;
 		// | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;
 		// | DEBUG_TRACE_X86EMU | DEBUG_JMP;
@@ -265,7 +265,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	CHECK_DBG(DEBUG_TRACE_X86EMU) {
 		X86EMU_trace_on();
 	} else {
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 		M.x86.debug |= DEBUG_SAVE_IP_CS_F;
 		M.x86.debug |= DEBUG_DECODE_F;
 		M.x86.debug |= DEBUG_DECODE_NOPRINT_F;
@@ -286,7 +286,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	 * some boot device status in AX (see PNP BIOS Spec Section 3.3
 	 */
 	DEBUG_PRINTF_CS_IP("Option ROM Exit Status: %04x\n", M.x86.R_AX);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	DEBUG_PRINTF("Exit Status Decode:\n");
 	if (M.x86.R_AX & 0x100) {	// bit 8
 		DEBUG_PRINTF

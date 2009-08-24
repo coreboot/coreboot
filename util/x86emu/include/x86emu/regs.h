@@ -279,7 +279,7 @@ typedef struct {
     u32                         mode;
     volatile int                intr;   /* mask of pending interrupts */
     volatile int                         debug;
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     int                         check;
     u16                         saved_ip;
     u16                         saved_cs;

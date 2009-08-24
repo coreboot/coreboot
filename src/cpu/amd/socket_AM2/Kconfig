@@ -1,0 +1,26 @@
+config CPU_AMD_SOCKET_AM2
+	bool
+	default false
+
+config CPU_SOCKET_TYPE
+	hex
+	default 0x11
+	depends on CPU_AMD_SOCKET_AM2
+
+config K8_REV_F_SUPPORT
+	hex
+	default 1
+	depends on CPU_AMD_SOCKET_AM2
+
+#Opteron K8 1G HT Support
+config K8_HT_FREQ_1G_SUPPORT
+	hex
+	default 1
+	depends on CPU_AMD_SOCKET_AM2
+
+#DDR2 and REG
+config DIMM_SUPPORT
+	hex
+	default 0x0004
+	depends on CPU_AMD_SOCKET_AM2
+

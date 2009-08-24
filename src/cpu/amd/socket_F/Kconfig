@@ -29,4 +29,3 @@ config CPU_SOCKET_TYPE
 	default 0x10
 	depends on CPU_AMD_SOCKET_F
 
-source src/cpu/amd/model_fxx/Kconfig

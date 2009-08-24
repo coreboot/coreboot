@@ -1,0 +1,1 @@
+obj-y += microcode.o

@@ -149,8 +149,11 @@ u32 mctGetLogicalCPUID(u32 Node)
 	case 0x10023:
 		ret = AMD_DR_B3;
 		break;
-	case 0x10062:
+	case 0x10042:
 		ret = AMD_RB_C2;
+		break;
+	case 0x10062:
+		ret = AMD_DA_C2;
 		break;
 	default:
 		/* FIXME: mabe we should die() here. */

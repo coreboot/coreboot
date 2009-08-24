@@ -41,6 +41,7 @@
 #define	AMD_DR_BA	0x00400000	/* Barcelona BA */
 #define	AMD_DR_B3	0x00800000	/* Barcelona B3 */
 #define	AMD_RB_C2	0x01000000	/* Shanghai C2 */
+#define	AMD_DA_C2	0x02000000	/* XXXX C2 */
 
 /*
  * Groups - Create as many as you wish, from the above public values

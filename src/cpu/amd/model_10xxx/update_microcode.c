@@ -44,6 +44,7 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
  * 00100F2Ah (DR-BA)     1020h                  01000096h
  * 00100F22h (DR-B2)     1022h                  01000095h
  * 00100F23h (DR-B3)     1022h                  01000095h
+ * 00100F42h (RB-C2)     1041h                  01000086h
  * 00100F62h (DA-C2)     1062h                  0100009Fh
  */
 
@@ -67,6 +68,7 @@ static u32 get_equivalent_processor_rev_id(u32 orig_id) {
 		0x100f2A, 0x1020,
 		0x100f22, 0x1022,
 		0x100f23, 0x1022,
+		0x100f42, 0x1041,
 		0x100f62, 0x1062,
 	};
 

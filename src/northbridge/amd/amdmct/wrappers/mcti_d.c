@@ -394,7 +394,7 @@ void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 
 void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
-	if (pDCTstatA->LogicalCPUID & AMD_RB_C2) {
+	if (pDCTstatA->LogicalCPUID & (AMD_RB_C2 | AMD_DA_C2)) {
 		vErrata350(pMCTstat, pDCTstatA);
 	}
 }

@@ -203,6 +203,9 @@ static int parse_header(void *addr, int len)
 		struct cb_record *rec = (struct cb_record *)ptr;
 
 		switch (rec->tag) {
+		case CB_TAG_FORWARD:
+			return parse_header((void *)(unsigned long)((struct cb_forward *)rec)->forward, 1);
+			break;
 		case CB_TAG_MEMORY:
 			parse_memory(ptr);
 			break;

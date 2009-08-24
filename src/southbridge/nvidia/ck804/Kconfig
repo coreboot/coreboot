@@ -1,0 +1,3 @@
+config SOUTHBRIDGE_NVIDIA_CK804
+	bool
+	default n

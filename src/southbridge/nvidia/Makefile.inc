@@ -1,3 +1,3 @@
-subdirs-y += ck804
-subdirs-y += mcp55
+subdirs-$(CONFIG_SOUTHBRIDGE_NVIDIA_CK804) += ck804
+subdirs-$(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55) += mcp55
 

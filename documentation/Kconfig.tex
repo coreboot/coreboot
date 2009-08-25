@@ -21,8 +21,8 @@ Kconfig files use the source command to include subdirectories. In most cases, s
 There is only one Makefile, at the top level. All other makefiles are included as Makefile.inc. All the next-level Makefile.inc files are selected in the top level Makefile. Directories that are platform-independent are in BUILD-y; platform-dependent (e.g. Makefile.inc's that depend on architecture) are included in PLATFORM-y.
 
 Make is not recursive. There is only one make process.
-\subsection{subdir usage}
-Further includes of Makefile.inc, if needed, are done via subdir-y commands. As in Linux, the subdir can be conditional or unconditional. Conditional includes are done via subdir-\$(CONFIG\_VARIABLE) usage; unconditional are done via subdir-y.
+\subsection{subdirs usage}
+Further includes of Makefile.inc, if needed, are done via subdirs-y commands. As in Linux, the subdirs can be conditional or unconditional. Conditional includes are done via subdirs-\$(CONFIG\_VARIABLE) usage; unconditional are done via subdirs-y.
 
 We define the common rules for which variation to use below.
 \subsection{object file specification}

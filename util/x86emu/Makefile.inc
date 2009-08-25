@@ -18,9 +18,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-subdir-$(CONFIG_PCI_OPTION_ROM_RUN_X86EMU) += x86emu
+subdirs-$(CONFIG_PCI_OPTION_ROM_RUN_X86EMU) += x86emu
 obj-$(CONFIG_PCI_OPTION_ROM_RUN_X86EMU) += biosemu.c
-subdir-$(CONFIG_PCI_OPTION_ROM_RUN_X86EMU) += pcbios
+subdirs-$(CONFIG_PCI_OPTION_ROM_RUN_X86EMU) += pcbios
 
 obj-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86.o
 obj-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += x86_asm.o

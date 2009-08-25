@@ -2,6 +2,7 @@ obj-y += socket_F.o
 subdirs-y += ../model_fxx
 subdirs-y += ../dualcore
 subdirs-y += ../mtrr
+subdirs-y += ../microcode
 subdirs-y += ../../x86/tsc
 subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/fpu

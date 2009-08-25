@@ -5,7 +5,7 @@ subdirs-y += init
 subdirs-y += lib
 subdirs-y += smp
 
-obj-y += ../../option_table.o
+obj-$(CONFIG_HAVE_OPTION_TABLE) += ../../option_table.o
 
 ifdef POST_EVALUATION
 BOOTBLOCK_SIZE=65536

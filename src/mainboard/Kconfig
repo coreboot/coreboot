@@ -97,8 +97,138 @@ endchoice
 
 config MAINBOARD_VENDOR
 	string
+	default "A-Trend"
+	depends on VENDOR_ATREND
+
+config MAINBOARD_VENDOR
+	string
+	default "Abit"
+	depends on VENDOR_ABIT
+
+config MAINBOARD_VENDOR
+	string
+	default "Advantech"
+	depends on VENDOR_ADVANTECH
+
+config MAINBOARD_VENDOR
+	string
+	default "agami"
+	depends on VENDOR_AGAMI
+
+config MAINBOARD_VENDOR
+	string
+	default "AMD"
+	depends on VENDOR_AMD
+
+config MAINBOARD_VENDOR
+	string
+	default "Arima"
+	depends on VENDOR_ARIMA
+
+config MAINBOARD_VENDOR
+	string
+	default "Artec Group"
+	depends on VENDOR_ARTEC
+
+config MAINBOARD_VENDOR
+	string
+	default "ASI"
+	depends on VENDOR_ASI
+
+config MAINBOARD_VENDOR
+	string
+	default "ASUS"
+	depends on VENDOR_ASUS
+
+config MAINBOARD_VENDOR
+	string
+	default "AXUS"
+	depends on VENDOR_AXUS
+
+config MAINBOARD_VENDOR
+	string
+	default "AZZA"
+	depends on VENDOR_AZZA
+
+config MAINBOARD_VENDOR
+	string
+	default "BCOM"
+	depends on VENDOR_BCOM
+
+config MAINBOARD_VENDOR
+	string
+	default "Biostar"
+	depends on VENDOR_BIOSTAR
+
+config MAINBOARD_VENDOR
+	string
+	default "Broadcom"
+	depends on VENDOR_BROADCOM
+
+config MAINBOARD_VENDOR
+	string
+	default "Compaq"
+	depends on VENDOR_COMPAQ
+
+config MAINBOARD_VENDOR
+	string
+	default "Dell"
+	depends on VENDOR_DELL
+
+config MAINBOARD_VENDOR
+	string
+	default "DIGITAL-LOGIC"
+	depends on VENDOR_DIGITALLOGIC
+
+config MAINBOARD_VENDOR
+	string
+	default "EagleLion"
+	depends on VENDOR_EAGLELION
+
+config MAINBOARD_VENDOR
+	string
+	default "Embedded Planet"
+	depends on VENDOR_EMBEDDEDPLANET
+
+config MAINBOARD_VENDOR
+	string
 	default "Emulation"
 	depends on VENDOR_EMULATION
+
+config MAINBOARD_VENDOR
+	string
+	default "GIGABYTE"
+	depends on VENDOR_GIGABYTE
+
+config MAINBOARD_VENDOR
+	string
+	default "HP"
+	depends on VENDOR_HP
+
+config MAINBOARD_VENDOR
+	string
+	default "IBM"
+	depends on VENDOR_IBM
+
+config MAINBOARD_VENDOR
+	string
+	default "IEI"
+	depends on VENDOR_IEI
+
+config MAINBOARD_VENDOR
+	string
+	default "Intel"
+	depends on VENDOR_INTEL
+
+config MAINBOARD_VENDOR
+	string
+	default "IWILL"
+	depends on VENDOR_IWILL
+
+config MAINBOARD_VENDOR
+	string
+	default "Jetway"
+	depends on VENDOR_JETWAY
 
 config MAINBOARD_VENDOR
 	string
@@ -107,13 +237,83 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_VENDOR
 	string
-	default "VIA"
-	depends on VENDOR_VIA
+	default "Lippert"
+	depends on VENDOR_LIPPERT
 
 config MAINBOARD_VENDOR
 	string
-	default "AMD"
-	depends on VENDOR_AMD
+	default "Motorola"
+	depends on VENDOR_MOTOROLA
+
+config MAINBOARD_VENDOR
+	string
+	default "MSI"
+	depends on VENDOR_MSI
+
+config MAINBOARD_VENDOR
+	string
+	default "NEC"
+	depends on VENDOR_NEC
+
+config MAINBOARD_VENDOR
+	string
+	default "Newisys"
+	depends on VENDOR_NEWISYS
+
+config MAINBOARD_VENDOR
+	string
+	default "NVIDIA"
+	depends on VENDOR_NVIDIA
+
+config MAINBOARD_VENDOR
+	string
+	default "OLPC"
+	depends on VENDOR_OLPC
+
+config MAINBOARD_VENDOR
+	string
+	default "PC Engines"
+	depends on VENDOR_PCENGINES
+
+config MAINBOARD_VENDOR
+	string
+	default "RCA"
+	depends on VENDOR_RCA
+
+config MAINBOARD_VENDOR
+	string
+	default "Sun"
+	depends on VENDOR_SUNW
+
+config MAINBOARD_VENDOR
+	string
+	default "Supermicro"
+	depends on VENDOR_SUPERMICRO
+
+config MAINBOARD_VENDOR
+	string
+	default "Technexion"
+	depends on VENDOR_TECHNEXION
+
+config MAINBOARD_VENDOR
+	string
+	default "Thomson"
+	depends on VENDOR_THOMSON
+
+config MAINBOARD_VENDOR
+	string
+	default "Total Impact"
+	depends on VENDOR_TOTALIMPACT
+
+config MAINBOARD_VENDOR
+	string
+	default "Tyan"
+	depends on VENDOR_TYAN
+
+config MAINBOARD_VENDOR
+	string
+	default "VIA"
+	depends on VENDOR_VIA
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex

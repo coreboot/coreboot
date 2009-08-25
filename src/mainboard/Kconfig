@@ -6,223 +6,92 @@ choice
 
 config VENDOR_ATREND
 	bool "A-Trend"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_ABIT
-	bool "ABIT"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "Abit"
 config VENDOR_ADVANTECH
 	bool "Advantech"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_AGAMI
-	bool "Agami"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "agami"
 config VENDOR_AMD
 	bool "AMD"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_ARIMA
 	bool "Arima"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_ARTEC
 	bool "Artec Group"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_ASI
 	bool "ASI"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_ASUS
 	bool "ASUS"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_AXUS
 	bool "AXUS"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_AZZA
-	bool "Azza"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "AZZA"
 config VENDOR_BCOM
 	bool "BCOM"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_BIOSTAR
 	bool "Biostar"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_BROADCOM
 	bool "Broadcom"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_COMPAQ
 	bool "Compaq"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_DELL
-	bool "DELL"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "Dell"
 config VENDOR_DIGITALLOGIC
-	bool "Digital Logic"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "DIGITAL-LOGIC"
 config VENDOR_EAGLELION
-	bool "Eagle Lion"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "EagleLion"
 config VENDOR_EMBEDDEDPLANET
 	bool "Embedded Planet"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_EMULATION
 	bool "Emulation"
-	help
-	  Select this option for various system emulators, such as QEMU.
-
 config VENDOR_GIGABYTE
-	bool "Gigabyte"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "GIGABYTE"
 config VENDOR_HP
 	bool "HP"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_IBM
 	bool "IBM"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_IEI
 	bool "IEI"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_INTEL
 	bool "Intel"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_IWILL
-	bool "Iwill"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "IWILL"
 config VENDOR_JETWAY
 	bool "Jetway"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_KONTRON
 	bool "Kontron"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_LIPPERT
 	bool "Lippert"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_MOTOROLA
 	bool "Motorola"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_MSI
 	bool "MSI"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_NEC
 	bool "NEC"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_NEWISYS
 	bool "Newisys"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_NVIDIA
-	bool "NVidia"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "NVIDIA"
 config VENDOR_OLPC
 	bool "OLPC"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_PCENGINES
 	bool "PC Engines"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_RCA
 	bool "RCA"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_SUNW
-	bool "SUN Microsystems"
-	help
-	  Select this option for systems from the vendor.
-
+	bool "Sun"
 config VENDOR_SUPERMICRO
 	bool "Supermicro"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_TECHNEXION
 	bool "Technexion"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_THOMSON
 	bool "Thomson"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_TOTALIMPACT
 	bool "Total Impact"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_TYAN
 	bool "Tyan"
-	help
-	  Select this option for systems from the vendor.
-
 config VENDOR_VIA
 	bool "VIA"
-	help
-	  Select this option for systems from the vendor.
 
 endchoice
 

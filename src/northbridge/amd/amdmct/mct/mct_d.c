@@ -352,7 +352,7 @@ static void DQSTiming_D(struct MCTStatStruc *pMCTstat,
 	nv_DQSTrainCTL = 1;
 
 	print_t("DQSTiming_D: mct_BeforeDQSTrain_D:\n");
-	mct_BeforeDQSTrain_D(pMCTstat, pDCTstatA);;
+	mct_BeforeDQSTrain_D(pMCTstat, pDCTstatA);
 	phyAssistedMemFnceTraining(pMCTstat, pDCTstatA);
 
 	if (nv_DQSTrainCTL) {
@@ -982,8 +982,8 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 		if ( mctGet_NVbits(NV_MCTUSRTMGMODE) == 2)
 			pDCTstat->Speed = mctGet_NVbits(NV_MemCkVal) + 1;
 
-		mct_AfterGetCLT(pMCTstat, pDCTstat, dct);
 	}
+	mct_AfterGetCLT(pMCTstat, pDCTstat, dct);
 
 	/* Gather all DIMM mini-max values for cycle timing data */
 	Rows = 0;
@@ -1001,7 +1001,7 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 	for ( i = 0; i< MAX_DIMMS_SUPPORTED; i++) {
 		LDIMM = i >> 1;
 		if (pDCTstat->DIMMValid & (1 << i)) {
-			smbaddr = Get_DIMMAddress_D(pDCTstat, i);
+			smbaddr = Get_DIMMAddress_D(pDCTstat, dct + i);
 			byte = mctRead_SPD(smbaddr, SPD_ROWSZ);
 			if (Rows < byte)
 				Rows = byte;	/* keep track of largest row sz */

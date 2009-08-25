@@ -6,6 +6,6 @@ config XIP_ROM_BASE
 	hex
 	default 0xfffe0000
 
-config XIP_ROM_BASE
+config XIP_ROM_SIZE
 	hex
 	default 0x2000

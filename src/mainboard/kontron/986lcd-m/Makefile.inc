@@ -1,6 +1,6 @@
 ##
 ## This file is part of the coreboot project.
-## 
+##
 ## Copyright (C) 2007-2008 coresystems GmbH
 ##
 ## This program is free software; you can redistribute it and/or
@@ -21,21 +21,21 @@
 
 ##
 ## This mainboard requires DCACHE_AS_RAM enabled. It won't work without.
-## 
+##
 
-driver-y +=  mainboard.o
-driver-y +=  rtl8168.o
+driver-y += mainboard.o
+driver-y += rtl8168.o
 
 #obj-y += ../../../southbridge/intel/i82801gx/i82801gx_reset.c
 obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
 obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  dsdt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  acpi_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  fadt.o
+obj-$(CONFIG_HAVE_ACPI_TABLES) += dsdt.o
+obj-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.o
+obj-$(CONFIG_HAVE_ACPI_TABLES) += fadt.o
 
 smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o
 
-# This is part of the conversion to init-obj and away from included code. 
+# This is part of the conversion to init-obj and away from included code.
 
 initobj-y += crt0.o
 # FIXME in $(top)/Makefile

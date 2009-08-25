@@ -1,15 +1,15 @@
 config BOARD_VIA_VT8454C
-        bool "vt8454c"
-        select ARCH_X86
-        select CPU_VIA_C7
-        select NORTHBRIDGE_VIA_CX700
-#       select SOUTHBRIDGE_INTEL_I82801GX
-        select SUPERIO_VIA_VT1211
-        select PIRQ_TABLE
+	bool "VT8454c"
+	select ARCH_X86
+	select CPU_VIA_C7
+	select NORTHBRIDGE_VIA_CX700
+#	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_VIA_VT1211
+	select PIRQ_TABLE
 #	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
-        help
-          Kontron 986LCD-M Series mainboards
+	help
+	  VIA VT8454C mainboard.
 
 config MAINBOARD_DIR
 	string

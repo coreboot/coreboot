@@ -29,5 +29,4 @@ config HAVE_HIGH_TABLES
 	bool
 	default y
 
-
 source src/northbridge/amd/amdk8/root_complex/Kconfig

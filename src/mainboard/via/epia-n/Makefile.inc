@@ -21,8 +21,8 @@
 
 initobj-y += crt0.o
 obj-y += mainboard.o
-obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o 
-obj-$(CONFIG_HAVE_MP_TABLE) += object mptable.o 
+obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
 
 obj-$(CONFIG_HAVE_ACPI_TABLES) += dsdt.o
 obj-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.o

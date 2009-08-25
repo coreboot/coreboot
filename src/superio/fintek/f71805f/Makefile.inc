@@ -19,5 +19,5 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_FINTEK_F71805F) +=  superio.o
+obj-$(CONFIG_SUPERIO_FINTEK_F71805F) += superio.o
 

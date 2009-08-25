@@ -17,6 +17,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
+
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb.o
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb_isa.o
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb_ide.o

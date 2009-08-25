@@ -1,4 +1,3 @@
-
 menu "Mainboard"
 
 choice
@@ -228,29 +227,29 @@ config VENDOR_VIA
 endchoice
 
 config MAINBOARD_VENDOR
-        string
-        default "EMULATION"
-        depends on VENDOR_EMULATION
+	string
+	default "Emulation"
+	depends on VENDOR_EMULATION
 
 config MAINBOARD_VENDOR
-        string
-        default "KONTRON"
-        depends on VENDOR_KONTRON
+	string
+	default "Kontron"
+	depends on VENDOR_KONTRON
 
 config MAINBOARD_VENDOR
-        string
-        default "VIA"
-        depends on VENDOR_VIA
+	string
+	default "VIA"
+	depends on VENDOR_VIA
 
 config MAINBOARD_VENDOR
-        string
-        default "AMD"
-        depends on VENDOR_AMD
+	string
+	default "AMD"
+	depends on VENDOR_AMD
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1019
-        depends on VENDOR_VIA
+	depends on VENDOR_VIA
 
 source "src/mainboard/a-trend/Kconfig"
 source "src/mainboard/abit/Kconfig"

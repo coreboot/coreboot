@@ -1,5 +1,5 @@
 config ARCH_POWERPC
-	boolean
+	bool
 	help
 	  This option is used to set the architecture of a mainboard.
 	  It is usually set in mainboard/*/Kconfig.

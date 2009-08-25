@@ -25,12 +25,12 @@
 ##	smmobject smihandler.o
 ##
 ##	makerule smm.o
-##		depends	"$(SMM-OBJECTS) $(TOP)/src/console/printk.o $(TOP)/src/console/vtxprintf.o $(LIBGCC_FILE_NAME)" 
+##		depends	"$(SMM-OBJECTS) $(TOP)/src/console/printk.o $(TOP)/src/console/vtxprintf.o $(LIBGCC_FILE_NAME)"
 ##		action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ $^"
 ##	end
 ##
 ##	makerule smm
-##		depends	"smm.o $(TOP)/src/cpu/x86/smm/smm.ld ldoptions" 
+##		depends	"smm.o $(TOP)/src/cpu/x86/smm/smm.ld ldoptions"
 ##		action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o smm.elf -T $(TOP)/src/cpu/x86/smm/smm.ld smm.o"
 ##		action 	"$(CONFIG_CROSS_COMPILE)nm -n smm.elf | sort > smm.map"
 ##		action  "$(OBJCOPY) -O binary smm.elf smm"

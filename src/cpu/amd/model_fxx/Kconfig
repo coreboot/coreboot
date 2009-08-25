@@ -13,4 +13,3 @@ config CPU_ADDR_BITS
 	default 40
 	depends on CPU_AMD_SOCKET_F
 
-

@@ -1,6 +1,3 @@
-#
-#
-#
 
 ifdef POST_EVALUATION
 
@@ -35,5 +32,4 @@ $(obj)/util/cbfstool/cbfstool: $(obj)/util/cbfstool $(obj)/util/cbfstool/tools/c
 endif
 
 include $(top)/util/cbfstool/tools/Makefile.inc
-
 

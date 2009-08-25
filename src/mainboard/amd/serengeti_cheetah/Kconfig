@@ -3,7 +3,7 @@ choice
 	depends on VENDOR_AMD
 
 config BOARD_AMD_SERENGETI_CHEETAH
-	bool "SERENGETI_CHEETAH"
+	bool "Serengeti Cheetah"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F
@@ -15,7 +15,7 @@ config BOARD_AMD_SERENGETI_CHEETAH
 	select PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
 	help
-	AMD Serengeti Series mainboards
+	 AMD Serengeti Cheetah mainboard.
 endchoice
 
 config MAINBOARD_DIR
@@ -27,12 +27,12 @@ config USE_DCACHE_RAM
 	int
 	default 1
 	depends on BOARD_AMD_SERENGETI_CHEETAH
-	
+
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
 	depends on BOARD_AMD_SERENGETI_CHEETAH
-	
+
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
@@ -70,7 +70,7 @@ config LB_CKS_RANGE_END
 
 config LB_CKS_LOC
 	int
-        default 123
+	default 123
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config MAINBOARD_PART_NUMBER
@@ -80,7 +80,7 @@ config MAINBOARD_PART_NUMBER
 
 config PCI_64BIT_PREF_MEM
 	int
-        default 0
+	default 0
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config USE_DCACHE_RAM

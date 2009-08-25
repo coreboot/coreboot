@@ -30,4 +30,3 @@ subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 
-

@@ -49,12 +49,12 @@ config PCI_BUS_SEGN_BITS
 	default 0
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-        hex
-        default 0
+	hex
+	default 0
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
-        hex
-        default 0
+	hex
+	default 0
 
 config CPU_ADDR_BITS
 	int
@@ -214,9 +214,10 @@ config IOAPIC
 	bool
 	default n
 
-menu "Drivers"
-
-endmenu
+# TODO
+# menu "Drivers"
+# 
+# endmenu
 
 menu "Payload"
 
@@ -242,13 +243,11 @@ config VGA_BIOS
 	bool "Add a VGA BIOS image"
 	depends on PAYLOAD_ELF
 	help
-	  Select this option if you have a VGA BIOS image that you would 
+	  Select this option if you have a VGA BIOS image that you would
 	  like to add to your ROM.
 
 	  You will be able to specify the location and file name of the
 	  image later.
-
-
 
 config PAYLOAD_NONE
 	bool "No payload"
@@ -257,7 +256,7 @@ config PAYLOAD_NONE
 	  ROM image for a certain mainboard, i.e. a coreboot ROM image
 	  which does not yet contain a payload.
 
-	  For such an image to be useful, you have to use the 'lar' tool
+	  For such an image to be useful, you have to use the 'cbfs' tool
 	  to add a payload to the ROM image later.
 
 endchoice
@@ -267,7 +266,7 @@ config FALLBACK_PAYLOAD_FILE
 	depends on PAYLOAD_ELF
 	default "payload.elf"
 	help
-	  The path and filename of the ELF executable file to use as fallback payload.
+	  The path and filename of the ELF executable file to use as payload.
 
 config FALLBACK_VGA_BIOS_FILE
 	string "VGA BIOS path and filename"
@@ -286,9 +285,9 @@ config FALLBACK_VGA_BIOS_ID
 endmenu
 
 config GDB_STUB
-	bool "Enable GDB debugging support"
+	bool "GDB debugging support"
 	default y
 	help
-	  If this is set, then you will be able to set breakpoints for gdb debugging. 
-	  See: src/arch/i386/lib/c_start.S
+	  If enabled, you will be able to set breakpoints for gdb debugging.
+	  See src/arch/i386/lib/c_start.S for details.
 

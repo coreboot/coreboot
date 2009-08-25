@@ -19,5 +19,5 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_ITE_IT8716F) +=  superio.o
+obj-$(CONFIG_SUPERIO_ITE_IT8716F) += superio.o
 

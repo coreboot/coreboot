@@ -1,4 +1,3 @@
-
 obj-y += boot.o
 obj-y += coreboot_table.o
 obj-$(CONFIG_MULTIBOOT) += multiboot.o

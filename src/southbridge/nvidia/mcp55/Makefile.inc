@@ -10,6 +10,7 @@ driver-y += mcp55_sata.o
 driver-y += mcp55_smbus.o
 driver-y += mcp55_usb2.o
 driver-y += mcp55_usb.o
+
 driver-$(CONFIG_HAVE_ACPI_TABLES) += mcp55_fadt.o
 
 obj-y += mcp55_reset.o

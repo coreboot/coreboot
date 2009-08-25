@@ -1,3 +1,3 @@
 config SOUTHBRIDGE_INTEL_I82371EB
-        boolean
+	bool
 

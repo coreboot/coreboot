@@ -1,4 +1,4 @@
 config CPU_EMULATION_QEMU_X86
-        bool
-        default false
+	bool
+	default false
 

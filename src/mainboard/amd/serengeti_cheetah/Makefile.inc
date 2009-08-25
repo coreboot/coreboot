@@ -1,6 +1,6 @@
 ##
 ## This file is part of the coreboot project.
-## 
+##
 ## Copyright (C) 2007-2008 coresystems GmbH
 ##
 ## This program is free software; you can redistribute it and/or
@@ -19,27 +19,23 @@
 ## MA 02110-1301 USA
 ##
 
-##
-## This mainboard requires DCACHE_AS_RAM enabled. It won't work without.
-## 
+driver-y += mainboard.o
 
-driver-y +=  mainboard.o
-
-#needed by irq_tables and mptable and acpi_tables
+# Needed by irq_tables and mptable and acpi_tables.
 obj-y += get_bus_conf.o
 obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
 obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  dsdt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  acpi_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  fadt.o
+obj-$(CONFIG_HAVE_ACPI_TABLES) += dsdt.o
+obj-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.o
+obj-$(CONFIG_HAVE_ACPI_TABLES) += fadt.o
 
-#./ssdt.o is in northbridge/amd/amdk8/Config.lb
-obj-$(CONFIG_ACPI_SSDTX_NUM) +=  ssdt2.o
-obj-$(CONFIG_ACPI_SSDTX_NUM) +=  ssdt3.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  ssdt4.o
+# ./ssdt.o is in northbridge/amd/amdk8/Config.lb
+obj-$(CONFIG_ACPI_SSDTX_NUM) += ssdt2.o
+obj-$(CONFIG_ACPI_SSDTX_NUM) += ssdt3.o
+obj-$(CONFIG_HAVE_ACPI_TABLES) += ssdt4.o
 driver-y += ../../../drivers/i2c/i2cmux/i2cmux.o
 
-# This is part of the conversion to init-obj and away from included code. 
+# This is part of the conversion to init-obj and away from included code.
 
 initobj-y += crt0.o
 # FIXME in $(top)/Makefile
@@ -79,7 +75,7 @@ $(obj)/ssdt3.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci3.asl"
 	iasl -p $(CURDIR)/pci3 -tc $(CONFIG_MAINBOARD)/
 	perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex
 	mv pci3.hex ssdt3.c
-           
+
 $(obj)/ssdt4.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci4.asl"
 	iasl -p $(CURDIR)/pci4 -tc $(CONFIG_MAINBOARD)/dx/pci4.asl
 	perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex

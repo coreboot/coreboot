@@ -24,30 +24,30 @@ config VGA_ROM_RUN
 	bool
 	help
 	  Execute PCI/AGP option ROMs if available. This is required to
-	  enable PCI/AGP VGA plugin cards. 
+	  enable PCI/AGP VGA plugin cards.
 
 choice
-        prompt "Execute PCI Option ROMs"
-        default  PCI_OPTION_ROM_RUN_REALMODE
-        help
-          Execute PCI/AGP option ROMs if available. You can choose to
-          execute PCI option ROMs natively (32bit x86 system required),
-          in an emulator (x86emu), or ignore option ROM execution.
+	prompt "Execute PCI option ROMs"
+	default PCI_OPTION_ROM_RUN_REALMODE
+	help
+	  Execute PCI/AGP option ROMs if available. You can choose to
+	  execute PCI option ROMs natively (32bit x86 system required),
+	  in an emulator (x86emu), or ignore option ROM execution.
 
-	config PCI_OPTION_ROM_RUN_REALMODE
-		prompt "Run VGA ROMs"
-		bool
-		select VGA_ROM_RUN
-		help
-	  	Execute PCI/AGP option ROMs if available. This is required to
-	  	enable PCI/AGP VGA plugin cards. 
+config PCI_OPTION_ROM_RUN_REALMODE
+	prompt "Run VGA ROMs"
+	bool
+	select VGA_ROM_RUN
+	help
+	  Execute PCI/AGP option ROMs if available. This is required to
+	  enable PCI/AGP VGA plugin cards.
 
-	config NO_RUN
-		prompt "DO NOT Run VGA ROMs"
-		bool
-		help
-	  	Execute PCI/AGP option ROMs if available. This is required to
-	  	enable PCI/AGP VGA plugin cards. 
+config NO_RUN
+	prompt "Do NOT run VGA ROMs"
+	bool
+	help
+	  Do not execute PCI/AGP option ROMs.
 
 endchoice
+
 endmenu

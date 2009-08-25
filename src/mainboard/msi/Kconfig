@@ -32,6 +32,7 @@ config BOARD_MSI_MS6178
 	select PIRQ_TABLE
 	help
 	  MSI MS-6178 mainboard.
+
 endchoice
 
 config MAINBOARD_DIR

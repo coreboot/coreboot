@@ -20,5 +20,5 @@
 ## 
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_WINBOND_W83627EHG) +=  superio.o
+obj-$(CONFIG_SUPERIO_WINBOND_W83627EHG) += superio.o
 

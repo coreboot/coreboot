@@ -19,4 +19,4 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_WINBOND_W83697HF) +=  superio.o
+obj-$(CONFIG_SUPERIO_WINBOND_W83697HF) += superio.o

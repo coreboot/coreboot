@@ -1,14 +1,14 @@
 config BOARD_VIA_EPIA_N
-        bool "via epia-n"
-        select ARCH_X86
-        select CPU_VIA_C3
-        select NORTHBRIDGE_VIA_CN400
+	bool "EPIA-N"
+	select ARCH_X86
+	select CPU_VIA_C3
+	select NORTHBRIDGE_VIA_CN400
 	select SOUTHBRIDGE_VIA_VT8237R
-        select SUPERIO_WINBOND_W83697HF
-        select PIRQ_TABLE
+	select SUPERIO_WINBOND_W83697HF
+	select PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
-        help
-          VIA Epia-n mainboards
+	help
+	  VIA EPIA-N mainboard.
 
 config MAINBOARD_DIR
 	string

@@ -1,5 +1,5 @@
 config ARCH_X86
-	boolean
+	bool
 	help
 	  This option is used to set the architecture of a mainboard.
 	  It is usually set in mainboard/*/Kconfig.
@@ -12,7 +12,7 @@ config ARCH
 	  This is the name of the respective subdirectory in arch/.
 
 config ROMBASE
-	hex 
+	hex
 	default 0xffc00000 if COREBOOT_ROMSIZE_KB_4096
 	default 0xffe00000 if COREBOOT_ROMSIZE_KB_2048
 	default 0xfff00000 if COREBOOT_ROMSIZE_KB_1024
@@ -50,13 +50,11 @@ config STACK_SIZE
 	hex
 	default 0x8000
 
-
-menu "Misc Options"
+menu "Misc options"
 
 config MAX_REBOOT_CNT
-	int "Maximum Reboot Count"
+	int "Maximum reboot count"
 	default 3
 
 endmenu
-
 

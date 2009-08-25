@@ -19,5 +19,5 @@
 ##
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_SMSC_FDC37M60X) +=  superio.o
+obj-$(CONFIG_SUPERIO_SMSC_FDC37M60X) += superio.o
 

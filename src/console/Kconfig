@@ -1,27 +1,28 @@
-menu "Console Options"
+menu "Console options"
 
 config SERIAL_CONSOLE
 	bool "See output on the serial port console"
 	default y
 
 config TTYS0_BASE
-	hex "I/O base for the serial port (default 0x3f8)"
+	hex "I/O base for the serial port"
 	depends on SERIAL_CONSOLE
 	default 0x3f8
 
 config SERIAL_SET_SPEED
-	bool "Override the serial console baud rate"
+	bool "Override the serial console BAUD rate"
 	default y
 	depends on SERIAL_CONSOLE
 
 config TTYS0_BAUD
-	int "Serial console baud rate (default 115200)"
+	int "Serial console BAUD rate"
 	depends on SERIAL_SET_SPEED
 	default 115200
 
 config USBDEBUG_DIRECT
-	bool "Support a USB debug dongle. Not supported on all chipsets. FIX DEPENDENCY HERE"
+	bool "USB debug dongle support. Not supported on all chipsets."
 	default n
+	# TODO: FIX DEPENDENCY HERE
 
 config CONSOLE_VGA
 	bool

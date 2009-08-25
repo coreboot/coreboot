@@ -19,4 +19,4 @@
 ## 
 
 #config chip.h
-obj-$(CONFIG_SUPERIO_SMSC_LPC47N217) +=  superio.o
+obj-$(CONFIG_SUPERIO_SMSC_LPC47N217) += superio.o

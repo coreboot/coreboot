@@ -85,8 +85,8 @@ config LOGICAL_CPUS
 	default 1
 
 config PCI_ROM_RUN
-	int
-	default 0
+	bool
+	default n
 
 config HT_CHAIN_UNITID_BASE
 	int

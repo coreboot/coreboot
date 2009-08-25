@@ -189,7 +189,7 @@ config CONSOLE_VGA
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config PCI_ROM_RUN
-	int
-	default 1
+	bool
+	default y
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 

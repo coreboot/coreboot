@@ -8,8 +8,8 @@ config CPU_SOCKET_TYPE
 	depends on CPU_AMD_SOCKET_AM2
 
 config K8_REV_F_SUPPORT
-	hex
-	default 1
+	bool
+	default y
 	depends on CPU_AMD_SOCKET_AM2
 
 # Opteron K8 1G HT support

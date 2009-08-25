@@ -57,7 +57,7 @@ PCIROM_SRC += $(patsubst %,$(src)/util/x86emu/%,$(LIBX86EMU_SRC))
 
 
 $(obj)/util/x86emu/libx86emu.a: $(LIBX86EMU_OBJS) $(src)/.config
-	$(Q)printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
+	@printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)rm -f $@ # otherwise we always add to the archive
 	$(Q)$(AR) qcs $@ $(LIBX86EMU_OBJS)
 
@@ -66,7 +66,7 @@ $(obj)/util/x86emu/libx86emu.a: $(LIBX86EMU_OBJS) $(src)/.config
 #
 
 $(obj)/util/x86emu/%.o: $(src)/util/x86emu/%.c
+	@printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)mkdir -p $(dir $@)
-	$(Q)printf "  CC      $(subst $(shell pwd)/,,$(@))\n"
 	$(Q)$(CC) -Werror $(INITCFLAGS) $(X86EMU_INCLUDE) -I$(src)/util/x86emu/include -c $< -o $@
 

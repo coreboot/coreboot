@@ -143,49 +143,49 @@ $(eval $(call evaluate_subdirs))
 
 define objs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define objs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	$(Q)printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
 	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
@@ -246,7 +246,7 @@ prepare:
 	$(Q)test -n "$(alldirs)" && mkdir -p $(alldirs) || true
 
 prepare2:
-	$(Q)printf "    GEN        $(subst $(shell pwd)/,,$(obj)/build.h)\n"
+	@printf "    GEN        $(subst $(shell pwd)/,,$(obj)/build.h)\n"
 	$(Q)printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
 	$(Q)printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.h
 	$(Q)printf "#define COREBOOT_V2 \"$(COREBOOT_V2)\"\n" >> $(obj)/build.h
@@ -292,7 +292,7 @@ $(obj)/ldoptions: $(obj)/config.h
 	$(Q)awk '/^#define ([^"])* ([^"])*$$/ {print $$2 " = " $$3 ";";}' $< > $@
 
 $(obj)/romcc: $(top)/util/romcc/romcc.c
-	$(Q)printf "  HOSTCC  romcc"
+	@printf "    HOSTCC     romcc"
 	$(HOSTCC) -g -O2 -Wall -o $@ $<
 
 .PHONY: $(PHONY) prepare prepare2 clean distclean doxygen doxy coreboot

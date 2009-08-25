@@ -18,11 +18,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_ASUS
-	
-source "src/mainboard/asus/p2b-f/Kconfig"
-
-endchoice
+config CPU_INTEL_SLOT_2
+	bool
+	default n
 

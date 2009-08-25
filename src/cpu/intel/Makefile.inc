@@ -5,6 +5,7 @@
 
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_MFCPGA478) += socket_mFCPGA478
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_PGA370) += socket_PGA370
+subdirs-$(CONFIG_CPU_INTEL_SLOT_2) += slot_2
 
 #socket_mPGA478
 #socket_mPGA479M

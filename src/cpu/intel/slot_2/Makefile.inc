@@ -18,11 +18,15 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_ASUS
-	
-source "src/mainboard/asus/p2b-f/Kconfig"
-
-endchoice
+obj-y += slot_2.o
+subdirs-y += ../model_6xx
+subdirs-y += ../../x86/tsc
+subdirs-y += ../../x86/mtrr
+subdirs-y += ../../x86/fpu
+subdirs-y += ../../x86/mmx
+subdirs-y += ../../x86/sse
+subdirs-y += ../../x86/lapic
+subdirs-y += ../../x86/cache
+subdirs-y += ../../x86/smm
+subdirs-y += ../microcode
 

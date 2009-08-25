@@ -2,7 +2,7 @@
 #subdirs-y += e7520
 #subdirs-y += e7525
 #subdirs-y += i3100
-#subdirs-y += i440bx
+subdirs-y += i440bx
 subdirs-y += i82810
 #subdirs-y += i82830
 #subdirs-y += i855gme

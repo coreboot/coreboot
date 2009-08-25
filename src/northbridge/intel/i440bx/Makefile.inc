@@ -18,11 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_ASUS
-	
-source "src/mainboard/asus/p2b-f/Kconfig"
-
-endchoice
+driver-$(CONFIG_NORTHBRIDGE_INTEL_I440BX) += northbridge.o
 

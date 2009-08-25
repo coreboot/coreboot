@@ -7,72 +7,72 @@ PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-c
 Kconfig := src/Kconfig
 
 xconfig: prepare $(objk)/qconf
-	$(Q)$(objk)/qconf $(Kconfig)
+	$(objk)/qconf $(Kconfig)
 
 gconfig: prepare $(objk)/gconf
-	$(Q)$(objk)/gconf $(Kconfig)
+	$(objk)/gconf $(Kconfig)
 
 menuconfig: prepare $(objk)/mconf
-	$(Q)$(objk)/mconf $(Kconfig)
+	$(objk)/mconf $(Kconfig)
 
 config: prepare $(objk)/conf
-	$(Q)$(objk)/conf $(Kconfig)
+	$(objk)/conf $(Kconfig)
 
 oldconfig: prepare $(objk)/conf
-	$(Q)$(objk)/conf -o $(Kconfig)
+	$(objk)/conf -o $(Kconfig)
 
 silentoldconfig: prepare $(objk)/conf
-	$(Q)$(objk)/conf -s $(Kconfig)
+	$(objk)/conf -s $(Kconfig)
 
 # --- UNUSED, ignore ----------------------------------------------------------
 # Create new linux.pot file
 # Adjust charset to UTF-8 in .po file to accept UTF-8 in Kconfig files
 # The symlink is used to repair a deficiency in arch/um
 update-po-config: $(obj)/kxgettext $(obj)/gconf.glade.h
-	$(Q)echo "  GEN config"
-	$(Q)xgettext --default-domain=linux              \
+	echo "  GEN config"
+	xgettext --default-domain=linux              \
 	    --add-comments --keyword=_ --keyword=N_      \
 	    --from-code=UTF-8                            \
 	    --files-from=scripts/kconfig/POTFILES.in     \
 	    --output $(obj)/config.pot
-	$(Q)sed -i s/CHARSET/UTF-8/ $(obj)/config.pot
-	$(Q)ln -fs Kconfig.i386 arch/um/Kconfig.arch
-	$(Q)(for i in `ls arch/`;                        \
+	sed -i s/CHARSET/UTF-8/ $(obj)/config.pot
+	ln -fs Kconfig.i386 arch/um/Kconfig.arch
+	(for i in `ls arch/`;                        \
 	    do                                           \
 		echo "  GEN $$i";                        \
 		$(obj)/kxgettext arch/$$i/Kconfig        \
 		     >> $(obj)/config.pot;               \
 	    done )
-	$(Q)msguniq --sort-by-file --to-code=UTF-8 $(obj)/config.pot \
+	msguniq --sort-by-file --to-code=UTF-8 $(obj)/config.pot \
 	    --output $(obj)/linux.pot
-	$(Q)rm -f arch/um/Kconfig.arch
-	$(Q)rm -f $(obj)/config.pot
+	rm -f arch/um/Kconfig.arch
+	rm -f $(obj)/config.pot
 # --- UNUSED, ignore ----------------------------------------------------------
 
 PHONY += randconfig allyesconfig allnoconfig allmodconfig defconfig
 
 randconfig: prepare $(objk)/conf
-	$(Q)$(objk)/conf -r $(Kconfig)
+	$(objk)/conf -r $(Kconfig)
 
 allyesconfig: prepare $(objk)/conf
-	$(Q)$(objk)/conf -y $(Kconfig)
+	$(objk)/conf -y $(Kconfig)
 
 allnoconfig: prepare $(objk)/conf
-	$(Q)$(objk)/conf -n $(Kconfig)
+	$(objk)/conf -n $(Kconfig)
 
 allmodconfig: prepare $(objk)/conf
-	$(Q)$(objk)/conf -m $(Kconfig)
+	$(objk)/conf -m $(Kconfig)
 
 defconfig: prepare $(objk)/conf
 ifeq ($(KBUILD_DEFCONFIG),)
-	$(Q)$(objk)/conf -d $(Kconfig)
+	$(objk)/conf -d $(Kconfig)
 else
 	@echo "*** Default configuration is based on '$(KBUILD_DEFCONFIG)'"
-	$(Q)$(objk)/conf -D $(KBUILD_DEFCONFIG) $(Kconfig)
+	$(objk)/conf -D $(KBUILD_DEFCONFIG) $(Kconfig)
 endif
 
 %_defconfig: prepare $(objk)/conf
-	$(Q)$(objk)/conf -D configs/$@ $(Kconfig)
+	$(objk)/conf -D configs/$@ $(Kconfig)
 
 # Help text used by make help
 help:
@@ -149,7 +149,7 @@ clean-files     += config.pot coreinfo.pot
 PHONY += $(objk)/dochecklxdialog
 $(addprefix $(obj)/,$(lxdialog)): $(objk)/dochecklxdialog
 $(objk)/dochecklxdialog:
-	$(Q)$(CONFIG_SHELL) $(check-lxdialog) -check $(HOSTCC) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES)
+	$(CONFIG_SHELL) $(check-lxdialog) -check $(HOSTCC) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES)
 
 always := dochecklxdialog
 
@@ -294,44 +294,44 @@ endif
 
 $(objk)/qconf: $(patsubst %,$(objk)/%,$(qconf-cxxobjs)) \
 	       $(patsubst %,$(objk)/%,$(qconf-objs))
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) $(HOSTLOADLIBES_qconf) -o $@ $^
+	$(HOSTCXX) $(HOSTCXXFLAGS) $(HOSTLOADLIBES_qconf) -o $@ $^
 $(objk)/gconf: $(patsubst %,$(objk)/%,$(gconf-objs))
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOSTLOADLIBES_gconf) -o $@ $^
+	$(HOSTCC) $(HOSTCFLAGS) $(HOSTLOADLIBES_gconf) -o $@ $^
 $(objk)/mconf: $(patsubst %,$(objk)/%,$(mconf-objs))
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) -o $@ $^
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) -o $@ $^
 $(objk)/conf: $(patsubst %,$(objk)/%,$(conf-objs))
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -o $@ $^
 
 $(objk)/mconf.o: $(srck)/mconf.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 $(objk)/conf.o: $(srck)/conf.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 
 $(objk)/zconf.tab.o: $(objk)/zconf.tab.c $(objk)/lex.zconf.c \
 		     $(objk)/zconf.hash.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $(objk)/zconf.tab.c
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $(objk)/zconf.tab.c
 $(objk)/kconfig_load.o: $(srck)/kconfig_load.c $(objk)/lkc_defs.h
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(HOSTCFLAGS) -c -o $@ $<
 $(objk)/qconf.o: $(srck)/qconf.cc $(objk)/qconf.moc $(objk)/lkc_defs.h
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) $(HOSTCXXFLAGS_qconf.o) -c -o $@ $<
+	$(HOSTCXX) $(HOSTCXXFLAGS) $(HOSTCXXFLAGS_qconf.o) -c -o $@ $<
 $(objk)/gconf.o: $(srck)/gconf.c $(objk)/lkc_defs.h
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOSTCFLAGS_gconf.o) -c -o $@ $<
+	$(HOSTCC) $(HOSTCFLAGS) $(HOSTCFLAGS_gconf.o) -c -o $@ $<
 $(objk)/%.moc: $(srck)/%.h
-	$(Q)$(KC_QT_MOC) -i $< -o $@
+	$(KC_QT_MOC) -i $< -o $@
 $(objk)/lkc_defs.h: $(srck)/lkc_proto.h
-	$(Q)sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
+	sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
 
 $(objk)/lex.zconf.c: $(srck)/lex.zconf.c_shipped
-	$(Q)cp $< $@
+	cp $< $@
 $(objk)/zconf.hash.c: $(srck)/zconf.hash.c_shipped
-	$(Q)cp $< $@
+	cp $< $@
 $(objk)/zconf.tab.c: $(srck)/zconf.tab.c_shipped
-	$(Q)cp $< $@
+	cp $< $@
 
 $(objk)/lxdialog/lxdialog: $(objk)/dochecklxdialog \
 			   $(patsubst %,$(objk)/lxdialog/%,$(lxdialog))
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) \
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES) \
 		$(patsubst %,$(objk)/lxdialog/%,$(lxdialog)) -o $@
 $(objk)/lxdialog/%.o: $(srck)/lxdialog/%.c
-	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $^ -c -o $@
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) $^ -c -o $@
 

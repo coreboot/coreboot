@@ -26,35 +26,35 @@ LZMA_OBJ += lzma/lzma-compress.o
 
 ifdef POST_EVALUATION
 $(tobj)/lzma/lzma-compress.o: $(tsrc)/lzma/minilzma.cc
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c -DCOMPACT $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c -DCOMPACT $<
 
 $(tobj)/lzma/%.o: $(tsrc)/lzma/C/7zip/Compress/LZMA/%.cpp
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(tobj)/lzma/%.o: $(tsrc)/lzma/C/7zip/Compress/LZ/%.cpp
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(tobj)/lzma/%.o: $(tsrc)/lzma/C/7zip/Compress/RangeCoder/%.cpp
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(tobj)/lzma/%.o: $(tsrc)/lzma/C/7zip/Decompress/%.cpp
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(tobj)/lzma/%.o: $(tsrc)/lzma/C/7zip/Common/%.cpp
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(tobj)/lzma/%.o: $(tsrc)/lzma/C/Common/%.cpp
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 $(tobj)/lzma/%.o: $(tsrc)/lzma/%.cc
-	$(Q)printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
-	$(Q)$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
+	$(HOSTCXX) $(HOSTCXXFLAGS) -o $@ -c $<
 
 endif

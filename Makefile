@@ -53,8 +53,11 @@ HAVE_DOTCONFIG := $(wildcard .config)
 MAKEFLAGS += -rR --no-print-directory
 
 # Make is silent per default, but 'make V=1' will show all compiler calls.
+Q:=@
 ifneq ($(V),1)
-Q := @
+ifneq ($(Q),)
+.SILENT:
+endif
 endif
 
 CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
@@ -101,14 +104,14 @@ all: coreboot
 CBFSTOOL:=$(obj)/util/cbfstool/cbfstool
 
 $(obj)/mainboard/$(MAINBOARDDIR)/config.py: $(yapps2_py) $(config_g) 
-	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	$(Q)python $(yapps2_py) $(config_g) $(obj)/mainboard/$(MAINBOARDDIR)/config.py
+	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
+	python $(yapps2_py) $(config_g) $(obj)/mainboard/$(MAINBOARDDIR)/config.py
 
 
 # needed objects that every mainboard uses 
 # Creation of these is architecture and mainboard independent
 $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/Config.lb  $(obj)/mainboard/$(MAINBOARDDIR)/config.py
-	$(Q)mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
+	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	(cd $(obj)/mainboard/$(MAINBOARDDIR) ; PYTHONPATH=$(top)/util/sconfig export PYTHONPATH; python config.py  $(MAINBOARDDIR) $(top) $(obj)/mainboard/$(MAINBOARDDIR))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/static.o: $(obj)/mainboard/$(MAINBOARDDIR)/static.c
@@ -144,49 +147,49 @@ $(eval $(call evaluate_subdirs))
 define objs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define objs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
-	$(Q)$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
@@ -241,47 +244,47 @@ coreboot: prepare prepare2 $(obj)/coreboot.rom
 endif
 
 prepare:
-	$(Q)mkdir -p $(obj)
-	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
-	$(Q)test -n "$(alldirs)" && mkdir -p $(alldirs) || true
+	mkdir -p $(obj)
+	mkdir -p $(obj)/util/kconfig/lxdialog
+	test -n "$(alldirs)" && mkdir -p $(alldirs) || true
 
 prepare2:
 	@printf "    GEN        $(subst $(shell pwd)/,,$(obj)/build.h)\n"
-	$(Q)printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
-	$(Q)printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_V2 \"$(COREBOOT_V2)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
-	$(Q)printf "\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
-	$(Q)printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
-	$(Q)printf "#include \"config.h\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
+	printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_V2 \"$(COREBOOT_V2)\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
+	printf "\n" >> $(obj)/build.h
+	printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
+	printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
+	printf "#include \"config.h\"\n" >> $(obj)/build.h
 
 doxy: doxygen
 doxygen:
-	$(Q)$(DOXYGEN) Doxyfile
+	$(DOXYGEN) Doxyfile
 
 doxyclean: doxygen-clean
 doxygen-clean:
-	$(Q)rm -rf $(DOXYGEN_OUTPUT_DIR)
+	rm -rf $(DOXYGEN_OUTPUT_DIR)
 
 clean: doxygen-clean
-	$(Q)rm -f $(allobjs) build/coreboot* .xcompile
-	$(Q)rm -f build/option_table.* build/crt0_includes.h build/ldscript
-	$(Q)rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
-	$(Q)rm -f $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
-	$(Q)rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
+	rm -f $(allobjs) build/coreboot* .xcompile
+	rm -f build/option_table.* build/crt0_includes.h build/ldscript
+	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
+	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
+	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
 
 distclean: clean
-	$(Q)rm -rf build
-	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
+	rm -rf build
+	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
 update:
-	$(Q)dongle.py -c /dev/term/1 build/coreboot.rom EOF
+	dongle.py -c /dev/term/1 build/coreboot.rom EOF
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
@@ -289,7 +292,7 @@ include util/kconfig/Makefile
 
 $(obj)/ldoptions: $(obj)/config.h
 #	cat $(obj)/config.h  | grep -v \" |grep -v AUTOCONF_INCLUDED | grep \#define | sed s/\#define\ // | sed s/\ /\ =\ / | sed 's/$$/;/' > $(obj)/ldoptions
-	$(Q)awk '/^#define ([^"])* ([^"])*$$/ {print $$2 " = " $$3 ";";}' $< > $@
+	awk '/^#define ([^"])* ([^"])*$$/ {print $$2 " = " $$3 ";";}' $< > $@
 
 $(obj)/romcc: $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     romcc"

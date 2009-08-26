@@ -65,6 +65,7 @@ HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
+LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
 
 DESTDIR = /opt
 

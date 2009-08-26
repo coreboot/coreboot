@@ -4,7 +4,7 @@ choice
 	prompt "Mainboard vendor"
 	default VENDOR_EMULATION
 
-config VENDOR_ATREND
+config VENDOR_A_TREND
 	bool "A-Trend"
 config VENDOR_ABIT
 	bool "Abit"
@@ -16,7 +16,7 @@ config VENDOR_AMD
 	bool "AMD"
 config VENDOR_ARIMA
 	bool "Arima"
-config VENDOR_ARTEC
+config VENDOR_ARTEC_GROUP
 	bool "Artec Group"
 config VENDOR_ASI
 	bool "ASI"
@@ -36,11 +36,11 @@ config VENDOR_COMPAQ
 	bool "Compaq"
 config VENDOR_DELL
 	bool "Dell"
-config VENDOR_DIGITALLOGIC
+config VENDOR_DIGITAL_LOGIC
 	bool "DIGITAL-LOGIC"
 config VENDOR_EAGLELION
 	bool "EagleLion"
-config VENDOR_EMBEDDEDPLANET
+config VENDOR_EMBEDDED_PLANET
 	bool "Embedded Planet"
 config VENDOR_EMULATION
 	bool "Emulation"
@@ -74,7 +74,7 @@ config VENDOR_NVIDIA
 	bool "NVIDIA"
 config VENDOR_OLPC
 	bool "OLPC"
-config VENDOR_PCENGINES
+config VENDOR_PC_ENGINES
 	bool "PC Engines"
 config VENDOR_RCA
 	bool "RCA"
@@ -86,7 +86,7 @@ config VENDOR_TECHNEXION
 	bool "Technexion"
 config VENDOR_THOMSON
 	bool "Thomson"
-config VENDOR_TOTALIMPACT
+config VENDOR_TOTAL_IMPACT
 	bool "Total Impact"
 config VENDOR_TYAN
 	bool "Tyan"
@@ -98,7 +98,7 @@ endchoice
 config MAINBOARD_VENDOR
 	string
 	default "A-Trend"
-	depends on VENDOR_ATREND
+	depends on VENDOR_A_TREND
 
 config MAINBOARD_VENDOR
 	string
@@ -128,7 +128,7 @@ config MAINBOARD_VENDOR
 config MAINBOARD_VENDOR
 	string
 	default "Artec Group"
-	depends on VENDOR_ARTEC
+	depends on VENDOR_ARTEC_GROUP
 
 config MAINBOARD_VENDOR
 	string
@@ -178,7 +178,7 @@ config MAINBOARD_VENDOR
 config MAINBOARD_VENDOR
 	string
 	default "DIGITAL-LOGIC"
-	depends on VENDOR_DIGITALLOGIC
+	depends on VENDOR_DIGITAL_LOGIC
 
 config MAINBOARD_VENDOR
 	string
@@ -188,7 +188,7 @@ config MAINBOARD_VENDOR
 config MAINBOARD_VENDOR
 	string
 	default "Embedded Planet"
-	depends on VENDOR_EMBEDDEDPLANET
+	depends on VENDOR_EMBEDDED_PLANET
 
 config MAINBOARD_VENDOR
 	string
@@ -273,7 +273,7 @@ config MAINBOARD_VENDOR
 config MAINBOARD_VENDOR
 	string
 	default "PC Engines"
-	depends on VENDOR_PCENGINES
+	depends on VENDOR_PC_ENGINES
 
 config MAINBOARD_VENDOR
 	string
@@ -303,7 +303,7 @@ config MAINBOARD_VENDOR
 config MAINBOARD_VENDOR
 	string
 	default "Total Impact"
-	depends on VENDOR_TOTALIMPACT
+	depends on VENDOR_TOTAL_IMPACT
 
 config MAINBOARD_VENDOR
 	string

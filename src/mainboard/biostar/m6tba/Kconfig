@@ -18,11 +18,37 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_TYAN
-	
-source "src/mainboard/tyan/s1846/Kconfig"
+config BOARD_BIOSTAR_M6TBA
+	bool "M6TBA"
+	select ARCH_X86
+	select CPU_INTEL_SLOT_2
+	select NORTHBRIDGE_INTEL_I440BX
+	select SOUTHBRIDGE_INTEL_I82371EB
+	select SUPERIO_SMSC_SMSCSUPERIO
+	select HAVE_PIRQ_TABLE
+	select UDELAY_IO
+	select PCI_ROM_RUN
+	select CONSOLE_VGA
+	help
+	  Biostar M6TBA mainboard.
 
-endchoice
+config MAINBOARD_DIR
+	string
+	default biostar/m6tba
+	depends on BOARD_BIOSTAR_M6TBA
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "M6TBA"
+	depends on BOARD_BIOSTAR_M6TBA
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_BIOSTAR_M6TBA
+
+config IRQ_SLOT_COUNT
+	int
+	default 7
+	depends on BOARD_BIOSTAR_M6TBA
 

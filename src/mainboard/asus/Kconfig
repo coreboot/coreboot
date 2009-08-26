@@ -22,7 +22,10 @@ choice
 	prompt "Mainboard model"
 	depends on VENDOR_ASUS
 
+source "src/mainboard/asus/p2b/Kconfig"
+source "src/mainboard/asus/p2b-d/Kconfig"
 source "src/mainboard/asus/p2b-f/Kconfig"
+source "src/mainboard/asus/p3b-f/Kconfig"
 source "src/mainboard/asus/m2v-mx_se/Kconfig"
 
 endchoice

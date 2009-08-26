@@ -21,22 +21,9 @@
 choice
 	prompt "Mainboard model"
 	depends on VENDOR_MSI
-
-config BOARD_MSI_MS6178
-	bool "MS-6178"
-	select ARCH_X86
-	select CPU_INTEL_SOCKET_PGA370
-	select NORTHBRIDGE_INTEL_I82810
-	select SOUTHBRIDGE_INTEL_I82801XX
-	select SUPERIO_WINBOND_W83627HF
-	select HAVE_PIRQ_TABLE
-	help
-	  MSI MS-6178 mainboard.
+	
+source "src/mainboard/msi/ms6119/Kconfig"
+source "src/mainboard/msi/ms6147/Kconfig"
 
 endchoice
-
-config MAINBOARD_DIR
-	string
-	default msi/ms6178
-	depends on BOARD_MSI_MS6178
 

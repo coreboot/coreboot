@@ -18,11 +18,37 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_TYAN
-	
-source "src/mainboard/tyan/s1846/Kconfig"
+config BOARD_COMPAQ_DESKPRO_EN_SFF_P600
+	bool "Deskpro EN SFF P600"
+	select ARCH_X86
+	select CPU_INTEL_SLOT_2
+	select NORTHBRIDGE_INTEL_I440BX
+	select SOUTHBRIDGE_INTEL_I82371EB
+	select SUPERIO_NSC_PC97307
+	select HAVE_PIRQ_TABLE
+	select UDELAY_IO
+	select PCI_ROM_RUN
+	select CONSOLE_VGA
+	help
+	  Compaq Deskpro EN SFF P600 mainboard.
 
-endchoice
+config MAINBOARD_DIR
+	string
+	default compaq/deskpro_en_sff_p600
+	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Deskpro EN SFF P600"
+	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
+
+config IRQ_SLOT_COUNT
+	int
+	default 5
+	depends on BOARD_COMPAQ_DESKPRO_EN_SFF_P600
 

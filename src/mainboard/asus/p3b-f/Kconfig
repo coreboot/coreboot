@@ -18,11 +18,37 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_TYAN
-	
-source "src/mainboard/tyan/s1846/Kconfig"
+config BOARD_ASUS_P3B_F
+	bool "P3B-F"
+	select ARCH_X86
+	select CPU_INTEL_SLOT_2
+	select NORTHBRIDGE_INTEL_I440BX
+	select SOUTHBRIDGE_INTEL_I82371EB
+	select SUPERIO_WINBOND_W83977TF
+	select HAVE_PIRQ_TABLE
+	select UDELAY_IO
+	select PCI_ROM_RUN
+	select CONSOLE_VGA
+	help
+	  ASUS P3B-F mainboard.
 
-endchoice
+config MAINBOARD_DIR
+	string
+	default asus/p3b-f
+	depends on BOARD_ASUS_P3B_F
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "P3B-F"
+	depends on BOARD_ASUS_P3B_F
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_ASUS_P3B_F
+
+config IRQ_SLOT_COUNT
+	int
+	default 8
+	depends on BOARD_ASUS_P3B_F
 

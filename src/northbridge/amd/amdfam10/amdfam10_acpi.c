@@ -190,7 +190,7 @@ void update_ssdt(void *ssdt)
 	u8 *CBST;
 	u8 *CBBX;
 	u8 *CBS2;
-	u8 *CONFIG_CBB2;
+	u8 *CBB2;
 
 
 	int i;
@@ -208,7 +208,7 @@ void update_ssdt(void *ssdt)
 	HCDN = ssdt+0x57a; //+5 will be next HCDN
 	CBBX = ssdt+0x61f; //
 	CBST = ssdt+0x626;
-	CONFIG_CBB2 = ssdt+0x62d; //
+	CBB2 = ssdt+0x62d; //
 	CBS2 = ssdt+0x634;
 
 	for(i=0;i<HC_NUMS;i++) {
@@ -260,10 +260,10 @@ void update_ssdt(void *ssdt)
 
 	if((CONFIG_CBB == 0xff) && (sysconf.nodes>32)) {
 		 *CBS2 = 0x0f;
-		 *CONFIG_CBB2 = (u8)(CONFIG_CBB-1);
+		 *CBB2 = (u8)(CONFIG_CBB-1);
 	} else {
 		*CBS2 = 0x00;
-		*CONFIG_CBB2 = 0x00;
+		*CBB2 = 0x00;
 	}
 
 }

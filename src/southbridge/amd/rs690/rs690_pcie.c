@@ -87,18 +87,21 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 		 Config & (PCIE_DISABLE_HIDE_UNUSED_PORTS +
 			   PCIE_GFX_COMPLIANCE))) {
 	}
-	/* step 3 Power Down Control for Southbridge */
-	reg = nbpcie_p_read_index(dev, 0xa2);
 
-	switch ((reg >> 4) & 0x7) {	/* get bit 4-6, LC_LINK_WIDTH_RD */
-	case 1:
-		nbpcie_ind_write_index(nb_dev, 0x65, 0x0e0e);
-		break;
-	case 2:
-		nbpcie_ind_write_index(nb_dev, 0x65, 0x0c0c);
-		break;
-	default:
-		break;
+        if (!cfg->gfx_tmds){
+		/* step 3 Power Down Control for Southbridge */
+		reg = nbpcie_p_read_index(dev, 0xa2);
+
+		switch ((reg >> 4) & 0x7) {	/* get bit 4-6, LC_LINK_WIDTH_RD */
+		case 1:
+			nbpcie_ind_write_index(nb_dev, 0x65, 0x0e0e);
+			break;
+		case 2:
+			nbpcie_ind_write_index(nb_dev, 0x65, 0x0c0c);
+			break;
+		default:
+			break;
+		}
 	}
 }
 

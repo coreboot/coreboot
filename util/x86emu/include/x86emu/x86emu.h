@@ -47,6 +47,9 @@
 #include <console/console.h>
 #undef printk
 #define printk(x...) do_printk(BIOS_DEBUG, x)
+#if defined(CONFIG_DEBUG) && (CONFIG_DEBUG == 0)
+#undef CONFIG_DEBUG
+#endif
 #else
 #define printk printf
 #endif 

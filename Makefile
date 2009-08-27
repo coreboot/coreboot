@@ -1,4 +1,5 @@
 ##
+
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.

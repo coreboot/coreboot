@@ -12,11 +12,11 @@ option CONFIG_IRQ_SLOT_COUNT=6
 option CONFIG_DEFAULT_CONSOLE_LOGLEVEL=9
 option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=9
 
-romimage "normal" 
+romimage "fallback" 
 	option COREBOOT_EXTRA_VERSION="-GRUB2"
 #	payload /home/stepan/core.img
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"
 

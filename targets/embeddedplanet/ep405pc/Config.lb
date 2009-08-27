@@ -4,7 +4,7 @@
 target ep405pc
 mainboard embeddedplanet/ep405pc
 
-romimage "normal"
+romimage "fallback"
         ## Enable PPC405 instructions
         option CONFIG_CPU_OPT="-mcpu=405"
 
@@ -78,4 +78,4 @@ romimage "normal"
 
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

@@ -21,9 +21,9 @@
 target via_pc2500e
 mainboard via/pc2500e
 
-romimage "image"
+romimage "fallback"
 	option COREBOOT_EXTRA_VERSION = "-pc2500e"
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

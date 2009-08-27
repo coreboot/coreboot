@@ -6,7 +6,7 @@ target apache
 mainboard momentum/apache
 
 # Apache Demo Board
-romimage "normal"
+romimage "fallback"
 	## Base of ROM
 	option CONFIG_ROMBASE=0xfff00000
 
@@ -25,4 +25,4 @@ romimage "normal"
 	option CONFIG_RAMSTART=0x00100000
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

@@ -12,10 +12,10 @@ option CC="gcc -m32"
 option CONFIG_HAVE_PIRQ_TABLE=1
 option CONFIG_IRQ_SLOT_COUNT=6
 
-romimage "image" 
+romimage "fallback" 
 	option COREBOOT_EXTRA_VERSION="-LAB"
 	payload ../payload.elf.lzma
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"
 

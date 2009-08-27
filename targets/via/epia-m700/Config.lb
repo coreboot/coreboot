@@ -21,9 +21,9 @@
 target epia-m700
 mainboard via/epia-m700
 
-romimage "image"
+romimage "fallback"
 	option COREBOOT_EXTRA_VERSION = "-epia-m700"
 	payload ../payload.elf
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

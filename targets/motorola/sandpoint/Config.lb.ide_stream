@@ -64,7 +64,7 @@ option CONFIG_STACK_SIZE=0x10000
 option CONFIG_HEAP_SIZE=0x10000
 
 # Sandpoint Demo Board
-romimage "normal"
+romimage "fallback"
 	## Base of ROM
 	option CONFIG_ROMBASE=0xfff00000
 
@@ -87,4 +87,4 @@ romimage "normal"
 	mainboard motorola/sandpoint
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

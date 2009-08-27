@@ -15,7 +15,7 @@ option CONFIG_FALLBACK_SIZE = 0
 
 
 
-romimage "normal"
+romimage "fallback"
 	option CONFIG_USE_FALLBACK_IMAGE=0
 #	option COREBOOT_EXTRA_VERSION="$(shell cat ../../VERSION)_Normal"
 #       payload ../../../../../../../memtest86/memtest
@@ -34,4 +34,4 @@ end
 #       payload ../../../../../../../etherboot/src/bin/e1000--filo.zelf
 #end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

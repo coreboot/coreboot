@@ -35,16 +35,9 @@ option CONFIG_RAMBASE=0x00004000
 #
 #option CONFIG_ROM_SIZE = (512 * 1024) - (64 * 1024) - (64 * 1024)
 
-romimage "image"
-	option COREBOOT_EXTRA_VERSION = "-epia_n"
-	payload ../../../../../payloads/filo/build/filo.elf
-end
-
 romimage "fallback"
 	option COREBOOT_EXTRA_VERSION = "-epia_n-fallback"
 	payload ../../../../../payloads/filo/build/filo.elf
 end
 
-#buildrom ./coreboot.rom CONFIG_ROM_SIZE "image" "fallback"
-#buildrom ./coreboot.rom CONFIG_FALLBACK_SIZE "image" "fallback"
 buildrom ./coreboot.rom CONFIG_FALLBACK_SIZE "fallback"

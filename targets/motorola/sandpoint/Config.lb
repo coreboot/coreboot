@@ -7,7 +7,7 @@ target sandpoint
 mainboard motorola/sandpointx3_altimus_mpc7410
 
 # Sandpoint Demo Board
-romimage "normal"
+romimage "fallback"
 	## Base of ROM
 	option CONFIG_ROMBASE=0xfff00000
 
@@ -28,4 +28,4 @@ romimage "normal"
 	option CONFIG_SANDPOINT_ALTIMUS=1
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

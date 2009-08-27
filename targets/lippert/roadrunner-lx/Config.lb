@@ -50,7 +50,7 @@ option CONFIG_FALLBACK_SIZE = CONFIG_ROM_SIZE
 # Saves space on CONFIG_ROM_IMAGE_SIZE, but decompression costs a second on boot.
 option CONFIG_COMPRESS = 1
 
-romimage "image"
+romimage "fallback"
 	option CONFIG_USE_FALLBACK_IMAGE = 1
 	option CONFIG_ROM_IMAGE_SIZE = 64 * 1024
 	option COREBOOT_EXTRA_VERSION = ".0"
@@ -59,4 +59,4 @@ romimage "image"
 	# payload /dev/null
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

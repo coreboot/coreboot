@@ -30,11 +30,11 @@ __LOGLEVEL__
 
 option CONFIG_ROM_SIZE = 512 * 1024
 
-romimage "image" 
+romimage "fallback" 
 	option CONFIG_USE_FALLBACK_IMAGE = 1
 	option CONFIG_ROM_IMAGE_SIZE = 128 * 1024
 	option COREBOOT_EXTRA_VERSION = ".0Fallback"
 	payload __PAYLOAD__
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

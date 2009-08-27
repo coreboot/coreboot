@@ -28,9 +28,9 @@ option HOSTCC="CROSS_HOSTCC"
 __COMPRESSION__
 __LOGLEVEL__
 
-romimage "image"
+romimage "fallback"
 	option COREBOOT_EXTRA_VERSION = "-epia-m700"
 	payload __PAYLOAD__
 end
 
-buildrom ./coreboot.rom CONFIG_ROM_SIZE "image"
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

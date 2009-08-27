@@ -43,7 +43,7 @@
 #define __X86EMU_X86EMU_H
 
 /* FIXME: redefine printk for the moment */
-#ifdef COREBOOT_V2
+#ifdef CONFIG_COREBOOT_V2
 #include <console/console.h>
 #undef printk
 #define printk(x...) do_printk(BIOS_DEBUG, x)

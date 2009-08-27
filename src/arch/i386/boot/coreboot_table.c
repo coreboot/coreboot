@@ -1,5 +1,28 @@
+/*
+ * This file is part of the coreboot project.
+ * 
+ * Copyright (C) 2003-2004 Eric Biederman
+ * Copyright (C) 2005-2009 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
 #include <console/console.h>
 #include <ip_checksum.h>
+#include <boot/tables.h>
 #include <boot/coreboot_tables.h>
 #include "coreboot_table.h"
 #include <string.h>
@@ -7,7 +30,7 @@
 #include <device/device.h>
 #include <stdlib.h>
 
-struct lb_header *lb_table_init(unsigned long addr)
+static struct lb_header *lb_table_init(unsigned long addr)
 {
 	struct lb_header *header;
 
@@ -28,27 +51,27 @@ struct lb_header *lb_table_init(unsigned long addr)
 	return header;
 }
 
-struct lb_record *lb_first_record(struct lb_header *header)
+static struct lb_record *lb_first_record(struct lb_header *header)
 {
 	struct lb_record *rec;
 	rec = (void *)(((char *)header) + sizeof(*header));
 	return rec;
 }
 
-struct lb_record *lb_last_record(struct lb_header *header)
+static struct lb_record *lb_last_record(struct lb_header *header)
 {
 	struct lb_record *rec;
 	rec = (void *)(((char *)header) + sizeof(*header) + header->table_bytes);
 	return rec;
 }
 
-struct lb_record *lb_next_record(struct lb_record *rec)
+static struct lb_record *lb_next_record(struct lb_record *rec)
 {
 	rec = (void *)(((char *)rec) + rec->size);	
 	return rec;
 }
 
-struct lb_record *lb_new_record(struct lb_header *header)
+static struct lb_record *lb_new_record(struct lb_header *header)
 {
 	struct lb_record *rec;
 	rec = lb_last_record(header);
@@ -63,7 +86,7 @@ struct lb_record *lb_new_record(struct lb_header *header)
 }
 
 
-struct lb_memory *lb_memory(struct lb_header *header)
+static struct lb_memory *lb_memory(struct lb_header *header)
 {
 	struct lb_record *rec;
 	struct lb_memory *mem;
@@ -74,7 +97,7 @@ struct lb_memory *lb_memory(struct lb_header *header)
 	return mem;
 }
 
-struct lb_serial *lb_serial(struct lb_header *header)
+static struct lb_serial *lb_serial(struct lb_header *header)
 {
 #if defined(CONFIG_TTYS0_BASE)
 	struct lb_record *rec;
@@ -91,7 +114,7 @@ struct lb_serial *lb_serial(struct lb_header *header)
 #endif
 }
 
-void add_console(struct lb_header *header, u16 consoletype)
+static void add_console(struct lb_header *header, u16 consoletype)
 {
 	struct lb_console *console;
 
@@ -101,7 +124,7 @@ void add_console(struct lb_header *header, u16 consoletype)
 	console->type = consoletype;
 }
 
-void lb_console(struct lb_header *header)
+static void lb_console(struct lb_header *header)
 {
 #ifdef CONFIG_CONSOLE_SERIAL8250
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
@@ -147,7 +170,7 @@ struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	return mainboard;
 }
 
-struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
+static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 {
 	struct lb_record *rec;
 	struct cmos_checksum *cmos_checksum;
@@ -165,7 +188,7 @@ struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 	return cmos_checksum;
 }
 
-void lb_strings(struct lb_header *header)
+static void lb_strings(struct lb_header *header)
 {
 	static const struct {
 		uint32_t tag;
@@ -195,7 +218,7 @@ void lb_strings(struct lb_header *header)
 
 }
 
-struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
+static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
 {
 	struct lb_record *rec;
 	struct lb_forward *forward;

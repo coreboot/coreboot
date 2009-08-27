@@ -14,6 +14,7 @@ config BOARD_AMD_SERENGETI_CHEETAH
 	select SUPERIO_WINBOND_W83627HF
 	select HAVE_PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
 	help
 	 AMD Serengeti Cheetah mainboard.
 endchoice
@@ -21,11 +22,6 @@ endchoice
 config MAINBOARD_DIR
 	string
 	default amd/serengeti_cheetah
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config USE_DCACHE_RAM
-	int
-	default 1
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config DCACHE_RAM_BASE
@@ -81,26 +77,6 @@ config MAINBOARD_PART_NUMBER
 config PCI_64BIT_PREF_MEM
 	int
 	default 0
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config USE_DCACHE_RAM
-	int
-	default 1
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xc8000
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x08000
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config DCACHE_RAM_GLOBAL_VAR_SIZE
-	hex
-	default 0x01000
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config USE_FAILOVER_IMAGE

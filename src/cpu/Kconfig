@@ -5,6 +5,10 @@ source src/cpu/via/Kconfig
 source src/cpu/x86/Kconfig
 source src/cpu/ppc/Kconfig
 
+config USE_DCACHE_RAM
+	bool
+	default n
+
 config DCACHE_RAM_BASE
 	hex
 	default 0xffdf8000 if CPU_INTEL_CORE

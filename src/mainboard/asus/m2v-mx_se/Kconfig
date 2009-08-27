@@ -29,17 +29,13 @@ config BOARD_ASUS_M2V_MX_SE
 	select SOUTHBRIDGE_VIA_K8T890
 	select SUPERIO_ITE_IT8712F
 	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
 	help
 	  Asus M2V-MX-SE mainboard.
 
 config MAINBOARD_DIR
 	string
 	default asus/m2v-mx_se
-	depends on BOARD_ASUS_M2V_MX_SE
-
-config USE_DCACHE_RAM
-	bool
-	dafault y
 	depends on BOARD_ASUS_M2V_MX_SE
 
 config DCACHE_RAM_BASE

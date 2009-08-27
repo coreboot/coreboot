@@ -86,10 +86,10 @@ static void sata_init(struct device *dev)
 	/* get base addresss */
 	sata_bar5 = (u8 *) (pci_read_config32(dev, 0x24) & ~0x3FF);
 	sata_bar0 = pci_read_config16(dev, 0x10) & ~0x7;
-	sata_bar1 = pci_read_config16(dev, 0x14) & ~0x7;
+	sata_bar1 = pci_read_config16(dev, 0x14) & ~0x3;
 	sata_bar2 = pci_read_config16(dev, 0x18) & ~0x7;
-	sata_bar3 = pci_read_config16(dev, 0x1C) & ~0x7;
-	sata_bar4 = pci_read_config16(dev, 0x20) & ~0x7;
+	sata_bar3 = pci_read_config16(dev, 0x1C) & ~0x3;
+	sata_bar4 = pci_read_config16(dev, 0x20) & ~0xf;
 
 	printk_spew("sata_bar0=%x\n", sata_bar0);	/* 3030 */
 	printk_spew("sata_bar1=%x\n", sata_bar1);	/* 3070 */

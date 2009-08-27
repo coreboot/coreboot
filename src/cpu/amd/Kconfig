@@ -5,6 +5,6 @@ source src/cpu/amd/socket_AM2/Kconfig
 #source src/cpu/amd/socket_AM2r2/Kconfig
 source src/cpu/amd/socket_F/Kconfig
 #source src/cpu/amd/socket_F_1207/Kconfig
-#source src/cpu/amd/socket_S1G1/Kconfig
+source src/cpu/amd/socket_S1G1/Kconfig
 
 source src/cpu/amd/model_fxx/Kconfig

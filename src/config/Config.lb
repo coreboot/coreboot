@@ -10,7 +10,7 @@ makedefine GCC ?= $(CC)
 makedefine GCC_INC_DIR := $(shell LC_ALL=C $(GCC) -print-search-dirs | sed -ne "s/install: \(.*\)/\1include/gp")
 
 makedefine CPPFLAGS := -I$(TOP)/src/include -I$(TOP)/src/arch/$(CONFIG_ARCH)/include -I$(GCC_INC_DIR) $(CPUFLAGS)
-makedefine CFLAGS := $(CONFIG_CPU_OPT) $(DISTRO_CFLAGS) $(CPPFLAGS) -Os -nostdinc -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wwrite-strings -Wredundant-decls -Wno-trigraphs -Werror-implicit-function-declaration -Wstrict-aliasing -Wshadow -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
+makedefine CFLAGS = $(CONFIG_CPU_OPT) $(DISTRO_CFLAGS) $(CPPFLAGS) -Os -nostdinc -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes -Wwrite-strings -Wredundant-decls -Wno-trigraphs -Werror-implicit-function-declaration -Wstrict-aliasing -Wshadow -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
 if CONFIG_ASSEMBLER_DEBUG
 makedefine DEBUG_CFLAGS := -g -dA -fverbose-asm

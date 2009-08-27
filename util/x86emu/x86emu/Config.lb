@@ -1,3 +1,5 @@
+makedefine CPPFLAGS += -I$(TOP)/util/x86emu/include
+
 object debug.o
 object decode.o
 object fpu.o

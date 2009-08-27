@@ -42,10 +42,11 @@
 #ifndef __X86EMU_X86EMU_H
 #define __X86EMU_X86EMU_H
 
-/* FIXME: undefine printk for the moment */
-#if 1 /* Coreboot needs to map prinkf to printk. */
-#include <console.h>
-#define printk(x...) printk(BIOS_DEBUG, x)
+/* FIXME: redefine printk for the moment */
+#ifdef COREBOOT_V2
+#include <console/console.h>
+#undef printk
+#define printk(x...) do_printk(BIOS_DEBUG, x)
 #else
 #define printk printf
 #endif 
@@ -165,7 +166,7 @@ void 	X86EMU_halt_sys(void);
 
 #ifdef	CONFIG_DEBUG
 #define	HALT_SYS()	\
-    	printk("halt_sys: file %s, line %d\n", __FILE__, __LINE__);	\
+    	printk("halt_sys: in %s\n", __func__);	\
 	X86EMU_halt_sys();
 #else
 #define	HALT_SYS()	X86EMU_halt_sys()

@@ -1,0 +1,44 @@
+config BOARD_KONTRON_986LCD_M
+	bool "986LCD-M"
+	select ARCH_X86
+	select CPU_INTEL_CORE
+	select CPU_INTEL_SOCKET_MFCPGA478
+	select NORTHBRIDGE_INTEL_I945
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_WINBOND_W83627THG
+	select HAVE_PIRQ_TABLE
+	select MMCONF_SUPPORT
+	select USE_PRINTK_IN_CAR
+	help
+          Kontron 986LCD-M/mITX mainboard.
+
+config MAINBOARD_DIR
+	string
+	default kontron/986lcd-m
+	depends on BOARD_KONTRON_986LCD_M
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+	depends on BOARD_KONTRON_986LCD_M
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_KONTRON_986LCD_M
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_KONTRON_986LCD_M
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_KONTRON_986LCD_M
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "986LCD-M"
+	depends on BOARD_KONTRON_986LCD_M
+

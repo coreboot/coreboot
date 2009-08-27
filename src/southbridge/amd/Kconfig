@@ -6,5 +6,5 @@ source src/southbridge/amd/amd8131/Kconfig
 #source src/southbridge/amd/cs5530/Kconfig
 #source src/southbridge/amd/cs5535/Kconfig
 #source src/southbridge/amd/cs5536/Kconfig
-#source src/southbridge/amd/rs690/Kconfig
-#source src/southbridge/amd/sb600/Kconfig
+source src/southbridge/amd/rs690/Kconfig
+source src/southbridge/amd/sb600/Kconfig

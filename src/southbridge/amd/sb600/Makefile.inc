@@ -1,0 +1,10 @@
+driver-y += sb600.o
+driver-y += sb600_usb.o
+driver-y += sb600_lpc.o
+driver-y += sb600_sm.o
+driver-y += sb600_ide.o
+driver-y += sb600_sata.o
+driver-y += sb600_hda.o
+driver-y += sb600_ac97.o
+driver-y += sb600_pci.o
+obj-y += sb600_reset.o

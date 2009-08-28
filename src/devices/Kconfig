@@ -51,3 +51,30 @@ config NO_RUN
 endchoice
 
 endmenu
+
+config PCI_64BIT_PREF_MEM
+	bool
+	default n
+
+config HYPERTRANSPORT_PLUGIN_SUPPORT
+	bool
+	default n
+
+config PCIX_PLUGIN_SUPPORT
+	bool
+	default n
+
+config PCIEXP_PLUGIN_SUPPORT
+	bool
+	default n
+
+config AGP_PLUGIN_SUPPORT
+	bool
+	default n
+
+config CARDBUS_PLUGIN_SUPPORT
+	bool
+	default n
+
+
+

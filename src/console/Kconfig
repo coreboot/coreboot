@@ -4,6 +4,10 @@ config SERIAL_CONSOLE
 	bool "See output on the serial port console"
 	default y
 
+config SERIAL_POST
+	bool "See POST output on the serial port console"
+	default n
+
 config TTYS0_BASE
 	hex "I/O base for the serial port"
 	depends on SERIAL_CONSOLE

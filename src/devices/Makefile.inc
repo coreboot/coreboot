@@ -12,8 +12,8 @@ obj-y += pci_ops.o
 obj-y += smbus_ops.o
 
 ifeq ($(CONFIG_PCI_ROM_RUN),y)
-obj-$(CONFIG_PCI_ROM_RUN) += pci_rom.o
-subdirs-$(CONFIG_PCI_ROM_RUN) += ../../util/x86emu
+obj-y += pci_rom.o
+subdirs-y += ../../util/x86emu
 else
 obj-$(CONFIG_VGA_ROM_RUN) += pci_rom.o
 subdirs-$(CONFIG_VGA_ROM_RUN) += ../../util/x86emu

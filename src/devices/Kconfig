@@ -21,34 +21,44 @@
 menu "Devices"
 
 config VGA_ROM_RUN
-	bool
+	bool "Run VGA Option ROMs"
 	help
-	  Execute PCI/AGP option ROMs if available. This is required to
-	  enable PCI/AGP VGA plugin cards.
+	  Execute VGA option ROMs if found. This is required to enable PCI/AGP
+	  VGA plugin cards.
+
+config PCI_ROM_RUN
+	bool "Run non-VGA Option ROMs"
+	help
+	  Execute non-VGA PCI option ROMs if found.
 
 choice
-	prompt "Execute PCI option ROMs"
-	default PCI_OPTION_ROM_RUN_REALMODE
-	help
-	  Execute PCI/AGP option ROMs if available. You can choose to
-	  execute PCI option ROMs natively (32bit x86 system required),
-	  in an emulator (x86emu), or ignore option ROM execution.
+        prompt "Option ROM Execution"
+        default  PCI_OPTION_ROM_RUN_REALMODE
+	depends on PCI_ROM_RUN || VGA_ROM_RUN
+        help
+          You can choose to execute PCI option ROMs natively (32bit x86 system
+	  required) or in an emulator (x86emu or YABEL).
 
-config PCI_OPTION_ROM_RUN_REALMODE
-	prompt "Run VGA ROMs"
-	bool
-	select VGA_ROM_RUN
-	help
-	  Execute PCI/AGP option ROMs if available. This is required to
-	  enable PCI/AGP VGA plugin cards.
+	config PCI_OPTION_ROM_RUN_REALMODE
+		prompt "Real mode"
+		bool
 
-config NO_RUN
-	prompt "Do NOT run VGA ROMs"
-	bool
-	help
-	  Do not execute PCI/AGP option ROMs.
+	config PCI_OPTION_ROM_RUN_YABEL
+		prompt "YABEL"
+		bool
 
+	config PCI_OPTION_ROM_RUN_X86EMU
+		prompt "X86EMU"
+		bool
 endchoice
+
+config YABEL_DEBUG_FLAGS
+	prompt "Hex value for debug flags"
+	hex
+	default 0x0
+	depends on PCI_OPTION_ROM_RUN_YABEL
+	help
+	  See debug.h for values 0 is no debug output, 0x31ff is _verbose_.
 
 endmenu
 

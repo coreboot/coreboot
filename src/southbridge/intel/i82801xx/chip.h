@@ -18,14 +18,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef IGNORE_I82801XX_DEVICE_LIST
-#warning "The i82801xx code currently supports, on a testing/experimental"
-#warning "basis, these devices:"
-#warning "i82801aa, i82801ab, i82801ba, i82801ca, i82801db, i82801dbm,"
-#warning "i82801eb, and i82801er."
-#warning "Using this without modification on any other i82801 version will"
-#warning "probably work until RAM init, but will fail after that."
-#endif
+/*
+ * The i82801xx code currently supports:
+ *  - 82801AA
+ *  - 82801AB
+ *  - 82801BA
+ *  - 82801CA
+ *  - 82801DB
+ *  - 82801DBM
+ *  - 82801EB
+ *  - 82801ER
+ *
+ * This code should NOT be used for ICH6 and later versions.
+ */
 
 #ifndef SOUTHBRIDGE_INTEL_I82801XX_CHIP_H
 #define SOUTHBRIDGE_INTEL_I82801XX_CHIP_H
@@ -43,10 +48,11 @@ struct southbridge_intel_i82801xx_config {
 	uint8_t pirqf_routing;
 	uint8_t pirqg_routing;
 	uint8_t pirqh_routing;
+
 	uint8_t ide0_enable;
 	uint8_t ide1_enable;
 };
 
 extern struct chip_operations southbridge_intel_i82801xx_ops;
 
-#endif				/* SOUTHBRIDGE_INTEL_I82801XX_CHIP_H */
+#endif

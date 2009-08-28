@@ -4,14 +4,10 @@ choice
 	prompt "Mainboard vendor"
 	default VENDOR_EMULATION
 
-config VENDOR_A_TREND
-	bool "A-Trend"
 config VENDOR_ABIT
 	bool "Abit"
 config VENDOR_ADVANTECH
 	bool "Advantech"
-config VENDOR_AGAMI
-	bool "agami"
 config VENDOR_AMD
 	bool "AMD"
 config VENDOR_ARIMA
@@ -22,6 +18,8 @@ config VENDOR_ASI
 	bool "ASI"
 config VENDOR_ASUS
 	bool "ASUS"
+config VENDOR_A_TREND
+	bool "A-Trend"
 config VENDOR_AXUS
 	bool "AXUS"
 config VENDOR_AZZA
@@ -62,6 +60,8 @@ config VENDOR_KONTRON
 	bool "Kontron"
 config VENDOR_LIPPERT
 	bool "Lippert"
+config VENDOR_MITAC
+	bool "Mitac"
 config VENDOR_MOTOROLA
 	bool "Motorola"
 config VENDOR_MSI
@@ -78,12 +78,18 @@ config VENDOR_PC_ENGINES
 	bool "PC Engines"
 config VENDOR_RCA
 	bool "RCA"
+config VENDOR_SOYO
+	bool "Soyo"
 config VENDOR_SUNW
 	bool "Sun"
 config VENDOR_SUPERMICRO
 	bool "Supermicro"
 config VENDOR_TECHNEXION
 	bool "Technexion"
+config VENDOR_TECHNOLOGIC
+	bool "Technologic"
+config VENDOR_TELEVIDEO
+	bool "TeleVideo"
 config VENDOR_THOMSON
 	bool "Thomson"
 config VENDOR_TOTAL_IMPACT
@@ -97,11 +103,6 @@ endchoice
 
 config MAINBOARD_VENDOR
 	string
-	default "A-Trend"
-	depends on VENDOR_A_TREND
-
-config MAINBOARD_VENDOR
-	string
 	default "Abit"
 	depends on VENDOR_ABIT
 
@@ -109,11 +110,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Advantech"
 	depends on VENDOR_ADVANTECH
-
-config MAINBOARD_VENDOR
-	string
-	default "agami"
-	depends on VENDOR_AGAMI
 
 config MAINBOARD_VENDOR
 	string
@@ -139,6 +135,11 @@ config MAINBOARD_VENDOR
 	string
 	default "ASUS"
 	depends on VENDOR_ASUS
+
+config MAINBOARD_VENDOR
+	string
+	default "A-Trend"
+	depends on VENDOR_A_TREND
 
 config MAINBOARD_VENDOR
 	string
@@ -242,6 +243,11 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_VENDOR
 	string
+	default "Mitac"
+	depends on VENDOR_MITAC
+
+config MAINBOARD_VENDOR
+	string
 	default "Motorola"
 	depends on VENDOR_MOTOROLA
 
@@ -282,6 +288,11 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_VENDOR
 	string
+	default "Soyo"
+	depends on VENDOR_SOYO
+
+config MAINBOARD_VENDOR
+	string
 	default "Sun"
 	depends on VENDOR_SUNW
 
@@ -294,6 +305,16 @@ config MAINBOARD_VENDOR
 	string
 	default "Technexion"
 	depends on VENDOR_TECHNEXION
+
+config MAINBOARD_VENDOR
+	string
+	default "Technologic"
+	depends on VENDOR_TECHNOLOGIC
+
+config MAINBOARD_VENDOR
+	string
+	default "TeleVideo"
+	depends on VENDOR_TELEVIDEO
 
 config MAINBOARD_VENDOR
 	string

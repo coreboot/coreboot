@@ -486,7 +486,6 @@ static void enable_dev(struct device *dev)
 	printk_debug("gx2 north: enable_dev\n");
 	void northbridgeinit(void);
 	void chipsetinit(struct northbridge_amd_gx2_config *nb);
-	void setup_realmode_idt(void);
 	void do_vsmbios(void);
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
@@ -499,8 +498,6 @@ static void enable_dev(struct device *dev)
 		cpubug();	
 		chipsetinit(nb);
 		setup_gx2();
-		/* do this here for now -- this chip really breaks our device model */
-		setup_realmode_idt();
 		do_vsmbios();
 		graphics_init();
 		dev->ops = &pci_domain_ops;

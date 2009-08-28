@@ -60,6 +60,7 @@
 #define DME1737		0x78
 #define SCH3112		0x7c
 #define SCH5307		0x81	/* Rebranded LPC47B397(?) */
+#define SCH5027D	0x89
 
 /* Register defines */
 #define DEVICE_ID_REG	0x20	/* Device ID register */
@@ -135,6 +136,7 @@ static const struct logical_devices {
 	{DME1737,  {0, 3, 4,  5, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, -1}},
 	{SCH3112,  {0, 3, 4,  5, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, -1}},
 	{SCH5307,  {0, 3, 4,  5, -1,  7, -1,  -1,  8,  -1, -1, -1, 10, -1, -1}},
+	{SCH5027D, {0, 3, 4,  5, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, 11}},
 };
 
 /**

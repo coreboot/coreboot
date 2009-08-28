@@ -25,6 +25,9 @@ static void i3100_enable_superio(void)
 	/* Enable decoding of I/O locations for SuperIO devices */
 	pci_write_config16(dev, 0x80, 0x0010);
 	pci_write_config16(dev, 0x82, 0x340f);
+
+	/* Enable the SERIRQs (start pulse width is 8 clock cycles) */
+	pci_write_config8(dev, 0x64, 0xD2);
 }
 
 static void i3100_halt_tco_timer(void)

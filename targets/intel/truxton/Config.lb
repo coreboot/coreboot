@@ -34,7 +34,7 @@ option CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 
 romimage "fallback"
 	option CONFIG_USE_FALLBACK_IMAGE=1
-	payload /tmp/filo.elf
+	payload /tmp/seabios.elf
 end
 
 buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"

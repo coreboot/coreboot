@@ -37,6 +37,7 @@ uses CONFIG_ROM_SECTION_OFFSET
 uses CONFIG_ROM_PAYLOAD
 uses CONFIG_ROM_PAYLOAD_START
 uses CONFIG_COMPRESSED_PAYLOAD_LZMA
+uses CONFIG_LB_MEM_TOPK
 uses CONFIG_PAYLOAD_SIZE
 uses CONFIG_ROMBASE
 uses CONFIG_XIP_ROM_SIZE
@@ -67,6 +68,7 @@ uses CC
 uses HOSTCC
 uses CONFIG_CROSS_COMPILE
 uses CONFIG_OBJCOPY
+uses CONFIG_CONSOLE_VGA
 
 
 ###
@@ -155,7 +157,12 @@ default CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 ##
 ## coreboot C code runs at this location in RAM
 ##
-default CONFIG_RAMBASE=0x00004000
+default CONFIG_RAMBASE=0x00100000
+
+##
+## in order to have coreboot running at 0x100000, TOPK has to be set
+##
+default CONFIG_LB_MEM_TOPK = 2*1024*1024
 
 ##
 ## Load the payload from the ROM
@@ -201,6 +208,9 @@ default CONFIG_TTYS0_BASE=0x3f8
 # Select the serial protocol
 # This defaults to 8 data bits, 1 stop bit, and no parity
 default CONFIG_TTYS0_LCS=0x3
+
+# Enable the VGA console.
+default CONFIG_CONSOLE_VGA=1
 
 ##
 ### Select the coreboot loglevel

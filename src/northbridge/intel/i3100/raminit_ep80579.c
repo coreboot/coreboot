@@ -31,7 +31,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	static const u32 register_values[] = {
 		PCI_ADDR(0, 0x00, 0, CKDIS), 0xffff0000, 0x0000ffff,
-		PCI_ADDR(0, 0x00, 0, DEVPRES), 0x00000000, 0x07420801 | DEVPRES_CONFIG,
+		PCI_ADDR(0, 0x00, 0, DEVPRES), 0x00000000, 0x07420001 | DEVPRES_CONFIG,
 		PCI_ADDR(0, 0x00, 0, PAM-1), 0xcccccc7f, 0x33333000,
 		PCI_ADDR(0, 0x00, 0, PAM+3), 0xcccccccc, 0x33333333,
 		PCI_ADDR(0, 0x00, 0, DEVPRES1), 0xffffffff, 0x0040003a,

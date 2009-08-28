@@ -23,5 +23,6 @@ config chip.h
 
 driver northbridge.o
 driver pciexp_porta.o
+driver pciexp_porta_ep80579.o
 
 default CONFIG_HAVE_HIGH_TABLES=1

@@ -30,7 +30,7 @@ option CONFIG_ROM_IMAGE_SIZE = 128 * 1024
 
 ## CONFIG_FALLBACK_SIZE is the amount of the ROM the complete fallback image
 ## (including payload) will use
-option CONFIG_FALLBACK_SIZE = CONFIG_ROM_SIZE
+option CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 
 romimage "fallback"
 	option CONFIG_USE_FALLBACK_IMAGE=1

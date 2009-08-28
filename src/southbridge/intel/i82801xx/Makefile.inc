@@ -25,7 +25,7 @@ driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_lpc.o
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_nic.o
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_pci.o
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_sata.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_smbus.o
+# driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_smbus.o
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_usb.o
 driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_usb_ehci.o
 
@@ -33,4 +33,6 @@ object-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_reset.o
 object-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_watchdog.o
 
 # TODO: What about cmos_failover.c?
+
+# TODO: Fix and enable i82801xx_smbus.o later.
 

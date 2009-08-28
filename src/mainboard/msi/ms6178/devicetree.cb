@@ -1,3 +1,23 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
 chip northbridge/intel/i82810			# Northbridge
   device apic_cluster 0 on			# APIC cluster
     chip cpu/intel/socket_PGA370		# CPU
@@ -6,11 +26,9 @@ chip northbridge/intel/i82810			# Northbridge
   end
   device pci_domain 0 on
     device pci 0.0 on end			# Host bridge
-    device pci 1.0 off				# Onboard video
-      # chip drivers/pci/onboard
-      #   device pci 1.0 on end
-      #   register "rom_address" = "0xfff80000"
-      # end
+    chip drivers/pci/onboard			# Onboard VGA
+      device pci 1.0 on end
+      register "rom_address" = "0xfff80000"	# 512 KB image
     end
     chip southbridge/intel/i82801xx		# Southbridge
       register "ide0_enable" = "1"
@@ -43,7 +61,7 @@ chip northbridge/intel/i82810			# Northbridge
             irq 0x70 = 1			# Keyboard interrupt
             irq 0x72 = 12			# Mouse interrupt
           end
-          device pnp 2e.6 on end		# Consumer IR (TODO)
+          device pnp 2e.6 off end		# Consumer IR (TODO)
           device pnp 2e.7 on			# Game port / MIDI / GPIO 1
             io 0x60 = 0x201
             io 0x62 = 0x330

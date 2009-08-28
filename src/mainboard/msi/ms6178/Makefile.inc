@@ -18,11 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_NEC
-
-source "src/mainboard/nec/powermate2000/Kconfig"
-
-endchoice
+include $(src)/mainboard/Makefile.romccboard.inc
 

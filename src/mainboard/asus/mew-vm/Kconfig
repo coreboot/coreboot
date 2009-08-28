@@ -18,11 +18,37 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_NEC
+config BOARD_ASUS_MEW_VM
+	bool "MEW-VM"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_PGA370
+	select NORTHBRIDGE_INTEL_I82810
+	select SOUTHBRIDGE_INTEL_I82801XX
+	select SUPERIO_SMSC_SMSCSUPERIO
+	select HAVE_PIRQ_TABLE
+	select UDELAY_IO
+	select PCI_ROM_RUN
+	select CONSOLE_VGA
+	help
+	  ASUS MEW-VM mainboard.
 
-source "src/mainboard/nec/powermate2000/Kconfig"
+config MAINBOARD_DIR
+	string
+	default asus/mew-vm
+	depends on BOARD_ASUS_MEW_VM
 
-endchoice
+config MAINBOARD_PART_NUMBER
+	string
+	default "MEW-VM"
+	depends on BOARD_ASUS_MEW_VM
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_ASUS_MEW_VM
+
+config VIDEO_MB
+	int
+	default 1
+	depends on BOARD_ASUS_MEW_VM
 

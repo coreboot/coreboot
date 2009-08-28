@@ -47,8 +47,13 @@ ifdef POST_EVALUATION
 $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib/failover.c
 	$(obj)/romcc -mcpu=p2 -O2 --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
 
+ifeq ($(HAVE_OPTION_TABLE),y)
+$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/option_table.h
+	$(obj)/romcc -mcpu=p2 -O2 $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
+else
 $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c
 	$(obj)/romcc -mcpu=p2 -O2 $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
+endif
 
 endif
 

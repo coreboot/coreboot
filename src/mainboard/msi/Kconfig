@@ -24,6 +24,7 @@ choice
 	
 source "src/mainboard/msi/ms6119/Kconfig"
 source "src/mainboard/msi/ms6147/Kconfig"
+source "src/mainboard/msi/ms6178/Kconfig"
 
 endchoice
 

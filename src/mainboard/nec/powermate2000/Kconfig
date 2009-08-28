@@ -18,11 +18,42 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_NEC
+config BOARD_NEC_POWERMATE_2000
+	bool "PowerMate 2000"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_PGA370
+	select NORTHBRIDGE_INTEL_I82810
+	select SOUTHBRIDGE_INTEL_I82801XX
+	select SUPERIO_SMSC_SMSCSUPERIO
+	select HAVE_PIRQ_TABLE
+	select UDELAY_IO
+	select PCI_ROM_RUN
+	select CONSOLE_VGA
+	help
+	  NEC PowerMate 2000 mainboard.
 
-source "src/mainboard/nec/powermate2000/Kconfig"
+config MAINBOARD_DIR
+	string
+	default nec/powermate2000
+	depends on BOARD_NEC_POWERMATE_2000
 
-endchoice
+config MAINBOARD_PART_NUMBER
+	string
+	default "PowerMate 2000"
+	depends on BOARD_NEC_POWERMATE_2000
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_NEC_POWERMATE_2000
+
+config IRQ_SLOT_COUNT
+	int
+	default 5
+	depends on BOARD_NEC_POWERMATE_2000
+
+config VIDEO_MB
+	int
+	default 1
+	depends on BOARD_NEC_POWERMATE_2000
 

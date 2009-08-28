@@ -18,11 +18,42 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_NEC
+config BOARD_MITAC_6513WU
+	bool "6513WU"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_PGA370
+	select NORTHBRIDGE_INTEL_I82810
+	select SOUTHBRIDGE_INTEL_I82801XX
+	select SUPERIO_SMSC_SMSCSUPERIO
+	select HAVE_PIRQ_TABLE
+	select UDELAY_IO
+	select PCI_ROM_RUN
+	select CONSOLE_VGA
+	help
+	  Mitac 6513WU mainboard.
 
-source "src/mainboard/nec/powermate2000/Kconfig"
+config MAINBOARD_DIR
+	string
+	default mitac/6513wu
+	depends on BOARD_MITAC_6513WU
 
-endchoice
+config MAINBOARD_PART_NUMBER
+	string
+	default "6513WU"
+	depends on BOARD_MITAC_6513WU
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_MITAC_6513WU
+
+config IRQ_SLOT_COUNT
+	int
+	default 8
+	depends on BOARD_MITAC_6513WU
+
+config VIDEO_MB
+	int
+	default 1
+	depends on BOARD_MITAC_6513WU
 

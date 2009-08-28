@@ -556,14 +556,14 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 	/* Constrain limits based on the fixed resources of this device. */
 	for (i = 0; i < dev->resources; i++) {
 		res = &dev->resource[i];
+		if (!(res->flags & IORESOURCE_FIXED))
+			continue;
 		if (!res->size) {
 			/* It makes no sense to have 0-sized, fixed resources.*/
 			printk_err("skipping %s@%lx fixed resource, size=0!\n",
 				   dev_path(dev), res->index);
 			continue;
 		}
-		if (!(res->flags & IORESOURCE_FIXED))
-			continue;
 
 		/* PREFETCH, MEM, or I/O - skip any others. */
 		if ((res->flags & MEM_MASK) == PREF_TYPE)

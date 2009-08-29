@@ -4,6 +4,14 @@ config ARCH_X86
 	  This option is used to set the architecture of a mainboard.
 	  It is usually set in mainboard/*/Kconfig.
 
+config AP_IN_SIPI_WAIT
+	bool
+	default n
+	depends on ARCH_X86
+	help
+	  This is an SMP option. It relates to starting up APs. 
+	  It is usually set in mainboard/*/Kconfig.
+
 config ARCH
 	string
 	default i386

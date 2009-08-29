@@ -26,6 +26,7 @@ config BOARD_AMD_RUMBA
 	select NORTHBRIDGE_AMD_GX2
 	select SOUTHBRIDGE_AMD_CS5536
 	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 	select HAVE_PIRQ_TABLE
 	help
 	  AMD Rumba mainboard.
@@ -51,12 +52,6 @@ config IRQ_SLOT_COUNT
 	depends on BOARD_AMD_RUMBA
 
 config USE_INIT
-	int
-	default 0
-	depends on BOARD_AMD_RUMBA
-
-
-config TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 	int
 	default 0
 	depends on BOARD_AMD_RUMBA

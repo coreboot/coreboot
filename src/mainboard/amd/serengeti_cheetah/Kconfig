@@ -1,7 +1,3 @@
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_AMD
-
 config BOARD_AMD_SERENGETI_CHEETAH
 	bool "Serengeti Cheetah"
 	select ARCH_X86
@@ -17,7 +13,6 @@ config BOARD_AMD_SERENGETI_CHEETAH
 	select USE_DCACHE_RAM
 	help
 	 AMD Serengeti Cheetah mainboard.
-endchoice
 
 config MAINBOARD_DIR
 	string
@@ -74,10 +69,6 @@ config MAINBOARD_PART_NUMBER
 	default "Serengeti-Cheetah"
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config PCI_64BIT_PREF_MEM
-	int
-	default 0
-	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config USE_FAILOVER_IMAGE
 	int

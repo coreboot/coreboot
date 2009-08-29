@@ -1,1 +1,9 @@
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_AMD
+
 source "src/mainboard/amd/serengeti_cheetah/Kconfig"
+source "src/mainboard/amd/rumba/Kconfig"
+
+endchoice
+

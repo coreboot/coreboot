@@ -1,0 +1,62 @@
+
+
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+config BOARD_AMD_RUMBA
+	bool "Rumba"
+	select ARCH_X86
+	select CPU_AMD_GX2
+	select NORTHBRIDGE_AMD_GX2
+	select SOUTHBRIDGE_AMD_CS5536
+	select UDELAY_TSC
+	select HAVE_PIRQ_TABLE
+	help
+	  AMD Rumba mainboard.
+
+config MAINBOARD_DIR
+	string
+	default amd/rumba
+	depends on BOARD_AMD_RUMBA
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Rumba"
+	depends on BOARD_AMD_RUMBA
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_AMD_RUMBA
+
+config IRQ_SLOT_COUNT
+	int
+	default 2
+	depends on BOARD_AMD_RUMBA
+
+config USE_INIT
+	int
+	default 0
+	depends on BOARD_AMD_RUMBA
+
+
+config TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	int
+	default 0
+	depends on BOARD_AMD_RUMBA

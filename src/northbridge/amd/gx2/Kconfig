@@ -21,7 +21,3 @@ config NORTHBRIDGE_AMD_GX2
 	bool
 	default n
 
-config HAVE_HIGH_TABLES
-	bool
-	default y
-

@@ -42,7 +42,8 @@ int print_epbar(struct pci_dev *nb)
  		epbar_phys = pci_read_long(nb, 0x40) & 0xfffffffe;
  		epbar_phys |= ((uint64_t)pci_read_long(nb, 0x44)) << 32;
  		break;
-	case 0x1234: // Dummy for non-existent functionality
+	case PCI_DEVICE_ID_INTEL_82810:
+	case PCI_DEVICE_ID_INTEL_82810DC:
 		printf("This northbrigde does not have EPBAR.\n");
 		return 1;
 	default:
@@ -88,7 +89,8 @@ int print_dmibar(struct pci_dev *nb)
  		dmibar_phys = pci_read_long(nb, 0x68) & 0xfffffffe;
  		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
  		break;
-	case 0x1234: // Dummy for non-existent functionality
+	case PCI_DEVICE_ID_INTEL_82810:
+	case PCI_DEVICE_ID_INTEL_82810DC:
 		printf("This northbrigde does not have DMIBAR.\n");
 		return 1;
 	default:
@@ -136,7 +138,8 @@ int print_pciexbar(struct pci_dev *nb)
  		pciexbar_reg = pci_read_long(nb, 0x60);
  		pciexbar_reg |= ((uint64_t)pci_read_long(nb, 0x64)) << 32;
  		break;
-	case 0x1234: // Dummy for non-existent functionality
+	case PCI_DEVICE_ID_INTEL_82810:
+	case PCI_DEVICE_ID_INTEL_82810DC:
 		printf("Error: This northbrigde does not have PCIEXBAR.\n");
 		return 1;
 	default:

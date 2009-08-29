@@ -2,6 +2,14 @@ config SERIAL_CPU_INIT
 	bool
 	default y
 
+config UDELAY_TSC
+	bool
+	default n
+
+config TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	bool
+	default n
+
 config XIP_ROM_BASE
 	hex
 	default 0xfffe0000

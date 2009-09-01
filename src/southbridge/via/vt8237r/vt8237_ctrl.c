@@ -94,6 +94,9 @@ static void vt8237_cfg(struct device *dev)
  * V-Link CKG Control				 0xb0  0x05  0x05  0x06  0x03
  * V-Link CKG Control				 0xb1  0x05  0x05  0x01  0x03
  */
+
+/* we setup 533MB/s mode full duplex */
+
 static void vt8237s_vlink_init(struct device *dev)
 {
 	u8 reg;
@@ -114,24 +117,47 @@ static void vt8237s_vlink_init(struct device *dev)
 	 * and VT8251) a different init code is required.
 	 */
 
+	/* disable auto disconnect */
+	reg = pci_read_config8(devfun7, 0x42);
+	reg &= ~0x4;
+	pci_write_config8(devfun7, 0x42, reg);
+
+	/* NB part setup */
 	pci_write_config8(devfun7, 0xb5, 0x66);
 	pci_write_config8(devfun7, 0xb6, 0x66);
-	pci_write_config8(devfun7, 0xb7, 0x65);
+	pci_write_config8(devfun7, 0xb7, 0x64);
 
 	reg = pci_read_config8(devfun7, 0xb4);
 	reg |= 0x1;
+	reg &= ~0x10;
 	pci_write_config8(devfun7, 0xb4, reg);
 
-	pci_write_config8(dev, 0xb9, 0x68);
+	pci_write_config8(devfun7, 0xb0, 0x6);
+	pci_write_config8(devfun7, 0xb1, 0x1);
+
+	/* SB part setup */
+	pci_write_config8(dev, 0xb7, 0x60);
+	pci_write_config8(dev, 0xb9, 0x88);
 	pci_write_config8(dev, 0xba, 0x88);
 	pci_write_config8(dev, 0xbb, 0x89);
 
 	reg = pci_read_config8(dev, 0xbd);
 	reg |= 0x3;
+	reg &= ~0x4;
 	pci_write_config8(dev, 0xbd, reg);
 
-	/* Program V-link 8X 8bit full duplex, parity disabled. FIXME. */
-	pci_write_config8(dev, 0x48, 0x13);
+	reg = pci_read_config8(dev, 0xbc);
+	reg &= ~0x7;
+	pci_write_config8(dev, 0xbc, reg);
+
+	/* Program V-link 8X 8bit full duplex, parity enabled.  */
+	pci_write_config8(dev, 0x48, 0x23 | 0x80);
+
+	/* enable auto disconnect, for STPGNT and HALT */
+	reg = pci_read_config8(devfun7, 0x42);
+	reg |= 0x7;
+	pci_write_config8(devfun7, 0x42, reg);
+
 }
 
 static void ctrl_enable(struct device *dev)
@@ -158,8 +184,7 @@ static void ctrl_init(struct device *dev)
 	device_t devsb = dev_find_device(PCI_VENDOR_ID_VIA,
 					 PCI_DEVICE_ID_VIA_VT8237S_LPC, 0);
 	if (devsb) {
-		/* FIXME: Skip v-link setup for now. */
-//              vt8237s_vlink_init(dev);
+		vt8237s_vlink_init(dev);
 	}
 
 	/* Configure PCI1 and copy mirror registers from D0F3. */

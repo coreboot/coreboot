@@ -4,6 +4,7 @@
  * Copyright (C) 2007 Carl-Daniel Hailfinger
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2008 Robinson P. Tryon <bishop.robinson@gmail.com>
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +31,10 @@
 #include <getopt.h>
 #if defined(__GLIBC__)
 #include <sys/io.h>
+#endif
+#if (defined(__MACH__) && defined(__APPLE__))
+/* DirectIO is available here: http://www.coresystems.de/en/directio */
+#include <DirectIO/darwinio.h>
 #endif
 
 #if defined(__FreeBSD__)

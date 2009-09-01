@@ -34,17 +34,23 @@ CFLAGS = -O2 -Wall -Werror -Wstrict-prototypes -Wundef -Wstrict-aliasing \
 
 OBJS = superiotool.o ali.o fintek.o ite.o nsc.o smsc.o winbond.o
 
+OS_ARCH = $(shell uname)
+ifeq ($(OS_ARCH), Darwin)
+LDFLAGS = -framework IOKit -framework DirectIO -lpci -lz
+endif
+
 all: $(PROGRAM)
 
 superiotool.o: *.c superiotool.h
 
 $(PROGRAM): $(OBJS) superiotool.h
-	$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS)
+	$(CC) $(LDFLAGS) -o $(PROGRAM) $(OBJS)
 
 install: $(PROGRAM)
-	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
-	mkdir -p $(PREFIX)/share/man/man8
-	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
+	mkdir -p $(DESTDIR)$(PREFIX)/sbin
+	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
+	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
+	$(INSTALL) $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
 clean:
 	rm -f $(PROGRAM) *.o

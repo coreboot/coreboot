@@ -30,30 +30,23 @@ int fd_msr;
 
 unsigned int cpuid(unsigned int op)
 {
-	unsigned int ret;
-	unsigned int dummy2, dummy3, dummy4;
-#if DARWIN
-	asm volatile ( 
-		"pushl %%ebx	\n"
-		"cpuid		\n"
-		"movl %%ebx, %1	\n"
-		"popl %%ebx	\n"
-		: "=a" (ret), "=r" (dummy2), "=c" (dummy3), "=d" (dummy4)
-		: "a" (op)
-		: "cc"
-	);
+	uint32_t ret;
+
+#if defined(__DARWIN__) && !defined(__LP64__)
+        asm volatile (
+                "pushl %%ebx    \n"
+                "cpuid          \n"
+                "popl %%ebx     \n"
+                : "=a" (ret) : "a" (op) : "%ecx", "%edx"
+        );
 #else
-	asm volatile ( 
-		"cpuid"
-		: "=a" (ret), "=b" (dummy2), "=c" (dummy3), "=d" (dummy4)
-		: "a" (op)
-		: "cc"
-	);
+	asm ("cpuid" : "=a" (ret) : "a" (op) : "%ebx", "%ecx", "%edx");
 #endif
+
 	return ret;
 }
 
-#ifndef DARWIN
+#ifndef __DARWIN__
 int msr_readerror = 0;
 
 msr_t rdmsr(int addr)
@@ -288,7 +281,7 @@ int print_intel_core_msrs(void)
 		return -1;
 	}
 
-#ifndef DARWIN
+#ifndef __DARWIN__
 	fd_msr = open("/dev/cpu/0/msr", O_RDWR);
 	if (fd_msr < 0) {
 		perror("Error while opening /dev/cpu/0/msr");
@@ -309,7 +302,7 @@ int print_intel_core_msrs(void)
 	close(fd_msr);
 
 	for (core = 0; core < 8; core++) {
-#ifndef DARWIN
+#ifndef __DARWIN__
 		char msrfilename[64];
 		memset(msrfilename, 0, 64);
 		sprintf(msrfilename, "/dev/cpu/%d/msr", core);
@@ -330,12 +323,12 @@ int print_intel_core_msrs(void)
 			       cpu->per_core_msrs[i].number, msr.hi, msr.lo,
 			       cpu->per_core_msrs[i].name);
 		}
-#ifndef DARWIN
+#ifndef __DARWIN__
 		close(fd_msr);
 #endif
 	}
 
-#ifndef DARWIN
+#ifndef __DARWIN__
 	if (msr_readerror)
 		printf("\n(*) Some MSRs could not be read. The marked values are unreliable.\n");
 #endif

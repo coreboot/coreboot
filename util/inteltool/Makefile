@@ -31,9 +31,7 @@ OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o
 
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
-CFLAGS += -DDARWIN -I/usr/local/include 
-LDFLAGS = -framework IOKit -framework DirectIO -L/usr/local/lib -lpci -lz
-# OBJS += darwinio.o
+LDFLAGS = -framework DirectIO -lpci -lz
 endif
 
 all: pciutils dep $(PROGRAM)
@@ -56,7 +54,7 @@ pciutils:
 		   printf "struct pci_access *pacc;\n";		\
 		   printf "int main(int argc, char **argv)\n";	\
 		   printf "{ pacc = pci_alloc(); return 0; }\n"; ) > .test.c )
-	@$(CC) $(CFLAGS) .test.c -o .test $(LDFLAGS) &>/dev/null &&	  \
+	@$(CC) $(CFLAGS) $(LDFLAGS) .test.c -o .test &>/dev/null &&	  \
 		printf "found.\n" || ( printf "not found.\n\n"; 	  \
 		printf "Please install pciutils-devel and zlib-devel.\n"; \
 		printf "See README for more information.\n\n";		  \
@@ -64,6 +62,7 @@ pciutils:
 	@rm -rf .test.c .test .test.dSYM
 
 install: $(PROGRAM)
+	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
 	$(INSTALL) $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8

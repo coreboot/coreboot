@@ -50,10 +50,10 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
 };
 
-#ifndef DARWIN
+#ifndef __DARWIN__
 static int fd_mem;
 
-void *map_physical(unsigned long phys_addr, int len)
+void *map_physical(unsigned long phys_addr, size_t len)
 {
 	void *virt_addr;
 
@@ -68,7 +68,7 @@ void *map_physical(unsigned long phys_addr, int len)
 	return virt_addr;
 }
 
-void unmap_physical(void *virt_addr, int len)
+void unmap_physical(void *virt_addr, size_t len)
 {
 	munmap(virt_addr, len);
 }
@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-#ifndef DARWIN
+#ifndef __DARWIN__
 	if ((fd_mem = open("/dev/mem", O_RDWR)) < 0) {
 		perror("Can not open /dev/mem");
 		exit(1);

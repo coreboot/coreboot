@@ -18,12 +18,13 @@
  */
 
 #include <stdint.h>
-#ifndef DARWIN
+
+#if defined(__GLIBC__)
 #include <sys/io.h>
-#else
-/* DirectIO is available here:
- * http://www.coresystems.de/en/directio
- */
+#endif
+#if (defined(__MACH__) && defined(__APPLE__))
+/* DirectIO is available here: http://www.coresystems.de/en/directio */
+#define __DARWIN__
 #include <DirectIO/darwinio.h>
 #endif
 #include <pci/pci.h>
@@ -55,13 +56,13 @@
 
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))
 
-#ifndef DARWIN
+#ifndef __DARWIN__
 typedef struct { uint32_t hi, lo; } msr_t;
 #endif
 typedef struct { uint16_t addr; int size; char *name; } io_register_t;
 
-void *map_physical(unsigned long phys_addr, int len);
-void unmap_physical(void *virt_addr, int len);
+void *map_physical(unsigned long phys_addr, size_t len);
+void unmap_physical(void *virt_addr, size_t len);
 
 unsigned int cpuid(unsigned int op);
 int print_intel_core_msrs(void);

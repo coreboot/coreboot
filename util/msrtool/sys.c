@@ -2,6 +2,7 @@
  * This file is part of msrtool.
  *
  * Copyright (c) 2008 Peter Stuge <peter@stuge.se>
+ * Copyright (c) 2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -25,7 +26,18 @@ static struct cpuid_t id;
 
 struct cpuid_t *cpuid(void) {
 	uint32_t outeax;
+
+#if defined(__DARWIN__) && !defined(__LP64__)
+        asm volatile (
+                "pushl %%ebx    \n"
+                "cpuid          \n"
+                "popl %%ebx     \n"
+                : "=a" (outeax) : "a" (1) : "%ecx", "%edx"
+        );
+#else
 	asm ("cpuid" : "=a" (outeax) : "a" (1) : "%ebx", "%ecx", "%edx");
+#endif
+
 	id.stepping = outeax & 0xf;
 	outeax >>= 4;
 	id.model = outeax & 0xf;
@@ -40,6 +52,9 @@ struct cpuid_t *cpuid(void) {
 		id.model |= (id.ext_model << 4);
 		id.family += id.ext_family;
 	}
+	printf_verbose("CPU: family %x, model %x, stepping %x\n",
+			id.family, id.model, id.stepping);
+
 	return &id;
 }
 

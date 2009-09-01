@@ -2,6 +2,7 @@
  * This file is part of msrtool.
  *
  * Copyright (c) 2008 Peter Stuge <peter@stuge.se>
+ * Copyright (c) 2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -22,6 +23,11 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#if (defined(__MACH__) && defined(__APPLE__))
+/* DirectIO is available here: http://www.coresystems.de/en/directio */
+#define __DARWIN__
+#include <DirectIO/darwinio.h>
+#endif
 #include <pci/pci.h>
 
 #define HEXCHARS "0123456789abcdefABCDEF"
@@ -174,6 +180,11 @@ extern int linux_open(uint8_t cpu, enum SysModes mode);
 extern int linux_close(uint8_t cpu);
 extern int linux_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val);
 
+/* darwin.c */
+extern int darwin_probe(const struct sysdef *system);
+extern int darwin_open(uint8_t cpu, enum SysModes mode);
+extern int darwin_close(uint8_t cpu);
+extern int darwin_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val);
 
 /** target externs **/
 

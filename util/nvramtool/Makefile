@@ -18,6 +18,11 @@ OBJS =  cmos_lowlevel.o cmos_ops.o common.o compute_ip_checksum.o \
 	hexdump.o input_file.o layout.o layout_file.o lbtable.o   \
 	nvramtool.o opts.o reg_expr.o
 
+OS_ARCH        = $(shell uname)
+ifeq ($(OS_ARCH), Darwin)
+LDFLAGS = -framework DirectIO
+endif
+
 all: dep $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
@@ -34,9 +39,10 @@ dep:
 	@$(CC) -MM *.c > .dependencies
 
 install: $(PROGRAM)
-	$(INSTALL) $(PROGRAM) $(PREFIX)/sbin
-	mkdir -p $(PREFIX)/share/man/man1
-	$(INSTALL) $(PROGRAM).8 $(PREFIX)/share/man/man8
+	mkdir -p $(DESTDIR)$(PREFIX)/sbin
+	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
+	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
+	$(INSTALL) $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
 .PHONY: all clean distclean dep
 

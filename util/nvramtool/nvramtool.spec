@@ -33,9 +33,9 @@ make
 %install
 rm -rf "$RPM_BUILD_ROOT"
 mkdir -p "$RPM_BUILD_ROOT/usr/bin"
-mkdir -p "$RPM_BUILD_ROOT/usr/man/man1"
+mkdir -p "$RPM_BUILD_ROOT/usr/man/man8"
 cp nvramtool "$RPM_BUILD_ROOT/usr/bin"
-cp nvramtool.1.gz $RPM_BUILD_ROOT/usr/man/man1
+cp nvramtool.8.gz $RPM_BUILD_ROOT/usr/man/man8
 
 %clean
 rm -rf "$RPM_BUILD_ROOT"
@@ -45,4 +45,4 @@ rm -rf "$RPM_BUILD_ROOT"
 %doc ChangeLog README
 %doc README
 /usr/bin/nvramtool
-/usr/man/man1/nvramtool.1.gz
+/usr/man/man8/nvramtool.8.gz

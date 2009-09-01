@@ -53,7 +53,12 @@
 #define INW(x) __extension__ ({ u_int tmp = (x); inw(tmp); })
 #define INL(x) __extension__ ({ u_int tmp = (x); inl(tmp); })
 #else
+#if defined(__GLIBC__)
 #include <sys/io.h>
+#endif
+#if (defined(__MACH__) && defined(__APPLE__))
+#include <DirectIO/darwinio.h>
+#endif
 #define OUTB outb
 #define OUTW outw
 #define OUTL outl

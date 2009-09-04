@@ -63,10 +63,9 @@ socketfkconfig.tex: ../src/cpu/amd/socket_F/Kconfig
 	grep '^config' $< | awk '{print $2}'  >>$@
 	cat endverbatim.tex  >> $@
 
-
 clean:
-	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex skconfig.tex cpukconfig.tex socketkconfig.tex
+	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex skconfig.tex cpukconfig.tex socketfkconfig.tex
 
 distclean: clean
-	rm -f LinuxBIOS-AMD64.pdf 
-	
+	rm -f LinuxBIOS-AMD64.pdf Kconfig.pdf
+

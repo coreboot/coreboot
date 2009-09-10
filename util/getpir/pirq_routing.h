@@ -39,12 +39,17 @@ struct irq_routing_table {
 
 extern const struct irq_routing_table intel_irq_routing_table;
 
+#ifdef GETPIR
+#define copy_pirq_routing_table(start) (start)
+unsigned long write_pirq_routing_table(unsigned long start);
+#else
 #if CONFIG_HAVE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long start);
 unsigned long write_pirq_routing_table(unsigned long start);
 #else
 #define copy_pirq_routing_table(start) (start)
 #define write_pirq_routing_table(start) (start)
+#endif
 #endif
 
 #endif /* ARCH_PIRQ_ROUTING_H */

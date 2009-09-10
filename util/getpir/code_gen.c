@@ -50,7 +50,7 @@ void code_gen(char *filename, struct irq_routing_table *rt)
 		fprintf(fpir, "%s", *code++);
 
 	fprintf(fpir, "\t32 + 16 * %d,		/* Max. number of devices on the bus */\n",
-		ts, ts);
+		ts);
 	fprintf(fpir, "\t0x%02x,			/* Interrupt router bus */\n",
 		rt->rtr_bus);
 	fprintf(fpir, "\t(0x%02x << 3) | 0x%01x,	/* Interrupt router dev */\n",

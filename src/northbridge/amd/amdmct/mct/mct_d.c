@@ -2472,22 +2472,13 @@ static u8 mct_setMode(struct MCTStatStruc *pMCTstat,
 
 u32 Get_NB32(u32 dev, u32 reg)
 {
-	u32 addr;
-
-	addr = (dev>>4) | (reg & 0xFF) | ((reg & 0xf00)<<16);
-	outl((1<<31) | (addr & ~3), 0xcf8);
-
-	return inl(0xcfc);
+	return pci_read_config32(dev, reg);
 }
 
 
 void Set_NB32(u32 dev, u32 reg, u32 val)
 {
-	u32 addr;
-
-	addr = (dev>>4) | (reg & 0xFF) | ((reg & 0xf00)<<16);
-	outl((1<<31) | (addr & ~3), 0xcf8);
-	outl(val, 0xcfc);
+	pci_write_config32(dev, reg, val);
 }
 
 

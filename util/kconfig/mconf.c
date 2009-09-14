@@ -506,11 +506,14 @@ static void build_conf(struct menu *menu)
 			if (def_menu) {
 				item_add_str(" (%s)", _(menu_get_prompt(def_menu)));
 				item_add_str("  --->");
+#if 0 
+/* coreboot doesn't need this representation */
 				if (def_menu->list) {
 					indent += 2;
 					build_conf(def_menu);
 					indent -= 2;
 				}
+#endif
 			}
 			return;
 		}

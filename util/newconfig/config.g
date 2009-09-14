@@ -2257,7 +2257,7 @@ def writemakefile(path):
 	file.write("\n")
 
 	# cbfstool rules
-	file.write("\ncbfstool:\n\tmkdir -p cbfs/tools/lzma\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)/cbfs\n")
+	file.write("\ncbfstool:\n\tmkdir -p cbfs\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)/cbfs\n")
 	file.write("\ncbfstool-clean:\n\t$(MAKE) -C $(TOP)/util/cbfstool obj=$(shell pwd)/cbfs clean\n\n")
 
 	file.write("include Makefile.settings\n\n")

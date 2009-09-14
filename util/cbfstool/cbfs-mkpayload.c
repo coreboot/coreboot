@@ -2,6 +2,8 @@
  * cbfs-mkpayload
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
+ *               2009 coresystems GmbH
+ *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +30,10 @@
 #include <arpa/inet.h>
 
 #include "common.h"
-#include "../cbfs.h"
+#include "cbfs.h"
 
-int parse_elf(unsigned char *input, unsigned char **output, int algo,
-	      void (*compress) (char *, int, char *, int *))
+int parse_elf_to_payload(unsigned char *input, unsigned char **output,
+			 comp_algo algo)
 {
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr;
@@ -45,6 +47,10 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 	int doffset = 0;
 	struct cbfs_payload_segment *segs;
 	int i;
+
+	comp_func_ptr compress = compression_function(algo);
+	if (!compress)
+		return -1;
 
 	ehdr = (Elf32_Ehdr *) input;
 	headers = ehdr->e_phnum;
@@ -93,8 +99,7 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 	/* Allocate a block of memory to store the data in */
 
 	sptr =
-	    calloc((segments * sizeof(struct cbfs_payload_segment)) + isize,
-		   1);
+	    calloc((segments * sizeof(struct cbfs_payload_segment)) + isize, 1);
 	doffset = (segments * sizeof(struct cbfs_payload_segment));
 
 	if (sptr == NULL)
@@ -141,7 +146,8 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 			segs[segments].type = PAYLOAD_SEGMENT_BSS;
 			segs[segments].load_addr =
 			    (unsigned long long)htonl(phdr[i].p_paddr);
-			segs[segments].mem_len = (unsigned int)htonl(phdr[i].p_memsz);
+			segs[segments].mem_len =
+			    (unsigned int)htonl(phdr[i].p_memsz);
 			segs[segments].offset = htonl(doffset);
 
 			segments++;
@@ -156,8 +162,7 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 
 		int len;
 		compress((char *)&header[phdr[i].p_offset],
-			 phdr[i].p_filesz,
-			 (char *)(sptr + doffset), &len);
+			 phdr[i].p_filesz, (char *)(sptr + doffset), &len);
 		segs[segments].len = htonl(len);
 
 		/* If the compressed section is larger, then use the
@@ -184,89 +189,6 @@ int parse_elf(unsigned char *input, unsigned char **output, int algo,
 
 	return (segments * sizeof(struct cbfs_payload_segment)) + osize;
 
-err:
+      err:
 	return -1;
-}
-
-int main(int argc, char **argv)
-{
-	void (*compress) (char *, int, char *, int *);
-	int algo = CBFS_COMPRESS_NONE;
-
-	char *output = NULL;
-	char *input = NULL;
-
-	unsigned char *buffer, *obuffer;
-	int size, osize;
-
-	while (1) {
-		int option_index;
-		static struct option longopt[] = {
-			{"output", 1, 0, 'o'},
-			{"lzma", 0, 0, 'l'},
-			{"nocompress", 0, 0, 'n'},
-		};
-
-		signed char ch = getopt_long(argc, argv, "o:ln",
-					     longopt, &option_index);
-
-		if (ch == -1)
-			break;
-
-		switch (ch) {
-		case 'o':
-			output = optarg;
-			break;
-		case 'l':
-			algo = CBFS_COMPRESS_LZMA;
-			break;
-		case 'n':
-			algo = CBFS_COMPRESS_NONE;
-			break;
-		default:
-			//usage();
-			return -1;
-		}
-	}
-
-	if (optind < argc)
-		input = argv[optind];
-
-	if (input == NULL || !strcmp(input, "-"))
-		buffer = file_read_to_buffer(STDIN_FILENO, &size);
-	else {
-		printf("Reading from %s\n", input);
-		buffer = file_read(input, &size);
-	}
-
-	if (!iself(buffer)) {
-		fprintf(stderr, "E:  This does not appear to be an ELF file\n");
-		return -1;
-	}
-
-	switch (algo) {
-	case CBFS_COMPRESS_NONE:
-		compress = none_compress;
-		break;
-	case CBFS_COMPRESS_LZMA:
-		compress = lzma_compress;
-		break;
-	default:
-		fprintf(stderr, "E: Unknown compression algorithm %d!\n", algo);
-		return -1;
-	}
-
-	osize = parse_elf(buffer, &obuffer, algo, compress);
-
-	if (osize == -1) {
-		fprintf(stderr, "E:  Error while converting the payload\n");
-		return -1;
-	}
-
-	if (output == NULL || !strcmp(output, "-"))
-		file_write_from_buffer(STDOUT_FILENO, obuffer, osize);
-	else
-		file_write(output, obuffer, osize);
-
-	return 0;
 }

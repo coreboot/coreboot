@@ -1,7 +1,8 @@
 /*
- * cbfstool
+ * cbfstool, CLI utility for CBFS file manipulation
  *
- * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
+ * Copyright (C) 2009 coresystems GmbH
+ *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,145 +18,116 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-/* v2 compat: First, assumes a 64K bootblock. 
- * cbfstool coreboot.rom create 0x80000 coreboot.strip 
- * cbfstool coreboot.rom add-payload /tmp/filo.elf payload 
- * cbfstool coreboot.rom extract new_filo.elf payload 
- * cbfstool coreboot.rom print
- */
-
-
-#include <string.h>
-#include <unistd.h>
-#include <libgen.h>
-#include <sys/mman.h>
-#include "cbfstool.h"
-
-extern int create_handler(struct rom *, int, char **);
-extern int bootblock_handler(struct rom *, int, char **);
-extern int print_handler(struct rom *, int, char **);
-extern int add_handler(struct rom *, int, char **);
-extern int extract_handler(struct rom *, int, char **);
-extern int delete_handler(struct rom *, int, char **);
-extern int resize_handler(struct rom *, int, char **);
-extern int add_payload_handler(struct rom *, int, char **);
-extern int add_stage_handler(struct rom *, int, char **);
-
-extern void create_usage(void);
-extern void bootblock_usage(void);
-extern void print_usage(void);
-extern void add_usage(void);
-extern void delete_usage(void);
-extern void extract_usage(void);
-extern void resize_usage(void);
-extern void add_payload_usage(void);
-extern void add_stage_usage(void);
-
-struct {
-	char *command;
-	int (*handler) (struct rom *, int, char **);
-	void (*help) (void);
-} commands[] = {
-	{
-	"add", add_handler, add_usage}, {
-	"add-payload", add_payload_handler, add_payload_usage}, {
-	"add-stage", add_stage_handler, add_stage_usage}, {
-	"bootblock", bootblock_handler, bootblock_usage}, {
-	"create", create_handler, create_usage}, {
-	"delete", delete_handler, delete_usage}, {
-	"extract", extract_handler, extract_usage}, {
-	"print", print_handler, print_usage}, {
-	"resize", resize_handler, resize_usage}, {
-"", NULL, NULL},};
-
-static struct rom rom;
-
-char cbfstool_bindir[255];
-
-void show_help(void)
-{
-	int i;
-
-	printf("cbfstool [OPTION] [[FILE] [COMMAND] [PARAMETERS]...\n");
-	printf("Apply COMMANDS with PARAMETERS to FILE.  If no COMMAND is\n");
-	printf("given, run in interactive mode\n\n");
-	printf("OPTIONs:\n");
-	printf(" -h\t\tDisplay this help message\n");
-	printf(" -C <dir>\tChange to the directory before operating\n\n");
-	printf("COMMANDs:\n");
-
-	for (i = 0; commands[i].handler != NULL; i++)
-		commands[i].help();
-}
+#include <stdio.h>
+#include <stdint.h>
+#include "common.h"
+#include "cbfs.h"
 
 int main(int argc, char **argv)
 {
-	char *cdir = NULL;
-	char *rname;
-	char *cmd;
-	int ret = -1, i;
+	if (argc < 3) {
+		printf
+		    ("cbfstool: Management utility for CBFS formatted ROM images\n"
+		     "USAGE:\n" "cbfstool [-h]\n"
+		     "cbfstool FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
+		     " -h		Display this help message\n\n"
+		     "COMMANDs:\n"
+		     "add FILE NAME TYPE [base address]    Add a component\n"
+		     "add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
+		     "add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
+		     "create SIZE BSIZE BOOTBLOCK [ALIGN]  Create a ROM file\n"
+		     "print                                Show the contents of the ROM\n");
+		return 1;
+	}
+	char *romname = argv[1];
+	char *cmd = argv[2];
 
-	strncpy(cbfstool_bindir, dirname(argv[0]), 254);
-
-	while (1) {
-		signed ch = getopt(argc, argv, "hC:");
-		if (ch == -1)
-			break;
-		switch (ch) {
-		case 'h':
-			show_help();
-			return -1;
-		case 'C':
-			cdir = optarg;
-			break;
+	if (strcmp(cmd, "create") == 0) {
+		if (argc < 6) {
+			printf("not enough arguments to 'create'.\n");
+			return 1;
 		}
+		uint32_t size = strtoul(argv[3], NULL, 0);
+		/* ignore bootblock size. we use whatever we get and won't allocate any larger */
+		char *bootblock = argv[5];
+		uint32_t align = 0;
+		if (argc > 6)
+			align = strtoul(argv[6], NULL, 0);
+		return create_cbfs_image(romname, size, bootblock, align);
 	}
 
-	if (optind >= argc) {
-		show_help();
-		return -1;
+	void *rom = loadrom(romname);
+
+	if (strcmp(cmd, "print") == 0) {
+		print_cbfs_directory(romname);
+		return 0;
 	}
 
-	if (cdir != NULL && chdir(cdir)) {
-		ERROR("Unable to switch to %s: %m\n", cdir);
-		return -1;
+	if (argc < 5) {
+		printf("not enough arguments to '%s'.\n", cmd);
+		return 1;
 	}
 
-	rname = argv[optind];
-	cmd = optind + 1 < argc ? argv[optind + 1] : NULL;
+	void *filename = argv[3];
+	void *cbfsname = argv[4];
 
-	/* Open the ROM (if it exists) */
-	rom.name = (unsigned char *)strdup(rname);
+	uint32_t filesize = 0;
+	void *filedata = loadfile(filename, &filesize, 0, SEEK_SET);
 
-	if (!access(rname, F_OK)) {
-		if (open_rom(&rom, rname)) {
-			ERROR("Problem while reading the ROM\n");
-			return -1;
+	uint32_t base = 0;
+	void *cbfsfile;
+
+	if (strcmp(cmd, "add") == 0) {
+		if (argc < 6) {
+			printf("not enough arguments to 'add'.\n");
+			return 1;
 		}
-	}
-
-	if (cmd) {
-		/* Process the incoming comand */
-
-		for (i = 0; commands[i].handler != NULL; i++) {
-			if (!strcmp(commands[i].command, cmd)) {
-				ret = commands[i].handler(&rom,
-							  argc - 3, &argv[3]);
-				goto leave;
-			}
+		uint32_t type;
+		if (intfiletype(argv[5]) != ((uint64_t) - 1))
+			type = intfiletype(argv[5]);
+		else
+			type = strtoul(argv[5], NULL, 0);
+		if (argc > 6) {
+			base = strtoul(argv[6], NULL, 0);
 		}
-
-		ERROR("Command %s not valid\n", cmd);
-	} else {
-		printf("Interactive mode not ready yet!\n");
+		cbfsfile =
+		    create_cbfs_file(cbfsname, filedata, &filesize, type,
+				     &base);
 	}
 
-leave:
-	if (rom.ptr != NULL && rom.ptr != MAP_FAILED)
-		munmap(rom.ptr, rom.size);
+	if (strcmp(cmd, "add-payload") == 0) {
+		comp_algo algo = CBFS_COMPRESS_NONE;
+		if (argc > 5) {
+			if (argv[5][0] == 'l')
+				algo = CBFS_COMPRESS_LZMA;
+		}
+		if (argc > 6) {
+			base = strtoul(argv[6], NULL, 0);
+		}
+		unsigned char *payload;
+		filesize = parse_elf_to_payload(filedata, &payload, algo);
+		cbfsfile =
+		    create_cbfs_file(cbfsname, payload, &filesize,
+				     CBFS_COMPONENT_PAYLOAD, &base);
+	}
 
-	if (rom.fd > 0)
-		close(rom.fd);
+	if (strcmp(cmd, "add-stage") == 0) {
+		comp_algo algo = CBFS_COMPRESS_NONE;
+		if (argc > 5) {
+			if (argv[5][0] == 'l')
+				algo = CBFS_COMPRESS_LZMA;
+		}
+		if (argc > 6) {
+			base = strtoul(argv[6], NULL, 0);
+		}
+		unsigned char *stage;
+		filesize = parse_elf_to_stage(filedata, &stage, algo, &base);
+		cbfsfile =
+		    create_cbfs_file(cbfsname, stage, &filesize,
+				     CBFS_COMPONENT_STAGE, &base);
+	}
 
-	return ret;
+	add_file_to_cbfs(cbfsfile, filesize, base);
+	writerom(romname, rom, romsize);
+	return 0;
 }

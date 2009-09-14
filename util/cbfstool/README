@@ -100,7 +100,7 @@ component at runtime without disturbing the others.
 the ROM).  This is to allow for arbitrary space to be left at the beginning
 of the ROM for things like embedded controller firmware.
 
-'pad' rounds the header to 32 bits and reserves a little room for later use. 
+'pad' rounds the header to 32 bytes and reserves a little room for later use. 
 
 = Bootblock =
 The bootblock is a mandatory component in the ROM.  It is located in the
@@ -123,7 +123,7 @@ unlimited size.
 
 Each CBFS component starts with a header:
 
-struct CBFS_file {
+struct cbfs_file {
         char magic[8];
         unsigned int len;
         unsigned int type;
@@ -335,24 +335,3 @@ the "don't care" component type.  This can be used when the component
 type is not necessary (such as when the name of the component is unique.
 i.e. option_table).  It is recommended that all components be assigned a
 unique type, but NULL can be used when the type does not matter.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

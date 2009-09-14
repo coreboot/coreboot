@@ -1,42 +1,51 @@
-#
-#
-#
-
 obj ?= $(shell pwd)
 
-COMMANDS=create.o bootblock.o delete.o extract.o add.o print.o resize.o
-OBJ=$(COMMANDS) cbfstool.o util.o fs.o
-INC=cbfstool.h cbfs.h
-
-HOSTCC ?= gcc
 HOSTCXX ?= g++
+HOSTCC ?= gcc
 
-CFLAGS=-g -Wall -W -Werror
+BINARY:=$(obj)/cbfstool
 
-DESTDIR ?= /usr/local/bin
+COMMON:=common.o compress.o minilzma.o
+COMMON+=LZMAEncoder.o LZInWindow.o
+COMMON+=RangeCoderBit.o StreamUtils.o
+COMMON+=OutBuffer.o Alloc.o CRC.o
+COMMON+=cbfs-mkstage.o cbfs-mkpayload.o cbfstool.o
 
-all: $(obj)/cbfstool $(obj)/tools/cbfs-mkpayload $(obj)/tools/cbfs-mkstage
+COMMON:=$(addprefix $(obj)/,$(COMMON))
 
-$(obj)/cbfstool: $(patsubst %,$(obj)/%,$(OBJ))
-	$(HOSTCC) -o $@ $(patsubst %,$(obj)/%,$(OBJ))
-
-tobj = $(obj)/tools
-tsrc = $(shell pwd)/tools
-
-include $(tsrc)/Makefile
-
-$(obj)/%.o: %.c $(INC)
+$(obj)/%.o: %.c
 	$(HOSTCC) $(CFLAGS) -c -o $@ $<
 
-install: $(obj)/cbfstool $(obj)/tools/cbfs-mkpayload $(obj)/tools/cbfs-mkstage
-	@ install -d $(DESTDIR)
-	@ install -m 0755 $(obj)/cbfstool $(DESTDIR)/cbfstool
-	@ install -m 0755 $(obj)/tools/cbfs-mkstage $(DESTDIR)/cbfs-mkstage
-	@ install -m 0755 $(obj)/tools/cbfs-mkpayload $(DESTDIR)/cbfs-mkpayload
+$(obj)/%.o: lzma/%.cc
+	$(HOSTCXX) $(CXXFLAGS) -c -o $@ $<
+
+$(obj)/%.o: lzma/C/7zip/Compress/LZMA/%.cpp
+	$(HOSTCXX) $(CXXFLAGS) -c -o $@ $<
+
+$(obj)/%.o: lzma/C/7zip/Compress/LZ/%.cpp
+	$(HOSTCXX) $(CXXFLAGS) -c -o $@ $<
+
+$(obj)/%.o: lzma/C/7zip/Compress/RangeCoder/%.cpp
+	$(HOSTCXX) $(CXXFLAGS) -c -o $@ $<
+
+$(obj)/%.o: lzma/C/7zip/Common/%.cpp
+	$(HOSTCXX) $(CXXFLAGS) -c -o $@ $<
+
+$(obj)/%.o: lzma/C/Common/%.cpp
+	$(HOSTCXX) $(CXXFLAGS) -c -o $@ $<
+
+all: $(BINARY)
+
+clean:
+	rm -f $(COMMON) $(BINARY)
 
 tags: 
-	ctags *.[ch] */*.[ch]
+	ctags *.[ch]
 
-clean: tools-clean
-	rm -f $(patsubst %,$(obj)/%,$(OBJ)) $(obj)/cbfstool
+CXXFLAGS=-DCOMPACT -m32
+CFLAGS=-m32
+LDFLAGS=-m32
 
+$(obj)/cbfstool:$(COMMON)
+	$(HOSTCXX) $(LDFLAGS) -o $@ $^
+	strip $@

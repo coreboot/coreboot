@@ -2,6 +2,8 @@
  * cbfs-mkstage
  *
  * Copyright (C) 2008 Jordan Crouse <jordan@cosmicpenguin.net>
+ *               2009 coresystems GmbH
+ *                 written by Patrick Georgi <patrick.georgi@coresystems.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +29,7 @@
 #include <sys/stat.h>
 
 #include "common.h"
-#include "../cbfs.h"
+#include "cbfs.h"
 
 unsigned int idemp(unsigned int x)
 {
@@ -36,13 +38,15 @@ unsigned int idemp(unsigned int x)
 
 unsigned int swap32(unsigned int x)
 {
-	return ((x>>24) | ((x>>8) & 0xff00) | ((x<<8) & 0xff0000) | (x<<24));
+	return ((x >> 24) | ((x >> 8) & 0xff00) | ((x << 8) & 0xff0000) |
+		(x << 24));
 }
 
-unsigned int (*elf32_to_native)(unsigned int)=idemp;
+unsigned int (*elf32_to_native) (unsigned int) = idemp;
 
-int parse_elf(unsigned char *input, unsigned char **output,
-	      int mode, void (*compress) (char *, int, char *, int *))
+/* returns size of result, or -1 if error */
+int parse_elf_to_stage(unsigned char *input, unsigned char **output,
+		       comp_algo algo, uint32_t * location)
 {
 	Elf32_Phdr *phdr;
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
@@ -56,10 +60,22 @@ int parse_elf(unsigned char *input, unsigned char **output,
 
 	int elf_bigendian = 0;
 	int host_bigendian = 0;
-	if (ehdr->e_ident[EI_DATA]==ELFDATA2MSB) {
+
+	comp_func_ptr compress = compression_function(algo);
+	if (!compress)
+		return -1;
+
+	if (!iself(input)) {
+		fprintf(stderr, "E:  The incoming file is not an ELF\n");
+		return -1;
+	}
+
+	if (ehdr->e_ident[EI_DATA] == ELFDATA2MSB) {
 		elf_bigendian = 1;
 	}
-	if ((unsigned int)"1234"==0x31323334) {
+	char test[4] = "1234";
+	uint32_t inttest = *(uint32_t *) test;
+	if (inttest == 0x31323334) {
 		host_bigendian = 1;
 	}
 	if (elf_bigendian != host_bigendian) {
@@ -125,7 +141,8 @@ int parse_elf(unsigned char *input, unsigned char **output,
 			continue;
 
 		memcpy(buffer + (elf32_to_native(phdr[i].p_paddr) - data_start),
-		       &header[elf32_to_native(phdr[i].p_offset)], elf32_to_native(phdr[i].p_filesz));
+		       &header[elf32_to_native(phdr[i].p_offset)],
+		       elf32_to_native(phdr[i].p_filesz));
 	}
 
 	/* Now make the output buffer */
@@ -140,92 +157,15 @@ int parse_elf(unsigned char *input, unsigned char **output,
 
 	stage->load = data_start;
 	stage->memlen = mem_end - data_start;
-	stage->compression = mode;
+	stage->compression = algo;
 	stage->entry = ehdr->e_entry;
 
 	compress(buffer, data_end - data_start,
-		 (char *)(out + sizeof(struct cbfs_stage)),
-		 (int *)&stage->len);
+		 (char *)(out + sizeof(struct cbfs_stage)), (int *)&stage->len);
 
 	*output = out;
 
+	if (*location)
+		*location -= sizeof(struct cbfs_stage);
 	return sizeof(struct cbfs_stage) + stage->len;
-}
-
-int main(int argc, char **argv)
-{
-	void (*compress) (char *, int, char *, int *);
-	int algo = CBFS_COMPRESS_LZMA;
-
-	char *output = NULL;
-	char *input = NULL;
-
-	unsigned char *buffer, *obuffer;
-	int size, osize;
-
-	while (1) {
-		int option_index;
-		static struct option longopt[] = {
-			{"output", 1, 0, 'o'},
-			{"lzma", 0, 0, 'l'},
-			{"nocompress", 0, 0, 'n'},
-		};
-
-		signed char ch = getopt_long(argc, argv, "o:ln",
-					     longopt, &option_index);
-
-		if (ch == -1)
-			break;
-
-		switch (ch) {
-		case 'o':
-			output = optarg;
-			break;
-		case 'l':
-			algo = CBFS_COMPRESS_LZMA;
-			break;
-		case 'n':
-			algo = CBFS_COMPRESS_NONE;
-			break;
-		default:
-			//usage();
-			return -1;
-		}
-	}
-
-	if (optind < argc)
-		input = argv[optind];
-
-	if (input == NULL || !strcmp(input, "-"))
-		buffer = file_read_to_buffer(STDIN_FILENO, &size);
-	else
-		buffer = file_read(input, &size);
-
-	if (!iself(buffer)) {
-		fprintf(stderr, "E:  The incoming file is not an ELF\n");
-		return -1;
-	}
-
-	switch (algo) {
-	case CBFS_COMPRESS_NONE:
-		compress = none_compress;
-		break;
-	case CBFS_COMPRESS_LZMA:
-		compress = lzma_compress;
-		break;
-	}
-
-	osize = parse_elf(buffer, &obuffer, algo, compress);
-
-	if (osize == -1) {
-		fprintf(stderr, "E:  Error while converting the ELF\n");
-		return -1;
-	}
-
-	if (output == NULL || !strcmp(output, "-"))
-		file_write_from_buffer(STDOUT_FILENO, obuffer, osize);
-	else
-		file_write(output, obuffer, osize);
-
-	return 0;
 }

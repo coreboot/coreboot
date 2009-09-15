@@ -123,13 +123,13 @@ static void main(unsigned long bist)
 #if 0
 	display_cpuid_update_microcode();
 #endif
-#if 0
+#if 1
 	print_pci_devices();
 #endif
 #if 1
 	enable_smbus();
 #endif
-#if 0
+#if 1
 //	dump_spd_registers(&cpu[0]);
 	int i;
 	for(i = 0; i < 1; i++) {
@@ -141,15 +141,15 @@ static void main(unsigned long bist)
 	mainboard_set_e7520_leds();	
 //	memreset_setup();
 	sdram_initialize(ARRAY_SIZE(mch), mch);
-#if 0
+#if 1
 	dump_pci_devices();
 #endif
-#if 0
+#if 1
 	dump_pci_device(PCI_DEV(0, 0x00, 0));
 	dump_bar14(PCI_DEV(0, 0x00, 0));
 #endif
 
-#if 0 // temporarily disabled 
+#if 1 // temporarily disabled 
 	/* Check the first 1M */
 //	ram_check(0x00000000, 0x000100000);
 //	ram_check(0x00000000, 0x000a0000);

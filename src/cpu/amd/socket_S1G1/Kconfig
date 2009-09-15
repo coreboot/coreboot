@@ -3,8 +3,8 @@ config CPU_AMD_SOCKET_S1G1
 	default false
 
 config K8_REV_F_SUPPORT
-	int
-	default 1
+	bool
+	default true
 	depends on CPU_AMD_SOCKET_S1G1
 
 config CPU_SOCKET_TYPE

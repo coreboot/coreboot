@@ -57,6 +57,10 @@ int main(int argc, char **argv)
 	}
 
 	void *rom = loadrom(romname);
+	if (rom == NULL) {
+		printf("Could not load ROM image '%s'.\n", romname);
+		return 1;
+	}
 
 	if (strcmp(cmd, "print") == 0) {
 		print_cbfs_directory(romname);
@@ -68,11 +72,15 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	void *filename = argv[3];
-	void *cbfsname = argv[4];
+	char *filename = argv[3];
+	char *cbfsname = argv[4];
 
 	uint32_t filesize = 0;
 	void *filedata = loadfile(filename, &filesize, 0, SEEK_SET);
+	if (filedata == NULL) {
+		printf("Could not load file '%s'.\n", filename);
+		return 1;
+	}
 
 	uint32_t base = 0;
 	void *cbfsfile;

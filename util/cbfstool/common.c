@@ -31,6 +31,8 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	       int place)
 {
 	FILE *file = fopen(filename, "rb");
+	if (file == NULL)
+		return NULL;
 	fseek(file, 0, SEEK_END);
 	*romsize_p = ftell(file);
 	fseek(file, 0, SEEK_SET);
@@ -65,6 +67,8 @@ void recalculate_rom_geometry(void *romarea)
 void *loadrom(const char *filename)
 {
 	void *romarea = loadfile(filename, &romsize, 0, SEEK_SET);
+	if (romarea == NULL)
+		return NULL;
 	recalculate_rom_geometry(romarea);
 	return romarea;
 }

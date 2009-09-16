@@ -42,10 +42,9 @@ clean:
 tags: 
 	ctags *.[ch]
 
-CXXFLAGS=-DCOMPACT
-CFLAGS=
-LDFLAGS=
+CXXFLAGS=-DCOMPACT -g
+CFLAGS=-g
+LDFLAGS=-g
 
 $(obj)/cbfstool:$(COMMON)
 	$(HOSTCXX) $(LDFLAGS) -o $@ $^
-	strip $@

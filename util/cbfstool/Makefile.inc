@@ -16,7 +16,7 @@ cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o
 cbfsobj += cbfstool.o
 
-CBFSTOOLFLAGS=-DCOMPACT
+CBFSTOOLFLAGS=-DCOMPACT -g
 
 $(obj)/util/cbfstool:
 	mkdir -p $@

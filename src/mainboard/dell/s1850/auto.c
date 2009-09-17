@@ -74,6 +74,107 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "sdram/generic_sdram.c"
 
 
+/* IPMI garbage. This is all test stuff, if it really works we'll move it somewhere
+ */
+
+#define nftransport  0xc
+
+#define OBF  0
+#define IBF 1
+
+#define ipmidata  0xca0
+#define ipmicsr  0xca4
+
+
+static inline void  ibfzero(void)
+{
+	while(inb(ipmicsr) &  (1<<IBF)) 
+		;
+}
+static inline void  clearobf(void)
+{
+	(void) inb(ipmidata);
+}
+
+static inline void  waitobf(void)
+{
+	while((inb(ipmicsr) &  (1<<OBF)) == 0) 
+		;
+}
+/* quite possibly the stupidest interface ever designed. */
+static inline void  first_cmd_byte(unsigned char byte)
+{
+	ibfzero();
+	clearobf();
+	outb(0x61, ipmicsr);
+	ibfzero();
+	clearobf();
+	outb(byte, ipmidata);
+}
+
+static inline void  next_cmd_byte(unsigned char byte)
+{
+
+	ibfzero();
+	clearobf();
+	outb(byte, ipmidata);
+}
+
+static inline void  last_cmd_byte(unsigned char byte)
+{
+	outb(0x62, ipmicsr);
+
+	ibfzero();
+	clearobf();
+	outb(byte,  ipmidata);
+}
+
+static inline void read_response_byte(void)
+{
+	int val = -1;
+	if ((inb(ipmicsr)>>6) != 1)
+		return;
+
+	ibfzero();
+	waitobf();
+	val = inb(ipmidata);
+	outb(0x68, ipmidata);
+
+	/* see if it is done */
+	if ((inb(ipmicsr)>>6) != 1){
+		/* wait for the dummy read. Which describes this protocol */
+		waitobf();
+		(void)inb(ipmidata);
+	}
+}
+
+static inline void ipmidelay(void)
+{
+	int i;
+	for(i = 0; i < 1000; i++) {
+		inb(0x80);
+	}
+}
+
+static inline void bmc_foad(void)
+{
+	unsigned char c;
+	/* be safe; make sure it is really ready */
+	while ((inb(ipmicsr)>>6)) {
+		outb(0x60, ipmicsr);
+		inb(ipmidata);
+	}
+	first_cmd_byte(nftransport << 2);
+	ipmidelay();
+	next_cmd_byte(0x12);
+	ipmidelay();
+	next_cmd_byte(2);
+	ipmidelay();
+	last_cmd_byte(3);
+	ipmidelay();
+}
+
+/* end IPMI garbage */
 static void main(unsigned long bist)
 {
 	/*
@@ -100,6 +201,7 @@ static void main(unsigned long bist)
 		}
 	}
 	/* Setup the console */
+	bmc_foad();
 	outb(0x87,0x2e);
 	outb(0x87,0x2e);
 	pnp_write_config(CONSOLE_SERIAL_DEV, 0x24, 0x84 | (1 << 6));

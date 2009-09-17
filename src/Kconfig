@@ -238,17 +238,6 @@ config PAYLOAD_ELF
 
 	  You will be able to specify the location and file name of the
 	  payload image later.
-
-config VGA_BIOS
-	bool "Add a VGA BIOS image"
-	depends on PAYLOAD_ELF
-	help
-	  Select this option if you have a VGA BIOS image that you would
-	  like to add to your ROM.
-
-	  You will be able to specify the location and file name of the
-	  image later.
-
 config PAYLOAD_NONE
 	bool "No payload"
 	help
@@ -267,6 +256,19 @@ config FALLBACK_PAYLOAD_FILE
 	default "payload.elf"
 	help
 	  The path and filename of the ELF executable file to use as payload.
+
+endmenu
+
+menu "VGA BIOS"
+
+config VGA_BIOS
+	bool "Add a VGA BIOS image"
+	help
+	  Select this option if you have a VGA BIOS image that you would
+	  like to add to your ROM.
+
+	  You will be able to specify the location and file name of the
+	  image later.
 
 config FALLBACK_VGA_BIOS_FILE
 	string "VGA BIOS path and filename"

@@ -426,6 +426,11 @@ define CONFIG_DEBUG
 	export always
 	comment "Enable x86emu debugging code"
 end
+define CONFIG_VGA_BRIDGE_SETUP
+	default 1
+	export always
+	comment "Set bridge bits to enable legacy VGA ranges"
+end
 define CONFIG_CONSOLE_VGA
 	default 0
 	export always

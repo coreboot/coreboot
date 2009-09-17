@@ -20,6 +20,13 @@
 
 menu "Devices"
 
+config VGA_BRIDGE_SETUP
+	bool "Setup bridges on path to VGA adapter"
+	default y
+	help
+	  Allow bridges to set up legacy decoding ranges for VGA.  Don't disable
+	  this unless you're sure you don't want the briges setup for VGA.
+
 config VGA_ROM_RUN
 	bool "Run VGA Option ROMs"
 	help
@@ -32,11 +39,11 @@ config PCI_ROM_RUN
 	  Execute non-VGA PCI option ROMs if found.
 
 choice
-        prompt "Option ROM Execution"
-        default  PCI_OPTION_ROM_RUN_REALMODE
+	prompt "Option ROM Execution"
+	default  PCI_OPTION_ROM_RUN_REALMODE
 	depends on PCI_ROM_RUN || VGA_ROM_RUN
-        help
-          You can choose to execute PCI option ROMs natively (32bit x86 system
+	help
+	  You can choose to execute PCI option ROMs natively (32bit x86 system
 	  required) or in an emulator (x86emu or YABEL).
 
 	config PCI_OPTION_ROM_RUN_REALMODE
@@ -62,6 +69,10 @@ config YABEL_DEBUG_FLAGS
 
 endmenu
 
+config CONSOLE_VGA_MULTI
+	bool
+	default n
+
 config PCI_64BIT_PREF_MEM
 	bool
 	default n
@@ -85,6 +96,3 @@ config AGP_PLUGIN_SUPPORT
 config CARDBUS_PLUGIN_SUPPORT
 	bool
 	default n
-
-
-

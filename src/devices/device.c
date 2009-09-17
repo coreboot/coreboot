@@ -667,7 +667,7 @@ static void avoid_fixed_resources(struct device *dev)
 	}
 }
 
-#if CONFIG_CONSOLE_VGA == 1
+#if CONFIG_VGA_BRIDGE_SETUP == 1
 device_t vga_pri = 0;
 static void set_vga_bridge_bits(void)
 {
@@ -926,7 +926,7 @@ void dev_configure(void)
 	struct device *child;
 	int i;
 
-#if CONFIG_CONSOLE_VGA == 1
+#if CONFIG_VGA_BRIDGE_SETUP == 1
 	set_vga_bridge_bits();
 #endif
 

@@ -282,7 +282,8 @@ config FALLBACK_VGA_BIOS_ID
 	depends on VGA_BIOS
 	default "1106,3230"
 	help
-	 The ID that would associate your VGA BIOS to your video card.
+	  The ID that would associate your VGA BIOS to your video card.
+	  (PCI VendorID, PCI Device ID)
 
 endmenu
 

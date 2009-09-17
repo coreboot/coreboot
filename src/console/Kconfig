@@ -29,7 +29,7 @@ config USBDEBUG_DIRECT
 	# TODO: FIX DEPENDENCY HERE
 
 config CONSOLE_VGA
-	bool
+	bool "Use VGA console, once initialized."
 	default n
 
 config MAXIMUM_CONSOLE_LOGLEVEL

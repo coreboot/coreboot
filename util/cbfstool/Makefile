@@ -2,6 +2,8 @@ obj ?= $(shell pwd)
 
 HOSTCXX ?= g++
 HOSTCC ?= gcc
+CFLAGS ?= -g
+
 
 BINARY:=$(obj)/cbfstool
 

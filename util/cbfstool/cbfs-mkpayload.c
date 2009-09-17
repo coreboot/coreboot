@@ -75,8 +75,10 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 
 		name = (char *)(strtab + shdr[i].sh_name);
 
-		if (!strcmp(name, ".note.pinfo"))
+		if (!strcmp(name, ".note.pinfo")) {
 			segments++;
+			isize += (unsigned int)shdr[i].sh_size;
+		}
 	}
 
 	/* Now, regular headers - we only care about PT_LOAD headers,

@@ -35,8 +35,8 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config APIC_ID_OFFSET
-	int
-	default 8
+	hex
+	default 0x8
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config HAVE_HARD_RESET

@@ -89,13 +89,13 @@ config MAX_PHYSICAL_CPUS
 	depends on BOARD_ASUS_M2V_MX_SE
 
 config STACK_SIZE
-	int
-	default 8192
+	hex
+	default 0x2000
 	depends on BOARD_ASUS_M2V_MX_SE
 
 config HEAP_SIZE
-	int
-	default 262144
+	hex
+	default 0x40000
 	depends on BOARD_ASUS_M2V_MX_SE
 
 config HAVE_OPTION_TABLE

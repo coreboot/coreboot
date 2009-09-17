@@ -14,8 +14,8 @@ config K8_REV_F_SUPPORT
 
 # Opteron K8 1G HT support
 config K8_HT_FREQ_1G_SUPPORT
-	hex
-	default 1
+	bool
+	default y
 	depends on CPU_AMD_SOCKET_F
 
 # DDR2 and REG

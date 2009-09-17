@@ -1,8 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 VIA Technologies, Inc.
- * (Written by Aaron Lwe <aaron.lwe@gmail.com> for VIA)
+ * Copyright (C) by the coreboot pirq tool. 
+ * This file was programatically generated. 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

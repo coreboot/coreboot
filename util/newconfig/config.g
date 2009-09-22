@@ -1647,7 +1647,7 @@ parser Config:
     token ACTION:		'action'
     token ADDACTION:		'addaction'
     token ALWAYS:		'always'
-    token CONFIG_ARCH:			'arch'
+    token ARCH:			'arch'
     token BUILDROM:		'buildrom'
     token COMMENT:		'comment'
     token CONFIG:		'config'
@@ -1677,7 +1677,7 @@ parser Config:
     token IRQ:			'irq'
     token LDSCRIPT:		'ldscript'
     token LOADOPTIONS:		'loadoptions'
-    token CONFIG_MAINBOARD:		'mainboard'
+    token MAINBOARD:		'mainboard'
     token MAINBOARDINIT:	'mainboardinit'
     token MAKEDEFINE:		'makedefine'
     token MAKERULE:		'makerule'
@@ -1777,7 +1777,7 @@ parser Config:
 			]                       {{ if (C): part(parttype, partid, 'Config.lb', name) }}
 			partend<<C>> 		
 
-    rule arch<<C>>:	CONFIG_ARCH ID			{{ if (C): setarch(ID) }}
+    rule arch<<C>>:	ARCH ID			{{ if (C): setarch(ID) }}
 			partend<<C>>
     
     rule mainboardinit<<C>>:
@@ -1969,7 +1969,7 @@ parser Config:
     rule payload<<C>>:	PAYLOAD DIRPATH		{{ if (C): payload(DIRPATH) }}
 
     rule mainboard:
-			CONFIG_MAINBOARD PATH		{{ mainboardsetup(PATH) }}
+			MAINBOARD PATH		{{ mainboardsetup(PATH) }}
 
     rule romif<<C>>:	IF ID			{{ c = lookup(ID) }}
 			(romstmt<<C and c>>)* 

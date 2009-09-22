@@ -23,48 +23,29 @@
 #include "common.h"
 #include "cbfs.h"
 
-int main(int argc, char **argv)
+typedef enum {
+	CMD_ADD,
+	CMD_ADD_PAYLOAD,
+	CMD_ADD_STAGE,
+	CMD_CREATE,
+	CMD_PRINT
+} cmd_t;
+
+struct command {
+	cmd_t id;
+	const char *name;
+	int (*function) (int argc, char **argv);
+};
+
+static int cbfs_add(int argc, char **argv)
 {
-	if (argc < 3) {
-		printf
-		    ("cbfstool: Management utility for CBFS formatted ROM images\n"
-		     "USAGE:\n" "cbfstool [-h]\n"
-		     "cbfstool FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
-		     " -h		Display this help message\n\n"
-		     "COMMANDs:\n"
-		     "add FILE NAME TYPE [base address]    Add a component\n"
-		     "add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
-		     "add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
-		     "create SIZE BSIZE BOOTBLOCK [ALIGN]  Create a ROM file\n"
-		     "print                                Show the contents of the ROM\n");
-		return 1;
-	}
 	char *romname = argv[1];
 	char *cmd = argv[2];
-
-	if (strcmp(cmd, "create") == 0) {
-		if (argc < 6) {
-			printf("not enough arguments to 'create'.\n");
-			return 1;
-		}
-		uint32_t size = strtoul(argv[3], NULL, 0);
-		/* ignore bootblock size. we use whatever we get and won't allocate any larger */
-		char *bootblock = argv[5];
-		uint32_t align = 0;
-		if (argc > 6)
-			align = strtoul(argv[6], NULL, 0);
-		return create_cbfs_image(romname, size, bootblock, align);
-	}
-
 	void *rom = loadrom(romname);
+
 	if (rom == NULL) {
 		printf("Could not load ROM image '%s'.\n", romname);
 		return 1;
-	}
-
-	if (strcmp(cmd, "print") == 0) {
-		print_cbfs_directory(romname);
-		return 0;
 	}
 
 	if (argc < 5) {
@@ -83,59 +64,198 @@ int main(int argc, char **argv)
 	}
 
 	uint32_t base = 0;
-	void *cbfsfile;
+	void *cbfsfile = NULL;
 
-	if (strcmp(cmd, "add") == 0) {
-		if (argc < 6) {
-			printf("not enough arguments to 'add'.\n");
-			return 1;
-		}
-		uint32_t type;
-		if (intfiletype(argv[5]) != ((uint64_t) - 1))
-			type = intfiletype(argv[5]);
-		else
-			type = strtoul(argv[5], NULL, 0);
-		if (argc > 6) {
-			base = strtoul(argv[6], NULL, 0);
-		}
-		cbfsfile =
-		    create_cbfs_file(cbfsname, filedata, &filesize, type,
-				     &base);
+	if (argc < 6) {
+		printf("not enough arguments to 'add'.\n");
+		return 1;
+	}
+	uint32_t type;
+	if (intfiletype(argv[5]) != ((uint64_t) - 1))
+		type = intfiletype(argv[5]);
+	else
+		type = strtoul(argv[5], NULL, 0);
+	if (argc > 6) {
+		base = strtoul(argv[6], NULL, 0);
+	}
+	cbfsfile =
+	    create_cbfs_file(cbfsname, filedata, &filesize, type, &base);
+	add_file_to_cbfs(cbfsfile, filesize, base);
+	writerom(romname, rom, romsize);
+	return 0;
+}
+
+static int cbfs_add_payload(int argc, char **argv)
+{
+	char *romname = argv[1];
+	char *cmd = argv[2];
+	void *rom = loadrom(romname);
+
+	if (rom == NULL) {
+		printf("Could not load ROM image '%s'.\n", romname);
+		return 1;
 	}
 
-	if (strcmp(cmd, "add-payload") == 0) {
-		comp_algo algo = CBFS_COMPRESS_NONE;
-		if (argc > 5) {
-			if (argv[5][0] == 'l')
-				algo = CBFS_COMPRESS_LZMA;
-		}
-		if (argc > 6) {
-			base = strtoul(argv[6], NULL, 0);
-		}
-		unsigned char *payload;
-		filesize = parse_elf_to_payload(filedata, &payload, algo);
-		cbfsfile =
-		    create_cbfs_file(cbfsname, payload, &filesize,
-				     CBFS_COMPONENT_PAYLOAD, &base);
+	if (argc < 5) {
+		printf("not enough arguments to '%s'.\n", cmd);
+		return 1;
 	}
 
-	if (strcmp(cmd, "add-stage") == 0) {
-		comp_algo algo = CBFS_COMPRESS_NONE;
-		if (argc > 5) {
-			if (argv[5][0] == 'l')
-				algo = CBFS_COMPRESS_LZMA;
-		}
-		if (argc > 6) {
-			base = strtoul(argv[6], NULL, 0);
-		}
-		unsigned char *stage;
-		filesize = parse_elf_to_stage(filedata, &stage, algo, &base);
-		cbfsfile =
-		    create_cbfs_file(cbfsname, stage, &filesize,
-				     CBFS_COMPONENT_STAGE, &base);
+	char *filename = argv[3];
+	char *cbfsname = argv[4];
+
+	uint32_t filesize = 0;
+	void *filedata = loadfile(filename, &filesize, 0, SEEK_SET);
+	if (filedata == NULL) {
+		printf("Could not load file '%s'.\n", filename);
+		return 1;
 	}
+
+	uint32_t base = 0;
+	void *cbfsfile = NULL;
+
+	comp_algo algo = CBFS_COMPRESS_NONE;
+	if (argc > 5) {
+		if (argv[5][0] == 'l')
+			algo = CBFS_COMPRESS_LZMA;
+	}
+	if (argc > 6) {
+		base = strtoul(argv[6], NULL, 0);
+	}
+	unsigned char *payload;
+	filesize = parse_elf_to_payload(filedata, &payload, algo);
+	cbfsfile =
+	    create_cbfs_file(cbfsname, payload, &filesize,
+			     CBFS_COMPONENT_PAYLOAD, &base);
+	add_file_to_cbfs(cbfsfile, filesize, base);
+	writerom(romname, rom, romsize);
+	return 0;
+}
+
+static int cbfs_add_stage(int argc, char **argv)
+{
+	char *romname = argv[1];
+	char *cmd = argv[2];
+	void *rom = loadrom(romname);
+
+	if (rom == NULL) {
+		printf("Could not load ROM image '%s'.\n", romname);
+		return 1;
+	}
+
+	if (argc < 5) {
+		printf("not enough arguments to '%s'.\n", cmd);
+		return 1;
+	}
+
+	char *filename = argv[3];
+	char *cbfsname = argv[4];
+
+	uint32_t filesize = 0;
+	void *filedata = loadfile(filename, &filesize, 0, SEEK_SET);
+	if (filedata == NULL) {
+		printf("Could not load file '%s'.\n", filename);
+		return 1;
+	}
+
+	uint32_t base = 0;
+	void *cbfsfile = NULL;
+
+	comp_algo algo = CBFS_COMPRESS_NONE;
+	if (argc > 5) {
+		if (argv[5][0] == 'l')
+			algo = CBFS_COMPRESS_LZMA;
+	}
+	if (argc > 6) {
+		base = strtoul(argv[6], NULL, 0);
+	}
+	unsigned char *stage;
+	filesize = parse_elf_to_stage(filedata, &stage, algo, &base);
+	cbfsfile =
+	    create_cbfs_file(cbfsname, stage, &filesize,
+			     CBFS_COMPONENT_STAGE, &base);
 
 	add_file_to_cbfs(cbfsfile, filesize, base);
 	writerom(romname, rom, romsize);
 	return 0;
+}
+
+static int cbfs_create(int argc, char **argv)
+{
+	char *romname = argv[1];
+	char *cmd = argv[2];
+	if (argc < 6) {
+		printf("not enough arguments to 'create'.\n");
+		return 1;
+	}
+
+	uint32_t size = strtoul(argv[3], NULL, 0);
+	/* ignore bootblock size. we use whatever we get and won't allocate any larger */
+	char *bootblock = argv[5];
+	uint32_t align = 0;
+
+	if (argc > 6)
+		align = strtoul(argv[6], NULL, 0);
+
+	return create_cbfs_image(romname, size, bootblock, align);
+}
+
+static int cbfs_print(int argc, char **argv)
+{
+	char *romname = argv[1];
+	char *cmd = argv[2];
+	void *rom = loadrom(romname);
+
+	if (rom == NULL) {
+		printf("Could not load ROM image '%s'.\n", romname);
+		return 1;
+	}
+
+	print_cbfs_directory(romname);
+	return 0;
+}
+
+struct command commands[] = {
+	{CMD_ADD, "add", cbfs_add},
+	{CMD_ADD_PAYLOAD, "add-payload", cbfs_add_payload},
+	{CMD_ADD_STAGE, "add-stage", cbfs_add_stage},
+	{CMD_CREATE, "create", cbfs_create},
+	{CMD_PRINT, "print", cbfs_print}
+};
+
+void usage(void)
+{
+	printf
+	    ("cbfstool: Management utility for CBFS formatted ROM images\n"
+	     "USAGE:\n" "cbfstool [-h]\n"
+	     "cbfstool FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
+	     " -h		Display this help message\n\n"
+	     "COMMANDs:\n"
+	     "add FILE NAME TYPE [base address]    Add a component\n"
+	     "add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
+	     "add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
+	     "create SIZE BSIZE BOOTBLOCK [ALIGN]  Create a ROM file\n"
+	     "print                                Show the contents of the ROM\n");
+}
+
+int main(int argc, char **argv)
+{
+	int i;
+
+	if (argc < 3) {
+		usage();
+		return 1;
+	}
+
+	char *cmd = argv[2];
+
+	for (i = 0; i < ARRAY_SIZE(commands); i++) {
+		if (strcmp(cmd, commands[i].name) != 0)
+			continue;
+		return commands[i].function(argc, argv);
+	}
+
+	printf("Unknown command '%s'.\n", cmd);
+	usage();
+	return 1;
 }

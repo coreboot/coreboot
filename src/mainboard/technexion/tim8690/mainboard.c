@@ -59,16 +59,15 @@ static void enable_onboard_nic()
 
        u8 byte;
        device_t sm_dev;
-       struct bus pbus;
 
 
        printk_info("enable_onboard_nic.\n");
 
        sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
-       byte= pci_cf8_conf1.read8(&pbus, sm_dev->bus->secondary, sm_dev->path.pci.devfn, 0x9a);
+       byte = pci_read_config8(sm_dev, 0x9a);
        byte |= ( 1 << 7);
-       pci_cf8_conf1.write8(&pbus, sm_dev->bus->secondary, sm_dev->path.pci.devfn, 0x9a,byte);
+       pci_write_config8(sm_dev, 0x9a, byte);
 
 
        byte=pm_ioread(0x59);
@@ -76,10 +75,10 @@ static void enable_onboard_nic()
        pm_iowrite(0x59,byte);
 
 
-       byte = pci_cf8_conf1.read8(&pbus, sm_dev->bus->secondary, sm_dev->path.pci.devfn, 0xA8);
+       byte = pci_read_config8(sm_dev, 0xA8);
 
        byte |= (1 << 1); //set bit 1 to high
-       pci_cf8_conf1.write8(&pbus, sm_dev->bus->secondary, sm_dev->path.pci.devfn, 0xA8, byte);
+       pci_write_config8(sm_dev, 0xA8, byte);
 }
 
 /* set thermal config
@@ -89,7 +88,6 @@ static void set_thermal_config()
 	u8 byte;
 	u16 word;
 	device_t sm_dev;
-	struct bus pbus;
 
 	/* set ADT 7461 */
 	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
@@ -112,12 +110,9 @@ static void set_thermal_config()
 
 	/* set GPIO 64 to input */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-	word =
-	    pci_cf8_conf1.read16(&pbus, sm_dev->bus->secondary,
-				 sm_dev->path.pci.devfn, 0x56);
+	word = pci_read_config16(sm_dev, 0x56);
 	word |= 1 << 7;
-	pci_cf8_conf1.write16(&pbus, sm_dev->bus->secondary,
-			      sm_dev->path.pci.devfn, 0x56, word);
+	pci_write_config16(sm_dev, 0x56, word);
 
 	/* set GPIO 64 internal pull-up */
 	byte = pm2_ioread(0xf0);

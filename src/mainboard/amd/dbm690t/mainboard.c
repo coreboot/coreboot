@@ -97,32 +97,24 @@ static void enable_onboard_nic()
 static void get_ide_dma66()
 {
 	u8 byte;
-	/*u32 sm_dev, ide_dev; */
-	device_t sm_dev, ide_dev;
-	struct bus pbus;
+	struct device *sm_dev;
+	struct device *ide_dev;
 
+	printk_info("%s.\n", __func__);
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
-	byte =
-	    pci_cf8_conf1.read8(&pbus, sm_dev->bus->secondary,
-				sm_dev->path.pci.devfn, 0xA9);
+	byte = pci_read_config8(sm_dev, 0xA9);
 	byte |= (1 << 5);	/* Set Gpio9 as input */
-	pci_cf8_conf1.write8(&pbus, sm_dev->bus->secondary,
-			     sm_dev->path.pci.devfn, 0xA9, byte);
+	pci_write_config8(sm_dev, 0xA9, byte);
 
 	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
-	byte =
-	    pci_cf8_conf1.read8(&pbus, ide_dev->bus->secondary,
-				ide_dev->path.pci.devfn, 0x56);
+	byte = pci_read_config8(ide_dev, 0x56);
 	byte &= ~(7 << 0);
-	if ((1 << 5) & pci_cf8_conf1.
-	    read8(&pbus, sm_dev->bus->secondary, sm_dev->path.pci.devfn,
-		  0xAA))
+	if ((1 << 5) & pci_read_config8(sm_dev, 0xAA))
 		byte |= 2 << 0;	/* mode 2 */
 	else
 		byte |= 5 << 0;	/* mode 5 */
-	pci_cf8_conf1.write8(&pbus, ide_dev->bus->secondary,
-			     ide_dev->path.pci.devfn, 0x56, byte);
+	pci_write_config8(ide_dev, 0x56, byte);
 }
 
 /*
@@ -133,7 +125,6 @@ static void set_thermal_config()
 	u8 byte;
 	u16 word;
 	device_t sm_dev;
-	struct bus pbus;
 
 	/* set ADT 7461 */
 	ADT7461_write_byte(0x0B, 0x50);	/* Local Temperature Hight limit */
@@ -156,12 +147,9 @@ static void set_thermal_config()
 
 	/* set GPIO 64 to input */
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-	word =
-	    pci_cf8_conf1.read16(&pbus, sm_dev->bus->secondary,
-				 sm_dev->path.pci.devfn, 0x56);
+	word = pci_read_config16(sm_dev, 0x56);
 	word |= 1 << 7;
-	pci_cf8_conf1.write16(&pbus, sm_dev->bus->secondary,
-			      sm_dev->path.pci.devfn, 0x56, word);
+	pci_write_config16(sm_dev, 0x56, word);
 
 	/* set GPIO 64 internal pull-up */
 	byte = pm2_ioread(0xf0);

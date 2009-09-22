@@ -1,3 +1,14 @@
 config SOUTHBRIDGE_NVIDIA_CK804
 	bool
 	default n
+
+config HAVE_HARD_RESET
+	bool
+	default y
+	depends on SOUTHBRIDGE_NVIDIA_CK804
+
+config IOAPIC
+	bool
+	default y
+	depends on SOUTHBRIDGE_NVIDIA_CK804
+

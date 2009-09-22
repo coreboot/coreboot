@@ -23,6 +23,9 @@ choice
 	depends on VENDOR_TYAN
 	
 source "src/mainboard/tyan/s1846/Kconfig"
+source "src/mainboard/tyan/s2891/Kconfig"
+source "src/mainboard/tyan/s2892/Kconfig"
+source "src/mainboard/tyan/s2895/Kconfig"
 
 endchoice
 

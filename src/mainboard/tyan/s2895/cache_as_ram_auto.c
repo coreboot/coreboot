@@ -1,3 +1,4 @@
+#define ASSEMBLY 1
 #define __ROMCC__
 
 #define K8_ALLOCATE_IO_RANGE 1
@@ -20,11 +21,10 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#define post_code(x) outb(x, 0x80)
+#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "ram/ramtest.c"
-
 
 #include <cpu/amd/model_fxx_rev.h>
 
@@ -34,6 +34,8 @@
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 
+#endif
+
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/smsc/lpc47b397/lpc47b397_early_serial.c"
@@ -41,6 +43,8 @@
 #define SUPERIO_GPIO_DEV PNP_DEV(0x2e, LPC47B397_RT)
 
 #define SUPERIO_GPIO_IO_BASE 0x400
+
+#if CONFIG_USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
 
@@ -114,7 +118,116 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/init_cpus.c"
 
+#endif
+
+#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
+
+#include "southbridge/nvidia/ck804/ck804_enable_rom.c"
+#include "northbridge/amd/amdk8/early_ht.c"
+
+static void sio_setup(void)
+{
+
+	unsigned value;
+	uint32_t dword;
+	uint8_t byte;
+
+	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xac, 0x047f0400);
+
+	byte = pci_read_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0x7b, byte);
+
+	dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0);
+	dword |= (1<<29)|(1<<0);
+	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
+
+	dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xa4);
+	dword |= (1<<16);
+	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4, dword);
+
+	lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE);
+	value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x77);
+	value &= 0xbf;
+	lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x77, value);
+
+}
+
+void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
+{
+	unsigned last_boot_normal_x = last_boot_normal();
+
+	/* Is this a cpu only reset? or Is this a secondary cpu? */
+	if ((cpu_init_detectedx) || (!boot_cpu())) {
+	if (last_boot_normal_x) {
+	goto normal_image;
+	} else {
+	goto fallback_image;
+	}
+	}
+
+	/* Nothing special needs to be done to find bus 0 */
+	/* Allow the HT devices to be found */
+
+	enumerate_ht_chain();
+
+	sio_setup();
+
+	/* Setup the ck804 */
+	ck804_enable_rom();
+
+	/* Is this a deliberate reset by the bios */
+//	post_code(0x22);
+	if (bios_reset_detected() && last_boot_normal_x) {
+	goto normal_image;
+	}
+	/* This is the primary cpu how should I boot? */
+	else if (do_normal_boot()) {
+	goto normal_image;
+	}
+	else {
+	goto fallback_image;
+	}
+ normal_image:
+//	post_code(0x23);
+	__asm__ volatile ("jmp __normal_image"
+	: /* outputs */
+	: "a" (bist), "b"(cpu_init_detectedx) /* inputs */
+	);
+
+ fallback_image:
+//	post_code(0x25);
+#if CONFIG_HAVE_FAILOVER_BOOT==1
+	__asm__ volatile ("jmp __fallback_image"
+	: /* outputs */
+	: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
+	)
+#endif
+	;
+}
+#endif
+
+void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
+{
+#if CONFIG_HAVE_FAILOVER_BOOT==1
+	#if CONFIG_USE_FAILOVER_IMAGE==1
+	failover_process(bist, cpu_init_detectedx);
+	#else
+	real_main(bist, cpu_init_detectedx);
+	#endif
+#else
+	#if CONFIG_USE_FALLBACK_IMAGE == 1
+	failover_process(bist, cpu_init_detectedx);
+	#endif
+	real_main(bist, cpu_init_detectedx);
+#endif
+}
+
+#if CONFIG_USE_FAILOVER_IMAGE==0
+
+void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
 		(0xa<<3)|0, (0xa<<3)|2, 0, 0,
@@ -135,7 +248,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
 	}
 
-	post_code(0x32);
+//	post_code(0x32);
 
 	lpc47b397_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
@@ -197,3 +310,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
+#endif

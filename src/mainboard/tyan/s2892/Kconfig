@@ -1,0 +1,142 @@
+config BOARD_TYAN_S2892
+	bool "Tyan Thunder K8SE S2892"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_940
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_NVIDIA_CK804
+	select SOUTHBRIDGE_AMD_AMD8131
+	select SUPERIO_WINBOND_W83627HF
+	select PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default tyan/s2892
+	depends on BOARD_TYAN_S2892
+
+config APIC_ID_OFFSET
+	hex
+	default 8
+	depends on BOARD_TYAN_S2892
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_TYAN_S2892
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_TYAN_S2892
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_TYAN_S2892
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "s2892"
+	depends on BOARD_TYAN_S2892
+
+config CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2892
+	depends on BOARD_TYAN_S2892
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_TYAN_S2892
+
+config MEM_TRAIN_SEQ
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config HAVE_FAILOVER_BOOT
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_TYAN_S2892
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_TYAN_S2892
+
+config MEM_TRAIN_SEQ
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config AP_CODE_IN_CAR
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0
+	depends on BOARD_TYAN_S2892
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x20
+	depends on BOARD_TYAN_S2892
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config SERIAL_CPU_INIT
+	bool
+	default y
+	depends on BOARD_TYAN_S2892
+
+config AP_CODE_IN_CAR
+	bool
+	default y
+	depends on BOARD_TYAN_S2892
+
+config WAIT_BEFORE_CPUS_INIT
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_TYAN_S2892
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_TYAN_S2892
+
+config HAVE_ACPI_TABLES
+	bool "Generate ACPI tables"
+	default y
+	depends on BOARD_TYAN_S2892
+

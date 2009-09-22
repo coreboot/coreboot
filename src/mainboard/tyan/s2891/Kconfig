@@ -1,0 +1,142 @@
+config BOARD_TYAN_S2891
+	bool "Tyan Thunder K8SRE S2891"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_940
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_NVIDIA_CK804
+	select SOUTHBRIDGE_AMD_AMD8131
+	select SUPERIO_WINBOND_W83627HF
+	select PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default tyan/s2891
+	depends on BOARD_TYAN_S2891
+
+config APIC_ID_OFFSET
+	hex
+	default 8
+	depends on BOARD_TYAN_S2891
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_TYAN_S2891
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_TYAN_S2891
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_TYAN_S2891
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "s2891"
+	depends on BOARD_TYAN_S2891
+
+config CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2891
+	depends on BOARD_TYAN_S2891
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_TYAN_S2891
+
+config MEM_TRAIN_SEQ
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config HAVE_FAILOVER_BOOT
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_TYAN_S2891
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_TYAN_S2891
+
+config MEM_TRAIN_SEQ
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config AP_CODE_IN_CAR
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0
+	depends on BOARD_TYAN_S2891
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x20
+	depends on BOARD_TYAN_S2891
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config SERIAL_CPU_INIT
+	bool
+	default y
+	depends on BOARD_TYAN_S2891
+
+config AP_CODE_IN_CAR
+	bool
+	default y
+	depends on BOARD_TYAN_S2891
+
+config WAIT_BEFORE_CPUS_INIT
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_TYAN_S2891
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_TYAN_S2891
+
+config HAVE_ACPI_TABLES
+	bool "Generate ACPI tables"
+	default y
+	depends on BOARD_TYAN_S2891
+

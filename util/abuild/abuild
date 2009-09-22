@@ -103,7 +103,7 @@ function vendors
 {
 	# make this a function so we can easily select
 	# without breaking readability
-	ls -1 "$LBROOT/src/mainboard" | grep -v Kconfig
+	ls -1 "$LBROOT/src/mainboard" | grep -v Kconfig | grep -v Makefile
 }
 
 function mainboards

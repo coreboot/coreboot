@@ -33,11 +33,11 @@ config CONSOLE_VGA
 	default n
 
 config MAXIMUM_CONSOLE_LOGLEVEL
-	int
+	int "Maximum console loglevel"
 	default 9
 
 config DEFAULT_CONSOLE_LOGLEVEL
-	int
+	int "Default console loglevel"
 	default 9
 
 endmenu

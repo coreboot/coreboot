@@ -111,7 +111,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/config.py: $(yapps2_py) $(config_g)
 
 # needed objects that every mainboard uses 
 # Creation of these is architecture and mainboard independent
-$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/Config.lb  $(obj)/mainboard/$(MAINBOARDDIR)/config.py
+$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(obj)/mainboard/$(MAINBOARDDIR)/config.py
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	(cd $(obj)/mainboard/$(MAINBOARDDIR) ; PYTHONPATH=$(top)/util/sconfig export PYTHONPATH; python config.py  $(MAINBOARDDIR) $(top) $(obj)/mainboard/$(MAINBOARDDIR))
 

@@ -17,7 +17,7 @@ config MAINBOARD_DIR
 
 config APIC_ID_OFFSET
 	hex
-	default 8
+	default 0x10
 	depends on BOARD_TYAN_S2891
 
 config SB_HT_CHAIN_ON_BUS0
@@ -40,7 +40,7 @@ config MAINBOARD_PART_NUMBER
 	default "s2891"
 	depends on BOARD_TYAN_S2891
 
-config CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2891
 	depends on BOARD_TYAN_S2891

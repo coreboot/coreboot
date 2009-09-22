@@ -79,20 +79,20 @@ config PCI_64BIT_PREF_MEM
 
 config HYPERTRANSPORT_PLUGIN_SUPPORT
 	bool
-	default n
+	default y
 
 config PCIX_PLUGIN_SUPPORT
 	bool
-	default n
+	default y
 
 config PCIEXP_PLUGIN_SUPPORT
 	bool
-	default n
+	default y
 
 config AGP_PLUGIN_SUPPORT
 	bool
-	default n
+	default y
 
 config CARDBUS_PLUGIN_SUPPORT
 	bool
-	default n
+	default y

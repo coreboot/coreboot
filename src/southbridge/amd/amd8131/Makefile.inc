@@ -1,1 +1,1 @@
-driver-$(SOUTHBRIDGE_AMD_AMD8131) += amd8131_bridge.o
+driver-y += amd8131_bridge.o

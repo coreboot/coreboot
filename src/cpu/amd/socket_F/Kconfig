@@ -24,8 +24,3 @@ config DIMM_SUPPORT
 	default 0x0104
 	depends on CPU_AMD_SOCKET_F
 
-config CPU_SOCKET_TYPE
-	hex
-	default 0x10
-	depends on CPU_AMD_SOCKET_F
-

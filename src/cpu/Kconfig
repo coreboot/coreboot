@@ -19,7 +19,7 @@ config DCACHE_RAM_SIZE
 
 config SMP
 	bool
-	default n
+	default y if MAX_CPUS != 1
 
 config CPU_SOCKET_TYPE
 	hex

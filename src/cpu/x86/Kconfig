@@ -16,4 +16,4 @@ config XIP_ROM_BASE
 
 config XIP_ROM_SIZE
 	hex
-	default 0x2000
+	default 0x20000

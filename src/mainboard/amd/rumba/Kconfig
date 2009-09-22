@@ -52,6 +52,6 @@ config IRQ_SLOT_COUNT
 	depends on BOARD_AMD_RUMBA
 
 config USE_INIT
-	int
-	default 0
+	bool
+	default n
 	depends on BOARD_AMD_RUMBA

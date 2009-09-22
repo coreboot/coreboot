@@ -40,13 +40,9 @@ config CBFS
 	bool
 	default y
 
-config HAVE_HIGH_TABLES
-	bool
-	default y
-
 config PCI_BUS_SEGN_BITS
-	int
-	default 0
+	bool
+	default n
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
@@ -81,20 +77,20 @@ config LB_CKS_LOC
 	default 126
 
 config LOGICAL_CPUS
-	int
-	default 1
+	bool
+	default y
 
 config PCI_ROM_RUN
 	bool
 	default n
 
 config HT_CHAIN_UNITID_BASE
-	int
+	hex
 	default 1
 
 config HT_CHAIN_END_UNITID_BASE
-	int
-	default 32
+	hex
+	default 0x20
 
 config HEAP_SIZE
 	hex
@@ -136,10 +132,6 @@ config LB_MEM_TOPK
 	int
 	default 2048
 
-config MULTIBOOT
-	bool
-	default n
-
 config COMPRESSED_PAYLOAD_LZMA
 	bool
 	default y
@@ -157,10 +149,6 @@ config HAVE_ACPI_RESUME
 config ACPI_SSDTX_NUM
 	int
 	default 0
-
-config HAVE_ACPI_TABLES
-	bool
-	default n
 
 config HAVE_FALLBACK_BOOT
 	bool
@@ -186,17 +174,9 @@ config HAVE_MOVNTI
 	bool
 	default y
 
-config HAVE_MP_TABLE
-	bool
-	default n
-
 config HAVE_OPTION_TABLE
 	bool
 	default y
-
-config HAVE_PIRQ_TABLE
-	bool
-	default n
 
 config PIRQ_ROUTE
 	bool
@@ -214,10 +194,54 @@ config IOAPIC
 	bool
 	default n
 
+config USE_WATCHDOG_ON_BOOT
+	bool
+	default n
+
+config VGA
+	bool
+	default n
+	help
+	  Build board-specific VGA code.
+
+config GFXUMA
+	bool
+	default n
+	help
+	  Enable Unified Memory Architecture for graphics.
+
 # TODO
 # menu "Drivers"
 # 
 # endmenu
+
+menu "Generated System Tables"
+
+config HAVE_LOW_TABLES
+	bool
+	default y
+
+config HAVE_HIGH_TABLES
+	bool "Write 'high' tables to avoid being overwritten in F segment"
+	default y
+
+config MULTIBOOT
+	bool "Add Multiboot tables (for grub2)"
+	default n
+
+config HAVE_ACPI_TABLES
+	bool "Generate ACPI tables"
+	default n
+
+config HAVE_MP_TABLE
+	bool "Generate an MP table"
+	default n
+
+config HAVE_PIRQ_TABLE
+	bool "Generate a PIRQ table"
+	default n
+
+endmenu
 
 menu "Payload"
 

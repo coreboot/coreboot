@@ -331,6 +331,11 @@ config MAINBOARD_VENDOR
 	default "Tyan"
 	depends on VENDOR_TYAN
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x10f1
+	depends on VENDOR_TYAN
+
 config MAINBOARD_VENDOR
 	string
 	default "VIA"

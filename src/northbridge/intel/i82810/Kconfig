@@ -18,11 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-config HAVE_HIGH_TABLES
-	bool "Do we have high tables"
-	default y
-
 config NORTHBRIDGE_INTEL_I82810
 	bool
 	default n
-

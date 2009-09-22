@@ -32,6 +32,12 @@ config CONSOLE_VGA
 	bool "Use VGA console, once initialized."
 	default n
 
+config CONSOLE_VGA_ONBOARD_AT_FIRST
+	bool "Use onboard VGA as primary"
+	default n
+	help
+	  If not selected, the last adapter found will be used.
+
 config MAXIMUM_CONSOLE_LOGLEVEL
 	int "Maximum console loglevel"
 	default 9

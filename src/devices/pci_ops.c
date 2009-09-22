@@ -25,6 +25,9 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+/* The only consumer of the return value of get_pbus() is ops_pci_bus().
+ * ops_pci_bus() can handle being passed NULL and auto-picks working ops.
+ */
 static struct bus *get_pbus(device_t dev)
 {
 	struct bus *pbus = NULL;
@@ -44,8 +47,9 @@ static struct bus *get_pbus(device_t dev)
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {
-		printk_emerg("%s: Cannot find pci bus operations.\n", dev_path(dev));
-		die("");
+		/* This can happen before the device tree is set up completely. */
+		//printk_emerg("%s: Cannot find pci bus operations.\n", dev_path(dev));
+		pbus = NULL;
 	}
 	return pbus;
 }

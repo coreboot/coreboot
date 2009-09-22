@@ -41,6 +41,8 @@ static int pci_sanity_check(const struct pci_bus_operations *o)
 	return 0;
 }
 
+struct pci_bus_operations *pci_bus_fallback_ops = NULL;
+
 const struct pci_bus_operations *pci_check_direct(void)
 {
 	unsigned int tmp;
@@ -81,11 +83,18 @@ const struct pci_bus_operations *pci_check_direct(void)
 	return NULL;
 }
 
+const struct pci_bus_operations *pci_remember_direct(void)
+{
+	if (!pci_bus_fallback_ops)
+		pci_bus_fallback_ops = pci_check_direct();
+	return pci_bus_fallback_ops;
+}
+
 /** Set the method to be used for PCI, type I or type II
  */
 void pci_set_method(device_t dev)
 {
 	printk_info("Finding PCI configuration type.\n");
-	dev->ops->ops_pci_bus = pci_check_direct();
+	dev->ops->ops_pci_bus = pci_remember_direct();
 	post_code(0x5f);
 }

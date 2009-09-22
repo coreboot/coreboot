@@ -21,4 +21,7 @@ void pci_mmio_write_config16(device_t dev, unsigned where, uint16_t val);
 void pci_mmio_write_config32(device_t dev, unsigned where, uint32_t val);
 #endif
 
+/* This function lives in pci_ops_auto.c */
+const struct pci_bus_operations *pci_remember_direct(void);
+
 #endif /* PCI_OPS_H */

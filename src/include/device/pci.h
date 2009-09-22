@@ -97,6 +97,8 @@ static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
 	if (bus && bus->dev && bus->dev->ops) {
 		bops = bus->dev->ops->ops_pci_bus;
 	}
+	if (!bops)
+		bops = pci_remember_direct();
 	return bops;
 }
 

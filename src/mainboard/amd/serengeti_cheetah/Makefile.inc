@@ -32,7 +32,7 @@ obj-$(CONFIG_HAVE_ACPI_TABLES) += fadt.o
 # ./ssdt.o is in northbridge/amd/amdk8/Config.lb
 obj-$(CONFIG_ACPI_SSDTX_NUM) += ssdt2.o
 obj-$(CONFIG_ACPI_SSDTX_NUM) += ssdt3.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += ssdt4.o
+obj-$(CONFIG_ACPI_SSDTX_NUM) += ssdt4.o
 driver-y += ../../../drivers/i2c/i2cmux/i2cmux.o
 
 # This is part of the conversion to init-obj and away from included code.
@@ -59,8 +59,8 @@ MAINBOARD_OPTIONS=\
 	-DCONFIG_USE_PRINTK_IN_CAR=1 \
 	-DCONFIG_HAVE_HIGH_TABLES=1
 
-$(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
-	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
+$(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/dsdt_lb.dsl
+	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dx/dsdt_lb.dsl
 	mv dsdt.hex $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c

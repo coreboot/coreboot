@@ -29,7 +29,7 @@ static void *phys_to_virt(uint32_t addr)
 
 static uint32_t virt_to_phys(void *addr)
 {
-	return (long)(addr - offset) & 0xffffffff;
+	return (unsigned long)(addr - offset) & 0xffffffff;
 }
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
@@ -61,3 +61,5 @@ int create_cbfs_image(const char *romfile, uint32_t romsize,
 
 int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location);
 void print_cbfs_directory(const char *filename);
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))

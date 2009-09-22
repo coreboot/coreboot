@@ -36,10 +36,16 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	fseek(file, 0, SEEK_END);
 	*romsize_p = ftell(file);
 	fseek(file, 0, SEEK_SET);
-	if (!content)
+	if (!content) {
 		content = malloc(*romsize_p);
-	else if (place == SEEK_END)
+		if (!content) {
+			printf("Could not get %d bytes for file %s\n",
+					*romsize_p, filename);
+			exit(1);
+		}
+	} else if (place == SEEK_END)
 		content -= *romsize_p;
+
 	if (!fread(content, *romsize_p, 1, file)) {
 		printf("failed to read %s\n", filename);
 		return NULL;
@@ -255,6 +261,11 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 		*location -= headersize;
 	}
 	void *newdata = malloc(*datasize + headersize);
+	if (!newdata) {
+		printf("Could not get %d bytes for CBFS file.\n", *datasize +
+				headersize);
+		exit(1);
+	}
 	struct cbfs_file *nextfile = (struct cbfs_file *)newdata;
 	strncpy(nextfile->magic, "LARCHIVE", 8);
 	nextfile->len = htonl(*datasize);
@@ -272,8 +283,15 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 {
 	romsize = _romsize;
 	unsigned char *romarea = malloc(romsize);
+	if (!romarea) {
+		printf("Could not get %d bytes of memory for CBFS image.\n",
+				romsize);
+		exit(1);
+	}
 	memset(romarea, 0xff, romsize);
-	recalculate_rom_geometry(romarea);
+
+	// Set up physical/virtual mapping
+	offset = romarea + romsize - 0x100000000ULL;
 
 	if (align == 0)
 		align = 64;
@@ -291,6 +309,9 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 	master_header->offset = htonl(0);
 	((uint32_t *) phys_to_virt(0xfffffffc))[0] =
 	    virt_to_phys(master_header);
+
+	recalculate_rom_geometry(romarea);
+
 	struct cbfs_file *one_empty_file =
 	    cbfs_create_empty_file((0 - romsize) & 0xffffffff,
 				   romsize - bootblocksize -

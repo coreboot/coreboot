@@ -236,9 +236,10 @@ CFLAGS +=-Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Werror-implicit-function-declaration -Wstrict-aliasing -Wshadow 
 CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
-CBFS_COMPRESS_FLAG:=
-ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZMA),y)
 CBFS_COMPRESS_FLAG:=l
+CBFS_PAYLOAD_COMPRESS_FLAG:=
+ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZMA),y)
+CBFS_PAYLOAD_COMPRESS_FLAG:=l
 endif
 
 coreboot: prepare prepare2 $(obj)/coreboot.rom

@@ -68,7 +68,7 @@
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug_direct.c"
 #include "pc80/usbdebug_direct_serial.c"
 #endif
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -107,7 +107,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 

@@ -63,7 +63,7 @@ static void post_code(u8 value) {
 #if (CONFIG_USE_FAILOVER_IMAGE == 0)
 #include "arch/i386/lib/console.c"
 #include "pc80/serial.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdfam10/raminit.h"

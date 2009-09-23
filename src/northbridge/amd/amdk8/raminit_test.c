@@ -305,7 +305,7 @@ static void coherent_ht_mainboard(unsigned cpus)
 }
 
 #include "raminit.c"
-#include "../../../sdram/generic_sdram.c"
+#include "../../../lib/generic_sdram.c"
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1

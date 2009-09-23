@@ -31,7 +31,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "northbridge/via/cn700/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"

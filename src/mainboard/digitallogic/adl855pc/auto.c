@@ -14,7 +14,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "southbridge/intel/i82801dbm/i82801dbm_early_smbus.c"
 #include "northbridge/intel/i855pm/raminit.h"
 
@@ -59,7 +59,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/i855pm/raminit.c"
 #include "northbridge/intel/i855pm/reset_test.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 static void main(unsigned long bist)
 {

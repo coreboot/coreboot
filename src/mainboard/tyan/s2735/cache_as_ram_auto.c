@@ -12,7 +12,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 
 #if 0
 static void post_code(uint8_t value) {
@@ -74,7 +74,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/e7501/raminit.c"
 #include "northbridge/intel/e7501/reset_test.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 
 #include "cpu/x86/car/copy_and_run.c"

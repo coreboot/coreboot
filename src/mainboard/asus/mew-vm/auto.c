@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "superio/smsc/lpc47b272/lpc47b272_early_serial.c"
 #include "northbridge/intel/i82810/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"

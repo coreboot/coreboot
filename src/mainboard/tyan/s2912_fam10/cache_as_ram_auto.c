@@ -60,7 +60,7 @@ static void post_code(u8 value) {
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug_direct.c"
 #include "pc80/usbdebug_direct_serial.c"
 #endif
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 
 #include <cpu/amd/model_10xxx_rev.h>
 

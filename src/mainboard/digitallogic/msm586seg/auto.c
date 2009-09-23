@@ -9,7 +9,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 //#include "lib/delay.c"
 
@@ -74,7 +74,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 //	return smbus_read_byte(device, address);
 }
 
-//#include "sdram/generic_sdram.c"
+//#include "lib/generic_sdram.c"
 
 static inline void dumpmem(void){
   int i, j;

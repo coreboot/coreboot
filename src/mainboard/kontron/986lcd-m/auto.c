@@ -45,7 +45,7 @@
 #include "pc80/usbdebug_direct_serial.c"
 #endif
 
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "southbridge/intel/i82801gx/i82801gx_early_smbus.c"
 #include "reset.c"
 #include "superio/winbond/w83627thg/w83627thg_early_serial.c"

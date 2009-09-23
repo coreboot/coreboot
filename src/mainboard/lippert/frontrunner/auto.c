@@ -8,7 +8,7 @@
 #include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
@@ -40,7 +40,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 }
 
 #include "northbridge/amd/gx2/raminit.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 #define PLLMSRhi 0x00000226
 #define PLLMSRlo 0x00000008

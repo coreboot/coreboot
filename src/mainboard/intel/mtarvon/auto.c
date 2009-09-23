@@ -30,7 +30,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "southbridge/intel/i3100/i3100_early_smbus.c"
 #include "southbridge/intel/i3100/i3100_early_lpc.c"
 #include "northbridge/intel/i3100/raminit.h"
@@ -57,7 +57,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 }
 
 #include "northbridge/intel/i3100/raminit.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 #include "../jarrell/debug.c"
 
 

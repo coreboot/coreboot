@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "northbridge/via/vt8601/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
@@ -37,7 +37,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/via/vt8601/raminit.c"
 /*
-  #include "sdram/generic_sdram.c"
+  #include "lib/generic_sdram.c"
 */
 
 static void enable_mainboard_devices(void) 

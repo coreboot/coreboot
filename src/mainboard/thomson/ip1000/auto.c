@@ -30,7 +30,7 @@
 #include "pc80/serial.c"
 #include "pc80/udelay_io.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "northbridge/intel/i82830/raminit.h"
 #include "northbridge/intel/i82830/memory_initialized.c"
@@ -69,7 +69,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/intel/i82830/raminit.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 /**
  * The AC'97 Audio Controller I/O space registers are read only by default

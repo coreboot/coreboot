@@ -276,7 +276,7 @@ static int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "raminit.c"
-#include "../../../sdram/generic_sdram.c"
+#include "../../../lib/generic_sdram.c"
 
 #define FIRST_CPU  1
 #define SECOND_CPU 1

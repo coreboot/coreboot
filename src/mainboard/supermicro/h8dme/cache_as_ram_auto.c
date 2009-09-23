@@ -56,7 +56,7 @@
 #if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 
 #include <cpu/amd/model_fxx_rev.h>
 
@@ -169,7 +169,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit_f.c"
 
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 #include "resourcemap.c"
 

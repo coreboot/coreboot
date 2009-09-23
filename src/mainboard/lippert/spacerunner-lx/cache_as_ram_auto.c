@@ -32,7 +32,7 @@
 #include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/lxdef.h>
@@ -123,7 +123,7 @@ static int smc_send_config(unsigned char config_data)
 #include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 #include "cpu/amd/model_lx/cpureginit.c"
 #include "cpu/amd/model_lx/syspreinit.c"
 

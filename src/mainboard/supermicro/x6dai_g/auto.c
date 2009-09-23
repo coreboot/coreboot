@@ -10,7 +10,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "southbridge/intel/esb6300/esb6300_early_smbus.c"
 #include "northbridge/intel/e7525/raminit.h"
 #include "superio/winbond/w83627hf/w83627hf.h"
@@ -52,7 +52,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/intel/e7525/raminit.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 
 static void main(unsigned long bist)

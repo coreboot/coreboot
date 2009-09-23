@@ -38,7 +38,7 @@
 #include "arch/i386/lib/console.c"
 #include <cpu/x86/bist.h>
 
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "southbridge/intel/i3100/i3100_early_smbus.c"
 #include "southbridge/intel/i3100/i3100_early_lpc.c"
 #include "reset.c"
@@ -117,7 +117,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/intel/i3100/memory_initialized.c"
 #include "northbridge/intel/i3100/raminit.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 #include "northbridge/intel/i3100/reset_test.c"
 #include "debug.c"
 

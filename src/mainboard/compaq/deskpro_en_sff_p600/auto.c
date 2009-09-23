@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "southbridge/intel/i82371eb/i82371eb_early_smbus.c"
 #include "northbridge/intel/i440bx/raminit.h"
 #include "lib/debug.c"

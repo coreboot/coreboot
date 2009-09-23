@@ -17,7 +17,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 
 #if 0
 static void post_code(uint8_t value) {
@@ -90,7 +90,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
  /* newisys khepri does not want the default */
 #include "resourcemap.c" 

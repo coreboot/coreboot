@@ -27,7 +27,7 @@
 #include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "northbridge/amd/gx1/raminit.c"
 #include "cpu/x86/bist.h"
 #include "superio/winbond/w83977f/w83977f_early_serial.c"

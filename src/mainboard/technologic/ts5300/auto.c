@@ -15,7 +15,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 
 #define TS5300_LED_OFF outb((inb(0x77)&0xfe), 0x77)

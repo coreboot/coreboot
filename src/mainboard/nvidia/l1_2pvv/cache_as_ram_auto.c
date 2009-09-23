@@ -63,7 +63,7 @@
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug_direct.c"
 #include "pc80/usbdebug_direct_serial.c"
 #endif
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 
 #include <cpu/amd/model_fxx_rev.h>
 
@@ -118,7 +118,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit_f.c"
 
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 #include "resourcemap.c"
 

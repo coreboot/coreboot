@@ -106,8 +106,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/raminit.c"
 
-#include "sdram/generic_sdram.c"
-#include "ram/ramtest.c"
+#include "lib/generic_sdram.c"
+#include "lib/ramtest.c"
 
  /* tyan does not want the default */
 #include "resourcemap.c" 

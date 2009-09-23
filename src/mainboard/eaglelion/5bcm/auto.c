@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 //#include "southbridge/intel/i440bx/i440bx_early_smbus.c"
 #include "superio/nsc/pc97317/pc97317_early_serial.c"
 //#include "northbridge/intel/i440bx/raminit.h"

@@ -111,7 +111,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
  /* msi does not want the default */
 #include "resourcemap.c"

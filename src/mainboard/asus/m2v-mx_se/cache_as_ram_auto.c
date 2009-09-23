@@ -100,7 +100,7 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "cpu/amd/car/copy_and_run.c"
 #include "cpu/amd/car/post_cache_as_ram.c"

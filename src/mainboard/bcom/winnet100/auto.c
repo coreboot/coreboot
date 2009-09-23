@@ -28,7 +28,7 @@
 #include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "northbridge/amd/gx1/raminit.c"
 #include "superio/nsc/pc97317/pc97317_early_serial.c"
 #include "cpu/x86/bist.h"

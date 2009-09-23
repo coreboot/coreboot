@@ -113,7 +113,7 @@ void soft_reset(void)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/via/k8t890/k8t890_early_car.c"
 #include "cpu/amd/car/copy_and_run.c"

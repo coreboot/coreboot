@@ -12,7 +12,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-#include "ram/ramtest.c"
+#include "lib/ramtest.c"
 #include "southbridge/intel/i82801ca/i82801ca_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
 #include "cpu/x86/lapic/boot_cpu.c"
@@ -41,7 +41,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/e7501/raminit.c"
 #include "northbridge/intel/e7501/reset_test.c"
-#include "sdram/generic_sdram.c"
+#include "lib/generic_sdram.c"
 
 
 // This function MUST appear last (ROMCC limitation)

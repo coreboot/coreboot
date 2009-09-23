@@ -71,9 +71,10 @@ struct ip_checksum_vcb {
 	unsigned short ip_checksum;
 };
 
+static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
+
 void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
 {
-	int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
 	struct cbfs_payload *payload;
 
 	payload = (struct cbfs_payload *)cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
@@ -110,7 +111,7 @@ void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
 
 static unsigned long bounce_size, bounce_buffer;
 
-static void get_bounce_buffer(struct lb_memory *mem, unsigned long bounce_size)
+static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
 {
 	unsigned long lb_size;
 	unsigned long mem_entries;
@@ -118,7 +119,7 @@ static void get_bounce_buffer(struct lb_memory *mem, unsigned long bounce_size)
 	int i;
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
 	/* Double coreboot size so I have somewhere to place a copy to return to */
-	lb_size = bounce_size + lb_size;
+	lb_size = req_size + lb_size;
 	mem_entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
 	buffer = 0;
 	for(i = 0; i < mem_entries; i++) {
@@ -142,6 +143,7 @@ static void get_bounce_buffer(struct lb_memory *mem, unsigned long bounce_size)
 		buffer = tbuffer;
 	}
 	bounce_buffer = buffer;
+	bounce_size = req_size;
 }
 
 static int valid_area(struct lb_memory *mem, unsigned long buffer,
@@ -424,7 +426,8 @@ static int load_self_segments(
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (!overlaps_coreboot(ptr)) continue;
 		unsigned long bounce = ptr->s_dstaddr + ptr->s_memsz - lb_start;
-		if (bounce > required_bounce_size) required_bounce_size = bounce;
+		if (bounce > required_bounce_size)
+			required_bounce_size = bounce;
 	}
 	get_bounce_buffer(mem, required_bounce_size);
 	if (!bounce_buffer) {
@@ -458,14 +461,12 @@ static int load_self_segments(
 			size_t len;
 			len = ptr->s_filesz;
 			switch(ptr->compression) {
-#if CONFIG_COMPRESSED_PAYLOAD_LZMA==1
 				case CBFS_COMPRESS_LZMA: {
 					printk_debug("using LZMA\n");
 					unsigned long ulzma(unsigned char *src, unsigned char *dst);		
 					len = ulzma(src, dest);
 					break;
 				}
-#endif
 #if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
 				case CBFS_COMPRESS_NRV2B: {
 					printk_debug("using NRV2B\n");
@@ -505,7 +506,7 @@ static int load_self_segments(
 	return 1;
 }
 
-int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
+static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 {
 	u32 entry=0;
 	struct segment head;

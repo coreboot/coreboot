@@ -68,7 +68,7 @@ int elf_check_arch(Elf_ehdr *ehdr)
 	
 }
 
-void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long bounce_size)
+void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 {
 	extern unsigned char _ram_seg, _eram_seg;
 	unsigned long lb_start, lb_size;
@@ -79,7 +79,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long bounce_si
 
 	lb_start = (unsigned long)&_ram_seg;
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
-	adjust = buffer + bounce_size - lb_start;
+	adjust = buffer +  size - lb_start;
 
 	adjusted_boot_notes = (unsigned long)&elf_boot_notes;
 	adjusted_boot_notes += adjust; 

@@ -30,8 +30,8 @@ mainmenu "Coreboot Configuration"
 source src/mainboard/Kconfig
 source src/arch/i386/Kconfig
 source src/arch/ppc/Kconfig
-source src/devices/Kconfig
 source src/northbridge/Kconfig
+source src/devices/Kconfig
 source src/southbridge/Kconfig
 source src/superio/Kconfig
 source src/cpu/Kconfig
@@ -41,16 +41,8 @@ config CBFS
 	default y
 
 config PCI_BUS_SEGN_BITS
-	bool
-	default n
-
-config HT_CHAIN_UNITID_BASE
-	hex
-	default 0x1
-
-config HT_CHAIN_END_UNITID_BASE
-	hex
-	default 0x20
+	int
+	default 0
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex

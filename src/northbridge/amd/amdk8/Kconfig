@@ -29,4 +29,9 @@ config HAVE_HIGH_TABLES
 	bool
 	default y
 
+config HYPERTRANSPORT_PLUGIN_SUPPORT
+	bool
+	default y
+	depends on NORTHBRIDGE_AMD_AMDK8
+
 source src/northbridge/amd/amdk8/root_complex/Kconfig

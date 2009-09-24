@@ -108,7 +108,6 @@ config HAVE_ACPI_TABLES
 	default y
 	depends on BOARD_ASUS_M2V_MX_SE
 
-
 config LB_CKS_RANGE_END
 	int
 	default 122
@@ -118,4 +117,24 @@ config LB_CKS_LOC
 	int
 	default	123
 	depends	on BOARD_ASUS_M2V_MX_SE
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_ASUS_M2V_MX_SE
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_ASUS_M2V_MX_SE
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 1
+	depends on BOARD_ASUS_M2V_MX_SE
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x20
+	depends on BOARD_ASUS_M2V_MX_SE
 

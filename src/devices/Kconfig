@@ -79,7 +79,7 @@ config PCI_64BIT_PREF_MEM
 
 config HYPERTRANSPORT_PLUGIN_SUPPORT
 	bool
-	default y
+	default n
 
 config PCIX_PLUGIN_SUPPORT
 	bool

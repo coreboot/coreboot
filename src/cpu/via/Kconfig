@@ -1,1 +1,2 @@
+source src/cpu/via/model_c3/Kconfig
 source src/cpu/via/model_c7/Kconfig

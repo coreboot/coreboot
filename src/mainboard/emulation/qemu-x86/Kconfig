@@ -1,0 +1,19 @@
+config BOARD_EMULATION_QEMU_X86
+	bool "QEMU x86"
+	select ARCH_X86
+	select CPU_I586
+	select SOUTHBRIDGE_INTEL_I82371EB
+	select CPU_EMULATION_QEMU_X86
+	select CONSOLE_SERIAL8250
+	help
+	  x86 QEMU variant.
+
+config MAINBOARD_DIR
+	string
+	default emulation/qemu-x86
+	depends on BOARD_EMULATION_QEMU_X86
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "QEMU-86"
+	depends on BOARD_EMULATION_QEMU_X86

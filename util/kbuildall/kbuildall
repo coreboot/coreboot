@@ -12,6 +12,7 @@
 #  of this archive for more details.
 
 TARGETDIR=kbuildall.results
+BOARD=$1
 
 if [ ! -f util/kbuildall/kbuildall ]; then
 	echo "This application must be run from the"
@@ -36,10 +37,16 @@ builddefconfig() {
 	yes "" | $MAKE oldconfig
 }
 
-rm -rf $TARGETDIR
-mkdir -p $TARGETDIR
 ALLTARGETS=`(cd src/mainboard; ls */*/Config.lb | sed s,/Config.lb,,)`
 TARGETCOUNT=`echo $ALLTARGETS | wc -w`
+
+if [ -n "$BOARD" ]; then
+	TARGETCOUNT=1
+	ALLTARGETS=$BOARD
+else
+	rm -rf $TARGETDIR
+fi
+mkdir -p $TARGETDIR
 CURRENTARGET=0
 for dir in $ALLTARGETS; do
 	i=`expr $i + 1`

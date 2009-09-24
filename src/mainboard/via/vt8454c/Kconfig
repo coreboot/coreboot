@@ -30,3 +30,13 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "VT8454C"
 	depends on BOARD_VIA_VT8454C
+
+config IRQ_SLOT_COUNT
+	int
+	default 15
+	depends on BOARD_VIA_VT8454C
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_VIA_VT8454C

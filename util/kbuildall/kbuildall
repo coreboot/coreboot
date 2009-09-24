@@ -47,7 +47,7 @@ else
 	rm -rf $TARGETDIR
 fi
 mkdir -p $TARGETDIR
-CURRENTARGET=0
+i=0
 for dir in $ALLTARGETS; do
 	i=`expr $i + 1`
 	if [ ! -f src/mainboard/$dir/Kconfig ]; then

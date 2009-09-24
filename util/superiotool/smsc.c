@@ -276,6 +276,8 @@ static const struct superio_registers reg_table[] = {
 			{0x30,0x60,0x61,0x70,0xf0,EOT},
 			{0x00,0x00,0x00,NANA,NANA,EOT}},
 		{EOT}}},
+	{0x46, "FDC37M602", {	/* Found in Biostar M6TLD. */
+		{EOT}}},
 	{0x47, "FDC37M60x", {	/* TODO: Not yet in sensors-detect */
 		{EOT}}},
 	{0x4c, "FDC37B72x", {

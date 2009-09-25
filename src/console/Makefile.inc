@@ -6,7 +6,7 @@ obj-y += vsprintf.o
 initobj-y += vtxprintf.o
 initobj-y += vsprintf.o
 
-driver-$(CONFIG_SERIAL_CONSOLE) += uart8250_console.o
+driver-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.o
 driver-$(CONFIG_USBDEBUG_DIRECT) += usbdebug_direct_console.o
 driver-$(CONFIG_CONSOLE_VGA) += vga_console.o
 driver-$(CONFIG_CONSOLE_BTEXT) += btext_console.o

@@ -1,6 +1,7 @@
 menu "Console options"
 
-config SERIAL_CONSOLE
+config CONSOLE_SERIAL8250
+	#TODO Rename to SERIAL_CONSOLE once Kconfig transition is complete.
 	bool "See output on the serial port console"
 	default y
 
@@ -10,13 +11,13 @@ config SERIAL_POST
 
 config TTYS0_BASE
 	hex "I/O base for the serial port"
-	depends on SERIAL_CONSOLE
+	depends on CONSOLE_SERIAL8250
 	default 0x3f8
 
 config SERIAL_SET_SPEED
 	bool "Override the serial console BAUD rate"
 	default y
-	depends on SERIAL_CONSOLE
+	depends on CONSOLE_SERIAL8250
 
 config TTYS0_BAUD
 	int "Serial console BAUD rate"

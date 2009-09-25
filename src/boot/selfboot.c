@@ -394,6 +394,7 @@ static int build_self_segment_list(
 
 		segment++;
 
+		// FIXME: Explain what this is 
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
 			if (new->s_srcaddr < ntohl((u32) segment->load_addr))
 				break;

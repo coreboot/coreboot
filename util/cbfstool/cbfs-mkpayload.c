@@ -48,6 +48,12 @@ int parse_elf_to_payload(unsigned char *input, unsigned char **output,
 	struct cbfs_payload_segment *segs;
 	int i;
 
+	if(!iself(input)){
+		printf("Fatal error: the payload file is not in ELF format!\n");
+		exit(1);
+	}
+
+
 	comp_func_ptr compress = compression_function(algo);
 	if (!compress)
 		return -1;

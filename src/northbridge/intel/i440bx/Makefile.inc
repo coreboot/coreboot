@@ -18,5 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-$(CONFIG_NORTHBRIDGE_INTEL_I440BX) += northbridge.o
+driver-y += northbridge.o
 

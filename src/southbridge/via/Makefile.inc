@@ -1,5 +1,4 @@
-#subdirs-y += k8t890
-#subdirs-y += vt8231
-#subdirs-y += vt8235
+subdirs-$(CONFIG_SOUTHBRIDGE_VIA_K8T890) += k8t890
+subdirs-$(CONFIG_SOUTHBRIDGE_VIA_VT8231) += vt8231
+subdirs-$(CONFIG_SOUTHBRIDGE_VIA_VT8235) += vt8235
 subdirs-$(CONFIG_SOUTHBRIDGE_VIA_VT8237R) += vt8237r
-#subdirs-y += vt82c686

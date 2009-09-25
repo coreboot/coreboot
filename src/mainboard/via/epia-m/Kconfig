@@ -1,0 +1,41 @@
+config BOARD_VIA_EPIA_M
+	bool "EPIA-M"
+	select ARCH_X86
+	select CPU_VIA_C3
+	select NORTHBRIDGE_VIA_VT8623
+	select SOUTHBRIDGE_VIA_VT8235
+	select SOUTHBRIDGE_RICOH_RL5C476
+	select SUPERIO_VIA_VT1211
+	select HAVE_PIRQ_TABLE
+	help
+	  VIA EPIA-M mainboard.
+
+config MAINBOARD_DIR
+	string
+	default via/epia-m
+	depends on BOARD_VIA_EPIA_M
+
+#config DCACHE_RAM_BASE
+#	hex
+#	default 0xffef0000
+#	depends on BOARD_VIA_EPIA_M
+
+#config DCACHE_RAM_SIZE
+#	hex
+#	default 0x8000
+#	depends on BOARD_VIA_EPIA_M
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EPIA_M"
+	depends on BOARD_VIA_EPIA_M
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_VIA_EPIA_M
+
+config IRQ_SLOT_COUNT
+	int
+	default 5
+	depends on BOARD_VIA_EPIA_M

@@ -1,0 +1,3 @@
+config SOUTHBRIDGE_AMD_CS5530
+	bool
+	default n

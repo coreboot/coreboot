@@ -1,0 +1,4 @@
+config CPU_INTEL_SOCKET_BGA956
+	bool
+	default n
+	select CPU_INTEL_CORE2

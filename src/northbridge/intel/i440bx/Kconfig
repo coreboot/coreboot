@@ -22,3 +22,7 @@ config NORTHBRIDGE_INTEL_I440BX
 	bool
 	default n
 
+config HAVE_HIGH_TABLES
+	bool
+	default y
+

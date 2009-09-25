@@ -1,0 +1,65 @@
+config BOARD_TYAN_S2850
+	bool "Tyan S2850"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_940
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_AMD8111
+	select SUPERIO_WINBOND_W83627HF
+	select PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default tyan/s2850
+	depends on BOARD_TYAN_S2850
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_TYAN_S2850
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_TYAN_S2850
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "s2850"
+	depends on BOARD_TYAN_S2850
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2850
+	depends on BOARD_TYAN_S2850
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_TYAN_S2850
+
+config HAVE_FAILOVER_BOOT
+	bool
+	default n
+	depends on BOARD_TYAN_S2850
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+	depends on BOARD_TYAN_S2850
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_TYAN_S2850
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_TYAN_S2850
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_TYAN_S2850

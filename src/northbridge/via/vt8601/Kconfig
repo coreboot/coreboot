@@ -1,0 +1,13 @@
+config NORTHBRIDGE_VIA_VT8601
+	bool
+	default n
+
+config FALLBACK_SIZE
+	int
+	default 0
+	depends on NORTHBRIDGE_VIA_VT8601
+
+config HAVE_HIGH_TABLES
+	bool
+	default y
+	depends on NORTHBRIDGE_VIA_VT8601

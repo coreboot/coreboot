@@ -1,7 +1,7 @@
-#subdirs-y += vt8601
-#subdirs-y += vt8623
-#subdirs-y += cn700
+subdirs-$(CONFIG_NORTHBRIDGE_VIA_VT8601) += vt8601
+subdirs-$(CONFIG_NORTHBRIDGE_VIA_VT8623) += vt8623
+subdirs-$(CONFIG_NORTHBRIDGE_VIA_CN700) += cn700
 subdirs-$(CONFIG_NORTHBRIDGE_VIA_CX700) += cx700
 subdirs-$(CONFIG_NORTHBRIDGE_VIA_CN400) += cn400
-#subdirs-y += vx800
+subdirs-$(CONFIG_NORTHBRIDGE_VIA_VX800) += vx800
 

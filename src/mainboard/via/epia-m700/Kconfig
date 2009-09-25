@@ -1,0 +1,44 @@
+config BOARD_VIA_EPIA_M700
+	bool "EPIA-M700"
+	select ARCH_X86
+	select CPU_VIA_C7
+	select NORTHBRIDGE_VIA_VX800
+	select SUPERIO_WINBOND_W83697HF
+	select HAVE_PIRQ_TABLE
+	help
+	  VIA EPIA-M700 mainboard.
+
+config MAINBOARD_DIR
+	string
+	default via/epia-m700
+	depends on BOARD_VIA_EPIA_M700
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffef0000
+	depends on BOARD_VIA_EPIA_M700
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_VIA_EPIA_M700
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EPIA_M700"
+	depends on BOARD_VIA_EPIA_M700
+
+config VIDEO_MB
+	int
+	default 64
+	depends on BOARD_VIA_EPIA_M700
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_VIA_EPIA_M700
+
+config IRQ_SLOT_COUNT
+	int
+	default 13
+	depends on BOARD_VIA_EPIA_M700

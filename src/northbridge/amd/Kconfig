@@ -1,8 +1,5 @@
 source src/northbridge/amd/amdk8/Kconfig
 source src/northbridge/amd/gx2/Kconfig
-
-#source src/northbridge/amd/amdfam10/Kconfig
-#source src/northbridge/amd/amdht/Kconfig
-#source src/northbridge/amd/amdmct/Kconfig
+source src/northbridge/amd/amdfam10/Kconfig
 #source src/northbridge/amd/gx1/Kconfig
 #source src/northbridge/amd/lx/Kconfig

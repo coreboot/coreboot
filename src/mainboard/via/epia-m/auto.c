@@ -20,7 +20,7 @@
 
 /*
  */
-void udelay(int usecs) 
+void udelay(unsigned usecs) 
 {
 	int i;
 	for(i = 0; i < usecs; i++)

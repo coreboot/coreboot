@@ -1,0 +1,47 @@
+config BOARD_INTEL_XE7501DEVKIT
+	bool "xe7501 DevKit"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA604
+	select NORTHBRIDGE_INTEL_E7501
+	select SOUTHBRIDGE_INTEL_I82870
+	select SOUTHBRIDGE_INTEL_I82801CA
+	select SUPERIO_SMSC_LPC47B272
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	help
+          Intel xe7501 devkit mainboard.
+
+config MAINBOARD_DIR
+	string
+	default intel/xe7501devkit
+	depends on BOARD_INTEL_XE7501DEVKIT
+
+config LB_CKS_RANGE_START
+	int
+	default 128
+	depends on BOARD_INTEL_XE7501DEVKIT
+
+config LB_CKS_RANGE_END
+	int
+	default 130
+	depends on BOARD_INTEL_XE7501DEVKIT
+
+config LB_CKS_LOC
+	int
+	default 131
+	depends on BOARD_INTEL_XE7501DEVKIT
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EIDXE7501DEVKIT"
+	depends on BOARD_INTEL_XE7501DEVKIT
+
+config HAVE_OPTION_TABLE
+	bool
+	default y
+	depends on BOARD_INTEL_XE7501DEVKIT
+
+config IRQ_SLOT_COUNT
+	int
+	default 12
+	depends on BOARD_INTEL_XE7501DEVKIT

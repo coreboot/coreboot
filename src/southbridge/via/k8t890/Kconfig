@@ -1,0 +1,4 @@
+config SOUTHBRIDGE_VIA_K8T890
+	bool
+	default n
+

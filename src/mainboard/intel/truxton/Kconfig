@@ -1,0 +1,43 @@
+config BOARD_INTEL_TRUXTON
+	bool "Truxton"
+	select ARCH_X86
+	select CPU_INTEL_EP80579
+	select NORTHBRIDGE_INTEL_I3100
+	select SOUTHBRIDGE_INTEL_I3100
+	select SUPERIO_INTEL_I3100
+	select SUPERIO_SMSC_SMSCSUPERIO
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	help
+          Intel Truxton mainboard.
+
+config MAINBOARD_DIR
+	string
+	default intel/truxton
+	depends on BOARD_INTEL_TRUXTON
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_INTEL_TRUXTON
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_INTEL_TRUXTON
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Truxton"
+	depends on BOARD_INTEL_TRUXTON
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_INTEL_TRUXTON
+
+config IRQ_SLOT_COUNT
+	int
+	default 1
+	depends on BOARD_INTEL_TRUXTON
+

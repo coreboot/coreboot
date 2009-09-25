@@ -1,0 +1,9 @@
+driver-y += i3100.o
+driver-y += i3100_uhci.o
+driver-y += i3100_lpc.o
+driver-y += i3100_sata.o
+driver-y += i3100_ehci.o
+driver-y += i3100_smbus.o
+driver-y += i3100_pci.o
+obj-y += i3100_reset.o
+obj-y += i3100_pciexp_portb.o

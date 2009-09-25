@@ -145,6 +145,14 @@ subdirs:=$(PLATFORM-y) $(BUILD-y)
 $(eval $(call evaluate_subdirs))
 
 
+define c_dsl_template
+$(obj)/$(1)%.c: src/$(1)%.dsl
+	@printf "    IASL       $$(subst $$(shell pwd)/,,$$(@))\n"
+	iasl -p $$(basename $$@) -tc $$<
+	perl -pi -e 's/AmlCode/AmlCode_$$(notdir $$(basename $$@))/g' $$(basename $$@).hex
+	mv $$(basename $$@).hex $$@
+endef
+
 define objs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
 	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
@@ -195,6 +203,7 @@ endef
 
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
+$(eval $(call usetemplate,c,dsl))
 $(eval $(call usetemplate,objs,c))
 $(eval $(call usetemplate,objs,S))
 $(eval $(call usetemplate,initobjs,c))
@@ -233,7 +242,7 @@ STACKPROTECT += $(call cc-option, -fno-stack-protector,)
 CFLAGS = $(STACKPROTECT) $(INCLUDES) $(MAINBOARD_OPTIONS) -Os -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS +=-Wwrite-strings -Wredundant-decls -Wno-trigraphs 
-CFLAGS += -Werror-implicit-function-declaration -Wstrict-aliasing -Wshadow 
+CFLAGS += -Wstrict-aliasing -Wshadow 
 CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
 CBFS_COMPRESS_FLAG:=l

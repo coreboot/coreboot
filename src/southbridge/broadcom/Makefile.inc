@@ -1,4 +1,3 @@
-subdirs-y += bcm21000
-subdirs-y += bcm5780
-subdirs-y += bcm5785
-
+subdirs-$(CONFIG_SOUTHBRIDGE_BROADCOM_BCM21000) += bcm21000
+subdirs-$(CONFIG_SOUTHBRIDGE_BROADCOM_BCM5780) += bcm5780
+subdirs-$(CONFIG_SOUTHBRIDGE_BROADCOM_BCM5785) += bcm5785

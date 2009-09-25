@@ -1,0 +1,35 @@
+config BOARD_VIA_EPIA
+	bool "EPIA"
+	select ARCH_X86
+	select CPU_VIA_C3
+	select NORTHBRIDGE_VIA_VT8601
+	select SOUTHBRIDGE_VIA_VT8231
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_PIRQ_TABLE
+	help
+	  VIA EPIA mainboard.
+
+config MAINBOARD_DIR
+	string
+	default via/epia
+	depends on BOARD_VIA_EPIA
+
+#config DCACHE_RAM_BASE
+#	hex
+#	default 0xffef0000
+#	depends on BOARD_VIA_EPIA
+#
+#config DCACHE_RAM_SIZE
+#	hex
+#	default 0x8000
+#	depends on BOARD_VIA_EPIA
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EPIA"
+	depends on BOARD_VIA_EPIA
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_VIA_EPIA

@@ -44,9 +44,7 @@ crt0-y += ../../../../src/cpu/x86/mmx/disable_mmx.inc
 
 ifdef POST_EVALUATION
 
-MAINBOARD_OPTIONS=\
-	-DCONFIG_USE_PRINTK_IN_CAR=1 \
-	-DCONFIG_HAVE_HIGH_TABLES=1
+MAINBOARD_OPTIONS=
 
 $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@

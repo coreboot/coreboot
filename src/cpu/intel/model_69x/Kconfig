@@ -1,0 +1,4 @@
+config CPU_INTEL_MODEL_69X
+	bool
+	default n
+	select SMP

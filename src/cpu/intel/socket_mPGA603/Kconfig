@@ -1,0 +1,6 @@
+config CPU_INTEL_SOCKET_MPGA603
+	bool
+	default false
+	select CPU_INTEL_MODEL_F0X
+	select CPU_INTEL_MODEL_F1X
+	select CPU_INTEL_MODEL_F2X

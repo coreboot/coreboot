@@ -1,0 +1,45 @@
+config BOARD_VIA_PC2500E
+	bool "PC2500E"
+	select ARCH_X86
+	select CPU_VIA_C7
+	select NORTHBRIDGE_VIA_CN700
+	select SOUTHBRIDGE_VIA_VT8237R
+	select SUPERIO_ITE_IT8716F
+	select HAVE_PIRQ_TABLE
+	help
+	  VIA PC2500E mainboard.
+
+config MAINBOARD_DIR
+	string
+	default via/pc2500e
+	depends on BOARD_VIA_PC2500E
+
+#config DCACHE_RAM_BASE
+#	hex
+#	default 0xffef0000
+#	depends on BOARD_VIA_PC2500E
+#
+#config DCACHE_RAM_SIZE
+#	hex
+#	default 0x8000
+#	depends on BOARD_VIA_PC2500E
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "PC2500E"
+	depends on BOARD_VIA_PC2500E
+
+config VIDEO_MB
+	int
+	default 32
+	depends on BOARD_VIA_PC2500E
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_VIA_PC2500E
+
+config IRQ_SLOT_COUNT
+	int
+	default 10
+	depends on BOARD_VIA_PC2500E

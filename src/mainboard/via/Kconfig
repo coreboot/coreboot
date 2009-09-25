@@ -2,8 +2,13 @@ choice
 	prompt "Mainboard model"
 	depends on VENDOR_VIA
 
-source "src/mainboard/via/vt8454c/Kconfig"
+source "src/mainboard/via/epia/Kconfig"
+source "src/mainboard/via/epia-cn/Kconfig"
+source "src/mainboard/via/epia-m/Kconfig"
+source "src/mainboard/via/epia-m700/Kconfig"
 source "src/mainboard/via/epia-n/Kconfig"
+source "src/mainboard/via/pc2500e/Kconfig"
+source "src/mainboard/via/vt8454c/Kconfig"
 
 endchoice
 

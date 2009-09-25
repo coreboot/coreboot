@@ -1,0 +1,3 @@
+config SOUTHBRIDGE_WINBOND_W83C553
+	bool
+	default n

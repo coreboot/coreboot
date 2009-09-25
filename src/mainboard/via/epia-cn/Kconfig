@@ -1,0 +1,45 @@
+config BOARD_VIA_EPIA_CN
+	bool "EPIA-CN"
+	select ARCH_X86
+	select CPU_VIA_C7
+	select NORTHBRIDGE_VIA_CN700
+	select SOUTHBRIDGE_VIA_VT8237R
+	select SUPERIO_VIA_VT1211
+	select HAVE_PIRQ_TABLE
+	help
+	  VIA EPIA-CN mainboard.
+
+config MAINBOARD_DIR
+	string
+	default via/epia-cn
+	depends on BOARD_VIA_EPIA_CN
+
+#config DCACHE_RAM_BASE
+#	hex
+#	default 0xffef0000
+#	depends on BOARD_VIA_EPIA_CN
+#
+#config DCACHE_RAM_SIZE
+#	hex
+#	default 0x8000
+#	depends on BOARD_VIA_EPIA_CN
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EPIA_CN"
+	depends on BOARD_VIA_EPIA_CN
+
+config VIDEO_MB
+	int
+	default 32
+	depends on BOARD_VIA_EPIA_CN
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_VIA_EPIA_CN
+
+config IRQ_SLOT_COUNT
+	int
+	default 9
+	depends on BOARD_VIA_EPIA_CN

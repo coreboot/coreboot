@@ -1,0 +1,9 @@
+driver-y += i82801dbm.o
+driver-y += i82801dbm_usb.o
+driver-y += i82801dbm_lpc.o
+driver-y += i82801dbm_ide.o
+driver-y += i82801dbm_usb2.o
+driver-y += i82801dbm_ac97.o
+#driver-y += i82801dbm_nic.o
+#driver-y += i82801dbm_pci.o
+obj-y += i82801dbm_reset.o

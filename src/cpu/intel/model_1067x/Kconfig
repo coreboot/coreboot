@@ -1,0 +1,5 @@
+config CPU_INTEL_CORE2
+	bool
+	default y
+	select SMP
+	select HAVE_MOVNTI

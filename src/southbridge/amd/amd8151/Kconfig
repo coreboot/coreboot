@@ -1,0 +1,3 @@
+config SOUTHBRIDGE_AMD_AMD8151
+	bool
+	default n

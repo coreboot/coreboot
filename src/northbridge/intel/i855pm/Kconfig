@@ -1,0 +1,8 @@
+config NORTHBRIDGE_INTEL_I855PM
+	bool
+	default n
+
+config HAVE_HIGH_TABLES
+	bool
+	default y
+	depends on NORTHBRIDGE_INTEL_I855PM

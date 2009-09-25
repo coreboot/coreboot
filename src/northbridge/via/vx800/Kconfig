@@ -1,0 +1,8 @@
+config NORTHBRIDGE_VIA_VX800
+	bool
+	default n
+
+config FALLBACK_SIZE
+	int
+	default 0
+	depends on NORTHBRIDGE_VIA_VX800

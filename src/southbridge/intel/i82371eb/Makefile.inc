@@ -18,11 +18,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb_isa.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb_ide.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb_usb.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb_smbus.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) +=  i82371eb_reset.o
+driver-y +=  i82371eb.o
+driver-y +=  i82371eb_isa.o
+driver-y +=  i82371eb_ide.o
+driver-y +=  i82371eb_usb.o
+driver-y +=  i82371eb_smbus.o
+driver-y +=  i82371eb_reset.o
 
-#initobj-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) += i82371eb_early_rom.o
+#initobj-y += i82371eb_early_rom.o

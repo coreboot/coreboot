@@ -1,0 +1,33 @@
+config BOARD_INTEL_JARRELL
+	bool "Jarrell"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA604
+	select NORTHBRIDGE_INTEL_E7520
+	select SOUTHBRIDGE_INTEL_PXHD
+	select SOUTHBRIDGE_INTEL_I82801ER
+	select SUPERIO_NSC_PC87427
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	help
+          Intel Jarrell mainboard.
+
+config MAINBOARD_DIR
+	string
+	default intel/jarrell
+	depends on BOARD_INTEL_JARRELL
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_INTEL_JARRELL
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_INTEL_JARRELL
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Jarrell"
+	depends on BOARD_INTEL_JARRELL
+

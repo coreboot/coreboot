@@ -1,11 +1,11 @@
-#subdirs-y += esb6300
-#subdirs-y += i3100
-subdirs-y += i82371eb
-#subdirs-y += i82801ca
-#subdirs-y += i82801dbm
-#subdirs-y += i82801er
-subdirs-y += i82801gx
-subdirs-y += i82801xx
-#subdirs-y += i82870
-#subdirs-y += pxhd
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_ESB6300) += esb6300
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I3100) += i3100
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I82371EB) += i82371eb
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I82801CA) += i82801ca
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I82801DBM) += i82801dbm
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I82801ER) += i82801er
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I82801GX) += i82801gx
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_I82870) += i82870
+subdirs-$(CONFIG_SOUTHBRIDGE_INTEL_PXHD) += pxhd
 

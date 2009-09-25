@@ -1,0 +1,3 @@
+config SOUTHBRIDGE_AMD_CS5535
+	bool
+	default n

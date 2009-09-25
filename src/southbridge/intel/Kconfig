@@ -1,10 +1,10 @@
-#source src/southbridge/intel/esb6300/Kconfig
-#source src/southbridge/intel/i3100/Kconfig
+source src/southbridge/intel/esb6300/Kconfig
+source src/southbridge/intel/i3100/Kconfig
 source src/southbridge/intel/i82371eb/Kconfig
-#source src/southbridge/intel/i82801ca/Kconfig
-#source src/southbridge/intel/i82801dbm/Kconfig
-#source src/southbridge/intel/i82801er/Kconfig
+source src/southbridge/intel/i82801ca/Kconfig
+source src/southbridge/intel/i82801dbm/Kconfig
+source src/southbridge/intel/i82801er/Kconfig
 source src/southbridge/intel/i82801gx/Kconfig
 source src/southbridge/intel/i82801xx/Kconfig
-#source src/southbridge/intel/i82870/Kconfig
-#source src/southbridge/intel/pxhd/Kconfig
+source src/southbridge/intel/i82870/Kconfig
+source src/southbridge/intel/pxhd/Kconfig

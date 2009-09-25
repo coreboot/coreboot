@@ -17,6 +17,10 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x8000 if CPU_INTEL_CORE
 
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0
+
 config SMP
 	bool
 	default y if MAX_CPUS != 1

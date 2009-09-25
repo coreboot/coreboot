@@ -1,0 +1,41 @@
+config BOARD_INTEL_MTARVON
+	bool "Mt. Arvon"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA479M
+	select NORTHBRIDGE_INTEL_I3100
+	select SOUTHBRIDGE_INTEL_I3100
+	select SUPERIO_INTEL_I3100
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	help
+          Intel Mt. Arvon mainboard.
+
+config MAINBOARD_DIR
+	string
+	default intel/mtarvon
+	depends on BOARD_INTEL_MTARVON
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_INTEL_MTARVON
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_INTEL_MTARVON
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Mt. Arvon"
+	depends on BOARD_INTEL_MTARVON
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_INTEL_MTARVON
+
+config IRQ_SLOT_COUNT
+	int
+	default 1
+	depends on BOARD_INTEL_MTARVON

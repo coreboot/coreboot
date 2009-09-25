@@ -18,19 +18,19 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_ac97.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_ide.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_lpc.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_nic.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_pci.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_sata.o
-# driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_smbus.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_usb.o
-driver-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_usb_ehci.o
+driver-y += i82801xx.o
+driver-y += i82801xx_ac97.o
+driver-y += i82801xx_ide.o
+driver-y += i82801xx_lpc.o
+driver-y += i82801xx_nic.o
+driver-y += i82801xx_pci.o
+driver-y += i82801xx_sata.o
+# driver-y += i82801xx_smbus.o
+driver-y += i82801xx_usb.o
+driver-y += i82801xx_usb_ehci.o
 
-object-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_reset.o
-object-$(CONFIG_SOUTHBRIDGE_INTEL_I82801XX) += i82801xx_watchdog.o
+object-y += i82801xx_reset.o
+object-y += i82801xx_watchdog.o
 
 # TODO: What about cmos_failover.c?
 

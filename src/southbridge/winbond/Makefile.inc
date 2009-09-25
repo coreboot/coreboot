@@ -1,1 +1,1 @@
-subdirs-y += w83c553
+subdirs-$(CONFIG_SOUTHBRIDGE_WINBOND_W83C553) += w83c553

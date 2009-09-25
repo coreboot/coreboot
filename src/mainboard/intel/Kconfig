@@ -1,1 +1,12 @@
-#
+choice
+        prompt "Mainboard model"
+        depends on VENDOR_INTEL
+
+source "src/mainboard/intel/eagleheights/Kconfig"
+source "src/mainboard/intel/jarrell/Kconfig"
+source "src/mainboard/intel/mtarvon/Kconfig"
+source "src/mainboard/intel/truxton/Kconfig"
+source "src/mainboard/intel/xe7501devkit/Kconfig"
+
+endchoice
+

@@ -1,0 +1,11 @@
+driver-y += esb6300.o
+driver-y += esb6300_uhci.o
+driver-y += esb6300_lpc.o
+driver-y += esb6300_ide.o
+driver-y += esb6300_sata.o
+driver-y += esb6300_ehci.o
+driver-y += esb6300_smbus.o
+driver-y += esb6300_pci.o
+driver-y += esb6300_pic.o
+driver-y += esb6300_bridge1c.o
+driver-y += esb6300_ac97.o

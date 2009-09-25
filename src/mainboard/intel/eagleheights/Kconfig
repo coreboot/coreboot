@@ -1,0 +1,48 @@
+config BOARD_INTEL_EAGLEHEIGHTS
+	bool "EagleHeights"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_BGA956
+	select NORTHBRIDGE_INTEL_I3100
+	select SOUTHBRIDGE_INTEL_I3100
+	select SUPERIO_INTEL_I3100
+	select SUPERIO_SMSC_SMSCSUPERIO
+	select HAVE_PIRQ_TABLE
+	select HAVE_HIGH_TABLES
+	select MMCONF_SUPPORT
+	select USE_PRINTK_IN_CAR
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	select AP_IN_SIPI_WAIT
+	help
+          Intel EagleHeights mainboard.
+
+config MAINBOARD_DIR
+	string
+	default intel/eagleheights
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EagleHeights"
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+

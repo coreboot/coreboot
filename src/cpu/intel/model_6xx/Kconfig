@@ -1,0 +1,4 @@
+config CPU_INTEL_MODEL_6XX
+	bool
+	default n
+	select SMP

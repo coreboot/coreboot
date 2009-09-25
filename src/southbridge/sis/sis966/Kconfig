@@ -1,0 +1,3 @@
+config SOUTHBRIDGE_SIS_SIS966
+	bool
+	default n

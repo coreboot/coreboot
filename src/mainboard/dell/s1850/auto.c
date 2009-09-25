@@ -13,14 +13,13 @@
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801er/i82801er_early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
-#include "superio/winbond/w83627hf/w83627hf.h"
+#include "superio/nsc/pc8374/pc8374_early_serial.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "debug.c"
 #include "watchdog.c"
 #include "reset.c"
-#include "s2850_fixups.c"
-#include "superio/winbond/w83627hf/w83627hf_early_init.c"
+#include "s1850_fixups.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
 
@@ -28,8 +27,7 @@
 #define SIO_GPIO_BASE 0x680
 #define SIO_XBUS_BASE 0x4880
 
-#define CONSOLE_SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-#define HIDDEN_SERIAL_DEV  PNP_DEV(0x2e, W83627HF_SP2)
+#define CONSOLE_SERIAL_DEV PNP_DEV(0x2e, PC8374_SP1)
 
 #define DEVPRES_CONFIG  ( \
 	DEVPRES_D0F0 | \
@@ -201,11 +199,9 @@ static void main(unsigned long bist)
 		}
 	}
 	/* Setup the console */
+	mainboard_set_ich5();
 	bmc_foad();
-	outb(0x87,0x2e);
-	outb(0x87,0x2e);
-	pnp_write_config(CONSOLE_SERIAL_DEV, 0x24, 0x84 | (1 << 6));
-	w83627hf_enable_dev(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
+	pc8374_enable_serial(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
 

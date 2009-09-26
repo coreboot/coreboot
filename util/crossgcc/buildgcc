@@ -1,0 +1,340 @@
+#!/bin/bash
+#
+# Copyright (C) 2008-2009 by coresystems GmbH
+# written by Patrick Georgi <patrick.georgi@coresystems.de> and
+#            Stefan Reinauer <stefan.reinauer@coresystems.de>
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA
+#
+
+CROSSGCC_DATE="August 18th, 2009"
+CROSSGCC_VERSION="0.9"
+
+# default settings
+TARGETDIR=`pwd`/xgcc
+TARGETARCH=i386-elf
+DESTDIR=
+
+# version numbers
+GMP_VERSION=4.3.1
+MPFR_VERSION=2.4.1
+GCC_VERSION=4.4.1
+BINUTILS_VERSION=2.19.1
+GDB_VERSION=6.8
+
+# archive locations
+GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
+MPFR_ARCHIVE="http://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.bz2"
+GCC_ARCHIVE="ftp://ftp.gwdg.de/pub/gnu/ftp/gnu/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
+BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
+GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
+
+GMP_DIR="gmp-${GMP_VERSION}"
+MPFR_DIR="mpfr-${MPFR_VERSION}"
+GCC_DIR="gcc-${GCC_VERSION}"
+BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
+GDB_DIR="gdb-${GDB_VERSION}"
+
+SAVETEMPS=0
+
+red='\e[0;31m'
+RED='\e[1;31m'
+green='\e[0;32m'
+GREEN='\e[1;32m'
+blue='\e[0;34m'
+BLUE='\e[1;34m'
+cyan='\e[0;36m'
+CYAN='\e[1;36m'
+NC='\e[0m' # No Color
+
+searchgnu()
+{
+	# $1 short name
+	# result: GNU version of that tool on stdout
+	#         or no output if no GNU version was found
+	for i in "$1" "g$1" "gnu$1"; do
+		if test -x "`which $i 2>/dev/null`"; then
+			if test `$i --version 2>/dev/null |grep -c GNU` -gt 0; then
+				echo $i
+				return
+			fi
+		fi
+	done
+	printf "${RED}ERROR:${red} Missing toolchain: $1${NC}\n" >&2
+	exit 1
+}
+
+TAR=`searchgnu tar`
+PATCH=`searchgnu patch`
+MAKE=`searchgnu make`
+
+cleanup()
+{
+	printf "Cleaning up temporary files... "
+	rm -rf build-* combined gcc-* gmp-* mpfr-* binutils-* gdb-*
+	printf "${green}ok${NC}\n"
+}
+
+myhelp()
+{
+	printf "Usage: $0 [-V] [-c] [-p <platform>] [-d <target directory>] [-D <dest dir>]\n"
+	printf "       $0 [-V|--version]\n"
+	printf "       $0 [-h|--help]\n\n"
+
+	printf "Options:\n"
+	printf "    [-V|--version]                print version number and exit\n"
+	printf "    [-h|--help]                   print this help and exit\n"
+	printf "    [-c|--clean]                  remove temporary files before build\n"
+	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
+	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
+	printf "                                  (defaults to $TARGETARCH)\n"
+	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
+	printf "                                  (defaults to $TARGETDIR)\n\n"
+	printf "    [-D|--destdir <dest dir>]     destination directory to install cross compiler to\n"
+	printf "                                  (for RPM builds, default unset)\n\n"
+}
+
+myversion()
+{
+	# version tag is always printed, so just print the license here
+
+	cat << EOF
+Copyright (C) 2008-2009 by coresystems GmbH
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; version 2 of the License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+EOF
+}
+
+printf "${blue}Welcome to the ${red}coresystems${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"
+
+# parse parameters.. try to find out whether we're running GNU getopt
+getoptbrand="`getopt -V`"
+if [ "${getoptbrand:0:6}" == "getopt" ]; then
+	# Detected GNU getopt that supports long options.
+	args=`getopt -l version,help,clean,directory:,platform:,destdir:,savetemps Vhcd:p:D:t -- "$@"`
+	eval set "$args"
+else
+	# Detected non-GNU getopt
+	args=`getopt Vhcd:p:D:t $*`
+	set -- $args
+fi
+
+if [ $? != 0 ]; then
+	myhelp
+	exit 1
+fi
+
+while true ; do
+        case "$1" in
+		-V|--version)	shift; myversion; exit 0;;
+		-h|--help)	shift; myhelp; exit 0;;
+		-c|--clean)	shift; cleanup;;
+		-t|--savetemps)	shift; SAVETEMPS=1;;
+		-d|--directory)	shift; TARGETDIR="$1"; shift;;
+		-p|--platform)	shift; TARGETARCH="$1"; shift;;
+		-D|--destdir)	shift; DESTDIR="$1"; shift;;
+		--)		shift; break;;
+		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
+		*)		break;;
+	esac
+done
+
+printf "Downloading tar balls ... \n"
+mkdir -p tarballs
+for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE; do
+	FILE=`basename $ARCHIVE`
+	printf " * $FILE "
+	test -f tarballs/$FILE && printf "(cached)" || (
+		printf "(downloading)"
+		cd tarballs
+		wget -q $ARCHIVE
+	)
+	test -f tarballs/$FILE || printf "Failed to download $FILE.\n"
+	test -f tarballs/$FILE || exit 1
+	printf "\n"
+done
+printf "Downloaded tar balls ... "
+printf "${green}ok${NC}\n"
+
+printf "Unpacking and patching ... \n"
+for PACKAGE in GMP MPFR GCC BINUTILS GDB; do
+	archive=$PACKAGE"_ARCHIVE"
+	archive=${!archive}
+	dir=$PACKAGE"_DIR"
+	test -d ${!dir} || ( 
+		printf " * `basename $archive`\n"
+		FLAGS=zxf
+		test ${archive:${#archive}-2:2} = "gz" && FLAGS=zxf
+		test ${archive:${#archive}-3:3} = "bz2" && FLAGS=jxf
+		$TAR $FLAGS tarballs/`basename $archive`
+		for patch in patches/${!dir}"_*.patch"; do
+			test -r $patch || continue
+			printf "   o `basename $patch`\n"
+			patch -s -N -p0 < `echo $patch`
+		done
+	)
+done
+printf "Unpacked and patched ... "
+printf "${green}ok${NC}\n"
+
+mkdir -p build-gmp build-mpfr build-binutils build-gcc build-gdb
+if [ -f build-gmp/.success ]; then
+	printf "Skipping GMP as it is already built\n"
+else
+printf "Building GMP ${GMP_VERSION} ... "
+(
+	cd build-gmp
+	rm -f .failed
+	if [ `uname` = "Darwin" ]; then
+		# generally the OS X compiler can create x64 binaries.
+		# Per default it generated i386 binaries in 10.5 and x64
+		# binaries in 10.6 (even if the kernel is 32bit)
+		# For some weird reason, 10.5 autodetects an ABI=64 though
+		# so we're setting the ABI explicitly here.
+		OPTIONS="ABI=32"
+		touch .architecture_check.c
+		gcc .architecture_check.c -c -o .architecture_check.o
+		ARCH=`file .architecture_check.o |cut -f5 -d\ `
+		test  "$ARCH" = "x86_64" && OPTIONS="ABI=64"
+		rm .architecture_check.c .architecture_check.o
+	fi
+
+	../${GMP_DIR}/configure --disable-shared --prefix=$TARGETDIR $OPTIONS \
+		|| touch .failed
+	$MAKE || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-gmp/crossgcc-build.log
+test -r build-gmp/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-gmp/.failed && exit 1
+fi
+
+#if [ "$DESTDIR" != "" -a ! -x $TARGETDIR ]; then
+#	# create compat link
+#	ln -s $DESTDIR$TARGETDIR $TARGETDIR
+#fi
+
+# Now set CFLAGS to match GMP CFLAGS.
+HOSTCFLAGS=`grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2`
+
+if [ -f build-mpfr/.success ]; then
+	printf "Skipping MPFR as it is already built\n"
+else
+printf "Building MPFR ${MPFR_VERSION} ... "
+(
+	test `uname` = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
+	cd build-mpfr
+	rm -f .failed
+	../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
+		--infodir=$TARGETDIR/info \
+		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || touch .failed
+	$MAKE || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+
+	# work around build problem of libgmp.la
+	if [ "$DESTDIR" != "" ]; then
+	    perl -pi -e "s,$DESTDIR,," $DESTDIR$TARGETDIR/libgmp.la
+	fi
+
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-mpfr/crossgcc-build.log
+test -r build-mpfr/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-mpfr/.failed && exit 1
+fi
+
+if [ -f build-binutils/.success ]; then
+	printf "Skipping binutils as it is already built\n"
+else
+printf "Building binutils ${BINUTILS_VERSION} ... "
+(
+	cd build-binutils
+	rm -f .failed
+	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
+		--disable-werror --disable-nls \
+		CFLAGS="$HOSTCFLAGS" || touch .failed
+	$MAKE || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-binutils/crossgcc-build.log
+test -r build-binutils/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-binutils/.failed && exit 1
+fi
+
+if [ -f build-gcc/.success ]; then
+	printf "Skipping GCC as it is already built\n"
+else
+printf "Building GCC ${GCC_VERSION} ... "
+(
+	cd build-gcc
+	rm -f .failed
+	# GCC does not honour HOSTCFLAGS at all. CFLAGS are used for
+	# both target and host object files. This is pretty misdesigned.
+	# There's a work-around called CFLAGS_FOR_BUILD and CFLAGS_FOR_TARGET
+	# but it does not seem to work properly. At least the host library
+	# libiberty is not compiled with CFLAGS_FOR_BUILD.
+	CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
+		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
+		--target=${TARGETARCH} --disable-werror \
+		--disable-libssp --disable-bootstrap --disable-nls \
+		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
+		|| touch .failed
+	$MAKE CFLAGS_FOR_BUILD="$HOSTCFLAGS" || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-gcc/crossgcc-build.log
+test -r build-gcc/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-gcc/.failed && exit 1
+fi
+
+if [ -f build-gdb/.success ]; then
+	printf "Skipping GDB as it is already built\n"
+else
+printf "Building GDB ${GDB_VERSION} ... "
+(
+	cd build-gdb
+	export PATH=$PATH:$PREFIX/bin
+	rm -f .failed
+	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
+		--disable-werror --disable-nls
+	$MAKE || touch .failed
+	$MAKE install DESTDIR=$DESTDIR || touch .failed
+	if [ ! -f .failed ]; then touch .success; fi
+) &> build-gdb/crossgcc-build.log
+test -r build-gdb/.failed && printf "${RED}failed${NC}\n" || printf "${green}ok${NC}\n"
+test -r build-gdb/.failed && exit 1
+fi
+
+if [ $SAVETEMPS -eq 0 ]; then
+	printf "Cleaning up... "
+	rm -rf ${GMP_DIR} build-gmp
+	rm -rf ${MPFR_DIR} build-mpfr
+	rm -rf ${BINUTILS_DIR} build-binutils
+	rm -rf ${GCC_DIR} build-gcc
+	rm -rf ${GDB_DIR} build-gdb
+	printf "${green}ok${NC}\n"
+else
+	printf "Leaving temporary files around... ${green}ok${NC}\n"
+fi
+
+printf "\n${green}You can now run your $TARGETARCH cross toolchain from $TARGETDIR.${NC}\n"
+
+

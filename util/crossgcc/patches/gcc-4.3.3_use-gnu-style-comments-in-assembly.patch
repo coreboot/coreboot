@@ -1,0 +1,11 @@
+--- gcc-4.3.3/gcc/config/i386/unix.h~	2009-01-20 16:05:45.000000000 +0100
++++ gcc-4.3.3/gcc/config/i386/unix.h	2009-01-20 16:05:47.000000000 +0100
+@@ -32,7 +32,7 @@
+ 
+ /* String containing the assembler's comment-starter.  */
+ 
+-#define ASM_COMMENT_START "/"
++#define ASM_COMMENT_START "#"
+ 
+ /* Output to assembler file text saying following lines
+    may contain character constants, extra white space, comments, etc.  */

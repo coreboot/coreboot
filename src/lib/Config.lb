@@ -17,6 +17,8 @@ object delay.o
 object fallback_boot.o
 object compute_ip_checksum.o
 object version.o
+object gcc.o
+
 # Force version.o to recompile every time
 makedefine .PHONY : version.o
 

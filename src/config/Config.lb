@@ -47,7 +47,7 @@ end
 
 makerule coreboot_ram.o
 	depends	"src/arch/$(CONFIG_ARCH)/lib/c_start.o $(DRIVER) coreboot.a $(LIBGCC_FILE_NAME)" 
-	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ src/arch/$(CONFIG_ARCH)/lib/c_start.o $(DRIVER) -Wl,-\( coreboot.a $(LIBGCC_FILE_NAME) -Wl,-\)"
+	action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ src/arch/$(CONFIG_ARCH)/lib/c_start.o $(DRIVER) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,-\( coreboot.a $(LIBGCC_FILE_NAME) -Wl,-\)"
 end
 
 makerule coreboot_ram
@@ -89,7 +89,7 @@ if CONFIG_AP_CODE_IN_CAR
 	end
 
 	makerule coreboot_apc.o
-		depends "src/arch/$(CONFIG_ARCH)/lib/c_start.o coreboot_apc.a $(LIBGCC_FILE_NAME)"
+		depends "src/arch/$(CONFIG_ARCH)/lib/c_start.o coreboot_apc.a"
         	action  "$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ $^"
 	end
 

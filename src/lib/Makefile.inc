@@ -12,6 +12,7 @@ obj-y += version.o
 obj-y += cbfs.o
 obj-y += lzma.o
 #obj-y += lzmadecode.o
+obj-y += gcc.o
 
 initobj-y += uart8250.o
 initobj-y += memset.o

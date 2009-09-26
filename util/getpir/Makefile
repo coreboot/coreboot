@@ -5,8 +5,7 @@
 CC=gcc
 CFLAGS=-O2 -D_GNU_SOURCE -DGETPIR -Wall
 
-all: getpir checkpir
-	./checkpir
+all: getpir
 
 getpir: getpir.o checksum.o code_gen.o
 	$(CC) $(CFLAGS) -o getpir $^

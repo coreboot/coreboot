@@ -1,28 +1,30 @@
 ABOUT:
 
-This utility will help to create irq_table.c file, that is very hard to create manually, 
-specialy when you are testing new motherboards, changing your hardware often, placing new cards, etc.. 
-
-
-INSTALL:
-
-edit Makefile, define the root to coreboot tree
-make
+This utility will help to create irq_table.c file, that is very hard to create
+manually, specialy when you are testing new motherboards, changing your
+hardware often, placing new cards, etc.. 
 
 USAGE:
 
-./getpir
+Steps 
+1. make distclean;
+2. make getpir
+3. ./getpir
 
-Will dump irq table to the file called irq_tables.c, ready to use with coreboot. Just move the 
-file to corresponding place in the linux bios tree.
+   Will dump irq table to the file called irq_tables.c, ready to use with
+   coreboot. Just move the file to corresponding place in the coreboot tree.
 
 
-CHECKING CUSTOM irq_tables.c:
+4. CHECKING CUSTOM irq_tables.c:
 
-checkpir.c Will verify the irq_tables.c, currently it only checks the checksum. In case of wrong
-checksum, a good value is proposed, so you can edit irq_tables.c manualy and replace checksum.
-Run the command like this:
+   make checkpir
+   ./checkpir
 
-make test
+   checkpir.c Will verify the irq_tables.c, currently it only checks the
+   checksum. In case of wrong checksum, a good value is proposed, so you can
+   edit irq_tables.c manualy and replace checksum.
+		
 
-Do not run ./checkpir directly because it needs to be linked to irq_table.o first.
+Do not run make checkpir and ./checkpir directly because it needs to be linked
+to irq_table.o first.
+

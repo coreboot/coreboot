@@ -110,8 +110,8 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config SB_HT_CHAIN_UNITID_OFFSET_ONLY
-	int
-	default 1
+	bool
+	default y
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config SB_HT_CHAIN_ON_BUS0
@@ -126,7 +126,7 @@ config HT_CHAIN_END_UNITID_BASE
 
 config HT_CHAIN_UNITID_BASE
 	hex
-	default 0x1
+	default 0xa
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config USE_INIT

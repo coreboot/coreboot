@@ -49,11 +49,6 @@ config IOAPIC
 	default y
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 2
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
 config LB_CKS_RANGE_END
 	int
 	default 122
@@ -114,6 +109,16 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	default n
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	int
+	default 1
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x6
@@ -142,11 +147,6 @@ config AP_CODE_IN_CAR
 config WAIT_BEFORE_CPUS_INIT
 	bool
 	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 2
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config CONSOLE_VGA

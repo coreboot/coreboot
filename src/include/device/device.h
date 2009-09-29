@@ -15,7 +15,7 @@ struct smbus_bus_operations;
 /* Chip operations */
 struct chip_operations {
 	void (*enable_dev)(struct device *dev);
-	char *name;
+	const char *name;
 };
 
 #define CHIP_NAME(X) .name = X,

@@ -37,10 +37,11 @@ char *lowmem_backup_ptr;
 int  lowmem_backup_size;
 #endif
 
+extern char _secondary_start[];
+
 static void copy_secondary_start_to_1m_below(void) 
 {
 #if CONFIG_RAMBASE >= 0x100000
-        extern char _secondary_start[];
         extern char _secondary_start_end[];
         unsigned long code_size;
         unsigned long start_eip;
@@ -74,7 +75,6 @@ static int lapic_start_cpu(unsigned long apicid)
 	int timeout;
 	unsigned long send_status, accept_status, start_eip;
 	int j, num_starts, maxlvt;
-	extern char _secondary_start[];
 		
 	/*
 	 * Starting actual IPI sequence...

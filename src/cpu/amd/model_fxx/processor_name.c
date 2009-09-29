@@ -143,7 +143,7 @@ static inline unsigned int cpuid_ecx(unsigned int op)
         return ecx;
 }
 
-static inline void strcpy(char *dst, char *src) 
+static inline void strcpy(char *dst, const char *src)
 {
 	while (*src) *dst++ = *src++;
 }
@@ -151,7 +151,9 @@ static inline void strcpy(char *dst, char *src)
 
 int init_processor_name(void)
 {
+#if CONFIG_K8_REV_F_SUPPORT == 0
 	u32 EightBitBrandId;
+#endif
 	u32 BrandId;
 	u32 BrandTableIndex;
 	u32 NN;
@@ -159,7 +161,7 @@ int init_processor_name(void)
 	msr_t progmsr;
 	int i;
 
-	char *processor_name_string=NULL;
+	const char *processor_name_string=NULL;
 	char program_string[48];
 	unsigned int *program_values = (unsigned int *)program_string;
 

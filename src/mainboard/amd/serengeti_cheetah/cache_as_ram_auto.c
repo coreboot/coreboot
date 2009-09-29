@@ -253,11 +253,13 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	};
 
-	struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (void*)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
-        int needs_reset; int i;
+        int needs_reset;
         unsigned bsp_apicid = 0;
+#if K8_SET_FIDVID == 1
 	struct cpuid_result cpuid1;
+#endif
 
         if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
@@ -361,6 +363,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_smbus();
 
 #if 0
+	int i;
 	for(i=0;i<4;i++) {
 		activate_spd_rom(&cpu[i]);
 		dump_smbus_registers();

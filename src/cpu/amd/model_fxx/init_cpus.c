@@ -347,7 +347,8 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
                         lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
                         set_init_ram_access();
 	#if CONFIG_MEM_TRAIN_SEQ == 1
-			train_ram_on_node(id.nodeid, id.coreid, sysinfo, STOP_CAR_AND_CPU);
+			train_ram_on_node(id.nodeid, id.coreid, sysinfo,
+					  (unsigned) STOP_CAR_AND_CPU);
 	#endif
 
 			STOP_CAR_AND_CPU();

@@ -4,7 +4,7 @@
 */
 
 #if CONFIG_CBFS == 1
-void cbfs_and_run_core(char*, unsigned ebp);
+void cbfs_and_run_core(const char*, unsigned ebp);
 
 static void copy_and_run(void)
 {

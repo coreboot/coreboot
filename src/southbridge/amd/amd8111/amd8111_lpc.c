@@ -76,7 +76,7 @@ static void setup_ioapic(void)
 	l = (unsigned long *) ioapic_base;
 
 	ioapicregvalues[0].value_high = bsp_apicid<<(56-32);
-	printk_debug("amd8111: ioapic bsp_apicid = %02x\n", bsp_apicid); 
+	printk_debug("amd8111: ioapic bsp_apicid = %02lx\n", bsp_apicid);
 	
 	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
 	     i++, a++) {
@@ -101,7 +101,7 @@ static void enable_hpet(struct device *dev)
 	
 	pci_write_config32(dev,0xa0, 0xfed00001);
 	hpet_address = pci_read_config32(dev,0xa0)& 0xfffffffe;
-	printk_debug("enabling HPET @0x%x\n", hpet_address);
+	printk_debug("enabling HPET @0x%lx\n", hpet_address);
 	
 }
 

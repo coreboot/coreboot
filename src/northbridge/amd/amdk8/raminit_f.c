@@ -1859,7 +1859,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		int latencies;
 		int latency;
 		int index;
-		int value;
+		int val;
 		u32 spd_device = ctrl->channel0[i];
 
 		if (!(meminfo->dimm_mask & (1 << i))) {
@@ -1893,14 +1893,14 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 		}
 
 		/* Read the min_cycle_time for this latency */
-		value = spd_read_byte(spd_device, latency_indicies[index]);
-		if (value < 0) goto hw_error;
+		val = spd_read_byte(spd_device, latency_indicies[index]);
+		if (val < 0) goto hw_error;
 
-		value = convert_to_linear(value);
+		val = convert_to_linear(val);
 		/* All is good if the selected clock speed
 		 * is what I need or slower.
 		 */
-		if (value <= min_cycle_time) {
+		if (val <= min_cycle_time) {
 			continue;
 		}
 		/* Otherwise I have an error, disable the dimm */
@@ -2508,7 +2508,9 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 {
 	uint32_t dword;
 	uint32_t dwordx;
+#if (CONFIG_DIMM_SUPPORT & 0x0100)==0x0000 /* 2T mode only used for unbuffered DIMM */
 	unsigned SlowAccessMode = 0;
+#endif
 
 	long dimm_mask = meminfo->dimm_mask & 0x0f;
 
@@ -3007,8 +3009,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 	tsc_t tsc, tsc0[8];
 
 	printk_debug("sdram_enable: tsc0[8]: %p", &tsc0[0]);
-#endif
 	uint32_t dword;
+#endif
 
 	/* Error if I don't have memory */
 	if (memory_end_k(ctrl, controllers) == 0) {
@@ -3017,7 +3019,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 
 	/* Before enabling memory start the memory clocks */
 	for (i = 0; i < controllers; i++) {
-		uint32_t dtl, dch;
+		uint32_t dch;
 		if (!sysinfo->ctrl_present[ i ])
 			continue;
 		dch = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_HIGH);
@@ -3083,20 +3085,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 		}
 #endif
 
-#if 0
-		/* Set the DqsRcvEnTrain bit */
-		dword = pci_read_config32(ctrl[i].f2, DRAM_CTRL);
-		dword |= DC_DqsRcvEnTrain;
-		pci_write_config32(ctrl[i].f2, DRAM_CTRL, dword);
-#endif
-
 		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
 		dcl |= DCL_InitDram;
 		pci_write_config32(ctrl[i].f2, DRAM_CONFIG_LOW, dcl);
 	}
 
 	for (i = 0; i < controllers; i++) {
-		uint32_t dcl, dch, dcm;
+		uint32_t dcl, dcm;
 		if (!sysinfo->ctrl_present[ i ])
 			continue;
 		/* Skip everything if I don't have any memory on this controller */

@@ -522,7 +522,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 	unsigned PatternA;
 	unsigned PatternB;
 
-	unsigned TestAddr0, TestAddr0B, TestAddr1, TestAddr1B = 0;
+	unsigned TestAddr0, TestAddr0B, TestAddr1 = 0, TestAddr1B = 0;
 
 	unsigned CurrRcvrCHADelay = 0;
 
@@ -530,7 +530,9 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 
 	unsigned is_Width128 = sysinfo->meminfo[ctrl->node_id].is_Width128;
 
+#if K8_REV_F_SUPPORT_F0_F1_WORKAROUND == 1
 	unsigned cpu_f0_f1;
+#endif
 
 	if(Pass == DQS_FIRST_PASS) {
 		InitDQSPos4RcvrEn(ctrl);
@@ -2094,7 +2096,7 @@ static void copy_and_run_ap_code_in_car(unsigned ret_addr);
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
 {
 	if(coreid) return; // only do it on core0
-	struct sys_info *sysinfox = ((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfox = (void*)((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	wait_till_sysinfo_in_ram(); // use pci to get it
 
 	if(sysinfox->mem_trained[nodeid] == 0x80) {

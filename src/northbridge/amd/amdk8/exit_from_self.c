@@ -25,7 +25,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 	u32 pcidev;
 	u8 bitmask;
 	u8 is_post_rev_g;
-	u32 cpuid;
+	u32 local_cpuid;
 
 	for (i = 0; i < controllers; i++) {
 		if (!sysinfo->ctrl_present[i])
@@ -36,8 +36,8 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 			continue;
 		}
 
-		cpuid = pci_read_config32(ctrl[i].f3, 0xfc);
-		is_post_rev_g = ((cpuid & 0xfff00) > 0x50f00);
+		local_cpuid = pci_read_config32(ctrl[i].f3, 0xfc);
+		is_post_rev_g = ((local_cpuid & 0xfff00) > 0x50f00);
 
 		/* ChipKill */
 		dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);

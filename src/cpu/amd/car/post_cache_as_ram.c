@@ -27,10 +27,10 @@ static void inline __attribute__((always_inline))  memcopy(void *dest, const voi
 
 static void vErrata343(void)
 {
+#ifdef BU_CFG2_MSR
     msr_t msr;
     unsigned int uiMask = 0xFFFFFFF7;
 
-#ifdef BU_CFG2_MSR
     msr = rdmsr(BU_CFG2_MSR);
     msr.hi &= uiMask; // set bit 35 to 0
     wrmsr(BU_CFG2_MSR, msr);

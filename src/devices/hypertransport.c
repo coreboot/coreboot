@@ -392,9 +392,9 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
         //let't record the device of last ht device, So we can set the Unitid to CONFIG_HT_CHAIN_END_UNITID_BASE
-        unsigned real_last_unitid; 
-        uint8_t real_last_pos;
-	device_t real_last_dev;
+        unsigned real_last_unitid=0;
+        uint8_t real_last_pos=0;
+	device_t real_last_dev=NULL;
 	unsigned end_used = 0;
 #endif
 
@@ -553,7 +553,6 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
         if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE)  && !end_used) {
                 uint16_t flags;
-                int i;
 		device_t last_func = 0;
                 flags = pci_read_config16(real_last_dev, real_last_pos + PCI_CAP_FLAGS);
                 flags &= ~0x1f;

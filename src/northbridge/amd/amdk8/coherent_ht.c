@@ -1661,10 +1661,10 @@ static int apply_cpu_errata_fixes(unsigned nodes)
 	unsigned node;
 	int needs_reset = 0;
 	for(node = 0; node < nodes; node++) {
+#if CONFIG_K8_REV_F_SUPPORT == 0
 		device_t dev;
 		uint32_t cmd;
 		dev = NODE_MC(node);
-#if CONFIG_K8_REV_F_SUPPORT == 0
 		if (is_cpu_pre_c0()) {
 
 			/* Errata 66

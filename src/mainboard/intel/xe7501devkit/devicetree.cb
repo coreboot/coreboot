@@ -27,7 +27,6 @@ chip northbridge/intel/e7501
 			device pci 1e.0 on # Hub to PCI bridge
 				chip drivers/pci/onboard # VGA ROM
 					device pci 0.0 on end
-				register "rom_address" = "_vgarom_start"
 				end
 			end
 			device pci 1f.0 on # LPC bridge

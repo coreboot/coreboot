@@ -14,17 +14,6 @@ if CONFIG_HAVE_PIRQ_TABLE 		object irq_tables.o	 end
 if CONFIG_HAVE_ACPI_TABLES 	object acpi_tables.o end
 object reset.o
 
-# Include the VGA option ROM, but only if we're compiled to use it
-if CONFIG_PCI_ROM_RUN
-	if CONFIG_CONSOLE_VGA	
-		object vgarom.S
-	else
-		object no_vgarom.S
-	end
-else
-	object no_vgarom.S
-end
-
 ##
 ## Romcc output
 ##
@@ -141,7 +130,6 @@ chip northbridge/intel/e7501
 			device pci 1e.0 on # Hub to PCI bridge
 				chip drivers/pci/onboard # VGA ROM
 					device pci 0.0 on end
-				register "rom_address" = "_vgarom_start"
 				end
 			end
 			device pci 1f.0 on # LPC bridge

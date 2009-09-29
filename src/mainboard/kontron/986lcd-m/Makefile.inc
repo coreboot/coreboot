@@ -54,13 +54,6 @@ ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
 
-MAINBOARD_OPTIONS=\
-	-DCONFIG_AP_IN_SIPI_WAIT=1 \
-	-DCONFIG_USE_PRINTK_IN_CAR=1 \
-	-DCONFIG_HAVE_HIGH_TABLES=1 \
-	-DCONFIG_MMCONF_SUPPORT=1 \
-	-DCONFIG_MMCONF_BASE_ADDRESS=0xf0000000
-
 $(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
 	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
 	mv dsdt.hex $@

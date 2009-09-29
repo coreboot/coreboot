@@ -25,10 +25,6 @@ ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
 
-MAINBOARD_OPTIONS=\
-	-DCONFIG_MMCONF_SUPPORT=1 \
-	-DCONFIG_MMCONF_BASE_ADDRESS=0xe0000000
-
 $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/option_table.h
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
 	perl -e 's/\.rodata/.rom.data/g' -pi $@

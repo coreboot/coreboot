@@ -46,3 +46,8 @@ config MAINBOARD_PART_NUMBER
 	default "EagleHeights"
 	depends on BOARD_INTEL_EAGLEHEIGHTS
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+

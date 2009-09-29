@@ -9,6 +9,7 @@ config BOARD_KONTRON_986LCD_M
 	select HAVE_PIRQ_TABLE
 	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
+	select AP_IN_SIPI_WAIT
 	help
           Kontron 986LCD-M/mITX mainboard.
 
@@ -42,3 +43,7 @@ config MAINBOARD_PART_NUMBER
 	default "986LCD-M"
 	depends on BOARD_KONTRON_986LCD_M
 
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+	depends on BOARD_KONTRON_986LCD_M

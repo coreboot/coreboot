@@ -96,15 +96,6 @@ ldscript-y += ../../../../src/arch/i386/lib/id.lds
 ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 
 \end{verbatim}
-\subsubsection{defines}
-There are variables that should never be definable by users, as changing them will break the build or the image. These are set
-in MAINBOARD\_OPTIONS.
-\begin{verbatim}
-MAINBOARD_OPTIONS=\
-  -DCONFIG_AP_IN_SIPI_WAIT=0 \
-  -DCONFIG_USE_PRINTK_IN_CAR=1 \
-  -DCONFIG_HAVE_HIGH_TABLES=1
-\end{verbatim}
 \subsubsection{POST\_EVALUATION}
 POST\_EVALUATION rules should be placed after this section:
 \begin{verbatim}

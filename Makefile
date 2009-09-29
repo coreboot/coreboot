@@ -239,7 +239,7 @@ $(CC) $(1) -S -xc /dev/null -o "$$TMP", $(1), $(2))
 
 STACKPROTECT += $(call cc-option, -fno-stack-protector,)
 
-CFLAGS = $(STACKPROTECT) $(INCLUDES) $(MAINBOARD_OPTIONS) -Os -nostdinc
+CFLAGS = $(STACKPROTECT) $(INCLUDES) -Os -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS +=-Wwrite-strings -Wredundant-decls -Wno-trigraphs 
 CFLAGS += -Wstrict-aliasing -Wshadow 

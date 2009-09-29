@@ -46,8 +46,6 @@ crt0-y += cache_as_ram_auto.inc
 
 ifdef POST_EVALUATION
 
-MAINBOARD_OPTIONS=
-
 $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
 

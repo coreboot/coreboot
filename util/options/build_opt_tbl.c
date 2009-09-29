@@ -16,6 +16,7 @@
 #define TMPFILE_TEMPLATE "/build_opt_tbl_XXXXXX"
 
 static unsigned char cmos_table[4096];
+void test_for_entry_overlaps(void *entry_start, void *entry_end);
 
 /* This array is used to isolate bits that are to be changed in a byte */
 static unsigned char clip[9]={0,1,3,7,0x0f,0x1f,0x3f,0x7f,0xff};
@@ -460,17 +461,21 @@ int main(int argc, char **argv)
 		}
 		/* And since we are not ready to be fully general purpose yet.. */
 		if ((cs->range_start/8) != CONFIG_LB_CKS_RANGE_START) {
-			fprintf(stderr, "Error - Range start(%d) does not match define(%d) in line\n%s\n", 
-				cs->range_start/8, CONFIG_LB_CKS_RANGE_START, line);
+			fprintf(stderr, "Error - Range start((value in file #%d), which is  byte #%d)"
+				"does not match the value of the config variable LB_CKS_RANGE_START)(%d) in line\n%s\n", 
+				cs->range_start, cs->range_start/8, CONFIG_LB_CKS_RANGE_START, line);
 			exit(1);
 		}
 		if ((cs->range_end/8) != CONFIG_LB_CKS_RANGE_END) {
-			fprintf(stderr, "Error - Range end (%d) does not match define (%d) in line\n%s\n", 
-					(cs->range_end/8), CONFIG_LB_CKS_RANGE_END, line);
+			fprintf(stderr, "Error - Range end ((value in file #%d), which is  byte #%d)"
+					"does not match the value of the config variable LB_CKS_RANGE_END (%d) in line\n%s\n", 
+					cs->range_end, cs->range_end/8, 
+					CONFIG_LB_CKS_RANGE_END, line);
 			exit(1);
 		}
 		if ((cs->location/8) != CONFIG_LB_CKS_LOC) {
-			fprintf(stderr, "Error - Location does not match define in line\n%s\n", line);
+			fprintf(stderr, "Error - Location ((value in file #%d), which is  byte #%d) does not match LB_CKS_LOC (%d) in line\n%s\n", 
+				cs->location, cs->location/8, CONFIG_LB_CKS_LOC, line);
 			exit(1);
 		}
 

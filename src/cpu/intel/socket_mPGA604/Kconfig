@@ -1,6 +1,6 @@
 config CPU_INTEL_SOCKET_MPGA604
 	bool
-	default false
+	default n
 	select CPU_INTEL_MODEL_F2X
 	select CPU_INTEL_MODEL_F3X
 	select CPU_INTEL_MODEL_F4X

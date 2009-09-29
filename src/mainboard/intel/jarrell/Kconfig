@@ -1,5 +1,5 @@
 config BOARD_INTEL_JARRELL
-	bool "Jarrell"
+	bool "Jarrell (SE7520JR2)"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7520
@@ -9,7 +9,7 @@ config BOARD_INTEL_JARRELL
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
 	help
-          Intel Jarrell mainboard.
+          Intel Jarrell (SE7520JR2) mainboard.
 
 config MAINBOARD_DIR
 	string

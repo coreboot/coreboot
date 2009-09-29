@@ -1,5 +1,5 @@
 config BOARD_INTEL_XE7501DEVKIT
-	bool "xe7501 DevKit"
+	bool "XE7501devkit"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7501
@@ -9,7 +9,7 @@ config BOARD_INTEL_XE7501DEVKIT
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
 	help
-          Intel xe7501 devkit mainboard.
+          Intel XE7501devkit mainboard.
 
 config MAINBOARD_DIR
 	string

@@ -1,5 +1,5 @@
 config BOARD_INTEL_TRUXTON
-	bool "Truxton"
+	bool "EP80579 devkit (Truxton)"
 	select ARCH_X86
 	select CPU_INTEL_EP80579
 	select NORTHBRIDGE_INTEL_I3100
@@ -9,7 +9,7 @@ config BOARD_INTEL_TRUXTON
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
 	help
-          Intel Truxton mainboard.
+          Intel EP80579 devkit (Truxton) mainboard.
 
 config MAINBOARD_DIR
 	string

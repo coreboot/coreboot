@@ -1,5 +1,5 @@
 config BOARD_INTEL_MTARVON
-	bool "Mt. Arvon"
+	bool "3100 devkit (Mt. Arvon)"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA479M
 	select NORTHBRIDGE_INTEL_I3100
@@ -8,7 +8,7 @@ config BOARD_INTEL_MTARVON
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
 	help
-          Intel Mt. Arvon mainboard.
+          Intel 3100 devkit (Mt. Arvon) mainboard.
 
 config MAINBOARD_DIR
 	string

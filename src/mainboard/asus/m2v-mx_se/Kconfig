@@ -19,7 +19,7 @@
 ##
 
 config BOARD_ASUS_M2V_MX_SE
-	bool "M2V-MX-SE"
+	bool "M2V-MX SE"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_AM2
@@ -30,8 +30,12 @@ config BOARD_ASUS_M2V_MX_SE
 	select SUPERIO_ITE_IT8712F
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_TABLES
 	help
-	  Asus M2V-MX-SE mainboard.
+	  Asus M2V-MX SE mainboard.
 
 config MAINBOARD_DIR
 	string
@@ -58,21 +62,6 @@ config APIC_ID_OFFSET
 	default 0x10
 	depends on BOARD_ASUS_M2V_MX_SE
 
-config HAVE_HARD_RESET
-	bool
-	default y
-	depends on BOARD_ASUS_M2V_MX_SE
-
-config IOAPIC
-	bool
-	default y
-	depends on BOARD_ASUS_M2V_MX_SE
-
-config MAINBOARD_VENDOR
-	string
-	default "ASUS"
-	depends on BOARD_ASUS_M2V_MX_SE
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "M2V-MX SE"
@@ -96,16 +85,6 @@ config STACK_SIZE
 config HEAP_SIZE
 	hex
 	default 0x40000
-	depends on BOARD_ASUS_M2V_MX_SE
-
-config HAVE_OPTION_TABLE
-	bool
-	default y
-	depends on BOARD_ASUS_M2V_MX_SE
-
-config HAVE_ACPI_TABLES
-	bool
-	default y
 	depends on BOARD_ASUS_M2V_MX_SE
 
 config LB_CKS_RANGE_END

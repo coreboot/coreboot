@@ -1,5 +1,5 @@
 config BOARD_KONTRON_986LCD_M
-	bool "986LCD-M"
+	bool "986LCD-M/mITX"
 	select ARCH_X86
 	select CPU_INTEL_CORE
 	select CPU_INTEL_SOCKET_MFCPGA478

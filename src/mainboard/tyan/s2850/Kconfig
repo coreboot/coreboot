@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2850
-	bool "Tyan S2850"
+	bool "Tomcat K8S (S2850)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -8,6 +8,8 @@ config BOARD_TYAN_S2850
 	select SOUTHBRIDGE_AMD_AMD8111
 	select SUPERIO_WINBOND_W83627HF
 	select PIRQ_TABLE
+	help
+	  Tyan Tomcat K8S (S2850) mainboard.
 
 config MAINBOARD_DIR
 	string

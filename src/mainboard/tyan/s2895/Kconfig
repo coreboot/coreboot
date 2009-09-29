@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2895
-	bool "Tyan Thunder K8WE S2895"
+	bool "Thunder K8WE (S2895)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -9,6 +9,8 @@ config BOARD_TYAN_S2895
 	select SOUTHBRIDGE_AMD_AMD8131
 	select SUPERIO_SMSC_LPC47B397
 	select PIRQ_TABLE
+	help
+	  Tyan Thunder K8WE (S2895) mainboard.
 
 config MAINBOARD_DIR
 	string

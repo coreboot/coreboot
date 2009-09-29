@@ -1,5 +1,5 @@
 config BOARD_VIA_PC2500E
-	bool "PC2500E"
+	bool "pc2500e"
 	select ARCH_X86
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CN700
@@ -7,7 +7,7 @@ config BOARD_VIA_PC2500E
 	select SUPERIO_ITE_IT8716F
 	select HAVE_PIRQ_TABLE
 	help
-	  VIA PC2500E mainboard.
+	  VIA pc2500e mainboard.
 
 config MAINBOARD_DIR
 	string
@@ -26,7 +26,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "PC2500E"
+	default "pc2500e"
 	depends on BOARD_VIA_PC2500E
 
 config VIDEO_MB

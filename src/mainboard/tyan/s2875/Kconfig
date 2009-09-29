@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2875
-	bool "Tyan S2875"
+	bool "Tiger K8W (S2875)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -9,6 +9,8 @@ config BOARD_TYAN_S2875
 	select SOUTHBRIDGE_AMD_AMD8111
 	select SUPERIO_WINBOND_W83627HF
 	select PIRQ_TABLE
+	help
+	  Tyan Tiger K8W (S2875) mainboard.
 
 config MAINBOARD_DIR
 	string

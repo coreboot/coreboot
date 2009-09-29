@@ -97,7 +97,6 @@ static u8 send_keyboard(u8 command)
 static void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	u8 regval;
-	u8 resend;
 	printk_debug("Keyboard init...\n");
 
 	/* clean up any junk that might have been in the kbc */
@@ -118,21 +117,14 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 	}
 
 	/* Enable keyboard interface - No IRQ */
-	resend = 10;
-	regval = 0;
-	do {
-		if (!kbc_input_buffer_empty()) return;
-		outb(0x60, 0x64);
-		if (!kbc_input_buffer_empty()) return;
-		outb(0x20, 0x60);	/* send cmd: enable keyboard */
-		if (kbc_output_buffer_full()) {
-			regval = inb(0x60);
-		} else {
-			printk_info("Timeout while enabling keyboard. (No keyboard present?)\n");
-			regval = inb(0x60); /* Better than 0 ? */
-		}
-		--resend;
-	} while (regval == 0xFE && resend > 0);
+	if (!kbc_input_buffer_empty()) return;
+	outb(0x60, 0x64);
+	if (!kbc_input_buffer_empty()) return;
+	outb(0x20, 0x60);	/* send cmd: enable keyboard */
+	if (!kbc_input_buffer_empty()) {
+		printk_info("Timeout while enabling keyboard\n");
+		return;
+	}
 
 	/* clean up any junk that might have been in the keyboard */
 	if (!kbc_cleanup_buffers()) return;
@@ -187,18 +179,14 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 	}
 
 	/* All is well - enable keyboard interface */
-	resend = 10;
-	regval = 0;
-	do {
-		if (!kbc_input_buffer_empty()) return;
-		outb(0x60, 0x64);
-		if (!kbc_input_buffer_empty()) return;
-		outb(0x61, 0x60);	/* send cmd: enable keyboard and IRQ 1 */
-		if (kbc_output_buffer_full()) {
-			regval = inb(0x60);
-		}
-		--resend;
-	} while (regval == 0xFE && resend > 0);
+	if (!kbc_input_buffer_empty()) return;
+	outb(0x60, 0x64);
+	if (!kbc_input_buffer_empty()) return;
+	outb(0x61, 0x60);	/* send cmd: enable keyboard and IRQ 1 */
+	if (!kbc_input_buffer_empty()) {
+		printk_err("Timeout during final keyboard enable\n");
+		return;
+	}
 }
 
 

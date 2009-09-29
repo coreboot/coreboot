@@ -7,7 +7,6 @@ config BOARD_INTEL_EAGLEHEIGHTS
 	select SUPERIO_INTEL_I3100
 	select SUPERIO_SMSC_SMSCSUPERIO
 	select HAVE_PIRQ_TABLE
-	select HAVE_HIGH_TABLES
 	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
 	select UDELAY_TSC
@@ -19,6 +18,11 @@ config BOARD_INTEL_EAGLEHEIGHTS
 config MAINBOARD_DIR
 	string
 	default intel/eagleheights
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
 	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config DCACHE_RAM_BASE

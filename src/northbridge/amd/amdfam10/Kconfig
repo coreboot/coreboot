@@ -20,15 +20,11 @@
 config NORTHBRIDGE_AMD_AMDFAM10
 	bool
 	default n
+	select HAVE_HIGH_TABLES
 
 config AGP_APERTURE_SIZE
 	hex
 	default 0x4000000
-	depends on NORTHBRIDGE_AMD_AMDFAM10
-
-config HAVE_HIGH_TABLES
-	bool
-	default y
 	depends on NORTHBRIDGE_AMD_AMDFAM10
 
 source src/northbridge/amd/amdfam10/root_complex/Kconfig

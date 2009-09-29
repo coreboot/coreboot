@@ -1,13 +1,9 @@
 config NORTHBRIDGE_VIA_CN700
 	bool
 	default n
+	select HAVE_HIGH_TABLES
 
 config FALLBACK_SIZE
 	int
 	default 0
-	depends on NORTHBRIDGE_VIA_CN700
-
-config HAVE_HIGH_TABLES
-	bool
-	default y
 	depends on NORTHBRIDGE_VIA_CN700

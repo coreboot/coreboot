@@ -1,8 +1,3 @@
-
-#default CONFIG_AGP_APERTURE_SIZE=0x4000000
-#default CONFIG_HAVE_HIGH_TABLES=1
-
-
 driver-y += northbridge.o
 driver-y += misc_control.o
 obj-y += get_sblk_pci1234.o

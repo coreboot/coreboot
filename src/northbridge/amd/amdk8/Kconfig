@@ -19,16 +19,12 @@
 
 config NORTHBRIDGE_AMD_AMDK8
 	bool
+	select HAVE_HIGH_TABLES
 	default n
 
 config AGP_APERTURE_SIZE
 	hex
 	default 0x4000000
-	depends on NORTHBRIDGE_AMD_AMDK8
-
-config HAVE_HIGH_TABLES
-	bool
-	default y
 	depends on NORTHBRIDGE_AMD_AMDK8
 
 config HYPERTRANSPORT_PLUGIN_SUPPORT

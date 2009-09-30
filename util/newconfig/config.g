@@ -2277,7 +2277,9 @@ def writemakefile(path):
 
 	file.write("ifeq \"$(CONFIG_CBFS)\" \"1\"\n\n")
 	file.write("CBFS_COMPRESS_FLAG:=\n")
+	file.write("CBFS_STAGE_COMPRESS_FLAG:=\n")
 	file.write("ifeq \"$(CONFIG_COMPRESSED_PAYLOAD_LZMA)\" \"1\"\nCBFS_COMPRESS_FLAG:=l\nendif\n\n")
+	file.write("ifeq \"$(CONFIG_COMPRESS)\" \"1\"\nCBFS_STAGE_COMPRESS_FLAG:=l\nendif\n\n")
 
 	for i in buildroms:
 		file.write("%s: cbfstool" %(i.name))
@@ -2303,7 +2305,7 @@ def writemakefile(path):
 			if (j != "failover") and (rommapping[j] != "/dev/null"):
 				file.write("\t./cbfs/cbfstool %s add-payload %s %s/payload $(CBFS_COMPRESS_FLAG)\n" % (i.name, rommapping[j], j,))
 			if (j != "failover"):
-				file.write("\t./cbfs/cbfstool %s add-stage %s/coreboot_ram %s/coreboot_ram $(CBFS_COMPRESS_FLAG)\n" % (i.name, j, j,))
+				file.write("\t./cbfs/cbfstool %s add-stage %s/coreboot_ram %s/coreboot_ram $(CBFS_STAGE_COMPRESS_FLAG)\n" % (i.name, j, j,))
 			file.write("\tif [ -f %s/coreboot_apc ]; then ./cbfs/cbfstool %s add-stage %s/coreboot_apc %s/coreboot_apc $(CBFS_COMPRESS_FLAG); fi\n" % (j, i.name, j, j,))
 		file.write("\t./cbfs/cbfstool %s print\n" % i.name)
 		file.write("\n")

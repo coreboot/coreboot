@@ -40,7 +40,7 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 		content = malloc(*romsize_p);
 		if (!content) {
 			printf("Could not get %d bytes for file %s\n",
-					*romsize_p, filename);
+			       *romsize_p, filename);
 			exit(1);
 		}
 	} else if (place == SEEK_END)
@@ -205,40 +205,42 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 				dprintf("copying data\n");
 				memcpy(phys_to_virt(current), content,
 				       contentsize);
-				break;
+				return 0;
 			}
-			if (location == 0)
-				continue;
+			if (location != 0) {
+				/* CBFS has the constraint that the chain always moves up in memory. so once
+				   we're past the place we seek, we don't need to look any further */
+				if (current > location) {
+					printf
+					    ("the requested space is not available\n");
+					return 1;
+				}
 
-			/* CBFS has the constraint that the chain always moves up in memory. so once
-			   we're past the place we seek, we don't need to look any further */
-			if (current > location) {
-				printf
-				    ("the requested space is not available\n");
-				return 1;
-			}
-
-			/* Is the requested location inside the current chunk? */
-			if ((current < location)
-			    && ((location + contentsize) <= (current + length))) {
-				/* Split it up. In the next iteration the code will be at the right place. */
-				dprintf("split up. new length: %x\n",
-					location - current -
-					ntohl(thisfile->offset));
-				thisfile->len =
-				    htonl(location - current -
-					  ntohl(thisfile->offset));
-				struct cbfs_file *nextfile =
-				    cbfs_create_empty_file(location,
-							   length - (location -
-								     current));
+				/* Is the requested location inside the current chunk? */
+				if ((current < location)
+				    && ((location + contentsize) <=
+					(current + length))) {
+					/* Split it up. In the next iteration the code will be at the right place. */
+					dprintf("split up. new length: %x\n",
+						location - current -
+						ntohl(thisfile->offset));
+					thisfile->len =
+					    htonl(location - current -
+						  ntohl(thisfile->offset));
+					struct cbfs_file *nextfile =
+					    cbfs_create_empty_file(location,
+								   length -
+								   (location -
+								    current));
+				}
 			}
 		}
 		current =
 		    ALIGN(current + ntohl(thisfile->len) +
 			  ntohl(thisfile->offset), align);
 	}
-	return 0;
+	printf("Could not add the file to CBFS, it's probably too big.\n");
+	return 1;
 }
 
 /* returns new data block with cbfs_file header, suitable to dump into the ROM. location returns
@@ -263,7 +265,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 	void *newdata = malloc(*datasize + headersize);
 	if (!newdata) {
 		printf("Could not get %d bytes for CBFS file.\n", *datasize +
-				headersize);
+		       headersize);
 		exit(1);
 	}
 	struct cbfs_file *nextfile = (struct cbfs_file *)newdata;
@@ -285,7 +287,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 	unsigned char *romarea = malloc(romsize);
 	if (!romarea) {
 		printf("Could not get %d bytes of memory for CBFS image.\n",
-				romsize);
+		       romsize);
 		exit(1);
 	}
 	memset(romarea, 0xff, romsize);

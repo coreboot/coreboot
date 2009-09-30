@@ -43,6 +43,8 @@ int print_mchbar(struct pci_dev *nb)
  		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
  		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
  		break;
+	case PCI_DEVICE_ID_INTEL_82443LX:
+	case PCI_DEVICE_ID_INTEL_82443BX:
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
 		printf("This northbrigde does not have MCHBAR.\n");

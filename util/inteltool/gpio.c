@@ -131,6 +131,9 @@ int print_gpios(struct pci_dev *sb)
 		gpio_registers = ich0_gpio_registers;
 		size = ARRAY_SIZE(ich0_gpio_registers);
 		break;
+	case PCI_DEVICE_ID_INTEL_82371XX:
+		printf("This southbridge has GPIOs in the PM unit.\n");
+		return 1;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This southbridge does not have GPIOBASE.\n");
 		return 1;

@@ -29,6 +29,9 @@ static const struct {
 	uint16_t vendor_id, device_id;
 	char *name;
 } supported_chips_list[] = {
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443LX, "82443LX" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443BX, "82443BX" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443BX_NO_AGP, "82443BX without AGP" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82810, "i810" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82810DC, "i810-DC100" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82845, "i845" },
@@ -47,7 +50,8 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH4, "ICH4" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH2, "ICH2" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH0, "ICH0" },
-	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" }
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH, "ICH" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371XX, "82371AB/EB/MB" },
 };
 
 #ifndef __DARWIN__
@@ -112,7 +116,7 @@ void print_usage(const char *name)
 int main(int argc, char *argv[])
 {
 	struct pci_access *pacc;
-	struct pci_dev *sb, *nb;
+	struct pci_dev *sb = NULL, *nb, *dev;
 	int i, opt, option_index = 0;
 	unsigned int id;
 
@@ -204,8 +208,20 @@ int main(int argc, char *argv[])
 	pci_scan_bus(pacc);
 
 	/* Find the required devices */
+	for (dev = pacc->devices; dev; dev = dev->next) {	
+		pci_fill_info(dev, PCI_FILL_CLASS);
+		/* The ISA/LPC bridge can be 0x1f, 0x07, or 0x04 so we probe. */
+		if (dev->device_class == 0x0601) { /* ISA/LPC bridge */
+			if (sb == NULL) 
+				sb = dev;
+			else
+				fprintf(stderr, "Multiple devices with class ID"
+					" 0x0601, using %02x%02x:%02x.%02x\n",
+					dev->domain, dev->bus, dev->dev,
+					dev->func);
+		}
+	}
 
-	sb = pci_get_dev(pacc, 0, 0, 0x1f, 0);
 	if (!sb) {
 		printf("No southbridge found.\n");
 		exit(1);

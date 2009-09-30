@@ -203,6 +203,50 @@ static const io_register_t ich0_pm_registers[] = {
 	{ 0x7c, 4, "RESERVED" },
 };
 
+static const io_register_t i82371xx_pm_registers[] = {
+	{ 0x00, 2, "PMSTS" },
+	{ 0x02, 2, "PMEN" },
+	{ 0x04, 2, "PMCNTRL" },
+	{ 0x06, 2, "RESERVED" },
+	{ 0x08, 1, "PMTMR" },
+	{ 0x09, 1, "RESERVED" },
+	{ 0x0A, 1, "RESERVED" },
+	{ 0x0B, 1, "RESERVED" },
+	{ 0x0C, 2, "GPSTS" },
+	{ 0x0E, 2, "GPEN" },
+	{ 0x10, 4, "PCNTRL" },
+#if DANGEROUS_REGISTERS
+	/*
+	 * This register returns 0 on read, but reading it may cause
+	 * the system to enter C2 state, which might hang the system.
+	 */
+	{ 0x14, 1, "PLVL2" },
+	{ 0x15, 1, "PLVL3" },
+	{ 0x16, 2, "RESERVED" },
+#endif
+	{ 0x18, 2, "GLBSTS" },
+	{ 0x1A, 2, "RESERVED" },
+	{ 0x1c, 4, "DEVSTS" },
+	{ 0x20, 2, "GLBEN" },
+	{ 0x22, 1, "RESERVED" },
+	{ 0x23, 1, "RESERVED" },
+	{ 0x24, 1, "RESERVED" },
+	{ 0x25, 1, "RESERVED" },
+	{ 0x26, 1, "RESERVED" },
+	{ 0x27, 1, "RESERVED" },
+	{ 0x28, 4, "GLBCTL" },
+	{ 0x2C, 4, "DEVCTL" },
+	/* The registers 0x30-0x33 and 0x34-0x37 allow byte-wise reads only. */
+	{ 0x30, 1, "GPIREG 0" },
+	{ 0x31, 1, "GPIREG 1" },
+	{ 0x32, 1, "GPIREG 2" },
+	{ 0x33, 1, "GPIREG 3" },
+	{ 0x34, 1, "GPOREG 0" },
+	{ 0x35, 1, "GPOREG 1" },
+	{ 0x36, 1, "GPOREG 2" },
+	{ 0x37, 1, "GPOREG 3" },
+};
+
 int print_pmbase(struct pci_dev *sb)
 {
 	int i, size;
@@ -229,6 +273,11 @@ int print_pmbase(struct pci_dev *sb)
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich0_pm_registers;
 		size = ARRAY_SIZE(ich0_pm_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_82371XX:
+		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
+		pm_registers = i82371xx_pm_registers;
+		size = ARRAY_SIZE(i82371xx_pm_registers);
 		break;
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This southbridge does not have PMBASE.\n");

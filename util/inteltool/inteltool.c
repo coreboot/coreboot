@@ -309,7 +309,7 @@ int main(int argc, char *argv[])
 
 	/* Clean up */
 	pci_free_dev(nb);
-	pci_free_dev(sb);
+	// pci_free_dev(sb); // TODO: glibc detected "double free or corruption"
 	pci_cleanup(pacc);
 
 	return 0;

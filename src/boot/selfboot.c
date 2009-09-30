@@ -423,14 +423,13 @@ static int load_self_segments(
 {
 	struct segment *ptr;
 	
-	unsigned long required_bounce_size = lb_end - lb_start;
+	unsigned long bounce_high = lb_end;
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (!overlaps_coreboot(ptr)) continue;
-		unsigned long bounce = ptr->s_dstaddr + ptr->s_memsz - lb_start;
-		if (bounce > required_bounce_size)
-			required_bounce_size = bounce;
+		if (ptr->s_dstaddr + ptr->s_memsz > bounce_high)
+			bounce_high = ptr->s_dstaddr + ptr->s_memsz;
 	}
-	get_bounce_buffer(mem, required_bounce_size);
+	get_bounce_buffer(mem, bounce_high - lb_start);
 	if (!bounce_buffer) {
 		printk_err("Could not find a bounce buffer...\n");
 		return 0;
@@ -501,6 +500,24 @@ static int load_self_segments(
 			
 				/* Zero the extra bytes */
 				memset(middle, 0, end - middle);
+			}
+			/* Copy the data that's outside the area that shadows coreboot_ram */
+			printk_debug("dest %lx, end %lx, bouncebuffer %lx\n", dest, end, bounce_buffer);
+			if ((unsigned long)end > bounce_buffer) {
+				if ((unsigned long)dest < bounce_buffer) {
+					unsigned long from = dest;
+					unsigned long to = lb_start-(bounce_buffer-(unsigned long)dest);
+					unsigned long amount = bounce_buffer-(unsigned long)dest;
+					printk_debug("move prefix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
+					memcpy(to, from, amount);
+				}
+				if ((unsigned long)end > bounce_buffer + (lb_end - lb_start)) {
+					unsigned long from = bounce_buffer + (lb_end - lb_start);
+					unsigned long to = lb_end;
+					unsigned long amount = end - from;
+					printk_debug("move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
+					memcpy(to, from, amount);
+				}
 			}
 		}
 	}

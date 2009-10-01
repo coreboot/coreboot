@@ -173,8 +173,13 @@ static inline void bmc_foad(void)
 }
 
 /* end IPMI garbage */
+
 static void main(unsigned long bist)
 {
+	u8 b;
+	u16 w;
+	u32 l;
+	int do_reset;
 	/*
 	 * 
 	 * 
@@ -191,6 +196,80 @@ static void main(unsigned long bist)
 		}
 	};
 
+	/* using SerialICE, we've seen this basic reset sequence on the dell. 
+	 * we don't understand it as it uses undocumented registers, but
+	 * we're going to clone it. 
+	 */
+	/* enable a hidden device. */
+	b = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
+	b |= 0x8;
+	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, b);
+
+	/* read-write lock in CMOS on LPC bridge on ICH5 */
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xd8, 4);
+
+	/* operate on undocumented device */
+	l = pci_read_config32(PCI_DEV(0, 0, 2), 0xa4);
+	l |= 0x1000;
+	pci_write_config32(PCI_DEV(0, 0, 2), 0xa4, l);
+
+	l = pci_read_config32(PCI_DEV(0, 0, 2), 0x9c);
+	l |= 0x8000;
+	pci_write_config32(PCI_DEV(0, 0, 2), 0x9c, l);
+
+	/* disable undocumented device */
+	b = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
+	b &= ~0x8;
+	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, b);
+	
+	/* set up LPC bridge bits, some of which reply on undocumented
+	 * registers
+	 */
+	
+	b= pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xd8);
+	b |= 4;
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xd8, b);
+
+	b= pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xd4);
+	b |= 2;
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xd4, b);
+
+	/* ACPI base address */
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x40, 0x800);
+
+	/* Enable specific ACPI features */
+	b= pci_read_config8(PCI_DEV(0, 0x1f, 0), 0x44);
+	b |= 0x10;
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44, b);
+
+	/* ACPI control */
+	w = inw(0x868);
+	outw(w|0x800, 0x868);
+	w = inw(0x866);
+	outw(w|2, 0x866);
+
+	/* SMBUS */
+	pci_write_config16(PCI_DEV(0, 0x1f, 3), 0x20, 0x08c0);
+
+	/* unknown */
+	b = inb(0x8c2);
+	outb(0xdf, 0x8c2);
+
+	/* another device enable? */
+	b = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
+	b |= 2;
+	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, b);
+	
+	/* ?? */
+	l = pci_read_config32(PCI_DEV(0, 0, 8), 0xc0);
+	do_reset = l & 0x8000000;
+	l |= 0x8000000;
+	pci_write_config32(PCI_DEV(0, 0, 2), 0xc0, l);
+
+	if (! do_reset) {
+		outb(2, 0xcf9);
+		outb(6, 0xcf9);
+	}
 	if (bist == 0) {
 		/* Skip this if there was a built in self test failure */
 		early_mtrr_init();

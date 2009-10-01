@@ -25,7 +25,3 @@ config SMP
 	bool
 	default y if MAX_CPUS != 1
 	default n
-
-config CPU_SOCKET_TYPE
-	hex
-	default 0

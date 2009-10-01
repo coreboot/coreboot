@@ -27,6 +27,11 @@ config AGP_APERTURE_SIZE
 	default 0x4000000
 	depends on NORTHBRIDGE_AMD_AMDK8
 
+config K8_HT_FREQ_1G_SUPPORT
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDK8
+
 config HYPERTRANSPORT_PLUGIN_SUPPORT
 	bool
 	default y

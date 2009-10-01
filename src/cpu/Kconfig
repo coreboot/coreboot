@@ -25,3 +25,17 @@ config SMP
 	bool
 	default y if MAX_CPUS != 1
 	default n
+
+config	MMX
+	bool
+	default n
+	help
+		Set this in socket or model if the CPU has MMX. 
+		If the CPUs for the socket always have MMX, set it there. 
+
+config SSE
+	bool
+	default n
+	help
+		Set this in socket or model if the CPU has SSE. 
+		If the CPUs for the socket always have MX, set it there. 

@@ -44,6 +44,18 @@ static void udelay(u32 us)
 	case 3:
 		fsb = 667;
 		break;
+	case 2:
+		fsb = 800;
+		break;
+	case 0:
+		fsb = 1067;
+		break;
+	case 4:
+		fsb = 1333;
+		break;
+	case 6:
+		fsb = 1600;
+		break;
 	}
 
 	msr = rdmsr(0x198);

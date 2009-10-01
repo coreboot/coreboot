@@ -152,7 +152,7 @@ config USE_FALLBACK_IMAGE
 
 config HAVE_HARD_RESET
 	bool
-	default n
+	default 0
 
 config HAVE_INIT_TIMER
 	bool

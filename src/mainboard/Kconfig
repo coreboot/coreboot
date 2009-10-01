@@ -92,8 +92,6 @@ config VENDOR_TELEVIDEO
 	bool "TeleVideo"
 config VENDOR_THOMSON
 	bool "Thomson"
-config VENDOR_TOTAL_IMPACT
-	bool "Total Impact"
 config VENDOR_TYAN
 	bool "Tyan"
 config VENDOR_VIA
@@ -323,11 +321,6 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_VENDOR
 	string
-	default "Total Impact"
-	depends on VENDOR_TOTAL_IMPACT
-
-config MAINBOARD_VENDOR
-	string
 	default "Tyan"
 	depends on VENDOR_TYAN
 
@@ -390,7 +383,6 @@ source "src/mainboard/technexion/Kconfig"
 source "src/mainboard/technologic/Kconfig"
 source "src/mainboard/televideo/Kconfig"
 source "src/mainboard/thomson/Kconfig"
-source "src/mainboard/totalimpact/Kconfig"
 source "src/mainboard/tyan/Kconfig"
 source "src/mainboard/via/Kconfig"
 

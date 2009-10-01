@@ -17,12 +17,12 @@ config MAINBOARD_DIR
 config LB_CKS_RANGE_END
 	int
 	default 122
-	depends on BOARD_TYAN_S2881
+	depends on BOARD_DELL_S1850
 
 config LB_CKS_LOC
 	int
         default 123
-	depends on BOARD_TYAN_S2881
+	depends on BOARD_DELL_S1850
 
 config MAINBOARD_PART_NUMBER
 	string

@@ -13,6 +13,8 @@
 
 static unsigned long main(unsigned long bist)
 {
+	/* skip all this nonsense as we are not doing fallback yet */
+	goto fallback_image;
 	/* Did just the cpu reset? */
 	if (memory_initialized()) {
 	 	if (last_boot_normal()) {

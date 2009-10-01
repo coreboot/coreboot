@@ -1,0 +1,66 @@
+config BOARD_DELL_S1850
+	bool "Dell S1850"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA604
+	select NORTHBRIDGE_INTEL_E7520
+	select SOUTHBRIDGE_INTEL_I82801ER
+	select SUPERIO_NSC_PC8374
+	select PIRQ_TABLE
+	help
+	  Dell S1850mainboard.
+
+config MAINBOARD_DIR
+	string
+	default dell/s1850
+	depends on BOARD_DELL_S1850
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_TYAN_S2881
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_TYAN_S2881
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "s1850"
+	depends on BOARD_DELL_S1850
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x016c
+	depends on BOARD_DELL_S1850
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+	depends on BOARD_DELL_S1850
+
+config HAVE_FAILOVER_BOOT
+	bool
+	default n
+	depends on BOARD_DELL_S1850
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+	depends on BOARD_DELL_S1850
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_DELL_S1850
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_DELL_S1850
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_DELL_S1850
+

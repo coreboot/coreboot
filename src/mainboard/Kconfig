@@ -62,8 +62,6 @@ config VENDOR_LIPPERT
 	bool "Lippert"
 config VENDOR_MITAC
 	bool "Mitac"
-config VENDOR_MOTOROLA
-	bool "Motorola"
 config VENDOR_MSI
 	bool "MSI"
 config VENDOR_NEC
@@ -243,11 +241,6 @@ config MAINBOARD_VENDOR
 	string
 	default "Mitac"
 	depends on VENDOR_MITAC
-
-config MAINBOARD_VENDOR
-	string
-	default "Motorola"
-	depends on VENDOR_MOTOROLA
 
 config MAINBOARD_VENDOR
 	string

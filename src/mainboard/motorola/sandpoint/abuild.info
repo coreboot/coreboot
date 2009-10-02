@@ -1,3 +1,0 @@
-# This mainboard directory can't be built without 
-# an extra set of config files.
-TARCH=SKIP

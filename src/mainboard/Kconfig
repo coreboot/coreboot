@@ -38,8 +38,6 @@ config VENDOR_DIGITAL_LOGIC
 	bool "DIGITAL-LOGIC"
 config VENDOR_EAGLELION
 	bool "EagleLion"
-config VENDOR_EMBEDDED_PLANET
-	bool "Embedded Planet"
 config VENDOR_EMULATION
 	bool "Emulation"
 config VENDOR_GIGABYTE
@@ -181,11 +179,6 @@ config MAINBOARD_VENDOR
 	string
 	default "EagleLion"
 	depends on VENDOR_EAGLELION
-
-config MAINBOARD_VENDOR
-	string
-	default "Embedded Planet"
-	depends on VENDOR_EMBEDDED_PLANET
 
 config MAINBOARD_VENDOR
 	string
@@ -349,7 +342,6 @@ source "src/mainboard/compaq/Kconfig"
 source "src/mainboard/dell/Kconfig"
 source "src/mainboard/digitallogic/Kconfig"
 source "src/mainboard/eaglelion/Kconfig"
-source "src/mainboard/embeddedplanet/Kconfig"
 source "src/mainboard/emulation/Kconfig"
 source "src/mainboard/gigabyte/Kconfig"
 source "src/mainboard/hp/Kconfig"
@@ -361,7 +353,6 @@ source "src/mainboard/jetway/Kconfig"
 source "src/mainboard/kontron/Kconfig"
 source "src/mainboard/lippert/Kconfig"
 source "src/mainboard/mitac/Kconfig"
-source "src/mainboard/motorola/Kconfig"
 source "src/mainboard/msi/Kconfig"
 source "src/mainboard/nec/Kconfig"
 source "src/mainboard/newisys/Kconfig"

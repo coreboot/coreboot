@@ -1,5 +1,5 @@
 config BOARD_DELL_S1850
-	bool "S1850"
+	bool "PowerEdge 1850"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7520
@@ -8,7 +8,7 @@ config BOARD_DELL_S1850
 	select SUPERIO_NSC_PC8374
 	select PIRQ_TABLE
 	help
-	  Dell S1850 mainboard.
+	  Dell PowerEdge 1850 mainboard.
 
 config MAINBOARD_DIR
 	string

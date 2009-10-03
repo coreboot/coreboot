@@ -28,6 +28,7 @@
 #undef __KERNEL__
 #include <arch/io.h>
 #include <string.h>
+#include <cbfs.h>
 
 void write_protect_vgabios(void);
 
@@ -323,7 +324,7 @@ void do_vgabios(void)
 	 * of core LXB stuff */
 
 #warning ROM address hardcoded to 512K
-	rom = 0xfff80000;
+	rom = (unsigned int)cbfs_load_optionrom(dev->vendor, dev->device, 0); 
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom | 1);
 	printk_debug("rom base, size: %x\n", rom);
 

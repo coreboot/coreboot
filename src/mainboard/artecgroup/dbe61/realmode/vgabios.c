@@ -7,6 +7,7 @@
 #include <arch/io.h>
 #include <string.h>
 #include "chip.h"
+#include <cbfs.h>
 
 /* vgabios.c. Derived from: */
 
@@ -266,7 +267,7 @@ void do_vgabios(device_t dev)
 {
 	
 	unsigned long busdevfn;
-	unsigned int rom = dev->rom_address;
+	unsigned int rom = cbfs_load_optionrom(dev->vendor, dev->device, 0);
 	unsigned char *buf;
 	unsigned int size = 64*1024;
 	int i;

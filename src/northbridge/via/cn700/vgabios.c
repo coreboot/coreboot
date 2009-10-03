@@ -7,6 +7,7 @@
 //#include <printk.h>
 #include <string.h>
 #include "vgachip.h"
+#include <cbfs.h>
 
 /* vgabios.c. Derived from: */
 
@@ -356,7 +357,7 @@ void do_vgabios(void)
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
 
-	rom = 0xfff80000;
+	rom = cbfs_load_optionrom(dev->vendor, dev->device, 0);
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom|1);
 	printk_debug("rom base, size: %x\n", rom);
 

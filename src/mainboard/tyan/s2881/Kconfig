@@ -45,27 +45,12 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	default 0x2881
 	depends on BOARD_TYAN_S2881
 
-config USE_FAILOVER_IMAGE
-	bool
-	default n
-	depends on BOARD_TYAN_S2881
-
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
 	depends on BOARD_TYAN_S2881
 
 config MEM_TRAIN_SEQ
-	bool
-	default n
-	depends on BOARD_TYAN_S2881
-
-config HAVE_FAILOVER_BOOT
-	bool
-	default n
-	depends on BOARD_TYAN_S2881
-
-config USE_FAILOVER_IMAGE
 	bool
 	default n
 	depends on BOARD_TYAN_S2881

@@ -40,16 +40,6 @@ config HW_MEM_HOLE_SIZEK
 	default 0x100000
 	depends on BOARD_TYAN_S2875
 
-config HAVE_FAILOVER_BOOT
-	bool
-	default n
-	depends on BOARD_TYAN_S2875
-
-config USE_FAILOVER_IMAGE
-	bool
-	default n
-	depends on BOARD_TYAN_S2875
-
 config MAX_CPUS
 	int
 	default 4

@@ -72,16 +72,6 @@ config MEM_TRAIN_SEQ
 	default y
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config HAVE_FAILOVER_BOOT
-	bool
-	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config USE_FAILOVER_IMAGE
-	bool
-	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
 config MAX_CPUS
 	int
 	default 8

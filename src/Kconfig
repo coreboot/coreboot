@@ -146,6 +146,14 @@ config USE_FALLBACK_IMAGE
 	bool
 	default y
 
+config HAVE_FAILOVER_BOOT
+	bool
+	default n
+
+config USE_FAILOVER_IMAGE
+	bool
+	default n
+
 config HAVE_HARD_RESET
 	bool
 	default 0

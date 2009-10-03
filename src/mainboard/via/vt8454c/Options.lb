@@ -55,7 +55,6 @@ uses CONFIG_ROMBASE
 uses CONFIG_RAMBASE
 uses CONFIG_XIP_ROM_SIZE
 uses CONFIG_XIP_ROM_BASE
-uses CONFIG_CBFS
 
 # compiler specifics
 uses CONFIG_CROSS_COMPILE
@@ -242,11 +241,5 @@ default CONFIG_TTYS0_LCS=0x3
 default  CONFIG_DEFAULT_CONSOLE_LOGLEVEL=5
 ## At a maximum only compile in this level of debugging
 default  CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=5
-
-#
-# CBFS
-# 
-default CONFIG_CBFS=1
-
 end
 

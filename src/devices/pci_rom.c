@@ -35,22 +35,17 @@ struct rom_header * pci_rom_probe(struct device *dev)
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
 
-	if (CONFIG_CBFS) {
-		void *v;
-		/* if it's in FLASH, then it's as if dev->on_mainboard was true */
-		v = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
-		printk_debug("In cbfs, rom address for %s = %p\n", 
-				dev_path(dev), v);
-		if (v) {
-			dev->rom_address = (u32)v;
-			dev->on_mainboard = 1;
-		}
-	} 
+	void *v;
+	/* if it's in FLASH, then it's as if dev->on_mainboard was true */
+	v = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
+	printk_debug("In cbfs, rom address for %s = %p\n", 
+			dev_path(dev), v);
+	if (v) {
+		dev->rom_address = (u32)v;
+		dev->on_mainboard = 1;
+	}
 
 	if (dev->on_mainboard) {
-		/* this is here as a legacy path. We hope it goes away soon. Users should not have to 
-		 * compute the ROM address at build time!
-		 */
                 // in case some device PCI_ROM_ADDRESS can not be set or readonly 
 		rom_address = dev->rom_address;
 		printk_debug("On mainboard, rom address for %s = %lx\n", 

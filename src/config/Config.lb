@@ -215,7 +215,6 @@ end
 # for now, this is just 'lib', but it may be more later. 
 dir /lib
 dir /console
-dir /stream
 dir /devices
 dir /pc80
 dir /boot

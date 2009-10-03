@@ -1,45 +1,29 @@
-uses CONFIG_CBFS
 uses CONFIG_SMP
 uses CONFIG_PRECOMPRESSED_PAYLOAD
 uses CONFIG_USE_INIT
 uses CONFIG_HAVE_FAILOVER_BOOT
 uses CONFIG_USE_FAILOVER_IMAGE
 uses CONFIG_USE_FALLBACK_IMAGE
-uses CONFIG_CBFS
 
 init init/crt0.S.lb
 
-if CONFIG_CBFS
-	if CONFIG_USE_FAILOVER_IMAGE
-	else
-		initobject /src/lib/cbfs.o
-		initobject /src/lib/lzma.o
-	end
+if CONFIG_USE_FAILOVER_IMAGE
+else
+	initobject /src/lib/cbfs.o
+	initobject /src/lib/lzma.o
 end
 
 if CONFIG_HAVE_FAILOVER_BOOT
 	if CONFIG_USE_FAILOVER_IMAGE
 		ldscript init/ldscript_failover.lb
 	else
-		if CONFIG_CBFS
 			ldscript init/ldscript_cbfs.lb
-		else
-			ldscript init/ldscript.lb
-		end
 	end
 else
-	if CONFIG_CBFS
-		if CONFIG_USE_FALLBACK_IMAGE
-			ldscript init/ldscript_fallback_cbfs.lb
-		else
-			ldscript init/ldscript_cbfs.lb
-		end
+	if CONFIG_USE_FALLBACK_IMAGE
+		ldscript init/ldscript_fallback_cbfs.lb
 	else
-		if CONFIG_USE_FALLBACK_IMAGE
-			ldscript init/ldscript_fallback.lb
-		else
-			ldscript init/ldscript.lb
-		end
+		ldscript init/ldscript_cbfs.lb
 	end
 end
 
@@ -82,13 +66,6 @@ end
 # catch the case where there is no compression
 makedefine PAYLOAD-1:=payload
 
-if CONFIG_CBFS
-else
-# match the case where a compression type is specified.
-makedefine PAYLOAD-$(CONFIG_COMPRESSED_PAYLOAD_NRV2B):=payload.nrv2b
-makedefine PAYLOAD-$(CONFIG_COMPRESSED_PAYLOAD_LZMA):=payload.lzma
-end
-
 # catch the case where there is precompression. Yes, this bites. 
 if CONFIG_PRECOMPRESSED_PAYLOAD 
 	makedefine PAYLOAD-1:=payload
@@ -105,8 +82,8 @@ if CONFIG_USE_FAILOVER_IMAGE
 else
 	makerule coreboot.rom 
 		depends	"coreboot.strip buildrom $(PAYLOAD-1)"
-		action "PAYLOAD=$(PAYLOAD-1); if [ $(CONFIG_CBFS) -eq 1 ]; then PAYLOAD=/dev/null; touch cbfs-support; fi; ./buildrom $< $@ $$PAYLOAD $(CONFIG_ROM_IMAGE_SIZE) $(CONFIG_ROM_SECTION_SIZE)"
-		action "if [ $(CONFIG_COMPRESSED_PAYLOAD_LZMA) -eq 1 -a $(CONFIG_CBFS) -eq 1 ]; then echo l > cbfs-support; fi"
+		action "touch cbfs-support; ./buildrom $< $@ /dev/null $(CONFIG_ROM_IMAGE_SIZE) $(CONFIG_ROM_SECTION_SIZE)"
+		action "if [ $(CONFIG_COMPRESSED_PAYLOAD_LZMA) -eq 1 ]; then echo l > cbfs-support; fi"
 	end
 end
 

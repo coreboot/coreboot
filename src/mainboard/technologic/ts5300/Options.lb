@@ -1,5 +1,4 @@
 uses CONFIG_HAVE_MP_TABLE
-uses CONFIG_CBFS
 uses CONFIG_HAVE_PIRQ_TABLE
 uses CONFIG_USE_FALLBACK_IMAGE
 uses CONFIG_HAVE_FALLBACK_BOOT
@@ -135,10 +134,4 @@ default CONFIG_ROM_PAYLOAD     = 1
 ##
 default CC="$(CONFIG_CROSS_COMPILE)gcc -m32"
 default HOSTCC="gcc"
-
-#
-# CBFS
-#
-#
-default CONFIG_CBFS=1
 end

@@ -74,19 +74,8 @@ __main:
 	movl	$0x4000000, %esp
 	movl	%esp, %ebp
 	pushl %esi
-#if CONFIG_CBFS == 1
 	pushl $str_coreboot_ram_name
 	call cbfs_and_run_core
-#else
-	movl	$_liseg, %esi
-	movl	$_iseg,  %edi
-	movl	$_eiseg, %ecx
-	subl	%edi, %ecx
-	pushl %ecx
-	pushl %edi
-	pushl %esi
-	call copy_and_run_core
-#endif
 
 .Lhlt:	
 	intel_chip_post_macro(0xee)	/* post fe */
@@ -148,12 +137,10 @@ str_pre_main:        .string "Jumping to coreboot.\r\n"
 
 #endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
 
-#if CONFIG_CBFS == 1
-# if CONFIG_USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 str_coreboot_ram_name:	.string "fallback/coreboot_ram"
-# else
+#else
 str_coreboot_ram_name:	.string "normal/coreboot_ram"
-# endif
 #endif
 
 #endif /* CONFIG_USE_DCACHE_RAM */

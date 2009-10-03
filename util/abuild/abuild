@@ -176,20 +176,12 @@ EOF
 			cat <<EOF
 romimage "normal"
 	option CONFIG_USE_FALLBACK_IMAGE=0
-if CONFIG_CBFS
-else
-	option CONFIG_ROM_IMAGE_SIZE=0x17000
-end
 	option COREBOOT_EXTRA_VERSION=".0-normal"
 	payload __PAYLOAD__
 end
 
 romimage "fallback" 
 	option CONFIG_USE_FALLBACK_IMAGE=1
-if CONFIG_CBFS
-else
-	option CONFIG_ROM_IMAGE_SIZE=0x17000
-end
 	option COREBOOT_EXTRA_VERSION=".0-fallback"
 	payload __PAYLOAD__
 end

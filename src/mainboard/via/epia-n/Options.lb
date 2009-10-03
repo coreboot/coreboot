@@ -19,7 +19,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-uses CONFIG_CBFS
 uses CONFIG_HAVE_PIRQ_TABLE
 uses CONFIG_HAVE_FAILOVER_BOOT
 uses CONFIG_USE_FAILOVER_IMAGE
@@ -120,11 +119,4 @@ default CONFIG_HAVE_MAINBOARD_RESOURCES = 1
 ## time when it can't find a device.
 ##
 default CONFIG_MAX_PCI_BUSES = 3
-
-
-#
-# CBFS
-#
-#
-default CONFIG_CBFS=1
 end

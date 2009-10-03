@@ -27,11 +27,5 @@ initobject memset.o
 initobject memcpy.o
 initobject memcmp.o
 
-if CONFIG_CBFS
-	object cbfs.o
-	object lzma.o
-end
-
-if CONFIG_COMPRESSED_PAYLOAD_LZMA
-	object lzma.o
-end
+object cbfs.o
+object lzma.o

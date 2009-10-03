@@ -2247,7 +2247,7 @@ def writemakefile(path):
 	file = safe_open(makefilepath, 'w+')
 	writemakefileheader(file, makefilepath)
 
-	# Hack to get the necessary settings (CONFIG_CBFS):
+	# Hack to get the necessary settings (CONFIG_COMPRESSED_PAYLOAD_LZMA):
 	file.write("include %s/Makefile.settings\n\n" % romimages.keys()[0])
 
 	# main rule
@@ -2275,7 +2275,6 @@ def writemakefile(path):
 	file.write("base-clean:\n")
 	file.write("\trm -f romcc*\n\n")
 
-	file.write("ifeq \"$(CONFIG_CBFS)\" \"1\"\n\n")
 	file.write("CBFS_COMPRESS_FLAG:=\n")
 	file.write("CBFS_STAGE_COMPRESS_FLAG:=\n")
 	file.write("ifeq \"$(CONFIG_COMPRESSED_PAYLOAD_LZMA)\" \"1\"\nCBFS_COMPRESS_FLAG:=l\nendif\n\n")
@@ -2309,19 +2308,6 @@ def writemakefile(path):
 			file.write("\tif [ -f %s/coreboot_apc ]; then ./cbfs/cbfstool %s add-stage %s/coreboot_apc %s/coreboot_apc $(CBFS_COMPRESS_FLAG); fi\n" % (j, i.name, j, j,))
 		file.write("\t./cbfs/cbfstool %s print\n" % i.name)
 		file.write("\n")
-	file.write("else\n\n")
-
-	for i in buildroms:
-		file.write("%s:" % i.name)
-		for j in i.roms:
-			file.write(" %s/coreboot.rom " % j)
-		file.write("\n")
-		file.write("\t cat ")
-		for j in i.roms:
-			file.write(" %s/coreboot.rom " % j)
-		file.write("> %s\n\n" %i.name)
-
-	file.write("endif\n\n")
 
 	file.write(".PHONY: all clean cbfstool")
 	for i in romimages.keys():

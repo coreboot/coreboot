@@ -19,7 +19,6 @@
 ##
 
 uses CONFIG_HAVE_MP_TABLE
-uses CONFIG_CBFS
 uses CONFIG_HAVE_PIRQ_TABLE
 uses CONFIG_USE_FALLBACK_IMAGE
 uses CONFIG_HAVE_FALLBACK_BOOT
@@ -137,7 +136,6 @@ default CC = "$(CONFIG_CROSS_COMPILE)gcc -m32"
 default HOSTCC = "gcc"
 default CONFIG_DEFAULT_CONSOLE_LOGLEVEL = 9
 default CONFIG_MAXIMUM_CONSOLE_LOGLEVEL = 9
-default CONFIG_CBFS=1
 
 ##
 ## Set this to the max PCI bus number you would ever use for PCI config I/O.

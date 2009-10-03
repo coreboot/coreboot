@@ -30,14 +30,6 @@ option CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 = 1
 option CONFIG_COMPRESSED_PAYLOAD_NRV2B = 0
 option CONFIG_COMPRESSED_PAYLOAD_LZMA = 0
 
-## Load payload (e.g. Linux) from IDE.
-#option CONFIG_ROM_PAYLOAD = 0
-#option CONFIG_IDE = 1
-#option CONFIG_FS_PAYLOAD = 1
-#option CONFIG_FS_EXT2 = 1
-#option CONFIG_AUTOBOOT_DELAY = 0
-#option CONFIG_AUTOBOOT_CMDLINE = "hda1:/payload.elf"
-
 # Leave 36k for VSA. Usually board is equipped with a 512 KB FWH (LPC) flash,
 # however it can be replaced with a 1 MB chip.
 option CONFIG_ROM_SIZE = (512 * 1024) - (36 * 1024)

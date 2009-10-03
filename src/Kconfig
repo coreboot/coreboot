@@ -36,10 +36,6 @@ source src/southbridge/Kconfig
 source src/superio/Kconfig
 source src/cpu/Kconfig
 
-config CBFS
-	bool
-	default y
-
 config PCI_BUS_SEGN_BITS
 	int
 	default 0

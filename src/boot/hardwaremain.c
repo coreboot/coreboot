@@ -96,21 +96,10 @@ void hardwaremain(int boot_complete)
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
-#if CONFIG_CBFS == 1
-# if CONFIG_USE_FALLBACK_IMAGE == 1
+#if CONFIG_USE_FALLBACK_IMAGE == 1
 	cbfs_load_payload(lb_mem, "fallback/payload");
-# else
+#else
 	cbfs_load_payload(lb_mem, "normal/payload");
-# endif
-#else
-
-#if CONFIG_FS_PAYLOAD == 1
-#warning "CONFIG_FS_PAYLOAD is deprecated."
-	filo(lb_mem);
-#else
-#warning "elfboot will soon be deprecated."
-	elfboot(lb_mem);
-#endif
 #endif
 	printk(BIOS_ERR, "Boot failed.\n");
 }

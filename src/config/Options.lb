@@ -641,11 +641,6 @@ define CONFIG_MULTIBOOT
 	export always
 	comment "Use Multiboot (rather than ELF boot notes) to boot the payload"
 end
-define CONFIG_IDE_PAYLOAD
-	default 0
-	export always
-	comment "Boot from IDE device"
-end
 define CONFIG_ROM_PAYLOAD
 	default 0
 	export always
@@ -671,47 +666,6 @@ define CONFIG_PRECOMPRESSED_PAYLOAD
 	default 0
 	export always
 	comment "boot image is already compressed" 
-end
-define CONFIG_SERIAL_PAYLOAD
-	default 0
-	export always
-	comment "Download boot image from serial port"
-end
-define CONFIG_FS_PAYLOAD
-	default 0
-	export always
-	comment "Boot from a filesystem"
-end
-define CONFIG_FS_EXT2
-	default 0
-	export always
-	comment "Enable ext2 filesystem support"
-end
-define CONFIG_FS_ISO9660
-	default 0
-	export always
-	comment "Enable ISO9660 filesystem support"
-end
-define CONFIG_FS_FAT
-	default 0
-	export always
-	comment "Enable FAT filesystem support"
-end
-define CONFIG_CBFS
-	default 1
-	export always
-	comment "The new CBFS file system"
-end
-define CONFIG_AUTOBOOT_DELAY
-	default 2
-	export always
-	comment "Delay (in seconds) before autobooting"
-end
-define CONFIG_AUTOBOOT_CMDLINE
-	default "hdc1:/vmlinuz root=/dev/hdc3 console=tty0 console=ttyS0,115200"
-	export always
-	format "\"%s\""
-	comment "Default command line when autobooting"
 end
 
 define CONFIG_USE_WATCHDOG_ON_BOOT

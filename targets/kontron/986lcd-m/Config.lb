@@ -5,7 +5,6 @@ mainboard kontron/986lcd-m
 ## (normal AND fallback images and payloads).
 option CONFIG_ROM_SIZE = 1024 * 1024
 
-option CONFIG_CBFS=1
 option HAVE_HIGH_TABLES=1
 option MAXIMUM_CONSOLE_LOGLEVEL=9
 option DEFAULT_CONSOLE_LOGLEVEL=9

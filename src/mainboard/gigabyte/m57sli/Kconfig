@@ -92,11 +92,6 @@ config HW_MEM_HOLE_SIZEK
 	default 0x100000
 	depends on BOARD_GIGABYTE_M57SLI
 
-config USE_FAILOVER_IMAGE
-	bool
-	default n
-	depends on BOARD_GIGABYTE_M57SLI
-
 config MAX_CPUS
 	int
 	default 2

@@ -29,8 +29,6 @@ config BOARD_ASUS_P2B
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  ASUS P2B mainboard.
 
 config MAINBOARD_DIR
 	string

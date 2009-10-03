@@ -29,8 +29,6 @@ config BOARD_BIOSTAR_M6TBA
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  Biostar M6TBA mainboard.
 
 config MAINBOARD_DIR
 	string

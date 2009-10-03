@@ -9,8 +9,6 @@ config BOARD_TYAN_S2881
 	select SOUTHBRIDGE_AMD_AMD8111
 	select SUPERIO_WINBOND_W83627HF
 	select PIRQ_TABLE
-	help
-	  Tyan Thunder K8SR (S2881) mainboard.
 
 config MAINBOARD_DIR
 	string

@@ -9,8 +9,6 @@ config BOARD_TYAN_S2895
 	select SOUTHBRIDGE_AMD_AMD8131
 	select SUPERIO_SMSC_LPC47B397
 	select PIRQ_TABLE
-	help
-	  Tyan Thunder K8WE (S2895) mainboard.
 
 config MAINBOARD_DIR
 	string

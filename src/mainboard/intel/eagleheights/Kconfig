@@ -12,8 +12,6 @@ config BOARD_INTEL_EAGLEHEIGHTS
 	select UDELAY_TSC
 	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 	select AP_IN_SIPI_WAIT
-	help
-          Intel EagleHeights mainboard.
 
 config MAINBOARD_DIR
 	string

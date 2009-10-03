@@ -6,8 +6,6 @@ config BOARD_VIA_PC2500E
 	select SOUTHBRIDGE_VIA_VT8237R
 	select SUPERIO_ITE_IT8716F
 	select HAVE_PIRQ_TABLE
-	help
-	  VIA pc2500e mainboard.
 
 config MAINBOARD_DIR
 	string

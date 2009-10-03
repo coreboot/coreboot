@@ -10,8 +10,6 @@ config BOARD_SUPERMICRO_H8DME
 	select HAVE_PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
-	help
-	  Supermicro H8DME mainboard.
 
 config MAINBOARD_DIR
 	string

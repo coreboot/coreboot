@@ -29,8 +29,6 @@ config BOARD_ASUS_P3B_F
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  ASUS P3B-F mainboard.
 
 config MAINBOARD_DIR
 	string

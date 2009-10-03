@@ -29,8 +29,6 @@ config BOARD_MSI_MS_6178
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  MSI MS-6178 mainboard.
 
 config MAINBOARD_DIR
 	string

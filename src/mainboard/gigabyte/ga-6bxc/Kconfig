@@ -29,8 +29,6 @@ config BOARD_GIGABYTE_GA_6BXC
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  GIGABYTE GA-6BXC mainboard.
 
 config MAINBOARD_DIR
 	string

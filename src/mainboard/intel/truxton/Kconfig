@@ -8,8 +8,6 @@ config BOARD_INTEL_TRUXTON
 	select SUPERIO_SMSC_SMSCSUPERIO
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
-	help
-          Intel EP80579 devkit (Truxton) mainboard.
 
 config MAINBOARD_DIR
 	string

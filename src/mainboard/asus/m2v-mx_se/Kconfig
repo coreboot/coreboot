@@ -34,8 +34,6 @@ config BOARD_ASUS_M2V_MX_SE
 	select IOAPIC
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_TABLES
-	help
-	  Asus M2V-MX SE mainboard.
 
 config MAINBOARD_DIR
 	string

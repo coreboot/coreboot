@@ -29,8 +29,6 @@ config BOARD_ASUS_MEW_VM
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  ASUS MEW-VM mainboard.
 
 config MAINBOARD_DIR
 	string

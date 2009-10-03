@@ -10,8 +10,6 @@ config BOARD_SUNW_ULTRA40
 	select HAVE_PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
-	help
-	 Sun Ultra 40 mainboard.
 
 config MAINBOARD_DIR
 	string

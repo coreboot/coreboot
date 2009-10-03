@@ -5,8 +5,6 @@ config BOARD_VIA_EPIA_M700
 	select NORTHBRIDGE_VIA_VX800
 	select SUPERIO_WINBOND_W83697HF
 	select HAVE_PIRQ_TABLE
-	help
-	  VIA EPIA-M700 mainboard.
 
 config MAINBOARD_DIR
 	string

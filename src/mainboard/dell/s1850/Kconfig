@@ -7,8 +7,6 @@ config BOARD_DELL_S1850
 	select SOUTHBRIDGE_INTEL_PXHD
 	select SUPERIO_NSC_PC8374
 	select PIRQ_TABLE
-	help
-	  Dell PowerEdge 1850 mainboard.
 
 config MAINBOARD_DIR
 	string

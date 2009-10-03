@@ -29,8 +29,6 @@ config BOARD_SOYO_SY_6BA_PLUS_III
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  SOYO SY-6BA+ III mainboard.
 
 config MAINBOARD_DIR
 	string

@@ -5,8 +5,6 @@ config BOARD_EMULATION_QEMU_X86
 	select SOUTHBRIDGE_INTEL_I82371EB
 	select CPU_EMULATION_QEMU_X86
 	select CONSOLE_SERIAL8250
-	help
-	  x86 QEMU variant.
 
 config MAINBOARD_DIR
 	string
@@ -15,5 +13,5 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "QEMU-86"
+	default "QEMU-x86"
 	depends on BOARD_EMULATION_QEMU_X86

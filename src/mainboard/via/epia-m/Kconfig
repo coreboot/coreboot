@@ -7,8 +7,6 @@ config BOARD_VIA_EPIA_M
 	select SOUTHBRIDGE_RICOH_RL5C476
 	select SUPERIO_VIA_VT1211
 	select HAVE_PIRQ_TABLE
-	help
-	  VIA EPIA-M mainboard.
 
 config MAINBOARD_DIR
 	string

@@ -27,8 +27,6 @@ config BOARD_AMD_RUMBA
 	select UDELAY_TSC
 	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 	select HAVE_PIRQ_TABLE
-	help
-	  AMD Rumba mainboard.
 
 config MAINBOARD_DIR
 	string

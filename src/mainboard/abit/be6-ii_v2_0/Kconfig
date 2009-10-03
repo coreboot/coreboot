@@ -29,8 +29,6 @@ config BOARD_ABIT_BE6_II_V2_0
 	select UDELAY_IO
 	select PCI_ROM_RUN
 	select CONSOLE_VGA
-	help
-	  Abit BE6-II V2.0 mainboard.
 
 config MAINBOARD_DIR
 	string

@@ -18,12 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_BCOM
-
-source "src/mainboard/bcom/winnet100/Kconfig"
-# source "src/mainboard/bcom/winnetp680/Kconfig"
-
-endchoice
+driver-y += northbridge.o
 

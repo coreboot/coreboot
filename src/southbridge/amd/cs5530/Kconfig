@@ -1,3 +1,76 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
 config SOUTHBRIDGE_AMD_CS5530
 	bool
 	default n
+
+menu "AMD Geode GX1 video support"
+	depends on SOUTHBRIDGE_AMD_CS5530
+
+config GX1_VIDEO
+	bool "AMD Geode GX1 video mode support"
+	default y
+	depends on SOUTHBRIDGE_AMD_CS5530
+
+choice
+	prompt "AMD Geode GX1 video mode"
+	default GX1_VIDEOMODE_0
+	depends on GX1_VIDEO
+
+config GX1_VIDEOMODE_0
+	bool "640x480"
+config GX1_VIDEOMODE_1
+	bool "800x600"
+config GX1_VIDEOMODE_2
+	bool "1024x768"
+config GX1_VIDEOMODE_3
+	bool "1280x960"
+config GX1_VIDEOMODE_4
+	bool "1280x1024"
+
+endchoice
+
+config GX1_VIDEOMODE
+	int
+	default 0 if GX1_VIDEOMODE_0
+	default 1 if GX1_VIDEOMODE_1
+	default 2 if GX1_VIDEOMODE_2
+	default 3 if GX1_VIDEOMODE_3
+	default 4 if GX1_VIDEOMODE_4
+	depends on GX1_VIDEO
+
+# TODO: Check how much RAM each of the modes actually needs.
+config VIDEO_MB
+	int
+	default 2 if GX1_VIDEOMODE_0
+	default 2 if GX1_VIDEOMODE_1
+	default 2 if GX1_VIDEOMODE_2
+	default 2 if GX1_VIDEOMODE_3
+	default 2 if GX1_VIDEOMODE_4
+	depends on GX1_VIDEO
+
+config SPLASH_GRAPHIC
+	bool "Enable splash screen on AMD Geode GX1 boards"
+	default y
+	depends on GX1_VIDEO
+
+endmenu
+

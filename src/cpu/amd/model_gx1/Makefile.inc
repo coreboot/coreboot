@@ -18,12 +18,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_BCOM
-
-source "src/mainboard/bcom/winnet100/Kconfig"
-# source "src/mainboard/bcom/winnetp680/Kconfig"
-
-endchoice
-
+subdirs-y += ../../x86/tsc
+subdirs-y += ../../x86/fpu
+subdirs-y += ../../x86/mmx
+subdirs-y += ../../x86/lapic
+subdirs-y += ../../x86/cache
+subdirs-y += ../../x86/smm
+driver-y += model_gx1_init.o

@@ -18,12 +18,36 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_BCOM
+config BOARD_BCOM_WINNET100
+	bool "WinNET100"
+	select ARCH_X86
+	select CPU_AMD_GX1
+	select NORTHBRIDGE_AMD_GX1
+	select SOUTHBRIDGE_AMD_CS5530
+	select SUPERIO_NSC_PC97317
+	select HAVE_PIRQ_TABLE
+	select PIRQ_ROUTE
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 
-source "src/mainboard/bcom/winnet100/Kconfig"
-# source "src/mainboard/bcom/winnetp680/Kconfig"
+config MAINBOARD_DIR
+	string
+	default bcom/winnet100
+	depends on BOARD_BCOM_WINNET100
 
-endchoice
+config MAINBOARD_PART_NUMBER
+	string
+	default "WinNET100"
+	depends on BOARD_BCOM_WINNET100
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_BCOM_WINNET100
+
+# Soldered NIC, internal USB, no real PCI slots.
+config IRQ_SLOT_COUNT
+	int
+	default 2
+	depends on BOARD_BCOM_WINNET100
 

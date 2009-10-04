@@ -12,4 +12,5 @@ source src/cpu/amd/socket_F/Kconfig
 source src/cpu/amd/socket_S1G1/Kconfig
 
 source src/cpu/amd/model_fxx/Kconfig
+source src/cpu/amd/model_gx1/Kconfig
 source src/cpu/amd/model_gx2/Kconfig

@@ -190,6 +190,10 @@ config IOAPIC
 	bool
 	default n
 
+config VIDEO_MB
+	int
+	default 0
+
 config USE_WATCHDOG_ON_BOOT
 	bool
 	default n

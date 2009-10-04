@@ -35,14 +35,6 @@ static void isa_init(struct device *dev)
 	/* Initialize the real time clock (RTC). */
 	rtc_init(0);
 
-	/* Enable access to all BIOS regions. */
-	reg16 = pci_read_config16(dev, XBCS);
-	reg16 |= LOWER_BIOS_ENABLE;
-	reg16 |= EXT_BIOS_ENABLE;
-	reg16 |= EXT_BIOS_ENABLE_1MB;
-	reg16 &= ~(WRITE_PROTECT_ENABLE);	/* Disable ROM write access. */
-	pci_write_config16(dev, XBCS, reg16);
-
 	/*
 	 * The PIIX4 can support the full ISA bus, or the Extended I/O (EIO)
 	 * bus, which is a subset of ISA. We select the full ISA bus here.

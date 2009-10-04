@@ -41,36 +41,6 @@ makerule nrv2b
 	action	"$(HOSTCC) -O2 -DENCODE -DDECODE -DMAIN -DVERBOSE -DNDEBUG -DBITSIZE=32 -DENDIAN=0 $< -o $@"
 end
 
-makerule payload
-	depends "$(PAYLOAD)"
-	action  "cp $< $@"
-end
-
-makerule payload.nrv2b
-	depends "$(PAYLOAD) nrv2b"
-	action  "./nrv2b e $(PAYLOAD) $@"
-end
-
-# unlike nrv2b, lzma is a huge build mess. If they want lzma, they have to have built it
-makerule payload.lzma
-	depends "$(PAYLOAD) "
-	action  "lzma -zc $(PAYLOAD) > $@ || lzma e $(PAYLOAD) $@"
-end
-
-
-# this one example shows the mess that has occurred. People are now mixing
-# conditional if in the make style with if in the config language style. 
-# The -1 is linux standard. 
-# I don't much like it but it is the mode nowadays. So coreboot will change
-# what a mess. -- RGM
-# catch the case where there is no compression
-makedefine PAYLOAD-1:=payload
-
-# catch the case where there is precompression. Yes, this bites. 
-if CONFIG_PRECOMPRESSED_PAYLOAD 
-	makedefine PAYLOAD-1:=payload
-end
-
 if CONFIG_USE_FAILOVER_IMAGE
 	makedefine COREBOOT_APC:=
 	makedefine COREBOOT_RAM_ROM:=
@@ -81,9 +51,8 @@ if CONFIG_USE_FAILOVER_IMAGE
 	end
 else
 	makerule coreboot.rom 
-		depends	"coreboot.strip buildrom $(PAYLOAD-1)"
-		action "touch cbfs-support; ./buildrom $< $@ /dev/null $(CONFIG_ROM_IMAGE_SIZE) $(CONFIG_ROM_SECTION_SIZE)"
-		action "if [ $(CONFIG_COMPRESSED_PAYLOAD_LZMA) -eq 1 ]; then echo l > cbfs-support; fi"
+		depends	"coreboot.strip buildrom"
+		action "./buildrom $< $@ /dev/null $(CONFIG_ROM_IMAGE_SIZE) $(CONFIG_ROM_SECTION_SIZE)"
 	end
 end
 

@@ -57,7 +57,7 @@ SECTIONS
 		/*
 		 * kevinh/Ispiri - Added an align, because the objcopy tool
 		 * incorrectly converts sections that are not long word aligned.
-		 * This breaks the coreboot.strip target.
+		 * This breaks the coreboot.rom target.
 		 */
 		 . = ALIGN(4);
 

@@ -1,12 +1,7 @@
 ldscript init/ldscript.lb
 
-makerule coreboot.strip 
-	depends	"coreboot" 
-	action	"cp $< $@"
-end
-
 makerule coreboot.rom 
-	depends	"coreboot.strip" 
+	depends	"coreboot"
 	action "cp $< $@"
 end
 

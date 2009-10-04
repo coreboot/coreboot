@@ -44,16 +44,6 @@ end
 if CONFIG_USE_FAILOVER_IMAGE
 	makedefine COREBOOT_APC:=
 	makedefine COREBOOT_RAM_ROM:=
-
-	makerule coreboot.rom 
-		depends	"coreboot.strip" 
-		action "cp $< $@"
-	end
-else
-	makerule coreboot.rom 
-		depends	"coreboot.strip buildrom"
-		action "./buildrom $< $@ /dev/null $(CONFIG_ROM_IMAGE_SIZE) $(CONFIG_ROM_SECTION_SIZE)"
-	end
 end
 
 makerule crt0.S

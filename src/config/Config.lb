@@ -33,9 +33,9 @@ end
 #	action	"perl -e 'foreach $$var (split(\" \", $$ENV{VARIABLES})) { if ($$ENV{$$var} =~ m/^(0x[0-9a-fA-F]+|0[0-7]+|[0-9]+)$$/) { print \"$$var = $$ENV{$$var};\n\"; }}' > $@"
 #end
 
-makerule coreboot.strip  
+makerule coreboot.rom
 	depends	"coreboot" 
-	action	"$(CONFIG_OBJCOPY) -O binary coreboot coreboot.strip"
+	action	"$(CONFIG_OBJCOPY) -O binary coreboot coreboot.rom"
 end
 
 makerule coreboot.a
@@ -133,12 +133,6 @@ makerule coreboot
 	action 	"$(CONFIG_CROSS_COMPILE)objdump -dS coreboot > coreboot.disasm"	
 end
 
-# the buildrom tool
-makerule buildrom 
-	depends	"$(TOP)/util/buildrom/buildrom.c" 
-	action	"$(HOSTCC) -o $@ $<"
-end
-
 # Force crt0.s (which has build time version code in it to rebuild every time)
 makedefine .PHONY : crt0.s
 makerule crt0.s   
@@ -204,7 +198,7 @@ makerule clean
 	action	"rm -f ldscript.ld"
 	action	"rm -f a.out *.s *.l *.o *.E *.inc"
 	action	"rm -f TAGS tags romcc*"
-	action	"rm -f docipl buildrom* chips.c *chip.c coreboot_apc* coreboot_ram* coreboot_pay*"
+	action	"rm -f docipl chips.c *chip.c coreboot_apc* coreboot_ram* coreboot_pay*"
 	action	"rm -f build_opt_tbl* nrv2b* option_table.c option_table.h crt0.S crt0.disasm"
 	action	"rm -f smm smm.elf smm.map smm_bin.c"
 	action	"rm -f dsdt.aml dsdt.c"

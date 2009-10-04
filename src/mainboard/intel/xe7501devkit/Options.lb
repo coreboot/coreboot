@@ -46,10 +46,6 @@ uses CONFIG_DEBUG
 #uses CONFIG_CPU_OPT
 uses CONFIG_IDE
 
-## The default definitions are used for these
-uses CONFIG_ROM_PAYLOAD_START
-uses CONFIG_PAYLOAD_SIZE
-
 ## These are defined in target Config.lb, don't add here
 uses CONFIG_USE_FALLBACK_IMAGE
 uses CONFIG_ROM_SIZE

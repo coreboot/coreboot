@@ -246,14 +246,8 @@ define CONFIG_ROM_SECTION_OFFSET
 	export used
 	comment "Default rom section offset"
 end
-define CONFIG_PAYLOAD_SIZE
-	default {CONFIG_ROM_SECTION_SIZE - CONFIG_ROM_IMAGE_SIZE}
-	format "0x%x"
-	export always
-	comment "Default payload size"
-end
 define CONFIG_ROMBASE
-	default {CONFIG_PAYLOAD_SIZE}
+	default {0xffffffff - CONFIG_ROM_SIZE + 1}
 	format "0x%x"
 	export always
 	comment "Base address of coreboot in ROM"
@@ -645,12 +639,6 @@ define CONFIG_ROM_PAYLOAD
 	default 0
 	export always
 	comment "Boot image is located in ROM" 
-end
-define CONFIG_ROM_PAYLOAD_START
-	default {0xffffffff - CONFIG_ROM_SIZE + CONFIG_ROM_SECTION_OFFSET + 1}
-	format "0x%x"
-	export always
-	comment "ROM stream start location"
 end
 define CONFIG_COMPRESSED_PAYLOAD_NRV2B
 	default 0

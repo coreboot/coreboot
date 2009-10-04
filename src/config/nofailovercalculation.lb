@@ -11,16 +11,9 @@ else
 end
 
 ##
-## Compute the start location and size size of
-## The coreboot bootloader.
-##
-default CONFIG_PAYLOAD_SIZE            = ( CONFIG_ROM_SECTION_SIZE - CONFIG_ROM_IMAGE_SIZE )
-default CONFIG_ROM_PAYLOAD_START = (0xffffffff - CONFIG_ROM_SIZE + CONFIG_ROM_SECTION_OFFSET + 1)
-
-##
 ## Compute where this copy of coreboot will start in the boot rom
 ##
-default CONFIG_ROMBASE      = ( CONFIG_ROM_PAYLOAD_START + CONFIG_PAYLOAD_SIZE )
+default CONFIG_ROMBASE      = (0xffffffff - CONFIG_ROM_SIZE + CONFIG_ROM_SECTION_OFFSET + 1)
 
 ##
 ## Compute a range of ROM that can cached to speed up coreboot,

@@ -27,8 +27,6 @@ config BOARD_AZZA_PT_6IBD
 	select SUPERIO_WINBOND_W83977TF
 	select HAVE_PIRQ_TABLE
 	select UDELAY_IO
-	select PCI_ROM_RUN
-	select CONSOLE_VGA
 
 config MAINBOARD_DIR
 	string

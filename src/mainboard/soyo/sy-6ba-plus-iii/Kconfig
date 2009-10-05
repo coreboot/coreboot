@@ -27,8 +27,6 @@ config BOARD_SOYO_SY_6BA_PLUS_III
 	select SUPERIO_ITE_IT8671F
 	select HAVE_PIRQ_TABLE
 	select UDELAY_IO
-	select PCI_ROM_RUN
-	select CONSOLE_VGA
 
 config MAINBOARD_DIR
 	string

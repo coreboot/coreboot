@@ -30,8 +30,6 @@ config BOARD_ASUS_P2B_DS
 	select SMP
 	select IOAPIC
 	select UDELAY_IO
-	select PCI_ROM_RUN
-	select CONSOLE_VGA
 
 config MAINBOARD_DIR
 	string

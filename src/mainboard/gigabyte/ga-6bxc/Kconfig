@@ -27,8 +27,6 @@ config BOARD_GIGABYTE_GA_6BXC
 	select SUPERIO_ITE_IT8671F
 	select HAVE_PIRQ_TABLE
 	select UDELAY_IO
-	select PCI_ROM_RUN
-	select CONSOLE_VGA
 
 config MAINBOARD_DIR
 	string

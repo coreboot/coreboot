@@ -26,7 +26,7 @@
 #define W83627DHG_SPI              6   /* Serial peripheral interface */
 #define W83627DHG_GPIO6            7   /* GPIO6 */
 #define W83627DHG_WDTO_PLED        8   /* WDTO#, PLED */
-#define W83627DHG_GPIO_SUSLED      9   /* GPIO2, GPIO3, GPIO4, GPIO5 */
+#define W83627DHG_GPIO2345         9   /* GPIO2, GPIO3, GPIO4, GPIO5 */
 #define W83627DHG_ACPI            10   /* ACPI */
 #define W83627DHG_HWM             11   /* Hardware monitor */
 #define W83627DHG_PECI_SST        12   /* PECI, SST */

@@ -93,6 +93,10 @@ BUILD-y := src/lib src/boot src/console src/devices src/southbridge src/northbri
 BUILD-y += util/cbfstool
 BUILD-$(CONFIG_ARCH_X86) += src/pc80
 
+ifneq ($(CONFIG_LOCALVERSION),"")
+COREBOOT_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
+endif
+
 # The primary target needs to be here before we include the
 # other files
 
@@ -241,7 +245,7 @@ STACKPROTECT += $(call cc-option, -fno-stack-protector,)
 
 CFLAGS = $(STACKPROTECT) $(INCLUDES) -Os -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
-CFLAGS +=-Wwrite-strings -Wredundant-decls -Wno-trigraphs 
+CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs 
 CFLAGS += -Wstrict-aliasing -Wshadow 
 CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 

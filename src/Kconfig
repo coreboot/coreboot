@@ -27,6 +27,15 @@
 
 mainmenu "Coreboot Configuration"
 
+menu "General setup"
+
+config LOCALVERSION
+	string "Local version - append to coreboot release"
+	help
+	  Append an extra string to the end of the coreboot version.
+
+endmenu
+
 source src/mainboard/Kconfig
 source src/arch/i386/Kconfig
 source src/arch/ppc/Kconfig

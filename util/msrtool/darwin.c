@@ -37,11 +37,15 @@ int darwin_probe(const struct sysdef *system)
 
 int darwin_open(uint8_t cpu, enum SysModes mode)
 {
+#ifdef __DARWIN__
 	if (cpu > 0) {
 		fprintf(stderr, "%s: only core 0 is supported on Mac OS X right now.\n", __func__);
 		return 0;
 	}
 	return 1;
+#else
+	return 0;
+#endif
 }
 
 int darwin_close(uint8_t cpu)
@@ -51,6 +55,7 @@ int darwin_close(uint8_t cpu)
 
 int darwin_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val)
 {
+#ifdef __DARWIN__
 	msr_t msr;
 
 	msr = rdmsr(addr);
@@ -58,4 +63,7 @@ int darwin_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val)
 	val->hi = msr.lo;
 	val->lo = msr.hi;
 	return 1;
+#else
+	return 0;
+#endif
 }

@@ -91,7 +91,7 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 8.0 on end # SATA 0
 					device pci 9.0 on end # PCI
 					device pci a.0 on end # NIC
-		       			device pci b.0 off end # PCI E 3
+					device pci b.0 off end # PCI E 3
 					device pci c.0 off end # PCI E 2
 					device pci d.0 off end # PCI E 1
 					device pci e.0 on end # PCI E 0
@@ -99,8 +99,6 @@ chip northbridge/amd/amdk8/root_complex
 					register "ide1_enable" = "1"
 					register "sata0_enable" = "1"
 					register "sata1_enable" = "1"
-#					register "nic_rom_address" = "0xfff80000" # 64k
-#					register "raid_rom_address" = "0xfff90000"
 					register "mac_eeprom_smbus" = "3" # 1: smbus under 2e.8, 2: SM0 3: SM1
 					register "mac_eeprom_addr" = "0x51"
 				end
@@ -146,7 +144,6 @@ chip northbridge/amd/amdk8/root_complex
 					device pci c.0 off end # PCI E 2
 					device pci d.0 off end # PCI E 1
 					device pci e.0 on end # PCI E 0
-#					register "nic_rom_address" = "0xfff80000" # 64k
 					register "mac_eeprom_smbus" = "3"
 					register "mac_eeprom_addr" = "0x51"
 				end

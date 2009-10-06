@@ -107,14 +107,13 @@ chip northbridge/amd/amdk8/root_complex
 					#	chip drivers/ati/ragexl
 						chip drivers/pci/onboard
 							device pci 6.0 on end
-							register "rom_address" = "0xfff80000"
 						end
 						chip drivers/pci/onboard
 							device pci 8.0 on end
 						end
 					end
 					device pci a.0 off end # NIC
-	       				device pci b.0 off end # PCI E 3
+					device pci b.0 off end # PCI E 3
 					device pci c.0 off end # PCI E 2
 					device pci d.0 on end # PCI E 1
 					device pci e.0 on end # PCI E 0

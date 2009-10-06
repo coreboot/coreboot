@@ -29,7 +29,8 @@ config BOARD_ASUS_P2B_D
 	select HAVE_MP_TABLE
 	select SMP
 	select IOAPIC
-	select UDELAY_IO
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 
 config MAINBOARD_DIR
 	string

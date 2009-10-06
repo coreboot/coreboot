@@ -116,3 +116,7 @@ config PCI_ROM_RUN
 	default y
 	depends on BOARD_SUPERMICRO_H8DME
 
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_SUPERMICRO_H8DME

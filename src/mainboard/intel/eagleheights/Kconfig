@@ -53,3 +53,12 @@ config MMCONF_BASE_ADDRESS
 	default 0xe0000000
 	depends on BOARD_INTEL_EAGLEHEIGHTS
 
+config IRQ_SLOT_COUNT
+	int
+	default 18
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_INTEL_EAGLEHEIGHTS

@@ -6,6 +6,14 @@ config WAIT_BEFORE_CPUS_INIT
 	bool
 	default n
 
+config UDELAY_IO
+	bool
+	default n
+
+config UDELAY_LAPIC
+	bool
+	default n
+
 config UDELAY_TSC
 	bool
 	default n

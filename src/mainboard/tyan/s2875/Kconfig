@@ -59,3 +59,8 @@ config USE_INIT
 	bool
 	default n
 	depends on BOARD_TYAN_S2875
+
+config IRQ_SLOT_COUNT
+	int
+	default 13
+	depends on BOARD_TYAN_S2875

@@ -42,3 +42,8 @@ config HAVE_OPTION_TABLE
 	default n
 	depends on BOARD_TYAN_S1846
 
+#Override manually, as in Config.lb (FIXME)
+config IRQ_SLOT_COUNT
+	int
+	default 0
+	depends on BOARD_TYAN_S1846

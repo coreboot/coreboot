@@ -147,3 +147,7 @@ config PCI_ROM_RUN
 	default y
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_AMD_SERENGETI_CHEETAH

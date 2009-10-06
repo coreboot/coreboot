@@ -125,3 +125,7 @@ config HAVE_ACPI_TABLES
 	default y
 	depends on BOARD_TYAN_S2892
 
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_TYAN_S2892

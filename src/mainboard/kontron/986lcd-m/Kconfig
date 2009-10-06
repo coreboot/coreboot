@@ -45,3 +45,13 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
 	depends on BOARD_KONTRON_986LCD_M
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+	depends on BOARD_KONTRON_986LCD_M
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_KONTRON_986LCD_M

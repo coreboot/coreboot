@@ -125,3 +125,7 @@ config HAVE_ACPI_TABLES
 	default n
 	depends on BOARD_TYAN_S2881
 
+config IRQ_SLOT_COUNT
+	int
+	default 9
+	depends on BOARD_TYAN_S2881

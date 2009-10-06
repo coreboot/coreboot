@@ -36,3 +36,13 @@ config RAMBASE
 	hex
 	default 0x4000
 	depends on BOARD_VIA_EPIA_N
+
+config IRQ_SLOT_COUNT
+	int
+	default 7
+	depends on BOARD_VIA_EPIA_N
+
+config EPIA_VT8237R_INIT
+	bool
+	default y
+	depends on BOARD_VIA_EPIA_N

@@ -61,6 +61,10 @@ config CPU_ADDR_BITS
 	int
 	default 36
 
+config AGP_APERTURE_SIZE
+	hex
+	default 0
+
 config XIP_ROM_BASE
 	hex
 	default 0xfffe0000

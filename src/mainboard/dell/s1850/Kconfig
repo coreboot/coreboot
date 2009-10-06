@@ -48,3 +48,7 @@ config USE_INIT
 	default n
 	depends on BOARD_DELL_S1850
 
+config IRQ_SLOT_COUNT
+	int
+	default 9
+	depends on BOARD_DELL_S1850

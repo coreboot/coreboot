@@ -115,3 +115,8 @@ config HT_CHAIN_END_UNITID_BASE
 	default 0x20
 	depends on BOARD_ASUS_M2V_MX_SE
 
+# FIXME?
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_ASUS_M2V_MX_SE

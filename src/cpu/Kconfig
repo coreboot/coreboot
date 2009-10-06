@@ -21,6 +21,10 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0
 
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+
 config SMP
 	bool
 	default y if MAX_CPUS != 1
@@ -39,3 +43,10 @@ config SSE
 	help
 		Set this in socket or model if the CPU has SSE. 
 		If the CPUs for the socket always have MX, set it there. 
+
+config VAR_MTRR_HOLE
+	bool
+	default y
+	help
+		Unset this if you don't want the MTRR code to use
+		subtractive MTRRs

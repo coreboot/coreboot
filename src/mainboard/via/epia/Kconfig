@@ -31,3 +31,8 @@ config RAMBASE
 	hex
 	default 0x4000
 	depends on BOARD_VIA_EPIA
+
+config IRQ_SLOT_COUNT
+	int
+	default 5
+	depends on BOARD_VIA_EPIA

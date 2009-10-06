@@ -18,7 +18,6 @@ config BOARD_GIGABYTE_M57SLI
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select HAVE_ACPI_TABLES
 	select K8_REV_F_SUPPORT
-	select HAVE_FANCTL
  
 config MAINBOARD_DIR
 	string
@@ -143,4 +142,15 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2b80
+	depends on BOARD_GIGABYTE_M57SLI
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_GIGABYTE_M57SLI
+
+# not globally defined yet, so can't "select" this
+config HAVE_FANCTL
+	bool
+	default y
 	depends on BOARD_GIGABYTE_M57SLI

@@ -15,3 +15,8 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "QEMU-x86"
 	depends on BOARD_EMULATION_QEMU_X86
+
+config IRQ_SLOT_COUNT
+	int
+	default 6
+	depends on BOARD_EMULATION_QEMU_X86

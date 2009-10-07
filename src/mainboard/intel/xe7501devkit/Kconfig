@@ -43,3 +43,13 @@ config IRQ_SLOT_COUNT
 	int
 	default 12
 	depends on BOARD_INTEL_XE7501DEVKIT
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_INTEL_XE7501DEVKIT
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_INTEL_XE7501DEVKIT

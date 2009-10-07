@@ -29,3 +29,12 @@ config MAINBOARD_PART_NUMBER
 	default "Jarrell"
 	depends on BOARD_INTEL_JARRELL
 
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_INTEL_JARRELL
+
+config IRQ_SLOT_COUNT
+	int
+	default 9
+	depends on BOARD_INTEL_JARRELL

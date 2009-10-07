@@ -1,1 +1,8 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_JETWAY
+
+source "src/mainboard/jetway/j7f24/Kconfig"
+
+endchoice
+

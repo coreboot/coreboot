@@ -1,0 +1,43 @@
+config BOARD_JETWAY_J7F24
+	bool "J7F24"
+	select ARCH_X86
+	select CPU_VIA_C7
+	select NORTHBRIDGE_VIA_CN700
+	select SOUTHBRIDGE_VIA_VT8237R
+	select SUPERIO_FINTEK_F71805F
+	select HAVE_PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default jetway/j7f24
+	depends on BOARD_JETWAY_J7F24
+
+#config DCACHE_RAM_BASE
+#	hex
+#	default 0xffef0000
+#	depends on BOARD_JETWAY_J7F24
+#
+#config DCACHE_RAM_SIZE
+#	hex
+#	default 0x8000
+#	depends on BOARD_JETWAY_J7F24
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "j7f24"
+	depends on BOARD_JETWAY_J7F24
+
+config VIDEO_MB
+	int
+	default 32
+	depends on BOARD_JETWAY_J7F24
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_JETWAY_J7F24
+
+config IRQ_SLOT_COUNT
+	int
+	default 10
+	depends on BOARD_JETWAY_J7F24

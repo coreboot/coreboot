@@ -1,1 +1,8 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_NEWISYS
+        
+source "src/mainboard/newisys/khepri/Kconfig"
+
+endchoice
+

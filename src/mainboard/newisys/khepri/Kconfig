@@ -1,0 +1,123 @@
+config BOARD_NEWISYS_KHEPRI
+	bool "Khepri"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_940
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_AMD8111
+	select SOUTHBRIDGE_AMD_AMD8131
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+
+config MAINBOARD_DIR
+	string
+	default newisys/khepri
+	depends on BOARD_NEWISYS_KHEPRI
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xcf000
+	depends on BOARD_NEWISYS_KHEPRI
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_NEWISYS_KHEPRI
+
+config APIC_ID_OFFSET
+	hex
+	default 0x10
+	depends on BOARD_NEWISYS_KHEPRI
+
+config HAVE_HARD_RESET
+	bool
+	default y
+	depends on BOARD_NEWISYS_KHEPRI
+
+config IOAPIC
+	bool
+	default y
+	depends on BOARD_NEWISYS_KHEPRI
+
+config K8_REV_F_SUPPORT
+	bool
+	default n
+	depends on BOARD_NEWISYS_KHEPRI
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_NEWISYS_KHEPRI
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_NEWISYS_KHEPRI
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_NEWISYS_KHEPRI
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_NEWISYS_KHEPRI
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Khepri"
+	depends on BOARD_NEWISYS_KHEPRI
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_NEWISYS_KHEPRI
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_NEWISYS_KHEPRI
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_NEWISYS_KHEPRI
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_NEWISYS_KHEPRI
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_NEWISYS_KHEPRI
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_NEWISYS_KHEPRI
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_NEWISYS_KHEPRI
+
+config CONSOLE_VGA
+	bool
+	default y
+	depends on BOARD_NEWISYS_KHEPRI
+
+config PCI_ROM_RUN
+	bool
+	default y
+	depends on BOARD_NEWISYS_KHEPRI
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_NEWISYS_KHEPRI

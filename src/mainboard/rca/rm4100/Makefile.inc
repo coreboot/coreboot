@@ -1,3 +1,4 @@
-ROMCCFLAGS := -mcpu=p4 -fno-simplify-phi -O2
+ROMCCFLAGS=-mcpu=p3 -O
+
 include $(src)/mainboard/Makefile.romccboard.inc
 

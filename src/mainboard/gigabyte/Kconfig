@@ -22,6 +22,7 @@ choice
 	prompt "Mainboard model"
 	depends on VENDOR_GIGABYTE
         
+source "src/mainboard/gigabyte/ga_2761gxdk/Kconfig"
 source "src/mainboard/gigabyte/ga-6bxc/Kconfig"
 source "src/mainboard/gigabyte/m57sli/Kconfig"
 

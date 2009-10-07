@@ -1,0 +1,148 @@
+config BOARD_GIGABYTE_GA_2761GXDK
+	bool "GA-2761GXDK"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_AM2
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_SIS_SIS966
+	select SUPERIO_ITE_IT8716F
+	select PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select HAVE_HIGH_TABLES
+	select IOAPIC
+	select MEM_TRAIN_SEQ
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select K8_REV_F_SUPPORT
+ 
+config MAINBOARD_DIR
+	string
+	default gigabyte/ga_2761gxdk
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+	
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config APIC_ID_OFFSET
+	hex	
+	default 16
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config LB_CKS_RANGE_START
+	int
+	default 49
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ga2761gxdk"
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config PCI_64BIT_PREF_MEM
+	bool
+        default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config HAVE_FALLBACK_BOOT
+	bool
+	default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config USE_FALLBACK_IMAGE
+	bool
+	default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config AP_CODE_IN_CAR
+	bool	
+	default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool	
+	default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config HT_CHAIN_END_UNITID_BASE
+	hex	
+	default 0x0
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config SERIAL_CPU_INIT
+	bool	
+	default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config WAIT_BEFORE_CPUS_INIT
+	bool	
+	default n
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1022
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2b80
+	depends on BOARD_GIGABYTE_GA_2761GXDK
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_GIGABYTE_GA_2761GXDK

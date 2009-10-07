@@ -18,6 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-ROMCCFLAGS := -mcpu=i386
+ROMCCFLAGS := -mcpu=i386 -O2
 include $(src)/mainboard/Makefile.romccboard.inc
 

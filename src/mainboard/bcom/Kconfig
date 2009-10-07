@@ -23,7 +23,7 @@ choice
 	depends on VENDOR_BCOM
 
 source "src/mainboard/bcom/winnet100/Kconfig"
-# source "src/mainboard/bcom/winnetp680/Kconfig"
+source "src/mainboard/bcom/winnetp680/Kconfig"
 
 endchoice
 

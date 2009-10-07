@@ -25,6 +25,10 @@ choice
 source "src/mainboard/msi/ms6119/Kconfig"
 source "src/mainboard/msi/ms6147/Kconfig"
 source "src/mainboard/msi/ms6178/Kconfig"
+source "src/mainboard/msi/ms7135/Kconfig"
+source "src/mainboard/msi/ms7260/Kconfig"
+source "src/mainboard/msi/ms9185/Kconfig"
+source "src/mainboard/msi/ms9282/Kconfig"
 
 endchoice
 

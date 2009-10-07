@@ -1,0 +1,148 @@
+config BOARD_MSI_MS9282
+	bool "MS9282"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_F
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_NVIDIA_MCP55
+	select SUPERIO_WINBOND_W83627EHG
+	select PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select HAVE_HIGH_TABLES
+	select IOAPIC
+	select MEM_TRAIN_SEQ
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select K8_REV_F_SUPPORT
+ 
+config MAINBOARD_DIR
+	string
+	default msi/ms9282
+	depends on BOARD_MSI_MS9282
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xcc000
+	depends on BOARD_MSI_MS9282
+	
+config DCACHE_RAM_SIZE
+	hex
+	default 0x04000
+	depends on BOARD_MSI_MS9282
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_MSI_MS9282
+
+config APIC_ID_OFFSET
+	hex	
+	default 16
+	depends on BOARD_MSI_MS9282
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_MSI_MS9282
+
+config LB_CKS_RANGE_START
+	int
+	default 49
+	depends on BOARD_MSI_MS9282
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_MSI_MS9282
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_MSI_MS9282
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ms9282"
+	depends on BOARD_MSI_MS9282
+
+config PCI_64BIT_PREF_MEM
+	bool
+        default n
+	depends on BOARD_MSI_MS9282
+
+config HAVE_FALLBACK_BOOT
+	bool
+	default n
+	depends on BOARD_MSI_MS9282
+
+config USE_FALLBACK_IMAGE
+	bool
+	default n
+	depends on BOARD_MSI_MS9282
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_MSI_MS9282
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_MSI_MS9282
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_MSI_MS9282
+
+config AP_CODE_IN_CAR
+	bool	
+	default n
+	depends on BOARD_MSI_MS9282
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool	
+	default n
+	depends on BOARD_MSI_MS9282
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_MSI_MS9282
+
+config HT_CHAIN_END_UNITID_BASE
+	hex	
+	default 0x0
+	depends on BOARD_MSI_MS9282
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_MSI_MS9282
+
+config SERIAL_CPU_INIT
+	bool	
+	default n
+	depends on BOARD_MSI_MS9282
+
+config WAIT_BEFORE_CPUS_INIT
+	bool	
+	default n
+	depends on BOARD_MSI_MS9282
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1462
+	depends on BOARD_MSI_MS9282
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x9282
+	depends on BOARD_MSI_MS9282
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_MSI_MS9282

@@ -20,6 +20,8 @@
 ##
 
 driver-y +=  mainboard.o
+driver-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
+driver-y += ../../../drivers/i2c/adm1027/adm1027.o
 
 #needed by irq_tables and mptable and acpi_tables
 obj-y += get_bus_conf.o
@@ -27,9 +29,6 @@ obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
 obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_USE_INIT) += cache_as_ram_auto.o
 obj-$(CONFIG_AP_CODE_IN_CAR) += apc_auto.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  dsdt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  acpi_tables.o
-obj-$(CONFIG_HAVE_FANCTL) += fanctl.o
 
 # This is part of the conversion to init-obj and away from included code. 
 initobj-y += crt0.o
@@ -37,7 +36,6 @@ crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
 crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
 crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
 crt0-y += ../../../../src/southbridge/nvidia/mcp55/id.inc
-crt0-y += ../../../../src/southbridge/nvidia/mcp55/romstrap.inc
 crt0-y += ../../../../src/cpu/amd/car/cache_as_ram.inc
 crt0-y += auto.inc
 
@@ -45,7 +43,6 @@ ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
 ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds
 ldscript-y += ../../../../src/cpu/x86/16bit/reset16.lds
 ldscript-y += ../../../../src/southbridge/nvidia/mcp55/id.lds
-ldscript-y += ../../../../src/southbridge/nvidia/mcp55/romstrap.lds
 ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 ldscript-$(CONFIG_AP_CODE_IN_CAR) += ../../../../src/arch/i386/init/ldscript_apc.lb
 

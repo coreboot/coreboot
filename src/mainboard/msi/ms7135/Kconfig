@@ -1,0 +1,137 @@
+config BOARD_MSI_MS7135
+	bool "MS7135"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_754
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_NVIDIA_CK804
+	select SUPERIO_WINBOND_W83627THF
+	select PIRQ_TABLE
+	select USE_DCACHE_RAM
+	select USE_PRINTK_IN_CAR
+
+config MAINBOARD_DIR
+	string
+	default msi/ms7135
+	depends on BOARD_MSI_MS7135
+
+config APIC_ID_OFFSET
+	hex
+	default 0x10
+	depends on BOARD_MSI_MS7135
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_MSI_MS7135
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_MSI_MS7135
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_MSI_MS7135
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ms7135"
+	depends on BOARD_MSI_MS7135
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2895
+	depends on BOARD_MSI_MS7135
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_MSI_MS7135
+
+config MEM_TRAIN_SEQ
+	bool
+	default n
+	depends on BOARD_MSI_MS7135
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_MSI_MS7135
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_MSI_MS7135
+
+config MEM_TRAIN_SEQ
+	bool
+	default n
+	depends on BOARD_MSI_MS7135
+
+config AP_CODE_IN_CAR
+	bool
+	default n
+	depends on BOARD_MSI_MS7135
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_MSI_MS7135
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0
+	depends on BOARD_MSI_MS7135
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x20
+	depends on BOARD_MSI_MS7135
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_MSI_MS7135
+
+config SERIAL_CPU_INIT
+	bool
+	default y
+	depends on BOARD_MSI_MS7135
+
+config AP_CODE_IN_CAR
+	bool
+	default y
+	depends on BOARD_MSI_MS7135
+
+config WAIT_BEFORE_CPUS_INIT
+	bool
+	default n
+	depends on BOARD_MSI_MS7135
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_MSI_MS7135
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_MSI_MS7135
+
+config IRQ_SLOT_COUNT
+	int
+	default 13
+	depends on BOARD_MSI_MS7135
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xcf000
+	depends on BOARD_MSI_MS7135
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1000
+	depends on BOARD_MSI_MS7135

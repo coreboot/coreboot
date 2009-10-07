@@ -1,0 +1,9 @@
+config CPU_AMD_SOCKET_754
+	bool
+	default n
+	select CPU_AMD_MODEL_FXX
+
+config CPU_SOCKET_TYPE
+	hex
+	default 0x10
+	depends on CPU_AMD_SOCKET_754

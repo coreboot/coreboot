@@ -13,7 +13,7 @@
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801er/i82801er_early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
-#include "superio/nsc/pc8374/pc8374_early_serial.c"
+#include "superio/nsc/pc8374/pc8374_early_init.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "debug.c"
@@ -65,6 +65,25 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 }
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
+	/* fake it out for this board */
+	switch(device) {
+		case 0x52:
+		case 0x53:
+			print_debug("FAKE");
+			device = 0x50;	
+			break;
+		case 0x50:
+		case 0x51:
+		case 0x54:
+		case 0x55:
+		case 0x56:
+		case 0x57:
+			print_debug("57");
+			device = 0x57;
+			break;
+		default: 
+			die("BAD DEV IN spd_read_byte");
+	}
 	return smbus_read_byte(device, address);
 }
 
@@ -191,9 +210,20 @@ static void main(unsigned long bist)
 			.f1 = PCI_DEV(0, 0x00, 1),
 			.f2 = PCI_DEV(0, 0x00, 2),
 			.f3 = PCI_DEV(0, 0x00, 3),
-			.channel0 = {(0xa<<3)|3, (0xa<<3)|2, (0xa<<3)|1, (0xa<<3)|0, },
-			.channel1 = {(0xa<<3)|7, (0xa<<3)|6, (0xa<<3)|5, (0xa<<3)|4, },
+			.channel0 = {(0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, (0xa<<3)|3, },
+			.channel1 = {(0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, (0xa<<3)|7, },
 		}
+	};
+
+	/* superio setup */
+	/* observed from serialice */
+	static const u8 earlyinit[] = {
+		0x21, 0x11, 0x11,
+		0x22, 1, 1,
+		0x23, 05, 05,
+		0x24, 0x81, 0x81,
+		0x26, 0, 0,
+		0,
 	};
 
 	/* using SerialICE, we've seen this basic reset sequence on the dell. 
@@ -261,10 +291,10 @@ static void main(unsigned long bist)
 	pci_write_config8(PCI_DEV(0, 0, 0), 0xf4, b);
 	
 	/* ?? */
-	l = pci_read_config32(PCI_DEV(0, 0, 8), 0xc0);
+	l = pci_read_config32(PCI_DEV(0, 8, 0), 0xc0);
 	do_reset = l & 0x8000000;
 	l |= 0x8000000;
-	pci_write_config32(PCI_DEV(0, 0, 2), 0xc0, l);
+	pci_write_config32(PCI_DEV(0, 8, 0), 0xc0, l);
 
 	if (! do_reset) {
 		outb(2, 0xcf9);
@@ -279,10 +309,25 @@ static void main(unsigned long bist)
 	}
 	/* Setup the console */
 	mainboard_set_ich5();
-	bmc_foad();
-	pc8374_enable_serial(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
+	//bmc_foad();
+	pc8374_enable_dev(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
+
+	/* stuff we seem to need */
+	pc8374_enable_dev(PC8374_KBCK, 0);
+
+	/* GPIOs */
+	pc8374_enable_dev(PC8374_GPIO, 0xc20);
+
+	/* keep this in mind.
+	SerialICE-hlp: outb 002e <= 23
+	SerialICE-hlp:  inb 002f => 05
+	SerialICE-hlp: outb 002f <= 05
+	SerialICE-hlp: outb 002e <= 24
+	SerialICE-hlp:  inb 002f => c1
+	SerialICE-hlp: outb 002f <= c1
+	 */
 
 	/* Halt if there was a built in self test failure */
 //	report_bist_failure(bist);
@@ -306,7 +351,7 @@ static void main(unsigned long bist)
 #if 1
 	enable_smbus();
 #endif
-#if 1
+#if 0
 //	dump_spd_registers(&cpu[0]);
 	int i;
 	for(i = 0; i < 1; i++) {

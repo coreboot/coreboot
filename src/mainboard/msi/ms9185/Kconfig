@@ -61,7 +61,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ultra40"
+	default "MS9185"
 	depends on BOARD_MSI_MS9185
 
 config HW_MEM_HOLE_SIZEK

@@ -27,6 +27,12 @@ void cs5530_enable(device_t dev);
 #endif
 
 #define DECODE_CONTROL_REG2		0x5b		/* F0 index 0x5b */
+#define ROM_AT_LOGIC_CONTROL_REG	0x52		/* F0 index 0x52 */
+
+#define LOWER_ROM_ADDRESS_RANGE		(1 << 0)
+#define ROM_WRITE_ENABLE		(1 << 1)
+#define UPPER_ROM_ADDRESS_RANGE		(1 << 2)
+#define BIOS_ROM_POSITIVE_DECODE	(1 << 5)
 
 /* Selects PCI positive decoding for accesses to the configured ROM space. */
 #define BIOS_ROM_POSITIVE_DECODE	(1 << 5)

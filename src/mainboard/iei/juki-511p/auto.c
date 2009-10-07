@@ -30,6 +30,7 @@
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
 #include "superio/winbond/w83977f/w83977f_early_serial.c"
+#include "southbridge/amd/cs5530/cs5530_enable_rom.c"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 
@@ -50,6 +51,8 @@ static void main(unsigned long bist)
 	/* Disable Watchdog Timer. */
 	inb(0x043);
 	inb(0x843);
+
+	cs5530_enable_rom();
 
 	/* Initialize RAM. */
 	sdram_init();

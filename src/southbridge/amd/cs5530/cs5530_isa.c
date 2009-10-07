@@ -45,14 +45,6 @@ static void cs5530_read_resources(device_t dev)
 
 static void isa_init(struct device *dev)
 {
-	uint8_t reg8;
-
-	// TODO: Test if needed, otherwise drop.
-
-	/* Set positive decode on ROM. */
-	reg8 = pci_read_config8(dev, DECODE_CONTROL_REG2);
-	reg8 |= BIOS_ROM_POSITIVE_DECODE;
-	pci_write_config8(dev, DECODE_CONTROL_REG2, reg8);
 }
 
 static void cs5530_pci_dev_enable_resources(device_t dev)

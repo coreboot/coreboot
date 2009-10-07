@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,30 +18,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
 #include <stdint.h>
-#include <arch/io.h>
-#include <device/pnp_def.h>
-#include <arch/romcc_io.h>
-#include <arch/hlt.h>
-#include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
-#include "lib/ramtest.c"
-#include "northbridge/amd/gx1/raminit.c"
-#include "cpu/x86/bist.h"
-#include "superio/winbond/w83977f/w83977f_early_serial.c"
-#include "southbridge/amd/cs5530/cs5530_enable_rom.c"
+#include "cs5530.h"
 
-#define SERIAL_DEV PNP_DEV(0x3f0, W83977F_SP1)
-
-static void main(unsigned long bist)
+static void cs5530_enable_rom(void)
 {
-	w83977f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
-	console_init();
-	report_bist_failure(bist);
-	cs5530_enable_rom();
-	sdram_init();
-	/* ram_check(0, 640 * 1024); */
+	uint8_t reg8;
+
+	/* So far all CS5530(A) ISA bridges we've seen are at 00:12.0. */
+	device_t dev = PCI_DEV(0, 0x12, 0);
+
+	/*
+	 * Decode 0x000E0000-0x000FFFFF (128 KB), not just 64 KB, and
+	 * decode 0xFF000000-0xFFFFFFFF (16 MB), not just 256 KB.
+	 *
+	 * Make the ROM write-protected.
+	 */
+	reg8 = pci_read_config8(dev, ROM_AT_LOGIC_CONTROL_REG);
+	reg8 |= LOWER_ROM_ADDRESS_RANGE;
+	reg8 |= UPPER_ROM_ADDRESS_RANGE;
+	reg8 &= ~ROM_WRITE_ENABLE;
+	pci_write_config8(dev, ROM_AT_LOGIC_CONTROL_REG, reg8);
+
+	/* Set positive decode on ROM. */
+	reg8 = pci_read_config8(dev, DECODE_CONTROL_REG2);
+	reg8 |= BIOS_ROM_POSITIVE_DECODE;
+	pci_write_config8(dev, DECODE_CONTROL_REG2, reg8);
 }

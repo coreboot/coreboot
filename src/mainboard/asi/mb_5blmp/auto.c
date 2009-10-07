@@ -32,6 +32,7 @@
 #include "northbridge/amd/gx1/raminit.c"
 #include "superio/nsc/pc87351/pc87351_early_serial.c"
 #include "cpu/x86/bist.h"
+#include "southbridge/amd/cs5530/cs5530_enable_rom.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87351_SP1)
 
@@ -44,6 +45,8 @@ static void main(unsigned long bist)
 
 	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
+
+	cs5530_enable_rom();
 
 	/* Initialize RAM. */
 	sdram_init();

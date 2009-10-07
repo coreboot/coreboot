@@ -30,6 +30,7 @@
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
 #include "superio/winbond/w83977tf/w83977tf_early_serial.c"
+#include "southbridge/amd/cs5530/cs5530_enable_rom.c"
 #include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
@@ -45,6 +46,8 @@ static void main(unsigned long bist)
 
 	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
+
+	cs5530_enable_rom();
 
 	/* Initialize RAM. */
 	sdram_init();

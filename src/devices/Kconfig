@@ -24,43 +24,58 @@ config VGA_BRIDGE_SETUP
 	bool "Setup bridges on path to VGA adapter"
 	default y
 	help
-	  Allow bridges to set up legacy decoding ranges for VGA.  Don't disable
+	  Allow bridges to set up legacy decoding ranges for VGA. Don't disable
 	  this unless you're sure you don't want the briges setup for VGA.
 
+# TODO: Explain differences (if any) for onboard cards.
 config VGA_ROM_RUN
-	bool "Run VGA Option ROMs"
+	bool "Run VGA option ROMs"
+	default y
 	help
-	  Execute VGA option ROMs if found. This is required to enable PCI/AGP
-	  VGA plugin cards.
+	  Execute VGA option ROMs, if found. This is required to enable
+	  PCI/AGP/PCI-E video cards.
 
 config PCI_ROM_RUN
-	bool "Run non-VGA Option ROMs"
+	bool "Run non-VGA option ROMs"
+	default y
 	help
-	  Execute non-VGA PCI option ROMs if found.
+	  Execute non-VGA PCI option ROMs, if found.
 
+	  Examples include IDE/SATA controller option ROMs and option ROMs
+	  for network cards (NICs).
+
+# TODO: Describe YABEL vs. x86emu differences in more detail.
 choice
-	prompt "Option ROM Execution"
-	default  PCI_OPTION_ROM_RUN_REALMODE
+	prompt "Option ROM execution type"
+	default PCI_OPTION_ROM_RUN_REALMODE
 	depends on PCI_ROM_RUN || VGA_ROM_RUN
+
+config PCI_OPTION_ROM_RUN_REALMODE
+	prompt "Real mode"
+	bool
 	help
-	  You can choose to execute PCI option ROMs natively (32bit x86 system
-	  required) or in an emulator (x86emu or YABEL).
+	  If you select this option, PCI option ROMs will be executed
+	  natively on the hardware (a 32bit x86 system is required).
 
-	config PCI_OPTION_ROM_RUN_REALMODE
-		prompt "Real mode"
-		bool
+config PCI_OPTION_ROM_RUN_YABEL
+	prompt "YABEL"
+	bool
+	help
+	  If you select this option, the YABEL BIOS emulator will be used to
+	  execute PCI option ROMs.
 
-	config PCI_OPTION_ROM_RUN_YABEL
-		prompt "YABEL"
-		bool
+config PCI_OPTION_ROM_RUN_X86EMU
+	prompt "x86emu"
+	bool
+	help
+	  If you select this option, the x86emu BIOS emulator will be used to
+	  execute PCI option ROMs.
 
-	config PCI_OPTION_ROM_RUN_X86EMU
-		prompt "X86EMU"
-		bool
 endchoice
 
+# TODO: Describe better, and/or make a "choice" selection for this.
 config YABEL_DEBUG_FLAGS
-	prompt "Hex value for debug flags"
+	prompt "Hex value for YABEL debug flags"
 	hex
 	default 0x0
 	depends on PCI_OPTION_ROM_RUN_YABEL

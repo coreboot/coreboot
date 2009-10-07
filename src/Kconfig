@@ -30,9 +30,14 @@ mainmenu "Coreboot Configuration"
 menu "General setup"
 
 config LOCALVERSION
-	string "Local version - append to coreboot release"
+	string "Local version string"
 	help
 	  Append an extra string to the end of the coreboot version.
+
+	  This can be useful if, for instance, you want to append the
+	  respective board's hostname or some other identifying string to
+	  the coreboot version number, so that you can easily distinguish
+	  boot logs of different boards from each other.
 
 endmenu
 
@@ -225,10 +230,10 @@ config GFXUMA
 
 # TODO
 # menu "Drivers"
-# 
+#
 # endmenu
 
-menu "Generated System Tables"
+menu "System tables"
 
 config HAVE_LOW_TABLES
 	bool
@@ -239,7 +244,7 @@ config HAVE_HIGH_TABLES
 	default y
 
 config MULTIBOOT
-	bool "Add Multiboot tables (for grub2)"
+	bool "Generate Multiboot tables (for GRUB2)"
 	default n
 
 config HAVE_ACPI_TABLES
@@ -258,16 +263,22 @@ endmenu
 
 menu "Payload"
 
-config COMPRESSED_PAYLOAD_LZMA
-	bool "Use LZMA compression for payloads"
-	default yes
-
 choice
-	prompt "Payload type"
+	prompt "Add a payload"
 	default PAYLOAD_NONE
 
+config PAYLOAD_NONE
+	bool "None"
+	help
+	  Select this option if you want to create an "empty" coreboot
+	  ROM image for a certain mainboard, i.e. a coreboot ROM image
+	  which does not yet contain a payload.
+
+	  For such an image to be useful, you have to use 'cbfstool'
+	  to add a payload to the ROM image later.
+
 config PAYLOAD_ELF
-	bool "An ELF executable payload file"
+	bool "An ELF executable payload"
 	help
 	  Select this option if you have a payload image (an ELF file)
 	  which coreboot should run as soon as the basic hardware
@@ -275,15 +286,6 @@ config PAYLOAD_ELF
 
 	  You will be able to specify the location and file name of the
 	  payload image later.
-config PAYLOAD_NONE
-	bool "No payload"
-	help
-	  Select this option if you want to create an "empty" coreboot
-	  ROM image for a certain mainboard, i.e. a coreboot ROM image
-	  which does not yet contain a payload.
-
-	  For such an image to be useful, you have to use the 'cbfs' tool
-	  to add a payload to the ROM image later.
 
 endchoice
 
@@ -293,6 +295,15 @@ config FALLBACK_PAYLOAD_FILE
 	default "payload.elf"
 	help
 	  The path and filename of the ELF executable file to use as payload.
+
+# TODO: Defined if no payload? Breaks build?
+config COMPRESSED_PAYLOAD_LZMA
+	bool "Use LZMA compression for payloads"
+	default y
+	depends on PAYLOAD_ELF
+	help
+	  In order to reduce the size payloads take up in the ROM chip
+	  coreboot can compress them using the LZMA algorithm.
 
 endmenu
 
@@ -319,15 +330,26 @@ config FALLBACK_VGA_BIOS_ID
 	depends on VGA_BIOS
 	default "1106,3230"
 	help
-	  The ID that would associate your VGA BIOS to your video card.
-	  (PCI VendorID, PCI Device ID)
+	  The comma-separated PCI vendor and device ID that would associate
+	  your VGA BIOS to your video card.
+
+	  Example: 1106,3230
+
+	  In the above example 1106 is the PCI vendor ID (in hex, but without
+	  the "0x" prefix) and 3230 specifies the PCI device ID of the
+	  video card (also in hex, without "0x" prefix).
 
 endmenu
 
+menu "Debugging"
+
+# TODO: Better help text and detailed instructions.
 config GDB_STUB
 	bool "GDB debugging support"
 	default y
 	help
 	  If enabled, you will be able to set breakpoints for gdb debugging.
 	  See src/arch/i386/lib/c_start.S for details.
+
+endmenu
 

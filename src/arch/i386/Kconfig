@@ -1,23 +1,22 @@
+# This option is used to set the architecture of a mainboard to X86.
+# It is usually set in mainboard/*/Kconfig.
 config ARCH_X86
 	bool
-	help
-	  This option is used to set the architecture of a mainboard.
-	  It is usually set in mainboard/*/Kconfig.
+	default n
 
+# This is an SMP option. It relates to starting up APs.
+# It is usually set in mainboard/*/Kconfig.
+# TODO: Improve description.
 config AP_IN_SIPI_WAIT
 	bool
 	default n
 	depends on ARCH_X86
-	help
-	  This is an SMP option. It relates to starting up APs. 
-	  It is usually set in mainboard/*/Kconfig.
 
+# This is the name of the respective architecture subdirectory in arch/.
 config ARCH
 	string
 	default i386
 	depends on ARCH_X86
-	help
-	  This is the name of the respective subdirectory in arch/.
 
 config ROMBASE
 	hex
@@ -58,11 +57,9 @@ config STACK_SIZE
 	hex
 	default 0x8000
 
-menu "Misc options"
-
+# Maximum reboot count
+# TODO: Improve description.
 config MAX_REBOOT_CNT
-	int "Maximum reboot count"
+	int
 	default 3
-
-endmenu
 

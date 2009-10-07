@@ -370,9 +370,15 @@ source "src/mainboard/thomson/Kconfig"
 source "src/mainboard/tyan/Kconfig"
 source "src/mainboard/via/Kconfig"
 
+# TODO: No help text possible for choice fields?
 choice
 	prompt "ROM chip size"
 	default COREBOOT_ROMSIZE_KB_256
+	help
+	  Select the size of the ROM chip you intend to flash coreboot on.
+
+	  The build system will take care of creating a coreboot.rom file
+	  of the matching size.
 
 config COREBOOT_ROMSIZE_KB_128
 	bool "128 KB"
@@ -406,6 +412,7 @@ config COREBOOT_ROMSIZE_KB_4096
 
 endchoice
 
+# Map the config names to an integer (KB).
 config COREBOOT_ROMSIZE_KB
 	int
 	default 128 if COREBOOT_ROMSIZE_KB_128
@@ -414,9 +421,8 @@ config COREBOOT_ROMSIZE_KB
 	default 1024 if COREBOOT_ROMSIZE_KB_1024
 	default 2048 if COREBOOT_ROMSIZE_KB_2048
 	default 4096 if COREBOOT_ROMSIZE_KB_4096
-	help
-	  Map the config names to an integer.
 
+# Map the config names to a hex value (bytes).
 config ROM_SIZE
 	hex
 	default 0x20000 if COREBOOT_ROMSIZE_KB_128

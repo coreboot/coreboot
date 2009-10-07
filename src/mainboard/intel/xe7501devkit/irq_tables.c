@@ -20,7 +20,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,
 	PIRQ_VERSION,
-	32 + 12*sizeof(struct irq_info),		// Size of this struct in bytes
+	32 + 16 * CONFIG_IRQ_SLOT_COUNT,		// Size of this struct in bytes
 	0,			 							// PCI bus number on which the interrupt router resides
 	PCI_DEVFN(31, 0),   					// PCI device/function number of the interrupt router
 	0,		 								// PCI-exclusive IRQ bitmap

@@ -24,7 +24,7 @@
 const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,
 	PIRQ_VERSION,
-	32 + 16 * 9,/* Max. number of devices on the bus */
+	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* Max. number of devices on the bus */
 	0x00,			/* Interrupt router bus */
 	(0x11 << 3) | 0x0,	/* Interrupt router device */
 	0xc20,			/* IRQs devoted exclusively to PCI usage */

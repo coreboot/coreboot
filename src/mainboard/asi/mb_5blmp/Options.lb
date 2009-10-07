@@ -68,7 +68,7 @@ default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 ## Build code to export a programmable irq routing table
 ##
 default CONFIG_HAVE_PIRQ_TABLE=1
-default CONFIG_IRQ_SLOT_COUNT=5        # TODO?
+default CONFIG_IRQ_SLOT_COUNT=5
 default CONFIG_PIRQ_ROUTE=1
 
 ##

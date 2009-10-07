@@ -1,7 +1,6 @@
 #include <arch/pirq_routing.h>
 #include <device/pci.h>
 
-#define CONFIG_IRQ_SLOT_COUNT 12
 #define IRQ_ROUTER_BUS		0
 #define IRQ_ROUTER_DEVFN	PCI_DEVFN(4,3)
 #define IRQ_ROUTER_VENDOR	0x1022

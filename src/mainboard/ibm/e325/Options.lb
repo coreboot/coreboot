@@ -78,7 +78,7 @@ default CONFIG_HAVE_HARD_RESET=1
 ## Build code to export a programmable irq routing table
 ##
 default CONFIG_HAVE_PIRQ_TABLE=1
-default CONFIG_IRQ_SLOT_COUNT=9
+default CONFIG_IRQ_SLOT_COUNT=12
 
 ##
 ## Build code to export an x86 MP table

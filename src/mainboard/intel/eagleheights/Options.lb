@@ -154,7 +154,7 @@ default CONFIG_MMCONF_BASE_ADDRESS=0xE0000000
 ## Build code to export a programmable irq routing table
 ##
 default CONFIG_HAVE_PIRQ_TABLE=1
-default CONFIG_IRQ_SLOT_COUNT=18
+default CONFIG_IRQ_SLOT_COUNT=9
 
 ##
 ## Build code to export an x86 MP table

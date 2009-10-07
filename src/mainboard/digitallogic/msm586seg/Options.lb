@@ -76,7 +76,7 @@ default CONFIG_HAVE_HARD_RESET=0
 ## Build code to export a programmable irq routing table
 ##
 default CONFIG_HAVE_PIRQ_TABLE=1
-default CONFIG_IRQ_SLOT_COUNT=7
+default CONFIG_IRQ_SLOT_COUNT=2
 #object irq_tables.o
 
 ##

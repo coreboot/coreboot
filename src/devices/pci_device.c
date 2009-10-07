@@ -669,14 +669,13 @@ void pci_dev_init(struct device *dev)
 	void run_bios(struct device *dev, unsigned long addr);
 	struct rom_header *rom, *ram;
 
-#if CONFIG_PCI_ROM_RUN != 1
-	/* We want to execute VGA option ROMs when CONFIG_VGA_ROM_RUN
-	 * is set but CONFIG_PCI_ROM_RUN is not. In this case we skip
-	 * all other option ROM types.
-	 */
-	if ((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA)
+	if (CONFIG_PCI_ROM_RUN != 1 && /* Only execute VGA ROMs. */
+	    ((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
 		return;
-#endif
+
+	if (CONFIG_VGA_ROM_RUN != 1 && /* Only execute non-VGA ROMs. */
+	    ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
+		return;
 
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)
@@ -1224,7 +1223,6 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 	device_t pdev;
 	u8 line;
 	u8 irq;
-	u8 readback;
 
 	/* Each slot may contain up to eight functions */
 	for (funct = 0; funct < 8; funct++) {
@@ -1248,8 +1246,8 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 			pIntAtoD[line - 1]);
 
 #ifdef PARANOID_IRQ_ASSIGNMENTS
-		readback = pci_read_config8(pdev, PCI_INTERRUPT_LINE);
-		printk_debug("  Readback = %d\n", readback);
+		irq = pci_read_config8(pdev, PCI_INTERRUPT_LINE);
+		printk_debug("  Readback = %d\n", irq);
 #endif
 
 		// Change to level triggered

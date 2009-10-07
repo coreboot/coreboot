@@ -6,6 +6,7 @@ config BOARD_VIA_EPIA_N
 	select SOUTHBRIDGE_VIA_VT8237R
 	select SUPERIO_WINBOND_W83697HF
 	select HAVE_PIRQ_TABLE
+	select EPIA_VT8237R_INIT
 
 config MAINBOARD_DIR
 	string
@@ -42,7 +43,3 @@ config IRQ_SLOT_COUNT
 	default 7
 	depends on BOARD_VIA_EPIA_N
 
-config EPIA_VT8237R_INIT
-	bool
-	default y
-	depends on BOARD_VIA_EPIA_N

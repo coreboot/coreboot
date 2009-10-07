@@ -10,6 +10,8 @@ config BOARD_SUPERMICRO_H8DME
 	select HAVE_PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
 
 config MAINBOARD_DIR
 	string
@@ -34,16 +36,6 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_SUPERMICRO_H8DME
-
-config HAVE_HARD_RESET
-	bool
-	default y
-	depends on BOARD_SUPERMICRO_H8DME
-
-config IOAPIC
-	bool
-	default y
 	depends on BOARD_SUPERMICRO_H8DME
 
 config SB_HT_CHAIN_ON_BUS0
@@ -104,16 +96,6 @@ config USE_INIT
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_SUPERMICRO_H8DME
-
-config CONSOLE_VGA
-	bool
-	default y
-	depends on BOARD_SUPERMICRO_H8DME
-
-config PCI_ROM_RUN
-	bool
-	default y
 	depends on BOARD_SUPERMICRO_H8DME
 
 config IRQ_SLOT_COUNT

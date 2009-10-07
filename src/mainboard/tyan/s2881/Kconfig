@@ -9,6 +9,8 @@ config BOARD_TYAN_S2881
 	select SOUTHBRIDGE_AMD_AMD8111
 	select SUPERIO_WINBOND_W83627HF
 	select PIRQ_TABLE
+	select SERIAL_CPU_INIT
+	select AP_CODE_IN_CAR
 
 config MAINBOARD_DIR
 	string
@@ -93,16 +95,6 @@ config HT_CHAIN_END_UNITID_BASE
 config USE_INIT
 	bool
 	default n
-	depends on BOARD_TYAN_S2881
-
-config SERIAL_CPU_INIT
-	bool
-	default y
-	depends on BOARD_TYAN_S2881
-
-config AP_CODE_IN_CAR
-	bool
-	default y
 	depends on BOARD_TYAN_S2881
 
 config WAIT_BEFORE_CPUS_INIT

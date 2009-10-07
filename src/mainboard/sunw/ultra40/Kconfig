@@ -10,6 +10,8 @@ config BOARD_SUNW_ULTRA40
 	select HAVE_PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
 
 config MAINBOARD_DIR
 	string
@@ -29,16 +31,6 @@ config DCACHE_RAM_SIZE
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_SUNW_ULTRA40
-
-config HAVE_HARD_RESET
-	bool
-	default y
-	depends on BOARD_SUNW_ULTRA40
-
-config IOAPIC
-	bool
-	default y
 	depends on BOARD_SUNW_ULTRA40
 
 config K8_REV_F_SUPPORT
@@ -104,16 +96,6 @@ config USE_INIT
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_SUNW_ULTRA40
-
-config CONSOLE_VGA
-	bool
-	default y
-	depends on BOARD_SUNW_ULTRA40
-
-config PCI_ROM_RUN
-	bool
-	default y
 	depends on BOARD_SUNW_ULTRA40
 
 config IRQ_SLOT_COUNT

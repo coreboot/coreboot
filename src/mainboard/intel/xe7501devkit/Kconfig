@@ -8,6 +8,7 @@ config BOARD_INTEL_XE7501DEVKIT
 	select SUPERIO_SMSC_LPC47B272
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
+	select HAVE_OPTION_TABLE
 
 config MAINBOARD_DIR
 	string
@@ -32,11 +33,6 @@ config LB_CKS_LOC
 config MAINBOARD_PART_NUMBER
 	string
 	default "EIDXE7501DEVKIT"
-	depends on BOARD_INTEL_XE7501DEVKIT
-
-config HAVE_OPTION_TABLE
-	bool
-	default y
 	depends on BOARD_INTEL_XE7501DEVKIT
 
 config IRQ_SLOT_COUNT

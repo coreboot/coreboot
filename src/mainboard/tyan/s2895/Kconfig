@@ -9,6 +9,8 @@ config BOARD_TYAN_S2895
 	select SOUTHBRIDGE_AMD_AMD8131
 	select SUPERIO_SMSC_LPC47B397
 	select PIRQ_TABLE
+	select SERIAL_CPU_INIT
+	select AP_CODE_IN_CAR
 
 config MAINBOARD_DIR
 	string
@@ -95,16 +97,6 @@ config USE_INIT
 	default n
 	depends on BOARD_TYAN_S2895
 
-config SERIAL_CPU_INIT
-	bool
-	default y
-	depends on BOARD_TYAN_S2895
-
-config AP_CODE_IN_CAR
-	bool
-	default y
-	depends on BOARD_TYAN_S2895
-
 config WAIT_BEFORE_CPUS_INIT
 	bool
 	default n
@@ -120,6 +112,7 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	default n
 	depends on BOARD_TYAN_S2895
 
+# TODO
 config HAVE_ACPI_TABLES
 	bool "Generate ACPI tables"
 	default y

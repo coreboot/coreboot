@@ -11,6 +11,12 @@ config BOARD_AMD_SERENGETI_CHEETAH
 	select HAVE_PIRQ_TABLE
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+	select MEM_TRAIN_SEQ
+	select AP_CODE_IN_CAR
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select WAIT_BEFORE_CPUS_INIT
 
 config MAINBOARD_DIR
 	string
@@ -37,16 +43,6 @@ config APIC_ID_OFFSET
 	default 0x8
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config HAVE_HARD_RESET
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config IOAPIC
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
 config LB_CKS_RANGE_END
 	int
 	default 122
@@ -67,11 +63,6 @@ config HW_MEM_HOLE_SIZEK
 	default 0x100000
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config MEM_TRAIN_SEQ
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
 config MAX_CPUS
 	int
 	default 8
@@ -82,24 +73,9 @@ config MAX_PHYSICAL_CPUS
 	default 4
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config MEM_TRAIN_SEQ
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config AP_CODE_IN_CAR
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config SB_HT_CHAIN_UNITID_OFFSET_ONLY
-	bool
-	default y
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config SB_HT_CHAIN_ON_BUS0
@@ -125,26 +101,6 @@ config USE_INIT
 config SERIAL_CPU_INIT
 	bool
 	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config AP_CODE_IN_CAR
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config WAIT_BEFORE_CPUS_INIT
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config CONSOLE_VGA
-	bool
-	default y
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config PCI_ROM_RUN
-	bool
-	default y
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config IRQ_SLOT_COUNT

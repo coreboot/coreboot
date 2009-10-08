@@ -7,3 +7,14 @@ config FALLBACK_SIZE
 	int
 	default 0
 	depends on NORTHBRIDGE_VIA_CN700
+
+# this is done by the northbridge's vgabios.c already
+config VGA_ROM_RUN
+	bool
+	default n
+	depends on NORTHBRIDGE_VIA_CN700
+
+config PCI_ROM_RUN
+	bool
+	default n
+	depends on NORTHBRIDGE_VIA_CN700

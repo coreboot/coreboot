@@ -1,3 +1,15 @@
 config NORTHBRIDGE_VIA_CX700
 	bool
 	default n
+
+# this is done by the northbridge's vgabios.c already
+config VGA_ROM_RUN
+	bool
+	default n
+	depends on NORTHBRIDGE_VIA_CX700
+
+config PCI_ROM_RUN
+	bool
+	default n
+	depends on NORTHBRIDGE_VIA_CX700
+

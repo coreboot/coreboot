@@ -1,0 +1,105 @@
+config BOARD_TECHNEXION_TIM8690
+	bool "Tim8690"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_S1G1
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_RS690
+	select SOUTHBRIDGE_AMD_SB600
+	select SUPERIO_ITE_IT8712F
+	select HAVE_PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+	select MEM_TRAIN_SEQ
+	select AP_CODE_IN_CAR
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select WAIT_BEFORE_CPUS_INIT
+	select HAVE_ACPI_TABLES
+
+config MAINBOARD_DIR
+	string
+	default technexion/tim8690
+	depends on BOARD_TECHNEXION_TIM8690
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_TECHNEXION_TIM8690
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+	depends on BOARD_TECHNEXION_TIM8690
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_TECHNEXION_TIM8690
+
+config APIC_ID_OFFSET
+	hex
+	default 0x8
+	depends on BOARD_TECHNEXION_TIM8690
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_TECHNEXION_TIM8690
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_TECHNEXION_TIM8690
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "tim8690"
+	depends on BOARD_TECHNEXION_TIM8690
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_TECHNEXION_TIM8690
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_TECHNEXION_TIM8690
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_TECHNEXION_TIM8690
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_TECHNEXION_TIM8690
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_TECHNEXION_TIM8690
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x6
+	depends on BOARD_TECHNEXION_TIM8690
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0xa
+	depends on BOARD_TECHNEXION_TIM8690
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_TECHNEXION_TIM8690
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_TECHNEXION_TIM8690

@@ -1,0 +1,35 @@
+config BOARD_THOMSON_IP1000
+	bool "ip1000"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_PGA370
+	select NORTHBRIDGE_INTEL_I82830
+	select SOUTHBRIDGE_INTEL_I82801XX
+	select SUPERIO_SMSC_SMSCSUPERIO
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+
+config MAINBOARD_DIR
+	string
+	default thomson/ip1000
+	depends on BOARD_THOMSON_IP1000
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "IP1000"
+	depends on BOARD_THOMSON_IP1000
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_THOMSON_IP1000
+
+config IRQ_SLOT_COUNT
+	int
+	default 7
+	depends on BOARD_THOMSON_IP1000
+
+config VIDEO_MB
+	int
+	default 0
+	depends on BOARD_THOMSON_IP1000
+

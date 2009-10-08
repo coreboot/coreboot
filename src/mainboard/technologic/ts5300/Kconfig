@@ -1,0 +1,21 @@
+config BOARD_TECHNOLOGIC_TS5300
+	bool "ts5300"
+	select ARCH_X86
+	select CPU_AMD_SC520
+	select HAVE_PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default technologic/ts5300
+	depends on BOARD_TECHNOLOGIC_TS5300
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "TS5300"
+	depends on BOARD_TECHNOLOGIC_TS5300
+
+config IRQ_SLOT_COUNT
+	int
+	default 2
+	depends on BOARD_TECHNOLOGIC_TS5300
+

@@ -1,1 +1,8 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_TECHNOLOGIC
+        
+source "src/mainboard/technologic/ts5300/Kconfig"
+
+endchoice
+

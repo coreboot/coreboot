@@ -1,0 +1,4 @@
+config CPU_AMD_LX
+	bool
+	default n
+

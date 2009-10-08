@@ -15,3 +15,6 @@ source src/cpu/amd/model_fxx/Kconfig
 source src/cpu/amd/model_10xxx/Kconfig
 source src/cpu/amd/model_gx1/Kconfig
 source src/cpu/amd/model_gx2/Kconfig
+source src/cpu/amd/model_lx/Kconfig
+
+source src/cpu/amd/sc520/Kconfig

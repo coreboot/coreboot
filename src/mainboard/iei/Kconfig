@@ -24,6 +24,7 @@ choice
 
 source "src/mainboard/iei/juki-511p/Kconfig"
 source "src/mainboard/iei/nova4899r/Kconfig"
+source "src/mainboard/iei/pcisa-lx-800-r10/Kconfig"
 
 endchoice
 

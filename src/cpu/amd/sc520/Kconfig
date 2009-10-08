@@ -1,0 +1,4 @@
+config CPU_AMD_SC520
+	bool
+	default n
+

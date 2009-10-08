@@ -1,0 +1,49 @@
+config BOARD_IEI_PCISA_LX_800_R10
+	bool "PCISA lx-800 r10"
+	select ARCH_X86
+	select CPU_AMD_LX
+	select NORTHBRIDGE_AMD_LX
+	select SOUTHBRIDGE_AMD_CS5536
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_PIRQ_TABLE
+	select PIRQ_ROUTE
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	select USE_DCACHE_RAM
+	select USE_PRINTK_IN_CAR
+
+config MAINBOARD_DIR
+	string
+	default iei/pcisa-lx-800-r10 
+	depends on BOARD_IEI_PCISA_LX_800_R10
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "PCISALX800R10"
+	depends on BOARD_IEI_PCISA_LX_800_R10
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_IEI_PCISA_LX_800_R10
+
+config IRQ_SLOT_COUNT
+	int
+	default 9
+	depends on BOARD_IEI_PCISA_LX_800_R10
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_IEI_PCISA_LX_800_R10
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_IEI_PCISA_LX_800_R10
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_IEI_PCISA_LX_800_R10
+

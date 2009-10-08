@@ -15,8 +15,8 @@ config DIMM_SUPPORT
 	depends on CPU_AMD_SOCKET_F_1207
 
 config PCI_IO_CFG_EXT
-	int
-	default 1
+	bool
+	default y
 	depends on CPU_AMD_SOCKET_F_1207
 
 config EXT_RT_TBL_SUPPORT

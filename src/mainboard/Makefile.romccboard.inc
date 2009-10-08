@@ -24,18 +24,16 @@ crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
 crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
 crt0-y += ../../../../src/arch/i386/lib/cpu_reset.inc
 crt0-y += ../../../../src/arch/i386/lib/id.inc
-crt0-y += failover.inc
 crt0-y += ../../../../src/cpu/x86/fpu/enable_fpu.inc
 
-ifeq ($(CONFIG_CPU_AMD_GX1),y)
-crt0-y += ../../../../src/cpu/amd/model_gx1/cpu_setup.inc
-crt0-y += ../../../../src/cpu/amd/model_gx1/gx_setup.inc
+crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/cpu_setup.inc
+crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/gx_setup.inc
+crt0-$(CONFIG_MMX) += ../../../../src/cpu/x86/mmx/enable_mmx.inc
+crt0-$(CONFIG_SSE) += ../../../../src/cpu/x86/sse/enable_sse.inc
+crt0-y += failover.inc
 crt0-y += auto.inc
-else
-crt0-y += ../../../../src/cpu/x86/mmx/enable_mmx.inc
-crt0-y += auto.inc
-crt0-y += ../../../../src/cpu/x86/mmx/disable_mmx.inc
-endif
+crt0-$(CONFIG_SSE) += ../../../../src/cpu/x86/sse/disable_sse.inc
+crt0-$(CONFIG_MMX) += ../../../../src/cpu/x86/mmx/disable_mmx.inc
 
 ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
 ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds

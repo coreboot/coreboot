@@ -21,3 +21,4 @@
 config CPU_INTEL_SOCKET_PGA370
 	bool
 	default n
+	select MMX

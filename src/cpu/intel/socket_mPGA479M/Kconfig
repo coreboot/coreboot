@@ -3,3 +3,5 @@ config CPU_INTEL_SOCKET_MPGA479M
 	default n
 	select CPU_INTEL_MODEL_69X
 	select CPU_INTEL_MODEL_6DX
+	select MMX
+	select SSE

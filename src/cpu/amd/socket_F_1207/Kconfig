@@ -1,0 +1,45 @@
+config CPU_AMD_SOCKET_F_1207
+	bool
+	default n
+	select CPU_AMD_MODEL_10XXX
+
+config CPU_SOCKET_TYPE
+	hex
+	default 0x10
+	depends on CPU_AMD_SOCKET_F_1207
+
+# DDR2 and REG
+config DIMM_SUPPORT
+	hex
+	default 0x0104
+	depends on CPU_AMD_SOCKET_F_1207
+
+config PCI_IO_CFG_EXT
+	int
+	default 1
+	depends on CPU_AMD_SOCKET_F_1207
+
+config EXT_RT_TBL_SUPPORT
+	bool
+	default n
+	depends on CPU_AMD_SOCKET_F_1207
+
+config EXT_CONF_SUPPORT
+	bool
+	default n
+	depends on CPU_AMD_SOCKET_F_1207
+
+config CAR_FAM10
+	bool
+	default y
+	depends on CPU_AMD_SOCKET_F_1207
+
+config CBB
+	hex
+	default 0xff
+	depends on CPU_AMD_SOCKET_F_1207
+
+config CDB
+	hex
+	default 0
+	depends on CPU_AMD_SOCKET_F_1207

@@ -23,10 +23,18 @@ choice
 	depends on VENDOR_TYAN
 	
 source "src/mainboard/tyan/s1846/Kconfig"
+source "src/mainboard/tyan/s2735/Kconfig"
+source "src/mainboard/tyan/s2880/Kconfig"
 source "src/mainboard/tyan/s2881/Kconfig"
+source "src/mainboard/tyan/s2882/Kconfig"
+source "src/mainboard/tyan/s2885/Kconfig"
 source "src/mainboard/tyan/s2891/Kconfig"
 source "src/mainboard/tyan/s2892/Kconfig"
 source "src/mainboard/tyan/s2895/Kconfig"
+source "src/mainboard/tyan/s2912/Kconfig"
+source "src/mainboard/tyan/s2912_fam10/Kconfig"
+source "src/mainboard/tyan/s4880/Kconfig"
+source "src/mainboard/tyan/s4882/Kconfig"
 
 endchoice
 

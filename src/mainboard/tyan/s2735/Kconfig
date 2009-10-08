@@ -1,0 +1,62 @@
+config BOARD_TYAN_S2735
+	bool "S2735"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA604
+	select NORTHBRIDGE_INTEL_E7501
+	select SOUTHBRIDGE_INTEL_I82870
+	select SOUTHBRIDGE_INTEL_I82801ER
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	select HAVE_OPTION_TABLE
+	select USE_DCACHE_RAM
+
+config MAINBOARD_DIR
+	string
+	default tyan/s2735
+	depends on BOARD_TYAN_S2735
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xcf000
+	depends on BOARD_TYAN_S2735
+	
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1000
+	depends on BOARD_TYAN_S2735
+	
+config LB_CKS_RANGE_START
+	int
+	default 49
+	depends on BOARD_TYAN_S2735
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_TYAN_S2735
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_TYAN_S2735
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "S2735"
+	depends on BOARD_TYAN_S2735
+
+config IRQ_SLOT_COUNT
+	int
+	default 15
+	depends on BOARD_TYAN_S2735
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_TYAN_S2735
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_TYAN_S2735

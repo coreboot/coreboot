@@ -1,0 +1,34 @@
+config BOARD_LIPPERT_FRONTRUNNER
+	bool "Frontrunner"
+	select ARCH_X86
+	select CPU_AMD_GX2
+	select NORTHBRIDGE_AMD_GX2
+	select SOUTHBRIDGE_AMD_CS5535
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	select HAVE_PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default lippert/frontrunner
+	depends on BOARD_LIPPERT_FRONTRUNNER
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Frontrunner"
+	depends on BOARD_LIPPERT_FRONTRUNNER
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_LIPPERT_FRONTRUNNER
+
+config IRQ_SLOT_COUNT
+	int
+	default 2
+	depends on BOARD_LIPPERT_FRONTRUNNER
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_LIPPERT_FRONTRUNNER

@@ -3,12 +3,13 @@ choice
 	depends on VENDOR_SUPERMICRO
 	
 source "src/mainboard/supermicro/h8dme/Kconfig"
-#source "src/mainboard/supermicro/h8dmr/Kconfig"
-#source "src/mainboard/supermicro/x6dai_g/Kconfig"
-#source "src/mainboard/supermicro/x6dhe_g/Kconfig"
-#source "src/mainboard/supermicro/x6dhe_g2/Kconfig"
-#source "src/mainboard/supermicro/x6dhr_ig/Kconfig"
-#source "src/mainboard/supermicro/x6dhr_ig2/Kconfig"
+source "src/mainboard/supermicro/h8dmr/Kconfig"
+source "src/mainboard/supermicro/h8dmr_fam10/Kconfig"
+source "src/mainboard/supermicro/x6dai_g/Kconfig"
+source "src/mainboard/supermicro/x6dhe_g/Kconfig"
+source "src/mainboard/supermicro/x6dhe_g2/Kconfig"
+source "src/mainboard/supermicro/x6dhr_ig/Kconfig"
+source "src/mainboard/supermicro/x6dhr_ig2/Kconfig"
 
 endchoice
 

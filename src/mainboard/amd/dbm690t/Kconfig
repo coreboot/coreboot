@@ -1,0 +1,104 @@
+config BOARD_AMD_DBM690T
+	bool "DBM690T"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_S1G1
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_RS690
+	select SOUTHBRIDGE_AMD_SB600
+	select SUPERIO_ITE_IT8712F
+	select HAVE_PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+	select AP_CODE_IN_CAR
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select WAIT_BEFORE_CPUS_INIT
+	select HAVE_ACPI_TABLES
+
+config MAINBOARD_DIR
+	string
+	default amd/dbm690t
+	depends on BOARD_AMD_DBM690T
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_AMD_DBM690T
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+	depends on BOARD_AMD_DBM690T
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_AMD_DBM690T
+
+config APIC_ID_OFFSET
+	hex
+	default 0x8
+	depends on BOARD_AMD_DBM690T
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_AMD_DBM690T
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_AMD_DBM690T
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "DBM690T"
+	depends on BOARD_AMD_DBM690T
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_AMD_DBM690T
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_AMD_DBM690T
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_AMD_DBM690T
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_AMD_DBM690T
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_AMD_DBM690T
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x6
+	depends on BOARD_AMD_DBM690T
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0xa
+	depends on BOARD_AMD_DBM690T
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_AMD_DBM690T
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_AMD_DBM690T

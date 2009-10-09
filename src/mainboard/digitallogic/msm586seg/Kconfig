@@ -1,0 +1,21 @@
+config BOARD_DIGITALLOGIC_MSM586SEG
+	bool "MSM586SEG"
+	select ARCH_X86
+	select CPU_AMD_SC520
+	select HAVE_PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default digitallogic/msm586seg
+	depends on BOARD_DIGITALLOGIC_MSM586SEG
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "TS5300"
+	depends on BOARD_DIGITALLOGIC_MSM586SEG
+
+config IRQ_SLOT_COUNT
+	int
+	default 2
+	depends on BOARD_DIGITALLOGIC_MSM586SEG
+

@@ -1,0 +1,53 @@
+config BOARD_SUPERMICRO_X6DAI_G
+	bool "X6DAI-G"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MPGA604
+	select NORTHBRIDGE_INTEL_E7525
+	select SOUTHBRIDGE_INTEL_ESB6300
+	select SUPERIO_WINBOND_W83627HF
+	select PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default supermicro/x6dai_g
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config LB_CKS_LOC
+	int
+        default 123
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "X6DAI_G"
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x15d9
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x6780
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_SUPERMICRO_X6DAI_G
+
+config IRQ_SLOT_COUNT
+	int
+	default 15
+	depends on BOARD_SUPERMICRO_X6DAI_G

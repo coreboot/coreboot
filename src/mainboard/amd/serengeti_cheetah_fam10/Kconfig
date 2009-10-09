@@ -1,0 +1,116 @@
+config BOARD_AMD_SERENGETI_CHEETAH_FAM10
+	bool "Serengeti Cheetah (Fam10)"
+	select ARCH_X86
+	select CPU_AMD_FAM10
+	select CPU_AMD_SOCKET_F_1207
+	select NORTHBRIDGE_AMD_AMDFAM10
+	select NORTHBRIDGE_AMD_AMDFAM10_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_AMD8111
+	select SOUTHBRIDGE_AMD_AMD8132
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+	select AP_CODE_IN_CAR
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select WAIT_BEFORE_CPUS_INIT
+	select AMDMCT
+
+config MAINBOARD_DIR
+	string
+	default amd/serengeti_cheetah_fam10
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config APIC_ID_OFFSET
+	hex
+	default 0x8
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Serengeti-Cheetah-Fam10"
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+# 6 * MAX_PHYSICAL_CPUS
+config MAX_CPUS
+	int
+	default 48
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 8
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x6
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0xa
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config SERIAL_CPU_INIT
+	bool
+	default n
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
+config AMD_UCODE_PATCH_FILE
+	string
+	default "mc_patch_01000095.h"
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+

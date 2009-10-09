@@ -1,5 +1,5 @@
-config BOARD_SUPERMICRO_H8DME
-	bool "H8DME"
+config BOARD_SUPERMICRO_H8DMR
+	bool "H8DMR"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F
@@ -15,90 +15,90 @@ config BOARD_SUPERMICRO_H8DME
 
 config MAINBOARD_DIR
 	string
-	default supermicro/h8dme
-	depends on BOARD_SUPERMICRO_H8DME
+	default supermicro/h8dmr
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config DCACHE_RAM_SIZE
 	hex
 	default 0x08000
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
 	default 0x01000
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config APIC_ID_OFFSET
 	hex
 	default 0x10
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	bool
 	default n
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config LB_CKS_RANGE_END
 	int
 	default 122
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config LB_CKS_LOC
 	int
 	default 123
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "H8DME"
-	depends on BOARD_SUPERMICRO_H8DME
+	default "H8DMR"
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config MAX_CPUS
 	int
 	default 4
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config USE_INIT
 	bool
 	default n
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR
 
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_SUPERMICRO_H8DME
+	depends on BOARD_SUPERMICRO_H8DMR

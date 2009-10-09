@@ -1,1 +1,10 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_DIGITAL_LOGIC
+        
+source "src/mainboard/digitallogic/adl855pc/Kconfig"
+source "src/mainboard/digitallogic/msm586seg/Kconfig"
+source "src/mainboard/digitallogic/msm800sev/Kconfig"
+
+endchoice
+

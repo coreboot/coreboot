@@ -9,6 +9,7 @@ static void enable_smbus(void)
 	print_spew("SMBus controller enabled\r\n");
 
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
+	print_debug_hex32(pci_read_config32(dev, 0x20));
 	/* Set smbus enable */
 	pci_write_config8(dev, 0x40, 1);
 	/* Set smbus iospace enable */

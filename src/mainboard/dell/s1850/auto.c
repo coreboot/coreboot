@@ -65,25 +65,6 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 }
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-	/* fake it out for this board */
-	switch(device) {
-		case 0x52:
-		case 0x53:
-			print_debug("FAKE");
-			device = 0x50;	
-			break;
-		case 0x50:
-		case 0x51:
-		case 0x54:
-		case 0x55:
-		case 0x56:
-		case 0x57:
-			print_debug("57");
-			device = 0x57;
-			break;
-		default: 
-			die("BAD DEV IN spd_read_byte");
-	}
 	return smbus_read_byte(device, address);
 }
 
@@ -278,12 +259,17 @@ static void main(unsigned long bist)
 	w = inw(0x866);
 	outw(w|2, 0x866);
 
+#if 0 
+	/*seriaice shows
+	dell does this so leave it here so I don't forget 
+ 	 */
 	/* SMBUS */
 	pci_write_config16(PCI_DEV(0, 0x1f, 3), 0x20, 0x08c0);
 
 	/* unknown */
 	b = inb(0x8c2);
 	outb(0xdf, 0x8c2);
+#endif
 
 	/* another device enable? */
 	b = pci_read_config8(PCI_DEV(0, 0, 0), 0xf4);
@@ -314,11 +300,12 @@ static void main(unsigned long bist)
 	uart_init();
 	console_init();
 
+
 	/* stuff we seem to need */
-	pc8374_enable_dev(PC8374_KBCK, 0);
+	pc8374_enable_dev(PNP_DEV(0x2e, PC8374_KBCK), 0);
 
 	/* GPIOs */
-	pc8374_enable_dev(PC8374_GPIO, 0xc20);
+	pc8374_enable_dev(PNP_DEV(0x2e, PC8374_GPIO), 0xc20);
 
 	/* keep this in mind.
 	SerialICE-hlp: outb 002e <= 23
@@ -351,7 +338,7 @@ static void main(unsigned long bist)
 #if 1
 	enable_smbus();
 #endif
-#if 0
+#if 1
 //	dump_spd_registers(&cpu[0]);
 	int i;
 	for(i = 0; i < 1; i++) {

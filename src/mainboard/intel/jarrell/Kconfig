@@ -8,6 +8,7 @@ config BOARD_INTEL_JARRELL
 	select SUPERIO_NSC_PC87427
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
+	select ATI_RAGE_XL
 
 config MAINBOARD_DIR
 	string
@@ -38,3 +39,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 9
 	depends on BOARD_INTEL_JARRELL
+

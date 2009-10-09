@@ -1,1 +1,8 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_ARIMA
+        
+source "src/mainboard/arima/hdama/Kconfig"
+
+endchoice
+

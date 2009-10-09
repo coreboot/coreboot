@@ -1,0 +1,34 @@
+config BOARD_OLPC_BTEST
+	bool "B-test"
+	select ARCH_X86
+	select CPU_AMD_GX2
+	select NORTHBRIDGE_AMD_GX2
+	select SOUTHBRIDGE_AMD_CS5536
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	select HAVE_PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default olpc/btest
+	depends on BOARD_OLPC_BTEST
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "BTEST"
+	depends on BOARD_OLPC_BTEST
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_OLPC_BTEST
+
+config IRQ_SLOT_COUNT
+	int
+	default 2
+	depends on BOARD_OLPC_BTEST
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_OLPC_BTEST

@@ -1,1 +1,8 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_BROADCOM
+        
+source "src/mainboard/broadcom/blast/Kconfig"
+
+endchoice
+

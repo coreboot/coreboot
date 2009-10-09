@@ -1,0 +1,99 @@
+config BOARD_ASUS_A8N_E
+	bool "A8N-E"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_939
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_NVIDIA_CK804
+	select SUPERIO_ITE_IT8712F
+	select HAVE_PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+
+config MAINBOARD_DIR
+	string
+	default asus/a8n_e
+	depends on BOARD_ASUS_A8N_E
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xcf000
+	depends on BOARD_ASUS_A8N_E
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_ASUS_A8N_E
+
+config APIC_ID_OFFSET
+	hex
+	default 0x10
+	depends on BOARD_ASUS_A8N_E
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_ASUS_A8N_E
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_ASUS_A8N_E
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_ASUS_A8N_E
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_ASUS_A8N_E
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "A8N-E"
+	depends on BOARD_ASUS_A8N_E
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_ASUS_A8N_E
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_ASUS_A8N_E
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_ASUS_A8N_E
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_ASUS_A8N_E
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_ASUS_A8N_E
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_ASUS_A8N_E
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_ASUS_A8N_E
+
+config IRQ_SLOT_COUNT
+	int
+	default 13
+	depends on BOARD_ASUS_A8N_E

@@ -1,1 +1,9 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_IBM
+        
+source "src/mainboard/ibm/e325/Kconfig"
+source "src/mainboard/ibm/e326/Kconfig"
+
+endchoice
+

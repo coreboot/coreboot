@@ -1,1 +1,8 @@
-#
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_HP
+        
+source "src/mainboard/hp/dl145_g3/Kconfig"
+
+endchoice
+

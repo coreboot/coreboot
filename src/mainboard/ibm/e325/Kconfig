@@ -1,0 +1,108 @@
+config BOARD_IBM_E325
+	bool "e325"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_940
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_AMD8111
+	select SOUTHBRIDGE_AMD_AMD8131
+	select SUPERIO_NSC_PC87366
+	select HAVE_PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+	select AP_CODE_IN_CAR
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select WAIT_BEFORE_CPUS_INIT
+
+config MAINBOARD_DIR
+	string
+	default ibm/e325
+	depends on BOARD_IBM_E325
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xcf000
+	depends on BOARD_IBM_E325
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1000
+	depends on BOARD_IBM_E325
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x0
+	depends on BOARD_IBM_E325
+
+config APIC_ID_OFFSET
+	hex
+	default 0x8
+	depends on BOARD_IBM_E325
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_IBM_E325
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_IBM_E325
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "E325"
+	depends on BOARD_IBM_E325
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_IBM_E325
+
+config MAX_CPUS
+	int
+	default 1
+	depends on BOARD_IBM_E325
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_IBM_E325
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_IBM_E325
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_IBM_E325
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x6
+	depends on BOARD_IBM_E325
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0xa
+	depends on BOARD_IBM_E325
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_IBM_E325
+
+config SERIAL_CPU_INIT
+	bool
+	default n
+	depends on BOARD_IBM_E325
+
+config IRQ_SLOT_COUNT
+	int
+	default 12
+	depends on BOARD_IBM_E325

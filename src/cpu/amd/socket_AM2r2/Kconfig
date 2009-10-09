@@ -1,0 +1,18 @@
+config CPU_AMD_SOCKET_AM2R2
+	bool
+	default n
+	select CPU_AMD_MODEL_10XXX
+	select HT3_SUPPORT
+	select CAR_FAM10
+
+config CPU_SOCKET_TYPE
+	hex
+	default 0x11
+	depends on CPU_AMD_SOCKET_AM2R2
+
+# DDR2 and REG
+config DIMM_SUPPORT
+	hex
+	default 0x0104
+	depends on CPU_AMD_SOCKET_AM2R2
+

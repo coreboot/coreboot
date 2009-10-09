@@ -1,0 +1,105 @@
+config BOARD_HP_DL145_G3
+	bool "DL145-G3"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_F
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_BROADCOM_BCM21000
+	select SOUTHBRIDGE_BROADCOM_BCM5785
+	select SUPERIO_NSC_PC87417
+	select HAVE_PIRQ_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+
+config MAINBOARD_DIR
+	string
+	default hp/dl145_g3
+	depends on BOARD_HP_DL145_G3
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xcc000
+	depends on BOARD_HP_DL145_G3
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x04000
+	depends on BOARD_HP_DL145_G3
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_HP_DL145_G3
+
+config APIC_ID_OFFSET
+	hex
+	default 0x10
+	depends on BOARD_HP_DL145_G3
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_HP_DL145_G3
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_HP_DL145_G3
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_HP_DL145_G3
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_HP_DL145_G3
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "DL145G3"
+	depends on BOARD_HP_DL145_G3
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_HP_DL145_G3
+
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_HP_DL145_G3
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_HP_DL145_G3
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_HP_DL145_G3
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_HP_DL145_G3
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_HP_DL145_G3
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_HP_DL145_G3
+
+config IRQ_SLOT_COUNT
+	int
+	default 15
+	depends on BOARD_HP_DL145_G3

@@ -1,18 +1,27 @@
 config SUPERIO_NSC_PC8374
 	bool
+	default n
 config SUPERIO_NSC_PC87309
 	bool
+	default n
 config SUPERIO_NSC_PC87351
 	bool
+	default n
 config SUPERIO_NSC_PC87360
 	bool
+	default n
 config SUPERIO_NSC_PC87366
 	bool
+	default n
 config SUPERIO_NSC_PC87417
 	bool
+	default n
 config SUPERIO_NSC_PC87427
 	bool
+	default n
 config SUPERIO_NSC_PC97307
 	bool
+	default n
 config SUPERIO_NSC_PC97317
 	bool
+	default n

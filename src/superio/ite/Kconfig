@@ -1,14 +1,21 @@
 config SUPERIO_ITE_IT8661F
 	bool
+	default n
 config SUPERIO_ITE_IT8671F
 	bool
+	default n
 config SUPERIO_ITE_IT8673F
 	bool
+	default n
 config SUPERIO_ITE_IT8705F
 	bool
+	default n
 config SUPERIO_ITE_IT8712F
 	bool
+	default n
 config SUPERIO_ITE_IT8716F
 	bool
+	default n
 config SUPERIO_ITE_IT8718F
 	bool
+	default n

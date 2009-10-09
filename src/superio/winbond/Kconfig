@@ -1,18 +1,27 @@
 config SUPERIO_WINBOND_W83627DHG
 	bool
+	default n
 config SUPERIO_WINBOND_W83627EHG
 	bool
+	default n
 config SUPERIO_WINBOND_W83627HF
 	bool
+	default n
 config SUPERIO_WINBOND_W83627THF
 	bool
+	default n
 config SUPERIO_WINBOND_W83627THG
 	bool
+	default n
 config SUPERIO_WINBOND_W83627UHG
 	bool
+	default n
 config SUPERIO_WINBOND_W83697HF
 	bool
+	default n
 config SUPERIO_WINBOND_W83977F
 	bool
+	default n
 config SUPERIO_WINBOND_W83977TF
 	bool
+	default n

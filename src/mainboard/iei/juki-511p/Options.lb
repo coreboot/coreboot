@@ -69,10 +69,10 @@ default CONFIG_UDELAY_IO=1
 ##
 ## Build code to export a programmable irq routing table
 ##
+# FIXME: There's an irq_tables.c file, but CONFIG_HAVE_PIRQ_TABLE is 0.
 default CONFIG_HAVE_PIRQ_TABLE=0
 default CONFIG_IRQ_SLOT_COUNT=2
 default CONFIG_PIRQ_ROUTE=1
-#object irq_tables.o
 
 ##
 ## Build code to export a CMOS option table

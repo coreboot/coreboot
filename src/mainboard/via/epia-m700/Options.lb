@@ -116,6 +116,7 @@ default CONFIG_HAVE_MP_TABLE = 0
 default CONFIG_UDELAY_TSC = 1
 default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2 = 1
 default CONFIG_HAVE_HARD_RESET = 0
+# TODO: There is an irq_tables.c file, should it be used?
 default CONFIG_HAVE_PIRQ_TABLE = 0
 default CONFIG_IRQ_SLOT_COUNT = 13
 default CONFIG_HAVE_ACPI_TABLES = 1

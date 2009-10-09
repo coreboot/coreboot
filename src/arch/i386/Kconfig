@@ -29,7 +29,7 @@ config ROMBASE
 
 config PAYLOAD_SIZE
 	hex
-	default 0
+	default 0x0
 
 config ROM_PAYLOAD_START
 	hex

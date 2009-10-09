@@ -1,12 +1,18 @@
 config SUPERIO_SMSC_FDC37M60X
 	bool
+	default n
 config SUPERIO_SMSC_LPC47B272
 	bool
+	default n
 config SUPERIO_SMSC_LPC47B397
 	bool
+	default n
 config SUPERIO_SMSC_LPC47M10X
 	bool
+	default n
 config SUPERIO_SMSC_LPC47N217
 	bool
+	default n
 config SUPERIO_SMSC_SMSCSUPERIO
 	bool
+	default n

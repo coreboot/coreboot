@@ -13,14 +13,9 @@ config TTYS0_BASE
 	depends on CONSOLE_SERIAL8250
 	default 0x3f8
 
-config SERIAL_SET_SPEED
-	bool "Override the serial port BAUD rate"
-	default y
-	depends on CONSOLE_SERIAL8250
-
 config TTYS0_BAUD
 	int "Serial port BAUD rate"
-	depends on SERIAL_SET_SPEED
+	depends on CONSOLE_SERIAL8250
 	default 115200
 
 # TODO: Allow user-friendly selection of settings other than 8n1.

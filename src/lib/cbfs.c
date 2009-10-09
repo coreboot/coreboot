@@ -29,6 +29,8 @@
 #define ntohl(x) (x)
 #endif
 
+unsigned long ulzma(unsigned char *src, unsigned char *dst);
+
 int cbfs_decompress(int algo, void *src, void *dst, int len)
 {
 	switch(algo) {
@@ -36,15 +38,15 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 		memcpy(dst, src, len);
 		return 0;
 
-	case CBFS_COMPRESS_LZMA: {
-		unsigned long ulzma(unsigned char *src, unsigned char *dst);
-		ulzma(src, dst);
-	}
+	case CBFS_COMPRESS_LZMA:
+		if (!ulzma(src, dst)) {
+			printk_err("CBFS: LZMA decompression failed!\n");
+			return -1;
+		}
 		return 0;
 
 	default:
-		printk_info( "CBFS:  Unknown compression type %d\n",
-		       algo);
+		printk_info( "CBFS:  Unknown compression type %d\n", algo);
 		return -1;
 	}
 }

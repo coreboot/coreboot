@@ -52,7 +52,7 @@
 #include <boot/coreboot_tables.h>
 /** These are standard values for the known compression
     alogrithms that coreboot knows about for stages and
-    payloads.  Of course, other LAR users can use whatever
+    payloads.  Of course, other CBFS users can use whatever
     values they want, as long as they understand them. */
 
 #define CBFS_COMPRESS_NONE  0

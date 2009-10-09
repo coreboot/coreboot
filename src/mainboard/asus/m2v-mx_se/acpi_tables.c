@@ -82,7 +82,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id) 
+unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
 {
 	k8acpi_write_vars();
 	amd_model_fxx_generate_powernow(0, 0, 0);

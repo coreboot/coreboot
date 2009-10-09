@@ -114,7 +114,7 @@ int acpigen_write_qword(uint64_t data)
 	return 9;
 }
 
-int acpigen_write_name_byte(char *name, uint8_t val)
+int acpigen_write_name_byte(const char *name, uint8_t val)
 {
 	int len;
 	len = acpigen_write_name(name);
@@ -122,7 +122,7 @@ int acpigen_write_name_byte(char *name, uint8_t val)
 	return len;
 }
 
-int acpigen_write_name_dword(char *name, uint32_t val)
+int acpigen_write_name_dword(const char *name, uint32_t val)
 {
 	int len;
 	len = acpigen_write_name(name);
@@ -130,7 +130,7 @@ int acpigen_write_name_dword(char *name, uint32_t val)
 	return len;
 }
 
-int acpigen_write_name_qword(char *name, uint64_t val)
+int acpigen_write_name_qword(const char *name, uint64_t val)
 {
 	int len;
 	len = acpigen_write_name(name);
@@ -138,7 +138,7 @@ int acpigen_write_name_qword(char *name, uint64_t val)
 	return len;
 }
 
-int acpigen_emit_stream(char *data, int size)
+int acpigen_emit_stream(const char *data, int size)
 {
 	int i;
 	for (i = 0; i < size; i++) {
@@ -152,7 +152,7 @@ int acpigen_emit_stream(char *data, int size)
    and 5.3 of ACPI specs 3.0 for details
 */
 
-static int acpigen_emit_simple_namestring(char *name) {
+static int acpigen_emit_simple_namestring(const char *name) {
 	int i, len = 0;
 	char ud[] = "____";
 	for (i = 0; i < 4; i++) {
@@ -166,7 +166,7 @@ static int acpigen_emit_simple_namestring(char *name) {
 	return len;
 }
 
-static int acpigen_emit_double_namestring(char *name, int dotpos) {
+static int acpigen_emit_double_namestring(const char *name, int dotpos) {
 	int len = 0; 
 	/* mark dual name prefix */
 	len += acpigen_emit_byte(0x2e);
@@ -175,7 +175,7 @@ static int acpigen_emit_double_namestring(char *name, int dotpos) {
 	return len;
 }
 
-static int acpigen_emit_multi_namestring(char *name) {
+static int acpigen_emit_multi_namestring(const char *name) {
 	int len = 0, count = 0;
 	unsigned char *pathlen; 
 	/* mark multi name prefix */
@@ -199,9 +199,9 @@ static int acpigen_emit_multi_namestring(char *name) {
 }
 
 
-int acpigen_emit_namestring(char *namepath) {
+int acpigen_emit_namestring(const char *namepath) {
 	int dotcount = 0, i;
-	int dotpos;
+	int dotpos = 0;
 	int len = 0;
 
 	/* we can start with a \ */
@@ -237,7 +237,7 @@ int acpigen_emit_namestring(char *namepath) {
 	return len;
 }
 
-int acpigen_write_name(char *name)
+int acpigen_write_name(const char *name)
 {
 	int len;
 	/* name op */
@@ -245,7 +245,7 @@ int acpigen_write_name(char *name)
 	return len + acpigen_emit_namestring(name);
 }
 
-int acpigen_write_scope(char *name)
+int acpigen_write_scope(const char *name)
 {
 	int len;
 	/* scope op */

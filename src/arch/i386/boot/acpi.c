@@ -224,11 +224,11 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 /* this can be overriden by platform ACPI setup code,
    if it calls acpi_create_ssdt_generator */
 unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(unsigned long current,
-						    char *oem_table_id) {
+						    const char *oem_table_id) {
 	return current;
 }
 
-void acpi_create_ssdt_generator(acpi_header_t *ssdt, char *oem_table_id)
+void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id)
 {
 	unsigned long current=(unsigned long)ssdt+sizeof(acpi_header_t);
 	memset((void *)ssdt, 0, sizeof(acpi_header_t));

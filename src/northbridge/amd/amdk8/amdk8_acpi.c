@@ -248,7 +248,7 @@ static int k8acpi_write_HT(void) {
 	return len;
 }
 
-static int k8acpi_write_pci_data(int dlen, char *name, int offset) {
+static int k8acpi_write_pci_data(int dlen, const char *name, int offset) {
 	device_t dev;
 	uint32_t dword;
 	int len, lenp, i;

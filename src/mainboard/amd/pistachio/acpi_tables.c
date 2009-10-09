@@ -123,7 +123,7 @@ void update_ssdtx(void *ssdtx, int i)
 
 }
 
-unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id) {
+unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id) {
 	k8acpi_write_vars();
 	amd_model_fxx_generate_powernow(pm_base + 8, 6, 1);
 	return (unsigned long) (acpigen_get_current());

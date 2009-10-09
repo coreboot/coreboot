@@ -182,7 +182,7 @@ void update_ssdtx(void *ssdtx, int i)
 
 }
 
-unsigned long acpi_fill_ssdt_generator(unsigned long current, char *oem_table_id) {
+unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id) {
 	k8acpi_write_vars();
 	return (unsigned long) (acpigen_get_current());
 }

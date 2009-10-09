@@ -95,9 +95,9 @@
 #if !defined(ASSEMBLY)
 void rtc_init(int invalid);
 #if CONFIG_USE_OPTION_TABLE == 1
-int get_option(void *dest, char *name);
+int get_option(void *dest, const char *name);
 #else
-static inline int get_option(void *dest, char *name) { return -2; }
+static inline int get_option(void *dest, const char *name) { return -2; }
 #endif
 #endif
 

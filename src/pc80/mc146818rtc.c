@@ -231,7 +231,7 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 	return 0;
 }
 
-int get_option(void *dest, char *name)
+int get_option(void *dest, const char *name)
 {
 	extern struct cmos_option_table option_table;
 	struct cmos_option_table *ct;

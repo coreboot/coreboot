@@ -42,7 +42,7 @@
  */
 
 #if CONFIG_K8_REV_F_SUPPORT == 0
-static char *processor_names[]={
+static const char *processor_names[]={
 	/* 0x00 */ "AMD Engineering Sample",
 	/* 0x01-0x03 */ NULL, NULL, NULL,
 	/* 0x04 */ "AMD Athlon(tm) 64 Processor XX00+",

@@ -1,6 +1,5 @@
 config CPU_AMD_SOCKET_939
 	bool
-	default n
 	select CPU_AMD_MODEL_FXX
 
 config CPU_SOCKET_TYPE

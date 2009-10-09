@@ -1,5 +1,4 @@
 config CPU_INTEL_MODEL_F2X
 	bool
-	default n
 	select SMP
 	select HAVE_MOVNTI

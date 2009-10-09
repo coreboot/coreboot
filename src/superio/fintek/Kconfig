@@ -1,3 +1,2 @@
 config SUPERIO_FINTEK_F71805F
 	bool
-	default n

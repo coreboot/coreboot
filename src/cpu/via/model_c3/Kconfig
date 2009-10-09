@@ -1,3 +1,2 @@
 config CPU_VIA_C3
 	bool
-	default n

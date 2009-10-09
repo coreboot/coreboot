@@ -19,5 +19,4 @@
 
 config SOUTHBRIDGE_AMD_SB600
 	bool
-	default n
 

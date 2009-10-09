@@ -1,3 +1,2 @@
 config SOUTHBRIDGE_BROADCOM_BCM5785
 	bool
-	default n

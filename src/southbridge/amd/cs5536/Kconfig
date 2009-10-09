@@ -19,5 +19,4 @@
 
 config SOUTHBRIDGE_AMD_CS5536
 	bool
-	default n
 

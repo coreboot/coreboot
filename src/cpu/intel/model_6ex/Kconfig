@@ -1,4 +1,3 @@
 config CPU_INTEL_CORE
 	bool
-	default n
 	select SMP

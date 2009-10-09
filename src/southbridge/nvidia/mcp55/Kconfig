@@ -1,3 +1,2 @@
 config SOUTHBRIDGE_NVIDIA_MCP55
 	bool
-	default n

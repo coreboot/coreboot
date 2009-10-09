@@ -19,5 +19,4 @@
 
 config NORTHBRIDGE_AMD_GX2
 	bool
-	default n
 

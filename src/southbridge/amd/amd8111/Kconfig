@@ -19,5 +19,4 @@
 
 config SOUTHBRIDGE_AMD_AMD8111
 	bool
-	default n
 

@@ -1,3 +1,2 @@
 config SOUTHBRIDGE_BROADCOM_BCM21000
 	bool
-	default n

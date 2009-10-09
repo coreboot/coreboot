@@ -1,3 +1,2 @@
 config SUPERIO_SERVERENGINES_PILOT
 	bool
-	default n

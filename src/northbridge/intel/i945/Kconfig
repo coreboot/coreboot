@@ -20,4 +20,3 @@
 config NORTHBRIDGE_INTEL_I945
 	bool
 	select HAVE_HIGH_TABLES
-	default n

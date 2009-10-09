@@ -1,3 +1,2 @@
 config CPU_INTEL_SOCKET_MFCPGA478
 	bool
-	default n

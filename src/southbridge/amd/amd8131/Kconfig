@@ -19,5 +19,4 @@
 
 config SOUTHBRIDGE_AMD_AMD8131
 	bool
-	default n
 

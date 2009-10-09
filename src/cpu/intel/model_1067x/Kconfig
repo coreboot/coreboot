@@ -1,5 +1,4 @@
 config CPU_INTEL_CORE2
 	bool
-	default n
 	select SMP
 	select HAVE_MOVNTI

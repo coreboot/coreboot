@@ -1,5 +1,4 @@
 config NORTHBRIDGE_INTEL_E7520
 	bool
-	default n
 	select HAVE_HIGH_TABLES
 

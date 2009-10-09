@@ -19,5 +19,4 @@
 
 config SOUTHBRIDGE_AMD_RS690
 	bool
-	default n
 

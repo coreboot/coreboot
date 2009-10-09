@@ -1,4 +1,3 @@
 config NORTHBRIDGE_AMD_AMDFAM10_ROOT_COMPLEX
 	bool
-	default n
 

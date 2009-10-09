@@ -1,3 +1,2 @@
 config CPU_VIA_C7
 	bool
-	default n

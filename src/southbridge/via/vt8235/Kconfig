@@ -19,5 +19,4 @@
 
 config SOUTHBRIDGE_VIA_VT8235
 	bool
-	default n
 

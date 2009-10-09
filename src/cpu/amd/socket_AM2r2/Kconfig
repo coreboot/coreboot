@@ -1,6 +1,5 @@
 config CPU_AMD_SOCKET_AM2R2
 	bool
-	default n
 	select CPU_AMD_MODEL_10XXX
 	select HT3_SUPPORT
 	select CAR_FAM10

@@ -1,6 +1,5 @@
 config NORTHBRIDGE_VIA_CN400
 	bool
-	default n
 
 config FALLBACK_SIZE
 	int

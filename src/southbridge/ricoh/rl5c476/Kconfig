@@ -19,5 +19,4 @@
 
 config SOUTHBRIDGE_RICOH_RL5C476
 	bool
-	default n
 

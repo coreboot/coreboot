@@ -30,19 +30,14 @@ config SMP
 	default y if MAX_CPUS != 1
 	default n
 
+# Set MMX and SSE in socket or model if the CPU has them.
+# If all CPUs for the socket have MMX or SSE, set them there.
+# These options are only needed for boards compiled with romcc.
 config	MMX
 	bool
-	default n
-	help
-		Set this in socket or model if the CPU has MMX. 
-		If the CPUs for the socket always have MMX, set it there. 
 
 config SSE
 	bool
-	default n
-	help
-		Set this in socket or model if the CPU has SSE. 
-		If the CPUs for the socket always have MX, set it there. 
 
 config VAR_MTRR_HOLE
 	bool

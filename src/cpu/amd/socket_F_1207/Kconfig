@@ -1,6 +1,5 @@
 config CPU_AMD_SOCKET_F_1207
 	bool
-	default n
 	select CPU_AMD_MODEL_10XXX
 
 config CPU_SOCKET_TYPE

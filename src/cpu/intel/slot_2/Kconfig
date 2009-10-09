@@ -20,5 +20,4 @@
 
 config CPU_INTEL_SLOT_2
 	bool
-	default n
 

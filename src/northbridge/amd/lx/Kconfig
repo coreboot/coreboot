@@ -1,6 +1,5 @@
 config NORTHBRIDGE_AMD_LX
 	bool
-	default n
 
 config HAVE_HIGH_TABLES
 	bool

@@ -20,5 +20,4 @@
 
 config CPU_AMD_GX1
 	bool
-	default n
 

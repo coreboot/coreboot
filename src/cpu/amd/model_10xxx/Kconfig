@@ -1,6 +1,5 @@
 config CPU_AMD_MODEL_10XXX
 	bool
-	default n
 
 config HAVE_INIT_TIMER
 	bool

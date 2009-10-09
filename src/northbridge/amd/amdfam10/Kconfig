@@ -19,7 +19,6 @@
 
 config NORTHBRIDGE_AMD_AMDFAM10
 	bool
-	default n
 	select HAVE_HIGH_TABLES
 
 config AGP_APERTURE_SIZE

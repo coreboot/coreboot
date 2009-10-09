@@ -1,6 +1,5 @@
 config CPU_AMD_SOCKET_AM2
 	bool
-	default n
 	select K8_REV_F_SUPPORT
 	# Opteron K8 1G HT support
 	select K8_HT_FREQ_1G_SUPPORT

@@ -38,18 +38,9 @@
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)
 
 #include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
-
-/* TODO: Not needed? */
-void udelay(int usecs) 
-{
-	int i;
-	for (i = 0; i < usecs; i++)
-		outb(i&0xff, 0x80);
-}
-
 #include "lib/debug.c"
+#include "pc80/udelay_io.c"
 #include "lib/delay.c"
-
 #include "northbridge/intel/i82810/raminit.c"
 #include "northbridge/intel/i82810/debug.c"
 

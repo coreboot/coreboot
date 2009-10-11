@@ -13,20 +13,10 @@
 #include "northbridge/via/vt8601/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-
-/*
- */
-void udelay(unsigned usecs) 
-{
-	int i;
-	for (i = 0; i < usecs; i++)
-		outb(i&0xff, 0x80);
-}
-
+#include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "lib/debug.c"
-
 #include "southbridge/via/vt8231/vt8231_early_smbus.c"
 #include "southbridge/via/vt8231/vt8231_early_serial.c"
 

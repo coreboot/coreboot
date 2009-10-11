@@ -43,13 +43,6 @@
 #define RECVENA_CONFIG  0x0808090a
 #define RECVENB_CONFIG  0x0808090a
 
-//void udelay(int usecs)
-//{
-//        int i;
-//        for(i = 0; i < usecs; i++)
-//                outb(i&0xff, 0x80);
-//}
-
 #if 0
 static void hard_reset(void)
 {

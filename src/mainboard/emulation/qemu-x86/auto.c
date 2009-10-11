@@ -11,16 +11,7 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
-
-/*
- */
-void udelay(int usecs) 
-{
-	int i;
-	for(i = 0; i < usecs; i++)
-		outb(i&0xff, 0x80);
-}
-
+#include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 

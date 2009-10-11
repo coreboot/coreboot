@@ -112,11 +112,6 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	default n
 	depends on BOARD_TYAN_S2885
 
-config HAVE_ACPI_TABLES
-	bool "Generate ACPI tables"
-	default n
-	depends on BOARD_TYAN_S2885
-
 config IRQ_SLOT_COUNT
 	int
 	default 9

@@ -11,6 +11,7 @@ config BOARD_TYAN_S2891
 	select PIRQ_TABLE
 	select SERIAL_CPU_INIT
 	select AP_CODE_IN_CAR
+	select HAVE_ACPI_TABLES
 
 config MAINBOARD_DIR
 	string
@@ -110,12 +111,6 @@ config SB_HT_CHAIN_ON_BUS0
 config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	bool
 	default n
-	depends on BOARD_TYAN_S2891
-
-# TODO: Should be "select". And not user-visible.
-config HAVE_ACPI_TABLES
-	bool "Generate ACPI tables"
-	default y
 	depends on BOARD_TYAN_S2891
 
 config IRQ_SLOT_COUNT

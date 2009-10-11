@@ -8,6 +8,7 @@ config BOARD_VIA_VT8454C
 	select HAVE_PIRQ_TABLE
 #	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
+	select HAVE_ACPI_TABLES
 
 config MAINBOARD_DIR
 	string

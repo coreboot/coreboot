@@ -78,18 +78,119 @@ config CONSOLE_VGA_ONBOARD_AT_FIRST
 	help
 	  If not selected, the last adapter found will be used.
 
-# TODO: User-friendly "choice" selection.
-# TODO: Add help text.
-config MAXIMUM_CONSOLE_LOGLEVEL
-	int "Maximum console loglevel"
-	default 9
+choice
+        prompt "Maximum console log level"
+        default MAXIMUM_CONSOLE_LOGLEVEL_8
 
-# TODO: User-friendly "choice" selection.
-# TODO: Add help text.
+config MAXIMUM_CONSOLE_LOGLEVEL_8
+        bool "8: SPEW"
+        help
+          Way too many details.
+config MAXIMUM_CONSOLE_LOGLEVEL_7
+        bool "7: DEBUG"
+        help
+          Debug-level messages.
+config MAXIMUM_CONSOLE_LOGLEVEL_6
+        bool "6: INFO"
+        help
+          Informational messages.
+config MAXIMUM_CONSOLE_LOGLEVEL_5
+        bool "5: NOTICE"
+        help
+          Normal but significant conditions.
+config MAXIMUM_CONSOLE_LOGLEVEL_4
+        bool "4: WARNING"
+        help
+          Warning conditions.
+config MAXIMUM_CONSOLE_LOGLEVEL_3
+        bool "3: ERR"
+        help
+          Error conditions.
+config MAXIMUM_CONSOLE_LOGLEVEL_2
+        bool "2: CRIT"
+        help
+          Critical conditions.
+config MAXIMUM_CONSOLE_LOGLEVEL_1
+        bool "1: ALERT"
+        help
+          Action must be taken immediately.
+config MAXIMUM_CONSOLE_LOGLEVEL_0
+        bool "0: EMERG"
+        help
+          System is unusable.
+
+endchoice
+
+config MAXIMUM_CONSOLE_LOGLEVEL
+	int
+	default 0 if MAXIMUM_CONSOLE_LOGLEVEL_0
+	default 1 if MAXIMUM_CONSOLE_LOGLEVEL_1
+	default 2 if MAXIMUM_CONSOLE_LOGLEVEL_2
+	default 3 if MAXIMUM_CONSOLE_LOGLEVEL_3
+	default 4 if MAXIMUM_CONSOLE_LOGLEVEL_4
+	default 5 if MAXIMUM_CONSOLE_LOGLEVEL_5
+	default 6 if MAXIMUM_CONSOLE_LOGLEVEL_6
+	default 7 if MAXIMUM_CONSOLE_LOGLEVEL_7
+	default 8 if MAXIMUM_CONSOLE_LOGLEVEL_8
+	help
+	  Map the log level config names to an integer.
+
+choice
+        prompt "Default console log level"
+        default DEFAULT_CONSOLE_LOGLEVEL_8
+
+config DEFAULT_CONSOLE_LOGLEVEL_8
+        bool "8: SPEW"
+        help
+          Way too many details.
+config DEFAULT_CONSOLE_LOGLEVEL_7
+        bool "7: DEBUG"
+        help
+          Debug-level messages.
+config DEFAULT_CONSOLE_LOGLEVEL_6
+        bool "6: INFO"
+        help
+          Informational messages.
+config DEFAULT_CONSOLE_LOGLEVEL_5
+        bool "5: NOTICE"
+        help
+          Normal but significant conditions.
+config DEFAULT_CONSOLE_LOGLEVEL_4
+        bool "4: WARNING"
+        help
+          Warning conditions.
+config DEFAULT_CONSOLE_LOGLEVEL_3
+        bool "3: ERR"
+        help
+          Error conditions.
+config DEFAULT_CONSOLE_LOGLEVEL_2
+        bool "2: CRIT"
+        help
+          Critical conditions.
+config DEFAULT_CONSOLE_LOGLEVEL_1
+        bool "1: ALERT"
+        help
+          Action must be taken immediately.
+config DEFAULT_CONSOLE_LOGLEVEL_0
+        bool "0: EMERG"
+        help
+          System is unusable.
+
+endchoice
+
 config DEFAULT_CONSOLE_LOGLEVEL
-	int "Default console loglevel"
-	default 9
+	int
+	default 0 if DEFAULT_CONSOLE_LOGLEVEL_0
+	default 1 if DEFAULT_CONSOLE_LOGLEVEL_1
+	default 2 if DEFAULT_CONSOLE_LOGLEVEL_2
+	default 3 if DEFAULT_CONSOLE_LOGLEVEL_3
+	default 4 if DEFAULT_CONSOLE_LOGLEVEL_4
+	default 5 if DEFAULT_CONSOLE_LOGLEVEL_5
+	default 6 if DEFAULT_CONSOLE_LOGLEVEL_6
+	default 7 if DEFAULT_CONSOLE_LOGLEVEL_7
+	default 8 if DEFAULT_CONSOLE_LOGLEVEL_8
+	help
+	  Map the log level config names to an integer.
 
 endmenu
-
 

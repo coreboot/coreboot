@@ -1,0 +1,79 @@
+#!/bin/bash
+# $1 board name
+
+normalize() {
+# $1 filename
+cat $1 | while read line; do
+	if echo $line | grep '= 0x' > /dev/null; then
+		first=`echo $line | cut -d= -f1`
+		last=`echo $line |cut -d= -f2 |cut -d\; -f1`
+		echo $first = $(($last + 0))\;
+	else
+		echo $line
+	fi
+done
+}
+
+BOARDPATH=`echo $1 | sed s,/,_,g`
+
+A=`mktemp`
+rm -rf $A
+mkdir -p $A
+
+sort coreboot-builds/$BOARDPATH/fallback/ldoptions > $A/old
+sort build/ldoptions > $A/new
+
+sed \
+	-e "/^CONFIG_CONSOLE_/ d" \
+	-e "/^CONFIG_RESET_/ d" \
+	-e "/^CONFIG_XIP_ROM_/ d" \
+	-e "/^CONFIG_PRECOMPRESSED_PAYLOAD / d" \
+	-e "/^CONFIG_MULTIBOOT / d" \
+	-e "/^CONFIG_ARCH_POWERPC / d" \
+	-e "/^CONFIG_RESET / d" \
+	-e "/^CONFIG_ROM_PAYLOAD / d" \
+	-e "/^CONFIG_ROM_SECTION_/ d" \
+	-e "/^CONFIG_UNCOMPRESSED / d" \
+	-e "/^CONFIG_COMPRESS / d" \
+	-e "/^CONFIG_COMPRESSED_PAYLOAD_LZMA / d" \
+	-e "/^CONFIG_ASSEMBLER_DEBUG / d" \
+	-e "/^CONFIG_HAVE_FAILOVER_BOOT / d" \
+	-e "/^CONFIG_FAILOVER_SIZE / d" \
+	-e "/^CONFIG_FALLBACK_SIZE / d" \
+	-e "/^CONFIG_ROMBASE / d" \
+	-e "/^CONFIG_ROM_IMAGE_SIZE / d" \
+	-e "/^CONFIG_STACK_SIZE / d" \
+	-e "/^CONFIG_IDE_BOOT_DRIVE / d" \
+	-e "/^CONFIG_IDE_OFFSET / d" \
+	-e "/^CONFIG_GDB_STUB / d" \
+	$A/old > $A/old.filtered
+sed \
+	-e "/^CONFIG_VENDOR_/ d" \
+	-e "/^CONFIG_ARCH_POWERPC / d" \
+	-e "/^CONFIG_[MAXIMUMDEFAULT]*_CONSOLE_LOGLEVEL_/ d" \
+	-e "/^CONFIG_COREBOOT_ROMSIZE_/ d" \
+	-e "/^CONFIG_BOARD_/ d" \
+	-e "/^CONFIG_[NORTHSOUTH]*BRIDGE_/ d" \
+	-e "/^CONFIG_SUPERIO_/ d" \
+	-e "/^CONFIG_GX1_VIDEOMODE_/ d" \
+	-e "/^CONFIG_CONSOLE_/ d" \
+	-e "/^CONFIG_COREBOOT_V4/ d" \
+	-e "/^CONFIG_PAYLOAD_/ d" \
+	-e "/^CONFIG_XIP_ROM_/ d" \
+	-e "/^CONFIG_MULTIBOOT/ d" \
+	-e "/^CONFIG_HAVE_FAILOVER_BOOT / d" \
+	-e "/^CONFIG_COMPRESSED_PAYLOAD_LZMA / d" \
+	-e "/^CONFIG_CPU_[A-Z]*_MODEL_/ d" \
+	-e "/^CONFIG_CPU_[A-Z]*_SOCKET_/ d" \
+	-e "/^CONFIG_ROMBASE / d" \
+	-e "/^CONFIG_ROM_IMAGE_SIZE / d" \
+	-e "/^CONFIG_STACK_SIZE / d" \
+	-e "/^CONFIG_GDB_STUB / d" \
+	$A/new > $A/new.filtered
+
+normalize $A/old.filtered > $A/old.normalized
+normalize $A/new.filtered > $A/new.normalized
+
+diff -u $A/old.normalized $A/new.normalized |grep ^[+-][^+-]|sed -e "s,^+,p ," -e "s,^-,m ," |sort -k2,2 -k1,1 |sed -e "s,^p ,+," -e "s,^m ,-,"
+
+rm -rf $A

@@ -60,5 +60,9 @@ for dir in $ALLTARGETS; do
 	builddefconfig $dir > $TARGETDIR/$name.buildconfig.log 2>&1
 	result=`$MAKE > $TARGETDIR/$name.buildcoreboot.log 2>&1 && echo ok || echo fail`
 	echo "$result."
+	if [ "$result" = "ok" ]; then
+		util/abuild/abuild -t $dir
+		sh util/compareboard/compareboard $dir | tee $TARGETDIR/$name.variables.txt
+	fi
 	echo "$dir $result" >> $TARGETDIR/_overview.txt
 done

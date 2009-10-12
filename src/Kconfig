@@ -135,8 +135,8 @@ config MMCONF_SUPPORT
 	default n
 
 config LB_MEM_TOPK
-	int
-	default 2048
+	hex
+	default 0x800
 
 config COMPRESSED_PAYLOAD_LZMA
 	bool

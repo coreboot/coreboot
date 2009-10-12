@@ -26,4 +26,14 @@ config AGP_APERTURE_SIZE
 	default 0x4000000
 	depends on NORTHBRIDGE_AMD_AMDFAM10
 
+config HYPERTRANSPORT_PLUGIN_SUPPORT
+	bool
+	default y
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config HT3_SUPPORT
+	bool
+	default y
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
 source src/northbridge/amd/amdfam10/root_complex/Kconfig

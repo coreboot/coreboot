@@ -28,16 +28,16 @@ config USE_DCACHE_RAM
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xc8000
+	default 0xc4000
 	depends on CPU_AMD_MODEL_10XXX
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x08000
+	default 0x0c000
 	depends on CPU_AMD_MODEL_10XXX
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
-	default 0x01000
+	default 0x04000
 	depends on CPU_AMD_MODEL_10XXX
 

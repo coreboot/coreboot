@@ -1,4 +1,5 @@
 subdirs-$(CONFIG_CPU_AMD_SOCKET_F) += socket_F
+subdirs-$(CONFIG_CPU_AMD_SOCKET_F_1207) += socket_F_1207
 subdirs-$(CONFIG_CPU_AMD_SOCKET_754) += socket_754
 subdirs-$(CONFIG_CPU_AMD_SOCKET_939) += socket_939
 subdirs-$(CONFIG_CPU_AMD_SOCKET_940) += socket_940

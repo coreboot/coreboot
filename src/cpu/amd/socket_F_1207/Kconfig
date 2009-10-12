@@ -35,10 +35,20 @@ config CAR_FAM10
 
 config CBB
 	hex
-	default 0xff
+	default 0x0
 	depends on CPU_AMD_SOCKET_F_1207
 
 config CDB
 	hex
-	default 0x0
+	default 0x18
+	depends on CPU_AMD_SOCKET_F_1207
+
+config XIP_ROM_BASE
+	hex
+	default 0xfff80000
+	depends on CPU_AMD_SOCKET_F_1207
+
+config XIP_ROM_SIZE
+	hex
+	default 0x80000
 	depends on CPU_AMD_SOCKET_F_1207

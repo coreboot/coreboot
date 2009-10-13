@@ -131,7 +131,7 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
         enumerate_ht_chain();
 
-        /* Setup the ck804 */
+        /* Setup the amd8111 */
         amd8111_enable_rom();
 
         /* Is this a deliberate reset by the bios */

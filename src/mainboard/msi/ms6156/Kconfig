@@ -18,18 +18,34 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_MSI
-	
-source "src/mainboard/msi/ms6119/Kconfig"
-source "src/mainboard/msi/ms6147/Kconfig"
-source "src/mainboard/msi/ms6156/Kconfig"
-source "src/mainboard/msi/ms6178/Kconfig"
-source "src/mainboard/msi/ms7135/Kconfig"
-source "src/mainboard/msi/ms7260/Kconfig"
-source "src/mainboard/msi/ms9185/Kconfig"
-source "src/mainboard/msi/ms9282/Kconfig"
+config BOARD_MSI_MS_6156
+	bool "MS-6156"
+	select ARCH_X86
+	select CPU_INTEL_SLOT_2
+	select NORTHBRIDGE_INTEL_I440BX
+	select SOUTHBRIDGE_INTEL_I82371EB
+	select SUPERIO_WINBOND_W83977TF
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 
-endchoice
+config MAINBOARD_DIR
+	string
+	default msi/ms6156
+	depends on BOARD_MSI_MS_6156
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MS-6156"
+	depends on BOARD_MSI_MS_6156
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_MSI_MS_6156
+
+config IRQ_SLOT_COUNT
+	int
+	default 7
+	depends on BOARD_MSI_MS_6156
 

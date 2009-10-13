@@ -18,18 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_MSI
-	
-source "src/mainboard/msi/ms6119/Kconfig"
-source "src/mainboard/msi/ms6147/Kconfig"
-source "src/mainboard/msi/ms6156/Kconfig"
-source "src/mainboard/msi/ms6178/Kconfig"
-source "src/mainboard/msi/ms7135/Kconfig"
-source "src/mainboard/msi/ms7260/Kconfig"
-source "src/mainboard/msi/ms9185/Kconfig"
-source "src/mainboard/msi/ms9282/Kconfig"
-
-endchoice
+include $(src)/mainboard/Makefile.romccboard.inc
 

@@ -18,18 +18,32 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-choice
-	prompt "Mainboard model"
-	depends on VENDOR_MSI
-	
-source "src/mainboard/msi/ms6119/Kconfig"
-source "src/mainboard/msi/ms6147/Kconfig"
-source "src/mainboard/msi/ms6156/Kconfig"
-source "src/mainboard/msi/ms6178/Kconfig"
-source "src/mainboard/msi/ms7135/Kconfig"
-source "src/mainboard/msi/ms7260/Kconfig"
-source "src/mainboard/msi/ms9185/Kconfig"
-source "src/mainboard/msi/ms9282/Kconfig"
+target ms6156
+mainboard msi/ms6156
 
-endchoice
+option CONFIG_ROM_SIZE = 256 * 1024
 
+option CONFIG_MAINBOARD_VENDOR = "MSI"
+option CONFIG_MAINBOARD_PART_NUMBER = "MS-6156"
+
+option CONFIG_IRQ_SLOT_COUNT = 7
+
+option CONFIG_DEFAULT_CONSOLE_LOGLEVEL = 9
+option CONFIG_MAXIMUM_CONSOLE_LOGLEVEL = 9
+
+option CONFIG_CONSOLE_VGA = 1
+option CONFIG_PCI_ROM_RUN = 1
+
+romimage "normal"
+	option CONFIG_USE_FALLBACK_IMAGE = 0
+	option COREBOOT_EXTRA_VERSION = ".0Normal"
+	payload /tmp/filo.elf
+end
+
+romimage "fallback"
+	option CONFIG_USE_FALLBACK_IMAGE = 1
+	option COREBOOT_EXTRA_VERSION = ".0Fallback"
+	payload /tmp/filo.elf
+end
+
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

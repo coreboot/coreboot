@@ -28,4 +28,4 @@ romimage "fallback"
 end
 
 buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"
-pci_rom ../../../misc/KT690/pci1002,791f.rom vendor_id=0x1002 device_id=0x791f
+#pci_rom ../../../misc/KT690/pci1002,791f.rom vendor_id=0x1002 device_id=0x791f

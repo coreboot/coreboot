@@ -235,7 +235,7 @@ static struct device *largest_resource(struct bus *bus,
  *   the allocator. Also this allows handling of other types of bridges.
  *
  */
-void compute_resources(struct bus *bus, struct resource *bridge,
+static void compute_resources(struct bus *bus, struct resource *bridge,
 		       unsigned long type_mask, unsigned long type)
 {
 	struct device *dev;
@@ -392,7 +392,7 @@ void compute_resources(struct bus *bus, struct resource *bridge,
  * @param type_mask This value gets anded with the resource type.
  * @param type This value must match the result of the and.
  */
-void allocate_resources(struct bus *bus, struct resource *bridge,
+static void allocate_resources(struct bus *bus, struct resource *bridge,
 			unsigned long type_mask, unsigned long type)
 {
 	struct device *dev;

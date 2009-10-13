@@ -163,6 +163,12 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info++; slot_num++;
 #endif
 
+	if(sysconf.pci1234[2] & 0xf) {
+	//second pci beidge
+		write_pirq_info(pirq_info, bus_ck804b_0, ((sbdnb+9)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0x0, 0);
+		pirq_info++; slot_num++;
+	}
+
 	pirq->size = 32 + 16 * slot_num;
 
 	for (i = 0; i < pirq->size; i++)

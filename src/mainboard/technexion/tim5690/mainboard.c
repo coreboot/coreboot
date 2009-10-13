@@ -49,7 +49,7 @@ uint64_t uma_memory_base, uma_memory_size;
 
 
 /***************************************************
-* This board, the TIM-8690 has two Marvel 88e5056 PCI-E
+* This board, the TIM-5690 has two Marvel 88e5056 PCI-E
 * 10/100/1000 chips on board. 
 * Both of their pin PERSTn pins are connected to GPIO 5 of the
 * SB600 southbridge.
@@ -142,15 +142,15 @@ static void set_thermal_config()
 }
 
 /*************************************************
-* enable the dedicated function in tim8690 board.
+* enable the dedicated function in tim5690 board.
 * This function called early than rs690_enable.
 *************************************************/
-void tim8690_enable(device_t dev)
+void tim5690_enable(device_t dev)
 {
 	struct mainboard_config *mainboard =
 	    (struct mainboard_config *)dev->chip_info;
 
-	printk_info("Mainboard tim8690 Enable. dev=0x%p\n", dev);
+	printk_info("Mainboard tim5690 Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;
@@ -211,6 +211,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("TechNexion TIM-8690   Mainboard")
-	.enable_dev = tim8690_enable,
+	CHIP_NAME("TechNexion TIM-5690   Mainboard")
+	.enable_dev = tim5690_enable,
 };

@@ -106,8 +106,8 @@ static void sb600_lpc_init(void)
 	pci_write_config16(dev, 0x68, 0x000e);
 	/* enable LPC ROM range mirroring end   0x000f(ffff) */
 	pci_write_config16(dev, 0x6a, 0x000f);
-	/* enable LPC ROM range start, 0xfff8(0000): 512KB, 0xfff0(0000): 1MB */
-	pci_write_config16(dev, 0x6c, 0xfff0);
+	/* enable LPC ROM range start, 0xfff8(0000): 512KB, 0xfff0(0000): 1MB, 0xffe0(0000): 2MB, 0xffc0(0000): 4MB */
+	pci_write_config16(dev, 0x6c, 0xffc0);
 	/* enable LPC ROM range end at 0xffff(ffff) */
 	pci_write_config16(dev, 0x6e, 0xffff);
 }

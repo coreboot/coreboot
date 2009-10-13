@@ -95,7 +95,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/dualcore/dualcore.c"
 
 #define CK804_NUM 2
-#define CK804B_BUSN 0x80
 #define CK804_USE_NIC 1
 #define CK804_USE_ACI 1
 
@@ -279,8 +278,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset |= ck804_early_setup_x();
 
 	if (needs_reset) {
-		print_info("ht reset -\r\n");
-	//	soft_reset();
+		printk_info("ht reset -\r\n");
+		soft_reset();
 	}
 
 	allow_all_aps_stop(bsp_apicid);
@@ -290,23 +289,9 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(nodes, ctrl, spd_addr);
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
 	memreset_setup();
 	sdram_initialize(nodes, ctrl);
-
-#if 0
-	print_pci_devices();
-#endif
-
-#if 0
-	dump_pci_devices();
-#endif
 
 	post_cache_as_ram();
 }

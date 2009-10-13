@@ -28,7 +28,6 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
 		reg = register_values[i];
 		outl(reg, where);
 	}
-
 	val = inl(control);
 	val |= 1;
 	outl(val, control);
@@ -51,18 +50,6 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
 #ifndef CK804_PCI_E_X
 #define CK804_PCI_E_X 4
 #endif
-
-/*
- * We will use the offset in setup_resource_map_x_offset and
- * setup_resource_map_offset.
- */
-#define CK804B_ANACTRL_IO_BASE 0x3000
-#define CK804B_SYSCTRL_IO_BASE 0x2000
-
-#ifdef CK804B_BUSN
-#undef CK804B_BUSN
-#endif
-#define CK804B_BUSN 0x0
 
 #ifndef CK804B_PCI_E_X
 #define CK804B_PCI_E_X 4
@@ -94,26 +81,20 @@ static void ck804_early_set_port(unsigned ck804_num, unsigned *busn,
 				 unsigned *io_base)
 {
 	static const unsigned int ctrl_devport_conf[] = {
-		PCI_ADDR(0, (CK804_DEVN_BASE + 0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), ANACTRL_IO_BASE,
-		PCI_ADDR(0, (CK804_DEVN_BASE + 0x1), 0, SYSCTRL_REG_POS), ~(0x0000ff00), SYSCTRL_IO_BASE,
-	};
-
-	static const unsigned int ctrl_devport_conf_b[] = {
-		PCI_ADDR(0, (CK804B_DEVN_BASE + 0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), ANACTRL_IO_BASE,
-		PCI_ADDR(0, (CK804B_DEVN_BASE + 0x1), 0, SYSCTRL_REG_POS), ~(0x0000ff00), SYSCTRL_IO_BASE,
+		PCI_ADDR(0, 0x1, 0, ANACTRL_REG_POS), ~(0x0000ff00), ANACTRL_IO_BASE,
+		PCI_ADDR(0, 0x1, 0, SYSCTRL_REG_POS), ~(0x0000ff00), SYSCTRL_IO_BASE,
 	};
 
 	int j;
 	for (j = 0; j < ck804_num; j++) {
-		if (busn[j] == 0) {	//sb chain
-			setup_resource_map_offset(ctrl_devport_conf,
-				ARRAY_SIZE(ctrl_devport_conf),
-				PCI_DEV(busn[j], 0, 0), io_base[j]);
-			continue;
-		}
-		setup_resource_map_offset(ctrl_devport_conf_b,
-					  ARRAY_SIZE(ctrl_devport_conf_b),
-					  PCI_DEV(busn[j], 0, 0), io_base[j]);
+		u32 dev;
+		if (busn[j] == 0)	//sb chain
+			dev = PCI_DEV(busn[j], CK804_DEVN_BASE, 0);
+		else
+			dev = PCI_DEV(busn[j], CK804B_DEVN_BASE, 0);
+		setup_resource_map_offset(ctrl_devport_conf,
+					  ARRAY_SIZE(ctrl_devport_conf), dev,
+					  io_base[j]);
 	}
 }
 
@@ -121,26 +102,20 @@ static void ck804_early_clear_port(unsigned ck804_num, unsigned *busn,
 				   unsigned *io_base)
 {
 	static const unsigned int ctrl_devport_conf_clear[] = {
-		PCI_ADDR(0, (CK804_DEVN_BASE + 0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), 0,
-		PCI_ADDR(0, (CK804_DEVN_BASE + 0x1), 0, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
-	};
-
-	static const unsigned int ctrl_devport_conf_clear_b[] = {
-		PCI_ADDR(0, (CK804B_DEVN_BASE + 0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), 0,
-		PCI_ADDR(0, (CK804B_DEVN_BASE + 0x1), 0, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
+		PCI_ADDR(0, 0x1, 0, ANACTRL_REG_POS), ~(0x0000ff00), 0,
+		PCI_ADDR(0, 0x1, 0, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
 	};
 
 	int j;
 	for (j = 0; j < ck804_num; j++) {
-		if (busn[j] == 0) {	//sb chain
-			setup_resource_map_offset(ctrl_devport_conf_clear,
-				ARRAY_SIZE(ctrl_devport_conf_clear),
-				PCI_DEV(busn[j], 0, 0), io_base[j]);
-			continue;
-		}
-		setup_resource_map_offset(ctrl_devport_conf_clear_b,
-					  ARRAY_SIZE(ctrl_devport_conf_clear_b),
-					  PCI_DEV(busn[j], 0, 0), io_base[j]);
+		u32 dev;
+		if (busn[j] == 0)	//sb chain
+			dev = PCI_DEV(busn[j], CK804_DEVN_BASE, 0);
+		else
+			dev = PCI_DEV(busn[j], CK804B_DEVN_BASE, 0);
+		setup_resource_map_offset(ctrl_devport_conf_clear,
+					  ARRAY_SIZE(ctrl_devport_conf_clear), dev,
+					  io_base[j]);
 	}
 }
 
@@ -148,39 +123,33 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 			      unsigned *io_base)
 {
 	static const unsigned int ctrl_conf_master[] = {
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 2, 0x8c), 0xffff0000, 0x00009880,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 2, 0x90), 0xffff000f, 0x000074a0,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 2, 0xa0), 0xfffff0ff, 0x00000a00,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 2, 0xac), 0xffffff00, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0x8c), 0xffff0000, 0x00009880,
+		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0x90), 0xffff000f, 0x000074a0,
+		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0xa0), 0xfffff0ff, 0x00000a00,
+		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0xac), 0xffffff00, 0x00000000,
 
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0x48), 0xfffffffd, 0x00000002,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0x74), 0xfffff00f, 0x000009d0,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0x8c), 0xffff0000, 0x0000007f,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0xcc), 0xfffffff8, 0x00000003,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0xd0), 0xff000000, 0x00000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0xd4), 0xff000000, 0x00000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0xd8), 0xff000000, 0x00000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE, 0, 0xdc), 0x7f000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x48), 0xfffffffd, 0x00000002,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x74), 0xfffff00f, 0x000009d0,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x8c), 0xffff0000, 0x0000007f,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xcc), 0xfffffff8, 0x00000003,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xd0), 0xff000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xd4), 0xff000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xd8), 0xff000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xdc), 0x7f000000, 0x00000000,
 
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0xf0), 0xfffffffd, 0x00000002,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0xf8), 0xffffffcf, 0x00000010,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xf0), 0xfffffffd, 0x00000002,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xf8), 0xffffffcf, 0x00000010,
 
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 9, 0, 0x40), 0xfff8ffff, 0x00030000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 9, 0, 0x4c), 0xfe00ffff, 0x00440000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 9, 0, 0x74), 0xffffffc0, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x40), 0xfff8ffff, 0x00030000,
+		RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x4c), 0xfe00ffff, 0x00440000,
+		RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x74), 0xffffffc0, 0x00000000,
 
 #ifdef CK804_MB_SETUP
 		CK804_MB_SETUP
 #endif
-#if CK804_NUM > 1
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0x78), 0xc0ffffff, 0x19000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0xe0), 0xfffffeff, 0x00000100,
-#endif
 
-#if CK804_NUM == 1
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0x78), 0xc0ffffff, 0x19000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0xe0), 0xfffffeff, 0x00000100,
-#endif
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xc0ffffff, 0x19000000,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe0), 0xfffffeff, 0x00000100,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x20, 0xe00fffff, 0x11000000,
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x24, 0xc3f0ffff, 0x24040000,
@@ -195,16 +164,16 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x24, 0xfcffff0f, 0x020000b0,
 
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0x50), ~(0x1f000013), 0x15000013,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0x64), ~(0x00000001), 0x00000001,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0x68), ~(0x02000000), 0x02000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0x70), ~(0x000f0000), 0x00040000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xa0), ~(0x000001ff), 0x00000150,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xac), ~(0xffff8f00), 0x02aa8b00,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0x7c), ~(0x00000010), 0x00000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xc8), ~(0x0fff0fff), 0x000a000a,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xd0), ~(0xf0000000), 0x00000000,
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 8, 0, 0xe0), ~(0xf0000000), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x50), ~(0x1f000013), 0x15000013,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x64), ~(0x00000001), 0x00000001,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x68), ~(0x02000000), 0x02000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x70), ~(0x000f0000), 0x00040000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xa0), ~(0x000001ff), 0x00000150,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xac), ~(0xffff8f00), 0x02aa8b00,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x7c), ~(0x00000010), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xc8), ~(0x0fff0fff), 0x000a000a,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xd0), ~(0xf0000000), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xe0), ~(0xf0000000), 0x00000000,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x04, ~((0x3ff << 0) | (0x3ff << 10)), (0x21 << 0) | (0x22 << 10),
 
@@ -218,11 +187,11 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 8, ~(0xff), ((0 << 4) | (0 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 9, ~(0xff), ((0 << 4) | (1 << 2) | (1 << 0)),
 #if CK804_USE_NIC == 1
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 0xa, 0, 0xf8), 0xffffffbf, 0x00000040,
+		RES_PCI_IO, PCI_ADDR(0, 0xa, 0, 0xf8), 0xffffffbf, 0x00000040,
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 19, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 3, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 3, ~(0xff), ((0 << 4) | (1 << 2) | (1 << 0)),
-		RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 0, 0xe4), ~(1 << 23), (1 << 23),
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe4), ~(1 << 23), (1 << 23),
 #endif
 
 #if CK804_USE_ACI == 1
@@ -236,64 +205,64 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 	};
 
 	static const unsigned int ctrl_conf_slave[] = {
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 2, 0x8c), 0xffff0000, 0x00009880,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 2, 0x90), 0xffff000f, 0x000074a0,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 2, 0xa0), 0xfffff0ff, 0x00000a00,
+		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0x8c), 0xffff0000, 0x00009880,
+		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0x90), 0xffff000f, 0x000074a0,
+		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0xa0), 0xfffff0ff, 0x00000a00,
 
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0x48), 0xfffffffd, 0x00000002,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0x74), 0xfffff00f, 0x000009d0,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0x8c), 0xffff0000, 0x0000007f,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0xcc), 0xfffffff8, 0x00000003,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0xd0), 0xff000000, 0x00000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0xd4), 0xff000000, 0x00000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0xd8), 0xff000000, 0x00000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE, 0, 0xdc), 0x7f000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x48), 0xfffffffd, 0x00000002,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x74), 0xfffff00f, 0x000009d0,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0x8c), 0xffff0000, 0x0000007f,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xcc), 0xfffffff8, 0x00000003,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xd0), 0xff000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xd4), 0xff000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xd8), 0xff000000, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 0, 0, 0xdc), 0x7f000000, 0x00000000,
 
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0xf0), 0xfffffffd, 0x00000002,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0xf8), 0xffffffcf, 0x00000010,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xf0), 0xfffffffd, 0x00000002,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xf8), 0xffffffcf, 0x00000010,
 
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 9, 0, 0x40), 0xfff8ffff, 0x00030000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 9, 0, 0x4c), 0xfe00ffff, 0x00440000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 9, 0, 0x74), 0xffffffc0, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x40), 0xfff8ffff, 0x00030000,
+		RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x4c), 0xfe00ffff, 0x00440000,
+		RES_PCI_IO, PCI_ADDR(0, 9, 0, 0x74), 0xffffffc0, 0x00000000,
 
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0x78), 0xc0ffffff, 0x20000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0xe0), 0xfffffeff, 0x00000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0xe8), 0xffffff00, 0x000000ff,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0x78), 0xc0ffffff, 0x20000000,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe0), 0xfffffeff, 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe8), 0xffffff00, 0x000000ff,
 
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x20, 0xe00fffff, 0x11000000,
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x24, 0xc3f0ffff, 0x24040000,
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x80, 0x8c3f04df, 0x51407120,
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x84, 0xffffff8f, 0x00000010,
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x94, 0xff00ffff, 0x00c00000,
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0xcc, 0xf7ffffff, 0x00000000,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x20, 0xe00fffff, 0x11000000,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x24, 0xc3f0ffff, 0x24040000,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, 0x8c3f04df, 0x51407120,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x84, 0xffffff8f, 0x00000010,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x94, 0xff00ffff, 0x00c00000,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, 0xf7ffffff, 0x00000000,
 
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x24, 0xfcffff0f, 0x020000b0,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x24, 0xfcffff0f, 0x020000b0,
 
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x50), ~(0x1f000013), 0x15000013,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x64), ~(0x00000001), 0x00000001,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x68), ~(0x02000000), 0x02000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x70), ~(0x000f0000), 0x00040000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0xa0), ~(0x000001ff), 0x00000150,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0xac), ~(0xffff8f00), 0x02aa8b00,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0x7c), ~(0x00000010), 0x00000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0xc8), ~(0x0fff0fff), 0x000a000a,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0xd0), ~(0xf0000000), 0x00000000,
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 8, 0, 0xe0), ~(0xf0000000), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x50), ~(0x1f000013), 0x15000013,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x64), ~(0x00000001), 0x00000001,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x68), ~(0x02000000), 0x02000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x70), ~(0x000f0000), 0x00040000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xa0), ~(0x000001ff), 0x00000150,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xac), ~(0xffff8f00), 0x02aa8b00,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x7c), ~(0x00000010), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xc8), ~(0x0fff0fff), 0x000a000a,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xd0), ~(0xf0000000), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0xe0), ~(0xf0000000), 0x00000000,
 
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x04, ~((0x3ff << 0) | (0x3ff << 10)), (0x21 << 0) | (0x22 << 10),
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x04, ~((0x3ff << 0) | (0x3ff << 10)), (0x21 << 0) | (0x22 << 10),
 
-//PANTA		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x08, ~(0xfffff), (0x1c << 10) | 0x1b,
+//PANTA		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x08, ~(0xfffff), (0x1c << 10) | 0x1b,
 
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0x80, ~(1 << 3), 0x00000000,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, ~(1 << 3), 0x00000000,
 
-		RES_PORT_IO_32, CK804B_ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CK804B_PCI_E_X << 4) | (1 << 8),
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CK804B_PCI_E_X << 4) | (1 << 8),
 
 #if CK804_USE_NIC == 1
-		RES_PCI_IO, PCI_ADDR(0, CK804B_DEVN_BASE + 0xa, 0, 0xf8), 0xffffffbf, 0x00000040,
+		RES_PCI_IO, PCI_ADDR(0, 0xa, 0, 0xf8), 0xffffffbf, 0x00000040,
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 19, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 3, ~(0xff), ((0 << 4) | (1 << 2) | (0 << 0)),
 		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0 + 3, ~(0xff), ((0 << 4) | (1 << 2) | (1 << 0)),
-		RES_PCI_IO, PCI_ADDR(CK804B_BUSN, CK804B_DEVN_BASE + 1, 0, 0xe4), ~(1 << 23), (1 << 23),
+		RES_PCI_IO, PCI_ADDR(0, 1, 0, 0xe4), ~(1 << 23), (1 << 23),
 #endif
 	};
 
@@ -302,13 +271,13 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		if (busn[j] == 0) {
 			setup_resource_map_x_offset(ctrl_conf_master,
 				ARRAY_SIZE(ctrl_conf_master),
-				PCI_DEV(busn[0], 0, 0), io_base[0]);
+				PCI_DEV(busn[0], CK804_DEVN_BASE, 0), io_base[0]);
 			continue;
 		}
 
 		setup_resource_map_x_offset(ctrl_conf_slave,
 					    ARRAY_SIZE(ctrl_conf_slave),
-					    PCI_DEV(busn[j], 0, 0), io_base[j]);
+					    PCI_DEV(busn[j], CK804B_DEVN_BASE, 0), io_base[j]);
 	}
 
 	for (j = 0; j < ck804_num; j++) {

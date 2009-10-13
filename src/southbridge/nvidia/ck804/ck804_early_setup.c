@@ -103,12 +103,11 @@ static void ck804_early_set_port(void)
 static void ck804_early_clear_port(void)
 {
 	static const unsigned int ctrl_devport_conf_clear[] = {
-		PCI_ADDR(0, (CK804_DEVN_BASE+0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), 0,
+		PCI_ADDR(0, (CK804_DEVN_BASE + 0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), 0,
 #if CK804_NUM > 1
 		PCI_ADDR(CK804B_BUSN, (CK804B_DEVN_BASE+0x1), 0, ANACTRL_REG_POS), ~(0x0000ff00), 0,
 #endif
-
-		PCI_ADDR(0, (CK804_DEVN_BASE+0x1), 0, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
+		PCI_ADDR(0, (CK804_DEVN_BASE + 0x1), 0, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
 #if CK804_NUM > 1
 		PCI_ADDR(CK804B_BUSN, (CK804B_DEVN_BASE+0x1), 0, SYSCTRL_REG_POS), ~(0x0000ff00), 0,
 #endif
@@ -120,7 +119,6 @@ static void ck804_early_clear_port(void)
 static void ck804_early_setup(void)
 {
 	static const unsigned int ctrl_conf[] = {
-
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 2, 0x8c), 0xffff0000, 0x00009880,
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 2, 0x90), 0xffff000f, 0x000074a0,
 	RES_PCI_IO, PCI_ADDR(0, CK804_DEVN_BASE + 1, 2, 0xa0), 0xfffff0ff, 0x00000a00,
@@ -328,9 +326,8 @@ static void hard_reset(void)
 static void soft_reset(void)
 {
 	set_bios_reset();
-#if 1
+
 	/* link reset */
 	outb(0x02, 0x0cf9);
 	outb(0x06, 0x0cf9);
-#endif
 }

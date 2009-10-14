@@ -250,7 +250,6 @@ clear_fixed_var_mtrr_out:
 	wrmsr
 #endif /*  CONFIG_USE_FAILOVER_IMAGE == 1*/
 
-
 #if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 0)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 0))
 	/* disable cache */
 	movl	%cr0, %eax
@@ -299,7 +298,6 @@ wbcache_post_fam10_setup:
 	movl	%cr0, %eax
 	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
-
 
 	jmp_if_k8(fam10_end_part1)
 

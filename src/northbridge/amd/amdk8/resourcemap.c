@@ -245,7 +245,7 @@ static void setup_default_resource_map(void)
 	 * [23:16] Bus Number Base i
 	 *	   This field defines the lowest bus number in configuration region i
 	 * [31:24] Bus Number Limit i
-	 *	   This field defines the highest bus number in configuration regin i
+	 *	   This field defines the highest bus number in configuration region i
 	 */
 	PCI_ADDR(0, 0x18, 1, 0xE0), 0x0000FC88, 0xff000003,
 	PCI_ADDR(0, 0x18, 1, 0xE4), 0x0000FC88, 0x00000000,

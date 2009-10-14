@@ -4,7 +4,6 @@
 #define K8_ALLOCATE_IO_RANGE 1
 //#define K8_SCAN_PCI_BUS 1
 
-//used by raminit
 #define QRANK_DIMM_SUPPORT 1
 
 #if CONFIG_LOGICAL_CPUS==1
@@ -112,7 +111,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/nvidia/ck804/ck804_early_setup_car.c"
 
 #include "cpu/amd/car/copy_and_run.c"
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -259,10 +257,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sio_gpio_setup();
 
 	setup_mb_resource_map();
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
 
 	needs_reset = setup_coherent_ht_domain();
 
@@ -278,7 +272,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset |= ck804_early_setup_x();
 
 	if (needs_reset) {
-		printk_info("ht reset -\r\n");
+		printk_info("ht reset -\n");
 		soft_reset();
 	}
 

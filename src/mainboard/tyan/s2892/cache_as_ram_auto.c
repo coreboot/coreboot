@@ -1,6 +1,12 @@
 #define ASSEMBLY 1
 #define __ROMCC__
 
+#define QRANK_DIMM_SUPPORT 1
+
+#if CONFIG_LOGICAL_CPUS==1
+#define SET_NB_CFG_54 1
+#endif
+
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -10,6 +16,8 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
+
+#define post_code(x) outb(x, 0x80)
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
@@ -34,10 +42,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-static void memreset_setup(void)
-{
-}
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
@@ -52,8 +56,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#define QRANK_DIMM_SUPPORT 1
-
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
@@ -61,9 +63,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
  /* tyan does not want the default */
 #include "resourcemap.c"
 
-#if CONFIG_LOGICAL_CPUS==1
-#define SET_NB_CFG_54 1
-#endif
 #include "cpu/amd/dualcore/dualcore.c"
 
 #define CK804_NUM 1
@@ -108,11 +107,11 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Is this a cpu only reset? or Is this a secondary cpu? */
 	if ((cpu_init_detectedx) || (!boot_cpu())) {
-	if (last_boot_normal_x) {
-	goto normal_image;
-	} else {
-	goto fallback_image;
-	}
+		if (last_boot_normal_x) {
+			goto normal_image;
+		} else {
+			goto fallback_image;
+		}
 	}
 
 	/* Nothing special needs to be done to find bus 0 */
@@ -128,14 +127,14 @@ void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Is this a deliberate reset by the bios */
 //	post_code(0x22);
 	if (bios_reset_detected() && last_boot_normal_x) {
-	goto normal_image;
+		goto normal_image;
 	}
 	/* This is the primary cpu how should I boot? */
 	else if (do_normal_boot()) {
-	goto normal_image;
+		goto normal_image;
 	}
 	else {
-	goto fallback_image;
+		goto fallback_image;
 	}
  normal_image:
 //	post_code(0x23);
@@ -178,7 +177,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	unsigned nodes;
 
 	if (bist == 0) {
-		init_cpus(cpu_init_detectedx);
+		bsp_apicid = init_cpus(cpu_init_detectedx);
 	}
 
 //	post_code(0x32);
@@ -190,11 +189,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	setup_s2892_resource_map();
-#if 0
-	dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
-#endif
+	setup_mb_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
 
@@ -210,7 +205,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset |= ck804_early_setup_x();
 
 	if (needs_reset) {
-		print_info("ht reset -\r\n");
+		printk_info("ht reset -\n");
 		soft_reset();
 	}
 
@@ -221,23 +216,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(nodes, ctrl, spd_addr);
 
 	enable_smbus();
-#if 0
-	dump_spd_registers(&cpu[0]);
-#endif
-#if 0
-	dump_smbus_registers();
-#endif
 
-	memreset_setup();
 	sdram_initialize(nodes, ctrl);
-
-#if 0
-	print_pci_devices();
-#endif
-
-#if 0
-	dump_pci_devices();
-#endif
 
 	post_cache_as_ram();
 }

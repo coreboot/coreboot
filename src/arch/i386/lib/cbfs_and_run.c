@@ -11,6 +11,11 @@ void cbfs_and_run_core(char *filename, unsigned ebp)
 	u8 *dst;
 	print_debug("Jumping to image.\r\n");
 	dst = cbfs_load_stage(filename);
+	if (dst == (void *) -1) {
+		/* We should use die() here. */
+		print_emerg("Loading stage failed!\n");
+		for (;;);
+	}
 	print_debug("Jumping to image.\r\n");
 
 	__asm__ volatile (

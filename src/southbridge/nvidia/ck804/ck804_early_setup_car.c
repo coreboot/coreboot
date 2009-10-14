@@ -164,6 +164,18 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x24, 0xfcffff0f, 0x020000b0,
 
+	/* Activate master port on primary SATA controller. */
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x50), ~(0x1f000013), 0x15000013,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x64), ~(0x00000001), 0x00000001,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x68), ~(0x02000000), 0x02000000,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x70), ~(0x000f0000), 0x00040000,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0xa0), ~(0x000001ff), 0x00000150,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0xac), ~(0xffff8f00), 0x02aa8b00,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0x7c), ~(0x00000010), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0xc8), ~(0x0fff0fff), 0x000a000a,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0xd0), ~(0xf0000000), 0x00000000,
+		RES_PCI_IO, PCI_ADDR(0, 7, 0, 0xe0), ~(0xf0000000), 0x00000000,
+
 		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x50), ~(0x1f000013), 0x15000013,
 		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x64), ~(0x00000001), 0x00000001,
 		RES_PCI_IO, PCI_ADDR(0, 8, 0, 0x68), ~(0x02000000), 0x02000000,
@@ -177,7 +189,7 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x04, ~((0x3ff << 0) | (0x3ff << 10)), (0x21 << 0) | (0x22 << 10),
 
-// PANTA	RES_PORT_IO_32, ANACTRL_IO_BASE + 0x08, ~(0xfffff), (0x1c << 10) | 0x1b,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x08, ~(0xfffff), (0x1c << 10) | 0x1b,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, ~(1 << 3), 0x00000000,
 
@@ -251,8 +263,9 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x04, ~((0x3ff << 0) | (0x3ff << 10)), (0x21 << 0) | (0x22 << 10),
 
-//PANTA		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x08, ~(0xfffff), (0x1c << 10) | 0x1b,
+		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x08, ~(0xfffff), (0x1c << 10) | 0x1b,
 
+/* This line doesn't exist in the non-CAR version. */
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0x80, ~(1 << 3), 0x00000000,
 
 		RES_PORT_IO_32, ANACTRL_IO_BASE + 0xcc, ~((7 << 4) | (1 << 8)), (CK804B_PCI_E_X << 4) | (1 << 8),
@@ -292,10 +305,10 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 			       io_base[j] + ANACTRL_IO_BASE + 0xb4,
 			       io_base[j] + ANACTRL_IO_BASE + 0xb8,
 			       sata_ss_tbl, 64);
-//PANTA         setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xc0,
-//			       io_base[j] + ANACTRL_IO_BASE + 0xc4,
-//			       io_base[j] + ANACTRL_IO_BASE + 0xc8,
-//			       cpu_ss_tbl, 64);
+		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xc0,
+			       io_base[j] + ANACTRL_IO_BASE + 0xc4,
+			       io_base[j] + ANACTRL_IO_BASE + 0xc8,
+			       cpu_ss_tbl, 64);
 	}
 }
 

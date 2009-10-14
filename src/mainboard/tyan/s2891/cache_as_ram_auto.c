@@ -222,8 +222,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset |= ck804_early_setup_x();
 
 	if (needs_reset) {
-		print_info("ht reset -\r\n");
-	//	soft_reset();
+		printk_info("ht reset -\r\n");
+		soft_reset();
 	}
 
 	allow_all_aps_stop(bsp_apicid);

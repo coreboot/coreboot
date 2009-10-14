@@ -75,7 +75,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/ \
 	RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff),((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
 
-#include "southbridge/nvidia/ck804/ck804_early_setup.c"
+#include "southbridge/nvidia/ck804/ck804_early_setup_car.c"
 
 #include "cpu/amd/car/copy_and_run.c"
 

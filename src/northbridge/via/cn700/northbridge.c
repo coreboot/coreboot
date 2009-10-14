@@ -186,8 +186,8 @@ static void pci_domain_set_resources(device_t dev)
 		}
 
 #if CONFIG_HAVE_HIGH_TABLES == 1
-		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
-		high_tables_size = HIGH_TABLES_SIZE* 1024;
+		high_tables_base = (tolmk - CONFIG_VIDEO_MB * 1024 - HIGH_TABLES_SIZE) * 1024;
+		high_tables_size = HIGH_TABLES_SIZE * 1024;
 		printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
 #endif
 

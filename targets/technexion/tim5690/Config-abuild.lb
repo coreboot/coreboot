@@ -1,0 +1,26 @@
+# This will make a target directory of ./VENDOR_MAINBOARD
+
+target VENDOR_MAINBOARD
+mainboard VENDOR/MAINBOARD
+
+option CC="CROSSCC"
+option CONFIG_CROSS_COMPILE="CROSS_PREFIX"
+option HOSTCC="CROSS_HOSTCC"
+
+__COMPRESSION__
+__LOGLEVEL__
+
+romimage "normal"
+	option CONFIG_USE_FALLBACK_IMAGE=0
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+	option COREBOOT_EXTRA_VERSION=".0-normal"
+	payload __PAYLOAD__
+end
+
+romimage "fallback" 
+	option CONFIG_USE_FALLBACK_IMAGE=1
+	option CONFIG_ROM_IMAGE_SIZE=0x20000
+	option COREBOOT_EXTRA_VERSION=".0-fallback"
+	payload __PAYLOAD__
+end
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"

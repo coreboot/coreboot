@@ -42,8 +42,8 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 	dword |= val;
 	writel(dword, port);
 
-	/* Wait for readback of register to 
-	 * match what was just written to it 
+	/* Wait for readback of register to
+	 * match what was just written to it
 	 */
 	count = 50;
 	do {
@@ -64,11 +64,11 @@ static u32 codec_detect(u8 * base)
 	u32 dword;
 
 	/* Set Bit0 to 0 to enter reset state (BAR + 0x8)[0] */
-	if (set_bits(base + 0x08, 1, 0) == -1) 
+	if (set_bits(base + 0x08, 1, 0) == -1)
 		goto no_codec;
 
 	/* Set Bit 0 to 1 to exit reset state (BAR + 0x8)[0] */
-	if (set_bits(base + 0x08, 1, 1) == -1) 
+	if (set_bits(base + 0x08, 1, 1) == -1)
 		goto no_codec;
 
 	/* Delay for 1 ms since the BKDG does */
@@ -79,7 +79,7 @@ static u32 codec_detect(u8 * base)
 	dword &= 0x0F;
 	if (!dword)
 		goto no_codec;
-		
+
 	return dword;
 
 no_codec:
@@ -271,10 +271,10 @@ static void hda_init(struct device *dev)
 	struct resource *res;
 	u32 codec_mask;
 	device_t sm_dev;
-	
+
 	/* Enable azalia - PM_io 0x59[4], disable ac97 - PM_io 0x59[1..0] */
 	pm_iowrite(0x59, 0xB);
-	
+
 	/* Find the SMBus */
 	/* FIXME: Need to find out why the call below crashes. */
 	/*sm_dev = dev_find_device(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_ATI_SB600_SM, 0);*/
@@ -294,8 +294,8 @@ static void hda_init(struct device *dev)
 	pci_write_config32(dev, 0x2c, dword);
 
 	/* Read in BAR */
-	/* Is this right? HDA allows for a 64-bit BAR 
-	 * but this is only setup for a 32-bit one 
+	/* Is this right? HDA allows for a 64-bit BAR
+	 * but this is only setup for a 32-bit one
 	 */
 	res = find_resource(dev, 0x10);
 	if (!res)

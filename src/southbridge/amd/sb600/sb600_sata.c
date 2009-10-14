@@ -185,14 +185,14 @@ static void sata_init(struct device *dev)
 			byte = readb(sata_bar5 + 0x12C + 0x80 * i);
 
 			/* Set Reset Bit and 1.5g bit */
-			byte |= 0x11; 
+			byte |= 0x11;
 			writeb(byte, (sata_bar5 + 0x12C + 0x80 * i));
-			
-			/* Wait 1ms */			
-			mdelay(1); 
+
+			/* Wait 1ms */
+			mdelay(1);
 
 			/* Clear Reset Bit */
-			byte &= ~0x01; 
+			byte &= ~0x01;
 			writeb(byte, (sata_bar5 + 0x12C + 0x80 * i));
 
 			/* Wait 1ms */

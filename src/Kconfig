@@ -237,31 +237,47 @@ config GFXUMA
 #
 # endmenu
 
+config HAVE_ACPI_TABLES
+	bool
+
+config HAVE_MP_TABLE
+	bool
+
+config HAVE_PIRQ_TABLE
+	bool
+
+config HAVE_HIGH_TABLES
+	bool
+
 menu "System tables"
 
 config HAVE_LOW_TABLES
 	bool
 	default y
 
-config HAVE_HIGH_TABLES
+config WRITE_HIGH_TABLES
 	bool "Write 'high' tables to avoid being overwritten in F segment"
+	depends on HAVE_HIGH_TABLES
 	default y
 
 config MULTIBOOT
 	bool "Generate Multiboot tables (for GRUB2)"
 	default n
 
-config HAVE_ACPI_TABLES
+config GENERATE_ACPI_TABLES
+	depends on HAVE_ACPI_TABLES
 	bool "Generate ACPI tables"
-	default n
+	default y
 
-config HAVE_MP_TABLE
+config GENERATE_MP_TABLE
+	depends on HAVE_MP_TABLE
 	bool "Generate an MP table"
-	default n
+	default y
 
-config HAVE_PIRQ_TABLE
+config GENERATE_PIRQ_TABLE
+	depends on HAVE_PIRQ_TABLE
 	bool "Generate a PIRQ table"
-	default n
+	default y
 
 endmenu
 

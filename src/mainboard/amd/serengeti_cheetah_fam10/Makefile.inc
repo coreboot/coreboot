@@ -23,17 +23,17 @@ driver-y += mainboard.o
 
 # Needed by irq_tables and mptable and acpi_tables.
 obj-y += get_bus_conf.o
-obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
-obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += dsdt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += fadt.o
+obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
+obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 
 # ./ssdt.o is in northbridge/amd/amdfam10/Makefile.inc
-obj-$(CONFIG_HAVE_ACPI_TABLES) += ssdt2.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += ssdt3.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += ssdt4.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += ssdt5.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt2.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt3.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt4.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt5.o
 
 driver-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
 

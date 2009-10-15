@@ -23,8 +23,8 @@ driver-y +=  mainboard.o
 
 #needed by irq_tables and mptable and acpi_tables
 obj-y += get_bus_conf.o
-obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
-obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
+obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_USE_INIT) += cache_as_ram_auto.o
 obj-$(CONFIG_AP_CODE_IN_CAR) += apc_auto.o
 

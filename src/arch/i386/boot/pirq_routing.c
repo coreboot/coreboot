@@ -3,7 +3,7 @@
 #include <string.h>
 #include <device/pci.h>
 
-#if (CONFIG_DEBUG==1 && CONFIG_HAVE_PIRQ_TABLE==1)
+#if (CONFIG_DEBUG==1 && CONFIG_GENERATE_PIRQ_TABLE==1)
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {
 	uint8_t *addr = (uint8_t *)rt;
@@ -83,7 +83,7 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 #define verify_copy_pirq_routing_table(addr)
 #endif
 
-#if CONFIG_HAVE_PIRQ_TABLE==1
+#if CONFIG_GENERATE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long addr)
 {
 	/* Align the table to be 16 byte aligned. */
@@ -100,7 +100,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 }
 #endif
 
-#if (CONFIG_PIRQ_ROUTE==1 && CONFIG_HAVE_PIRQ_TABLE==1)
+#if (CONFIG_PIRQ_ROUTE==1 && CONFIG_GENERATE_PIRQ_TABLE==1)
 void pirq_routing_irqs(unsigned long addr)
 {
 	int i, j, k, num_entries;

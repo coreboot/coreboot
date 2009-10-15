@@ -1,5 +1,5 @@
-uses CONFIG_HAVE_MP_TABLE
-uses CONFIG_HAVE_PIRQ_TABLE
+uses CONFIG_GENERATE_MP_TABLE
+uses CONFIG_GENERATE_PIRQ_TABLE
 uses CONFIG_USE_FALLBACK_IMAGE
 uses CONFIG_HAVE_FALLBACK_BOOT
 uses CONFIG_HAVE_HARD_RESET
@@ -27,7 +27,7 @@ uses CONFIG_ROMBASE
 uses CONFIG_RAMBASE
 uses CONFIG_XIP_ROM_SIZE
 uses CONFIG_XIP_ROM_BASE
-uses CONFIG_HAVE_MP_TABLE
+uses CONFIG_GENERATE_MP_TABLE
 uses CONFIG_CROSS_COMPILE
 uses CC
 uses HOSTCC
@@ -67,7 +67,7 @@ default CONFIG_HAVE_FALLBACK_BOOT=1
 ##
 ## no MP table
 ##
-default CONFIG_HAVE_MP_TABLE=0
+default CONFIG_GENERATE_MP_TABLE=0
 
 ##
 ## Build code to reset the motherboard from coreboot
@@ -82,7 +82,7 @@ default CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2=1
 ##
 ## Build code to export a programmable irq routing table
 ##
-default CONFIG_HAVE_PIRQ_TABLE=1
+default CONFIG_GENERATE_PIRQ_TABLE=1
 default CONFIG_IRQ_SLOT_COUNT=3
 default CONFIG_PIRQ_ROUTE=1
 #object irq_tables.o

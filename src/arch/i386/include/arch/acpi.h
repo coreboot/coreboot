@@ -14,7 +14,7 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
-#if CONFIG_HAVE_ACPI_TABLES==1
+#if CONFIG_GENERATE_ACPI_TABLES==1
 
 #include <stdint.h>
  
@@ -404,7 +404,7 @@ do {                                                    \
 
 #define IO_APIC_ADDR	0xfec00000UL
 
-#else // CONFIG_HAVE_ACPI_TABLES
+#else // CONFIG_GENERATE_ACPI_TABLES
 
 #define write_acpi_tables(start) (start)
 

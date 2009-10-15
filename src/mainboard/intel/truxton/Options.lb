@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-uses CONFIG_HAVE_MP_TABLE
-uses CONFIG_HAVE_PIRQ_TABLE
+uses CONFIG_GENERATE_MP_TABLE
+uses CONFIG_GENERATE_PIRQ_TABLE
 uses CONFIG_USE_FALLBACK_IMAGE
 uses CONFIG_HAVE_FALLBACK_BOOT
 uses CONFIG_HAVE_HARD_RESET
@@ -97,14 +97,14 @@ default CONFIG_HAVE_HARD_RESET=1
 ##
 ## Build code to export a programmable irq routing table
 ##
-default CONFIG_HAVE_PIRQ_TABLE=1
+default CONFIG_GENERATE_PIRQ_TABLE=1
 default CONFIG_IRQ_SLOT_COUNT=1
 
 ##
 ## Build code to export an x86 MP table
 ## Useful for specifying IRQ routing values
 ##
-default CONFIG_HAVE_MP_TABLE=1
+default CONFIG_GENERATE_MP_TABLE=1
 
 ##
 ## Build code for SMP support

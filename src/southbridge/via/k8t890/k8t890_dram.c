@@ -92,7 +92,7 @@ static void get_memres(void *gp, struct device *dev, struct resource *res)
 		(proposed_base < ((uint64_t) 0xffffffff) )) {
 		resmax = res;
 	}
-#if CONFIG_HAVE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES==1
 /* in arch/i386/boot/tables.c */
 extern uint64_t high_tables_base, high_tables_size;
 

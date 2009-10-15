@@ -1,6 +1,6 @@
-uses CONFIG_HAVE_MP_TABLE
-uses CONFIG_HAVE_PIRQ_TABLE
-uses CONFIG_HAVE_ACPI_TABLES
+uses CONFIG_GENERATE_MP_TABLE
+uses CONFIG_GENERATE_PIRQ_TABLE
+uses CONFIG_GENERATE_ACPI_TABLES
 uses CONFIG_HAVE_ACPI_RESUME
 uses CONFIG_ACPI_SSDTX_NUM
 uses CONFIG_USE_FALLBACK_IMAGE
@@ -123,17 +123,17 @@ default CONFIG_HAVE_HARD_RESET=1
 ##
 ## Build code to export a programmable irq routing table
 ##
-default CONFIG_HAVE_PIRQ_TABLE=1
+default CONFIG_GENERATE_PIRQ_TABLE=1
 default CONFIG_IRQ_SLOT_COUNT=11
 
 ##
 ## Build code to export an x86 MP table
 ## Useful for specifying IRQ routing values
 ##
-default CONFIG_HAVE_MP_TABLE=1
+default CONFIG_GENERATE_MP_TABLE=1
 
 ## ACPI tables will be included
-default CONFIG_HAVE_ACPI_TABLES=1
+default CONFIG_GENERATE_ACPI_TABLES=1
 ## extra SSDT num
 default CONFIG_ACPI_SSDTX_NUM=1
 

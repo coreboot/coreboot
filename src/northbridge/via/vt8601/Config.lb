@@ -1,7 +1,7 @@
-uses CONFIG_HAVE_HIGH_TABLES
+uses CONFIG_WRITE_HIGH_TABLES
 
 config chip.h
 
 driver northbridge.o
 
-default CONFIG_HAVE_HIGH_TABLES=1
+default CONFIG_WRITE_HIGH_TABLES=1

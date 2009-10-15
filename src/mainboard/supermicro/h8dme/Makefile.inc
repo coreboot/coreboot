@@ -24,8 +24,8 @@ driver-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
 
 # Needed by irq_tables and mptable and acpi_tables.
 obj-y += get_bus_conf.o
-obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
-obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
+obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 
 # This is part of the conversion to init-obj and away from included code.
 

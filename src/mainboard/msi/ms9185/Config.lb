@@ -39,11 +39,11 @@ driver mainboard.o
 #needed by irq_tables and mptable and acpi_tables
 object get_bus_conf.o
 
-if CONFIG_HAVE_MP_TABLE
+if CONFIG_GENERATE_MP_TABLE
        object mptable.o
 end
 
-if CONFIG_HAVE_PIRQ_TABLE
+if CONFIG_GENERATE_PIRQ_TABLE
        object irq_tables.o
 end
 

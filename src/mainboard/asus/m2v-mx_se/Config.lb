@@ -27,7 +27,7 @@ include /config/nofailovercalculation.lb
 arch i386 end 
 
 driver mainboard.o
-if CONFIG_HAVE_ACPI_TABLES
+if CONFIG_GENERATE_ACPI_TABLES
   object acpi_tables.o
   makerule dsdt.c
     depends "$(CONFIG_MAINBOARD)/dsdt.asl"

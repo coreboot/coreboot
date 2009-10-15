@@ -23,11 +23,11 @@ driver-y += mainboard.o
 
 # Needed by irq_tables and mptable and acpi_tables.
 obj-y += get_bus_conf.o
-obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
-obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += dsdt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += fadt.o
+obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
+obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 
 # ./ssdt.o is in northbridge/amd/amdk8/Config.lb
 obj-$(CONFIG_ACPI_SSDTX_NUM) += ssdt2.o

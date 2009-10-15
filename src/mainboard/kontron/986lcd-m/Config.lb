@@ -46,11 +46,11 @@ arch i386 end
 
 driver mainboard.o
 driver rtl8168.o
-if CONFIG_HAVE_MP_TABLE object mptable.o end
-if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_GENERATE_MP_TABLE object mptable.o end
+if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
 if CONFIG_HAVE_SMI_HANDLER smmobject mainboard_smi.o end
 
-if CONFIG_HAVE_ACPI_TABLES
+if CONFIG_GENERATE_ACPI_TABLES
 	object fadt.o
 	object acpi_tables.o
 	makerule dsdt.c

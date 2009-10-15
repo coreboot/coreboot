@@ -15,7 +15,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-uses CONFIG_HAVE_HIGH_TABLES
+uses CONFIG_WRITE_HIGH_TABLES
 
 config chip.h
 
@@ -28,4 +28,4 @@ driver cx700_lpc.o
 driver cx700_sata.o
 driver cx700_vga.o
 
-default CONFIG_HAVE_HIGH_TABLES=1
+default CONFIG_WRITE_HIGH_TABLES=1

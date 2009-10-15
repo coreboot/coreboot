@@ -1,4 +1,4 @@
-uses CONFIG_HAVE_ACPI_TABLES
+uses CONFIG_GENERATE_ACPI_TABLES
 
 config chip.h
 driver ck804.o
@@ -15,6 +15,6 @@ driver ck804_pcie.o
 driver ck804_ht.o
 object ck804_reset.o
 
-if CONFIG_HAVE_ACPI_TABLES
+if CONFIG_GENERATE_ACPI_TABLES
 	object ck804_fadt.o
 end

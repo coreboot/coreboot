@@ -39,7 +39,7 @@ struct irq_routing_table {
 
 extern const struct irq_routing_table intel_irq_routing_table;
 
-#if CONFIG_HAVE_PIRQ_TABLE==1
+#if CONFIG_GENERATE_PIRQ_TABLE==1
 unsigned long copy_pirq_routing_table(unsigned long start);
 unsigned long write_pirq_routing_table(unsigned long start);
 #if CONFIG_PIRQ_ROUTE==1

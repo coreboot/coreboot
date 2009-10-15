@@ -1,1 +1,1 @@
-obj-$(CONFIG_HAVE_ACPI_TABLES) += acpi.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.o

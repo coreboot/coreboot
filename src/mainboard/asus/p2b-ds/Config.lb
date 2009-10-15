@@ -25,8 +25,8 @@ default CONFIG_XIP_ROM_BASE = 0xffffffff - CONFIG_XIP_ROM_SIZE + 1
 
 arch i386 end
 driver mainboard.o
-if CONFIG_HAVE_MP_TABLE object mptable.o end
-if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_GENERATE_MP_TABLE object mptable.o end
+if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
 makerule ./failover.E
 	depends "$(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
 	action "../romcc -E -O2 -mcpu=p2 --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"

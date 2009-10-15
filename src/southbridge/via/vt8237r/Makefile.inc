@@ -24,4 +24,4 @@ driver-y += vt8237r_lpc.o
 driver-y += vt8237r_sata.o
 driver-y += vt8237r_usb.o
 driver-y += vt8237r_nic.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += vt8237_fadt.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += vt8237_fadt.o

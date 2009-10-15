@@ -39,9 +39,9 @@ extern unsigned char AmlCode[];
 
 /*
  * These four macros are copied from <arch/smp/mpspec.h>, I have to do this
- * since the "default CONFIG_HAVE_MP_TABLE = 0" in Options.lb, and also since
+ * since the "default CONFIG_GENERATE_MP_TABLE = 0" in Options.lb, and also since
  * mainboard/via/... have no mptable.c (so that I can not set
- * CONFIG_HAVE_MP_TABLE = 1) as many other mainboards.
+ * CONFIG_GENERATE_MP_TABLE = 1) as many other mainboards.
  * So I have to copy these four to here. acpi_fill_madt() needs this.
  */
 #define MP_IRQ_POLARITY_DEFAULT	0x0

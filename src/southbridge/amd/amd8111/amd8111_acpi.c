@@ -66,7 +66,7 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	return do_smbus_write_byte(res->base, device, address, val);
 }
 
-#if CONFIG_HAVE_ACPI_TABLES == 1
+#if CONFIG_GENERATE_ACPI_TABLES == 1
 unsigned pm_base;
 #endif
 
@@ -140,7 +140,7 @@ static void acpi_init(struct device *dev)
 				(on*12)+(on>>1),(on&1)*5);
 	}
 
-#if CONFIG_HAVE_ACPI_TABLES == 1
+#if CONFIG_GENERATE_ACPI_TABLES == 1
 	pm_base = pci_read_config16(dev, 0x58) & 0xff00;
 	printk_debug("pm_base: 0x%04x\n",pm_base);
 #endif

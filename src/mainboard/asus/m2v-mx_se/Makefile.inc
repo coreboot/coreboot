@@ -23,8 +23,8 @@
 driver-y +=  mainboard.o
 
 #needed by irq_tables and mptable and acpi_tables
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  dsdt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) +=  acpi_tables.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) +=  dsdt.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) +=  acpi_tables.o
 
 # This is part of the conversion to init-obj and away from included code.
 

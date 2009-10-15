@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-uses CONFIG_HAVE_ACPI_TABLES
+uses CONFIG_GENERATE_ACPI_TABLES
 
 config chip.h
 
@@ -28,6 +28,6 @@ driver vt8237r_lpc.o
 driver vt8237r_sata.o
 driver vt8237r_usb.o
 driver vt8237r_nic.o
-if CONFIG_HAVE_ACPI_TABLES
+if CONFIG_GENERATE_ACPI_TABLES
 	object vt8237_fadt.o
 end

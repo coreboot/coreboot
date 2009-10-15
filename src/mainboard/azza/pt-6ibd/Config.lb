@@ -24,7 +24,7 @@ include /config/nofailovercalculation.lb
 default CONFIG_XIP_ROM_BASE = 0xffffffff - CONFIG_XIP_ROM_SIZE + 1
 arch i386 end
 driver mainboard.o
-if CONFIG_HAVE_PIRQ_TABLE
+if CONFIG_GENERATE_PIRQ_TABLE
 	object irq_tables.o
 end
 makerule ./failover.E

@@ -436,7 +436,7 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	return mem;
 }
 
-#if CONFIG_HAVE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES == 1
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
@@ -447,7 +447,7 @@ unsigned long write_coreboot_table(
 	struct lb_header *head;
 	struct lb_memory *mem;
 
-#if CONFIG_HAVE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES == 1
 	printk_debug("Writing high table forward entry at 0x%08lx\n",
 			low_table_end);
 	head = lb_table_init(low_table_end);
@@ -505,7 +505,7 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		rom_table_start, rom_table_end-rom_table_start);
 
-#if CONFIG_HAVE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES == 1
 	printk_debug("Adding high table area\n");
 	// should this be LB_MEM_ACPI?
 	lb_add_memory_range(mem, LB_MEM_TABLE,

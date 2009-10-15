@@ -41,8 +41,8 @@ ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 
 driver-y += mainboard.o
 
-obj-$(CONFIG_HAVE_MP_TABLE) += mptable.o
-obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
+obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 
 ifdef POST_EVALUATION
 

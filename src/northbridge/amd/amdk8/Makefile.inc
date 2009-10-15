@@ -1,7 +1,7 @@
 driver-y += northbridge.o
 driver-y += misc_control.o
 obj-y += get_sblk_pci1234.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += amdk8_acpi.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += amdk8_acpi.o
 
 # Not sure what to do with these yet. How did raminit_test even work?
 # Should be a target in -y form.

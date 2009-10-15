@@ -22,11 +22,11 @@
 initobj-y += crt0.o
 obj-y += mainboard.o
 obj-y += vgabios.o
-obj-$(CONFIG_HAVE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 
-obj-$(CONFIG_HAVE_ACPI_TABLES) += fadt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += dsdt.o
-obj-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 
 ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
 ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds

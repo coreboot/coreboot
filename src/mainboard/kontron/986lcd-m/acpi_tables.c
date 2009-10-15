@@ -355,7 +355,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk_debug("ACPI:     * DMI (Linux workaround)\n");
 	memcpy((void *)0xfff80, dmi_table, DMI_TABLE_SIZE);
-#if CONFIG_HAVE_HIGH_TABLES == 1
+#if CONFIG_WRITE_HIGH_TABLES == 1
 	memcpy((void *)current, dmi_table, DMI_TABLE_SIZE);
 	current += DMI_TABLE_SIZE;
 	ALIGN_CURRENT;

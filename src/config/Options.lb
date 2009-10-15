@@ -601,7 +601,7 @@ define CONFIG_AP_IN_SIPI_WAIT
 	export always
 	comment "Should application processors go to SIPI wait state after initialization? (Required for Intel Core Duo)"
 end
-define CONFIG_HAVE_MP_TABLE
+define CONFIG_GENERATE_MP_TABLE
 	default none
 	export used
 	comment "Define to build an MP table"
@@ -696,7 +696,7 @@ end
 # IRQ options
 ###############################################
 
-define CONFIG_HAVE_PIRQ_TABLE
+define CONFIG_GENERATE_PIRQ_TABLE
 	default none
 	export used
 	comment "Define if we have a PIRQ table"
@@ -886,7 +886,7 @@ define CONFIG_FAKE_SPDROM
 	comment "Use this to fake spd rom values"
 end
 
-define CONFIG_HAVE_ACPI_TABLES
+define CONFIG_GENERATE_ACPI_TABLES
 	default 0
 	export always
 	comment "Define to build ACPI tables"
@@ -1131,7 +1131,7 @@ define CONFIG_HAVE_LOW_TABLES
 	comment "Enable if ACPI, PIRQ, MP tables are supposed to live in the low megabyte"
 end
 
-define CONFIG_HAVE_HIGH_TABLES
+define CONFIG_WRITE_HIGH_TABLES
 	default 0
 	export always
 	comment "Enable if ACPI, PIRQ, MP tables are supposed to live at top of memory"

@@ -476,7 +476,7 @@ static struct device_operations cpu_bus_ops = {
 
 void chipsetInit (void);
 
-#if CONFIG_HAVE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
@@ -503,7 +503,7 @@ static void enable_dev(struct device *dev)
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
 		tomk = ((sizeram() - VIDEO_MB) * 1024) - SMM_SIZE;
-#if CONFIG_HAVE_HIGH_TABLES==1
+#if CONFIG_WRITE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */
 		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE * 1024;

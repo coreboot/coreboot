@@ -13,4 +13,4 @@ driver-y += ck804_ht.o
 
 obj-y += ck804_reset.o
 
-obj-$(CONFIG_HAVE_ACPI_TABLES) += ck804_fadt.o
+obj-$(CONFIG_GENERATE_ACPI_TABLES) += ck804_fadt.o

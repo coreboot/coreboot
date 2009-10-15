@@ -28,7 +28,7 @@ default CONFIG_ROM_PAYLOAD = 1
 arch i386 end 
 
 driver mainboard.o
-if CONFIG_HAVE_ACPI_TABLES
+if CONFIG_GENERATE_ACPI_TABLES
   object acpi_tables.o
   makerule dsdt.c
     depends "$(CONFIG_MAINBOARD)/dsdt.asl"
@@ -37,8 +37,8 @@ if CONFIG_HAVE_ACPI_TABLES
   end
   object ./dsdt.o
 end
-if CONFIG_HAVE_MP_TABLE object mptable.o end
-if CONFIG_HAVE_PIRQ_TABLE object irq_tables.o end
+if CONFIG_GENERATE_MP_TABLE object mptable.o end
+if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
 # object reset.o
 
   if CONFIG_USE_INIT

@@ -2,7 +2,7 @@
 #Define vga_rom_address = 0xfff0000
 #Define port_enable, (bit map): GFX(2,3), GPP(4,5,6,7)
 #Define gfx_dev2_dev3, 0: a link will never be established on Dev2 or Dev3,
-#			1: the system allows a PCIE link to be established on Dev2 or Dev3.
+#					   1: the system allows a PCIE link to be established on Dev2 or Dev3.
 #Define gfx_dual_slot, 0: single slot, 1: dual slot
 #Define gfx_lane_reversal, 0: disable lane reversal, 1: enable
 #Define gfx_tmds, 0: didn't support TMDS, 1: support
@@ -106,10 +106,10 @@ chip northbridge/amd/amdk8/root_complex
 								io 0x60 = 0xa10
 							end
 							device pnp 2e.c off # PECI, SST
-							endif
-							
+							end
 						end	#superio/winbond/w83627dhg
 						#chip superio/smsc/fdc37n972
+						# seems this chip is not used?
 						#end
 					end		#LPC
 					device pci 14.4 on end # PCI 0x4384

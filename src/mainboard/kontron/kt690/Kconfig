@@ -1,0 +1,124 @@
+config BOARD_KONTRON_KT690
+	bool "KT690"
+	select ARCH_X86
+	select CPU_AMD_K8
+	select CPU_AMD_SOCKET_S1G1
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_RS690
+	select SOUTHBRIDGE_AMD_SB600
+	select SUPERIO_WINBOND_W83627DHG
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_MAINBOARD_RESOURCES
+	select GFXUMA
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select IOAPIC
+	select HAVE_ACPI_TABLES
+
+config MAINBOARD_DIR
+	string
+	default kontron/kt690
+	depends on BOARD_KONTRON_KT690
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1488
+	depends on BOARD_KONTRON_KT690
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x6900
+	depends on BOARD_KONTRON_KT690
+
+config LB_CKS_RANGE_START
+	int
+	default 49
+	depends on BOARD_KONTRON_KT690
+
+config APIC_ID_OFFSET
+	hex
+	default 0x0
+	depends on BOARD_KONTRON_KT690
+
+config VIDEO_MB
+	int
+	default 1
+	depends on BOARD_KONTRON_KT690
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_KONTRON_KT690
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_KONTRON_KT690
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "KT690"
+	depends on BOARD_KONTRON_KT690
+
+config HEAP_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_KONTRON_KT690
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_KONTRON_KT690
+
+config MAX_CPUS
+	int
+	default 2
+	depends on BOARD_KONTRON_KT690
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+	depends on BOARD_KONTRON_KT690
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_KONTRON_KT690
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_KONTRON_KT690
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 1
+	depends on BOARD_KONTRON_KT690
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default y
+	depends on BOARD_KONTRON_KT690
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x1
+	depends on BOARD_KONTRON_KT690
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_KONTRON_KT690
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_KONTRON_KT690
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_KONTRON_KT690

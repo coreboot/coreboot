@@ -14,11 +14,10 @@ config BOARD_TECHNEXION_TIM5690
 	select USE_DCACHE_RAM
 	select HAVE_HARD_RESET
 	select IOAPIC
-	select MEM_TRAIN_SEQ
-	select AP_CODE_IN_CAR
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
-	select WAIT_BEFORE_CPUS_INIT
 	select HAVE_ACPI_TABLES
+	select GFXUMA
+	select HAVE_MAINBOARD_RESOURCES
 
 config MAINBOARD_DIR
 	string
@@ -42,7 +41,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex
-	default 0x8
+	default 0x0
 	depends on BOARD_TECHNEXION_TIM5690
 
 config LB_CKS_RANGE_END
@@ -82,17 +81,17 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config SB_HT_CHAIN_ON_BUS0
 	int
-	default 2
+	default 1
 	depends on BOARD_TECHNEXION_TIM5690
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
-	default 0x6
+	default 0x1
 	depends on BOARD_TECHNEXION_TIM5690
 
 config HT_CHAIN_UNITID_BASE
 	hex
-	default 0xa
+	default 0x0
 	depends on BOARD_TECHNEXION_TIM5690
 
 config USE_INIT
@@ -103,4 +102,39 @@ config USE_INIT
 config IRQ_SLOT_COUNT
 	int
 	default 11
+	depends on BOARD_TECHNEXION_TIM5690
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1022
+	depends on BOARD_TECHNEXION_TIM5690
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x3050
+	depends on BOARD_TECHNEXION_TIM5690
+
+config STACK_SIZE
+	hex
+	default 0x2000
+	depends on BOARD_TECHNEXION_TIM5690
+
+config HEAP_SIZE
+	hex
+	default 0x4000
+	depends on BOARD_TECHNEXION_TIM5690
+
+config RAMBASE
+	hex
+	default 0x4000
+	depends on BOARD_TECHNEXION_TIM5690
+
+config VIDEO_MB
+	int
+	default 1
+	depends on BOARD_TECHNEXION_TIM5690
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
 	depends on BOARD_TECHNEXION_TIM5690

@@ -64,7 +64,6 @@ uses CONFIG_UDELAY_TSC
 uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_CONSOLE_VGA
-uses CONFIG_MAX_PCI_BUSES
 uses CONFIG_TTYS0_BAUD
 uses CONFIG_VIDEO_MB
 uses CONFIG_IOAPIC
@@ -109,10 +108,4 @@ default HOSTCC = "gcc"
 #default CONFIG_MAINBOARD = "EPIA-N"
 default CONFIG_HAVE_MAINBOARD_RESOURCES = 1
 
-##
-## Set this to the max PCI bus number you would ever use for PCI config I/O.
-## Setting this number very high will make pci_locate_device() take a long
-## time when it can't find a device.
-##
-default CONFIG_MAX_PCI_BUSES = 3
 end

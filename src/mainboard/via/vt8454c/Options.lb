@@ -72,7 +72,6 @@ uses CONFIG_UDELAY_TSC
 uses CONFIG_TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_CONSOLE_VGA
-uses CONFIG_MAX_PCI_BUSES 
 uses CONFIG_SMP
 uses CONFIG_IOAPIC
 
@@ -183,15 +182,6 @@ default CONFIG_ROM_PAYLOAD     = 1
 default CONFIG_CROSS_COMPILE=""
 default CC="$(CONFIG_CROSS_COMPILE)gcc -m32"
 default HOSTCC="gcc"
-
-##
-## Set this to the max PCI bus number you 
-## would ever use for PCI config IO.
-## Setting this number very high will make 
-## pci_locate_device take a long time when
-## it can't find a device.
-##
-default CONFIG_MAX_PCI_BUSES = 0x80
 
 ##
 ## Disable the gdb stub by default

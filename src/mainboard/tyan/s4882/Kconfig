@@ -14,6 +14,7 @@ config BOARD_TYAN_S4882
 	select USE_DCACHE_RAM
 	select HAVE_HARD_RESET
 	select IOAPIC
+	select BOARD_ROMSIZE_KB_512
 
 config MAINBOARD_DIR
 	string

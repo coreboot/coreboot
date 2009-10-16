@@ -15,6 +15,7 @@ config BOARD_MSI_MS9185
 	select HAVE_HARD_RESET
 	select HAVE_ACPI_TABLES
 	select IOAPIC
+	select BOARD_ROMSIZE_KB_512
 
 config MAINBOARD_DIR
 	string

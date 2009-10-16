@@ -10,6 +10,7 @@ config BOARD_INTEL_JARRELL
 	select HAVE_MP_TABLE
 	select UDELAY_TSC
 	select ATI_RAGE_XL
+	select BOARD_ROMSIZE_KB_2048
 
 config MAINBOARD_DIR
 	string

@@ -1,4 +1,3 @@
-
 config BOARD_TYAN_S2912_FAM10
 	bool "S2912_FAM10"
 	select ARCH_X86
@@ -16,7 +15,8 @@ config BOARD_TYAN_S2912_FAM10
 	select IOAPIC
 	select MEM_TRAIN_SEQ
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
- 
+	select BOARD_ROMSIZE_KB_1024
+
 config MAINBOARD_DIR
 	string
 	default tyan/s2912_fam10

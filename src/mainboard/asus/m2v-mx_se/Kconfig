@@ -34,6 +34,7 @@ config BOARD_ASUS_M2V_MX_SE
 	select IOAPIC
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_512
 
 config MAINBOARD_DIR
 	string

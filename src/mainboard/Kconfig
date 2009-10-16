@@ -370,10 +370,28 @@ source "src/mainboard/thomson/Kconfig"
 source "src/mainboard/tyan/Kconfig"
 source "src/mainboard/via/Kconfig"
 
+config BOARD_ROMSIZE_KB_128
+	bool
+config BOARD_ROMSIZE_KB_256
+	bool
+config BOARD_ROMSIZE_KB_512
+	bool
+config BOARD_ROMSIZE_KB_1024
+	bool
+config BOARD_ROMSIZE_KB_2048
+	bool
+config BOARD_ROMSIZE_KB_4096
+	bool
+
 # TODO: No help text possible for choice fields?
 choice
 	prompt "ROM chip size"
-	default COREBOOT_ROMSIZE_KB_256
+	default COREBOOT_ROMSIZE_KB_128 if BOARD_ROMSIZE_KB_128
+	default COREBOOT_ROMSIZE_KB_256 if BOARD_ROMSIZE_KB_256
+	default COREBOOT_ROMSIZE_KB_512 if BOARD_ROMSIZE_KB_512
+	default COREBOOT_ROMSIZE_KB_1024 if BOARD_ROMSIZE_KB_1024
+	default COREBOOT_ROMSIZE_KB_2048 if BOARD_ROMSIZE_KB_2048
+	default COREBOOT_ROMSIZE_KB_4096 if BOARD_ROMSIZE_KB_4096
 	help
 	  Select the size of the ROM chip you intend to flash coreboot on.
 

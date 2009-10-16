@@ -35,6 +35,12 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	default 0x016c
 	depends on BOARD_DELL_S1850
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1028
+	depends on BOARD_DELL_S1850
+
+
 config MAX_CPUS
 	int
 	default 2

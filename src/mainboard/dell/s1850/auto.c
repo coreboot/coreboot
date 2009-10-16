@@ -61,6 +61,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
+/* this is very highly mainboard dependent, related to wiring */
+/* from factory BIOS via lspci */
+#define DIMM_MAP_LOGICAL 0x2841
 #include "northbridge/intel/e7520/raminit.c"
 #include "lib/generic_sdram.c"
 
@@ -184,6 +187,8 @@ static void main(unsigned long bist)
 			.f1 = PCI_DEV(0, 0x00, 1),
 			.f2 = PCI_DEV(0, 0x00, 2),
 			.f3 = PCI_DEV(0, 0x00, 3),
+			/* the wiring on this part is really messed up */
+			/* this is my best guess so far */
 			.channel0 = {(0xa<<3)|0, (0xa<<3)|1, (0xa<<3)|2, (0xa<<3)|3, },
 			.channel1 = {(0xa<<3)|4, (0xa<<3)|5, (0xa<<3)|6, (0xa<<3)|7, },
 		}
@@ -331,24 +336,28 @@ static void main(unsigned long bist)
 #if 1
 	enable_smbus();
 #endif
-#if 1
+#if 0
 //	dump_spd_registers(&cpu[0]);
 	int i;
 	for(i = 0; i < 1; i++) {
 		dump_spd_registers();
 	}
 #endif
+#if 1
+	show_dram_slots();
+#endif
 	disable_watchdogs();
 //	dump_ipmi_registers();
 	mainboard_set_e7520_leds();	
 //	memreset_setup();
+
 	sdram_initialize(ARRAY_SIZE(mch), mch);
-#if 1
+#if 0
 	dump_pci_devices();
 #endif
 #if 1
 	dump_pci_device(PCI_DEV(0, 0x00, 0));
-	dump_bar14(PCI_DEV(0, 0x00, 0));
+//	dump_bar14(PCI_DEV(0, 0x00, 0));
 #endif
 
 #if 1 // temporarily disabled 

@@ -32,7 +32,7 @@
 #
 #############################################################################
 
-.IMPORT .IGNORE: CONFIG_DEBUG
+.IMPORT .IGNORE: DEBUG
 
 #----------------------------------------------------------------------------
 # Define the lists of object files
@@ -40,7 +40,7 @@
 
 OBJECTS			= sys$O decode$O ops$O ops2$O prim_ops$O fpu$O debug$O
 CFLAGS      	+= -DSCITECH
-.IF $(CONFIG_DEBUG)
+.IF $(DEBUG)
 CFLAGS			+= -DDEBUG
 .ENDIF
 LIBCLEAN  		= *.dll *.lib *.a

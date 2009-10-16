@@ -4,7 +4,6 @@ subdirs-y += ../quadcore
 subdirs-y += ../mtrr
 subdirs-y += ../microcode
 subdirs-y += ../../x86/tsc
-subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/fpu
 subdirs-y += ../../x86/mmx
 subdirs-y += ../../x86/sse

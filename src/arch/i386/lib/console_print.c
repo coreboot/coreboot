@@ -11,14 +11,14 @@ static void __console_tx_nibble(unsigned nibble)
 
 static void __console_tx_char(int loglevel, unsigned char byte)
 {
-	if (ASM_CONSOLE_LOGLEVEL > loglevel) {
+	if (ASM_CONSOLE_LOGLEVEL >= loglevel) {
 		uart_tx_byte(byte);
 	}
 }
 
 static void __console_tx_hex8(int loglevel, unsigned char value)
 {
-	if (ASM_CONSOLE_LOGLEVEL > loglevel) {
+	if (ASM_CONSOLE_LOGLEVEL >= loglevel) {
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
 	}
@@ -26,7 +26,7 @@ static void __console_tx_hex8(int loglevel, unsigned char value)
 
 static void __console_tx_hex16(int loglevel, unsigned short value)
 {
-	if (ASM_CONSOLE_LOGLEVEL > loglevel) {
+	if (ASM_CONSOLE_LOGLEVEL >= loglevel) {
 		__console_tx_nibble((value >> 12U) & 0x0fU);
 		__console_tx_nibble((value >>  8U) & 0x0fU);
 		__console_tx_nibble((value >>  4U) & 0x0fU);
@@ -36,7 +36,7 @@ static void __console_tx_hex16(int loglevel, unsigned short value)
 
 static void __console_tx_hex32(int loglevel, unsigned int value)
 {
-	if (ASM_CONSOLE_LOGLEVEL > loglevel) {
+	if (ASM_CONSOLE_LOGLEVEL >= loglevel) {
 		__console_tx_nibble((value >> 28U) & 0x0fU);
 		__console_tx_nibble((value >> 24U) & 0x0fU);
 		__console_tx_nibble((value >> 20U) & 0x0fU);
@@ -50,7 +50,7 @@ static void __console_tx_hex32(int loglevel, unsigned int value)
 
 static void __console_tx_string(int loglevel, const char *str)
 {
-	if (ASM_CONSOLE_LOGLEVEL > loglevel) {
+	if (ASM_CONSOLE_LOGLEVEL >= loglevel) {
 		unsigned char ch;
 		while((ch = *str++) != '\0') {
 			__console_tx_byte(ch);

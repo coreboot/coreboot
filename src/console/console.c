@@ -81,11 +81,3 @@ void post_code(uint8_t value)
 	outb(value, 0x80);
 #endif
 }
-
-/* Report a fatal error */
-void __attribute__((noreturn)) die(const char *msg)
-{
-	printk_emerg("%s", msg);
-	post_code(0xff);
-	while (1);		/* Halt */
-}

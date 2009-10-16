@@ -34,7 +34,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	va_list args;
 	int i;
 
-	if (msg_level >= console_loglevel) {
+	if (msg_level > console_loglevel) {
 		return 0;
 	}
 

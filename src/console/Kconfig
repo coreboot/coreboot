@@ -79,45 +79,45 @@ config CONSOLE_VGA_ONBOARD_AT_FIRST
 	  If not selected, the last adapter found will be used.
 
 choice
-        prompt "Maximum console log level"
-        default MAXIMUM_CONSOLE_LOGLEVEL_8
+	prompt "Maximum console log level"
+	default MAXIMUM_CONSOLE_LOGLEVEL_8
 
 config MAXIMUM_CONSOLE_LOGLEVEL_8
-        bool "8: SPEW"
-        help
-          Way too many details.
+	bool "8: SPEW"
+	help
+	  Way too many details.
 config MAXIMUM_CONSOLE_LOGLEVEL_7
-        bool "7: DEBUG"
-        help
-          Debug-level messages.
+	bool "7: DEBUG"
+	help
+	  Debug-level messages.
 config MAXIMUM_CONSOLE_LOGLEVEL_6
-        bool "6: INFO"
-        help
-          Informational messages.
+	bool "6: INFO"
+	help
+	  Informational messages.
 config MAXIMUM_CONSOLE_LOGLEVEL_5
-        bool "5: NOTICE"
-        help
-          Normal but significant conditions.
+	bool "5: NOTICE"
+	help
+	  Normal but significant conditions.
 config MAXIMUM_CONSOLE_LOGLEVEL_4
-        bool "4: WARNING"
-        help
-          Warning conditions.
+	bool "4: WARNING"
+	help
+	  Warning conditions.
 config MAXIMUM_CONSOLE_LOGLEVEL_3
-        bool "3: ERR"
-        help
-          Error conditions.
+	bool "3: ERR"
+	help
+	  Error conditions.
 config MAXIMUM_CONSOLE_LOGLEVEL_2
-        bool "2: CRIT"
-        help
-          Critical conditions.
+	bool "2: CRIT"
+	help
+	  Critical conditions.
 config MAXIMUM_CONSOLE_LOGLEVEL_1
-        bool "1: ALERT"
-        help
-          Action must be taken immediately.
+	bool "1: ALERT"
+	help
+	  Action must be taken immediately.
 config MAXIMUM_CONSOLE_LOGLEVEL_0
-        bool "0: EMERG"
-        help
-          System is unusable.
+	bool "0: EMERG"
+	help
+	  System is unusable.
 
 endchoice
 
@@ -136,45 +136,65 @@ config MAXIMUM_CONSOLE_LOGLEVEL
 	  Map the log level config names to an integer.
 
 choice
-        prompt "Default console log level"
-        default DEFAULT_CONSOLE_LOGLEVEL_8
+	prompt "Default console log level"
+	default DEFAULT_CONSOLE_LOGLEVEL_8
 
 config DEFAULT_CONSOLE_LOGLEVEL_8
-        bool "8: SPEW"
-        help
-          Way too many details.
+	bool "8: SPEW"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8)
+	help
+	  Way too many details.
 config DEFAULT_CONSOLE_LOGLEVEL_7
-        bool "7: DEBUG"
-        help
-          Debug-level messages.
+	bool "7: DEBUG"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8 || MAXIMUM_CONSOLE_LOGLEVEL_7)
+	help
+	  Debug-level messages.
 config DEFAULT_CONSOLE_LOGLEVEL_6
-        bool "6: INFO"
-        help
-          Informational messages.
+	bool "6: INFO"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8 || MAXIMUM_CONSOLE_LOGLEVEL_7 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_6)
+	help
+	  Informational messages.
 config DEFAULT_CONSOLE_LOGLEVEL_5
-        bool "5: NOTICE"
-        help
-          Normal but significant conditions.
+	bool "5: NOTICE"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8 || MAXIMUM_CONSOLE_LOGLEVEL_7 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_6 || MAXIMUM_CONSOLE_LOGLEVEL_5)
+	help
+	  Normal but significant conditions.
 config DEFAULT_CONSOLE_LOGLEVEL_4
-        bool "4: WARNING"
-        help
-          Warning conditions.
+	bool "4: WARNING"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8 || MAXIMUM_CONSOLE_LOGLEVEL_7 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_6 || MAXIMUM_CONSOLE_LOGLEVEL_5 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_4)
+	help
+	  Warning conditions.
 config DEFAULT_CONSOLE_LOGLEVEL_3
-        bool "3: ERR"
-        help
-          Error conditions.
+	bool "3: ERR"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8 || MAXIMUM_CONSOLE_LOGLEVEL_7 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_6 || MAXIMUM_CONSOLE_LOGLEVEL_5 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_4 || MAXIMUM_CONSOLE_LOGLEVEL_3)
+	help
+	  Error conditions.
 config DEFAULT_CONSOLE_LOGLEVEL_2
-        bool "2: CRIT"
-        help
-          Critical conditions.
+	bool "2: CRIT"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8 || MAXIMUM_CONSOLE_LOGLEVEL_7 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_6 || MAXIMUM_CONSOLE_LOGLEVEL_5 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_4 || MAXIMUM_CONSOLE_LOGLEVEL_3 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_2)
+	help
+	  Critical conditions.
 config DEFAULT_CONSOLE_LOGLEVEL_1
-        bool "1: ALERT"
-        help
-          Action must be taken immediately.
+	bool "1: ALERT"
+	depends on (MAXIMUM_CONSOLE_LOGLEVEL_8 || MAXIMUM_CONSOLE_LOGLEVEL_7 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_6 || MAXIMUM_CONSOLE_LOGLEVEL_5 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_4 || MAXIMUM_CONSOLE_LOGLEVEL_3 ||\
+		    MAXIMUM_CONSOLE_LOGLEVEL_2 || MAXIMUM_CONSOLE_LOGLEVEL_1)
+	help
+	  Action must be taken immediately.
 config DEFAULT_CONSOLE_LOGLEVEL_0
-        bool "0: EMERG"
-        help
-          System is unusable.
+	bool "0: EMERG"
+	help
+	  System is unusable.
 
 endchoice
 

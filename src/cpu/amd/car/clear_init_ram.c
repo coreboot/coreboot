@@ -9,15 +9,15 @@ static void __attribute__((noinline)) clear_init_ram(void)
 
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	/* clear only coreboot used region of memory. Note: this may break ECC enabled boards */
-	clear_memory( CONFIG_RAMBASE,  (CONFIG_LB_MEM_TOPK << 10) -  CONFIG_RAMBASE - CONFIG_DCACHE_RAM_SIZE);
+	clear_memory( CONFIG_RAMBASE, (CONFIG_RAMTOP) - CONFIG_RAMBASE - CONFIG_DCACHE_RAM_SIZE);
 #else
-        clear_memory(0,  ((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_SIZE));
+        clear_memory(0, ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE));
 #endif
 }
 
 /* be warned, this file will be used by core other than core 0/node 0 or core0/node0 when cpu_reset*/
 static void set_init_ram_access(void)
 {
-	set_var_mtrr(0, 0x00000000, CONFIG_LB_MEM_TOPK << 10, MTRR_TYPE_WRBACK);
+	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 }
 

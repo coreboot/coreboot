@@ -38,7 +38,7 @@ static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
 
         /* Enable memory access for 0 - 1MB using top_mem */
         msr.hi = 0;
-        msr.lo = (((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK);
+        msr.lo = (((CONFIG_RAMTOP) + TOP_MEM_MASK) & ~TOP_MEM_MASK);
         wrmsr(TOP_MEM, msr);
 
 #if defined(CONFIG_XIP_ROM_SIZE)

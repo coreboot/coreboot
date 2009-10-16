@@ -134,7 +134,7 @@ unsigned long acpi_fill_slit(unsigned long current)
 	/* fill the first 8 byte with that num */
 	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
 
-	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	u8 *ln = sysinfox->ln;
 
 

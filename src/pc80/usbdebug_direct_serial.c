@@ -45,7 +45,7 @@ void usbdebug_direct_ram_tx_byte(unsigned char data)
 
 	/* "Find" dbg_info structure in RAM */
 	dbg_info = (struct ehci_debug_info *)
-	    ((CONFIG_LB_MEM_TOPK << 10) - sizeof(struct ehci_debug_info));
+	    ((CONFIG_RAMTOP) - sizeof(struct ehci_debug_info));
 
 	if (dbg_info->ehci_debug) {
 		dbgp_bulk_write_x(dbg_info, &data, 1);

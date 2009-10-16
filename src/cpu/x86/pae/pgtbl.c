@@ -54,19 +54,19 @@ void *map_2M_page(unsigned long page)
 		struct pde pdp[512];
 	} __attribute__ ((packed));
 
-#if (CONFIG_LB_MEM_TOPK>1024) && (CONFIG_RAMBASE<0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
+#if (CONFIG_RAMTOP>0x100000) && (CONFIG_RAMBASE<0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
 	/*
 	 pgtbl is too big, so use last one 1M before CONFIG_LB_MEM_TOP, otherwise for 8 way dual core with vga support will push stack and heap cross 0xa0000, 
-	 and that region need to be used as vga font buffer. Please make sure set CONFIG_LB_MEM_TOPK=2048 in MB Config
+	 and that region need to be used as vga font buffer. Please make sure set CONFIG_RAMTOP=0x200000 in MB Config
 	*/
 	struct pg_table *pgtbl = (struct pg_table*)0x100000; //1M
 
 	unsigned x_end = 0x100000 + sizeof(struct pg_table) * CONFIG_MAX_CPUS;
-#if (0x100000+20480*CONFIG_MAX_CPUS) > (CONFIG_LB_MEM_TOPK<<10)
-                #warning "We may need to increase CONFIG_LB_MEM_TOPK, it need to be more than (0x100000+20480*CONFIG_MAX_CPUS)\n"
+#if (0x100000+20480*CONFIG_MAX_CPUS) > (CONFIG_RAMTOP)
+                #warning "We may need to increase CONFIG_RAMTOP, it need to be more than (0x100000+20480*CONFIG_MAX_CPUS)\n"
 #endif
-	if(x_end > (CONFIG_LB_MEM_TOPK<<10)) {
-                        printk_debug("map_2M_page: Please increase the CONFIG_LB_MEM_TOPK more than %dK\n", x_end>>10);
+	if(x_end > (CONFIG_RAMTOP)) {
+                        printk_debug("map_2M_page: Please increase the CONFIG_RAMTOP more than %dK\n", x_end);
                         die("Can not go on");
 	}
 #else

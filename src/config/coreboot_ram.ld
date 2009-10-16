@@ -103,8 +103,8 @@ SECTIONS
 	_stack = .;
 	.stack . : {
 		/* Reserve a stack for each possible cpu */
-		/* the stack for ap will be put after pgtbl in 1M to CONFIG_LB_MEM_TOPK range when VGA and ROM_RUN and CONFIG_LB_MEM_TOPK>1024*/
-		. = ((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN)&&(CONFIG_RAMBASE<0x100000)&&(CONFIG_LB_MEM_TOPK>(0x100000>>10)) ) ? CONFIG_STACK_SIZE : (CONFIG_MAX_CPUS*CONFIG_STACK_SIZE);
+		/* the stack for ap will be put after pgtbl in 1M to CONFIG_RAMTOP range when VGA and ROM_RUN and CONFIG_RAMTOP>1M*/
+		. = ((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN)&&(CONFIG_RAMBASE<0x100000)&&(CONFIG_RAMTOP>0x100000) ) ? CONFIG_STACK_SIZE : (CONFIG_MAX_CPUS*CONFIG_STACK_SIZE);
 	}
 	_estack = .;
         _heap = .;
@@ -120,9 +120,9 @@ SECTIONS
 	_ram_seg = _text; 
 	_eram_seg = _eheap;
 
-	_bogus = ASSERT( ( (_eram_seg>>10) < (CONFIG_LB_MEM_TOPK)) , "please increase CONFIG_LB_MEM_TOPK");
+	_bogus = ASSERT( ( _eram_seg < (CONFIG_RAMTOP)) , "please increase CONFIG_RAMTOP");
 
-        _bogus = ASSERT( !((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN) && ((_ram_seg<0xa0000) && (_eram_seg>0xa0000))) , "please increase CONFIG_LB_MEM_TOPK and if still fail, try to set CONFIG_RAMBASE more than 1M");
+        _bogus = ASSERT( !((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN) && ((_ram_seg<0xa0000) && (_eram_seg>0xa0000))) , "please increase CONFIG_RAMTOP and if still fail, try to set CONFIG_RAMBASE more than 1M");
 
 	/DISCARD/ : {
 		*(.comment)

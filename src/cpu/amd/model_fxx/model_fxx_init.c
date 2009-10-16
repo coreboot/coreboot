@@ -33,7 +33,7 @@
 void cpus_ready_for_init(void)
 {
 #if CONFIG_MEM_TRAIN_SEQ == 1
-        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_LB_MEM_TOPK<<10) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
         // wait for ap memory to trained
         wait_all_core0_mem_trained(sysinfox);
 #endif
@@ -182,7 +182,7 @@ static void set_init_ecc_mtrrs(void)
 	msr.lo = 0x00000000 | MTRR_TYPE_WRBACK;
 	wrmsr(MTRRphysBase_MSR(0), msr);
 	msr.hi = 0x000000ff;
-	msr.lo = ~((CONFIG_LB_MEM_TOPK << 10) - 1) | 0x800;
+	msr.lo = ~((CONFIG_RAMTOP) - 1) | 0x800;
 	wrmsr(MTRRphysMask_MSR(0), msr);
 
 	/* Set the default type to write combining */
@@ -308,8 +308,8 @@ static void init_ecc_memory(unsigned node_id)
 
 	/* Don't start too early */
 	begink = startk;
-	if (begink < CONFIG_LB_MEM_TOPK) { 
-		begink = CONFIG_LB_MEM_TOPK;
+	if (begink < (CONFIG_RAMTOP >> 10)) {
+		begink = (CONFIG_RAMTOP >>10);
 	}
 
 	printk_debug("Clearing memory %luK - %luK: ", begink, endk);

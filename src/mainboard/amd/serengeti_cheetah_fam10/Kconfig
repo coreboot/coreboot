@@ -95,9 +95,9 @@ config AMD_UCODE_PATCH_FILE
 	default "mc_patch_01000095.h"
 	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
-config LB_MEM_TOPK
+config RAMTOP
 	hex
-	default 0x4000
+	default 0x1000000
 	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config HEAP_SIZE

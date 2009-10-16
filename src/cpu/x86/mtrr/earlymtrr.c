@@ -11,8 +11,8 @@
 #if defined(CONFIG_XIP_ROM_BASE) && !defined(CONFIG_XIP_ROM_SIZE)
 # error "CONFIG_XIP_ROM_BASE without CONFIG_XIP_ROM_SIZE"
 #endif
-#if !defined(CONFIG_LB_MEM_TOPK)
-# error "CONFIG_LB_MEM_TOPK not defined"
+#if !defined(CONFIG_RAMTOP)
+# error "CONFIG_RAMTOP not defined"
 #endif
 
 #if defined(CONFIG_XIP_ROM_SIZE) && ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE -1)) != 0)
@@ -22,8 +22,8 @@
 # error "CONFIG_XIP_ROM_BASE is not a multiple of CONFIG_XIP_ROM_SIZE"
 #endif
 
-#if (CONFIG_LB_MEM_TOPK & (CONFIG_LB_MEM_TOPK -1)) != 0
-# error "CONFIG_LB_MEM_TOPK must be a power of 2"
+#if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0
+# error "CONFIG_RAMTOP must be a power of 2"
 #endif
 
 static void disable_var_mtrr(unsigned reg)
@@ -75,7 +75,7 @@ static void cache_lbmem(int type)
 {
 	/* Enable caching for 0 - 1MB using variable mtrr */
 	disable_cache();
-	set_var_mtrr(0, 0x00000000, CONFIG_LB_MEM_TOPK << 10, type);
+	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, type);
 	enable_cache();
 }
 

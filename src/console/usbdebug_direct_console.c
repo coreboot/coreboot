@@ -53,7 +53,7 @@ static void dbgp_init(void)
 	 * debug_info data structure to our version defined above. */
 
 	dbg_infox = (struct ehci_debug_info *)
-		((CONFIG_LB_MEM_TOPK << 10) - sizeof(struct ehci_debug_info));
+		((CONFIG_RAMTOP) - sizeof(struct ehci_debug_info));
 
 	memcpy(&dbg_info, dbg_infox, sizeof(struct ehci_debug_info));
 }

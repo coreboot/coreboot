@@ -246,7 +246,7 @@ clear_fixed_var_mtrr_out:
 	/* enable memory access for first MBs using top_mem */
 	movl	$TOP_MEM, %ecx
 	xorl	%edx, %edx
-	movl	$(((CONFIG_LB_MEM_TOPK << 10) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
+	movl	$(((CONFIG_RAMTOP) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
 	wrmsr
 #endif /*  CONFIG_USE_FAILOVER_IMAGE == 1*/
 

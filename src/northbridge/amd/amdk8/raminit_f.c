@@ -48,8 +48,8 @@
 #endif
 
 
-#if (CONFIG_LB_MEM_TOPK & (CONFIG_LB_MEM_TOPK -1)) != 0
-# error "CONFIG_LB_MEM_TOPK must be a power of 2"
+#if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0
+# error "CONFIG_RAMTOP must be a power of 2"
 #endif
 
 #include "amdk8_f_pci.c"

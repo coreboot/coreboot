@@ -80,7 +80,7 @@ uses CONFIG_HT_CHAIN_END_UNITID_BASE
 uses CONFIG_SB_HT_CHAIN_ON_BUS0
 uses CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
 
-uses CONFIG_LB_MEM_TOPK
+uses CONFIG_RAMTOP
 
 ## CONFIG_ROM_SIZE is the size of boot ROM that this board will use.
 default CONFIG_ROM_SIZE=1024*1024
@@ -95,7 +95,7 @@ default CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 default CONFIG_FAILOVER_SIZE=0x01000
 
 #more 1M for pgtbl
-default CONFIG_LB_MEM_TOPK=2048
+default CONFIG_RAMTOP=2048*1024
 
 ##
 ## Build code for the fallback boot

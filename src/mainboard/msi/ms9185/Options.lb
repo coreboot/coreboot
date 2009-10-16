@@ -101,7 +101,7 @@ uses CONFIG_LIFT_BSP_APIC_ID
 
 uses CONFIG_PCI_64BIT_PREF_MEM
 
-uses CONFIG_LB_MEM_TOPK
+uses CONFIG_RAMTOP
 uses CONFIG_USE_PRINTK_IN_CAR
 
 ###
@@ -118,7 +118,7 @@ default CONFIG_ROM_SIZE=524288
 default CONFIG_FALLBACK_SIZE = CONFIG_ROM_IMAGE_SIZE
 
 #more 1M for pgtbl
-default CONFIG_LB_MEM_TOPK=2048
+default CONFIG_RAMTOP=2048*1024
 
 ##
 ## Build code for the fallback boot

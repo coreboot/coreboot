@@ -360,11 +360,11 @@ define CONFIG_UNCOMPRESSED
 	export always
 	comment "Set for uncompressed image"
 end
-define CONFIG_LB_MEM_TOPK
+define CONFIG_RAMTOP
 	format "%d"
-	default 2048
+	default 2048*1024
 	export always
-	comment "Kilobytes of memory to initialized before executing code from RAM"
+	comment "Highest RAM that coreboot_ram will use"
 end
 define CONFIG_HAVE_OPTION_TABLE
 	default 0

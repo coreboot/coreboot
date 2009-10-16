@@ -7,21 +7,14 @@ config BOARD_VIA_PC2500E
 	select SUPERIO_ITE_IT8716F
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
+	select SMP
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 
 config MAINBOARD_DIR
 	string
 	default via/pc2500e
 	depends on BOARD_VIA_PC2500E
-
-#config DCACHE_RAM_BASE
-#	hex
-#	default 0xffef0000
-#	depends on BOARD_VIA_PC2500E
-#
-#config DCACHE_RAM_SIZE
-#	hex
-#	default 0x8000
-#	depends on BOARD_VIA_PC2500E
 
 config MAINBOARD_PART_NUMBER
 	string
@@ -42,3 +35,14 @@ config IRQ_SLOT_COUNT
 	int
 	default 10
 	depends on BOARD_VIA_PC2500E
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1019
+	depends on BOARD_VIA_PC2500E
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0xaa51
+	depends on BOARD_VIA_PC2500E
+

@@ -63,7 +63,6 @@ if CONFIG_USE_FALLBACK_IMAGE
 	mainboardinit ./failover.inc
 end
 mainboardinit cpu/x86/fpu/enable_fpu.inc
-mainboardinit cpu/x86/mmx/enable_mmx.inc
 mainboardinit ./auto.inc
 mainboardinit cpu/x86/mmx/disable_mmx.inc
 dir /pc80

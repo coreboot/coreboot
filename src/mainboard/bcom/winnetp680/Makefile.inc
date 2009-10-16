@@ -39,7 +39,6 @@ crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
 crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
 crt0-y += ../../../../src/arch/i386/lib/id.inc
 crt0-y += ../../../../src/cpu/x86/fpu/enable_fpu.inc
-crt0-y += ../../../../src/cpu/x86/mmx/enable_mmx.inc
 crt0-y += auto.inc
 crt0-y += ../../../../src/cpu/x86/mmx/disable_mmx.inc
 

@@ -25,7 +25,6 @@ crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
 crt0-y += ../../../../src/arch/i386/lib/cpu_reset.inc
 crt0-y += ../../../../src/arch/i386/lib/id.inc
 crt0-y += ../../../../src/cpu/x86/fpu/enable_fpu.inc
-crt0-y += ../../../../src/cpu/x86/mmx/enable_mmx.inc
 crt0-y += ../../../../src/cpu/x86/sse/enable_sse.inc
 crt0-y += failover.inc
 crt0-y += auto.inc

@@ -92,7 +92,6 @@ if CONFIG_USE_FALLBACK_IMAGE
   # mainboardinit ./failover.inc
 end
 # mainboardinit cpu/x86/fpu/enable_fpu.inc
-# mainboardinit cpu/x86/mmx/enable_mmx.inc
 
 if CONFIG_USE_DCACHE_RAM
   if CONFIG_USE_INIT

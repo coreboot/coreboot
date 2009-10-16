@@ -28,7 +28,6 @@ crt0-y += ../../../../src/cpu/x86/fpu/enable_fpu.inc
 
 crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/cpu_setup.inc
 crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/gx_setup.inc
-crt0-$(CONFIG_MMX) += ../../../../src/cpu/x86/mmx/enable_mmx.inc
 crt0-$(CONFIG_SSE) += ../../../../src/cpu/x86/sse/enable_sse.inc
 crt0-y += failover.inc
 crt0-y += auto.inc

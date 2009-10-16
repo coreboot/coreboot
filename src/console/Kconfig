@@ -2,21 +2,82 @@ menu "Console options"
 
 # TODO: Rename to SERIAL_CONSOLE once Kconfig transition is complete.
 config CONSOLE_SERIAL8250
-	bool "Enable serial port console output"
+	bool "Serial port console output"
 	default y
 	help
 	  Send coreboot debug output to a serial port console.
 
-# TODO: COM1, COM2 etc.
-config TTYS0_BASE
-	hex "I/O base for the serial port"
+choice
+	prompt "COM port"
+	default CONSOLE_SERIAL_COM1
 	depends on CONSOLE_SERIAL8250
-	default 0x3f8
+
+config CONSOLE_SERIAL_COM1
+	bool "COM1/ttyS0"
+	help
+	  Serial console on COM1/ttyS0.
+config CONSOLE_SERIAL_COM2
+	bool "COM2/ttyS1"
+	help
+	  Serial console on COM2/ttyS1.
+config CONSOLE_SERIAL_COM3
+	bool "COM3/ttyS2"
+	help
+	  Serial console on COM3/ttyS2.
+config CONSOLE_SERIAL_COM4
+	bool "COM4/ttyS3"
+	help
+	  Serial console on COM4/ttyS3.
+
+endchoice
+
+config TTYS0_BASE
+	hex
+	depends on CONSOLE_SERIAL8250
+	default 0x3f8 if CONSOLE_SERIAL_COM1
+	default 0x2f8 if CONSOLE_SERIAL_COM2
+	default 0x3e8 if CONSOLE_SERIAL_COM3
+	default 0x2e8 if CONSOLE_SERIAL_COM4
+	help
+	  Map the COM port names to the respective I/O port.
+
+choice
+	prompt "BAUD rate"
+	default CONSOLE_SERIAL_115200
+	depends on CONSOLE_SERIAL8250
+
+config CONSOLE_SERIAL_115200
+	bool "115200"
+	help
+	  Set serial port BAUD rate to 115200.
+config CONSOLE_SERIAL_57600
+	bool "57600"
+	help
+	  Set serial port BAUD rate to 57600.
+config CONSOLE_SERIAL_38400
+	bool "38400"
+	help
+	  Set serial port BAUD rate to 38400.
+config CONSOLE_SERIAL_19200
+	bool "19200"
+	help
+	  Set serial port BAUD rate to 19200.
+config CONSOLE_SERIAL_9600
+	bool "9600"
+	help
+	  Set serial port BAUD rate to 9600.
+
+endchoice
 
 config TTYS0_BAUD
-	int "Serial port BAUD rate"
-	depends on CONSOLE_SERIAL8250
-	default 115200
+	int
+	default 115200 if CONSOLE_SERIAL_115200
+	default 57600 if CONSOLE_SERIAL_57600
+	default 38400 if CONSOLE_SERIAL_38400
+	default 19200 if CONSOLE_SERIAL_19200
+	default 9600 if CONSOLE_SERIAL_9600
+	help
+	  Map the BAUD rates to an integer.
 
 # TODO: Allow user-friendly selection of settings other than 8n1.
 config TTYS0_LCS
@@ -25,7 +86,7 @@ config TTYS0_LCS
 	depends on CONSOLE_SERIAL8250
 
 config SERIAL_POST
-	bool "Enable POST output on the serial port console"
+	bool "Show POST codes on the serial port console"
 	depends on CONSOLE_SERIAL8250
 	default n
 	help

@@ -77,13 +77,9 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	    (struct southbridge_amd_rs690_config *)dev->chip_info;
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
 	vendorid = pci_read_config16(dev, PCI_VENDOR_ID);
-	printk_info("internal_gfx_pci_dev_init device=%x, vendor=%x, vga_rom_address=0x%x.\n",
-	     deviceid, vendorid, cfg->vga_rom_address);
+	printk_info("internal_gfx_pci_dev_init device=%x, vendor=%x.\n",
+	     deviceid, vendorid);
 
-#if 0 /* I think these should be done in Config.lb. Please check it. */
-	dev->on_mainboard = 1;
-	dev->rom_address = cfg->vga_rom_address;	/* 0xfff00000; */
-#endif
 	pci_dev_init(dev);
 
 	/* clk ind */

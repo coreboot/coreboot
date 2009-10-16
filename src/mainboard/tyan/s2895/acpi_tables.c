@@ -42,6 +42,20 @@ unsigned long acpi_fill_madt(unsigned long current)
 		apic_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1) & ~0xf;
 		current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 4,
 						   apic_addr, 0);
+		/* Initialize interrupt mapping if mptable.c didn't. */
+		#if (!CONFIG_GENERATE_MP_TABLE)
+		{
+			u32 dword;
+			dword = 0x0120d218;
+			pci_write_config32(dev, 0x7c, dword);
+
+			dword = 0x12008a00;
+			pci_write_config32(dev, 0x80, dword);
+
+			dword = 0x00080d7d;
+			pci_write_config32(dev, 0x84, dword);
+		}
+		#endif
 	}
 
 	/* Write AMD 8131 two IOAPICs. */
@@ -65,11 +79,25 @@ unsigned long acpi_fill_madt(unsigned long current)
 		apic_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1) & ~0xf;
 		current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 7,
 						   apic_addr, 0x20);
+		/* Initialize interrupt mapping if mptable.c didn't. */
+		#if (!CONFIG_GENERATE_MP_TABLE)
+		{
+			u32 dword;
+			dword = 0x0000d218; // Why does the factory BIOS have 0?
+			pci_write_config32(dev, 0x7c, dword);
+
+			dword = 0x00000000;
+			pci_write_config32(dev, 0x80, dword);
+
+			dword = 0x00000d00; // Same here.
+			pci_write_config32(dev, 0x84, dword);
+		}
+		#endif
 	}
 
-	/* IRQ9 ACPI active low. */
+	/* IRQ9 */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-		current, 0, 9, 9, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW);
+		current, 0, 9, 9, MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_LOW);
 
 	/* IRQ0 -> APIC IRQ2. */
 	/* Doesn't work on this board. */

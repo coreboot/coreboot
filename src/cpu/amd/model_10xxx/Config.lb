@@ -26,8 +26,6 @@ default CONFIG_HAVE_MOVNTI=1
 default CONFIG_CPU_ADDR_BITS=48
 dir /cpu/x86/tsc
 dir /cpu/x86/fpu
-dir /cpu/x86/mmx
-dir /cpu/x86/sse
 dir /cpu/x86/lapic
 dir /cpu/x86/cache
 dir /cpu/x86/pae

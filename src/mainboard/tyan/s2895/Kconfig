@@ -75,11 +75,6 @@ config MEM_TRAIN_SEQ
 	default n
 	depends on BOARD_TYAN_S2895
 
-config AP_CODE_IN_CAR
-	bool
-	default n
-	depends on BOARD_TYAN_S2895
-
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n

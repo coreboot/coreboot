@@ -98,11 +98,6 @@ config MAX_PHYSICAL_CPUS
 	default 1
 	depends on BOARD_NVIDIA_L1_2PVV
 
-config AP_CODE_IN_CAR
-	bool	
-	default n
-	depends on BOARD_NVIDIA_L1_2PVV
-
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool	
 	default n

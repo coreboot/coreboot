@@ -2,7 +2,6 @@
 # It is usually set in mainboard/*/Kconfig.
 config ARCH_POWERPC
 	bool
-	default n
 
 # This is the name of the respective architecture subdirectory in arch/.
 config ARCH

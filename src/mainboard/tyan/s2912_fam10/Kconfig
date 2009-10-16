@@ -97,11 +97,6 @@ config MAX_PHYSICAL_CPUS
 	default 1
 	depends on BOARD_TYAN_S2912_FAM10
 
-config AP_CODE_IN_CAR
-	bool	
-	default n
-	depends on BOARD_TYAN_S2912_FAM10
-
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool	
 	default n

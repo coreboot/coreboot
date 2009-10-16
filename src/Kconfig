@@ -100,7 +100,7 @@ config PCI_ROM_RUN
 
 config HEAP_SIZE
 	hex
-	default 0x2000
+	default 0x4000
 
 config COREBOOT_V2
 	bool
@@ -138,17 +138,8 @@ config RAMTOP
 	hex
 	default 0x200000
 
-config COMPRESSED_PAYLOAD_LZMA
-	bool
-	default y
-
-config COMPRESSED_PAYLOAD_NRV2B
-	bool
-	default n
-
 config ATI_RAGE_XL
 	bool
-	default n
 
 source src/console/Kconfig
 
@@ -218,7 +209,6 @@ config IOAPIC
 
 config VIDEO_MB
 	int
-	default 0
 
 config USE_WATCHDOG_ON_BOOT
 	bool
@@ -232,7 +222,6 @@ config VGA
 
 config GFXUMA
 	bool
-	default n
 	help
 	  Enable Unified Memory Architecture for graphics.
 
@@ -356,6 +345,9 @@ config COMPRESSED_PAYLOAD_LZMA
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.
+
+config COMPRESSED_PAYLOAD_NRV2B
+	default n
 
 endmenu
 

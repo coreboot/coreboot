@@ -61,7 +61,7 @@ if CONFIG_USE_FALLBACK_IMAGE
 	ldscript /arch/i386/lib/failover.lds
 	mainboardinit ./failover.inc
 end
-mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/fpu_enable.inc
 mainboardinit cpu/amd/model_gx1/cpu_setup.inc
 mainboardinit cpu/amd/model_gx1/gx_setup.inc
 mainboardinit ./auto.inc

@@ -86,7 +86,7 @@ ldscript /arch/i386/lib/id.lds
 ##
 ## Setup RAM
 ##
-mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/fpu_enable.inc
 mainboardinit cpu/amd/model_gx1/cpu_setup.inc
 mainboardinit cpu/amd/model_gx1/gx_setup.inc
 mainboardinit ./auto.inc

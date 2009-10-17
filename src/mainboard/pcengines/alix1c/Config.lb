@@ -91,7 +91,7 @@ end
 ##
 ## Setup RAM
 ##
-mainboardinit cpu/x86/fpu/enable_fpu.inc
+mainboardinit cpu/x86/fpu_enable.inc
 
 	mainboardinit cpu/amd/model_lx/cache_as_ram.inc
 	mainboardinit ./cache_as_ram_auto.inc

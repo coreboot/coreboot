@@ -94,7 +94,7 @@ else
 	##
 	## Setup RAM
 	##
-	mainboardinit cpu/x86/fpu/enable_fpu.inc
+	mainboardinit cpu/x86/fpu_enable.inc
 	mainboardinit ./auto.inc
 	
 	## the id string will be in cbfs. We will expect flashrom to parse cbfs for the idstring in future. 

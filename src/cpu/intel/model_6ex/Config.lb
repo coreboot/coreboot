@@ -3,7 +3,6 @@ default CONFIG_HAVE_MOVNTI=1
 
 dir /cpu/x86/tsc
 dir /cpu/x86/mtrr
-dir /cpu/x86/fpu
 dir /cpu/x86/lapic
 dir /cpu/x86/cache
 dir /cpu/x86/smm

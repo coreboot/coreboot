@@ -1,5 +1,4 @@
 dir /cpu/x86/tsc
-dir /cpu/x86/fpu
 dir /cpu/x86/lapic
 dir /cpu/x86/cache
 dir /cpu/x86/smm

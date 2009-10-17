@@ -65,7 +65,7 @@ struct display {
 #define fontheight(p) ((p)->_fontheight)
 #define fontheightlog(p) ((p)->_fontheightlog)
 
-#ifdef CONFIG_FBCON_FONTWIDTH8_ONLY
+#ifdef FBCON_FONTWIDTH8_ONLY
 
 /* fontwidth w is supported by dispsw */
 #define FONTWIDTH(w)	(1 << ((8) - 1))

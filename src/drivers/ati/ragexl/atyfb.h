@@ -223,7 +223,7 @@ static inline u32 aty_ld_le32(int regindex,
     if (regindex >= 0x400)
 	regindex -= 0x800;
 
-#ifdef CONFIG_ATARI
+#ifdef ATARI
     return in_le32((volatile u32 *)(info->ati_regbase+regindex));
 #else
     return readl (info->ati_regbase + regindex);
@@ -237,7 +237,7 @@ static inline void aty_st_le32(int regindex, u32 val,
     if (regindex >= 0x400)
 	regindex -= 0x800;
 
-#ifdef CONFIG_ATARI
+#ifdef ATARI
     out_le32 (info->ati_regbase+regindex, val);
 #else
     writel (val, info->ati_regbase + regindex);
@@ -279,7 +279,7 @@ static inline u8 aty_ld_8(int regindex,
     if (regindex >= 0x400)
 	regindex -= 0x800;
 
-#ifdef CONFIG_ATARI
+#ifdef ATARI
     return in_8 (info->ati_regbase + regindex);
 #else
     return readb (info->ati_regbase + regindex);
@@ -293,7 +293,7 @@ static inline void aty_st_8(int regindex, u8 val,
     if (regindex >= 0x400)
 	regindex -= 0x800;
 
-#ifdef CONFIG_ATARI
+#ifdef ATARI
     out_8 (info->ati_regbase + regindex, val);
 #else
     writeb (val, info->ati_regbase + regindex);

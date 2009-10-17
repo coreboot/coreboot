@@ -112,7 +112,7 @@ static inline void lapic_write_atomic(unsigned long reg, unsigned long v)
 }
 
 
-#ifdef CONFIG_X86_GOOD_APIC
+#ifdef X86_GOOD_APIC
 # define FORCE_READ_AROUND_WRITE 0
 # define lapic_read_around(x) lapic_read(x)
 # define lapic_write_around(x,y) lapic_write((x),(y))

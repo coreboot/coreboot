@@ -269,7 +269,7 @@ clear_fixed_var_mtrr_out:
 
 
 	/* TODO: make this a config variable */
-#if CONFIG_CARTEST
+#if CARTEST
 	/* check the cache as ram */
 	movl  $CacheBase, %esi
 	movl    $(CacheSize>>2), %ecx

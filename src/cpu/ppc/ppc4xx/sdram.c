@@ -28,8 +28,8 @@
 #include <clock.h>
 #include <stdint.h>
 
-#define CONFIG_SDRAM_BANK0
-#ifdef CONFIG_SDRAM_BANK0
+#define CONFIGURE_SDRAM_BANK0
+#ifdef CONFIGURE_SDRAM_BANK0
 
 /*
  * According to the PPC405GPr Users Manual, only non-reserved
@@ -130,4 +130,4 @@ void memory_init(void)
 	udelay(10000);
 }
 
-#endif /* CONFIG_SDRAM_BANK0 */
+#endif /* CONFIGURE_SDRAM_BANK0 */

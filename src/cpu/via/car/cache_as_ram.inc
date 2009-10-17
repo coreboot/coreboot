@@ -131,7 +131,7 @@ clear_fixed_var_mtrr_out:
 	movl    $(CacheBase+CacheSize-4), %eax
 	movl    %eax, %esp
 
-#ifdef CONFIG_CARTEST
+#ifdef CARTEST
 testok:	movb $0x40,%al
 	outb %al, $0x80
 	xorl  %edx, %edx

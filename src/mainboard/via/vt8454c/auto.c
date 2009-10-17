@@ -35,8 +35,8 @@
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
-#define CONFIG_DEACTIVATE_CAR 1
-#define CONFIG_DEACTIVATE_CAR_FILE "cpu/via/car/cache_as_ram_post.c"
+#define DEACTIVATE_CAR 1
+#define DEACTIVATE_CAR_FILE "cpu/via/car/cache_as_ram_post.c"
 #include "cpu/x86/car/copy_and_run.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
@@ -120,9 +120,9 @@ static void main(unsigned long bist)
 	enable_shadow_ram(cx700);
 	sdram_enable(cx700);
 
-#ifdef CONFIG_DEACTIVATE_CAR
+#ifdef DEACTIVATE_CAR
 	print_debug("Deactivating CAR");
-#include CONFIG_DEACTIVATE_CAR_FILE
+#include DEACTIVATE_CAR_FILE
 	print_debug(" - Done.\r\n");
 #endif
 	copy_and_run(0);

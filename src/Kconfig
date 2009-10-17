@@ -347,6 +347,7 @@ config COMPRESSED_PAYLOAD_LZMA
 	  coreboot can compress them using the LZMA algorithm.
 
 config COMPRESSED_PAYLOAD_NRV2B
+	bool
 	default n
 
 endmenu

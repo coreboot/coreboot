@@ -69,20 +69,6 @@ void dimms_write(int x)
 	}
 }
 
-#ifdef DEBUG_SETNORTHB
-void setnorthb(device_t north, uint8_t reg, uint8_t val)
-{
-	print_debug("setnorth: reg ");
-	print_debug_hex8(reg);
-	print_debug(" to ");
-	print_debug_hex8(val);
-	print_debug("\r\n");
-	pci_write_config8(north, reg, val);
-}
-#else
-#define setnorthb pci_write_config8
-#endif
-
 void dumpnorth(device_t north)
 {
 	unsigned int r, c;

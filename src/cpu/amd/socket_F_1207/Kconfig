@@ -1,6 +1,8 @@
 config CPU_AMD_SOCKET_F_1207
 	bool
 	select CPU_AMD_MODEL_10XXX
+	select PCI_IO_CFG_EXT
+	select CAR_FAM10
 
 config CPU_SOCKET_TYPE
 	hex
@@ -13,11 +15,6 @@ config DIMM_SUPPORT
 	default 0x0104
 	depends on CPU_AMD_SOCKET_F_1207
 
-config PCI_IO_CFG_EXT
-	bool
-	default y
-	depends on CPU_AMD_SOCKET_F_1207
-
 config EXT_RT_TBL_SUPPORT
 	bool
 	default n
@@ -26,11 +23,6 @@ config EXT_RT_TBL_SUPPORT
 config EXT_CONF_SUPPORT
 	bool
 	default n
-	depends on CPU_AMD_SOCKET_F_1207
-
-config CAR_FAM10
-	bool
-	default y
 	depends on CPU_AMD_SOCKET_F_1207
 
 config CBB

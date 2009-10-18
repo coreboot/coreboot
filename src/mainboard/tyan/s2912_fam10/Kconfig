@@ -16,6 +16,8 @@ config BOARD_TYAN_S2912_FAM10
 	select MEM_TRAIN_SEQ
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select BOARD_ROMSIZE_KB_1024
+	select ENABLE_APIC_EXT_ID
+	select AMDMCT
 
 config MAINBOARD_DIR
 	string
@@ -147,12 +149,3 @@ config AMD_UCODE_PATCH_FILE
 	default "mc_patch_01000095.h"
 	depends on BOARD_TYAN_S2912_FAM10
 
-config ENABLE_APIC_EXT_ID
-	bool
-	default y
-	depends on BOARD_TYAN_S2912_FAM10
-
-config AMDMCT
-	bool
-	default y
-	depends on BOARD_TYAN_S2912_FAM10

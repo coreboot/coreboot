@@ -20,6 +20,7 @@
 config NORTHBRIDGE_AMD_AMDK8
 	bool
 	select HAVE_HIGH_TABLES
+	select HYPERTRANSPORT_PLUGIN_SUPPORT
 
 config AGP_APERTURE_SIZE
 	hex
@@ -29,11 +30,6 @@ config AGP_APERTURE_SIZE
 config K8_HT_FREQ_1G_SUPPORT
 	bool
 	default n
-	depends on NORTHBRIDGE_AMD_AMDK8
-
-config HYPERTRANSPORT_PLUGIN_SUPPORT
-	bool
-	default y
 	depends on NORTHBRIDGE_AMD_AMDK8
 
 source src/northbridge/amd/amdk8/root_complex/Kconfig

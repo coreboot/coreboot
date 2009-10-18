@@ -9,6 +9,7 @@ config BOARD_SUPERMICRO_X6DHE_G
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select BOARD_ROMSIZE_KB_1024
+	select DRIVERS_GENERIC_DEBUG
 
 config MAINBOARD_DIR
 	string
@@ -55,7 +56,3 @@ config IRQ_SLOT_COUNT
 	default 15
 	depends on BOARD_SUPERMICRO_X6DHE_G
 
-config DRIVERS_GENERIC_DEBUG
-	bool
-	default y
-	depends on BOARD_SUPERMICRO_X6DHE_G

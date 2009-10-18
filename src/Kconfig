@@ -29,6 +29,14 @@ mainmenu "Coreboot Configuration"
 
 menu "General setup"
 
+config EXPERT
+	bool "Expert mode"
+	help
+	  This allows you to select certain advanced configuration options.
+
+	  Warning: Only enable this option if you really know what you are
+	  doing! You have been warned!
+
 config LOCALVERSION
 	string "Local version string"
 	help

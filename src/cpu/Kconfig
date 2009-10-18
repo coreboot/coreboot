@@ -29,6 +29,9 @@ config SMP
 	bool
 	default y if MAX_CPUS != 1
 	default n
+	help
+	  This option is used to enable certain functions to make coreboot
+	  work correctly on symmetric multi processor (SMP) systems.
 
 # Set MMX and SSE in socket or model if the CPU has them.
 # If all CPUs for the socket have MMX or SSE, set them there.

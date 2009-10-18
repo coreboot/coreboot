@@ -22,13 +22,13 @@ if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
 ## Romcc output
 ##
 makerule ./failover.E
-	depends "$(CONFIG_MAINBOARD)/failover.c ../romcc" 
-	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/failover.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+	action "../romcc -E -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 
 makerule ./failover.inc
-	depends "$(CONFIG_MAINBOARD)/failover.c ../romcc"
-	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/failover.c -o $@"
+	depends "$(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
+	action "../romcc    -O --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"
 end
 
 makerule ./auto.E 

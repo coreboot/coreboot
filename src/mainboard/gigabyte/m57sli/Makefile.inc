@@ -29,7 +29,7 @@ obj-$(CONFIG_USE_INIT) += cache_as_ram_auto.o
 obj-$(CONFIG_AP_CODE_IN_CAR) += apc_auto.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) +=  dsdt.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) +=  acpi_tables.o
-obj-$(CONFIG_HAVE_FANCTL) += fanctl.o
+obj-$(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) += fanctl.o
 
 # This is part of the conversion to init-obj and away from included code. 
 initobj-y += crt0.o

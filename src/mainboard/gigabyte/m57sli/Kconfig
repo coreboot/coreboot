@@ -7,6 +7,7 @@ config BOARD_GIGABYTE_M57SLI
 	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
 	select SOUTHBRIDGE_NVIDIA_MCP55
 	select SUPERIO_ITE_IT8716F
+	select SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select USE_PRINTK_IN_CAR
@@ -142,10 +143,4 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 config IRQ_SLOT_COUNT
 	int
 	default 11
-	depends on BOARD_GIGABYTE_M57SLI
-
-# not globally defined yet, so can't "select" this
-config HAVE_FANCTL
-	bool
-	default y
 	depends on BOARD_GIGABYTE_M57SLI

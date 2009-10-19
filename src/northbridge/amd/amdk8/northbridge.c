@@ -357,7 +357,7 @@ static void amdk8_link_read_bases(device_t dev, unsigned nodeid, unsigned link)
 		resource->gran  = log2(HT_MEM_HOST_ALIGN);
 		resource->limit = 0xffffffffffULL;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-#ifdef CONFIG_PCI_64BIT_PREF_MEM
+#if CONFIG_PCI_64BIT_PREF_MEM
 		resource->flags |= IORESOURCE_BRIDGE;
 #endif
 	}

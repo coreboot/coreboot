@@ -51,7 +51,7 @@
 extern void dump_south(device_t dev);
 static void southbridge_init_common(struct device *dev);
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
                    /* Interrupts for  INT# A   B   C   D */
 static const unsigned char pciIrqs[4]  = { 10, 11, 12, 0};
 
@@ -119,7 +119,7 @@ static void setup_ioapic(u32 ioapic_base)
 	ioapic_table[0].value_high = (lapicid()) << (56 - 32);
 	l = (u32 *)ioapic_base;
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	/* Set APIC to APIC Serial bus. */
 	l[0] = 0x3;
 	l[4] = 0;
@@ -157,7 +157,7 @@ static void setup_ioapic(u32 ioapic_base)
 /** Set up PCI IRQ routing, route everything through APIC. */
 static void pci_routing_fixup(struct device *dev)
 {
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	device_t pdev;
 	u8 reg;
 #endif
@@ -171,7 +171,7 @@ static void pci_routing_fixup(struct device *dev)
 	/* Gate Interrupts until RAM Writes are flushed */
 	pci_write_config8(dev, 0x49, 0x20);
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 
 	/* Share INTE-INTH with INTA-INTD as per stock BIOS. */
 	pci_write_config8(dev, 0x46, 0x00);
@@ -256,7 +256,7 @@ static void setup_pm(device_t dev)
 	/* Set ACPI to 9, must set IRQ 9 override to level! Set PSON gating. */
 	pci_write_config8(dev, 0x82, 0x40 | VT8237R_ACPI_IRQ);
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	/* Primary interupt channel, define wake events 0=IRQ0 15=IRQ15 1=en. */
 	pci_write_config16(dev, 0x84, 0x3052);
 #else
@@ -288,7 +288,7 @@ static void setup_pm(device_t dev)
 	 * 0 = USB Wakeup
 	 */
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	pci_write_config8(dev, 0x95, 0xc2);
 #else
 	pci_write_config8(dev, 0x95, 0xcc);
@@ -343,7 +343,7 @@ static void vt8237r_init(struct device *dev)
 {
 	u8 enables, reg8;
 	
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	printk_spew("Entering vt8237r_init, for EPIA.\n");
 	/*
 	 * TODO: Looks like stock BIOS can do this but causes a hang
@@ -386,7 +386,7 @@ static void vt8237r_init(struct device *dev)
 	enables |= 0x08;
 	pci_write_config8(dev, 0x4f, enables);
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	/*
 	 * Set Read Pass Write Control Enable
 	 */
@@ -401,7 +401,7 @@ static void vt8237r_init(struct device *dev)
 
 	southbridge_init_common(dev);
 
-#ifndef CONFIG_EPIA_VT8237R_INIT
+#if !CONFIG_EPIA_VT8237R_INIT
 	/* FIXME: Intel needs more bit set for C2/C3. */
 
 	/*
@@ -460,7 +460,7 @@ static void vt8237_common_init(struct device *dev)
 	pci_write_config8(dev, PCI_COMMAND, byte);
 
 /* EPIA-N(L) Uses CN400 for BIOS Access */
-#ifndef CONFIG_EPIA_VT8237R_INIT
+#if !CONFIG_EPIA_VT8237R_INIT
 	/* Enable the internal I/O decode. */
 	enables = pci_read_config8(dev, 0x6C);
 	enables |= 0x80;
@@ -499,7 +499,7 @@ static void vt8237_common_init(struct device *dev)
 	/* Delay transaction control */
 	pci_write_config8(dev, 0x43, 0xb);
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	/* I/O recovery time, default IDE routing */
 	pci_write_config8(dev, 0x4c, 0x04);
 

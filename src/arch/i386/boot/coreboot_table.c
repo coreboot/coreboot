@@ -99,7 +99,7 @@ static struct lb_memory *lb_memory(struct lb_header *header)
 
 static struct lb_serial *lb_serial(struct lb_header *header)
 {
-#if defined(CONFIG_TTYS0_BASE)
+#if CONFIG_CONSOLE_SERIAL8250
 	struct lb_record *rec;
 	struct lb_serial *serial;
 	rec = lb_new_record(header);
@@ -126,22 +126,22 @@ static void add_console(struct lb_header *header, u16 consoletype)
 
 static void lb_console(struct lb_header *header)
 {
-#ifdef CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL8250
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
 #endif
-#ifdef CONFIG_CONSOLE_VGA
+#if CONFIG_CONSOLE_VGA
 	add_console(header, LB_TAG_CONSOLE_VGA);
 #endif
-#ifdef CONFIG_CONSOLE_BTEXT
+#if CONFIG_CONSOLE_BTEXT
 	add_console(header, LB_TAG_CONSOLE_BTEXT);
 #endif
-#ifdef CONFIG_CONSOLE_LOGBUF
+#if CONFIG_CONSOLE_LOGBUF
 	add_console(header, LB_TAG_CONSOLE_LOGBUF);
 #endif
-#ifdef CONFIG_CONSOLE_SROM
+#if CONFIG_CONSOLE_SROM
 	add_console(header, LB_TAG_CONSOLE_SROM);
 #endif
-#ifdef CONFIG_USBDEBUG_DIRECT
+#if CONFIG_USBDEBUG_DIRECT
 	add_console(header, LB_TAG_CONSOLE_EHCI);
 #endif
 }

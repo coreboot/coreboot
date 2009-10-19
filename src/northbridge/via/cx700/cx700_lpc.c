@@ -37,7 +37,7 @@
 #define HPET_ADDR	0xfe800000UL
 #define IOAPIC_ADDR	0xfec00000ULL
 
-#ifdef CONFIG_IOAPIC
+#if CONFIG_IOAPIC
 struct ioapicreg {
 	unsigned int reg;
 	unsigned int value_low, value_high;
@@ -368,7 +368,7 @@ static void cx700_lpc_init(struct device *dev)
 {
 	cx700_set_lpc_registers(dev);
 
-#ifdef CONFIG_IOAPIC
+#if CONFIG_IOAPIC
 	setup_ioapic();
 #endif
 

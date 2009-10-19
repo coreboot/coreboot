@@ -27,7 +27,7 @@
 
 static void vt8237_eth_read_resources(struct device *dev)
 {
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	struct resource *res;
 
 	/* Fix the I/O Resources of the USB2.0 Interface */

@@ -115,7 +115,7 @@ uses CONFIG_WAIT_BEFORE_CPUS_INIT
 
 uses CONFIG_USE_PRINTK_IN_CAR
 
-uses CONFIG_HAVE_FANCTL
+uses CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
 ###
 ### Build options
 ###
@@ -141,7 +141,7 @@ default CONFIG_RAMTOP=2048*1024
 ##
 ## Set-up automatic fan control
 ##
-default CONFIG_HAVE_FANCTL=1
+default CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL=1
 
 ##
 ## Build code for the fallback boot

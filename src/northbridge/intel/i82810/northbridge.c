@@ -147,7 +147,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* Convert tomk from MB to KB. */
 		tomk = tomk << 10;
 
-#ifdef CONFIG_VIDEO_MB
+#if CONFIG_VIDEO_MB
 		/* Check for VGA reserved memory. */
 		if (CONFIG_VIDEO_MB == 512) {
 			tomk -= 512;

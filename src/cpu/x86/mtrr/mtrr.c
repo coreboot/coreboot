@@ -37,7 +37,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 
-#ifdef CONFIG_GFXUMA
+#if CONFIG_GFXUMA
 extern uint64_t uma_memory_base, uma_memory_size;
 #endif
 

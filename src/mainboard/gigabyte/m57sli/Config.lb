@@ -150,7 +150,7 @@ else
     end
 end
 
-if CONFIG_HAVE_FANCTL
+if CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
 	object fanctl.o
 end
 

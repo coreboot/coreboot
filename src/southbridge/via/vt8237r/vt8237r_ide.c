@@ -97,7 +97,7 @@ static void ide_init(struct device *dev)
 		    (sb->ide1_80pin_cable << 4);
 	pci_write_config32(dev, IDE_UDMA, cablesel);
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	/* Set PATA Output Drive Strength */
 	lpc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				    PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);

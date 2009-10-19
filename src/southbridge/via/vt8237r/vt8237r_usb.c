@@ -24,14 +24,14 @@
 #include <device/pci_ids.h>
 #include "vt8237r.h"
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 u32 usb_io_addr[4] = {0xcc00, 0xd000, 0xd400, 0xd800};
 #endif
 
 static void usb_i_init(struct device *dev)
 {
 
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	u8 reg8;
 
 	printk_debug("Entering %s\n", __func__);
@@ -70,7 +70,7 @@ static void usb_i_init(struct device *dev)
 
 static void vt8237_usb_i_read_resources(struct device *dev)
 {
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	struct resource *res;
 	u8 function = (u8) dev->path.pci.devfn & 0x7;
 
@@ -95,7 +95,7 @@ static void vt8237_usb_i_read_resources(struct device *dev)
 
 static void usb_ii_init(struct device *dev)
 {
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	u8 reg8;
 
 	printk_debug("Entering %s\n", __func__);
@@ -117,7 +117,7 @@ static void usb_ii_init(struct device *dev)
 
 static void vt8237_usb_ii_read_resources(struct device *dev)
 {
-#ifdef CONFIG_EPIA_VT8237R_INIT
+#if CONFIG_EPIA_VT8237R_INIT
 	struct resource *res;
 
 	/* Fix the I/O Resources of the USB2.0 Interface */

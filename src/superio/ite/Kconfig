@@ -10,5 +10,9 @@ config SUPERIO_ITE_IT8712F
 	bool
 config SUPERIO_ITE_IT8716F
 	bool
+config SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
+	bool
+	depends on SUPERIO_ITE_ITE8716F
+	default n
 config SUPERIO_ITE_IT8718F
 	bool

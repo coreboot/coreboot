@@ -233,10 +233,6 @@ config GFXUMA
 	help
 	  Enable Unified Memory Architecture for graphics.
 
-config SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
-	bool
-	default n
-
 # TODO
 # menu "Drivers"
 #

@@ -1,0 +1,60 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+# FIXME: It's a PC87360 actually.
+# FIXME: It's an i810E actually!
+# FIXME: ROM chip size really 512KB?
+config BOARD_HP_E_VECTRA_P2706T
+	bool "e-Vectra P2706T"
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_PGA370
+	select NORTHBRIDGE_INTEL_I82810
+	select SOUTHBRIDGE_INTEL_I82801XX
+	select SUPERIO_NSC_PC87360
+	select HAVE_PIRQ_TABLE
+	select UDELAY_TSC
+	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
+	select BOARD_ROMSIZE_KB_512
+
+config MAINBOARD_DIR
+	string
+	default hp/e_vectra_p2706t
+	depends on BOARD_HP_E_VECTRA_P2706T
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "e-Vectra P2706T"
+	depends on BOARD_HP_E_VECTRA_P2706T
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_HP_E_VECTRA_P2706T
+
+config IRQ_SLOT_COUNT
+	int
+	default 3
+	depends on BOARD_HP_E_VECTRA_P2706T
+
+config VIDEO_MB
+	int
+	default 1
+	depends on BOARD_HP_E_VECTRA_P2706T
+

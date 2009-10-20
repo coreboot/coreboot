@@ -406,3 +406,6 @@ config GDB_STUB
 
 endmenu
 
+config LIFT_BSP_APIC_ID
+	bool
+	default n

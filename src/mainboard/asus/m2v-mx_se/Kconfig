@@ -21,7 +21,6 @@
 config BOARD_ASUS_M2V_MX_SE
 	bool "M2V-MX SE"
 	select ARCH_X86
-	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_AM2
 	select NORTHBRIDGE_AMD_AMDK8
 	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
@@ -35,6 +34,7 @@ config BOARD_ASUS_M2V_MX_SE
 	select HAVE_OPTION_TABLE
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
+	select VGA
 
 config MAINBOARD_DIR
 	string

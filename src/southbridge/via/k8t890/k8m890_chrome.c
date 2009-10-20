@@ -23,7 +23,7 @@
 #include <string.h> /* for memset */
 #include "k8t890.h"
 
-#if CONFIG_VGA == 1
+#if CONFIG_VGA
 #include <pc80/vga_io.h>
 #include <pc80/vga.h>
 #include <arch/io.h>
@@ -140,7 +140,7 @@ chrome_init(struct device *dev)
 
 	//k8m890_host_fb_direct_set(fb_address);
 
-#if CONFIG_VGA == 1
+#if CONFIG_VGA
 	/* Now set up the VGA console */
 	vga_io_init(); /* Enable full IO access */
 

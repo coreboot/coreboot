@@ -24,7 +24,7 @@
 #define VGA_COLUMNS 80
 #define VGA_LINES 25
 
-#if (CONFIG_VGA == 1)
+#if CONFIG_VGA
 
 void vga_io_init(void);
 
@@ -38,6 +38,6 @@ void vga_frame_set(unsigned int line, unsigned int character);
 
 void vga_line_write(unsigned int line, const char *string);
 
-#endif /* (CONFIG_VGA == 1) */
+#endif /* CONFIG_VGA */
 
 #endif /* VGA_H */

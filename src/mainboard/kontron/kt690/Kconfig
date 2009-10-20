@@ -1,5 +1,5 @@
 config BOARD_KONTRON_KT690
-	bool "KT690"
+	bool "KT690/mITX"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_S1G1
@@ -62,7 +62,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "KT690"
+	default "KT690/mITX"
 	depends on BOARD_KONTRON_KT690
 
 config HEAP_SIZE

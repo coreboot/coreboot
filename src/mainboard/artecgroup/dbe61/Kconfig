@@ -1,5 +1,5 @@
 config BOARD_ARTECGROUP_DBE61
-	bool "dbe61"
+	bool "DBE61"
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX

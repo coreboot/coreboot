@@ -35,7 +35,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "EIDXE7501DEVKIT"
+	default "XE7501devkit"
 	depends on BOARD_INTEL_XE7501DEVKIT
 
 config IRQ_SLOT_COUNT

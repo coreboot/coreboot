@@ -24,7 +24,7 @@ config DCACHE_RAM_SIZE
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "EPIA_M700"
+	default "EPIA-M700"
 	depends on BOARD_VIA_EPIA_M700
 
 config VIDEO_MB

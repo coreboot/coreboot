@@ -63,7 +63,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "BLAST"
+	default "Blast"
 	depends on BOARD_BROADCOM_BLAST
 
 config HW_MEM_HOLE_SIZEK

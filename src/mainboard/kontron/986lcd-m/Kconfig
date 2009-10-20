@@ -41,7 +41,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "986LCD-M"
+	default "986LCD-M/mITX"
 	depends on BOARD_KONTRON_986LCD_M
 
 config MMCONF_BASE_ADDRESS

@@ -62,7 +62,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ultra40"
+	default "Ultra 40"
 	depends on BOARD_SUNW_ULTRA40
 
 config HW_MEM_HOLE_SIZEK

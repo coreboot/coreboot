@@ -27,7 +27,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Mt. Arvon"
+	default "3100 devkit (Mt. Arvon)"
 	depends on BOARD_INTEL_MTARVON
 
 config HAVE_OPTION_TABLE

@@ -1,5 +1,5 @@
 config BOARD_SUPERMICRO_H8DMR_FAM10
-	bool "H8DMR_FAM10 (Fam10)"
+	bool "H8DMR-i2 (Fam10)"
 	select ARCH_X86
 	select CPU_AMD_FAM10
 	select CPU_AMD_SOCKET_F_1207
@@ -63,7 +63,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "H8DMR_FAM10 FAM10"
+	default "H8DMR-i2 (Fam10)"
 	depends on BOARD_SUPERMICRO_H8DMR_FAM10
 
 config HW_MEM_HOLE_SIZEK

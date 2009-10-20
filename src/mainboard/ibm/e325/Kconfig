@@ -1,5 +1,5 @@
 config BOARD_IBM_E325
-	bool "e325"
+	bool "eServer 325"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -55,7 +55,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "E325"
+	default "eServer 325"
 	depends on BOARD_IBM_E325
 
 config HW_MEM_HOLE_SIZEK

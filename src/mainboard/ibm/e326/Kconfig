@@ -1,5 +1,5 @@
 config BOARD_IBM_E326
-	bool "e326"
+	bool "eServer 326"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -55,7 +55,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "E326"
+	default "eServer 326"
 	depends on BOARD_IBM_E326
 
 config HW_MEM_HOLE_SIZEK

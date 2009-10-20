@@ -1,5 +1,5 @@
 config BOARD_THOMSON_IP1000
-	bool "ip1000"
+	bool "IP1000"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_PGA370
 	select NORTHBRIDGE_INTEL_I82830

@@ -1,5 +1,5 @@
 config BOARD_SUPERMICRO_X6DHE_G2
-	bool "X6DAI-G"
+	bool "X6DHE-G2"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7520
@@ -28,7 +28,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "X6DHE_G2"
+	default "X6DHE-G2"
 	depends on BOARD_SUPERMICRO_X6DHE_G2
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID

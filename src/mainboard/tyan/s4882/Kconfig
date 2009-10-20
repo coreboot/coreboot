@@ -1,5 +1,5 @@
 config BOARD_TYAN_S4882
-	bool "S4882"
+	bool "S4882 (Thunder K8QS Pro)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940

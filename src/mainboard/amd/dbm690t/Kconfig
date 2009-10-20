@@ -1,5 +1,5 @@
 config BOARD_AMD_DBM690T
-	bool "DBM690T"
+	bool "DBM690T (Herring)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_S1G1

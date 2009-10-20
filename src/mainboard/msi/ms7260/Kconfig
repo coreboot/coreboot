@@ -1,5 +1,5 @@
 config BOARD_MSI_MS7260
-	bool "MS7260"
+	bool "MS-7260 (K9N Neo)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_AM2
@@ -65,7 +65,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ms7260"
+	default "MS-7260"
 	depends on BOARD_MSI_MS7260
 
 config PCI_64BIT_PREF_MEM

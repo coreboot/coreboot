@@ -28,7 +28,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "X6DHE_G"
+	default "X6DHE-G"
 	depends on BOARD_SUPERMICRO_X6DHE_G
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID

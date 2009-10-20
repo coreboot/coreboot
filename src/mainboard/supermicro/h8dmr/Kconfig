@@ -1,5 +1,5 @@
 config BOARD_SUPERMICRO_H8DMR
-	bool "H8DMR"
+	bool "H8DMR-i2"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F
@@ -62,7 +62,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "H8DMR"
+	default "H8DMR-i2"
 	depends on BOARD_SUPERMICRO_H8DMR
 
 config HW_MEM_HOLE_SIZEK

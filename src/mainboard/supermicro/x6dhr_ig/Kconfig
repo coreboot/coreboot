@@ -1,5 +1,5 @@
 config BOARD_SUPERMICRO_X6DHR_IG
-	bool "X6DHR-IG"
+	bool "X6DHR-iG"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7520
@@ -27,7 +27,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "X6DHR_IG"
+	default "X6DHR-iG"
 	depends on BOARD_SUPERMICRO_X6DHR_IG
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID

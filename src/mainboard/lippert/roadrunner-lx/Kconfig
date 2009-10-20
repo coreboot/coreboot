@@ -1,5 +1,5 @@
 config BOARD_LIPPERT_ROADRUNNER_LX
-	bool "RoadRunner-LX"
+	bool "Cool RoadRunner-LX"
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -20,7 +20,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ROADRUNNERLX"
+	default "Cool RoadRunner-LX"
 	depends on BOARD_LIPPERT_ROADRUNNER_LX
 
 config HAVE_OPTION_TABLE

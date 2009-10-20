@@ -64,7 +64,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ga2761gxdk"
+	default "GA-2761GXDK"
 	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config PCI_64BIT_PREF_MEM

@@ -19,7 +19,7 @@
 ##
 
 config BOARD_TYAN_S1846
-	bool "Tsunami ATX (S1846)"
+	bool "S1846 (Tsunami ATX)"
 	select ARCH_X86
 	select CPU_INTEL_SLOT_2
 	select NORTHBRIDGE_INTEL_I440BX

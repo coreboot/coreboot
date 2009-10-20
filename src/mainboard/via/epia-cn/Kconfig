@@ -25,7 +25,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "EPIA_CN"
+	default "EPIA-CN"
 	depends on BOARD_VIA_EPIA_CN
 
 config VIDEO_MB

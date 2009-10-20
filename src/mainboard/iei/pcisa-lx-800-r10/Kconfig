@@ -1,5 +1,5 @@
 config BOARD_IEI_PCISA_LX_800_R10
-	bool "PCISA lx-800 r10"
+	bool "PCISA LX-800-R10"
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX
@@ -20,7 +20,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "PCISALX800R10"
+	default "PCISA-LX-800-R10"
 	depends on BOARD_IEI_PCISA_LX_800_R10
 
 config HAVE_OPTION_TABLE

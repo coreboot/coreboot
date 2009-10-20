@@ -1,5 +1,5 @@
 config BOARD_HP_DL145_G3
-	bool "DL145-G3"
+	bool "ProLiant DL145 G3"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F
@@ -63,7 +63,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "DL145G3"
+	default "ProLiant DL145 G3"
 	depends on BOARD_HP_DL145_G3
 
 config HW_MEM_HOLE_SIZEK

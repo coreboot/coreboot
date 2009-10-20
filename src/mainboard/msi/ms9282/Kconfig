@@ -1,5 +1,5 @@
 config BOARD_MSI_MS9282
-	bool "MS9282"
+	bool "MS-9282 (K9SD Master)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F
@@ -65,7 +65,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ms9282"
+	default "MS-9282"
 	depends on BOARD_MSI_MS9282
 
 config PCI_64BIT_PREF_MEM

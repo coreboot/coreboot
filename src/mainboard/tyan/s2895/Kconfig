@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2895
-	bool "Thunder K8WE (S2895)"
+	bool "S2895 (Thunder K8WE)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -41,7 +41,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "s2895"
+	default "S2895"
 	depends on BOARD_TYAN_S2895
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID

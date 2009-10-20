@@ -1,5 +1,5 @@
 config BOARD_GIGABYTE_M57SLI
-	bool "M57SLI"
+	bool "GA-M57SLI-S4"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_AM2
@@ -67,7 +67,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "m57sli"
+	default "GA-M57SLI-S4"
 	depends on BOARD_GIGABYTE_M57SLI
 
 config PCI_64BIT_PREF_MEM

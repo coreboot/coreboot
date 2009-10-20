@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2735
-	bool "S2735"
+	bool "S2735 (Tiger i7501R)"
 	select ARCH_X86
 	select CPU_INTEL_SOCKET_MPGA604
 	select NORTHBRIDGE_INTEL_E7501

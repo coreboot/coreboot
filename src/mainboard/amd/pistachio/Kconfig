@@ -55,7 +55,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "PISTACHIO"
+	default "Pistachio"
 	depends on BOARD_AMD_PISTACHIO
 
 config HW_MEM_HOLE_SIZEK

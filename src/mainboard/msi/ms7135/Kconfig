@@ -1,5 +1,5 @@
 config BOARD_MSI_MS7135
-	bool "MS7135"
+	bool "MS-7135 (K8N Neo3)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_754
@@ -40,7 +40,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ms7135"
+	default "MS-7135"
 	depends on BOARD_MSI_MS7135
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID

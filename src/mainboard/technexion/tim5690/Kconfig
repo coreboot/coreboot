@@ -1,5 +1,5 @@
 config BOARD_TECHNEXION_TIM5690
-	bool "Tim5690"
+	bool "TIM-5690"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_S1G1
@@ -57,7 +57,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "tim5690"
+	default "TIM-5690"
 	depends on BOARD_TECHNEXION_TIM5690
 
 config HW_MEM_HOLE_SIZEK

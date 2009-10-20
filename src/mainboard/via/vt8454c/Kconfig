@@ -29,7 +29,7 @@ config DCACHE_RAM_SIZE
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "VT8454C"
+	default "VT8454c"
 	depends on BOARD_VIA_VT8454C
 
 config IRQ_SLOT_COUNT

@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2912
-	bool "S2912"
+	bool "S2912 (Thunder n3600R)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F

@@ -1,5 +1,5 @@
 config BOARD_AMD_DB800
-	bool "DB800"
+	bool "DB800 (Salsa)"
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX

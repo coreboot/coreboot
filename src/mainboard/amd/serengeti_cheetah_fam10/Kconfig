@@ -44,7 +44,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Serengeti-Cheetah-Fam10"
+	default "Serengeti Cheetah (Fam10)"
 	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
 config HW_MEM_HOLE_SIZEK

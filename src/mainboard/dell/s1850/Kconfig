@@ -27,7 +27,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "s1850"
+	default "PowerEdge 1850"
 	depends on BOARD_DELL_S1850
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID

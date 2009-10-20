@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2875
-	bool "Tiger K8W (S2875)"
+	bool "S2875 (Tiger K8W)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -29,7 +29,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "s2875"
+	default "S2875"
 	depends on BOARD_TYAN_S2875
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID

@@ -1,5 +1,5 @@
 config BOARD_MSI_MS9185
-	bool "MS9185"
+	bool "MS-9185 (K9SD Master-S2R)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F
@@ -64,7 +64,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "MS9185"
+	default "MS-9185"
 	depends on BOARD_MSI_MS9185
 
 config HW_MEM_HOLE_SIZEK

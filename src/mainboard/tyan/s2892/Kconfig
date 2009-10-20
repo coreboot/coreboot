@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2892
-	bool "Thunder K8SE (S2892)"
+	bool "S2892 (Thunder K8SE)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -41,7 +41,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "s2892"
+	default "S2892"
 	depends on BOARD_TYAN_S2892
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID

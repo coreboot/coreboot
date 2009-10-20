@@ -1,5 +1,5 @@
 config BOARD_NEWISYS_KHEPRI
-	bool "Khepri"
+	bool "Khephri - 2100 Server (SUN Fire v20z)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940

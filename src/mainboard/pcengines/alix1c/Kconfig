@@ -1,5 +1,5 @@
 config BOARD_PCENGINES_ALIX1C
-	bool "alix.1c"
+	bool "ALIX.1C"
 	select ARCH_X86
 	select CPU_AMD_LX
 	select NORTHBRIDGE_AMD_LX

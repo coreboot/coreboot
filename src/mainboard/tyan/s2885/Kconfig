@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2885
-	bool "Thunder K8SR (S2885)"
+	bool "S2885 (Thunder K8SR)"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_940
@@ -39,7 +39,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "s2885"
+	default "S2885"
 	depends on BOARD_TYAN_S2885
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID

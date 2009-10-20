@@ -1,5 +1,5 @@
 config BOARD_SUPERMICRO_H8DME
-	bool "H8DME"
+	bool "H8DME-2"
 	select ARCH_X86
 	select CPU_AMD_K8
 	select CPU_AMD_SOCKET_F
@@ -63,7 +63,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "H8DME"
+	default "H8DME-2"
 	depends on BOARD_SUPERMICRO_H8DME
 
 config HW_MEM_HOLE_SIZEK

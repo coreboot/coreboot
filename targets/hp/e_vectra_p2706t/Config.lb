@@ -37,3 +37,6 @@ end
 
 buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"
 
+# pci_rom /tmp/vgabios.rom vendor_id=0x8086 device_id=0x7125
+# pci_rom /tmp/ethbios.rom vendor_id=0x10b7 device_id=0x9200
+

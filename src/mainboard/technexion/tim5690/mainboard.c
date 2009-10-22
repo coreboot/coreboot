@@ -47,37 +47,6 @@ extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
 uint64_t uma_memory_base, uma_memory_size;
 
 
-
-/***************************************************
-* This board, the TIM-5690 has two Marvel 88e5056 PCI-E
-* 10/100/1000 chips on board. 
-* Both of their pin PERSTn pins are connected to GPIO 5 of the
-* SB600 southbridge.
-****************************************************/
-static void enable_onboard_nic()
-{
-
-	u8 byte;
-	device_t sm_dev;
-
-	printk_info("enable_onboard_nic.\n");
-
-	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
-
-	byte = pci_read_config8(sm_dev, 0x9a);
-	byte |= ( 1 << 7);
-	pci_write_config8(sm_dev, 0x9a, byte);
-
-	byte=pm_ioread(0x59);
-	byte &= ~( 1<< 5);
-	pm_iowrite(0x59,byte);
-
-	byte = pci_read_config8(sm_dev, 0xA8);
-
-	byte |= (1 << 1); //set bit 1 to high
-	pci_write_config8(sm_dev, 0xA8, byte);
-}
-
 /* set thermal config
  */
 static void set_thermal_config()
@@ -193,7 +162,6 @@ void tim5690_enable(device_t dev)
 	uma_memory_base = 0x38000000;	/* 1GB  system memory supposed */
 #endif
 
-	enable_onboard_nic();
 	set_thermal_config();
 }
 

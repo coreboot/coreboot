@@ -172,7 +172,7 @@ void rl5c476_read_resources(device_t dev)
 	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){ 
 		/* fake index as it isn't in PCI config space */
 		resource = new_resource(dev, 1);
-		resource->flags |= IORESOURCE_MEM ;
+		resource->flags |= IORESOURCE_MEM;
 		resource->size = 0x1000;
 		resource->align = resource->gran = 12;
 		resource->limit= 0xffff0000;
@@ -188,7 +188,7 @@ void rl5c476_set_resources(device_t dev)
 		resource = find_resource(dev,1);
 		if( !(resource->flags & IORESOURCE_STORED) ){
 			resource->flags |= IORESOURCE_STORED ;
-			printk_debug("%s 1 ==> %x\n",dev_path(dev),resource->base); 
+			printk_debug("%s 1 ==> %x\n", dev_path(dev), resource->base); 
 			cf_base = resource->base;
 		}
 	}

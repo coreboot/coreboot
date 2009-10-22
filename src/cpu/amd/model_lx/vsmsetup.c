@@ -291,6 +291,7 @@ void do_vsmbios(void)
 	 * much better parameterized
 	 */
 
+	// TODO this is a CBFS candidate
 	//VSA is cat onto the end after LB builds
 	rom = ((unsigned long)0) - (CONFIG_ROM_SIZE + 36 * 1024);
 	buf = (unsigned char *)VSA2_BUFFER;

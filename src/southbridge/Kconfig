@@ -5,4 +5,3 @@ source src/southbridge/nvidia/Kconfig
 source src/southbridge/ricoh/Kconfig
 source src/southbridge/sis/Kconfig
 source src/southbridge/via/Kconfig
-source src/southbridge/winbond/Kconfig

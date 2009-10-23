@@ -26,13 +26,13 @@ ifeq ($(CONFIG_PAYLOAD_NONE),y)
 else
 	@printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(COMPRESSFLAG)\n"
 	$(CBFSTOOL) ./build/coreboot.rom add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE)  fallback/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
 ifeq ($(CONFIG_VGA_BIOS),y)
 	@printf "    VGABIOS    $(CONFIG_FALLBACK_VGA_BIOS_FILE) $(CONFIG_FALLBACK_VGA_BIOS_ID)\n"
 	$(CBFSTOOL) ./build/coreboot.rom add $(CONFIG_FALLBACK_VGA_BIOS_FILE) "pci$(CONFIG_FALLBACK_VGA_BIOS_ID).rom" optionrom 
 endif
 	@printf "    CBFSPRINT  ./build/coreboot.rom\n\n"
 	$(CBFSTOOL) build/coreboot.rom print
-endif
 
 
 #######################################################################

@@ -15,10 +15,6 @@
 	#define RAMINIT_SYSINFO 0
 #endif
 
-#ifndef K8_SCAN_PCI_BUS
-	#define K8_SCAN_PCI_BUS 0
-#endif
-
 #ifndef K8_ALLOCATE_IO_RANGE
 	#define K8_ALLOCATE_IO_RANGE 0
 #endif
@@ -298,122 +294,6 @@ static int ht_optimize_link(
 
 	return needs_reset;
 }
-
-#if (CONFIG_USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
-
-#if RAMINIT_SYSINFO == 1
-static void ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid, struct sys_info *sysinfo);
-static int scan_pci_bus( unsigned bus , struct sys_info *sysinfo)
-#else
-static int ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid);
-static int scan_pci_bus( unsigned bus)
-#endif
-{
-	/*
-		here we already can access PCI_DEV(bus, 0, 0) to PCI_DEV(bus, 0x1f, 0x7)
-		So We can scan these devices to find out if they are bridge
-		If it is pci bridge, We need to set busn in bridge, and go on
-		For ht bridge, We need to set the busn in bridge and ht_setup_chainx, and the scan_pci_bus
-	*/
-	unsigned int devfn;
-	unsigned new_bus;
-	unsigned max_bus;
-
-	new_bus = (bus & 0xff); // mask out the reset_needed
-
-	if(new_bus<0x40) {
-		max_bus = 0x3f;
-	} else if (new_bus<0x80) {
-		max_bus = 0x7f;
-	} else if (new_bus<0xc0) {
-		max_bus = 0xbf;
-	} else {
-		max_bus = 0xff;
-	}
-
-	new_bus = bus;
-
-	for (devfn = 0; devfn <= 0xff; devfn++) {
-		uint8_t hdr_type;
-		uint16_t class;
-		uint32_t buses;
-		device_t dev;
-		uint16_t cr;
-		dev = PCI_DEV((bus & 0xff), ((devfn>>3) & 0x1f), (devfn & 0x7));
-		hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
-		class = pci_read_config16(dev, PCI_CLASS_DEVICE);
-
-		switch(hdr_type & 0x7f) {  /* header type */
-			case PCI_HEADER_TYPE_BRIDGE:
-				if (class  != PCI_CLASS_BRIDGE_PCI) goto bad;
-				/* set the bus range dev */
-
-				/* Clear all status bits and turn off memory, I/O and master enables. */
-				cr = pci_read_config16(dev, PCI_COMMAND);
-				pci_write_config16(dev, PCI_COMMAND, 0x0000);
-				pci_write_config16(dev, PCI_STATUS, 0xffff);
-
-				buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
-
-				buses &= 0xff000000;
-				new_bus++;
-				buses |= (((unsigned int) (bus & 0xff) << 0) |
-					((unsigned int) (new_bus & 0xff) << 8) |
-					((unsigned int) max_bus << 16));
-				pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
-
-				/* here we need to figure out if dev is a ht bridge
-					if it is ht bridge, we need to call ht_setup_chainx at first
-					Not verified --- yhlu
-				*/
-				uint8_t upos;
-				upos = ht_lookup_host_capability(dev); // one func one ht sub
-				if (upos) { // sub ht chain
-					uint8_t busn;
-					busn = (new_bus & 0xff);
-					/* Make certain the HT bus is not enumerated */
-					ht_collapse_previous_enumeration(busn, 0);
-					/* scan the ht chain */
-					#if RAMINIT_SYSINFO == 1
-					ht_setup_chainx(dev,upos,busn, 0, sysinfo); // don't need offset unitid
-					#else
-					new_bus |= (ht_setup_chainx(dev, upos, busn, 0)<<16); // store reset_needed to upword
-					#endif
-				}
-
-				#if RAMINIT_SYSINFO == 1
-				new_bus = scan_pci_bus(new_bus, sysinfo);
-				#else
-				new_bus = scan_pci_bus(new_bus);
-				#endif
-				/* set real max bus num in that */
-
-				buses = (buses & 0xff00ffff) |
-					((unsigned int) (new_bus & 0xff) << 16);
-				pci_write_config32(dev, PCI_PRIMARY_BUS, buses);
-
-				pci_write_config16(dev, PCI_COMMAND, cr);
-
-				break;
-			default:
-			bad:
-				;
-		}
-
-		/* if this is not a multi function device,
-		 * or the device is not present don't waste
-		 * time probing another function.
-		 * Skip to next device.
-		 */
-		if ( ((devfn & 0x07) == 0x00) && ((hdr_type & 0x80) != 0x80))
-		{
-			devfn += 0x07;
-		}
-	}
-
-	return new_bus;
-}
-#endif
 
 #if RAMINIT_SYSINFO == 1
 static void ht_setup_chainx(device_t udev, uint8_t upos, uint8_t bus, unsigned offset_unitid, struct sys_info *sysinfo)
@@ -777,9 +657,6 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		unsigned regpos;
 		uint32_t dword;
 		uint8_t busn;
-		#if (CONFIG_USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
-		unsigned bus;
-		#endif
 		unsigned offset_unitid = 0;
 
 		reg = pci_read_config32(PCI_DEV(0,0x18,1), 0xe0 + i * 4);
@@ -814,15 +691,6 @@ static int ht_setup_chains(uint8_t ht_c_num)
 		reset_needed |= ht_setup_chainx(udev,upos,busn, offset_unitid); //all not
 #endif
 
-		#if (CONFIG_USE_DCACHE_RAM == 1) && (K8_SCAN_PCI_BUS == 1)
-		/* You can use use this in romcc, because there is function call in romcc, recursive will kill you */
-		bus = busn; // we need 32 bit
-#if RAMINIT_SYSINFO == 1
-		scan_pci_bus(bus, sysinfo);
-#else
-		reset_needed |= (scan_pci_bus(bus)>>16); // take out reset_needed that stored in upword
-#endif
-		#endif
 	}
 
 #if RAMINIT_SYSINFO == 0

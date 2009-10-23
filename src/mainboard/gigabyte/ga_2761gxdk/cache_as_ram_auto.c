@@ -27,8 +27,6 @@
 #define RAMINIT_SYSINFO 1
 
 #define K8_ALLOCATE_IO_RANGE 1
-//#define K8_SCAN_PCI_BUS 1
-
 
 #define QRANK_DIMM_SUPPORT 1
 

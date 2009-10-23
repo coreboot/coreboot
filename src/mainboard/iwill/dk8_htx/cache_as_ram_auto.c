@@ -10,9 +10,7 @@
 #define QRANK_DIMM_SUPPORT 1
 
 //used by incoherent_ht
-//#define K8_SCAN_PCI_BUS 1
 //#define K8_ALLOCATE_IO_RANGE 1
-
 
 //used by init_cpus and fidvid
 #define K8_SET_FIDVID 0

@@ -1,9 +1,6 @@
 #define ASSEMBLY 1
 #define __ROMCC__
 
-
-//#define K8_SCAN_PCI_BUS 1
-
 #define QRANK_DIMM_SUPPORT 1
 
 #if CONFIG_LOGICAL_CPUS==1

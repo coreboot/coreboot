@@ -631,6 +631,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x40fc2 }, /* DH-F2 (socket S1g1) */
 	{ X86_VENDOR_AMD, 0x40f13 }, /* JH-F3 (socket F/1207) */
 	{ X86_VENDOR_AMD, 0x40f33 }, /* JH-F3 (socket AM2) */
+	{ X86_VENDOR_AMD, 0x50fd3 }, /* JH-F3 (socket F/1207) */
 	{ X86_VENDOR_AMD, 0xc0f13 }, /* JH-F3 (socket F/1207) */
 	{ X86_VENDOR_AMD, 0x50ff3 }, /* DH-F3 (socket AM2) */
 	{ X86_VENDOR_AMD, 0x60fb1 }, /* BH-G1 (socket AM2) */
@@ -639,6 +640,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x60f82 }, /* BH-G2 (socket S1g1) */
 	{ X86_VENDOR_AMD, 0x70ff1 }, /* DH-G1 (socket AM2) */
 	{ X86_VENDOR_AMD, 0x60ff2 }, /* DH-G2 (socket AM2) */
+	{ X86_VENDOR_AMD, 0x70ff2 }, /* DH-G2 (socket AM2) */
 	{ X86_VENDOR_AMD, 0x60fc2 }, /* DH-G2 (socket S1g1) */
 	{ X86_VENDOR_AMD, 0x70fc2 }, /* DH-G2 (socket S1g1) */
 #endif

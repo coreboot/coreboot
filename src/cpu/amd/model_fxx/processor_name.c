@@ -302,6 +302,10 @@ int init_processor_name(void)
 			processor_name_string =
 			    "AMD Athlon(tm) Neo Processor MV-TT";
 			break;
+		case 0x300c2:
+			processor_name_string =
+			    "AMD Sempron(tm) Processor 2RRU";
+			break;
 		/* dual-core */
 		case 0x31016:
 			processor_name_string =
@@ -352,6 +356,16 @@ int init_processor_name(void)
 			processor_name_string =
 			    "AMD Athlon(tm) X2 Dual Core Processor TT50e";
 			break;
+		case 0x310a1:
+		case 0x310a2:
+			processor_name_string =
+			    "AMD Athlon(tm) Neo X2 Dual Core Processor TT50e";
+			break;
+		case 0x310b0:
+		case 0x310c0:
+			processor_name_string =
+			    "AMD Turion(tm) Neo X2 Dual Core Processor L6RR";
+			break;
 		/* Socket S1g1 */
 		/* single core */
 		case 0x00012:
@@ -384,6 +398,10 @@ int init_processor_name(void)
 			processor_name_string =
 			    "AMD Athlon(tm) Processor TF-TT";
 			break;
+		case 0x00073:
+			processor_name_string =
+			    "AMD Athlon(tm) Processor L1RR";
+			break;
 		/* dual-core */
 		case 0x0101c:
 			processor_name_string =
@@ -401,6 +419,14 @@ int init_processor_name(void)
 		case 0x01054:
 			processor_name_string =
 			    "AMD Athlon(tm) 64 X2 Dual Core Processor TT00+";
+			break;
+		case 0x01062:
+			processor_name_string =
+			    "AMD Athlon(tm) X2 Dual Core Processor L3RR";
+			break;
+		case 0x01074:
+			processor_name_string =
+			    "AMD Athlon(tm) X2 Dual Core Processor L5RR";
 			break;
 		default:
 			processor_name_string = "AMD Processor model unknown";

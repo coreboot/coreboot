@@ -3,7 +3,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include "vt8235.h"
 
 /* really nothing to do here, both usb 1.1 & 2.0 are normal PCI devices and so get resources allocated
    properly. They are part of the southbridge and are enabled in the chip enable function for the southbridge */

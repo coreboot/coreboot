@@ -3,7 +3,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-#include "vt8235.h"
 #include "chip.h"
 
 static void ide_init(struct device *dev)

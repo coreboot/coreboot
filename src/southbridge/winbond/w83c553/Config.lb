@@ -1,4 +1,0 @@
-#config chip.h
-#object w83c553f.o
-driver w83c553f.o
-driver w83c553f_ide.o

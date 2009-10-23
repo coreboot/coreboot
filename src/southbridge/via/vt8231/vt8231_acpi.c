@@ -3,7 +3,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include "vt8231.h"
 
 static void acpi_init(struct device *dev)
 {

@@ -1,16 +1,8 @@
-uses CONFIG_IDE
-
 config chip.h
 driver i82801ca.o
-
 driver i82801ca_usb.o
-
 driver i82801ca_lpc.o
-
-if CONFIG_IDE
-	driver i82801ca_ide.o
-end
-
+driver i82801ca_ide.o
 driver i82801ca_ac97.o
 #driver i82801ca_nic.o
 driver i82801ca_pci.o

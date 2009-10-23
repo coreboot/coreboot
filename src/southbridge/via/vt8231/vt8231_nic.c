@@ -3,7 +3,6 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
-#include "vt8231.h"
 
 /*
  * Enable the ethernet device and turn off stepping (because it is integrated 

@@ -6,7 +6,6 @@
 
 #include <pc80/mc146818rtc.h>
 
-#include "vt8231.h"
 #include "chip.h"
 
 /* PIRQ init

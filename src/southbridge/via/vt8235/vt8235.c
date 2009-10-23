@@ -5,7 +5,6 @@
 #include <device/pci_ids.h>
 #include <pc80/keyboard.h>
 #include <pc80/i8259.h>
-#include "vt8235.h"
 #include "chip.h"
 
 /*

@@ -1,4 +1,3 @@
-uses CONFIG_IDE
 uses CONFIG_UDELAY_IO
 uses CONFIG_USE_INIT
 uses CONFIG_ARCH_X86
@@ -10,10 +9,6 @@ object i8259.o
 
 if CONFIG_UDELAY_IO
 	object udelay_io.o
-end
-
-if CONFIG_IDE
-	dir ide
 end
 
 dir vga

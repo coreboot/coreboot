@@ -7,7 +7,6 @@
 
 #include <pc80/mc146818rtc.h>
 
-#include "vt8235.h"
 #include "chip.h"
 
 /* The epia-m is really short on interrupts available, so PCI interupts A & D are ganged togther and so are B & C.

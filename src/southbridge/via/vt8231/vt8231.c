@@ -7,7 +7,6 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/keyboard.h>
 
-#include "vt8231.h"
 #include "chip.h"
 
 /* Base 8231 controller */

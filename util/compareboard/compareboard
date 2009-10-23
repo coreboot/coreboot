@@ -43,8 +43,6 @@ sed \
 	-e "/^CONFIG_ROMBASE / d" \
 	-e "/^CONFIG_ROM_IMAGE_SIZE / d" \
 	-e "/^CONFIG_STACK_SIZE / d" \
-	-e "/^CONFIG_IDE_BOOT_DRIVE / d" \
-	-e "/^CONFIG_IDE_OFFSET / d" \
 	-e "/^CONFIG_GDB_STUB / d" \
 	$A/old > $A/old.filtered
 sed \

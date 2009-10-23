@@ -718,31 +718,6 @@ define CONFIG_IOAPIC
 end
 
 ###############################################
-# IDE specific options
-###############################################
-
-define CONFIG_IDE
-	default 0
-	export always
-	comment "Define to include IDE support"
-end
-define CONFIG_IDE_BOOT_DRIVE
-	default 0
-	export always
-	comment "Disk number of boot drive"
-end
-define CONFIG_IDE_SWAB
-	default none
-	export used
-	comment "Swap bytes when reading from IDE device"
-end
-define CONFIG_IDE_OFFSET
-	default 0
-	export always
-	comment "Sector at which to start searching for boot image"
-end
-
-###############################################
 # Options for memory mapped I/O
 ###############################################
 

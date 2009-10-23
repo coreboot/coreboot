@@ -27,7 +27,6 @@ struct device_operations pci_bridge_ops  = {
 };
 
 struct pci_driver pci_bridge_pci_driver __pci_driver = {
-	/* w83c553f */
 	.ops = &pci_bridge_ops,
 	.device = PCI_DEVICE_ID_IBM_405GP,
 	.vendor = PCI_VENDOR_ID_IBM,

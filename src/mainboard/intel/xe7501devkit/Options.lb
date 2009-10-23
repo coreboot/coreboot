@@ -44,7 +44,6 @@ uses CONFIG_CONSOLE_VGA
 uses CONFIG_PCI_ROM_RUN
 uses CONFIG_DEBUG
 #uses CONFIG_CPU_OPT
-uses CONFIG_IDE
 
 ## These are defined in target Config.lb, don't add here
 uses CONFIG_USE_FALLBACK_IMAGE
@@ -227,9 +226,6 @@ default  CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=8
 ##
 ## Select power on after power fail setting
 default CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
-
-## Things we may not have
-default CONFIG_IDE=1
 
 default CONFIG_DEBUG=1
 # default CONFIG_CPU_OPT="-g"

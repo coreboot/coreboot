@@ -16,39 +16,23 @@
 
 static inline void print_initcpu8 (const char *strval, unsigned val)
 {
-#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%02x\r\n", strval, val);
-#else
-        print_debug(strval); print_debug_hex8(val); print_debug("\r\n");
-#endif
 }
 
 static inline void print_initcpu8_nocr (const char *strval, unsigned val)
 {
-#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%02x", strval, val);
-#else
-        print_debug(strval); print_debug_hex8(val);
-#endif
 }
 
 
 static inline void print_initcpu16 (const char *strval, unsigned val)
 {
-#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%04x\r\n", strval, val);
-#else
-        print_debug(strval); print_debug_hex16(val); print_debug("\r\n");
-#endif
 }
 
 static inline void print_initcpu(const char *strval, unsigned val)
 {
-#if CONFIG_USE_PRINTK_IN_CAR
         printk_debug("%s%08x\r\n", strval, val);
-#else
-        print_debug(strval); print_debug_hex32(val); print_debug("\r\n");
-#endif
 }
 
 typedef void (*process_ap_t)(unsigned apicid, void *gp);
@@ -171,14 +155,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
 
 static inline __attribute__((always_inline)) void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id, const char *str)
 {
-	#if CONFIG_USE_PRINTK_IN_CAR
                 printk_debug("%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n", str, apicid, id.nodeid, id.coreid);
-	#else
-		print_debug(str);
-        	print_debug(" ---- {APICID = "); print_debug_hex8(apicid);
-		print_debug(" NODEID = "), print_debug_hex8(id.nodeid); print_debug(" COREID = "), print_debug_hex8(id.coreid);
-	        print_debug("} --- \r\n");
-        #endif
 }
 
 

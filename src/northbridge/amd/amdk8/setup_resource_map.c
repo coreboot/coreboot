@@ -12,14 +12,7 @@ static void setup_resource_map_offset(const unsigned int *register_values, int m
 		unsigned where;
 		unsigned long reg;
 #if 0
-	#if CONFIG_USE_PRINTK_IN_CAR
 		prink_debug("%08x <- %08x\r\n", register_values[i] +  offset_pci_dev, register_values[i+2]);
-	#else
-		print_debug_hex32(register_values[i] + offset_pci_dev);
-		print_debug(" <-");
-		print_debug_hex32(register_values[i+2]);
-		print_debug("\r\n");
-	#endif
 #endif
 		dev = (register_values[i] & ~0xfff) + offset_pci_dev;
 		where = register_values[i] & 0xfff;
@@ -56,27 +49,12 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-	#if CONFIG_USE_PRINTK_IN_CAR
 		printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n",
 			i>>2, register_values[i],
 			register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0),
 			register_values[i+2],
 			register_values[i+3] + ( ( (register_values[i] & RES_PORT_IO_32) == RES_PORT_IO_32) ? offset_io_base : 0)
 			);
-	#else
-		print_debug_hex16(i>>2);
-		print_debug(": ");
-		print_debug_hex8(register_values[i]);
-		print_debug(" ");
-		print_debug_hex32(register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0) );
-		print_debug(" <- & ");
-		print_debug_hex32(register_values[i+2]);
-		print_debug(" | ");
-		print_debug_hex32(register_values[i+3] +
-			(((register_values[i] & RES_PORT_IO_32) == RES_PORT_IO_32) ? offset_io_base : 0)
-			);
-		print_debug("\r\n");
-	#endif
 #endif
 		switch (register_values[i]) {
 		case RES_PCI_IO: //PCI
@@ -151,21 +129,8 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-	#if CONFIG_USE_PRINTK_IN_CAR
 		printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n",
 			i/4, register_values[i],register_values[i+1], register_values[i+2], register_values[i+3]);
-	#else
-		print_debug_hex16(i/4);
-		print_debug(": ");
-		print_debug_hex8(register_values[i]);
-		print_debug(" ");
-		print_debug_hex32(register_values[i+1]);
-		print_debug(" <- & ");
-		print_debug_hex32(register_values[i+2]);
-		print_debug(" | ");
-		print_debug_hex32(register_values[i+3]);
-		print_debug("\r\n");
-	#endif
 #endif
 		switch (register_values[i]) {
 		case RES_PCI_IO: //PCI

@@ -28,10 +28,6 @@
 	#define K8_ALLOCATE_MMIO_RANGE 0
 #endif
 
-#if CONFIG_USE_PRINTK_IN_CAR == 0
-#error This file needs CONFIG_USE_PRINTK_IN_CAR
-#endif
-
 static inline void print_linkn_in (const char *strval, uint8_t byteval)
 {
 	printk_debug("%s%02x\r\n", strval, byteval);

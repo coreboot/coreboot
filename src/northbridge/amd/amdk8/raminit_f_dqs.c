@@ -21,11 +21,6 @@
 //0: mean no debug info
 #define DQS_TRAIN_DEBUG 0
 
-#if CONFIG_USE_PRINTK_IN_CAR
-#else
-#error This file needs CONFIG_USE_PRINTK_IN_CAR
-#endif
-
 static inline void print_debug_dqs(const char *str, unsigned val, unsigned level)
 {
 #if DQS_TRAIN_DEBUG > 0

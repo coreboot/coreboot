@@ -34,11 +34,6 @@
 #define QRANK_DIMM_SUPPORT 0
 #endif
 
-#if CONFIG_USE_PRINTK_IN_CAR
-#else
-#error This file needs CONFIG_USE_PRINTK_IN_CAR
-#endif
-
 #define RAM_TIMING_DEBUG 0
 
 #if RAM_TIMING_DEBUG == 1

@@ -15,33 +15,21 @@
 static inline void print_debug_fv(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-	#if CONFIG_USE_PRINTK_IN_CAR
 		printk_debug("%s%x\r\n", str, val);
-	#else
-		print_debug(str); print_debug_hex32(val); print_debug("\r\n");
-	#endif
 #endif
 }
 
 static inline void print_debug_fv_8(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-	#if CONFIG_USE_PRINTK_IN_CAR
 		printk_debug("%s%02x\r\n", str, val);
-	#else
-		print_debug(str); print_debug_hex8(val); print_debug("\r\n");
-	#endif
 #endif
 }
 
 static inline void print_debug_fv_64(const char *str, unsigned val, unsigned val2)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-	#if CONFIG_USE_PRINTK_IN_CAR
 		printk_debug("%s%x%x\r\n", str, val, val2);
-	#else
-		print_debug(str); print_debug_hex32(val); print_debug_hex32(val2); print_debug("\r\n");
-	#endif
 #endif
 }
 
@@ -143,11 +131,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	apicidx = lapicid();
 
 	if (apicid != apicidx) {
-#if CONFIG_USE_PRINTK_IN_CAR
 		printk_err("wrong apicid, we want change %x, but it is %x\r\n", apicid, apicidx);
-#else
-		print_err("wrong apicid, we want change "); print_err_hex8(apicid); print_err(" but it is "); print_err_hex8(apicidx); print_err("\r\n");
-#endif
 		return fidvid;
 	}
 

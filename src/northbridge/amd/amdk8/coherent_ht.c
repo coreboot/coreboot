@@ -111,13 +111,7 @@
 
 static inline void print_linkn (const char *strval, uint8_t byteval)
 {
-#if 1
-#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("%s%02x\r\n", strval, byteval);
-#else
-	print_debug(strval); print_debug_hex8(byteval); print_debug("\r\n");
-#endif
-#endif
 }
 
 static void disable_probes(void)
@@ -1502,12 +1496,7 @@ static unsigned setup_smp(void)
 		nodes = setup_smp8();
 #endif
 
-#if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("%02x nodes initialized.\r\n", nodes);
-#else
-	print_debug_hex8(nodes);
-	print_debug(" nodes initialized.\r\n");
-#endif
 
 	return nodes;
 }

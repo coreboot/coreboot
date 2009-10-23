@@ -31,7 +31,7 @@
 
 #define jmp_if_k8(x)	comisd	%xmm2, %xmm1; jb x
 
-#define CPUID_MASK		0x0ff00f00
+#define CPUID_MASK	0x0ff00f00
 #define CPUID_VAL_FAM10_ROTATED	0x0f000010
 
 #include <cpu/x86/mtrr.h>
@@ -127,13 +127,13 @@ CAR_FAM10_out:
 	/* Erratum 343, RevGuide for Fam10h, Pub#41322 Rev. 3.33 */
 
 	/* read-address has to be stored in the ecx register */
-	movl    $MSR_FAM10, %ecx
+	movl	$MSR_FAM10, %ecx
 
 	/* execute special read command for msr-register. Result is then in the EDX:EAX-registers (MSBs in EDX) */
 	rdmsr
 
 	/* Set bit 35 to 1 in EAX */
-	bts     $35, %eax
+	bts	$35, %eax
 
 	/* write back the modified register EDX:EAX to the MSR specified in ECX */
 	wrmsr
@@ -157,13 +157,13 @@ enable_fixed_mtrr_dram_modify:
 clear_fixed_var_mtrr:
 	lodsl	(%esi), %eax
 	testl	%eax, %eax
-	jz		clear_fixed_var_mtrr_out
+	jz	clear_fixed_var_mtrr_out
 
 	movl	%eax, %ecx
 	xorl	%eax, %eax
 	wrmsr
 
-	jmp		clear_fixed_var_mtrr
+	jmp	clear_fixed_var_mtrr
 clear_fixed_var_mtrr_out:
 
 /* 0x06 is the WB IO type for a given 4k segment.
@@ -231,15 +231,15 @@ clear_fixed_var_mtrr_out:
 #error Invalid CAR size, is not a multiple of 4k. This is a processor limitation.
 #endif
 
-#if CacheSize > 0x8000 
-        /* enable caching for 32K-64K using fixed mtrr */
-        movl    $0x268, %ecx  /* fix4k_c0000*/
+#if CacheSize > 0x8000
+	/* enable caching for 32K-64K using fixed mtrr */
+	movl	$0x268, %ecx  /* fix4k_c0000*/
 	simplemask CacheSize, 0x8000
-        wrmsr
+	wrmsr
 #endif
 
-        /* enable caching for 0-32K using fixed mtrr */
-        movl    $0x269, %ecx  /* fix4k_c8000*/
+	/* enable caching for 0-32K using fixed mtrr */
+	movl	$0x269, %ecx  /* fix4k_c8000*/
 	simplemask CacheSize, 0
 	wrmsr
 
@@ -253,7 +253,7 @@ clear_fixed_var_mtrr_out:
 #if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 0)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 0))
 	/* disable cache */
 	movl	%cr0, %eax
-	orl		$(1 << 30),%eax
+	orl	$(0x1 << 30), %eax
 	movl	%eax, %cr0
 
 #endif
@@ -287,7 +287,7 @@ wbcache_post_fam10_setup:
 	/* Enable the MTRRs and IORRs in SYSCFG */
 	movl	$SYSCFG_MSR, %ecx
 	rdmsr
-	orl		$(SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn), %eax
+	orl	$(SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn), %eax
 	wrmsr
 #endif
 
@@ -312,16 +312,17 @@ fam10_end_part1:
 	outb	%al, $0x80
 
 #if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
-		/* Read the range with lodsl*/
+	/* Read the range with lodsl*/
 	cld
 	movl	$CacheBase, %esi
 	movl	$(CacheSize >> 2), %ecx
-	rep		lodsl
+	rep	lodsl
+
 	/* Clear the range */
 	movl	$CacheBase, %edi
 	movl	$(CacheSize >> 2), %ecx
 	xorl	%eax, %eax
-	rep		stosl
+	rep	stosl
 
 #endif /*CONFIG_USE_FAILOVER_IMAGE == 1*/
 
@@ -395,7 +396,7 @@ CAR_FAM10_ap_out:
 	call	cache_as_ram_main
 	/* We will not go back */
 
-	movb	$0xAF, %al		/* Should never see this postcode */
+	movb	$0xAF, %al	/* Should never see this postcode */
 	outb	%al, $0x80
 
 fixed_mtrr_msr:

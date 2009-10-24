@@ -407,11 +407,10 @@ try_next_port:
 		cmd = readl(&ehci_regs->command);
 	} while ((cmd & CMD_RESET) && (--loop > 0));
 
-	if(!loop) {
+	if(!loop)
 		dbgp_printk("Could not reset EHCI controller.\n");
-		return;
-	}
-	dbgp_printk("EHCI controller reset successfully.\n");
+	else
+		dbgp_printk("EHCI controller reset successfully.\n");
 
 	/* Claim ownership, but do not enable yet */
 	ctrl = readl(&ehci_debug->control);

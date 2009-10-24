@@ -1,7 +1,7 @@
 #ifndef I386_STDINT_H
 #define I386_STDINT_H
 
-#if defined(__GNUC__) && !defined(__ROMCC__)
+#if defined(__GNUC__)
 #define __HAVE_LONG_LONG__ 1
 #else
 #define __HAVE_LONG_LONG__ 0

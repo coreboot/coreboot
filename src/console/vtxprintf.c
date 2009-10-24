@@ -7,49 +7,12 @@
 #include <stdarg.h>
 #include <string.h>
 #include <div64.h>
+#include <console/vtxprintf.h>
 
 /* haha, don't need ctype.c */
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
 #define is_digit isdigit
 #define isxdigit(c)	(((c) >= '0' && (c) <= '9') || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
-
-#if 0
-/* We are using number() instead. So this code is obsoleted and should
- * probably go away.
- */
-
-static unsigned long simple_strtoul(const char *cp,char **endp,unsigned int base)
-{
-	unsigned long result = 0,value;
-
-	if (!base) {
-		base = 10;
-		if (*cp == '0') {
-			base = 8;
-			cp++;
-			if ((*cp == 'x') && isxdigit(cp[1])) {
-				cp++;
-				base = 16;
-			}
-		}
-	}
-	while (isxdigit(*cp) && (value = isdigit(*cp) ? *cp-'0' : (islower(*cp)
-	    ? toupper(*cp) : *cp)-'A'+10) < base) {
-		result = result*base + value;
-		cp++;
-	}
-	if (endp)
-		*endp = (char *)cp;
-	return result;
-}
-
-static long simple_strtol(const char *cp,char **endp,unsigned int base)
-{
-	if(*cp=='-')
-		return -simple_strtoul(cp+1,endp,base);
-	return simple_strtoul(cp,endp,base);
-}
-#endif
 
 static int skip_atoi(const char **s)
 {

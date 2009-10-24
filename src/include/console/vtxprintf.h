@@ -19,43 +19,11 @@
  * MA 02110-1301 USA
  */
 
+#ifndef __CONSOLE_VTXPRINTF_H
+#define __CONSOLE_VTXPRINTF_H
+
 #include <stdarg.h>
-#include <smp/spinlock.h>
-#include <console/vtxprintf.h>
 
-static spinlock_t vsprintf_lock = SPIN_LOCK_UNLOCKED;
+int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args);
 
-static char *str_buf;
-
-static void str_tx_byte(unsigned char byte)
-{
-	*str_buf = byte;
-	str_buf++;
-}
-
-static int vsprintf(char *buf, const char *fmt, va_list args)
-{
-	int i;
-
-	spin_lock(&vsprintf_lock);
-
-	str_buf = buf;
-	i = vtxprintf(str_tx_byte, fmt, args);
-	*str_buf = '\0';
-
-	spin_unlock(&vsprintf_lock);
-
-	return i;
-}
-
-int sprintf(char *buf, const char *fmt, ...)
-{
-	va_list args;
-	int i;
-
-	va_start(args, fmt);
-	i = vsprintf(buf, fmt, args);
-	va_end(args);
-
-	return i;
-}
+#endif

@@ -1,3 +1,7 @@
+static void __console_tx_byte(unsigned char byte)
+{
+	uart_tx_byte(byte);
+}
 
 static void __console_tx_nibble(unsigned nibble)
 {

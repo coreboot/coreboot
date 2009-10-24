@@ -1,18 +1,9 @@
 #include <console/loglevel.h>
 
 #if CONFIG_USE_PRINTK_IN_CAR == 0
-static void __console_tx_byte(unsigned char byte)
-{
-	uart_tx_byte(byte);
-}
-
 #include "console_print.c"
-
-#else  
-/* CONFIG_USE_PRINTK_IN_CAR == 1 */
-
+#else  /* CONFIG_USE_PRINTK_IN_CAR == 1 */
 #include "console_printk.c"
-
 #endif /* CONFIG_USE_PRINTK_IN_CAR */
 
 #ifndef COREBOOT_EXTRA_VERSION
@@ -32,7 +23,7 @@ static void console_init(void)
 }
 
 
-static void die(const char *str)
+void die(const char *str)
 {
 	print_emerg(str);
 	do {

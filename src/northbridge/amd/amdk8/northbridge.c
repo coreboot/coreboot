@@ -837,6 +837,9 @@ static uint32_t hoist_memory(unsigned long hole_startk, int node_id)
 #if CONFIG_WRITE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
+#if CONFIG_GFXUMA == 1
+extern uint64_t uma_memory_base, uma_memory_size;
+#endif
 #endif
 
 static void amdk8_domain_set_resources(device_t dev)
@@ -1001,7 +1004,13 @@ static void amdk8_domain_set_resources(device_t dev)
 		}
 
 
+#if CONFIG_GFXUMA == 1
+		printk_debug("node %d : uma_memory_base/1024=0x%08x, mmio_basek=0x%08x, basek=0x%08x, limitk=0x%08x\n", i, uma_memory_base >> 10, mmio_basek, basek, limitk);
+		if ((uma_memory_base >> 10) < mmio_basek)
+			printk_alert("node %d: UMA memory starts below mmio_basek\n", i);
+#else
 //		printk_debug("node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu
+#endif
 
 		/* See if I need to split the region to accomodate pci memory space */
 		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
@@ -1015,7 +1024,11 @@ static void amdk8_domain_set_resources(device_t dev)
 #if CONFIG_WRITE_HIGH_TABLES==1
 					if (i==0 && high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
+#if CONFIG_GFXUMA == 1
+						high_tables_base = ((uma_memory_base >> 10) - HIGH_TABLES_SIZE) * 1024;
+#else
 						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
+#endif
 						high_tables_size = HIGH_TABLES_SIZE * 1024;
 						printk_debug(" split: %dK table at =%08llx\n", HIGH_TABLES_SIZE,
 							     high_tables_base);
@@ -1051,7 +1064,11 @@ static void amdk8_domain_set_resources(device_t dev)
 			     i, mmio_basek, basek, limitk);
 		if (i==0 && high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
+#if CONFIG_GFXUMA == 1
+			high_tables_base = ((uma_memory_base >> 10) - HIGH_TABLES_SIZE) * 1024;
+#else
 			high_tables_base = (limitk - HIGH_TABLES_SIZE) * 1024;
+#endif
 			high_tables_size = HIGH_TABLES_SIZE * 1024;
 		}
 #endif

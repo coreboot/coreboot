@@ -29,8 +29,8 @@ driver-y += i82801xx_sata.o
 driver-y += i82801xx_usb.o
 driver-y += i82801xx_usb_ehci.o
 
-object-y += i82801xx_reset.o
-object-y += i82801xx_watchdog.o
+obj-y += i82801xx_reset.o
+obj-y += i82801xx_watchdog.o
 
 # TODO: What about cmos_failover.c?
 

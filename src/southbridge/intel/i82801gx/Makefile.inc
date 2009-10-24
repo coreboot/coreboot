@@ -30,8 +30,8 @@ driver-y += i82801gx_smbus.o
 driver-y += i82801gx_usb.o
 driver-y += i82801gx_usb_ehci.o
 
-object-y += i82801gx_reset.o
-object-y += i82801gx_watchdog.o
+obj-y += i82801gx_reset.o
+obj-y += i82801gx_watchdog.o
 
-object-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smi.o
+obj-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smi.o
 smmobj-$(CONFIG_HAVE_SMI_HANDLER) += i82801gx_smihandler.o

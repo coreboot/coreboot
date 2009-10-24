@@ -3,7 +3,6 @@ source src/cpu/emulation/Kconfig
 source src/cpu/intel/Kconfig
 source src/cpu/via/Kconfig
 source src/cpu/x86/Kconfig
-source src/cpu/ppc/Kconfig
 
 config USE_DCACHE_RAM
 	bool

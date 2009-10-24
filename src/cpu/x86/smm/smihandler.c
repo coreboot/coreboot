@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,7 +27,7 @@
 
 void southbridge_smi_set_eos(void);
 
-#define DEBUG_SMI
+/* To enable SMI define DEBUG_SMI in smiutil.c */
 
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
@@ -67,66 +67,6 @@ static inline __attribute__((always_inline)) unsigned long nodeid(void)
 	return (*((volatile unsigned long *)(LAPIC_ID)) >> 24);
 }
 
-/* ********************* smi_util ************************* */
-
-/* Data */
-#define UART_RBR 0x00
-#define UART_TBR 0x00
-
-/* Control */
-#define UART_IER 0x01
-#define UART_IIR 0x02
-#define UART_FCR 0x02
-#define UART_LCR 0x03
-#define UART_MCR 0x04
-#define UART_DLL 0x00
-#define UART_DLM 0x01
-
-/* Status */
-#define UART_LSR 0x05
-#define UART_MSR 0x06
-#define UART_SCR 0x07
-
-static int uart_can_tx_byte(void)
-{
-	return inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x20;
-}
-
-static void uart_wait_to_tx_byte(void)
-{
-	while(!uart_can_tx_byte()) 
-	;
-}
-
-static void uart_wait_until_sent(void)
-{
-	while(!(inb(CONFIG_TTYS0_BASE + UART_LSR) & 0x40))
-	; 
-}
-
-static void uart_tx_byte(unsigned char data)
-{
-	uart_wait_to_tx_byte();
-	outb(data, CONFIG_TTYS0_BASE + UART_TBR);
-	/* Make certain the data clears the fifos */
-	uart_wait_until_sent();
-}
-
-void console_tx_flush(void)
-{
-	uart_wait_to_tx_byte();
-}
-
-void console_tx_byte(unsigned char byte)
-{
-	if (byte == '\n')
-		uart_tx_byte('\r');
-	uart_tx_byte(byte);
-}
-
-/* ********************* smi_util ************************* */
-
-
 void io_trap_handler(int smif)
 {
 	/* If a handler function handled a given IO trap, it
@@ -163,16 +103,17 @@ void smi_handler(u32 smm_revision)
 	smm_state_save_area_t state_save;
 
 	/* Are we ok to execute the handler? */
-	if (!smi_obtain_lock())
+	if (!smi_obtain_lock()) {
+		/* For security reasons we don't release the other CPUs
+		 * until the CPU with the lock is actually done
+		 */
+		while (smi_handler_status == SMI_LOCKED) /* wait */ ;
 		return;
+	}
 
 	node=nodeid();
 
-#ifdef DEBUG_SMI
-	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-#else
-	console_loglevel = 1;
-#endif
+	console_init();
 
 	printk_spew("\nSMI# #%d\n", node);
 

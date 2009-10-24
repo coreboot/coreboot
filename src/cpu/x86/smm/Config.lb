@@ -25,6 +25,7 @@ if CONFIG_HAVE_SMI_HANDLER
 
 	smmobject smmhandler.S
 	smmobject smihandler.o
+	smmobject smiutil.o
 
 	makerule smm.o
 		depends	"$(SMM-OBJECTS) src/console/printk.o src/console/vtxprintf.o $(LIBGCC_FILE_NAME)" 

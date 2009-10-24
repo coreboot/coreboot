@@ -20,20 +20,20 @@
 
 
 
-obj-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
+obj-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.o
 obj-$(CONFIG_HAVE_SMI_HANDLER) += smm_bin.o
 
-smmobj-y += smmhandler.S
+smmobj-y += smmhandler.o
 smmobj-y += smihandler.o
 smmobj-y += smiutil.o
 
 ifdef POST_EVALUATION
 
-$(obj)/cpu/x86/smm/smm.o: $(SMM-OBJECTS) $(obj)/console/printk.o $(obj)/console/vtxprintf.o $(LIBGCC_FILE_NAME)
+$(obj)/cpu/x86/smm/smm.o: $(smmobjs) $(obj)/console/printk.o $(obj)/console/vtxprintf.o $(LIBGCC_FILE_NAME)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
 
-$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(obj)/cpu/x86/smm/smm.ld ldoptions
-	$(CC) $(LDFLAGS) -nostdlib -nostartfiles -static -o smm.elf -T $(src)/src/cpu/x86/smm/smm.ld smm.o
+$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj)/ldoptions
+	$(CC) $(LDFLAGS) -nostdlib -nostartfiles -static -o smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
 	$(CONFIG_CROSS_COMPILE)nm -n smm.elf | sort > smm.map
 	$(OBJCOPY) -O binary smm.elf smm
 

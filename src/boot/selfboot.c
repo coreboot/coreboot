@@ -24,7 +24,6 @@
 #include <boot/elf_boot.h>
 #include <boot/coreboot_tables.h>
 #include <ip_checksum.h>
-#include <stream/read_bytes.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

@@ -62,10 +62,9 @@ int get_fsb(void)
 
 void generate_cpu_entries(void)
 {
-	int len_sc, len_pr, len_ps;
+	int len_pr, len_ps;
 	int coreID, cpuID, pcontrol_blk=0x510, plen=6;
 	msr_t msr;
-	len_sc = acpigen_write_scope("\\_PR_");
 	int totalcores = determine_total_number_of_cores();
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
 	int numcpus = totalcores/cores_per_package; // this assumes that all CPUs share the same layout
@@ -129,9 +128,7 @@ void generate_cpu_entries(void)
 		len_pr += len_ps;
 		len_pr--;
 		acpigen_patch_len(len_pr);
-		len_sc += len_pr;
 		}
 	}
-	acpigen_patch_len(len_sc-1);
 }
 

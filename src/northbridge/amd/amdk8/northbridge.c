@@ -1025,7 +1025,7 @@ static void amdk8_domain_set_resources(device_t dev)
 					if (i==0 && high_tables_base==0) {
 					/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-						high_tables_base = ((uma_memory_base >> 10) - HIGH_TABLES_SIZE) * 1024;
+						high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
 #else
 						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
 #endif
@@ -1065,7 +1065,7 @@ static void amdk8_domain_set_resources(device_t dev)
 		if (i==0 && high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA == 1
-			high_tables_base = ((uma_memory_base >> 10) - HIGH_TABLES_SIZE) * 1024;
+			high_tables_base = uma_memory_base - (HIGH_TABLES_SIZE * 1024);
 #else
 			high_tables_base = (limitk - HIGH_TABLES_SIZE) * 1024;
 #endif

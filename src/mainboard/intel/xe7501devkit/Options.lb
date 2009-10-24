@@ -59,6 +59,10 @@ uses CONFIG_ROMBASE
 uses CONFIG_XIP_ROM_SIZE
 uses CONFIG_XIP_ROM_BASE
 
+uses CONFIG_HAVE_HARD_RESET
+
+default CONFIG_HAVE_HARD_RESET = 1
+
 ###
 ### Build options
 ###

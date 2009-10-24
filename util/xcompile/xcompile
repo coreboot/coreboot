@@ -35,6 +35,7 @@ fi
 cat << afteroptions
 AS:=${GCCPREFIX}as --32
 CC:=${GCCPREFIX}gcc -m32
+CPP:=${GCCPREFIX}cpp
 AR:=${GCCPREFIX}ar
 LD:=${GCCPREFIX}ld -b elf32-i386
 STRIP:=${GCCPREFIX}strip

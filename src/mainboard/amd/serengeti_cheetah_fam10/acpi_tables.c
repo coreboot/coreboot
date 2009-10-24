@@ -43,7 +43,7 @@ static void dump_mem(u32 start, u32 end)
 		printk_debug(" %02x", (unsigned char)*((unsigned char *)i));
 	}
 	print_debug("\n");
- }
+}
 #endif
 
 extern u8 AmlCode[];

@@ -26,20 +26,12 @@
 #ifdef CONFIG_COREBOOT_V2
 #include <console/console.h>
 #include <arch/io.h>
+#include <arch/registers.h>
 #define printk(x...) do_printk(x)
 #else
 #include <console.h>
 #include <io.h>
 #endif
-
-struct eregs {
-	uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
-	uint32_t vector;
-	uint32_t error_code;
-	uint32_t eip;
-	uint32_t cs;
-	uint32_t eflags;
-};
 
 enum {
 	CHECK = 0xb001,

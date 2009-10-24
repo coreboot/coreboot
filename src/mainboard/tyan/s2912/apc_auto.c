@@ -100,14 +100,8 @@ void hardwaremain(int ret_addr)
 
 
 }
-struct eregs {
-	uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
-	uint32_t vector;
-	uint32_t error_code;
-	uint32_t eip;
-	uint32_t cs;
-	uint32_t eflags;
-};
+
+#include <arch/registers.h>
 
 void x86_exception(struct eregs *info)
 {

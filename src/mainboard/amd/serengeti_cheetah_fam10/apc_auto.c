@@ -96,14 +96,8 @@ void hardwaremain(int ret_addr)
 
 
 }
-struct eregs {
-	u32 eax, ecx, edx, ebx, esp, ebp, esi, edi;
-	u32 vector;
-	u32 error_code;
-	u32 eip;
-	u32 cs;
-	u32 eflags;
-};
+
+#include <arch/registers.h>
 
 void x86_exception(struct eregs *info)
 {

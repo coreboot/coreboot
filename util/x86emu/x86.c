@@ -22,6 +22,7 @@
 
 #ifdef CONFIG_COREBOOT_V2
 #include <arch/io.h>
+#include <arch/registers.h>
 #include <console/console.h>
 #define printk(x...) do_printk(x)
 #else
@@ -32,15 +33,6 @@
 
 struct realmode_idt {
 	u16 offset, cs;
-};
-
-struct eregs {
-	uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi;
-	uint32_t vector;
-	uint32_t error_code;
-	uint32_t eip;
-	uint32_t cs;
-	uint32_t eflags;
 };
 
 void x86_exception(struct eregs *info);

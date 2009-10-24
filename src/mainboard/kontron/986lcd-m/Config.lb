@@ -61,7 +61,7 @@ if CONFIG_GENERATE_ACPI_TABLES
 	object ./dsdt.o
 end
 
-object reset.o
+if CONFIG_HAVE_HARD_RESET object reset.o end
 
 if CONFIG_USE_INIT
 

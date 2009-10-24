@@ -4,7 +4,7 @@ obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
-obj-y += reset.o
+obj-$(CONFIG_HAVE_HARD_RESET) += reset.o
 
 # This is part of the conversion to init-obj and away from included code.
 

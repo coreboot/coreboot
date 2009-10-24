@@ -37,6 +37,7 @@ static void post_code(uint8_t value) {
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
+// FIXME: There's another hard_reset() in reset.c. Why?
 static void hard_reset(void)
 {
         /* full reset */

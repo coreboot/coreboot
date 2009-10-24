@@ -50,10 +50,6 @@ struct mem_controller {
 	int i;
 };
 
-static void hard_reset(void)
-{
-}
-
 static void memreset_setup(void)
 {
 }

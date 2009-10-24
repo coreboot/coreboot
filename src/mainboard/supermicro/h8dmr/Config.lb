@@ -35,7 +35,6 @@ object get_bus_conf.o
 
 if CONFIG_GENERATE_MP_TABLE object mptable.o end
 if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
-#object reset.o
 
 	if CONFIG_USE_INIT	
 		makerule ./auto.o

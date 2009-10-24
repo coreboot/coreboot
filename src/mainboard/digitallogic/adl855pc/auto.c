@@ -31,7 +31,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-
 static void hard_reset(void)
 {
         outb(0x0e, 0x0cf9);

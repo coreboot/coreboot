@@ -12,7 +12,7 @@ arch i386 end
 driver mainboard.o
 if CONFIG_GENERATE_MP_TABLE object mptable.o end
 if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
-object reset.o
+if CONFIG_HAVE_HARD_RESET object reset.o end
 if CONFIG_USE_INIT
 
 makerule ./auto.o

@@ -25,7 +25,6 @@ include /config/nofailovercalculation.lb
 arch i386 end
 driver mainboard.o
 if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
-# object reset.o
 makerule ./failover.E
 	depends "$(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c ../romcc"
 	action "../romcc -E -O2 -mcpu=p2 --label-prefix=failover -I$(TOP)/src -I. $(CPPFLAGS) $(CONFIG_MAINBOARD)/../../../arch/i386/lib/failover.c -o $@"

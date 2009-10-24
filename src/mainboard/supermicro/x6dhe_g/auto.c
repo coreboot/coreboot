@@ -43,16 +43,6 @@
 #define RECVENA_CONFIG  0x0808090a
 #define RECVENB_CONFIG  0x0808090a
 
-#if 0
-static void hard_reset(void)
-{
-	/* enable cf9 */
-	pci_write_config8(PCI_DEV(0, 0x04, 3), 0x41, 0xf1);
-	/* reset */
-	outb(0x0e, 0x0cf9);
-}
-#endif
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	/* nothing to do */

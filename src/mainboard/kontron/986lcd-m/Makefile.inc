@@ -32,6 +32,7 @@ obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
+obj-$(CONFIG_HAVE_HARD_RESET) += reset.o
 
 smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o
 

@@ -45,6 +45,7 @@ driver-y += mainboard.o
 
 obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
+obj-$(CONFIG_HAVE_HARD_RESET) += reset.o
 
 ifdef POST_EVALUATION
 

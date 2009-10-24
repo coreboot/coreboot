@@ -18,28 +18,27 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-##if CONFIG_HAVE_SMI_HANDLER
-##	object smmrelocate.S
-##
-##	smmobject smmhandler.S
-##	smmobject smihandler.o
-##
-##	makerule smm.o
-##		depends	"$(SMM-OBJECTS) $(TOP)/src/console/printk.o $(TOP)/src/console/vtxprintf.o $(LIBGCC_FILE_NAME)"
-##		action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -r -o $@ $^"
-##	end
-##
-##	makerule smm
-##		depends	"smm.o $(TOP)/src/cpu/x86/smm/smm.ld ldoptions"
-##		action	"$(CC) $(DISTRO_LFLAGS) -nostdlib -nostartfiles -static -o smm.elf -T $(TOP)/src/cpu/x86/smm/smm.ld smm.o"
-##		action 	"$(CONFIG_CROSS_COMPILE)nm -n smm.elf | sort > smm.map"
-##		action  "$(OBJCOPY) -O binary smm.elf smm"
-##	end
-##
-##	makerule smm_bin.c
-##		depends "smm"
-##		action "(echo 'unsigned char smm[] = {'; od -vtx1 smm | sed -e 's,^[0-9]* *,,' -e 's:[0-9a-f][0-9a-f] :0x&,:g' -e 's:[0-9a-f][0-9a-f]$$:0x&,:'; echo '}; unsigned int smm_len = '; wc -c smm |awk '{print $$1;}' ; echo ';')  > smm_bin.c"
-##	end
-##
-##	object ./smm_bin.o
-##end
+
+
+obj-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.S
+obj-$(CONFIG_HAVE_SMI_HANDLER) += smm_bin.o
+
+smmobj-y += smmhandler.S
+smmobj-y += smihandler.o
+smmobj-y += smiutil.o
+
+ifdef POST_EVALUATION
+
+$(obj)/cpu/x86/smm/smm.o: $(SMM-OBJECTS) $(obj)/console/printk.o $(obj)/console/vtxprintf.o $(LIBGCC_FILE_NAME)
+	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
+
+$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(obj)/cpu/x86/smm/smm.ld ldoptions
+	$(CC) $(LDFLAGS) -nostdlib -nostartfiles -static -o smm.elf -T $(src)/src/cpu/x86/smm/smm.ld smm.o
+	$(CONFIG_CROSS_COMPILE)nm -n smm.elf | sort > smm.map
+	$(OBJCOPY) -O binary smm.elf smm
+
+$(obj)/cpu/x86/smm/smm_bin.c: $(obj)/cpu/x86/smm/smm
+	(echo 'unsigned char smm[] = {'; od -vtx1 smm | sed -e 's,^[0-9]* *,,' -e 's:[0-9a-f][0-9a-f] :0x&,:g' -e 's:[0-9a-f][0-9a-f]$$:0x&,:'; echo '}; unsigned int smm_len = '; wc -c smm |awk '{print $$1;}' ; echo ';')  > $@
+
+endif
+

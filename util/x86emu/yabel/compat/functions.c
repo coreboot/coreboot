@@ -17,6 +17,7 @@
 #ifndef CONFIG_COREBOOT_V2
 #include <config.h>
 #endif
+#include <string.h>
 #include <device/device.h>
 
 #define VMEM_SIZE 1024 *1024 /* 1 MB */
@@ -33,6 +34,9 @@ u32 biosemu(u8 *biosmem, u32 biosmem_size, struct device *dev,
 void run_bios(struct device * dev, unsigned long addr)
 {
 	biosemu(vmem, VMEM_SIZE, dev, addr);
+	memcpy(0x0, vmem + 0x0, 0x400);
+	memcpy(0x400, vmem + 0x400, 0x100);
+	memcpy(0xc0000, vmem + 0xc0000, 0x10000);
 }
 
 u64 get_time(void)

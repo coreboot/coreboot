@@ -29,7 +29,7 @@
 #include <console.h>
 #endif
 
-#define REALMODE_BASE ((void *)0x500)
+#define REALMODE_BASE ((void *)0x600)
 
 struct realmode_idt {
 	u16 offset, cs;
@@ -41,8 +41,8 @@ extern unsigned char __idt_handler, __idt_handler_size;
 extern unsigned char __realmode_code, __realmode_code_size;
 extern unsigned char __run_optionrom, __run_interrupt;
 
-void (*run_optionrom)(u32 devfn) = (void *)&__run_optionrom;
-void (*vga_enable_console)(void) = (void *)&__run_interrupt;
+void (*run_optionrom)(u32 devfn) __attribute__((regparm(0))) = (void *)&__run_optionrom;
+void (*vga_enable_console)(void) __attribute__((regparm(0))) = (void *)&__run_interrupt;
 
 int (*intXX_handler[256])(struct eregs *regs) = { NULL };
 
@@ -127,9 +127,7 @@ void run_bios(struct device *dev, unsigned long addr)
 	int i;
 
 	/* clear vga bios data area */
-	for (i = 0x400; i < 0x500; i++) {
-		*(unsigned char *) i = 0;
-	}
+	memset(0x400, 0, 0x200);
 	
 	/* Set up C interrupt handlers */
 	setup_interrupt_handlers();

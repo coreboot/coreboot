@@ -36,6 +36,9 @@ extern int write_io(void *, unsigned int, size_t);
 //defined in net-snk/kernel/timer.c
 extern u64 get_time(void);
 
+#ifdef COREBOOT_V2
+#include <arch/io.h>
+#else
 // these are not used, only needed for linking,  must be overridden using X86emu_setupPioFuncs
 // with the functions and struct below
 void
@@ -82,7 +85,7 @@ inl(u16 port)
 	HALT_SYS();
 	return 0;
 }
-
+#endif
 u32 pci_cfg_read(X86EMU_pioAddr addr, u8 size);
 void pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size);
 u8 handle_port_61h(void);
@@ -106,7 +109,8 @@ my_inb(X86EMU_pioAddr addr)
 		switch (addr) {
 		case 0x61:
 			//8254 KB Controller / Timer Port
-			rval = handle_port_61h();
+			// rval = handle_port_61h();
+			rval = inb(0x61);
 			//DEBUG_PRINTF_IO("%s(%04x) KB / Timer Port B --> %02x\n", __func__, addr, rval);
 			return rval;
 			break;

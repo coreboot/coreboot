@@ -206,6 +206,7 @@ int int15_handler(struct eregs *regs)
 		regs->eax = 0x860f;
 		break;
 	/* And now Intel IGD code */
+#define BOOT_DISPLAY_DEFAULT    0
 #define BOOT_DISPLAY_CRT        (1 << 0)
 #define BOOT_DISPLAY_TV         (1 << 1)
 #define BOOT_DISPLAY_EFP        (1 << 2)
@@ -217,7 +218,7 @@ int int15_handler(struct eregs *regs)
 
 	case 0x5f35:
 		regs->eax = 0x5f;
-		regs->ecx = BOOT_DISPLAY_LCD|BOOT_DISPLAY_CRT;
+		regs->ecx = BOOT_DISPLAY_DEFAULT;
 		res = 0;
 		break;
 	case 0x5f40:

@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#define REALMODE_BASE		0x500
+#define REALMODE_BASE		0x600
 #define RELOCATED(x)	(x - __realmode_code + REALMODE_BASE)
 
 /* CR0 bits */

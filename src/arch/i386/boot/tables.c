@@ -19,8 +19,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/* 2006.1 yhlu add mptable cross 0x467 processing */
-
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <boot/tables.h>
@@ -31,33 +29,19 @@
 #include <string.h>
 #include <cpu/x86/multiboot.h>
 #include "coreboot_table.h"
-
-// Global Descriptor Table, defined in c_start.S
-extern uint8_t gdt;
-extern uint8_t gdt_end;
-
-/* i386 lgdt argument */
-struct gdtarg {
-	unsigned short limit;
-	unsigned int base;
-} __attribute__((packed));
-
-// Copy GDT to new location and reload it
-void move_gdt(unsigned long newgdt)
-{
-	uint16_t num_gdt_bytes = &gdt_end - &gdt;
-	struct gdtarg gdtarg;
-
-	printk_debug("Moving GDT to %#lx...", newgdt);
-	memcpy((void*)newgdt, &gdt, num_gdt_bytes);
-	gdtarg.base = newgdt;
-	gdtarg.limit = num_gdt_bytes - 1;
-	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
-	printk_debug("ok\n");
-}
+#include <cbmem.h>
 
 uint64_t high_tables_base = 0;
 uint64_t high_tables_size;
+
+void cbmem_list(void);
+
+void move_gdt(void);
+void cbmem_arch_init(void)
+{
+	/* defined in gdt.c */
+	move_gdt();
+}
 
 struct lb_memory *write_tables(void)
 {
@@ -68,14 +52,15 @@ struct lb_memory *write_tables(void)
 	 * the low and the high area, so payloads and OSes don't need to know
 	 * about the high tables.
 	 */
-	unsigned long high_table_end=0;
+	unsigned long high_table_pointer;
 
-	if (high_tables_base) {
-		printk_debug("High Tables Base is %llx.\n", high_tables_base);
-		high_table_end = high_tables_base;
-	} else {
+	if (!high_tables_base) {
 		printk_err("ERROR: High Tables Base is not set.\n");
+		// Are there any boards without?
+		// Stepan thinks we should die() here!
 	}
+
+	printk_debug("High Tables Base is %llx.\n", high_tables_base);
 
 	rom_table_start = 0xf0000; 
 	rom_table_end =   0xf0000;
@@ -87,7 +72,9 @@ struct lb_memory *write_tables(void)
 	low_table_start = 0;
 	low_table_end = 0x500;
 
-	post_code(0x99);
+#if CONFIG_GENERATE_PIRQ_TABLE == 1
+#define MAX_PIRQ_TABLE_SIZE (4 * 1024)
+	post_code(0x9a);
 
 	/* This table must be between 0x0f0000 and 0x100000 */
 	rom_table_end = write_pirq_routing_table(rom_table_end);
@@ -96,26 +83,87 @@ struct lb_memory *write_tables(void)
 	/* And add a high table version for those payloads that
 	 * want to live in the F segment
 	 */
-	if (high_tables_base) {
-		high_table_end = write_pirq_routing_table(high_table_end);
-		high_table_end = ALIGN(high_table_end, 1024);
+	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_PIRQ, MAX_PIRQ_TABLE_SIZE);
+	if (high_table_pointer) {
+		unsigned long new_high_table_pointer;
+		new_high_table_pointer = write_pirq_routing_table(high_table_pointer);
+		// FIXME make pirq table code intelligent enough to know how
+		// much space it's going to need.
+		if (new_high_table_pointer > (high_table_pointer + MAX_PIRQ_TABLE_SIZE)) {
+			printk(BIOS_ERR, "ERROR: Increase PIRQ size.\n");
+		}
+		printk(BIOS_DEBUG, "PIRQ table: %ld bytes.\n",
+				new_high_table_pointer - high_table_pointer);
 	}
 
-	post_code(0x9a);
+#endif
+
+#if CONFIG_GENERATE_MP_TABLE == 1
+#define MAX_MP_TABLE_SIZE (4 * 1024)
+	post_code(0x9b);
+
+	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
+	rom_table_end = write_smp_table(rom_table_end);
+	rom_table_end = ALIGN(rom_table_end, 1024);
+
+	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_MPTABLE, MAX_MP_TABLE_SIZE);
+	if (high_table_pointer) {
+		unsigned long new_high_table_pointer;
+		new_high_table_pointer = write_smp_table(high_table_pointer);
+		// FIXME make mp table code intelligent enough to know how
+		// much space it's going to need.
+		if (new_high_table_pointer > (high_table_pointer + MAX_MP_TABLE_SIZE)) {
+			printk(BIOS_ERR, "ERROR: Increase MP table size.\n");
+		}
+
+		printk(BIOS_DEBUG, "MP table: %ld bytes.\n",
+				new_high_table_pointer - high_table_pointer);
+	}
+#endif /* CONFIG_GENERATE_MP_TABLE */
+
+#if CONFIG_GENERATE_ACPI_TABLES == 1
+#define MAX_ACPI_SIZE (47 * 1024)
+	post_code(0x9c);
 
 	/* Write ACPI tables to F segment and high tables area */
-#if CONFIG_GENERATE_ACPI_TABLES == 1
-	if (high_tables_base) {
-		unsigned long acpi_start = high_table_end;
+
+	/* Ok, this is a bit hacky still, because some day we want to have this
+	 * completely dynamic. But right now we are setting fixed sizes. 
+	 * It's probably still better than the old high_table_base code because
+	 * now at least we know when we have an overflow in the area.
+	 *
+	 * We want to use 1MB - 64K for Resume backup. We use 512B for TOC and
+	 * 512 byte for GDT, 4K for PIRQ and 4K for MP table and 8KB for the
+	 * coreboot table. This leaves us with 47KB for all of ACPI. Let's see
+	 * how far we get.
+	 */
+	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_ACPI, MAX_ACPI_SIZE);
+	if (high_table_pointer) {
+		unsigned long acpi_start = high_table_pointer;
+		unsigned long new_high_table_pointer;
+
 		rom_table_end = ALIGN(rom_table_end, 16);
-		high_table_end = write_acpi_tables(high_table_end);
-		while (acpi_start < high_table_end) {
+		new_high_table_pointer = write_acpi_tables(high_table_pointer);
+		if (new_high_table_pointer > ( high_table_pointer + MAX_ACPI_SIZE)) {
+			printk(BIOS_ERR, "ERROR: Increase ACPI size\n");
+		}
+                printk(BIOS_DEBUG, "ACPI tables: %ld bytes.\n",
+				new_high_table_pointer - high_table_pointer);
+
+		/* Now we need to create a low table copy of the RSDP. */
+
+		/* First we look for the high table RSDP */
+		while (acpi_start < new_high_table_pointer) {
 			if (memcmp(((acpi_rsdp_t *)acpi_start)->signature, RSDP_SIG, 8) == 0) {
 				break;
 			}
 			acpi_start++;
 		}
-		if (acpi_start != high_table_end) {
+
+		/* Now, if we found the RSDP, we take the RSDT and XSDT pointer
+		 * from it in order to write the low RSDP
+		 */
+		if (acpi_start < new_high_table_pointer) {
 			acpi_rsdp_t *low_rsdp = (acpi_rsdp_t *)rom_table_end,
 				    *high_rsdp = (acpi_rsdp_t *)acpi_start;
 
@@ -125,65 +173,61 @@ struct lb_memory *write_tables(void)
 		} else {
 			printk_err("ERROR: Didn't find RSDP in high table.\n");
 		}
-		high_table_end = ALIGN(high_table_end, 1024);
 		rom_table_end = ALIGN(rom_table_end + sizeof(acpi_rsdp_t), 16);
 	} else {
 		rom_table_end = write_acpi_tables(rom_table_end);
 		rom_table_end = ALIGN(rom_table_end, 1024);
 	}
+
 #endif
-	post_code(0x9b);
-
-#if CONFIG_GENERATE_MP_TABLE == 1
-	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
-	rom_table_end = write_smp_table(rom_table_end);
-	rom_table_end = ALIGN(rom_table_end, 1024);
-
-	/* ... and a copy in the high tables */
-	if (high_tables_base) {
-		high_table_end = write_smp_table(high_table_end);
-		high_table_end = ALIGN(high_table_end, 1024);
-	}
-#endif /* CONFIG_GENERATE_MP_TABLE */
-
-	post_code(0x9c);
-
-	// Relocate the GDT to reserved memory, so it won't get clobbered
-	if (high_tables_base) {
-		move_gdt(high_table_end);
-		high_table_end += &gdt_end - &gdt;
-		high_table_end = ALIGN(high_table_end, 1024);
-	} else {
-		move_gdt(low_table_end);
-		low_table_end += &gdt_end - &gdt;
-	}
-
-	post_code(0x9d);
 
 #if CONFIG_MULTIBOOT
+	post_code(0x9d);
+
 	/* The Multiboot information structure */
 	rom_table_end = write_multiboot_info(
 				low_table_start, low_table_end,
 				rom_table_start, rom_table_end);
 #endif
 
-	post_code(0x9e);
+#define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
+	post_code(0x9d);
 
-	if (high_tables_base) {
+	high_table_pointer = cbmem_add(CBMEM_ID_CBTABLE, MAX_COREBOOT_TABLE_SIZE);
+
+	if (high_table_pointer) {
+		unsigned long new_high_table_pointer;
+
 		/* Also put a forwarder entry into 0-4K */
-		write_coreboot_table(low_table_start, low_table_end,
-				high_tables_base, high_table_end);
-		if (high_table_end > high_tables_base + high_tables_size)
-			printk_err("%s: High tables didn't fit in %llx (%llx)\n",
-				   __func__, high_tables_size, high_table_end -
-				   high_tables_base);
+		new_high_table_pointer = write_coreboot_table(low_table_start, low_table_end,
+				high_tables_base, high_table_pointer);
+
+		if (new_high_table_pointer > (high_table_pointer +
+					MAX_COREBOOT_TABLE_SIZE))
+			printk_err("%s: coreboot table didn't fit (%llx)\n",
+				   __func__, new_high_table_pointer -
+				   high_table_pointer);
+
+                printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
+				new_high_table_pointer - high_table_pointer);
 	} else {
 		/* The coreboot table must be in 0-4K or 960K-1M */
 		write_coreboot_table(low_table_start, low_table_end,
 			      rom_table_start, rom_table_end);
 	}
  
-	post_code(0x9f);
+	post_code(0x9e);
+
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Let's prepare the ACPI S3 Resume area now already, so we can rely on
+	 * it begin there during reboot time. We don't need the pointer, nor
+	 * the result right now. If it fails, ACPI resume will be disabled.
+	 */
+	cbmem_add(CBMEM_ID_RESUME, 1024 * (1024-64));
+#endif
+	
+	// Remove before sending upstream
+	cbmem_list();
 
 	return get_lb_mem();
 }

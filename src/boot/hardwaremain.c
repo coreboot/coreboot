@@ -39,12 +39,14 @@ it with the version available from LANL.
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
+#if CONFIG_WRITE_HIGH_TABLES
+#include <cbmem.h>
+#endif
 
 /**
- * @brief Main function of the DRAM part of coreboot.
+ * @brief Main function of the RAM part of coreboot.
  *
- * Coreboot is divided into Pre-DRAM part and DRAM part. 
- *
+ * Coreboot is divided into Pre-RAM part and RAM part. 
  * 
  * Device Enumeration:
  *	In the dev_enumerate() phase, 
@@ -56,7 +58,7 @@ void hardwaremain(int boot_complete)
 
 	post_code(0x80);
 
-	/* displayinit MUST PRECEDE ALL PRINTK! */
+	/* console_init() MUST PRECEDE ALL printk()! */
 	console_init();
 	
 	post_code(0x39);
@@ -87,6 +89,9 @@ void hardwaremain(int boot_complete)
 	dev_initialize();
 	post_code(0x89);
 
+#if CONFIG_WRITE_HIGH_TABLES == 1
+	cbmem_initialize();
+#endif
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	suspend_resume();
 	post_code(0x8a);

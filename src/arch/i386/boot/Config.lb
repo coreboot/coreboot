@@ -19,3 +19,4 @@ if CONFIG_HAVE_ACPI_RESUME
 object wakeup.S
 end
 end
+object gdt.o

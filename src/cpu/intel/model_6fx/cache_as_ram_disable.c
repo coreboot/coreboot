@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  * 
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -53,24 +53,20 @@ void stage1_main(unsigned long bist)
 
 	/* No servicable parts below this line .. */
 
-        {
-        	/* Check value of esp to verify if we have enough rom for stack in Cache as RAM */
-	        unsigned v_esp;
-	        __asm__ volatile (
-        	        "movl   %%esp, %0\n\t"
-	                : "=a" (v_esp)
-	        );
-	        printk_spew("v_esp=%08x\r\n", v_esp);
-        }
+#if CAR_DEBUG
+        /* Check value of esp to verify if we have enough rom for stack in Cache as RAM */
+	unsigned v_esp;
+	__asm__ volatile (
+        	"movl   %%esp, %0\n"
+		: "=a" (v_esp)
+	);
+	printk_spew("v_esp=%08x\n", v_esp);
+#endif
 
 cpu_reset_x:
 
-        printk_spew("cpu_reset = %08x\r\n",cpu_reset);
-
-	if(cpu_reset == 0) {
-	        print_spew("Clearing initial memory region: ");
-	}
-	print_spew("No cache as ram now - ");
+        printk_spew("cpu_reset = %08x\n", cpu_reset);
+	printk_spew("No cache as ram now - ");
 
 	/* store cpu_reset to ebx */
         __asm__ volatile (
@@ -78,19 +74,22 @@ cpu_reset_x:
                 ::"a" (cpu_reset)
         );
 
-	if(cpu_reset==0) {
-#define CLEAR_FIRST_1M_RAM 1
-#include "cache_as_ram_post.c"
-	} else {
 #undef CLEAR_FIRST_1M_RAM 
 #include "cache_as_ram_post.c"
-	}
+
+	/* For now: use rambase + 1MB - 64K (counting downwards) as stack. This
+	 * makes sure that we stay completely within the 1M of memory we
+	 * preserve with the memcpy above.
+	 */
+
+#ifndef HIGH_MEMORY_SAVE
+#define HIGH_MEMORY_SAVE ( (1024 - 64) * 1024 )
+#endif
 
 	__asm__ volatile (
-                /* set new esp */ /* before CONFIG_RAMBASE */
-                "subl   %0, %%ebp\n\t"
-                "subl   %0, %%esp\n\t"
-                ::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- CONFIG_RAMBASE )
+		"movl %0, %%ebp\n"
+		"movl %0, %%esp\n"
+		:: "a" (CONFIG_RAMBASE + HIGH_MEMORY_SAVE)
 	);
 
 	{
@@ -98,19 +97,14 @@ cpu_reset_x:
 
 		/* get back cpu_reset from ebx */
 		__asm__ volatile (
-			"movl %%ebx, %0\n\t"
+			"movl %%ebx, %0\n"
 			:"=a" (new_cpu_reset)
 		);
 
-#ifdef DEACTIVATE_CAR
-		print_debug("Deactivating CAR");
-#include DEACTIVATE_CAR_FILE
-		print_debug(" - Done.\r\n");
-#endif
 		/* Copy and execute coreboot_ram */
 		copy_and_run(new_cpu_reset);
-		/* We will not return */
 	}
 
-	print_debug("sorry. parachute did not open.\r\n");
+	/* We will not return */
+	printk_debug("sorry. parachute did not open.\n");
 }

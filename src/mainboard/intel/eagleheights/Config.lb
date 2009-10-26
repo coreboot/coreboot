@@ -109,7 +109,8 @@ ldscript /arch/i386/lib/id.lds
 ##
 ## Setup Cache-As-Ram
 ##
-mainboardinit cpu/intel/model_6fx/cache_as_ram.inc
+## Use Intel Core (not Core 2) code for CAR init, any CPU might be used.
+mainboardinit cpu/intel/model_6ex/cache_as_ram.inc
 
 ###
 ### This is the early phase of coreboot startup

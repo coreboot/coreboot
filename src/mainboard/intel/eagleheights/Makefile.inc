@@ -14,6 +14,7 @@ crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
 crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
 crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
 crt0-y += ../../../../src/arch/i386/lib/id.inc
+# Use Intel Core (not Core 2) code for CAR init, any CPU might be used.
 crt0-y += ../../../../src/cpu/intel/model_6ex/cache_as_ram.inc
 crt0-y += auto.inc
 

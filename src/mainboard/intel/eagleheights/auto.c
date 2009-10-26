@@ -238,4 +238,5 @@ void real_main(unsigned long bist)
 	sdram_initialize(ARRAY_SIZE(mch), mch);
 }
 
-#include "cpu/intel/model_6fx/cache_as_ram_disable.c"
+/* Use Intel Core (not Core 2) code for CAR init, any CPU might be used. */
+#include "cpu/intel/model_6ex/cache_as_ram_disable.c"

@@ -890,10 +890,9 @@ void dev_enumerate(void)
 	printk_info("Enumerating buses...\n");
 	root = &dev_root;
 
-	show_all_devs(BIOS_DEBUG, "Before Device Enumeration.");
-	printk_debug("Compare with tree...\n");
-
-	show_devs_tree(root, BIOS_DEBUG, 0, 0);
+	show_all_devs(BIOS_SPEW, "Before Device Enumeration.");
+	printk_spew("Compare with tree...\n");
+	show_devs_tree(root, BIOS_SPEW, 0, 0);
 
 	if (root->chip_ops && root->chip_ops->enable_dev) {
 		root->chip_ops->enable_dev(root);
@@ -945,7 +944,7 @@ void dev_configure(void)
 	read_resources(&root->link[0]);
 	printk_info("Done reading resources.\n");
 
-	print_resource_tree(root, BIOS_DEBUG, "After reading.");
+	print_resource_tree(root, BIOS_SPEW, "After reading.");
 
 	/* Compute resources for all domains. */
 	for (child = root->link[0].children; child; child = child->sibling) {
@@ -1021,7 +1020,7 @@ void dev_configure(void)
 	}
 	assign_resources(&root->link[0]);
 	printk_info("Done setting resources.\n");
-	print_resource_tree(root, BIOS_DEBUG, "After assigning values.");
+	print_resource_tree(root, BIOS_SPEW, "After assigning values.");
 
 	printk_info("Done allocating resources.\n");
 }
@@ -1068,5 +1067,5 @@ void dev_initialize(void)
 		}
 	}
 	printk_info("Devices initialized\n");
-	show_all_devs(BIOS_DEBUG, "After init.");
+	show_all_devs(BIOS_SPEW, "After init.");
 }

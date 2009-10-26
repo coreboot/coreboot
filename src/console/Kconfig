@@ -8,26 +8,26 @@ config CONSOLE_SERIAL8250
 	  Send coreboot debug output to a serial port console.
 
 choice
-	prompt "COM port"
+	prompt "Serial port"
 	default CONSOLE_SERIAL_COM1
 	depends on CONSOLE_SERIAL8250
 
 config CONSOLE_SERIAL_COM1
-	bool "COM1/ttyS0"
+	bool "COM1/ttyS0, I/O port 0x3f8"
 	help
-	  Serial console on COM1/ttyS0.
+	  Serial console on COM1/ttyS0 at I/O port 0x3f8.
 config CONSOLE_SERIAL_COM2
-	bool "COM2/ttyS1"
+	bool "COM2/ttyS1, I/O port 0x2f8"
 	help
-	  Serial console on COM2/ttyS1.
+	  Serial console on COM2/ttyS1 at I/O port 0x2f8.
 config CONSOLE_SERIAL_COM3
-	bool "COM3/ttyS2"
+	bool "COM3/ttyS2, I/O port 0x3e8"
 	help
-	  Serial console on COM3/ttyS2.
+	  Serial console on COM3/ttyS2 at I/O port 0x3e8.
 config CONSOLE_SERIAL_COM4
-	bool "COM4/ttyS3"
+	bool "COM4/ttyS3, I/O port 0x2e8"
 	help
-	  Serial console on COM4/ttyS3.
+	  Serial console on COM4/ttyS3 at I/O port 0x2e8.
 
 endchoice
 
@@ -42,30 +42,30 @@ config TTYS0_BASE
 	  Map the COM port names to the respective I/O port.
 
 choice
-	prompt "BAUD rate"
+	prompt "Baud rate"
 	default CONSOLE_SERIAL_115200
 	depends on CONSOLE_SERIAL8250
 
 config CONSOLE_SERIAL_115200
 	bool "115200"
 	help
-	  Set serial port BAUD rate to 115200.
+	  Set serial port Baud rate to 115200.
 config CONSOLE_SERIAL_57600
 	bool "57600"
 	help
-	  Set serial port BAUD rate to 57600.
+	  Set serial port Baud rate to 57600.
 config CONSOLE_SERIAL_38400
 	bool "38400"
 	help
-	  Set serial port BAUD rate to 38400.
+	  Set serial port Baud rate to 38400.
 config CONSOLE_SERIAL_19200
 	bool "19200"
 	help
-	  Set serial port BAUD rate to 19200.
+	  Set serial port Baud rate to 19200.
 config CONSOLE_SERIAL_9600
 	bool "9600"
 	help
-	  Set serial port BAUD rate to 9600.
+	  Set serial port Baud rate to 9600.
 
 endchoice
 
@@ -77,7 +77,7 @@ config TTYS0_BAUD
 	default 19200 if CONSOLE_SERIAL_19200
 	default 9600 if CONSOLE_SERIAL_9600
 	help
-	  Map the BAUD rates to an integer.
+	  Map the Baud rates to an integer.
 
 # TODO: Allow user-friendly selection of settings other than 8n1.
 config TTYS0_LCS

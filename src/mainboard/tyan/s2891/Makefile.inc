@@ -1,1 +1,1 @@
-include $(src)/mainboard/tyan/Makefile.s289x.inc
+include $(src)/mainboard/Makefile.k8_CAR.inc

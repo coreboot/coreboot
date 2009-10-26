@@ -51,9 +51,9 @@ Device (LPCB)
 		RCBA,	18,
 	}
 
-	Include ("../../../southbridge/intel/i82801gx/acpi/ich7_irqlinks.asl")
+	#include "../../../southbridge/intel/i82801gx/acpi/ich7_irqlinks.asl"
 
-	Include ("acpi/ec.asl")
+	#include "acpi/ec.asl"
 
 	Device (DMAC)		// DMA Controller
 	{
@@ -174,11 +174,9 @@ Device (LPCB)
 			IO (Decode16, 0x80, 0x80, 0x1, 0x01)		// Port 80 Post
 			IO (Decode16, 0x92, 0x92, 0x1, 0x01)		// CPU Reserved
 			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02)		// SWSMI
-			// IO (Decode16, 0x680, 0x680, 0x1, 0x70)	// IO ???
 			IO (Decode16, 0x800, 0x800, 0x1, 0x10)		// ACPI I/O trap
-			IO (Decode16, 0x0500, 0x0500, 0x1, 0x80)	// ICH7-M ACPI
-			IO (Decode16, 0x0480, 0x0480, 0x1, 0x40)	// ICH7-M GPIO
-			// IO (Decode16, 0x1640, 0x1640, 0x1, 0x10)	// IO ???
+			IO (Decode16, DEFAULT_PMBASE, DEFAULT_PMBASE, 0x1, 0x80)	// ICH7-M ACPI
+			IO (Decode16, DEFAULT_GPIOBASE, DEFAULT_GPIOBASE, 0x1, 0x40)	// ICH7-M GPIO
 		})
 	}
 
@@ -188,7 +186,8 @@ Device (LPCB)
 		Name (_CRS, ResourceTemplate()
 		{
 			IO (Decode16, 0x70, 0x70, 1, 8)
-			IRQNoFlags() { 8 }
+// Disable as Windows doesn't like it, and systems don't seem to use it.
+//			IRQNoFlags() { 8 }
 		})
 	}
 
@@ -203,7 +202,31 @@ Device (LPCB)
 		})
 	}
 
-	Include ("acpi/superio.asl")
+	#include "acpi/superio.asl"
+
+#ifdef ENABLE_TPM
+	Device (TPM)		// Trusted Platform Module
+	{
+		Name(_HID, EISAID("IFX0102"))
+		Name(_CID, 0x310cd041)
+		Name(_UID, 1)
+
+		Method(_STA, 0)
+		{
+			If (TPMP) {
+				Return (0xf)
+			}
+			Return (0x0)
+		}
+
+		Name(_CRS, ResourceTemplate() {
+			IO (Decode16, 0x2e, 0x2e, 0x01, 0x02)
+			IO (Decode16, 0x6f0, 0x6f0, 0x01, 0x10)
+			Memory32Fixed (ReadWrite, 0xfed40000, 0x5000)
+			IRQ (Edge, Activehigh, Exclusive) { 6 }
+		})
+	}
+#endif
 
 	Device (PS2K)		// Keyboard
 	{
@@ -237,6 +260,7 @@ Device (LPCB)
 		}
 	}
 
+#ifdef ENABLE_FDC
 	Device (FDC0)		// Floppy controller
 	{
 		Name (_HID, EisaId ("PNP0700"))
@@ -262,4 +286,5 @@ Device (LPCB)
 		})
 
 	}
+#endif
 }

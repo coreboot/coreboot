@@ -68,7 +68,7 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, IDE_SDMA_TIM, 0x0200);
 
 		/* Set IDE I/O Configuration */
-		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
+		reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
 		pci_write_config32(dev, IDE_CONFIG, reg32);
 
 		/* Combine IDE - SATA configuration */
@@ -100,7 +100,7 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, IDE_SDMA_TIM, 0x0001);
 
 		/* Set IDE I/O Configuration */
-		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
+		reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
 		pci_write_config32(dev, IDE_CONFIG, reg32);
 
 		/* Set Sata Controller Mode. */
@@ -146,7 +146,7 @@ static void sata_init(struct device *dev)
 		pci_write_config16(dev, IDE_SDMA_TIM, 0x0201);
 
 		/* Set IDE I/O Configuration */
-		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
+		reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
 		pci_write_config32(dev, IDE_CONFIG, reg32);
 
 		/* Port 0 & 1 enable XXX */

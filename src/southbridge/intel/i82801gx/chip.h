@@ -61,14 +61,14 @@ struct southbridge_intel_i82801gx_config {
 	uint8_t gpi14_routing;
 	uint8_t gpi15_routing;
 
+	uint32_t gpe0_en;
+	uint16_t alt_gp_smi_en;
+
 	/* IDE configuration */
 	uint32_t ide_legacy_combined;
 	uint32_t ide_enable_primary;
 	uint32_t ide_enable_secondary;
 	uint32_t sata_ahci;
-
-	/* Azalia Configuration */
-	uint32_t hda_viddid;
 };
 
 extern struct chip_operations southbridge_intel_i82801gx_ops;

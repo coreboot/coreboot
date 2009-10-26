@@ -36,36 +36,6 @@
 
 typedef struct southbridge_intel_i82801gx_config config_t;
 
-/* PIRQ[n]_ROUT[3:0] - PIRQ Routing Control
- * 0x00 - 0000 = Reserved
- * 0x01 - 0001 = Reserved
- * 0x02 - 0010 = Reserved
- * 0x03 - 0011 = IRQ3
- * 0x04 - 0100 = IRQ4
- * 0x05 - 0101 = IRQ5
- * 0x06 - 0110 = IRQ6
- * 0x07 - 0111 = IRQ7
- * 0x08 - 1000 = Reserved
- * 0x09 - 1001 = IRQ9
- * 0x0A - 1010 = IRQ10
- * 0x0B - 1011 = IRQ11
- * 0x0C - 1100 = IRQ12
- * 0x0D - 1101 = Reserved
- * 0x0E - 1110 = IRQ14
- * 0x0F - 1111 = IRQ15
- * PIRQ[n]_ROUT[7] - PIRQ Routing Control
- * 0x80 - The PIRQ is not routed.
- */
-
-#define PIRQA 0x03
-#define PIRQB 0x05
-#define PIRQC 0x06
-#define PIRQD 0x07
-#define PIRQE 0x09
-#define PIRQF 0x0A
-#define PIRQG 0x0B
-#define PIRQH 0x0C
-
 static void i82801gx_enable_apic(struct device *dev)
 {
 	int i;
@@ -206,6 +176,8 @@ static void i82801gx_power_options(device_t dev)
 	u16 reg16, pmbase;
 	u32 reg32;
 	char *state;
+	/* Get the chip configuration */
+	config_t *config = dev->chip_info;
 
 	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	int nmi_option;
@@ -213,8 +185,12 @@ static void i82801gx_power_options(device_t dev)
 	/* Which state do we want to goto after g3 (power restored)?
 	 * 0 == S0 Full On
 	 * 1 == S5 Soft Off
+	 *
+	 * If the option is not existent (Laptops), use MAINBOARD_POWER_ON.
 	 */
-        get_option(&pwr_on, "power_on_after_fail");
+	if (get_option(&pwr_on, "power_on_after_fail") < 0)
+		pwr_on = MAINBOARD_POWER_ON;
+
 	reg8 = pci_read_config8(dev, GEN_PMCON_3);
 	reg8 &= 0xfe;
 	switch (pwr_on) {
@@ -265,18 +241,30 @@ static void i82801gx_power_options(device_t dev)
 	reg16 &= ~((3 << 0) | (1 << 10));
 	reg16 |= (1 << 3) | (1 << 5);
 	reg16 |= (1 << 2);			// CLKRUN_EN
+#if DEBUG_PERIODIC_SMIS
+	/* Set DEBUG_PERIODIC_SMIS in i82801gx.h to debug using
+	 * periodic SMIs.
+	 */
+	reg16 |= (3 << 0); // Periodic SMI every 8s
+#endif
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
 	// Set the board's GPI routing.
 	i82801gx_gpi_routing(dev);
 
-	/* Set up power management block and determine sleep mode */
 	pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
+
+	outl(config->gpe0_en, pmbase + GPE0_EN);
+	outw(config->alt_gp_smi_en, pmbase + ALT_GP_SMI_EN);
+
+	/* Set up power management block and determine sleep mode */
 	reg32 = inl(pmbase + 0x04); // PM1_CNT
+#if 0
 #if CONFIG_HAVE_ACPI_RESUME
 	acpi_slp_type = (((reg32 >> 10) & 7) == 5) ? 3 : 0;
 	printk_debug("PM1_CNT: 0x%08x --> acpi_sleep_type: %x\n",
 			reg32, acpi_slp_type);
+#endif
 #endif
 	reg32 |= (1 << 1); // enable C3->C0 transition on bus master
 	reg32 |= 1; // SCI_EN
@@ -447,6 +435,9 @@ static void lpc_init(struct device *dev)
 	enable_clock_gating();
 
 	setup_i8259();
+
+	/* The OS should do this? */
+	// i8259_configure_irq_trigger(9, 1);
 
 #if CONFIG_HAVE_SMI_HANDLER
 	i82801gx_lock_smm(dev);

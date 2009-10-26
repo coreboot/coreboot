@@ -62,12 +62,12 @@ typedef struct {
 	u8	rsvd4[5];
 	/* Super I/O & CMOS config */
 	u8	natp; /* 0x32 - SIO type */
-	u8	cmap;
-	u8	cmbp;
-	u8	lptp;
-	u8	fdcp;
-	u8	rfdv;
-	u8	hotk;
+	u8	cmap; /* 0x33 - */
+	u8	cmbp; /* 0x34 - */
+	u8	lptp; /* 0x35 - LPT port */
+	u8	fdcp; /* 0x36 - Floppy Disk Controller */
+	u8	rfdv; /* 0x37 - */
+	u8	hotk; /* 0x38 - Hot Key */
 	u8	rtcf;
 	u8	util;
 	u8	acin;
@@ -134,6 +134,7 @@ typedef struct {
 	u8	rsvd12[8];
 	/* Mainboard specific */
 	u8	dock; /* 0xf0 - Docking Status */
-	u8	rsvd13[15];
+	u8	bten;
+	u8	rsvd13[14];
 } __attribute__((packed)) global_nvs_t;
 

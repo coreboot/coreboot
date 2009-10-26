@@ -90,93 +90,25 @@ no_codec:
 	return 0;
 }
 
-static u32 cim_verb_data[] = {
-	0x00172000,
-	0x00172100,
-	0x001722EC,
-	0x00172310,
+u32 * cim_verb_data = NULL;
+u32 cim_verb_data_size = 0;
 
-	/* Pin Complex (NID 0x12) */
-	0x01271CF0,
-	0x01271D11,
-	0x01271E11,
-	0x01271F41,
-	/* Pin Complex (NID 0x14) */
-	0x01471C10,
-	0x01471D01,
-	0x01471E13,
-	0x01471F99,
-	/* Pin Complex (NID 0x15) */
-	0x01571C20,
-	0x01571D40,
-	0x01571E21,
-	0x01571F01,
-	/* Pin Complex (NID 0x16) */
-	0x01671CF0,
-	0x01671D11,
-	0x01671E11,
-	0x01671F41,
-	/* Pin Complex (NID 0x18) */
-	0x01871C30,
-	0x01871D98,
-	0x01871EA1,
-	0x01871F01,
-	/* Pin Complex (NID 0x19) */
-	0x01971C31,
-	0x01971D09,
-	0x01971EA3,
-	0x01971F99,
-	/* Pin Complex (NID 0x1A) */
-	0x01A71C3F,
-	0x01A71D98,
-	0x01A71EA1,
-	0x01A71F02,
-	/* Pin Complex (NID 0x1B) */
-	0x01B71C1F,
-	0x01B71D40,
-	0x01B71E21,
-	0x01B71F02,
-	/* Pin Complex (NID 0x1C) */
-	0x01C71CF0,
-	0x01C71D11,
-	0x01C71E11,
-	0x01C71F41,
-	/* Pin Complex (NID 0x1D) */
-	0x01D71CF0,
-	0x01D71D11,
-	0x01D71E11,
-	0x01D71F41,
-	/* Pin Complex (NID 0x1E) */
-	0x01E71CF0,
-	0x01E71D11,
-	0x01E71E11,
-	0x01E71F41,
-	/* Pin Complex (NID 0x1F) */
-	0x01F71CF0,
-	0x01F71D11,
-	0x01F71E11,
-	0x01F71F41,
-};
-
-static unsigned find_verb(struct device *dev, u32 viddid, u32 ** verb)
+static u32 find_verb(struct device *dev, u32 viddid, u32 ** verb)
 {
-	config_t *config = dev->chip_info;
-
-	if (config == NULL) {
-		printk_err("\ni82801gx_azalia: Not mentioned in mainboard's Config.lb!\n");
-		return 0;
+	int idx=0;
+	
+	while (idx < (cim_verb_data_size / sizeof(u32))) {
+		u32 verb_size = 4 * cim_verb_data[idx+2]; // in u32
+		if (cim_verb_data[idx] != viddid) {
+			idx += verb_size + 3; // skip verb + header
+			continue;
+		}
+		*verb = &cim_verb_data[idx+3];
+		return verb_size;
 	}
 
-	printk_debug("Azalia: dev=%s\n", dev_path(dev));
-	printk_debug("Azalia: Default viddid=%x\n", (u32)config->hda_viddid);
-	printk_debug("Azalia: Reading viddid=%x\n", viddid);
-
-	if (viddid != config->hda_viddid)
-		return 0;
-
-	*verb = (u32 *) cim_verb_data;
-
-	return sizeof(cim_verb_data) / sizeof(u32);
+	/* Not all codecs need to load another verb */
+	return 0;
 }
 
 /**
@@ -209,19 +141,26 @@ static int wait_for_ready(u8 *base)
 
 static int wait_for_valid(u8 *base)
 {
+	u32 reg32;
+
+	/* Send the verb to the codec */
+	reg32 = readl(base + 0x68);
+	reg32 |= (1 << 0) | (1 << 1);
+	writel(reg32, base + 0x68);
+
 	/* Use a 50 usec timeout - the Linux kernel uses the
 	 * same duration */
 
 	int timeout = 50;
 	while(timeout--) {
-		u32 reg32 = readl(base + HDA_ICII_REG);
+		reg32 = readl(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
 			HDA_ICII_VALID)
 			return 0;
 		udelay(1);
 	}
 
-	return 1;
+	return -1;
 }
 
 static void codec_init(struct device *dev, u8 * base, int addr)
@@ -230,6 +169,8 @@ static void codec_init(struct device *dev, u8 * base, int addr)
 	u32 *verb;
 	u32 verb_size;
 	int i;
+
+	printk_debug("Azalia: Initializing codec #%d\n", addr);
 
 	/* 1 */
 	if (wait_for_ready(base) == -1)
@@ -251,8 +192,8 @@ static void codec_init(struct device *dev, u8 * base, int addr)
 		printk_debug("Azalia: No verb!\n");
 		return;
 	}
-
 	printk_debug("Azalia: verb_size: %d\n", verb_size);
+
 	/* 3 */
 	for (i = 0; i < verb_size; i++) {
 		if (wait_for_ready(base) == -1)

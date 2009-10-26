@@ -46,53 +46,13 @@
 #define   G_SMRANE	(1 << 3)
 #define   C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
-/* ICH7 */
-#define PM1_STS		0x00
-#define PM1_EN		0x02
-#define PM1_CNT		0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
-#define   GBL_RLS	(1 << 2)
-#define   BM_RLD	(1 << 1)
-#define   SCI_EN	(1 << 0)
-#define PM1_TMR		0x08
-#define PROC_CNT	0x10
-#define LV2		0x14
-#define LV3		0x15
-#define LV4		0x16
-#define PM2_CNT		0x20 // mobile only
-#define GPE0_STS	0x28
-#define GPE0_EN		0x2c
-#define   PME_B0_EN	(1 << 13)
-#define SMI_EN		0x30
-#define   EL_SMI_EN	 (1 << 25) // Intel Quick Resume Technology
-#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
-#define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
-#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
-#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
-#define   MCSMI_EN	 (1 << 11) // Trap microcontroller range access
-#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
-#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
-#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
-#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
-#define   LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
-#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
-#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
-#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
-#define SMI_STS		0x34
-#define ALT_GP_SMI_EN	0x38
-#define ALT_GP_SMI_STS	0x3a
-#define GPE_CNTL	0x42
-#define DEVACT_STS	0x44
-#define SS_CNT		0x50
-#define C3_RES		0x54
-
 #include "i82801gx_nvs.h"
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value
  */
 u16 pmbase = DEFAULT_PMBASE;
+u8 smm_initialized = 0;
 
 /* GNVS needs to be updated by an 0xEA PM Trap (B2) after it has been located
  * by coreboot.
@@ -118,16 +78,16 @@ static u16 reset_pm1_status(void)
 
 static void dump_pm1_status(u16 pm1_sts)
 {
-	printk_debug("PM1_STS: ");
-	if (pm1_sts & (1 << 15)) printk_debug("WAK ");
-	if (pm1_sts & (1 << 14)) printk_debug("PCIEXPWAK ");
-	if (pm1_sts & (1 << 11)) printk_debug("PRBTNOR ");
-	if (pm1_sts & (1 << 10)) printk_debug("RTC ");
-	if (pm1_sts & (1 <<  8)) printk_debug("PWRBTN ");
-	if (pm1_sts & (1 <<  5)) printk_debug("GBL ");
-	if (pm1_sts & (1 <<  4)) printk_debug("BM ");
-	if (pm1_sts & (1 <<  0)) printk_debug("TMROF ");
-	printk_debug("\n");
+	printk_spew("PM1_STS: ");
+	if (pm1_sts & (1 << 15)) printk_spew("WAK ");
+	if (pm1_sts & (1 << 14)) printk_spew("PCIEXPWAK ");
+	if (pm1_sts & (1 << 11)) printk_spew("PRBTNOR ");
+	if (pm1_sts & (1 << 10)) printk_spew("RTC ");
+	if (pm1_sts & (1 <<  8)) printk_spew("PWRBTN ");
+	if (pm1_sts & (1 <<  5)) printk_spew("GBL ");
+	if (pm1_sts & (1 <<  4)) printk_spew("BM ");
+	if (pm1_sts & (1 <<  0)) printk_spew("TMROF ");
+	printk_spew("\n");
 }
 
 /**
@@ -261,21 +221,16 @@ int southbridge_io_trap_handler(int smif)
 	switch (smif) {
 	case 0x32:
 		printk_debug("OS Init\n");
+		/* gnvs->smif:
+		 *  On success, the IO Trap Handler returns 0
+		 *  On failure, the IO Trap Handler returns a value != 0
+		 */
 		gnvs->smif = 0;
-		break;
-	default:
-		/* Not handled */
-		return 0;
+		return 1; /* IO trap handled */
 	}
 
-	/* On success, the IO Trap Handler returns 0
-	 * On failure, the IO Trap Handler returns a value != 0
-	 *
-	 * For now, we force the return value to 0 and log all traps to
-	 * see what's going on.
-	 */
-	//gnvs->smif = 0;
-	return 1; /* IO trap handled */
+	/* Not handled */
+	return 0;
 }
 
 /**
@@ -400,9 +355,14 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 		printk_debug("SMI#: ACPI enabled.\n");
 		break;
 	case GNVS_UPDATE:
+		if (smm_initialized) {
+			printk_debug("SMI#: SMM structures already initialized!\n");
+			return;
+		}
 		gnvs = *(global_nvs_t **)0x500;
 		tcg  = *(void **)0x504;
 		smi1 = *(void **)0x508;
+		smm_initialized = 1;
 		printk_debug("SMI#: Setting up structures to %p, %p, %p\n", gnvs, tcg, smi1);
 		break;
 	default:
@@ -424,6 +384,17 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 
 	gpe0_sts = reset_gpe0_status();
 	dump_gpe0_status(gpe0_sts);
+}
+
+static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
+{
+	u16 reg16;
+	reg16 = inw(pmbase + ALT_GP_SMI_STS);
+	outl(reg16, pmbase + ALT_GP_SMI_STS);
+
+	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
+	if (reg16)
+		printk_debug("GPI (mask %04x)\n",reg16);
 }
 
 static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_save)
@@ -559,7 +530,7 @@ smi_handler southbridge_smi[32] = {
 	NULL,			  //  [7] reserved
 	southbridge_smi_pm1,	  //  [8] PM1_STS
 	southbridge_smi_gpe0,	  //  [9] GPE0_STS
-	NULL,			  // [10] GPI_STS
+	southbridge_smi_gpi,	  // [10] GPI_STS
 	southbridge_smi_mc,	  // [11] MCSMI_STS
 	NULL,			  // [12] DEVMON_STS
 	southbridge_smi_tco,	  // [13] TCO_STS

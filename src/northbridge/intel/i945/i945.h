@@ -20,7 +20,17 @@
 #ifndef __NORTHBRIDGE_INTEL_I945_I945_H__
 #define __NORTHBRIDGE_INTEL_I945_I945_H__ 1
 
+/* Northbridge BARs */
+#define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
+#define DEFAULT_X60BAR		0xfed13000
+#define DEFAULT_MCHBAR		0xfed14000	/* 16 KB */
+#define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
+#define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
+
 #include "../../../southbridge/intel/i82801gx/i82801gx.h"
+
+/* Everything below this line is ignored in the DSDT */
+#ifndef __ACPI__
 
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 
@@ -29,13 +39,6 @@
 #define PCIEXBAR	0x48
 #define DMIBAR		0x4c
 #define X60BAR		0x60
-
-/* Northbridge BARs */
-#define DEFAULT_PCIEXBAR	0xf0000000	/* 4 KB per PCIe device */
-#define DEFAULT_X60BAR		0xfed13000
-#define DEFAULT_MCHBAR		0xfed14000	/* 16 KB */
-#define DEFAULT_DMIBAR		0xfed18000	/* 4 KB */
-#define DEFAULT_EPBAR		0xfed19000	/* 4 KB */
 
 #define GGC		0x52			/* GMCH Graphics Control */
 
@@ -328,4 +331,5 @@
 
 #define DMIDRCCFG	0xeb4	/* 32bit */
 
+#endif
 #endif

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  * 
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -57,7 +57,6 @@
 #include "southbridge/intel/i82801gx/i82801gx.h"
 static void setup_ich7_gpios(void)
 {
-	/* TODO: This is highly board specific and should be moved */
 	printk_debug(" GPIOS...");
 	/* General Registers */
 	outl(0x1f1ff7c0, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
@@ -127,6 +126,12 @@ static void early_superio_config_w83627thg(void)
 	dev=PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_enter_ext_func_mode(dev);
 
+	pnp_write_config(dev, 0x24, 0xc6); // PNPCSV
+
+	pnp_write_config(dev, 0x29, 0x43); // GPIO settings
+	pnp_write_config(dev, 0x2a, 0x40); // GPIO settings
+
+	dev=PNP_DEV(0x2e, W83627THG_SP1);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
@@ -218,6 +223,8 @@ static void early_superio_config_w83627thg(void)
 
 static void rcba_config(void)
 {
+	u32 reg32;
+
 	/* Set up virtual channel 0 */
 	//RCBA32(0x0014) = 0x80000001;
 	//RCBA32(0x001c) = 0x03128010;
@@ -240,9 +247,52 @@ static void rcba_config(void)
 	/* Enable upper 128bytes of CMOS */
 	RCBA32(0x3400) = (1 << 2);
 
+	/* Now, this is a bit ugly. As per PCI specification, function 0 of a
+	 * device always has to be implemented. So disabling ethernet port 1
+	 * would essentially disable all three ethernet ports of the mainboard.
+	 * It's possible to rename the ports to achieve compatibility to the
+	 * PCI spec but this will confuse all (static!) tables containing
+	 * interrupt routing information. 
+	 * To avoid this, we enable (unused) port 6 and swap it with port 1
+	 * in the case that ethernet port 1 is disabled. Since no devices
+	 * are connected to that port, we don't have to worry about interrupt
+	 * routing.
+	 */
+	int port_shuffle = 0;
+
 	/* Disable unused devices */
-	RCBA32(0x3418) = FD_PCIE6|FD_PCIE5|FD_PCIE4|FD_ACMOD|FD_ACAUD|FD_PATA;
-	RCBA32(0x3418) |= (1 << 0); // Required.
+	reg32 = FD_ACMOD|FD_ACAUD|FD_PATA;
+	reg32 |= FD_PCIE6|FD_PCIE5|FD_PCIE4;
+
+	if (read_option(CMOS_VSTART_ethernet1, CMOS_VLEN_ethernet1, 0) != 0) {
+		printk_debug("Disabling ethernet adapter 1.\n");
+		reg32 |= FD_PCIE1;
+	}
+	if (read_option(CMOS_VSTART_ethernet2, CMOS_VLEN_ethernet2, 0) != 0) {
+		printk_debug("Disabling ethernet adapter 2.\n");
+		reg32 |= FD_PCIE2;
+	} else {
+		if (reg32 & FD_PCIE1)
+			port_shuffle = 1;
+	}
+	if (read_option(CMOS_VSTART_ethernet3, CMOS_VLEN_ethernet3, 0) != 0) {
+		printk_debug("Disabling ethernet adapter 3.\n");
+		reg32 |= FD_PCIE3;
+	} else {
+		if (reg32 & FD_PCIE1)
+			port_shuffle = 1;
+	}
+
+	if (port_shuffle) {
+		/* Enable PCIE6 again */
+		reg32 &= ~FD_PCIE6;
+		/* Swap PCIE6 and PCIE1 */
+		RCBA32(RPFN) = 0x00043215;
+	}
+
+	reg32 |= 1;
+
+	RCBA32(0x3418) = reg32;
 
 	/* Enable PCIe Root Port Clock Gate */
 	// RCBA32(0x341c) = 0x00000001;
@@ -306,6 +356,16 @@ static void early_ich7_init(void)
 #include "southbridge/intel/i82801gx/cmos_failover.c"
 #endif
 
+#include <cbmem.h>
+
+// Now, this needs to be included because it relies on the symbol
+// __ROMCC_ being set during CAR stage (in order to compile the 
+// BSS free versions of the functions). Either rewrite the code
+// to be always BSS free, or invent a flag that's better suited than
+// __ROMCC__ to determine whether we're in ram init stage (stage 1)
+//
+#include "lib/cbmem.c"
+
 void real_main(unsigned long bist)
 {
 	u32 reg32;
@@ -345,13 +405,14 @@ void real_main(unsigned long bist)
 	reg32 = inl(DEFAULT_PMBASE + 0x04);
 	printk_debug("PM1_CNT: %08x\n", reg32);
 	if (((reg32 >> 10) & 7) == 5) {
-#if HAVE_ACPI_RESUME
+#if CONFIG_HAVE_ACPI_RESUME
 		printk_debug("Resume from S3 detected.\n");
 		boot_mode = 2;
 		/* Clear SLP_TYPE. This will break stage2 but
 		 * we care for that when we get there.
 		 */
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
+
 #else
 		printk_debug("Resume from S3 detected, but disabled.\n");
 #endif
@@ -380,6 +441,7 @@ void real_main(unsigned long bist)
 	/* Initialize the internal PCIe links before we go into stage2 */
 	i945_late_initialization();
 
+#if !CONFIG_HAVE_ACPI_RESUME
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
 #if defined(DEBUG_RAM_SETUP)
 	sdram_dump_mchbar_registers();
@@ -391,10 +453,35 @@ void real_main(unsigned long bist)
 
 		printk_debug("TOM: 0x%08x\n", tom);
 		ram_check(0x00000000, 0x000a0000);
-		ram_check(0x00100000, tom);
+		//ram_check(0x00100000, tom);
 	}
 #endif
+#endif
+
 	MCHBAR16(SSKPD) = 0xCAFE;
+
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Start address of high memory tables */
+	unsigned long high_ram_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
+
+	/* If there is no high memory area, we didn't boot before, so
+	 * this is not a resume. In that case we just create the cbmem toc.
+	 */
+	if ((boot_mode == 2) && cbmem_reinit((u64)high_ram_base)) {
+		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+
+		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
+		 * through stage 2. We could keep stuff like stack and heap in high tables
+		 * memory completely, but that's a wonderful clean up task for another
+		 * day.
+		 */
+		if (resume_backup_memory) 
+			memcpy(resume_backup_memory, CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+
+		/* Magic for S3 resume */
+		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
+	}
+#endif
 }
 
 #include "cpu/intel/model_6ex/cache_as_ram_disable.c"

@@ -40,41 +40,6 @@ extern unsigned int smm_len;
 #define   G_SMRAME	(1 << 3)
 #define   C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
-/* ICH7 */
-#define PM1_STS		0x00
-#define PM1_EN		0x02
-#define PM1_CNT		0x04
-#define PM1_TMR		0x08
-#define PROC_CNT	0x10
-#define LV2		0x14
-#define LV3		0x15
-#define LV4		0x16
-#define PM2_CNT		0x20 // mobile only
-#define GPE0_STS	0x28
-#define GPE0_EN		0x2c
-#define SMI_EN		0x30
-#define   EL_SMI_EN	 (1 << 25) // Intel Quick Resume Technology
-#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
-#define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
-#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
-#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
-#define   MCSMI_EN	 (1 << 11) // Trap microcontroller range access
-#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
-#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
-#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
-#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
-#define   LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
-#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
-#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
-#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
-#define SMI_STS		0x34
-#define ALT_GP_SMI_EN	0x38
-#define ALT_GP_SMI_STS	0x3a
-#define GPE_CNTL	0x42
-#define DEVACT_STS	0x44
-#define SS_CNT		0x50
-#define C3_RES		0x54
-
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value
  */
@@ -277,8 +242,23 @@ void smm_relocate(void)
 	 * No SMIs:
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 */
-	outl(smi_en | (TCO_EN | APMC_EN | SLP_SMI_EN | BIOS_EN |
-				EOS | GBL_SMI_EN), pmbase + SMI_EN);
+
+	smi_en = 0; /* reset SMI enables */
+	smi_en |= TCO_EN;
+	smi_en |= APMC_EN;
+#if DEBUG_PERIODIC_SMIS
+	/* Set DEBUG_PERIODIC_SMIS in i82801gx.h to debug using
+	 * periodic SMIs.
+	 */
+	smi_en |= PERIODIC_EN;
+#endif
+	smi_en |= SLP_SMI_EN;
+	smi_en |= BIOS_EN;
+
+	/* The following need to be on for SMIs to happen */
+	smi_en |= EOS | GBL_SMI_EN;
+
+	outl(smi_en, pmbase + SMI_EN);
 
 	/**
 	 * There are several methods of raising a controlled SMI# via

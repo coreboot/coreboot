@@ -81,7 +81,16 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PPCM,	 8,	// 0x2c - Max. PPC state
 	/* Super I/O & CMOS config */
 	Offset (0x32),
-	NATP,	 8,	// 0x32 - ...
+	NATP,	 8,	// 0x32 -
+	CMAP,	 8,	// 0x33 -
+	CMBP,	 8,	// 0x34 -
+	LPTP,	 8,	// 0x35 - LPT Port
+	FDCP,	 8,	// 0x36 - Floppy Disk Controller
+	RFDV,	 8,	// 0x37 -
+	HOTK,	 8,	// 0x38 -
+	RTCF,	 8,	// 0x39 -
+	UTIL,	 8,	// 0x3a -
+	ACIN,	 8,	// 0x3b -
 	/* Integrated Graphics Device */
 	Offset (0x3c),
 	IGDS,	 8,	// 0x3c - IGD state (primary = 1)
@@ -158,4 +167,5 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	/* Mainboard Specific (TODO move elsewhere) */
 	Offset (0xf0),
 	DOCK,	 8,	// 0xf0 - Docking Status
+	BTEN,	 8,	// 0xf1 - Bluetooth Enable
 }

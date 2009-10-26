@@ -70,7 +70,7 @@ Device (PCIB)
 
 	Method (_PRT)
 	{
-		Include ("acpi/ich7_pci_irqs.asl")
+		#include "acpi/ich7_pci_irqs.asl"
 	}
 
 }

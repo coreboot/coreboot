@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007-2008 coresystems GmbH
+ * Copyright (C) 2007-2009 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,13 +23,13 @@
 #include <device/pci.h>
 #include <arch/acpi.h>
 
-/* FIXME: This needs to go into a separate .h file 
+/* FIXME: This needs to go into a separate .h file
  * to be included by the ich7 smi handler, ich7 smi init
  * code and the mainboard fadt.
  */
 #define APM_CNT		0xb2
-#define   CST_CONTROL	0x00 // 0xe3 crashes the box
-#define   PST_CONTROL	0x00 // 0xe2 crashes the box
+#define   CST_CONTROL	0x85
+#define   PST_CONTROL	0x80
 #define   ACPI_DISABLE	0x1e
 #define   ACPI_ENABLE	0xe1
 #define   GNVS_UPDATE   0xea
@@ -59,7 +59,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
  	fadt->acpi_disable = ACPI_DISABLE;
   	fadt->s4bios_req = 0x0;
  	fadt->pstate_cnt = PST_CONTROL;
- 
+
 	fadt->pm1a_evt_blk = pmbase;
 	fadt->pm1b_evt_blk = 0x0;
 	fadt->pm1a_cnt_blk = pmbase + 0x4;
@@ -89,72 +89,72 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->century = 0x00;
 	fadt->iapc_boot_arch = 0x03;
 
- 	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED | 
-			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON | 
+ 	fadt->flags = ACPI_FADT_WBINVD | ACPI_FADT_C1_SUPPORTED |
+			ACPI_FADT_C2_MP_SUPPORTED | ACPI_FADT_SLEEP_BUTTON |
 			ACPI_FADT_S4_RTC_WAKE | ACPI_FADT_PLATFORM_CLOCK;
- 
+
  	fadt->reset_reg.space_id = 0;
  	fadt->reset_reg.bit_width = 0;
  	fadt->reset_reg.bit_offset = 0;
  	fadt->reset_reg.resv = 0;
  	fadt->reset_reg.addrl = 0x0;
  	fadt->reset_reg.addrh = 0x0;
- 
+
  	fadt->reset_value = 0;
  	fadt->x_firmware_ctl_l = (unsigned long)facs;
  	fadt->x_firmware_ctl_h = 0;
  	fadt->x_dsdt_l = (unsigned long)dsdt;
  	fadt->x_dsdt_h = 0;
- 
+
  	fadt->x_pm1a_evt_blk.space_id = 1;
  	fadt->x_pm1a_evt_blk.bit_width = 32;
  	fadt->x_pm1a_evt_blk.bit_offset = 0;
  	fadt->x_pm1a_evt_blk.resv = 0;
  	fadt->x_pm1a_evt_blk.addrl = pmbase;
  	fadt->x_pm1a_evt_blk.addrh = 0x0;
- 
+
  	fadt->x_pm1b_evt_blk.space_id = 1;
  	fadt->x_pm1b_evt_blk.bit_width = 0;
  	fadt->x_pm1b_evt_blk.bit_offset = 0;
  	fadt->x_pm1b_evt_blk.resv = 0;
  	fadt->x_pm1b_evt_blk.addrl = 0x0;
  	fadt->x_pm1b_evt_blk.addrh = 0x0;
- 
+
  	fadt->x_pm1a_cnt_blk.space_id = 1;
  	fadt->x_pm1a_cnt_blk.bit_width = 16;
  	fadt->x_pm1a_cnt_blk.bit_offset = 0;
  	fadt->x_pm1a_cnt_blk.resv = 0;
  	fadt->x_pm1a_cnt_blk.addrl = pmbase + 0x4;
  	fadt->x_pm1a_cnt_blk.addrh = 0x0;
- 
+
  	fadt->x_pm1b_cnt_blk.space_id = 1;
  	fadt->x_pm1b_cnt_blk.bit_width = 0;
  	fadt->x_pm1b_cnt_blk.bit_offset = 0;
  	fadt->x_pm1b_cnt_blk.resv = 0;
  	fadt->x_pm1b_cnt_blk.addrl = 0x0;
  	fadt->x_pm1b_cnt_blk.addrh = 0x0;
- 
+
  	fadt->x_pm2_cnt_blk.space_id = 1;
  	fadt->x_pm2_cnt_blk.bit_width = 8;
  	fadt->x_pm2_cnt_blk.bit_offset = 0;
  	fadt->x_pm2_cnt_blk.resv = 0;
  	fadt->x_pm2_cnt_blk.addrl = pmbase + 0x20;
  	fadt->x_pm2_cnt_blk.addrh = 0x0;
- 
+
  	fadt->x_pm_tmr_blk.space_id = 1;
  	fadt->x_pm_tmr_blk.bit_width = 32;
  	fadt->x_pm_tmr_blk.bit_offset = 0;
  	fadt->x_pm_tmr_blk.resv = 0;
  	fadt->x_pm_tmr_blk.addrl = pmbase + 0x8;
  	fadt->x_pm_tmr_blk.addrh = 0x0;
- 
+
  	fadt->x_gpe0_blk.space_id = 1;
  	fadt->x_gpe0_blk.bit_width = 64;
  	fadt->x_gpe0_blk.bit_offset = 0;
  	fadt->x_gpe0_blk.resv = 0;
  	fadt->x_gpe0_blk.addrl = pmbase + 0x28;
  	fadt->x_gpe0_blk.addrh = 0x0;
- 
+
  	fadt->x_gpe1_blk.space_id = 1;
  	fadt->x_gpe1_blk.bit_width = 0;
  	fadt->x_gpe1_blk.bit_offset = 0;

@@ -19,7 +19,8 @@
  * MA 02110-1301 USA
  */
 
-Include ("../../../northbridge/intel/i945/acpi/i945_hostbridge.asl")
+#include "../../../northbridge/intel/i945/acpi/i945_hostbridge.asl"
+#include "../../../northbridge/intel/i945/i945.h"
 
 /* PCI Device Resource Consumption */
 Device (PDRC)
@@ -41,10 +42,10 @@ Device (PDRC)
 
 	Name (PDRS, ResourceTemplate() {
 		Memory32Fixed(ReadWrite, 0xfed1c000, 0x00004000) // RCBA
-		Memory32Fixed(ReadWrite, 0xfed14000, 0x00004000) // MCHBAR
-		Memory32Fixed(ReadWrite, 0xfed18000, 0x00001000) // DMIBAR
-		Memory32Fixed(ReadWrite, 0xfed19000, 0x00001000) // EPBAR
-		Memory32Fixed(ReadWrite, 0xf0000000, 0x04000000) // PCIE BAR
+		Memory32Fixed(ReadWrite, DEFAULT_MCHBAR,   0x00004000)
+		Memory32Fixed(ReadWrite, DEFAULT_DMIBAR,   0x00001000)
+		Memory32Fixed(ReadWrite, DEFAULT_EPBAR,    0x00001000)
+		Memory32Fixed(ReadWrite, DEFAULT_PCIEXBAR, 0x04000000)
 		Memory32Fixed(ReadWrite, 0xfed20000, 0x00020000) // Misc ICH
 		Memory32Fixed(ReadWrite, 0xfed40000, 0x00005000) // Misc ICH
 		Memory32Fixed(ReadWrite, 0xfed45000, 0x0004b000) // Misc ICH
@@ -76,13 +77,13 @@ Device (PDRC)
 }
 
 // PCIe graphics port 0:1.0
-Include ("../../../northbridge/intel/i945/acpi/i945_peg.asl")
+#include "../../../northbridge/intel/i945/acpi/i945_peg.asl"
 
 // Integrated graphics 0:2.0
-Include ("../../../northbridge/intel/i945/acpi/i945_igd.asl")
+#include "../../../northbridge/intel/i945/acpi/i945_igd.asl"
 
 Scope (\)
 {
 	// backlight control, display switching, lid
-	Include ("acpi/video.asl")
+	#include "acpi/video.asl"
 }

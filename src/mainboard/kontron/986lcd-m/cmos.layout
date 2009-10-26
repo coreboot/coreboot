@@ -91,7 +91,21 @@ entries
 
 # coreboot config options: bootloader
 416        512       s       0        boot_devices
-#928         80       r       0        unused
+#928         40       r       0        unused
+
+# coreboot config options: mainboard specific options
+948          2       e       8        cpufan_cruise_control
+950          2       e       8        sysfan_cruise_control
+952          4       e       9        cpufan_speed
+#956          4       e       10       cpufan_temperature
+960          4       e       9        sysfan_speed
+#964          4       e       10       sysfan_temperature
+
+968          1       e       2        ethernet1
+969          1       e       2        ethernet2
+970          1       e       2        ethernet3
+ 
+#971          13       r       0        unused
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
@@ -135,7 +149,45 @@ enumerations
 7     0     Disable
 7     1     Enable
 7     2     Keep
-
+# Fan Cruise Control
+8     0     Disabled
+8     1     Speed
+#8     2     Thermal
+# Fan Speed (Rotations per Minute)
+9     0     5625
+9     1     5192
+9     2     4753
+9     3     4326
+9     4     3924
+9     5     3552
+9     6     3214
+9     7     2909
+9     8     2636
+9     9     2393
+9    10     2177
+9    11     1985
+9    12     1814
+9    13     1662
+9    14     1527
+9    15     1406
+#
+# Temperature (°C/°F)
+#10     0     30/86
+#10     1     33/91
+#10     2     36/96
+#10     3     39/102
+#10     4     42/107
+#10     5     45/113
+#10     6     48/118
+#10     7     51/123
+#10     8     54/129
+#10     9     57/134
+#10    10     60/140
+#10    11     63/145
+#10    12     66/150
+#10    13     69/156
+#10    14     72/161
+#10    15     75/167
 # -----------------------------------------------------------------
 checksums
 

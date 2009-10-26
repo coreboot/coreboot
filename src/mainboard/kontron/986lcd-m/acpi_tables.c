@@ -31,100 +31,33 @@
 #include <cpu/x86/msr.h>
 #include "dmi.h"
 
-#define OLD_ACPI 0
-
 extern unsigned char AmlCode[];
 #if HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
 void generate_cpu_entries(void); // from cpu/intel/speedstep
-unsigned long acpi_fill_mcfg(unsigned long current); // from northbridge/intel/i945
 
-#if OLD_ACPI
-typedef struct acpi_oemb {
-	acpi_header_t header;
-	u8  ss;
-	u16 iost;
-	u32 topm;
-	u32 roms;
-	u32 mg1b;
-	u32 mg1l;
-	u32 mg2b;
-	u32 mg2l;
-	u8  rsvd;
-	u8  dmax;
-	u32 hpta;
-	u32 cpb0;
-	u32 cpb1;
-	u32 cpb2;
-	u32 cpb3;
-	u8  assb;
-	u8  aotb;
-	u32 aaxb;
-	u8  smif;
-	u8  dtse;
-	u8  dts1;
-	u8  dts2;
-	u8  mpen;
-} __attribute__((packed)) acpi_oemb_t;
-#endif
-
-typedef struct acpi_gnvs {
-	// 0x00
-	u16 osys;
-	u8  smif;
-	u8  reserved[13];
-	// 0x10
-	u8  mpen;
-} __attribute__((packed)) acpi_gnvs_t;
-
-#if OLD_ACPI
-void acpi_create_oemb(acpi_oemb_t *oemb)
-{
-	acpi_header_t *header = &(oemb->header);
-	unsigned long tolud;
-
-	memset (oemb, 0, sizeof(*oemb));
-
-	/* fill out header fields */
-	memcpy(header->signature, "OEMB", 4);
-	memcpy(header->oem_id, OEM_ID, 6);
-	memcpy(header->oem_table_id, "COREBOOT", 8);
-	memcpy(header->asl_compiler_id, ASLC, 4);
-
-	header->length = sizeof(acpi_oemb_t);
-	header->revision = 1;
-
-	oemb->ss   =   0x09; // ss1 + ss 4
-	oemb->iost = 0x0403; // ??
-
-        tolud = pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c);
-	oemb->topm = tolud;
-
-	oemb->roms = 0xfff00000; // 1M hardcoded
-
-	oemb->mg1b = 0x000d0000;
-	oemb->mg1l = 0x00010000;
-
-	oemb->mg2b = tolud;
-	oemb->mg2l = 0-tolud;
-
-	oemb->dmax = 0x87;
-	oemb->hpta = 0x000e36c0;
-
-	header->checksum =
-	    acpi_checksum((void *) oemb, sizeof(acpi_oemb_t));
-
-};
-#endif
-
-void acpi_create_gnvs(acpi_gnvs_t *gnvs)
+#include "../../../southbridge/intel/i82801gx/i82801gx_nvs.h"
+static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	memset((void *)gnvs, 0, sizeof(*gnvs));
-	gnvs->mpen = 1;
+	gnvs->apic = 1;
+	gnvs->mpen = 1; /* Enable Multi Processing */
+
+	/* Enable both COM ports */
+	gnvs->cmap = 0x01;
+	gnvs->cmbp = 0x01;
+
+	/* IGD Displays */
+	gnvs->ndid = 3;
+	gnvs->did[0] = 0x80000100;
+	gnvs->did[1] = 0x80000240;
+	gnvs->did[2] = 0x80000410;
+	gnvs->did[3] = 0x80000410;
+	gnvs->did[4] = 0x00000005;
 }
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet)
+static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 {
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header = &(hpet->header);
@@ -212,10 +145,6 @@ unsigned long write_acpi_tables(unsigned long start)
 #if HAVE_ACPI_SLIC
 	acpi_header_t *slic;
 #endif
-#if OLD_ACPI
-	acpi_oemb_t *oemb;
-#endif
-	acpi_gnvs_t *gnvs;
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 
@@ -271,15 +200,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, mcfg);
 
-#if OLD_ACPI
-	printk_debug("ACPI:    * OEMB\n");
-	oemb=(acpi_oemb_t *)current;
-	current += sizeof(acpi_oemb_t);
-	ALIGN_CURRENT;
-	acpi_create_oemb(oemb);
-	acpi_add_table(rsdp, oemb);
-#endif
-
 	printk_debug("ACPI:     * FACS\n");
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
@@ -290,16 +210,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += ((acpi_header_t *) AmlCode)->length;
 	memcpy((void *) dsdt, (void *) AmlCode,
 	       ((acpi_header_t *) AmlCode)->length);
-
-#if OLD_ACPI
-	for (i=0; i < dsdt->length; i++) {
-		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBEEF) {
-			printk_debug("ACPI: Patching up DSDT at offset 0x%04x -> 0x%08x\n", i, 0x24 + (u32)oemb);
-			*(u32*)(((u32)dsdt) + i) = 0x24 + (u32)oemb;
-			break;
-		}
-	}
-#endif
 
 	ALIGN_CURRENT;
 

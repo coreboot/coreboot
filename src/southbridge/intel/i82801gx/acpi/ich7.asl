@@ -19,8 +19,7 @@
  * MA 02110-1301 USA
  */
 
-/* Intel i82801G support
- */
+/* Intel 82801Gx support */
 
 Scope(\)
 {
@@ -34,10 +33,7 @@ Scope(\)
 	}
 
 	// ICH7 Power Management Registers, located at PMBASE (0x1f.0 0x40.l)
-	// this doesn't work as ACPI initializes regions and packages first, devices second.
-	// use dynamic operation region? if so, how? XXX
-        //OperationRegion(PMIO, SystemIO, And(\_SB_.PCI0.LPCB.PMBS, 0xfffc), 0x80)
-	OperationRegion(PMIO, SystemIO, 0x500, 0x80)
+	OperationRegion(PMIO, SystemIO, DEFAULT_PMBASE, 0x80)
 	Field(PMIO, ByteAcc, NoLock, Preserve)
 	{
 		Offset(0x42),	// General Purpose Control
@@ -49,7 +45,7 @@ Scope(\)
 	}
 
 	// ICH7 GPIO IO mapped registers (0x1f.0 reg 0x48.l)
-	OperationRegion(GPIO, SystemIO, 0x1180, 0x3c)
+	OperationRegion(GPIO, SystemIO, DEFAULT_GPIOBASE, 0x3c)
 	Field(GPIO, ByteAcc, NoLock, Preserve)
 	{
 		Offset(0x00),	// GPIO Use Select
@@ -63,12 +59,32 @@ Scope(\)
 		GIO2, 8,
 		GIO3, 8,
 		Offset(0x0c),	// GPIO Level
-		GL00, 8,
-		GL01, 8,
-		, 3,
-		GP27, 1,	// SATA_PWR_EN #0
-		GP28, 1,	// SATA_PWR_EN #1
-		, 3,
+		GL00, 6,
+		GP07, 1,	// GDET
+		GP08, 1,
+		GP09, 1,
+		GP10, 1,	// HPMU
+		GP11, 1,	// GPSE
+		GP12, 1,
+		GP13, 1,	// WLED
+		GP14, 1,	// BLED
+		GP15, 1,	// GLED
+		GP16, 1,	// GDIS
+		GP17, 1,
+		GP18, 1,
+		GP19, 1,	// SPCI
+		GP20, 1,	// TSDT
+		GP21, 1,	// SCPU
+		GP22, 1,
+		GP23, 1,
+		GP24, 1,	// LANP
+		GP25, 1,	// DKLR
+		GP26, 1,	// WLAN
+		GP27, 1,	// SATA_PWR_EN #0 / SPOF
+		GP28, 1,	// SATA_PWR_EN #1 / SPMU
+		GP29, 1,
+		GP30, 1,
+		GP31, 1,
 		Offset(0x18),	// GPIO Blink
 		GB00, 8,
 		GB01, 8,
@@ -90,10 +106,14 @@ Scope(\)
 		GIO6, 8,
 		GIO7, 8,
 		Offset(0x38),	// GPIO Level 2
-		, 5,
-		GP37, 1,	// PATA_PWR_EN
-		GP38, 1,	// Battery / Power (?)
-		GP39, 1,	// ??
+		GP32, 1,
+		GP33, 1,	// CREN
+		GP34, 1,	// CRRS
+		GP35, 1,
+		GP36, 1,	// STAD
+		GP37, 1,	// PATA_PWR_EN / HDDE
+		GP38, 1,	// Battery / Power (?) / MB00
+		GP39, 1,	// ?? / MB01
 		GL05, 8,
 		GL06, 8,
 		GL07, 8
@@ -101,7 +121,7 @@ Scope(\)
 
 
 	// ICH7 Root Complex Register Block. Memory Mapped through RCBA)
-	OperationRegion(RCRB, SystemMemory, 0xfed1c000, 0x4000)
+	OperationRegion(RCRB, SystemMemory, DEFAULT_RCBA, 0x4000)
 	Field(RCRB, DWordAcc, Lock, Preserve)
 	{
 		Offset(0x0000), // Backbone
@@ -139,30 +159,30 @@ Scope(\)
 }
 
 // 0:1b.0 High Definition Audio (Azalia)
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_audio.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_audio.asl"
 
 // PCI Express Ports
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_pcie.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_pcie.asl"
 
 // USB
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_usb.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_usb.asl"
 
 // PCI Bridge
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_pci.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_pci.asl"
 
 // AC97 Audio and Modem
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_ac97.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_ac97.asl"
 
 // LPC Bridge
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_lpc.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_lpc.asl"
 
 // PATA
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_pata.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_pata.asl"
 
 // SATA
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_sata.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_sata.asl"
 
 // SMBus
-Include ("../../../southbridge/intel/i82801gx/acpi/ich7_smbus.asl")
+#include "../../../southbridge/intel/i82801gx/acpi/ich7_smbus.asl"
 
 

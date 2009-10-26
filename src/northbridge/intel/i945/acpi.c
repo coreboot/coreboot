@@ -27,6 +27,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "i945.h"
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -39,7 +40,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	if (!dev)
 		return current;
 
-	pciexbar_reg=pci_read_config32(dev, 0x48);
+	pciexbar_reg=pci_read_config32(dev, PCIEXBAR);
 
 	// MMCFG not supported or not enabled.
 	if (!(pciexbar_reg & (1 << 0)))

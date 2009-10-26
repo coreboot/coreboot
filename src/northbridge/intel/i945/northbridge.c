@@ -44,7 +44,7 @@ int get_pcie_bar(u32 *base, u32 *len)
 	if (!dev)
 		return 0;
 
-	pciexbar_reg = pci_read_config32(dev, 0x48);
+	pciexbar_reg = pci_read_config32(dev, PCIEXBAR);
 
 	if (!(pciexbar_reg & (1 << 0)))
 		return 0;
@@ -66,9 +66,6 @@ int get_pcie_bar(u32 *base, u32 *len)
 
 	return 0;
 }
-
-/* in arch/i386/boot/tables.c */
-extern uint64_t high_tables_base, high_tables_size;
 
 /* IDG memory */
 uint64_t uma_memory_base=0, uma_memory_size=0;
@@ -127,7 +124,7 @@ static uint32_t find_pci_tolm(struct bus *bus)
 }
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-#define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
+#define HIGH_TABLES_SIZE 1024	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
 #endif
 
@@ -284,6 +281,28 @@ static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
+#if CONFIG_HAVE_ACPI_RESUME
+extern u8 acpi_slp_type;
+
+static void northbridge_init(struct device *dev)
+{
+	switch (pci_read_config32(dev, SKPAD)) {
+	case 0xcafebabe:
+		printk_debug("Normal boot.\n");
+		acpi_slp_type=0;
+		break;
+	case 0xcafed00d:
+		printk_debug("S3 Resume.\n");
+		acpi_slp_type=3;
+		break;
+	default:
+		printk_debug("Unknown boot method, assuming normal.\n");
+		acpi_slp_type=0;
+		break;
+	}
+}
+#endif
+
 static struct pci_operations intel_pci_ops = {
 	.set_subsystem    = intel_set_subsystem,
 };
@@ -292,7 +311,9 @@ static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
 	.set_resources    = mc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
+#if CONFIG_HAVE_ACPI_RESUME
+	.init             = northbridge_init,
+#endif
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,
 };

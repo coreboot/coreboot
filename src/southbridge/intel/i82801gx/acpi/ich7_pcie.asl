@@ -26,7 +26,7 @@
 Device (RP01)
 {
 	NAME(_ADR, 0x001c0000) // FIXME: Have a macro for PCI Devices -> ACPI notation?
-	//Include ("pcie_port.asl")
+	//#include "pcie_port.asl"
 	Method(_PRT)
 	{
 		If (PICM) {
@@ -52,7 +52,7 @@ Device (RP01)
 Device (RP02)
 {
 	NAME(_ADR, 0x001c0001) // FIXME: Have a macro for PCI Devices -> ACPI notation?
-	//Include ("pcie_port.asl")
+	//#include "pcie_port.asl"
 	Method(_PRT)
 	{
 		If (PICM) {
@@ -79,7 +79,7 @@ Device (RP02)
 Device (RP03)
 {
 	NAME(_ADR, 0x001c0002) // FIXME: Have a macro for PCI Devices -> ACPI notation?
-	//Include ("pcie_port.asl")
+	//#include "pcie_port.asl"
 	Method(_PRT)
 	{
 		If (PICM) {
@@ -106,7 +106,7 @@ Device (RP03)
 Device (RP04)
 {
 	NAME(_ADR, 0x001c0003) // FIXME: Have a macro for PCI Devices -> ACPI notation?
-	//Include ("pcie_port.asl")
+	//#include "pcie_port.asl"
 	Method(_PRT)
 	{
 		If (PICM) {
@@ -133,7 +133,7 @@ Device (RP04)
 Device (RP05)
 {
 	NAME(_ADR, 0x001c0004) // FIXME: Have a macro for PCI Devices -> ACPI notation?
-	//Include ("pcie_port.asl")
+	//#include "pcie_port.asl"
 	Method(_PRT)
 	{
 		If (PICM) {
@@ -160,7 +160,7 @@ Device (RP05)
 Device (RP06)
 {
 	NAME(_ADR, 0x001c0005) // FIXME: Have a macro for PCI Devices -> ACPI notation?
-	//Include ("pcie_port.asl")
+	//#include "pcie_port.asl"
 	Method(_PRT)
 	{
 		If (PICM) {

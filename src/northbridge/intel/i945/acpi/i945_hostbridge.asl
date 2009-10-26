@@ -23,6 +23,9 @@
 Name(_HID,EISAID("PNP0A08"))	// PCIe
 Name(_CID,EISAID("PNP0A03"))	// PCI
 
+Name(_ADR, 0)
+Name(_BBN, 0)
+
 Device (MCHC)
 {
 	Name(_ADR, 0x00000000)	// 0:0.0
@@ -232,6 +235,6 @@ Method (_CRS, 0, Serialized)
 }
 
 /* IRQ assignment is mainboard specific. Get it from mainboard ACPI code */
-Include ("acpi/i945_pci_irqs.asl")
+#include "acpi/i945_pci_irqs.asl"
 
 

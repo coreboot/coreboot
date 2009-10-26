@@ -518,6 +518,33 @@ static void i945_setup_pci_express_x16(void)
 	reg32 &= ~(1 << 8);
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x208, reg32);
 
+	/* We have no success with querying the usual PCIe registers
+	 * for link setup success on the i945. Hence we assign a temporary
+	 * PCI bus 0x0a and check whether we find a device on 0:a.0
+	 */
+
+	/* First we reset the secondary bus */
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
+	reg16 |= (1 << 6);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+	/* Read back and clear reset bit. */
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
+	reg16 &= ~(1 << 6);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
+
+	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xba);
+	printk_debug("SLOTSTS: %04x\n", reg16);
+	if (!(reg16 & 0x48)) {
+		goto disable_pciexpress_x16_link;
+	}
+	reg16 |= (1 << 4) | (1 << 0);
+	pci_write_config16(PCI_DEV(0, 0x01, 0), 0xba, reg16);
+
+	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x19, 0x00);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x1a, 0x00);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x19, 0x0a);
+	pci_write_config8(PCI_DEV(0, 0x01, 0), 0x1a, 0x0a);
+
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x224);
 	reg32 &= ~(1 << 8);
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0x224, reg32);
@@ -542,11 +569,16 @@ static void i945_setup_pci_express_x16(void)
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xb4, reg32);
 
 	/* Wait for training to succeed */
-	printk_debug("Wait for PCIe x16 link training ...");
-	timeout = 0x7fff;
+	printk_debug("PCIe link training ...");
+	timeout = 0x7ffff;
 	while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
-	if (!timeout) {
-		printk_debug("timeout!\n");
+
+	reg32 = pci_read_config32(PCI_DEV(0x0a, 0x0, 0), 0);
+	if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
+		printk_debug(" Detected PCIe device %04x:%04x\n",
+				reg32 & 0xffff, reg32 >> 16);
+	} else {
+		printk_debug(" timeout!\n");
 
 		printk_debug("Restrain PCIe port to x1\n");
 
@@ -562,18 +594,19 @@ static void i945_setup_pci_express_x16(void)
 		reg16 &= ~(1 << 6);
 		pcie_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
 
-		printk_debug("Wait for PCIe x1 link training ...");
-		timeout = 0x7fff;
+		printk_debug("PCIe link training ...");
+		timeout = 0x7ffff;
 		while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
-		if (!timeout) {
-			printk_debug("timeout!\n");
+
+		reg32 = pci_read_config32(PCI_DEV(0xa, 0x00, 0), 0);
+		if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
+			printk_debug(" Detected PCIe x1 device %04x:%04x\n",
+				reg32 & 0xffff, reg32 >> 16);
+		} else {
+			printk_debug(" timeout!\n");
 			printk_debug("Disabling PCIe x16 port completely.\n");
 			goto disable_pciexpress_x16_link;
-		} else {
-			printk_debug("ok\n");
 		}
-	} else {
-		printk_debug("ok\n");
 	}
 
 	reg16 = pcie_read_config16(PCI_DEV(0, 0x01, 0), 0xb2);
@@ -590,6 +623,24 @@ static void i945_setup_pci_express_x16(void)
 	} else if (reg16 == 16) {
 		reg32 |= 0x0f4;
 		// TODO
+	}
+
+	reg32 = (pci_read_config32(PCI_DEV(0xa, 0, 0), 0x8) >> 8);
+	printk_debug("PCIe device class: %06x\n", reg32);
+	if (reg32 == 0x030000) {
+		printk_debug("PCIe device is VGA. Disabling IGD.\n");
+		reg16 = (1 << 1);
+		pci_write_config16(PCI_DEV(0, 0x0, 0), 0x52, reg16);
+
+		/* DEVEN */
+		reg32 = pci_read_config32(PCI_DEV(0, 0x0, 0), 0x54);
+		reg32 &= ~((1 << 3) | (1 << 4));
+		pci_write_config32(PCI_DEV(0, 0x0, 0), 0x54, reg32);
+
+		/* Set VGA enable bit in PCIe bridge */
+		reg16 = pci_read_config16(PCI_DEV(0, 0x1, 0), 0x3e);
+		reg16 |= (1 << 3);
+		pci_write_config16(PCI_DEV(0, 0x1, 0), 0x3e, reg16);
 	}
 
 	/* Enable GPEs */

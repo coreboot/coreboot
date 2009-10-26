@@ -2481,6 +2481,9 @@ static void sdram_program_receive_enable(struct sys_info *sysinfo)
 {
 	MCHBAR32(REPC) |= (1 << 0);
 
+	/* enable upper CMOS */
+	RCBA32(0x3400) = (1 << 2);
+
 	/* Program Receive Enable Timings */
 	if (sysinfo->boot_path == BOOT_PATH_RESUME) {
 		sdram_recover_receive_enable();
@@ -2904,9 +2907,7 @@ void sdram_initialize(int boot_path)
 	sdram_thermal_management();
 
 	/* Normal Operations */
-	if (boot_path == BOOT_PATH_NORMAL) {
-		sdram_init_complete();
-	}
+	sdram_init_complete();
 
 	/* Program Receive Enable Timings */
 	sdram_program_receive_enable(&sysinfo);
@@ -2922,5 +2923,13 @@ void sdram_initialize(int boot_path)
 	printk_debug("RAM initialization finished.\n");
 
 	sdram_setup_processor_side();
+}
+
+unsigned long get_top_of_ram(void)
+{
+	/* This will not work if TSEG is in place! */
+	u32 tom = pci_read_config32(PCI_DEV(0,2,0), 0x5c);
+
+	return (unsigned long) tom;
 }
 

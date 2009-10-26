@@ -38,7 +38,7 @@ static void ide_init(struct device *dev)
 	printk_debug("i82801gx_ide: initializing... ");
 	if (config == NULL) {
 		printk_err("\ni82801gx_ide: Not mentioned in mainboard's Config.lb!\n");
-		// Trying to set somewhat save defaults instead of bailing out.
+		// Trying to set somewhat safe defaults instead of bailing out.
 		enable_primary = enable_secondary = 1;
 	} else {
 		enable_primary = config->ide_enable_primary;
@@ -80,10 +80,12 @@ static void ide_init(struct device *dev)
 	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
 
 	/* Set IDE I/O Configuration */
+	reg32 = 0;
+	/* FIXME: only set FAST_* for ata/100, only ?CBx for ata/66 */
+	if (enable_primary)
+		reg32 |= SIG_MODE_PRI_NORMAL | FAST_PCB0 | PCB0 | FAST_PCB1 | PCB1;
 	if (enable_secondary)
-		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
-	else
-		reg32 = SIG_MODE_NORMAL | FAST_PCB1 | PCB1;
+		reg32 |= SIG_MODE_SEC_NORMAL | FAST_SCB0 | SCB0 | FAST_SCB1 | SCB1;
 	pci_write_config32(dev, IDE_CONFIG, reg32);
 
 	/* Set Interrupt Line */

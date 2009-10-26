@@ -53,8 +53,3 @@ config IRQ_SLOT_COUNT
 	default 3
 	depends on BOARD_HP_E_VECTRA_P2706T
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_HP_E_VECTRA_P2706T
-

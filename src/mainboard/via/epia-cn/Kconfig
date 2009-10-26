@@ -28,11 +28,6 @@ config MAINBOARD_PART_NUMBER
 	default "EPIA-CN"
 	depends on BOARD_VIA_EPIA_CN
 
-config VIDEO_MB
-	int
-	default 32
-	depends on BOARD_VIA_EPIA_CN
-
 config RAMBASE
 	hex
 	default 0x4000

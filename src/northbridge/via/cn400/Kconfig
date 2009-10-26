@@ -17,3 +17,36 @@ config PCI_ROM_RUN
 	default n
 	depends on NORTHBRIDGE_VIA_CN400
 
+# TODO: Values are from the CX700 datasheet, not sure if this matches CN400.
+# TODO: What should be the per-chipset default value here?
+choice
+	prompt "Onboard graphics"
+	default CN400_VIDEO_MB_32MB
+	depends on NORTHBRIDGE_VIA_CN400
+
+# TODO: Disabling onboard graphics is not yet supported in the source code.
+config CN400_VIDEO_MB_OFF
+	bool "Disabled, 0KB"
+config CN400_VIDEO_MB_8MB
+	bool "Enabled, 8MB"
+config CN400_VIDEO_MB_16MB
+	bool "Enabled, 16MB"
+config CN400_VIDEO_MB_32MB
+	bool "Enabled, 32MB"
+config CN400_VIDEO_MB_64MB
+	bool "Enabled, 64MB"
+config CN400_VIDEO_MB_128MB
+	bool "Enabled, 128MB"
+
+endchoice
+
+config VIDEO_MB
+	int
+	default 0   if CN400_VIDEO_MB_OFF
+	default 8   if CN400_VIDEO_MB_8MB
+	default 16  if CN400_VIDEO_MB_16MB
+	default 32  if CN400_VIDEO_MB_32MB
+	default 64  if CN400_VIDEO_MB_64MB
+	default 128 if CN400_VIDEO_MB_128MB
+	depends on NORTHBRIDGE_VIA_CN400
+

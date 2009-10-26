@@ -44,11 +44,6 @@ config APIC_ID_OFFSET
 	default 0x0
 	depends on BOARD_KONTRON_KT690
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_KONTRON_KT690
-
 config LB_CKS_RANGE_END
 	int
 	default 122

@@ -30,8 +30,3 @@ config IRQ_SLOT_COUNT
 	default 7
 	depends on BOARD_RCA_RM4100
 
-config VIDEO_MB
-	int
-	default 0
-	depends on BOARD_RCA_RM4100
-

@@ -29,11 +29,6 @@ config MAINBOARD_PART_NUMBER
 	default "J7f24"
 	depends on BOARD_JETWAY_J7F24
 
-config VIDEO_MB
-	int
-	default 32
-	depends on BOARD_JETWAY_J7F24
-
 config RAMBASE
 	hex
 	default 0x4000

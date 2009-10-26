@@ -45,8 +45,3 @@ config IRQ_SLOT_COUNT
 	default 11
 	depends on BOARD_ASUS_MEW_VM
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_ASUS_MEW_VM
-

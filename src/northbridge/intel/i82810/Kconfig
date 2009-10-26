@@ -22,3 +22,24 @@ config NORTHBRIDGE_INTEL_I82810
 	bool
 	select HAVE_HIGH_TABLES
 
+choice
+	prompt "Onboard graphics"
+	default I810_VIDEO_MB_1MB
+	depends on NORTHBRIDGE_INTEL_I82810
+
+config I810_VIDEO_MB_OFF
+	bool "Disabled, 0KB"
+config I810_VIDEO_MB_512KB
+	bool "Enabled, 512KB"
+config I810_VIDEO_MB_1MB
+	bool "Enabled, 1MB"
+
+endchoice
+
+config VIDEO_MB
+	int
+	default 0   if I810_VIDEO_MB_OFF
+	default 512 if I810_VIDEO_MB_512KB
+	default 1   if I810_VIDEO_MB_1MB
+	depends on NORTHBRIDGE_INTEL_I82810
+

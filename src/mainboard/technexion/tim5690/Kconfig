@@ -129,11 +129,6 @@ config RAMBASE
 	default 0x4000
 	depends on BOARD_TECHNEXION_TIM5690
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_TECHNEXION_TIM5690
-
 config HAVE_OPTION_TABLE
 	bool
 	default n

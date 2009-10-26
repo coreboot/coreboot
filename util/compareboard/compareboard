@@ -44,6 +44,7 @@ sed \
 	-e "/^CONFIG_ROM_IMAGE_SIZE / d" \
 	-e "/^CONFIG_STACK_SIZE / d" \
 	-e "/^CONFIG_GDB_STUB / d" \
+	-e "/^CONFIG_VIDEO_MB / d" \
 	$A/old > $A/old.filtered
 sed \
 	-e "/^CONFIG_VENDOR_/ d" \
@@ -67,6 +68,7 @@ sed \
 	-e "/^CONFIG_ROM_IMAGE_SIZE / d" \
 	-e "/^CONFIG_STACK_SIZE / d" \
 	-e "/^CONFIG_GDB_STUB / d" \
+	-e "/^CONFIG_VIDEO_MB / d" \
 	$A/new > $A/new.filtered
 
 normalize $A/old.filtered > $A/old.normalized

@@ -50,8 +50,3 @@ config IRQ_SLOT_COUNT
 	default 5
 	depends on BOARD_NEC_POWERMATE_2000
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_NEC_POWERMATE_2000
-

@@ -25,11 +25,6 @@ config IRQ_SLOT_COUNT
 	default 10
 	depends on BOARD_BCOM_WINNETP680
 
-config VIDEO_MB
-	int
-	default 32
-	depends on BOARD_BCOM_WINNETP680
-
 config RAMBASE
 	hex
 	default 0x4000

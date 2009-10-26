@@ -52,11 +52,21 @@ endmenu
 source src/mainboard/Kconfig
 source src/arch/i386/Kconfig
 source src/arch/ppc/Kconfig
-source src/northbridge/Kconfig
-source src/devices/Kconfig
-source src/southbridge/Kconfig
-source src/superio/Kconfig
+
+menu "Chipset"
+
+comment "CPU"
 source src/cpu/Kconfig
+comment "Northbridge"
+source src/northbridge/Kconfig
+comment "Southbridge"
+source src/southbridge/Kconfig
+comment "Super I/O"
+source src/superio/Kconfig
+comment "Devices"
+source src/devices/Kconfig
+
+endmenu
 
 config PCI_BUS_SEGN_BITS
 	int
@@ -211,9 +221,10 @@ config IOAPIC
 	bool
 	default n
 
+# TODO: Can probably be removed once all chipsets have kconfig options for it.
 config VIDEO_MB
-	default 0
 	int
+	default 0
 
 config USE_WATCHDOG_ON_BOOT
 	bool

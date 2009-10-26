@@ -50,8 +50,3 @@ config IRQ_SLOT_COUNT
 	default 8
 	depends on BOARD_ASUS_MEW_AM
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_ASUS_MEW_AM
-

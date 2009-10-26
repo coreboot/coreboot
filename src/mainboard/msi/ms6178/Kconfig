@@ -49,8 +49,3 @@ config IRQ_SLOT_COUNT
 	default 4
 	depends on BOARD_MSI_MS_6178
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_MSI_MS_6178
-

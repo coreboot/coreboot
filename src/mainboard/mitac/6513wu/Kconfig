@@ -50,8 +50,3 @@ config IRQ_SLOT_COUNT
 	default 8
 	depends on BOARD_MITAC_6513WU
 
-config VIDEO_MB
-	int
-	default 1
-	depends on BOARD_MITAC_6513WU
-

@@ -27,11 +27,6 @@ config MAINBOARD_PART_NUMBER
 	default "EPIA-M700"
 	depends on BOARD_VIA_EPIA_M700
 
-config VIDEO_MB
-	int
-	default 64
-	depends on BOARD_VIA_EPIA_M700
-
 config RAMBASE
 	hex
 	default 0x4000

@@ -29,8 +29,3 @@ config IRQ_SLOT_COUNT
 	default 7
 	depends on BOARD_THOMSON_IP1000
 
-config VIDEO_MB
-	int
-	default 0
-	depends on BOARD_THOMSON_IP1000
-

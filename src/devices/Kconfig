@@ -18,8 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-menu "Devices"
-
 config VGA_BRIDGE_SETUP
 	bool "Setup bridges on path to VGA adapter"
 	default y
@@ -81,8 +79,6 @@ config YABEL_DEBUG_FLAGS
 	depends on PCI_OPTION_ROM_RUN_YABEL
 	help
 	  See debug.h for values 0 is no debug output, 0x31ff is _verbose_.
-
-endmenu
 
 config CONSOLE_VGA_MULTI
 	bool

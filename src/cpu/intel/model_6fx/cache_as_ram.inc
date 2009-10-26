@@ -101,7 +101,6 @@ clear_mtrrs:
 	//movl	$0x23322332, %eax
 	xorl	%eax, %eax
 	rep	stosl
-#endif
 
 	/* Enable Cache As RAM mode by disabling cache */
 	movl	%cr0, %eax
@@ -124,10 +123,16 @@ clear_mtrrs:
         /* enable cache */
         movl	%cr0, %eax
 	andl	$( ~( (1 << 30) | (1 << 29) ) ), %eax
-        movl	%eax, %cr0
+	movl	%eax, %cr0
+#endif
 
 	/* Set up stack pointer */
+#if defined(CONFIG_USBDEBUG_DIRECT) && (CONFIG_USBDEBUG_DIRECT == 1)
+	/* leave some space for the struct ehci_debug_info */
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
+#else
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
+#endif
 	movl	%eax, %esp
 
 	/* Restore the BIST result */

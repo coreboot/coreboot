@@ -88,7 +88,7 @@ struct cbfs_file *cbfs_find(const char *name)
 	while(1) {
 		struct cbfs_file *file = (struct cbfs_file *) offset;
 		if (!cbfs_check_magic(file)) return NULL;
-		printk_debug("Check %s\n", CBFS_NAME(file));
+		printk_spew("Check %s\n", CBFS_NAME(file));
 		if (!strcmp(CBFS_NAME(file), name))
 			return file;
 
@@ -187,7 +187,7 @@ void * cbfs_load_stage(const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	printk_info("Stage: load %s @ %d/%d bytes, enter @ %llx\n", 
+	printk_info("Stage: loading %s @ 0x%x (%d bytes), entry @ 0x%llx\n", 
 			name,
 			(u32) stage->load, stage->memlen, 
 			stage->entry);
@@ -199,10 +199,12 @@ void * cbfs_load_stage(const char *name)
 			     (void *) (u32) stage->load,
 			     stage->len))
 		return (void *) -1;
-	printk_info("Stage: done loading.\n");
+
+	printk_debug("Stage: done loading.\n");
 
 	entry = stage->entry;
-//	return (void *) ntohl((u32) stage->entry);
+	// entry = ntohl((u32) stage->entry);
+
 	return (void *) entry;
 }
 

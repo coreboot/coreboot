@@ -34,6 +34,11 @@ config APIC_ID_OFFSET
 	default 0x10
 	depends on BOARD_ASUS_A8N_E
 
+config MEM_TRAIN_SEQ
+	int
+	default 2
+	depends on BOARD_ASUS_A8N_E
+
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2

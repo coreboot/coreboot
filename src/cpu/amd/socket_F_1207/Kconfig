@@ -2,7 +2,6 @@ config CPU_AMD_SOCKET_F_1207
 	bool
 	select CPU_AMD_MODEL_10XXX
 	select PCI_IO_CFG_EXT
-	select CAR_FAM10
 
 config CPU_SOCKET_TYPE
 	hex

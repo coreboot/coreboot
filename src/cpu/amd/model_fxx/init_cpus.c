@@ -215,11 +215,6 @@ static void STOP_CAR_AND_CPU(void)
 	stop_this_cpu(); // inline, it will stop all cores except node0/core0 the bsp ....
 }
 
-#ifndef CONFIG_MEM_TRAIN_SEQ
-#define CONFIG_MEM_TRAIN_SEQ 0
-#endif
-
-
 #if CONFIG_MEM_TRAIN_SEQ == 1
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall); 
 #endif

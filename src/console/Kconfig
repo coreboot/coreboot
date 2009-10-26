@@ -275,3 +275,14 @@ config DEFAULT_CONSOLE_LOGLEVEL
 
 endmenu
 
+config CONSOLE_BTEXT
+	bool
+	default n
+
+config CONSOLE_SROM
+	bool
+	default n
+
+config CONSOLE_LOGBUF
+	bool
+	default n

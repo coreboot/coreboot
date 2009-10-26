@@ -103,9 +103,6 @@ static void post_cache_as_ram(void)
 
 //	dump_mem((CONFIG_RAMTOP) - 0x8000, (CONFIG_RAMTOP) - 0x7c00);
 
-#ifndef CONFIG_MEM_TRAIN_SEQ
-#define CONFIG_MEM_TRAIN_SEQ 0
-#endif
         set_sysinfo_in_ram(1); // So other core0 could start to train mem
 
 #if CONFIG_MEM_TRAIN_SEQ == 1

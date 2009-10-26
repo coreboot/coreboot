@@ -51,11 +51,6 @@ config HW_MEM_HOLE_SIZEK
 	default 0x100000
 	depends on BOARD_TYAN_S2881
 
-config MEM_TRAIN_SEQ
-	bool
-	default n
-	depends on BOARD_TYAN_S2881
-
 config MAX_CPUS
 	int
 	default 4
@@ -64,11 +59,6 @@ config MAX_CPUS
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_TYAN_S2881
-
-config MEM_TRAIN_SEQ
-	bool
-	default n
 	depends on BOARD_TYAN_S2881
 
 config HW_MEM_HOLE_SIZE_AUTO_INC

@@ -24,7 +24,7 @@
 /* leave some space for global variable to pass to RAM stage */
 #define GlobalVarSize CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE
 
-/* for CONFIG_CAR_FAM10 */
+/* for CAR with FAM10 */
 #define CacheSizeAPStack 0x400 /* 1K */
 
 #define MSR_FAM10      0xC001102A

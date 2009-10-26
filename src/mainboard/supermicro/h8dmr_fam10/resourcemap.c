@@ -49,7 +49,7 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the upper address bits of a 40 bit  address
 		 *	   that define the end of the DRAM region.
 		 */
-		// PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x44), 0x0000f8f8, 0x00000000, // Don't touch it, we need it for CAR_FAM10
+		// PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x44), 0x0000f8f8, 0x00000000, // Don't touch it, we need it for CAR with FAM10
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x4C), 0x0000f8f8, 0x00000001,
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x54), 0x0000f8f8, 0x00000002,
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x5C), 0x0000f8f8, 0x00000003,
@@ -88,7 +88,7 @@ static void setup_mb_resource_map(void)
 		 *	   This field defines the upper address bits of a 40-bit address
 		 *	   that define the start of the DRAM region.
 		 */
-		// PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x40), 0x0000f8fc, 0x00000000, // don't touch it, we need it for CAR_FAM10
+		// PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x40), 0x0000f8fc, 0x00000000, // don't touch it, we need it for CAR with FAM10
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x48), 0x0000f8fc, 0x00000000,
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x50), 0x0000f8fc, 0x00000000,
 		PCI_ADDR(CONFIG_CBB, CONFIG_CDB, 1, 0x58), 0x0000f8fc, 0x00000000,

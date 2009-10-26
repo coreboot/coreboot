@@ -299,11 +299,6 @@ define CONFIG_USE_DCACHE_RAM
 	export always
 	comment "Use data cache as temporary RAM if possible"
 end
-define CONFIG_CAR_FAM10
-	default 0
-	export always
-	comment "AMD family 10 CAR requires additional setup"
-end
 define CONFIG_DCACHE_RAM_BASE
 	default 0xc0000
 	format "0x%x"

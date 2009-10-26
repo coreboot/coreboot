@@ -13,7 +13,6 @@ config BOARD_TYAN_S2912
 	select HAVE_HARD_RESET
 	select IOAPIC
 	select LIFT_BSP_APIC_ID
-	select MEM_TRAIN_SEQ
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select K8_REV_F_SUPPORT
 	select BOARD_ROMSIZE_KB_512
@@ -41,6 +40,11 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 config APIC_ID_OFFSET
 	hex	
 	default 16
+	depends on BOARD_TYAN_S2912
+
+config MEM_TRAIN_SEQ
+	int
+	default 1
 	depends on BOARD_TYAN_S2912
 
 config SB_HT_CHAIN_ON_BUS0

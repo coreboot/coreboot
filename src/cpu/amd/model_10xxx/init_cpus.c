@@ -306,11 +306,6 @@ static void STOP_CAR_AND_CPU()
 	stop_this_cpu();
 }
 
-
-#ifndef CONFIG_MEM_TRAIN_SEQ
-#define CONFIG_MEM_TRAIN_SEQ 0
-#endif
-
 #if RAMINIT_SYSINFO == 1
 static u32 init_cpus(u32 cpu_init_detectedx ,struct sys_info *sysinfo)
 #else
@@ -478,8 +473,8 @@ static void start_node(u8 node)
 	/* Enable routing table */
 	printk_debug("Start node %02x", node);
 
-#if CONFIG_CAR_FAM10 == 1
-	/* For CONFIG_CAR_FAM10 support, we need to set Dram base/limit for the new node */
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+	/* For FAM10 support, we need to set Dram base/limit for the new node */
 	pci_write_config32(NODE_MP(node), 0x44, 0);
 	pci_write_config32(NODE_MP(node), 0x40, 3);
 #endif

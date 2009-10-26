@@ -67,6 +67,11 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	default n
 	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
+config MEM_TRAIN_SEQ
+	int
+	default 2
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2

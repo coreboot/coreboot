@@ -1,6 +1,5 @@
 config CPU_AMD_MODEL_FXX
 	bool
-	select HAVE_INIT_TIMER
 	select HAVE_MOVNTI
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM

@@ -14,7 +14,6 @@ config BOARD_AMD_SERENGETI_CHEETAH
 	select HAVE_HARD_RESET
 	select IOAPIC
 	select LIFT_BSP_APIC_ID
-	select MEM_TRAIN_SEQ
 	select AP_CODE_IN_CAR
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select WAIT_BEFORE_CPUS_INIT
@@ -79,6 +78,11 @@ config MAX_PHYSICAL_CPUS
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
+	depends on BOARD_AMD_SERENGETI_CHEETAH
+
+config MEM_TRAIN_SEQ
+	int
+	default 1
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
 config SB_HT_CHAIN_ON_BUS0

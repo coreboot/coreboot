@@ -32,4 +32,19 @@ config K8_HT_FREQ_1G_SUPPORT
 	default n
 	depends on NORTHBRIDGE_AMD_AMDK8
 
+config MEM_TRAIN_SEQ
+	int
+	default 0
+	depends on NORTHBRIDGE_AMD_AMDK8
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on NORTHBRIDGE_AMD_AMDK8
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDK8
+
 source src/northbridge/amd/amdk8/root_complex/Kconfig

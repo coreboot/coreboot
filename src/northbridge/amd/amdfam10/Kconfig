@@ -21,11 +21,35 @@ config NORTHBRIDGE_AMD_AMDFAM10
 	bool
 	select HAVE_HIGH_TABLES
 	select HYPERTRANSPORT_PLUGIN_SUPPORT
-	select HT3_SUPPORT
 
 config AGP_APERTURE_SIZE
 	hex
 	default 0x4000000
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config HT3_SUPPORT
+	bool
+	default y
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config AMDMCT
+	bool
+	default y
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config MEM_TRAIN_SEQ
+	int
+	default 0
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
 	depends on NORTHBRIDGE_AMD_AMDFAM10
 
 source src/northbridge/amd/amdfam10/root_complex/Kconfig

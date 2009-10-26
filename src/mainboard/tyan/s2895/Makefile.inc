@@ -1,1 +1,1 @@
-include $(src)/mainboard/Makefile.k8_CAR.inc
+include $(src)/mainboard/Makefile.k8_ck804.inc

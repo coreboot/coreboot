@@ -671,8 +671,11 @@ static void avoid_fixed_resources(struct device *dev)
 device_t vga_pri = 0;
 static void set_vga_bridge_bits(void)
 {
-#warning "FIXME modify set_vga_bridge so it is less pci centric!"
-#warning "This function knows too much about PCI stuff, it should be just a iterator/visitor."
+	/*
+	 * FIXME: Modify set_vga_bridge so it is less PCI centric!
+	 * This function knows too much about PCI stuff, it should be just
+	 * an iterator/visitor.
+	 */
 
 	/* FIXME: Handle the VGA palette snooping. */
 	struct device *dev, *vga, *vga_onboard, *vga_first, *vga_last;

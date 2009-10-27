@@ -48,6 +48,8 @@ static int vsprintf(char *buf, const char *fmt, va_list args)
 	return i;
 }
 
+int sprintf(char *buf, const char *fmt, ...);
+
 int sprintf(char *buf, const char *fmt, ...)
 {
 	va_list args;

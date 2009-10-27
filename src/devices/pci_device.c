@@ -809,7 +809,7 @@ static void set_pci_ops(struct device *dev)
 	for (driver = &pci_drivers[0]; driver != &epci_drivers[0]; driver++) {
 		if ((driver->vendor == dev->vendor) &&
 		    (driver->device == dev->device)) {
-			dev->ops = driver->ops;
+			dev->ops = (struct device_operations *)driver->ops;
 			printk_spew("%s [%04x/%04x] %sops\n",
 				    dev_path(dev),
 				    driver->vendor, driver->device,

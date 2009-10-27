@@ -69,7 +69,7 @@ static void sb_read_resources(struct device *dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-const struct device_operations isa_ops = {
+static const struct device_operations isa_ops = {
 	.read_resources		= sb_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,

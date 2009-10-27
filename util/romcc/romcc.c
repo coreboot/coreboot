@@ -23843,12 +23843,12 @@ static long get_const_pool_ref(
 	long ref;
 	ref = next_label(state);
 	fprintf(fp, ".section \"" DATA_SECTION "\"\n");
-	fprintf(fp, ".balign %ld\n", align_of_in_bytes(state, ins->type));
+	fprintf(fp, ".balign %ld\n", (long int)align_of_in_bytes(state, ins->type));
 	fprintf(fp, "L%s%lu:\n", state->compiler->label_prefix, ref);
 	print_const(state, ins, fp);
 	fill_bytes = bits_to_bytes(size - size_of(state, ins->type));
 	if (fill_bytes) {
-		fprintf(fp, ".fill %ld, 1, 0\n", fill_bytes);
+		fprintf(fp, ".fill %ld, 1, 0\n", (long int)fill_bytes);
 	}
 	fprintf(fp, ".section \"" TEXT_SECTION "\"\n");
 	return ref;
@@ -24657,7 +24657,7 @@ static void print_sdecl(struct compile_state *state,
 	struct triple *ins, FILE *fp)
 {
 	fprintf(fp, ".section \"" DATA_SECTION "\"\n");
-	fprintf(fp, ".balign %ld\n", align_of_in_bytes(state, ins->type));
+	fprintf(fp, ".balign %ld\n", (long int)align_of_in_bytes(state, ins->type));
 	fprintf(fp, "L%s%lu:\n", 
 		state->compiler->label_prefix, (unsigned long)(ins->u.cval));
 	print_const(state, MISC(ins, 0), fp);

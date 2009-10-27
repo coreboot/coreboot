@@ -191,7 +191,7 @@ struct lb_memory *write_tables(void)
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 	post_code(0x9d);
 
-	high_table_pointer = cbmem_add(CBMEM_ID_CBTABLE, MAX_COREBOOT_TABLE_SIZE);
+	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_CBTABLE, MAX_COREBOOT_TABLE_SIZE);
 
 	if (high_table_pointer) {
 		unsigned long new_high_table_pointer;
@@ -202,7 +202,7 @@ struct lb_memory *write_tables(void)
 
 		if (new_high_table_pointer > (high_table_pointer +
 					MAX_COREBOOT_TABLE_SIZE))
-			printk_err("%s: coreboot table didn't fit (%llx)\n",
+			printk_err("%s: coreboot table didn't fit (%lx)\n",
 				   __func__, new_high_table_pointer -
 				   high_table_pointer);
 

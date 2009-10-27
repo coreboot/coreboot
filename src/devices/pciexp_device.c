@@ -34,8 +34,8 @@ static void pciexp_tune_dev(device_t dev)
 		/* error... */
 		return;
 	}
-	printk_debug("PCIe: tuning %s\n", dev_path(dev));
-#warning "IMPLEMENT PCI EXPRESS TUNING"
+	// printk_debug("PCIe: tuning %s\n", dev_path(dev));
+	/* TODO: Implement PCI Express tuning. */
 }
 
 unsigned int pciexp_scan_bus(struct bus *bus, 

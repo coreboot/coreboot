@@ -126,8 +126,8 @@ def generate(inputfilename, outputfilename='', dump=0, **flags):
 	if inputfilename[-2:]=='.g': outputfilename = inputfilename[:-2]+'.py'
 	else: raise "Invalid Filename", outputfilename
         
-    print 'Input Grammar:', inputfilename
-    print 'Output File:', outputfilename
+    print '    SCONFIG     Input Grammar:', os.path.basename(inputfilename)
+    print '    SCONFIG     Output File:', os.path.basename(outputfilename)
     
     DIVIDER = '\n%%\n' # This pattern separates the pre/post parsers
     preparser, postparser = None, None # Code before and after the parser desc

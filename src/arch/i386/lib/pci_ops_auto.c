@@ -43,7 +43,7 @@ static int pci_sanity_check(const struct pci_bus_operations *o)
 
 struct pci_bus_operations *pci_bus_fallback_ops = NULL;
 
-const struct pci_bus_operations *pci_check_direct(void)
+static const struct pci_bus_operations *pci_check_direct(void)
 {
 	unsigned int tmp;
 
@@ -86,7 +86,7 @@ const struct pci_bus_operations *pci_check_direct(void)
 const struct pci_bus_operations *pci_remember_direct(void)
 {
 	if (!pci_bus_fallback_ops)
-		pci_bus_fallback_ops = pci_check_direct();
+		pci_bus_fallback_ops = (struct pci_bus_operations *)pci_check_direct();
 	return pci_bus_fallback_ops;
 }
 

@@ -38,7 +38,7 @@ struct pci_bus_operations {
 };
 
 struct pci_driver {
-	struct device_operations *ops;
+	const struct device_operations *ops;
 	unsigned short vendor;
 	unsigned short device;
 };

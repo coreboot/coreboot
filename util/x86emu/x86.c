@@ -149,6 +149,14 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	    u32 ebp, u32 esp,
 	    u32 ebx, u32 edx,
 	    u32 ecx, u32 eax,
+	    u32 cs_ip, u16 stackflags);
+
+int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
+	    u32 gsfs, u32 dses,
+	    u32 edi, u32 esi,
+	    u32 ebp, u32 esp,
+	    u32 ebx, u32 edx,
+	    u32 ecx, u32 eax,
 	    u32 cs_ip, u16 stackflags)
 {
 	u32 ip;

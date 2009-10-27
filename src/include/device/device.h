@@ -86,7 +86,7 @@ struct device {
 	unsigned int links;
 
 	struct device_operations *ops;
-	struct chip_operations *chip_ops;
+	const struct chip_operations *chip_ops;
 	void *chip_info;
 };
 

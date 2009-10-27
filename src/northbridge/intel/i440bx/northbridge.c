@@ -85,7 +85,6 @@ static void i440bx_domain_set_resources(device_t dev)
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
-		uint16_t tolm_r;
 		unsigned long tomk, tolmk;
 		int idx;
 
@@ -98,7 +97,7 @@ static void i440bx_domain_set_resources(device_t dev)
 		/* Convert to KB. */
 		tomk *= (8 * 1024);
 
-		printk_debug("Setting RAM size to %d MB\n", tomk / 1024);
+		printk_debug("Setting RAM size to %ld MB\n", tomk / 1024);
 
 		/* Compute the top of low memory. */
 		tolmk = pci_tolm / 1024;

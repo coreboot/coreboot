@@ -886,7 +886,7 @@ def dumptree(part, lvl):
 
 def writecode(image):
 	filename = os.path.join(img_dir, "static.c")
-	print "Creating", filename
+	print "    SCONFIG    Creating", os.path.basename(filename)
 	file = safe_open(filename, 'w+')
 	file.write("#include <device/device.h>\n")
 	file.write("#include <device/pci.h>\n")
@@ -920,7 +920,7 @@ def gencode(part, file, pass_num):
 
 def writegraph(image):
 	filename = os.path.join(img_dir, "static.dot")
-	print "Creating", filename
+	print "    SCONFIG    Creating", os.path.basename(filename)
 	file = safe_open(filename, 'w+')
 	file.write("digraph devicetree {\n")
 	file.write("	rankdir=LR\n")
@@ -1015,7 +1015,6 @@ if __name__=='__main__':
 	fp = safe_open(config_file, 'r')
 	if (not parse('devicetree', fp.read())):
 		fatal("Could not parse file")
-	print "PARSED THE TREE"
 	partstack.pop()
 	
 	img_dir = argv[3]

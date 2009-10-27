@@ -311,7 +311,7 @@ $(obj)/ldoptions: $(obj)/config.h
 	awk '/^#define ([^"])* ([^"])*$$/ {print $$2 " = " $$3 ";";}' $< > $@
 
 $(obj)/romcc: $(top)/util/romcc/romcc.c
-	@printf "    HOSTCC     romcc (this may take a while)\n"
+	@printf "    HOSTCC     build/romcc (this may take a while)\n"
 	$(HOSTCC) -g -O2 -Wall -o $@ $<
 
 .PHONY: $(PHONY) prepare prepare2 clean distclean doxygen doxy coreboot

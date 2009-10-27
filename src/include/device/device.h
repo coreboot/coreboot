@@ -132,6 +132,7 @@ void print_resource_tree(struct device * root, int debug_level,
 void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum);
 void show_devs_subtree(struct device *root, int debug_level, const char *msg);
 void show_all_devs(int debug_level, const char *msg);
+void show_all_devs_tree(int debug_level, const char *msg);
 void show_one_resource(int debug_level, struct device *dev,
 		       struct resource *resource, const char *comment);
 void show_all_devs_resources(int debug_level, const char* msg);
@@ -152,4 +153,5 @@ void enable_childrens_resources(device_t dev);
 void root_dev_enable_resources(device_t dev);
 unsigned int root_dev_scan_bus(device_t root, unsigned int max);
 void root_dev_init(device_t dev);
+void root_dev_reset(struct bus *bus);
 #endif /* DEVICE_H */

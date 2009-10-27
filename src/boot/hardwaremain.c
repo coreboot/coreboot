@@ -52,6 +52,8 @@ it with the version available from LANL.
  *	In the dev_enumerate() phase, 
  */
 
+void hardwaremain(int boot_complete);
+
 void hardwaremain(int boot_complete)
 {
 	struct lb_memory *lb_mem;

@@ -361,6 +361,8 @@ static void put_packet(char *buffer)
 
 #include <arch/registers.h>
 
+void x86_exception(struct eregs *info);
+
 void x86_exception(struct eregs *info)
 {
 #if CONFIG_GDB_STUB == 1

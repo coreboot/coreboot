@@ -24,6 +24,8 @@ static inline unsigned long long rdtscll(void)
 	asm volatile ("rdtsc" : "=A" (val));
 	return val;
 }
+
+void init_timer(void);
 #endif
 
 

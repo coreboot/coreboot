@@ -34,8 +34,6 @@
 uint64_t high_tables_base = 0;
 uint64_t high_tables_size;
 
-void cbmem_list(void);
-
 void move_gdt(void);
 void cbmem_arch_init(void)
 {

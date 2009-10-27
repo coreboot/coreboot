@@ -7,6 +7,8 @@
 /* Assume 8 bits per byte */
 #define CHAR_BIT 8
 
+unsigned long log2(unsigned long x);
+
 unsigned long log2(unsigned long x)
 {
         // assume 8 bits per byte.

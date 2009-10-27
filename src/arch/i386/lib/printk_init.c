@@ -32,6 +32,9 @@ int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
 #endif
 
+void console_tx_byte(unsigned char byte);
+int do_printk(int msg_level, const char *fmt, ...);
+
 void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')

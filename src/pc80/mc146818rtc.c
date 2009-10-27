@@ -133,8 +133,10 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 
 void rtc_init(int invalid)
 {
+#if CONFIG_HAVE_OPTION_TABLE
 	unsigned char x;
 	int cmos_invalid, checksum_invalid;
+#endif
 
 	printk_debug("RTC Init\n");
 

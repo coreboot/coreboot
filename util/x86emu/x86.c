@@ -36,6 +36,7 @@ struct realmode_idt {
 };
 
 void x86_exception(struct eregs *info);
+void run_bios(struct device *dev, unsigned long addr);
 
 extern unsigned char __idt_handler, __idt_handler_size;
 extern unsigned char __realmode_code, __realmode_code_size;
@@ -124,8 +125,6 @@ static void setup_realmode_idt(void)
 
 void run_bios(struct device *dev, unsigned long addr)
 {
-	int i;
-
 	/* clear vga bios data area */
 	memset(0x400, 0, 0x200);
 	

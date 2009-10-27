@@ -33,6 +33,7 @@ struct gdtarg {
 } __attribute__((packed));
 
 // Copy GDT to new location and reload it
+void move_gdt(void);
 void move_gdt(void)
 {
 	void *newgdt;

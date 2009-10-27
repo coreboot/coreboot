@@ -45,5 +45,7 @@ void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);
 void *cbmem_add(u32 id, u64 size);
 void *cbmem_find(u32 id);
+void cbmem_list(void);
+void cbmem_arch_init(void);
 
 #endif

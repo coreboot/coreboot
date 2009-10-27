@@ -51,6 +51,10 @@ enum {
 	PCIBIOS_BADREG = 0x8700
 };
 
+int int12_handler(struct eregs *regs);
+int int1a_handler(struct eregs *regs);
+int int15_handler(struct eregs *regs);
+
 int int12_handler(struct eregs *regs)
 {
 	regs->eax = 64 * 1024;

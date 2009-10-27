@@ -29,7 +29,6 @@
 
 static void isa_init(struct device *dev)
 {
-	u16 reg16;
 	u32 reg32;
 
 	/* Initialize the real time clock (RTC). */

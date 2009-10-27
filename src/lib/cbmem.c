@@ -90,7 +90,7 @@ int cbmem_reinit(u64 baseaddr)
 	struct cbmem_entry *cbmem_toc;
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
-	debug("Re-Initializing CBMEM area to 0x%lx\n", baseaddr);
+	debug("Re-Initializing CBMEM area to 0x%lx\n", (unsigned long)baseaddr);
 #ifndef __ROMCC__
 	bss_cbmem_toc = cbmem_toc;
 #endif
@@ -212,7 +212,7 @@ void cbmem_list(void)
 #endif
 	
 	if (cbmem_toc == NULL)
-		return NULL;
+		return;
 
 	for (i = 0; i < MAX_CBMEM_ENTRIES; i++) {
 

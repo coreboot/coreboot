@@ -24,6 +24,7 @@
 #ifndef __ROMCC__
 #include "chip.h"
 void i82371eb_enable(device_t dev);
+void i82371eb_hard_reset(void);
 #endif
 
 /* If 'cond' is true this macro sets the bit(s) specified by 'bits' in the

@@ -556,7 +556,7 @@ void disable_children(struct bus *bus)
 	}
 }
 
-void resource_tree(struct device *root, int debug_level, int depth)
+static void resource_tree(struct device *root, int debug_level, int depth)
 {
 	int i = 0, link = 0;
 	struct device *child;

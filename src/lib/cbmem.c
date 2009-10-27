@@ -176,7 +176,6 @@ void *cbmem_find(u32 id)
 }
 
 #ifndef __ROMCC__
-void cbmem_arch_init(void);
 #if CONFIG_HAVE_ACPI_RESUME
 extern u8 acpi_slp_type;
 #endif

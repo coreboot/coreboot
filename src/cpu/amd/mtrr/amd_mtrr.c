@@ -101,8 +101,6 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	
 }
 
-extern void enable_fixed_mtrr(void);
-
 void amd_setup_mtrrs(void)
 {
 	unsigned long address_bits;

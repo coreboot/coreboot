@@ -51,7 +51,6 @@ endmenu
 
 source src/mainboard/Kconfig
 source src/arch/i386/Kconfig
-source src/arch/ppc/Kconfig
 
 menu "Chipset"
 

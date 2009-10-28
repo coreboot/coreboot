@@ -1,3 +1,0 @@
-object boot.o
-object tables.o
-object coreboot_table.o

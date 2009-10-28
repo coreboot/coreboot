@@ -1,2 +1,0 @@
-init crt0.S.lb
-initobject ppc_main.o

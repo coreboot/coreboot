@@ -1,8 +1,0 @@
-#ifndef ASM_I386_BOOT_H
-#define ASM_I386_BOOT_H
-
-#define ELF_CLASS	ELFCLASS32
-#define ELF_DATA	ELFDATA2MSB
-#define ELF_ARCH	EM_PPC
-
-#endif /* ASM_I386_BOOT_H */

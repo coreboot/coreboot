@@ -1,0 +1,10 @@
+target d945gclf
+mainboard intel/d945gclf
+
+romimage "fallback"
+	option CONFIG_USE_FALLBACK_IMAGE = 1
+	payload ../payload.elf
+end
+
+buildrom ./coreboot.rom CONFIG_ROM_SIZE "fallback"
+

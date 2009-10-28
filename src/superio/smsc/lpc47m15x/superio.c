@@ -35,7 +35,6 @@
 // Forward declarations
 static void enable_dev(device_t dev);
 void lpc47m15x_pnp_set_resources(device_t dev);
-void lpc47m15x_pnp_set_resources(device_t dev);
 void lpc47m15x_pnp_enable_resources(device_t dev);
 void lpc47m15x_pnp_enable(device_t dev);
 static void lpc47m15x_init(device_t dev);
@@ -121,7 +120,7 @@ static void lpc47m15x_init(device_t dev)
 	case LPC47M15X_KBC:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
-		pc_keyboard_init(&conf->keyboard);
+		init_pc_keyboard(0x60, 0x64, &conf->keyboard);
 		break;
 	}
 }

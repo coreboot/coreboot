@@ -30,11 +30,11 @@
 #include <cpu/x86/multiboot.h>
 #include "coreboot_table.h"
 #include <cbmem.h>
+#include <lib.h>
 
 uint64_t high_tables_base = 0;
 uint64_t high_tables_size;
 
-void move_gdt(void);
 void cbmem_arch_init(void)
 {
 	/* defined in gdt.c */

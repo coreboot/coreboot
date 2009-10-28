@@ -20,6 +20,7 @@
 #include <types.h>
 #include <string.h>
 #include <cbmem.h>
+#include <lib.h>
 #include <console/console.h>
 
 // Global Descriptor Table, defined in c_start.S
@@ -33,7 +34,6 @@ struct gdtarg {
 } __attribute__((packed));
 
 // Copy GDT to new location and reload it
-void move_gdt(void);
 void move_gdt(void)
 {
 	void *newgdt;

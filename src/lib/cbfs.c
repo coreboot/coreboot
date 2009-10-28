@@ -21,6 +21,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <cbfs.h>
+#include <lib.h>
 
 #ifndef CONFIG_BIG_ENDIAN
 #define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \
@@ -28,8 +29,6 @@
 #else
 #define ntohl(x) (x)
 #endif
-
-unsigned long ulzma(unsigned char *src, unsigned char *dst);
 
 int cbfs_decompress(int algo, void *src, void *dst, int len)
 {

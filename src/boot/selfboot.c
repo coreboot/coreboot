@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <cbfs.h>
+#include <lib.h>
 
 #ifndef CONFIG_BIG_ENDIAN
 #define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \
@@ -462,7 +463,6 @@ static int load_self_segments(
 			switch(ptr->compression) {
 				case CBFS_COMPRESS_LZMA: {
 					printk_debug("using LZMA\n");
-					unsigned long ulzma(unsigned char *src, unsigned char *dst);		
 					len = ulzma(src, dest);
 					break;
 				}

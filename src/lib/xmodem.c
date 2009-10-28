@@ -19,10 +19,7 @@
 
 #include <string.h>
 #include <delay.h>
-
-extern void uart8250_tx_byte(unsigned, unsigned char);
-extern int uart8250_can_rx_byte(unsigned);
-extern unsigned char uart8250_rx_byte(unsigned);
+#include <uart8250.h>
 
 static int _inbyte(int msec)
 {

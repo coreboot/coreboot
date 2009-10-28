@@ -22,35 +22,35 @@ $(obj)/util/cbfstool:
 	mkdir -p $@
 
 $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/%.c
-	printf "    HOSTCC     $(subst $(shell pwd)/,,$(@))\n"
+	printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/lzma/%.cc
-	printf "    HOSTCXX    $(subst $(shell pwd)/,,$(@))\n"
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
 $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Compress/LZMA/%.cpp
-	printf "    HOSTCXX    $(subst $(shell pwd)/,,$(@))\n"
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
 $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Compress/LZ/%.cpp
-	printf "    HOSTCXX    $(subst $(shell pwd)/,,$(@))\n"
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
 $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Compress/RangeCoder/%.cpp
-	printf "    HOSTCXX    $(subst $(shell pwd)/,,$(@))\n"
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
 $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/7zip/Common/%.cpp
-	printf "    HOSTCXX    $(subst $(shell pwd)/,,$(@))\n"
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
 $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/Common/%.cpp
-	printf "    HOSTCXX    $(subst $(shell pwd)/,,$(@))\n"
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@))\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
 
 $(obj)/util/cbfstool/cbfstool: $(obj)/util/cbfstool $(addprefix $(obj)/util/cbfstool/,$(cbfsobj))
-	printf "    HOSTCXX    $(subst $(shell pwd)/,,$(@)) (link)\n"
+	printf "    HOSTCXX    $(subst $(obj)/,,$(@)) (link)\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) -o $@ $(addprefix $(obj)/util/cbfstool/,$(cbfsobj))
 
 endif

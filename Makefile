@@ -159,49 +159,49 @@ endef
 
 define objs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define objs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_c_template
 $(obj)/$(1)%.o: src/$(1)%.c
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_S_template
 $(obj)/$(1)%.o: src/$(1)%.S
-	@printf "    CC         $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
@@ -265,7 +265,7 @@ prepare:
 	test -n "$(alldirs)" && mkdir -p $(alldirs) || true
 
 prepare2:
-	@printf "    GEN        $(subst $(shell pwd)/,,$(obj)/build.h)\n"
+	@printf "    GEN        build.h\n"
 	printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
 	printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.h
 	printf "#define COREBOOT_V2 \"$(COREBOOT_V2)\"\n" >> $(obj)/build.h
@@ -294,9 +294,10 @@ clean: doxygen-clean
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
+	$(MAKE) -C util/sconfig clean
 
 distclean: clean
-	rm -rf build
+	rm -rf $(obj)
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
 update:
@@ -311,7 +312,7 @@ $(obj)/ldoptions: $(obj)/config.h
 	awk '/^#define ([^"])* ([^"])*$$/ {print $$2 " = " $$3 ";";}' $< > $@
 
 $(obj)/romcc: $(top)/util/romcc/romcc.c
-	@printf "    HOSTCC     $(obj)/romcc (this may take a while)\n"
+	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
 	$(HOSTCC) -g -O2 -Wall -o $@ $<
 
 .PHONY: $(PHONY) prepare prepare2 clean distclean doxygen doxy coreboot

@@ -42,5 +42,5 @@ romimage "fallback"
 end
 
 buildrom ./coreboot.rom CONFIG_ROM_SIZE "normal" "fallback"
-pci_rom ../../../misc/d945gclf-pci8086,2772.rom vendor_id=0x8086 device_id=0x2772
+#pci_rom ../../../misc/d945gclf-pci8086,2772.rom vendor_id=0x8086 device_id=0x2772
 

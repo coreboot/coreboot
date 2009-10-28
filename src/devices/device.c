@@ -576,8 +576,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 			continue;
 
 		/* Is it already outside the limits? */
-		if (res->size && (((res->base + res->size -1) < lim->base) ||
-				  (res->base > lim->limit)))
+		if (((res->base + res->size -1) < lim->base) || (res->base > lim->limit))
 			continue;
 
 		/* Choose to be above or below fixed resources.  This

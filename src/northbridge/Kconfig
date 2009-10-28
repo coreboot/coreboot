@@ -1,5 +1,3 @@
 source src/northbridge/amd/Kconfig
-#source src/northbridge/ibm/Kconfig
 source src/northbridge/intel/Kconfig
-#source src/northbridge/motorola/Kconfig
 source src/northbridge/via/Kconfig

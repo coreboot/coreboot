@@ -2,7 +2,6 @@ uses CONFIG_GENERATE_MP_TABLE
 uses CONFIG_GENERATE_PIRQ_TABLE
 uses CONFIG_USE_FALLBACK_IMAGE
 uses CONFIG_HAVE_FALLBACK_BOOT
-uses CONFIG_HAVE_HARD_RESET
 uses CONFIG_HAVE_OPTION_TABLE
 uses CONFIG_USE_OPTION_TABLE
 uses CONFIG_ROM_PAYLOAD
@@ -53,11 +52,6 @@ default CONFIG_HAVE_FALLBACK_BOOT=1
 ## no MP table
 ##
 default CONFIG_GENERATE_MP_TABLE=0
-
-##
-## Build code to reset the motherboard from coreboot
-##
-default CONFIG_HAVE_HARD_RESET=1
 
 ##
 ## use io based udelay function

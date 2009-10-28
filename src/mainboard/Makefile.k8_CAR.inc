@@ -49,11 +49,11 @@ ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
 
-$(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.dsl
-	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.dsl
-	mv dsdt.hex $@
+$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.dsl
+	iasl -p $(obj)/mainboard/$(MAINBOARDDIR)/dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.dsl
+	mv $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.hex $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
+$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c $(obj)/option_table.h

@@ -35,7 +35,7 @@ export top := $(shell pwd)
 export src := $(top)/src
 export srck := $(top)/util/kconfig
 export obj := $(top)/build
-export objk := $(top)/build/util/kconfig
+export objk := $(obj)/util/kconfig
 export sconfig := $(top)/util/sconfig
 export yapps2_py := $(sconfig)/yapps2.py
 export config_g := $(sconfig)/config.g
@@ -289,8 +289,8 @@ doxygen-clean:
 	rm -rf $(DOXYGEN_OUTPUT_DIR)
 
 clean: doxygen-clean
-	rm -f $(allobjs) build/coreboot* .xcompile
-	rm -f build/option_table.* build/crt0_includes.h build/ldscript
+	rm -f $(allobjs) $(obj)/coreboot* .xcompile
+	rm -f $(obj)/option_table.* $(obj)/crt0_includes.h $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
@@ -300,7 +300,7 @@ distclean: clean
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
 update:
-	dongle.py -c /dev/term/1 build/coreboot.rom EOF
+	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.
@@ -311,7 +311,7 @@ $(obj)/ldoptions: $(obj)/config.h
 	awk '/^#define ([^"])* ([^"])*$$/ {print $$2 " = " $$3 ";";}' $< > $@
 
 $(obj)/romcc: $(top)/util/romcc/romcc.c
-	@printf "    HOSTCC     build/romcc (this may take a while)\n"
+	@printf "    HOSTCC     $(obj)/romcc (this may take a while)\n"
 	$(HOSTCC) -g -O2 -Wall -o $@ $<
 
 .PHONY: $(PHONY) prepare prepare2 clean distclean doxygen doxy coreboot

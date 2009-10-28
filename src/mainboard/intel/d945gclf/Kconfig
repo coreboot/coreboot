@@ -1,0 +1,62 @@
+config BOARD_INTEL_D945GCLF
+	bool "D945GCLF"
+	select ARCH_X86
+	select CPU_INTEL_CORE
+	select CPU_INTEL_SOCKET_MFCPGA478
+	select NORTHBRIDGE_INTEL_I945
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select SUPERIO_WINBOND_W83627THG
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select MMCONF_SUPPORT
+	select USE_PRINTK_IN_CAR
+	select AP_IN_SIPI_WAIT
+	select UDELAY_LAPIC
+	select HAVE_ACPI_TABLES
+	select HAVE_SMI_HANDLER
+	select BOARD_ROMSIZE_KB_1024
+
+config MAINBOARD_DIR
+	string
+	default intel/d945gclf
+	depends on BOARD_INTEL_D945GCLF
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+	depends on BOARD_INTEL_D945GCLF
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on BOARD_INTEL_D945GCLF
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_INTEL_D945GCLF
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_INTEL_D945GCLF
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "D945GCLF"
+	depends on BOARD_INTEL_D945GCLF
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+	depends on BOARD_INTEL_D945GCLF
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+	depends on BOARD_INTEL_D945GCLF
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_INTEL_D945GCLF

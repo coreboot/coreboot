@@ -1,0 +1,115 @@
+##
+## This file is part of the coreboot project.
+## 
+## Copyright (C) 2007-2008 coresystems GmbH
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+## MA 02110-1301 USA
+##
+
+chip northbridge/intel/i945
+
+        device apic_cluster 0 on
+                chip cpu/intel/socket_441
+                        device apic 0 on end
+                end
+        end
+
+        device pci_domain 0 on 
+                device pci 00.0 on end # host bridge
+		device pci 01.0 off end # i945 PCIe root port
+		chip drivers/pci/onboard
+			device pci 02.0 on end # vga controller
+			# register "rom_address" = "0xfffc0000"	# 256 KB image
+			# register "rom_address" = "0xfff80000"	# 512 KB image
+			# register "rom_address" = "0xfff00000" # 1 MB image
+		end
+		device pci 02.1 on end # display controller
+
+                chip southbridge/intel/i82801gx
+			register "pirqa_routing" = "0x05"
+			register "pirqb_routing" = "0x07"
+			register "pirqc_routing" = "0x05"
+			register "pirqd_routing" = "0x07"
+			register "pirqe_routing" = "0x80"
+			register "pirqf_routing" = "0x80"
+			register "pirqg_routing" = "0x80"
+			register "pirqh_routing" = "0x06"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi13_routing" = "1"
+			register "gpe0_en" = "0x20000601"
+
+                        register "ide_legacy_combined" = "0x1"
+                        register "ide_enable_primary" = "0x1"
+                        register "ide_enable_secondary" = "0x0"
+                        register "sata_ahci" = "0x0"
+
+                	device pci 1b.0 on end # High Definition Audio
+                	device pci 1c.0 on end # PCIe
+                	device pci 1c.1 on end # PCIe
+                	device pci 1c.2 on end # PCIe
+			#device pci 1c.3 off end # PCIe port 4
+			#device pci 1c.4 off end # PCIe port 5
+			#device pci 1c.5 off end # PCIe port 6
+                	device pci 1d.0 on end # USB UHCI
+                	device pci 1d.1 on end # USB UHCI
+                	device pci 1d.2 on end # USB UHCI
+                	device pci 1d.3 on end # USB UHCI
+                	device pci 1d.7 on end # USB2 EHCI
+                	device pci 1e.0 on end # PCI bridge
+			#device pci 1e.2 off end # AC'97 Audio 
+			#device pci 1e.3 off end # AC'97 Modem
+                        device pci 1f.0 on # LPC bridge
+                                chip superio/smsc/lpc47m15x
+					device pnp 2e.0 off		# Floppy
+					end
+					device pnp 2e.3 off		# Parport
+					end
+                                        device pnp 2e.4 on
+                                                 io 0x60 = 0x3f8
+                                                irq 0x70 = 4
+                                        end
+                                        device pnp 2e.5 on
+                                                 io 0x60 = 0x2f8
+                                                irq 0x70 = 3
+						irq 0xf1 = 4 # set IRMODE 0 # XXX not an irq
+                                        end
+					device pnp 2e.7 on		# Keyboard+Mouse
+						 io 0x60 = 0x60
+						 io 0x62 = 0x64
+						irq 0x70 = 1
+						irq 0x72 = 12
+						irq 0xf0 = 0x82		# HW accel A20.
+					end
+					device pnp 2e.8 on		# GAME
+						# all default
+					end
+					device pnp 2e.a on		# PME
+					end
+					device pnp 2e.b on		# MPU
+					end
+                                end
+                        end
+			#device pci 1f.1 off end # IDE
+                        device pci 1f.2 on end  # SATA
+                        device pci 1f.3 on end  # SMBus
+			#device pci 1f.4 off end # Realtek ID Codec
+                end
+        end
+end

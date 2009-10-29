@@ -149,6 +149,8 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 	return from;
 }
 
+/* Warning: This function uses a static buffer.  Don't call it more than once
+ * from the same print statement! */
 
 const char *dev_path(device_t dev)
 {
@@ -211,8 +213,7 @@ const char *dev_path(device_t dev)
 const char *bus_path(struct bus *bus)
 {
 	static char buffer[BUS_PATH_MAX];
-	sprintf(buffer, "%s,%d",
-		dev_path(bus->dev), bus->link);
+	sprintf(buffer, "%s,%d", dev_path(bus->dev), bus->link);
 	return buffer;
 }
 
@@ -566,10 +567,10 @@ static void resource_tree(struct device *root, int debug_level, int depth)
 		indent[i] = ' ';
 	indent[i] = '\0';
 
-	do_printk(BIOS_DEBUG, "%s%s links %x child on link 0 %s\n",
-		  indent, dev_path(root), root->links,
-		  root->link[0].children ? dev_path(root->link[0].children) :
-	    				  "NULL");
+	do_printk(BIOS_DEBUG, "%s%s links %x child on link 0", indent,
+		  dev_path(root), root->links);
+	do_printk(BIOS_DEBUG, " %s\n", root->link[0].children ?
+		  dev_path(root->link[0].children) : "NULL");
 	for (i = 0; i < root->resources; i++) {
 		do_printk(BIOS_DEBUG,
 			  "%s%s resource base %llx size %llx align %d gran %d limit %llx flags %lx index %lx\n",

@@ -420,7 +420,7 @@ config FALLBACK_VGA_BIOS_FILE
 	  The path and filename of the file to use as VGA BIOS.
 
 config FALLBACK_VGA_BIOS_ID
-	string "VGA BIOS ID"
+	string "VGA device PCI IDs"
 	depends on VGA_BIOS
 	default "1106,3230"
 	help

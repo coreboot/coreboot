@@ -42,3 +42,13 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	default 0xaa51
 	depends on BOARD_VIA_PC2500E
 
+config FALLBACK_VGA_BIOS_FILE
+	string
+	default "M14CRT.ROM"
+	depends on BOARD_VIA_PC2500E
+
+config FALLBACK_VGA_BIOS_ID
+	string
+	default "1106,3344"
+	depends on BOARD_VIA_PC2500E
+

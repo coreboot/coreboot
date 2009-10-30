@@ -49,3 +49,9 @@ config IRQ_SLOT_COUNT
 	default 4
 	depends on BOARD_MSI_MS_6178
 
+# No need to override the chipset FALLBACK_VGA_BIOS_ID.
+config FALLBACK_VGA_BIOS_FILE
+	string
+	default "i810.vga"
+	depends on BOARD_MSI_MS_6178
+

@@ -60,3 +60,9 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 	depends on BOARD_KONTRON_986LCD_M
+
+config FALLBACK_VGA_BIOS_FILE
+	string
+	default "amipci_01.20"
+	depends on BOARD_KONTRON_986LCD_M
+

@@ -20,3 +20,9 @@
 config NORTHBRIDGE_INTEL_I945
 	bool
 	select HAVE_HIGH_TABLES
+
+config FALLBACK_VGA_BIOS_ID
+	string
+	default "8086,27a2"
+	depends on NORTHBRIDGE_INTEL_I945
+

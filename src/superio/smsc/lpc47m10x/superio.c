@@ -37,10 +37,9 @@
 
 // Forward declarations
 static void enable_dev(device_t dev);
-void lpc47m10x_pnp_set_resources(device_t dev);
-void lpc47m10x_pnp_set_resources(device_t dev);
-void lpc47m10x_pnp_enable_resources(device_t dev);
-void lpc47m10x_pnp_enable(device_t dev);
+static void lpc47m10x_pnp_set_resources(device_t dev);
+static void lpc47m10x_pnp_enable_resources(device_t dev);
+static void lpc47m10x_pnp_enable(device_t dev);
 static void lpc47m10x_init(device_t dev);
 
 static void pnp_enter_conf_state(device_t dev);
@@ -94,21 +93,21 @@ static void enable_dev(device_t dev)
 // Description: 	Configure the specified Super I/O device with the resources
 //					(I/O space, etc.) that have been allocated for it.
 //
-void lpc47m10x_pnp_set_resources(device_t dev)
+static void lpc47m10x_pnp_set_resources(device_t dev)
 {
 	pnp_enter_conf_state(dev);  
 	pnp_set_resources(dev);
     pnp_exit_conf_state(dev);  
 }       
 
-void lpc47m10x_pnp_enable_resources(device_t dev)
+static void lpc47m10x_pnp_enable_resources(device_t dev)
 {       
 	pnp_enter_conf_state(dev);
     pnp_enable_resources(dev);
     pnp_exit_conf_state(dev);
 }
 
-void lpc47m10x_pnp_enable(device_t dev)
+static void lpc47m10x_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);   
 	pnp_set_logical_device(dev);

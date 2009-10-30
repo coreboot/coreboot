@@ -501,21 +501,21 @@ static int load_self_segments(
 				memset(middle, 0, end - middle);
 			}
 			/* Copy the data that's outside the area that shadows coreboot_ram */
-			printk_debug("dest %lx, end %lx, bouncebuffer %lx\n", dest, end, bounce_buffer);
+			printk_debug("dest %p, end %p, bouncebuffer %lx\n", dest, end, bounce_buffer);
 			if ((unsigned long)end > bounce_buffer) {
 				if ((unsigned long)dest < bounce_buffer) {
-					unsigned long from = dest;
-					unsigned long to = lb_start-(bounce_buffer-(unsigned long)dest);
+					unsigned char *from = dest;
+					unsigned char *to = (unsigned char*)(lb_start-(bounce_buffer-(unsigned long)dest));
 					unsigned long amount = bounce_buffer-(unsigned long)dest;
-					printk_debug("move prefix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
+					printk_debug("move prefix around: from %p, to %p, amount: %lx\n", from, to, amount);
 					memcpy(to, from, amount);
 				}
 				if ((unsigned long)end > bounce_buffer + (lb_end - lb_start)) {
 					unsigned long from = bounce_buffer + (lb_end - lb_start);
 					unsigned long to = lb_end;
-					unsigned long amount = end - from;
+					unsigned long amount = (unsigned long)end - from;
 					printk_debug("move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
-					memcpy(to, from, amount);
+					memcpy((char*)to, (char*)from, amount);
 				}
 			}
 		}

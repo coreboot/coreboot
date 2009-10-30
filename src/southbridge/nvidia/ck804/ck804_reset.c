@@ -4,6 +4,7 @@
  */
 
 #include <arch/io.h>
+#include <part/hard_reset.h>
 
 #define PCI_DEV(BUS, DEV, FN) ( \
 	(((BUS) & 0xFFF) << 20) | \

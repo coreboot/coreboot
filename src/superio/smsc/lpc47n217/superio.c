@@ -39,16 +39,16 @@
 
 // Forward declarations
 static void enable_dev(device_t dev);
-void lpc47n217_pnp_set_resources(device_t dev);
-void lpc47n217_pnp_enable_resources(device_t dev);
-void lpc47n217_pnp_enable(device_t dev);
+static void lpc47n217_pnp_set_resources(device_t dev);
+static void lpc47n217_pnp_enable_resources(device_t dev);
+static void lpc47n217_pnp_enable(device_t dev);
 static void lpc47n217_init(device_t dev);
 
 static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource);
-void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase);
-void lpc47n217_pnp_set_drq(device_t dev, unsigned drq);
-void lpc47n217_pnp_set_irq(device_t dev, unsigned irq);
-void lpc47n217_pnp_set_enable(device_t dev, int enable);
+static void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase);
+static void lpc47n217_pnp_set_drq(device_t dev, unsigned drq);
+static void lpc47n217_pnp_set_irq(device_t dev, unsigned irq);
+static void lpc47n217_pnp_set_enable(device_t dev, int enable);
 
 static void pnp_enter_conf_state(device_t dev);
 static void pnp_exit_conf_state(device_t dev);
@@ -98,7 +98,7 @@ static void enable_dev(device_t dev)
 // Description: 	Configure the specified Super I/O device with the resources
 //					(I/O space, etc.) that have been allocate for it.
 //
-void lpc47n217_pnp_set_resources(device_t dev)
+static void lpc47n217_pnp_set_resources(device_t dev)
 {
 	int i;
 	
@@ -114,7 +114,7 @@ void lpc47n217_pnp_set_resources(device_t dev)
    	pnp_exit_conf_state(dev);  
 }       
 
-void lpc47n217_pnp_enable_resources(device_t dev)
+static void lpc47n217_pnp_enable_resources(device_t dev)
 {       
     pnp_enter_conf_state(dev);
 
@@ -125,7 +125,7 @@ void lpc47n217_pnp_enable_resources(device_t dev)
     pnp_exit_conf_state(dev);
 }
 
-void lpc47n217_pnp_enable(device_t dev)
+static void lpc47n217_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);   
 
@@ -207,7 +207,7 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 	report_resource_stored(dev, resource, "");
 }
 
-void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
+static void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
 {
 	ASSERT(!(iobase & 0x3));
 	
@@ -230,7 +230,7 @@ void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
 	}
 }
 
-void lpc47n217_pnp_set_drq(device_t dev, unsigned drq)
+static void lpc47n217_pnp_set_drq(device_t dev, unsigned drq)
 {
 	if (dev->path.pnp.device == LPC47N217_PP) {
 		const uint8_t PP_DMA_MASK = 0x0F;
@@ -246,7 +246,7 @@ void lpc47n217_pnp_set_drq(device_t dev, unsigned drq)
 	}
 }
 
-void lpc47n217_pnp_set_irq(device_t dev, unsigned irq)
+static void lpc47n217_pnp_set_irq(device_t dev, unsigned irq)
 {
 	uint8_t irq_config_register = 0;
 	uint8_t irq_config_mask = 0;
@@ -282,7 +282,7 @@ void lpc47n217_pnp_set_irq(device_t dev, unsigned irq)
 	pnp_write_config(dev, irq_config_register, new_config);
 }
 
-void lpc47n217_pnp_set_enable(device_t dev, int enable)
+static void lpc47n217_pnp_set_enable(device_t dev, int enable)
 {
 	uint8_t power_register = 0;
 	uint8_t power_mask = 0;

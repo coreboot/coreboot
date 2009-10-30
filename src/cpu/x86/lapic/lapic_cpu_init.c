@@ -448,16 +448,6 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 #define initialize_other_cpus(root) do {} while(0)
 #endif /* CONFIG_SMP */
 
-#if CONFIG_WAIT_BEFORE_CPUS_INIT==0
-	#define cpus_ready_for_init() do {} while(0)
-#else
-	void cpus_ready_for_init(void);
-#endif
-
-#if CONFIG_HAVE_SMI_HANDLER
-void smm_init(void);
-#endif
-
 void initialize_cpus(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;

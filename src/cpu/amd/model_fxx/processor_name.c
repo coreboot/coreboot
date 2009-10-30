@@ -35,6 +35,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/model_fxx_rev.h>
 
 /* The maximum length of CPU names is 48 bytes, including the final NULL byte.
  * If you change these names your BIOS will _NOT_ pass the AMD validation and
@@ -108,39 +109,6 @@ static inline void wrmsr_amd(unsigned index, msr_t msr)
                 : /* No outputs */
                 : "c" (index), "a" (msr.lo), "d" (msr.hi), "D" (0x9c5a203a)
                 );
-}
-
-static inline unsigned int cpuid_eax(unsigned int op)
-{
-        unsigned int eax;
-
-        __asm__("cpuid"
-                : "=a" (eax)
-                : "0" (op)
-                : "ebx", "ecx", "edx");
-        return eax;
-}
-
-static inline unsigned int cpuid_ebx(unsigned int op)
-{
-        unsigned int eax, ebx;
-
-        __asm__("cpuid"
-                : "=a" (eax), "=b" (ebx)
-                : "0" (op)
-                : "ecx", "edx" );
-        return ebx;
-}
-
-static inline unsigned int cpuid_ecx(unsigned int op)
-{
-        unsigned int eax, ecx;
-
-        __asm__("cpuid"
-                : "=a" (eax), "=c" (ecx)
-                : "0" (op)
-                : "ebx", "edx" );
-        return ecx;
 }
 
 static inline void strcpy(char *dst, const char *src)

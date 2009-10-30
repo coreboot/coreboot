@@ -30,6 +30,7 @@
 
 #include <cpu/amd/model_fxx_msr.h>
 
+#if CONFIG_WAIT_BEFORE_CPUS_INIT
 void cpus_ready_for_init(void)
 {
 #if CONFIG_MEM_TRAIN_SEQ == 1
@@ -38,7 +39,7 @@ void cpus_ready_for_init(void)
         wait_all_core0_mem_trained(sysinfox);
 #endif
 }
-
+#endif
 
 #if CONFIG_K8_REV_F_SUPPORT == 0
 int is_e0_later_in_bsp(int nodeid)
@@ -463,13 +464,12 @@ static inline void k8_errata(void)
 }
 
 extern void model_fxx_update_microcode(unsigned cpu_deviceid);
-int init_processor_name(void);
 
 #if CONFIG_USBDEBUG_DIRECT
 static unsigned ehci_debug_addr;
 #endif
 
-void model_fxx_init(device_t dev)
+static void model_fxx_init(device_t dev)
 {
 	unsigned long i;
 	msr_t msr;

@@ -74,7 +74,7 @@ static void lpc47b397_init(device_t dev)
 
 }
 
-void lpc47b397_pnp_set_resources(device_t dev)
+static void lpc47b397_pnp_set_resources(device_t dev)
 {
 
 	pnp_enter_conf_state(dev);
@@ -89,7 +89,7 @@ void lpc47b397_pnp_set_resources(device_t dev)
 
 }
 
-void lpc47b397_pnp_enable_resources(device_t dev)
+static void lpc47b397_pnp_enable_resources(device_t dev)
 {
 
 	pnp_enter_conf_state(dev);
@@ -112,7 +112,7 @@ void lpc47b397_pnp_enable_resources(device_t dev)
 
 }
 
-void lpc47b397_pnp_enable(device_t dev)
+static void lpc47b397_pnp_enable(device_t dev)
 {
 
 	pnp_enter_conf_state(dev);

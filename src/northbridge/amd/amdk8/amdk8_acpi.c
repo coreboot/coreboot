@@ -45,6 +45,7 @@ acknowledgement of AMD's proprietary rights in them.
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdk8_sysconf.h>
+#include "amdk8_acpi.h"
 
 //it seems some functions can be moved arch/i386/boot/acpi.c
 
@@ -102,7 +103,7 @@ struct acpi_srat_mem_state {
 	unsigned long current;
 };
 
-void set_srat_mem(void *gp, struct device *dev, struct resource *res)
+static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 {
 	struct acpi_srat_mem_state *state = gp;
 	unsigned long basek, sizek;

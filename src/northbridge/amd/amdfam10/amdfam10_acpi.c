@@ -82,7 +82,7 @@ struct acpi_srat_mem_state {
 	unsigned long current;
 };
 
-void set_srat_mem(void *gp, struct device *dev, struct resource *res)
+static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 {
 	struct acpi_srat_mem_state *state = gp;
 	unsigned long basek, sizek;

@@ -1,5 +1,7 @@
 #include <arch/cpu.h>
 
+int init_processor_name(void);
+
 #if CONFIG_K8_REV_F_SUPPORT == 0
 static inline int is_cpu_rev_a0(void)
 {

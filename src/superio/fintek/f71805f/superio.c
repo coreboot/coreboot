@@ -60,21 +60,21 @@ static void f71805f_init(device_t dev)
 	}
 }
 
-void f71805f_pnp_set_resources(device_t dev)
+static void f71805f_pnp_set_resources(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_resources(dev);
 	pnp_exit_conf_state(dev);
 }
 
-void f71805f_pnp_enable_resources(device_t dev)
+static void f71805f_pnp_enable_resources(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_enable_resources(dev);
 	pnp_exit_conf_state(dev);
 }
 
-void f71805f_pnp_enable(device_t dev)
+static void f71805f_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

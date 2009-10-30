@@ -1,6 +1,6 @@
 #ifndef DELAY_H
 #define DELAY_H
-#if !defined( __ROMCC__) && defined (__GNUC__)
+#if !defined( __ROMCC__)
 
 void udelay(unsigned usecs);
 void mdelay(unsigned msecs);

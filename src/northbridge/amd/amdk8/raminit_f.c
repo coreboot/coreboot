@@ -1253,7 +1253,7 @@ static unsigned long order_chip_selects(const struct mem_controller *ctrl)
 	return (tom & ~0xff000000) << (27-10);
 }
 
-unsigned long memory_end_k(const struct mem_controller *ctrl, int max_node_id)
+static unsigned long memory_end_k(const struct mem_controller *ctrl, int max_node_id)
 {
 	unsigned node_id;
 	unsigned end_k;

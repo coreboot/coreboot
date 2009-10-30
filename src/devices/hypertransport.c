@@ -613,7 +613,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus,
  *
  * @return The maximum bus number found, after scanning all subordinate busses
  */
-unsigned int hypertransport_scan_chain_x(struct bus *bus,
+static unsigned int hypertransport_scan_chain_x(struct bus *bus,
         unsigned min_devfn, unsigned max_devfn, unsigned int max)
 {
 	unsigned ht_unitid_base[4];

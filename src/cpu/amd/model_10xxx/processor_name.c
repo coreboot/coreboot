@@ -29,6 +29,7 @@
 #include <string.h>
 #include <cpu/x86/msr.h>
 #include <cpu/cpu.h>
+#include <cpu/amd/model_10xxx_rev.h>
 
 extern void wrmsr_amd(u32 index, msr_t msr);
 

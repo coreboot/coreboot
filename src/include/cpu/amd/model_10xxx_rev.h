@@ -19,4 +19,6 @@
 
 #include <arch/cpu.h>
 
+int init_processor_name(void);
+
 /* place holder for Family 10 revision code */

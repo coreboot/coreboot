@@ -64,21 +64,21 @@ static void w83627dhg_init(device_t dev)
 	}
 }
 
-void w83627dhg_pnp_set_resources(device_t dev)
+static void w83627dhg_pnp_set_resources(device_t dev)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_resources(dev);
 	pnp_exit_ext_func_mode(dev);
 }
 
-void w83627dhg_pnp_enable_resources(device_t dev)
+static void w83627dhg_pnp_enable_resources(device_t dev)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_enable_resources(dev);
 	pnp_exit_ext_func_mode(dev);
 }
 
-void w83627dhg_pnp_enable(device_t dev)
+static void w83627dhg_pnp_enable(device_t dev)
 {
 	if (!dev->enabled)
 		return;

@@ -272,7 +272,7 @@ static void main(unsigned long bist)
 			 : "a" (0x4000)
 			 ); 
 	
-	print_err("FUCK\r\n");
+	print_err("Oh dear, I'm afraid it didn't work...\r\n");
 	
 	while(1);
 #endif

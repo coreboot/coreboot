@@ -10,7 +10,7 @@ GCCPREFIX=invalid
 TMP=`mktemp /tmp/temp.XXXX`
 echo "mov %eax, %eax" > ${TMP}.s
 printf "\x7fELF" > ${TMP}.compare
-for gccprefixes in `pwd`/../crossgcc/xgcc/bin/i386-elf- i386-elf- ""; do
+for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/i386-elf- i386-elf- ""; do
 	if which ${gccprefixes}as 2>/dev/null >/dev/null; then
 		printf ""
 	else

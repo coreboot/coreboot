@@ -289,7 +289,7 @@ doxygen-clean:
 	rm -rf $(DOXYGEN_OUTPUT_DIR)
 
 clean: doxygen-clean
-	rm -f $(allobjs) $(obj)/coreboot* .xcompile
+	rm -f $(allobjs) $(obj)/coreboot*
 	rm -f $(obj)/option_table.* $(obj)/crt0_includes.h $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
@@ -297,7 +297,7 @@ clean: doxygen-clean
 	$(MAKE) -C util/sconfig clean
 
 distclean: clean
-	rm -rf $(obj)
+	rm -rf $(obj) .xcompile
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
 
 update:

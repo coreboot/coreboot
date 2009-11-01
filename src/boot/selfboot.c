@@ -105,7 +105,7 @@ void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
  * - Nearly arbitrary standalone executables can be loaded.
  * - Coreboot is preserved, so it can be returned to.
  * - The implementation is still relatively simple,
- *   and much simpler then the general case implemented in kexec.
+ *   and much simpler than the general case implemented in kexec.
  * 
  */
 

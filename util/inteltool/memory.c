@@ -40,6 +40,9 @@ int print_mchbar(struct pci_dev *nb)
 		mchbar_phys = pci_read_long(nb, 0x44) & 0xfffffffe;
 		break;
  	case PCI_DEVICE_ID_INTEL_PM965:
+ 	case PCI_DEVICE_ID_INTEL_82Q35:
+ 	case PCI_DEVICE_ID_INTEL_82G33:
+ 	case PCI_DEVICE_ID_INTEL_82Q33:
  		mchbar_phys = pci_read_long(nb, 0x48) & 0xfffffffe;
  		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
  		break;

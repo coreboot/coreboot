@@ -103,7 +103,6 @@ clear_mtrrs:
 	//movl	$0x23322332, %eax
 	xorl	%eax, %eax
 	rep	stosl
-#endif
 
 	post_code(0x29)
 	/* Enable Cache As RAM mode by disabling cache */
@@ -111,29 +110,33 @@ clear_mtrrs:
 	orl	$(1 << 30), %eax
 	movl	%eax, %cr0
 
-#if 0
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
-	/* Enable cache for our code in Flash because we do CONFIG_XIP here */
+	/* Enable cache for our code in Flash because we do XIP here */
         movl    $MTRRphysBase_MSR(1), %ecx
         xorl    %edx, %edx
         movl    $(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
         wrmsr
 
         movl    $MTRRphysMask_MSR(1), %ecx
-        movl    $0x0000000f, %edx
+        movl    $0x00000000, %edx
         movl    $(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
         wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
-#endif
 
 	post_code(0x2a)
         /* enable cache */
         movl	%cr0, %eax
 	andl	$( ~( (1 << 30) | (1 << 29) ) ), %eax
-        movl	%eax, %cr0
+	movl	%eax, %cr0
+#endif
 
 	/* Set up stack pointer */
+#if defined(CONFIG_USBDEBUG_DIRECT) && (CONFIG_USBDEBUG_DIRECT == 1)
+	/* leave some space for the struct ehci_debug_info */
+	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
+#else
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
+#endif
 	movl	%eax, %esp
 
 	/* Restore the BIST result */

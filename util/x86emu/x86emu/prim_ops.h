@@ -134,7 +134,8 @@ u16     mem_access_word (int addr);
 void    push_word (u16 w);
 void    push_long (u32 w);
 u16     pop_word (void);
-u32		pop_long (void);
+u32	pop_long (void);
+void	x86emu_cpuid (void);
 
 #if  defined(__HAVE_INLINE_ASSEMBLER__) && !defined(PRIM_OPS_NO_REDEFINE_ASM)
 

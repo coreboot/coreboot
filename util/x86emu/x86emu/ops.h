@@ -42,4 +42,6 @@
 extern void (*x86emu_optab[0x100])(u8 op1);
 extern void (*x86emu_optab2[0x100])(u8 op2);
 
+int x86emu_check_jump_condition(u8 op);
+
 #endif /* __X86EMU_OPS_H */

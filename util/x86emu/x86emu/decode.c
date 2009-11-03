@@ -735,7 +735,7 @@ REMARKS:
 Decodes scale/index of SIB byte and returns relevant offset part of 
 effective address.
 ****************************************************************************/
-unsigned decode_sib_si(
+static unsigned decode_sib_si(
     int scale,
     int index)
 {
@@ -785,7 +785,7 @@ Offset in memory for the address decoding
 REMARKS:
 Decodes SIB addressing byte and returns calculated effective address.
 ****************************************************************************/
-unsigned decode_sib_address(
+static unsigned decode_sib_address(
     int mod)
 {
     int sib   = fetch_byte_imm();

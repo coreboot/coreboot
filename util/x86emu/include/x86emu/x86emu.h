@@ -44,6 +44,7 @@
 
 /* FIXME: redefine printk for the moment */
 #ifdef CONFIG_COREBOOT_V2
+#include <stddef.h>
 #include <console/console.h>
 #undef printk
 #define printk(x...) do_printk(BIOS_DEBUG, x)
@@ -160,7 +161,7 @@ void 	X86EMU_setupPioFuncs(X86EMU_pioFuncs *funcs);
 void 	X86EMU_setupIntrFuncs(X86EMU_intrFuncs funcs[]);
 void 	X86EMU_prepareForInt(int num);
 
-//void X86EMU_setMemBase(void *base, size_t size);
+void X86EMU_setMemBase(void *base, size_t size);
 
 /* decode.c */
 

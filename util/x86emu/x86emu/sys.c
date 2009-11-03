@@ -68,7 +68,7 @@ X86EMU_intrFuncs _X86EMU_intrTab[256];
 /*----------------------------- Implementation ----------------------------*/
 
 /* compute a pointer. This replaces code scattered all over the place! */
-u8 *mem_ptr(u32 addr, int size)
+static u8 *mem_ptr(u32 addr, int size)
 {
 	u8 *retaddr = 0;
 

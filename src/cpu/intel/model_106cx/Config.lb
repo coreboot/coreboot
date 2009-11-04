@@ -28,4 +28,4 @@ dir /cpu/x86/smm
 dir /cpu/intel/microcode
 dir /cpu/intel/hyperthreading
 dir /cpu/intel/speedstep
-driver model_6cx_init.o
+driver model_106cx_init.o

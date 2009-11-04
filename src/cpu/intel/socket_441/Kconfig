@@ -1,0 +1,5 @@
+config CPU_INTEL_SOCKET_441
+	bool
+	select CPU_INTEL_MODEL_106CX
+	select MMX
+	select SSE

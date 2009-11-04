@@ -159,7 +159,7 @@ static void configure_misc(void)
 static unsigned ehci_debug_addr;
 #endif
 
-static void model_6ex_init(device_t cpu)
+static void model_106cx_init(device_t cpu)
 {
 	char processor_name[49];
 
@@ -207,13 +207,11 @@ static void model_6ex_init(device_t cpu)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_6ex_init,
+	.init     = model_106cx_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
-	{ X86_VENDOR_INTEL, 0x06e0 }, /* Intel Core Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06e8 }, /* Intel Core Solo/Core Duo */
-	{ X86_VENDOR_INTEL, 0x06ec }, /* Intel Core Solo/Core Duo */
+	{ X86_VENDOR_INTEL, 0x106c0 }, /* Intel Atom 230 */
 	{ 0, 0 },
 };
 

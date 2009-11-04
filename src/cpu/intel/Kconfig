@@ -3,6 +3,7 @@ source src/cpu/intel/model_6dx/Kconfig
 source src/cpu/intel/model_6ex/Kconfig
 source src/cpu/intel/model_6fx/Kconfig
 source src/cpu/intel/model_1067x/Kconfig
+source src/cpu/intel/model_106cx/Kconfig
 
 source src/cpu/intel/bga956/Kconfig
 source src/cpu/intel/ep80579/Kconfig
@@ -13,3 +14,4 @@ source src/cpu/intel/socket_mPGA479M/Kconfig
 #source src/cpu/intel/socket_mPGA603/Kconfig
 source src/cpu/intel/socket_mPGA604/Kconfig
 source src/cpu/intel/socket_PGA370/Kconfig
+source src/cpu/intel/socket_441/Kconfig

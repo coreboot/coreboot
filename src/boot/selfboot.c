@@ -60,7 +60,7 @@ struct segment {
 
 struct verify_callback {
 	struct verify_callback *next;
-	int (*callback)(struct verify_callback *vcb, 
+	int (*callback)(struct verify_callback *vcb,
 		Elf_ehdr *ehdr, Elf_phdr *phdr, struct segment *head);
 	unsigned long desc_offset;
 	unsigned long desc_addr;
@@ -88,7 +88,7 @@ void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
 	return (void *) -1;
 }
 
-/* The problem:  
+/* The problem:
  * Static executables all want to share the same addresses
  * in memory because only a few addresses are reliably present on
  * a machine, and implementing general relocation is hard.
@@ -97,16 +97,16 @@ void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
  * - Allocate a buffer the size of the coreboot image plus additional
  *   required space.
  * - Anything that would overwrite coreboot copy into the lower part of
- *   the buffer. 
+ *   the buffer.
  * - After loading an ELF image copy coreboot to the top of the buffer.
  * - Then jump to the loaded image.
- * 
+ *
  * Benefits:
  * - Nearly arbitrary standalone executables can be loaded.
  * - Coreboot is preserved, so it can be returned to.
  * - The implementation is still relatively simple,
  *   and much simpler than the general case implemented in kexec.
- * 
+ *
  */
 
 static unsigned long bounce_size, bounce_buffer;
@@ -138,7 +138,7 @@ static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
 			msize = unpack_lb64(mem->map[i].size);
 		mend = mstart + msize;
 		tbuffer = mend - lb_size;
-		if (tbuffer < buffer) 
+		if (tbuffer < buffer)
 			continue;
 		buffer = tbuffer;
 	}
@@ -190,10 +190,10 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 			mstart = unpack_lb64(mem->map[i].start);
 			mend = mstart + unpack_lb64(mem->map[i].size);
 			printk_err("  [0x%016lx, 0x%016lx) %s\n",
-				(unsigned long)mstart, 
-				(unsigned long)mend, 
+				(unsigned long)mstart,
+				(unsigned long)mend,
 				(mtype == LB_MEM_RAM)?"RAM":"Reserved");
-			
+
 		}
 		return 0;
 	}
@@ -211,25 +211,27 @@ static int overlaps_coreboot(struct segment *seg)
 	return !((end <= lb_start) || (start >= lb_end));
 }
 
-static void relocate_segment(unsigned long buffer, struct segment *seg)
+static int relocate_segment(unsigned long buffer, struct segment *seg)
 {
 	/* Modify all segments that want to load onto coreboot
 	 * to load onto the bounce buffer instead.
 	 */
-	unsigned long start, middle, end;
+	/* ret:  1 : A new segment is inserted before the seg.
+	 *       0 : A new segment is inserted after the seg, or no new one. */
+	unsigned long start, middle, end, ret = 0;
 
-	printk_spew("lb: [0x%016lx, 0x%016lx)\n", 
+	printk_spew("lb: [0x%016lx, 0x%016lx)\n",
 		lb_start, lb_end);
 
 	/* I don't conflict with coreboot so get out of here */
 	if (!overlaps_coreboot(seg))
-		return;
+		return 0;
 
 	start = seg->s_dstaddr;
 	middle = start + seg->s_filesz;
 	end = start + seg->s_memsz;
 
-	printk_spew("segment: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
+	printk_spew("segment: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 		start, middle, end);
 
 	if (seg->compression == CBFS_COMPRESS_NONE) {
@@ -265,15 +267,17 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 
 			/* compute the new value of start */
 			start = seg->s_dstaddr;
-			
-			printk_spew("   early: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-				new->s_dstaddr, 
+
+			printk_spew("   early: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
+
+			ret = 1;
 		}
-			
-		/* Slice off a piece at the end 
-		 * that doesn't conflict with coreboot 
+
+		/* Slice off a piece at the end
+		 * that doesn't conflict with coreboot
 		 */
 		if (end > lb_end) {
 			unsigned long len = lb_end - start;
@@ -301,29 +305,31 @@ static void relocate_segment(unsigned long buffer, struct segment *seg)
 			seg->phdr_next->phdr_prev = new;
 			seg->phdr_next = new;
 
-			printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-				new->s_dstaddr, 
+			printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
 		}
 	}
 
 	/* Now retarget this segment onto the bounce buffer */
-	/* sort of explanation: the buffer is a 1:1 mapping to coreboot. 
+	/* sort of explanation: the buffer is a 1:1 mapping to coreboot.
 	 * so you will make the dstaddr be this buffer, and it will get copied
 	 * later to where coreboot lives.
 	 */
 	seg->s_dstaddr = buffer + (seg->s_dstaddr - lb_start);
 
-	printk_spew(" bounce: [0x%016lx, 0x%016lx, 0x%016lx)\n", 
-		seg->s_dstaddr, 
-		seg->s_dstaddr + seg->s_filesz, 
+	printk_spew(" bounce: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+		seg->s_dstaddr,
+		seg->s_dstaddr + seg->s_filesz,
 		seg->s_dstaddr + seg->s_memsz);
+
+	return ret;
 }
 
 
 static int build_self_segment_list(
-	struct segment *head, 
+	struct segment *head,
 	struct lb_memory *mem,
 	struct cbfs_payload *payload, u32 *entry)
 {
@@ -345,7 +351,7 @@ static int build_self_segment_list(
 
 		case PAYLOAD_SEGMENT_CODE:
 		case PAYLOAD_SEGMENT_DATA:
-			printk_debug("  %s (compression=%x)\n", 
+			printk_debug("  %s (compression=%x)\n",
 					segment->type == PAYLOAD_SEGMENT_CODE ?  "code" : "data",
 					ntohl(segment->compression));
 			new = malloc(sizeof(*new));
@@ -394,7 +400,7 @@ static int build_self_segment_list(
 
 		segment++;
 
-		// FIXME: Explain what this is 
+		// FIXME: Explain what this is
 		for(ptr = head->next; ptr != head; ptr = ptr->next) {
 			if (new->s_srcaddr < ntohl((u32) segment->load_addr))
 				break;
@@ -422,7 +428,7 @@ static int load_self_segments(
 	struct cbfs_payload *payload)
 {
 	struct segment *ptr;
-	
+
 	unsigned long bounce_high = lb_end;
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		if (!overlaps_coreboot(ptr)) continue;
@@ -443,10 +449,13 @@ static int load_self_segments(
 		unsigned char *dest, *src;
 		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
-		
+
 		/* Modify the segment to load onto the bounce_buffer if necessary.
 		 */
-		relocate_segment(bounce_buffer, ptr);
+		if (relocate_segment(bounce_buffer, ptr)) {
+			ptr = (ptr->prev)->prev;
+			continue;
+		}
 
 		printk_debug("Post relocation: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
@@ -454,7 +463,7 @@ static int load_self_segments(
 		/* Compute the boundaries of the segment */
 		dest = (unsigned char *)(ptr->s_dstaddr);
 		src = (unsigned char *)(ptr->s_srcaddr);
-		
+
 		/* Copy data from the initial buffer */
 		if (ptr->s_filesz) {
 			unsigned char *middle, *end;
@@ -496,7 +505,7 @@ static int load_self_segments(
 			if (middle < end) {
 				printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
 					(unsigned long)middle, (unsigned long)(end - middle));
-			
+
 				/* Zero the extra bytes */
 				memset(middle, 0, end - middle);
 			}

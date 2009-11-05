@@ -68,8 +68,10 @@ __run_optionrom = RELOCATED(.)
 
 	/* Get devfn into %ecx */
 	movl    %esp, %ebp
-	// FIXME: Should this function be called with regparm=0?
-	movl    8(%ebp), %ecx
+	/* This function is called with regparm=0 and we have
+	 * to skip the 32 byte from pushal:
+	 */
+	movl    36(%ebp), %ecx
 
 	/* Activate the right segment descriptor real mode. */
 	ljmp	$0x28, $RELOCATED(1f)

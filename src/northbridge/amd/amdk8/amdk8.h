@@ -8,4 +8,6 @@
         #include "amdk8_pre_f.h"
 #endif
 
+void showallroutes(int level, device_t dev);
+
 #endif /* AMDK8_H */

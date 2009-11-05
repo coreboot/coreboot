@@ -424,6 +424,7 @@ void acpi_write_xsdt(acpi_xsdt_t *xsdt)
 
 void acpi_write_rsdp(acpi_rsdp_t *rsdp, acpi_rsdt_t *rsdt, acpi_xsdt_t *xsdt)
 {
+	memset(rsdp, 0, sizeof(acpi_rsdp_t));
 	memcpy(rsdp->signature, RSDP_SIG, 8);
 	memcpy(rsdp->oem_id, OEM_ID, 6);
 	rsdp->length		= sizeof(acpi_rsdp_t);

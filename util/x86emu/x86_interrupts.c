@@ -73,6 +73,9 @@ int int1a_handler(struct eregs *regs)
 	short devindex;
 	unsigned char bus;
 	struct device *dev;
+	u32 dword;
+	u16 word;
+	u8 byte, reg;
 
 	switch (func) {
 	case PCIBIOS_CHECK:
@@ -115,11 +118,6 @@ int int1a_handler(struct eregs *regs)
 	case PCIBIOS_WRITECONFDWORD:
 	case PCIBIOS_WRITECONFWORD:
 	case PCIBIOS_WRITECONFBYTE:
-		unsigned long dword;
-		unsigned short word;
-		unsigned char byte;
-		unsigned char reg;
-
 		devfn = regs->ebx & 0xff;
 		bus = regs->ebx >> 8;
 		reg = regs->edi;

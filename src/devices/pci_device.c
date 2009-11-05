@@ -479,6 +479,11 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		return;
 	}
 
+	/* If this resource is fixed don't worry about it. */
+	if (resource->flags & IORESOURCE_FIXED) {
+		return;
+	}
+
 	/* If I have already stored this resource don't worry about it. */
 	if (resource->flags & IORESOURCE_STORED) {
 		return;

@@ -34,19 +34,22 @@
 #endif
 
 enum {
-	CHECK = 0xb001,
-	FINDDEV = 0xb102,
-	READCONFBYTE = 0xb108,
-	READCONFWORD = 0xb109,
-	READCONFDWORD = 0xb10a,
-	WRITECONFBYTE = 0xb10b,
-	WRITECONFWORD = 0xb10c,
-	WRITECONFDWORD = 0xb10d
+	PCIBIOS_CHECK = 0xb101,
+	PCIBIOS_FINDDEV = 0xb102,
+	PCIBIOS_READCONFBYTE = 0xb108,
+	PCIBIOS_READCONFWORD = 0xb109,
+	PCIBIOS_READCONFDWORD = 0xb10a,
+	PCIBIOS_WRITECONFBYTE = 0xb10b,
+	PCIBIOS_WRITECONFWORD = 0xb10c,
+	PCIBIOS_WRITECONFDWORD = 0xb10d
 };
 
 // errors go in AH. Just set these up so that word assigns
 // will work. KISS.
 enum {
+	PCIBIOS_SUCCESSFUL = 0x0000,
+	PCIBIOS_UNSUPPORTED = 0x8100,
+	PCIBIOS_BADVENDOR = 0x8300,
 	PCIBIOS_NODEV = 0x8600,
 	PCIBIOS_BADREG = 0x8700
 };
@@ -63,7 +66,7 @@ int int12_handler(struct eregs *regs)
 
 int int1a_handler(struct eregs *regs)
 {
-	unsigned short func = (unsigned short) regs->eax;
+	unsigned short func = (unsigned short)regs->eax;
 	int retval = 0;
 	unsigned short devid, vendorid, devfn;
 	/* Use short to get rid of gabage in upper half of 32-bit register */
@@ -71,14 +74,13 @@ int int1a_handler(struct eregs *regs)
 	unsigned char bus;
 	struct device *dev;
 
-	switch(func) {
-	case  CHECK:
-		regs->edx = 0x4350;
-		regs->ecx = 0x2049;
+	switch (func) {
+	case PCIBIOS_CHECK:
+		regs->edx = 0x20494350;	/* ' ICP' */
+		regs->edi = 0x00000000;	/* protected mode entry */
 		retval = 0;
 		break;
-	case FINDDEV:
-	{
+	case PCIBIOS_FINDDEV:
 		devid = regs->ecx;
 		vendorid = regs->edx;
 		devindex = regs->esi;
@@ -98,7 +100,7 @@ int int1a_handler(struct eregs *regs)
 			// busnum is an unsigned char;
 			// devfn is an int, so we mask it off.
 			busdevfn = (dev->bus->secondary << 8)
-				| (dev->path.pci.devfn & 0xff);
+			    | (dev->path.pci.devfn & 0xff);
 			printk(BIOS_DEBUG, "0x%x: return 0x%x\n", func, busdevfn);
 			regs->ebx = busdevfn;
 			retval = 0;
@@ -106,15 +108,13 @@ int int1a_handler(struct eregs *regs)
 			regs->eax = PCIBIOS_NODEV;
 			retval = -1;
 		}
-	}
-	break;
-	case READCONFDWORD:
-	case READCONFWORD:
-	case READCONFBYTE:
-	case WRITECONFDWORD:
-	case WRITECONFWORD:
-	case WRITECONFBYTE:
-	{
+		break;
+	case PCIBIOS_READCONFDWORD:
+	case PCIBIOS_READCONFWORD:
+	case PCIBIOS_READCONFBYTE:
+	case PCIBIOS_WRITECONFDWORD:
+	case PCIBIOS_WRITECONFWORD:
+	case PCIBIOS_WRITECONFBYTE:
 		unsigned long dword;
 		unsigned short word;
 		unsigned char byte;
@@ -124,49 +124,48 @@ int int1a_handler(struct eregs *regs)
 		bus = regs->ebx >> 8;
 		reg = regs->edi;
 		dev = dev_find_slot(bus, devfn);
-		if (! dev) {
+		if (!dev) {
 			printk(BIOS_DEBUG, "0x%x: BAD DEVICE bus %d devfn 0x%x\n", func, bus, devfn);
 			// idiots. the pcibios guys assumed you'd never pass a bad bus/devfn!
 			regs->eax = PCIBIOS_BADREG;
 			retval = -1;
+			return retval;
 		}
-		switch(func) {
-		case READCONFBYTE:
+		switch (func) {
+		case PCIBIOS_READCONFBYTE:
 			byte = pci_read_config8(dev, reg);
 			regs->ecx = byte;
 			break;
-		case READCONFWORD:
+		case PCIBIOS_READCONFWORD:
 			word = pci_read_config16(dev, reg);
 			regs->ecx = word;
 			break;
-		case READCONFDWORD:
+		case PCIBIOS_READCONFDWORD:
 			dword = pci_read_config32(dev, reg);
 			regs->ecx = dword;
 			break;
-		case WRITECONFBYTE:
+		case PCIBIOS_WRITECONFBYTE:
 			byte = regs->ecx;
 			pci_write_config8(dev, reg, byte);
 			break;
-		case WRITECONFWORD:
+		case PCIBIOS_WRITECONFWORD:
 			word = regs->ecx;
 			pci_write_config16(dev, reg, word);
 			break;
-		case WRITECONFDWORD:
+		case PCIBIOS_WRITECONFDWORD:
 			dword = regs->ecx;
 			pci_write_config32(dev, reg, dword);
 			break;
 		}
 
-		if (retval)
-			retval = PCIBIOS_BADREG;
 		printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%x\n",
 			     func, bus, devfn, reg, regs->ecx);
 		regs->eax = 0;
 		retval = 0;
-	}
-	break;
+		break;
 	default:
-		printk(BIOS_ERR, "UNSUPPORTED PCIBIOS FUNCTION 0x%x\n",  func);
+		printk(BIOS_ERR, "UNSUPPORTED PCIBIOS FUNCTION 0x%x\n", func);
+		retval = -1;
 		break;
 	}
 

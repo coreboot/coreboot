@@ -36,6 +36,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+#include <string.h>
 #ifdef CONFIG_COREBOOT_V2
 #include <arch/io.h>
 #include <console/console.h>
@@ -47,10 +48,39 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-
 #include <x86emu/x86emu.h>
+#include "x86emu/prim_ops.h"
 
-#include "pcbios/pcibios.h"
+#define DATA_SEGMENT 0x2000
+#define STACK_SEGMENT 0x1000	//1000:xxxx
+#define STACK_START_OFFSET 0xfffe
+#define INITIAL_EBDA_SEGMENT 0xF600	// segment of the Extended BIOS Data Area
+#define INITIAL_EBDA_SIZE 0x400	// size of the EBDA (at least 1KB!! since size is stored in KB!)
+
+enum {
+	PCI_BIOS_PRESENT	= 0xB101,
+	FIND_PCI_DEVICE		= 0xB102,
+	FIND_PCI_CLASS_CODE	= 0xB103,
+	GENERATE_SPECIAL_CYCLE	= 0xB106,
+	READ_CONFIG_BYTE	= 0xB108,
+	READ_CONFIG_WORD	= 0xB109,
+	READ_CONFIG_DWORD	= 0xB10A,
+	WRITE_CONFIG_BYTE	= 0xB10B,
+	WRITE_CONFIG_WORD	= 0xB10C,
+	WRITE_CONFIG_DWORD	= 0xB10D,
+	GET_IRQ_ROUTING_OPTIONS	= 0xB10E,
+	SET_PCI_IRQ		= 0xB10F
+};
+
+enum {
+	SUCCESSFUL		= 0x00,
+	FUNC_NOT_SUPPORTED	= 0x81,
+	BAD_VENDOR_ID		= 0x83,
+	DEVICE_NOT_FOUND	= 0x86,
+	BAD_REGISTER_NUMBER	= 0x87,
+	SET_FAILED		= 0x88,
+	BUFFER_TOO_SMALL	= 0x89
+};
 
 #define MEM_WB(where, what) wrb(where, what)
 #define MEM_WW(where, what) wrw(where, what)
@@ -60,44 +90,7 @@
 #define MEM_RW(where) rdw(where)
 #define MEM_RL(where) rdl(where)
 
-u8 x_inb(u16 port);
-u16 x_inw(u16 port);
-void x_outb(u16 port, u8 val);
-void x_outw(u16 port, u16 val);
-u32 x_inl(u16 port);
-void x_outl(u16 port, u32 val);
-
-//
-void X86EMU_setMemBase(void *base, size_t size);
-
-/* general software interrupt handler */
-u32 getIntVect(int num)
-{
-	return MEM_RW(num << 2) + (MEM_RW((num << 2) + 2) << 4);
-}
-
-/* FIXME: There is already a push_word() in the emulator */
-void pushw(u16 val)
-{
-	X86_ESP -= 2;
-	MEM_WW(((u32) X86_SS << 4) + X86_SP, val);
-}
-
-int run_bios_int(int num)
-{
-	u32 eflags;
-
-	eflags = X86_EFLAGS;
-	pushw(eflags);
-	pushw(X86_CS);
-	pushw(X86_IP);
-	X86_CS = MEM_RW((num << 2) + 2);
-	X86_IP = MEM_RW(num << 2);
-
-	return 1;
-}
-
-u8 x_inb(u16 port)
+static u8 biosemu_inb(u16 port)
 {
 	u8 val;
 
@@ -110,7 +103,7 @@ u8 x_inb(u16 port)
 	return val;
 }
 
-u16 x_inw(u16 port)
+static u16 biosemu_inw(u16 port)
 {
 	u16 val;
 
@@ -122,7 +115,7 @@ u16 x_inw(u16 port)
 	return val;
 }
 
-u32 x_inl(u16 port)
+static u32 biosemu_inl(u16 port)
 {
 	u32 val;
 
@@ -134,7 +127,7 @@ u32 x_inl(u16 port)
 	return val;
 }
 
-void x_outb(u16 port, u8 val)
+static void biosemu_outb(u16 port, u8 val)
 {
 #ifdef CONFIG_DEBUG
 	if (port != 0x43)
@@ -143,7 +136,7 @@ void x_outb(u16 port, u8 val)
 	outb(val, port);
 }
 
-void x_outw(u16 port, u16 val)
+static void biosemu_outw(u16 port, u16 val)
 {
 #ifdef CONFIG_DEBUG
 	printk("outw(0x%04x, 0x%04x)\n", val, port);
@@ -151,7 +144,7 @@ void x_outw(u16 port, u16 val)
 	outw(val, port);
 }
 
-void x_outl(u16 port, u32 val)
+static void biosemu_outl(u16 port, u32 val)
 {
 #ifdef CONFIG_DEBUG
 	printk("outl(0x%08x, 0x%04x)\n", val, port);
@@ -159,23 +152,245 @@ void x_outl(u16 port, u32 val)
 	outl(val, port);
 }
 
-X86EMU_pioFuncs myfuncs = {
-	x_inb, x_inw, x_inl,
-	x_outb, x_outw, x_outl
+static X86EMU_pioFuncs biosemu_piofuncs = {
+	biosemu_inb,  biosemu_inw,  biosemu_inl,
+	biosemu_outb, biosemu_outw, biosemu_outl
 };
 
+/* Interrupt Handlers */
 
+static int int15_handler(void)
+{
+	/* This int15 handler is VIA Tech. and Intel specific. Other chipsets need other
+	 * handlers. The right way to do this is to move this handler code into
+	 * the mainboard or northbridge code.
+	 */
+	switch (X86_AX) {
+	case 0x5f19:
+		X86_EFLAGS |= FB_CF;	/* set carry flag */
+		break;
+	case 0x5f18:
+		X86_EAX = 0x5f;
+		// MCLK = 133, 32M frame buffer, 256 M main memory
+		X86_EBX = 0x545;
+		X86_ECX = 0x060;
+		X86_EFLAGS &= ~FB_CF;
+		break;
+	case 0x5f00:
+		X86_EAX = 0x8600;
+		X86_EFLAGS |= FB_CF;	/* set carry flag */
+		break;
+	case 0x5f01:
+		X86_EAX = 0x5f;
+		X86_ECX = (X86_ECX & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
+		X86_EFLAGS &= ~FB_CF;
+		break;
+	case 0x5f02:
+		X86_EAX = 0x5f;
+		X86_EBX = (X86_EBX & 0xffff0000) | 2;
+		X86_ECX = (X86_ECX & 0xffff0000) | 0x401;  // PAL + crt only
+		X86_EDX = (X86_EDX & 0xffff0000) | 0;  // TV Layout - default
+		X86_EFLAGS &= ~FB_CF;
+		break;
+	case 0x5f0f:
+		X86_EAX = 0x860f;
+		X86_EFLAGS |= FB_CF;	/* set carry flag */
+		break;
+	/* And now Intel IGD code */
+#define BOOT_DISPLAY_DEFAULT    0
+#define BOOT_DISPLAY_CRT        (1 << 0)
+#define BOOT_DISPLAY_TV         (1 << 1)
+#define BOOT_DISPLAY_EFP        (1 << 2)
+#define BOOT_DISPLAY_LCD        (1 << 3)
+#define BOOT_DISPLAY_CRT2       (1 << 4)
+#define BOOT_DISPLAY_TV2        (1 << 5)
+#define BOOT_DISPLAY_EFP2       (1 << 6)
+#define BOOT_DISPLAY_LCD2       (1 << 7)
+
+	case 0x5f35:
+		X86_EAX = 0x5f;
+		X86_ECX = BOOT_DISPLAY_DEFAULT;
+		X86_EFLAGS &= ~FB_CF;
+		break;
+	case 0x5f40:
+		X86_EAX = 0x5f;
+		X86_ECX = 3; // This is mainboard specific
+		printk("DISPLAY=%x\n", X86_ECX);
+		X86_EFLAGS &= ~FB_CF;
+		break;
+	default:
+		printk("Unknown INT15 function %04x!\n", X86_AX);
+		X86_EFLAGS |= FB_CF;	/* set carry flag */
+	}
+
+	return 1;
+}
+
+static int int1a_handler(void)
+{
+	int ret = 0;
+	struct device *dev = 0;
+
+	switch (X86_AX) {
+	case PCI_BIOS_PRESENT:
+		X86_AH	= 0x00;		/* no config space/special cycle support */
+		X86_AL	= 0x01;		/* config mechanism 1 */
+		X86_EDX = 'P' | 'C' << 8 | 'I' << 16 | ' ' << 24;
+		X86_EBX = 0x0210;	/* Version 2.10 */
+		X86_ECX = 0xFF00;	/* FIXME: Max bus number */
+		X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+		ret = 1;
+		break;
+	case FIND_PCI_DEVICE:
+		/* FIXME: support SI != 0 */
+#ifdef CONFIG_COREBOOT_V2
+		dev = dev_find_device(X86_DX, X86_CX, dev);
+#else
+		dev = dev_find_pci_device(X86_DX, X86_CX, dev);
+#endif
+		if (dev != 0) {
+			X86_BH = dev->bus->secondary;
+			X86_BL = dev->path.pci.devfn;
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */
+			ret = 0;
+		}
+		break;
+	case FIND_PCI_CLASS_CODE:
+		/* FixME: support SI != 0 */
+		dev = dev_find_class(X86_ECX, dev);
+		if (dev != 0) {
+			X86_BH = dev->bus->secondary;
+			X86_BL = dev->path.pci.devfn;
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */
+			ret = 0;
+		}
+		break;
+	case READ_CONFIG_BYTE:
+		dev = dev_find_slot(X86_BH, X86_BL);
+		if (dev != 0) {
+			X86_CL = pci_read_config8(dev, X86_DI);
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */	
+			ret = 0;
+		}
+		break;
+	case READ_CONFIG_WORD:
+		dev = dev_find_slot(X86_BH, X86_BL);
+		if (dev != 0) {
+			X86_CX = pci_read_config16(dev, X86_DI);
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */	
+			ret = 0;
+		}
+		break;
+	case READ_CONFIG_DWORD:
+		dev = dev_find_slot(X86_BH, X86_BL);
+		if (dev != 0) {
+			X86_ECX = pci_read_config32(dev, X86_DI);
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */	
+			ret = 0;
+		}
+		break;
+	case WRITE_CONFIG_BYTE:
+		dev = dev_find_slot(X86_BH, X86_BL);
+		if (dev != 0) {
+			pci_write_config8(dev, X86_DI, X86_CL);
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */	
+			ret = 0;
+		}
+		break;
+	case WRITE_CONFIG_WORD:
+		dev = dev_find_slot(X86_BH, X86_BL);
+		if (dev != 0) {
+			pci_write_config16(dev, X86_DI, X86_CX);
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */	
+			ret = 0;
+		}
+		break;
+	case WRITE_CONFIG_DWORD:
+		dev = dev_find_slot(X86_BH, X86_BL);
+		if (dev != 0) {
+			pci_write_config16(dev, X86_DI, X86_ECX);
+			X86_AH = SUCCESSFUL;
+			X86_EFLAGS &= ~FB_CF;	/* clear carry flag */
+			ret = 1;
+		} else {
+			X86_AH = DEVICE_NOT_FOUND;
+			X86_EFLAGS |= FB_CF;	/* set carry flag */	
+			ret = 0;
+		}
+		break;
+	default:
+		X86_AH = FUNC_NOT_SUPPORTED;
+		X86_EFLAGS |= FB_CF; 
+		break;
+	}
+
+	return ret;
+}
 
 /* Interrupt multiplexer */
 
-void do_int(int num)
+/* Find base address of interrupt handler */
+static u32 getIntVect(int num)
+{
+	return MEM_RW(num << 2) + (MEM_RW((num << 2) + 2) << 4);
+}
+
+static int run_bios_int(int num)
+{
+	u32 eflags;
+
+	eflags = X86_EFLAGS;
+	push_word(eflags);
+	push_word(X86_CS);
+	push_word(X86_IP);
+	X86_CS = MEM_RW((num << 2) + 2);
+	X86_IP = MEM_RW(num << 2);
+
+	return 1;
+}
+
+static void do_int(int num)
 {
 	int ret = 0;
 
-	printk("int%x vector at %x\n", num, getIntVect(num));
+	printk("int%x (AX=%04x) vector at %x\n", num, X86_AX, getIntVect(num));
 
 	switch (num) {
-#ifndef _PC
 	case 0x10:
 	case 0x42:
 	case 0x6D:
@@ -188,9 +403,8 @@ void do_int(int num)
 			ret = 1;
 		}
 		break;
-#endif
 	case 0x15:
-		//ret = int15_handler();
+		ret = int15_handler();
 		ret = 1;
 		break;
 	case 0x16:
@@ -198,7 +412,7 @@ void do_int(int num)
 		ret = 0;
 		break;
 	case 0x1A:
-		ret = pcibios_handler();
+		ret = int1a_handler();
 		ret = 1;
 		break;
 	case 0xe6:
@@ -214,158 +428,123 @@ void do_int(int num)
 
 }
 
-#if 0
-#define SYS_BIOS 0xf0000
 /*
  * here we are really paranoid about faking a "real"
  * BIOS. Most of this information was pulled from
  * dosemu.
  */
-#if 0
-void setup_int_vect(void)
+static void setup_system_bios(void)
 {
 	int i;
 
-	/* let the int vects point to the SYS_BIOS seg */
-	for (i = 0; i < 0x80; i++) {
-		MEM_WW(i << 2, 0);
-		MEM_WW((i << 2) + 2, SYS_BIOS >> 4);
-	}
+	/* Set up Interrupt Vectors. The IVT starts at 0x0000:0x0000
+	 * Additionally, we put some stub code into the F segment for
+	 * those pesky little buggers that jmp to the hard coded addresses
+	 * instead of calling int XX. This stub code looks like this
+	 *
+	 *  CD XX	int 0xXX
+	 *  C3		ret
+	 *  F4		hlt
+	 */
 
-	reset_int_vect();
-
-	/* font tables default location (int 1F) */
-	MEM_WW(0x1f << 2, 0xfa6e);
-	/* int 11 default location (Get Equipment Configuration) */
-	MEM_WW(0x11 << 2, 0xf84d);
-	/* int 12 default location (Get Conventional Memory Size) */
-	MEM_WW(0x12 << 2, 0xf841);
-	/* int 15 default location (I/O System Extensions) */
-	MEM_WW(0x15 << 2, 0xf859);
-	/* int 1A default location (RTC, PCI and others) */
-	MEM_WW(0x1a << 2, 0xff6e);
 	/* int 05 default location (Bound Exceeded) */
-	MEM_WW(0x05 << 2, 0xff54);
+	MEM_WL(0x05 << 2, 0xf000ff54);
+	MEM_WL(0xfff54, 0xf4c305cd);
 	/* int 08 default location (Double Fault) */
-	MEM_WW(0x08 << 2, 0xfea5);
-	/* int 13 default location (Disk) */
-	MEM_WW(0x13 << 2, 0xec59);
+	MEM_WL(0x08 << 2, 0xf000fea5);
+	MEM_WL(0xffea5, 0xf4c308cd);
 	/* int 0E default location (Page Fault) */
-	MEM_WW(0x0e << 2, 0xef57);
+	MEM_WL(0x0e << 2, 0xf000ef57);
+	MEM_WL(0xfef57, 0xf4c30ecd);
+	/* int 10 default location */
+	MEM_WL(0x10 << 2, 0xf000f065);
+	MEM_WL(0xff065, 0xf4c310cd);
+	/* int 11 default location (Get Equipment Configuration) */
+	MEM_WL(0x11 << 2, 0xf000f84d);
+	MEM_WL(0xff84d, 0xf4c311cd);
+	/* int 12 default location (Get Conventional Memory Size) */
+	MEM_WL(0x12 << 2, 0xf000f841);
+	MEM_WL(0xff841, 0xf4c312cd);
+	/* int 13 default location (Disk) */
+	MEM_WL(0x13 << 2, 0xf000ec59);
+	MEM_WL(0xfec59, 0xf4c313cd);
+	/* int 14 default location (Disk) */
+	MEM_WL(0x14 << 2, 0xf000e739);
+	MEM_WL(0xfe739, 0xf4c314cd);
+	/* int 15 default location (I/O System Extensions) */
+	MEM_WL(0x15 << 2, 0xf000f859);
+	MEM_WL(0xf859, 0xf4c315cd);
+	/* int 16 default location */
+	MEM_WL(0x16 << 2, 0xf000e82e);
+	MEM_WL(0xfe82e, 0xf4c316cd);
 	/* int 17 default location (Parallel Port) */
-	MEM_WW(0x17 << 2, 0xefd2);
-	/* fdd table default location (int 1e) */
-	MEM_WW(0x1e << 2, 0xefc7);
+	MEM_WL(0x17 << 2, 0xf000efd2);
+	MEM_WL(0xfefd2, 0xf4c317cd);
+	/* int 1A default location (RTC, PCI and others) */
+	MEM_WL(0x1a << 2, 0xf000fe6e);
+	MEM_WL(0xffe6e, 0xf4c31acd);
+	/* int 1E default location (FDD table) */
+	MEM_WL(0x1e << 2, 0xf000efc7);
+	MEM_WL(0xfefc7, 0xf4c31ecd);
+	/* font tables default location (int 1F) */
+	MEM_WL(0x1f << 2, 0xf000fa6e);
+	MEM_WL(0xffa6e, 0xf4c31fcd);
+	/* int 42 default location */
+	MEM_WL(0x42 << 2, 0xf000f065);
+	/* int 6D default location */
+	MEM_WL(0x6D << 2, 0xf000f065);
 
-	/* Set Equipment flag to VGA */
-	i = MEM_RB(0x0410) & 0xCF;
-	MEM_WB(0x0410, i);
-	/* XXX Perhaps setup more of the BDA here.  See also int42(0x00). */
-}
+	/* Clear EBDA */
+	for (i=(INITIAL_EBDA_SEGMENT << 4); 
+		i<(INITIAL_EBDA_SEGMENT << 4) + INITIAL_EBDA_SIZE; i++)
+		MEM_WB(i, 0);
+	/* at offset 0h in EBDA is the size of the EBDA in KB */
+	MEM_WW((INITIAL_EBDA_SEGMENT << 4) + 0x0, INITIAL_EBDA_SIZE / 1024);
 
-int setup_system_bios(void *base_addr)
-{
-	char *base = (char *) base_addr;
+	/* Clear BDA */
+	for (i=0x400; i<0x500; i+=4)
+		MEM_WL(i, 0);
 
-	/*
-	 * we trap the "industry standard entry points" to the BIOS
-	 * and all other locations by filling them with "hlt"
-	 * TODO: implement hlt-handler for these
-	 */
-	memset(base, 0xf4, 0x10000);
+	/* Set up EBDA */
+	MEM_WW(0x40e, INITIAL_EBDA_SEGMENT);
 
-	/* set bios date */
-	//strcpy(base + 0x0FFF5, "06/11/99");
+	/* Set RAM size to 16MB (fake) */
+	MEM_WW(0x413, 16384);
+
+	// TODO Set up more of BDA here
+
+	/* setup original ROM BIOS Area (F000:xxxx) */
+	const char *date = "06/23/99";
+	for (i = 0; date[i]; i++)
+		MEM_WB(0xffff5 + i, date[i]);
 	/* set up eisa ident string */
-	//strcpy(base + 0x0FFD9, "PCI_ISA");
-	/* write system model id for IBM-AT */
-	//*((unsigned char *) (base + 0x0FFFE)) = 0xfc;
+        const char *ident = "PCI_ISA";
+        for (i = 0; ident[i]; i++)
+                MEM_WB(0xfffd9 + i, ident[i]);
 
-	return 1;
+        // write system model id for IBM-AT
+        // according to "Ralf Browns Interrupt List" Int15 AH=C0 Table 515,
+        // model FC is the original AT and also used in all DOSEMU Versions.
+        MEM_WB(0xFFFFE, 0xfc);
 }
-#endif
 
-void reset_int_vect(void)
-{
-	/*
-	 * This table is normally located at 0xF000:0xF0A4.  However, int 0x42,
-	 * function 0 (Mode Set) expects it (or a copy) somewhere in the bottom
-	 * 64kB.  Note that because this data doesn't survive POST, int 0x42 should
-	 * only be used during EGA/VGA BIOS initialisation.
-	 */
-	static const u8 VideoParms[] = {
-		/* Timing for modes 0x00 & 0x01 */
-		0x38, 0x28, 0x2d, 0x0a, 0x1f, 0x06, 0x19, 0x1c,
-		0x02, 0x07, 0x06, 0x07, 0x00, 0x00, 0x00, 0x00,
-		/* Timing for modes 0x02 & 0x03 */
-		0x71, 0x50, 0x5a, 0x0a, 0x1f, 0x06, 0x19, 0x1c,
-		0x02, 0x07, 0x06, 0x07, 0x00, 0x00, 0x00, 0x00,
-		/* Timing for modes 0x04, 0x05 & 0x06 */
-		0x38, 0x28, 0x2d, 0x0a, 0x7f, 0x06, 0x64, 0x70,
-		0x02, 0x01, 0x06, 0x07, 0x00, 0x00, 0x00, 0x00,
-		/* Timing for mode 0x07 */
-		0x61, 0x50, 0x52, 0x0f, 0x19, 0x06, 0x19, 0x19,
-		0x02, 0x0d, 0x0b, 0x0c, 0x00, 0x00, 0x00, 0x00,
-		/* Display page lengths in little endian order */
-		0x00, 0x08,	/* Modes 0x00 and 0x01 */
-		0x00, 0x10,	/* Modes 0x02 and 0x03 */
-		0x00, 0x40,	/* Modes 0x04 and 0x05 */
-		0x00, 0x40,	/* Modes 0x06 and 0x07 */
-		/* Number of columns for each mode */
-		40, 40, 80, 80, 40, 40, 80, 80,
-		/* CGA Mode register value for each mode */
-		0x2c, 0x28, 0x2d, 0x29, 0x2a, 0x2e, 0x1e, 0x29,
-		/* Padding */
-		0x00, 0x00, 0x00, 0x00
-	};
-	int i;
-
-	for (i = 0; i < sizeof(VideoParms); i++)
-		MEM_WB(i + (0x1000 - sizeof(VideoParms)), VideoParms[i]);
-	MEM_WW(0x1d << 2, 0x1000 - sizeof(VideoParms));
-	MEM_WW((0x1d << 2) + 2, 0);
-
-	printk(BIOS_DEBUG,"SETUP INT\n");
-	MEM_WW(0x10 << 2, 0xf065);
-	MEM_WW((0x10 << 2) + 2, SYS_BIOS >> 4);
-	MEM_WW(0x42 << 2, 0xf065);
-	MEM_WW((0x42 << 2) + 2, SYS_BIOS >> 4);
-	MEM_WW(0x6D << 2, 0xf065);
-	MEM_WW((0x6D << 2) + 2, SYS_BIOS >> 4);
-}
-#endif
-
+#define BIOSEMU_MEM_BASE 0x00000000
+#define BIOSEMU_MEM_SIZE 0x00100000
 void run_bios(struct device * dev, unsigned long addr)
 {
-#if 1
 	int i;
-	unsigned short initialcs = (addr & 0xF0000) >> 4;
-	unsigned short initialip = (addr + 3) & 0xFFFF;
-	unsigned short devfn = dev->bus->secondary << 8 | dev->path.pci.devfn;
-
+	u16 initialcs = (addr & 0xF0000) >> 4;
+	u16 initialip = (addr + 3) & 0xFFFF;
+	u16 devfn = (dev->bus->secondary << 8) | dev->path.pci.devfn;
 	X86EMU_intrFuncs intFuncs[256];
 
-	X86EMU_setMemBase(0, 0x100000);
-	X86EMU_setupPioFuncs(&myfuncs);
+	X86EMU_setMemBase(BIOSEMU_MEM_BASE, BIOSEMU_MEM_SIZE);
+	X86EMU_setupPioFuncs(&biosemu_piofuncs);
 	for (i = 0; i < 256; i++)
 		intFuncs[i] = do_int;
 	X86EMU_setupIntrFuncs(intFuncs);
 
-	{
-		char *date = "01/01/99";
-		for (i = 0; date[i]; i++)
-			wrb(0xffff5 + i, date[i]);
-		wrb(0xffff7, '/');
-		wrb(0xffffa, '/');
-	}
-
-	{
-	    /* FixME: move PIT init to its own file */
-	    outb(0x36, 0x43);
-	    outb(0x00, 0x40);
-	    outb(0x00, 0x40);
-	}
-	//setup_int_vect();
+	setup_system_bios();
 
 	/* cpu setup */
 	X86_AX = devfn ? devfn : 0xff;
@@ -374,26 +553,37 @@ void run_bios(struct device * dev, unsigned long addr)
 	X86_CS = initialcs;
 
 	/* Initialize stack and data segment */
-	X86_SS = initialcs;
-	X86_SP = 0xfffe;
-	X86_DS = 0x0040;
-	X86_ES = 0x0000;
+	X86_SS = STACK_SEGMENT;
+	X86_SP = STACK_START_OFFSET;;
+	X86_DS = DATA_SEGMENT;
 
 	/* We need a sane way to return from bios
 	 * execution. A hlt instruction and a pointer
 	 * to it, both kept on the stack, will do.
 	 */
-	pushw(0xf4f4);		/* hlt; hlt */
-	pushw(X86_SS);
-	pushw(X86_SP + 2);
+	push_word(0xf4f4);		/* hlt; hlt */
+	push_word(X86_SS);
+	push_word(X86_SP + 2);
 
 #ifdef CONFIG_DEBUG
 	//X86EMU_trace_on();
 #endif
 
-	printk("entering emulator\n");
+	printk("Executing Initialization Vector...\n");
 	X86EMU_exec();
-	printk("exited emulator\n");
+	printk("Option ROM Exit Status: %04x\n", X86_AX);
 
-#endif
+	/* Check whether the stack is "clean" i.e. containing the HLT
+         * instruction we pushed before executing and pointing to the original
+	 * stack address... indicating that the initialization probably was
+	 * successful
+	 */
+	if ((pop_word() == 0xf4f4) && (X86_SS == STACK_SEGMENT)
+	    && (X86_SP == STACK_START_OFFSET)) {
+		printk("Stack is clean, initialization successfull!\n");
+	} else {
+		printk("Stack unclean, initialization probably NOT COMPLETE!!\n");
+		printk("SS:SP = %04x:%04x, expected: %04x:%04x\n",
+			X86_SS, X86_SP, STACK_SEGMENT, STACK_START_OFFSET);
+        }
 }

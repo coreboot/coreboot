@@ -22,7 +22,7 @@
 
 X86EMU_SRC  = debug.c decode.c fpu.c ops.c ops2.c prim_ops.c sys.c
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_X86EMU),y)
-BIOSEMU_SRC = biosemu.c pcbios/pcibios.c
+BIOSEMU_SRC = biosemu.c
 endif
 
 ifeq ($(CONFIG_PCI_OPTION_ROM_RUN_YABEL),y)

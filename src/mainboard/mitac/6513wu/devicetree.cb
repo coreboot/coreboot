@@ -28,7 +28,6 @@ chip northbridge/intel/i82810           # Northbridge
     device pci 0.0 on end               # Graphics Memory Controller Hub (GMCH)
     chip drivers/pci/onboard
       device pci 1.0 on end
-      register "rom_address" = "0xfff80000" # 512 KB image
     end
     chip southbridge/intel/i82801xx     # Southbridge
       register "pirqa_routing" = "0x03"

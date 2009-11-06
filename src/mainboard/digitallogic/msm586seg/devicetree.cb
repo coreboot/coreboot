@@ -7,7 +7,6 @@ chip cpu/amd/sc520
 		end
 		chip drivers/pci/onboard
 			device pci 14.0 on end # 69000
-			register "rom_address" = "0x2000000"
 		end
 #		register "com1" = "{1}"
 #		register "com1" = "{1, 0, 0x3f8, 4}"

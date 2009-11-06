@@ -123,9 +123,6 @@ chip northbridge/via/cx700
 		device pci 1.0 on     # PCI Bridge
 			chip drivers/pci/onboard
 				device pci 0.0 on end
-				#register "rom_address" = "0xfffc0000" #256k image
-				register "rom_address" = "0xfff80000" #512k image
-				#register "rom_address" = "0xfff00000" #1024k image
 			end # Onboard Video
 		end # PCI Bridge
 		device pci f.0 on end # IDE/SATA

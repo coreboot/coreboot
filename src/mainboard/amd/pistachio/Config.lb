@@ -158,7 +158,6 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 1.0 on  # Internal Graphics P2P bridge 0x7912
 						chip drivers/pci/onboard
 							device pci 5.0 on end	# Internal Graphics 0x791F
-							register "rom_address" = "0xfff00000"
 						end
 					end
 					device pci 2.0 on end # PCIE P2P bridge (external graphics) 0x7913

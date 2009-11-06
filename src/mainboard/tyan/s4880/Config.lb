@@ -135,7 +135,6 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 1.0 off end
                                                 chip drivers/pci/onboard
                                                         device pci 6.0 on end
-                                                        register "rom_address" = "0xfff80000"
                                                 end
 					end
 					device pci 1.0 on

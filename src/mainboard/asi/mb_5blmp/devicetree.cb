@@ -40,9 +40,6 @@ chip northbridge/amd/gx1		# Northbridge
       # device pci 12.4 on		# VGA (onboard)
       #   chip drivers/pci/onboard
       #     device pci 12.4 on end
-      #     register "rom_address" = "0xfffc0000" # 256 KB image
-      #     # register "rom_address" = "0xfff80000" # 512 KB image
-      #     # register "rom_address" = "0xfff00000" # 1 MB image
       #   end
       # end
       device pci 13.0 on end		# USB

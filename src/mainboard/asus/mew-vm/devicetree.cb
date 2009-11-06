@@ -4,7 +4,6 @@ chip northbridge/intel/i82810
 		device pci 1.0 on # Onboard Video
 			#chip drivers/pci/onboard
 			#	device pci 1.0 on end
-			#	register "rom_address" = "0xfff80000"
 		        #end
 		end
 		chip southbridge/intel/i82801xx # Southbridge
@@ -14,7 +13,6 @@ chip northbridge/intel/i82810
 			device pci 1e.0 on # PCI Bridge
 				#chip drivers/pci/onboard
 				#	device pci 1.0 on end
-				#	register "rom_address" = "0xfff80000"
 			        #end
 			end
 			device pci 1f.0 on  # ISA/LPC? Bridge

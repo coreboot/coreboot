@@ -211,7 +211,6 @@ chip northbridge/amd/amdk8/root_complex
                                         chip drivers/pci/onboard
                                               device pci 3.0 on end # it is in bcm5785_0 bus, but the device id can not be changed even unitid is changed, fake one to get the rom_address
                                                                     # if CONFIG_HT_CHAIN_END_UNITID_BASE=0, it is 4, if CONFIG_HT_CHAIN_END_UNITID_BASE=1, it is 3
-                                              register "rom_address" = "0xfff80000"
                                         end
                                        #bx_a013+ start
                                        #chip drivers/pci/onboard    #SATA2
@@ -229,7 +228,6 @@ chip northbridge/amd/amdk8/root_complex
 #                                        end
 #                                        chip drivers/pci/onboard
 #                                              device pci 4.0 on end # it is in bcm5785_0 bus, but the device id can not be changed even unitid is changed
-#                                              register "rom_address" = "0xfff80000"
 #                                        end
 
                        end #  device pci 18.0

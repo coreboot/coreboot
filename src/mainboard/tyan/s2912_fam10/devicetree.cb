@@ -114,7 +114,6 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 6.0 on
 						chip drivers/pci/onboard
 							device pci 4.0 on end
-							register "rom_address" = "0xfff00000"
 						end
 					end # PCI
 					device pci 6.1 off end # AZA

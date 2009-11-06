@@ -1,29 +1,29 @@
-## 
+##
 ## This file is part of the coreboot project.
-## 
+##
 ## Copyright (C) 2007 AMD
 ## Written by Yinghai Lu <yinghailu@amd.com> for AMD.
-## 
+##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 2 of the License, or
 ## (at your option) any later version.
-## 
+##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-## 
+##
 ## You should have received a copy of the GNU General Public License
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-## 
+##
 
 ## CONFIG_XIP_ROM_SIZE must be a power of 2.
 default CONFIG_XIP_ROM_SIZE = 64 * 1024
 include /config/failovercalculation.lb
 
-arch i386 end 
+arch i386 end
 
 ##
 ## Build the objects we have code for in this directory.
@@ -36,28 +36,28 @@ object get_bus_conf.o
 if CONFIG_GENERATE_MP_TABLE object mptable.o end
 if CONFIG_GENERATE_PIRQ_TABLE object irq_tables.o end
 
-	if CONFIG_USE_INIT	
+	if CONFIG_USE_INIT
 		makerule ./cache_as_ram_auto.o
-		        depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
-        		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
+			depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
 		end
 	else
 		makerule ./cache_as_ram_auto.inc
-        		depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
-		        action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
-		        action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
-        		action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
+			depends "$(CONFIG_MAINBOARD)/cache_as_ram_auto.c option_table.h"
+			action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(TOP)/src -I. -c -S $(CONFIG_MAINBOARD)/cache_as_ram_auto.c -o $@"
+			action "perl -e 's/\.rodata/.rom.data/g' -pi $@"
+			action "perl -e 's/\.text/.section .rom.text/g' -pi $@"
 		end
 	end
 
 if CONFIG_USE_FAILOVER_IMAGE
 else
     if CONFIG_AP_CODE_IN_CAR
-        makerule ./apc_auto.o
-                depends "$(CONFIG_MAINBOARD)/apc_auto.c option_table.h"
-                action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/apc_auto.c -o $@"
-        end
-        ldscript /arch/i386/init/ldscript_apc.lb
+	makerule ./apc_auto.o
+		depends "$(CONFIG_MAINBOARD)/apc_auto.c option_table.h"
+		action "$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) -I$(TOP)/src -I. -c $(CONFIG_MAINBOARD)/apc_auto.c -o $@"
+	end
+	ldscript /arch/i386/init/ldscript_apc.lb
     end
 end
 
@@ -79,32 +79,32 @@ end
 
 mainboardinit cpu/x86/32bit/entry32.inc
 
-        if CONFIG_USE_INIT
-                ldscript /cpu/x86/32bit/entry32.lds
-        end
+	if CONFIG_USE_INIT
+		ldscript /cpu/x86/32bit/entry32.lds
+	end
 
-        if CONFIG_USE_INIT
-                ldscript /cpu/amd/car/cache_as_ram.lds
-        end
+	if CONFIG_USE_INIT
+		ldscript /cpu/amd/car/cache_as_ram.lds
+	end
 
 ##
 ## Build our reset vector (This is where coreboot is entered)
 ##
 if CONFIG_HAVE_FAILOVER_BOOT
-    if CONFIG_USE_FAILOVER_IMAGE 
-	mainboardinit cpu/x86/16bit/reset16.inc 
-	ldscript /cpu/x86/16bit/reset16.lds 
+    if CONFIG_USE_FAILOVER_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
     else
-	mainboardinit cpu/x86/32bit/reset32.inc 
-	ldscript /cpu/x86/32bit/reset32.lds 
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
     end
 else
-    if CONFIG_USE_FALLBACK_IMAGE 
-	mainboardinit cpu/x86/16bit/reset16.inc 
-	ldscript /cpu/x86/16bit/reset16.lds 
+    if CONFIG_USE_FALLBACK_IMAGE
+	mainboardinit cpu/x86/16bit/reset16.inc
+	ldscript /cpu/x86/16bit/reset16.lds
     else
-	mainboardinit cpu/x86/32bit/reset32.inc 
-	ldscript /cpu/x86/32bit/reset32.lds 
+	mainboardinit cpu/x86/32bit/reset32.inc
+	ldscript /cpu/x86/32bit/reset32.lds
     end
 end
 
@@ -118,12 +118,12 @@ ldscript /southbridge/nvidia/mcp55/id.lds
 ## ROMSTRAP table for MCP55
 ##
 if CONFIG_HAVE_FAILOVER_BOOT
-    if CONFIG_USE_FAILOVER_IMAGE 
+    if CONFIG_USE_FAILOVER_IMAGE
 	mainboardinit southbridge/nvidia/mcp55/romstrap.inc
 	ldscript /southbridge/nvidia/mcp55/romstrap.lds
     end
 else
-    if CONFIG_USE_FALLBACK_IMAGE 
+    if CONFIG_USE_FALLBACK_IMAGE
 	mainboardinit southbridge/nvidia/mcp55/romstrap.inc
 	ldscript /southbridge/nvidia/mcp55/romstrap.lds
     end
@@ -135,7 +135,7 @@ end
 	mainboardinit cpu/amd/car/cache_as_ram.inc
 
 ###
-### This is the early phase of coreboot startup 
+### This is the early phase of coreboot startup
 ### Things are delicate and we test to see if we should
 ### failover to another image.
 ###
@@ -176,209 +176,187 @@ if CONFIG_GENERATE_ACPI_TABLES
 end
 
 ##
-## Include the secondary Configuration files 
+## Include the secondary Configuration files
 ##
 config chip.h
 
 chip northbridge/amd/amdk8/root_complex
-        device apic_cluster 0 on
-                chip cpu/amd/socket_AM2
-                        device apic 0 on end
-                end
-        end
-	device pci_domain 0 on
-		chip northbridge/amd/amdk8 #mc0
-			device pci 18.0 on 
-				#  devices on link 0, link 0 == LDT 0 
-			        chip southbridge/nvidia/mcp55 
-					device pci 0.0 on end   # HT
-                			device pci 1.0 on # LPC
-						chip superio/ite/it8716f
-							# Floppy and any LDN
-							device pnp 2e.0 on
-                	               			# Watchdog from CLKIN, CLKIN = 24 MHz
-                	                 			irq 0x23 = 0x11 
+	device apic_cluster 0 on
+		chip cpu/amd/socket_AM2
+			device apic 0 on end
+		end
+end
+device pci_domain 0 on
+	chip northbridge/amd/amdk8 #mc0
+		device pci 18.0 on #  devices on link 0, link 0 == LDT 0
+			chip southbridge/nvidia/mcp55
+				device pci 0.0 on end # HT
+				device pci 1.0 on # LPC
+					chip superio/ite/it8716f
+						# Floppy and any LDN
+						device pnp 2e.0 on
+							# Watchdog from CLKIN, CLKIN = 24 MHz
+							irq 0x23 = 0x11
 							# Serial Flash (SPI only)
-								#0x24 = 0x1a
-                	                 			io 0x60 = 0x3f0
-                	                			irq 0x70 = 6
-                	                			drq 0x74 = 2
-							end
-                	        			device pnp 2e.1 on #  Com1
-                	                 			io 0x60 = 0x3f8
-                	                			irq 0x70 = 4
-							end
-                	        			device pnp 2e.2 off #  Com2
-                	                 			io 0x60 = 0x2f8
-                	                			irq 0x70 = 3
-							end
-                	        			device pnp 2e.3 on #  Parallel Port
-                	                 			io 0x60 = 0x378
-                	                			irq 0x70 = 7
-							end
-                	        			device pnp 2e.4 on #  EC
-                	                 			io 0x60 = 0x290
-                	                 			io 0x62 = 0x230
-                	                			irq 0x70 = 9
-							end
-                	        			device pnp 2e.5 on #  Keyboard
-                	                 			io 0x60 = 0x60
-                	                 			io 0x62 = 0x64
-                	                			irq 0x70 = 1
-							end
-                	        			device pnp 2e.6 on #  Mouse
-                	                			irq 0x70 = 12
-							end
-	              	        			device pnp 2e.7 on #  GPIO, SPI flash
-								# pin 84 is not GP10
-								irq 0x25 = 0x0
-				# pin 21 is GP26, pin 26 is GP21, pin 27 is GP20
-								irq 0x26 = 0x43
-								# pin 13 is GP35
-								irq 0x27 = 0x20 
-								# pin 70 is not GP46
-								#irq 0x28 = 0x0
-				# pin 6,3,128,127,126 is GP63,64,65,66,67
-								irq 0x29 = 0x81
-				# Enable FAN_CTL/FAN_TAC set to 5 (pin 21,23), enable FAN_CTL/FAN_TAC set to 4 (pin 20,22), pin 48 is PCIRST5#, pin91 is PCIRSTIN#, VIN7 is internal voltage divider for VCCH5V, pin 95 is ATXPG, VIN3 is internal voltage divider for VCC5V
-								#irq 0x2c = 0x1f
-				# Simple I/O base
-								io 0x62 = 0x800
-				# Serial Flash I/O (SPI only)
-								io 0x64 = 0x820
-				# watch dog force timeout (parallel flash only)
-								#irq 0x71 = 0x1
-								# No WDT interrupt
-								irq 0x72 = 0x0 
-					# GPIO pin set 1 disable internal pullup
-								irq 0xb8 = 0x0
-					# GPIO pin set 5 enable internal pullup
-								irq 0xbc = 0x01
-					# SIO pin set 1 alternate function
-								#irq 0xc0 = 0x0
-					# SIO pin set 2 mixed function
-								irq 0xc1 = 0x43
-					# SIO pin set 3 mixed function
-								irq 0xc2 = 0x20
-					# SIO pin set 4 alternate function
-								#irq 0xc3 = 0x0
-					# SIO pin set 1 input mode
-								#irq 0xc8 = 0x0
-					# SIO pin set 2 input mode
-								irq 0xc9 = 0x0
-					# SIO pin set 4 input mode
-								#irq 0xcb = 0x0
-					# Generate SMI# on EC IRQ
-								#irq 0xf0 = 0x10
-					# SMI# level trigger
-								#irq 0xf1 = 0x40
-					# HWMON alert beep pin location
-								irq 0xf6 = 0x28
-							end
-                	        			device pnp 2e.8 off #  MIDI
-								io 0x60 = 0x300
-								irq 0x70 = 10
-							end
-                	        			device pnp 2e.9 off #  GAME
-								io 0x60 = 0x220
-							end
-                	        			device pnp 2e.a off end #  CIR
+							#0x24 = 0x1a
+							io 0x60 = 0x3f0
+							irq 0x70 = 6
+							drq 0x74 = 2
 						end
+						device pnp 2e.1 on # Com1
+							io 0x60 = 0x3f8
+							irq 0x70 = 4
+						end
+						device pnp 2e.2 off # Com2
+							io 0x60 = 0x2f8
+							irq 0x70 = 3
+						end
+						device pnp 2e.3 on #  Parallel Port
+							io 0x60 = 0x378
+							irq 0x70 = 7
+						end
+						device pnp 2e.4 on #  EC
+							io 0x60 = 0x290
+							io 0x62 = 0x230
+							irq 0x70 = 9
+						end
+						device pnp 2e.5 on #  Keyboard
+							io 0x60 = 0x60
+							io 0x62 = 0x64
+							irq 0x70 = 1
+						end
+						device pnp 2e.6 on #  Mouse
+							irq 0x70 = 12
+						end
+						device pnp 2e.7 on #  GPIO, SPI flash
+						# pin 84 is not GP10
+							irq 0x25 = 0x0
+						# pin 21 is GP26, pin 26 is GP21, pin 27 is GP20
+							irq 0x26 = 0x43
+						# pin 13 is GP35
+							irq 0x27 = 0x20
+						# pin 70 is not GP46
+							#irq 0x28 = 0x0
+						# pin 6,3,128,127,126 is GP63,64,65,66,67
+							irq 0x29 = 0x81
+						# Enable FAN_CTL/FAN_TAC set to 5 (pin 21,23), enable FAN_CTL/FAN_TAC set to 4 (pin 20,22), pin 48 is PCIRST5#, pin91 is PCIRSTIN#, VIN7 is internal voltage divider for VCCH5V, pin 95 is ATXPG, VIN3 is internal voltage divider for VCC5V
+							#irq 0x2c = 0x1f
+						# Simple I/O base
+							io 0x62 = 0x800
+						# Serial Flash I/O (SPI only)
+							io 0x64 = 0x820
+						# watch dog force timeout (parallel flash only)
+							#irq 0x71 = 0x1
+						# No WDT interrupt
+							irq 0x72 = 0x0
+						# GPIO pin set 1 disable internal pullup
+							irq 0xb8 = 0x0
+						# GPIO pin set 5 enable internal pullup
+							irq 0xbc = 0x01
+						# SIO pin set 1 alternate function
+							#irq 0xc0 = 0x0
+						# SIO pin set 2 mixed function
+							irq 0xc1 = 0x43
+						# SIO pin set 3 mixed function
+							irq 0xc2 = 0x20
+						# SIO pin set 4 alternate function
+							#irq 0xc3 = 0x0
+						# SIO pin set 1 input mode
+							#irq 0xc8 = 0x0
+						# SIO pin set 2 input mode
+							irq 0xc9 = 0x0
+						# SIO pin set 4 input mode
+							#irq 0xcb = 0x0
+						# Generate SMI# on EC IRQ
+							#irq 0xf0 = 0x10
+						# SMI# level trigger
+							#irq 0xf1 = 0x40
+						# HWMON alert beep pin location
+							irq 0xf6 = 0x28
+						end
+						device pnp 2e.8 off #  MIDI
+							io 0x60 = 0x300
+							irq 0x70 = 10
+						end
+						device pnp 2e.9 off #  GAME
+							io 0x60 = 0x220
+						end
+						device pnp 2e.a off end #  CIR
 					end
-			                device pci 1.1 on # SM 0
-                                                chip drivers/generic/generic #dimm 0-0-0
-                                                        device i2c 50 on end  
-                                                end              
-                                                chip drivers/generic/generic #dimm 0-0-1
-                                                        device i2c 51 on end
-                                                end     
-                                                chip drivers/generic/generic #dimm 0-1-0
-                                                        device i2c 52 on end
-                                                end             
-                                                chip drivers/generic/generic #dimm 0-1-1
-                                                        device i2c 53 on end
-                                                end              
-                                                chip drivers/generic/generic #dimm 1-0-0
-                                                        device i2c 54 on end
-                                                end     
-                                                chip drivers/generic/generic #dimm 1-0-1
-                                                        device i2c 55 on end
-                                                end     
-                                                chip drivers/generic/generic #dimm 1-1-0
-                                                        device i2c 56 on end
-                                                end     
-                                                chip drivers/generic/generic #dimm 1-1-1
-                                                        device i2c 57 on end
-                                                end 
-					end # SM
+				end
+				device pci 1.1 on # SM 0
+					chip drivers/generic/generic #dimm 0-0-0
+						device i2c 50 on end
+					end
+					chip drivers/generic/generic #dimm 0-0-1
+						device i2c 51 on end
+					end
+					chip drivers/generic/generic #dimm 0-1-0
+						device i2c 52 on end
+					end
+					chip drivers/generic/generic #dimm 0-1-1
+						device i2c 53 on end
+					end
+					chip drivers/generic/generic #dimm 1-0-0
+						device i2c 54 on end
+					end
+					chip drivers/generic/generic #dimm 1-0-1
+						device i2c 55 on end
+					end
+					chip drivers/generic/generic #dimm 1-1-0
+						device i2c 56 on end
+					end
+					chip drivers/generic/generic #dimm 1-1-1
+						device i2c 57 on end
+					end
+				end # SM
 #WTF?!? We already have device pci 1.1 in the section above
-                                        device pci 1.1 on # SM 1
-#PCI device smbus address will depend on addon pci device, do we need to scan_smbus_bus?
-#                                                chip drivers/generic/generic #PCIXA Slot1
-#                                                        device i2c 50 on end
-#                                                end
-#                                                chip drivers/generic/generic #PCIXB Slot1
-#                                                        device i2c 51 on end
-#                                                end     
-#                                                chip drivers/generic/generic #PCIXB Slot2
-#                                                        device i2c 52 on end
-#                                                end             
-#                                                chip drivers/generic/generic #PCI Slot1
-#                                                        device i2c 53 on end
-#                                                end              
-#                                                chip drivers/generic/generic #Master MCP55 PCI-E
-#                                                        device i2c 54 on end
-#                                                end     
-#                                                chip drivers/generic/generic #Slave MCP55 PCI-E
-#                                                        device i2c 55 on end
-#                                                end             
-                                                chip drivers/generic/generic #MAC EEPROM
-                                                        device i2c 51 on end
-                                                end 
-
-                                        end # SM 
-	                		device pci 2.0 on end # USB 1.1
-        	        		device pci 2.1 on end # USB 2
-                			device pci 4.0 on end # IDE
-	                		device pci 5.0 on end # SATA 0
-	                		device pci 5.1 on end # SATA 1
-	                		device pci 5.2 on end # SATA 2
-                			device pci 6.0 on end # PCI
-        	        		device pci 6.1 on end # AZA
-	                		device pci 8.0 on end # NIC
-	                		device pci 9.0 off end # NIC
-        	       			device pci a.0 on end # PCI E 5
-        	       			device pci b.0 on end # PCI E 4
-                			device pci c.0 on end # PCI E 3
-                			device pci d.0 on end # PCI E 2
-                			device pci e.0 on end # PCI E 1
-        	       			device pci f.0 on end # PCI E 0
-	                                register "ide0_enable" = "1"
-                	                register "sata0_enable" = "1"
-                        	        register "sata1_enable" = "1"
+				device pci 1.1 on # SM 1
+					chip drivers/generic/generic #MAC EEPROM
+						device i2c 51 on end
+					end
+				end # SM
+				device pci 2.0 on end # USB 1.1
+				device pci 2.1 on end # USB 2
+				device pci 4.0 on end # IDE
+				device pci 5.0 on end # SATA 0
+				device pci 5.1 on end # SATA 1
+				device pci 5.2 on end # SATA 2
+				device pci 6.0 on end # PCI
+				device pci 6.1 on end # AZA
+				device pci 8.0 on end # NIC
+				device pci 9.0 off end # NIC
+				device pci a.0 on end # PCI E 5
+				device pci b.0 on end # PCI E 4
+				device pci c.0 on end # PCI E 3
+				device pci d.0 on end # PCI E 2
+				device pci e.0 on end # PCI E 1
+				device pci f.0 on end # PCI E 0
+					register "ide0_enable" = "1"
+					register "sata0_enable" = "1"
+					register "sata1_enable" = "1"
 					register "mac_eeprom_smbus" = "3" # 1: smbus under 2e.8, 2: SM0 3: SM1
 					register "mac_eeprom_addr" = "0x51"
 				end
-			end #  device pci 18.0 
+			end #device pci 18.0
 			device pci 18.0 on end # Link 1
 			device pci 18.0 on end
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
 		end # mc0
-		
 	end # PCI domain
-	
-#       chip drivers/generic/debug 
-#               device pnp 0.0 off end # chip name
-#                device pnp 0.1 on end # pci_regs_all
-#                device pnp 0.2 on end # mem
-#                device pnp 0.3 off end # cpuid
-#                device pnp 0.4 on end # smbus_regs_all
-#                device pnp 0.5 off end # dual core msr
-#                device pnp 0.6 off end # cache size
-#               device pnp 0.7 off end # tsc
-#                device pnp 0.8 off  end # io
-#                device pnp 0.9 off end # io
-#       end  
+
+#	chip drivers/generic/debug
+#		device pnp 0.0 off end # chip name
+#		device pnp 0.1 on end # pci_regs_all
+#		device pnp 0.2 on end # mem
+#		device pnp 0.3 off end # cpuid
+#		device pnp 0.4 on end # smbus_regs_all
+#		device pnp 0.5 off end # dual core msr
+#		device pnp 0.6 off end # cache size
+#		device pnp 0.7 off end # tsc
+#		device pnp 0.8 off  end # io
+#		device pnp 0.9 off end # io
+#	end
 end #root_complex

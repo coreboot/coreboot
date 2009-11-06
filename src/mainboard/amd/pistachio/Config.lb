@@ -136,7 +136,7 @@ config chip.h
 #Define gpp_configuration,	A=0, B=1, C=2, D=3, E=4(default)
 #Define port_enable, (bit map): GFX(2,3), GPP(4,5,6,7)
 #Define gfx_dev2_dev3, 0: a link will never be established on Dev2 or Dev3,
-#					   1: the system allows a PCIE link to be established on Dev2 or Dev3.
+#			1: the system allows a PCIE link to be established on Dev2 or Dev3.
 #Define gfx_dual_slot, 0: single slot, 1: dual slot
 #Define gfx_lane_reversal, 0: disable lane reversal, 1: enable
 #Define gfx_tmds, 0: didn't support TMDS, 1: support

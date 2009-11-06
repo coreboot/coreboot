@@ -5,11 +5,11 @@ chip northbridge/amd/amdk8/root_complex
 		end
 end
 device pci_domain 0 on
-	chip northbridge/amd/amdk8
-		device pci 18.0 on 
-			chip southbridge/nvidia/mcp55 
-				device pci 0.0 on end
-				device pci 1.0 on
+	chip northbridge/amd/amdk8 #mc0
+		device pci 18.0 on #  devices on link 0, link 0 == LDT 0
+			chip southbridge/nvidia/mcp55
+				device pci 0.0 on end # HT
+				device pci 1.0 on # LPC
 					chip superio/ite/it8716f
 						# Floppy and any LDN
 						device pnp 2e.0 on
@@ -52,7 +52,7 @@ device pci_domain 0 on
 						# pin 21 is GP26, pin 26 is GP21, pin 27 is GP20
 							irq 0x26 = 0x43
 						# pin 13 is GP35
-							irq 0x27 = 0x20 
+							irq 0x27 = 0x20
 						# pin 70 is not GP46
 							#irq 0x28 = 0x0
 						# pin 6,3,128,127,126 is GP63,64,65,66,67
@@ -66,7 +66,7 @@ device pci_domain 0 on
 						# watch dog force timeout (parallel flash only)
 							#irq 0x71 = 0x1
 						# No WDT interrupt
-							irq 0x72 = 0x0 
+							irq 0x72 = 0x0
 						# GPIO pin set 1 disable internal pullup
 							irq 0xb8 = 0x0
 						# GPIO pin set 5 enable internal pullup
@@ -99,11 +99,10 @@ device pci_domain 0 on
 						device pnp 2e.9 off #  GAME
 							io 0x60 = 0x220
 						end
-						device pnp 2e.a off #  CIR
-						end
+						device pnp 2e.a off end #  CIR
 					end
 				end
-				device pci 1.1 on
+				device pci 1.1 on # SM 0
 					chip drivers/generic/generic #dimm 0-0-0
 						device i2c 50 on end
 					end
@@ -129,22 +128,22 @@ device pci_domain 0 on
 						device i2c 57 on end
 					end
 				end # SM
-	                	device pci 2.0 on end # USB 1.1
-        	        	device pci 2.1 on end # USB 2
-                		device pci 4.0 on end # IDE
-	                	device pci 5.0 on end # SATA 0
-	                	device pci 5.1 on end # SATA 1
-	                	device pci 5.2 on end # SATA 2
-                		device pci 6.0 on end # PCI
-        	        	device pci 6.1 on end # AUDIO
-	                	device pci 8.0 on end # NIC
-	                	device pci 9.0 off end # N/A
-        	       		device pci a.0 on end # PCI E 5
-        	       		device pci b.0 on end # PCI E 4
-                		device pci c.0 on end # PCI E 3
-                		device pci d.0 on end # PCI E 2
-                		device pci e.0 on end # PCI E 1
-        	       		device pci f.0 on end # PCI E 0
+				device pci 2.0 on end # USB 1.1
+				device pci 2.1 on end # USB 2
+				device pci 4.0 on end # IDE
+				device pci 5.0 on end # SATA 0
+				device pci 5.1 on end # SATA 1
+				device pci 5.2 on end # SATA 2
+				device pci 6.0 on end # PCI
+				device pci 6.1 on end # AUDIO
+				device pci 8.0 on end # NIC
+				device pci 9.0 off end # N/A
+				device pci a.0 on end # PCI E 5
+				device pci b.0 on end # PCI E 4
+				device pci c.0 on end # PCI E 3
+				device pci d.0 on end # PCI E 2
+				device pci e.0 on end # PCI E 1
+				device pci f.0 on end # PCI E 0
 					register "ide0_enable" = "1"
 					register "sata0_enable" = "1"
 					register "sata1_enable" = "1"
@@ -153,13 +152,14 @@ device pci_domain 0 on
 				end
 			end #device pci 18.0
 			device pci 18.0 on end # Link 1
+			device pci 18.0 on end
 			device pci 18.1 on end
 			device pci 18.2 on end
 			device pci 18.3 on end
 		end # mc0
 	end # PCI domain
 
-#	 chip drivers/generic/debug 
+#	chip drivers/generic/debug
 #		device pnp 0.0 off end # chip name
 #		device pnp 0.1 on end # pci_regs_all
 #		device pnp 0.2 on end # mem
@@ -170,6 +170,5 @@ device pci_domain 0 on
 #		device pnp 0.7 off end # tsc
 #		device pnp 0.8 off  end # io
 #		device pnp 0.9 off end # io
-#	 end  
-
+#	end
 end #root_complex

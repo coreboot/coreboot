@@ -17,7 +17,7 @@
  * Having the proper apicid's in the table so the non-bootstrap
  *  processors can be woken up should be enough.  Linux-2.6.11 work-around.
  */
-void smp_write_processors_inorder(struct mp_config_table *mc)
+static void smp_write_processors_inorder(struct mp_config_table *mc)
 {
         int boot_apic_id;
 	int order_id;
@@ -65,7 +65,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 	if (!dev) {
-		return 0;
+		return 0xff;
 	}
 	for(reg = 0xE0; reg < 0xF0; reg += 0x04) {
 		uint32_t config_map;
@@ -89,25 +89,25 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
 			return bus_base;
 		}
 	}
-	return 0;
+	return 0xff;
 }
 
-unsigned max_apicid(void)
+static unsigned max_apicid(void)
 {
-	unsigned max_apicid;
+	unsigned max;
 	device_t dev;
-	max_apicid = 0;
+	max = 0;
 	for(dev = all_devices; dev; dev = dev->next) {
 		if (dev->path.type != DEVICE_PATH_APIC)
 			continue;
-		if (dev->path.apic.apic_id > max_apicid) {
-			max_apicid = dev->path.apic.apic_id;
+		if (dev->path.apic.apic_id > max) {
+			max = dev->path.apic.apic_id;
 		}
 	}
-	return max_apicid;
+	return max;
 }
 
-void *smp_write_config_table(void *v)
+static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
 	static const char oem[8] = "LNXI    ";
@@ -152,9 +152,9 @@ void *smp_write_config_table(void *v)
 
 		/* HT chain 0 */
 		bus_chain_0 = node_link_to_bus(0, 0);
-		if (bus_chain_0 == 0) {
+		if (bus_chain_0 == 0xff) {
 			printk_debug("ERROR - cound not find bus for node 0 chain 0, using defaults\n");
-			bus_chain_0 = 1;
+			bus_chain_0 = 0;
 		}
 
 		/* 8111 */
@@ -165,7 +165,7 @@ void *smp_write_config_table(void *v)
 			bus_isa++;
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:03.0, using defaults\n");
+			printk_debug("ERROR - could not find PCI %02x:03.0, using defaults\n", bus_chain_0);
 
 			bus_8111_1 = 4;
 			bus_isa = 5;
@@ -177,7 +177,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:01.0, using defaults\n");
+			printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_chain_0);
 
 			bus_8131_1 = 2;
 		}
@@ -188,7 +188,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
+			printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_chain_0);
 
 			bus_8131_2 = 3;
 		}
@@ -318,29 +318,38 @@ void *smp_write_config_table(void *v)
 	return smp_next_mpe_entry(mc);
 }
 
-void reboot_if_hotswap(void)
+static void reboot_if_hotswap(void)
 {
 	/* Hack patch work around for hot swap enable 33mhz problem */
 	device_t dev;
 	uint32_t data;
 	unsigned long htic;
 	int reset;
-	int i;
+
+	unsigned bus_chain_0 = node_link_to_bus(0, 0);
 
 	reset = 0;
 	printk_debug("Looking for bad PCIX MHz input\n");
-	dev = dev_find_slot(1, PCI_DEVFN(0x02,0));
-	data = pci_read_config32(dev, 0xa0);
-	if(!(((data>>16)&0x03)==0x03)) {
-		reset=1;
-		printk_debug("Bad PCIX MHz - Reset\n");
+	dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x02,0));
+	if (!dev)
+		printk_debug("Couldn't find %02x:02.0 \n", bus_chain_0);
+	else {
+		data = pci_read_config32(dev, 0xa0);
+		if(!(((data>>16)&0x03)==0x03)) {
+			reset=1;
+			printk_debug("Bad PCIX MHz - Reset\n");
+		}
 	}
 	printk_debug("Looking for bad Hot Swap Enable\n");
-	dev = dev_find_slot(1, PCI_DEVFN(0x01,0));
-	data = pci_read_config32(dev, 0x48);
-	if(data & 0x0c) {
-		reset=1;
-		printk_debug("Bad Hot Swap start - Reset\n");
+	dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x01,0));
+	if (!dev)
+		printk_debug("Couldn't find %02x:01.0 \n", bus_chain_0);
+	else {
+		data = pci_read_config32(dev, 0x48);
+		if(data & 0x0c) {
+			reset=1;
+			printk_debug("Bad Hot Swap start - Reset\n");
+		}
 	}
 	if(reset) {
 		/* enable cf9 */

@@ -19,7 +19,7 @@
 /*
  *	2006.12.10 yhlu moved it to corbeoot and use struct instead
  */
-#ifndef __ROMCC__
+#if !defined(__ROMCC__)
 #include <console/console.h>
 #else
 #if CONFIG_USE_PRINTK_IN_CAR==0

@@ -34,7 +34,7 @@ struct node_core_id {
 struct node_core_id get_node_core_id(u32 nb_cfg_54);
 #endif
 
-#ifndef __ROMCC__
+#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
 struct device;
 u32 get_apicid_base(u32 ioapic_num);
 void amd_sibling_init(struct device *cpu);

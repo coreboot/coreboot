@@ -22,7 +22,7 @@
 #include <arch/asm.h>
 
 // Make sure no stage 2 code is included:
-#define __ROMCC__
+#define __PRE_RAM__
 
 // FIXME: Is this piece of code southbridge specific, or 
 // can it be cleaned up so this include is not required?

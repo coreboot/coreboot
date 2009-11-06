@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-// __ROMCC__ means: use "unsigned" for device, not a struct.
-#define __ROMCC__ 
+// __PRE_RAM__ means: use "unsigned" for device, not a struct.
+#define __PRE_RAM__
 
 #include <stdint.h>
 #include <string.h>
@@ -220,10 +220,10 @@ static void early_ich7_init(void)
 #include <cbmem.h>
 
 // Now, this needs to be included because it relies on the symbol
-// __ROMCC_ being set during CAR stage (in order to compile the 
+// __PRE_RAM__ being set during CAR stage (in order to compile the
 // BSS free versions of the functions). Either rewrite the code
 // to be always BSS free, or invent a flag that's better suited than
-// __ROMCC__ to determine whether we're in ram init stage (stage 1)
+// __PRE_RAM__ to determine whether we're in ram init stage (stage 1)
 //
 #include "lib/cbmem.c"
 

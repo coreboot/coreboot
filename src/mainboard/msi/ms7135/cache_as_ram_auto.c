@@ -23,7 +23,7 @@
  */
 
 #define ASSEMBLY 1
-#define __ROMCC__
+#define __PRE_RAM__
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627HF_SP1)
 

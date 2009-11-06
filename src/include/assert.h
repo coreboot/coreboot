@@ -24,7 +24,7 @@
 // ROMCC doesn't support __FILE__ or __LINE__  :^{
 
 #if CONFIG_DEBUG
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 #define ASSERT(x)	{ if (!(x)) die("ASSERT failure!\r\n"); }
 #else
 #define ASSERT(x)	{ 				\
@@ -39,7 +39,7 @@
 #define ASSERT(x)	{ }
 #endif
 
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 #define BUG()		{ 	die("BUG encountered: system halted\r\n");  }
 #else
 #define BUG()		{ 				\

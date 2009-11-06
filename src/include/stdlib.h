@@ -11,7 +11,7 @@
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
-#ifndef __ROMCC__
+#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
 void *malloc(size_t size);
 void free(void *ptr);
 #endif

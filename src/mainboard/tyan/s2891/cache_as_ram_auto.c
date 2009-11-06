@@ -1,5 +1,5 @@
 #define ASSEMBLY 1
-#define __ROMCC__
+#define __PRE_RAM__
 
 //used by raminit
 #define QRANK_DIMM_SUPPORT 1

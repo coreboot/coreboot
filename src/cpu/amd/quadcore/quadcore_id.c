@@ -20,7 +20,7 @@
 
 #include <arch/cpu.h>
 #include <cpu/amd/quadcore.h>
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 #include <cpu/amd/model_10xxx_msr.h>
 #endif
 

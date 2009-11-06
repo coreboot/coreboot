@@ -22,7 +22,7 @@
  */
 
 #define ASSEMBLY 1
-#define __ROMCC__
+#define __PRE_RAM__
 
 /* Used by it8712f_enable_serial(). */
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)

@@ -22,7 +22,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#ifndef __ROMCC__
+#if !defined (__ROMCC__) && !defined (__PRE_RAM__)
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>

@@ -4,7 +4,7 @@
  * Additional (C) 2007 coresystems GmbH 
  */
 #define ASSEMBLY 1
-#define __ROMCC__
+#define __PRE_RAM__
  
 #include <stdint.h>
 #include <string.h>

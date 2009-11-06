@@ -9,7 +9,7 @@
  * (insb/insw/insl/outsb/outsw/outsl). You can also use "pausing"
  * versions of the single-IO instructions (inb_p/inw_p/..).
  */
-#if defined( __ROMCC__ ) && !defined (__GNUC__) 
+#if defined( __ROMCC__ ) && !defined (__GNUC__)
 static inline void outb(uint8_t value, uint16_t port)
 {
 	__builtin_outb(value, port);

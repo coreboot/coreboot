@@ -66,7 +66,7 @@ static void __console_tx_string(int loglevel, const char *str)
  * set in some auto.c files to trigger the simple device_t version to be used.
  * So __GNUCC__ does the right thing here.
  */
-#if defined (__GNUCC__)
+#if defined (__ROMCC__)
 #define STATIC
 #else
 #define STATIC static

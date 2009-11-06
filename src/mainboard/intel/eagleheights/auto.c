@@ -20,7 +20,7 @@
  * MA 02110-1301 USA
  */
 
-#define __ROMCC__
+#define __PRE_RAM__
 
 #include <delay.h>
 

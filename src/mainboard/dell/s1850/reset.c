@@ -2,7 +2,7 @@
 
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#ifndef __ROMCC__
+#if !defined (__ROMCC__) && !defined (__PRE_RAM__)
 #include <device/pci.h>
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))

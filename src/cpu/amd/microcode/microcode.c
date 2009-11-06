@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 
 #include <stdint.h>
 #include <console/console.h>

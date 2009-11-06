@@ -17,7 +17,7 @@
  */
 
 #define ASSEMBLY 1
-#define __ROMCC__
+#define __PRE_RAM__
 
 #define RAMINIT_SYSINFO 1
 

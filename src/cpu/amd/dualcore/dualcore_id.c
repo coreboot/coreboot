@@ -2,7 +2,7 @@
 
 #include <arch/cpu.h>
 #include <cpu/amd/dualcore.h>
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 #include <cpu/amd/model_fxx_msr.h>
 #endif
 

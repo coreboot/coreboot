@@ -956,7 +956,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #include "amdfam10_nums.h"
 
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 #if NODE_NUMS==64
 	 #define NODE_PCI(x, fn) ((x<32)?(PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)):(PCI_DEV((CONFIG_CBB-1),(CONFIG_CDB+x-32),fn)))
 #else
@@ -1086,7 +1086,7 @@ struct sys_info {
 
 #if CONFIG_AMDMCT == 0
 
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 static void soft_reset(void);
 #endif
 static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
@@ -1131,7 +1131,7 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 	}
 
 	for(i=0; i<sysinfo->nodes; i++) {
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 		print_debug("mem_trained["); print_debug_hex8(i); print_debug("]="); print_debug_hex8(sysinfo->mem_trained[i]); print_debug("\n");
 #else
 		printk_debug("mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]);
@@ -1148,7 +1148,7 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 		}
 	}
 	if(needs_reset) {
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 		print_debug("mem trained failed\n");
 		soft_reset();
 #else

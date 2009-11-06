@@ -21,7 +21,7 @@
  */
 
 #define ASSEMBLY 1
-#define __ROMCC__
+#define __PRE_RAM__
 
 // #define CACHE_AS_RAM_ADDRESS_DEBUG 1
 // #define DEBUG_SMBUS 1

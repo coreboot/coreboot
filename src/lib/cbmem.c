@@ -45,7 +45,7 @@ struct cbmem_entry {
 	u64 size;
 } __attribute__((packed));
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 struct cbmem_entry *bss_cbmem_toc;
 #endif
 
@@ -64,7 +64,7 @@ void cbmem_init(u64 baseaddr, u64 size)
 	struct cbmem_entry *cbmem_toc;
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 	bss_cbmem_toc = cbmem_toc;
 #endif
 	
@@ -91,7 +91,7 @@ int cbmem_reinit(u64 baseaddr)
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
 	debug("Re-Initializing CBMEM area to 0x%lx\n", (unsigned long)baseaddr);
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 	bss_cbmem_toc = cbmem_toc;
 #endif
 
@@ -102,7 +102,7 @@ void *cbmem_add(u32 id, u64 size)
 {
 	struct cbmem_entry *cbmem_toc;
 	int i;
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 	 cbmem_toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
 #else
 	 cbmem_toc = bss_cbmem_toc;
@@ -158,7 +158,7 @@ void *cbmem_find(u32 id)
 {
 	struct cbmem_entry *cbmem_toc;
 	int i;
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 	 cbmem_toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
 #else
 	 cbmem_toc = bss_cbmem_toc;
@@ -175,7 +175,7 @@ void *cbmem_find(u32 id)
 	return (void *)NULL;
 }
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 #if CONFIG_HAVE_ACPI_RESUME
 extern u8 acpi_slp_type;
 #endif
@@ -199,12 +199,12 @@ void cbmem_initialize(void)
 	cbmem_arch_init();
 }
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 void cbmem_list(void)
 {
 	struct cbmem_entry *cbmem_toc;
 	int i;
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 	 cbmem_toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
 #else
 	 cbmem_toc = bss_cbmem_toc;

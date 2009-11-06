@@ -1,7 +1,7 @@
 #ifndef I82801CA_H
 #define I82801CA_H
 
-#ifndef __ROMCC__
+#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
 #include "chip.h"
 extern void i82801ca_enable(device_t dev);
 #endif

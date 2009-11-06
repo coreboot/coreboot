@@ -23,8 +23,8 @@
 #include <cpu/x86/lapic.h>
 
 /* NOTE: We use the APIC TIMER register is to hold flags for AP init during
- * pre-memory init (ROMCC). Don't use init_timer() and  udelay is redirected
- * to udelay_tsc().
+ * pre-memory init (__PRE_RAM__). Don't use init_timer() and  udelay is
+ * redirected to udelay_tsc().
  */
 
 

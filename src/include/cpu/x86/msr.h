@@ -1,7 +1,7 @@
 #ifndef CPU_X86_MSR_H
 #define CPU_X86_MSR_H
 
-#if defined( __ROMCC__) && !defined (__GNUC__)
+#if defined( __ROMCC__)
 
 typedef __builtin_msr_t msr_t;
 
@@ -43,7 +43,7 @@ static inline void wrmsr(unsigned index, msr_t msr)
 		);
 }
 
-#endif /* ROMCC__ && !__GNUC__ */
+#endif /* __ROMCC__ */
 
 
 #endif /* CPU_X86_MSR_H */

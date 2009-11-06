@@ -21,7 +21,7 @@
 #ifndef SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 #define SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 
-#ifndef __ROMCC__
+#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
 #include "chip.h"
 void i82371eb_enable(device_t dev);
 void i82371eb_hard_reset(void);

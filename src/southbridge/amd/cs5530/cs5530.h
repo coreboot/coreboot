@@ -21,7 +21,7 @@
 #ifndef SOUTHBRIDGE_AMD_CS5530_CS5530_H
 #define SOUTHBRIDGE_AMD_CS5530_CS5530_H
 
-#ifndef __ROMCC__
+#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
 #include "chip.h"
 void cs5530_enable(device_t dev);
 #endif

@@ -15,7 +15,7 @@ struct node_core_id {
 struct node_core_id get_node_core_id(unsigned int nb_cfg_54);
 #endif
 
-#ifndef __ROMCC__
+#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
 struct device;
 unsigned get_apicid_base(unsigned ioapic_num);
 void amd_sibling_init(struct device *cpu);

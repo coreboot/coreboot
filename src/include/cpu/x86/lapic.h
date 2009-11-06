@@ -68,7 +68,7 @@ static inline __attribute__((always_inline)) void stop_this_cpu(void)
 }
 #endif
 
-#if ! defined (__ROMCC__)
+#if ! defined (__ROMCC__) && !defined(__PRE_RAM__)
 
 #define xchg(ptr,v) ((__typeof__(*(ptr)))__xchg((unsigned long)(v),(ptr),sizeof(*(ptr))))
 
@@ -157,6 +157,6 @@ int start_cpu(struct device *cpu);
 #endif /* CONFIG_SMP */
 
 
-#endif /* !__ROMCC__ */
+#endif /* !__ROMCC__ && !__PRE_RAM__ */
 
 #endif /* CPU_X86_LAPIC_H */

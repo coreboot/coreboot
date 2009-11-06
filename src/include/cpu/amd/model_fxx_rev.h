@@ -49,7 +49,7 @@ static inline int is_cpu_e0(void)
 }
 
 
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 static int is_e0_later_in_bsp(int nodeid)
 {
         uint32_t val;
@@ -96,7 +96,7 @@ static inline int is_cpu_pre_f2(void)
         return (cpuid_eax(1) & 0xfff0f) <  0x40f02;
 }
 
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 //AMD_F0_SUPPORT
 static int is_cpu_f0_in_bsp(int nodeid)
 {

@@ -18,7 +18,7 @@
  */
 
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -29,7 +29,7 @@
 
 static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
 
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 
 /* From the Revision Guide :
  * Equivalent Processor Table for AMD Family 10h Processors

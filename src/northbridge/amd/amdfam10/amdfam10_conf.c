@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 typedef struct sys_info sys_info_conf_t;
 #else
 typedef struct amdfam10_sysconf_t sys_info_conf_t;
@@ -32,7 +32,7 @@ static struct dram_base_mask_t get_dram_base_mask(u32 nodeid)
 {
 	device_t dev;
 	struct dram_base_mask_t d;
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = PCI_DEV(CONFIG_CBB, CONFIG_CDB, 1);
 #else
 	dev = __f1_dev[0];
@@ -88,7 +88,7 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 #endif
 
 	for(i=0;i<nodes;i++) {
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 		dev = NODE_PCI(i, 1);
 #else
 		dev = __f1_dev[i];
@@ -108,7 +108,7 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 #endif
 	}
 
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(nodeid, 1);
 #else
 	dev = __f1_dev[nodeid];
@@ -122,7 +122,7 @@ static void set_dram_base_mask(u32 nodeid, struct dram_base_mask_t d, u32 nodes)
 static void set_DctSelBaseAddr(u32 i, u32 sel_m)
 {
 	device_t dev;
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(i, 2);
 #else
 		dev = __f2_dev[i];
@@ -139,7 +139,7 @@ static void set_DctSelBaseAddr(u32 i, u32 sel_m)
 static u32 get_DctSelBaseAddr(u32 i)
 {
 	device_t dev;
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(i, 2);
 #else
 		dev = __f2_dev[i];
@@ -156,7 +156,7 @@ static u32 get_DctSelBaseAddr(u32 i)
 static void set_DctSelHiEn(u32 i, u32 val)
 {
 	device_t dev;
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(i, 2);
 #else
 		dev = __f2_dev[i];
@@ -172,7 +172,7 @@ static void set_DctSelHiEn(u32 i, u32 val)
 static u32 get_DctSelHiEn(u32 i)
 {
 	device_t dev;
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(i, 2);
 #else
 	dev = __f2_dev[i];
@@ -187,7 +187,7 @@ static u32 get_DctSelHiEn(u32 i)
 static void set_DctSelBaseOffset(u32 i, u32 sel_off_m)
 {
 	device_t dev;
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(i, 2);
 #else
 	dev = __f2_dev[i];
@@ -203,7 +203,7 @@ static void set_DctSelBaseOffset(u32 i, u32 sel_off_m)
 static u32 get_DctSelBaseOffset(u32 i)
 {
 	device_t dev;
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(i, 2);
 #else
 	dev = __f2_dev[i];
@@ -264,7 +264,7 @@ static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
 	d = get_dram_base_mask(i);
 	d.mask += (carry_over>>9);
 	set_dram_base_mask(i,d, nodes);
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(i, 1);
 #else
 	dev = __f1_dev[i];
@@ -330,7 +330,7 @@ static void set_addr_map_reg_4_6_in_one_node(u32 nodeid, u32 cfg_map_dest,
 	index_max = busn_max>>2; dest_max = busn_max - (index_max<<2);
 
 	// three case: index_min==index_max, index_min+1=index_max; index_min+1<index_max
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(nodeid, 1);
 #else
 	dev = __f1_dev[nodeid];
@@ -393,7 +393,7 @@ static void set_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 #endif
 		tempreg = 3 | ((nodeid&0xf)<<4) | ((nodeid & 0x30)<<(12-4))|(linkn<<8)|((busn_min & 0xff)<<16)|((busn_max&0xff)<<24);
 		for(i=0; i<nodes; i++) {
-		#if defined(__ROMCC__)
+		#if defined(__PRE_RAM__)
 			dev = NODE_PCI(i, 1);
 		#else
 			dev = __f1_dev[i];
@@ -433,7 +433,7 @@ static void clear_config_map_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 	if(ht_c_index<4) {
 #endif
 		for(i=0; i<nodes; i++) {
-		#if defined(__ROMCC__)
+		#if defined(__PRE_RAM__)
 			dev = NODE_PCI(i, 1);
 		#else
 			dev = __f1_dev[i];
@@ -480,7 +480,7 @@ static u32 check_segn(device_t dev, u32 segbusn, u32 nodes,
 }
 #endif
 
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 					u32 io_min, u32 io_max, u32 nodes)
 {
@@ -494,7 +494,7 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 		/* io range allocation */
 		tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) |  ((io_max&0xf0)<<(12-4)); //limit
 		for(i=0; i<nodes; i++) {
-		#if defined(__ROMCC__)
+		#if defined(__PRE_RAM__)
 			dev = NODE_PCI(i, 1);
 		#else
 			dev = __f1_dev[i];
@@ -503,7 +503,7 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 		}
 		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
 		for(i=0; i<nodes; i++){
-		#if defined(__ROMCC__)
+		#if defined(__PRE_RAM__)
 			dev = NODE_PCI(i, 1);
 		#else
 			dev = __f1_dev[i];
@@ -546,7 +546,7 @@ static void clear_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 #endif
 		 /* io range allocation */
 		for(i=0; i<nodes; i++) {
-		#if defined(__ROMCC__)
+		#if defined(__PRE_RAM__)
 			dev = NODE_PCI(i, 1);
 		#else
 			dev = __f1_dev[i];
@@ -584,7 +584,7 @@ static void re_set_all_config_map_reg(u32 nodes, u32 segbit,
 	for(ht_c_index=1;ht_c_index<4; ht_c_index++) {
 		u32 i;
 		for(i=0; i<nodes; i++) {
-		#if defined(__ROMCC__)
+		#if defined(__PRE_RAM__)
 			dev = NODE_PCI(i, 1);
 		#else
 			dev = __f1_dev[i];
@@ -664,7 +664,7 @@ static  void set_BusSegmentEn(u32 node, u32 segbit)
 	u32 dword;
 	device_t dev;
 
-#if defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 	dev = NODE_PCI(node, 0);
 #else
 	dev = __f0_dev[node];
@@ -677,7 +677,7 @@ static  void set_BusSegmentEn(u32 node, u32 segbit)
 #endif
 }
 
-#if !defined(__ROMCC__)
+#if !defined(__PRE_RAM__)
 static u32 get_io_addr_index(u32 nodeid, u32 linkn)
 {
 	u32 index;

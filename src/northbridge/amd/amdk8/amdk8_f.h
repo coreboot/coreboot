@@ -518,7 +518,7 @@ struct sys_info {
 	uint32_t sbbusn;
 } __attribute__((packed));
 
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 static void soft_reset(void);
 #else
 void hard_reset(void);
@@ -562,7 +562,7 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 	}
 
 	for(i=0; i<sysinfo->nodes; i++) {
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 		print_debug("mem_trained["); print_debug_hex8(i); print_debug("]="); print_debug_hex8(sysinfo->mem_trained[i]); print_debug("\r\n");
 #else
 		printk_debug("mem_trained[%02x]=%02x\n", i, sysinfo->mem_trained[i]); 
@@ -579,7 +579,7 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 		}
 	}
 	if(needs_reset) {
-#ifdef __ROMCC__
+#ifdef __PRE_RAM__
 		print_debug("mem trained failed\r\n");
 		soft_reset();
 #else

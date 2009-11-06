@@ -135,11 +135,6 @@ chip northbridge/amd/gx1		# Northbridge
       device pci 12.2 on  end		# IDE
       device pci 12.3 on  end		# Audio
       device pci 12.4 on  end		# VGA (onboard)
-      # device pci 12.4 on		# VGA (onboard)
-      #   chip drivers/pci/onboard
-      #     device pci 12.4 on end
-      #   end
-      # end
       device pci 13.0 on end		# USB
       register "ide0_enable" = "1"
       register "ide1_enable" = "1"

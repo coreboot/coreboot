@@ -31,42 +31,37 @@
 
 struct rom_header * pci_rom_probe(struct device *dev)
 {
-	unsigned long rom_address = 0;
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
 
-	void *v;
-	/* if it's in FLASH, then it's as if dev->on_mainboard was true */
-	v = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
-	printk_debug("In cbfs, rom address for %s = %p\n", 
-			dev_path(dev), v);
-	if (v) {
-		dev->rom_address = (u32)v;
-		dev->on_mainboard = 1;
-	}
+	/* If it's in FLASH, then don't check device for ROM. */
+	rom_header = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
 
-	if (dev->on_mainboard) {
-                // in case some device PCI_ROM_ADDRESS can not be set or readonly 
-		rom_address = dev->rom_address;
-		printk_debug("On mainboard, rom address for %s = %lx\n", 
-			dev_path(dev), rom_address);
+	if (rom_header) {
+		printk_debug("In cbfs, rom address for %s = %p\n",
+			     dev_path(dev), rom_header);
 	} else {
+		unsigned long rom_address;
+
 		rom_address = pci_read_config32(dev, PCI_ROM_ADDRESS);
-		printk_debug("On card, rom address for %s = %lx\n", 
+
+		if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
+			#if CONFIG_BOARD_EMULATION_QEMU_X86
+			rom_address = 0xc0000;
+			#else
+			return NULL;
+			#endif
+		} else {
+			/* enable expansion ROM address decoding */
+			pci_write_config32(dev, PCI_ROM_ADDRESS,
+					   rom_address|PCI_ROM_ADDRESS_ENABLE);
+		}
+
+		printk_debug("On card, rom address for %s = %lx\n",
 				dev_path(dev), rom_address);
+		rom_header = (struct rom_header *)rom_address;
 	}
 
-	if (rom_address == 0x00000000 || rom_address == 0xffffffff) {
-		return NULL;
-	}
-
-	if(!dev->on_mainboard) {
-		/* enable expansion ROM address decoding */
-		pci_write_config32(dev, PCI_ROM_ADDRESS,
-				   rom_address|PCI_ROM_ADDRESS_ENABLE);
-	}
-
-	rom_header = (struct rom_header *)rom_address;
 	printk_spew("PCI Expansion ROM, signature 0x%04x, INIT size 0x%04x, data ptr 0x%04x\n",
 		    le32_to_cpu(rom_header->signature),
 		    rom_header->size * 512, le32_to_cpu(rom_header->data));
@@ -76,11 +71,12 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		return NULL;
 	}
 
-	rom_data = (struct pci_data *) ((void *)rom_header + le32_to_cpu(rom_header->data));
+	rom_data = (((void *)rom_header) + le32_to_cpu(rom_header->data));
+
 	printk_spew("PCI ROM Image, Vendor %04x, Device %04x,\n",
 		    rom_data->vendor, rom_data->device);
 	if (dev->vendor != rom_data->vendor || dev->device != rom_data->device) {
-		printk_err("Device or Vendor ID mismatch Vendor %04x, Device %04x\n",
+		printk_err("ID mismatch: Vendor ID %04x, Device ID %04x\n",
 			   rom_data->vendor, rom_data->device);
 		return NULL;
 	}
@@ -90,7 +86,8 @@ struct rom_header * pci_rom_probe(struct device *dev)
 		    rom_data->type);
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
 		printk_debug("Class Code mismatch ROM %08x, dev %08x\n", 
-			    (rom_data->class_hi << 8) | rom_data->class_lo, dev->class);
+			     (rom_data->class_hi << 8) | rom_data->class_lo,
+			     dev->class);
 		//return NULL;
 	}
 

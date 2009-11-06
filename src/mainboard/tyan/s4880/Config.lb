@@ -116,10 +116,8 @@ chip northbridge/amd/amdk8/root_complex
 #                                                        device pci 4.1 on end
 #                                                        register "fw_address" = "0xfff8c000"
 #                                                end
-                                                chip drivers/pci/onboard
-                                                        device pci 9.0 on end
-                                                        device pci 9.1 on end
-                                                end
+                                                device pci 9.0 on end
+                                                device pci 9.1 on end
 					end
 					device pci 0.1 on end
 					device pci 1.0 on end
@@ -133,9 +131,7 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 0.1 on end
 						device pci 0.2 off end
 						device pci 1.0 off end
-                                                chip drivers/pci/onboard
-                                                        device pci 6.0 on end
-                                                end
+                                                device pci 6.0 on end
 					end
 					device pci 1.0 on
 						chip superio/winbond/w83627hf

@@ -17,9 +17,7 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 0.2 off end
 						device pci 1.0 off end
                                                 #chip drivers/ati/ragexl
-						chip drivers/pci/onboard
-                                                        device pci b.0 on end
-                                                end
+                                                device pci b.0 on end
 					end
 					device pci 1.0 on
 						chip superio/winbond/w83627hf

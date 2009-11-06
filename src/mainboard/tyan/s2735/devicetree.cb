@@ -6,10 +6,8 @@ chip northbridge/intel/e7501
         		chip southbridge/intel/i82870
         	        	device pci 1c.0 on end
 		                device pci 1d.0 on 
-					chip drivers/pci/onboard
-                                        	device pci 1.0 on end # intel lan
-                                                device pci 1.1 on end
-                                        end
+                                     	 device pci 1.0 on end # intel lan
+                                        device pci 1.1 on end
 				end
         	                device pci 1e.0 on end
         	                device pci 1f.0 on end
@@ -23,12 +21,8 @@ chip northbridge/intel/e7501
         	        device pci 1d.3 on end
 		        device pci 1d.7 on end
 		        device pci 1e.0 on 
-                        	chip drivers/pci/onboard
-                                	device pci 1.0 on end # intel lan 10/100
-                                end
-                                chip drivers/pci/onboard
-                                        device pci 2.0 on end # ati 
-                                end
+                             	device pci 1.0 on end # intel lan 10/100
+                                device pci 2.0 on end # ati
 			end
 		        device pci 1f.0 on
 				chip superio/winbond/w83627hf

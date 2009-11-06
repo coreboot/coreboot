@@ -77,12 +77,10 @@ void ck804_enable(device_t dev)
 	case PCI_DEVICE_ID_NVIDIA_CK804_NIC:
 		devfn -= (9 << 3);
 		index = 10;
-		dev->rom_address = conf->nic_rom_address;
 		break;
 	case PCI_DEVICE_ID_NVIDIA_CK804_NIC_BRIDGE:
 		devfn -= (9 << 3);
 		index = 10;
-		dev->rom_address = conf->nic_rom_address;
 		break;
 	case PCI_DEVICE_ID_NVIDIA_CK804_ACI:
 		devfn -= (3 << 3);
@@ -95,7 +93,6 @@ void ck804_enable(device_t dev)
 	case PCI_DEVICE_ID_NVIDIA_CK804_IDE:
 		devfn -= (5 << 3);
 		index = 14;
-		dev->rom_address = conf->raid_rom_address;
 		break;
 	case PCI_DEVICE_ID_NVIDIA_CK804_SATA0:
 		devfn -= (6 << 3);

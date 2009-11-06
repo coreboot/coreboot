@@ -73,29 +73,8 @@ chip northbridge/amd/amdk8/root_complex
                                         device pci 2.0 on end # USB        0x0223
                                         device pci 2.1 on end # USB
                                         device pci 2.2 on end # USB
-                                        #when CONFIG_HT_CHAIN_END_UNITID_BASE (0,1) < CONFIG_HT_CHAIN_UNITID_BASE (6,,,,),
-                                        chip drivers/pci/onboard
-                                              device pci 3.0 on end # it is in bcm5785_0 bus, but the device id can not be changed even unitid is changed, fake one to get the rom_address
-                                                                    # if CONFIG_HT_CHAIN_END_UNITID_BASE=0, it is 4, if CONFIG_HT_CHAIN_END_UNITID_BASE=1, it is 3
-                                        end
-                                       #bx_a013+ start
-                                       #chip drivers/pci/onboard    #SATA2
-                                       #       device pci 5.0 on end
-                                       #       device pci 5.1 on end
-                                       #       device pci 5.2 on end
-                                       #       device pci 5.3 on end
-                                       #end
-                                       #bx_a013+ end
-
+                                        device pci 3.0 on end # it is in bcm5785_0 bus
                                 end
-                                        #when CONFIG_HT_CHAIN_END_UNITID_BASE > CONFIG_HT_CHAIN_UNITID_BASE (6, ,,,,)
-#                                        chip drivers/pci/onboard
-#                                              device pci 0.0 on end # fake, will be disabled
-#                                        end
-#                                        chip drivers/pci/onboard
-#                                              device pci 4.0 on end # it is in bcm5785_0 bus, but the device id can not be changed even unitid is changed
-#                                        end
-
                        end #  device pci 18.0
                        device pci 18.1 on end
                        device pci 18.2 on end

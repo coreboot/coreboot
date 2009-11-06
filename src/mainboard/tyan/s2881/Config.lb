@@ -115,14 +115,10 @@ chip northbridge/amd/amdk8/root_complex
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
 					device pci 0.0 on 
-                                                chip drivers/pci/onboard
-                                                        device pci 9.0 on end # Broadcom 5704
-                                                        device pci 9.1 on end
-                                                end
-                                                chip drivers/pci/onboard
-                                                        device pci a.0 on end # Adaptic
-                                                        device pci a.1 on end
-                                                end
+                                                device pci 9.0 on end # Broadcom 5704
+                                                device pci 9.1 on end
+                                                device pci a.0 on end # Adaptic
+                                                device pci a.1 on end
 					end
 					device pci 0.1 on end
 					device pci 1.0 on end
@@ -136,12 +132,8 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 0.1 on end
 						device pci 0.2 off end
 						device pci 1.0 off end
-                                                chip drivers/pci/onboard
-                                                        device pci 5.0 on end # SiI
-                                                end
-                                                chip drivers/pci/onboard
-                                                        device pci 6.0 on end
-                                                end
+                                                device pci 5.0 on end # SiI
+                                                device pci 6.0 on end
 					end
 					device pci 1.0 on
 						chip superio/winbond/w83627hf

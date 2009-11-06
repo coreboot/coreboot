@@ -70,7 +70,6 @@ struct device {
 	unsigned int    enabled : 1;	/* set if we should enable the device */
 	unsigned int    initialized : 1; /* set if we have initialized the device */
 	unsigned int    on_mainboard : 1;
-	unsigned long   rom_address;
 
 	u8 command;
 

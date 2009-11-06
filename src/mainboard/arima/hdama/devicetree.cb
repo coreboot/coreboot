@@ -73,9 +73,7 @@ chip northbridge/amd/amdk8/root_complex
 						device pci 0.1 on  end	# USB1
 						device pci 0.2 off end	# USB 2.0
 						device pci 1.0 off end	# LAN
-						chip drivers/pci/onboard
-							device pci 6.0 on end # ATI Rage XL
-						end
+						device pci 6.0 on end # ATI Rage XL
 						## PCI Slot 5 (correct?)
 						#chip drivers/generic/generic
 						#	device pci 5.0 on

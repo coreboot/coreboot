@@ -121,9 +121,7 @@ chip northbridge/via/cx700
 		device pci 0.4 on end # Power Management
 		device pci 0.7 on end # V-Link Controller
 		device pci 1.0 on     # PCI Bridge
-			chip drivers/pci/onboard
-				device pci 0.0 on end
-			end # Onboard Video
+			device pci 0.0 on end # Onboard Video
 		end # PCI Bridge
 		device pci f.0 on end # IDE/SATA
 		#device pci f.1 on end # IDE

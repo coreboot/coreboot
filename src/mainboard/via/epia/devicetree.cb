@@ -2,10 +2,7 @@ chip northbridge/via/vt8601
 	device pci_domain 0 on
     		device pci 0.0 on end			# Northbridge
 #		device pci 0.1 on			# AGP bridge
-		#	chip drivers/pci/onboard	# Integrated VGA
-		#		device pci 0.0 on end
-		#		register "rom_adress" = "0xfff80000"
-		#	end
+		#	device pci 0.0 on end		# Integrated VGA
 #		end
 		chip southbridge/via/vt8231
 			register "enable_native_ide" = "0"

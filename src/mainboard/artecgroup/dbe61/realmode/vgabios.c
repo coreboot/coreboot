@@ -74,36 +74,6 @@
   emulator to successfully run this bios.
 */
 
-
-
-
-/*
-  Modified to be an universal driver for loading VGA ROMs.
-  Aug 2006, anti.sullin@artecdesign.ee, Artec Design
-  
-  USAGE:
-  	define in your motherboard Config.lb file in device hierarchy 
-  	around the VGA pci device realmode chip and define its rom address.
-	Rom address is read from Config.lb, this rom is then copied to 0xC000 and then excecuted
-  	
-  		chip drivers/pci/realmode
-				device pci 1.1 on end  					# VGA
-				register "rom_address" = "0xfffc0000"	# at the beginning of 256k
-		end
-  	
-  	then, chip enable is called at this list first traversal, and this sets
-  	up device's init callback. Device init is called during last list traversal and
-  	so, other hw should be already initialized to run vga bios successfully.
-*/
-
-
-
-
-
-
-
-
-
 /* Declare a temporary global descriptor table - necessary because the
    Core part of the bios no longer sets up any 16 bit segments */
 __asm__ (
@@ -918,8 +888,6 @@ static void vga_init(device_t dev)
 
 	// code to make vga init go through the emulator - as of yet this does not workfor the epia-m
 	dev->on_mainboard=1;
-	dev->rom_address = (void *)cfg->rom_address;
-
 	pci_dev_init(dev);
 
 	// code to make vga init run in real mode - does work but against the current coreboot philosophy 

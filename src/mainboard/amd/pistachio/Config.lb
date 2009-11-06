@@ -156,9 +156,7 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 0.0 on end # HT  	0x7910
 				#	device pci 0.1 off end # CLK
 					device pci 1.0 on  # Internal Graphics P2P bridge 0x7912
-						chip drivers/pci/onboard
-							device pci 5.0 on end	# Internal Graphics 0x791F
-						end
+						device pci 5.0 on end	# Internal Graphics 0x791F
 					end
 					device pci 2.0 on end # PCIE P2P bridge (external graphics) 0x7913
 					device pci 3.0 off end # PCIE P2P bridge	0x791b

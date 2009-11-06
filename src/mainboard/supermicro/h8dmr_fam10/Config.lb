@@ -280,9 +280,7 @@ chip northbridge/amd/amdfam10/root_complex
 	                		device pci 5.1 on end # SATA 1
 	                		device pci 5.2 on end # SATA 2
                 			device pci 6.0 on  # PCI
-                                                chip drivers/pci/onboard
-                                                        device pci 6.0 on end
-                                                end
+                                                device pci 6.0 on end
 					end
         	        		device pci 6.1 on end # AZA
 	                		device pci 8.0 on end # NIC

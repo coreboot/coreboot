@@ -16,7 +16,6 @@ static void qemu_init(device_t dev)
 	 * force coreboot to use it.
 	 */
 	dev->on_mainboard = 1;
-	dev->rom_address = 0xc0000;
 
 	/* Now do the usual initialization */
 	pci_dev_init(dev);

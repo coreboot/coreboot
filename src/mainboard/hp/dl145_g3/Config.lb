@@ -195,15 +195,6 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 2.1 on end # USB
 					device pci 2.2 on end # USB
 					device pci 3.0 on end # VGA
-					
-					#bx_a013+ start
-					#chip drivers/pci/onboard    #SATA2
-					#	device pci 5.0 on end
-					#	device pci 5.1 on end
-					#	device pci 5.2 on end
-					#	device pci 5.3 on end
-					#end
-					#bx_a013+ end
 				end
 			end
 			device pci 18.0 on end

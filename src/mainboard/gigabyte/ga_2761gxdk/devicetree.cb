@@ -11,9 +11,7 @@ chip northbridge/amd/amdk8/root_complex
 			        chip southbridge/sis/sis966
 					device pci 0.0 on end   # Northbridge
 					device pci 1.0 on		# AGP bridge
-					  chip drivers/pci/onboard	# Integrated VGA
 						device pci 0.0 on end
-					  end
 					end
                 			device pci 2.0 on # LPC
 						chip superio/ite/it8716f

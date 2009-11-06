@@ -126,15 +126,8 @@ static void vga_init(device_t dev)
 
 }
 
-static void vga_read_resources(device_t dev)
-{
-	dev->rom_address = (void *)(0xffffffff - CONFIG_ROM_SIZE + 1);
-	dev->on_mainboard = 1;
-	pci_dev_read_resources(dev);
-}
-
 static struct device_operations vga_operations = {
-	.read_resources = vga_read_resources,
+	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = vga_init,

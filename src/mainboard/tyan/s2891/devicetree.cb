@@ -104,9 +104,7 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 8.0 on end # SATA 0
 					device pci 9.0 on  # PCI
 					#	chip drivers/ati/ragexl
-						chip drivers/pci/onboard
-							device pci 7.0 on end
-						end
+						device pci 7.0 on end
 					end
 					device pci a.0 off end # NIC
 					device pci b.0 off end # PCI E 3
@@ -127,10 +125,8 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 0.0 on end
 					device pci 0.1 on end
 					device pci 1.0 on
-						chip drivers/pci/onboard
-							device pci 9.0 on end
-							device pci 9.1 on end
-						end
+						device pci 9.0 on end
+						device pci 9.1 on end
 					end
 					device pci 1.1 on end
 				end

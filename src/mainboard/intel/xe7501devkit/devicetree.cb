@@ -25,9 +25,7 @@ chip northbridge/intel/e7501
 			device pci 1d.1 off end # USB (not populated)
 			device pci 1d.2 off end # USB (not populated)
 			device pci 1e.0 on # Hub to PCI bridge
-				chip drivers/pci/onboard # VGA ROM
-					device pci 0.0 on end
-				end
+				device pci 0.0 on end
 			end
 			device pci 1f.0 on # LPC bridge
 				chip superio/smsc/lpc47b272

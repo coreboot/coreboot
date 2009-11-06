@@ -285,11 +285,6 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	unsigned long value;
 	resource_t moving;
 
-	if ((dev->on_mainboard) && (dev->rom_address == 0)) {
-		/* Skip it if rom_address is not set in the MB Config.lb. */
-		return;
-	}
-
 	/* Initialize the resources to nothing. */
 	resource = new_resource(dev, index);
 
@@ -326,18 +321,6 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 		}
 		resource->flags = 0;
 	}
-
-	/* For on board device with embedded ROM image, the ROM image is at
-	 * fixed address specified in the Config.lb, the dev->rom_address is
-	 * inited by driver_pci_onboard_ops::enable_dev() */
-	if ((dev->on_mainboard) && (dev->rom_address != 0)) {
-		resource->base = dev->rom_address;
-		/* The resource allocator needs the size to be non-zero. */
-		resource->size = 0x100;
-		resource->flags |= IORESOURCE_MEM | IORESOURCE_READONLY |
-		    IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
-	}
-
 	compact_resources(dev);
 }
 

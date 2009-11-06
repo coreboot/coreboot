@@ -75,11 +75,7 @@ chip northbridge/intel/i82810			# Northbridge
   end
   device pci_domain 0 on
     device pci 0.0 on end			# Host bridge
-    device pci 1.0 off				# Onboard video
-      # chip drivers/pci/onboard
-      #   device pci 1.0 on end
-      # end
-    end
+    device pci 1.0 off end			# Onboard video
     chip southbridge/intel/i82801xx		# Southbridge
       register "ide0_enable" = "1"
       register "ide1_enable" = "1"

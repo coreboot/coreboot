@@ -124,9 +124,6 @@ static void vga_init(device_t dev)
 	
 #if 0
 	/* code to make vga init go through the emulator - as of yet this does not workfor the epia-m */
-	dev->on_mainboard=1;
-	dev->rom_address = (void *)0xfffc0000;
-
 	pci_dev_init(dev);
 	
 	call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);
@@ -167,17 +164,8 @@ static void vga_init(device_t dev)
 #endif
 }
 
-static void vga_read_resources(device_t dev)
-{
-
-	dev->rom_address = (void *)0xfffc0000;
-	dev->on_mainboard=1;
-	pci_dev_read_resources(dev);
-
-}
-
 static struct device_operations vga_operations = {
-	.read_resources   = vga_read_resources,
+	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init             = vga_init,

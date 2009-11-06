@@ -98,8 +98,6 @@ end
 
 config chip.h
 
-# FIXME: ROM for onboard VGA
-
 chip northbridge/amd/amdk8/root_complex
 	device apic_cluster 0 on
 		chip cpu/amd/socket_940

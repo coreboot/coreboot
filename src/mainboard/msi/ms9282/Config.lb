@@ -278,27 +278,21 @@ chip northbridge/amd/amdk8/root_complex
                                        device pci 5.1 on  end # SATA 1
                                        device pci 5.2 on  end # SATA 2
                                        device pci 6.0 on  #P2P
-                                               chip drivers/pci/onboard
-                                                       device pci 4.0 on end
-                                               end
+                                               device pci 4.0 on end
                                        end # P2P
                                        device pci 7.0 on end # reserve
                                        device pci 8.0 on end # MAC0
                                        device pci 9.0 on end # MAC1
                                        device pci a.0 on
                                                device pci 0.0 on
-                                                       chip drivers/pci/onboard
-                                                               device pci 4.0 on end  #pci_E lan1
-                                                               device pci 4.1 on end  #pci_E lan2
-                                                       end
+                                                       device pci 4.0 on end  #pci_E lan1
+                                                       device pci 4.1 on end  #pci_E lan2
                                                end
                                        end # 0x376
                                                device pci b.0 on  end # PCI E 0x374
                                        device pci c.0 on  end
                                        device pci d.0 on   #SAS
-                                               chip drivers/pci/onboard
-                                                       device pci 0.0 on end
-                                               end
+                                               device pci 0.0 on end
                                        end # PCI E 1 0x378
                                        device pci e.0 on end # PCI E 0 0x375
                                        device pci f.0 on end   #PCI E 0x377  pci_E slot

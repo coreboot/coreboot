@@ -7,8 +7,6 @@ struct southbridge_nvidia_ck804_config {
 	unsigned int ide1_enable : 1;
 	unsigned int sata0_enable : 1;
 	unsigned int sata1_enable : 1;
-	unsigned long nic_rom_address;
-	unsigned long raid_rom_address;
 	unsigned int mac_eeprom_smbus;
 	unsigned int mac_eeprom_addr;
 };

@@ -5,7 +5,7 @@ option HEAP_SIZE=0x40000
 # Reserve 8K for each stack
 option STACK_SIZE=0x2000
 
-ldscript arch/ppc/config/ldscript.base
+ldscript arch/ppc/init/ldscript.base
 
 dir /src/config
 

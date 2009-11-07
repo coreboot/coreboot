@@ -2,7 +2,7 @@ biosbase 0
 rambase 0x8000
 
 option USE_DEFAULT_LAYOUT=1
-ldscript arch/alpha/config/ldscript.base USE_DEFAULT_LAYOUT
+ldscript arch/alpha/init/ldscript.base USE_DEFAULT_LAYOUT
 
 option MAX_CPUS=1
 

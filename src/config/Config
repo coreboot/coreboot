@@ -55,7 +55,7 @@ addaction linuxbios $(CROSS_COMPILE)nm -n linuxbios | sort > linuxbios.map
 makerule linuxbios.a : $(OBJECTS-1) ; rm -f linuxbios.a
 addaction linuxbios.a ar cr linuxbios.a $(OBJECTS-1)
 
-option CRT0=$(TOP)/src/arch/$(ARCH)/config/crt0.base
+option CRT0=$(TOP)/src/arch/$(ARCH)/init/crt0.base
 makerule crt0.S: $(CRT0) ; cp $< $@
 
 # Force crt0.s (which has build time version code in it to rebuild every time)

@@ -7,8 +7,8 @@ static inline unsigned long log2(unsigned long x)
         unsigned long pow = sizeof(x) * 8 - 1;
 
         if (! x) {
-                printk_emerg(__FUNCTION__ 
-                        " called with invalid parameter of 0\n");
+                printk_emerg("%s called with invalid parameter of 0\n",
+				__func__);
                 return -1;
         }
         for(; i > x; i >>= 1, pow--)

@@ -13,7 +13,7 @@ option STACK_SIZE=0x2000
 # By default on x86 we have a memory hole between 640K and 1MB
 option MEMORY_HOLE=1
 
-ldscript arch/i386/config/ldscript.base
+ldscript arch/i386/init/ldscript.base
 
 # How do I add -mprefered-stack-boundary=2 if the compiler supports it?
 # On x86 tt results in a code size reduction.

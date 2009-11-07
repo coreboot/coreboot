@@ -261,7 +261,7 @@ def common_command_action(dir, type, name):
 def set_arch(dir, my_arch):
 	global arch, makebase
 	arch = my_arch
-	configpath = os.path.join(treetop, "src/arch/", my_arch, "config")
+	configpath = os.path.join(treetop, "src/arch/", my_arch, "init")
 	makebase = os.path.join(configpath, "make.base")
 	print "Now Process the ", my_arch, " base files"
 	if (debug):
@@ -1135,7 +1135,7 @@ CPUFLAGS := $(foreach _var_,$(VARIABLES),$(call D_item,$(_var_)))
 
 	for depfile in [ '%s' % top_config_file,    # This a duplicate, remove?
 			'$(TOP)/util/config/NLBConfig.py',
-			'$(TOP)/src/arch/$(ARCH)/config/make.base' ]:
+			'$(TOP)/src/arch/$(ARCH)/init/make.base' ]:
 		file.write("$(GENERATED): %s\n" % depfile)
 
 	file.write("$(GENERATED):\n")
@@ -1180,7 +1180,7 @@ treetop = os.path.abspath(sys.argv[2])
 	
 # Set the default locations for config files.
 makebase = os.path.join(treetop, "util/config/make.base")
-crt0base = os.path.join(treetop, "arch/i386/config/crt0.base")
+crt0base = os.path.join(treetop, "arch/i386/init/crt0.base")
 doxyscriptbase = os.path.join(treetop, "src/config/doxyscript.base")
 
 # Now read in the customizing script...

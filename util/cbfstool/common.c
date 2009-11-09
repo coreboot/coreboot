@@ -27,6 +27,16 @@
 
 #define dprintf
 
+uint32_t getfilesize(const char *filename)
+{
+	uint32_t size;
+	FILE *file = fopen(filename, "rb");
+	fseek(file, 0, SEEK_END);
+	size = ftell(file);
+	fclose(file);
+	return size;
+}
+
 void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	       int place)
 {
@@ -321,5 +331,60 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 				   sizeof(struct cbfs_file) - 16);
 
 	writerom(romfile, romarea, romsize);
+	return 0;
+}
+
+static int in_segment(int addr, int size, int gran)
+{
+	return ((addr & ~(gran - 1)) == ((addr + size) & ~(gran - 1)));
+}
+
+uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
+			    const char *filename, uint32_t alignment)
+{
+	void *rom = loadrom(romfile);
+	int filename_size = strlen(filename);
+
+	int headersize =
+	    sizeof(struct cbfs_file) + ALIGN(filename_size + 1,
+					     16) + sizeof(struct cbfs_stage);
+	int totalsize = headersize + filesize;
+
+	uint32_t current = phys_start;
+	while (current < phys_end) {
+		if (!cbfs_file_header(current)) {
+			current += align;
+			continue;
+		}
+		struct cbfs_file *thisfile =
+		    (struct cbfs_file *)phys_to_virt(current);
+
+		uint32_t top =
+		    current + ntohl(thisfile->len) + ntohl(thisfile->offset);
+		if (((ntohl(thisfile->type) == 0x0)
+		     || (ntohl(thisfile->type) == 0xffffffff))
+		    && (ntohl(thisfile->len) + ntohl(thisfile->offset) >=
+			totalsize)) {
+			if (in_segment
+			    (current + headersize, filesize, alignment))
+				return current + headersize;
+			if ((ALIGN(current, alignment) + filesize < top)
+			    && (ALIGN(current, alignment) - headersize >
+				current)
+			    && in_segment(ALIGN(current, alignment), filesize,
+					  alignment))
+				return ALIGN(current, alignment);
+			if ((ALIGN(current, alignment) + alignment + filesize <
+			     top)
+			    && (ALIGN(current, alignment) + alignment -
+				headersize > current)
+			    && in_segment(ALIGN(current, alignment) + alignment,
+					  filesize, alignment))
+				return ALIGN(current, alignment) + alignment;
+		}
+		current =
+		    ALIGN(current + ntohl(thisfile->len) +
+			  ntohl(thisfile->offset), align);
+	}
 	return 0;
 }

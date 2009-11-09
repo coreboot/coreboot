@@ -28,6 +28,7 @@ typedef enum {
 	CMD_ADD_PAYLOAD,
 	CMD_ADD_STAGE,
 	CMD_CREATE,
+	CMD_LOCATE,
 	CMD_PRINT
 } cmd_t;
 
@@ -78,8 +79,7 @@ static int cbfs_add(int argc, char **argv)
 	if (argc > 6) {
 		base = strtoul(argv[6], NULL, 0);
 	}
-	cbfsfile =
-	    create_cbfs_file(cbfsname, filedata, &filesize, type, &base);
+	cbfsfile = create_cbfs_file(cbfsname, filedata, &filesize, type, &base);
 	if (add_file_to_cbfs(cbfsfile, filesize, base))
 		return 1;
 	writerom(romname, rom, romsize);
@@ -203,6 +203,23 @@ static int cbfs_create(int argc, char **argv)
 	return create_cbfs_image(romname, size, bootblock, align);
 }
 
+static int cbfs_locate(int argc, char **argv)
+{
+	char *romname = argv[1];
+	if (argc < 6) {
+		printf("not enough arguments to 'locate'.\n");
+		return 1;
+	}
+
+	const char *file = argv[3];
+	uint32_t filesize = getfilesize(file);
+	const char *filename = argv[4];
+	int align = strtoul(argv[5], NULL, 0);
+
+	printf("%x\n", cbfs_find_location(romname, filesize, filename, align));
+	return 0;
+}
+
 static int cbfs_print(int argc, char **argv)
 {
 	char *romname = argv[1];
@@ -223,6 +240,7 @@ struct command commands[] = {
 	{CMD_ADD_PAYLOAD, "add-payload", cbfs_add_payload},
 	{CMD_ADD_STAGE, "add-stage", cbfs_add_stage},
 	{CMD_CREATE, "create", cbfs_create},
+	{CMD_LOCATE, "locate", cbfs_locate},
 	{CMD_PRINT, "print", cbfs_print}
 };
 
@@ -238,6 +256,7 @@ void usage(void)
 	     "add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
 	     "add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
 	     "create SIZE BSIZE BOOTBLOCK [ALIGN]  Create a ROM file\n"
+	     "locate FILE NAME ALIGN               Find a place for a file of that size\n"
 	     "print                                Show the contents of the ROM\n");
 }
 

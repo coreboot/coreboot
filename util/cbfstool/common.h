@@ -34,6 +34,7 @@ static uint32_t virt_to_phys(void *addr)
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
 
+uint32_t getfilesize(const char *filename);
 void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	       int place);
 void *loadrom(const char *filename);
@@ -61,5 +62,8 @@ int create_cbfs_image(const char *romfile, uint32_t romsize,
 
 int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location);
 void print_cbfs_directory(const char *filename);
+
+uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
+			    const char *filename, uint32_t align);
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))

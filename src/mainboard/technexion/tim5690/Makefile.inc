@@ -29,6 +29,9 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 
+# This is debug message for products of Technexion.
+obj-y += tn_post_code.o
+
 # This is part of the conversion to init-obj and away from included code.
 
 initobj-y += crt0.o

@@ -100,6 +100,10 @@ static inline int spd_read_byte(u32 device, u32 address)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 
+#define TECHNEXION_EARLY_SETUP
+#include "tn_post_code.c"
+
+
 #if CONFIG_USE_FALLBACK_IMAGE == 1
 
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -161,6 +165,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct cpuid_result cpuid1;
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
+	technexion_post_code_init();
+	technexion_post_code(LED_MESSAGE_START);
 
 	if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
@@ -233,7 +239,11 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* It's the time to set ctrl now; */
 	printk_debug("sysinfo->nodes: %2x  sysinfo->ctrl: %2x  spd_addr: %2x\n",
 		     sysinfo->nodes, sysinfo->ctrl, spd_addr);
+
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
+
+	technexion_post_code(LED_MESSAGE_RAM);
+
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	rs690_before_pci_init();

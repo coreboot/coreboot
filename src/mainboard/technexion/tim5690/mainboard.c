@@ -27,6 +27,7 @@
 #include <device/pci_def.h>
 #include <../southbridge/amd/sb600/sb600.h>
 #include "chip.h"
+#include "tn_post_code.h"
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */
@@ -44,12 +45,18 @@ extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
+/* previous
+ */
+void tim5690_enable(device_t dev);
+int add_mainboard_resources(struct lb_memory *mem);
+
+
 uint64_t uma_memory_base, uma_memory_size;
 
 
 /* set thermal config
  */
-static void set_thermal_config()
+static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;
@@ -176,6 +183,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);
 #endif
+	technexion_post_code(LED_MESSAGE_FINISH);
 }
 
 struct chip_operations mainboard_ops = {

@@ -30,6 +30,7 @@ arch i386 end
 ##
 
 driver mainboard.o
+object tn_post_code.o
 
 #dir /drivers/si/3114
 

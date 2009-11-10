@@ -1,15 +1,26 @@
 /*
  * coreboot ACPI Support - headers and defines.
- * 
+ *
  * written by Stefan Reinauer <stepan@coresystems.de>
  * Copyright (C) 2004 SUSE LINUX AG
+ * Copyright (C) 2004 Nick Barker
  * Copyright (C) 2008-2009 coresystems GmbH
  *
- * The ACPI table structs are based on the Linux kernel sources.
- * ACPI FADT & FACS added by Nick Barker <nick.barker9@btinternet.com>
- * those parts (C) 2004 Nick Barker
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
  */
-
 
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
@@ -48,6 +59,12 @@ typedef struct acpi_gen_regaddr {
 	u32 addrh;
 } __attribute__ ((packed)) acpi_addr_t;
 
+#define ACPI_ADDRESS_SPACE_MEMORY	   0
+#define ACPI_ADDRESS_SPACE_IO		   1
+#define ACPI_ADDRESS_SPACE_PCI		   2
+#define ACPI_ADDRESS_SPACE_FIXED	0x7f
+
+
 /* Generic ACPI Header, provided by (almost) all tables */
 
 typedef struct acpi_table_header         /* ACPI common table header */
@@ -63,12 +80,8 @@ typedef struct acpi_table_header         /* ACPI common table header */
 	u32  asl_compiler_revision;  /* ASL compiler revision number */
 } __attribute__ ((packed)) acpi_header_t;
 
-/* FIXME: This is very fragile:
- * MCONFIG, HPET, FADT, SRAT, SLIT, MADT(APIC), SSDT, SSDTX, and SSDT for CPU
- * pstate
- */
-
-#define MAX_ACPI_TABLES (7 + CONFIG_ACPI_SSDTX_NUM + CONFIG_MAX_CPUS)
+/* A maximum number of 32 ACPI tables ought to be enough for now */
+#define MAX_ACPI_TABLES 32
 
 /* RSDT */
 typedef struct acpi_rsdt {
@@ -330,6 +343,16 @@ typedef struct acpi_facs {
 //
 #define ACPI_FACS_S4BIOS_F	(1 << 0)
 
+typedef struct acpi_ecdt {
+	struct acpi_table_header header;
+	struct acpi_gen_regaddr ec_control;
+	struct acpi_gen_regaddr ec_data;
+	u32 uid;
+	u8 gpe_bit;
+	u8 ec_id[];
+} __attribute__ ((packed)) acpi_ecdt_t;
+
+
 /* These are implemented by the target port */
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
@@ -382,7 +405,7 @@ extern u8 acpi_slp_type;
 void suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
-void acpi_jmp_to_realm_wakeup(u32 linear_addr);
+void acpi_jmp_to_realm_wakeup(u32 linear_addr) __attribute__((regparm(0)));
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
 int acpi_get_sleep_type(void);

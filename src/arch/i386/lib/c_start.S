@@ -253,7 +253,16 @@ gdtaddr:
 
 	/* This is the gdt for GCC part of coreboot.
 	 * It is different from the gdt in ROMCC/ASM part of coreboot
-	 * which is defined in entry32.inc */ /* BUT WHY?? */
+	 * which is defined in entry32.inc
+	 *
+	 * When the machine is initially started, we use a very simple
+	 * gdt from rom (that in entry32.inc) which only contains those
+	 * entries we need for protected mode.
+	 *
+	 * When we're executing code from RAM, we want to do more complex
+	 * stuff, like initializing PCI option roms in real mode, or doing
+	 * a resume from a suspend to ram. 
+	 */
 gdt:
 	/* selgdt 0, unused */
 	.word	0x0000, 0x0000		/* dummy */
@@ -275,6 +284,8 @@ gdt:
 	.word	0x0000, 0x0000		/* dummy */
 	.byte	0x00, 0x00, 0x00, 0x00
 
+	/* The next two entries are used for executing VGA option ROMs */
+
 	/* selgdt 0x28 16-bit 64k code at 0x00000000 */
 	.word   0xffff, 0x0000
 	.byte   0, 0x9a, 0, 0
@@ -282,6 +293,16 @@ gdt:
 	/* selgdt 0x30 16-bit 64k data at 0x00000000 */
 	.word   0xffff, 0x0000
 	.byte   0, 0x92, 0, 0
+
+	/* The next two entries are used for ACPI S3 RESUME */
+
+	/* selgdt 0x38, flat data segment 16bit */
+	.word	0x0000, 0x0000		/* dummy */
+	.byte	0x00, 0x93, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */	
+
+	/* selgdt 0x40, flat code segment 16bit */ 
+	.word	0xffff, 0x0000		
+	.byte	0x00, 0x9b, 0x8f, 0x00 /* G=1 and 0x0f, So we get 4Gbytes for limit */	
 gdt_end:
 
 idtarg:

@@ -18,7 +18,8 @@
  *   write_acpi_tables()
  *   acpi_dump_apics()
  *   
- * See AMD Solo, Island Aruma or Via Epia-M port for more details.
+ * See Kontron 986LCD-M port for a good example of an ACPI implementation
+ * in coreboot.
  */
 
 #include <console/console.h>
@@ -26,6 +27,7 @@
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <device/pci.h>
+#include <cbmem.h>
 
 u8 acpi_checksum(u8 *table, u32 length)
 {
@@ -37,54 +39,67 @@ u8 acpi_checksum(u8 *table, u32 length)
 	return -ret;
 }
 
-/*
- * add an acpi table to rsdt structure, and recalculate checksum
+/**
+ * Add an ACPI table to the RSDT (and XSDT) structure, recalculate length and checksum
  */
 
 void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 {
-	int i;
+	int i, entries_num;
 	acpi_rsdt_t *rsdt;
 	acpi_xsdt_t *xsdt = NULL;
 
+	/* The RSDT is mandatory ... */
 	rsdt = (acpi_rsdt_t *)rsdp->rsdt_address;
+
+	/* ... while the XSDT is not */
 	if (rsdp->xsdt_address) {
 		xsdt = (acpi_xsdt_t *)((u32)rsdp->xsdt_address);
 	}
 	
-	int entries_num = ARRAY_SIZE(rsdt->entry);
+	/* This should always be MAX_ACPI_TABLES */
+	entries_num = ARRAY_SIZE(rsdt->entry);
 	
-	for (i=0; i<entries_num; i++) {
-		if(rsdt->entry[i]==0) {
-			rsdt->entry[i]=(u32)table;
-			/* fix length to stop kernel whining about invalid entries */
-			rsdt->header.length = sizeof(acpi_header_t) + (sizeof(u32) * (i+1));
-			/* fix checksum */
-			/* hope this won't get optimized away */
-			rsdt->header.checksum=0;
-			rsdt->header.checksum=acpi_checksum((u8 *)rsdt,
-					rsdt->header.length);
-
-			/* And now the same thing for the XSDT. We use the same
-			 * index as we want the XSDT and RSDT to always be in
-			 * sync in coreboot.
-			 */
-			if (xsdt) {
-				xsdt->entry[i]=(u64)(u32)table;
-				xsdt->header.length = sizeof(acpi_header_t) +
-					(sizeof(u64) * (i+1));
-				xsdt->header.checksum=0;
-				xsdt->header.checksum=acpi_checksum((u8 *)xsdt,
-						xsdt->header.length);
-			}
-			
-			printk_debug("ACPI: added table %d/%d Length now %d\n",
-					i+1, entries_num, rsdt->header.length);
-			return;
-		}
+	for (i = 0; i < entries_num; i++) {
+		if(rsdt->entry[i] == 0)
+			break;
 	}
 
-	printk_err("ACPI: Error: Could not add ACPI table, too many tables.\n");
+	if (i >= entries_num) {
+		printk_err("ACPI: Error: Could not add ACPI table, too many tables.\n");
+		return;
+	}
+
+	/* Add table to the RSDT */
+	rsdt->entry[i] = (u32)table;
+
+	/* Fix RSDT length or the kernel will assume invalid entries */
+	rsdt->header.length = sizeof(acpi_header_t) + (sizeof(u32) * (i+1));
+
+	/* Re-calculate checksum */
+	rsdt->header.checksum = 0; /* Hope this won't get optimized away */
+	rsdt->header.checksum = acpi_checksum((u8 *)rsdt,
+			rsdt->header.length);
+
+	/* And now the same thing for the XSDT. We use the same index as for
+	 * now we want the XSDT and RSDT to always be in sync in coreboot.
+	 */
+	if (xsdt) {
+		/* Add table to the XSDT */
+		xsdt->entry[i]=(u64)(u32)table;
+
+		/* Fix XSDT length */
+		xsdt->header.length = sizeof(acpi_header_t) +
+			(sizeof(u64) * (i+1));
+
+		/* Re-calculate checksum */
+		xsdt->header.checksum=0;
+		xsdt->header.checksum=acpi_checksum((u8 *)xsdt,
+				xsdt->header.length);
+	}
+
+	printk_debug("ACPI: added table %d/%d Length now %d\n",
+			i+1, entries_num, rsdt->header.length);
 }
 
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base, u16 seg_nr, u8 start, u8 end)
@@ -222,7 +237,8 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 }
 
 /* this can be overriden by platform ACPI setup code,
-   if it calls acpi_create_ssdt_generator */
+ * if it calls acpi_create_ssdt_generator
+ */
 unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(unsigned long current,
 						    const char *oem_table_id) {
 	return current;
@@ -560,10 +576,29 @@ extern char *lowmem_backup;
 extern char *lowmem_backup_ptr;
 extern int lowmem_backup_size;
 
+#define WAKEUP_BASE		0x600
+
+void (*acpi_do_wakeup)(u32 vector, u32 backup_source, u32 backup_target, u32
+		backup_size) __attribute__((regparm(0))) = (void *)WAKEUP_BASE;
+
+extern unsigned char __wakeup, __wakeup_size;
+
 void acpi_jump_to_wakeup(void *vector)
 {
+	u32 acpi_backup_memory = (u32) cbmem_find(CBMEM_ID_RESUME);
+
+	if (!acpi_backup_memory) {
+		printk(BIOS_WARNING, "ACPI: Backup memory missing. No S3 Resume.\n");
+		return;
+	}
+
+	// FIXME this should go into the ACPI backup memory, too. No pork saussages.
 	/* just restore the SMP trampoline and continue with wakeup on assembly level */
 	memcpy(lowmem_backup_ptr, lowmem_backup, lowmem_backup_size);
-	acpi_jmp_to_realm_wakeup((u32) vector);
+
+	/* copy wakeup trampoline in place */
+	memcpy(WAKEUP_BASE, &__wakeup, &__wakeup_size);
+
+	acpi_do_wakeup((u32)vector, acpi_backup_memory, CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 }
 #endif

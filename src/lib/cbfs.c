@@ -66,6 +66,10 @@ struct cbfs_header *cbfs_master_header(void)
 	printk_spew("magic is %08x\n", ntohl(header->magic));
 	if (ntohl(header->magic) != CBFS_HEADER_MAGIC) {
 		printk_err("ERROR: No valid CBFS header found!\n");
+		if (header->magic == 0xffffffff) {
+			printk_err("Maybe the ROM isn't entirely mapped yet?\n"
+				"See (and report to) http://www.coreboot.org/Infrastructure_Projects#CBFS\n");
+		}
 		return NULL;
 	}
 

@@ -485,10 +485,11 @@ unsigned long write_coreboot_table(
 
 #if (CONFIG_HAVE_OPTION_TABLE == 1) 
 	{
-		struct lb_record *rec_dest;
-		/* Copy the option config table, it's already a lb_record... */
+		struct lb_record *rec_dest, *rec_src;
+		/* Write the option config table... */
 		rec_dest = lb_new_record(head);
-		memcpy(rec_dest,  &option_table, sizeof(option_table));
+		rec_src = (struct lb_record *)(void *)&option_table;
+		memcpy(rec_dest,  rec_src, rec_src->size);
 		/* Create cmos checksum entry in coreboot table */
 		lb_cmos_checksum(head);
 	}

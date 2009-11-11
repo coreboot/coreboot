@@ -8,14 +8,13 @@ subdirs-y += smp
 obj-$(CONFIG_HAVE_OPTION_TABLE) += ../../option_table.o
 
 ifdef POST_EVALUATION
-BOOTBLOCK_SIZE=65536
 
 #######################################################################
 # Build the final rom image
 
 $(obj)/coreboot.rom: $(obj)/coreboot.bootblock $(obj)/coreboot_ram $(CBFSTOOL)
 	rm -f $@
-	$(CBFSTOOL) $@ create $(shell expr 1024 \* $(CONFIG_COREBOOT_ROMSIZE_KB)) $(BOOTBLOCK_SIZE) $(obj)/coreboot.bootblock
+	$(CBFSTOOL) $@ create $(shell expr 1024 \* $(CONFIG_COREBOOT_ROMSIZE_KB)) $(obj)/coreboot.bootblock
 	if [ -f fallback/coreboot_apc ]; \
 	then \
 		$(CBFSTOOL) $@ add-stage fallback/coreboot_apc fallback/coreboot_apc $(CBFS_COMPRESS_FLAG); \

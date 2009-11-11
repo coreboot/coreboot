@@ -187,18 +187,17 @@ static int cbfs_create(int argc, char **argv)
 {
 	char *romname = argv[1];
 	char *cmd = argv[2];
-	if (argc < 6) {
+	if (argc < 5) {
 		printf("not enough arguments to 'create'.\n");
 		return 1;
 	}
 
 	uint32_t size = strtoul(argv[3], NULL, 0);
-	/* ignore bootblock size. we use whatever we get and won't allocate any larger */
-	char *bootblock = argv[5];
+	char *bootblock = argv[4];
 	uint32_t align = 0;
 
-	if (argc > 6)
-		align = strtoul(argv[6], NULL, 0);
+	if (argc > 5)
+		align = strtoul(argv[5], NULL, 0);
 
 	return create_cbfs_image(romname, size, bootblock, align);
 }
@@ -255,7 +254,7 @@ void usage(void)
 	     "add FILE NAME TYPE [base address]    Add a component\n"
 	     "add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
 	     "add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
-	     "create SIZE BSIZE BOOTBLOCK [ALIGN]  Create a ROM file\n"
+	     "create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
 	     "locate FILE NAME ALIGN               Find a place for a file of that size\n"
 	     "print                                Show the contents of the ROM\n");
 }

@@ -2295,8 +2295,8 @@ def writemakefile(path):
 		for j in i.roms:
 			file.write(" %s/coreboot.rom " % j)
 		file.write("> %s.bootblock\n\n" %i.name)
-		file.write("\t./cbfs/cbfstool %s create %s %s %s.bootblock\n"
-			   %(i.name, romsize, bootblocksize, i.name))
+		file.write("\t./cbfs/cbfstool %s create %s %s.bootblock\n"
+			   %(i.name, romsize, i.name))
 		for j in pciroms:
 			file.write("\t./cbfs/cbfstool %s add %s pci%04x,%04x.rom optionrom\n" % (i.name, j.name, j.pci_vid, j.pci_did))
 		for j in i.roms:

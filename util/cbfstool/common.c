@@ -250,6 +250,7 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location)
 			  ntohl(thisfile->offset), align);
 	}
 	printf("Could not add the file to CBFS, it's probably too big.\n");
+	printf("File size %d bytes (%dK).\n", contentsize, contentsize/1024);
 	return 1;
 }
 

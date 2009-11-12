@@ -21096,7 +21096,7 @@ static void scc_transform(struct compile_state *state)
 			fblock = lnode->fblock;
 
 			if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
-				fprintf(state->errout, "sedge: %5d (%5d -> %5d)\n",
+				fprintf(state->errout, "sedge: %5ld (%5d -> %5d)\n",
 					sedge - scc.ssa_edges,
 					sedge->src->def->id,
 					sedge->dst->def->id);

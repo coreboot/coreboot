@@ -126,7 +126,7 @@ static void setup_realmode_idt(void)
 void run_bios(struct device *dev, unsigned long addr)
 {
 	/* clear vga bios data area */
-	memset(0x400, 0, 0x200);
+	memset((void *)0x400, 0, 0x200);
 	
 	/* Set up C interrupt handlers */
 	setup_interrupt_handlers();

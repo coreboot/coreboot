@@ -58,7 +58,9 @@ extern struct device **last_dev_p;
  *
  * @see device_path
  */
-static spinlock_t dev_lock = SPIN_LOCK_UNLOCKED;
+
+DECLARE_SPIN_LOCK(dev_lock)
+
 device_t alloc_dev(struct bus *parent, struct device_path *path)
 {
 	device_t dev, child;

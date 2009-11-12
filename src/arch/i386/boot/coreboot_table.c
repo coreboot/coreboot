@@ -65,11 +65,13 @@ static struct lb_record *lb_last_record(struct lb_header *header)
 	return rec;
 }
 
+#if 0
 static struct lb_record *lb_next_record(struct lb_record *rec)
 {
 	rec = (void *)(((char *)rec) + rec->size);	
 	return rec;
 }
+#endif
 
 static struct lb_record *lb_new_record(struct lb_header *header)
 {
@@ -218,6 +220,7 @@ static void lb_strings(struct lb_header *header)
 
 }
 
+#if CONFIG_WRITE_HIGH_TABLES == 1
 static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
 {
 	struct lb_record *rec;
@@ -229,6 +232,7 @@ static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header 
 	forward->forward = (uint64_t)(unsigned long)next_header;
 	return forward;
 }
+#endif
 
 void lb_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)

@@ -11,6 +11,7 @@ typedef struct {
 
 
 #define SPIN_LOCK_UNLOCKED (spinlock_t) { 1 }
+#define DECLARE_SPIN_LOCK(x) static spinlock_t x = SPIN_LOCK_UNLOCKED;
 
 /*
  * Simple spin lock operations.  There are two variants, one clears IRQ's

@@ -8,6 +8,7 @@
 #include <bitops.h>
 #include "chip.h"
 #include "northbridge.h"
+#include <delay.h>
 
 static void ram_resource(device_t dev, unsigned long index,
 	unsigned long basek, unsigned long sizek)
@@ -157,9 +158,9 @@ struct chip_operations cpu_emulation_qemu_x86_ops = {
 	.enable_dev = enable_dev,
 };
 
-void udelay(int usecs)
+void udelay(unsigned usecs)
 {
-	int i;
+	unsigned i;
 	for(i = 0; i < usecs; i++)
 		inb(0x80);
 }

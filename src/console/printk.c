@@ -23,7 +23,7 @@ int default_message_loglevel = DEFAULT_MESSAGE_LOGLEVEL;
 int minimum_console_loglevel = MINIMUM_CONSOLE_LOGLEVEL;
 int default_console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
-static spinlock_t console_lock = SPIN_LOCK_UNLOCKED;
+DECLARE_SPIN_LOCK(console_lock)
 
 int do_printk(int msg_level, const char *fmt, ...)
 {

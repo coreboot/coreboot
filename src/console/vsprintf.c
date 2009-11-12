@@ -24,7 +24,7 @@
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>
 
-static spinlock_t vsprintf_lock = SPIN_LOCK_UNLOCKED;
+DECLARE_SPIN_LOCK(vsprintf_lock)
 
 static char *str_buf;
 

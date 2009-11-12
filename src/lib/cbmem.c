@@ -35,9 +35,6 @@
 #define MAX_CBMEM_ENTRIES	16
 #define CBMEM_MAGIC		0x434f5245
 
-static void *cbmem_base;
-static int cbmem_size;
-
 struct cbmem_entry {
 	u32 magic;
 	u32 id;
@@ -151,7 +148,7 @@ void *cbmem_add(u32 id, u64 size)
 	cbmem_toc[0].base += size;
 	cbmem_toc[0].size -= size;
 
-	return (void *)cbmem_toc[i].base;
+	return (void *)(u32)cbmem_toc[i].base;
 }
 
 void *cbmem_find(u32 id)

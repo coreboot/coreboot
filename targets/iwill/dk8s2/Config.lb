@@ -21,7 +21,7 @@ option CONFIG_HAVE_FALLBACK_BOOT=1
 ###
 ### Build code to export a programmable irq routing table
 ###
-option CONFIG_HAVE_PIRQ_TABLE=1
+option CONFIG_GENERATE_PIRQ_TABLE=1
 option CONFIG_IRQ_SLOT_COUNT=12
 #
 ###

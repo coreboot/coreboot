@@ -11,7 +11,7 @@ option CONFIG_USE_PRINTK_IN_CAR=1
 
 option CC="gcc -m32"
 
-option CONFIG_HAVE_PIRQ_TABLE=1
+option CONFIG_GENERATE_PIRQ_TABLE=1
 option CONFIG_IRQ_SLOT_COUNT=6
 
 romimage "fallback" 

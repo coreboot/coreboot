@@ -26,6 +26,10 @@
 
 #include "msrtool.h"
 
+/* This Darwin support requires DirectIO, which is available at
+ * http://www.coresystems.de/en/directio
+ */
+
 int darwin_probe(const struct sysdef *system)
 {
 #ifdef __DARWIN__

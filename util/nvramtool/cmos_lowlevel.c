@@ -93,7 +93,7 @@ unsigned long long cmos_read (const cmos_entry_t *e)
    result = 0;
 
    if (e->config == CMOS_ENTRY_STRING)
-    { char *newstring = malloc((length+7)/8);
+    { char *newstring = calloc(1, (length+7)/8);
       unsigned usize = (8 * sizeof(unsigned long long));
 
       if(!newstring) { out_of_memory(); }

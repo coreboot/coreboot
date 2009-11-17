@@ -13,7 +13,6 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include <cpu/amd/amdk8_sysconf.h>
 
-static int first_time = 1;
 static int disable_siblings = !CONFIG_LOGICAL_CPUS;
 
 #include "dualcore_id.c"
@@ -116,7 +115,10 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	
 	return apicid_base;
 }
+
 #if 0
+static int first_time = 1;
+
 void amd_sibling_init(device_t cpu)
 {
 	unsigned i, siblings;

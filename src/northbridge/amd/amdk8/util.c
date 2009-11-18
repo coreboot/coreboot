@@ -25,7 +25,7 @@
  * It can be called after RAM is set up by including amdk8.h and enabling the
  * compilation of this file in src/northbridge/amd/amdk8/Makefile.inc.
  */
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 #include <console/console.h>
 #include <string.h>
 #include <device/pci.h>
@@ -95,7 +95,7 @@ static const char *ileave(u32 base)
  * Return the node number.
  * For one case (config registers) these are not the right bit fields.
  */
-static int node(u32 reg)
+static int r_node(u32 reg)
 {
 	return BITS(reg, 0, 0x7);
 }
@@ -104,7 +104,7 @@ static int node(u32 reg)
  * Return the link number.
  * For one case (config registers) these are not the right bit fields.
  */
-static int link(u32 reg)
+static int r_link(u32 reg)
 {
 	return BITS(reg, 4, 0x3);
 }
@@ -125,7 +125,7 @@ static void showdram(int level, u8 which, u32 base, u32 lim)
 	do_printk(level, "DRAM(%02x)%010llx-%010llx, ->(%d), %s, %s, %s, %d\n",
 	       which, (((u64) base & 0xffff0000) << 8),
 	       (((u64) lim & 0xffff0000) << 8) + 0xffffff,
-	       node(lim), re(base), we(base), ileave(base), (lim >> 8) & 3);
+	       r_node(lim), re(base), we(base), ileave(base), (lim >> 8) & 3);
 }
 
 /**
@@ -140,7 +140,7 @@ static void showdram(int level, u8 which, u32 base, u32 lim)
  */
 static void showconfig(int level, u8 which, u32 reg)
 {
-	/* Don't use node() and link() here. */
+	/* Don't use r_node() and r_link() here. */
 	do_printk(level, "CONFIG(%02x)%02x-%02x ->(%d,%d),%s %s (%s numbers)\n",
 	       which, BITS(reg, 16, 0xff), BITS(reg, 24, 0xff),
 	       BITS(reg, 4, 0x7), BITS(reg, 8, 0x3),
@@ -163,7 +163,7 @@ static void showpciio(int level, u8 which, u32 base, u32 lim)
 {
 	do_printk(level, "PCIIO(%02x)%07x-%07x, ->(%d,%d), %s, %s,VGA %d ISA %d\n",
 	       which, BITS(base, 12, 0x3fff) << 12,
-	       (BITS(lim, 12, 0x3fff) << 12) + 0xfff, node(lim), link(lim),
+	       (BITS(lim, 12, 0x3fff) << 12) + 0xfff, r_node(lim), r_link(lim),
 	       re(base), we(base), BITS(base, 4, 0x1), BITS(base, 5, 0x1));
 }
 
@@ -183,8 +183,8 @@ static void showmmio(int level, u8 which, u32 base, u32 lim)
 	do_printk(level, "MMIO(%02x)%010llx-%010llx, ->(%d,%d), %s, %s, "
 	       "CPU disable %d, Lock %d, Non posted %d\n",
 	       which, ((u64) BITS(base, 0, 0xffffff00)) << 8,
-	       (((u64) BITS(lim, 0, 0xffffff00)) << 8) + 0xffff, node(lim),
-	       link(lim), re(base), we(base), BITS(base, 4, 0x1),
+	       (((u64) BITS(lim, 0, 0xffffff00)) << 8) + 0xffff, r_node(lim),
+	       r_link(lim), re(base), we(base), BITS(base, 4, 0x1),
 	       BITS(base, 7, 0x1), BITS(lim, 7, 0x1));
 }
 

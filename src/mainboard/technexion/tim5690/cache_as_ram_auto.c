@@ -145,6 +145,20 @@ fallback_image:
 }
 #endif				/* CONFIG_USE_FALLBACK_IMAGE == 1 */
 
+/* Early mainboard specific GPIO setup. */
+static void mb_gpio_init(void)
+{
+	/* Init Super I/O GPIOs. Done early. */
+	it8712f_enter_conf();
+	outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
+	outb(IT8712F_GPIO, SIO_DATA);
+	outb(0x62, SIO_INDEX); // set Simple I/O Base Address 0x200
+	outb(0x02, SIO_DATA);
+	outb(0x63, SIO_INDEX);
+	outb(0x00, SIO_DATA);
+	it8712f_exit_conf();
+}
+
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
@@ -177,6 +191,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* it8712f_enable_serial does not use its 1st parameter. */
 	it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
+	mb_gpio_init();
 	it8712f_kill_watchdog();
 	uart_init();
 	console_init();

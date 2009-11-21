@@ -94,6 +94,74 @@ const struct msrdef geodelx_msrs[] = {
 		{ 4, 5, "DLL_OVS/RSDA", "DLL Override Setting or Read Strobe Delay Adjust", PRESENT_DEC, NOBITS },
 		{ BITS_EOT }
 	}},
+	{ 0x4c000014, MSRTYPE_RDWR, MSR2(0, 0), "GLCP_SYS_RSTPLL", "GLCP System Reset and PLL Control", {
+		{ 63, 20, RESERVED },
+		{ 43, 5, "GLIUMULT", "GLIU Multiplier", PRESENT_DEC, NOBITS },
+		{ 38, 1, "GLIUDIV", "GLIU Divide", PRESENT_DEC, {
+			{ MSR1(0), "Do not predivide input" },
+			{ MSR1(1), "Divide by 2" },
+			{ BITVAL_EOT }
+		}},
+		{ 37, 5, "COREMULT", "CPU Core Multiplier", PRESENT_DEC, NOBITS },
+		{ 32, 1, "COREDIV", "CPU Core Divide", PRESENT_DEC, {
+			{ MSR1(0), "Do not predivide input" },
+			{ MSR1(1), "Divide by 2" },
+			{ BITVAL_EOT }
+		}},
+		{ 31, 6, "SWFLAGS", "Flags", PRESENT_BIN, NOBITS },
+		{ 25, 1, "GLIULOCK", "GLIU PLL Lock", PRESENT_DEC, {
+			{ MSR1(1), "PLL locked" },
+			{ MSR1(0), "PLL is not locked" },
+			{ BITVAL_EOT }
+		}},
+		{ 24, 1, "CORELOCK", "CPU Core PLL Lock", PRESENT_DEC, {
+			{ MSR1(1), "PLL locked" },
+			{ MSR1(0), "PLL is not locked" },
+			{ BITVAL_EOT }
+		}},
+		{ 23, 8, "HOLD_COUNT", "Hold Count, divided by 16", PRESENT_DEC, NOBITS },
+		{ 15, 1, RESERVED },
+		{ 14, 1, "GLIUPD", "GLIU PLL Power Down mode", PRESENT_DEC, NOBITS },
+		{ 13, 1, "COREPD", "CPU Core PLL Power Down mode", PRESENT_DEC, NOBITS },
+		{ 12, 1, "GLIUBYPASS", "GLIU PLL Bypass", PRESENT_DEC, {
+			{ MSR1(1), "DOTREF input directly drives the GLIU clock spines" },
+			{ MSR1(0), "DOTPLL drives the GLIU clock" },
+			{ BITVAL_EOT }
+		}},
+		{ 11, 1, "COREBYPASS", "CPU Core PLL Bypass", PRESENT_DEC, {
+			{ MSR1(1), "DOTREF input directly drives the CPU Core clock" },
+			{ MSR1(0), "DOTPLL drives the CPU Core clock" },
+			{ BITVAL_EOT }
+		}},
+		{ 10, 1, "LPFEN", "Loop Filter", PRESENT_DEC, {
+			{ MSR1(1), "Enabled" },
+			{ MSR1(0), "Disabled" },
+			{ BITVAL_EOT }
+		}},
+		{ 9, 1, "VA_SEMI_SYNC_MODE", "CPU-GLIU Sync Mode", PRESENT_DEC, {
+			{ MSR1(1), "CPU does not use GLIU FIFO" },
+			{ MSR1(0), "The GLIU FIFO is used by the CPU" },
+			{ BITVAL_EOT }
+		}},
+		{ 8, 1, "PCI_SEMI_SYNC_MODE", "PCI-GLIU Sync Mode", PRESENT_DEC, {
+			{ MSR1(1), "PCI does not use mb_func_clk and pci_func_clk falling edges" },
+			{ MSR1(0), "Falling edges on mb_func_clk and pci_func_clk are used by PCI" },
+			{ BITVAL_EOT }
+		}},
+		{ 7, 1, "BOOTSTRAP_PW1", "PW1 bootstrap", PRESENT_DEC, {
+			{ MSR1(1), "66MHz PCI clock" },
+			{ MSR1(0), "33MHz PCI clock" },
+			{ BITVAL_EOT }
+		}},
+		{ 6, 1, "BOOTSTRAP_IRQ13", "IRQ13 bootstrap", PRESENT_DEC, {
+			{ MSR1(1), "Stall-on-reset debug feature enabled" },
+			{ MSR1(0), "No stall" },
+			{ BITVAL_EOT }
+		}},
+		{ 5, 5, "BOOTSTRAPS", "CPU/GLIU frequency select", PRESENT_BIN, NOBITS },
+		{ 0, 1, "CHIP_RESET", "Chip Reset", PRESENT_DEC, NOBITS },
+		{ BITS_EOT }
+	}},
 /*
 	{ 0, MSRTYPE_RDONLY, MSR2(0, 0), "TEMPLATE", "Template MSR", {
 		{ 63, 64, RESERVED },

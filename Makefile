@@ -311,12 +311,19 @@ update:
 include util/kconfig/Makefile
 
 $(obj)/ldoptions: $(obj)/config.h
-#	cat $(obj)/config.h  | grep -v \" |grep -v AUTOCONF_INCLUDED | grep \#define | sed s/\#define\ // | sed s/\ /\ =\ / | sed 's/$$/;/' > $(obj)/ldoptions
-	awk '/^#define ([^"])* ([^"])*$$/ {print $$2 " = " $$3 ";";}' $< > $@
+	awk '/^#define ([^"])* ([^"])*$$/ {gsub("\\r","",$$3); print $$2 " = " $$3 ";";}' $< > $@
 
+_OS=$(shell uname -s |cut -c-7)
+STACK=
+ifeq ($(_OS),MINGW32)
+	STACK=-Wl,--stack,16384000
+endif
+ifeq ($(_OS),CYGWIN_)
+	STACK=-Wl,--stack,16384000
+endif
 $(obj)/romcc: $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
-	$(HOSTCC) -g -O2 -Wall -o $@ $<
+	$(HOSTCC) -g -O2 $(STACK) -Wall -o $@ $<
 
 .PHONY: $(PHONY) prepare prepare2 clean distclean doxygen doxy coreboot
 

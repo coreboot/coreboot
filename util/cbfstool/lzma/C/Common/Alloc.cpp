@@ -96,7 +96,7 @@ void *BigAlloc(size_t size) throw()
   if (size >= (1 << 18))
   {
     void *res = ::VirtualAlloc(0, (size + g_LargePageSize - 1) & (~(g_LargePageSize - 1)), 
-        MEM_COMMIT | MEM_LARGE_PAGES, PAGE_READWRITE);
+        MEM_COMMIT, PAGE_READWRITE);
     if (res != 0)
       return res;
   }

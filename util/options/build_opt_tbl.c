@@ -21,6 +21,19 @@ void test_for_entry_overlaps(void *entry_start, void *entry_end);
 /* This array is used to isolate bits that are to be changed in a byte */
 static unsigned char clip[9]={0,1,3,7,0x0f,0x1f,0x3f,0x7f,0xff};
 
+#ifdef WIN32
+#include <fcntl.h>
+char* mkstemp(char* name) {
+	static char val='0';
+	char *c=name;
+	while (*c!='X') c++;
+	*c=val++;
+	return open(name,O_CREAT | O_RDWR);
+}
+#define UNLINK_IF_NECESSARY(x) unlink(x)
+#else
+#define UNLINK_IF_NECESSARY(x)
+#endif
 
 /* This routine loops through the entried and tests if any of the fields overlap
 	input entry_start = the memory pointer to the start of the entries.
@@ -531,6 +544,7 @@ int main(int argc, char **argv)
         	}
 
         	fclose(fp);
+		UNLINK_IF_NECESSARY(option);
 		if (rename(tmpfilename, option)) {
 			fprintf(stderr, "Error - Could not write %s: ", option);
 			perror(NULL);
@@ -584,6 +598,7 @@ int main(int argc, char **argv)
 		}
 		fclose(fp);
 
+		UNLINK_IF_NECESSARY(header);
 		if (rename(tmpfilename, header)) {
 			fprintf(stderr, "Error - Could not write %s: ", header);
 			perror(NULL);

@@ -27,7 +27,6 @@
 #include <fcntl.h>
 #include <getopt.h>
 #include <sys/stat.h>
-#include <arpa/inet.h>
 
 #include "common.h"
 #include "cbfs.h"

@@ -17,6 +17,12 @@
  */
 
 #include <stdint.h>
+#ifndef WIN32
+#include <arpa/inet.h>
+#else
+#define ntohl(x) (((x)>>24) | ((x)<<24) | (((x)>>8)&0xff00) | (((x)<<8)&0xff0000))
+#define htonl ntohl
+#endif
 
 extern void *offset;
 extern struct cbfs_header *master_header;

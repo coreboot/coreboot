@@ -219,11 +219,10 @@ static int exists(const char *dirname, const char *filename)
 static char *slurp_file(const char *dirname, const char *filename, off_t *r_size)
 {
 	char cwd[MAX_CWD_SIZE];
-	int fd;
 	char *buf;
 	off_t size, progress;
 	ssize_t result;
-	struct stat stats;
+	FILE* file;
 	
 	if (!filename) {
 		*r_size = 0;
@@ -233,25 +232,22 @@ static char *slurp_file(const char *dirname, const char *filename, off_t *r_size
 		die("cwd buffer to small");
 	}
 	xchdir(dirname);
-	fd = open(filename, O_RDONLY);
+	file = fopen(filename, "rb");
 	xchdir(cwd);
-	if (fd < 0) {
+	if (file == NULL) {
 		die("Cannot open '%s' : %s\n",
 			filename, strerror(errno));
 	}
-	result = fstat(fd, &stats);
-	if (result < 0) {
-		die("Cannot stat: %s: %s\n",
-			filename, strerror(errno));
-	}
-	size = stats.st_size;
+	fseek(file, 0, SEEK_END);
+	size = ftell(file);
+	fseek(file, 0, SEEK_SET);
 	*r_size = size +1;
 	buf = xmalloc(size +2, filename);
 	buf[size] = '\n'; /* Make certain the file is newline terminated */
 	buf[size+1] = '\0'; /* Null terminate the file for good measure */
 	progress = 0;
 	while(progress < size) {
-		result = read(fd, buf + progress, size - progress);
+		result = fread(buf + progress, 1, size - progress, file);
 		if (result < 0) {
 			if ((errno == EINTR) ||	(errno == EAGAIN))
 				continue;
@@ -260,11 +256,7 @@ static char *slurp_file(const char *dirname, const char *filename, off_t *r_size
 		}
 		progress += result;
 	}
-	result = close(fd);
-	if (result < 0) {
-		die("Close of %s failed: %s\n",
-			filename, strerror(errno));
-	}
+	fclose(file);
 	return buf;
 }
 
@@ -3863,15 +3855,16 @@ static const char *next_char(struct file_state *file, const char *pos, int index
 		}
 		/* Is this an escaped newline? */
 		if (file->join_lines &&
-			(c == '\\') && (pos + size < end) && (pos[1] == '\n')) 
+			(c == '\\') && (pos + size < end) && ((pos[1] == '\n') || ((pos[1] == '\r') && (pos[2] == '\n'))))
 		{
+			int cr_offset = ((pos[1] == '\r') && (pos[2] == '\n'))?1:0;
 			/* At the start of a line just eat it */
 			if (pos == file->pos) {
 				file->line++;
 				file->report_line++;
-				file->line_start = pos + size + 1;
+				file->line_start = pos + size + 1 + cr_offset;
 			}
-			pos += size + 1;
+			pos += size + 1 + cr_offset;
 		}
 		/* Do I need to ga any farther? */
 		else if (index == 0) {
@@ -5088,7 +5081,7 @@ static void compile_file(struct compile_state *state, const char *filename, int 
 	if (getcwd(cwd, sizeof(cwd)) == 0) {
 		die("cwd buffer to small");
 	}
-	if (subdir[0] == '/') {
+	if ((subdir[0] == '/') || ((subdir[1] == ':') && ((subdir[2] == '/') || (subdir[2] == '\\')))) {
 		file->dirname = xmalloc(subdir_len + 1, "dirname");
 		memcpy(file->dirname, subdir, subdir_len);
 		file->dirname[subdir_len] = '\0';
@@ -15148,7 +15141,9 @@ static void free_basic_block(struct compile_state *state, struct block *block)
 		}
 	}
 	memset(block, -1, sizeof(*block));
+#ifndef WIN32
 	xfree(block);
+#endif
 }
 
 static void free_basic_blocks(struct compile_state *state, 

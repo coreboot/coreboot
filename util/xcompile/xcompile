@@ -7,9 +7,9 @@ for make in make gmake gnumake; do
 done
 
 GCCPREFIX=invalid
-TMP=`mktemp /tmp/temp.XXXX`
+TMP=`mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz`
 echo "mov %eax, %eax" > ${TMP}.s
-printf "\x7fELF" > ${TMP}.compare
+printf "\x7fELF\n" > ${TMP}.compare
 for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/i386-elf- i386-elf- ""; do
 	if which ${gccprefixes}as 2>/dev/null >/dev/null; then
 		printf ""
@@ -18,7 +18,7 @@ for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/i386-elf- i386-elf- ""; do
 	fi
 	rm -f ${TMP}.o
 	if ${gccprefixes}as --32 -o ${TMP}.o ${TMP}.s; then
-		dd bs=4 count=1 if=${TMP}.o > ${TMP}.test 2>/dev/null
+		cut -c-4 ${TMP}.o > ${TMP}.test 2>/dev/null
 		if cmp ${TMP}.test ${TMP}.compare; then
 			GCCPREFIX=$gccprefixes
 			break

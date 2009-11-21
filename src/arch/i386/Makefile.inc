@@ -43,10 +43,10 @@ $(obj)/coreboot.bootblock: $(obj)/coreboot
 
 $(obj)/ldscript.ld: $(ldscripts) $(obj)/ldoptions
 	printf 'INCLUDE "ldoptions"\n' > $@
-	printf '$(foreach ldscript,$(ldscripts),INCLUDE "$(ldscript)"\n)' >> $@
+	printf '$(foreach ldscript,$(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@
 
 $(obj)/crt0_includes.h: $(crt0s)
-	printf '$(foreach crt0,$(obj)/config.h $(crt0s),#include "$(crt0)"\n)' > $@
+	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
 	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm

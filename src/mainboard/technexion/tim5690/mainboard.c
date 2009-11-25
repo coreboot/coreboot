@@ -28,7 +28,6 @@
 #include <../southbridge/amd/sb600/sb600.h>
 #include "chip.h"
 #include "tn_post_code.h"
-//#include "speaker.h" // test buzzer
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */
@@ -185,12 +184,6 @@ int add_mainboard_resources(struct lb_memory *mem)
 		uma_memory_base, uma_memory_size);
 #endif
 	technexion_post_code(LED_MESSAGE_FINISH);
-        // test buzzer
-	//speaker_on_delay();
-	//speaker_off_delay();
-	//speaker_on_delay();
-	//speaker_off_nodelay();
-	
 }
 
 struct chip_operations mainboard_ops = {

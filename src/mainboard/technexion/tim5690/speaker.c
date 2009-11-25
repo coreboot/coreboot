@@ -32,7 +32,7 @@
 #include <../southbridge/amd/sb600/sb600.h>
 #include <delay.h>
 
-#endif // __PRE_RAM__
+#endif /* __PRE_RAM__ */
 
 #include "speaker.h"
 
@@ -41,11 +41,11 @@ void speaker_init(uint8_t time) {
     * Options_0 - RW - 8 bits - [PM_Reg: 60h].
     * SpkrEn, bit[5]=1b, Setting this bit will configure GPIO2 to be speaker output.
     */
-#ifndef __PRE_RAM__
-   pm_iowrite(0x60, (pm_ioread(0x60) | (1<<5)));
-#else
+#ifdef __PRE_RAM__
    pmio_write(0x60, (pmio_read(0x60) | (1<<5)));
-#endif // __PRE_RAM__
+#else
+   pm_iowrite(0x60, (pm_ioread(0x60) | (1<<5)));
+#endif /* __PRE_RAM__ */
 
    /* SB600 RRG.
     * Tmr1CntrlWord - RW - 8 bits - [IO_Reg: 43h].
@@ -72,12 +72,7 @@ void speaker_on_nodelay(void) {
 }
 
 void speaker_on_delay(void) {
-   /* SB600 RRG.
-    * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
-    * SpkrEnable, bit[0]=1b, Enable counter 2
-    * SpkrTmrEnable, bit[1]=1b, Speaker timer on
-    */
-   outb(inb(0x61) | 0x03, 0x61);
+   speaker_on_nodelay();
    mdelay(100);
 }
 
@@ -91,12 +86,6 @@ void speaker_off_nodelay(void) {
 }
 
 void speaker_off_delay(void) {
-   /* SB600 RRG.
-    * Nmi_Status - RW - 8 bits - [IO_Reg: 61h].
-    * SpkrEnable, bit[0]=0b, Disable counter 2
-    * SpkrTmrEnable, bit[1]=0b, Speaker timer off
-    */
-   outb(inb(0x61) & ~0x03, 0x61);
+   speaker_off_nodelay();
    mdelay(100);
 }
-

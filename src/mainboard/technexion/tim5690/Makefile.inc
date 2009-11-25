@@ -32,6 +32,8 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 # This is debug message for products of Technexion.
 obj-y += tn_post_code.o
 
+obj-y += speaker.o
+
 # This is part of the conversion to init-obj and away from included code.
 
 initobj-y += crt0.o

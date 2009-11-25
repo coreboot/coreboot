@@ -100,8 +100,8 @@ static inline int spd_read_byte(u32 device, u32 address)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#define TECHNEXION_EARLY_SETUP
 #include "tn_post_code.c"
+#include "speaker.c"
 
 
 #if CONFIG_USE_FALLBACK_IMAGE == 1
@@ -249,6 +249,9 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		soft_reset();
 	}
 
+	speaker_init(255);
+	speaker_on_nodelay();
+
 	allow_all_aps_stop(bsp_apicid);
 
 	/* It's the time to set ctrl now; */
@@ -260,6 +263,8 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	technexion_post_code(LED_MESSAGE_RAM);
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
+
+	speaker_off_nodelay();
 
 	rs690_before_pci_init();
 	sb600_before_pci_init();

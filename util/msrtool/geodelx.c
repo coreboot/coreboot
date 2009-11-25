@@ -21,7 +21,7 @@
 
 int geodelx_probe(const struct targetdef *target) {
 	struct cpuid_t *id = cpuid();
-	return 10 == id->family && 5 == id->model;
+	return 5 == id->family && 10 == id->model;
 }
 
 const struct msrdef geodelx_msrs[] = {

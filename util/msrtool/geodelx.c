@@ -454,11 +454,5 @@ const struct msrdef geodelx_msrs[] = {
 		{ 0, 1, "CHIP_RESET", "Chip Reset", PRESENT_DEC, NOBITS },
 		{ BITS_EOT }
 	}},
-/*
-	{ 0, MSRTYPE_RDONLY, MSR2(0, 0), "TEMPLATE", "Template MSR", {
-		{ 63, 64, RESERVED },
-		{ BITS_EOT }
-	}},
-*/
 	{ MSR_EOT }
 };

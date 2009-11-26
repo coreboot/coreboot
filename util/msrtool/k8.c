@@ -355,12 +355,5 @@ const struct msrdef k8_msrs[] = {
 		{ BITS_EOT }
 	}},
 
-/*
-	{ 0, MSRTYPE_RDONLY, MSR2(0, 0), "TEMPLATE", "Template MSR", {
-		{ 63, 64, RESERVED },
-		{ BITS_EOT }
-	}},
-*/
-
 	{ MSR_EOT }
 };

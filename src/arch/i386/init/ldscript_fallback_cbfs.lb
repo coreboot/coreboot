@@ -40,8 +40,10 @@ SECTIONS
 	_x = .;
 	. = (_x < (CONFIG_ROMBASE - 0x10000 +  CONFIG_ROM_IMAGE_SIZE)) ? (CONFIG_ROMBASE - 0x10000 +  CONFIG_ROM_IMAGE_SIZE) : _x;
 
+	__my_rom_start = .; 
+
 	/* This section might be better named .setup */
-	.rom . : {
+	.rom _myrom : {
 		_rom = .;
 		*(.rom.text);
 		*(.rom.data);
@@ -54,6 +56,7 @@ SECTIONS
 	}
 
 	_lrom = LOADADDR(.rom);
+
 	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
 
 	/DISCARD/ : {
@@ -62,4 +65,13 @@ SECTIONS
 		*(.comment.*)
 		*(.note.*)
 	}
+
+	__my_rom_end = .; 
+
+	__my_rom_size = (( ( __my_rom_end - __my_rom_start ) / 256) + 2 ) * 256; 
+	/* Next line gives same output for me as above one but causes
+	 * ld to complain about non constant offset so
+	__my_rom_size = (( (SIZEOF(.rom) + SIZEOF(.data) + SIZEOF(.text)) / 256 ) + 2 ) * 256;
+	*/
+	_myrom = _rom + (0x10000 - __my_rom_size);
 }

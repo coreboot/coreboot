@@ -111,3 +111,8 @@ config HT_CHAIN_END_UNITID_BASE
 	default 0x20
 	depends on BOARD_ASUS_M2V_MX_SE
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1043
+	depends on BOARD_ASUS_M2V_MX_SE
+

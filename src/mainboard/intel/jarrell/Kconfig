@@ -43,3 +43,13 @@ config IRQ_SLOT_COUNT
 	default 9
 	depends on BOARD_INTEL_JARRELL
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x8086
+	depends on BOARD_INTEL_JARRELL
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x1079
+	depends on BOARD_INTEL_JARRELL
+

@@ -10,6 +10,7 @@ config BOARD_TYAN_S2875
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select BOARD_ROMSIZE_KB_512
+	select IOAPIC
 
 config MAINBOARD_DIR
 	string
@@ -65,3 +66,29 @@ config IRQ_SLOT_COUNT
 	int
 	default 13
 	depends on BOARD_TYAN_S2875
+
+config HT_CHAIN_UNITID_BASE
+	hex
+        default 1
+        depends on BOARD_TYAN_S2875
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+        default 0x20
+        depends on BOARD_TYAN_S2875
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+        bool
+        default y
+        depends on BOARD_TYAN_S2875
+
+config SB_HT_CHAIN_ON_BUS0
+        int
+        default 0
+        depends on BOARD_TYAN_S2875
+
+config APIC_ID_OFFSET
+	hex
+        default 0x0
+        depends on BOARD_TYAN_S2875
+

@@ -9,6 +9,7 @@ config BOARD_DELL_S1850
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select BOARD_ROMSIZE_KB_1024
+	select UDELAY_TSC
 
 config MAINBOARD_DIR
 	string
@@ -32,12 +33,12 @@ config MAINBOARD_PART_NUMBER
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
-	default 0x016c
+	default 0x5580
 	depends on BOARD_DELL_S1850
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
-	default 0x1028
+	default 0x15d9
 	depends on BOARD_DELL_S1850
 
 

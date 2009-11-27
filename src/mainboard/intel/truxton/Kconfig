@@ -41,3 +41,13 @@ config IRQ_SLOT_COUNT
 	default 1
 	depends on BOARD_INTEL_TRUXTON
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x8086
+	depends on BOARD_INTEL_TRUXTON
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2680
+	depends on BOARD_INTEL_TRUXTON
+

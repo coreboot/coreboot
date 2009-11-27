@@ -101,3 +101,13 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 	depends on BOARD_AMD_PISTACHIO
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1022
+	depends on BOARD_AMD_PISTACHIO
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x3050
+	depends on BOARD_AMD_PISTACHIO

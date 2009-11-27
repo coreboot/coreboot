@@ -104,3 +104,9 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 	depends on BOARD_TYAN_S4880
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x4880
+	depends on BOARD_TYAN_S4880
+

@@ -104,3 +104,14 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 	depends on BOARD_NEWISYS_KHEPRI
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x17c2
+	depends on BOARD_NEWISYS_KHEPRI
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x10
+	depends on BOARD_NEWISYS_KHEPRI
+

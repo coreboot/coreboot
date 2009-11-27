@@ -108,3 +108,14 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 	depends on BOARD_IWILL_DK8_HTX
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1022
+	depends on BOARD_IWILL_DK8_HTX
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x2b80
+	depends on BOARD_IWILL_DK8_HTX
+

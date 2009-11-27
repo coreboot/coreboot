@@ -103,3 +103,14 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 	depends on BOARD_SUNW_ULTRA40
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x108e
+	depends on BOARD_SUNW_ULTRA40
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x40
+	depends on BOARD_SUNW_ULTRA40
+

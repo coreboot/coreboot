@@ -69,6 +69,8 @@ uses CONFIG_HT_CHAIN_END_UNITID_BASE
 uses CONFIG_SB_HT_CHAIN_ON_BUS0
 uses CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
 
+uses CONFIG_ID_SECTION_OFFSET
+
 ## CONFIG_ROM_SIZE is the size of boot ROM that this board will use.
 #512K bytes 
 #default CONFIG_ROM_SIZE=524288
@@ -271,6 +273,8 @@ default  CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=8
 ##
 ## Select power on after power fail setting
 default CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
+
+default CONFIG_ID_SECTION_OFFSET=0x80
 
 ### End Options.lb
 end

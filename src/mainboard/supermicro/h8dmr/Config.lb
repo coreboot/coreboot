@@ -110,8 +110,8 @@ end
 ##
 ## Include an id string (For safe flashing)
 ##
-mainboardinit southbridge/nvidia/mcp55/id.inc
-ldscript /southbridge/nvidia/mcp55/id.lds
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
 
 ##
 ## ROMSTRAP table for MCP55

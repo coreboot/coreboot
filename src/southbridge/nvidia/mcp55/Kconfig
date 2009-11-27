@@ -1,2 +1,6 @@
 config SOUTHBRIDGE_NVIDIA_MCP55
 	bool
+
+config ID_SECTION_OFFSET
+	hex
+	default 0x80 if SOUTHBRIDGE_NVIDIA_MCP55

@@ -114,6 +114,8 @@ uses CONFIG_WAIT_BEFORE_CPUS_INIT
 
 uses CONFIG_USE_PRINTK_IN_CAR
 
+uses CONFIG_ID_SECTION_OFFSET
+
 ###
 ### Build options
 ###
@@ -346,6 +348,8 @@ default  CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=9
 ##
 ## Select power on after power fail setting
 default CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
+
+default CONFIG_ID_SECTION_OFFSET=0x80
 
 ### End Options.lb
 end

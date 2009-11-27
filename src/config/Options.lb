@@ -1132,3 +1132,8 @@ define CONFIG_PCIE_CONFIGSPACE_HOLE
 	comment "Leave a hole for PCIe config space in the device allocator"
 end
 
+define CONFIG_ID_SECTION_OFFSET
+	default 0x10
+	export always
+	comment "Offset of the .id section. Only needs to change if something like a romstrap is in the way"
+end

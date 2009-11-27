@@ -467,3 +467,7 @@ config ENABLE_APIC_EXT_ID
 config WARNINGS_ARE_ERRORS
 	bool
 	default n
+
+config ID_SECTION_OFFSET
+	hex
+	default 0x10

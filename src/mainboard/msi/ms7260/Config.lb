@@ -93,8 +93,8 @@ else
   end
 end
 
-mainboardinit southbridge/nvidia/mcp55/id.inc
-ldscript /southbridge/nvidia/mcp55/id.lds
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
 
 # ROMSTRAP table for MCP55.
 if CONFIG_HAVE_FAILOVER_BOOT

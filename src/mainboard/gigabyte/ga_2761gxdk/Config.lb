@@ -113,8 +113,8 @@ end
 ##
 ## Include an id string (For safe flashing)
 ##
-mainboardinit southbridge/sis/sis966/id.inc
-ldscript /southbridge/sis/sis966/id.lds
+mainboardinit arch/i386/lib/id.inc
+ldscript /arch/i386/lib/id.lds
 
 ##
 ## ROMSTRAP table for MCP55

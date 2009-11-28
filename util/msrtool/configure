@@ -99,7 +99,7 @@ trycompile() {
 	exit 1
 }
 
-trylink {
+trylink() {
 	NPARMS=$#
 	WHAT="${1}"
 	shift

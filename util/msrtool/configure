@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # This file is part of msrtool.
 #
@@ -25,7 +25,7 @@ VERSION=""
 REV="`svnversion -c . 2>/dev/null | sed 's,.*:,,' 2>/dev/null`"
 VERSION="${VERSION:-$REV}"
 
-function findprog {
+findprog() {
 	NPARMS=$#
 	WHAT="${1}"
 	shift
@@ -41,7 +41,7 @@ function findprog {
 	while test $i -lt $NPARMS; do
 		test -z "${1}" && {
 			shift
-			i=$[$i+1]
+			i=$(($i+1))
 			continue
 		}
 		FILE="`which "${1}" 2>/dev/null`"
@@ -50,7 +50,7 @@ function findprog {
 			break
 		}
 		shift
-		i=$[$i+1]
+		i=$(($i+1))
 	done
 	test -z "${1}" && {
 		echo "  not found!" 1>&2
@@ -62,7 +62,7 @@ function findprog {
 	exit 0
 }
 
-function trycompile {
+trycompile() {
 	NPARMS=$#
 	WHAT="${1}"
 	shift
@@ -84,7 +84,7 @@ function trycompile {
 			exit 0
 		} 
 		shift
-		i=$[$i+1]
+		i=$(($i+1))
 	done
 	echo "failed!" 1>&2
 	echo 1>&2
@@ -99,7 +99,7 @@ function trycompile {
 	exit 1
 }
 
-function trylink {
+trylink {
 	NPARMS=$#
 	WHAT="${1}"
 	shift
@@ -121,7 +121,7 @@ function trylink {
 			exit 0
 		}
 		shift
-		i=$[$i+1]
+		i=$(($i+1))
 	done
 	echo "failed!" 1>&2
 	echo 1>&2

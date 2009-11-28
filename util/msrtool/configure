@@ -2,7 +2,7 @@
 #
 # This file is part of msrtool.
 #
-# Copyright (c) 2008 Peter Stuge <peter@stuge.se>
+# Copyright (c) 2008, 2009 Peter Stuge <peter@stuge.se>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as
@@ -180,7 +180,7 @@ sed -e "s#@VERSION@#${VERSION}#g" \
 	-e "s#@CFLAGS@#${CFLAGS}#g" \
 	-e "s#@LDFLAGS@#${LDFLAGS}#g" \
 	-e "s#@INSTALL@#${INSTALL}#g" \
-	-e "s#@PREFIX@#/usr/local#g" \
+	-e "s#@PREFIX@#${PREFIX}#g" \
 	Makefile.in >> Makefile
 echo "  done"
 echo

@@ -27,7 +27,7 @@ CFLAGS  = @CFLAGS@
 LDFLAGS = @LDFLAGS@
 
 TARGETS = geodelx.o cs5536.o k8.o
-SYSTEMS = linux.o darwin.o
+SYSTEMS = linux.o darwin.o freebsd.o
 OBJS    = $(PROGRAM).o msrutils.o sys.o $(SYSTEMS) $(TARGETS)
 
 all: $(PROGRAM)

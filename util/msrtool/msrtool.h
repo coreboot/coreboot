@@ -28,6 +28,10 @@
 #define __DARWIN__
 #include <DirectIO/darwinio.h>
 #endif
+#if defined(__FreeBSD__)
+#include <sys/ioctl.h>
+#include <sys/cpuctl.h>
+#endif
 #include <pci/pci.h>
 
 #define HEXCHARS "0123456789abcdefABCDEF"
@@ -185,6 +189,12 @@ extern int darwin_probe(const struct sysdef *system);
 extern int darwin_open(uint8_t cpu, enum SysModes mode);
 extern int darwin_close(uint8_t cpu);
 extern int darwin_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val);
+
+/* freebsd.c */
+extern int freebsd_probe(const struct sysdef *system);
+extern int freebsd_open(uint8_t cpu, enum SysModes mode);
+extern int freebsd_close(uint8_t cpu);
+extern int freebsd_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val);
 
 /** target externs **/
 

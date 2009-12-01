@@ -23,6 +23,21 @@ mkdir -p $A
 sort coreboot-builds/$BOARDPATH/fallback/ldoptions > $A/old
 sort build/ldoptions > $A/new
 
+if [ `grep -c "^CONFIG_NORTHBRIDGE_AMD" $A/new` -eq 0 ]; then
+	sed \
+		-e "/^CONFIG_C[BD]B / d" \
+		-e "/^CONFIG_AMDMCT / d" \
+		-e "/^CONFIG_HT3_SUPPORT / d" \
+		-e "/^CONFIG_HT_CHAIN_UNITID_BASE / d" \
+		-e "/^CONFIG_HT_CHAIN_END_UNITID_BASE / d" \
+		-e "/^CONFIG_K8_HT_FREQ_1G_SUPPORT / d" \
+		-e "/^CONFIG_K8_MEM_BANK_B_ONLY / d" \
+		-e "/^CONFIG_MEM_TRAIN_SEQ / d" \
+		-e "/^CONFIG_SB_HT_CHAIN_ON_BUS0 / d" \
+		-e "/^CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY / d" \
+		$A/old > $A/old.tmp && mv $A/old.tmp $A/old
+fi
+
 sed \
 	-e "/^CONFIG_CONSOLE_/ d" \
 	-e "/^CONFIG_RESET_/ d" \

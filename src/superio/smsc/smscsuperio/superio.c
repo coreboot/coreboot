@@ -61,7 +61,7 @@
 #define SCH3112		0x7c
 #define SCH5307		0x81	/* Rebranded LPC47B397(?) */
 #define SCH5027D	0x89
-#define SCH4304		0x90	/* SCH4304 */
+#define SCH4304		0x90	/* SCH4304, SCH4307 */
 
 /* Register defines */
 #define DEVICE_ID_REG	0x20	/* Device ID register */

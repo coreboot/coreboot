@@ -3,7 +3,7 @@
 #
 # Therefore: ONLY include Makefile.inc from socket directories!
 
-subdirs-$(CONFIG_CPU_INTEL_SOCKET_411) += socket_411
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_441) += socket_441
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_BGA956) += bga956
 subdirs-$(CONFIG_CPU_INTEL_EP80579) += ep80579
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_MFCPGA478) += socket_mFCPGA478

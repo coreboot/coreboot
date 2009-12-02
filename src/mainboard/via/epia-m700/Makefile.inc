@@ -46,12 +46,8 @@ crt0-y += cache_as_ram_auto.inc
 
 ifdef POST_EVALUATION
 
-$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
+$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
-
-$(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
-	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
-	mv dsdt.hex $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c $(obj)/option_table.h
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c -o $@

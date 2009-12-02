@@ -132,11 +132,6 @@ config WAIT_BEFORE_CPUS_INIT
 	default n
 	depends on BOARD_TYAN_S2912
 
-config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
-	hex
-	default 0x1022
-	depends on BOARD_TYAN_S2912
-
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2912

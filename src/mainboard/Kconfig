@@ -210,6 +210,11 @@ config MAINBOARD_VENDOR
 	default "Intel"
 	depends on VENDOR_INTEL
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x8086
+	depends on VENDOR_INTEL
+
 config MAINBOARD_VENDOR
 	string
 	default "IWILL"
@@ -238,6 +243,11 @@ config MAINBOARD_VENDOR
 config MAINBOARD_VENDOR
 	string
 	default "MSI"
+	depends on VENDOR_MSI
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1462
 	depends on VENDOR_MSI
 
 config MAINBOARD_VENDOR

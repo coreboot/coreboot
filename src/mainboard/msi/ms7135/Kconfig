@@ -24,7 +24,7 @@ config APIC_ID_OFFSET
 
 config MEM_TRAIN_SEQ
 	int
-	default 1
+	default 0
 	depends on BOARD_MSI_MS7135
 
 config SB_HT_CHAIN_ON_BUS0
@@ -49,7 +49,7 @@ config MAINBOARD_PART_NUMBER
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
-	default 0x2895
+	default 0x7135
 	depends on BOARD_MSI_MS7135
 
 config HW_MEM_HOLE_SIZEK

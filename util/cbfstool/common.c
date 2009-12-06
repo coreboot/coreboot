@@ -279,6 +279,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 		       headersize);
 		exit(1);
 	}
+	memset(newdata, 0xff, *datasize + headersize);
 	struct cbfs_file *nextfile = (struct cbfs_file *)newdata;
 	strncpy(nextfile->magic, "LARCHIVE", 8);
 	nextfile->len = htonl(*datasize);

@@ -7,9 +7,7 @@
 #include <string.h>
 #include <cpu/amd/lxdef.h>
 #include <cpu/amd/vr.h>
-
-// andrei: use the /lib copy of nrv2b
-#include "../lib/nrv2b.c"
+#include <cbfs.h>
 
 #define VSA2_BUFFER			0x60000
 #define VSA2_ENTRY_POINT	0x60020
@@ -272,11 +270,9 @@ void do_vsmbios(void)
 {
 	device_t dev;
 	unsigned long busdevfn;
-	unsigned int rom = 0;
 	unsigned char *buf;
 	unsigned int size = SMM_SIZE * 1024;
 	int i;
-	unsigned long ilen, olen;
 
 	printk_err("do_vsmbios\n");
 	/* clear vsm bios data area */
@@ -291,12 +287,10 @@ void do_vsmbios(void)
 	 * much better parameterized
 	 */
 
-	// TODO this is a CBFS candidate
-	//VSA is cat onto the end after LB builds
-	rom = ((unsigned long)0) - (CONFIG_ROM_SIZE + 36 * 1024);
-	buf = (unsigned char *)VSA2_BUFFER;
-	olen = unrv2b((uint8_t *) rom, buf, &ilen);
-	printk_debug("buf ilen %d olen%d\n", ilen, olen);
+	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
+		printk_err("do_vsmbios: Failed to load VSA.\n");
+	}
+	buf = VSA2_BUFFER;
 	printk_debug("buf %p *buf %d buf[256k] %d\n",
 		     buf, buf[0], buf[SMM_SIZE * 1024]);
 	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",

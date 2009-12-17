@@ -264,12 +264,6 @@ define CONFIG_RESET
 	export always
 	comment "Hardware reset vector address"
 end
-define CONFIG_EXCEPTION_VECTORS
-	default {CONFIG_ROMBASE+0x100}
-	format "0x%x"
-	export always
-	comment "Address of exception vector table"
-end
 define CONFIG_STACK_SIZE
 	default 0x2000
 	format "0x%x"
@@ -844,11 +838,6 @@ define CONFIG_UDELAY_LAPIC
 	default 0
 	export used
 	comment "Implement udelay with the x86 Local APIC"
-end
-define CONFIG_FAKE_SPDROM
-	default 0
-	export always
-	comment "Use this to fake spd rom values"
 end
 
 define CONFIG_GENERATE_ACPI_TABLES

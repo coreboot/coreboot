@@ -84,6 +84,9 @@ sed \
 	-e "/^CONFIG_STACK_SIZE / d" \
 	-e "/^CONFIG_GDB_STUB / d" \
 	-e "/^CONFIG_VIDEO_MB / d" \
+	-e "/^CONFIG_EXPERT / d" \
+	-e "/^CONFIG_VGA_BIOS / d" \
+	-e "/^CONFIG_WARNINGS_ARE_ERRORS / d" \
 	$A/new > $A/new.filtered
 
 normalize $A/old.filtered > $A/old.normalized

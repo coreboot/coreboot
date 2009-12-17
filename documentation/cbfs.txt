@@ -135,7 +135,7 @@ used by both the CBFS implementation within coreboot at runtime as well
 as host based utilities to create and manage the ROM.  The master header
 will be located somewhere within the bootblock (last 20k of the ROM).  A
 pointer to the location of the header will be located at offset
--12 from the end of the ROM.  This translates to address 0xFFFFFFF4 on a
+-4 from the end of the ROM.  This translates to address 0xFFFFFFFC on a
 normal x86 system.  The pointer will be to physical memory somewhere
 between - 0xFFFFB000 and 0xFFFFFFF0.  This makes it easier for coreboot
 to locate the header at run time.  Build time utilities will

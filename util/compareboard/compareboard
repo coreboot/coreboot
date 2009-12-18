@@ -16,7 +16,7 @@ done
 
 BOARDPATH=`echo $1 | sed s,/,_,g`
 
-A=`mktemp`
+A=`mktemp tmp.XXXXXXXXXX`
 rm -rf $A
 mkdir -p $A
 
@@ -92,6 +92,15 @@ sed \
 normalize $A/old.filtered > $A/old.normalized
 normalize $A/new.filtered > $A/new.normalized
 
-diff -u $A/old.normalized $A/new.normalized |grep ^[+-][^+-]|sed -e "s,^+,p ," -e "s,^-,m ," |sort -k2,2 -k1,1 |sed -e "s,^p ,+," -e "s,^m ,-,"
+diff -u $A/old.normalized $A/new.normalized | \
+    grep ^[+-][^+-] | \
+    sed -e "s,^+,p ," -e "s,^-,m ," | \
+    sort -k2,2 -k1,1 | \
+    sed -e "s,^p ,+," -e "s,^m ,-," | \
+    while read line; do
+	key=`echo $line|cut -f1 -d\=`
+	value=`echo $line|cut -f2 -d\= | tr -d \\;`
+	printf "%s = 0x%x\n" "$key" $value
+    done
 
 rm -rf $A

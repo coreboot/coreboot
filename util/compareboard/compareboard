@@ -36,7 +36,6 @@ fi
 if [ `grep -c "^CONFIG_NORTHBRIDGE_AMD_AMDK8" $A/new` -eq 0 ]; then
 	sed \
 		-e "/^CONFIG_K8_HT_FREQ_1G_SUPPORT / d" \
-		-e "/^CONFIG_K8_MEM_BANK_B_ONLY / d" \
 		$A/old > $A/old.tmp && mv $A/old.tmp $A/old
 fi
 
@@ -60,6 +59,7 @@ sed \
 	-e "/^CONFIG_RESET_/ d" \
 	-e "/^CONFIG_XIP_ROM_/ d" \
 	-e "/^CONFIG_PRECOMPRESSED_PAYLOAD / d" \
+	-e "/^CONFIG_K8_MEM_BANK_B_ONLY / d" \
 	-e "/^CONFIG_MULTIBOOT / d" \
 	-e "/^CONFIG_ARCH_POWERPC / d" \
 	-e "/^CONFIG_RESET / d" \
@@ -77,6 +77,7 @@ sed \
 	-e "/^CONFIG_STACK_SIZE / d" \
 	-e "/^CONFIG_GDB_STUB / d" \
 	-e "/^CONFIG_VIDEO_MB / d" \
+	-e "/^CONFIG_PCIE_CONFIGSPACE_HOLE / d" \
 	$A/old > $A/old.filtered
 sed \
 	-e "/^CONFIG_VENDOR_/ d" \

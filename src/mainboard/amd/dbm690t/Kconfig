@@ -7,20 +7,30 @@ config BOARD_AMD_DBM690T
 	select SOUTHBRIDGE_AMD_RS690
 	select SOUTHBRIDGE_AMD_SB600
 	select SUPERIO_ITE_IT8712F
-	select HAVE_PIRQ_TABLE
-	select HAVE_MP_TABLE
+	select GENERATE_ACPI_TABLES
+	select GENERATE_MP_TABLE
+	select GENERATE_PIRQ_TABLE
+	select HAVE_MAINBOARD_RESOURCES
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
 	select HAVE_HARD_RESET
 	select IOAPIC
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
-	select WAIT_BEFORE_CPUS_INIT
-	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
 
 config MAINBOARD_DIR
 	string
 	default amd/dbm690t
+	depends on BOARD_AMD_DBM690T
+
+config HAVE_HIGH_TABLES
+	bool
+	default n
+	depends on BOARD_AMD_DBM690T
+
+config HAVE_OPTION_TABLE
+	bool
+	default n
 	depends on BOARD_AMD_DBM690T
 
 config DCACHE_RAM_BASE
@@ -40,7 +50,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex
-	default 0x8
+	default 0x0
 	depends on BOARD_AMD_DBM690T
 
 config LB_CKS_RANGE_END
@@ -80,17 +90,17 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config SB_HT_CHAIN_ON_BUS0
 	int
-	default 2
+	default 1
 	depends on BOARD_AMD_DBM690T
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
-	default 0x6
+	default 0x1
 	depends on BOARD_AMD_DBM690T
 
 config HT_CHAIN_UNITID_BASE
 	hex
-	default 0xa
+	default 0x0
 	depends on BOARD_AMD_DBM690T
 
 config USE_INIT

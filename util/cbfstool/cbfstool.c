@@ -192,7 +192,14 @@ static int cbfs_create(int argc, char **argv)
 		return 1;
 	}
 
-	uint32_t size = strtoul(argv[3], NULL, 0);
+	char* suffix;
+	uint32_t size = strtoul(argv[3], &suffix, 0);
+	if (tolower(suffix[0])=='k') {
+		size *= 1024;
+	}
+	if (tolower(suffix[0])=='m') {
+		size *= 1024 * 1024;
+	}
 	char *bootblock = argv[4];
 	uint32_t align = 0;
 

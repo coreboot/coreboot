@@ -14,7 +14,7 @@ ifdef POST_EVALUATION
 
 $(obj)/coreboot.rom: $(obj)/coreboot.bootblock $(obj)/coreboot_ram $(CBFSTOOL)
 	rm -f $@
-	$(CBFSTOOL) $@ create $(shell expr 1024 \* $(CONFIG_COREBOOT_ROMSIZE_KB)) $(obj)/coreboot.bootblock
+	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
 	if [ -f fallback/coreboot_apc ]; \
 	then \
 		$(CBFSTOOL) $@ add-stage fallback/coreboot_apc fallback/coreboot_apc $(CBFS_COMPRESS_FLAG); \

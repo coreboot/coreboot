@@ -33,6 +33,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
 #include <arch/io.h>
+#include <cbfs.h>
 
 u32 VSA_vrRead(u16 classIndex);
 void do_vsmbios(void);
@@ -190,18 +191,11 @@ void do_vsmbios(void)
 	/* Clear VSM BIOS data area. */
 	for (i = 0x400; i < 0x500; i++)
 		*(volatile unsigned char *)i = 0;
-	/* set up cbfs and find the vsa file -- later */
-/*
-	init_archive(&archive);
+	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
+		printk_err("do_vsmbios: Failed to load VSA.\n");
+	}
+	buf = VSA2_BUFFER;
 
-	if (find_file(&archive, "blob/vsa", &file))
-		die("FATAL: NO VSA found!\n");
-
-	if (process_file(&file, (void *)VSA2_BUFFER))
-		die("FATAL: Processing /blob/vsa failed\n");
- */
-
-	buf = (unsigned char *)VSA2_BUFFER;
 	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",
 	       buf[0x20], buf[0x21], buf[0x22], buf[0x23]);
 	/* Check for POST code at start of vsainit.bin. If you don't see it,

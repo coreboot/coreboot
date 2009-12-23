@@ -29,6 +29,8 @@
 #include <console.h>
 #endif
 
+#include <arch/interrupt.h>
+
 #define REALMODE_BASE ((void *)0x600)
 
 struct realmode_idt {
@@ -64,6 +66,12 @@ static int intXX_unknown_handler(struct eregs *regs)
 	return -1;
 }
 
+/* setup interrupt handlers for mainboard */
+void mainboard_interrupt_handlers(int intXX, void *intXX_func)
+{
+	intXX_handler[intXX] = intXX_func;
+}
+
 int int12_handler(struct eregs *regs);
 int int15_handler(struct eregs *regs);
 int int1a_handler(struct eregs *regs);
@@ -80,16 +88,32 @@ static void setup_interrupt_handlers(void)
 	
 	/* Mark all other intXX calls as unknown first */
 	for (i = 0x10; i < 0x100; i++)
-		intXX_handler[i] = &intXX_unknown_handler;
-
-	/* Now set the default functions that are actually
-	 * needed to initialize the option roms. This is very
-	 * slick, as it allows us to implement mainboard specific
-	 * interrupt handlers, such as the int15
-	 */
-	intXX_handler[0x12] = &int12_handler;
-	intXX_handler[0x15] = &int15_handler;
-	intXX_handler[0x1a] = &int1a_handler;
+	{
+		/* If the mainboard_interrupt_handler isn't called first.
+		 */
+		if(!intXX_handler[i])
+		{
+			/* Now set the default functions that are actually
+			 * needed to initialize the option roms. This is very
+			 * slick, as it allows us to implement mainboard specific
+			 * interrupt handlers, such as the int15
+			 */
+			switch (i) {
+			case 0x12:
+				intXX_handler[0x12] = &int12_handler;
+				break;
+			case 0x15:
+				intXX_handler[0x15] = &int15_handler;
+				break;
+			case 0x1a:
+				intXX_handler[0x1a] = &int1a_handler;
+				break;
+			default:
+				intXX_handler[i] = &intXX_unknown_handler;
+				break;
+			}
+		}
+	}
 }
 
 static void write_idt_stub(void *target, u8 intnum)
@@ -127,7 +151,7 @@ void run_bios(struct device *dev, unsigned long addr)
 {
 	/* clear vga bios data area */
 	memset((void *)0x400, 0, 0x200);
-	
+
 	/* Set up C interrupt handlers */
 	setup_interrupt_handlers();
 

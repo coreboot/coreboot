@@ -33,6 +33,7 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 obj-y += tn_post_code.o
 
 obj-y += speaker.o
+obj-y += vgabios.o
 
 # This is part of the conversion to init-obj and away from included code.
 

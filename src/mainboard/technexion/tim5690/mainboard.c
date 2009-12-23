@@ -26,12 +26,55 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <../southbridge/amd/sb600/sb600.h>
+#include <../superio/ite/it8712f/it8712f.h>
 #include "chip.h"
 #include "tn_post_code.h"
+#include "vgabios.h"
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */
 #define SMBUS_IO_BASE 0x1000
+
+
+/* Video BIOS Function Extensions Specification
+ */
+//Callback Sub-Function 00h - Get LCD Panel ID
+#define LCD_PANEL_ID_NO 0x00	/* No LCD */
+#define LCD_PANEL_ID_01 0x01	/* 1024x768, 24 bits, 1 channel */
+#define LCD_PANEL_ID_02 0x02	/* 1280x1024, 24 bits, 2 channels */
+#define LCD_PANEL_ID_03 0x03	/* 1440x900, 24 bits, 2 channels */
+#define LCD_PANEL_ID_04 0x04	/* 1680x1050, 24 bits, 2 channels */
+#define LCD_PANEL_ID_05 0x05	/* 1920x1200, 24 bits, 2 channels */
+#define LCD_PANEL_ID_06 0x06	/* 1920x1080, 24 bits, 2 channels */
+//Callback Sub-Function 05h – Select Boot-up TV Standard
+#define TV_MODE_00	0x00	/* NTSC */
+#define TV_MODE_01	0x01	/* PAL */
+#define TV_MODE_02	0x02	/* PALM */
+#define TV_MODE_03	0x03	/* PAL60 */
+#define TV_MODE_04	0x04	/* NTSCJ */
+#define TV_MODE_05	0x05	/* PALCN */
+#define TV_MODE_06	0x06	/* PALN */
+#define TV_MODE_09	0x09	/* SCART-RGB */
+#define TV_MODE_NO	0xff	/* No TV Support */
+
+
+/* The base address is 0x2e or 0x4e, depending on config bytes. */
+#define SIO_BASE                     0x2e
+#define SIO_INDEX                    SIO_BASE
+#define SIO_DATA                     SIO_BASE+1
+
+/* Global configuration registers. */
+#define IT8712F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
+#define IT8712F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
+#define IT8712F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
+#define IT8712F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
+#define IT8712F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
+#define IT8712F_CONFIG_REG_MFC       0x2a /* Multi-function control */
+#define IT8712F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
+
+#define IT8712F_CONFIGURATION_PORT   0x2e /* Write-only. */
+#define IT8712F_SIMPLE_IO_BASE       0x200 /* Simple I/O base address */
+
 
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
@@ -52,6 +95,36 @@ int add_mainboard_resources(struct lb_memory *mem);
 
 
 uint64_t uma_memory_base, uma_memory_size;
+
+
+/* The content of IT8712F_CONFIG_REG_LDN (index 0x07) must be set to the
+   LDN the register belongs to, before you can access the register. */
+static void it8712f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
+{
+        outb(IT8712F_CONFIG_REG_LDN, SIO_BASE);
+        outb(ldn, SIO_DATA);
+        outb(index, SIO_BASE);
+        outb(value, SIO_DATA);
+}
+
+static void it8712f_enter_conf(void)
+{
+        /*  Enter the configuration state (MB PnP mode). */
+
+        /* Perform MB PnP setup to put the SIO chip at 0x2e. */
+        /* Base address 0x2e: 0x87 0x01 0x55 0x55. */
+        /* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
+        outb(0x87, IT8712F_CONFIGURATION_PORT);
+        outb(0x01, IT8712F_CONFIGURATION_PORT);
+        outb(0x55, IT8712F_CONFIGURATION_PORT);
+        outb(0x55, IT8712F_CONFIGURATION_PORT);
+}
+
+static void it8712f_exit_conf(void)
+{
+        /* Exit the configuration state (MB PnP mode). */
+        it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
+}
 
 
 /* set thermal config
@@ -117,6 +190,48 @@ static void set_thermal_config(void)
 	 */
 }
 
+/* Mainboard specific GPIO setup. */
+void mb_gpio_init(u16 *iobase)
+{
+        /* Init Super I/O GPIOs. */
+        it8712f_enter_conf();
+        outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
+        outb(IT8712F_GPIO, SIO_DATA);
+        outb(0x62, SIO_INDEX); 
+        outb((*iobase >> 8), SIO_DATA);
+        outb(0x63, SIO_INDEX);
+        outb((*iobase & 0xff), SIO_DATA);
+        it8712f_exit_conf();
+}
+
+/* The LCD's panel id seletion. */
+void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
+{
+	switch (num_id) {
+	case 0x1:
+		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_01;
+		break;
+	case 0x2:
+		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_02;
+		break;
+	case 0x3:
+		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_03;
+		break;
+	case 0x4:
+		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_04;
+		break;
+	case 0x5:
+		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_05;
+		break;
+	case 0x6:
+		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_06;
+		break;
+	default:
+		vbios_regs->int15_regs.fun00_panel_id = LCD_PANEL_ID_NO;
+		break;
+	}
+}
+
 /*************************************************
 * enable the dedicated function in tim5690 board.
 * This function called early than rs690_enable.
@@ -126,7 +241,20 @@ void tim5690_enable(device_t dev)
 	struct mainboard_config *mainboard =
 	    (struct mainboard_config *)dev->chip_info;
 
+	rs690_vbios_regs vbios_regs;
+	u16 gpio_base = IT8712F_SIMPLE_IO_BASE;
+	u8 port2;
+
 	printk_info("Mainboard tim5690 Enable. dev=0x%p\n", dev);
+
+	mb_gpio_init(&gpio_base);
+
+	/* The LCD's panel id seletion by switch. */
+	port2 = inb(gpio_base+1);
+	lcd_panel_id(&vbios_regs, ((~port2) & 0xf));
+	/* No support TV */
+	vbios_regs.int15_regs.fun05_tv_standard = TV_MODE_NO;
+	vgabios_init(&vbios_regs);
 
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;

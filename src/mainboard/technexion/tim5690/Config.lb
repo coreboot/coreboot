@@ -30,6 +30,7 @@ arch i386 end
 ##
 
 driver mainboard.o
+object vgabios.o
 object tn_post_code.o
 object speaker.o
 

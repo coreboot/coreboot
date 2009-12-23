@@ -11,10 +11,8 @@ ifdef POST_EVALUATION
 
 #######################################################################
 # Build the final rom image
-
-$(obj)/coreboot.rom: $(obj)/coreboot.bootblock $(obj)/coreboot_ram $(CBFSTOOL)
-	rm -f $@
-	$(CBFSTOOL) $@ create $(CONFIG_COREBOOT_ROMSIZE_KB)K $(obj)/coreboot.bootblock
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL)
+	cp $(obj)/coreboot.pre $@
 	if [ -f fallback/coreboot_apc ]; \
 	then \
 		$(CBFSTOOL) $@ add-stage fallback/coreboot_apc fallback/coreboot_apc $(CBFS_COMPRESS_FLAG); \
@@ -33,36 +31,10 @@ endif
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $(obj)/coreboot.rom print
 
-
-#######################################################################
-# Build the bootblock
-
-$(obj)/coreboot.bootblock: $(obj)/coreboot
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	$(OBJCOPY) -O binary $< $@
-
-$(obj)/ldscript.ld: $(ldscripts) $(obj)/ldoptions
-	printf 'INCLUDE "ldoptions"\n' > $@
-	printf '$(foreach ldscript,$(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@
-
-$(obj)/crt0_includes.h: $(crt0s)
-	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
-
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
-	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
-
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(src)/arch/i386/init/crt0.S.lb $(obj)/crt0_includes.h
-	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
-
-$(obj)/coreboot: $(initobjs) $(obj)/ldscript.ld
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/ldscript.ld $(initobjs)
-	$(NM) -n $(obj)/coreboot | sort > $(obj)/coreboot.map
-
 #######################################################################
 # i386 specific tools
 
-$(obj)/option_table.h $(obj)/option_table.c: $(obj)/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+$(obj)/option_table.h $(obj)/option_table.c $(obj)/arch/i386/../../option_table.c: $(obj)/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
 	$(obj)/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --header $(obj)/option_table.h --option $(obj)/option_table.c
 
@@ -90,4 +62,10 @@ $(obj)/coreboot.a: $(objs)
 #######################################################################
 # done
 
+endif
+
+ifeq ($(CONFIG_TINY_BOOTBLOCK),y)
+include $(src)/arch/i386/Makefile.tinybootblock.inc
+else
+include $(src)/arch/i386/Makefile.bigbootblock.inc
 endif

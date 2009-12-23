@@ -40,3 +40,6 @@ config MAX_REBOOT_CNT
 	int
 	default 3
 
+config TINY_BOOTBLOCK
+	bool
+	default n

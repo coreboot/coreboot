@@ -122,6 +122,10 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 			mem_end = mend;
 	}
 
+	if (data_start < *location) {
+		data_start = *location;
+	}
+
 	/* allocate an intermediate buffer for the data */
 	buffer = calloc(data_end - data_start, 1);
 
@@ -133,6 +137,7 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 	/* Copy the file data into the buffer */
 
 	for (i = 0; i < headers; i++) {
+		unsigned int l_start, l_offset = 0;
 
 		if (elf32_to_native(phdr[i].p_type) != PT_LOAD)
 			continue;
@@ -140,9 +145,15 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 		if (elf32_to_native(phdr[i].p_memsz) == 0)
 			continue;
 
-		memcpy(buffer + (elf32_to_native(phdr[i].p_paddr) - data_start),
-		       &header[elf32_to_native(phdr[i].p_offset)],
-		       elf32_to_native(phdr[i].p_filesz));
+		l_start = elf32_to_native(phdr[i].p_paddr);
+		if (l_start < *location) {
+			l_offset = *location - l_start;
+			l_start = *location;
+		}
+
+		memcpy(buffer + (l_start - data_start),
+		       &header[elf32_to_native(phdr[i].p_offset)+l_offset],
+		       elf32_to_native(phdr[i].p_filesz)-l_offset);
 	}
 
 	/* Now make the output buffer */

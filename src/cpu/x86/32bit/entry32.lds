@@ -1,0 +1,1 @@
+ENTRY(protected_start)

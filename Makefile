@@ -293,6 +293,7 @@ doxygen-clean:
 
 clean: doxygen-clean
 	rm -f $(allobjs) $(obj)/coreboot*
+	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*
 	rm -f $(obj)/option_table.* $(obj)/crt0_includes.h $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm

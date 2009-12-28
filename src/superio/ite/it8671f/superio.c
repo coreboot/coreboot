@@ -70,9 +70,9 @@ static struct device_operations ops = {
 
 /* TODO: FDC, PP, KBCM. */
 static struct pnp_info pnp_dev_info[] = {
- { &ops, IT8671F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
- { &ops, IT8671F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
- { &ops, IT8671F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
+	{ &ops, IT8671F_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &ops, IT8671F_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
+	{ &ops, IT8671F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
 };
 
 static void enable_dev(struct device *dev)
@@ -85,4 +85,3 @@ struct chip_operations superio_ite_it8671f_ops = {
 	CHIP_NAME("ITE IT8671F Super I/O")
 	.enable_dev = enable_dev,
 };
-

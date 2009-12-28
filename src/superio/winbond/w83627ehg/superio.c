@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan 
+ * Copyright (C) 2004 Tyan
  * Copyright (C) 2007 AMD
  * Written by Yinghai Lu <yinghai.lu@amd.com> for AMD.
  *
@@ -57,7 +57,8 @@ static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
 	return inb(port_base + 1);
 }
 
-static void enable_hwm_smbus(device_t dev) {
+static void enable_hwm_smbus(device_t dev)
+{
 	/* Set the pin 91,92 as I2C bus. */
 	uint8_t reg, value;
 	reg = 0x2a;
@@ -99,7 +100,7 @@ static void init_hwm(unsigned long base)
 		value = pnp_read_index(base, reg);
 		value &= 0xff & (~(hwm_reg_values[i + 1]));
 		value |= 0xff & hwm_reg_values[i + 2];
-		// printk_debug("base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value);
+		/* printk_debug("base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value); */
 		pnp_write_index(base, reg, value);
 	}
 }
@@ -182,7 +183,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83627EHG_PP,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
 	{ &ops, W83627EHG_SP1, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627EHG_SP2, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	// No 4 { 0,},
+	/* No 4 { 0,}, */
 	{ &ops, W83627EHG_KBC, PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
 	{ &ops, W83627EHG_SFI, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627EHG_WDTO_PLED, },
@@ -208,4 +209,3 @@ struct chip_operations superio_winbond_w83627ehg_ops = {
 	CHIP_NAME("Winbond W83627EHG Super I/O")
 	.enable_dev = enable_dev,
 };
-

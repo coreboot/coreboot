@@ -33,4 +33,3 @@ struct superio_smsc_fdc37m60x_config {
 };
 
 #endif /* _SUPERIO_SMSC_FDC37M60X */
-

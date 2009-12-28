@@ -1,3 +1,25 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2000 AG Electronics Ltd.
+ * Copyright (C) 2003-2004 Linux Networx
+ * Copyright (C) 2004 Tyan By LYH change from PC87360
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 #define W83627HF_FDC              0   /* Floppy */
 #define W83627HF_PP               1   /* Parallel Port */
 #define W83627HF_SP1              2   /* Com1 */
@@ -10,8 +32,8 @@
 #define W83627HF_ACPI            10
 #define W83627HF_HWM             11   /* Hardware Monitor */
 
-//#define W83627HF_GPIO_DEV PNP_DEV(0x2e, W83627HF_GPIO)
-//#define W83627HF_XBUS_DEV PNP_DEV(0x2e, W83627HF_XBUS)
+/* #define W83627HF_GPIO_DEV PNP_DEV(0x2e, W83627HF_GPIO) */
+/* #define W83627HF_XBUS_DEV PNP_DEV(0x2e, W83627HF_XBUS) */
 
 #define W83627HF_GPSEL		0xf0
 #define W83627HF_GPCFG1		0xf1
@@ -87,5 +109,3 @@
 #define W83627HF_HAP1		0x14
 #define W83627HF_XSCNF		0x15
 #define W83627HF_XWBCNF		0x16
-
-

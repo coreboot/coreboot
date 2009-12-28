@@ -13,7 +13,7 @@
 
 #define PC87427_GPIO_DEV PNP_DEV(0x2e, PC87427_GPIO)
 /* This is to get around a romcc bug */
-//#define PC87427_XBUS_DEV PNP_DEV(0x2e, PC87427_XBUS)
+/* #define PC87427_XBUS_DEV PNP_DEV(0x2e, PC87427_XBUS) */
 #define PC87427_XBUS_DEV PNP_DEV(0x2e, 0x0f)
 
 #define PC87427_GPSEL		0xf0

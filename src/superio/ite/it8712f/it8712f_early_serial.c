@@ -47,7 +47,6 @@ static void it8712f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 	outb(value, SIO_DATA);
 }
 
-
 static void it8712f_enter_conf(void)
 {
 	/*  Enter the configuration state (MB PnP mode). */
@@ -67,7 +66,6 @@ static void it8712f_exit_conf(void)
 	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
 }
 
-
 static void it8712f_24mhz_clkin(void)
 {
 	it8712f_enter_conf();
@@ -76,10 +74,10 @@ static void it8712f_24mhz_clkin(void)
 	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CLOCKSEL, 0x1);
 
 	it8712f_exit_conf();
-
 }
 
-static void it8712f_enable_3vsbsw(void) {
+static void it8712f_enable_3vsbsw(void)
+{
 
 	/* We need to set enable 3VSBSW#, this was documented only in IT8712F_V0.9.2!
 	 LDN 7, reg 0x2a - needed for S3, or memory power will be cut off.
@@ -92,7 +90,6 @@ static void it8712f_enable_3vsbsw(void) {
 	it8712f_sio_write(0x07, IT8712F_CONFIG_REG_MFC, 0x80);
 	it8712f_exit_conf();
 }
-
 
 static void it8712f_kill_watchdog(void)
 {
@@ -114,8 +111,8 @@ static void it8712f_enable_serial(device_t dev, unsigned iobase)
 	/* (2) Modify the data of configuration registers. */
 
 	/* Select the chip to configure (if there's more than one).
-           Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
-           If this register is not written, both chips are configured. */
+	   Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
+	   If this register is not written, both chips are configured. */
 	/* it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CONFIGSEL, 0x00); */
 
 	/* Enable serial port(s). */

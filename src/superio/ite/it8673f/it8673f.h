@@ -28,4 +28,3 @@
 #define IT8673F_FAN  0x04 /* Fan controller */
 #define IT8673F_KBCK 0x05 /* Keyboard */
 #define IT8673F_KBCM 0x06 /* Mouse */
-

@@ -66,7 +66,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{&ops, PC87309_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x04f8, 0},},
 	{&ops, PC87309_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, {0x7f8, 0},},
 	{&ops, PC87309_SP1,  PNP_IO0 | PNP_IRQ0, {0x7f8, 0},},
-	// TODO: PM.
+	/* TODO: PM. */
 	{&ops, PC87309_KBCM, PNP_IRQ0},
 	{&ops, PC87309_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x7f8, 0}, {0x7f8, 0x4},},
 };

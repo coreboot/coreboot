@@ -63,8 +63,8 @@ static void it8705f_enable_serial(device_t dev, unsigned iobase)
 	/* (2) Modify the data of configuration registers. */
 
 	/* Select the chip to configure (if there's more than one).
-           Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
-           If this register is not written, both chips are configured. */
+	   Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
+	   If this register is not written, both chips are configured. */
 	/* it8705f_sio_write(0x00, IT8705F_CONFIG_REG_CONFIGSEL, 0x00); */
 
 	/* Enable serial port(s). */
@@ -80,4 +80,3 @@ static void it8705f_enable_serial(device_t dev, unsigned iobase)
 	/* (3) Exit the configuration state (MB PnP mode). */
 	it8705f_sio_write(0x00, IT8705F_CONFIG_REG_CC, 0x02);
 }
-

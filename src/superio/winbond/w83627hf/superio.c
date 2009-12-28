@@ -1,8 +1,24 @@
-/* Copyright 2000  AG Electronics Ltd. */
-/* Copyright 2003-2004 Linux Networx */
-/* Copyright 2004 Tyan
-   By LYH change from PC87360 */
-/* This code is distributed without warranty under the GPL v2 (see COPYING) */
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2000 AG Electronics Ltd.
+ * Copyright (C) 2003-2004 Linux Networx
+ * Copyright (C) 2004 Tyan By LYH change from PC87360
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 #include <arch/io.h>
 #include <device/device.h>
@@ -17,12 +33,12 @@
 #include "chip.h"
 #include "w83627hf.h"
 
-
 static void pnp_enter_ext_func_mode(device_t dev)
 {
 	outb(0x87, dev->path.pnp.port);
 	outb(0x87, dev->path.pnp.port);
 }
+
 static void pnp_exit_ext_func_mode(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
@@ -40,7 +56,8 @@ static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
 	return inb(port_base + 1);
 }
 
-static void enable_hwm_smbus(device_t dev) {
+static void enable_hwm_smbus(device_t dev)
+{
 	/* set the pin 91,92 as I2C bus */
 	uint8_t reg, value;
 	reg = 0x2b;
@@ -72,7 +89,7 @@ static void init_hwm(unsigned long base)
 	int i;
 
 	unsigned  hwm_reg_values[] = {
-/*		reg  mask  data */
+	/*	reg  mask  data */
 		0x40, 0xff, 0x81,  /* start HWM */
 		0x48, 0xaa, 0x2a,  /* set SMBus base to 0x54>>1	*/
 		0x4a, 0x21, 0x21,  /* set T2 SMBus base to 0x92>>1 and T3 SMBus base to 0x94>>1 */
@@ -84,9 +101,9 @@ static void init_hwm(unsigned long base)
 
 	};
 
-	for(i = 0; i<  ARRAY_SIZE(hwm_reg_values); i+=3 ) { 
-		reg = hwm_reg_values[i];	
-	 	value = pnp_read_index(base, reg);		
+	for(i = 0; i<  ARRAY_SIZE(hwm_reg_values); i+=3 ) {
+		reg = hwm_reg_values[i];
+	 	value = pnp_read_index(base, reg);
 		value &= 0xff & hwm_reg_values[i+1];
 		value |= 0xff & hwm_reg_values[i+2];
 #if 0
@@ -134,7 +151,6 @@ static void w83627hf_pnp_set_resources(device_t dev)
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_resources(dev);
 	pnp_exit_ext_func_mode(dev);
-
 }
 
 static void w83627hf_pnp_enable_resources(device_t dev)
@@ -148,12 +164,10 @@ static void w83627hf_pnp_enable_resources(device_t dev)
 		break;
 	}
 	pnp_exit_ext_func_mode(dev);
-
 }
 
 static void w83627hf_pnp_enable(device_t dev)
 {
-
 	if (!dev->enabled) {
 		pnp_enter_ext_func_mode(dev);
 
@@ -177,7 +191,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83627HF_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
 	{ &ops, W83627HF_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627HF_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-	// No 4 { 0,},
+	/* No 4 { 0,}, */
 	{ &ops, W83627HF_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
 	{ &ops, W83627HF_CIR, PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
 	{ &ops, W83627HF_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7ff, 0 }, {0x7fe, 0x4}, },

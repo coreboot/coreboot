@@ -20,4 +20,3 @@
 
 #config chip.h
 obj-$(CONFIG_SUPERIO_INTEL_I3100) += superio.o
-

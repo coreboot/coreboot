@@ -120,7 +120,7 @@ static const struct logical_devices {
 	uint8_t superio_id;
 	int devs[MAX_LOGICAL_DEVICES];
 } logical_device_table[] = {
-	// Chip   FDC PP SP1 SP2 RTC KBC AUX XBUS HWM GAME PME MPU RT ACPI SMB
+	/* Chip   FDC PP SP1 SP2 RTC KBC AUX XBUS HWM GAME PME MPU RT ACPI SMB */
 	{LPC47M172,{0, 3, 4,  2, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, -1}},
 	{FDC37B80X,{0, 3, 4,  5, -1,  7,  8,  -1, -1,  -1, -1, -1, -1, -1, -1}},
 	{FDC37B78X,{0, 3, 4,  5,  6,  7,  8,  -1, -1,  -1, -1, -1, -1, 10, -1}},

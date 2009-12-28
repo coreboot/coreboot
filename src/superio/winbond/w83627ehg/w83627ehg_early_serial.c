@@ -44,4 +44,3 @@ static void w83627ehg_enable_serial(device_t dev, unsigned iobase)
 	pnp_set_enable(dev, 1);
 	pnp_exit_ext_func_mode(dev);
 }
-

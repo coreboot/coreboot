@@ -24,123 +24,126 @@
 #include <assert.h>
 #include "lpc47n217.h"
 
-//----------------------------------------------------------------------------------
-// Function:    	pnp_enter_conf_state
-// Parameters:  	dev - high 8 bits = Super I/O port
-// Return Value:	None
-// Description: 	Enable access to the LPC47N217's configuration registers.
-//
-static inline void pnp_enter_conf_state(device_t dev) {
+/*
+ * Function:    	pnp_enter_conf_state
+ * Parameters:  	dev - high 8 bits = Super I/O port
+ * Return Value:	None
+ * Description:		Enable access to the LPC47N217's configuration registers.
+ */
+static inline void pnp_enter_conf_state(device_t dev)
+{
 	unsigned port = dev>>8;
-    outb(0x55, port);
+	outb(0x55, port);
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	pnp_exit_conf_state
-// Parameters:  	dev - high 8 bits = Super I/O port
-// Return Value:	None
-// Description: 	Disable access to the LPC47N217's configuration registers.
-//
-static void pnp_exit_conf_state(device_t dev) {
+/*
+ * Function:		pnp_exit_conf_state
+ * Parameters:		dev - high 8 bits = Super I/O port
+ * Return Value:	None
+ * Description:		Disable access to the LPC47N217's configuration registers.
+ */
+static void pnp_exit_conf_state(device_t dev)
+{
 	unsigned port = dev>>8;
-    outb(0xaa, port);
+	outb(0xaa, port);
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	lpc47n217_pnp_set_iobase
-// Parameters:  	dev - high 8 bits = Super I/O port, 
-//						  low 8 bits = logical device number (per lpc47n217.h)
-//					iobase - base I/O port for the logical device
-// Return Value:	None
-// Description: 	Program the base I/O port for the specified logical device.
-//
+/*
+ * Function:	lpc47n217_pnp_set_iobase
+ * Parameters:	dev - high 8 bits = Super I/O port,
+ *		      low 8 bits = logical device number (per lpc47n217.h)
+ *		iobase - base I/O port for the logical device
+ * Return Value:None
+ * Description:	Program the base I/O port for the specified logical device.
+ *
+ */
 void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
 {
-	// LPC47N217 requires base ports to be a multiple of 4
+	/* LPC47N217 requires base ports to be a multiple of 4 */
 	ASSERT(!(iobase & 0x3));
 
 	switch(dev & 0xFF) {
-	case LPC47N217_PP: 
+	case LPC47N217_PP:
 		pnp_write_config(dev, 0x23, (iobase >> 2) & 0xff);
 		break;
-		
-	case LPC47N217_SP1: 
+
+	case LPC47N217_SP1:
 		pnp_write_config(dev, 0x24, (iobase >> 2) & 0xff);
 		break;
-		
+
 	case LPC47N217_SP2:
 		pnp_write_config(dev, 0x25, (iobase >> 2) & 0xff);
 		break;
-		
+
 	default:
 		break;
 	}
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	lpc47n217_pnp_set_enable
-// Parameters:  	dev - high 8 bits = Super I/O port, 
-//						  low 8 bits = logical device number (per lpc47n217.h)
-//					enable - 0 to disable, anythig else to enable
-// Return Value:	None
-// Description: 	Enable or disable the specified logical device.
-//					Technically, a full disable requires setting the device's base
-//					I/O port below 0x100. We don't do that here, because we don't
-//					have access to a data structure that specifies what the 'real'
-//					base port is (when asked to enable the device). Also the function
-//					is used only to disable the device while its true base port is
-//					programmed (see lpc47n217_enable_serial() below).
-//
+/*
+ * Function:	lpc47n217_pnp_set_enable
+ * Parameters:	dev - high 8 bits = Super I/O port,
+ *		      low 8 bits = logical device number (per lpc47n217.h)
+ *		enable - 0 to disable, anythig else to enable
+ * Return Value:None
+ * Description:	Enable or disable the specified logical device.
+ *		Technically, a full disable requires setting the device's base
+ *		I/O port below 0x100. We don't do that here, because we don't
+ *		have access to a data structure that specifies what the 'real'
+ *		base port is (when asked to enable the device). Also the function
+ *		is used only to disable the device while its true base port is
+ *		programmed (see lpc47n217_enable_serial() below).
+ */
 void lpc47n217_pnp_set_enable(device_t dev, int enable)
 {
 	uint8_t power_register = 0;
 	uint8_t power_mask = 0;
 	uint8_t current_power;
 	uint8_t new_power;
-	
+
 	switch(dev & 0xFF) {
-	case LPC47N217_PP: 
+	case LPC47N217_PP:
 		power_register = 0x01;
 		power_mask = 0x04;
 		break;
-		
-	case LPC47N217_SP1: 
+
+	case LPC47N217_SP1:
 		power_register = 0x02;
 		power_mask = 0x08;
 		break;
-		
+
 	case LPC47N217_SP2:
 		power_register = 0x02;
 		power_mask = 0x80;
 		break;
-		
+
 	default:
 		return;
 	}
 
 	current_power = pnp_read_config(dev, power_register);
-	new_power = current_power & ~power_mask;		// disable by default
+	new_power = current_power & ~power_mask;	/* disable by default */
 
 	if (enable)
-		new_power |= power_mask;		// Enable
+		new_power |= power_mask;		/* Enable */
 
 	pnp_write_config(dev, power_register, new_power);
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	lpc47n217_enable_serial
-// Parameters:  	dev - high 8 bits = Super I/O port, 
-//						  low 8 bits = logical device number (per lpc47n217.h)
-//					iobase - processor I/O port address to assign to this serial device
-// Return Value:	bool
-// Description: 	Configure the base I/O port of the specified serial device
-//					and enable the serial device.
-//
+/*
+ * Function:	lpc47n217_enable_serial
+ * Parameters:	dev - high 8 bits = Super I/O port,
+ *		      low 8 bits = logical device number (per lpc47n217.h)
+ *		iobase - processor I/O port address to assign to this serial device
+ * Return Value:bool
+ * Description:	Configure the base I/O port of the specified serial device
+ *		and enable the serial device.
+ */
 static void lpc47n217_enable_serial(device_t dev, unsigned iobase)
 {
-	// NOTE: Cannot use pnp_set_XXX() here because they assume chip
-	//		 support for logical devices, which the LPC47N217 doesn't have
-	
+	/* NOTE: Cannot use pnp_set_XXX() here because they assume chip
+	 * support for logical devices, which the LPC47N217 doesn't have*/
+
 	pnp_enter_conf_state(dev);
 	lpc47n217_pnp_set_enable(dev, 0);
 	lpc47n217_pnp_set_iobase(dev, iobase);

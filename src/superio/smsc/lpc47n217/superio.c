@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
- * Copyright (C) 2004 Tyan 
+ * Copyright (C) 2004 Tyan
  * Copyright (C) 2005 Digital Design Corporation
  *
  * This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@
 #include "chip.h"
 #include "lpc47n217.h"
 
-// Forward declarations
+/* Forward declarations */
 static void enable_dev(device_t dev);
 static void lpc47n217_pnp_set_resources(device_t dev);
 static void lpc47n217_pnp_enable_resources(device_t dev);
@@ -53,7 +53,6 @@ static void lpc47n217_pnp_set_enable(device_t dev, int enable);
 static void pnp_enter_conf_state(device_t dev);
 static void pnp_exit_conf_state(device_t dev);
 
-
 struct chip_operations superio_smsc_lpc47n217_ops = {
 	CHIP_NAME("SMSC LPC47N217 Super I/O")
 	.enable_dev = enable_dev,
@@ -68,69 +67,72 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, LPC47N217_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-        { &ops, LPC47N217_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-        { &ops, LPC47N217_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, }
+	{ &ops, LPC47N217_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &ops, LPC47N217_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &ops, LPC47N217_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, }
 };
 
 /**********************************************************************************/
-/*								PUBLIC INTERFACE								  */
+/*			PUBLIC INTERFACE					  */
 /**********************************************************************************/
 
-//----------------------------------------------------------------------------------
-// Function:    	enable_dev
-// Parameters:  	dev - pointer to structure describing a Super I/O device 
-// Return Value:	None
-// Description: 	Create device structures and allocate resources to devices 
-//					specified in the pnp_dev_info array (above).
-//
+/*
+ * Function:    	enable_dev
+ * Parameters:  	dev - pointer to structure describing a Super I/O device
+ * Return Value:	None
+ * Description: 	Create device structures and allocate resources to devices
+ *			specified in the pnp_dev_info array (above).
+ */
 static void enable_dev(device_t dev)
 {
-	pnp_enable_devices(dev, &pnp_ops, 
-					   ARRAY_SIZE(pnp_dev_info), 
-					   pnp_dev_info);
+	pnp_enable_devices(dev, &pnp_ops,
+			   ARRAY_SIZE(pnp_dev_info),
+			   pnp_dev_info);
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	lpc47n217_pnp_set_resources
-// Parameters:  	dev - pointer to structure describing a Super I/O device 
-// Return Value:	None
-// Description: 	Configure the specified Super I/O device with the resources
-//					(I/O space, etc.) that have been allocate for it.
-//
+/*
+ * Function:    	lpc47n217_pnp_set_resources
+ * Parameters:  	dev - pointer to structure describing a Super I/O device
+ * Return Value:	None
+ * Description: 	Configure the specified Super I/O device with the resources
+ *			(I/O space, etc.) that have been allocate for it.
+ */
 static void lpc47n217_pnp_set_resources(device_t dev)
 {
 	int i;
-	
-	pnp_enter_conf_state(dev);  
 
-	// NOTE: Cannot use pnp_set_resources() here because it assumes chip
-	//		 support for logical devices, which the LPC47N217 doesn't have
+	pnp_enter_conf_state(dev);
+
+	/* NOTE: Cannot use pnp_set_resources() here because it assumes chip
+	 * support for logical devices, which the LPC47N217 doesn't have
+	 */
 	for(i = 0; i < dev->resources; i++)
 		lpc47n217_pnp_set_resource(dev, &dev->resource[i]);
 
-//	dump_pnp_device(dev);
-                
-   	pnp_exit_conf_state(dev);  
-}       
+	/* dump_pnp_device(dev); */
+
+   	pnp_exit_conf_state(dev);
+}
 
 static void lpc47n217_pnp_enable_resources(device_t dev)
-{       
-    pnp_enter_conf_state(dev);
+{
+	pnp_enter_conf_state(dev);
 
-	// NOTE: Cannot use pnp_enable_resources() here because it assumes chip
-	//		 support for logical devices, which the LPC47N217 doesn't have
-    lpc47n217_pnp_set_enable(dev, 1);
+	/* NOTE: Cannot use pnp_enable_resources() here because it assumes chip
+	 * support for logical devices, which the LPC47N217 doesn't have
+	 */
+	lpc47n217_pnp_set_enable(dev, 1);
 
-    pnp_exit_conf_state(dev);
+	pnp_exit_conf_state(dev);
 }
 
 static void lpc47n217_pnp_enable(device_t dev)
 {
-	pnp_enter_conf_state(dev);   
+	pnp_enter_conf_state(dev);
 
-	// NOTE: Cannot use pnp_set_enable() here because it assumes chip
-	//		 support for logical devices, which the LPC47N217 doesn't have
+	/* NOTE: Cannot use pnp_set_enable() here because it assumes chip
+	 * support for logical devices, which the LPC47N217 doesn't have
+	 */
 
 	if(dev->enabled) {
 		lpc47n217_pnp_set_enable(dev, 1);
@@ -139,17 +141,17 @@ static void lpc47n217_pnp_enable(device_t dev)
 		lpc47n217_pnp_set_enable(dev, 0);
 	}
 
-	pnp_exit_conf_state(dev);  
+	pnp_exit_conf_state(dev);
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	lpc47n217_init
-// Parameters:  	dev - pointer to structure describing a Super I/O device 
-// Return Value:	None
-// Description: 	Initialize the specified Super I/O device.
-//					Devices other than COM ports are ignored.
-//					For COM ports, we configure the baud rate. 
-//
+/*
+ * Function:    	lpc47n217_init
+ * Parameters:  	dev - pointer to structure describing a Super I/O device
+ * Return Value:	None
+ * Description: 	Initialize the specified Super I/O device.
+ *			Devices other than COM ports are ignored.
+ *			For COM ports, we configure the baud rate.
+ */
 static void lpc47n217_init(device_t dev)
 {
 	struct superio_smsc_lpc47n217_config* conf = dev->chip_info;
@@ -159,7 +161,7 @@ static void lpc47n217_init(device_t dev)
 		return;
 
 	switch(dev->path.pnp.device) {
-	case LPC47N217_SP1: 
+	case LPC47N217_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
 		break;
@@ -171,9 +173,8 @@ static void lpc47n217_init(device_t dev)
 	}
 }
 
-
 /**********************************************************************************/
-/*								PRIVATE FUNCTIONS							      */
+/*      			PRIVATE FUNCTIONS				  */
 /**********************************************************************************/
 
 static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
@@ -185,8 +186,9 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 	}
 
 	/* Now store the resource */
-	// NOTE: Cannot use pnp_set_XXX() here because they assume chip
-	//		 support for logical devices, which the LPC47N217 doesn't have
+	/* NOTE: Cannot use pnp_set_XXX() here because they assume chip
+	 * support for logical devices, which the LPC47N217 doesn't have
+	 */
 
 	if (resource->flags & IORESOURCE_IO) {
 		lpc47n217_pnp_set_iobase(dev, resource->base);
@@ -210,20 +212,20 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 static void lpc47n217_pnp_set_iobase(device_t dev, unsigned iobase)
 {
 	ASSERT(!(iobase & 0x3));
-	
+
 	switch(dev->path.pnp.device) {
-	case LPC47N217_PP: 
+	case LPC47N217_PP:
 		pnp_write_config(dev, 0x23, (iobase >> 2) & 0xff);
 		break;
-		
-	case LPC47N217_SP1: 
+
+	case LPC47N217_SP1:
 		pnp_write_config(dev, 0x24, (iobase >> 2) & 0xff);
 		break;
-		
+
 	case LPC47N217_SP2:
 		pnp_write_config(dev, 0x25, (iobase >> 2) & 0xff);
 		break;
-		
+
 	default:
 		BUG();
 		break;
@@ -238,7 +240,7 @@ static void lpc47n217_pnp_set_drq(device_t dev, unsigned drq)
 		uint8_t current_config = pnp_read_config(dev, PP_DMA_SELECTION_REGISTER);
 		uint8_t new_config;
 
-		ASSERT(!(drq & ~PP_DMA_MASK));		// DRQ out of range??		
+		ASSERT(!(drq & ~PP_DMA_MASK));		/* DRQ out of range?? */
 		new_config = (current_config & ~PP_DMA_MASK) | drq;
 		pnp_write_config(dev, PP_DMA_SELECTION_REGISTER, new_config);
 	} else {
@@ -252,31 +254,31 @@ static void lpc47n217_pnp_set_irq(device_t dev, unsigned irq)
 	uint8_t irq_config_mask = 0;
 	uint8_t current_config;
 	uint8_t new_config;
-	
+
 	switch(dev->path.pnp.device) {
-	case LPC47N217_PP: 
+	case LPC47N217_PP:
 		irq_config_register = 0x27;
 		irq_config_mask = 0x0F;
 		break;
-		
-	case LPC47N217_SP1: 
+
+	case LPC47N217_SP1:
 		irq_config_register = 0x28;
 		irq_config_mask = 0xF0;
 		irq <<= 4;
 		break;
-		
+
 	case LPC47N217_SP2:
 		irq_config_register = 0x28;
 		irq_config_mask = 0x0F;
 		break;
-		
+
 	default:
 		BUG();
 		return;
 	}
 
-	ASSERT(!(irq & ~irq_config_mask));		// IRQ out of range??
-	
+	ASSERT(!(irq & ~irq_config_mask));		/* IRQ out of range?? */
+
 	current_config = pnp_read_config(dev, irq_config_register);
 	new_config = (current_config & ~irq_config_mask) | irq;
 	pnp_write_config(dev, irq_config_register, new_config);
@@ -288,100 +290,99 @@ static void lpc47n217_pnp_set_enable(device_t dev, int enable)
 	uint8_t power_mask = 0;
 	uint8_t current_power;
 	uint8_t new_power;
-	
+
 	switch(dev->path.pnp.device) {
-	case LPC47N217_PP: 
+	case LPC47N217_PP:
 		power_register = 0x01;
 		power_mask = 0x04;
 		break;
-		
-	case LPC47N217_SP1: 
+
+	case LPC47N217_SP1:
 		power_register = 0x02;
 		power_mask = 0x08;
 		break;
-		
+
 	case LPC47N217_SP2:
 		power_register = 0x02;
 		power_mask = 0x80;
 		break;
-		
+
 	default:
 		BUG();
 		return;
 	}
 
 	current_power = pnp_read_config(dev, power_register);
-	new_power = current_power & ~power_mask;		// disable by default
+	new_power = current_power & ~power_mask;		/* disable by default */
 
 	if (enable) {
 		struct resource* ioport_resource = find_resource(dev, PNP_IDX_IO0);
 		lpc47n217_pnp_set_iobase(dev, ioport_resource->base);
-		
-		new_power |= power_mask;		// Enable
-		
-    } else {
+
+		new_power |= power_mask;		/* Enable */
+
+	} else {
 		lpc47n217_pnp_set_iobase(dev, 0);
 	}
 	pnp_write_config(dev, power_register, new_power);
 }
 
-
-//----------------------------------------------------------------------------------
-// Function:    	pnp_enter_conf_state
-// Parameters:  	dev - pointer to structure describing a Super I/O device 
-// Return Value:	None
-// Description: 	Enable access to the LPC47N217's configuration registers.
-//
-static void pnp_enter_conf_state(device_t dev) 
+/*
+ * Function:    	pnp_enter_conf_state
+ * Parameters:  	dev - pointer to structure describing a Super I/O device
+ * Return Value:	None
+ * Description: 	Enable access to the LPC47N217's configuration registers.
+ */
+static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
 
-//----------------------------------------------------------------------------------
-// Function:    	pnp_exit_conf_state
-// Parameters:  	dev - pointer to structure describing a Super I/O device 
-// Return Value:	None
-// Description: 	Disable access to the LPC47N217's configuration registers.
-//
-static void pnp_exit_conf_state(device_t dev) 
+/*
+ * Function:    	pnp_exit_conf_state
+ * Parameters:  	dev - pointer to structure describing a Super I/O device
+ * Return Value:	None
+ * Description: 	Disable access to the LPC47N217's configuration registers.
+ */
+static void pnp_exit_conf_state(device_t dev)
 {
-    outb(0xaa, dev->path.pnp.port);
+	outb(0xaa, dev->path.pnp.port);
 }
 
 #if 0
-//----------------------------------------------------------------------------------
-// Function:    	dump_pnp_device
-// Parameters:  	dev - pointer to structure describing a Super I/O device 
-// Return Value:	None
-// Description: 	Print the values of all of the LPC47N217's configuration registers.
-//					NOTE: The LPC47N217 must be in configuration mode when this
-//						  function is called.
-//
+/*
+ * Function:    	dump_pnp_device
+ * Parameters:  	dev - pointer to structure describing a Super I/O device
+ * Return Value:	None
+ * Description: 	Print the values of all of the LPC47N217's configuration registers.
+ *			NOTE: The LPC47N217 must be in configuration mode when this
+ *			function is called.
+ */
 static void dump_pnp_device(device_t dev)
 {
-    int register_index;
-    print_debug("\r\n");
+	int register_index;
+	print_debug("\r\n");
 
-    for(register_index = 0; register_index <= LPC47N217_MAX_CONFIG_REGISTER; register_index++) {
-        uint8_t register_value;
+	for(register_index = 0; register_index <= LPC47N217_MAX_CONFIG_REGISTER; register_index++) {
+		uint8_t register_value;
 
-        if ((register_index & 0x0f) == 0) {
-                print_debug_hex8(register_index);
-                print_debug_char(':');
-        }
+		if ((register_index & 0x0f) == 0) {
+			print_debug_hex8(register_index);
+			print_debug_char(':');
+		}
 
-		// Skip over 'register' that would cause exit from configuration mode
-	    if (register_index == 0xaa)
+		/* Skip over 'register' that would cause exit from configuration mode */
+		if (register_index == 0xaa)
 			register_value = 0xaa;
 		else
-        	register_value = pnp_read_config(dev, register_index);
+			register_value = pnp_read_config(dev, register_index);
 
-        print_debug_char(' ');
-        print_debug_hex8(register_value);
-        if ((register_index & 0x0f) == 0x0f) {
-        	print_debug("\r\n");
-        }
-    }
+		print_debug_char(' ');
+		print_debug_hex8(register_value);
+		if ((register_index & 0x0f) == 0x0f) {
+			print_debug("\r\n");
+		}
+	}
 
    	print_debug("\r\n");
 }

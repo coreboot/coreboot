@@ -105,4 +105,3 @@ struct chip_operations superio_intel_i3100_ops = {
 	CHIP_NAME("Intel 3100 Super I/O")
 	.enable_dev = enable_dev,
 };
-

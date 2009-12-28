@@ -1,9 +1,24 @@
-/* Copyright 2000  AG Electronics Ltd. */
-/* Copyright 2003-2004 Linux Networx */
-/* Copyright 2004 Tyan
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2000 AG Electronics Ltd.
+ * Copyright (C) 2003-2004 Linux Networx
+ * Copyright (C) 2004 Tyan
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-
-/* This code is distributed without warranty under the GPL v2 (see COPYING) */
 
 #include <arch/io.h>
 #include <device/device.h>
@@ -18,11 +33,12 @@
 #include "chip.h"
 #include "lpc47b397.h"
 
-
-static void pnp_enter_conf_state(device_t dev) {
+static void pnp_enter_conf_state(device_t dev)
+{
 	outb(0x55, dev->path.pnp.port);
 }
-static void pnp_exit_conf_state(device_t dev) {
+static void pnp_exit_conf_state(device_t dev)
+{
 	outb(0xaa, dev->path.pnp.port);
 }
 
@@ -38,7 +54,8 @@ static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
 	return inb(port_base + 1);
 }
 
-static void enable_hwm_smbus(device_t dev) {
+static void enable_hwm_smbus(device_t dev)
+{
 	/* enable SensorBus register access */
 	uint8_t reg, value;
 	reg = 0xf0;
@@ -46,7 +63,6 @@ static void enable_hwm_smbus(device_t dev) {
 	value |= 0x01;
 	pnp_write_config(dev, reg, value);
 }
-
 
 static void lpc47b397_init(device_t dev)
 {
@@ -71,29 +87,21 @@ static void lpc47b397_init(device_t dev)
 		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
 		break;
 	}
-
 }
 
 static void lpc47b397_pnp_set_resources(device_t dev)
 {
-
 	pnp_enter_conf_state(dev);
-
 	pnp_set_resources(dev);
-
 #if 0
 	dump_pnp_device(dev);
 #endif
-
 	pnp_exit_conf_state(dev);
-
 }
 
 static void lpc47b397_pnp_enable_resources(device_t dev)
 {
-
 	pnp_enter_conf_state(dev);
-
 	pnp_enable_resources(dev);
 
 	switch(dev->path.pnp.device) {
@@ -103,20 +111,15 @@ static void lpc47b397_pnp_enable_resources(device_t dev)
 		enable_hwm_smbus(dev);
 		break;
 	}
-
 #if 0
 	dump_pnp_device(dev);
 #endif
-
 	pnp_exit_conf_state(dev);
-
 }
 
 static void lpc47b397_pnp_enable(device_t dev)
 {
-
 	pnp_enter_conf_state(dev);
-
 	pnp_set_logical_device(dev);
 
 	if(dev->enabled) {
@@ -125,9 +128,7 @@ static void lpc47b397_pnp_enable(device_t dev)
 	else {
 		pnp_set_enable(dev, 0);
 	}
-
 	pnp_exit_conf_state(dev);
-
 }
 
 static struct device_operations ops = {
@@ -137,7 +138,6 @@ static struct device_operations ops = {
 	.enable           = lpc47b397_pnp_enable,
 	.init             = lpc47b397_init,
 };
-
 
 #define HWM_INDEX 0
 #define HWM_DATA  1
@@ -157,9 +157,9 @@ static int lsmbus_read_byte(device_t dev, uint8_t address)
 
 	res = find_resource(get_pbus_smbus(dev)->dev, PNP_IDX_IO0);
 
-	pnp_write_index(res->base+HWM_INDEX, 0, device); // why 0?
+	pnp_write_index(res->base+HWM_INDEX, 0, device); /* why 0? */
 
-	result = pnp_read_index(res->base+SB_INDEX, address); // we only read it one byte one time
+	result = pnp_read_index(res->base+SB_INDEX, address);  /* we only read it one byte one time */
 
 	return result;
 }
@@ -172,16 +172,16 @@ static int lsmbus_write_byte(device_t dev, uint8_t address, uint8_t val)
 	device = dev->path.i2c.device;
 	res = find_resource(get_pbus_smbus(dev)->dev, PNP_IDX_IO0);
 
-	pnp_write_index(res->base+HWM_INDEX, 0, device); // why 0?
+	pnp_write_index(res->base+HWM_INDEX, 0, device); /* why 0? */
 
-	pnp_write_index(res->base+SB_INDEX, address, val); // we only write it one byte one time
+	pnp_write_index(res->base+SB_INDEX, address, val); /* we only write it one byte one time */
 
 	return 0;
 }
 
 static struct smbus_bus_operations lops_smbus_bus = {
-//	.recv_byte  = lsmbus_recv_byte,
-//	.send_byte  = lsmbus_send_byte,
+	/* .recv_byte  = lsmbus_recv_byte, */
+	/* .send_byte  = lsmbus_send_byte, */
 	.read_byte  = lsmbus_read_byte,
 	.write_byte = lsmbus_write_byte,
 };
@@ -215,4 +215,3 @@ struct chip_operations superio_smsc_lpc47b397_ops = {
 	CHIP_NAME("SMSC LPC47B397 Super I/O")
 	.enable_dev = enable_dev,
 };
-

@@ -1,5 +1,22 @@
-/* Copyright 2000  AG Electronics Ltd. */
-/* This code is distributed without warranty under the GPL v2 (see COPYING) */
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2000 AG Electronics Ltd.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 #include <arch/io.h>
 #include <console/console.h>
@@ -66,15 +83,15 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
- { &ops, PC97307_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0xffb, 0 }, { 0xffb, 0x4}, },
- { &ops, PC97307_KBCM, PNP_IRQ0 },
- { &ops, PC97307_RTC,  PNP_IO0 | PNP_IRQ0, { 0xfffe, 0}, },
- { &ops, PC97307_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0xfffa, 0}, },
- { &ops, PC97307_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x03fc, 0}, },
- { &ops, PC97307_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0xfff8, 0 }, },
- { &ops, PC97307_SP1,  PNP_IO0 | PNP_IRQ0, { 0xfff8, 0 }, },
- { &ops, PC97307_GPIO, PNP_IO0, { 0xfff8, 0 } },
- { &ops, PC97307_PM,   PNP_IO0, { 0xfffe, 0 } },
+	{ &ops, PC97307_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0xffb, 0 }, { 0xffb, 0x4}, },
+	{ &ops, PC97307_KBCM, PNP_IRQ0 },
+	{ &ops, PC97307_RTC,  PNP_IO0 | PNP_IRQ0, { 0xfffe, 0}, },
+	{ &ops, PC97307_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0xfffa, 0}, },
+	{ &ops, PC97307_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x03fc, 0}, },
+	{ &ops, PC97307_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0xfff8, 0 }, },
+	{ &ops, PC97307_SP1,  PNP_IO0 | PNP_IRQ0, { 0xfff8, 0 }, },
+	{ &ops, PC97307_GPIO, PNP_IO0, { 0xfff8, 0 } },
+	{ &ops, PC97307_PM,   PNP_IO0, { 0xfffe, 0 } },
 };
 
 static void enable_dev(struct device *dev)

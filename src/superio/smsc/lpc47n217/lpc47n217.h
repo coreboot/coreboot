@@ -18,8 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-// These are arbitrary, but must match declarations in the mainboard config file.
-// Values chosen to match SMSC 47B37x.
+/* These are arbitrary, but must match declarations in the mainboard config file.
+ * Values chosen to match SMSC 47B37x.
+ */
 
 #define LPC47N217_PP               3   /* Parallel Port */
 #define LPC47N217_SP1              4   /* Com1 */

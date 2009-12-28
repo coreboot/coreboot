@@ -29,12 +29,12 @@
 #include "chip.h"
 #include "f71805f.h"
 
-static void pnp_enter_conf_state(device_t dev) 
+static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x87, dev->path.pnp.port);
 }
 
-static void pnp_exit_conf_state(device_t dev) 
+static void pnp_exit_conf_state(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }
@@ -46,7 +46,7 @@ static void f71805f_init(device_t dev)
 
 	if (!dev->enabled)
 		return;
-	
+
 	switch(dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case F71805F_SP1:
@@ -110,4 +110,3 @@ struct chip_operations superio_fintek_f71805f_ops = {
 	CHIP_NAME("Fintek F71805F Super I/O")
 	.enable_dev = enable_dev
 };
-

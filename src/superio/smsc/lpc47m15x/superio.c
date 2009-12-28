@@ -32,7 +32,7 @@
 #include "chip.h"
 #include "lpc47m15x.h"
 
-// Forward declarations
+/* Forward declarations */
 static void enable_dev(device_t dev);
 static void lpc47m15x_pnp_set_resources(device_t dev);
 static void lpc47m15x_pnp_enable_resources(device_t dev);
@@ -42,7 +42,6 @@ static void lpc47m15x_init(device_t dev);
 static void pnp_enter_conf_state(device_t dev);
 static void pnp_exit_conf_state(device_t dev);
 static void dump_pnp_device(device_t dev);
-
 
 struct chip_operations superio_smsc_lpc47m15x_ops = {
 	CHIP_NAME("SMSC LPC47M15x/192/997 Super I/O")
@@ -58,11 +57,11 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, LPC47M15X_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-        { &ops, LPC47M15X_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
-        { &ops, LPC47M15X_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-        { &ops, LPC47M15X_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
-        { &ops, LPC47M15X_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
+	{ &ops, LPC47M15X_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &ops, LPC47M15X_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, { 0x07f8, 0}, },
+	{ &ops, LPC47M15X_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &ops, LPC47M15X_SP2,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &ops, LPC47M15X_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, { 0x7ff, 0 }, { 0x7ff, 0x4}, },
 };
 
 static void enable_dev(device_t dev)
@@ -72,13 +71,13 @@ static void enable_dev(device_t dev)
 
 static void lpc47m15x_pnp_set_resources(device_t dev)
 {
-	pnp_enter_conf_state(dev);  
+	pnp_enter_conf_state(dev);
 	pnp_set_resources(dev);
-	pnp_exit_conf_state(dev);  
-}       
+	pnp_exit_conf_state(dev);
+}
 
 static void lpc47m15x_pnp_enable_resources(device_t dev)
-{       
+{
 	pnp_enter_conf_state(dev);
 	pnp_enable_resources(dev);
 	pnp_exit_conf_state(dev);
@@ -86,7 +85,7 @@ static void lpc47m15x_pnp_enable_resources(device_t dev)
 
 static void lpc47m15x_pnp_enable(device_t dev)
 {
-	pnp_enter_conf_state(dev);   
+	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
 
 	if(dev->enabled) {
@@ -95,7 +94,7 @@ static void lpc47m15x_pnp_enable(device_t dev)
 	else {
 		pnp_set_enable(dev, 0);
 	}
-	pnp_exit_conf_state(dev);  
+	pnp_exit_conf_state(dev);
 }
 
 static void lpc47m15x_init(device_t dev)
@@ -105,18 +104,18 @@ static void lpc47m15x_init(device_t dev)
 
 	if (!dev->enabled)
 		return;
-	
+
 	switch(dev->path.pnp.device) {
-	case LPC47M15X_SP1: 
+	case LPC47M15X_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com1);
 		break;
-		
+
 	case LPC47M15X_SP2:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		init_uart8250(res0->base, &conf->com2);
 		break;
-		
+
 	case LPC47M15X_KBC:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
@@ -125,13 +124,12 @@ static void lpc47m15x_init(device_t dev)
 	}
 }
 
-static void pnp_enter_conf_state(device_t dev) 
+static void pnp_enter_conf_state(device_t dev)
 {
 	outb(0x55, dev->path.pnp.port);
 }
 
-static void pnp_exit_conf_state(device_t dev) 
+static void pnp_exit_conf_state(device_t dev)
 {
-    outb(0xaa, dev->path.pnp.port);
+	outb(0xaa, dev->path.pnp.port);
 }
-

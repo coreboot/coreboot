@@ -29,4 +29,3 @@
 #define IT8661F_PP   0x03 /* Parallel port */
 #define IT8661F_IR   0x04 /* IR */
 #define IT8661F_GPIO 0x05 /* GPIO & Alternate Function Configuration */
-

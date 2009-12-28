@@ -41,7 +41,7 @@
 /* Perform MB PnP setup to put the SIO chip at 0x2e. */
 /* Base address 0x2e: 0x87 0x01 0x55 0x55. */
 /* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
-static inline void pnp_enter_ext_func_mode(device_t dev) 
+static inline void pnp_enter_ext_func_mode(device_t dev)
 {
 	unsigned port = dev >> 8;
 	outb(0x87, port);
@@ -68,4 +68,3 @@ static void it8716f_enable_serial(device_t dev, unsigned iobase)
 	pnp_set_enable(dev, 1);
 	pnp_exit_ext_func_mode(dev);
 }
-

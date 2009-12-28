@@ -27,4 +27,3 @@
 #define IT8671F_PP   0x03 /* Parallel port */
 #define IT8671F_KBCK 0x05 /* Keyboard */
 #define IT8671F_KBCM 0x06 /* Mouse */
-

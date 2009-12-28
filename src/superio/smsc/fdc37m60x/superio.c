@@ -70,9 +70,9 @@ static struct device_operations ops = {
 
 /* TODO: FDC, PP, AUX. */
 static struct pnp_info pnp_dev_info[] = {
- { &ops, FDC37M60X_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
- { &ops, FDC37M60X_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
- { &ops, FDC37M60X_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
+	{ &ops, FDC37M60X_SP1,  PNP_IO0 | PNP_IRQ0, { 0x7f8, 0 }, },
+	{ &ops, FDC37M60X_SP2,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0 | PNP_DRQ1, { 0x7f8, 0 }, },
+	{ &ops, FDC37M60X_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x7f8, 0 }, { 0x7f8, 0x4}, },
 };
 
 static void enable_dev(struct device *dev)
@@ -85,4 +85,3 @@ struct chip_operations superio_smsc_fdc37m60x_ops = {
 	CHIP_NAME("SMSC FDC37M60X Super I/O")
 	.enable_dev = enable_dev,
 };
-

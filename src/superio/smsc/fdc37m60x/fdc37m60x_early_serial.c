@@ -75,4 +75,3 @@ static void fdc37m60x_enable_serial(device_t dev, unsigned iobase)
 	/* (3) Exit the configuration state. */
 	outb(0xaa, FDC37M60X_CONFIGURATION_PORT);
 }
-

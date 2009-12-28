@@ -89,4 +89,3 @@ static void it8673f_enable_serial(device_t dev, unsigned iobase)
 	/* (3) Exit the configuration state (MB PnP mode). */
 	it8673f_sio_write(0x00, IT8673F_CONFIG_REG_CC, 0x02);
 }
-

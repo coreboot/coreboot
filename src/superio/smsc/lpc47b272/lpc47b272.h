@@ -26,4 +26,3 @@
 #define LPC47B272_RT              10   /* Runtime reg*/
 
 #define LPC47B272_MAX_CONFIG_REGISTER	0x5F
-

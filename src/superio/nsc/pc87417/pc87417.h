@@ -1,3 +1,25 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2000 AG Electronics Ltd.
+ * Copyright (C) 2003-2004 Linux Networx
+ * Copyright (C) 2004 Tyan by yhlu
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 #define PC87417_FDC  0x00 /* Floppy */
 #define PC87417_PP   0x01 /* Parallel Port */
 #define PC87417_SP2  0x02 /* Com2 */
@@ -11,7 +33,7 @@
 
 #define PC87417_GPIO_DEV PNP_DEV(0x2e, PC87417_GPIO)
 /* This is to get around a romcc bug */
-//#define PC87417_XBUS_DEV PNP_DEV(0x2e, PC87417_XBUS)
+/* #define PC87417_XBUS_DEV PNP_DEV(0x2e, PC87417_XBUS) */
 #define PC87417_XBUS_DEV PNP_DEV(0x2e, 0x0f)
 
 #define PC87417_GPSEL		0xf0
@@ -88,5 +110,3 @@
 #define PC87417_HAP1		0x14
 #define PC87417_XSCNF		0x15
 #define PC87417_XWBCNF		0x16
-
-

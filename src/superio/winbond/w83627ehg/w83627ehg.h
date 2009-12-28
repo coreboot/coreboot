@@ -31,8 +31,8 @@
 #define W83627EHG_HWM             11   /* Hardware Monitor */
 
 /* virtual devices sharing the enables are encoded as follows:
-   VLDN = baseLDN[7:0] | [10:8] bitpos of enable in 0x30 of baseLDN
-*/
+ *   VLDN = baseLDN[7:0] | [10:8] bitpos of enable in 0x30 of baseLDN
+ */
 
 #define W83627EHG_SFI		((1 << 8) | 6) /* Flash has bit1 as enable */
 #define W83627EHG_GPIO1		W83627EHG_GPIO_GAME_MIDI /* GPIO1 is at LDN 7, bit 0 */

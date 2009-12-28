@@ -33,4 +33,3 @@
 #define IT8705F_GAME 0x06 /* GAME port */
 #define IT8705F_IR   0x07 /* Consumer IR */
 #define IT8705F_MIDI 0x08 /* MIDI port */
-

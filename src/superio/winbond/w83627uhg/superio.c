@@ -80,7 +80,7 @@ static void w83627uhg_init(device_t dev)
 
 	conf = dev->chip_info;
 	switch(dev->path.pnp.device) {
-	case W83627UHG_SP1: 
+	case W83627UHG_SP1:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		/* set_uart_clock_source(dev, 0); */
 		init_uart8250(res0->base, &conf->com1);

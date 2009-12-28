@@ -32,4 +32,3 @@
 #define IT8716F_MIDI 0x08 /* MIDI port */
 #define IT8716F_GAME 0x09 /* GAME port */
 #define IT8716F_IR   0x0a /* Consumer IR */
-

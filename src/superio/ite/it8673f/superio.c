@@ -87,4 +87,3 @@ struct chip_operations superio_ite_it8673f_ops = {
 	CHIP_NAME("ITE IT8673F Super I/O")
 	.enable_dev = enable_dev,
 };
-

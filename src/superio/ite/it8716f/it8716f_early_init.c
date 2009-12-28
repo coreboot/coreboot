@@ -35,4 +35,3 @@ static void it8716f_enable_dev(device_t dev, unsigned iobase)
 	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
 	pnp_set_enable(dev, 1);
 }
-

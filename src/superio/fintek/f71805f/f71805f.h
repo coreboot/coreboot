@@ -24,7 +24,7 @@
  *  - URL: http://www.fintek.com.tw/eng/products.asp?BID=1&SID=17
  *  - PDF: http://www.fintek.com.tw/files/productfiles/F71805F_V025.pdf
  *  - Revision: V0.25P
- */ 
+ */
 
 /* Logical Device Numbers (LDN). */
 #define F71805F_FDC	0x00	/* Floppy */

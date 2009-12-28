@@ -36,4 +36,3 @@
 #define FDC37M60X_SP2  0x05 /* Com2 */
 #define FDC37M60X_KBCK 0x07 /* Keyboard */
 #define FDC37M60X_AUX  0x08 /* Auxiliary I/O */
-

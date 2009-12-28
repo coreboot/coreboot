@@ -33,4 +33,3 @@ struct superio_ite_it8661f_config {
 };
 
 #endif /* _SUPERIO_ITE_IT8661F */
-

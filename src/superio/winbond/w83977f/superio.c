@@ -30,12 +30,12 @@
 #include "chip.h"
 #include "w83977f.h"
 
-static void w83977f_enter_ext_func_mode(device_t dev) 
+static void w83977f_enter_ext_func_mode(device_t dev)
 {
 	outb(0x87, dev->path.pnp.port);
 	outb(0x87, dev->path.pnp.port);
 }
-static void w83977f_exit_ext_func_mode(device_t dev) 
+static void w83977f_exit_ext_func_mode(device_t dev)
 {
 	outb(0xaa, dev->path.pnp.port);
 }

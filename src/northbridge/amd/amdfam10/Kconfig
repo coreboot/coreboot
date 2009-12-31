@@ -52,4 +52,9 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	default n
 	depends on NORTHBRIDGE_AMD_AMDFAM10
 
+config BOOTBLOCK_NORTHBRIDGE_INIT
+        string
+        default "northbridge/amd/amdfam10/bootblock.c"
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
 source src/northbridge/amd/amdfam10/root_complex/Kconfig

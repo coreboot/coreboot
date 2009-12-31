@@ -43,3 +43,9 @@ config MAX_REBOOT_CNT
 config TINY_BOOTBLOCK
 	bool
 	default n
+
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+	string

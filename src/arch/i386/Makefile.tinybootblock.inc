@@ -30,8 +30,16 @@ bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
 bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc
 bootblock_inc += $(src)/arch/i386/lib/id.inc
+ifeq ($(CONFIG_SSE),y)
+bootblock_inc += $(src)/cpu/x86/sse_enable.inc
+endif
 bootblock_inc += $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc
 bootblock_inc += $(src)/arch/i386/lib/walkcbfs.S
+
+bootblock_romccflags := -mcpu=i386
+ifeq ($(CONFIG_SSE),y)
+bootblock_romccflags := -mcpu=k7 -msse
+endif
 
 $(obj)/bootblock/ldscript.ld: $(bootblock_ldscripts) $(obj)/ldoptions
 	mkdir -p $(obj)/bootblock
@@ -48,7 +56,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.c
 	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(obj)/romcc $(src)/arch/i386/init/bootblock.c
-	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/arch/i386/init/bootblock.c -o $@
+	$(obj)/romcc $(bootblock_romccflags) -O2 $(ROMCCFLAGS) $(INCLUDES) $(src)/arch/i386/init/bootblock.c -o $@
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

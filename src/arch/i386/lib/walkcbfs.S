@@ -25,18 +25,9 @@
   input %esi: filename
   input %esp: return address (not pointer to return address!)
   output %eax: entry point
-  clobbers %ebx, %ecx, %edx, %edi, %ebp
+  clobbers %ebx, %ecx, %edi
 */
 walkcbfs:
-	mov %esi, %ebp /* stash away filename pointer */
-	mov $0, %edx
-1:
-	cmpb $0, (%edx,%esi)
-	jz 2f
-	add $1, %edx
-	jmp 1b
-2:
-	add $1, %edx
 	mov CBFS_HEADER_PTR, %eax
 	mov CBFS_HEADER_ROMSIZE(%eax), %ecx
 	bswap %ecx
@@ -45,15 +36,20 @@ walkcbfs:
 	mov CBFS_HEADER_OFFSET(%eax), %ecx
 	bswap %ecx
 	add %ecx, %ebx
-	mov CBFS_HEADER_ALIGN(%eax), %eax
-	bswap %eax
-	sub $1, %eax
 
+	/* determine filename length */
+	mov $0, %eax
+1:
+	cmpb $0, (%eax,%esi)
+	jz 2f
+	add $1, %eax
+	jmp 1b
+2:
+	add $1, %eax
 walker:
-	mov %ebp, %esi
 	mov %ebx, %edi
 	add $CBFS_FILE_STRUCTSIZE, %edi /* edi = address of first byte after struct cbfs_file */
-	mov %edx, %ecx
+	mov %eax, %ecx
 	repe cmpsb
 	# zero flag set if strings are equal
 	jnz tryharder
@@ -67,21 +63,29 @@ walker:
 	jmp *%esp
 
 tryharder:
+	sub %ebx, %edi /* edi = # of walked bytes */
+	sub %edi, %esi /* esi = start of filename */
+
+	/* ebx = ecx = (current+offset+len+ALIGN-1) & ~(ALIGN-1) */
 	mov CBFS_FILE_OFFSET(%ebx), %ecx
 	bswap %ecx
 	add %ebx, %ecx
 	mov CBFS_FILE_LEN(%ebx), %edi
 	bswap %edi
 	add %edi, %ecx
-	add %eax, %ecx
-	mov %eax, %edi
+	mov CBFS_HEADER_PTR, %ebx
+	mov CBFS_HEADER_ALIGN(%ebx), %ebx
+	bswap %ebx
+	sub $1, %ebx
+	add %ebx, %ecx
+	mov %ebx, %edi
 	not %edi
 	and %edi, %ecx
 	mov %ecx, %ebx
 
 	/* look if we should exit */
-	mov CBFS_HEADER_PTR, %esi
-	mov CBFS_HEADER_ROMSIZE(%esi), %ecx
+	mov CBFS_HEADER_PTR, %ecx
+	mov CBFS_HEADER_ROMSIZE(%ecx), %ecx
 	bswap %ecx
 	not %ecx
 	add $1, %ecx

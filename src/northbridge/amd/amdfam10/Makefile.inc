@@ -13,33 +13,33 @@ obj-y += get_pci1234.o
 
 ifdef POST_EVALUATION
 $(obj)/northbridge/amd/amdfam10/ssdt.c: $(src)/northbridge/amd/amdfam10/ssdt.dsl
-	iasl -p $(CURDIR)/ssdt -tc $<
-	perl -pi -e 's/AmlCode/AmlCode_ssdt/g' ssdt.hex
-	mv ssdt.hex $@
+	iasl -p $(obj)/ssdt -tc $<
+	perl -pi -e 's/AmlCode/AmlCode_ssdt/g' $(obj)/ssdt.hex
+	mv $(obj)/ssdt.hex $@
 
 $(obj)/northbridge/amd/amdfam10/sspr1.c: $(src)/northbridge/amd/amdfam10/sspr1.dsl
-	iasl -p $(CURDIR)/sspr1 -tc $<
-	perl -pi -e 's/AmlCode/AmlCode_sspr1/g' sspr1.hex
-	mv sspr1.hex $@
+	iasl -p $(obj)/sspr1 -tc $<
+	perl -pi -e 's/AmlCode/AmlCode_sspr1/g' $(obj)/sspr1.hex
+	mv $(obj)/sspr1.hex $@
 
 $(obj)/northbridge/amd/amdfam10/sspr2.c: $(src)/northbridge/amd/amdfam10/sspr2.dsl
-	iasl -p $(CURDIR)/sspr2 -tc $<
-	perl -pi -e 's/AmlCode/AmlCode_sspr2/g' sspr2.hex
-	mv sspr2.hex $@
+	iasl -p $(obj)/sspr2 -tc $<
+	perl -pi -e 's/AmlCode/AmlCode_sspr2/g' $(obj)/sspr2.hex
+	mv $(obj)/sspr2.hex $@
 
 $(obj)/northbridge/amd/amdfam10/sspr3.c: $(src)/northbridge/amd/amdfam10/sspr3.dsl
-	iasl -p $(CURDIR)/sspr3 -tc $<
-	perl -pi -e 's/AmlCode/AmlCode_sspr3/g' sspr3.hex
-	mv sspr3.hex $@
+	iasl -p $(obj)/sspr3 -tc $<
+	perl -pi -e 's/AmlCode/AmlCode_sspr3/g' $(obj)/sspr3.hex
+	mv $(obj)/sspr3.hex $@
 
 $(obj)/northbridge/amd/amdfam10/sspr4.c: $(src)/northbridge/amd/amdfam10/sspr4.dsl
-	iasl -p $(CURDIR)/sspr4 -tc $<
-	perl -pi -e 's/AmlCode/AmlCode_sspr4/g' sspr4.hex
-	mv sspr4.hex $@
+	iasl -p $(obj)/sspr4 -tc $<
+	perl -pi -e 's/AmlCode/AmlCode_sspr4/g' $(obj)/sspr4.hex
+	mv $(obj)/sspr4.hex $@
 
 $(obj)/northbridge/amd/amdfam10/sspr5.c: $(src)/northbridge/amd/amdfam10/sspr5.dsl
-	iasl -p $(CURDIR)/sspr5 -tc $<
-	perl -pi -e 's/AmlCode/AmlCode_sspr5/g' sspr5.hex
-	mv sspr5.hex $@
+	iasl -p $(obj)/sspr5 -tc $<
+	perl -pi -e 's/AmlCode/AmlCode_sspr5/g' $(obj)/sspr5.hex
+	mv $(obj)/sspr5.hex $@
 endif
 

@@ -20,3 +20,7 @@
 config SOUTHBRIDGE_AMD_AMD8111
 	bool
 
+config BOOTBLOCK_SOUTHBRIDGE_INIT
+        string
+        default "southbridge/amd/amd8111/bootblock.c"
+        depends on SOUTHBRIDGE_AMD_AMD8111

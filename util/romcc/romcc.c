@@ -3616,6 +3616,7 @@ static void register_builtin_macros(struct compile_state *state)
 	tm = localtime(&now);
 
 	register_builtin_macro(state, "__ROMCC__", VERSION_MAJOR);
+	register_builtin_macro(state, "__PRE_RAM__", VERSION_MAJOR);
 	register_builtin_macro(state, "__ROMCC_MINOR__", VERSION_MINOR);
 	register_builtin_macro(state, "__FILE__", "\"This should be the filename\"");
 	register_builtin_macro(state, "__LINE__", "54321");
@@ -5453,6 +5454,13 @@ static void preprocess(struct compile_state *state, struct token *current_token)
 		name = 0;
 
 		pp_eat(state, TOK_MINCLUDE);
+		if (if_eat(state)) {
+			/* Find the end of the line */
+			while((tok = raw_peek(state)) != TOK_EOL) {
+				raw_eat(state, tok);
+			}
+			break;
+		}
 		tok = peek(state);
 		if (tok == TOK_LIT_STRING) {
 			struct token *tk;

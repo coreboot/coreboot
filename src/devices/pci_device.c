@@ -950,7 +950,7 @@ device_t pci_probe_dev(device_t dev, struct bus * bus, unsigned devfn)
 		if ((id == 0xffffffff) || (id == 0x00000000) ||
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			if (dev->enabled) {
-				printk_info("Disabling static device: %s\n",
+				printk_info("PCI: Static device %s not found, disabling it.\n",
 					    dev_path(dev));
 				dev->enabled = 0;
 			}

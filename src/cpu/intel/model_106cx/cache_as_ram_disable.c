@@ -25,6 +25,7 @@ void stage1_main(unsigned long bist)
 {
 	unsigned int cpu_reset = 0;
 
+#if !defined(CONFIG_TINY_BOOTBLOCK) || !CONFIG_TINY_BOOTBLOCK
 #if CONFIG_USE_FALLBACK_IMAGE == 1
         /* Is this a deliberate reset by the bios */
         if (bios_reset_detected() && last_boot_normal()) {
@@ -45,6 +46,7 @@ void stage1_main(unsigned long bist)
                 : "a" (bist) /* inputs */
                 );
  fallback_image:
+#endif
 #endif
 
 	real_main(bist);

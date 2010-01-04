@@ -114,7 +114,13 @@ clear_mtrrs:
 	/* Enable cache for our code in Flash because we do XIP here */
         movl    $MTRRphysBase_MSR(1), %ecx
         xorl    %edx, %edx
-        movl    $(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+#if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
+#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
+#else
+#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
+#endif
+        movl    $REAL_XIP_ROM_BASE, %eax
+        orl     $MTRR_TYPE_WRBACK, %eax
         wrmsr
 
         movl    $MTRRphysMask_MSR(1), %ecx

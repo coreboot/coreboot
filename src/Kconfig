@@ -186,6 +186,7 @@ config HAVE_HARD_RESET
 
 config HAVE_INIT_TIMER
 	bool
+	default n if UDELAY_IO
 	default y
 
 config HAVE_MAINBOARD_RESOURCES

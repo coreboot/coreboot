@@ -8,6 +8,7 @@ config WAIT_BEFORE_CPUS_INIT
 
 config UDELAY_IO
 	bool
+	default y if !UDELAY_LAPIC && !UDELAY_TSC
 	default n
 
 config UDELAY_LAPIC

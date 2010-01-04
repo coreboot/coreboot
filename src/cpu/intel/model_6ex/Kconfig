@@ -1,3 +1,4 @@
 config CPU_INTEL_CORE
 	bool
 	select SMP
+	select HAVE_MOVNTI

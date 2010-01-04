@@ -1,3 +1,4 @@
 config CPU_INTEL_ATOM_230
 	bool
 	select SMP
+	select HAVE_MOVNTI

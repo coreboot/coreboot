@@ -35,6 +35,8 @@ config BOARD_ASUS_M2V_MX_SE
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
 	select VGA
+	select TINY_BOOTBLOCK
+	select HAVE_MAINBOARD_RESOURCES
 
 config MAINBOARD_DIR
 	string

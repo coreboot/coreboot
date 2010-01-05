@@ -3616,7 +3616,6 @@ static void register_builtin_macros(struct compile_state *state)
 	tm = localtime(&now);
 
 	register_builtin_macro(state, "__ROMCC__", VERSION_MAJOR);
-	register_builtin_macro(state, "__PRE_RAM__", VERSION_MAJOR);
 	register_builtin_macro(state, "__ROMCC_MINOR__", VERSION_MINOR);
 	register_builtin_macro(state, "__FILE__", "\"This should be the filename\"");
 	register_builtin_macro(state, "__LINE__", "54321");

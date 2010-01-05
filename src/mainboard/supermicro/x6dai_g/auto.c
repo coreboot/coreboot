@@ -1,4 +1,5 @@
 #define ASSEMBLY 1
+#define __PRE_RAM__
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>

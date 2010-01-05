@@ -1,3 +1,4 @@
+#define __PRE_RAM__
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>

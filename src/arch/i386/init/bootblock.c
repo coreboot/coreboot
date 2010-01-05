@@ -1,3 +1,4 @@
+#define __PRE_RAM__
 #if CONFIG_LOGICAL_CPUS && \
  (defined(CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT) || defined(CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT))
 #include <cpu/x86/lapic/boot_cpu.c>

@@ -1,4 +1,5 @@
 #define ASSEMBLY 1
+#define __PRE_RAM__
 #define ASM_CONSOLE_LOGLEVEL 8
 #include <stdint.h>
 #include <device/pci_def.h>

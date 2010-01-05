@@ -1,4 +1,5 @@
 #define ASSEMBLY 1
+#define __PRE_RAM__
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -45,11 +46,11 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x51, 0xff);
 #if 0
 	// This early setup switches IDE into compatibility mode before PCI gets 
-	// // a chance to assign I/Os
-	//         movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
-	//         //      movb    $0x09, %dl
-	//                 movb    $0x00, %dl
-	//                         PCI_WRITE_CONFIG_BYTE
+	// a chance to assign I/Os
+	//   movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
+	//   movb    $0x09, %dl
+	//   movb    $0x00, %dl
+	//   PCI_WRITE_CONFIG_BYTE
 	//
 #endif
 	/* we do this here as in V2, we can not yet do raw operations 

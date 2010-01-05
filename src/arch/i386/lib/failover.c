@@ -19,6 +19,7 @@
  */
 
 #define ASSEMBLY 1
+#define __PRE_RAM__
 
 #include <arch/io.h>
 #include "arch/romcc_io.h"

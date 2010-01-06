@@ -1,5 +1,3 @@
-dir /southbridge/nvidia/mcp55
-
 chip northbridge/amd/amdfam10/root_complex
         device apic_cluster 0 on
                 chip cpu/amd/socket_F_1207

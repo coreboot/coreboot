@@ -30,19 +30,12 @@ obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 
 initobj-y += crt0.o
 # FIXME in $(top)/Makefile
-crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
 crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
-crt0-y += ../../../../src/arch/i386/lib/id.inc
-crt0-y += ../../../../src/southbridge/nvidia/mcp55/romstrap.inc
 crt0-y += ../../../../src/cpu/amd/car/cache_as_ram.inc
 crt0-y += auto.inc
 
 ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds
-ldscript-y += ../../../../src/cpu/x86/16bit/reset16.lds
-ldscript-y += ../../../../src/arch/i386/lib/id.lds
-ldscript-y += ../../../../src/southbridge/nvidia/mcp55/romstrap.lds
+ldscript-y += ../../../../src/cpu/x86/32bit/entry32.lds
 ldscript-y += ../../../../src/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
@@ -55,19 +48,19 @@ $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
 
 $(obj)/ssdt2.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci2.asl
-	iasl -p $(CURDIR)/pci2 -tc $(CONFIG_MAINBOARD)/dx/pci2.asl
-	perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex
-	mv pci2.hex ssdt2.c
+	iasl -p $(obj)/pci2 -tc $(CONFIG_MAINBOARD)/dx/pci2.asl
+	perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' $(obj)/pci2.hex
+	mv $(obj)/pci2.hex $(obj)/ssdt2.c
 
 $(obj)/ssdt3.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci3.asl"
-	iasl -p $(CURDIR)/pci3 -tc $(CONFIG_MAINBOARD)/
-	perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex
-	mv pci3.hex ssdt3.c
+	iasl -p $(obj)/pci3 -tc $(CONFIG_MAINBOARD)/
+	perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' $(obj)/pci3.hex
+	mv $(obj)/pci3.hex $(obj)/ssdt3.c
 
 $(obj)/ssdt4.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci4.asl"
-	iasl -p $(CURDIR)/pci4 -tc $(CONFIG_MAINBOARD)/dx/pci4.asl
-	perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex
-	mv pci4.hex ssdt4.c
+	iasl -p $(obj)/pci4 -tc $(CONFIG_MAINBOARD)/dx/pci4.asl
+	perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' $(obj)/pci4.hex
+	mv $(obj)/pci4.hex $(obj)/ssdt4.c
 
 $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c $(obj)/option_table.h
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c -o $@

@@ -1,3 +1,8 @@
 config CPU_AMD_SC520
 	bool
 
+config UDELAY_IO
+	bool
+	default n
+	depends on CPU_AMD_SC520
+

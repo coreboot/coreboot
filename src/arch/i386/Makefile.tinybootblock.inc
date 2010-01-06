@@ -24,19 +24,14 @@ bootblock_lds := $(src)/arch/i386/init/ldscript_failover.lb
 bootblock_lds += $(src)/cpu/x86/16bit/entry16.lds
 bootblock_lds += $(src)/cpu/x86/16bit/reset16.lds
 bootblock_lds += $(src)/arch/i386/lib/id.lds
-ifeq ($(CONFIG_SOUTHBRIDGE_VIA_K8T890),y)
-bootblock_lds += $(src)/southbridge/via/k8t890/romstrap.lds
-endif
+bootblock_lds += $(chipset_bootblock_lds)
 
 bootblock_inc := $(src)/arch/i386/init/bootblock_prologue.c
 bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
 bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc
 bootblock_inc += $(src)/arch/i386/lib/id.inc
-
-ifeq ($(CONFIG_SOUTHBRIDGE_VIA_K8T890),y)
-bootblock_inc += $(src)/southbridge/via/k8t890/romstrap.inc
-endif
+bootblock_inc += $(chipset_bootblock_inc)
 
 ifeq ($(CONFIG_SSE),y)
 bootblock_inc += $(src)/cpu/x86/sse_enable.inc

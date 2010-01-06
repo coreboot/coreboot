@@ -4,6 +4,7 @@ config CPU_AMD_MODEL_10XXX
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
 	select SSE
+	select HAVE_INIT_TIMER
 
 config CPU_ADDR_BITS
 	int
@@ -25,3 +26,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	default 0x04000
 	depends on CPU_AMD_MODEL_10XXX
 
+config UDELAY_IO
+	bool
+	default n
+	depends on CPU_AMD_MODEL_10XXX

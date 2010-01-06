@@ -13,10 +13,10 @@ config BOARD_TYAN_S2912_FAM10
 	select HAVE_HARD_RESET
 	select IOAPIC
 	select LIFT_BSP_APIC_ID
-	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select BOARD_ROMSIZE_KB_1024
 	select ENABLE_APIC_EXT_ID
 	select AMDMCT
+	select TINY_BOOTBLOCK
 
 config MAINBOARD_DIR
 	string
@@ -25,22 +25,22 @@ config MAINBOARD_DIR
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xc8000
+	default 0xc4000
 	depends on BOARD_TYAN_S2912_FAM10
 	
 config DCACHE_RAM_SIZE
 	hex
-	default 0x08000
+	default 0x0c000
 	depends on BOARD_TYAN_S2912_FAM10
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex
-	default 0x01000
+	default 0x04000
 	depends on BOARD_TYAN_S2912_FAM10
 
 config APIC_ID_OFFSET
 	hex	
-	default 16
+	default 0
 	depends on BOARD_TYAN_S2912_FAM10
 
 config MEM_TRAIN_SEQ
@@ -95,12 +95,12 @@ config HW_MEM_HOLE_SIZEK
 
 config MAX_CPUS
 	int
-	default 2
+	default 8
 	depends on BOARD_TYAN_S2912_FAM10
 
 config MAX_PHYSICAL_CPUS
 	int
-	default 1
+	default 2
 	depends on BOARD_TYAN_S2912_FAM10
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
@@ -110,12 +110,12 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config HT_CHAIN_UNITID_BASE
 	hex
-	default 0x0
+	default 0x1
 	depends on BOARD_TYAN_S2912_FAM10
 
 config HT_CHAIN_END_UNITID_BASE
 	hex	
-	default 0x0
+	default 0x20
 	depends on BOARD_TYAN_S2912_FAM10
 
 config USE_INIT
@@ -148,3 +148,27 @@ config AMD_UCODE_PATCH_FILE
 	default "mc_patch_01000095.h"
 	depends on BOARD_TYAN_S2912_FAM10
 
+config SERIAL_CPU_INIT
+	bool
+	default n
+	depends on BOARD_TYAN_S2912_FAM10
+
+config ACPI_SSDTX_NUM
+	hex
+	default 0x1f
+	depends on BOARD_TYAN_S2912_FAM10
+
+config RAMBASE
+	hex
+	default 0x200000
+	depends on BOARD_TYAN_S2912_FAM10
+
+config RAMTOP
+	hex
+	default 0x1000000
+	depends on BOARD_TYAN_S2912_FAM10
+
+config HEAP_SIZE
+	hex
+	default 0xc0000
+	depends on BOARD_TYAN_S2912_FAM10

@@ -14,3 +14,6 @@ driver-y += mcp55_usb.o
 driver-$(CONFIG_GENERATE_ACPI_TABLES) += mcp55_fadt.o
 
 obj-y += mcp55_reset.o
+
+chipset_bootblock_inc += $(src)/southbridge/nvidia/mcp55/romstrap.inc
+chipset_bootblock_lds += $(src)/southbridge/nvidia/mcp55/romstrap.lds

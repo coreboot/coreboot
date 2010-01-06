@@ -116,7 +116,7 @@ void AMD_CB_EventNotify (u8 evtClass, u16 event, u8 *pEventData0)
  */
 BOOL AMD_CB_ManualBUIDSwapList (u8 node, u16 link, u8 **List)
 {
-	const u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
+	static const u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
 	/* If the BUID was adjusted in early_ht we need to do the manual override */
 	if ((CONFIG_HT_CHAIN_UNITID_BASE != 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE != 0)) {
 		printk_debug("AMD_CB_ManualBUIDSwapList()\n");

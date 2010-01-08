@@ -19,27 +19,27 @@
 ##
 
 initobj-y += crt0.o
-crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
+crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/entry16.inc
 crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
-crt0-y += ../../../../src/arch/i386/lib/cpu_reset.inc
-crt0-y += ../../../../src/arch/i386/lib/id.inc
+crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/reset16.inc
+crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/cpu_reset.inc
+crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/id.inc
 crt0-y += ../../../../src/cpu/x86/fpu_enable.inc
 
 crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/cpu_setup.inc
 crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/gx_setup.inc
 crt0-$(CONFIG_SSE) += ../../../../src/cpu/x86/sse_enable.inc
-crt0-y += failover.inc
+crt0-$(CONFIG_BIG_BOOTBLOCK) += failover.inc
 crt0-y += auto.inc
 crt0-$(CONFIG_SSE) += ../../../../src/cpu/x86/sse_disable.inc
 crt0-$(CONFIG_MMX) += ../../../../src/cpu/x86/mmx_disable.inc
 
 ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds
+ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/entry16.lds
 ldscript-y += ../../../../src/cpu/x86/32bit/entry32.lds
-ldscript-y += ../../../../src/cpu/x86/16bit/reset16.lds
-ldscript-y += ../../../../src/arch/i386/lib/id.lds
-ldscript-y += ../../../../src/arch/i386/lib/failover.lds
+ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/reset16.lds
+ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/id.lds
+ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/failover.lds
 
 driver-y += mainboard.o
 

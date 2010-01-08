@@ -44,6 +44,11 @@ config TINY_BOOTBLOCK
 	bool
 	default n
 
+config BIG_BOOTBLOCK
+	bool
+	default n if TINY_BOOTBLOCK
+	default y
+
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 

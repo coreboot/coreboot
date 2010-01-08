@@ -107,6 +107,7 @@ sed \
 	-e "/^CONFIG_VGA_BIOS / d" \
 	-e "/^CONFIG_WARNINGS_ARE_ERRORS / d" \
 	-e "/^CONFIG_TINY_BOOTBLOCK / d" \
+	-e "/^CONFIG_BIG_BOOTBLOCK / d" \
 	-e "/^CONFIG_BOOTBLOCK_NORTHBRIDGE_INIT / d" \
 	-e "/^CONFIG_BOOTBLOCK_SOUTHBRIDGE_INIT / d" \
 	$A/new > $A/new.filtered

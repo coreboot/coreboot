@@ -157,12 +157,3 @@ struct chip_operations cpu_emulation_qemu_x86_ops = {
 	CHIP_NAME("QEMU Northbridge")
 	.enable_dev = enable_dev,
 };
-
-void udelay(unsigned usecs)
-{
-	unsigned i;
-	for(i = 0; i < usecs; i++)
-		inb(0x80);
-}
-
-

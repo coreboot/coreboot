@@ -22,13 +22,3 @@ config IRQ_SLOT_COUNT
 	int
 	default 6
 	depends on BOARD_EMULATION_QEMU_X86
-
-config HAVE_INIT_TIMER
-	bool
-	default n
-	depends on BOARD_EMULATION_QEMU_X86
-
-config UDELAY_IO
-	bool
-	default n
-	depends on BOARD_EMULATION_QEMU_X86

@@ -34,8 +34,8 @@
 #include "common.h"
 #include "coreboot_tables.h"
 
-void set_layout_filename (const char filename[]);
-void get_layout_from_file (void);
-void write_cmos_layout (FILE *f);
+void set_layout_filename(const char filename[]);
+void get_layout_from_file(void);
+void write_cmos_layout(FILE * f);
 
-#endif  /* LAYOUT_FILE_H */
+#endif				/* LAYOUT_FILE_H */

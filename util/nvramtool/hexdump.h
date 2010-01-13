@@ -81,17 +81,16 @@ typedef int (*is_printable_fn_t) (unsigned char c);
  *                      printable.  A value of NULL will cause
  *                      default_is_printable_fn to be used.
  *--------------------------------------------------------------------------*/
-typedef struct
- { int bytes_per_line;
-   int addrprint_width;
-   const char *indent;
-   const char *sep1;
-   const char *sep2;
-   const char *sep3;
-   unsigned char nonprintable;
-   is_printable_fn_t is_printable_fn;
- }
-hexdump_format_t;
+typedef struct {
+	int bytes_per_line;
+	int addrprint_width;
+	const char *indent;
+	const char *sep1;
+	const char *sep2;
+	const char *sep3;
+	unsigned char nonprintable;
+	is_printable_fn_t is_printable_fn;
+} hexdump_format_t;
 
 /*--------------------------------------------------------------------------
  * hexdump
@@ -109,8 +108,8 @@ hexdump_format_t;
  *     format:          A structure specifying how the hex dump should be
  *                      formatted.
  *--------------------------------------------------------------------------*/
-void hexdump (const void *mem, int bytes, uint64_t addrprint_start,
-              FILE *outfile, const hexdump_format_t *format);
+void hexdump(const void *mem, int bytes, uint64_t addrprint_start,
+	     FILE * outfile, const hexdump_format_t * format);
 
 /*--------------------------------------------------------------------------
  * default_is_printable_fn
@@ -126,6 +125,6 @@ void hexdump (const void *mem, int bytes, uint64_t addrprint_start,
  * return value:
  *     Return 1 if the input character is printable.  Otherwise return 0.
  *--------------------------------------------------------------------------*/
-int default_is_printable_fn (unsigned char c);
+int default_is_printable_fn(unsigned char c);
 
-#endif  /* _HEXDUMP_H */
+#endif				/* _HEXDUMP_H */

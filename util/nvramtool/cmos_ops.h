@@ -41,12 +41,12 @@
 #define CMOS_OP_VALUE_TOO_WIDE (CMOS_OP_RESULT_START + 4)
 #define CMOS_OP_NO_MATCHING_ENUM (CMOS_OP_RESULT_START + 5)
 
-int prepare_cmos_read (const cmos_entry_t *e);
-int prepare_cmos_write (const cmos_entry_t *e, const char value_str[],
-                        unsigned long long *value);
-uint16_t cmos_checksum_read (void);
-void cmos_checksum_write (uint16_t checksum);
-uint16_t cmos_checksum_compute (void);
-void cmos_checksum_verify (void);
+int prepare_cmos_read(const cmos_entry_t * e);
+int prepare_cmos_write(const cmos_entry_t * e, const char value_str[],
+		       unsigned long long *value);
+uint16_t cmos_checksum_read(void);
+void cmos_checksum_write(uint16_t checksum);
+uint16_t cmos_checksum_compute(void);
+void cmos_checksum_verify(void);
 
-#endif  /* CMOS_OPS_H */
+#endif				/* CMOS_OPS_H */

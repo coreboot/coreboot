@@ -38,17 +38,17 @@
 #define CMOS_AREA_OVERLAPS_RTC (CMOS_RESULT_START + 1)
 #define CMOS_AREA_TOO_WIDE (CMOS_RESULT_START + 2)
 
-unsigned long long cmos_read (const cmos_entry_t *e);
-void cmos_write (const cmos_entry_t *e, unsigned long long value);
-unsigned char cmos_read_byte (unsigned index);
-void cmos_write_byte (unsigned index, unsigned char value);
-void cmos_read_all (unsigned char data[]);
-void cmos_write_all (unsigned char data[]);
-void set_iopl (int level);
-int verify_cmos_op (unsigned bit, unsigned length, cmos_entry_config_t config);
+unsigned long long cmos_read(const cmos_entry_t * e);
+void cmos_write(const cmos_entry_t * e, unsigned long long value);
+unsigned char cmos_read_byte(unsigned index);
+void cmos_write_byte(unsigned index, unsigned char value);
+void cmos_read_all(unsigned char data[]);
+void cmos_write_all(unsigned char data[]);
+void set_iopl(int level);
+int verify_cmos_op(unsigned bit, unsigned length, cmos_entry_config_t config);
 
-#define CMOS_SIZE 256  /* size of CMOS memory in bytes */
-#define CMOS_RTC_AREA_SIZE 14  /* first 14 bytes control real time clock */
+#define CMOS_SIZE 256		/* size of CMOS memory in bytes */
+#define CMOS_RTC_AREA_SIZE 14	/* first 14 bytes control real time clock */
 
 /****************************************************************************
  * verify_cmos_byte_index
@@ -56,7 +56,9 @@ int verify_cmos_op (unsigned bit, unsigned length, cmos_entry_config_t config);
  * Return 1 if 'index' does NOT specify a valid CMOS memory location.  Else
  * return 0.
  ****************************************************************************/
-static inline int verify_cmos_byte_index (unsigned index)
- { return (index < CMOS_RTC_AREA_SIZE) || (index >= CMOS_SIZE); }
+static inline int verify_cmos_byte_index(unsigned index)
+{
+	return (index < CMOS_RTC_AREA_SIZE) || (index >= CMOS_SIZE);
+}
 
-#endif  /* NVRAMTOOL_CMOS_LOWLEVEL_H */
+#endif				/* NVRAMTOOL_CMOS_LOWLEVEL_H */

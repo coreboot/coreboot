@@ -36,22 +36,21 @@
 #include "common.h"
 #include "cmos_lowlevel.h"
 
-typedef struct
- { unsigned byte_index;
-   unsigned bit_offset;
- }
-cmos_bit_op_location_t;
+typedef struct {
+	unsigned byte_index;
+	unsigned bit_offset;
+} cmos_bit_op_location_t;
 
-static unsigned cmos_bit_op_strategy (unsigned bit, unsigned bits_left,
-                                      cmos_bit_op_location_t *where);
-static unsigned char cmos_read_bits (const cmos_bit_op_location_t *where,
-                                     unsigned nr_bits);
-static void cmos_write_bits (const cmos_bit_op_location_t *where,
-                             unsigned nr_bits, unsigned char value);
-static unsigned char get_bits (unsigned long long value, unsigned bit,
-                               unsigned nr_bits);
-static void put_bits (unsigned char value, unsigned bit, unsigned nr_bits,
-                      unsigned long long *result);
+static unsigned cmos_bit_op_strategy(unsigned bit, unsigned bits_left,
+				     cmos_bit_op_location_t * where);
+static unsigned char cmos_read_bits(const cmos_bit_op_location_t * where,
+				    unsigned nr_bits);
+static void cmos_write_bits(const cmos_bit_op_location_t * where,
+			    unsigned nr_bits, unsigned char value);
+static unsigned char get_bits(unsigned long long value, unsigned bit,
+			      unsigned nr_bits);
+static void put_bits(unsigned char value, unsigned bit, unsigned nr_bits,
+		     unsigned long long *result);
 
 /****************************************************************************
  * get_bits
@@ -59,9 +58,11 @@ static void put_bits (unsigned char value, unsigned bit, unsigned nr_bits,
  * Extract a value 'nr_bits' bits wide starting at bit position 'bit' from
  * 'value' and return the result.  It is assumed that 'nr_bits' is at most 8.
  ****************************************************************************/
-static inline unsigned char get_bits (unsigned long long value, unsigned bit,
-                                      unsigned nr_bits)
- { return (value >> bit) & ((unsigned char) ((1 << nr_bits) - 1)); }
+static inline unsigned char get_bits(unsigned long long value, unsigned bit,
+				     unsigned nr_bits)
+{
+	return (value >> bit) & ((unsigned char)((1 << nr_bits) - 1));
+}
 
 /****************************************************************************
  * put_bits
@@ -71,9 +72,12 @@ static inline unsigned char get_bits (unsigned long long value, unsigned bit,
  * positions in 'result' where the result is stored are assumed to be
  * initially zero.
  ****************************************************************************/
-static inline void put_bits (unsigned char value, unsigned bit,
-                             unsigned nr_bits, unsigned long long *result)
- { *result += ((unsigned long long)(value & ((unsigned char) ((1 << nr_bits) - 1)))) << bit; }
+static inline void put_bits(unsigned char value, unsigned bit,
+			    unsigned nr_bits, unsigned long long *result)
+{
+	*result += ((unsigned long long)(value & 
+				((unsigned char)((1 << nr_bits) - 1)))) << bit;
+}
 
 /****************************************************************************
  * cmos_read
@@ -82,43 +86,48 @@ static inline void put_bits (unsigned char value, unsigned bit,
  * and return this value.  The I/O privilege level of the currently executing
  * process must be set appropriately.
  ****************************************************************************/
-unsigned long long cmos_read (const cmos_entry_t *e)
- { cmos_bit_op_location_t where;
-   unsigned bit = e->bit, length=e->length;
-   unsigned next_bit, bits_left, nr_bits;
-   unsigned long long result = 0;
-   unsigned char value;
+unsigned long long cmos_read(const cmos_entry_t * e)
+{
+	cmos_bit_op_location_t where;
+	unsigned bit = e->bit, length = e->length;
+	unsigned next_bit, bits_left, nr_bits;
+	unsigned long long result = 0;
+	unsigned char value;
 
-   assert(!verify_cmos_op(bit, length, e->config));
-   result = 0;
+	assert(!verify_cmos_op(bit, length, e->config));
+	result = 0;
 
-   if (e->config == CMOS_ENTRY_STRING)
-    { char *newstring = calloc(1, (length+7)/8);
-      unsigned usize = (8 * sizeof(unsigned long long));
+	if (e->config == CMOS_ENTRY_STRING) {
+		char *newstring = calloc(1, (length + 7) / 8);
+		unsigned usize = (8 * sizeof(unsigned long long));
 
-      if(!newstring) { out_of_memory(); }
+		if (!newstring) {
+			out_of_memory();
+		}
 
-      for (next_bit = 0, bits_left = length;
-           bits_left;
-           next_bit += nr_bits, bits_left -= nr_bits)
-       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left>usize?usize:bits_left, &where);
-         value = cmos_read_bits(&where, nr_bits);
-         put_bits(value, next_bit % usize, nr_bits, &((unsigned long long *)newstring)[next_bit/usize]);
-	 result = (unsigned long)newstring;
-       }
-    }
-   else
-    { for (next_bit = 0, bits_left = length;
-           bits_left;
-           next_bit += nr_bits, bits_left -= nr_bits)
-       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left, &where);
-         value = cmos_read_bits(&where, nr_bits);
-         put_bits(value, next_bit, nr_bits, &result);
-       }
-    }
+		for (next_bit = 0, bits_left = length;
+		     bits_left; next_bit += nr_bits, bits_left -= nr_bits) {
+			nr_bits = cmos_bit_op_strategy(bit + next_bit,
+				   bits_left > usize ? usize : bits_left, &where);
+			value = cmos_read_bits(&where, nr_bits);
+			put_bits(value, next_bit % usize, nr_bits,
+				 &((unsigned long long *)newstring)[next_bit /
+								    usize]);
+			result = (unsigned long)newstring;
+		}
+	} else {
+		for (next_bit = 0, bits_left = length;
+		     bits_left; next_bit += nr_bits, bits_left -= nr_bits) {
+			nr_bits =
+			    cmos_bit_op_strategy(bit + next_bit, bits_left,
+						 &where);
+			value = cmos_read_bits(&where, nr_bits);
+			put_bits(value, next_bit, nr_bits, &result);
+		}
+	}
 
-   return result;
- }
+	return result;
+}
 
 /****************************************************************************
  * cmos_write
@@ -127,34 +136,38 @@ unsigned long long cmos_read (const cmos_entry_t *e)
  * The I/O privilege level of the currently executing process must be set
  * appropriately.
  ****************************************************************************/
-void cmos_write (const cmos_entry_t *e, unsigned long long value)
- { cmos_bit_op_location_t where;
-   unsigned bit = e->bit, length=e->length;
-   unsigned next_bit, bits_left, nr_bits;
+void cmos_write(const cmos_entry_t * e, unsigned long long value)
+{
+	cmos_bit_op_location_t where;
+	unsigned bit = e->bit, length = e->length;
+	unsigned next_bit, bits_left, nr_bits;
 
-   assert(!verify_cmos_op(bit, length, e->config));
+	assert(!verify_cmos_op(bit, length, e->config));
 
-   if (e->config == CMOS_ENTRY_STRING) 
-    { unsigned long long *data = (unsigned long long *)(unsigned long)value;
-      unsigned usize = (8 * sizeof(unsigned long long));
+	if (e->config == CMOS_ENTRY_STRING) {
+		unsigned long long *data =
+		    (unsigned long long *)(unsigned long)value;
+		unsigned usize = (8 * sizeof(unsigned long long));
 
-      for (next_bit = 0, bits_left = length;
-           bits_left;
-           next_bit += nr_bits, bits_left -= nr_bits)
-       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left>usize?usize:bits_left, &where);
-         value = data[next_bit/usize];
-         cmos_write_bits(&where, nr_bits, get_bits(value, next_bit % usize, nr_bits));
-       }
-    }
-   else
-    { for (next_bit = 0, bits_left = length;
-           bits_left;
-           next_bit += nr_bits, bits_left -= nr_bits)
-       { nr_bits = cmos_bit_op_strategy(bit + next_bit, bits_left, &where);
-         cmos_write_bits(&where, nr_bits, get_bits(value, next_bit, nr_bits));
-       }
-    }
- }
+		for (next_bit = 0, bits_left = length;
+		     bits_left; next_bit += nr_bits, bits_left -= nr_bits) {
+			nr_bits = cmos_bit_op_strategy(bit + next_bit,
+					bits_left > usize ? usize : bits_left,
+					&where);
+			value = data[next_bit / usize];
+			cmos_write_bits(&where, nr_bits,
+				get_bits(value, next_bit % usize, nr_bits));
+		}
+	} else {
+		for (next_bit = 0, bits_left = length;
+		     bits_left; next_bit += nr_bits, bits_left -= nr_bits) {
+			nr_bits = cmos_bit_op_strategy(bit + next_bit, 
+					bits_left, &where);
+			cmos_write_bits(&where, nr_bits,
+					get_bits(value, next_bit, nr_bits));
+		}
+	}
+}
 
 /****************************************************************************
  * cmos_read_byte
@@ -166,23 +179,23 @@ void cmos_write (const cmos_entry_t *e, unsigned long long value)
  * Note: the first 14 bytes of nonvolatile RAM provide an interface to the
  *       real time clock.
  ****************************************************************************/
-unsigned char cmos_read_byte (unsigned index)
- { unsigned short port_0, port_1;
+unsigned char cmos_read_byte(unsigned index)
+{
+	unsigned short port_0, port_1;
 
-   assert(!verify_cmos_byte_index(index));
+	assert(!verify_cmos_byte_index(index));
 
-   if (index < 128)
-    { port_0 = 0x70;
-      port_1 = 0x71;
-    }
-   else
-    { port_0 = 0x72;
-      port_1 = 0x73;
-    }
+	if (index < 128) {
+		port_0 = 0x70;
+		port_1 = 0x71;
+	} else {
+		port_0 = 0x72;
+		port_1 = 0x73;
+	}
 
-   OUTB(index, port_0);
-   return INB(port_1);
- }
+	OUTB(index, port_0);
+	return INB(port_1);
+}
 
 /****************************************************************************
  * cmos_write_byte
@@ -194,23 +207,23 @@ unsigned char cmos_read_byte (unsigned index)
  *       real time clock.  Writing to any of these bytes will therefore
  *       affect its functioning.
  ****************************************************************************/
-void cmos_write_byte (unsigned index, unsigned char value)
- { unsigned short port_0, port_1;
+void cmos_write_byte(unsigned index, unsigned char value)
+{
+	unsigned short port_0, port_1;
 
-   assert(!verify_cmos_byte_index(index));
+	assert(!verify_cmos_byte_index(index));
 
-   if (index < 128)
-    { port_0 = 0x70;
-      port_1 = 0x71;
-    }
-   else
-    { port_0 = 0x72;
-      port_1 = 0x73;
-    }
+	if (index < 128) {
+		port_0 = 0x70;
+		port_1 = 0x71;
+	} else {
+		port_0 = 0x72;
+		port_1 = 0x73;
+	}
 
-   OUTB(index, port_0);
-   OUTB(value, port_1);
- }
+	OUTB(index, port_0);
+	OUTB(value, port_1);
+}
 
 /****************************************************************************
  * cmos_read_all
@@ -218,15 +231,16 @@ void cmos_write_byte (unsigned index, unsigned char value)
  * Read all contents of CMOS memory into array 'data'.  The first 14 bytes of
  * 'data' are set to zero since this corresponds to the real time clock area.
  ****************************************************************************/
-void cmos_read_all (unsigned char data[])
- { unsigned i;
+void cmos_read_all(unsigned char data[])
+{
+	unsigned i;
 
-   for (i = 0; i < CMOS_RTC_AREA_SIZE; i++)
-      data[i] = 0;
+	for (i = 0; i < CMOS_RTC_AREA_SIZE; i++)
+		data[i] = 0;
 
-   for (; i < CMOS_SIZE; i++)
-      data[i] = cmos_read_byte(i);
- }
+	for (; i < CMOS_SIZE; i++)
+		data[i] = cmos_read_byte(i);
+}
 
 /****************************************************************************
  * cmos_write_all
@@ -235,12 +249,13 @@ void cmos_read_all (unsigned char data[])
  * bytes of 'data' are ignored since this corresponds to the real time clock
  * area.
  ****************************************************************************/
-void cmos_write_all (unsigned char data[])
- { unsigned i;
+void cmos_write_all(unsigned char data[])
+{
+	unsigned i;
 
-   for (i = CMOS_RTC_AREA_SIZE; i < CMOS_SIZE; i++)
-      cmos_write_byte(i, data[i]);
- }
+	for (i = CMOS_RTC_AREA_SIZE; i < CMOS_SIZE; i++)
+		cmos_write_byte(i, data[i]);
+}
 
 /****************************************************************************
  * set_iopl
@@ -251,45 +266,37 @@ void cmos_write_all (unsigned char data[])
  * interrupts while executing in user space.  Messing with the I/O privilege
  * level is therefore somewhat dangerous.
  ****************************************************************************/
-void set_iopl (int level)
- {
+void set_iopl(int level)
+{
 #if defined(__FreeBSD__)
-   static int io_fd = -1;
+	static int io_fd = -1;
 #endif
 
-   assert((level >= 0) && (level <= 3));
+	assert((level >= 0) && (level <= 3));
 
 #if defined(__FreeBSD__)
-   if (level == 0)
-    {
-      if (io_fd != -1)
-       {
-         close(io_fd);
-         io_fd = -1;
-       }
-    }
-   else
-    {
-      if (io_fd == -1)
-       {
-         io_fd = open("/dev/io", O_RDWR);
-         if (io_fd < 0)
-          {
-            perror("/dev/io");
-            exit(1);
-          }
-       }
-    }
+	if (level == 0) {
+		if (io_fd != -1) {
+			close(io_fd);
+			io_fd = -1;
+		}
+	} else {
+		if (io_fd == -1) {
+			io_fd = open("/dev/io", O_RDWR);
+			if (io_fd < 0) {
+				perror("/dev/io");
+				exit(1);
+			}
+		}
+	}
 #else
-   if (iopl(level))
-    { fprintf(stderr,
-              "%s: iopl() system call failed.  You must be root to do "
-              "this.\n",
-              prog_name);
-      exit(1);
-    }
+	if (iopl(level)) {
+		fprintf(stderr, "%s: iopl() system call failed.  "
+			"You must be root to do this.\n", prog_name);
+		exit(1);
+	}
 #endif
- }
+}
 
 /****************************************************************************
  * verify_cmos_op
@@ -300,21 +307,22 @@ void set_iopl (int level)
  * wish to read or write.  Perform sanity checking on 'bit' and 'length'.  If
  * no problems were encountered, return OK.  Else return an error code.
  ****************************************************************************/
-int verify_cmos_op (unsigned bit, unsigned length, cmos_entry_config_t config)
- { if ((bit >= (8 * CMOS_SIZE)) || ((bit + length) > (8 * CMOS_SIZE)))
-      return CMOS_AREA_OUT_OF_RANGE;
+int verify_cmos_op(unsigned bit, unsigned length, cmos_entry_config_t config)
+{
+	if ((bit >= (8 * CMOS_SIZE)) || ((bit + length) > (8 * CMOS_SIZE)))
+		return CMOS_AREA_OUT_OF_RANGE;
 
-   if (bit < (8 * CMOS_RTC_AREA_SIZE))
-      return CMOS_AREA_OVERLAPS_RTC;
+	if (bit < (8 * CMOS_RTC_AREA_SIZE))
+		return CMOS_AREA_OVERLAPS_RTC;
 
-   if (config == CMOS_ENTRY_STRING)
-      return OK;
+	if (config == CMOS_ENTRY_STRING)
+		return OK;
 
-   if (length > (8 * sizeof(unsigned long long)))
-      return CMOS_AREA_TOO_WIDE;
+	if (length > (8 * sizeof(unsigned long long)))
+		return CMOS_AREA_TOO_WIDE;
 
-   return OK;
- }
+	return OK;
+}
 
 /****************************************************************************
  * cmos_bit_op_strategy
@@ -322,15 +330,16 @@ int verify_cmos_op (unsigned bit, unsigned length, cmos_entry_config_t config)
  * Helper function used by cmos_read() and cmos_write() to determine which
  * bits to read or write next.
  ****************************************************************************/
-static unsigned cmos_bit_op_strategy (unsigned bit, unsigned bits_left,
-                                      cmos_bit_op_location_t *where)
- { unsigned max_bits;
+static unsigned cmos_bit_op_strategy(unsigned bit, unsigned bits_left,
+				     cmos_bit_op_location_t * where)
+{
+	unsigned max_bits;
 
-   where->byte_index = bit >> 3;
-   where->bit_offset = bit & 0x07;
-   max_bits = 8 - where->bit_offset;
-   return (bits_left > max_bits) ? max_bits : bits_left;
- }
+	where->byte_index = bit >> 3;
+	where->bit_offset = bit & 0x07;
+	max_bits = 8 - where->bit_offset;
+	return (bits_left > max_bits) ? max_bits : bits_left;
+}
 
 /****************************************************************************
  * cmos_read_bits
@@ -338,11 +347,12 @@ static unsigned cmos_bit_op_strategy (unsigned bit, unsigned bits_left,
  * Read a chunk of bits from a byte location within CMOS memory.  Return the
  * value represented by the chunk of bits.
  ****************************************************************************/
-static unsigned char cmos_read_bits (const cmos_bit_op_location_t *where,
-                                     unsigned nr_bits)
- { return (cmos_read_byte(where->byte_index) >> where->bit_offset) &
-          ((unsigned char) ((1 << nr_bits) - 1));
- }
+static unsigned char cmos_read_bits(const cmos_bit_op_location_t * where,
+				    unsigned nr_bits)
+{
+	return (cmos_read_byte(where->byte_index) >> where->bit_offset) &
+	    ((unsigned char)((1 << nr_bits) - 1));
+}
 
 /****************************************************************************
  * cmos_write_bits
@@ -350,17 +360,18 @@ static unsigned char cmos_read_bits (const cmos_bit_op_location_t *where,
  * Write a chunk of bits (the low order 'nr_bits' bits of 'value') to an area
  * within a particular byte of CMOS memory.
  ****************************************************************************/
-static void cmos_write_bits (const cmos_bit_op_location_t *where,
-                             unsigned nr_bits, unsigned char value)
- { unsigned char n, mask;
+static void cmos_write_bits(const cmos_bit_op_location_t * where,
+			    unsigned nr_bits, unsigned char value)
+{
+	unsigned char n, mask;
 
-   if (nr_bits == 8)
-    { cmos_write_byte(where->byte_index, value);
-      return;
-    }
+	if (nr_bits == 8) {
+		cmos_write_byte(where->byte_index, value);
+		return;
+	}
 
-   n = cmos_read_byte(where->byte_index);
-   mask = ((unsigned char) ((1 << nr_bits) - 1)) << where->bit_offset;
-   n = (n & ~mask) + ((value << where->bit_offset) & mask);
-   cmos_write_byte(where->byte_index, n);
- }
+	n = cmos_read_byte(where->byte_index);
+	mask = ((unsigned char)((1 << nr_bits) - 1)) << where->bit_offset;
+	n = (n & ~mask) + ((value << where->bit_offset) & mask);
+	cmos_write_byte(where->byte_index, n);
+}

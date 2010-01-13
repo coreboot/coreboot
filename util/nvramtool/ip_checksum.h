@@ -13,4 +13,4 @@
 
 unsigned long compute_ip_checksum(void *addr, unsigned long length);
 
-#endif /* IP_CHECKSUM_H */
+#endif				/* IP_CHECKSUM_H */

@@ -32,26 +32,27 @@
 #include "cmos_ops.h"
 #include "cmos_lowlevel.h"
 
-static int prepare_cmos_op_common (const cmos_entry_t *e);
+static int prepare_cmos_op_common(const cmos_entry_t * e);
 
 /****************************************************************************
  * prepare_cmos_op_common
  *
  * Perform a few checks common to both reads and writes.
  ****************************************************************************/
-static int prepare_cmos_op_common (const cmos_entry_t *e)
- { int result;
+static int prepare_cmos_op_common(const cmos_entry_t * e)
+{
+	int result;
 
-   if (e->config == CMOS_ENTRY_RESERVED)
-      /* Access to reserved parameters is not permitted. */
-      return CMOS_OP_RESERVED;
+	if (e->config == CMOS_ENTRY_RESERVED)
+		/* Access to reserved parameters is not permitted. */
+		return CMOS_OP_RESERVED;
 
-   if ((result = verify_cmos_op(e->bit, e->length, e->config)) != OK)
-      return result;
+	if ((result = verify_cmos_op(e->bit, e->length, e->config)) != OK)
+		return result;
 
-   assert(e->length > 0);
-   return OK;
- }
+	assert(e->length > 0);
+	return OK;
+}
 
 /****************************************************************************
  * prepare_cmos_read
@@ -60,24 +61,25 @@ static int prepare_cmos_op_common (const cmos_entry_t *e)
  * sanity checking on 'e'.  If a problem was found with e, return an error
  * code.  Else return OK.
  ****************************************************************************/
-int prepare_cmos_read (const cmos_entry_t *e)
- { int result;
+int prepare_cmos_read(const cmos_entry_t * e)
+{
+	int result;
 
-   if ((result = prepare_cmos_op_common(e)) != OK)
-      return result;
+	if ((result = prepare_cmos_op_common(e)) != OK)
+		return result;
 
-   switch (e->config)
-    { case CMOS_ENTRY_ENUM:
-      case CMOS_ENTRY_HEX:
-      case CMOS_ENTRY_STRING:
-         break;
+	switch (e->config) {
+	case CMOS_ENTRY_ENUM:
+	case CMOS_ENTRY_HEX:
+	case CMOS_ENTRY_STRING:
+		break;
 
-      default:
-         BUG();
-    }
+	default:
+		BUG();
+	}
 
-   return OK;
- }
+	return OK;
+}
 
 /****************************************************************************
  * prepare_cmos_write
@@ -87,79 +89,78 @@ int prepare_cmos_read (const cmos_entry_t *e)
  * checking on 'value_str'.  On error, return an error code.  Else store the
  * numeric equivalent of 'value_str' in '*value' and return OK.
  ****************************************************************************/
-int prepare_cmos_write (const cmos_entry_t *e, const char value_str[],
-                        unsigned long long *value)
- { const cmos_enum_t *q;
-   unsigned long long out;
-   const char *p;
-   char *memory;
-   int negative, result, found_one;
+int prepare_cmos_write(const cmos_entry_t * e, const char value_str[],
+		       unsigned long long *value)
+{
+	const cmos_enum_t *q;
+	unsigned long long out;
+	const char *p;
+	char *memory;
+	int negative, result, found_one;
 
-   if ((result = prepare_cmos_op_common(e)) != OK)
-      return result;
+	if ((result = prepare_cmos_op_common(e)) != OK)
+		return result;
 
-   switch (e->config)
-    { case CMOS_ENTRY_ENUM:
-         /* Make sure the user's input corresponds to a valid option. */
-         for (q = first_cmos_enum_id(e->config_id), found_one = 0;
-              q != NULL;
-              q = next_cmos_enum_id(q))
-          { found_one = 1;
+	switch (e->config) {
+	case CMOS_ENTRY_ENUM:
+		/* Make sure the user's input corresponds to a valid option. */
+		for (q = first_cmos_enum_id(e->config_id), found_one = 0;
+		     q != NULL; q = next_cmos_enum_id(q)) {
+			found_one = 1;
 
-            if (!strncmp(q->text, value_str, CMOS_MAX_TEXT_LENGTH))
-               break;
-          }
+			if (!strncmp(q->text, value_str, CMOS_MAX_TEXT_LENGTH))
+				break;
+		}
 
-         if (!found_one)
-            return CMOS_OP_NO_MATCHING_ENUM;
+		if (!found_one)
+			return CMOS_OP_NO_MATCHING_ENUM;
 
-         if (q == NULL)
-            return CMOS_OP_BAD_ENUM_VALUE;
+		if (q == NULL)
+			return CMOS_OP_BAD_ENUM_VALUE;
 
-         out = q->value;
-         break;
+		out = q->value;
+		break;
 
-      case CMOS_ENTRY_HEX:
-         /* See if the first character of 'value_str' (excluding any initial
-          * whitespace) is a minus sign.
-          */
-         for (p = value_str; isspace(*p); p++);
-         negative = (*p == '-');
+	case CMOS_ENTRY_HEX:
+		/* See if the first character of 'value_str' (excluding 
+		 * any initial whitespace) is a minus sign.
+		 */
+		for (p = value_str; isspace(*p); p++) ;
+		negative = (*p == '-');
 
-         out = strtoull(value_str, (char **) &p, 0);
+		out = strtoull(value_str, (char **)&p, 0);
 
-         if (*p)
-            return CMOS_OP_INVALID_INT;
+		if (*p)
+			return CMOS_OP_INVALID_INT;
 
-         /* If we get this far, the user specified a valid integer.  However
-          * we do not currently support the use of negative numbers as CMOS
-          * parameter values.
-          */
-         if (negative)
-            return CMOS_OP_NEGATIVE_INT;
+		/* If we get this far, the user specified a valid integer.
+		 * However we do not currently support the use of negative
+		 * numbers as CMOS parameter values.
+		 */
+		if (negative)
+			return CMOS_OP_NEGATIVE_INT;
 
-         break;
+		break;
 
-      case CMOS_ENTRY_STRING:
-	 if (e->length < (8 * strlen(value_str)))
-	    return CMOS_OP_VALUE_TOO_WIDE;
-	 memory = malloc(e->length / 8);
-         memset(memory, 0, e->length / 8);
-         strcpy(memory, value_str);
-         out = (unsigned long)memory;
-	 break;
+	case CMOS_ENTRY_STRING:
+		if (e->length < (8 * strlen(value_str)))
+			return CMOS_OP_VALUE_TOO_WIDE;
+		memory = malloc(e->length / 8);
+		memset(memory, 0, e->length / 8);
+		strcpy(memory, value_str);
+		out = (unsigned long)memory;
+		break;
 
-      default:
-         BUG();
-    }
+	default:
+		BUG();
+	}
 
-   if ((e->length < (8 * sizeof(*value))) &&
-       (out >= (1ull << e->length)))
-      return CMOS_OP_VALUE_TOO_WIDE;
+	if ((e->length < (8 * sizeof(*value))) && (out >= (1ull << e->length)))
+		return CMOS_OP_VALUE_TOO_WIDE;
 
-   *value = out;
-   return OK;
- }
+	*value = out;
+	return OK;
+}
 
 /****************************************************************************
  * cmos_checksum_read
@@ -167,14 +168,15 @@ int prepare_cmos_write (const cmos_entry_t *e, const char value_str[],
  * Read the checksum for the coreboot parameters stored in CMOS and return
  * this value.
  ****************************************************************************/
-uint16_t cmos_checksum_read (void)
- { uint16_t lo, hi;
+uint16_t cmos_checksum_read(void)
+{
+	uint16_t lo, hi;
 
-   /* The checksum is stored in a big-endian format. */
-   hi = cmos_read_byte(cmos_checksum_index);
-   lo = cmos_read_byte(cmos_checksum_index + 1);
-   return (hi << 8) + lo;
- }
+	/* The checksum is stored in a big-endian format. */
+	hi = cmos_read_byte(cmos_checksum_index);
+	lo = cmos_read_byte(cmos_checksum_index + 1);
+	return (hi << 8) + lo;
+}
 
 /****************************************************************************
  * cmos_checksum_write
@@ -182,15 +184,16 @@ uint16_t cmos_checksum_read (void)
  * Set the checksum for the coreboot parameters stored in CMOS to
  * 'checksum'.
  ****************************************************************************/
-void cmos_checksum_write (uint16_t checksum)
- { unsigned char lo, hi;
+void cmos_checksum_write(uint16_t checksum)
+{
+	unsigned char lo, hi;
 
-   /* The checksum is stored in a big-endian format. */
-   hi = (unsigned char) (checksum >> 8);
-   lo = (unsigned char) (checksum & 0x00ff);
-   cmos_write_byte(cmos_checksum_index, hi);
-   cmos_write_byte(cmos_checksum_index + 1, lo);
- }
+	/* The checksum is stored in a big-endian format. */
+	hi = (unsigned char)(checksum >> 8);
+	lo = (unsigned char)(checksum & 0x00ff);
+	cmos_write_byte(cmos_checksum_index, hi);
+	cmos_write_byte(cmos_checksum_index + 1, lo);
+}
 
 /****************************************************************************
  * cmos_checksum_compute
@@ -198,16 +201,17 @@ void cmos_checksum_write (uint16_t checksum)
  * Compute a checksum for the coreboot parameter values currently stored in
  * CMOS and return this checksum.
  ****************************************************************************/
-uint16_t cmos_checksum_compute (void)
- { unsigned i, sum;
+uint16_t cmos_checksum_compute(void)
+{
+	unsigned i, sum;
 
-   sum = 0;
+	sum = 0;
 
-   for (i = cmos_checksum_start; i <= cmos_checksum_end; i++)
-      sum += cmos_read_byte(i);
+	for (i = cmos_checksum_start; i <= cmos_checksum_end; i++)
+		sum += cmos_read_byte(i);
 
-   return ~((uint16_t) (sum & 0xffff));
- }
+	return ~((uint16_t) (sum & 0xffff));
+}
 
 /****************************************************************************
  * cmos_checksum_verify
@@ -215,17 +219,18 @@ uint16_t cmos_checksum_compute (void)
  * Verify that the coreboot CMOS checksum is valid.  If checksum is not
  * valid then print warning message and exit.
  ****************************************************************************/
-void cmos_checksum_verify (void)
- { uint16_t computed, actual;
+void cmos_checksum_verify(void)
+{
+	uint16_t computed, actual;
 
-   set_iopl(3);
-   computed = cmos_checksum_compute();
-   actual = cmos_checksum_read();
-   set_iopl(0);
+	set_iopl(3);
+	computed = cmos_checksum_compute();
+	actual = cmos_checksum_read();
+	set_iopl(0);
 
-   if (computed != actual)
-    { fprintf(stderr, "%s: Warning: Coreboot CMOS checksum is bad.\n",
-              prog_name);
-      exit(1);
-    }
- }
+	if (computed != actual) {
+		fprintf(stderr, "%s: Warning: Coreboot CMOS checksum is bad.\n",
+			prog_name);
+		exit(1);
+	}
+}

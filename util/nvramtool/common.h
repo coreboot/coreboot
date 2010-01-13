@@ -77,7 +77,7 @@
 #define CMOS_RESULT_START 0x30000
 #define CMOS_OP_RESULT_START 0x40000
 
-#define OK 0  /* 0 is used universally to indicate success. */
+#define OK 0			/* 0 is used universally to indicate success. */
 
 #define LINE_EOF (COMMON_RESULT_START + 0)
 #define LINE_TOO_LONG (COMMON_RESULT_START + 1)
@@ -88,8 +88,8 @@ extern const char prog_name[];
 /* version of this program */
 extern const char prog_version[];
 
-int get_line_from_file (FILE *f, char line[], int line_buf_size);
-void out_of_memory (void);
-void usage (FILE *outfile);
+int get_line_from_file(FILE * f, char line[], int line_buf_size);
+void out_of_memory(void);
+void usage(FILE * outfile);
 
-#endif  /* COMMON_H */
+#endif				/* COMMON_H */

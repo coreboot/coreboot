@@ -198,6 +198,10 @@ extern int freebsd_rdmsr(uint8_t cpu, uint32_t addr, struct msr *val);
 
 /** target externs **/
 
+/* geodegx2.c */
+extern int geodegx2_probe(const struct targetdef *t);
+extern const struct msrdef geodegx2_msrs[];
+
 /* geodelx.c */
 extern int geodelx_probe(const struct targetdef *t);
 extern const struct msrdef geodelx_msrs[];

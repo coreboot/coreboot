@@ -192,7 +192,9 @@ unsigned long acpi_fill_srat(unsigned long current)
 	return current;
 }
 
+#if CONFIG_HAVE_SMI_HANDLER
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
+#endif
 
 #define ALIGN_CURRENT current = ((current + 0x0f) & -0x10)
 unsigned long write_acpi_tables(unsigned long start)
@@ -311,8 +313,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += 0x100;
 	ALIGN_CURRENT;
 
+#if CONFIG_HAVE_SMI_HANDLER
 	/* And tell SMI about it */
 	smm_setup_structures((void *)current, NULL, NULL);
+#endif
 
 	/* We patched up the DSDT, so we need to recalculate the checksum */
 	dsdt->checksum = 0;

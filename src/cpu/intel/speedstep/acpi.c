@@ -29,7 +29,7 @@
 
 // XXX: PSS table values for power consumption are for Merom only
 
-int determine_total_number_of_cores(void)
+static int determine_total_number_of_cores(void)
 {
 	device_t cpu;
 	int count = 0;
@@ -46,7 +46,7 @@ int determine_total_number_of_cores(void)
 	return count;
 }
 
-int get_fsb(void)
+static int get_fsb(void)
 {
 	u32 fsbcode=(rdmsr(0xcd).lo >> 4) & 7;
 	switch (fsbcode) {

@@ -180,13 +180,13 @@ done:
 }
 
 int do_diff(const char *difffn) {
-	char tmpfn[20], line[512];
-	size_t start, len;
-	int ret = 1, found, tmp;
+	char tmpfn[20], line[512], *m1start;
+	size_t len;
+	int ret = 1, tmp, m1pos;
 	FILE *fin = NULL, *fout = stdout;
 	uint8_t rev = 0;
 	uint32_t addr, linenum;
-	struct msr mf = MSR1(0), mhw = MSR1(0);
+	struct msr m1 = MSR1(0), m2 = MSR1(0);
 
 	if (':' == difffn[0]) {
 		rev = 1;
@@ -202,20 +202,19 @@ int do_diff(const char *difffn) {
 	if (!sys->open(cpu, SYS_RDONLY))
 		goto done;
 	for (linenum = 1; NULL != fgets(line, sizeof(line), fin); ++linenum) {
-		start = (0 == strncmp("0x", line, 2)) ? 2 : 0;
-		found = sscanf(line + start, "%8x %n%*x", &addr, &tmp);
-		if (found < 1)
+		tmp = strncmp("0x", line, 2) ? 0 : 2;
+		if (sscanf(line + tmp, "%8x %n%*x", &addr, &m1pos) < 1)
 			continue;
-		start += tmp;
-		for (len = strlen(line) - 1; NULL != strchr("\r\n", line[len]); --len)
-			line[len] = 0;
-		if (!str2msr(line + start, &mf)) {
-			fprintf(stderr, "%s:%d: invalid MSR value '%s'\n", difffn, linenum, line + start);
+		m1start = line + tmp + m1pos;
+		for (len = strlen(m1start) - 1; NULL != strchr("\r\n", m1start[len]); --len)
+			m1start[len] = 0;
+		if (!str2msr(m1start, &m1)) {
+			fprintf(stderr, "%s:%d: invalid MSR value '%s'\n", difffn, linenum, m1start);
 			continue;
 		}
-		if (!sys->rdmsr(cpu, addr, &mhw))
+		if (!sys->rdmsr(cpu, addr, &m2))
 			goto done;
-		if (diff_msr(fout, addr, rev ? mhw : mf, rev ? mf : mhw))
+		if (diff_msr(fout, addr, rev ? m2 : m1, rev ? m1 : m2))
 			fprintf(fout, "\n");
 	}
 	if (!feof(fin))

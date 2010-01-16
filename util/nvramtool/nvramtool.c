@@ -672,6 +672,7 @@ static int list_cmos_entry(const cmos_entry_t * e, int show_name)
 {
 	const cmos_enum_t *p;
 	unsigned long long value;
+	char *w;
 
 	/* sanity check CMOS entry */
 	switch (prepare_cmos_read(e)) {
@@ -741,11 +742,26 @@ static int list_cmos_entry(const cmos_entry_t * e, int show_name)
 		break;
 
 	case CMOS_ENTRY_STRING:
-		if (show_name)
-			printf("%s = %s\n", e->name,
-			       (char *)(unsigned long)value);
-		else
-			printf("%s\n", (char *)(unsigned long)value);
+		w = (char *)(unsigned long)value;
+		while (*w) {
+			if(!isprint(*w)) {
+				if (show_name)
+					printf("# Bad value -> %s\n", e->name);
+				else
+					printf("Bad value\n");
+				break;
+			}
+			w++;
+		}
+
+		if (!*w) {
+
+			if (show_name)
+				printf("%s = %s\n", e->name,
+				       (char *)(unsigned long)value);
+			else
+				printf("%s\n", (char *)(unsigned long)value);
+		}
 
 		free((void *)(unsigned long)value);
 

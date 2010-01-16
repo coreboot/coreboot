@@ -87,10 +87,10 @@ cpu_reset_x:
 	}
 
 	__asm__ volatile (
-                /* set new esp */ /* before _RAMBASE */
-                "subl   %0, %%ebp\n\t"
-                "subl   %0, %%esp\n\t"
-                ::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- CONFIG_RAMBASE )
+                /* set new esp */
+                "movl   %0, %%ebp\n\t"
+                "movl   %0, %%esp\n\t"
+                ::"a"( CONFIG_RAMBASE + (1024-64)*1024 )
 	);
 
 	{

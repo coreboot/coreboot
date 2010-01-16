@@ -20,13 +20,12 @@
 
 #include "i82801gx.h"
 
-#define RTC_FAILED    (1 <<2)
-#define GEN_PMCON_3     0xa4
+#define RTC_FAILED	(1 << 2)
+#define GEN_PMCON_3	0xa4
 
 static void check_cmos_failed(void)
 {
-	u8 byte;
-	byte = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+	u8 byte = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
 	if (byte & RTC_FAILED) {
 		// clear bit 1 and bit 2
 		byte = cmos_read(RTC_BOOT_BYTE);

@@ -29,6 +29,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include "i3100.h"
 
 #define ACPI_BAR 0x40
@@ -48,60 +49,6 @@
 #ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
-
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-
-static void setup_ioapic(device_t dev)
-{
-	int i;
-	u32 value_low, value_high;
-	u32 ioapic_base = 0xfec00000;
-	volatile u32 *l;
-	u32 interrupts;
-	struct resource *res;
-
-	/* Enable IO APIC */
-	res = find_resource(dev, RCBA);
-	if (!res) {
-		return;
-	}
-	*((u8 *)(res->base + 0x31ff)) |= (1 << 0);
-
-	l = (u32 *) ioapic_base;
-
-	l[0] = 0x01;
-	interrupts = (l[04] >> 16) & 0xff;
-	for (i = 0; i < interrupts; i++) {
-		l[0] = (i * 2) + 0x10;
-		l[4] = DISABLED;
-		value_low = l[4];
-		l[0] = (i * 2) + 0x11;
-		l[4] = NONE; /* Should this be an address? */
-		value_high = l[4];
-		if (value_low == 0xffffffff) {
-			printk_warning("%d IO APIC not responding.\n",
-				dev_path(dev));
-			return;
-		}
-	}
-
-	/* Put the APIC in virtual wire mode */
-	l[0] = 0x12;
-	l[4] = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
-}
 
 static void i3100_enable_serial_irqs(device_t dev)
 {
@@ -363,7 +310,19 @@ static void i3100_gpio_init(device_t dev)
 
 static void lpc_init(struct device *dev)
 {
-	setup_ioapic(dev);
+	struct resource *res;
+
+	/* Enable IO APIC */
+	res = find_resource(dev, RCBA);
+	if (!res) {
+		return;
+	}
+	*((u8 *)(res->base + 0x31ff)) |= (1 << 0);
+
+	// TODO this code sets int 0 of the IOAPIC in Virtual Wire Mode
+	// (register 0x10/0x11) while the old code used int 1 (register 0x12)
+	// ... Why? 
+	setup_ioapic(IO_APIC_ADDR, 0); // Don't rename IOAPIC ID
 
 	/* Decode 0xffc00000 - 0xffffffff to fwh idsel 0 */
 	pci_write_config32(dev, 0xd0, 0x00000000);

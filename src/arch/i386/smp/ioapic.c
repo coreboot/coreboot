@@ -1,85 +1,135 @@
-#include <console/console.h>
-#include <arch/ioapic.h>
-
-/* we have to do more than we thought. I assumed Linux would do all the
- * interesting parts, and I was wrong. 
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2010 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
-struct ioapicreg {
-	unsigned int reg;
-	unsigned int value_low, value_high;
-};
-struct ioapicreg ioapicregvalues[] = {
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-	/* mask, trigger, polarity, destination, delivery, vector */
-	{0x00, DISABLED, NONE},
-	{0x01, DISABLED, NONE},
-	{0x02, DISABLED, NONE},
-	{0x03, DISABLED, NONE},
-	{0x04, DISABLED, NONE},
-	{0x05, DISABLED, NONE},
-	{0x06, DISABLED, NONE},
-	{0x07, DISABLED, NONE},
-	{0x08, DISABLED, NONE},
-	{0x09, DISABLED, NONE},
-	{0x0a, DISABLED, NONE},
-	{0x0b, DISABLED, NONE},
-	{0x0c, DISABLED, NONE},
-	{0x0d, DISABLED, NONE},
-	{0x0e, DISABLED, NONE},
-	{0x0f, DISABLED, NONE},
-	{0x10, DISABLED, NONE},
-	{0x11, DISABLED, NONE},
-	{0x12, DISABLED, NONE},
-	{0x13, DISABLED, NONE},
-	{0x14, DISABLED, NONE},
-	{0x14, DISABLED, NONE},
-	{0x15, DISABLED, NONE},
-	{0x16, DISABLED, NONE},
-	{0x17, DISABLED, NONE},
-};
 
-void setup_ioapic(void)
+#include <arch/io.h>
+#include <arch/ioapic.h>
+#include <console/console.h>
+#include <cpu/x86/lapic.h>
+
+static u32 io_apic_read(u32 ioapic_base, u32 reg)
 {
-	int i;
-	unsigned long value_low, value_high;
-	unsigned long ioapicaddr = 0xfec00000;
-	volatile unsigned long *l;
-	struct ioapicreg *a = ioapicregvalues;
+	write32(ioapic_base, reg);
+	return read32(ioapic_base + 0x10);
+}
 
-	l = (unsigned long *) ioapicaddr;
-#if defined(i786)
-	/* For the pentium 4 and above apic deliver their interrupts
+static void io_apic_write(u32 ioapic_base, u32 reg, u32 value)
+{
+	write32(ioapic_base, reg);
+	write32(ioapic_base + 0x10, value);
+}
+
+
+void clear_ioapic(u32 ioapic_base)
+{
+	u32 low, high;
+	u32 i, ioapic_interrupts;
+
+	printk_debug("IOAPIC: Clearing IOAPIC at 0x%08x\n", ioapic_base); 
+
+	/* Read the available number of interrupts */
+	ioapic_interrupts = (io_apic_read(ioapic_base, 1) >> 16) & 0xff;
+	if (!ioapic_interrupts || ioapic_interrupts == 0xff)
+		ioapic_interrupts = 24;
+	printk_debug("IOAPIC: %d interrupts\n", ioapic_interrupts); 
+
+	low = DISABLED;
+	high = NONE;
+
+	for (i = 0; i < ioapic_interrupts; i++) {
+		io_apic_write(ioapic_base, i * 2 + 0x10, low);
+		io_apic_write(ioapic_base, i * 2 + 0x11, high);
+
+		printk_spew("IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", i, high, low);
+	}
+
+	if (io_apic_read(ioapic_base, 0x10) == 0xffffffff) {
+		printk_warning("IO APIC not responding.\n");
+		return;
+	}
+}
+
+void setup_ioapic(u32 ioapic_base, u8 ioapic_id)
+{
+	u32 bsp_lapicid = lapicid();
+	u32 low, high;
+	u32 i, ioapic_interrupts;
+
+	printk_debug("IOAPIC: Initializing IOAPIC at 0x%08x\n", ioapic_base); 
+	printk_debug("IOAPIC: Bootstrap Processor Local APIC = %02x\n",
+			bsp_lapicid);
+
+	if (ioapic_id) {
+		printk_debug("IOAPIC: ID = 0x%02x\n", ioapic_id); 
+		/* Set IOAPIC ID if it has been specified */
+		io_apic_write(ioapic_base, 0x00, 
+			(io_apic_read(ioapic_base, 0x00) & 0xfff0ffff) | 
+				(ioapic_id << 24));
+	}
+
+	/* Read the available number of interrupts */
+	ioapic_interrupts = (io_apic_read(ioapic_base, 1) >> 16) & 0xff;
+	if (!ioapic_interrupts || ioapic_interrupts == 0xff)
+		ioapic_interrupts = 24;
+	printk_debug("IOAPIC: %d interrupts\n", ioapic_interrupts); 
+
+
+// XXX this decision should probably be made elsewhere, and
+// it's the C3, not the EPIA this depends on.
+#if defined(CONFIG_EPIA_VT8237R_INIT) && CONFIG_EPIA_VT8237R_INIT
+#define IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
+#else
+#define IOAPIC_INTERRUPTS_ON_FSB
+#endif
+
+#ifdef IOAPIC_INTERRUPTS_ON_FSB
+	/* For the Pentium 4 and above APICs deliver their interrupts
 	 * on the front side bus, enable that.
 	 */
-	l[0] = 0x03;
-	l[4] = 1;
-#endif /* i786 */
-	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
-	     i++, a++) {
-		l[0] = (a->reg * 2) + 0x10;
-		l[4] = a->value_low;
-		value_low = l[4];
-		l[0] = (a->reg *2) + 0x11;
-		l[4] = a->value_high;
-		value_high = l[4];
-		if ((i==0) && (value_low == 0xffffffff)) {
-			printk_warning("IO APIC not responding.\n");
-			return;
-		}
-		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
-			a->reg, a->value_low, a->value_high);
+	printk_debug("IOAPIC: Enabling interrupts on FSB\n"); 
+	io_apic_write(ioapic_base, 0x03, io_apic_read(ioapic_base, 0x03) | (1 << 0));
+#endif
+#ifdef IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
+	printk_debug("IOAPIC: Enabling interrupts on APIC serial bus\n"); 
+	io_apic_write(ioapic_base, 0x03, 0);
+#endif
+
+	/* Enable Virtual Wire Mode */
+	low = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
+	high = bsp_lapicid << (56 - 32);
+
+	io_apic_write(ioapic_base, 0x10, low);
+	io_apic_write(ioapic_base, 0x11, high);
+
+	if (io_apic_read(ioapic_base, 0x10) == 0xffffffff) {
+		printk_warning("IO APIC not responding.\n");
+		return;
+	}
+
+	printk_spew("IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", 0, high, low);
+
+	low = DISABLED;
+	high = NONE;
+
+	for (i = 1; i < ioapic_interrupts; i++) {
+		io_apic_write(ioapic_base, i * 2 + 0x10, low);
+		io_apic_write(ioapic_base, i * 2 + 0x11, high);
+
+		printk_spew("IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n", i, high, low);
 	}
 }

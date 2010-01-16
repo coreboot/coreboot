@@ -9,6 +9,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include "esb6300.h"
 
 #define ACPI_BAR 0x40
@@ -21,52 +22,6 @@
 #ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
-
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-
-static void setup_ioapic(device_t dev)
-{
-	int i;
-	unsigned long value_low, value_high;
-	unsigned long ioapic_base = 0xfec00000;
-	volatile unsigned long *l;
-	unsigned interrupts;
-
-	l = (unsigned long *) ioapic_base;
-
-	l[0] = 0x01;
-	interrupts = (l[04] >> 16) & 0xff;
-	for (i = 0; i < interrupts; i++) {
-		l[0] = (i * 2) + 0x10;
-		l[4] = DISABLED;
-		value_low = l[4];
-		l[0] = (i * 2) + 0x11;
-		l[4] = NONE; /* Should this be an address? */
-		value_high = l[4];
-		if (value_low == 0xffffffff) {
-			printk_warning("%d IO APIC not responding.\n",
-				dev_path(dev));
-			return;
-		}
-	}
-
-	/* Put the ioapic in virtual wire mode */
-	l[0] = 0 + 0x10;
-	l[4] = ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT;
-}
 
 #define SERIRQ_CNTL 0x64
 static void esb6300_enable_serial_irqs(device_t dev)
@@ -287,7 +242,7 @@ static void lpc_init(struct device *dev)
 	value |= (1 << 8)|(1<<7);
 	value |= (6 << 0)|(1<<13)|(1<<11);
 	pci_write_config32(dev, 0xd0, value);
-	setup_ioapic(dev);
+	setup_ioapic(0xfec00000, 0); // don't rename IO APIC ID
 
 	/* disable reset timer */
 	pci_write_config8(dev, 0xd4, 0x02);

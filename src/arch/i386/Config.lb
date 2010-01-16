@@ -70,6 +70,4 @@ end
 
 dir lib
 dir boot
-if CONFIG_SMP
-	dir smp
-end
+dir smp

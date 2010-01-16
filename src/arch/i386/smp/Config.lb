@@ -1,8 +1,10 @@
 uses CONFIG_GENERATE_MP_TABLE
+uses CONFIG_IOAPIC
 
 if CONFIG_GENERATE_MP_TABLE
   object mpspec.o 
 end
-#object ioapic.o CONFIG_IOAPIC
-
+if CONFIG_IOAPIC
+  object ioapic.o
+end
 

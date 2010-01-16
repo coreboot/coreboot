@@ -6,49 +6,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <arch/ioapic.h>
 #include "esb6300.h"
-
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-
-static void setup_ioapic(device_t dev)
-{
-	int i;
-	unsigned long value_low, value_high;
-	unsigned long ioapic_base = 0xfec10000;
-	volatile unsigned long *l;
-	unsigned interrupts;
-
-	l = (unsigned long *) ioapic_base;
-
-	l[0] = 0x01;
-	interrupts = (l[04] >> 16) & 0xff;
-	for (i = 0; i < interrupts; i++) {
-		l[0] = (i * 2) + 0x10;
-		l[4] = DISABLED;
-		value_low = l[4];
-		l[0] = (i * 2) + 0x11;
-		l[4] = NONE; /* Should this be an address? */
-		value_high = l[4];
-		if (value_low == 0xffffffff) {
-			printk_warning("%s IO APIC not responding.\n", 
-				dev_path(dev));
-			return;
-		}
-	}
-}
 
 static void pic_init(struct device *dev)
 {
@@ -64,7 +23,7 @@ static void pic_init(struct device *dev)
 	pci_write_config8(dev, 0x3c, 0xff);
 
 	/* Setup the ioapic */
-	setup_ioapic(dev);
+	clear_ioapic(0xfec10000);
 }
 
 static void pic_read_resources(device_t dev)

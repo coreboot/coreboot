@@ -8,6 +8,7 @@
 #include <device/pci_ops.h>
 #include <device/pcix.h>
 #include <pc80/mc146818rtc.h>
+#include <arch/ioapic.h>
 #include <delay.h>
 #include "pxhd.h"
 
@@ -159,63 +160,17 @@ static const struct pci_driver pcix_driver2 __pci_driver = {
         .device = 0x032a,
 };
 
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-	/* IO-APIC virtual wire mode configuration */
-	/* mask, trigger, polarity, destination, delivery, vector */
-
-static void setup_ioapic(device_t dev)
-{
-	int i;
-	unsigned long value_low, value_high;
-	unsigned long ioapic_base;
-	volatile unsigned long *l;
-	unsigned interrupts;
-
-	ioapic_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	l = (unsigned long *) ioapic_base;
-
-	/* Enable front side bus delivery */
-	l[0] = 0x03;
-	l[4] = 1;
-
-	l[0] = 0x01;
-	interrupts = (l[04] >> 16) & 0xff;
-	for (i = 0; i < interrupts; i++) {
-		l[0] = (i * 2) + 0x10;
-		l[4] = DISABLED;
-		value_low = l[4];
-		l[0] = (i * 2) + 0x11;
-		l[4] = NONE; /* Should this be an address? */
-		value_high = l[4];
-		if (value_low == 0xffffffff) {
-			printk_warning("IO APIC not responding.\n");
-			return;
-		}
-	}
-}
-
 static void ioapic_init(device_t dev)
 {
-	uint32_t value;
+	uint32_t value, ioapic_base;
 	/* Enable bus mastering so IOAPICs work */
 	value = pci_read_config16(dev, PCI_COMMAND);
 	value |= PCI_COMMAND_MASTER;
 	pci_write_config16(dev, PCI_COMMAND, value);
 
-	setup_ioapic(dev);
+	ioapic_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+
+	setup_ioapic(ioapic_base, 0); // Don't rename IOAPIC ID
 }
 
 static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)

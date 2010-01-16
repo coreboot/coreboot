@@ -26,27 +26,13 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
+#include <arch/ioapic.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/keyboard.h>
 #include <pc80/i8259.h>
 #include <stdlib.h>
 #include "vt8237r.h"
 #include "chip.h"
-
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
 
 extern void dump_south(device_t dev);
 static void southbridge_init_common(struct device *dev);
@@ -74,85 +60,6 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 	return Irqs;
 }
 #endif
-
-static struct ioapicreg {
-	u32 reg;
-	u32 value_low;
-	u32 value_high;
-} ioapic_table[] = {
-	/* IO-APIC virtual wire mode configuration. */
-	/* mask, trigger, polarity, destination, delivery, vector */
-	{0, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST |
-		    ExtINT, NONE},
-	{1,  DISABLED, NONE},
-	{2,  DISABLED, NONE},
-	{3,  DISABLED, NONE},
-	{4,  DISABLED, NONE},
-	{5,  DISABLED, NONE},
-	{6,  DISABLED, NONE},
-	{7,  DISABLED, NONE},
-	{8,  DISABLED, NONE},
-	{9,  DISABLED, NONE},
-	{10, DISABLED, NONE},
-	{11, DISABLED, NONE},
-	{12, DISABLED, NONE},
-	{13, DISABLED, NONE},
-	{14, DISABLED, NONE},
-	{15, DISABLED, NONE},
-	{16, DISABLED, NONE},
-	{17, DISABLED, NONE},
-	{18, DISABLED, NONE},
-	{19, DISABLED, NONE},
-	{20, DISABLED, NONE},
-	{21, DISABLED, NONE},
-	{22, DISABLED, NONE},
-	{23, DISABLED, NONE},
-};
-
-static void setup_ioapic(u32 ioapic_base)
-{
-	u32 value_low, value_high, val;
-	volatile u32 *l;
-	int i;
-
-	/* All delivered to CPU0. */
-	ioapic_table[0].value_high = (lapicid()) << (56 - 32);
-	l = (u32 *)ioapic_base;
-
-#if CONFIG_EPIA_VT8237R_INIT
-	/* Set APIC to APIC Serial bus. */
-	l[0] = 0x3;
-	l[4] = 0;
-#else
-	/* Set APIC to FSB message bus. */
-	l[0] = 0x3;
-	val = l[4];
-	l[4] = (val & 0xFFFFFE) | 1;
-#endif
-
-	/* Set APIC ADDR - this will be VT8237R_APIC_ID. */
-	l[0] = 0;
-	val = l[4];
-	l[4] = (val & 0xF0FFFF) | (VT8237R_APIC_ID << 24);
-
-	for (i = 0; i < ARRAY_SIZE(ioapic_table); i++) {
-		l[0] = (ioapic_table[i].reg * 2) + 0x10;
-		l[4] = ioapic_table[i].value_low;
-		value_low = l[4];
-		l[0] = (ioapic_table[i].reg * 2) + 0x11;
-		l[4] = ioapic_table[i].value_high;
-		if (i == 0) {
-			l[0] = (ioapic_table[i].reg * 2) + 0x10;
-			value_low = l[4];
-			if (value_low == 0xffffffff)
-			{
-				printk_warning("IO APIC not responding.\n");
-				return;
-			}
-		}
-	}
-}
-
 
 /** Set up PCI IRQ routing, route everything through APIC. */
 static void pci_routing_fixup(struct device *dev)
@@ -622,7 +529,7 @@ static void southbridge_init_common(struct device *dev)
 {
 	vt8237_common_init(dev);
 	pci_routing_fixup(dev);
-	setup_ioapic(VT8237R_APIC_BASE);
+	setup_ioapic(VT8237R_APIC_BASE, VT8237R_APIC_ID);
 	setup_i8259();
 	init_keyboard(dev);
 }

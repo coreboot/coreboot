@@ -181,7 +181,7 @@ default CONFIG_LB_CKS_LOC=123
 ## Build code for SMP support
 ## Only worry about 2 micro processors
 ##
-default CONFIG_SMP=0
+default CONFIG_SMP=1
 default CONFIG_MAX_CPUS=2
 default CONFIG_MAX_PHYSICAL_CPUS=1
 default CONFIG_LOGICAL_CPUS=1

@@ -425,8 +425,6 @@ do {                                                    \
 	gsi_base+=4;					\
 } while(0);
 
-#define IO_APIC_ADDR	0xfec00000UL
-
 #else // CONFIG_GENERATE_ACPI_TABLES
 
 #define write_acpi_tables(start) (start)

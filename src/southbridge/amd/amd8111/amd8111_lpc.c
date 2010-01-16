@@ -10,90 +10,11 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <cpu/x86/lapic.h>
+#include <arch/ioapic.h>
 #include <stdlib.h>
 #include "amd8111.h"
 
 #define NMI_OFF 0
-
-struct ioapicreg {
-	unsigned int reg;
-	unsigned int value_low, value_high;
-};
-
-static struct ioapicreg ioapicregvalues[] = {
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-	/* IO-APIC virtual wire mode configuration */
-	/* mask, trigger, polarity, destination, delivery, vector */
-	{   0, ENABLED | TRIGGER_EDGE | POLARITY_HIGH | PHYSICAL_DEST | ExtINT, NONE},
-	{   1, DISABLED, NONE},
-	{   2, DISABLED, NONE},
-	{   3, DISABLED, NONE},
-	{   4, DISABLED, NONE},
-	{   5, DISABLED, NONE},
-	{   6, DISABLED, NONE},
-	{   7, DISABLED, NONE},
-	{   8, DISABLED, NONE},
-	{   9, DISABLED, NONE},
-	{  10, DISABLED, NONE},
-	{  11, DISABLED, NONE},
-	{  12, DISABLED, NONE},
-	{  13, DISABLED, NONE},
-	{  14, DISABLED, NONE},
-	{  15, DISABLED, NONE},
-	{  16, DISABLED, NONE},
-	{  17, DISABLED, NONE},
-	{  18, DISABLED, NONE},
-	{  19, DISABLED, NONE},
-	{  20, DISABLED, NONE},
-	{  21, DISABLED, NONE},
-	{  22, DISABLED, NONE},
-	{  23, DISABLED, NONE},
-	/* Be careful and don't write past the end... */
-};
-
-static void setup_ioapic(void)
-{
-	int i;
-	unsigned long value_low, value_high;
-	unsigned long ioapic_base = 0xfec00000;
-	volatile unsigned long *l;
-	struct ioapicreg *a = ioapicregvalues;
-	unsigned long bsp_apicid = lapicid();
-
-	l = (unsigned long *) ioapic_base;
-
-	ioapicregvalues[0].value_high = bsp_apicid<<(56-32);
-	printk_debug("amd8111: ioapic bsp_apicid = %02lx\n", bsp_apicid);
-	
-	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
-	     i++, a++) {
-		l[0] = (a->reg * 2) + 0x10;
-		l[4] = a->value_low;
-		value_low = l[4];
-		l[0] = (a->reg *2) + 0x11;
-		l[4] = a->value_high;
-		value_high = l[4];
-		if ((i==0) && (value_low == 0xffffffff)) {
-			printk_warning("IO APIC not responding.\n");
-			return;
-		}
-		printk_spew("for IRQ, reg 0x%08x value 0x%08x 0x%08x\n", 
-			    a->reg, a->value_low, a->value_high);
-	}
-}
 
 static void enable_hpet(struct device *dev)
 {
@@ -114,7 +35,8 @@ static void lpc_init(struct device *dev)
 	byte = pci_read_config8(dev, 0x4B);
 	byte |= 1;
 	pci_write_config8(dev, 0x4B, byte);
-	setup_ioapic();
+	/* Don't rename IO APIC */
+	setup_ioapic(IO_APIC_ADDR, 0);
 
 	/* posted memory write enable */
 	byte = pci_read_config8(dev, 0x46);

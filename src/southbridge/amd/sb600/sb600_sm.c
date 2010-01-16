@@ -27,6 +27,7 @@
 #include <bitops.h>
 #include <arch/io.h>
 #include <cpu/x86/lapic.h>
+#include <arch/ioapic.h>
 #include <stdlib.h>
 #include "sb600.h"
 #include "sb600_smbus.c"
@@ -39,83 +40,6 @@
 #ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
 #endif
-
-struct ioapicreg {
-	u32 reg;
-	u32 value_low, value_high;
-};
-
-static struct ioapicreg ioapicregvalues[] = {
-#define ALL		(0xff << 24)
-#define NONE		(0)
-#define DISABLED	(1 << 16)
-#define ENABLED		(0 << 16)
-#define TRIGGER_EDGE	(0 << 15)
-#define TRIGGER_LEVEL	(1 << 15)
-#define POLARITY_HIGH	(0 << 13)
-#define POLARITY_LOW	(1 << 13)
-#define PHYSICAL_DEST	(0 << 11)
-#define LOGICAL_DEST	(1 << 11)
-#define ExtINT		(7 << 8)
-#define NMI		(4 << 8)
-#define SMI		(2 << 8)
-#define INT		(1 << 8)
-	/* IO-APIC virtual wire mode configuration */
-	/* mask, trigger, polarity, destination, delivery, vector */
-	{0, DISABLED, NONE},
-	{1, DISABLED, NONE},
-	{2, DISABLED, NONE},
-	{3, DISABLED, NONE},
-	{4, DISABLED, NONE},
-	{5, DISABLED, NONE},
-	{6, DISABLED, NONE},
-	{7, DISABLED, NONE},
-	{8, DISABLED, NONE},
-	{9, DISABLED, NONE},
-	{10, DISABLED, NONE},
-	{11, DISABLED, NONE},
-	{12, DISABLED, NONE},
-	{13, DISABLED, NONE},
-	{14, DISABLED, NONE},
-	{15, DISABLED, NONE},
-	{16, DISABLED, NONE},
-	{17, DISABLED, NONE},
-	{18, DISABLED, NONE},
-	{19, DISABLED, NONE},
-	{20, DISABLED, NONE},
-	{21, DISABLED, NONE},
-	{22, DISABLED, NONE},
-	{23, DISABLED, NONE},
-	/* Be careful and don't write past the end... */
-};
-
-static void setup_ioapic(u32 ioapic_base)
-{
-	int i;
-	u32 value_low, value_high;
-	volatile u32 *l;
-	struct ioapicreg *a = ioapicregvalues;
-
-	ioapicregvalues[0].value_high = lapicid() << (56 - 32);
-
-	printk_debug("lapicid = %016x\n", ioapicregvalues[0].value_high);
-
-	l = (u32 *)ioapic_base;
-
-	for (i = 0; i < ARRAY_SIZE(ioapicregvalues);
-	     i++, a++) {
-		l[0] = (a->reg * 2) + 0x10;
-		l[4] = a->value_low;
-		value_low = l[4];
-		l[0] = (a->reg * 2) + 0x11;
-		l[4] = a->value_high;
-		value_high = l[4];
-		if ((i == 0) && (value_low == 0xffffffff)) {
-			printk_warning("IO APIC not responding.\n");
-			return;
-		}
-	}
-}
 
 /*
 * SB600 enables all USB controllers by default in SMBUS Control.
@@ -133,7 +57,8 @@ static void sm_init(device_t dev)
 	printk_info("sm_init().\n");
 
 	ioapic_base = pci_read_config32(dev, 0x74) & (0xffffffe0);	/* some like mem resource, but does not have  enable bit */
-	setup_ioapic(ioapic_base);
+	/* Don't rename APIC ID */
+	setup_ioapic(ioapic_base, 0);
 
 	dword = pci_read_config8(dev, 0x62);
 	dword |= 1 << 2;

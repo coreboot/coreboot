@@ -22,6 +22,19 @@
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 #define __PRE_RAM__
 
+/* Configuration of the i945 driver */
+#define CHIPSET_I945GM 1
+/* Usually system firmware turns off system memory clock signals to 
+ * unused SO-DIMM slots to reduce EMI and power consumption.
+ * However, the Kontron 986LCD-M does not like unused clock signals to
+ * be disabled. If other similar mainboard occur, it would make sense
+ * to make this an entry in the sysinfo structure, and pre-initialize that
+ * structure in the mainboard's auto.c main() function. For now a
+ * #define will do.
+ */
+#define OVERRIDE_CLOCK_DISABLE 1
+#define CHANNEL_XOR_RANDOMIZATION 1
+
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
@@ -47,7 +60,6 @@
 
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801gx/i82801gx_early_smbus.c"
-#include "reset.c"
 #include "superio/winbond/w83627thg/w83627thg_early_serial.c"
 
 #include "northbridge/intel/i945/udelay.c"
@@ -78,22 +90,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-/* Usually system firmware turns off system memory clock signals to 
- * unused SO-DIMM slots to reduce EMI and power consumption.
- * However, the Kontron 986LCD-M does not like unused clock signals to
- * be disabled. If other similar mainboard occur, it would make sense
- * to make this an entry in the sysinfo structure, and pre-initialize that
- * structure in the mainboard's auto.c main() function. For now a
- * #define will do.
- */
-#define OVERRIDE_CLOCK_DISABLE 1
-
-#define CHANNEL_XOR_RANDOMIZATION 1
 #include "northbridge/intel/i945/raminit.h"
 #include "northbridge/intel/i945/raminit.c"
 #include "northbridge/intel/i945/reset_test.c"
 #include "northbridge/intel/i945/errata.c"
-#include "debug.c"
+#include "northbridge/intel/i945/debug.c"
 
 static void ich7_enable_lpc(void)
 {

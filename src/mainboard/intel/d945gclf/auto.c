@@ -20,6 +20,10 @@
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 #define __PRE_RAM__
 
+/* Configuration of the i945 driver */
+#define CHIPSET_I945GC 1
+#define CHANNEL_XOR_RANDOMIZATION 1
+
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
@@ -45,7 +49,6 @@
 
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801gx/i82801gx_early_smbus.c"
-#include "reset.c"
 #include "superio/smsc/lpc47m15x/lpc47m15x_early_serial.c"
 
 #include "northbridge/intel/i945/udelay.c"
@@ -77,12 +80,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#define CHANNEL_XOR_RANDOMIZATION 1
 #include "northbridge/intel/i945/raminit.h"
 #include "northbridge/intel/i945/raminit.c"
 #include "northbridge/intel/i945/reset_test.c"
 #include "northbridge/intel/i945/errata.c"
-#include "debug.c"
+#include "northbridge/intel/i945/debug.c"
 
 static void ich7_enable_lpc(void)
 {

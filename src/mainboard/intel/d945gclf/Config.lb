@@ -60,8 +60,6 @@ if CONFIG_GENERATE_ACPI_TABLES
 	object ./dsdt.o
 end
 
-object reset.o
-
 if CONFIG_USE_INIT
 
 makerule ./auto.o

@@ -18,6 +18,7 @@
  */
 
 #include <stdarg.h>
+#include <console/console.h>
 #include <console/vtxprintf.h>
 #include <console/loglevel.h>
 #include <uart8250.h>
@@ -31,9 +32,6 @@ int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #else
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
 #endif
-
-void console_tx_byte(unsigned char byte);
-int do_printk(int msg_level, const char *fmt, ...);
 
 void console_tx_byte(unsigned char byte)
 {

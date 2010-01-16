@@ -136,6 +136,14 @@ static inline void insl(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
+/* XXX XXX XXX This is a story from the evil API from hell XXX XXX XXX
+ * We have different functions for memory access in pre-ram stage and ram
+ * stage. Those in pre-ram stage are called write32 and expect the address
+ * first and the address as a pointer type. Those in ram stage are called
+ * writel and expect the datum first and the address as an integer type.
+ * Until all code is checked and fixed, I'll add both versions here now.
+ */
+
 static inline void writeb(uint8_t b, volatile void *addr)
 {
 	*(volatile uint8_t *) addr = b;
@@ -165,6 +173,38 @@ static inline uint32_t readl(const volatile void *addr)
 {
 	return *(volatile uint32_t *) addr;
 }
+
+#if !defined(__PRE_RAM__)
+static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)
+{
+	return *((volatile uint8_t *)(addr));
+}
+
+static inline __attribute__((always_inline)) uint16_t read16(unsigned long addr)
+{
+	return *((volatile uint16_t *)(addr));
+}
+
+static inline __attribute__((always_inline)) uint32_t read32(unsigned long addr)
+{
+	return *((volatile uint32_t *)(addr));
+}
+
+static inline __attribute__((always_inline)) void write8(unsigned long addr, uint8_t value)
+{
+	*((volatile uint8_t *)(addr)) = value;
+}
+
+static inline __attribute__((always_inline)) void write16(unsigned long addr, uint16_t value)
+{
+	*((volatile uint16_t *)(addr)) = value;
+}
+
+static inline __attribute__((always_inline)) void write32(unsigned long addr, uint32_t value)
+{
+	*((volatile uint32_t *)(addr)) = value;
+}
+#endif
 
 #endif
 

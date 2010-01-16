@@ -234,10 +234,10 @@ void *smp_write_config_table(void *v)
 	/* PCIe Port B
 	 */
 	for(i = 0; i < 4; i++) {
-	  pin = (readl(rcba + RCBA_D28IP) >> (i * 4)) & 0x0F;
+	  pin = (read32(rcba + RCBA_D28IP) >> (i * 4)) & 0x0F;
 	  if(pin > 0) {
 	    pin -= 1;
-	    route = PIRQ_A + ((readw(rcba + RCBA_D28IR) >> (pin * 4)) & 0x07);
+	    route = PIRQ_A + ((read16(rcba + RCBA_D28IR) >> (pin * 4)) & 0x07);
 	    smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(28, pin), IO_APIC0, route);
 	  }
 	}
@@ -245,20 +245,20 @@ void *smp_write_config_table(void *v)
 	/* USB 1.1 : device 29, function 0, 1
 	 */
 	for(i = 0; i < 2; i++) {
-	  pin = (readl(rcba + RCBA_D29IP) >> (i * 4)) & 0x0F;
+	  pin = (read32(rcba + RCBA_D29IP) >> (i * 4)) & 0x0F;
 	  if(pin > 0) {
 	    pin -= 1;
-	    route = PIRQ_A + ((readw(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
+	    route = PIRQ_A + ((read16(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
 	    smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(29, pin), IO_APIC0, route);
 	  }
 	}
 
 	/* USB 2.0 : device 29, function 7
 	*/
-	pin = (readl(rcba + RCBA_D29IP) >> (7 * 4)) & 0x0F;
+	pin = (read32(rcba + RCBA_D29IP) >> (7 * 4)) & 0x0F;
 	if(pin > 0) {
 	  pin -= 1;
-	  route = PIRQ_A + ((readw(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
+	  route = PIRQ_A + ((read16(rcba + RCBA_D29IR) >> (pin * 4)) & 0x07);
 	  smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(29, pin), IO_APIC0, route);
 	}
 
@@ -267,10 +267,10 @@ void *smp_write_config_table(void *v)
 	   Performance counters : device 31 function 4
 	 */
 	for(i = 2; i < 5; i++) {
-	  pin = (readl(rcba + RCBA_D31IP) >> (i * 4)) & 0x0F;
+	  pin = (read32(rcba + RCBA_D31IP) >> (i * 4)) & 0x0F;
 	  if(pin > 0) {
 	    pin -= 1;
-	    route = PIRQ_A + ((readw(rcba + RCBA_D31IR) >> (pin * 4)) & 0x07);
+	    route = PIRQ_A + ((read16(rcba + RCBA_D31IR) >> (pin * 4)) & 0x07);
 	    smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_chipset, PCI_IRQ(31, pin), IO_APIC0, route);
 	  }
 	}

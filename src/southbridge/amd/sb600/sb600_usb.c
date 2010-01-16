@@ -98,16 +98,16 @@ static void usb_init2(struct device *dev)
 
 	/* RPR5.4 Enables the USB PHY auto calibration resister to match 45ohm resistence */
 	dword = 0x00020F00;
-	writel(dword, usb2_bar0 + 0xC0);
+	write32(usb2_bar0 + 0xC0, dword);
 
 	/* RPR5.5 Sets In/OUT FIFO threshold for best performance */
 	dword = 0x00200040;
-	writel(dword, usb2_bar0 + 0xA4);
+	write32(usb2_bar0 + 0xA4, dword);
 
 	/* RPR5.9 Disable the EHCI Dynamic Power Saving feature */
-	word = readl(usb2_bar0 + 0xBC);
+	word = read16(usb2_bar0 + 0xBC);
 	word &= ~(1 << 12);
-	writew(word, usb2_bar0 + 0xBC);
+	write16(usb2_bar0 + 0xBC, word);
 
 	/* RPR5.10 Disable EHCI MSI support */
 	byte = pci_read_config8(dev, 0x50);

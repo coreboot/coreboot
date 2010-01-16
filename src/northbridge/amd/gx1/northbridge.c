@@ -36,8 +36,8 @@ static void optimize_xbus(device_t dev)
 
 static void enable_shadow(device_t dev)
 {
-       writel(0x77777777,GX_BASE+BC_XMAP_2);
-       writel(0x77777777,GX_BASE+BC_XMAP_3);
+       write32(GX_BASE+BC_XMAP_2, 0x77777777);
+       write32(GX_BASE+BC_XMAP_3, 0x77777777);
 }
 
 static void northbridge_init(device_t dev) 

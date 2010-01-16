@@ -172,7 +172,7 @@ static void sata_init(struct device *dev)
 	/* Use BAR5+0x2A8,BAR2 for Secondary Slave */
 
 	for (i = 0; i < 4; i++) {
-		byte = readb(sata_bar5 + 0x128 + 0x80 * i);
+		byte = read8(sata_bar5 + 0x128 + 0x80 * i);
 		printk_spew("SATA port %i status = %x\n", i, byte);
 		byte &= 0xF;
 
@@ -182,24 +182,24 @@ static void sata_init(struct device *dev)
 			printk_spew("SATA device detected but not talking. Trying lower speed.\n");
 
 			/* Read in Port-N Serial ATA Control Register */
-			byte = readb(sata_bar5 + 0x12C + 0x80 * i);
+			byte = read8(sata_bar5 + 0x12C + 0x80 * i);
 
 			/* Set Reset Bit and 1.5g bit */
 			byte |= 0x11;
-			writeb(byte, (sata_bar5 + 0x12C + 0x80 * i));
+			write8((sata_bar5 + 0x12C + 0x80 * i), byte);
 
 			/* Wait 1ms */
 			mdelay(1);
 
 			/* Clear Reset Bit */
 			byte &= ~0x01;
-			writeb(byte, (sata_bar5 + 0x12C + 0x80 * i));
+			write8((sata_bar5 + 0x12C + 0x80 * i), byte);
 
 			/* Wait 1ms */
 			mdelay(1);
 
 			/* Reread status */
-			byte = readb(sata_bar5 + 0x128 + 0x80 * i);
+			byte = read8(sata_bar5 + 0x128 + 0x80 * i);
 			printk_spew("SATA port %i status = %x\n", i, byte);
 			byte &= 0xF;
 		}
@@ -223,15 +223,15 @@ static void sata_init(struct device *dev)
 
 	/* Below is CIM InitSataLateFar */
 	/* Enable interrupts from the HBA  */
-	byte = readb(sata_bar5 + 0x4);
+	byte = read8(sata_bar5 + 0x4);
 	byte |= 1 << 1;
-	writeb(byte, (sata_bar5 + 0x4));
+	write8((sata_bar5 + 0x4), byte);
 
 	/* Clear error status */
-	writel(0xFFFFFFFF, (sata_bar5 + 0x130));
-	writel(0xFFFFFFFF, (sata_bar5 + 0x1b0));
-	writel(0xFFFFFFFF, (sata_bar5 + 0x230));
-	writel(0xFFFFFFFF, (sata_bar5 + 0x2b0));
+	write32((sata_bar5 + 0x130), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x1b0), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x230), 0xFFFFFFFF);
+	write32((sata_bar5 + 0x2b0), 0xFFFFFFFF);
 
 	/* Clear SATA status,Firstly we get the AcpiGpe0BlkAddr */
 	/* ????? why CIM does not set the AcpiGpe0BlkAddr , but use it??? */
@@ -241,7 +241,7 @@ static void sata_init(struct device *dev)
 	/* byte = pm_ioread(0x29); */
 	/* word |= byte<<8; */
 	/* printk_debug("AcpiGpe0Blk addr = %x\n", word); */
-	/* writel(0x80000000 , word); */
+	/* write32(word, 0x80000000); */
 }
 
 static struct pci_operations lops_pci = {

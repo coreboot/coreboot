@@ -144,13 +144,13 @@ static  unsigned long ReadEEprom( struct device *dev,  uint32_t base,  uint32_t 
 
     ulValue = (0x80 | (0x2 << 8) | (Reg << 10));  //BIT_7
 
-    writel( ulValue,base+0x3c);
+    write32(base+0x3c, ulValue);
 
     mdelay(10);
 
     for(i=0 ; i <= LoopNum; i++)
     {
-        ulValue=readl(base+0x3c);
+        ulValue=read32(base+0x3c);
 
         if(!(ulValue & 0x0080)) //BIT_7
             break;
@@ -162,7 +162,7 @@ static  unsigned long ReadEEprom( struct device *dev,  uint32_t base,  uint32_t 
 
     if(i==LoopNum)   data=0x10000;
     else{
-    	ulValue=readl(base+0x3c);
+    	ulValue=read32(base+0x3c);
     	data = ((ulValue & 0xffff0000) >> 16);
     }
 
@@ -183,14 +183,14 @@ static int phy_read(uint32_t  base, unsigned phy_addr, unsigned phy_reg)
      		       SMI_REQUEST);
 
            // SmiMgtInterface Reg is the SMI management interface register(offset 44h) of MAC
-          writel( Read_Cmd,base+0x44);
+          write32(base+0x44, Read_Cmd);
 
            // Polling SMI_REQ bit to be deasserted indicated read command completed
            do
            {
 	       // Wait 20 usec before checking status
 		   mdelay(20);
-    	       ulValue = readl(base+0x44);
+    	       ulValue = read32(base+0x44);
            } while((ulValue & SMI_REQUEST) != 0);
             //printk_debug("base %x cmd %lx ret val %lx\n", tmp,Read_Cmd,ulValue);
            usData=(ulValue>>16);
@@ -282,7 +282,7 @@ static void nic_init(struct device *dev)
 		return;
 	}
 
-        ulValue=readl(base + 0x38L);   //  check EEPROM existing
+        ulValue=read32(base + 0x38L);   //  check EEPROM existing
 
         if((ulValue & 0x0002))
         {
@@ -303,9 +303,9 @@ static void nic_init(struct device *dev)
         }else{
                  // read MAC address from firmware
 		 printk_debug("EEPROM invalid!!\nReg 0x38h=%.8lx \n",ulValue);
-		 MacAddr[0]=readw(0xffffffc0); // mac address store at here
-		 MacAddr[1]=readw(0xffffffc2);
-		 MacAddr[2]=readw(0xffffffc4);
+		 MacAddr[0]=read16(0xffffffc0); // mac address store at here
+		 MacAddr[1]=read16(0xffffffc2);
+		 MacAddr[2]=read16(0xffffffc4);
         }
 
         set_apc(dev);

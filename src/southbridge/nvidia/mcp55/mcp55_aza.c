@@ -36,14 +36,14 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 	int count;
 
 	val &= mask;
-	dword = readl(port);
+	dword = read32(port);
 	dword &= ~mask;
 	dword |= val;
-	writel(dword, port);
+	write32(port, dword);
 
 	count = 50;
 	do {
-		dword = readl(port);
+		dword = read32(port);
 		dword &= mask;
 		udelay(100);
 	} while ((dword != val) && --count);
@@ -63,9 +63,9 @@ static int codec_detect(uint8_t *base)
 	set_bits(base + 0x08, 1, 1);
 
 	/* 2 */
-	dword = readl(base + 0x0e);
+	dword = read32(base + 0x0e);
 	dword |= 7;
-	writel(dword, base + 0x0e);
+	write32(base + 0x0e, dword);
 
 	/* 3 */
 	set_bits(base + 0x08, 1, 0);
@@ -74,7 +74,7 @@ static int codec_detect(uint8_t *base)
 	set_bits(base + 0x08, 1, 1);
 
 	/* 5 */
-	dword = readl(base + 0xe);
+	dword = read32(base + 0xe);
 	dword &= 7;
 
 	/* 6 */
@@ -173,17 +173,17 @@ static void codec_init(uint8_t *base, int addr)
 
 	/* 1 */
 	do {
-		dword = readl(base + 0x68);
+		dword = read32(base + 0x68);
 	} while (dword & 1);
 
 	dword = (addr<<28) | 0x000f0000;
-	writel(dword, base + 0x60);
+	write32(base + 0x60, dword);
 
 	do {
-		dword = readl(base + 0x68);
+		dword = read32(base + 0x68);
 	} while ((dword & 3)!=2);
 
-	dword = readl(base + 0x64);
+	dword = read32(base + 0x64);
 
 	/* 2 */
 	printk_debug("codec viddid: %08x\n", dword);
@@ -198,13 +198,13 @@ static void codec_init(uint8_t *base, int addr)
 	/* 3 */
 	for(i=0; i<verb_size; i++) {
 		do {
-			dword = readl(base + 0x68);
+			dword = read32(base + 0x68);
 		} while (dword & 1);
 
-		writel(verb[i], base + 0x60);
+		write32(base + 0x60, verb[i]);
 
 		do {
-			dword = readl(base + 0x68);
+			dword = read32(base + 0x68);
 		} while ((dword & 3) != 2);
 	}
 	printk_debug("verb loaded!\n");

@@ -31,10 +31,9 @@ void set_debug_port(unsigned port)
 	u32 dbgctl;
 
 	printk_debug("Enabling OWNER_CNT\n");
-	dbgctl = readl(EHCI_BAR + EHCI_DEBUG_OFFSET);
+	dbgctl = read32(EHCI_BAR + EHCI_DEBUG_OFFSET);
 	dbgctl |= (1 << 30);
-	writel(dbgctl, EHCI_BAR + EHCI_DEBUG_OFFSET);
-
+	write32(EHCI_BAR + EHCI_DEBUG_OFFSET, dbgctl);
 }
 
 static void i82801gx_enable_usbdebug_direct(unsigned port)

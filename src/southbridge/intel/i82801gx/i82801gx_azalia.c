@@ -40,10 +40,10 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 
 	/* Write (val & mask) to port */
 	val &= mask;
-	reg32 = readl(port);
+	reg32 = read32(port);
 	reg32 &= ~mask;
 	reg32 |= val;
-	writel(reg32, port);
+	write32(port, reg32);
 
 	/* Wait for readback of register to
 	 * match what was just written to it
@@ -52,7 +52,7 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 	do {
 		/* Wait 1ms based on BKDG wait time */
 		mdelay(1);
-		reg32 = readl(port);
+		reg32 = read32(port);
 		reg32 &= mask;
 	} while ((reg32 != val) && --count);
 
@@ -75,7 +75,7 @@ static int codec_detect(u8 * base)
 		goto no_codec;
 
 	/* Read in Codec location (BAR + 0xe)[2..0]*/
-	reg32 = readl(base + 0xe);
+	reg32 = read32(base + 0xe);
 	reg32 &= 0x0f;
 	if (!reg32)
 		goto no_codec;
@@ -124,7 +124,7 @@ static int wait_for_ready(u8 *base)
 	int timeout = 50;
 
 	while(timeout--) {
-		u32 reg32 = readl(base +  HDA_ICII_REG);
+		u32 reg32 = read32(base +  HDA_ICII_REG);
 		if (!(reg32 & HDA_ICII_BUSY))
 			return 0;
 		udelay(1);
@@ -144,16 +144,16 @@ static int wait_for_valid(u8 *base)
 	u32 reg32;
 
 	/* Send the verb to the codec */
-	reg32 = readl(base + 0x68);
+	reg32 = read32(base + 0x68);
 	reg32 |= (1 << 0) | (1 << 1);
-	writel(reg32, base + 0x68);
+	write32(base + 0x68, reg32);
 
 	/* Use a 50 usec timeout - the Linux kernel uses the
 	 * same duration */
 
 	int timeout = 50;
 	while(timeout--) {
-		reg32 = readl(base + HDA_ICII_REG);
+		reg32 = read32(base + HDA_ICII_REG);
 		if ((reg32 & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
 			HDA_ICII_VALID)
 			return 0;
@@ -177,12 +177,12 @@ static void codec_init(struct device *dev, u8 * base, int addr)
 		return;
 
 	reg32 = (addr << 28) | 0x000f0000;
-	writel(reg32, base + 0x60);
+	write32(base + 0x60, reg32);
 
 	if (wait_for_valid(base) == -1)
 		return;
 
-	reg32 = readl(base + 0x64);
+	reg32 = read32(base + 0x64);
 
 	/* 2 */
 	printk_debug("Azalia: codec viddid: %08x\n", reg32);
@@ -199,7 +199,7 @@ static void codec_init(struct device *dev, u8 * base, int addr)
 		if (wait_for_ready(base) == -1)
 			return;
 
-		writel(verb[i], base + 0x60);
+		write32(base + 0x60, verb[i]);
 
 		if (wait_for_valid(base) == -1)
 			return;

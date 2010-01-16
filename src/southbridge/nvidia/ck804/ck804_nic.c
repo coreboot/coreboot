@@ -27,7 +27,7 @@ static void nic_init(struct device *dev)
 #define NvRegPhyInterface  0xC0
 #define PHY_RGMII          0x10000000
 
-	writel(PHY_RGMII, base + NvRegPhyInterface);
+	write32(base + NvRegPhyInterface, PHY_RGMII);
 
 	old = dword = pci_read_config32(dev, 0x30);
 	dword &= ~(0xf);
@@ -76,15 +76,15 @@ static void nic_init(struct device *dev)
 	if (!eeprom_valid) {
 		unsigned long mac_pos;
 		mac_pos = 0xffffffd0; /* See romstrap.inc and romstrap.lds. */
-		mac_l = readl((uint8_t*)mac_pos) + nic_index;
-		mac_h = readl((uint8_t*)mac_pos + 4);
+		mac_l = read32((uint8_t*)mac_pos) + nic_index;
+		mac_h = read32((uint8_t*)mac_pos + 4);
 	}
 #if 1
 	/* Set that into NIC MMIO. */
 #define NvRegMacAddrA  0xA8
 #define NvRegMacAddrB  0xAC
-	writel(mac_l, base + NvRegMacAddrA);
-	writel(mac_h, base + NvRegMacAddrB);
+	write32(base + NvRegMacAddrA, mac_l);
+	write32(base + NvRegMacAddrB, mac_h);
 #else
 	/* Set that into NIC. */
 	pci_write_config32(dev, 0xa8, mac_l);

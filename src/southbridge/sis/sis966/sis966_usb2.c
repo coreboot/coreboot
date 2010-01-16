@@ -96,7 +96,7 @@ static void usb2_init(struct device *dev)
 
         base =(uint8_t *) res->base;
         printk_debug("base = %08x\n", base);
-        writel(0x2,base+0x20);
+        write32(base+0x20, 0x2);
 //-----------------------------------------------------------
 
 #if DEBUG_USB2

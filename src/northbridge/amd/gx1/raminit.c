@@ -34,12 +34,12 @@ it with the version available from LANL.
 
 void setGX1Mem(unsigned int addr, unsigned int data)
 {
-	writel(data, (volatile void *)addr);
+	write32(addr, data);
 }
 
 unsigned int getGX1Mem(unsigned int addr)
 {
-	return (unsigned int)readl((const volatile void *)addr);
+	return (unsigned int)read32(addr);
 }
 
 void do_refresh(void)

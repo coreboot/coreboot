@@ -133,22 +133,22 @@ void early_config(void) {
 	pci_write_config32(PCI_DEV(0, 0x1F, 0), RCBA, DEFAULT_RCBA | 1);
 
 	/* Disable watchdog */
-	gcs = readl(DEFAULT_RCBA + RCBA_GCS);
+	gcs = read32(DEFAULT_RCBA + RCBA_GCS);
 	gcs |= (1 << 5); /* No reset */
-	writel(gcs, DEFAULT_RCBA + RCBA_GCS);
+	write32(DEFAULT_RCBA + RCBA_GCS, gcs);
 
 	/* Configure PCIe port B as 4x */
-	rpc = readl(DEFAULT_RCBA + RCBA_RPC);
+	rpc = read32(DEFAULT_RCBA + RCBA_RPC);
 	rpc |= (3 << 0);
-	writel(rpc, DEFAULT_RCBA + RCBA_RPC);
+	write32(DEFAULT_RCBA + RCBA_RPC, rpc);
 
 	/* Disable Modem, Audio, PCIe ports 2/3/4 */
-	fd = readl(DEFAULT_RCBA + RCBA_FD);
+	fd = read32(DEFAULT_RCBA + RCBA_FD);
 	fd |= (1 << 19) | (1 << 18) | (1 << 17) | (1 << 6) | (1 << 5);
-	writel(fd, DEFAULT_RCBA + RCBA_FD);
+	write32(DEFAULT_RCBA + RCBA_FD, fd);
 
 	/* Enable HPET */
-	writel((1 << 7), DEFAULT_RCBA + RCBA_HPTC);
+	write32(DEFAULT_RCBA + RCBA_HPTC, (1 << 7));
 
 	/* Improve interrupt routing
 	 * D31:F2 SATA        INTB# -> PIRQD
@@ -160,10 +160,10 @@ void early_config(void) {
 	 * D28:F0 PCIe Port 1 INTA# -> PIRQE
 	 */
 
-	writew(0x0230, DEFAULT_RCBA + RCBA_D31IR);
-	writew(0x3210, DEFAULT_RCBA + RCBA_D30IR);
-	writew(0x3237, DEFAULT_RCBA + RCBA_D29IR);
-	writew(0x3214, DEFAULT_RCBA + RCBA_D28IR);
+	write16(DEFAULT_RCBA + RCBA_D31IR, 0x0230);
+	write16(DEFAULT_RCBA + RCBA_D30IR, 0x3210);
+	write16(DEFAULT_RCBA + RCBA_D29IR, 0x3237);
+	write16(DEFAULT_RCBA + RCBA_D28IR, 0x3214);
 
 	/* Setup sata mode */
 	pci_write_config8(PCI_DEV(0, 0x1F, 2), SATA_MAP, (SATA_MODE_AHCI << 6) | (0 << 0));

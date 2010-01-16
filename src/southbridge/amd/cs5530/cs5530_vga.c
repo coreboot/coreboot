@@ -242,27 +242,27 @@ static void cs5530_set_clock_frequency(void *io_base, unsigned long pll_val)
 	unsigned long reg;
 
 	/* disable the PLL first, reset and power it down */
-	reg = readl(io_base+CS5530_DOT_CLK_CONFIG) & ~0x20;
+	reg = read32(io_base+CS5530_DOT_CLK_CONFIG) & ~0x20;
 	reg |= 0x80000100;
-	writel(reg, io_base+CS5530_DOT_CLK_CONFIG);
+	write32(io_base+CS5530_DOT_CLK_CONFIG, reg);
 
 	/* write the new PLL setting */
 	reg |= (pll_val & ~0x80000920);
-	writel(reg, io_base+CS5530_DOT_CLK_CONFIG);
+	write32(io_base+CS5530_DOT_CLK_CONFIG, reg);
 
 	mdelay(1);	/* wait for control voltage to be 0V */
 
 	/* enable the PLL */
 	reg |= 0x00000800;
-	writel(reg, io_base+CS5530_DOT_CLK_CONFIG);
+	write32(io_base+CS5530_DOT_CLK_CONFIG, reg);
 
 	/* clear reset */
 	reg &= ~0x80000000;
-	writel(reg, io_base+CS5530_DOT_CLK_CONFIG);
+	write32(io_base+CS5530_DOT_CLK_CONFIG, reg);
 
 	/* clear bypass */
 	reg &= ~0x00000100;
-	writel(reg, io_base+CS5530_DOT_CLK_CONFIG);
+	write32(io_base+CS5530_DOT_CLK_CONFIG, reg);
 }
 
 /**
@@ -286,15 +286,15 @@ static void dc_setup_layout(void *gx_base, const struct video_mode *mode)
 {
 	u32 base = 0x00000000;
 
-	writel(base, gx_base + DC_FB_ST_OFFSET);
+	write32(gx_base + DC_FB_ST_OFFSET, base);
 
 	base += (COLOUR_DEPTH>>3) * mode->visible_pixel * mode->visible_lines;
 
-	writel(base, gx_base + DC_CB_ST_OFFSET);
-	writel(base, gx_base + DC_CURS_ST_OFFSET);
-	writel(base, gx_base + DC_VID_ST_OFFSET);
-	writel(((COLOUR_DEPTH>>3) * mode->visible_pixel) >> 2, gx_base + DC_LINE_DELTA);
-	writel(((COLOUR_DEPTH>>3) * mode->visible_pixel) >> 3, gx_base + DC_BUF_SIZE);
+	write32(gx_base + DC_CB_ST_OFFSET, base);
+	write32(gx_base + DC_CURS_ST_OFFSET, base);
+	write32(gx_base + DC_VID_ST_OFFSET, base);
+	write32(gx_base + DC_LINE_DELTA, ((COLOUR_DEPTH>>3) * mode->visible_pixel) >> 2);
+	write32(gx_base + DC_BUF_SIZE, ((COLOUR_DEPTH>>3) * mode->visible_pixel) >> 3);
 }
 
 /**
@@ -343,20 +343,20 @@ static void dc_setup_timing(void *gx_base, const struct video_mode *mode)
 	vtotal = vblankend;
 
 	/* row description */
-	writel((hactive - 1) | ((htotal - 1) << 16), gx_base + DC_H_TIMING_1);
+	write32(gx_base + DC_H_TIMING_1, (hactive - 1) | ((htotal - 1) << 16));
 	/* horizontal blank description */
-	writel((hblankstart - 1) | ((hblankend - 1) << 16), gx_base + DC_H_TIMING_2);
+	write32(gx_base + DC_H_TIMING_2, (hblankstart - 1) | ((hblankend - 1) << 16));
 	/* horizontal sync description */
-	writel((hsyncstart - 1) | ((hsyncend - 1) << 16), gx_base + DC_H_TIMING_3);
-	writel((hsyncstart - 1) | ((hsyncend - 1) << 16), gx_base + DC_FP_H_TIMING);
+	write32(gx_base + DC_H_TIMING_3, (hsyncstart - 1) | ((hsyncend - 1) << 16));
+	write32(gx_base + DC_FP_H_TIMING, (hsyncstart - 1) | ((hsyncend - 1) << 16));
 
 	/* line description */
-	writel((vactive - 1) | ((vtotal - 1) << 16), gx_base + DC_V_TIMING_1);
+	write32(gx_base + DC_V_TIMING_1, (vactive - 1) | ((vtotal - 1) << 16));
 	/* vertical blank description */
-	writel((vblankstart - 1) | ((vblankend - 1) << 16), gx_base + DC_V_TIMING_2);
+	write32(gx_base + DC_V_TIMING_2, (vblankstart - 1) | ((vblankend - 1) << 16));
 	/* vertical sync description */
-	writel((vsyncstart - 1) | ((vsyncend - 1) << 16), gx_base + DC_V_TIMING_3);
-	writel((vsyncstart - 2) | ((vsyncend - 2) << 16), gx_base + DC_FP_V_TIMING);
+	write32(gx_base + DC_V_TIMING_3, (vsyncstart - 1) | ((vsyncend - 1) << 16));
+	write32(gx_base + DC_FP_V_TIMING, (vsyncstart - 2) | ((vsyncend - 2) << 16));
 }
 
 /**
@@ -369,14 +369,14 @@ static void dc_setup_timing(void *gx_base, const struct video_mode *mode)
  */
 static void cs5530_activate_mode(void *gx_base, const struct video_mode *mode)
 {
-	writel(0x00000080, gx_base + DC_GENERAL_CFG);
+	write32(gx_base + DC_GENERAL_CFG, 0x00000080);
 	mdelay(1);
 	dc_setup_layout(gx_base,mode);
 	dc_setup_timing(gx_base,mode);
 
-	writel(0x2000C581, gx_base + DC_GENERAL_CFG);
-	writel(0x0000002F, gx_base + DC_TIMING_CFG);
-	writel(0x00003004, gx_base + DC_OUTPUT_CFG);
+	write32(gx_base + DC_GENERAL_CFG, 0x2000C581);
+	write32(gx_base + DC_TIMING_CFG, 0x0000002F);
+	write32(gx_base + DC_OUTPUT_CFG, 0x00003004);
 }
 
 /**
@@ -392,7 +392,7 @@ static void cs5530_activate_video(void *io_base, const struct video_mode *mode)
 	u32 val;
 
 	val = (u32)mode->sync_pol << 8;
-	writel(val | 0x0020002F, io_base + CS5530_DISPLAY_CONFIG);
+	write32(io_base + CS5530_DISPLAY_CONFIG, val | 0x0020002F);
 }
 
 #if CONFIG_SPLASH_GRAPHIC == 1
@@ -465,7 +465,7 @@ static void cs5530_vga_init(device_t dev)
 
 	cs5530_set_clock_frequency(io_base, mode->pll_value);
 
-	writel(DC_UNLOCK_MAGIC, gx_base + DC_UNLOCK);
+	write32(gx_base + DC_UNLOCK, DC_UNLOCK_MAGIC);
 
 	show_boot_splash_16(mode->visible_pixel, mode->visible_lines,
 		mode->visible_pixel * (COLOUR_DEPTH>>3), (void*)(GX_BASE + 0x800000));
@@ -473,7 +473,7 @@ static void cs5530_vga_init(device_t dev)
 	cs5530_activate_mode(gx_base, mode);
 
 	cs5530_activate_video(io_base, mode);
-	writel(0x00000000, gx_base + DC_UNLOCK);
+	write32(gx_base + DC_UNLOCK, 0x00000000);
 }
 
 static struct device_operations vga_ops = {

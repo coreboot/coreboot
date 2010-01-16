@@ -10,7 +10,7 @@
 #define COREBOOT_EXTRA_VERSION ""
 #endif
 
-static void console_init(void)
+void console_init(void)
 {
 	static const char console_test[] = 
 		"\r\n\r\ncoreboot-"

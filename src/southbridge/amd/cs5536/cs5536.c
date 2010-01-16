@@ -428,10 +428,10 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		bar = (uint8_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
 		/* Make HCCPARAMS writeable */
-		writel(readl(bar + IPREG04) | USB_HCCPW_SET, bar + IPREG04);
+		write32(bar + IPREG04, read32(bar + IPREG04) | USB_HCCPW_SET);
 
 		/* ; EECP=50h, IST=01h, ASPC=1 */
-		writel(0x00005012, bar + HCCPARAMS);
+		write32(bar + HCCPARAMS, 0x00005012);
 	}
 
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
@@ -439,19 +439,19 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	if (dev) {
 		bar = (uint8_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
-		writel(readl(bar + UOCMUX) & PUEN_SET, bar + UOCMUX);
+		write32(bar + UOCMUX, read32(bar + UOCMUX) & PUEN_SET);
 
 		/* Host or Device? */
 		if (sb->enable_USBP4_device) {
-			writel(readl(bar + UOCMUX) | PMUX_DEVICE, bar + UOCMUX);
+			write32(bar + UOCMUX, read32(bar + UOCMUX) | PMUX_DEVICE);
 		} else {
-			writel(readl(bar + UOCMUX) | PMUX_HOST, bar + UOCMUX);
+			write32(bar + UOCMUX, read32(bar + UOCMUX) | PMUX_HOST);
 		}
 
 		/* Overcurrent configuration */
 		if (sb->enable_USBP4_overcurrent) {
-			writel(readl(bar + UOCCAP)
-			       | sb->enable_USBP4_overcurrent, bar + UOCCAP);
+			write32(bar + UOCCAP, read32(bar + UOCCAP)
+			       | sb->enable_USBP4_overcurrent);
 		}
 	}
 
@@ -467,8 +467,8 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		if (dev) {
 			bar = (uint8_t *) pci_read_config32(dev, 
 					PCI_BASE_ADDRESS_0);
-			writel(readl(bar + UDCDEVCTL) | UDC_SD_SET,
-			       bar + UDCDEVCTL);
+			write32(bar + UDCDEVCTL,
+			       read32(bar + UDCDEVCTL) | UDC_SD_SET);
 
 		}
 
@@ -477,8 +477,8 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		if (dev) {
 			bar = (uint8_t *) pci_read_config32(dev,
 					PCI_BASE_ADDRESS_0);
-			writel(readl(bar + UOCCTL) | PADEN_SET, bar + UOCCTL);
-			writel(readl(bar + UOCCAP) | APU_SET, bar + UOCCAP);
+			write32(bar + UOCCTL, read32(bar + UOCCTL) | PADEN_SET);
+			write32(bar + UOCCAP, read32(bar + UOCCAP) | APU_SET);
 		}
 	}
 

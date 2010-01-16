@@ -37,10 +37,10 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 
 	/* Write (val & ~mask) to port */
 	val &= mask;
-	dword = readl(port);
+	dword = read32(port);
 	dword &= ~mask;
 	dword |= val;
-	writel(dword, port);
+	write32(port, dword);
 
 	/* Wait for readback of register to
 	 * match what was just written to it
@@ -49,7 +49,7 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 	do {
 		/* Wait 1ms based on BKDG wait time */
 		mdelay(1);
-		dword = readl(port);
+		dword = read32(port);
 		dword &= mask;
 	} while ((dword != val) && --count);
 
@@ -75,7 +75,7 @@ static u32 codec_detect(u8 * base)
 	mdelay(1);
 
 	/* Read in Codec location (BAR + 0xe)[3..0]*/
-	dword = readl(base + 0xe);
+	dword = read32(base + 0xe);
 	dword &= 0x0F;
 	if (!dword)
 		goto no_codec;
@@ -180,7 +180,7 @@ static int wait_for_ready(u8 *base)
 	int timeout = 50;
 
 	while(timeout--) {
-		u32 dword=readl(base +  HDA_ICII_REG);
+		u32 dword=read32(base +  HDA_ICII_REG);
 		if (!(dword & HDA_ICII_BUSY))
 			return 0;
 		udelay(1);
@@ -202,7 +202,7 @@ static int wait_for_valid(u8 *base)
 
 	int timeout = 50;
 	while(timeout--) {
-		u32 dword = readl(base + HDA_ICII_REG);
+		u32 dword = read32(base + HDA_ICII_REG);
 		if ((dword & (HDA_ICII_VALID | HDA_ICII_BUSY)) ==
 			HDA_ICII_VALID)
 			return 0;
@@ -224,12 +224,12 @@ static void codec_init(u8 * base, int addr)
 		return;
 
 	dword = (addr << 28) | 0x000f0000;
-	writel(dword, base + 0x60);
+	write32(base + 0x60, dword);
 
 	if (wait_for_valid(base) == -1)
 		return;
 
-	dword = readl(base + 0x64);
+	dword = read32(base + 0x64);
 
 	/* 2 */
 	printk_debug("codec viddid: %08x\n", dword);
@@ -246,7 +246,7 @@ static void codec_init(u8 * base, int addr)
 		if (wait_for_ready(base) == -1)
 			return;
 
-		writel(verb[i], base + 0x60);
+		write32(base + 0x60, verb[i]);
 
 		if (wait_for_valid(base) == -1)
 			return;

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-
+#ifdef __PRE_RAM__
 static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)
 {
 	return *((volatile uint8_t *)(addr));
@@ -33,6 +33,7 @@ static inline __attribute__((always_inline)) void write32(unsigned long addr, ui
 {
 	*((volatile uint32_t *)(addr)) = value;
 }
+#endif
 
 #if CONFIG_MMCONF_SUPPORT
 

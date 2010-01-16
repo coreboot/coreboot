@@ -48,14 +48,14 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 	int count;
 
 	val &= mask;
-	dword = readl(port);
+	dword = read32(port);
 	dword &= ~mask;
 	dword |= val;
-	writel(dword, port);
+	write32(port, dword);
 
 	count = 50;
 	do {
-		dword = readl(port);
+		dword = read32(port);
 		dword &= mask;
 		udelay(100);
 	} while ((dword != val) && --count);
@@ -73,23 +73,23 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 
      uint32_t dword;
 
-     dword = readl(base + 0x68);
+     dword = read32(base + 0x68);
      dword=dword|(unsigned long)0x0002;
-     writel(dword,base + 0x68);
+     write32(base + 0x68, dword);
      do {
-	 	dword = readl(base + 0x68);
+	 	dword = read32(base + 0x68);
      }  while ((dword & 1)!=0);
-     writel(verb, base + 0x60);
+     write32(base + 0x60, verb);
      udelay(500);
-     dword = readl(base + 0x68);
+     dword = read32(base + 0x68);
      dword =(dword |0x1);
-     writel(dword, base + 0x68);
+     write32(base + 0x68, dword);
      do {
 	 	udelay(100);
-		dword = readl(base + 0x68);
+		dword = read32(base + 0x68);
      } while ((dword & 3) != 2);
 
-     dword = readl(base + 0x64);
+     dword = read32(base + 0x64);
      return dword;
 
 }
@@ -106,7 +106,7 @@ static int codec_detect(uint8_t *base)
 	set_bits(base + 0x08, 1, 1);
 
       do{
-	  	dword = readl(base + 0x08)&0x1;
+	  	dword = read32(base + 0x08)&0x1;
 		if(idx++>1000) { printk_debug("controller reset fail !!! \n"); break;}
 	   } while (dword !=1);
 
@@ -206,17 +206,17 @@ static void codec_init(uint8_t *base, int addr)
 
 	/* 1 */
 	do {
-		dword = readl(base + 0x68);
+		dword = read32(base + 0x68);
 	} while (dword & 1);
 
 	dword = (addr<<28) | 0x000f0000;
-	writel(dword, base + 0x60);
+	write32(base + 0x60, dword);
 
 	do {
-		dword = readl(base + 0x68);
+		dword = read32(base + 0x68);
 	} while ((dword & 3)!=2);
 
-	dword = readl(base + 0x64);
+	dword = read32(base + 0x64);
 
 	/* 2 */
 	printk_debug("codec viddid: %08x\n", dword);

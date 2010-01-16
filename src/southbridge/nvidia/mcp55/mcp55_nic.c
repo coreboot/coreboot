@@ -35,22 +35,22 @@ static int phy_read(uint8_t *base, unsigned phy_addr, unsigned phy_reg)
 {
 	uint32_t dword;
 	unsigned loop = 0x100;
-	writel(0x8000, base+0x190); //Clear MDIO lock bit
+	write32(base+0x190, 0x8000); //Clear MDIO lock bit
 	mdelay(1);
-	dword = readl(base+0x190);
+	dword = read32(base+0x190);
 	if(dword & (1<<15)) return -1;
 
-	writel(1, base+0x180);
-	writel((phy_addr<<5) | (phy_reg),base + 0x190);
+	write32(base+0x180, 1);
+	write32(base + 0x190, (phy_addr<<5) | (phy_reg));
 	do{
-		dword = readl(base + 0x190);
+		dword = read32(base + 0x190);
 		if(--loop==0) return -4;
 	} while ((dword & (1<<15)) );
 
-	dword = readl(base + 0x180);
+	dword = read32(base + 0x180);
 	if(dword & 1) return -3;
 
-	dword = readl(base + 0x194);
+	dword = read32(base + 0x194);
 
 	return dword;
 
@@ -62,9 +62,9 @@ static void phy_detect(uint8_t *base)
 	int i;
 	int val;
 	unsigned id;
-	dword = readl(base+0x188);
+	dword = read32(base+0x188);
 	dword &= ~(1<<20);
-	writel(dword, base+0x188);
+	write32(base+0x188, dword);
 
 	phy_read(base, 0, 1);
 
@@ -116,7 +116,7 @@ static void nic_init(struct device *dev)
 #define NvRegPhyInterface	0xC0
 #define PHY_RGMII	0x10000000
 
-	writel(PHY_RGMII, base + NvRegPhyInterface);
+	write32(base + NvRegPhyInterface, PHY_RGMII);
 
 	conf = dev->chip_info;
 
@@ -157,16 +157,16 @@ static void nic_init(struct device *dev)
 	if(!eeprom_valid) {
 		unsigned long mac_pos;
 		mac_pos = 0xffffffd0; // refer to romstrap.inc and romstrap.lds
-		mac_l = readl(mac_pos) + nic_index; // overflow?
-		mac_h = readl(mac_pos + 4);
+		mac_l = read32(mac_pos) + nic_index; // overflow?
+		mac_h = read32(mac_pos + 4);
 
 	}
 #if 1
 //	set that into NIC MMIO
 #define NvRegMacAddrA	0xA8
 #define NvRegMacAddrB	0xAC
-	writel(mac_l, base + NvRegMacAddrA);
-	writel(mac_h, base + NvRegMacAddrB);
+	write32(base + NvRegMacAddrA, mac_l);
+	write32(base + NvRegMacAddrB, mac_h);
 #else
 //	set that into NIC
 	pci_write_config32(dev, 0xa8, mac_l);

@@ -47,4 +47,5 @@ int send_ec_data_nowait(uint8_t data);
 uint8_t recv_ec_data(void);
 uint8_t ec_read(uint8_t addr);
 
+uint8_t ec_idx_read(uint16_t addr);
 #endif

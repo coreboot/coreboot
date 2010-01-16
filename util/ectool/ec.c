@@ -114,3 +114,13 @@ int ec_write(uint8_t addr, uint8_t data)
 
 	return send_ec_data(data);
 }
+
+uint8_t ec_idx_read(uint16_t addr)
+{
+	uint16_t lpc_idx = 0x380;
+
+	outb(addr & 0xff, lpc_idx + 2);
+	outb(addr >> 8, lpc_idx + 1);
+	
+	return inb(lpc_idx + 3);
+}

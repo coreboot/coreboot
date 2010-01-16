@@ -99,5 +99,14 @@ int main(int argc, char *argv[])
 	}
 	printf("\n\n");
 
+	printf("EC IDX RAM:\n");
+	for (i = 0; i < 0x10000; i++) {
+		if ((i % 0x10) == 0)
+			printf("\n%04x: ", i);
+		printf("%02x ", ec_idx_read(i));
+	}
+	printf("\n\n");
+
+
 	return 0;
 }

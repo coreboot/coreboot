@@ -121,14 +121,14 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 	cmos_write(((sum >> 0) & 0x0ff), cks_loc+1);
 }
 
+#if CONFIG_ARCH_X86
 #define RTC_CONTROL_DEFAULT (RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
-
-#if 0 /* alpha setup */
-#undef RTC_CONTROL_DEFAULT
-#undef RTC_FREQ_SELECT_DEFAULT
+#else
+#if CONFIG_ARCH_ALPHA
 #define RTC_CONTROL_DEFAULT (RTC_SQWE | RTC_24H)
 #define RTC_FREQ_SELECT_DEFAULT (RTC_REF_CLCK_32KHZ | RTC_RATE_1024HZ)
+#endif
 #endif
 
 void rtc_init(int invalid)

@@ -71,7 +71,7 @@ clear_mtrrs:
 	/* Set cache as ram mask */
 	movl	$(MTRRphysMask_MSR(0)), %ecx
 	movl	$(~((CACHE_AS_RAM_SIZE-1)) | (1 << 11)), %eax
-	movl	$0x00000000, %edx
+	xorl	%edx, %edx
 	wrmsr
 
 	post_code(0x25)
@@ -113,7 +113,7 @@ clear_mtrrs:
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 	/* Enable cache for our code in Flash because we do XIP here */
         movl    $MTRRphysBase_MSR(1), %ecx
-        xorl    %edx, %edx
+	xorl    %edx, %edx
 #if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
@@ -124,7 +124,7 @@ clear_mtrrs:
         wrmsr
 
         movl    $MTRRphysMask_MSR(1), %ecx
-        movl    $0x00000000, %edx
+	xorl	%edx, %edx
         movl    $(~(CONFIG_XIP_ROM_SIZE - 1) | 0x800), %eax
         wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */

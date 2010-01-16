@@ -60,7 +60,7 @@
 	"wrmsr\n"
 	"movl	$MTRRphysMask_MSR(0), %ecx\n"
 	"movl	$(~(1024*1024 -1) | (1 << 11)), %eax\n"
-	"movl	$0x00000000, %edx\n"
+	"xorl	%edx, %edx\n"
 	"wrmsr\n"
 	"movb	$0x35, %al\noutb %al, $0x80\n"
 #endif
@@ -97,7 +97,7 @@
 	"wrmsr\n"
 	"movl	$MTRRphysMask_MSR(0), %ecx\n"
 	"movl	$(~(1024*1024 -1) | (1 << 11)), %eax\n"
-	"movl	$0x00000000, %edx\n"
+	"xorl	%edx, %edx\n"
 	"wrmsr\n"
 
 	"movb	$0x39, %al\noutb %al, $0x80\n"

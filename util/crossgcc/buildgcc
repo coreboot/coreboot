@@ -28,10 +28,12 @@ DESTDIR=
 
 # version numbers
 GMP_VERSION=4.3.1
-MPFR_VERSION=2.4.1
-GCC_VERSION=4.4.1
-BINUTILS_VERSION=2.19.1
-GDB_VERSION=6.8
+MPFR_VERSION=2.4.2
+GCC_VERSION=4.4.2
+BINUTILS_VERSION=2.20
+GDB_VERSION=7.0
+W32API_VERSION=3.13
+MINGWRT_VERSION=3.16
 
 # archive locations
 GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
@@ -39,12 +41,16 @@ MPFR_ARCHIVE="http://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.
 GCC_ARCHIVE="ftp://ftp.gwdg.de/pub/gnu/ftp/gnu/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
+W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20API%20for%20MS-Windows/Current%20Release_%20w32api-${W32API_VERSION}/w32api-${W32API_VERSION}-mingw32-src.tar.gz"
+MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20Runtime/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 
 GMP_DIR="gmp-${GMP_VERSION}"
 MPFR_DIR="mpfr-${MPFR_VERSION}"
 GCC_DIR="gcc-${GCC_VERSION}"
 BINUTILS_DIR="binutils-${BINUTILS_VERSION}"
 GDB_DIR="gdb-${GDB_VERSION}"
+W32API_DIR="w32api-${W32API_VERSION}-mingw32"
+MINGWRT_DIR="mingwrt-${MINGWRT_VERSION}-mingw32"
 
 SAVETEMPS=0
 
@@ -82,7 +88,7 @@ MAKE=`searchgnu make`
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	rm -rf build-* combined gcc-* gmp-* mpfr-* binutils-* gdb-*
+	rm -rf build-* combined gcc-* gmp-* mpfr-* binutils-* gdb-* w32api-* mingwrt-*
 	printf "${green}ok${NC}\n"
 }
 
@@ -158,9 +164,14 @@ while true ; do
 	esac
 done
 
+MINGW_ARCHIVES=""
+if [ "$TARGETARCH" = "i386-mingw32" ]; then
+	MINGW_ARCHIVES="$W32API_ARCHIVE $MINGWRT_ARCHIVE"
+fi
+
 printf "Downloading tar balls ... \n"
 mkdir -p tarballs
-for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE; do
+for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE $MINGW_ARCHIVES; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
 	test -f tarballs/$FILE && printf "(cached)" || (
@@ -175,8 +186,13 @@ done
 printf "Downloaded tar balls ... "
 printf "${green}ok${NC}\n"
 
+MINGW_PACKAGES=""
+if [ "$TARGETARCH" = "i386-mingw32" ]; then
+	MINGW_PACKAGES="W32API MINGWRT"
+fi
+
 printf "Unpacking and patching ... \n"
-for PACKAGE in GMP MPFR GCC BINUTILS GDB; do
+for PACKAGE in GMP MPFR GCC BINUTILS GDB $MINGW_PACKAGES; do
 	archive=$PACKAGE"_ARCHIVE"
 	archive=${!archive}
 	dir=$PACKAGE"_DIR"
@@ -186,7 +202,7 @@ for PACKAGE in GMP MPFR GCC BINUTILS GDB; do
 		test ${archive:${#archive}-2:2} = "gz" && FLAGS=zxf
 		test ${archive:${#archive}-3:3} = "bz2" && FLAGS=jxf
 		$TAR $FLAGS tarballs/`basename $archive`
-		for patch in patches/${!dir}"_*.patch"; do
+		for patch in patches/${!dir}_*.patch; do
 			test -r $patch || continue
 			printf "   o `basename $patch`\n"
 			patch -s -N -p0 < `echo $patch`
@@ -195,6 +211,11 @@ for PACKAGE in GMP MPFR GCC BINUTILS GDB; do
 done
 printf "Unpacked and patched ... "
 printf "${green}ok${NC}\n"
+
+if [ "$TARGETARCH" = "i386-mingw32" ]; then
+	mkdir -p $TARGETDIR/i386-mingw32/sys-include
+	mv $MINGWRT_DIR/include/* $W32API_DIR/include/* $TARGETDIR/i386-mingw32/sys-include
+fi
 
 mkdir -p build-gmp build-mpfr build-binutils build-gcc build-gdb
 if [ -f build-gmp/.success ]; then
@@ -293,7 +314,7 @@ printf "Building GCC ${GCC_VERSION} ... "
 	# libiberty is not compiled with CFLAGS_FOR_BUILD.
 	CFLAGS_FOR_BUILD="$HOSTCFLAGS" ../gcc-${GCC_VERSION}/configure \
 		--prefix=$TARGETDIR --libexecdir=$TARGETDIR/lib \
-		--target=${TARGETARCH} --disable-werror \
+		--target=${TARGETARCH} --disable-werror --disable-shared \
 		--disable-libssp --disable-bootstrap --disable-nls \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		|| touch .failed

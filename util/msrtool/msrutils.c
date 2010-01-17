@@ -205,7 +205,7 @@ int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu) {
  * @param str The string to parse. The string must be writable but will be
  * restored before return.
  * @param msr Pointer to the struct msr where the value will be stored.
- * @param endptr If endpotr is not NULL, *endptr will point to after the MSR.
+ * @param endptr If endptr is not NULL, *endptr will point to after the MSR.
  * @return 1 on success, 0 on parse failure. msr is unchanged on failure.
  */
 uint8_t str2msr(char *str, struct msr *msr, char **endptr) {

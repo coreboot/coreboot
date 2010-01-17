@@ -25,14 +25,15 @@
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
+#include <device/pci_def.h>
 #include "i82801gx.h"
 #include "i82801gx_power.h"
 
 #define DEBUG_SMI
 
 #define APM_CNT		0xb2
-#define   CST_CONTROL	0x85 // 0x85 crashes the box
-#define   PST_CONTROL	0x80 // 0x80 crashes the box
+#define   CST_CONTROL	0x85
+#define   PST_CONTROL	0x80
 #define   ACPI_DISABLE	0x1e
 #define   ACPI_ENABLE	0xe1
 #define   GNVS_UPDATE   0xea
@@ -88,6 +89,8 @@ static void dump_pm1_status(u16 pm1_sts)
 	if (pm1_sts & (1 <<  4)) printk_spew("BM ");
 	if (pm1_sts & (1 <<  0)) printk_spew("TMROF ");
 	printk_spew("\n");
+	int reg16 = inw(pmbase + PM1_EN);
+	printk_spew("PM1_EN: %x\n", reg16);
 }
 
 /**
@@ -245,6 +248,41 @@ void southbridge_smi_set_eos(void)
 	outb(reg8, pmbase + SMI_EN);
 }
 
+static void busmaster_disable_on_bus(int bus)
+{
+        int slot, func;
+        unsigned int val;
+        unsigned char hdr;
+
+        for (slot = 0; slot < 0x20; slot++) {
+                for (func = 0; func < 8; func++) {
+                        u32 reg32;
+                        device_t dev = PCI_DEV(bus, slot, func);
+
+                        val = pci_read_config32(dev, PCI_VENDOR_ID);
+
+                        if (val == 0xffffffff || val == 0x00000000 ||
+                            val == 0x0000ffff || val == 0xffff0000)
+                                continue;
+
+                        /* Disable Bus Mastering for this one device */
+                        reg32 = pci_read_config32(dev, PCI_COMMAND);
+                        reg32 &= ~PCI_COMMAND_MASTER;
+                        pci_write_config32(dev, PCI_COMMAND, reg32);
+
+                        /* If this is a bridge, then follow it. */
+                        hdr = pci_read_config8(dev, PCI_HEADER_TYPE);
+                        hdr &= 0x7f;
+                        if (hdr == PCI_HEADER_TYPE_BRIDGE ||
+                            hdr == PCI_HEADER_TYPE_CARDBUS) {
+                                unsigned int buses;
+                                buses = pci_read_config32(dev, PCI_PRIMARY_BUS);
+                                busmaster_disable_on_bus((buses >> 8) & 0xff);
+                        }
+                }
+        }
+}
+
 
 static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *state_save)
 {
@@ -281,12 +319,9 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	case 6: printk_debug("SMI#: Entering S4 (Suspend-To-Disk)\n"); break;
 	case 7:
 		printk_debug("SMI#: Entering S5 (Soft Power off)\n");
-#if 0
-		/* Set PME_B0_EN before going to S5 */
-		reg32 = inl(pmbase + GPE0_EN);
-		reg32 |= PME_B0_EN;
-		outl(reg32, pmbase + GPE0_EN);
-#endif
+
+		outl(0, pmbase + GPE0_EN);
+
 		/* Should we keep the power state after a power loss?
 		 * In case the setting is "ON" or "OFF" we don't have
 		 * to do anything. But if it's "KEEP" we have to switch
@@ -297,6 +332,9 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 			reg8 |= 1;
 			pcie_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 		}
+
+		/* also iterates over all bridges on bus 0 */
+		busmaster_disable_on_bus(0);
 		break;
 	default: printk_debug("SMI#: ERROR: SLP_TYP reserved\n"); break;
 	}
@@ -376,6 +414,16 @@ static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_
 
 	pm1_sts = reset_pm1_status();
 	dump_pm1_status(pm1_sts);
+
+	/* While OSPM is not active, poweroff immediately
+	 * on a power button event.
+	 */
+	if (pm1_sts & PWRBTN_STS) {
+		// power button pressed
+		u32 reg32;
+		reg32 = (7 << 10) | (1 << 13);
+		outl(reg32, pmbase + PM1_CNT);
+	}
 }
 
 static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state_save)
@@ -386,6 +434,8 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 	dump_gpe0_status(gpe0_sts);
 }
 
+void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts);
+
 static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
 {
 	u16 reg16;
@@ -393,8 +443,13 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 	outl(reg16, pmbase + ALT_GP_SMI_STS);
 
 	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
-	if (reg16)
-		printk_debug("GPI (mask %04x)\n",reg16);
+
+	if (mainboard_smi_gpi) {
+		mainboard_smi_gpi(reg16);
+	} else {
+		if (reg16)
+			printk_debug("GPI (mask %04x)\n",reg16);
+	}
 }
 
 static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_save)

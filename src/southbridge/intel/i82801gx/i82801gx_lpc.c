@@ -40,8 +40,8 @@ static void i82801gx_enable_apic(struct device *dev)
 {
 	int i;
 	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)0xfec00000;
-	volatile u32 *ioapic_data = (volatile u32 *)0xfec00010;
+	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
+	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
 
 	/* Enable ACPI I/O and power management.
 	 * Set SCI IRQ to IRQ9
@@ -175,7 +175,7 @@ static void i82801gx_power_options(device_t dev)
 	u8 reg8;
 	u16 reg16, pmbase;
 	u32 reg32;
-	char *state;
+	const char *state;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
@@ -238,9 +238,13 @@ static void i82801gx_power_options(device_t dev)
 
 	/* Enable CPU_SLP# and Intel Speedstep, set SMI# rate down */
 	reg16 = pci_read_config16(dev, GEN_PMCON_1);
-	reg16 &= ~((3 << 0) | (1 << 10));
-	reg16 |= (1 << 3) | (1 << 5);
-	reg16 |= (1 << 2);			// CLKRUN_EN
+	reg16 &= ~(3 << 0);	// SMI# rate 1 minute
+	reg16 |= (1 << 2);	// CLKRUN_EN - Mobile/Ultra only
+	reg16 |= (1 << 3);	// Speedstep Enable - Mobile/Ultra only
+	reg16 |= (1 << 5);	// CPUSLP_EN Desktop only
+	// another laptop wants this?
+	// reg16 &= ~(1 << 10);	// BIOS_PCI_EXP_EN - Desktop/Mobile only
+	reg16 |= (1 << 10);	// BIOS_PCI_EXP_EN - Desktop/Mobile only
 #if DEBUG_PERIODIC_SMIS
 	/* Set DEBUG_PERIODIC_SMIS in i82801gx.h to debug using
 	 * periodic SMIs.
@@ -259,15 +263,10 @@ static void i82801gx_power_options(device_t dev)
 
 	/* Set up power management block and determine sleep mode */
 	reg32 = inl(pmbase + 0x04); // PM1_CNT
-#if 0
-#if CONFIG_HAVE_ACPI_RESUME
-	acpi_slp_type = (((reg32 >> 10) & 7) == 5) ? 3 : 0;
-	printk_debug("PM1_CNT: 0x%08x --> acpi_sleep_type: %x\n",
-			reg32, acpi_slp_type);
-#endif
-#endif
-	reg32 |= (1 << 1); // enable C3->C0 transition on bus master
-	reg32 |= 1; // SCI_EN
+
+	reg32 &= ~(7 << 10);	// SLP_TYP
+	reg32 |= (1 << 1);	// enable C3->C0 transition on bus master
+	reg32 |= (1 << 0);	// SCI_EN
 	outl(reg32, pmbase + 0x04);
 }
 
@@ -308,10 +307,10 @@ static void enable_hpet(void)
 	u32 reg32;
 
 	/* Move HPET to default address 0xfed00000 and enable it */
-	reg32 = RCBA32(0x3404);
+	reg32 = RCBA32(HPTC);
 	reg32 |= (1 << 7); // HPET Address Enable
 	reg32 &= ~(3 << 0);
-	RCBA32(0x3404) = reg32;
+	RCBA32(HPTC) = reg32;
 }
 
 static void enable_clock_gating(void)
@@ -319,16 +318,18 @@ static void enable_clock_gating(void)
 	u32 reg32;
 
 	/* Enable Clock Gating for most devices */
-	reg32 = RCBA32(0x341c);
+	reg32 = RCBA32(CG);
 	reg32 |= (1 << 31);	// LPC clock gating
 	reg32 |= (1 << 30);	// PATA clock gating
 	// SATA clock gating
 	reg32 |= (1 << 27) | (1 << 26) | (1 << 25) | (1 << 24);
 	reg32 |= (1 << 23);	// AC97 clock gating
-	reg32 |= (1 << 20) | (1 << 19);	// USB EHCI clock gating
+	reg32 |= (1 << 19);	// USB EHCI clock gating
 	reg32 |= (1 << 3) | (1 << 1);	// DMI clock gating
 	reg32 |= (1 << 2);	// PCIe clock gating;
-	RCBA32(0x341c) = reg32;
+	reg32 &= ~(1 << 20); // No static clock gating for USB
+	reg32 &= ~( (1 << 29) | (1 << 28) ); // Disable UHCI clock gating
+	RCBA32(CG) = reg32;
 }
 
 #if CONFIG_HAVE_SMI_HANDLER
@@ -392,10 +393,16 @@ static void i82801gx_spi_init(void)
 	RCBA16(SPIBASE + 2) = spicontrol;
 }
 
-static void i82801gx_fixups(void)
+static void i82801gx_fixups(struct device *dev)
 {
 	/* This needs to happen after PCI enumeration */
 	RCBA32(0x1d40) |= 1;
+
+	/* USB Transient Disconnect Detect:
+	 * Prevent a SE0 condition on the USB ports from being
+	 * interpreted by the UHCI controller as a disconnect
+	 */
+	pci_write_config8(dev, 0xad, 0x3);
 }
 
 static void lpc_init(struct device *dev)
@@ -437,7 +444,8 @@ static void lpc_init(struct device *dev)
 	setup_i8259();
 
 	/* The OS should do this? */
-	// i8259_configure_irq_trigger(9, 1);
+	/* Interrupt 9 should be level triggered (SCI) */
+	i8259_configure_irq_trigger(9, 1);
 
 #if CONFIG_HAVE_SMI_HANDLER
 	i82801gx_lock_smm(dev);
@@ -445,7 +453,7 @@ static void lpc_init(struct device *dev)
 
 	i82801gx_spi_init();
 
-	i82801gx_fixups();
+	i82801gx_fixups(dev);
 }
 
 static void i82801gx_lpc_read_resources(device_t dev)

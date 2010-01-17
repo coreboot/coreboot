@@ -155,6 +155,34 @@ static void dump_gpe0_status(u32 gpe0_sts)
 	printk_debug("\n");
 }
 
+
+/**
+ * @brief read and clear ALT_GP_SMI_STS
+ * @return ALT_GP_SMI_STS register
+ */
+static u16 reset_alt_gp_smi_status(void)
+{
+	u16 reg16;
+
+	reg16 = inl(pmbase + ALT_GP_SMI_STS);
+	/* set status bits are cleared by writing 1 to them */
+	outl(reg16, pmbase + ALT_GP_SMI_STS);
+
+	return reg16;
+}
+
+static void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
+{
+	int i;
+	printk_debug("ALT_GP_SMI_STS: ");
+	for (i=15; i<= 0; i--) {
+		if (alt_gp_smi_sts & (1 << i)) printk_debug("GPI%d ", (i-16));
+	}
+	printk_debug("\n");
+}
+
+
+
 /**
  * @brief read and clear TCOx_STS
  * @return TCOx_STS registers
@@ -212,6 +240,7 @@ extern uint8_t smm_relocation_start, smm_relocation_end;
 void smm_relocate(void)
 {
 	u32 smi_en;
+	u16 pm1_en;
 
 	printk_debug("Initializing SMM handler...");
 
@@ -232,6 +261,7 @@ void smm_relocate(void)
 	dump_smi_status(reset_smi_status());
 	dump_pm1_status(reset_pm1_status());
 	dump_gpe0_status(reset_gpe0_status());
+	dump_alt_gp_smi_status(reset_alt_gp_smi_status());
 	dump_tco_status(reset_tco_status());
 
 	/* Enable SMI generation:
@@ -244,6 +274,10 @@ void smm_relocate(void)
 	 */
 
 	smi_en = 0; /* reset SMI enables */
+
+#if 0
+	smi_en |= LEGACY_USB2_EN | LEGACY_USB_EN;
+#endif
 	smi_en |= TCO_EN;
 	smi_en |= APMC_EN;
 #if DEBUG_PERIODIC_SMIS
@@ -259,6 +293,11 @@ void smm_relocate(void)
 	smi_en |= EOS | GBL_SMI_EN;
 
 	outl(smi_en, pmbase + SMI_EN);
+
+	pm1_en = 0;
+	pm1_en |= PWRBTN_EN;
+	pm1_en |= GBL_EN;
+	outw(pm1_en, pmbase + PM1_EN);
 
 	/**
 	 * There are several methods of raising a controlled SMI# via

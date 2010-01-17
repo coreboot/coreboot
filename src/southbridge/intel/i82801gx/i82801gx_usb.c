@@ -35,6 +35,10 @@ static void usb_init(struct device *dev)
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
 
+	// Erratum
+	pci_write_config8(dev, 0xca, 0x00);
+
+	// Yes. Another Erratum
 	reg8 = pci_read_config8(dev, 0xca);
 	reg8 |= (1 << 0);
 	pci_write_config8(dev, 0xca, reg8);

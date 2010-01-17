@@ -32,6 +32,8 @@
 /* TODO Make sure these don't get changed by stage2 */
 #define DEFAULT_GPIOBASE	0x0480
 #define DEFAULT_PMBASE		0x0500
+
+#define IO_APIC_ADDR		0xfec00000
 #define HPET_ADDR		0xfed00000
 #define DEFAULT_RCBA		0xfed1c000
 
@@ -276,7 +278,20 @@ extern void i82801gx_enable(device_t dev);
 
 /* ICH7 PMBASE */
 #define PM1_STS		0x00
+#define   WAK_STS	(1 << 15)
+#define   PCIEXPWAK_STS	(1 << 14)
+#define   PRBTNOR_STS	(1 << 11)
+#define   RTC_STS	(1 << 10)
+#define   PWRBTN_STS	(1 << 8)
+#define   GBL_STS	(1 << 5)
+#define   BM_STS	(1 << 4)
+#define   TMROF_STS	(1 << 0)
 #define PM1_EN		0x02
+#define   PCIEXPWAK_DIS	(1 << 14)
+#define   RTC_EN	(1 << 10)
+#define   PWRBTN_EN	(1 << 8)
+#define   GBL_EN	(1 << 5)
+#define   TMROF_EN	(1 << 0)
 #define PM1_CNT		0x04
 #define   SLP_EN	(1 << 13)
 #define   SLP_TYP	(7 << 10)
@@ -290,8 +305,24 @@ extern void i82801gx_enable(device_t dev);
 #define LV4		0x16
 #define PM2_CNT		0x20 // mobile only
 #define GPE0_STS	0x28
+#define   USB4_STS	(1 << 14)
+#define   PME_B0_STS	(1 << 13)
+#define   USB3_STS	(1 << 12)
+#define   PME_STS	(1 << 11)
+#define   BATLOW_STS	(1 << 10)
+#define   PCI_EXP_STS	(1 << 9)
+#define   RI_STS	(1 << 8)
+#define   SMB_WAK_STS	(1 << 7)
+#define   TCOSCI_STS	(1 << 6)
+#define   AC97_STS	(1 << 5)
+#define   USB2_STS	(1 << 4)
+#define   USB1_STS	(1 << 3)
+#define   SWGPE_STS	(1 << 2)
+#define   HOT_PLUG_STS	(1 << 1)
+#define   THRM_STS	(1 << 0)
 #define GPE0_EN		0x2c
 #define   PME_B0_EN	(1 << 13)
+#define   PME_EN	(1 << 11)
 #define SMI_EN		0x30
 #define   EL_SMI_EN	 (1 << 25) // Intel Quick Resume Technology
 #define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic

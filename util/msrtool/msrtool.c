@@ -208,7 +208,7 @@ int do_diff(const char *difffn) {
 		m1start = line + tmp + m1pos;
 		for (len = strlen(m1start) - 1; NULL != strchr("\r\n", m1start[len]); --len)
 			m1start[len] = 0;
-		if (!str2msr(m1start, &m1)) {
+		if (!str2msr(m1start, &m1, NULL)) {
 			fprintf(stderr, "%s:%d: invalid MSR value '%s'\n", difffn, linenum, m1start);
 			continue;
 		}
@@ -288,7 +288,7 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "missing value in -i argument!\n");
 				break;
 			}
-			if (!str2msr(++optarg, &msrval))
+			if (!str2msr(++optarg, &msrval, NULL))
 				fprintf(stderr, "invalid value in -i argument!\n");
 			break;
 		case 's':

@@ -193,7 +193,7 @@ int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu) {
  * Parse a hexadecimal string into an MSR value.
  *
  * Leading 0x or 0X is optional, the string is always parsed as hexadecimal.
- * Any non-hexadecimal character can be used to separate the high 32 bits and
+ * Any non-hexadecimal character except ' ' can separate the high 32 bits and
  * the low 32 bits. If there is such a separator, high and low values do not
  * need to be zero padded. If there is no separator, the last <=8 digits are
  * the low 32 bits and any characters before them are the high 32 bits.
@@ -205,15 +205,16 @@ int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu) {
  * @param str The string to parse. The string must be writable but will be
  * restored before return.
  * @param msr Pointer to the struct msr where the value will be stored.
+ * @param endptr If endpotr is not NULL, *endptr will point to after the MSR.
  * @return 1 on success, 0 on parse failure. msr is unchanged on failure.
  */
-uint8_t str2msr(char *str, struct msr *msr) {
+uint8_t str2msr(char *str, struct msr *msr, char **endptr) {
 	char c;
 	size_t len, lo;
 	if (0 == strncmp(str, "0x", 2) || 0 == strncmp(str, "0X", 2))
 		str += 2;
 	len = strspn(str, HEXCHARS);
-	if (len <= 8 && 0 == str[len]) {
+	if (len <= 8 && (0 == str[len] || ' ' == str[len])) {
 		msr->hi = 0;
 		lo = 0;
 	} else if (len <= 8) {
@@ -231,7 +232,7 @@ uint8_t str2msr(char *str, struct msr *msr) {
 		msr->hi = strtoul(str, NULL, 16);
 		str[lo] = c;
 	}
-	msr->lo = strtoul(str + lo, NULL, 16);
+	msr->lo = strtoul(str + lo, endptr, 16);
 	return 1;
 }
 

@@ -170,7 +170,7 @@ const struct msrdef *findmsrdef(const uint32_t addr);
 uint32_t msraddrbyname(const char *name);
 void dumpmsrdefs(const struct targetdef *t);
 int dumpmsrdefsvals(FILE *f, const struct targetdef *t, const uint8_t cpu);
-uint8_t str2msr(char *str, struct msr *msr);
+uint8_t str2msr(char *str, struct msr *msr, char **endptr);
 void decodemsr(const uint8_t cpu, const uint32_t addr, const struct msr val);
 uint8_t diff_msr(FILE *fout, const uint32_t addr, const struct msr a, const struct msr b);
 

@@ -93,6 +93,16 @@ static void *add_target(const struct targetdef *t) {
 	return targets;
 }
 
+static int found_system() {
+	if (!sys || (sys && !sys->name)) {
+		fprintf(stderr, "Unable to detect the current operating system!\n");
+		fprintf(stderr, "On Linux, please run 'modprobe msr' and try again.\n");
+		fprintf(stderr, "Please send a report or patch to coreboot@coreboot.org. Thanks for your help!\n");
+		fprintf(stderr, "\n");
+	}
+	return (sys && sys->name);
+}
+
 int do_stream(const char *streamfn, uint8_t ignoreinput) {
 	char tmpfn[20], line[256];
 	uint8_t tn;
@@ -132,6 +142,8 @@ int do_stream(const char *streamfn, uint8_t ignoreinput) {
 		}
 	}
 
+	if (!found_system())
+		goto done;
 	if (!sys->open(cpu, SYS_RDONLY))
 		goto done;
 	if (ignoreinput) {
@@ -180,9 +192,9 @@ done:
 }
 
 int do_diff(const char *difffn) {
-	char tmpfn[20], line[512], *m1start;
+	char tmpfn[20], line[512], *m1start, *m2start;
 	size_t len;
-	int ret = 1, tmp, m1pos;
+	int ret = 1, tmp, m1pos, sys_opened = 0;
 	FILE *fin = NULL, *fout = stdout;
 	uint8_t rev = 0;
 	uint32_t addr, linenum;
@@ -199,8 +211,6 @@ int do_diff(const char *difffn) {
 		return 1;
 	}
 
-	if (!sys->open(cpu, SYS_RDONLY))
-		goto done;
 	for (linenum = 1; NULL != fgets(line, sizeof(line), fin); ++linenum) {
 		tmp = strncmp("0x", line, 2) ? 0 : 2;
 		if (sscanf(line + tmp, "%8x %n%*x", &addr, &m1pos) < 1)
@@ -208,12 +218,24 @@ int do_diff(const char *difffn) {
 		m1start = line + tmp + m1pos;
 		for (len = strlen(m1start) - 1; NULL != strchr("\r\n", m1start[len]); --len)
 			m1start[len] = 0;
-		if (!str2msr(m1start, &m1, NULL)) {
-			fprintf(stderr, "%s:%d: invalid MSR value '%s'\n", difffn, linenum, m1start);
+		if (!str2msr(m1start, &m1, &m2start)) {
+			fprintf(stderr, "%s:%d: invalid MSR1 value '%s'\n", difffn, linenum, m1start);
 			continue;
 		}
-		if (!sys->rdmsr(cpu, addr, &m2))
-			goto done;
+		while (' ' == *m2start)
+			++m2start;
+		if (!str2msr(m2start, &m2, NULL)) {
+			fprintf(stderr, "%s:%d: invalid MSR2 value '%s' - reading from hardware!\n", difffn, linenum, m2start);
+			if (!sys_opened) {
+				if (!found_system())
+					goto done;
+				sys_opened = sys->open(cpu, SYS_RDONLY);
+				if (!sys_opened)
+					goto done;
+			}
+			if (!sys->rdmsr(cpu, addr, &m2))
+				goto done;
+		}
 		if (diff_msr(fout, addr, rev ? m2 : m1, rev ? m1 : m2))
 			fprintf(fout, "\n");
 	}
@@ -222,7 +244,8 @@ int do_diff(const char *difffn) {
 	else
 		ret = 0;
 done:
-	sys->close(cpu);
+	if (sys_opened)
+		sys->close(cpu);
 	if (strcmp(difffn, "-")) {
 		if (ret)
 			unlink(tmpfn);
@@ -351,13 +374,6 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	if (sys && !sys->name) {
-		fprintf(stderr, "Unable to detect the current operating system!\n");
-		fprintf(stderr, "On Linux, please do 'modprobe msr' and retry.\n");
-		fprintf(stderr, "Please send a report or patch to coreboot@coreboot.org. Thanks for your help!\n");
-		fprintf(stderr, "\n");
-	}
-
 	if (!targets_found || !targets) {
 		fprintf(stderr, "Unable to detect a known target; can not decode any MSRs! (Use -t to force)\n");
 		fprintf(stderr, "Please send a report or patch to coreboot@coreboot.org. Thanks for your help!\n");
@@ -369,9 +385,6 @@ int main(int argc, char *argv[]) {
 		decodemsr(cpu, addr, msrval);
 		return 0;
 	}
-
-	if (sys && !sys->name)
-		return 1;
 
 	if (listmsrs) {
 		if (streamfn)
@@ -388,9 +401,6 @@ int main(int argc, char *argv[]) {
 	if (streamfn)
 		return do_stream(streamfn, 0);
 
-	if (!sys->open(cpu, SYS_RDONLY))
-		return 1;
-
 	if (difffn) {
 		ret = do_diff(difffn);
 		goto done;
@@ -401,6 +411,11 @@ int main(int argc, char *argv[]) {
 		printf("\nNo mode or address(es) specified!\n");
 		goto done;
 	}
+
+	if (!found_system())
+		return 1;
+	if (!sys->open(cpu, SYS_RDONLY))
+		return 1;
 
 	for (; optind < argc; optind++) {
 		addr = msraddrbyname(argv[optind]);

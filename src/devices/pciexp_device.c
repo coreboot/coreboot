@@ -34,8 +34,16 @@ static void pciexp_tune_dev(device_t dev)
 		/* error... */
 		return;
 	}
-	// printk_debug("PCIe: tuning %s\n", dev_path(dev));
-	/* TODO: Implement PCI Express tuning. */
+#ifdef CONFIG_PCIE_TUNING
+	printk_debug("PCIe: tuning %s\n", dev_path(dev));
+
+	// TODO make this depending on ASPM
+	/* Enable ASPM Role Based Error Reporting */
+	u32 reg32;
+	reg32 = pci_read_config32(dev, cap + PCI_EXP_DEVCAP);
+	reg32 |= PCI_EXP_DEVCAP_RBER;
+	pci_write_config32(dev, cap + PCI_EXP_DEVCAP, reg32);
+#endif
 }
 
 unsigned int pciexp_scan_bus(struct bus *bus, 

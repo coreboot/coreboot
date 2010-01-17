@@ -1,0 +1,2 @@
+config SUPERIO_RENESAS_M3885X
+	bool

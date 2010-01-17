@@ -92,22 +92,29 @@ static void i945_detect_chipset(void)
 	u8 reg8;
 
 	printk_info("\nIntel(R) ");
-	reg8 = pci_read_config8(PCI_DEV(0, 0x00, 0), 0x8);
+
+	reg8 = ((pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe7) >> 5) & 4) | ((pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe4) >> 4) & 3);
 	switch (reg8) {
 	case 0:
 	case 1:
 		printk_info("82945G");
 		break;
 	case 2:
-		printk_info("82945G/GZ/GC");
+	case 3:
+		printk_info("82945P");
 		break;
-	case 0x80:
-	case 0x81:
-	case 0x82:
-		printk_info("82945P/PL");
+	case 4:
+		printk_info("82945GC");
+		break;
+	case 5:
+		printk_info("82945GZ");
+		break;
+	case 6:
+	case 7:
+		printk_info("82945PL");
 		break;
 	default:
-		printk_info("Unknown (%02x)", reg8);	/* Others unknown. */
+		break;
 	}
 	printk_info(" Chipset\n");
 
@@ -794,32 +801,26 @@ static void i945_setup_root_complex_topology(void)
 	reg32 |= (1 << 16);
 	EPBAR32(EPESD) = reg32;
 
-	EPBAR32(EPLE1D) |= (1 << 16);
-
-	EPBAR32(EPLE1D) |= (1 << 0);
+	EPBAR32(EPLE1D) |= (1 << 16) | (1 << 0);
 
 	EPBAR32(EPLE1A) = DEFAULT_DMIBAR;
-#if 0
-	EPBAR32(EPLE2D) |= (1 << 16);
-#endif
 
-	EPBAR32(EPLE2D) |= (1 << 0);
+	EPBAR32(EPLE2D) |= (1 << 16) | (1 << 0);
 
 	/* DMI Port Root Topology */
+
 	reg32 = DMIBAR32(DMILE1D);
 	reg32 &= 0x00ffffff;
-	DMIBAR32(DMILE1D) = reg32;
 
-	reg32 = DMIBAR32(DMILE1D);
 	reg32 &= 0xff00ffff;
 	reg32 |= (2 << 16);
-	DMIBAR32(DMILE1D) = reg32;
 
-	DMIBAR32(DMILE1D) |= (1 << 0);
+	reg32 |= (1 << 0);
+	DMIBAR32(DMILE1D) = reg32;
 
 	DMIBAR32(DMILE1A) = DEFAULT_RCBA;
 
-	DMIBAR32(DMILE2D) |= (1 << 0);
+	DMIBAR32(DMILE2D) |= (1 << 16) | (1 << 0);
 
 	DMIBAR32(DMILE2A) = DEFAULT_EPBAR;
 

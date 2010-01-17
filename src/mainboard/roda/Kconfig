@@ -1,0 +1,7 @@
+choice
+	prompt "Mainboard model"
+	depends on VENDOR_RODA
+
+source "src/mainboard/roda/rk886ex/Kconfig"
+
+endchoice

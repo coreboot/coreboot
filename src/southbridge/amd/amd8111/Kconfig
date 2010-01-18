@@ -19,6 +19,7 @@
 
 config SOUTHBRIDGE_AMD_AMD8111
 	bool
+	select IOAPIC
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
         string

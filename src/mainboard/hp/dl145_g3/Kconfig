@@ -12,7 +12,6 @@ config BOARD_HP_DL145_G3
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
 	select HAVE_HARD_RESET
-	select IOAPIC
 	select LIFT_BSP_APIC_ID
 	select BOARD_ROMSIZE_KB_512
 

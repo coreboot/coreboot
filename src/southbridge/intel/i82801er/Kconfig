@@ -1,2 +1,3 @@
 config SOUTHBRIDGE_INTEL_I82801ER
 	bool
+	select IOAPIC

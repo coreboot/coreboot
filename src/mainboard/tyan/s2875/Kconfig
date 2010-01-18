@@ -10,7 +10,6 @@ config BOARD_TYAN_S2875
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select BOARD_ROMSIZE_KB_512
-	select IOAPIC
 
 config MAINBOARD_DIR
 	string

@@ -36,13 +36,13 @@ Build Requirements
  * make
  * python
  * perl
- * ncurses
 
 Optional:
 
  * doxygen (for generating/viewing documentation)
  * iasl (for targets with ACPI support)
  * gdb (for better debugging facilities on some targets)
+ * ncurses (for 'make menuconfig')
 
 
 Building coreboot

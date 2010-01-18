@@ -154,8 +154,8 @@ config SERIAL_CPU_INIT
 	depends on BOARD_TYAN_S2912_FAM10
 
 config ACPI_SSDTX_NUM
-	hex
-	default 0x1f
+	int
+	default 31
 	depends on BOARD_TYAN_S2912_FAM10
 
 config RAMBASE

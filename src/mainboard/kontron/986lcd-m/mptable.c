@@ -33,8 +33,9 @@ void *smp_write_config_table(void *v)
         static const char oem[8] = "COREBOOT";
         static const char productid[12] = "986LCD-M    ";
         struct mp_config_table *mc;
+	struct device *riser = NULL, *firewire = NULL;
 	int i;
-	int max_pci_bus, isa_bus;
+	int max_pci_bus, firewire_bus = 0, riser_bus = 0, isa_bus;
 
         mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
         memset(mc, 0, sizeof(*mc));
@@ -54,8 +55,26 @@ void *smp_write_config_table(void *v)
         mc->reserved = 0;
 
         smp_write_processors(mc);
+	max_pci_bus=0;
 
-	max_pci_bus = 5; // XXX read me from bridges.
+	firewire = dev_find_device(0x104c, 0x8023, 0);
+	if (firewire) {
+		firewire_bus = firewire->bus->secondary;
+		printk_spew("Firewire device is on bus %x\n",
+				firewire_bus);
+		max_pci_bus = firewire_bus;
+	}
+
+	// If a riser card is used, this riser is detected on bus 4, so its secondary bus is the
+	// highest bus number on the pci bus.
+	riser = dev_find_device(0x3388, 0x0021, 0);
+	if (!riser)
+		riser = dev_find_device(0x3388, 0x0022, 0);
+	if (riser) {
+		riser_bus = riser->link[0].secondary;
+		printk_spew("Riser bus is %x\n", riser_bus);
+		max_pci_bus = riser_bus;
+	}
 
 	/* ISA bus follows */
 	isa_bus = max_pci_bus + 1;
@@ -98,20 +117,24 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x71, 0x2, 0x11);
 
 	/* Firewire 4:0.0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x0, 0x2, 0x10);
+	if (firewire) {
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, firewire_bus, 0x0, 0x2, 0x10);
+	}
 
-	/* Old riser card */
-	// riser slot top 5:8.0
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x20, 0x2, 0x14);
-	// riser slot middle 5:9.0
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x24, 0x2, 0x15);
-	// riser slot bottom 5:a.0
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x28, 0x2, 0x16);
+	if (riser) {
+		/* Old riser card */
+		// riser slot top 5:8.0
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x20, 0x2, 0x14);
+		// riser slot middle 5:9.0
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x24, 0x2, 0x15);
+		// riser slot bottom 5:a.0
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x28, 0x2, 0x16);
 
-	/* New Riser Card */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x30, 0x2, 0x14);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x34, 0x2, 0x15);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x5, 0x38, 0x2, 0x16);
+		/* New Riser Card */
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x30, 0x2, 0x14);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x34, 0x2, 0x15);
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, riser_bus, 0x38, 0x2, 0x16);
+	}
 
 	/* Onboard Ethernet */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x1, 0x0, 0x2, 0x10);

@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <console/console.h>
 #include <boot/tables.h>
+#include <x86emu/x86emu.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 #include "chip.h"
@@ -33,6 +34,49 @@ int add_mainboard_resources(struct lb_memory *mem)
 {
 	return add_northbridge_resources(mem);
 }
+
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+static int int15_handler(void)
+{
+#define BOOT_DISPLAY_DEFAULT	0
+#define BOOT_DISPLAY_CRT	(1 << 0)
+#define BOOT_DISPLAY_TV		(1 << 1)
+#define BOOT_DISPLAY_EFP	(1 << 2)
+#define BOOT_DISPLAY_LCD	(1 << 3)
+#define BOOT_DISPLAY_CRT2	(1 << 4)
+#define BOOT_DISPLAY_TV2	(1 << 5)
+#define BOOT_DISPLAY_EFP2	(1 << 6)
+#define BOOT_DISPLAY_LCD2	(1 << 7)
+
+	printk_debug("%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
+			  __func__, M.x86.R_AX, M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
+
+	switch (M.x86.R_AX) {
+	case 0x5f35: /* Boot Display */
+		M.x86.R_AX = 0x005f; // Success
+		M.x86.R_CL = BOOT_DISPLAY_DEFAULT;
+		break;
+	case 0x5f40: /* Boot Panel Type */
+		// M.x86.R_AX = 0x015f; // Supported but failed
+		M.x86.R_AX = 0x005f; // Success
+		M.x86.R_CL = 3; // Display ID
+		break;
+	default:
+		/* Interrupt was not handled */
+		return 0;
+	}
+
+	/* Interrupt handled */
+	return 1;
+}
+
+static void int15_install(void)
+{
+	typedef int (* yabel_handleIntFunc)(void);
+	extern yabel_handleIntFunc yabel_intFuncArray[256];
+	yabel_intFuncArray[0x15] = int15_handler;
+}
+#endif
 
 /* Hardware Monitor */
 
@@ -182,8 +226,13 @@ static void verb_setup(void)
 
 // mainboard_enable is executed as first thing after 
 // enumerate_buses().
+
 static void mainboard_enable(device_t dev) 
 {
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
+	/* Install custom int15 handler for VGA OPROM */
+	int15_install();
+#endif
 	verb_setup();
 	hwm_setup();
 }

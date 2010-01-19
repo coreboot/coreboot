@@ -71,7 +71,7 @@ biosemu_dev_get_addr_info(void)
 	translate_address_array[taa_index].bus = bus;
 	translate_address_array[taa_index].devfn = devfn;
 	translate_address_array[taa_index].cfg_space_offset = 0x30;
-	translate_address_array[taa_index].address = bios_device.dev->rom_address;
+	translate_address_array[taa_index].address = bios_device.img_addr;
 	translate_address_array[taa_index].size = 0; /* TODO: do we need the size? */
 	/* dont translate addresses... all addresses are 1:1 */
 	translate_address_array[taa_index].address_offset = 0;

@@ -14,19 +14,12 @@
 #include <string.h>
 
 #include <types.h>
-#ifndef CONFIG_COREBOOT_V2
-#include <cpu.h>
-#endif
 
 #include "debug.h"
 
 #include <x86emu/x86emu.h>
 #include <x86emu/regs.h>
-#ifdef CONFIG_COREBOOT_V2
 #include "../x86emu/prim_ops.h"
-#else
-#include <x86emu/prim_ops.h>	// for push_word
-#endif
 
 #include "biosemu.h"
 #include "io.h"
@@ -35,11 +28,7 @@
 #include "device.h"
 #include "pmm.h"
 
-#ifdef CONFIG_COREBOOT_V2
 #include "compat/rtas.h"
-#else
-#include <rtas.h>
-#endif
 
 #include <device/device.h>
 

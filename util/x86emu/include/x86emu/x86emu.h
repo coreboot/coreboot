@@ -43,7 +43,6 @@
 #define __X86EMU_X86EMU_H
 
 /* FIXME: redefine printk for the moment */
-#ifdef CONFIG_COREBOOT_V2
 #include <stddef.h>
 #include <console/console.h>
 #undef printk
@@ -51,9 +50,6 @@
 #if defined(CONFIG_DEBUG) && (CONFIG_DEBUG == 0)
 #undef CONFIG_DEBUG
 #endif
-#else
-#define printk printf
-#endif 
 
 #ifdef SCITECH
 #include "scitech.h"

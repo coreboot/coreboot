@@ -12,14 +12,8 @@
  *****************************************************************************/
 
 #include <types.h>
-#ifdef CONFIG_COREBOOT_V2
 #include "compat/rtas.h"
 #include "compat/time.h"
-#else
-#include <cpu.h>
-#include "rtas.h"
-#include <time.h>
-#endif
 #include "device.h"
 #include "debug.h"
 #include <x86emu/x86emu.h>
@@ -36,7 +30,7 @@ extern int write_io(void *, unsigned int, size_t);
 //defined in net-snk/kernel/timer.c
 extern u64 get_time(void);
 
-#ifdef COREBOOT_V2
+#ifdef CONFIG_ARCH_X86
 #include <arch/io.h>
 #else
 // these are not used, only needed for linking,  must be overridden using X86emu_setupPioFuncs

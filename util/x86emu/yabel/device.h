@@ -15,14 +15,8 @@
 #define DEVICE_LIB_H
 
 #include <types.h>
-#ifdef CONFIG_COREBOOT_V2
 #include <arch/byteorder.h>
 #include "compat/of.h"
-#else
-#include <cpu.h>
-#include <byteorder.h>
-#include "of.h"
-#endif
 #include "debug.h"
 
 

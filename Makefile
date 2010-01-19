@@ -3,6 +3,7 @@
 ##
 ## Copyright (C) 2008 Advanced Micro Devices, Inc.
 ## Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2009-2010 coresystems GmbH
 ##
 ## Redistribution and use in source and binary forms, with or without
 ## modification, are permitted provided that the following conditions
@@ -44,7 +45,6 @@ export config_g := $(sconfig)/config.g
 export KERNELVERSION      := 2.3
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
-export COREBOOT_V2	:= 1
 
 CONFIG_SHELL := sh
 KBUILD_DEFCONFIG := configs/defconfig
@@ -271,7 +271,6 @@ prepare2:
 	@printf "    GEN        build.h\n"
 	printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
 	printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_V2 \"$(COREBOOT_V2)\"\n" >> $(obj)/build.h
 	printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
 	printf "\n" >> $(obj)/build.h
 	printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h

@@ -11,10 +11,6 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
-#ifndef CONFIG_COREBOOT_V2
-#include <cpu.h>
-#endif
-
 #include "debug.h"
 
 u32 debug_flags = 0;

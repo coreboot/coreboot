@@ -14,9 +14,6 @@
  */
 
 #include <types.h>
-#ifndef CONFIG_COREBOOT_V2
-#include <config.h>
-#endif
 #include <string.h>
 #include <device/device.h>
 

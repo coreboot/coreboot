@@ -23,15 +23,10 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <string.h>
-#ifdef CONFIG_COREBOOT_V2
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/registers.h>
 #define printk(x...) do_printk(x)
-#else
-#include <console.h>
-#include <io.h>
-#endif
 
 enum {
 	PCIBIOS_CHECK = 0xb101,
@@ -88,11 +83,7 @@ int int1a_handler(struct eregs *regs)
 		vendorid = regs->edx;
 		devindex = regs->esi;
 		dev = 0;
-#ifdef CONFIG_COREBOOT_V2
 		while ((dev = dev_find_device(vendorid, devid, dev))) {
-#else
-		while ((dev = dev_find_pci_device(vendorid, devid, dev))) {
-#endif
 			if (devindex <= 0)
 				break;
 			devindex--;

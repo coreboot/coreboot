@@ -89,7 +89,6 @@ sed \
 	-e "/^CONFIG_SUPERIO_/ d" \
 	-e "/^CONFIG_GX1_VIDEOMODE_/ d" \
 	-e "/^CONFIG_CONSOLE_/ d" \
-	-e "/^CONFIG_COREBOOT_V4/ d" \
 	-e "/^CONFIG_PAYLOAD_/ d" \
 	-e "/^CONFIG_XIP_ROM_/ d" \
 	-e "/^CONFIG_MULTIBOOT/ d" \

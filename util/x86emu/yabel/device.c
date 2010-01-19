@@ -13,11 +13,7 @@
 
 
 #include "device.h"
-#ifdef CONFIG_COREBOOT_V2
 #include "compat/rtas.h"
-#else
-#include "rtas.h"
-#endif
 #include <string.h>
 #include "debug.h"
 
@@ -397,11 +393,7 @@ biosemu_dev_init(struct device * device)
 {
 	u8 rval = 0;
 	//init bios_device struct
-#ifdef CONFIG_COREBOOT_V2
 	DEBUG_PRINTF("%s\n", __func__);
-#else
-	DEBUG_PRINTF("%s(%s)\n", __func__, device->dtsname);
-#endif
 	memset(&bios_device, 0, sizeof(bios_device));
 
 #ifndef CONFIG_PCI_OPTION_ROM_RUN_YABEL

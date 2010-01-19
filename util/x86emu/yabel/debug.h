@@ -20,11 +20,7 @@ extern u32 debug_flags;
 extern void x86emu_dump_xregs(void);
 
 /* printf is not available in coreboot... use printk */
-#ifdef CONFIG_COREBOOT_V2
 #include <console/console.h>
-#else
-#include <console.h>
-#endif
 /* uurgs... yuck... x86emu/x86emu.h is redefining printk... we include it here
  * and use its redefinition of printk
  * TODO: FIX!!!! */

@@ -115,14 +115,6 @@ config HEAP_SIZE
 	hex
 	default 0x4000
 
-config COREBOOT_V2
-	bool
-	default y
-
-config COREBOOT_V4
-	bool
-	default y
-
 config DEBUG
 	bool
 	default n

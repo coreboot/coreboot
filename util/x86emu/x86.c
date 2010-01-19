@@ -20,14 +20,10 @@
 #include <device/pci.h>
 #include <string.h>
 
-#ifdef CONFIG_COREBOOT_V2
 #include <arch/io.h>
 #include <arch/registers.h>
 #include <console/console.h>
 #define printk(x...) do_printk(x)
-#else
-#include <console.h>
-#endif
 
 #include <arch/interrupt.h>
 

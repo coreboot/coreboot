@@ -235,6 +235,9 @@ static const struct superio_registers reg_table[] = {
 		{EOT}}},
 	{0xa23, "W83627UHG", {/* TODO: Not yet in sensors-detect */
 		{EOT}}},
+	{0xa51, "W83667HG", {
+		/* See also: http://lists.lm-sensors.org/pipermail/lm-sensors/2008-July/023683.html */
+		{EOT}}},
 
 	/* ID and rev */
 	{0x9771, "W83977F-A/G-A/AF-A/AG-A", {

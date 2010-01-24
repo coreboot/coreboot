@@ -1,7 +1,7 @@
 ##
 ## This file is part of the superiotool project.
 ##
-## Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2007-2010 Uwe Hermann <uwe@hermann-uwe.de>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -37,6 +37,15 @@ OBJS = superiotool.o ali.o fintek.o ite.o nsc.o smsc.o winbond.o
 OS_ARCH = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
 LDFLAGS = -framework IOKit -framework DirectIO -lpci -lz
+endif
+
+# Support for PCI-attached "Super I/Os" (e.g. in VIA VT82686A/B).
+CONFIG_PCI = yes
+
+ifeq ($(CONFIG_PCI), yes)
+CFLAGS += -DPCI_SUPPORT
+LDFLAGS += -lpci
+OBJS += pci.o via.o
 endif
 
 all: $(PROGRAM)

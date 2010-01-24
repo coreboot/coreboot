@@ -282,6 +282,13 @@ int main(int argc, char *argv[])
 
 	print_version();
 
+#ifdef PCI_SUPPORT
+	/* Do some basic libpci init. */
+	pacc = pci_alloc();
+	pci_init(pacc);
+	pci_scan_bus(pacc);
+#endif
+
 	for (i = 0; i < ARRAY_SIZE(superio_ports_table); i++) {
 		for (j = 0; superio_ports_table[i].ports[j] != EOT; j++)
 			superio_ports_table[i].probe_idregs(

@@ -2,7 +2,7 @@
  * This file is part of the superiotool project.
  *
  * Copyright (C) 2007 Carl-Daniel Hailfinger
- * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2007-2010 Uwe Hermann <uwe@hermann-uwe.de>
  * Copyright (C) 2008 Robinson P. Tryon <bishop.robinson@gmail.com>
  * Copyright (C) 2008-2009 coresystems GmbH
  *
@@ -35,6 +35,10 @@
 #if (defined(__MACH__) && defined(__APPLE__))
 /* DirectIO is available here: http://www.coresystems.de/en/directio */
 #include <DirectIO/darwinio.h>
+#endif
+
+#ifdef PCI_SUPPORT
+#include <pci/pci.h>
 #endif
 
 #if defined(__FreeBSD__)
@@ -102,6 +106,12 @@ struct superio_registers {
 	} ldn[LDNSIZE];
 };
 
+/* pci.c */
+#ifdef PCI_SUPPORT
+extern struct pci_access *pacc;
+struct pci_dev *pci_dev_find(uint16_t vendor, uint16_t device);
+#endif
+
 /* superiotool.c */
 uint8_t regval(uint16_t port, uint8_t reg);
 void regwrite(uint16_t port, uint8_t reg, uint8_t val);
@@ -141,6 +151,12 @@ void print_smsc_chips(void);
 void probe_idregs_winbond(uint16_t port);
 void print_winbond_chips(void);
 
+/* via.c */
+#ifdef PCI_SUPPORT
+void probe_idregs_via(uint16_t port);
+void print_via_chips(void);
+#endif
+
 /** Table of which config ports to probe for each Super I/O family. */
 static const struct {
 	void (*probe_idregs) (uint16_t port);
@@ -153,6 +169,9 @@ static const struct {
 	{probe_idregs_nsc,	{0x2e, 0x4e, 0x15c, EOT}},
 	{probe_idregs_smsc,	{0x2e, 0x4e, 0x162e, 0x164e, 0x3f0, 0x370, EOT}},
 	{probe_idregs_winbond,	{0x2e, 0x4e, 0x3f0, 0x370, 0x250, EOT}},
+#ifdef PCI_SUPPORT
+	{probe_idregs_via,	{0x3f0, EOT}},
+#endif
 };
 
 /** Table of functions to print out supported Super I/O chips. */
@@ -165,6 +184,9 @@ static const struct {
 	{print_nsc_chips},
 	{print_smsc_chips},
 	{print_winbond_chips},
+#ifdef PCI_SUPPORT
+	{print_via_chips},
+#endif
 };
 
 #endif

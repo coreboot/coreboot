@@ -21,6 +21,16 @@ config MAINBOARD_PART_NUMBER
 	default "pc2500e"
 	depends on BOARD_VIA_PC2500E
 
+config DCACHE_RAM_BASE
+	hex
+	default 0xc0000
+	depends on BOARD_VIA_PC2500E
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1000
+	depends on BOARD_VIA_PC2500E
+
 config RAMBASE
 	hex
 	default 0x4000

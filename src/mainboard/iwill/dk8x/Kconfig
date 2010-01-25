@@ -38,7 +38,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex
-	default 0x8
+	default 0x0
 	depends on BOARD_IWILL_DK8X
 
 config LB_CKS_RANGE_END
@@ -103,5 +103,5 @@ config SERIAL_CPU_INIT
 
 config IRQ_SLOT_COUNT
 	int
-	default 11
+	default 9
 	depends on BOARD_IWILL_DK8X

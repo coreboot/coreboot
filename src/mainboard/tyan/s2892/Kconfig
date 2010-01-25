@@ -20,7 +20,7 @@ config MAINBOARD_DIR
 
 config APIC_ID_OFFSET
 	hex
-	default 0x10
+	default 0x0
 	depends on BOARD_TYAN_S2892
 
 config SB_HT_CHAIN_ON_BUS0

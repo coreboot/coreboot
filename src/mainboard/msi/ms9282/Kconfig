@@ -36,7 +36,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex	
-	default 16
+	default 0x10
 	depends on BOARD_MSI_MS9282
 
 config SB_HT_CHAIN_ON_BUS0

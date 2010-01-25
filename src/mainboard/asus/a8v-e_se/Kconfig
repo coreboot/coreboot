@@ -104,11 +104,6 @@ config HAVE_OPTION_TABLE
 	default n
 	depends on BOARD_ASUS_A8V_E_SE
 
-config IRQ_SLOT_COUNT
-	int
-	default 13
-	depends on BOARD_ASUS_A8V_E_SE
-
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1043

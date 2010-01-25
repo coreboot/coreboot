@@ -29,7 +29,7 @@ config HAVE_OPTION_TABLE
 
 config IRQ_SLOT_COUNT
 	int
-	default 7
+	default 9
 	depends on BOARD_DIGITALLOGIC_MSM800SEV
 
 config DCACHE_RAM_BASE

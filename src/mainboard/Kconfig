@@ -287,6 +287,11 @@ config MAINBOARD_VENDOR
 	default "Roda"
 	depends on VENDOR_RODA
 
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x4352
+	depends on VENDOR_RODA
+
 config MAINBOARD_VENDOR
 	string
 	default "Soyo"
@@ -300,6 +305,11 @@ config MAINBOARD_VENDOR
 config MAINBOARD_VENDOR
 	string
 	default "Supermicro"
+	depends on VENDOR_SUPERMICRO
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x15d9
 	depends on VENDOR_SUPERMICRO
 
 config MAINBOARD_VENDOR

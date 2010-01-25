@@ -6,3 +6,8 @@ config CPU_SOCKET_TYPE
 	hex
 	default 0x10
 	depends on CPU_AMD_SOCKET_754
+
+config DIMM_SUPPORT
+	hex
+	default 0x108
+	depends on CPU_AMD_SOCKET_754

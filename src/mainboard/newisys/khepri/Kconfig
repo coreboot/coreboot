@@ -32,7 +32,7 @@ config DCACHE_RAM_SIZE
 
 config APIC_ID_OFFSET
 	hex
-	default 0x10
+	default 0x0
 	depends on BOARD_NEWISYS_KHEPRI
 
 config K8_REV_F_SUPPORT
@@ -97,7 +97,7 @@ config SB_HT_CHAIN_ON_BUS0
 
 config IRQ_SLOT_COUNT
 	int
-	default 11
+	default 9
 	depends on BOARD_NEWISYS_KHEPRI
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID

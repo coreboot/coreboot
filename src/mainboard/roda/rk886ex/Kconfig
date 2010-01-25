@@ -14,8 +14,9 @@ config BOARD_RODA_RK886EX
 	select USE_PRINTK_IN_CAR
 	select AP_IN_SIPI_WAIT
 	select UDELAY_LAPIC
-	select HAVE_ACPI_TABLES
 	select HAVE_SMI_HANDLER
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
 	select BOARD_ROMSIZE_KB_1024
 
 config MAINBOARD_DIR
@@ -66,4 +67,9 @@ config MAX_CPUS
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
+	depends on BOARD_RODA_RK886EX
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x6886
 	depends on BOARD_RODA_RK886EX

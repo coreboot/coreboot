@@ -37,7 +37,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex	
-	default 16
+	default 0x10
 	depends on BOARD_TYAN_S2912
 
 config MEM_TRAIN_SEQ
@@ -138,4 +138,9 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 config IRQ_SLOT_COUNT
 	int
 	default 11
+	depends on BOARD_TYAN_S2912
+
+config ACPI_SSDTX_NUM
+	int
+	default 3
 	depends on BOARD_TYAN_S2912

@@ -38,7 +38,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex
-	default 0x8
+	default 0x0
 	depends on BOARD_IBM_E325
 
 config LB_CKS_RANGE_END

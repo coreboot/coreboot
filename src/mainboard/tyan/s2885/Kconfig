@@ -89,5 +89,5 @@ config WAIT_BEFORE_CPUS_INIT
 
 config IRQ_SLOT_COUNT
 	int
-	default 9
+	default 11
 	depends on BOARD_TYAN_S2885

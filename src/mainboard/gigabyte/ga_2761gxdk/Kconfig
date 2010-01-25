@@ -36,12 +36,12 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex	
-	default 16
+	default 0x10
 	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config MEM_TRAIN_SEQ
 	int
-	default 1
+	default 2
 	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config SB_HT_CHAIN_ON_BUS0

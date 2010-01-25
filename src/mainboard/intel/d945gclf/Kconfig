@@ -28,6 +28,7 @@ config BOARD_INTEL_D945GCLF
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
 	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
 	select AP_IN_SIPI_WAIT
@@ -89,9 +90,4 @@ config MAX_CPUS
 config MAX_PHYSICAL_CPUS
 	int
 	default 2
-	depends on BOARD_INTEL_D945GCLF
-
-config HAVE_INIT_TIMER
-	bool
-	default n
 	depends on BOARD_INTEL_D945GCLF

@@ -46,6 +46,6 @@ config HAVE_OPTION_TABLE
 
 config IRQ_SLOT_COUNT
 	int
-	default 5
+	default 6
 	depends on BOARD_GIGABYTE_GA_6BXC
 

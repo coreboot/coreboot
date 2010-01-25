@@ -40,7 +40,7 @@ config MAX_CPUS
 
 config IRQ_SLOT_COUNT
 	int
-	default 9
+	default 18
 	depends on BOARD_INTEL_JARRELL
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID

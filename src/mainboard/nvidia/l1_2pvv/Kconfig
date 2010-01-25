@@ -37,7 +37,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 
 config APIC_ID_OFFSET
 	hex	
-	default 16
+	default 0x10
 	depends on BOARD_NVIDIA_L1_2PVV
 
 config MEM_TRAIN_SEQ

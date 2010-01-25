@@ -92,7 +92,7 @@ config USE_INIT
 
 config IRQ_SLOT_COUNT
 	int
-	default 11
+	default 22
 	depends on BOARD_TYAN_S4882
 
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID

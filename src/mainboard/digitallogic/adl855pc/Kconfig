@@ -23,8 +23,3 @@ config IRQ_SLOT_COUNT
 	int
 	default 5
 	depends on BOARD_DIGITALLOGIC_ADL855PC
-
-config HAVE_INIT_TIMER
-	bool
-	default n
-	depends on BOARD_DIGITALLOGIC_ADL855PC

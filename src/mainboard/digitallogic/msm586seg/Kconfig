@@ -19,8 +19,3 @@ config IRQ_SLOT_COUNT
 	int
 	default 2
 	depends on BOARD_DIGITALLOGIC_MSM586SEG
-
-config HAVE_INIT_TIMER
-	bool
-	default n
-	depends on BOARD_DIGITALLOGIC_MSM586SEG

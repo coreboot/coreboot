@@ -77,6 +77,8 @@ sed \
 	-e "/^CONFIG_STACK_SIZE / d" \
 	-e "/^CONFIG_GDB_STUB / d" \
 	-e "/^CONFIG_VIDEO_MB / d" \
+	-e "/^CONFIG_IOAPIC / d" \
+	-e "/^CONFIG_HAVE_MOVNTI / d" \
 	-e "/^CONFIG_PCIE_CONFIGSPACE_HOLE / d" \
 	$A/old > $A/old.filtered
 sed \
@@ -85,6 +87,8 @@ sed \
 	-e "/^CONFIG_[MAXIMUMDEFAULT]*_CONSOLE_LOGLEVEL_/ d" \
 	-e "/^CONFIG_COREBOOT_ROMSIZE_/ d" \
 	-e "/^CONFIG_BOARD_/ d" \
+	-e "/^CONFIG_IOAPIC / d" \
+	-e "/^CONFIG_HAVE_MOVNTI / d" \
 	-e "/^CONFIG_[NORTHSOUTH]*BRIDGE_/ d" \
 	-e "/^CONFIG_SUPERIO_/ d" \
 	-e "/^CONFIG_GX1_VIDEOMODE_/ d" \
@@ -103,6 +107,7 @@ sed \
 	-e "/^CONFIG_VIDEO_MB / d" \
 	-e "/^CONFIG_EXPERT / d" \
 	-e "/^CONFIG_SSE / d" \
+	-e "/^CONFIG_MMX / d" \
 	-e "/^CONFIG_VGA_BIOS / d" \
 	-e "/^CONFIG_WARNINGS_ARE_ERRORS / d" \
 	-e "/^CONFIG_TINY_BOOTBLOCK / d" \

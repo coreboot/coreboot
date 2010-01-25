@@ -57,7 +57,7 @@ config MMCONF_BASE_ADDRESS
 
 config IRQ_SLOT_COUNT
 	int
-	default 18
+	default 9
 	depends on BOARD_INTEL_EAGLEHEIGHTS
 
 config MAX_CPUS

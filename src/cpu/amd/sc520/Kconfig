@@ -6,3 +6,7 @@ config UDELAY_IO
 	default n
 	depends on CPU_AMD_SC520
 
+config HAVE_INIT_TIMER
+	bool
+	default n
+	depends on CPU_AMD_SC520

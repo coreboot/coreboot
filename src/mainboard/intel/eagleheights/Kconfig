@@ -11,7 +11,6 @@ config BOARD_INTEL_EAGLEHEIGHTS
 	select MMCONF_SUPPORT
 	select USE_PRINTK_IN_CAR
 	select UDELAY_TSC
-	select TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 	select AP_IN_SIPI_WAIT
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_1024
@@ -61,6 +60,11 @@ config IRQ_SLOT_COUNT
 	default 18
 	depends on BOARD_INTEL_EAGLEHEIGHTS
 
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_INTEL_EAGLEHEIGHTS
+	
 config MAX_PHYSICAL_CPUS
 	int
 	default 2

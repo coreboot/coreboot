@@ -11,7 +11,6 @@ config BOARD_MSI_MS9282
 	select USE_PRINTK_IN_CAR
 	select USE_DCACHE_RAM
 	select HAVE_HARD_RESET
-	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select K8_REV_F_SUPPORT
 	select BOARD_ROMSIZE_KB_512
  
@@ -42,7 +41,7 @@ config APIC_ID_OFFSET
 
 config SB_HT_CHAIN_ON_BUS0
 	int
-	default 2
+	default 1
 	depends on BOARD_MSI_MS9282
 
 config LB_CKS_RANGE_START
@@ -87,12 +86,12 @@ config HW_MEM_HOLE_SIZEK
 
 config MAX_CPUS
 	int
-	default 2
+	default 4
 	depends on BOARD_MSI_MS9282
 
 config MAX_PHYSICAL_CPUS
 	int
-	default 1
+	default 2
 	depends on BOARD_MSI_MS9282
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
@@ -107,7 +106,7 @@ config HT_CHAIN_UNITID_BASE
 
 config HT_CHAIN_END_UNITID_BASE
 	hex	
-	default 0x0
+	default 0x20
 	depends on BOARD_MSI_MS9282
 
 config USE_INIT

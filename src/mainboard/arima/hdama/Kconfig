@@ -72,7 +72,7 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config SB_HT_CHAIN_ON_BUS0
 	int
-	default 1
+	default 0
 	depends on BOARD_ARIMA_HDAMA
 
 config HT_CHAIN_END_UNITID_BASE

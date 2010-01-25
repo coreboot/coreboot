@@ -79,17 +79,17 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config SB_HT_CHAIN_ON_BUS0
 	int
-	default 2
+	default 1
 	depends on BOARD_TECHNEXION_TIM8690
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
-	default 0x6
+	default 0x1
 	depends on BOARD_TECHNEXION_TIM8690
 
 config HT_CHAIN_UNITID_BASE
 	hex
-	default 0xa
+	default 0x0
 	depends on BOARD_TECHNEXION_TIM8690
 
 config USE_INIT

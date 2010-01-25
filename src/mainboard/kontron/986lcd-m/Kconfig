@@ -62,6 +62,11 @@ config IRQ_SLOT_COUNT
 	default 18
 	depends on BOARD_KONTRON_986LCD_M
 
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_KONTRON_986LCD_M
+
 config MAX_PHYSICAL_CPUS
 	int
 	default 2

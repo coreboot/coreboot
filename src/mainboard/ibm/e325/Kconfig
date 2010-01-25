@@ -78,17 +78,17 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 
 config SB_HT_CHAIN_ON_BUS0
 	int
-	default 2
+	default 0
 	depends on BOARD_IBM_E325
 
 config HT_CHAIN_END_UNITID_BASE
 	hex
-	default 0x6
+	default 0x20
 	depends on BOARD_IBM_E325
 
 config HT_CHAIN_UNITID_BASE
 	hex
-	default 0xa
+	default 0x1
 	depends on BOARD_IBM_E325
 
 config USE_INIT

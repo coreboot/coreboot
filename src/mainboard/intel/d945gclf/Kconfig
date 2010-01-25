@@ -34,7 +34,7 @@ config BOARD_INTEL_D945GCLF
 	select UDELAY_LAPIC
 	select HAVE_ACPI_TABLES
 	select HAVE_SMI_HANDLER
-	select BOARD_ROMSIZE_KB_1024
+	select BOARD_ROMSIZE_KB_512
 
 config MAINBOARD_DIR
 	string
@@ -79,6 +79,11 @@ config MMCONF_BASE_ADDRESS
 config IRQ_SLOT_COUNT
 	int
 	default 18
+	depends on BOARD_INTEL_D945GCLF
+
+config MAX_CPUS
+	int
+	default 4
 	depends on BOARD_INTEL_D945GCLF
 
 config MAX_PHYSICAL_CPUS

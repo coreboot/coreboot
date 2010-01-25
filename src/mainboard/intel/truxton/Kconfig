@@ -51,3 +51,7 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	default 0x2680
 	depends on BOARD_INTEL_TRUXTON
 
+config MAX_CPUS
+	int
+	default 4
+	depends on BOARD_INTEL_TRUXTON

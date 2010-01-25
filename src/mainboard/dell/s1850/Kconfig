@@ -44,12 +44,12 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 
 config MAX_CPUS
 	int
-	default 2
+	default 4
 	depends on BOARD_DELL_S1850
 
 config MAX_PHYSICAL_CPUS
 	int
-	default 2
+	default 1
 	depends on BOARD_DELL_S1850
 
 config USE_INIT

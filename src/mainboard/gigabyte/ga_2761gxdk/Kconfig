@@ -11,7 +11,6 @@ config BOARD_GIGABYTE_GA_2761GXDK
 	select USE_DCACHE_RAM
 	select HAVE_HARD_RESET
 	select LIFT_BSP_APIC_ID
-	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select K8_REV_F_SUPPORT
 	select BOARD_ROMSIZE_KB_512
  
@@ -112,7 +111,7 @@ config HT_CHAIN_UNITID_BASE
 
 config HT_CHAIN_END_UNITID_BASE
 	hex	
-	default 0x0
+	default 0x20
 	depends on BOARD_GIGABYTE_GA_2761GXDK
 
 config USE_INIT

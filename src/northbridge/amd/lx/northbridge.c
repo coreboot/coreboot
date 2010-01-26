@@ -414,6 +414,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* Report the memory regions */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
+		ram_resource(dev, idx++, 768, 1024); // c0000-fffff are usable
 		ram_resource(dev, idx++, 1024, tomk - 1024);	// Systop - 1 MB -> KB
 
 #if CONFIG_WRITE_HIGH_TABLES==1

@@ -1,6 +1,8 @@
 CC=gcc
+CFLAGS=-O2 -Wall -Wextra -Wshadow -Wno-sign-compare
 
-mptable: mptable.o
-	$(CC) -o mptable mptable.o
+mptable: mptable.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 clean:
-	\rm *.o mptable
+	rm -f mptable

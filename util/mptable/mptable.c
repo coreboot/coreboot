@@ -27,11 +27,6 @@
  * mptable.c
  */
 
-#ifndef lint
-static const char rcsid[] =
-	"$Id$";
-#endif /* not lint */
-
 #define VMAJOR			2
 #define VMINOR			0
 #define VDELTA			15
@@ -53,6 +48,7 @@ static const char rcsid[] =
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #define SEP_LINE \
 "\n-------------------------------------------------------------------------------\n"
@@ -97,7 +93,7 @@ enum busTypes {
 };
 
 typedef struct BUSTYPENAME {
-    u_char	type;
+    uint8_t	type;
     char	name[ 7 ];
 } busTypeName;
 
@@ -135,8 +131,8 @@ char* whereStrings[] = {
 };
 
 typedef struct TABLE_ENTRY {
-    u_char	type;
-    u_char	length;
+    uint8_t	type;
+    uint8_t	length;
     char	name[ 32 ];
 } tableEntry;
 
@@ -158,69 +154,69 @@ tableEntry extendedtableEntryTypes[] =
 
 /* MP Floating Pointer Structure */
 typedef struct MPFPS {
-    char	signature[ 4 ];
-    void*	pap;
-    u_char	length;
-    u_char	spec_rev;
-    u_char	checksum;
-    u_char	mpfb1;
-    u_char	mpfb2;
-    u_char	mpfb3;
-    u_char	mpfb4;
-    u_char	mpfb5;
+    uint8_t	signature[ 4 ];
+    uint32_t	pap;
+    uint8_t	length;
+    uint8_t	spec_rev;
+    uint8_t	checksum;
+    uint8_t	mpfb1;
+    uint8_t	mpfb2;
+    uint8_t	mpfb3;
+    uint8_t	mpfb4;
+    uint8_t	mpfb5;
 } mpfps_t;
 
 /* MP Configuration Table Header */
 typedef struct MPCTH {
-    char	signature[ 4 ];
-    u_short	base_table_length;
-    u_char	spec_rev;
-    u_char	checksum;
-    u_char	oem_id[ 8 ];
-    u_char	product_id[ 12 ];
-    void*	oem_table_pointer;
-    u_short	oem_table_size;
-    u_short	entry_count;
-    void*	apic_address;
-    u_short	extended_table_length;
-    u_char	extended_table_checksum;
-    u_char	reserved;
+    uint8_t	signature[ 4 ];
+    uint16_t	base_table_length;
+    uint8_t	spec_rev;
+    uint8_t	checksum;
+    uint8_t	oem_id[ 8 ];
+    uint8_t	product_id[ 12 ];
+    uint32_t	oem_table_pointer;
+    uint16_t	oem_table_size;
+    uint16_t	entry_count;
+    uint32_t	apic_address;
+    uint16_t	extended_table_length;
+    uint8_t	extended_table_checksum;
+    uint8_t	reserved;
 } mpcth_t;
 
 
 typedef struct PROCENTRY {
-    u_char	type;
-    u_char	apicID;
-    u_char	apicVersion;
-    u_char	cpuFlags;
-    u_long	cpuSignature;
-    u_long	featureFlags;
-    u_long	reserved1;
-    u_long	reserved2;
+    uint8_t	type;
+    uint8_t	apicID;
+    uint8_t	apicVersion;
+    uint8_t	cpuFlags;
+    uint32_t	cpuSignature;
+    uint32_t	featureFlags;
+    uint32_t	reserved1;
+    uint32_t	reserved2;
 } ProcEntry;
 
 typedef struct BUSENTRY {
-    u_char	type;
-    u_char	busID;
-    char	busType[ 6 ];
+    uint8_t	type;
+    uint8_t	busID;
+    uint8_t	busType[ 6 ];
 } BusEntry;
 
 typedef struct IOAPICENTRY {
-    u_char	type;
-    u_char	apicID;
-    u_char	apicVersion;
-    u_char	apicFlags;
-    void*	apicAddress;
+    uint8_t	type;
+    uint8_t	apicID;
+    uint8_t	apicVersion;
+    uint8_t	apicFlags;
+    uint32_t	apicAddress;
 } IOApicEntry;
 
 typedef struct INTENTRY {
-    u_char	type;
-    u_char	intType;
-    u_short	intFlags;
-    u_char	srcBusID;
-    u_char	srcBusIRQ;
-    u_char	dstApicID;
-    u_char	dstApicINT;
+    uint8_t	type;
+    uint8_t	intType;
+    uint16_t	intFlags;
+    uint8_t	srcBusID;
+    uint8_t	srcBusIRQ;
+    uint8_t	dstApicID;
+    uint8_t	dstApicINT;
 } IntEntry;
 
 
@@ -229,42 +225,42 @@ typedef struct INTENTRY {
  */
 
 typedef struct SASENTRY {
-    u_char	type;
-    u_char	length;
-    u_char	busID;
-    u_char	addressType;
-    u_int64_t	addressBase;
-    u_int64_t	addressLength;
+    uint8_t	type;
+    uint8_t	length;
+    uint8_t	busID;
+    uint8_t	addressType;
+    uint64_t	addressBase;
+    uint64_t	addressLength;
 } SasEntry;
 
 
 typedef struct BHDENTRY {
-    u_char	type;
-    u_char	length;
-    u_char	busID;
-    u_char	busInfo;
-    u_char	busParent;
-    u_char	reserved[ 3 ];
+    uint8_t	type;
+    uint8_t	length;
+    uint8_t	busID;
+    uint8_t	busInfo;
+    uint8_t	busParent;
+    uint8_t	reserved[ 3 ];
 } BhdEntry;
 
 
 typedef struct CBASMENTRY {
-    u_char	type;
-    u_char	length;
-    u_char	busID;
-    u_char	addressMod;
-    u_int	predefinedRange;
+    uint8_t	type;
+    uint8_t	length;
+    uint8_t	busID;
+    uint8_t	addressMod;
+    uint32_t	predefinedRange;
 } CbasmEntry;
 
 
-typedef unsigned long vm_offset_t;
+typedef uint32_t vm_offset_t;
 
 static void apic_probe( vm_offset_t* paddr, int* where );
 
 static void MPConfigDefault( int featureByte );
 
 static void MPFloatingPointer( vm_offset_t paddr, int where, mpfps_t* mpfps );
-static void MPConfigTableHeader( void* pap );
+static void MPConfigTableHeader( uint32_t pap );
 
 static int readType( void );
 static void seekEntry( vm_offset_t addr );
@@ -282,7 +278,7 @@ static void cbasmEntry( void );
 
 static void doOptionList( void );
 static void doDmesg( void );
-static void pnstr( char* s, int c );
+static void pnstr( uint8_t* s, int c );
 
 /* global data */
 int	pfd;		/* physical /dev/mem fd */
@@ -418,9 +414,6 @@ main( int argc, char *argv[] )
     mpfps_t	mpfps;
     int		defaultConfig;
 
-    extern int	optreset;
-    int		ch;
-
     /* announce ourselves */
     
     if (verbose) puts( SEP_LINE2 );
@@ -432,19 +425,18 @@ main( int argc, char *argv[] )
     /* Ron hates getopt() */
 
     for(argc--, argv++; argc; argc--, argv++){
-      char *optarg = argv[0];
-      if ( strcmp( optarg, "-dmesg") == 0 ) {
+      if ( strcmp( argv[0], "-dmesg") == 0 ) {
 	dmesg = 1;
       } else 
-	if ( strcmp( optarg, "-help") == 0 )
+	if ( strcmp( argv[0], "-help") == 0 )
 	  {
 	    usage();
 	  } else
-	    if ( strcmp( optarg, "-grope") == 0 ){
+	    if ( strcmp( argv[0], "-grope") == 0 ){
 	      grope = 1;
-	    } else  if ( strcmp( optarg, "-verbose") == 0 )
+	    } else  if ( strcmp( argv[0], "-verbose") == 0 )
 	      verbose = 1;
-	    else  if ( strcmp( optarg, "-noisy") == 0 )
+	    else  if ( strcmp( argv[0], "-noisy") == 0 )
 	      noisy = 1;
 	    else usage();
     }
@@ -787,7 +779,7 @@ MPConfigDefault( int featureByte )
  * 
  */
 static void
-MPConfigTableHeader( void* pap )
+MPConfigTableHeader( uint32_t pap )
 {
     vm_offset_t paddr;
     mpcth_t	cth;
@@ -1239,8 +1231,8 @@ sasEntry( void )
 	break;
     }
 
-    printf( " address base: 0x%qx\n", entry.addressBase );
-    printf( " address range: 0x%qx\n", entry.addressLength );
+    printf( " address base: 0x%lx\n", entry.addressBase );
+    printf( " address range: 0x%lx\n", entry.addressLength );
 }
 
 
@@ -1315,13 +1307,13 @@ doOptionList( void )
  * 
  */
 static void
-pnstr( char* s, int c )
+pnstr( uint8_t* s, int c )
 {
-    char string[ MAXPNSTR + 1 ];
+    uint8_t string[ MAXPNSTR + 1 ];
 
     if ( c > MAXPNSTR )
         c = MAXPNSTR;
-    strncpy( string, s, c );
+    strncpy( (char *)string, (char *)s, c );
     string[ c ] = '\0';
     printf( "%s", string );
 }

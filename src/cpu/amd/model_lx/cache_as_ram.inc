@@ -178,31 +178,28 @@ DCacheSetupGood:
 	call	cache_as_ram_main
 done_cache_as_ram_main:
 
-	/* If you wanted to maintain the stack in memory you would need to set the tags as dirty
-	  so the wbinvd would push out the old stack contents to memory */
-	/* Clear the cache, the following code from crt0.S.lb will setup a new stack*/
+        /* We now run over the stack-in-cache, copying it back to itself to invalidate the cache */
+
+        push   %edi
+        mov    $(CONFIG_DCACHE_RAM_SIZE/4),%ecx
+        push   %esi
+        mov    $(CONFIG_DCACHE_RAM_BASE),%edi
+        mov    %edi,%esi
+        cld
+        rep movsl %ds:(%esi),%es:(%edi)
+        pop    %esi
+        pop    %edi
+
+	/* Clear the cache out to ram */
 	wbinvd
-
-/* the following code is from crt0.S.lb */
-/* This takes the place of the post-CAR funtions that the K8 uses to setup the stack and copy LB low.*/
-
-#ifndef CONSOLE_DEBUG_TX_STRING
-	/* uses:	 esp, ebx, ax, dx */
-# define __CRT_CONSOLE_TX_STRING(string) \
-	mov	string, %ebx	; \
-	CALLSP(crt_console_tx_string)
-
-# if defined(CONFIG_TTYS0_BASE) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
-#  define CONSOLE_DEBUG_TX_STRING(string)        __CRT_CONSOLE_TX_STRING(string)
-# else
-#  define CONSOLE_DEBUG_TX_STRING(string)
-# endif
-#endif
+        /* re-enable the cache */
+        movl    %cr0, %eax
+        xorl             $(CR0_CD + CR0_NW), %eax        /* clear  the CD and NW bits */
+        movl    %eax, %cr0
 
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
 __main:
-	CONSOLE_DEBUG_TX_STRING($str_copying_to_ram)
 
 	/*
 	 *	Copy data into RAM and clear the BSS. Since these segments
@@ -218,9 +215,6 @@ __main:
 	 * Normally this is copying from FLASH ROM to RAM.
 	 */
 	movl	%ebp, %esi
-	/* FIXME: look for a proper place for the stack */
-	movl	$0x4000000, %esp
-	movl	%esp, %ebp
 	pushl	%esi
 	pushl $str_coreboot_ram_name
 	call cbfs_and_run_core

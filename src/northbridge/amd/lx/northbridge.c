@@ -411,11 +411,11 @@ static void pci_domain_set_resources(device_t dev)
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
 		tomk = get_systop() / 1024;
-		/* Report the memory regions */
+		/* Report the memory regions
+		   All memory up to systop except 0xa0000-0xbffff */
 		idx = 10;
 		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 768, 1024); // c0000-fffff are usable
-		ram_resource(dev, idx++, 1024, tomk - 1024);	// Systop - 1 MB -> KB
+		ram_resource(dev, idx++, 768, tomk - 768);	// Systop - 0xc0000 -> KB
 
 #if CONFIG_WRITE_HIGH_TABLES==1
 		/* Leave some space for ACPI, PIRQ and MP tables */

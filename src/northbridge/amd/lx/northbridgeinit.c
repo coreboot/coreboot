@@ -99,7 +99,6 @@ struct msrinit GeodeLinkPriorityTable[] = {
 	{0x0FFFFFFFF, {0x0FFFFFFFF, 0x0FFFFFFFF}},	/*  END */
 };
 
-extern int sizeram(void);
 
 static void writeglmsr(struct gliutable *gl)
 {
@@ -122,7 +121,6 @@ static void ShadowInit(struct gliutable *gl)
 	}
 }
 
-extern int sizeram(void);
 static void SysmemInit(struct gliutable *gl)
 {
 	msr_t msr;
@@ -749,7 +747,6 @@ uint32_t get_systop(void)
 /* ***************************************************************************/
 void northbridge_init_early(void)
 {
-	msr_t msr;
 	int i;
 	printk_debug("Enter %s\n", __func__);
 

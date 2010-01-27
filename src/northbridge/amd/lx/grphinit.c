@@ -22,6 +22,45 @@
 #include <stdint.h>
 #include <cpu/amd/vr.h>
 #include <console/console.h>
+#include <cpu/amd/lxdef.h>
+#include <cpu/x86/msr.h>
+#include <stdlib.h>
+
+void geodelx_vga_msr_init(void);
+void graphics_init(void);
+
+struct msrinit {
+	u32 msrnum;
+	msr_t msr;
+};
+
+static const struct msrinit geodelx_vga_msr[] = {
+	/* Enable the GLIU Memory routing to the hardware 
+	* PDID1 : Port 4, GLIU0
+	* PBASE : 0x000A0
+	* PMASK : 0xFFFE0
+	*/
+	{.msrnum = MSR_GLIU0_BASE4, {.lo = 0x0a0fffe0, .hi = 0x80000000}},
+	/* Enable the GLIU IO Routing
+	* IDID  : Port 4, GLIU0
+	* IBASE : 0x003c0
+	* IMASK : 0xffff0
+	*/
+	{.msrnum = GLIU0_IOD_BM_0,  {.lo = 0x3c0ffff0, .hi = 0x80000000}},
+	/* Enable the GLIU IO Routing
+	* IDID  : Port 4, GLIU0
+	* IBASE : 0x003d0
+	* IMASK : 0xffff0
+	*/
+	{.msrnum = GLIU0_IOD_BM_1,  {.lo = 0x3d0ffff0, .hi = 0x80000000}},
+};
+
+void geodelx_vga_msr_init(void)
+{
+	int i;
+	for (i = 0; i < ARRAY_SIZE(geodelx_vga_msr); i++)
+		wrmsr(geodelx_vga_msr[i].msrnum, geodelx_vga_msr[i].msr);
+}
 
  /*
   * This function mirrors the Graphics_Init routine in GeodeROM.
@@ -32,7 +71,9 @@ void graphics_init(void)
 
 	/* SoftVG initialization */
 	printk_debug("Graphics init...\n");
-
+   
+	geodelx_vga_msr_init();
+   
 	/* Call SoftVG with the main configuration parameters. */
 	/* NOTE: SoftVG expects the memory size to be given in 2MB blocks */
 

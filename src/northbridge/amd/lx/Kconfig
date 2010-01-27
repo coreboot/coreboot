@@ -1,4 +1,8 @@
 config NORTHBRIDGE_AMD_LX
 	bool
 	select HAVE_HIGH_TABLES
-
+	
+config VIDEO_MB
+	int
+	default 8
+	depends on NORTHBRIDGE_AMD_LX

@@ -132,6 +132,10 @@ EOF
 
 printf "${blue}Welcome to the ${red}coresystems${blue} cross toolchain builder v$CROSSGCC_VERSION ($CROSSGCC_DATE)${NC}\n\n"
 
+# Look if we have getopt. If not, build it.
+export PATH=$PATH:.
+getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
+
 # parse parameters.. try to find out whether we're running GNU getopt
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
@@ -205,7 +209,7 @@ for PACKAGE in GMP MPFR GCC BINUTILS GDB $MINGW_PACKAGES; do
 		for patch in patches/${!dir}_*.patch; do
 			test -r $patch || continue
 			printf "   o `basename $patch`\n"
-			patch -s -N -p0 < `echo $patch`
+			$PATCH -s -N -p0 < `echo $patch`
 		done
 	)
 done

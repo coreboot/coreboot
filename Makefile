@@ -140,7 +140,7 @@ $(eval $(call evaluate_subdirs))
 
 
 define c_dsl_template
-$(obj)/$(1)%.c: src/$(1)%.dsl
+$(obj)/$(1)%.c: src/$(1)%.dsl $(obj)/build.h
 	@printf "    IASL       $$(subst $$(shell pwd)/,,$$(@))\n"
 	iasl -p $$(basename $$@) -tc $$<
 	perl -pi -e 's/AmlCode/AmlCode_$$(notdir $$(basename $$@))/g' $$(basename $$@).hex
@@ -148,31 +148,31 @@ $(obj)/$(1)%.c: src/$(1)%.dsl
 endef
 
 define objs_c_template
-$(obj)/$(1)%.o: src/$(1)%.c
+$(obj)/$(1)%.o: src/$(1)%.c $(obj)/build.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define objs_S_template
-$(obj)/$(1)%.o: src/$(1)%.S
+$(obj)/$(1)%.o: src/$(1)%.S $(obj)/build.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_c_template
-$(obj)/$(1)%.o: src/$(1)%.c
+$(obj)/$(1)%.o: src/$(1)%.c $(obj)/build.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_S_template
-$(obj)/$(1)%.o: src/$(1)%.S
+$(obj)/$(1)%.o: src/$(1)%.S $(obj)/build.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_c_template
-$(obj)/$(1)%.o: src/$(1)%.c
+$(obj)/$(1)%.o: src/$(1)%.c $(obj)/build.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
@@ -257,20 +257,24 @@ prepare:
 	mkdir -p $(obj)/util/kconfig/lxdialog
 	test -n "$(alldirs)" && mkdir -p $(alldirs) || true
 
-prepare2:
+prepare2: $(obj)/build.h
+
+$(obj)/build.h:
 	@printf "    GEN        build.h\n"
-	printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.h
-	printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.h
-	printf "\n" >> $(obj)/build.h
-	printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_COMPILE_BY \"$(shell PATH=$$PATH:/usr/ucb whoami)\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.h
-	printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.h
-	printf "#include \"config.h\"\n" >> $(obj)/build.h
+	rm -f $(obj)/build.h
+	printf "#define COREBOOT_VERSION \"$(KERNELVERSION)\"\n" > $(obj)/build.ht
+	printf "#define COREBOOT_EXTRA_VERSION \"$(COREBOOT_EXTRA_VERSION)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_BUILD \"`LANG= date`\"\n" >> $(obj)/build.ht
+	printf "\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILER \"$(shell LANG= $(CC) --version | head -n1)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_ASSEMBLER \"$(shell LANG= $(AS) --version | head -n1)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILE_BY \"$(subst \,@,$(shell PATH=$$PATH:/usr/ucb whoami))\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.ht
+	printf "#include \"config.h\"\n" >> $(obj)/build.ht
+	mv $(obj)/build.ht $(obj)/build.h
 
 doxy: doxygen
 doxygen:

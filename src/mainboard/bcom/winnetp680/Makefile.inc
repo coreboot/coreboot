@@ -28,19 +28,19 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 
-ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds
-ldscript-y += ../../../../src/cpu/x86/16bit/reset16.lds
-ldscript-y += ../../../../src/arch/i386/lib/id.lds
-ldscript-y += ../../../../src/arch/i386/lib/failover.lds
+ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/cpu/x86/16bit/entry16.lds
+ldscripts += $(src)/cpu/x86/16bit/reset16.lds
+ldscripts += $(src)/arch/i386/lib/id.lds
+ldscripts += $(src)/arch/i386/lib/failover.lds
 
-crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
-crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
-crt0-y += ../../../../src/arch/i386/lib/id.inc
-crt0-y += ../../../../src/cpu/x86/fpu_enable.inc
-crt0-y += auto.inc
-crt0-y += ../../../../src/cpu/x86/mmx_disable.inc
+crt0s := $(src)/cpu/x86/16bit/entry16.inc
+crt0s += $(src)/cpu/x86/32bit/entry32.inc
+crt0s += $(src)/cpu/x86/16bit/reset16.inc
+crt0s += $(src)/arch/i386/lib/id.inc
+crt0s += $(src)/cpu/x86/fpu_enable.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
+crt0s += $(src)/cpu/x86/mmx_disable.inc
 
 ifdef POST_EVALUATION
 

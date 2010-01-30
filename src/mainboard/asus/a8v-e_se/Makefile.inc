@@ -10,20 +10,20 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 
 initobj-y += crt0.o
 # FIXME in $(top)/Makefile
-crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
-crt0-y += ../../../../src/southbridge/via/k8t890/romstrap.inc
-crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
-crt0-y += ../../../../src/arch/i386/lib/id.inc
-crt0-y += ../../../../src/cpu/amd/car/cache_as_ram.inc
-crt0-y += auto.inc
+crt0s := $(src)/cpu/x86/16bit/entry16.inc
+crt0s += $(src)/southbridge/via/k8t890/romstrap.inc
+crt0s += $(src)/cpu/x86/32bit/entry32.inc
+crt0s += $(src)/cpu/x86/16bit/reset16.inc
+crt0s += $(src)/arch/i386/lib/id.inc
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
 
-ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds
-ldscript-y += ../../../../src/southbridge/via/k8t890/romstrap.lds
-ldscript-y += ../../../../src/cpu/x86/16bit/reset16.lds
-ldscript-y += ../../../../src/arch/i386/lib/id.lds
-ldscript-y += ../../../../src/arch/i386/lib/failover.lds
+ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/cpu/x86/16bit/entry16.lds
+ldscripts += $(src)/southbridge/via/k8t890/romstrap.lds
+ldscripts += $(src)/cpu/x86/16bit/reset16.lds
+ldscripts += $(src)/arch/i386/lib/id.lds
+ldscripts += $(src)/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
 

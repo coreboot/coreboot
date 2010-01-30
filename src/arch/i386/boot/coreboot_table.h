@@ -10,7 +10,6 @@ unsigned long write_coreboot_table(
 
 void lb_memory_range(struct lb_memory *mem, 
 	uint32_t type, uint64_t start, uint64_t size);
-struct lb_mainboard *lb_mainboard(struct lb_header *header);
 
 /* Routines to extract part so the coreboot table or information
  * from the coreboot table.

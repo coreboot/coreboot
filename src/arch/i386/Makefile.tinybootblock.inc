@@ -86,6 +86,7 @@ $(obj)/romstage/ldscript.ld: $(ldscripts) $(obj)/ldoptions
 	printf '$(foreach ldscript,ldoptions location.ld $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' > $@
 
 $(obj)/romstage/crt0_includes.h: $(crt0s)
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/romstage
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 

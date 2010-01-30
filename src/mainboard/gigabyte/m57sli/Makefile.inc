@@ -33,21 +33,23 @@ obj-$(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) += fanctl.o
 
 # This is part of the conversion to init-obj and away from included code. 
 initobj-y += crt0.o
-crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
-crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
-crt0-y += ../../../../src/arch/i386/lib/id.inc
-crt0-y += ../../../../src/southbridge/nvidia/mcp55/romstrap.inc
-crt0-y += ../../../../src/cpu/amd/car/cache_as_ram.inc
-crt0-y += auto.inc
+crt0s := $(src)/cpu/x86/16bit/entry16.inc
+crt0s += $(src)/cpu/x86/32bit/entry32.inc
+crt0s += $(src)/cpu/x86/16bit/reset16.inc
+crt0s += $(src)/arch/i386/lib/id.inc
+crt0s += $(src)/southbridge/nvidia/mcp55/romstrap.inc
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
 
-ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds
-ldscript-y += ../../../../src/cpu/x86/16bit/reset16.lds
-ldscript-y += ../../../../src/arch/i386/lib/id.lds
-ldscript-y += ../../../../src/southbridge/nvidia/mcp55/romstrap.lds
-ldscript-y += ../../../../src/arch/i386/lib/failover.lds
-ldscript-$(CONFIG_AP_CODE_IN_CAR) += ../../../../src/arch/i386/init/ldscript_apc.lb
+ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/cpu/x86/16bit/entry16.lds
+ldscripts += $(src)/cpu/x86/16bit/reset16.lds
+ldscripts += $(src)/arch/i386/lib/id.lds
+ldscripts += $(src)/southbridge/nvidia/mcp55/romstrap.lds
+ldscripts += $(src)/arch/i386/lib/failover.lds
+ifeq($(CONFIG_AP_CODE_IN_CAR),y)
+ldscripts += $(src)/arch/i386/init/ldscript_apc.lb
+endif
 
 ifdef POST_EVALUATION
 

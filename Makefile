@@ -25,7 +25,7 @@ include .xcompile
 export top := $(shell pwd)
 export src := $(top)/src
 export srck := $(top)/util/kconfig
-export obj := $(top)/build
+export obj ?= $(top)/build
 export objk := $(obj)/util/kconfig
 export sconfig := $(top)/util/sconfig
 export yapps2_py := $(sconfig)/yapps2.py
@@ -119,9 +119,8 @@ smmobjs:=
 crt0s:=
 ldscripts:=
 types:=obj initobj driver smmobj
-src_types:=crt0 ldscript
 includemakefiles=$(foreach type,$(2), $(eval $(type)-y:=)) $(eval subdirs-y:=) $(eval include $(1)) $(if $(strip $(3)),$(foreach type,$(2),$(eval $(type)s+=$$(patsubst src/%,$(obj)/%,$$(addprefix $(dir $(1)),$$($(type)-y)))))) $(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
-evaluate_subdirs=$(eval cursubdirs:=$(subdirs)) $(eval subdirs:=) $(foreach dir,$(cursubdirs),$(eval $(call includemakefiles,$(dir)/Makefile.inc,$(types) $(src_types),$(1)))) $(if $(subdirs),$(eval $(call evaluate_subdirs, $(1))))
+evaluate_subdirs=$(eval cursubdirs:=$(subdirs)) $(eval subdirs:=) $(foreach dir,$(cursubdirs),$(eval $(call includemakefiles,$(dir)/Makefile.inc,$(types),$(1)))) $(if $(subdirs),$(eval $(call evaluate_subdirs, $(1))))
 
 # collect all object files eligible for building
 subdirs:=$(PLATFORM-y) $(BUILD-y)
@@ -271,7 +270,7 @@ $(obj)/build.h:
 	printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_COMPILE_BY \"$(subst \,@,$(shell PATH=$$PATH:/usr/ucb whoami))\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname -s)\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.ht
 	printf "#include \"config.h\"\n" >> $(obj)/build.ht
 	mv $(obj)/build.ht $(obj)/build.h

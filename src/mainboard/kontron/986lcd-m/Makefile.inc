@@ -37,20 +37,20 @@ smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o
 # This is part of the conversion to init-obj and away from included code.
 
 initobj-y += crt0.o
-# FIXME in $(top)/Makefile
-crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-y += ../../../../src/cpu/intel/model_6ex/cache_as_ram.inc
-crt0-y += auto.inc
 
-ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-y += ../../../../src/cpu/x86/32bit/entry32.lds
+crt0s := $(src)/cpu/x86/32bit/entry32.inc
+crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
+
+ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/cpu/x86/32bit/entry32.lds
 
 ifdef POST_EVALUATION
 
 $(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
 	$(CPP) -D__ACPI__ -P $(CPPFLAGS) -include $(obj)/config.h -I$(src)/mainboard/$(MAINBOARDDIR) $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl -o $(obj)/dsdt.asl
-	iasl -p dsdt -tc $(obj)/dsdt.asl
-	mv dsdt.hex $@
+	iasl -p $(obj)/dsdt -tc $(obj)/dsdt.asl
+	mv $(obj)/dsdt.hex $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@

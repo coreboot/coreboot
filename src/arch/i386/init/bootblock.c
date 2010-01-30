@@ -29,7 +29,7 @@ static unsigned long findstage(char* target)
 
 static void call(unsigned long addr, unsigned long bist)
 {
-	asm volatile ("jmp %0\n\t" : : "r" (addr), "a" (bist));
+	asm volatile ("jmp *%0\n\t" : : "r" (addr), "a" (bist));
 }
 
 static void main(unsigned long bist)

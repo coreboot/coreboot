@@ -1,7 +1,7 @@
 #######################################################################
 # Take care of subdirectories
 subdirs-y += boot
-subdirs-y += init
+# subdirs-y += init
 subdirs-y += lib
 subdirs-y += smp
 

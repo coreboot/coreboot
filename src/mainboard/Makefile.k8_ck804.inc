@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2007-2008 coresystems GmbH
+## Copyright (C) 2007-2010 coresystems GmbH
 ##
 ## This program is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU General Public License as
@@ -35,21 +35,21 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) +=  acpi_tables.o
 # This is part of the conversion to init-obj and away from included code.
 
 initobj-y += crt0.o
-# FIXME in $(top)/Makefile
-crt0-y += ../../../../src/cpu/x86/16bit/entry16.inc
-crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-y += ../../../../src/cpu/x86/16bit/reset16.inc
-crt0-y += ../../../../src/arch/i386/lib/id.inc
-crt0-y += ../../../../src/southbridge/nvidia/ck804/romstrap.inc
-crt0-y += ../../../../src/cpu/amd/car/cache_as_ram.inc
-crt0-y += auto.inc
 
-ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-y += ../../../../src/cpu/x86/16bit/entry16.lds
-ldscript-y += ../../../../src/cpu/x86/16bit/reset16.lds
-ldscript-y += ../../../../src/arch/i386/lib/id.lds
-ldscript-y += ../../../../src/southbridge/nvidia/ck804/romstrap.lds
-ldscript-y += ../../../../src/arch/i386/lib/failover.lds
+crt0s := $(src)/cpu/x86/16bit/entry16.inc
+crt0s += $(src)/cpu/x86/32bit/entry32.inc
+crt0s += $(src)/cpu/x86/16bit/reset16.inc
+crt0s += $(src)/arch/i386/lib/id.inc
+crt0s += $(src)/southbridge/nvidia/ck804/romstrap.inc
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
+
+ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/cpu/x86/16bit/entry16.lds
+ldscripts += $(src)/cpu/x86/16bit/reset16.lds
+ldscripts += $(src)/arch/i386/lib/id.lds
+ldscripts += $(src)/southbridge/nvidia/ck804/romstrap.lds
+ldscripts += $(src)/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
 

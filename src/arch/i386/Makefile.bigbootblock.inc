@@ -19,6 +19,7 @@ $(obj)/ldscript.ld: $(ldscripts) $(obj)/ldoptions
 	printf '$(foreach ldscript,$(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@
 
 $(obj)/crt0_includes.h: $(crt0s)
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s

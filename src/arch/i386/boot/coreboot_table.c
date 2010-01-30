@@ -148,7 +148,7 @@ static void lb_console(struct lb_header *header)
 #endif
 }
 
-struct lb_mainboard *lb_mainboard(struct lb_header *header)
+static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
 	struct lb_record *rec;
 	struct lb_mainboard *mainboard;
@@ -407,6 +407,36 @@ void lb_add_memory_range(struct lb_memory *mem,
 	lb_cleanup_memory_ranges(mem);
 }
 
+static void lb_dump_memory_ranges(struct lb_memory *mem)
+{
+	int entries;
+	int i;
+	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
+	
+	printk_debug("coreboot memory table:\n");
+	for(i = 0; i < entries; i++) {
+		uint64_t entry_start = unpack_lb64(mem->map[i].start);
+		uint64_t entry_size = unpack_lb64(mem->map[i].size);
+		const char *entry_type;
+
+		switch (mem->map[i].type) {
+		case LB_MEM_RAM: entry_type="RAM"; break;
+		case LB_MEM_RESERVED: entry_type="RESERVED"; break;
+		case LB_MEM_ACPI: entry_type="ACPI"; break;
+		case LB_MEM_NVS: entry_type="NVS"; break;
+		case LB_MEM_UNUSABLE: entry_type="UNUSABLE"; break;
+		case LB_MEM_VENDOR_RSVD: entry_type="VENDOR RESERVED"; break;
+		case LB_MEM_TABLE: entry_type="CONFIGURATION TABLES"; break;
+		default: entry_type="UNKNOWN!"; break;
+		}
+
+		printk_debug("%2d. %016llx-%016llx: %s\n", 
+			i, entry_start, entry_start+entry_size-1, entry_type);
+		
+	}
+}
+
+
 /* Routines to extract part so the coreboot table or 
  * information from the coreboot table after we have written it.
  * Currently get_lb_mem relies on a global we can change the
@@ -517,6 +547,8 @@ unsigned long write_coreboot_table(
 #if (CONFIG_HAVE_MAINBOARD_RESOURCES == 1)
 	add_mainboard_resources(mem);
 #endif
+
+	lb_dump_memory_ranges(mem);
 
 	/* Note:
 	 * I assume that there is always memory at immediately after

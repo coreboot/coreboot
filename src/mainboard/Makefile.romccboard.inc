@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2010 coresystems GmbH
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -19,27 +20,48 @@
 ##
 
 initobj-y += crt0.o
-crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/entry16.inc
-crt0-y += ../../../../src/cpu/x86/32bit/entry32.inc
-crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/reset16.inc
-crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/cpu_reset.inc
-crt0-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/id.inc
-crt0-y += ../../../../src/cpu/x86/fpu_enable.inc
 
-crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/cpu_setup.inc
-crt0-$(CONFIG_CPU_AMD_GX1) += ../../../../src/cpu/amd/model_gx1/gx_setup.inc
-crt0-$(CONFIG_SSE) += ../../../../src/cpu/x86/sse_enable.inc
-crt0-$(CONFIG_BIG_BOOTBLOCK) += failover.inc
-crt0-y += auto.inc
-crt0-$(CONFIG_SSE) += ../../../../src/cpu/x86/sse_disable.inc
-crt0-$(CONFIG_MMX) += ../../../../src/cpu/x86/mmx_disable.inc
+crt0s :=
+ifeq($(CONFIG_BIG_BOOTBLOCK),y)
+crt0s += $(src)/cpu/x86/16bit/entry16.inc
+endif
+crt0s += $(src)/cpu/x86/32bit/entry32.inc
+ifeq($(CONFIG_BIG_BOOTBLOCK),y)
+crt0s += $(src)/cpu/x86/16bit/reset16.inc
+crt0s += $(src)/arch/i386/lib/cpu_reset.inc
+crt0s += $(src)/arch/i386/lib/id.inc
+endif
+crt0s += $(src)/cpu/x86/32bit/entry32.inc
+crt0s += $(src)/cpu/x86/fpu_enable.inc
 
-ldscript-y += ../../../../src/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/entry16.lds
-ldscript-y += ../../../../src/cpu/x86/32bit/entry32.lds
-ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/cpu/x86/16bit/reset16.lds
-ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/id.lds
-ldscript-$(CONFIG_BIG_BOOTBLOCK) += ../../../../src/arch/i386/lib/failover.lds
+ifeq($(CONFIG_CPU_AMD_GX1),y)
+crt0s += $(src)/cpu/amd/model_gx1/cpu_setup.inc
+crt0s += $(src)/cpu/amd/model_gx1/gx_setup.inc
+endif
+ifeq($(CONFIG_SSE),y)
+crt0s += $(src)/cpu/x86/sse_enable.inc
+endif
+ifeq($(CONFIG_BIG_BOOTBLOCK),y)
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc
+endif
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
+ifeq($(CONFIG_SSE),y)
+crt0s += $(src)/cpu/x86/sse_disable.inc
+endif
+ifeq($(CONFIG_MMX),y)
+crt0s += $(src)/cpu/x86/mmx_disable.inc
+endif
+
+ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ifeq($(CONFIG_BIG_BOOTBLOCK),y)
+ldscripts += $(src)/cpu/x86/16bit/entry16.lds
+endif
+ldscripts += $(src)/cpu/x86/32bit/entry32.lds
+ifeq($(CONFIG_BIG_BOOTBLOCK),y)
+ldscripts += $(src)/cpu/x86/16bit/reset16.lds
+ldscripts += $(src)/arch/i386/lib/id.lds
+ldscripts += $(src)/arch/i386/lib/failover.lds
+endif
 
 driver-y += mainboard.o
 

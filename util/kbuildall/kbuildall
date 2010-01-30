@@ -61,7 +61,7 @@ for dir in $ALLTARGETS; do
 	result=`$MAKE > $TARGETDIR/$name.buildcoreboot.log 2>&1 && echo ok || echo fail`
 	echo "$result."
 	if [ "$result" = "ok" ]; then
-		util/abuild/abuild -C -t $dir
+		util/abuild/abuild -o -C -t $dir
 		sh util/compareboard/compareboard $dir | tee $TARGETDIR/$name.variables.txt
 	fi
 	echo "$dir $result" >> $TARGETDIR/_overview.txt

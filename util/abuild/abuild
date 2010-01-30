@@ -367,7 +367,6 @@ function create_buildenv
 		create_builddir $VENDOR $MAINBOARD
 	else
 		create_config $VENDOR $MAINBOARD $CONFIG
-		cp .config $TARGET/${VENDOR}_${MAINBOARD}/coreboot.config
 	fi
 }
 

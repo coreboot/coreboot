@@ -31,9 +31,7 @@ crt0s += $(src)/cpu/x86/16bit/reset16.inc
 crt0s += $(src)/arch/i386/lib/cpu_reset.inc
 crt0s += $(src)/arch/i386/lib/id.inc
 endif
-crt0s += $(src)/cpu/x86/32bit/entry32.inc
 crt0s += $(src)/cpu/x86/fpu_enable.inc
-
 ifeq ($(CONFIG_CPU_AMD_GX1),y)
 crt0s += $(src)/cpu/amd/model_gx1/cpu_setup.inc
 crt0s += $(src)/cpu/amd/model_gx1/gx_setup.inc

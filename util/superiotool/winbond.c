@@ -464,9 +464,11 @@ static const struct superio_registers reg_table[] = {
 	/* ID[3..0] */
 	{0xa, "W83877F", {
 		{EOT}}},
+	{0xb, "W83877AF", {
+		{EOT}}},
 	{0xc, "W83877TF", {
 		{EOT}}},
-	{0xd, "W83877ATF", {
+	{0xd, "W83877ATF/ATG", {
 		{EOT}}},
 	{EOT}
 };
@@ -556,7 +558,7 @@ static void probe_idregs_winbond_helper(const char *init, uint16_t port)
 	else
 		id = (devid << 4) | ((rev & 0xf0) >> 4); /* ID and rev[7..4] */
 
-	if (olddevid == 0x0a || olddevid == 0x0c || olddevid == 0x0d)
+	if (olddevid >= 0x0a && olddevid <= 0x0d)
 		id = olddevid & 0x0f;			 /* ID[3..0] */
 
 	if (superio_unknown(reg_table, id)) {
@@ -566,7 +568,7 @@ static void probe_idregs_winbond_helper(const char *init, uint16_t port)
 		return;
 	}
 
-	if (olddevid == 0x0a || olddevid == 0x0c || olddevid == 0x0d)
+	if (olddevid >= 0x0a && olddevid <= 0x0d)
 		printf("Found Winbond %s (id=0x%02x) at 0x%x\n",
 		       get_superio_name(reg_table, id), olddevid, port);
 	else

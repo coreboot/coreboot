@@ -84,10 +84,10 @@ sed \
 sed \
 	-e "/^CONFIG_VENDOR_/ d" \
 	-e "/^CONFIG_ARCH_POWERPC / d" \
-	-e "/^CONFIG_[MAXIMUMDEFAULT]*_CONSOLE_LOGLEVEL_/ d" \
+	-e "/^CONFIG_MAXIMUM_CONSOLE_LOGLEVEL/ d" \
+	-e "/^CONFIG_DEFAULT_CONSOLE_LOGLEVEL/ d" \
 	-e "/^CONFIG_COREBOOT_ROMSIZE_/ d" \
 	-e "/^CONFIG_BOARD_/ d" \
-	-e "/^CONFIG_IOAPIC / d" \
 	-e "/^CONFIG_HAVE_MOVNTI / d" \
 	-e "/^CONFIG_[NORTHSOUTH]*BRIDGE_/ d" \
 	-e "/^CONFIG_SUPERIO_/ d" \
@@ -100,6 +100,9 @@ sed \
 	-e "/^CONFIG_COMPRESSED_PAYLOAD_LZMA / d" \
 	-e "/^CONFIG_CPU_[A-Z]*_MODEL_/ d" \
 	-e "/^CONFIG_CPU_[A-Z]*_SOCKET_/ d" \
+	-e "/^CONFIG_CPU_AMD_/ d" \
+	-e "/^CONFIG_CPU_INTEL_/ d" \
+	-e "/^CONFIG_CPU_VIA_/ d" \
 	-e "/^CONFIG_ROMBASE / d" \
 	-e "/^CONFIG_ROM_IMAGE_SIZE / d" \
 	-e "/^CONFIG_STACK_SIZE / d" \

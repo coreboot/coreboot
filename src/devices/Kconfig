@@ -42,32 +42,50 @@ config PCI_ROM_RUN
 	  Examples include IDE/SATA controller option ROMs and option ROMs
 	  for network cards (NICs).
 
-# TODO: Describe YABEL vs. x86emu differences in more detail.
 choice
 	prompt "Option ROM execution type"
-	default PCI_OPTION_ROM_RUN_REALMODE
+	default PCI_OPTION_ROM_RUN_YABEL if !ARCH_X86
+	default PCI_OPTION_ROM_RUN_REALMODE if ARCH_X86
 	depends on PCI_ROM_RUN || VGA_ROM_RUN
 
 config PCI_OPTION_ROM_RUN_REALMODE
 	prompt "Real mode"
 	bool
+	depends on ARCH_X86
 	help
 	  If you select this option, PCI option ROMs will be executed
-	  natively on the hardware (a 32bit x86 system is required).
-
-config PCI_OPTION_ROM_RUN_YABEL
-	prompt "YABEL"
-	bool
-	help
-	  If you select this option, the YABEL BIOS emulator will be used to
-	  execute PCI option ROMs.
+	  natively on the CPU in real mode. No CPU emulation is involved,
+	  so this is the fastest, but also the least secure option.
+	  (only works on x86/x64 systems)
 
 config PCI_OPTION_ROM_RUN_X86EMU
 	prompt "x86emu"
 	bool
 	help
-	  If you select this option, the x86emu BIOS emulator will be used to
+	  If you select this option, the x86emu CPU emulator will be used to
+	  execute PCI option ROMs. 
+	  When choosing this option, x86emu will pass through all hardware
+	  accesses to memory and IO devices to the underlying memory and IO
+	  addresses. While this option prevents option ROMs from doing dirty
+	  tricks with the CPU (such as installing SMM modules or hypervisors),
+	  they can still access all devices in the system.
+	  Choosing x86emu, option ROM execution is slower than native execution
+	  in real mode, but faster than the full system emulation YABEL
+	  This is the default choice for non-x86 systems.
+
+config PCI_OPTION_ROM_RUN_YABEL
+	prompt "YABEL"
+	bool
+	help
+	  If you select this option, the YABEL system emulator will be used to
 	  execute PCI option ROMs.
+	  YABEL consists of two parts: It uses x86emu for the CPU emulation and
+	  additionally provides a PC system emulation that filters bad device and
+	  memory access (such as PCI config space access to other devices than the
+	  initialized one).
+	  This option best prevents option ROMs from doing dirty tricks with the 
+	  system (such as installing SMM modules or hypervisors), but it is also
+	  significantly slower than the other option ROM initialization methods.
 
 endchoice
 

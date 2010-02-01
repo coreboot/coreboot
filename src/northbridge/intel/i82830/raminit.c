@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Joseph Smith <joe@smittys.pointclark.net>
+ * Copyright (C) 2008-2010 Joseph Smith <joe@settoplinux.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,41 +67,122 @@ Macros and definitions.
 #define RAM_COMMAND_IC			0x1
 
 /*-----------------------------------------------------------------------------
-SDRAM configuration functions.
+DIMM-initialization functions.
 -----------------------------------------------------------------------------*/
 
-/* Send the specified RAM command to all DIMMs. */
-
-static void do_ram_command(const struct mem_controller *ctrl, uint32_t command,
-			   uint32_t addr_offset)
+static void do_ram_command(uint32_t command)
 {
-	int i;
-	uint8_t dimm_start, dimm_end;
 	uint32_t reg32;
 
 	/* Configure the RAM command. */
-	reg32 = pci_read_config32(ctrl->d0, DRC);
+	reg32 = pci_read_config32(NORTHBRIDGE, DRC);
 	/* Clear bits 29, 10-8, 6-4. */
 	reg32 &= 0xdffff88f;
 	reg32 |= command << 4;
-	pci_write_config32(ctrl->d0, DRC, reg32);
+	pci_write_config32(NORTHBRIDGE, DRC, reg32);
+	PRINT_DEBUG("RAM command 0x");
+	PRINT_DEBUG_HEX32(reg32);
+	PRINT_DEBUG("\r\n");
+}
 
-	/* Send the ram command to each row of memory.
-	 * (DIMM_SOCKETS * 2) is the maximum number of rows possible.
-	 * Note: Each DRB defines the upper boundary address of 
-	 * each SDRAM row in 32-MB granularity.
-	 */
+static void ram_read32(uint8_t dimm_start, uint32_t offset)
+{
+	if (offset == 0x55aa55aa) {
+		PRINT_DEBUG("  Reading RAM at 0x");
+		PRINT_DEBUG_HEX32(dimm_start * 32 * 1024 * 1024);
+		PRINT_DEBUG(" => 0x");
+		PRINT_DEBUG_HEX32(read32(dimm_start * 32 * 1024 * 1024));
+		PRINT_DEBUG("\r\n");
+
+		PRINT_DEBUG("  Writing RAM at 0x");
+		PRINT_DEBUG_HEX32(dimm_start * 32 * 1024 * 1024);
+		PRINT_DEBUG(" <= 0x");
+		PRINT_DEBUG_HEX32(offset);
+		PRINT_DEBUG("\r\n");
+		write32(dimm_start * 32 * 1024 * 1024, offset);
+
+		PRINT_DEBUG("  Reading RAM at 0x");
+		PRINT_DEBUG_HEX32(dimm_start * 32 * 1024 * 1024);
+		PRINT_DEBUG(" => 0x");
+		PRINT_DEBUG_HEX32(read32(dimm_start * 32 * 1024 * 1024));
+		PRINT_DEBUG("\r\n");
+	} else {
+		PRINT_DEBUG("  Sending RAM command to 0x");
+		PRINT_DEBUG_HEX32((dimm_start * 32 * 1024 * 1024) + offset);
+		PRINT_DEBUG("\r\n");
+		read32((dimm_start * 32 * 1024 * 1024) + offset);
+	}
+}
+
+static void initialize_dimm_rows(void)
+{
+	int i, row;
+	uint8_t dimm_start, dimm_end;
+	unsigned device;
+
 	dimm_start = 0;
 
-	for (i = 0; i < (DIMM_SOCKETS * 2); i++) {
-		dimm_end = pci_read_config8(ctrl->d0, DRB + i);
+	for (row = 0; row < (DIMM_SOCKETS * 2); row++) {
+
+		switch (row) {
+			case 0:
+				device = DIMM_SPD_BASE;
+				break;
+			case 1:
+				device = DIMM_SPD_BASE;
+				break;
+			case 2:
+				device = DIMM_SPD_BASE + 1;
+				break;
+			case 3:
+				device = DIMM_SPD_BASE + 1;
+				break;
+		}
+
+		dimm_end = pci_read_config8(NORTHBRIDGE, DRB + row);
+
 		if (dimm_end > dimm_start) {
-			PRINT_DEBUG("    Sending RAM command 0x");
-			PRINT_DEBUG_HEX32(reg32);
-			PRINT_DEBUG(" to 0x");
-			PRINT_DEBUG_HEX32((dimm_start * 32 * 1024 * 1024) + addr_offset);
-			PRINT_DEBUG("\r\n");
-			read32((dimm_start * 32 * 1024 * 1024) + addr_offset);
+			print_debug("Initializing SDRAM Row ");
+			print_debug_hex8(row);
+			print_debug("\r\n");
+
+			/* NOP command */
+			PRINT_DEBUG(" NOP ");
+			do_ram_command(RAM_COMMAND_NOP);
+			ram_read32(dimm_start, 0);
+			udelay(200);
+
+			/* Pre-charge all banks (at least 200 us after NOP) */
+			PRINT_DEBUG(" Pre-charging all banks ");
+			do_ram_command(RAM_COMMAND_PRECHARGE);
+			ram_read32(dimm_start, 0);
+			udelay(1);
+
+			/* 8 CBR refreshes (Auto Refresh) */
+			PRINT_DEBUG(" 8 CBR refreshes ");
+			for (i = 0; i < 8; i++) {
+				do_ram_command(RAM_COMMAND_CBR);
+				ram_read32(dimm_start, 0);
+				udelay(1);
+			}
+
+			/* MRS command */
+			/* TODO: Set offset 0x1d0 according to DRT values */
+			PRINT_DEBUG(" MRS ");
+			do_ram_command(RAM_COMMAND_MRS);
+			ram_read32(dimm_start, 0x1d0);
+			udelay(2);
+
+			/* Set GMCH-M Mode Select bits back to NORMAL operation mode */
+			PRINT_DEBUG(" Normal operation mode ");
+			do_ram_command(RAM_COMMAND_NORMAL);
+			ram_read32(dimm_start, 0);
+			udelay(1);
+
+			/* Perform a dummy memory read/write cycle */
+			PRINT_DEBUG(" Performing dummy read/write\r\n");
+			ram_read32(dimm_start, 0x55aa55aa);
+			udelay(1);
 		}
 		/* Set the start of the next DIMM. */
 		dimm_start = dimm_end;
@@ -122,8 +203,8 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	struct dimm_size sz;
 	int i, module_density, dimm_banks;
 	sz.side1 = 0;
-	module_density = spd_read_byte(device, 31);
-	dimm_banks = spd_read_byte(device, 5);
+	module_density = spd_read_byte(device, SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
+	dimm_banks = spd_read_byte(device, SPD_NUM_DIMM_BANKS);
 
 	/* Find the size of side1. */
 	/* Find the larger value. The larger value is always side1. */
@@ -163,19 +244,19 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	return sz;
 }
 
-static void spd_set_dram_size(const struct mem_controller *ctrl)
+static void set_dram_row_boundaries(void)
 {
 	int i, value, drb1, drb2;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		struct dimm_size sz;
 		unsigned device;
-		device = ctrl->channel0[i];
+		device = DIMM_SPD_BASE + i;
 		drb1 = 0;
 		drb2 = 0;
 
 		/* First check if a DIMM is actually present. */
-		if (spd_read_byte(device, 2) == 0x4) {
+		if (spd_read_byte(device, SPD_MEMORY_TYPE) == 0x4) {
 			print_debug("Found DIMM in slot ");
 			print_debug_hex8(i);
 			print_debug("\r\n");
@@ -190,14 +271,15 @@ static void spd_set_dram_size(const struct mem_controller *ctrl)
 			print_debug_hex16(sz.side2);
 			print_debug(" on side 2\r\n");
 
+			/* - Memory compatibility checks - */
 			/* Test for PC133 (i82830 only supports PC133) */
 			/* PC133 SPD9 - cycle time is always 75 */
-			if (spd_read_byte(device, 9) != 0x75) {
+			if (spd_read_byte(device, SPD_MIN_CYCLE_TIME_AT_CAS_MAX) != 0x75) {
 				print_err("SPD9 DIMM Is Not PC133 Compatable\r\n");
 				die("HALT\r\n");
 			}
 			/* PC133 SPD10 - access time is always 54 */
-			if (spd_read_byte(device, 10) != 0x54) {
+			if (spd_read_byte(device, SPD_ACCESS_TIME_FROM_CLOCK) != 0x54) {
 				print_err("SPD10 DIMM Is Not PC133 Compatable\r\n");
 				die("HALT\r\n");
 			}
@@ -225,6 +307,7 @@ static void spd_set_dram_size(const struct mem_controller *ctrl)
 				    ("are not supported on this northbridge\r\n");
 				die("HALT\r\n");
 			}
+			/* - End Memory compatibility checks - */
 
 			/* We need to divide size by 32 to set up the
 			 * DRB registers.
@@ -244,8 +327,8 @@ static void spd_set_dram_size(const struct mem_controller *ctrl)
 		}
 		/* Set the value for DRAM Row Boundary Registers */
 		if (i == 0) {
-			pci_write_config8(ctrl->d0, DRB, drb1);
-			pci_write_config8(ctrl->d0, DRB + 1, drb1 + drb2);
+			pci_write_config8(NORTHBRIDGE, DRB, drb1);
+			pci_write_config8(NORTHBRIDGE, DRB + 1, drb1 + drb2);
 			PRINT_DEBUG("DRB 0x");
 			PRINT_DEBUG_HEX8(DRB);
 			PRINT_DEBUG(" has been set to 0x");
@@ -257,10 +340,9 @@ static void spd_set_dram_size(const struct mem_controller *ctrl)
 			PRINT_DEBUG_HEX8(drb1 + drb2);
 			PRINT_DEBUG("\r\n");
 		} else if (i == 1) {
-			value = pci_read_config8(ctrl->d0, DRB + 1);
-			pci_write_config8(ctrl->d0, DRB + 2, value + drb1);
-			pci_write_config8(ctrl->d0, DRB + 3,
-					  value + drb1 + drb2);
+			value = pci_read_config8(NORTHBRIDGE, DRB + 1);
+			pci_write_config8(NORTHBRIDGE, DRB + 2, value + drb1);
+			pci_write_config8(NORTHBRIDGE, DRB + 3, value + drb1 + drb2);
 			PRINT_DEBUG("DRB2 0x");
 			PRINT_DEBUG_HEX8(DRB + 2);
 			PRINT_DEBUG(" has been set to 0x");
@@ -276,23 +358,23 @@ static void spd_set_dram_size(const struct mem_controller *ctrl)
 			 * These are supposed to be "Reserved" but memory will
 			 * not initialize properly if we don't.
 			 */
-			value = pci_read_config8(ctrl->d0, DRB + 3);
-			pci_write_config8(ctrl->d0, DRB + 4, value);
-			pci_write_config8(ctrl->d0, DRB + 5, value);
+			value = pci_read_config8(NORTHBRIDGE, DRB + 3);
+			pci_write_config8(NORTHBRIDGE, DRB + 4, value);
+			pci_write_config8(NORTHBRIDGE, DRB + 5, value);
 		}
 	}
 }
 
-static void set_dram_row_attributes(const struct mem_controller *ctrl)
+static void set_dram_row_attributes(void)
 {
 	int i, dra, col, width, value;
 
 	for (i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned device;
-		device = ctrl->channel0[i];
+		device = DIMM_SPD_BASE + i;
 
 		/* First check if a DIMM is actually present. */
-		if (spd_read_byte(device, 2) == 0x4) {
+		if (spd_read_byte(device, SPD_MEMORY_TYPE) == 0x4) {
 			print_debug("Found DIMM in slot ");
 			print_debug_hex8(i);
 			print_debug(", setting DRA...\r\n");
@@ -300,10 +382,10 @@ static void set_dram_row_attributes(const struct mem_controller *ctrl)
 			dra = 0x00;
 
 			/* columns */
-			col = spd_read_byte(device, 4);
+			col = spd_read_byte(device, SPD_NUM_COLUMNS);
 
 			/* data width */
-			width = spd_read_byte(device, 6);
+			width = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_LSB);
 
 			/* calculate page size in bits */
 			value = ((1 << col) * width);
@@ -312,7 +394,7 @@ static void set_dram_row_attributes(const struct mem_controller *ctrl)
 			dra = ((value / 8) >> 10);
 
 			/* # of banks of DIMM (single or double sided) */
-			value = spd_read_byte(device, 5);
+			value = spd_read_byte(device, SPD_NUM_DIMM_BANKS);
 
 			if (value == 1) {
 				if (dra == 2) {
@@ -355,7 +437,7 @@ static void set_dram_row_attributes(const struct mem_controller *ctrl)
 		}
 
 		/* Set the value for DRAM Row Attribute Registers */
-		pci_write_config8(ctrl->d0, DRA + i, dra);
+		pci_write_config8(NORTHBRIDGE, DRA + i, dra);
 		PRINT_DEBUG("DRA 0x");
 		PRINT_DEBUG_HEX8(DRA + i);
 		PRINT_DEBUG(" has been set to 0x");
@@ -364,14 +446,14 @@ static void set_dram_row_attributes(const struct mem_controller *ctrl)
 	}
 }
 
-static void set_dram_timing(const struct mem_controller *ctrl)
+static void set_dram_timing(void)
 {
 	/* Set the value for DRAM Timing Register */
 	/* TODO: Configure the value according to SPD values. */
-	pci_write_config32(ctrl->d0, DRT, 0x00000010);
+	pci_write_config32(NORTHBRIDGE, DRT, 0x00000010);
 }
 
-static void set_dram_buffer_strength(const struct mem_controller *ctrl)
+static void set_dram_buffer_strength(void)
 {
 	/* TODO: This needs to be set according to the DRAM tech
 	 * (x8, x16, or x32). Argh, Intel provides no docs on this!
@@ -380,22 +462,61 @@ static void set_dram_buffer_strength(const struct mem_controller *ctrl)
 	 */
 
 	/* Set the value for System Memory Buffer Strength Control Registers */
-	pci_write_config32(ctrl->d0, BUFF_SC, 0xFC9B491B);
+	pci_write_config32(NORTHBRIDGE, BUFF_SC, 0xFC9B491B);
 }
 
 /*-----------------------------------------------------------------------------
 Public interface.
 -----------------------------------------------------------------------------*/
 
-static void sdram_set_registers(const struct mem_controller *ctrl)
+static void sdram_set_registers(void)
+{
+	PRINT_DEBUG("Setting initial sdram registers....\r\n");
+
+	/* Calculate the value for DRT DRAM Timing Register */
+	set_dram_timing();
+
+	/* Setup System Memory Buffer Strength Control Registers */
+	set_dram_buffer_strength();
+
+	/* Setup DRAM Row Boundary Registers */
+	set_dram_row_boundaries();
+
+	/* Setup DRAM Row Attribute Registers */
+	set_dram_row_attributes();
+
+	PRINT_DEBUG("Initial sdram registers have been set.\r\n");
+}
+
+static void northbridge_set_registers(void)
 {
 	uint16_t value;
 	int igd_memory = 0;
 
-	PRINT_DEBUG("Setting initial registers....\r\n");
+	PRINT_DEBUG("Setting initial nothbridge registers....\r\n");
+
+	/* Set the value for Fixed DRAM Hole Control Register */
+	pci_write_config8(NORTHBRIDGE, FDHC, 0x00);
+
+	/* Set the value for Programable Attribute Map Registers
+	 * Ideally, this should be R/W for as many ranges as possible.
+	 */
+	pci_write_config8(NORTHBRIDGE, PAM0, 0x30);
+	pci_write_config8(NORTHBRIDGE, PAM1, 0x33);
+	pci_write_config8(NORTHBRIDGE, PAM2, 0x33);
+	pci_write_config8(NORTHBRIDGE, PAM3, 0x33);
+	pci_write_config8(NORTHBRIDGE, PAM4, 0x33);
+	pci_write_config8(NORTHBRIDGE, PAM5, 0x33);
+	pci_write_config8(NORTHBRIDGE, PAM6, 0x33);
+
+	/* Set the value for System Management RAM Control Register */
+	pci_write_config8(NORTHBRIDGE, SMRAM, 0x02);
 
 	/* Set the value for GMCH Control Register #0 */
-	pci_write_config16(ctrl->d0, GCC0, 0xA072);
+	pci_write_config16(NORTHBRIDGE, GCC0, 0xA072);
+
+	/* Set the value for Aperture Base Configuration Register */
+	pci_write_config32(NORTHBRIDGE, APBASE, 0x00000008);
 
 	/* Set the value for GMCH Control Register #1 */
 	switch (CONFIG_VIDEO_MB) {
@@ -409,95 +530,45 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		igd_memory = 0x4;
 		break;
 	default: /* No memory */
-		pci_write_config16(ctrl->d0, GCC1, 0x0002);
+		pci_write_config16(NORTHBRIDGE, GCC1, 0x0002);
 		igd_memory = 0x0;
 	}
 
-	value = pci_read_config16(ctrl->d0, GCC1);
+	value = pci_read_config16(NORTHBRIDGE, GCC1);
 	value |= igd_memory << 4;
-	pci_write_config16(ctrl->d0, GCC1, value);
+	pci_write_config16(NORTHBRIDGE, GCC1, value);
 
-	/* Set the value for Aperture Base Configuration Register */
-	pci_write_config32(ctrl->d0, APBASE, 0x00000008);
-
-	/* Set the value for Register Range Base Address Register */
-	pci_write_config32(ctrl->d0, RRBAR, 0x00000000);
-
-	/* Set the value for Fixed DRAM Hole Control Register */
-	pci_write_config8(ctrl->d0, FDHC, 0x00);
-
-	/* Set the value for Programable Attribute Map Registers
-	 * Ideally, this should be R/W for as many ranges as possible.
-	 */
-	pci_write_config8(ctrl->d0, PAM0, 0x30);
-	pci_write_config8(ctrl->d0, PAM1, 0x33);
-	pci_write_config8(ctrl->d0, PAM2, 0x33);
-	pci_write_config8(ctrl->d0, PAM3, 0x33);
-	pci_write_config8(ctrl->d0, PAM4, 0x33);
-	pci_write_config8(ctrl->d0, PAM5, 0x33);
-	pci_write_config8(ctrl->d0, PAM6, 0x33);
-
-	/* Set the value for DRAM Throttling Control Register */
-	pci_write_config32(ctrl->d0, DTC, 0x00000000);
-
-	/* Set the value for System Management RAM Control Register */
-	pci_write_config8(ctrl->d0, SMRAM, 0x02);
-
-	/* Set the value for Extended System Management RAM Control Register */
-	pci_write_config8(ctrl->d0, ESMRAMC, 0x38);
-
-	PRINT_DEBUG("Initial registers have been set.\r\n");
+	PRINT_DEBUG("Initial northbridge registers have been set.\r\n");
 }
 
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
-{
-	spd_set_dram_size(ctrl);
-	set_dram_row_attributes(ctrl);
-	set_dram_timing(ctrl);
-	set_dram_buffer_strength(ctrl);
-}
-
-static void sdram_enable(int controllers, const struct mem_controller *ctrl)
+static void sdram_initialize(void)
 {
 	int i;
 	uint32_t reg32;
 
+	/* Setup Initial SDRAM Registers */
+	sdram_set_registers();
+
 	/* 0. Wait until power/voltages and clocks are stable (200us). */
 	udelay(200);
 
-	/* 1. Apply NOP. */
-	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NOP, 0);
-	udelay(200);
+	/* Initialize each row of memory one at a time */
+	initialize_dimm_rows();
 
-	/* 2. Precharge all. Wait tRP. */
-	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE, 0);
-	udelay(1);
+	/* Enable Refresh */
+	PRINT_DEBUG("Enabling Refresh\r\n");
+	reg32 = pci_read_config32(NORTHBRIDGE, DRC);
+	reg32 |= (RAM_COMMAND_REFRESH << 8);
+	pci_write_config32(NORTHBRIDGE, DRC, reg32);
 
-	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
-	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
-	for (i = 0; i < 8; i++) {
-		do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
-		udelay(1);
-	}
+	/* Set initialization complete */
+	PRINT_DEBUG("Setting initialization complete\r\n");
+	reg32 = pci_read_config32(NORTHBRIDGE, DRC);
+	reg32 |= (RAM_COMMAND_IC << 29);
+	pci_write_config32(NORTHBRIDGE, DRC, reg32);
 
-	/* 4. Mode register set. Wait two memory cycles. */
-	/* TODO: Set offset according to DRT values */
-	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_MRS, 0x1d0);
-	udelay(2);
-
-	/* 5. Normal operation (enables refresh) */
-	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NORMAL, 0);
-	udelay(1);
-
-	/* 6. Enable refresh and Set initialization complete. */
-	PRINT_DEBUG("RAM Enable 6: Enable Refresh and IC\r\n");
-	reg32 = pci_read_config32(ctrl->d0, DRC);
-	reg32 |= ((RAM_COMMAND_REFRESH << 8) | (RAM_COMMAND_IC << 29));
-	pci_write_config32(ctrl->d0, DRC, reg32);
+	/* Setup Initial Northbridge Registers */
+	northbridge_set_registers();
 
 	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");
 	DUMPNORTH();

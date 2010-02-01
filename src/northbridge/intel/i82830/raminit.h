@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Joseph Smith <joe@smittys.pointclark.net>
+ * Copyright (C) 2008-2010 Joseph Smith <joe@settoplinux.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,13 @@
 #ifndef NORTHBRIDGE_INTEL_I82830_RAMINIT_H
 #define NORTHBRIDGE_INTEL_I82830_RAMINIT_H
 
+/* 82830 Northbridge PCI device */
+#define NORTHBRIDGE	PCI_DEV(0, 0, 0)
+
 /* The 82830 supports max. 2 dual-sided SO-DIMMs. */
 #define DIMM_SOCKETS	2
 
-struct mem_controller {
-	device_t d0;
-	uint16_t channel0[DIMM_SOCKETS];
-};
+/* DIMM0 is at 0x50, DIMM1 is at 0x51. */
+#define DIMM_SPD_BASE	0x50
 
 #endif /* NORTHBRIDGE_INTEL_I82830_RAMINIT_H */

@@ -69,7 +69,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/intel/i82830/raminit.c"
-#include "lib/generic_sdram.c"
 
 /**
  * Setup mainboard specific registers pre raminit.
@@ -103,13 +102,6 @@ static void mb_early_setup(void)
 
 static void main(unsigned long bist)
 {
-	static const struct mem_controller memctrl[] = {
-		{
-			.d0 = PCI_DEV(0, 0, 0),
-			.channel0 = {0x50, 0x51},
-		}
-	};
-
 	if (bist == 0)
 		early_mtrr_init();
 		if (memory_initialized()) {
@@ -129,10 +121,8 @@ static void main(unsigned long bist)
 	/* Setup mainboard specific registers */
 	mb_early_setup();
 
-	/* SDRAM init */
-	sdram_set_registers(memctrl);
-	sdram_set_spd_registers(memctrl);
-	sdram_enable(0, memctrl);
+	/* Initialize memory */
+	sdram_initialize();
 
 	/* Check RAM. */
 	/* ram_check(0, 640 * 1024); */

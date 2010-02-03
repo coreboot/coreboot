@@ -1,5 +1,5 @@
 config BOARD_TYAN_S2882
-	bool "S2882 (Thunder K8SR)"
+	bool "S2882 (Thunder K8S Pro)"
 	select ARCH_X86
 	select CPU_AMD_SOCKET_940
 	select NORTHBRIDGE_AMD_AMDK8

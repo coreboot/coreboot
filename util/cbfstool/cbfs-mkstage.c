@@ -126,6 +126,11 @@ int parse_elf_to_stage(unsigned char *input, unsigned char **output,
 		data_start = *location;
 	}
 
+	if (data_end <= data_start) {
+		fprintf(stderr, "E: data ends before it starts. Make sure the ELF file is correct and resides in ROM space.\n");
+		exit(1);
+	}
+
 	/* allocate an intermediate buffer for the data */
 	buffer = calloc(data_end - data_start, 1);
 

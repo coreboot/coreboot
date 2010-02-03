@@ -62,6 +62,10 @@ $(obj)/coreboot.a: $(objs)
 #######################################################################
 # done
 
+# crt0s should be set by now
+ifeq ($(crt0s),)
+$(error crt0s are empty. If your board still uses crt0-y and ldscript-y: It shouldn't, we moved away from that in r5065)
+endif
 endif
 
 ifeq ($(CONFIG_TINY_BOOTBLOCK),y)

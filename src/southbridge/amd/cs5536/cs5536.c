@@ -298,7 +298,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 		/* Set: OUTAUX1 Select (0x10) */
 		outl(GPIOL_8_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
 
-		/* GPIO8 - UART1_RX */
+		/* GPIO9 - UART1_RX */
 		/* Set: Input Enable   (0x20) */
 		outl(GPIOL_9_SET, gpio_addr + GPIOL_INPUT_ENABLE);
 		/* Set: INAUX1 Select  (0x34) */
@@ -356,17 +356,17 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 		msr.lo |= sb->com2_irq << 28;
 		wrmsr(MDD_IRQM_YHIGH, msr);
 
-		/* GPIO4 - UART2_RX */
-		/* Set: Output Enable (0x4) */
-		outl(GPIOL_4_SET, gpio_addr + GPIOL_OUTPUT_ENABLE);
-		/* Set: OUTAUX1 Select (0x10) */
-		outl(GPIOL_4_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
-
-		/* GPIO3 - UART2_TX */
+		/* GPIO3 - UART2_RX */
 		/* Set: Input Enable (0x20) */
 		outl(GPIOL_3_SET, gpio_addr + GPIOL_INPUT_ENABLE);
 		/* Set: INAUX1 Select (0x34) */
 		outl(GPIOL_3_SET, gpio_addr + GPIOL_IN_AUX1_SELECT);
+
+		/* GPIO4 - UART2_TX */
+		/* Set: Output Enable (0x4) */
+		outl(GPIOL_4_SET, gpio_addr + GPIOL_OUTPUT_ENABLE);
+		/* Set: OUTAUX1 Select (0x10) */
+		outl(GPIOL_4_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
 
 		/* Set: GPIO 3 and 4 Pull Up (0x18) */
 		outl(GPIOL_3_SET | GPIOL_4_SET,

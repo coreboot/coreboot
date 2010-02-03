@@ -172,6 +172,7 @@ static void cs5536_setup_onchipuart(void)
 	outl(GPIOL_8_SET, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
 	/* Set: OUTAUX1 Select (0x10) */
 	outl(GPIOL_8_SET, GPIO_IO_BASE + GPIOL_OUT_AUX1_SELECT);
+
 	/* GPIO9 - UART1_RX */
 	/* Set: Input Enable   (0x20) */
 	outl(GPIOL_9_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);

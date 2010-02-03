@@ -141,6 +141,7 @@ default CONFIG_FAILOVER_SIZE=0x02000
 #more 1M for pgtbl
 default CONFIG_RAMTOP=16384*1024
 #default CONFIG_RAMTOP=16384*8192
+
 ##
 ## Build code for the fallback boot
 ##
@@ -162,7 +163,6 @@ default CONFIG_IRQ_SLOT_COUNT=11
 ## Build code to export an x86 MP table
 ## Useful for specifying IRQ routing values
 ##
-##default CONFIG_GENERATE_MP_TABLE=1
 default CONFIG_GENERATE_MP_TABLE=1
 
 ## ACPI tables will be included
@@ -272,10 +272,15 @@ default CONFIG_AMD_UCODE_PATCH_FILE="mc_patch_0100009f.h"
 ## CONFIG_ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
 default CONFIG_ROM_IMAGE_SIZE = 0x1e000
 
+##
+## Use a 64K stack
+##
+default CONFIG_STACK_SIZE=0x10000
 
-default CONFIG_STACK_SIZE=0x10000 
-default CONFIG_HEAP_SIZE= 0xc000
-
+##
+## Use a 48K heap
+##
+default CONFIG_HEAP_SIZE=0xc000
 
 ##
 ## Only use the option table in a normal image

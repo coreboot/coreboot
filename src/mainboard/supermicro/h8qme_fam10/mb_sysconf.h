@@ -28,12 +28,11 @@ struct mb_sysconf_t {
 	unsigned apicid_mcp55;
 	unsigned bus_type[256]; 
 
-unsigned char bus_8132_0;  //7
-unsigned char bus_8132_1;  //8
-unsigned char bus_8132_2;  //9
-unsigned apicid_8132_1;
-unsigned apicid_8132_2;
-
+	unsigned char bus_8132_0;  //7
+	unsigned char bus_8132_1;  //8
+	unsigned char bus_8132_2;  //9
+	unsigned apicid_8132_1;
+	unsigned apicid_8132_2;
 };
 
 #endif

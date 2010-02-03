@@ -107,9 +107,9 @@ static const u8 spd_addr[] = {
 	RC00, DIMM4, DIMM6, 0, 0, DIMM5, DIMM7, 0, 0,
 #endif
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-  // third node
-  RC02, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
-	// forth node
+	//third node
+	RC02, DIMM0, DIMM2, 0, 0, DIMM1, DIMM3, 0, 0,
+	//forth node
 	RC03, DIMM4, DIMM6,0 , 0, DIMM5, DIMM7, 0, 0,
 #endif
 };

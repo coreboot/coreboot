@@ -288,12 +288,12 @@ chip northbridge/amd/amdfam10/root_complex
 	                		device pci 5.0 on end # SATA 0
 	                		device pci 5.1 on end # SATA 1
 	                		device pci 5.2 on end # SATA 2
-											device pci 6.1 off end # AZA
-											device pci 7.0 on 
-														 device pci 1.0 on end
-											end 
-											device pci 8.0 off end
-											device pci 9.0 off end
+					device pci 6.1 off end # AZA
+					device pci 7.0 on
+						device pci 1.0 on end
+					end
+					device pci 8.0 off end
+					device pci 9.0 off end
         	       			device pci a.0 on end # PCI E 5
         	       			device pci b.0 on end # PCI E 4
                 			device pci c.0 on end # PCI E 3
@@ -312,20 +312,18 @@ chip northbridge/amd/amdfam10/root_complex
 			device pci 18.3 on end
 			device pci 18.4 on end
 			device pci 19.0 on end
-      device pci 19.0 on end
-		  device pci 19.0 on
-		       chip southbridge/amd/amd8132
-		                  device pci 0.0 on	end
-		                  device pci 0.1 on end
-											device pci 1.0 on
-												 device pci 3.0 on end
-												 device pci 3.1 on end
-											end
-											device pci 1.1 on end
-		                  
-		       end #amd8132
-	
-      end #device pci 19.0
+			device pci 19.0 on end
+			device pci 19.0 on
+				chip southbridge/amd/amd8132
+					device pci 0.0 on end
+					device pci 0.1 on end
+					device pci 1.0 on
+						device pci 3.0 on end
+						device pci 3.1 on end
+					end
+					device pci 1.1 on end
+				end #amd8132
+			end #device pci 19.0
 			device pci 19.1 on end
 			device pci 19.2 on end
 			device pci 19.3 on end

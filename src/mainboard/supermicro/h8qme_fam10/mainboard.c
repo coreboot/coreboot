@@ -27,5 +27,5 @@
 #include "chip.h"
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Supermicro H8QME Mainboard (Family 10)")
+	CHIP_NAME("Supermicro H8QME-2+ Mainboard (Family 10)")
 };

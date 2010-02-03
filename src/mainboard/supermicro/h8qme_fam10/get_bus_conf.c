@@ -62,8 +62,7 @@ static unsigned hcdnx[] = {
 	0x20202020, 0x20202020,
 };
 
-unsigned sbdn3; 
-
+unsigned sbdn3;
 
 extern void get_pci1234(void);
 
@@ -99,9 +98,8 @@ void get_bus_conf(void)
 	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
 	m->bus_mcp55[0] = (sysconf.pci1234[0] >> 12) & 0xff;
 
-
-  m->bus_8132_0 = (sysconf.pci1234[1] >> 12) & 0xff; 
-	sbdn3 =(sysconf.hcdn[1] & 0xff); // first byte of second chain 
+	m->bus_8132_0 = (sysconf.pci1234[1] >> 12) & 0xff;
+	sbdn3 = (sysconf.hcdn[1] & 0xff); // first byte of second chain
 
 		/* MCP55 */
 		dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x06,0));
@@ -123,21 +121,21 @@ void get_bus_conf(void)
 			}
 		}
 
-/*8132_1*/
+		/* 8132_1 */
 
-		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3,0));
-    m->bus_8132_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3, 0));
+		m->bus_8132_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		m->bus_8132_2++;
-/*8132_2*/   
 
-		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3+1,0));
+		/* 8132_2 */
+		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3 + 1, 0));
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		m->bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		m->bus_isa++;
 
 	for(i=0; i< sysconf.hc_possible_num; i++) {
-			if(!(sysconf.pci1234[i] & 0x1) ) continue;
+		if(!(sysconf.pci1234[i] & 0x1) ) continue;
 
 		unsigned busn = (sysconf.pci1234[i] >> 12) & 0xff;
 		unsigned busn_max = (sysconf.pci1234[i] >> 20) & 0xff;
@@ -155,6 +153,6 @@ void get_bus_conf(void)
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
 	m->apicid_mcp55 = apicid_base+0;
-  m->apicid_8132_1 = apicid_base+1;
+	m->apicid_8132_1 = apicid_base+1;
 	m->apicid_8132_2 = apicid_base+2;
 }

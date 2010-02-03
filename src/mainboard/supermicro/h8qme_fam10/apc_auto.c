@@ -64,32 +64,25 @@ static void post_code(uint8_t value) {
 #endif
 
 #include <cpu/amd/model_fxx_rev.h>
-
-//#include "northbridge/amd/amdk8/raminit.h"
 #include "northbridge/amd/amkfam10/raminit.h"
-
 #include "cpu/amd/model_fxx/apic_timer.c"
 
 #include "lib/delay.c"
 
 //#include "cpu/x86/lapic/boot_cpu.c"
 
-//#include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
 
-//#include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdfam10/debug.c"
 
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
-//#include "northbridge/amd/amdk8/amdk8_f.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 
 #include "cpu/x86/mtrr.h"
 #include "cpu/amd/mtrr.h"
 #include "cpu/x86/tsc.h"
 
-//#include "northbridge/amd/amdk8/amdk8_f_pci.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
 
 #include "northbridge/amd/amdk8/raminit_f_dqs.c"

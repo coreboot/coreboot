@@ -40,7 +40,6 @@ void *smp_write_config_table(void *v)
 	struct mp_config_table *mc;
 	struct mb_sysconf_t *m;
 	unsigned sbdn;
-	
 
 	int i,j;
 
@@ -67,8 +66,6 @@ void *smp_write_config_table(void *v)
 	sbdn = sysconf.sbdn;
 	m = sysconf.mb;
 
-	
-
 /*Bus:		Bus ID	Type*/
 	/* define bus and isa numbers */
 	for(j= 0; j < 256 ; j++) {
@@ -77,22 +74,13 @@ void *smp_write_config_table(void *v)
 	}
 	smp_write_bus(mc, m->bus_isa, "ISA   ");
 
-	
-
-
-
-
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	{
 		device_t dev;
 		struct resource *res;
 		uint32_t dword;
 
-//void smp_write_ioapic(struct mp_config_table *mc,	unsigned char id, unsigned char ver, 	unsigned long apicaddr);
-
 		dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sbdn+ 0x1,0));
-	
-
 		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
 			if (res) {
@@ -103,55 +91,52 @@ void *smp_write_config_table(void *v)
 			pci_write_config32(dev, 0x7c, dword);
 
 			dword = 0x5ab0a500;
-		        pci_write_config32(dev, 0x80, dword);
+			pci_write_config32(dev, 0x80, dword);
 
 			dword = 0xa000000b;
-			dword = 0x10000002; 
+			dword = 0x10000002;
 			pci_write_config32(dev, 0x84, dword);
 
 		}
 
- /* 8132_1*/
-    dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3,1));
-    res = find_resource(dev,PCI_BASE_ADDRESS_0);
-    smp_write_ioapic(mc, m->apicid_8132_1, 0x11, res->base);
+		/* 8132_1 */
+		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3,1));
+		res = find_resource(dev,PCI_BASE_ADDRESS_0);
+		smp_write_ioapic(mc, m->apicid_8132_1, 0x11, res->base);
 
- /* 8132_2*/
-    dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3+1,1));
-    res = find_resource(dev,PCI_BASE_ADDRESS_0);
-    smp_write_ioapic(mc, m->apicid_8132_2, 0x11, res->base);
+		/* 8132_2 */
+		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3+1,1));
+		res = find_resource(dev,PCI_BASE_ADDRESS_0);
+		smp_write_ioapic(mc, m->apicid_8132_2, 0x11, res->base);
 
-
-}
-
+	}
 		
-/*I/O Ints:	Type	Polarity    Trigger			Bus ID	 IRQ	APIC ID                                 				* PIN# */
-smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, m->apicid_mcp55, 0x0); 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x1, m->apicid_mcp55, 0x1); 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x0, m->apicid_mcp55, 0x2); 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x3, m->apicid_mcp55, 0x3); 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x4, m->apicid_mcp55, 0x4); 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x6, m->apicid_mcp55, 0x6); 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x7, m->apicid_mcp55, 0x7);
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x8, m->apicid_mcp55, 0x8);
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xc, m->apicid_mcp55, 0xc);
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xd, m->apicid_mcp55, 0xd);
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xe, m->apicid_mcp55, 0xe);
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xf, m->apicid_mcp55, 0xf);
+		   /*I/O Ints:	Type	Polarity    Trigger			Bus ID	 IRQ	APIC ID	PIN# */
+	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, m->apicid_mcp55, 0x0); 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x1, m->apicid_mcp55, 0x1); 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x0, m->apicid_mcp55, 0x2); 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x3, m->apicid_mcp55, 0x3); 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x4, m->apicid_mcp55, 0x4); 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x6, m->apicid_mcp55, 0x6); 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x7, m->apicid_mcp55, 0x7);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x8, m->apicid_mcp55, 0x8);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xc, m->apicid_mcp55, 0xc);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xd, m->apicid_mcp55, 0xd);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xe, m->apicid_mcp55, 0xe);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xf, m->apicid_mcp55, 0xf);
+	
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+1)<<2)|1, m->apicid_mcp55, 0x5);  /*  5 SMBus! Not correctly assign!!*/
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|0, m->apicid_mcp55, 0xb); /* 11 USB, OK */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|1, m->apicid_mcp55, 0xa); /* 10 USB, OK */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|0, m->apicid_mcp55, 0x5); /*  5  IDE, OK*/
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|1, m->apicid_mcp55, 0xa); /* 10 IDE, OK*/ 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|2, m->apicid_mcp55, 0xa); /* 10 IDE, OK*/ 
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+6)<<2)|1, m->apicid_mcp55, 0xa); /* 10 VGA, OK*/
+	
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_2, ((3)<<2)|0, m->apicid_mcp55, 0x5); /* 5  eth0, OK*/
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_2, ((3)<<2)|1, m->apicid_mcp55, 0xb); /* 11 eth1, OK*/
 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+1)<<2)|1, m->apicid_mcp55, 0x5);  /*  5 SMBus! Not correctly assign!!*/
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|0, m->apicid_mcp55, 0xb); /* 11 USB, OK */
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|1, m->apicid_mcp55, 0xa); /* 10 USB, OK */
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|0, m->apicid_mcp55, 0x5); /*  5  IDE, OK*/
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|1, m->apicid_mcp55, 0xa); /* 10 IDE, OK*/ 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|2, m->apicid_mcp55, 0xa); /* 10 IDE, OK*/ 
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+6)<<2)|1, m->apicid_mcp55, 0xa); /* 10 VGA, OK*/
-
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_2, ((3)<<2)|0, m->apicid_mcp55, 0x5); /* 5  eth0, OK*/
-smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8132_2, ((3)<<2)|1, m->apicid_mcp55, 0xb); /* 11 eth1, OK*/
-
-
-for(j=7;j>=2; j--) { 
+	for(j=7;j>=2; j--) { 
 		if(!m->bus_mcp55[j]) continue;
 		for(i=0;i<4;i++) {
 			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[j], (0x00<<2)|i, m->apicid_mcp55, 0x10 + (2+j+i+4-sbdn%4)%4);
@@ -172,7 +157,7 @@ for(j=7;j>=2; j--) {
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
 	printk_debug("Wrote the mp table end at: %p - %p\n",
-	mc, smp_next_mpe_entry(mc));
+		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }
 

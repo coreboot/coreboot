@@ -1,0 +1,368 @@
+## 
+## This file is part of the coreboot project.
+## 
+## Copyright (C) 2007 AMD
+## Written by Yinghai Lu <yinghailu@amd.com> for AMD.
+## 
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+## 
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+## 
+
+uses CONFIG_GENERATE_MP_TABLE
+uses CONFIG_GENERATE_PIRQ_TABLE
+uses CONFIG_GENERATE_ACPI_TABLES
+uses CONFIG_HAVE_ACPI_RESUME
+uses CONFIG_ACPI_SSDTX_NUM
+uses CONFIG_USE_FALLBACK_IMAGE
+uses CONFIG_USE_FAILOVER_IMAGE
+uses CONFIG_HAVE_FALLBACK_BOOT
+uses CONFIG_HAVE_FAILOVER_BOOT
+uses CONFIG_HAVE_HARD_RESET
+uses CONFIG_IRQ_SLOT_COUNT
+uses CONFIG_HAVE_OPTION_TABLE
+uses CONFIG_MAX_CPUS
+uses CONFIG_MAX_PHYSICAL_CPUS
+uses CONFIG_LOGICAL_CPUS
+uses CONFIG_IOAPIC
+uses CONFIG_SMP
+uses CONFIG_FALLBACK_SIZE
+uses CONFIG_FAILOVER_SIZE
+uses CONFIG_ROM_SIZE
+uses CONFIG_ROM_SECTION_SIZE
+uses CONFIG_ROM_IMAGE_SIZE
+uses CONFIG_ROM_SECTION_SIZE
+uses CONFIG_ROM_SECTION_OFFSET
+uses CONFIG_ROM_PAYLOAD
+uses CONFIG_COMPRESSED_PAYLOAD_NRV2B
+uses CONFIG_COMPRESSED_PAYLOAD_LZMA
+uses CONFIG_ROMBASE
+uses CONFIG_XIP_ROM_SIZE
+uses CONFIG_XIP_ROM_BASE
+uses CONFIG_STACK_SIZE
+uses CONFIG_HEAP_SIZE
+uses CONFIG_USE_OPTION_TABLE
+uses CONFIG_LB_CKS_RANGE_START
+uses CONFIG_LB_CKS_RANGE_END
+uses CONFIG_LB_CKS_LOC
+uses CONFIG_MAINBOARD_PART_NUMBER
+uses CONFIG_MAINBOARD_VENDOR
+uses CONFIG_MAINBOARD
+uses CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+uses CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+uses COREBOOT_EXTRA_VERSION
+uses CONFIG_RAMBASE
+uses CONFIG_TTYS0_BAUD
+uses CONFIG_TTYS0_BASE
+uses CONFIG_TTYS0_LCS
+uses CONFIG_DEFAULT_CONSOLE_LOGLEVEL
+uses CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
+uses CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+uses CONFIG_CONSOLE_SERIAL8250
+uses CONFIG_HAVE_INIT_TIMER
+uses CONFIG_GDB_STUB
+uses CONFIG_CROSS_COMPILE
+uses CC
+uses HOSTCC
+uses CONFIG_OBJCOPY
+uses CONFIG_VGA
+uses CONFIG_CONSOLE_VGA
+uses CONFIG_VGA_ROM_RUN
+uses CONFIG_PCI_ROM_RUN
+uses CONFIG_HW_MEM_HOLE_SIZEK
+uses CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC
+
+uses CONFIG_HT_CHAIN_UNITID_BASE
+uses CONFIG_HT_CHAIN_END_UNITID_BASE
+uses CONFIG_SB_HT_CHAIN_ON_BUS0
+uses CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY
+
+uses CONFIG_USE_DCACHE_RAM
+uses CONFIG_DCACHE_RAM_BASE
+uses CONFIG_DCACHE_RAM_SIZE
+uses CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE
+uses CONFIG_USE_INIT
+
+uses CONFIG_SERIAL_CPU_INIT
+
+uses CONFIG_ENABLE_APIC_EXT_ID
+uses CONFIG_APIC_ID_OFFSET
+uses CONFIG_LIFT_BSP_APIC_ID
+
+uses CONFIG_PCI_64BIT_PREF_MEM
+
+uses CONFIG_RAMTOP
+
+uses CONFIG_UNCOMPRESSED
+
+uses CONFIG_PCI_BUS_SEGN_BITS
+
+uses CONFIG_AP_CODE_IN_CAR
+
+uses CONFIG_MEM_TRAIN_SEQ
+
+uses CONFIG_WAIT_BEFORE_CPUS_INIT
+
+uses CONFIG_AMDMCT
+
+uses CONFIG_USE_PRINTK_IN_CAR
+uses CONFIG_AMD_UCODE_PATCH_FILE
+uses CONFIG_ID_SECTION_OFFSET
+
+uses CONFIG_PIRQ_ROUTE
+
+default CONFIG_PIRQ_ROUTE = 1
+
+
+###
+### Build options
+###
+
+##
+## CONFIG_ROM_SIZE is the size of boot ROM that this board will use.
+##
+default CONFIG_ROM_SIZE=1024*1024
+
+##
+## CONFIG_FALLBACK_SIZE is the amount of the ROM the ROM part of the fallback image will use
+default CONFIG_FALLBACK_SIZE=CONFIG_ROM_IMAGE_SIZE
+default CONFIG_FAILOVER_SIZE=0x02000
+
+#more 1M for pgtbl
+default CONFIG_RAMTOP=16384*1024
+#default CONFIG_RAMTOP=16384*8192
+##
+## Build code for the fallback boot
+##
+default CONFIG_HAVE_FALLBACK_BOOT=1
+default CONFIG_HAVE_FAILOVER_BOOT=1
+
+##
+## Build code to reset the motherboard from coreboot
+##
+default CONFIG_HAVE_HARD_RESET=1
+
+##
+## Build code to export a programmable irq routing table
+##
+default CONFIG_GENERATE_PIRQ_TABLE=1
+default CONFIG_IRQ_SLOT_COUNT=11
+
+##
+## Build code to export an x86 MP table
+## Useful for specifying IRQ routing values
+##
+##default CONFIG_GENERATE_MP_TABLE=1
+default CONFIG_GENERATE_MP_TABLE=1
+
+## ACPI tables will be included
+default CONFIG_GENERATE_ACPI_TABLES=0
+
+##
+## Build code to export a CMOS option table
+##
+default CONFIG_HAVE_OPTION_TABLE=1
+
+##
+## Move the default coreboot cmos range off of AMD RTC registers
+##
+default CONFIG_LB_CKS_RANGE_START=49
+default CONFIG_LB_CKS_RANGE_END=122
+default CONFIG_LB_CKS_LOC=123
+
+##
+## Build code for SMP support
+## Only worry about 2 micro processors
+##
+default CONFIG_SMP=1
+default CONFIG_MAX_PHYSICAL_CPUS=4
+default CONFIG_MAX_CPUS=4 * CONFIG_MAX_PHYSICAL_CPUS
+default CONFIG_LOGICAL_CPUS=1
+
+default CONFIG_SERIAL_CPU_INIT=1
+
+default CONFIG_ENABLE_APIC_EXT_ID=1
+default CONFIG_APIC_ID_OFFSET=0x00
+default CONFIG_LIFT_BSP_APIC_ID=1
+
+#memory hole size, 0 mean disable, others will enable the hole, at that case if it is small than mmio_basek, it will use mmio_basek instead. 
+#2G
+#default CONFIG_HW_MEM_HOLE_SIZEK=0x200000
+#1G
+default CONFIG_HW_MEM_HOLE_SIZEK=0x100000
+#512M
+#default CONFIG_HW_MEM_HOLE_SIZEK=0x80000
+
+#make auto increase hole size to avoid hole_startk equal to basek so as to make some kernel happy
+#default CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC=1
+
+#VGA Console
+default CONFIG_VGA=0
+default CONFIG_CONSOLE_VGA=1
+default CONFIG_VGA_ROM_RUN=1
+default CONFIG_PCI_ROM_RUN=0
+
+#HT Unit ID offset, default is 1, the typical one, 0 mean only one HT device
+default CONFIG_HT_CHAIN_UNITID_BASE=1
+
+#real SB Unit ID, default is 0x20, mean dont touch it at last
+#default CONFIG_HT_CHAIN_END_UNITID_BASE=0x6
+
+#make the SB HT chain on bus 0, default is not (0)
+default CONFIG_SB_HT_CHAIN_ON_BUS0=2
+
+#only offset for SB chain?, default is yes(1)
+default CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY=0
+
+#allow capable device use that above 4G
+#default CONFIG_PCI_64BIT_PREF_MEM=1
+
+##
+## enable CACHE_AS_RAM specifics
+##
+default CONFIG_USE_DCACHE_RAM=1
+default CONFIG_DCACHE_RAM_BASE=0xc4000
+default CONFIG_DCACHE_RAM_SIZE=0x0c000
+default CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE=0x04000
+default CONFIG_USE_INIT=0
+
+default CONFIG_MEM_TRAIN_SEQ=2
+default CONFIG_WAIT_BEFORE_CPUS_INIT=0
+default CONFIG_AMDMCT = 1
+
+##
+## Build code to setup a generic IOAPIC
+##
+default CONFIG_IOAPIC=1
+
+##
+## Clean up the motherboard id strings
+##
+default CONFIG_MAINBOARD_PART_NUMBER="h8qme (Fam10)"
+default CONFIG_MAINBOARD_VENDOR="Supermicro"
+default CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID=0x15d9
+default CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID=0x1511
+
+##
+## Set microcode patch file name
+##
+##      Barcelona rev Ax:  "mc_patch_01000020.h"
+##      Barcelona rev B0, B1, BA: "mc_patch_01000084.h"
+##      Barcelona rev B2, B3: "mc_patch_01000083.h"
+##			Shanghai rev RB-C2: "mc_patch_01000086.h"
+##			Shanghai rev DA-C2: "mc_patch_0100009f.h"
+##
+#default CONFIG_AMD_UCODE_PATCH_FILE="mc_patch_01000086.h"
+default CONFIG_AMD_UCODE_PATCH_FILE="mc_patch_0100009f.h"
+
+###
+### coreboot layout values
+###
+
+## CONFIG_ROM_IMAGE_SIZE is the amount of space to allow coreboot to occupy.
+default CONFIG_ROM_IMAGE_SIZE = 0x1e000
+
+
+default CONFIG_STACK_SIZE=0x10000 
+default CONFIG_HEAP_SIZE= 0xc000
+
+
+##
+## Only use the option table in a normal image
+##
+default CONFIG_USE_OPTION_TABLE = (!CONFIG_USE_FALLBACK_IMAGE) && (!CONFIG_USE_FAILOVER_IMAGE )
+
+##
+## Coreboot C code runs at this location in RAM
+##
+default CONFIG_RAMBASE=0x00200000
+
+##
+## Load the payload from the ROM
+##
+default CONFIG_ROM_PAYLOAD = 1
+
+#default CONFIG_COMPRESSED_PAYLOAD = 1
+
+# CBFS will take care of payload compression
+default CONFIG_UNCOMPRESSED = 1
+
+###
+### Defaults of options that you may want to override in the target config file
+### 
+
+##
+## The default compiler
+##
+default CC="$(CONFIG_CROSS_COMPILE)gcc -m32"
+default HOSTCC="gcc"
+
+##
+## Disable the gdb stub by default
+## 
+default CONFIG_GDB_STUB=0
+
+##
+## The Serial Console
+##
+default CONFIG_USE_PRINTK_IN_CAR=1
+
+# To Enable the Serial Console
+default CONFIG_CONSOLE_SERIAL8250=1
+
+## Select the serial console baud rate
+#default CONFIG_TTYS0_BAUD=115200
+#default CONFIG_TTYS0_BAUD=57600
+#default CONFIG_TTYS0_BAUD=38400
+default CONFIG_TTYS0_BAUD=19200
+#default CONFIG_TTYS0_BAUD=9600
+#default CONFIG_TTYS0_BAUD=4800
+#default CONFIG_TTYS0_BAUD=2400
+#default CONFIG_TTYS0_BAUD=1200
+
+# Select the serial console base port
+default CONFIG_TTYS0_BASE=0x3f8
+
+# Select the serial protocol
+# This defaults to 8 data bits, 1 stop bit, and no parity
+default CONFIG_TTYS0_LCS=0x3
+
+##
+### Select the coreboot loglevel
+##
+## EMERG      1   system is unusable               
+## ALERT      2   action must be taken immediately 
+## CRIT       3   critical conditions              
+## ERR        4   error conditions                 
+## WARNING    5   warning conditions               
+## NOTICE     6   normal but significant condition 
+## INFO       7   informational                    
+## DEBUG      8   debug-level messages             
+## SPEW       9   Way too many details             
+
+## Request this level of debugging output
+default  CONFIG_DEFAULT_CONSOLE_LOGLEVEL=5
+## At a maximum only compile in this level of debugging
+default  CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=5
+
+##
+## Select power on after power fail setting
+default CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL="MAINBOARD_POWER_ON"
+
+default CONFIG_USE_FAILOVER_IMAGE=0
+default CONFIG_USE_FALLBACK_IMAGE=0
+default CONFIG_XIP_ROM_SIZE=CONFIG_FAILOVER_SIZE
+
+default CONFIG_ID_SECTION_OFFSET=0x80
+### End Options.lb
+end

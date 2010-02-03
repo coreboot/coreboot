@@ -1,0 +1,143 @@
+config BOARD_SUPERMICRO_H8QME_FAM10
+	bool "H8QME-2+ (Fam10)"
+	select ARCH_X86
+	select CPU_AMD_SOCKET_F_1207
+	select NORTHBRIDGE_AMD_AMDFAM10
+	select NORTHBRIDGE_AMD_AMDFAM10_ROOT_COMPLEX
+	select SOUTHBRIDGE_NVIDIA_MCP55
+	select SUPERIO_WINBOND_W83627HF
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select LIFT_BSP_APIC_ID
+	select AMDMCT
+	select BOARD_ROMSIZE_KB_1024
+	select TINY_BOOTBLOCK
+	select ENABLE_APIC_EXT_ID
+
+config MAINBOARD_DIR
+	string
+	default supermicro/h8qme_fam10
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc4000
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x0c000
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x04000
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config RAMBASE
+	hex
+	default 0x200000
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config RAMTOP
+	hex
+	default 0x1000000
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config HEAP_SIZE
+	hex
+	default 0xc0000
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config APIC_ID_OFFSET
+	hex
+	default 0x0
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config MEM_TRAIN_SEQ
+	int
+	default 2
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "H8QME-2+ (Fam10)"
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config MAX_CPUS
+	int
+	default 16
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 4
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x20
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x1
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 2
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config AMD_UCODE_PATCH_FILE
+	string
+	default "mc_patch_0100009f.h"
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config SERIAL_CPU_INIT
+	bool
+	default n
+	depends on BOARD_SUPERMICRO_H8QME_FAM10
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x1511
+	depends on BOARD_SUPERMICRO_H8QME_FAM10

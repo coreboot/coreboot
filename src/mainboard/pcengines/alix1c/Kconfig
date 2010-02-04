@@ -32,16 +32,6 @@ config IRQ_SLOT_COUNT
 	default 5
 	depends on BOARD_PCENGINES_ALIX1C
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xc8000
-	depends on BOARD_PCENGINES_ALIX1C
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
-	depends on BOARD_PCENGINES_ALIX1C
-
 config RAMBASE
 	hex
 	default 0x4000

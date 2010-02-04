@@ -56,6 +56,8 @@ fi
 
 sed \
 	-e "/^CONFIG_CONSOLE_/ d" \
+	-e "/^CONFIG_MAXIMUM_CONSOLE_LOGLEVEL/ d" \
+	-e "/^CONFIG_DEFAULT_CONSOLE_LOGLEVEL/ d" \
 	-e "/^CONFIG_RESET_/ d" \
 	-e "/^CONFIG_XIP_ROM_/ d" \
 	-e "/^CONFIG_PRECOMPRESSED_PAYLOAD / d" \
@@ -77,7 +79,6 @@ sed \
 	-e "/^CONFIG_STACK_SIZE / d" \
 	-e "/^CONFIG_GDB_STUB / d" \
 	-e "/^CONFIG_VIDEO_MB / d" \
-	-e "/^CONFIG_IOAPIC / d" \
 	-e "/^CONFIG_HAVE_MOVNTI / d" \
 	-e "/^CONFIG_PCIE_CONFIGSPACE_HOLE / d" \
 	$A/old > $A/old.filtered

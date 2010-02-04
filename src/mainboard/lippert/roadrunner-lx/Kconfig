@@ -32,16 +32,6 @@ config IRQ_SLOT_COUNT
 	default 7
 	depends on BOARD_LIPPERT_ROADRUNNER_LX
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xc8000
-	depends on BOARD_LIPPERT_ROADRUNNER_LX
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
-	depends on BOARD_LIPPERT_ROADRUNNER_LX
-
 config RAMBASE
 	hex
 	default 0x4000

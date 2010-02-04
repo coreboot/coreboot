@@ -32,16 +32,6 @@ config IRQ_SLOT_COUNT
 	default 4
 	depends on BOARD_AMD_DB800
 
-config DCACHE_RAM_BASE
-	hex
-	default 0xc8000
-	depends on BOARD_AMD_DB800
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
-	depends on BOARD_AMD_DB800
-
 config RAMBASE
 	hex
 	default 0x4000

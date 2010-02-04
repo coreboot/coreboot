@@ -21,3 +21,13 @@
 config CPU_AMD_GX1
 	bool
 
+config DCACHE_RAM_BASE
+	hex
+	default 0xc0000
+	depends on CPU_AMD_GX1
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x01000
+	depends on CPU_AMD_GX1
+

@@ -1,3 +1,13 @@
 config CPU_AMD_LX
 	bool
 
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on CPU_AMD_LX
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on CPU_AMD_LX
+

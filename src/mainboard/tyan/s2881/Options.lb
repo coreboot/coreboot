@@ -128,7 +128,7 @@ default CONFIG_HT_CHAIN_UNITID_BASE=0x0a
 default CONFIG_HT_CHAIN_END_UNITID_BASE=0x06
 
 #make the SB HT chain on bus 0, default is not (0)
-default CONFIG_SB_HT_CHAIN_ON_BUS0=0
+default CONFIG_SB_HT_CHAIN_ON_BUS0=2
 
 ##only offset for SB chain?, default is yes(1)
 #default CONFIG_SB_HT_CHAIN_UNITID_OFFSET_ONLY=0

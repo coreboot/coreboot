@@ -24,7 +24,7 @@ config APIC_ID_OFFSET
 
 config SB_HT_CHAIN_ON_BUS0
 	int
-	default 0
+	default 2
 	depends on BOARD_TYAN_S2881
 
 config LB_CKS_RANGE_END

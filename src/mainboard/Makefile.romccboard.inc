@@ -75,10 +75,10 @@ $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib
 	$(obj)/romcc $(ROMCCFLAGS) --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
 
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
-$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/option_table.h
+$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/option_table.h $(obj)/build.h
 	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
 else
-$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c
+$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/build.h
 	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
 endif
 

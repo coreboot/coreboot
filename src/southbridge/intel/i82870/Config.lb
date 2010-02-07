@@ -1,3 +1,0 @@
-driver p64h2_ioapic.o
-driver p64h2_pcibridge.o
-#driver p64h2_pci_parity.o

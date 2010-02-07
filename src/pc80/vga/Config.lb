@@ -1,9 +1,0 @@
-uses CONFIG_VGA
-
-# always build this.
-object vga_io.o
-
-# this adds a vga modeset including a huge font.
-if CONFIG_VGA
-	object vga.o
-end

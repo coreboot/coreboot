@@ -1,1 +1,0 @@
-dd if=/dev/mem of=atix.rom skip=1536 count=96

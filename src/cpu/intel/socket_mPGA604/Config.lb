@@ -1,5 +1,0 @@
-config chip.h
-object socket_mPGA604.o
-dir /cpu/intel/model_f2x
-dir /cpu/intel/model_f3x
-dir /cpu/intel/model_f4x

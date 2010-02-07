@@ -1,6 +1,0 @@
-#!/bin/bash
-TYANMB=s2875
-cd "$TYANMB"
-make
-cat ./normal/coreboot.rom ./fallback/coreboot.rom > $TYANMB"_coreboot.rom"
-cp -f $TYANMB"_coreboot.rom" /home/yhlu/

@@ -1,7 +1,0 @@
-uses CONFIG_WRITE_HIGH_TABLES
-config chip.h
-driver northbridge.o
-object northbridgeinit.o
-object chipsetinit.o
-object grphinit.o
-default CONFIG_WRITE_HIGH_TABLES=1

@@ -1,8 +1,0 @@
-config chip.h
-driver vt8231.o
-driver vt8231_lpc.o
-driver vt8231_acpi.o
-driver vt8231_ide.o
-driver vt8231_nic.o
-#driver vt8231_usb.o
-

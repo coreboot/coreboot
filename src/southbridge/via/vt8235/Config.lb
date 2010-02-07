@@ -1,6 +1,0 @@
-config chip.h
-driver vt8235.o
-driver vt8235_ide.o
-driver vt8235_lpc.o
-driver vt8235_nic.o
-driver vt8235_usb.o

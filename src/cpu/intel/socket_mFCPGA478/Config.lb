@@ -1,6 +1,0 @@
-config chip.h
-object socket_mFCPGA478.o
-dir /cpu/intel/model_69x
-dir /cpu/intel/model_6dx
-dir /cpu/intel/model_6ex
-dir /cpu/intel/model_6fx

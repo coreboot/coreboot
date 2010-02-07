@@ -1,8 +1,0 @@
-config chip.h
-driver bcm5785.o
-driver bcm5785_usb.o
-driver bcm5785_lpc.o
-driver bcm5785_sb_pci_main.o
-driver bcm5785_ide.o
-driver bcm5785_sata.o
-object bcm5785_reset.o

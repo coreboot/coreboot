@@ -1,3 +1,0 @@
-driver bcm5780_nic.o
-driver bcm5780_pcix.o
-driver bcm5780_pcie.o

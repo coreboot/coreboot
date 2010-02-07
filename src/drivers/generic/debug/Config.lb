@@ -1,2 +1,0 @@
-config chip.h
-object debug_dev.o

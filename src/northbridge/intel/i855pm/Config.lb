@@ -1,7 +1,0 @@
-uses CONFIG_WRITE_HIGH_TABLES
-
-config chip.h
-
-object northbridge.o
-
-default CONFIG_WRITE_HIGH_TABLES=1

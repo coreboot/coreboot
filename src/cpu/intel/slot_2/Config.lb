@@ -1,3 +1,0 @@
-config chip.h
-object slot_2.o
-dir /cpu/intel/model_6xx

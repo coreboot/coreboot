@@ -1,8 +1,0 @@
-#!/bin/bash
-TYANMB=s2735
-cd "$TYANMB"
-make
-#cat ../fwx.rom ../atix.rom ./normal/coreboot.rom ./fallback/coreboot.rom > $TYANMB"_coreboot.rom"
-#cat ../fwx.rom ./normal/coreboot.rom ./fallback/coreboot.rom > $TYANMB"_coreboot.rom"
-cat ./normal/coreboot.rom ./fallback/coreboot.rom > $TYANMB"_coreboot.rom"
-cp -f $TYANMB"_coreboot.rom" /home/yhlu/

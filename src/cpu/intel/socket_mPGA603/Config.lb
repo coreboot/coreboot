@@ -1,6 +1,0 @@
-config chip.h
-object socket_mPGA603_400Mhz.o
-dir /cpu/intel/model_f0x
-dir /cpu/intel/model_f1x
-dir /cpu/intel/model_f2x
-

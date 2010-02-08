@@ -26,7 +26,7 @@ obj-y += get_bus_conf.o
 obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_USE_INIT) += romstage.o
-obj-$(CONFIG_AP_CODE_IN_CAR) += apc_auto.o
+obj-$(CONFIG_AP_CODE_IN_CAR) += ap_romstage.o
 
 # This is part of the conversion to init-obj and away from included code. 
 initobj-y += crt0.o
@@ -48,8 +48,8 @@ endif
 
 ifdef POST_EVALUATION
 
-$(obj)/mainboard/$(MAINBOARDDIR)/apc_auto.o: $(src)/mainboard/$(MAINBOARDDIR)/apc_romstage.c $(obj)/option_table.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/apc_romstage.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(obj)/option_table.h
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@

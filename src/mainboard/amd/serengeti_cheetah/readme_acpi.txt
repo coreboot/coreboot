@@ -1,12 +1,12 @@
 At this time, For acpi support We got
 1. support AMK K8 SRAT --- dynamically (coreboot run-time)  (src/northbridge/amd/amdk8/amdk8_acpi.c)
 2. support MADT ---- dynamically (coreboot run-time)  (src/northbridge/amd/amdk8/amdk8_acpi.c , src/mainboard/amd/serengeti_cheetah/acpi_tables.c)
-3. support DSDT ---- dynamically (Compile time, coreboot run-time, ACPI run-time) (src/mainboard/amd/serengeti_cheetah/{dx/*, get_bus_conf.c}, src/northbridge/amd/amdk8/get_sblk_pci1234.c)
+3. support DSDT ---- dynamically (Compile time, coreboot run-time, ACPI run-time) (src/mainboard/amd/serengeti_cheetah/{acpi/*, get_bus_conf.c}, src/northbridge/amd/amdk8/get_sblk_pci1234.c)
 4. Chipset support: amd8111, amd8132
 
 The developers need to change for different MB
 
-Change dx/dsdt_lb.dsl, according to MB layout 
+Change dsdt.asl, according to MB layout 
 	pci1, pci2, pci3, pci4, ...., pci8
 	if there is HT-IO board, may use pci2.asl.... to create ssdt2.c, and ssdt3,c and ssdt4.c, ....ssdt8.c
 

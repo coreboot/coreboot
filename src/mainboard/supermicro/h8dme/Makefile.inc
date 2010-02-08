@@ -48,28 +48,6 @@ ldscripts += $(src)/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
 
-$(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/dsdt_lb.dsl
-	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dx/dsdt_lb.dsl
-	mv dsdt.hex $@
-
-$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
-
-$(obj)/ssdt2.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci2.asl
-	iasl -p $(CURDIR)/pci2 -tc $(CONFIG_MAINBOARD)/dx/pci2.asl
-	perl -pi -e 's/AmlCode/AmlCode_ssdt2/g' pci2.hex
-	mv pci2.hex ssdt2.c
-
-$(obj)/ssdt3.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci3.asl"
-	iasl -p $(CURDIR)/pci3 -tc $(CONFIG_MAINBOARD)/
-	perl -pi -e 's/AmlCode/AmlCode_ssdt3/g' pci3.hex
-	mv pci3.hex ssdt3.c
-
-$(obj)/ssdt4.c: $(src)/mainboard/$(MAINBOARDDIR)/dx/pci4.asl"
-	iasl -p $(CURDIR)/pci4 -tc $(CONFIG_MAINBOARD)/dx/pci4.asl
-	perl -pi -e 's/AmlCode/AmlCode_ssdt4/g' pci4.hex
-	mv pci4.hex ssdt4.c
-
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
 	perl -e 's/\.rodata/.rom.data/g' -pi $@

@@ -88,7 +88,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CBT-V2", "CBT-DSDT", 1)
 	       })
 
 		   /* PCI Devices Included Here */
-		   Include("sb_physical.asl")
+		   #include "acpi/sb_physical.asl"
 
 		   /* Legacy PNP Devices Defined Here */
 
@@ -343,8 +343,8 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CBT-V2", "CBT-DSDT", 1)
                })
            }
 
-		   Include("irq_links.asl")
-		   Include("pci_init.asl")
+		   #include "acpi/irq_links.asl"
+		   #include "acpi/pci_init.asl"
 
 	   } //End of PCI0
 

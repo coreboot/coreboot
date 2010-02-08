@@ -138,12 +138,13 @@ subdirs:=$(PLATFORM-y) $(BUILD-y)
 $(eval $(call evaluate_subdirs))
 
 
-define c_dsl_template
-$(obj)/$(1)%.c: src/$(1)%.dsl $(obj)/build.h
+define objs_dsl_template
+$(obj)/$(1)%.o: src/$(1)%.asl
 	@printf "    IASL       $$(subst $$(shell pwd)/,,$$(@))\n"
-	iasl -p $$(basename $$@) -tc $$<
-	perl -pi -e 's/AmlCode/AmlCode_$$(notdir $$(basename $$@))/g' $$(basename $$@).hex
-	mv $$(basename $$@).hex $$@
+	$(CPP) -D__ACPI__ -P $(CPPFLAGS) -include $(obj)/config.h -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
+	iasl -p $$(basename $$@) -tc $$(basename $$@).asl
+	mv $$(basename $$@).hex $$(basename $$@).c
+	$(CC) -m32 $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c
 endef
 
 define objs_c_template
@@ -196,7 +197,7 @@ endef
 
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
-$(eval $(call usetemplate,c,dsl))
+$(eval $(call usetemplate,objs,dsl))
 $(eval $(call usetemplate,objs,c))
 $(eval $(call usetemplate,objs,S))
 $(eval $(call usetemplate,initobjs,c))

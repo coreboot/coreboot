@@ -27,7 +27,7 @@
 		0x00010001
 		)
 	{
-		Include ("debug.asl")
+		#include "debug.asl"
 	}
 */
 

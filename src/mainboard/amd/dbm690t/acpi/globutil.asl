@@ -19,7 +19,7 @@
 
 /*
 Scope(\_SB) {
-	Include ("globutil.asl")
+	#include "globutil.asl"
 }
 */
 

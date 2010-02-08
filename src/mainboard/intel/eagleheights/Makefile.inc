@@ -26,13 +26,6 @@ ldscripts += $(src)/arch/i386/lib/failover.lds
 
 ifdef POST_EVALUATION
 
-$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.dsl
-	iasl -p $(obj)/mainboard/$(MAINBOARDDIR)/dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.dsl
-	mv $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.hex $@
-
-$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.c
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
-
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
 	perl -e 's/\.rodata/.rom.data/g' -pi $@

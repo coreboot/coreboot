@@ -22,7 +22,7 @@
 DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
 		)
 	{
-		Include ("usb.asl")
+		#include "usb.asl"
 	}
 */
 Method(UCOC, 0) {

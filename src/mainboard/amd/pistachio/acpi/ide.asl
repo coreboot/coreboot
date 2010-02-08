@@ -22,7 +22,7 @@ Scope (_SB) {
 	Device(PCI0) {
 		Device(IDEC) {
 			Name(_ADR, 0x00140001)
-			Include ("ide.asl")
+			#include "ide.asl"
 		}
 	}
 }

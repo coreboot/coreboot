@@ -43,13 +43,6 @@ endif
 
 ifdef POST_EVALUATION
 
-$(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
-	iasl -p $(obj)/dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
-	mv $(obj)/dsdt.hex $@
-
-$(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/dsdt.c
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
-
 $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(obj)/option_table.h
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 

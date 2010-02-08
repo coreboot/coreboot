@@ -32,7 +32,7 @@ export yapps2_py := $(sconfig)/yapps2.py
 export config_g := $(sconfig)/config.g
 
 
-export KERNELVERSION      := 2.3
+export KERNELVERSION      := 4.0
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 

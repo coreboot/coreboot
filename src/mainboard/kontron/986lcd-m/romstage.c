@@ -29,7 +29,7 @@
  * However, the Kontron 986LCD-M does not like unused clock signals to
  * be disabled. If other similar mainboard occur, it would make sense
  * to make this an entry in the sysinfo structure, and pre-initialize that
- * structure in the mainboard's auto.c main() function. For now a
+ * structure in the mainboard's romstage.c main() function. For now a
  * #define will do.
  */
 #define OVERRIDE_CLOCK_DISABLE 1

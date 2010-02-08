@@ -78,7 +78,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	nb_cfg_54 = read_nb_cfg_54();
 
 #if 0
-	//it is for all e0 single core and nc_cfg_54 low is set, but in the auto.c stage we do not set that bit for it.
+	//it is for all e0 single core and nc_cfg_54 low is set, but in the romstage.c stage we do not set that bit for it.
 	if(nb_cfg_54 && (!disable_siblings) && (siblings == 0)) {
 		//we need to check if e0 single core is there
 		int i;
@@ -109,7 +109,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	if((apicid_base+ioapic_num-1)>0xf) {
 		// We need to enable APIC EXT ID
-		printk_info("if the IO APIC device doesn't support 256 apic id, \r\n you need to set CONFIG_ENABLE_APIC_EXT_ID in auto.c so you can spare 16 id for ioapic\r\n");
+		printk_info("if the IO APIC device doesn't support 256 apic id, \r\n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for ioapic\r\n");
 		enable_apic_ext_id(nodes);
 	}
 	

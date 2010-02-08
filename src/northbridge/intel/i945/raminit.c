@@ -2796,7 +2796,7 @@ static void sdram_enable_memory_clocks(struct sys_info *sysinfo)
 	 * signals to be disabled.
 	 * If other similar mainboard occur, it would make sense to make
 	 * this an entry in the sysinfo structure, and pre-initialize that
-	 * structure in the mainboard's auto.c main() function.
+	 * structure in the mainboard's romstage.c main() function.
 	 * For now an #ifdef will do.
 	 */
 

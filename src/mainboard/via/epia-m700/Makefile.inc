@@ -42,15 +42,15 @@ crt0s += $(src)/cpu/x86/16bit/reset16.inc
 crt0s += $(src)/northbridge/via/vx800/romstrap.inc
 crt0s += $(src)/arch/i386/lib/id.inc
 crt0s += $(src)/cpu/via/car/cache_as_ram.inc
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 ifdef POST_EVALUATION
 
 $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c $(obj)/option_table.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
 	perl -e 's/\.rodata/.rom.data/g' -pi $@
 	perl -e 's/\.text/.section .rom.text/g' -pi $@
 

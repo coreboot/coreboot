@@ -559,13 +559,13 @@ g)      Rx73h = 32h
 	}
 #endif
 /*
-the following code is  copied from src\mainboard\tyan\s2735\cache_as_ram_auto.c
+the following code is  copied from src/mainboard/tyan/s2735/romstage.c
 Only the code around CLEAR_FIRST_1M_RAM is changed.
 I remove all the code around CLEAR_FIRST_1M_RAM and #include "cpu/x86/car/cache_as_ram_post.c"
 the CLEAR_FIRST_1M_RAM seems to make cpu/x86/car/cache_as_ram_post.c stop at somewhere, 
 and cpu/x86/car/cache_as_ram_post.c  do not cache my $CONFIG_XIP_ROM_BASE+SIZE area.
 
-So,I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c have some diff withx86-version
+So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c have some diff with x86-version
 */
 #if 1
 	{

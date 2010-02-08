@@ -181,7 +181,7 @@ void cache_as_ram_main(void)
 	 *
 	 * There are two ways we could think about this.
 	 *
-	 * 1. If we are using the auto.inc ROMCC way, the stack is
+	 * 1. If we are using the romstage.inc ROMCC way, the stack is
 	 * going to be re-setup in the code following this code.  Just
 	 * wbinvd the stack to clear the cache tags.  We don't care
 	 * where the stack used to be.

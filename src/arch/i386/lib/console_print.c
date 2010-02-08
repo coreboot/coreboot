@@ -63,7 +63,7 @@ static void __console_tx_string(int loglevel, const char *str)
 }
 
 /* Actually this should say defined(__ROMCC__) but that define is explicitly
- * set in some auto.c files to trigger the simple device_t version to be used.
+ * set in some romstage.c files to trigger the simple device_t version to be used.
  * So __GNUCC__ does the right thing here.
  */
 #if defined (__ROMCC__)

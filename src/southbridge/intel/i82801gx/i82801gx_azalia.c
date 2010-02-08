@@ -265,7 +265,7 @@ static void azalia_init(struct device *dev)
 	pci_write_config8(dev, 0x3c, 0x0a); // unused?
 
 	// TODO Actually check if we're AC97 or HDA instead of hardcoding this
-	// here, in Config.lb and/or auto.c.
+	// here, in devicetree.cb and/or romstage.c.
 	reg8 = pci_read_config8(dev, 0x40);
 	reg8 |= (1 << 3); // Clear Clock Detect Bit
 	pci_write_config8(dev, 0x40, reg8);
@@ -279,7 +279,7 @@ static void azalia_init(struct device *dev)
 
 	//
 	reg8 = pci_read_config8(dev, 0x40); // Audio Control
-	reg8 |= 1; // Select Azalia mode. This needs to be controlled via Config.lb
+	reg8 |= 1; // Select Azalia mode. This needs to be controlled via devicetree.cb
 	pci_write_config8(dev, 0x40, reg8);
 
 	reg8 = pci_read_config8(dev, 0x4d); // Docking Status

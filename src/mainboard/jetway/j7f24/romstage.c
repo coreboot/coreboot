@@ -106,7 +106,7 @@ static void main(unsigned long bist)
 	uart_init();
 	console_init();
 
-	print_spew("In auto.c:main()\r\n");
+	print_spew("In romstage.c:main()\r\n");
 
 	enable_smbus();
 	smbus_fixup(&ctrl);
@@ -126,5 +126,5 @@ static void main(unsigned long bist)
 
 	/* ram_check(0, 640 * 1024); */
 
-	print_spew("Leaving auto.c:main()\r\n");
+	print_spew("Leaving romstage.c:main()\r\n");
 }

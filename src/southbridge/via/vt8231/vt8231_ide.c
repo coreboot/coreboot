@@ -13,7 +13,7 @@ static void ide_init(struct device *dev)
 	if (!conf->enable_native_ide) {
 		// Run the IDE controller in 'compatiblity mode - i.e. don't use PCI
 		// interrupts.  Using PCI ints confuses linux for some reason.
-		/* Setting reg 0x42 here does not work. It is set in mainboard/auto.c
+		/* Setting reg 0x42 here does not work. It is set in mainboard/romstage.c
 		* It probably can only be changed while the IDE is disabled
 		* or it is possibly a timing issue. Ben Hewson 29 Apr 2007.
 		*/

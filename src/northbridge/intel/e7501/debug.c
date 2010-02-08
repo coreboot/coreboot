@@ -1,5 +1,5 @@
 /*
- * generic debug code, used by mainboard specific auto.c
+ * generic debug code, used by mainboard specific romstage.c
  *
  */
 #if 1

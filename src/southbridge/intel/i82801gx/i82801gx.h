@@ -40,7 +40,7 @@
 #ifndef __ACPI__
 #define DEBUG_PERIODIC_SMIS 0
 
-/* __ROMCC__ is set by auto.c to make sure
+/* __ROMCC__ is set by romstage.c to make sure
  * none of the stage2 data structures are included.
  */
 #if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)

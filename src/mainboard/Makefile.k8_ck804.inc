@@ -42,7 +42,7 @@ crt0s += $(src)/cpu/x86/16bit/reset16.inc
 crt0s += $(src)/arch/i386/lib/id.inc
 crt0s += $(src)/southbridge/nvidia/ck804/romstrap.inc
 crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
 ldscripts += $(src)/cpu/x86/16bit/entry16.lds
@@ -60,8 +60,8 @@ $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.d
 $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o: $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.c
 	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c $< -o $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c $(obj)/option_table.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/cache_as_ram_auto.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
 	perl -e 's/\.rodata/.rom.data/g' -pi $@
 	perl -e 's/\.text/.section .rom.text/g' -pi $@
 

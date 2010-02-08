@@ -19,7 +19,7 @@
 
 /**
  * This file defines the SPD addresses for the mainboard. Must be included in
- * cache_as_ram_auto.c
+ * romstage.c
  */
 
 #define RC00 0

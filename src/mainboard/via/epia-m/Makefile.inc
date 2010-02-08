@@ -41,7 +41,7 @@ crt0s += $(src)/cpu/x86/16bit/reset16.inc
 crt0s += $(src)/northbridge/via/vx800/romstrap.inc
 crt0s += $(src)/arch/i386/lib/id.inc
 crt0s += $(src)/cpu/x86/fpu_enable.inc
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 crt0s += $(src)/cpu/x86/mmx_disable.inc
 
 ifdef POST_EVALUATION
@@ -53,8 +53,8 @@ $(obj)/dsdt.c: $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
 	iasl -p dsdt -tc $(src)/mainboard/$(MAINBOARDDIR)/dsdt.asl
 	mv dsdt.hex $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/option_table.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
 	perl -e 's/\.rodata/.rom.data/g' -pi $@
 	perl -e 's/\.text/.section .rom.text/g' -pi $@
 

@@ -32,7 +32,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
-#include "northbridge/via/cn400/raminit.h"
+#include "northbridge/via/cn700/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
@@ -40,23 +40,7 @@
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
 #include "superio/winbond/w83697hf/w83697hf_early_serial.c"
-
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
-
-/*
- * NOOB ::			
- * d0f0 - Device 0 Function 0 etc. 
- */
-static const struct mem_controller ctrl = {
-	.d0f0 = 0x0000,
-	.d0f2 = 0x2000,
-	.d0f3 = 0x3000,
-	.d0f4 = 0x4000,
-	.d0f7 = 0x7000,
-	.d1f0 = 0x8000,
-	.channel0 = { 0x50 },
-};
-
 
 static void memreset_setup(void)
 {
@@ -67,7 +51,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/via/cn400/raminit.c"
+#include "northbridge/via/cn700/raminit.c"
 
 static void enable_mainboard_devices(void)
 {
@@ -78,40 +62,33 @@ static void enable_mainboard_devices(void)
 	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
 
-	/* bit=0 means enable function (per VT8237R datasheet)
-	 *   7 17.6 MC97
-	 *   6 17.5 AC97
+	/* bit=0 means enable function (per CX700 datasheet)
 	 *   5 16.1 USB 2
 	 *   4 16.0 USB 1
 	 *   3 15.0 SATA and PATA
 	 *   2 16.2 USB 3
 	 *   1 16.4 USB EHCI
 	 */
-	pci_write_config8(dev, 0x50, 0xC0);
+	pci_write_config8(dev, 0x50, 0x80);
 
-	/*bit=0 means enable internal function (per VT8237R datasheet)
-	 *   7 USB Device Mode
-	 *bit=1 means enable internal function (per VT8237R datasheet)
-	 *   6 Reserved
-	 *   5 LAN Controller Clock Gating
-	 *   4 LAN Controller
+	/* bit=1 means enable internal function (per CX700 datasheet)
 	 *   3 Internal RTC
 	 *   2 Internal PS2 Mouse
 	 *   1 Internal KBC Configuration
 	 *   0 Internal Keyboard Controller
 	 */
-	pci_write_config8(dev, 0x51, 0x9d);
+	pci_write_config8(dev, 0x51, 0x1d);
 }
 
-static void enable_shadow_ram(void) 
-{
-	unsigned char shadowreg;
-	
-	shadowreg = pci_read_config8(ctrl.d0f3, 0x82);
-	/* 0xf0000-0xfffff Read/Write*/
-	shadowreg |= 0x30;
-	pci_write_config8(ctrl.d0f3, 0x82, shadowreg);
-}
+static const struct mem_controller ctrl = {
+	.d0f0 = 0x0000,
+	.d0f2 = 0x2000,
+	.d0f3 = 0x3000,
+	.d0f4 = 0x4000,
+	.d0f7 = 0x7000,
+	.d1f0 = 0x8000,
+	.channel0 = { 0x50 },
+};
 
 static void main(unsigned long bist)
 {
@@ -124,14 +101,18 @@ static void main(unsigned long bist)
 	w83697hf_set_clksel_48(SERIAL_DEV);
 
 	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
 	uart_init();
 	console_init();
 
-	print_spew("In auto.c:main()\r\n");
+	print_spew("In romstage.c:main()\r\n");
 
 	enable_smbus();
 	smbus_fixup(&ctrl);
+
+	if (bist == 0) {
+		print_debug("doing early_mtrr\r\n");
+		early_mtrr_init();
+	}
 
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
@@ -139,22 +120,9 @@ static void main(unsigned long bist)
 	print_debug("Enabling mainboard devices\r\n");
 	enable_mainboard_devices();
 
-	print_debug("Enable F-ROM Shadow RAM\r\n");
-	enable_shadow_ram();
-	
-	/* setup cpu */
-	print_debug("Setup CPU Interface\r\n");
-	c3_cpu_setup(ctrl.d0f2);	
+	ddr_ram_setup(&ctrl);
 
+	/* ram_check(0, 640 * 1024); */
 
-	ddr_ram_setup();
-
-	if (bist == 0) {
-		print_debug("doing early_mtrr\r\n");
-		early_mtrr_init();
-	}
-	
-	//ram_check(0, 640 * 1024);
-
-	print_spew("Leaving auto.c:main()\r\n");
+	print_spew("Leaving romstage.c:main()\r\n");
 }

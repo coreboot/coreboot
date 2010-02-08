@@ -710,7 +710,7 @@ void amd64_main(unsigned long bist)
 #endif
 
 /*
- * The following code is copied from tyan\s2735\cache_as_ram_auto.c.
+ * The following code is copied from tyan\s2735\romstage.c.
  * Only the code around CLEAR_FIRST_1M_RAM is changed. Removed all the code
  * around CLEAR_FIRST_1M_RAM and #include "cpu/x86/car/cache_as_ram_post.c".
  * The CLEAR_FIRST_1M_RAM seems to make cpu/x86/car/cache_as_ram_post.c stop

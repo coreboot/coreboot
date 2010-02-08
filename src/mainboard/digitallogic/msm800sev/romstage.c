@@ -98,7 +98,7 @@ void cache_as_ram_main(void)
 
 	/* Switch from Cache as RAM to real RAM */
 	/* There are two ways we could think about this.
-	 1. If we are using the auto.inc ROMCC way, the stack is going to be re-setup in the code following this code.
+	 1. If we are using the romstage.inc ROMCC way, the stack is going to be re-setup in the code following this code.
 		Just wbinvd the stack to clear the cache tags. We don't care where the stack used to be.
 	 2. This file is built as a normal .c -> .o and linked in etc. The stack might be used to return etc.
 		That means we care about what is in the stack. If we are smart we set the CAR stack to the same location

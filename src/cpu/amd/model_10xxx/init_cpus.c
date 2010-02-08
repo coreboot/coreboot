@@ -463,7 +463,7 @@ static void wait_all_core0_started(void)
  *  start the core0 in node, so it can generate HT packet to feature code.
  *
  * This function starts the AP nodes core0s. wait_all_core0_started() in
- * cache_as_ram_auto.c waits for all the AP to be finished before continuing
+ * romstage.c waits for all the AP to be finished before continuing
  * system init.
  */
 static void start_node(u8 node)

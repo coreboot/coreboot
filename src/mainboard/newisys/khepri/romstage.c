@@ -1,5 +1,5 @@
 /*
- * This code is derived from the Tyan s2882 cache_as_ram_auto.c
+ * This code is derived from the Tyan s2882 romstage.c
  * Adapted by Stefan Reinauer <stepan@coresystems.de>
  * Additional (C) 2007 coresystems GmbH 
  */

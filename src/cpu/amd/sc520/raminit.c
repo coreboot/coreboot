@@ -89,7 +89,7 @@ void setupsc520(void)
 	/* as per the book: */
 	/* PAR register setup */
 	/* set up the PAR registers as they are on the MSM586SEG */
-	/*    moved to auto.c by Stepan, Ron says: */
+	/*    moved to romstage.c by Stepan, Ron says: */
 	/* NOTE: move this to mainboard.c ASAP */
 	setup_pars();
   

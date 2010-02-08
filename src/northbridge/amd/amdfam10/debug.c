@@ -18,7 +18,7 @@
  */
 
 /*
- * Generic FAM10 debug code, used by mainboard specific car_auto.c
+ * Generic FAM10 debug code, used by mainboard specific romstage.c
  */
 
 #include "amdfam10_pci.c"

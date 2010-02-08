@@ -105,7 +105,7 @@ static void main(unsigned long bist)
 
 	enable_smbus();
 
-	print_spew("In auto.c:main()\r\n");
+	print_spew("In romstage.c:main()\r\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
@@ -150,5 +150,5 @@ static void main(unsigned long bist)
 
 	//dump_pci_devices();
 	
-	print_spew("Leaving auto.c:main()\r\n");
+	print_spew("Leaving romstage.c:main()\r\n");
 }

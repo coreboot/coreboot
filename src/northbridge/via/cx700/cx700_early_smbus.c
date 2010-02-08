@@ -188,7 +188,7 @@ static unsigned int get_spd_data(const struct mem_controller *ctrl, unsigned int
 	smbus_wait_until_ready();
 
 	/* Fetch the SMBus address of the SPD ROM from
-	 * the ctrl struct in auto.c in case they are at
+	 * the ctrl struct in romstage.c in case they are at
 	 * non-standard positions.
 	 * SMBus Address shifted by 1
 	 */

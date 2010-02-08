@@ -42,7 +42,7 @@ endif
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc
 endif
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 ifeq ($(CONFIG_SSE),y)
 crt0s += $(src)/cpu/x86/sse_disable.inc
 endif
@@ -75,11 +75,11 @@ $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib
 	$(obj)/romcc $(ROMCCFLAGS) --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
 
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
-$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/option_table.h $(obj)/build.h
-	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h $(obj)/build.h
+	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
 else
-$(obj)/mainboard/$(MAINBOARDDIR)/auto.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/auto.c $(obj)/build.h
-	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/auto.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/build.h
+	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
 endif
 
 endif

@@ -78,11 +78,6 @@ config MAX_PHYSICAL_CPUS
 	default 1
 	depends on BOARD_KONTRON_KT690
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_KONTRON_KT690
-
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n

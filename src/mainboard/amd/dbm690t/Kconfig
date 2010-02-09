@@ -27,11 +27,6 @@ config HAVE_HIGH_TABLES
 	default n
 	depends on BOARD_AMD_DBM690T
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_AMD_DBM690T
-
 config DCACHE_RAM_BASE
 	hex
 	default 0xc8000

@@ -99,11 +99,6 @@ config USE_INIT
 	default n
 	depends on BOARD_ASUS_A8V_E_SE
 
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_ASUS_A8V_E_SE
-
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1043

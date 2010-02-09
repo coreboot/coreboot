@@ -127,8 +127,3 @@ config RAMBASE
 	hex
 	default 0x4000
 	depends on BOARD_TECHNEXION_TIM5690
-
-config HAVE_OPTION_TABLE
-	bool
-	default n
-	depends on BOARD_TECHNEXION_TIM5690

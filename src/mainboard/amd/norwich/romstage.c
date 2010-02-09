@@ -115,7 +115,7 @@ void cache_as_ram_main(void)
 	 * up later...
 	 */
 	/* If debug. real setup done in chipset init via Config.lb. */
-	cs5536_setup_onchipuart();
+	cs5536_setup_onchipuart(1);
 	mb_gpio_init();
 	uart_init();
 	console_init();

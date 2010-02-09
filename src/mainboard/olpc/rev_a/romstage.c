@@ -177,7 +177,7 @@ static void main(unsigned long bist)
 	 * it is counting on some early MSR setup
 	 * for cs5536
 	 */
-	cs5536_setup_onchipuart();
+	cs5536_setup_onchipuart(1);
 	gpio_init();
 	uart_init();
 	console_init();

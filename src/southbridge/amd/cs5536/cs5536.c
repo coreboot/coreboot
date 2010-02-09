@@ -247,38 +247,45 @@ static void lpc_init(struct southbridge_amd_cs5536_config *sb)
 
 	isa_dma_init();
 }
+			
 
+/**
+ * Depending on settings in the config struct, enable COM1 or COM2 or both.
+ *
+ * If the enable is NOT set, the UARTs are explicitly disabled, which is
+ * required if (e.g.) there is a Super I/O attached that does COM1 or COM2.
+ *
+ * @param sb Southbridge config structure.
+ */
 static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 {
 	msr_t msr;
-	uint16_t addr;
-	uint32_t gpio_addr;
+	u16 addr = 0;
+	u32 gpio_addr;
 	device_t dev;
-
+	
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
 			PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 	gpio_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1);
-	gpio_addr &= ~1;	/* clear IO bit */
-	printk_debug("GPIO_ADDR: %08X\n", gpio_addr);
+	gpio_addr &= ~1;	/* Clear I/O bit */
+	printk(BIOS_DEBUG, "GPIO_ADDR: %08X\n", gpio_addr);
 
-	/* This could be extended to support IR modes */
+	/* This could be extended to support IR modes. */
 
 	/* COM1 */
 	if (sb->com1_enable) {
-		/* Set the address */
+		printk(BIOS_SPEW, "uarts_init: enable COM1\n");
+		/* Set the address. */
 		switch (sb->com1_address) {
 		case 0x3F8:
 			addr = 7;
 			break;
-
 		case 0x3E8:
 			addr = 6;
 			break;
-
 		case 0x2F8:
 			addr = 5;
 			break;
-
 		case 0x2E8:
 			addr = 4;
 			break;
@@ -287,13 +294,13 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 		msr.lo |= addr << 16;
 		wrmsr(MDD_LEG_IO, msr);
 
-		/* Set the IRQ */
+		/* Set the IRQ. */
 		msr = rdmsr(MDD_IRQM_YHIGH);
 		msr.lo |= sb->com1_irq << 24;
 		wrmsr(MDD_IRQM_YHIGH, msr);
 
 		/* GPIO8 - UART1_TX */
-		/* Set: Output Enable  (0x4) */
+		/* Set: Output Enable (0x4) */
 		outl(GPIOL_8_SET, gpio_addr + GPIOL_OUTPUT_ENABLE);
 		/* Set: OUTAUX1 Select (0x10) */
 		outl(GPIOL_8_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
@@ -301,28 +308,31 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 		/* GPIO9 - UART1_RX */
 		/* Set: Input Enable   (0x20) */
 		outl(GPIOL_9_SET, gpio_addr + GPIOL_INPUT_ENABLE);
-		/* Set: INAUX1 Select  (0x34) */
+		/* Set: INAUX1 Select (0x34) */
 		outl(GPIOL_9_SET, gpio_addr + GPIOL_IN_AUX1_SELECT);
 
-		/* Set: GPIO 8 + 9 Pull Up         (0x18) */
+		/* Set: GPIO 8 + 9 Pull Up (0x18) */
 		outl(GPIOL_8_SET | GPIOL_9_SET,
 		     gpio_addr + GPIOL_PULLUP_ENABLE);
 
-		/* enable COM1 */
-		/* Bit 1 = device enable Bit 4 = allow access to the upper banks */
+		/* Enable COM1.
+		 *
+		 * Bit 1 = device enable
+		 * Bit 4 = allow access to the upper banks
+		 */
 		msr.lo = (1 << 4) | (1 << 1);
 		msr.hi = 0;
 		wrmsr(MDD_UART1_CONF, msr);
-
 	} else {
-		/* Reset and disable COM1 */
+		/* Reset and disable COM1. */
+		printk(BIOS_SPEW, "uarts_init: disable COM1\n");
 		msr = rdmsr(MDD_UART1_CONF);
-		msr.lo = 1;	// reset
+		msr.lo = 1;			/* Reset */
 		wrmsr(MDD_UART1_CONF, msr);
-		msr.lo = 0;	// disabled
+		msr.lo = 0;			/* Disabled */
 		wrmsr(MDD_UART1_CONF, msr);
 
-		/* Disable the IRQ */
+		/* Disable the IRQ. */
 		msr = rdmsr(MDD_LEG_IO);
 		msr.lo &= ~(0xF << 16);
 		wrmsr(MDD_LEG_IO, msr);
@@ -330,19 +340,17 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 
 	/* COM2 */
 	if (sb->com2_enable) {
+		printk(BIOS_SPEW, "uarts_init: enable COM2\n");
 		switch (sb->com2_address) {
 		case 0x3F8:
 			addr = 7;
 			break;
-
 		case 0x3E8:
 			addr = 6;
 			break;
-
 		case 0x2F8:
 			addr = 5;
 			break;
-
 		case 0x2E8:
 			addr = 4;
 			break;
@@ -350,11 +358,13 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 		msr = rdmsr(MDD_LEG_IO);
 		msr.lo |= addr << 20;
 		wrmsr(MDD_LEG_IO, msr);
+		printk(BIOS_SPEW, "uarts_init: wrote COM2 address 0x%x\n", sb->com2_address);
 
-		/* Set the IRQ */
+		/* Set the IRQ. */
 		msr = rdmsr(MDD_IRQM_YHIGH);
 		msr.lo |= sb->com2_irq << 28;
 		wrmsr(MDD_IRQM_YHIGH, msr);
+		printk(BIOS_SPEW, "uarts_init: set COM2 irq\n");
 
 		/* GPIO3 - UART2_RX */
 		/* Set: Input Enable (0x20) */
@@ -365,33 +375,41 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 		/* GPIO4 - UART2_TX */
 		/* Set: Output Enable (0x4) */
 		outl(GPIOL_4_SET, gpio_addr + GPIOL_OUTPUT_ENABLE);
+		printk(BIOS_SPEW, "uarts_init: set output enable\n");
 		/* Set: OUTAUX1 Select (0x10) */
 		outl(GPIOL_4_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
+		printk(BIOS_SPEW, "uarts_init: set OUTAUX1\n");
 
-		/* Set: GPIO 3 and 4 Pull Up (0x18) */
+		/* Set: GPIO 3 + 4 Pull Up (0x18) */
 		outl(GPIOL_3_SET | GPIOL_4_SET,
 		     gpio_addr + GPIOL_PULLUP_ENABLE);
+		printk(BIOS_SPEW, "uarts_init: set pullup COM2\n");
 
-		/* enable COM2 */
-		/* Bit 1 = device enable Bit 4 = allow access to the upper banks */
+		/* Enable COM2.
+		 *
+		 * Bit 1 = device enable
+		 * Bit 4 = allow access to the upper banks
+		 */
 		msr.lo = (1 << 4) | (1 << 1);
 		msr.hi = 0;
 		wrmsr(MDD_UART2_CONF, msr);
-
+		printk(BIOS_SPEW, "uarts_init: COM2 enabled\n");
 	} else {
-		/* Reset and disable COM2 */
+		printk(BIOS_SPEW, "uarts_init: disable COM2\n");
+		/* Reset and disable COM2. */
 		msr = rdmsr(MDD_UART2_CONF);
-		msr.lo = 1;	// reset
+		msr.lo = 1;			/* Reset */
 		wrmsr(MDD_UART2_CONF, msr);
-		msr.lo = 0;	// disabled
+		msr.lo = 0;			/* Disabled */
 		wrmsr(MDD_UART2_CONF, msr);
 
-		/* Disable the IRQ */
+		/* Disable the IRQ. */
 		msr = rdmsr(MDD_LEG_IO);
 		msr.lo &= ~(0xF << 20);
 		wrmsr(MDD_LEG_IO, msr);
 	}
 }
+
 
 #define HCCPARAMS		0x08
 #define IPREG04			0xA0

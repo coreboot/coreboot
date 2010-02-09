@@ -153,46 +153,97 @@ static void cs5536_setup_cis_mode(void)
 	wrmsr(GLPCI_SB_CTRL, msr);
 }
 
-/* see page 412 of the cs5536 companion book */
-static void cs5536_setup_onchipuart(void)
+/**
+ * Enable the on-chip UART.
+ *
+ * See page 412 of the AMD Geode CS5536 Companion Device data book.
+ */
+void cs5536_setup_onchipuart1(void)
 {
 	msr_t msr;
 
 	/* Setup early for polling only mode.
-	 * 1. Eanble GPIO 8 to OUT_AUX1, 9 to IN_AUX1
+	 * 1. Enable GPIO 8 to OUT_AUX1, 9 to IN_AUX1.
 	 *        GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
-	 * 2. Enable UART IO space in MDD
+	 * 2. Enable UART I/O space in MDD.
 	 *        MSR 0x51400014 bit 18:16
-	 * 3. Enable UART controller
+	 * 3. Enable UART controller.
 	 *        MSR 0x5140003A bit 0, 1
 	 */
 
 	/* GPIO8 - UART1_TX */
-	/* Set: Output Enable  (0x4) */
+	/* Set: Output Enable (0x4) */
 	outl(GPIOL_8_SET, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
 	/* Set: OUTAUX1 Select (0x10) */
 	outl(GPIOL_8_SET, GPIO_IO_BASE + GPIOL_OUT_AUX1_SELECT);
 
 	/* GPIO9 - UART1_RX */
-	/* Set: Input Enable   (0x20) */
+	/* Set: Input Enable (0x20) */
 	outl(GPIOL_9_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
-	/* Set: INAUX1 Select  (0x34) */
+	/* Set: INAUX1 Select (0x34) */
 	outl(GPIOL_9_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
 
-	/* set address to 3F8 */
+	/* Set address to 0x3F8. */
 	msr = rdmsr(MDD_LEG_IO);
 	msr.lo |= 0x7 << 16;
 	wrmsr(MDD_LEG_IO, msr);
 
-	/*      Bit 1 = DEVEN (device enable)
-	 *      Bit 4 = EN_BANKS (allow access to the upper banks
+	/* Bit 1 = DEVEN (device enable)
+	 * Bit 4 = EN_BANKS (allow access to the upper banks)
 	 */
 	msr.lo = (1 << 4) | (1 << 1);
 	msr.hi = 0;
 
-	/* enable COM1 */
+	/* Enable COM1. */
 	wrmsr(MDD_UART1_CONF, msr);
 }
+
+void cs5536_setup_onchipuart2(void)
+{
+	msr_t msr;
+
+	/* GPIO4 - UART2_TX */
+	/* Set: Output Enable  (0x4) */
+	outl(GPIOL_4_SET, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
+	/* Set: OUTAUX1 Select (0x10) */
+	outl(GPIOL_4_SET, GPIO_IO_BASE + GPIOL_OUT_AUX1_SELECT);
+	/* GPIO4 - UART2_RX */
+	/* Set: Input Enable   (0x20) */
+	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
+	/* Set: INAUX1 Select  (0x34) */
+	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
+
+	/* Set: GPIO 3 + 3 Pull Up  (0x18) */
+	outl(GPIOL_3_SET | GPIOL_4_SET,
+	     GPIO_IO_BASE + GPIOL_PULLUP_ENABLE);
+
+	/* set address to 2F8 */
+	msr = rdmsr(MDD_LEG_IO);
+	msr.lo |= 0x5 << 20;
+	wrmsr(MDD_LEG_IO, msr);
+
+	/* Bit 1 = DEVEN (device enable)
+	 * Bit 4 = EN_BANKS (allow access to the upper banks
+	 */
+	msr.lo = (1 << 4) | (1 << 1);
+	msr.hi = 0;
+
+	/* enable COM2 */
+	wrmsr(MDD_UART2_CONF, msr);
+}
+
+void cs5536_setup_onchipuart(int uart)
+{
+	switch (uart) {
+	case 1:
+		cs5536_setup_onchipuart1();
+		break;
+	case 2:
+		cs5536_setup_onchipuart2();
+		break;
+	}
+}
+
 
 /* note: you can't do prints in here in most cases,
  * and we don't want to hang on serial, so they are

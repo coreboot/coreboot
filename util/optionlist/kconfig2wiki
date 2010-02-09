@@ -1,0 +1,133 @@
+#!/usr/bin/python
+# 
+# kconfig2wiki - Kconfig to MediaWiki converter for
+# http://www.coreboot.org/Coreboot_Options
+# 
+# Copyright (C) 2010 coresystems GmbH
+# based on http://landley.net/kdocs/make/menuconfig2html.py
+# Copyright (C) by Rob Landley
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+# 
+
+helplen = 0
+extra_chapters = 0
+
+##
+## Remove quotes from Kconfig string options
+##
+def zapquotes(str):
+	if str[0]=='"': str = str[1:str.rfind('"')]
+	return str
+
+##
+## Escape HTML special characters
+##
+def htmlescape(str):
+	return str.strip().replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+
+##
+## Process Kconfig file
+##
+def readfile(filename):
+	import sys
+	global helplen
+
+	source=filename.replace("src/","").replace("/Kconfig","").replace("Kconfig","toplevel")
+
+	try:
+		lines = open(filename).read().split("\n")
+	except IOError:
+		sys.stderr.write("File %s missing\n" % filename)
+		return
+	config = None
+	description = None
+	configtype = None
+	for i in lines:
+		if helplen:
+			i = i.expandtabs()
+			if not len(i) or i[:helplen].isspace():
+				sys.stdout.write("%s\n" % htmlescape(i))
+				continue
+			else:
+				helplen = 0
+				sys.stdout.write("||\n")
+
+		words = i.strip().split(None,1)
+		if not len(words): continue
+
+		if words[0] in ("config", "menuconfig"):
+			config = words[1]
+			description = ""
+		elif words[0] in ("bool", "boolean", "tristate", "string", "hex", "int"):
+			 configtype = htmlescape(zapquotes(words[0]))
+			 if len(words)>1: description = htmlescape(zapquotes(words[1]))
+		elif words[0]=="prompt":
+			description = htmlescape(zapquotes(words[1]))
+		elif words[0] in ("help", "---help---"):
+			sys.stdout.write("|- bgcolor=\"#eeeeee\"\n")
+			sys.stdout.write("| %s || %s || %s || %s || \n" % (config,source,configtype,description) )
+			helplen = len(i[:i.find(words[0])].expandtabs())
+		elif words[0] == "comment":
+			sys.stdout.write("|- bgcolor=\"#eeeeee\"\n")
+			sys.stdout.write("| || || (comment) || || %s ||\n" % htmlescape(zapquotes(words[1])))
+		elif words[0]=="menu":
+			if len(words)>1:
+				temp = htmlescape(zapquotes(words[1]))
+				if extra_chapters:
+					sys.stdout.write("== Menu: %s ==\n" % temp)
+					sys.stdout.write("{| border=\"0\" style=\"font-size: smaller\"\n");
+					sys.stdout.write("|- bgcolor=\"#6699dd\"\n")
+					sys.stdout.write("! align=\"left\" | Option\n")
+					sys.stdout.write("! align=\"left\" | Source\n")
+					sys.stdout.write("! align=\"left\" | Format\n")
+					sys.stdout.write("! align=\"left\" | Short&nbsp;Description\n")
+					sys.stdout.write("! align=\"left\" | Description\n")
+				else:
+					# Don't start an extra chapter for a
+					# new menu
+					sys.stdout.write("|- bgcolor=\"#6699dd\"\n")
+					sys.stdout.write("! align=\"left\" | Menu: %s || || || ||\n" % temp)
+		elif words[0] == "endmenu":
+			if extra_chapters:
+				sys.stdout.write("|}\n")
+			sys.stdout.write("\n")
+		elif words[0] == "source":
+			fn=zapquotes(words[1])
+			readfile(fn)
+		elif words[0] in ("default","depends", "select", "if", "endif", "#"): pass
+		#else: sys.stderr.write("unknown: %s\n" % i)
+	if helplen: sys.stdout.write("||\n")
+
+def main():
+	import sys, time
+
+	if len(sys.argv)!=3:
+		sys.stderr.write("Usage: kconfig2wiki kconfigfile version\n")
+		sys.exit(1)
+
+	sys.stdout.write("This is an automatically generated list of '''coreboot compile-time options'''.\n")
+	sys.stdout.write("\nLast update: %s. (r%s)\n" % (time.strftime('%Y/%m/%d %H:%M:%S'),sys.argv[2]))
+	sys.stdout.write("{| border=\"0\" style=\"font-size: smaller\"\n");
+	sys.stdout.write("|- bgcolor=\"#6699dd\"\n")
+	sys.stdout.write("! align=\"left\" | Option\n")
+	sys.stdout.write("! align=\"left\" | Source\n")
+	sys.stdout.write("! align=\"left\" | Format\n")
+	sys.stdout.write("! align=\"left\" | Short&nbsp;Description\n")
+	sys.stdout.write("! align=\"left\" | Description\n")
+	readfile(sys.argv[1])
+	sys.stdout.write("|}\n")
+
+if __name__ == "__main__":
+	main()

@@ -43,12 +43,3 @@ ldscripts += $(src)/cpu/x86/16bit/reset16.lds
 ldscripts += $(src)/arch/i386/lib/id.lds
 ldscripts += $(src)/arch/i386/lib/failover.lds
 
-ifdef POST_EVALUATION
-
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
-	perl -e 's/\.rodata/.rom.data/g' -pi $@
-	perl -e 's/\.text/.section .rom.text/g' -pi $@
-
-endif
-

@@ -49,6 +49,10 @@ config BIG_BOOTBLOCK
 	default n if TINY_BOOTBLOCK
 	default y
 
+config ROMCC
+	bool
+	default n
+
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 

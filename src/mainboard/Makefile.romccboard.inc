@@ -67,20 +67,3 @@ obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_HAVE_HARD_RESET) += reset.o
 
-ifdef POST_EVALUATION
-
-ROMCCFLAGS ?= -mcpu=p2 -O2
-
-$(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib/failover.c
-	$(obj)/romcc $(ROMCCFLAGS) --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
-
-ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/option_table.h $(obj)/build.h
-	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
-else
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/romcc $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/build.h
-	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $(src)/mainboard/$(MAINBOARDDIR)/romstage.c -o $@
-endif
-
-endif
-

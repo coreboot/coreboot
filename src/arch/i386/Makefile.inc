@@ -66,6 +66,27 @@ $(obj)/coreboot.a: $(objs)
 ifeq ($(crt0s),)
 $(error crt0s are empty. If your board still uses crt0-y and ldscript-y: It shouldn't, we moved away from that in r5065)
 endif
+
+OPTION_TABLE_H:=
+ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
+OPTION_TABLE_H:=$(obj)/option_table.h
+endif
+
+ifeq ($(CONFIG_ROMCC),y)
+ROMCCFLAGS ?= -mcpu=p2 -O2
+
+$(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib/failover.c
+	$(obj)/romcc $(ROMCCFLAGS) --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
+
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h
+	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $< -o $@
+
+else
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S $< -o $@
+	perl -e 's/\.rodata/.rom.data/g' -pi $@
+	perl -e 's/\.text/.section .rom.text/g' -pi $@
+endif
 endif
 
 ifeq ($(CONFIG_TINY_BOOTBLOCK),y)

@@ -115,39 +115,6 @@ static void mb_gpio_init(void)
 	/* Early mainboard specific GPIO setup */
 }
 
-static void cs5536_setup_onchipuart2(void)
-{
-	msr_t msr;
-
-	/* GPIO4 - UART2_TX */
-	/* Set: Output Enable  (0x4) */
-	outl(GPIOL_4_SET, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
-	/* Set: OUTAUX1 Select (0x10) */
-	outl(GPIOL_4_SET, GPIO_IO_BASE + GPIOL_OUT_AUX1_SELECT);
-	/* GPIO4 - UART2_RX */
-	/* Set: Input Enable   (0x20) */
-	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
-	/* Set: INAUX1 Select  (0x34) */
-	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
-
-	/* Set: GPIO 3 + 3 Pull Up  (0x18) */
-	outl(GPIOL_3_SET | GPIOL_4_SET, GPIO_IO_BASE + GPIOL_PULLUP_ENABLE);
-
-	/* set address to 3F8 */
-	msr = rdmsr(MDD_LEG_IO);
-	msr.lo |= 0x7 << 20;
-	wrmsr(MDD_LEG_IO, msr);
-
-	/* Bit 1 = DEVEN (device enable)
-	 * Bit 4 = EN_BANKS (allow access to the upper banks
-	 */
-	msr.lo = (1 << 4) | (1 << 1);
-	msr.hi = 0;
-
-	/* enable COM2 */
-	wrmsr(MDD_UART2_CONF, msr);
-}
-
 void cache_as_ram_main(void)
 {
 	POST_CODE(0x01);
@@ -166,7 +133,7 @@ void cache_as_ram_main(void)
 	 * for cs5536
 	 */
 	/* cs5536_disable_internal_uart	 disable them. Set them up now... */
-	cs5536_setup_onchipuart2(); /* dbe61 uses UART2 as COM1 */
+	cs5536_setup_onchipuart(2); /* dbe61 uses UART2 as COM1 */
 	mb_gpio_init();
 	uart_init();
 	console_init();

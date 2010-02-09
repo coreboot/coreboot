@@ -103,11 +103,7 @@ void hardwaremain(int boot_complete)
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-	cbfs_load_payload(lb_mem, "fallback/payload");
-#else
-	cbfs_load_payload(lb_mem, "normal/payload");
-#endif
+	cbfs_load_payload(lb_mem, CONFIG_CBFS_PREFIX "/payload");
 	printk(BIOS_ERR, "Boot failed.\n");
 }
 

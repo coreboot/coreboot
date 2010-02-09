@@ -10,7 +10,7 @@ $(obj)/coreboot.pre1: $(obj)/coreboot.bootblock $(CBFSTOOL)
 $(obj)/coreboot.pre: $(obj)/coreboot.romstage $(obj)/coreboot.pre1 $(CBFSTOOL)
 	rm -f $@
 	cp $(obj)/coreboot.pre1 $@
-	$(CBFSTOOL) $@ add-stage $(obj)/romstage.elf fallback/romstage x 0x$(shell cat $(obj)/location.txt)
+	$(CBFSTOOL) $@ add-stage $(obj)/romstage.elf $(CONFIG_CBFS_PREFIX)/romstage x 0x$(shell cat $(obj)/location.txt)
 #FIXME: location.txt might require an offset of header size
 
 #######################################################################
@@ -58,8 +58,8 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o: $(obj)/mainboard/$(MAINBOARDDIR)/b
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.c
 	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(obj)/romcc $(src)/arch/i386/init/bootblock.c
-	$(obj)/romcc $(bootblock_romccflags) -O2 $(ROMCCFLAGS) $(INCLUDES) $(src)/arch/i386/init/bootblock.c -o $@
+$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/i386/init/$(subst ",,$(CONFIG_TINY_BOOTBLOCK_SOURCE)) $(obj)/romcc
+	$(obj)/romcc $(bootblock_romccflags) -O2 $(ROMCCFLAGS) $(INCLUDES) $< -o $@
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -74,7 +74,7 @@ $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $(initobjs) $(obj)/romstage/ldscr
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(initobjs)
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $(obj)/romstage.bin
 	printf "CONFIG_ROMBASE = 0x" > $(obj)/location.ld
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin fallback/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt
+	$(CBFSTOOL) $(obj)/coreboot.pre1 locate $(obj)/romstage.bin $(CONFIG_CBFS_PREFIX)/romstage $(CONFIG_XIP_ROM_SIZE) > $(obj)/location.txt
 	cat $(obj)/location.txt >> $(obj)/location.ld
 	printf ';\nAUTO_XIP_ROM_BASE = CONFIG_ROMBASE & ~(CONFIG_XIP_ROM_SIZE - 1);\n' >> $(obj)/location.ld
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(initobjs)

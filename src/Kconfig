@@ -39,6 +39,13 @@ config LOCALVERSION
 	  the coreboot version number, so that you can easily distinguish
 	  boot logs of different boards from each other.
 
+config CBFS_PREFIX
+	string "CBFS prefix to use"
+	default "fallback"
+	help
+	  Select the prefix to all files put into the image. It's "fallback"
+	  by default, "normal" is a common alternative.
+
 endmenu
 
 source src/mainboard/Kconfig

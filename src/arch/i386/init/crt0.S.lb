@@ -137,10 +137,7 @@ str_pre_main:        .string "Jumping to coreboot.\r\n"
 
 #endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-str_coreboot_ram_name:	.string "fallback/coreboot_ram"
-#else
-str_coreboot_ram_name:	.string "normal/coreboot_ram"
-#endif
+str_coreboot_ram_name:	.ascii CONFIG_CBFS_PREFIX
+			.string "/coreboot_ram"
 
 #endif /* CONFIG_USE_DCACHE_RAM */

@@ -216,7 +216,7 @@ function compile_target
 	test 0$cpus -gt 1 && printf "on %d cpus in parallel .. " $cpus
 
 	CURR=$( pwd )
-	stime=`perl -e 'print time();'`
+	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
 	eval $MAKE $silent -j $cpus obj=${build_dir} \
 		&> ${build_dir}/make.log
@@ -225,7 +225,7 @@ function compile_target
 	mv .xcompile ${build_dir}/xcompile.build
 	mv ..config.tmp ${build_dir}/config.deps
 	cd $TARGET/${VENDOR}_${MAINBOARD}
-	etime=`perl -e 'print time();'`
+	etime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	duration=$(( $etime - $stime ))
 	if [ $ret -eq 0 ]; then
 		xml "  <compile>ok</compile>"

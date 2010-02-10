@@ -83,9 +83,8 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/
 
 else
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S $< -o $@
-	perl -e 's/\.rodata/.rom.data/g' -pi $@
-	perl -e 's/\.text/.section .rom.text/g' -pi $@
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S $< -o - | sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' > $@.tmp
+	mv $@.tmp $@
 endif
 endif
 

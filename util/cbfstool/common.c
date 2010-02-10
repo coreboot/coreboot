@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 #include "common.h"
 #include "cbfs.h"
 #include "elf.h"
@@ -153,7 +154,7 @@ void print_cbfs_directory(const char *filename)
 {
 	printf
 	    ("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\nAlignment: %d bytes\n\n",
-	     filename, romsize / 1024, ntohl(master_header->bootblocksize),
+	     basename((char *)filename), romsize / 1024, ntohl(master_header->bootblocksize),
 	     romsize, ntohl(master_header->offset), align);
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	uint32_t current = phys_start;

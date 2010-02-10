@@ -22,7 +22,7 @@
 $(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile > .xcompile)))
 include .xcompile
 
-export top := $(shell pwd)
+export top := $(PWD)
 export src := $(top)/src
 export srck := $(top)/util/kconfig
 export obj ?= $(top)/build
@@ -73,7 +73,7 @@ include $(top)/.config
 ARCHDIR-$(CONFIG_ARCH_X86)    := i386
 ARCHDIR-$(CONFIG_ARCH_POWERPC) := ppc
 
-MAINBOARDDIR=$(shell echo $(CONFIG_MAINBOARD_DIR))
+MAINBOARDDIR=$(subst ",,$(CONFIG_MAINBOARD_DIR))
 export MAINBOARDDIR
 
 PLATFORM-y += src/arch/$(ARCHDIR-y) src/cpu src/mainboard/$(MAINBOARDDIR)
@@ -84,7 +84,7 @@ BUILD-y += util/cbfstool
 BUILD-$(CONFIG_ARCH_X86) += src/pc80
 
 ifneq ($(CONFIG_LOCALVERSION),"")
-COREBOOT_EXTRA_VERSION := -$(shell echo $(CONFIG_LOCALVERSION))
+COREBOOT_EXTRA_VERSION := -$(subst ",,$(CONFIG_LOCALVERSION))
 endif
 
 # The primary target needs to be here before we include the
@@ -140,7 +140,7 @@ $(eval $(call evaluate_subdirs))
 
 define objs_dsl_template
 $(obj)/$(1)%.o: src/$(1)%.asl
-	@printf "    IASL       $$(subst $$(shell pwd)/,,$$(@))\n"
+	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CPP) -D__ACPI__ -P $(CPPFLAGS) -include $(obj)/config.h -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	iasl -p $$(basename $$@) -tc $$(basename $$@).asl
 	mv $$(basename $$@).hex $$(basename $$@).c

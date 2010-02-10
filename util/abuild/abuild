@@ -44,7 +44,6 @@ if [ "$i" = "nonexistant_make" ]; then
 	exit 1
 fi
 MAKE=$i
-PYTHON=python
 
 # this can be changed to xml by -x
 mode=text

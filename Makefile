@@ -278,7 +278,7 @@ $(obj)/build.h:
 
 doxy: doxygen
 doxygen:
-	$(DOXYGEN) Doxyfile
+	$(DOXYGEN) documentation/Doxyfile.coreboot
 
 doxyclean: doxygen-clean
 doxygen-clean:

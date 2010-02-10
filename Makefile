@@ -254,7 +254,7 @@ endif
 
 prepare:
 	mkdir -p $(obj)
-	mkdir -p $(obj)/util/kconfig/lxdialog
+	mkdir -p $(obj)/util/kconfig/lxdialog $(obj)/util/cbfstool
 	test -n "$(alldirs)" && mkdir -p $(alldirs) || true
 
 prepare2: $(obj)/build.h

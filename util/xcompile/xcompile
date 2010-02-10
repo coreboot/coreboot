@@ -1,3 +1,31 @@
+#!/bin/sh
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2007-2010 coresystems GmbH
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
+
+testcc()
+{
+	echo "_start(void) {}" > .$$$$.c
+	$1 -nostdlib $2 .$$$$.c -o .$$$$.tmp 2>/dev/null >/dev/null
+	ret=$?
+	rm -f .$$$$.c .$$$$.tmp
+	return $ret
+}
 
 for make in make gmake gnumake; do
 	if [ "`$make --version 2>/dev/null | grep -c GNU`" -gt 0 ]; then
@@ -8,39 +36,67 @@ done
 
 GCCPREFIX=invalid
 TMP=`mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz`
-echo "mov %eax, %eax" > ${TMP}.s
-printf "\x7fELF\n" > ${TMP}.compare
-for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/i386-elf- i386-elf- ""; do
-	if which ${gccprefixes}as 2>/dev/null >/dev/null; then
-		printf ""
-	else
+touch $TMP
+
+# This should be a loop over all supported architectures
+TARCH=i386
+TWIDTH=32
+for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/${TARCH}-elf- ${TARCH}-elf- ""; do
+	if ! which ${gccprefixes}as 2>/dev/null >/dev/null; then
 		continue
 	fi
 	rm -f ${TMP}.o
-	if ${gccprefixes}as --32 -o ${TMP}.o ${TMP}.s; then
-		cut -c-4 ${TMP}.o > ${TMP}.test 2>/dev/null
-		if cmp ${TMP}.test ${TMP}.compare; then
+	if ${gccprefixes}as -o ${TMP}.o ${TMP}; then
+		TYPE=`${gccprefixes}objdump -p ${TMP}.o`
+		if [ ${TYPE##* } == "elf${TWIDTH}-${TARCH}" ]; then
 			GCCPREFIX=$gccprefixes
+			ASFLAGS=
+			CFLAGS=
+			LDFLAGS=
+			break
+		fi
+	fi
+	if ${gccprefixes}as --32 -o ${TMP}.o ${TMP}; then
+		TYPE=`${gccprefixes}objdump -p ${TMP}.o`
+		if [ ${TYPE##* } == "elf${TWIDTH}-${TARCH}" ]; then
+			GCCPREFIX=$gccprefixes
+			ASFLAGS=--32
+			CFLAGS="-m32 "
+			LDFLAGS="-b elf32-i386"
 			break
 		fi
 	fi
 done
-rm -f $TMP ${TMP}.s ${TMP}.o ${TMP}.compare ${TMP}.test
+rm -f $TMP ${TMP}.o
 
 if [ "$GCCPREFIX" = "invalid" ]; then
 	echo '$(error no suitable gcc found)'
 	exit 1
 fi
 
-cat << afteroptions
-AS:=${GCCPREFIX}as --32
-CC:=${GCCPREFIX}gcc -m32
+CC="${GCCPREFIX}gcc"
+testcc "$CC" "$CFLAGS-fno-stack-protector " && CFLAGS="$CFLAGS-fno-stack-protector "
+testcc "$CC" "$CFLAGS-Wl,--build-id=none " && CFLAGS="$CFLAGS-Wl,--build-id=none "
+
+if which gcc 2>/dev/null >/dev/null; then
+	HOSTCC=gcc
+else
+	HOSTCC=cc
+fi
+
+cat << EOF
+# elf${TWIDTH}-${TARCH} toolchain
+AS:=${GCCPREFIX}as ${ASFLAGS}
+CC:=${GCCPREFIX}gcc ${CFLAGS}
 CPP:=${GCCPREFIX}cpp
 AR:=${GCCPREFIX}ar
-LD:=${GCCPREFIX}ld -b elf32-i386
+LD:=${GCCPREFIX}ld ${LDFLAGS}
 STRIP:=${GCCPREFIX}strip
 NM:=${GCCPREFIX}nm
 OBJCOPY:=${GCCPREFIX}objcopy
 OBJDUMP:=${GCCPREFIX}objdump
-HOSTCC:=gcc
-afteroptions
+
+# native toolchain
+HOSTCC:=${HOSTCC}
+EOF
+

@@ -221,19 +221,7 @@ INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)inclu
 INCLUDES += -I$(top)/util/x86emu/include
 INCLUDES += -include $(obj)/build.h
 
-try-run= $(shell set -e; \
-TMP=".$$$$.tmp"; \
-if ($(1)) > /dev/null 2>&1; \
-then echo "$(2)"; \
-else echo "$(3)"; \
-fi; rm -rf "$$TMP")
-
-cc-option= $(call try-run,\
-$(CC) $(1) -S -xc /dev/null -o "$$TMP", $(1), $(2))
-
-STACKPROTECT += $(call cc-option, -fno-stack-protector,)
-
-CFLAGS = $(STACKPROTECT) $(INCLUDES) -Os -nostdinc
+CFLAGS = $(INCLUDES) -Os -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs 
 CFLAGS += -Wstrict-aliasing -Wshadow 

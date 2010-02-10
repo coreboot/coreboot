@@ -45,9 +45,9 @@ $(obj)/build_opt_tbl: $(top)/util/options/build_opt_tbl.c $(top)/src/include/pc8
 #######################################################################
 # Build the coreboot_ram (stage 2)
 
-$(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/config/coreboot_ram.ld #ldoptions
+$(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/i386/coreboot_ram.ld #ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/config/coreboot_ram.ld $(obj)/coreboot_ram.o
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/i386/coreboot_ram.ld $(obj)/coreboot_ram.o
 	$(NM) -n $(obj)/coreboot_ram | sort > $(obj)/coreboot_ram.map
 
 $(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.o $(drivers) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)

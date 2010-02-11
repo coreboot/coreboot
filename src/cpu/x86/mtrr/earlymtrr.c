@@ -101,6 +101,7 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 
 #if defined(CONFIG_XIP_ROM_SIZE)
 #if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
+extern unsigned long AUTO_XIP_ROM_BASE;
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE

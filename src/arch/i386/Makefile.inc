@@ -87,8 +87,10 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o - | sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' > $@.tmp
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o $@.tmp1
+	sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' $@.tmp1 > $@.tmp
 	mv $@.tmp $@
+	rm -f $@.tmp1
 endif
 endif
 

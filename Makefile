@@ -279,7 +279,7 @@ clean-for-update: doxygen-clean
 	rm -f $(objs) $(initobjs) $(drivers) $(smmobjs) .xcompile
 	rm -f $(obj)/coreboot_ram* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
 	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*
-	rm -f $(obj)/option_table.* $(obj)/crt0_includes.h $(obj)/ldscript $(obj)/config.h
+	rm -f $(obj)/option_table.* $(obj)/crt0_includes.h $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/auto.inc $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true

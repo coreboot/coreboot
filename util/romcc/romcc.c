@@ -10782,6 +10782,9 @@ static struct triple *string_constant(struct compile_state *state)
 		if (str_len < 0) {
 			error(state, 0, "negative string constant length");
 		}
+		/* ignore empty string tokens */
+		if (strcmp("\"", str) == 0)
+			continue;
 		end = str + str_len;
 		ptr = buf;
 		buf = xmalloc(type->elements + str_len + 1, "string_constant");

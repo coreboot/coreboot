@@ -46,9 +46,3 @@ ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 ldscripts += $(src)/arch/i386/init/ldscript_apc.lb
 endif
 
-ifdef POST_EVALUATION
-
-$(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(obj)/option_table.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
-
-endif

@@ -83,7 +83,13 @@ clear_fixed_var_mtrr_out:
 	/* MTRRPhysBase */
 	movl	$0x202, %ecx
 	xorl	%edx, %edx
-	movl	$(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+#if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
+#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
+#else
+#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
+#endif
+	movl    $REAL_XIP_ROM_BASE, %eax
+	orl     $MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
 	/* MTRRPhysMask */

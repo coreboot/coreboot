@@ -236,12 +236,18 @@ clear_fixed_var_mtrr_out:
 	wrmsr
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
+#if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
+#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
+#else
+#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
+#endif
 	/* enable write base caching so we can do execute in place
 	 * on the flash rom.
 	 */
 	movl    $0x202, %ecx
 	xorl    %edx, %edx
-	movl    $(CONFIG_XIP_ROM_BASE | MTRR_TYPE_WRBACK), %eax
+	movl    $REAL_XIP_ROM_BASE, %eax
+	orl     $MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
 	movl    $0x203, %ecx

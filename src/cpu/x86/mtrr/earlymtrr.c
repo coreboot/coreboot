@@ -100,10 +100,15 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	}
 
 #if defined(CONFIG_XIP_ROM_SIZE)
+#if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
+#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
+#else
+#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
+#endif
 	/* enable write through caching so we can do execute in place
 	 * on the flash rom.
 	 */
-	set_var_mtrr(1, CONFIG_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
+	set_var_mtrr(1, REAL_XIP_ROM_BASE, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 
 	/* Set the default memory type and enable fixed and variable MTRRs 

@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "71"
-#define RELEASE_DATE "03 April 2009"
+#define VERSION_MINOR "72"
+#define RELEASE_DATE "10 February 2010"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -127,6 +127,14 @@
  * Where do I place phi functions and how do I make that decision.
  *   
  */
+
+struct filelist {
+	const char *filename;
+	struct filelist *next;
+};
+
+struct filelist *include_filelist = NULL;
+
 static void die(char *fmt, ...)
 {
 	va_list args;
@@ -24927,12 +24935,13 @@ static void print_preprocessed_tokens(struct compile_state *state)
 	}
 }
 
-static void compile(const char *filename, const char *includefile,
+static void compile(const char *filename,
 	struct compiler_state *compiler, struct arch_state *arch)
 {
 	int i;
 	struct compile_state state;
 	struct triple *ptr;
+	struct filelist *includes = include_filelist;
 	memset(&state, 0, sizeof(state));
 	state.compiler = compiler;
 	state.arch     = arch;
@@ -25002,8 +25011,11 @@ static void compile(const char *filename, const char *includefile,
 	register_builtins(&state);
 
 	compile_file(&state, filename, 1);
-	if (includefile)
-		compile_file(&state, includefile, 1);
+	
+	while (includes) {
+		compile_file(&state, includes->filename, 1);
+		includes=includes->next;
+	}
 
 	/* Stop if all we want is preprocessor output */
 	if (state.compiler->flags & COMPILER_PP_ONLY) {
@@ -25070,7 +25082,6 @@ static void arg_error(char *fmt, ...)
 int main(int argc, char **argv)
 {
 	const char *filename;
-	const char *includefile = NULL;
 	struct compiler_state compiler;
 	struct arch_state arch;
 	int all_opts;
@@ -25121,14 +25132,16 @@ int main(int argc, char **argv)
 				result = arch_encode_flag(&arch, argv[1]+2);
 			}
 			else if (strncmp(argv[1], "-include", 10) == 0) {
-				if (includefile) {
-					arg_error("Only one -include option may be specified.\n");
-				} else {
-					argv++;
-					argc--;
-					includefile = argv[1];
-					result = 0;
+				struct filelist *old_head = include_filelist;
+				include_filelist = malloc(sizeof(struct filelist));
+				if (!include_filelist) {
+					die("Out of memory.\n");
 				}
+				argv++;
+				argc--;
+				include_filelist->filename = argv[1];
+				include_filelist->next = old_head;
+				result = 0;
 			}
 			if (result < 0) {
 				arg_error("Invalid option specified: %s\n",
@@ -25149,7 +25162,7 @@ int main(int argc, char **argv)
 	if (!filename) {
 		arg_error("No filename specified\n");
 	}
-	compile(filename, includefile, &compiler, &arch);
+	compile(filename, &compiler, &arch);
 
 	return 0;
 }

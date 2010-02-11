@@ -1,4 +1,5 @@
 #include <version.h>
+#include <build.h>
 
 #ifndef CONFIG_MAINBOARD_VENDOR
 #error CONFIG_MAINBOARD_VENDOR not defined

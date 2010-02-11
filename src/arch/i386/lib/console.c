@@ -1,3 +1,4 @@
+#include <build.h>
 #include <console/loglevel.h>
 
 #if CONFIG_USE_PRINTK_IN_CAR == 0
@@ -5,10 +6,6 @@
 #else  /* CONFIG_USE_PRINTK_IN_CAR == 1 */
 #include "console_printk.c"
 #endif /* CONFIG_USE_PRINTK_IN_CAR */
-
-#ifndef COREBOOT_EXTRA_VERSION
-#define COREBOOT_EXTRA_VERSION ""
-#endif
 
 void console_init(void)
 {
@@ -21,7 +18,6 @@ void console_init(void)
 		" starting...\r\n";
 	print_info(console_test);
 }
-
 
 void die(const char *str)
 {

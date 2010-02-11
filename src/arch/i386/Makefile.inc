@@ -79,11 +79,11 @@ $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib
 	$(obj)/romcc $(ROMCCFLAGS) --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h
-	$(obj)/romcc $(ROMCCFLAGS) $(INCLUDES) $< -o $@
+	$(obj)/romcc $(ROMCCFLAGS) -include $(obj)/build.h $(INCLUDES) $< -o $@
 
 else
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
-	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S $< -o - | sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' > $@.tmp
+	$(CC) $(DISTRO_CFLAGS) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o - | sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' > $@.tmp
 	mv $@.tmp $@
 endif
 endif

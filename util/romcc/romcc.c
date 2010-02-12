@@ -10783,7 +10783,7 @@ static struct triple *string_constant(struct compile_state *state)
 			error(state, 0, "negative string constant length");
 		}
 		/* ignore empty string tokens */
-		if (strcmp("\"", str) == 0)
+		if ('"' == *str && 0 == str[1])
 			continue;
 		end = str + str_len;
 		ptr = buf;
@@ -21110,7 +21110,7 @@ static void scc_transform(struct compile_state *state)
 
 			if (state->compiler->debug & DEBUG_SCC_TRANSFORM) {
 				fprintf(state->errout, "sedge: %5ld (%5d -> %5d)\n",
-					sedge - scc.ssa_edges,
+					(unsigned long)sedge - (unsigned long)scc.ssa_edges,
 					sedge->src->def->id,
 					sedge->dst->def->id);
 			}

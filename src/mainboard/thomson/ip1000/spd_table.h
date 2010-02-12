@@ -20,6 +20,16 @@
 
 #include <spd.h>
 
+#if CONFIG_ONBOARD_MEMORY_64MB
+
+#define DENSITY 0x10
+
+#elif CONFIG_ONBOARD_MEMORY_128MB
+
+#define DENSITY 0x20
+
+#endif
+
 struct spd_entry {
 	unsigned int address;
 	unsigned int data;
@@ -36,5 +46,5 @@ const struct spd_entry spd_table [] = {
 	{SPD_MODULE_DATA_WIDTH_LSB,           0x40}, /* Module data width (LSB) */
 	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX,       0x75}, /* SDRAM cycle time (highest CAS latency), RAS access time (tRAC) */
 	{SPD_ACCESS_TIME_FROM_CLOCK,          0x54}, /* SDRAM access time from clock (highest CAS latency), CAS access time (Tac, tCAC) */
-	{SPD_DENSITY_OF_EACH_ROW_ON_MODULE,   0x10}, /* Density of each row on module */
+	{SPD_DENSITY_OF_EACH_ROW_ON_MODULE,   DENSITY}, /* Density of each row on module */
 };

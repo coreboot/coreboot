@@ -89,6 +89,25 @@ config PCI_OPTION_ROM_RUN_YABEL
 
 endchoice
 
+config YABEL_PCI_ACCESS_OTHER_DEVICES
+	prompt "Allow option roms to acces other devices"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL
+	help
+	  Per default, YABEL only allows option roms to access the PCI device
+	  that they are associated with. However, this causes trouble for some
+	  onboard graphics chips whose option rom needs to reconfigure the 
+	  north bridge. 
+
+config YABEL_VIRTMEM_LOCATION
+	prompt "Location of YABEL's virtual memory"
+	hex
+	depends on EXPERT
+	default 0x1000000
+	help
+	  YABEL requires 1MB memory for its CPU emulation. This memory is
+	  normally located at 16MB.
+
 # TODO: Describe better, and/or make a "choice" selection for this.
 config YABEL_DEBUG_FLAGS
 	prompt "Hex value for YABEL debug flags"

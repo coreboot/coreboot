@@ -312,7 +312,7 @@ ifeq ($(_OS),CYGWIN_)
 endif
 $(obj)/romcc: $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
-	$(HOSTCC) -g -O2 $(STACK) -Wall -o $@ $<
+	$(HOSTCC) -g $(STACK) -Wall -o $@ $<
 
 .PHONY: $(PHONY) prepare prepare2 clean distclean doxygen doxy coreboot
 

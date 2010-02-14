@@ -45,3 +45,13 @@ static void w83627hf_enable_serial(device_t dev, unsigned iobase)
 	pnp_set_enable(dev, 1);
 	pnp_exit_ext_func_mode(dev);
 }
+
+static void w83627hf_set_clksel_48(device_t dev)
+{
+	unsigned port = dev >> 8;
+	pnp_enter_ext_func_mode(dev);
+	outb(0x24, port);
+	/* Set CLKSEL (clock input on pin 1) to 48MHz. */
+	outb(inb(port + 1) | (1 << 6), port + 1);
+	pnp_exit_ext_func_mode(dev);
+}

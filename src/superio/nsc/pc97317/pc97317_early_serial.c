@@ -41,7 +41,7 @@ static void pc97317_enable_serial(device_t dev, unsigned iobase)
 	outb(inb(PM_BASE + 1) | 0x07, PM_BASE + 1);
 
 	/* Wait for the clock to stabilise */
-	while(!inb(PM_BASE + 1 & 0x80))
+	while(!(inb(PM_BASE + 1) & 0x80))
 		;
 
 	/* Set the base address of the port */

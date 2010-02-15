@@ -1,11 +1,11 @@
 /*
- * superio.c: RAM driver for SMSC LPC47M10X2 Super I/O chip
+ * This file is part of the coreboot project.
  *
- * Copyright 2000  AG Electronics Ltd.
- * Copyright 2003-2004 Linux Networx
- * Copyright 2004 Tyan
+ * Copyright (C) 2000 AG Electronics Ltd.
+ * Copyright (C) 2003-2004 Linux Networx
+ * Copyright (C) 2004 Tyan
  * Copyright (C) 2005 Digital Design Corporation
- * Copyright (C) Ron Minnich, LANL
+ * Copyright (C) 2006 Ron Minnich, LANL
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
 /* AMD64 SMM State-Save Area 
  * starts @ 0x7e00
  */

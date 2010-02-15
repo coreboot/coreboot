@@ -1,5 +1,5 @@
 /*
- * e7501.h: PCI configuration space for the Intel E7501 memory controller
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2005 Digital Design Corporation
  *
@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+/*
+ * e7501.h: PCI configuration space for the Intel E7501 memory controller
+ */
 
 /************  D0:F0 ************/
 // Register offsets

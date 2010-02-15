@@ -3,7 +3,6 @@
  *
  * Copyright (C) 2006 AMD
  * Written by Yinghai Lu <yinghailu@amd.com> for AMD.
- *
  * Copyright (C) 2006 MSI
  * Written by Bingxun Shi <bingxunshi@gmail.com> for MSI.
  *

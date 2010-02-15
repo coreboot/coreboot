@@ -18,8 +18,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-
-
 obj-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.o
 obj-$(CONFIG_HAVE_SMI_HANDLER) += smm_bin.o
 

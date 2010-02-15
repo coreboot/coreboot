@@ -4,8 +4,8 @@
  * Copyright (C) 2009 Rudolf Marek <r.marek@assembler.cz>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License v2 as published by
- * the Free Software Foundation.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,8 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
+
 #ifndef LIBACPI_H
 #define LIBACPI_H
+
 #include <assert.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -44,4 +46,5 @@ int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat, u32 busmLat
 typedef enum { SW_ALL=0xfc, SW_ANY=0xfd, HW_ALL=0xfe } PSD_coord;
 int acpigen_write_PSD_package(u32 domain, u32 numprocs, PSD_coord coordtype);
 int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len);
+
 #endif

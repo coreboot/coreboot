@@ -82,7 +82,7 @@
 
 
 #define PCI_DEV_BASE 24		/* System PCI device ID base */
-#define LOCAL_APIC_ID_SHIFT 24		/* Local APCI ID shift bit # */
+#define LOCAL_APIC_ID_SHIFT 24		/* Local APIC ID shift bit # */
 #define APIC_CID_SIZE_SHIFT 12		/* ApicCoreIdSize shift bit # */
 #define FN_0 0				/* Function 0 */
 #define FN_1 1				/* Function 1 */

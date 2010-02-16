@@ -42,7 +42,7 @@ typedef struct acpi_rsdp {
 	char  signature[8];	/* RSDP signature "RSD PTR" */
 	u8    checksum;		/* checksum of the first 20 bytes */
 	char  oem_id[6];	/* OEM ID, "LXBIOS" */
-	u8    revision;		/* 0 for APCI 1.0, 2 for ACPI 2.0/3.0 */
+	u8    revision;		/* 0 for ACPI 1.0, 2 for ACPI 2.0/3.0 */
 	u32   rsdt_address;	/* physical address of RSDT */
 	u32   length;		/* total length of RSDP (including extended part) */
 	u64   xsdt_address;	/* physical address of XSDT */

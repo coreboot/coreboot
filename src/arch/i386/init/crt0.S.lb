@@ -1,0 +1,143 @@
+/* -*- asm -*-
+ * $ $
+ *
+ */
+
+/* 
+ * Copyright (C) 1996-2002 Markus Franz Xaver Johannes Oberhumer
+ *
+ * This file is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * Originally this code was part of ucl the data compression library
+ * for upx the ``Ultimate Packer of eXecutables''.
+ *
+ * - Converted to gas assembly, and refitted to work with etherboot.
+ *   Eric Biederman 20 Aug 2002
+ * - Merged the nrv2b decompressor into crt0.base of coreboot
+ *   Eric Biederman 26 Sept 2002
+ */
+
+
+#include <arch/asm.h>
+#include <arch/intel.h>
+#include <console/loglevel.h>	
+
+/*
+ * This is the entry code the code in .reset section
+ * jumps to this address.
+ *
+ */
+.section ".rom.data", "a", @progbits
+.section ".rom.text", "ax", @progbits
+
+	intel_chip_post_macro(0x01)             /* delay for chipsets */
+
+#include "crt0_includes.h"
+
+#if CONFIG_USE_DCACHE_RAM == 0
+#ifndef CONSOLE_DEBUG_TX_STRING
+	/* uses:	 esp, ebx, ax, dx */
+# define __CRT_CONSOLE_TX_STRING(string) \
+	mov	string, %ebx	; \
+	CALLSP(crt_console_tx_string)
+
+# if defined(CONFIG_TTYS0_BASE) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
+#  define CONSOLE_DEBUG_TX_STRING(string)        __CRT_CONSOLE_TX_STRING(string)
+# else
+#  define CONSOLE_DEBUG_TX_STRING(string)
+# endif
+#endif
+
+	/* clear boot_complete flag */
+	xorl	%ebp, %ebp
+__main:
+	CONSOLE_DEBUG_TX_STRING($str_copying_to_ram)
+
+	/*
+	 *	Copy data into RAM and clear the BSS. Since these segments
+	 *	isn\'t really that big we just copy/clear using bytes, not
+	 *	double words.
+	 */
+	intel_chip_post_macro(0x11)		/* post 11 */
+
+	cld				/* clear direction flag */
+	
+	/* copy coreboot from it's initial load location to 
+	 * the location it is compiled to run at.
+	 * Normally this is copying from FLASH ROM to RAM.
+	 */
+	movl	%ebp, %esi
+	/* FIXME: look for a proper place for the stack */
+	movl	$0x4000000, %esp
+	movl	%esp, %ebp
+	pushl %esi
+	pushl $str_coreboot_ram_name
+	call cbfs_and_run_core
+
+.Lhlt:	
+	intel_chip_post_macro(0xee)	/* post fe */
+	hlt
+	jmp	.Lhlt
+
+#ifdef __CRT_CONSOLE_TX_STRING
+	/* Uses esp, ebx, ax, dx  */
+crt_console_tx_string:
+	mov	(%ebx), %al
+	inc	%ebx
+	cmp	$0, %al
+	jne	9f
+	RETSP
+9:
+/* Base Address */
+#ifndef CONFIG_TTYS0_BASE
+#define CONFIG_TTYS0_BASE	0x3f8
+#endif
+/* Data */
+#define TTYS0_RBR (CONFIG_TTYS0_BASE+0x00)
+
+/* Control */
+#define TTYS0_TBR TTYS0_RBR
+#define TTYS0_IER (CONFIG_TTYS0_BASE+0x01)
+#define TTYS0_IIR (CONFIG_TTYS0_BASE+0x02)
+#define TTYS0_FCR TTYS0_IIR
+#define TTYS0_LCR (CONFIG_TTYS0_BASE+0x03)
+#define TTYS0_MCR (CONFIG_TTYS0_BASE+0x04)
+#define TTYS0_DLL TTYS0_RBR
+#define TTYS0_DLM TTYS0_IER
+
+/* Status */
+#define TTYS0_LSR (CONFIG_TTYS0_BASE+0x05)
+#define TTYS0_MSR (CONFIG_TTYS0_BASE+0x06)
+#define TTYS0_SCR (CONFIG_TTYS0_BASE+0x07)
+	
+	mov	%al, %ah
+10:	mov	$TTYS0_LSR, %dx
+	inb	%dx, %al
+	test	$0x20, %al
+	je	10b
+	mov	$TTYS0_TBR, %dx
+	mov	%ah, %al
+	outb	%al, %dx
+
+	jmp crt_console_tx_string
+#endif /* __CRT_CONSOLE_TX_STRING */
+
+#if defined(CONSOLE_DEBUG_TX_STRING) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
+.section ".rom.data"
+#if CONFIG_COMPRESS
+str_copying_to_ram:  .string "Uncompressing coreboot to RAM.\r\n"
+#else
+str_copying_to_ram:  .string "Copying coreboot to RAM.\r\n"
+#endif
+str_pre_main:        .string "Jumping to coreboot.\r\n"
+.previous
+
+#endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
+
+str_coreboot_ram_name:	.ascii CONFIG_CBFS_PREFIX
+			.string "/coreboot_ram"
+
+#endif /* CONFIG_USE_DCACHE_RAM */

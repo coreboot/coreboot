@@ -1,0 +1,59 @@
+/*
+ *	Memory map:
+ *
+ *	CONFIG_RAMBASE		
+ *				: data segment
+ *				: bss segment
+ *				: heap
+ *				: stack
+ *	CONFIG_ROMBASE
+ *				: coreboot text 
+ *				: readonly text
+ */
+/*
+ * Bootstrap code for the STPC Consumer
+ * Copyright (c) 1999 by Net Insight AB. All Rights Reserved.
+ *
+ */
+
+/*
+ *	Written by Johan Rydberg, based on work by Daniel Kahlin.
+ *      Rewritten by Eric Biederman
+ */
+/*
+ *	We use ELF as output format. So that we can
+ *	debug the code in some form. 
+ */
+OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
+OUTPUT_ARCH(i386)
+
+/*
+ENTRY(_start)
+*/
+
+TARGET(binary)
+SECTIONS
+{
+	. = CONFIG_ROMBASE;
+
+	/* This section might be better named .setup */
+	.rom . : {
+		_rom = .;
+		*(.rom.text);
+		*(.rom.data);
+		*(.rom.data.*);
+		*(.rodata.*);
+		. = ALIGN(16);
+		_erom = .;
+	}
+
+	_lrom = LOADADDR(.rom);
+	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
+
+	/DISCARD/ : {
+		*(.comment)
+		*(.note)
+		*(.comment.*)
+		*(.note.*)
+	}
+}

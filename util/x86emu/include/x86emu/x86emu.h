@@ -47,8 +47,10 @@
 #include <console/console.h>
 #undef printk
 #define printk(x...) do_printk(BIOS_DEBUG, x)
-#if defined(CONFIG_DEBUG) && (CONFIG_DEBUG == 0)
-#undef CONFIG_DEBUG
+#if defined(CONFIG_YABEL_DEBUG_FLAGS) && (CONFIG_YABEL_DEBUG_FLAGS != 0)
+#define DEBUG
+#else
+#undef DEBUG
 #endif
 
 #ifdef SCITECH
@@ -164,7 +166,7 @@ void X86EMU_setMemBase(void *base, size_t size);
 void 	X86EMU_exec(void);
 void 	X86EMU_halt_sys(void);
 
-#ifdef	CONFIG_DEBUG
+#ifdef	DEBUG
 #define	HALT_SYS()	\
     	printk("halt_sys: in %s\n", __func__);	\
 	X86EMU_halt_sys();

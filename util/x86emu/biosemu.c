@@ -90,7 +90,7 @@ static u8 biosemu_inb(u16 port)
 	u8 val;
 
 	val = inb(port);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	if (port != 0x40)
 	    printk("inb(0x%04x) = 0x%02x\n", port, val);
 #endif
@@ -104,7 +104,7 @@ static u16 biosemu_inw(u16 port)
 
 	val = inw(port);
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	printk("inw(0x%04x) = 0x%04x\n", port, val);
 #endif
 	return val;
@@ -116,7 +116,7 @@ static u32 biosemu_inl(u16 port)
 
 	val = inl(port);
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	printk("inl(0x%04x) = 0x%08x\n", port, val);
 #endif
 	return val;
@@ -124,7 +124,7 @@ static u32 biosemu_inl(u16 port)
 
 static void biosemu_outb(u16 port, u8 val)
 {
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	if (port != 0x43)
 		printk("outb(0x%02x, 0x%04x)\n", val, port);
 #endif
@@ -133,7 +133,7 @@ static void biosemu_outb(u16 port, u8 val)
 
 static void biosemu_outw(u16 port, u16 val)
 {
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	printk("outw(0x%04x, 0x%04x)\n", val, port);
 #endif
 	outw(val, port);
@@ -141,7 +141,7 @@ static void biosemu_outw(u16 port, u16 val)
 
 static void biosemu_outl(u16 port, u32 val)
 {
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	printk("outl(0x%08x, 0x%04x)\n", val, port);
 #endif
 	outl(val, port);
@@ -556,7 +556,7 @@ void run_bios(struct device * dev, unsigned long addr)
 	push_word(X86_SS);
 	push_word(X86_SP + 2);
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 	//X86EMU_trace_on();
 #endif
 

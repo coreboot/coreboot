@@ -19,7 +19,7 @@
 #include "compat/time.h"
 
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 static u8 in_check = 0;	// to avoid recursion...
 u16 ebda_segment;
 u32 ebda_size;

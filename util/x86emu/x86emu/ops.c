@@ -76,7 +76,7 @@
 
 /* constant arrays to do several instructions in just one function */
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 static char *x86emu_GenOpName[8] = {
     "ADD", "OR", "ADC", "SBB", "AND", "SUB", "XOR", "CMP"};
 #endif
@@ -157,7 +157,7 @@ static u32 (*opcD1_long_operation[])(u32 s, u8 d) =
     sar_long,
 };
 
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
 
 static char *opF6_names[8] =
   { "TEST\t", "", "NOT\t", "NEG\t", "MUL\t", "IMUL\t", "DIV\t", "IDIV\t" };
@@ -1285,7 +1285,7 @@ static void x86emuOp_opc80_byte_RM_IMM(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -1361,7 +1361,7 @@ static void x86emuOp_opc81_word_RM_IMM(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -1471,7 +1471,7 @@ static void x86emuOp_opc82_byte_RM_IMM(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -1545,7 +1545,7 @@ static void x86emuOp_opc83_word_RM_IMM(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -3127,7 +3127,7 @@ static void x86emuOp_opcC0_byte_RM_MEM(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -3202,7 +3202,7 @@ static void x86emuOp_opcC1_word_RM_MEM(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -3679,7 +3679,7 @@ static void x86emuOp_opcD0_byte_RM_1(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -3750,7 +3750,7 @@ static void x86emuOp_opcD1_word_RM_1(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -3852,7 +3852,7 @@ static void x86emuOp_opcD2_byte_RM_CL(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -3925,7 +3925,7 @@ static void x86emuOp_opcD3_word_RM_CL(u8 X86EMU_UNUSED(op1))
      */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -4928,7 +4928,7 @@ static void x86emuOp_opcFE_byte_RM(u8 X86EMU_UNUSED(op1))
     /* Yet another special case instruction. */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings
@@ -4994,7 +4994,7 @@ static void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
     /* Yet another special case instruction. */
     START_OF_INSTR();
     FETCH_DECODE_MODRM(mod, rh, rl);
-#ifdef CONFIG_DEBUG
+#ifdef DEBUG
     if (DEBUG_DECODE()) {
         /* XXX DECODE_PRINTF may be changed to something more
            general, so that it is important to leave the strings

@@ -19,15 +19,15 @@
 
 #if CONFIG_RAMBASE >= 0x100000
 /* This is a lot more paranoid now, since Linux can NOT handle
- * being told there is a CPU when none exists. So any errors 
- * will return 0, meaning no CPU. 
+ * being told there is a CPU when none exists. So any errors
+ * will return 0, meaning no CPU.
  *
  * We actually handling that case by noting which cpus startup
  * and not telling anyone about the ones that dont.
- */ 
+ */
 static unsigned long get_valid_start_eip(unsigned long orig_start_eip)
 {
-	return (unsigned long)orig_start_eip & 0xffff; // 16 bit to avoid 0xa0000 
+	return (unsigned long)orig_start_eip & 0xffff; // 16 bit to avoid 0xa0000
 }
 #endif
 
@@ -39,34 +39,34 @@ int  lowmem_backup_size;
 
 extern char _secondary_start[];
 
-static void copy_secondary_start_to_1m_below(void) 
+static void copy_secondary_start_to_1m_below(void)
 {
 #if CONFIG_RAMBASE >= 0x100000
-        extern char _secondary_start_end[];
-        unsigned long code_size;
-        unsigned long start_eip;
+	extern char _secondary_start_end[];
+	unsigned long code_size;
+	unsigned long start_eip;
 
-        /* _secondary_start need to be masked 20 above bit, because 16 bit code in secondary.S
-                Also We need to copy the _secondary_start to the below 1M region
-        */
-        start_eip = get_valid_start_eip((unsigned long)_secondary_start);
-        code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
+	/* _secondary_start need to be masked 20 above bit, because 16 bit code in secondary.S
+	   Also We need to copy the _secondary_start to the below 1M region
+	*/
+	start_eip = get_valid_start_eip((unsigned long)_secondary_start);
+	code_size = (unsigned long)_secondary_start_end - (unsigned long)_secondary_start;
 
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	/* need to save it for RAM resume */
 	lowmem_backup_size = code_size;
 	lowmem_backup = malloc(code_size);
 	lowmem_backup_ptr = (char *)start_eip;
-	
+
 	if (lowmem_backup == NULL)
 		die("Out of backup memory\n");
 
-        memcpy(lowmem_backup, lowmem_backup_ptr, lowmem_backup_size);
+	memcpy(lowmem_backup, lowmem_backup_ptr, lowmem_backup_size);
 #endif
-        /* copy the _secondary_start to the ram below 1M*/
-        memcpy((unsigned char *)start_eip, (unsigned char *)_secondary_start, code_size);
+	/* copy the _secondary_start to the ram below 1M*/
+	memcpy((unsigned char *)start_eip, (unsigned char *)_secondary_start, code_size);
 
-        printk_debug("start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
+	printk_debug("start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
 #endif
 }
 
@@ -75,7 +75,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	int timeout;
 	unsigned long send_status, accept_status, start_eip;
 	int j, num_starts, maxlvt;
-		
+
 	/*
 	 * Starting actual IPI sequence...
 	 */
@@ -90,7 +90,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	/*
 	 * Send IPI
 	 */
-	
+
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT
 				| LAPIC_DM_INIT);
 
@@ -104,7 +104,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	if (timeout >= 1000) {
 		printk_err("CPU %ld: First apic write timed out. Disabling\n",
 			 apicid);
-		// too bad. 
+		// too bad.
 		printk_err("ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
 		if (lapic_read(LAPIC_ESR)) {
 			printk_err("Try to reset ESR\n");
@@ -122,7 +122,7 @@ static int lapic_start_cpu(unsigned long apicid)
 
 	/* Send IPI */
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
-	
+
 	printk_spew("Waiting for send to finish...\n");
 	timeout = 0;
 	do {
@@ -133,7 +133,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	if (timeout >= 1000) {
 		printk_err("CPU %ld: Second apic write timed out. Disabling\n",
 			 apicid);
-		// too bad. 
+		// too bad.
 		return 0;
 	}
 
@@ -244,10 +244,10 @@ int start_cpu(device_t cpu)
 
 	/* Get an index for the new processor */
 	index = ++last_cpu_index;
-	
+
 	/* Find end of the new processors stack */
 #if (CONFIG_RAMTOP>0x100000) && (CONFIG_RAMBASE < 0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
-	if(index<1) { // only keep bsp on low 
+	if(index<1) { // only keep bsp on low
 		stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
 	} else {
 		// for all APs, let use stack after pgtbl, 20480 is the pgtbl size for every cpu
@@ -265,7 +265,7 @@ int start_cpu(device_t cpu)
 	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
 #endif
 
-	
+
 	/* Record the index and which cpu structure we are using */
 	info = (struct cpu_info *)stack_end;
 	info->index = index;
@@ -339,7 +339,7 @@ void stop_this_cpu(void)
 
 	printk_spew("Deasserting INIT.\n");
 	/* Deassert the LAPIC INIT */
-	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));	
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
 
 	printk_spew("Waiting for send to finish...\n");
@@ -391,7 +391,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 		}
 	#if CONFIG_SERIAL_CPU_INIT == 0
 		if(cpu==bsp_cpu) {
-			continue; 
+			continue;
 		}
 	#endif
 
@@ -437,7 +437,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 			continue;
 		}
 		if (!cpu->initialized) {
-			printk_err("CPU 0x%02x did not initialize!\n", 
+			printk_err("CPU 0x%02x did not initialize!\n",
 				cpu->path.apic.apic_id);
 		}
 	}
@@ -480,22 +480,22 @@ void initialize_cpus(struct bus *cpu_bus)
 	smm_init();
 #endif
 
-        cpus_ready_for_init(); 
+	cpus_ready_for_init();
 
 #if CONFIG_SMP == 1
 	#if CONFIG_SERIAL_CPU_INIT == 0
 	/* start all aps at first, so we can init ECC all together */
-        start_other_cpus(cpu_bus, info->cpu);
+	start_other_cpus(cpu_bus, info->cpu);
 	#endif
 #endif
 
-        /* Initialize the bootstrap processor */
-        cpu_initialize();
+	/* Initialize the bootstrap processor */
+	cpu_initialize();
 
 #if CONFIG_SMP == 1
-        #if CONFIG_SERIAL_CPU_INIT == 1
-        start_other_cpus(cpu_bus, info->cpu);
-        #endif
+	#if CONFIG_SERIAL_CPU_INIT == 1
+	start_other_cpus(cpu_bus, info->cpu);
+	#endif
 
 	/* Now wait the rest of the cpus stop*/
 	wait_other_cpus_stop(cpu_bus);

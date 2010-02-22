@@ -1,7 +1,7 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008 by coresystems GmbH 
+ * Copyright (C) 2008-2010 by coresystems GmbH 
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 
 #define PCI_DEVICE_ID_INTEL_82810		0x7120
 #define PCI_DEVICE_ID_INTEL_82810DC		0x7122
+#define PCI_DEVICE_ID_INTEL_82830M		0x3575
 #define PCI_DEVICE_ID_INTEL_82845		0x1a30
 #define PCI_DEVICE_ID_INTEL_82945P		0x2770
 #define PCI_DEVICE_ID_INTEL_82945GM		0x27a0

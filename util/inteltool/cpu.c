@@ -1,7 +1,7 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008 by coresystems GmbH 
+ * Copyright (C) 2008-2010 by coresystems GmbH 
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,67 @@ int print_intel_core_msrs(void)
 		int number;
 		char *name;
 	} msr_entry_t;
+
+	static const msr_entry_t model6bx_global_msrs[] = {
+		{ 0x0010, "IA32_TIME_STAMP_COUNTER" },
+		{ 0x0017, "IA32_PLATFORM_ID" },
+		{ 0x001b, "IA32_APIC_BASE" },
+		{ 0x002a, "EBL_CR_POWERON" },
+		{ 0x0033, "TEST_CTL" },
+		{ 0x003f, "THERM_DIODE_OFFSET" },
+		//{ 0x0079, "IA32_BIOS_UPDT_TRIG" }, // Seems to be RO 
+		{ 0x008b, "IA32_BIOS_SIGN_ID" },
+		{ 0x00c1, "PERFCTR0" },
+		{ 0x00c2, "PERFCTR1" },
+		{ 0x011e, "BBL_CR_CTL3" },
+		{ 0x0179, "IA32_MCG_CAP" },
+		{ 0x017a, "IA32_MCG_STATUS" },
+		{ 0x0198, "IA32_PERF_STATUS" },
+		{ 0x0199, "IA32_PERF_CONTROL" },
+		{ 0x019a, "IA32_CLOCK_MODULATION" },
+		{ 0x01a0, "IA32_MISC_ENABLES" },
+		{ 0x01d9, "IA32_DEBUGCTL" },
+		{ 0x0200, "IA32_MTRR_PHYSBASE0" },
+		{ 0x0201, "IA32_MTRR_PHYSMASK0" },
+		{ 0x0202, "IA32_MTRR_PHYSBASE1" },
+		{ 0x0203, "IA32_MTRR_PHYSMASK1" },
+		{ 0x0204, "IA32_MTRR_PHYSBASE2" },
+		{ 0x0205, "IA32_MTRR_PHYSMASK2" },
+		{ 0x0206, "IA32_MTRR_PHYSBASE3" },
+		{ 0x0207, "IA32_MTRR_PHYSMASK3" },
+		{ 0x0208, "IA32_MTRR_PHYSBASE4" },
+		{ 0x0209, "IA32_MTRR_PHYSMASK4" },
+		{ 0x020a, "IA32_MTRR_PHYSBASE5" },
+		{ 0x020b, "IA32_MTRR_PHYSMASK5" },
+		{ 0x020c, "IA32_MTRR_PHYSBASE6" },
+		{ 0x020d, "IA32_MTRR_PHYSMASK6" },
+		{ 0x020e, "IA32_MTRR_PHYSBASE7" },
+		{ 0x020f, "IA32_MTRR_PHYSMASK7" },
+		{ 0x0250, "IA32_MTRR_FIX64K_00000" },
+		{ 0x0258, "IA32_MTRR_FIX16K_80000" },
+		{ 0x0259, "IA32_MTRR_FIX16K_A0000" },
+		{ 0x0268, "IA32_MTRR_FIX4K_C0000" },
+		{ 0x0269, "IA32_MTRR_FIX4K_C8000" },
+		{ 0x026a, "IA32_MTRR_FIX4K_D0000" },
+		{ 0x026b, "IA32_MTRR_FIX4K_D8000" },
+		{ 0x026c, "IA32_MTRR_FIX4K_E0000" },
+		{ 0x026d, "IA32_MTRR_FIX4K_E8000" },
+		{ 0x026e, "IA32_MTRR_FIX4K_F0000" },
+		{ 0x026f, "IA32_MTRR_FIX4K_F8000" },
+		{ 0x02ff, "IA32_MTRR_DEF_TYPE" },
+		{ 0x0400, "IA32_MC0_CTL" },
+		{ 0x0401, "IA32_MC0_STATUS" },
+		{ 0x0402, "IA32_MC0_ADDR" },
+		//{ 0x0403, "IA32_MC0_MISC" }, // Seems to be RO
+		{ 0x040c, "IA32_MC4_CTL" },
+		{ 0x040d, "IA32_MC4_STATUS" },
+		{ 0x040e, "IA32_MC4_ADDR" },
+		//{ 0x040f, "IA32_MC4_MISC" } // Seems to be RO
+	};
+
+	static const msr_entry_t model6bx_per_core_msrs[] = {
+		// single core only
+	};
 
 	static const msr_entry_t model6ex_global_msrs[] = {
 		{ 0x0017, "IA32_PLATFORM_ID" },
@@ -259,6 +320,7 @@ int print_intel_core_msrs(void)
 	} cpu_t;
 
 	cpu_t cpulist[] = {
+		{ 0x006b0, model6bx_global_msrs, ARRAY_SIZE(model6bx_global_msrs), NULL, 0 },
 		{ 0x006e0, model6ex_global_msrs, ARRAY_SIZE(model6ex_global_msrs), model6ex_per_core_msrs, ARRAY_SIZE(model6ex_per_core_msrs) },
 		{ 0x006f0, model6fx_global_msrs, ARRAY_SIZE(model6fx_global_msrs), model6fx_per_core_msrs, ARRAY_SIZE(model6fx_per_core_msrs) },
 	};
@@ -315,7 +377,8 @@ int print_intel_core_msrs(void)
 		if (fd_msr < 0)
 			break;
 #endif
-		printf("\n====================== UNIQUE MSRs  (core %d) ======================\n", core);
+		if (cpu->num_per_core_msrs)
+			printf("\n====================== UNIQUE MSRs  (core %d) ======================\n", core);
 
 		for (i = 0; i < cpu->num_per_core_msrs; i++) {
 			msr = rdmsr(cpu->per_core_msrs[i].number);

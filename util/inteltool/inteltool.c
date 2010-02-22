@@ -1,7 +1,7 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008 by coresystems GmbH 
+ * Copyright (C) 2008-2010 by coresystems GmbH 
  *  written by Stefan Reinauer <stepan@coresystems.de> 
  * 
  * This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82443BX_NO_AGP, "82443BX without AGP" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82810, "i810" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82810DC, "i810-DC100" },
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82830M, "i830M" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82845, "i845" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945P, "i945P" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82945GM, "i945GM" },

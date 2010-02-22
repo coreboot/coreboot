@@ -1,7 +1,7 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008 by coresystems GmbH 
+ * Copyright (C) 2008-2010 by coresystems GmbH 
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@ int print_epbar(struct pci_dev *nb)
  		break;
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
+	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbrigde does not have EPBAR.\n");
 		return 1;
 	default:
@@ -97,6 +98,7 @@ int print_dmibar(struct pci_dev *nb)
  		break;
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
+	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbrigde does not have DMIBAR.\n");
 		return 1;
 	default:

@@ -1,7 +1,7 @@
 /*
  * inteltool - dump all registers on an Intel CPU + chipset based system.
  *
- * Copyright (C) 2008 by coresystems GmbH 
+ * Copyright (C) 2008-2010 by coresystems GmbH 
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ int print_mchbar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82443BX:
 	case PCI_DEVICE_ID_INTEL_82810:
 	case PCI_DEVICE_ID_INTEL_82810DC:
+	case PCI_DEVICE_ID_INTEL_82830M:
 		printf("This northbrigde does not have MCHBAR.\n");
 		return 1;
 	default:

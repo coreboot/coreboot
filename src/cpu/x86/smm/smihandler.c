@@ -118,6 +118,7 @@ void smi_handler(u32 smm_revision)
 	printk_spew("\nSMI# #%d\n", node);
 
 	switch (smm_revision) {
+	case 0x00030002:
 	case 0x00030007:
 		state_save.type = LEGACY;
 		state_save.legacy_state_save = (legacy_smm_state_save_area_t *)
@@ -145,8 +146,12 @@ void smi_handler(u32 smm_revision)
 	/* Call chipset specific SMI handlers. This would be the place to
 	 * add a CPU or northbridge specific SMI handler, too
 	 */
-
-	southbridge_smi_handler(node, &state_save);
+	if (cpu_smi_handler)
+		cpu_smi_handler(node, &state_save);
+	if (northbridge_smi_handler)
+		northbridge_smi_handler(node, &state_save);
+	if (southbridge_smi_handler)
+		southbridge_smi_handler(node, &state_save);
 
 	smi_release_lock();
 

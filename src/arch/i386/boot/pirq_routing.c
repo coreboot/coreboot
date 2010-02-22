@@ -93,7 +93,9 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	printk_info("Copying Interrupt Routing Table to 0x%08lx... ", addr);
 	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
 	printk_info("done.\n");
+#if CONFIG_DEBUG
 	verify_copy_pirq_routing_table(addr);
+#endif
 	pirq_routing_irqs(addr);
 	return addr + intel_irq_routing_table.size;
 }

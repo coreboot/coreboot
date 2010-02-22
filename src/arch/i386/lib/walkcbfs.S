@@ -28,6 +28,8 @@
   clobbers %ebx, %ecx, %edi
 */
 walkcbfs:
+	cld
+
 	mov CBFS_HEADER_PTR, %eax
 	mov CBFS_HEADER_ROMSIZE(%eax), %ecx
 	bswap %ecx
@@ -47,6 +49,13 @@ walkcbfs:
 2:
 	add $1, %eax
 walker:
+	mov 0(%ebx), %edi
+	cmp %edi, filemagic
+	jne searchfile
+	mov 4(%ebx), %edi
+	cmp %edi, filemagic+4
+	jne searchfile
+
 	mov %ebx, %edi
 	add $CBFS_FILE_STRUCTSIZE, %edi /* edi = address of first byte after struct cbfs_file */
 	mov %eax, %ecx
@@ -63,7 +72,8 @@ walker:
 	jmp *%esp
 
 tryharder:
-	sub %ebx, %edi /* edi = # of walked bytes */
+	sub %ebx, %edi
+	sub $CBFS_FILE_STRUCTSIZE, %edi /* edi = # of walked bytes */
 	sub %edi, %esi /* esi = start of filename */
 
 	/* ebx = ecx = (current+offset+len+ALIGN-1) & ~(ALIGN-1) */
@@ -73,26 +83,44 @@ tryharder:
 	mov CBFS_FILE_LEN(%ebx), %edi
 	bswap %edi
 	add %edi, %ecx
-	mov CBFS_HEADER_PTR, %ebx
-	mov CBFS_HEADER_ALIGN(%ebx), %ebx
-	bswap %ebx
-	sub $1, %ebx
-	add %ebx, %ecx
-	mov %ebx, %edi
+	mov CBFS_HEADER_PTR, %edi
+	mov CBFS_HEADER_ALIGN(%edi), %edi
+	bswap %edi
+	sub $1, %edi
+	add %edi, %ecx
 	not %edi
 	and %edi, %ecx
+
+	/* if oldaddr >= addr, leave */
+	cmp %ebx, %ecx
+	jbe out
+
 	mov %ecx, %ebx
 
-	/* look if we should exit */
+check_for_exit:
+	/* look if we should exit: did we pass into the bootblock already? */
 	mov CBFS_HEADER_PTR, %ecx
-	mov CBFS_HEADER_ROMSIZE(%ecx), %ecx
+	mov CBFS_HEADER_BOOTBLOCKSIZE(%ecx), %ecx
 	bswap %ecx
 	not %ecx
 	add $1, %ecx
 
-	cmp %ebx, %ecx
-	/* if we're still inside the ROM area, jump back */
+	cmp %ecx, %ebx
+	/* if bootblockstart >= addr (==we're still in the data area) , jump back */
 	jbe walker
 
+out:
 	mov $0, %eax
 	jmp *%esp
+
+
+searchfile:
+	/* if filemagic isn't found, move forward cbfs_header->align bytes */
+	mov CBFS_HEADER_PTR, %edi
+	mov CBFS_HEADER_ALIGN(%edi), %edi
+	bswap %edi
+	add %edi, %ebx
+	jmp check_for_exit
+
+filemagic:
+	.ascii "LARCHIVE"

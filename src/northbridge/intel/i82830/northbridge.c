@@ -45,7 +45,7 @@ static struct device_operations northbridge_operations = {
 	.ops_pci = 0,
 };
 
-static struct pci_driver northbridge_driver __pci_driver = {
+static const struct pci_driver northbridge_driver __pci_driver = {
 	.ops = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x3575,
@@ -116,7 +116,7 @@ static void pci_domain_set_resources(device_t dev)
 		 */
 		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB + 3)) << 15;
 		tomk -= igd_memory;
-		printk_debug("Setting RAM size to %d\n", tomk);
+		printk_debug("Setting RAM size to %ld\n", tomk);
 
 		/* Compute the top of low memory. */
 		tolmk = pci_tolm >> 10;

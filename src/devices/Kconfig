@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2007 coresystems GmbH
+## Copyright (C) 2007-2010 coresystems GmbH
 ## (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ choice
 	depends on PCI_ROM_RUN || VGA_ROM_RUN
 
 config PCI_OPTION_ROM_RUN_REALMODE
-	prompt "Real mode"
+	prompt "Native mode"
 	bool
 	depends on ARCH_X86
 	help
@@ -58,36 +58,59 @@ config PCI_OPTION_ROM_RUN_REALMODE
 	  so this is the fastest, but also the least secure option.
 	  (only works on x86/x64 systems)
 
-config PCI_OPTION_ROM_RUN_X86EMU
-	prompt "x86emu"
+config PCI_OPTION_ROM_RUN_YABEL
+	prompt "Secure Mode"
 	bool
 	help
 	  If you select this option, the x86emu CPU emulator will be used to
-	  execute PCI option ROMs. 
-	  When choosing this option, x86emu will pass through all hardware
-	  accesses to memory and IO devices to the underlying memory and IO
-	  addresses. While this option prevents option ROMs from doing dirty
-	  tricks with the CPU (such as installing SMM modules or hypervisors),
-	  they can still access all devices in the system.
-	  Choosing x86emu, option ROM execution is slower than native execution
-	  in real mode, but faster than the full system emulation YABEL
-	  This is the default choice for non-x86 systems.
-
-config PCI_OPTION_ROM_RUN_YABEL
-	prompt "YABEL"
-	bool
-	help
-	  If you select this option, the YABEL system emulator will be used to
 	  execute PCI option ROMs.
-	  YABEL consists of two parts: It uses x86emu for the CPU emulation and
-	  additionally provides a PC system emulation that filters bad device and
-	  memory access (such as PCI config space access to other devices than the
-	  initialized one).
-	  This option best prevents option ROMs from doing dirty tricks with the 
+	  This option prevents option ROMs from doing dirty tricks with the 
 	  system (such as installing SMM modules or hypervisors), but it is also
-	  significantly slower than the other option ROM initialization methods.
-
+	  significantly slower than the native option ROM initialization method.
+	  This is the default choice for non-x86 systems.
 endchoice
+
+# TODO: Describe better, and/or make a "choice" selection for this.
+config YABEL_DEBUG_FLAGS
+	prompt "Hex value for YABEL debug flags"
+	hex
+	default 0x0
+	depends on PCI_OPTION_ROM_RUN_YABEL
+	help
+	  Set CONFIG_YABEL_DEBUG_FLAGS is a binary switch that allows you
+	  to select the following items to debug. 1=on 0=off. After you
+	  decide what you want to debug create the binary value, convert to hex
+	  and set the Option (Ex. CONFIG_YABEL_DEBUG_FLAGS = 0x31FF //Debug All).
+
+	  |-DEBUG_JMP - print info about JMP and RETF opcodes from x86emu
+	  ||-DEBUG_TRACE_X86EMU - print _all_ opcodes that are executed by x86emu (WARNING: this will produce a LOT of output)
+	  |||-Currently unused
+	  ||||-Currently unused
+	  |||||-Currently unused
+	  ||||||-DEBUG_PNP - Print Plug And Play access made by option rom 
+	  |||||||-DEBUG_DISK - Print Disk I/O related messages, currently unused
+	  ||||||||-DEBUG_PMM - Print messages related to POST Memory Manager (PMM)
+	  |||||||||-DEBUG_VBE - Print messages related to VESA BIOS Extension (VBE) functions
+	  ||||||||||-DEBUG_PRINT_INT10 - let INT10 (i.e. character output) calls print messages to Debug output
+	  |||||||||||-DEBUG_INTR - Print messages related to interrupt handling
+	  ||||||||||||-DEBUG_CHECK_VMEM_ACCESS - Print messages related to accesse to certain areas of the virtual Memory (e.g. BDA (BIOS Data Area) or Interrupt Vectors)
+	  |||||||||||||-DEBUG_MEM - Print memory access made by option rom (NOTE: this also includes accesses to fetch instructions)
+	  ||||||||||||||-DEBUG_IO - Print I/O access made by option rom 
+	  11000111111111 - Max Binary Value, Debug All (WARNING: - This could run for hours)
+	
+	  DEBUG_IO		  0x0001
+	  DEBUG_MEM		  0x0002
+	  DEBUG_CHECK_VMEM_ACCESS 0x0004
+	  DEBUG_INTR		  0x0008
+	  DEBUG_PRINT_INT10	  0x0010
+	  DEBUG_VBE		  0x0020
+	  DEBUG_PMM		  0x0040
+	  DEBUG_DISK		  0x0080
+	  DEBUG_PNP		  0x0100
+	  DEBUG_TRACE_X86EMU	  0x1000
+	  DEBUG_JMP		  0x2000
+
+	  See debug.h for values 0 is no debug output, 0x31ff is _verbose_.
 
 config YABEL_PCI_ACCESS_OTHER_DEVICES
 	prompt "Allow option roms to acces other devices"
@@ -102,20 +125,56 @@ config YABEL_PCI_ACCESS_OTHER_DEVICES
 config YABEL_VIRTMEM_LOCATION
 	prompt "Location of YABEL's virtual memory"
 	hex
-	depends on EXPERT
+	depends on PCI_OPTION_ROM_RUN_YABEL && EXPERT
 	default 0x1000000
 	help
 	  YABEL requires 1MB memory for its CPU emulation. This memory is
 	  normally located at 16MB.
 
-# TODO: Describe better, and/or make a "choice" selection for this.
-config YABEL_DEBUG_FLAGS
-	prompt "Hex value for YABEL debug flags"
-	hex
-	default 0x0
+config YABEL_DIRECTHW
+	prompt "Direct Hardware Access"
+	bool
 	depends on PCI_OPTION_ROM_RUN_YABEL
 	help
-	  See debug.h for values 0 is no debug output, 0x31ff is _verbose_.
+	  YABEL consists of two parts: It uses x86emu for the CPU emulation and
+	  additionally provides a PC system emulation that filters bad device and
+	  memory access (such as PCI config space access to other devices than the
+	  initialized one).
+	  When choosing this option, x86emu will pass through all hardware
+	  accesses to memory and IO devices to the underlying memory and IO
+	  addresses. While this option prevents option ROMs from doing dirty
+	  tricks with the CPU (such as installing SMM modules or hypervisors),
+	  they can still access all devices in the system.
+	  Enable this option for a good compromise between security and speed.
+
+config BOOTSPLASH
+	prompt "Show graphical bootsplash"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL
+	help
+	  This option shows a graphical bootsplash screen. The grapics are
+	  loaded from the CBFS file bootsplash.jpg
+
+config FRAMEBUFFER_VESA_MODE
+	prompt "VESA framebuffer video mode"
+	hex
+	default 0x117
+	depends on BOOTSPLASH
+	help
+	  This option sets the resolution used for the coreboot framebuffer and
+	  bootsplash screen. Set to 0x117 for 1024x768x16. A diligent soul will 
+	  some day make this a "choice".
+
+config COREBOOT_KEEP_FRAMEBUFFER
+	prompt "Keep VESA framebuffer"
+	bool
+	depends on BOOTSPLASH
+	help
+	  This option keeps the framebuffer mode set after coreboot finishes
+	  execution. If this option is enabled, coreboot will pass a framebuffer
+	  entry in its coreboot table and the payload will need a framebuffer
+	  driver. If this option is disabled, coreboot will switch back to 
+	  text mode before handing control to a payload.
 
 config CONSOLE_VGA_MULTI
 	bool

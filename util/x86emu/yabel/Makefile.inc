@@ -5,4 +5,5 @@ obj-y += interrupt.o
 obj-y += io.o
 obj-y += mem.o
 obj-y += pmm.o
+obj-y += vbe.o
 subdirs-y += compat

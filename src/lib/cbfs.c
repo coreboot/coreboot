@@ -22,13 +22,7 @@
 #include <console/console.h>
 #include <cbfs.h>
 #include <lib.h>
-
-#ifndef CONFIG_BIG_ENDIAN
-#define ntohl(x) ( ((x&0xff)<<24) | ((x&0xff00)<<8) | \
-		((x&0xff0000) >> 8) | ((x&0xff000000) >> 24) )
-#else
-#define ntohl(x) (x)
-#endif
+#include <arch/byteorder.h>
 
 int cbfs_decompress(int algo, void *src, void *dst, int len)
 {
@@ -213,7 +207,7 @@ void * cbfs_load_stage(const char *name)
 
 void * cbfs_get_file(const char *name)
 {
-	return cbfs_find(name);
+	return (void *) cbfs_find(name);
 }
 
 int cbfs_execute_stage(const char *name)

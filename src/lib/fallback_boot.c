@@ -30,6 +30,11 @@ void set_boot_successful(void)
 
 void boot_successful(void)
 {
+#if defined(CONFIG_BOOTSPLASH) && CONFIG_BOOTSPLASH && !CONFIG_COREBOOT_KEEP_FRAMEBUFFER
+	void vbe_textmode_console(void);
+
+	vbe_textmode_console();
+#endif
 	/* Remember this was a successful boot */
 	set_boot_successful();
 

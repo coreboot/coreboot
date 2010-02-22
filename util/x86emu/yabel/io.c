@@ -80,6 +80,76 @@ inl(u16 port)
 	return 0;
 }
 #endif
+
+#if defined(CONFIG_YABEL_DIRECTHW) && (CONFIG_YABEL_DIRECTHW == 1)
+u8 my_inb(X86EMU_pioAddr addr)
+{
+	u8 val;
+
+	val = inb(addr);
+#ifdef CONFIG_DEBUG
+	if ((debug_flags & DEBUG_IO) && (addr != 0x40))
+	    printk("inb(0x%04x) = 0x%02x\n", addr, val);
+#endif
+
+	return val;
+}
+
+u16 my_inw(X86EMU_pioAddr addr)
+{
+	u16 val;
+
+	val = inw(addr);
+
+#ifdef CONFIG_DEBUG
+	if (debug_flags & DEBUG_IO)
+		printk("inw(0x%04x) = 0x%04x\n", addr, val);
+#endif
+	return val;
+}
+
+u32 my_inl(X86EMU_pioAddr addr)
+{
+	u32 val;
+
+	val = inl(addr);
+
+#ifdef CONFIG_DEBUG
+	if (debug_flags & DEBUG_IO)
+		printk("inl(0x%04x) = 0x%08x\n", addr, val);
+#endif
+	return val;
+}
+
+void my_outb(X86EMU_pioAddr addr, u8 val)
+{
+#ifdef CONFIG_DEBUG
+	if ((debug_flags & DEBUG_IO) && (addr != 0x43))
+		printk("outb(0x%02x, 0x%04x)\n", val, addr);
+#endif
+	outb(val, addr);
+}
+
+void my_outw(X86EMU_pioAddr addr, u16 val)
+{
+#ifdef CONFIG_DEBUG
+	if (debug_flags & DEBUG_IO)
+		printk("outw(0x%04x, 0x%04x)\n", val, addr);
+#endif
+	outw(val, addr);
+}
+
+void my_outl(X86EMU_pioAddr addr, u32 val)
+{
+#ifdef CONFIG_DEBUG
+	if (debug_flags & DEBUG_IO)
+		printk("outl(0x%08x, 0x%04x)\n", val, addr);
+#endif
+	outl(val, addr);
+}
+
+#else
+
 u32 pci_cfg_read(X86EMU_pioAddr addr, u8 size);
 void pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size);
 u8 handle_port_61h(void);
@@ -479,3 +549,4 @@ handle_port_61h(void)
 	//finally read the value from the io_buffer
 	return *((u8 *) (bios_device.io_buffer + 0x61));
 }
+#endif

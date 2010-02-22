@@ -14,4 +14,7 @@
 #define cpu_to_be16(x) swab16((x))
 #define be16_to_cpu(x) swab16((x))
 
+#define ntohl(x) be32_to_cpu(x)
+#define htonl(x) cpu_to_be32(x)
+
 #endif /* _BYTEORDER_H */

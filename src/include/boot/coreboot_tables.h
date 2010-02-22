@@ -159,6 +159,13 @@ struct lb_console {
 	uint16_t type;
 };
 
+#define LB_TAG_CONSOLE_SERIAL8250	0
+#define LB_TAG_CONSOLE_VGA		1
+#define LB_TAG_CONSOLE_BTEXT		2
+#define LB_TAG_CONSOLE_LOGBUF		3
+#define LB_TAG_CONSOLE_SROM		4
+#define LB_TAG_CONSOLE_EHCI		5
+
 #define LB_TAG_FORWARD		0x0011
 struct lb_forward {
 	uint32_t tag;
@@ -166,12 +173,25 @@ struct lb_forward {
 	uint64_t forward;
 };
 
-#define LB_TAG_CONSOLE_SERIAL8250	0
-#define LB_TAG_CONSOLE_VGA		1
-#define LB_TAG_CONSOLE_BTEXT		2
-#define LB_TAG_CONSOLE_LOGBUF		3
-#define LB_TAG_CONSOLE_SROM		4
-#define LB_TAG_CONSOLE_EHCI		5
+#define LB_TAG_FRAMEBUFFER	0x0012
+struct lb_framebuffer {
+	uint32_t tag;
+	uint32_t size;
+
+        uint64_t physical_address;
+        uint32_t x_resolution;
+        uint32_t y_resolution;
+        uint32_t bytes_per_line;
+        uint8_t bits_per_pixel;
+        uint8_t red_mask_pos;
+        uint8_t red_mask_size;
+        uint8_t green_mask_pos;
+        uint8_t green_mask_size;
+        uint8_t blue_mask_pos;
+        uint8_t blue_mask_size;
+        uint8_t reserved_mask_pos;
+        uint8_t reserved_mask_size;
+};
 
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200

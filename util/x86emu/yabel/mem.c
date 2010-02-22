@@ -168,6 +168,7 @@ extern u64 get_time(void);
 
 void update_time(u32);
 
+#if !defined(CONFIG_YABEL_DIRECTHW) || (!CONFIG_YABEL_DIRECTHW)
 // read byte from memory
 u8
 my_rdb(u32 addr)
@@ -436,6 +437,43 @@ my_wrl(u32 addr, u32 val)
 		out32le((void *) (M.mem_base + addr), val);
 	}
 }
+#else
+u8
+my_rdb(u32 addr)
+{
+	return rdb(addr);
+}
+
+u16
+my_rdw(u32 addr)
+{
+	return rdw(addr);
+}
+
+u32
+my_rdl(u32 addr)
+{
+	return rdl(addr);
+}
+
+void
+my_wrb(u32 addr, u8 val)
+{
+	wrb(addr, val);
+}
+
+void
+my_wrw(u32 addr, u16 val)
+{
+	wrw(addr, val);
+}
+
+void
+my_wrl(u32 addr, u32 val)
+{
+	wrl(addr, val);
+}
+#endif
 
 //update time in BIOS Data Area
 //DWord at offset 0x6c is the timer ticks since midnight, timer is running at 18Hz

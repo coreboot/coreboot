@@ -13,6 +13,12 @@
 
 #include <string.h>
 #include <types.h>
+#if CONFIG_BOOTSPLASH
+#include <boot/coreboot_tables.h>
+#endif
+
+#include <arch/byteorder.h>
+#define ntohl(x) be32_to_cpu(x)
 
 #include "debug.h"
 
@@ -26,18 +32,14 @@
 #include "interrupt.h"
 #include "device.h"
 
-static X86EMU_memFuncs my_mem_funcs = {
-	my_rdb, my_rdw, my_rdl,
-	my_wrb, my_wrw, my_wrl
-};
+#include <cbfs.h>
 
-static X86EMU_pioFuncs my_pio_funcs = {
-	my_inb, my_inw, my_inl,
-	my_outb, my_outw, my_outl
-};
+#include <delay.h>
+#include "../../src/lib/jpeg.h"
 
 // pointer to VBEInfoBuffer, set by vbe_prepare
 u8 *vbe_info_buffer = 0;
+
 // virtual BIOS Memory
 u8 *biosmem;
 u32 biosmem_size;
@@ -73,17 +75,57 @@ typedef struct {
 } vbe_info_t;
 
 typedef struct {
+	u16 mode_attributes; // 00
+	u8 win_a_attributes; // 02
+	u8 win_b_attributes; // 03
+	u16 win_granularity; // 04
+	u16 win_size;        // 06
+	u16 win_a_segment;   // 08
+	u16 win_b_segment;   // 0a
+	u32 win_func_ptr;    // 0c
+	u16 bytes_per_scanline; // 10
+	u16 x_resolution;    // 12
+	u16 y_resolution;    // 14
+	u8 x_charsize;       // 16
+	u8 y_charsize;       // 17
+	u8 number_of_planes; // 18
+	u8 bits_per_pixel;   // 19
+	u8 number_of_banks;  // 20
+	u8 memory_model;     // 21
+	u8 bank_size;        // 22
+	u8 number_of_image_pages; // 23
+	u8 reserved_page;
+	u8 red_mask_size;
+	u8 red_mask_pos;
+	u8 green_mask_size;
+	u8 green_mask_pos;
+	u8 blue_mask_size;
+	u8 blue_mask_pos;
+	u8 reserved_mask_size;
+	u8 reserved_mask_pos;
+	u8 direct_color_mode_info;
+	u32 phys_base_ptr;
+	u32 offscreen_mem_offset;
+	u16 offscreen_mem_size;
+	u8 reserved[206];
+} __attribute__ ((__packed__)) vesa_mode_info_t;
+
+typedef struct {
 	u16 video_mode;
-	u8 mode_info_block[256];
-	u16 attributes;
-	u16 linebytes;
-	u16 x_resolution;
-	u16 y_resolution;
-	u8 x_charsize;
-	u8 y_charsize;
-	u8 bits_per_pixel;
-	u8 memory_model;
-	u32 framebuffer_address;
+	union {
+		vesa_mode_info_t vesa;
+		u8 mode_info_block[256];
+	};
+	// our crap
+	//u16 attributes;
+	//u16 linebytes;
+	//u16 x_resolution;
+	//u16 y_resolution;
+	//u8 x_charsize;
+	//u8 y_charsize;
+	//u8 bits_per_pixel;
+	//u8 memory_model;
+	//u32 framebuffer_address;
 } vbe_mode_info_t;
 
 typedef struct {
@@ -94,7 +136,7 @@ typedef struct {
 } vbe_ddc_info_t;
 
 static inline u8
-vbe_prepare()
+vbe_prepare(void)
 {
 	vbe_info_buffer = biosmem + (VBE_SEGMENT << 4);	// segment:offset off VBE Data Area
 	//clear buffer
@@ -209,6 +251,7 @@ vbe_get_mode_info(vbe_mode_info_t * mode_info)
 		     __func__, mode_info->video_mode, M.x86.R_AH);
 		return M.x86.R_AH;
 	}
+
 	//pointer to mode_info_block is in ES:DI
 	memcpy(mode_info->mode_info_block,
 	       biosmem + ((M.x86.R_ES << 4) + M.x86.R_DI),
@@ -216,34 +259,6 @@ vbe_get_mode_info(vbe_mode_info_t * mode_info)
 
 	//printf("Mode Info Dump:");
 	//dump(mode_info_block, 64);
-
-	// offset 0: 16bit le mode attributes
-	mode_info->attributes = in16le(mode_info->mode_info_block);
-
-	// offset 16: 16bit le bytes per scan line
-	mode_info->linebytes = in16le(mode_info->mode_info_block + 16);
-
-	// offset 18: 16bit le x resolution
-	mode_info->x_resolution = in16le(mode_info->mode_info_block + 18);
-
-	// offset 20: 16bit le y resolution
-	mode_info->y_resolution = in16le(mode_info->mode_info_block + 20);
-
-	// offset 22: 8bit le x charsize
-	mode_info->x_charsize = *(mode_info->mode_info_block + 22);
-
-	// offset 23: 8bit le y charsize
-	mode_info->y_charsize = *(mode_info->mode_info_block + 23);
-
-	// offset 25: 8bit le bits per pixel
-	mode_info->bits_per_pixel = *(mode_info->mode_info_block + 25);
-
-	// offset 27: 8bit le memory model
-	mode_info->memory_model = *(mode_info->mode_info_block + 27);
-
-	// offset 40: 32bit le containg offset of frame buffer memory ptr
-	mode_info->framebuffer_address =
-	    in32le(mode_info->mode_info_block + 40);
 
 	return 0;
 }
@@ -482,56 +497,22 @@ vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 }
 
 u32
-vbe_get_info(u8 argc, char ** argv)
+vbe_get_info(void)
 {
 	u8 rval;
-	u32 i;
-	if (argc < 4) {
-		printf
-		    ("Usage %s <vmem_base> <device_path> <address of screen_info_t>\n",
-		     argv[0]);
-		int i = 0;
-		for (i = 0; i < argc; i++) {
-			printf("argv[%d]: %s\n", i, argv[i]);
-		}
-		return -1;
-	}
+	int i;
+
+	// XXX FIXME these need to be filled with sane values
+
 	// get a copy of input struct...
-	screen_info_input_t input =
-	    *((screen_info_input_t *) strtoul((char *) argv[4], 0, 16));
+	screen_info_input_t input;
 	// output is pointer to the address passed as argv[4]
-	screen_info_t *output =
-	    (screen_info_t *) strtoul((char *) argv[4], 0, 16);
+	screen_info_t local_output;
+	screen_info_t *output = &local_output;
+	// zero input
+	memset(&input, 0, sizeof(screen_info_input_t));
 	// zero output
-	memset(output, 0, sizeof(screen_info_t));
-
-	// argv[1] is address of virtual BIOS mem...
-	// argv[2] is the size
-	biosmem = (u8 *) strtoul(argv[1], 0, 16);
-	biosmem_size = strtoul(argv[2], 0, 16);;
-	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
-		printf("Error: Not enough virtual memory: %x, required: %x!\n",
-		       biosmem_size, MIN_REQUIRED_VMEM_SIZE);
-		return -1;
-	}
-	// argv[3] is the device to open and use...
-	if (dev_init((char *) argv[3]) != 0) {
-		printf("Error initializing device!\n");
-		return -1;
-	}
-	//setup interrupt handler
-	X86EMU_intrFuncs intrFuncs[256];
-	for (i = 0; i < 256; i++)
-		intrFuncs[i] = handleInterrupt;
-	X86EMU_setupIntrFuncs(intrFuncs);
-	X86EMU_setupPioFuncs(&my_pio_funcs);
-	X86EMU_setupMemFuncs(&my_mem_funcs);
-
-	// set mem_base
-	M.mem_base = (long) biosmem;
-	M.mem_size = biosmem_size;
-	DEBUG_PRINTF_VBE("membase set: %08x, size: %08x\n", (int) M.mem_base,
-			 (int) M.mem_size);
+	memset(&output, 0, sizeof(screen_info_t));
 
 	vbe_info_t info;
 	rval = vbe_info(&info);
@@ -613,7 +594,9 @@ vbe_get_info(u8 argc, char ** argv)
 	while ((mode_info.video_mode = info.video_mode_list[i]) != 0xFFFF) {
 		//DEBUG_PRINTF_VBE("%x: Mode: %04x\n", i, mode_info.video_mode);
 		vbe_get_mode_info(&mode_info);
-#if 0
+
+		// FIXME all these values are little endian!
+
 		DEBUG_PRINTF_VBE("Video Mode 0x%04x available, %s\n",
 				 mode_info.video_mode,
 				 (mode_info.attributes & 0x1) ==
@@ -646,13 +629,13 @@ vbe_get_info(u8 argc, char ** argv)
 				 mode_info.memory_model);
 		DEBUG_PRINTF_VBE("\tFramebuffer Offset: %08x\n",
 				 mode_info.framebuffer_address);
-#endif
-		if ((mode_info.bits_per_pixel == input.color_depth)
-		    && (mode_info.x_resolution <= input.max_screen_width)
-		    && ((mode_info.attributes & 0x80) != 0)	// framebuffer mode
-		    && ((mode_info.attributes & 0x10) != 0)	// graphics
-		    && ((mode_info.attributes & 0x8) != 0)	// color
-		    && (mode_info.x_resolution > best_mode_info.x_resolution))	// better than previous best_mode
+
+		if ((mode_info.vesa.bits_per_pixel == input.color_depth)
+		    && (le16_to_cpu(mode_info.vesa.x_resolution) <= input.max_screen_width)
+		    && ((le16_to_cpu(mode_info.vesa.mode_attributes) & 0x80) != 0)	// framebuffer mode
+		    && ((le16_to_cpu(mode_info.vesa.mode_attributes) & 0x10) != 0)	// graphics
+		    && ((le16_to_cpu(mode_info.vesa.mode_attributes) & 0x8) != 0)	// color
+		    && (le16_to_cpu(mode_info.vesa.x_resolution) > le16_to_cpu(best_mode_info.vesa.x_resolution)))	// better than previous best_mode
 		{
 			// yiiiihaah... we found a new best mode
 			memcpy(&best_mode_info, &mode_info, sizeof(mode_info));
@@ -757,12 +740,12 @@ vbe_get_info(u8 argc, char ** argv)
 		vbe_set_color(0x00, 0x00000000);
 		vbe_set_color(0xFF, 0x00FFFFFF);
 
-		output->screen_width = best_mode_info.x_resolution;
-		output->screen_height = best_mode_info.y_resolution;
-		output->screen_linebytes = best_mode_info.linebytes;
-		output->color_depth = best_mode_info.bits_per_pixel;
+		output->screen_width = le16_to_cpu(best_mode_info.vesa.x_resolution);
+		output->screen_height = le16_to_cpu(best_mode_info.vesa.y_resolution);
+		output->screen_linebytes = le16_to_cpu(best_mode_info.vesa.bytes_per_scanline);
+		output->color_depth = best_mode_info.vesa.bits_per_pixel;
 		output->framebuffer_address =
-		    best_mode_info.framebuffer_address;
+		    le32_to_cpu(best_mode_info.vesa.phys_base_ptr);
 	} else {
 		printf("%s: No suitable video mode found!\n", __func__);
 		//unset display_type...
@@ -770,3 +753,92 @@ vbe_get_info(u8 argc, char ** argv)
 	}
 	return 0;
 }
+
+#if CONFIG_BOOTSPLASH
+vbe_mode_info_t mode_info;
+
+void vbe_set_graphics(void)
+{
+	u8 rval;
+	int i;
+
+	vbe_info_t info;
+	rval = vbe_info(&info);
+	if (rval != 0)
+		return;
+
+	DEBUG_PRINTF_VBE("VbeSignature: %s\n", info.signature);
+	DEBUG_PRINTF_VBE("VbeVersion: 0x%04x\n", info.version);
+	DEBUG_PRINTF_VBE("OemString: %s\n", info.oem_string_ptr);
+	DEBUG_PRINTF_VBE("Capabilities:\n");
+	DEBUG_PRINTF_VBE("\tDAC: %s\n",
+			 (info.capabilities & 0x1) ==
+			 0 ? "fixed 6bit" : "switchable 6/8bit");
+	DEBUG_PRINTF_VBE("\tVGA: %s\n",
+			 (info.capabilities & 0x2) ==
+			 0 ? "compatible" : "not compatible");
+	DEBUG_PRINTF_VBE("\tRAMDAC: %s\n",
+			 (info.capabilities & 0x4) ==
+			 0 ? "normal" : "use blank bit in Function 09h");
+
+	mode_info.video_mode = (1 << 14) | CONFIG_FRAMEBUFFER_VESA_MODE;
+	vbe_get_mode_info(&mode_info);
+	unsigned char *framebuffer = 
+		(unsigned char *) le32_to_cpu(mode_info.vesa.phys_base_ptr);
+	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%08x\n", framebuffer);
+	vbe_set_mode(&mode_info);
+
+	struct jpeg_decdata *decdata;
+	decdata = malloc(sizeof(*decdata));
+
+	/* Switching Intel IGD to 1MB video memory will break this. Who
+	 * cares. */
+	int imagesize = 1024*768*2;
+	
+	struct cbfs_file *file = cbfs_find("bootsplash.jpg");
+	if (!file) { 
+		DEBUG_PRINTF_VBE("Could not find bootsplash.jpg\n");
+		return;
+	}
+	unsigned char *jpeg = ((unsigned char *)file) + ntohl(file->offset);
+	DEBUG_PRINTF_VBE("Splash at %08x ...\n", jpeg);
+	dump(jpeg, 64);
+
+	int ret = 0;
+	DEBUG_PRINTF_VBE("Decompressing boot splash screen...\n");
+	ret = jpeg_decode(jpeg, framebuffer, 1024, 768, 16, decdata);
+	DEBUG_PRINTF_VBE("returns %x\n", ret);
+}
+
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+{
+	framebuffer->physical_address = le32_to_cpu(mode_info.vesa.phys_base_ptr);
+
+	framebuffer->x_resolution = le16_to_cpu(mode_info.vesa.x_resolution);
+	framebuffer->y_resolution = le16_to_cpu(mode_info.vesa.y_resolution);
+	framebuffer->bytes_per_line = le16_to_cpu(mode_info.vesa.bytes_per_scanline);
+	framebuffer->bits_per_pixel = mode_info.vesa.bits_per_pixel;
+
+	framebuffer->red_mask_pos = mode_info.vesa.red_mask_pos;
+	framebuffer->red_mask_size = mode_info.vesa.red_mask_size;
+
+	framebuffer->green_mask_pos = mode_info.vesa.green_mask_pos;
+	framebuffer->green_mask_size = mode_info.vesa.green_mask_size;
+
+	framebuffer->blue_mask_pos = mode_info.vesa.blue_mask_pos;
+	framebuffer->blue_mask_size = mode_info.vesa.blue_mask_size;
+
+	framebuffer->reserved_mask_pos = mode_info.vesa.reserved_mask_pos;
+	framebuffer->reserved_mask_size = mode_info.vesa.reserved_mask_size;
+}
+
+void vbe_textmode_console(void)
+{
+	/* Wait, just a little bit more, pleeeease ;-) */
+	delay(2);
+
+	M.x86.R_EAX = 0x0003;
+	runInt10();
+}
+
+#endif

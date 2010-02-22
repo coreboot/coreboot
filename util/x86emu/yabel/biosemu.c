@@ -86,10 +86,15 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 
 	// in case we jump somewhere unexpected, or execution is finished,
 	// fill the biosmem with hlt instructions (0xf4)
-	memset(biosmem, 0xf4, biosmem_size);
+	// But we have to be careful: If biosmem is 0x00000000 we're running
+	// in the lower 1MB and we must not wipe memory like that.
+	if (biosmem) {
+		DEBUG_PRINTF("Clearing biosmem\n");
+		memset(biosmem, 0xf4, biosmem_size);
+	}
 
-	M.mem_base = (long) biosmem;
-	M.mem_size = biosmem_size;
+	X86EMU_setMemBase(biosmem, biosmem_size);
+
 	DEBUG_PRINTF("membase set: %08x, size: %08x\n", (int) M.mem_base,
 		     (int) M.mem_size);
 

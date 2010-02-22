@@ -26,6 +26,8 @@ initobj-y += lzma.o
 obj-$(CONFIG_USBDEBUG_DIRECT) += usbdebug_direct.o
 obj-$(CONFIG_COMPRESSED_PAYLOAD_LZMA) += lzma.o
 
+obj-$(CONFIG_BOOTSPLASH) += jpeg.o
+
 ifdef POST_EVALUATION
 $(obj)/lib/version.o :: $(obj)/build.h
 endif

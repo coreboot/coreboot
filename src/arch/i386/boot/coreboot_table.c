@@ -148,6 +148,19 @@ static void lb_console(struct lb_header *header)
 #endif
 }
 
+static void lb_framebuffer(struct lb_header *header)
+{
+#if defined(CONFIG_BOOTSPLASH) && CONFIG_BOOTSPLASH && CONFIG_COREBOOT_KEEP_FRAMEBUFFER
+	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
+
+	struct lb_framebuffer *framebuffer;
+	framebuffer = (struct lb_framebuffer *)lb_new_record(header);
+	framebuffer->tag = LB_TAG_FRAMEBUFFER;
+	framebuffer->size = sizeof(*framebuffer);
+	fill_lb_framebuffer(framebuffer);
+#endif
+}
+
 static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -565,6 +578,8 @@ unsigned long write_coreboot_table(
 	lb_console(head);
 	/* Record our various random string information */
 	lb_strings(head);
+	/* Record our framebuffer */
+	lb_framebuffer(head);
 
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head, 1);

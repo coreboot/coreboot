@@ -16,24 +16,41 @@
 #include <types.h>
 #include <string.h>
 #include <device/device.h>
+#include "../debug.h"
 
-#define VMEM_SIZE 1024 *1024 /* 1 MB */
+#define VMEM_SIZE (1024 * 1024) /* 1 MB */
 
+#if !defined(CONFIG_YABEL_DIRECTHW) || (!CONFIG_YABEL_DIRECTHW)
 #ifdef CONFIG_YABEL_VIRTMEM_LOCATION
 u8* vmem = (u8 *) CONFIG_YABEL_VIRTMEM_LOCATION;
 #else
 u8* vmem = (u8 *) (16*1024*1024); /* default to 16MB */
 #endif
+#else
+u8* vmem = NULL;
+#endif
 
 u32 biosemu(u8 *biosmem, u32 biosmem_size, struct device *dev,
 	    unsigned long rom_addr);
+#if CONFIG_BOOTSPLASH
+void vbe_set_graphics(void);
+#endif
 
 void run_bios(struct device * dev, unsigned long addr)
 {
+
 	biosemu(vmem, VMEM_SIZE, dev, addr);
-	memcpy(0x0, vmem + 0x0, 0x400);
-	memcpy(0x400, vmem + 0x400, 0x100);
-	memcpy(0xc0000, vmem + 0xc0000, 0x10000);
+
+#if CONFIG_BOOTSPLASH
+	vbe_set_graphics();
+#endif
+
+	if (vmem != NULL) {
+		printf("Copying legacy memory from 0x%08x to the lower 1MB\n", vmem);
+		memcpy(0x00000, vmem + 0x00000, 0x400);         // IVT
+		memcpy(0x00400, vmem + 0x00400, 0x100);         // BDA
+		memcpy(0xc0000, vmem + 0xc0000, 0x10000);       // VGA OPROM
+	}
 }
 
 u64 get_time(void)

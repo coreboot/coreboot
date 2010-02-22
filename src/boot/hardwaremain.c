@@ -31,8 +31,7 @@ it with the version available from LANL.
 #include <device/pci.h>
 #include <delay.h>
 #include <stdlib.h>
-#include <part/hard_reset.h>
-#include <part/init_timer.h>
+#include <reset.h>
 #include <boot/tables.h>
 #include <boot/elf.h>
 #include <cbfs.h>

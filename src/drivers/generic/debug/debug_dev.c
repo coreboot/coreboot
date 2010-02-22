@@ -5,7 +5,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
-#include <part/hard_reset.h>
+#include <reset.h>
 #include <delay.h>
 #include "chip.h"
 

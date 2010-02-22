@@ -30,7 +30,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 	 * Fill.
 	 */
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug("DRAM fill: 0x%08x-0x%08x\r\n", start, stop);
+	printk_debug("DRAM fill: 0x%08lx-0x%08lx\r\n", start, stop);
 #else
 	print_debug("DRAM fill: ");
 	print_debug_hex32(start);
@@ -42,7 +42,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 		/* Display address being filled */
 		if (!(addr & 0xfffff)) {
 #if CONFIG_USE_PRINTK_IN_CAR
-			printk_debug("%08x \r", addr);
+			printk_debug("%08lx \r", addr);
 #else
 			print_debug_hex32(addr);
 			print_debug(" \r");
@@ -52,7 +52,7 @@ static void ram_fill(unsigned long start, unsigned long stop)
 	};
 	/* Display final address */
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug("%08x\r\nDRAM filled\r\n", addr);
+	printk_debug("%08lx\r\nDRAM filled\r\n", addr);
 #else
 	print_debug_hex32(addr);
 	print_debug("\r\nDRAM filled\r\n");
@@ -67,7 +67,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 	 * Verify.
 	 */
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug("DRAM verify: 0x%08x-0x%08x\r\n", start, stop);
+	printk_debug("DRAM verify: 0x%08lx-0x%08lx\r\n", start, stop);
 #else
 	print_debug("DRAM verify: ");
 	print_debug_hex32(start);
@@ -80,7 +80,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		/* Display address being tested */
 		if (!(addr & 0xfffff)) {
 #if CONFIG_USE_PRINTK_IN_CAR
-			printk_debug("%08x \r", addr);
+			printk_debug("%08lx \r", addr);
 #else
 			print_debug_hex32(addr);
 			print_debug(" \r");
@@ -90,7 +90,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 		if (value != addr) {
 			/* Display address with error */
 #if CONFIG_USE_PRINTK_IN_CAR
-			printk_err("Fail: @0x%08x Read value=0x%08x\r\n", addr, value);
+			printk_err("Fail: @0x%08lx Read value=0x%08lx\r\n", addr, value);
 #else
 			print_err("Fail: @0x");
 			print_err_hex32(addr);
@@ -111,7 +111,7 @@ static void ram_verify(unsigned long start, unsigned long stop)
 	}
 	/* Display final address */
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug("%08x", addr);
+	printk_debug("%08lx", addr);
 #else
 	print_debug_hex32(addr);
 #endif
@@ -142,7 +142,7 @@ void ram_check(unsigned long start, unsigned long stop)
 	 * are tested.   -Tyson
 	 */
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk_debug("Testing DRAM : %08x - %08x\r\n", start, stop);
+	printk_debug("Testing DRAM : %08lx - %08lx\r\n", start, stop);
 #else
 	print_debug("Testing DRAM : ");
 	print_debug_hex32(start);

@@ -162,15 +162,16 @@ function create_config
 		echo "CONFIG_MAINBOARD_DIR=\"$VENDOR/$MAINBOARD\"" >> .config
 		if [ "$PAYLOAD" != "/dev/null" ]; then
 			echo "# CONFIG_PAYLOAD_NONE is not set" >> .config
-			echo "CONFIG_PAYLOAD_ELF=\"$PAYLOAD\"" >> .config
+			echo "CONFIG_PAYLOAD_ELF=y" >> .config
+			echo "CONFIG_FALLBACK_PAYLOAD_FILE=\"$PAYLOAD\"" >> .config
 		fi
 
 		if [ "$loglevel" != "default" ]; then
 			printf "(loglevel override) "
-			echo "CONFIG_MAXIMUM_CONSOLE_LOGLEVEL_$loglevel=y"
-			echo "CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=$loglevel"
-			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL_$loglevel=y"
-			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$loglevel"
+			echo "CONFIG_MAXIMUM_CONSOLE_LOGLEVEL_$loglevel=y" >> .config
+			echo "CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=$loglevel" >> .config
+			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL_$loglevel=y" >> .config
+			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$loglevel" >> .config
 		fi
 	fi
 
@@ -223,7 +224,6 @@ function compile_target
 	ret=$?
 	mv .config ${build_dir}/config.build
 	mv .xcompile ${build_dir}/xcompile.build
-	mv ..config.tmp ${build_dir}/config.deps
 	cd $TARGET/${VENDOR}_${MAINBOARD}
 	etime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	duration=$(( $etime - $stime ))

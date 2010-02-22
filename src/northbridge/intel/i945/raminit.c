@@ -398,12 +398,8 @@ static void sdram_get_dram_configuration(struct sys_info *sysinfo)
 		die("No memory installed.\n");
 	}
 
-	/* The chipset might be able to do this. What the heck, legacy bios
-	 * just beeps when a single DIMM is in the Channel 1 socket. So let's
-	 * not bother until someone needs this enough to cope with it.
-	 */
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
-		printk_err("Channel 0 has no memory populated. This setup is not usable. Please move the DIMM.\n");
+		printk_info("Channel 0 has no memory populated.\n");
 	}
 }
 
@@ -454,7 +450,7 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 {
 	int i, j, idx;
 	int lowest_common_cas = 0;
-	int max_ram_speed;
+	int max_ram_speed = 0;
 
 	const u8 ddr2_speeds_table[] = {
 		0x50, 0x60,	/* DDR2 400: tCLK = 5.0ns  tAC = 0.6ns  */
@@ -1593,7 +1589,7 @@ static void sdram_set_bank_architecture(struct sys_info *sysinfo)
 		if (sysinfo->banks[i] != 8)
 			continue;
 
-		printk_spew("DIMM%d has 8 banks.\n");
+		printk_spew("DIMM%d has 8 banks.\n", i);
 
 		if (i & 1)
 			MCHBAR16(off32) |= 0x50;
@@ -2572,7 +2568,7 @@ static void sdram_power_management(struct sys_info *sysinfo)
 	reg8 |= (1 << 2);
 	pci_write_config8(PCI_DEV(0, 0x2, 0), 0xc1, reg8);
 
-#if C2_SELF_REFRESH_DISABLE
+#ifdef C2_SELF_REFRESH_DISABLE
 
 	if (integrated_graphics) {
 		printk_debug("C2 self-refresh with IGD\n");

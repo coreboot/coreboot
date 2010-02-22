@@ -76,3 +76,9 @@ config FALLBACK_VGA_BIOS_FILE
 	string
 	default "amipci_01.20"
 	depends on BOARD_KONTRON_986LCD_M
+
+config HAVE_ACPI_SLIC
+	bool
+	default n
+	depends on BOARD_KONTRON_986LCD_M
+

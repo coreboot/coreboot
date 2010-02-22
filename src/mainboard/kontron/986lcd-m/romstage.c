@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  * 
- * Copyright (C) 2007-2009 coresystems GmbH
+ * Copyright (C) 2007-2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -48,6 +48,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
+#include <console/console.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include <cpu/x86/bist.h>
@@ -367,6 +368,8 @@ static void early_ich7_init(void)
 //
 #include "lib/cbmem.c"
 
+#include "cpu/intel/model_6ex/cache_as_ram_disable.c"
+
 void real_main(unsigned long bist)
 {
 	u32 reg32;
@@ -477,7 +480,7 @@ void real_main(unsigned long bist)
 		 * day.
 		 */
 		if (resume_backup_memory) 
-			memcpy(resume_backup_memory, CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
@@ -485,4 +488,3 @@ void real_main(unsigned long bist)
 #endif
 }
 
-#include "cpu/intel/model_6ex/cache_as_ram_disable.c"

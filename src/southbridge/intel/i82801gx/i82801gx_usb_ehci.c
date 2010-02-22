@@ -53,8 +53,8 @@ static void usb_ehci_init(struct device *dev)
 	/* Clear any pending port changes */
 	res = find_resource(dev, 0x10);
 	base = res->base;
-	reg32 = read32((u8 *)base + 0x24) | (1 << 2);
-	write32((u8 *)base + 0x24, reg32);
+	reg32 = read32(base + 0x24) | (1 << 2);
+	write32(base + 0x24, reg32);
 
 	/* workaround */
 	reg8 = pci_read_config8(dev, 0x84);

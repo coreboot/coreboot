@@ -487,7 +487,7 @@ void suspend_resume(void)
 /* this is to be filled by SB code - startup value what was found */
 u8 acpi_slp_type = 0;
 
-int acpi_is_wakeup(void)
+static int acpi_is_wakeup(void)
 {
 	return (acpi_slp_type == 3);
 }
@@ -600,7 +600,7 @@ void acpi_jump_to_wakeup(void *vector)
 	memcpy(lowmem_backup_ptr, lowmem_backup, lowmem_backup_size);
 
 	/* copy wakeup trampoline in place */
-	memcpy(WAKEUP_BASE, &__wakeup, &__wakeup_size);
+	memcpy((void *)WAKEUP_BASE, &__wakeup, (size_t)&__wakeup_size);
 
 	acpi_do_wakeup((u32)vector, acpi_backup_memory, CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 }

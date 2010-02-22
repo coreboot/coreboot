@@ -1,7 +1,7 @@
 #ifndef CPU_X86_BIST_H
 #define CPU_X86_BIST_H
 
-static void report_bist_failure(unsigned long bist)
+static void report_bist_failure(u32 bist)
 {
 	if (bist != 0) {
 #if CONFIG_USE_PRINTK_IN_CAR

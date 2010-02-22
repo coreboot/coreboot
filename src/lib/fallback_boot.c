@@ -1,6 +1,6 @@
 #include <console/console.h>
-#include <part/fallback_boot.h>
-#include <part/watchdog.h>
+#include <fallback.h>
+#include <watchdog.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 

@@ -55,7 +55,7 @@ void stage1_main(unsigned long bist)
 
 	/* No servicable parts below this line .. */
 
-#if CAR_DEBUG
+#ifdef CAR_DEBUG
         /* Check value of esp to verify if we have enough rom for stack in Cache as RAM */
 	unsigned v_esp;
 	__asm__ volatile (

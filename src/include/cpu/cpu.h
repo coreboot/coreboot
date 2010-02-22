@@ -17,6 +17,8 @@ void secondary_cpu_init(void);
 
 #if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);
+void smm_lock(void);
+void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 #endif
 
 #define __cpu_driver __attribute__ ((used,__section__(".rodata.cpu_driver")))

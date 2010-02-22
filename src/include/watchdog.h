@@ -1,5 +1,5 @@
-#ifndef PART_WATCHDOG_H
-#define PART_WATCHDOG_H
+#ifndef WATCHDOG_H
+#define WATCHDOG_H
 
 #if CONFIG_USE_WATCHDOG_ON_BOOT == 1
 void watchdog_off(void);
@@ -7,4 +7,4 @@ void watchdog_off(void);
 #define watchdog_off()
 #endif
 
-#endif /* PART_WATCHDOG_H */
+#endif /* WATCHDOG_H */

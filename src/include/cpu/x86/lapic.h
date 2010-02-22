@@ -60,12 +60,13 @@ static inline __attribute__((always_inline)) unsigned long lapicid(void)
  */
 static inline __attribute__((always_inline)) void stop_this_cpu(void)
 {
-
 	/* Called by an AP when it is ready to halt and wait for a new task */
 	for(;;) {
 		hlt();
 	}
 }
+#else
+void stop_this_cpu(void);
 #endif
 
 #if ! defined (__ROMCC__) && !defined(__PRE_RAM__)

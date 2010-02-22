@@ -1,6 +1,4 @@
 
-extern int do_printk(int msg_level, const char *fmt, ...);
-
 #define printk_emerg(fmt, arg...)   do_printk(BIOS_EMERG   ,fmt, ##arg)
 #define printk_alert(fmt, arg...)   do_printk(BIOS_ALERT   ,fmt, ##arg)
 #define printk_crit(fmt, arg...)    do_printk(BIOS_CRIT    ,fmt, ##arg)

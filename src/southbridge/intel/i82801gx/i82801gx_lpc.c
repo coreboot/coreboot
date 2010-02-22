@@ -27,7 +27,6 @@
 #include <pc80/i8259.h>
 #include <arch/io.h>
 #include "i82801gx.h"
-#include "i82801gx_power.h"
 
 #define NMI_OFF	0
 

@@ -28,7 +28,7 @@
 #include <device/pciexp.h>
 #include <arch/io.h>
 #include "chip.h"
-#include <part/hard_reset.h>
+#include <reset.h>
 
 #define PCIE_LCTL 0x50
 #define PCIE_LSTS 0x52

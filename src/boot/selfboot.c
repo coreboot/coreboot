@@ -19,7 +19,7 @@
  */
 
 #include <console/console.h>
-#include <part/fallback_boot.h>
+#include <fallback.h>
 #include <boot/elf.h>
 #include <boot/elf_boot.h>
 #include <boot/coreboot_tables.h>

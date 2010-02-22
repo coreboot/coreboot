@@ -47,6 +47,24 @@
 extern void i82801gx_enable(device_t dev);
 #endif
 
+#define MAINBOARD_POWER_OFF	0
+#define MAINBOARD_POWER_ON	1
+#define MAINBOARD_POWER_KEEP	2
+
+#ifndef CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+#define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL MAINBOARD_POWER_ON
+#endif
+
+/* PCI Configuration Space (D30:F0): PCI2PCI */
+#define PSTS	0x06
+#define SMLT	0x1b
+#define SECSTS	0x1e
+#define INTR	0x3c
+#define BCTRL	0x3e
+#define   SBR	(1 << 6)
+#define   SEE	(1 << 1)
+#define   PERE	(1 << 0)
+
 /* PCI Configuration Space (D31:F0): LPC */
 
 #define SERIRQ_CNTL		0x64

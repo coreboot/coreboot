@@ -31,7 +31,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <delay.h>
-#include <part/init_timer.h>	/* for jason_tsc_count_end */
 #include "wakeup.h"
 
 int enable_a20(void);

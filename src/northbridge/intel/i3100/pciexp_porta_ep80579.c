@@ -28,7 +28,7 @@
 #include <device/pciexp.h>
 #include <arch/io.h>
 #include "chip.h"
-#include <part/hard_reset.h>
+#include <reset.h>
 
 typedef struct northbridge_intel_i3100_config config_t;
 

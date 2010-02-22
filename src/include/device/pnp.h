@@ -33,14 +33,17 @@ struct pnp_info {
 	struct device_operations *ops;
 	unsigned function;
 	unsigned flags;
-#define PNP_IO0  0x01
-#define PNP_IO1  0x02
-#define PNP_IO2  0x04
-#define PNP_IO3  0x08
-#define PNP_IRQ0 0x10
-#define PNP_IRQ1 0x20
-#define PNP_DRQ0 0x40
-#define PNP_DRQ1 0x80
+#define PNP_IO0  0x001
+#define PNP_IO1  0x002
+#define PNP_IO2  0x004
+#define PNP_IO3  0x008
+#define PNP_IRQ0 0x010
+#define PNP_IRQ1 0x020
+#define PNP_DRQ0 0x040
+#define PNP_DRQ1 0x080
+#define PNP_EN   0x100
+#define PNP_MSC0 0x200
+#define PNP_MSC1 0x400
 	struct io_info io0, io1, io2, io3;
 };
 struct resource *pnp_get_resource(device_t dev, unsigned index);

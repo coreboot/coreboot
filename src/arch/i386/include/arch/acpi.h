@@ -355,7 +355,7 @@ typedef struct acpi_ecdt {
 } __attribute__ ((packed)) acpi_ecdt_t;
 
 
-/* These are implemented by the target port */
+/* These are implemented by the target port or north/southbridge*/
 unsigned long write_acpi_tables(unsigned long addr);
 unsigned long acpi_fill_madt(unsigned long current);
 unsigned long acpi_fill_mcfg(unsigned long current);
@@ -414,7 +414,10 @@ int acpi_get_sleep_type(void);
 
 #endif
 
+/* northbridge/amd/amdfam10/amdfam10_acpi.c */
 unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
+/* cpu/intel/speedstep/acpi.c */
+void generate_cpu_entries(void);
 
 #define ACPI_WRITE_MADT_IOAPIC(dev,id)        		\
 do {                                                    \

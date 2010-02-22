@@ -91,3 +91,9 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 	depends on BOARD_INTEL_D945GCLF
+
+config HAVE_ACPI_SLIC
+	bool
+	default n
+	depends on BOARD_INTEL_D945GCLF
+

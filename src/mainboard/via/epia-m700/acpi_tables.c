@@ -39,7 +39,6 @@ extern unsigned char AmlCode_dsdt[];
 extern unsigned char AmlCode_ssdt[];
 
 extern u32 wake_vec;
-extern u8 acpi_sleep_type;
 
 /*
  * These four macros are copied from <arch/smp/mpspec.h>, I have to do this
@@ -203,7 +202,3 @@ unsigned long write_acpi_tables(unsigned long start)
 	return current;
 }
 
-int acpi_is_wakeup(void)
-{
-	return (acpi_sleep_type == 3);
-}

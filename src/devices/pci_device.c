@@ -32,8 +32,6 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <part/hard_reset.h>
-#include <part/fallback_boot.h>
 #include <delay.h>
 #if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT == 1
 #include <device/hypertransport.h>

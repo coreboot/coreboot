@@ -34,8 +34,6 @@ extern unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
-void generate_cpu_entries(void); // from cpu/intel/speedstep
-unsigned long acpi_fill_mcfg(unsigned long current); // from northbridge/intel/i945
 
 #define OLD_ACPI 0
 #if OLD_ACPI

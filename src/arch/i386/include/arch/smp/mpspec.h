@@ -31,6 +31,8 @@ struct intel_mp_floating
 	unsigned char mpf_checksum;	/* Checksum (makes sum 0)	*/
 	unsigned char mpf_feature1;	/* Standard or configuration ? 	*/
 	unsigned char mpf_feature2;	/* Bit7 set for IMCR|PIC	*/
+#define MP_FEATURE_VIRTUALWIRE (1 << 7)
+#define MP_FEATURE_PIC         (0 << 7)
 	unsigned char mpf_feature3;	/* Unused (0)			*/
 	unsigned char mpf_feature4;	/* Unused (0)			*/
 	unsigned char mpf_feature5;	/* Unused (0)			*/

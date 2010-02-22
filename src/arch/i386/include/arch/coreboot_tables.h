@@ -20,5 +20,6 @@ extern struct cmos_option_table option_table;
 
 /* defined by mainboard.c if the mainboard requires extra resources */
 int add_mainboard_resources(struct lb_memory *mem);
+int add_northbridge_resources(struct lb_memory *mem);
 
 #endif /* COREBOOT_TABLE_H */

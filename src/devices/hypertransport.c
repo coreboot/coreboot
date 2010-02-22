@@ -34,8 +34,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport.h>
-#include <part/hard_reset.h>
-#include <part/fallback_boot.h>
 
 /* The hypertransport link is already optimized in pre-ram code
  * so don't do it again

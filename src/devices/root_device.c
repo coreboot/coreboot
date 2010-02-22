@@ -25,7 +25,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <part/hard_reset.h>
+#include <reset.h>
 
 /** 
  * Read the resources for the root device,

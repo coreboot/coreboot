@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <reset.h>
 
 void soft_reset(void)
 {

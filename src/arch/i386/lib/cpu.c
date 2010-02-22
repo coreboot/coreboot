@@ -224,7 +224,7 @@ void cpu_initialize(void)
 	
 	info = cpu_info();
 
-	printk_notice("Initializing CPU #%ld\n", info->index);
+	printk_info("Initializing CPU #%ld\n", info->index);
 
 	cpu = info->cpu;
 	if (!cpu) {

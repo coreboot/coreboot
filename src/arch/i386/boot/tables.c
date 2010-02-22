@@ -23,12 +23,12 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
+#include <arch/coreboot_tables.h>
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
 #include <string.h>
 #include <cpu/x86/multiboot.h>
-#include "coreboot_table.h"
 #include <cbmem.h>
 #include <lib.h>
 
@@ -167,7 +167,7 @@ struct lb_memory *write_tables(void)
 
 			acpi_write_rsdp(low_rsdp,
 				(acpi_rsdt_t *)(high_rsdp->rsdt_address),
-				(acpi_xsdt_t *)(high_rsdp->xsdt_address));
+				(acpi_xsdt_t *)((unsigned long)high_rsdp->xsdt_address));
 		} else {
 			printk_err("ERROR: Didn't find RSDP in high table.\n");
 		}

@@ -14,7 +14,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <part/hard_reset.h>
+#include <reset.h>
 #include <pc80/mc146818rtc.h>
 #include <bitops.h>
 #include <cpu/amd/model_fxx_rev.h>

@@ -240,7 +240,25 @@ static void get_resources(device_t dev, struct pnp_info *info)
 		resource = new_resource(dev, PNP_IDX_DRQ1);
 		resource->size = 1;
 		resource->flags |= IORESOURCE_DRQ;
-	}	
+	}
+	/* These are not IRQs, but set the flag to have the
+	 * resource allocator do the right thing
+	 */
+	if (info->flags & PNP_EN) {
+		resource = new_resource(dev, PNP_IDX_EN);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSC0) {
+		resource = new_resource(dev, PNP_IDX_MSC0);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
+	if (info->flags & PNP_MSC1) {
+		resource = new_resource(dev, PNP_IDX_MSC1);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
 } 
 
 void pnp_enable_devices(device_t base_dev, struct device_operations *ops, 

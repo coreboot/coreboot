@@ -22,6 +22,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "i82801gx.h"
 
 static void pci_init(struct device *dev)
 {
@@ -34,31 +35,31 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, PCI_COMMAND, reg16);
 
 	/* This device has no interrupt */
-	pci_write_config8(dev, 0x3c, 0xff);
+	pci_write_config8(dev, INTR, 0xff);
 
 	/* disable parity error response and SERR */
-	reg16 = pci_read_config16(dev, 0x3e);
+	reg16 = pci_read_config16(dev, BCTRL);
 	reg16 &= ~(1 << 0);
 	reg16 &= ~(1 << 1);
-	pci_write_config16(dev, 0x3e, reg16);
+	pci_write_config16(dev, BCTRL, reg16);
 
 	/* Master Latency Count must be set to 0x04! */
-	reg8 = pci_read_config8(dev, 0x1b);
+	reg8 = pci_read_config8(dev, SMLT);
 	reg8 &= 0x07;
 	reg8 |= (0x04 << 3);
-	pci_write_config8(dev, 0x1b, reg8);
+	pci_write_config8(dev, SMLT, reg8);
 
 	/* Will this improve throughput of bus masters? */
 	pci_write_config8(dev, PCI_MIN_GNT, 0x06);
 
 	/* Clear errors in status registers */
-	reg16 = pci_read_config16(dev, 0x06);
+	reg16 = pci_read_config16(dev, PSTS);
 	//reg16 |= 0xf900;
-	pci_write_config16(dev, 0x06, reg16);
+	pci_write_config16(dev, PSTS, reg16);
 
-	reg16 = pci_read_config16(dev, 0x1e);
+	reg16 = pci_read_config16(dev, SECSTS);
 	// reg16 |= 0xf900;
-	pci_write_config16(dev, 0x1e, reg16);
+	pci_write_config16(dev, SECSTS, reg16);
 }
 
 #undef PCI_BRIDGE_UPDATE_COMMAND

@@ -184,7 +184,7 @@ void cbmem_initialize(void)
 	if (acpi_slp_type == 3) {
 		if (!cbmem_reinit(high_tables_base)) {
 			/* Something went wrong, our high memory area got wiped */
-			acpi_slp_type == 0;
+			acpi_slp_type = 0;
 			cbmem_init(high_tables_base, high_tables_size);
 		}
 	} else {

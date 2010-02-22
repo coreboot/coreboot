@@ -27,7 +27,6 @@
 #include <cpu/x86/smm.h>
 #include <device/pci_def.h>
 #include "i82801gx.h"
-#include "i82801gx_power.h"
 
 #define DEBUG_SMI
 

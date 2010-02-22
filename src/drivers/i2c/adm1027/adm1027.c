@@ -4,7 +4,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <part/hard_reset.h>
 #include <cpu/x86/msr.h>
 #include "chip.h"
 

@@ -1,5 +1,5 @@
 #include <pc80/mc146818rtc.h>
-#include <part/fallback_boot.h>
+#include <fallback.h>
 
 #ifndef CONFIG_MAX_REBOOT_CNT
 #error "CONFIG_MAX_REBOOT_CNT not defined"

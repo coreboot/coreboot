@@ -67,4 +67,6 @@ struct sys_info {
 
 } __attribute__ ((packed));
 
+void receive_enable_adjust(struct sys_info *sysinfo);
+
 #endif				/* RAMINIT_H */

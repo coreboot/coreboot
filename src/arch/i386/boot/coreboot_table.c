@@ -24,7 +24,7 @@
 #include <ip_checksum.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
-#include "coreboot_table.h"
+#include <arch/coreboot_tables.h>
 #include <string.h>
 #include <version.h>
 #include <device/device.h>

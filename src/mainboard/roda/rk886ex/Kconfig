@@ -73,3 +73,9 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x6886
 	depends on BOARD_RODA_RK886EX
+
+config HAVE_ACPI_SLIC
+	bool
+	default n
+	depends on BOARD_RODA_RK886EX
+

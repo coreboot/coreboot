@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <watchdog.h>
 
 void watchdog_off(void)
 {

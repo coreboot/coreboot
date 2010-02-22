@@ -102,6 +102,7 @@ chip northbridge/intel/i945
                                         device pnp 4e.3 on		# COM4
                                                  io 0x60 = 0x2e8
                                                 irq 0x70 = 10
+						irq 0xf1 = 4 # set IRMODE 0 # XXX not an irq
                                         end
 					device pnp 4e.5 off		# Keyboard
 					end

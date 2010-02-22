@@ -75,7 +75,7 @@ static void pci_init(struct device *dev)
 	reg16 |= (1 << 6);
 	pci_write_config16(dev, 0x50, reg16);
 
-#if EVEN_MORE_DEBUG
+#ifdef EVEN_MORE_DEBUG
 	reg32 = pci_read_config32(dev, 0x20);
 	printk_spew("    MBL    = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x24);

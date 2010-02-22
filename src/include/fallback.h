@@ -1,5 +1,5 @@
-#ifndef PART_FALLBACK_BOOT_H
-#define PART_FALLBACK_BOOT_H
+#ifndef FALLBACK_H
+#define FALLBACK_H
 
 #ifndef ASSEMBLY
 
@@ -15,4 +15,4 @@ void boot_successful(void);
 
 #define RTC_BOOT_BYTE	48
 
-#endif /* PART_FALLBACK_BOOT_H */
+#endif /* FALLBACK_H */

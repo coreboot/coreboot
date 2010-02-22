@@ -22449,7 +22449,10 @@ static unsigned arch_type_to_regcm(struct compile_state *state, struct type *typ
 
 static int is_imm32(struct triple *imm)
 {
-	return ((imm->op == OP_INTCONST) && (imm->u.cval <= 0xffffffffUL)) ||
+	// second condition commented out to prevent compiler warning:
+	// imm->u.cval is always 32bit unsigned, so the comparison is
+	// always true.
+	return ((imm->op == OP_INTCONST) /* && (imm->u.cval <= 0xffffffffUL) */ ) ||
 		(imm->op == OP_ADDRCONST);
 	
 }

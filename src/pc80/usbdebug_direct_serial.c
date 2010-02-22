@@ -15,7 +15,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#include <part/fallback_boot.h>
 #include "../lib/usbdebug_direct.c"
 
 static void early_usbdebug_direct_init(void)

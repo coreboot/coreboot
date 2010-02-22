@@ -32,10 +32,9 @@
 #include "dmi.h"
 
 extern unsigned char AmlCode[];
-#if HAVE_ACPI_SLIC
+#if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
-void generate_cpu_entries(void); // from cpu/intel/speedstep
 
 #include "../../../southbridge/intel/i82801gx/i82801gx_nvs.h"
 static void acpi_create_gnvs(global_nvs_t *gnvs)
@@ -142,7 +141,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_mcfg_t *mcfg;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
-#if HAVE_ACPI_SLIC
+#if CONFIG_HAVE_ACPI_SLIC
 	acpi_header_t *slic;
 #endif
 	acpi_header_t *ssdt;
@@ -216,14 +215,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Pack GNVS into the ACPI table area */
 	for (i=0; i < dsdt->length; i++) {
 		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
-			printk_debug("ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08x\n", i, current);
+			printk_debug("ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
 			*(u32*)(((u32)dsdt) + i) = current; // 0x92 bytes
 			break;
 		}
 	}
 
 	/* And fill it */
-	acpi_create_gnvs(current);
+	acpi_create_gnvs((global_nvs_t *)current);
 
 	current += 0x100;
 	ALIGN_CURRENT;
@@ -238,7 +237,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk_debug("ACPI:     * DSDT @ %p Length %x\n", dsdt,
 		     dsdt->length);
 
-#if HAVE_ACPI_SLIC
+#if CONFIG_HAVE_ACPI_SLIC
 	printk_debug("ACPI:     * SLIC\n");
 	slic = (acpi_header_t *)current;
 	current += acpi_create_slic(current);

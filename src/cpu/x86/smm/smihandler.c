@@ -143,9 +143,7 @@ void smi_handler(u32 smm_revision)
 		return;
 	}
 
-	/* Call chipset specific SMI handlers. This would be the place to
-	 * add a CPU or northbridge specific SMI handler, too
-	 */
+	/* Call chipset specific SMI handlers. */
 	if (cpu_smi_handler)
 		cpu_smi_handler(node, &state_save);
 	if (northbridge_smi_handler)

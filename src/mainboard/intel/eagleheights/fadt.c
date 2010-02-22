@@ -66,7 +66,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->dsdt = (unsigned long) dsdt;
 	fadt->preferred_pm_profile = 7; /* Performance Server */
 	fadt->sci_int = 0x9;
-#if HAVE_SMI_HANDLER == 1
+#if CONFIG_HAVE_SMI_HANDLER == 1
 	fadt->smi_cmd = 0xb2;
 #else
 	fadt->smi_cmd = 0x00;

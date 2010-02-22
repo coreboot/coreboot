@@ -39,6 +39,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
+#include <console/console.h>
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include <cpu/x86/bist.h>

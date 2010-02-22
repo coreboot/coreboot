@@ -20,5 +20,6 @@
 config SOUTHBRIDGE_INTEL_I82801GX
 	bool
 	select IOAPIC
+	select HAVE_HARD_RESET
 	select USE_WATCHDOG_ON_BOOT
 

@@ -169,7 +169,7 @@ struct cbfs_stage *cbfs_find_file(const char *name, int type);
 int cbfs_check_magic(struct cbfs_file *file);
 struct cbfs_header *cbfs_master_header(void);
 struct cbfs_file *cbfs_find(const char *name);
-void cbfs_and_run_core(char* filename, unsigned int ebp);
+void cbfs_and_run_core(const char *filename, unsigned int ebp);
 
 #endif
 

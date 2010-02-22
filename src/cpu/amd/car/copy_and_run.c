@@ -3,7 +3,7 @@
    2006/05/02 - stepan: move nrv2b to an extra file.
 */
 
-void cbfs_and_run_core(const char*, unsigned ebp);
+void cbfs_and_run_core(const char *filename, unsigned ebp);
 
 static void copy_and_run(void)
 {

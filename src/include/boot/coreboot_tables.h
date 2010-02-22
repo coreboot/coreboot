@@ -8,7 +8,7 @@
  * is expected to be information that cannot be discovered by
  * other means, such as quering the hardware directly.
  *
- * All of the information should be Position Independent Data.  
+ * All of the information should be Position Independent Data.
  * That is it should be safe to relocated any of the information
  * without it's meaning/correctnes changing.   For table that
  * can reasonably be used on multiple architectures the data
@@ -31,8 +31,8 @@
  * table entries and be backwards compatible, but it is not required.
  */
 
-/* Since coreboot is usually compiled 32bit, gcc will align 64bit 
- * types to 32bit boundaries. If the coreboot table is dumped on a 
+/* Since coreboot is usually compiled 32bit, gcc will align 64bit
+ * types to 32bit boundaries. If the coreboot table is dumped on a
  * 64bit system, a uint64_t would be aligned to 64bit boundaries, 
  * breaking the table format.
  *
@@ -50,21 +50,19 @@ struct lb_uint64 {
 
 static inline uint64_t unpack_lb64(struct lb_uint64 value)
 {
-        uint64_t result;
-        result = value.hi;
-        result = (result << 32) + value.lo;
-        return result;
+	uint64_t result;
+	result = value.hi;
+	result = (result << 32) + value.lo;
+	return result;
 }
 
 static inline struct lb_uint64 pack_lb64(uint64_t value)
 {
-        struct lb_uint64 result;
-        result.lo = (value >> 0) & 0xffffffff;
-        result.hi = (value >> 32) & 0xffffffff;
-        return result;
+	struct lb_uint64 result;
+	result.lo = (value >> 0) & 0xffffffff;
+	result.hi = (value >> 32) & 0xffffffff;
+	return result;
 }
-
-
 
 struct lb_header
 {
@@ -178,19 +176,19 @@ struct lb_framebuffer {
 	uint32_t tag;
 	uint32_t size;
 
-        uint64_t physical_address;
-        uint32_t x_resolution;
-        uint32_t y_resolution;
-        uint32_t bytes_per_line;
-        uint8_t bits_per_pixel;
-        uint8_t red_mask_pos;
-        uint8_t red_mask_size;
-        uint8_t green_mask_pos;
-        uint8_t green_mask_size;
-        uint8_t blue_mask_pos;
-        uint8_t blue_mask_size;
-        uint8_t reserved_mask_pos;
-        uint8_t reserved_mask_size;
+	uint64_t physical_address;
+	uint32_t x_resolution;
+	uint32_t y_resolution;
+	uint32_t bytes_per_line;
+	uint8_t bits_per_pixel;
+	uint8_t red_mask_pos;
+	uint8_t red_mask_size;
+	uint8_t green_mask_pos;
+	uint8_t green_mask_size;
+	uint8_t blue_mask_pos;
+	uint8_t blue_mask_size;
+	uint8_t reserved_mask_pos;
+	uint8_t reserved_mask_size;
 };
 
 /* The following structures are for the cmos definitions table */
@@ -265,7 +263,5 @@ struct	cmos_checksum {
 #define CHECKSUM_NONE	0
 #define CHECKSUM_PCBIOS	1
 };
-
-
 
 #endif /* COREBOOT_TABLES_H */

@@ -27,33 +27,34 @@
 OUTPUT_FORMAT("elf32-i386", "elf32-i386", "elf32-i386")
 OUTPUT_ARCH(i386)
 
-/*
-ENTRY(_start)
-*/
+MEMORY {
+	rom : ORIGIN = 0xffff0000, LENGTH = 64K
+}
 
 TARGET(binary)
 SECTIONS
 {
-	. = CONFIG_ROMBASE;
+	. = 0;
 
 	/* This section might be better named .setup */
-	.rom . : {
+	.rom ROMLOC : {
 		_rom = .;
 		*(.rom.text);
 		*(.rom.data);
 		*(.rom.data.*);
 		*(.rodata.*);
-		. = ALIGN(16);
 		_erom = .;
-	}
+	} >rom =0xff
 
-	_lrom = LOADADDR(.rom);
-	_elrom = LOADADDR(.rom) + SIZEOF(.rom);
+	ROMLOC = 0xffffff00 - (_erom - _rom) + 1;
 
 	/DISCARD/ : {
 		*(.comment)
 		*(.note)
 		*(.comment.*)
 		*(.note.*)
+		*(.iplt)
+		*(.rel.*)
+		*(.igot.*)
 	}
 }

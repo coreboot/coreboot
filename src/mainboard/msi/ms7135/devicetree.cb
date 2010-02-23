@@ -21,6 +21,7 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
               device pnp 4e.1 on		# Parallel port
                 io 0x60 = 0x378
                 irq 0x70 = 7
+                drq 0x74 = 3
               end
               device pnp 4e.2 on		# Com1
                 io 0x60 = 0x3f8
@@ -36,13 +37,14 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
                 irq 0x70 = 1
                 irq 0x72 = 12
               end
+              device pnp 4e.6 off end		# XXX keep allocator happy
               device pnp 4e.7 off end		# Game, MIDI, GPIO 1, GPIO 5
               device pnp 4e.8 off end		# GPIO 2
               device pnp 4e.9 off end		# GPIO 3, GPIO 4
               device pnp 4e.a off end		# ACPI
               device pnp 4e.b on		# Hardware monitor
                 io 0x60 = 0x290
-                irq 0x70 = 0
+                irq 0x70 = 5
               end
             end
           end
@@ -64,8 +66,6 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
           register "ide1_enable" = "1"
           register "sata0_enable" = "1"
           register "sata1_enable" = "1"
-          # register "mac_eeprom_smbus" = "3"
-          # register "mac_eeprom_addr" = "0x51"
         end
       end
       device pci 18.1 on end

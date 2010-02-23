@@ -109,10 +109,10 @@ config IRQ_SLOT_COUNT
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xcf000
+	default 0xc8000
 	depends on BOARD_MSI_MS7135
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x1000
+	default 0x8000
 	depends on BOARD_MSI_MS7135

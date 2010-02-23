@@ -10,14 +10,20 @@ static inline void print_debug_pcar(const char *strval, uint32_t val)
         printk_debug("%s%08x\r\n", strval, val);
 }
 
+/* from linux kernel 2.6.32 asm/string_32.h */
+
 static void inline __attribute__((always_inline))  memcopy(void *dest, const void *src, unsigned long bytes)
 {
-        __asm__ volatile(
-                "cld\n\t"
-                "rep; movsl\n\t"
-                : /* No outputs */
-                : "S" (src), "D" (dest), "c" ((bytes)>>2)
-                );
+	int d0, d1, d2;
+	asm volatile("cld ; rep ; movsl\n\t"
+			"movl %4,%%ecx\n\t"
+			"andl $3,%%ecx\n\t"
+			"jz 1f\n\t"
+			"rep ; movsb\n\t"
+			"1:"
+			: "=&c" (d0), "=&D" (d1), "=&S" (d2)
+			: "0" (bytes / 4), "g" (bytes), "1" ((long)dest), "2" ((long)src)
+			: "memory", "cc");
 }
 /* Disable Erratum 343 Workaround, see RevGuide for Fam10h, Pub#41322 Rev 3.33 */
 
@@ -66,27 +72,17 @@ static void post_cache_as_ram(void)
 	/* from here don't store more data in CAR */
 	vErrata343();
 
-#if 0
-        __asm__ volatile (
-        	"pushl  %eax\n\t"
-        );
-#endif
-
         memcopy((void *)((CONFIG_RAMTOP)-CONFIG_DCACHE_RAM_SIZE), (void *)CONFIG_DCACHE_RAM_BASE, CONFIG_DCACHE_RAM_SIZE); //inline
 //        dump_mem((CONFIG_RAMTOP) - 0x8000, (CONFIG_RAMTOP) - 0x7c00);
 
         __asm__ volatile (
                 /* set new esp */ /* before CONFIG_RAMBASE */
-                "subl   %0, %%ebp\n\t"
                 "subl   %0, %%esp\n\t"
                 ::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- (CONFIG_RAMTOP) )
-        ); // We need to push %eax to the stack (CAR) before copy stack and pop it later after copy stack and change esp
-#if 0
-        __asm__ volatile (
-	        "popl   %eax\n\t"
+		/* discard all registers (eax is used for %0), so gcc redo everything
+		   after the stack is moved */
+		: "cc", "memory", "%ebx", "%ecx", "%edx", "%esi", "%edi", "%ebp"
         );
-#endif
-
 
 	/* We can put data to stack again */
 

@@ -26,7 +26,7 @@ static void keyboard_on(struct device *dev)
 	regval &= 0xfd;
 	pci_write_config8(dev, 0x51, regval);
 
-	init_pc_keyboard(0x60, 0x64, 0);
+	pc_keyboard_init(0);
 }
 
 void dump_south(device_t dev0)

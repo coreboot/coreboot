@@ -112,7 +112,7 @@ static void it8716f_init(device_t dev)
 	case IT8716F_KBCK:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
-		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
+		pc_keyboard_init(&conf->keyboard);
 		break;
 	}
 }

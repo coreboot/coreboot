@@ -5,7 +5,7 @@ struct pc_keyboard {
 	/* No initialization parameters for now */
 };
 
-void init_pc_keyboard(unsigned port0, unsigned port1, struct pc_keyboard *kbd);
+void pc_keyboard_init(struct pc_keyboard *keyboard);
 void set_kbc_ps2_mode(void);
 
 #endif /* PC80_KEYBOARD_H */

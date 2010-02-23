@@ -232,7 +232,7 @@ static void smsc_init(device_t dev)
 	} else if (ld == logical_device_table[i].devs[LD_KBC]) {
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
-		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
+		pc_keyboard_init(&conf->keyboard);
 	}
 }
 

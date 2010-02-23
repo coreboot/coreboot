@@ -72,7 +72,7 @@ static void w83977tf_init(device_t dev)
 	case W83977TF_KBC:
 		res0 = find_resource(dev, PNP_IDX_IO0);
 		res1 = find_resource(dev, PNP_IDX_IO1);
-		init_pc_keyboard(res0->base, res1->base, &conf->keyboard);
+		pc_keyboard_init(&conf->keyboard);
 		break;
 	}
 }

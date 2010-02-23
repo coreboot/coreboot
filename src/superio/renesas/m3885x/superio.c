@@ -41,7 +41,7 @@ static void m3885x_init(device_t dev)
 
 	printk_debug("Renesas M3885x: Initializing keyboard.\n");
 	set_kbc_ps2_mode();
-	init_pc_keyboard(0x60, 0x64, &conf->keyboard);
+	pc_keyboard_init(&conf->keyboard);
 	m3885_configure_multikey();
 }
 

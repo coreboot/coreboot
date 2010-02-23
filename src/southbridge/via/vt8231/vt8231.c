@@ -26,7 +26,7 @@ static void keyboard_on(void)
 		regval |= 0x0f; 
 		pci_write_config8(lpc_dev, 0x51, regval);
 	}
-	init_pc_keyboard(0x60, 0x64, 0);
+	pc_keyboard_init(0);
 }
 
 static void com_port_on(void)

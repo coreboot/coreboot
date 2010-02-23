@@ -93,7 +93,7 @@ static void lpc_init(device_t dev)
 	 int nmi_option;
 
         printk_debug("LPC_INIT -------->\n");
-        init_pc_keyboard(0x60, 0x64, 0);
+        pc_keyboard_init(0);
 
         lpc_usb_legacy_init(dev);
 	 lpc_common_init(dev);

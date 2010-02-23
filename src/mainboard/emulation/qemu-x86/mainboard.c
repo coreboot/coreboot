@@ -23,7 +23,7 @@ static void qemu_init(device_t dev)
 	/* This sneaked in here, because Qemu does not
 	 * emulate a SuperIO chip
 	 */
-	init_pc_keyboard(0x60, 0x64, 0);
+	pc_keyboard_init(0);
 
 	/* The PIRQ table is not working well for interrupt routing purposes. 
 	 * so we'll just set the IRQ directly. 

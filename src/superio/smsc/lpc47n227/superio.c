@@ -164,7 +164,7 @@ static void lpc47n227_init(device_t dev)
 
 	case LPC47N227_KBDC:
 		printk_debug("LPC47N227: Initializing keyboard.\n");
-		init_pc_keyboard(0x60, 0x64, &conf->keyboard);
+		pc_keyboard_init(&conf->keyboard);
 		break;
 	}
 }

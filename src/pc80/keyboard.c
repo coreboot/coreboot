@@ -159,7 +159,7 @@ static u8 send_keyboard(u8 command)
 	return regval;
 }
 
-static void pc_keyboard_init(struct pc_keyboard *keyboard)
+void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	u8 regval;
 	printk_debug("Keyboard init...\n");
@@ -239,16 +239,6 @@ static void pc_keyboard_init(struct pc_keyboard *keyboard)
 	if (kbc_output_buffer_full()) {
 		printk_err("Timeout during final keyboard enable\n");
 		return;
-	}
-}
-
-
-void init_pc_keyboard(unsigned port0, unsigned port1, struct pc_keyboard *kbd)
-{
-	if ((port0 == 0x60) && (port1 == 0x64)) {
-		pc_keyboard_init(kbd);
-	} else {
-		printk_warning("Unsupported keyboard controller.\n");
 	}
 }
 

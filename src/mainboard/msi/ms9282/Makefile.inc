@@ -17,9 +17,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-driver-y +=  mainboard.o
-driver-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
-driver-y += ../../../drivers/i2c/adm1027/adm1027.o
+obj-y +=  mainboard.o
+obj-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
+obj-y += ../../../drivers/i2c/adm1027/adm1027.o
 
 #needed by irq_tables and mptable and acpi_tables
 obj-y += get_bus_conf.o

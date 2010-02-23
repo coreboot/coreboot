@@ -23,7 +23,7 @@
 ## This mainboard requires DCACHE_AS_RAM enabled. It won't work without.
 ##
 
-driver-y +=  mainboard.o
+obj-y +=  mainboard.o
 
 #needed by irq_tables and mptable and acpi_tables
 obj-y += get_bus_conf.o

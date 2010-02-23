@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-driver-y += mainboard.o
+obj-y += mainboard.o
 
 # Needed by irq_tables and mptable and acpi_tables.
 obj-y += get_bus_conf.o
@@ -33,7 +33,7 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt3.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt4.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt5.o
 
-driver-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
+obj-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
 
 # This is part of the conversion to init-obj and away from included code.
 

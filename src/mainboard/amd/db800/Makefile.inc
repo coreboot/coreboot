@@ -1,4 +1,4 @@
-driver-y += mainboard.o
+obj-y += mainboard.o
 
 # Needed by irq_tables and mptable and acpi_tables.
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o

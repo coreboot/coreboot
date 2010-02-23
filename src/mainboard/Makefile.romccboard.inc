@@ -61,7 +61,7 @@ ldscripts += $(src)/arch/i386/lib/id.lds
 ldscripts += $(src)/arch/i386/lib/failover.lds
 endif
 
-driver-y += mainboard.o
+obj-y += mainboard.o
 
 obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o

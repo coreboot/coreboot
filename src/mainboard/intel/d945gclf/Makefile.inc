@@ -21,8 +21,8 @@
 ## This mainboard requires DCACHE_AS_RAM enabled. It won't work without.
 ##
 
-driver-y += mainboard.o
-driver-y += rtl8168.o
+obj-y += mainboard.o
+obj-y += rtl8168.o
 
 obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o

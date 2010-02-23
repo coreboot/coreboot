@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-driver-y += mainboard.o
+obj-y += mainboard.o
 
 obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o

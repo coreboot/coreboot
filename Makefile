@@ -126,6 +126,10 @@ evaluate_subdirs=$(eval cursubdirs:=$(subdirs)) $(eval subdirs:=) $(foreach dir,
 subdirs:=$(PLATFORM-y) $(BUILD-y)
 $(eval $(call evaluate_subdirs, modify))
 
+initobjs:=$(addsuffix .initobj.o, $(basename $(initobjs)))
+drivers:=$(addsuffix .driver.o, $(basename $(drivers)))
+smmobjs:=$(addsuffix .smmobj.o, $(basename $(smmobjs)))
+
 allobjs:=$(foreach var, $(addsuffix s,$(types)), $($(var)))
 alldirs:=$(sort $(abspath $(dir $(allobjs))))
 source_with_ext=$(patsubst $(obj)/%.o,src/%.$(1),$(allobjs))
@@ -160,37 +164,37 @@ $(obj)/$(1)%.o: src/$(1)%.S $(obj)/config.h
 endef
 
 define initobjs_c_template
-$(obj)/$(1)%.o: src/$(1)%.c $(obj)/config.h
+$(obj)/$(1)%.initobj.o: src/$(1)%.c $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_S_template
-$(obj)/$(1)%.o: src/$(1)%.S $(obj)/config.h
+$(obj)/$(1)%.initobj.o: src/$(1)%.S $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_c_template
-$(obj)/$(1)%.o: src/$(1)%.c $(obj)/config.h
+$(obj)/$(1)%.driver.o: src/$(1)%.c $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_S_template
-$(obj)/$(1)%.o: src/$(1)%.S
+$(obj)/$(1)%.driver.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_c_template
-$(obj)/$(1)%.o: src/$(1)%.c
+$(obj)/$(1)%.smmobj.o: src/$(1)%.c
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_S_template
-$(obj)/$(1)%.o: src/$(1)%.S
+$(obj)/$(1)%.smmobj.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
 	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
 endef

@@ -95,7 +95,7 @@ endif
 endif
 
 ifeq ($(CONFIG_TINY_BOOTBLOCK),y)
-include $(src)/arch/i386/Makefile.tinybootblock.inc
+include $(src)/arch/i386/Makefile.bootblock.inc
 else
 include $(src)/arch/i386/Makefile.bigbootblock.inc
 endif

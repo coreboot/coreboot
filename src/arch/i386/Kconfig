@@ -49,6 +49,24 @@ config BIG_BOOTBLOCK
 	default n if TINY_BOOTBLOCK
 	default y
 
+choice
+	prompt "Bootblock behaviour"
+	default BOOTBLOCK_SIMPLE
+	depends on TINY_BOOTBLOCK
+
+config BOOTBLOCK_SIMPLE
+	bool "Always load fallback"
+
+config BOOTBLOCK_NORMAL
+	bool "Switch to normal if CMOS says so"
+
+endchoice
+
+config BOOTBLOCK_SOURCE
+	string
+	default "bootblock_simple.c" if BOOTBLOCK_SIMPLE
+	default "bootblock_normal.c" if BOOTBLOCK_NORMAL
+
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"
 	default n

@@ -807,8 +807,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 
 //----------------------------------------------------------------------------------
 // Function:    	do_ram_command
-// Parameters:  	ctrl - PCI addresses of memory controller functions, and
-//						SMBus addresses of DIMM slots on the mainboard
+// Parameters:  	
 //					command - specifies the command to be sent to the DIMMs:
 //						RAM_COMMAND_NOP			- No Operation
 //						RAM_COMMAND_PRECHARGE	- Precharge all banks
@@ -821,8 +820,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 // Return Value:	None
 // Description: 	Send the specified command to all DIMMs.
 //
-static void do_ram_command(const struct mem_controller *ctrl, uint8_t command, 
-						   uint16_t jedec_mode_bits) 
+static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits) 
 {
     int i;
 	uint32_t dram_controller_mode;
@@ -830,10 +828,10 @@ static void do_ram_command(const struct mem_controller *ctrl, uint8_t command,
 	uint16_t e7501_mode_bits = jedec_mode_bits;
 
 	// Configure the RAM command
-    dram_controller_mode = pci_read_config32(ctrl->d0, DRC);
+    dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
     dram_controller_mode &= 0xFFFFFF8F;
     dram_controller_mode |= command;
-    pci_write_config32(ctrl->d0, DRC, dram_controller_mode);
+    pci_write_config32(PCI_DEV(0, 0, 0), DRC, dram_controller_mode);
 
 	// RAM_COMMAND_NORMAL is an exception. 
 	// It affects only the memory controller and does not need to be "sent" to the DIMMs.
@@ -865,7 +863,7 @@ static void do_ram_command(const struct mem_controller *ctrl, uint8_t command,
 
 		for (i = 0; i < (MAX_NUM_CHANNELS * MAX_DIMM_SOCKETS_PER_CHANNEL); ++i) {
 
-			uint8_t dimm_end_64M_multiple = pci_read_config8(ctrl->d0, DRB_ROW_0 + i);
+			uint8_t dimm_end_64M_multiple = pci_read_config8(PCI_DEV(0, 0, 0), DRB_ROW_0 + i);
 			if (dimm_end_64M_multiple > dimm_start_64M_multiple) {
 
 				// This code assumes DRAM row boundaries are all set below 4 GB
@@ -890,19 +888,17 @@ static void do_ram_command(const struct mem_controller *ctrl, uint8_t command,
 
 //----------------------------------------------------------------------------------
 // Function:    	set_ram_mode
-// Parameters:  	ctrl - PCI addresses of memory controller functions, and
-//						SMBus addresses of DIMM slots on the mainboard
-//					jedec_mode_bits - for mode register set & extended mode register set
-//						commands, bits 0-12 contain the register value in JEDEC format.
+// Parameters:  	jedec_mode_bits - for mode register set & extended mode register set
+//			commands, bits 0-12 contain the register value in JEDEC format.
 // Return Value:	None
 // Description: 	Set the mode register of all DIMMs. The proper CAS# latency 
 //					setting is added to the mode bits specified by the caller.
 //
-static void set_ram_mode(const struct mem_controller *ctrl, uint16_t jedec_mode_bits)
+static void set_ram_mode(uint16_t jedec_mode_bits)
 {
 	ASSERT(!(jedec_mode_bits & SDRAM_CAS_MASK));
 
-	uint32_t dram_cas_latency = pci_read_config32(ctrl->d0, DRT) & DRT_CAS_MASK;
+	uint32_t dram_cas_latency = pci_read_config32(PCI_DEV(0, 0, 0), DRT) & DRT_CAS_MASK;
 	
 	switch (dram_cas_latency) {
 	case DRT_CAS_2_5:
@@ -918,7 +914,7 @@ static void set_ram_mode(const struct mem_controller *ctrl, uint16_t jedec_mode_
 		break;
 	}
 
-	do_ram_command(ctrl, RAM_COMMAND_MRS, jedec_mode_bits);
+	do_ram_command(RAM_COMMAND_MRS, jedec_mode_bits);
 }
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
@@ -927,8 +923,7 @@ static void set_ram_mode(const struct mem_controller *ctrl, uint16_t jedec_mode_
 
 //----------------------------------------------------------------------------------
 // Function:    	configure_dimm_row_boundaries
-// Parameters:  	ctrl - PCI addresses of memory controller functions, and
-//						SMBus addresses of DIMM slots on the mainboard
+// Parameters:  	
 //					dimm_log2_num_bits - log2(number of bits) for each side of the DIMM
 //					total_dram_64M_multiple - total DRAM in the system (as a 
 //						multiple of 64 MB) for DIMMs < dimm_index
@@ -938,7 +933,7 @@ static void set_ram_mode(const struct mem_controller *ctrl, uint16_t jedec_mode_
 // Description: 	Configure the E7501's DRAM Row Boundary registers for the memory
 //					present in the specified DIMM.
 //
-static uint8_t configure_dimm_row_boundaries(const struct mem_controller *ctrl, 
+static uint8_t configure_dimm_row_boundaries(
 											 struct dimm_size dimm_log2_num_bits, 
 											 uint8_t total_dram_64M_multiple, 
 											 unsigned dimm_index)
@@ -967,7 +962,7 @@ static uint8_t configure_dimm_row_boundaries(const struct mem_controller *ctrl,
 	total_dram_64M_multiple += (1 << (dimm_log2_num_bits.side1 - 29));
 
 	// Configure the boundary address for the row on side 1
-	pci_write_config8(ctrl->d0, DRB_ROW_0+(dimm_index<<1), total_dram_64M_multiple);
+	pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_0+(dimm_index<<1), total_dram_64M_multiple);
 
 	// If the DIMMs are double-sided, add the capacity of side 2 this DIMM pair 
 	// (as a multiple of 64 MB) to the total capacity of the system
@@ -975,14 +970,14 @@ static uint8_t configure_dimm_row_boundaries(const struct mem_controller *ctrl,
 		total_dram_64M_multiple += (1 << (dimm_log2_num_bits.side2 - 29));
         
 	// Configure the boundary address for the row (if any) on side 2
-    pci_write_config8(ctrl->d0, DRB_ROW_1+(dimm_index<<1), total_dram_64M_multiple);
+    pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_1+(dimm_index<<1), total_dram_64M_multiple);
 
 	// Update boundaries for rows subsequent to these.
 	// These settings will be overridden by a subsequent call if a populated physical slot exists
         
     for(i=dimm_index+1; i<MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
-		pci_write_config8(ctrl->d0, DRB_ROW_0+(i<<1), total_dram_64M_multiple);
-        pci_write_config8(ctrl->d0, DRB_ROW_1+(i<<1), total_dram_64M_multiple);
+		pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_0+(i<<1), total_dram_64M_multiple);
+        pci_write_config8(PCI_DEV(0, 0, 0), DRB_ROW_1+(i<<1), total_dram_64M_multiple);
 	}
         
     return total_dram_64M_multiple;
@@ -1008,8 +1003,8 @@ static void configure_e7501_ram_addresses(const struct mem_controller *ctrl,
 
 	// Configure the E7501's DRAM row boundaries
 	// Start by zeroing out the temporary initial configuration
-	pci_write_config32(ctrl->d0, DRB_ROW_0, 0);
-	pci_write_config32(ctrl->d0, DRB_ROW_4, 0);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRB_ROW_0, 0);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRB_ROW_4, 0);
 
 	for(i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
 
@@ -1030,7 +1025,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller *ctrl,
 		if (sz.side1 == 0)
 			die("Bad SPD value\r\n");
 
-		total_dram_64M_multiple = configure_dimm_row_boundaries(ctrl, sz, total_dram_64M_multiple, i);
+		total_dram_64M_multiple = configure_dimm_row_boundaries(sz, total_dram_64M_multiple, i);
 	}
 
 	// Configure the Top Of Low Memory (TOLM) in the E7501
@@ -1064,7 +1059,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller *ctrl,
 		// Convert to high 16 bits of address
 		uint16_t top_of_low_memory = total_dram_128M_multiple << 11;
 
-        pci_write_config16(ctrl->d0, TOLM, top_of_low_memory);
+        pci_write_config16(PCI_DEV(0, 0, 0), TOLM, top_of_low_memory);
 
 	} else {
 
@@ -1076,7 +1071,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller *ctrl,
 
 		// Put TOLM at 3 GB
 
-		pci_write_config16(ctrl->d0, TOLM, 0xc000);
+		pci_write_config16(PCI_DEV(0, 0, 0), TOLM, 0xc000);
 
 		// Define a remap window to make the RAM that would appear from 3 GB - 4 GB
 		// visible just beyond 4 GB or the end of physical memory, whichever is larger
@@ -1089,25 +1084,24 @@ static void configure_e7501_ram_addresses(const struct mem_controller *ctrl,
 			remap_limit = 0x40 + (total_dram_64M_multiple - 0x30) - 1;
 		}
 
-        pci_write_config16(ctrl->d0, REMAPBASE, remap_base);
-        pci_write_config16(ctrl->d0, REMAPLIMIT, remap_limit);
+        pci_write_config16(PCI_DEV(0, 0, 0), REMAPBASE, remap_base);
+        pci_write_config16(PCI_DEV(0, 0, 0), REMAPLIMIT, remap_limit);
 	}
 }
 
 //----------------------------------------------------------------------------------
 // Function:    	initialize_ecc
-// Parameters:  	ctrl - PCI addresses of memory controller functions, and
-//						SMBus addresses of DIMM slots on the mainboard
+// Parameters:  	None
 // Return Value:	None
 // Description: 	If we're configured to use ECC, initialize the SDRAM and
 //					clear the E7501's ECC error flags.
 //
-static void initialize_ecc(const struct mem_controller *ctrl)
+static void initialize_ecc(void)
 {
 	uint32_t dram_controller_mode;
 
 	/* Test to see if ECC support is enabled */
-	dram_controller_mode = pci_read_config32(ctrl->d0, DRC);
+	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
 	dram_controller_mode >>= 20;
 	dram_controller_mode &= 3;
 	if (dram_controller_mode == 2)  {
@@ -1116,28 +1110,28 @@ static void initialize_ecc(const struct mem_controller *ctrl)
 
 		RAM_DEBUG_MESSAGE("Initializing ECC state...\r\n");
 		/* Initialize ECC bits , use ECC zero mode (new to 7501)*/
-		pci_write_config8(ctrl->d0, MCHCFGNS, 0x06);
-		pci_write_config8(ctrl->d0, MCHCFGNS, 0x07);
+		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x06);
+		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x07);
 
 		// Wait for scrub cycle to complete
 		do {
-			byte = pci_read_config8(ctrl->d0, MCHCFGNS);
+			byte = pci_read_config8(PCI_DEV(0, 0, 0), MCHCFGNS);
 
 		} while ( (byte & 0x08 ) == 0);
 
-		pci_write_config8(ctrl->d0, MCHCFGNS, byte & 0xfc);
+		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, byte & 0xfc);
 		RAM_DEBUG_MESSAGE("ECC state initialized.\r\n");	
 
 		/* Clear the ECC error bits */
-		pci_write_config8(ctrl->d0f1, DRAM_FERR, 0x03);
-		pci_write_config8(ctrl->d0f1, DRAM_NERR, 0x03);
+		pci_write_config8(PCI_DEV(0, 0, 1), DRAM_FERR, 0x03);
+		pci_write_config8(PCI_DEV(0, 0, 1), DRAM_NERR, 0x03);
 
 		// Clear DRAM Interface error bits (write-one-clear)
-		pci_write_config32(ctrl->d0f1, FERR_GLOBAL, 1<<18); 
- 	    pci_write_config32(ctrl->d0f1, NERR_GLOBAL, 1<<18);
+		pci_write_config32(PCI_DEV(0, 0, 1), FERR_GLOBAL, 1<<18); 
+ 	    pci_write_config32(PCI_DEV(0, 0, 1), NERR_GLOBAL, 1<<18);
 
 		// Start normal ECC scrub
-		pci_write_config8(ctrl->d0, MCHCFGNS, 5);
+		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 5);
 	}
 	
 }
@@ -1161,7 +1155,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl, uint8
 	uint8_t slowest_row_precharge = 0;
 	uint8_t slowest_ras_cas_delay = 0;
 	uint8_t slowest_active_to_precharge_delay = 0;
-	uint32_t current_cas_latency = pci_read_config32(ctrl->d0, DRT) & DRT_CAS_MASK;
+	uint32_t current_cas_latency = pci_read_config32(PCI_DEV(0, 0, 0), DRT) & DRT_CAS_MASK;
 
 	// CAS# latency must be programmed beforehand
 	ASSERT((current_cas_latency == DRT_CAS_2_0) || (current_cas_latency == DRT_CAS_2_5));
@@ -1200,7 +1194,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl, uint8
 	//		At 133 MHz, 1 clock == 7.52 ns
 
     /* Read the initial state */
-    dram_timing = pci_read_config32(ctrl->d0, DRT);
+    dram_timing = pci_read_config32(PCI_DEV(0, 0, 0), DRT);
 
 	/* Trp */
 
@@ -1260,7 +1254,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl, uint8
 	if (current_cas_latency == DRT_CAS_2_0)
 		dram_timing |= (1<<28);		// 4 clocks
 
-	pci_write_config32(ctrl->d0, DRT, dram_timing);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRT, dram_timing);
 
 	return;
 
@@ -1351,10 +1345,10 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl, uint8
 	 * cas latency I can use.
 	 */
 
-	dram_timing = pci_read_config32(ctrl->d0, DRT);
+	dram_timing = pci_read_config32(PCI_DEV(0, 0, 0), DRT);
 	dram_timing &= ~(DRT_CAS_MASK);
 
-	maybe_dram_read_timing = pci_read_config16(ctrl->d0, MAYBE_DRDCTL);
+	maybe_dram_read_timing = pci_read_config16(PCI_DEV(0, 0, 0), MAYBE_DRDCTL);
 	maybe_dram_read_timing &= 0xF00C;
 
 	if (system_compatible_cas_latencies & SPD_CAS_LATENCY_2_0) {
@@ -1363,7 +1357,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl, uint8
 	}
 	else if (system_compatible_cas_latencies & SPD_CAS_LATENCY_2_5) {
 
-		uint32_t dram_row_attributes = pci_read_config32(ctrl->d0, DRA);
+		uint32_t dram_row_attributes = pci_read_config32(PCI_DEV(0, 0, 0), DRA);
 
 		dram_timing |= DRT_CAS_2_5;
 
@@ -1384,24 +1378,24 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl, uint8
 	else
 		die("No CAS# latencies compatible with all DIMMs!!\r\n");
 
-	pci_write_config32(ctrl->d0, DRT, dram_timing);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRT, dram_timing);
 
 	/* set master DLL reset */
-	dword = pci_read_config32(ctrl->d0, 0x88);
+	dword = pci_read_config32(PCI_DEV(0, 0, 0), 0x88);
 	dword |= (1<<26);
-	pci_write_config32(ctrl->d0, 0x88, dword);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
 	
 	dword &= 0x0c0007ff;	/* patch try register 88 is undocumented tnz */
 	dword |= 0xd2109800;
 
-	pci_write_config32(ctrl->d0, 0x88, dword);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
 
 	
-	pci_write_config16(ctrl->d0, MAYBE_DRDCTL, maybe_dram_read_timing);
+	pci_write_config16(PCI_DEV(0, 0, 0), MAYBE_DRDCTL, maybe_dram_read_timing);
 	
-	dword = pci_read_config32(ctrl->d0, 0x88);	/* reset master DLL reset */
+	dword = pci_read_config32(PCI_DEV(0, 0, 0), 0x88);	/* reset master DLL reset */
 	dword &= ~(1<<26);
-	pci_write_config32(ctrl->d0, 0x88, dword);
+	pci_write_config32(PCI_DEV(0, 0, 0), 0x88, dword);
 
 	return;
 
@@ -1426,7 +1420,7 @@ static void configure_e7501_dram_controller_mode(const struct mem_controller *ct
 	int i;  
 
 	// Initial settings
-    uint32_t controller_mode = pci_read_config32(ctrl->d0, DRC);
+    uint32_t controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
 	uint32_t system_refresh_mode = (controller_mode >> 8) & 7;
 
 	// Code below assumes that most aggressive settings are in
@@ -1507,7 +1501,7 @@ static void configure_e7501_dram_controller_mode(const struct mem_controller *ct
 	controller_mode |= (system_refresh_mode << 8);
 
 	// Configure the E7501
-	pci_write_config32(ctrl->d0, DRC, controller_mode);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRC, controller_mode);
 }
 
 //----------------------------------------------------------------------------------
@@ -1562,23 +1556,21 @@ static void configure_e7501_row_attributes(const struct mem_controller *ctrl,
 	}
 
 	/* Write the new row attributes register */
-	pci_write_config32(ctrl->d0, DRA, row_attributes);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRA, row_attributes);
 }
 
 //----------------------------------------------------------------------------------
 // Function:    	enable_e7501_clocks
-// Parameters:  	ctrl - PCI addresses of memory controller functions, and
-//						SMBus addresses of DIMM slots on the mainboard
-//					dimm_mask - bitmask of populated DIMMs on the board - see 
+// Parameters:  	dimm_mask - bitmask of populated DIMMs on the board - see 
 //								spd_get_supported_dimms()
 // Return Value:	None
 // Description: 	Enable clock signals for populated DIMM sockets and disable them
 //					for unpopulated sockets (to reduce EMI).
 //
-static void enable_e7501_clocks(const struct mem_controller *ctrl, uint8_t dimm_mask)
+static void enable_e7501_clocks(uint8_t dimm_mask)
 {
 	int i;
-	uint8_t clock_disable = pci_read_config8(ctrl->d0, CKDIS);
+	uint8_t clock_disable = pci_read_config8(PCI_DEV(0, 0, 0), CKDIS);
 
 	for (i = 0; i < MAX_DIMM_SOCKETS_PER_CHANNEL; i++) {
 
@@ -1590,7 +1582,7 @@ static void enable_e7501_clocks(const struct mem_controller *ctrl, uint8_t dimm_
 			clock_disable |= socket_mask;	// DIMM absent, disable clock
 	}
 	
-	pci_write_config8(ctrl->d0, CKDIS, clock_disable);
+	pci_write_config8(PCI_DEV(0, 0, 0), CKDIS, clock_disable);
 }
 
 
@@ -1605,22 +1597,21 @@ static void enable_e7501_clocks(const struct mem_controller *ctrl, uint8_t dimm_
 // Return Value:	None
 // Description: 	DDR Receive FIFO RE-Sync (?)
 //
-static void RAM_RESET_DDR_PTR(const struct mem_controller *ctrl) 
+static void RAM_RESET_DDR_PTR(void) 
 {
 	uint8_t byte;
-	byte = pci_read_config8(ctrl->d0, 0x88);
+	byte = pci_read_config8(PCI_DEV(0, 0, 0), 0x88);
 	byte |= (1 << 4);
-	pci_write_config8(ctrl->d0, 0x88, byte);
+	pci_write_config8(PCI_DEV(0, 0, 0), 0x88, byte);
 
-	byte = pci_read_config8(ctrl->d0, 0x88);
+	byte = pci_read_config8(PCI_DEV(0, 0, 0), 0x88);
 	byte &= ~(1 << 4);
-	pci_write_config8(ctrl->d0, 0x88, byte);
+	pci_write_config8(PCI_DEV(0, 0, 0), 0x88, byte);
 }
 
 //----------------------------------------------------------------------------------
 // Function:    	ram_set_d0f0_regs
-// Parameters:  	ctrl - PCI addresses of memory controller functions, and
-//						SMBus addresses of DIMM slots on the mainboard
+// Parameters:  	None
 // Return Value:	None
 // Description: 	Set E7501 registers that are either independent of DIMM specifics,
 //					or establish default settings that will be overridden when we
@@ -1629,7 +1620,7 @@ static void RAM_RESET_DDR_PTR(const struct mem_controller *ctrl)
 //					on the table 'constant_register_values', which are a triple of 
 //					configuration register offset, mask, and bits to set.
 //
-static void ram_set_d0f0_regs(const struct mem_controller *ctrl) 
+static void ram_set_d0f0_regs(void) 
 {
 	int i;
 	int num_values = ARRAY_SIZE(constant_register_values);
@@ -1651,11 +1642,11 @@ static void ram_set_d0f0_regs(const struct mem_controller *ctrl)
 		// Again, not strictly an error, but flagged as a potential bug
 		ASSERT((bits_to_mask & bits_to_set) == 0);
 
-		register_value = pci_read_config32(ctrl->d0, register_offset);
+		register_value = pci_read_config32(PCI_DEV(0, 0, 0), register_offset);
         register_value &= bits_to_mask;
         register_value |= bits_to_set;
 
-        pci_write_config32(ctrl->d0, register_offset, register_value);
+        pci_write_config32(PCI_DEV(0, 0, 0), register_offset, register_value);
     }
 }
 
@@ -1678,8 +1669,7 @@ static void write_8dwords(uint32_t* src_addr, uint32_t dst_addr)
 
 //----------------------------------------------------------------------------------
 // Function:    	ram_set_rcomp_regs
-// Parameters:  	ctrl - PCI addresses of memory controller functions, and
-//						SMBus addresses of DIMM slots on the mainboard
+// Parameters:  	None
 // Return Value:	None
 // Description: 	Set the E7501's (undocumented) RCOMP registers.
 //					Per the 855PM datasheet and IXP2800 HW Initialization Reference 
@@ -1688,7 +1678,7 @@ static void write_8dwords(uint32_t* src_addr, uint32_t dst_addr)
 //					Comments below are conjecture based on apparent similarity
 //					between the E7501 and these two chips.
 //
-static void ram_set_rcomp_regs(const struct mem_controller *ctrl) 
+static void ram_set_rcomp_regs(void) 
 {
 	uint32_t dword;
 	uint8_t maybe_strength_control;
@@ -1696,13 +1686,13 @@ static void ram_set_rcomp_regs(const struct mem_controller *ctrl)
 	RAM_DEBUG_MESSAGE("Setting RCOMP registers.\r\n");
 
 	/*enable access to the rcomp bar*/
-	dword = pci_read_config32(ctrl->d0, MAYBE_MCHTST);
+	dword = pci_read_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST);
     dword |= (1<<22);
-    pci_write_config32(ctrl->d0, MAYBE_MCHTST, dword);
+    pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST, dword);
         
 
 	// Set the RCOMP MMIO base address
-    pci_write_config32(ctrl->d0, MAYBE_SMRBASE, RCOMP_MMIO);
+    pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_SMRBASE, RCOMP_MMIO);
 
 	// Block RCOMP updates while we configure the registers
 	dword = read32(RCOMP_MMIO + MAYBE_SMRCTL);
@@ -1789,9 +1779,9 @@ static void ram_set_rcomp_regs(const struct mem_controller *ctrl)
 	SLOW_DOWN_IO;
 
 	/*disable access to the rcomp bar */
-	dword = pci_read_config32(ctrl->d0, MAYBE_MCHTST);
+	dword = pci_read_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST);
 	dword &= ~(1<<22);
-	pci_write_config32(ctrl->d0, MAYBE_MCHTST, dword);	
+	pci_write_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST, dword);	
 
 }
 
@@ -1811,7 +1801,7 @@ static void ram_set_rcomp_regs(const struct mem_controller *ctrl)
 //
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
-	uint8_t dimm_mask = pci_read_config16(ctrl->d0, SKPD);
+	uint8_t dimm_mask = pci_read_config16(PCI_DEV(0, 0, 0), SKPD);
 	uint32_t dram_controller_mode;
 
 	if (dimm_mask == 0)
@@ -1828,23 +1818,23 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* 3. Apply NOP */
 	RAM_DEBUG_MESSAGE("Ram Enable 3\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NOP, 0);
+	do_ram_command(RAM_COMMAND_NOP, 0);
 	EXTRA_DELAY
 
 	/* 4 Precharge all */
 	RAM_DEBUG_MESSAGE("Ram Enable 4\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE, 0);
+	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
 	EXTRA_DELAY
 	
 	/* wait until the all banks idle state... */
 	/* 5. Issue EMRS to enable DLL */
 	RAM_DEBUG_MESSAGE("Ram Enable 5\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_EMRS, SDRAM_EXTMODE_DLL_ENABLE | SDRAM_EXTMODE_DRIVE_NORMAL);
+	do_ram_command(RAM_COMMAND_EMRS, SDRAM_EXTMODE_DLL_ENABLE | SDRAM_EXTMODE_DRIVE_NORMAL);
 	EXTRA_DELAY
 	
 	/* 6. Reset DLL */
 	RAM_DEBUG_MESSAGE("Ram Enable 6\r\n");
-	set_ram_mode(ctrl, E7501_SDRAM_MODE | SDRAM_MODE_DLL_RESET);
+	set_ram_mode(E7501_SDRAM_MODE | SDRAM_MODE_DLL_RESET);
 	EXTRA_DELAY
 
 	/* Ensure a 200us delay between the DLL reset in step 6 and the final
@@ -1856,42 +1846,42 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	
 	/* 7 Precharge all */
 	RAM_DEBUG_MESSAGE("Ram Enable 7\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_PRECHARGE, 0);
+	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
 	EXTRA_DELAY
 	
 	/* 8 Now we need 2 AUTO REFRESH / CBR cycles to be performed */
 	RAM_DEBUG_MESSAGE("Ram Enable 8\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
 	/* And for good luck 6 more CBRs */
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
-	do_ram_command(ctrl, RAM_COMMAND_CBR, 0);
+	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
 
 	/* 9 mode register set */
 	RAM_DEBUG_MESSAGE("Ram Enable 9\r\n");
-	set_ram_mode(ctrl, E7501_SDRAM_MODE | SDRAM_MODE_NORMAL);
+	set_ram_mode(E7501_SDRAM_MODE | SDRAM_MODE_NORMAL);
 	EXTRA_DELAY
 	
 	/* 10 DDR Receive FIFO RE-Sync */
 	RAM_DEBUG_MESSAGE("Ram Enable 10\r\n");
-	RAM_RESET_DDR_PTR(ctrl);
+	RAM_RESET_DDR_PTR();
 	EXTRA_DELAY
 	
 	/* 11 normal operation */
 	RAM_DEBUG_MESSAGE("Ram Enable 11\r\n");
-	do_ram_command(ctrl, RAM_COMMAND_NORMAL, 0);
+	do_ram_command(RAM_COMMAND_NORMAL, 0);
 	EXTRA_DELAY
 
 	// Reconfigure the row boundaries and Top of Low Memory
@@ -1899,16 +1889,16 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	configure_e7501_ram_addresses(ctrl, dimm_mask);
 
     /* Finally enable refresh */
-	dram_controller_mode = pci_read_config32(ctrl->d0, DRC);
+	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC);
 	dram_controller_mode |= (1 << 29);
-	pci_write_config32(ctrl->d0, DRC, dram_controller_mode);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRC, dram_controller_mode);
 	EXTRA_DELAY
 
-	initialize_ecc(ctrl);
+	initialize_ecc();
 
-	dram_controller_mode = pci_read_config32(ctrl->d0, DRC); /* FCS_EN */
+	dram_controller_mode = pci_read_config32(PCI_DEV(0, 0, 0), DRC); /* FCS_EN */
 	dram_controller_mode |= (1<<17);		// NOTE: undocumented reserved bit
-	pci_write_config32(ctrl->d0, DRC, dram_controller_mode);
+	pci_write_config32(PCI_DEV(0, 0, 0), DRC, dram_controller_mode);
 
 	RAM_DEBUG_MESSAGE("Northbridge following SDRAM init:\r\n");
 	DUMPNORTH();
@@ -1940,14 +1930,14 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 		print_debug("No usable memory for this controller\r\n");
     } else {
 
-		enable_e7501_clocks(ctrl, dimm_mask);
+		enable_e7501_clocks(dimm_mask);
 
 		RAM_DEBUG_MESSAGE("setting based on SPD data...\r\n");
 
 		configure_e7501_row_attributes(ctrl, dimm_mask);
 		configure_e7501_dram_controller_mode(ctrl, dimm_mask);
 		configure_e7501_cas_latency(ctrl, dimm_mask);
-		RAM_RESET_DDR_PTR(ctrl);
+		RAM_RESET_DDR_PTR();
 
 		configure_e7501_dram_timing(ctrl, dimm_mask);
 		DO_DELAY
@@ -1963,7 +1953,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	//		 Save the dimm_mask for when sdram_enable is called, so it can call
 	//		 configure_e7501_ram_addresses() without having to regenerate the bitmask
 	//		 of usable DIMMs.
-	pci_write_config16(ctrl->d0, SKPD, dimm_mask);
+	pci_write_config16(PCI_DEV(0, 0, 0), SKPD, dimm_mask);
 }
 
 //----------------------------------------------------------------------------------
@@ -1979,8 +1969,8 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	RAM_DEBUG_MESSAGE("Northbridge prior to SDRAM init:\r\n");
 	DUMPNORTH();
 
-	ram_set_rcomp_regs(ctrl);
-    ram_set_d0f0_regs(ctrl);
+	ram_set_rcomp_regs();
+    ram_set_d0f0_regs();
 }
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

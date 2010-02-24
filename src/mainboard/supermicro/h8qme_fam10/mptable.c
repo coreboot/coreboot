@@ -94,20 +94,10 @@ void *smp_write_config_table(void *v)
 			pci_write_config32(dev, 0x80, dword);
 
 			dword = 0xa000000b;
-			dword = 0x10000002;
 			pci_write_config32(dev, 0x84, dword);
 
 		}
 
-		/* 8132_1 */
-		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3,1));
-		res = find_resource(dev,PCI_BASE_ADDRESS_0);
-		smp_write_ioapic(mc, m->apicid_8132_1, 0x11, res->base);
-
-		/* 8132_2 */
-		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN(sbdn3+1,1));
-		res = find_resource(dev,PCI_BASE_ADDRESS_0);
-		smp_write_ioapic(mc, m->apicid_8132_2, 0x11, res->base);
 
 	}
 		
@@ -125,7 +115,7 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xe, m->apicid_mcp55, 0xe);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xf, m->apicid_mcp55, 0xf);
 	
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+1)<<2)|1, m->apicid_mcp55, 0x5);  /*  5 SMBus! Not correctly assign!!*/
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+1)<<2)|1, m->apicid_mcp55, 0x5);  /*  5 SMBus, OK */ 
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|0, m->apicid_mcp55, 0xb); /* 11 USB, OK */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|1, m->apicid_mcp55, 0xa); /* 10 USB, OK */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+5)<<2)|0, m->apicid_mcp55, 0x5); /*  5  IDE, OK*/

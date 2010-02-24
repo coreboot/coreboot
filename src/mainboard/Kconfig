@@ -94,6 +94,8 @@ config VENDOR_TYAN
 	bool "Tyan"
 config VENDOR_VIA
 	bool "VIA"
+config VENDOR_WINENT
+	bool "Win Enterprises"
 
 endchoice
 
@@ -352,6 +354,11 @@ config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	default 0x1019
 	depends on VENDOR_VIA
 
+config MAINBOARD_VENDOR
+	string
+	default "Win Enterprise"
+	depends on VENDOR_WINENT
+
 source "src/mainboard/a-trend/Kconfig"
 source "src/mainboard/abit/Kconfig"
 source "src/mainboard/advantech/Kconfig"
@@ -397,6 +404,7 @@ source "src/mainboard/televideo/Kconfig"
 source "src/mainboard/thomson/Kconfig"
 source "src/mainboard/tyan/Kconfig"
 source "src/mainboard/via/Kconfig"
+source "src/mainboard/winent/Kconfig"
 
 config BOARD_ROMSIZE_KB_128
 	bool

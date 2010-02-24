@@ -4,6 +4,7 @@
  * Copyright (C) 2000 AG Electronics Ltd.
  * Copyright (C) 2003-2004 Linux Networx
  * Copyright (C) 2004 Tyan By LYH change from PC87360
+ * Copyright (C) 2010 Win Enterprises (anishp@win-ent.com) 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,6 +55,16 @@ static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
 {
 	outb(reg, port_base);
 	return inb(port_base + 1);
+}
+
+static void w83627hf_16_bit_addr_qual(device_t dev)
+{
+      int port = dev->path.pnp.port >> 8;
+      pnp_enter_ext_func_mode(dev);
+      outb(0x24, port);
+      /* enable 16 bit address qualification */
+      outb(inb(port + 1) | 0x80, port + 1);
+      pnp_exit_ext_func_mode(dev);
 }
 
 static void enable_hwm_smbus(device_t dev)

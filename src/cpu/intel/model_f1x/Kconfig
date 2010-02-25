@@ -1,4 +1,4 @@
 config CPU_INTEL_MODEL_F1X
 	bool
 	select SMP
-	select HAVE_MOVNTI
+	select SSE2

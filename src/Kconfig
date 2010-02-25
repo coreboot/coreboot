@@ -184,10 +184,6 @@ config HAVE_MAINBOARD_RESOURCES
 	bool
 	default n
 
-config HAVE_MOVNTI
-	bool
-	default n
-
 config HAVE_OPTION_TABLE
 	bool
 	default y

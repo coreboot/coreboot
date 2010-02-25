@@ -1,1 +1,4 @@
-# select HAVE_MOVNTI
+config CPU_INTEL_CORE2
+	bool
+	select SMP
+	select SSE2

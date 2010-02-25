@@ -1,6 +1,8 @@
 static void write_phys(unsigned long addr, unsigned long value)
 {
-#if CONFIG_HAVE_MOVNTI
+	// Assembler in lib/ is very ugly. But we properly guarded
+	// it so let's obey this one for now
+#if CONFIG_SSE2
 	asm volatile(
 		"movnti %1, (%0)"
 		: /* outputs */
@@ -50,6 +52,10 @@ static void ram_fill(unsigned long start, unsigned long stop)
 		}
 		write_phys(addr, addr);
 	};
+#if CONFIG_SSE2
+	// Needed for movnti
+	asm volatile ("sfence" ::: "memory");
+#endif
 	/* Display final address */
 #if CONFIG_USE_PRINTK_IN_CAR
 	printk_debug("%08lx\r\nDRAM filled\r\n", addr);

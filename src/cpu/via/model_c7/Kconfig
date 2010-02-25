@@ -1,3 +1,4 @@
 config CPU_VIA_C7
 	bool
 	select UDELAY_TSC
+	select SSE2

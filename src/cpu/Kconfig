@@ -32,14 +32,26 @@ config SMP
 	  This option is used to enable certain functions to make coreboot
 	  work correctly on symmetric multi processor (SMP) systems.
 
-# Set MMX and SSE in socket or model if the CPU has them.
-# If all CPUs for the socket have MMX or SSE, set them there.
-# These options are only needed for boards compiled with romcc.
 config	MMX
 	bool
+	help
+	  Select MMX in your socket or model Kconfig if your CPU has MMX
+	  streaming SIMD instructions. ROMCC can build more efficient
+	  code if it can spill to MMX registers.
 
 config SSE
 	bool
+	help
+	  Select SSE in your socket or model Kconfig if your CPU has SSE
+	  streaming SIMD instructions. ROMCC can build more efficient
+	  code if it can spill to SSE (aka XMM) registers.
+
+config SSE2
+	bool
+	help
+	  Select SSE2 in your socket or model Kconfig if your CPU has SSE2
+	  streaming SIMD instructions. Some parts of coreboot can be built
+	  with more efficient code if SSE2 instructions are available.
 
 config VAR_MTRR_HOLE
 	bool

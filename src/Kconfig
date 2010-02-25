@@ -247,7 +247,7 @@ config HAVE_LOW_TABLES
 
 config HAVE_HIGH_TABLES
 	bool
-	default n
+	default y
 	help
 	  This variable specifies whether a given northbridge has high table
 	  support.

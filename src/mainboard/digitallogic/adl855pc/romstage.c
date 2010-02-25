@@ -17,7 +17,7 @@
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801dbm/i82801dbm_early_smbus.c"
-#include "northbridge/intel/i855pm/raminit.h"
+#include "northbridge/intel/i855/raminit.h"
 
 #if 0
 #include "cpu/p6/apic_timer.c"
@@ -25,7 +25,7 @@
 #endif
 
 #include "cpu/x86/lapic/boot_cpu.c"
-#include "northbridge/intel/i855pm/debug.c"
+#include "northbridge/intel/i855/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c" 
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
@@ -57,8 +57,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/intel/i855pm/raminit.c"
-#include "northbridge/intel/i855pm/reset_test.c"
+#include "northbridge/intel/i855/raminit.c"
+#include "northbridge/intel/i855/reset_test.c"
 #include "lib/generic_sdram.c"
 
 static void main(unsigned long bist)

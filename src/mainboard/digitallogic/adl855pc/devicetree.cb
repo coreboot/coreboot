@@ -1,4 +1,4 @@
-chip northbridge/intel/i855pm
+chip northbridge/intel/i855
 	device pci_domain 0 on 
 		device pci 0.0 on end
 		device pci 1.0 on end

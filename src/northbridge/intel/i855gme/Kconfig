@@ -1,4 +1,0 @@
-config NORTHBRIDGE_INTEL_I855GME
-	bool
-	select HAVE_HIGH_TABLES
-

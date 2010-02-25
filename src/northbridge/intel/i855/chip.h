@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-struct northbridge_intel_i855gme_config
+struct northbridge_intel_i855_config
 {
 };
 
-extern struct chip_operations northbridge_intel_i855gme_ops;
+extern struct chip_operations northbridge_intel_i855_ops;

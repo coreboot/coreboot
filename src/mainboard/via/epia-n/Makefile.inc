@@ -33,11 +33,4 @@ ldscripts += $(src)/cpu/x86/16bit/reset16.lds
 ldscripts += $(src)/arch/i386/lib/id.lds
 ldscripts += $(src)/arch/i386/lib/failover.lds
 
-crt0s := $(src)/cpu/x86/16bit/entry16.inc
-crt0s += $(src)/cpu/x86/32bit/entry32.inc
-crt0s += $(src)/cpu/x86/16bit/reset16.inc
-crt0s += $(src)/arch/i386/lib/id.inc
-crt0s += $(src)/cpu/x86/fpu_enable.inc
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
-crt0s += $(src)/cpu/x86/mmx_disable.inc
 

@@ -36,9 +36,6 @@ smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o
 
 initobj-y += crt0.o
 
-crt0s := $(src)/cpu/x86/32bit/entry32.inc
-crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
 ldscripts += $(src)/cpu/x86/32bit/entry32.lds

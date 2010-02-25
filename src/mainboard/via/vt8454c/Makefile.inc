@@ -26,13 +26,6 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 
 initobj-y += crt0.o
-# FIXME in $(top)/Makefile
-crt0s := $(src)/cpu/x86/16bit/entry16.inc
-crt0s += $(src)/cpu/x86/32bit/entry32.inc
-crt0s += $(src)/cpu/x86/16bit/reset16.inc
-crt0s += $(src)/arch/i386/lib/id.inc
-crt0s += $(src)/cpu/via/car/cache_as_ram.inc
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
 ldscripts += $(src)/cpu/x86/16bit/entry16.lds

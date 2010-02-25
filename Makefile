@@ -219,6 +219,9 @@ printall:
 	@echo alldirs:=$(alldirs)
 	@echo allsrc=$(allsrc)
 
+printcrt0s:
+	@echo $(patsubst $(top)/%,%,$(crt0s))
+
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
 INCLUDES := -I$(top)/src -I$(top)/src/include -I$(obj) -I$(top)/src/arch/$(ARCHDIR-y)/include 
 INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include

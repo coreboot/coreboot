@@ -62,9 +62,98 @@ $(obj)/coreboot.a: $(objs)
 #######################################################################
 # done
 
-# crt0s should be set by now
-ifeq ($(crt0s),)
-$(error crt0s are empty. If your board still uses crt0-y and ldscript-y: It shouldn't, we moved away from that in r5065)
+crt0s :=
+ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
+crt0s += $(src)/cpu/x86/16bit/entry16.inc
+endif
+crt0s += $(src)/cpu/x86/32bit/entry32.inc
+ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
+crt0s += $(src)/cpu/x86/16bit/reset16.inc
+ifeq ($(CONFIG_ROMCC),y)
+crt0s += $(src)/arch/i386/lib/cpu_reset.inc
+endif
+crt0s += $(src)/arch/i386/lib/id.inc
+endif
+
+crt0s += $(src)/cpu/x86/fpu_enable.inc
+ifeq ($(CONFIG_CPU_AMD_GX1),y)
+crt0s += $(src)/cpu/amd/model_gx1/cpu_setup.inc
+crt0s += $(src)/cpu/amd/model_gx1/gx_setup.inc
+endif
+ifeq ($(CONFIG_SSE),y)
+crt0s += $(src)/cpu/x86/sse_enable.inc
+endif
+
+ifeq ($(CONFIG_CPU_AMD_LX),y)
+crt0s += $(src)/cpu/amd/model_lx/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_F),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_F_1207),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_AM2),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_S1G1),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_754),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_939),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_940),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_CPU_INTEL_CORE),y)
+crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
+endif
+# Use Intel Core (not Core 2) code for CAR init, any CPU might be used.
+ifeq ($(CONFIG_CPU_INTEL_SOCKET_BGA956),y)
+crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
+endif
+# should be CONFIG_CPU_VIA_C7, but bcom/winnetp680, jetway/j7f24, via/epia-cn, via/pc2500e don't use CAR yet
+ifeq ($(CONFIG_BOARD_VIA_VT8454C),y)
+crt0s += $(src)/cpu/via/car/cache_as_ram.inc
+endif
+ifeq ($(CONFIG_BOARD_VIA_EPIA_M700),y)
+crt0s += $(src)/cpu/via/car/cache_as_ram.inc
+endif
+# who else could use this?
+ifeq ($(CONFIG_BOARD_TYAN_S2735),y)
+crt0s += $(src)/cpu/x86/car/cache_as_ram.inc
+endif
+
+ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
+ifeq ($(CONFIG_ROMCC),y)
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc
+endif
+endif
+crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
+
+ifeq ($(CONFIG_SSE),y)
+crt0s += $(src)/cpu/x86/sse_disable.inc
+endif
+ifeq ($(CONFIG_MMX),y)
+crt0s += $(src)/cpu/x86/mmx_disable.inc
+endif
+
+ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
+ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_CK804),y)
+crt0s += $(src)/southbridge/nvidia/ck804/romstrap.inc
+endif
+ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55),y)
+crt0s += $(src)/southbridge/nvidia/mcp55/romstrap.inc
+endif
+ifeq ($(CONFIG_SOUTHBRIDGE_VIA_K8T890),y)
+crt0s += $(src)/southbridge/via/k8t890/romstrap.inc
+endif
+ifeq ($(CONFIG_NORTHBRIDGE_VIA_VX800),y)
+crt0s += $(src)/northbridge/via/vx800/romstrap.inc
+endif
 endif
 
 OPTION_TABLE_H:=

@@ -21,35 +21,6 @@
 
 initobj-y += crt0.o
 
-crt0s :=
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-crt0s += $(src)/cpu/x86/16bit/entry16.inc
-endif
-crt0s += $(src)/cpu/x86/32bit/entry32.inc
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-crt0s += $(src)/cpu/x86/16bit/reset16.inc
-crt0s += $(src)/arch/i386/lib/cpu_reset.inc
-crt0s += $(src)/arch/i386/lib/id.inc
-endif
-crt0s += $(src)/cpu/x86/fpu_enable.inc
-ifeq ($(CONFIG_CPU_AMD_GX1),y)
-crt0s += $(src)/cpu/amd/model_gx1/cpu_setup.inc
-crt0s += $(src)/cpu/amd/model_gx1/gx_setup.inc
-endif
-ifeq ($(CONFIG_SSE),y)
-crt0s += $(src)/cpu/x86/sse_enable.inc
-endif
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc
-endif
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
-ifeq ($(CONFIG_SSE),y)
-crt0s += $(src)/cpu/x86/sse_disable.inc
-endif
-ifeq ($(CONFIG_MMX),y)
-crt0s += $(src)/cpu/x86/mmx_disable.inc
-endif
-
 ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 ldscripts += $(src)/cpu/x86/16bit/entry16.lds

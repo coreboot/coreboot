@@ -47,7 +47,7 @@ Optional:
 Building coreboot
 -----------------
 
-Please consult http://www.coreboot.org/Documentation for details.
+Please consult http://www.coreboot.org/Build_HOWTO for details.
 
 
 Testing coreboot Without Modifying Your Hardware
@@ -81,10 +81,9 @@ developers and companies. Please check the individual source files for details.
 
 coreboot is licensed under the terms of the GNU General Public License (GPL).
 Some files are licensed under the "GPL (version 2, or any later version)",
-and some files (mostly those derived from the Linux kernel) are licensed under
-the "GPL, version 2". For some parts, which were derived from other projects,
-other (GPL-compatible) licenses may apply. Please check the individual
-source files for details.
+and some files are licensed under the "GPL, version 2". For some parts, which
+were derived from other projects, other (GPL-compatible) licenses may apply.
+Please check the individual source files for details.
 
 This makes the resulting coreboot images licensed under the GPL, version 2.
 

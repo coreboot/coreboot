@@ -39,7 +39,4 @@ obj-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
 
 initobj-y += crt0.o
 
-ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscripts += $(src)/cpu/x86/32bit/entry32.lds
-ldscripts += $(src)/arch/i386/lib/failover.lds
 

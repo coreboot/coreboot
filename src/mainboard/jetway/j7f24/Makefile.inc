@@ -24,10 +24,5 @@ obj-y += mainboard.o
 obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
 
-ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscripts += $(src)/cpu/x86/16bit/entry16.lds
-ldscripts += $(src)/cpu/x86/16bit/reset16.lds
-ldscripts += $(src)/arch/i386/lib/id.lds
-ldscripts += $(src)/arch/i386/lib/failover.lds
 
 

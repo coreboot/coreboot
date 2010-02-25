@@ -10,10 +10,4 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
 
 initobj-y += crt0.o
 
-ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscripts += $(src)/cpu/x86/16bit/entry16.lds
-ldscripts += $(src)/southbridge/via/k8t890/romstrap.lds
-ldscripts += $(src)/cpu/x86/16bit/reset16.lds
-ldscripts += $(src)/arch/i386/lib/id.lds
-ldscripts += $(src)/arch/i386/lib/failover.lds
 

@@ -21,17 +21,6 @@
 
 initobj-y += crt0.o
 
-ldscripts := $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-ldscripts += $(src)/cpu/x86/16bit/entry16.lds
-endif
-ldscripts += $(src)/cpu/x86/32bit/entry32.lds
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-ldscripts += $(src)/cpu/x86/16bit/reset16.lds
-ldscripts += $(src)/arch/i386/lib/id.lds
-ldscripts += $(src)/arch/i386/lib/failover.lds
-endif
-
 obj-y += mainboard.o
 
 obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o

@@ -63,16 +63,23 @@ $(obj)/coreboot.a: $(objs)
 # done
 
 crt0s :=
+ldscripts :=
+ldscripts += $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
+ldscripts += $(src)/arch/i386/lib/failover.lds
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/entry16.inc
+ldscripts += $(src)/cpu/x86/16bit/entry16.lds
 endif
 crt0s += $(src)/cpu/x86/32bit/entry32.inc
+ldscripts += $(src)/cpu/x86/32bit/entry32.lds
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/reset16.inc
+ldscripts += $(src)/cpu/x86/16bit/reset16.lds
 ifeq ($(CONFIG_ROMCC),y)
 crt0s += $(src)/arch/i386/lib/cpu_reset.inc
 endif
 crt0s += $(src)/arch/i386/lib/id.inc
+ldscripts += $(src)/arch/i386/lib/id.lds
 endif
 
 crt0s += $(src)/cpu/x86/fpu_enable.inc
@@ -125,6 +132,7 @@ endif
 # who else could use this?
 ifeq ($(CONFIG_BOARD_TYAN_S2735),y)
 crt0s += $(src)/cpu/x86/car/cache_as_ram.inc
+ldscripts += $(src)/cpu/x86/car/cache_as_ram.lds
 endif
 
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
@@ -141,18 +149,26 @@ ifeq ($(CONFIG_MMX),y)
 crt0s += $(src)/cpu/x86/mmx_disable.inc
 endif
 
+ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
+ldscripts += $(src)/arch/i386/init/ldscript_apc.lb
+endif
+
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_CK804),y)
 crt0s += $(src)/southbridge/nvidia/ck804/romstrap.inc
+ldscripts += $(src)/southbridge/nvidia/ck804/romstrap.lds
 endif
 ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55),y)
 crt0s += $(src)/southbridge/nvidia/mcp55/romstrap.inc
+ldscripts += $(src)/southbridge/nvidia/mcp55/romstrap.lds
 endif
 ifeq ($(CONFIG_SOUTHBRIDGE_VIA_K8T890),y)
 crt0s += $(src)/southbridge/via/k8t890/romstrap.inc
+ldscripts += $(src)/southbridge/via/k8t890/romstrap.lds
 endif
 ifeq ($(CONFIG_NORTHBRIDGE_VIA_VX800),y)
 crt0s += $(src)/northbridge/via/vx800/romstrap.inc
+ldscripts += $(src)/northbridge/via/vx800/romstrap.lds
 endif
 endif
 

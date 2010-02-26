@@ -104,7 +104,7 @@ SECTIONS
 	.stack . : {
 		/* Reserve a stack for each possible cpu */
 		/* the stack for ap will be put after pgtbl in 1M to CONFIG_RAMTOP range when VGA and ROM_RUN and CONFIG_RAMTOP>1M*/
-		. = ((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN)&&(CONFIG_RAMBASE<0x100000)&&(CONFIG_RAMTOP>0x100000) ) ? CONFIG_STACK_SIZE : (CONFIG_MAX_CPUS*CONFIG_STACK_SIZE);
+		. += ((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN)&&(CONFIG_RAMBASE<0x100000)&&(CONFIG_RAMTOP>0x100000) ) ? CONFIG_STACK_SIZE : (CONFIG_MAX_CPUS*CONFIG_STACK_SIZE);
 	}
 	_estack = .;
         _heap = .;

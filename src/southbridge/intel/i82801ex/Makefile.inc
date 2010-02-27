@@ -1,0 +1,11 @@
+driver-y += i82801ex.o
+driver-y += i82801ex_uhci.o
+driver-y += i82801ex_lpc.o
+driver-y += i82801ex_ide.o
+driver-y += i82801ex_sata.o
+driver-y += i82801ex_ehci.o
+driver-y += i82801ex_smbus.o
+driver-y += i82801ex_pci.o
+driver-y += i82801ex_ac97.o
+obj-y += i82801ex_watchdog.o
+obj-y += i82801ex_reset.o

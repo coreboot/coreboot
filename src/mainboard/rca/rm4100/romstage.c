@@ -35,8 +35,8 @@
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "northbridge/intel/i82830/raminit.h"
 #include "northbridge/intel/i82830/memory_initialized.c"
-#include "southbridge/intel/i82801xx/i82801xx.h"
-#include "southbridge/intel/i82801xx/i82801xx_reset.c"
+#include "southbridge/intel/i82801dx/i82801dx.h"
+#include "southbridge/intel/i82801dx/i82801dx_reset.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "spd_table.h"
@@ -44,7 +44,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
-#include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
+#include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"
 
 /**
  * The onboard 64MB PC133 memory does not have a SPD EEPROM so the

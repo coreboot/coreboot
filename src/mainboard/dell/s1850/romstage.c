@@ -12,7 +12,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
-#include "southbridge/intel/i82801er/i82801er_early_smbus.c"
+#include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
 #include "superio/nsc/pc8374/pc8374_early_init.c"
 #include "cpu/x86/lapic/boot_cpu.c"

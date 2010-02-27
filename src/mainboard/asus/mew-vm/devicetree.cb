@@ -4,7 +4,7 @@ chip northbridge/intel/i82810
 		device pci 1.0 on # Onboard Video
 			#	device pci 1.0 on end
 		end
-		chip southbridge/intel/i82801xx # Southbridge
+		chip southbridge/intel/i82801ax # Southbridge
       			register "ide0_enable" = "1"
       			register "ide1_enable" = "1"
 

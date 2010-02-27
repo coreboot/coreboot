@@ -37,7 +37,7 @@
 #include "northbridge/intel/i82810/raminit.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
-#include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
+#include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "pc80/udelay_io.c"
 #include "lib/debug.c"
 #include "northbridge/intel/i82810/raminit.c"

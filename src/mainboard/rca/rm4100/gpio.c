@@ -34,8 +34,8 @@ static void mb_gpio_init(void)
 	dev = PCI_DEV(0x0, 0x1f, 0x0);
 
 	/* Set the value for GPIO base address register and enable GPIO. */
-	pci_write_config32(dev, GPIO_BASE_ICH0_5, (ICH_IO_BASE_ADDR | 1));
-	pci_write_config8(dev, GPIO_CNTL_ICH0_5, 0x10);
+	pci_write_config32(dev, GPIO_BASE, (ICH_IO_BASE_ADDR | 1));
+	pci_write_config8(dev, GPIO_CNTL, 0x10);
 
 	/* Set GPIO23 to high, this enables the LAN controller. */
 	udelay(10);

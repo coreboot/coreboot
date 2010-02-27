@@ -31,7 +31,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
-#include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
+#include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "northbridge/intel/i82810/raminit.h"
 #include "lib/debug.c"
 #include "pc80/udelay_io.c"

@@ -14,7 +14,7 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
-#include "southbridge/intel/i82801ca/i82801ca_early_smbus.c"
+#include "southbridge/intel/i82801cx/i82801cx_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/debug.c"

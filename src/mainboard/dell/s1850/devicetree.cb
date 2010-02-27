@@ -1,6 +1,6 @@
 chip northbridge/intel/e7520 # mch
 	device pci_domain 0 on 
-		chip southbridge/intel/i82801er # i82801er
+		chip southbridge/intel/i82801ex # i82801er
 			# USB ports
 			device pci 1d.0 on end
 			device pci 1d.1 on end

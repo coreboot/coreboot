@@ -25,7 +25,7 @@ static void post_code(uint8_t value) {
 }
 #endif
 
-#include "southbridge/intel/i82801er/i82801er_early_smbus.c"
+#include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
 
 #include "cpu/x86/lapic/boot_cpu.c"
@@ -82,7 +82,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #if CONFIG_USE_FALLBACK_IMAGE == 1
 
-#include "southbridge/intel/i82801er/cmos_failover.c"
+#include "southbridge/intel/i82801ex/cmos_failover.c"
 
 void real_main(unsigned long bist);
 

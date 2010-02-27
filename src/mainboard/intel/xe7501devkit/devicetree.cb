@@ -20,7 +20,7 @@ chip northbridge/intel/e7501
 			end
 		end
 		device pci 6.0 on end # E7501 Power management registers? (undocumented)
-		chip southbridge/intel/i82801ca
+		chip southbridge/intel/i82801cx
 			device pci 1d.0 off end # USB (might not work, Southbridge code needs looking at)
 			device pci 1d.1 off end # USB (not populated)
 			device pci 1d.2 off end # USB (not populated)

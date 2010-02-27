@@ -1,6 +1,6 @@
-void i82801ca_hard_reset(void);
+void i82801cx_hard_reset(void);
 
 void hard_reset(void)
 {
-	i82801ca_hard_reset();
+	i82801cx_hard_reset();
 }

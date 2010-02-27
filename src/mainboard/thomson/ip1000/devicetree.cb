@@ -2,7 +2,7 @@ chip northbridge/intel/i82830		# Northbridge
   device pci_domain 0 on		# PCI domain
     device pci 0.0 on end		# Host bridge
     device pci 2.0 on end		# VGA (Intel 82830 CGC)
-    chip southbridge/intel/i82801xx	# Southbridge
+    chip southbridge/intel/i82801dx	# Southbridge
       register "pirqa_routing" = "0x05"
       register "pirqb_routing" = "0x06"
       register "pirqc_routing" = "0x07"

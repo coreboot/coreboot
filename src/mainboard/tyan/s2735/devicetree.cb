@@ -14,7 +14,7 @@ chip northbridge/intel/e7501
         		end
 		end
         	device pci 6.0 on end
-        	chip southbridge/intel/i82801er
+        	chip southbridge/intel/i82801ex
         		device pci 1d.0 on end
 		        device pci 1d.1 on end
         	        device pci 1d.2 on end

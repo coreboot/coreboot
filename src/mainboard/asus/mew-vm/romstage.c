@@ -38,7 +38,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)
 
-#include "southbridge/intel/i82801xx/i82801xx_early_smbus.c"
+#include "southbridge/intel/i82801ax/i82801ax_early_smbus.c"
 #include "lib/debug.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"

@@ -119,7 +119,7 @@ smmobjs:=
 crt0s:=
 ldscripts:=
 types:=obj initobj driver smmobj
-includemakefiles=$(foreach type,$(2), $(eval $(type)-y:=)) $(eval subdirs-y:=) $(eval include $(1)) $(if $(strip $(3)),$(foreach type,$(2),$(eval $(type)s+=$$(patsubst src/%,$(obj)/%,$$(addprefix $(dir $(1)),$$($(type)-y)))))) $(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
+includemakefiles=$(foreach type,$(2), $(eval $(type)-y:=)) $(eval subdirs-y:=) $(eval -include $(1)) $(if $(strip $(3)),$(foreach type,$(2),$(eval $(type)s+=$$(patsubst src/%,$(obj)/%,$$(addprefix $(dir $(1)),$$($(type)-y)))))) $(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 evaluate_subdirs=$(eval cursubdirs:=$(subdirs)) $(eval subdirs:=) $(foreach dir,$(cursubdirs),$(eval $(call includemakefiles,$(dir)/Makefile.inc,$(types),$(1)))) $(if $(subdirs),$(eval $(call evaluate_subdirs, $(1))))
 
 # collect all object files eligible for building

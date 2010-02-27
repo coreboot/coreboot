@@ -19,5 +19,3 @@
 ##
 
 ROMCCFLAGS ?= -mcpu=c3
-include $(src)/mainboard/Makefile.romccboard.inc
-

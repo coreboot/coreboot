@@ -17,17 +17,10 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-obj-y +=  mainboard.o
 obj-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
 obj-y += ../../../drivers/i2c/adm1027/adm1027.o
 
 #needed by irq_tables and mptable and acpi_tables
 obj-y += get_bus_conf.o
-obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
-obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
 obj-$(CONFIG_USE_INIT) += romstage.o
 obj-$(CONFIG_AP_CODE_IN_CAR) += ap_romstage.o
-
-# This is part of the conversion to init-obj and away from included code. 
-initobj-y += crt0.o
-

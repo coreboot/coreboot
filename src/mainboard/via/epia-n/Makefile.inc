@@ -19,13 +19,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-initobj-y += crt0.o
-obj-y += mainboard.o
-obj-$(CONFIG_GENERATE_PIRQ_TABLE) += irq_tables.o
-obj-$(CONFIG_GENERATE_MP_TABLE) += mptable.o
-
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
-
-
-

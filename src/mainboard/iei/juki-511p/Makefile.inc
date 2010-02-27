@@ -19,5 +19,3 @@
 ##
 
 ROMCCFLAGS := -mcpu=i386 -O2
-include $(src)/mainboard/Makefile.romccboard.inc
-

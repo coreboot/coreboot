@@ -19,6 +19,3 @@
 ##
 
 ROMCCFLAGS=-mcpu=p4 -O2
-obj-$(CONFIG_HAVE_HARD_RESET) += reset.o
-include $(src)/mainboard/Makefile.romccboard.inc
-

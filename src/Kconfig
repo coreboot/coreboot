@@ -173,7 +173,18 @@ config USE_FAILOVER_IMAGE
 
 config HAVE_HARD_RESET
 	bool
+	default y if BOARD_HAS_HARD_RESET
 	default n
+	help
+	  This variable specifies whether a given board has a hard_reset
+	  function, no matter if it's provided by board code or chipset code.
+
+config BOARD_HAS_HARD_RESET
+	bool
+	default n
+	help
+	  This variable specifies whether a given board has a reset.c
+	  file containing a hard_reset() function.
 
 config HAVE_INIT_TIMER
 	bool

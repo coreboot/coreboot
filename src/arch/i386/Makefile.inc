@@ -197,6 +197,23 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/
 	mv $@.tmp $@
 	rm -f $@.tmp1
 endif
+
+else
+# Only in first pass
+
+# Things that appear in every board
+initobjs += $(obj)/mainboard/$(MAINBOARDDIR)/crt0.o
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/mainboard.o
+ifeq ($(CONFIG_GENERATE_MP_TABLE),y)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/mptable.o
+endif
+ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/irq_tables.o
+endif
+ifeq ($(CONFIG_BOARD_HAS_HARD_RESET),y)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/reset.o
+endif
+
 endif
 
 ifeq ($(CONFIG_TINY_BOOTBLOCK),y)

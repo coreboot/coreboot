@@ -1083,6 +1083,7 @@ struct compile_state {
 	struct hash_entry *i_break;
 	struct hash_entry *i_default;
 	struct hash_entry *i_return;
+	struct hash_entry *i_noreturn;
 	/* Additional hash entries for predefined macros */
 	struct hash_entry *i_defined;
 	struct hash_entry *i___VA_ARGS__;
@@ -12757,6 +12758,9 @@ static unsigned int attrib(struct compile_state *state, unsigned int attributes)
 				error(state, 0, "both noinline and always_inline attribtes");
 			}
 			attributes |= ATTRIB_ALWAYS_INLINE;
+		}
+		else if (ident == state->i_noreturn) {
+			// attribute((noreturn)) does nothing (yet?)
 		}
 		else {
 			error(state, 0, "Unknown attribute:%s", ident->name);
@@ -24994,6 +24998,7 @@ static void compile(const char *filename,
 	/* Memorize where some attribute keywords are. */
 	state.i_noinline      = lookup(&state, "noinline", 8);
 	state.i_always_inline = lookup(&state, "always_inline", 13);
+	state.i_noreturn      = lookup(&state, "noreturn", 8);
 
 	/* Process the command line macros */
 	process_cmdline_macros(&state);

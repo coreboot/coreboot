@@ -154,7 +154,7 @@ static u8 send_keyboard(u8 command)
 		}
 		regval = inb(KBD_DATA);
 		--resend;
-	} while (regval == 0xFE && resend > 0);
+	} while (regval == KBD_REPLY_RESEND && resend > 0);
 
 	return regval;
 }
@@ -183,7 +183,13 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 
 	/* reset keyboard and self test (keyboard side) */
 	regval = send_keyboard(0xFF);
-	if (regval != 0xFA) {
+	if (regval == KBD_REPLY_RESEND) {
+		/* keeps sending RESENDs, probably no keyboard. */
+		printk_info("No PS/2 keyboard detected.\n");
+		return;
+	}
+
+	if (regval != KBD_REPLY_ACK) {
 		printk_err("Keyboard selftest failed ACK: 0x%x\n", regval);
 		return;
 	}
@@ -206,27 +212,27 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 
 	/* disable the keyboard */
 	regval = send_keyboard(0xF5);
-	if (regval != 0xFA) {
+	if (regval != KBD_REPLY_ACK) {
 		printk_err("Keyboard disable failed ACK: 0x%x\n", regval);
 		return;
 	}
 
 	/* Set scancode command */
 	regval = send_keyboard(0xF0);
-	if (regval != 0xFA) {
+	if (regval != KBD_REPLY_ACK) {
 		printk_err("Keyboard set scancode cmd failed ACK: 0x%x\n", regval);
 		return;
 	}
 	/* Set scancode mode 2 */
 	regval = send_keyboard(0x02);
-	if (regval != 0xFA) {
+	if (regval != KBD_REPLY_ACK) {
 		printk_err("Keyboard set scancode mode failed ACK: 0x%x\n", regval);
 		return;
 	}
 
 	/* enable the keyboard */
 	regval = send_keyboard(0xF4);
-	if (regval != 0xFA) {
+	if (regval != KBD_REPLY_ACK) {
 		printk_err("Keyboard enable failed ACK: 0x%x\n", regval);
 		return;
 	}

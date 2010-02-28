@@ -25,3 +25,5 @@ driver-y += vga.o
 driver-y += vx800_lpc.o
 driver-y += vx800_ide.o
 
+chipset_bootblock_inc += $(src)/northbridge/via/vx800/romstrap.inc
+chipset_bootblock_lds += $(src)/northbridge/via/vx800/romstrap.lds

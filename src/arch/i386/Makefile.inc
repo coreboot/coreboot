@@ -154,22 +154,8 @@ ldscripts += $(src)/arch/i386/init/ldscript_apc.lb
 endif
 
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_CK804),y)
-crt0s += $(src)/southbridge/nvidia/ck804/romstrap.inc
-ldscripts += $(src)/southbridge/nvidia/ck804/romstrap.lds
-endif
-ifeq ($(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55),y)
-crt0s += $(src)/southbridge/nvidia/mcp55/romstrap.inc
-ldscripts += $(src)/southbridge/nvidia/mcp55/romstrap.lds
-endif
-ifeq ($(CONFIG_SOUTHBRIDGE_VIA_K8T890),y)
-crt0s += $(src)/southbridge/via/k8t890/romstrap.inc
-ldscripts += $(src)/southbridge/via/k8t890/romstrap.lds
-endif
-ifeq ($(CONFIG_NORTHBRIDGE_VIA_VX800),y)
-crt0s += $(src)/northbridge/via/vx800/romstrap.inc
-ldscripts += $(src)/northbridge/via/vx800/romstrap.lds
-endif
+crt0s += $(chipset_bootblock_inc)
+ldscripts += $(chipset_bootblock_lds)
 endif
 
 OPTION_TABLE_H:=

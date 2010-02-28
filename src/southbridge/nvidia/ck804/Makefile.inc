@@ -14,3 +14,6 @@ driver-y += ck804_ht.o
 obj-y += ck804_reset.o
 
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += ck804_fadt.o
+
+chipset_bootblock_inc += $(src)/southbridge/nvidia/ck804/romstrap.inc
+chipset_bootblock_lds += $(src)/southbridge/nvidia/ck804/romstrap.lds

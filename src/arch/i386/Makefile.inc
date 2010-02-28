@@ -213,6 +213,17 @@ endif
 ifeq ($(CONFIG_BOARD_HAS_HARD_RESET),y)
 objs += $(obj)/mainboard/$(MAINBOARDDIR)/reset.o
 endif
+ifeq ($(CONFIG_GENERATE_ACPI_TABLES),y)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/acpi_tables.o
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o
+ifeq ($(CONFIG_BOARD_HAS_FADT),y)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/fadt.o
+endif
+endif
+
+ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/get_bus_conf.o
+endif
 
 endif
 

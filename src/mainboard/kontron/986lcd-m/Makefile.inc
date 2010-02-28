@@ -23,8 +23,5 @@
 
 obj-y += rtl8168.o
 
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 
 smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o

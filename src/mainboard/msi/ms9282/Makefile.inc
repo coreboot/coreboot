@@ -21,6 +21,5 @@ obj-y += ../../../drivers/i2c/i2cmux2/i2cmux2.o
 obj-y += ../../../drivers/i2c/adm1027/adm1027.o
 
 #needed by irq_tables and mptable and acpi_tables
-obj-y += get_bus_conf.o
 obj-$(CONFIG_USE_INIT) += romstage.o
 obj-$(CONFIG_AP_CODE_IN_CAR) += ap_romstage.o

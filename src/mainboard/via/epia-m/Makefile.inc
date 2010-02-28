@@ -21,6 +21,3 @@
 
 obj-y += vgabios.o
 
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o

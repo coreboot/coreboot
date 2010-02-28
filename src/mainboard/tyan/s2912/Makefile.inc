@@ -18,6 +18,5 @@
 ##
 
 #needed by irq_tables and mptable and acpi_tables
-obj-y += get_bus_conf.o
 obj-$(CONFIG_USE_INIT) += romstage.o
 obj-$(CONFIG_AP_CODE_IN_CAR) += ap_romstage.o

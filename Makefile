@@ -142,7 +142,7 @@ subdirs:=$(PLATFORM-y) $(BUILD-y)
 $(eval $(call evaluate_subdirs))
 
 
-define objs_dsl_template
+define objs_asl_template
 $(obj)/$(1)%.o: src/$(1)%.asl
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
 	$(CPP) -D__ACPI__ -P $(CPPFLAGS) -include $(obj)/config.h -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
@@ -201,7 +201,7 @@ endef
 
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
-$(eval $(call usetemplate,objs,dsl))
+$(eval $(call usetemplate,objs,asl))
 $(eval $(call usetemplate,objs,c))
 $(eval $(call usetemplate,objs,S))
 $(eval $(call usetemplate,initobjs,c))

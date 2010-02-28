@@ -18,10 +18,6 @@
 ##
 
 # Needed by irq_tables and mptable and acpi_tables.
-obj-y += get_bus_conf.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += dsdt.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.o
 
 # This is debug message for products of Technexion.
 obj-y += tn_post_code.o

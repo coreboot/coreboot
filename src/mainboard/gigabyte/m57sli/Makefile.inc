@@ -18,9 +18,6 @@
 ##
 
 #needed by irq_tables and mptable and acpi_tables
-obj-y += get_bus_conf.o
 obj-$(CONFIG_USE_INIT) += romstage.o
 obj-$(CONFIG_AP_CODE_IN_CAR) += ap_romstage.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) +=  dsdt.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) +=  acpi_tables.o
 obj-$(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) += fanctl.o

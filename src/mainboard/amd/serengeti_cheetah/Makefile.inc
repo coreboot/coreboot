@@ -17,9 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-# Needed by irq_tables and mptable and acpi_tables.
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt2.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt3.o
-obj-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt4.o
-
 obj-y += ../../../drivers/i2c/i2cmux/i2cmux.o

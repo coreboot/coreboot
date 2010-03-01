@@ -122,5 +122,5 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 
 config ACPI_SSDTX_NUM
 	int
-	default 3
+	default 5
 	depends on BOARD_IWILL_DK8_HTX

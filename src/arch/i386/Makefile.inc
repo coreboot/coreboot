@@ -202,6 +202,15 @@ endif
 ifeq ($(CONFIG_GENERATE_ACPI_TABLES),y)
 objs += $(obj)/mainboard/$(MAINBOARDDIR)/acpi_tables.o
 objs += $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.o
+# make doesn't have arithmetic operators or greater-than comparisons
+ifeq ($(subst 5,4,$(CONFIG_ACPI_SSDTX_NUM)),4)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt2.o
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt3.o
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt4.o
+endif
+ifeq ($(CONFIG_ACPI_SSDTX_NUM),5)
+objs += $(obj)/mainboard/$(MAINBOARDDIR)/ssdt5.o
+endif
 ifeq ($(CONFIG_BOARD_HAS_FADT),y)
 objs += $(obj)/mainboard/$(MAINBOARDDIR)/fadt.o
 endif

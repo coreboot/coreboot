@@ -50,9 +50,9 @@
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 
- static void post_code(u8 value) {
- 	outb(value, 0x80);
- }
+static void post_code(u8 value) {
+	outb(value, 0x80);
+}
 
 #if CONFIG_USE_FAILOVER_IMAGE==0
 #include "arch/i386/lib/console.c"
@@ -153,20 +153,17 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
+	unsigned value;
+	uint32_t dword;
+	uint8_t byte;
 
-        unsigned value;
-        uint32_t dword;
-        uint8_t byte;
+	byte = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
 
-        byte = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20;
-        pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
-
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1<<0);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
-
-
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
+	dword |= (1<<0);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
 }
 
 void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
@@ -281,10 +278,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
 	val = cpuid_eax(1);
-	printk_debug("BSP Family_Model: %08x \n", val);
+	printk_debug("BSP Family_Model: %08x\n", val);
 	printk_debug("*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
-	printk_debug("bsp_apicid = %02x \n", bsp_apicid);
-	printk_debug("cpu_init_detectedx = %08x \n", cpu_init_detectedx);
+	printk_debug("bsp_apicid = %02x\n", bsp_apicid);
+	printk_debug("cpu_init_detectedx = %08x\n", cpu_init_detectedx);
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
@@ -300,12 +297,12 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Setup nodes PCI space and start core 0 AP init. */
 	finalize_node_setup(sysinfo);
-	printk_debug("finalize_node_setup done \n");
+	printk_debug("finalize_node_setup done\n");
 
 	/* Setup any mainboard PCI settings etc. */
-	printk_debug("setup_mb_resource_map begin \n");
+	printk_debug("setup_mb_resource_map begin\n");
 	setup_mb_resource_map();
-	printk_debug("setup_mb_resource_map end \n");
+	printk_debug("setup_mb_resource_map end\n");
 	post_code(0x36);
 
 	/* wait for all the APs core0 started by finalize_node_setup. */
@@ -329,7 +326,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if FAM10_SET_FIDVID == 1
 	msr = rdmsr(0xc0010071);
-	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 
 	/* FIXME: The sb fid change may survive the warm reset and only
 	 * need to be done once.*/
@@ -347,7 +344,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
-	printk_debug("End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk_debug("End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 #endif
 
 	wants_reset = mcp55_early_setup_x();

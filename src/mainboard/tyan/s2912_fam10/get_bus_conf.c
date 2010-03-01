@@ -68,7 +68,6 @@ static unsigned get_bus_conf_done = 0;
 
 void get_bus_conf(void)
 {
-
 	unsigned apicid_base;
 	struct mb_sysconf_t *m;
 
@@ -134,5 +133,4 @@ void get_bus_conf(void)
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
 	m->apicid_mcp55 = apicid_base+0;
-
 }

@@ -134,7 +134,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "MS-9252"
+	default "MS-9652"
 	depends on BOARD_MSI_MS9652_FAM10
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID

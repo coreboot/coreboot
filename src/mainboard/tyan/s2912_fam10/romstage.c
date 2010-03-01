@@ -150,10 +150,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
-
 static void sio_setup(void)
 {
-
 	unsigned value;
 	uint32_t dword;
 	uint8_t byte;
@@ -278,10 +276,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
 	val = cpuid_eax(1);
-	printk_debug("BSP Family_Model: %08x \n", val);
+	printk_debug("BSP Family_Model: %08x\n", val);
 	printk_debug("*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
-	printk_debug("bsp_apicid = %02x \n", bsp_apicid);
-	printk_debug("cpu_init_detectedx = %08x \n", cpu_init_detectedx);
+	printk_debug("bsp_apicid = %02x\n", bsp_apicid);
+	printk_debug("cpu_init_detectedx = %08x\n", cpu_init_detectedx);
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
@@ -322,7 +320,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if FAM10_SET_FIDVID == 1
 	msr = rdmsr(0xc0010071);
-	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 
 	/* FIXME: The sb fid change may survive the warm reset and only
 	 * need to be done once.*/
@@ -340,7 +338,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
-	printk_debug("End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk_debug("End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 #endif
 
 	wants_reset = mcp55_early_setup_x();

@@ -27,7 +27,7 @@ config DCACHE_RAM_BASE
 	hex
 	default 0xc4000
 	depends on BOARD_TYAN_S2912_FAM10
-	
+
 config DCACHE_RAM_SIZE
 	hex
 	default 0x0c000
@@ -39,7 +39,7 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	depends on BOARD_TYAN_S2912_FAM10
 
 config APIC_ID_OFFSET
-	hex	
+	hex
 	default 0
 	depends on BOARD_TYAN_S2912_FAM10
 
@@ -65,7 +65,7 @@ config LB_CKS_RANGE_END
 
 config LB_CKS_LOC
 	int
-        default 123
+	default 123
 	depends on BOARD_TYAN_S2912_FAM10
 
 config MAINBOARD_PART_NUMBER
@@ -75,7 +75,7 @@ config MAINBOARD_PART_NUMBER
 
 config PCI_64BIT_PREF_MEM
 	bool
-        default n
+	default n
 	depends on BOARD_TYAN_S2912_FAM10
 
 config HAVE_FALLBACK_BOOT
@@ -104,7 +104,7 @@ config MAX_PHYSICAL_CPUS
 	depends on BOARD_TYAN_S2912_FAM10
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
-	bool	
+	bool
 	default n
 	depends on BOARD_TYAN_S2912_FAM10
 
@@ -114,7 +114,7 @@ config HT_CHAIN_UNITID_BASE
 	depends on BOARD_TYAN_S2912_FAM10
 
 config HT_CHAIN_END_UNITID_BASE
-	hex	
+	hex
 	default 0x20
 	depends on BOARD_TYAN_S2912_FAM10
 
@@ -124,12 +124,12 @@ config USE_INIT
 	depends on BOARD_TYAN_S2912_FAM10
 
 config SERIAL_CPU_INIT
-	bool	
+	bool
 	default n
 	depends on BOARD_TYAN_S2912_FAM10
 
 config WAIT_BEFORE_CPUS_INIT
-	bool	
+	bool
 	default n
 	depends on BOARD_TYAN_S2912_FAM10
 

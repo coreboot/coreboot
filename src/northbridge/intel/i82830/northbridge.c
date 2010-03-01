@@ -116,7 +116,7 @@ static void pci_domain_set_resources(device_t dev)
 		 */
 		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB + 3)) << 15;
 		tomk -= igd_memory;
-		printk_debug("Setting RAM size to %ld\n", tomk);
+		printk_debug("Memory detected: %ldKB RAM\n", tomk);
 
 		/* Compute the top of low memory. */
 		tolmk = pci_tolm >> 10;

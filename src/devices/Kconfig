@@ -167,36 +167,6 @@ config YABEL_DIRECTHW
 	  they can still access all devices in the system.
 	  Enable this option for a good compromise between security and speed.
 
-config BOOTSPLASH
-	prompt "Show graphical bootsplash"
-	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL
-	help
-	  This option shows a graphical bootsplash screen. The grapics are
-	  loaded from the CBFS file bootsplash.jpg.
-
-# TODO: Turn this into a "choice".
-config FRAMEBUFFER_VESA_MODE
-	prompt "VESA framebuffer video mode"
-	hex
-	default 0x117
-	depends on BOOTSPLASH
-	help
-	  This option sets the resolution used for the coreboot framebuffer and
-	  bootsplash screen. Set to 0x117 for 1024x768x16. A diligent soul will
-	  some day make this a "choice".
-
-config COREBOOT_KEEP_FRAMEBUFFER
-	prompt "Keep VESA framebuffer"
-	bool
-	depends on BOOTSPLASH
-	help
-	  This option keeps the framebuffer mode set after coreboot finishes
-	  execution. If this option is enabled, coreboot will pass a
-	  framebuffer entry in its coreboot table and the payload will need a
-	  framebuffer driver. If this option is disabled, coreboot will switch
-	  back to text mode before handing control to a payload.
-
 config CONSOLE_VGA_MULTI
 	bool
 	default n

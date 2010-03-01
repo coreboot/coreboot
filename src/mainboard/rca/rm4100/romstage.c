@@ -45,6 +45,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
 #include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"
+#include "southbridge/intel/i82801dx/i82801dx_tco_timer.c"
 
 /**
  * The onboard 64MB PC133 memory does not have a SPD EEPROM so the
@@ -102,11 +103,12 @@ static void mb_early_setup(void)
 
 static void main(unsigned long bist)
 {
-	if (bist == 0)
+	if (bist == 0) {
 		early_mtrr_init();
 		if (memory_initialized()) {
 			hard_reset();
 		}
+	}
 
 	/* Set southbridge and superio gpios */
 	mb_gpio_init();
@@ -117,6 +119,9 @@ static void main(unsigned long bist)
 
 	/* Halt if there was a built in self test failure. */
 	report_bist_failure(bist);
+
+	/* disable TCO timers */
+	i82801dx_halt_tco_timer();
 
 	/* Setup mainboard specific registers */
 	mb_early_setup();

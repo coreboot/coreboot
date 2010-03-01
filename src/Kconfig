@@ -447,6 +447,66 @@ config FALLBACK_VGA_BIOS_ID
 	  the "0x" prefix) and 3230 specifies the PCI device ID of the
 	  video card (also in hex, without "0x" prefix).
 
+config INTEL_MBI
+	bool "Add an MBI image"
+	depends on NORTHBRIDGE_INTEL_I82830
+	help
+	  Select this option if you have an Intel MBI image that you would
+	  like to add to your ROM.
+
+	  You will be able to specify the location and file name of the
+	  image later.
+
+config FALLBACK_MBI_FILE
+	string "Intel MBI path and filename"
+	depends on INTEL_MBI
+	default "mbi.bin"
+	help
+	  The path and filename of the file to use as VGA BIOS.
+
+endmenu
+
+menu "Bootsplash"
+	depends on PCI_OPTION_ROM_RUN_YABEL
+
+config BOOTSPLASH
+	prompt "Show graphical bootsplash"
+	bool
+	depends on PCI_OPTION_ROM_RUN_YABEL
+	help
+	  This option shows a graphical bootsplash screen. The grapics are
+	  loaded from the CBFS file bootsplash.jpg.
+
+config FALLBACK_BOOTSPLASH_FILE
+	string "Bootsplash path and filename"
+	depends on BOOTSPLASH
+	default "bootsplash.jpg"
+	help
+	  The path and filename of the file to use as graphical bootsplash 
+	  screen. The file format has to be jpg. 
+
+# TODO: Turn this into a "choice".
+config FRAMEBUFFER_VESA_MODE
+	prompt "VESA framebuffer video mode"
+	hex
+	default 0x117
+	depends on BOOTSPLASH
+	help
+	  This option sets the resolution used for the coreboot framebuffer and
+	  bootsplash screen. Set to 0x117 for 1024x768x16. A diligent soul will
+	  some day make this a "choice".
+
+config COREBOOT_KEEP_FRAMEBUFFER
+	prompt "Keep VESA framebuffer"
+	bool
+	depends on BOOTSPLASH
+	help
+	  This option keeps the framebuffer mode set after coreboot finishes
+	  execution. If this option is enabled, coreboot will pass a
+	  framebuffer entry in its coreboot table and the payload will need a
+	  framebuffer driver. If this option is disabled, coreboot will switch
+	  back to text mode before handing control to a payload.
+
 endmenu
 
 menu "Debugging"

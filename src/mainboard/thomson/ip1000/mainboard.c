@@ -21,6 +21,18 @@
 #include <device/device.h>
 #include "chip.h"
 
+static void mainboard_init(device_t dev)
+{
+	// TODO Switch parport LEDs again
+}
+
+static void mainboard_enable(device_t dev)
+{
+	// TODO Switch parport LEDs
+	dev->ops->init = mainboard_init;
+}
+
 struct chip_operations mainboard_ops = {
+	.enable_dev = mainboard_enable,
 	CHIP_NAME("THOMSON IP1000 Mainboard")
 };

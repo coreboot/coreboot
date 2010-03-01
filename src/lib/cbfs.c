@@ -24,7 +24,16 @@
 #include <lib.h>
 #include <arch/byteorder.h>
 
-int cbfs_decompress(int algo, void *src, void *dst, int len)
+
+/**
+ * Decompression wrapper for CBFS
+ * @param algo
+ * @param src
+ * @param dst
+ * @param len
+ * @return 0 on success, -1 on failure
+ */
+static int cbfs_decompress(int algo, void *src, void *dst, int len)
 {
 	switch(algo) {
 	case CBFS_COMPRESS_NONE:
@@ -44,12 +53,12 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 	}
 }
 
-int cbfs_check_magic(struct cbfs_file *file)
+static int cbfs_check_magic(struct cbfs_file *file)
 {
 	return !strcmp(file->magic, CBFS_FILE_MAGIC) ? 1 : 0;
 }
 
-struct cbfs_header *cbfs_master_header(void)
+static struct cbfs_header *cbfs_master_header(void)
 {
 	struct cbfs_header *header;
 
@@ -103,7 +112,7 @@ struct cbfs_file *cbfs_find(const char *name)
 	}
 }
 
-struct cbfs_stage *cbfs_find_file(const char *name, int type)
+void *cbfs_find_file(const char *name, int type)
 {
 	struct cbfs_file *file = cbfs_find(name);
 
@@ -123,7 +132,7 @@ struct cbfs_stage *cbfs_find_file(const char *name, int type)
 	return (void *) CBFS_SUBHEADER(file);
 }
 
-static int tohex4(unsigned int c)
+static inline int tohex4(unsigned int c)
 {
 	return (c<=9)?(c+'0'):(c-10+'a');
 }
@@ -205,11 +214,6 @@ void * cbfs_load_stage(const char *name)
 	return (void *) entry;
 }
 
-void * cbfs_get_file(const char *name)
-{
-	return (void *) cbfs_find(name);
-}
-
 int cbfs_execute_stage(const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
@@ -233,7 +237,7 @@ int cbfs_execute_stage(const char *name)
  * run_address is passed the address of a function taking no parameters and
  * jumps to it, returning the result. 
  * @param f the address to call as a function. 
- * returns value returned by the function. 
+ * @return value returned by the function. 
  */
 
 int run_address(void *f)

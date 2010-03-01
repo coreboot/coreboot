@@ -4,9 +4,8 @@
  * Copyright (C) 2008 Joseph Smith <joe@settoplinux.org>
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,23 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ *
  */
 
-#include <device/device.h>
-#include "chip.h"
-
-static void mainboard_init(device_t dev)
+static void i82801dx_halt_tco_timer(void)
 {
-	// TODO Switch parport LEDs again
-}
+	device_t dev;
+	uint16_t halt_tco_timer;
 
-static void mainboard_enable(device_t dev)
-{
-	// TODO Switch parport LEDs
-	dev->ops->init = mainboard_init;
+	/* Set the LPC device statically. */
+	dev = PCI_DEV(0x0, 0x1f, 0x0);
+
+	/* Temporarily set ACPI base address (I/O space). */
+	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));
+
+	/* Enable ACPI I/O. */
+	pci_write_config8(dev, ACPI_CNTL, 0x10);
+
+	/* Halt the TCO timer, preventing SMI and automatic reboot */
+	outw(inw(PMBASE_ADDR + TCOBASE + TCO1_CNT) | (1 << 11), PMBASE_ADDR + TCOBASE + TCO1_CNT);
 }
- 
-struct chip_operations mainboard_ops = {
-	.enable_dev = mainboard_enable,
-	CHIP_NAME("RCA RM4100 Mainboard")
-};

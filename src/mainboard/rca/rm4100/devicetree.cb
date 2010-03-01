@@ -1,4 +1,9 @@
 chip northbridge/intel/i82830		# Northbridge
+  device apic_cluster 0 on		# APIC cluster
+    chip cpu/intel/socket_PGA370	# Mobile Celeron Micro-FCBGA Socket 479
+      device apic 0 on end		# APIC
+    end
+  end
   device pci_domain 0 on		# PCI domain
     device pci 0.0 on end		# Host bridge
     device pci 2.0 on end		# VGA (Intel 82830 CGC)
@@ -19,9 +24,7 @@ chip northbridge/intel/i82830		# Northbridge
       device pci 1d.1 on end		# USB UHCI Controller #2
       device pci 1d.2 on end		# USB UHCI Controller #3
       device pci 1d.7 on end		# USB2 EHCI Controller
-      device pci 1e.0 on		# PCI bridge
-        device pci 08.0 on end		# Intel 82801DB PRO/100 VE Ethernet
-      end
+      device pci 1e.0 on end		# PCI bridge
       device pci 1f.0 on		# ISA/LPC bridge
         chip superio/smsc/smscsuperio	# Super I/O
           device pnp 2e.0 off		# Floppy
@@ -59,11 +62,6 @@ chip northbridge/intel/i82830		# Northbridge
       device pci 1f.3 on end		# SMBus
       device pci 1f.5 on end		# AC'97 audio
       device pci 1f.6 on end		# AC'97 modem
-    end
-  end
-  device apic_cluster 0 on		# APIC cluster
-    chip cpu/intel/socket_PGA370	# Mobile Celeron Micro-FCBGA Socket 479
-      device apic 0 on end		# APIC
     end
   end
 end

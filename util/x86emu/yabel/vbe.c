@@ -795,12 +795,11 @@ void vbe_set_graphics(void)
 	 * cares. */
 	int imagesize = 1024*768*2;
 	
-	struct cbfs_file *file = cbfs_find("bootsplash.jpg");
-	if (!file) { 
+	unsigned char *jpeg = cbfs_find_file("bootsplash.jpg", CBFS_TYPE_BOOTSPLASH);
+	if (!jpeg) { 
 		DEBUG_PRINTF_VBE("Could not find bootsplash.jpg\n");
 		return;
 	}
-	unsigned char *jpeg = ((unsigned char *)file) + ntohl(file->offset);
 	DEBUG_PRINTF_VBE("Splash at %08x ...\n", jpeg);
 	dump(jpeg, 64);
 

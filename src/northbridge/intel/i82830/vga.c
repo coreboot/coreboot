@@ -24,13 +24,67 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <cbfs.h>
+#include <x86emu/x86emu.h>
 
-static void vga_init(device_t dev) {
-
+static void vga_init(device_t dev)
+{
 	printk_info("Starting Graphics Initialization\n");
+	struct cbfs_file *file = cbfs_find("mbi.bin");
+	void *mbi = NULL;
+	unsigned int mbi_len = 0;
+
+	if (file) {
+		if (ntohl(file->type) != CBFS_TYPE_MBI) {
+			printk_info( "CBFS:  MBI binary is of type %x instead of"
+			       "type %x\n", file->type, CBFS_TYPE_MBI);
+		} else {
+			mbi = (void *) CBFS_SUBHEADER(file);
+			mbi_len = file->len;
+		}
+	} else {
+		printk_info( "Could not find MBI.\n");
+	}
+
+	if (mbi && mbi_len) {
+		/* The GDT or coreboot table is going to live here. But
+		 * a long time after we relocated the GNVS, so this is
+		 * not troublesome.
+		 */
+		*(u32 *)0x500 = (u32)mbi;
+		*(u32 *)0x504 = (u32)mbi_len;
+		outb(0xeb, 0xb2);
+	}
+
 	pci_dev_init(dev);
 	printk_info("Graphics Initialization Complete\n");
-	/* Future TV-OUT code will be called from here. */
+
+	/* Enable TV-Out */
+#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
+#define PIPE_A_CRT	(1 << 0)
+#define PIPE_A_LFP	(1 << 1)
+#define PIPE_A_TV	(1 << 3)
+#define PIPE_B_CRT	(1 << 8)
+#define PIPE_B_TV	(1 << 10)
+	printk_debug("Enabling TV-Out\n"); 
+	void runInt10(void);
+	M.x86.R_AX = 0x5f64;
+	M.x86.R_BX = 0x0001; // Set Display Device, force execution
+	M.x86.R_CX = PIPE_A_CRT | PIPE_A_TV;
+	// M.x86.R_CX = PIPE_B_TV;
+	runInt10();
+	switch (M.x86.R_AX) {
+	case 0x005f:
+		printk_debug("... failed.\n");
+		break;
+	case 0x015f:
+		printk_debug("... ok.\n");
+		break;
+	default:
+		printk_debug("... not supported.\n");
+		break;
+	}
+#endif
 }
 
 static const struct device_operations vga_operations = {

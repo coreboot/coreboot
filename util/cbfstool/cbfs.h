@@ -68,9 +68,14 @@ struct cbfs_payload {
     Users are welcome to use any other value for their
     components */
 
-#define CBFS_COMPONENT_STAGE     0x10
-#define CBFS_COMPONENT_PAYLOAD   0x20
-#define CBFS_COMPONENT_OPTIONROM 0x30
+#define CBFS_COMPONENT_STAGE      0x10
+#define CBFS_COMPONENT_PAYLOAD    0x20
+#define CBFS_COMPONENT_OPTIONROM  0x30
+#define CBFS_COMPONENT_BOOTSPLASH 0x40
+#define CBFS_COMPONENT_RAW        0x50
+#define CBFS_COMPONENT_VSA        0x51
+#define CBFS_COMPONENT_MBI        0x52
+#define CBFS_COMPONENT_MICROCODE  0x53
 
 /* The deleted type is chosen to be a value
  * that can be written in a FLASH from all other

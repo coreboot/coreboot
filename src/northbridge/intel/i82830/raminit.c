@@ -536,6 +536,7 @@ static void northbridge_set_registers(void)
 
 	value = pci_read_config16(NORTHBRIDGE, GCC1);
 	value |= igd_memory << 4;
+	value |= 1; // 64MB aperture
 	pci_write_config16(NORTHBRIDGE, GCC1, value);
 
 	PRINT_DEBUG("Initial northbridge registers have been set.\r\n");

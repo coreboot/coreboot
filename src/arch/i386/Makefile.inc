@@ -28,6 +28,14 @@ ifeq ($(CONFIG_VGA_BIOS),y)
 	@printf "    VGABIOS    $(CONFIG_FALLBACK_VGA_BIOS_FILE) $(CONFIG_FALLBACK_VGA_BIOS_ID)\n"
 	$(CBFSTOOL) $(obj)/coreboot.rom add $(CONFIG_FALLBACK_VGA_BIOS_FILE) "pci$(CONFIG_FALLBACK_VGA_BIOS_ID).rom" optionrom
 endif
+ifeq ($(CONFIG_INTEL_MBI),y)
+	@printf "    MBI        $(CONFIG_FALLBACK_MBI_FILE)\n"
+	$(CBFSTOOL) $(obj)/coreboot.rom add $(CONFIG_FALLBACK_MBI_FILE) mbi.bin mbi
+endif
+ifeq ($(CONFIG_BOOTSPLASH),y)
+	@printf "    BOOTSPLASH $(CONFIG_FALLBACK_BOOTSPLASH_FILE)\n"
+	$(CBFSTOOL) $(obj)/coreboot.rom add $(CONFIG_FALLBACK_BOOTSPLASH_FILE) bootsplash.jpg bootsplash
+endif
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $(obj)/coreboot.rom print
 

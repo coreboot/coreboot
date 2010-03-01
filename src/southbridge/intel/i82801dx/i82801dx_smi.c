@@ -1,0 +1,365 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2008-2009 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
+ */
+
+
+#include <device/device.h>
+#include <device/pci.h>
+#include <console/console.h>
+#include <arch/io.h>
+#include <cpu/x86/cache.h>
+#include <cpu/x86/smm.h>
+#include <string.h>
+#include "i82801dx.h"
+
+extern unsigned char smm[];
+extern unsigned int smm_len;
+
+/* I945 */
+#define SMRAM		0x90
+#define   D_OPEN	(1 << 6)
+#define   D_CLS		(1 << 5)
+#define   D_LCK		(1 << 4)
+#define   G_SMRAME	(1 << 3)
+#define   C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
+
+/* While we read PMBASE dynamically in case it changed, let's
+ * initialize it with a sane value
+ */
+static u16 pmbase = PMBASE_ADDR;
+
+/**
+ * @brief read and clear PM1_STS
+ * @return PM1_STS register
+ */
+static u16 reset_pm1_status(void)
+{
+	u16 reg16;
+
+	reg16 = inw(pmbase + PM1_STS);
+	/* set status bits are cleared by writing 1 to them */
+	outw(reg16, pmbase + PM1_STS);
+
+	return reg16;
+}
+
+static void dump_pm1_status(u16 pm1_sts)
+{
+	printk_debug("PM1_STS: ");
+	if (pm1_sts & (1 << 15)) printk_debug("WAK ");
+	if (pm1_sts & (1 << 14)) printk_debug("PCIEXPWAK ");
+	if (pm1_sts & (1 << 11)) printk_debug("PRBTNOR ");
+	if (pm1_sts & (1 << 10)) printk_debug("RTC ");
+	if (pm1_sts & (1 <<  8)) printk_debug("PWRBTN ");
+	if (pm1_sts & (1 <<  5)) printk_debug("GBL ");
+	if (pm1_sts & (1 <<  4)) printk_debug("BM ");
+	if (pm1_sts & (1 <<  0)) printk_debug("TMROF ");
+	printk_debug("\n");
+}
+
+/**
+ * @brief read and clear SMI_STS
+ * @return SMI_STS register
+ */
+static u32 reset_smi_status(void)
+{
+	u32 reg32;
+
+	reg32 = inl(pmbase + SMI_STS);
+	/* set status bits are cleared by writing 1 to them */
+	outl(reg32, pmbase + SMI_STS);
+
+	return reg32;
+}
+
+static void dump_smi_status(u32 smi_sts)
+{
+	printk_debug("SMI_STS: ");
+	if (smi_sts & (1 << 26)) printk_debug("SPI ");
+	if (smi_sts & (1 << 25)) printk_debug("EL_SMI ");
+	if (smi_sts & (1 << 21)) printk_debug("MONITOR ");
+	if (smi_sts & (1 << 20)) printk_debug("PCI_EXP_SMI ");
+	if (smi_sts & (1 << 18)) printk_debug("INTEL_USB2 ");
+	if (smi_sts & (1 << 17)) printk_debug("LEGACY_USB2 ");
+	if (smi_sts & (1 << 16)) printk_debug("SMBUS_SMI ");
+	if (smi_sts & (1 << 15)) printk_debug("SERIRQ_SMI ");
+	if (smi_sts & (1 << 14)) printk_debug("PERIODIC ");
+	if (smi_sts & (1 << 13)) printk_debug("TCO ");
+	if (smi_sts & (1 << 12)) printk_debug("DEVMON ");
+	if (smi_sts & (1 << 11)) printk_debug("MCSMI ");
+	if (smi_sts & (1 << 10)) printk_debug("GPI ");
+	if (smi_sts & (1 <<  9)) printk_debug("GPE0 ");
+	if (smi_sts & (1 <<  8)) printk_debug("PM1 ");
+	if (smi_sts & (1 <<  6)) printk_debug("SWSMI_TMR ");
+	if (smi_sts & (1 <<  5)) printk_debug("APM ");
+	if (smi_sts & (1 <<  4)) printk_debug("SLP_SMI ");
+	if (smi_sts & (1 <<  3)) printk_debug("LEGACY_USB ");
+	if (smi_sts & (1 <<  2)) printk_debug("BIOS ");
+	printk_debug("\n");
+}
+
+
+/**
+ * @brief read and clear GPE0_STS
+ * @return GPE0_STS register
+ */
+static u32 reset_gpe0_status(void)
+{
+	u32 reg32;
+
+	reg32 = inl(pmbase + GPE0_STS);
+	/* set status bits are cleared by writing 1 to them */
+	outl(reg32, pmbase + GPE0_STS);
+
+	return reg32;
+}
+
+static void dump_gpe0_status(u32 gpe0_sts)
+{
+	int i;
+	printk_debug("GPE0_STS: ");
+	for (i=31; i<= 16; i--) {
+		if (gpe0_sts & (1 << i)) printk_debug("GPIO%d ", (i-16));
+	}
+	if (gpe0_sts & (1 << 14)) printk_debug("USB4 ");
+	if (gpe0_sts & (1 << 13)) printk_debug("PME_B0 ");
+	if (gpe0_sts & (1 << 12)) printk_debug("USB3 ");
+	if (gpe0_sts & (1 << 11)) printk_debug("PME ");
+	if (gpe0_sts & (1 << 10)) printk_debug("EL_SCI/BATLOW ");
+	if (gpe0_sts & (1 <<  9)) printk_debug("PCI_EXP ");
+	if (gpe0_sts & (1 <<  8)) printk_debug("RI ");
+	if (gpe0_sts & (1 <<  7)) printk_debug("SMB_WAK ");
+	if (gpe0_sts & (1 <<  6)) printk_debug("TCO_SCI ");
+	if (gpe0_sts & (1 <<  5)) printk_debug("AC97 ");
+	if (gpe0_sts & (1 <<  4)) printk_debug("USB2 ");
+	if (gpe0_sts & (1 <<  3)) printk_debug("USB1 ");
+	if (gpe0_sts & (1 <<  2)) printk_debug("HOT_PLUG ");
+	if (gpe0_sts & (1 <<  0)) printk_debug("THRM ");
+	printk_debug("\n");
+}
+
+
+/**
+ * @brief read and clear ALT_GP_SMI_STS
+ * @return ALT_GP_SMI_STS register
+ */
+static u16 reset_alt_gp_smi_status(void)
+{
+	u16 reg16;
+
+	reg16 = inl(pmbase + ALT_GP_SMI_STS);
+	/* set status bits are cleared by writing 1 to them */
+	outl(reg16, pmbase + ALT_GP_SMI_STS);
+
+	return reg16;
+}
+
+static void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
+{
+	int i;
+	printk_debug("ALT_GP_SMI_STS: ");
+	for (i=15; i<= 0; i--) {
+		if (alt_gp_smi_sts & (1 << i)) printk_debug("GPI%d ", (i-16));
+	}
+	printk_debug("\n");
+}
+
+
+
+/**
+ * @brief read and clear TCOx_STS
+ * @return TCOx_STS registers
+ */
+static u32 reset_tco_status(void)
+{
+	u32 tcobase = pmbase + 0x60;
+	u32 reg32;
+
+	reg32 = inl(tcobase + 0x04);
+	/* set status bits are cleared by writing 1 to them */
+	outl(reg32 & ~(1<<18), tcobase + 0x04); //  Don't clear BOOT_STS before SECOND_TO_STS
+	if (reg32 & (1 << 18))
+		outl(reg32 & (1<<18), tcobase + 0x04); // clear BOOT_STS
+
+	return reg32;
+}
+
+
+static void dump_tco_status(u32 tco_sts)
+{
+	printk_debug("TCO_STS: ");
+	if (tco_sts & (1 << 20)) printk_debug("SMLINK_SLV ");
+	if (tco_sts & (1 << 18)) printk_debug("BOOT ");
+	if (tco_sts & (1 << 17)) printk_debug("SECOND_TO ");
+	if (tco_sts & (1 << 16)) printk_debug("INTRD_DET ");
+	if (tco_sts & (1 << 12)) printk_debug("DMISERR ");
+	if (tco_sts & (1 << 10)) printk_debug("DMISMI ");
+	if (tco_sts & (1 <<  9)) printk_debug("DMISCI ");
+	if (tco_sts & (1 <<  8)) printk_debug("BIOSWR ");
+	if (tco_sts & (1 <<  7)) printk_debug("NEWCENTURY ");
+	if (tco_sts & (1 <<  3)) printk_debug("TIMEOUT ");
+	if (tco_sts & (1 <<  2)) printk_debug("TCO_INT ");
+	if (tco_sts & (1 <<  1)) printk_debug("SW_TCO ");
+	if (tco_sts & (1 <<  0)) printk_debug("NMI2SMI ");
+	printk_debug("\n");
+}
+
+
+
+/**
+ * @brief Set the EOS bit
+ */
+static void smi_set_eos(void)
+{
+	u8 reg8;
+
+	reg8 = inb(pmbase + SMI_EN);
+	reg8 |= EOS;
+	outb(reg8, pmbase + SMI_EN);
+}
+
+extern uint8_t smm_relocation_start, smm_relocation_end;
+
+void smm_relocate(void)
+{
+	u32 smi_en;
+	u16 pm1_en;
+
+	printk_debug("Initializing SMM handler...");
+
+	pmbase = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f, 0)), 0x40) & 0xfffc;
+	printk_spew(" ... pmbase = 0x%04x\n", pmbase);
+
+	smi_en = inl(pmbase + SMI_EN);
+	if (smi_en & APMC_EN) {
+		printk_info("SMI# handler already enabled?\n");
+		return;
+	}
+
+	/* copy the SMM relocation code */
+	memcpy((void *)0x38000, &smm_relocation_start,
+			&smm_relocation_end - &smm_relocation_start);
+
+	printk_debug("\n");
+	dump_smi_status(reset_smi_status());
+	dump_pm1_status(reset_pm1_status());
+	dump_gpe0_status(reset_gpe0_status());
+	dump_alt_gp_smi_status(reset_alt_gp_smi_status());
+	dump_tco_status(reset_tco_status());
+
+	/* Enable SMI generation:
+	 *  - on TCO events
+	 *  - on APMC writes (io 0xb2)
+	 *  - on writes to SLP_EN (sleep states)
+	 *  - on writes to GBL_RLS (bios commands)
+	 * No SMIs:
+	 *  - on microcontroller writes (io 0x62/0x66)
+	 */
+
+	smi_en = 0; /* reset SMI enables */
+
+#if 0
+	smi_en |= LEGACY_USB2_EN | LEGACY_USB_EN;
+#endif
+	smi_en |= TCO_EN;
+	smi_en |= APMC_EN;
+#if DEBUG_PERIODIC_SMIS
+	/* Set DEBUG_PERIODIC_SMIS in i82801gx.h to debug using
+	 * periodic SMIs.
+	 */
+	smi_en |= PERIODIC_EN;
+#endif
+	smi_en |= SLP_SMI_EN;
+	smi_en |= BIOS_EN;
+
+	/* The following need to be on for SMIs to happen */
+	smi_en |= EOS | GBL_SMI_EN;
+
+	outl(smi_en, pmbase + SMI_EN);
+
+	pm1_en = 0;
+	pm1_en |= PWRBTN_EN;
+	pm1_en |= GBL_EN;
+	outw(pm1_en, pmbase + PM1_EN);
+
+	/**
+	 * There are several methods of raising a controlled SMI# via
+	 * software, among them:
+	 *  - Writes to io 0xb2 (APMC)
+	 *  - Writes to the Local Apic ICR with Delivery mode SMI.
+	 *
+	 * Using the local apic is a bit more tricky. According to
+	 * AMD Family 11 Processor BKDG no destination shorthand must be
+	 * used.
+	 * The whole SMM initialization is quite a bit hardware specific, so
+	 * I'm not too worried about the better of the methods at the moment
+	 */
+
+	/* raise an SMI interrupt */
+	printk_spew("  ... raise SMI#\n");
+	outb(0x00, 0xb2);
+}
+
+void smm_install(void)
+{
+	/* enable the SMM memory window */
+	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+				D_OPEN | G_SMRAME | C_BASE_SEG);
+
+	/* copy the real SMM handler */
+	memcpy((void *)0xa0000, smm, smm_len);
+	wbinvd();
+
+	/* close the SMM memory window and enable normal SMM */
+	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+			G_SMRAME | C_BASE_SEG);
+}
+
+void smm_init(void)
+{
+	// FIXME is this a race condition?
+	smm_relocate();
+	smm_install();
+
+	// We're done. Make sure SMIs can happen!
+	smi_set_eos();
+}
+
+void smm_lock(void)
+{
+	/* LOCK the SMM memory window and enable normal SMM.
+	 * After running this function, only a full reset can
+	 * make the SMM registers writable again.
+	 */
+	printk_debug("Locking SMM.\n");
+	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+			D_LCK | G_SMRAME | C_BASE_SEG);
+}
+
+void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
+{
+	/* The GDT or coreboot table is going to live here. But a long time
+	 * after we relocated the GNVS, so this is not troublesome.
+	 */
+	*(u32 *)0x500 = (u32)gnvs;
+	*(u32 *)0x504 = (u32)tcg;
+	*(u32 *)0x508 = (u32)smi1;
+	outb(0xea, 0xb2);
+}

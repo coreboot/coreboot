@@ -31,3 +31,5 @@ obj-$(CONFIG_BOOTSPLASH) += jpeg.o
 ifdef POST_EVALUATION
 $(obj)/lib/version.o :: $(obj)/build.h
 endif
+
+smmobj-y += memcpy.o

@@ -63,9 +63,14 @@
     Users are welcome to use any other value for their
     components */
 
-#define CBFS_TYPE_STAGE     0x10
-#define CBFS_TYPE_PAYLOAD   0x20
-#define CBFS_TYPE_OPTIONROM 0x30
+#define CBFS_TYPE_STAGE      0x10
+#define CBFS_TYPE_PAYLOAD    0x20
+#define CBFS_TYPE_OPTIONROM  0x30
+#define CBFS_TYPE_BOOTSPLASH 0x40
+#define CBFS_TYPE_RAW        0x50
+#define CBFS_TYPE_VSA        0x51
+#define CBFS_TYPE_MBI        0x52
+#define CBFS_TYPE_MICROCODE  0x53
 
 /** this is the master cbfs header - it need to be
     located somewhere in the bootblock.  Where it
@@ -164,11 +169,8 @@ int cbfs_execute_stage(const char *name);
 void * cbfs_get_file(const char *name);
 void *cbfs_load_optionrom(u16 vendor, u16 device, void * dest);
 int run_address(void *f);
-int cbfs_decompress(int algo, void *src, void *dst, int len);
-struct cbfs_stage *cbfs_find_file(const char *name, int type);
-int cbfs_check_magic(struct cbfs_file *file);
-struct cbfs_header *cbfs_master_header(void);
 struct cbfs_file *cbfs_find(const char *name);
+void *cbfs_find_file(const char *name, int type);
 void cbfs_and_run_core(const char *filename, unsigned int ebp);
 
 #endif

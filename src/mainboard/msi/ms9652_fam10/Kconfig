@@ -1,0 +1,288 @@
+config BOARD_MSI_MS9652_FAM10
+	bool "MS9652 Fam10 (Speedster K9ND)"
+	select ARCH_X86
+	select CPU_AMD_SOCKET_F_1207
+	select NORTHBRIDGE_AMD_AMDFAM10
+	select NORTHBRIDGE_AMD_AMDFAM10_ROOT_COMPLEX
+	select SOUTHBRIDGE_NVIDIA_MCP55
+	select SUPERIO_WINBOND_W83627EHG
+	select HAVE_BUS_CONFIG
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select BOARD_ROMSIZE_KB_512
+	select ENABLE_APIC_EXT_ID
+	select AMDMCT
+	select TINY_BOOTBLOCK
+
+config MAINBOARD_DIR
+	string
+	default msi/ms9652_fam10
+	depends on BOARD_MSI_MS9652_FAM10
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc4000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x0c000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x04000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config CONFIG_ACPI_SSDTX_NUM
+	hex
+	default 0x1F
+	depends on BOARD_MSI_MS9652_FAM10
+
+config USE_FALLBACK_IMAGE
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HAVE_FALLBACK_BOOT
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config CONFIG_USE_FAILOVER_IMAGE
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config CONFIG_HAVE_FAILOVER_BOOT
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config GENERATE_PIRQ_TABLE
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config CONFIG_IRQ_SLOT_COUNT
+	hex
+	default 0x0b
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HAVE_OPTION_TABLE
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MAX_CPUS
+	int
+	default 8
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_MSI_MS9652_FAM10
+
+config LOGICAL_CPUS
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config IOAPIC
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config SMP
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config STACK_SIZE
+	hex
+	default 0x20000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HEAP_SIZE
+	hex
+	default 0x20000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config USE_OPTION_TABLE
+	bool
+	default n
+	depends on BOARD_MSI_MS9652_FAM10
+
+config LB_CKS_RANGE_START
+	int
+	default 49
+	depends on BOARD_MSI_MS9652_FAM10
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_MSI_MS9652_FAM10
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "MS-9256"
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1462
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x9652
+	depends on BOARD_MSI_MS9652_FAM10
+
+config RAMBASE
+	hex
+	default 0x00200000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config TTYS0_BAUD
+	int
+	default 115200
+	depends on BOARD_MSI_MS9652_FAM10
+
+config TTYS0_BASE
+	hex
+	default 0x3f8
+	depends on BOARD_MSI_MS9652_FAM10
+
+config TTYS0_LCS
+	int
+	default 3
+	depends on BOARD_MSI_MS9652_FAM10
+
+config DEFAULT_CONSOLE_LOGLEVEL
+	int
+	default 9
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MAXIMUM_CONSOLE_LOGLEVEL
+	int
+	default 9
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config CONSOLE_SERIAL8250
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config CONSOLE_VGA
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config PCI_ROM_RUN
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config USBDEBUG_DIRECT
+	bool
+	default n
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x20
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x00
+	depends on BOARD_MSI_MS9652_FAM10
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 1
+	depends on BOARD_MSI_MS9652_FAM10
+
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config VAR_MTRR_HOLE
+	bool
+	default n
+	depends on BOARD_MSI_MS9652_FAM10
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_MSI_MS9652_FAM10
+
+config SERIAL_CPU_INIT
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10
+
+config APIC_ID_OFFSET
+	hex
+	default 0x00
+	depends on BOARD_MSI_MS9652_FAM10
+
+config LIFT_BSP_APIC_ID
+	bool
+	default 1
+	depends on BOARD_MSI_MS9652_FAM10
+
+config RAMTOP
+	hex
+	default 0x1000000
+	depends on BOARD_MSI_MS9652_FAM10
+
+config MEM_TRAIN_SEQ
+	int
+	default 2
+	depends on BOARD_MSI_MS9652_FAM10
+
+config WAIT_BEFORE_CPUS_INIT
+	bool
+	default n
+	depends on BOARD_MSI_MS9652_FAM10
+
+config AMD_UCODE_PATCH_FILE
+	string
+	default "mc_patch_01000096.h"
+	depends on BOARD_MSI_MS9652_FAM10
+
+config ID_SECTION_OFFSET
+	hex
+	default 0x80
+	depends on BOARD_MSI_MS9652_FAM10
+
+config HT3_SUPPORT
+	bool
+	default y
+	depends on BOARD_MSI_MS9652_FAM10

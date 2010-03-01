@@ -30,6 +30,7 @@ source "src/mainboard/msi/ms7135/Kconfig"
 source "src/mainboard/msi/ms7260/Kconfig"
 source "src/mainboard/msi/ms9185/Kconfig"
 source "src/mainboard/msi/ms9282/Kconfig"
+source "src/mainboard/msi/ms9652_fam10/Kconfig"
 
 endchoice
 

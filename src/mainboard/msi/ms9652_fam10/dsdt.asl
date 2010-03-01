@@ -1,15 +1,15 @@
 /*
  * This file is part of the coreboot project.
  *
- * (C) Copyright 2004 Nick Barker <Nick.Barker9@btinternet.com>
- * (C) Copyright 2007, 2008 Rudolf Marek <r.marek@assembler.cz>
- * (C) Copyright 2009 Harald Gutmann <harald.gutmann@gmx.net>
+ * Copyright (C) 2004 Nick Barker <Nick.Barker9@btinternet.com>
+ * Copyright (C) 2007, 2008 Rudolf Marek <r.marek@assembler.cz>
+ * Copyright (C) 2009 Harald Gutmann <harald.gutmann@gmx.net>
  *
  * ISA portions taken from QEMU acpi-dsdt.dsl.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License v2 as published by
- * the Free Software Foundation.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of

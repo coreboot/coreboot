@@ -1,5 +1,5 @@
 config BOARD_MSI_MS9652_FAM10
-	bool "MS9652 Fam10 (Speedster K9ND)"
+	bool "MS-9652 Fam10 (Speedster K9ND)"
 	select ARCH_X86
 	select CPU_AMD_SOCKET_F_1207
 	select NORTHBRIDGE_AMD_AMDFAM10
@@ -134,7 +134,7 @@ config LB_CKS_LOC
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "MS-9256"
+	default "MS-9252"
 	depends on BOARD_MSI_MS9652_FAM10
 
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID

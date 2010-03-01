@@ -100,11 +100,11 @@ SECTIONS
 	_ebss = .;
 	_end = .;
 	. = ALIGN(CONFIG_STACK_SIZE);
+
 	_stack = .;
 	.stack . : {
 		/* Reserve a stack for each possible cpu */
-		/* the stack for ap will be put after pgtbl in 1M to CONFIG_RAMTOP range when VGA and ROM_RUN and CONFIG_RAMTOP>1M*/
-		. += ((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN)&&(CONFIG_RAMBASE<0x100000)&&(CONFIG_RAMTOP>0x100000) ) ? CONFIG_STACK_SIZE : (CONFIG_MAX_CPUS*CONFIG_STACK_SIZE);
+		. += CONFIG_MAX_CPUS*CONFIG_STACK_SIZE;
 	}
 	_estack = .;
         _heap = .;
@@ -114,6 +114,10 @@ SECTIONS
                 . = ALIGN(4);
         }
         _eheap = .;
+
+	/* Avoid running into 0xa0000-0xfffff */
+	_bogus = ASSERT(CONFIG_RAMBASE >= 0x100000 || _eheap < 0xa0000, "Please move RAMBASE to 1MB");
+
 	/* The ram segment
  	 * This is all address of the memory resident copy of coreboot.
 	 */

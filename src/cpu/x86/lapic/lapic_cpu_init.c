@@ -246,25 +246,7 @@ int start_cpu(device_t cpu)
 	index = ++last_cpu_index;
 
 	/* Find end of the new processors stack */
-#if (CONFIG_RAMTOP>0x100000) && (CONFIG_RAMBASE < 0x100000) && ((CONFIG_CONSOLE_VGA==1) || (CONFIG_PCI_ROM_RUN == 1))
-	if(index<1) { // only keep bsp on low
-		stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
-	} else {
-		// for all APs, let use stack after pgtbl, 20480 is the pgtbl size for every cpu
-		stack_end = 0x100000+(20480 + CONFIG_STACK_SIZE)*CONFIG_MAX_CPUS - (CONFIG_STACK_SIZE*index);
-#if (0x100000+(20480 + CONFIG_STACK_SIZE)*CONFIG_MAX_CPUS) > (CONFIG_RAMTOP)
-		#warning "We may need to increase CONFIG_RAMTOP, it need to be more than (0x100000+(20480 + CONFIG_STACK_SIZE)*CONFIG_MAX_CPUS)\n"
-#endif
-		if(stack_end > (CONFIG_RAMTOP)) {
-			printk_debug("start_cpu: Please increase the CONFIG_RAMTOP more than %luK\n", stack_end);
-			die("Can not go on\n");
-		}
-		stack_end -= sizeof(struct cpu_info);
-	}
-#else
 	stack_end = ((unsigned long)_estack) - (CONFIG_STACK_SIZE*index) - sizeof(struct cpu_info);
-#endif
-
 
 	/* Record the index and which cpu structure we are using */
 	info = (struct cpu_info *)stack_end;

@@ -127,5 +127,5 @@ config HEAP_SIZE
 
 config RAMBASE
 	hex
-	default 0x4000
+	default 0x100000
 	depends on BOARD_TECHNEXION_TIM5690

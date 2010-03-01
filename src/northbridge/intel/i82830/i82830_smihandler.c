@@ -32,12 +32,12 @@
 extern unsigned char *mbi;
 extern u32 mbi_len;
 
-#define DEBUG_SMI
+// #define DEBUG_SMI_I82830
 
 /* If YABEL is enabled and it's not running at 0x00000000, we have to add some
  * offset to all our mbi object memory accesses
  */
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && !defined(CONFIG_YABEL_DIRECTHW)
+#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL && !CONFIG_YABEL_DIRECTHW
 #define OBJ_OFFSET CONFIG_YABEL_VIRTMEM_LOCATION
 #else
 #define OBJ_OFFSET 0x00000
@@ -76,6 +76,7 @@ typedef struct {
 #define MSH_IF_BUF_SIZE		0x010b
 #define MSH_IF_NOT_PENDING	0x010c
 
+#ifdef DEBUG_SMI_I82830
 static void
 dump(u8 * addr, u32 len)
 {
@@ -109,6 +110,7 @@ dump(u8 * addr, u32 len)
 	}
 	printk_debug("\n");
 }
+#endif
 
 typedef struct {
 	banner_id_t banner;
@@ -147,13 +149,15 @@ typedef struct {
 
 static void mbi_call(u8 subf, banner_id_t *banner_id)
 {
-	// printk_debug("MBI\n");
-	// printk_debug("|- sub function %x\n", subf);
-	// printk_debug("|- banner id @ %x\n", (u32)banner_id);
-	// printk_debug("|  |- mhid %x\n", banner_id->mhid);
-	// printk_debug("|  |- function %x\n", banner_id->function);
-	// printk_debug("|  |- return status %x\n", banner_id->retsts);
-	// printk_debug("|  |- rfu %x\n", banner_id->rfu);
+#ifdef DEBUG_SMI_I82830
+	printk_debug("MBI\n");
+	printk_debug("|- sub function %x\n", subf);
+	printk_debug("|- banner id @ %x\n", (u32)banner_id);
+	printk_debug("|  |- mhid %x\n", banner_id->mhid);
+	printk_debug("|  |- function %x\n", banner_id->function);
+	printk_debug("|  |- return status %x\n", banner_id->retsts);
+	printk_debug("|  |- rfu %x\n", banner_id->rfu);
+#endif
 
 	switch(banner_id->function) {
 	case 0x0001: {
@@ -196,15 +200,19 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			
 			if (obj_header->objnum == count) {
 				int headerlen = ALIGN(sizeof(mbi_header) + mbi_header->name_len + 15, 16);
-				// printk_debug("|  |- headerlen = %d\n", headerlen);
+#ifdef DEBUG_SMI_I82830
+				printk_debug("|  |- headerlen = %d\n", headerlen);
+#endif
 				memcpy(&obj_header->header, mbi_header, headerlen);
 				obj_header->banner.retsts = MSH_OK;
 				printk_debug("|     |- MBI module '");
 				int j;
 				for (j=0; j < mbi_header->name_len && mbi_header->name[j]; j++)
 					printk_debug("%c",  mbi_header->name[j]);
-				printk_debug("' found.\n", obj_header->objnum);
-				// dump(banner_id, sizeof(obj_header_t) + 16);
+				printk_debug("' found.\n");
+#ifdef DEBUG_SMI_I82830
+				dump(banner_id, sizeof(obj_header_t) + 16);
+#endif
 				break;
 			}
 			i += len;
@@ -218,7 +226,9 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 		get_object_t *getobj = (get_object_t *)banner_id;
 		mbi_header_t *mbi_header = NULL;
 		printk_debug("|- MBI_GetObject\n");
-		// printk_debug("|  |- handle = %016lx\n", getobj->handle);
+#ifdef DEBUG_SMI_I82830
+		printk_debug("|  |- handle = %016lx\n", getobj->handle);
+#endif
 		printk_debug("|  |- objnum = %d\n", getobj->objnum);
 		printk_debug("|  |- start = %x\n", getobj->start);
 		printk_debug("|  |- numbytes = %x\n", getobj->numbytes);
@@ -245,7 +255,9 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 						((char *)mbi_header) + 0x20 , (len > getobj->buflen ? getobj->buflen : len));
 
 				getobj->banner.retsts = MSH_OK;
-				//dump(banner_id, sizeof(getobj) + len);
+#ifdef DEBUG_SMI_I82830
+				dump(banner_id, sizeof(getobj) + len);
+#endif
 				break;
 			}
 			i += len;
@@ -275,15 +287,12 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 #define PC12	0x12
 #define PC13	0x13
 
-void smi_interface_call(void)
+static void smi_interface_call(void)
 {
-	u32 mmio;
-	mmio = pci_read_config32(PCI_DEV(0, 0x02, 0), 0x14);
+	u32 mmio = pci_read_config32(PCI_DEV(0, 0x02, 0), 0x14);
 	// mmio &= 0xfff80000;
 	// printk_debug("mmio=%x\n", mmio);
-
-	u16 swsmi;
-	swsmi=pci_read_config16(PCI_DEV(0, 0x02, 0), 0xe0);
+	u16 swsmi = pci_read_config16(PCI_DEV(0, 0x02, 0), 0xe0);
 
 	if (!(swsmi & 1))
 		return;
@@ -299,7 +308,7 @@ void smi_interface_call(void)
 		swsmi &= 0xff;
 		swsmi |= (PC13 << 8);
 		pci_write_config16(PCI_DEV(0, 0x02, 0), 0xe0, swsmi);
-		// pathetic
+		// write magic
 		write32(mmio + 0x71428, 0x494e5443);
 		return;
 	case 4:
@@ -308,7 +317,7 @@ void smi_interface_call(void)
 		break;
 	case 5:
 		printk_debug("Call MBI Functions.\n");
-		mbi_call(swsmi >> 8, (banner_id_t *)((readl(mmio + 0x71428) & 0x000fffff) + OBJ_OFFSET) );
+		mbi_call(swsmi >> 8, (banner_id_t *)((read32(mmio + 0x71428) & 0x000fffff) + OBJ_OFFSET) );
 		// swsmi = 0x0000;
 		swsmi &= ~(7 << 5); // Exit: Result
 		swsmi |= (SMI_IFC_SUCCESS << 5);

@@ -16,21 +16,17 @@
 #include "device.h"
 #include "x86emu/x86emu.h"
 #include "biosemu.h"
+#include "mem.h"
 #include "compat/time.h"
 
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
-#ifdef DEBUG
+#if CONFIG_X86EMU_DEBUG
 static u8 in_check = 0;	// to avoid recursion...
 u16 ebda_segment;
 u32 ebda_size;
 
 //TODO: these macros have grown so large, that they should be changed to an inline function,
 //just for the sake of readability...
-
-//declare prototypes of the functions to follow, for use in DEBUG_CHECK_VMEM_ACCESS
-u8 my_rdb(u32);
-u16 my_rdw(u32);
-u32 my_rdl(u32);
 
 #define DEBUG_CHECK_VMEM_READ(_addr, _rval) \
    if ((debug_flags & DEBUG_CHECK_VMEM_ACCESS) && (in_check == 0)) { \

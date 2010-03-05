@@ -220,11 +220,7 @@ static void dump_pci_devices_on_bus(u32 busn)
 	}
 }
 
-#ifndef DEBUG_SMBUS
-#define DEBUG_SMBUS 0
-#endif
-
-#if DEBUG_SMBUS == 1
+#if CONFIG_DEBUG_SMBUS
 
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {

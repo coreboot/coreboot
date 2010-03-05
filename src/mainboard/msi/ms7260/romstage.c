@@ -24,7 +24,6 @@
 #define __PRE_RAM__
 
 // #define CACHE_AS_RAM_ADDRESS_DEBUG 1
-// #define DEBUG_SMBUS 1
 // #define RAM_TIMING_DEBUG 1
 // #define DQS_TRAIN_DEBUG 1
 // #define RES_DEBUG 1

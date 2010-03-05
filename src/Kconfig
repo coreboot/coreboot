@@ -609,6 +609,190 @@ config GDB_STUB
 	  If enabled, you will be able to set breakpoints for gdb debugging.
 	  See src/arch/i386/lib/c_start.S for details.
 
+config DEBUG_RAM_SETUP
+	bool "Output verbose RAM init debug messages"
+	default n
+	depends on (NORTHBRIDGE_AMD_AMDFAM10 \
+		 || NORTHBRIDGE_AMD_AMDK8 \
+		 || NORTHBRIDGE_VIA_CN700 \
+		 || NORTHBRIDGE_VIA_CX700 \
+		 || NORTHBRIDGE_VIA_VX800 \
+		 || NORTHBRIDGE_INTEL_E7501 \
+		 || NORTHBRIDGE_INTEL_I440BX \
+		 || NORTHBRIDGE_INTEL_I82810 \
+		 || NORTHBRIDGE_INTEL_I82830 \
+		 || NORTHBRIDGE_INTEL_I945)
+	help
+	  This option enables additional RAM init related debug messages.
+	  It is recommended to enable this when debugging issues on your
+	  board which might be RAM init related.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config DEBUG_SMBUS
+	bool "Output verbose SMBus debug messages"
+	default n
+	depends on (SOUTHBRIDGE_VIA_VT8237R \
+		 || NORTHBRIDGE_VIA_VX800 \
+		 || NORTHBRIDGE_VIA_CX700 \
+		 || NORTHBRIDGE_AMD_AMDK8)
+	help
+	  This option enables additional SMBus (and SPD) debug messages.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config DEBUG_SMI
+	bool "Output verbose SMI debug messages"
+	default n
+	depends on HAVE_SMI_HANDLER
+	help
+	  This option enables additional SMI related debug messages.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG
+	bool "Output verbose x86emu debug messages"
+	default n
+	depends on PCI_OPTION_ROM_RUN_YABEL
+	help
+	  This option enables additional x86emu related debug messages.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_JMP
+	bool "Trace JMP/RETF"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print information about JMP and RETF opcodes from x86emu.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_TRACE
+	bool "Trace all opcodes"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print _all_ opcodes that are executed by x86emu.
+	  
+	  WARNING: This will produce a LOT of output and take a long time.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_PNP
+	bool "Log Plug&Play accesses"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print Plug And Play accesses made by option ROMs.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_DISK
+	bool "Log Disk I/O"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print Disk I/O related messages.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_PMM
+	bool "Log PMM"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print messages related to POST Memory Manager (PMM).
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+
+config X86EMU_DEBUG_VBE
+	bool "Debug VESA BIOS Extensions"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print messages related to VESA BIOS Extension (VBE) functions.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_INT10
+	bool "Redirect INT10 output to console"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Let INT10 (i.e. character output) calls print messages to debug output.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_INTERRUPTS
+	bool "Log intXX calls"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print messages related to interrupt handling.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_CHECK_VMEM_ACCESS
+	bool "Log special memory accesses"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print messages related to accesses to certain areas of the virtual
+	  memory (e.g. BDA (BIOS Data Area) or interrupt vectors)
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_MEM
+	bool "Log all memory accesses"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print memory accesses made by option ROM.
+	  Note: This also includes accesses to fetch instructions.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
+config X86EMU_DEBUG_IO
+	bool "Log IO accesses"
+	default n
+	depends on X86EMU_DEBUG
+	help
+	  Print I/O accesses made by option ROM.
+
+	  Note: This option will increase the size of the coreboot image.
+
+	  If unsure, say N.
+
 endmenu
 
 config LIFT_BSP_APIC_ID

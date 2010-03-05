@@ -49,11 +49,7 @@
 
 #define SMBUS_DELAY()		outb(0x80, 0x80)
 
-/* Debugging macros. Only necessary if something isn't working right */
-
-#define DEBUG_SMBUS 1
-
-#ifdef DEBUG_SMBUS
+#ifdef CONFIG_DEBUG_SMBUS
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
 #else
@@ -289,7 +285,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 }
 
 /* Debugging Function */
-#ifdef DEBUG_SMBUS
+#if CONFIG_DEBUG_SMBUS
 static void dump_spd_data(void)
 {
 	int dimm, offset, regs;

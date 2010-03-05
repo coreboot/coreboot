@@ -23,21 +23,16 @@ static  void print_raminit(const char *strval, u32 val)
 	printk_debug("%s%08x\n", strval, val);
 }
 
-
-#define RAMINIT_DEBUG 1
-
-
 static  void print_tx(const char *strval, u32 val)
 {
-#if RAMINIT_DEBUG == 1
+#if CONFIG_DEBUG_RAM_SETUP
 	print_raminit(strval, val);
 #endif
 }
 
-
 static  void print_t(const char *strval)
 {
-#if RAMINIT_DEBUG == 1
+#if CONFIG_DEBUG_RAM_SETUP
 	print_debug(strval);
 #endif
 }

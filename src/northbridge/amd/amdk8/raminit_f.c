@@ -34,9 +34,7 @@
 #define QRANK_DIMM_SUPPORT 0
 #endif
 
-#define RAM_TIMING_DEBUG 0
-
-#if RAM_TIMING_DEBUG == 1
+#if DEBUG_RAM_SETUP
 #define printk_raminit printk_debug
 #else
 #define printk_raminit(fmt, arg...)

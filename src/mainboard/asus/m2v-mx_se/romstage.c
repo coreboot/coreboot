@@ -44,8 +44,6 @@ unsigned int get_sbdn(unsigned bus);
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
 #endif
 
-/* #define DEBUG_SMBUS 1 */
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

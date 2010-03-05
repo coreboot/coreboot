@@ -22,10 +22,7 @@
 // Unfortunately the code seems to chew up several K of space.
 //#define VALIDATE_DIMM_COMPATIBILITY
 
-// Uncomment this to enable local debugging messages
-//#define DEBUG_RAM_CONFIG
-
-#if defined(DEBUG_RAM_CONFIG)
+#if CONFIG_DEBUG_RAM_SETUP
 #define RAM_DEBUG_MESSAGE(x)	print_debug(x)
 #define RAM_DEBUG_HEX32(x)		print_debug_hex32(x)
 #define RAM_DEBUG_HEX8(x)		print_debug_hex8(x)

@@ -25,8 +25,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 
-// #define DEBUG_SMI
-
 /* ********************* smi_util ************************* */
 
 /* Data */
@@ -119,7 +117,7 @@ void uart_init(void)
 
 void console_init(void)
 {
-#ifdef DEBUG_SMI
+#if CONFIG_DEBUG_SMI
 	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 	uart_init();
 #else

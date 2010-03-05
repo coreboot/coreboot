@@ -28,8 +28,6 @@
 #include <device/pci_def.h>
 #include "i82801gx.h"
 
-#define DEBUG_SMI
-
 #define APM_CNT		0xb2
 #define   CST_CONTROL	0x85
 #define   PST_CONTROL	0x80

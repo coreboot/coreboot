@@ -24,10 +24,8 @@
 #include <delay.h>
 #include "cx700_registers.h"
 
-// #define DEBUG_RAM_SETUP 1
-
 /* Debugging macros. */
-#if defined(DEBUG_RAM_SETUP)
+#if CONFIG_DEBUG_RAM_SETUP
 #define PRINTK_DEBUG(x...)      printk_debug(x)
 #else
 #define PRINTK_DEBUG(x...)

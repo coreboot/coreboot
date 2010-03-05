@@ -17,6 +17,7 @@
 #include "device.h"
 #include "debug.h"
 #include <x86emu/x86emu.h>
+#include "io.h"
 
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <device/pci.h>
@@ -87,10 +88,7 @@ u8 my_inb(X86EMU_pioAddr addr)
 	u8 val;
 
 	val = inb(addr);
-#ifdef CONFIG_DEBUG
-	if ((debug_flags & DEBUG_IO) && (addr != 0x40))
-	    printk("inb(0x%04x) = 0x%02x\n", addr, val);
-#endif
+	DEBUG_PRINTF_IO("inb(0x%04x) = 0x%02x\n", addr, val);
 
 	return val;
 }
@@ -100,11 +98,8 @@ u16 my_inw(X86EMU_pioAddr addr)
 	u16 val;
 
 	val = inw(addr);
+	DEBUG_PRINTF_IO("inw(0x%04x) = 0x%04x\n", addr, val);
 
-#ifdef CONFIG_DEBUG
-	if (debug_flags & DEBUG_IO)
-		printk("inw(0x%04x) = 0x%04x\n", addr, val);
-#endif
 	return val;
 }
 
@@ -113,38 +108,26 @@ u32 my_inl(X86EMU_pioAddr addr)
 	u32 val;
 
 	val = inl(addr);
+	DEBUG_PRINTF_IO("inl(0x%04x) = 0x%08x\n", addr, val);
 
-#ifdef CONFIG_DEBUG
-	if (debug_flags & DEBUG_IO)
-		printk("inl(0x%04x) = 0x%08x\n", addr, val);
-#endif
 	return val;
 }
 
 void my_outb(X86EMU_pioAddr addr, u8 val)
 {
-#ifdef CONFIG_DEBUG
-	if ((debug_flags & DEBUG_IO) && (addr != 0x43))
-		printk("outb(0x%02x, 0x%04x)\n", val, addr);
-#endif
+	DEBUG_PRINTF_IO("outb(0x%02x, 0x%04x)\n", val, addr);
 	outb(val, addr);
 }
 
 void my_outw(X86EMU_pioAddr addr, u16 val)
 {
-#ifdef CONFIG_DEBUG
-	if (debug_flags & DEBUG_IO)
-		printk("outw(0x%04x, 0x%04x)\n", val, addr);
-#endif
+	DEBUG_PRINTF_IO("outw(0x%04x, 0x%04x)\n", val, addr);
 	outw(val, addr);
 }
 
 void my_outl(X86EMU_pioAddr addr, u32 val)
 {
-#ifdef CONFIG_DEBUG
-	if (debug_flags & DEBUG_IO)
-		printk("outl(0x%08x, 0x%04x)\n", val, addr);
-#endif
+	DEBUG_PRINTF_IO("outl(0x%08x, 0x%04x)\n", val, addr);
 	outl(val, addr);
 }
 

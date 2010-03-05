@@ -134,11 +134,8 @@ static void dump_pci_devices_on_bus(unsigned busn)
 	}
 }
 
-#ifndef DEBUG_SMBUS
-#define DEBUG_SMBUS 0
-#endif
+#if CONFIG_DEBUG_SMBUS
 
-#if DEBUG_SMBUS == 1
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;

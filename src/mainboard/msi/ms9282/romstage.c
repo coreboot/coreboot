@@ -38,8 +38,6 @@
 //if we want to wait for core1 done before DQS training, set it to 0
 #define K8_SET_FIDVID_CORE0_ONLY 1
 
-#define DEBUG_SMBUS 1
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

@@ -279,7 +279,7 @@ typedef struct {
     u32                         mode;
     volatile int                intr;   /* mask of pending interrupts */
     volatile int                         debug;
-#ifdef DEBUG
+#if CONFIG_X86EMU_DEBUG
     int                         check;
     u16                         saved_ip;
     u16                         saved_cs;
@@ -364,13 +364,6 @@ extern    X86EMU_sysEnv	_X86EMU_env;
 #define X86_BH M.x86.R_BH
 #define X86_CH M.x86.R_CH
 #define X86_DH M.x86.R_DH
-
-		
-/*-------------------------- Function Prototypes --------------------------*/
-
-/* Function to log information at runtime */
-
-//void	printk(const char *fmt, ...);
 
 #ifdef  __cplusplus
 }                       			/* End of "C" linkage for C++   	*/

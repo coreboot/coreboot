@@ -21,21 +21,18 @@ extern void x86emu_dump_xregs(void);
 
 /* printf is not available in coreboot... use printk */
 #include <console/console.h>
-/* uurgs... yuck... x86emu/x86emu.h is redefining printk... we include it here
- * and use its redefinition of printk
- * TODO: FIX!!!! */
 #include "x86emu/x86emu.h"
-#define printf printk
+#define printf(x...) printk(BIOS_DEBUG, x)
 
 /* PH: empty versions of set/clr_ci
  * TODO: remove! */
 static inline void clr_ci(void) {};
 static inline void set_ci(void) {};
 
-/* Set CONFIG_YABEL_DEBUG_FLAGS is a binary switch that allows you
- * to select the following items to debug. 1=on 0=off. After you
- * decide what you want to debug create the binary value, convert to hex
- * and set the Option (Ex. CONFIG_YABEL_DEBUG_FLAGS = 0x31FF //Debug All).
+/* debug_flags is a binary switch that allows you to select the following items
+ * to debug. 1=on 0=off. After you decide what you want to debug create the
+ * binary value, convert to hex and set the option. These options can be
+ * selected in Kconfig.
  *
  * |-DEBUG_JMP - print info about JMP and RETF opcodes from x86emu
  * ||-DEBUG_TRACE_X86EMU - print _all_ opcodes that are executed by x86emu (WARNING: this will produce a LOT of output)
@@ -69,9 +66,7 @@ static inline void set_ci(void) {};
 // set to enable tracing of JMPs in x86emu
 #define DEBUG_JMP 0x2000
 
-//#define DEBUG
-//#undef DEBUG
-#ifdef DEBUG
+#if defined(CONFIG_X86EMU_DEBUG) && CONFIG_X86EMU_DEBUG
 
 #define CHECK_DBG(_flag) if (debug_flags & _flag)
 

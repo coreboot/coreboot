@@ -40,8 +40,6 @@ unsigned int get_sbdn(unsigned bus);
 /* If we want to wait for core1 done before DQS training, set it to 0. */
 #define K8_SET_FIDVID_CORE0_ONLY 1
 
-/* #define DEBUG_SMBUS 1 */
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -59,10 +57,10 @@ unsigned int get_sbdn(unsigned bus);
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 #include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
+#include "northbridge/amd/amdk8/debug.c" /* After vt8237r_early_smbus.c! */
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"

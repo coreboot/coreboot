@@ -27,8 +27,6 @@
 
 void southbridge_smi_set_eos(void);
 
-/* To enable SMI define DEBUG_SMI in smiutil.c */
-
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */

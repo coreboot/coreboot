@@ -29,11 +29,8 @@
 Macros and definitions.
 -----------------------------------------------------------------------------*/
 
-/* Uncomment this to enable debugging output. */
-// #define DEBUG_RAM_SETUP 1
-
 /* Debugging macros. */
-#if defined(DEBUG_RAM_SETUP)
+#if CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX8(x)	print_debug_hex8(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)

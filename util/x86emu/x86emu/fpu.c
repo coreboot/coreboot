@@ -52,7 +52,7 @@ void x86emuOp_esc_coprocess_d8(u8 X86EMU_UNUSED(op1))
 
 #ifdef DEBUG
 
-static char *x86emu_fpu_op_d9_tab[] = {
+static const char *x86emu_fpu_op_d9_tab[] = {
     "FLD\tDWORD PTR ", "ESC_D9\t", "FST\tDWORD PTR ", "FSTP\tDWORD PTR ",
     "FLDENV\t", "FLDCW\t", "FSTENV\t", "FSTCW\t",
 
@@ -63,7 +63,7 @@ static char *x86emu_fpu_op_d9_tab[] = {
     "FLDENV\t", "FLDCW\t", "FSTENV\t", "FSTCW\t",
 };
 
-static char *x86emu_fpu_op_d9_tab1[] = {
+static const char *x86emu_fpu_op_d9_tab1[] = {
     "FLD\t", "FLD\t", "FLD\t", "FLD\t",
     "FLD\t", "FLD\t", "FLD\t", "FLD\t",
 
@@ -296,7 +296,7 @@ void x86emuOp_esc_coprocess_d9(u8 X86EMU_UNUSED(op1))
 
 #ifdef DEBUG
 
-char *x86emu_fpu_op_da_tab[] = {
+static const char *x86emu_fpu_op_da_tab[] = {
     "FIADD\tDWORD PTR ", "FIMUL\tDWORD PTR ", "FICOM\tDWORD PTR ",
     "FICOMP\tDWORD PTR ",
     "FISUB\tDWORD PTR ", "FISUBR\tDWORD PTR ", "FIDIV\tDWORD PTR ",
@@ -386,7 +386,7 @@ void x86emuOp_esc_coprocess_da(u8 X86EMU_UNUSED(op1))
 
 #ifdef DEBUG
 
-char *x86emu_fpu_op_db_tab[] = {
+static const char *x86emu_fpu_op_db_tab[] = {
     "FILD\tDWORD PTR ", "ESC_DB\t19", "FIST\tDWORD PTR ", "FISTP\tDWORD PTR ",
     "ESC_DB\t1C", "FLD\tTBYTE PTR ", "ESC_DB\t1E", "FSTP\tTBYTE PTR ",
 
@@ -505,7 +505,7 @@ void x86emuOp_esc_coprocess_db(u8 X86EMU_UNUSED(op1))
 }
 
 #ifdef DEBUG
-char *x86emu_fpu_op_dc_tab[] = {
+static const char *x86emu_fpu_op_dc_tab[] = {
     "FADD\tQWORD PTR ", "FMUL\tQWORD PTR ", "FCOM\tQWORD PTR ",
     "FCOMP\tQWORD PTR ",
     "FSUB\tQWORD PTR ", "FSUBR\tQWORD PTR ", "FDIV\tQWORD PTR ",
@@ -620,7 +620,7 @@ void x86emuOp_esc_coprocess_dc(u8 X86EMU_UNUSED(op1))
 
 #ifdef DEBUG
 
-static char *x86emu_fpu_op_dd_tab[] = {
+static const char *x86emu_fpu_op_dd_tab[] = {
     "FLD\tQWORD PTR ", "ESC_DD\t29,", "FST\tQWORD PTR ", "FSTP\tQWORD PTR ",
     "FRSTOR\t", "ESC_DD\t2D,", "FSAVE\t", "FSTSW\t",
 
@@ -720,7 +720,7 @@ void x86emuOp_esc_coprocess_dd(u8 X86EMU_UNUSED(op1))
 
 #ifdef DEBUG
 
-static char *x86emu_fpu_op_de_tab[] =
+static const char *x86emu_fpu_op_de_tab[] =
 {
     "FIADD\tWORD PTR ", "FIMUL\tWORD PTR ", "FICOM\tWORD PTR ",
     "FICOMP\tWORD PTR ",
@@ -839,7 +839,7 @@ void x86emuOp_esc_coprocess_de(u8 X86EMU_UNUSED(op1))
 
 #ifdef DEBUG
 
-static char *x86emu_fpu_op_df_tab[] = {
+static const char *x86emu_fpu_op_df_tab[] = {
     /* mod == 00 */
     "FILD\tWORD PTR ", "ESC_DF\t39\n", "FIST\tWORD PTR ", "FISTP\tWORD PTR ",
     "FBLD\tTBYTE PTR ", "FILD\tQWORD PTR ", "FBSTP\tTBYTE PTR ",

@@ -42,27 +42,15 @@
 #ifndef __X86EMU_X86EMU_H
 #define __X86EMU_X86EMU_H
 
-/* FIXME: redefine printk for the moment */
 #include <stddef.h>
 #include <console/console.h>
-#undef printk
-#define printk(x...) do_printk(BIOS_DEBUG, x)
-#if defined(CONFIG_YABEL_DEBUG_FLAGS) && (CONFIG_YABEL_DEBUG_FLAGS != 0)
+#if CONFIG_X86EMU_DEBUG
 #define DEBUG
-#else
-#undef DEBUG
 #endif
 
-#ifdef SCITECH
-#include "scitech.h"
-#define	X86API	_ASMAPI
-#define	X86APIP	_ASMAPIP
-typedef int X86EMU_pioAddr;
-#else
 #include "types.h"
 #define	X86API
 #define	X86APIP	*
-#endif
 #include "regs.h"
 
 /*---------------------- Macros and type definitions ----------------------*/
@@ -166,9 +154,9 @@ void X86EMU_setMemBase(void *base, size_t size);
 void 	X86EMU_exec(void);
 void 	X86EMU_halt_sys(void);
 
-#ifdef	DEBUG
+#if CONFIG_X86EMU_DEBUG
 #define	HALT_SYS()	\
-    	printk("halt_sys: in %s\n", __func__);	\
+    	printf("halt_sys: in %s\n", __func__);	\
 	X86EMU_halt_sys();
 #else
 #define	HALT_SYS()	X86EMU_halt_sys()

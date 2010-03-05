@@ -1,6 +1,7 @@
 /******************************************************************************
  * Copyright (c) 2004, 2008 IBM Corporation
  * Copyright (c) 2008, 2009 Pattrick Hueper <phueper@hueper.net>
+ * Copyright (c) 2010 coresystems GmbH
  * All rights reserved.
  * This program and the accompanying materials
  * are made available under the terms of the BSD License
@@ -12,7 +13,6 @@
  *****************************************************************************/
 
 #include <string.h>
-
 #include <types.h>
 
 #include "debug.h"
@@ -28,9 +28,8 @@
 #include "device.h"
 #include "pmm.h"
 
-#include "compat/rtas.h"
-
 #include <device/device.h>
+#include "compat/rtas.h"
 
 static X86EMU_memFuncs my_mem_funcs = {
 	my_rdb, my_rdw, my_rdl,
@@ -57,13 +56,42 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 {
 	u8 *rom_image;
 	int i = 0;
-#ifdef DEBUG
-	debug_flags = 0;//DEBUG_PRINT_INT10 | DEBUG_PNP | DEBUG_INTR | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;
-		// | DEBUG_CHECK_VMEM_ACCESS | DEBUG_MEM | DEBUG_IO;
-		// | DEBUG_TRACE_X86EMU | DEBUG_JMP;
+#if CONFIG_X86EMU_DEBUG
+	debug_flags = 0;
+#if defined(CONFIG_X86EMU_DEBUG_JMP) && CONFIG_X86EMU_DEBUG_JMP
+	debug_flags |= DEBUG_JMP;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_TRACE) && CONFIG_X86EMU_DEBUG_TRACE
+	debug_flags |= DEBUG_TRACE_X86EMU;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_PNP) && CONFIG_X86EMU_DEBUG_PNP
+	debug_flags |= DEBUG_PNP;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_DISK) && CONFIG_X86EMU_DEBUG_DISK
+	debug_flags |= DEBUG_DISK;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_PMM) && CONFIG_X86EMU_DEBUG_PMM
+	debug_flags |= DEBUG_PMM;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_VBE) && CONFIG_X86EMU_DEBUG_VBE
+	debug_flags |= DEBUG_VBE;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_INT10) && CONFIG_X86EMU_DEBUG_INT10
+	debug_flags |= DEBUG_PRINT_INT10;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_INTERRUPTS) && CONFIG_X86EMU_DEBUG_INTERRUPTS
+	debug_flags |= DEBUG_INTR;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_CHECK_VMEM_ACCESS) && CONFIG_X86EMU_DEBUG_CHECK_VMEM_ACCESS
+	debug_flags |= DEBUG_CHECK_VMEM_ACCESS;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_MEM) && CONFIG_X86EMU_DEBUG_MEM
+	debug_flags |= DEBUG_MEM;
+#endif
+#if defined(CONFIG_X86EMU_DEBUG_IO) && CONFIG_X86EMU_DEBUG_IO
+	debug_flags |= DEBUG_IO;
+#endif
 
-	/* use CONFIG_YABEL_DEBUG_FLAGS, too... */
-	debug_flags |= CONFIG_YABEL_DEBUG_FLAGS;
 #endif
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",
@@ -200,11 +228,11 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	//TODO: check for further needed EBDA data...
 
 	// setup  original ROM BIOS Area (F000:xxxx)
-	char *date = "06/11/99";
+	const char *date = "06/11/99";
 	for (i = 0; date[i]; i++)
 		my_wrb(0xffff5 + i, date[i]);
 	// set up eisa ident string
-	char *ident = "PCI_ISA";
+	const char *ident = "PCI_ISA";
 	for (i = 0; ident[i]; i++)
 		my_wrb(0xfffd9 + i, ident[i]);
 
@@ -250,14 +278,14 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	// push a HLT instruction and a pointer to it onto the stack
 	// any return will pop the pointer and jump to the HLT, thus
 	// exiting (more or less) cleanly
-	push_word(0xf4f4);	//F4=HLT
+	push_word(0xf4f4);	// F4=HLT
 	push_word(M.x86.R_SS);
 	push_word(M.x86.R_SP + 2);
 
 	CHECK_DBG(DEBUG_TRACE_X86EMU) {
 		X86EMU_trace_on();
+#if 0
 	} else {
-#ifdef DEBUG
 		M.x86.debug |= DEBUG_SAVE_IP_CS_F;
 		M.x86.debug |= DEBUG_DECODE_F;
 		M.x86.debug |= DEBUG_DECODE_NOPRINT_F;
@@ -268,7 +296,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 		M.x86.debug |= DEBUG_TRACEJMP_REGS_F;
 		M.x86.debug |= DEBUG_TRACECALL_F;
 		M.x86.debug |= DEBUG_TRACECALL_REGS_F;
-		}
+	}
 
 	DEBUG_PRINTF("Executing Initialization Vector...\n");
 	X86EMU_exec();
@@ -278,7 +306,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	 * some boot device status in AX (see PNP BIOS Spec Section 3.3
 	 */
 	DEBUG_PRINTF_CS_IP("Option ROM Exit Status: %04x\n", M.x86.R_AX);
-#ifdef DEBUG
+#if defined(CONFIG_X86EMU_DEBUG) && CONFIG_X86EMU_DEBUG
 	DEBUG_PRINTF("Exit Status Decode:\n");
 	if (M.x86.R_AX & 0x100) {	// bit 8
 		DEBUG_PRINTF
@@ -344,13 +372,11 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	    && (M.x86.R_SP == STACK_START_OFFSET)) {
 		DEBUG_PRINTF("Stack is clean, initialization successfull!\n");
 	} else {
-		DEBUG_PRINTF
-		    ("Stack unclean, initialization probably NOT COMPLETE!!\n");
+		printf("Stack unclean, initialization probably NOT COMPLETE!\n");
 		DEBUG_PRINTF("SS:SP = %04x:%04x, expected: %04x:%04x\n",
 			     M.x86.R_SS, M.x86.R_SP, STACK_SEGMENT,
 			     STACK_START_OFFSET);
 	}
-
 
 	// TODO: according to the BIOS Boot Spec initializations may be ended using INT18h and setting
 	// the status.

@@ -65,7 +65,7 @@
 #define I2C_TRANS_CMD			0x40
 #define CLOCK_SLAVE_ADDRESS		0x69
 
-#if DEBUG_SMBUS == 1
+#if CONFIG_DEBUG_SMBUS
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
 #else

@@ -46,4 +46,7 @@
 typedef int (* yabel_handleIntFunc)(void);
 extern yabel_handleIntFunc yabel_intFuncArray[256];
 
+struct device;
+
+u32 biosemu(u8 *biosmem, u32 biosmem_size, struct device *dev, unsigned long rom_addr);
 #endif

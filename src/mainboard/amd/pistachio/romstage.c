@@ -51,7 +51,6 @@
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "northbridge/amd/amdk8/debug.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
@@ -61,6 +60,7 @@
 
 #include "southbridge/amd/rs690/rs690_early_setup.c"
 #include "southbridge/amd/sb600/sb600_early_setup.c"
+#include "northbridge/amd/amdk8/debug.c" /* After sb600_early_setup.c! */
 
 /* CAN'T BE REMOVED! crt0.S will use it. I don't know WHY!*/
 static void memreset(int controllers, const struct mem_controller *ctrl)

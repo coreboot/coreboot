@@ -24,10 +24,8 @@
 #include "raminit.h"
 #include "i945.h"
 
-#define DEBUG_RAM_SETUP
-
 /* Debugging macros. */
-#if defined(DEBUG_RAM_SETUP)
+#if CONFIG_DEBUG_RAM_SETUP
 #define PRINTK_DEBUG(x...)	printk_debug(x)
 #else
 #define PRINTK_DEBUG(x...)
@@ -73,7 +71,7 @@ static void ram_read32(u32 offset)
 	read32(offset);
 }
 
-#ifdef DEBUG_RAM_SETUP
+#if CONFIG_DEBUG_RAM_SETUP
 static void sdram_dump_mchbar_registers(void)
 {
 	int i;

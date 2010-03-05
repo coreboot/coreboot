@@ -77,7 +77,7 @@ next instruction.
 void x86emu_intr_raise(
     u8 intrnum)
 {
-    printk("%s, rasing execption %x\n", __func__, intrnum);
+    printf("%s, raising exeception %x\n", __func__, intrnum);
     x86emu_dump_regs();
     M.x86.intno = intrnum;
     M.x86.intr |= INTR_SYNCH;
@@ -105,12 +105,12 @@ DB(     if (CHECK_IP_FETCH())
         if (M.x86.intr) {
             if (M.x86.intr & INTR_HALTED) {
 DB(             if (M.x86.R_SP != 0) {
-                    printk("halted\n");
+                    printf("halted\n");
                     X86EMU_trace_regs();
                     }
                 else {
                     if (M.x86.debug)
-                        printk("Service completed successfully\n");
+                        printf("Service completed successfully\n");
                     })
                 return;
             }
@@ -286,7 +286,7 @@ _INLINE u32 get_data_segment(void)
         return  M.x86.R_SS;
       default:
 #ifdef  DEBUG
-        printk("error: should not happen:  multiple overrides.\n");
+        printf("error: should not happen:  multiple overrides.\n");
 #endif
         HALT_SYS();
         return 0;

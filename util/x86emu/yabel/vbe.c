@@ -154,7 +154,7 @@ vbe_prepare(void)
 }
 
 // VBE Function 00h
-u8
+static u8
 vbe_info(vbe_info_t * info)
 {
 	vbe_prepare();
@@ -223,7 +223,7 @@ vbe_info(vbe_info_t * info)
 }
 
 // VBE Function 01h
-u8
+static u8
 vbe_get_mode_info(vbe_mode_info_t * mode_info)
 {
 	vbe_prepare();
@@ -264,7 +264,7 @@ vbe_get_mode_info(vbe_mode_info_t * mode_info)
 }
 
 // VBE Function 02h
-u8
+static u8
 vbe_set_mode(vbe_mode_info_t * mode_info)
 {
 	vbe_prepare();
@@ -301,7 +301,7 @@ vbe_set_mode(vbe_mode_info_t * mode_info)
 }
 
 //VBE Function 08h
-u8
+static u8
 vbe_set_palette_format(u8 format)
 {
 	vbe_prepare();
@@ -337,7 +337,7 @@ vbe_set_palette_format(u8 format)
 }
 
 // VBE Function 09h
-u8
+static u8
 vbe_set_color(u16 color_number, u32 color_value)
 {
 	vbe_prepare();
@@ -379,7 +379,7 @@ vbe_set_color(u16 color_number, u32 color_value)
 	return 0;
 }
 
-u8
+static u8
 vbe_get_color(u16 color_number, u32 * color_value)
 {
 	vbe_prepare();
@@ -422,7 +422,7 @@ vbe_get_color(u16 color_number, u32 * color_value)
 }
 
 // VBE Function 15h
-u8
+static u8
 vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 {
 	vbe_prepare();
@@ -496,7 +496,7 @@ vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 	return 0;
 }
 
-u32
+static u32
 vbe_get_info(void)
 {
 	u8 rval;
@@ -571,7 +571,7 @@ vbe_get_info(void)
 	}
 #endif
 	if (*((u64 *) ddc_info.edid_block_zero) !=
-	    (u64) 0x00FFFFFFFFFFFF00) {
+	    (u64) 0x00FFFFFFFFFFFF00ULL) {
 		// invalid EDID signature... probably no monitor
 
 		output->display_type = 0x0;
@@ -599,36 +599,36 @@ vbe_get_info(void)
 
 		DEBUG_PRINTF_VBE("Video Mode 0x%04x available, %s\n",
 				 mode_info.video_mode,
-				 (mode_info.attributes & 0x1) ==
+				 (le16_to_cpu(mode_info.vesa.mode_attributes) & 0x1) ==
 				 0 ? "not supported" : "supported");
 		DEBUG_PRINTF_VBE("\tTTY: %s\n",
-				 (mode_info.attributes & 0x4) ==
+				 (le16_to_cpu(mode_info.vesa.mode_attributes) & 0x4) ==
 				 0 ? "no" : "yes");
 		DEBUG_PRINTF_VBE("\tMode: %s %s\n",
-				 (mode_info.attributes & 0x8) ==
+				 (le16_to_cpu(mode_info.vesa.mode_attributes) & 0x8) ==
 				 0 ? "monochrome" : "color",
-				 (mode_info.attributes & 0x10) ==
+				 (le16_to_cpu(mode_info.vesa.mode_attributes) & 0x10) ==
 				 0 ? "text" : "graphics");
 		DEBUG_PRINTF_VBE("\tVGA: %s\n",
-				 (mode_info.attributes & 0x20) ==
+				 (le16_to_cpu(mode_info.vesa.mode_attributes) & 0x20) ==
 				 0 ? "compatible" : "not compatible");
 		DEBUG_PRINTF_VBE("\tWindowed Mode: %s\n",
-				 (mode_info.attributes & 0x40) ==
+				 (le16_to_cpu(mode_info.vesa.mode_attributes) & 0x40) ==
 				 0 ? "yes" : "no");
 		DEBUG_PRINTF_VBE("\tFramebuffer: %s\n",
-				 (mode_info.attributes & 0x80) ==
+				 (le16_to_cpu(mode_info.vesa.mode_attributes) & 0x80) ==
 				 0 ? "no" : "yes");
 		DEBUG_PRINTF_VBE("\tResolution: %dx%d\n",
-				 mode_info.x_resolution,
-				 mode_info.y_resolution);
+				 le16_to_cpu(mode_info.vesa.x_resolution),
+				 le16_to_cpu(mode_info.vesa.y_resolution));
 		DEBUG_PRINTF_VBE("\tChar Size: %dx%d\n",
-				 mode_info.x_charsize, mode_info.y_charsize);
+				 mode_info.vesa.x_charsize, mode_info.vesa.y_charsize);
 		DEBUG_PRINTF_VBE("\tColor Depth: %dbpp\n",
-				 mode_info.bits_per_pixel);
+				 mode_info.vesa.bits_per_pixel);
 		DEBUG_PRINTF_VBE("\tMemory Model: 0x%x\n",
-				 mode_info.memory_model);
+				 mode_info.vesa.memory_model);
 		DEBUG_PRINTF_VBE("\tFramebuffer Offset: %08x\n",
-				 mode_info.framebuffer_address);
+				 le32_to_cpu(mode_info.vesa.phys_base_ptr));
 
 		if ((mode_info.vesa.bits_per_pixel == input.color_depth)
 		    && (le16_to_cpu(mode_info.vesa.x_resolution) <= input.max_screen_width)
@@ -647,10 +647,10 @@ vbe_get_info(void)
 		DEBUG_PRINTF_VBE
 		    ("Best Video Mode found: 0x%x, %dx%d, %dbpp, framebuffer_address: 0x%x\n",
 		     best_mode_info.video_mode,
-		     best_mode_info.x_resolution,
-		     best_mode_info.y_resolution,
-		     best_mode_info.bits_per_pixel,
-		     best_mode_info.framebuffer_address);
+		     best_mode_info.vesa.x_resolution,
+		     best_mode_info.vesa.y_resolution,
+		     best_mode_info.vesa.bits_per_pixel,
+		     le32_to_cpu(best_mode_info.vesa.phys_base_ptr));
 
 		//printf("Mode Info Dump:");
 		//dump(best_mode_info.mode_info_block, 64);

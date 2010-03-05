@@ -40,7 +40,7 @@ typedef struct {
 #ifdef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 /* coreboot version */
 
-void
+static void
 biosemu_dev_get_addr_info(void)
 {
 	int taa_index = 0;
@@ -112,7 +112,7 @@ biosemu_dev_get_addr_info(void)
 	}
 	// store last entry index of translate_address_array
 	taa_last_entry = taa_index - 1;
-#ifdef DEBUG
+#if defined(CONFIG_X86EMU_DEBUG) && CONFIG_X86EMU_DEBUG
 	//dump translate_address_array
 	printf("translate_address_array: \n");
 	translate_address_t ta;
@@ -195,7 +195,7 @@ biosemu_dev_get_addr_info(void)
 	}
 	// store last entry index of translate_address_array
 	taa_last_entry = taa_index - 1;
-#ifdef DEBUG
+#if defined(CONFIG_X86EMU_DEBUG) && CONFIG_X86EMU_DEBUG
 	//dump translate_address_array
 	printf("translate_address_array: \n");
 	translate_address_t ta;
@@ -210,11 +210,12 @@ biosemu_dev_get_addr_info(void)
 }
 #endif
 
+#ifndef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 // to simulate accesses to legacy VGA Memory (0xA0000-0xBFFFF)
 // we look for the first prefetchable memory BAR, if no prefetchable BAR found,
 // we use the first memory BAR
 // dev_translate_addr will translate accesses to the legacy VGA Memory into the found vmem BAR
-void
+static void
 biosemu_dev_find_vmem_addr(void)
 {
 	int i = 0;
@@ -257,7 +258,6 @@ biosemu_dev_find_vmem_addr(void)
 	//bios_device.vmem_size = 0;
 }
 
-#ifndef CONFIG_PCI_OPTION_ROM_RUN_YABEL
 void
 biosemu_dev_get_puid(void)
 {
@@ -267,7 +267,7 @@ biosemu_dev_get_puid(void)
 }
 #endif
 
-void
+static void
 biosemu_dev_get_device_vendor_id(void)
 {
 
@@ -334,7 +334,7 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 		memcpy(&pci_ds, (void *) (rom_base_addr + pci_ds_offset),
 		       sizeof(pci_ds));
 		clr_ci();
-#ifdef DEBUG
+#if defined(CONFIG_X86EMU_DEBUG) && CONFIG_X86EMU_DEBUG
 		DEBUG_PRINTF("PCI Data Structure @%lx:\n",
 			     rom_base_addr + pci_ds_offset);
 		dump((void *) &pci_ds, sizeof(pci_ds));

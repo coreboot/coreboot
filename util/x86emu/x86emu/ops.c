@@ -77,7 +77,7 @@
 /* constant arrays to do several instructions in just one function */
 
 #ifdef DEBUG
-static char *x86emu_GenOpName[8] = {
+static const char *x86emu_GenOpName[8] = {
     "ADD", "OR", "ADC", "SBB", "AND", "SUB", "XOR", "CMP"};
 #endif
 
@@ -159,7 +159,7 @@ static u32 (*opcD1_long_operation[])(u32 s, u8 d) =
 
 #ifdef DEBUG
 
-static char *opF6_names[8] =
+static const char *opF6_names[8] =
   { "TEST\t", "", "NOT\t", "NEG\t", "MUL\t", "IMUL\t", "DIV\t", "IDIV\t" };
 
 #endif
@@ -178,7 +178,7 @@ static void x86emuOp_illegal_op(
     if (M.x86.R_SP != 0) {
         DECODE_PRINTF("ILLEGAL X86 OPCODE\n");
         TRACE_REGS();
-        DB( printk("%04x:%04x: %02X ILLEGAL X86 OPCODE!\n",
+        DB( printf("%04x:%04x: %02X ILLEGAL X86 OPCODE!\n",
             M.x86.R_CS, M.x86.R_IP-1,op1));
         HALT_SYS();
         }

@@ -11,6 +11,7 @@
  *     IBM Corporation - initial implementation
  *****************************************************************************/
 
+#include <types.h>
 #include "compat/rtas.h"
 
 #include "biosemu.h"
@@ -18,6 +19,7 @@
 #include "device.h"
 #include "debug.h"
 #include "pmm.h"
+#include "interrupt.h"
 
 #include <x86emu/x86emu.h>
 #include "../x86emu/prim_ops.h"

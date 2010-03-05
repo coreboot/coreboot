@@ -48,10 +48,7 @@
 #define SMBUS_DELAY()		outb(0x80, 0x80)
 
 /* Debugging macros. */
-
-// #define DEBUG_SMBUS 1
-
-#ifdef DEBUG_SMBUS
+#if CONFIG_DEBUG_SMBUS
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
 #else
@@ -102,7 +99,7 @@ static void smbus_wait_until_ready(void)
 		SMBUS_DELAY();
 		++loops;
 	}
-#ifdef DEBUG_SMBUS
+#if CONFIG_DEBUG_SMBUS
 	/* Some systems seem to have a flakey SMBus. No need to spew a lot of
 	 * errors on those, once we know that SMBus access is principally
 	 * working.
@@ -234,7 +231,7 @@ static void enable_smbus(void)
 }
 
 /* Debugging Function */
-#ifdef DEBUG_SMBUS
+#ifdef CONFIG_DEBUG_SMBUS
 static void dump_spd_data(const struct mem_controller *ctrl)
 {
 	int dimm, offset, regs;

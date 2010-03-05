@@ -25,9 +25,7 @@
 #include <delay.h>
 #include "cn700.h"
 
-// #define DEBUG_RAM_SETUP 1
-
-#ifdef DEBUG_RAM_SETUP
+#ifdef CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG_MEM(x)		print_debug(x)
 #define PRINT_DEBUG_MEM_HEX8(x)		print_debug_hex8(x)
 #define PRINT_DEBUG_MEM_HEX16(x)	print_debug_hex16(x)
@@ -51,12 +49,6 @@ static void do_ram_command(device_t dev, u8 command)
 	reg &= 0xf8;		/* Clear bits 2-0. */
 	reg |= command;
 	pci_write_config8(dev, DRAM_MISC_CTL, reg);
-
-	PRINT_DEBUG_MEM("    Sending RAM command 0x");
-	PRINT_DEBUG_MEM_HEX8(reg);
-	PRINT_DEBUG_MEM(" to 0x");
-	PRINT_DEBUG_MEM_HEX32(0 + addr_offset);
-	PRINT_DEBUG_MEM("\r\n");
 }
 
 /**

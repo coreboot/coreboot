@@ -38,7 +38,6 @@
 ****************************************************************************/
 
 #include "x86emui.h"
-// #include <stdarg.h>
 
 /*----------------------------- Implementation ----------------------------*/
 
@@ -59,7 +58,7 @@ void X86EMU_trace_regs (void)
 	}
     }
     if (DEBUG_DECODE() && ! DEBUG_DECODE_NOPRINT()) {
-        printk("%04x:%04x ",M.x86.saved_cs, M.x86.saved_ip);
+        printf("%04x:%04x ",M.x86.saved_cs, M.x86.saved_ip);
         print_encoded_bytes( M.x86.saved_cs, M.x86.saved_ip);
         print_decoded_instruction();
     }
@@ -78,7 +77,7 @@ void x86emu_just_disassemble (void)
      * This routine called if the flag DEBUG_DISASSEMBLE is set kind
      * of a hack!
      */
-    printk("%04x:%04x ",M.x86.saved_cs, M.x86.saved_ip);
+    printf("%04x:%04x ",M.x86.saved_cs, M.x86.saved_ip);
     print_encoded_bytes( M.x86.saved_cs, M.x86.saved_ip);
     print_decoded_instruction();
 }
@@ -162,13 +161,13 @@ void x86emu_inc_decoded_inst_len (int x)
     M.x86.enc_pos += x;
 }
 
-void x86emu_decode_printf (char *x)
+void x86emu_decode_printf (const char *x)
 {
     sprintf(M.x86.decoded_buf+M.x86.enc_str_pos,"%s",x);
     M.x86.enc_str_pos += strlen(x);
 }
 
-void x86emu_decode_printf2 (char *x, int y)
+void x86emu_decode_printf2 (const char *x, int y)
 {
     char temp[100];
     sprintf(temp,x,y);
@@ -189,12 +188,12 @@ static void print_encoded_bytes (u16 s, u16 o)
     for (i=0; i< M.x86.enc_pos; i++) {
         sprintf(buf1+2*i,"%02x", fetch_data_byte_abs(s,o+i));
     }
-    printk("%-20s ",buf1);
+    printf("%-20s ",buf1);
 }
 
 static void print_decoded_instruction (void)
 {
-    printk("%s", M.x86.decoded_buf);
+    printf("%s", M.x86.decoded_buf);
 }
 
 void x86emu_print_int_vect (u16 iv)
@@ -204,7 +203,7 @@ void x86emu_print_int_vect (u16 iv)
     if (iv > 256) return;
     seg   = fetch_data_word_abs(0,iv*4);
     off   = fetch_data_word_abs(0,iv*4+2);
-    printk("%04x:%04x ", seg, off);
+    printf("%04x:%04x ", seg, off);
 }
 
 void X86EMU_dump_memory (u16 seg, u16 off, u32 amt)
@@ -216,12 +215,12 @@ void X86EMU_dump_memory (u16 seg, u16 off, u32 amt)
 
     current = start;
     while (end <= off + amt) {
-        printk("%04x:%04x ", seg, start);
+        printf("%04x:%04x ", seg, start);
         for (i=start; i< off; i++)
-          printk("   ");
+          printf("   ");
         for (       ; i< end; i++)
-          printk("%02x ", fetch_data_byte_abs(seg,i));
-        printk("\n");
+          printf("%02x ", fetch_data_byte_abs(seg,i));
+        printf("\n");
         start = end;
         end = start + 16;
     }
@@ -256,7 +255,7 @@ void x86emu_single_step (void)
     done=0;
     offset = M.x86.saved_ip;
     while (!done) {
-        printk("-");
+        printf("-");
         p = fgets(s, 1023, stdin);
         cmd = parse_line(s, ps, &ntok);
         switch(cmd) {
@@ -310,7 +309,7 @@ void x86emu_single_step (void)
           return;
       case 'P':
           noDecode = (noDecode)?0:1;
-          printk("Toggled decoding to %s\n",(noDecode)?"FALSE":"TRUE");
+          printf("Toggled decoding to %s\n",(noDecode)?"FALSE":"TRUE");
           break;
           case 't':
       case 0:
@@ -368,68 +367,68 @@ int parse_line (char *s, int *ps, int *n)
 
 void x86emu_dump_regs (void)
 {
-    printk("\tAX=%04x  ", M.x86.R_AX );
-    printk("BX=%04x  ", M.x86.R_BX );
-    printk("CX=%04x  ", M.x86.R_CX );
-    printk("DX=%04x  ", M.x86.R_DX );
-    printk("SP=%04x  ", M.x86.R_SP );
-    printk("BP=%04x  ", M.x86.R_BP );
-    printk("SI=%04x  ", M.x86.R_SI );
-    printk("DI=%04x\n", M.x86.R_DI );
-    printk("\tDS=%04x  ", M.x86.R_DS );
-    printk("ES=%04x  ", M.x86.R_ES );
-    printk("SS=%04x  ", M.x86.R_SS );
-    printk("CS=%04x  ", M.x86.R_CS );
-    printk("IP=%04x   ", M.x86.R_IP );
-    if (ACCESS_FLAG(F_OF))    printk("OV ");     /* CHECKED... */
-    else                        printk("NV ");
-    if (ACCESS_FLAG(F_DF))    printk("DN ");
-    else                        printk("UP ");
-    if (ACCESS_FLAG(F_IF))    printk("EI ");
-    else                        printk("DI ");
-    if (ACCESS_FLAG(F_SF))    printk("NG ");
-    else                        printk("PL ");
-    if (ACCESS_FLAG(F_ZF))    printk("ZR ");
-    else                        printk("NZ ");
-    if (ACCESS_FLAG(F_AF))    printk("AC ");
-    else                        printk("NA ");
-    if (ACCESS_FLAG(F_PF))    printk("PE ");
-    else                        printk("PO ");
-    if (ACCESS_FLAG(F_CF))    printk("CY ");
-    else                        printk("NC ");
-    printk("\n");
+    printf("\tAX=%04x  ", M.x86.R_AX );
+    printf("BX=%04x  ", M.x86.R_BX );
+    printf("CX=%04x  ", M.x86.R_CX );
+    printf("DX=%04x  ", M.x86.R_DX );
+    printf("SP=%04x  ", M.x86.R_SP );
+    printf("BP=%04x  ", M.x86.R_BP );
+    printf("SI=%04x  ", M.x86.R_SI );
+    printf("DI=%04x\n", M.x86.R_DI );
+    printf("\tDS=%04x  ", M.x86.R_DS );
+    printf("ES=%04x  ", M.x86.R_ES );
+    printf("SS=%04x  ", M.x86.R_SS );
+    printf("CS=%04x  ", M.x86.R_CS );
+    printf("IP=%04x   ", M.x86.R_IP );
+    if (ACCESS_FLAG(F_OF))    printf("OV ");     /* CHECKED... */
+    else                        printf("NV ");
+    if (ACCESS_FLAG(F_DF))    printf("DN ");
+    else                        printf("UP ");
+    if (ACCESS_FLAG(F_IF))    printf("EI ");
+    else                        printf("DI ");
+    if (ACCESS_FLAG(F_SF))    printf("NG ");
+    else                        printf("PL ");
+    if (ACCESS_FLAG(F_ZF))    printf("ZR ");
+    else                        printf("NZ ");
+    if (ACCESS_FLAG(F_AF))    printf("AC ");
+    else                        printf("NA ");
+    if (ACCESS_FLAG(F_PF))    printf("PE ");
+    else                        printf("PO ");
+    if (ACCESS_FLAG(F_CF))    printf("CY ");
+    else                        printf("NC ");
+    printf("\n");
 }
 
 void x86emu_dump_xregs (void)
 {
-    printk("\tEAX=%08x  ", M.x86.R_EAX );
-    printk("EBX=%08x  ", M.x86.R_EBX );
-    printk("ECX=%08x  ", M.x86.R_ECX );
-    printk("EDX=%08x  \n", M.x86.R_EDX );
-    printk("\tESP=%08x  ", M.x86.R_ESP );
-    printk("EBP=%08x  ", M.x86.R_EBP );
-    printk("ESI=%08x  ", M.x86.R_ESI );
-    printk("EDI=%08x\n", M.x86.R_EDI );
-    printk("\tDS=%04x  ", M.x86.R_DS );
-    printk("ES=%04x  ", M.x86.R_ES );
-    printk("SS=%04x  ", M.x86.R_SS );
-    printk("CS=%04x  ", M.x86.R_CS );
-    printk("EIP=%08x\n\t", M.x86.R_EIP );
-    if (ACCESS_FLAG(F_OF))    printk("OV ");     /* CHECKED... */
-    else                        printk("NV ");
-    if (ACCESS_FLAG(F_DF))    printk("DN ");
-    else                        printk("UP ");
-    if (ACCESS_FLAG(F_IF))    printk("EI ");
-    else                        printk("DI ");
-    if (ACCESS_FLAG(F_SF))    printk("NG ");
-    else                        printk("PL ");
-    if (ACCESS_FLAG(F_ZF))    printk("ZR ");
-    else                        printk("NZ ");
-    if (ACCESS_FLAG(F_AF))    printk("AC ");
-    else                        printk("NA ");
-    if (ACCESS_FLAG(F_PF))    printk("PE ");
-    else                        printk("PO ");
-    if (ACCESS_FLAG(F_CF))    printk("CY ");
-    else                        printk("NC ");
-    printk("\n");
+    printf("\tEAX=%08x  ", M.x86.R_EAX );
+    printf("EBX=%08x  ", M.x86.R_EBX );
+    printf("ECX=%08x  ", M.x86.R_ECX );
+    printf("EDX=%08x  \n", M.x86.R_EDX );
+    printf("\tESP=%08x  ", M.x86.R_ESP );
+    printf("EBP=%08x  ", M.x86.R_EBP );
+    printf("ESI=%08x  ", M.x86.R_ESI );
+    printf("EDI=%08x\n", M.x86.R_EDI );
+    printf("\tDS=%04x  ", M.x86.R_DS );
+    printf("ES=%04x  ", M.x86.R_ES );
+    printf("SS=%04x  ", M.x86.R_SS );
+    printf("CS=%04x  ", M.x86.R_CS );
+    printf("EIP=%08x\n\t", M.x86.R_EIP );
+    if (ACCESS_FLAG(F_OF))    printf("OV ");     /* CHECKED... */
+    else                        printf("NV ");
+    if (ACCESS_FLAG(F_DF))    printf("DN ");
+    else                        printf("UP ");
+    if (ACCESS_FLAG(F_IF))    printf("EI ");
+    else                        printf("DI ");
+    if (ACCESS_FLAG(F_SF))    printf("NG ");
+    else                        printf("PL ");
+    if (ACCESS_FLAG(F_ZF))    printf("ZR ");
+    else                        printf("NZ ");
+    if (ACCESS_FLAG(F_AF))    printf("AC ");
+    else                        printf("NA ");
+    if (ACCESS_FLAG(F_PF))    printf("PE ");
+    else                        printf("PO ");
+    if (ACCESS_FLAG(F_CF))    printf("CY ");
+    else                        printf("NC ");
+    printf("\n");
 }

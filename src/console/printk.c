@@ -19,8 +19,6 @@
 /* Keep together for sysctl support */
 
 int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-int default_message_loglevel = DEFAULT_MESSAGE_LOGLEVEL;
-int minimum_console_loglevel = MINIMUM_CONSOLE_LOGLEVEL;
 int default_console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 DECLARE_SPIN_LOCK(console_lock)

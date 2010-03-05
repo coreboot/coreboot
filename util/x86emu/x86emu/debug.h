@@ -40,9 +40,10 @@
 #ifndef __X86EMU_DEBUG_H
 #define __X86EMU_DEBUG_H
 
-//#define DEBUG 0
-//#undef DEBUG
 /*---------------------- Macros and type definitions ----------------------*/
+
+/* printf is not available in coreboot... use printk */
+#define printf(x...) printk(BIOS_DEBUG, x)
 
 /* checks to be enabled for "runtime" */
 
@@ -172,17 +173,17 @@
 	if (DEBUG_TRACECALLREGS())									\
 		x86emu_dump_regs();                                     \
 	if (DEBUG_TRACECALL())                                     	\
-		printk("%04x:%04x: CALL %s%04x:%04x\n", u , v, s, w, x);
+		printf("%04x:%04x: CALL %s%04x:%04x\n", u , v, s, w, x);
 # define RETURN_TRACE(u,v,w,x,s)                                    \
 	if (DEBUG_TRACECALLREGS())									\
 		x86emu_dump_regs();                                     \
 	if (DEBUG_TRACECALL())                                     	\
-		printk("%04x:%04x: RET %s %04x:%04x\n",u,v,s,w,x);
+		printf("%04x:%04x: RET %s %04x:%04x\n",u,v,s,w,x);
 # define  JMP_TRACE(u,v,w,x,s)                                 \
    if (DEBUG_TRACEJMPREGS()) \
       x86emu_dump_regs(); \
    if (DEBUG_TRACEJMP()) \
-      printk("%04x:%04x: JMP %s%04x:%04x\n", u , v, s, w, x);
+      printf("%04x:%04x: JMP %s%04x:%04x\n", u , v, s, w, x);
 #else
 # define CALL_TRACE(u,v,w,x,s)
 # define RETURN_TRACE(u,v,w,x,s)
@@ -201,20 +202,22 @@
 extern "C" {            			/* Use "C" linkage when in C++ mode */
 #endif
 
-extern void x86emu_inc_decoded_inst_len (int x);
-extern void x86emu_decode_printf (char *x);
-extern void x86emu_decode_printf2 (char *x, int y);
-extern void x86emu_just_disassemble (void);
-extern void x86emu_single_step (void);
-extern void x86emu_end_instr (void);
-extern void x86emu_dump_regs (void);
-extern void x86emu_dump_xregs (void);
-extern void x86emu_print_int_vect (u16 iv);
-extern void x86emu_instrument_instruction (void);
-extern void x86emu_check_ip_access (void);
-extern void x86emu_check_sp_access (void);
-extern void x86emu_check_mem_access (u32 p);
-extern void x86emu_check_data_access (uint s, uint o);
+void x86emu_inc_decoded_inst_len (int x);
+void x86emu_decode_printf (const char *x);
+void x86emu_decode_printf2 (const char *x, int y);
+void x86emu_just_disassemble (void);
+void x86emu_single_step (void);
+void x86emu_end_instr (void);
+void x86emu_dump_regs (void);
+void x86emu_dump_xregs (void);
+void x86emu_print_int_vect (u16 iv);
+void x86emu_instrument_instruction (void);
+void x86emu_check_ip_access (void);
+void x86emu_check_sp_access (void);
+void x86emu_check_mem_access (u32 p);
+void x86emu_check_data_access (uint s, uint o);
+
+void disassemble_forward (u16 seg, u16 off, int n);
 
 #ifdef  __cplusplus
 }                       			/* End of "C" linkage for C++   	*/

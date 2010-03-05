@@ -17,6 +17,7 @@
 #include <string.h>
 #include <device/device.h>
 #include "../debug.h"
+#include "../biosemu.h"
 
 #define VMEM_SIZE (1024 * 1024) /* 1 MB */
 
@@ -30,8 +31,6 @@ u8* vmem = (u8 *) (16*1024*1024); /* default to 16MB */
 u8* vmem = NULL;
 #endif
 
-u32 biosemu(u8 *biosmem, u32 biosmem_size, struct device *dev,
-	    unsigned long rom_addr);
 #if CONFIG_BOOTSPLASH
 void vbe_set_graphics(void);
 #endif
@@ -46,10 +45,10 @@ void run_bios(struct device * dev, unsigned long addr)
 #endif
 
 	if (vmem != NULL) {
-		printf("Copying legacy memory from 0x%08x to the lower 1MB\n", vmem);
-		memcpy(0x00000, vmem + 0x00000, 0x400);         // IVT
-		memcpy(0x00400, vmem + 0x00400, 0x100);         // BDA
-		memcpy(0xc0000, vmem + 0xc0000, 0x10000);       // VGA OPROM
+		printf("Copying legacy memory from %p to the lower 1MB\n", vmem);
+		memcpy((void *)0x00000, vmem + 0x00000, 0x400);         // IVT
+		memcpy((void *)0x00400, vmem + 0x00400, 0x100);         // BDA
+		memcpy((void *)0xc0000, vmem + 0xc0000, 0x10000);       // VGA OPROM
 	}
 }
 

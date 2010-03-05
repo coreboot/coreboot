@@ -23,8 +23,6 @@
 #include <arch/io.h>
 #include <arch/registers.h>
 #include <console/console.h>
-#define printk(x...) do_printk(x)
-
 #include <arch/interrupt.h>
 
 #define REALMODE_BASE ((void *)0x600)

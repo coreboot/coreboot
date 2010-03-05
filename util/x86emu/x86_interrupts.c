@@ -26,7 +26,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/registers.h>
-#define printk(x...) do_printk(x)
 
 enum {
 	PCIBIOS_CHECK = 0xb101,

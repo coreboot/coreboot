@@ -74,63 +74,6 @@ config PCI_OPTION_ROM_RUN_YABEL
 
 endchoice
 
-# TODO: Describe better, and/or make a "choice" selection for this.
-config YABEL_DEBUG_FLAGS
-	prompt "Hex value for YABEL debug flags"
-	hex
-	default 0x0
-	depends on PCI_OPTION_ROM_RUN_YABEL
-	help
-	  CONFIG_YABEL_DEBUG_FLAGS is a binary switch that allows you
-	  to select the following items to debug. 1=on 0=off. After you
-	  decide what you want to debug create the binary value, convert to
-	  hex and set the option.
-
-	  Example for "debug all":
-	    CONFIG_YABEL_DEBUG_FLAGS = 0x31FF
-
-	  |-DEBUG_JMP - Print info about JMP and RETF opcodes from x86emu
-	  ||-DEBUG_TRACE_X86EMU - Print _all_ opcodes that are executed by
-	  ||                      x86emu (WARNING: this will produce a LOT
-	  ||                      of output)
-	  |||-Currently unused
-	  ||||-Currently unused
-	  |||||-Currently unused
-	  ||||||-DEBUG_PNP - Print Plug And Play accesses made by option ROM
-	  |||||||-DEBUG_DISK - Print Disk I/O related messages, currently unused
-	  ||||||||-DEBUG_PMM - Print messages related to POST Memory
-	  ||||||||             Manager (PMM)
-	  |||||||||-DEBUG_VBE - Print messages related to VESA BIOS Extension
-	  |||||||||             (VBE) functions
-	  ||||||||||-DEBUG_PRINT_INT10 - Let INT10 (i.e. character output)
-	  ||||||||||                     calls print messages to debug output
-	  |||||||||||-DEBUG_INTR - Print messages related to interrupt handling
-	  ||||||||||||-DEBUG_CHECK_VMEM_ACCESS - Print messages related to
-	  ||||||||||||                           accesses to certain areas of
-	  ||||||||||||                           the virtual memory (e.g. BDA
-	  ||||||||||||                           (BIOS Data Area) or interrupt
-	  ||||||||||||                           vectors)
-	  |||||||||||||-DEBUG_MEM - Print memory accesses made by option ROM
-	  |||||||||||||             (NOTE: this also includes accesses to
-	  |||||||||||||             fetch instructions)
-	  ||||||||||||||-DEBUG_IO - Print I/O accesses made by option ROM
-	  11000111111111 - Maximum binary value, i.e. "debug all"
-	                   (WARNING: This could run for hours)
-
-	  DEBUG_IO			0x0001
-	  DEBUG_MEM			0x0002
-	  DEBUG_CHECK_VMEM_ACCESS	0x0004
-	  DEBUG_INTR			0x0008
-	  DEBUG_PRINT_INT10		0x0010
-	  DEBUG_VBE			0x0020
-	  DEBUG_PMM			0x0040
-	  DEBUG_DISK			0x0080
-	  DEBUG_PNP			0x0100
-	  DEBUG_TRACE_X86EMU		0x1000
-	  DEBUG_JMP			0x2000
-
-	  See debug.h for values. 0 is no debug output, 0x31ff is _verbose_.
-
 config YABEL_PCI_ACCESS_OTHER_DEVICES
 	prompt "Allow option ROMs to access other devices"
 	bool
@@ -149,6 +92,11 @@ config YABEL_VIRTMEM_LOCATION
 	help
 	  YABEL requires 1MB memory for its CPU emulation. This memory is
 	  normally located at 16MB.
+
+config YABEL_VIRTMEM_LOCATION
+	hex
+	depends on PCI_OPTION_ROM_RUN_YABEL && !EXPERT
+	default 0x1000000
 
 config YABEL_DIRECTHW
 	prompt "Direct hardware access"

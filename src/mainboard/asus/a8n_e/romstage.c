@@ -30,9 +30,6 @@
 /* Used by raminit. */
 #define QRANK_DIMM_SUPPORT 1
 
-/* Turn this on for SMBus debugging output. */
-#define DEBUG_SMBUS 0
-
 #if CONFIG_LOGICAL_CPUS == 1
 #define SET_NB_CFG_54 1
 #endif

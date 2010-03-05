@@ -119,7 +119,7 @@ smmobjs:=
 crt0s:=
 ldscripts:=
 types:=obj initobj driver smmobj
-includemakefiles=$(foreach type,$(2), $(eval $(type)-y:=)) $(eval subdirs-y:=) $(eval -include $(1)) $(if $(strip $(3)),$(foreach type,$(2),$(eval $(type)s+=$$(patsubst src/%,$(obj)/%,$$(addprefix $(dir $(1)),$$($(type)-y)))))) $(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
+includemakefiles=$(foreach type,$(2), $(eval $(type)-y:=)) $(eval subdirs-y:=) $(eval -include $(1)) $(if $(strip $(3)),$(foreach type,$(2),$(eval $(type)s+=$$(patsubst util/%,$(obj)/util/%,$$(patsubst src/%,$(obj)/%,$$(addprefix $(dir $(1)),$$($(type)-y))))))) $(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 evaluate_subdirs=$(eval cursubdirs:=$(subdirs)) $(eval subdirs:=) $(foreach dir,$(cursubdirs),$(eval $(call includemakefiles,$(dir)/Makefile.inc,$(types),$(1)))) $(if $(subdirs),$(eval $(call evaluate_subdirs, $(1))))
 
 # collect all object files eligible for building
@@ -148,55 +148,63 @@ $(obj)/$(1)%.o: src/$(1)%.asl
 	$(CPP) -D__ACPI__ -P $(CPPFLAGS) -include $(obj)/config.h -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	iasl -p $$(basename $$@) -tc $$(basename $$@).asl
 	mv $$(basename $$@).hex $$(basename $$@).c
-	$(CC) -m32 $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c
+	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c
 endef
 
 define objs_c_template
+$(obj)/$(1)%.o: $(1)%.c $(obj)/config.h
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
+	$(CC) $$(CFLAGS) -c -o $$@ $$<
+
 $(obj)/$(1)%.o: src/$(1)%.c $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define objs_S_template
+$(obj)/$(1)%.o: $(1)%.S $(obj)/config.h
+	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
+	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
+
 $(obj)/$(1)%.o: src/$(1)%.S $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_c_template
 $(obj)/$(1)%.initobj.o: src/$(1)%.c $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define initobjs_S_template
 $(obj)/$(1)%.initobj.o: src/$(1)%.S $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_c_template
 $(obj)/$(1)%.driver.o: src/$(1)%.c $(obj)/config.h
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define drivers_S_template
 $(obj)/$(1)%.driver.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
+	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_c_template
 $(obj)/$(1)%.smmobj.o: src/$(1)%.c
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) $$(CFLAGS) -c -o $$@ $$<
 endef
 
 define smmobjs_S_template
 $(obj)/$(1)%.smmobj.o: src/$(1)%.S
 	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -m32 $$(CFLAGS) -c -o $$@ $$<
+	$(CC) $$(CFLAGS) -c -o $$@ $$<
 endef
 
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))

@@ -236,8 +236,9 @@ static void sdram_detect_errors(void)
 	if (reg8 & ((1<<7)|(1<<2))) {
 		if (reg8 & (1<<2)) {
 			printk_debug("SLP S4# Assertion Width Violation.\n");
-
+			/* Write back clears bit 2 */
 			pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, reg8);
+			do_reset = 1;
 
 		}
 
@@ -257,7 +258,7 @@ static void sdram_detect_errors(void)
 			printk_debug("Reset required.\n");
 			outb(0x00, 0xcf9);
 			outb(0x0e, 0xcf9);
-			for (;;) ; /* Wait for reset! */
+			for (;;) asm("hlt"); /* Wait for reset! */
 		}
 	}
 

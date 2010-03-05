@@ -159,9 +159,6 @@ u32 ebda_size;
 #define DEBUG_CHECK_VMEM_WRITE(_addr, _val)
 #endif
 
-//defined in net-snk/kernel/timer.c
-extern u64 get_time(void);
-
 void update_time(u32);
 
 #if !defined(CONFIG_YABEL_DIRECTHW) || (!CONFIG_YABEL_DIRECTHW)

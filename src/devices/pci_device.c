@@ -652,7 +652,6 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 void pci_dev_init(struct device *dev)
 {
 #if CONFIG_PCI_ROM_RUN == 1 || CONFIG_VGA_ROM_RUN == 1
-	void run_bios(struct device *dev, unsigned long addr);
 	struct rom_header *rom, *ram;
 
 	if (CONFIG_PCI_ROM_RUN != 1 && /* Only execute VGA ROMs. */

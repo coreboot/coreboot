@@ -117,6 +117,9 @@ const char *bus_path(struct bus *bus);
 void dev_set_enabled(device_t dev, int enable);
 void disable_children(struct bus *bus);
 
+/* Option ROM helper functions */
+void run_bios(struct device *dev, unsigned long addr);
+
 /* Helper functions */
 device_t find_dev_path(struct bus *parent, struct device_path *path);
 device_t alloc_find_dev(struct bus *parent, struct device_path *path);

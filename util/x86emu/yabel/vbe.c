@@ -570,8 +570,17 @@ vbe_get_info(void)
 		     sizeof(ddc_info.edid_block_zero));
 	}
 #endif
-	if (*((u64 *) ddc_info.edid_block_zero) !=
-	    (u64) 0x00FFFFFFFFFFFF00ULL) {
+/* This could fail because of alignment issues, so use a longer form.
+	*((u64 *) ddc_info.edid_block_zero) != (u64) 0x00FFFFFFFFFFFF00ULL
+*/
+	if (ddc_info.edid_block_zero[0] != 0x00 ||
+	    ddc_info.edid_block_zero[1] != 0xFF ||
+	    ddc_info.edid_block_zero[2] != 0xFF ||
+	    ddc_info.edid_block_zero[3] != 0xFF ||
+	    ddc_info.edid_block_zero[4] != 0xFF ||
+	    ddc_info.edid_block_zero[5] != 0xFF ||
+	    ddc_info.edid_block_zero[6] != 0xFF ||
+	    ddc_info.edid_block_zero[7] != 0x00 ) {
 		// invalid EDID signature... probably no monitor
 
 		output->display_type = 0x0;

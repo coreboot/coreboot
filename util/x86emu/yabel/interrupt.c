@@ -31,7 +31,7 @@
 
 
 //setup to run the code at the address, that the Interrupt Vector points to...
-void
+static void
 setupInt(int intNum)
 {
 	DEBUG_PRINTF_INTR("%s(%x): executing interrupt handler @%08x\n",
@@ -50,7 +50,7 @@ setupInt(int intNum)
 }
 
 // handle int10 (VGA BIOS Interrupt)
-void
+static void
 handleInt10(void)
 {
 	// the data for INT10 is stored in BDA (0000:0400h) offset 49h-66h
@@ -207,7 +207,7 @@ static u8 keycode_table[256] = {
 
 ;
 
-void
+static void
 translate_keycode(u64 * keycode)
 {
 	u8 scan_code = 0;
@@ -233,7 +233,7 @@ translate_keycode(u64 * keycode)
 }
 
 // handle int16 (Keyboard BIOS Interrupt)
-void
+static void
 handleInt16(void)
 {
 	// keyboard buffer is in BIOS Memory Area:
@@ -319,7 +319,7 @@ handleInt16(void)
 }
 
 // handle int1a (PCI BIOS Interrupt)
-void
+static void
 handleInt1a(void)
 {
 	// function number in AX

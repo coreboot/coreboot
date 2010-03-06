@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2010 Keith Hui <buurin@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +24,7 @@
 #include <delay.h>
 #include <stdlib.h>
 #include "i440bx.h"
+#include "raminit.h"
 
 /*-----------------------------------------------------------------------------
 Macros and definitions.
@@ -185,14 +187,23 @@ static const long register_values[] = {
 	 * 10 = Write Only (Writes to DRAM, reads to memory mapped I/O space)
 	 * 11 = Read/Write (all access goes to DRAM)
 	 */
-	// TODO
-	PAM0, 0x00, 0x00,
-	PAM1, 0x00, 0x00,
-	PAM2, 0x00, 0x00,
-	PAM3, 0x00, 0x00,
-	PAM4, 0x00, 0x00,
-	PAM5, 0x00, 0x00,
-	PAM6, 0x00, 0x00,
+
+	/*
+	 * Map all legacy regions to RAM (read/write). This is required if
+	 * you want to use the RAM area from 768 KB - 1 MB. If the PAM
+	 * registers are not set here appropriately, the RAM in that region
+	 * will not be accessible, thus a RAM check of it will also fail.
+	 *
+	 * TODO: This was set in sdram_set_spd_registers().
+	 * Test if it still works when set here.
+	 */
+	PAM0, 0x00, 0x30,
+	PAM1, 0x00, 0x33,
+	PAM2, 0x00, 0x33,
+	PAM3, 0x00, 0x33,
+	PAM4, 0x00, 0x33,
+	PAM5, 0x00, 0x33,
+	PAM6, 0x00, 0x33,
 
 	/* DRB[0:7] - DRAM Row Boundary Registers
 	 * 0x60 - 0x67
@@ -340,6 +351,9 @@ static const long register_values[] = {
 	// PMCR, 0x00, 0x14,
 	// PMCR, 0x00, 0x10,
 	PMCR, 0x00, 0x00,
+
+	/* Enable SCRR.SRRAEN and let BX choose the SRR. */
+	SCRR + 1, 0x00, 0x10,
 };
 
 /*-----------------------------------------------------------------------------
@@ -374,8 +388,8 @@ static void do_ram_command(u32 command)
 	/* Send the RAM command to each row of memory. */
 	dimm_start = 0;
 	for (i = 0; i < (DIMM_SOCKETS * 2); i++) {
-                addr_offset = 0;
-                caslatency = 3; /* TODO: Dynamically get CAS latency later. */
+		addr_offset = 0;
+		caslatency = 3; /* TODO: Dynamically get CAS latency later. */
 		if (command == RAM_COMMAND_MRS) {
 			/*
 			 * MAA[12:11,9:0] must be inverted when sent to DIMM
@@ -409,6 +423,19 @@ static void do_ram_command(u32 command)
 		/* Set the start of the next DIMM. */
 		dimm_start = dimm_end;
 	}
+}
+
+static void set_dram_buffer_strength(void)
+{
+	/* TODO: This needs to be set according to the DRAM tech
+	 * (x8, x16, or x32). Argh, Intel provides no docs on this!
+	 * Currently, it needs to be pulled from the output of
+	 * lspci -xxx Rx92
+	 *
+	 * Relevant registers: MBSC, MBFS, BUFFC.
+	 */
+
+	pci_write_config8(NB, MBSC, 0x03);
 }
 
 /*-----------------------------------------------------------------------------
@@ -458,69 +485,311 @@ static void sdram_set_registers(void)
 		reg &= register_values[i + 1];
 		reg |= register_values[i + 2] & ~(register_values[i + 1]);
 		pci_write_config8(NB, register_values[i], reg);
-
+#if 0
 		PRINT_DEBUG("    Set register 0x");
 		PRINT_DEBUG_HEX8(register_values[i]);
 		PRINT_DEBUG(" to 0x");
 		PRINT_DEBUG_HEX8(reg);
 		PRINT_DEBUG("\r\n");
+#endif
 	}
+}
+
+struct dimm_size {
+	unsigned long side1;
+	unsigned long side2;
+};
+
+static struct dimm_size spd_get_dimm_size(unsigned int device)
+{
+	struct dimm_size sz;
+	int i, module_density, dimm_banks;
+	sz.side1 = 0;
+	module_density = spd_read_byte(device, SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
+	dimm_banks = spd_read_byte(device, SPD_NUM_DIMM_BANKS);
+
+	/* Find the size of side1. */
+	/* Find the larger value. The larger value is always side1. */
+	for (i = 512; i >= 0; i >>= 1) {
+		if ((module_density & i) == i) {
+			sz.side1 = i;
+			break;
+		}
+	}
+
+	/* Set to 0 in case it's single sided. */
+	sz.side2 = 0;
+
+	/* Test if it's a dual-sided DIMM. */
+	if (dimm_banks > 1) {
+		/* Test if there's a second value. If so it's asymmetrical. */
+		if (module_density != i) {
+			/*
+			 * Find second value, picking up where we left off.
+			 * i >>= 1 done initially to make sure we don't get
+			 * the same value again.
+			 */
+			for (i >>= 1; i >= 0; i >>= 1) {
+				if (module_density == (sz.side1 | i)) {
+					sz.side2 = i;
+					break;
+				}
+			}
+			/* If not, it's symmetrical. */
+		} else {
+			sz.side2 = sz.side1;
+		}
+	}
+
+	/*
+	 * SPD byte 31 is the memory size divided by 4 so we
+	 * need to muliply by 4 to get the total size.
+	 */
+	sz.side1 *= 4;
+	sz.side2 *= 4;
+
+	return sz;
+}
+/*
+ * Sets DRAM attributes one DIMM at a time, based on SPD data.
+ * Northbridge settings that are set: NBXCFG[31:24], DRB0-DRB7, RPS, DRAMC.
+ */
+static void set_dram_row_attributes(void)
+{
+	int i, dra, drb, col, width, value, rps, edosd, ecc, nbxecc;
+	u8 bpr; /* Top 8 bits of PGPOL */
+
+	edosd = 0;
+	rps = 0;
+	drb = 0;
+	bpr = 0;
+	nbxecc = 0xff;
+
+	for (i = 0; i < DIMM_SOCKETS; i++) {
+		unsigned int device;
+		device = DIMM_SPD_BASE + i;
+		bpr >>= 2;
+
+		/* First check if a DIMM is actually present. */
+		value = spd_read_byte(device, SPD_MEMORY_TYPE);
+		/* This is 440BX! We do EDO too! */
+		if (value == SPD_MEMORY_TYPE_EDO
+			|| value == SPD_MEMORY_TYPE_SDRAM) {
+
+			PRINT_DEBUG("Found ");
+			if (value == SPD_MEMORY_TYPE_EDO) {
+				edosd |= 0x02; 
+			} else if (value == SPD_MEMORY_TYPE_SDRAM) { 
+				edosd |= 0x04; 
+			}
+			PRINT_DEBUG("DIMM in slot ");
+			PRINT_DEBUG_HEX8(i);
+			PRINT_DEBUG("\r\n");
+
+			if (edosd == 0x06) { 
+				print_err("Mixing EDO/SDRAM unsupported!\r\n");
+				die("HALT\r\n");
+			}
+
+			/* "DRA" is our RPS for the two rows on this DIMM. */
+			dra = 0;
+
+			/* Columns */
+			col = spd_read_byte(device, SPD_NUM_COLUMNS);
+
+			/*
+			 * Is this an ECC DIMM? Actually will be a 2 if so.
+			 * TODO: Other register than NBXCFG also needs this
+			 * ECC information.
+			 */
+			ecc = spd_read_byte(device, SPD_DIMM_CONFIG_TYPE);
+
+			/* Data width */
+			width = spd_read_byte(device, SPD_MODULE_DATA_WIDTH_LSB);
+			
+			/* Exclude error checking data width from page size calculations */
+			if (ecc) {
+				value = spd_read_byte(device,
+					SPD_ERROR_CHECKING_SDRAM_WIDTH);
+				width -= value;
+				/* ### ECC */
+				/* Clear top 2 bits to help set up NBXCFG. */
+				ecc &= 0x3f;
+			} else {
+				/* Without ECC, top 2 bits should be 11. */
+				ecc |= 0xc0;
+			}
+
+			/* Calculate page size in bits. */
+			value = ((1 << col) * width);
+
+			/* Convert to KB. */
+			dra = (value >> 13);
+
+			/* Number of banks of DIMM (single or double sided). */
+			value = spd_read_byte(device, SPD_NUM_DIMM_BANKS);
+
+			/* Once we have dra, col is done and can be reused.
+			 * So it's reused for number of banks.
+			 */
+			col = spd_read_byte(device, SPD_NUM_BANKS_PER_SDRAM);
+
+			if (value == 1) {
+				/*
+				 * Second bank of 1-bank DIMMs "doesn't have
+				 * ECC" - or anything.
+				 */
+				ecc |= 0x80;
+				if (dra == 2) {
+					dra = 0x0; /* 2KB */
+				} else if (dra == 4) {
+					dra = 0x1; /* 4KB */
+				} else if (dra == 8) {
+					dra = 0x2; /* 8KB */
+				} else {
+					dra = -1;
+				}
+				/*
+				 * Sets a flag in PGPOL[BPR] if this DIMM has
+				 * 4 banks per row.
+				 */
+				if (col == 4)
+					bpr |= 0x40;
+			} else if (value == 2) {
+				if (dra == 2) {
+					dra = 0x0; /* 2KB */
+				} else if (dra == 4) {
+					dra = 0x05; /* 4KB */
+				} else if (dra == 8) {
+					dra = 0x0a; /* 8KB */
+				} else {
+					dra = -1;
+				}
+				/* Ditto */
+				if (col == 4)
+					bpr |= 0xc0;
+			} else {
+				print_err("# of banks of DIMM unsupported!\r\n");
+				die("HALT\r\n");
+			}
+			if (dra == -1) {
+				print_err("Page size not supported\r\n");
+				die("HALT\r\n");
+			}
+
+			/*
+			 * 440BX supports asymmetrical dual-sided DIMMs,
+			 * but can't handle DIMMs smaller than 8MB per
+			 * side or larger than 128MB per side.
+			 */
+			struct dimm_size sz = spd_get_dimm_size(device);
+			if ((sz.side1 < 8)) {
+				print_err("DIMMs smaller than 8MB per side\r\n"
+					  "are not supported on this NB.\r\n");
+				die("HALT\r\n");
+			}
+			if ((sz.side1 > 128)) {
+				print_err ("DIMMs > 128MB per side\r\n"
+					   "are not supported on this NB\r\n");
+				die("HALT\r\n");
+			}
+
+			/* Divide size by 8 to set up the DRB registers. */
+			drb += (sz.side1 / 8);
+
+			/*
+			 * Build the DRB for the next row in MSB so it gets
+			 * placed in DRB[n+1] where it belongs when written
+			 * as a 16-bit word.
+			 */
+			drb &= 0xff;
+			drb |= (drb + (sz.side2 / 8)) << 8;
+		} else {
+#if 0
+			PRINT_DEBUG("No DIMM found in slot ");
+			PRINT_DEBUG_HEX8(i);
+			PRINT_DEBUG("\r\n");
+#endif
+
+			/* If there's no DIMM in the slot, set dra to 0x00. */
+			dra = 0x00;
+			ecc = 0xc0;
+			/* Still have to propagate DRB over. */
+			drb &= 0xff;
+			drb |= (drb << 8);
+		}
+
+		pci_write_config16(NB, DRB + (2 * i), drb);
+#if 0
+		PRINT_DEBUG("DRB has been set to 0x");
+		PRINT_DEBUG_HEX16(drb);
+		PRINT_DEBUG("\r\n");
+#endif
+
+		/* Brings the upper DRB back down to be base for
+		 * DRB calculations for the next two rows.
+		 */
+		drb >>= 8;
+
+		rps |= (dra & 0x0f) << (i * 4);
+		nbxecc = (nbxecc >> 2) | (ecc & 0xc0);
+	}
+
+	/* Set paging policy register. */
+	pci_write_config8(NB, PGPOL + 1, bpr);
+	PRINT_DEBUG("PGPOL[BPR] has been set to 0x");
+	PRINT_DEBUG_HEX8(bpr);
+	PRINT_DEBUG("\r\n");
+
+	/* Set DRAM row page size register. */
+	pci_write_config16(NB, RPS, rps);
+	PRINT_DEBUG("RPS has been set to 0x");
+	PRINT_DEBUG_HEX16(rps);
+	PRINT_DEBUG("\r\n");
+
+	/* ### ECC */
+	pci_write_config8(NB, NBXCFG + 3, nbxecc);
+	PRINT_DEBUG("NBXECC[31:24] has been set to 0x");
+	PRINT_DEBUG_HEX8(nbxecc);
+	PRINT_DEBUG("\r\n");
+
+	/* Set DRAMC[4:3] to proper memory type (EDO/SDRAM).
+	 * TODO: Registered SDRAM support.
+	 */
+	edosd &= 0x07;
+	if (edosd & 0x02) {
+		edosd |= 0x00;
+	} else if (edosd & 0x04) {
+		edosd |= 0x08;
+	}
+	edosd &= 0x18;
+
+	/* edosd is now in the form needed for DRAMC[4:3]. */
+	value = pci_read_config8(NB, DRAMC) & 0xe7;
+	value |= edosd;
+	pci_write_config8(NB, DRAMC, value);
+	PRINT_DEBUG("DRAMC has been set to 0x");
+	PRINT_DEBUG_HEX8(value);
+	PRINT_DEBUG("\r\n");
 }
 
 static void sdram_set_spd_registers(void)
 {
-	/* TODO: Don't hardcode the values here, get info via SPD. */
-
-	/* Map all legacy regions to RAM (read/write). This is required if
-	 * you want to use the RAM area from 768 KB - 1 MB. If the PAM
-	 * registers are not set here appropriately, the RAM in that region
-	 * will not be accessible, thus a RAM check of it will also fail.
-	 */
-	pci_write_config8(NB, PAM0, 0x30);
-	pci_write_config8(NB, PAM1, 0x33);
-	pci_write_config8(NB, PAM2, 0x33);
-	pci_write_config8(NB, PAM3, 0x33);
-	pci_write_config8(NB, PAM4, 0x33);
-	pci_write_config8(NB, PAM5, 0x33);
-	pci_write_config8(NB, PAM6, 0x33);
-
-	/* TODO: Set DRB0-DRB7. */
-	/* Currently this is hardcoded to one 64 MB DIMM in slot 0. */
-	pci_write_config8(NB, DRB0, 0x08);
-	pci_write_config8(NB, DRB1, 0x08);
-	pci_write_config8(NB, DRB2, 0x08);
-	pci_write_config8(NB, DRB3, 0x08);
-	pci_write_config8(NB, DRB4, 0x08);
-	pci_write_config8(NB, DRB5, 0x08);
-	pci_write_config8(NB, DRB6, 0x08);
-	pci_write_config8(NB, DRB7, 0x08);
-
-	/* TODO: Set DRAMC. Don't enable refresh for now. */
-	pci_write_config8(NB, DRAMC, 0x08);
-
-	/* TODO: Set RPS. Needs to be fixed for multiple DIMM support. */
-	pci_write_config16(NB, RPS, 0x0001);
+	/* Setup DRAM row boundary registers and other attributes. */
+	set_dram_row_attributes();
 
 	/* TODO: Set SDRAMC. */
 	pci_write_config16(NB, SDRAMC, 0x0010);	/* SDRAMPWR=1: 4 DIMM config */
 
-	/* TODO: Set PGPOL. */
-	// pci_write_config16(NB, PGPOL, 0x0107);
-	pci_write_config16(NB, PGPOL, 0x0123);
-
-	/* TODO: Set NBXCFG. */
-	// pci_write_config32(NB, NBXCFG, 0x0100220c); // FIXME?
-	pci_write_config32(NB, NBXCFG, 0xff00800c);
+	/* TODO */
+	set_dram_buffer_strength();
 
 	/* TODO: Set PMCR? */
 	// pci_write_config8(NB, PMCR, 0x14);
 	pci_write_config8(NB, PMCR, 0x10);
 
 	/* TODO? */
-	pci_write_config8(NB, PCI_LATENCY_TIMER, 0x40);
 	pci_write_config8(NB, DRAMT, 0x03);
-	pci_write_config8(NB, MBSC, 0x03);
-	pci_write_config8(NB, SCRR, 0x38);
 }
 
 static void sdram_enable(void)

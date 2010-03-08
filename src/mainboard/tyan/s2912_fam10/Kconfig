@@ -38,6 +38,26 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	default 0x04000
 	depends on BOARD_TYAN_S2912_FAM10
 
+config USE_FALLBACK_IMAGE
+	bool
+	default y
+	depends on BOARD_TYAN_S2912_FAM10
+
+config HAVE_FALLBACK_BOOT
+	bool
+	default y
+	depends on BOARD_TYAN_S2912_FAM10
+
+config CONFIG_USE_FAILOVER_IMAGE
+	bool
+	default y
+	depends on BOARD_TYAN_S2912_FAM10
+
+config CONFIG_HAVE_FAILOVER_BOOT
+	bool
+	default y
+	depends on BOARD_TYAN_S2912_FAM10
+
 config APIC_ID_OFFSET
 	hex
 	default 0
@@ -95,7 +115,7 @@ config HW_MEM_HOLE_SIZEK
 
 config MAX_CPUS
 	int
-	default 8
+	default 12
 	depends on BOARD_TYAN_S2912_FAM10
 
 config MAX_PHYSICAL_CPUS

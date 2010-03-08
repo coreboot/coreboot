@@ -225,7 +225,7 @@ int nocbreak(void)
 	return 0;
 }
 
-#ifdef CONFIG_VGA_CONSOLE
+#ifdef CONFIG_VGA_VIDEO_CONSOLE
 void curses_enable_vga(int state)
 {
 	if (state)

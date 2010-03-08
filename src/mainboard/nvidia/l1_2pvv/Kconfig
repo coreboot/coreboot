@@ -126,11 +126,6 @@ config SERIAL_CPU_INIT
 	default n
 	depends on BOARD_NVIDIA_L1_2PVV
 
-config WAIT_BEFORE_CPUS_INIT
-	bool	
-	default n
-	depends on BOARD_NVIDIA_L1_2PVV
-
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022

@@ -120,11 +120,6 @@ config SERIAL_CPU_INIT
 	default n
 	depends on BOARD_MSI_MS9282
 
-config WAIT_BEFORE_CPUS_INIT
-	bool	
-	default n
-	depends on BOARD_MSI_MS9282
-
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1462

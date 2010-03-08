@@ -83,11 +83,6 @@ config USE_INIT
 	default n
 	depends on BOARD_TYAN_S2882
 
-config WAIT_BEFORE_CPUS_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S2882
-
 config IRQ_SLOT_COUNT
 	int
 	default 15

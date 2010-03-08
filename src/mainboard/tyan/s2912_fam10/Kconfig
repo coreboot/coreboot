@@ -148,11 +148,6 @@ config SERIAL_CPU_INIT
 	default n
 	depends on BOARD_TYAN_S2912_FAM10
 
-config WAIT_BEFORE_CPUS_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S2912_FAM10
-
 config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	hex
 	default 0x2912

@@ -125,11 +125,6 @@ config SERIAL_CPU_INIT
 	default n
 	depends on BOARD_GIGABYTE_GA_2761GXDK
 
-config WAIT_BEFORE_CPUS_INIT
-	bool	
-	default n
-	depends on BOARD_GIGABYTE_GA_2761GXDK
-
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1039

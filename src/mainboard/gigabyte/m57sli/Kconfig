@@ -128,11 +128,6 @@ config SERIAL_CPU_INIT
 	default n
 	depends on BOARD_GIGABYTE_M57SLI
 
-config WAIT_BEFORE_CPUS_INIT
-	bool	
-	default n
-	depends on BOARD_GIGABYTE_M57SLI
-
 config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
 	hex
 	default 0x1022

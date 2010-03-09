@@ -58,7 +58,7 @@ static void sm_init(device_t dev)
 
 	ioapic_base = pci_read_config32(dev, 0x74) & (0xffffffe0);	/* some like mem resource, but does not have  enable bit */
 	/* Don't rename APIC ID */
-	setup_ioapic(ioapic_base, 0);
+	clear_ioapic(ioapic_base);
 
 	dword = pci_read_config8(dev, 0x62);
 	dword |= 1 << 2;

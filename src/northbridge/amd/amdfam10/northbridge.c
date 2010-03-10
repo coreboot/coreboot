@@ -1364,6 +1364,8 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 		if (dev && dev->enabled) {
 			j = pci_read_config32(dev, 0xe8);
 			cores_found = (j >> 12) & 3; // dev is func 3
+			if (siblings > 3)
+				cores_found |= (j >> 13) & 4;
 			printk_debug("  %s siblings=%d\n", dev_path(dev), cores_found);
 		}
 

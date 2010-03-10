@@ -29,7 +29,11 @@ static u32 get_core_num_in_bsp(u32 nodeid)
 	u32 dword;
 	dword = pci_read_config32(NODE_PCI(nodeid, 3), 0xe8);
 	dword >>= 12;
-	dword &= 3;
+	/* Bit 15 is CmpCap[2] since Revision D. */
+	if ((cpuid_ecx(0x80000008) & 0xff) > 3)
+	    dword = ((dword & 8) >> 1) | (dword & 3);
+	else
+	    dword &= 3;
 	return dword;
 }
 
@@ -53,7 +57,7 @@ static void set_apicid_cpuid_lo(void) { }
 
 static void real_start_other_core(u32 nodeid, u32 cores)
 {
-	u32 dword;
+	u32 dword, i;
 
 	printk_debug("Start other core - nodeid: %02x  cores: %02x\n", nodeid, cores);
 
@@ -69,9 +73,8 @@ static void real_start_other_core(u32 nodeid, u32 cores)
 
 	if(cores > 1) {
 		dword = pci_read_config32(NODE_PCI(nodeid, 0), 0x168);
-		dword |= (1 << 0);	// core2
-		if(cores > 2) {		// core3
-			dword |= (1 << 1);
+		for (i = 0; i < cores - 1; i++) {
+			dword |= 1 << i;
 		}
 		pci_write_config32(NODE_PCI(nodeid, 0), 0x168, dword);
 	}

@@ -146,6 +146,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x100F42 },           /* RB-C2 */ 
 	{ X86_VENDOR_AMD, 0x100F52 },           /* BL-C2 */ 
 	{ X86_VENDOR_AMD, 0x100F62 },           /* DA-C2 */ 
+	{ X86_VENDOR_AMD, 0x100F80 },           /* HY-D0 */ 
 	{ 0, 0 },
 };
 static struct cpu_driver model_10xxx __cpu_driver = {

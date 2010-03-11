@@ -270,8 +270,8 @@ clear_fixed_var_mtrr_out:
 #else
 #define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
 #endif
-       movl    $REAL_XIP_ROM_BASE, %eax
-       orl     $MTRR_TYPE_WRBACK, %eax
+	movl    $REAL_XIP_ROM_BASE, %eax
+	orl     $MTRR_TYPE_WRBACK, %eax
 	wrmsr
 
 	movl	$0x203, %ecx

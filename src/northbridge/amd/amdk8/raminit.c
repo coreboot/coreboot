@@ -4,7 +4,6 @@
 	2005.02 yhlu add E0 memory hole support
 */
 
-#include <cpu/x86/mem.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <stdlib.h>

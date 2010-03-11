@@ -3,8 +3,6 @@
  */
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
-#include "cpu/amd/car/clear_init_ram.c"
-
 static inline void print_debug_pcar(const char *strval, uint32_t val)
 {
         printk_debug("%s%08x\r\n", strval, val);
@@ -64,7 +62,8 @@ static void post_cache_as_ram(void)
         #error "You need to set CONFIG_RAMTOP greater than 1M"
 #endif
 	
-	set_init_ram_access(); /* So we can access RAM from [1M, CONFIG_RAMTOP) */
+	/* So we can access RAM from [1M, CONFIG_RAMTOP) */
+	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x8000, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x7c00);
 	print_debug("Copying data from cache to RAM -- switching to use RAM as stack... ");
@@ -94,7 +93,12 @@ static void post_cache_as_ram(void)
 	disable_cache_as_ram_bsp();  
 
         print_debug("Clearing initial memory region: ");
-        clear_init_ram(); //except the range from [(CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE, (CONFIG_RAMTOP))
+#if CONFIG_HAVE_ACPI_RESUME == 1
+	/* clear only coreboot used region of memory. Note: this may break ECC enabled boards */
+	memset((void*) CONFIG_RAMBASE, (CONFIG_RAMTOP) - CONFIG_RAMBASE - CONFIG_DCACHE_RAM_SIZE, 0);
+#else
+        memset((void*)0, ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE), 0);
+#endif
         print_debug("Done\r\n");
 
 //	dump_mem((CONFIG_RAMTOP) - 0x8000, (CONFIG_RAMTOP) - 0x7c00);

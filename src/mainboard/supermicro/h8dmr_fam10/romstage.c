@@ -108,7 +108,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include "northbridge/amd/amdht/ht_wrapper.c"
 
-#include "include/cpu/x86/mem.h"
 #include "northbridge/amd/amdfam10/raminit_sysinfo_in_ram.c"
 #include "northbridge/amd/amdfam10/raminit_amdmct.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"

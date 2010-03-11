@@ -19,7 +19,6 @@
  *
  */
 
-#include <cpu/x86/mem.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include "raminit_ep80579.h"

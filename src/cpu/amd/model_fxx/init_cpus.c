@@ -317,7 +317,7 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 			        print_initcpu8("while waiting for BSP signal to STOP, timeout in ap ", apicid);
 			}
                         lapic_write(LAPIC_MSG_REG, (apicid<<24) | 0x44); // bsp can not check it before stop_this_cpu
-                        set_init_ram_access();
+			set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 	#if CONFIG_MEM_TRAIN_SEQ == 1
 			train_ram_on_node(id.nodeid, id.coreid, sysinfo,
 					  (unsigned) STOP_CAR_AND_CPU);

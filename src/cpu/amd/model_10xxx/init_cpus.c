@@ -421,7 +421,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		 */
 		//wait_till_sysinfo_in_ram();
 
-		set_init_ram_access();
+		set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 
 		STOP_CAR_AND_CPU();
 		printk_debug("\nAP %02x should be halted but you are reading this....\n", apicid);

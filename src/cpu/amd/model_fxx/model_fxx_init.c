@@ -24,7 +24,6 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/mem.h>
 
 #include <cpu/amd/dualcore.h>
 
@@ -238,7 +237,7 @@ static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_sta
 
                 /* clear memory 2M (limitk - basek) */
                 addr = (void *)(((uint32_t)addr) | ((basek & 0x7ff) << 10));
-                clear_memory(addr, size);
+                memset(addr, size, 0);
 }
 
 static void init_ecc_memory(unsigned node_id)

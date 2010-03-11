@@ -34,7 +34,6 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/x86/mem.h>
 #include <cpu/amd/quadcore.h>
 #include <cpu/amd/model_10xxx_msr.h>
 

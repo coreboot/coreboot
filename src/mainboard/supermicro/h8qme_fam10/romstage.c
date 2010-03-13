@@ -97,7 +97,10 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
-	/* nothing to do */
+#define SMBUS_SWITCH1 0x70
+#define SMBUS_SWITCH2 0x72
+	smbus_send_byte(SMBUS_SWITCH1, 5 & 0x0f);
+	smbus_send_byte(SMBUS_SWITCH2, (5 >> 4) & 0x0f);
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -239,6 +242,46 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 
+#define GPIO1_DEV PNP_DEV(0x2e, W83627HF_GAME_MIDI_GPIO1)
+#define GPIO2_DEV PNP_DEV(0x2e, W83627HF_GPIO2)
+#define GPIO3_DEV PNP_DEV(0x2e, W83627HF_GPIO3)
+void write_GPIO(void)
+{
+	pnp_enter_ext_func_mode(GPIO1_DEV);
+	pnp_set_logical_device(GPIO1_DEV);
+	pnp_write_config(GPIO1_DEV, 0x30, 0x01);
+	pnp_write_config(GPIO1_DEV, 0x60, 0x00);
+	pnp_write_config(GPIO1_DEV, 0x61, 0x00);
+	pnp_write_config(GPIO1_DEV, 0x62, 0x00);
+	pnp_write_config(GPIO1_DEV, 0x63, 0x00);
+	pnp_write_config(GPIO1_DEV, 0x70, 0x00);
+	pnp_write_config(GPIO1_DEV, 0xf0, 0xff);
+	pnp_write_config(GPIO1_DEV, 0xf1, 0xff);
+	pnp_write_config(GPIO1_DEV, 0xf2, 0x00);
+	pnp_exit_ext_func_mode(GPIO1_DEV);
+
+	pnp_enter_ext_func_mode(GPIO2_DEV);
+	pnp_set_logical_device(GPIO2_DEV);
+	pnp_write_config(GPIO2_DEV, 0x30, 0x01);
+	pnp_write_config(GPIO2_DEV, 0xf0, 0xef);
+	pnp_write_config(GPIO2_DEV, 0xf1, 0xff);
+	pnp_write_config(GPIO2_DEV, 0xf2, 0x00);
+	pnp_write_config(GPIO2_DEV, 0xf3, 0x00);
+	pnp_write_config(GPIO2_DEV, 0xf5, 0x48);
+	pnp_write_config(GPIO2_DEV, 0xf6, 0x00);
+	pnp_write_config(GPIO2_DEV, 0xf7, 0xc0);
+	pnp_exit_ext_func_mode(GPIO2_DEV);
+
+	pnp_enter_ext_func_mode(GPIO3_DEV);
+	pnp_set_logical_device(GPIO3_DEV);
+	pnp_write_config(GPIO3_DEV, 0x30, 0x00);
+	pnp_write_config(GPIO3_DEV, 0xf0, 0xff);
+	pnp_write_config(GPIO3_DEV, 0xf1, 0xff);
+	pnp_write_config(GPIO3_DEV, 0xf2, 0xff);
+	pnp_write_config(GPIO3_DEV, 0xf3, 0x40);
+	pnp_exit_ext_func_mode(GPIO3_DEV);
+}
+
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
   struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
@@ -261,10 +304,10 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
  	w83627hf_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 
-        uart_init();
-        console_init();
-  printk_debug("\n");
-
+	uart_init();
+	console_init();
+	write_GPIO();
+	printk_debug("\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);

@@ -29,6 +29,7 @@ config BOARD_ASUS_P3B_F
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
 	select BOARD_ROMSIZE_KB_256
+	select SDRAMPWR_4DIMM
 
 config MAINBOARD_DIR
 	string

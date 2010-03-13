@@ -292,7 +292,11 @@ static const long register_values[] = {
 	 *         0 = 3 clocks of RAS# precharge
 	 *         1 = 2 clocks of RAS# precharge
 	 */
-	SDRAMC + 0, 0x00, 0x00,
+#if CONFIG_SDRAMPWR_4DIMM
+	SDRAMC + 0, 0x00, 0x10, /* The board has 4 DIMM slots. */
+#else
+	SDRAMC + 0, 0x00, 0x00, /* The board has 3 DIMM slots.*/
+#endif
 	SDRAMC + 1, 0x00, 0x00,
 
 	/* PGPOL - Paging Policy Register

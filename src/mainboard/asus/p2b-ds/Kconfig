@@ -31,6 +31,7 @@ config BOARD_ASUS_P2B_DS
 	select SMP
 	select UDELAY_TSC
 	select BOARD_ROMSIZE_KB_256
+	select SDRAMPWR_4DIMM
 
 config MAINBOARD_DIR
 	string

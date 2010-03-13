@@ -22,3 +22,16 @@ config NORTHBRIDGE_INTEL_I440BX
 	bool
 	select HAVE_HIGH_TABLES
 
+config SDRAMPWR_4DIMM
+	bool
+	depends on NORTHBRIDGE_INTEL_I440BX
+	default n
+	help
+	  This option affects how the SDRAMC register is programmed.
+	  Memory clock signals will not be routed properly if this option
+	  is set wrong.
+	
+	  If your board has 4 DIMM slots, you must use select this option, in
+	  your Kconfig file of the board. On boards with 3 DIMM slots,
+	  do _not_ select this option.
+

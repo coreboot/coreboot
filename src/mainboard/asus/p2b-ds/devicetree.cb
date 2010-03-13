@@ -1,9 +1,9 @@
 chip northbridge/intel/i440bx		# Northbridge
   device apic_cluster 0 on		# APIC cluster
-    chip cpu/intel/slot_2		# CPU (FIXME: It's slot 1, actually)
+    chip cpu/intel/slot_1		# CPU
       device apic 0 on end		# APIC
     end
-    chip cpu/intel/slot_2		# CPU (FIXME: It's slot 1, actually)
+    chip cpu/intel/slot_1		# CPU
       device apic 1 on end		# APIC
     end
   end

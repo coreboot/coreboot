@@ -28,6 +28,7 @@
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
+#include <arch/llshell.h>
 #include "pc80/serial.c"
 #include "pc80/udelay_io.c"
 #include "arch/i386/lib/console.c"
@@ -129,6 +130,9 @@ static void main(unsigned long bist)
 	/* Initialize memory */
 	sdram_initialize();
 
+#if CONFIG_LLSHELL
+	llshell();
+#endif
 	/* Check RAM. */
 	/* ram_check(0, 640 * 1024); */
 	/* ram_check(64512 * 1024, 65536 * 1024); */

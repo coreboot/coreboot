@@ -148,6 +148,11 @@ ifeq ($(CONFIG_ROMCC),y)
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc
 endif
 endif
+
+ifeq ($(CONFIG_LLSHELL),y)
+crt0s += $(src)/arch/i386/llshell/llshell.inc
+endif
+
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 ifeq ($(CONFIG_SSE),y)

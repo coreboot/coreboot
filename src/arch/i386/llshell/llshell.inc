@@ -1,3 +1,7 @@
+#include "console.inc"
+#include "pci.inc"
+#include "ramtest.inc"
+
 jmp llshell_out
 
 // (c) 2004 Bryan Chafy,  This program is released under the GPL

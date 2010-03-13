@@ -793,6 +793,14 @@ config X86EMU_DEBUG_IO
 
 	  If unsure, say N.
 
+config LLSHELL
+	bool "Built-in low-level shell"
+	default n
+	help
+	  If enabled, you will have a low level shell to examine your machine.
+	  Put llshell() in your (romstage) code to start the shell.
+	  See src/arch/i386/llshell/llshell.inc for details.
+
 endmenu
 
 config LIFT_BSP_APIC_ID

@@ -3,9 +3,10 @@
  *
  * Copyright (C) 2008 Joseph Smith <joe@settoplinux.org>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,8 +15,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+ * MA 02110-1301 USA
  */
 
 static void i82801dx_halt_tco_timer(void)
@@ -33,5 +34,6 @@ static void i82801dx_halt_tco_timer(void)
 	pci_write_config8(dev, ACPI_CNTL, 0x10);
 
 	/* Halt the TCO timer, preventing SMI and automatic reboot */
-	outw(inw(PMBASE_ADDR + TCOBASE + TCO1_CNT) | (1 << 11), PMBASE_ADDR + TCOBASE + TCO1_CNT);
+	outw(inw(PMBASE_ADDR + TCOBASE + TCO1_CNT) | (1 << 11),
+	     PMBASE_ADDR + TCOBASE + TCO1_CNT);
 }

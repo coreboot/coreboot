@@ -1,3 +1,25 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2004 Ron G. Minnich
+ * Copyright (C) 2004 Eric Biederman
+ * Copyright (C) 2008-2009 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 /* the problem: we have 82801dbm support in fb1, and 82801er in fb2. 
  * fb1 code is what we want, fb2 structure is needed however. 
  * so we need to get fb1 code for 82801dbm into fb2 structure. 
@@ -23,15 +45,23 @@ extern void i82801dx_enable(device_t dev);
 #endif
 
 /*
-000 = Non-combined. P0 is primary master. P1 is secondary master.
-001 = Non-combined. P0 is secondary master. P1 is primary master.
-100 = Combined. P0 is primary master. P1 is primary slave. IDE is secondary; Primary IDE channel
-disabled.
-101 = Combined. P0 is primary slave. P1 is primary master. IDE is secondary.
-110 = Combined. IDE is primary. P0 is secondary master. P1 is secondary slave; Secondary IDE
-channel disabled.
-111 = Combined. IDE is primary. P0 is secondary slave. P1 is secondary master.
-*/
+ * 000 = Non-combined. P0 is primary master. P1 is secondary master.
+ * 001 = Non-combined. P0 is secondary master. P1 is primary master.
+ * 100 = Combined. P0 is primary master. P1 is primary slave. IDE is secondary;
+ *       Primary IDE channel disabled.
+ * 101 = Combined. P0 is primary slave. P1 is primary master. IDE is secondary.
+ * 110 = Combined. IDE is primary. P0 is secondary master. P1 is secondary
+ *       slave; Secondary IDE channel disabled.
+ * 111 = Combined. IDE is primary. P0 is secondary slave. P1 is secondary master.
+ */
+/* PCI Configuration Space (D31:F1) */
+#define IDE_TIM_PRI		0x40	/* IDE timings, primary */
+#define IDE_TIM_SEC		0x42	/* IDE timings, secondary */
+
+/* IDE_TIM bits */
+#define IDE_DECODE_ENABLE	(1 << 15)
+
+
 
 #define PCI_DMA_CFG     0x90
 #define SERIRQ_CNTL     0x64

@@ -1,3 +1,23 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2004 Ronald G. Minnich
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; version 2 of
+ * the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -5,49 +25,58 @@
 #include <device/pci_ops.h>
 #include "i82801dx.h"
 
+typedef struct southbridge_intel_i82801dx_config config_t;
 
 static void ide_init(struct device *dev)
 {
-#if ICH5_SATA_ADDRESS_MAP<=1
-	/* Enable ide devices so the linux ide driver will work */
-	uint16_t word;
-	uint8_t byte;
-	int enable_a=1, enable_b=1;
+	/* Get the chip configuration */
+	config_t *config = dev->chip_info;
 
+	/* Enable IDE devices so the Linux IDE driver will work. */
+	uint16_t ideTimingConfig;
 
-	word = pci_read_config16(dev, 0x40);
-	word &= ~((1 << 15));
-	if (enable_a) {
-		/* Enable first ide interface */
-		word |= (1<<15);
-		printk_debug("IDE0 ");
+	ideTimingConfig = pci_read_config16(dev, IDE_TIM_PRI);
+	ideTimingConfig &= ~IDE_DECODE_ENABLE;
+	if (!config || config->ide0_enable) {
+		/* Enable primary IDE interface. */
+		ideTimingConfig |= IDE_DECODE_ENABLE;
+		printk_debug("IDE0: Primary IDE interface is enabled\n");
+	} else {
+		printk_info("IDE0: Primary IDE interface is disabled\n");
 	}
-	pci_write_config16(dev, 0x40, word);
+	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
 
-        word = pci_read_config16(dev, 0x42);
-        word &= ~((1 << 15));
-        if (enable_b) {
-                /* Enable secondary ide interface */
-                word |= (1<<15);
-                printk_debug("IDE1 ");
-        }
-        pci_write_config16(dev, 0x42, word);
-#endif
-
+	ideTimingConfig = pci_read_config16(dev, IDE_TIM_SEC);
+	ideTimingConfig &= ~IDE_DECODE_ENABLE;
+	if (!config || config->ide1_enable) {
+		/* Enable secondary IDE interface. */
+		ideTimingConfig |= IDE_DECODE_ENABLE;
+		printk_debug("IDE1: Secondary IDE interface is enabled\n");
+	} else {
+		printk_info("IDE1: Secondary IDE interface is disabled\n");
+	}
+	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
 }
 
-static struct device_operations ide_ops  = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+static struct device_operations ide_ops = {
+	.read_resources = pci_dev_read_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = ide_init,
-	.scan_bus         = 0,
-	.enable           = i82801dx_enable,
+	.init = ide_init,
+	.scan_bus = 0,
+	.enable = i82801dx_enable,
 };
 
-static const struct pci_driver ide_driver __pci_driver = {
-	.ops    = &ide_ops,
+/* 82801DB */
+static const struct pci_driver i82801db_ide __pci_driver = {
+	.ops = &ide_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
-	.device = PCI_DEVICE_ID_INTEL_82801DBM_IDE,
+	.device = 0x24cb,
 };
 
+/* 82801DBM */
+static const struct pci_driver i82801dbm_ide __pci_driver = {
+	.ops = &ide_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x24ca,
+};

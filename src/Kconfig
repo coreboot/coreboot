@@ -46,6 +46,20 @@ config CBFS_PREFIX
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.
 
+config SCANBUILD_ENABLE
+	bool "build with scan-build for static analysis"
+	default n
+	help
+	  Changes the build process to scan-build is used.
+	  Requires scan-build in path.
+
+config SCANBUILD_REPORT_LOCATION
+	string "directory to put scan-build report in"
+	default ""
+	depends on SCANBUILD_ENABLE
+	help
+	  Where the scan-build report should be stored
+
 endmenu
 
 source src/mainboard/Kconfig

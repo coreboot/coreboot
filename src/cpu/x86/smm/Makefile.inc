@@ -38,5 +38,9 @@ $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj
 $(obj)/cpu/x86/smm/smm_bin.c: $(obj)/cpu/x86/smm/smm
 	(echo 'unsigned char smm[] = {'; od -vtx1 $(obj)/cpu/x86/smm/smm | sed -e 's,^[0-9]* *,,' -e 's:[0-9a-f][0-9a-f] :0x&,:g' -e 's:[0-9a-f][0-9a-f]$$:0x&,:'; echo '}; unsigned int smm_len = '; wc -c $(obj)/cpu/x86/smm/smm |awk '{print $$1;}' ; echo ';')  > $@
 
+$(obj)/cpu/x86/smm/smm_bin.o: $(obj)/cpu/x86/smm/smm_bin.c
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) $(CFLAGS) -c -o $@ $<
+
 endif
 

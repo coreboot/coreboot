@@ -19,8 +19,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+ifeq ($(INNER_SCANBUILD),y)
+CC_real:=$(CC)
+endif
 $(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile > .xcompile)))
 include .xcompile
+ifeq ($(INNER_SCANBUILD),y)
+CC:=$(CC_real)
+HOSTCC:=$(CC_real) --hostcc
+HOSTCXX:=$(CC_real) --hostcxx
+endif
 
 export top := $(PWD)
 export src := $(top)/src
@@ -90,7 +98,25 @@ endif
 # The primary target needs to be here before we include the
 # other files
 
+ifeq ($(INNER_SCANBUILD),y)
+CONFIG_SCANBUILD_ENABLE:=
+endif
+
+ifeq ($(CONFIG_SCANBUILD_ENABLE),y)
+ifneq ($(CONFIG_SCANBUILD_REPORT_LOCATION),)
+CONFIG_SCANBUILD_REPORT_LOCATION:=-o $(CONFIG_SCANBUILD_REPORT_LOCATION)
+endif
+all:
+	echo '#!/bin/sh' > .ccwrap
+	echo 'CC="$(CC)"' >> .ccwrap
+	echo 'if [ "$$1" = "--hostcc" ]; then shift; CC="$(HOSTCC)"; fi' >> .ccwrap
+	echo 'if [ "$$1" = "--hostcxx" ]; then shift; CC="$(HOSTCXX)"; fi' >> .ccwrap
+	echo 'eval $$CC $$*' >> .ccwrap
+	chmod +x .ccwrap
+	scan-build $(CONFIG_SCANBUILD_REPORT_LOCATION) -analyze-headers --use-cc=$(top)/.ccwrap --use-c++=$(top)/.ccwrap $(MAKE) INNER_SCANBUILD=y
+else
 all: coreboot
+endif
 
 
 #######################################################################
@@ -110,7 +136,12 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 	(cd $(obj)/mainboard/$(MAINBOARDDIR) ; PYTHONPATH=$(top)/util/sconfig export PYTHONPATH; python config.py  $(MAINBOARDDIR) $(top) $(obj)/mainboard/$(MAINBOARDDIR))
 
 $(obj)/mainboard/$(MAINBOARDDIR)/static.o: $(obj)/mainboard/$(MAINBOARDDIR)/static.c
-#
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(obj)/arch/i386/../../option_table.o: $(obj)/arch/i386/../../option_table.c
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
 initobjs:=
@@ -325,7 +356,7 @@ clean-for-update: doxygen-clean
 	$(MAKE) -C util/sconfig clean
 
 clean: clean-for-update
-	rm -f $(obj)/coreboot*
+	rm -f $(obj)/coreboot* .ccwrap
 
 distclean: clean
 	rm -rf $(obj)

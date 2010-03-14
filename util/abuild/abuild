@@ -173,6 +173,12 @@ function create_config
 			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL_$loglevel=y" >> .config
 			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$loglevel" >> .config
 		fi
+
+		if [ "$scanbuild" = "true" ]; then
+			printf "(scan-build enabled) "
+			echo "CONFIG_SCANBUILD_ENABLE=y" >> .config
+			echo "CONFIG_SCANBUILD_REPORT_LOCATION=\"$TARGET/scan-build-results-tmp\"" >> .config
+		fi
 	fi
 
 	yes "" | $MAKE oldconfig obj=${build_dir} > ${build_dir}/config.log
@@ -362,21 +368,6 @@ function build_target
 
 	if  [ "$stackprotect" = "true" ]; then
 		CC="$CC -fno-stack-protector"
-	fi
-
-	if  [ "$scanbuild" = "true" ]; then
-		ccwrap=`mktemp`
-		mkdir -p $TARGET/${VENDOR}_${MAINBOARD}
-		mkdir -p $TARGET/scan-build-results-tmp
-		mv $ccwrap $TARGET/${VENDOR}_${MAINBOARD}
-		ccwrap=$TARGET/${VENDOR}_${MAINBOARD}/`basename $ccwrap`
-		echo '#!/bin/sh' > $ccwrap
-		echo $CC' "$@"' >> $ccwrap
-		chmod +x $ccwrap
-		origMAKE=$MAKE
-		MAKE="scan-build --use-cc=$ccwrap -o $TARGET/scan-build-results-tmp -analyze-headers $MAKE GCC=$ccwrap"
-		CC="\$(CC)"
-		HOSTCC="CCC_CC=$HOSTCC \$(CC)"
 	fi
 
 	built_successfully $VENDOR $MAINBOARD && \

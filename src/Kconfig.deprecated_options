@@ -1,0 +1,33 @@
+# Options in this file are meant to be deprecated. Avoid their use
+# if possible, and if you find the time, or touch the general area
+# for other purposes, please consider removing their uses.
+
+# It might be possible to consolidate hard_reset() to southbridges,
+# given that it (usually) uses its registers.
+# The long term goal would be to eliminate hard_reset from boards.
+config BOARD_HAS_HARD_RESET
+        bool
+        default n
+        help
+          This variable specifies whether a given board has a reset.c
+          file containing a hard_reset() function.
+
+# It might be possible to consolidate FADTs to southbridges. This would
+# improve code reuse in the tree.
+config BOARD_HAS_FADT
+        bool
+        default n
+        help
+          This variable specifies whether a given board has a board-local
+          FADT in fadt.c. Long-term, those should be moved to appropriate
+          chipset components (eg. southbridge)
+
+# There ought to be a better place to put data than code. Also, make this
+# (or a similar) framework more universally usable, so all boards benefit
+# from sharing data between the various tables.
+config HAVE_BUS_CONFIG
+        bool
+        default n
+	help
+	  This variable specifies whether a given board has a get_bus_conf.c
+	  file containing information about bus routing.

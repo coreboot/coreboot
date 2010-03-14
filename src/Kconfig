@@ -283,28 +283,6 @@ config HAVE_HARD_RESET
 	  This variable specifies whether a given board has a hard_reset
 	  function, no matter if it's provided by board code or chipset code.
 
-config BOARD_HAS_HARD_RESET
-	bool
-	default n
-	help
-	  This variable specifies whether a given board has a reset.c
-	  file containing a hard_reset() function.
-
-config BOARD_HAS_FADT
-	bool
-	default n
-	help
-	  This variable specifies whether a given board has a board-local
-	  FADT in fadt.c. Long-term, those should be moved to appropriate
-	  chipset components (eg. southbridge)
-
-config HAVE_BUS_CONFIG
-	bool
-	default n
-	help
-	  This variable specifies whether a given board has a get_bus_conf.c
-	  file containing bus configuration data.
-
 config HAVE_INIT_TIMER
 	bool
 	default n if UDELAY_IO
@@ -841,3 +819,5 @@ config WARNINGS_ARE_ERRORS
 config ID_SECTION_OFFSET
 	hex
 	default 0x10
+
+source src/Kconfig.deprecated_options

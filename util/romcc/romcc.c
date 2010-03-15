@@ -11557,7 +11557,7 @@ static struct triple *constant_expr(struct compile_state *state)
 
 static struct triple *assignment_expr(struct compile_state *state)
 {
-	struct triple *def, *left, *right;
+	struct triple *def, *left, *left2, *right;
 	int tok, op, sign;
 	/* The C grammer in K&R shows assignment expressions
 	 * only taking unary expressions as input on their
@@ -11578,6 +11578,9 @@ static struct triple *assignment_expr(struct compile_state *state)
 	 */
 	def = conditional_expr(state);
 	left = def;
+	left2 = left;
+	if (!(left2->id & TRIPLE_FLAG_FLATTENED))
+		left2 = copy_triple(state, left2);
 	switch((tok = peek(state))) {
 	case TOK_EQ:
 		lvalue(state, left);
@@ -11603,19 +11606,19 @@ static struct triple *assignment_expr(struct compile_state *state)
 		}
 		def = write_expr(state, left,
 			triple(state, op, left->type, 
-				read_expr(state, copy_triple(state, left)), right));
+				read_expr(state, left2), right));
 		break;
 	case TOK_PLUSEQ:
 		lvalue(state, left);
 		eat(state, TOK_PLUSEQ);
 		def = write_expr(state, left,
-			mk_add_expr(state, copy_triple(state, left), assignment_expr(state)));
+			mk_add_expr(state, left2, assignment_expr(state)));
 		break;
 	case TOK_MINUSEQ:
 		lvalue(state, left);
 		eat(state, TOK_MINUSEQ);
 		def = write_expr(state, left,
-			mk_sub_expr(state, copy_triple(state, left), assignment_expr(state)));
+			mk_sub_expr(state, left2, assignment_expr(state)));
 		break;
 	case TOK_SLEQ:
 	case TOK_SREQ:
@@ -11639,7 +11642,7 @@ static struct triple *assignment_expr(struct compile_state *state)
 		}
 		def = write_expr(state, left,
 			triple(state, op, left->type, 
-				read_expr(state, copy_triple(state,left)), right));
+				read_expr(state, left2), right));
 		break;
 	}
 	return def;

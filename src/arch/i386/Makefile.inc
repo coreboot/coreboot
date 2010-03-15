@@ -108,6 +108,9 @@ endif
 ifeq ($(CONFIG_CPU_AMD_SOCKET_F_1207),y)
 crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
 endif
+ifeq ($(CONFIG_CPU_AMD_SOCKET_AM2R2),y)
+crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
+endif
 ifeq ($(CONFIG_CPU_AMD_SOCKET_AM2),y)
 crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
 endif

@@ -1204,7 +1204,7 @@ initialize and operate the device:
             .init = lsi_scsi_init,
             .scan_bus = 0,
     };
-    static struct pci_driver lsi_scsi_driver __pci_driver = {
+    static const struct pci_driver lsi_scsi_driver __pci_driver = {
             .ops = &lsi_scsi_ops,
             .vendor = 0xXXXX,
             .device = 0xXXXX,

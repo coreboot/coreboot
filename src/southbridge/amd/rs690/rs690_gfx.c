@@ -211,13 +211,13 @@ static struct device_operations pcie_ops = {
  * The dev id of 690G is 791E, while the id of 690M, 690T is 791F.
  * We should list both of them here.
  * */
-static struct pci_driver pcie_driver_690t __pci_driver = {
+static const struct pci_driver pcie_driver_690t __pci_driver = {
 	.ops = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_RS690MT_INT_GFX,
 };
 
-static struct pci_driver pcie_driver_690 __pci_driver = {
+static const struct pci_driver pcie_driver_690 __pci_driver = {
 	.ops = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_RS690_INT_GFX,

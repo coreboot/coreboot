@@ -159,27 +159,27 @@ static struct device_operations usb_ops = {
 	.ops_pci = &lops_pci,
 };
 
-static struct pci_driver usb_0_driver __pci_driver = {
+static const struct pci_driver usb_0_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_USB_0,
 };
-static struct pci_driver usb_1_driver __pci_driver = {
+static const struct pci_driver usb_1_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_USB_1,
 };
-static struct pci_driver usb_2_driver __pci_driver = {
+static const struct pci_driver usb_2_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_USB_2,
 };
-static struct pci_driver usb_3_driver __pci_driver = {
+static const struct pci_driver usb_3_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_USB_3,
 };
-static struct pci_driver usb_4_driver __pci_driver = {
+static const struct pci_driver usb_4_driver __pci_driver = {
 	.ops = &usb_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_USB_4,
@@ -195,7 +195,7 @@ static struct device_operations usb_ops2 = {
 	.ops_pci = &lops_pci,
 };
 
-static struct pci_driver usb_5_driver __pci_driver = {
+static const struct pci_driver usb_5_driver __pci_driver = {
 	.ops = &usb_ops2,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_USB2,

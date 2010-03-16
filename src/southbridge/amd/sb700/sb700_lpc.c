@@ -240,7 +240,7 @@ static struct device_operations lpc_ops = {
 	.scan_bus = scan_static_bus,
 	.ops_pci = &lops_pci,
 };
-static struct pci_driver lpc_driver __pci_driver = {
+static const struct pci_driver lpc_driver __pci_driver = {
 	.ops = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB700_LPC,

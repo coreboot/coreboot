@@ -68,7 +68,7 @@ static struct device_operations ide_ops = {
 	.ops_pci = &lops_pci,
 };
 
-static struct pci_driver ide_driver __pci_driver = {
+static const struct pci_driver ide_driver __pci_driver = {
 	.ops = &ide_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_IDE,

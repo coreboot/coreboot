@@ -261,7 +261,7 @@ static struct device_operations ide_ops = {
 	.ops_pci = 0,
 };
 
-static struct pci_driver via_ide_driver __pci_driver = {
+static const struct pci_driver via_ide_driver __pci_driver = {
 	.ops = &ide_ops,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_VX855_IDE,

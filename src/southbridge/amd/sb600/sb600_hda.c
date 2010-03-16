@@ -325,7 +325,7 @@ static struct device_operations hda_audio_ops = {
 	.ops_pci = &lops_pci,
 };
 
-static struct pci_driver hdaaudio_driver __pci_driver = {
+static const struct pci_driver hdaaudio_driver __pci_driver = {
 	.ops = &hda_audio_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_HDA,

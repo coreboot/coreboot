@@ -38,7 +38,7 @@ static struct device_operations ac97audio_ops = {
 	.ops_pci = &lops_pci,
 };
 
-static struct pci_driver ac97audio_driver __pci_driver = {
+static const struct pci_driver ac97audio_driver __pci_driver = {
 	.ops = &ac97audio_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_ACI,
@@ -54,7 +54,7 @@ static struct device_operations ac97modem_ops = {
 	.ops_pci = &lops_pci,
 };
 
-static struct pci_driver ac97modem_driver __pci_driver = {
+static const struct pci_driver ac97modem_driver __pci_driver = {
 	.ops = &ac97modem_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_SB600_MCI,

@@ -62,19 +62,19 @@ static struct device_operations pcie_ops  = {
 };
 
 
-static struct pci_driver pcie_driver1 __pci_driver = {
+static const struct pci_driver pcie_driver1 __pci_driver = {
 	.ops    = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM21000_EXB0,
 };
 
-static struct pci_driver pcie_driver2 __pci_driver = {
+static const struct pci_driver pcie_driver2 __pci_driver = {
 	.ops    = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM21000_EXB1,
 };
 
-static struct pci_driver pcie_driver3 __pci_driver = {
+static const struct pci_driver pcie_driver3 __pci_driver = {
 	.ops    = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM21000_EXB2,

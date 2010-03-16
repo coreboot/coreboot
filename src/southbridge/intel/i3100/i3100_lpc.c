@@ -422,13 +422,13 @@ static struct device_operations lpc_ops  = {
 	.ops_pci          = &lops_pci,
 };
 
-static struct pci_driver lpc_driver __pci_driver = {
+static const struct pci_driver lpc_driver __pci_driver = {
 	.ops    = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_3100_LPC,
 };
 
-static struct pci_driver lpc_driver_ep80579 __pci_driver = {
+static const struct pci_driver lpc_driver_ep80579 __pci_driver = {
 	.ops    = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_EP80579_LPC,

@@ -233,7 +233,7 @@ static struct device_operations mc_ops = {
 	.ops_pci          = &intel_pci_ops,
 };
 
-static struct pci_driver mc_driver __pci_driver = {
+static const struct pci_driver mc_driver __pci_driver = {
 	.ops = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_3100_MC,

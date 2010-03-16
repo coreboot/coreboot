@@ -24,7 +24,8 @@ endif
 ifeq ($(CONFIG_BOOTSPLASH),y)
 COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_FALLBACK_BOOTSPLASH_FILE)
 endif
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(COREBOOT_ROM_DEPENDENCIES)
+strip_quotes = $(subst ",,$(subst \",,$(1)))
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
 	cp $(obj)/coreboot.pre $@.tmp
 	if [ -f fallback/coreboot_apc ]; \
 	then \

@@ -85,10 +85,12 @@ HOSTCC:=clang
 endif
 endif
 
+strip_quotes = $(subst ",,$(subst \",,$(1)))
+
 ARCHDIR-$(CONFIG_ARCH_X86)    := i386
 ARCHDIR-$(CONFIG_ARCH_POWERPC) := ppc
 
-MAINBOARDDIR=$(subst ",,$(CONFIG_MAINBOARD_DIR))
+MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 export MAINBOARDDIR
 
 PLATFORM-y += src/arch/$(ARCHDIR-y) src/cpu src/mainboard/$(MAINBOARDDIR)
@@ -99,7 +101,7 @@ BUILD-y += util/cbfstool
 BUILD-$(CONFIG_ARCH_X86) += src/pc80
 
 ifneq ($(CONFIG_LOCALVERSION),"")
-COREBOOT_EXTRA_VERSION := -$(subst ",,$(CONFIG_LOCALVERSION))
+COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 endif
 
 # The primary target needs to be here before we include the

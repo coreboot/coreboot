@@ -8,3 +8,5 @@ source src/southbridge/amd/cs5530/Kconfig
 source src/southbridge/amd/cs5535/Kconfig
 source src/southbridge/amd/rs690/Kconfig
 source src/southbridge/amd/sb600/Kconfig
+source src/southbridge/amd/rs780/Kconfig
+source src/southbridge/amd/sb700/Kconfig

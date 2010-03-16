@@ -4,6 +4,8 @@ choice
 
 source "src/mainboard/amd/db800/Kconfig"
 source "src/mainboard/amd/dbm690t/Kconfig"
+source "src/mainboard/amd/mahogany/Kconfig"
+source "src/mainboard/amd/mahogany_fam10/Kconfig"
 source "src/mainboard/amd/norwich/Kconfig"
 source "src/mainboard/amd/pistachio/Kconfig"
 source "src/mainboard/amd/rumba/Kconfig"

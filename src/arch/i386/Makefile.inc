@@ -42,7 +42,7 @@ endif
 #######################################################################
 # i386 specific tools
 
-$(obj)/option_table.h $(obj)/option_table.c $(obj)/arch/i386/../../option_table.c: $(obj)/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
+$(obj)/option_table.h $(obj)/option_table.c: $(obj)/build_opt_tbl $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
 	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
 	$(obj)/build_opt_tbl --config $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout --header $(obj)/option_table.h --option $(obj)/option_table.c
 
@@ -183,9 +183,11 @@ ifeq ($(CONFIG_ROMCC),y)
 ROMCCFLAGS ?= -mcpu=p2 -O2
 
 $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib/failover.c
+	printf "    ROMCC      failover.inc\n"
 	$(obj)/romcc $(ROMCCFLAGS) --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h
+	printf "    ROMCC      romstage.inc\n"
 	$(obj)/romcc $(ROMCCFLAGS) -include $(obj)/build.h $(INCLUDES) $< -o $@
 
 else
@@ -194,6 +196,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
+	printf "    GEN        romstage.inc\n"
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o $@.tmp1
 	sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' $@.tmp1 > $@.tmp
 	mv $@.tmp $@

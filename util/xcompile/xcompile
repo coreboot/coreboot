@@ -75,6 +75,7 @@ if [ "$GCCPREFIX" = "invalid" ]; then
 fi
 
 CC="${GCCPREFIX}gcc"
+testcc "$CC" "$CFLAGS-Wa,--divide " && CFLAGS="$CFLAGS-Wa,--divide "
 testcc "$CC" "$CFLAGS-fno-stack-protector " && CFLAGS="$CFLAGS-fno-stack-protector "
 testcc "$CC" "$CFLAGS-Wl,--build-id=none " && CFLAGS="$CFLAGS-Wl,--build-id=none "
 

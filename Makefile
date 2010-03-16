@@ -142,14 +142,6 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	(cd $(obj)/mainboard/$(MAINBOARDDIR) ; PYTHONPATH=$(top)/util/sconfig export PYTHONPATH; python config.py  $(MAINBOARDDIR) $(top) $(obj)/mainboard/$(MAINBOARDDIR))
 
-$(obj)/mainboard/$(MAINBOARDDIR)/static.o: $(obj)/mainboard/$(MAINBOARDDIR)/static.c
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-$(obj)/arch/i386/../../option_table.o: $(obj)/arch/i386/../../option_table.c
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) $(CFLAGS) -c -o $@ $<
-
 objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
 initobjs:=
 drivers:=
@@ -168,11 +160,11 @@ includemakefiles= \
 	$(if $(strip $(3)), \
 		$(foreach type,$(2), \
 			$(eval $(type)s+= \
-				$$(patsubst util/%, \
+				$$(abspath $$(patsubst util/%, \
 					$(obj)/util/%, \
 					$$(patsubst src/%, \
 						$(obj)/%, \
-						$$(addprefix $(dir $(1)),$$($(type)-y))))))) \
+						$$(addprefix $(dir $(1)),$$($(type)-y)))))))) \
 	$(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 
 # For each path in $(subdirs) call includemakefiles, passing $(1) as $(3)
@@ -213,61 +205,35 @@ $(obj)/$(1)%.o: src/$(1)%.asl
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c
 endef
 
-define objs_c_template
-$(obj)/$(1)%.o: $(1)%.c $(obj)/config.h
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) $$(CFLAGS) -c -o $$@ $$<
+# macro to define template macros that are used by use_template macro
+define create_cc_template
+# $1 obj class (objs, initobjs, ...)
+# $2 source suffix (c, S)
+# $3 .o infix ("" ".initobj", ...)
+# $4 additional compiler flags
+de$(EMPTY)fine $(1)_$(2)_template
+$(obj)/$$(1)%$(3).o: $$(1)%.$(2) $(obj)/config.h
+	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	$(CC) $(4) $$$$(CFLAGS) -c -o $$$$@ $$$$<
 
-$(obj)/$(1)%.o: src/$(1)%.c $(obj)/config.h
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) $$(CFLAGS) -c -o $$@ $$<
+$(obj)/$$(1)%$(3).o: src/$$(1)%.$(2) $(obj)/config.h
+	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	$(CC) $(4) $$$$(CFLAGS) -c -o $$$$@ $$$$<
+
+$(obj)/$$(1)%$(3).o: obj/$$(1)%.$(2) $(obj)/config.h
+	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	$(CC) $(4) $$$$(CFLAGS) -c -o $$$$@ $$$$<
+en$(EMPTY)def
 endef
 
-define objs_S_template
-$(obj)/$(1)%.o: $(1)%.S $(obj)/config.h
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
-
-$(obj)/$(1)%.o: src/$(1)%.S $(obj)/config.h
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
-endef
-
-define initobjs_c_template
-$(obj)/$(1)%.initobj.o: src/$(1)%.c $(obj)/config.h
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) $$(CFLAGS) -c -o $$@ $$<
-endef
-
-define initobjs_S_template
-$(obj)/$(1)%.initobj.o: src/$(1)%.S $(obj)/config.h
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
-endef
-
-define drivers_c_template
-$(obj)/$(1)%.driver.o: src/$(1)%.c $(obj)/config.h
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) $$(CFLAGS) -c -o $$@ $$<
-endef
-
-define drivers_S_template
-$(obj)/$(1)%.driver.o: src/$(1)%.S
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) -DASSEMBLY $$(CFLAGS) -c -o $$@ $$<
-endef
-
-define smmobjs_c_template
-$(obj)/$(1)%.smmobj.o: src/$(1)%.c
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) $$(CFLAGS) -c -o $$@ $$<
-endef
-
-define smmobjs_S_template
-$(obj)/$(1)%.smmobj.o: src/$(1)%.S
-	@printf "    CC         $$(subst $$(obj)/,,$$(@))\n"
-	$(CC) $$(CFLAGS) -c -o $$@ $$<
-endef
+$(eval $(call create_cc_template,objs,c))
+$(eval $(call create_cc_template,objs,S,,-DASSEMBLY))
+$(eval $(call create_cc_template,initobjs,c,.initobj))
+$(eval $(call create_cc_template,initobjs,S,.initobj,-DASSEMBLY))
+$(eval $(call create_cc_template,drivers,c,.driver))
+$(eval $(call create_cc_template,drivers,S,.driver,-DASSEMBLY))
+$(eval $(call create_cc_template,smmobjs,c,.smmobj))
+$(eval $(call create_cc_template,smmobjs,S,.smmobj))
 
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
 usetemplate=$(foreach d,$(sort $(dir $($(1)))),$(eval $(call $(1)_$(2)_template,$(subst $(obj)/,,$(d)))))
@@ -298,7 +264,7 @@ INCLUDES := -I$(top)/src -I$(top)/src/include -I$(obj) -I$(top)/src/arch/$(ARCHD
 INCLUDES += -I$(top)/util/x86emu/include
 INCLUDES += -include $(obj)/config.h
 
-CFLAGS = $(INCLUDES) -Os -nostdinc
+CFLAGS = $(INCLUDES) -Os -nostdinc -pipe
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs 
 CFLAGS += -Wstrict-aliasing -Wshadow
@@ -337,8 +303,8 @@ $(obj)/build.h: .xcompile
 	printf "#define COREBOOT_LINKER \"$(shell LANG= $(LD) --version | head -n1)\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_COMPILE_TIME \"`LANG= date +%T`\"\n" >> $(obj)/build.ht
 	printf "#define COREBOOT_COMPILE_BY \"$(subst \,@,$(shell PATH=$$PATH:/usr/ucb whoami))\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname -s)\"\n" >> $(obj)/build.ht
-	printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILE_HOST \"$(shell hostname -s 2>/dev/null)\"\n" >> $(obj)/build.ht
+	printf "#define COREBOOT_COMPILE_DOMAIN \"$(shell test `uname -s` = "Linux" && dnsdomainname || domainname 2>/dev/null)\"\n" >> $(obj)/build.ht
 	printf "#endif\n" >> $(obj)/build.ht
 	mv $(obj)/build.ht $(obj)/build.h
 

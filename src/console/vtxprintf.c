@@ -4,7 +4,6 @@
  *  Copyright (C) 1991, 1992  Linus Torvalds
  */
 
-#include <stdarg.h>
 #include <string.h>
 #include <div64.h>
 #include <console/vtxprintf.h>

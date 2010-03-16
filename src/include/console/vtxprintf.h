@@ -20,7 +20,19 @@
 #ifndef __CONSOLE_VTXPRINTF_H
 #define __CONSOLE_VTXPRINTF_H
 
+/* With GCC we use -nostdinc -ffreestanding to keep out system includes.
+ * Unfortunately this also gets us rid of the _compiler_ includes, like
+ * stdarg.h. To work around the issue, we define varargs directly here.
+ * On LLVM we can still just include stdarg.h.
+ */
+#ifdef __GNUC__
+#define va_start(v,l)		__builtin_va_start(v,l)
+#define va_end(v)		__builtin_va_end(v)
+#define va_arg(v,l)		__builtin_va_arg(v,l)
+typedef __builtin_va_list	va_list;
+#else
 #include <stdarg.h>
+#endif
 
 int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args);
 

@@ -17,7 +17,6 @@
  * MA 02110-1301 USA
  */
 
-#include <stdarg.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
 #include <console/loglevel.h>

@@ -63,9 +63,7 @@ HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g
 HOSTCXXFLAGS := -I$(srck) -I$(objk)
-LIBGCC_FILE_NAME := $(shell $(CC) -print-libgcc-file-name)
-
-DESTDIR = /opt
+LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && $(CC) -print-libgcc-file-name)
 
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
@@ -281,20 +279,20 @@ printall:
 	@echo smmobjs:=$(smmobjs)
 	@echo alldirs:=$(alldirs)
 	@echo allsrc=$(allsrc)
+	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
 
 printcrt0s:
 	@echo $(patsubst $(top)/%,%,$(crt0s))
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
 INCLUDES := -I$(top)/src -I$(top)/src/include -I$(obj) -I$(top)/src/arch/$(ARCHDIR-y)/include 
-INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
 INCLUDES += -I$(top)/util/x86emu/include
 INCLUDES += -include $(obj)/config.h
 
 CFLAGS = $(INCLUDES) -Os -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs 
-CFLAGS += -Wstrict-aliasing -Wshadow 
+CFLAGS += -Wstrict-aliasing -Wshadow
 ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS += -Werror
 endif

@@ -19,7 +19,6 @@
  * MA 02110-1301 USA
  */
 
-#include <stdarg.h>
 #include <string.h>
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>

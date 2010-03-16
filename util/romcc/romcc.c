@@ -1896,16 +1896,12 @@ static void use_triple(struct triple *used, struct triple *user)
 		return;
 	if (!user)
 		return;
-	if (used->use == (void*)-1)
-		used->use = 0;
-	if (used->use) {
-		ptr = &used->use;
-		while(*ptr) {
-			if ((*ptr)->member == user) {
-				return;
-			}
-			ptr = &(*ptr)->next;
+	ptr = &used->use;
+	while(*ptr) {
+		if ((*ptr)->member == user) {
+			return;
 		}
+		ptr = &(*ptr)->next;
 	}
 	/* Append new to the head of the list, 
 	 * copy_func and rename_block_variables
@@ -11557,7 +11553,7 @@ static struct triple *constant_expr(struct compile_state *state)
 
 static struct triple *assignment_expr(struct compile_state *state)
 {
-	struct triple *def, *left, *left2, *right;
+	struct triple *def, *left, *right;
 	int tok, op, sign;
 	/* The C grammer in K&R shows assignment expressions
 	 * only taking unary expressions as input on their
@@ -11578,9 +11574,6 @@ static struct triple *assignment_expr(struct compile_state *state)
 	 */
 	def = conditional_expr(state);
 	left = def;
-	left2 = left;
-	if (!(left2->id & TRIPLE_FLAG_FLATTENED))
-		left2 = copy_triple(state, left2);
 	switch((tok = peek(state))) {
 	case TOK_EQ:
 		lvalue(state, left);
@@ -11606,19 +11599,19 @@ static struct triple *assignment_expr(struct compile_state *state)
 		}
 		def = write_expr(state, left,
 			triple(state, op, left->type, 
-				read_expr(state, left2), right));
+				read_expr(state, left), right));
 		break;
 	case TOK_PLUSEQ:
 		lvalue(state, left);
 		eat(state, TOK_PLUSEQ);
 		def = write_expr(state, left,
-			mk_add_expr(state, left2, assignment_expr(state)));
+			mk_add_expr(state, left, assignment_expr(state)));
 		break;
 	case TOK_MINUSEQ:
 		lvalue(state, left);
 		eat(state, TOK_MINUSEQ);
 		def = write_expr(state, left,
-			mk_sub_expr(state, left2, assignment_expr(state)));
+			mk_sub_expr(state, left, assignment_expr(state)));
 		break;
 	case TOK_SLEQ:
 	case TOK_SREQ:
@@ -11642,7 +11635,7 @@ static struct triple *assignment_expr(struct compile_state *state)
 		}
 		def = write_expr(state, left,
 			triple(state, op, left->type, 
-				read_expr(state, left2), right));
+				read_expr(state, left), right));
 		break;
 	}
 	return def;

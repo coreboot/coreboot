@@ -96,7 +96,7 @@ export MAINBOARDDIR
 PLATFORM-y += src/arch/$(ARCHDIR-y) src/cpu src/mainboard/$(MAINBOARDDIR)
 TARGETS-y :=
 
-BUILD-y := src/lib src/boot src/console src/devices src/southbridge src/northbridge src/superio src/drivers util/x86emu
+BUILD-y := src/lib src/boot src/console src/devices src/southbridge src/northbridge src/superio src/drivers
 BUILD-y += util/cbfstool
 BUILD-$(CONFIG_ARCH_X86) += src/pc80
 
@@ -162,11 +162,9 @@ includemakefiles= \
 	$(if $(strip $(3)), \
 		$(foreach type,$(2), \
 			$(eval $(type)s+= \
-				$$(abspath $$(patsubst util/%, \
-					$(obj)/util/%, \
-					$$(patsubst src/%, \
+				$$(abspath $$(patsubst src/%, \
 						$(obj)/%, \
-						$$(addprefix $(dir $(1)),$$($(type)-y)))))))) \
+						$$(addprefix $(dir $(1)),$$($(type)-y))))))) \
 	$(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 
 # For each path in $(subdirs) call includemakefiles, passing $(1) as $(3)
@@ -214,10 +212,6 @@ define create_cc_template
 # $3 .o infix ("" ".initobj", ...)
 # $4 additional compiler flags
 de$(EMPTY)fine $(1)_$(2)_template
-$(obj)/$$(1)%$(3).o: $$(1)%.$(2) $(obj)/config.h
-	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC) $(4) $$$$(CFLAGS) -c -o $$$$@ $$$$<
-
 $(obj)/$$(1)%$(3).o: src/$$(1)%.$(2) $(obj)/config.h
 	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC) $(4) $$$$(CFLAGS) -c -o $$$$@ $$$$<
@@ -263,7 +257,7 @@ printcrt0s:
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
 INCLUDES := -I$(top)/src -I$(top)/src/include -I$(obj) -I$(top)/src/arch/$(ARCHDIR-y)/include 
-INCLUDES += -I$(top)/util/x86emu/include
+INCLUDES += -I$(top)/src/devices/oprom/include
 INCLUDES += -include $(obj)/config.h
 
 CFLAGS = $(INCLUDES) -Os -nostdinc -pipe

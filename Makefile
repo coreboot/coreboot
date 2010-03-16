@@ -22,8 +22,10 @@
 ifeq ($(INNER_SCANBUILD),y)
 CC_real:=$(CC)
 endif
+
 $(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile > .xcompile)))
 include .xcompile
+
 ifeq ($(INNER_SCANBUILD),y)
 CC:=$(CC_real)
 HOSTCC:=$(CC_real) --hostcc
@@ -75,6 +77,13 @@ all: config
 else
 
 include $(top)/.config
+
+ifneq ($(INNER_SCANBUILD),y)
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+CC:=clang -m32
+HOSTCC:=clang
+endif
+endif
 
 ARCHDIR-$(CONFIG_ARCH_X86)    := i386
 ARCHDIR-$(CONFIG_ARCH_POWERPC) := ppc

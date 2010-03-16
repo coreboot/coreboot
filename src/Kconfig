@@ -46,15 +46,28 @@ config CBFS_PREFIX
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.
 
+choice
+	prompt "Compiler"
+	default COMPILER_GCC
+	help
+	  This option allows you to select the compiler used for building
+	  coreboot.
+
+config COMPILER_GCC
+	bool "GCC"
+config COMPILER_LLVM_CLANG
+	bool "LLVM/clang"
+endchoice
+
 config SCANBUILD_ENABLE
-	bool "build with scan-build for static analysis"
+	bool "Build with scan-build for static analysis"
 	default n
 	help
 	  Changes the build process to scan-build is used.
 	  Requires scan-build in path.
 
 config SCANBUILD_REPORT_LOCATION
-	string "directory to put scan-build report in"
+	string "Directory to put scan-build report in"
 	default ""
 	depends on SCANBUILD_ENABLE
 	help

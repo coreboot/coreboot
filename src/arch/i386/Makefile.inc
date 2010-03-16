@@ -11,33 +11,47 @@ ifdef POST_EVALUATION
 
 #######################################################################
 # Build the final rom image
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL)
-	cp $(obj)/coreboot.pre $@
-	if [ -f fallback/coreboot_apc ]; \
-	then \
-		$(CBFSTOOL) $@ add-stage fallback/coreboot_apc $(CONFIG_CBFS_PREFIX)/coreboot_apc $(CBFS_COMPRESS_FLAG); \
-	fi
-	$(CBFSTOOL) $@ add-stage $(obj)/coreboot_ram $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
-ifeq ($(CONFIG_PAYLOAD_NONE),y)
-	@printf "    PAYLOAD    none (as specified by user)\n"
-else
-	@printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CBFS_PAYLOAD_COMPRESS_FLAG)\n"
-	$(CBFSTOOL) $(obj)/coreboot.rom add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+COREBOOT_ROM_DEPENDENCIES:=
+ifneq ($(CONFIG_PAYLOAD_NONE),y)
+COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_FALLBACK_PAYLOAD_FILE)
 endif
 ifeq ($(CONFIG_VGA_BIOS),y)
-	@printf "    VGABIOS    $(CONFIG_FALLBACK_VGA_BIOS_FILE) $(CONFIG_FALLBACK_VGA_BIOS_ID)\n"
-	$(CBFSTOOL) $(obj)/coreboot.rom add $(CONFIG_FALLBACK_VGA_BIOS_FILE) "pci$(CONFIG_FALLBACK_VGA_BIOS_ID).rom" optionrom
+COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_FALLBACK_VGA_BIOS_FILE)
 endif
 ifeq ($(CONFIG_INTEL_MBI),y)
-	@printf "    MBI        $(CONFIG_FALLBACK_MBI_FILE)\n"
-	$(CBFSTOOL) $(obj)/coreboot.rom add $(CONFIG_FALLBACK_MBI_FILE) mbi.bin mbi
+COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_FALLBACK_MBI_FILE)
 endif
 ifeq ($(CONFIG_BOOTSPLASH),y)
-	@printf "    BOOTSPLASH $(CONFIG_FALLBACK_BOOTSPLASH_FILE)\n"
-	$(CBFSTOOL) $(obj)/coreboot.rom add $(CONFIG_FALLBACK_BOOTSPLASH_FILE) bootsplash.jpg bootsplash
+COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_FALLBACK_BOOTSPLASH_FILE)
 endif
-	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
-	$(CBFSTOOL) $(obj)/coreboot.rom print
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(COREBOOT_ROM_DEPENDENCIES)
+	cp $(obj)/coreboot.pre $@.tmp
+	if [ -f fallback/coreboot_apc ]; \
+	then \
+		$(CBFSTOOL) $@.tmp add-stage fallback/coreboot_apc $(CONFIG_CBFS_PREFIX)/coreboot_apc $(CBFS_COMPRESS_FLAG); \
+	fi
+	$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ram $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
+ifeq ($(CONFIG_PAYLOAD_NONE),y)
+	printf "    PAYLOAD    none (as specified by user)\n"
+else
+	printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CBFS_PAYLOAD_COMPRESS_FLAG)\n"
+	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_VGA_BIOS),y)
+	printf "    VGABIOS    $(CONFIG_FALLBACK_VGA_BIOS_FILE) $(CONFIG_FALLBACK_VGA_BIOS_ID)\n"
+	$(CBFSTOOL) $@.tmp add $(CONFIG_FALLBACK_VGA_BIOS_FILE) "pci$(CONFIG_FALLBACK_VGA_BIOS_ID).rom" optionrom
+endif
+ifeq ($(CONFIG_INTEL_MBI),y)
+	printf "    MBI        $(CONFIG_FALLBACK_MBI_FILE)\n"
+	$(CBFSTOOL) $@.tmp add $(CONFIG_FALLBACK_MBI_FILE) mbi.bin mbi
+endif
+ifeq ($(CONFIG_BOOTSPLASH),y)
+	printf "    BOOTSPLASH $(CONFIG_FALLBACK_BOOTSPLASH_FILE)\n"
+	$(CBFSTOOL) $@.tmp add $(CONFIG_FALLBACK_BOOTSPLASH_FILE) bootsplash.jpg bootsplash
+endif
+	mv $@.tmp $@
+	printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
+	$(CBFSTOOL) $@ print
 
 #######################################################################
 # i386 specific tools

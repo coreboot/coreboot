@@ -1,0 +1,9 @@
+driver-y += sb700.o
+driver-y += sb700_usb.o
+driver-y += sb700_lpc.o
+driver-y += sb700_sm.o
+driver-y += sb700_ide.o
+driver-y += sb700_sata.o
+driver-y += sb700_hda.o
+driver-y += sb700_pci.o
+obj-y += sb700_reset.o

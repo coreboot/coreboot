@@ -177,6 +177,30 @@ static void i82801dx_lpc_decode_en(device_t dev)
 	pci_write_config16(dev, LPC_EN, 0x300F);
 }
 
+/* ICH4 does not mention HPET in the docs, but
+ * all ICH3 and ICH4 do have HPETs built in.
+ */
+static void enable_hpet(struct device *dev)
+{
+	u32 reg32;
+	u32 code = (0 & 0x3);
+
+	reg32 = pci_read_config32(dev, GEN_CNTL);
+	reg32 |= (1 << 17);	/* Enable HPET. */
+	/*
+	 * Bits [16:15]	Memory Address Range
+	 * 00		FED0_0000h - FED0_03FFh
+	 * 01		FED0_1000h - FED0_13FFh
+	 * 10		FED0_2000h - FED0_23FFh
+	 * 11		FED0_3000h - FED0_33FFh
+	 */
+	reg32 &= ~(3 << 15);	/* Clear it */
+	reg32 |= (code << 15);
+	pci_write_config32(dev, GEN_CNTL, reg32);
+
+	printk_debug("Enabling HPET @0x%x\n", HPET_ADDR | (code << 12));
+}
+
 static void lpc_init(struct device *dev)
 {
 	/* Set the value for PCI command register. */
@@ -207,6 +231,9 @@ static void lpc_init(struct device *dev)
 
 	/* Setup decode ports and LPC I/F enables. */
 	i82801dx_lpc_decode_en(dev);
+
+	/* Initialize the High Precision Event Timers */
+	enable_hpet(dev);
 }
 
 static void i82801dx_lpc_read_resources(device_t dev)

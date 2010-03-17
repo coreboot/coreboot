@@ -36,6 +36,9 @@
 extern void i82801dx_enable(device_t dev);
 #endif
 
+#define IO_APIC_ADDR		0xfec00000
+#define HPET_ADDR		0xfed00000
+
 #define DEBUG_PERIODIC_SMIS 0
 
 #define MAINBOARD_POWER_OFF	0
@@ -79,8 +82,15 @@ extern void i82801dx_enable(device_t dev);
 #define BIOS_CNTL       0x4E
 #define GPIO_BASE       0x58
 #define GPIO_CNTL       0x5C
-#define PIRQA_ROUT      0x60
-#define PIRQE_ROUT      0x68
+#define   GPIOBASE_ADDR 0x0500
+#define PIRQA_ROUT	0x60
+#define PIRQB_ROUT	0x61
+#define PIRQC_ROUT	0x62
+#define PIRQD_ROUT	0x63
+#define PIRQE_ROUT	0x68
+#define PIRQF_ROUT	0x69
+#define PIRQG_ROUT	0x6A
+#define PIRQH_ROUT	0x6B
 #define COM_DEC         0xE0
 #define LPC_EN          0xE6
 #define FUNC_DIS        0xF2
@@ -191,5 +201,10 @@ extern void i82801dx_enable(device_t dev);
 
 #define TCOBASE		0x60 /* TCO Base Address Register */
 #define TCO1_CNT	0x08 /* TCO1 Control Register */
+
+/* GEN_PMCON_3 bits */
+#define RTC_BATTERY_DEAD	(1 << 2)
+#define RTC_POWER_FAILED	(1 << 1)
+#define SLEEP_AFTER_POWER_FAIL	(1 << 0)
 
 #endif /* I82801DX_H */

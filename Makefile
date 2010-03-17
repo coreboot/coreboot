@@ -320,6 +320,8 @@ clean-for-update: doxygen-clean
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc 
+	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.*
+	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
 	$(MAKE) -C util/sconfig clean
 

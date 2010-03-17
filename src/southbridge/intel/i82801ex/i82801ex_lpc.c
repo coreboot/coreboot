@@ -231,6 +231,7 @@ static void enable_hpet(struct device *dev)
 
 	dword &= ~(3 << 15); /* clear it */
 	dword |= (code<<15);
+	pci_write_config32(dev, GEN_CNTL, dword);
 
 	printk_debug("enabling HPET @0x%lx\n", hpet_address | (code <<12) );
 }

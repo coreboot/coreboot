@@ -272,28 +272,6 @@ static void i82801ax_lpc_decode_en(device_t dev, uint16_t ich_model)
 	}
 }
 
-static void enable_hpet(struct device *dev)
-{
-#ifdef HPET_PRESENT
-	uint32_t reg32;
-	uint32_t code = (0 & 0x3);
-
-	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (1 << 17);	/* Enable HPET. */
-	/*
-	 * Bits [16:15]	Memory Address Range
-	 * 00		FED0_0000h - FED0_03FFh
-	 * 01		FED0_1000h - FED0_13FFh
-	 * 10		FED0_2000h - FED0_23FFh
-	 * 11		FED0_3000h - FED0_33FFh
-	 */
-	reg32 &= ~(3 << 15);	/* Clear it */
-	reg32 |= (code << 15);
-	/* TODO: reg32 is never written to anywhere? */
-	printk_debug("Enabling HPET @0x%x\n", HPET_ADDR | (code << 12));
-#endif
-}
-
 static void lpc_init(struct device *dev)
 {
 	uint16_t ich_model = pci_read_config16(dev, PCI_DEVICE_ID);
@@ -326,9 +304,6 @@ static void lpc_init(struct device *dev)
 
 	/* Setup decode ports and LPC I/F enables. */
 	i82801ax_lpc_decode_en(dev, ich_model);
-
-	/* Initialize the High Precision Event Timers, if present. */
-	enable_hpet(dev);
 }
 
 static void i82801ax_lpc_read_resources(device_t dev)

@@ -71,8 +71,16 @@ static void sb600_lpc_init(void)
 	u32 reg32;
 	device_t dev;
 
-	/* Enable lpc controller */
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);	/* SMBUS controller */
+	/* NOTE: Set BootTimerDisable, otherwise it would keep rebooting!!
+	 * This bit has no meaning if debug strap is not enabled. So if the
+	 * board keeps rebooting and the code fails to reach here, we could
+	 * disable the debug strap first. */
+	reg32 = pci_read_config32(dev, 0x4C);
+	reg32 |= 1 << 31;
+	pci_write_config32(dev, 0x4C, reg32);
+
+	/* Enable lpc controller */
 	reg32 = pci_read_config32(dev, 0x64);
 	reg32 |= 1 << 20;
 	pci_write_config32(dev, 0x64, reg32);

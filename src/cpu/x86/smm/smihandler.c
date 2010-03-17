@@ -25,8 +25,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 
-void southbridge_smi_set_eos(void);
-
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */

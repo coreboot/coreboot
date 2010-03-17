@@ -32,7 +32,7 @@ $(obj)/cpu/x86/smm/smm.o: $(smmobjs) $(obj)/console/printk.o $(obj)/console/vtxp
 
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj)/ldoptions
 	$(CC) $(LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/smm.ld $(obj)/cpu/x86/smm/smm.o
-	$(CONFIG_CROSS_COMPILE)nm -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
+	$(NM) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
 	$(OBJCOPY) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
 
 $(obj)/cpu/x86/smm/smm_bin.c: $(obj)/cpu/x86/smm/smm

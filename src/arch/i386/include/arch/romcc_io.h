@@ -273,7 +273,7 @@ static inline __attribute__((always_inline)) void pci_write_config32(device_t de
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
-static device_t pci_io_locate_device(unsigned pci_id, device_t dev)
+static inline device_t pci_io_locate_device(unsigned pci_id, device_t dev)
 {
         for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
                 unsigned int id;
@@ -285,7 +285,7 @@ static device_t pci_io_locate_device(unsigned pci_id, device_t dev)
         return PCI_DEV_INVALID;
 }
 
-static device_t pci_locate_device(unsigned pci_id, device_t dev)
+static inline device_t pci_locate_device(unsigned pci_id, device_t dev)
 {
 	for(; dev <= PCI_DEV(255|(((1<<CONFIG_PCI_BUS_SEGN_BITS)-1)<<8), 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
@@ -297,7 +297,7 @@ static device_t pci_locate_device(unsigned pci_id, device_t dev)
 	return PCI_DEV_INVALID;
 }
 
-static device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
+static inline device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 {
 	device_t dev, last;
 

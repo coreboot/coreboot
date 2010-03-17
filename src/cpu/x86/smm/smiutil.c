@@ -102,7 +102,8 @@ void console_tx_byte(unsigned char byte)
 	uart_tx_byte(byte);
 }
 
-void uart_init(void)
+#if CONFIG_DEBUG_SMI
+static void uart_init(void)
 {
 	/* disable interrupts */
 	outb(0x0, CONFIG_TTYS0_BASE + UART_IER);
@@ -114,6 +115,7 @@ void uart_init(void)
 	outb((CONFIG_TTYS0_DIV >> 8) & 0xFF,    CONFIG_TTYS0_BASE + UART_DLM);
 	outb(UART_LCS, CONFIG_TTYS0_BASE + UART_LCR);
 }
+#endif
 
 void console_init(void)
 {

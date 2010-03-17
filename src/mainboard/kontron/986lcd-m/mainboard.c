@@ -21,7 +21,9 @@
 #include <device/device.h>
 #include <console/console.h>
 #include <boot/tables.h>
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
+#endif
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 #include <arch/coreboot_tables.h>

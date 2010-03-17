@@ -7,7 +7,7 @@ struct tsc_struct {
 };
 typedef struct tsc_struct tsc_t;
 
-static tsc_t rdtsc(void)
+static inline tsc_t rdtsc(void)
 {
 	tsc_t res;
 	__asm__ __volatile__ (

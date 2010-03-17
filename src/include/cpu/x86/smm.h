@@ -250,9 +250,13 @@ typedef struct {
 
 
 /* SMI handler function prototypes */
+void smi_handler(u32 smm_revision);
+
 void io_trap_handler(int smif);
 int southbridge_io_trap_handler(int smif);
 int mainboard_io_trap_handler(int smif);
+
+void southbridge_smi_set_eos(void);
 
 void __attribute__((weak)) cpu_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 void __attribute__((weak)) northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);

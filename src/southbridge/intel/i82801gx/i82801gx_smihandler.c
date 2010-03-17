@@ -568,10 +568,10 @@ static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *st
 #undef IOTRAP
 }
 
-typedef void (*smi_handler)(unsigned int node,
+typedef void (*smi_handler_t)(unsigned int node,
 		smm_state_save_area_t *state_save);
 
-smi_handler southbridge_smi[32] = {
+smi_handler_t southbridge_smi[32] = {
 	NULL,			  //  [0] reserved
 	NULL,			  //  [1] reserved
 	NULL,			  //  [2] BIOS_STS

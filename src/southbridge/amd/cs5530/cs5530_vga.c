@@ -237,7 +237,7 @@ static const struct video_mode *modes[] = {
  *
  * The PLL to program here is located in the CS5530
  */
-static void cs5530_set_clock_frequency(void *io_base, unsigned long pll_val)
+static void cs5530_set_clock_frequency(u32 io_base, unsigned long pll_val)
 {
 	unsigned long reg;
 
@@ -282,7 +282,7 @@ static void cs5530_set_clock_frequency(void *io_base, unsigned long pll_val)
  * - 2 (=2MiB) for XGA
  * - 4 (=4MiB) for SXGA
  */
-static void dc_setup_layout(void *gx_base, const struct video_mode *mode)
+static void dc_setup_layout(u32 gx_base, const struct video_mode *mode)
 {
 	u32 base = 0x00000000;
 
@@ -323,7 +323,7 @@ static void dc_setup_layout(void *gx_base, const struct video_mode *mode)
  * |#####################################___________________________| line data
  * |______________________________________________---------_________| YSYNC
  */
-static void dc_setup_timing(void *gx_base, const struct video_mode *mode)
+static void dc_setup_timing(u32 gx_base, const struct video_mode *mode)
 {
 	u32 hactive, hblankstart, hsyncstart, hsyncend, hblankend, htotal;
 	u32 vactive, vblankstart, vsyncstart, vsyncend, vblankend, vtotal;
@@ -367,7 +367,7 @@ static void dc_setup_timing(void *gx_base, const struct video_mode *mode)
  * Must be setup in Geode GX1's chipset.
  * Note: This routine assumes unlocked DC registers.
  */
-static void cs5530_activate_mode(void *gx_base, const struct video_mode *mode)
+static void cs5530_activate_mode(u32 gx_base, const struct video_mode *mode)
 {
 	write32(gx_base + DC_GENERAL_CFG, 0x00000080);
 	mdelay(1);
@@ -387,7 +387,7 @@ static void cs5530_activate_mode(void *gx_base, const struct video_mode *mode)
  * As we now activate the interface this must be done
  * in the CS5530
  */
-static void cs5530_activate_video(void *io_base, const struct video_mode *mode)
+static void cs5530_activate_video(u32 io_base, const struct video_mode *mode)
 {
 	u32 val;
 
@@ -454,10 +454,10 @@ static void show_boot_splash_16(u32 swidth, u32 sheight, u32 pitch,void *base)
 static void cs5530_vga_init(device_t dev)
 {
 	const struct video_mode *mode;
-	void *io_base, *gx_base;
+	u32 io_base, gx_base;
 
-	io_base = (void*)pci_read_config32(dev, 0x10);
-	gx_base = (void*)GX_BASE;
+	io_base = pci_read_config32(dev, 0x10);
+	gx_base = GX_BASE;
 	mode = modes[CONFIG_GX1_VIDEOMODE];
 
 	printk_debug("Setting up video mode %dx%d with %d Hz clock\n",

@@ -13473,6 +13473,10 @@ static struct triple *do_decl(struct compile_state *state,
 	if ((type->type & TYPE_MASK) == TYPE_FUNCTION) {
 		error(state, 0, "Function prototypes not supported");
 	}
+	if (ident &&
+		((type->type & TYPE_MASK) == TYPE_ARRAY) &&
+		((type->type & STOR_MASK) != STOR_STATIC))
+		error(state, 0, "non static arrays not supported");
 	if (ident && 
 		((type->type & STOR_MASK) == STOR_STATIC) &&
 		((type->type & QUAL_CONST) == 0)) {

@@ -13,4 +13,10 @@
 #ifndef _BIOSEMU_VBE_H_
 #define _BIOSEMU_VBE_H_
 
+struct lb_framebuffer;
+
+void vbe_set_graphics(void);
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
+void vbe_textmode_console(void);
+
 #endif

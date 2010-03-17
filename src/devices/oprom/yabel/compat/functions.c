@@ -18,6 +18,7 @@
 #include <device/device.h>
 #include "../debug.h"
 #include "../biosemu.h"
+#include "../vbe.h"
 #include "../compat/time.h"
 
 #define VMEM_SIZE (1024 * 1024) /* 1 MB */
@@ -30,10 +31,6 @@ u8* vmem = (u8 *) (16*1024*1024); /* default to 16MB */
 #endif
 #else
 u8* vmem = NULL;
-#endif
-
-#if CONFIG_BOOTSPLASH
-void vbe_set_graphics(void);
 #endif
 
 void run_bios(struct device * dev, unsigned long addr)

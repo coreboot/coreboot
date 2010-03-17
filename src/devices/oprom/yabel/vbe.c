@@ -31,6 +31,7 @@
 #include "mem.h"
 #include "interrupt.h"
 #include "device.h"
+#include "vbe.h"
 
 #include <cbfs.h>
 
@@ -153,6 +154,7 @@ vbe_prepare(void)
 	return 0;		// successfull init
 }
 
+#if CONFIG_BOOTSPLASH || CONFIG_EXPERT
 // VBE Function 00h
 static u8
 vbe_info(vbe_info_t * info)
@@ -299,7 +301,9 @@ vbe_set_mode(vbe_mode_info_t * mode_info)
 	}
 	return 0;
 }
+#endif
 
+#if CONFIG_EXPERT
 //VBE Function 08h
 static u8
 vbe_set_palette_format(u8 format)
@@ -762,6 +766,7 @@ vbe_get_info(void)
 	}
 	return 0;
 }
+#endif
 
 #if CONFIG_BOOTSPLASH
 vbe_mode_info_t mode_info;
@@ -769,7 +774,6 @@ vbe_mode_info_t mode_info;
 void vbe_set_graphics(void)
 {
 	u8 rval;
-	int i;
 
 	vbe_info_t info;
 	rval = vbe_info(&info);
@@ -802,7 +806,7 @@ void vbe_set_graphics(void)
 
 	/* Switching Intel IGD to 1MB video memory will break this. Who
 	 * cares. */
-	int imagesize = 1024*768*2;
+	// int imagesize = 1024*768*2;
 	
 	unsigned char *jpeg = cbfs_find_file("bootsplash.jpg", CBFS_TYPE_BOOTSPLASH);
 	if (!jpeg) { 

@@ -38,8 +38,8 @@ typedef struct southbridge_intel_i82801dx_config config_t;
 static void i82801dx_enable_ioapic(struct device *dev)
 {
 	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)IO_APIC_ADDR;
-	volatile u32 *ioapic_data = (volatile u32 *)IO_APIC_ADDR + 0x10;
+	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
+	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
 
 	/* Set ACPI base address (I/O space). */
 	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));

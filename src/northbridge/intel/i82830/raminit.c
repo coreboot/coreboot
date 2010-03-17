@@ -48,7 +48,7 @@ Macros and definitions.
  * 0x0 for Refresh Disabled (Self Refresh)
  * 0x1 for Refresh interval 15.6 us for 133MHz
  * 0x2 for Refresh interval 7.8 us for 133MHz
- * 0x7 /* Refresh interval 128 Clocks. (Fast Refresh Mode)
+ * 0x7 for Refresh interval 128 Clocks. (Fast Refresh Mode)
  */
 #define RAM_COMMAND_REFRESH		0x1
 

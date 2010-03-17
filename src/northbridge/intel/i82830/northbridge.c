@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Joseph Smith <joe@smittys.pointclark.net>
+ * Copyright (C) 2008-2010 Joseph Smith <joe@settoplinux.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
+#include <boot/tables.h>
+#include <arch/coreboot_tables.h>
 #include "chip.h"
 #include "i82830.h"
 
@@ -88,6 +90,18 @@ static uint32_t find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 
+/* IGD memory */
+uint64_t uma_memory_base=0, uma_memory_size=0;
+
+int add_northbridge_resources(struct lb_memory *mem)
+{
+	printk_debug("Adding IGD UMA memory area\n");
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		uma_memory_base, uma_memory_size);
+
+	return 0;
+}
+
 #if CONFIG_WRITE_HIGH_TABLES==1
 #define HIGH_TABLES_SIZE 64	// maximum size of high tables in KB
 extern uint64_t high_tables_base, high_tables_size;
@@ -106,8 +120,10 @@ static void pci_domain_set_resources(device_t dev)
 
 		if (CONFIG_VIDEO_MB == 512) {
 			igd_memory = (CONFIG_VIDEO_MB);
+			printk_debug("%dKB IGD UMA\n", igd_memory >> 10);
 		} else {
 			igd_memory = (CONFIG_VIDEO_MB * 1024);
+			printk_debug("%dMB IGD UMA\n", igd_memory >> 10);
 		}
 
 		/* Get the value of the highest DRB. This tells the end of
@@ -116,7 +132,11 @@ static void pci_domain_set_resources(device_t dev)
 		 */
 		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB + 3)) << 15;
 		tomk -= igd_memory;
-		printk_debug("Memory detected: %ldKB RAM\n", tomk);
+
+		/* For reserving UMA memory in the memory map */
+		uma_memory_base = tomk * 1024ULL;
+		uma_memory_size = igd_memory * 1024ULL;
+		printk_debug("Available memory: %ldKB\n", tomk);
 
 		/* Compute the top of low memory. */
 		tolmk = pci_tolm >> 10;

@@ -8,9 +8,11 @@ config BOARD_RCA_RM4100
 	select ROMCC
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
-	select BOARD_ROMSIZE_KB_512
+ 	select BOARD_ROMSIZE_KB_1024
+ 	select HAVE_MAINBOARD_RESOURCES
 	select HAVE_HARD_RESET
 	select HAVE_SMI_HANDLER
+ 	select GFXUMA
 
 config MAINBOARD_DIR
 	string

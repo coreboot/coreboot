@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Joseph Smith <joe@settoplinux.org>
+ * Copyright (C) 2008-2010 Joseph Smith <joe@settoplinux.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,14 @@
  */
 
 #include <device/device.h>
+#include <boot/tables.h>
+#include <arch/coreboot_tables.h>
 #include "chip.h"
+
+int add_mainboard_resources(struct lb_memory *mem)
+{
+	return add_northbridge_resources(mem);
+}
 
 static void mainboard_init(device_t dev)
 {

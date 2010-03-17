@@ -107,7 +107,6 @@ void pirq_routing_irqs(unsigned long addr)
 	unsigned char irq_slot[4];
 	unsigned char pirq[4] = {0, 0, 0, 0};
 	struct irq_routing_table *pirq_tbl;
-	device_t pdev;
 
 	pirq_tbl = (struct irq_routing_table *)(addr);
 	num_entries = (pirq_tbl->size - 32) / 16;

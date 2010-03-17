@@ -19,7 +19,8 @@
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "debug.c"
 #include "watchdog.c"
-#include "reset.c"
+// Remove comment if resets in this file are actually used.
+// #include "reset.c"
 #include "s1850_fixups.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"

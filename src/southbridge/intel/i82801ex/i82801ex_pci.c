@@ -7,7 +7,6 @@
 
 static void pci_init(struct device *dev)
 {
-	uint32_t dword;
 	uint16_t word;
 
 	/* Clear system errors */
@@ -17,6 +16,7 @@ static void pci_init(struct device *dev)
 
 #if 0
 	/* System error enable */
+	uint32_t dword;
 	dword = pci_read_config32(dev, 0x04);
 	dword |= (1<<8); /* SERR# Enable */
 	dword |= (1<<6); /* Parity Error Response */

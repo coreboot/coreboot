@@ -46,7 +46,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	return loops?0:-1;
 }
 
-static int smbus_wait_until_blk_done(unsigned smbus_io_base)
+static inline int smbus_wait_until_blk_done(unsigned smbus_io_base)
 {
 	unsigned loops = SMBUS_TIMEOUT;
 	unsigned char byte;

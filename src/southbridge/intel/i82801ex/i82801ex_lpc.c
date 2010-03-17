@@ -232,7 +232,7 @@ const unsigned long hpet_address = 0xfed0000;
 	dword &= ~(3 << 15); /* clear it */
 	dword |= (code<<15);
 
-	printk_debug("enabling HPET @0x%x\n", hpet_address | (code <<12) );
+	printk_debug("enabling HPET @0x%lx\n", hpet_address | (code <<12) );
 }
 
 static void lpc_init(struct device *dev)

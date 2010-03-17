@@ -7,10 +7,7 @@
 
 static void sata_init(struct device *dev)
 {
-
-	uint16_t word;
-
-  printk_debug("SATA init\n");
+  	printk_debug("SATA init\n");
 	/* SATA configuration */
 	pci_write_config8(dev, 0x04, 0x07);
 	pci_write_config8(dev, 0x09, 0x8f);

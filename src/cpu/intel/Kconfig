@@ -1,12 +1,19 @@
+# CPU models
+source src/cpu/intel/model_6xx/Kconfig
 source src/cpu/intel/model_69x/Kconfig
 source src/cpu/intel/model_6dx/Kconfig
 source src/cpu/intel/model_6ex/Kconfig
 source src/cpu/intel/model_6fx/Kconfig
 source src/cpu/intel/model_1067x/Kconfig
 source src/cpu/intel/model_106cx/Kconfig
-
-source src/cpu/intel/bga956/Kconfig
+source src/cpu/intel/model_f0x/Kconfig
+source src/cpu/intel/model_f1x/Kconfig
+source src/cpu/intel/model_f2x/Kconfig
+source src/cpu/intel/model_f3x/Kconfig
+source src/cpu/intel/model_f4x/Kconfig
 source src/cpu/intel/ep80579/Kconfig
+# Sockets/Slots
+source src/cpu/intel/bga956/Kconfig
 source src/cpu/intel/slot_2/Kconfig
 source src/cpu/intel/slot_1/Kconfig
 source src/cpu/intel/socket_mFCPGA478/Kconfig

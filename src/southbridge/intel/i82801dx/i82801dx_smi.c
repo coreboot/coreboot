@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <console/console.h>
 #include <arch/io.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <string.h>
@@ -237,7 +238,7 @@ static void smi_set_eos(void)
 
 extern uint8_t smm_relocation_start, smm_relocation_end;
 
-void smm_relocate(void)
+static void smm_relocate(void)
 {
 	u32 smi_en;
 	u16 pm1_en;
@@ -317,7 +318,7 @@ void smm_relocate(void)
 	outb(0x00, 0xb2);
 }
 
-void smm_install(void)
+static void smm_install(void)
 {
 	/* enable the SMM memory window */
 	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,

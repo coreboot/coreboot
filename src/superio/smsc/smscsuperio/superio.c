@@ -345,7 +345,7 @@ static void enable_dev(device_t dev)
 
 	/* Enable the specified devices (if present on the chip). */
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
-			   &pnp_dev_info);
+			   &pnp_dev_info[0]);
 
 	/* Restore LD_FOO values. */
 	for (j = 0; j < ARRAY_SIZE(pnp_dev_info); j++)

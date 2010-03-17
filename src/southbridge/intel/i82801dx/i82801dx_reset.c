@@ -18,6 +18,7 @@
  */
 
 #include <arch/io.h>
+#include <reset.h>
 
 void hard_reset(void)
 {

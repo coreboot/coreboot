@@ -36,6 +36,8 @@
 extern void i82801dx_enable(device_t dev);
 #endif
 
+#define DEBUG_PERIODIC_SMIS 0
+
 #define MAINBOARD_POWER_OFF	0
 #define MAINBOARD_POWER_ON	1
 #define MAINBOARD_POWER_KEEP	2

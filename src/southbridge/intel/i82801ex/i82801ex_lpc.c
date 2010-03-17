@@ -214,7 +214,7 @@ static void i82801ex_gpio_init(device_t dev)
 
 static void enable_hpet(struct device *dev)
 {
-const unsigned long hpet_address = 0xfed0000;
+	const unsigned long hpet_address = 0xfed00000;
 
 	uint32_t dword;
 	uint32_t code = (0 & 0x3);

@@ -115,6 +115,6 @@ extern void i82801ax_enable(device_t dev);
 #define SMBUS_TIMEOUT		(10 * 1000 * 100)
 
 /* HPET, if present */
-#define HPET_ADDR		0xfed0000
+#define HPET_ADDR		0xfed00000
 
 #endif				/* SOUTHBRIDGE_INTEL_I82801AX_I82801AX_H */

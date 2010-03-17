@@ -114,7 +114,7 @@ void i82801dx_1f0_misc(struct device *dev)
 
 static void enable_hpet(struct device *dev)
 {
-	const unsigned long hpet_address = 0xfed0000;
+	const unsigned long hpet_address = 0xfed00000;
 
 	u32 dword;
 	u32 code = (0 & 0x3);
@@ -130,7 +130,7 @@ static void enable_hpet(struct device *dev)
 	dword &= ~(3 << 15);	/* clear it */
 	dword |= (code << 15);
 
-	printk_debug("enabling HPET @0x%x\n", hpet_address | (code << 12));
+	printk_debug("enabling HPET @0x%lx\n", hpet_address | (code << 12));
 }
 
 static void lpc_init(struct device *dev)

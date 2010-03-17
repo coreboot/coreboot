@@ -160,7 +160,7 @@ static struct dec_hufftbl dhuff[4];
 #define dec_huffdc (dhuff + 0)
 #define dec_huffac (dhuff + 2)
 
-static struct in in;
+static struct in glob_in;
 
 static int readtables(int till)
 {
@@ -248,7 +248,7 @@ static int dec_checkmarker(void)
 {
 	int i;
 
-	if (dec_readmarker(&in) != info.rm)
+	if (dec_readmarker(&glob_in) != info.rm)
 		return -1;
 	info.nm = info.dri;
 	info.rm = (info.rm + 1) & ~0x08;
@@ -356,7 +356,7 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 	idctqtab(quant[dscans[1].tq], decdata->dquant[1]);
 	idctqtab(quant[dscans[2].tq], decdata->dquant[2]);
 	initcol(decdata->dquant);
-	setinput(&in, datap);
+	setinput(&glob_in, datap);
 
 #if 0
 	/* landing zone */
@@ -376,7 +376,7 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 				if (dec_checkmarker())
 					return ERR_WRONG_MARKER;
 
-			decode_mcus(&in, decdata->dcts, 6, dscans, max);
+			decode_mcus(&glob_in, decdata->dcts, 6, dscans, max);
 			idct(decdata->dcts, decdata->out, decdata->dquant[0], IFIX(128.5), max[0]);
 			idct(decdata->dcts + 64, decdata->out + 64, decdata->dquant[0], IFIX(128.5), max[1]);
 			idct(decdata->dcts + 128, decdata->out + 128, decdata->dquant[0], IFIX(128.5), max[2]);
@@ -401,7 +401,7 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 		}
 	}
 
-	m = dec_readmarker(&in);
+	m = dec_readmarker(&glob_in);
 	if (m != M_EOI)
 		return ERR_NO_EOI;
 
@@ -664,7 +664,7 @@ static unsigned char zig2[64] = {
 	6, 13, 17, 24, 32, 38, 47, 49
 };
 
-void idct(int *in, int *out, PREC *quant, PREC off, int max)
+void idct(int *in, int *out, PREC *lquant, PREC off, int max)
 {
 	PREC t0, t1, t2, t3, t4, t5, t6, t7, t;
 	PREC tmp[64], *tmpp;
@@ -673,7 +673,7 @@ void idct(int *in, int *out, PREC *quant, PREC off, int max)
 
 	t0 = off;
 	if (max == 1) {
-		t0 += in[0] * quant[0];
+		t0 += in[0] * lquant[0];
 		for (i = 0; i < 64; i++)
 			out[i] = ITOINT(t0);
 		return;
@@ -682,21 +682,21 @@ void idct(int *in, int *out, PREC *quant, PREC off, int max)
 	tmpp = tmp;
 	for (i = 0; i < 8; i++) {
 		j = *zig2p++;
-		t0 += in[j] * quant[j];
+		t0 += in[j] * lquant[j];
 		j = *zig2p++;
-		t5 = in[j] * quant[j];
+		t5 = in[j] * lquant[j];
 		j = *zig2p++;
-		t2 = in[j] * quant[j];
+		t2 = in[j] * lquant[j];
 		j = *zig2p++;
-		t7 = in[j] * quant[j];
+		t7 = in[j] * lquant[j];
 		j = *zig2p++;
-		t1 = in[j] * quant[j];
+		t1 = in[j] * lquant[j];
 		j = *zig2p++;
-		t4 = in[j] * quant[j];
+		t4 = in[j] * lquant[j];
 		j = *zig2p++;
-		t3 = in[j] * quant[j];
+		t3 = in[j] * lquant[j];
 		j = *zig2p++;
-		t6 = in[j] * quant[j];
+		t6 = in[j] * lquant[j];
 		IDCT;
 		tmpp[0 * 8] = t0;
 		tmpp[1 * 8] = t1;

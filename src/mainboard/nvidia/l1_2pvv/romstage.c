@@ -150,8 +150,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #endif
 
-#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -177,77 +175,8 @@ static void sio_setup(void)
 
 }
 
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-	unsigned last_boot_normal_x = last_boot_normal();
-
-	/* Is this a cpu only reset? or Is this a secondary cpu? */
-	if ((cpu_init_detectedx) || (!boot_cpu())) {
-		if (last_boot_normal_x) {
-			goto normal_image;
-		} else {
-			goto fallback_image;
-		}
-	}
-
-	/* Nothing special needs to be done to find bus 0 */
-	/* Allow the HT devices to be found */
-
-	enumerate_ht_chain();
-
-	sio_setup();
-
-	/* Setup the mcp55 */
-	mcp55_enable_rom();
-
-	/* Is this a deliberate reset by the bios */
-	if (bios_reset_detected() && last_boot_normal_x) {
-		goto normal_image;
-	}
-	/* This is the primary cpu how should I boot? */
-	else if (do_normal_boot()) {
-		goto normal_image;
-	}
-	else {
-		goto fallback_image;
-	}
- normal_image:
-	__asm__ volatile ("jmp __normal_image"
-		: /* outputs */
-		: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-		);
-
- fallback_image:
-#if CONFIG_HAVE_FAILOVER_BOOT==1
-	__asm__ volatile ("jmp __fallback_image"
-		: /* outputs */
-		: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-		)
-#endif
-	;
-}
-#endif
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-#if CONFIG_HAVE_FAILOVER_BOOT==1
-    #if CONFIG_USE_FAILOVER_IMAGE==1
-	failover_process(bist, cpu_init_detectedx);
-    #else
-	real_main(bist, cpu_init_detectedx);
-    #endif
-#else
-    #if CONFIG_USE_FALLBACK_IMAGE == 1
-	failover_process(bist, cpu_init_detectedx);
-    #endif
-	real_main(bist, cpu_init_detectedx);
-#endif
-}
-
 #if CONFIG_USE_FAILOVER_IMAGE==0
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
+void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
 			(0xa<<3)|0, (0xa<<3)|2, 0, 0,
@@ -262,6 +191,18 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	int needs_reset = 0;
 	unsigned bsp_apicid = 0;
+
+	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+		/* Nothing special needs to be done to find bus 0 */
+		/* Allow the HT devices to be found */
+
+		enumerate_ht_chain();
+
+		sio_setup();
+
+		/* Setup the mcp55 */
+		mcp55_enable_rom();
+	}
 
 	if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);

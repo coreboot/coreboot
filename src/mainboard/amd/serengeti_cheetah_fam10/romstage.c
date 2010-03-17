@@ -144,94 +144,32 @@ static int spd_read_byte(u32 device, u32 address)
 #endif /* (CONFIG_USE_FAILOVER_IMAGE == 0) */
 
 
-#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
-
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-	int last_boot_normal_flag = last_boot_normal();
-
-	/* Is this a cpu only reset? or Is this a secondary cpu? */
-	if ((cpu_init_detectedx) || (!boot_cpu())) {
-		if (last_boot_normal_flag) {
-			goto normal_image;
-		} else {
-			goto fallback_image;
-		}
-	}
-
-	/* Nothing special needs to be done to find bus 0 */
-	/* Allow the HT devices to be found */
-	/* mov bsp to bus 0xff when > 8 nodes */
-	set_bsp_node_CHtExtNodeCfgEn();
-	enumerate_ht_chain();
-
-	/* Setup the rom access for 4M */
-	amd8111_enable_rom();
-
-	/* Is this a deliberate reset by the bios */
-	if (bios_reset_detected() && last_boot_normal_flag) {
-		goto normal_image;
-	}
-	/* This is the primary cpu how should I boot? */
-	else if (do_normal_boot()) {
-		goto normal_image;
-	}
-	else {
-		goto fallback_image;
-	}
-
-normal_image:
-	__asm__ volatile ("jmp __normal_image"
-		 : /* outputs */
-		 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-		);
-
-fallback_image:
- #if CONFIG_HAVE_FAILOVER_BOOT==1
-	__asm__ volatile ("jmp __fallback_image"
-		 : /* outputs */
-		 : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-		)
- #endif
-	;
-}
-#endif /* ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1)) */
-
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-//FIXME: I think that there is a hole here with the real_main() logic realmain is inside a CONFIG_USE_FAILOVER_IMAGE=0.
-#if CONFIG_HAVE_FAILOVER_BOOT==1
- #if CONFIG_USE_FAILOVER_IMAGE==1
-	failover_process(bist, cpu_init_detectedx);
- #else
-	real_main(bist, cpu_init_detectedx);
- #endif
-#else
- #if CONFIG_USE_FALLBACK_IMAGE == 1
-	failover_process(bist, cpu_init_detectedx);
- #endif
-	real_main(bist, cpu_init_detectedx);
-#endif
-}
-
 
 #if (CONFIG_USE_FAILOVER_IMAGE==0)
 #include "spd_addr.h"
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
 
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
+void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	u32 bsp_apicid = 0;
 	u32 val;
 	msr_t msr;
+
+	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+		/* Nothing special needs to be done to find bus 0 */
+		/* Allow the HT devices to be found */
+		/* mov bsp to bus 0xff when > 8 nodes */
+		set_bsp_node_CHtExtNodeCfgEn();
+		enumerate_ht_chain();
+
+		/* Setup the rom access for 4M */
+		amd8111_enable_rom();
+	}
 
 	post_code(0x30);
 

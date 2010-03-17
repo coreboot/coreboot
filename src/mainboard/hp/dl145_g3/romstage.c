@@ -155,8 +155,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #endif
 
-#if ((CONFIG_HAVE_FAILOVER_BOOT==1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT==0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
 #if 0
@@ -197,78 +195,9 @@ static void setup_early_ipmi_serial()
 }
 #endif
 
-
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-	 /* Is this a cpu only reset? Is this a secondary cpu? */
-	 if ((cpu_init_detectedx) || (!boot_cpu())) {
-		if (last_boot_normal()) { // RTC already inited
-			goto normal_image; //normal_image;
-		} else {
-			goto fallback_image;
-		}
-	 }
-
-	 /* Nothing special needs to be done to find bus 0 */
-	 /* Allow the HT devices to be found */
-
-	 enumerate_ht_chain();
-	 bcm5785_enable_rom();
-	 bcm5785_enable_lpc();
-	 //enable RTC
-	pc87417_enable_dev(RTC_DEV);
-
-	 /* Is this a deliberate reset by the bios */
-
-	 if (bios_reset_detected() && last_boot_normal()) {
-		goto normal_image;
-	 }
-	 /* This is the primary cpu how should I boot? */
-	 else if (do_normal_boot()) {
-		goto normal_image;
-	 }
-	 else {
-		goto fallback_image;
-	 }
- normal_image:
-	 __asm__ volatile ("jmp __normal_image"
-		: /* outputs */
-		: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-		);
-
- fallback_image:
-#if CONFIG_HAVE_FAILOVER_BOOT==1
-	__asm__ volatile ("jmp __fallback_image"
-		: /* outputs */
-		: "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-		)
-#endif
-	 ;
-
-}
-#endif
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-#if CONFIG_HAVE_FAILOVER_BOOT==1
-    #if CONFIG_USE_FAILOVER_IMAGE==1
-	failover_process(bist, cpu_init_detectedx);
-    #else
-	real_main(bist, cpu_init_detectedx);
-    #endif
-#else
-    #if CONFIG_USE_FALLBACK_IMAGE == 1
-	failover_process(bist, cpu_init_detectedx);
-    #endif
-	real_main(bist, cpu_init_detectedx);
-#endif
-}
-
 #if CONFIG_USE_FAILOVER_IMAGE==0
 
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
+void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
 		//first node
@@ -286,6 +215,17 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	 int needs_reset;
 	 unsigned bsp_apicid = 0;
+
+	 if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+		 /* Nothing special needs to be done to find bus 0 */
+		 /* Allow the HT devices to be found */
+
+		 enumerate_ht_chain();
+		 bcm5785_enable_rom();
+		 bcm5785_enable_lpc();
+		 //enable RTC
+		pc87417_enable_dev(RTC_DEV);
+	 }
 
 
 	 if (bist == 0) {

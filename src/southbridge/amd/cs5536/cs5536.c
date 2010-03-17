@@ -35,7 +35,7 @@
 #include "cs5536.h"
 
 struct msrinit {
-	uint32_t msrnum;
+	u32 msrnum;
 	msr_t msr;
 };
 
@@ -61,8 +61,8 @@ struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
 };
 
 struct acpiinit {
-	uint16_t ioreg;
-	uint32_t regdata;
+	u16 ioreg;
+	u32 regdata;
 };
 
 struct acpiinit acpi_init_table[] = {
@@ -95,7 +95,7 @@ struct FLASH_DEVICE FlashInitTable[] = {
 
 #define FlashInitTableLen (ARRAY_SIZE(FlashInitTable))
 
-uint32_t FlashPort[] = {
+u32 FlashPort[] = {
 	MDD_LBAR_FLSH0,
 	MDD_LBAR_FLSH1,
 	MDD_LBAR_FLSH2,
@@ -111,8 +111,8 @@ uint32_t FlashPort[] = {
 /* ***************************************************************************/
 static void pmChipsetInit(void)
 {
-	uint32_t val = 0;
-	uint16_t port;
+	u32 val = 0;
+	u16 port;
 
 	port = (PMS_IO_BASE + 0x010);
 	val = 0x0E00;		/*  1ms */
@@ -427,7 +427,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 
 static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 {
-	uint8_t *bar;
+	u32 bar;
 	msr_t msr;
 	device_t dev;
 
@@ -443,7 +443,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		/* write to clear diag register */
 		wrmsr(USB2_SB_GLD_MSR_DIAG, rdmsr(USB2_SB_GLD_MSR_DIAG));
 
-		bar = (uint8_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+		bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
 		/* Make HCCPARAMS writeable */
 		write32(bar + IPREG04, read32(bar + IPREG04) | USB_HCCPW_SET);
@@ -455,7 +455,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
 			PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 	if (dev) {
-		bar = (uint8_t *) pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+		bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 
 		write32(bar + UOCMUX, read32(bar + UOCMUX) & PUEN_SET);
 
@@ -483,8 +483,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		dev = dev_find_device(PCI_VENDOR_ID_AMD, 
 				PCI_DEVICE_ID_AMD_CS5536_UDC, 0);
 		if (dev) {
-			bar = (uint8_t *) pci_read_config32(dev, 
-					PCI_BASE_ADDRESS_0);
+			bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 			write32(bar + UDCDEVCTL,
 			       read32(bar + UDCDEVCTL) | UDC_SD_SET);
 
@@ -493,8 +492,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		dev = dev_find_device(PCI_VENDOR_ID_AMD,
 				PCI_DEVICE_ID_AMD_CS5536_OTG, 0);
 		if (dev) {
-			bar = (uint8_t *) pci_read_config32(dev,
-					PCI_BASE_ADDRESS_0);
+			bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 			write32(bar + UOCCTL, read32(bar + UOCCTL) | PADEN_SET);
 			write32(bar + UOCCAP, read32(bar + UOCCAP) | APU_SET);
 		}
@@ -524,7 +522,7 @@ void chipsetinit(void)
 {
 	device_t dev;
 	msr_t msr;
-	uint32_t msrnum;
+	u32 msrnum;
 	struct southbridge_amd_cs5536_config *sb =
 	    (struct southbridge_amd_cs5536_config *)dev->chip_info;
 	struct msrinit *csi;

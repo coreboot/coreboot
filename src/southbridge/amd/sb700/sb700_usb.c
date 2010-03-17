@@ -34,7 +34,6 @@ static void usb_init(struct device *dev)
 {
 	u8 byte;
 	u16 word;
-	u32 dword;
 
 	/* 6.1 Enable OHCI0-4 and EHCI Controllers */
 	device_t sm_dev;
@@ -70,10 +69,8 @@ static void usb_init(struct device *dev)
 
 static void usb_init2(struct device *dev)
 {
-	u8 byte;
-	u16 word;
 	u32 dword;
-	u8 *usb2_bar0;
+	u32 usb2_bar0;
 	device_t sm_dev;
 	u8 rev;
 
@@ -84,8 +81,8 @@ static void usb_init2(struct device *dev)
 	/* dword |= 40; */
 	/* pci_write_config32(dev, 0xf8, dword); */
 
-	usb2_bar0 = (u8 *) (pci_read_config32(dev, 0x10) & ~0xFF);
-	printk_info("usb2_bar0=%p\n", usb2_bar0);
+	usb2_bar0 = pci_read_config32(dev, 0x10) & ~0xFF;
+	printk_info("usb2_bar0=0x%x\n", usb2_bar0);
 
 	/* RPR6.4 Enables the USB PHY auto calibration resister to match 45ohm resistence */
 	dword = 0x00020F00;
@@ -123,6 +120,9 @@ static void usb_init2(struct device *dev)
 	/* Each step below causes the linux crashes. Leave them here
 	 * for future debugging. */
 #if 0
+	u8 byte;
+	u16 word;
+
 	/* RPR6.16 Disable EHCI MSI support */
 	byte = pci_read_config8(dev, 0x50);
 	byte |= (1 << 6);

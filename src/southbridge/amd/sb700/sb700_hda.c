@@ -30,7 +30,7 @@
 #define   HDA_ICII_BUSY (1 << 0)
 #define   HDA_ICII_VALID  (1 << 1)
 
-static int set_bits(u8 * port, u32 mask, u32 val)
+static int set_bits(u32 port, u32 mask, u32 val)
 {
 	u32 dword;
 	int count;
@@ -59,7 +59,7 @@ static int set_bits(u8 * port, u32 mask, u32 val)
 	return 0;
 }
 
-static u32 codec_detect(u8 * base)
+static u32 codec_detect(u32 base)
 {
 	u32 dword;
 
@@ -94,7 +94,7 @@ no_codec:
  *  Wait 50usec for for the codec to indicate it is ready
  *  no response would imply that the codec is non-operative
  */
-static int wait_for_ready(u8 *base)
+static int wait_for_ready(u32 base)
 {
 	/* Use a 50 usec timeout - the Linux kernel uses the
 	 * same duration */
@@ -116,7 +116,7 @@ static int wait_for_ready(u8 *base)
  *  the previous command.  No response would imply that the code
  *  is non-operative
  */
-static int wait_for_valid(u8 *base)
+static int wait_for_valid(u32 base)
 {
 	/* Use a 50 usec timeout - the Linux kernel uses the
 	 * same duration */
@@ -133,7 +133,7 @@ static int wait_for_valid(u8 *base)
 	return 1;
 }
 
-static void codec_init(u8 * base, int addr)
+static void codec_init(u32 base, int addr)
 {
 	u32 dword;
 
@@ -153,7 +153,7 @@ static void codec_init(u8 * base, int addr)
 	printk_debug("%x(th) codec viddid: %08x\n", addr, dword);
 }
 
-static void codecs_init(u8 * base, u32 codec_mask)
+static void codecs_init(u32 base, u32 codec_mask)
 {
 	int i;
 	for (i = 2; i >= 0; i--) {
@@ -166,7 +166,7 @@ static void hda_init(struct device *dev)
 {
 	u8 byte;
 	u32 dword;
-	u8 *base;
+	u32 base;
 	struct resource *res;
 	u32 codec_mask;
 	device_t sm_dev;
@@ -202,8 +202,8 @@ static void hda_init(struct device *dev)
 	if (!res)
 		return;
 
-	base = (u8 *) ((u32)res->base);
-	printk_debug("base = %p\n", base);
+	base = (u32)res->base;
+	printk_debug("base = 0x%x\n", base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {

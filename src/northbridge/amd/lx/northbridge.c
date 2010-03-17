@@ -253,16 +253,16 @@ void print_conf(void)
 	}
 
 	iol = inl(GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08X\n",
+	printk_debug("IOR 0x%08X is now 0x%08lX\n",
 		     GPIO_IO_BASE + GPIOL_INPUT_ENABLE, iol);
 	iol = inl(GPIOL_EVENTS_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08X\n",
+	printk_debug("IOR 0x%08X is now 0x%08lX\n",
 		     GPIO_IO_BASE + GPIOL_EVENTS_ENABLE, iol);
 	iol = inl(GPIOL_INPUT_INVERT_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08X\n",
+	printk_debug("IOR 0x%08X is now 0x%08lX\n",
 		     GPIO_IO_BASE + GPIOL_INPUT_INVERT_ENABLE, iol);
 	iol = inl(GPIO_MAPPER_X);
-	printk_debug("IOR 0x%08X is now 0x%08X\n", GPIO_IO_BASE + GPIO_MAPPER_X,
+	printk_debug("IOR 0x%08X is now 0x%08lX\n", GPIO_IO_BASE + GPIO_MAPPER_X,
 		     iol);
 #endif				//CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
 }

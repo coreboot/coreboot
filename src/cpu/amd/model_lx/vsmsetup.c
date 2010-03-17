@@ -290,7 +290,7 @@ void do_vsmbios(void)
 	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
 		printk_err("do_vsmbios: Failed to load VSA.\n");
 	}
-	buf = VSA2_BUFFER;
+	buf = (unsigned char *)VSA2_BUFFER;
 	printk_debug("buf %p *buf %d buf[256k] %d\n",
 		     buf, buf[0], buf[SMM_SIZE * 1024]);
 	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",
@@ -501,15 +501,15 @@ int biosint(unsigned long intnumber,
 	printk_debug("biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
 		     ebp, esp, edi, esi);
 	printk_debug("biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
-		     ip, cs, flags);
+		     (u32)ip, (u32)cs, (u32)flags);
 	printk_debug("biosint: gs 0x%x fs 0x%x ds 0x%x es 0x%x\n",
-		     gsfs >> 16, gsfs & 0xffff, dses >> 16, dses & 0xffff);
+		     (u16)(gsfs >> 16), (u16)(gsfs & 0xffff), (u16)(dses >> 16), (u16)(dses & 0xffff));
 
 	// cases in a good compiler are just as good as your own tables.
 	switch (intnumber) {
 	case 0 ... 15:
 		// These are not BIOS service, but the CPU-generated exceptions
-		printk_info("biosint: Oops, exception %u\n", intnumber);
+		printk_info("biosint: Oops, exception 0x%x\n", (u32)intnumber);
 		if (esp < 0x1000) {
 			printk_debug("Stack contents: ");
 			while (esp < 0x1000) {
@@ -537,7 +537,7 @@ int biosint(unsigned long intnumber,
 				  &ebx, &edx, &ecx, &eax, &flags);
 		break;
 	default:
-		printk_info("BIOSINT: Unsupport int #0x%x\n", intnumber);
+		printk_info("BIOSINT: Unsupported int #0x%x\n", (u32)intnumber);
 		break;
 	}
 	if (ret)
@@ -617,16 +617,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 	unsigned long *pesp, unsigned long *pebx, unsigned long *pedx,
 	unsigned long *pecx, unsigned long *peax, unsigned long *pflags)
 {
-	unsigned long edi = *pedi;
-	unsigned long esi = *pesi;
-	unsigned long ebp = *pebp;
-	unsigned long esp = *pesp;
-	unsigned long ebx = *pebx;
-	unsigned long edx = *pedx;
-	unsigned long ecx = *pecx;
-	unsigned long eax = *peax;
-	unsigned long flags = *pflags;
-	unsigned short func = (unsigned short)eax;
+	unsigned short func = (unsigned short)*peax;
 	int retval = 0;
 	unsigned short devid, vendorid, devfn;
 	short devindex;		/* Use short to get rid of gabage in upper half of 32-bit register */
@@ -740,7 +731,7 @@ int handleint21(unsigned long *edi, unsigned long *esi, unsigned long *ebp,
 		unsigned long *ecx, unsigned long *eax, unsigned long *flags)
 {
 	int res = -1;
-	printk_debug("handleint21, eax 0x%x\n", *eax);
+	printk_debug("handleint21, eax 0x%x\n", (u32)*eax);
 	switch (*eax & 0xffff) {
 	case 0x5f19:
 		break;

@@ -27,12 +27,13 @@ static const unsigned char NumColAddr[] = {
 	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F 
 };
 
-void banner(char *s)
+void banner(const char *s)
 {
 	print_debug("===========================");
 	print_debug(s);
 	print_debug("======================================\r\n");
 }
+
 void hcf(void)
 {
 	print_emerg("DIE\r\n");

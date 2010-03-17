@@ -107,7 +107,7 @@ static void writeglmsr(struct gliutable *gl)
 	msr.lo = gl->lo;
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);	// GX3
+	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);	// GX3
 }
 
 static void ShadowInit(struct gliutable *gl)
@@ -147,7 +147,7 @@ static void SysmemInit(struct gliutable *gl)
 	msr.lo = sizebytes;
 
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__,
+	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -173,7 +173,7 @@ static void SMMGL0Init(struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__,
+	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -190,7 +190,7 @@ static void SMMGL1Init(struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	printk_debug("%s: MSR 0x%08x, val 0x%08x:0x%08x\n", __func__,
+	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 

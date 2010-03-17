@@ -32,13 +32,11 @@ static void cs5536_setup_extmsr(void)
 
 	/* forward MSR access to CS5536_GLINK_PORT_NUM to CS5536_DEV_NUM */
 	msr.hi = msr.lo = 0x00000000;
-	if (CS5536_GLINK_PORT_NUM <= 4) {
-		msr.lo = CS5536_DEV_NUM << 
-			(unsigned char)((CS5536_GLINK_PORT_NUM - 1) * 8);
-	} else {
-		msr.hi = CS5536_DEV_NUM << 
-			(unsigned char)((CS5536_GLINK_PORT_NUM - 5) * 8);
-	}
+#if CS5536_GLINK_PORT_NUM <= 4
+	msr.lo = CS5536_DEV_NUM << (unsigned char)((CS5536_GLINK_PORT_NUM - 1) * 8);
+#else
+	msr.hi = CS5536_DEV_NUM << (unsigned char)((CS5536_GLINK_PORT_NUM - 5) * 8);
+#endif
 	wrmsr(GLPCI_ExtMSR, msr);
 }
 

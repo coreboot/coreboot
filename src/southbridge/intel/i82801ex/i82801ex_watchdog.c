@@ -1,4 +1,5 @@
 #include <console/console.h>
+#include <watchdog.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>

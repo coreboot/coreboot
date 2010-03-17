@@ -1,4 +1,3 @@
 config CPU_INTEL_MODEL_F2X
 	bool
 	select SMP
-	select SSE2

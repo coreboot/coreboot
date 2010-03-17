@@ -73,12 +73,12 @@ unsigned pm_base;
 static void acpi_init(struct device *dev)
 {
 	uint8_t byte;
-	uint16_t word;
 	uint16_t pm10_bar;
 	uint32_t dword;
 	int on;
 
 #if 0
+	uint16_t word;
 	printk_debug("ACPI: disabling NMI watchdog.. ");
 	byte = pci_read_config8(dev, 0x49);
 	pci_write_config8(dev, 0x49, byte | (1<<2));
@@ -98,9 +98,8 @@ static void acpi_init(struct device *dev)
 	word = pci_read_config16(dev, 0x46);
 	pci_write_config16(dev, 0x46, word | (1<<9));
 	printk_debug("done.\n");
-
-	
 #endif
+
 	/* To enable the register 0xcf9 in the IO space
 	 * bit [D5] is set in the amd8111 configuration register.
 	 * The config. reg. is devBx41.  Register 0xcf9 allows

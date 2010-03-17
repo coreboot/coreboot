@@ -187,7 +187,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	dsdt->checksum = 0;	// don't trust intel iasl compiler to get this right
 	dsdt->checksum = acpi_checksum(dsdt, dsdt->length);
 #endif
-	printk_debug("ACPI:     * DSDT @ %08x Length %x\n", dsdt,
+	printk_debug("ACPI:     * DSDT @ %p Length %x\n", dsdt,
 		     dsdt->length);
 	printk_debug("ACPI:     * FADT\n");
 

@@ -21,6 +21,7 @@
 #include "../../../northbridge/amd/amdk8/amdk8.h"
 
 #include <cpu/amd/model_fxx_rev.h>
+#include <cpu/amd/microcode.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
@@ -461,8 +462,6 @@ static inline void k8_errata(void)
 #endif
 
 }
-
-extern void model_fxx_update_microcode(unsigned cpu_deviceid);
 
 #if CONFIG_USBDEBUG_DIRECT
 static unsigned ehci_debug_addr;

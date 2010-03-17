@@ -165,7 +165,7 @@ extern void get_bus_conf(void);
 extern void update_ssdt(void *ssdt);
 
 
-void update_ssdtx(void *ssdtx, int i)
+static void update_ssdtx(void *ssdtx, int i)
 {
 	u8 *PCI;
 	u8 *HCIN;
@@ -323,7 +323,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += ((acpi_header_t *)AmlCode)->length;
 	memcpy((void *)dsdt,(void *)AmlCode, \
 			((acpi_header_t *)AmlCode)->length);
-	printk_debug("ACPI:    * DSDT @ %08x Length %x\n",dsdt,dsdt->length);
+	printk_debug("ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	/* FACS */ // it needs 64 bit alignment
 	current	  = ( current + 0x07) & -0x08;

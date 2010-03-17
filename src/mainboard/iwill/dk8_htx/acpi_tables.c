@@ -99,7 +99,7 @@ unsigned long acpi_fill_madt(unsigned long current)
                 int j = 0;
 
                 for(i=1; i< sysconf.hc_possible_num; i++) {
-			unsigned d;
+			unsigned d = 0;
                         if(!(sysconf.pci1234[i] & 0x1) ) continue;
                         // 8131 need to use +4
 			
@@ -159,7 +159,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 extern void get_bus_conf(void);
 
-void update_ssdtx(void *ssdtx, int i)
+static void update_ssdtx(void *ssdtx, int i)
 {
         uint8_t *PCI;
         uint8_t *HCIN;
@@ -202,8 +202,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *ssdt;
 	acpi_header_t *ssdtx;
 	unsigned char *p;
-
-	unsigned char *AmlCode_ssdtx[HC_POSSIBLE_NUM];
 
 	int i;
 
@@ -318,7 +316,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += ((acpi_header_t *)AmlCode)->length;
 	memcpy((void *)dsdt,(void *)AmlCode, \
 			((acpi_header_t *)AmlCode)->length);
-	printk_debug("ACPI:    * DSDT @ %08x Length %x\n",dsdt,dsdt->length);
+	printk_debug("ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	/* FDAT */
 	printk_debug("ACPI:    * FADT\n");

@@ -101,7 +101,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 extern void get_bus_conf(void);
 
-void update_ssdtx(void *ssdtx, int i)
+static void update_ssdtx(void *ssdtx, int i)
 {
 	uint8_t *PCI;
 	uint8_t *HCIN;

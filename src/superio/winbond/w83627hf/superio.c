@@ -57,6 +57,7 @@ static uint8_t pnp_read_index(unsigned long port_base, uint8_t reg)
 	return inb(port_base + 1);
 }
 
+#if CONFIG_EXPERT
 static void w83627hf_16_bit_addr_qual(device_t dev)
 {
       int port = dev->path.pnp.port >> 8;
@@ -66,6 +67,7 @@ static void w83627hf_16_bit_addr_qual(device_t dev)
       outb(inb(port + 1) | 0x80, port + 1);
       pnp_exit_ext_func_mode(dev);
 }
+#endif
 
 static void enable_hwm_smbus(device_t dev)
 {

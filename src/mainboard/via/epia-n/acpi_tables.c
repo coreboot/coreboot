@@ -165,7 +165,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy((void *)dsdt,(void *)AmlCode, ((acpi_header_t *)AmlCode)->length);
 	dsdt->checksum = 0; // don't trust intel iasl compiler to get this right
 	dsdt->checksum = acpi_checksum(dsdt,dsdt->length);
-	printk_debug("ACPI:     * DSDT @ %08x Length %x\n",dsdt,dsdt->length);
+	printk_debug("ACPI:     * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 	printk_debug("ACPI:     * FADT\n");
 
 	fadt = (acpi_fadt_t *) current;

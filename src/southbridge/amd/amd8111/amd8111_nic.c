@@ -54,12 +54,12 @@ static void nic_init(struct device *dev)
 	/* Hard Reset PHY */
 	printk_debug("Reseting PHY... ");
 	if (conf->phy_lowreset) {
-		write32((void *)(mmio + CMD3), VAL0 | PHY_RST_POL | RESET_PHY);
+		write32((mmio + CMD3), VAL0 | PHY_RST_POL | RESET_PHY);
 	} else {
-		write32((void *)(mmio + CMD3), VAL0 | RESET_PHY);
+		write32((mmio + CMD3), VAL0 | RESET_PHY);
 	}
 	mdelay(15);
-	write32((void *)(mmio + CMD3), RESET_PHY);
+	write32((mmio + CMD3), RESET_PHY);
 	printk_debug("Done\n");
 }
 

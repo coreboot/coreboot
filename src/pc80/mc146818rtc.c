@@ -95,6 +95,7 @@ static inline void cmos_write(unsigned char val, unsigned char addr)
 	outb(val, RTC_BASE_PORT + offs + 1);
 }
 
+#if CONFIG_HAVE_OPTION_TABLE
 static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
 {
 	int i;
@@ -120,6 +121,7 @@ static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
 	cmos_write(((sum >> 8) & 0x0ff), cks_loc);
 	cmos_write(((sum >> 0) & 0x0ff), cks_loc+1);
 }
+#endif
 
 #if CONFIG_ARCH_X86
 #define RTC_CONTROL_DEFAULT (RTC_24H)

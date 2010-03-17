@@ -185,6 +185,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	return mainboard;
 }
 
+#if (CONFIG_HAVE_OPTION_TABLE == 1)
 static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -202,6 +203,7 @@ static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 	
 	return cmos_checksum;
 }
+#endif
 
 static void lb_strings(struct lb_header *header)
 {

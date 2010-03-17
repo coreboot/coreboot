@@ -193,7 +193,8 @@ static void enable_hpet(struct device *dev)
 	 */
 	reg32 &= ~(3 << 15);	/* Clear it */
 	reg32 |= (code << 15);
-	/* TODO: reg32 is never written to anywhere? */
+	pci_write_config32(dev, GEN_CNTL, reg32);
+
 	printk_debug("Enabling HPET @0x%x\n", HPET_ADDR | (code << 12));
 }
 

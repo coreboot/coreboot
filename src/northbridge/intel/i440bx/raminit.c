@@ -431,15 +431,156 @@ static void do_ram_command(u32 command)
 
 static void set_dram_buffer_strength(void)
 {
-	/* TODO: This needs to be set according to the DRAM tech
-	 * (x8, x16, or x32). Argh, Intel provides no docs on this!
-	 * Currently, it needs to be pulled from the output of
-	 * lspci -xxx Rx92
-	 *
-	 * Relevant registers: MBSC, MBFS, BUFFC.
+	/* To give some breathing room for romcc,
+	 * mbsc0 doubles as drb 
+	 * mbsc1 doubles as drb1
+	 * mbfs0 doubles as i and reg
 	 */
+	uint8_t mbsc0,mbsc1,mbsc3,mbsc4,mbfs0,mbfs2,fsb;
 
-	pci_write_config8(NB, MBSC, 0x03);
+	/* Tally how many rows between rows 0-3 and rows 4-7 are populated. 
+	 * This determines how to program MBFS and MBSC.
+	 */
+	uint8_t dimm03 = 0;
+	uint8_t dimm47 = 0;
+
+	mbsc0 = 0;
+	for (mbfs0 = DRB0; mbfs0 <= DRB7; mbfs0++) {
+		mbsc1 = pci_read_config8(NB, mbfs0);
+		if (mbsc0 != mbsc1) {
+			if (mbfs0 <= DRB3) {
+				dimm03++;
+			} else {
+				dimm47++;
+			}
+			mbsc0 = mbsc1;
+		}
+	}
+
+	/* Algorithm bitmap for programming MBSC[39:0] and MBFS[23:0]
+	 *
+	 * 440BX datasheet says buffer frequency is independent from bus frequency
+	 * and mismatch both ways are possible. This is how it is programmed
+	 * in ASUS P2B-LS.
+	 *
+	 * There are four main conditions to check when programming DRAM buffer
+	 * frequency and strength:
+	 *
+	 * a: >2 rows populated across DIMM0,1
+	 * b: >2 rows populated across DIMM2,3
+	 * c: >4 rows populated across all DIMM slots
+	 * and either one of:
+	 * 1: NBXCFG[13] strapped as 100MHz, or
+	 * 6: NBXCFG[13] strapped as 66MHz
+	 *
+	 * CKE0/FENA ----------------------------------------------------------+
+	 * CKE1/GCKE -------------------[    MBFS    ]------------------------+|
+	 * DQMA/CASA[764320]# ----------[ 0 = 66MHz  ]-----------------------+||
+	 * DQMB1/CASB1# ----------------[ 1 = 100MHz ]----------------------+|||
+	 * DQMB5/CASB5# ---------------------------------------------------+||||
+	 * DQMA1/CASA1# --------------------------------------------------+|||||
+	 * DQMA5/CASA5# -------------------------------------------------+||||||
+	 * CSA0-5#,CSB0-5# ----------------------------------------++++++|||||||
+	 * CSA6#/CKE2# -------------------------------------------+|||||||||||||
+	 * CSB6#/CKE4# ------------------------------------------+||||||||||||||
+	 * CSA7#/CKE3# -----------------------------------------+|||||||||||||||
+	 * CSB7#/CKE5# ----------------------------------------+||||||||||||||||
+	 * MECC[7:0] #2/#1 (100MHz) -------------------------++|||||||||||||||||
+	 * MD[63:0] #2/#1 (100MHz) ------------------------++|||||||||||||||||||
+	 * MAB[12:11,9:0]#,MAB[13,10],WEB#,SRASB#,SCASB# -+|||||||||||||||||||||
+	 * MAA[13:0],WEA#,SRASA#,SCASA# -----------------+||||||||||||||||||||||
+	 * Reserved ------------------------------------+|||||||||||||||||||||||
+	 *                                              ||||||||||||||||||||||||
+	 *   3        32        21        10        0 * 2  21        10        0
+	 *   9876543210987654321098765432109876543210 * 321098765432109876543210
+	 * a 10------------------------1010---------- * -1---------------11-----  a
+	 *!a 11------------------------1111---------- * -0---------------00----- !a
+	 * b --10--------------------------1010------ * --1----------------11---  b
+	 *!b --11--------------------------1111------ * --0----------------00--- !b
+	 * c ----------------------------------1100-- * ----------------------1-  c
+	 *!c ----------------------------------1011-- * ----------------------0- !c
+	 * 1 ----1010101000000000000000------------00 * ---11111111111111----1-0  1
+	 * 6 ----000000000000000000000010101010----00 * ---1111111111111100000-0  6
+	 *   | | | | | | | | | | ||||||| | | | | | |
+	 *   | | | | | | | | | | ||||||| | | | | | +- CKE0/FENA
+	 *   | | | | | | | | | | ||||||| | | | | +--- CKE1/GCKE
+	 *   | | | | | | | | | | ||||||| | | | +----- DQMA/CASA[764320]#
+	 *   | | | | | | | | | | ||||||| | | +------- DQMB1/CASB1#
+	 *   | | | | | | | | | | ||||||| | +--------- DQMB5/CASB5#
+	 *   | | | | | | | | | | ||||||| +----------- DQMA1/CASA1#
+	 *   | | | | | | | | | | ||||||+------------- DQMA5/CASA5#
+	 *   | | | | | | | | | | ++++++-------------- CSA0-5#,CSB0-5# [ 0=1x;1=2x ]
+	 *   | | | | | | | | | +--------------------- CSA6#/CKE2#
+	 *   | | | | | | | | +---[    MBSC    ]------ CSB6#/CKE4#
+	 *   | | | | | | | +-----[ 00 = 1x    ]------ CSA7#/CKE3#
+	 *   | | | | | | +-------[ 01 invalid ]------ CSB7#/CKE5#
+	 *   | | | | | +---------[ 10 = 2x    ]------ MECC[7:0] #1 (2x)
+	 *   | | | | +-----------[ 11 = 3x    ]------ MECC[7:0] #2 (2x)
+	 *   | | | +--------------------------------- MD[63:0] #1 (2x)
+	 *   | | +----------------------------------- MD[63:0] #2 (2x)
+	 *   | +------------------------------------- MAB[12:11,9:0]#,MAB[13,10],WEB#,SRASB#,SCASB#
+	 *   +--------------------------------------- MAA[13:0],WEA#,SRASA#,SCASA#
+	 * MBSC[47:40] and MBFS[23] are reserved.
+	 *
+	 * This algorithm is checked against P2B-LS factory BIOS. It has 4 DIMM slots.
+	 * Therefore it assumes a board with 4 slots, and will need testing
+	 * on boards with 3 DIMM slots.
+	 */
+	 
+	mbsc0 = 0x80;
+	mbsc1 = 0x2a;
+	mbfs2 = 0x1f;
+	if (pci_read_config8(NB, NBXCFG + 1) & 0x30) {
+		fsb = 66;
+		mbsc3 = 0x00;
+		mbsc4 = 0x00;
+		mbfs0 = 0x80;
+	} else {
+		fsb = 100;
+		mbsc3 = 0xa0;
+		mbsc4 = 0x0a;
+		mbfs0 = 0x84;
+	}
+	
+	if (dimm03 > 2) { 
+		mbsc4 = mbsc4 | 0x80; 
+		mbsc1 = mbsc1 | 0x28;
+		mbfs2 = mbfs2 | 0x40;
+		mbfs0 = mbfs0 | 0x60;
+	} else { 
+		mbsc4 = mbsc4 | 0xc0; 
+		if (fsb == 100) {
+			mbsc1 = mbsc1 | 0x3c;
+		}
+	}	
+	if (dimm47 > 2) { 
+		mbsc4 = mbsc4 | 0x20; 
+		mbsc1 = mbsc1 | 0x02; 
+		mbsc0 = mbsc0 | 0x80;
+		mbfs2 = mbfs2 | 0x20;
+		mbfs0 = mbfs0 | 0x18;
+	} else { 
+		mbsc4 = mbsc4 | 0x30;
+		if (fsb == 100) {
+			mbsc1 = mbsc1 | 0x03; 
+			mbsc0 = mbsc0 | 0xc0;
+		}
+	}
+	if ((dimm03 + dimm47) > 4) { 
+		mbsc0 = mbsc0 | 0x30;
+		mbfs0 = mbfs0 | 0x02;
+	} else { 
+		mbsc0 = mbsc0 | 0x2c; 
+	}
+
+	pci_write_config8(NB, MBSC + 0, mbsc0);
+	pci_write_config8(NB, MBSC + 1, mbsc1);
+	pci_write_config8(NB, MBSC + 2, 0x00);
+	pci_write_config8(NB, MBSC + 3, mbsc3);
+	pci_write_config8(NB, MBSC + 4, mbsc4);
+	pci_write_config8(NB, MBFS + 0, mbfs0);
+	pci_write_config8(NB, MBFS + 1, 0xff);
+	pci_write_config8(NB, MBFS + 2, mbfs2);
 }
 
 /*-----------------------------------------------------------------------------

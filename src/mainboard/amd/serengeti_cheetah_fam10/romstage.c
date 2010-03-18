@@ -58,7 +58,6 @@ static void post_code(u8 value) {
 	outb(value, 0x80);
 }
 
-#if (CONFIG_USE_FAILOVER_IMAGE == 0)
 #include "arch/i386/lib/console.c"
 #include "pc80/serial.c"
 #include "lib/ramtest.c"
@@ -66,7 +65,6 @@ static void post_code(u8 value) {
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
-#endif
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
@@ -79,8 +77,6 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #endif
 #include "cpu/x86/bist.h"
 
-
-#if (CONFIG_USE_FAILOVER_IMAGE == 0)
 
 #include "northbridge/amd/amdfam10/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
@@ -141,13 +137,10 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "cpu/amd/model_10xxx/fidvid.c"
 
-#endif /* (CONFIG_USE_FAILOVER_IMAGE == 0) */
-
 
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
-#if (CONFIG_USE_FAILOVER_IMAGE==0)
 #include "spd_addr.h"
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
@@ -316,5 +309,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 }
 
-
-#endif /* CONFIG_USE_FAILOVER_IMAGE==0 */

@@ -3,12 +3,7 @@
 
 #ifndef ASSEMBLY
 
-#if CONFIG_HAVE_FALLBACK_BOOT == 1
 void set_boot_successful(void);
-#else
-#define set_boot_successful()
-#endif
-
 void boot_successful(void);
 
 #endif /* ASSEMBLY */

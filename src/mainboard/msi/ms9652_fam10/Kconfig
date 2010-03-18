@@ -42,26 +42,6 @@ config CONFIG_ACPI_SSDTX_NUM
 	default 0x1F
 	depends on BOARD_MSI_MS9652_FAM10
 
-config USE_FALLBACK_IMAGE
-	bool
-	default y
-	depends on BOARD_MSI_MS9652_FAM10
-
-config HAVE_FALLBACK_BOOT
-	bool
-	default y
-	depends on BOARD_MSI_MS9652_FAM10
-
-config CONFIG_USE_FAILOVER_IMAGE
-	bool
-	default y
-	depends on BOARD_MSI_MS9652_FAM10
-
-config CONFIG_HAVE_FAILOVER_BOOT
-	bool
-	default y
-	depends on BOARD_MSI_MS9652_FAM10
-
 config GENERATE_PIRQ_TABLE
 	bool
 	default y

@@ -5,7 +5,6 @@
 #include <arch/io.h>
 
 
-#if CONFIG_HAVE_FALLBACK_BOOT == 1
 void set_boot_successful(void)
 {
 	/* Remember I succesfully booted by setting
@@ -26,7 +25,6 @@ void set_boot_successful(void)
 		byte &= 0x0f;
 	outb(byte, RTC_PORT(1));
 }
-#endif
 
 void boot_successful(void)
 {

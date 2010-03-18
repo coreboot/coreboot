@@ -54,7 +54,6 @@ static void post_code(u8 value) {
 	outb(value, 0x80);
 }
 
-#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
@@ -65,14 +64,10 @@ static void post_code(u8 value) {
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 
-#endif
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
-
-#if CONFIG_USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
 
@@ -133,8 +128,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_10xxx/fidvid.c"
 
-#endif
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
@@ -163,7 +156,6 @@ static void sio_setup(void)
 
 }
 
-#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "spd_addr.h"
 #include "cpu/amd/microcode/microcode.c"
 #include "cpu/amd/model_10xxx/update_microcode.c"
@@ -317,5 +309,3 @@ post_code(0x40);
 
 }
 
-
-#endif

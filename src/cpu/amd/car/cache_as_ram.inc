@@ -71,9 +71,6 @@ cache_as_ram_setup:
 	cvtsi2sd %eax, %xmm2
 	cvtsd2si %xmm3, %ebx
 
-	/* hope we can skip the double set for normal part */
-#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
-
 	/* check if cpu_init_detected */
 	movl	$MTRRdefType_MSR, %ecx
 	rdmsr
@@ -248,15 +245,6 @@ clear_fixed_var_mtrr_out:
 	xorl	%edx, %edx
 	movl	$(((CONFIG_RAMTOP) + TOP_MEM_MASK) & ~TOP_MEM_MASK) , %eax
 	wrmsr
-#endif /*  CONFIG_USE_FAILOVER_IMAGE == 1*/
-
-#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 0)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 0))
-	/* disable cache */
-	movl	%cr0, %eax
-	orl	$(0x1 << 30), %eax
-	movl	%eax, %cr0
-
-#endif
 
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 	/* enable write base caching so we can do execute in place
@@ -283,7 +271,6 @@ wbcache_post_fam10_setup:
 	wrmsr
 #endif /* CONFIG_XIP_ROM_SIZE && CONFIG_XIP_ROM_BASE */
 
-#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 	/* Set the default memory type and enable fixed and variable MTRRs */
 	movl	$MTRRdefType_MSR, %ecx
 	xorl	%edx, %edx
@@ -296,7 +283,6 @@ wbcache_post_fam10_setup:
 	rdmsr
 	orl	$(SYSCFG_MSR_MtrrVarDramEn | SYSCFG_MSR_MtrrFixDramEn), %eax
 	wrmsr
-#endif
 
 	movb	$0xA1, %al
 	outb	%al, $0x80
@@ -318,7 +304,6 @@ fam10_end_part1:
 	movb	$0xA2, %al
 	outb	%al, $0x80
 
-#if ((CONFIG_HAVE_FAILOVER_BOOT == 1) && (CONFIG_USE_FAILOVER_IMAGE == 1)) || ((CONFIG_HAVE_FAILOVER_BOOT == 0) && (CONFIG_USE_FALLBACK_IMAGE == 1))
 	/* Read the range with lodsl*/
 	cld
 	movl	$CacheBase, %esi
@@ -330,8 +315,6 @@ fam10_end_part1:
 	movl	$(CacheSize >> 2), %ecx
 	xorl	%eax, %eax
 	rep	stosl
-
-#endif /*CONFIG_USE_FAILOVER_IMAGE == 1*/
 
 	/* set up the stack pointer */
 	movl	$(CacheBase + CacheSize - GlobalVarSize), %eax

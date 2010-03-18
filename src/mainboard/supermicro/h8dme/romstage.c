@@ -52,7 +52,6 @@
 // for enable the FAN
 #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 
-#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
@@ -64,14 +63,10 @@
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 
-#endif
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "superio/winbond/w83627hf/w83627hf_early_init.c"
-
-#if CONFIG_USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
 
@@ -191,8 +186,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#endif
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -224,8 +217,6 @@ static void sio_setup(void)
 /* We have no idea where the SMBUS switch is. This doesn't do anything ATM. */
 #define RC0 (2<<8)
 #define RC1 (1<<8)
-
-#if CONFIG_USE_FAILOVER_IMAGE==0
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -371,4 +362,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 }
 
-#endif

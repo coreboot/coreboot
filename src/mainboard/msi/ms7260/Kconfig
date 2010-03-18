@@ -76,16 +76,6 @@ config PCI_64BIT_PREF_MEM
         default n
 	depends on BOARD_MSI_MS7260
 
-config HAVE_FALLBACK_BOOT
-	bool
-	default n
-	depends on BOARD_MSI_MS7260
-
-config USE_FALLBACK_IMAGE
-	bool
-	default n
-	depends on BOARD_MSI_MS7260
-
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000

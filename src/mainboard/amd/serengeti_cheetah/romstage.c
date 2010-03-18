@@ -43,21 +43,18 @@ static void post_code(uint8_t value) {
 #endif
 }
 #endif
-#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
-#endif
 
 
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
-#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "cpu/x86/bist.h"
 
 #include "lib/delay.c"
@@ -152,12 +149,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 
 #include "cpu/amd/model_fxx/fidvid.c"
-#endif
 
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
-
-#if CONFIG_USE_FAILOVER_IMAGE==0
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -336,4 +330,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
 
 }
-#endif

@@ -216,9 +216,7 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
 #include "southbridge/intel/i82801gx/cmos_failover.c"
-#endif
 
 #include <cbmem.h>
 

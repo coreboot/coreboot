@@ -47,8 +47,6 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 
-#if CONFIG_USE_FAILOVER_IMAGE == 0
-
 /* Used by ck894_early_setup(). */
 #define CK804_NUM 1
 
@@ -96,8 +94,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-#endif	/* CONFIG_USE_FAILOVER_IMAGE */
-
 #include "southbridge/nvidia/ck804/ck804_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -118,7 +114,6 @@ static void sio_setup(void)
 	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE + 1, 0), 0xa0, dword);
 }
 
-#if CONFIG_USE_FAILOVER_IMAGE == 0
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
@@ -200,4 +195,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
-#endif /* CONFIG_USE_FAILOVER_IMAGE */

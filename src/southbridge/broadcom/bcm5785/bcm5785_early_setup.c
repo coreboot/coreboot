@@ -3,8 +3,6 @@
  *  by yinghai.lu@amd.com
  */
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
 static void bcm5785_enable_rom(void)
 {
         unsigned char byte;
@@ -42,8 +40,6 @@ static void bcm5785_enable_lpc(void)
         byte |=(1<<1)|(1<<0);
         pci_write_config8(dev, 0x48, byte);
 }
-#endif /* CONFIG_USE_FALLBACK_IMAGE == 1 */
-
 
 static void bcm5785_enable_wdt_port_cf9(void)
 {

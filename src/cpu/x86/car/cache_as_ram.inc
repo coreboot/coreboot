@@ -36,9 +36,6 @@
 	movl	%eax, %ebp
 
 CacheAsRam:
-	/* hope we can skip the double set for normal part */
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
 	// Check whether the processor has HT capability
 	movl	$01, %eax
 	cpuid
@@ -191,14 +188,6 @@ clear_fixed_var_mtrr_out:
 	simplemask CacheSize, 0
 	wrmsr
 
-#else
-	/* disable cache */
-	movl	%cr0, %eax
-	orl	$(0x1 << 30), %eax
-	movl	%eax, %cr0
-
-#endif /*  CONFIG_USE_FALLBACK_IMAGE == 1*/
-
 #if defined(CONFIG_XIP_ROM_SIZE) && defined(CONFIG_XIP_ROM_BASE)
 #if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
 #define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
@@ -224,8 +213,6 @@ clear_fixed_var_mtrr_out:
 	movl	%cr0, %eax
 	andl	$0x9fffffff, %eax
 	movl	%eax, %cr0
-
-#if CONFIG_USE_FALLBACK_IMAGE == 1
 
 	/* Read the range with lodsl*/
 	movl	$CacheBase, %esi
@@ -283,8 +270,6 @@ clear_fixed_var_mtrr_out:
 .xout1x:
 
 #endif
-#endif /*CONFIG_USE_FALLBACK_IMAGE == 1*/
-
 
 	movl	$(CacheBase + CacheSize - 4), %eax
 	movl	%eax, %esp
@@ -319,7 +304,6 @@ var_mtrr_msr:
 	.long	0x20C, 0x20D, 0x20E, 0x20F
 	.long	0x000 /* NULL, end of table */
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
 	.align 0x1000
 	.code16
 .global LogicalAP_SIPI
@@ -349,5 +333,4 @@ Halt_LogicalAP:
 	hlt
 	jmp	Halt_LogicalAP
 	.code32
-#endif /*CONFIG_USE_FALLBACK_IMAGE == 1*/
 .CacheAsRam_out:

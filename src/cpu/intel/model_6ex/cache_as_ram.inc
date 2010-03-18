@@ -29,8 +29,6 @@
 	movl    %eax, %ebp
 
 cache_as_ram:
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
 	post_code(0x20)
 
 	/* Send INIT IPI to all excluding ourself */
@@ -123,7 +121,6 @@ clear_mtrrs:
         movl	%cr0, %eax
 	andl	$( ~( (1 << 30) | (1 << 29) ) ), %eax
 	movl	%eax, %cr0
-#endif
 
 	/* Set up stack pointer */
 #if defined(CONFIG_USBDEBUG_DIRECT) && (CONFIG_USBDEBUG_DIRECT == 1)

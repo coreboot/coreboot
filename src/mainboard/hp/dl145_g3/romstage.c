@@ -61,7 +61,6 @@
 #include "pc80/mc146818rtc_early.c"
 
 
-#if CONFIG_USE_FAILOVER_IMAGE==0
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
@@ -73,8 +72,6 @@
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 
-#endif
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 
@@ -82,8 +79,6 @@
 #include "superio/serverengines/pilot/pilot_early_init.c"
 #include "superio/nsc/pc87417/pc87417_early_serial.c"
 
-
-#if CONFIG_USE_FAILOVER_IMAGE==0
 
 #include "cpu/x86/bist.h"
 
@@ -153,8 +148,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#endif
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
 #if 0
@@ -194,8 +187,6 @@ static void setup_early_ipmi_serial()
 
 }
 #endif
-
-#if CONFIG_USE_FAILOVER_IMAGE==0
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -312,4 +303,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 }
 
-#endif

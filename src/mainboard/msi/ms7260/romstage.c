@@ -58,8 +58,6 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#if CONFIG_USE_FAILOVER_IMAGE == 0
-
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #if CONFIG_USBDEBUG_DIRECT
@@ -73,14 +71,10 @@
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 
-#endif
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627ehg/w83627ehg_early_serial.c"
 #include "superio/winbond/w83627ehg/w83627ehg_early_init.c"
-
-#if CONFIG_USE_FAILOVER_IMAGE == 0
 
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
@@ -129,8 +123,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#endif
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -151,8 +143,6 @@ static void sio_setup(void)
 	dword |= (1 << 16);
 	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0xa4, dword);
 }
-
-#if CONFIG_USE_FAILOVER_IMAGE == 0
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -282,4 +272,3 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_cache_as_ram();
 }
 
-#endif

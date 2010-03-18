@@ -121,9 +121,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "northbridge/intel/i3100/reset_test.c"
 #include "debug.c"
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
 #include "southbridge/intel/i3100/cmos_failover.c"
-#endif
 
 void early_config(void) {
 	device_t dev;

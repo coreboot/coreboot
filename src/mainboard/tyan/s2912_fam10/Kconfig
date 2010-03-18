@@ -38,26 +38,6 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	default 0x04000
 	depends on BOARD_TYAN_S2912_FAM10
 
-config USE_FALLBACK_IMAGE
-	bool
-	default y
-	depends on BOARD_TYAN_S2912_FAM10
-
-config HAVE_FALLBACK_BOOT
-	bool
-	default y
-	depends on BOARD_TYAN_S2912_FAM10
-
-config CONFIG_USE_FAILOVER_IMAGE
-	bool
-	default y
-	depends on BOARD_TYAN_S2912_FAM10
-
-config CONFIG_HAVE_FAILOVER_BOOT
-	bool
-	default y
-	depends on BOARD_TYAN_S2912_FAM10
-
 config APIC_ID_OFFSET
 	hex
 	default 0
@@ -94,16 +74,6 @@ config MAINBOARD_PART_NUMBER
 	depends on BOARD_TYAN_S2912_FAM10
 
 config PCI_64BIT_PREF_MEM
-	bool
-	default n
-	depends on BOARD_TYAN_S2912_FAM10
-
-config HAVE_FALLBACK_BOOT
-	bool
-	default n
-	depends on BOARD_TYAN_S2912_FAM10
-
-config USE_FALLBACK_IMAGE
 	bool
 	default n
 	depends on BOARD_TYAN_S2912_FAM10

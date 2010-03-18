@@ -87,7 +87,6 @@ $(obj)/coreboot.a: $(objs)
 crt0s :=
 ldscripts :=
 ldscripts += $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
-ldscripts += $(src)/arch/i386/lib/failover.lds
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/entry16.inc
 ldscripts += $(src)/cpu/x86/16bit/entry16.lds
@@ -160,12 +159,6 @@ crt0s += $(src)/cpu/x86/car/cache_as_ram.inc
 ldscripts += $(src)/cpu/x86/car/cache_as_ram.lds
 endif
 
-ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
-ifeq ($(CONFIG_ROMCC),y)
-crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc
-endif
-endif
-
 ifeq ($(CONFIG_LLSHELL),y)
 crt0s += $(src)/arch/i386/llshell/llshell.inc
 endif
@@ -195,10 +188,6 @@ endif
 
 ifeq ($(CONFIG_ROMCC),y)
 ROMCCFLAGS ?= -mcpu=p2 -O2
-
-$(obj)/mainboard/$(MAINBOARDDIR)/failover.inc: $(obj)/romcc $(src)/arch/i386/lib/failover.c
-	printf "    ROMCC      failover.inc\n"
-	$(obj)/romcc $(ROMCCFLAGS) --label-prefix=failover $(INCLUDES) $(src)/arch/i386/lib/failover.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h
 	printf "    ROMCC      romstage.inc\n"

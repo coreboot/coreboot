@@ -25,30 +25,6 @@ void stage1_main(unsigned long bist)
 {
 	unsigned int cpu_reset = 0;
 
-#if !defined(CONFIG_TINY_BOOTBLOCK) || !CONFIG_TINY_BOOTBLOCK
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-        /* Is this a deliberate reset by the bios */
-        if (bios_reset_detected() && last_boot_normal()) {
-                goto normal_image;
-        } else {
-        	/* This is the primary cpu how should I boot? */
-		check_cmos_failed();
-		if (do_normal_boot()) {
-        	        goto normal_image;
-	        }
-        	else {
-	                goto fallback_image;
-        	}
-	}
- normal_image:
-        __asm__ volatile ("jmp __normal_image"
-                : /* outputs */
-                : "a" (bist) /* inputs */
-                );
- fallback_image:
-#endif
-#endif
-
 	real_main(bist);
 
 	/* No servicable parts below this line .. */

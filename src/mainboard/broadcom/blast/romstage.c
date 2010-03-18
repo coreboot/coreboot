@@ -106,73 +106,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/model_fxx/init_cpus.c"
 
-
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-
-
-        /* Is this a cpu only reset? Is this a secondary cpu? */
-        if ((cpu_init_detectedx) || (!boot_cpu())) {  
-                if (last_boot_normal()) { // RTC already inited
-                        goto normal_image;
-                } else {
-                        goto fallback_image;
-                }
-        }
-        /* Nothing special needs to be done to find bus 0 */
-        /* Allow the HT devices to be found */
-
-        enumerate_ht_chain();
-
-        bcm5785_enable_rom();
-
-        bcm5785_enable_lpc();
-
-        //enable RTC
-        pc87417_enable_dev(RTC_DEV);
-
-        /* Is this a deliberate reset by the bios */
-//        post_code(0x22);
-        if (bios_reset_detected() && last_boot_normal()) {
-                goto normal_image;
-        }
-        /* This is the primary cpu how should I boot? */
-        else if (do_normal_boot()) {
-                goto normal_image;
-        }
-        else {
-                goto fallback_image;
-        }
- normal_image:
-//        post_code(0x23);
-        __asm__ volatile ("jmp __normal_image"
-                : /* outputs */
-                : "a" (bist), "b" (cpu_init_detectedx) /* inputs */
-                );
-
- fallback_image:
-//        post_code(0x25);
-	;
-}
-#endif /* CONFIG_USE_FALLBACK_IMAGE == 1 */
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-        failover_process(bist, cpu_init_detectedx);
-#endif
-        real_main(bist, cpu_init_detectedx);
-
-}
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
         	RC0|DIMM0, RC0|DIMM2, 0, 0,
@@ -188,6 +124,20 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         struct mem_controller ctrl[8];
         unsigned nodes;
+
+        if (!((cpu_init_detectedx) || (!boot_cpu()))) {  
+		/* Nothing special needs to be done to find bus 0 */
+		/* Allow the HT devices to be found */
+
+		enumerate_ht_chain();
+
+		bcm5785_enable_rom();
+
+		bcm5785_enable_lpc();
+
+		//enable RTC
+		pc87417_enable_dev(RTC_DEV);
+        }
 
         if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx);

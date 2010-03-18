@@ -80,53 +80,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/x86/car/copy_and_run.c"
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
-#include "southbridge/intel/i82801ex/cmos_failover.c"
-
-void real_main(unsigned long bist);
-
 void amd64_main(unsigned long bist)
-{
-        /* Is this a deliberate reset by the bios */
-//        post_code(0x22);
-        if (bios_reset_detected() && last_boot_normal()) {
-                goto normal_image;
-        }
-        /* This is the primary cpu how should I boot? */
-        else {
-		check_cmos_failed();
-		if (do_normal_boot()) {
-        	        goto normal_image;
-	        }
-        	else {
-	                goto fallback_image;
-        	}
-	}
- normal_image:
-//        post_code(0x23);
-        __asm__ volatile ("jmp __normal_image"
-                : /* outputs */
-                : "a" (bist) /* inputs */
-                );
- cpu_reset:
-//        post_code(0x24);
-#if 0
-        //CPU reset will reset memtroller ???
-        asm volatile ("jmp __cpu_reset" 
-                : /* outputs */ 
-                : "a"(bist) /* inputs */
-                );
-#endif
-
- fallback_image:
-//        post_code(0x25);
-        real_main(bist);
-}
-void real_main(unsigned long bist)
-#else
-void amd64_main(unsigned long bist)
-#endif
 {
 	static const struct mem_controller memctrl[] = {
                 {

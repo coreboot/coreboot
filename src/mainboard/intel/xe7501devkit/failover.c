@@ -13,36 +13,5 @@
 
 static unsigned long main(unsigned long bist)
 {
-	/* Is this a deliberate reset by the bios */
-	if (bios_reset_detected() && last_boot_normal()) {
-		goto normal_image;
-	}
-	/* This is the primary cpu how should I boot? */
-	else  {
-
-		check_cmos_failed();		
-
-		if (do_normal_boot()) {
-			goto normal_image;
-		}
-		else {
-			goto fallback_image;
-		}
-	}
- normal_image:
-	asm volatile ("jmp __normal_image" 
-		: /* outputs */ 
-		: "a" (bist) /* inputs */
-		: /* clobbers */
-		);
-#if 0
- cpu_reset:
-	asm volatile ("jmp __cpu_reset"
-		: /* outputs */ 
-		: "a"(bist) /* inputs */
-		: /* clobbers */
-		);
-#endif
- fallback_image:
 	return bist;
 }

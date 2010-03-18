@@ -100,59 +100,9 @@ static inline int spd_read_byte(u32 device, u32 address)
 
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
 #include "northbridge/amd/amdk8/early_ht.c"
 
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-	/* Is this a cpu only reset? Is this a secondary cpu? */
-	if ((cpu_init_detectedx) || (!boot_cpu())) {
-		if (last_boot_normal()) {	/* RTC already inited */
-			goto normal_image;
-		} else {
-			goto fallback_image;
-		}
-	}
-	/* Nothing special needs to be done to find bus 0 */
-	/* Allow the HT devices to be found */
-	enumerate_ht_chain();
-
-	/* sb600_lpc_port80(); */
-	sb600_pci_port80();
-
-	/* Is this a deliberate reset by the bios */
-	if (bios_reset_detected() && last_boot_normal()) {
-		goto normal_image;
-	}
-	/* This is the primary cpu how should I boot? */
-	else if (do_normal_boot()) {
-		goto normal_image;
-	} else {
-		goto fallback_image;
-	}
-normal_image:
-	post_code(0x23);
-	__asm__ volatile ("jmp __normal_image":	/* outputs */
-			  :"a" (bist), "b"(cpu_init_detectedx)	/* inputs */);
-
-fallback_image:
-	post_code(0x25);
-}
-#endif				/* CONFIG_USE_FALLBACK_IMAGE == 1 */
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-	failover_process(bist, cpu_init_detectedx);
-#endif
-	real_main(bist, cpu_init_detectedx);
-}
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const u16 spd_addr[] = { DIMM0, 0, 0, 0, DIMM1, 0, 0, 0, };
 	int needs_reset = 0;
@@ -161,6 +111,15 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct cpuid_result cpuid1;
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
+
+	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+		/* Nothing special needs to be done to find bus 0 */
+		/* Allow the HT devices to be found */
+		enumerate_ht_chain();
+
+		/* sb600_lpc_port80(); */
+		sb600_pci_port80();
+	}
 
 	if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);

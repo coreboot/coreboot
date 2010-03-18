@@ -15,35 +15,5 @@
 static unsigned long main(unsigned long bist)
 {
 	/* skip all this nonsense as we are not doing fallback yet */
-	goto fallback_image;
-	/* Did just the cpu reset? */
-	if (memory_initialized()) {
-	 	if (last_boot_normal()) {
-			goto normal_image;
-		} else {
-			goto cpu_reset;
-		}
-	}
-
-	/* This is the primary cpu how should I boot? */
-	else if (do_normal_boot()) {
-		goto normal_image;
-	}
-	else {
-		goto fallback_image;
-	}
- normal_image:
-	asm volatile ("jmp __normal_image" 
-		: /* outputs */ 
-		: "a" (bist) /* inputs */
-		: /* clobbers */
-		);
- cpu_reset:
-	asm volatile ("jmp __cpu_reset"
-		: /* outputs */ 
-		: "a"(bist) /* inputs */
-		: /* clobbers */
-		);
- fallback_image:
 	return bist;
 }

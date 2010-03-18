@@ -10,20 +10,5 @@
 
 static void main(void)
 {
-#if 0
-	/* Is this a cpu reset? */
-	if (cpu_init_detected()) {
-		if (last_boot_normal()) {
-			asm("jmp __normal_image");
-		} else {
-			asm("jmp __cpu_reset");
-		}
-	}
-
-	/* This is the primary cpu how should I boot? */
-	else if (do_normal_boot()) {
-		asm("jmp __normal_image");
-	}
-#endif
 }
 

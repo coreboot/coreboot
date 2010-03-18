@@ -176,67 +176,7 @@ void sio_init(void)
 	pnp_exit_ext_func_mode(GPIO_DEV);
 }
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-	/* unsigned last_boot_normal_x = last_boot_normal(); */
-	/* FIXME */
-	unsigned last_boot_normal_x = 1;
-
-	sio_init();
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	uart_init();
-	console_init();
-	enable_rom_decode();
-
-	print_info("now booting... fallback\r\n");
-
-	/* Is this a CPU only reset? Or is this a secondary CPU? */
-	if ((cpu_init_detectedx) || (!boot_cpu())) {
-		if (last_boot_normal_x)
-			goto normal_image;
-		else
-			goto fallback_image;
-	}
-
-	/* Nothing special needs to be done to find bus 0. */
-	/* Allow the HT devices to be found. */
-	enumerate_ht_chain();
-
-	/* Is this a deliberate reset by the BIOS? */
-	if (bios_reset_detected() && last_boot_normal_x) {
-		goto normal_image;
-	}
-	/* This is the primary CPU, how should I boot? */
-	else if (do_normal_boot()) {
-		goto normal_image;
-	} else {
-		goto fallback_image;
-	}
-
-normal_image:
-	/* print_info("JMP normal image\r\n"); */
-
-	__asm__ __volatile__("jmp __normal_image":
-			     :"a" (bist), "b" (cpu_init_detectedx));
-
-fallback_image:
-	;
-}
-#endif
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-	failover_process(bist, cpu_init_detectedx);
-#endif
-	real_main(bist, cpu_init_detectedx);
-}
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
 		(0xa << 3) | 0, (0xa << 3) | 2, 0, 0,
@@ -251,6 +191,21 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct sys_info *sysinfo =
 	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 	char *p;
+
+	sio_init();
+	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	uart_init();
+	console_init();
+	enable_rom_decode();
+
+	print_info("now booting... fallback\r\n");
+
+	/* Is this a CPU only reset? Or is this a secondary CPU? */
+	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+		/* Nothing special needs to be done to find bus 0. */
+		/* Allow the HT devices to be found. */
+		enumerate_ht_chain();
+	}
 
 	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

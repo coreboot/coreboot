@@ -133,8 +133,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"
 
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
 
@@ -156,68 +154,12 @@ static void sio_setup(void)
 
 
 }
-void failover_process(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-        unsigned last_boot_normal_x = last_boot_normal();
-
-        /* Is this a cpu only reset? or Is this a secondary cpu? */
-        if ((cpu_init_detectedx) || (!boot_cpu())) {
-                if (last_boot_normal_x) {
-                        goto normal_image;
-                } else {
-                        goto fallback_image;
-                }
-        }
-
-        /* Nothing special needs to be done to find bus 0 */
-        /* Allow the HT devices to be found */
-
-        enumerate_ht_chain();
-
-        sio_setup();
-
-        /* Setup the mcp55 */
-        mcp55_enable_rom();
-
-        /* Is this a deliberate reset by the bios */
-        if (bios_reset_detected() && last_boot_normal_x) {
-                goto normal_image;
-        }
-        /* This is the primary cpu how should I boot? */
-        else if (do_normal_boot()) {
-                goto normal_image;
-        }
-        else {
-                goto fallback_image;
-        }
- normal_image:
-        __asm__ volatile ("jmp __normal_image"
-                : /* outputs */
-                : "a" (bist), "b"(cpu_init_detectedx) /* inputs */
-                );
-
- fallback_image:
-       ;
-}
-#endif
-
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx);
-
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
-{
-
-#if CONFIG_USE_FALLBACK_IMAGE == 1
-        failover_process(bist, cpu_init_detectedx);
-#endif
-        real_main(bist, cpu_init_detectedx);
-
-}
 
 //CPU 1 mem is on SMBUS_HUB channel 2, and CPU 2 mem is on channel 1.
 #define RC0 (2<<8)
 #define RC1 (1<<8)
 
-void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
+void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
        static const uint16_t spd_addr [] = {
                        RC0|(0xa<<3)|0, RC0|(0xa<<3)|2, RC0|(0xa<<3)|4, RC0|(0xa<<3)|6,
@@ -232,6 +174,18 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
         int needs_reset;
        struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
        char *p ;
+
+        if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+		/* Nothing special needs to be done to find bus 0 */
+		/* Allow the HT devices to be found */
+
+		enumerate_ht_chain();
+
+		sio_setup();
+
+		/* Setup the mcp55 */
+		mcp55_enable_rom();
+        }
 
         if (bist == 0) {
                //init_cpus(cpu_init_detectedx);

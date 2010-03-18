@@ -201,7 +201,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_info("now booting... fallback\r\n");
 
 	/* Is this a CPU only reset? Or is this a secondary CPU? */
-	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0. */
 		/* Allow the HT devices to be found. */
 		enumerate_ht_chain();

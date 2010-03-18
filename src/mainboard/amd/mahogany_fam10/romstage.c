@@ -156,7 +156,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 val;
 	msr_t msr;
 
-	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		/* mov bsp to bus 0xff when > 8 nodes */

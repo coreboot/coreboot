@@ -134,7 +134,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	unsigned nodes, bsp_apicid = 0;
 	struct mem_controller ctrl[8];
 
-	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();

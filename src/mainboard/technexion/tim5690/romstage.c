@@ -114,7 +114,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct cpuid_result cpuid1;
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
-	if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();

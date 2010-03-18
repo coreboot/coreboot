@@ -185,7 +185,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         int needs_reset = 0;
         unsigned bsp_apicid = 0;
 
-        if (!((cpu_init_detectedx) || (!boot_cpu()))) {
+        if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 

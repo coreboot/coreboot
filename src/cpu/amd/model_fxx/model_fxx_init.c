@@ -5,7 +5,7 @@
  * 2005.02 yhlu add e0 memory hole support
 
  * Copyright 2005 AMD
- * 2005.08 yhlu add microcode support 
+ * 2005.08 yhlu add microcode support
 */
 #include <console/console.h>
 #include <cpu/x86/msr.h>
@@ -199,7 +199,7 @@ static void set_init_ecc_mtrrs(void)
 	enable_cache();
 }
 
-static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_state) 
+static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_state)
 {
                 unsigned long limitk;
                 unsigned long size;
@@ -226,7 +226,7 @@ static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_sta
 #if 0
 		/* couldn't happen, memory must on 2M boundary */
 		if(limitk>endk) {
-			limitk = enk; 
+			limitk = enk;
 		}
 #endif
                 size = (limitk - basek) << 10;
@@ -238,7 +238,7 @@ static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_sta
 
                 /* clear memory 2M (limitk - basek) */
                 addr = (void *)(((uint32_t)addr) | ((basek & 0x7ff) << 10));
-                memset(addr, size, 0);
+                memset(addr, 0, size);
 }
 
 static void init_ecc_memory(unsigned node_id)
@@ -278,7 +278,7 @@ static void init_ecc_memory(unsigned node_id)
 			(SCRUB_NONE << 16) | (SCRUB_NONE << 8) | (SCRUB_NONE << 0));
 		printk_debug("Scrubbing Disabled\n");
 	}
-	
+
 
 	/* If ecc support is not enabled don't touch memory */
 	dcl = pci_read_config32(f2_dev, DRAM_CONFIG_LOW);
@@ -292,7 +292,7 @@ static void init_ecc_memory(unsigned node_id)
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	#if CONFIG_K8_REV_F_SUPPORT == 0
-        if (!is_cpu_pre_e0()) 
+        if (!is_cpu_pre_e0())
 	{
 	#endif
 
@@ -305,7 +305,7 @@ static void init_ecc_memory(unsigned node_id)
         }
 	#endif
 #endif
-	
+
 
 	/* Don't start too early */
 	begink = startk;
@@ -337,10 +337,10 @@ static void init_ecc_memory(unsigned node_id)
                                 clear_2M_ram(basek, &mtrr_state);
                         }
         }
-	else 
+	else
 #endif
         for(basek = begink; basek < endk;
-                basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) 
+                basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1)))
 	{
 		clear_2M_ram(basek, &mtrr_state);
 	}
@@ -385,7 +385,7 @@ static inline void k8_errata(void)
 		msr = rdmsr_amd(DC_CFG_MSR);
 		msr.lo |=  (1 << 10);
 		wrmsr_amd(DC_CFG_MSR, msr);
-			
+
 	}
 	/* I can't touch this msr on early buggy cpus */
 	if (!is_cpu_pre_b3()) {
@@ -393,10 +393,10 @@ static inline void k8_errata(void)
 		/* Erratum 89 ... */
 		msr = rdmsr(NB_CFG_MSR);
 		msr.lo |= 1 << 3;
-		
+
 		if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
 			/* D0 later don't need it */
-			/* Erratum 86 Disable data masking on C0 and 
+			/* Erratum 86 Disable data masking on C0 and
 			 * later processor revs.
 			 * FIXME this is only needed if ECC is enabled.
 			 */
@@ -404,14 +404,14 @@ static inline void k8_errata(void)
 		}
 		wrmsr(NB_CFG_MSR, msr);
 	}
-	
+
 	/* Erratum 97 ... */
 	if (!is_cpu_pre_c0() && is_cpu_pre_d0()) {
 		msr = rdmsr_amd(DC_CFG_MSR);
 		msr.lo |= 1 << 3;
 		wrmsr_amd(DC_CFG_MSR, msr);
-	}	
-	
+	}
+
 	/* Erratum 94 ... */
 	if (is_cpu_pre_d0()) {
 		msr = rdmsr_amd(IC_CFG_MSR);
@@ -440,7 +440,7 @@ static inline void k8_errata(void)
 #endif
 
 #if CONFIG_K8_REV_F_SUPPORT == 0
-	if (!is_cpu_pre_e0()) 
+	if (!is_cpu_pre_e0())
 #endif
 	{
 		/* Erratum 110 ... */
@@ -478,12 +478,12 @@ static void model_fxx_init(device_t dev)
 
 #if CONFIG_K8_REV_F_SUPPORT == 1
 	struct cpuinfo_x86 c;
-	
+
 	get_fms(&c, dev->device);
 #endif
 
 #if CONFIG_USBDEBUG_DIRECT
-	if(!ehci_debug_addr) 
+	if(!ehci_debug_addr)
 		ehci_debug_addr = get_ehci_debug();
 	set_ehci_debug(0);
 #endif
@@ -501,7 +501,7 @@ static void model_fxx_init(device_t dev)
 	model_fxx_update_microcode(dev->device);
 
 	disable_cache();
-	
+
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
@@ -510,15 +510,15 @@ static void model_fxx_init(device_t dev)
 	}
 
 	k8_errata();
-	
+
 	/* Set SMMLOCK to avoid exploits messing with SMM */
 	msr = rdmsr(HWCR_MSR);
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);
-	
+
 	/* Set the processor name string */
 	init_processor_name();
-	
+
 	enable_cache();
 
 	/* Enable the local cpu apics */
@@ -529,17 +529,17 @@ static void model_fxx_init(device_t dev)
 
        	if(siblings>0) {
                 msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
-                msr.lo |= 1 << 28; 
+                msr.lo |= 1 << 28;
                 wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
 
        	        msr = rdmsr_amd(LOGICAL_CPUS_NUM_MSR);
-                msr.lo = (siblings+1)<<16; 
+                msr.lo = (siblings+1)<<16;
        	        wrmsr_amd(LOGICAL_CPUS_NUM_MSR, msr);
 
                 msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
-       	        msr.hi |= 1<<(33-32); 
+       	        msr.hi |= 1<<(33-32);
                	wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
-	} 
+	}
 
 #endif
 

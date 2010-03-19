@@ -1,4 +1,4 @@
-/* 2005.6 by yhlu 
+/* 2005.6 by yhlu
  * 2006.3 yhlu add copy data from CAR to ram
  */
 #include "cpu/amd/car/disable_cache_as_ram.c"
@@ -55,13 +55,13 @@ static void post_cache_as_ram(void)
 	unsigned testx = 0x5a5a5a5a;
 	print_debug_pcar("testx = ", testx);
 
-	/* copy data from cache as ram to 
+	/* copy data from cache as ram to
 		ram need to set CONFIG_RAMTOP to 2M and use var mtrr instead.
 	 */
 #if CONFIG_RAMTOP <= 0x100000
 	#error "You need to set CONFIG_RAMTOP greater than 1M"
 #endif
-	
+
 	/* So we can access RAM from [1M, CONFIG_RAMTOP) */
 	set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 
@@ -90,14 +90,14 @@ static void post_cache_as_ram(void)
 	print_debug_pcar("testx = ", testx);
 
 	print_debug("Disabling cache as ram now \r\n");
-	disable_cache_as_ram_bsp();  
+	disable_cache_as_ram_bsp();
 
 	print_debug("Clearing initial memory region: ");
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	/* clear only coreboot used region of memory. Note: this may break ECC enabled boards */
-	memset((void*) CONFIG_RAMBASE, (CONFIG_RAMTOP) - CONFIG_RAMBASE - CONFIG_DCACHE_RAM_SIZE, 0);
+	memset((void*) CONFIG_RAMBASE, 0, (CONFIG_RAMTOP) - CONFIG_RAMBASE - CONFIG_DCACHE_RAM_SIZE);
 #else
-	memset((void*)0, ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE), 0);
+	memset((void*)0, 0, ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE));
 #endif
 	print_debug("Done\r\n");
 

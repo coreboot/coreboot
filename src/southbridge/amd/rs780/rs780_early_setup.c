@@ -101,7 +101,7 @@ static void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 /* family 10 only, for reg > 0xFF */
-#if CONFIG_CAR_FAM10 == 1
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1
 static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev, u32 reg_pos, u32 mask,
 				  u32 val)
 {
@@ -270,7 +270,7 @@ static void rs780_htinit()
 	} else if ((cpu_ht_freq > 0x6) && (cpu_ht_freq < 0xf)) {
 		printk_info("rs780_htinit: HT3 mode\n");
 
-		#if CONFIG_CAR_FAM10 == 1		/* save some spaces */
+		#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
 		/* HT3 mode, RPR 8.4.3 */
 		set_nbcfg_enable_bits(rs780_f0, 0x9c, 0x3 << 16, 0);
 
@@ -306,11 +306,11 @@ static void rs780_htinit()
 		/* Sets Training 0 Time. See T0Time table for encodings */
 		set_fam10_ext_cfg_enable_bits(cpu_f0, 0x16C, 0x3F, 0x20);
 		/* TODO: */
-		#endif	/* #if CONFIG_CAR_FAM10 == 1 */
+		#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
 	}
 }
 
-#if CONFIG_CAR_FAM10 != 1		/* save some spaces */
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1		/* save some spaces */
 /*******************************************************
 * Optimize k8 with UMA.
 * See BKDG_NPT_0F guide for details.
@@ -364,9 +364,9 @@ static void k8_optimization()
 }
 #else
 #define k8_optimization() do{}while(0)
-#endif	/* #if CONFIG_CAR_FAM10 != 1 */
+#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1 */
 
-#if CONFIG_CAR_FAM10 == 1		/* save some spaces */
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
 void fam10_optimization()
 {
 	device_t cpu_f0, cpu_f2, cpu_f3;
@@ -422,7 +422,7 @@ void fam10_optimization()
 	/*          L3 Disabled:  L3 Enabled: */
 	/* cores:    2   3    4    2   3    4  */
 	/* bit8:4   28  26   24   24  20   16 */
-	if (!l3Cache()) {
+	if (!l3_cache()) {
 		Set_NB32(cpu_f3, 0x1A0, 4 << 12 | (24 + 2*(4-cpu_core_number())) << 4 | 2);
 	} else {
 		Set_NB32(cpu_f3, 0x1A0, 4 << 12 | (16 + 4*(4-cpu_core_number())) << 4 | 4);
@@ -430,7 +430,7 @@ void fam10_optimization()
 }
 #else
 #define fam10_optimization() do{}while(0)
-#endif	/* #if CONFIG_CAR_FAM10 == 1 */
+#endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1 */
 
 /*****************************************
 * rs780_por_pcicfg_init()

@@ -1,3 +1,4 @@
+#include <lib.h> /* Prototypes */
 
 #ifndef RAMINIT_SYSINFO
         #define RAMINIT_SYSINFO 0
@@ -10,14 +11,6 @@ static inline void print_debug_sdram_8(const char *strval, uint32_t val)
 #else
         print_debug(strval); print_debug_hex8(val); print_debug("\r\n");
 #endif
-}
-
-void sdram_no_memory(void)
-{
-	print_err("No memory!!\r\n");
-	while(1) { 
-		hlt(); 
-	}
 }
 
 /* Setup SDRAM */

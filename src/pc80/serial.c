@@ -1,3 +1,5 @@
+#include <lib.h> /* Prototypes */
+
 /* Base Address */
 #ifndef CONFIG_TTYS0_BASE
 #define CONFIG_TTYS0_BASE 0x3f8

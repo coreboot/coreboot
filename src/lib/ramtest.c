@@ -1,3 +1,5 @@
+#include <lib.h> /* Prototypes */
+
 static void write_phys(unsigned long addr, unsigned long value)
 {
 	// Assembler in lib/ is very ugly. But we properly guarded

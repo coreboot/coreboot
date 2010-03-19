@@ -48,6 +48,7 @@ config SSE
 
 config SSE2
 	bool
+	default n
 	help
 	  Select SSE2 in your socket or model Kconfig if your CPU has SSE2
 	  streaming SIMD instructions. Some parts of coreboot can be built

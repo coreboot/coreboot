@@ -17,7 +17,6 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#define post_code(x) outb(x, 0x80)
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"

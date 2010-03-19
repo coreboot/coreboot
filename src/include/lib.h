@@ -19,8 +19,15 @@
 
 /* This file is for "nuisance prototypes" that have no other home. */
 
+#ifndef __LIB_H__
+#define __LIB_H__
+
+#ifndef __ROMCC__ /* romcc doesn't support prototypes. */
+
+#ifndef __PRE_RAM__ /* Conflicts with romcc_io.h */
 /* Defined in src/lib/clog2.c */
 unsigned long log2(unsigned long x);
+#endif
 
 /* Defined in src/lib/lzma.c */
 unsigned long ulzma(unsigned char *src, unsigned char *dst);
@@ -28,3 +35,18 @@ unsigned long ulzma(unsigned char *src, unsigned char *dst);
 /* Defined in src/arch/i386/boot/gdt.c */
 void move_gdt(void);
 
+/* Defined in src/lib/ramtest.c */
+void ram_check(unsigned long start, unsigned long stop);
+
+/* Defined in src/pc80/serial.c */
+void uart_init(void);
+
+/* Defined in romstage.c */
+#if defined(CONFIG_CPU_AMD_LX) && CONFIG_CPU_AMD_LX
+void cache_as_ram_main(void);
+#else
+void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
+#endif
+
+#endif /* __ROMCC__ */
+#endif /* __LIB_H__ */

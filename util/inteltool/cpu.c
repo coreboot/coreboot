@@ -154,10 +154,6 @@ int print_intel_core_msrs(void)
 		//{ 0x040f, "IA32_MC4_MISC" } // Seems to be RO
 	};
 
-	static const msr_entry_t model6bx_per_core_msrs[] = {
-		// single core only
-	};
-
 	static const msr_entry_t model6ex_global_msrs[] = {
 		{ 0x0017, "IA32_PLATFORM_ID" },
 		{ 0x002a, "EBL_CR_POWERON" },

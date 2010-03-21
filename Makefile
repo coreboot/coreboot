@@ -124,9 +124,11 @@ all:
 	chmod +x .ccwrap
 	scan-build $(CONFIG_SCANBUILD_REPORT_LOCATION) -analyze-headers --use-cc=$(top)/.ccwrap --use-c++=$(top)/.ccwrap $(MAKE) INNER_SCANBUILD=y
 else
-all: coreboot
+all: $(obj)/config.h coreboot
 endif
 
+$(obj)/config.h:
+	$(MAKE) oldconfig
 
 #######################################################################
 # Build the tools

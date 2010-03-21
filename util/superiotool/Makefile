@@ -36,7 +36,7 @@ OBJS = superiotool.o ali.o fintek.o ite.o nsc.o smsc.o winbond.o
 
 OS_ARCH = $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
-LDFLAGS = -framework IOKit -framework DirectIO -lpci -lz
+LIBS = -framework IOKit -framework DirectIO -lpci -lz
 endif
 
 # Support for PCI-attached "Super I/Os" (e.g. in VIA VT82686A/B).
@@ -44,7 +44,7 @@ CONFIG_PCI = yes
 
 ifeq ($(CONFIG_PCI), yes)
 CFLAGS += -DPCI_SUPPORT
-LDFLAGS += -lpci
+LIBS += -lpci
 OBJS += pci.o via.o
 endif
 
@@ -53,7 +53,7 @@ all: $(PROGRAM)
 superiotool.o: *.c superiotool.h
 
 $(PROGRAM): $(OBJS) superiotool.h
-	$(CC) $(LDFLAGS) -o $(PROGRAM) $(OBJS)
+	$(CC) $(LDFLAGS) -o $(PROGRAM) $(OBJS) $(LIBS)
 
 install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin

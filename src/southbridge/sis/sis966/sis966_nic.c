@@ -274,7 +274,7 @@ static void nic_init(struct device *dev)
 		return;
 	}
 	base = res->base;
-        printk(BIOS_DEBUG, "NIC base address %lx\n",base);
+        printk(BIOS_DEBUG, "NIC base address %x\n",base);
 
 	if(!(val=phy_detect(base,&PhyAddr)))
 	{
@@ -291,7 +291,7 @@ static void nic_init(struct device *dev)
 
           //	if that is valid we will use that
 
-			printk(BIOS_DEBUG, "EEPROM contents %x \n",ReadEEprom( dev,  base,  0LL));
+			printk(BIOS_DEBUG, "EEPROM contents %lx \n",ReadEEprom( dev,  base,  0LL));
 			for(i=0;i<3;i++) {
 				//status = smbus_read_byte(dev_eeprom, i);
 				ulValue=ReadEEprom( dev,  base,  i+3L);

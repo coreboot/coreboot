@@ -1,4 +1,5 @@
 #include <arch/io.h>
+#include <reset.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #if !defined (__ROMCC__) && !defined (__PRE_RAM__)

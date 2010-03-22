@@ -484,7 +484,7 @@ void sis_init_stage2(void)
         printk(BIOS_DEBUG, "Init NorthBridge sis761 -------->\n");
         dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
         msr = rdmsr(0xC001001A);
-	 printk(BIOS_DEBUG, "Memory Top Bound %lx\n",msr.lo );
+	 printk(BIOS_DEBUG, "Memory Top Bound %x\n",msr.lo );
 
         temp16=(pci_read_config8(dev, 0x4C) & 0xE0) >> 5;
         temp16=0x0001<<(temp16-1);

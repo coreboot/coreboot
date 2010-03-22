@@ -1700,7 +1700,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		}
 		sizek = 1 << align;
 #if CONFIG_MEM_TRAIN_SEQ != 1
-		printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4dMB, range: %4dMB, type %s\r\n",
+		printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\r\n",
 			reg, range_startk >>10, sizek >> 10,
 			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
 			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")

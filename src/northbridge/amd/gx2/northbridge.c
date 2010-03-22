@@ -127,7 +127,7 @@ static void irq_init_steering(struct device *dev, uint16_t irq_map) {
 	/* Set up IRQ steering */
 	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 
-	printk(BIOS_DEBUG, "%s(%08X [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
+	printk(BIOS_DEBUG, "%s(%p [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
 
 	/* The IRQ steering values (in hex) are effectively dcba, where:
 	 *    <a> represents the IRQ for INTA, 
@@ -240,7 +240,7 @@ setup_gx2(void)
 	/* calculate the PBASE and PMASK fields */
 	tmp2 = (SMM_OFFSET << 8) & 0xFFF00000; /* shift right 12 then left 20  == left 8 */
 	tmp2 |= (((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff);
-	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, tmp, tmp2);
+	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%lx:0x%lx\n", 0x10000026, tmp, tmp2);
 	msr.hi = tmp;
 	msr.lo = tmp2;
 	wrmsr(0x10000026, msr);

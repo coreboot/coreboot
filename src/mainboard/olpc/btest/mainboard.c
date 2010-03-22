@@ -61,7 +61,7 @@ static void init_dcon(void) {
 	/* Enable the DCON */
 	ret = do_smbus_write_word(iobase, 0x0D << 1, 0x01, 0x0069);
 	if (ret != 0)
-		printk(BIOS_DEBUG, "DCON ENABLE FAILED\n", ret);
+		printk(BIOS_DEBUG, "DCON ENABLE FAILED %d\n", ret);
   }
   else
 	  printk(BIOS_DEBUG, "DCON NOT FOUND (%x)\n", rev);

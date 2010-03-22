@@ -1086,7 +1086,7 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 #if CONFIG_WRITE_HIGH_TABLES==1
-		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
+		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			     i, mmio_basek, basek, limitk);
 		if (i==0 && high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */

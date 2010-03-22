@@ -142,7 +142,7 @@ void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_EDGE |MP_IRQ_POLARITY_HIGH,	SUPERIO_BUS,		15,					IOAPIC_ICH3,			15);
 }
 
-void* smp_write_config_table(void* v)
+static void *smp_write_config_table(void* v)
 {
 	static const char sig[4] = MPC_SIGNATURE;
     static const char oem[8] = "INTEL   ";

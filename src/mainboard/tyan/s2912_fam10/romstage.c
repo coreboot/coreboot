@@ -210,9 +210,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
-	printk(BIOS_DEBUG, "*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
+	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 	printk(BIOS_DEBUG, "bsp_apicid = %02x\n", bsp_apicid);
-	printk(BIOS_DEBUG, "cpu_init_detectedx = %08x\n", cpu_init_detectedx);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);

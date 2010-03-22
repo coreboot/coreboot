@@ -255,7 +255,7 @@ void rs780_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	u32 gfx_gpp_sb_sel;
 	struct southbridge_amd_rs780_config *cfg =
 	    (struct southbridge_amd_rs780_config *)nb_dev->chip_info;
-	printk(BIOS_DEBUG, "gpp_sb_init nb_dev=0x%p, dev=0x%p, port=0x%p\n", nb_dev, dev, port);
+	printk(BIOS_DEBUG, "gpp_sb_init nb_dev=0x%x, dev=0x%x, port=0x%x\n", nb_dev->path.pci.devfn, dev->path.pci.devfn, port);
 
 	gfx_gpp_sb_sel = port >= 4 && port <= 8 ?
 				PCIE_CORE_INDEX_GPPSB :		/* 4,5,6,7,8 */

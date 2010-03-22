@@ -117,7 +117,7 @@ static int codec_detect(uint8_t *base)
 		return 0;
        }
 
-	 printk(BIOS_DEBUG, "Codec ID = %lx\n", dword);
+	 printk(BIOS_DEBUG, "Codec ID = %x\n", dword);
 
        dword=0x1;
 	return dword;
@@ -293,7 +293,7 @@ static void aza_init(struct device *dev)
 		return;
 
 	base =(uint8_t *) res->base;
-	printk(BIOS_DEBUG, "base = %08x\n", base);
+	printk(BIOS_DEBUG, "base = %p\n", base);
 
 	codec_mask = codec_detect(base);
 

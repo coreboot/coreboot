@@ -86,7 +86,7 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 					if(!(res->flags & IORESOURCE_IO)) continue;
 		        	        base = res->base;
                 			end = resource_end(res);
-					printk(BIOS_DEBUG, "bcm5785lpc decode:%s, base=0x%08x, end=0x%08x\r\n",dev_path(child),base, end);
+					printk(BIOS_DEBUG, "bcm5785lpc decode:%s, base=0x%08lx, end=0x%08lx\r\n",dev_path(child),base, end);
 					switch(base) {
 					case 0x60: //KBC
 					case 0x64:

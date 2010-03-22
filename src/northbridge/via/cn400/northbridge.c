@@ -244,7 +244,7 @@ static void cn400_domain_set_resources(device_t dev)
 		tomk = rambits * 32 * 1024;
 		/* Compute the Top Of Low Memory (TOLM), in Kb. */
 		tolmk = pci_tolm >> 10;
-		printk(BIOS_SPEW, "tomk is 0x%x, tolmk is 0x%08X\n", tomk, tolmk);
+		printk(BIOS_SPEW, "tomk is 0x%lx, tolmk is 0x%08lX\n", tomk, tolmk);
 		if (tolmk >= tomk) {
 			/* The PCI hole does does not overlap the memory. */
 			tolmk = tomk;

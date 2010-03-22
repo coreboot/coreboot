@@ -64,6 +64,11 @@ config MAX_PHYSICAL_CPUS
 	default 8
 	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
 
+config LOGICAL_CPUS
+	bool
+	default n
+	depends on BOARD_AMD_SERENGETI_CHEETAH_FAM10
+
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n

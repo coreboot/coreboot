@@ -39,7 +39,7 @@ extern u32 sbdn_sb700;
 
 extern void get_bus_conf(void);
 
-void *smp_write_config_table(void *v)
+static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
 	static const char oem[8] = "AMD     ";

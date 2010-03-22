@@ -317,7 +317,7 @@ static void lpc_init(struct device *dev)
 	if (!res) {
 		return;
 	}
-	*((u8 *)(res->base + 0x31ff)) |= (1 << 0);
+	*((u8 *)((u32)res->base + 0x31ff)) |= (1 << 0);
 
 	// TODO this code sets int 0 of the IOAPIC in Virtual Wire Mode
 	// (register 0x10/0x11) while the old code used int 1 (register 0x12)

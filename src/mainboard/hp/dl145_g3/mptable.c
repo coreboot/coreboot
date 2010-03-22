@@ -43,7 +43,7 @@
 
 extern void get_bus_conf(void);
 
-void *smp_write_config_table(void *v)
+static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
 	static const char oem[8] = "HP      ";
@@ -101,7 +101,7 @@ void *smp_write_config_table(void *v)
 			if (dev) {
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
 				if (res) {
-					printk(BIOS_DEBUG, "APIC %d base address: %x\n",m->apicid_bcm5785[i],  res->base);
+					printk(BIOS_DEBUG, "APIC %d base address: %llx\n",m->apicid_bcm5785[i],  res->base);
 					smp_write_ioapic(mc, m->apicid_bcm5785[i], 0x11, res->base);
 				}
 			}

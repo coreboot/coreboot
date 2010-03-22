@@ -270,11 +270,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	print_debug("*sysinfo range: [");
-	print_debug_hex32(sysinfo);
-	print_debug(",");
-	print_debug_hex32((unsigned long)sysinfo + sizeof(struct sys_info));
-	print_debug(")\r\n");
+	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
 	setup_mb_resource_map();
 

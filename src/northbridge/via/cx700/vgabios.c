@@ -339,7 +339,7 @@ void do_vgabios(void)
 		if (buf[0] == 0x55 && buf[1] == 0xAA) {
 			busdevfn =
 			    (dev->bus->secondary << 8) | dev->path.pci.devfn;
-			printk(BIOS_DEBUG, "bus/devfn = %#x\n", busdevfn);
+			printk(BIOS_DEBUG, "bus/devfn = %#lx\n", busdevfn);
 
 			real_mode_switch_call_vga(busdevfn);
 		} else
@@ -517,14 +517,14 @@ int biosint(unsigned long intnumber,
 		     eax, ebx, ecx, edx);
 	printk(BIOS_DEBUG, "biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
 		     ebp, esp, edi, esi);
-	printk(BIOS_DEBUG, "biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
+	printk(BIOS_DEBUG, "biosint:  ip 0x%lx   cs 0x%lx  flags 0x%lx\n",
 		     ip, cs, flags);
 
 	// cases in a good compiler are just as good as your own tables. 
 	switch (intnumber) {
 	case 0 ... 15:
 		// These are not BIOS service, but the CPU-generated exceptions
-		printk(BIOS_INFO, "biosint: Oops, exception %u\n", intnumber);
+		printk(BIOS_INFO, "biosint: Oops, exception %lu\n", intnumber);
 		if (esp < 0x1000) {
 			printk(BIOS_DEBUG, "Stack contents: ");
 			while (esp < 0x1000) {
@@ -552,7 +552,7 @@ int biosint(unsigned long intnumber,
 				  &ebx, &edx, &ecx, &eax, &flags);
 		break;
 	default:
-		printk(BIOS_INFO, "BIOSINT: Unsupport int #0x%x\n", intnumber);
+		printk(BIOS_INFO, "BIOSINT: Unsupport int #0x%lx\n", intnumber);
 		break;
 	}
 	if (ret)

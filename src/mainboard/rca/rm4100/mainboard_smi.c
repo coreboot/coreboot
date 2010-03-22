@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <arch/romcc_io.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 
 int mainboard_io_trap_handler(int smif)
 {

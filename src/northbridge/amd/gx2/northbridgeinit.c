@@ -112,10 +112,10 @@ writeglmsr(struct gliutable *gl){
 	msr.lo = gl->lo;
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk(BIOS_DEBUG, "%s: write msr 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 	/* they do this, so we do this */
 	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 
 static void
@@ -164,7 +164,7 @@ SysmemInit(struct gliutable *gl)
 	msr.lo = sizebytes;
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
 	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __func__, 
+	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 				gl->desc_name, msr.hi, msr.lo);
 	
 }
@@ -181,7 +181,7 @@ DMMGL0Init(struct gliutable *gl) {
 
 	sizebytes -= DMM_SIZE*1024;
 	offset = sizebytes - DMM_OFFSET;
-	printk(BIOS_DEBUG, "%s: offset is 0x%08x\n", __func__, offset);
+	printk(BIOS_DEBUG, "%s: offset is 0x%08lx\n", __func__, offset);
 	offset >>= 12;
 	msr.hi = (gl->hi) | (offset << 8);
 	/* I don't think this is needed */
@@ -192,7 +192,7 @@ DMMGL0Init(struct gliutable *gl) {
 	
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 	
 }
 static void
@@ -215,7 +215,7 @@ DMMGL1Init(struct gliutable *gl) {
 	
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 static void
 SMMGL0Init(struct gliutable *gl) {
@@ -231,7 +231,7 @@ SMMGL0Init(struct gliutable *gl) {
 	printk(BIOS_DEBUG, "%s: %d bytes\n", __func__, sizebytes);
 
 	offset = sizebytes - SMM_OFFSET;
-	printk(BIOS_DEBUG, "%s: offset is 0x%08x\n", __func__, offset);
+	printk(BIOS_DEBUG, "%s: offset is 0x%08lx\n", __func__, offset);
 	offset >>= 12;
 
 	msr.hi = offset << 8;
@@ -242,7 +242,7 @@ SMMGL0Init(struct gliutable *gl) {
 	
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 static void
 SMMGL1Init(struct gliutable *gl) {
@@ -258,7 +258,7 @@ SMMGL1Init(struct gliutable *gl) {
 	
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
 	msr = rdmsr(gl->desc_name);
-	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08x, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "%s: AFTER write msr 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);
 }
 
 static void
@@ -507,10 +507,10 @@ performance:
 
 	for(i = 0; gating->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(gating->msrnum);
-		printk(BIOS_DEBUG, "%s: MSR 0x%08x is 0x%08x:0x%08x\n", __func__, gating->msrnum, msr.hi, msr.lo);
+		printk(BIOS_DEBUG, "%s: MSR 0x%08lx is 0x%08x:0x%08x\n", __func__, gating->msrnum, msr.hi, msr.lo);
 		msr.hi |= gating->msr.hi;
 		msr.lo |= gating->msr.lo;
-		printk(BIOS_DEBUG, "%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __func__, 
+		printk(BIOS_DEBUG, "%s: MSR 0x%08lx will be set to  0x%08x:0x%08x\n", __func__,
 			gating->msrnum, msr.hi, msr.lo);
 		wrmsr(gating->msrnum, msr);	// MSR - See the table above
 		gating +=1;
@@ -526,11 +526,11 @@ GeodeLinkPriority(void){
 
 	for(i = 0; prio->msrnum != 0xffffffff; i++) {
 		msr = rdmsr(prio->msrnum);
-		printk(BIOS_DEBUG, "%s: MSR 0x%08x is 0x%08x:0x%08x\n", __func__, prio->msrnum, msr.hi, msr.lo);
+		printk(BIOS_DEBUG, "%s: MSR 0x%08lx is 0x%08x:0x%08x\n", __func__, prio->msrnum, msr.hi, msr.lo);
 		msr.hi |= prio->msr.hi;
 		msr.lo &= ~0xfff;
 		msr.lo |= prio->msr.lo;
-		printk(BIOS_DEBUG, "%s: MSR 0x%08x will be set to 0x%08x:0x%08x\n", __func__, 
+		printk(BIOS_DEBUG, "%s: MSR 0x%08lx will be set to 0x%08x:0x%08x\n", __func__,
 			prio->msrnum, msr.hi, msr.lo);
 		wrmsr(prio->msrnum, msr);	// MSR - See the table above
 		prio +=1;

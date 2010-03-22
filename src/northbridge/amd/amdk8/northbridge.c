@@ -1005,7 +1005,7 @@ static void amdk8_domain_set_resources(device_t dev)
 
 
 #if CONFIG_GFXUMA == 1
-		printk(BIOS_DEBUG, "node %d : uma_memory_base/1024=0x%08x, mmio_basek=0x%08x, basek=0x%08x, limitk=0x%08x\n", i, uma_memory_base >> 10, mmio_basek, basek, limitk);
+		printk(BIOS_DEBUG, "node %d : uma_memory_base/1024=0x%08llx, mmio_basek=0x%08lx, basek=0x%08x, limitk=0x%08x\n", i, uma_memory_base >> 10, mmio_basek, basek, limitk);
 		if ((uma_memory_base >> 10) < mmio_basek)
 			printk(BIOS_ALERT, "node %d: UMA memory starts below mmio_basek\n", i);
 #else

@@ -35,7 +35,7 @@ extern unsigned apicid_sis966;
 
 extern unsigned bus_type[256];
 
-void *smp_write_config_table(void *v)
+static void *smp_write_config_table(void *v)
 {
         static const char sig[4] = "PCMP";
         static const char oem[8] = "GIGABYTE";

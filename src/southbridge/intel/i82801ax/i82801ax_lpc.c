@@ -74,7 +74,7 @@ typedef struct southbridge_intel_i82801ax_config config_t;
  * specific IRQ values in your mainboards Config.lb.
 */
 
-void i82801ax_enable_apic(struct device *dev)
+static void i82801ax_enable_apic(struct device *dev)
 {
 	uint32_t reg32;
 	volatile uint32_t *ioapic_index = (volatile uint32_t *)0xfec00000;
@@ -108,7 +108,7 @@ void i82801ax_enable_apic(struct device *dev)
 	*ioapic_data = 1; /* Use Processor System Bus to deliver interrupts. */
 }
 
-void i82801ax_enable_serial_irqs(struct device *dev)
+static void i82801ax_enable_serial_irqs(struct device *dev)
 {
 	/* Set packet length and toggle silent mode bit. */
 	pci_write_config8(dev, SERIRQ_CNTL,
@@ -220,7 +220,7 @@ static void gpio_init(device_t dev, uint16_t ich_model)
 	}
 }
 
-void i82801ax_rtc_init(struct device *dev)
+static void i82801ax_rtc_init(struct device *dev)
 {
 	uint8_t reg8;
 	uint32_t reg32;
@@ -240,7 +240,7 @@ void i82801ax_rtc_init(struct device *dev)
 	pci_write_config8(dev, RTC_CONF, 0x04);
 }
 
-void i82801ax_lpc_route_dma(struct device *dev, uint8_t mask)
+static void i82801ax_lpc_route_dma(struct device *dev, uint8_t mask)
 {
 	uint16_t reg16;
 	int i;

@@ -142,7 +142,7 @@ static void pci_domain_set_resources(device_t dev)
 		drp_value = drp_value >> 4;	// >>= 4; //? mess with later
 		tomk += (unsigned long)(translate_i82810_to_mb[drp_value]);
 
-		printk(BIOS_DEBUG, "Setting RAM size to %d MB\n", tomk);
+		printk(BIOS_DEBUG, "Setting RAM size to %ld MB\n", tomk);
 
 		/* Convert tomk from MB to KB. */
 		tomk = tomk << 10;

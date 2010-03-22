@@ -18,11 +18,11 @@ static void nic_init(struct device *dev)
 	int eeprom_valid = 0;
 	struct southbridge_nvidia_ck804_config *conf;
 	static uint32_t nic_index = 0;
-	uint8_t *base;
+	unsigned long base;
 	struct resource *res;
 
 	res = find_resource(dev, 0x10);
-	base = (uint8_t*)(unsigned long)res->base;
+	base = (unsigned long)res->base;
 
 #define NvRegPhyInterface  0xC0
 #define PHY_RGMII          0x10000000
@@ -76,8 +76,8 @@ static void nic_init(struct device *dev)
 	if (!eeprom_valid) {
 		unsigned long mac_pos;
 		mac_pos = 0xffffffd0; /* See romstrap.inc and romstrap.lds. */
-		mac_l = read32((uint8_t*)mac_pos) + nic_index;
-		mac_h = read32((uint8_t*)mac_pos + 4);
+		mac_l = read32(mac_pos) + nic_index;
+		mac_h = read32(mac_pos + 4);
 	}
 #if 1
 	/* Set that into NIC MMIO. */

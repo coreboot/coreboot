@@ -341,7 +341,7 @@ void northbridge_set_resources(struct device *dev)
 		bus = &dev->link[link];
 		if (bus->children) {
 			printk(BIOS_DEBUG, "my_dev_set_resources: assign_resources %d\n",
-			     bus);
+			     bus->secondary);
 			assign_resources(bus);
 		}
 	}

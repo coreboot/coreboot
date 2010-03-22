@@ -148,7 +148,7 @@ void vt1211_pnp_set_resources(struct device *dev)
 	for(i = 0; i < dev->resources; i++) {
 		resource = &dev->resource[i];
 		if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-			printk(BIOS_ERR, "ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
+			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010Lx not assigned\n",
 				dev_path(dev), dev->resource->index,
 				resource_type(resource),
 				resource->size);
@@ -166,7 +166,7 @@ void vt1211_pnp_set_resources(struct device *dev)
 			pnp_set_irq(dev, resource->index, resource->base);
 		}
 		else {
-			printk(BIOS_ERR, "ERROR: %s %02x unknown resource type\n",
+			printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
 				dev_path(dev), resource->index);
 			return;
 		}

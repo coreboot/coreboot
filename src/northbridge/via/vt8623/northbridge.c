@@ -48,7 +48,7 @@ static void northbridge_init(device_t dev)
 		 */
 		//fb = pci_read_config32(dev, 0x10);       /* Base addres of framebuffer */
 		fb = 0xd0000000;
-		printk(BIOS_DEBUG, "Frame buffer at %8x\n",fb);
+		printk(BIOS_DEBUG, "Frame buffer at %8lx\n",fb);
 
 		c = pci_read_config8(dev, 0xe1) & 0xf0;  /* size of vga */
 		c |= fb>>28;  /* upper nibble of frame buffer address */

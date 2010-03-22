@@ -230,7 +230,7 @@ static void aza_init(struct device *dev)
 		return;
 
 	base =(uint8_t *) res->base;
-	printk(BIOS_DEBUG, "base = %08x\n", base);
+	printk(BIOS_DEBUG, "base = %p\n", base);
 
 	codec_mask = codec_detect(base);
 

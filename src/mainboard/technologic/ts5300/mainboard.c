@@ -7,7 +7,8 @@
 #include "chip.h"
 
 
-static void irqdump()
+#if 0
+static void irqdump(void)
 {
   volatile unsigned char *irq;
   void *mmcr;
@@ -26,16 +27,16 @@ static void irqdump()
   printk(BIOS_ERR, "mmcr is %p\n", mmcr);
   for(i = 0; irqlist[i] >= 0; i++) {
     irq = mmcr + irqlist[i];
-    printk(BIOS_ERR, "0x%x register @%p is 0x%lx\n", irqlist[i], irq, *irq);
+    printk(BIOS_ERR, "0x%x register @%p is 0x%x\n", irqlist[i], irq, *irq);
   }
 
 }
+#endif
 
 /* TODO: finish up mmcr struct in sc520.h, and;
    - set ADDDECTL (now done in raminit.c in cpu/amd/sc520
 */
 static void enable_dev(struct device *dev) {
-	volatile struct mmcrpic *pic = MMCRPIC;
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
 
 	/* currently, nothing in the device to use, so ignore it. */

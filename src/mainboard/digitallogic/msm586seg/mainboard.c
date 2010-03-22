@@ -26,7 +26,7 @@ static void irqdump()
   printk(BIOS_ERR, "mmcr is %p\n", mmcr);
   for(i = 0; irqlist[i] >= 0; i++) {
     irq = mmcr + irqlist[i];
-    printk(BIOS_ERR, "0x%x register @%p is 0x%lx\n", irqlist[i], irq, *irq);
+    printk(BIOS_ERR, "0x%x register @%p is 0x%x\n", irqlist[i], irq, *irq);
   }
 
 }

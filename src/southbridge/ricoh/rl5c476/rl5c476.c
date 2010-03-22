@@ -189,7 +189,7 @@ void rl5c476_set_resources(device_t dev)
 		resource = find_resource(dev,1);
 		if( !(resource->flags & IORESOURCE_STORED) ){
 			resource->flags |= IORESOURCE_STORED ;
-			printk(BIOS_DEBUG, "%s 1 ==> %x\n", dev_path(dev), resource->base); 
+			printk(BIOS_DEBUG, "%s 1 ==> %llx\n", dev_path(dev), resource->base);
 			cf_base = resource->base;
 		}
 	}

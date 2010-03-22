@@ -12,11 +12,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <bitops.h>
+#include <delay.h>
 #include "chip.h"
 
 
 /* hack for now */
-void sc520_udelay(int microseconds) {
+static void sc520_udelay(int microseconds) {
         volatile int x;
         for(x = 0; x < 1000; x++) 
                 ;  
@@ -24,7 +25,7 @@ void sc520_udelay(int microseconds) {
 
 /* looks like we define this now */
 void
-udelay(int microseconds) {
+udelay(unsigned microseconds) {
         sc520_udelay(microseconds); 
 }
 /*
@@ -46,7 +47,7 @@ static void cpu_init(device_t dev)
  * there is no real northbridge, keep it here in cpu. 
  * Ron wins, he's writing the code. 
  */
-void sc520_enable_resources(struct device *dev) {
+static void sc520_enable_resources(struct device *dev) {
 	unsigned char command;
 
 	printk(BIOS_SPEW, "%s\n", __func__);
@@ -100,7 +101,7 @@ static void ram_resource(device_t dev, unsigned long index,
         unsigned long basek, unsigned long sizek)
 {
         struct resource *resource;
-  printk(BIOS_SPEW, "%s sizek 0x%x\n", __func__, sizek);
+	printk(BIOS_SPEW, "%s sizek 0x%lx\n", __func__, sizek);
         if (!sizek) {
                 return;
         }

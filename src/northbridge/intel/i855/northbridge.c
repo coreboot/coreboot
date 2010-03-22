@@ -29,6 +29,7 @@
 #include <string.h>
 #include <bitops.h>
 #include <cpu/x86/cache.h>
+#include <cpu/cpu.h>
 #include "chip.h"
 
 static void ram_resource(device_t dev, unsigned long index,
@@ -95,9 +96,7 @@ static void pci_domain_set_resources(device_t dev)
 		 * too confusing to get right.  Kilobytes are good up to
 		 * 4 Terabytes of RAM...
 		 */
-		uint16_t tolm_r, vga_mem;
 		unsigned long tomk, tolmk;
-		unsigned long remapbasek, remaplimitk;
 		int idx;
 
 		/* Get the value of the highest DRB. This tells the end of
@@ -120,8 +119,8 @@ static void pci_domain_set_resources(device_t dev)
 		 */
 		 
 		/* Report the memory regions */
-		printk(BIOS_DEBUG, "tomk = %d\n", tomk);
-		printk(BIOS_DEBUG, "tolmk = %d\n", tolmk);
+		printk(BIOS_DEBUG, "tomk = %ld\n", tomk);
+		printk(BIOS_DEBUG, "tolmk = %ld\n", tolmk);
 
 		idx = 10;
 		/* avoid pam region */
@@ -165,8 +164,6 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-        struct device_path path;
-
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;

@@ -236,7 +236,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	console_init();
 //	setup_early_ipmi_serial();
 	pilot_early_init(SERIAL_DEV); //config port is being taken from SERIAL_DEV
-	print_debug("*sysinfo range: ["); print_debug_hex32(sysinfo); print_debug(","); print_debug_hex32((unsigned long)sysinfo+sizeof(struct sys_info)); print_debug(")\r\n");
+	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
 	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\r\n");
 

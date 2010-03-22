@@ -190,7 +190,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	allow_all_aps_stop(bsp_apicid);
 
 	/* It's the time to set ctrl now; */
-	printk(BIOS_DEBUG, "sysinfo->nodes: %2x  sysinfo->ctrl: %2x  spd_addr: %2x\n",
+	printk(BIOS_DEBUG, "sysinfo->nodes: %2x  sysinfo->ctrl: %p  spd_addr: %p\n",
 		     sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);

@@ -356,7 +356,7 @@ cpubug(void)
 
 	rev = msr.lo & 0xff;
 	if (rev < 0x20) {
-		printk(BIOS_ERR, "%s: rev < 0x20! bailing!\n");
+		printk(BIOS_ERR, "%s: rev < 0x20! bailing!\n", __func__);
 		return;
 	}
 	printk(BIOS_DEBUG, "Doing cpubug fixes for rev 0x%x\n", rev);

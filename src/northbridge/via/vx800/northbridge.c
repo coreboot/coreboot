@@ -162,7 +162,7 @@ if register with invalid value we set frame buffer size to 32M for default, but 
 			    (((rambits << 6) - (4 << reg) -
 			      VIACONFIG_TOP_SM_SIZE_MB) * 1024);
 
-		printk(BIOS_SPEW, "tomk is 0x%x\n", tomk);
+		printk(BIOS_SPEW, "tomk is 0x%lx\n", tomk);
 		/* Compute the Top Of Low Memory, in Kb */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {

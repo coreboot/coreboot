@@ -6,7 +6,7 @@
 
 static void acpi_init(struct device *dev)
 {
-	printk_debug("Configuring VIA ACPI\n");
+	printk(BIOS_DEBUG, "Configuring VIA ACPI\n");
 
 	// Set ACPI base address to IO 0x4000
 	pci_write_config32(dev, 0x48, 0x4001);

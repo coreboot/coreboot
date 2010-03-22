@@ -31,7 +31,7 @@ void intel_sibling_init(device_t cpu)
 	}
 
 #if 1
-	printk_debug("CPU: %u %d siblings\n",
+	printk(BIOS_DEBUG, "CPU: %u %d siblings\n",
 		cpu->path.apic.apic_id,
 		siblings);
 #endif
@@ -61,14 +61,14 @@ void intel_sibling_init(device_t cpu)
 		}
 
 #if 1
-		printk_debug("CPU: %u has sibling %u\n", 
+		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n", 
 			cpu->path.apic.apic_id,
 			new->path.apic.apic_id);
 #endif
 		/* Start the new cpu */
 		if (!start_cpu(new)) {
 			/* Record the error in cpu? */
-			printk_err("CPU %u would not start!\n",
+			printk(BIOS_ERR, "CPU %u would not start!\n",
 				new->path.apic.apic_id);
 		}
 	}

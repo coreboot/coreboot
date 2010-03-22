@@ -156,14 +156,14 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	v[10] = cpuid1.ecx;
 	v[11] = cpuid1.edx;
 	processor_brand[48] = 0;
-	printk_info("processor_brand=%s\n", processor_brand);
+	printk(BIOS_INFO, "processor_brand=%s\n", processor_brand);
 
 	/*
 	 * Based on the CPU socket type,cmp_cap and pwr_lmt , get the power limit.
 	 * socket_type : 0x10 SocketF; 0x11 AM2/ASB1 ; 0x12 S1G1
 	 * cmp_cap : 0x0 SingleCore ; 0x1 DualCore
 	 */
-	printk_info("Pstates Algorithm ...\n");
+	printk(BIOS_INFO, "Pstates Algorithm ...\n");
 	cmp_cap =
 	    (pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8) &
 	     0x3000) >> 12;
@@ -181,7 +181,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	/* See if the CPUID(0x80000007) returned EDX[2:1]==11b */
 	cpuid1 = cpuid(0x80000007);
 	if ((cpuid1.edx & 0x6) != 0x6) {
-		printk_info("No valid set of P-states\n");
+		printk(BIOS_INFO, "No valid set of P-states\n");
 		goto write_pstates;
 	}
 
@@ -204,7 +204,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		PstateStep_coef = 2;
 
 	if (IntPstateSup == 0) {
-		printk_info("No intermediate P-states are supported\n");
+		printk(BIOS_INFO, "No intermediate P-states are supported\n");
 		goto write_pstates;
 	}
 
@@ -352,12 +352,12 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	/* Print Pstate freq,vid,volt,power */
 
 	for (index = 0; index < Pstate_num; index++) {
-		printk_info("Pstate_freq[%d] = %dMHz\t", index,
+		printk(BIOS_INFO, "Pstate_freq[%d] = %dMHz\t", index,
 			    Pstate_feq[index]);
-		printk_info("Pstate_vid[%d] = %d\t", index, Pstate_vid[index]);
-		printk_info("Pstate_volt[%d] = %dmv\t", index,
+		printk(BIOS_INFO, "Pstate_vid[%d] = %d\t", index, Pstate_vid[index]);
+		printk(BIOS_INFO, "Pstate_volt[%d] = %dmv\t", index,
 			    Pstate_volt[index]);
-		printk_info("Pstate_power[%d] = %dmw\n", index,
+		printk(BIOS_INFO, "Pstate_power[%d] = %dmw\n", index,
 			    Pstate_power[index]);
 	}
 

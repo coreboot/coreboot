@@ -126,7 +126,7 @@ static void pci_domain_set_resources(device_t dev)
 	u32 pci_tolm;
 	u8 reg;
 
-	printk_spew("Entering vx800 pci_domain_set_resources.\n");
+	printk(BIOS_SPEW, "Entering vx800 pci_domain_set_resources.\n");
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
@@ -162,7 +162,7 @@ if register with invalid value we set frame buffer size to 32M for default, but 
 			    (((rambits << 6) - (4 << reg) -
 			      VIACONFIG_TOP_SM_SIZE_MB) * 1024);
 
-		printk_spew("tomk is 0x%x\n", tomk);
+		printk(BIOS_SPEW, "tomk is 0x%x\n", tomk);
 		/* Compute the Top Of Low Memory, in Kb */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -206,7 +206,7 @@ static const struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk_spew("In VX800 enable_dev for device %s.\n", dev_path(dev));
+	printk(BIOS_SPEW, "In VX800 enable_dev for device %s.\n", dev_path(dev));
 
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {

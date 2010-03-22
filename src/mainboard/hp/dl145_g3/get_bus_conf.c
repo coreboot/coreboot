@@ -98,25 +98,25 @@ void get_bus_conf(void)
 	m->bus_bcm5780[0] = m->bus_bcm5785_0;
 
 		/* bcm5785 */
-	printk_debug("search for def %d.0 on bus %d\n",sysconf.sbdn,m->bus_bcm5785_0);
+	printk(BIOS_DEBUG, "search for def %d.0 on bus %d\n",sysconf.sbdn,m->bus_bcm5785_0);
 	dev = dev_find_slot(m->bus_bcm5785_0, PCI_DEVFN(sysconf.sbdn,0));
 	if (dev) {
-		printk_debug("found dev %s...\n",dev_path(dev));
+		printk(BIOS_DEBUG, "found dev %s...\n",dev_path(dev));
 		m->bus_bcm5785_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		printk_debug("secondary is %d...\n",m->bus_bcm5785_1);
+		printk(BIOS_DEBUG, "secondary is %d...\n",m->bus_bcm5785_1);
 		dev = dev_find_slot(m->bus_bcm5785_1, PCI_DEVFN(0xd,0));
-		printk_debug("now found %s...\n",dev_path(dev));
+		printk(BIOS_DEBUG, "now found %s...\n",dev_path(dev));
 		if(dev) {
 			m->bus_bcm5785_1_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 #if CONFIG_HT_CHAIN_END_UNITID_BASE >= CONFIG_HT_CHAIN_UNITID_BASE
 			m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 			m->bus_isa++;
-			printk_debug("bus_isa 1=%d\n",m->bus_isa);
+			printk(BIOS_DEBUG, "bus_isa 1=%d\n",m->bus_isa);
 #endif
 		}
 	}
 	else {
-		printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_bcm5785_0, sysconf.sbdn);
+		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_bcm5785_0, sysconf.sbdn);
 	}
 
 		/* bcm5780 */
@@ -127,12 +127,12 @@ void get_bus_conf(void)
 #if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
 			m->bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 			m->bus_isa++;
-			printk_debug("bus_isa 2=%d\n",m->bus_isa);
+			printk(BIOS_DEBUG, "bus_isa 2=%d\n",m->bus_isa);
 #endif
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_bcm5780[0], m->sbdn2+i-1);
+			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_bcm5780[0], m->sbdn2+i-1);
 		}
 	}
 

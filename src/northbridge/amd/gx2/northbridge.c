@@ -32,7 +32,7 @@ sizeram(void)
 	unsigned short dimm;
 
 	msr = rdmsr(0x20000018);
-	printk_debug("sizeram: %08x:%08x\n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "sizeram: %08x:%08x\n", msr.hi, msr.lo);
 
 	/* dimm 0 */
 	dimm = msr.hi;
@@ -47,7 +47,7 @@ sizeram(void)
 	if ((dimm & 7) != 7)
 		sizem += (1 << ((dimm >> 12)-1)) * 8;
 
-	printk_debug("sizeram: sizem 0x%x\n", sizem);
+	printk(BIOS_DEBUG, "sizeram: sizem 0x%x\n", sizem);
 	return sizem;
 }
 
@@ -127,7 +127,7 @@ static void irq_init_steering(struct device *dev, uint16_t irq_map) {
 	/* Set up IRQ steering */
 	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 
-	printk_debug("%s(%08X [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
+	printk(BIOS_DEBUG, "%s(%08X [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
 
 	/* The IRQ steering values (in hex) are effectively dcba, where:
 	 *    <a> represents the IRQ for INTA, 
@@ -160,7 +160,7 @@ setup_gx2_cache(void)
 	int sizekbytes, sizereg;
 
 	sizekbytes = sizeram() * 1024;
-	printk_debug("setup_gx2_cache: enable for %d KB\n", sizekbytes);
+	printk(BIOS_DEBUG, "setup_gx2_cache: enable for %d KB\n", sizekbytes);
 	/* build up the rconf word. */
 	/* the SYSTOP bits 27:8 are actually the top bits from 31:12. Book fails to say that */
 	/* set romrp */
@@ -181,7 +181,7 @@ setup_gx2_cache(void)
 	val |= RAM_PROPERTIES;
 	msr.lo = val;
 	msr.hi = (val >> 32);
-	printk_debug("msr 0x%08X will be set to %08x:%08x\n", CPU_RCONF_DEFAULT, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "msr 0x%08X will be set to %08x:%08x\n", CPU_RCONF_DEFAULT, msr.hi, msr.lo);
 	wrmsr(CPU_RCONF_DEFAULT, msr);
 
 	enable_cache();
@@ -214,7 +214,7 @@ setup_gx2(void)
 
 #if 0
 	/* This has already been done elsewhere */
-	printk_debug("size_kb 0x%x, membytes 0x%x\n", size_kb, membytes);
+	printk(BIOS_DEBUG, "size_kb 0x%x, membytes 0x%x\n", size_kb, membytes);
 	msr.hi = 0x20000000 | membytes>>24;
 	msr.lo = 0x100 | ( ((membytes >>12) & 0xfff) << 20);
 	wrmsr(0x10000028, msr);
@@ -224,9 +224,9 @@ setup_gx2(void)
 #endif
 #if 0
 	msr = rdmsr(0x10000028);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi,msr.lo);
+	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x10000028, msr.hi,msr.lo);
 	msr = rdmsr(0x40000029);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
+	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x40000029, msr.hi,msr.lo);
 #endif
 #if 1
 	/* fixme: SMM MSR 0x10000026 and 0x400000023 */
@@ -240,7 +240,7 @@ setup_gx2(void)
 	/* calculate the PBASE and PMASK fields */
 	tmp2 = (SMM_OFFSET << 8) & 0xFFF00000; /* shift right 12 then left 20  == left 8 */
 	tmp2 |= (((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, tmp, tmp2);
+	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, tmp, tmp2);
 	msr.hi = tmp;
 	msr.lo = tmp2;
 	wrmsr(0x10000026, msr);
@@ -251,14 +251,14 @@ setup_gx2(void)
 	msr.lo = 0x400fffc0;
 	wrmsr(0x10000026, msr);
 	msr = rdmsr(0x10000026);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x10000026, msr.hi, msr.lo);
 #endif
 #if 0
 	msr.hi = 0x22fffc02;
 	msr.lo = 0x10ffbf00;
 	wrmsr(0x1808, msr);
 	msr = rdmsr(0x1808);
-	printk_debug("MSR 0x%x is now 0x%x:0x%x\n", 0x1808, msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "MSR 0x%x is now 0x%x:0x%x\n", 0x1808, msr.hi, msr.lo);
 #endif
 #if 0	// SDG - don't do this
 	/* now do the default MSR values */
@@ -266,7 +266,7 @@ setup_gx2(void)
 		msr_t msr;
 		wrmsr(msr_defaults[i].msr_no, msr_defaults[i].msr);	// MSR - see table above
 		msr = rdmsr(msr_defaults[i].msr_no);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", msr_defaults[i].msr_no, msr.hi,msr.lo);
 	}
 #endif
 }
@@ -281,7 +281,7 @@ static void northbridge_init(device_t dev)
 	unsigned long m;
 
 	struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
-	printk_debug("northbridge: %s()\n", __func__);
+	printk(BIOS_DEBUG, "northbridge: %s()\n", __func__);
 	
 	enable_shadow(dev);
 	irq_init_steering(dev, nb->irqmap);
@@ -429,10 +429,10 @@ static void pci_domain_set_resources(device_t dev)
 		*bcdramtop = ((tomk << 10) - 1);
 		*mcgbaseadd = (tomk >> 9);
 
-		printk_debug("BC_DRAM_TOP = 0x%08x\n", *bcdramtop);
-		printk_debug("MC_GBASE_ADD = 0x%08x\n", *mcgbaseadd);
+		printk(BIOS_DEBUG, "BC_DRAM_TOP = 0x%08x\n", *bcdramtop);
+		printk(BIOS_DEBUG, "MC_GBASE_ADD = 0x%08x\n", *mcgbaseadd);
 
-		printk_debug("I would set ram size to %d Mbytes\n", (tomk >> 10));
+		printk(BIOS_DEBUG, "I would set ram size to %d Mbytes\n", (tomk >> 10));
 
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
@@ -483,7 +483,7 @@ extern uint64_t high_tables_base, high_tables_size;
 
 static void enable_dev(struct device *dev)
 {
-	printk_debug("gx2 north: enable_dev\n");
+	printk(BIOS_DEBUG, "gx2 north: enable_dev\n");
 	void northbridgeinit(void);
 	void chipsetinit(struct northbridge_amd_gx2_config *nb);
 	void do_vsmbios(void);
@@ -492,7 +492,7 @@ static void enable_dev(struct device *dev)
 		struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
 		extern void cpubug(void);
 		u32 tomk;
-		printk_debug("DEVICE_PATH_PCI_DOMAIN\n");
+		printk(BIOS_DEBUG, "DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
 		northbridgeinit();
 		cpubug();	
@@ -510,10 +510,10 @@ static void enable_dev(struct device *dev)
 #endif
 		ram_resource(dev, 0, 0, tomk);
         } else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
-		printk_debug("DEVICE_PATH_APIC_CLUSTER\n");
+		printk(BIOS_DEBUG, "DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
         }
-	printk_debug("gx2 north: end enable_dev\n");
+	printk(BIOS_DEBUG, "gx2 north: end enable_dev\n");
 }
 
 struct chip_operations northbridge_amd_gx2_ops = {

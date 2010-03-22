@@ -97,7 +97,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	start = (start + 0x0f) & -0x10;
 	current = start;
 
-	printk_info("ACPI: Writing ACPI tables at %lx...\n", start);
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT table. */
 	rsdp = (acpi_rsdp_t *) current;
@@ -112,7 +112,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_write_rsdt(rsdt);
 
 	/* We explicitly add these tables later on: */
-	printk_debug("ACPI:     * FACS\n");
+	printk(BIOS_DEBUG, "ACPI:     * FACS\n");
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
@@ -123,9 +123,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	       ((acpi_header_t *) AmlCode)->length);
 	dsdt->checksum = 0;	/* Don't trust iasl to get this right. */
 	dsdt->checksum = acpi_checksum(dsdt, dsdt->length);
-	printk_debug("ACPI:     * DSDT @ %p Length %x\n", dsdt,
+	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt,
 		     dsdt->length);
-	printk_debug("ACPI:     * FADT\n");
+	printk(BIOS_DEBUG, "ACPI:     * FADT\n");
 
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
@@ -134,23 +134,23 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, fadt);
 
 	/* If we want to use HPET timers Linux wants it in MADT. */
-	printk_debug("ACPI:    * MADT\n");
+	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current += madt->header.length;
 	acpi_add_table(rsdp, madt);
-	printk_debug("ACPI:    * MCFG\n");
+	printk(BIOS_DEBUG, "ACPI:    * MCFG\n");
 	mcfg = (acpi_mcfg_t *) current;
 	acpi_create_mcfg(mcfg);
 	current += mcfg->header.length;
 	acpi_add_table(rsdp, mcfg);
 
-	printk_debug("ACPI:    * SRAT\n");
+	printk(BIOS_DEBUG, "ACPI:    * SRAT\n");
 	srat = (acpi_srat_t *) current;
 	acpi_create_srat(srat);
 	current += srat->header.length;
 	acpi_add_table(rsdp, srat);
 
-	printk_info("ACPI: done.\n");
+	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }

@@ -218,7 +218,7 @@ void mcp55_enable(device_t dev)
 //		reg |= (1<<0);
 		reg &= ~(0x3f<<4);
 		if (reg != reg_old) {
-			printk_debug("mcp55.c pcie enabled\n");
+			printk(BIOS_DEBUG, "mcp55.c pcie enabled\n");
 			pci_write_config32(sm_dev, 0xe4, reg);
 		}
 #endif

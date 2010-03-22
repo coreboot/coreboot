@@ -35,11 +35,11 @@ static void smbus_init(struct device *dev)
 	u32 smb_base;
 
 	smb_base = pci_read_config32(dev, SMB_BASE);
-	printk_debug("Initializing SMBus device:\n");
-	printk_debug("  Old SMBUS Base Address: 0x%04x\n", smb_base);
+	printk(BIOS_DEBUG, "Initializing SMBus device:\n");
+	printk(BIOS_DEBUG, "  Old SMBUS Base Address: 0x%04x\n", smb_base);
 	pci_write_config32(dev, SMB_BASE, 0x00000401);
 	smb_base = pci_read_config32(dev, SMB_BASE);
-	printk_debug("  New SMBUS Base Address: 0x%04x\n", smb_base);
+	printk(BIOS_DEBUG, "  New SMBUS Base Address: 0x%04x\n", smb_base);
 }
 
 static int lsmbus_read_byte(device_t dev, u8 address)

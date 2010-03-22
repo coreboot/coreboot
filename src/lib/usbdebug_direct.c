@@ -23,7 +23,7 @@
 #include <console/console.h>
 #else
 #if CONFIG_USE_PRINTK_IN_CAR==0
-#define printk_debug(fmt, arg...)   do {} while(0)
+#define printk(BIOS_DEBUG, fmt, arg...)   do {} while(0)
 #endif
 #endif
 
@@ -304,7 +304,7 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 				delay_time += delay;
 			} while ((portsc & PORT_RESET) && (--loop > 0));
 			if (!loop) {
-				printk_debug("ehci_reset_port forced done");
+				printk(BIOS_DEBUG, "ehci_reset_port forced done");
 			}
 		}
 
@@ -342,7 +342,7 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 
 #define DBGP_DEBUG 1
 #if DBGP_DEBUG
-# define dbgp_printk printk_debug
+# define dbgp_printk(fmt, arg...) printk(BIOS_DEBUG, fmt, arg)
 #else
 #define dbgp_printk(fmt, arg...)   do {} while(0)
 #endif

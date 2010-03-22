@@ -79,7 +79,7 @@ static void acpi_init(struct device *dev)
 
 #if 0
 	uint16_t word;
-	printk_debug("ACPI: disabling NMI watchdog.. ");
+	printk(BIOS_DEBUG, "ACPI: disabling NMI watchdog.. ");
 	byte = pci_read_config8(dev, 0x49);
 	pci_write_config8(dev, 0x49, byte | (1<<2));
 
@@ -91,13 +91,13 @@ static void acpi_init(struct device *dev)
 	byte = pci_read_config8(dev, 0x48);
 	pci_write_config8(dev, 0x48, byte | (1<<3));
 
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 
 
-	printk_debug("ACPI: Routing IRQ 12 to PS2 port.. ");
+	printk(BIOS_DEBUG, "ACPI: Routing IRQ 12 to PS2 port.. ");
 	word = pci_read_config16(dev, 0x46);
 	pci_write_config16(dev, 0x46, word | (1<<9));
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #endif
 
 	/* To enable the register 0xcf9 in the IO space
@@ -119,7 +119,7 @@ static void acpi_init(struct device *dev)
 		byte |= 0x40;
 	}
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
-	printk_info("set power %s after power fail\n", on?"on":"off");
+	printk(BIOS_INFO, "set power %s after power fail\n", on?"on":"off");
 
 	/* switch serial irq logic from quiet mode to continuous
 	 * mode for Winbond W83627HF Rev. 17
@@ -135,13 +135,13 @@ static void acpi_init(struct device *dev)
 		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
 		on = 8-on;
-		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
+		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
 				(on*12)+(on>>1),(on&1)*5);
 	}
 
 #if CONFIG_GENERATE_ACPI_TABLES == 1
 	pm_base = pci_read_config16(dev, 0x58) & 0xff00;
-	printk_debug("pm_base: 0x%04x\n",pm_base);
+	printk(BIOS_DEBUG, "pm_base: 0x%04x\n",pm_base);
 #endif
 
 }

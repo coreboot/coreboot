@@ -9,7 +9,7 @@
 
 static void usb_init(struct device *dev)
 {
-	printk_debug("Configuring VIA USB 1.1\n");
+	printk(BIOS_DEBUG, "Configuring VIA USB 1.1\n");
 
 	/* pci_write_config8(dev, 0x04, 0x07); */
 

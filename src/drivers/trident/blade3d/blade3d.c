@@ -777,7 +777,7 @@ static int init9880(void)
 
 	//if chip revB
 	if (CHIPREV == 0x02) {
-		printk_debug("blade3d: chip revision B\n");
+		printk(BIOS_DEBUG, "blade3d: chip revision B\n");
 		outp(Port_CRX, 0xc0);
 		outp(Port_CRX + 1, 0x00);
 	}
@@ -805,7 +805,7 @@ static void config_OEM_regs(void)
 	lpMode3_temp = &Mode3_temp[0];
 	lpInit_reg = &Init_reg[0];
 
-	printk_debug("blade3d: config_OEM_regs()\n");
+	printk(BIOS_DEBUG, "blade3d: config_OEM_regs()\n");
 	
 	outp(Port_GRX, 0x24);
 	outp(Port_GRX + 1, 0xe0);
@@ -943,13 +943,13 @@ static void init_SGRAM(void)
 		}
 
 	} else {			//SGRAM
-		printk_debug("blade3d: No SGRAM found.\n");
+		printk(BIOS_DEBUG, "blade3d: No SGRAM found.\n");
 	}
 }
 
 static void config_video_memory(void)
 {
-	printk_debug("blade3d: Error: no video memory init\n");
+	printk(BIOS_DEBUG, "blade3d: Error: no video memory init\n");
 }
 
 static void set_video_mode(void)
@@ -959,7 +959,7 @@ static void set_video_mode(void)
 	lpDef_Reg_struct lpMode3_reg;
 	lpMode3_reg = &Mode3_reg[0];
 
-	printk_debug("blade3d: setting video mode\n");
+	printk(BIOS_DEBUG, "blade3d: setting video mode\n");
 	outp(0x3c2, 0x67);
 	for (i = 0; i < Length_Mode3_reg; i++) {
 		if (lpMode3_reg[i].rPort == Port_BRX) {
@@ -982,7 +982,7 @@ static void set_video_mode(void)
 static void set_font(void)
 {
 
-	printk_debug("blade3d: setting font (not implemented)\n");
+	printk(BIOS_DEBUG, "blade3d: setting font (not implemented)\n");
 }
 
 static void clear_MEM(void)
@@ -1008,7 +1008,7 @@ static void clear_MEM(void)
 
 static void trident_blade3d_init(struct device *dev)
 {
-	printk_info("blade3d: initializing video card\n");
+	printk(BIOS_INFO, "blade3d: initializing video card\n");
 	init9880();
 }
 

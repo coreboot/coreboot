@@ -140,7 +140,7 @@ void rtc_init(int invalid)
 	int cmos_invalid, checksum_invalid;
 #endif
 
-	printk_debug("RTC Init\n");
+	printk(BIOS_DEBUG, "RTC Init\n");
 
 #if CONFIG_HAVE_OPTION_TABLE
 	/* See if there has been a CMOS power problem. */
@@ -152,7 +152,7 @@ void rtc_init(int invalid)
 			PC_CKS_RANGE_END,PC_CKS_LOC);
 
 	if (invalid || cmos_invalid || checksum_invalid) {
-		printk_warning("RTC:%s%s%s zeroing cmos\n",
+		printk(BIOS_WARNING, "RTC:%s%s%s zeroing cmos\n",
 			invalid?" Clear requested":"", 
 			cmos_invalid?" Power Problem":"",
 			checksum_invalid?" Checksum invalid":"");
@@ -188,7 +188,7 @@ void rtc_init(int invalid)
 	checksum_invalid = !rtc_checksum_valid(CONFIG_LB_CKS_RANGE_START,
 			CONFIG_LB_CKS_RANGE_END,CONFIG_LB_CKS_LOC);
 	if(checksum_invalid)
-		printk_debug("Invalid CMOS LB checksum\n");
+		printk(BIOS_DEBUG, "Invalid CMOS LB checksum\n");
 
 	/* Make certain we have a valid checksum */
 	rtc_set_checksum(PC_CKS_RANGE_START,
@@ -257,7 +257,7 @@ int get_option(void *dest, const char *name)
 		}
 	}
 	if(!found) {
-		printk_debug("WARNING: No cmos option '%s'\n", name);
+		printk(BIOS_DEBUG, "WARNING: No cmos option '%s'\n", name);
 		return(-2);
 	}
 	

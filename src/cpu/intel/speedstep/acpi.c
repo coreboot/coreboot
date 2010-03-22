@@ -56,7 +56,7 @@ static int get_fsb(void)
 		case 3: return 166;
 		case 5: return 100;
 	}
-	printk_debug("Warning: No supported FSB frequency. Assuming 200MHz\n");
+	printk(BIOS_DEBUG, "Warning: No supported FSB frequency. Assuming 200MHz\n");
 	return 200;
 }
 
@@ -68,7 +68,7 @@ void generate_cpu_entries(void)
 	int totalcores = determine_total_number_of_cores();
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
 	int numcpus = totalcores/cores_per_package; // this assumes that all CPUs share the same layout
-	printk_debug("Found %d CPU(s) with %d core(s) each.\n", numcpus, cores_per_package);
+	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n", numcpus, cores_per_package);
 
 	for (cpuID=1; cpuID <=numcpus; cpuID++) {
 		for (coreID=1; coreID<=cores_per_package; coreID++) {
@@ -93,7 +93,7 @@ void generate_cpu_entries(void)
 			int vid_max=msr.lo & 0x3f;
 			int clock_max=get_fsb()*busratio_max;
 			int clock_min=get_fsb()*busratio_min;
-			printk_debug("clocks between %d and %d MHz.\n", clock_min, clock_max);
+			printk(BIOS_DEBUG, "clocks between %d and %d MHz.\n", clock_min, clock_max);
 #define MEROM_MIN_POWER 16000
 #define MEROM_MAX_POWER 35000
 			int power_max=MEROM_MAX_POWER;
@@ -104,7 +104,7 @@ void generate_cpu_entries(void)
 				busratio_step <<= 1;
 				num_states >>= 1;
 			}
-			printk_debug("adding %x P-States between busratio %x and %x, incl. P0\n", num_states+1, busratio_min, busratio_max);
+			printk(BIOS_DEBUG, "adding %x P-States between busratio %x and %x, incl. P0\n", num_states+1, busratio_min, busratio_max);
 			int vid_step=(vid_max-vid_min)/num_states;
 			int power_step=(power_max-power_min)/num_states;
 			int clock_step=(clock_max-clock_min)/num_states;

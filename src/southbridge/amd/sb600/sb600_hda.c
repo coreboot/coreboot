@@ -86,7 +86,7 @@ no_codec:
 	/* Codec Not found */
 	/* Put HDA back in reset (BAR + 0x8) [0] */
 	set_bits(base + 0x08, 1, 0);
-	printk_debug("No codec!\n");
+	printk(BIOS_DEBUG, "No codec!\n");
 	return 0;
 }
 
@@ -156,9 +156,9 @@ static u32 find_verb(u32 viddid, u32 ** verb)
 	device_t azalia_dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
 	struct southbridge_amd_sb600_config *cfg =
 	    (struct southbridge_amd_sb600_config *)azalia_dev->chip_info;
-	printk_debug("Dev=%s\n", dev_path(azalia_dev));
-	printk_debug("Default viddid=%x\n", cfg->hda_viddid);
-	printk_debug("Reading viddid=%x\n", viddid);
+	printk(BIOS_DEBUG, "Dev=%s\n", dev_path(azalia_dev));
+	printk(BIOS_DEBUG, "Default viddid=%x\n", cfg->hda_viddid);
+	printk(BIOS_DEBUG, "Reading viddid=%x\n", viddid);
 	if (!cfg)
 		return 0;
 	if (viddid != cfg->hda_viddid)
@@ -232,15 +232,15 @@ static void codec_init(u32 base, int addr)
 	dword = read32(base + 0x64);
 
 	/* 2 */
-	printk_debug("codec viddid: %08x\n", dword);
+	printk(BIOS_DEBUG, "codec viddid: %08x\n", dword);
 	verb_size = find_verb(dword, &verb);
 
 	if (!verb_size) {
-		printk_debug("No verb!\n");
+		printk(BIOS_DEBUG, "No verb!\n");
 		return;
 	}
 
-	printk_debug("verb_size: %d\n", verb_size);
+	printk(BIOS_DEBUG, "verb_size: %d\n", verb_size);
 	/* 3 */
 	for (i = 0; i < verb_size; i++) {
 		if (wait_for_ready(base) == -1)
@@ -251,7 +251,7 @@ static void codec_init(u32 base, int addr)
 		if (wait_for_valid(base) == -1)
 			return;
 	}
-	printk_debug("verb loaded!\n");
+	printk(BIOS_DEBUG, "verb loaded!\n");
 }
 
 static void codecs_init(u32 base, u32 codec_mask)
@@ -302,11 +302,11 @@ static void hda_init(struct device *dev)
 		return;
 
 	base = ((u32)res->base);
-	printk_debug("base = 0x%x\n", base);
+	printk(BIOS_DEBUG, "base = 0x%x\n", base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {
-		printk_debug("codec_mask = %02x\n", codec_mask);
+		printk(BIOS_DEBUG, "codec_mask = %02x\n", codec_mask);
 		codecs_init(base, codec_mask);
 	}
 }

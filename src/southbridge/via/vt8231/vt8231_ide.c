@@ -19,22 +19,22 @@ static void ide_init(struct device *dev)
 		*/
 
 		/*		
-		printk_info("%s: enabling compatibility IDE addresses\n", __func__);
+		printk(BIOS_INFO, "%s: enabling compatibility IDE addresses\n", __func__);
 		enables = pci_read_config8(dev, 0x42);
-		printk_debug("enables in reg 0x42 0x%x\n", enables);
+		printk(BIOS_DEBUG, "enables in reg 0x42 0x%x\n", enables);
 		enables &= ~0xc0;		// compatability mode
 		pci_write_config8(dev, 0x42, enables);
 		enables = pci_read_config8(dev, 0x42);
-		printk_debug("enables in reg 0x42 read back as 0x%x\n", enables);
+		printk(BIOS_DEBUG, "enables in reg 0x42 read back as 0x%x\n", enables);
 		*/
 	}
 	
 	enables = pci_read_config8(dev, 0x40);
-	printk_debug("enables in reg 0x40 0x%x\n", enables);
+	printk(BIOS_DEBUG, "enables in reg 0x40 0x%x\n", enables);
 	enables |= 3;
 	pci_write_config8(dev, 0x40, enables);
 	enables = pci_read_config8(dev, 0x40);
-	printk_debug("enables in reg 0x40 read back as 0x%x\n", enables);
+	printk(BIOS_DEBUG, "enables in reg 0x40 read back as 0x%x\n", enables);
 	
 	// Enable prefetch buffers
 	enables = pci_read_config8(dev, 0x41);
@@ -58,7 +58,7 @@ static void ide_init(struct device *dev)
 	// kevinh@ispiri.com - the standard linux drivers seem ass slow when 
 	// used in native mode - I've changed back to classic
 	enables = pci_read_config8(dev, 0x9);
-	printk_debug("enables in reg 0x9 0x%x\n", enables);
+	printk(BIOS_DEBUG, "enables in reg 0x9 0x%x\n", enables);
 	// by the book, set the low-order nibble to 0xa. 
 	if (conf->enable_native_ide) {
 		enables &= ~0xf;
@@ -70,11 +70,11 @@ static void ide_init(struct device *dev)
 	
 	pci_write_config8(dev, 0x9, enables);
 	enables = pci_read_config8(dev, 0x9);
-	printk_debug("enables in reg 0x9 read back as 0x%x\n", enables);
+	printk(BIOS_DEBUG, "enables in reg 0x9 read back as 0x%x\n", enables);
 	
 	// standard bios sets master bit. 
 	enables = pci_read_config8(dev, 0x4);
-	printk_debug("command in reg 0x4 0x%x\n", enables);
+	printk(BIOS_DEBUG, "command in reg 0x4 0x%x\n", enables);
 	enables |= 7;
 	
 	// No need for stepping - kevinh@ispiri.com
@@ -82,7 +82,7 @@ static void ide_init(struct device *dev)
 	
 	pci_write_config8(dev, 0x4, enables);
 	enables = pci_read_config8(dev, 0x4);
-	printk_debug("command in reg 0x4 reads back as 0x%x\n", enables);
+	printk(BIOS_DEBUG, "command in reg 0x4 reads back as 0x%x\n", enables);
 	
 	if (!conf->enable_native_ide) {
 		// Use compatability mode - per award bios

@@ -82,7 +82,7 @@ void hardwaremain(int ret_addr)
 	id = get_node_core_id_x();
 
 #if CONFIG_USE_PRINTK_IN_CAR
-        printk_debug("CODE IN CACHE ON NODE: %02x\n");
+        printk(BIOS_DEBUG, "CODE IN CACHE ON NODE: %02x\n");
 #else
         print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\r\n");
 #endif

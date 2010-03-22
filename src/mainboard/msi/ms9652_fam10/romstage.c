@@ -200,7 +200,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
@@ -211,10 +211,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
 	val = cpuid_eax(1);
-	printk_debug("BSP Family_Model: %08x\n", val);
-	printk_debug("*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
-	printk_debug("bsp_apicid = %02x\n", bsp_apicid);
-	printk_debug("cpu_init_detectedx = %08x\n", cpu_init_detectedx);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
+	printk(BIOS_DEBUG, "*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
+	printk(BIOS_DEBUG, "bsp_apicid = %02x\n", bsp_apicid);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08x\n", cpu_init_detectedx);
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
@@ -230,12 +230,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Setup nodes PCI space and start core 0 AP init. */
 	finalize_node_setup(sysinfo);
-	printk_debug("finalize_node_setup done\n");
+	printk(BIOS_DEBUG, "finalize_node_setup done\n");
 
 	/* Setup any mainboard PCI settings etc. */
-	printk_debug("setup_mb_resource_map begin\n");
+	printk(BIOS_DEBUG, "setup_mb_resource_map begin\n");
 	setup_mb_resource_map();
-	printk_debug("setup_mb_resource_map end\n");
+	printk(BIOS_DEBUG, "setup_mb_resource_map end\n");
 	post_code(0x36);
 
 	/* wait for all the APs core0 started by finalize_node_setup. */
@@ -248,10 +248,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if CONFIG_LOGICAL_CPUS==1
 	/* Core0 on each node is configured. Now setup any additional cores. */
-	printk_debug("start_other_cores()\n");
+	printk(BIOS_DEBUG, "start_other_cores()\n");
 	start_other_cores();
 	post_code(0x37);
-	printk_debug("wait_all_other_cores_started()\n");
+	printk(BIOS_DEBUG, "wait_all_other_cores_started()\n");
 	wait_all_other_cores_started(bsp_apicid);
 #endif
 
@@ -259,7 +259,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if FAM10_SET_FIDVID == 1
 	msr = rdmsr(0xc0010071);
-	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 
 	/* FIXME: The sb fid change may survive the warm reset and only
 	 * need to be done once.*/
@@ -277,7 +277,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
-	printk_debug("End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 #endif
 
 	wants_reset = mcp55_early_setup_x();
@@ -290,27 +290,27 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	if (wants_reset)
-		printk_debug("mcp55_early_setup_x wanted additional reset!\n");
+		printk(BIOS_DEBUG, "mcp55_early_setup_x wanted additional reset!\n");
 
 	post_code(0x3B);
 
 	/* It's the time to set ctrl in sysinfo now; */
-	printk_debug("fill_mem_ctrl()\n");
+	printk(BIOS_DEBUG, "fill_mem_ctrl()\n");
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	post_code(0x3D);
 
-	printk_debug("enable_smbus()\n");
+	printk(BIOS_DEBUG, "enable_smbus()\n");
 	enable_smbus();
 	post_code(0x3E);
 
 	memreset_setup();
 	post_code(0x40);
 
-	printk_debug("raminit_amdmct()\n");
+	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
 	post_code(0x41);
 
-	printk_debug("\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
+	printk(BIOS_DEBUG, "\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
 }

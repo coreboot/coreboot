@@ -28,7 +28,7 @@ static void qemu_init(device_t dev)
 	/* The PIRQ table is not working well for interrupt routing purposes. 
 	 * so we'll just set the IRQ directly. 
 	*/
-	printk_info("setting ethernet\n");
+	printk(BIOS_INFO, "setting ethernet\n");
 	pci_assign_irqs(0, 3, enetIrqs);
 }
 

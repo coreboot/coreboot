@@ -147,25 +147,25 @@ static void get_cpu_rev()
 	u32 eax;
 
 	eax = cpuid_eax(1);
-	printk_info("get_cpu_rev EAX=0x%x.\n", eax);
+	printk(BIOS_INFO, "get_cpu_rev EAX=0x%x.\n", eax);
 	if (eax <= 0xfff)
-		printk_info("CPU Rev is K8_Cx.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Cx.\n");
 	else if (eax <= 0x10fff)
-		printk_info("CPU Rev is K8_Dx.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Dx.\n");
 	else if (eax <= 0x20fff)
-		printk_info("CPU Rev is K8_Ex.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Ex.\n");
 	else if (eax <= 0x40fff)
-		printk_info("CPU Rev is K8_Fx.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Fx.\n");
 	else if (eax == 0x60fb1 || eax == 0x60f81)	/*These two IDS are exception, they are G1. */
-		printk_info("CPU Rev is K8_G1.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_G1.\n");
 	else if (eax <= 0X60FF0)
-		printk_info("CPU Rev is K8_G0.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_G0.\n");
 	else if (eax <= 0x100000)
-		printk_info("CPU Rev is K8_G1.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_G1.\n");
 	else if (eax <= 0x100f00)
-		printk_info("CPU Rev is Fam 10.\n");
+		printk(BIOS_INFO, "CPU Rev is Fam 10.\n");
 	else
-		printk_info("CPU Rev is K8_10.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_10.\n");
 }
 
 static u8 is_famly10()
@@ -246,7 +246,7 @@ static void rs780_htinit()
 	************************/
 	reg = pci_read_config32(cpu_f0, 0x88);
 	cpu_ht_freq = (reg & 0xf00) >> 8;
-	printk_info("rs780_htinit cpu_ht_freq=%x.\n", cpu_ht_freq);
+	printk(BIOS_INFO, "rs780_htinit cpu_ht_freq=%x.\n", cpu_ht_freq);
 	rs780_f0 = PCI_DEV(0, 0, 0);
 	//set_nbcfg_enable_bits(rs780_f0, 0xC8, 0x7<<24 | 0x7<<28, 1<<24 | 1<<28);
 
@@ -260,7 +260,7 @@ static void rs780_htinit()
 	 * So we check 6 only, it would be faster. */
 	if ((cpu_ht_freq == 0x6) || (cpu_ht_freq == 0x5) || (cpu_ht_freq == 0x4) ||
 		(cpu_ht_freq == 0x2) || (cpu_ht_freq == 0x0)) {
-		printk_info("rs780_htinit: HT1 mode\n");
+		printk(BIOS_INFO, "rs780_htinit: HT1 mode\n");
 
 		/* HT1 mode, RPR 8.4.2 */
 		/* set IBIAS code */
@@ -268,7 +268,7 @@ static void rs780_htinit()
 		/* Optimizes chipset HT transmitter drive strength */
 		set_htiu_enable_bits(rs780_f0, 0x2A, 0x3, 0x1);
 	} else if ((cpu_ht_freq > 0x6) && (cpu_ht_freq < 0xf)) {
-		printk_info("rs780_htinit: HT3 mode\n");
+		printk(BIOS_INFO, "rs780_htinit: HT3 mode\n");
 
 		#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
 		/* HT3 mode, RPR 8.4.3 */
@@ -330,7 +330,7 @@ static void k8_optimization()
 	device_t k8_f0, k8_f2, k8_f3;
 	msr_t msr;
 
-	printk_info("k8_optimization()\n");
+	printk(BIOS_INFO, "k8_optimization()\n");
 	k8_f0 = PCI_DEV(0, 0x18, 0);
 	k8_f2 = PCI_DEV(0, 0x18, 2);
 	k8_f3 = PCI_DEV(0, 0x18, 3);
@@ -373,7 +373,7 @@ void fam10_optimization()
 	msr_t msr;
 	u32 val;
 
-	printk_info("fam10_optimization()\n");
+	printk(BIOS_INFO, "fam10_optimization()\n");
 
 	cpu_f0 = PCI_DEV(0, 0x18, 0);
 	cpu_f2 = PCI_DEV(0, 0x18, 2);
@@ -612,7 +612,7 @@ static void rs780_por_htiu_index_init(device_t nb_dev)
 *****************************************/
 static void rs780_por_init(device_t nb_dev)
 {
-	printk_info("rs780_por_init\n");
+	printk(BIOS_INFO, "rs780_por_init\n");
 	/* ATINB_PCICFG_POR_TABLE, initialize the values for rs780 PCI Config registers */
 	rs780_por_pcicfg_init(nb_dev);
 
@@ -642,20 +642,20 @@ static void rs780_before_pci_init()
 static void rs780_early_setup()
 {
 	device_t nb_dev = PCI_DEV(0, 0, 0);
-	printk_info("rs780_early_setup()\n");
+	printk(BIOS_INFO, "rs780_early_setup()\n");
 
 	get_cpu_rev();
 
-	/* The printk_info(s) below cause the system unstable. */
+	/* The printk(BIOS_INFO, s) below cause the system unstable. */
 	switch (get_nb_rev(nb_dev)) {
 	case REV_RS780_A11:
-		/* printk_info("NB Revision is A11.\n"); */
+		/* printk(BIOS_INFO, "NB Revision is A11.\n"); */
 		break;
 	case REV_RS780_A12:
-		/* printk_info("NB Revision is A12.\n"); */
+		/* printk(BIOS_INFO, "NB Revision is A12.\n"); */
 		break;
 	case REV_RS780_A13:
-		/* printk_info("NB Revision is A13.\n"); */
+		/* printk(BIOS_INFO, "NB Revision is A13.\n"); */
 		break;
 	}
 

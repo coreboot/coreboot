@@ -61,7 +61,7 @@ static void enable_onboard_nic()
 {
 	u8 byte;
 
-	printk_info("%s.\n", __func__);
+	printk(BIOS_INFO, "%s.\n", __func__);
 
 	/* enable GPM8 output */
 	byte = pm_ioread(0x95);
@@ -155,7 +155,7 @@ static void set_thermal_config()
 	/* remote 1 temperature offset */
 	ADT7475_write_byte(0x70, 0x00);
 
-	printk_info("Init adt7475 end , status 0x42 %02x, status 0x41 %02x\n",
+	printk(BIOS_INFO, "Init adt7475 end , status 0x42 %02x, status 0x41 %02x\n",
 		    byte2, byte);
 
 	/* sb600 setting for thermal config. Set SB600 GPM5 to trigger ACPI event */
@@ -261,19 +261,19 @@ void pistachio_enable(device_t dev)
 	struct mainboard_config *mainboard =
 	    (struct mainboard_config *)dev->chip_info;
 
-	printk_info("Mainboard Pistachio Enable. dev=0x%p\n", dev);
+	printk(BIOS_INFO, "Mainboard Pistachio Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)
 	msr_t msr, msr2;
 
 	/* TOP_MEM: the top of DRAM below 4G */
 	msr = rdmsr(TOP_MEM);
-	printk_info("%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+	printk(BIOS_INFO, "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
 		    __func__, msr.lo, msr.hi);
 
 	/* TOP_MEM2: the top of DRAM above 4G */
 	msr2 = rdmsr(TOP_MEM2);
-	printk_info("%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
+	printk(BIOS_INFO, "%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
 		    __func__, msr2.lo, msr2.hi);
 
 	switch (msr.lo) {
@@ -295,7 +295,7 @@ void pistachio_enable(device_t dev)
 	}
 
 	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk_info("%s: uma size 0x%08llx, memory start 0x%08llx\n",
+	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
 		    __func__, uma_memory_size, uma_memory_base);
 
 	/* TODO: TOP_MEM2 */
@@ -315,7 +315,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
 #if (CONFIG_GFXUMA == 1)
-	printk_info("uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
+	printk(BIOS_INFO, "uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
 	uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);

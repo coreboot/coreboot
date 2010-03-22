@@ -113,7 +113,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	start = (start + 0x0f) & -0x10;
 	current = start;
 
-	printk_info("ACPI: Writing ACPI tables at %lx.\n", start);
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
 	rsdp = (acpi_rsdp_t *) current;
@@ -131,21 +131,21 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	current = ALIGN(current, 64);
 	facs = (acpi_facs_t *) current;
-	printk_debug("ACPI:    * FACS %p\n", facs);
+	printk(BIOS_DEBUG, "ACPI:    * FACS %p\n", facs);
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
 
 	/* DSDT */
 	current = ALIGN(current, 16);
 	dsdt = (acpi_header_t *) current;
-	printk_debug("ACPI:    * DSDT %p\n", dsdt);
+	printk(BIOS_DEBUG, "ACPI:    * DSDT %p\n", dsdt);
 	current += ((acpi_header_t *) AmlCode)->length;
 	memcpy((void*) dsdt, (void*)AmlCode, ((acpi_header_t*)AmlCode)->length);
-	printk_debug("ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	current = ALIGN(current, 16);
 	fadt = (acpi_fadt_t *) current;
-	printk_debug("ACPI:    * FACP (FADT) @ %p\n", fadt);
+	printk(BIOS_DEBUG, "ACPI:    * FACP (FADT) @ %p\n", fadt);
 	current += sizeof(acpi_fadt_t);
 
 	/* Add FADT now that we have facs and dsdt. */
@@ -154,21 +154,21 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	current = ALIGN(current, 16);
 	hpet = (acpi_hpet_t *) current;
-	printk_debug("ACPI:    * HPET @ %p\n", hpet);
+	printk(BIOS_DEBUG, "ACPI:    * HPET @ %p\n", hpet);
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
 	acpi_add_table(rsdp, hpet);
 
 	current = ALIGN(current, 16);
 	madt = (acpi_madt_t *) current;
-	printk_debug("ACPI:    * APIC/MADT @ %p\n", madt);
+	printk(BIOS_DEBUG, "ACPI:    * APIC/MADT @ %p\n", madt);
 	acpi_create_madt(madt);
 	current += madt->header.length;
 	acpi_add_table(rsdp, madt);
 
 	current = ALIGN(current, 16);
 	srat = (acpi_srat_t *) current;
-	printk_debug("ACPI:    * SRAT @ %p\n", srat);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT @ %p\n", srat);
 	acpi_create_srat(srat);
 	current += srat->header.length;
 	acpi_add_table(rsdp, srat);
@@ -176,7 +176,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* SLIT */
 	current = ALIGN(current, 16);
 	slit = (acpi_slit_t *) current;
-	printk_debug("ACPI:    * SLIT @ %p\n", slit);
+	printk(BIOS_DEBUG, "ACPI:    * SLIT @ %p\n", slit);
 	acpi_create_slit(slit);
 	current+=slit->header.length;
 	acpi_add_table(rsdp,slit);
@@ -184,11 +184,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* SSDT */
 	current = ALIGN(current, 16);
 	ssdt = (acpi_header_t *)current;
-	printk_debug("ACPI:    * SSDT @ %p\n", ssdt);
+	printk(BIOS_DEBUG, "ACPI:    * SSDT @ %p\n", ssdt);
 	acpi_create_ssdt_generator(ssdt, "DYNADATA");
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);
 
-	printk_info("ACPI: done %p.\n", (void *)current);
+	printk(BIOS_INFO, "ACPI: done %p.\n", (void *)current);
 	return current;
 }

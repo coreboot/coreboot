@@ -146,7 +146,7 @@ static void set_thermal_config(void)
 
 	byte = ADT7461_read_byte(0x02);	/* read status register to clear it */
 	ARA_read_byte(0x05); /* A hardware alert can only be cleared by the master sending an ARA as a read command */
-	printk_info("Init adt7461 end , status 0x02 %02x\n", byte);
+	printk(BIOS_INFO, "Init adt7461 end , status 0x02 %02x\n", byte);
 
 	/* sb600 settings for thermal config */
 	/* set SB600 GPIO 64 to GPIO with pull-up */
@@ -245,7 +245,7 @@ void tim5690_enable(device_t dev)
 	u16 gpio_base = IT8712F_SIMPLE_IO_BASE;
 	u8 port2;
 
-	printk_info("Mainboard tim5690 Enable. dev=0x%p\n", dev);
+	printk(BIOS_INFO, "Mainboard tim5690 Enable. dev=0x%p\n", dev);
 
 	mb_gpio_init(&gpio_base);
 
@@ -261,12 +261,12 @@ void tim5690_enable(device_t dev)
 
 	/* TOP_MEM: the top of DRAM below 4G */
 	msr = rdmsr(TOP_MEM);
-	printk_info("%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
+	printk(BIOS_INFO, "%s, TOP MEM: msr.lo = 0x%08x, msr.hi = 0x%08x\n",
 		    __func__, msr.lo, msr.hi);
 
 	/* TOP_MEM2: the top of DRAM above 4G */
 	msr2 = rdmsr(TOP_MEM2);
-	printk_info("%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
+	printk(BIOS_INFO, "%s, TOP MEM2: msr2.lo = 0x%08x, msr2.hi = 0x%08x\n",
 		    __func__, msr2.lo, msr2.hi);
 
 	switch (msr.lo) {
@@ -288,7 +288,7 @@ void tim5690_enable(device_t dev)
 	}
 
 	uma_memory_base = msr.lo - uma_memory_size;	/* TOP_MEM1 */
-	printk_info("%s: uma size 0x%08llx, memory start 0x%08llx\n",
+	printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
 		    __func__, uma_memory_size, uma_memory_base);
 
 	/* TODO: TOP_MEM2 */
@@ -306,7 +306,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	 * in some circumstances we want the memory mentioned as reserved.
  	 */
 #if (CONFIG_GFXUMA == 1)
-	printk_info("uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
+	printk(BIOS_INFO, "uma_memory_base=0x%llx, uma_memory_size=0x%llx \n",
 	uma_memory_base, uma_memory_size);
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);

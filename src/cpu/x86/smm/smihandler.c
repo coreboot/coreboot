@@ -68,7 +68,7 @@ void io_trap_handler(int smif)
 	/* If a handler function handled a given IO trap, it
 	 * shall return a non-zero value
 	 */
-        printk_debug("SMI function trap 0x%x: ", smif);
+        printk(BIOS_DEBUG, "SMI function trap 0x%x: ", smif);
 
 	if (southbridge_io_trap_handler(smif))
 		return;
@@ -76,7 +76,7 @@ void io_trap_handler(int smif)
 	if (mainboard_io_trap_handler(smif))
 		return;
 
-	printk_debug("Unknown function\n");
+	printk(BIOS_DEBUG, "Unknown function\n");
 }
 
 /**
@@ -111,7 +111,7 @@ void smi_handler(u32 smm_revision)
 
 	console_init();
 
-	printk_spew("\nSMI# #%d\n", node);
+	printk(BIOS_SPEW, "\nSMI# #%d\n", node);
 
 	switch (smm_revision) {
 	case 0x00030002:
@@ -131,8 +131,8 @@ void smi_handler(u32 smm_revision)
 			(0xa8000 + 0x7e00 - (node * 0x400));
 		break;
 	default:
-		printk_debug("smm_revision: 0x%08x\n", smm_revision);
-		printk_debug("SMI# not supported on your CPU\n");
+		printk(BIOS_DEBUG, "smm_revision: 0x%08x\n", smm_revision);
+		printk(BIOS_DEBUG, "SMI# not supported on your CPU\n");
 		/* Don't release lock, so no further SMI will happen,
 		 * if we don't handle it anyways.
 		 */

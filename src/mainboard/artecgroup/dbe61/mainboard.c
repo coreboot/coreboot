@@ -31,20 +31,20 @@
 static void init_gpio()
 {
 	msr_t msr;
-	printk_debug("Checking GPIO module...\n");
+	printk(BIOS_DEBUG, "Checking GPIO module...\n");
 
 	msr = rdmsr(MDD_LBAR_GPIO);
-	printk_debug("DIVIL_LBAR_GPIO set to 0x%08x 0x%08x\n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "DIVIL_LBAR_GPIO set to 0x%08x 0x%08x\n", msr.hi, msr.lo);
 }
 
 static void init(struct device *dev)
 {
 	// BOARD-SPECIFIC INIT
-	printk_debug("ARTECGROUP DBE61 ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "ARTECGROUP DBE61 ENTER %s\n", __func__);
 
 	init_gpio();
 
-	printk_debug("ARTECGROUP DBE61 EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "ARTECGROUP DBE61 EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

@@ -49,17 +49,17 @@ static void sata_init(struct device *dev)
 
 		//init PHY
 
-		printk_debug("init PHY...\n");
+		printk(BIOS_DEBUG, "init PHY...\n");
 		for(i=0; i<4; i++) {
 			mmio = base + 0x100 * i; 
 			byte = read8(mmio + 0x40);
-			printk_debug("port %d PHY status = %02x\r\n", i, byte);
+			printk(BIOS_DEBUG, "port %d PHY status = %02x\r\n", i, byte);
 			if(byte & 0x4) {// bit 2 is set
 				byte = read8(mmio+0x48);
 				write8(mmio + 0x48, byte | 1);
 				write8(mmio + 0x48, byte & (~1));
 	                        byte = read8(mmio + 0x40);
-	                        printk_debug("after reset port %d PHY status = %02x\r\n", i, byte);
+	                        printk(BIOS_DEBUG, "after reset port %d PHY status = %02x\r\n", i, byte);
 			}
 		}
 		

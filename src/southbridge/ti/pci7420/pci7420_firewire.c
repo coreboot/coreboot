@@ -32,7 +32,7 @@ static void pci7420_firewire_init(device_t dev)
 {
 	u8 reg8;
 
-	printk_debug("TI PCI7420/7620 FireWire init\n");
+	printk(BIOS_DEBUG, "TI PCI7420/7620 FireWire init\n");
 
 #ifdef ODD_IRQ_FIXUP
 	/* This is a workaround for buggy kernels. This should

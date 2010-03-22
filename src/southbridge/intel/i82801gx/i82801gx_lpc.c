@@ -52,16 +52,16 @@ static void i82801gx_enable_apic(struct device *dev)
 
 	*ioapic_index = 0;
 	reg32 = *ioapic_data;
-	printk_debug("Southbridge APIC ID = %x\n", (reg32 >> 24) & 0x0f);
+	printk(BIOS_DEBUG, "Southbridge APIC ID = %x\n", (reg32 >> 24) & 0x0f);
 	if (reg32 != (1 << 25))
 		die("APIC Error\n");
 
-	printk_spew("Dumping IOAPIC registers\n");
+	printk(BIOS_SPEW, "Dumping IOAPIC registers\n");
 	for (i=0; i<3; i++) {
 		*ioapic_index = i;
-		printk_spew("  reg 0x%04x:", i);
+		printk(BIOS_SPEW, "  reg 0x%04x:", i);
 		reg32 = *ioapic_data;
-		printk_spew(" 0x%08x\n", reg32);
+		printk(BIOS_SPEW, " 0x%08x\n", reg32);
 	}
 
 	*ioapic_index = 3; /* Select Boot Configuration register. */
@@ -213,7 +213,7 @@ static void i82801gx_power_options(device_t dev)
 	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
 
 	pci_write_config8(dev, GEN_PMCON_3, reg8);
-	printk_info("Set power %s after power failure.\n", state);
+	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
 
 	/* Set up NMI on errors. */
 	reg8 = inb(0x61);
@@ -227,10 +227,10 @@ static void i82801gx_power_options(device_t dev)
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
 	if (nmi_option) {
-		printk_info ("NMI sources enabled.\n");
+		printk(BIOS_INFO, "NMI sources enabled.\n");
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
-		printk_info ("NMI sources disabled.\n");
+		printk(BIOS_INFO, "NMI sources disabled.\n");
 		reg8 |= ( 1 << 7);	/* Can't mask NMI from PCI-E and NMI_NOW */
 	}
 	outb(reg8, 0x70);
@@ -296,7 +296,7 @@ static void i82801gx_rtc_init(struct device *dev)
 		reg8 &= ~RTC_BATTERY_DEAD;
 		pci_write_config8(dev, GEN_PMCON_3, reg8);
 	}
-	printk_debug("rtc_failed = 0x%x\n", rtc_failed);
+	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 
 	rtc_init(rtc_failed);
 }
@@ -340,13 +340,13 @@ static void i82801gx_lock_smm(struct device *dev)
 #endif
 
 #if ENABLE_ACPI_MODE_IN_COREBOOT
-	printk_debug("Enabling ACPI via APMC:\n");
+	printk(BIOS_DEBUG, "Enabling ACPI via APMC:\n");
 	outb(0xe1, 0xb2); // Enable ACPI mode
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #else
-	printk_debug("Disabling ACPI via APMC:\n");
+	printk(BIOS_DEBUG, "Disabling ACPI via APMC:\n");
 	outb(0x1e, 0xb2); // Disable ACPI mode
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #endif
 	/* Don't allow evil boot loaders, kernels, or
 	 * userspace applications to deceive us:
@@ -355,29 +355,29 @@ static void i82801gx_lock_smm(struct device *dev)
 
 #if TEST_SMM_FLASH_LOCKDOWN
 	/* Now try this: */
-	printk_debug("Locking BIOS to RO... ");
+	printk(BIOS_DEBUG, "Locking BIOS to RO... ");
 	reg8 = pci_read_config8(dev, 0xdc);	/* BIOS_CNTL */
-	printk_debug(" BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
+	printk(BIOS_DEBUG, " BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
 			(reg8&1)?"rw":"ro");
 	reg8 &= ~(1 << 0);			/* clear BIOSWE */
 	pci_write_config8(dev, 0xdc, reg8);
 	reg8 |= (1 << 1);			/* set BLE */
 	pci_write_config8(dev, 0xdc, reg8);
-	printk_debug("ok.\n");
+	printk(BIOS_DEBUG, "ok.\n");
 	reg8 = pci_read_config8(dev, 0xdc);	/* BIOS_CNTL */
-	printk_debug(" BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
+	printk(BIOS_DEBUG, " BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
 			(reg8&1)?"rw":"ro");
 
-	printk_debug("Writing:\n");
+	printk(BIOS_DEBUG, "Writing:\n");
 	*(volatile u8 *)0xfff00000 = 0x00;
-	printk_debug("Testing:\n");
+	printk(BIOS_DEBUG, "Testing:\n");
 	reg8 |= (1 << 0);			/* set BIOSWE */
 	pci_write_config8(dev, 0xdc, reg8);
 
 	reg8 = pci_read_config8(dev, 0xdc);	/* BIOS_CNTL */
-	printk_debug(" BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
+	printk(BIOS_DEBUG, " BLE: %s; BWE: %s\n", (reg8&2)?"on":"off",
 			(reg8&1)?"rw":"ro");
-	printk_debug("Done.\n");
+	printk(BIOS_DEBUG, "Done.\n");
 #endif
 }
 #endif
@@ -406,7 +406,7 @@ static void i82801gx_fixups(struct device *dev)
 
 static void lpc_init(struct device *dev)
 {
-	printk_debug("i82801gx: lpc_init\n");
+	printk(BIOS_DEBUG, "i82801gx: lpc_init\n");
 
 	/* Set the value for PCI command register. */
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);

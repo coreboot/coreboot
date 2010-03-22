@@ -5,7 +5,7 @@ static void report_bist_failure(u32 bist)
 {
 	if (bist != 0) {
 #if CONFIG_USE_PRINTK_IN_CAR
-                printk_emerg("BIST failed: %08x", bist);
+                printk(BIOS_EMERG, "BIST failed: %08x", bist);
 #else
 		print_emerg("BIST failed: ");
 		print_emerg_hex32(bist);

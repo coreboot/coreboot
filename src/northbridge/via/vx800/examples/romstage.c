@@ -574,7 +574,7 @@ So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c hav
 		__asm__ volatile ("movl   %%esp, %0\n\t":"=a" (v_esp)
 		    );
 #if CONFIG_USE_INIT
-		printk_debug("v_esp=%08x\r\n", v_esp);
+		printk(BIOS_DEBUG, "v_esp=%08x\r\n", v_esp);
 #else
 		print_debug("v_esp=");
 		print_debug_hex32(v_esp);
@@ -590,7 +590,7 @@ So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c hav
 //stack
 	cpu_reset = 0;
 #if CONFIG_USE_INIT
-	printk_debug("cpu_reset = %08x\r\n", cpu_reset);
+	printk(BIOS_DEBUG, "cpu_reset = %08x\r\n", cpu_reset);
 #else
 	print_debug("cpu_reset = ");
 	print_debug_hex32(cpu_reset);
@@ -642,7 +642,7 @@ So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c hav
 			print_debug("Use Ram as Stack now - \r\n");
 		}
 #if CONFIG_USE_INIT
-		printk_debug("new_cpu_reset = %08x\r\n", new_cpu_reset);
+		printk(BIOS_DEBUG, "new_cpu_reset = %08x\r\n", new_cpu_reset);
 #else
 		print_debug("new_cpu_reset = ");
 		print_debug_hex32(new_cpu_reset);

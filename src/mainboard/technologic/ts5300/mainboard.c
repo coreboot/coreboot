@@ -23,10 +23,10 @@ static void irqdump()
 		-1};
   mmcr = (void *) 0xfffef000;
 
-  printk_err("mmcr is %p\n", mmcr);
+  printk(BIOS_ERR, "mmcr is %p\n", mmcr);
   for(i = 0; irqlist[i] >= 0; i++) {
     irq = mmcr + irqlist[i];
-    printk_err("0x%x register @%p is 0x%lx\n", irqlist[i], irq, *irq);
+    printk(BIOS_ERR, "0x%x register @%p is 0x%lx\n", irqlist[i], irq, *irq);
   }
 
 }
@@ -39,14 +39,14 @@ static void enable_dev(struct device *dev) {
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
 
 	/* currently, nothing in the device to use, so ignore it. */
-	printk_err("Technologic Systems 5300 ENTER %s\n", __func__);
+	printk(BIOS_ERR, "Technologic Systems 5300 ENTER %s\n", __func__);
 
 	/* from fuctory bios */
 	/* NOTE: the following interrupt settings made interrupts work
 	 * for hard drive, and serial, but not for ethernet 
 	 */
 
-	printk_err("Setting up PIC\n");
+	printk(BIOS_ERR, "Setting up PIC\n");
 	/* just do what they say and nobody gets hurt. */
 	mmcr->pic.pcicr = 0 ;
 	/* all ints to level */
@@ -77,7 +77,7 @@ static void enable_dev(struct device *dev) {
 
 	// irqdump();
 
-	printk_err("Setting up sysarb\n");
+	printk(BIOS_ERR, "Setting up sysarb\n");
 	mmcr->dbctl.dbctl = 0x01;
 	mmcr->sysarb.ctl = 0x00;
 	mmcr->sysarb.menb = 0x1f;
@@ -90,7 +90,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->hostbridge.mstirqctl = 0x0;
 	mmcr->hostbridge.mstirqsta = 0x708;
 
-	printk_err("Setting up pio\n");
+	printk(BIOS_ERR, "Setting up pio\n");
 	/* pio */
 	mmcr->pio.pfs15_0 = 0xffff;
 	mmcr->pio.pfs31_16 = 0xffff;
@@ -100,7 +100,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->pio.data15_0 = 0xde04;
 	mmcr->pio.data31_16 = 0xef9f;
 
-	printk_err("Setting up sysmap\n");
+	printk(BIOS_ERR, "Setting up sysmap\n");
 	/* system memory map */
 	mmcr->sysmap.adddecctl = 0x04;
 	mmcr->sysmap.wpvsta = 0x8006;
@@ -116,7 +116,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->sysmap.par[13] = 0x8a07c940;
 	mmcr->sysmap.par[15] = 0xee00400e;
 
-	printk_err("Setting up gpctl\n");
+	printk(BIOS_ERR, "Setting up gpctl\n");
 	mmcr->gpctl.gpcsrt = 0x01;
 	mmcr->gpctl.gpcspw = 0x09;
 	mmcr->gpctl.gpcsoff = 0x01;
@@ -138,7 +138,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->dmacontrol.extchanmapa = 0xf210;
 	mmcr->dmacontrol.extchanmapb = 0xffff;
 
-	printk_err("TS5300 EXIT %s\n", __func__);
+	printk(BIOS_ERR, "TS5300 EXIT %s\n", __func__);
 }
 
 struct chip_operations mainboard_ops = {

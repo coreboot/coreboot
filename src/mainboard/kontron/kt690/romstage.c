@@ -136,7 +136,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-	printk_debug("bsp_apicid=0x%x\n", bsp_apicid);
+	printk(BIOS_DEBUG, "bsp_apicid=0x%x\n", bsp_apicid);
 
 	setup_kt690_resource_map();
 
@@ -162,7 +162,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		/* Read FIDVID_STATUS */
 		msr=rdmsr(0xc0010042);
-		printk_debug("begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
+		printk(BIOS_DEBUG, "begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
 
 		enable_fid_change();
 		enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
@@ -170,17 +170,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		/* show final fid and vid */
 		msr=rdmsr(0xc0010042);
-		printk_debug("end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
+		printk(BIOS_DEBUG, "end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
 
 	} else {
-		printk_debug("Changing FIDVID not supported\n");
-		printk_spew("... because cpuid returned %08x\n", cpuid1.edx);
+		printk(BIOS_DEBUG, "Changing FIDVID not supported\n");
+		printk(BIOS_SPEW, "... because cpuid returned %08x\n", cpuid1.edx);
 	}
 
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 	rs690_htinit();
-	printk_debug("needs_reset=0x%x\n", needs_reset);
+	printk(BIOS_DEBUG, "needs_reset=0x%x\n", needs_reset);
 
 
 	if (needs_reset) {
@@ -191,7 +191,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	allow_all_aps_stop(bsp_apicid);
 
 	/* It's the time to set ctrl now; */
-	printk_debug("sysinfo->nodes: %2x  sysinfo->ctrl: %2x  spd_addr: %2x\n",
+	printk(BIOS_DEBUG, "sysinfo->nodes: %2x  sysinfo->ctrl: %2x  spd_addr: %2x\n",
 		     sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);

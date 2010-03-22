@@ -82,7 +82,7 @@ static void get_memres(void *gp, struct device *dev, struct resource *res)
 	unsigned int *fbsize = (unsigned int *) gp;
 	uint64_t proposed_base = res->base + res->size - *fbsize;
 
-	printk_debug("get_memres: res->base=%llx res->size=%llx %d %d %d\n",
+	printk(BIOS_DEBUG, "get_memres: res->base=%llx res->size=%llx %d %d %d\n",
 			res->base, res->size, (res->size > *fbsize), 
 			(!(proposed_base & (*fbsize - 1))),
 			(proposed_base < ((uint64_t) 0xffffffff)));
@@ -99,7 +99,7 @@ extern uint64_t high_tables_base, high_tables_size;
 	if ((high_tables_base) && ((high_tables_base > proposed_base) &&
 			(high_tables_base < (res->base + res->size)))) {
 		high_tables_base = proposed_base - high_tables_size;
-		printk_debug("Moving the high_tables_base pointer to "
+		printk(BIOS_DEBUG, "Moving the high_tables_base pointer to "
 				"new base %llx\n", high_tables_base);
 	}
 #endif
@@ -140,12 +140,12 @@ static void dram_init_fb(struct device *dev)
 
 	ret = get_option(&fbbits, "videoram_size");
 	if (ret) {
-		printk_warning("Failed to get videoram size (error %d), using default.\n", ret);
+		printk(BIOS_WARNING, "Failed to get videoram size (error %d), using default.\n", ret);
 		fbbits = 5;
  	}
 
 	if ((fbbits < 1) || (fbbits > 7)) {
-		printk_warning("Invalid videoram size (%d), using default.\n",
+		printk(BIOS_WARNING, "Invalid videoram size (%d), using default.\n",
 			       4 << fbbits);
 		fbbits = 5;
 	}
@@ -159,14 +159,14 @@ static void dram_init_fb(struct device *dev)
 
 	/* no space for FB */
 	if (!resmax) {
-		printk_err("VIA FB: no space for framebuffer in RAM\n");
+		printk(BIOS_ERR, "VIA FB: no space for framebuffer in RAM\n");
 		return;
 	}
 
 	proposed_base = resmax->base + resmax->size - fbsize;
 	resmax->size -= fbsize;
 
-	printk_info("K8M890: Using a %dMB framebuffer.\n", 4 << fbbits);
+	printk(BIOS_INFO, "K8M890: Using a %dMB framebuffer.\n", 4 << fbbits);
 
 	/* Step 1: enable UMA but no FB */
 	pci_write_config8(dev, 0xa1, 0x80);

@@ -27,7 +27,7 @@ static void northbridge_init(device_t dev)
 	unsigned long fb;
 	unsigned char c;
 
-	printk_debug("VT8623 random fixup ...\n");
+	printk(BIOS_DEBUG, "VT8623 random fixup ...\n");
 	pci_write_config8(dev,  0x0d, 0x08);
 	pci_write_config8(dev,  0x70, 0x82);
 	pci_write_config8(dev,  0x71, 0xc8);
@@ -48,7 +48,7 @@ static void northbridge_init(device_t dev)
 		 */
 		//fb = pci_read_config32(dev, 0x10);       /* Base addres of framebuffer */
 		fb = 0xd0000000;
-		printk_debug("Frame buffer at %8x\n",fb);
+		printk(BIOS_DEBUG, "Frame buffer at %8x\n",fb);
 
 		c = pci_read_config8(dev, 0xe1) & 0xf0;  /* size of vga */
 		c |= fb>>28;  /* upper nibble of frame buffer address */
@@ -77,7 +77,7 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 
 static void agp_init(device_t dev)
 {
-	printk_debug("VT8623 AGP random fixup ...\n");
+	printk(BIOS_DEBUG, "VT8623 AGP random fixup ...\n");
 
 	pci_write_config8(dev, 0x3e, 0x0c);
 	pci_write_config8(dev, 0x40, 0x83);
@@ -107,7 +107,7 @@ static void vga_init(device_t dev)
 //	unsigned long fb;
 	msr_t clocks1,clocks2,instructions,setup;
 
-	printk_debug("VGA random fixup ...\n");
+	printk(BIOS_DEBUG, "VGA random fixup ...\n");
 	pci_write_config8(dev, 0x04, 0x07);
 	pci_write_config8(dev, 0x0d, 0x20);
 	pci_write_config32(dev,0x10,0xd8000008);
@@ -131,24 +131,24 @@ static void vga_init(device_t dev)
 	//clocks2 = rdmsr(0x10);
 	//instructions = rdmsr(0xc2);
 	
-	printk_debug("Clocks 1 = %08x:%08x\n",clocks1.hi,clocks1.lo);
-	printk_debug("Clocks 2 = %08x:%08x\n",clocks2.hi,clocks2.lo);
-	printk_debug("Instructions = %08x:%08x\n",instructions.hi,instructions.lo);
+	printk(BIOS_DEBUG, "Clocks 1 = %08x:%08x\n",clocks1.hi,clocks1.lo);
+	printk(BIOS_DEBUG, "Clocks 2 = %08x:%08x\n",clocks2.hi,clocks2.lo);
+	printk(BIOS_DEBUG, "Instructions = %08x:%08x\n",instructions.hi,instructions.lo);
 
 #else
 
 	/* code to make vga init run in real mode - does work but against the current coreboot philosophy */
-	printk_debug("INSTALL REAL-MODE IDT\n");
+	printk(BIOS_DEBUG, "INSTALL REAL-MODE IDT\n");
         setup_realmode_idt();
-        printk_debug("DO THE VGA BIOS\n");
+        printk(BIOS_DEBUG, "DO THE VGA BIOS\n");
         do_vgabios();
 
 	//clocks2 = rdmsr(0x10);
 	//instructions = rdmsr(0xc2);
 	
-	//printk_debug("Clocks 1 = %08x:%08x\n",clocks1.hi,clocks1.lo);
-	//printk_debug("Clocks 2 = %08x:%08x\n",clocks2.hi,clocks2.lo);
-	//printk_debug("Instructions = %08x:%08x\n",instructions.hi,instructions.lo);
+	//printk(BIOS_DEBUG, "Clocks 1 = %08x:%08x\n",clocks1.hi,clocks1.lo);
+	//printk(BIOS_DEBUG, "Clocks 2 = %08x:%08x\n",clocks2.hi,clocks2.lo);
+	//printk(BIOS_DEBUG, "Instructions = %08x:%08x\n",instructions.hi,instructions.lo);
 
         vga_enable_console();
 	
@@ -229,7 +229,7 @@ static void pci_domain_set_resources(device_t dev)
 	device_t mc_dev;
         uint32_t pci_tolm;
 
-	printk_spew("Entering vt8623 pci_domain_set_resources.\n");
+	printk(BIOS_SPEW, "Entering vt8623 pci_domain_set_resources.\n");
 
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
@@ -250,10 +250,10 @@ static void pci_domain_set_resources(device_t dev)
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk_err("ERROR! register 0x%x is not set!\n", 
+				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n", 
 					ramregs[i]);
 		}
-		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*16*1024);
+		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*16*1024);
 		tomk = rambits*16*1024 - 32768;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
@@ -266,7 +266,7 @@ static void pci_domain_set_resources(device_t dev)
 #if CONFIG_WRITE_HIGH_TABLES == 1
 		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE* 1024;
-		printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+		printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
 #endif
 
 		/* Report the memory regions */
@@ -304,7 +304,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk_spew("In vt8623 enable_dev for device %s.\n", dev_path(dev));
+	printk(BIOS_SPEW, "In vt8623 enable_dev for device %s.\n", dev_path(dev));
 
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {

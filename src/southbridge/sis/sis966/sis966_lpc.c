@@ -92,7 +92,7 @@ static void lpc_init(device_t dev)
 	 int on;
 	 int nmi_option;
 
-        printk_debug("LPC_INIT -------->\n");
+        printk(BIOS_DEBUG, "LPC_INIT -------->\n");
         pc_keyboard_init(0);
 
         lpc_usb_legacy_init(dev);
@@ -109,7 +109,7 @@ static void lpc_init(device_t dev)
 		byte |= 0x40;
 	}
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
-	printk_info("set power %s after power fail\n", on?"on":"off");
+	printk(BIOS_INFO, "set power %s after power fail\n", on?"on":"off");
 
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
@@ -121,7 +121,7 @@ static void lpc_init(device_t dev)
 		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
 		on = 8-on;
-		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
+		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
 				(on*12)+(on>>1),(on&1)*5);
 	}
 
@@ -151,7 +151,7 @@ static void lpc_init(device_t dev)
         /* Initialize isa dma */
         isa_dma_init();
 
-        printk_debug("LPC_INIT <--------\n");
+        printk(BIOS_DEBUG, "LPC_INIT <--------\n");
 }
 
 static void sis966_lpc_read_resources(device_t dev)
@@ -214,7 +214,7 @@ static void sis966_lpc_enable_childrens_resources(device_t dev)
 					if(!(res->flags & IORESOURCE_IO)) continue;
 					base = res->base;
 					end = resource_end(res);
-					printk_debug("sis966 lpc decode:%s, base=0x%08x, end=0x%08x\n",dev_path(child),base, end);
+					printk(BIOS_DEBUG, "sis966 lpc decode:%s, base=0x%08x, end=0x%08x\n",dev_path(child),base, end);
 					switch(base) {
 					case 0x3f8: // COM1
 						reg |= (1<<0);	break;

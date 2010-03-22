@@ -13,7 +13,7 @@ static void sata_init(struct device *dev)
 
 	/* Enable SATA devices */
 
-	printk_debug("SATA init\n");
+	printk(BIOS_DEBUG, "SATA init\n");
         /* SATA configuration */
         pci_write_config8(dev, 0x04, 0x07);
         pci_write_config8(dev, 0x09, 0x8f);
@@ -41,7 +41,7 @@ static void sata_init(struct device *dev)
         pci_write_config16(dev, 0xa0, 0x0040);
         pci_write_config32(dev, 0xa4, 0x00220043);
                                                                                 
-	printk_debug("SATA Enabled\n");
+	printk(BIOS_DEBUG, "SATA Enabled\n");
 }
 
 static void esb6300_sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)

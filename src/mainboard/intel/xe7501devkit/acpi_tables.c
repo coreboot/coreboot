@@ -105,7 +105,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	start   = ( start + 0x0f ) & -0x10;
 	current = start;
 	
-	printk_info("ACPI: Writing ACPI tables at %lx...\n", start);
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
 	rsdp = (acpi_rsdp_t *) current;
@@ -123,14 +123,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	 * We explicitly add these tables later on:
 	 */
 	/* QNX wants an MADT */
-	printk_debug("ACPI:    * MADT\n");
+	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
 
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current+=madt->header.length;
 	acpi_add_table(rsdp,madt);
 
-	printk_info("ACPI: done.\n");
+	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }
 

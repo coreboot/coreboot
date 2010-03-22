@@ -36,12 +36,12 @@ void stage1_main(unsigned long bist)
         	        "movl   %%esp, %0\n\t"
 	                : "=a" (v_esp)
 	        );
-	        printk_spew("v_esp=%08x\r\n", v_esp);
+	        printk(BIOS_SPEW, "v_esp=%08x\r\n", v_esp);
         }
 
 cpu_reset_x:
 
-        printk_spew("cpu_reset = %08x\r\n",cpu_reset);
+        printk(BIOS_SPEW, "cpu_reset = %08x\r\n",cpu_reset);
 
 	if(cpu_reset == 0) {
 	        print_spew("Clearing initial memory region: ");

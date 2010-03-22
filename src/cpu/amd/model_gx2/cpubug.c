@@ -169,7 +169,7 @@ eng2900(void)
 {
 	msr_t msr;
 
-	printk_debug("CPU_BUG:%s\n", __func__);
+	printk(BIOS_DEBUG, "CPU_BUG:%s\n", __func__);
 	/* Clear bit 43, disables the sysenter/sysexit in CPUID3 */
 	msr = rdmsr(0x3003);
 	msr.hi &= 0xFFFFF7FF;
@@ -356,10 +356,10 @@ cpubug(void)
 
 	rev = msr.lo & 0xff;
 	if (rev < 0x20) {
-		printk_err("%s: rev < 0x20! bailing!\n");
+		printk(BIOS_ERR, "%s: rev < 0x20! bailing!\n");
 		return;
 	}
-	printk_debug("Doing cpubug fixes for rev 0x%x\n", rev);
+	printk(BIOS_DEBUG, "Doing cpubug fixes for rev 0x%x\n", rev);
 	switch(rev)
 	{
 		case 0x20:
@@ -379,11 +379,11 @@ cpubug(void)
 		case 0x30: 
 			break;
 		default:
-			printk_err("unknown rev %x, bailing\n", rev);
+			printk(BIOS_ERR, "unknown rev %x, bailing\n", rev);
 			return;
 	}
 	bug784();
 	bug118253();
 	disablememoryreadorder();
-	printk_debug("Done cpubug fixes \n");
+	printk(BIOS_DEBUG, "Done cpubug fixes \n");
 }

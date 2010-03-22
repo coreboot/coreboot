@@ -113,13 +113,13 @@ static void vt1211_init(struct device *dev)
 		init_hwm(res0->base);
 		break;
 	default:
-		printk_info("vt1211 asked to initialise unknown device!\n");
+		printk(BIOS_INFO, "vt1211 asked to initialise unknown device!\n");
 	}
 }
 
 void vt1211_pnp_enable_resources(device_t dev)
 {
-	printk_debug("%s - enabling\n",dev_path(dev));
+	printk(BIOS_DEBUG, "%s - enabling\n",dev_path(dev));
 	pnp_enter_ext_func_mode(dev);
 	pnp_enable_resources(dev);
 	pnp_exit_ext_func_mode(dev);
@@ -148,7 +148,7 @@ void vt1211_pnp_set_resources(struct device *dev)
 	for(i = 0; i < dev->resources; i++) {
 		resource = &dev->resource[i];
 		if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-			printk_err("ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
+			printk(BIOS_ERR, "ERROR: %s %02x %s size: 0x%010Lx not assigned\n",
 				dev_path(dev), dev->resource->index,
 				resource_type(resource),
 				resource->size);
@@ -166,7 +166,7 @@ void vt1211_pnp_set_resources(struct device *dev)
 			pnp_set_irq(dev, resource->index, resource->base);
 		}
 		else {
-			printk_err("ERROR: %s %02x unknown resource type\n",
+			printk(BIOS_ERR, "ERROR: %s %02x unknown resource type\n",
 				dev_path(dev), resource->index);
 			return;
 		}
@@ -206,7 +206,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	printk_debug("vt1211 enabling PNP devices.\n");
+	printk(BIOS_DEBUG, "vt1211 enabling PNP devices.\n");
 	pnp_enable_devices(dev,
 			&ops,
 			ARRAY_SIZE(pnp_dev_info),

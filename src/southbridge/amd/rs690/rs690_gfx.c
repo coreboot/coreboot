@@ -45,7 +45,7 @@ static u32 clkind_read(device_t dev, u32 index)
 static void clkind_write(device_t dev, u32 index, u32 data)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
-	/* printk_info("gfx bar 2 %02x\n", gfx_bar2); */
+	/* printk(BIOS_INFO, "gfx bar 2 %02x\n", gfx_bar2); */
 
 	*(u32*)(gfx_bar2+CLK_CNTL_INDEX) = index | 1<<7;
 	*(u32*)(gfx_bar2+CLK_CNTL_DATA)  = data;
@@ -57,7 +57,7 @@ static void clkind_write(device_t dev, u32 index, u32 data)
 */
 static void rs690_gfx_read_resources(device_t dev)
 {
-	printk_info("rs690_gfx_read_resources.\n");
+	printk(BIOS_INFO, "rs690_gfx_read_resources.\n");
 
 	/* The initial value of 0x24 is 0xFFFFFFFF, which is confusing.
 	   Even if we write 0xFFFFFFFF into it, it will be 0xFFF00000,
@@ -77,7 +77,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	    (struct southbridge_amd_rs690_config *)dev->chip_info;
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
 	vendorid = pci_read_config16(dev, PCI_VENDOR_ID);
-	printk_info("internal_gfx_pci_dev_init device=%x, vendor=%x.\n",
+	printk(BIOS_INFO, "internal_gfx_pci_dev_init device=%x, vendor=%x.\n",
 	     deviceid, vendorid);
 
 	pci_dev_init(dev);
@@ -117,12 +117,12 @@ static void rs690_internal_gfx_enable(device_t dev)
 	device_t k8_f0 = 0, k8_f2 = 0;
 	device_t nb_dev = dev_find_slot(0, 0);
 
-	printk_info("rs690_internal_gfx_enable dev=0x%p, nb_dev=0x%p.\n", dev,
+	printk(BIOS_INFO, "rs690_internal_gfx_enable dev=0x%p, nb_dev=0x%p.\n", dev,
 		    nb_dev);
 
 	/* set APERTURE_SIZE, 128M. */
 	l_dword = pci_read_config32(nb_dev, 0x8c);
-	printk_info("nb_dev, 0x8c=0x%x\n", l_dword);
+	printk(BIOS_INFO, "nb_dev, 0x8c=0x%x\n", l_dword);
 	l_dword &= 0xffffff8f;
 	pci_write_config32(nb_dev, 0x8c, l_dword);
 
@@ -231,13 +231,13 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
 
-	printk_info("rs690_gfx_init single_port_configuration.\n");
+	printk(BIOS_INFO, "rs690_gfx_init single_port_configuration.\n");
 
 	/* step 12 training, releases hold training for GFX port 0 (device 2) */
 	set_nbmisc_enable_bits(nb_dev, 0x8, 1 << 4, 0<<4);
 	PcieReleasePortTraining(nb_dev, dev, 2);
 	result = PcieTrainPort(nb_dev, dev, 2);
-	printk_info("rs690_gfx_init single_port_configuration step12.\n");
+	printk(BIOS_INFO, "rs690_gfx_init single_port_configuration step12.\n");
 
 	/* step 13 Power Down Control */
 	/* step 13.1 Enables powering down transmitter and receiver pads along with PLL macros. */
@@ -257,7 +257,7 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 
 		reg32 = nbpcie_p_read_index(dev, 0xa2);
 		width = (reg32 >> 4) & 0x7;
-		printk_debug("GFX LC_LINK_WIDTH = 0x%x.\n", width);
+		printk(BIOS_DEBUG, "GFX LC_LINK_WIDTH = 0x%x.\n", width);
 		switch (width) {
 		case 1:
 		case 2:
@@ -274,11 +274,11 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 			break;
 		}
 	}
-	printk_info("rs690_gfx_init single_port_configuration step13.\n");
+	printk(BIOS_INFO, "rs690_gfx_init single_port_configuration step13.\n");
 
 	/* step 14 Reset Enumeration Timer, disables the shortening of the enumeration timer */
 	set_pcie_enable_bits(dev, 0x70, 1 << 19, 0 << 19);
-	printk_info("rs690_gfx_init single_port_configuration step14.\n");
+	printk(BIOS_INFO, "rs690_gfx_init single_port_configuration step14.\n");
 }
 
 /* step 15 ~ step 18 from rpr */
@@ -305,7 +305,7 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 
 		reg32 = nbpcie_p_read_index(dev, 0xa2);
 		width = (reg32 >> 4) & 0x7;
-		printk_debug("GFX LC_LINK_WIDTH = 0x%x.\n", width);
+		printk(BIOS_DEBUG, "GFX LC_LINK_WIDTH = 0x%x.\n", width);
 		switch (width) {
 		case 1:
 		case 2:
@@ -335,7 +335,7 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 
 		reg32 = nbpcie_p_read_index(dev, 0xa2);
 		width = (reg32 >> 4) & 0x7;
-		printk_debug("GFX LC_LINK_WIDTH = 0x%x.\n", width);
+		printk(BIOS_DEBUG, "GFX LC_LINK_WIDTH = 0x%x.\n", width);
 		switch (width) {
 		case 1:
 		case 2:
@@ -413,13 +413,13 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
 
-	printk_info("rs690_gfx_init, nb_dev=0x%p, dev=0x%p, port=0x%x.\n",
+	printk(BIOS_INFO, "rs690_gfx_init, nb_dev=0x%p, dev=0x%p, port=0x%x.\n",
 		    nb_dev, dev, port);
 
 	/* step 0, REFCLK_SEL, skip A11 revision */
 	set_nbmisc_enable_bits(nb_dev, 0x6a, 1 << 9,
 			       cfg->gfx_dev2_dev3 ? 1 << 9 : 0 << 9);
-	printk_info("rs690_gfx_init step0.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step0.\n");
 
 	/* step 1, lane reversal (only need if CMOS option is enabled) */
 	if (cfg->gfx_lane_reversal) {
@@ -427,13 +427,13 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		if (cfg->gfx_dual_slot)
 			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 3, 1 << 3);
 	}
-	printk_info("rs690_gfx_init step1.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step1.\n");
 
 	/* step 1.1, dual-slot gfx configuration (only need if CMOS option is enabled) */
 	/* AMD calls the configuration CrossFire */
 	if (cfg->gfx_dual_slot)
 		set_nbmisc_enable_bits(nb_dev, 0x0, 0xf << 8, 5 << 8);
-	printk_info("rs690_gfx_init step2.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step2.\n");
 
 	/* step 2, TMDS, (only need if CMOS option is enabled) */
 	if (cfg->gfx_tmds) {
@@ -461,7 +461,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* step 4.6 bring external GFX device out of reset, wait for 1ms */
 	mdelay(1);
-	printk_info("rs690_gfx_init step4.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step4.\n");
 
 	/* step 5 program PCIE memory mapped configuration space */
 	/* done by enable_pci_bar3() before */
@@ -508,7 +508,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
                 set_nbmisc_enable_bits(nb_dev, 0x35, 0x3 << 2, 0x3 << 2);
         }
 
-        printk_info("rs690_gfx_init step6.\n");
+        printk(BIOS_INFO, "rs690_gfx_init step6.\n");
 
 	/* step 7 compliance state, (only need if CMOS option is enabled) */
 	/* the compliance stete is just for test. refer to 4.2.5.2 of PCIe specification */
@@ -518,64 +518,64 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		/* release hold training for device 2. GFX initialization is done. */
 		set_nbmisc_enable_bits(nb_dev, 0x8, 1 << 4, 0 << 4);
 		dynamic_link_width_control(nb_dev, dev, cfg->gfx_link_width);
-		printk_info("rs690_gfx_init step7.\n");
+		printk(BIOS_INFO, "rs690_gfx_init step7.\n");
 		return;
 	}
 
 	/* step 8 common initialization */
 	/* step 8.1 sets RCB timeout to be 25ms */
 	set_pcie_enable_bits(dev, 0x70, 7 << 16, 3 << 16);
-	printk_info("rs690_gfx_init step8.1.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.1.\n");
 
 	/* step 8.2 disables slave ordering logic */
 	set_pcie_enable_bits(nb_dev, 0x20, 1 << 8, 1 << 8);
-	printk_info("rs690_gfx_init step8.2.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.2.\n");
 
 	/* step 8.3 sets DMA payload size to 64 bytes */
 	set_pcie_enable_bits(nb_dev, 0x10, 7 << 10, 4 << 10);
-	printk_info("rs690_gfx_init step8.3.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.3.\n");
 
 	/* step 8.4 if the LTSSM could not see all 8 TS1 during Polling Active, it can still
 	 * time out and go back to Detect Idle.*/
 	set_pcie_enable_bits(dev, 0x02, 1 << 14, 1 << 14);
-	printk_info("rs690_gfx_init step8.4.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.4.\n");
 
 	/* step 8.5 shortens the enumeration timer */
 	set_pcie_enable_bits(dev, 0x70, 1 << 19, 1 << 19);
-	printk_info("rs690_gfx_init step8.5.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.5.\n");
 
 	/* step 8.6 blocks DMA traffic during C3 state */
 	set_pcie_enable_bits(dev, 0x10, 1 << 0, 0 << 0);
-	printk_info("rs690_gfx_init step8.6.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.6.\n");
 
 	/* step 8.7 Do not gate the electrical idle form the PHY
 	 * step 8.8 Enables the escape from L1L23 */
 	set_pcie_enable_bits(dev, 0xa0, 3 << 30, 3 << 30);
-	printk_info("rs690_gfx_init step8.8.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.8.\n");
 
 	/* step 8.9 Setting this register to 0x1 will workaround a PCI Compliance failure reported by Vista DTM.
 	 * SLOT_IMPLEMENTED@PCIE_CAP */
 	reg16 = pci_read_config16(dev, 0x5a);
 	reg16 |= 0x100;
 	pci_write_config16(dev, 0x5a, reg16);
-	printk_info("rs690_gfx_init step8.9.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.9.\n");
 
 	/* step 8.10 Setting this register to 0x1 will hide the Advanced Error Rporting Capabilities in the PCIE Brider.
 	 * This will workaround several failures reported by the PCI Compliance test under Vista DTM. */
 	set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 31, 0 << 31);
-	printk_info("rs690_gfx_init step8.10.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.10.\n");
 
 	/* step 8.11 Sets REGS_DLP_IGNORE_IN_L1_EN to ignore DLLPs during L1 so that txclk can be turned off. */
 	set_pcie_enable_bits(nb_dev, 0x02, 1 << 0, 1 << 0);
-	printk_info("rs690_gfx_init step8.11.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.11.\n");
 
 	/* step 8.12 Sets REGS_LC_DONT_GO_TO_L0S_IF_L1_ARMED to prevent lc to go to from L0 to Rcv_L0s if L1 is armed. */
 	set_pcie_enable_bits(nb_dev, 0x02, 1 << 6, 1 << 6);
-	printk_info("rs690_gfx_init step8.12.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.12.\n");
 
 	/* step 8.13 Sets CMGOOD_OVERRIDE. */
 	set_nbmisc_enable_bits(nb_dev, 0x6a, 1 << 17, 1 << 17);
-	printk_info("rs690_gfx_init step8.13.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step8.13.\n");
 
 	/* step 9 Enable TLP Flushing, for non-AMD GFX devices and Hot-Plug devices only. */
 	/* skip */
@@ -619,7 +619,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		dual_port_configuration(nb_dev, dev);
 		break;
 	default:
-		printk_info("Incorrect configuration of external gfx slot.\n");
+		printk(BIOS_INFO, "Incorrect configuration of external gfx slot.\n");
 		break;
 	}
 }

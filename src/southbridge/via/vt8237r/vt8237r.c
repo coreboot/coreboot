@@ -30,7 +30,7 @@
 
 void hard_reset(void)
 {
-	printk_err("NO HARD RESET ON VT8237R! FIX ME!\n");
+	printk(BIOS_ERR, "NO HARD RESET ON VT8237R! FIX ME!\n");
 }
 
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 7
@@ -61,10 +61,10 @@ void dump_south(device_t dev)
 	int i, j;
 
 	for (i = 0; i < 256; i += 16) {
-		printk_debug("%02x: ", i);
+		printk(BIOS_DEBUG, "%02x: ", i);
 		for (j = 0; j < 16; j++)
-			printk_debug("%02x ", pci_read_config8(dev, i + j));
-		printk_debug("\n");
+			printk(BIOS_DEBUG, "%02x ", pci_read_config8(dev, i + j));
+		printk(BIOS_DEBUG, "\n");
 	}
 }
 

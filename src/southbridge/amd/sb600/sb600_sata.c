@@ -35,22 +35,22 @@ static int sata_drive_detect(int portnum, u16 iobar)
 	while (byte = inb(iobar + 0x6), byte2 = inb(iobar + 0x7),
 		(byte != (0xA0 + 0x10 * (portnum % 2))) ||
 		((byte2 & 0x88) != 0)) {
-		printk_spew("0x6=%x, 0x7=%x\n", byte, byte2);
+		printk(BIOS_SPEW, "0x6=%x, 0x7=%x\n", byte, byte2);
 		if (byte != (0xA0 + 0x10 * (portnum % 2))) {
 			/* This will happen at the first iteration of this loop
 			 * if the first SATA port is unpopulated and the
 			 * second SATA port is poulated.
 			 */
-			printk_debug("drive no longer selected after %i ms, "
+			printk(BIOS_DEBUG, "drive no longer selected after %i ms, "
 				"retrying init\n", i * 10);
 			return 1;
 		} else
-			printk_spew("drive detection not yet completed, "
+			printk(BIOS_SPEW, "drive detection not yet completed, "
 				"waiting...\n");
 		mdelay(10);
 		i++;
 	}
-	printk_spew("drive detection done after %i ms\n", i * 10);
+	printk(BIOS_SPEW, "drive detection done after %i ms\n", i * 10);
 	return 0;
 }
 
@@ -91,12 +91,12 @@ static void sata_init(struct device *dev)
 	sata_bar3 = pci_read_config16(dev, 0x1C) & ~0x3;
 	sata_bar4 = pci_read_config16(dev, 0x20) & ~0xf;
 
-	printk_spew("sata_bar0=%x\n", sata_bar0);	/* 3030 */
-	printk_spew("sata_bar1=%x\n", sata_bar1);	/* 3070 */
-	printk_spew("sata_bar2=%x\n", sata_bar2);	/* 3040 */
-	printk_spew("sata_bar3=%x\n", sata_bar3);	/* 3080 */
-	printk_spew("sata_bar4=%x\n", sata_bar4);	/* 3000 */
-	printk_spew("sata_bar5=%x\n", sata_bar5);	/* e0309000 */
+	printk(BIOS_SPEW, "sata_bar0=%x\n", sata_bar0);	/* 3030 */
+	printk(BIOS_SPEW, "sata_bar1=%x\n", sata_bar1);	/* 3070 */
+	printk(BIOS_SPEW, "sata_bar2=%x\n", sata_bar2);	/* 3040 */
+	printk(BIOS_SPEW, "sata_bar3=%x\n", sata_bar3);	/* 3080 */
+	printk(BIOS_SPEW, "sata_bar4=%x\n", sata_bar4);	/* 3000 */
+	printk(BIOS_SPEW, "sata_bar5=%x\n", sata_bar5);	/* e0309000 */
 
 	/* Program the 2C to 0x43801002 */
 	dword = 0x43801002;
@@ -173,13 +173,13 @@ static void sata_init(struct device *dev)
 
 	for (i = 0; i < 4; i++) {
 		byte = read8(sata_bar5 + 0x128 + 0x80 * i);
-		printk_spew("SATA port %i status = %x\n", i, byte);
+		printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
 		byte &= 0xF;
 
 		if( byte == 0x1 ) {
 			/* If the drive status is 0x1 then we see it but we aren't talking to it. */
 			/* Try to do something about it. */
-			printk_spew("SATA device detected but not talking. Trying lower speed.\n");
+			printk(BIOS_SPEW, "SATA device detected but not talking. Trying lower speed.\n");
 
 			/* Read in Port-N Serial ATA Control Register */
 			byte = read8(sata_bar5 + 0x12C + 0x80 * i);
@@ -200,7 +200,7 @@ static void sata_init(struct device *dev)
 
 			/* Reread status */
 			byte = read8(sata_bar5 + 0x128 + 0x80 * i);
-			printk_spew("SATA port %i status = %x\n", i, byte);
+			printk(BIOS_SPEW, "SATA port %i status = %x\n", i, byte);
 			byte &= 0xF;
 		}
 
@@ -209,13 +209,13 @@ static void sata_init(struct device *dev)
 				if (!sata_drive_detect(i, ((i / 2) == 0) ? sata_bar0 : sata_bar2))
 					break;
 			}
-			printk_debug("%s %s device is %sready after %i tries\n",
+			printk(BIOS_DEBUG, "%s %s device is %sready after %i tries\n",
 					(i / 2) ? "Secondary" : "Primary",
 					(i % 2 ) ? "Slave" : "Master",
 					(j == 10) ? "not " : "",
 					(j == 10) ? j : j + 1);
 		} else {
-			printk_debug("No %s %s SATA drive on Slot%i\n",
+			printk(BIOS_DEBUG, "No %s %s SATA drive on Slot%i\n",
 					(i / 2) ? "Secondary" : "Primary",
 					(i % 2 ) ? "Slave" : "Master", i);
 		}
@@ -240,7 +240,7 @@ static void sata_init(struct device *dev)
 	/* word = pm_ioread(0x28); */
 	/* byte = pm_ioread(0x29); */
 	/* word |= byte<<8; */
-	/* printk_debug("AcpiGpe0Blk addr = %x\n", word); */
+	/* printk(BIOS_DEBUG, "AcpiGpe0Blk addr = %x\n", word); */
 	/* write32(word, 0x80000000); */
 }
 

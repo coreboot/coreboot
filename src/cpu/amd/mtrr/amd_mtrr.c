@@ -95,7 +95,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	if (start_mtrr >= NUM_FIXED_RANGES) {
 		return;
 	}
-	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB, RdMEM, WrMEM\n",
+	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: WB, RdMEM, WrMEM\n",
 		start_mtrr, last_mtrr);
 	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
 	
@@ -116,9 +116,9 @@ void amd_setup_mtrrs(void)
 	wrmsr(SYSCFG_MSR, msr);
 	enable_cache();
 
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 	/* Initialized the fixed_mtrrs to uncached */
-	printk_debug("Setting fixed MTRRs(%d-%d) type: UC\n", 
+	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) type: UC\n", 
 		0, NUM_FIXED_RANGES);
 	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 
@@ -130,7 +130,7 @@ void amd_setup_mtrrs(void)
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, &state);
-	printk_debug("DONE fixed MTRRs\n");
+	printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
 
 	if (state.mmio_basek > state.tomk) {
 		state.mmio_basek = state.tomk;

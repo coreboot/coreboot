@@ -137,7 +137,7 @@ void get_bus_conf(void)
 			m->bus_type[j] = 1;
 		if(m->bus_isa <= busn_max)
 			m->bus_isa = busn_max + 1;
-		printk_debug("i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn_min, busn_max, m->bus_isa);
+		printk(BIOS_DEBUG, "i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn_min, busn_max, m->bus_isa);
 	}
 
 		/* MCP55b */

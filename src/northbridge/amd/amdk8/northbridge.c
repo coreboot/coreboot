@@ -395,14 +395,14 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 
 	/* Make certain the resource has actually been set */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk_err("%s: can't set unassigned resource @%lx %lx\n",
+		printk(BIOS_ERR, "%s: can't set unassigned resource @%lx %lx\n",
 			   __func__, resource->index, resource->flags);
 		return;
 	}
 
 	/* If I have already stored this resource don't worry about it */
 	if (resource->flags & IORESOURCE_STORED) {
-		printk_err("%s: can't set stored resource @%lx %lx\n", __func__,
+		printk(BIOS_ERR, "%s: can't set stored resource @%lx %lx\n", __func__,
 			   resource->index, resource->flags);
 		return;
 	}
@@ -442,7 +442,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		limit |= (nodeid & 7);
 
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-			printk_spew("%s, enabling legacy VGA IO forwarding for %s link 0x%x\n",
+			printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link 0x%x\n",
 				    __func__, dev_path(dev), link);
 			base |= PCI_IO_BASE_VGA_EN;
 		}
@@ -487,7 +487,7 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if CONFIG_CONSOLE_VGA_MULTI == 1
-			printk_debug("VGA: vga_pri bus num = %d dev->link[link] bus range [%d,%d]\n", vga_pri->bus->secondary,
+			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d dev->link[link] bus range [%d,%d]\n", vga_pri->bus->secondary,
 				dev->link[link].secondary,dev->link[link].subordinate);
 			/* We need to make sure the vga_pri is under the link */
 			if((vga_pri->bus->secondary >= dev->link[link].secondary ) &&
@@ -502,12 +502,12 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 	if (link == dev->links)
 		return;
 
-	printk_debug("VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link);
+	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link);
 
 	/* allocate a temp resource for the legacy VGA buffer */
 	resource = new_resource(dev, IOINDEX(4, link));
 	if(!resource){
-		printk_debug("VGA: %s out of resources.\n", dev_path(dev));
+		printk(BIOS_DEBUG, "VGA: %s out of resources.\n", dev_path(dev));
 		return;
 	}
 	resource->base = 0xa0000;
@@ -573,10 +573,10 @@ static void amdk8_enable_resources(device_t dev)
 static void mcf0_control_init(struct device *dev)
 {
 #if 0
-	printk_debug("NB: Function 0 Misc Control.. ");
+	printk(BIOS_DEBUG, "NB: Function 0 Misc Control.. ");
 #endif
 #if 0
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #endif
 }
 
@@ -773,7 +773,7 @@ static void disable_hoist_memory(unsigned long hole_startk, int node_id)
 	f1_write_config32(0x44 + (node_id << 3),limit - (hole_sizek << 2));
 	dev = __f1_dev[node_id];
 	if (dev == NULL) {
-		printk_err("%s: node %x is NULL!\n", __func__, node_id);
+		printk(BIOS_ERR, "%s: node %x is NULL!\n", __func__, node_id);
 		return;
 	}
 	hoist = pci_read_config32(dev, 0xf0);
@@ -869,9 +869,9 @@ static void amdk8_domain_set_resources(device_t dev)
 	mem2 = find_resource(dev, 2);
 
 #if 1
-	printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
 		mem1->base, mem1->limit, mem1->size, mem1->align);
-	printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
 		mem2->base, mem2->limit, mem2->size, mem2->align);
 #endif
 
@@ -899,9 +899,9 @@ static void amdk8_domain_set_resources(device_t dev)
 	}
 
 #if 1
-	printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
 		mem1->base, mem1->limit, mem1->size, mem1->align);
-	printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
 		mem2->base, mem2->limit, mem2->size, mem2->align);
 #endif
 
@@ -1005,11 +1005,11 @@ static void amdk8_domain_set_resources(device_t dev)
 
 
 #if CONFIG_GFXUMA == 1
-		printk_debug("node %d : uma_memory_base/1024=0x%08x, mmio_basek=0x%08x, basek=0x%08x, limitk=0x%08x\n", i, uma_memory_base >> 10, mmio_basek, basek, limitk);
+		printk(BIOS_DEBUG, "node %d : uma_memory_base/1024=0x%08x, mmio_basek=0x%08x, basek=0x%08x, limitk=0x%08x\n", i, uma_memory_base >> 10, mmio_basek, basek, limitk);
 		if ((uma_memory_base >> 10) < mmio_basek)
-			printk_alert("node %d: UMA memory starts below mmio_basek\n", i);
+			printk(BIOS_ALERT, "node %d: UMA memory starts below mmio_basek\n", i);
 #else
-//		printk_debug("node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu
+//		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk); //yhlu
 #endif
 
 		/* See if I need to split the region to accomodate pci memory space */
@@ -1030,7 +1030,7 @@ static void amdk8_domain_set_resources(device_t dev)
 						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
 #endif
 						high_tables_size = HIGH_TABLES_SIZE * 1024;
-						printk_debug(" split: %dK table at =%08llx\n", HIGH_TABLES_SIZE,
+						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n", HIGH_TABLES_SIZE,
 							     high_tables_base);
 					}
 #endif
@@ -1060,7 +1060,7 @@ static void amdk8_domain_set_resources(device_t dev)
 			ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 #if CONFIG_WRITE_HIGH_TABLES==1
-		printk_debug("%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
+		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
 			     i, mmio_basek, basek, limitk);
 		if (i==0 && high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
@@ -1101,7 +1101,7 @@ static unsigned int amdk8_domain_scan_bus(device_t dev, unsigned int max)
 			if (!dev->link[0].disable_relaxed_ordering) {
 				httc |= HTTC_RSP_PASS_PW;
 			}
-			printk_spew("%s passpw: %s\n",
+			printk(BIOS_SPEW, "%s passpw: %s\n",
 				dev_path(dev),
 				(!dev->link[0].disable_relaxed_ordering)?
 				"enabled":"disabled");
@@ -1207,7 +1207,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 		if (cpu_dev && cpu_dev->enabled) {
 			j = pci_read_config32(cpu_dev, 0xe8);
 			j = (j >> 12) & 3; // dev is func 3
-			printk_debug("  %s siblings=%d\n", dev_path(cpu_dev), j);
+			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(cpu_dev), j);
 
 			if(nb_cfg_54) {
 				// For e0 single core if nb_cfg_54 is set, apicid will be 0, 2, 4....
@@ -1224,7 +1224,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 				       e0_later_single_core = 0;
 	       			}
 				if(e0_later_single_core) {
-					printk_debug("\tFound Rev E or Rev F later single core\r\n");
+					printk(BIOS_DEBUG, "\tFound Rev E or Rev F later single core\r\n");
 
 					j=1;
 				}
@@ -1287,7 +1287,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 						       cpu->path.apic.apic_id += sysconf.apicid_offset;
 					}
 				}
-				printk_debug("CPU: %s %s\n",
+				printk(BIOS_DEBUG, "CPU: %s %s\n",
 					dev_path(cpu), cpu->enabled?"enabled":"disabled");
 			}
 

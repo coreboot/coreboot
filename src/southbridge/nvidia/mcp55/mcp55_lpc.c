@@ -80,7 +80,7 @@ static void enable_hpet(struct device *dev)
 
 	pci_write_config32(dev,0x44, 0xfed00001);
 	hpet_address=pci_read_config32(dev,0x44)& 0xfffffffe;
-	printk_debug("enabling HPET @0x%x\n", hpet_address);
+	printk(BIOS_DEBUG, "enabling HPET @0x%x\n", hpet_address);
 }
 
 static void lpc_init(device_t dev)
@@ -108,7 +108,7 @@ static void lpc_init(device_t dev)
 		byte |= 0x40;
 	}
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
-	printk_info("set power %s after power fail\n", on?"on":"off");
+	printk(BIOS_INFO, "set power %s after power fail\n", on?"on":"off");
 #endif
 	/* Throttle the CPU speed down for testing */
 	on = SLOW_CPU_OFF;
@@ -120,7 +120,7 @@ static void lpc_init(device_t dev)
 		outl(((on<<1)+0x10)  ,(pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
 		on = 8-on;
-		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
+		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
 			     (on*12)+(on>>1),(on&1)*5);
 	}
 
@@ -224,7 +224,7 @@ static void mcp55_lpc_enable_childrens_resources(device_t dev)
 					if(!(res->flags & IORESOURCE_IO)) continue;
 					base = res->base;
 					end = resource_end(res);
-					printk_debug("mcp55 lpc decode:%s, base=0x%08x, end=0x%08x\n",dev_path(child),base, end);
+					printk(BIOS_DEBUG, "mcp55 lpc decode:%s, base=0x%08x, end=0x%08x\n",dev_path(child),base, end);
 					switch(base) {
 					case 0x3f8: // COM1
 						reg |= (1<<0);	break;

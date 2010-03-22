@@ -32,10 +32,10 @@ int send_ec_command(u8 command)
 	while ((inb(EC_SC) & EC_IBF) && --timeout) {
 		udelay(10);
 		if ((timeout & 0xff) == 0)
-			printk_spew(".");
+			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk_debug("Timeout while sending command 0x%02x to EC!\n", 
+		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n", 
 				command);
 		// return -1;
 	}
@@ -52,10 +52,10 @@ int send_ec_data(u8 data)
 	while ((inb(EC_SC) & EC_IBF) && --timeout) { // wait for IBF = 0
 		udelay(10);
 		if ((timeout & 0xff) == 0)
-			printk_spew(".");
+			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk_debug("Timeout while sending data 0x%02x to EC!\n",
+		printk(BIOS_DEBUG, "Timeout while sending data 0x%02x to EC!\n",
 				data);
 		// return -1;
 	}
@@ -84,15 +84,15 @@ u8 recv_ec_data(void)
 		}
 		udelay(10);
 		if ((timeout & 0xff) == 0)
-			printk_spew(".");
+			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk_debug("\nTimeout while receiving data from EC!\n");
+		printk(BIOS_DEBUG, "\nTimeout while receiving data from EC!\n");
 		// return -1;
 	}
 
 	data = inb(EC_DATA);
-	printk_debug("recv_ec_data: 0x%02x\n", data);
+	printk(BIOS_DEBUG, "recv_ec_data: 0x%02x\n", data);
 
 	return data;
 }

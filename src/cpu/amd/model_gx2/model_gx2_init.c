@@ -19,7 +19,7 @@ static void vsm_end_post_smi(void)
 
 static void model_gx2_init(device_t dev)
 {
-	printk_debug("model_gx2_init\n");
+	printk(BIOS_DEBUG, "model_gx2_init\n");
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -29,7 +29,7 @@ static void model_gx2_init(device_t dev)
 
 	vsm_end_post_smi();
 
-	printk_debug("model_gx2_init DONE\n");
+	printk(BIOS_DEBUG, "model_gx2_init DONE\n");
 };
 
 static struct device_operations cpu_dev_ops = {

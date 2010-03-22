@@ -58,7 +58,7 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 
 static void pci_routing_fixup(struct device *dev)
 {
-	printk_info("%s: dev is %p\n", __FUNCTION__, dev);
+	printk(BIOS_INFO, "%s: dev is %p\n", __FUNCTION__, dev);
 
 	/* set up PCI IRQ routing */
 	pci_write_config8(dev, 0x55, pciIrqs[0] << 4);
@@ -66,42 +66,42 @@ static void pci_routing_fixup(struct device *dev)
 	pci_write_config8(dev, 0x57, pciIrqs[3] << 4);
 
 	/* VGA */
-	printk_info("setting vga\n");
+	printk(BIOS_INFO, "setting vga\n");
 	pci_assign_irqs(0, 0x1, pin_to_irq(vgaPins));
 
 	/* PCI slot */
-	printk_info("setting pci slot\n");
+	printk(BIOS_INFO, "setting pci slot\n");
 	pci_assign_irqs(0, 0x08, pin_to_irq(slotPins));
 
 	/* PCI slot */
-	printk_info("setting USB Device Controller\n");
+	printk(BIOS_INFO, "setting USB Device Controller\n");
 	pci_assign_irqs(0, 0x0b, pin_to_irq(usbdevicePins));
 
 	/* PCI slot */
-	printk_info("setting SDIO Controller\n");
+	printk(BIOS_INFO, "setting SDIO Controller\n");
 	pci_assign_irqs(0, 0x0c, pin_to_irq(sdioPins));
 
 	/* PCI slot */
-	printk_info("setting SD $ MS Controller\n");
+	printk(BIOS_INFO, "setting SD $ MS Controller\n");
 	pci_assign_irqs(0, 0x0d, pin_to_irq(sd_ms_ctrl_Pins));
 
 	/* PCI slot */
-	printk_info("setting CE-ATA NF Controller(Card Boot)\n");
+	printk(BIOS_INFO, "setting CE-ATA NF Controller(Card Boot)\n");
 	pci_assign_irqs(0, 0x0e, pin_to_irq(ce_ata_nf_ctrl_Pins));
 
 	/* PCI slot */
-	printk_info("setting ide\n");
+	printk(BIOS_INFO, "setting ide\n");
 	//pci_assign_irqs(0, 0x0f, pin_to_irq(idePins));
 
 	/* Standard usb components */
-	printk_info("setting usb1-2\n");
+	printk(BIOS_INFO, "setting usb1-2\n");
 //      pci_assign_irqs(0, 0x10, pin_to_irq(usbPins));
 
 	/* sound hardware */
-	printk_info("setting hdac audio\n");
+	printk(BIOS_INFO, "setting hdac audio\n");
 	pci_assign_irqs(0, 0x14, pin_to_irq(hdacaudioPins));
 
-	printk_spew("%s: DONE\n", __FUNCTION__);
+	printk(BIOS_SPEW, "%s: DONE\n", __FUNCTION__);
 }
 
 void setup_pm(device_t dev)
@@ -335,7 +335,7 @@ void vx800_enable_resources(device_t dev)
 
 static void southbridge_init(struct device *dev)
 {
-	printk_debug("vx800 sb init\n");
+	printk(BIOS_DEBUG, "vx800 sb init\n");
 	vx800_sb_init(dev);
 	pci_routing_fixup(dev);
 
@@ -343,8 +343,7 @@ static void southbridge_init(struct device *dev)
 
 	/* turn on keyboard and RTC, no need to visit this reg twice */
 	pc_keyboard_init(0);
-	printk_debug
-	    ("ps2 usb lid, you  set who can wakeup system from s3 sleep\n");
+	printk(BIOS_DEBUG, "ps2 usb lid, you  set who can wakeup system from s3 sleep\n");
 	S3_ps2_kb_ms_wakeup(dev);
 	S3_usb_wakeup(dev);
 

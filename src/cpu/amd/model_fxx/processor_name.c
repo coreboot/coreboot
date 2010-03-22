@@ -443,7 +443,7 @@ int init_processor_name(void)
 		}
 	}
 	
-	printk_debug("CPU model %s\n", program_string);
+	printk(BIOS_DEBUG, "CPU model %s\n", program_string);
 
 	for (i=0; i<6; i++) {
 		progmsr.lo = program_values[(2*i)+0];

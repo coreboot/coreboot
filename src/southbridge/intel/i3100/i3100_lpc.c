@@ -232,7 +232,7 @@ static void i3100_power_options(device_t dev) {
   /* minimum asssertion is 1 to 2 RTCCLK */
   reg8 &= ~(1 << 3);	
   pci_write_config8(dev, GEN_PMCON_3, reg8);
-  printk_info("set power %s after power fail\n", pwr_on ? "on" : "off");  
+  printk(BIOS_INFO, "set power %s after power fail\n", pwr_on ? "on" : "off");  
 
   /* Set up NMI on errors. */
   reg8 = inb(0x61);
@@ -251,11 +251,11 @@ static void i3100_power_options(device_t dev) {
   get_option(&nmi_option, "nmi");
   if (nmi_option) {
     /* Set NMI. */
-    printk_info ("NMI sources enabled.\n");
+    printk(BIOS_INFO, "NMI sources enabled.\n");
     reg8 &= ~(1 << 7);	
   } else {
     /* Can't mask NMI from PCI-E and NMI_NOW */
-    printk_info ("NMI sources disabled.\n");
+    printk(BIOS_INFO, "NMI sources disabled.\n");
     reg8 |= ( 1 << 7);
   }
   outb(reg8, 0x70);

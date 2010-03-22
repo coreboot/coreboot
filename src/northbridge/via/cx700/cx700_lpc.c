@@ -56,7 +56,7 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 
 static void pci_routing_fixup(struct device *dev)
 {
-	printk_debug("%s: device is %p\n", __FUNCTION__, dev);
+	printk(BIOS_DEBUG, "%s: device is %p\n", __FUNCTION__, dev);
 
 	/* set up PCI IRQ routing */
 	pci_write_config8(dev, 0x55, pci_irqs[0] << 4);
@@ -64,17 +64,17 @@ static void pci_routing_fixup(struct device *dev)
 	pci_write_config8(dev, 0x57, pci_irqs[3] << 4);
 
 	/* Assigning IRQs */
-	printk_debug("Setting up USB interrupts.\n");
+	printk(BIOS_DEBUG, "Setting up USB interrupts.\n");
 	pci_assign_irqs(0, 0x10, pin_to_irq(usb_pins));
 
-	printk_debug("Setting up VGA interrupts.\n");
+	printk(BIOS_DEBUG, "Setting up VGA interrupts.\n");
 	pci_assign_irqs(1, 0x00, pin_to_irq(vga_pins));
 
-	printk_debug("Setting up PCI slot interrupts.\n");
+	printk(BIOS_DEBUG, "Setting up PCI slot interrupts.\n");
 	pci_assign_irqs(2, 0x04, pin_to_irq(slot_pins));
 	// more?
 
-	printk_debug("Setting up AC97 interrupts.\n");
+	printk(BIOS_DEBUG, "Setting up AC97 interrupts.\n");
 	pci_assign_irqs(0x80, 0x1, pin_to_irq(ac97_pins));
 }
 
@@ -169,7 +169,7 @@ static void cx700_set_lpc_registers(struct device *dev)
 {
 	unsigned char enables;
 
-	printk_debug("VIA CX700 LPC bridge init\n");
+	printk(BIOS_DEBUG, "VIA CX700 LPC bridge init\n");
 
 	// enable the internal I/O decode
 	enables = pci_read_config8(dev, 0x6C);

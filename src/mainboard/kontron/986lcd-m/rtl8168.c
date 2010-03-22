@@ -27,7 +27,7 @@
 
 static void nic_init(struct device *dev)
 {
-	printk_debug("Initializing RTL8168 Gigabit Ethernet\n");
+	printk(BIOS_DEBUG, "Initializing RTL8168 Gigabit Ethernet\n");
 	// Nothing to do yet, but this has to be here to keep 
 	// coreboot from trying to execute an option ROM.
 }

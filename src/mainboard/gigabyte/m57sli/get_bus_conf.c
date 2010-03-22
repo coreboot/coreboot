@@ -115,7 +115,7 @@ void get_bus_conf(void)
 			for(j=bus_mcp55[1];j<bus_mcp55[2]; j++) bus_type[j] = 1;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x06);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x06);
 
                         bus_mcp55[1] = 2;
                         bus_mcp55[2] = 3;
@@ -130,7 +130,7 @@ void get_bus_conf(void)
 				for(j=bus_mcp55[i];j<bus_isa; j++) bus_type[j] = 1;
 	                }
         	        else {
-                	        printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_mcp55[0], sbdn + 0x0a + i - 2 );
+                	        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_mcp55[0], sbdn + 0x0a + i - 2 );
 	                        bus_isa = bus_mcp55[i-1]+1;
         	        }
 		}

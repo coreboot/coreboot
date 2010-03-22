@@ -30,11 +30,11 @@ static void usb_ehci_init(struct device *dev)
 	/* TODO: Is any special init really needed? */
 	uint32_t cmd;
 
-	printk_debug("EHCI: Setting up controller.. ");
+	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
 	cmd = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, cmd | PCI_COMMAND_MASTER);
 
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 }
 
 static void usb_ehci_set_subsystem(device_t dev, unsigned vendor,

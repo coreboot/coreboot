@@ -304,7 +304,7 @@ static void enable_dev(device_t dev)
 
 		/* TODO: Error handling? */
 
-		printk_info("Found SMSC Super I/O (ID=0x%02x, rev=0x%02x)\n",
+		printk(BIOS_INFO, "Found SMSC Super I/O (ID=0x%02x, rev=0x%02x)\n",
 			    superio_id, superio_rev);
 		first_time = 0;
 

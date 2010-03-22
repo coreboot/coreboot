@@ -79,13 +79,13 @@ static void pci_domain_set_resources(device_t dev)
 	device_t mc_dev;
         uint32_t pci_tolm;
         
-        printk_debug("Entered with dev vid = %x\n", dev->vendor);
-	printk_debug("Entered with dev did = %x\n", dev->device);
+        printk(BIOS_DEBUG, "Entered with dev vid = %x\n", dev->vendor);
+	printk(BIOS_DEBUG, "Entered with dev did = %x\n", dev->device);
 
         pci_tolm = find_pci_tolm(&dev->link[0]);	
 	mc_dev = dev->link[0].children->sibling;
-	printk_debug("MC dev vendor = %x\n", mc_dev->vendor);
-	printk_debug("MC dev device = %x\n", mc_dev->device);
+	printk(BIOS_DEBUG, "MC dev vendor = %x\n", mc_dev->vendor);
+	printk(BIOS_DEBUG, "MC dev device = %x\n", mc_dev->device);
 	
 	if (mc_dev) {
 		/* Figure out which areas are/should be occupied by RAM.
@@ -120,8 +120,8 @@ static void pci_domain_set_resources(device_t dev)
 		 */
 		 
 		/* Report the memory regions */
-		printk_debug("tomk = %d\n", tomk);
-		printk_debug("tolmk = %d\n", tolmk);
+		printk(BIOS_DEBUG, "tomk = %d\n", tomk);
+		printk(BIOS_DEBUG, "tolmk = %d\n", tolmk);
 
 		idx = 10;
 		/* avoid pam region */

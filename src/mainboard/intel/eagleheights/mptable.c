@@ -108,7 +108,7 @@ void *smp_write_config_table(void *v)
 	  bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 	  bus_isa++;
 	} else {
-	  printk_debug("ERROR - could not find PCI 0:1e.0, using defaults\n");
+	  printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1e.0, using defaults\n");
 	  bus_pci = 6;
 	  bus_isa = 7;
 	}
@@ -117,7 +117,7 @@ void *smp_write_config_table(void *v)
 	if(dev) {
 	  bus_pcie_a = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-	  printk_debug("ERROR - could not find PCIe Port A  0:2.0, using defaults\n");
+	  printk(BIOS_DEBUG, "ERROR - could not find PCIe Port A  0:2.0, using defaults\n");
 	  bus_pcie_a = 1;
 	}
 
@@ -125,7 +125,7 @@ void *smp_write_config_table(void *v)
 	if(dev) {
 	  bus_pcie_a1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-	  printk_debug("ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
+	  printk(BIOS_DEBUG, "ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
 	  bus_pcie_a1 = 2;
 	}
 
@@ -133,7 +133,7 @@ void *smp_write_config_table(void *v)
 	if(dev) {
 	  bus_pcie_b = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-	  printk_debug("ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
+	  printk(BIOS_DEBUG, "ERROR - could not find PCIe Port B 0:3.0, using defaults\n");
 	  bus_pcie_b = 3;
 	}
 
@@ -310,7 +310,7 @@ void *smp_write_config_table(void *v)
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

@@ -180,7 +180,7 @@ static void lpc47n217_init(device_t dev)
 static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk_err("ERROR: %s %02x not allocated\n",
+		printk(BIOS_ERR, "ERROR: %s %02x not allocated\n",
 			dev_path(dev), resource->index);
 		return;
 	}
@@ -200,7 +200,7 @@ static void lpc47n217_pnp_set_resource(device_t dev, struct resource *resource)
 		lpc47n217_pnp_set_irq(dev, resource->base);
 	}
 	else {
-		printk_err("ERROR: %s %02x unknown resource type\n",
+		printk(BIOS_ERR, "ERROR: %s %02x unknown resource type\n",
 			dev_path(dev), resource->index);
 		return;
 	}

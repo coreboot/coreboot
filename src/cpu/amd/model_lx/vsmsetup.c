@@ -274,7 +274,7 @@ void do_vsmbios(void)
 	unsigned int size = SMM_SIZE * 1024;
 	int i;
 
-	printk_err("do_vsmbios\n");
+	printk(BIOS_ERR, "do_vsmbios\n");
 	/* clear vsm bios data area */
 	for (i = 0x400; i < 0x500; i++) {
 		*(volatile unsigned char *)i = 0;
@@ -288,23 +288,23 @@ void do_vsmbios(void)
 	 */
 
 	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
-		printk_err("do_vsmbios: Failed to load VSA.\n");
+		printk(BIOS_ERR, "do_vsmbios: Failed to load VSA.\n");
 	}
 	buf = (unsigned char *)VSA2_BUFFER;
-	printk_debug("buf %p *buf %d buf[256k] %d\n",
+	printk(BIOS_DEBUG, "buf %p *buf %d buf[256k] %d\n",
 		     buf, buf[0], buf[SMM_SIZE * 1024]);
-	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",
+	printk(BIOS_DEBUG, "buf[0x20] signature is %x:%x:%x:%x\n",
 		     buf[0x20], buf[0x21], buf[0x22], buf[0x23]);
 	/* check for post code at start of vsainit.bin. If you don't see it,
 	   don't bother. */
 	if ((buf[0x20] != 0xb0) || (buf[0x21] != 0x10) ||
 	    (buf[0x22] != 0xe6) || (buf[0x23] != 0x80)) {
-		printk_err("do_vsmbios: no vsainit.bin signature, skipping!\n");
+		printk(BIOS_ERR, "do_vsmbios: no vsainit.bin signature, skipping!\n");
 		return;
 	}
 
 	/* ecx gets smm, edx gets sysm */
-	printk_err("Call real_mode_switch_call_vsm\n");
+	printk(BIOS_ERR, "Call real_mode_switch_call_vsm\n");
 	real_mode_switch_call_vsm(MSR_GLIU0_SMM, MSR_GLIU0_SYSMEM);
 
 	/* restart timer 1 */
@@ -313,10 +313,9 @@ void do_vsmbios(void)
 
 	// check that VSA is running OK
 	if (VSA_vrRead(SIGNATURE) == VSA2_SIGNATURE)
-		printk_debug("do_vsmbios: VSA2 VR signature verified\n");
+		printk(BIOS_DEBUG, "do_vsmbios: VSA2 VR signature verified\n");
 	else
-		printk_err
-		    ("do_vsmbios: VSA2 VR signature not valid, install failed!\n");
+		printk(BIOS_ERR, "do_vsmbios: VSA2 VR signature not valid, install failed!\n");
 }
 
 // we had hoped to avoid this.
@@ -495,30 +494,30 @@ int biosint(unsigned long intnumber,
 	cs = cs_ip >> 16;
 	flags = stackflags;
 
-	printk_debug("biosint: INT# 0x%lx\n", intnumber);
-	printk_debug("biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n",
+	printk(BIOS_DEBUG, "biosint: INT# 0x%lx\n", intnumber);
+	printk(BIOS_DEBUG, "biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n",
 		     eax, ebx, ecx, edx);
-	printk_debug("biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
+	printk(BIOS_DEBUG, "biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
 		     ebp, esp, edi, esi);
-	printk_debug("biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
+	printk(BIOS_DEBUG, "biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
 		     (u32)ip, (u32)cs, (u32)flags);
-	printk_debug("biosint: gs 0x%x fs 0x%x ds 0x%x es 0x%x\n",
+	printk(BIOS_DEBUG, "biosint: gs 0x%x fs 0x%x ds 0x%x es 0x%x\n",
 		     (u16)(gsfs >> 16), (u16)(gsfs & 0xffff), (u16)(dses >> 16), (u16)(dses & 0xffff));
 
 	// cases in a good compiler are just as good as your own tables.
 	switch (intnumber) {
 	case 0 ... 15:
 		// These are not BIOS service, but the CPU-generated exceptions
-		printk_info("biosint: Oops, exception 0x%x\n", (u32)intnumber);
+		printk(BIOS_INFO, "biosint: Oops, exception 0x%x\n", (u32)intnumber);
 		if (esp < 0x1000) {
-			printk_debug("Stack contents: ");
+			printk(BIOS_DEBUG, "Stack contents: ");
 			while (esp < 0x1000) {
-				printk_debug("0x%04x ", *(unsigned short *)esp);
+				printk(BIOS_DEBUG, "0x%04x ", *(unsigned short *)esp);
 				esp += 2;
 			}
-			printk_debug("\n");
+			printk(BIOS_DEBUG, "\n");
 		}
-		printk_debug("biosint: Bailing out ... not now\n");
+		printk(BIOS_DEBUG, "biosint: Bailing out ... not now\n");
 		// "longjmp"
 		//vga_exit();
 		break;
@@ -537,7 +536,7 @@ int biosint(unsigned long intnumber,
 				  &ebx, &edx, &ecx, &eax, &flags);
 		break;
 	default:
-		printk_info("BIOSINT: Unsupported int #0x%x\n", (u32)intnumber);
+		printk(BIOS_INFO, "BIOSINT: Unsupported int #0x%x\n", (u32)intnumber);
 		break;
 	}
 	if (ret)
@@ -648,7 +647,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 				// devfn is an int, so we mask it off.
 				busdevfn = (dev->bus->secondary << 8)
 				    | (dev->path.pci.devfn & 0xff);
-				printk_debug("0x%x: return 0x%x\n", func,
+				printk(BIOS_DEBUG, "0x%x: return 0x%x\n", func,
 					     busdevfn);
 				*pebx = busdevfn;
 				retval = 0;
@@ -675,8 +674,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 			reg = *pedi;
 			dev = dev_find_slot(bus, devfn);
 			if (!dev) {
-				printk_debug
-				    ("0x%x: BAD DEVICE bus %d devfn 0x%x\n",
+				printk(BIOS_DEBUG, "0x%x: BAD DEVICE bus %d devfn 0x%x\n",
 				     func, bus, devfn);
 				// idiots. the pcibios guys assumed you'd never pass a bad bus/devfn!
 				*peax = PCIBIOS_BADREG;
@@ -711,15 +709,14 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 
 			if (retval)
 				retval = PCIBIOS_BADREG;
-			printk_debug
-			    ("0x%x: bus %d devfn 0x%x reg 0x%x val 0x%lx\n",
+			printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%lx\n",
 			     func, bus, devfn, reg, *pecx);
 			*peax = 0;
 			retval = 0;
 		}
 		break;
 	default:
-		printk_err("UNSUPPORTED PCIBIOS FUNCTION 0x%x\n", func);
+		printk(BIOS_ERR, "UNSUPPORTED PCIBIOS FUNCTION 0x%x\n", func);
 		break;
 	}
 
@@ -731,7 +728,7 @@ int handleint21(unsigned long *edi, unsigned long *esi, unsigned long *ebp,
 		unsigned long *ecx, unsigned long *eax, unsigned long *flags)
 {
 	int res = -1;
-	printk_debug("handleint21, eax 0x%x\n", (u32)*eax);
+	printk(BIOS_DEBUG, "handleint21, eax 0x%x\n", (u32)*eax);
 	switch (*eax & 0xffff) {
 	case 0x5f19:
 		break;

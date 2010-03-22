@@ -118,10 +118,10 @@ static int send_kbd_command(u8 command)
 	while ((inb(KBD_SC) & KBD_IBF) && --timeout) {
 		udelay(10);
 		if ((timeout & 0xff) == 0)
-			printk_spew(".");
+			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk_debug("Timeout while sending command 0x%02x to EC!\n", 
+		printk(BIOS_DEBUG, "Timeout while sending command 0x%02x to EC!\n", 
 				command);
 		// return -1;
 	}
@@ -138,10 +138,10 @@ static int send_kbd_data(u8 data)
 	while ((inb(KBD_SC) & KBD_IBF) && --timeout) { // wait for IBF = 0
 		udelay(10);
 		if ((timeout & 0xff) == 0)
-			printk_spew(".");
+			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk_debug("Timeout while sending data 0x%02x to EC!\n",
+		printk(BIOS_DEBUG, "Timeout while sending data 0x%02x to EC!\n",
 				data);
 		// return -1;
 	}
@@ -164,10 +164,10 @@ static u8 recv_kbd_data(void)
 		}
 		udelay(10);
 		if ((timeout & 0xff) == 0)
-			printk_spew(".");
+			printk(BIOS_SPEW, ".");
 	}
 	if (!timeout) {
-		printk_debug("\nTimeout while receiving data from EC!\n");
+		printk(BIOS_DEBUG, "\nTimeout while receiving data from EC!\n");
 		// return -1;
 	}
 
@@ -186,13 +186,13 @@ static u8 m3885_get_variable(u8 index)
 	send_kbd_command(0xbc);
 	send_kbd_command(0xff);
 	ret = recv_kbd_data();
-	printk_spew("m3885: get variable %02x = %02x\n", index, ret);
+	printk(BIOS_SPEW, "m3885: get variable %02x = %02x\n", index, ret);
 	return ret;
 }
 
 static void m3885_set_variable(u8 index, u8 data)
 {
-	printk_spew("m3885: set variable %02x = %02x\n", index, data);
+	printk(BIOS_SPEW, "m3885: set variable %02x = %02x\n", index, data);
 	send_kbd_command(0xb8);
 	send_kbd_data(index);
 	send_kbd_command(0xbd);
@@ -201,7 +201,7 @@ static void m3885_set_variable(u8 index, u8 data)
 
 static void m3885_set_proc_ram(u8 index, u8 data)
 {
-	printk_spew("m3885: set procram %02x = %02x\n", index, data);
+	printk(BIOS_SPEW, "m3885: set procram %02x = %02x\n", index, data);
 	send_kbd_command(0xb8);
 	send_kbd_data(index);
 	send_kbd_command(0xbb);
@@ -217,7 +217,7 @@ static u8 m3885_get_proc_ram(u8 index)
 	send_kbd_command(0xba);
 	// send_kbd_command(0xff);
 	ret = recv_kbd_data();
-	printk_spew("m3885: get procram %02x = %02x\n", index, ret);
+	printk(BIOS_SPEW, "m3885: get procram %02x = %02x\n", index, ret);
 	return ret;
 }
 
@@ -255,25 +255,25 @@ void m3885_configure_multikey(void)
 
 	/* Get the number of variables */
 	maxvars = m3885_get_variable(0x00);
-	printk_debug("M388x has %d variables in bank 2.\n", maxvars);
+	printk(BIOS_DEBUG, "M388x has %d variables in bank 2.\n", maxvars);
 	if (maxvars >= 35) {
 		offs = m3885_get_variable(0x23);
 		if ((offs > 0xc0) || (offs < 0x80)) {
-			printk_debug("M388x does not have a valid ram offset (0x%x)\n", offs);
+			printk(BIOS_DEBUG, "M388x does not have a valid ram offset (0x%x)\n", offs);
 		} else {
-			printk_debug("Writing Fn-Table to M388x RAM offset 0x%x\n", offs);
+			printk(BIOS_DEBUG, "Writing Fn-Table to M388x RAM offset 0x%x\n", offs);
 			for (i=0; i < ARRAY_SIZE(function_ram); i++) {
 				m3885_set_proc_ram(i + offs, function_ram[i]);
 			}
 		}
 	} else {
-		printk_debug("Could not load Function-RAM (%d).\n", maxvars);
+		printk(BIOS_DEBUG, "Could not load Function-RAM (%d).\n", maxvars);
 	}
 
 	// restore original bank
 	m3885_set_variable(0x0c, kstate5_flags);
 	maxvars = m3885_get_variable(0x00);
-	printk_debug("M388x has %d variables in original bank.\n", maxvars);
+	printk(BIOS_DEBUG, "M388x has %d variables in original bank.\n", maxvars);
 	for (i=0; i<ARRAY_SIZE(variables); i+=3) {
 		u8 reg8;
 		if(variables[i + 0] > maxvars)
@@ -402,10 +402,10 @@ u8 m3885_gpio(u8 value)
 	timeout = 0xf;
 	while (ec_read(M3885_CMCMD) && --timeout) {
 		udelay(10);
-		printk_debug(".");
+		printk(BIOS_DEBUG, ".");
 	}
 	if (!timeout) {
-		printk_debug("\nTimeout while waiting for M3885 command!\n");
+		printk(BIOS_DEBUG, "\nTimeout while waiting for M3885 command!\n");
 	}
 
 	/* If it was a read function: Pin state */

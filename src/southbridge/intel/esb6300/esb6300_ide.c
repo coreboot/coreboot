@@ -26,7 +26,7 @@ static void ide_init(struct device *dev)
 	word |= (1 << 15);
 	pci_write_config16(dev, 0x42, word);
 #endif
-	printk_debug("IDE Enabled\n");
+	printk(BIOS_DEBUG, "IDE Enabled\n");
 }
 
 static void esb6300_ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)

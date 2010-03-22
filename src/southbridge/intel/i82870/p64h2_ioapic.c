@@ -62,7 +62,7 @@ static void p64h2_ioapic_init(device_t dev)
     pIndexRegister  = (volatile uint32_t*) memoryBase;
     pWindowRegister = (volatile uint32_t*)(memoryBase + 0x10);
 
-    printk_debug("IOAPIC %d at %02x:%02x.%01x  MBAR = %x DataAddr = %x\n",
+    printk(BIOS_DEBUG, "IOAPIC %d at %02x:%02x.%01x  MBAR = %x DataAddr = %x\n",
                  apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn), 
                  PCI_FUNC(dev->path.pci.devfn), pIndexRegister, pWindowRegister);
 

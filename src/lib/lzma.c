@@ -29,19 +29,19 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	outSize = *(UInt32 *)(src + LZMA_PROPERTIES_SIZE);
 	if (LzmaDecodeProperties(&state.Properties, properties, LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK) {
-		printk_warning("lzma: Incorrect stream properties.\n");
+		printk(BIOS_WARNING, "lzma: Incorrect stream properties.\n");
 		return 0;
 	}
 	mallocneeds = (LzmaGetNumProbs(&state.Properties) * sizeof(CProb));
 	if (mallocneeds > 15980) {
-		printk_warning("lzma: Decoder scratchpad too small!\n");
+		printk(BIOS_WARNING, "lzma: Decoder scratchpad too small!\n");
 		return 0;
 	}
 	state.Probs = (CProb *)scratchpad;
 	res = LzmaDecode(&state, src + LZMA_PROPERTIES_SIZE + 8, (SizeT)0xffffffff, &inProcessed,
 		dst, outSize, &outProcessed);
 	if (res != 0) {
-		printk_warning("lzma: Decoding error = %d\n", res);
+		printk(BIOS_WARNING, "lzma: Decoding error = %d\n", res);
 		return 0;
 	}
 	return outSize;

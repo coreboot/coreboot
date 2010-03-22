@@ -97,7 +97,7 @@ void update_microcode(u32 cpu_deviceid)
 	if (equivalent_processor_rev_id != 0) {
 		amd_update_microcode((void *) microcode_updates, equivalent_processor_rev_id);
 	} else {
-		printk_debug("microcode: rev id not found. Skipping microcode patch!\n");
+		printk(BIOS_DEBUG, "microcode: rev id not found. Skipping microcode patch!\n");
 	}
 
 }

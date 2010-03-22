@@ -75,12 +75,12 @@ static void readApcMacAddr(void)
     outl(0x80001048,0xcf8);
     outl((inl(0xcfc) & 0xfffffffd),0xcfc ); // enable IO78/79h for APC Index/Data
 
-    printk_debug("MAC addr in APC = ");
+    printk(BIOS_DEBUG, "MAC addr in APC = ");
     for(i = 0x9 ; i <=0xe ; i++)
     {
-        printk_debug("%2.2x",readApcByte(i));
+        printk(BIOS_DEBUG, "%2.2x",readApcByte(i));
     }
-    printk_debug("\n");
+    printk(BIOS_DEBUG, "\n");
 
     /* Set APC Reload */
     writeApcByte(0x7,readApcByte(0x7)&0xf7);
@@ -192,7 +192,7 @@ static int phy_read(uint32_t  base, unsigned phy_addr, unsigned phy_reg)
 		   mdelay(20);
     	       ulValue = read32(base+0x44);
            } while((ulValue & SMI_REQUEST) != 0);
-            //printk_debug("base %x cmd %lx ret val %lx\n", tmp,Read_Cmd,ulValue);
+            //printk(BIOS_DEBUG, "base %x cmd %lx ret val %lx\n", tmp,Read_Cmd,ulValue);
            usData=(ulValue>>16);
 
 
@@ -227,7 +227,7 @@ static int phy_detect(uint32_t base,uint16_t *PhyAddr) //BOOL PHY_Detect()
 
 	if(!bFoundPhy)
 	{
-	    printk_debug("PHY not found !!!! \n");
+	    printk(BIOS_DEBUG, "PHY not found !!!! \n");
 	}
 
        *PhyAddr=PhyAddress;
@@ -270,15 +270,15 @@ static void nic_init(struct device *dev)
 
 	if(!res)
 	{
-		printk_debug("NIC Cannot find resource..\r\n");
+		printk(BIOS_DEBUG, "NIC Cannot find resource..\r\n");
 		return;
 	}
 	base = res->base;
-        printk_debug("NIC base address %lx\n",base);
+        printk(BIOS_DEBUG, "NIC base address %lx\n",base);
 
 	if(!(val=phy_detect(base,&PhyAddr)))
 	{
-	       printk_debug("PHY detect fail !!!!\r\n");
+	       printk(BIOS_DEBUG, "PHY detect fail !!!!\r\n");
 		return;
 	}
 
@@ -291,7 +291,7 @@ static void nic_init(struct device *dev)
 
           //	if that is valid we will use that
 
-			printk_debug("EEPROM contents %x \n",ReadEEprom( dev,  base,  0LL));
+			printk(BIOS_DEBUG, "EEPROM contents %x \n",ReadEEprom( dev,  base,  0LL));
 			for(i=0;i<3;i++) {
 				//status = smbus_read_byte(dev_eeprom, i);
 				ulValue=ReadEEprom( dev,  base,  i+3L);
@@ -302,7 +302,7 @@ static void nic_init(struct device *dev)
 			}
         }else{
                  // read MAC address from firmware
-		 printk_debug("EEPROM invalid!!\nReg 0x38h=%.8lx \n",ulValue);
+		 printk(BIOS_DEBUG, "EEPROM invalid!!\nReg 0x38h=%.8lx \n",ulValue);
 		 MacAddr[0]=read16(0xffffffc0); // mac address store at here
 		 MacAddr[1]=read16(0xffffffc2);
 		 MacAddr[2]=read16(0xffffffc4);

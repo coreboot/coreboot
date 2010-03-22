@@ -74,7 +74,7 @@ void get_bus_conf(void)
 	device_t dev;
 	int i, j;
 
-	printk_spew("get_bus_conf()\n");
+	printk(BIOS_SPEW, "get_bus_conf()\n");
 
 	if(get_bus_conf_done==1) return; //do it only once
 
@@ -103,7 +103,7 @@ void get_bus_conf(void)
 			m->bus_mcp55[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sysconf.sbdn + 0x06);
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sysconf.sbdn + 0x06);
 		}
 
 		for(i=2; i<8;i++) {
@@ -112,7 +112,7 @@ void get_bus_conf(void)
 				m->bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			}
 			else {
-				printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2 );
+				printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2 );
 			}
 		}
 
@@ -125,16 +125,16 @@ void get_bus_conf(void)
 			m->bus_type[j] = 1;
 		if(m->bus_isa <= busn_max)
 			m->bus_isa = busn_max + 1;
-		printk_debug("i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn, busn_max, m->bus_isa);
+		printk(BIOS_DEBUG, "i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn, busn_max, m->bus_isa);
 	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS==1
 	apicid_base = get_apicid_base(1);
-	printk_spew("CONFIG_LOGICAL_CPUS==1: apicid_base: %08x\n");
+	printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==1: apicid_base: %08x\n");
 #else
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
-	printk_spew("CONFIG_LOGICAL_CPUS==0: apicid_base: %08x\n");
+	printk(BIOS_SPEW, "CONFIG_LOGICAL_CPUS==0: apicid_base: %08x\n");
 #endif
 	m->apicid_mcp55 = apicid_base+0;
 }

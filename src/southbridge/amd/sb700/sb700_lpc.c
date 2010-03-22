@@ -143,8 +143,7 @@ static void sb700_lpc_enable_childrens_resources(device_t dev)
 						continue;
 					base = res->base;
 					end = resource_end(res);
-					printk_debug
-					    ("sb700 lpc decode:%s, base=0x%08x, end=0x%08x\n",
+					printk(BIOS_DEBUG, "sb700 lpc decode:%s, base=0x%08x, end=0x%08x\n",
 					     dev_path(child), base, end);
 					switch (base) {
 					case 0x60:	/*  KB */

@@ -38,9 +38,9 @@ static void dump_mem(u32 start, u32 end)
 	print_debug("dump_mem:");
 	for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
-			printk_debug("\n%08x:", i);
+			printk(BIOS_DEBUG, "\n%08x:", i);
 		}
-		printk_debug(" %02x", (unsigned char)*((unsigned char *)i));
+		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
 	}
 	print_debug("\n");
 }
@@ -140,7 +140,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	start	= ( start + 0x0f) & -0x10;
 	current = start;
 
-	printk_info("ACPI: Writing ACPI tables at %lx...\n", start);
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
 	rsdp = (acpi_rsdp_t *) current;
@@ -158,7 +158,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	 * We explicitly add these tables later on:
 	 */
 	current	  = ( current + 0x07) & -0x08;
-	printk_debug("ACPI:    * HPET at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:    * HPET at %lx\n", current);
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
@@ -166,7 +166,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	current	  = ( current + 0x07) & -0x08;
-	printk_debug("ACPI:    * MADT at %lx\n",current);
+	printk(BIOS_DEBUG, "ACPI:    * MADT at %lx\n",current);
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current+=madt->header.length;
@@ -174,7 +174,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* SRAT */
 	current	  = ( current + 0x07) & -0x08;
-	printk_debug("ACPI:    * SRAT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
 	srat = (acpi_srat_t *) current;
 	acpi_create_srat(srat);
 	current+=srat->header.length;
@@ -182,7 +182,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* SLIT */
 	current	  = ( current + 0x07) & -0x08;
-	printk_debug("ACPI:   * SLIT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
 	slit = (acpi_slit_t *) current;
 	acpi_create_slit(slit);
 	current+=slit->header.length;
@@ -190,7 +190,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* SSDT */
 	current	  = ( current + 0x0f) & -0x10;
-	printk_debug("ACPI:    * SSDT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
 	ssdt = (acpi_header_t *)current;
 	current += ((acpi_header_t *)AmlCode_ssdt)->length;
 	memcpy((void *)ssdt, (void *)AmlCode_ssdt, ((acpi_header_t *)AmlCode_ssdt)->length);
@@ -201,7 +201,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
 	acpi_add_table(rsdp,ssdt);
 
-	printk_debug("ACPI:    * SSDT for PState at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
 	current = acpi_add_ssdt_pstates(rsdp, current);
 
 #if 0 //CONFIG_ACPI_SSDTX_NUM >= 1
@@ -219,7 +219,7 @@ unsigned long write_acpi_tables(unsigned long start)
 			c  = (u8) ('A' + i - 1 - 6);
 		}
 		current	  = ( current + 0x07) & -0x08;
-		printk_debug("ACPI:    * SSDT for PCI%c at %lx\n", c, current); //pci0 and pci1 are in dsdt
+		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c at %lx\n", c, current); //pci0 and pci1 are in dsdt
 		ssdtx = (acpi_header_t *)current;
 		switch(sysconf.hcid[i]) {
 		case 1:
@@ -246,23 +246,23 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* DSDT */
 	current	  = ( current + 0x07) & -0x08;
-	printk_debug("ACPI:    * DSDT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
 	dsdt = (acpi_header_t *)current; // it will used by fadt
 	current += ((acpi_header_t *)AmlCode)->length;
 	memcpy((void *)dsdt,(void *)AmlCode, \
 			((acpi_header_t *)AmlCode)->length);
-	printk_debug("ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	/* FACS */ // it needs 64 bit alignment
 	current	  = ( current + 0x07) & -0x08;
-	printk_debug("ACPI:	* FACS at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:	* FACS at %lx\n", current);
 	facs = (acpi_facs_t *) current; // it will be used by fadt
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
 
 	/* FDAT */
 	current	  = ( current + 0x07) & -0x08;
-	printk_debug("ACPI:    * FADT at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
 
@@ -270,29 +270,29 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp,fadt);
 
 #if DUMP_ACPI_TABLES == 1
-	printk_debug("rsdp\n");
+	printk(BIOS_DEBUG, "rsdp\n");
 	dump_mem(rsdp, ((void *)rsdp) + sizeof(acpi_rsdp_t));
 
-	printk_debug("rsdt\n");
+	printk(BIOS_DEBUG, "rsdt\n");
 	dump_mem(rsdt, ((void *)rsdt) + sizeof(acpi_rsdt_t));
 
-	printk_debug("madt\n");
+	printk(BIOS_DEBUG, "madt\n");
 	dump_mem(madt, ((void *)madt) + madt->header.length);
 
-	printk_debug("srat\n");
+	printk(BIOS_DEBUG, "srat\n");
 	dump_mem(srat, ((void *)srat) + srat->header.length);
 
-	printk_debug("slit\n");
+	printk(BIOS_DEBUG, "slit\n");
 	dump_mem(slit, ((void *)slit) + slit->header.length);
 
-	printk_debug("ssdt\n");
+	printk(BIOS_DEBUG, "ssdt\n");
 	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);
 
-	printk_debug("fadt\n");
+	printk(BIOS_DEBUG, "fadt\n");
 	dump_mem(fadt, ((void *)fadt) + fadt->header.length);
 #endif
 
-	printk_info("ACPI: done.\n");
+	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }
 

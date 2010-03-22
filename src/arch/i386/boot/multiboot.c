@@ -112,7 +112,7 @@ unsigned long write_multiboot_info(
 	mbi->mmap_length = ((u32) mb_mem) - mbi->mmap_addr;
 	mbi->flags |= MB_INFO_MEM_MAP;
 
-	printk_info("Multiboot Information structure has been written.\n");
+	printk(BIOS_INFO, "Multiboot Information structure has been written.\n");
 
 	return (unsigned long)mb_mem;
 }

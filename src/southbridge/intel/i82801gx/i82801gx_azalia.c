@@ -86,7 +86,7 @@ no_codec:
 	/* Codec Not found */
 	/* Put HDA back in reset (BAR + 0x8) [0] */
 	set_bits(base + 0x08, 1, 0);
-	printk_debug("Azalia: No codec!\n");
+	printk(BIOS_DEBUG, "Azalia: No codec!\n");
 	return 0;
 }
 
@@ -170,7 +170,7 @@ static void codec_init(struct device *dev, u32 base, int addr)
 	u32 verb_size;
 	int i;
 
-	printk_debug("Azalia: Initializing codec #%d\n", addr);
+	printk(BIOS_DEBUG, "Azalia: Initializing codec #%d\n", addr);
 
 	/* 1 */
 	if (wait_for_ready(base) == -1)
@@ -185,14 +185,14 @@ static void codec_init(struct device *dev, u32 base, int addr)
 	reg32 = read32(base + 0x64);
 
 	/* 2 */
-	printk_debug("Azalia: codec viddid: %08x\n", reg32);
+	printk(BIOS_DEBUG, "Azalia: codec viddid: %08x\n", reg32);
 	verb_size = find_verb(dev, reg32, &verb);
 
 	if (!verb_size) {
-		printk_debug("Azalia: No verb!\n");
+		printk(BIOS_DEBUG, "Azalia: No verb!\n");
 		return;
 	}
-	printk_debug("Azalia: verb_size: %d\n", verb_size);
+	printk(BIOS_DEBUG, "Azalia: verb_size: %d\n", verb_size);
 
 	/* 3 */
 	for (i = 0; i < verb_size; i++) {
@@ -204,7 +204,7 @@ static void codec_init(struct device *dev, u32 base, int addr)
 		if (wait_for_valid(base) == -1)
 			return;
 	}
-	printk_debug("Azalia: verb loaded.\n");
+	printk(BIOS_DEBUG, "Azalia: verb loaded.\n");
 }
 
 static void codecs_init(struct device *dev, u32 base, u32 codec_mask)
@@ -275,7 +275,7 @@ static void azalia_init(struct device *dev)
 	pci_write_config8(dev, 0x40, reg8);
 	mdelay(1);
 	reg8 = pci_read_config8(dev, 0x40);
-	printk_debug("Azalia: codec type: %s\n", (reg8 & (1 << 1))?"Azalia":"AC97");
+	printk(BIOS_DEBUG, "Azalia: codec type: %s\n", (reg8 & (1 << 1))?"Azalia":"AC97");
 
 	//
 	reg8 = pci_read_config8(dev, 0x40); // Audio Control
@@ -304,11 +304,11 @@ static void azalia_init(struct device *dev)
 	// NOTE this will break as soon as the Azalia get's a bar above
 	// 4G. Is there anything we can do about it?
 	base = (u32)res->base;
-	printk_debug("Azalia: base = %08x\n", (u32)base);
+	printk(BIOS_DEBUG, "Azalia: base = %08x\n", (u32)base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {
-		printk_debug("Azalia: codec_mask = %02x\n", codec_mask);
+		printk(BIOS_DEBUG, "Azalia: codec_mask = %02x\n", codec_mask);
 		codecs_init(dev, base, codec_mask);
 	}
 }

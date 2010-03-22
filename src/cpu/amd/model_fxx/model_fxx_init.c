@@ -150,16 +150,16 @@ static void print_mtrr_state(struct mtrr_state *state)
 {
 	int i;
 	for(i = 0; i < MTRR_COUNT; i++) {
-		printk_debug("var mtrr %d: %08x%08x mask: %08x%08x\n",
+		printk(BIOS_DEBUG, "var mtrr %d: %08x%08x mask: %08x%08x\n",
 			i,
 			state->mtrrs[i].base.hi, state->mtrrs[i].base.lo,
 			state->mtrrs[i].mask.hi, state->mtrrs[i].mask.lo);
 	}
-	printk_debug("top_mem:  %08x%08x\n",
+	printk(BIOS_DEBUG, "top_mem:  %08x%08x\n",
 		state->top_mem.hi, state->top_mem.lo);
-	printk_debug("top_mem2: %08x%08x\n",
+	printk(BIOS_DEBUG, "top_mem2: %08x%08x\n",
 		state->top_mem2.hi, state->top_mem2.lo);
-	printk_debug("def_type: %08x%08x\n",
+	printk(BIOS_DEBUG, "def_type: %08x%08x\n",
 		state->def_type.hi, state->def_type.lo);
 }
 #endif
@@ -214,7 +214,7 @@ static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_sta
                         enable_lapic();
 
                         /* Print a status message */
-                        printk_debug("%c", (basek >= TOLM_KB)?'+':'-');
+                        printk(BIOS_DEBUG, "%c", (basek >= TOLM_KB)?'+':'-');
 
                         /* Return to the initialization state */
                         set_init_ecc_mtrrs();
@@ -232,7 +232,7 @@ static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_sta
                 size = (limitk - basek) << 10;
                 addr = map_2M_page(basek >> 11);
                 if (addr == MAPPING_ERROR) {
-                        printk_err("Cannot map page: %lx\n", basek >> 11);
+                        printk(BIOS_ERR, "Cannot map page: %lx\n", basek >> 11);
                         return;
                 }
 
@@ -276,14 +276,14 @@ static void init_ecc_memory(unsigned node_id)
 	} else {
 		pci_write_config32(f3_dev, SCRUB_CONTROL,
 			(SCRUB_NONE << 16) | (SCRUB_NONE << 8) | (SCRUB_NONE << 0));
-		printk_debug("Scrubbing Disabled\n");
+		printk(BIOS_DEBUG, "Scrubbing Disabled\n");
 	}
 
 
 	/* If ecc support is not enabled don't touch memory */
 	dcl = pci_read_config32(f2_dev, DRAM_CONFIG_LOW);
 	if (!(dcl & DCL_DimmEccEn)) {
-		printk_debug("ECC Disabled\n");
+		printk(BIOS_DEBUG, "ECC Disabled\n");
 		return;
 	}
 
@@ -313,7 +313,7 @@ static void init_ecc_memory(unsigned node_id)
 		begink = (CONFIG_RAMTOP >>10);
 	}
 
-	printk_debug("Clearing memory %luK - %luK: ", begink, endk);
+	printk(BIOS_DEBUG, "Clearing memory %luK - %luK: ", begink, endk);
 
 	/* Save the normal state */
 	save_mtrr_state(&mtrr_state);
@@ -362,7 +362,7 @@ static void init_ecc_memory(unsigned node_id)
 			(SCRUB_84ms << 16) | (SCRUB_84ms << 8) | (SCRUB_84ms << 0));
 	}
 
-	printk_debug(" done\n");
+	printk(BIOS_DEBUG, " done\n");
 }
 
 

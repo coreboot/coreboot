@@ -69,7 +69,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 	}
 
 	if (i >= entries_num) {
-		printk_err("ACPI: Error: Could not add ACPI table, too many tables.\n");
+		printk(BIOS_ERR, "ACPI: Error: Could not add ACPI table, too many tables.\n");
 		return;
 	}
 
@@ -101,7 +101,7 @@ void acpi_add_table(acpi_rsdp_t *rsdp, void *table)
 				xsdt->header.length);
 	}
 
-	printk_debug("ACPI: added table %d/%d Length now %d\n",
+	printk(BIOS_DEBUG, "ACPI: added table %d/%d Length now %d\n",
 			i+1, entries_num, rsdt->header.length);
 }
 
@@ -497,17 +497,17 @@ static acpi_rsdp_t *valid_rsdp(acpi_rsdp_t *rsdp)
 	if (strncmp((char *)rsdp, RSDP_SIG, sizeof(RSDP_SIG) - 1) != 0)
 		return NULL;
 
-	printk_debug("Looking on %p for valid checksum\n", rsdp);
+	printk(BIOS_DEBUG, "Looking on %p for valid checksum\n", rsdp);
 
 	if (acpi_checksum((void *)rsdp, 20) != 0)
 		return NULL;
-	printk_debug("Checksum 1 passed\n");
+	printk(BIOS_DEBUG, "Checksum 1 passed\n");
 
 	if ((rsdp->revision > 1) && (acpi_checksum((void *)rsdp,
 						rsdp->length) != 0))
 		return NULL;
 
-	printk_debug("Checksum 2 passed all OK\n");
+	printk(BIOS_DEBUG, "Checksum 2 passed all OK\n");
 
 	return rsdp;
 }
@@ -534,7 +534,7 @@ void *acpi_find_wakeup_vector(void)
 	if (!acpi_is_wakeup())
 		return NULL;
 
-	printk_debug("Trying to find the wakeup vector ...\n");
+	printk(BIOS_DEBUG, "Trying to find the wakeup vector ...\n");
 
 	/* find RSDP */
 	for (p = (char *) 0xe0000; p <  (char *) 0xfffff; p+=16) {
@@ -545,11 +545,11 @@ void *acpi_find_wakeup_vector(void)
 	if (rsdp == NULL)
 		return NULL;
 
-	printk_debug("RSDP found at %p\n", rsdp);
+	printk(BIOS_DEBUG, "RSDP found at %p\n", rsdp);
 	rsdt = (acpi_rsdt_t *) rsdp->rsdt_address;
 	
 	end = (char *) rsdt + rsdt->header.length;
-	printk_debug("RSDT found at %p ends at %p\n", rsdt, end);
+	printk(BIOS_DEBUG, "RSDT found at %p ends at %p\n", rsdt, end);
 
 	for (i = 0; ((char *) &rsdt->entry[i]) < end; i++) {
 		fadt = (acpi_fadt_t *) rsdt->entry[i];
@@ -561,17 +561,17 @@ void *acpi_find_wakeup_vector(void)
 	if (fadt == NULL)
 		return NULL;
 
-	printk_debug("FADT found at %p\n", fadt);
+	printk(BIOS_DEBUG, "FADT found at %p\n", fadt);
 	facs = (acpi_facs_t *)fadt->firmware_ctrl;
 
 	if (facs == NULL) {
-		printk_debug("No FACS found, wake up from S3 not possible.\n");
+		printk(BIOS_DEBUG, "No FACS found, wake up from S3 not possible.\n");
 		return NULL;
 	}
 
-	printk_debug("FACS found at %p\n", facs);
+	printk(BIOS_DEBUG, "FACS found at %p\n", facs);
 	wake_vec = (void *) facs->firmware_waking_vector;
-	printk_debug("OS waking vector is %p\n", wake_vec);
+	printk(BIOS_DEBUG, "OS waking vector is %p\n", wake_vec);
 	return wake_vec;
 }
 

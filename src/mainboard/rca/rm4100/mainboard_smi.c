@@ -25,6 +25,6 @@
 
 int mainboard_io_trap_handler(int smif)
 {
-	printk_debug("MAINBOARD IO TRAP HANDLER!\n");
+	printk(BIOS_DEBUG, "MAINBOARD IO TRAP HANDLER!\n");
 	return 1;
 }

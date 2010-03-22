@@ -22,7 +22,7 @@ static void pxhd_enable(device_t dev)
 	}
 	bridge = dev_find_slot(dev->bus->secondary, dev->path.pci.devfn & ~1);
 	if (!bridge) {
-		printk_err("Cannot find bridge for ioapic: %s\n",
+		printk(BIOS_ERR, "Cannot find bridge for ioapic: %s\n",
 			   dev_path(dev));
 		return;
 	}
@@ -48,7 +48,7 @@ static unsigned int pxhd_scan_bridge(device_t dev, unsigned int max)
 	if(bus_100Mhz) {
 		uint16_t word;
 
-		printk_debug("setting pxhd bus to 100 Mhz\n");
+		printk(BIOS_DEBUG, "setting pxhd bus to 100 Mhz\n");
 		/* set to pcix 100 mhz */
 		word = pci_read_config16(dev, 0x40);
 		word &= ~(3 << 14);

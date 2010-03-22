@@ -111,8 +111,8 @@ void get_bus_conf(void)
 			for (j = bus_ck804[i]; j < bus_isa; j++)
 				bus_type[j] = 1;
 		} else {
-			printk_debug
-			    ("ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+			printk
+			    (BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
 			     bus_ck804[0], sbdn + dn);
 			bus_isa = bus_ck804[i - 1] + 1;
 		}

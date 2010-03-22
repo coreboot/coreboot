@@ -107,7 +107,7 @@ static void writeglmsr(struct gliutable *gl)
 	msr.lo = gl->lo;
 	msr.hi = gl->hi;
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);	// GX3
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__, gl->desc_name, msr.hi, msr.lo);	// GX3
 }
 
 static void ShadowInit(struct gliutable *gl)
@@ -131,11 +131,11 @@ static void SysmemInit(struct gliutable *gl)
 	 * system. We will adjust for SMM now and Frame Buffer later.
 	 */
 	sizembytes = sizeram();
-	printk_debug("%s: enable for %dMBytes\n", __func__, sizembytes);
+	printk(BIOS_DEBUG, "%s: enable for %dMBytes\n", __func__, sizembytes);
 	sizebytes = sizembytes << 20;
 
 	sizebytes -= ((SMM_SIZE * 1024) + 1);
-	printk_debug("usable RAM: %d bytes\n", sizebytes);
+	printk(BIOS_DEBUG, "usable RAM: %d bytes\n", sizebytes);
 
 	/* 20 bit address The bottom 12 bits go into bits 20-31 in msr.lo
 	   The top 8 bits go into 0-7 of msr.hi. */
@@ -147,7 +147,7 @@ static void SysmemInit(struct gliutable *gl)
 	msr.lo = sizebytes;
 
 	wrmsr(gl->desc_name, msr);	// MSR - see table above
-	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -159,12 +159,12 @@ static void SMMGL0Init(struct gliutable *gl)
 
 	sizebytes -= (SMM_SIZE * 1024);
 
-	printk_debug("%s: %d bytes\n", __func__, sizebytes);
+	printk(BIOS_DEBUG, "%s: %d bytes\n", __func__, sizebytes);
 
 	/* calculate the Two's complement offset */
 	offset = sizebytes - SMM_OFFSET;
 	offset = (offset >> 12) & 0x000fffff;
-	printk_debug("%s: offset is 0x%08x\n", __func__, SMM_OFFSET);
+	printk(BIOS_DEBUG, "%s: offset is 0x%08x\n", __func__, SMM_OFFSET);
 
 	msr.hi = offset << 8 | gl->hi;
 	msr.hi |= SMM_OFFSET >> 24;
@@ -173,14 +173,14 @@ static void SMMGL0Init(struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
 static void SMMGL1Init(struct gliutable *gl)
 {
 	msr_t msr;
-	printk_debug("%s:\n", __func__);
+	printk(BIOS_DEBUG, "%s:\n", __func__);
 
 	msr.hi = gl->hi;
 	/* I don't think this is needed */
@@ -190,7 +190,7 @@ static void SMMGL1Init(struct gliutable *gl)
 	msr.lo |= ((~(SMM_SIZE * 1024) + 1) >> 12) & 0xfffff;
 
 	wrmsr(gl->desc_name, msr);	// MSR - See table above
-	printk_debug("%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
+	printk(BIOS_DEBUG, "%s: MSR 0x%08lx, val 0x%08x:0x%08x\n", __func__,
 		     gl->desc_name, msr.hi, msr.lo);
 }
 
@@ -290,7 +290,7 @@ static void GLPCIInit(void)
 		msr.lo |=
 		    GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET |
 		    GLPCI_RC_LOWER_WC_SET;
-		printk_debug("GLPCI R1: system msr.lo 0x%08x msr.hi 0x%08x\n",
+		printk(BIOS_DEBUG, "GLPCI R1: system msr.lo 0x%08x msr.hi 0x%08x\n",
 			     msr.lo, msr.hi);
 		msrnum = GLPCI_RC1;
 		wrmsr(msrnum, msr);
@@ -304,7 +304,7 @@ static void GLPCIInit(void)
 	      (SMM_SIZE * 1024 - 1)) >> 12) << GLPCI_RC_UPPER_TOP_SHIFT;
 	msr.lo = (SMM_OFFSET >> 12) << GLPCI_RC_LOWER_BASE_SHIFT;
 	msr.lo |= GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET;
-	printk_debug("GLPCI R2: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo,
+	printk(BIOS_DEBUG, "GLPCI R2: system msr.lo 0x%08x msr.hi 0x%08x\n", msr.lo,
 		     msr.hi);
 	msrnum = GLPCI_RC2;
 	wrmsr(msrnum, msr);
@@ -435,7 +435,7 @@ static void ClockGatingInit(void)
 		msr = rdmsr(gating->msrnum);
 		msr.hi |= gating->msr.hi;
 		msr.lo |= gating->msr.lo;
-		/* printk_debug("%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __func__,
+		/* printk(BIOS_DEBUG, "%s: MSR 0x%08x will be set to  0x%08x:0x%08x\n", __func__,
 		   gating->msrnum, msr.hi, msr.lo); */// GX3
 		wrmsr(gating->msrnum, msr);	// MSR - See the table above
 		gating += 1;
@@ -454,7 +454,7 @@ static void GeodeLinkPriority(void)
 		msr.hi |= prio->msr.hi;
 		msr.lo &= ~0xfff;
 		msr.lo |= prio->msr.lo;
-		/* printk_debug("%s: MSR 0x%08x will be set to 0x%08x:0x%08x\n", __func__,
+		/* printk(BIOS_DEBUG, "%s: MSR 0x%08x will be set to 0x%08x:0x%08x\n", __func__,
 		   prio->msrnum, msr.hi, msr.lo);  */// GX3
 		wrmsr(prio->msrnum, msr);	// MSR - See the table above
 		prio += 1;
@@ -651,7 +651,7 @@ static void enable_L1_cache(void)
 
 	// now program RCONF_DEFAULT
 	wrmsr(CPU_RCONF_DEFAULT, msr);
-	printk_debug("CPU_RCONF_DEFAULT (1808): 0x%08X:0x%08X\n", msr.hi,
+	printk(BIOS_DEBUG, "CPU_RCONF_DEFAULT (1808): 0x%08X:0x%08X\n", msr.hi,
 		     msr.lo);
 
 	// RCONF_BYPASS: Cache tablewalk properties and SMM/DMM header access properties.
@@ -663,7 +663,7 @@ static void enable_L1_cache(void)
 	    (msr.lo & 0xFFFF0000) | (SysMemCacheProp << 8) | SysMemCacheProp;
 	wrmsr(CPU_RCONF_BYPASS, msr);
 
-	printk_debug("CPU_RCONF_BYPASS (180A): 0x%08x : 0x%08x\n", msr.hi,
+	printk(BIOS_DEBUG, "CPU_RCONF_BYPASS (180A): 0x%08x : 0x%08x\n", msr.hi,
 		     msr.lo);
 }
 
@@ -695,7 +695,7 @@ static void enable_L2_cache(void)
 	msr.lo = 0x0f;
 	wrmsr(CPU_BC_L2_CONF, msr);
 
-	printk_debug("L2 cache enabled\n");
+	printk(BIOS_DEBUG, "L2 cache enabled\n");
 }
 
 static void setup_lx_cache(void)
@@ -748,7 +748,7 @@ uint32_t get_systop(void)
 void northbridge_init_early(void)
 {
 	int i;
-	printk_debug("Enter %s\n", __func__);
+	printk(BIOS_DEBUG, "Enter %s\n", __func__);
 
 	for (i = 0; gliutables[i]; i++)
 		GLIUInit(gliutables[i]);
@@ -768,5 +768,5 @@ void northbridge_init_early(void)
 	ClockGatingInit();
 
 	__asm__ __volatile__("FINIT\n");
-	printk_debug("Exit %s\n", __func__);
+	printk(BIOS_DEBUG, "Exit %s\n", __func__);
 }

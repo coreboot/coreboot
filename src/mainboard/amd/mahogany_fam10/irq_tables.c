@@ -67,7 +67,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	addr &= ~15;
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
-	printk_info("Writing IRQ routing tables to 0x%lx...", addr);
+	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
 	v = (u8 *) (addr);
@@ -107,7 +107,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		pirq->checksum = sum;
 	}
 
-	printk_info("write_pirq_routing_table done.\n");
+	printk(BIOS_INFO, "write_pirq_routing_table done.\n");
 
 	return (unsigned long)pirq_info;
 }

@@ -34,7 +34,7 @@
  */
 void root_dev_read_resources(device_t root)
 {
-	printk_err("%s should never be called.\n", __func__);
+	printk(BIOS_ERR, "%s should never be called.\n", __func__);
 }
 
 /**
@@ -46,7 +46,7 @@ void root_dev_read_resources(device_t root)
  */
 void root_dev_set_resources(device_t root)
 {
-	printk_err("%s should never be called.\n", __func__);
+	printk(BIOS_ERR, "%s should never be called.\n", __func__);
 }
 
 /**
@@ -77,7 +77,7 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 	device_t child;
 	unsigned link;
 
-	printk_spew("%s for %s\n", __func__, dev_path(bus));
+	printk(BIOS_SPEW, "%s for %s\n", __func__, dev_path(bus));
 
 	for(link = 0; link < bus->links; link++) {
 		/* for smbus bus enumerate */
@@ -93,10 +93,10 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 				child->ops->enable(child);
 			}
  			if (child->path.type == DEVICE_PATH_I2C) {
- 				printk_debug("smbus: %s[%d]->",  
+ 				printk(BIOS_DEBUG, "smbus: %s[%d]->",  
 					dev_path(child->bus->dev), child->bus->link );
 			}
-			printk_debug("%s %s\n",
+			printk(BIOS_DEBUG, "%s %s\n",
 				dev_path(child),
 				child->enabled?"enabled": "disabled");
 		}
@@ -105,12 +105,12 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 		for(child = bus->link[link].children; child; child = child->sibling) {
 			if (!child->ops || !child->ops->scan_bus)
 				continue;
-			printk_spew("%s scanning...\n", dev_path(child));
+			printk(BIOS_SPEW, "%s scanning...\n", dev_path(child));
 			max = scan_bus(child, max);
 		}
 	}
 
-	printk_spew("%s for %s done\n", __func__, dev_path(bus));
+	printk(BIOS_SPEW, "%s for %s done\n", __func__, dev_path(bus));
 
 	return max;
 }
@@ -163,7 +163,7 @@ void root_dev_init(device_t root)
 
 void root_dev_reset(struct bus *bus)
 {
-	printk_info("Reseting board...\n");
+	printk(BIOS_INFO, "Reseting board...\n");
 	hard_reset();
 }
 

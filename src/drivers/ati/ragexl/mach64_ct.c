@@ -2,7 +2,7 @@
 
 /* FIXME: remove the FAIL definition */
 #if 0
-#define FAIL(x) do { printk_debug(x); return -EINVAL; } while (0)
+#define FAIL(x) do { printk(BIOS_DEBUG, x); return -EINVAL; } while (0)
 #else
 #define FAIL(x) 
 #endif
@@ -31,7 +31,7 @@ static int aty_dsp_gt(const struct fb_info_aty *info, u32 bpp,
     u32 memcntl, n, t_pfc, t_rp, t_ras, t_rcd, t_crd, t_rcc, t_lat;
 
 #if DEBUG_PLL==1
-    printk_debug("aty_dsp_gt : mclk_fb_mult=%d\n", pll->mclk_fb_mult);
+    printk(BIOS_DEBUG, "aty_dsp_gt : mclk_fb_mult=%d\n", pll->mclk_fb_mult);
 #endif
     
     /* (64*xclk/vclk/bpp)<<11 = xclocks_per_row<<11 */
@@ -150,7 +150,7 @@ static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
     pllsclk = (1000000 * 2 * pll->sclk_fb_div) /
 	    (info->ref_clk_per * pll->pll_ref_div);
 
-    printk_debug("aty_valid_pll_ct: pllsclk=%d MHz, mclk=%d MHz\n",
+    printk(BIOS_DEBUG, "aty_valid_pll_ct: pllsclk=%d MHz, mclk=%d MHz\n",
 	   pllsclk, pllsclk / pll->mclk_post_div_real);
 #endif
     
@@ -175,7 +175,7 @@ static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
 #if DEBUG_PLL==1
     pllmclk = (1000000 * pll->mclk_fb_mult * pll->mclk_fb_div) /
 	    (info->ref_clk_per * pll->pll_ref_div);
-    printk_debug("aty_valid_pll_ct: pllmclk=%d MHz, xclk=%d MHz\n",
+    printk(BIOS_DEBUG, "aty_valid_pll_ct: pllmclk=%d MHz, xclk=%d MHz\n",
 	   pllmclk, pllmclk / pll->xclk_post_div_real);
 #endif
     
@@ -301,7 +301,7 @@ u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
 void aty_set_pll_ct(const struct fb_info_aty *info, const union aty_pll *pll)
 {
 #if DEBUG_PLL==1
-    printk_debug("aty_set_pll_ct: about to program:\n"
+    printk(BIOS_DEBUG, "aty_set_pll_ct: about to program:\n"
 	   "refdiv=%d, extcntl=0x%02x, mfbdiv=%d\n"
 	   "spllcntl2=0x%02x, sfbdiv=%d, gencntl=0x%02x\n"
 	   "vclkcntl=0x%02x, vpostdiv=0x%02x, vfbdiv=%d\n"

@@ -101,7 +101,7 @@ static int ac97_semaphore(void)
 		timeout--;
 	} while ((reg8 & 1) && timeout);
 	if (! timeout) {
-		printk_debug("Timeout!\n");
+		printk(BIOS_DEBUG, "Timeout!\n");
 	}
 
 	return (!timeout);
@@ -123,7 +123,7 @@ static void ac97_audio_init(struct device *dev)
 	u32 reg32;
 	int i;
 
-	printk_debug("Initializing AC'97 Audio.\n");
+	printk(BIOS_DEBUG, "Initializing AC'97 Audio.\n");
 
 	/* top 16 bits are zero, so don't read them */
 	nabmbar = pci_read_config16(dev, NABMBAR) & 0xfffe;
@@ -142,7 +142,7 @@ static void ac97_audio_init(struct device *dev)
 	reg32 = inl(nabmbar + GLOB_STA);
 	if ((reg32 & ((1 << 28) | (1 << 9) | (1 << 8))) == 0) {
 		/* Primary Codec not found */
-		printk_debug("No primary codec. Disabling AC'97 Audio.\n");
+		printk(BIOS_DEBUG, "No primary codec. Disabling AC'97 Audio.\n");
 		return;
 	}
 
@@ -152,7 +152,7 @@ static void ac97_audio_init(struct device *dev)
 	outw(0x8000, nambar + MASTER_VOL);
 	ac97_semaphore();
 	if (inw(nambar + MASTER_VOL) != 0x8000) {
-		printk_debug("Codec not programmable. Disabling AC'97 Audio.\n");
+		printk(BIOS_DEBUG, "Codec not programmable. Disabling AC'97 Audio.\n");
 		return;
 	}
 

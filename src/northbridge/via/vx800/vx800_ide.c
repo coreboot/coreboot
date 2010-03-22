@@ -169,7 +169,7 @@ static void ide_init(struct device *dev)
 	uint8_t enables, Rx89, RxC0;
 	u8 i, data;
 	struct ATA_REG_INIT_TABLE *pEntry;
-	printk_info("ide_init\n");
+	printk(BIOS_INFO, "ide_init\n");
 
 #if 1
 	/*these 3 lines help to keep interl back door for DID VID SUBID untouched */
@@ -207,14 +207,14 @@ static void ide_init(struct device *dev)
 	enables |= 0x02;
 	pci_write_config8(dev, IDE_CS, enables);
 	enables = pci_read_config8(dev, IDE_CS);
-	printk_debug("Enables in reg 0x40 read back as 0x%x\n", enables);
+	printk(BIOS_DEBUG, "Enables in reg 0x40 read back as 0x%x\n", enables);
 
 	/* Enable only compatibility mode. */
 	enables = pci_read_config8(dev, IDE_CONF_II);
 	enables &= ~0xc0;
 	pci_write_config8(dev, IDE_CONF_II, enables);
 	enables = pci_read_config8(dev, IDE_CONF_II);
-	printk_debug("Enables in reg 0x42 read back as 0x%x\n", enables);
+	printk(BIOS_DEBUG, "Enables in reg 0x42 read back as 0x%x\n", enables);
 
 	/* Enable prefetch buffers. */
 	enables = pci_read_config8(dev, IDE_CONF_I);

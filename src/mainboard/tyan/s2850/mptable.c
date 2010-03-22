@@ -30,7 +30,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
                 dst_link = (config_map >> 8) & 3;
                 bus_base = (config_map >> 16) & 0xff;
 #if 0                           
-                printk_debug("node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
+                printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
                         dst_node, dst_link, bus_base,
                         reg, config_map);
 #endif
@@ -81,7 +81,7 @@ void *smp_write_config_table(void *v)
                 /* HT chain 0 */
                 bus_chain_0 = node_link_to_bus(0, 0);
                 if (bus_chain_0 == 0) {
-                        printk_debug("ERROR - cound not find bus for node 0 chain 0, using defaults\n");
+                        printk(BIOS_DEBUG, "ERROR - cound not find bus for node 0 chain 0, using defaults\n");
                         bus_chain_0 = 1;
                 }
                 /* 8111 */
@@ -92,7 +92,7 @@ void *smp_write_config_table(void *v)
                         bus_isa++;
                 }     
                 else {  
-                        printk_debug("ERROR - could not find PCI 1:01.0, using defaults\n");
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:01.0, using defaults\n");
 
                         bus_8111_1 = 2;
                         bus_isa = 3;
@@ -194,7 +194,7 @@ void *smp_write_config_table(void *v)
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

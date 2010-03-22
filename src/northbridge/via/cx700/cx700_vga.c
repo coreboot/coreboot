@@ -49,7 +49,7 @@ void write_protect_vgabios(void)
 {
 	device_t dev;
 
-	printk_debug("write_protect_vgabios\n");
+	printk(BIOS_DEBUG, "write_protect_vgabios\n");
 
 	dev = dev_find_device(PCI_VENDOR_ID_VIA, 0x3324, 0);
 	if (dev)
@@ -64,7 +64,7 @@ static void vga_init(device_t dev)
 {
 	u8 reg8;
 
-	printk_debug("Initializing VGA...\n");
+	printk(BIOS_DEBUG, "Initializing VGA...\n");
 
 	//*
 	pci_write_config8(dev, 0x04, 0x07);
@@ -75,10 +75,10 @@ static void vga_init(device_t dev)
 	pci_write_config8(dev, 0x3c, 0x0b);
 	//*/
 
-	printk_debug("Executing VGA option rom in real mode\n");
+	printk(BIOS_DEBUG, "Executing VGA option rom in real mode\n");
 	setup_realmode_idt();
 	do_vgabios();
-	printk_debug("Enable VGA console\n");
+	printk(BIOS_DEBUG, "Enable VGA console\n");
 	vga_enable_console();
 
 	/* It's not clear if these need to be programmed before or after

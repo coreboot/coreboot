@@ -173,96 +173,96 @@ void print_conf(void)
 		MDD_DMA_SHAD7, MDD_DMA_SHAD8, MDD_DMA_SHAD9, GL_END
 	};
 
-	printk_debug("---------- CPU ------------\n");
+	printk(BIOS_DEBUG, "---------- CPU ------------\n");
 
 	for (i = 0; cpu_msr_defs[i] != GL_END; i++) {
 		msr = rdmsr(cpu_msr_defs[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n",
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
 			     cpu_msr_defs[i], msr.hi, msr.lo);
 	}
 
-	printk_debug("---------- GLIU 0 ------------\n");
+	printk(BIOS_DEBUG, "---------- GLIU 0 ------------\n");
 
 	for (i = 0; gliu0_msr_defs[i] != GL_END; i++) {
 		msr = rdmsr(gliu0_msr_defs[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n",
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
 			     gliu0_msr_defs[i], msr.hi, msr.lo);
 	}
 
-	printk_debug("---------- GLIU 1 ------------\n");
+	printk(BIOS_DEBUG, "---------- GLIU 1 ------------\n");
 
 	for (i = 0; gliu1_msr_defs[i] != GL_END; i++) {
 		msr = rdmsr(gliu1_msr_defs[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n",
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
 			     gliu1_msr_defs[i], msr.hi, msr.lo);
 	}
 
-	printk_debug("---------- RCONF ------------\n");
+	printk(BIOS_DEBUG, "---------- RCONF ------------\n");
 
 	for (i = 0; rconf_msr[i] != GL_END; i++) {
 		msr = rdmsr(rconf_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", rconf_msr[i],
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", rconf_msr[i],
 			     msr.hi, msr.lo);
 	}
 
-	printk_debug("---------- VARIA ------------\n");
+	printk(BIOS_DEBUG, "---------- VARIA ------------\n");
 	msr = rdmsr(0x51300010);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", 0x51300010, msr.hi,
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", 0x51300010, msr.hi,
 		     msr.lo);
 
 	msr = rdmsr(0x51400015);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", 0x51400015, msr.hi,
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", 0x51400015, msr.hi,
 		     msr.lo);
 
-	printk_debug("---------- DIVIL IRQ ------------\n");
+	printk(BIOS_DEBUG, "---------- DIVIL IRQ ------------\n");
 	msr = rdmsr(MDD_IRQM_YLOW);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_YLOW, msr.hi,
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_YLOW, msr.hi,
 		     msr.lo);
 	msr = rdmsr(MDD_IRQM_YHIGH);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_YHIGH,
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_YHIGH,
 		     msr.hi, msr.lo);
 	msr = rdmsr(MDD_IRQM_ZLOW);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_ZLOW, msr.hi,
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_ZLOW, msr.hi,
 		     msr.lo);
 	msr = rdmsr(MDD_IRQM_ZHIGH);
-	printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_ZHIGH,
+	printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MDD_IRQM_ZHIGH,
 		     msr.hi, msr.lo);
 
-	printk_debug("---------- PCI ------------\n");
+	printk(BIOS_DEBUG, "---------- PCI ------------\n");
 
 	for (i = 0; pci_msr[i] != GL_END; i++) {
 		msr = rdmsr(pci_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", pci_msr[i],
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", pci_msr[i],
 			     msr.hi, msr.lo);
 	}
 
-	printk_debug("---------- LPC/UART DMA ------------\n");
+	printk(BIOS_DEBUG, "---------- LPC/UART DMA ------------\n");
 
 	for (i = 0; dma_msr[i] != GL_END; i++) {
 		msr = rdmsr(dma_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", dma_msr[i],
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", dma_msr[i],
 			     msr.hi, msr.lo);
 	}
 
-	printk_debug("---------- CS5536 ------------\n");
+	printk(BIOS_DEBUG, "---------- CS5536 ------------\n");
 
 	for (i = 0; cs5536_msr[i] != GL_END; i++) {
 		msr = rdmsr(cs5536_msr[i]);
-		printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", cs5536_msr[i],
+		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", cs5536_msr[i],
 			     msr.hi, msr.lo);
 	}
 
 	iol = inl(GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08lX\n",
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n",
 		     GPIO_IO_BASE + GPIOL_INPUT_ENABLE, iol);
 	iol = inl(GPIOL_EVENTS_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08lX\n",
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n",
 		     GPIO_IO_BASE + GPIOL_EVENTS_ENABLE, iol);
 	iol = inl(GPIOL_INPUT_INVERT_ENABLE);
-	printk_debug("IOR 0x%08X is now 0x%08lX\n",
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n",
 		     GPIO_IO_BASE + GPIOL_INPUT_INVERT_ENABLE, iol);
 	iol = inl(GPIO_MAPPER_X);
-	printk_debug("IOR 0x%08X is now 0x%08lX\n", GPIO_IO_BASE + GPIO_MAPPER_X,
+	printk(BIOS_DEBUG, "IOR 0x%08X is now 0x%08lX\n", GPIO_IO_BASE + GPIO_MAPPER_X,
 		     iol);
 #endif				//CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_ERR
 }
@@ -278,7 +278,7 @@ int sizeram(void)
 
 	/* Get the RAM size from the memory controller as calculated and set by auto_size_dimm() */
 	msr = rdmsr(MC_CF07_DATA);
-	printk_debug("sizeram: _MSR MC_CF07_DATA: %08x:%08x\n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "sizeram: _MSR MC_CF07_DATA: %08x:%08x\n", msr.hi, msr.lo);
 
 	/* dimm 0 */
 	dimm = msr.hi;
@@ -294,7 +294,7 @@ int sizeram(void)
 		sizem += 4 << ((dimm >> 12) & 0x0F); /* 1:8MB, 2:16MB, 3:32MB, 4:64MB, ... 7:512MB, 8:1GB */
 	}
 
-	printk_debug("sizeram: sizem 0x%xMB\n", sizem);
+	printk(BIOS_DEBUG, "sizeram: sizem 0x%xMB\n", sizem);
 	return sizem;
 }
 
@@ -306,7 +306,7 @@ static void northbridge_init(device_t dev)
 {
 	//msr_t msr;
 
-	printk_spew(">> Entering northbridge.c: %s\n", __func__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
 	enable_shadow(dev);
 	/*
@@ -317,8 +317,8 @@ static void northbridge_init(device_t dev)
 	//msr.hi |= 0x3;
 	//msr.lo |= 0x30000;
 
-	//printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU0_SHADOW, msr.hi, msr.lo);
-	//printk_debug("MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU1_SHADOW, msr.hi, msr.lo);
+	//printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU0_SHADOW, msr.hi, msr.lo);
+	//printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU1_SHADOW, msr.hi, msr.lo);
 }
 
 void northbridge_set_resources(struct device *dev)
@@ -340,8 +340,7 @@ void northbridge_set_resources(struct device *dev)
 		struct bus *bus;
 		bus = &dev->link[link];
 		if (bus->children) {
-			printk_debug
-			    ("my_dev_set_resources: assign_resources %d\n",
+			printk(BIOS_DEBUG, "my_dev_set_resources: assign_resources %d\n",
 			     bus);
 			assign_resources(bus);
 		}
@@ -406,7 +405,7 @@ static void pci_domain_set_resources(device_t dev)
 	u32 tomk;
 	device_t mc_dev;
 
-	printk_spew(">> Entering northbridge.c: %s\n", __func__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
@@ -430,7 +429,7 @@ static void pci_domain_set_resources(device_t dev)
 static void pci_domain_enable(device_t dev)
 {
 
-	printk_spew(">> Entering northbridge.c: %s\n", __func__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
 	// do this here for now -- this chip really breaks our device model
 	northbridge_init_early();
@@ -439,12 +438,12 @@ static void pci_domain_enable(device_t dev)
 
 	setup_realmode_idt();
 
-	printk_debug("Before VSA:\n");
+	printk(BIOS_DEBUG, "Before VSA:\n");
 	// print_conf();
 
 	do_vsmbios();		// do the magic stuff here, so prepare your tambourine ;)
 
-	printk_debug("After VSA:\n");
+	printk(BIOS_DEBUG, "After VSA:\n");
 	// print_conf();
 
 	graphics_init();
@@ -461,7 +460,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-	printk_spew(">> Entering northbridge.c: %s\n", __func__);
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
 	initialize_cpus(&dev->link[0]);
 }
@@ -480,7 +479,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk_spew(">> Entering northbridge.c: %s with path %d\n",
+	printk(BIOS_SPEW, ">> Entering northbridge.c: %s with path %d\n",
 		    __func__, dev->path.type);
 
 	/* Set the operations if it is a special bus type */

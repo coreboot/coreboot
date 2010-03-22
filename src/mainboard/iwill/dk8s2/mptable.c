@@ -46,7 +46,7 @@ void *smp_write_config_table(void *v)
 			bus_isa++;
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:03.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:03.0, using defaults\n");
 
 			bus_8111_1 = 4;
 			bus_isa = 5;
@@ -58,7 +58,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:01.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:01.0, using defaults\n");
 
 			bus_8131_1 = 2;
 		}
@@ -69,7 +69,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:02.0, using defaults\n");
 
 			bus_8131_2 = 3;
 		}
@@ -218,7 +218,7 @@ void *smp_write_config_table(void *v)
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

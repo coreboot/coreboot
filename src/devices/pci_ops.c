@@ -39,7 +39,7 @@ static struct bus *get_pbus(device_t dev)
 
 	while(pbus && pbus->dev && !ops_pci_bus(pbus)) {
 		if (pbus == pbus->dev->bus) {
-			printk_alert("%s in endless loop looking for a parent "
+			printk(BIOS_ALERT, "%s in endless loop looking for a parent "
 				"bus with ops_pci_bus for %s, breaking out.\n",
 				 __func__, dev_path(dev));
 			break;
@@ -48,7 +48,7 @@ static struct bus *get_pbus(device_t dev)
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_pci_bus) {
 		/* This can happen before the device tree is set up completely. */
-		//printk_emerg("%s: Cannot find pci bus operations.\n", dev_path(dev));
+		//printk(BIOS_EMERG, "%s: Cannot find pci bus operations.\n", dev_path(dev));
 		pbus = NULL;
 	}
 	return pbus;

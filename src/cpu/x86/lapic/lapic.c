@@ -17,7 +17,7 @@ void setup_lapic(void)
 	/* Only Pentium Pro and later have those MSR stuff */
 	msr_t msr;
 
-	printk_info("Setting up local apic...");
+	printk(BIOS_INFO, "Setting up local apic...");
 
 	/* Enable the local apic */
 	msr = rdmsr(LAPIC_BASE_MSR);
@@ -55,18 +55,18 @@ void setup_lapic(void)
 			LAPIC_DELIVERY_MODE_NMI)
 		);
 
-	printk_debug(" apic_id: 0x%02lx ", lapicid());
+	printk(BIOS_DEBUG, " apic_id: 0x%02lx ", lapicid());
 
 #else /* !NEED_LLAPIC */
 	/* Only Pentium Pro and later have those MSR stuff */
 	msr_t msr;
 
-	printk_info("Disabling local apic...");
+	printk(BIOS_INFO, "Disabling local apic...");
 
 	msr = rdmsr(LAPIC_BASE_MSR);
 	msr.lo &= ~LAPIC_BASE_MSR_ENABLE;
 	wrmsr(LAPIC_BASE_MSR, msr);
 #endif /* !NEED_LAPIC */
-	printk_info("done.\n");
+	printk(BIOS_INFO, "done.\n");
 	post_code(0x9b);
 }

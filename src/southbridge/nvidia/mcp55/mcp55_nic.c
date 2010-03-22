@@ -83,13 +83,13 @@ static void phy_detect(uint8_t *base)
 		val = phy_read(base, phyaddr, 2);
 		if (val < 0 || val == 0xffff) continue;
 		id |= ((val & 0xffff)<<16);
-		printk_debug("MCP55 MAC PHY ID 0x%08x PHY ADDR %d\n", id, i);
+		printk(BIOS_DEBUG, "MCP55 MAC PHY ID 0x%08x PHY ADDR %d\n", id, i);
 //		if((id == 0xe0180000) || (id==0x0032cc00))
 			break;
 	}
 
 	if(i>32) {
-		printk_debug("MCP55 MAC PHY not found\n");
+		printk(BIOS_DEBUG, "MCP55 MAC PHY not found\n");
 	}
 }
 

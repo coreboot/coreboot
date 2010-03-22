@@ -84,13 +84,13 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 	adjusted_boot_notes = (unsigned long)&elf_boot_notes;
 	adjusted_boot_notes += adjust; 
 
-	printk_spew("entry    = 0x%08lx\n", (unsigned long)entry);
-	printk_spew("lb_start = 0x%08lx\n", lb_start);
-	printk_spew("lb_size  = 0x%08lx\n", lb_size);
-	printk_spew("adjust   = 0x%08lx\n", adjust);
-	printk_spew("buffer   = 0x%08lx\n", buffer);
-	printk_spew("     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
-	printk_spew("adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
+	printk(BIOS_SPEW, "entry    = 0x%08lx\n", (unsigned long)entry);
+	printk(BIOS_SPEW, "lb_start = 0x%08lx\n", lb_start);
+	printk(BIOS_SPEW, "lb_size  = 0x%08lx\n", lb_size);
+	printk(BIOS_SPEW, "adjust   = 0x%08lx\n", adjust);
+	printk(BIOS_SPEW, "buffer   = 0x%08lx\n", buffer);
+	printk(BIOS_SPEW, "     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
+	printk(BIOS_SPEW, "adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
 	
 	/* Jump to kernel */
 	__asm__ __volatile__(

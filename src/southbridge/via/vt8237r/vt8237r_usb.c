@@ -34,16 +34,16 @@ static void usb_i_init(struct device *dev)
 #if CONFIG_EPIA_VT8237R_INIT
 	u8 reg8;
 
-	printk_debug("Entering %s\n", __func__);
+	printk(BIOS_DEBUG, "Entering %s\n", __func__);
 
-	printk_spew("%s Read %02X from PCI Command Reg\n", dev_path(dev), reg8);
+	printk(BIOS_SPEW, "%s Read %02X from PCI Command Reg\n", dev_path(dev), reg8);
 
 	reg8 = pci_read_config8(dev, 0x04);
 
 	reg8 = reg8 | PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config8(dev, 0x04, reg8);
 
-	printk_spew("%s Wrote %02X to PCI Command Reg\n", dev_path(dev), reg8);
+	printk(BIOS_SPEW, "%s Wrote %02X to PCI Command Reg\n", dev_path(dev), reg8);
 
 	/* Set Cache Line Size and Latency Timer */
 	pci_write_config8(dev, 0x0c, 0x08);
@@ -74,7 +74,7 @@ static void vt8237_usb_i_read_resources(struct device *dev)
 	struct resource *res;
 	u8 function = (u8) dev->path.pci.devfn & 0x7;
 
-	printk_spew("VT8237R Fixing USB 1.1 fn %d I/O resource = 0x%04X\n", function, usb_io_addr[function]);
+	printk(BIOS_SPEW, "VT8237R Fixing USB 1.1 fn %d I/O resource = 0x%04X\n", function, usb_io_addr[function]);
 
 	/* Fix the I/O Resources of the USB1.1 Interfaces */
 	/* Auto PCI probe seems to size the resources     */
@@ -98,7 +98,7 @@ static void usb_ii_init(struct device *dev)
 #if CONFIG_EPIA_VT8237R_INIT
 	u8 reg8;
 
-	printk_debug("Entering %s\n", __func__);
+	printk(BIOS_DEBUG, "Entering %s\n", __func__);
 
 	/* Set memory Write and Invalidate */
 	reg8 = pci_read_config8(dev, 0x04);

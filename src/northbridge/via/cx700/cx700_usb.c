@@ -28,7 +28,7 @@ static void usb_init(struct device *dev)
 	u8 reg8;
 
 	/* USB Specification says the device must be Bus Master */
-	printk_debug("UHCI: Setting up controller.. ");
+	printk(BIOS_DEBUG, "UHCI: Setting up controller.. ");
 
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
@@ -37,7 +37,7 @@ static void usb_init(struct device *dev)
 	reg8 |= (1 << 0);
 	pci_write_config8(dev, 0xca, reg8);
 
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 }
 
 static struct device_operations usb_ops = {

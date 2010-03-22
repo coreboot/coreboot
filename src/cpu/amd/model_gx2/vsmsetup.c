@@ -187,16 +187,16 @@ void do_vsmbios(void)
 	unsigned char *buf;
 	int i;
 
-	printk_err( "do_vsmbios\n");
+	printk(BIOS_ERR,  "do_vsmbios\n");
 	/* Clear VSM BIOS data area. */
 	for (i = 0x400; i < 0x500; i++)
 		*(volatile unsigned char *)i = 0;
 	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
-		printk_err("do_vsmbios: Failed to load VSA.\n");
+		printk(BIOS_ERR, "do_vsmbios: Failed to load VSA.\n");
 	}
 	buf = VSA2_BUFFER;
 
-	printk_debug("buf[0x20] signature is %x:%x:%x:%x\n",
+	printk(BIOS_DEBUG, "buf[0x20] signature is %x:%x:%x:%x\n",
 	       buf[0x20], buf[0x21], buf[0x22], buf[0x23]);
 	/* Check for POST code at start of vsainit.bin. If you don't see it,
 	 * don't bother.
@@ -207,7 +207,7 @@ void do_vsmbios(void)
 	}
 
 	/* ecx gets smm, edx gets sysm. */
-	printk_err("Call real_mode_switch_call_vsm\n");
+	printk(BIOS_ERR, "Call real_mode_switch_call_vsm\n");
 //	real_mode_switch_call_vsm(MSR_GLIU0_SMM, MSR_GLIU0_SYSMEM);
 
 	/* Restart Timer 1. */
@@ -216,7 +216,7 @@ void do_vsmbios(void)
 
 	/* Check that VSA is running OK. */
 	if (VSA_vrRead(SIGNATURE) == VSA2_SIGNATURE)
-		printk_debug("do_vsmbios: VSA2 VR signature verified\n");
+		printk(BIOS_DEBUG, "do_vsmbios: VSA2 VR signature verified\n");
 	else
 		die("FATAL: VSA2 VR signature not valid, install failed!\n");
 }

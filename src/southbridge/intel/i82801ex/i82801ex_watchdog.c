@@ -24,6 +24,6 @@ void watchdog_off(void)
         /* Clear TCO timeout status */
         outw(0x0008, base + 0x04);
         outw(0x0002, base + 0x06);
-        printk_debug("Watchdog ICH5 disabled\r\n");
+        printk(BIOS_DEBUG, "Watchdog ICH5 disabled\r\n");
 }
 

@@ -45,7 +45,7 @@ static void si_sata_init(struct device *dev)
         	dword &= ~(1<<0);
         	pci_write_config32(dev, 0x40, dword);
 
-		printk_debug("Class code restored.\n");
+		printk(BIOS_DEBUG, "Class code restored.\n");
 
 	}
 

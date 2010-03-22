@@ -114,7 +114,7 @@ u8 k8t890_early_setup_ht(void)
 
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos) {
 	
-	printk_debug("Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
+	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
 	switch (size) {
 	case 1:
 		outb((dword & 0xff), K8T890_NVRAM_IO_BASE+nvram_pos);
@@ -149,6 +149,6 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos) {
 		nvram_pos +=4;
 		break;
 	}
-	printk_debug("Loading %x of size %d to nvram pos:%d\n", * old_dword, size, nvram_pos-size);
+	printk(BIOS_DEBUG, "Loading %x of size %d to nvram pos:%d\n", * old_dword, size, nvram_pos-size);
 	return nvram_pos;
 }

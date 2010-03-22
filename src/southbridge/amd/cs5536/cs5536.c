@@ -155,10 +155,10 @@ static void ChipsetFlashSetup(void)
 	int i;
 	int numEnabled = 0;
 
-	printk_debug("ChipsetFlashSetup: Start\n");
+	printk(BIOS_DEBUG, "ChipsetFlashSetup: Start\n");
 	for (i = 0; i < FlashInitTableLen; i++) {
 		if (FlashInitTable[i].fType != FLASH_TYPE_NONE) {
-			printk_debug("Enable CS%d\n", i);
+			printk(BIOS_DEBUG, "Enable CS%d\n", i);
 			/* we need to configure the memory/IO mask */
 			msr = rdmsr(FlashPort[i]);
 			msr.hi = 0;	/* start with the "enabled" bit clear */
@@ -171,14 +171,14 @@ static void ChipsetFlashSetup(void)
 			else
 				msr.hi &= ~0x00000004;
 			msr.hi |= FlashInitTable[i].fMask;
-			printk_debug("MSR(0x%08X, %08X_%08X)\n", FlashPort[i],
+			printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n", FlashPort[i],
 				     msr.hi, msr.lo);
 			wrmsr(FlashPort[i], msr);
 
 			/* now write-enable the device */
 			msr = rdmsr(MDD_NORF_CNTRL);
 			msr.lo |= (1 << i);
-			printk_debug("MSR(0x%08X, %08X_%08X)\n", MDD_NORF_CNTRL,
+			printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n", MDD_NORF_CNTRL,
 				     msr.hi, msr.lo);
 			wrmsr(MDD_NORF_CNTRL, msr);
 
@@ -187,7 +187,7 @@ static void ChipsetFlashSetup(void)
 		}
 	}
 
-	printk_debug("ChipsetFlashSetup: Finish\n");
+	printk(BIOS_DEBUG, "ChipsetFlashSetup: Finish\n");
 
 }
 
@@ -566,7 +566,7 @@ void chipsetinit(void)
 	}
 
 	/*      Flash BAR size Setup */
-	printk_err("%sDoing ChipsetFlashSetup()\n",
+	printk(BIOS_ERR, "%sDoing ChipsetFlashSetup()\n",
 		   sb->enable_ide_nand_flash == 1 ? "" : "Not ");
 	if (sb->enable_ide_nand_flash == 1)
 		ChipsetFlashSetup();
@@ -594,7 +594,7 @@ static void southbridge_init(struct device *dev)
 	 * unsigned short gpiobase = MDD_GPIO;
 	 */
 
-	printk_err("cs5536: %s\n", __func__);
+	printk(BIOS_ERR, "cs5536: %s\n", __func__);
 	setup_i8259();
 	lpc_init(sb);
 	uarts_init(sb);
@@ -606,7 +606,7 @@ static void southbridge_init(struct device *dev)
 			(sb->enable_gpio_int_route >> 16));
 	}
 
-	printk_err("cs5536: %s: enable_ide_nand_flash is %d\n", __func__,
+	printk(BIOS_ERR, "cs5536: %s: enable_ide_nand_flash is %d\n", __func__,
 		   sb->enable_ide_nand_flash);
 	if (sb->enable_ide_nand_flash == 1) {
 		enable_ide_nand_flash_header();
@@ -616,7 +616,7 @@ static void southbridge_init(struct device *dev)
 
 	/* disable unwanted virtual PCI devices */
 	for (i = 0; (i < MAX_UNWANTED_VPCI) && (0 != sb->unwanted_vpci[i]); i++) {
-		printk_debug("Disabling VPCI device: 0x%08X\n",
+		printk(BIOS_DEBUG, "Disabling VPCI device: 0x%08X\n",
 			     sb->unwanted_vpci[i]);
 		outl(sb->unwanted_vpci[i] + 0x7C, 0xCF8);
 		outl(0xDEADBEEF, 0xCFC);
@@ -644,13 +644,13 @@ static void cs5536_read_resources(device_t dev)
 
 static void southbridge_enable(struct device *dev)
 {
-	printk_err("cs5536: %s: dev is %p\n", __func__, dev);
+	printk(BIOS_ERR, "cs5536: %s: dev is %p\n", __func__, dev);
 
 }
 
 static void cs5536_pci_dev_enable_resources(device_t dev)
 {
-	printk_err("cs5536: %s()\n", __func__);
+	printk(BIOS_ERR, "cs5536: %s()\n", __func__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }

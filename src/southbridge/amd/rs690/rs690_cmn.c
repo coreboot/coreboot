@@ -50,7 +50,7 @@ u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg)
 {
 	/*get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c) & ~0xF;
-	printk_debug("addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
+	printk(BIOS_DEBUG, "addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
 		     dev->path.pci.devfn);
 	addr |= dev->bus->secondary << 20 |	/* bus num */
 	    dev->path.pci.devfn << 12 | reg;
@@ -63,7 +63,7 @@ void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg_pos, u32 mask
 
 	/*get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c) & ~0xF;
-	/*printk_debug("write: addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
+	/*printk(BIOS_DEBUG, "write: addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
 		     dev->path.pci.devfn);*/
 	addr |= dev->bus->secondary << 20 |	/* bus num */
 	    dev->path.pci.devfn << 12 | reg_pos;
@@ -253,7 +253,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 		mdelay(40);
 		udelay(200);
 		lc_state = nbpcie_p_read_index(dev, 0xa5);	/* lc_state */
-		printk_debug("PcieLinkTraining port=%x:lc current state=%x\n",
+		printk(BIOS_DEBUG, "PcieLinkTraining port=%x:lc current state=%x\n",
 			     port, lc_state);
 		current = lc_state & 0x3f;	/* get LC_CURRENT_STATE, bit0-5 */
 
@@ -274,7 +274,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 			reg =
 			    pci_ext_read_config32(nb_dev, dev,
 						  PCIE_VC0_RESOURCE_STATUS);
-			printk_debug("PcieTrainPort reg=0x%x\n", reg);
+			printk(BIOS_DEBUG, "PcieTrainPort reg=0x%x\n", reg);
 			/* check bit1 */
 			if (reg & VC_NEGOTIATION_PENDING) {	/* bit1=1 means the link needs to be re-trained. */
 				/* set bit8=1, bit0-2=bit4-6 */

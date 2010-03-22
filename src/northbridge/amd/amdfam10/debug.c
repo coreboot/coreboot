@@ -28,16 +28,16 @@ static void udelay_tsc(u32 us);
 static  void print_debug_addr(const char *str, void *val)
 {
 #if CACHE_AS_RAM_ADDRESS_DEBUG == 1
-		printk_debug("------Address debug: %s%x------\n", str, val);
+		printk(BIOS_DEBUG, "------Address debug: %s%x------\n", str, val);
 #endif
 }
 
 static void print_debug_pci_dev(u32 dev)
 {
 #if CONFIG_PCI_BUS_SEGN_BITS==0
-	printk_debug("PCI: %02x:%02x.%02x", (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
+	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x", (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
 #else
-	printk_debug("PCI: %04x:%02x:%02x.%02x", (dev>>28) & 0x0f, (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
+	printk(BIOS_DEBUG, "PCI: %04x:%02x:%02x.%02x", (dev>>28) & 0x0f, (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
 #endif
 }
 
@@ -55,7 +55,7 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-		printk_debug(" %04x:%04x\n", (id & 0xffff), (id>>16));
+		printk(BIOS_DEBUG, " %04x:%04x\n", (id & 0xffff), (id>>16));
 		if(((dev>>12) & 0x07) == 0) {
 			u8 hdr_type;
 			hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
@@ -80,7 +80,7 @@ static void print_pci_devices_on_bus(u32 busn)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-		printk_debug(" %04x:%04x\n", (id & 0xffff), (id>>16));
+		printk(BIOS_DEBUG, " %04x:%04x\n", (id & 0xffff), (id>>16));
 		if(((dev>>12) & 0x07) == 0) {
 			u8 hdr_type;
 			hdr_type = pci_read_config8(dev, PCI_HEADER_TYPE);
@@ -103,11 +103,11 @@ static void dump_pci_device_range(u32 dev, u32 start_reg, u32 size)
 	for(i = start_reg; i < end; i+=4) {
 		u32 val;
 		if ((i & 0x0f) == 0) {
-			printk_debug("\n%04x:",i);
+			printk(BIOS_DEBUG, "\n%04x:",i);
 		}
 		val = pci_read_config32(dev, i);
 		for(j=0;j<4;j++) {
-			printk_debug(" %02x", val & 0xff);
+			printk(BIOS_DEBUG, " %02x", val & 0xff);
 			val >>= 8;
 		}
 	}
@@ -129,10 +129,10 @@ static void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
 	for(i = start; i < end; i++) {
 		u32 val;
 		int j;
-		printk_debug("\n%02x:",i);
+		printk(BIOS_DEBUG, "\n%02x:",i);
 		val = pci_read_config32_index_wait(dev, index_reg, i);
 		for(j=0;j<4;j++) {
-			printk_debug(" %02x", val & 0xff);
+			printk(BIOS_DEBUG, " %02x", val & 0xff);
 			val >>= 8;
 		}
 
@@ -160,10 +160,10 @@ static void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)
 	for(i = 0; i < length; i++) {
 		u32 val;
 		if ((i & 0x0f) == 0) {
-			printk_debug("\n%02x:",i);
+			printk(BIOS_DEBUG, "\n%02x:",i);
 		}
 		val = pci_read_config32_index(dev, index_reg, i|type);
-		printk_debug(" %08x", val);
+		printk(BIOS_DEBUG, " %08x", val);
 	}
 	print_debug("\n");
 }
@@ -231,38 +231,38 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		device = ctrl->spd_addr[i];
 		if (device) {
 			int j;
-			printk_debug("dimm: %02x.0: %02x", i, device);
+			printk(BIOS_DEBUG, "dimm: %02x.0: %02x", i, device);
 			for(j = 0; j < 128; j++) {
 				int status;
 				u8 byte;
 				if ((j & 0xf) == 0) {
-					printk_debug("\n%02x: ", j);
+					printk(BIOS_DEBUG, "\n%02x: ", j);
 				}
 				status = smbus_read_byte(device, j);
 				if (status < 0) {
 					break;
 				}
 				byte = status & 0xff;
-				printk_debug("%02x ", byte);
+				printk(BIOS_DEBUG, "%02x ", byte);
 			}
 			print_debug("\n");
 		}
 		device = ctrl->spd_addr[i+DIMM_SOCKETS];
 		if (device) {
 			int j;
-			printk_debug("dimm: %02x.1: %02x", i, device);
+			printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
 			for(j = 0; j < 128; j++) {
 				int status;
 				u8 byte;
 				if ((j & 0xf) == 0) {
-					printk_debug("\n%02x: ", j);
+					printk(BIOS_DEBUG, "\n%02x: ", j);
 				}
 				status = smbus_read_byte(device, j);
 				if (status < 0) {
 					break;
 				}
 				byte = status & 0xff;
-				printk_debug("%02x ", byte);
+				printk(BIOS_DEBUG, "%02x ", byte);
 			}
 			print_debug("\n");
 		}
@@ -275,7 +275,7 @@ static void dump_smbus_registers(void)
 	for(device = 1; device < 0x80; device++) {
 		int j;
 		if( smbus_read_byte(device, 0) < 0 ) continue;
-		printk_debug("smbus: %02x", device);
+		printk(BIOS_DEBUG, "smbus: %02x", device);
 		for(j = 0; j < 256; j++) {
 			int status;
 			u8 byte;
@@ -284,10 +284,10 @@ static void dump_smbus_registers(void)
 				break;
 			}
 			if ((j & 0xf) == 0) {
-				printk_debug("\n%02x: ",j);
+				printk(BIOS_DEBUG, "\n%02x: ",j);
 			}
 			byte = status & 0xff;
-			printk_debug("%02x ", byte);
+			printk(BIOS_DEBUG, "%02x ", byte);
 		}
 		print_debug("\n");
 	}
@@ -298,14 +298,14 @@ static void dump_io_resources(u32 port)
 
 	int i;
 	udelay_tsc(2000);
-	printk_debug("%04x:\n", port);
+	printk(BIOS_DEBUG, "%04x:\n", port);
 	for(i=0;i<256;i++) {
 		u8 val;
 		if ((i & 0x0f) == 0) {
-			printk_debug("%02x:", i);
+			printk(BIOS_DEBUG, "%02x:", i);
 		}
 		val = inb(port);
-		printk_debug(" %02x",val);
+		printk(BIOS_DEBUG, " %02x",val);
 		if ((i & 0x0f) == 0x0f) {
 			print_debug("\n");
 		}
@@ -319,9 +319,9 @@ static void dump_mem(u32 start, u32 end)
 	print_debug("dump_mem:");
 	for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
-			printk_debug("\n%08x:", i);
+			printk(BIOS_DEBUG, "\n%08x:", i);
 		}
-		printk_debug(" %02x", (u8)*((u8 *)i));
+		printk(BIOS_DEBUG, " %02x", (u8)*((u8 *)i));
 	}
 	print_debug("\n");
 }

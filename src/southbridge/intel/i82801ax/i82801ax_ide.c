@@ -43,9 +43,9 @@ static void ide_init(struct device *dev)
 	if (!config || config->ide0_enable) {
 		/* Enable primary IDE interface. */
 		ideTimingConfig |= IDE_DECODE_ENABLE;
-		printk_debug("IDE0: Primary IDE interface is enabled\n");
+		printk(BIOS_DEBUG, "IDE0: Primary IDE interface is enabled\n");
 	} else {
-		printk_info("IDE0: Primary IDE interface is disabled\n");
+		printk(BIOS_INFO, "IDE0: Primary IDE interface is disabled\n");
 	}
 	pci_write_config16(dev, IDE_TIM_PRI, ideTimingConfig);
 
@@ -54,9 +54,9 @@ static void ide_init(struct device *dev)
 	if (!config || config->ide1_enable) {
 		/* Enable secondary IDE interface. */
 		ideTimingConfig |= IDE_DECODE_ENABLE;
-		printk_debug("IDE1: Secondary IDE interface is enabled\n");
+		printk(BIOS_DEBUG, "IDE1: Secondary IDE interface is enabled\n");
 	} else {
-		printk_info("IDE1: Secondary IDE interface is disabled\n");
+		printk(BIOS_INFO, "IDE1: Secondary IDE interface is disabled\n");
 	}
 	pci_write_config16(dev, IDE_TIM_SEC, ideTimingConfig);
 }

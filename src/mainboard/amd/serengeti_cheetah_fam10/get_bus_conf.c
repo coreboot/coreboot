@@ -133,7 +133,7 @@ void get_bus_conf(void)
 	if (dev) {
 		m->bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-		printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8111_0, sysconf.sbdn);
+		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8111_0, sysconf.sbdn);
 	}
 
 	/* 8132-1 */
@@ -141,7 +141,7 @@ void get_bus_conf(void)
 	if (dev) {
 		m->bus_8132_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-		printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132_0, m->sbdn3);
+		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132_0, m->sbdn3);
 	}
 
 	/* 8132-2 */
@@ -149,7 +149,7 @@ void get_bus_conf(void)
 	if (dev) {
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
-		printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132_0, m->sbdn3+1);
+		printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132_0, m->sbdn3+1);
 	}
 
 	for(i=0; i< sysconf.hc_possible_num; i++) {
@@ -161,7 +161,7 @@ void get_bus_conf(void)
 			m->bus_type[j] = 1;
 		if(m->bus_isa <= busn_max)
 			m->bus_isa = busn_max + 1;
-		printk_debug("i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn, busn_max, m->bus_isa);
+		printk(BIOS_DEBUG, "i=%d bus range: [%x, %x] bus_isa=%x\n",i, busn, busn_max, m->bus_isa);
 	}
 
 	 /* HT chain 1 */
@@ -186,7 +186,7 @@ void get_bus_conf(void)
 			if (dev) {
 				m->bus_8132a[j][1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			} else {
-				printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132a[j][0], m->sbdn3a[j]);
+				printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132a[j][0], m->sbdn3a[j]);
 			}
 
 			/* 8132-2 */
@@ -194,7 +194,7 @@ void get_bus_conf(void)
 			if (dev) {
 				m->bus_8132a[j][2] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			} else {
-				printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132a[j][0], m->sbdn3a[j]+1);
+				printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8132a[j][0], m->sbdn3a[j]+1);
 			}
 
 			break;
@@ -209,7 +209,7 @@ void get_bus_conf(void)
 			if (dev) {
 				m->bus_8151[j][1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			} else {
-				printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8151[j][0], m->sbdn5[j]+1);
+				printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_8151[j][0], m->sbdn5[j]+1);
 			}
 
 			break;

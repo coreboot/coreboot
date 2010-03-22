@@ -226,7 +226,7 @@ done:
 	strcpymax(&program_string[j], processor_name_string,
 		  sizeof(program_string) - j);
 
-	printk_debug("CPU model: %s\n", program_string);
+	printk(BIOS_DEBUG, "CPU model: %s\n", program_string);
 
 	for (i = 0; i < 6; i++) {
 		msr.lo = p_program_string[(2 * i) + 0];

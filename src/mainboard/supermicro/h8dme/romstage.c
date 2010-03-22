@@ -102,7 +102,7 @@ static void dump_smbus_registers(void)
 		int j;
 		if (smbus_read_byte(device, 0) < 0)
 			continue;
-		printk_debug("smbus: %02x", device);
+		printk(BIOS_DEBUG, "smbus: %02x", device);
 		for (j = 0; j < 256; j++) {
 			int status;
 			unsigned char byte;
@@ -111,10 +111,10 @@ static void dump_smbus_registers(void)
 				break;
 			}
 			if ((j & 0xf) == 0) {
-				printk_debug("\r\n%02x: ", j);
+				printk(BIOS_DEBUG, "\r\n%02x: ", j);
 			}
 			byte = status & 0xff;
-			printk_debug("%02x ", byte);
+			printk(BIOS_DEBUG, "%02x ", byte);
 		}
 		print_debug("\r\n");
 	}

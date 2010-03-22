@@ -15,21 +15,21 @@
 static inline void print_debug_fv(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-		printk_debug("%s%x\r\n", str, val);
+		printk(BIOS_DEBUG, "%s%x\r\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_8(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-		printk_debug("%s%02x\r\n", str, val);
+		printk(BIOS_DEBUG, "%s%02x\r\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_64(const char *str, unsigned val, unsigned val2)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-		printk_debug("%s%x%x\r\n", str, val, val2);
+		printk(BIOS_DEBUG, "%s%x%x\r\n", str, val, val2);
 #endif
 }
 
@@ -131,7 +131,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	apicidx = lapicid();
 
 	if (apicid != apicidx) {
-		printk_err("wrong apicid, we want change %x, but it is %x\r\n", apicid, apicidx);
+		printk(BIOS_ERR, "wrong apicid, we want change %x, but it is %x\r\n", apicid, apicidx);
 		return fidvid;
 	}
 
@@ -201,8 +201,8 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	 *	transition to target fid
 	 */
 
-	printk_debug("Current fid_cur: 0x%x, fid_max: 0x%x\n", fid_cur, fid_max);
-	printk_debug("Requested fid_new: 0x%x\n", fid_new);
+	printk(BIOS_DEBUG, "Current fid_cur: 0x%x, fid_max: 0x%x\n", fid_cur, fid_max);
+	printk(BIOS_DEBUG, "Requested fid_new: 0x%x\n", fid_new);
 
 	step_limit = 8; /* max 8 steps just in case... */
 	while ((fid_cur != fid_new) && (step_limit--)) {
@@ -218,7 +218,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 		/* If 200Mhz step OR past 3200 max table value */
 		if ((step == 2) || (fid_new >= 0x18 || fid_cur >= 0x18)) {
 
-			printk_debug("200MHZ step ");
+			printk(BIOS_DEBUG, "200MHZ step ");
 
 			/* Step +/- 200MHz at a time */
 			if (fid_cur < fid_new)
@@ -231,7 +231,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 			int temp;
 
 			/* look it up in the table */
-			printk_debug("FidVid table step ");
+			printk(BIOS_DEBUG, "FidVid table step ");
 
 			temp = next_fid_200[((fid_new/2) * 13) + (fid_cur/2)];
 
@@ -243,7 +243,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 				break; /* table error */
 
 		} else { /* step < 2 (100MHZ) */
-			printk_debug("100MHZ step ");
+			printk(BIOS_DEBUG, "100MHZ step ");
 
 			/* The table adjust in 200MHz increments. If requested,
 			 * do the 100MHz increment if the CPU supports it.*/
@@ -251,17 +251,17 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 				fid_temp = fid_cur + 1;
 			} else {
 				/* 100 MHZ not supported. Get out of the loop */
-				printk_debug("is not supported.\n");
+				printk(BIOS_DEBUG, "is not supported.\n");
 				break;
 			}
 		}
 
 		if(fid_temp > fid_max) {
-			printk_debug("fid_temp 0x%x > fid_max 0x%x\n", fid_temp, fid_max);
+			printk(BIOS_DEBUG, "fid_temp 0x%x > fid_max 0x%x\n", fid_temp, fid_max);
 			break;
 		}
 
-		printk_debug("fidvid: 0x%x\n", fid_temp);
+		printk(BIOS_DEBUG, "fidvid: 0x%x\n", fid_temp);
 
 		/* set target fid */
 		msr.hi = 0x190; /* 2 us for AMD NPT Family 0Fh Processors */

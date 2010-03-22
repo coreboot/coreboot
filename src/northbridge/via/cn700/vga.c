@@ -54,7 +54,7 @@ static void vga_init(device_t dev)
 	 */
 	memcpy(0xf0000, (0xffffffff - CONFIG_ROM_SIZE - 0xffff), 0x10000);
 
-	printk_debug("Initializing VGA\n");
+	printk(BIOS_DEBUG, "Initializing VGA\n");
 
 	/* Set memory rate to 200 MHz. */
 	outb(0x3d, CRTM_INDEX);
@@ -74,12 +74,12 @@ static void vga_init(device_t dev)
 	pci_write_config32(dev, 0x10, 0xf4000008);
 	pci_write_config32(dev, 0x14, 0xfb000000);
 
-	printk_debug("INSTALL REAL-MODE IDT\n");
+	printk(BIOS_DEBUG, "INSTALL REAL-MODE IDT\n");
 	setup_realmode_idt();
-	printk_debug("DO THE VGA BIOS\n");
+	printk(BIOS_DEBUG, "DO THE VGA BIOS\n");
 	do_vgabios();
 	/* VGA seems to work without this, but crash & burn with it. */
-	// printk_debug("Enable VGA console\n");
+	// printk(BIOS_DEBUG, "Enable VGA console\n");
 	// vga_enable_console();
 
 	/* It's not clear if these need to be programmed before or after

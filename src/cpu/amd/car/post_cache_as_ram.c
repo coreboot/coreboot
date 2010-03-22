@@ -5,7 +5,7 @@
 
 static inline void print_debug_pcar(const char *strval, uint32_t val)
 {
-	printk_debug("%s%08x\r\n", strval, val);
+	printk(BIOS_DEBUG, "%s%08x\r\n", strval, val);
 }
 
 /* from linux kernel 2.6.32 asm/string_32.h */

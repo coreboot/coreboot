@@ -83,7 +83,7 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 	}
 
 
-	printk_debug("%s AMD8131 PCI-X tuning\n", dev_path(dev));
+	printk(BIOS_DEBUG, "%s AMD8131 PCI-X tuning\n", dev_path(dev));
 	status = pci_read_config32(dev, cap + PCI_X_STATUS);
 	orig_cmd = cmd = pci_read_config16(dev,cap + PCI_X_CMD);
 
@@ -170,7 +170,7 @@ static void amd8131_pcix_tune_dev(device_t dev, void *ptr)
 		}
 	}
 #if 0
-	printk_debug("%s max_read: %d max_tran: %d sibs: %d sib_funcs: %d\n",
+	printk(BIOS_DEBUG, "%s max_read: %d max_tran: %d sibs: %d sib_funcs: %d\n",
 		dev_path(dev), max_read, max_tran, sibs, sib_funcs, sib_funcs);
 #endif
 	if (max_read != ((cmd & PCI_X_CMD_MAX_READ) >> 2)) {
@@ -214,7 +214,7 @@ static unsigned int amd8131_scan_bus(struct bus *bus,
 	info.sstatus = pci_read_config16(bus->dev, pos + PCI_X_SEC_STATUS);
 
 	/* Print the PCI-X bus speed */
-	printk_debug("PCI: %02x: %s\n", bus->secondary, pcix_speed(info.sstatus));
+	printk(BIOS_DEBUG, "PCI: %02x: %s\n", bus->secondary, pcix_speed(info.sstatus));
 
 
 	/* Examine the bus and find out how loaded it is */
@@ -260,7 +260,7 @@ static unsigned int amd8131_scan_bus(struct bus *bus,
 	 * implement relaxed ordering.  Errata #58
 	 */
 	for(pbus = bus; !pbus->disable_relaxed_ordering; pbus = pbus->dev->bus) {
-		printk_spew("%s disabling relaxed ordering\n",
+		printk(BIOS_SPEW, "%s disabling relaxed ordering\n",
 			bus_path(pbus));
 		pbus->disable_relaxed_ordering = 1;
 	}

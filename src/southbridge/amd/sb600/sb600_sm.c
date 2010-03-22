@@ -54,7 +54,7 @@ static void sm_init(device_t dev)
 	u32 on;
 	u32 nmi_option;
 
-	printk_info("sm_init().\n");
+	printk(BIOS_INFO, "sm_init().\n");
 
 	ioapic_base = pci_read_config32(dev, 0x74) & (0xffffffe0);	/* some like mem resource, but does not have  enable bit */
 	/* Don't rename APIC ID */
@@ -98,7 +98,7 @@ static void sm_init(device_t dev)
 	}
 	byte |= 1 << 2;
 	pm_iowrite(0x74, byte);
-	printk_info("set power %s after power fail\n", on ? "on" : "off");
+	printk(BIOS_INFO, "set power %s after power fail\n", on ? "on" : "off");
 
 	/* sb600 rpr:2.3.3: */
 	byte = pm_ioread(0x9A);
@@ -154,10 +154,10 @@ static void sm_init(device_t dev)
 	get_option(&nmi_option, "nmi");
 	if (nmi_option) {
 		byte &= ~(1 << 7);	/* set NMI */
-		printk_info("++++++++++set NMI+++++\n");
+		printk(BIOS_INFO, "++++++++++set NMI+++++\n");
 	} else {
 		byte |= (1 << 7);	/* Can not mask NMI from PCI-E and NMI_NOW */
-		printk_info("++++++++++no set NMI+++++\n");
+		printk(BIOS_INFO, "++++++++++no set NMI+++++\n");
 	}
 	byte &= ~(1 << 7);
 	if (byte != byte_old) {
@@ -197,9 +197,9 @@ static void sm_init(device_t dev)
 	/* 3.12: Enabling AB and BIF Clock Gating */
 	abcfg_reg(0x10054, 0xFFFF0000, 0x1040000);
 	abcfg_reg(0x54, 0xFF << 16, 4 << 16);
-	printk_info("3.11, ABCFG:0x54\n");
+	printk(BIOS_INFO, "3.11, ABCFG:0x54\n");
 	abcfg_reg(0x54, 1 << 24, 1 << 24);
-	printk_info("3.12, ABCFG:0x54\n");
+	printk(BIOS_INFO, "3.12, ABCFG:0x54\n");
 	abcfg_reg(0x98, 0x0000FF00, 0x00004700);
 
 	/* 3.13:Enabling AB Int_Arbiter Enhancement (for All Revisions) */
@@ -211,7 +211,7 @@ static void sm_init(device_t dev)
 
 	abcfg_reg(0x10098, 0xFFFFFFFF, 0x4000);
 	abcfg_reg(0x04, 0xFFFFFFFF, 0x6);
-	printk_info("sm_init() end\n");
+	printk(BIOS_INFO, "sm_init() end\n");
 
 	/* Enable NbSb virtual channel */
 	axcfg_reg(0x114, 0x3f << 1, 0 << 1);

@@ -14,7 +14,7 @@ static int enabled = 0;
 
 void hard_reset(void) 
 {
-	printk_err("NO HARD RESET ON VT8235! FIX ME!\n");
+	printk(BIOS_ERR, "NO HARD RESET ON VT8235! FIX ME!\n");
 }
 
 static void keyboard_on(struct device *dev)
@@ -34,11 +34,11 @@ void dump_south(device_t dev0)
 	int i,j;
 	
 	for(i = 0; i < 256; i += 16) {
-		printk_debug("0x%x: ", i);
+		printk(BIOS_DEBUG, "0x%x: ", i);
 		for(j = 0; j < 16; j++) {
-			printk_debug("%02x ", pci_read_config8(dev0, i+j));
+			printk(BIOS_DEBUG, "%02x ", pci_read_config8(dev0, i+j));
 		}
-		printk_debug("\n");
+		printk(BIOS_DEBUG, "\n");
 	}
 }
 
@@ -61,7 +61,7 @@ static void vt8235_enable(struct device *dev)
 	vendor = pci_read_config16(dev,0);
 	model = pci_read_config16(dev,0x2);
 
-	printk_debug("In vt8235_enable %04x %04x.\n",vendor,model);
+	printk(BIOS_DEBUG, "In vt8235_enable %04x %04x.\n",vendor,model);
 	
 	/* if this is not the southbridge itself just return */
 	/* this is necessary because USB devices are slot 10, whereas this device is slot 11 
@@ -70,7 +70,7 @@ static void vt8235_enable(struct device *dev)
 	if( (vendor != PCI_VENDOR_ID_VIA) || (model != PCI_DEVICE_ID_VIA_8235))
 		return;
 
-	printk_debug("Initialising Devices\n");
+	printk(BIOS_DEBUG, "Initialising Devices\n");
 
 
 	setup_i8259();   // make sure interupt controller is configured before keyboard init 

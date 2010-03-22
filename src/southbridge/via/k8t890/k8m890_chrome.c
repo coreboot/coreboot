@@ -125,7 +125,7 @@ chrome_init(struct device *dev)
 
 	fb_size = k8m890_host_fb_size_get();
 	if (!fb_size) {
-		printk_warning("Chrome: Device has not been initialised in the"
+		printk(BIOS_WARNING, "Chrome: Device has not been initialised in the"
 			       " ramcontroller!\n");
 		return;
 	}
@@ -133,11 +133,11 @@ chrome_init(struct device *dev)
 	fb_address = pci_read_config32(dev, 0x10);
 	fb_address &= ~0x0F;
 	if (!fb_address) {
-		printk_warning("Chrome: No FB BAR assigned!\n");
+		printk(BIOS_WARNING, "Chrome: No FB BAR assigned!\n");
 		return;
 	}
 
-	printk_info("Chrome: Using %dMB Framebuffer at 0x%08X.\n",
+	printk(BIOS_INFO, "Chrome: Using %dMB Framebuffer at 0x%08X.\n",
 		    fb_size, fb_address);
 
 	//k8m890_host_fb_direct_set(fb_address);
@@ -154,7 +154,7 @@ chrome_init(struct device *dev)
 	vga_console_init();
 #endif
 
-	printk_info("Chrome VGA Textmode initialized.\n");
+	printk(BIOS_INFO, "Chrome VGA Textmode initialized.\n");
 
 #if CONFIG_CONSOLE_VGA == 0
 	/* if we don't have console, at least print something... */

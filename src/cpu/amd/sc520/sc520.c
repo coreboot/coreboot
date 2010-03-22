@@ -36,9 +36,9 @@ static void cpu_init(device_t dev)
   unsigned long *l = (unsigned long *) 0xfffef088;
   int i;
   for(i = 0; i < 16; i++, l++)
-    printk_err("Par%d: 0x%lx\n", i, *l);
+    printk(BIOS_ERR, "Par%d: 0x%lx\n", i, *l);
 
-  printk_spew("SC520 random fixup ...\n");
+  printk(BIOS_SPEW, "SC520 random fixup ...\n");
 }
 
 
@@ -49,14 +49,14 @@ static void cpu_init(device_t dev)
 void sc520_enable_resources(struct device *dev) {
 	unsigned char command;
 
-	printk_spew("%s\n", __func__);
+	printk(BIOS_SPEW, "%s\n", __func__);
         command = pci_read_config8(dev, PCI_COMMAND);
-        printk_spew("========>%s, command 0x%x\n", __func__, command);
+        printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
         command |= PCI_COMMAND_MEMORY | PCI_COMMAND_PARITY | PCI_COMMAND_SERR;
-        printk_spew("========>%s, command 0x%x\n", __func__, command);
+        printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
         pci_write_config8(dev, PCI_COMMAND, command);
         command = pci_read_config8(dev, PCI_COMMAND);
-        printk_spew("========>%s, command 0x%x\n", __func__, command);
+        printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
 /*
  */
 
@@ -100,7 +100,7 @@ static void ram_resource(device_t dev, unsigned long index,
         unsigned long basek, unsigned long sizek)
 {
         struct resource *resource;
-  printk_spew("%s sizek 0x%x\n", __func__, sizek);
+  printk(BIOS_SPEW, "%s sizek 0x%x\n", __func__, sizek);
         if (!sizek) {
                 return;
         }
@@ -126,14 +126,14 @@ static uint32_t find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
 	uint32_t tolm;
-  printk_spew("%s\n", __func__);
+  printk(BIOS_SPEW, "%s\n", __func__);
 	min = 0;
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
 	tolm = 0xffffffffUL;
 	if (min && tolm > min->base) {
 		tolm = min->base;
 	}
-  printk_spew("%s returns 0x%x\n", __func__, tolm);
+  printk(BIOS_SPEW, "%s returns 0x%x\n", __func__, tolm);
 	return tolm;
 }
 
@@ -141,7 +141,7 @@ static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
         uint32_t pci_tolm;
-  printk_spew("%s\n", __func__);
+  printk(BIOS_SPEW, "%s\n", __func__);
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
 	if (mc_dev) {
@@ -162,10 +162,10 @@ static void pci_domain_set_resources(device_t dev)
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk_err("ERROR! register 0x%x is not set!\n", 
+				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n", 
 					ramregs[i]);
 		}
-		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
+		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
 		tomk = rambits*8*1024;
 #endif
 		tomk = 32 * 1024;
@@ -186,20 +186,20 @@ static void pci_domain_set_resources(device_t dev)
 #if 0
 void sc520_enable_resources(device_t dev) {
 
-	printk_spew("%s\n", __func__);
-	printk_spew("THIS IS FOR THE SC520 =============================\n");
+	printk(BIOS_SPEW, "%s\n", __func__);
+	printk(BIOS_SPEW, "THIS IS FOR THE SC520 =============================\n");
 
 /*
 	command = pci_read_config8(dev, PCI_COMMAND);
-	printk_spew("%s, command 0x%x\n", __func__, command);
+	printk(BIOS_SPEW, "%s, command 0x%x\n", __func__, command);
 	command |= PCI_COMMAND_MEMORY;
-	printk_spew("%s, command 0x%x\n", __func__, command);
+	printk(BIOS_SPEW, "%s, command 0x%x\n", __func__, command);
 	pci_write_config8(dev, PCI_COMMAND, command);
 	command = pci_read_config8(dev, PCI_COMMAND);
-	printk_spew("%s, command 0x%x\n", __func__, command);
+	printk(BIOS_SPEW, "%s, command 0x%x\n", __func__, command);
  */
 	enable_childrens_resources(dev);
-	printk_spew("%s\n", __func__);
+	printk(BIOS_SPEW, "%s\n", __func__);
 }
 #endif
 
@@ -220,7 +220,7 @@ static struct device_operations pci_domain_ops = {
 #if 0
 static void cpu_bus_init(device_t dev)
 {
-  printk_spew("cpu_bus_init\n");
+  printk(BIOS_SPEW, "cpu_bus_init\n");
 }
 
 static void cpu_bus_noop(device_t dev)
@@ -238,7 +238,7 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-  printk_spew("%s\n", __func__);
+  printk(BIOS_SPEW, "%s\n", __func__);
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
                 dev->ops = &pci_domain_ops;

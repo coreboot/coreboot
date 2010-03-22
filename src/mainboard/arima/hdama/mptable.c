@@ -80,7 +80,7 @@ static unsigned node_link_to_bus(unsigned node, unsigned link)
 		dst_link = (config_map >> 8) & 3;
 		bus_base = (config_map >> 16) & 0xff;
 #if 0				
-		printk_debug("node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
+		printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
 			dst_node, dst_link, bus_base,
 			reg, config_map);
 #endif
@@ -153,7 +153,7 @@ static void *smp_write_config_table(void *v)
 		/* HT chain 0 */
 		bus_chain_0 = node_link_to_bus(0, 0);
 		if (bus_chain_0 == 0xff) {
-			printk_debug("ERROR - cound not find bus for node 0 chain 0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - cound not find bus for node 0 chain 0, using defaults\n");
 			bus_chain_0 = 0;
 		}
 
@@ -165,7 +165,7 @@ static void *smp_write_config_table(void *v)
 			bus_isa++;
 		}
 		else {
-			printk_debug("ERROR - could not find PCI %02x:03.0, using defaults\n", bus_chain_0);
+			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:03.0, using defaults\n", bus_chain_0);
 
 			bus_8111_1 = 4;
 			bus_isa = 5;
@@ -177,7 +177,7 @@ static void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_chain_0);
+			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:01.0, using defaults\n", bus_chain_0);
 
 			bus_8131_1 = 2;
 		}
@@ -188,7 +188,7 @@ static void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_chain_0);
+			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:02.0, using defaults\n", bus_chain_0);
 
 			bus_8131_2 = 3;
 		}
@@ -313,7 +313,7 @@ static void *smp_write_config_table(void *v)
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }
@@ -329,26 +329,26 @@ static void reboot_if_hotswap(void)
 	unsigned bus_chain_0 = node_link_to_bus(0, 0);
 
 	reset = 0;
-	printk_debug("Looking for bad PCIX MHz input\n");
+	printk(BIOS_DEBUG, "Looking for bad PCIX MHz input\n");
 	dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x02,0));
 	if (!dev)
-		printk_debug("Couldn't find %02x:02.0 \n", bus_chain_0);
+		printk(BIOS_DEBUG, "Couldn't find %02x:02.0 \n", bus_chain_0);
 	else {
 		data = pci_read_config32(dev, 0xa0);
 		if(!(((data>>16)&0x03)==0x03)) {
 			reset=1;
-			printk_debug("Bad PCIX MHz - Reset\n");
+			printk(BIOS_DEBUG, "Bad PCIX MHz - Reset\n");
 		}
 	}
-	printk_debug("Looking for bad Hot Swap Enable\n");
+	printk(BIOS_DEBUG, "Looking for bad Hot Swap Enable\n");
 	dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x01,0));
 	if (!dev)
-		printk_debug("Couldn't find %02x:01.0 \n", bus_chain_0);
+		printk(BIOS_DEBUG, "Couldn't find %02x:01.0 \n", bus_chain_0);
 	else {
 		data = pci_read_config32(dev, 0x48);
 		if(data & 0x0c) {
 			reset=1;
-			printk_debug("Bad Hot Swap start - Reset\n");
+			printk(BIOS_DEBUG, "Bad Hot Swap start - Reset\n");
 		}
 	}
 	if(reset) {
@@ -363,7 +363,7 @@ static void reboot_if_hotswap(void)
 		outb(0x0e, 0x0cf9);
 	}
 	else {
-		printk_debug("OK 133MHz & Hot Swap is off\n");
+		printk(BIOS_DEBUG, "OK 133MHz & Hot Swap is off\n");
 	}
 }
 

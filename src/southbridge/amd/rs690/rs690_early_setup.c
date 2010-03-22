@@ -133,23 +133,23 @@ static void get_cpu_rev()
 	u32 eax, ebx, ecx, edx;
 	__asm__ volatile ("cpuid":"=a" (eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
 			  :"0"(1));
-	printk_info("get_cpu_rev EAX=0x%x.\n", eax);
+	printk(BIOS_INFO, "get_cpu_rev EAX=0x%x.\n", eax);
 	if (eax <= 0xfff)
-		printk_info("CPU Rev is K8_Cx.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Cx.\n");
 	else if (eax <= 0x10fff)
-		printk_info("CPU Rev is K8_Dx.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Dx.\n");
 	else if (eax <= 0x20fff)
-		printk_info("CPU Rev is K8_Ex.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Ex.\n");
 	else if (eax <= 0x40fff)
-		printk_info("CPU Rev is K8_Fx.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_Fx.\n");
 	else if (eax == 0x60fb1 || eax == 0x60f81)	/*These two IDS are exception, they are G1. */
-		printk_info("CPU Rev is K8_G1.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_G1.\n");
 	else if (eax <= 0X60FF0)
-		printk_info("CPU Rev is K8_G0.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_G0.\n");
 	else if (eax <= 0x100000)
-		printk_info("CPU Rev is K8_G1.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_G1.\n");
 	else
-		printk_info("CPU Rev is K8_10.\n");
+		printk(BIOS_INFO, "CPU Rev is K8_10.\n");
 }
 
 static u8 get_nb_rev(device_t nb_dev)
@@ -197,19 +197,19 @@ static void rs690_htinit()
 	************************/
 	reg = pci_read_config32(k8_f0, 0x88);
 	k8_ht_freq = (reg & 0xf00) >> 8;
-	printk_spew("rs690_htinit k8_ht_freq=%x.\n", k8_ht_freq);
+	printk(BIOS_SPEW, "rs690_htinit k8_ht_freq=%x.\n", k8_ht_freq);
 	rs690_f0 = PCI_DEV(0, 0, 0);
 	reg8 = pci_read_config8(rs690_f0, 0x9c);
-	printk_spew("rs690_htinit NB_CFG_Q_F1000_800=%x\n", reg8);
+	printk(BIOS_SPEW, "rs690_htinit NB_CFG_Q_F1000_800=%x\n", reg8);
 	/* For 1000 MHz HT, NB_CFG_Q_F1000_800 bit 0 MUST be set.
 	 * For any other HT frequency, NB_CFG_Q_F1000_800 bit 0 MUST NOT be set.
 	 */
 	if (((k8_ht_freq == 0x6) || (k8_ht_freq == 0xf)) && (!(reg8 & 0x1))) {
-		printk_info("rs690_htinit setting bit 0 in NB_CFG_Q_F1000_800 to use 1 GHz HT\n");
+		printk(BIOS_INFO, "rs690_htinit setting bit 0 in NB_CFG_Q_F1000_800 to use 1 GHz HT\n");
 		reg8 |= 0x1;
 		pci_write_config8(rs690_f0, 0x9c, reg8);
 	} else if ((k8_ht_freq != 0x6) && (k8_ht_freq != 0xf) && (reg8 & 0x1)) {
-		printk_info("rs690_htinit clearing bit 0 in NB_CFG_Q_F1000_800 to not use 1 GHz HT\n");
+		printk(BIOS_INFO, "rs690_htinit clearing bit 0 in NB_CFG_Q_F1000_800 to not use 1 GHz HT\n");
 		reg8 &= ~0x1;
 		pci_write_config8(rs690_f0, 0x9c, reg8);
 	}
@@ -234,7 +234,7 @@ static void k8_optimization()
 	device_t k8_f0, k8_f2, k8_f3;
 	msr_t msr;
 
-	printk_info("k8_optimization()\n");
+	printk(BIOS_INFO, "k8_optimization()\n");
 	k8_f0 = PCI_DEV(0, 0x18, 0);
 	k8_f2 = PCI_DEV(0, 0x18, 2);
 	k8_f3 = PCI_DEV(0, 0x18, 3);
@@ -425,7 +425,7 @@ static void rs690_por_htiu_index_init(device_t nb_dev)
 *****************************************/
 static void rs690_por_init(device_t nb_dev)
 {
-	printk_info("rs690_por_init\n");
+	printk(BIOS_INFO, "rs690_por_init\n");
 	/* ATINB_PCICFG_POR_TABLE, initialize the values for rs690 PCI Config registers */
 	rs690_por_pcicfg_init(nb_dev);
 
@@ -463,19 +463,19 @@ static void rs690_before_pci_init()
 static void rs690_early_setup()
 {
 	device_t nb_dev = PCI_DEV(0, 0, 0);
-	printk_info("rs690_early_setup()\n");
+	printk(BIOS_INFO, "rs690_early_setup()\n");
 
 	/*ATINB_PrepareInit */
 	get_cpu_rev();
 	switch (get_nb_rev(nb_dev)) {	/* PCIEMiscInit */
 	case 5:
-		printk_info("NB Revision is A11.\n");
+		printk(BIOS_INFO, "NB Revision is A11.\n");
 		break;
 	case 6:
-		printk_info("NB Revision is A12.\n");
+		printk(BIOS_INFO, "NB Revision is A12.\n");
 		break;
 	case 7:
-		printk_info("NB Revision is A21.\n");
+		printk(BIOS_INFO, "NB Revision is A21.\n");
 		break;
 	}
 

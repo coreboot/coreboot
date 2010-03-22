@@ -43,7 +43,7 @@ static void init(struct device *dev)
 {
 	struct mainboard_config *mb = dev->chip_info;
 	unsigned int gpio_base, i;
-	printk_debug("LiPPERT SpaceRunner-LX ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "LiPPERT SpaceRunner-LX ENTER %s\n", __func__);
 
 	/* Init CS5536 GPIOs */
 	gpio_base = pci_read_config32(dev_find_device(PCI_VENDOR_ID_AMD,
@@ -66,7 +66,7 @@ static void init(struct device *dev)
 	}
 
 	outb(mb->sio_gp1x_config, 0x1220); /* Simple-I/O GP17-10 */
-	printk_debug("LiPPERT SpaceRunner-LX EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "LiPPERT SpaceRunner-LX EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

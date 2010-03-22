@@ -41,7 +41,7 @@ static void memctrl_init(device_t dev)
 	u8 ranks, pagec, paged, pagee, pagef, shadowreg, reg8;
 	int i, j;
 
-	printk_spew("Entering cn400 memctrl_init.\n");
+	printk(BIOS_SPEW, "Entering cn400 memctrl_init.\n");
 	/* vlink mirror */
 	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				    PCI_DEVICE_ID_VIA_CN400_VLINK, 0);
@@ -53,7 +53,7 @@ static void memctrl_init(device_t dev)
 	reg16 = (((u16)(ranks - 1) << 9) & 0xFFF0) | 0x01F0;
 
 	pci_write_config16(dev, 0x84, reg16);
-	printk_spew("Low Top Address = 0x%04X\n", reg16);
+	printk(BIOS_SPEW, "Low Top Address = 0x%04X\n", reg16);
 
 	/* Set up the VGA framebuffer size and Base Address   */
 	/* Note dependencies between agp.c and vga.c and here */
@@ -110,20 +110,20 @@ static void memctrl_init(device_t dev)
 	pci_write_config8(dev, 0xA0, reg8);
 
 #ifdef DEBUG_CN400
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 #endif
-	printk_spew("Leaving cn400 %s.\n", __func__);
+	printk(BIOS_SPEW, "Leaving cn400 %s.\n", __func__);
 }
 
 static const struct device_operations memctrl_operations = {
@@ -144,7 +144,7 @@ static void cn400_domain_read_resources(device_t dev)
 {
 	struct resource *resource;
 
-	printk_spew("Entering %s.\n", __func__);
+	printk(BIOS_SPEW, "Entering %s.\n", __func__);
 
 	/* Initialize the system wide I/O space constraints. */
 	resource = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
@@ -158,7 +158,7 @@ static void cn400_domain_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 	    IORESOURCE_ASSIGNED;
 
-	printk_spew("Leaving %s.\n", __func__);
+	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
 }
 
 static void ram_resource(device_t dev, unsigned long index,
@@ -180,7 +180,7 @@ static void ram_reservation(device_t dev, unsigned long index,
 {
 	struct resource *res;
 
-	printk_spew("Configuring Via C3 LAPIC Fixed Resource\n");
+	printk(BIOS_SPEW, "Configuring Via C3 LAPIC Fixed Resource\n");
 	/* Fixed LAPIC resource */
 	res = new_resource(dev, 1);
 	res->base = (resource_t) base;
@@ -205,7 +205,7 @@ static u32 find_pci_tolm(struct bus *bus)
 	struct resource *min = NULL;
 	u32 tolm;
 
-	printk_spew("Entering CN400 find_pci_tolm\n");
+	printk(BIOS_SPEW, "Entering CN400 find_pci_tolm\n");
 
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM,
 			     tolm_test, &min);
@@ -213,7 +213,7 @@ static u32 find_pci_tolm(struct bus *bus)
 	if (min && tolm > min->base)
 		tolm = min->base;
 
-	printk_spew("Leaving CN400 find_pci_tolm\n");
+	printk(BIOS_SPEW, "Leaving CN400 find_pci_tolm\n");
 
 	return tolm;
 }
@@ -229,7 +229,7 @@ static void cn400_domain_set_resources(device_t dev)
 	device_t mc_dev;
 	u32 pci_tolm;
 
-	printk_spew("Entering %s.\n", __func__);
+	printk(BIOS_SPEW, "Entering %s.\n", __func__);
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
@@ -244,7 +244,7 @@ static void cn400_domain_set_resources(device_t dev)
 		tomk = rambits * 32 * 1024;
 		/* Compute the Top Of Low Memory (TOLM), in Kb. */
 		tolmk = pci_tolm >> 10;
-		printk_spew("tomk is 0x%x, tolmk is 0x%08X\n", tomk, tolmk);
+		printk(BIOS_SPEW, "tomk is 0x%x, tolmk is 0x%08X\n", tomk, tolmk);
 		if (tolmk >= tomk) {
 			/* The PCI hole does does not overlap the memory. */
 			tolmk = tomk;
@@ -254,7 +254,7 @@ static void cn400_domain_set_resources(device_t dev)
 		/* Locate the High Tables at the Top of Low Memory below the Video RAM */
 		high_tables_base = (uint64_t) (tolmk - (CONFIG_VIDEO_MB *1024) - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = (uint64_t) HIGH_TABLES_SIZE* 1024;
-		printk_spew("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+		printk(BIOS_SPEW, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
 #endif
 
 		/* Report the memory regions. */
@@ -267,12 +267,12 @@ static void cn400_domain_set_resources(device_t dev)
 	}
 	assign_resources(&dev->link[0]);
 	
-	printk_spew("Leaving %s.\n", __func__);
+	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
 }
 
 static unsigned int cn400_domain_scan_bus(device_t dev, unsigned int max)
 {
-	printk_debug("Entering %s.\n", __func__);
+	printk(BIOS_DEBUG, "Entering %s.\n", __func__);
 
 	max = pci_scan_bus(&dev->link[0], PCI_DEVFN(0, 0), 0xff, max);
 	return max;
@@ -305,7 +305,7 @@ static const struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk_spew("In cn400 enable_dev for device %s.\n", dev_path(dev));
+	printk(BIOS_SPEW, "In cn400 enable_dev for device %s.\n", dev_path(dev));
 
 	/* Set the operations if it is a special bus type. */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {

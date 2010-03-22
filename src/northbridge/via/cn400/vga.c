@@ -52,14 +52,14 @@ static void vga_init(device_t dev)
 #endif
 
 	temp = (0xffffffff - CONFIG_FALLBACK_SIZE - 0xffff);
-	printk_debug("Copying BOCHS BIOS from 0x%08X	to 0xf000\n", temp);
+	printk(BIOS_DEBUG, "Copying BOCHS BIOS from 0x%08X	to 0xf000\n", temp);
 	/*
 	 * Copy BOCHS BIOS from 4G-CONFIG_FALLBACK_SIZE-64k (in flash) to 0xf0000 (in RAM)
 	 * This is for compatibility with the VGA ROM's BIOS callbacks.
 	 */
 	//memcpy(0xf0000, (0xffffffff - CONFIG_ROM_SIZE - 0xffff), 0x10000);
 	memcpy(0xf0000, temp, 0x10000);
-	printk_debug("Initializing VGA\n");
+	printk(BIOS_DEBUG, "Initializing VGA\n");
 
 	/* Set memory rate to 200 MHz. */
 	outb(0x3d, CRTM_INDEX);
@@ -79,12 +79,12 @@ static void vga_init(device_t dev)
 	pci_write_config32(dev, 0x10, 0xf0000008);
 	pci_write_config32(dev, 0x14, 0xf4000000);
 
-	printk_debug("INSTALL REAL-MODE IDT\n");
+	printk(BIOS_DEBUG, "INSTALL REAL-MODE IDT\n");
 	setup_realmode_idt();
-	printk_debug("DO THE VGA BIOS\n");
+	printk(BIOS_DEBUG, "DO THE VGA BIOS\n");
 	do_vgabios();
 	/* VGA seems to work without this, but crash & burn with it. */
-	// printk_debug("Enable VGA console\n");
+	// printk(BIOS_DEBUG, "Enable VGA console\n");
 	// vga_enable_console();
 
 	/* It's not clear if these need to be programmed before or after
@@ -106,17 +106,17 @@ static void vga_init(device_t dev)
 	memset(0xf0000, 0, 0x10000);
 
 #ifdef DEBUG_CN400
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 #endif
 }

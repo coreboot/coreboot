@@ -125,7 +125,7 @@ static void misc_control_init(struct device *dev)
 {
 	u32 cmd;
 
-	printk_debug("NB: Function 3 Misc Control.. ");
+	printk(BIOS_DEBUG, "NB: Function 3 Misc Control.. ");
 
 	/* Disable Machine checks from Invalid Locations.
 	 * This is needed for PC backwards compatibility.
@@ -134,7 +134,7 @@ static void misc_control_init(struct device *dev)
 	cmd |= (1<<6) | (1<<25);
 	pci_write_config32(dev, 0x44, cmd );
 
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 }
 
 

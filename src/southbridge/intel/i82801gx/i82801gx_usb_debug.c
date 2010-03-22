@@ -30,7 +30,7 @@ void set_debug_port(unsigned port)
 {
 	u32 dbgctl;
 
-	printk_debug("Enabling OWNER_CNT\n");
+	printk(BIOS_DEBUG, "Enabling OWNER_CNT\n");
 	dbgctl = read32(EHCI_BAR + EHCI_DEBUG_OFFSET);
 	dbgctl |= (1 << 30);
 	write32(EHCI_BAR + EHCI_DEBUG_OFFSET, dbgctl);

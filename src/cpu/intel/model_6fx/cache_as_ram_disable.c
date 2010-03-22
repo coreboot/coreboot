@@ -38,13 +38,13 @@ void stage1_main(unsigned long bist)
         	"movl   %%esp, %0\n"
 		: "=a" (v_esp)
 	);
-	printk_spew("v_esp=%08x\n", v_esp);
+	printk(BIOS_SPEW, "v_esp=%08x\n", v_esp);
 #endif
 
 cpu_reset_x:
 
-        printk_spew("cpu_reset = %08x\n", cpu_reset);
-	printk_spew("No cache as ram now - ");
+        printk(BIOS_SPEW, "cpu_reset = %08x\n", cpu_reset);
+	printk(BIOS_SPEW, "No cache as ram now - ");
 
 	/* store cpu_reset to ebx */
         __asm__ volatile (
@@ -84,5 +84,5 @@ cpu_reset_x:
 	}
 
 	/* We will not return */
-	printk_debug("sorry. parachute did not open.\n");
+	printk(BIOS_DEBUG, "sorry. parachute did not open.\n");
 }

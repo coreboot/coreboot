@@ -106,7 +106,7 @@ static void lpc47b397_pnp_enable_resources(device_t dev)
 
 	switch(dev->path.pnp.device) {
 	case LPC47B397_HWM:
-		printk_debug("lpc47b397 SensorBus Register Access enabled\r\n");
+		printk(BIOS_DEBUG, "lpc47b397 SensorBus Register Access enabled\r\n");
 		pnp_set_logical_device(dev);
 		enable_hwm_smbus(dev);
 		break;

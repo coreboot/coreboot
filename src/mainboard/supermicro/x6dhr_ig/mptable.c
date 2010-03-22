@@ -48,7 +48,7 @@ void *smp_write_config_table(void *v)
 			bus_isa++;
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 0:1f.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1f.0, using defaults\n");
 
 			bus_ich5r_1 = 9;
 			bus_isa = 10;
@@ -60,7 +60,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:00.1, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:00.1, using defaults\n");
 
 			bus_pxhd_1 = 3;
 		}
@@ -71,7 +71,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:02.0, using defaults\n");
 
 			bus_pxhd_2 = 4;
 		}
@@ -83,7 +83,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:00.1, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:00.1, using defaults\n");
 
 			bus_pxhd_3 = 6;
 		}
@@ -94,7 +94,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:02.0, using defaults\n");
 
 			bus_pxhd_4 = 7;
 		}
@@ -122,7 +122,7 @@ void *smp_write_config_table(void *v)
 			}
 		}
 		else {
-			printk_debug("ERROR - could not find IOAPIC PCI 2:00.1\n");
+			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 2:00.1\n");
 		}
 		/* pxhd apic 4 */
 		dev = dev_find_slot(2, PCI_DEVFN(0x00,3));
@@ -133,7 +133,7 @@ void *smp_write_config_table(void *v)
 			}
 		}
 		else {
-			printk_debug("ERROR - could not find IOAPIC PCI 2:00.3\n");
+			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 2:00.3\n");
 		}
 		/* pxhd apic 5 */
 		dev = dev_find_slot(5, PCI_DEVFN(0x00,1));
@@ -144,7 +144,7 @@ void *smp_write_config_table(void *v)
 			}
 		}
 		else {
-			printk_debug("ERROR - could not find IOAPIC PCI 5:00.1\n");
+			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 5:00.1\n");
 		}
 		/* pxhd apic 8 */
 		dev = dev_find_slot(5, PCI_DEVFN(0x00,3));
@@ -155,7 +155,7 @@ void *smp_write_config_table(void *v)
 			}
 		}
 		else {
-			printk_debug("ERROR - could not find IOAPIC PCI 5:00.3\n");
+			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 5:00.3\n");
 		}
 	}
 
@@ -222,7 +222,7 @@ void *smp_write_config_table(void *v)
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

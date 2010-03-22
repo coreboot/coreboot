@@ -120,7 +120,7 @@ static void init_hwm(unsigned long base)
 		value &= 0xff & hwm_reg_values[i+1];
 		value |= 0xff & hwm_reg_values[i+2];
 #if 0
-		printk_debug("base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value);
+		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value);
 #endif
 		pnp_write_index(base, reg, value);
 	}
@@ -172,7 +172,7 @@ static void w83627hf_pnp_enable_resources(device_t dev)
 	pnp_enable_resources(dev);
 	switch(dev->path.pnp.device) {
 	case W83627HF_HWM:
-		printk_debug("w83627hf hwm smbus enabled\n");
+		printk(BIOS_DEBUG, "w83627hf hwm smbus enabled\n");
 		enable_hwm_smbus(dev);
 		break;
 	}

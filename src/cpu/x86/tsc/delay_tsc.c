@@ -78,7 +78,7 @@ static unsigned long long calibrate_tsc(void)
 	 * 32 bits..
 	 */
 bad_ctc:
-	printk_err("bad_ctc\n");
+	printk(BIOS_ERR, "bad_ctc\n");
 	return 0;
 }
 
@@ -104,7 +104,7 @@ static unsigned long long calibrate_tsc(void)
 	unsigned long long start, end, delta;
 	unsigned long result, count;
 	
-	printk_spew("Calibrating delay loop...\n");
+	printk(BIOS_SPEW, "Calibrating delay loop...\n");
 	start = rdtscll();
 	// no udivdi3 because we don't like libgcc. (only in x86emu)
 	// so we count to 1<< 20 and then right shift 20
@@ -128,10 +128,10 @@ static unsigned long long calibrate_tsc(void)
 	delta >>= 20;
 	// save this for microsecond timing.
 	result = delta;
-	printk_spew("end %llx, start %llx\n", end, start);
-	printk_spew("32-bit delta %ld\n", (unsigned long) delta);
+	printk(BIOS_SPEW, "end %llx, start %llx\n", end, start);
+	printk(BIOS_SPEW, "32-bit delta %ld\n", (unsigned long) delta);
 	
-	printk_spew("%s 32-bit result is %ld\n",
+	printk(BIOS_SPEW, "%s 32-bit result is %ld\n",
 			__func__,
 			result);
 	return delta;
@@ -144,7 +144,7 @@ void init_timer(void)
 {
 	if (!clocks_per_usec) {
 		clocks_per_usec = calibrate_tsc();
-		printk_info("clocks_per_usec: %lu\n", clocks_per_usec);
+		printk(BIOS_INFO, "clocks_per_usec: %lu\n", clocks_per_usec);
 	}
 }
 

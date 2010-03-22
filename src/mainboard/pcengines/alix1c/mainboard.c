@@ -23,8 +23,8 @@
 
 static void init(struct device *dev)
 {
-	printk_debug("ALIX1.C ENTER %s\n", __func__);
-	printk_debug("ALIX1.C EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "ALIX1.C ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "ALIX1.C EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

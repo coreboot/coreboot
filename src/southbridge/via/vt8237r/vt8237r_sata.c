@@ -28,7 +28,7 @@ static void sata_i_init(struct device *dev)
 {
 	u8 reg;
 
-	printk_debug("Configuring VIA SATA controller\n");
+	printk(BIOS_DEBUG, "Configuring VIA SATA controller\n");
 
 	/* Class IDE Disk */
 	reg = pci_read_config8(dev, SATA_MISC_CTRL);

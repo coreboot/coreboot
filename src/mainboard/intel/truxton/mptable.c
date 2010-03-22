@@ -65,7 +65,7 @@ void *smp_write_config_table(void *v)
 		bus_isa++;
 	}
 	else {
-		printk_debug("ERROR - could not find PCI 0:04.0\n");
+		printk(BIOS_DEBUG, "ERROR - could not find PCI 0:04.0\n");
 		bus_aioc = 0;
 		bus_isa = 9;
 	}
@@ -75,7 +75,7 @@ void *smp_write_config_table(void *v)
 		bus_pea0 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	}
 	else {
-		printk_debug("ERROR - could not find PCI 0:02.0\n");
+		printk(BIOS_DEBUG, "ERROR - could not find PCI 0:02.0\n");
 		bus_pea0 = 0;
 	}
 	/* PCIe A1 */
@@ -84,7 +84,7 @@ void *smp_write_config_table(void *v)
 		bus_pea1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	}
 	else {
-		printk_debug("ERROR - could not find PCI 0:03.0\n");
+		printk(BIOS_DEBUG, "ERROR - could not find PCI 0:03.0\n");
 		bus_pea1 = 0;
 	}
 
@@ -183,7 +183,7 @@ void *smp_write_config_table(void *v)
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

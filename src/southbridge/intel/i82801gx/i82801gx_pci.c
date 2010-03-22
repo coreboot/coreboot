@@ -71,7 +71,7 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	/* Set the subsystem vendor and device id for mainboard devices */
 	ops = ops_pci(dev);
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
-		printk_debug("%s subsystem <- %02x/%02x\n",
+		printk(BIOS_DEBUG, "%s subsystem <- %02x/%02x\n",
 			dev_path(dev),
 			CONFIG_MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID,
 			CONFIG_MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID);
@@ -87,10 +87,10 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	 * this will cause the ROM and APICs not being visible
 	 * anymore.
 	 */
-	printk_debug("%s cmd <- %02x\n", dev_path(dev), command);
+	printk(BIOS_DEBUG, "%s cmd <- %02x\n", dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
 #else
-	printk_debug("%s cmd <- %02x (NOT WRITTEN!)\n", dev_path(dev), command);
+	printk(BIOS_DEBUG, "%s cmd <- %02x (NOT WRITTEN!)\n", dev_path(dev), command);
 #endif
 }
 
@@ -105,7 +105,7 @@ static void ich_pci_bus_enable_resources(struct device *dev)
 	ctrl = pci_read_config16(dev, PCI_BRIDGE_CONTROL);
 	ctrl |= dev->link[0].bridge_ctrl;
 	ctrl |= (PCI_BRIDGE_CTL_PARITY + PCI_BRIDGE_CTL_SERR); /* error check */
-	printk_debug("%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
+	printk(BIOS_DEBUG, "%s bridge ctrl <- %04x\n", dev_path(dev), ctrl);
 	pci_write_config16(dev, PCI_BRIDGE_CONTROL, ctrl);
 
 	/* This is the reason we need our own pci_bus_enable_resources */

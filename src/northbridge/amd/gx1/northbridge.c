@@ -42,11 +42,11 @@ static void enable_shadow(device_t dev)
 
 static void northbridge_init(device_t dev) 
 {
-	printk_debug("northbridge: %s()\n", __func__);
+	printk(BIOS_DEBUG, "northbridge: %s()\n", __func__);
 	
 	optimize_xbus(dev);
 	enable_shadow(dev);
-	printk_spew("Calling enable_cache()\n");
+	printk(BIOS_SPEW, "Calling enable_cache()\n");
 	enable_cache();
 }
 
@@ -140,10 +140,10 @@ static void pci_domain_set_resources(device_t dev)
 		*bcdramtop = ((tomk << 10) - 1);
 		*mcgbaseadd = (tomk >> 9);
 
-		printk_debug("BC_DRAM_TOP = 0x%08x\n", *bcdramtop);
-		printk_debug("MC_GBASE_ADD = 0x%08x\n", *mcgbaseadd);
+		printk(BIOS_DEBUG, "BC_DRAM_TOP = 0x%08x\n", *bcdramtop);
+		printk(BIOS_DEBUG, "MC_GBASE_ADD = 0x%08x\n", *mcgbaseadd);
 
-		printk_debug("I would set ram size to %d Mbytes\n", (tomk >> 10));
+		printk(BIOS_DEBUG, "I would set ram size to %d Mbytes\n", (tomk >> 10));
 
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
@@ -176,7 +176,7 @@ static struct device_operations pci_domain_ops = {
 
 static void cpu_bus_init(device_t dev)
 {
-	printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __func__);
+	printk(BIOS_SPEW, "%s:%s()\n", NORTHBRIDGE_FILE, __func__);
 	initialize_cpus(&dev->link[0]);
 }
 
@@ -194,18 +194,18 @@ static struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-        printk_spew("%s:%s()\n", NORTHBRIDGE_FILE, __func__);
+        printk(BIOS_SPEW, "%s:%s()\n", NORTHBRIDGE_FILE, __func__);
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
-        	printk_spew("DEVICE_PATH_PCI_DOMAIN\n");
+        	printk(BIOS_SPEW, "DEVICE_PATH_PCI_DOMAIN\n");
                 dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
         }
         else if (dev->path.type == DEVICE_PATH_APIC_CLUSTER) {
-        	printk_spew("DEVICE_PATH_APIC_CLUSTER\n");
+        	printk(BIOS_SPEW, "DEVICE_PATH_APIC_CLUSTER\n");
                 dev->ops = &cpu_bus_ops;
         } else {
-        	printk_spew("device path type %d\n",dev->path.type);
+        	printk(BIOS_SPEW, "device path type %d\n",dev->path.type);
 	}
 }
 

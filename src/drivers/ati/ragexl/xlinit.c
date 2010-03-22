@@ -541,7 +541,7 @@ static void ati_ragexl_init(device_t dev)
 #endif
 
 #if 0
-	printk_debug("ati_regbase = 0x%08x, frame_buffer = 0x%08x\r\n", info->ati_regbase, info->frame_buffer);
+	printk(BIOS_DEBUG, "ati_regbase = 0x%08x, frame_buffer = 0x%08x\r\n", info->ati_regbase, info->frame_buffer);
 #endif
 
     	chip_id = aty_ld_le32(CONFIG_CHIP_ID, info);
@@ -557,11 +557,11 @@ static void ati_ragexl_init(device_t dev)
             		info->features = aty_chips[j].features;
             		goto found;
         }
-    	printk_spew("ati_ragexl_init: Unknown mach64 0x%04x rev 0x%04x\n", type, rev);
+    	printk(BIOS_SPEW, "ati_ragexl_init: Unknown mach64 0x%04x rev 0x%04x\n", type, rev);
     	return ;
 
 found:
-    	printk_info("ati_ragexl_init: %s [0x%04x rev 0x%02x]\r\n", chipname, type, rev);
+    	printk(BIOS_INFO, "ati_ragexl_init: %s [0x%04x rev 0x%02x]\r\n", chipname, type, rev);
 #if 0
     	if (M64_HAS(INTEGRATED)) {
         	/* for many chips, the mclk is 67 MHz for SDRAM, 63 MHz otherwise */
@@ -717,7 +717,7 @@ found:
 
     if (atyfb_decode_var(&var, &info->default_par, info)) {
 #if 0	
-        printk_debug("atyfb: can't set default video mode\n");
+        printk(BIOS_DEBUG, "atyfb: can't set default video mode\n");
 #endif
         return ;
     }
@@ -750,7 +750,7 @@ found:
 
 #if PLL_CRTC_DECODE==1
 
-    printk_spew("framebuffer=0x%08x, width=%d, height=%d, bpp=%d, pitch=%d\n",info->frame_buffer,
+    printk(BIOS_SPEW, "framebuffer=0x%08x, width=%d, height=%d, bpp=%d, pitch=%d\n",info->frame_buffer,
                          (((info->current_par.crtc.h_tot_disp>>16) & 0xff)+1)*8,
                          ((info->current_par.crtc.v_tot_disp>>16) & 0x7ff)+1,
                          info->current_par.crtc.bpp,
@@ -762,7 +762,7 @@ found:
                          info->current_par.crtc.bpp,
                          info->current_par.crtc.vxres*info->current_par.crtc.bpp/8,info->frame_buffer);
 #else
-    printk_spew("framebuffer=0x%08x, width=%d, height=%d, bpp=%d, pitch=%d\n",info->frame_buffer,
+    printk(BIOS_SPEW, "framebuffer=0x%08x, width=%d, height=%d, bpp=%d, pitch=%d\n",info->frame_buffer,
                          (((info->default_par.crtc.h_tot_disp>>16) & 0xff)+1)*8,
                          ((info->default_par.crtc.v_tot_disp>>16) & 0x7ff)+1,
                          info->default_par.crtc.bpp,
@@ -1184,7 +1184,7 @@ static int atyfb_set_var(struct fb_var_screeninfo *var, int con,
     atyfb_encode_var(var, &par, (struct fb_info_aty *)info);
    
 #if 0 
-    printk_info("atyfb_set_var: activate=%d\n", activate & FB_ACTIVATE_MASK);
+    printk(BIOS_INFO, "atyfb_set_var: activate=%d\n", activate & FB_ACTIVATE_MASK);
 #endif
 
     if ((activate & FB_ACTIVATE_MASK) == FB_ACTIVATE_NOW) {

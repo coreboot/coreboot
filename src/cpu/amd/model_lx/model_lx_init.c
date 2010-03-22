@@ -40,7 +40,7 @@ static void vsm_end_post_smi(void)
 
 static void model_lx_init(device_t dev)
 {
-	printk_debug("model_lx_init\n");
+	printk(BIOS_DEBUG, "model_lx_init\n");
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -52,11 +52,11 @@ static void model_lx_init(device_t dev)
 	vsm_end_post_smi();
 
 	// Set gate A20 (legacy vsm disables it in late init)
-	printk_debug("A20 (0x92): %d\n", inb(0x92));
+	printk(BIOS_DEBUG, "A20 (0x92): %d\n", inb(0x92));
 	outb(0x02, 0x92);
-	printk_debug("A20 (0x92): %d\n", inb(0x92));
+	printk(BIOS_DEBUG, "A20 (0x92): %d\n", inb(0x92));
 
-	printk_debug("CPU model_lx_init DONE\n");
+	printk(BIOS_DEBUG, "CPU model_lx_init DONE\n");
 };
 
 static struct device_operations cpu_dev_ops = {

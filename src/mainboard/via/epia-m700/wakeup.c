@@ -116,13 +116,13 @@ void acpi_jump_wake(u32 vector)
 	u8 Data;
 	struct Xgt_desc_struct *wake_thunk16_Xgt_desc;
 
-	printk_debug("IN ACPI JUMP WAKE TO %x\n", vector);
+	printk(BIOS_DEBUG, "IN ACPI JUMP WAKE TO %x\n", vector);
 	if (enable_a20())
 		die("failed to enable A20\n");
-	printk_debug("IN ACPI JUMP WAKE TO 3 %x\n", vector);
+	printk(BIOS_DEBUG, "IN ACPI JUMP WAKE TO 3 %x\n", vector);
 
 	*((u16 *) (jump_to_wakeup + 3)) = (u16) (vector >> 4);
-	printk_debug("%x %x %x %x %x\n", jump_to_wakeup[0], jump_to_wakeup[1],
+	printk(BIOS_DEBUG, "%x %x %x %x %x\n", jump_to_wakeup[0], jump_to_wakeup[1],
 		     jump_to_wakeup[2], jump_to_wakeup[3], jump_to_wakeup[4]);
 
 	memcpy((void *)(WAKE_THUNK16_ADDR - sizeof(real_mode_switch) - 100),
@@ -131,7 +131,7 @@ void acpi_jump_wake(u32 vector)
 	       sizeof(jump_to_wakeup));
 
 	//jason_tsc_count();
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 	//jason_tsc_count_end();
 
 	unsigned long long *real_mode_gdt_entries_at_eseg;

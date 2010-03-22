@@ -17,7 +17,7 @@ unsigned long log2(unsigned long x)
 
         if (! x) {
 #ifdef DEBUG_LOG2
-                printk_warning("%s called with invalid parameter of 0\n",
+                printk(BIOS_WARNING, "%s called with invalid parameter of 0\n",
 			__func__);
 #endif
                 return -1;

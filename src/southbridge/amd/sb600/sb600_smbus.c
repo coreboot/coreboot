@@ -188,7 +188,7 @@ static void alink_ab_indx(u32 reg_space, u32 reg_addr,
 	tmp &= ~mask;
 	tmp |= val;
 
-	/* printk_debug("about write %x, index=%x", tmp, (reg_space&0x3)<<30 | reg_addr); */
+	/* printk(BIOS_DEBUG, "about write %x, index=%x", tmp, (reg_space&0x3)<<30 | reg_addr); */
 	outl((reg_space & 0x3) << 30 | reg_addr, AB_INDX);	/* probably we dont have to do it again. */
 	outl(tmp, AB_DATA);
 }

@@ -475,7 +475,7 @@ void x86_exception(struct eregs *info)
 		put_packet(out_buffer);
 	}
 #else /* !CONFIG_GDB_STUB */
-	printk_emerg(
+	printk(BIOS_EMERG, 
 		"Unexpected Exception: %d @ %02x:%08x - Halting\n"
 		"Code: %d eflags: %08x\n"
 		"eax: %08x ebx: %08x ecx: %08x edx: %08x\n"

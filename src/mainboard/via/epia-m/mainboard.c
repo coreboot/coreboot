@@ -16,9 +16,9 @@ static void vga_fixup(void) {
         //   that
         // - we need page 0 below for coreboot tables.
 
-        printk_debug("INSTALL REAL-MODE IDT\n");
+        printk(BIOS_DEBUG, "INSTALL REAL-MODE IDT\n");
         setup_realmode_idt();
-        printk_debug("DO THE VGA BIOS\n");
+        printk(BIOS_DEBUG, "DO THE VGA BIOS\n");
         do_vgabios();
         post_code(0x93);
 	vga_enable_console();
@@ -30,7 +30,7 @@ void write_protect_vgabios(void)
 {
  	device_t dev;
  
- 	printk_info("write_protect_vgabios\n");
+ 	printk(BIOS_INFO, "write_protect_vgabios\n");
 	/* there are two possible devices. Just do both. */
  	dev = dev_find_device(PCI_VENDOR_ID_VIA, 0x3122, 0);
  	if(dev)

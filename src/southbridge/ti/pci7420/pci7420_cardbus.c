@@ -41,10 +41,10 @@ static void pci7420_cardbus_init(device_t dev)
 	struct southbridge_ti_pci7420_config *config = dev->chip_info;
 	int smartcard_enabled = 0;
 
-	printk_debug("TI PCI7420/7620 init\n");
+	printk(BIOS_DEBUG, "TI PCI7420/7620 init\n");
 
 	if (!config) {
-		printk_debug("PCI7420: No configuration found.\n");
+		printk(BIOS_DEBUG, "PCI7420: No configuration found.\n");
 	} else {
 		smartcard_enabled = config->smartcard_enabled;
 	}
@@ -90,11 +90,11 @@ void pci7420_cardbus_read_resources(device_t dev)
 
 void pci7420_cardbus_set_resources(device_t dev)
 {
-	printk_debug("%s In set resources \n",dev_path(dev));
+	printk(BIOS_DEBUG, "%s In set resources \n",dev_path(dev));
 
 	pci_dev_set_resources(dev);
 
-	printk_debug("%s done set resources \n",dev_path(dev));
+	printk(BIOS_DEBUG, "%s done set resources \n",dev_path(dev));
 }
 
 static struct device_operations ti_pci7420_ops = {

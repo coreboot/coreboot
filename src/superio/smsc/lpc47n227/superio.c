@@ -163,7 +163,7 @@ static void lpc47n227_init(device_t dev)
 		break;
 
 	case LPC47N227_KBDC:
-		printk_debug("LPC47N227: Initializing keyboard.\n");
+		printk(BIOS_DEBUG, "LPC47N227: Initializing keyboard.\n");
 		pc_keyboard_init(&conf->keyboard);
 		break;
 	}
@@ -176,7 +176,7 @@ static void lpc47n227_init(device_t dev)
 static void lpc47n227_pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk_err("ERROR: %s %02lx not allocated\n",
+		printk(BIOS_ERR, "ERROR: %s %02lx not allocated\n",
 			   dev_path(dev), resource->index);
 		return;
 	}
@@ -192,7 +192,7 @@ static void lpc47n227_pnp_set_resource(device_t dev, struct resource *resource)
 	} else if (resource->flags & IORESOURCE_IRQ) {
 		lpc47n227_pnp_set_irq(dev, resource->base);
 	} else {
-		printk_err("ERROR: %s %02lx unknown resource type\n",
+		printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
 			   dev_path(dev), resource->index);
 		return;
 	}

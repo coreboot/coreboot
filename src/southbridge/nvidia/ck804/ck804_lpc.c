@@ -95,7 +95,7 @@ static void enable_hpet(struct device *dev)
 
 	pci_write_config32(dev, 0x44, 0xfed00001);
 	hpet_address = pci_read_config32(dev, 0x44) & 0xfffffffe;
-	printk_debug("Enabling HPET @0x%lx\n", hpet_address);
+	printk(BIOS_DEBUG, "Enabling HPET @0x%lx\n", hpet_address);
 }
 
 unsigned pm_base=0;
@@ -108,7 +108,7 @@ static void lpc_init(device_t dev)
 	lpc_common_init(dev);
 
 	pm_base = pci_read_config32(dev, 0x60) & 0xff00;
-	printk_info("%s: pm_base = %x \n", __func__, pm_base);
+	printk(BIOS_INFO, "%s: pm_base = %x \n", __func__, pm_base);
 
 #if CK804_CHIP_REV==1
 	if (dev->bus->secondary != 1)
@@ -129,7 +129,7 @@ static void lpc_init(device_t dev)
 	if (!on)
 		byte |= 0x40;
 	pci_write_config8(dev, PREVIOUS_POWER_STATE, byte);
-	printk_info("set power %s after power fail\n", on ? "on" : "off");
+	printk(BIOS_INFO, "set power %s after power fail\n", on ? "on" : "off");
 
 	/* Throttle the CPU speed down for testing. */
 	on = SLOW_CPU_OFF;
@@ -141,7 +141,7 @@ static void lpc_init(device_t dev)
 		outl(((on << 1) + 0x10), (pm10_bar + 0x10));
 		dword = inl(pm10_bar + 0x10);
 		on = 8 - on;
-		printk_debug("Throttling CPU %2d.%1.1d percent.\n",
+		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
 			     (on * 12) + (on >> 1), (on & 1) * 5);
 	}
 #if 0
@@ -250,7 +250,7 @@ static void ck804_lpc_enable_childrens_resources(device_t dev)
 						continue;
 					base = res->base;
 					end = resource_end(res);
-					printk_debug("ck804 lpc decode:%s, base=0x%08lx, end=0x%08lx\r\n", dev_path(child), base, end);
+					printk(BIOS_DEBUG, "ck804 lpc decode:%s, base=0x%08lx, end=0x%08lx\r\n", dev_path(child), base, end);
 					switch (base) {
 					case 0x3f8:	// COM1
 						reg |= (1 << 0);

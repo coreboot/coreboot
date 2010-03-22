@@ -238,7 +238,7 @@ static void setup_pm(device_t dev)
 	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	acpi_slp_type = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0 ;
-	printk_debug("SLP_TYP type was %x %x\n", tmp, acpi_slp_type);
+	printk(BIOS_DEBUG, "SLP_TYP type was %x %x\n", tmp, acpi_slp_type);
 #endif
 	/* clear sleep */
 	tmp &= ~(7 << 10);
@@ -251,7 +251,7 @@ static void vt8237r_init(struct device *dev)
 	u8 enables, reg8;
 	
 #if CONFIG_EPIA_VT8237R_INIT
-	printk_spew("Entering vt8237r_init, for EPIA.\n");
+	printk(BIOS_SPEW, "Entering vt8237r_init, for EPIA.\n");
 	/*
 	 * TODO: Looks like stock BIOS can do this but causes a hang
 	 * Enable SATA LED, disable special CPU Frequency Change -
@@ -277,7 +277,7 @@ static void vt8237r_init(struct device *dev)
 	pci_write_config8(dev, 0x4E, enables);
 
 #else 
-	printk_spew("Entering vt8237r_init.\n");
+	printk(BIOS_SPEW, "Entering vt8237r_init.\n");
 	/*
 	 * Enable SATA LED, disable special CPU Frequency Change -
 	 * GPIO28 GPIO22 GPIO29 GPIO23 are GPIOs.
@@ -318,7 +318,7 @@ static void vt8237r_init(struct device *dev)
 	outb(0x1, VT8237R_ACPI_IO_BASE + 0x11);
 #endif
 
-	printk_spew("Leaving %s.\n", __func__);
+	printk(BIOS_SPEW, "Leaving %s.\n", __func__);
 }
 
 static void vt8237s_init(struct device *dev)

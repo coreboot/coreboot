@@ -26,7 +26,7 @@ static void amd8111_usb2_enable(device_t dev)
 	// Due to buggy USB2 we force it to disable. 
 	dev->enabled = 0;
 	amd8111_enable(dev);
-	printk_debug("USB2 disabled.\n");
+	printk(BIOS_DEBUG, "USB2 disabled.\n");
 }
 
 static struct device_operations usb2_ops  = {

@@ -481,23 +481,23 @@ void sis_init_stage2(void)
 
 // ========================== NB =============================
 
-        printk_debug("Init NorthBridge sis761 -------->\n");
+        printk(BIOS_DEBUG, "Init NorthBridge sis761 -------->\n");
         dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS761), 0);
         msr = rdmsr(0xC001001A);
-	 printk_debug("Memory Top Bound %lx\n",msr.lo );
+	 printk(BIOS_DEBUG, "Memory Top Bound %lx\n",msr.lo );
 
         temp16=(pci_read_config8(dev, 0x4C) & 0xE0) >> 5;
         temp16=0x0001<<(temp16-1);
         temp16<<=8;
 
-        printk_debug("Integrated VGA Shared memory size=%dM bytes\n", temp16 >> 4);
+        printk(BIOS_DEBUG, "Integrated VGA Shared memory size=%dM bytes\n", temp16 >> 4);
         pci_write_config16(dev, 0x8E, (msr.lo >> 16) -temp16*1);
         pci_write_config8(dev, 0x7F, 0x08);									// ACPI Base
         outb(inb(0x856) | 0x40, 0x856);										// Auto-Reset Function
 
 // ========================== ACPI =============================
 	i=0;
-	printk_debug("Init ACPI -------->\n");
+	printk(BIOS_DEBUG, "Init ACPI -------->\n");
 	do
 	{				temp8 = inb(0x800 + SiS_ACPI_2_init[i][0]);
 					temp8 &= SiS_ACPI_2_init[i][1];
@@ -507,7 +507,7 @@ void sis_init_stage2(void)
 	}while(SiS_ACPI_2_init[i][0] != 0);
 
 // ========================== Misc =============================
-       printk_debug("Init Misc -------->\n");
+       printk(BIOS_DEBUG, "Init Misc -------->\n");
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 
 	/* R77h Internal PCI Device Enable 1 (Power On Value = 0h)
@@ -533,7 +533,7 @@ void sis_init_stage2(void)
 	pci_write_config8(dev, 0x7E, 0x00);  // azalia controller enable
 	temp8=inb(0x878)|0x4;   //bit2=1 enable Azalia  =0 enable AC97
 	outb(temp8, 0x878);  // ACPI select AC97 or HDA controller
-	printk_debug("Audio select %x\n",inb(0x878));
+	printk(BIOS_DEBUG, "Audio select %x\n",inb(0x878));
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_SATA), 0);
 
@@ -550,7 +550,7 @@ static void enable_smbus(void)
 {
 	device_t dev;
 	uint8_t temp8;
-	printk_debug("enable_smbus -------->\n");
+	printk(BIOS_DEBUG, "enable_smbus -------->\n");
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_SIS, PCI_DEVICE_ID_SIS_SIS966_LPC), 0);
 
@@ -561,7 +561,7 @@ static void enable_smbus(void)
 	temp8=pci_read_config8(dev, 0x76);					// Enable SMBUS
 	pci_write_config8(dev, 0x76, temp8 | 0x03);
 
-	printk_debug("enable_smbus <--------\n");
+	printk(BIOS_DEBUG, "enable_smbus <--------\n");
 }
 
 static int smbus_read_byte(unsigned device, unsigned address)

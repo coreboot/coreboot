@@ -20,7 +20,7 @@
  */
 static void northbridge_init(device_t dev) 
 {
-	printk_spew("VT8601 random fixup ...\n");
+	printk(BIOS_SPEW, "VT8601 random fixup ...\n");
 	pci_write_config8(dev, 0x70, 0xc0);
 	pci_write_config8(dev, 0x71, 0x88);
 	pci_write_config8(dev, 0x72, 0xec);
@@ -117,10 +117,10 @@ static void pci_domain_set_resources(device_t dev)
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk_err("ERROR! register 0x%x is not set!\n", 
+				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n", 
 					ramregs[i]);
 		}
-		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
+		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
 		tomk = rambits*8*1024;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;
@@ -133,7 +133,7 @@ static void pci_domain_set_resources(device_t dev)
 #if CONFIG_WRITE_HIGH_TABLES == 1
 		high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE* 1024;
-		printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+		printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
 #endif
 
 		/* Report the memory regions */

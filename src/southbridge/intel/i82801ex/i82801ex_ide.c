@@ -13,7 +13,7 @@ static void ide_init(struct device *dev)
 	pci_write_config8(dev, 0x48, 0x05);
 	pci_write_config16(dev, 0x4a, 0x0101);
 	pci_write_config16(dev, 0x54, 0x5055);
-	printk_debug("IDE Enabled\n");
+	printk(BIOS_DEBUG, "IDE Enabled\n");
 }
 
 static void i82801ex_ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)

@@ -302,7 +302,7 @@ void do_vgabios(void)
 	u16 tmp;
 	u8 tmp8;
 
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 	/* clear vga bios data area */
 	for (i = 0x400; i < 0x500; i++) {
@@ -312,24 +312,24 @@ void do_vgabios(void)
 	dev = dev_find_class(PCI_CLASS_DISPLAY_VGA << 8, 0);
 
 	if (!dev) {
-		printk_debug("NO VGA FOUND\n");
+		printk(BIOS_DEBUG, "NO VGA FOUND\n");
 		return;
 	}
-	printk_debug("found VGA: vid=%x, did=%x\n", dev->vendor, dev->device);
+	printk(BIOS_DEBUG, "found VGA: vid=%x, did=%x\n", dev->vendor, dev->device);
 
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
 
         rom = cbfs_load_optionrom(dev->vendor, dev->device, 0);
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom | 1);
-	printk_debug("rom base: %x\n", rom);
+	printk(BIOS_DEBUG, "rom base: %x\n", rom);
 	buf = (unsigned char *)rom;
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 	if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {
 		memcpy((void *)0xc0000, buf, size);
 
-		printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+		printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 		write_protect_vgabios();	// in northbridge
 
@@ -338,14 +338,14 @@ void do_vgabios(void)
 		if (buf[0] == 0x55 && buf[1] == 0xAA) {
 			busdevfn =
 			    (dev->bus->secondary << 8) | dev->path.pci.devfn;
-			printk_debug("bus/devfn = %#x\n", busdevfn);
+			printk(BIOS_DEBUG, "bus/devfn = %#x\n", busdevfn);
 			real_mode_switch_call_vga(busdevfn);
 		} else
-			printk_debug("Failed to copy VGA BIOS to 0xc0000\n");
+			printk(BIOS_DEBUG, "Failed to copy VGA BIOS to 0xc0000\n");
 	} else
-		printk_debug("BAD SIGNATURE 0x%x 0x%x\n", buf[0], buf[1]);
+		printk(BIOS_DEBUG, "BAD SIGNATURE 0x%x 0x%x\n", buf[0], buf[1]);
 
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 	pci_write_config32(dev, PCI_ROM_ADDRESS, 0);
 }
@@ -513,12 +513,12 @@ int biosint(unsigned long intnumber,
 	cs = cs_ip >> 16;
 	flags = stackflags;
 
-	printk_debug("biosint: INT# 0x%lx\n", intnumber);
-	printk_debug("biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n",
+	printk(BIOS_DEBUG, "biosint: INT# 0x%lx\n", intnumber);
+	printk(BIOS_DEBUG, "biosint: eax 0x%lx ebx 0x%lx ecx 0x%lx edx 0x%lx\n",
 		     eax, ebx, ecx, edx);
-	printk_debug("biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
+	printk(BIOS_DEBUG, "biosint: ebp 0x%lx esp 0x%lx edi 0x%lx esi 0x%lx\n",
 		     ebp, esp, edi, esi);
-	printk_debug("biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
+	printk(BIOS_DEBUG, "biosint:  ip 0x%x   cs 0x%x  flags 0x%x\n",
 		     ip, cs, flags);
 
 	// cases in a good compiler are just as good as your own tables. 
@@ -527,16 +527,16 @@ int biosint(unsigned long intnumber,
 	case 6: case 7: case 8: case 9: case 10:
 	case 11: case 12: case 13: case 14: case 15:
 		// These are not BIOS service, but the CPU-generated exceptions
-		printk_info("biosint: Oops, exception %u\n", intnumber);
+		printk(BIOS_INFO, "biosint: Oops, exception %u\n", intnumber);
 		if (esp < 0x1000) {
-			printk_debug("Stack contents: ");
+			printk(BIOS_DEBUG, "Stack contents: ");
 			while (esp < 0x1000) {
-				printk_debug("0x%04x ", *(unsigned short *)esp);
+				printk(BIOS_DEBUG, "0x%04x ", *(unsigned short *)esp);
 				esp += 2;
 			}
-			printk_debug("\n");
+			printk(BIOS_DEBUG, "\n");
 		}
-		printk_debug("biosint: Bailing out\n");
+		printk(BIOS_DEBUG, "biosint: Bailing out\n");
 		// "longjmp"
 		if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/)	// add this to keep same with kevin's seabios patch in 2008-9-8
 			vga_exit();
@@ -556,7 +556,7 @@ int biosint(unsigned long intnumber,
 				  &ebx, &edx, &ecx, &eax, &flags);
 		break;
 	default:
-		printk_info("BIOSINT: Unsupport int #0x%x\n", intnumber);
+		printk(BIOS_INFO, "BIOSINT: Unsupport int #0x%x\n", intnumber);
 		break;
 	}
 	if (ret)
@@ -686,7 +686,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 				// devfn is an int, so we mask it off. 
 				busdevfn = (dev->bus->secondary << 8)
 				    | (dev->path.pci.devfn & 0xff);
-				printk_debug("0x%x: return 0x%x\n", func,
+				printk(BIOS_DEBUG, "0x%x: return 0x%x\n", func,
 					     busdevfn);
 				*pebx = busdevfn;
 				retval = 0;
@@ -713,8 +713,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 			reg = *pedi;
 			dev = dev_find_slot(bus, devfn);
 			if (!dev) {
-				printk_debug
-				    ("0x%x: BAD DEVICE bus %d devfn 0x%x\n",
+				printk(BIOS_DEBUG, "0x%x: BAD DEVICE bus %d devfn 0x%x\n",
 				     func, bus, devfn);
 				// idiots. the pcibios guys assumed you'd never pass a bad bus/devfn!
 				*peax = PCIBIOS_BADREG;
@@ -749,15 +748,14 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 
 			if (retval)
 				retval = PCIBIOS_BADREG;
-			printk_debug
-			    ("0x%x: bus %d devfn 0x%x reg 0x%x val 0x%lx\n",
+			printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%lx\n",
 			     func, bus, devfn, reg, *pecx);
 			*peax = 0;
 			retval = 0;
 		}
 		break;
 	default:
-		printk_err("UNSUPPORTED PCIBIOS FUNCTION 0x%x\n", func);
+		printk(BIOS_ERR, "UNSUPPORTED PCIBIOS FUNCTION 0x%x\n", func);
 		break;
 	}
 

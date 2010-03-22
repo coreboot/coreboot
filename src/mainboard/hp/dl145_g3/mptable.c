@@ -80,7 +80,7 @@ void *smp_write_config_table(void *v)
 	/* define bus and isa numbers */
 /*	for(bus_num = 0; bus_num < m->bus_isa; bus_num++) {
 		smp_write_bus(mc, bus_num, "PCI   ");
-		printk_debug("writing bus %d as PCI...\n",bus_num);
+		printk(BIOS_DEBUG, "writing bus %d as PCI...\n",bus_num);
 	}
 	*/
 	smp_write_bus(mc, 0, "PCI   ");
@@ -89,7 +89,7 @@ void *smp_write_config_table(void *v)
 	smp_write_bus(mc, 8, "PCI   ");
 
 	smp_write_bus(mc,m->bus_isa, "ISA   ");
-	printk_debug("writing %d as ISA...\n",m->bus_isa);
+	printk(BIOS_DEBUG, "writing %d as ISA...\n",m->bus_isa);
 
 	/*I/O APICs:   APIC ID Version State           Address*/
 	{
@@ -101,7 +101,7 @@ void *smp_write_config_table(void *v)
 			if (dev) {
 				res = find_resource(dev, PCI_BASE_ADDRESS_0);
 				if (res) {
-					printk_debug("APIC %d base address: %x\n",m->apicid_bcm5785[i],  res->base);
+					printk(BIOS_DEBUG, "APIC %d base address: %x\n",m->apicid_bcm5785[i],  res->base);
 					smp_write_ioapic(mc, m->apicid_bcm5785[i], 0x11, res->base);
 				}
 			}
@@ -160,14 +160,14 @@ void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x5, m->apicid_bcm5785[0], 0x5);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x6, m->apicid_bcm5785[0], 0x6);
 	//SATA
-/* 	printk_debug("MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0x7); */
+/* 	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0x7); */
 /*	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0x7); */
-	printk_debug("MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0xb);
+	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0xb);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0xb);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x8, m->apicid_bcm5785[0], 0x8);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0x9, m->apicid_bcm5785[0], 0x9);
 	//USB
-	printk_debug("sysconf.sbdn: %d on bus: %x \n",sysconf.sbdn, m->bus_bcm5785_0);
+	printk(BIOS_DEBUG, "sysconf.sbdn: %d on bus: %x \n",sysconf.sbdn, m->bus_bcm5785_0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x03<<2)|0, m->apicid_bcm5785[0], 0xa);
 
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_isa, 0xb, m->apicid_bcm5785[0], 0xb);
@@ -188,7 +188,7 @@ void *smp_write_config_table(void *v)
 
 	//IDE
 //     	outb(0x02, 0xc00); outb(0x0e, 0xc01);
-//	printk_debug("MPTABLE_IDE: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_0, ((1+sysconf.sbdn)<<2)|1, m->apicid_bcm5785[0], 0xe);
+//	printk(BIOS_DEBUG, "MPTABLE_IDE: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_0, ((1+sysconf.sbdn)<<2)|1, m->apicid_bcm5785[0], 0xe);
 //		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  m->bus_bcm5785_0, (0x02<<2)|1, m->apicid_bcm5785[0], 0xe);
 
 	//onboard Broadcom GbE
@@ -206,13 +206,13 @@ void *smp_write_config_table(void *v)
 			uint32_t dword;
 			dword = pci_read_config32(dev, 0x6c);
 			dword |= (1<<4); // enable interrupts
-			printk_debug("6ch: %x\n",dword);
+			printk(BIOS_DEBUG, "6ch: %x\n",dword);
 			pci_write_config32(dev, 0x6c, dword);
 		}
 	}
 
 /*Local Ints:  Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN#*/
-	printk_debug("m->bus_isa is: %x\n",m->bus_isa);
+	printk(BIOS_DEBUG, "m->bus_isa is: %x\n",m->bus_isa);
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa, 0x0, MP_APIC_ALL, 0x0);
 	smp_write_intsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH, m->bus_isa , 0x0, MP_APIC_ALL, 0x1);
 
@@ -231,7 +231,7 @@ void *smp_write_config_table(void *v)
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

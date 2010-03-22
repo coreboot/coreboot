@@ -118,7 +118,7 @@ void sb600_enable(device_t dev)
 
 	u32 devfn;
 
-	printk_debug("sb600_enable()\n");
+	printk(BIOS_DEBUG, "sb600_enable()\n");
 
 /*
 *	0:12.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
@@ -220,7 +220,7 @@ void sb600_enable(device_t dev)
 		index += 32 * 4;
 		break;
 	default:
-		printk_debug("unknown dev: %s deviceid=%4x\n", dev_path(dev),
+		printk(BIOS_DEBUG, "unknown dev: %s deviceid=%4x\n", dev_path(dev),
 			     deviceid);
 	}
 }

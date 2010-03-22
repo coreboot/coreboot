@@ -68,7 +68,7 @@
 #include "southbridge/intel/i82801gx/i82801gx.h"
 static void setup_ich7_gpios(void)
 {
-	printk_debug(" GPIOS...");
+	printk(BIOS_DEBUG, " GPIOS...");
 	/* General Registers */
 	outl(0x1f1ff7c0, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
 	outl(0xe0e8efc3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
@@ -265,18 +265,18 @@ static void rcba_config(void)
 	reg32 |= FD_PCIE6|FD_PCIE5|FD_PCIE4;
 
 	if (read_option(CMOS_VSTART_ethernet1, CMOS_VLEN_ethernet1, 0) != 0) {
-		printk_debug("Disabling ethernet adapter 1.\n");
+		printk(BIOS_DEBUG, "Disabling ethernet adapter 1.\n");
 		reg32 |= FD_PCIE1;
 	}
 	if (read_option(CMOS_VSTART_ethernet2, CMOS_VLEN_ethernet2, 0) != 0) {
-		printk_debug("Disabling ethernet adapter 2.\n");
+		printk(BIOS_DEBUG, "Disabling ethernet adapter 2.\n");
 		reg32 |= FD_PCIE2;
 	} else {
 		if (reg32 & FD_PCIE1)
 			port_shuffle = 1;
 	}
 	if (read_option(CMOS_VSTART_ethernet3, CMOS_VLEN_ethernet3, 0) != 0) {
-		printk_debug("Disabling ethernet adapter 3.\n");
+		printk(BIOS_DEBUG, "Disabling ethernet adapter 3.\n");
 		reg32 |= FD_PCIE3;
 	} else {
 		if (reg32 & FD_PCIE1)
@@ -392,7 +392,7 @@ void real_main(unsigned long bist)
 	report_bist_failure(bist);
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk_debug("soft reset detected.\n");
+		printk(BIOS_DEBUG, "soft reset detected.\n");
 		boot_mode = 1;
 	}
 
@@ -403,10 +403,10 @@ void real_main(unsigned long bist)
 
 	/* Read PM1_CNT */
 	reg32 = inl(DEFAULT_PMBASE + 0x04);
-	printk_debug("PM1_CNT: %08x\n", reg32);
+	printk(BIOS_DEBUG, "PM1_CNT: %08x\n", reg32);
 	if (((reg32 >> 10) & 7) == 5) {
 #if CONFIG_HAVE_ACPI_RESUME
-		printk_debug("Resume from S3 detected.\n");
+		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 		boot_mode = 2;
 		/* Clear SLP_TYPE. This will break stage2 but
 		 * we care for that when we get there.
@@ -414,7 +414,7 @@ void real_main(unsigned long bist)
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 
 #else
-		printk_debug("Resume from S3 detected, but disabled.\n");
+		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
 #endif
 	}
 
@@ -451,7 +451,7 @@ void real_main(unsigned long bist)
 		/* This will not work if TSEG is in place! */
 		u32 tom = pci_read_config32(PCI_DEV(0,2,0), 0x5c);
 
-		printk_debug("TOM: 0x%08x\n", tom);
+		printk(BIOS_DEBUG, "TOM: 0x%08x\n", tom);
 		ram_check(0x00000000, 0x000a0000);
 		//ram_check(0x00100000, tom);
 	}

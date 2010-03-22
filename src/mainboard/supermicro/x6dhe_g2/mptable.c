@@ -45,7 +45,7 @@ void *smp_write_config_table(void *v)
 			bus_esb6300_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 0:1c.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1c.0, using defaults\n");
 
 			bus_esb6300_2 = 6;
 		}
@@ -57,7 +57,7 @@ void *smp_write_config_table(void *v)
 			bus_isa++;
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 0:1e.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1e.0, using defaults\n");
 
 			bus_esb6300_1 = 7;
 			bus_isa = 8;
@@ -69,7 +69,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:00.1, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:00.1, using defaults\n");
 
 			bus_pxhd_1 = 2;
 		}
@@ -80,7 +80,7 @@ void *smp_write_config_table(void *v)
 
 		}
 		else {
-			printk_debug("ERROR - could not find PCI 1:02.0, using defaults\n");
+			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:02.0, using defaults\n");
 
 			bus_pxhd_2 = 3;
 		}
@@ -108,8 +108,8 @@ void *smp_write_config_table(void *v)
 			}
 		}
 		else {
-			printk_debug("ERROR - could not find IOAPIC PCI 1:00.1\n");
-			printk_debug("CONFIG_DEBUG: Dev= %p\n", dev);
+			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 1:00.1\n");
+			printk(BIOS_DEBUG, "CONFIG_DEBUG: Dev= %p\n", dev);
 		}
 		/* PXHd apic 5 */
 		dev = dev_find_slot(1, PCI_DEVFN(0x00,3));
@@ -120,8 +120,8 @@ void *smp_write_config_table(void *v)
 			}
 		}
 		else {
-			printk_debug("ERROR - could not find IOAPIC PCI 1:00.3\n");
-			printk_debug("CONFIG_DEBUG: Dev= %p\n", dev);
+			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 1:00.3\n");
+			printk(BIOS_DEBUG, "CONFIG_DEBUG: Dev= %p\n", dev);
 		}
 	}
 
@@ -188,7 +188,7 @@ void *smp_write_config_table(void *v)
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
-	printk_debug("Wrote the mp table end at: %p - %p\n",
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n",
 		mc, smp_next_mpe_entry(mc));
 	return smp_next_mpe_entry(mc);
 }

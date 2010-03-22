@@ -53,7 +53,7 @@ static void pcie_init(struct device *dev)
 	/* Enable pci error detecting */
 	u32 dword;
 
-	printk_info("pcie_init in rs690_ht.c\n");
+	printk(BIOS_INFO, "pcie_init in rs690_ht.c\n");
 
 	/* System error enable */
 	dword = pci_read_config32(dev, 0x04);

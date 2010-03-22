@@ -32,24 +32,24 @@
 
 static void print_initcpu8 (const char *strval, u8 val)
 {
-	printk_debug("%s%02x\n", strval, val);
+	printk(BIOS_DEBUG, "%s%02x\n", strval, val);
 }
 
 static void print_initcpu8_nocr (const char *strval, u8 val)
 {
-	printk_debug("%s%02x", strval, val);
+	printk(BIOS_DEBUG, "%s%02x", strval, val);
 }
 
 
 static void print_initcpu16 (const char *strval, u16 val)
 {
-	printk_debug("%s%04x\n", strval, val);
+	printk(BIOS_DEBUG, "%s%04x\n", strval, val);
 }
 
 
 static void print_initcpu(const char *strval, u32 val)
 {
-	printk_debug("%s%08x\n", strval, val);
+	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 }
 
 
@@ -223,7 +223,7 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid);
 
 static inline __attribute__((always_inline)) void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id, const char *str)
 {
-		printk_debug("%s --- {	 APICID = %02x NODEID = %02x COREID = %02x} ---\n", str, apicid, id.nodeid, id.coreid);
+		printk(BIOS_DEBUG, "%s --- {	 APICID = %02x NODEID = %02x COREID = %02x} ---\n", str, apicid, id.nodeid, id.coreid);
 }
 
 
@@ -406,10 +406,10 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		{
 		// check warm(bios) reset to call stage2 otherwise do stage1
 			if (warm_reset_detect(id.nodeid)) {
-				printk_debug("init_fidvid_stage2 apicid: %02x\n", apicid);
+				printk(BIOS_DEBUG, "init_fidvid_stage2 apicid: %02x\n", apicid);
 				init_fidvid_stage2(apicid, id.nodeid);
 			} else {
-				printk_debug("init_fidvid_ap(stage1) apicid: %02x\n", apicid);
+				printk(BIOS_DEBUG, "init_fidvid_ap(stage1) apicid: %02x\n", apicid);
 				init_fidvid_ap(bsp_apicid, apicid, id.nodeid, id.coreid);
 			}
 		}
@@ -424,7 +424,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 
 		STOP_CAR_AND_CPU();
-		printk_debug("\nAP %02x should be halted but you are reading this....\n", apicid);
+		printk(BIOS_DEBUG, "\nAP %02x should be halted but you are reading this....\n", apicid);
 	}
 
 	return bsp_apicid;
@@ -449,12 +449,12 @@ static void wait_all_core0_started(void)
 	u32 i;
 	u32 nodes = get_nodes();
 
-	printk_debug("Wait all core0s started \n");
+	printk(BIOS_DEBUG, "Wait all core0s started \n");
 	for(i=1;i<nodes;i++) { // skip bsp, because it is running on bsp
 		while(!is_core0_started(i)) {}
 		print_initcpu8("  Core0 started on node: ", i);
 	}
-	printk_debug("Wait all core0s started done\n");
+	printk(BIOS_DEBUG, "Wait all core0s started done\n");
 }
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
 /**
@@ -471,7 +471,7 @@ static void start_node(u8 node)
 	u32 val;
 
 	/* Enable routing table */
-	printk_debug("Start node %02x", node);
+	printk(BIOS_DEBUG, "Start node %02x", node);
 
 #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10
 	/* For FAM10 support, we need to set Dram base/limit for the new node */
@@ -484,7 +484,7 @@ static void start_node(u8 node)
 	val &= ~(1 << 1);
 	pci_write_config32(NODE_HT(node), 0x6c, val);
 
-	printk_debug(" done.\n");
+	printk(BIOS_DEBUG, " done.\n");
 }
 
 
@@ -514,7 +514,7 @@ static void setup_remote_node(u8 node)
 	};
 	u16 i;
 
-	printk_debug("setup_remote_node: %02x", node);
+	printk(BIOS_DEBUG, "setup_remote_node: %02x", node);
 
 	/* copy the default resource map from node 0 */
 	for(i = 0; i < ARRAY_SIZE(pci_reg); i++) {
@@ -525,7 +525,7 @@ static void setup_remote_node(u8 node)
 		pci_write_config32(NODE_MP(node), reg, value);
 
 	}
-	printk_debug(" done\n");
+	printk(BIOS_DEBUG, " done\n");
 }
 #endif	/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
@@ -845,7 +845,7 @@ void cpuSetAMDMSR(void)
 	u8 i;
 	u32 revision, platform;
 
-	printk_debug("cpuSetAMDMSR ");
+	printk(BIOS_DEBUG, "cpuSetAMDMSR ");
 
 	revision = mctGetLogicalCPUID(0xFF);
 	platform = get_platform_type();
@@ -863,7 +863,7 @@ void cpuSetAMDMSR(void)
 	}
 	AMD_Errata298();
 
-	printk_debug(" done\n");
+	printk(BIOS_DEBUG, " done\n");
 }
 
 
@@ -879,7 +879,7 @@ void cpuSetAMDPCI(u8 node)
 	u32 val;
 	u8 offset;
 
-	printk_debug("cpuSetAMDPCI %02d", node);
+	printk(BIOS_DEBUG, "cpuSetAMDPCI %02d", node);
 
 
 	revision = mctGetLogicalCPUID(node);
@@ -933,7 +933,7 @@ void cpuSetAMDPCI(u8 node)
 	if (revision & (AMD_DR_B2 | AMD_DR_B3))
 		dctPhyDiag(); */
 
-	printk_debug(" done\n");
+	printk(BIOS_DEBUG, " done\n");
 }
 
 

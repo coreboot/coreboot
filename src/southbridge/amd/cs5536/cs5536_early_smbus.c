@@ -53,7 +53,7 @@ static int smbus_wait(unsigned smbus_io_base)
 		if ((val & SMB_STS_SDAST) != 0)
 			break;
 		if (val & (SMB_STS_BER | SMB_STS_NEGACK)) {
-			/*printk_debug("SMBUS WAIT ERROR %x\n", val); */
+			/*printk(BIOS_DEBUG, "SMBUS WAIT ERROR %x\n", val); */
 			return SMBUS_ERROR;
 		}
 	} while (--loops);
@@ -123,7 +123,7 @@ static int smbus_send_slave_address(unsigned smbus_io_base,
 	/* check for bus conflict and NACK */
 	val = inb(smbus_io_base + SMB_STS);
 	if (((val & SMB_STS_BER) != 0) || ((val & SMB_STS_NEGACK) != 0)) {
-		/* printk_debug("SEND SLAVE ERROR (%x)\n", val); */
+		/* printk(BIOS_DEBUG, "SEND SLAVE ERROR (%x)\n", val); */
 		return SMBUS_ERROR;
 	}
 	return smbus_wait(smbus_io_base);

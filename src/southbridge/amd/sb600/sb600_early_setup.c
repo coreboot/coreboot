@@ -284,16 +284,16 @@ static void sb600_devices_por_init(void)
 	device_t dev;
 	u8 byte;
 
-	printk_info("sb600_devices_por_init()\n");
+	printk(BIOS_INFO, "sb600_devices_por_init()\n");
 	/* SMBus Device, BDF:0-20-0 */
-	printk_info("sb600_devices_por_init(): SMBus Device, BDF:0-20-0\n");
+	printk(BIOS_INFO, "sb600_devices_por_init(): SMBus Device, BDF:0-20-0\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		die("SMBUS controller not found\r\n");
 		/* NOT REACHED */
 	}
-	printk_info("SMBus controller enabled, sb revision is 0x%x\r\n",
+	printk(BIOS_INFO, "SMBus controller enabled, sb revision is 0x%x\r\n",
 		    get_sb600_revision());
 
 	/* sbPorAtStartOfTblCfg */
@@ -372,7 +372,7 @@ static void sb600_devices_por_init(void)
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
 
 	/* IDE Device, BDF:0-20-1 */
-	printk_info("sb600_devices_por_init(): IDE Device, BDF:0-20-1\n");
+	printk(BIOS_INFO, "sb600_devices_por_init(): IDE Device, BDF:0-20-1\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x438C), 0);
 	/* Disable prefetch */
 	byte = pci_read_config8(dev, 0x63);
@@ -380,7 +380,7 @@ static void sb600_devices_por_init(void)
 	pci_write_config8(dev, 0x63, byte);
 
 	/* LPC Device, BDF:0-20-3 */
-	printk_info("sb600_devices_por_init(): LPC Device, BDF:0-20-3\n");
+	printk(BIOS_INFO, "sb600_devices_por_init(): LPC Device, BDF:0-20-3\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x438D), 0);
 	/* DMA enable */
 	pci_write_config8(dev, 0x40, 0x04);
@@ -417,7 +417,7 @@ static void sb600_devices_por_init(void)
 
 	/* P2P Bridge, BDF:0-20-4, the configuration of the registers in this dev are copied from CIM,
 	 * TODO: I don't know what are their mean? */
-	printk_info("sb600_devices_por_init(): P2P Bridge, BDF:0-20-4\n");
+	printk(BIOS_INFO, "sb600_devices_por_init(): P2P Bridge, BDF:0-20-4\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4384), 0);
 	/* I don't know why CIM tried to write into a read-only reg! */
 	/*pci_write_config8(dev, 0x0c, 0x20) */ ;
@@ -448,7 +448,7 @@ static void sb600_devices_por_init(void)
 	pci_write_config8(dev, 0x50, 0x01);
 
 	/* SATA Device, BDF:0-18-0, Non-Raid-5 SATA controller */
-	printk_info("sb600_devices_por_init(): SATA Device, BDF:0-18-0\n");
+	printk(BIOS_INFO, "sb600_devices_por_init(): SATA Device, BDF:0-18-0\n");
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4380), 0);
 
 	/*PHY Global Control, we are using A14.
@@ -479,7 +479,7 @@ static void sb600_pmio_por_init(void)
 {
 	u8 byte;
 
-	printk_info("sb600_pmio_por_init()\n");
+	printk(BIOS_INFO, "sb600_pmio_por_init()\n");
 	/* K8KbRstEn, KB_RST# control for K8 system. */
 	byte = pmio_read(0x66);
 	byte |= 0x20;
@@ -676,7 +676,7 @@ static void sb600_before_pci_init(void)
 */
 static void sb600_early_setup(void)
 {
-	printk_info("sb600_early_setup()\n");
+	printk(BIOS_INFO, "sb600_early_setup()\n");
 	sb600_por_init();
 }
 

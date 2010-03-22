@@ -233,7 +233,7 @@ static void enable_hpet(struct device *dev)
 	dword |= (code<<15);
 	pci_write_config32(dev, GEN_CNTL, dword);
 
-	printk_debug("enabling HPET @0x%lx\n", hpet_address | (code <<12) );
+	printk(BIOS_DEBUG, "enabling HPET @0x%lx\n", hpet_address | (code <<12) );
 }
 
 static void lpc_init(struct device *dev)
@@ -267,7 +267,7 @@ static void lpc_init(struct device *dev)
 		byte |= 1;
 	}
 	pci_write_config8(dev, 0xa4, byte);
-	printk_info("set power %s after power fail\n", pwr_on?"on":"off");
+	printk(BIOS_INFO, "set power %s after power fail\n", pwr_on?"on":"off");
 
 	/* Set up the PIRQ */
 	i82801ex_pirq_init(dev);

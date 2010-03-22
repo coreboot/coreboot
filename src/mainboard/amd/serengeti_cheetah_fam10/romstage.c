@@ -73,7 +73,7 @@ static void post_code(u8 value) {
 #if 0
 void die(const char *msg);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
-#define printk_emerg(fmt, arg...)   do_printk(BIOS_EMERG   ,fmt, ##arg)
+#define printk(BIOS_EMERG, fmt, arg...)   do_printk(BIOS_EMERG   ,fmt, ##arg)
 #endif
 #include "cpu/x86/bist.h"
 
@@ -105,7 +105,7 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 	int ret,i;
 	u8 device = ctrl->spd_switch_addr;
 
-	printk_debug("switch i2c to : %02x for node %02x \n", device, ctrl->node_id);
+	printk(BIOS_DEBUG, "switch i2c to : %02x for node %02x \n", device, ctrl->node_id);
 
 	/* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
 	i=2;
@@ -176,7 +176,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	uart_init();
 	console_init();
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);
 
@@ -185,10 +185,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	// Load MPB
 	val = cpuid_eax(1);
-	printk_debug("BSP Family_Model: %08x \n", val);
-	printk_debug("*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
-	printk_debug("bsp_apicid = %02x \n", bsp_apicid);
-	printk_debug("cpu_init_detectedx = %08x \n", cpu_init_detectedx);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
+	printk(BIOS_DEBUG, "*sysinfo range: ["); print_debug_hex32((u32)sysinfo); print_debug(","); print_debug_hex32((u32)sysinfo+sizeof(struct sys_info)); print_debug("]\n");
+	printk(BIOS_DEBUG, "bsp_apicid = %02x \n", bsp_apicid);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08x \n", cpu_init_detectedx);
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
@@ -219,7 +219,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
  #if CONFIG_LOGICAL_CPUS==1
 	/* Core0 on each node is configured. Now setup any additional cores. */
-	printk_debug("start_other_cores()\n");
+	printk(BIOS_DEBUG, "start_other_cores()\n");
 	start_other_cores();
 	post_code(0x37);
 	wait_all_other_cores_started(bsp_apicid);
@@ -229,7 +229,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
  #if FAM10_SET_FIDVID == 1
 	msr = rdmsr(0xc0010071);
-	printk_debug("\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
 
 	/* FIXME: The sb fid change may survive the warm reset and only
 	   need to be done once.*/
@@ -247,7 +247,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
-	printk_debug("End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
  #endif
 
 
@@ -268,12 +268,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_code(0x3C);
 
 	/* It's the time to set ctrl in sysinfo now; */
-	printk_debug("fill_mem_ctrl()\n");
+	printk(BIOS_DEBUG, "fill_mem_ctrl()\n");
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	post_code(0x3D);
 
 
-	printk_debug("enable_smbus()\n");
+	printk(BIOS_DEBUG, "enable_smbus()\n");
 	enable_smbus();
 	post_code(0x3E);
 
@@ -283,7 +283,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 //	die("Die Before MCT init.");
 
-	printk_debug("raminit_amdmct()\n");
+	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
 	post_code(0x41);
 
@@ -302,7 +302,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 //	die("After MCT init before CAR disabled.");
 
 	post_code(0x42);
-	printk_debug("\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
+	printk(BIOS_DEBUG, "\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
 

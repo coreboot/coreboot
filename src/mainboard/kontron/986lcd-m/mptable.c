@@ -59,7 +59,7 @@ static void *smp_write_config_table(void *v)
 	firewire = dev_find_device(0x104c, 0x8023, 0);
 	if (firewire) {
 		firewire_bus = firewire->bus->secondary;
-		printk_spew("Firewire device is on bus %x\n",
+		printk(BIOS_SPEW, "Firewire device is on bus %x\n",
 				firewire_bus);
 		max_pci_bus = firewire_bus;
 	}
@@ -71,7 +71,7 @@ static void *smp_write_config_table(void *v)
 		riser = dev_find_device(0x3388, 0x0022, 0);
 	if (riser) {
 		riser_bus = riser->link[0].secondary;
-		printk_spew("Riser bus is %x\n", riser_bus);
+		printk(BIOS_SPEW, "Riser bus is %x\n", riser_bus);
 		max_pci_bus = riser_bus;
 	}
 
@@ -153,7 +153,7 @@ static void *smp_write_config_table(void *v)
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);
 	mc->mpc_checksum = smp_compute_checksum(mc, mc->mpc_length);
 
-	printk_debug("Wrote the mp table end at: %p - %p\n", mc, smp_next_mpe_entry(mc));
+	printk(BIOS_DEBUG, "Wrote the mp table end at: %p - %p\n", mc, smp_next_mpe_entry(mc));
 
 	return smp_next_mpe_entry(mc);
 }

@@ -39,14 +39,14 @@ static void nvram_on(struct device *dev)
 
 	*flash = 0xf0;
 
-	printk_debug("Flash device: MFGID %02x, DEVID %02x\n", id1, id2);
+	printk(BIOS_DEBUG, "Flash device: MFGID %02x, DEVID %02x\n", id1, id2);
 #endif
 }
 
 	
 static void southbridge_init(struct device *dev)
 {
-	printk_spew("cs5535: %s\n", __func__);
+	printk(BIOS_SPEW, "cs5535: %s\n", __func__);
 	nvram_on(dev);
 }
 
@@ -56,17 +56,17 @@ static void dump_south(struct device *dev)
 	int i, j;
 
 	for(i=0; i<256; i+=16) {
-		printk_debug("0x%02x: ", i);
+		printk(BIOS_DEBUG, "0x%02x: ", i);
 		for(j=0; j<16; j++)
-			printk_debug("%02x ", pci_read_config8(dev, i+j));
-		printk_debug("\n");
+			printk(BIOS_DEBUG, "%02x ", pci_read_config8(dev, i+j));
+		printk(BIOS_DEBUG, "\n");
 	}
 }
 */
 
 static void southbridge_enable(struct device *dev)
 {
-	printk_spew("%s: dev is %p\n", __func__, dev);
+	printk(BIOS_SPEW, "%s: dev is %p\n", __func__, dev);
 }
 
 static void cs5535_read_resources(device_t dev)
@@ -89,7 +89,7 @@ static void cs5535_read_resources(device_t dev)
 
 static void cs5535_pci_dev_enable_resources(device_t dev)
 {
-	printk_spew("cs5535.c: %s()\n", __func__);
+	printk(BIOS_SPEW, "cs5535.c: %s()\n", __func__);
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
 }

@@ -38,9 +38,9 @@ static void rl5c476_init(device_t dev)
 	unsigned char *base;
 
 	/* cardbus controller function 1 for CF Socket */
-	printk_debug("Ricoh RL5c476: Initializing.\n");
+	printk(BIOS_DEBUG, "Ricoh RL5c476: Initializing.\n");
 
-	printk_debug("CF Base = %0x\n",cf_base);
+	printk(BIOS_DEBUG, "CF Base = %0x\n",cf_base);
 
 	/* misc control register */
 	pci_write_config16(dev,0x82,0x00a0);
@@ -48,7 +48,7 @@ static void rl5c476_init(device_t dev)
 	/* set up second slot as compact flash port if asked to do so */
 
 	if (!enable_cf_boot) {
-		printk_debug("CF boot not enabled.\n");
+		printk(BIOS_DEBUG, "CF boot not enabled.\n");
 		return;
 	}
 	
@@ -152,7 +152,7 @@ static void rl5c476_init(device_t dev)
 	 */
 	unsigned char *cptr;
 	cptr = (unsigned char *)(cf_base + 0x200);
-	printk_debug("CF Config = %x\n",*cptr);
+	printk(BIOS_DEBUG, "CF Config = %x\n",*cptr);
 
 	/* Set CF to decode 16 IO bytes on any 16 byte boundary - 
 	 * rely on the io windows of the bridge set up above to 
@@ -184,12 +184,12 @@ void rl5c476_read_resources(device_t dev)
 void rl5c476_set_resources(device_t dev)
 {
 	struct resource *resource;
-	printk_debug("%s In set resources \n",dev_path(dev));
+	printk(BIOS_DEBUG, "%s In set resources \n",dev_path(dev));
 	if( enable_cf_boot && (PCI_FUNC(dev->path.pci.devfn) == 1)){
 		resource = find_resource(dev,1);
 		if( !(resource->flags & IORESOURCE_STORED) ){
 			resource->flags |= IORESOURCE_STORED ;
-			printk_debug("%s 1 ==> %x\n", dev_path(dev), resource->base); 
+			printk(BIOS_DEBUG, "%s 1 ==> %x\n", dev_path(dev), resource->base); 
 			cf_base = resource->base;
 		}
 	}

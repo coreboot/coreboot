@@ -33,7 +33,7 @@ static void pcie_init(struct device *dev)
 	uint32_t dword;
 	uint32_t msicap;
 
-	printk_debug("PCIE enable.... dev= %s\n",dev_path(dev));
+	printk(BIOS_DEBUG, "PCIE enable.... dev= %s\n",dev_path(dev));
 
 	/* System error enable */
 	dword = pci_read_config32(dev, 0x04);

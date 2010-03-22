@@ -110,7 +110,7 @@ static void pcie_init(struct device *dev)
 	/* Enable pci error detecting */
 	u32 dword;
 
-	printk_debug("pcie_init in rs690_pcie.c\n");
+	printk(BIOS_DEBUG, "pcie_init in rs690_pcie.c\n");
 
 	/* System error enable */
 	dword = pci_read_config32(dev, 0x04);
@@ -168,7 +168,7 @@ static void switching_gpp_configurations(device_t nb_dev, device_t sb_dev)
 *****************************************************************/
 void enable_pcie_bar3(device_t nb_dev)
 {
-	printk_debug("enable_pcie_bar3()\n");
+	printk(BIOS_DEBUG, "enable_pcie_bar3()\n");
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 1 << 30);	/* Enables writes to the BAR3 register. */
 	set_nbcfg_enable_bits(nb_dev, 0x84, 7 << 16, 0 << 16);
 
@@ -184,7 +184,7 @@ void enable_pcie_bar3(device_t nb_dev)
 *****************************************************************/
 void disable_pcie_bar3(device_t nb_dev)
 {
-	printk_debug("disable_pcie_bar3()\n");
+	printk(BIOS_DEBUG, "disable_pcie_bar3()\n");
 	set_nbcfg_enable_bits(nb_dev, 0x7C, 1 << 30, 0 << 30);	/* Disable writes to the BAR3. */
 	pci_write_config32(nb_dev, 0x1C, 0);	/* clear BAR3 address */
 	ProgK8TempMmioBase(0, EXT_CONF_BASE_ADDRESS, TEMP_MMIO_BASE_ADDRESS);
@@ -206,7 +206,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	device_t sb_dev;
 	struct southbridge_amd_rs690_config *cfg =
 	    (struct southbridge_amd_rs690_config *)nb_dev->chip_info;
-	printk_debug("gpp_sb_init nb_dev=0x%p, dev=0x%p, port=0x%x\n", nb_dev, dev, port);
+	printk(BIOS_DEBUG, "gpp_sb_init nb_dev=0x%p, dev=0x%p, port=0x%x\n", nb_dev, dev, port);
 
 	/* init GPP core */
 	set_pcie_enable_bits(nb_dev, 0x20 | PCIE_CORE_INDEX_GPPSB, 1 << 8,
@@ -262,7 +262,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 			PcieReleasePortTraining(nb_dev, dev, port);
 			if (!(AtiPcieCfg.Config & PCIE_GPP_COMPLIANCE)) {
 				u8 res = PcieTrainPort(nb_dev, dev, port);
-				printk_debug("PcieTrainPort port=0x%x result=%d\n", port, res);
+				printk(BIOS_DEBUG, "PcieTrainPort port=0x%x result=%d\n", port, res);
 				if (res) {
 					AtiPcieCfg.PortDetect |= 1 << port;
 				}

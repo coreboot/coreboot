@@ -41,7 +41,7 @@ static void adt7463_init(device_t dev)
 	smbus_dev = dev_find_device(0x1022, 0x746b, 0);
 	if (!smbus_dev)
 		die("SMBus controller not found\n");
-	printk_debug("SMBus controller found\n");
+	printk(BIOS_DEBUG, "SMBus controller found\n");
 
 	/* Find the ADT7463 device. */
 	path.type = DEVICE_PATH_I2C;
@@ -49,7 +49,7 @@ static void adt7463_init(device_t dev)
 	adt7463 = find_dev_path(smbus_dev->link, &path);
 	if (!adt7463)
 		die("ADT7463 not found\n");
-	printk_debug("ADT7463 found\n");
+	printk(BIOS_DEBUG, "ADT7463 found\n");
 
 	/* Set all fans to 'Fastest Speed Calculated by All 3 Temperature
 	 * Channels Controls PWMx'.
@@ -95,7 +95,7 @@ static void adt7463_init(device_t dev)
 	/* Set TACH measurements to normal (1/second). */
 	result = smbus_write_byte(adt7463, 0x78, 0xf0);
 
-	printk_debug("ADT7463 properly initialized\n");
+	printk(BIOS_DEBUG, "ADT7463 properly initialized\n");
 }
 
 static void dummy_noop(device_t dummy)
@@ -117,7 +117,7 @@ static unsigned int scan_root_bus(device_t root, unsigned int max)
 
 	max = root_dev_scan_bus(root, max);
 
-	printk_debug("scan_root_bus ok\n");
+	printk(BIOS_DEBUG, "scan_root_bus ok\n");
 
 	/* The following is a little silly. We need a hook into the boot
 	 * process *after* the ADT7463 device has been initialized. So we
@@ -128,7 +128,7 @@ static unsigned int scan_root_bus(device_t root, unsigned int max)
 
 	link_i = root->links;
 	if (link_i >= MAX_LINKS) {
-		printk_debug("Reached MAX_LINKS, not configuring ADT7463");
+		printk(BIOS_DEBUG, "Reached MAX_LINKS, not configuring ADT7463");
 		return max;
 	}
 	root->link[link_i].link = link_i;

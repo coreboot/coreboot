@@ -177,7 +177,7 @@ void smp_write_intsrc(struct mp_config_table *mc,
 	mpc->mpc_dstirq = dstirq;
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 #ifdef DEBUG_MPTABLE
-	printk_debug("add intsrc srcbus 0x%x srcbusirq 0x%x, dstapic 0x%x, dstirq 0x%x\n",
+	printk(BIOS_DEBUG, "add intsrc srcbus 0x%x srcbusirq 0x%x, dstapic 0x%x, dstirq 0x%x\n",
 				srcbus, srcbusirq, dstapic, dstirq);
 	hexdump(__func__, mpc, sizeof(*mpc));
 #endif
@@ -215,7 +215,7 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 
 			if ((child->class >> 16) != PCI_BASE_CLASS_BRIDGE) {
 				/* pci device */
-				printk_debug("route irq: %s\n", dev_path(child));
+				printk(BIOS_DEBUG, "route irq: %s\n", dev_path(child));
 				for (i = 0; i < 4; i++)
 					smp_write_intsrc(mc, irqtype, irqflag, srcbus, (slot<<2)|i, dstapic, dstirq_x[i]);
 				goto next;
@@ -225,7 +225,7 @@ void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
 			case PCI_CLASS_BRIDGE_PCI:
 			case PCI_CLASS_BRIDGE_PCMCIA:
 			case PCI_CLASS_BRIDGE_CARDBUS:
-				printk_debug("route irq bridge: %s\n", dev_path(child));
+				printk(BIOS_DEBUG, "route irq bridge: %s\n", dev_path(child));
 				smp_write_intsrc_pci_bridge(mc, irqtype, irqflag, child, dstapic, dstirq_x);
 			}
 

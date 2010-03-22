@@ -42,13 +42,13 @@ static int cbfs_decompress(int algo, void *src, void *dst, int len)
 
 	case CBFS_COMPRESS_LZMA:
 		if (!ulzma(src, dst)) {
-			printk_err("CBFS: LZMA decompression failed!\n");
+			printk(BIOS_ERR, "CBFS: LZMA decompression failed!\n");
 			return -1;
 		}
 		return 0;
 
 	default:
-		printk_info( "CBFS:  Unknown compression type %d\n", algo);
+		printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", algo);
 		return -1;
 	}
 }
@@ -63,20 +63,20 @@ static struct cbfs_header *cbfs_master_header(void)
 	struct cbfs_header *header;
 
 	void *ptr = (void *)*((unsigned long *) CBFS_HEADPTR_ADDR);
-	printk_spew("Check CBFS header at %p\n", ptr);
+	printk(BIOS_SPEW, "Check CBFS header at %p\n", ptr);
 	header = (struct cbfs_header *) ptr;
 
-	printk_spew("magic is %08x\n", ntohl(header->magic));
+	printk(BIOS_SPEW, "magic is %08x\n", ntohl(header->magic));
 	if (ntohl(header->magic) != CBFS_HEADER_MAGIC) {
-		printk_err("ERROR: No valid CBFS header found!\n");
+		printk(BIOS_ERR, "ERROR: No valid CBFS header found!\n");
 		if (header->magic == 0xffffffff) {
-			printk_err("Maybe the ROM isn't entirely mapped yet?\n"
+			printk(BIOS_ERR, "Maybe the ROM isn't entirely mapped yet?\n"
 				"See (and report to) http://www.coreboot.org/Infrastructure_Projects#CBFS\n");
 		}
 		return NULL;
 	}
 
-	printk_spew("Found CBFS header at %p\n", ptr);
+	printk(BIOS_SPEW, "Found CBFS header at %p\n", ptr);
 	return header;
 }
 
@@ -94,17 +94,17 @@ struct cbfs_file *cbfs_find(const char *name)
 	while(1) {
 		struct cbfs_file *file = (struct cbfs_file *) offset;
 		if (!cbfs_check_magic(file)) return NULL;
-		printk_spew("Check %s\n", CBFS_NAME(file));
+		printk(BIOS_SPEW, "Check %s\n", CBFS_NAME(file));
 		if (!strcmp(CBFS_NAME(file), name))
 			return file;
 
 		int flen = ntohl(file->len);
 		int foffset = ntohl(file->offset);
-		printk_spew("CBFS: follow chain: %p + %x + %x + align -> ", (void *)offset, foffset, flen);
+		printk(BIOS_SPEW, "CBFS: follow chain: %p + %x + %x + align -> ", (void *)offset, foffset, flen);
 
 		unsigned long oldoffset = offset;
 		offset = ALIGN(offset + foffset + flen, align);
-		printk_spew("%p\n", (void *)offset);
+		printk(BIOS_SPEW, "%p\n", (void *)offset);
 		if (offset <= oldoffset) return NULL;
 
 		if (offset < 0xFFFFFFFF - ntohl(header->romsize))
@@ -117,13 +117,13 @@ void *cbfs_find_file(const char *name, int type)
 	struct cbfs_file *file = cbfs_find(name);
 
 	if (file == NULL) {
-		printk_info( "CBFS:  Could not find file %s\n",
+		printk(BIOS_INFO,  "CBFS:  Could not find file %s\n",
 		       name);
 		return NULL;
 	}
 
 	if (ntohl(file->type) != type) {
-		printk_info( "CBFS:  File %s is of type %x instead of"
+		printk(BIOS_INFO,  "CBFS:  File %s is of type %x instead of"
 		       "type %x\n", name, file->type, type);
 
 		return NULL;
@@ -193,7 +193,7 @@ void * cbfs_load_stage(const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	printk_info("Stage: loading %s @ 0x%x (%d bytes), entry @ 0x%llx\n", 
+	printk(BIOS_INFO, "Stage: loading %s @ 0x%x (%d bytes), entry @ 0x%llx\n", 
 			name,
 			(u32) stage->load, stage->memlen, 
 			stage->entry);
@@ -206,7 +206,7 @@ void * cbfs_load_stage(const char *name)
 			     stage->len))
 		return (void *) -1;
 
-	printk_debug("Stage: done loading.\n");
+	printk(BIOS_DEBUG, "Stage: done loading.\n");
 
 	entry = stage->entry;
 	// entry = ntohl((u32) stage->entry);
@@ -223,13 +223,13 @@ int cbfs_execute_stage(const char *name)
 		return 1;
 
 	if (ntohl(stage->compression) != CBFS_COMPRESS_NONE) {
-		printk_info( "CBFS:  Unable to run %s:  Compressed file"
+		printk(BIOS_INFO,  "CBFS:  Unable to run %s:  Compressed file"
 		       "Not supported for in-place execution\n", name);
 		return 1;
 	}
 
 	/* FIXME: This isn't right */
-	printk_info( "CBFS: run @ %p\n", (void *) ntohl((u32) stage->entry));
+	printk(BIOS_INFO,  "CBFS: run @ %p\n", (void *) ntohl((u32) stage->entry));
 	return run_address((void *) ntohl((u32) stage->entry));
 }
 

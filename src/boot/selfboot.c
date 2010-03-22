@@ -80,10 +80,10 @@ void * cbfs_load_payload(struct lb_memory *lb_mem, const char *name)
 	payload = (struct cbfs_payload *)cbfs_find_file(name, CBFS_TYPE_PAYLOAD);
 	if (payload == NULL)
 		return (void *) -1;
-	printk_debug("Got a payload\n");
+	printk(BIOS_DEBUG, "Got a payload\n");
 
 	selfboot(lb_mem, payload);
-	printk_emerg("SELFBOOT RETURNED!\n");
+	printk(BIOS_EMERG, "SELFBOOT RETURNED!\n");
 
 	return (void *) -1;
 }
@@ -175,21 +175,21 @@ static int valid_area(struct lb_memory *mem, unsigned long buffer,
 			break;
 		}
 		if ((mtype == LB_MEM_TABLE) && (start < mend) && (end > mstart)) {
-			printk_err("Payload is overwriting Coreboot tables.\n");
+			printk(BIOS_ERR, "Payload is overwriting Coreboot tables.\n");
 			break;
 		}
 	}
 	if (i == mem_entries) {
-		printk_err("No matching ram area found for range:\n");
-		printk_err("  [0x%016lx, 0x%016lx)\n", start, end);
-		printk_err("Ram areas\n");
+		printk(BIOS_ERR, "No matching ram area found for range:\n");
+		printk(BIOS_ERR, "  [0x%016lx, 0x%016lx)\n", start, end);
+		printk(BIOS_ERR, "Ram areas\n");
 		for(i = 0; i < mem_entries; i++) {
 			uint64_t mstart, mend;
 			uint32_t mtype;
 			mtype = mem->map[i].type;
 			mstart = unpack_lb64(mem->map[i].start);
 			mend = mstart + unpack_lb64(mem->map[i].size);
-			printk_err("  [0x%016lx, 0x%016lx) %s\n",
+			printk(BIOS_ERR, "  [0x%016lx, 0x%016lx) %s\n",
 				(unsigned long)mstart,
 				(unsigned long)mend,
 				(mtype == LB_MEM_RAM)?"RAM":"Reserved");
@@ -220,7 +220,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 	 *       0 : A new segment is inserted after the seg, or no new one. */
 	unsigned long start, middle, end, ret = 0;
 
-	printk_spew("lb: [0x%016lx, 0x%016lx)\n",
+	printk(BIOS_SPEW, "lb: [0x%016lx, 0x%016lx)\n",
 		lb_start, lb_end);
 
 	/* I don't conflict with coreboot so get out of here */
@@ -231,7 +231,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 	middle = start + seg->s_filesz;
 	end = start + seg->s_memsz;
 
-	printk_spew("segment: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+	printk(BIOS_SPEW, "segment: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 		start, middle, end);
 
 	if (seg->compression == CBFS_COMPRESS_NONE) {
@@ -268,7 +268,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			/* compute the new value of start */
 			start = seg->s_dstaddr;
 
-			printk_spew("   early: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+			printk(BIOS_SPEW, "   early: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
@@ -305,7 +305,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			seg->phdr_next->phdr_prev = new;
 			seg->phdr_next = new;
 
-			printk_spew("   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+			printk(BIOS_SPEW, "   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
@@ -319,7 +319,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 	 */
 	seg->s_dstaddr = buffer + (seg->s_dstaddr - lb_start);
 
-	printk_spew(" bounce: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+	printk(BIOS_SPEW, " bounce: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 		seg->s_dstaddr,
 		seg->s_dstaddr + seg->s_filesz,
 		seg->s_dstaddr + seg->s_memsz);
@@ -342,16 +342,16 @@ static int build_self_segment_list(
 	first_segment = segment = &payload->segments;
 
 	while(1) {
-		printk_debug("Loading segment from rom address 0x%p\n", segment);
+		printk(BIOS_DEBUG, "Loading segment from rom address 0x%p\n", segment);
 		switch(segment->type) {
 		case PAYLOAD_SEGMENT_PARAMS:
-			printk_debug("  parameter section (skipped)\n");
+			printk(BIOS_DEBUG, "  parameter section (skipped)\n");
 			segment++;
 			continue;
 
 		case PAYLOAD_SEGMENT_CODE:
 		case PAYLOAD_SEGMENT_DATA:
-			printk_debug("  %s (compression=%x)\n",
+			printk(BIOS_DEBUG, "  %s (compression=%x)\n",
 					segment->type == PAYLOAD_SEGMENT_CODE ?  "code" : "data",
 					ntohl(segment->compression));
 			new = malloc(sizeof(*new));
@@ -361,18 +361,18 @@ static int build_self_segment_list(
 
 			new->s_srcaddr = (u32) ((unsigned char *) first_segment) + ntohl(segment->offset);
 			new->s_filesz = ntohl(segment->len);
-			printk_debug("  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
+			printk(BIOS_DEBUG, "  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
 				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
 			/* Clean up the values */
 			if (new->s_filesz > new->s_memsz)  {
 				new->s_filesz = new->s_memsz;
 			}
-			printk_debug("  (cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
+			printk(BIOS_DEBUG, "  (cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
 				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
 			break;
 
 		case PAYLOAD_SEGMENT_BSS:
-			printk_debug("  BSS 0x%p (%d byte)\n", (void *) ntohl((u32) segment->load_addr),
+			printk(BIOS_DEBUG, "  BSS 0x%p (%d byte)\n", (void *) ntohl((u32) segment->load_addr),
 				 ntohl(segment->mem_len));
 			new = malloc(sizeof(*new));
 			new->s_filesz = 0;
@@ -381,7 +381,7 @@ static int build_self_segment_list(
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
-			printk_debug("  Entry Point 0x%p\n", (void *) ntohl((u32) segment->load_addr));
+			printk(BIOS_DEBUG, "  Entry Point 0x%p\n", (void *) ntohl((u32) segment->load_addr));
 			*entry =  ntohl((u32) segment->load_addr);
 			/* Per definition, a payload always has the entry point
 			 * as last segment. Thus, we use the occurence of the
@@ -394,7 +394,7 @@ static int build_self_segment_list(
 			/* We found something that we don't know about. Throw
 			 * hands into the sky and run away!
 			 */
-			printk_emerg("Bad segment type %x\n", segment->type);
+			printk(BIOS_EMERG, "Bad segment type %x\n", segment->type);
 			return -1;
 		}
 
@@ -437,7 +437,7 @@ static int load_self_segments(
 	}
 	get_bounce_buffer(mem, bounce_high - lb_start);
 	if (!bounce_buffer) {
-		printk_err("Could not find a bounce buffer...\n");
+		printk(BIOS_ERR, "Could not find a bounce buffer...\n");
 		return 0;
 	}
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
@@ -447,7 +447,7 @@ static int load_self_segments(
 	}
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		unsigned char *dest, *src;
-		printk_debug("Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+		printk(BIOS_DEBUG, "Loading Segment: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 
 		/* Modify the segment to load onto the bounce_buffer if necessary.
@@ -457,7 +457,7 @@ static int load_self_segments(
 			continue;
 		}
 
-		printk_debug("Post relocation: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
+		printk(BIOS_DEBUG, "Post relocation: addr: 0x%016lx memsz: 0x%016lx filesz: 0x%016lx\n",
 			ptr->s_dstaddr, ptr->s_memsz, ptr->s_filesz);
 
 		/* Compute the boundaries of the segment */
@@ -471,13 +471,13 @@ static int load_self_segments(
 			len = ptr->s_filesz;
 			switch(ptr->compression) {
 				case CBFS_COMPRESS_LZMA: {
-					printk_debug("using LZMA\n");
+					printk(BIOS_DEBUG, "using LZMA\n");
 					len = ulzma(src, dest);
 					break;
 				}
 #if CONFIG_COMPRESSED_PAYLOAD_NRV2B==1
 				case CBFS_COMPRESS_NRV2B: {
-					printk_debug("using NRV2B\n");
+					printk(BIOS_DEBUG, "using NRV2B\n");
 					unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
 					unsigned long tmp;
 					len = unrv2b(src, dest, &tmp);
@@ -485,17 +485,17 @@ static int load_self_segments(
 				}
 #endif
 				case CBFS_COMPRESS_NONE: {
-					printk_debug("it's not compressed!\n");
+					printk(BIOS_DEBUG, "it's not compressed!\n");
 					memcpy(dest, src, len);
 					break;
 				}
 				default:
-					printk_info( "CBFS:  Unknown compression type %d\n", ptr->compression);
+					printk(BIOS_INFO,  "CBFS:  Unknown compression type %d\n", ptr->compression);
 					return -1;
 			}
 			end = dest + ptr->s_memsz;
 			middle = dest + len;
-			printk_spew("[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
+			printk(BIOS_SPEW, "[ 0x%016lx, %016lx, 0x%016lx) <- %016lx\n",
 				(unsigned long)dest,
 				(unsigned long)middle,
 				(unsigned long)end,
@@ -503,27 +503,27 @@ static int load_self_segments(
 
 			/* Zero the extra bytes between middle & end */
 			if (middle < end) {
-				printk_debug("Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
+				printk(BIOS_DEBUG, "Clearing Segment: addr: 0x%016lx memsz: 0x%016lx\n",
 					(unsigned long)middle, (unsigned long)(end - middle));
 
 				/* Zero the extra bytes */
 				memset(middle, 0, end - middle);
 			}
 			/* Copy the data that's outside the area that shadows coreboot_ram */
-			printk_debug("dest %p, end %p, bouncebuffer %lx\n", dest, end, bounce_buffer);
+			printk(BIOS_DEBUG, "dest %p, end %p, bouncebuffer %lx\n", dest, end, bounce_buffer);
 			if ((unsigned long)end > bounce_buffer) {
 				if ((unsigned long)dest < bounce_buffer) {
 					unsigned char *from = dest;
 					unsigned char *to = (unsigned char*)(lb_start-(bounce_buffer-(unsigned long)dest));
 					unsigned long amount = bounce_buffer-(unsigned long)dest;
-					printk_debug("move prefix around: from %p, to %p, amount: %lx\n", from, to, amount);
+					printk(BIOS_DEBUG, "move prefix around: from %p, to %p, amount: %lx\n", from, to, amount);
 					memcpy(to, from, amount);
 				}
 				if ((unsigned long)end > bounce_buffer + (lb_end - lb_start)) {
 					unsigned long from = bounce_buffer + (lb_end - lb_start);
 					unsigned long to = lb_end;
 					unsigned long amount = (unsigned long)end - from;
-					printk_debug("move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
+					printk(BIOS_DEBUG, "move suffix around: from %lx, to %lx, amount: %lx\n", from, to, amount);
 					memcpy((char*)to, (char*)from, amount);
 				}
 			}
@@ -545,12 +545,12 @@ static int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	if (!load_self_segments(&head, mem, payload))
 		goto out;
 
-	printk_spew("Loaded segments\n");
+	printk(BIOS_SPEW, "Loaded segments\n");
 
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
-	printk_debug("Jumping to boot code at %x\n", entry);
+	printk(BIOS_DEBUG, "Jumping to boot code at %x\n", entry);
 	post_code(0xfe);
 
 	/* Jump to kernel */

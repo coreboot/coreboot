@@ -460,7 +460,7 @@ static void cs5530_vga_init(device_t dev)
 	gx_base = GX_BASE;
 	mode = modes[CONFIG_GX1_VIDEOMODE];
 
-	printk_debug("Setting up video mode %dx%d with %d Hz clock\n",
+	printk(BIOS_DEBUG, "Setting up video mode %dx%d with %d Hz clock\n",
 		mode->visible_pixel, mode->visible_lines, mode->pixel_clock);
 
 	cs5530_set_clock_frequency(io_base, mode->pll_value);

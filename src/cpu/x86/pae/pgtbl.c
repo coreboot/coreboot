@@ -66,7 +66,7 @@ void *map_2M_page(unsigned long page)
                 #warning "We may need to increase CONFIG_RAMTOP, it need to be more than (0x100000+20480*CONFIG_MAX_CPUS)\n"
 #endif
 	if(x_end > (CONFIG_RAMTOP)) {
-                        printk_debug("map_2M_page: Please increase the CONFIG_RAMTOP more than %dK\n", x_end);
+                        printk(BIOS_DEBUG, "map_2M_page: Please increase the CONFIG_RAMTOP more than %dK\n", x_end);
                         die("Can not go on");
 	}
 #else

@@ -47,7 +47,7 @@ static int int15_handler(void)
 #define BOOT_DISPLAY_EFP2	(1 << 6)
 #define BOOT_DISPLAY_LCD2	(1 << 7)
 
-	printk_debug("%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
+	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
 			  __func__, M.x86.R_AX, M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
 
 	switch (M.x86.R_AX) {
@@ -176,12 +176,12 @@ static void hwm_setup(void)
 
 	switch (cpufan_control) {
 	case FAN_CRUISE_CONTROL_SPEED:
-		printk_debug("Fan Cruise Control setting CPU fan to %d RPM\n",
+		printk(BIOS_DEBUG, "Fan Cruise Control setting CPU fan to %d RPM\n",
 				fan_speeds[cpufan_speed].fan_speed);
 		hwm_write(0x06, fan_speeds[cpufan_speed].fan_in);  // CPUFANIN target speed
 		break;
 	case FAN_CRUISE_CONTROL_THERMAL:
-		printk_debug("Fan Cruise Control setting CPU fan to activation at %d deg C/%d deg F\n",
+		printk(BIOS_DEBUG, "Fan Cruise Control setting CPU fan to activation at %d deg C/%d deg F\n",
 				temperatures[cpufan_temperature].deg_celsius,
 				temperatures[cpufan_temperature].deg_fahrenheit);
 		hwm_write(0x06, temperatures[cpufan_temperature].deg_celsius);  // CPUFANIN target temperature
@@ -190,12 +190,12 @@ static void hwm_setup(void)
 
 	switch (sysfan_control) {
 	case FAN_CRUISE_CONTROL_SPEED:
-		printk_debug("Fan Cruise Control setting system fan to %d RPM\n",
+		printk(BIOS_DEBUG, "Fan Cruise Control setting system fan to %d RPM\n",
 				fan_speeds[sysfan_speed].fan_speed);
 		hwm_write(0x05, fan_speeds[sysfan_speed].fan_in);  // SYSFANIN target speed
 		break;
 	case FAN_CRUISE_CONTROL_THERMAL:
-		printk_debug("Fan Cruise Control setting system fan to activation at %d deg C/%d deg F\n",
+		printk(BIOS_DEBUG, "Fan Cruise Control setting system fan to activation at %d deg C/%d deg F\n",
 				temperatures[sysfan_temperature].deg_celsius,
 				temperatures[sysfan_temperature].deg_fahrenheit);
 		hwm_write(0x05, temperatures[sysfan_temperature].deg_celsius); // SYSFANIN target temperature

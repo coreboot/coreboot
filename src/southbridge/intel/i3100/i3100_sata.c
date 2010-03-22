@@ -53,7 +53,7 @@ static void sata_init(struct device *dev)
 	ahci = (pci_read_config8(dev, SATA_MAP) >> 6) & 0x03;
 
 	/* Enable SATA devices */
-	printk_info("SATA init (%s mode)\n", ahci ? "AHCI" : "Legacy");
+	printk(BIOS_INFO, "SATA init (%s mode)\n", ahci ? "AHCI" : "Legacy");
 
 	if(ahci) {
 	  /* AHCI mode */
@@ -97,7 +97,7 @@ static void sata_init(struct device *dev)
 	  pci_write_config8(dev, SATA_PCS + 1, 0x0f);
 	  
 	}
-	printk_debug("SATA Enabled\n");
+	printk(BIOS_DEBUG, "SATA Enabled\n");
 }
 
 static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)

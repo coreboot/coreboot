@@ -32,7 +32,7 @@ struct bus *get_pbus_smbus(device_t dev)
 		pbus = pbus->dev->bus;
 	}
 	if (!pbus || !pbus->dev || !pbus->dev->ops || !pbus->dev->ops->ops_smbus_bus) {
-		printk_alert("%s Cannot find smbus bus operations", dev_path(dev));
+		printk(BIOS_ALERT, "%s Cannot find smbus bus operations", dev_path(dev));
 		die("");
 	}
 	return pbus;
@@ -53,15 +53,15 @@ int smbus_set_link(device_t dev)
 		pbus_a[pbus_num++] = pbus;
                 pbus = pbus->dev->bus;
         }
-//	printk_info("smbus_set_link: ");
+//	printk(BIOS_INFO, "smbus_set_link: ");
 	for (i=pbus_num-1; i>=0; i--) {
-//		printk_info(" %s[%d] -> ", dev_path(pbus_a[i]->dev), pbus_a[i]->link);
+//		printk(BIOS_INFO, " %s[%d] -> ", dev_path(pbus_a[i]->dev), pbus_a[i]->link);
         	if (ops_smbus_bus(get_pbus_smbus(pbus_a[i]->dev))) {
                 	if (pbus_a[i]->dev->ops && pbus_a[i]->dev->ops->set_link)
                         	pbus_a[i]->dev->ops->set_link(pbus_a[i]->dev, pbus_a[i]->link);
 		}
 	}
-//	printk_info(" %s\n", dev_path(dev));
+//	printk(BIOS_INFO, " %s\n", dev_path(dev));
 
         return pbus_num;
 }

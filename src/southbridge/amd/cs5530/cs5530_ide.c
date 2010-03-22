@@ -55,9 +55,9 @@ static void ide_init(struct device *dev)
 
 	pci_write_config8(dev, DECODE_CONTROL_REG2, reg8);
 
-	printk_info("%s IDE interface %s\n", "Primary",
+	printk(BIOS_INFO, "%s IDE interface %s\n", "Primary",
 		    conf->ide0_enable ? "enabled" : "disabled");
-	printk_info("%s IDE interface %s\n", "Secondary",
+	printk(BIOS_INFO, "%s IDE interface %s\n", "Secondary",
 		    conf->ide1_enable ? "enabled" : "disabled");
 }
 

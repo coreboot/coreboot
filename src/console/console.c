@@ -76,7 +76,7 @@ void post_code(uint8_t value)
 {
 #if !defined(CONFIG_NO_POST) || CONFIG_NO_POST==0
 #if CONFIG_SERIAL_POST==1
-	printk_emerg("POST: 0x%02x\n", value);
+	printk(BIOS_EMERG, "POST: 0x%02x\n", value);
 #endif
 	outb(value, 0x80);
 #endif
@@ -85,7 +85,7 @@ void post_code(uint8_t value)
 /* Report a fatal error */
 void __attribute__((noreturn)) die(const char *msg)
 {
-	printk_emerg("%s", msg);
+	printk(BIOS_EMERG, "%s", msg);
 	post_code(0xff);
 	while (1);		/* Halt */
 }

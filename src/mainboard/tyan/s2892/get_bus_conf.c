@@ -93,7 +93,7 @@ void get_bus_conf(void)
                         bus_ck804_4++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x09);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x09);
 
                         bus_ck804_1 = 2;
                         bus_ck804_4 = 3;
@@ -106,7 +106,7 @@ void get_bus_conf(void)
                         bus_ck804_5++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n",sbdn + 0x0d);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n",sbdn + 0x0d);
 
                         bus_ck804_5 = bus_ck804_4+1;
                 }
@@ -118,7 +118,7 @@ void get_bus_conf(void)
                         bus_isa++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn+ 0x0e);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn+ 0x0e);
                 }
 
 		bus_8131_0 = (sysconf.pci1234[1] >> 16) & 0xff;
@@ -130,7 +130,7 @@ void get_bus_conf(void)
                         bus_8131_2++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
 
                         bus_8131_1 = bus_8131_0+1;
                         bus_8131_2 = bus_8131_0+2;
@@ -143,7 +143,7 @@ void get_bus_conf(void)
                         bus_isa++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
 
                         bus_8131_2 = bus_8131_1+1;
                         bus_isa = bus_8131_1+2;

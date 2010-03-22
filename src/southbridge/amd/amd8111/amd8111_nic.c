@@ -52,7 +52,7 @@ static void nic_init(struct device *dev)
 	mmio = resource->base;
 
 	/* Hard Reset PHY */
-	printk_debug("Reseting PHY... ");
+	printk(BIOS_DEBUG, "Reseting PHY... ");
 	if (conf->phy_lowreset) {
 		write32((mmio + CMD3), VAL0 | PHY_RST_POL | RESET_PHY);
 	} else {
@@ -60,7 +60,7 @@ static void nic_init(struct device *dev)
 	}
 	mdelay(15);
 	write32((mmio + CMD3), RESET_PHY);
-	printk_debug("Done\n");
+	printk(BIOS_DEBUG, "Done\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

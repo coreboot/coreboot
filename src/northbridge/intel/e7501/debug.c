@@ -40,7 +40,7 @@ static void dump_pci_device(unsigned dev)
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
 #if CONFIG_USE_INIT
-                        printk_debug("\r\n%02x:",i);
+                        printk(BIOS_DEBUG, "\r\n%02x:",i);
 #else
 			print_debug("\r\n");
 			print_debug_hex8(i);
@@ -49,7 +49,7 @@ static void dump_pci_device(unsigned dev)
 		}
 		val = pci_read_config8(dev, i);
 #if CONFIG_USE_INIT
-		printk_debug(" %02x", val);
+		printk(BIOS_DEBUG, " %02x", val);
 #else
 		print_debug_char(' ');
 		print_debug_hex8(val);
@@ -102,7 +102,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		if (device) {
 			int j;
 #if CONFIG_USE_INIT
-			printk_debug("dimm: %02x.0: %02x", i, device);
+			printk(BIOS_DEBUG, "dimm: %02x.0: %02x", i, device);
 #else
 			print_debug("dimm: "); 
 			print_debug_hex8(i); 
@@ -114,7 +114,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
 #if CONFIG_USE_INIT
-					printk_debug("\r\n%02x: ", j);
+					printk(BIOS_DEBUG, "\r\n%02x: ", j);
 #else
 					print_debug("\r\n");
 					print_debug_hex8(j);
@@ -127,7 +127,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				}
 				byte = status & 0xff;
 #if CONFIG_USE_INIT
-				printk_debug("%02x ", byte);
+				printk(BIOS_DEBUG, "%02x ", byte);
 #else
 				print_debug_hex8(byte);
 				print_debug_char(' ');
@@ -139,7 +139,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		if (device) {
 			int j;
 #if CONFIG_USE_INIT
-                        printk_debug("dimm: %02x.1: %02x", i, device);
+                        printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
 #else`
 			print_debug("dimm: "); 
 			print_debug_hex8(i); 
@@ -151,7 +151,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
 #if CONFIG_USE_INIT
-                                        printk_debug("\r\n%02x: ", j);
+                                        printk(BIOS_DEBUG, "\r\n%02x: ", j);
 #else
 					print_debug("\r\n");
 					print_debug_hex8(j);
@@ -164,7 +164,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				}
 				byte = status & 0xff;
 #if CONFIG_USE_INIT
-                                printk_debug("%02x ", byte);
+                                printk(BIOS_DEBUG, "%02x ", byte);
 #else
 				print_debug_hex8(byte);
 				print_debug_char(' ');
@@ -182,7 +182,7 @@ static void dump_smbus_registers(void)
                 int j;
 		if( smbus_read_byte(device, 0) < 0 ) continue;
 #if CONFIG_USE_INIT
-		printk_debug("smbus: %02x", device);
+		printk(BIOS_DEBUG, "smbus: %02x", device);
 #else
                 print_debug("smbus: ");
                 print_debug_hex8(device);
@@ -196,7 +196,7 @@ static void dump_smbus_registers(void)
                         }
                         if ((j & 0xf) == 0) {
 #if CONFIG_USE_INIT
-				printk_debug("\r\n%02x: ",j);
+				printk(BIOS_DEBUG, "\r\n%02x: ",j);
 #else
                 	        print_debug("\r\n");
                                 print_debug_hex8(j);
@@ -205,7 +205,7 @@ static void dump_smbus_registers(void)
                         }
                         byte = status & 0xff;
 #if CONFIG_USE_INIT
-                        printk_debug("%02x ", byte);
+                        printk(BIOS_DEBUG, "%02x ", byte);
 #else
                         print_debug_hex8(byte);
                         print_debug_char(' ');
@@ -220,7 +220,7 @@ static void dump_io_resources(unsigned port)
 
 	int i;
 #if CONFIG_USE_INIT
-	printk_debug("%04x:\r\n", port);
+	printk(BIOS_DEBUG, "%04x:\r\n", port);
 #else
         print_debug_hex16(port);
         print_debug(":\r\n");
@@ -229,7 +229,7 @@ static void dump_io_resources(unsigned port)
                 uint8_t val;
                 if ((i & 0x0f) == 0) {
 #if CONFIG_USE_INIT
-			printk_debug("%02x:", i);
+			printk(BIOS_DEBUG, "%02x:", i);
 #else
                         print_debug_hex8(i);
                         print_debug_char(':');
@@ -237,7 +237,7 @@ static void dump_io_resources(unsigned port)
                 }
                 val = inb(port);
 #if CONFIG_USE_INIT
-		printk_debug(" %02x",val);
+		printk(BIOS_DEBUG, " %02x",val);
 #else
                 print_debug_char(' ');
                 print_debug_hex8(val);
@@ -256,7 +256,7 @@ static void dump_mem(unsigned start, unsigned end)
         for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
 #if CONFIG_USE_INIT
-			printk_debug("\r\n%08x:", i);
+			printk(BIOS_DEBUG, "\r\n%08x:", i);
 #else	
 			print_debug("\r\n");
 			print_debug_hex32(i);
@@ -264,7 +264,7 @@ static void dump_mem(unsigned start, unsigned end)
 #endif
 		}
 #if CONFIG_USE_INIT	
-		printk_debug(" %02x", (unsigned char)*((unsigned char *)i));
+		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
 #else
 		print_debug(" ");
              	print_debug_hex8((unsigned char)*((unsigned char *)i));

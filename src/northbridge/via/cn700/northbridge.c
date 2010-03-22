@@ -155,7 +155,7 @@ static void pci_domain_set_resources(device_t dev)
 	device_t mc_dev;
 	u32 pci_tolm;
 
-	printk_spew("Entering cn700 pci_domain_set_resources.\n");
+	printk(BIOS_SPEW, "Entering cn700 pci_domain_set_resources.\n");
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
@@ -177,7 +177,7 @@ static void pci_domain_set_resources(device_t dev)
 		}
 
 		tomk = rambits * 64 * 1024;
-		printk_spew("tomk is 0x%x\n", tomk);
+		printk(BIOS_SPEW, "tomk is 0x%x\n", tomk);
 		/* Compute the Top Of Low Memory (TOLM), in Kb. */
 		tolmk = pci_tolm >> 10;
 		if (tolmk >= tomk) {
@@ -188,7 +188,7 @@ static void pci_domain_set_resources(device_t dev)
 #if CONFIG_WRITE_HIGH_TABLES == 1
 		high_tables_base = (tolmk - CONFIG_VIDEO_MB * 1024 - HIGH_TABLES_SIZE) * 1024;
 		high_tables_size = HIGH_TABLES_SIZE * 1024;
-		printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+		printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
 #endif
 
 		/* Report the memory regions. */
@@ -229,7 +229,7 @@ static const struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk_spew("In cn700 enable_dev for device %s.\n", dev_path(dev));
+	printk(BIOS_SPEW, "In cn700 enable_dev for device %s.\n", dev_path(dev));
 
 	/* Set the operations if it is a special bus type. */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {

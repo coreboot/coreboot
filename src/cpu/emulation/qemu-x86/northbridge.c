@@ -81,14 +81,14 @@ static void cpu_pci_domain_set_resources(device_t dev)
 			if (reg > rambits)
 				rambits = reg;
 			if (reg < rambits)
-				printk_err("ERROR! register 0x%x is not set!\n",
+				printk(BIOS_ERR, "ERROR! register 0x%x is not set!\n",
 					ramregs[i]);
 		}
 		if (rambits == 0) {
-			printk_err("RAM size config registers are empty; defaulting to 64 MBytes\n");
+			printk(BIOS_ERR, "RAM size config registers are empty; defaulting to 64 MBytes\n");
 			rambits = 8;
 		}
-		printk_debug("I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
+		printk(BIOS_DEBUG, "I would set ram size to 0x%x Kbytes\n", (rambits)*8*1024);
 		tomk = rambits*8*1024;
 		/* Compute the top of Low memory */
 		tolmk = pci_tolm >> 10;

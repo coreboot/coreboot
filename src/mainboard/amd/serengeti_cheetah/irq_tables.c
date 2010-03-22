@@ -58,7 +58,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         addr &= ~15;
 
         /* This table must be betweeen 0xf0000 & 0x100000 */
-        printk_info("Writing IRQ routing tables to 0x%lx...", addr);
+        printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
 	v = (uint8_t *)(addr);
@@ -98,13 +98,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         }
 
 //pci bridge
-        printk_debug("setting Onboard AMD Southbridge \n");
+        printk(BIOS_DEBUG, "setting Onboard AMD Southbridge \n");
         static const unsigned char slotIrqs_1_4[4] = { 3, 5, 10, 11 };
         pci_assign_irqs(m->bus_8111_0, sysconf.sbdn+1, slotIrqs_1_4);
 	write_pirq_info(pirq_info, m->bus_8111_0, ((sysconf.sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++; slot_num++;
 
-        printk_debug("setting Onboard AMD USB \n");
+        printk(BIOS_DEBUG, "setting Onboard AMD USB \n");
         static const unsigned char slotIrqs_8111_1_0[4] = { 0, 0, 0, 11};
         pci_assign_irqs(m->bus_8111_1, 0, slotIrqs_8111_1_0);
         write_pirq_info(pirq_info, m->bus_8111_1,0, 0, 0, 0, 0, 0, 0, 0x4, 0xdef8, 0, 0);
@@ -138,7 +138,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 pirq->checksum = sum;
         }
 
-	printk_info("done.\n");
+	printk(BIOS_INFO, "done.\n");
 
 	return	(unsigned long) pirq_info;
 

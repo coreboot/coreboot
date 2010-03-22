@@ -92,14 +92,14 @@ void i82801ax_enable_apic(struct device *dev)
 	reg32 |= (1 << 1);	/* Delayed transaction enable */
 	reg32 |= (1 << 2);	/* DMA collection buffer enable */
 	pci_write_config32(dev, GEN_CNTL, reg32);
-	printk_debug("IOAPIC Southbridge enabled %x\n", reg32);
+	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
 	*ioapic_index = 0;
 	*ioapic_data = (1 << 25);
 
 	*ioapic_index = 0;
 	reg32 = *ioapic_data;
-	printk_debug("Southbridge APIC ID = %x\n", reg32);
+	printk(BIOS_DEBUG, "Southbridge APIC ID = %x\n", reg32);
 	if (reg32 != (1 << 25))
 		die("APIC Error\n");
 
@@ -189,7 +189,7 @@ static void i82801ax_power_options(device_t dev)
 	 * 1 == S5 Soft Off
 	 */
 	pci_write_config8(dev, GEN_PMCON_3, pwr_on ? 0 : 1);
-	printk_info("Set power %s if power fails\n", pwr_on ? "on" : "off");
+	printk(BIOS_INFO, "Set power %s if power fails\n", pwr_on ? "on" : "off");
 
 	/* Set up NMI on errors. */
 	byte = inb(0x61);

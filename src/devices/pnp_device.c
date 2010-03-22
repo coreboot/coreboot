@@ -103,7 +103,7 @@ void pnp_read_resources(device_t dev)
 static void pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-		printk_err("ERROR: %s %02lx %s size: 0x%010Lx not assigned\n",
+		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010Lx not assigned\n",
 			dev_path(dev), resource->index,
 			resource_type(resource),
 			resource->size);
@@ -121,7 +121,7 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 		pnp_set_irq(dev, resource->index, resource->base);
 	}
 	else {
-		printk_err("ERROR: %s %02lx unknown resource type\n",
+		printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
 			dev_path(dev), resource->index);
 		return;
 	}

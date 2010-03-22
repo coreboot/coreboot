@@ -20,7 +20,7 @@
 
 static  void print_raminit(const char *strval, u32 val)
 {
-	printk_debug("%s%08x\n", strval, val);
+	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 }
 
 static  void print_tx(const char *strval, u32 val)

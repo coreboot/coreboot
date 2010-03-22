@@ -240,7 +240,7 @@ void CALLCONV AmdMSRWrite(uint32 Address, uint64 *Value)
 
 void ErrorStop(u32 value)
 {
-	printk_debug("Error: %08x ", value);
+	printk(BIOS_DEBUG, "Error: %08x ", value);
 
 }
 

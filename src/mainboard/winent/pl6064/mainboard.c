@@ -23,8 +23,8 @@
 
 static void init(struct device *dev)
 {
-	printk_debug("Win Enterprises PL-6064/65 ENTER %s\n", __func__);
-	printk_debug("Win Enterprises PL-6064/65 EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "Win Enterprises PL-6064/65 ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "Win Enterprises PL-6064/65 EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

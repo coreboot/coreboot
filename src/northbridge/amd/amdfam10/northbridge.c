@@ -83,7 +83,7 @@ static void get_fx_devs(void)
 		__f4_dev[i] = get_node_pci(i, 4);
 	}
 	if (!__f1_dev[0]) {
-		printk_err("Cannot find %02x:%02x.1", CONFIG_CBB, CONFIG_CDB);
+		printk(BIOS_ERR, "Cannot find %02x:%02x.1", CONFIG_CBB, CONFIG_CDB);
 		die("Cannot go on\n");
 	}
 }
@@ -568,7 +568,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	for (link = 0; link < dev->links; link++) {
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if CONFIG_CONSOLE_VGA_MULTI == 1
-			printk_debug("VGA: vga_pri bus num = %d dev->link[link] bus range [%d,%d]\n", vga_pri->bus->secondary,
+			printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d dev->link[link] bus range [%d,%d]\n", vga_pri->bus->secondary,
 				dev->link[link].secondary,dev->link[link].subordinate);
 			/* We need to make sure the vga_pri is under the link */
 			if((vga_pri->bus->secondary >= dev->link[link].secondary ) &&
@@ -583,7 +583,7 @@ static void amdfam10_create_vga_resource(device_t dev, unsigned nodeid)
 	if (link == dev->links)
 		return;
 
-	printk_debug("VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link);
+	printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link);
 	set_vga_enable_reg(nodeid, link);
 }
 
@@ -906,9 +906,9 @@ static void pci_domain_set_resources(device_t dev)
 		mem1 = find_resource(dev, 1|(link<<2));
 		mem2 = find_resource(dev, 2|(link<<2));
 
-		printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
 			mem1->base, mem1->limit, mem1->size, mem1->align);
-		printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
 			mem2->base, mem2->limit, mem2->size, mem2->align);
 
 		/* See if both resources have roughly the same limits */
@@ -934,9 +934,9 @@ static void pci_domain_set_resources(device_t dev)
 			mem1->base = resource_max(mem1);
 		}
 
-		printk_debug("base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+		printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
 			mem1->base, mem1->limit, mem1->size, mem1->align);
-		printk_debug("base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+		printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
 			mem2->base, mem2->limit, mem2->size, mem2->align);
 	}
 
@@ -1041,7 +1041,7 @@ static void pci_domain_set_resources(device_t dev)
 
 		}
 
-//		printk_debug("node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk);
+//		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk);
 
 		/* split the region to accomodate pci memory space */
 		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
@@ -1057,7 +1057,7 @@ static void pci_domain_set_resources(device_t dev)
 					/* Leave some space for ACPI, PIRQ and MP tables */
 						high_tables_base = (mmio_basek - HIGH_TABLES_SIZE) * 1024;
 						high_tables_size = HIGH_TABLES_SIZE * 1024;
-						printk_debug("(split)%xK table at =%08llx\n", HIGH_TABLES_SIZE,
+						printk(BIOS_DEBUG, "(split)%xK table at =%08llx\n", HIGH_TABLES_SIZE,
 							     high_tables_base);
 					}
 #endif
@@ -1086,7 +1086,7 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 #if CONFIG_WRITE_HIGH_TABLES==1
-		printk_debug("%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
+		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
 			     i, mmio_basek, basek, limitk);
 		if (i==0 && high_tables_base==0) {
 		/* Leave some space for ACPI, PIRQ and MP tables */
@@ -1144,7 +1144,7 @@ static u32 amdfam10_domain_scan_bus(device_t dev, u32 max)
 			if (!dev->link[0].disable_relaxed_ordering) {
 				httc |= HTTC_RSP_PASS_PW;
 			}
-			printk_spew("%s passpw: %s\n",
+			printk(BIOS_SPEW, "%s passpw: %s\n",
 				dev_path(dev),
 				(!dev->link[0].disable_relaxed_ordering)?
 				"enabled":"disabled");
@@ -1247,34 +1247,34 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 #if CONFIG_CBB
 	dev_mc = dev_find_slot(0, PCI_DEVFN(CONFIG_CDB, 0)); //0x00
 	if(dev_mc && dev_mc->bus) {
-		printk_debug("%s found", dev_path(dev_mc));
+		printk(BIOS_DEBUG, "%s found", dev_path(dev_mc));
 		pci_domain = dev_mc->bus->dev;
 		if(pci_domain && (pci_domain->path.type == DEVICE_PATH_PCI_DOMAIN)) {
-			printk_debug("\n%s move to ",dev_path(dev_mc));
+			printk(BIOS_DEBUG, "\n%s move to ",dev_path(dev_mc));
 			dev_mc->bus->secondary = CONFIG_CBB; // move to 0xff
-			printk_debug("%s",dev_path(dev_mc));
+			printk(BIOS_DEBUG, "%s",dev_path(dev_mc));
 
 		} else {
-			printk_debug(" but it is not under pci_domain directly ");
+			printk(BIOS_DEBUG, " but it is not under pci_domain directly ");
 		}
-		printk_debug("\n");
+		printk(BIOS_DEBUG, "\n");
 
 	}
 	dev_mc = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 0));
 	if(!dev_mc) {
 		dev_mc = dev_find_slot(0, PCI_DEVFN(0x18, 0));
 		if (dev_mc && dev_mc->bus) {
-			printk_debug("%s found\n", dev_path(dev_mc));
+			printk(BIOS_DEBUG, "%s found\n", dev_path(dev_mc));
 			pci_domain = dev_mc->bus->dev;
 			if(pci_domain && (pci_domain->path.type == DEVICE_PATH_PCI_DOMAIN)) {
 				if((pci_domain->links==1) && (pci_domain->link[0].children == dev_mc)) {
-					printk_debug("%s move to ",dev_path(dev_mc));
+					printk(BIOS_DEBUG, "%s move to ",dev_path(dev_mc));
 					dev_mc->bus->secondary = CONFIG_CBB; // move to 0xff
-					printk_debug("%s\n",dev_path(dev_mc));
+					printk(BIOS_DEBUG, "%s\n",dev_path(dev_mc));
 					while(dev_mc){
-						printk_debug("%s move to ",dev_path(dev_mc));
+						printk(BIOS_DEBUG, "%s move to ",dev_path(dev_mc));
 						dev_mc->path.pci.devfn -= PCI_DEVFN(0x18,0);
-						printk_debug("%s\n",dev_path(dev_mc));
+						printk(BIOS_DEBUG, "%s\n",dev_path(dev_mc));
 						dev_mc = dev_mc->sibling;
 					}
 				}
@@ -1286,7 +1286,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 	dev_mc = dev_find_slot(CONFIG_CBB, PCI_DEVFN(CONFIG_CDB, 0));
 	if (!dev_mc) {
-		printk_err("%02x:%02x.0 not found", CONFIG_CBB, CONFIG_CDB);
+		printk(BIOS_ERR, "%02x:%02x.0 not found", CONFIG_CBB, CONFIG_CDB);
 		die("");
 	}
 
@@ -1301,7 +1301,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			pci_domain->link[1].link = 1;
 			pci_domain->link[1].dev = pci_domain;
 			pci_domain->link[1].children = 0;
-			printk_debug("%s links increase to %d\n", dev_path(pci_domain), pci_domain->links);
+			printk(BIOS_DEBUG, "%s links increase to %d\n", dev_path(pci_domain), pci_domain->links);
 		}
 		pci_domain->link[1].secondary = CONFIG_CBB - 1;
 	}
@@ -1355,7 +1355,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 					 dev->link[j].dev = dev;
 				}
 				dev->links = linknum;
-				printk_debug("%s links increase to %d\n", dev_path(dev), dev->links);
+				printk(BIOS_DEBUG, "%s links increase to %d\n", dev_path(dev), dev->links);
 			}
 		}
 
@@ -1366,7 +1366,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			cores_found = (j >> 12) & 3; // dev is func 3
 			if (siblings > 3)
 				cores_found |= (j >> 13) & 4;
-			printk_debug("  %s siblings=%d\n", dev_path(dev), cores_found);
+			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(dev), cores_found);
 		}
 
 		u32 jj;
@@ -1416,7 +1416,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 					 }
 				}
 	#endif
-				printk_debug("CPU: %s %s\n",
+				printk(BIOS_DEBUG, "CPU: %s %s\n",
 					dev_path(cpu), cpu->enabled?"enabled":"disabled");
 			}
 

@@ -50,5 +50,5 @@ void watchdog_off(void)
 	outw(0x0008, base + 0x04);
 	outw(0x0002, base + 0x06);
 
-	printk_debug("ICH Watchdog disabled\r\n");
+	printk(BIOS_DEBUG, "ICH Watchdog disabled\r\n");
 }

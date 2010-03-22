@@ -150,7 +150,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Align ACPI tables to 16byte */
 	ALIGN_CURRENT;
 
-	printk_info("ACPI: Writing ACPI tables at %lx.\n", start);
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx.\n", start);
 
 	/* We need at least an RSDP and an RSDT Table */
 	rsdp = (acpi_rsdp_t *) current;
@@ -173,7 +173,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/*
 	 * We explicitly add these tables later on:
 	 */
-	printk_debug("ACPI:    * HPET\n");
+	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
 
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
@@ -182,7 +182,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, hpet);
 
 	/* If we want to use HPET Timers Linux wants an MADT */
-	printk_debug("ACPI:    * MADT\n");
+	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
 
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
@@ -190,14 +190,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, madt);
 
-	printk_debug("ACPI:    * MCFG\n");
+	printk(BIOS_DEBUG, "ACPI:    * MCFG\n");
 	mcfg = (acpi_mcfg_t *) current;
 	acpi_create_mcfg(mcfg);
 	current += mcfg->header.length;
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, mcfg);
 
-	printk_debug("ACPI:     * FACS\n");
+	printk(BIOS_DEBUG, "ACPI:     * FACS\n");
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
 	ALIGN_CURRENT;
@@ -213,7 +213,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Pack GNVS into the ACPI table area */
 	for (i=0; i < dsdt->length; i++) {
 		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
-			printk_debug("ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
+			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
 			*(u32*)(((u32)dsdt) + i) = current; // 0x92 bytes
 			break;
 		}
@@ -232,18 +232,18 @@ unsigned long write_acpi_tables(unsigned long start)
 	dsdt->checksum = 0;
 	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
 
-	printk_debug("ACPI:     * DSDT @ %p Length %x\n", dsdt,
+	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt,
 		     dsdt->length);
 
 #if CONFIG_HAVE_ACPI_SLIC
-	printk_debug("ACPI:     * SLIC\n");
+	printk(BIOS_DEBUG, "ACPI:     * SLIC\n");
 	slic = (acpi_header_t *)current;
 	current += acpi_create_slic(current);
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, slic);
 #endif
 
-	printk_debug("ACPI:     * FADT\n");
+	printk(BIOS_DEBUG, "ACPI:     * FADT\n");
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
 	ALIGN_CURRENT;
@@ -251,16 +251,16 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_fadt(fadt, facs, dsdt);
 	acpi_add_table(rsdp, fadt);
 
-	printk_debug("ACPI:     * SSDT\n");
+	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
 	ssdt = (acpi_header_t *)current;
 	acpi_create_ssdt_generator(ssdt, "COREBOOT");
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);
 	ALIGN_CURRENT;
 
-	printk_debug("current = %lx\n", current);
+	printk(BIOS_DEBUG, "current = %lx\n", current);
 
-	printk_debug("ACPI:     * DMI (Linux workaround)\n");
+	printk(BIOS_DEBUG, "ACPI:     * DMI (Linux workaround)\n");
 	memcpy((void *)0xfff80, dmi_table, DMI_TABLE_SIZE);
 #if CONFIG_WRITE_HIGH_TABLES == 1
 	memcpy((void *)current, dmi_table, DMI_TABLE_SIZE);
@@ -268,6 +268,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 #endif
 
-	printk_info("ACPI: done.\n");
+	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }

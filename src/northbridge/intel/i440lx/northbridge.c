@@ -43,7 +43,7 @@
  */
 static void northbridge_init(device_t dev)
 {
-	printk_spew("Northbridge Init\n");
+	printk(BIOS_SPEW, "Northbridge Init\n");
 }
 
 static struct device_operations northbridge_operations = {
@@ -125,7 +125,7 @@ static void i440lx_domain_set_resources(device_t dev)
 		/* Convert to KB. */
 		tomk *= (8 * 1024);
 
-		printk_debug("Setting RAM size to %lu MB\n", tomk / 1024);
+		printk(BIOS_DEBUG, "Setting RAM size to %lu MB\n", tomk / 1024);
 
 		/* Compute the top of low memory. */
 		tolmk = pci_tolm / 1024;

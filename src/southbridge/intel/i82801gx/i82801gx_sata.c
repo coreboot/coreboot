@@ -33,10 +33,10 @@ static void sata_init(struct device *dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 
-	printk_debug("i82801gx_sata: initializing...\n");
+	printk(BIOS_DEBUG, "i82801gx_sata: initializing...\n");
 
 	if (config == NULL) {
-		printk_err("i82801gx_sata: error: device not in Config.lb!\n");
+		printk(BIOS_ERR, "i82801gx_sata: error: device not in Config.lb!\n");
 		return;
 	}
 
@@ -46,7 +46,7 @@ static void sata_init(struct device *dev)
 	pci_write_config16(dev, PCI_COMMAND, 0x0007);
 
 	if (config->ide_legacy_combined) {
-		printk_debug("SATA controller in combined mode.\n");
+		printk(BIOS_DEBUG, "SATA controller in combined mode.\n");
 		/* No AHCI: clear AHCI base */
 		pci_write_config32(dev, 0x24, 0x00000000);
 		/* And without AHCI BAR no memory decoding */
@@ -80,7 +80,7 @@ static void sata_init(struct device *dev)
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94, 0x5a000180);
 	} else if(config->sata_ahci) {
-		printk_debug("SATA controller in AHCI mode.\n");
+		printk(BIOS_DEBUG, "SATA controller in AHCI mode.\n");
 		/* Allow both Legacy and Native mode */
 		pci_write_config8(dev, 0x09, 0x8f);
 
@@ -112,7 +112,7 @@ static void sata_init(struct device *dev)
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94, 0x1a000180);
 	} else {
-		printk_debug("SATA controller in plain mode.\n");
+		printk(BIOS_DEBUG, "SATA controller in plain mode.\n");
 		/* Set Sata Controller Mode. No Mapping(?) */
 		pci_write_config8(dev, 0x90, 0x00);
 

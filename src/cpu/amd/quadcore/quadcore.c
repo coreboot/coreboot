@@ -59,7 +59,7 @@ static void real_start_other_core(u32 nodeid, u32 cores)
 {
 	u32 dword, i;
 
-	printk_debug("Start other core - nodeid: %02x  cores: %02x\n", nodeid, cores);
+	printk(BIOS_DEBUG, "Start other core - nodeid: %02x  cores: %02x\n", nodeid, cores);
 
 	/* set PCI_DEV(0, 0x18+nodeid, 3), 0x44 bit 27 to redirect all MC4
 	   accesses and error logging to core0 */
@@ -88,7 +88,7 @@ static void start_other_cores(void)
 
 	// disable quad_core
 	if (read_option(CMOS_VSTART_quad_core, CMOS_VLEN_quad_core, 0) != 0)  {
-		printk_debug("Skip additional core init\n");
+		printk(BIOS_DEBUG, "Skip additional core init\n");
 		return;
 	}
 
@@ -96,7 +96,7 @@ static void start_other_cores(void)
 
 	for (nodeid = 0; nodeid < nodes; nodeid++) {
 		u32 cores = get_core_num_in_bsp(nodeid);
-		printk_debug("init node: %02x  cores: %02x \n", nodeid, cores);
+		printk(BIOS_DEBUG, "init node: %02x  cores: %02x \n", nodeid, cores);
 		if (cores > 0) {
 			real_start_other_core(nodeid, cores);
 		}

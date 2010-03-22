@@ -80,17 +80,17 @@ typedef struct {
 static void
 dump(u8 * addr, u32 len)
 {
-	printk_debug("\n%s(%p, %x):\n", __func__, addr, len);
+	printk(BIOS_DEBUG, "\n%s(%p, %x):\n", __func__, addr, len);
 	while (len) {
 		unsigned int tmpCnt = len;
 		unsigned char x;
 		if (tmpCnt > 8)
 			tmpCnt = 8;
-		printk_debug("\n%p: ", addr);
+		printk(BIOS_DEBUG, "\n%p: ", addr);
 		// print hex
 		while (tmpCnt--) {
 			x = *addr++;
-			printk_debug("%02x ", x);
+			printk(BIOS_DEBUG, "%02x ", x);
 		}
 		tmpCnt = len;
 		if (tmpCnt > 8)
@@ -105,10 +105,10 @@ dump(u8 * addr, u32 len)
 				//non-printable char
 				x = '.';
 			}
-			printk_debug("%c", x);
+			printk(BIOS_DEBUG, "%c", x);
 		}
 	}
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 }
 #endif
 
@@ -150,19 +150,19 @@ typedef struct {
 static void mbi_call(u8 subf, banner_id_t *banner_id)
 {
 #ifdef DEBUG_SMI_I82830
-	printk_debug("MBI\n");
-	printk_debug("|- sub function %x\n", subf);
-	printk_debug("|- banner id @ %x\n", (u32)banner_id);
-	printk_debug("|  |- mhid %x\n", banner_id->mhid);
-	printk_debug("|  |- function %x\n", banner_id->function);
-	printk_debug("|  |- return status %x\n", banner_id->retsts);
-	printk_debug("|  |- rfu %x\n", banner_id->rfu);
+	printk(BIOS_DEBUG, "MBI\n");
+	printk(BIOS_DEBUG, "|- sub function %x\n", subf);
+	printk(BIOS_DEBUG, "|- banner id @ %x\n", (u32)banner_id);
+	printk(BIOS_DEBUG, "|  |- mhid %x\n", banner_id->mhid);
+	printk(BIOS_DEBUG, "|  |- function %x\n", banner_id->function);
+	printk(BIOS_DEBUG, "|  |- return status %x\n", banner_id->retsts);
+	printk(BIOS_DEBUG, "|  |- rfu %x\n", banner_id->rfu);
 #endif
 
 	switch(banner_id->function) {
 	case 0x0001: {
 		version_t *version;
-		printk_debug("|- MBI_QueryInterface\n");
+		printk(BIOS_DEBUG, "|- MBI_QueryInterface\n");
 		version = (version_t *)banner_id;
 		version->banner.retsts = MSH_OK;
 		version->versionmajor=1;
@@ -171,18 +171,18 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 		break;
 	}
 	case 0x0002:
-		printk_debug("|- MBI_Attach\n");
-		printk_debug("|  |- Not Implemented!\n");
+		printk(BIOS_DEBUG, "|- MBI_Attach\n");
+		printk(BIOS_DEBUG, "|  |- Not Implemented!\n");
 		break;
 	case 0x0003:
-		printk_debug("|- MBI_Detach\n");
-		printk_debug("|  |- Not Implemented!\n");
+		printk(BIOS_DEBUG, "|- MBI_Detach\n");
+		printk(BIOS_DEBUG, "|  |- Not Implemented!\n");
 		break;
 	case 0x0201: {
 		obj_header_t *obj_header = (obj_header_t *)banner_id;
 		mbi_header_t *mbi_header = NULL;
-		printk_debug("|- MBI_GetObjectHeader\n");
-		printk_debug("|  |- objnum = %d\n", obj_header->objnum);
+		printk(BIOS_DEBUG, "|- MBI_GetObjectHeader\n");
+		printk(BIOS_DEBUG, "|  |- objnum = %d\n", obj_header->objnum);
 
 		int i, count=0;
 		obj_header->banner.retsts = MSH_IF_NOT_FOUND;
@@ -201,15 +201,15 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			if (obj_header->objnum == count) {
 				int headerlen = ALIGN(sizeof(mbi_header) + mbi_header->name_len + 15, 16);
 #ifdef DEBUG_SMI_I82830
-				printk_debug("|  |- headerlen = %d\n", headerlen);
+				printk(BIOS_DEBUG, "|  |- headerlen = %d\n", headerlen);
 #endif
 				memcpy(&obj_header->header, mbi_header, headerlen);
 				obj_header->banner.retsts = MSH_OK;
-				printk_debug("|     |- MBI module '");
+				printk(BIOS_DEBUG, "|     |- MBI module '");
 				int j;
 				for (j=0; j < mbi_header->name_len && mbi_header->name[j]; j++)
-					printk_debug("%c",  mbi_header->name[j]);
-				printk_debug("' found.\n");
+					printk(BIOS_DEBUG, "%c",  mbi_header->name[j]);
+				printk(BIOS_DEBUG, "' found.\n");
 #ifdef DEBUG_SMI_I82830
 				dump(banner_id, sizeof(obj_header_t) + 16);
 #endif
@@ -219,21 +219,21 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			count++;
 		}
 		if (obj_header->banner.retsts == MSH_IF_NOT_FOUND) 
-			printk_debug("|     |- MBI object #%d not found.\n", obj_header->objnum);
+			printk(BIOS_DEBUG, "|     |- MBI object #%d not found.\n", obj_header->objnum);
 		break;
 	}
 	case 0x0203: {
 		get_object_t *getobj = (get_object_t *)banner_id;
 		mbi_header_t *mbi_header = NULL;
-		printk_debug("|- MBI_GetObject\n");
+		printk(BIOS_DEBUG, "|- MBI_GetObject\n");
 #ifdef DEBUG_SMI_I82830
-		printk_debug("|  |- handle = %016lx\n", getobj->handle);
+		printk(BIOS_DEBUG, "|  |- handle = %016lx\n", getobj->handle);
 #endif
-		printk_debug("|  |- objnum = %d\n", getobj->objnum);
-		printk_debug("|  |- start = %x\n", getobj->start);
-		printk_debug("|  |- numbytes = %x\n", getobj->numbytes);
-		printk_debug("|  |- buflen = %x\n", getobj->buflen);
-		printk_debug("|  |- buffer = %x\n", getobj->buffer);
+		printk(BIOS_DEBUG, "|  |- objnum = %d\n", getobj->objnum);
+		printk(BIOS_DEBUG, "|  |- start = %x\n", getobj->start);
+		printk(BIOS_DEBUG, "|  |- numbytes = %x\n", getobj->numbytes);
+		printk(BIOS_DEBUG, "|  |- buflen = %x\n", getobj->buflen);
+		printk(BIOS_DEBUG, "|  |- buffer = %x\n", getobj->buffer);
 
 		int i, count=0;
 		getobj->banner.retsts = MSH_IF_NOT_FOUND;
@@ -250,7 +250,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + mbi_header->name_len, 16);
 			
 			if (getobj->objnum == count) {
-				printk_debug("|  |- len = %x\n", len);
+				printk(BIOS_DEBUG, "|  |- len = %x\n", len);
 				memcpy((void *)(getobj->buffer + OBJ_OFFSET),
 						((char *)mbi_header) + 0x20 , (len > getobj->buflen ? getobj->buflen : len));
 
@@ -264,15 +264,15 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			count++;
 		}
 		if (getobj->banner.retsts == MSH_IF_NOT_FOUND) 
-			printk_debug("MBI module %d not found.\n", getobj->objnum);
+			printk(BIOS_DEBUG, "MBI module %d not found.\n", getobj->objnum);
 		break;
 	}
 	default:
-		printk_debug("|- function %x\n", banner_id->function);
-		printk_debug("|  |- Unknown Function!\n");
+		printk(BIOS_DEBUG, "|- function %x\n", banner_id->function);
+		printk(BIOS_DEBUG, "|  |- Unknown Function!\n");
 		break;
 	}
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 	//dump(banner_id, 0x20);
 }
 
@@ -291,7 +291,7 @@ static void smi_interface_call(void)
 {
 	u32 mmio = pci_read_config32(PCI_DEV(0, 0x02, 0), 0x14);
 	// mmio &= 0xfff80000;
-	// printk_debug("mmio=%x\n", mmio);
+	// printk(BIOS_DEBUG, "mmio=%x\n", mmio);
 	u16 swsmi = pci_read_config16(PCI_DEV(0, 0x02, 0), 0xe0);
 
 	if (!(swsmi & 1))
@@ -301,7 +301,7 @@ static void smi_interface_call(void)
 
 	switch ((swsmi>>1) & 0xf) {
 	case 0:
-		printk_debug("Interface Function Presence Test.\n");
+		printk(BIOS_DEBUG, "Interface Function Presence Test.\n");
 		swsmi = 0;
 		swsmi &= ~(7 << 5); // Exit: Result
 		swsmi |= (SMI_IFC_SUCCESS << 5);
@@ -312,11 +312,11 @@ static void smi_interface_call(void)
 		write32(mmio + 0x71428, 0x494e5443);
 		return;
 	case 4:
-		printk_debug("Get BIOS Data.\n");
-		printk_debug("swsmi=%04x\n", swsmi);
+		printk(BIOS_DEBUG, "Get BIOS Data.\n");
+		printk(BIOS_DEBUG, "swsmi=%04x\n", swsmi);
 		break;
 	case 5:
-		printk_debug("Call MBI Functions.\n");
+		printk(BIOS_DEBUG, "Call MBI Functions.\n");
 		mbi_call(swsmi >> 8, (banner_id_t *)((read32(mmio + 0x71428) & 0x000fffff) + OBJ_OFFSET) );
 		// swsmi = 0x0000;
 		swsmi &= ~(7 << 5); // Exit: Result
@@ -324,11 +324,11 @@ static void smi_interface_call(void)
 		pci_write_config16(PCI_DEV(0, 0x02, 0), 0xe0, swsmi);
 		return;
 	case 6:
-		printk_debug("System BIOS Callbacks.\n");
-		printk_debug("swsmi=%04x\n", swsmi);
+		printk(BIOS_DEBUG, "System BIOS Callbacks.\n");
+		printk(BIOS_DEBUG, "swsmi=%04x\n", swsmi);
 		break;
 	default:
-		printk_debug("Unknown SMI interface call %04x\n", swsmi);
+		printk(BIOS_DEBUG, "Unknown SMI interface call %04x\n", swsmi);
 		break;
 	}
 
@@ -354,15 +354,15 @@ static u16 reset_err_status(void)
 
 static void dump_err_status(u32 errsts)
 {
-	printk_debug("ERRSTS: ");
-	if (errsts & (1 << 12)) printk_debug("MBI ");
-	if (errsts & (1 <<  9)) printk_debug("LCKF ");
-	if (errsts & (1 <<  8)) printk_debug("DTF ");
-	if (errsts & (1 <<  5)) printk_debug("UNSC ");
-	if (errsts & (1 <<  4)) printk_debug("OOGF ");
-	if (errsts & (1 <<  3)) printk_debug("IAAF ");
-	if (errsts & (1 <<  2)) printk_debug("ITTEF ");
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "ERRSTS: ");
+	if (errsts & (1 << 12)) printk(BIOS_DEBUG, "MBI ");
+	if (errsts & (1 <<  9)) printk(BIOS_DEBUG, "LCKF ");
+	if (errsts & (1 <<  8)) printk(BIOS_DEBUG, "DTF ");
+	if (errsts & (1 <<  5)) printk(BIOS_DEBUG, "UNSC ");
+	if (errsts & (1 <<  4)) printk(BIOS_DEBUG, "OOGF ");
+	if (errsts & (1 <<  3)) printk(BIOS_DEBUG, "IAAF ");
+	if (errsts & (1 <<  2)) printk(BIOS_DEBUG, "ITTEF ");
+	printk(BIOS_DEBUG, "\n");
 }
 
 void northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save)

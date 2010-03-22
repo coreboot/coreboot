@@ -13,7 +13,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 
-	printk_debug("pm_base: 0x%04x\n", pm_base);
+	printk(BIOS_DEBUG, "pm_base: 0x%04x\n", pm_base);
 
 	/* Prepare the header */
 	memset((void *)fadt, 0, sizeof(acpi_fadt_t));

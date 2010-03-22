@@ -37,7 +37,7 @@ static int pci_sanity_check(const struct pci_bus_operations *o)
 			return 1;
 		}
 	}
-	printk_err("PCI: Sanity check failed\n");
+	printk(BIOS_ERR, "PCI: Sanity check failed\n");
 	return 0;
 }
 
@@ -58,7 +58,7 @@ static const struct pci_bus_operations *pci_check_direct(void)
 			pci_sanity_check(&pci_cf8_conf1)) 
 		{
 			outl(tmp, 0xCF8);
-			printk_debug("PCI: Using configuration type 1\n");
+			printk(BIOS_DEBUG, "PCI: Using configuration type 1\n");
 			return &pci_cf8_conf1;
 		}
 		outl(tmp, 0xCF8);
@@ -74,7 +74,7 @@ static const struct pci_bus_operations *pci_check_direct(void)
 		if ((inb(0xCF8) == 0x00 && inb(0xCFA) == 0x00) &&
 			pci_sanity_check(&pci_cf8_conf2))
 		{
-			printk_debug("PCI: Using configuration type 2\n");
+			printk(BIOS_DEBUG, "PCI: Using configuration type 2\n");
 			return &pci_cf8_conf2;
 		}
 	}
@@ -94,7 +94,7 @@ const struct pci_bus_operations *pci_remember_direct(void)
  */
 void pci_set_method(device_t dev)
 {
-	printk_info("Finding PCI configuration type.\n");
+	printk(BIOS_INFO, "Finding PCI configuration type.\n");
 	dev->ops->ops_pci_bus = pci_remember_direct();
 	post_code(0x5f);
 }

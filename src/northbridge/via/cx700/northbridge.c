@@ -119,7 +119,7 @@ static void pci_domain_set_resources(device_t dev)
 #if CONFIG_WRITE_HIGH_TABLES == 1
 	high_tables_base = (tolmk - HIGH_TABLES_SIZE) * 1024;
 	high_tables_size = HIGH_TABLES_SIZE* 1024;
-	printk_debug("tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
+	printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n", tomk*1024, high_tables_base, high_tables_size);
 #endif
 
 	/* Report the memory regions */

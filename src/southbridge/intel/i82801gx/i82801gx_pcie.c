@@ -28,7 +28,7 @@ static void pci_init(struct device *dev)
 	u16 reg16;
 	u32 reg32;
 
-	printk_debug("Initializing ICH7 PCIe bridge.\n");
+	printk(BIOS_DEBUG, "Initializing ICH7 PCIe bridge.\n");
 
 	/* Enable Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -77,13 +77,13 @@ static void pci_init(struct device *dev)
 
 #ifdef EVEN_MORE_DEBUG
 	reg32 = pci_read_config32(dev, 0x20);
-	printk_spew("    MBL    = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "    MBL    = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x24);
-	printk_spew("    PMBL   = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "    PMBL   = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x28);
-	printk_spew("    PMBU32 = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "    PMBU32 = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x2c);
-	printk_spew("    PMLU32 = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "    PMLU32 = 0x%08x\n", reg32);
 #endif
 
 	/* Clear errors in status registers */

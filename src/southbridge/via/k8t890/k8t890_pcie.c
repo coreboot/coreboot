@@ -28,7 +28,7 @@ static void peg_init(struct device *dev)
 {
 	u8 reg;
 
-	printk_debug("Configuring PCIe PEG\n");
+	printk(BIOS_DEBUG, "Configuring PCIe PEG\n");
 	dump_south(dev);
 
 	/* Disable link. */
@@ -68,7 +68,7 @@ static void pcie_init(struct device *dev)
 {
 	u8 reg;
 
-	printk_debug("Configuring PCIe PEXs\n");
+	printk(BIOS_DEBUG, "Configuring PCIe PEXs\n");
 	dump_south(dev);
 
 	/* Disable link. */

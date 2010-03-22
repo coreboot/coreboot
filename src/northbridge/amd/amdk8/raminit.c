@@ -25,7 +25,7 @@ static void hard_reset(void);
 static void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
-//	printk_debug("setting up resource map....");
+//	printk(BIOS_DEBUG, "setting up resource map....");
 	for (i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
@@ -37,7 +37,7 @@ static void setup_resource_map(const unsigned int *register_values, int max)
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-//	printk_debug("done.\n");
+//	printk(BIOS_DEBUG, "done.\n");
 }
 
 static int controller_present(const struct mem_controller *ctrl)
@@ -524,10 +524,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	int max;
 
 	if (!controller_present(ctrl)) {
-//		printk_debug("No memory controller present\n");
+//		printk(BIOS_DEBUG, "No memory controller present\n");
 		return;
 	}
-	printk_spew("setting up CPU%02x northbridge registers\n", ctrl->node_id);
+	printk(BIOS_SPEW, "setting up CPU%02x northbridge registers\n", ctrl->node_id);
 	max = ARRAY_SIZE(register_values);
 	for (i = 0; i < max; i += 3) {
 		device_t dev;
@@ -540,7 +540,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-	printk_spew("done.\n");
+	printk(BIOS_SPEW, "done.\n");
 }
 
 static void hw_enable_ecc(const struct mem_controller *ctrl)
@@ -849,17 +849,17 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	}
 
 	/* Report the amount of memory. */
-	printk_debug("RAM end at 0x%08x kB\n", tom_k);
+	printk(BIOS_DEBUG, "RAM end at 0x%08x kB\n", tom_k);
 
 	/* Now set top of memory */
 	msr_t msr;
 	if (tom_k > (4*1024*1024)) {
-		printk_spew("Handling memory mapped above 4 GB\n");
-		printk_spew("Upper RAM end at 0x%08x kB\n", tom_k);
+		printk(BIOS_SPEW, "Handling memory mapped above 4 GB\n");
+		printk(BIOS_SPEW, "Upper RAM end at 0x%08x kB\n", tom_k);
 		msr.lo = (tom_k & 0x003fffff) << 10;
 		msr.hi = (tom_k & 0xffc00000) >> 22;
 		wrmsr(TOP_MEM2, msr);
-		printk_spew("Correcting memory amount mapped below 4 GB\n");
+		printk(BIOS_SPEW, "Correcting memory amount mapped below 4 GB\n");
 	}
 
 	/* Leave a 64M hole between TOP_MEM and TOP_MEM2
@@ -872,9 +872,9 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 		} else
 #endif
 		tom_k = 0x3f0000;
-		printk_spew("Adjusting lower RAM end\n");
+		printk(BIOS_SPEW, "Adjusting lower RAM end\n");
 	}
-	printk_spew("Lower RAM end at 0x%08x kB\n", tom_k);
+	printk(BIOS_SPEW, "Lower RAM end at 0x%08x kB\n", tom_k);
 	msr.lo = (tom_k & 0x003fffff) << 10;
 	msr.hi = (tom_k & 0xffc00000) >> 22;
 	wrmsr(TOP_MEM, msr);
@@ -969,7 +969,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		if (is_dual_channel(ctrl)) {
 		/* Also we run out of address mask bits if we try and interleave 8 4GB dimms */
 			if ((bits == 3) && (common_size == (1 << (32 - 3)))) {
-//     				printk_debug("8 4GB chip selects cannot be interleaved\n");
+//     				printk(BIOS_DEBUG, "8 4GB chip selects cannot be interleaved\n");
 				return 0;
 			}
 			csbase_inc <<=1;
@@ -979,7 +979,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		csbase_inc = 1 << csbase_low_d0_shift[common_cs_mode];
 		if (is_dual_channel(ctrl)) {
 			if ( (bits==3) && (common_cs_mode > 8)) {
-//				printk_debug("8 cs_mode>8 chip selects cannot be interleaved\n");
+//				printk(BIOS_DEBUG, "8 cs_mode>8 chip selects cannot be interleaved\n");
 				return 0;
 			}
 			csbase_inc <<=1;
@@ -1006,7 +1006,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 		csbase += csbase_inc;
 	}
 
-	printk_spew("Interleaved\n");
+	printk(BIOS_SPEW, "Interleaved\n");
 
 	/* Return the memory size in K */
 	return common_size << (15 + bits);
@@ -1107,7 +1107,7 @@ static void order_dimms(const struct mem_controller *ctrl)
 	    read_option(CMOS_VSTART_interleave_chip_selects, CMOS_VLEN_interleave_chip_selects, 1) != 0) {
 		tom_k = interleave_chip_selects(ctrl);
 	} else {
-		printk_debug("Interleaving disabled\n");
+		printk(BIOS_DEBUG, "Interleaving disabled\n");
 		tom_k = 0;
 	}
 
@@ -1124,7 +1124,7 @@ static void order_dimms(const struct mem_controller *ctrl)
 
 static long disable_dimm(const struct mem_controller *ctrl, unsigned index, long dimm_mask)
 {
-	printk_debug("disabling dimm %02x\n", index);
+	printk(BIOS_DEBUG, "disabling dimm %02x\n", index);
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+0)<<2), 0);
 	pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1)+1)<<2), 0);
 	dimm_mask &= ~(1 << index);
@@ -1183,9 +1183,9 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 
 	if (is_registered(ctrl)) {
-		printk_spew("Registered\n");
+		printk(BIOS_SPEW, "Registered\n");
 	} else {
-		printk_spew("Unbuffered\n");
+		printk(BIOS_SPEW, "Unbuffered\n");
 	}
 
 	return dimm_mask;
@@ -1280,7 +1280,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, long dimm_ma
 			}
 		}
 	}
-	printk_spew("Enabling dual channel memory\n");
+	printk(BIOS_SPEW, "Enabling dual channel memory\n");
 	uint32_t dcl;
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_32ByteEn;
@@ -1378,7 +1378,7 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 	if (!param->cycle_time) {
 		die("min_cycle_time to low");
 	}
-	printk_spew("%s\n", param->name);
+	printk(BIOS_SPEW, "%s\n", param->name);
 	return param;
 }
 
@@ -2073,7 +2073,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	long dimm_mask;
 #if 1
 	if (!controller_present(ctrl)) {
-//		printk_debug("No memory controller present\n");
+//		printk(BIOS_DEBUG, "No memory controller present\n");
 		return;
 	}
 #endif
@@ -2081,7 +2081,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	activate_spd_rom(ctrl);
 	dimm_mask = spd_detect_dimms(ctrl);
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
-		printk_debug("No memory for this cpu\n");
+		printk(BIOS_DEBUG, "No memory for this cpu\n");
 		return;
 	}
 	dimm_mask = spd_enable_2channels(ctrl, dimm_mask);
@@ -2105,7 +2105,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	return;
  hw_spd_err:
 	/* Unrecoverable error reading SPD data */
-	printk_err("SPD error - reset\n");
+	printk(BIOS_ERR, "SPD error - reset\n");
 	hard_reset();
 	return;
 }
@@ -2171,7 +2171,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 
 	hole_startk = 4*1024*1024 - CONFIG_HW_MEM_HOLE_SIZEK;
 
-	printk_spew("Handling memory hole at 0x%08x (default)\n", hole_startk);
+	printk(BIOS_SPEW, "Handling memory hole at 0x%08x (default)\n", hole_startk);
 #if CONFIG_HW_MEM_HOLE_SIZE_AUTO_INC == 1
 	/* We need to double check if hole_startk is valid.
 	 * If it is equal to the dram base address in K (base_k),
@@ -2196,7 +2196,7 @@ static void set_hw_mem_hole(int controllers, const struct mem_controller *ctrl)
 			basek_pri = base_k;
 	}
 
-	printk_spew("Handling memory hole at 0x%08x (adjusted)\n", hole_startk);
+	printk(BIOS_SPEW, "Handling memory hole at 0x%08x (adjusted)\n", hole_startk);
 #endif
 	/* Find node number that needs the memory hole configured */
 	for (i=0; i<controllers; i++) {
@@ -2273,7 +2273,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 		if (dcl & DCL_DimmEccEn) {
 			uint32_t mnc;
-			printk_spew("ECC enabled\n");
+			printk(BIOS_SPEW, "ECC enabled\n");
 			mnc = pci_read_config32(ctrl[i].f3, MCA_NB_CONFIG);
 			mnc |= MNC_ECC_EN;
 			if (dcl & DCL_128BitEn) {
@@ -2301,17 +2301,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			continue;
 		}
 
-		printk_debug("Initializing memory: ");
+		printk(BIOS_DEBUG, "Initializing memory: ");
 		int loops = 0;
 		do {
 			dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 			loops++;
 			if ((loops & 1023) == 0) {
-				printk_debug(".");
+				printk(BIOS_DEBUG, ".");
 			}
 		} while(((dcl & DCL_DramInit) != 0) && (loops < TIMEOUT_LOOPS));
 		if (loops >= TIMEOUT_LOOPS) {
-			printk_debug(" failed\n");
+			printk(BIOS_DEBUG, " failed\n");
 			continue;
 		}
 
@@ -2324,7 +2324,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 			} while(((dcl & DCL_MemClrStatus) == 0) || ((dcl & DCL_DramEnable) == 0) );
 		}
 
-		printk_debug(" done\n");
+		printk(BIOS_DEBUG, " done\n");
 	}
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

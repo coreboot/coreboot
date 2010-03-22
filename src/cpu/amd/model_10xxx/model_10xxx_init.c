@@ -77,7 +77,7 @@ void model_10xxx_init(device_t dev)
 #endif
 
 	id = get_node_core_id(read_nb_cfg_54()); /* nb_cfg_54 can not be set */
-	printk_debug("nodeid = %02d, coreid = %02d\n", id.nodeid, id.coreid);
+	printk(BIOS_DEBUG, "nodeid = %02d, coreid = %02d\n", id.nodeid, id.coreid);
 
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
@@ -114,7 +114,7 @@ void model_10xxx_init(device_t dev)
 		msr.hi |= 1 << (33-32);
 		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
-	printk_debug("siblings = %02d, ", siblings);
+	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
 #endif
 
 	/* DisableCf8ExtCfg */

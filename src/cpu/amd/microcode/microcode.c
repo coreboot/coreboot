@@ -61,8 +61,8 @@ static int need_apply_patch(struct microcode *m, u32 equivalent_processor_rev_id
 {
 
 	if (m->processor_rev_id != equivalent_processor_rev_id) {
-		printk_err("microcode: rev id (%x) does not match this patch.\n", m->processor_rev_id);
-		printk_err("microcode: Not updated! Fix microcode_updates[] \n");
+		printk(BIOS_ERR, "microcode: rev id (%x) does not match this patch.\n", m->processor_rev_id);
+		printk(BIOS_ERR, "microcode: Not updated! Fix microcode_updates[] \n");
 		return 0;
 	}
 	if (m->nb_dev_id) {
@@ -93,7 +93,7 @@ void amd_update_microcode(void *microcode_updates, u32 equivalent_processor_rev_
 	msr = rdmsr(0x8b);
 	patch_id = msr.lo;
 
-	printk_debug("microcode: equivalent rev id  = 0x%04x, current patch id = 0x%08x\n", equivalent_processor_rev_id, patch_id);
+	printk(BIOS_DEBUG, "microcode: equivalent rev id  = 0x%04x, current patch id = 0x%08x\n", equivalent_processor_rev_id, patch_id);
 
 	m = microcode_updates;
 
@@ -107,13 +107,13 @@ void amd_update_microcode(void *microcode_updates, u32 equivalent_processor_rev_
 
 			wrmsr(0xc0010020, msr);
 
-			printk_debug("microcode: patch id to apply = 0x%08x\n", m->patch_id);
+			printk(BIOS_DEBUG, "microcode: patch id to apply = 0x%08x\n", m->patch_id);
 
 			//read the patch_id again
 			msr = rdmsr(0x8b);
 			new_patch_id = msr.lo;
 
-			printk_debug("microcode: updated to patch id = 0x%08x %s\n", new_patch_id , (new_patch_id == m->patch_id)?" success\n":" fail\n" );
+			printk(BIOS_DEBUG, "microcode: updated to patch id = 0x%08x %s\n", new_patch_id , (new_patch_id == m->patch_id)?" success\n":" fail\n" );
 			break;
 		}
 		c += 2048;

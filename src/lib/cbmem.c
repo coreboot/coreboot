@@ -23,7 +23,7 @@
 #include <console/console.h>
 
 #if 1
-#define debug(x...) printk_debug(x)
+#define debug(x...) printk(BIOS_DEBUG, x)
 #else
 #define debug(x...)
 #endif
@@ -110,13 +110,13 @@ void *cbmem_add(u32 id, u64 size)
 	}
 
 	if (cbmem_toc[0].magic != CBMEM_MAGIC) {
-		printk_err("ERROR: CBMEM was not initialized yet.\n");
+		printk(BIOS_ERR, "ERROR: CBMEM was not initialized yet.\n");
 		return NULL;
 	}
 
 	/* Will the entry fit at all? */
 	if (size > cbmem_toc[0].size) {
-		printk_err("ERROR: Not enough memory for table %x\n", id);
+		printk(BIOS_ERR, "ERROR: Not enough memory for table %x\n", id);
 		return NULL;
 	}
 
@@ -132,7 +132,7 @@ void *cbmem_add(u32 id, u64 size)
 	}
 
 	if (i >= MAX_CBMEM_ENTRIES) {
-		printk_err("ERROR: No more CBMEM entries available.\n");
+		printk(BIOS_ERR, "ERROR: No more CBMEM entries available.\n");
 		return NULL;
 	}
 
@@ -214,19 +214,19 @@ void cbmem_list(void)
 
 		if (cbmem_toc[i].magic != CBMEM_MAGIC)
 			continue;
-		printk_debug("%2d. ", i);
+		printk(BIOS_DEBUG, "%2d. ", i);
 		switch (cbmem_toc[i].id) {
-		case CBMEM_ID_FREESPACE: printk_debug("FREE SPACE "); break;
-		case CBMEM_ID_GDT:	 printk_debug("GDT        "); break;
-		case CBMEM_ID_ACPI:	 printk_debug("ACPI       "); break;
-		case CBMEM_ID_CBTABLE:	 printk_debug("COREBOOT   "); break;
-		case CBMEM_ID_PIRQ:	 printk_debug("IRQ TABLE  "); break;
-		case CBMEM_ID_MPTABLE:	 printk_debug("SMP TABLE  "); break;
-		case CBMEM_ID_RESUME:	 printk_debug("ACPI RESUME"); break;
-		default: printk_debug("%08x ", cbmem_toc[i].id);
+		case CBMEM_ID_FREESPACE: printk(BIOS_DEBUG, "FREE SPACE "); break;
+		case CBMEM_ID_GDT:	 printk(BIOS_DEBUG, "GDT        "); break;
+		case CBMEM_ID_ACPI:	 printk(BIOS_DEBUG, "ACPI       "); break;
+		case CBMEM_ID_CBTABLE:	 printk(BIOS_DEBUG, "COREBOOT   "); break;
+		case CBMEM_ID_PIRQ:	 printk(BIOS_DEBUG, "IRQ TABLE  "); break;
+		case CBMEM_ID_MPTABLE:	 printk(BIOS_DEBUG, "SMP TABLE  "); break;
+		case CBMEM_ID_RESUME:	 printk(BIOS_DEBUG, "ACPI RESUME"); break;
+		default: printk(BIOS_DEBUG, "%08x ", cbmem_toc[i].id);
 		}
-		printk_debug("%08llx ", cbmem_toc[i].base);
-		printk_debug("%08llx\n", cbmem_toc[i].size);
+		printk(BIOS_DEBUG, "%08llx ", cbmem_toc[i].base);
+		printk(BIOS_DEBUG, "%08llx\n", cbmem_toc[i].size);
 	}
 }
 #endif

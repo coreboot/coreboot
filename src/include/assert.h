@@ -48,13 +48,13 @@
 /* GCC and CAR versions */
 #define ASSERT(x) {						\
 	if (!(x)) {						\
-		printk_emerg("ASSERTION FAILED: file '%s', "	\
+		printk(BIOS_EMERG, "ASSERTION FAILED: file '%s', "	\
 			" line %d\n", __FILE__, __LINE__);	\
 		/* die(""); */					\
 	}							\
 }
 #define BUG() {							\
-	printk_emerg("BUG ENCOUNTERED: SYSTEM HALTED at file '%s', "	\
+	printk(BIOS_EMERG, "BUG ENCOUNTERED: SYSTEM HALTED at file '%s', "	\
 		" line %d\n", __FILE__, __LINE__);		\
 	/* die(""); */						\
 }

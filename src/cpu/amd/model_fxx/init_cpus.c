@@ -16,23 +16,23 @@
 
 static inline void print_initcpu8 (const char *strval, unsigned val)
 {
-        printk_debug("%s%02x\r\n", strval, val);
+        printk(BIOS_DEBUG, "%s%02x\r\n", strval, val);
 }
 
 static inline void print_initcpu8_nocr (const char *strval, unsigned val)
 {
-        printk_debug("%s%02x", strval, val);
+        printk(BIOS_DEBUG, "%s%02x", strval, val);
 }
 
 
 static inline void print_initcpu16 (const char *strval, unsigned val)
 {
-        printk_debug("%s%04x\r\n", strval, val);
+        printk(BIOS_DEBUG, "%s%04x\r\n", strval, val);
 }
 
 static inline void print_initcpu(const char *strval, unsigned val)
 {
-        printk_debug("%s%08x\r\n", strval, val);
+        printk(BIOS_DEBUG, "%s%08x\r\n", strval, val);
 }
 
 typedef void (*process_ap_t)(unsigned apicid, void *gp);
@@ -155,7 +155,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
 
 static inline __attribute__((always_inline)) void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id, const char *str)
 {
-                printk_debug("%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n", str, apicid, id.nodeid, id.coreid);
+                printk(BIOS_DEBUG, "%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n", str, apicid, id.nodeid, id.coreid);
 }
 
 

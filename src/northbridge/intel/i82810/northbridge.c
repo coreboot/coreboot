@@ -34,7 +34,7 @@
 
 static void northbridge_init(device_t dev)
 {
-	printk_spew("Northbridge init\n");
+	printk(BIOS_SPEW, "Northbridge init\n");
 }
 
 static struct device_operations northbridge_operations = {
@@ -142,7 +142,7 @@ static void pci_domain_set_resources(device_t dev)
 		drp_value = drp_value >> 4;	// >>= 4; //? mess with later
 		tomk += (unsigned long)(translate_i82810_to_mb[drp_value]);
 
-		printk_debug("Setting RAM size to %d MB\n", tomk);
+		printk(BIOS_DEBUG, "Setting RAM size to %d MB\n", tomk);
 
 		/* Convert tomk from MB to KB. */
 		tomk = tomk << 10;
@@ -151,12 +151,12 @@ static void pci_domain_set_resources(device_t dev)
 		/* Check for VGA reserved memory. */
 		if (CONFIG_VIDEO_MB == 512) {
 			tomk -= 512;
-			printk_debug("Allocating %s RAM for VGA\n", "512KB");
+			printk(BIOS_DEBUG, "Allocating %s RAM for VGA\n", "512KB");
 		} else if (CONFIG_VIDEO_MB == 1) {
 			tomk -= 1024 ;
-			printk_debug("Allocating %s RAM for VGA\n", "1MB");
+			printk(BIOS_DEBUG, "Allocating %s RAM for VGA\n", "1MB");
 		} else {
-			printk_debug("Allocating %s RAM for VGA\n", "0MB");
+			printk(BIOS_DEBUG, "Allocating %s RAM for VGA\n", "0MB");
 		}
 #endif
 

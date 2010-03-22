@@ -23,8 +23,8 @@
 
 static void init(struct device *dev)
 {
-	printk_debug("AMD DB800 ENTER %s\n", __func__);
-	printk_debug("AMD DB800 EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "AMD DB800 ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "AMD DB800 EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

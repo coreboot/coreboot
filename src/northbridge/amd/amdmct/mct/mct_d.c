@@ -556,7 +556,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 			base  += NextBase;
 			limit += NextBase;
 			DramSelBaseAddr += NextBase;
-			printk_debug(" Node: %02x  base: %02x  limit: %02x  BottomIO: %02x\n", Node, base, limit, BottomIO);
+			printk(BIOS_DEBUG, " Node: %02x  base: %02x  limit: %02x  BottomIO: %02x\n", Node, base, limit, BottomIO);
 
 			if (_MemHoleRemap) {
 				if ((base < BottomIO) && (limit >= BottomIO)) {
@@ -633,7 +633,7 @@ static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 		devx = pDCTstat->dev_map;
 
 		if (pDCTstat->NodePresent) {
-		printk_debug(" Copy dram map from Node 0 to Node %02x \n", Node);
+		printk(BIOS_DEBUG, " Copy dram map from Node 0 to Node %02x \n", Node);
 			reg = 0x40;		/*Dram Base 0*/
 			do {
 				val = Get_NB32(dev, reg);

@@ -40,15 +40,15 @@ static void ide_init(struct device *dev)
 	device_t lpc_dev;
 	int i, j;
 
-	printk_info("%s IDE interface %s\n", "Primary",
+	printk(BIOS_INFO, "%s IDE interface %s\n", "Primary",
 		    sb->ide0_enable ? "enabled" : "disabled");
-	printk_info("%s IDE interface %s\n", "Secondary",
+	printk(BIOS_INFO, "%s IDE interface %s\n", "Secondary",
 		    sb->ide1_enable ? "enabled" : "disabled");
 	enables = pci_read_config8(dev, IDE_CS) & ~0x3;
 	enables |= (sb->ide0_enable << 1) | sb->ide1_enable;
 	pci_write_config8(dev, IDE_CS, enables);
 	enables = pci_read_config8(dev, IDE_CS);
-	printk_debug("Enables in reg 0x40 read back as 0x%x\n", enables);
+	printk(BIOS_DEBUG, "Enables in reg 0x40 read back as 0x%x\n", enables);
 
 	/* Enable only compatibility mode. */
 	enables = pci_read_config8(dev, 0x09);
@@ -59,7 +59,7 @@ static void ide_init(struct device *dev)
 	enables &= ~0xc0;
 	pci_write_config8(dev, IDE_CONF_II, enables);
 	enables = pci_read_config8(dev, IDE_CONF_II);
-	printk_debug("Enables in reg 0x42 read back as 0x%x\n", enables);
+	printk(BIOS_DEBUG, "Enables in reg 0x42 read back as 0x%x\n", enables);
 
 	/* Enable prefetch buffers. */
 	enables = pci_read_config8(dev, IDE_CONF_I);

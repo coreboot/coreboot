@@ -66,7 +66,7 @@ static void copy_secondary_start_to_1m_below(void)
 	/* copy the _secondary_start to the ram below 1M*/
 	memcpy((unsigned char *)start_eip, (unsigned char *)_secondary_start, code_size);
 
-	printk_debug("start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
+	printk(BIOS_DEBUG, "start_eip=0x%08lx, offset=0x%08lx, code_size=0x%08lx\n", start_eip, ((unsigned long)_secondary_start - start_eip), code_size);
 #endif
 }
 
@@ -80,7 +80,7 @@ static int lapic_start_cpu(unsigned long apicid)
 	 * Starting actual IPI sequence...
 	 */
 
-	printk_spew("Asserting INIT.\n");
+	printk(BIOS_SPEW, "Asserting INIT.\n");
 
 	/*
 	 * Turn INIT on target chip
@@ -94,28 +94,28 @@ static int lapic_start_cpu(unsigned long apicid)
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_INT_ASSERT
 				| LAPIC_DM_INIT);
 
-	printk_spew("Waiting for send to finish...\n");
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 	timeout = 0;
 	do {
-		printk_spew("+");
+		printk(BIOS_SPEW, "+");
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_err("CPU %ld: First apic write timed out. Disabling\n",
+		printk(BIOS_ERR, "CPU %ld: First apic write timed out. Disabling\n",
 			 apicid);
 		// too bad.
-		printk_err("ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
+		printk(BIOS_ERR, "ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
 		if (lapic_read(LAPIC_ESR)) {
-			printk_err("Try to reset ESR\n");
+			printk(BIOS_ERR, "Try to reset ESR\n");
 			lapic_write_around(LAPIC_ESR, 0);
-			printk_err("ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
+			printk(BIOS_ERR, "ESR is 0x%lx\n", lapic_read(LAPIC_ESR));
 		}
 		return 0;
 	}
 	mdelay(10);
 
-	printk_spew("Deasserting INIT.\n");
+	printk(BIOS_SPEW, "Deasserting INIT.\n");
 
 	/* Target chip */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
@@ -123,15 +123,15 @@ static int lapic_start_cpu(unsigned long apicid)
 	/* Send IPI */
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
 
-	printk_spew("Waiting for send to finish...\n");
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 	timeout = 0;
 	do {
-		printk_spew("+");
+		printk(BIOS_SPEW, "+");
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_err("CPU %ld: Second apic write timed out. Disabling\n",
+		printk(BIOS_ERR, "CPU %ld: Second apic write timed out. Disabling\n",
 			 apicid);
 		// too bad.
 		return 0;
@@ -148,16 +148,16 @@ static int lapic_start_cpu(unsigned long apicid)
 	/*
 	 * Run STARTUP IPI loop.
 	 */
-	printk_spew("#startup loops: %d.\n", num_starts);
+	printk(BIOS_SPEW, "#startup loops: %d.\n", num_starts);
 
 	maxlvt = 4;
 
 	for (j = 1; j <= num_starts; j++) {
-		printk_spew("Sending STARTUP #%d to %lu.\n", j, apicid);
+		printk(BIOS_SPEW, "Sending STARTUP #%d to %lu.\n", j, apicid);
 		lapic_read_around(LAPIC_SPIV);
 		lapic_write(LAPIC_ESR, 0);
 		lapic_read(LAPIC_ESR);
-		printk_spew("After apic_write.\n");
+		printk(BIOS_SPEW, "After apic_write.\n");
 
 		/*
 		 * STARTUP IPI
@@ -176,12 +176,12 @@ static int lapic_start_cpu(unsigned long apicid)
 		 */
 		udelay(300);
 
-		printk_spew("Startup point 1.\n");
+		printk(BIOS_SPEW, "Startup point 1.\n");
 
-		printk_spew("Waiting for send to finish...\n");
+		printk(BIOS_SPEW, "Waiting for send to finish...\n");
 		timeout = 0;
 		do {
-			printk_spew("+");
+			printk(BIOS_SPEW, "+");
 			udelay(100);
 			send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 		} while (send_status && (timeout++ < 1000));
@@ -201,11 +201,11 @@ static int lapic_start_cpu(unsigned long apicid)
 		if (send_status || accept_status)
 			break;
 	}
-	printk_spew("After Startup.\n");
+	printk(BIOS_SPEW, "After Startup.\n");
 	if (send_status)
-		printk_warning("APIC never delivered???\n");
+		printk(BIOS_WARNING, "APIC never delivered???\n");
 	if (accept_status)
-		printk_warning("APIC delivery error (%lx).\n", accept_status);
+		printk(BIOS_WARNING, "APIC delivery error (%lx).\n", accept_status);
 	if (send_status || accept_status)
 		return 0;
 	return 1;
@@ -294,7 +294,7 @@ void stop_this_cpu(void)
 
 	id = lapic_read(LAPIC_ID) >> 24;
 
-	printk_debug("CPU %ld going down...\n", id);
+	printk(BIOS_DEBUG, "CPU %ld going down...\n", id);
 
 	/* send an LAPIC INIT to myself */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
@@ -302,37 +302,37 @@ void stop_this_cpu(void)
 
 	/* wait for the ipi send to finish */
 #if 0
-	// When these two printk_spew calls are not removed, the
+	// When these two printk(BIOS_SPEW, ...) calls are not removed, the
 	// machine will hang when log level is SPEW. Why?
-	printk_spew("Waiting for send to finish...\n");
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 #endif
 	timeout = 0;
 	do {
 #if 0
-		printk_spew("+");
+		printk(BIOS_SPEW, "+");
 #endif
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_err("timed out\n");
+		printk(BIOS_ERR, "timed out\n");
 	}
 	mdelay(10);
 
-	printk_spew("Deasserting INIT.\n");
+	printk(BIOS_SPEW, "Deasserting INIT.\n");
 	/* Deassert the LAPIC INIT */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(id));
 	lapic_write_around(LAPIC_ICR, LAPIC_INT_LEVELTRIG | LAPIC_DM_INIT);
 
-	printk_spew("Waiting for send to finish...\n");
+	printk(BIOS_SPEW, "Waiting for send to finish...\n");
 	timeout = 0;
 	do {
-		printk_spew("+");
+		printk(BIOS_SPEW, "+");
 		udelay(100);
 		send_status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (send_status && (timeout++ < 1000));
 	if (timeout >= 1000) {
-		printk_err("timed out\n");
+		printk(BIOS_ERR, "timed out\n");
 	}
 
 	while(1) {
@@ -387,7 +387,7 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 
 		if (!start_cpu(cpu)) {
 			/* Record the error in cpu? */
-			printk_err("CPU 0x%02x would not start!\n",
+			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
 		}
 #if CONFIG_SERIAL_CPU_INIT == 1
@@ -408,7 +408,7 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 	active_count = atomic_read(&active_cpus);
 	while(active_count > 1) {
 		if (active_count != old_active_count) {
-			printk_info("Waiting for %d CPUS to stop\n", active_count - 1);
+			printk(BIOS_INFO, "Waiting for %d CPUS to stop\n", active_count - 1);
 			old_active_count = active_count;
 		}
 		udelay(10);
@@ -419,11 +419,11 @@ static void wait_other_cpus_stop(struct bus *cpu_bus)
 			continue;
 		}
 		if (!cpu->initialized) {
-			printk_err("CPU 0x%02x did not initialize!\n",
+			printk(BIOS_ERR, "CPU 0x%02x did not initialize!\n",
 				cpu->path.apic.apic_id);
 		}
 	}
-	printk_debug("All AP CPUs stopped\n");
+	printk(BIOS_DEBUG, "All AP CPUs stopped\n");
 }
 
 #else /* CONFIG_SMP */

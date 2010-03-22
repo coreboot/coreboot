@@ -84,13 +84,13 @@ void AMD_CB_EventNotify (u8 evtClass, u16 event, u8 *pEventData0)
 {
 	u8 i;
 
-	printk_debug("AMD_CB_EventNotify()\n");
-	printk_debug(" event class: %02x\n event: %04x\n data: ", evtClass, event);
+	printk(BIOS_DEBUG, "AMD_CB_EventNotify()\n");
+	printk(BIOS_DEBUG, " event class: %02x\n event: %04x\n data: ", evtClass, event);
 
 	for (i = 0; i < *pEventData0; i++) {
-		printk_debug(" %02x ", *(pEventData0 + i));
+		printk(BIOS_DEBUG, " %02x ", *(pEventData0 + i));
 	}
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 
 }
 
@@ -119,7 +119,7 @@ BOOL AMD_CB_ManualBUIDSwapList (u8 node, u16 link, u8 **List)
 	static const u8 swaplist[] = { 0xFF, CONFIG_HT_CHAIN_UNITID_BASE, CONFIG_HT_CHAIN_END_UNITID_BASE, 0xFF };
 	/* If the BUID was adjusted in early_ht we need to do the manual override */
 	if ((CONFIG_HT_CHAIN_UNITID_BASE != 0) && (CONFIG_HT_CHAIN_END_UNITID_BASE != 0)) {
-		printk_debug("AMD_CB_ManualBUIDSwapList()\n");
+		printk(BIOS_DEBUG, "AMD_CB_ManualBUIDSwapList()\n");
 		if ((node == 0) && (link == 0)) {	/* BSP SB link */
 			*List = swaplist;
 			return 1;
@@ -170,9 +170,9 @@ void amd_ht_init(struct sys_info *sysinfo)
 		AMD_CB_EventNotify	// void (*AMD_CB_EventNotify) ();
 	};
 
-	printk_debug("Enter amd_ht_init()\n");
+	printk(BIOS_DEBUG, "Enter amd_ht_init()\n");
 	amdHtInitialize(&ht_wrapper);
-	printk_debug("Exit amd_ht_init()\n");
+	printk(BIOS_DEBUG, "Exit amd_ht_init()\n");
 
 
 }

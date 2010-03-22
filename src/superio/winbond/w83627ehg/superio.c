@@ -100,7 +100,7 @@ static void init_hwm(unsigned long base)
 		value = pnp_read_index(base, reg);
 		value &= 0xff & (~(hwm_reg_values[i + 1]));
 		value |= 0xff & hwm_reg_values[i + 2];
-		/* printk_debug("base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value); */
+		/* printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value); */
 		pnp_write_index(base, reg, value);
 	}
 }
@@ -152,7 +152,7 @@ static void w83627ehg_pnp_enable_resources(device_t dev)
 
 	switch (dev->path.pnp.device) {
 	case W83627EHG_HWM:
-		printk_debug("w83627ehg hwm smbus enabled\n");
+		printk(BIOS_DEBUG, "w83627ehg hwm smbus enabled\n");
 		enable_hwm_smbus(dev);
 		break;
 	}

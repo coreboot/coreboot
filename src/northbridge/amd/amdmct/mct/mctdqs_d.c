@@ -69,7 +69,7 @@ static void print_debug_dqs(const char *str, u32 val, u8 level)
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {
-		printk_debug("%s%x\n", str, val);
+		printk(BIOS_DEBUG, "%s%x\n", str, val);
 	}
 #endif
 }
@@ -78,7 +78,7 @@ static void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32
 {
 #if DQS_TRAIN_DEBUG > 0
 	if (DQS_TRAIN_DEBUG >= level) {
-		printk_debug("%s%08x%s%08x\n", str, val, str2, val2);
+		printk(BIOS_DEBUG, "%s%08x%s%08x\n", str, val, str2, val2);
 	}
 #endif
 }

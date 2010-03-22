@@ -135,7 +135,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	start = (start + 0x0f) & -0x10;
 	current = start;
 
-	printk_info("ACPI: Writing ACPI tables at %lx...\n", start);
+	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
 
 	/* We need at least an RSDP and an RSDT table. */
 	rsdp = (acpi_rsdp_t *) current;
@@ -150,22 +150,22 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_write_rsdt(rsdt);
 
 	/* We explicitly add these tables later on: */
-	printk_debug("ACPI:     * FACS\n");
+	printk(BIOS_DEBUG, "ACPI:     * FACS\n");
 	current = ALIGN(current, 64);
 	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
 
-	printk_debug("ACPI:     * DSDT\n");
+	printk(BIOS_DEBUG, "ACPI:     * DSDT\n");
 	dsdt = (acpi_header_t *) current;
 	current += ((acpi_header_t *) AmlCode_dsdt)->length;
 	memcpy((void *)dsdt, (void *)AmlCode_dsdt,
 	       ((acpi_header_t *) AmlCode_dsdt)->length);
 	dsdt->checksum = 0; /* Don't trust iasl to get this right. */
 	dsdt->checksum = acpi_checksum(dsdt, dsdt->length);
-	printk_debug("ACPI:     * DSDT @ %p Length %x\n", dsdt, dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt, dsdt->length);
 
-	printk_debug("ACPI:     * FADT\n");
+	printk(BIOS_DEBUG, "ACPI:     * FADT\n");
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
 
@@ -173,7 +173,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, fadt);
 
 	/* If we want to use HPET timers Linux wants it in MADT. */
-	printk_debug("ACPI:    * MADT\n");
+	printk(BIOS_DEBUG, "ACPI:    * MADT\n");
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current += madt->header.length;
@@ -181,24 +181,24 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* NO MCFG in VX855, no PCI-E. */
 
-	printk_debug("ACPI:    * HPET\n");
+	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
 	hpet = (acpi_mcfg_t *) current;
 	acpi_create_hpet(hpet);
 	current += hpet->header.length;
 	acpi_add_table(rsdp, hpet);
 
 #if 0
-	printk_debug("ACPI:     * SSDT\n");
+	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
 	ssdt = (acpi_header_t *) current;
 	current += ((acpi_header_t *)AmlCode_ssdt)->length;
 	memcpy((void *)ssdt,(void *)AmlCode_ssdt, ((acpi_header_t *)AmlCode_ssdt)->length);
 	ssdt->checksum = 0; /* Don't trust iasl to get this right. */
 	ssdt->checksum = acpi_checksum(ssdt, ssdt->length);
 	acpi_add_table(rsdp, ssdt);
-	printk_debug("ACPI:     * SSDT @ %08x Length %x\n", ssdt, ssdt->length);
+	printk(BIOS_DEBUG, "ACPI:     * SSDT @ %08x Length %x\n", ssdt, ssdt->length);
 #endif
 
-	printk_info("ACPI: done.\n");
+	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }
 

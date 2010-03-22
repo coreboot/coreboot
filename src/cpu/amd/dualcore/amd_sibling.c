@@ -109,7 +109,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	if((apicid_base+ioapic_num-1)>0xf) {
 		// We need to enable APIC EXT ID
-		printk_info("if the IO APIC device doesn't support 256 apic id, \r\n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for ioapic\r\n");
+		printk(BIOS_INFO, "if the IO APIC device doesn't support 256 apic id, \r\n you need to set CONFIG_ENABLE_APIC_EXT_ID in romstage.c so you can spare 16 id for ioapic\r\n");
 		enable_apic_ext_id(nodes);
 	}
 	
@@ -140,7 +140,7 @@ void amd_sibling_init(device_t cpu)
 	}
 
 #if 1
-	printk_debug("CPU: %u %d siblings\n",
+	printk(BIOS_DEBUG, "CPU: %u %d siblings\n",
 		cpu->path.apic.apic_id,
 		siblings);
 #endif
@@ -191,7 +191,7 @@ void amd_sibling_init(device_t cpu)
                 new->path.apic.core_id = i;
 
 #if 1
-		printk_debug("CPU: %u has sibling %u\n", 
+		printk(BIOS_DEBUG, "CPU: %u has sibling %u\n", 
 			cpu->path.apic.apic_id,
 			new->path.apic.apic_id);
 #endif

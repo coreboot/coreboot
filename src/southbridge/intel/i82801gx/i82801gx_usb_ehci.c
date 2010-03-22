@@ -35,7 +35,7 @@ static void usb_ehci_init(struct device *dev)
 	u32 reg32;
 	u8 reg8;
 
-	printk_debug("EHCI: Setting up controller.. ");
+	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER;
 	reg32 |= PCI_COMMAND_SERR;
@@ -61,7 +61,7 @@ static void usb_ehci_init(struct device *dev)
 	reg8 |= (1 << 4);
 	pci_write_config8(dev, 0x84, reg8);
 
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 }
 
 static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

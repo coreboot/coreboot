@@ -102,7 +102,7 @@ void get_bus_conf(void)
 #endif
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x09);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x09);
 
                         bus_ck804_1 = 2;
 #if 0
@@ -120,7 +120,7 @@ void get_bus_conf(void)
                         bus_ck804_3++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x0b);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x0b);
 
                         bus_ck804_3 = bus_ck804_2+1;
                 }
@@ -132,7 +132,7 @@ void get_bus_conf(void)
                         bus_ck804_4++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x0c);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x0c);
 
                         bus_ck804_4 = bus_ck804_3+1;
                 }
@@ -145,7 +145,7 @@ void get_bus_conf(void)
                         bus_ck804_5++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n",sbdn + 0x0d);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n",sbdn + 0x0d);
 
                         bus_ck804_5 = bus_ck804_4+1;
                 }
@@ -156,7 +156,7 @@ void get_bus_conf(void)
                         bus_ck804_5 = pci_read_config8(dev, PCI_SECONDARY_BUS);
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn+ 0x0e);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn+ 0x0e);
                 }
 
 		bus_8131_0 = (pci1234[1] >> 16) & 0xff;
@@ -168,7 +168,7 @@ void get_bus_conf(void)
                         bus_8131_2++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
 
                         bus_8131_1 = bus_8131_0+1;
                         bus_8131_2 = bus_8131_0+2;
@@ -181,7 +181,7 @@ void get_bus_conf(void)
                         bus_isa++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
 
                         bus_8131_2 = bus_8131_1+1;
                 }
@@ -198,7 +198,7 @@ void get_bus_conf(void)
                         bus_ck804b_2++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x09);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x09);
 
                         bus_ck804b_1 = bus_ck804b_0+1;
                         bus_ck804b_2 = bus_ck804b_0+2;
@@ -211,7 +211,7 @@ void get_bus_conf(void)
                         bus_ck804b_3++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0b);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0b);
 
                         bus_ck804b_2 = bus_ck804b_0+1;
                         bus_ck804b_3 = bus_ck804b_0+2;
@@ -224,7 +224,7 @@ void get_bus_conf(void)
                         bus_ck804b_4++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0c);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0c);
 
                         bus_ck804b_4 = bus_ck804b_3+1;
                 }
@@ -235,7 +235,7 @@ void get_bus_conf(void)
                         bus_ck804b_5++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0d);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0d);
 
                         bus_ck804b_5 = bus_ck804b_4+1;
                 }
@@ -248,7 +248,7 @@ void get_bus_conf(void)
                         bus_isa++;
                 }
                 else {
-                        printk_debug("ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0e);
+                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", bus_ck804b_0,sbdnb+0x0e);
 #if 1
                         bus_ck804b_5 = bus_ck804b_4+1;
 #endif

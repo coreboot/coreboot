@@ -86,12 +86,12 @@ void get_bus_conf(void)
 #if CONFIG_HT_CHAIN_END_UNITID_BASE >= CONFIG_HT_CHAIN_UNITID_BASE
 	                bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 	                bus_isa++;
-//        	        printk_debug("bus_isa=%d\n",bus_isa);
+//        	        printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
 #endif
 		}
         }
 	else {
-                printk_debug("ERROR - could not find PCI %02x:07.0, using defaults\n", bus_bcm5785_0);
+                printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:07.0, using defaults\n", bus_bcm5785_0);
         }
 
 		/* bcm5780 */
@@ -102,12 +102,12 @@ void get_bus_conf(void)
 #if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
                         bus_isa    = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
                         bus_isa++;
-//                      printk_debug("bus_isa=%d\n",bus_isa);
+//                      printk(BIOS_DEBUG, "bus_isa=%d\n",bus_isa);
 #endif
 
 		}
         	else {
-                	printk_debug("ERROR - could not find PCI %02x:01.0, using defaults\n", bus_bcm5780[i]);
+                	printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:01.0, using defaults\n", bus_bcm5780[i]);
 	        }
 	}
 

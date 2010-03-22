@@ -17,10 +17,10 @@ static void print_pci_regs(struct device *dev)
       for(i=0;i<256;i++) {
 	      byte = pci_read_config8(dev, i);
    
-	      if((i & 0xf)==0) printk_debug("\n%02x:",i);
-	      printk_debug(" %02x",byte);
+	      if((i & 0xf)==0) printk(BIOS_DEBUG, "\n%02x:",i);
+	      printk(BIOS_DEBUG, " %02x",byte);
       }
-      printk_debug("\n");
+      printk(BIOS_DEBUG, "\n");
 }
 
 static void print_mem(void)
@@ -28,10 +28,10 @@ static void print_mem(void)
         unsigned int i;
 	unsigned int start = 0xfffff000;
 	for(i=start;i<0xffffffff;i++) {
-             if((i & 0xf)==0) printk_debug("\n %08x:",i);
-             printk_debug(" %02x",(unsigned char)*((unsigned char *)i));
+             if((i & 0xf)==0) printk(BIOS_DEBUG, "\n %08x:",i);
+             printk(BIOS_DEBUG, " %02x",(unsigned char)*((unsigned char *)i));
              }
-	printk_debug(" %02x\n",(unsigned char)*((unsigned char *)i));
+	printk(BIOS_DEBUG, " %02x\n",(unsigned char)*((unsigned char *)i));
 
  }
 static void print_pci_regs_all(void)
@@ -51,7 +51,7 @@ static void print_pci_regs_all(void)
 				if(!dev->enabled) {
 					continue;
 				}
-			        printk_debug("\n%02x:%02x:%02x aka %s", 
+			        printk(BIOS_DEBUG, "\n%02x:%02x:%02x aka %s", 
 					bus, device, function, dev_path(dev));
 				print_pci_regs(dev);
 			}
@@ -65,19 +65,19 @@ static void print_cpuid()
 	unsigned index;
 	unsigned eax, ebx, ecx, edx;
 	index = 0x80000007;
-	printk_debug("calling cpuid 0x%08x\n", index);
+	printk(BIOS_DEBUG, "calling cpuid 0x%08x\n", index);
 	asm volatile(
 		"cpuid"
 		: "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
 		: "a" (index)
 		);
-	printk_debug("cpuid[%08x]: %08x %08x %08x %08x\n",
+	printk(BIOS_DEBUG, "cpuid[%08x]: %08x %08x %08x %08x\n",
 		index, eax, ebx, ecx, edx);
 	if (edx & (3 << 1)) {
 		index = 0xC0010042;
-		printk_debug("Reading msr: 0x%08x\n", index);
+		printk(BIOS_DEBUG, "Reading msr: 0x%08x\n", index);
 		msr = rdmsr(index);
-		printk_debug("msr[0x%08x]: 0x%08x%08x\n",
+		printk(BIOS_DEBUG, "msr[0x%08x]: 0x%08x%08x\n",
 			index, msr.hi, msr.lo);
 	}
 
@@ -85,23 +85,23 @@ static void print_cpuid()
 static void print_smbus_regs(struct device *dev)
 {               
 	int j;
-	printk_debug("smbus: %s[%d]->", dev_path(dev->bus->dev), dev->bus->link);
-	printk_debug("%s", dev_path(dev));
+	printk(BIOS_DEBUG, "smbus: %s[%d]->", dev_path(dev->bus->dev), dev->bus->link);
+	printk(BIOS_DEBUG, "%s", dev_path(dev));
 	for(j = 0; j < 256; j++) {
 		int status;
 		unsigned char byte;
 		status = smbus_read_byte(dev, j);
 		if (status < 0) {
-		//	printk_debug("bad device status= %08x\r\n", status);
+		//	printk(BIOS_DEBUG, "bad device status= %08x\r\n", status);
 			break;
 		}
                 if ((j & 0xf) == 0) {
-                        printk_debug("\r\n%02x: ", j);
+                        printk(BIOS_DEBUG, "\r\n%02x: ", j);
                 }  
 		byte = status & 0xff;
-		printk_debug("%02x ", byte);
+		printk(BIOS_DEBUG, "%02x ", byte);
 	}
-	printk_debug("\r\n");
+	printk(BIOS_DEBUG, "\r\n");
 }
 
 static void print_smbus_regs_all(struct device *dev)
@@ -133,28 +133,28 @@ static void print_msr_dualcore(void)
         unsigned index;
         unsigned eax, ebx, ecx, edx;
         index = 0x80000008;
-        printk_debug("calling cpuid 0x%08x\n", index);
+        printk(BIOS_DEBUG, "calling cpuid 0x%08x\n", index);
         asm volatile(
                 "cpuid"
                 : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
                 : "a" (index)
                 );
-        printk_debug("cpuid[%08x]: %08x %08x %08x %08x\n",
+        printk(BIOS_DEBUG, "cpuid[%08x]: %08x %08x %08x %08x\n",
                 index, eax, ebx, ecx, edx);
 
-        printk_debug("core number %d\n", ecx & 0xff);   
+        printk(BIOS_DEBUG, "core number %d\n", ecx & 0xff);   
 
         index = 0xc001001f;
-        printk_debug("Reading msr: 0x%08x\n", index);
+        printk(BIOS_DEBUG, "Reading msr: 0x%08x\n", index);
         msr = rdmsr(index);
-        printk_debug("msr[0x%08x]: 0x%08x%08x bit 54 is %d\n",
+        printk(BIOS_DEBUG, "msr[0x%08x]: 0x%08x%08x bit 54 is %d\n",
                 index, msr.hi, msr.lo, (msr.hi>> (54-32)) & 1);
 #if 0
         msr.hi |= (1<<(54-32));
         wrmsr(index, msr);
 
         msr = rdmsr(index);
-        printk_debug("msr[0x%08x]: 0x%08x%08x\n",
+        printk(BIOS_DEBUG, "msr[0x%08x]: 0x%08x%08x\n",
                 index, msr.hi, msr.lo);
 #endif
 
@@ -166,7 +166,7 @@ static void print_cache_size(void)
 	unsigned int n, eax, ebx, ecx, edx;
 
         index = 0x80000000;
-        printk_debug("calling cpuid 0x%08x\n", index);
+        printk(BIOS_DEBUG, "calling cpuid 0x%08x\n", index);
         asm volatile(
                 "cpuid"
                 : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
@@ -176,25 +176,25 @@ static void print_cache_size(void)
 
         if (n >= 0x80000005) {
 	        index = 0x80000005;
-	        printk_debug("calling cpuid 0x%08x\n", index);
+	        printk(BIOS_DEBUG, "calling cpuid 0x%08x\n", index);
         	asm volatile(
                 	"cpuid"
 	                : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
         	        : "a" (index)
                 	);
-                printk_debug("CPU: L1 I Cache: %dK (%d bytes/line), D cache %dK (%d bytes/line)\n",
+                printk(BIOS_DEBUG, "CPU: L1 I Cache: %dK (%d bytes/line), D cache %dK (%d bytes/line)\n",
                         edx>>24, edx&0xFF, ecx>>24, ecx&0xFF);
         }
 
         if (n >= 0x80000006) {
                 index = 0x80000006;
-                printk_debug("calling cpuid 0x%08x\n", index);
+                printk(BIOS_DEBUG, "calling cpuid 0x%08x\n", index);
                 asm volatile(
                         "cpuid"
                         : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
                         : "a" (index)
                         );
-        	printk_debug("CPU: L2 Cache: %dK (%d bytes/line)\n",
+        	printk(BIOS_DEBUG, "CPU: L2 Cache: %dK (%d bytes/line)\n",
                 	ecx >> 16, ecx & 0xFF);
         }
 
@@ -220,11 +220,11 @@ static void print_tsc(void) {
 	
 	tsc_t tsc;
 	tsc = rdtsc();
-        printk_debug("tsc: 0x%08x%08x\n",
+        printk(BIOS_DEBUG, "tsc: 0x%08x%08x\n",
                      tsc.hi, tsc.lo);
 	udelay(1);
         tsc = rdtsc();
-        printk_debug("tsc: 0x%08x%08x after udelay(1) \n",
+        printk(BIOS_DEBUG, "tsc: 0x%08x%08x after udelay(1) \n",
                      tsc.hi, tsc.lo);
 
 }
@@ -238,11 +238,11 @@ static void debug_init(device_t dev)
 	switch(dev->path.pnp.device) {
 	case 0:
 		parent = dev->bus->dev;
-		printk_debug("DEBUG: %s", dev_path(parent));
+		printk(BIOS_DEBUG, "DEBUG: %s", dev_path(parent));
 		if(parent->chip_ops && parent->chip_ops->name) {
-			printk_debug(": %s\n", parent->chip_ops->name);
+			printk(BIOS_DEBUG, ": %s\n", parent->chip_ops->name);
 		} else {
-			printk_debug("\n");
+			printk(BIOS_DEBUG, "\n");
 		}
 		break;
 		

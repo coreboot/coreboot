@@ -288,7 +288,7 @@ static void lpc_init(struct device *dev)
 		byte |= 1;
 	}
 	pci_write_config8(dev, 0xa4, byte);
-	printk_info("set power %s after power fail\n", pwr_on?"on":"off");
+	printk(BIOS_INFO, "set power %s after power fail\n", pwr_on?"on":"off");
 
 	/* Set up the PIRQ */
 	esb6300_pirq_init(dev);

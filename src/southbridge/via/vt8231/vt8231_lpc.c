@@ -23,7 +23,7 @@ static const unsigned char slotIrqs[4] = { 5, 10, 12, 11 };
 static void pci_routing_fixup(struct device *dev)
 {
 
-	printk_info("%s: dev is %p\n", __func__, dev);
+	printk(BIOS_INFO, "%s: dev is %p\n", __func__, dev);
 	if (dev) {
 		/* initialize PCI interupts - these assignments depend
 		   on the PCB routing of PINTA-D 
@@ -39,17 +39,17 @@ static void pci_routing_fixup(struct device *dev)
 	}
 
 	// Standard southbridge components
-	printk_info("setting southbridge\n");
+	printk(BIOS_INFO, "setting southbridge\n");
 	pci_assign_irqs(0, 0x11, southbridgeIrqs);
 
 	// Ethernet built into southbridge
-	printk_info("setting ethernet\n");
+	printk(BIOS_INFO, "setting ethernet\n");
 	pci_assign_irqs(0, 0x12, enetIrqs);
 
 	// PCI slot
-	printk_info("setting pci slot\n");
+	printk(BIOS_INFO, "setting pci slot\n");
 	pci_assign_irqs(0, 0x14, slotIrqs);
-	printk_info("%s: DONE\n", __func__);
+	printk(BIOS_INFO, "%s: DONE\n", __func__);
 }
 
 static void vt8231_init(struct device *dev)
@@ -57,7 +57,7 @@ static void vt8231_init(struct device *dev)
 	unsigned char enables;
 	struct southbridge_via_vt8231_config *conf = dev->chip_info;
 
-	printk_debug("vt8231 init\n");
+	printk(BIOS_DEBUG, "vt8231 init\n");
 
 	// enable the internal I/O decode
 	enables = pci_read_config8(dev, 0x6C);
@@ -102,18 +102,18 @@ static void vt8231_init(struct device *dev)
 	// First do some more things to devfn (17,0)
 	// note: this should already be cleared, according to the book. 
 	enables = pci_read_config8(dev, 0x50);
-	printk_debug("IDE enable in reg. 50 is 0x%x\n", enables);
+	printk(BIOS_DEBUG, "IDE enable in reg. 50 is 0x%x\n", enables);
 	enables &= ~8; // need manifest constant here!
-	printk_debug("set IDE reg. 50 to 0x%x\n", enables);
+	printk(BIOS_DEBUG, "set IDE reg. 50 to 0x%x\n", enables);
 	pci_write_config8(dev, 0x50, enables);
 	
 	// set default interrupt values (IDE)
 	enables = pci_read_config8(dev, 0x4c);
-	printk_debug("IRQs in reg. 4c are 0x%x\n", enables & 0xf);
+	printk(BIOS_DEBUG, "IRQs in reg. 4c are 0x%x\n", enables & 0xf);
 	// clear out whatever was there. 
 	enables &= ~0xf;
 	enables |= 4;
-	printk_debug("setting reg. 4c to 0x%x\n", enables);
+	printk(BIOS_DEBUG, "setting reg. 4c to 0x%x\n", enables);
 	pci_write_config8(dev, 0x4c, enables);
 	
 	// set up the serial port interrupts. 

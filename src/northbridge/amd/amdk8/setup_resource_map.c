@@ -49,7 +49,7 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-		printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n",
+		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\r\n",
 			i>>2, register_values[i],
 			register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0),
 			register_values[i+2],
@@ -129,7 +129,7 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-		printk_debug("%04x: %02x %08x <- & %08x | %08x\r\n",
+		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\r\n",
 			i/4, register_values[i],register_values[i+1], register_values[i+2], register_values[i+3]);
 #endif
 		switch (register_values[i]) {

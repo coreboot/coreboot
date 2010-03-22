@@ -46,7 +46,7 @@ static void sata_init(struct device *dev)
 {
 	u8 reg8;
 
-	printk_debug("Configuring VIA SATA & EIDE Controller\n");
+	printk(BIOS_DEBUG, "Configuring VIA SATA & EIDE Controller\n");
 
 	/* Class IDE Disk, instead of RAID controller */
 	reg8 = pci_read_config8(dev, 0x45);
@@ -57,7 +57,7 @@ static void sata_init(struct device *dev)
 	pci_write_config8(dev, 0x45, reg8);
 
 #if defined(DISABLE_SATA) && (DISABLE_SATA == 1)
-	printk_info("Disabling SATA (Primary Channel)\n");
+	printk(BIOS_INFO, "Disabling SATA (Primary Channel)\n");
 	/* Disable SATA channels */
 	pci_write_config8(dev, 0x40, 0x00);
 #else
@@ -132,12 +132,12 @@ static void sata_init(struct device *dev)
 	reg8 &= ~0xa0;
 	pci_write_config8(dev, 0x42, reg8);
 	reg8 = pci_read_config8(dev, 0x42);
-	printk_debug("Reg 0x42 read back as 0x%x\n", reg8);
+	printk(BIOS_DEBUG, "Reg 0x42 read back as 0x%x\n", reg8);
 
 	/* Support Staggered Spin-Up */
 	reg8 = pci_read_config8(dev, 0xb9);
 	if ((reg8 & 0x8) == 0) {
-		printk_debug("start OOB sequence on both drives\n");
+		printk(BIOS_DEBUG, "start OOB sequence on both drives\n");
 		reg8 |= 0x30;
 		pci_write_config8(dev, 0xb9, reg8);
 	}

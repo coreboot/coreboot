@@ -779,7 +779,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 #if 0
 		// FIXME: can we use VGA reg instead?
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-			printk_spew("%s, enabling legacy VGA IO forwarding for %s link %s\n",
+			printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link %s\n",
 				__func__, dev_path(dev), link);
 			tempreg |= PCI_IO_BASE_VGA_EN;
 		}

@@ -35,7 +35,7 @@
 
 static void northbridge_init(device_t dev)
 {
-	printk_spew("Northbridge init\n");
+	printk(BIOS_SPEW, "Northbridge init\n");
 }
 
 static struct device_operations northbridge_operations = {
@@ -95,7 +95,7 @@ uint64_t uma_memory_base=0, uma_memory_size=0;
 
 int add_northbridge_resources(struct lb_memory *mem)
 {
-	printk_debug("Adding IGD UMA memory area\n");
+	printk(BIOS_DEBUG, "Adding IGD UMA memory area\n");
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);
 
@@ -120,10 +120,10 @@ static void pci_domain_set_resources(device_t dev)
 
 		if (CONFIG_VIDEO_MB == 512) {
 			igd_memory = (CONFIG_VIDEO_MB);
-			printk_debug("%dKB IGD UMA\n", igd_memory >> 10);
+			printk(BIOS_DEBUG, "%dKB IGD UMA\n", igd_memory >> 10);
 		} else {
 			igd_memory = (CONFIG_VIDEO_MB * 1024);
-			printk_debug("%dMB IGD UMA\n", igd_memory >> 10);
+			printk(BIOS_DEBUG, "%dMB IGD UMA\n", igd_memory >> 10);
 		}
 
 		/* Get the value of the highest DRB. This tells the end of
@@ -136,7 +136,7 @@ static void pci_domain_set_resources(device_t dev)
 		/* For reserving UMA memory in the memory map */
 		uma_memory_base = tomk * 1024ULL;
 		uma_memory_size = igd_memory * 1024ULL;
-		printk_debug("Available memory: %ldKB\n", tomk);
+		printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk);
 
 		/* Compute the top of low memory. */
 		tolmk = pci_tolm >> 10;

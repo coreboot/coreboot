@@ -49,22 +49,22 @@ static void init_dcon(void) {
   unsigned short rev = 0;
   unsigned short iobase = _getsmbusbase();
 
-  printk_debug("CHECKING FOR DCON (%x)\n", iobase);
+  printk(BIOS_DEBUG, "CHECKING FOR DCON (%x)\n", iobase);
 
   /* Get the IO base for the SMBUS */
 
   rev = do_smbus_read_word(iobase, 0x0D << 1, 0x00);
 
   if (rev & 0xDC00) {
-	printk_debug("DCON FOUND - REV %x\n", rev);
+	printk(BIOS_DEBUG, "DCON FOUND - REV %x\n", rev);
 
 	/* Enable the DCON */
 	ret = do_smbus_write_word(iobase, 0x0D << 1, 0x01, 0x0069);
 	if (ret != 0)
-		printk_debug("DCON ENABLE FAILED\n", ret);
+		printk(BIOS_DEBUG, "DCON ENABLE FAILED\n", ret);
   }
   else
-	  printk_debug("DCON NOT FOUND (%x)\n", rev);
+	  printk(BIOS_DEBUG, "DCON NOT FOUND (%x)\n", rev);
 
   write_bit(rev > 0 ? 1 : 0);
 }
@@ -104,18 +104,18 @@ static void init(struct device *dev) {
 	unsigned char usbirq = 0xa;
 */
 
-	printk_debug("OLPC BTEST ENTER %s\n", __func__);
+	printk(BIOS_DEBUG, "OLPC BTEST ENTER %s\n", __func__);
 
 #if 0
 	/* I can't think of any reason NOT to just set this. If it turns out we want this to be
 	  * conditional we can make it a config variable later.
 	  */
 
-	printk_debug("%s (%x,%x)SET USB PCI interrupt line to %d\n", 
+	printk(BIOS_DEBUG, "%s (%x,%x)SET USB PCI interrupt line to %d\n", 
 		__func__, bus, devfn, usbirq);
 	usb = dev_find_slot(bus, devfn);
 	if (! usb){
-		printk_err("Could not find USB\n");
+		printk(BIOS_ERR, "Could not find USB\n");
 	} else {
 		pci_write_config8(usb, PCI_INTERRUPT_LINE, usbirq);
 	}
@@ -123,7 +123,7 @@ static void init(struct device *dev) {
 
 	init_dcon();
 	init_cafe_irq();
-	printk_debug("OLPC BTEST EXIT %s\n", __func__);
+	printk(BIOS_DEBUG, "OLPC BTEST EXIT %s\n", __func__);
 }
 
 static void enable_dev(struct device *dev)

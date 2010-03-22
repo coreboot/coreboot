@@ -26,7 +26,7 @@
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP
-#define PRINTK_DEBUG(x...)      printk_debug(x)
+#define PRINTK_DEBUG(x...)      printk(BIOS_DEBUG, x)
 #else
 #define PRINTK_DEBUG(x...)
 #endif
@@ -105,9 +105,9 @@
 #define REGISTERPRESET(bus,dev,fun,bdfspec) \
 	{ u8 i, reg; \
 		for (i=0; i<(sizeof((bdfspec))/sizeof(struct regmask)); i++) { \
-			printk_debug("Writing bus " #bus " dev " #dev " fun " #fun " register "); \
-			printk_debug("%02x", (bdfspec)[i].reg); \
-			printk_debug("\n"); \
+			printk(BIOS_DEBUG, "Writing bus " #bus " dev " #dev " fun " #fun " register "); \
+			printk(BIOS_DEBUG, "%02x", (bdfspec)[i].reg); \
+			printk(BIOS_DEBUG, "\n"); \
 			reg = pci_read_config8(PCI_DEV((bus), (dev), (fun)), (bdfspec)[i].reg); \
 			reg &= (bdfspec)[i].mask; \
 			reg |= (bdfspec)[i].val; \
@@ -184,7 +184,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 
 	regs = pci_read_config8(MEMCTRL, 0x6c);
 	if (regs & (1 << 6))
-		printk_debug("DDR2 Detected.\n");
+		printk(BIOS_DEBUG, "DDR2 Detected.\n");
 	else
 		die("ERROR: DDR1 memory detected but not supported by coreboot.\n");
 
@@ -201,25 +201,25 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	/* SPD 9 SDRAM Cycle Time */
 	GET_SPD(dimm, spds, regs, 9);
 
-	printk_debug("\nDDRII ");
+	printk(BIOS_DEBUG, "\nDDRII ");
 	if (spds <= 0x3d) {
-		printk_debug("533");
+		printk(BIOS_DEBUG, "533");
 		val = DDRII_533;
 		t = 38;
 	} else if (spds <= 0x50) {
-		printk_debug("400");
+		printk(BIOS_DEBUG, "400");
 		val = DDRII_400;
 		t = 50;
 	} else if (spds <= 0x60) {
-		printk_debug("333");
+		printk(BIOS_DEBUG, "333");
 		val = DDRII_333;
 		t = 60;
 	} else if (spds <= 0x75) {
-		printk_debug("266");
+		printk(BIOS_DEBUG, "266");
 		val = DDRII_266;
 		t = 75;
 	} else {
-		printk_debug("200");
+		printk(BIOS_DEBUG, "200");
 		val = DDRII_200;
 		t = 100;
 	}
@@ -259,45 +259,45 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	/* SPD 9 18 23 25 CAS Latency NB3DRAM_REG62[2:0] */
 	/* Read SPD byte 18 CAS Latency */
 	GET_SPD(dimm, spds, regs, SPD_CAS_LAT);
-	printk_debug("\nCAS Supported ");
+	printk(BIOS_DEBUG, "\nCAS Supported ");
 	if (spds & SPD_CAS_LAT_2)
-		printk_debug("2 ");
+		printk(BIOS_DEBUG, "2 ");
 	if (spds & SPD_CAS_LAT_3)
-		printk_debug("3 ");
+		printk(BIOS_DEBUG, "3 ");
 	if (spds & SPD_CAS_LAT_4)
-		printk_debug("4 ");
+		printk(BIOS_DEBUG, "4 ");
 	if (spds & SPD_CAS_LAT_5)
-		printk_debug("5 ");
+		printk(BIOS_DEBUG, "5 ");
 	if (spds & SPD_CAS_LAT_6)
-		printk_debug("6");
+		printk(BIOS_DEBUG, "6");
 
 	/* We don't consider CAS = 6, because CX700 doesn't support it */
-	printk_debug("\n CAS:");
+	printk(BIOS_DEBUG, "\n CAS:");
 	if (spds & SPD_CAS_LAT_5) {
-		printk_debug("Starting at CL5");
+		printk(BIOS_DEBUG, "Starting at CL5");
 		val = 0x3;
 		/* See whether we can improve it */
 		GET_SPD(dimm, tmp, regs, SPD_CAS_LAT_MIN_X_1);
 		if ((spds & SPD_CAS_LAT_4) && (tmp < 0x50)) {
-			printk_debug("\n... going to CL4");
+			printk(BIOS_DEBUG, "\n... going to CL4");
 			val = 0x2;
 		}
 		GET_SPD(dimm, tmp, regs, SPD_CAS_LAT_MIN_X_2);
 		if ((spds & SPD_CAS_LAT_3) && (tmp < 0x50)) {
-			printk_debug("\n... going to CL3");
+			printk(BIOS_DEBUG, "\n... going to CL3");
 			val = 0x1;
 		}
 	} else {
-		printk_debug("Starting at CL4");
+		printk(BIOS_DEBUG, "Starting at CL4");
 		val = 0x2;
 		GET_SPD(dimm, tmp, regs, SPD_CAS_LAT_MIN_X_1);
 		if ((spds & SPD_CAS_LAT_3) && (tmp < 0x50)) {
-			printk_debug("\n... going to CL3");
+			printk(BIOS_DEBUG, "\n... going to CL3");
 			val = 0x1;
 		}
 		GET_SPD(dimm, tmp, regs, SPD_CAS_LAT_MIN_X_2);
 		if ((spds & SPD_CAS_LAT_2) && (tmp < 0x50)) {
-			printk_debug("\n... going to CL2");
+			printk(BIOS_DEBUG, "\n... going to CL2");
 			val = 0x0;
 		}
 	}
@@ -308,7 +308,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 
 	/* SPD 27 Trp NB3DRAM_REG64[3:2] */
 	GET_SPD(dimm, spds, regs, SPD_TRP);
-	printk_debug("\nTrp %d", spds);
+	printk(BIOS_DEBUG, "\nTrp %d", spds);
 	spds >>= 2;
 	for (val = 2; val <= 5; val++) {
 		if (spds <= (val * t / 10)) {
@@ -324,7 +324,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 
 	/* SPD 29 Trcd NB3DRAM_REG64[7:6] */
 	GET_SPD(dimm, spds, regs, SPD_TRCD);
-	printk_debug("\nTrcd %d", spds);
+	printk(BIOS_DEBUG, "\nTrcd %d", spds);
 	spds >>= 2;
 	for (val = 2; val <= 5; val++) {
 		if (spds <= (val * t / 10)) {
@@ -340,7 +340,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 
 	/* SPD 30 Tras NB3DRAM_REG62[7:4] */
 	GET_SPD(dimm, spds, regs, SPD_TRAS);
-	printk_debug("\nTras %d", spds);
+	printk(BIOS_DEBUG, "\nTras %d", spds);
 	for (val = 5; val <= 20; val++) {
 		if (spds <= (val * t / 10)) {
 			val = val - 5;
@@ -355,7 +355,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 
 	/* SPD 42 SPD 40 Trfc NB3DRAM_REG61[5:0] */
 	GET_SPD(dimm, spds, regs, SPD_TRFC);
-	printk_debug("\nTrfc %d", spds);
+	printk(BIOS_DEBUG, "\nTrfc %d", spds);
 	tmp = spds;
 	GET_SPD(dimm, spds, regs, SPD_EX_TRC_TRFC);
 	if (spds & 0x1)
@@ -382,7 +382,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 		}
 	}
 	val <<= 6;
-	printk_debug("\nTrrd val = 0x%x", val);
+	printk(BIOS_DEBUG, "\nTrrd val = 0x%x", val);
 	regs = pci_read_config8(MEMCTRL, 0x63);
 	regs &= ~0xc0;
 	regs |= val;
@@ -397,7 +397,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 		}
 	}
 	val <<= 6;
-	printk_debug("\nTwr val = 0x%x", val);
+	printk(BIOS_DEBUG, "\nTwr val = 0x%x", val);
 
 	regs = pci_read_config8(MEMCTRL, 0x61);
 	regs &= ~0xc0;
@@ -407,13 +407,13 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	/* SPD 37 Twtr NB3DRAM_REG63[1] */
 	GET_SPD(dimm, spds, regs, SPD_TWTR);
 	spds >>= 2;
-	printk_debug("\nTwtr 0x%x", spds);
+	printk(BIOS_DEBUG, "\nTwtr 0x%x", spds);
 	if (spds <= (t * 2 / 10))
 		val = 0;
 	else
 		val = 1;
 	val <<= 1;
-	printk_debug("\nTwtr val = 0x%x", val);
+	printk(BIOS_DEBUG, "\nTwtr val = 0x%x", val);
 
 	regs = pci_read_config8(MEMCTRL, 0x63);
 	regs &= ~0x2;
@@ -423,13 +423,13 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	/* SPD 38 Trtp NB3DRAM_REG63[3] */
 	GET_SPD(dimm, spds, regs, SPD_TRTP);
 	spds >>= 2;
-	printk_debug("\nTrtp 0x%x", spds);
+	printk(BIOS_DEBUG, "\nTrtp 0x%x", spds);
 	if (spds <= (t * 2 / 10))
 		val = 0;
 	else
 		val = 1;
 	val <<= 3;
-	printk_debug("\nTrtp val = 0x%x", val);
+	printk(BIOS_DEBUG, "\nTrtp val = 0x%x", val);
 
 	regs = pci_read_config8(MEMCTRL, 0x63);
 	regs &= ~0x8;
@@ -534,7 +534,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 			val += spds;
 		}
 	}
-	printk_debug("\nchip #%d", val);
+	printk(BIOS_DEBUG, "\nchip #%d", val);
 	if (val > 18)
 		regs = 0xdb;
 	else
@@ -852,7 +852,7 @@ static void step_2_19(const struct mem_controller *ctrl)
 	i |= DDR2_Twr_table[val];
 	read32(i);
 
-	printk_debug("MRS = %08x\n", i);
+	printk(BIOS_DEBUG, "MRS = %08x\n", i);
 
 	udelay(15);
 
@@ -1073,7 +1073,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 		else
 			sdram_clear_vr_addr(ctrl, i);
 	}
-	printk_debug("\nDQSI Low %08x", dl);
+	printk(BIOS_DEBUG, "\nDQSI Low %08x", dl);
 	for (dh = dl; dh < 0x3f; dh += 2) {
 		reg8 = dh & 0x3f;
 		reg8 |= 0x80;	/* Set Manual Mode */
@@ -1106,7 +1106,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 			break;
 		}
 	}
-	printk_debug("\nDQSI High %02x", dh);
+	printk(BIOS_DEBUG, "\nDQSI High %02x", dh);
 	pci_write_config8(PCI_DEV(0, 0, 4), SCRATCH_CHA_DQSI_LOW_REG, dl);
 	pci_write_config8(PCI_DEV(0, 0, 4), SCRATCH_CHA_DQSI_HIGH_REG, dh);
 	reg8 = pci_read_config8(MEMCTRL, 0X90) & 0X7;

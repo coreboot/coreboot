@@ -56,7 +56,7 @@ static unsigned char *pin_to_irq(const unsigned char *pin)
 
 static void pci_routing_fixup(struct device *dev)
 {
-	printk_info("%s: dev is %p\n", __func__, dev);
+	printk(BIOS_INFO, "%s: dev is %p\n", __func__, dev);
 
 	/* set up PCI IRQ routing */
 	pci_write_config8(dev, 0x55, pciIrqs[0] << 4);
@@ -65,38 +65,38 @@ static void pci_routing_fixup(struct device *dev)
 
 
 	// firewire built into southbridge
-	printk_info("setting firewire\n");
+	printk(BIOS_INFO, "setting firewire\n");
 	pci_assign_irqs(0, 0x0d, pin_to_irq(firewirePins));
 
 	// Standard usb components
-	printk_info("setting usb\n");
+	printk(BIOS_INFO, "setting usb\n");
 	pci_assign_irqs(0, 0x10, pin_to_irq(usbPins));
 
 	// VT8235 + sound hardware
-	printk_info("setting vt8235\n");
+	printk(BIOS_INFO, "setting vt8235\n");
 	pci_assign_irqs(0, 0x11, pin_to_irq(vt8235Pins));
 
 	// Ethernet built into southbridge
-	printk_info("setting ethernet\n");
+	printk(BIOS_INFO, "setting ethernet\n");
 	pci_assign_irqs(0, 0x12, pin_to_irq(enetPins));
 
 	// VGA
-	printk_info("setting vga\n");
+	printk(BIOS_INFO, "setting vga\n");
 	pci_assign_irqs(1, 0x00, pin_to_irq(vgaPins));
 
 	// PCI slot
-	printk_info("setting pci slot\n");
+	printk(BIOS_INFO, "setting pci slot\n");
 	pci_assign_irqs(0, 0x14, pin_to_irq(slotPins));
 
 	// Cardbus slot 
-	printk_info("setting cardbus slot\n");
+	printk(BIOS_INFO, "setting cardbus slot\n");
 	pci_assign_irqs(0, 0x0a, pin_to_irq(cbPins));
 
 	// Via 2 slot riser card 2nd slot
-	printk_info("setting riser slot\n");
+	printk(BIOS_INFO, "setting riser slot\n");
 	pci_assign_irqs(0, 0x13, pin_to_irq(riserPins));
 
-	printk_spew("%s: DONE\n", __func__);
+	printk(BIOS_SPEW, "%s: DONE\n", __func__);
 }
 
 /* 
@@ -154,7 +154,7 @@ static void vt8235_init(struct device *dev)
 {
 	unsigned char enables;
 	
-	printk_debug("vt8235 init\n");
+	printk(BIOS_DEBUG, "vt8235 init\n");
 
 	// enable the internal I/O decode
 	enables = pci_read_config8(dev, 0x6C);

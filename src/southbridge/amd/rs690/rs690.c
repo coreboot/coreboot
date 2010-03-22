@@ -129,7 +129,7 @@ void rs690_enable(device_t dev)
 	device_t nb_dev = 0, sb_dev = 0;
 	int dev_ind;
 
-	printk_info("rs690_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
+	printk(BIOS_INFO, "rs690_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
 
 	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {
@@ -147,7 +147,7 @@ void rs690_enable(device_t dev)
 	dev_ind = dev->path.pci.devfn >> 3;
 	switch (dev_ind) {
 	case 0:		/* bus0, dev0, fun0; */
-		printk_info("Bus-0, Dev-0, Fun-0.\n");
+		printk(BIOS_INFO, "Bus-0, Dev-0, Fun-0.\n");
 		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
 		config_gpp_core(nb_dev, sb_dev);
 		rs690_gpp_sb_init(nb_dev, sb_dev, 8);
@@ -159,11 +159,11 @@ void rs690_enable(device_t dev)
 		break;
 
 	case 1:		/* bus0, dev1 */
-		printk_info("Bus-0, Dev-1, Fun-0.\n");
+		printk(BIOS_INFO, "Bus-0, Dev-1, Fun-0.\n");
 		break;
 	case 2:		/* bus0, dev2,3, two GFX */
 	case 3:
-		printk_info("Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
+		printk(BIOS_INFO, "Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
 				       (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
@@ -173,7 +173,7 @@ void rs690_enable(device_t dev)
 	case 5:
 	case 6:
 	case 7:
-		printk_info("Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
+		printk(BIOS_INFO, "Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
 			    dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
 				       (dev->enabled ? 0 : 1) << dev_ind);
@@ -181,7 +181,7 @@ void rs690_enable(device_t dev)
 			rs690_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;
 	case 8:		/* bus0, dev8, SB */
-		printk_info("Bus-0, Dev-8, Fun-0. enable=%d\n", dev->enabled);
+		printk(BIOS_INFO, "Bus-0, Dev-8, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 6,
 				       (dev->enabled ? 1 : 0) << 6);
 		if (dev->enabled)
@@ -189,7 +189,7 @@ void rs690_enable(device_t dev)
 		disable_pcie_bar3(nb_dev);
 		break;
 	default:
-		printk_debug("unknown dev: %s\n", dev_path(dev));
+		printk(BIOS_DEBUG, "unknown dev: %s\n", dev_path(dev));
 	}
 }
 

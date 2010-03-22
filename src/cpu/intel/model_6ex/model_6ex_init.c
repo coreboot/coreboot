@@ -200,7 +200,7 @@ static void model_6ex_init(device_t cpu)
 
 	/* Print processor name */
 	fill_processor_name(processor_name);
-	printk_info("CPU: %s.\n", processor_name);
+	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
 #if CONFIG_USBDEBUG_DIRECT
 	// Is this caution really needed?

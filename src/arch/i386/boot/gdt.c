@@ -47,7 +47,7 @@ void move_gdt(void)
 			printk(BIOS_ERR, "Error: Could not relocate GDT.\n");
 			return;
 		}
-		printk_debug("Moving GDT to %p...", newgdt);
+		printk(BIOS_DEBUG, "Moving GDT to %p...", newgdt);
 		memcpy((void*)newgdt, &gdt, num_gdt_bytes);
 	}
 
@@ -55,6 +55,6 @@ void move_gdt(void)
 	gdtarg.limit = num_gdt_bytes - 1;
 
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
-	printk_debug("ok\n");
+	printk(BIOS_DEBUG, "ok\n");
 }
 

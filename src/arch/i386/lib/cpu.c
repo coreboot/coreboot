@@ -224,7 +224,7 @@ void cpu_initialize(void)
 	
 	info = cpu_info();
 
-	printk_info("Initializing CPU #%ld\n", info->index);
+	printk(BIOS_INFO, "Initializing CPU #%ld\n", info->index);
 
 	cpu = info->cpu;
 	if (!cpu) {
@@ -233,12 +233,12 @@ void cpu_initialize(void)
 
 	/* Find what type of cpu we are dealing with */
 	identify_cpu(cpu);
-	printk_debug("CPU: vendor %s device %x\n",
+	printk(BIOS_DEBUG, "CPU: vendor %s device %x\n",
 		cpu_vendor_name(cpu->vendor), cpu->device);
 
 	get_fms(&c, cpu->device);
 
-	printk_debug("CPU: family %02x, model %02x, stepping %02x\n", c.x86, c.x86_model, c.x86_mask);
+	printk(BIOS_DEBUG, "CPU: family %02x, model %02x, stepping %02x\n", c.x86, c.x86_model, c.x86_mask);
 	
 	/* Lookup the cpu's operations */
 	set_cpu_ops(cpu);
@@ -249,7 +249,7 @@ void cpu_initialize(void)
 		set_cpu_ops(cpu);
 		cpu->device += c.x86_mask;
 		if(!cpu->ops) die("Unknown cpu");
-		printk_debug("Using generic cpu ops (good)\n");
+		printk(BIOS_DEBUG, "Using generic cpu ops (good)\n");
 	}
 	
 
@@ -260,7 +260,7 @@ void cpu_initialize(void)
 		cpu->ops->init(cpu);
 	}
 
-	printk_info("CPU #%ld initialized\n", info->index);
+	printk(BIOS_INFO, "CPU #%ld initialized\n", info->index);
 
 	return;
 }

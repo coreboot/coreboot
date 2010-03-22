@@ -68,7 +68,7 @@ static int c7d_speed_translation[] = {
 static void set_c7_speed(int model) {
 	int cnt, current, new, i;
 	msr_t msr;
-	printk_debug("Enabling improved C7 clock and voltage.\n");
+	printk(BIOS_DEBUG, "Enabling improved C7 clock and voltage.\n");
 
 	// Enable Speedstep
 	msr = rdmsr(MSR_IA32_MISC_ENABLE);
@@ -77,16 +77,16 @@ static void set_c7_speed(int model) {
 
 	msr = rdmsr(MSR_IA32_PERF_STATUS);
 
-	printk_info("Voltage: %dmV (min %dmV; max %dmV)\n",
+	printk(BIOS_INFO, "Voltage: %dmV (min %dmV; max %dmV)\n",
 		    ((int)(msr.lo & 0xff) * 16 + 700),
 		    ((int)((msr.hi >> 16) & 0xff) * 16 + 700),
 		    ((int)(msr.hi & 0xff) * 16 + 700));
 
-	printk_info("CPU multiplier: %dx (min %dx; max %dx)\n",
+	printk(BIOS_INFO, "CPU multiplier: %dx (min %dx; max %dx)\n",
 		    (int)((msr.lo >> 8) & 0xff),
 		    (int)((msr.hi >> 24) & 0xff), (int)((msr.hi >> 8) & 0xff));
 
-	printk_debug(" msr.lo = %x\n", msr.lo);
+	printk(BIOS_DEBUG, " msr.lo = %x\n", msr.lo);
 
 	/* Wait while CPU is busy */
 	cnt = 0;
@@ -95,7 +95,7 @@ static void set_c7_speed(int model) {
 		msr = rdmsr(MSR_IA32_PERF_STATUS);
 		cnt++;
 		if (cnt > 128) {
-			printk_warning("Could not update multiplier and voltage.\n");
+			printk(BIOS_WARNING, "Could not update multiplier and voltage.\n");
 			return;
 		}
 	}
@@ -129,7 +129,7 @@ static void set_c7_speed(int model) {
 
 	msr.lo = new;
 	msr.hi = 0;
-	printk_debug(" new msr.lo = %x\n", msr.lo);
+	printk(BIOS_DEBUG, " new msr.lo = %x\n", msr.lo);
 
 	wrmsr(MSR_IA32_PERF_CTL, msr);
 
@@ -140,13 +140,13 @@ static void set_c7_speed(int model) {
 		msr = rdmsr(MSR_IA32_PERF_STATUS);
 		cnt++;
 		if (cnt > 128) {
-			printk_warning("Error while updating multiplier and voltage\n");
+			printk(BIOS_WARNING, "Error while updating multiplier and voltage\n");
 			break;
 		}
 	} while (msr.lo & ((1 << 16) | (1 << 17)));
 
-	printk_info("Current voltage: %dmV\n", ((int)(msr.lo & 0xff) * 16 + 700));
-	printk_info("Current CPU multiplier: %dx\n", (int)((msr.lo >> 8) & 0xff));
+	printk(BIOS_INFO, "Current voltage: %dmV\n", ((int)(msr.lo & 0xff) * 16 + 700));
+	printk(BIOS_INFO, "Current CPU multiplier: %dx\n", (int)((msr.lo >> 8) & 0xff));
 }
 
 static void model_c7_init(device_t dev)
@@ -157,39 +157,39 @@ static void model_c7_init(device_t dev)
 
 	get_fms(&c, dev->device);
 
-	printk_info("Detected VIA ");
+	printk(BIOS_INFO, "Detected VIA ");
 
 	switch (c.x86_model) {
 	case 10:
 		msr = rdmsr(0x1153);
 		brand = (((msr.lo >> 2) ^ msr.lo) >> 18) & 3;
-		printk_info("Model A ");
+		printk(BIOS_INFO, "Model A ");
 		break;
 	case 13:
 		msr = rdmsr(0x1154);
 		brand = (((msr.lo >> 4) ^ (msr.lo >> 2))) & 0x000000ff;
-		printk_info("Model D ");
+		printk(BIOS_INFO, "Model D ");
 		break;
 	default:
-		printk_info("Model Unknown ");
+		printk(BIOS_INFO, "Model Unknown ");
 		brand = 0xff;
 	}
 
 	switch (brand) {
 	case 0:
-		printk_info("C7-M\n");
+		printk(BIOS_INFO, "C7-M\n");
 		break;
 	case 1:
-		printk_info("C7\n");
+		printk(BIOS_INFO, "C7\n");
 		break;
 	case 2:
-		printk_info("Eden\n");
+		printk(BIOS_INFO, "Eden\n");
 		break;
 	case 3:
-		printk_info("C7-D\n");
+		printk(BIOS_INFO, "C7-D\n");
 		break;
 	default:
-		printk_info("%02x (please report)\n", brand);
+		printk(BIOS_INFO, "%02x (please report)\n", brand);
 	}
 
 	/* Gear up */

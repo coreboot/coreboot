@@ -71,7 +71,7 @@ static int kbc_input_buffer_empty(void)
 	}
 
 	if (!timeout) {
-		printk_warning("Unexpected Keyboard controller input buffer full\n");
+		printk(BIOS_WARNING, "Unexpected Keyboard controller input buffer full\n");
 	}
 	return !!timeout;
 }
@@ -85,7 +85,7 @@ static int kbc_output_buffer_full(void)
 	}
 
 	if (!timeout) {
-		printk_warning("Keyboard controller output buffer result timeout\n");
+		printk(BIOS_WARNING, "Keyboard controller output buffer result timeout\n");
 	}
 	return !!timeout;
 }
@@ -100,8 +100,8 @@ static int kbc_cleanup_buffers(void)
 	}
 
 	if (!timeout) {
-		printk_err("Couldn't cleanup the keyboard controller buffers\n");
-		printk_err("Status (0x%x): 0x%x, Buffer (0x%x): 0x%x\n",
+		printk(BIOS_ERR, "Couldn't cleanup the keyboard controller buffers\n");
+		printk(BIOS_ERR, "Status (0x%x): 0x%x, Buffer (0x%x): 0x%x\n",
 				KBD_STATUS, inb(KBD_STATUS), KBD_DATA, inb(KBD_DATA));
 	}
 
@@ -123,7 +123,7 @@ static int kbc_self_test(void)
 
 	if (!kbc_output_buffer_full()) {
 		/* There probably is no keyboard controller. */
-		printk_err("Could not reset keyboard controller.\n");
+		printk(BIOS_ERR, "Could not reset keyboard controller.\n");
 		return 0;
 	}
 
@@ -131,7 +131,7 @@ static int kbc_self_test(void)
 	self_test = inb(KBD_DATA);
 
 	if (self_test != 0x55) {
-		printk_err("Keyboard Controller self-test failed: 0x%x\n",
+		printk(BIOS_ERR, "Keyboard Controller self-test failed: 0x%x\n",
 				self_test);
 		return 0;
 	}
@@ -148,7 +148,7 @@ static u8 send_keyboard(u8 command)
 		if (!kbc_input_buffer_empty()) return 0;
 		outb(command, KBD_DATA);
 		if (!kbc_output_buffer_full()) {
-			printk_err("Could not send keyboard command %02x\n",
+			printk(BIOS_ERR, "Could not send keyboard command %02x\n",
 					command);
 			return 0;
 		}
@@ -162,7 +162,7 @@ static u8 send_keyboard(u8 command)
 void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	u8 regval;
-	printk_debug("Keyboard init...\n");
+	printk(BIOS_DEBUG, "Keyboard init...\n");
 
 	/* Run a keyboard controller self-test */
 	if (!kbc_self_test())
@@ -174,7 +174,7 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 	if (!kbc_input_buffer_empty()) return;
 	outb(0x20, KBD_DATA);	/* send cmd: enable keyboard */
 	if (!kbc_input_buffer_empty()) {
-		printk_info("Timeout while enabling keyboard\n");
+		printk(BIOS_INFO, "Timeout while enabling keyboard\n");
 		return;
 	}
 
@@ -185,23 +185,23 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 	regval = send_keyboard(0xFF);
 	if (regval == KBD_REPLY_RESEND) {
 		/* keeps sending RESENDs, probably no keyboard. */
-		printk_info("No PS/2 keyboard detected.\n");
+		printk(BIOS_INFO, "No PS/2 keyboard detected.\n");
 		return;
 	}
 
 	if (regval != KBD_REPLY_ACK) {
-		printk_err("Keyboard selftest failed ACK: 0x%x\n", regval);
+		printk(BIOS_ERR, "Keyboard selftest failed ACK: 0x%x\n", regval);
 		return;
 	}
 
 	if (!kbc_output_buffer_full()) {
-		printk_err("Timeout waiting for keyboard after reset.\n");
+		printk(BIOS_ERR, "Timeout waiting for keyboard after reset.\n");
 		return;
 	}
 
 	regval = inb(KBD_DATA);
 	if (regval != 0xAA) {
-		printk_err("Keyboard selftest failed: 0x%x\n", regval);
+		printk(BIOS_ERR, "Keyboard selftest failed: 0x%x\n", regval);
 		return;
 	}
 
@@ -213,27 +213,27 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 	/* disable the keyboard */
 	regval = send_keyboard(0xF5);
 	if (regval != KBD_REPLY_ACK) {
-		printk_err("Keyboard disable failed ACK: 0x%x\n", regval);
+		printk(BIOS_ERR, "Keyboard disable failed ACK: 0x%x\n", regval);
 		return;
 	}
 
 	/* Set scancode command */
 	regval = send_keyboard(0xF0);
 	if (regval != KBD_REPLY_ACK) {
-		printk_err("Keyboard set scancode cmd failed ACK: 0x%x\n", regval);
+		printk(BIOS_ERR, "Keyboard set scancode cmd failed ACK: 0x%x\n", regval);
 		return;
 	}
 	/* Set scancode mode 2 */
 	regval = send_keyboard(0x02);
 	if (regval != KBD_REPLY_ACK) {
-		printk_err("Keyboard set scancode mode failed ACK: 0x%x\n", regval);
+		printk(BIOS_ERR, "Keyboard set scancode mode failed ACK: 0x%x\n", regval);
 		return;
 	}
 
 	/* enable the keyboard */
 	regval = send_keyboard(0xF4);
 	if (regval != KBD_REPLY_ACK) {
-		printk_err("Keyboard enable failed ACK: 0x%x\n", regval);
+		printk(BIOS_ERR, "Keyboard enable failed ACK: 0x%x\n", regval);
 		return;
 	}
 
@@ -243,7 +243,7 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 	if (!kbc_input_buffer_empty()) return;
 	outb(0x61, KBD_DATA);	/* send cmd: enable keyboard and IRQ 1 */
 	if (kbc_output_buffer_full()) {
-		printk_err("Timeout during final keyboard enable\n");
+		printk(BIOS_ERR, "Timeout during final keyboard enable\n");
 		return;
 	}
 }

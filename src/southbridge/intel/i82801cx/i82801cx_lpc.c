@@ -35,7 +35,7 @@ void i82801cx_enable_ioapic( struct device *dev)
     dword |= (1 << 1); /* delay transaction enable */
     dword |= (1 << 2); /* DMA collection buf enable */
     pci_write_config32(dev, GEN_CNTL, dword);
-    printk_debug("ioapic southbridge enabled %x\n",dword);
+    printk(BIOS_DEBUG, "ioapic southbridge enabled %x\n",dword);
         
     // Must program the APIC's ID before using it
 
@@ -45,7 +45,7 @@ void i82801cx_enable_ioapic( struct device *dev)
     // Hang if the ID didn't take (chip not present?)
     *ioapic_index = 0;
     dword = *ioapic_data;
-    printk_debug("Southbridge apic id = %x\n", (dword>>24) & 0xF);
+    printk(BIOS_DEBUG, "Southbridge apic id = %x\n", (dword>>24) & 0xF);
     if(dword != (2<<24))
 		die("");
 
@@ -105,7 +105,7 @@ void i82801cx_rtc_init(struct device *dev)
 		pmcon3 |= SLEEP_AFTER_POWER_FAIL;
 	}
 	pci_write_config8(dev, GEN_PMCON_3, pmcon3);
-	printk_info("set power %s after power fail\n", 
+	printk(BIOS_INFO, "set power %s after power fail\n", 
 				 pwr_on ? "on" : "off");
 
     // See if the Safe Mode jumper is set
@@ -177,7 +177,7 @@ static void lpc_init(struct device *dev)
     else
     	byte |= 1;		// Return to S5
     pci_write_config8(dev, GEN_PMCON_3, byte);
-    printk_info("set power %s after power fail\n", pwr_on?"on":"off");
+    printk(BIOS_INFO, "set power %s after power fail\n", pwr_on?"on":"off");
 
     /* Set up NMI on errors */
     byte = inb(0x61);

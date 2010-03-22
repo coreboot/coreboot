@@ -60,7 +60,7 @@ unsigned long acpi_create_srat_lapics(unsigned long current)
 		if (!cpu->enabled) {
 			continue;
 		}
-		printk_debug("SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
+		printk(BIOS_DEBUG, "SRAT: lapic cpu_index=%02x, node_id=%02x, apic_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.apic_id);
 		current += acpi_create_srat_lapic((acpi_srat_lapic_t *)current, cpu->path.apic.node_id, cpu->path.apic.apic_id);
 		cpu_index++;
 	}
@@ -89,7 +89,7 @@ static void set_srat_mem(void *gp, struct device *dev, struct resource *res)
 	basek = resk(res->base);
 	sizek = resk(res->size);
 
-	printk_debug("set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
+	printk(BIOS_DEBUG, "set_srat_mem: dev %s, res->index=%04x startk=%08x, sizek=%08x\n",
 			dev_path(dev), res->index, basek, sizek);
 	/*
 	 * 0-640K must be on node 0
@@ -338,7 +338,7 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current)
 		if (!cpu->enabled) {
 			 continue;
 		}
-		printk_debug("ACPI: pstate cpu_index=%02x, node_id=%02x, core_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.core_id);
+		printk(BIOS_DEBUG, "ACPI: pstate cpu_index=%02x, node_id=%02x, core_id=%02x\n", cpu_index, cpu->path.apic.node_id, cpu->path.apic.core_id);
 
 		current	  = ( current + 0x0f) & -0x10;
 		ssdt = (acpi_header_t *)current;

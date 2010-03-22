@@ -112,7 +112,7 @@ static void misc_control_init(struct device *dev)
 	int needs_reset;
 	struct device *f0_dev, *f2_dev;
 	
-	printk_debug("NB: Function 3 Misc Control.. ");
+	printk(BIOS_DEBUG, "NB: Function 3 Misc Control.. ");
 	needs_reset = 0;
 
 	/* Disable Machine checks from Invalid Locations.
@@ -205,13 +205,13 @@ static void misc_control_init(struct device *dev)
 		}
 	}
 	else {
-		printk_err("Missing f0 device!\n");
+		printk(BIOS_ERR, "Missing f0 device!\n");
 	}
 	if (needs_reset) {
-		printk_debug("resetting cpu\n");
+		printk(BIOS_DEBUG, "resetting cpu\n");
 		hard_reset();
 	}
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 }
 
 

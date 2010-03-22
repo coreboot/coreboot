@@ -244,7 +244,7 @@ static void sdram_set_registers(void)
 #if 0
 	uint16_t reg16;
 	reg16 = pci_read_config16(NB, PACCFG); 
-	printk_debug("i82443LX Host Freq: 6%C MHz\r\n", (reg16 & 0x4000) ? '0' : '6');
+	printk(BIOS_DEBUG, "i82443LX Host Freq: 6%C MHz\r\n", (reg16 & 0x4000) ? '0' : '6');
 #endif
 
 	PRINT_DEBUG("Northbridge prior to SDRAM init:\r\n");

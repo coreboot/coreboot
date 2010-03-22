@@ -70,7 +70,7 @@ void graphics_init(void)
 	uint16_t wClassIndex, wData, res;
 
 	/* SoftVG initialization */
-	printk_debug("Graphics init...\n");
+	printk(BIOS_DEBUG, "Graphics init...\n");
    
 	geodelx_vga_msr_init();
    
@@ -99,5 +99,5 @@ void graphics_init(void)
 	vrWrite(wClassIndex, wData);
 
 	res = vrRead(wClassIndex);
-	printk_debug("VRC_VG value: 0x%04x\n", res);
+	printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", res);
 }

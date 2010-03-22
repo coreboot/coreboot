@@ -87,7 +87,7 @@ static int is_5536(void){
 	msr_t msr;
 	msr = rdmsr(GLIU_SB_GLD_MSR_CAP);
 	msr.lo >>= 20;
-	printk_debug("is_5536: msr.lo is 0x%x(==5 means 5536)\n", msr.lo&0xf);
+	printk(BIOS_DEBUG, "is_5536: msr.lo is 0x%x(==5 means 5536)\n", msr.lo&0xf);
 	return ((msr.lo&0xf) == 5);
 }
 /* ***************************************************************************/
@@ -205,10 +205,10 @@ static void ChipsetFlashSetup(void)
 	int i;
 	int numEnabled = 0;
 
-	printk_debug("ChipsetFlashSetup++\n");
+	printk(BIOS_DEBUG, "ChipsetFlashSetup++\n");
 	for (i = 0; i < FlashInitTableLen; i++) {
 		if (FlashInitTable[i].fType != FLASH_TYPE_NONE) {
-			printk_debug("Enable CS%d\n", i);
+			printk(BIOS_DEBUG, "Enable CS%d\n", i);
 			/* we need to configure the memory/IO mask */
 			msr = rdmsr(FlashPort[i]);
 			msr.hi = 0;	/* start with the "enabled" bit clear */
@@ -221,13 +221,13 @@ static void ChipsetFlashSetup(void)
 			else
 				msr.hi &= ~0x00000004;
 			msr.hi |= FlashInitTable[i].fMask;
-			printk_debug("WRMSR(0x%08X, %08X_%08X)\n", FlashPort[i], msr.hi, msr.lo);
+			printk(BIOS_DEBUG, "WRMSR(0x%08X, %08X_%08X)\n", FlashPort[i], msr.hi, msr.lo);
 			wrmsr(FlashPort[i], msr);
 
 			/* now write-enable the device */
 			msr = rdmsr(MDD_NORF_CNTRL);
 			msr.lo |= (1 << i);
-			printk_debug("WRMSR(0x%08X, %08X_%08X)\n", MDD_NORF_CNTRL, msr.hi, msr.lo);
+			printk(BIOS_DEBUG, "WRMSR(0x%08X, %08X_%08X)\n", MDD_NORF_CNTRL, msr.hi, msr.lo);
 			wrmsr(MDD_NORF_CNTRL, msr);
 
 			/* update the number enabled */
@@ -239,10 +239,10 @@ static void ChipsetFlashSetup(void)
 	if (0 != numEnabled) {
 		msr = rdmsr(MDD_PIN_OPT);
 		msr.lo &= ~1; /* PIN_OPT_IDE */
-		printk_debug("WRMSR(0x%08X, %08X_%08X)\n", MDD_PIN_OPT, msr.hi, msr.lo);
+		printk(BIOS_DEBUG, "WRMSR(0x%08X, %08X_%08X)\n", MDD_PIN_OPT, msr.hi, msr.lo);
 		wrmsr(MDD_PIN_OPT, msr);
 	}
-	printk_debug("ChipsetFlashSetup--\n");
+	printk(BIOS_DEBUG, "ChipsetFlashSetup--\n");
 
 }
 
@@ -359,7 +359,7 @@ chipsetinit (struct northbridge_amd_gx2_config *nb){
 
 
 	/*  Flash Setup*/
-	printk_err("%sDOING ChipsetFlashSetup()!!!!!!!!!!!!!!!!!!\n", nb->setupflash? " " : "NOT");
+	printk(BIOS_ERR, "%sDOING ChipsetFlashSetup()!!!!!!!!!!!!!!!!!!\n", nb->setupflash? " " : "NOT");
 	if (nb->setupflash)
 		ChipsetFlashSetup();
 

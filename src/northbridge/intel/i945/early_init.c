@@ -29,108 +29,108 @@ static void i945m_detect_chipset(void)
 {
 	u8 reg8;
 
-	printk_info("\n");
+	printk(BIOS_INFO, "\n");
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe7) & 0x70) >> 4;
 	switch (reg8) {
 	case 1:
-		printk_info("Mobile Intel(R) 82945GM/GME Express");
+		printk(BIOS_INFO, "Mobile Intel(R) 82945GM/GME Express");
 		break;
 	case 2:
-		printk_info("Mobile Intel(R) 82945GMS/GU Express");
+		printk(BIOS_INFO, "Mobile Intel(R) 82945GMS/GU Express");
 		break;
 	case 3:
-		printk_info("Mobile Intel(R) 82945PM Express");
+		printk(BIOS_INFO, "Mobile Intel(R) 82945PM Express");
 		break;
 	case 5:
-		printk_info("Intel(R) 82945GT Express");
+		printk(BIOS_INFO, "Intel(R) 82945GT Express");
 		break;
 	case 6:
-		printk_info("Mobile Intel(R) 82943/82940GML Express");
+		printk(BIOS_INFO, "Mobile Intel(R) 82943/82940GML Express");
 		break;
 	default:
-		printk_info("Unknown (%02x)", reg8);	/* Others reserved. */
+		printk(BIOS_INFO, "Unknown (%02x)", reg8);	/* Others reserved. */
 	}
-	printk_info(" Chipset\n");
+	printk(BIOS_INFO, " Chipset\n");
 
-	printk_debug("(G)MCH capable of up to FSB ");
+	printk(BIOS_DEBUG, "(G)MCH capable of up to FSB ");
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe3) & 0xe0) >> 5;
 	switch (reg8) {
 	case 2:
-		printk_debug("800 MHz"); /* According to 965 spec */
+		printk(BIOS_DEBUG, "800 MHz"); /* According to 965 spec */
 		break;
 	case 3:
-		printk_debug("667 MHz");
+		printk(BIOS_DEBUG, "667 MHz");
 		break;
 	case 4:
-		printk_debug("533 MHz");
+		printk(BIOS_DEBUG, "533 MHz");
 		break;
 	default:
-		printk_debug("N/A MHz (%02x)", reg8);
+		printk(BIOS_DEBUG, "N/A MHz (%02x)", reg8);
 	}
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 
-	printk_debug("(G)MCH capable of ");
+	printk(BIOS_DEBUG, "(G)MCH capable of ");
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe4) & 0x07);
 	switch (reg8) {
 	case 2:
-		printk_debug("up to DDR2-667");
+		printk(BIOS_DEBUG, "up to DDR2-667");
 		break;
 	case 3:
-		printk_debug("up to DDR2-533");
+		printk(BIOS_DEBUG, "up to DDR2-533");
 		break;
 	case 4:
-		printk_debug("DDR2-400");
+		printk(BIOS_DEBUG, "DDR2-400");
 		break;
 	default:
-		printk_info("unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
+		printk(BIOS_INFO, "unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
 	}
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 }
 
 static void i945_detect_chipset(void)
 {
 	u8 reg8;
 
-	printk_info("\nIntel(R) ");
+	printk(BIOS_INFO, "\nIntel(R) ");
 
 	reg8 = ((pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe7) >> 5) & 4) | ((pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe4) >> 4) & 3);
 	switch (reg8) {
 	case 0:
 	case 1:
-		printk_info("82945G");
+		printk(BIOS_INFO, "82945G");
 		break;
 	case 2:
 	case 3:
-		printk_info("82945P");
+		printk(BIOS_INFO, "82945P");
 		break;
 	case 4:
-		printk_info("82945GC");
+		printk(BIOS_INFO, "82945GC");
 		break;
 	case 5:
-		printk_info("82945GZ");
+		printk(BIOS_INFO, "82945GZ");
 		break;
 	case 6:
 	case 7:
-		printk_info("82945PL");
+		printk(BIOS_INFO, "82945PL");
 		break;
 	default:
 		break;
 	}
-	printk_info(" Chipset\n");
+	printk(BIOS_INFO, " Chipset\n");
 
-	printk_debug("(G)MCH capable of ");
+	printk(BIOS_DEBUG, "(G)MCH capable of ");
 	reg8 = (pci_read_config8(PCI_DEV(0, 0x00, 0), 0xe4) & 0x07);
 	switch (reg8) {
 	case 0:
-		printk_debug("up to DDR2-667");
+		printk(BIOS_DEBUG, "up to DDR2-667");
 		break;
 	case 3:
-		printk_debug("up to DDR2-533");
+		printk(BIOS_DEBUG, "up to DDR2-533");
 		break;
 	default:
-		printk_info("unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
+		printk(BIOS_INFO, "unknown max. RAM clock (%02x).", reg8);	/* Others reserved. */
 	}
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 }
 
 static void i945_setup_bars(void)
@@ -139,11 +139,10 @@ static void i945_setup_bars(void)
 
 	/* As of now, we don't have all the A0 workarounds implemented */
 	if (i945_silicon_revision() == 0)
-		printk_info
-		    ("Warning: i945 silicon revision A0 might not work correctly.\n");
+		printk(BIOS_INFO, "Warning: i945 silicon revision A0 might not work correctly.\n");
 
 	/* Setting up Southbridge. In the northbridge code. */
-	printk_debug("Setting up static southbridge registers...");
+	printk(BIOS_DEBUG, "Setting up static southbridge registers...");
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), RCBA, DEFAULT_RCBA | 1);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
@@ -152,14 +151,14 @@ static void i945_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIOBASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x4c /* GC */ , 0x10);	/* Enable GPIOs */
 	setup_ich7_gpios();
-	printk_debug(" done.\n");
+	printk(BIOS_DEBUG, " done.\n");
 
-	printk_debug("Disabling Watchdog reboot...");
+	printk(BIOS_DEBUG, "Disabling Watchdog reboot...");
 	RCBA32(GCS) = (RCBA32(0x3410)) | (1 << 5);	/* No reset */
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	printk_debug(" done.\n");
+	printk(BIOS_DEBUG, " done.\n");
 
-	printk_debug("Setting up static northbridge registers...");
+	printk(BIOS_DEBUG, "Setting up static northbridge registers...");
 	/* Set up all hardcoded northbridge BARs */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), EPBAR, DEFAULT_EPBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR, DEFAULT_MCHBAR | 1);
@@ -182,16 +181,16 @@ static void i945_setup_bars(void)
 	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
 
 	pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
-	printk_debug(" done.\n");
+	printk(BIOS_DEBUG, " done.\n");
 
 	/* Wait for MCH BAR to come up */
-	printk_debug("Waiting for MCHBAR to come up...");
+	printk(BIOS_DEBUG, "Waiting for MCHBAR to come up...");
 	if ((pci_read_config8(PCI_DEV(0, 0x0f, 0), 0xe6) & 0x2) == 0x00) { /* Bit 49 of CAPID0 */
 		do {
 			reg8 = *(volatile u8 *)0xfed40000;
 		} while (!(reg8 & 0x80));
 	}
-	printk_debug("ok\n");
+	printk(BIOS_DEBUG, "ok\n");
 }
 
 static void i945_setup_egress_port(void)
@@ -199,7 +198,7 @@ static void i945_setup_egress_port(void)
 	u32 reg32;
 	u32 timeout;
 
-	printk_debug("Setting up Egress Port RCRB\n");
+	printk(BIOS_DEBUG, "Setting up Egress Port RCRB\n");
 
 	/* Egress Port Virtual Channel 0 Configuration */
 
@@ -267,26 +266,26 @@ static void i945_setup_egress_port(void)
 	EPBAR32(EPVC1RCTL) |= (1 << 16);
 	EPBAR32(EPVC1RCTL) |= (1 << 16);
 
-	printk_debug("Loading port arbitration table ...");
+	printk(BIOS_DEBUG, "Loading port arbitration table ...");
 	/* Loop until bit 0 becomes 0 */
 	timeout = 0x7fffff;
 	while ((EPBAR16(EPVC1RSTS) & 1) && --timeout) ;
 	if (!timeout)
-		printk_debug("timeout!\n");
+		printk(BIOS_DEBUG, "timeout!\n");
 	else
-		printk_debug("ok\n");
+		printk(BIOS_DEBUG, "ok\n");
 
 	/* Now enable VC1 */
 	EPBAR32(EPVC1RCTL) |= (1 << 31);
 
-	printk_debug("Wait for VC1 negotiation ...");
+	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
 	/* Wait for VC1 negotiation pending */
 	timeout = 0x7fff;
 	while ((EPBAR16(EPVC1RSTS) & (1 << 1)) && --timeout) ;
 	if (!timeout)
-		printk_debug("timeout!\n");
+		printk(BIOS_DEBUG, "timeout!\n");
 	else
-		printk_debug("ok\n");
+		printk(BIOS_DEBUG, "ok\n");
 
 }
 
@@ -348,7 +347,7 @@ static void i945_setup_dmi_rcrb(void)
 
 	int activate_aspm = 1;
 
-	printk_debug("Setting up DMI RCRB\n");
+	printk(BIOS_DEBUG, "Setting up DMI RCRB\n");
 
 	/* Virtual Channel 0 Configuration */
 	reg32 = DMIBAR32(DMIVC0RCTL0);
@@ -373,14 +372,14 @@ static void i945_setup_dmi_rcrb(void)
 	/* Now enable VC1 */
 	DMIBAR32(DMIVC1RCTL) |= (1 << 31);
 
-	printk_debug("Wait for VC1 negotiation ...");
+	printk(BIOS_DEBUG, "Wait for VC1 negotiation ...");
 	/* Wait for VC1 negotiation pending */
 	timeout = 0x7ffff;
 	while ((DMIBAR16(DMIVC1RSTS) & (1 << 1)) && --timeout) ;
 	if (!timeout)
-		printk_debug("timeout!\n");
+		printk(BIOS_DEBUG, "timeout!\n");
 	else
-		printk_debug("done..\n");
+		printk(BIOS_DEBUG, "done..\n");
 #if 1
 	/* Enable Active State Power Management (ASPM) L0 state */
 
@@ -425,10 +424,10 @@ static void i945_setup_dmi_rcrb(void)
 	DMIBAR32(0x204) = reg32;
 
 	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 0x54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
-		printk_debug("Internal graphics: enabled\n");
+		printk(BIOS_DEBUG, "Internal graphics: enabled\n");
 		DMIBAR32(0x200) |= (1 << 21);
 	} else {
-		printk_debug("Internal graphics: disabled\n");
+		printk(BIOS_DEBUG, "Internal graphics: disabled\n");
 		DMIBAR32(0x200) &= ~(1 << 21);
 	}
 
@@ -474,13 +473,13 @@ static void i945_setup_dmi_rcrb(void)
 	}
 
 	/* wait for bit toggle to 0 */
-	printk_debug("Waiting for DMI hardware...");
+	printk(BIOS_DEBUG, "Waiting for DMI hardware...");
 	timeout = 0x7fffff;
 	while ((DMIBAR8(0x32) & (1 << 1)) && --timeout) ;
 	if (!timeout)
-		printk_debug("timeout!\n");
+		printk(BIOS_DEBUG, "timeout!\n");
 	else
-		printk_debug("ok\n");
+		printk(BIOS_DEBUG, "ok\n");
 
 	DMIBAR32(0x1c4) = 0xffffffff;
 	DMIBAR32(0x1d0) = 0xffffffff;
@@ -495,8 +494,7 @@ static void i945_setup_dmi_rcrb(void)
 
 	if (i945_silicon_revision() == 1 && ((MCHBAR8(0xe08) & (1 << 5)) == 1)) {
 		if ((MCHBAR32(0x214) & 0xf) != 0x3) {
-			printk_info
-			    ("DMI link requires A1 stepping workaround. Rebooting.\n");
+			printk(BIOS_INFO, "DMI link requires A1 stepping workaround. Rebooting.\n");
 			reg32 = DMIBAR32(0x224);
 			reg32 &= ~(7 << 0);
 			reg32 |= (3 << 0);
@@ -515,7 +513,7 @@ static void i945_setup_pci_express_x16(void)
 
 	u8 reg8;
 
-	printk_debug("Enabling PCI Express x16 Link\n");
+	printk(BIOS_DEBUG, "Enabling PCI Express x16 Link\n");
 
 	reg16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DEVEN);
 	reg16 |= DEVEN_D1F0;
@@ -540,7 +538,7 @@ static void i945_setup_pci_express_x16(void)
 	pci_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
 
 	reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0xba);
-	printk_debug("SLOTSTS: %04x\n", reg16);
+	printk(BIOS_DEBUG, "SLOTSTS: %04x\n", reg16);
 	if (!(reg16 & 0x48)) {
 		goto disable_pciexpress_x16_link;
 	}
@@ -576,18 +574,18 @@ static void i945_setup_pci_express_x16(void)
 	pcie_write_config32(PCI_DEV(0, 0x01, 0), 0xb4, reg32);
 
 	/* Wait for training to succeed */
-	printk_debug("PCIe link training ...");
+	printk(BIOS_DEBUG, "PCIe link training ...");
 	timeout = 0x7ffff;
 	while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
 
 	reg32 = pci_read_config32(PCI_DEV(0x0a, 0x0, 0), 0);
 	if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
-		printk_debug(" Detected PCIe device %04x:%04x\n",
+		printk(BIOS_DEBUG, " Detected PCIe device %04x:%04x\n",
 				reg32 & 0xffff, reg32 >> 16);
 	} else {
-		printk_debug(" timeout!\n");
+		printk(BIOS_DEBUG, " timeout!\n");
 
-		printk_debug("Restrain PCIe port to x1\n");
+		printk(BIOS_DEBUG, "Restrain PCIe port to x1\n");
 
 		reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214);
 		reg32 &= ~(0xf << 1);
@@ -601,17 +599,17 @@ static void i945_setup_pci_express_x16(void)
 		reg16 &= ~(1 << 6);
 		pcie_write_config16(PCI_DEV(0, 0x01, 0), 0x3e, reg16);
 
-		printk_debug("PCIe link training ...");
+		printk(BIOS_DEBUG, "PCIe link training ...");
 		timeout = 0x7ffff;
 		while ((((pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
 
 		reg32 = pci_read_config32(PCI_DEV(0xa, 0x00, 0), 0);
 		if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
-			printk_debug(" Detected PCIe x1 device %04x:%04x\n",
+			printk(BIOS_DEBUG, " Detected PCIe x1 device %04x:%04x\n",
 				reg32 & 0xffff, reg32 >> 16);
 		} else {
-			printk_debug(" timeout!\n");
-			printk_debug("Disabling PCIe x16 port completely.\n");
+			printk(BIOS_DEBUG, " timeout!\n");
+			printk(BIOS_DEBUG, "Disabling PCIe x16 port completely.\n");
 			goto disable_pciexpress_x16_link;
 		}
 	}
@@ -620,7 +618,7 @@ static void i945_setup_pci_express_x16(void)
 	reg16 >>= 4;
 	reg16 &= 0x3f;
 	/* reg16 == 1 -> x1; reg16 == 16 -> x16 */
-	printk_debug("PCIe x%d link training succeeded.\n", reg16);
+	printk(BIOS_DEBUG, "PCIe x%d link training succeeded.\n", reg16);
 
 	reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x204);
 	reg32 &= 0xfffffc00; /* clear [9:0] */
@@ -633,9 +631,9 @@ static void i945_setup_pci_express_x16(void)
 	}
 
 	reg32 = (pci_read_config32(PCI_DEV(0xa, 0, 0), 0x8) >> 8);
-	printk_debug("PCIe device class: %06x\n", reg32);
+	printk(BIOS_DEBUG, "PCIe device class: %06x\n", reg32);
 	if (reg32 == 0x030000) {
-		printk_debug("PCIe device is VGA. Disabling IGD.\n");
+		printk(BIOS_DEBUG, "PCIe device is VGA. Disabling IGD.\n");
 		reg16 = (1 << 1);
 		pci_write_config16(PCI_DEV(0, 0x0, 0), 0x52, reg16);
 
@@ -758,7 +756,7 @@ static void i945_setup_pci_express_x16(void)
 
 disable_pciexpress_x16_link:
 	/* For now we just disable the x16 link */
-	printk_debug("Disabling PCI Express x16 Link\n");
+	printk(BIOS_DEBUG, "Disabling PCI Express x16 Link\n");
 
 	MCHBAR16(UPMC1) |= (1 << 5) | (1 << 0);
 
@@ -774,14 +772,14 @@ disable_pciexpress_x16_link:
 	reg16 &= ~(1 << 6);
 	pcie_write_config16(PCI_DEV(0, 0x01, 0), BCTRL1, reg16);
 
-	printk_debug("Wait for link to enter detect state... ");
+	printk(BIOS_DEBUG, "Wait for link to enter detect state... ");
 	timeout = 0x7fffff;
 	for (reg32 = pcie_read_config32(PCI_DEV(0, 0x01, 0), 0x214);
 	     (reg32 & 0x000f0000) && --timeout;) ;
 	if (!timeout)
-		printk_debug("timeout!\n");
+		printk(BIOS_DEBUG, "timeout!\n");
 	else
-		printk_debug("ok\n");
+		printk(BIOS_DEBUG, "ok\n");
 
 	/* Finally: Disable the PCI config header */
 	reg16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DEVEN);
@@ -793,7 +791,7 @@ static void i945_setup_root_complex_topology(void)
 {
 	u32 reg32;
 
-	printk_debug("Setting up Root Complex Topology\n");
+	printk(BIOS_DEBUG, "Setting up Root Complex Topology\n");
 	/* Egress Port Root Topology */
 
 	reg32 = EPBAR32(EPESD);

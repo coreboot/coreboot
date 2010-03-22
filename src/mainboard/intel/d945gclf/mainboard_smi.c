@@ -31,7 +31,7 @@ int mainboard_io_trap_handler(int smif)
 {
 	switch (smif) {
 	case 0x99:
-		printk_debug("Sample\n");
+		printk(BIOS_DEBUG, "Sample\n");
 		gnvs->smif = 0;
 		break;
 	default:

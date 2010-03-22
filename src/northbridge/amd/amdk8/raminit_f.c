@@ -34,7 +34,7 @@
 #endif
 
 #if DEBUG_RAM_SETUP
-#define printk_raminit printk_debug
+#define printk_raminit(fmt, arg...) printk(BIOS_DEBUG, fmt, arg)
 #else
 #define printk_raminit(fmt, arg...)
 #endif
@@ -691,7 +691,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	}
 	sysinfo->ctrl_present[ctrl->node_id] = 1;
 
-	printk_spew("setting up CPU %02x northbridge registers\n", ctrl->node_id);
+	printk(BIOS_SPEW, "setting up CPU %02x northbridge registers\n", ctrl->node_id);
 	max = ARRAY_SIZE(register_values);
 	for (i = 0; i < max; i += 3) {
 		device_t dev;
@@ -704,7 +704,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-	printk_spew("done.\n");
+	printk(BIOS_SPEW, "done.\n");
 }
 
 static int is_dual_channel(const struct mem_controller *ctrl)
@@ -801,7 +801,7 @@ static void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 	if (value <=4 ) value += 8; // add back to 1G to high
 	value += (27-5); // make 128MB to the real lines
 	if ( value != (sz->per_rank)) {
-		printk_err("Bad RANK Size --\n");
+		printk(BIOS_ERR, "Bad RANK Size --\n");
 		goto val_err;
 	}
 
@@ -1041,7 +1041,7 @@ static void set_top_mem(unsigned tom_k, unsigned hole_startk)
 	}
 
 	/* Report the amount of memory. */
-	printk_debug("RAM end at 0x%08x kB\n", tom_k);
+	printk(BIOS_DEBUG, "RAM end at 0x%08x kB\n", tom_k);
 
 	/* Now set top of memory */
 	msr_t msr;
@@ -1175,7 +1175,7 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 		csbase += csbase_inc;
 	}
 
-	printk_debug("Interleaved\n");
+	printk(BIOS_DEBUG, "Interleaved\n");
 
 	/* Return the memory size in K */
 	return common_size << ((27-10) + bits);
@@ -1279,7 +1279,7 @@ static void order_dimms(const struct mem_controller *ctrl,
 	    CMOS_VLEN_interleave_chip_selects, 1) != 0) {
 		tom_k = interleave_chip_selects(ctrl, meminfo->is_Width128);
 	} else {
-		printk_debug("Interleaving disabled\n");
+		printk(BIOS_DEBUG, "Interleaving disabled\n");
 		tom_k = 0;
 	}
 
@@ -1297,7 +1297,7 @@ static void order_dimms(const struct mem_controller *ctrl,
 static long disable_dimm(const struct mem_controller *ctrl, unsigned index,
 			  struct mem_info *meminfo)
 {
-	printk_debug("disabling dimm %02x\n", index);
+	printk(BIOS_DEBUG, "disabling dimm %02x\n", index);
 	if (!(meminfo->dimm_mask & 0x0F) && (meminfo->dimm_mask & 0xF0)) { /* channelB only? */
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 4) << 2), 0);
 		pci_write_config32(ctrl->f2, DRAM_CSBASE + (((index << 1) + 5) << 2), 0);
@@ -1370,9 +1370,9 @@ static long spd_handle_unbuffered_dimms(const struct mem_controller *ctrl,
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 
 	if (meminfo->is_registered) {
-		printk_spew("Registered\n");
+		printk(BIOS_SPEW, "Registered\n");
 	} else {
-		printk_spew("Unbuffered\n");
+		printk(BIOS_SPEW, "Unbuffered\n");
 	}
 	return meminfo->dimm_mask;
 }
@@ -1473,7 +1473,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 		/* Abort if the chips don't support a common CAS latency. */
 		common_cl = spd_read_byte(device0, 18) & spd_read_byte(device1, 18);
 		if (!common_cl) {
-			printk_debug("No common CAS latency supported\n");
+			printk(BIOS_DEBUG, "No common CAS latency supported\n");
 			goto single_channel;
 		} else {
 			printk_raminit("Common CAS latency bitfield: 0x%02x\n", common_cl);
@@ -1495,7 +1495,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 			}
 		}
 	}
-	printk_spew("Enabling dual channel memory\n");
+	printk(BIOS_SPEW, "Enabling dual channel memory\n");
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_BurstLength32;  /*	32byte mode may be preferred in platforms that include graphics controllers that generate a lot of 32-bytes system memory accesses
 					32byte mode is not supported when the DRAM interface is 128 bits wides, even 32byte mode is set, system still use 64 byte mode	*/
@@ -1514,7 +1514,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 		if (((meminfo->dimm_mask >> DIMM_SOCKETS) & ((1 << DIMM_SOCKETS) - 1))) {
 			/* mux capable and single dimm in channelB */
 			if (mux_cap) {
-				printk_spew("Enable 64MuxMode & BurstLength32\n");
+				printk(BIOS_SPEW, "Enable 64MuxMode & BurstLength32\n");
 				dcm = pci_read_config32(ctrl->f2, DRAM_CTRL_MISC);
 				dcm |= DCM_Mode64BitMux;
 				pci_write_config32(ctrl->f2, DRAM_CTRL_MISC, dcm);
@@ -1529,7 +1529,7 @@ static long spd_enable_2channels(const struct mem_controller *ctrl, struct mem_i
 	} else { /* unmatched dual dimms ? */
 		/* unmatched dual dimms not supported by meminit code. Use single channelA dimm. */
 		meminfo->dimm_mask &= ~((1 << (DIMM_SOCKETS * 2)) - (1 << DIMM_SOCKETS));
-		printk_spew("Unmatched dual dimms. Use single channelA dimm.\n");
+		printk(BIOS_SPEW, "Unmatched dual dimms. Use single channelA dimm.\n");
 	}
 	return meminfo->dimm_mask;
 }
@@ -1610,7 +1610,7 @@ static const struct mem_param *get_mem_param(unsigned min_cycle_time)
 	if (!param->cycle_time) {
 		die("min_cycle_time to low");
 	}
-	printk_spew("%s\n", param->name);
+	printk(BIOS_SPEW, "%s\n", param->name);
 	return param;
 }
 
@@ -1912,7 +1912,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	value |= result.param->dch_memclk << DCH_MemClkFreq_SHIFT;
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, value);
 
-	printk_debug("%s\n", result.param->name);
+	printk(BIOS_DEBUG, "%s\n", result.param->name);
 
 	/* Update DRAM Timing Low with our selected cas latency */
 	value = pci_read_config32(ctrl->f2, DRAM_TIMING_LOW);
@@ -1960,7 +1960,7 @@ int get_dimm_Trc_clocks(u32 spd_device, const struct mem_param *param)
 
 	if (clocks < DTL_TRC_MIN) {
 #warning We should die here or at least disable this bank.
-		printk_notice("update_dimm_Trc: can't refresh fast enough, "
+		printk(BIOS_NOTICE, "update_dimm_Trc: can't refresh fast enough, "
 			"want %i clocks, can %i clocks\n", clocks, DTL_TRC_MIN);
 		clocks = DTL_TRC_MIN;
 	}
@@ -2057,7 +2057,7 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 	}
 	
 	if (clocks > TT_MAX) {
-		printk_info("warning spd byte : %x = %x > TT_MAX: %x, setting TT_MAX", SPD_TT, value, TT_MAX);
+		printk(BIOS_INFO, "warning spd byte : %x = %x > TT_MAX: %x, setting TT_MAX", SPD_TT, value, TT_MAX);
 		clocks = TT_MAX;
 	}
 
@@ -2372,7 +2372,7 @@ static void set_ecc(const struct mem_controller *ctrl,
 		if (!(meminfo->dimm_mask & (1 << i))) {
 			if (meminfo->dimm_mask & (1 << (DIMM_SOCKETS + i))) { /* channelB only? */
 				spd_device = ctrl->channel1[i];
-				printk_debug("set_ecc spd_device: 0x%x\n", spd_device);
+				printk(BIOS_DEBUG, "set_ecc spd_device: 0x%x\n", spd_device);
 			} else {
 				continue;
 			}
@@ -2405,7 +2405,7 @@ static void set_TT(const struct mem_controller *ctrl,
 	uint32_t reg;
 
 	if ((val < TT_MIN) || (val > TT_MAX)) {
-		printk_err(str);
+		printk(BIOS_ERR, str);
 		die(" Unknown\n");
 	}
 
@@ -2765,7 +2765,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl,
 
 		continue;
 	dimm_err:
-		printk_debug("spd_set_dram_timing dimm_err!\n");
+		printk(BIOS_DEBUG, "spd_set_dram_timing dimm_err!\n");
 		if (rc < 0) {
 			return -1;
 		}
@@ -2815,7 +2815,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 #endif
 	meminfo = &sysinfo->meminfo[ctrl->node_id];
 
-	printk_debug("sdram_set_spd_registers: paramx :%p\n", &paramx);
+	printk(BIOS_DEBUG, "sdram_set_spd_registers: paramx :%p\n", &paramx);
 
 	activate_spd_rom(ctrl);
 	meminfo->dimm_mask = spd_detect_dimms(ctrl);
@@ -2824,7 +2824,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 
 	if (!(meminfo->dimm_mask & ((1 << 2*DIMM_SOCKETS) - 1)))
 	{
-		printk_debug("No memory for this cpu\n");
+		printk(BIOS_DEBUG, "No memory for this cpu\n");
 		return;
 	}
 	meminfo->dimm_mask = spd_enable_2channels(ctrl, meminfo);
@@ -3000,7 +3000,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 	/* FIXME: How about 32 node machine later? */
 	tsc_t tsc, tsc0[8];
 
-	printk_debug("sdram_enable: tsc0[8]: %p", &tsc0[0]);
+	printk(BIOS_DEBUG, "sdram_enable: tsc0[8]: %p", &tsc0[0]);
 	uint32_t dword;
 #endif
 
@@ -3034,9 +3034,9 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 
 	/* lets override the rest of the routine */
 	if (suspend) {
-		printk_debug("Wakeup!\n");
+		printk(BIOS_DEBUG, "Wakeup!\n");
 		exit_from_self(controllers, ctrl, sysinfo);
-		printk_debug("Mem running !\n");
+		printk(BIOS_DEBUG, "Mem running !\n");
 		return;
 	}
 
@@ -3054,7 +3054,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 		dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 		if (dcl & DCL_DimmEccEn) {
 			uint32_t mnc;
-			printk_spew("ECC enabled\n");
+			printk(BIOS_SPEW, "ECC enabled\n");
 			mnc = pci_read_config32(ctrl[i].f3, MCA_NB_CONFIG);
 			mnc |= MNC_ECC_EN;
 			if (dcl & DCL_Width128) {
@@ -3089,17 +3089,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 		/* Skip everything if I don't have any memory on this controller */
 		if (sysinfo->meminfo[i].dimm_mask==0x00) continue;
 
-		printk_debug("Initializing memory: ");
+		printk(BIOS_DEBUG, "Initializing memory: ");
 		int loops = 0;
 		do {
 			dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 			loops++;
 			if ((loops & 1023) == 0) {
-				printk_debug(".");
+				printk(BIOS_DEBUG, ".");
 			}
 		} while(((dcl & DCL_InitDram) != 0) && (loops < TIMEOUT_LOOPS));
 		if (loops >= TIMEOUT_LOOPS) {
-			printk_debug(" failed\n");
+			printk(BIOS_DEBUG, " failed\n");
 			continue;
 		}
 
@@ -3127,7 +3127,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl,
 			print_debug_dqs_tsc("     dtsc0", i, tsc0[i].hi, tsc0[i].lo, 2);
 		}
 #endif
-		printk_debug(" done\n");
+		printk(BIOS_DEBUG, " done\n");
 	}
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

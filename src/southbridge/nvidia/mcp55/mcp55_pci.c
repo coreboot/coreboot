@@ -75,13 +75,13 @@ static void pci_init(struct device *dev)
 
 	if (!pref || pref->base > mem->base) {
 		dword = mem->base & (0xffff0000UL);
-		printk_debug("PCI DOMAIN mem base = 0x%010Lx\n", mem->base);
+		printk(BIOS_DEBUG, "PCI DOMAIN mem base = 0x%010Lx\n", mem->base);
 	} else {
 		dword = pref->base & (0xffff0000UL);
-		printk_debug("PCI DOMAIN pref base = 0x%010Lx\n", pref->base);
+		printk(BIOS_DEBUG, "PCI DOMAIN pref base = 0x%010Lx\n", pref->base);
 	}
 
-	printk_debug("[0x50] <-- 0x%08x\n", dword);
+	printk(BIOS_DEBUG, "[0x50] <-- 0x%08x\n", dword);
 	pci_write_config32(dev, 0x50, dword);	/* TOM */
 }
 

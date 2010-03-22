@@ -48,7 +48,7 @@ static void backlight_enable(void)
 		m3885_gpio(M3885_GPIO_PULSE|M3885_GPIO_TOGGLE|M3885_GPIO_P56);
 	}
 #endif
-	printk_debug("Display I/O: 0x%02x\n", inb(0x60f));
+	printk(BIOS_DEBUG, "Display I/O: 0x%02x\n", inb(0x60f));
 }
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
@@ -65,7 +65,7 @@ static int int15_handler(void)
 #define BOOT_DISPLAY_EFP2	(1 << 6)
 #define BOOT_DISPLAY_LCD2	(1 << 7)
 
-	printk_debug("%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
+	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
 			  __func__, M.x86.R_AX, M.x86.R_BX, M.x86.R_CX, M.x86.R_DX);
 
 	switch (M.x86.R_AX) {
@@ -103,13 +103,13 @@ static void dump_runtime_registers(void)
 {
 	int i;
 
-	printk_debug("SuperIO runtime register block:\n");
+	printk(BIOS_DEBUG, "SuperIO runtime register block:\n");
 	for (i=0; i<0x10; i++)
-		printk_debug("%02x ", i);
-	printk_debug("\n");
+		printk(BIOS_DEBUG, "%02x ", i);
+	printk(BIOS_DEBUG, "\n");
 	for (i=0; i<0x10; i++)
-		printk_debug("%02x ", inb(0x600 +i));
-	printk_debug("\n");
+		printk(BIOS_DEBUG, "%02x ", inb(0x600 +i));
+	printk(BIOS_DEBUG, "\n");
 }
 #endif
 

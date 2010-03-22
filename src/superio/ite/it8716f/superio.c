@@ -72,13 +72,13 @@ static void init_ec(uint16_t base)
 
 	/* Read out current value of FAN_CTL control register (0x14). */
 	value = pnp_read_index(base, 0x14);
-	printk_debug("FAN_CTL: reg = 0x%04x, read value = 0x%02x\r\n",
+	printk(BIOS_DEBUG, "FAN_CTL: reg = 0x%04x, read value = 0x%02x\r\n",
 		     base + 0x14, value);
 
 	/* Set FAN_CTL control register (0x14) polarity to high, and
 	   activate fans 1, 2 and 3. */
 	pnp_write_index(base, 0x14, value | 0x87);
-	printk_debug("FAN_CTL: reg = 0x%04x, writing value = 0x%02x\r\n",
+	printk(BIOS_DEBUG, "FAN_CTL: reg = 0x%04x, writing value = 0x%02x\r\n",
 		     base + 0x14, value | 0x87);
 }
 #endif

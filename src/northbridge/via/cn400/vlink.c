@@ -43,7 +43,7 @@ static void vlink_init(device_t dev)
 	u8 reg, reg8;
 	int i, j;
 
-	printk_spew("Entering CN400 %s\n", __func__);
+	printk(BIOS_SPEW, "Entering CN400 %s\n", __func__);
 
 	/* Disconnect the VLink Before Changing Settings */
 	reg = pci_read_config8(dev, 0x47);
@@ -107,17 +107,17 @@ static void vlink_init(device_t dev)
 	reg &= ~0x04;
 	pci_write_config8(dev, 0x47, reg);
 
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 #endif
 }
@@ -141,19 +141,19 @@ static void c3_host_init(device_t dev)
 	u8 reg8;
 	int i, j;
 
-	printk_spew("Entering CN400 %s\n", __func__);
+	printk(BIOS_SPEW, "Entering CN400 %s\n", __func__);
 
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 
 }
@@ -178,19 +178,19 @@ static void c3_err_init(device_t dev)
 	u8 reg8;
 	int i, j;
 
-	printk_spew("Entering CN400 %s\n", __func__);
+	printk(BIOS_SPEW, "Entering CN400 %s\n", __func__);
 
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 
 }
@@ -214,19 +214,19 @@ static void cn400_pm_init(device_t dev)
 	u8 reg8;
 	int i, j;
 
-	printk_spew("Entering CN400 %s\n", __func__);
+	printk(BIOS_SPEW, "Entering CN400 %s\n", __func__);
 
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 
 }

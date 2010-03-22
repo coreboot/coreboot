@@ -43,7 +43,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		dcl = pci_read_config32(ctrl[i].f2, DRAM_CONFIG_LOW);
 		if (dcl & DCL_DimmEccEn) {
 			u32 mnc;
-			printk_spew("ECC enabled\n");
+			printk(BIOS_SPEW, "ECC enabled\n");
 			mnc = pci_read_config32(ctrl[i].f3, MCA_NB_CONFIG);
 			mnc |= MNC_ECC_EN;
 			if (dcl & DCL_Width128) {
@@ -52,7 +52,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 			pci_write_config32(ctrl[i].f3, MCA_NB_CONFIG, mnc);
 		}
 
-		printk_debug("before resume errata #%d\n",
+		printk(BIOS_DEBUG, "before resume errata #%d\n",
 			     (is_post_rev_g) ? 270 : 125);
 		/* 
 		   1. Restore memory controller registers as normal.
@@ -70,7 +70,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		enable_lapic();
 		init_timer();
 
-		printk_debug("before exit errata - timer enabled\n");
+		printk(BIOS_DEBUG, "before exit errata - timer enabled\n");
 
 		if (is_post_rev_g) {
 			dcl =
@@ -86,7 +86,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 
 		udelay(800);
 
-		printk_debug("before exit errata - after mdelay\n");
+		printk(BIOS_DEBUG, "before exit errata - after mdelay\n");
 
 		dcl = pci_read_config32(ctrl[i].f2, DRAM_INIT);
 		dcl &= ~DI_EnDramInit;
@@ -108,7 +108,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		pcidev =
 		    0x80000000 | ((((ctrl[i].node_id + 0x18) << 3) | 0x2)
 				  << 8) | 0x90;
-		printk_debug("pcidev is %x\n", pcidev);
+		printk(BIOS_DEBUG, "pcidev is %x\n", pcidev);
 		bitmask = 2;
 		__asm__ __volatile__("pushl %0\n\t"
 				     "movw $0xcf8, %%dx\n\t"
@@ -125,7 +125,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 				     "q"(bitmask):"edx");
 	}
 
-	printk_debug("after exit errata\n");
+	printk(BIOS_DEBUG, "after exit errata\n");
 
 
 	for (i = 0; i < controllers; i++) {
@@ -136,12 +136,12 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		if (sysinfo->meminfo[i].dimm_mask == 0x00)
 			continue;
 
-		printk_debug("Exiting memory from self refresh: ");
+		printk(BIOS_DEBUG, "Exiting memory from self refresh: ");
 		int loops = 0;
 		do {
 			loops++;
 			if ((loops & 1023) == 0) {
-				printk_debug(".");
+				printk(BIOS_DEBUG, ".");
 			}
 			dcm =
 			    pci_read_config32(ctrl[i].f2, DRAM_CTRL_MISC);
@@ -149,11 +149,11 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 			  0) /* || ((dcm & DCM_DramEnabled) == 0) */ );
 
 		if (loops >= TIMEOUT_LOOPS) {
-			printk_debug("timeout with with cntrl[%d]\n", i);
+			printk(BIOS_DEBUG, "timeout with with cntrl[%d]\n", i);
 			continue;
 		}
 
-		printk_debug(" done\n");
+		printk(BIOS_DEBUG, " done\n");
 	}
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0

@@ -26,7 +26,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 
 	base = (uint32_t *) pci_read_config32(dev, 0x24);
 
-	printk_debug("base = %08lx\n", base);
+	printk(BIOS_DEBUG, "base = %08lx\n", base);
 
 	if (reset) {
 		*(base + 4) = 0xffffffff;
@@ -51,7 +51,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 		return;
 
 	dword = *(base + 0);
-	printk_debug("*(base+0)=%08x\r\n", dword);
+	printk(BIOS_DEBUG, "*(base+0)=%08x\r\n", dword);
 	if (dword == 0x113) {
 		loop = 200000;	// 2
 		do {
@@ -60,11 +60,11 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 				break;
 			udelay(10);
 		} while (--loop > 0);
-		printk_debug("loop=%d, *(base+4)=%08x\r\n", loop, dword);
+		printk(BIOS_DEBUG, "loop=%d, *(base+4)=%08x\r\n", loop, dword);
 	}
 
 	dword = *(base + 0x40);
-	printk_debug("*(base+0x40)=%08x\r\n", dword);
+	printk(BIOS_DEBUG, "*(base+0x40)=%08x\r\n", dword);
 	if (dword == 0x113) {
 		loop = 200000;	//2
 		do {
@@ -73,7 +73,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 				break;
 			udelay(10);
 		} while (--loop > 0);
-		printk_debug("loop=%d, *(base+0x44)=%08x\r\n", loop, dword);
+		printk(BIOS_DEBUG, "loop=%d, *(base+0x44)=%08x\r\n", loop, dword);
 	}
 }
 #endif
@@ -91,12 +91,12 @@ static void sata_init(struct device *dev)
 	if (conf->sata1_enable) {
 		/* Enable secondary SATA interface. */
 		dword |= (1 << 0);
-		printk_debug("SATA S \t");
+		printk(BIOS_DEBUG, "SATA S \t");
 	}
 	if (conf->sata0_enable) {
 		/* Enable primary SATA interface. */
 		dword |= (1 << 1);
-		printk_debug("SATA P \n");
+		printk(BIOS_DEBUG, "SATA P \n");
 	}
 #if 0
 	/* Write back */

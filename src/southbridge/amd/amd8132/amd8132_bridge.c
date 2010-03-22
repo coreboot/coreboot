@@ -107,7 +107,7 @@ static void amd8132_pcix_tune_dev(device_t dev, void *ptr)
 	/* How many siblings does this device have? */
 	sibs = info->master_devices - 1;
 
-	printk_debug("%s AMD8132 PCI-X tuning\n", dev_path(dev));
+	printk(BIOS_DEBUG, "%s AMD8132 PCI-X tuning\n", dev_path(dev));
 	status = pci_read_config32(dev, cap + PCI_X_STATUS);
 	orig_cmd = cmd = pci_read_config16(dev,cap + PCI_X_CMD);
 
@@ -177,7 +177,7 @@ static unsigned int amd8132_scan_bus(struct bus *bus,
 	info.sstatus = pci_read_config16(bus->dev, pos + PCI_X_SEC_STATUS);
 
 	/* Print the PCI-X bus speed */
-	printk_debug("PCI: %02x: %s sstatus=%04x rev=%02x \n", bus->secondary, pcix_speed(info.sstatus), info.sstatus, info.rev);
+	printk(BIOS_DEBUG, "PCI: %02x: %s sstatus=%04x rev=%02x \n", bus->secondary, pcix_speed(info.sstatus), info.sstatus, info.rev);
 
 
 	/* Examine the bus and find out how loaded it is */

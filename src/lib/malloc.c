@@ -4,7 +4,7 @@
 #if 0
 #define MALLOCDBG(x)
 #else
-#define MALLOCDBG(x...) printk_spew(x)
+#define MALLOCDBG(x...) printk(BIOS_SPEW, x)
 #endif
 extern unsigned char _heap, _eheap;
 static void *free_mem_ptr = &_heap;		/* Start of heap */

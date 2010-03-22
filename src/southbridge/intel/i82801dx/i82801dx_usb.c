@@ -29,12 +29,12 @@
 static void usb_init(struct device *dev)
 {
 	u32 cmd;
-	printk_debug("USB: Setting up controller.. ");
+	printk(BIOS_DEBUG, "USB: Setting up controller.. ");
 	cmd = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND,
 			   cmd | PCI_COMMAND_IO | PCI_COMMAND_MEMORY |
 			   PCI_COMMAND_MASTER | PCI_COMMAND_INVALIDATE);
-	printk_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 }
 
 static struct device_operations usb_ops = {

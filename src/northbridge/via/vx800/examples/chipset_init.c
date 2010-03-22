@@ -261,7 +261,7 @@ void AcpiInit(void)
 
 	// Get SB Revision
 	sbchiprev = pci_rawread_config8(rawdevice, 0xf6);
-	printk_debug("SB chip revision =%x\n", sbchiprev);
+	printk(BIOS_DEBUG, "SB chip revision =%x\n", sbchiprev);
 
 	// Fill Register Table
 	via_pci_inittable(sbchiprev, mSbStage1InitTbl);
@@ -279,7 +279,7 @@ void Stage2NbInit(void)
 	u32 subid = 0;
 	rawdevice = PCI_RAWDEV(0, 0, 4);
 	nbchiprev = pci_rawread_config8(rawdevice, 0xf6);
-	printk_debug("NB chip revision =%x\n", nbchiprev);
+	printk(BIOS_DEBUG, "NB chip revision =%x\n", nbchiprev);
 
 	via_pci_inittable(nbchiprev, mNbStage2InitTable);
 
@@ -414,7 +414,7 @@ void InitEHCI(u8 Number, u8 bEnable)
 		// Get Chipset Revision
 		EHCIRevision =
 		    pci_rawread_config8(PCI_RAWDEV(0, 0x10, 4), 0xF6);
-		printk_debug("EHCI Revision =%x\n", EHCIRevision);
+		printk(BIOS_DEBUG, "EHCI Revision =%x\n", EHCIRevision);
 		via_pci_inittable(EHCIRevision, mEHCIInitTable);
 	}
 }
@@ -567,7 +567,7 @@ void Stage2SbInit(void)
 
 	rawdevice = PCI_RAWDEV(0, 11, 0);
 	sbchiprev = pci_rawread_config8(rawdevice, 0xf6);
-	printk_debug("SB chip revision =%x\n", sbchiprev);
+	printk(BIOS_DEBUG, "SB chip revision =%x\n", sbchiprev);
 
 	//SBBasicInit
 	via_pci_inittable(sbchiprev, mBusControllerInitTable);
@@ -592,7 +592,7 @@ void Stage2SbInit(void)
 
 void init_VIA_chipset(void)
 {
-	printk_debug("In: init_VIA_chipset\n");
+	printk(BIOS_DEBUG, "In: init_VIA_chipset\n");
 	//1.nbstage1 is done in raminit.
 	//2.sbstage1
 	AcpiInit();
@@ -604,7 +604,7 @@ void init_VIA_chipset(void)
 
 	//5.open hdac
 	pci_rawmodify_config32(PCI_RAWDEV(0, 0x11, 7), 0xd1, 0, 0x04);
-	printk_debug("End: init_VIA_chipset\n");
+	printk(BIOS_DEBUG, "End: init_VIA_chipset\n");
 }
 
 /**
@@ -630,7 +630,7 @@ void hardwaremain(int boot_complete)
 
 	u8 y, x;
 	init_VIA_chipset();
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 #if 0
 
@@ -653,90 +653,90 @@ void hardwaremain(int boot_complete)
 	//pci_rawmodify_config8(PCI_RAWDEV(0, 0x11, 0), 0x50, 0x00, 0x76);//open all usb and usb mode
 	//pci_rawmodify_config8(PCI_RAWDEV(0, 0x11, 0), 0x50, 0x76, 0x76);//close all usb
 
-	printk_info("=================SB 50h=%02x \n",
+	printk(BIOS_INFO, "=================SB 50h=%02x \n",
 		    pci_rawread_config8(PCI_RAWDEV(0, 0x11, 0), 0x50));
 
 
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 #if 0
 	x = y = 0;
-	printk_info("dump ehci3 \n");
+	printk(BIOS_INFO, "dump ehci3 \n");
 	for (; x < 16; x++) {
 		y = 0;
 		for (; y < 16; y++) {
-			printk_info("%02x ",
+			printk(BIOS_INFO, "%02x ",
 				    pci_rawread_config8(PCI_RAWDEV
 							(0, 0x10, 4),
 							x * 16 + y));
 		}
-		printk_info("\n");
+		printk(BIOS_INFO, "\n");
 	}
 #endif
 
 	post_code(0x66);
 	/* Now compute and assign the bus resources. */
 	dev_configure();
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 #if 0
 	x = y = 0;
-	printk_info("dump ehci3 \n");
+	printk(BIOS_INFO, "dump ehci3 \n");
 	for (; x < 16; x++) {
 		y = 0;
 		for (; y < 16; y++) {
-			printk_info("%02x ",
+			printk(BIOS_INFO, "%02x ",
 				    pci_rawread_config8(PCI_RAWDEV
 							(0, 0x10, 4),
 							x * 16 + y));
 		}
-		printk_info("\n");
+		printk(BIOS_INFO, "\n");
 	}
 #endif
 
 	post_code(0x88);
 	/* Now actually enable devices on the bus */
 	dev_enable();
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 	/* And of course initialize devices on the bus */
 #if 0
 	x = y = 0;
-	printk_info("dump ehci3 \n");
+	printk(BIOS_INFO, "dump ehci3 \n");
 	for (; x < 16; x++) {
 		y = 0;
 		for (; y < 16; y++) {
-			printk_info("%02x ",
+			printk(BIOS_INFO, "%02x ",
 				    pci_rawread_config8(PCI_RAWDEV
 							(0, 0x10, 4),
 							x * 16 + y));
 		}
-		printk_info("\n");
+		printk(BIOS_INFO, "\n");
 	}
 #endif
 
 	dev_initialize();
 	post_code(0x89);
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 
 //          pci_rawwrite_config16(PCI_RAWDEV(0, 0xf, 0), 0xBA, 0x0571);
 
 #if 0
 	x = y = 0;
-	printk_info("dump ehci3 \n");
+	printk(BIOS_INFO, "dump ehci3 \n");
 	for (; x < 16; x++) {
 		y = 0;
 		for (; y < 16; y++) {
-			printk_info("%02x ",
+			printk(BIOS_INFO, "%02x ",
 				    pci_rawread_config8(PCI_RAWDEV
 							(0, 0x10, 4),
 							x * 16 + y));
 		}
-		printk_info("\n");
+		printk(BIOS_INFO, "\n");
 	}
 #endif
 
@@ -1265,25 +1265,25 @@ for(i=0;i<5;i++){
 
 #if 1
 	struct device *dev;
-	printk_info("=========zjldump all  devices...\n");
+	printk(BIOS_INFO, "=========zjldump all  devices...\n");
 	for (dev = all_devices; dev; dev = dev->next) {
 		if (dev->path.type == DEVICE_PATH_PCI) {
-			printk_debug("%s dump\n", dev_path(dev));
+			printk(BIOS_DEBUG, "%s dump\n", dev_path(dev));
 			x = y = 0;
 			for (; x < 16; x++) {
 				y = 0;
 				for (; y < 16; y++) {
-					printk_info("%02x ",
+					printk(BIOS_INFO, "%02x ",
 						    pci_read_config8(dev,
 								     x *
 								     16 +
 								     y));
 				}
-				printk_info("\n");
+				printk(BIOS_INFO, "\n");
 			}
 
 		}
-		printk_info("\n");
+		printk(BIOS_INFO, "\n");
 	}
 #endif
 

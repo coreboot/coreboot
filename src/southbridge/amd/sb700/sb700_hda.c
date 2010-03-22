@@ -86,7 +86,7 @@ no_codec:
 	/* Codec Not found */
 	/* Put HDA back in reset (BAR + 0x8) [0] */
 	set_bits(base + 0x08, 1, 0);
-	printk_debug("No codec!\n");
+	printk(BIOS_DEBUG, "No codec!\n");
 	return 0;
 }
 
@@ -150,7 +150,7 @@ static void codec_init(u32 base, int addr)
 	dword = read32(base + 0x64);
 
 	/* 2 */
-	printk_debug("%x(th) codec viddid: %08x\n", addr, dword);
+	printk(BIOS_DEBUG, "%x(th) codec viddid: %08x\n", addr, dword);
 }
 
 static void codecs_init(u32 base, u32 codec_mask)
@@ -203,11 +203,11 @@ static void hda_init(struct device *dev)
 		return;
 
 	base = (u32)res->base;
-	printk_debug("base = 0x%x\n", base);
+	printk(BIOS_DEBUG, "base = 0x%x\n", base);
 	codec_mask = codec_detect(base);
 
 	if (codec_mask) {
-		printk_debug("codec_mask = %02x\n", codec_mask);
+		printk(BIOS_DEBUG, "codec_mask = %02x\n", codec_mask);
 		codecs_init(base, codec_mask);
 	}
 }

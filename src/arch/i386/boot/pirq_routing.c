@@ -14,10 +14,10 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	uint8_t sum=0;
 	int i;
 
-	printk_info("Checking Interrupt Routing Table consistency...\n");
+	printk(BIOS_INFO, "Checking Interrupt Routing Table consistency...\n");
 
 	if (sizeof(struct irq_routing_table) != rt->size) {
-		printk_warning("Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
+		printk(BIOS_WARNING, "Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
 			       sizeof(struct irq_routing_table),
 			       rt->size
 			);
@@ -27,21 +27,21 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	for (i = 0; i < rt->size; i++)
 		sum += addr[i];
 
-	printk_debug("%s(): Interrupt Routing Table located at %p.\n",
+	printk(BIOS_DEBUG, "%s(): Interrupt Routing Table located at %p.\n",
 		     __func__, addr);
 
 	
 	sum = rt->checksum - sum;
 
 	if (sum != rt->checksum) {
-		printk_warning("Interrupt Routing Table checksum is: 0x%02x but should be: 0x%02x.\n",
+		printk(BIOS_WARNING, "Interrupt Routing Table checksum is: 0x%02x but should be: 0x%02x.\n",
 			       rt->checksum, sum);
 		rt->checksum = sum;
 	}
 
 	if (rt->signature != PIRQ_SIGNATURE || rt->version != PIRQ_VERSION ||
 	    rt->size % 16 ) {
-		printk_warning("Interrupt Routing Table not valid.\n");
+		printk(BIOS_WARNING, "Interrupt Routing Table not valid.\n");
 		return;
 	}
 
@@ -54,11 +54,11 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 	 * function would have bailed out earlier.
 	 */
 	if (sum) {
-		printk_warning("Checksum error in Interrupt Routing Table "
+		printk(BIOS_WARNING, "Checksum error in Interrupt Routing Table "
 				"could not be fixed.\n");
 	}
 
-	printk_info("done.\n");
+	printk(BIOS_INFO, "done.\n");
 }
 
 static int verify_copy_pirq_routing_table(unsigned long addr)
@@ -68,14 +68,14 @@ static int verify_copy_pirq_routing_table(unsigned long addr)
 
 	rt_curr = (uint8_t*)addr;
 	rt_orig = (uint8_t*)&intel_irq_routing_table;
-	printk_info("Verifing copy of Interrupt Routing Table at 0x%08x... ", addr);
+	printk(BIOS_INFO, "Verifing copy of Interrupt Routing Table at 0x%08x... ", addr);
 	for (i = 0; i < intel_irq_routing_table.size; i++) {
 		if (*(rt_curr + i) != *(rt_orig + i)) {
-			printk_info("failed\n");
+			printk(BIOS_INFO, "failed\n");
 			return -1;
 		}
 	}
-	printk_info("done\n");
+	printk(BIOS_INFO, "done\n");
 	
 	check_pirq_routing_table((struct irq_routing_table *)addr);
 	
@@ -90,9 +90,9 @@ unsigned long copy_pirq_routing_table(unsigned long addr)
 	addr &= ~15;
 
 	/* This table must be betweeen 0xf0000 & 0x100000 */
-	printk_info("Copying Interrupt Routing Table to 0x%08lx... ", addr);
+	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ", addr);
 	memcpy((void *)addr, &intel_irq_routing_table, intel_irq_routing_table.size);
-	printk_info("done.\n");
+	printk(BIOS_INFO, "done.\n");
 #if CONFIG_DEBUG
 	verify_copy_pirq_routing_table(addr);
 #endif
@@ -114,7 +114,7 @@ void pirq_routing_irqs(unsigned long addr)
 	/* Set PCI IRQs. */
 	for (i = 0; i < num_entries; i++) {
 
-		printk_debug("PIRQ Entry %d Dev/Fn: %X Slot: %d\n", i,
+		printk(BIOS_DEBUG, "PIRQ Entry %d Dev/Fn: %X Slot: %d\n", i,
 			pirq_tbl->slots[i].devfn >> 3, pirq_tbl->slots[i].slot);
 
 		for (j = 0; j < 4; j++) {
@@ -123,12 +123,12 @@ void pirq_routing_irqs(unsigned long addr)
 			int bitmap = pirq_tbl->slots[i].irq[j].bitmap;
 			int irq = 0;
 
-			printk_debug("INT: %c link: %x bitmap: %x  ",
+			printk(BIOS_DEBUG, "INT: %c link: %x bitmap: %x  ",
 				'A' + j, link, bitmap);
 
 			if (!bitmap|| !link || link > 4) {
 
-				printk_debug("not routed\n");
+				printk(BIOS_DEBUG, "not routed\n");
 				irq_slot[j] = irq;
 				continue;
 			}
@@ -154,7 +154,7 @@ void pirq_routing_irqs(unsigned long addr)
 			else
 				irq = pirq[link - 1];
 
-			printk_debug("IRQ: %d\n", irq);
+			printk(BIOS_DEBUG, "IRQ: %d\n", irq);
 			irq_slot[j] = irq;
 		}
 
@@ -163,10 +163,10 @@ void pirq_routing_irqs(unsigned long addr)
 			pirq_tbl->slots[i].devfn >> 3, irq_slot);
 	}
 
-	printk_debug("PIRQ1: %d\n", pirq[0]);
-	printk_debug("PIRQ2: %d\n", pirq[1]);
-	printk_debug("PIRQ3: %d\n", pirq[2]);
-	printk_debug("PIRQ4: %d\n", pirq[3]);
+	printk(BIOS_DEBUG, "PIRQ1: %d\n", pirq[0]);
+	printk(BIOS_DEBUG, "PIRQ2: %d\n", pirq[1]);
+	printk(BIOS_DEBUG, "PIRQ3: %d\n", pirq[2]);
+	printk(BIOS_DEBUG, "PIRQ4: %d\n", pirq[3]);
 
 	pirq_assign_irqs(pirq);
 }

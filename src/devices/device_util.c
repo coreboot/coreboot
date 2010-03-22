@@ -203,7 +203,7 @@ const char *dev_path(device_t dev)
 			sprintf(buffer, "CPU_BUS: %02x", dev->path.cpu_bus.id);
 			break;
 		default:
-			printk_err("Unknown device path type: %d\n", dev->path.type);
+			printk(BIOS_ERR, "Unknown device path type: %d\n", dev->path.type);
 			break;
 		}
 	}
@@ -253,7 +253,7 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 			equal = (path1->cpu_bus.id == path2->cpu_bus.id);
 			break;
 		default:
-			printk_err("Uknown device type: %d\n", path1->type);
+			printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
 			break;
 		}
 	}
@@ -355,7 +355,7 @@ struct resource *find_resource(device_t dev, unsigned index)
 	/* See if there is a resource with the appropriate index */
 	resource = probe_resource(dev, index);
 	if (!resource) {
-		printk_emerg("%s missing resource: %02x\n",
+		printk(BIOS_EMERG, "%s missing resource: %02x\n",
 			dev_path(dev), index);
 		die("");
 	}
@@ -468,7 +468,7 @@ void report_resource_stored(device_t dev, struct resource *resource, const char 
 			sprintf(buf, "bus %02x ", dev->link[0].secondary);
 #endif
 		}
-		printk_debug(
+		printk(BIOS_DEBUG, 
 			"%s %02lx <- [0x%010Lx - 0x%010Lx] size 0x%08Lx gran 0x%02x %s%s%s\n",
 			dev_path(dev),
 			resource->index,

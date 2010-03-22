@@ -98,7 +98,7 @@ static void set_var_mtrr(
 	base.hi = basek >> 22;
 	base.lo  = basek << 10;
 
-	printk_spew("ADDRESS_MASK_HIGH=%#x\n", address_mask_high);
+	printk(BIOS_SPEW, "ADDRESS_MASK_HIGH=%#x\n", address_mask_high);
 
 	if (sizek < 4*1024*1024) {
 		mask.hi = address_mask_high;
@@ -236,12 +236,12 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		/* If there's no MTRR hole, this function will bail out
 		 * here when called for the hole.
 		 */
-		printk_spew("Zero-sized MTRR range @%ldKB\n", range_startk);
+		printk(BIOS_SPEW, "Zero-sized MTRR range @%ldKB\n", range_startk);
 		return reg;
 	}
 
 	if (reg >= BIOS_MTRRS) {
-		printk_err("Warning: Out of MTRRs for base: %4ldMB, range: %ldMB, type %s\n",
+		printk(BIOS_ERR, "Warning: Out of MTRRs for base: %4ldMB, range: %ldMB, type %s\n",
 				range_startk >>10, range_sizek >> 10,
 				(type==MTRR_TYPE_UNCACHEABLE)?"UC":
 				   ((type==MTRR_TYPE_WRBACK)?"WB":"Other") );
@@ -258,7 +258,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 			align = max_align;
 		}
 		sizek = 1 << align;
-		printk_debug("Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
+		printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
 			reg, range_startk >>10, sizek >> 10,
 			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
 			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
@@ -267,7 +267,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		range_startk += sizek;
 		range_sizek -= sizek;
 		if (reg >= BIOS_MTRRS) {
-			printk_err("Running out of variable MTRRs!\n");
+			printk(BIOS_ERR, "Running out of variable MTRRs!\n");
 			break;
 		}
 	}
@@ -295,7 +295,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	if (start_mtrr >= NUM_FIXED_RANGES) {
 		return;
 	}
-	printk_debug("Setting fixed MTRRs(%d-%d) Type: WB\n",
+	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: WB\n",
 		start_mtrr, last_mtrr);
 	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
 	
@@ -357,7 +357,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 #endif
 	}
 	/* Allocate an msr */  
-	printk_spew(" Allocate an msr - basek = %08lx, sizek = %08lx,\n", basek, sizek);
+	printk(BIOS_SPEW, " Allocate an msr - basek = %08lx, sizek = %08lx,\n", basek, sizek);
 	state->range_startk = basek;
 	state->range_sizek  = sizek;
 }
@@ -369,9 +369,9 @@ void x86_setup_fixed_mtrrs(void)
          * and clear out the mtrrs.
          */
 
-        printk_debug("\n");
+        printk(BIOS_DEBUG, "\n");
         /* Initialized the fixed_mtrrs to uncached */
-        printk_debug("Setting fixed MTRRs(%d-%d) Type: UC\n",
+        printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: UC\n",
 	        0, NUM_FIXED_RANGES);
         set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
 
@@ -380,10 +380,10 @@ void x86_setup_fixed_mtrrs(void)
         search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, NULL);
-        printk_debug("DONE fixed MTRRs\n");
+        printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
 
         /* enable fixed MTRR */
-        printk_spew("call enable_fixed_mtrr()\n");
+        printk(BIOS_SPEW, "call enable_fixed_mtrr()\n");
         enable_fixed_mtrr();
 
 }
@@ -421,7 +421,7 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 #if (CONFIG_GFXUMA == 1) /* UMA or SP. */
 	// For now we assume the UMA space is at the end of memory
 	if (var_state.hole_startk || var_state.hole_sizek) {
-		printk_debug("Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");
+		printk(BIOS_DEBUG, "Warning: Can't set up MTRR hole for UMA due to pre-existing MTRR hole.\n");
 	} else {
 		// Increase the base range and set up UMA as an UC hole instead
 		var_state.range_sizek += (uma_memory_size >> 10);
@@ -437,15 +437,15 @@ void x86_setup_var_mtrrs(unsigned address_bits)
 	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk,
 		var_state.hole_sizek,  0, MTRR_TYPE_UNCACHEABLE, var_state.address_bits);
 #endif
-	printk_debug("DONE variable MTRRs\n");
-	printk_debug("Clear out the extra MTRR's\n");
+	printk(BIOS_DEBUG, "DONE variable MTRRs\n");
+	printk(BIOS_DEBUG, "Clear out the extra MTRR's\n");
 	/* Clear out the extra MTRR's */
 	while(var_state.reg < MTRRS) {
 		set_var_mtrr(var_state.reg++, 0, 0, 0, var_state.address_bits);
 	}
-	printk_spew("call enable_var_mtrr()\n");
+	printk(BIOS_SPEW, "call enable_var_mtrr()\n");
 	enable_var_mtrr();
-	printk_spew("Leave %s\n", __func__);
+	printk(BIOS_SPEW, "Leave %s\n", __func__);
 	post_code(0x6A);
 }
 
@@ -460,24 +460,24 @@ int x86_mtrr_check(void)
 {
 	/* Only Pentium Pro and later have MTRR */
 	msr_t msr;
-	printk_debug("\nMTRR check\n");
+	printk(BIOS_DEBUG, "\nMTRR check\n");
 
 	msr = rdmsr(0x2ff);
 	msr.lo >>= 10;
 
-	printk_debug("Fixed MTRRs   : ");
+	printk(BIOS_DEBUG, "Fixed MTRRs   : ");
 	if (msr.lo & 0x01)
-		printk_debug("Enabled\n");
+		printk(BIOS_DEBUG, "Enabled\n");
 	else
-		printk_debug("Disabled\n");
+		printk(BIOS_DEBUG, "Disabled\n");
 
-	printk_debug("Variable MTRRs: ");
+	printk(BIOS_DEBUG, "Variable MTRRs: ");
 	if (msr.lo & 0x02)
-		printk_debug("Enabled\n");
+		printk(BIOS_DEBUG, "Enabled\n");
 	else
-		printk_debug("Disabled\n");
+		printk(BIOS_DEBUG, "Disabled\n");
 
-	printk_debug("\n");
+	printk(BIOS_DEBUG, "\n");
 
 	post_code(0x93);
 	return ((int) msr.lo);

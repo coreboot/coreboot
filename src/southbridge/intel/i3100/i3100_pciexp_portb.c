@@ -46,12 +46,12 @@ static unsigned int pcie_scan_bridge(struct device *dev, unsigned int max)
 	int flag = 0;
 	do {
 		val = pci_read_config16(dev, PCIE_LSTS);
-		printk_debug("pcie portb link status: %02x\n", val);
+		printk(BIOS_DEBUG, "pcie portb link status: %02x\n", val);
 		if ((val & (1<<10)) && (!flag)) { /* training error */
 			ctl = pci_read_config16(dev, PCIE_LCTL);
 			pci_write_config16(dev, PCIE_LCTL, (ctl | (1<<5)));
 			val = pci_read_config16(dev, PCIE_LSTS);
-			printk_debug("pcie portb reset link status: %02x\n", val);
+			printk(BIOS_DEBUG, "pcie portb reset link status: %02x\n", val);
 			flag=1;
 			hard_reset();
 		}

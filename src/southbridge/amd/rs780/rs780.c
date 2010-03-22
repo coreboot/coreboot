@@ -120,9 +120,9 @@ void rs780_nb_pci_table(device_t nb_dev)
 
 	/* Program NB PCI table. */
 	temp16 = pci_read_config16(nb_dev, 0x04);
-	printk_debug("NB_PCI_REG04 = %x.\n", temp16);
+	printk(BIOS_DEBUG, "NB_PCI_REG04 = %x.\n", temp16);
 	temp32 = pci_read_config32(nb_dev, 0x84);
-	printk_debug("NB_PCI_REG84 = %x.\n", temp32);
+	printk(BIOS_DEBUG, "NB_PCI_REG84 = %x.\n", temp32);
 
 	pci_write_config8(nb_dev, 0x4c, 0x42);
 
@@ -131,7 +131,7 @@ void rs780_nb_pci_table(device_t nb_dev)
 	pci_write_config8(nb_dev, 0x4e, temp8);
 
 	temp32 = pci_read_config32(nb_dev, 0x4c);
-	printk_debug("NB_PCI_REG4C = %x.\n", temp32);
+	printk(BIOS_DEBUG, "NB_PCI_REG4C = %x.\n", temp32);
 
 	/* disable GFX debug. */
 	temp8 = pci_read_config8(nb_dev, 0x8d);
@@ -250,7 +250,7 @@ void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 
 	/* Enable PCIe configuration space. */
 	set_htiu_enable_bits(nb_dev, 0x32, 0, 1<<28);
-	printk_info("GC is accessible from now on.\n");
+	printk(BIOS_INFO, "GC is accessible from now on.\n");
 }
 
 /***********************************************
@@ -272,7 +272,7 @@ void rs780_enable(device_t dev)
 	device_t nb_dev = 0, sb_dev = 0;
 	int dev_ind;
 
-	printk_info("rs780_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
+	printk(BIOS_INFO, "rs780_enable: dev=%p, VID_DID=0x%x\n", dev, get_vid_did(dev));
 
 	nb_dev = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (!nb_dev) {
@@ -290,7 +290,7 @@ void rs780_enable(device_t dev)
 	dev_ind = dev->path.pci.devfn >> 3;
 	switch (dev_ind) {
 	case 0:		/* bus0, dev0, fun0; */
-		printk_info("Bus-0, Dev-0, Fun-0.\n");
+		printk(BIOS_INFO, "Bus-0, Dev-0, Fun-0.\n");
 		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
 		config_gpp_core(nb_dev, sb_dev);
 		rs780_gpp_sb_init(nb_dev, sb_dev, 8);
@@ -304,12 +304,12 @@ void rs780_enable(device_t dev)
 		break;
 
 	case 1: /* bus0, dev1, APC. */
-		printk_info("Bus-0, Dev-1, Fun-0.\n");
+		printk(BIOS_INFO, "Bus-0, Dev-1, Fun-0.\n");
 		rs780_nb_gfx_dev_table(nb_dev, dev);
 		break;
 	case 2:		/* bus0, dev2,3, two GFX */
 	case 3:
-		printk_info("Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
+		printk(BIOS_INFO, "Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
 				       (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
@@ -319,7 +319,7 @@ void rs780_enable(device_t dev)
 	case 5:
 	case 6:
 	case 7:
-		printk_info("Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
+		printk(BIOS_INFO, "Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
 			    dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
 				       (dev->enabled ? 0 : 1) << dev_ind);
@@ -327,7 +327,7 @@ void rs780_enable(device_t dev)
 			rs780_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;
 	case 8:		/* bus0, dev8, SB */
-		printk_info("Bus-0, Dev-8, Fun-0. enable=%d\n", dev->enabled);
+		printk(BIOS_INFO, "Bus-0, Dev-8, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 6,
 				       (dev->enabled ? 1 : 0) << 6);
 		if (dev->enabled)
@@ -336,7 +336,7 @@ void rs780_enable(device_t dev)
 		break;
 	case 9:		/* bus 0, dev 9,10, GPP */
 	case 10:
-		printk_info("Bus-0, Dev-9, 10, Fun-0. enable=%d\n",
+		printk(BIOS_INFO, "Bus-0, Dev-9, 10, Fun-0. enable=%d\n",
 			    dev->enabled);
 		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << (7 + dev_ind),
@@ -346,7 +346,7 @@ void rs780_enable(device_t dev)
 		/* Dont call disable_pcie_bar3(nb_dev) here, otherwise the screen will crash. */
 		break;
 	default:
-		printk_debug("unknown dev: %s\n", dev_path(dev));
+		printk(BIOS_DEBUG, "unknown dev: %s\n", dev_path(dev));
 	}
 }
 

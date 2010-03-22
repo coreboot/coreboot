@@ -101,23 +101,23 @@ static int codec_detect(uint8_t *base)
 	int idx=0;
 
 	/* 1 */ // controller reset
-	printk_debug("controller reset\n");
+	printk(BIOS_DEBUG, "controller reset\n");
 
 	set_bits(base + 0x08, 1, 1);
 
       do{
 	  	dword = read32(base + 0x08)&0x1;
-		if(idx++>1000) { printk_debug("controller reset fail !!! \n"); break;}
+		if(idx++>1000) { printk(BIOS_DEBUG, "controller reset fail !!! \n"); break;}
 	   } while (dword !=1);
 
        dword=send_verb(base,0x000F0000); // get codec VendorId and DeviceId
 
        if(dword==0) {
-	   	printk_debug("No codec!\n");
+	   	printk(BIOS_DEBUG, "No codec!\n");
 		return 0;
        }
 
-	 printk_debug("Codec ID = %lx\n", dword);
+	 printk(BIOS_DEBUG, "Codec ID = %lx\n", dword);
 
        dword=0x1;
 	return dword;
@@ -219,20 +219,20 @@ static void codec_init(uint8_t *base, int addr)
 	dword = read32(base + 0x64);
 
 	/* 2 */
-	printk_debug("codec viddid: %08x\n", dword);
+	printk(BIOS_DEBUG, "codec viddid: %08x\n", dword);
 	verb_size = find_verb(dword, &verb);
 
 	if(!verb_size) {
-		printk_debug("No verb!\n");
+		printk(BIOS_DEBUG, "No verb!\n");
 		return;
 	}
 
-	printk_debug("verb_size: %d\n", verb_size);
+	printk(BIOS_DEBUG, "verb_size: %d\n", verb_size);
 	/* 3 */
 	for(i=0; i<verb_size; i++) {
 		send_verb(base,verb[i]);
 	}
-	printk_debug("verb loaded!\n");
+	printk(BIOS_DEBUG, "verb loaded!\n");
 }
 
 static void codecs_init(uint8_t *base, uint32_t codec_mask)
@@ -293,12 +293,12 @@ static void aza_init(struct device *dev)
 		return;
 
 	base =(uint8_t *) res->base;
-	printk_debug("base = %08x\n", base);
+	printk(BIOS_DEBUG, "base = %08x\n", base);
 
 	codec_mask = codec_detect(base);
 
 	if(codec_mask) {
-		printk_debug("codec_mask = %02x\n", codec_mask);
+		printk(BIOS_DEBUG, "codec_mask = %02x\n", codec_mask);
 		codecs_init(base, codec_mask);
 	}
 

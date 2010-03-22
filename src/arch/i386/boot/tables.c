@@ -53,12 +53,12 @@ struct lb_memory *write_tables(void)
 	unsigned long high_table_pointer;
 
 	if (!high_tables_base) {
-		printk_err("ERROR: High Tables Base is not set.\n");
+		printk(BIOS_ERR, "ERROR: High Tables Base is not set.\n");
 		// Are there any boards without?
 		// Stepan thinks we should die() here!
 	}
 
-	printk_debug("High Tables Base is %llx.\n", high_tables_base);
+	printk(BIOS_DEBUG, "High Tables Base is %llx.\n", high_tables_base);
 
 	rom_table_start = 0xf0000; 
 	rom_table_end =   0xf0000;
@@ -169,7 +169,7 @@ struct lb_memory *write_tables(void)
 				(acpi_rsdt_t *)(high_rsdp->rsdt_address),
 				(acpi_xsdt_t *)((unsigned long)high_rsdp->xsdt_address));
 		} else {
-			printk_err("ERROR: Didn't find RSDP in high table.\n");
+			printk(BIOS_ERR, "ERROR: Didn't find RSDP in high table.\n");
 		}
 		rom_table_end = ALIGN(rom_table_end + sizeof(acpi_rsdp_t), 16);
 	} else {
@@ -202,7 +202,7 @@ struct lb_memory *write_tables(void)
 
 		if (new_high_table_pointer > (high_table_pointer +
 					MAX_COREBOOT_TABLE_SIZE))
-			printk_err("%s: coreboot table didn't fit (%lx)\n",
+			printk(BIOS_ERR, "%s: coreboot table didn't fit (%lx)\n",
 				   __func__, new_high_table_pointer -
 				   high_table_pointer);
 

@@ -72,27 +72,27 @@ static inline msr_t rdmsr(unsigned index)
 static void sis761_read_resources(device_t dev)
 {
 	/* Read the generic PCI resources */
-	printk_debug("sis761_read_resources ------->\n");
+	printk(BIOS_DEBUG, "sis761_read_resources ------->\n");
 	pci_dev_read_resources(dev);
 
 	/* If we are not the first processor don't allocate the gart apeture */
 	if (dev->path.pci.devfn != PCI_DEVFN(0x0, 0)) {
-		printk_debug("sis761_not_the_first_processor !!!\n");
+		printk(BIOS_DEBUG, "sis761_not_the_first_processor !!!\n");
 		return;
 	}
 
-	printk_debug("sis761_read_resources <-------\n");
+	printk(BIOS_DEBUG, "sis761_read_resources <-------\n");
 	return;
 
 }
 
 static void sis761_set_resources(device_t dev)
 {
-	printk_debug("sis761_set_resources ------->\n");
+	printk(BIOS_DEBUG, "sis761_set_resources ------->\n");
 
 	/* Set the generic PCI resources */
 	pci_dev_set_resources(dev);
-	printk_debug("sis761_set_resources <-------\n");
+	printk(BIOS_DEBUG, "sis761_set_resources <-------\n");
 }
 
 static void sis761_init(struct device *dev)
@@ -102,14 +102,14 @@ static void sis761_init(struct device *dev)
 
 
 	needs_reset = 0;
-	printk_debug("sis761_init: ---------->\n");
+	printk(BIOS_DEBUG, "sis761_init: ---------->\n");
 
 	msr = rdmsr(0xC001001A);
 	pci_write_config16(dev, 0x8E, msr.lo >> 16);				// Topbound
 	pci_write_config8(dev, 0x7F, 0x08);			// ACPI Base
 	outb(inb(0x856) | 0x40, 0x856);	 // Auto-Reset Function
 
-	printk_debug("sis761_init: <----------\n");
+	printk(BIOS_DEBUG, "sis761_init: <----------\n");
 }
 
 

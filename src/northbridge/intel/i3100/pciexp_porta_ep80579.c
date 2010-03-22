@@ -44,7 +44,7 @@ static void pcie_init(struct device *dev)
 		pci_write_config32(dev, 0x3c, config->intrline);
 	}
 
-	printk_spew("configure PCIe port as \"Slot Implemented\"\n");
+	printk(BIOS_SPEW, "configure PCIe port as \"Slot Implemented\"\n");
 	val = pci_read_config16(dev, 0x66);
 	val &= ~(1<<8);
 	val |= 1<<8;
@@ -58,7 +58,7 @@ static void pcie_bus_enable_resources(struct device *dev)
 {
 	u8 val8;
 	if (dev->link[0].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
-		printk_spew("Enable VGA IO/MEM forwarding on PCIe port\n");
+		printk(BIOS_SPEW, "Enable VGA IO/MEM forwarding on PCIe port\n");
 		pci_write_config8(dev, PCI_BRIDGE_CONTROL, 8);
 		
 		dev->command |= PCI_COMMAND_IO;
@@ -76,12 +76,12 @@ static unsigned int pcie_scan_bridge(struct device *dev, unsigned int max)
 	int flag = 0;
 	do {
 		val = pci_read_config16(dev, 0x76);
-		printk_debug("pcie porta 0x76: %02x\n", val);
+		printk(BIOS_DEBUG, "pcie porta 0x76: %02x\n", val);
 		if ((val & (1<<11)) && (!flag)) { /* training error */
 			ctl = pci_read_config16(dev, 0x74);
 			pci_write_config16(dev, 0x74, (ctl | (1<<5)));
 			val = pci_read_config16(dev, 0x76);
-			printk_debug("pcie porta reset 0x76: %02x\n", val);
+			printk(BIOS_DEBUG, "pcie porta reset 0x76: %02x\n", val);
 			flag=1;
 			hard_reset();
 		}

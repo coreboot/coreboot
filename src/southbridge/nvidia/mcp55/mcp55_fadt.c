@@ -49,7 +49,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	memcpy(header->asl_compiler_id, "CORE", 4);
 	header->asl_compiler_revision = 42;
 
-	printk_info("ACPI: pm_base: %u...\n", pm_base);
+	printk(BIOS_INFO, "ACPI: pm_base: %u...\n", pm_base);
 
 	fadt->firmware_ctrl = facs;
 	fadt->dsdt = dsdt;

@@ -44,7 +44,7 @@ static void adm1026_enable_monitoring(device_t dev)
 
         result = smbus_read_byte(dev, ADM1026_REG_CONFIG1);
         if (!(result & CFG1_MONITOR)) {
-                printk_debug("ADM1026: monitoring would not enable");
+                printk(BIOS_DEBUG, "ADM1026: monitoring would not enable");
         }
 }
 static void adm1026_noop(device_t dummy)

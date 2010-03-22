@@ -53,7 +53,7 @@ void write_protect_vgabios(void)
 {
 	device_t dev;
 
-	printk_info("write_protect_vgabios\n");
+	printk(BIOS_INFO, "write_protect_vgabios\n");
 	/* there are two possible devices. Just do both. */
 	dev = dev_find_device(PCI_VENDOR_ID_VIA,
 			      PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
@@ -85,16 +85,16 @@ static void vga_init(device_t dev)
 	pci_write_config32(dev, 0x14, VIACONFIG_VGA_PCI_14);
 	pci_write_config8(dev, 0x3c, 0x0a);	//same with vx855_lpc.c
 	//*/
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 #if 1
-	printk_debug("INSTALL REAL-MODE IDT\n");
+	printk(BIOS_DEBUG, "INSTALL REAL-MODE IDT\n");
 	setup_realmode_idt();
-	printk_debug("DO THE VGA BIOS\n");
+	printk(BIOS_DEBUG, "DO THE VGA BIOS\n");
 
 	do_vgabios();
 	if ((acpi_sleep_type == 3)/* || (PAYLOAD_IS_SEABIOS == 0)*/) {
-		printk_debug("Enable VGA console\n");
+		printk(BIOS_DEBUG, "Enable VGA console\n");
 		// remove this function since in cn700 it is said "VGA seems to work without this, but crash & burn with it"
 		//but the existense of  vga_enable_console()  seems do not hurt my coreboot. XP+ubuntu s3 can resume with and without this function.
 		//and remove it also do not help my s3 problem: desktop screen have some thin black line, after resuming back to win.
@@ -102,7 +102,7 @@ static void vga_init(device_t dev)
 	}
 #else
 /* Attempt to manually force the rom to load */
-	printk_debug("Forcing rom load\r\n");
+	printk(BIOS_DEBUG, "Forcing rom load\r\n");
 	pci_rom_load(dev, 0xfff80000);
 	run_bios(dev, 0xc0000);
 #endif
@@ -122,7 +122,7 @@ static void vga_init(device_t dev)
 		   outb(0x39, SR_INDEX);
 		   outb(reg8, SR_DATA); */
 	}
-	printk_emerg("file '%s', line %d\n\n", __FILE__, __LINE__);
+	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
 }
 

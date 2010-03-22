@@ -36,7 +36,7 @@ static void agp_init(device_t dev)
 	int i, j;
 
 	/* Some of this may not be necessary (should be handled by the OS). */
-	printk_debug("Enabling AGP.\n");
+	printk(BIOS_DEBUG, "Enabling AGP.\n");
 
 	/* Allow R/W access to AGP registers. */
 	pci_write_config8(dev, 0x4d, 0x05);
@@ -113,17 +113,17 @@ static void agp_init(device_t dev)
 	pci_write_config8(dev, 0xc1, 0x02);
 
 #ifdef DEBUG_CN400
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 #endif
 }
@@ -170,7 +170,7 @@ static void agp_bridge_init(device_t dev)
 	u8 reg8;
 	int i, j;
 
-	printk_debug("Entering %s\n", __func__);
+	printk(BIOS_DEBUG, "Entering %s\n", __func__);
 
 	pci_write_config16(dev, 0x4, 0x0107);
 
@@ -208,17 +208,17 @@ static void agp_bridge_init(device_t dev)
 	pci_write_config8(dev, 0x44, 0x34);
 	pci_write_config8(dev, 0x45, 0x72);
 
-	printk_spew("%s PCI Header Regs::\n", dev_path(dev));
+	printk(BIOS_SPEW, "%s PCI Header Regs::\n", dev_path(dev));
 
 	for (i = 0 ; i < 16; i++)
 	{
-		printk_spew("%02X: ", i*16);
+		printk(BIOS_SPEW, "%02X: ", i*16);
 		for (j = 0; j < 16; j++)
 		{
 			reg8 = pci_read_config8(dev, j+(i*16));
-			printk_spew("%02X ", reg8);
+			printk(BIOS_SPEW, "%02X ", reg8);
 		}
-		printk_spew("\n");
+		printk(BIOS_SPEW, "\n");
 	}
 
 }

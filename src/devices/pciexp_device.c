@@ -35,7 +35,7 @@ static void pciexp_tune_dev(device_t dev)
 		return;
 	}
 #ifdef CONFIG_PCIE_TUNING
-	printk_debug("PCIe: tuning %s\n", dev_path(dev));
+	printk(BIOS_DEBUG, "PCIe: tuning %s\n", dev_path(dev));
 
 	// TODO make this depending on ASPM
 	/* Enable ASPM Role Based Error Reporting */

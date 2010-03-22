@@ -80,7 +80,7 @@ void hardwaremain(int ret_addr)
 
 	id = get_node_core_id_x();
 
-	printk_debug("CODE IN CACHE ON NODE: %02x\n");
+	printk(BIOS_DEBUG, "CODE IN CACHE ON NODE: %02x\n");
 
 	train_ram(id.nodeid, sysinfo, sysinfox);
 

@@ -123,12 +123,12 @@ print_debug("IDE_INIT:---------->\n");
 	if (conf->ide1_enable) {
 		/* Enable secondary ide interface */
 		word |= (1<<0);
-		printk_debug("IDE1 \t");
+		printk(BIOS_DEBUG, "IDE1 \t");
 	}
 	if (conf->ide0_enable) {
 		/* Enable primary ide interface */
 		word |= (1<<1);
-		printk_debug("IDE0\n");
+		printk(BIOS_DEBUG, "IDE0\n");
 	}
 
 	word |= (1<<12);

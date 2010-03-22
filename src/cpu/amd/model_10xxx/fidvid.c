@@ -28,21 +28,21 @@
 static void print_debug_fv(const char *str, u32 val)
 {
 #if FAM10_SET_FIDVID_DEBUG == 1
-		printk_debug("%s%x\n", str, val);
+		printk(BIOS_DEBUG, "%s%x\n", str, val);
 #endif
 }
 
 static void print_debug_fv_8(const char *str, u8 val)
 {
 #if FAM10_SET_FIDVID_DEBUG == 1
-		printk_debug("%s%02x\n", str, val);
+		printk(BIOS_DEBUG, "%s%02x\n", str, val);
 #endif
 }
 
 static void print_debug_fv_64(const char *str, u32 val, u32 val2)
 {
 #if FAM10_SET_FIDVID_DEBUG == 1
-		printk_debug("%s%x%x\n", str, val, val2);
+		printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);
 #endif
 }
 
@@ -68,7 +68,7 @@ static void enable_fid_change(u8 fid)
 		dword |= (u32) fid & 0x1F;
 		dword |= 1 << 5;	// enable
 		pci_write_config32(dev, 0xd4, dword);
-		printk_debug("FID Change Node:%02x, F3xD4: %08x \n", i, dword);
+		printk(BIOS_DEBUG, "FID Change Node:%02x, F3xD4: %08x \n", i, dword);
 	}
 }
 
@@ -186,7 +186,7 @@ static void prep_fid_change(void)
 	nodes = get_nodes();
 
 	for(i = 0; i < nodes; i++) {
-		printk_debug("Prep FID/VID Node:%02x \n", i);
+		printk(BIOS_DEBUG, "Prep FID/VID Node:%02x \n", i);
 		dev = NODE_PCI(i,3);
 
 		dword = pci_read_config32(dev, 0xd8);
@@ -286,15 +286,15 @@ static void prep_fid_change(void)
 		pci_write_config32(dev, 0x80, dword);
 
 		dword = pci_read_config32(dev, 0x80);
-		printk_debug("  F3x80: %08x \n", dword);
+		printk(BIOS_DEBUG, "  F3x80: %08x \n", dword);
 		dword = pci_read_config32(dev, 0x84);
-		printk_debug("  F3x84: %08x \n", dword);
+		printk(BIOS_DEBUG, "  F3x84: %08x \n", dword);
 		dword = pci_read_config32(dev, 0xD4);
-		printk_debug("  F3xD4: %08x \n", dword);
+		printk(BIOS_DEBUG, "  F3xD4: %08x \n", dword);
 		dword = pci_read_config32(dev, 0xD8);
-		printk_debug("  F3xD8: %08x \n", dword);
+		printk(BIOS_DEBUG, "  F3xD8: %08x \n", dword);
 		dword = pci_read_config32(dev, 0xDC);
-		printk_debug("  F3xDC: %08x \n", dword);
+		printk(BIOS_DEBUG, "  F3xDC: %08x \n", dword);
 
 
 	}
@@ -495,7 +495,7 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
 	u8 nodes;
 	u8 i;
 
-	printk_debug("FIDVID on AP: %02x\n", apicid);
+	printk(BIOS_DEBUG, "FIDVID on AP: %02x\n", apicid);
 
 	/* Steps 1-6 of BIOS NB COF and VID Configuration
 	 * for SVI and Single-Plane PVI Systems.
@@ -773,7 +773,7 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	u32 reg1fc;
 	u8 pvimode;
 
-	printk_debug("FIDVID on BSP, APIC_id: %02x\n", bsp_apicid);
+	printk(BIOS_DEBUG, "FIDVID on BSP, APIC_id: %02x\n", bsp_apicid);
 	/* FIXME: The first half of this function is nearly the same as
 	 * init_fidvid_bsp() and the code could be combined.
 	 */

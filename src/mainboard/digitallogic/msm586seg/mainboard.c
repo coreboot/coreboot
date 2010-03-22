@@ -23,10 +23,10 @@ static void irqdump()
 		-1};
   mmcr = (void *) 0xfffef000;
 
-  printk_err("mmcr is %p\n", mmcr);
+  printk(BIOS_ERR, "mmcr is %p\n", mmcr);
   for(i = 0; irqlist[i] >= 0; i++) {
     irq = mmcr + irqlist[i];
-    printk_err("0x%x register @%p is 0x%lx\n", irqlist[i], irq, *irq);
+    printk(BIOS_ERR, "0x%x register @%p is 0x%lx\n", irqlist[i], irq, *irq);
   }
 
 }
@@ -43,7 +43,7 @@ static void enable_dev(struct device *dev) {
 	 */
 
 	/* currently, nothing in the device to use, so ignore it. */
-	printk_err("digital logic msm586 seg ENTER %s\n", __func__);
+	printk(BIOS_ERR, "digital logic msm586 seg ENTER %s\n", __func__);
 
 
 	/* from fuctory bios */
@@ -77,10 +77,10 @@ static void enable_dev(struct device *dev) {
 
 
 	irqdump();
-	printk_err("uart 1 ctl is 0x%x\n", *(unsigned char *) 0xfffefcc0);
+	printk(BIOS_ERR, "uart 1 ctl is 0x%x\n", *(unsigned char *) 0xfffefcc0);
 
-	printk_err("0xc20 ctl is 0x%x\n", *(unsigned short *) 0xfffefc20);
-	printk_err("0xc22 0x%x\n", *(unsigned short *) 0xfffefc22b);
+	printk(BIOS_ERR, "0xc20 ctl is 0x%x\n", *(unsigned short *) 0xfffefc20);
+	printk(BIOS_ERR, "0xc22 0x%x\n", *(unsigned short *) 0xfffefc22b);
 
 	/* The following block has NOT proven sufficient to get
 	 * the VGA hardware to talk to us 
@@ -92,7 +92,7 @@ static void enable_dev(struct device *dev) {
 	mmcr->sysarb.prictl = 0xc0000f0f;
 	/* this is bios setting, depends on sysarb above */
 	mmcr->hostbridge.ctl = 0x108;
-	printk_err("digital logic msm586 seg EXIT %s\n", __func__);
+	printk(BIOS_ERR, "digital logic msm586 seg EXIT %s\n", __func__);
 
 	/* pio */
 	mmcr->pio.data31_16 = 0xffbf;

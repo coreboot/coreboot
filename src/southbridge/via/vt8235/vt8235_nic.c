@@ -12,7 +12,7 @@ static void nic_init(struct device *dev)
 {
 	uint8_t	byte;
 
-	printk_debug("Configuring VIA Rhine LAN\n");
+	printk(BIOS_DEBUG, "Configuring VIA Rhine LAN\n");
 
 	/* We don't need stepping - though the device supports it */
 	byte = pci_read_config8(dev, PCI_COMMAND);

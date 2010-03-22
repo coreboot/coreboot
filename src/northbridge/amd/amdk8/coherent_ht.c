@@ -111,7 +111,7 @@
 
 static inline void print_linkn (const char *strval, uint8_t byteval)
 {
-	printk_debug("%s%02x\r\n", strval, byteval);
+	printk(BIOS_DEBUG, "%s%02x\r\n", strval, byteval);
 }
 
 static void disable_probes(void)
@@ -1496,7 +1496,7 @@ static unsigned setup_smp(void)
 		nodes = setup_smp8();
 #endif
 
-	printk_debug("%02x nodes initialized.\r\n", nodes);
+	printk(BIOS_DEBUG, "%02x nodes initialized.\r\n", nodes);
 
 	return nodes;
 }

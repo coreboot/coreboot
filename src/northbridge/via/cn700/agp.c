@@ -34,7 +34,7 @@ static void agp_init(device_t dev)
 	u32 reg32;
 
 	/* Some of this may not be necessary (should be handled by the OS). */
-	printk_debug("Enabling AGP.\n");
+	printk(BIOS_DEBUG, "Enabling AGP.\n");
 
 	/* Allow R/W access to AGP registers. */
 	pci_write_config8(dev, 0x4d, 0x15);
@@ -124,7 +124,7 @@ static const struct pci_driver agp_driver __pci_driver = {
  */
 static void agp_bridge_init(device_t dev)
 {
-	printk_debug("Setting up AGP bridge device\n");
+	printk(BIOS_DEBUG, "Setting up AGP bridge device\n");
 
 	pci_write_config16(dev, 0x4, 0x0007);
 

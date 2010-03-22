@@ -55,7 +55,7 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
 		dst_link = (config_map >> 8) & 3;
 		bus_base = (config_map >> 16) & 0xff;
 #if 0
-		printk_debug("node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
+		printk(BIOS_DEBUG, "node.link=bus: %d.%d=%d 0x%2x->0x%08x\n",
 			dst_node, dst_link, bus_base,
 			reg, config_map);
 #endif

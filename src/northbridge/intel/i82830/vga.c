@@ -31,21 +31,21 @@
 
 static void vga_init(device_t dev)
 {
-	printk_info("Starting Graphics Initialization\n");
+	printk(BIOS_INFO, "Starting Graphics Initialization\n");
 	struct cbfs_file *file = cbfs_find("mbi.bin");
 	void *mbi = NULL;
 	unsigned int mbi_len = 0;
 
 	if (file) {
 		if (ntohl(file->type) != CBFS_TYPE_MBI) {
-			printk_info( "CBFS:  MBI binary is of type %x instead of"
+			printk(BIOS_INFO,  "CBFS:  MBI binary is of type %x instead of"
 			       "type %x\n", file->type, CBFS_TYPE_MBI);
 		} else {
 			mbi = (void *) CBFS_SUBHEADER(file);
 			mbi_len = file->len;
 		}
 	} else {
-		printk_info( "Could not find MBI.\n");
+		printk(BIOS_INFO,  "Could not find MBI.\n");
 	}
 
 	if (mbi && mbi_len) {
@@ -59,7 +59,7 @@ static void vga_init(device_t dev)
 	}
 
 	pci_dev_init(dev);
-	printk_info("Graphics Initialization Complete\n");
+	printk(BIOS_INFO, "Graphics Initialization Complete\n");
 
 	/* Enable TV-Out */
 #if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL) && CONFIG_PCI_OPTION_ROM_RUN_YABEL
@@ -68,7 +68,7 @@ static void vga_init(device_t dev)
 #define PIPE_A_TV	(1 << 3)
 #define PIPE_B_CRT	(1 << 8)
 #define PIPE_B_TV	(1 << 10)
-	printk_debug("Enabling TV-Out\n"); 
+	printk(BIOS_DEBUG, "Enabling TV-Out\n"); 
 	void runInt10(void);
 	M.x86.R_AX = 0x5f64;
 	M.x86.R_BX = 0x0001; // Set Display Device, force execution
@@ -77,13 +77,13 @@ static void vga_init(device_t dev)
 	runInt10();
 	switch (M.x86.R_AX) {
 	case 0x005f:
-		printk_debug("... failed.\n");
+		printk(BIOS_DEBUG, "... failed.\n");
 		break;
 	case 0x015f:
-		printk_debug("... ok.\n");
+		printk(BIOS_DEBUG, "... ok.\n");
 		break;
 	default:
-		printk_debug("... not supported.\n");
+		printk(BIOS_DEBUG, "... not supported.\n");
 		break;
 	}
 #endif

@@ -49,5 +49,5 @@ void watchdog_off(void)
 	outw(0x0008, base + 0x04);
 	outw(0x0002, base + 0x06);
 
-	printk_debug("ICH7 watchdog disabled\r\n");
+	printk(BIOS_DEBUG, "ICH7 watchdog disabled\r\n");
 }

@@ -77,7 +77,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         addr &= ~15;
 
         /* This table must be betweeen 0xf0000 & 0x100000 */
-	printk_info("Writing IRQ routing tables to 0x%x...", addr);
+	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%x...", addr);
 
 	pirq = (void *)(addr);
 	v = (uint8_t *)(addr);
@@ -114,7 +114,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 		pirq->checksum = sum;
 	}
 
-	printk_info("done.\n");
+	printk(BIOS_INFO, "done.\n");
 
         {
                 device_t dev;
@@ -141,7 +141,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                     pci_write_config8(dev, reg[i], irq[i]);
 		} // endif
 
-                printk_debug("Setting Onboard SiS Southbridge\n");
+                printk(BIOS_DEBUG, "Setting Onboard SiS Southbridge\n");
 
                 dev = dev_find_slot(0, PCI_DEVFN(2,5));   // 5513 (IDE)
                 pci_write_config8(dev, 0x3C, 0x0A);
@@ -163,9 +163,9 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 pci_write_config8(dev, 0x3C, 0x05);
         }
 
-	printk_debug("pirq routing table, size=%d\n", pirq->size);
+	printk(BIOS_DEBUG, "pirq routing table, size=%d\n", pirq->size);
 	for (i = 0; i < pirq->size; i+=4)
-		printk_debug("%.2x%.2x%.2x%.2x\n", v[i+3],v[i+2],v[i+1],v[i]);
+		printk(BIOS_DEBUG, "%.2x%.2x%.2x%.2x\n", v[i+3],v[i+2],v[i+1],v[i]);
 
 	return	(unsigned long) pirq_info;
 

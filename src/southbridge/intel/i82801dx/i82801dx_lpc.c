@@ -64,7 +64,6 @@ static void i82801dx_enable_ioapic(struct device *dev)
 	if (reg32 != (1 << 25))
 		die("APIC Error\n");
 
-	/* TODO: From i82801ca, needed/useful on other ICH? */
 	*ioapic_index = 3; /* Select Boot Configuration register. */
 	*ioapic_data = 1; /* Use Processor System Bus to deliver interrupts. */
 }
@@ -91,37 +90,85 @@ static void i82801dx_pirq_init(device_t dev)
 	pci_write_config8(dev, PIRQF_ROUT, config->pirqf_routing);
 	pci_write_config8(dev, PIRQG_ROUT, config->pirqg_routing);
 	pci_write_config8(dev, PIRQH_ROUT, config->pirqh_routing);
-
 }
 
 static void i82801dx_power_options(device_t dev)
 {
-	u8 byte;
-	int pwr_on = -1;
+	u8 reg8;
+	u16 reg16, pmbase;
+	u32 reg32;
+	const char *state;
+
+	int pwr_on = CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	int nmi_option;
 
-	/* power after power fail */
-	/* FIXME this doesn't work! */
 	/* Which state do we want to goto after g3 (power restored)?
 	 * 0 == S0 Full On
 	 * 1 == S5 Soft Off
+	 *
+	 * If the option is not existent (Laptops), use MAINBOARD_POWER_ON.
 	 */
-	pci_write_config8(dev, GEN_PMCON_3, pwr_on ? 0 : 1);
-	printk(BIOS_INFO, "Set power %s if power fails\n", pwr_on ? "on" : "off");
+	if (get_option(&pwr_on, "power_on_after_fail") < 0)
+		pwr_on = MAINBOARD_POWER_ON;
+
+	reg8 = pci_read_config8(dev, GEN_PMCON_3);
+	reg8 &= 0xfe;
+	switch (pwr_on) {
+		case MAINBOARD_POWER_OFF:
+			reg8 |= 1;
+			state = "off";
+			break;
+		case MAINBOARD_POWER_ON:
+			reg8 &= ~1;
+			state = "on";
+			break;
+		case MAINBOARD_POWER_KEEP:
+			reg8 &= ~1;
+			state = "state keep";
+			break;
+		default:
+			state = "undefined";
+	}
+
+	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
+
+	pci_write_config8(dev, GEN_PMCON_3, reg8);
+	printk_info("Set power %s after power failure.\n", state);
 
 	/* Set up NMI on errors. */
-	byte = inb(0x61);
-	byte &= ~(1 << 3);	/* IOCHK# NMI Enable */
-	byte &= ~(1 << 2);	/* PCI SERR# Enable */
-	outb(byte, 0x61);
-	byte = inb(0x70);
+	reg8 = inb(0x61);
+	reg8 &= 0x0f;		/* Higher Nibble must be 0 */
+	reg8 &= ~(1 << 3);	/* IOCHK# NMI Enable */
+	// reg8 &= ~(1 << 2);	/* PCI SERR# Enable */
+	reg8 |= (1 << 2); /* PCI SERR# Disable for now */
+	outb(reg8, 0x61);
 
+	reg8 = inb(0x70);
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
 	if (nmi_option) {
-		byte &= ~(1 << 7);	/* Set NMI. */
-		outb(byte, 0x70);
+		printk_info ("NMI sources enabled.\n");
+		reg8 &= ~(1 << 7);	/* Set NMI. */
+	} else {
+		printk_info ("NMI sources disabled.\n");
+		reg8 |= ( 1 << 7);	/* Disable NMI. */
 	}
+	outb(reg8, 0x70);
+
+	/* Set SMI# rate down and enable CPU_SLP# */
+	reg16 = pci_read_config16(dev, GEN_PMCON_1);
+	reg16 &= ~(3 << 0);	// SMI# rate 1 minute
+	reg16 |= (1 << 5);	// CPUSLP_EN Desktop only
+	pci_write_config16(dev, GEN_PMCON_1, reg16);
+
+	pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
+
+	/* Set up power management block and determine sleep mode */
+	reg32 = inl(pmbase + 0x04); // PM1_CNT
+
+	reg32 &= ~(7 << 10);	// SLP_TYP
+	reg32 |= (1 << 0);	// SCI_EN
+	outl(reg32, pmbase + 0x04);
 }
 
 static void gpio_init(device_t dev)
@@ -182,23 +229,36 @@ static void i82801dx_lpc_decode_en(device_t dev)
  */
 static void enable_hpet(struct device *dev)
 {
-	u32 reg32;
-	u32 code = (0 & 0x3);
+	u32 reg32, hpet, val;
 
+	/* Set HPET base address and enable it */
+	printk_debug("Enabling HPET at 0x%x\n", HPET_ADDR);
 	reg32 = pci_read_config32(dev, GEN_CNTL);
-	reg32 |= (1 << 17);	/* Enable HPET. */
 	/*
-	 * Bits [16:15]	Memory Address Range
-	 * 00		FED0_0000h - FED0_03FFh
-	 * 01		FED0_1000h - FED0_13FFh
-	 * 10		FED0_2000h - FED0_23FFh
-	 * 11		FED0_3000h - FED0_33FFh
+	 * Bit 17 is HPET enable bit.
+	 * Bit 16:15 control the HPET base address.
 	 */
 	reg32 &= ~(3 << 15);	/* Clear it */
-	reg32 |= (code << 15);
+
+	hpet = HPET_ADDR >> 12;
+	hpet &= 0x3;
+
+	reg32 |= (hpet << 15);
+	reg32 |= (1 << 17);	/* Enable HPET. */
 	pci_write_config32(dev, GEN_CNTL, reg32);
 
-	printk(BIOS_DEBUG, "Enabling HPET @0x%x\n", HPET_ADDR | (code << 12));
+	/* Check to see whether it took */
+	reg32 = pci_read_config32(dev, GEN_CNTL);
+	val = reg32 >> 15;
+	val &= 0x7;
+
+	if ((val & 0x4) && (hpet == (val & 0x3))) {
+		printk_debug("HPET enabled at 0x%x\n", HPET_ADDR);
+	} else {
+		printk_err("HPET was not enabled correctly\n");
+		reg32 &= ~(1 << 17);	/* Clear Enable */
+		pci_write_config32(dev, GEN_CNTL, reg32);
+	}
 }
 
 static void lpc_init(struct device *dev)

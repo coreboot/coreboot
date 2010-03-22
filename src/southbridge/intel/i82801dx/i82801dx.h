@@ -37,6 +37,14 @@ extern void i82801dx_enable(device_t dev);
 #endif
 
 #define IO_APIC_ADDR		0xfec00000
+
+/*
+ * HPET Memory Address Range. Possible values:
+ * 0xfed00000 for FED0_0000h - FED0_03FFh
+ * 0xfed01000 for FED0_1000h - FED0_13FFh
+ * 0xfed02000 for FED0_2000h - FED0_23FFh
+ * 0xfed03000 for FED0_3000h - FED0_33FFh
+ */
 #define HPET_ADDR		0xfed00000
 
 #define DEBUG_PERIODIC_SMIS 0
@@ -201,6 +209,10 @@ extern void i82801dx_enable(device_t dev);
 
 #define TCOBASE		0x60 /* TCO Base Address Register */
 #define TCO1_CNT	0x08 /* TCO1 Control Register */
+
+#define GEN_PMCON_1		0xa0
+#define GEN_PMCON_2		0xa2
+#define GEN_PMCON_3		0xa4
 
 /* GEN_PMCON_3 bits */
 #define RTC_BATTERY_DEAD	(1 << 2)

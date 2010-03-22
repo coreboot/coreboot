@@ -199,6 +199,8 @@ static int sdram_capabilities_two_dimms_per_channel(void)
 	return (reg8 != 0);
 }
 
+// TODO check if we ever need this function 
+#if 0
 static int sdram_capabilities_MEM4G_disable(void)
 {
 	u8 reg8;
@@ -208,6 +210,7 @@ static int sdram_capabilities_MEM4G_disable(void)
 
 	return (reg8 != 0);
 }
+#endif
 
 #define GFX_FREQUENCY_CAP_166MHZ	0x04
 #define GFX_FREQUENCY_CAP_200MHZ	0x03

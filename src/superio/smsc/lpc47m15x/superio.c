@@ -41,7 +41,6 @@ static void lpc47m15x_init(device_t dev);
 
 static void pnp_enter_conf_state(device_t dev);
 static void pnp_exit_conf_state(device_t dev);
-static void dump_pnp_device(device_t dev);
 
 struct chip_operations superio_smsc_lpc47m15x_ops = {
 	CHIP_NAME("SMSC LPC47M15x/192/997 Super I/O")

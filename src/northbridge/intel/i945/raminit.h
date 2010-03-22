@@ -68,5 +68,7 @@ struct sys_info {
 } __attribute__ ((packed));
 
 void receive_enable_adjust(struct sys_info *sysinfo);
-
+void sdram_initialize(int boot_path);
+unsigned long get_top_of_ram(void);
+int fixup_i945_errata(void);
 #endif				/* RAMINIT_H */

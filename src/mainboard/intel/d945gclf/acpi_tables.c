@@ -32,6 +32,7 @@
 #define OLD_ACPI 0
 
 extern unsigned char AmlCode[];
+void *amlcodeptr = &AmlCode;
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
@@ -65,17 +66,10 @@ typedef struct acpi_oemb {
 } __attribute__((packed)) acpi_oemb_t;
 #endif
 
-typedef struct acpi_gnvs {
-	// 0x00
-	u16 osys;
-	u8  smif;
-	u8  reserved[13];
-	// 0x10
-	u8  mpen;
-} __attribute__((packed)) acpi_gnvs_t;
+#include "../../../southbridge/intel/i82801gx/i82801gx_nvs.h"
 
 #if OLD_ACPI
-void acpi_create_oemb(acpi_oemb_t *oemb)
+static void acpi_create_oemb(acpi_oemb_t *oemb)
 {
 	acpi_header_t *header = &(oemb->header);
 	unsigned long tolud;
@@ -114,13 +108,14 @@ void acpi_create_oemb(acpi_oemb_t *oemb)
 };
 #endif
 
-void acpi_create_gnvs(acpi_gnvs_t *gnvs)
+static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	memset((void *)gnvs, 0, sizeof(*gnvs));
-	gnvs->mpen = 1;
+	gnvs->apic = 1;
+	gnvs->mpen = 1; /* Enable Multi Processing */
 }
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet)
+static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 {
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header = &(hpet->header);
@@ -212,7 +207,6 @@ unsigned long write_acpi_tables(unsigned long start)
 #if OLD_ACPI
 	acpi_oemb_t *oemb;
 #endif
-	acpi_gnvs_t *gnvs;
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
 
@@ -279,10 +273,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_create_facs(facs);
 
+	int len = ((acpi_header_t *) amlcodeptr)->length;
 	dsdt = (acpi_header_t *) current;
-	current += ((acpi_header_t *) AmlCode)->length;
-	memcpy((void *) dsdt, (void *) AmlCode,
-	       ((acpi_header_t *) AmlCode)->length);
+	current += len;
+	memcpy((void *) dsdt, amlcodeptr, len);
 
 #if OLD_ACPI
 	for (i=0; i < dsdt->length; i++) {
@@ -299,14 +293,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* Pack GNVS into the ACPI table area */
 	for (i=0; i < dsdt->length; i++) {
 		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
-			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08x\n", i, current);
+			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
 			*(u32*)(((u32)dsdt) + i) = current; // 0x92 bytes
 			break;
 		}
 	}
 
 	/* And fill it */
-	acpi_create_gnvs(current);
+	acpi_create_gnvs((global_nvs_t *)current);
 
 	current += 0x100;
 	ALIGN_CURRENT;

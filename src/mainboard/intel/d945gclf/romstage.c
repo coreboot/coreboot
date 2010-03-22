@@ -83,7 +83,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/i945/raminit.h"
 #include "northbridge/intel/i945/raminit.c"
-#include "northbridge/intel/i945/reset_test.c"
 #include "northbridge/intel/i945/errata.c"
 #include "northbridge/intel/i945/debug.c"
 
@@ -216,8 +215,6 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-#include "southbridge/intel/i82801gx/cmos_failover.c"
-
 #include <cbmem.h>
 
 // Now, this needs to be included because it relies on the symbol
@@ -227,6 +224,8 @@ static void early_ich7_init(void)
 // __PRE_RAM__ to determine whether we're in ram init stage (stage 1)
 //
 #include "lib/cbmem.c"
+
+#include "cpu/intel/model_106cx/cache_as_ram_disable.c"
 
 void real_main(unsigned long bist)
 {
@@ -337,7 +336,7 @@ void real_main(unsigned long bist)
 		 * day.
 		 */
 		if (resume_backup_memory) 
-			memcpy(resume_backup_memory, CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
@@ -345,4 +344,3 @@ void real_main(unsigned long bist)
 #endif
 }
 
-#include "cpu/intel/model_106cx/cache_as_ram_disable.c"

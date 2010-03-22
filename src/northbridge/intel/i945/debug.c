@@ -23,7 +23,7 @@
 #define SMBUS_MEM_DEVICE_END 0x53
 #define SMBUS_MEM_DEVICE_INC 1
 
-static void print_pci_devices(void)
+static inline void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
@@ -42,7 +42,7 @@ static void print_pci_devices(void)
 	}
 }
 
-static void dump_pci_device(unsigned dev)
+static inline void dump_pci_device(unsigned dev)
 {
 	int i;
 
@@ -61,7 +61,7 @@ static void dump_pci_device(unsigned dev)
 	}
 }
 
-static void dump_pci_devices(void)
+static inline void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
@@ -78,7 +78,7 @@ static void dump_pci_devices(void)
 	}
 }
 
-void dump_spd_registers(void)
+static inline void dump_spd_registers(void)
 {
         unsigned device;
         device = SMBUS_MEM_DEVICE_START;
@@ -103,7 +103,7 @@ void dump_spd_registers(void)
 	}
 }
 
-static void dump_mem(unsigned start, unsigned end)
+static inline void dump_mem(unsigned start, unsigned end)
 {
         unsigned i;
 	print_debug("dump_mem:");

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include "raminit.h"
+
 int fixup_i945_errata(void)
 {
 	u32 reg32;

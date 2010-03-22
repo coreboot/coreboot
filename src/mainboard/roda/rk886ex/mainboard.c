@@ -27,6 +27,7 @@
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif
+#include <arch/coreboot_tables.h>
 #include "chip.h"
 
 #include "ec.h"
@@ -132,8 +133,6 @@ static void mainboard_enable(device_t dev)
 	dump_runtime_registers();
 #endif
 }
-
-int add_northbridge_resources(struct lb_memory *mem);
 
 int add_mainboard_resources(struct lb_memory *mem)
 {

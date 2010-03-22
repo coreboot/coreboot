@@ -57,14 +57,14 @@ static int cmos_chksum_valid(void)
 }
 
 
-static int last_boot_normal(void)
+static inline int last_boot_normal(void)
 {
 	unsigned char byte;
 	byte = cmos_read(RTC_BOOT_BYTE);
 	return (byte & (1 << 1));
 }
 
-static int do_normal_boot(void)
+static inline int do_normal_boot(void)
 {
 	unsigned char byte;
 
@@ -107,7 +107,7 @@ static int do_normal_boot(void)
 	return (byte & (1<<1));
 }
 
-static unsigned read_option(unsigned start, unsigned size, unsigned def)
+static inline unsigned read_option(unsigned start, unsigned size, unsigned def)
 {
 #if CONFIG_USE_OPTION_TABLE == 1
 	unsigned byte;

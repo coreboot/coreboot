@@ -275,7 +275,6 @@ void m3885_configure_multikey(void)
 	maxvars = m3885_get_variable(0x00);
 	printk(BIOS_DEBUG, "M388x has %d variables in original bank.\n", maxvars);
 	for (i=0; i<ARRAY_SIZE(variables); i+=3) {
-		u8 reg8;
 		if(variables[i + 0] > maxvars)
 			continue;
 		reg8 = m3885_get_variable(variables[i + 0]);

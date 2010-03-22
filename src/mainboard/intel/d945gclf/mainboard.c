@@ -20,9 +20,8 @@
 #include <device/device.h>
 #include <console/console.h>
 #include <boot/tables.h>
+#include <arch/coreboot_tables.h>
 #include "chip.h"
-
-int add_northbridge_resources(struct lb_memory *mem);
 
 int add_mainboard_resources(struct lb_memory *mem)
 {

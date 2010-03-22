@@ -36,7 +36,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, port);
 }
 
-static void w83627thg_enable_serial(device_t dev, unsigned int iobase)
+static inline void w83627thg_enable_serial(device_t dev, unsigned int iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

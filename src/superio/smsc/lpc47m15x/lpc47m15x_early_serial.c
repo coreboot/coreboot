@@ -34,7 +34,7 @@ static void pnp_exit_conf_state(device_t dev)
 	outb(0xaa, port);
 }
 
-static void lpc47b272_enable_serial(device_t dev, unsigned iobase)
+static inline void lpc47b272_enable_serial(device_t dev, unsigned iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

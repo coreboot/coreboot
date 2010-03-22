@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include "chip.h"
 
-void set_kbc_ps2_mode(void);
 void m3885_configure_multikey(void);
 
 static void m3885x_init(device_t dev)

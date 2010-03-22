@@ -10,11 +10,9 @@ config USE_DCACHE_RAM
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xffdf8000 if CPU_INTEL_CORE
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x8000 if CPU_INTEL_CORE
 
 config DCACHE_RAM_GLOBAL_VAR_SIZE
 	hex

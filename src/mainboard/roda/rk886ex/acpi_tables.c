@@ -31,13 +31,14 @@
 #include "dmi.h"
 
 extern unsigned char AmlCode[];
+void *amlcodeptr = &AmlCode;
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
 
 #define OLD_ACPI 0
 #if OLD_ACPI
-void acpi_create_gnvs(global_nvs_t *gnvs)
+static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	memset (gnvs, 0, sizeof(global_nvs_t));
 
@@ -91,7 +92,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 #endif
 
 #include "../../../southbridge/intel/i82801gx/i82801gx_nvs.h"
-void acpi_create_gnvs(global_nvs_t *gnvs)
+static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
 	memset((void *)gnvs, 0, sizeof(*gnvs));
 	gnvs->apic = 1;
@@ -110,7 +111,7 @@ void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->did[4] = 0x00000005;
 }
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet)
+static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 {
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header = &(hpet->header);
@@ -272,10 +273,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_create_facs(facs);
 
+	int len = ((acpi_header_t *)amlcodeptr)->length;
+	current += len;
 	dsdt = (acpi_header_t *) current;
-	current += ((acpi_header_t *) AmlCode)->length;
-	memcpy((void *) dsdt, (void *) AmlCode,
-	       ((acpi_header_t *) AmlCode)->length);
+	memcpy((void *) dsdt, amlcodeptr, len);
 
 	/* Fix up global NVS region for SMI handler. The GNVS region lives 
 	 * in the (high) table area. The low memory map looks like this:

@@ -91,7 +91,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/i945/raminit.h"
 #include "northbridge/intel/i945/raminit.c"
-#include "northbridge/intel/i945/reset_test.c"
 #include "northbridge/intel/i945/errata.c"
 #include "northbridge/intel/i945/debug.c"
 
@@ -351,8 +350,6 @@ static void early_ich7_init(void)
 	reg32 |= (5 << 16);
 	RCBA32(0x2034) = reg32;
 }
-
-#include "southbridge/intel/i82801gx/cmos_failover.c"
 
 #include <cbmem.h>
 

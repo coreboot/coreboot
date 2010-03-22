@@ -83,12 +83,12 @@ static void pci7420_cardbus_init(device_t dev)
 #endif
 }
 
-void pci7420_cardbus_read_resources(device_t dev)
+static void pci7420_cardbus_read_resources(device_t dev)
 {
 	cardbus_read_resources(dev);
 }
 
-void pci7420_cardbus_set_resources(device_t dev)
+static void pci7420_cardbus_set_resources(device_t dev)
 {
 	printk(BIOS_DEBUG, "%s In set resources \n",dev_path(dev));
 

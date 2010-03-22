@@ -32,7 +32,5 @@ driver-y += i82801bx_usb_ehci.o
 obj-y += i82801bx_reset.o
 obj-y += i82801bx_watchdog.o
 
-# TODO: What about cmos_failover.c?
-
 # TODO: Fix and enable i82801bx_smbus.o later.
 

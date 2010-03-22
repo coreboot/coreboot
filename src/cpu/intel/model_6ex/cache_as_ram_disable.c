@@ -21,6 +21,10 @@
 
 #include "cpu/x86/car/copy_and_run.c"
 
+/* called from assembler code */
+void stage1_main(unsigned long bist);
+
+/* from romstage.c */
 void real_main(unsigned long bist);
 
 void stage1_main(unsigned long bist)
@@ -39,8 +43,6 @@ void stage1_main(unsigned long bist)
 	);
 	printk(BIOS_SPEW, "v_esp=%08x\n", v_esp);
 #endif
-
-cpu_reset_x:
 
         printk(BIOS_SPEW, "cpu_reset = %08x\n", cpu_reset);
 	printk(BIOS_SPEW, "No cache as ram now - ");

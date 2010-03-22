@@ -139,6 +139,9 @@ endif
 ifeq ($(CONFIG_CPU_AMD_SOCKET_940),y)
 crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
 endif
+ifeq ($(CONFIG_CPU_INTEL_ATOM_230),y)
+crt0s += $(src)/cpu/intel/model_106cx/cache_as_ram.inc
+endif
 ifeq ($(CONFIG_CPU_INTEL_CORE),y)
 crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
 endif
@@ -199,8 +202,9 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
-	printf "    GEN        romstage.inc\n"
+	printf "    CC         romstage.inc\n"
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o $@.tmp1
+	printf "    POST       romstage.inc\n"
 	sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' $@.tmp1 > $@.tmp
 	mv $@.tmp $@
 	rm -f $@.tmp1

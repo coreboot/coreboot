@@ -30,8 +30,6 @@
 
 static void pci7420_firewire_init(device_t dev)
 {
-	u8 reg8;
-
 	printk(BIOS_DEBUG, "TI PCI7420/7620 FireWire init\n");
 
 #ifdef ODD_IRQ_FIXUP

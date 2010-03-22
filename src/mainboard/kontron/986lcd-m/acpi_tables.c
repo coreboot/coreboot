@@ -30,6 +30,7 @@
 #include "dmi.h"
 
 extern unsigned char AmlCode[];
+void *amlcodeptr = &AmlCode;
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
@@ -203,10 +204,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_create_facs(facs);
 
+	int len = ((acpi_header_t *) amlcodeptr)->length;
 	dsdt = (acpi_header_t *) current;
-	current += ((acpi_header_t *) AmlCode)->length;
-	memcpy((void *) dsdt, (void *) AmlCode,
-	       ((acpi_header_t *) AmlCode)->length);
+	current += len;
+	memcpy((void *) dsdt, amlcodeptr, len);
 
 	ALIGN_CURRENT;
 

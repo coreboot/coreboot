@@ -97,7 +97,7 @@ static void post_cache_as_ram(void)
 	/* clear only coreboot used region of memory. Note: this may break ECC enabled boards */
 	memset((void*) CONFIG_RAMBASE, 0, (CONFIG_RAMTOP) - CONFIG_RAMBASE - CONFIG_DCACHE_RAM_SIZE);
 #else
-	//memset((void*)CONFIG_RAMBASE, 0, ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE - 0xa0000));
+	memset((void*)0, 0, ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE));
 #endif
 	print_debug("Done\r\n");
 

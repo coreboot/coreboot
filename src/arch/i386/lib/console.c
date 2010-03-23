@@ -5,7 +5,6 @@
 #include "console_print.c"
 #else  /* CONFIG_USE_PRINTK_IN_CAR == 1 */
 #include <console/console.h>
-#include "console_printk.c"
 #endif /* CONFIG_USE_PRINTK_IN_CAR */
 
 void console_init(void)

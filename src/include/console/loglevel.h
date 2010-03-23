@@ -15,6 +15,7 @@
 #define BIOS_NOTICE     5   /* normal but significant condition     */
 #define BIOS_INFO       6   /* informational                        */
 #define BIOS_DEBUG      7   /* debug-level messages                 */
-#define BIOS_SPEW       8   /* Way too many details                 */
+#define BIOS_SPEW       8   /* way too many details                 */
+#define BIOS_NEVER	9   /* these messages are never printed     */
 
 #endif /* LOGLEVEL_H */

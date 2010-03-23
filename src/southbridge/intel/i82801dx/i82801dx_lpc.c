@@ -133,7 +133,7 @@ static void i82801dx_power_options(device_t dev)
 	reg8 &= ~(1 << 3);	/* minimum asssertion is 1 to 2 RTCCLK */
 
 	pci_write_config8(dev, GEN_PMCON_3, reg8);
-	printk_info("Set power %s after power failure.\n", state);
+	printk(BIOS_INFO, "Set power %s after power failure.\n", state);
 
 	/* Set up NMI on errors. */
 	reg8 = inb(0x61);
@@ -147,10 +147,10 @@ static void i82801dx_power_options(device_t dev)
 	nmi_option = NMI_OFF;
 	get_option(&nmi_option, "nmi");
 	if (nmi_option) {
-		printk_info ("NMI sources enabled.\n");
+		printk(BIOS_INFO, "NMI sources enabled.\n");
 		reg8 &= ~(1 << 7);	/* Set NMI. */
 	} else {
-		printk_info ("NMI sources disabled.\n");
+		printk(BIOS_INFO, "NMI sources disabled.\n");
 		reg8 |= ( 1 << 7);	/* Disable NMI. */
 	}
 	outb(reg8, 0x70);
@@ -232,7 +232,7 @@ static void enable_hpet(struct device *dev)
 	u32 reg32, hpet, val;
 
 	/* Set HPET base address and enable it */
-	printk_debug("Enabling HPET at 0x%x\n", HPET_ADDR);
+	printk(BIOS_DEBUG, "Enabling HPET at 0x%x\n", HPET_ADDR);
 	reg32 = pci_read_config32(dev, GEN_CNTL);
 	/*
 	 * Bit 17 is HPET enable bit.
@@ -253,9 +253,9 @@ static void enable_hpet(struct device *dev)
 	val &= 0x7;
 
 	if ((val & 0x4) && (hpet == (val & 0x3))) {
-		printk_debug("HPET enabled at 0x%x\n", HPET_ADDR);
+		printk(BIOS_INFO, "HPET enabled at 0x%x\n", HPET_ADDR);
 	} else {
-		printk_err("HPET was not enabled correctly\n");
+		printk(BIOS_WARNING, "HPET was not enabled correctly\n");
 		reg32 &= ~(1 << 17);	/* Clear Enable */
 		pci_write_config32(dev, GEN_CNTL, reg32);
 	}

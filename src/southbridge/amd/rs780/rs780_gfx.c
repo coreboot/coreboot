@@ -55,7 +55,7 @@ static u32 clkind_read(device_t dev, u32 index)
 static void clkind_write(device_t dev, u32 index, u32 data)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
-	/* printk(BIOS_INFO, "gfx bar 2 %02x\n", gfx_bar2); */
+	/* printk(BIOS_DEBUG, "gfx bar 2 %02x\n", gfx_bar2); */
 
 	*(u32*)(gfx_bar2+CLK_CNTL_INDEX) = index | 1<<7;
 	*(u32*)(gfx_bar2+CLK_CNTL_DATA)  = data;
@@ -67,7 +67,7 @@ static void clkind_write(device_t dev, u32 index, u32 data)
 */
 static void rs780_gfx_read_resources(device_t dev)
 {
-	printk(BIOS_INFO, "rs780_gfx_read_resources.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_read_resources.\n");
 
 	/* The initial value of 0x24 is 0xFFFFFFFF, which is confusing.
 	   Even if we write 0xFFFFFFFF into it, it will be 0xFFF00000,
@@ -307,7 +307,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
 	vendorid = pci_read_config16(dev, PCI_VENDOR_ID);
-	printk(BIOS_INFO, "internal_gfx_pci_dev_init device=%x, vendor=%x.\n",
+	printk(BIOS_DEBUG, "internal_gfx_pci_dev_init device=%x, vendor=%x.\n",
 	     deviceid, vendorid);
 
 	command = pci_read_config16(dev, 0x04);
@@ -583,10 +583,10 @@ static void rs780_internal_gfx_enable(device_t dev)
 	u32 FB_Start, FB_End;
 #endif
 
-	printk(BIOS_INFO, "rs780_internal_gfx_enable dev = 0x%p, nb_dev = 0x%p.\n", dev, nb_dev);
+	printk(BIOS_DEBUG, "rs780_internal_gfx_enable dev = 0x%p, nb_dev = 0x%p.\n", dev, nb_dev);
 
 	sysmem = rdmsr(0xc001001a);
-	printk(BIOS_INFO, "sysmem = %x_%x\n", sysmem.hi, sysmem.lo);
+	printk(BIOS_DEBUG, "sysmem = %x_%x\n", sysmem.hi, sysmem.lo);
 
 	/* The system top memory in 780. */
 	pci_write_config32(nb_dev, 0x90, sysmem.lo);
@@ -824,12 +824,12 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 	struct southbridge_amd_rs780_config *cfg =
 	    (struct southbridge_amd_rs780_config *)nb_dev->chip_info;
 
-	printk(BIOS_INFO, "rs780_gfx_init single_port_configuration.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_init single_port_configuration.\n");
 
 	/* step 12 training, releases hold training for GFX port 0 (device 2) */
 	PcieReleasePortTraining(nb_dev, dev, 2);
 	result = PcieTrainPort(nb_dev, dev, 2);
-	printk(BIOS_INFO, "rs780_gfx_init single_port_configuration step12.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_init single_port_configuration step12.\n");
 
 	/* step 13 Power Down Control */
 	/* step 13.1 Enables powering down transmitter and receiver pads along with PLL macros. */
@@ -866,11 +866,11 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 			break;
 		}
 	}
-	printk(BIOS_INFO, "rs780_gfx_init single_port_configuration step13.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_init single_port_configuration step13.\n");
 
 	/* step 14 Reset Enumeration Timer, disables the shortening of the enumeration timer */
 	set_pcie_enable_bits(dev, 0x70, 1 << 19, 1 << 19);
-	printk(BIOS_INFO, "rs780_gfx_init single_port_configuration step14.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_init single_port_configuration step14.\n");
 }
 
 static void dual_port_configuration(device_t nb_dev, device_t dev)
@@ -980,7 +980,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	struct southbridge_amd_rs780_config *cfg =
 	    (struct southbridge_amd_rs780_config *)nb_dev->chip_info;
 
-	printk(BIOS_INFO, "rs780_gfx_init, nb_dev=0x%p, dev=0x%p, port=0x%x.\n",
+	printk(BIOS_DEBUG, "rs780_gfx_init, nb_dev=0x%p, dev=0x%p, port=0x%x.\n",
 		    nb_dev, dev, port);
 
 	/* GFX Core Initialization */
@@ -1003,7 +1003,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	set_nbmisc_enable_bits(nb_dev, 0x28, 3 << 6 | 3 << 8 | 3 << 10,
 			       1 << 6 | 1 << 8 | 1 << 10);
 	reg32 = nbmisc_read_index(nb_dev, 0x28);
-	printk(BIOS_INFO, "misc 28 = %x\n", reg32);
+	printk(BIOS_DEBUG, "misc 28 = %x\n", reg32);
 
 	/* 5.9.1.6.Selects the single ended GFX REFCLK to be the source for core logic. */
 	set_nbmisc_enable_bits(nb_dev, 0x6C, 1 << 31, 1 << 31);
@@ -1021,7 +1021,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	set_nbmisc_enable_bits(nb_dev, 0x28, 3 << 6 | 3 << 8 | 3 << 10,
 			       0);
 	reg32 = nbmisc_read_index(nb_dev, 0x28);
-	printk(BIOS_INFO, "misc 28 = %x\n", reg32);
+	printk(BIOS_DEBUG, "misc 28 = %x\n", reg32);
 
 	/* 5.9.1.6.Selects the single ended GFX REFCLK to be the source for core logic. */
 	set_nbmisc_enable_bits(nb_dev, 0x6C, 1 << 31, 0 << 31);
@@ -1062,7 +1062,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		/* release hold training for device 2. GFX initialization is done. */
 		set_nbmisc_enable_bits(nb_dev, 0x8, 1 << 4, 0 << 4);
 		dynamic_link_width_control(nb_dev, dev, cfg->gfx_link_width);
-		printk(BIOS_INFO, "rs780_gfx_init step7.\n");
+		printk(BIOS_DEBUG, "rs780_gfx_init step7.\n");
 		return;
 	}
 
@@ -1070,11 +1070,11 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* 5.9.12.1 sets RCB timeout to be 25ms */
 	/* 5.9.12.2. RCB Cpl timeout on link down. */
 	set_pcie_enable_bits(dev, 0x70, 7 << 16 | 1 << 19, 4 << 16 | 1 << 19);
-	printk(BIOS_INFO, "rs780_gfx_init step5.9.12.1.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_init step5.9.12.1.\n");
 
 	/* step 5.9.12.3 disables slave ordering logic */
 	set_pcie_enable_bits(nb_dev, 0x20, 1 << 8, 1 << 8);
-	printk(BIOS_INFO, "rs780_gfx_init step5.9.12.3.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_init step5.9.12.3.\n");
 
 	/* step 5.9.12.4 sets DMA payload size to 64 bytes */
 	set_pcie_enable_bits(nb_dev, 0x10, 7 << 10, 4 << 10);
@@ -1096,7 +1096,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* 5.9.12.9 CMGOOD_OVERRIDE for end point initiated lane degradation. */
 	set_nbmisc_enable_bits(nb_dev, 0x6a, 1 << 17, 1 << 17);
-	printk(BIOS_INFO, "rs780_gfx_init step5.9.12.9.\n");
+	printk(BIOS_DEBUG, "rs780_gfx_init step5.9.12.9.\n");
 
 	/* 5.9.12.10 Sets the timer in Config state from 20us to */
 	/* 5.9.12.11 De-asserts RX_EN in L0s. */
@@ -1169,15 +1169,14 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 		if (cfg->gfx_lane_reversal) {
 			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
 		}
-		printk_info("rs780_gfx_init step1.\n");
-		printk_info("rs780_gfx_init step2.\n");
+		printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
 
-		printk_info("device = %x\n", dev->path.pci.devfn >> 3);
-		if((dev->path.pci.devfn >> 3) == 2)
+		printk(BIOS_DEBUG, "device = %x\n", dev->path.pci.devfn >> 3);
+		if((dev->path.pci.devfn >> 3) == 2) {
 			single_port_configuration(nb_dev, dev);
-		else{
+		} else {
 			set_nbmisc_enable_bits(nb_dev, 0xc, 0, 0x2 << 2); /* hide the GFX bridge. */
-			printk_info("If dev3.., single port. Do nothing.\n");
+			printk(BIOS_INFO, "Single port. Do nothing.\n"); // If dev3
 		}
 
 		break;
@@ -1187,17 +1186,17 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
 			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 3, 1 << 3);
 		}
-		printk_info("rs780_gfx_init step1.\n");
+		printk(BIOS_DEBUG, "rs780_gfx_init step1.\n");
 		/* step 1.1, dual-slot gfx configuration (only need if CMOS option is enabled) */
 		/* AMD calls the configuration CrossFire */
 		set_nbmisc_enable_bits(nb_dev, 0x0, 0xf << 8, 5 << 8);
-		printk_info("rs780_gfx_init step2.\n");
+		printk(BIOS_DEBUG, "rs780_gfx_init step2.\n");
 
-		printk_info("device = %x\n", dev->path.pci.devfn >> 3);
+		printk(BIOS_DEBUG, "device = %x\n", dev->path.pci.devfn >> 3);
 		dual_port_configuration(nb_dev, dev);
 		break;
 	default:
-		printk(BIOS_INFO, "Incorrect configuration of external gfx slot.\n");
+		printk(BIOS_INFO, "Incorrect configuration of external GFX slot.\n");
 		break;
 	}
 }

@@ -35,8 +35,8 @@
 #include <cpu/x86/msr.h>
 #include "rs780.h"
 
-void set_pcie_reset();
-void set_pcie_dereset();
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
 
 #define CLK_CNTL_INDEX	0x8
 #define CLK_CNTL_DATA	0xC
@@ -89,7 +89,7 @@ typedef struct _MMIORANGE
 
 MMIORANGE MMIO[8], CreativeMMIO[8];
 
-MMIORANGE* AllocMMIO(MMIORANGE* pMMIO)
+static MMIORANGE* AllocMMIO(MMIORANGE* pMMIO)
 {
 	int i;
 	for (i=0; i<8; i++)
@@ -99,7 +99,7 @@ MMIORANGE* AllocMMIO(MMIORANGE* pMMIO)
 	}
 	return 0;
 }
-void FreeMMIO(MMIORANGE* pMMIO)
+static void FreeMMIO(MMIORANGE* pMMIO)
 {
 	pMMIO->Base = 0;
 	pMMIO->Limit = 0;
@@ -115,7 +115,7 @@ void FreeMMIO(MMIORANGE* pMMIO)
 #define MMIO_ATTRIB_BOTTOM_TO_TOP 1<<1
 #define MMIO_ATTRIB_SKIP_ZERO 1<<2
 
-u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
+static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 {
 	int i;
 	MMIORANGE * TempRange;
@@ -139,7 +139,7 @@ u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 	return 0;
 }
 
-u8 FinalizeMMIO(MMIORANGE *pMMIO)
+static u8 FinalizeMMIO(MMIORANGE *pMMIO)
 {
 	int i, j, n = 0;
 	for(i=0; i<8; i++)
@@ -173,7 +173,7 @@ u8 FinalizeMMIO(MMIORANGE *pMMIO)
 	return n;
 }
 
-CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
+static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 {
 	CIM_STATUS Status = CIM_UNSUPPORTED;
 	u8 Bus, Dev, Reg, BusStart, BusEnd;
@@ -241,11 +241,10 @@ CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 	return Status;
 }
 
-void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
+static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
 {
 	int i, j, n = 7;
 	device_t k8_f1;
-	u32 temp32;
 
 	k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 
@@ -296,17 +295,15 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	volatile u32 * pointer;
 	int i;
 	u16 command;
-	u32 value, temp, Base32, Limit32;
-	CIM_STATUS Status;
+	u32 value;
 	u16 deviceid, vendorid;
 	device_t nb_dev = dev_find_slot(0, 0);
 	device_t k8_f2 = dev_find_slot(0, PCI_DEVFN(0x18, 2));
-	device_t k8_f1 = dev_find_slot(0, PCI_DEVFN(0x18, 1));
 	device_t k8_f0 = dev_find_slot(0, PCI_DEVFN(0x18, 0));
-	device_t dev0x14 = dev_find_slot(0, PCI_DEVFN(0x14, 4));
 
-	struct southbridge_amd_rs780_config *cfg =
-	    (struct southbridge_amd_rs780_config *)dev->chip_info;
+	/* We definetely will use this in future. Just leave it here. */
+	/*struct southbridge_amd_rs780_config *cfg =
+	   (struct southbridge_amd_rs780_config *)dev->chip_info;*/
 
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
 	vendorid = pci_read_config16(dev, PCI_VENDOR_ID);
@@ -430,7 +427,8 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	//vgainfo.ulSystemConfig |= 1<<1 | 1<<3 | 1<<4 | 1<<5 | 1<<6 | 1<<7 | 1;
 	vgainfo.ulBootUpReqDisplayVector = 0; //?
 	vgainfo.ulOtherDisplayMisc = 0; //?
-	vgainfo.ulDDISlot1Config = 0x000c0011; //0; //?
+	vgainfo.ulDDISlot1Config = 0x000c0011; //0; //VGA
+	//vgainfo.ulDDISlot1Config = 0x000c00FF; //0; //HDMI
 	vgainfo.ulDDISlot2Config = 0x00130022; //0; //?
 	vgainfo.ucMemoryType = 2;
 	/* UMA Channel Number: 1 or 2. */
@@ -978,7 +976,6 @@ static void dynamic_link_width_control(device_t nb_dev, device_t dev, u8 width)
 */
 void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 {
-	u16 reg16;
 	u32 reg32;
 	struct southbridge_amd_rs780_config *cfg =
 	    (struct southbridge_amd_rs780_config *)nb_dev->chip_info;
@@ -988,20 +985,6 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* GFX Core Initialization */
 	//if (port == 2) return;
-
-	/* step 1, lane reversal (only need if CMOS option is enabled) */
-	if (cfg->gfx_lane_reversal) {
-		set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
-		if (cfg->gfx_dual_slot)
-			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 3, 1 << 3);
-	}
-	printk(BIOS_INFO, "rs780_gfx_init step1.\n");
-
-	/* step 1.1, dual-slot gfx configuration (only need if CMOS option is enabled) */
-	/* AMD calls the configuration CrossFire */
-	if (cfg->gfx_dual_slot)
-		set_nbmisc_enable_bits(nb_dev, 0x0, 0xf << 8, 5 << 8);
-	printk(BIOS_INFO, "rs780_gfx_init step2.\n");
 
 	/* step 2, TMDS, (only need if CMOS option is enabled) */
 	if (cfg->gfx_tmds) {
@@ -1182,9 +1165,35 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* Single-port/Dual-port configureation. */
 	switch (cfg->gfx_dual_slot) {
 	case 0:
-		single_port_configuration(nb_dev, dev);
+		/* step 1, lane reversal (only need if CMOS option is enabled) */
+		if (cfg->gfx_lane_reversal) {
+			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
+		}
+		printk_info("rs780_gfx_init step1.\n");
+		printk_info("rs780_gfx_init step2.\n");
+
+		printk_info("device = %x\n", dev->path.pci.devfn >> 3);
+		if((dev->path.pci.devfn >> 3) == 2)
+			single_port_configuration(nb_dev, dev);
+		else{
+			set_nbmisc_enable_bits(nb_dev, 0xc, 0, 0x2 << 2); /* hide the GFX bridge. */
+			printk_info("If dev3.., single port. Do nothing.\n");
+		}
+
 		break;
 	case 1:
+		/* step 1, lane reversal (only need if CMOS option is enabled) */
+		if (cfg->gfx_lane_reversal) {
+			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 2, 1 << 2);
+			set_nbmisc_enable_bits(nb_dev, 0x33, 1 << 3, 1 << 3);
+		}
+		printk_info("rs780_gfx_init step1.\n");
+		/* step 1.1, dual-slot gfx configuration (only need if CMOS option is enabled) */
+		/* AMD calls the configuration CrossFire */
+		set_nbmisc_enable_bits(nb_dev, 0x0, 0xf << 8, 5 << 8);
+		printk_info("rs780_gfx_init step2.\n");
+
+		printk_info("device = %x\n", dev->path.pci.devfn >> 3);
 		dual_port_configuration(nb_dev, dev);
 		break;
 	default:

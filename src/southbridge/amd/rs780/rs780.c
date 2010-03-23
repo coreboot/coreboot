@@ -107,12 +107,12 @@ void static rs780_config_misc_clk(device_t nb_dev)
 	set_htiu_enable_bits(nb_dev, 0x05, 7 << 8, 7 << 8);
 }
 
-u32 get_vid_did(device_t dev)
+static u32 get_vid_did(device_t dev)
 {
 	return pci_read_config32(dev, 0);
 }
 
-void rs780_nb_pci_table(device_t nb_dev)
+static void rs780_nb_pci_table(device_t nb_dev)
 {	/* NBPOR_InitPOR function. */
 	u8 temp8;
 	u16 temp16;
@@ -191,7 +191,7 @@ void rs780_nb_pci_table(device_t nb_dev)
 #endif
 }
 
-void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
+static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 {
 	/* NB_InitGFXStraps */
 	u32 MMIOBase, apc04, apc18, apc24;
@@ -214,27 +214,27 @@ void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 	pci_write_config8(dev, 0x04, 0x02);
 
 	/* Program Straps. */
-	strap = MMIOBase + 0x15020;
+	strap = (volatile u32 *)(MMIOBase + 0x15020);
 #if (CONFIG_GFXUMA == 1)
 	*strap = 1<<7; /* the format of BIF_MEM_AP_SIZE. 001->256MB? */
 #else
 	*strap = 0; /* 128M SP memory, 000 -> 128MB */
 #endif
-	strap = MMIOBase + 0x15000;
+	strap = (volatile u32 *)(MMIOBase + 0x15000);
 	*strap = 0x2c006300;
-	strap = MMIOBase + 0x15010;
+	strap = (volatile u32 *)(MMIOBase + 0x15010);
 	*strap = 0x03015330;
-	//strap = MMIOBase + 0x15020;
+	//strap = (volatile u32 *)(MMIOBase + 0x15020);
 	//*strap |= 0x00000040; /* Disable HDA device. */
-	strap = MMIOBase + 0x15030;
+	strap = (volatile u32 *)(MMIOBase + 0x15030);
 	*strap = 0x00001002;
-	strap = MMIOBase + 0x15040;
+	strap = (volatile u32 *)(MMIOBase + 0x15040);
 	*strap = 0x00000000;
-	strap = MMIOBase + 0x15050;
+	strap = (volatile u32 *)(MMIOBase + 0x15050);
 	*strap = 0x00000000;
-	strap = MMIOBase + 0x15220;
+	strap = (volatile u32 *)(MMIOBase + 0x15220);
 	*strap = 0x03c03800;
-	strap = MMIOBase + 0x15060;
+	strap = (volatile u32 *)(MMIOBase + 0x15060);
 	*strap = 0x00000000;
 
 	/* BIF switches into normal functional mode. */

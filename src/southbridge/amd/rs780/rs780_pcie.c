@@ -101,20 +101,6 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 	}
 }
 
-static void pcie_init(struct device *dev)
-{
-	/* Enable pci error detecting */
-	u32 dword;
-
-	printk(BIOS_DEBUG, "pcie_init in rs780_pcie.c\n");
-
-	/* System error enable */
-	dword = pci_read_config32(dev, 0x04);
-	dword |= (1 << 8);	/* System error enable */
-	dword |= (1 << 30);	/* Clear possible errors */
-	pci_write_config32(dev, 0x04, dword);
-}
-
 /**********************************************************************
 **********************************************************************/
 static void switching_gppsb_configurations(device_t nb_dev, device_t sb_dev)
@@ -249,9 +235,6 @@ void disable_pcie_bar3(device_t nb_dev)
 *****************************************/
 void rs780_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 {
-	u8 reg8;
-	u16 reg16;
-	device_t sb_dev;
 	u32 gfx_gpp_sb_sel;
 	struct southbridge_amd_rs780_config *cfg =
 	    (struct southbridge_amd_rs780_config *)nb_dev->chip_info;
@@ -405,45 +388,4 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 	if (cfg->gpp_configuration != ((reg >> 7) & 0xf))
 		switching_gpp_configurations(nb_dev, sb_dev);
 	ValidatePortEn(nb_dev);
-}
-
-/*****************************************
-* Compliant with CIM_33's PCIEMiscClkProg
-*****************************************/
-void pcie_config_misc_clk(device_t nb_dev)
-{
-	u32 reg;
-	struct bus pbus; /* fake bus for dev0 fun1 */
-
-	reg = pci_read_config32(nb_dev, 0x4c);
-	reg |= 1 << 0;
-	pci_write_config32(nb_dev, 0x4c, reg);
-
-	if (AtiPcieCfg.Config & PCIE_GFX_CLK_GATING) {
-		/* TXCLK Clock Gating */
-		set_nbmisc_enable_bits(nb_dev, 0x07, 3 << 0, 3 << 0);
-		set_nbmisc_enable_bits(nb_dev, 0x07, 1 << 22, 1 << 22);
-		set_pcie_enable_bits(nb_dev, 0x11 | PCIE_CORE_INDEX_GFX, (3 << 6) | (~0xf), 3 << 6);
-
-		/* LCLK Clock Gating */
-		reg =  pci_cf8_conf1.read32(&pbus, 0, 1, 0x94);
-		reg &= ~(1 << 16);
-		pci_cf8_conf1.write32(&pbus, 0, 1, 0x94, reg);
-	}
-
-	if (AtiPcieCfg.Config & PCIE_GPP_CLK_GATING) {
-		/* TXCLK Clock Gating */
-		set_nbmisc_enable_bits(nb_dev, 0x07, 3 << 4, 3 << 4);
-		set_nbmisc_enable_bits(nb_dev, 0x07, 1 << 22, 1 << 22);
-		set_pcie_enable_bits(nb_dev, 0x11 | PCIE_CORE_INDEX_GPPSB, (3 << 6) | (~0xf), 3 << 6);
-
-		/* LCLK Clock Gating */
-		reg =  pci_cf8_conf1.read32(&pbus, 0, 1, 0x94);
-		reg &= ~(1 << 24);
-		pci_cf8_conf1.write32(&pbus, 0, 1, 0x94, reg);
-	}
-
-	reg = pci_read_config32(nb_dev, 0x4c);
-	reg &= ~(1 << 0);
-	pci_write_config32(nb_dev, 0x4c, reg);
 }

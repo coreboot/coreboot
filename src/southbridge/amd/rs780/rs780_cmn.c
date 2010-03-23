@@ -252,8 +252,8 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 	u32 lc_state, reg, current_link_width, lane_mask;
 	int8_t current, res = 0;
 	u32 gfx_gpp_sb_sel;
-	void set_pcie_dereset();
-	void set_pcie_reset();
+	void set_pcie_dereset(void);
+	void set_pcie_reset(void);
 
 	switch (port) {
 	case 2 ... 3:
@@ -265,6 +265,9 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 	case 9 ... 10:
 		gfx_gpp_sb_sel = PCIE_CORE_INDEX_GPP;
 		break;
+	default:
+		gfx_gpp_sb_sel = -1;
+		return 0;
 	}
 
 	while (count--) {

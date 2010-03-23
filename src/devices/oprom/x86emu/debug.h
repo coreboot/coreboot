@@ -42,8 +42,10 @@
 
 /*---------------------- Macros and type definitions ----------------------*/
 
+#ifdef CONFIG_DEFAULT_CONSOLE_LOGLEVEL
 /* printf is not available in coreboot... use printk */
 #define printf(x...) printk(BIOS_DEBUG, x)
+#endif
 
 /* checks to be enabled for "runtime" */
 

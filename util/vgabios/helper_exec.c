@@ -14,7 +14,7 @@
  * in xf86EnableIO(). Otherwise we won't trap
  * on PIO.
  */
-#include <x86emu.h>
+#include <x86emu/x86emu.h>
 #include "helper_exec.h"
 #include "test.h"
 #include <sys/io.h>

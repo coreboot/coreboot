@@ -10,7 +10,7 @@
 #define die(x) { perror(x); exit(1); }
 #define warn(x) { perror(x);  }
 
-#include <x86emu.h>
+#include <x86emu/x86emu.h>
 #include "helper_exec.h"
 #include "test.h"
 #include "pci-userspace.h"
@@ -139,7 +139,6 @@ int main(int argc, char **argv)
 	unsigned short initialip = 0, initialcs = 0, devfn = 0;
 	X86EMU_intrFuncs intFuncs[256];
 	void X86EMU_setMemBase(void *base, size_t size);
-	void X86EMU_setabseg(void *abseg);
 	void x86emu_dump_xregs(void);
 	int X86EMU_set_debug(int debug);
 	int debugflag = 0;
@@ -277,7 +276,7 @@ int main(int argc, char **argv)
 
 	current = &p;
 	X86EMU_setMemBase(biosmem, sizeof(biosmem));
-	X86EMU_setabseg(abseg);
+	M.abseg = (unsigned long)abseg;
 	X86EMU_setupPioFuncs(&myfuncs);
 	ioperm(0, 0x400, 1);
 

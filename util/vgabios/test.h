@@ -6,7 +6,7 @@
  */
 #ifndef XF86X86EMU_H_
 #define XF86X86EMU_H_
-#include <x86emu.h>
+#include <x86emu/x86emu.h>
 
 #define M _X86EMU_env
 

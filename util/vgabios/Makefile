@@ -7,29 +7,27 @@
 #
 
 CC       =  gcc
-CFLAGS   =  -Wall -Ix86emu/include -O2 -g
+CFLAGS   =  -Wall -Iinclude -I../../src/devices/oprom/include/ -O2 -g
 
-INTOBJS  =  int10.o int15.o int16.o int1a.o inte6.o
-OBJECTS  =  testbios.o helper_exec.o helper_mem.o $(INTOBJS)
-
-LIBS     =  x86emu/src/x86emu/libx86emu.a
+INTOBJS  = int10.o int15.o int16.o int1a.o inte6.o
+X86EMUOBJS  = sys.o decode.o ops.o ops2.o prim_ops.o fpu.o debug.o
+OBJS  =  testbios.o helper_exec.o helper_mem.o $(INTOBJS) $(X86EMUOBJS)
 
 # user space pci is the only option right now.
-OBJECTS += pci-userspace.o
+OBJS += pci-userspace.o
+
+LIBS=-lpci
 
 all: testbios
 
-testbios: $(OBJECTS) $(LIBS)
-	$(CC) -o testbios $(OBJECTS) $(LIBS) -lpci
+testbios: $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
  
 helper_exec.o: helper_exec.c test.h
 
-x86emu/src/x86emu/libx86emu.a:
-	$(MAKE) -C x86emu/src/x86emu/ -f makefile.linux
-
 clean:
-	$(MAKE) -C x86emu/src/x86emu/ -f makefile.linux clean
 	rm -f *.o *~ testbios
 
-distclean: clean
-	$(MAKE) -C x86emu/src/x86emu/ -f makefile.linux clean
+%.o: ../../src/devices/oprom/x86emu/%.c
+	$(CC) $(CFLAGS) -include stdio.h -c -o $@ $^
+

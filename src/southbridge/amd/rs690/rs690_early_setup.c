@@ -128,7 +128,7 @@ static void set_nbmc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 /*
 * Compliant with CIM_33's ATINB_PrepareInit
 */
-static void get_cpu_rev()
+static void get_cpu_rev(void)
 {
 	u32 eax, ebx, ecx, edx;
 	__asm__ volatile ("cpuid":"=a" (eax), "=b"(ebx), "=c"(ecx), "=d"(edx)
@@ -171,7 +171,7 @@ static u8 get_nb_rev(device_t nb_dev)
 * Compliant with CIM_33's ATINB_HTInit
 * Init HT link speed/width for rs690 -- k8 link
 *****************************************/
-static void rs690_htinit()
+static void rs690_htinit(void)
 {
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
@@ -229,7 +229,7 @@ static void rs690_htinit()
 *	Function2: DRAM and HT technology Trace mode configuration
 *	Function3: Miscellaneous configuration
 *******************************************************/
-static void k8_optimization()
+static void k8_optimization(void)
 {
 	device_t k8_f0, k8_f2, k8_f3;
 	msr_t msr;
@@ -443,7 +443,7 @@ static void rs690_por_init(device_t nb_dev)
 }
 
 /* enable CFG access to Dev8, which is the SB P2P Bridge */
-static void enable_rs690_dev8()
+static void enable_rs690_dev8(void)
 {
 	set_nbmisc_enable_bits(PCI_DEV(0, 0, 0), 0x00, 1 << 6, 1 << 6);
 }
@@ -453,14 +453,14 @@ static void enable_rs690_dev8()
 /*
 * Compliant with CIM_33's AtiNBInitEarlyPost (AtiInitNBBeforePCIInit).
 */
-static void rs690_before_pci_init()
+static void rs690_before_pci_init(void)
 {
 }
 
 /*
 * The calling sequence is same as CIM.
 */
-static void rs690_early_setup()
+static void rs690_early_setup(void)
 {
 	device_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "rs690_early_setup()\n");

@@ -702,25 +702,27 @@ void AMD_SetupPSIVID_d (u32 platform_type, u8 node)
  */
 BOOL AMD_CpuFindCapability (u8 node, u8 cap_count, u8 *offset)
 {
+       u32 reg;
 	u32 val;
 
 	/* get start of CPU HT Host Capabilities */
 	val = pci_read_config32(NODE_PCI(node, 0), 0x34);
-	val &= 0xFF;
+       val &= 0xFF;  //reg offset of first link
 
 	cap_count++;
 
 	/* Traverse through the capabilities. */
 	do {
-		val = pci_read_config32(NODE_PCI(node, 0), val);
+               reg = pci_read_config32(NODE_PCI(node, 0), val);
 		/* Is the capability block a HyperTransport capability block? */
-		if ((val & 0xFF) == 0x08) {
+               if ((reg & 0xFF) == 0x08) {
 			/* Is the HT capability block an HT Host Capability? */
-			if ((val & 0xE0000000) == (1 << 29))
+                       if ((reg & 0xE0000000) == (1 << 29))
 				cap_count--;
 		}
-		if (cap_count)
-			val = (val >> 8) & 0xFF;
+
+               if(cap_count)
+                   val = (reg >> 8)  & 0xFF; //update reg offset
 	} while (cap_count && val);
 
 	*offset = (u8) val;

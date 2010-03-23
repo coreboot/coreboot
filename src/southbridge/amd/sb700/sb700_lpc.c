@@ -94,7 +94,6 @@ static void sb700_lpc_read_resources(device_t dev)
 static void sb700_lpc_set_resources(struct device *dev)
 {
 	struct resource *res;
-	u8 byte;
 
 	pci_dev_set_resources(dev);
 

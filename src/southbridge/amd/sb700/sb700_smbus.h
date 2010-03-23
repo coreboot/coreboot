@@ -58,5 +58,8 @@
 #define axindxp_reg(reg, mask, val)	\
 	alink_ax_indx(1, (reg), (mask), (val))
 
+int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
+int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
+
 
 #endif

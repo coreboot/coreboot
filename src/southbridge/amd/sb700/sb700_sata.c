@@ -26,7 +26,7 @@
 #include <arch/io.h>
 #include "sb700.h"
 
-int sata_drive_detect(int portnum, u16 iobar)
+static int sata_drive_detect(int portnum, u16 iobar)
 {
 	u8 byte, byte2;
 	int i = 0;
@@ -59,7 +59,7 @@ static void sata_init(struct device *dev)
 	u16 word;
 	u32 dword;
 	u8 rev_id;
-	u8 *sata_bar5;
+	u32 sata_bar5;
 	u16 sata_bar0, sata_bar1, sata_bar2, sata_bar3, sata_bar4;
 	int i, j;
 
@@ -89,7 +89,7 @@ static void sata_init(struct device *dev)
 	rev_id = pci_read_config8(sm_dev, 0x08) - 0x28;
 
 	/* get base addresss */
-	sata_bar5 = (u8 *) (pci_read_config32(dev, 0x24) & ~0x3FF);
+	sata_bar5 = pci_read_config32(dev, 0x24) & ~0x3FF;
 	sata_bar0 = pci_read_config16(dev, 0x10) & ~0x7;
 	sata_bar1 = pci_read_config16(dev, 0x14) & ~0x3;
 	sata_bar2 = pci_read_config16(dev, 0x18) & ~0x7;
@@ -101,7 +101,7 @@ static void sata_init(struct device *dev)
 	printk(BIOS_SPEW, "sata_bar2=%x\n", sata_bar2);	/* 3040 */
 	printk(BIOS_SPEW, "sata_bar3=%x\n", sata_bar3);	/* 3080 */
 	printk(BIOS_SPEW, "sata_bar4=%x\n", sata_bar4);	/* 3000 */
-	printk(BIOS_SPEW, "sata_bar5=%p\n", sata_bar5);	/* e0309000 */
+	printk(BIOS_SPEW, "sata_bar5=%x\n", sata_bar5);	/* e0309000 */
 
 	/* disable combined mode */
 	byte = pci_read_config8(sm_dev, 0xAD);

@@ -35,8 +35,8 @@
 #include <device/pci_ids.h>
 #include <../../../northbridge/via/vx800/vx800.h>
 
-extern unsigned char AmlCode_dsdt[];
-extern unsigned char AmlCode_ssdt[];
+extern const acpi_header_t AmlCode_dsdt;
+extern const acpi_header_t AmlCode_ssdt;
 
 extern u32 wake_vec;
 
@@ -158,9 +158,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:     * DSDT\n");
 	dsdt = (acpi_header_t *) current;
-	current += ((acpi_header_t *) AmlCode_dsdt)->length;
-	memcpy((void *)dsdt, (void *)AmlCode_dsdt,
-	       ((acpi_header_t *) AmlCode_dsdt)->length);
+	current += AmlCode_dsdt.length;
+	memcpy((void *)dsdt, &AmlCode_dsdt, AmlCode_dsdt.length);
 	dsdt->checksum = 0; /* Don't trust iasl to get this right. */
 	dsdt->checksum = acpi_checksum(dsdt, dsdt->length);
 	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt, dsdt->length);
@@ -190,8 +189,8 @@ unsigned long write_acpi_tables(unsigned long start)
 #if 0
 	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
 	ssdt = (acpi_header_t *) current;
-	current += ((acpi_header_t *)AmlCode_ssdt)->length;
-	memcpy((void *)ssdt,(void *)AmlCode_ssdt, ((acpi_header_t *)AmlCode_ssdt)->length);
+	current += AmlCode_ssdt.length;
+	memcpy((void *)ssdt, &AmlCode_ssdt, AmlCode_ssdt.length);
 	ssdt->checksum = 0; /* Don't trust iasl to get this right. */
 	ssdt->checksum = acpi_checksum(ssdt, ssdt->length);
 	acpi_add_table(rsdp, ssdt);

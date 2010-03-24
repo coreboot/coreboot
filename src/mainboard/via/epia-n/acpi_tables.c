@@ -35,7 +35,7 @@
 #include <device/pci_ids.h>
 #include "../../../southbridge/via/vt8237r/vt8237r.h"
 
-extern unsigned char AmlCode[];
+extern const acpi_header_t AmlCode;
 
 /*
  * These four macros are copied from <arch/smp/mpspec.h>, I have to do this
@@ -161,8 +161,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:     * DSDT\n");
 	dsdt = (acpi_header_t *)current;
-	current += ((acpi_header_t *)AmlCode)->length;
-	memcpy((void *)dsdt,(void *)AmlCode, ((acpi_header_t *)AmlCode)->length);
+	current += AmlCode.length;
+	memcpy((void *)dsdt, &AmlCode, AmlCode.length);
 	dsdt->checksum = 0; // don't trust intel iasl compiler to get this right
 	dsdt->checksum = acpi_checksum(dsdt,dsdt->length);
 	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n",dsdt,dsdt->length);

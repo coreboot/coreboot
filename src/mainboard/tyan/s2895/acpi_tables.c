@@ -20,7 +20,7 @@
 #include <../../../northbridge/amd/amdk8/amdk8_acpi.h>
 #include <cpu/amd/model_fxx_powernow.h>
 
-extern unsigned char AmlCode[];
+extern const acpi_header_t AmlCode;
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -164,8 +164,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	current = ALIGN(current, 16);
 	dsdt = (acpi_header_t *) current;
 	printk(BIOS_DEBUG, "ACPI:    * DSDT %p\n", dsdt);
-	current += ((acpi_header_t *) AmlCode)->length;
-	memcpy((void*) dsdt, (void*)AmlCode, ((acpi_header_t*)AmlCode)->length);
+	current += AmlCode.length;
+	memcpy((void*) dsdt, &AmlCode, AmlCode.length);
 	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	current = ALIGN(current, 16);

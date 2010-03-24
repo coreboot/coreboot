@@ -38,11 +38,11 @@ static void dump_mem(unsigned start, unsigned end)
  }
 #endif
 
-extern unsigned char AmlCode[];
+extern const acpi_header_t AmlCode;
 #if CONFIG_ACPI_SSDTX_NUM >= 1
-extern unsigned char AmlCode_ssdt2[];
-extern unsigned char AmlCode_ssdt3[];
-extern unsigned char AmlCode_ssdt4[];
+extern const acpi_header_t AmlCode_ssdt2;
+extern const acpi_header_t AmlCode_ssdt3;
+extern const acpi_header_t AmlCode_ssdt4;
 #endif
 
 #define IO_APIC_ADDR	0xfec00000UL
@@ -198,7 +198,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *dsdt;
 	acpi_header_t *ssdt;
 	acpi_header_t *ssdtx;
-	unsigned char *p;
+	acpi_header_t const *p;
 
 	int i;
 
@@ -279,13 +279,13 @@ unsigned long write_acpi_tables(unsigned long start)
                 ssdtx = (acpi_header_t *)current;
                 switch(sysconf.hcid[i]) {
                 case 1: //8132
-                        p = AmlCode_ssdt2;
+                        p = &AmlCode_ssdt2;
                         break;
                 case 2: //8151
-                        p = AmlCode_ssdt3;
+                        p = &AmlCode_ssdt3;
                         break;
 		case 3: //8131
-                        p = AmlCode_ssdt4;
+                        p = &AmlCode_ssdt4;
                         break;
                 default:
                         continue;
@@ -308,9 +308,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* DSDT */
 	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
 	dsdt = (acpi_header_t *)current;
-	current += ((acpi_header_t *)AmlCode)->length;
-	memcpy((void *)dsdt,(void *)AmlCode, \
-			((acpi_header_t *)AmlCode)->length);
+	current += AmlCode.length;
+	memcpy((void *)dsdt, &AmlCode, AmlCode.length);
 	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	/* FDAT */

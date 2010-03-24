@@ -143,7 +143,7 @@ function create_config
 		printf "Using payload $PAYLOAD\n"
 	fi
 
-	$MAKE distclean obj=${build_dir}
+	$MAKE distclean O=${build_dir}
 	mkdir -p ${build_dir}
 
 	if [ "$CONFIG" != "" ]; then
@@ -181,7 +181,7 @@ function create_config
 		fi
 	fi
 
-	yes "" | $MAKE oldconfig obj=${build_dir} > ${build_dir}/config.log
+	yes "" | $MAKE oldconfig O=${build_dir} > ${build_dir}/config.log
 	ret=$?
 	mv .config.old $TARGET/${VENDOR}_${MAINBOARD}/config.in
 	if [ $ret -eq 0 ]; then
@@ -225,7 +225,7 @@ function compile_target
 	CURR=$( pwd )
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
-	eval $MAKE $silent -j $cpus obj=${build_dir} \
+	eval $MAKE $silent -j $cpus O=${build_dir} \
 		&> ${build_dir}/make.log
 	ret=$?
 	mv .config ${build_dir}/config.build

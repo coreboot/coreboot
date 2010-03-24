@@ -44,27 +44,34 @@ endif
 bootblock_inc += $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc
 bootblock_inc += $(src)/arch/i386/lib/walkcbfs.S
 
-bootblock_romccflags := -mcpu=i386
+bootblock_romccflags := -mcpu=i386 -O2
 ifeq ($(CONFIG_SSE),y)
-bootblock_romccflags := -mcpu=k7 -msse
+bootblock_romccflags := -mcpu=k7 -msse -O2
 endif
 
 $(obj)/bootblock/ldscript.ld: $(bootblock_ldscripts) $(obj)/ldoptions
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/bootblock
 	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
 
 $(obj)/bootblock/bootblock.c: $(bootblock_inc)
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/bootblock
 	printf '$(foreach crt0,config.h $(bootblock_inc),#include "$(crt0)"\n)' > $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.c
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/i386/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(obj)/romcc
-	$(obj)/romcc $(bootblock_romccflags) -O2 $(ROMCCFLAGS) $(INCLUDES) $< -o $@
+	@printf "    ROMCC      $(subst $(obj)/,,$(@)) $(<)\n"
+	$(CC) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
+		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d
+	$(obj)/romcc $(bootblock_romccflags) $(ROMCCFLAGS) $(INCLUDES) $< -o $@
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -87,6 +94,7 @@ $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $(initobjs) $(obj)/romstage/ldscr
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $@
 
 $(obj)/romstage/ldscript.ld: $(ldscripts) $(obj)/ldoptions
+	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/romstage
 	printf '$(foreach ldscript,ldoptions location.ld $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' > $@
 
@@ -96,9 +104,11 @@ $(obj)/romstage/crt0_includes.h: $(crt0s)
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.initobj.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(src)/arch/i386/init/crt0.S.lb $(obj)/romstage/crt0_includes.h
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 
 endif

@@ -216,11 +216,7 @@ define create_cc_template
 de$(EMPTY)fine $(1)_$(2)_template
 $(obj)/$$(1)%$(3).o: src/$$(1)%.$(2) $(obj)/config.h
 	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC) $(4) $$$$(CFLAGS) -c -o $$$$@ $$$$<
-
-$(obj)/$$(1)%$(3).o: obj/$$(1)%.$(2) $(obj)/config.h
-	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC) $(4) $$$$(CFLAGS) -c -o $$$$@ $$$$<
+	$(CC) $(4) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def
 endef
 
@@ -245,6 +241,9 @@ $(eval $(call usetemplate,drivers,S))
 $(eval $(call usetemplate,smmobjs,c))
 $(eval $(call usetemplate,smmobjs,S))
 
+DEPENDENCIES = $(objs:.o=.d) $(initobjs:.o=.d) $(drivers:.o=.d) $(smmobjs:.o=.d)
+-include $(DEPENDENCIES)
+
 printall:
 	@echo objs:=$(objs)
 	@echo initobjs:=$(initobjs)
@@ -252,6 +251,7 @@ printall:
 	@echo smmobjs:=$(smmobjs)
 	@echo alldirs:=$(alldirs)
 	@echo allsrc=$(allsrc)
+	@echo DEPENDENCIES=$(DEPENDENCIES)
 	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
 
 printcrt0s:
@@ -316,12 +316,13 @@ doxygen-clean:
 
 clean-for-update: doxygen-clean
 	rm -f $(objs) $(initobjs) $(drivers) $(smmobjs) .xcompile
+	rm -f $(DEPENDENCIES)
 	rm -f $(obj)/coreboot_ram* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
 	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*
 	rm -f $(obj)/option_table.* $(obj)/crt0_includes.h $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
-	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/failover.inc $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc 
+	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.*
 	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true

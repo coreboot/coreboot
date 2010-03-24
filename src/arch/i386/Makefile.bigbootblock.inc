@@ -23,10 +23,12 @@ $(obj)/crt0_includes.h: $(crt0s)
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.initobj.o: $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s
-	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -MMD -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(src)/arch/i386/init/crt0.S.lb $(obj)/crt0_includes.h
-	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 
 $(obj)/coreboot: $(initobjs) $(obj)/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

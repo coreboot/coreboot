@@ -3,6 +3,9 @@ obj-y += console.o
 obj-y += vtxprintf.o
 obj-y += vsprintf.o
 
+smmobj-y += printk.o
+smmobj-y += vtxprintf.o
+
 initobj-y += vtxprintf.o
 
 driver-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.o

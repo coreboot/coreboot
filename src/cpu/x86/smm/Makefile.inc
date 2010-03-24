@@ -27,7 +27,7 @@ smmobj-y += smiutil.o
 
 ifdef POST_EVALUATION
 
-$(obj)/cpu/x86/smm/smm.o: $(smmobjs) $(obj)/console/printk.o $(obj)/console/vtxprintf.o $(LIBGCC_FILE_NAME)
+$(obj)/cpu/x86/smm/smm.o: $(smmobjs)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
 
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj)/ldoptions

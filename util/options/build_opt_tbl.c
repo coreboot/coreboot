@@ -472,25 +472,6 @@ int main(int argc, char **argv)
 			fprintf(stderr, "Error - location is to big in line\n%s\n", line);
 			exit(1);
 		}
-		/* And since we are not ready to be fully general purpose yet.. */
-		if ((cs->range_start/8) != CONFIG_LB_CKS_RANGE_START) {
-			fprintf(stderr, "Error - Range start((value in file #%d), which is  byte #%d)"
-				"does not match the value of the config variable LB_CKS_RANGE_START)(%d) in line\n%s\n", 
-				cs->range_start, cs->range_start/8, CONFIG_LB_CKS_RANGE_START, line);
-			exit(1);
-		}
-		if ((cs->range_end/8) != CONFIG_LB_CKS_RANGE_END) {
-			fprintf(stderr, "Error - Range end ((value in file #%d), which is  byte #%d)"
-					"does not match the value of the config variable LB_CKS_RANGE_END (%d) in line\n%s\n", 
-					cs->range_end, cs->range_end/8, 
-					CONFIG_LB_CKS_RANGE_END, line);
-			exit(1);
-		}
-		if ((cs->location/8) != CONFIG_LB_CKS_LOC) {
-			fprintf(stderr, "Error - Location ((value in file #%d), which is  byte #%d) does not match LB_CKS_LOC (%d) in line\n%s\n", 
-				cs->location, cs->location/8, CONFIG_LB_CKS_LOC, line);
-			exit(1);
-		}
 
 		cs->tag = LB_TAG_OPTION_CHECKSUM;
 		cs->size = sizeof(*cs);

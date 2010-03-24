@@ -274,8 +274,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_facs(facs);
 
 	int len = ((acpi_header_t *)amlcodeptr)->length;
-	current += len;
 	dsdt = (acpi_header_t *) current;
+	current += len;
 	memcpy((void *) dsdt, amlcodeptr, len);
 
 	/* Fix up global NVS region for SMI handler. The GNVS region lives 

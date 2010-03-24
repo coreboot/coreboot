@@ -201,7 +201,7 @@ $(eval $(call evaluate_subdirs))
 define objs_asl_template
 $(obj)/$(1)%.o: src/$(1)%.asl
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
-	$(CPP) -D__ACPI__ -P $(CPPFLAGS) -include $(obj)/config.h -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
+	$(CPP) -D__ACPI__ -P -include $(obj)/config.h -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	iasl -p $$(basename $$@) -tc $$(basename $$@).asl
 	mv $$(basename $$@).hex $$(basename $$@).c
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c

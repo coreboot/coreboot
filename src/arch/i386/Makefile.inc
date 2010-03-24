@@ -199,11 +199,11 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/
 else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(obj)/option_table.h
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
+	$(CC) $(CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
 	printf "    CC         romstage.inc\n"
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(DEBUG_CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o $@.tmp1
+	$(CC) $(CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o $@.tmp1
 	printf "    POST       romstage.inc\n"
 	sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' $@.tmp1 > $@.tmp
 	mv $@.tmp $@

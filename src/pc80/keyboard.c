@@ -60,8 +60,8 @@
 #define KBD_REPLY_ACK		0xFA    // Command ACK
 #define KBD_REPLY_RESEND	0xFE    // Command NACK, send command again
 
-/* Wait 200ms for keyboard controller answers */
-#define KBC_TIMEOUT_IN_MS 200
+/* Wait 400ms for keyboard controller answers */
+#define KBC_TIMEOUT_IN_MS 400
 
 static int kbc_input_buffer_empty(void)
 {
@@ -85,7 +85,7 @@ static int kbc_output_buffer_full(void)
 	}
 
 	if (!timeout) {
-		printk(BIOS_WARNING, "Keyboard controller output buffer result timeout\n");
+		printk(BIOS_INFO, "Keyboard controller output buffer result timeout\n");
 	}
 	return !!timeout;
 }

@@ -143,7 +143,7 @@ function create_config
 		printf "Using payload $PAYLOAD\n"
 	fi
 
-	$MAKE distclean O=${build_dir}
+	$MAKE distclean obj=${build_dir}
 	mkdir -p ${build_dir}
 
 	if [ "$CONFIG" != "" ]; then
@@ -181,7 +181,7 @@ function create_config
 		fi
 	fi
 
-	yes "" | $MAKE oldconfig O=${build_dir} > ${build_dir}/config.log
+	yes "" | $MAKE oldconfig obj=${build_dir} > ${build_dir}/config.log
 	ret=$?
 	mv .config.old $TARGET/${VENDOR}_${MAINBOARD}/config.in
 	if [ $ret -eq 0 ]; then
@@ -218,8 +218,8 @@ function create_buildenv
 	echo "OUT=$TARGET/${VENDOR}_${MAINBOARD}" >> $MAKEFILE
 	echo "coreboot.rom:" >> $MAKEFILE
 	echo "	cp config.build \$(TOP)/.config" >> $MAKEFILE
-	echo "	cd \$(TOP); \$(MAKE) oldconfig O=\$(OUT)" >> $MAKEFILE
-	echo "	cd \$(TOP); \$(MAKE) O=\$(OUT)" >> $MAKEFILE
+	echo "	cd \$(TOP); \$(MAKE) oldconfig obj=\$(OUT)" >> $MAKEFILE
+	echo "	cd \$(TOP); \$(MAKE) obj=\$(OUT)" >> $MAKEFILE
 }
 
 function compile_target
@@ -235,7 +235,7 @@ function compile_target
 	CURR=$( pwd )
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
-	eval $MAKE $silent -j $cpus O=${build_dir} \
+	eval $MAKE $silent -j $cpus obj=${build_dir} \
 		&> ${build_dir}/make.log
 	ret=$?
 	mv .config ${build_dir}/config.build

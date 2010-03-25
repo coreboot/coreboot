@@ -55,6 +55,9 @@ silent=
 # clang mode enabled by -sb option.
 scanbuild=false
 
+# use ccache
+ccache=false
+
 # stackprotect mode enabled by -ns option.
 stackprotect=false
 
@@ -172,6 +175,11 @@ function create_config
 			echo "CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=$loglevel" >> .config
 			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL_$loglevel=y" >> .config
 			echo "CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$loglevel" >> .config
+		fi
+
+		if [ "$ccache" = "true" ]; then
+			printf "(ccache enabled) "
+			echo "CONFIG_CCACHE=y" >> .config
 		fi
 
 		if [ "$scanbuild" = "true" ]; then
@@ -495,6 +503,7 @@ function myhelp
 	printf "    [-s|--silent]                 omit compiler calls in logs\n"
 	printf "    [-ns|--nostackprotect]        use gcc -fno-stack-protector option\n"
 	printf "    [-sb|--scan-build]            use clang's static analyzer\n"
+	printf "    [-y|--ccache]                 use ccache\n"
 	printf "    [-C|--config]                 configure-only mode\n"
 	printf "    [-l|--loglevel <num>]         set loglevel\n"
 	printf "    [lbroot]			  absolute path to coreboot sources\n"
@@ -530,11 +539,11 @@ test "$ROOT" = "" && ROOT=$( cd ../..; pwd )
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config,loglevel: Vvhat:bp:Tc:sxCl: -- "$@"`
+	args=`getopt -l version,verbose,help,all,target:,broken,payloads:,test,cpus:,silent,xml,config,loglevel:,ccache Vvhat:bp:Tc:sxCl:y -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vvhat:bp:Tc:sxCl:o $*`
+	args=`getopt Vvhat:bp:Tc:sxCl:y $*`
 	set -- $args
 fi
 
@@ -559,6 +568,7 @@ while true ; do
 		-s|--silent)    shift; silent="-s";;
 		-ns|--nostackprotect) shift; stackprotect=true;;
 		-sb|--scan-build) shift; scanbuild=true;;
+		-y|--ccache)    shift; ccache=true;;
 		-C|--config)    shift; configureonly=1;;
 		-l|--loglevel)  shift; loglevel="$1"; shift;;
 		--)		shift; break;;

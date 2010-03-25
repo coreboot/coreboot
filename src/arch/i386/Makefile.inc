@@ -195,7 +195,7 @@ ROMCCFLAGS ?= -mcpu=p2 -O2
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h
 	printf "    ROMCC      romstage.inc\n"
-	$(obj)/romcc $(ROMCCFLAGS) -include $(obj)/build.h $(INCLUDES) $< -o $@
+	$(ROMCC) -c -S $(ROMCCFLAGS) -include $(obj)/build.h -I. $(INCLUDES) $< -o $@
 
 else
 

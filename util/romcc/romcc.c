@@ -24968,10 +24968,14 @@ static void compile(const char *filename,
 	state.errout = stderr;
 	state.dbgout = stdout;
 	/* Remember the output filename */
-	state.output    = fopen(state.compiler->ofilename, "w");
-	if (!state.output) {
-		error(&state, 0, "Cannot open output file %s\n",
-			state.compiler->ofilename);
+	if ((state.compiler->flags & COMPILER_PP_ONLY) && (strcmp("auto.inc",state.compiler->ofilename) == 0)) {
+		state.output    = stdout;
+	} else {
+		state.output    = fopen(state.compiler->ofilename, "w");
+		if (!state.output) {
+			error(&state, 0, "Cannot open output file %s\n",
+				state.compiler->ofilename);
+		}
 	}
 	/* Make certain a good cleanup happens */
 	exit_state = &state;
@@ -25145,6 +25149,12 @@ int main(int argc, char **argv)
 			}
 			else if (strncmp(argv[1], "-m", 2) == 0) {
 				result = arch_encode_flag(&arch, argv[1]+2);
+			}
+			else if (strncmp(argv[1], "-c", 2) == 0) {
+				result = 0;
+			}
+			else if (strncmp(argv[1], "-S", 2) == 0) {
+				result = 0;
 			}
 			else if (strncmp(argv[1], "-include", 10) == 0) {
 				struct filelist *old_head = include_filelist;

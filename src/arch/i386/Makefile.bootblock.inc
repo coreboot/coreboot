@@ -71,7 +71,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/i386/init/$(subst ",
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
 		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d
-	$(obj)/romcc $(bootblock_romccflags) $(ROMCCFLAGS) $(INCLUDES) $< -o $@
+	$(ROMCC) -c -S $(bootblock_romccflags) $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
 
 $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootblock/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

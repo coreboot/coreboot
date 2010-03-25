@@ -61,6 +61,7 @@ endif
 endif
 
 CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
+ROMCC:= $(obj)/romcc
 HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g
@@ -83,6 +84,17 @@ ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 CC:=clang -m32
 HOSTCC:=clang
 endif
+endif
+
+ifeq ($(CONFIG_CCACHE),y)
+CCACHE:=CCACHE_COMPILERCHECK=content $(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH))))
+ifeq ($(CCACHE),)
+$(error ccache selected, but not found in PATH)
+endif
+CC := $(CCACHE) $(CC)
+HOSTCC := $(CCACHE) $(HOSTCC)
+HOSTCXX := $(CCACHE) $(HOSTCXX)
+ROMCC := $(CCACHE) $(ROMCC)
 endif
 
 strip_quotes = $(subst ",,$(subst \",,$(1)))

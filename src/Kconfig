@@ -62,6 +62,7 @@ endchoice
 config SCANBUILD_ENABLE
 	bool "Build with scan-build for static analysis"
 	default n
+	depends on !CCACHE
 	help
 	  Changes the build process to scan-build is used.
 	  Requires scan-build in path.
@@ -72,6 +73,13 @@ config SCANBUILD_REPORT_LOCATION
 	depends on SCANBUILD_ENABLE
 	help
 	  Where the scan-build report should be stored
+
+config CCACHE
+	bool "ccache"
+	default n
+	help
+	  Enables the use of ccache for faster builds.
+	  Requires ccache in path.
 
 endmenu
 

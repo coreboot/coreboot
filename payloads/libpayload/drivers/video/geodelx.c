@@ -287,5 +287,12 @@ struct video_console geodelx_video_console = {
 	.init = geodelx_init,
 	.putc = geodelx_putc,
 	.clear = geodelx_clear,
-	.scroll_up = geodelx_scroll_up
+	.scroll_up = geodelx_scroll_up,
+
+	/* TODO .get_cursor */
+	/* TODO .set_cursor */
+	/* TODO .enable_cursor */
+
+	.columns = 80,
+	.rows    = 25
 };

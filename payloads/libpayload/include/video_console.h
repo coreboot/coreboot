@@ -30,9 +30,6 @@
 #ifndef _VIDEO_CONSOLE_H
 #define _VIDEO_CONSOLE_H
 
-#define VIDEO_ROWS 25
-#define VIDEO_COLS 80
-
 struct video_console {
 	int (*init)(void);
 	void (*putc)(u8, u8, unsigned int);
@@ -42,6 +39,9 @@ struct video_console {
 	void (*get_cursor)(unsigned int *, unsigned int *, unsigned int *);
 	void (*set_cursor)(unsigned int, unsigned int);
 	void (*enable_cursor)(int);
+
+	unsigned int rows;
+	unsigned int columns;
 };
 
 #endif

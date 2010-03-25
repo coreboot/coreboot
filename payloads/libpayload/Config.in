@@ -116,6 +116,14 @@ config GEODELX_VIDEO_CONSOLE
 	depends on VIDEO_CONSOLE
 	default n
 
+config COREBOOT_VIDEO_CONSOLE
+	bool "coreboot video console driver"
+	depends on VIDEO_CONSOLE && !GEODELX_VIDEO_CONSOLE
+	default n
+	help
+	  Say Y here if coreboot switched to a graphics mode and
+	  your payload wants to use it.
+
 config PC_KEYBOARD
 	bool "Allow input from a PC keyboard"
 	default y

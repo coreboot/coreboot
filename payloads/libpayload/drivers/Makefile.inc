@@ -48,6 +48,10 @@ TARGETS-$(CONFIG_VGA_VIDEO_CONSOLE) += drivers/video/vga.o
 TARGETS-$(CONFIG_GEODELX_VIDEO_CONSOLE) += drivers/video/geodelx.o
 TARGETS-$(CONFIG_GEODELX_VIDEO_CONSOLE) += drivers/video/font8x16.o
 
+# coreboot generic framebuffer driver
+TARGETS-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += drivers/video/corebootfb.o
+TARGETS-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += drivers/video/font8x16.o
+
 # USB stack
 TARGETS-$(CONFIG_USB) += drivers/usb/usbinit.o
 TARGETS-$(CONFIG_USB) += drivers/usb/usb.o

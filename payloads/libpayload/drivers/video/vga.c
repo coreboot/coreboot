@@ -30,13 +30,15 @@
 #include <libpayload.h>
 #include <video_console.h>
 
+struct video_console vga_video_console;
+
 #define VGA_COLOR_WHITE 7
 
 #define CRTC_INDEX      0x3d4
 #define CRTC_DATA       0x3d5
 
 #define VIDEO(_r, _c)\
-  ((u16 *) (phys_to_virt(0xB8000) + ((_r) * (VIDEO_COLS * 2)) + ((_c) * 2)))
+  ((u16 *) (phys_to_virt(0xB8000) + ((_r) * (vga_video_console.columns * 2)) + ((_c) * 2)))
 
 static u8 crtc_read(u8 index)
 {
@@ -56,8 +58,8 @@ static void vga_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en)
 	addr = ((unsigned int) crtc_read(0x0E)) << 8;
 	addr += crtc_read(0x0F);
 
-	*x = addr % VIDEO_COLS;
-	*y = addr / VIDEO_COLS;
+	*x = addr % vga_video_console.columns;
+	*y = addr / vga_video_console.columns;
 
 	*en = !(crtc_read(0x0A) & (1 << 5));
 }
@@ -66,7 +68,7 @@ static void vga_set_cursor(unsigned int x, unsigned int y)
 {
 	unsigned int addr;
 
-	addr = x + (VIDEO_COLS * y);
+	addr = x + (vga_video_console.columns * y);
 	crtc_write(addr >> 8, 0x0E);
 	crtc_write(addr, 0x0F);
 }
@@ -89,7 +91,7 @@ static void vga_clear_line(u8 row, u8 ch, u8 attr)
 	int col;
 	u16 *ptr = VIDEO(row, 0);
 
-	for(col = 0; col < VIDEO_COLS; col++)
+	for(col = 0; col < vga_video_console.columns; col++)
 		ptr[col] = ((attr & 0xFF) << 8) | (ch & 0xFF);
 }
 
@@ -99,16 +101,16 @@ static void vga_scroll_up(void)
 	u16 *dst = VIDEO(0,0);
 	int i;
 
-	for(i = 0; i < (VIDEO_ROWS - 1) * VIDEO_COLS; i++)
+	for(i = 0; i < (vga_video_console.rows - 1) * vga_video_console.columns; i++)
 		*dst++ = *src++;
 
-	vga_clear_line(VIDEO_ROWS - 1, ' ', VGA_COLOR_WHITE);
+	vga_clear_line(vga_video_console.rows - 1, ' ', VGA_COLOR_WHITE);
 }
 
 static void vga_fill(u8 ch, u8 attr)
 {
 	u8 row;
-	for(row = 0; row < VIDEO_ROWS; row++)
+	for(row = 0; row < vga_video_console.rows; row++)
 		vga_clear_line(row, ch, attr);
 }
 
@@ -151,4 +153,7 @@ struct video_console vga_video_console = {
 	.get_cursor = vga_get_cursor,
 	.set_cursor = vga_set_cursor,
 	.enable_cursor = vga_enable_cursor,
+
+	.columns = 80,
+	.rows    = 25
 };

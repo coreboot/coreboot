@@ -136,6 +136,26 @@ struct cb_forward {
 	u64 forward;
 };
 
+#define CB_TAG_FRAMEBUFFER      0x0012
+struct cb_framebuffer {
+	u32 tag;
+	u32 size;
+
+	u64 physical_address;
+	u32 x_resolution;
+	u32 y_resolution;
+	u32 bytes_per_line;
+	u8 bits_per_pixel;
+        u8 red_mask_pos;
+	u8 red_mask_size;
+	u8 green_mask_pos;
+	u8 green_mask_size;
+	u8 blue_mask_pos;
+	u8 blue_mask_size;
+	u8 reserved_mask_pos;
+	u8 reserved_mask_size;
+};
+
 #define CB_TAG_CMOS_OPTION_TABLE 0x00c8
 struct cb_cmos_option_table {
 	u32 tag;

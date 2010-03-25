@@ -95,6 +95,13 @@ static void cb_parse_checksum(unsigned char *ptr, struct sysinfo_t *info)
 }
 #endif
 
+#ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
+static void cb_parse_framebuffer(unsigned char *ptr, struct sysinfo_t *info)
+{
+	info->framebuffer = (struct cb_framebuffer *)ptr;
+}
+#endif
+
 static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 {
 	struct cb_header *header;
@@ -145,6 +152,13 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_OPTION_CHECKSUM:
 			cb_parse_checksum(ptr, info);
+			break;
+#endif
+#ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
+		// FIXME we should warn on serial if coreboot set up a
+		// framebuffer buf the payload does not know about it.
+		case CB_TAG_FRAMEBUFFER:
+			cb_parse_framebuffer(ptr, info);
 			break;
 #endif
 		}

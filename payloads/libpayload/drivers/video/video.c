@@ -35,6 +35,10 @@
 extern struct video_console geodelx_video_console;
 #endif
 
+#ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
+extern struct video_console coreboot_video_console;
+#endif
+
 #ifdef CONFIG_VGA_VIDEO_CONSOLE
 extern struct video_console vga_video_console;
 #endif
@@ -43,6 +47,9 @@ static struct video_console *console_list[] =
 {
 #ifdef CONFIG_GEODELX_VIDEO_CONSOLE
 	&geodelx_video_console,
+#endif
+#ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
+	&coreboot_video_console,
 #endif
 #ifdef CONFIG_VGA_VIDEO_CONSOLE
 	&vga_video_console,
@@ -66,12 +73,12 @@ static void video_console_fixup_cursor(void)
 	if (cursory < 0)
 		cursory = 0;
 
-	if (cursorx >= VIDEO_COLS) {
+	if (cursorx >= console->columns) {
 		cursorx = 0;
 		cursory++;
 	}
 
-	while(cursory >= VIDEO_ROWS) {
+	while(cursory >= console->rows) {
 		console->scroll_up();
 		cursory--;
 	}
@@ -112,10 +119,12 @@ void video_console_putc(u8 row, u8 col, unsigned int ch)
 void video_console_putchar(unsigned int ch)
 {
 	/* replace black-on-black with light-gray-on-black.
-	   do it here, instead of in libc/console.c */
+	 * do it here, instead of in libc/console.c
+	 */
 	if ((ch & 0xFF00) == 0) {
 		ch |= 0x0700;
 	}
+
 	switch(ch & 0xFF) {
 	case '\r':
 		cursorx = 0;
@@ -129,12 +138,12 @@ void video_console_putchar(unsigned int ch)
 		cursorx--;
 		if (cursorx < 0) {
 			cursory--;
-			cursorx = VIDEO_COLS;
+			cursorx = console->columns;
 		}
 		break;
 
 	case '\t':
-		while(cursorx % 8 && cursorx < VIDEO_COLS) {
+		while(cursorx % 8 && cursorx < console->columns) {
 			if (console)
 				console->putc(cursory, cursorx, (ch & 0xFF00) | ' ');
 

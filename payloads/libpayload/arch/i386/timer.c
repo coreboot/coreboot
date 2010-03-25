@@ -88,7 +88,7 @@ static inline void _delay(unsigned long long delta)
  */
 void ndelay(unsigned int n)
 {
-	_delay(n * cpu_khz / 1000000);
+	_delay((unsigned long long)n * cpu_khz / 1000000);
 }
 
 /**
@@ -98,7 +98,7 @@ void ndelay(unsigned int n)
  */
 void udelay(unsigned int n)
 {
-	_delay(n * cpu_khz / 1000);
+	_delay((unsigned long long)n * cpu_khz / 1000);
 }
 
 /**
@@ -108,7 +108,7 @@ void udelay(unsigned int n)
  */
 void mdelay(unsigned int m)
 {
-	_delay(m * cpu_khz);
+	_delay((unsigned long long)m * cpu_khz);
 }
 
 /**
@@ -118,5 +118,7 @@ void mdelay(unsigned int m)
  */
 void delay(unsigned int s)
 {
-	_delay(s * cpu_khz * 1000);
+	int i;
+	for (i=0; i<1000; i++)
+		_delay((unsigned long long)s * cpu_khz);
 }

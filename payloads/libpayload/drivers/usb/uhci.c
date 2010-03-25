@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,6 +27,8 @@
  * SUCH DAMAGE.
  */
 
+//#define USB_DEBUG
+
 #include <usb/usb.h>
 #include "uhci.h"
 #include <arch/virtual.h>
@@ -35,8 +37,6 @@ static void uhci_start (hci_t *controller);
 static void uhci_stop (hci_t *controller);
 static void uhci_reset (hci_t *controller);
 static void uhci_shutdown (hci_t *controller);
-static int uhci_packet (usbdev_t *dev, int endp, int pid, int toggle,
-			int length, u8 *data);
 static int uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize);
 static int uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq,
 			 int dalen, u8 *data);
@@ -128,6 +128,8 @@ hci_t *
 uhci_init (pcidev_t addr)
 {
 	int i;
+	u16 reg16;
+
 	hci_t *controller = new_controller ();
 
 	if (!controller)
@@ -141,7 +143,6 @@ uhci_init (pcidev_t addr)
 	controller->stop = uhci_stop;
 	controller->reset = uhci_reset;
 	controller->shutdown = uhci_shutdown;
-	controller->packet = uhci_packet;
 	controller->bulk = uhci_bulk;
 	controller->control = uhci_control;
 	controller->create_intr_queue = uhci_create_intr_queue;
@@ -160,7 +161,9 @@ uhci_init (pcidev_t addr)
 	uhci_stop (controller);
 	mdelay (1);
 	uhci_reg_write16 (controller, USBSTS, 0x3f);
-	pci_write_config32 (controller->bus_address, 0xc0, 0x8f00);
+	reg16 = pci_read_config16(controller->bus_address, 0xc0);
+	reg16 &= 0xdf80;
+	pci_write_config16 (controller->bus_address, 0xc0, reg16);
 
 	UHCI_INST (controller)->framelistptr = memalign (0x1000, 1024 * sizeof (flistp_t *));	/* 4kb aligned to 4kb */
 	if (! UHCI_INST (controller)->framelistptr)
@@ -277,18 +280,6 @@ wait_for_completed_qh (hci_t *controller, qh_t *qh)
 		0) ? 0 : GET_TD (phys_to_virt (qh->elementlinkptr.ptr));
 }
 
-static void
-wait_for_completed_td (hci_t *controller, td_t *td)
-{
-	int timeout = 10000;
-	while ((td->status_active == 1)
-	       && ((uhci_reg_read16 (controller, USBSTS) & 2) == 0)
-	       && (timeout-- > 0)) {
-		uhci_reg_mask16 (controller, USBSTS, ~0, 0);	// clear resettable registers
-		udelay (10);
-	}
-}
-
 static int
 maxlen (int size)
 {
@@ -331,7 +322,7 @@ uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
 	tds[0].maxlen = maxlen (drlen);
 	tds[0].counter = 3;
 	tds[0].data_toggle = 0;
-	tds[0].lowspeed = dev->lowspeed;
+	tds[0].lowspeed = dev->speed;
 	tds[0].bufptr = virt_to_phys (devreq);
 	tds[0].status_active = 1;
 
@@ -343,7 +334,7 @@ uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
 		tds[i].maxlen = maxlen (min (mlen, dalen));
 		tds[i].counter = 3;
 		tds[i].data_toggle = toggle;
-		tds[i].lowspeed = dev->lowspeed;
+		tds[i].lowspeed = dev->speed;
 		tds[i].bufptr = virt_to_phys (data);
 		tds[i].status_active = 1;
 		toggle ^= 1;
@@ -357,7 +348,8 @@ uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
 	tds[count].maxlen = maxlen (0);
 	tds[count].counter = 0;	/* as per linux 2.4.10 */
 	tds[count].data_toggle = 1;
-	tds[count].lowspeed = dev->lowspeed, tds[count].bufptr = 0;
+	tds[count].lowspeed = dev->speed;
+	tds[count].bufptr = 0;
 	tds[count].status_active = 1;
 	UHCI_INST (dev->controller)->qh_data->elementlinkptr.ptr =
 		virt_to_phys (tds);
@@ -376,48 +368,6 @@ uhci_control (usbdev_t *dev, pid_t dir, int drlen, void *devreq, int dalen,
 	}
 	free (tds);
 	return result;
-}
-
-static int
-uhci_packet (usbdev_t *dev, int endp, int pid, int toggle, int length,
-	     unsigned char *data)
-{
-	static td_t *td = 0;
-	if (td == 0)
-		td = memalign (16, sizeof (td_t));
-
-	memset (td, 0, sizeof (td_t));
-	td->ptr = 0;
-	td->terminate = 1;
-	td->queue_head = 0;
-
-	td->pid = pid;
-	td->dev_addr = dev->address;
-	td->endp = endp & 0xf;
-	td->maxlen = maxlen (length);
-	if (pid == SETUP)
-		td->counter = 3;
-	else
-		td->counter = 0;
-	td->data_toggle = toggle & 1;
-	td->lowspeed = dev->lowspeed;
-	td->bufptr = virt_to_phys (data);
-
-	td->status_active = 1;
-
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.ptr =
-		virt_to_phys (td);
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.queue_head = 0;
-	UHCI_INST (dev->controller)->qh_data->elementlinkptr.terminate = 0;
-	wait_for_completed_td (dev->controller, td);
-	if ((td->status & 0x7f) == 0) {
-		//printf("successfully sent a %x packet to %x.%x\n",pid, dev->address,endp);
-		// success
-		return 0;
-	} else {
-		td_dump (td);
-		return 1;
-	}
 }
 
 static td_t *
@@ -454,7 +404,7 @@ fill_schedule (td_t *td, endpoint_t *ep, int length, unsigned char *data,
 	else
 		td->counter = 0;
 	td->data_toggle = *toggle & 1;
-	td->lowspeed = ep->dev->lowspeed;
+	td->lowspeed = ep->dev->speed;
 	td->bufptr = virt_to_phys (data);
 
 	td->status_active = 1;
@@ -484,7 +434,7 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 {
 	int maxpsize = ep->maxpacketsize;
 	if (maxpsize == 0)
-		fatal ("MaxPacketSize == 0!!!");
+		usb_fatal ("MaxPacketSize == 0!!!");
 	int numpackets = (size + maxpsize - 1 + finalize) / maxpsize;
 	if (numpackets == 0)
 		return 0;
@@ -498,6 +448,7 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 		size -= maxpsize;
 	}
 	if (run_schedule (ep->dev, tds) == 1) {
+		debug("Stalled. Trying to clean up.\n");
 		clear_stall (ep);
 		free (tds);
 		return 1;
@@ -557,7 +508,7 @@ uhci_create_intr_queue (endpoint_t *ep, int reqsize, int reqcount, int reqtiming
 		tds[i].maxlen = maxlen (reqsize);
 		tds[i].counter = 0;
 		tds[i].data_toggle = ep->toggle & 1;
-		tds[i].lowspeed = ep->dev->lowspeed;
+		tds[i].lowspeed = ep->dev->speed;
 		tds[i].bufptr = virt_to_phys (data);
 		tds[i].status_active = 1;
 		ep->toggle ^= 1;

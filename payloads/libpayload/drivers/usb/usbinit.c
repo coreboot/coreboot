@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,6 +30,9 @@
 #include <libpayload-config.h>
 #include <usb/usb.h>
 #include "uhci.h"
+//#include "ohci.h"
+//#include "ehci.h"
+//#include "xhci.h"
 #include <usb/usbdisk.h>
 
 /**
@@ -58,20 +61,19 @@ usb_controller_initialize (int bus, int dev, int func)
 	/* enable busmaster */
 #define PCI_COMMAND 4
 #define PCI_COMMAND_MASTER 4
-	pci_write_config32 (addr, PCI_COMMAND,
-			    pci_read_config32 (addr,
-					       PCI_COMMAND) |
-			    PCI_COMMAND_MASTER);
-
 	if (devclass == 0xc03) {
+		u32 pci_command;
+
+		pci_command =pci_read_config32(addr, PCI_COMMAND);
+		pci_command |= PCI_COMMAND_MASTER;
+		pci_write_config32(addr, PCI_COMMAND, pci_command);
+
 		printf ("%02x:%02x.%x %04x:%04x.%d ", 0, dev, func,
 			pciid >> 16, pciid & 0xFFFF, func);
 		if (prog_if == 0) {
 			printf ("UHCI controller\n");
 #ifdef CONFIG_USB_UHCI
 			uhci_init (addr);
-			usb_poll ();
-			usb_poll ();
 #else
 			printf ("Not supported.\n");
 #endif
@@ -79,7 +81,8 @@ usb_controller_initialize (int bus, int dev, int func)
 		if (prog_if == 0x10) {
 			printf ("OHCI controller\n");
 #ifdef CONFIG_USB_OHCI
-			// ohci_init(addr);
+			//ohci_init(addr);
+			printf ("Not supported.\n");
 #else
 			printf ("Not supported.\n");
 #endif
@@ -88,7 +91,18 @@ usb_controller_initialize (int bus, int dev, int func)
 		if (prog_if == 0x20) {
 			printf ("EHCI controller\n");
 #ifdef CONFIG_USB_EHCI
-			// ehci_init(addr);
+			//ehci_init(addr);
+			printf ("Not supported.\n");
+#else
+			printf ("Not supported.\n");
+#endif
+
+		}
+		if (prog_if == 0x30) {
+			printf ("XHCI controller\n");
+#ifdef CONFIG_USB_XHCI
+			//xhci_init(addr);
+			printf ("Not supported.\n");
 #else
 			printf ("Not supported.\n");
 #endif
@@ -106,10 +120,17 @@ int
 usb_initialize (void)
 {
 	int bus, dev, func;
+	/* EHCI is defined by standards to be at a
+	 * higher function than the USB1 controllers.
+	 * We don't want to init USB1 + devices just to
+	 * "steal" those for USB2, so make sure USB2
+	 * comes first.
+	 */
 	for (bus = 0; bus < 256; bus++)
 		for (dev = 0; dev < 32; dev++)
-			for (func = 0; func < 8; func++)
+			for (func = 7; func >= 0 ; func--)
 				usb_controller_initialize (bus, dev, func);
+	usb_poll();
 	return 0;
 }
 

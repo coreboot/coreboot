@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -26,6 +26,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
+//#define USB_DEBUG
 
 #include <libpayload-config.h>
 #include <usb/usb.h>
@@ -69,7 +71,7 @@ detach_controller (hci_t *controller)
  * Polls all hubs on all USB controllers, to find out about device changes
  */
 void
-usb_poll ()
+usb_poll (void)
 {
 	if (usb_hcs == 0)
 		return;
@@ -78,8 +80,7 @@ usb_poll ()
 		int i;
 		for (i = 0; i < 128; i++) {
 			if (controller->devices[i] != 0) {
-				controller->devices[i]->poll (controller->
-							     devices[i]);
+				controller->devices[i]->poll (controller->devices[i]);
 			}
 		}
 		controller = controller->next;
@@ -150,7 +151,7 @@ get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
 
 	if (descType == 1) {
 		device_descriptor_t *dd = (device_descriptor_t *) buf;
-		printf ("maxPacketSize0: %x\n", dd->bMaxPacketSize0);
+		debug ("maxPacketSize0: %x\n", dd->bMaxPacketSize0);
 		if (dd->bMaxPacketSize0 != 0)
 			dev->endpoints[0].maxpacketsize = dd->bMaxPacketSize0;
 	}
@@ -204,6 +205,7 @@ clear_stall (endpoint_t *ep)
 	dr.wIndex = endp;
 	dr.wLength = 0;
 	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+	ep->toggle = 0;
 	return 0;
 }
 
@@ -221,7 +223,7 @@ get_free_address (hci_t *controller)
 }
 
 int
-set_address (hci_t *controller, int lowspeed)
+set_address (hci_t *controller, int speed)
 {
 	int adr = get_free_address (controller);	// address to set
 	dev_req_t dr;
@@ -241,7 +243,7 @@ set_address (hci_t *controller, int lowspeed)
 	usbdev_t *dev = controller->devices[adr];
 	// dummy values for registering the address
 	dev->address = 0;
-	dev->lowspeed = lowspeed;
+	dev->speed = speed;
 	dev->endpoints[0].dev = dev;
 	dev->endpoints[0].endpoint = 0;
 	dev->endpoints[0].maxpacketsize = 8;
@@ -254,26 +256,25 @@ set_address (hci_t *controller, int lowspeed)
 	}
 	mdelay (50);
 	dev->address = adr;
-	dev->descriptor =
-		get_descriptor (dev,
-				gen_bmRequestType (device_to_host,
-						   standard_type, dev_recp),
-				1, 0, 0);
+	dev->descriptor = get_descriptor (dev, gen_bmRequestType 
+		(device_to_host, standard_type, dev_recp), 1, 0, 0);
 	dd = (device_descriptor_t *) dev->descriptor;
-	printf ("device version: %x.%x\n", dd->bcdUSB >> 8,
-		dd->bcdUSB & 0xff);
-	printf ("device has %x configurations\n", dd->bNumConfigurations);
+
+	printf ("device 0x%04x:0x%04x is USB %x.%x ",
+		 dd->idVendor, dd->idProduct,	
+		 dd->bcdUSB >> 8, dd->bcdUSB & 0xff);
+	dev->quirks = usb_quirk_check(dd->idVendor, dd->idProduct);
+
+	debug ("\ndevice has %x configurations\n", dd->bNumConfigurations);
 	if (dd->bNumConfigurations == 0) {
 		/* device isn't usable */
-		printf ("no usable configuration!\n");
+		printf ("... no usable configuration!\n");
 		dev->address = 0;
 		return -1;
 	}
-	dev->configuration =
-		get_descriptor (dev,
-				gen_bmRequestType (device_to_host,
-						   standard_type, dev_recp),
-				2, 0, 0);
+
+	dev->configuration = get_descriptor (dev, gen_bmRequestType
+		(device_to_host, standard_type, dev_recp), 2, 0, 0);
 	cd = (configuration_descriptor_t *) dev->configuration;
 	set_configuration (dev);
 	interface_descriptor_t *interface =
@@ -282,24 +283,33 @@ set_address (hci_t *controller, int lowspeed)
 		int i;
 		int num = cd->bNumInterfaces;
 		interface_descriptor_t *current = interface;
-		printf ("device has %x interfaces\n", num);
-		if (num>1)
-			printf ("NOTICE: This driver defaults to using the first interface.\n"
-				"This might be the wrong choice and lead to limited functionality\n"
-				"of the device. Please report such a case to coreboot@coreboot.org\n"
-				"as you might be the first.\n");
-		/* we limit to the first interface, as there was no need to
-		   implement something else for the time being. If you need
-		   it, see the SetInterface and GetInterface functions in
-		   the USB specification, and adapt appropriately. */
-		num = (num > 1) ? 1 : num;
+		debug ("device has %x interfaces\n", num);
+		if (num > 1) {
+			int interfaces = usb_interface_check(dd->idVendor, dd->idProduct);
+			if (interfaces) {
+				/* Well known device, don't warn */
+				num = interfaces;
+			} else {
+
+				printf ("\nNOTICE: This driver defaults to using the first interface.\n"
+					"This might be the wrong choice and lead to limited functionality\n"
+					"of the device. Please report such a case to coreboot@coreboot.org\n"
+					"as you might be the first.\n");
+				/* we limit to the first interface, as there was no need to
+				 * implement something else for the time being. If you need
+				 * it, see the SetInterface and GetInterface functions in
+				 * the USB specification, and adapt appropriately.
+				 */
+				num = (num > 1) ? 1 : num;
+			}
+		}
 		for (i = 0; i < num; i++) {
 			int j;
-			printf (" #%x has %x endpoints, interface %x:%x, protocol %x\n", current->bInterfaceNumber, current->bNumEndpoints, current->bInterfaceClass, current->bInterfaceSubClass, current->bInterfaceProtocol);
+			debug (" #%x has %x endpoints, interface %x:%x, protocol %x\n",
+					current->bInterfaceNumber, current->bNumEndpoints, current->bInterfaceClass, current->bInterfaceSubClass, current->bInterfaceProtocol);
 			endpoint_descriptor_t *endp =
 				(endpoint_descriptor_t *) (((char *) current)
-							   +
-							   current->bLength);
+							   + current->bLength);
 			if (interface->bInterfaceClass == 0x3)
 				endp = (endpoint_descriptor_t *) (((char *) endp) + ((char *) endp)[0]);	// ignore HID descriptor
 			memset (dev->endpoints, 0, sizeof (dev->endpoints));
@@ -309,11 +319,12 @@ set_address (hci_t *controller, int lowspeed)
 			dev->endpoints[0].direction = SETUP;
 			dev->endpoints[0].type = CONTROL;
 			for (j = 1; j <= current->bNumEndpoints; j++) {
-				static const char *transfertypes[4] =
-					{ "control", "isochronous", "bulk",
-					"interrupt"
+#ifdef USB_DEBUG
+				static const char *transfertypes[4] = {
+					"control", "isochronous", "bulk", "interrupt"
 				};
-				printf ("   #%x: Endpoint %x (%s), max packet size %x, type %s\n", j, endp->bEndpointAddress & 0x7f, ((endp->bEndpointAddress & 0x80) != 0) ? "in" : "out", endp->wMaxPacketSize, transfertypes[endp->bmAttributes]);
+				debug ("   #%x: Endpoint %x (%s), max packet size %x, type %s\n", j, endp->bEndpointAddress & 0x7f, ((endp->bEndpointAddress & 0x80) != 0) ? "in" : "out", endp->wMaxPacketSize, transfertypes[endp->bmAttributes]);
+#endif
 				endpoint_t *ep =
 					&dev->endpoints[dev->num_endp++];
 				ep->dev = dev;
@@ -330,36 +341,94 @@ set_address (hci_t *controller, int lowspeed)
 			current = (interface_descriptor_t *) endp;
 		}
 	}
+
 	int class = dd->bDeviceClass;
 	if (class == 0)
 		class = interface->bInterfaceClass;
 
-	enum { hid_device = 0x3, msc_device = 0x8, hub_device = 0x9 };
+	enum {
+		audio_device      = 0x01,
+		comm_device       = 0x02,
+		hid_device        = 0x03,
+		physical_device   = 0x05,
+		imaging_device    = 0x06,
+		printer_device    = 0x07,
+		msc_device        = 0x08,
+		hub_device        = 0x09,
+		cdc_device        = 0x0a,
+		ccid_device       = 0x0b,
+		security_device   = 0x0d,
+		video_device      = 0x0e,
+		healthcare_device = 0x0f,
+		diagnostic_device = 0xdc,
+		wireless_device   = 0xe0,
+		misc_device       = 0xef,
+	};
 
-	printf ("device of class %x found\n", class);
-	if (class == hub_device) {
-		printf ("hub found\n");
-#ifdef CONFIG_USB_HUB
-		controller->devices[adr]->init = usb_hub_init;
-#else
-		printf ("support not compiled in\n");
-#endif
-	}
-	if (class == hid_device) {
-		printf ("HID found\n");
+	switch (class) {
+	case audio_device:
+		printf("(Audio)\n");
+		break;
+	case comm_device:
+		printf("(Communication)\n");
+		break;
+	case hid_device:
+		printf ("(HID)\n");
 #ifdef CONFIG_USB_HID
 		controller->devices[adr]->init = usb_hid_init;
 #else
-		printf ("support not compiled in\n");
+		printf ("NOTICE: USB HID support not compiled in\n");
 #endif
-	}
-	if (class == msc_device) {
-		printf ("MSC found\n");
+		break;
+	case physical_device:
+		printf("(Physical)\n");
+		break;
+	case imaging_device:
+		printf("(Camera)\n");
+		break;
+	case printer_device:
+		printf("(Printer)\n");
+		break;
+	case msc_device:
+		printf ("(MSC)\n");
 #ifdef CONFIG_USB_MSC
 		controller->devices[adr]->init = usb_msc_init;
 #else
-		printf ("support not compiled in\n");
+		printf ("NOTICE: USB MSC support not compiled in\n");
 #endif
+		break;
+	case hub_device:
+		printf ("(Hub)\n");
+#ifdef CONFIG_USB_HUB
+		controller->devices[adr]->init = usb_hub_init;
+#else
+		printf ("NOTICE: USB hub support not compiled in.\n");
+#endif
+		break;
+	case cdc_device:
+		printf("(CDC)\n");
+		break;
+	case ccid_device:
+		printf ("(Smart Card / CCID)\n");
+		break;
+	case security_device:
+		printf("(Content Security)\n");
+		break;
+	case video_device:
+		printf("(Video)\n");
+		break;
+	case healthcare_device:
+		printf("(Healthcare)\n");
+		break;
+	case diagnostic_device:
+		printf("(Diagnostic)\n");
+		break;
+	case wireless_device:
+		printf("(Wireless)\n");
+		break;
+	default:
+		printf ("(unsupported class %x)\n", class);
+		break;
 	}
 	return adr;
 }
@@ -373,10 +442,11 @@ usb_detach_device(hci_t *controller, int devno)
 }
 
 int
-usb_attach_device(hci_t *controller, int hubaddress, int port, int lowspeed)
+usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
 {
-	printf ("%sspeed device\n", (lowspeed == 1) ? "low" : "full");
-	int newdev = set_address (controller, lowspeed);
+	static const char* speeds[] = { "full", "low", "high" };
+	printf ("%sspeed device\n", (speed <= 2) ? speeds[speed] : "invalid value - no");
+	int newdev = set_address (controller, speed);
 	if (newdev == -1)
 		return -1;
 	usbdev_t *newdev_t = controller->devices[newdev];

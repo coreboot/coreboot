@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,6 +27,8 @@
  * SUCH DAMAGE.
  */
 
+// #define USB_DEBUG
+
 #include <usb/usb.h>
 #include <curses.h>
 
@@ -35,7 +37,9 @@ typedef enum { hid_proto_boot = 0, hid_proto_report = 1 } hid_proto;
 enum { hid_boot_proto_none = 0, hid_boot_proto_keyboard =
 		1, hid_boot_proto_mouse = 2
 };
+#ifdef USB_DEBUG
 static const char *boot_protos[3] = { "(none)", "keyboard", "mouse" };
+#endif
 enum { GET_REPORT = 0x1, GET_IDLE = 0x2, GET_PROTOCOL = 0x3, SET_REPORT =
 		0x9, SET_IDLE = 0xa, SET_PROTOCOL = 0xb
 };
@@ -48,72 +52,295 @@ usb_hid_destroy (usbdev_t *dev)
 
 typedef struct {
 	void* queue;
+	hid_descriptor_t *descriptor;
 } usbhid_inst_t;
 
 #define HID_INST(dev) ((usbhid_inst_t*)(dev)->data)
 
-/* buffer is global to all keyboard drivers */
-int count;
-short keybuffer[16];
+/* keybuffer is global to all USB keyboards */
+static int keycount;
+#define KEYBOARD_BUFFER_SIZE 16
+static short keybuffer[KEYBOARD_BUFFER_SIZE];
 
-int keypress;
-short keymap[256] = {
-	-1, -1, -1, -1, 'a', 'b', 'c', 'd',
-	'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
-
-	'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-	'u', 'v', 'w', 'x', 'y', 'z', '1', '2',
-
-	'3', '4', '5', '6', '7', '8', '9', '0',
-	'\n', '\e', '\b', '\t', ' ', '-', '=', '[',
-
-	']', '\\', -1, ';', '\'', '`', ',', '.',
-	'/', -1, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5), KEY_F(6),
-
-	KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), KEY_F(11), KEY_F(12), -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-/* 50 */
-	-1, -1, -1, -1, -1, '*', '-', '+',
-	-1, KEY_END, KEY_DOWN, KEY_NPAGE, KEY_LEFT, -1, KEY_RIGHT, KEY_HOME,
-
-	KEY_UP, KEY_PPAGE, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1,
-
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-	-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+char *countries[36][2] = {
+	{ "not supported", "us" },
+	{ "Arabic", "ae" },
+	{ "Belgian", "be" },
+	{ "Canadian-Bilingual", "ca" },
+	{ "Canadian-French", "ca" },
+	{ "Czech Republic", "cz" },
+	{ "Danish", "dk" },
+	{ "Finnish", "fi" },
+	{ "French", "fr" },
+	{ "German", "de" },
+	{ "Greek", "gr" },
+	{ "Hebrew", "il" },
+	{ "Hungary", "hu" },
+	{ "International (ISO)", "iso" },
+	{ "Italian", "it" },
+	{ "Japan (Katakana)", "jp" },
+	{ "Korean", "us" },
+	{ "Latin American", "us" },
+	{ "Netherlands/Dutch", "nl" },
+	{ "Norwegian", "no" },
+	{ "Persian (Farsi)", "ir" },
+	{ "Poland", "pl" },
+	{ "Portuguese", "pt" },
+	{ "Russia", "ru" }, 
+	{ "Slovakia", "sl" },
+	{ "Spanish", "es" },
+	{ "Swedish", "se" },
+	{ "Swiss/French", "ch" },
+	{ "Swiss/German", "ch" },
+	{ "Switzerland", "ch" },
+	{ "Taiwan", "tw" },
+	{ "Turkish-Q", "tr" },
+	{ "UK", "uk" },
+	{ "US", "us" },
+	{ "Yugoslavia", "yu" },
+	{ "Turkish-F", "tr" },
+	/* 36 - 255: Reserved */
 };
 
+
+
+struct layout_maps {
+	char *country;
+	short map[4][0x80];
+};
+
+static struct layout_maps *map;
+
+static struct layout_maps keyboard_layouts[] = {
+// #ifdef CONFIG_PC_KEYBOARD_LAYOUT_US
+{ .country = "us", .map = {
+	{ /* No modifier */
+	-1, -1, -1, -1, 'a', 'b', 'c', 'd',
+	'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+	/* 0x10 */
+	'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+	'u', 'v', 'w', 'x', 'y', 'z', '1', '2',
+	/* 0x20 */
+	'3', '4', '5', '6', '7', '8', '9', '0',
+	'\n', '\e', '\b', '\t', ' ', '-', '=', '[',
+	/* 0x30 */
+	']', '\\', -1, ';', '\'', '`', ',', '.',
+	'/', -1 /* CapsLk */, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5), KEY_F(6),
+	/* 0x40 */
+	KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), KEY_F(11), KEY_F(12), KEY_PRINT, -1 /* ScrLk */,
+	KEY_BREAK, KEY_IC, KEY_HOME, KEY_PPAGE, KEY_DC, KEY_END, KEY_NPAGE, KEY_RIGHT,
+	/* 50 */
+	KEY_LEFT, KEY_DOWN, KEY_UP, -1 /*NumLck*/, '/', '*', '-' /* = ? */, '+',
+	KEY_ENTER, KEY_END, KEY_DOWN, KEY_NPAGE, KEY_LEFT, -1, KEY_RIGHT, KEY_HOME,
+	/* 60 */
+	KEY_UP, KEY_PPAGE, -1, KEY_DC, -1 /* < > | */, -1 /* Win Key Right */, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	/* 70 */
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	 },
+	{ /* Shift modifier */
+	-1, -1, -1, -1, 'A', 'B', 'C', 'D',
+	'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+	/* 0x10 */
+	'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+	'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@',
+	/* 0x20 */
+	'#', '$', '%', '^', '&', '*', '(', ')',
+	'\n', '\e', '\b', '\t', ' ', '-', '=', '[',
+	/* 0x30 */
+	']', '\\', -1, ':', '\'', '`', ',', '.',
+	'/', -1 /* CapsLk */, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5), KEY_F(6),
+	/* 0x40 */
+	KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), KEY_F(11), KEY_F(12), KEY_PRINT, -1 /* ScrLk */,
+	KEY_BREAK, KEY_IC, KEY_HOME, KEY_PPAGE, KEY_DC, KEY_END, KEY_NPAGE, KEY_RIGHT,
+	/* 50 */
+	KEY_LEFT, KEY_DOWN, KEY_UP, -1 /*NumLck*/, '/', '*', '-' /* = ? */, '+',
+	KEY_ENTER, KEY_END, KEY_DOWN, KEY_NPAGE, KEY_LEFT, -1, KEY_RIGHT, KEY_HOME,
+	/* 60 */
+	KEY_UP, KEY_PPAGE, -1, KEY_DC, -1 /* < > | */, -1 /* Win Key Right */, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	/* 70 */
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	 },
+	{ /* Alt */
+	-1, -1, -1, -1, 'a', 'b', 'c', 'd',
+	'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+	/* 0x10 */
+	'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+	'u', 'v', 'w', 'x', 'y', 'z', '1', '2',
+	/* 0x20 */
+	'3', '4', '5', '6', '7', '8', '9', '0',
+	'\n', '\e', '\b', '\t', ' ', '-', '=', '[',
+	/* 0x30 */
+	']', '\\', -1, ';', '\'', '`', ',', '.',
+	'/', -1 /* CapsLk */, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5), KEY_F(6),
+	/* 0x40 */
+	KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), KEY_F(11), KEY_F(12), KEY_PRINT, -1 /* ScrLk */,
+	KEY_BREAK, KEY_IC, KEY_HOME, KEY_PPAGE, KEY_DC, KEY_END, KEY_NPAGE, KEY_RIGHT,
+	/* 50 */
+	KEY_LEFT, KEY_DOWN, KEY_UP, -1 /*NumLck*/, '/', '*', '-' /* = ? */, '+',
+	KEY_ENTER, KEY_END, KEY_DOWN, KEY_NPAGE, KEY_LEFT, -1, KEY_RIGHT, KEY_HOME,
+	/* 60 */
+	KEY_UP, KEY_PPAGE, -1, KEY_DC, -1 /* < > | */, -1 /* Win Key Right */, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	/* 70 */
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	 },
+	{ /* Shift+Alt modifier */
+	-1, -1, -1, -1, 'A', 'B', 'C', 'D',
+	'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+	/* 0x10 */
+	'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+	'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@',
+	/* 0x20 */
+	'#', '$', '%', '^', '&', '*', '(', ')',
+	'\n', '\e', '\b', '\t', ' ', '-', '=', '[',
+	/* 0x30 */
+	']', '\\', -1, ':', '\'', '`', ',', '.',
+	'/', -1 /* CapsLk */, KEY_F(1), KEY_F(2), KEY_F(3), KEY_F(4), KEY_F(5), KEY_F(6),
+	/* 0x40 */
+	KEY_F(7), KEY_F(8), KEY_F(9), KEY_F(10), KEY_F(11), KEY_F(12), KEY_PRINT, -1 /* ScrLk */,
+	KEY_BREAK, KEY_IC, KEY_HOME, KEY_PPAGE, KEY_DC, KEY_END, KEY_NPAGE, KEY_RIGHT,
+	/* 50 */
+	KEY_LEFT, KEY_DOWN, KEY_UP, -1 /*NumLck*/, '/', '*', '-' /* = ? */, '+',
+	KEY_ENTER, KEY_END, KEY_DOWN, KEY_NPAGE, KEY_LEFT, -1, KEY_RIGHT, KEY_HOME,
+	/* 60 */
+	KEY_UP, KEY_PPAGE, -1, KEY_DC, -1 /* < > | */, -1 /* Win Key Right */, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	/* 70 */
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1, -1, -1, -1,
+	 }
+}},
+//#endif
+};
+
+#define MOD_SHIFT    (1 << 0)
+#define MOD_ALT      (1 << 1)
+#define MOD_CTRL     (1 << 2)
+
+static void usb_hid_keyboard_queue(int ch) {
+	/* ignore key presses if buffer full */
+	if (keycount < KEYBOARD_BUFFER_SIZE)
+		keybuffer[keycount++] = ch;
+}
+
+typedef union {
+	struct {
+		u8 modifiers;
+		u8 repeats;
+		u8 keys[6];
+	};
+	u8 buffer[8];
+} usb_hid_keyboard_event_t;
+
+#define KEYBOARD_REPEAT_MS	30
+#define INITIAL_REPEAT_DELAY	10
+#define REPEAT_DELAY		 2
+
+static void 
+usb_hid_process_keyboard_event(usb_hid_keyboard_event_t *current, 
+		usb_hid_keyboard_event_t *previous)
+{
+	int i, keypress = 0, modifiers = 0;
+	static int lastkeypress = 0, repeat_delay = INITIAL_REPEAT_DELAY;
+
+	if (current->modifiers & 0x01) /* Left-Ctrl */   modifiers |= MOD_CTRL;
+	if (current->modifiers & 0x02) /* Left-Shift */  modifiers |= MOD_SHIFT;
+	if (current->modifiers & 0x04) /* Left-Alt */    modifiers |= MOD_ALT;
+	if (current->modifiers & 0x08) /* Left-GUI */    ;
+	if (current->modifiers & 0x10) /* Right-Ctrl */  modifiers |= MOD_CTRL;
+	if (current->modifiers & 0x20) /* Right-Shift */ modifiers |= MOD_SHIFT;
+	if (current->modifiers & 0x40) /* Right-AltGr */ modifiers |= MOD_ALT;
+	if (current->modifiers & 0x80) /* Right-GUI */   ;
+
+	if ((current->modifiers & 0x05) && ((current->keys[0] == 0x4c) ||
+				(current->keys[0]==0x63))) {
+		/* vulcan nerve pinch */
+		if (reset_handler)
+			reset_handler();
+	}
+
+	/* Did the event change at all? */
+	if (lastkeypress && !memcmp(current, previous, sizeof(usb_hid_keyboard_event_t))) {
+		/* No. Then it's a key repeat event. */
+		if (repeat_delay) {
+			repeat_delay--;
+		} else {
+			usb_hid_keyboard_queue(lastkeypress);
+			repeat_delay = REPEAT_DELAY;
+		}
+
+		return;
+	}
+
+	lastkeypress = 0;
+
+	for (i=0; i<6; i++) {
+		int j;
+		int skip = 0;
+		// No more keys? skip
+		if (current->keys[i] == 0)
+			return;
+
+		for (j=0; j<6; j++) {
+			if (current->keys[i] == previous->keys[j]) {
+				skip = 1;
+				break;
+			}
+		}
+		if (skip)
+			continue;
+
+
+		/* Mask off MOD_CTRL */
+		keypress = map->map[modifiers & 0x03][current->keys[i]];
+
+		if (modifiers & MOD_CTRL) {
+			switch (keypress) {
+			case 'a' ... 'z':
+				keypress &= 0x1f;
+				break;
+			default:
+				continue;
+			}
+		}
+
+		if (keypress == -1) {
+			/* Debug: Print unknown keys */
+			debug ("usbhid: <%x> %x [ %x %x %x %x %x %x ] %d\n",
+				current->modifiers, current->repeats,
+			current->keys[0], current->keys[1],
+			current->keys[2], current->keys[3],
+			current->keys[4], current->keys[5], i);
+
+			/* Unknown key? Try next one in the queue */
+			continue;
+		}
+
+		usb_hid_keyboard_queue(keypress);
+
+		/* Remember for authentic key repeat */
+		lastkeypress = keypress;
+		repeat_delay = INITIAL_REPEAT_DELAY;
+	}
+}
 
 static void
 usb_hid_poll (usbdev_t *dev)
 {
+	usb_hid_keyboard_event_t current;
+	static usb_hid_keyboard_event_t previous = {
+		.buffer = { 0, 0, 0, 0, 0, 0, 0, 0}
+	};
 	u8* buf;
 	while ((buf=dev->controller->poll_intr_queue (HID_INST(dev)->queue))) {
-		// FIXME: manage buf[0]=special keys, too
-		int i;
-		keypress = 0;
-		for (i=2; i<9; i++) {
-			if (buf[i] != 0)
-				keypress = keymap[buf[i]];
-			else
-				break;
-		}
-		if ((keypress == -1) && (buf[2] != 0)) {
-			printf ("%x %x %x %x %x %x %x %x\n", buf[0], buf[1], buf[2],
-				buf[3], buf[4], buf[5], buf[6], buf[7]);
-		}
-		if (keypress != -1) {
-			/* ignore key presses if buffer full */
-			if (count < 16)
-				keybuffer[count++] = keypress;
-		}
+		memcpy(&current.buffer, buf, 8);
+		usb_hid_process_keyboard_event(&current, &previous);
+		previous = current;
 	}
 }
 
@@ -150,6 +377,30 @@ static struct console_input_driver cons = {
 	.getchar = usbhid_getchar
 };
 
+
+int usb_hid_set_layout (char *country)
+{
+	/* FIXME should be per keyboard */
+	int i;
+
+	for (i=0; i<ARRAY_SIZE(keyboard_layouts); i++) {
+		if (strncmp(keyboard_layouts[i].country, country,
+					strlen(keyboard_layouts[i].country)))
+			continue;
+
+		/* Found, changing keyboard layout */
+		map = &keyboard_layouts[i];
+		printf("  Keyboard layout '%s'\n", map->country);
+		return 0;
+	}
+
+	printf("Keyboard layout '%s' not found, using '%s'\n",
+			country, map->country);
+
+	/* Nothing found, not changed */
+	return -1;
+}
+
 void
 usb_hid_init (usbdev_t *dev)
 {
@@ -164,17 +415,34 @@ usb_hid_init (usbdev_t *dev)
 	interface_descriptor_t *interface = (interface_descriptor_t*)(((char *) cd) + cd->bLength);
 
 	if (interface->bInterfaceSubClass == hid_subclass_boot) {
-		printf ("  supports boot interface..\n");
-		printf ("  it's a %s\n",
+		u8 countrycode;
+		debug ("  supports boot interface..\n");
+		debug ("  it's a %s\n",
 			boot_protos[interface->bInterfaceProtocol]);
-		if (interface->bInterfaceProtocol == hid_boot_proto_keyboard) {
+		switch (interface->bInterfaceProtocol) {
+		case hid_boot_proto_keyboard:
 			dev->data = malloc (sizeof (usbhid_inst_t));
 			if (!dev->data)
 				usb_fatal("Not enough memory for USB HID device.\n");
-			printf ("  configuring...\n");
+			debug ("  configuring...\n");
 			usb_hid_set_protocol(dev, interface, hid_proto_boot);
-			usb_hid_set_idle(dev, interface, 0);
-			printf ("  activating...\n");
+			usb_hid_set_idle(dev, interface, KEYBOARD_REPEAT_MS);
+			debug ("  activating...\n");
+
+			HID_INST (dev)->descriptor = 
+				(hid_descriptor_t *)
+					get_descriptor(dev, gen_bmRequestType
+					(device_to_host, standard_type, iface_recp), 
+					0x21, 0, 0);
+			countrycode = HID_INST(dev)->descriptor->bCountryCode;
+			/* 35 countries defined: */
+			if (countrycode > 35)
+				countrycode = 0;
+			printf ("  Keyboard has %s layout (country code %02x)\n", 
+					countries[countrycode][0], countrycode);
+
+			/* Set keyboard layout accordingly */
+			usb_hid_set_layout(countries[countrycode][1]);
 
 			// only add here, because we only support boot-keyboard HID devices
 			dev->destroy = usb_hid_destroy;
@@ -189,24 +457,33 @@ usb_hid_init (usbdev_t *dev)
 					continue;
 				break;
 			}
-			printf ("  found endpoint %x for interrupt-in\n", i);
+			debug ("  found endpoint %x for interrupt-in\n", i);
 			/* 20 buffers of 8 bytes, for every 10 msecs */
 			HID_INST(dev)->queue = dev->controller->create_intr_queue (&dev->endpoints[i], 8, 20, 10);
-			count = 0;
-			printf ("  configuration done.\n");
+			keycount = 0;
+			debug ("  configuration done.\n");
+			break;
+		case hid_boot_proto_mouse:
+			printf("NOTICE: USB mice are not supported.\n");
+			break;
 		}
 	}
 }
 
 int usbhid_havechar (void)
 {
-	return (count != 0);
+	return (keycount != 0);
 }
 
 int usbhid_getchar (void)
 {
-	if (count == 0) return 0;
-	short ret = keybuffer[0];
-	memmove (keybuffer, keybuffer+1, --count);
-	return ret;
+	short ret;
+
+	if (keycount == 0)
+		return 0;
+	ret = keybuffer[0];
+	memmove(keybuffer, keybuffer + 1, --keycount);
+
+	return (int)ret;
 }
+

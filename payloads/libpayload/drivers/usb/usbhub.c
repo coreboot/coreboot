@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -74,9 +74,15 @@ usb_hub_scanport (usbdev_t *dev, int port)
 	mdelay (20);
 
 	get_status (dev, port, DR_PORT, 4, buf);
-	int lowspeed = (buf[0] >> 9) & 1;
 
-	HUB_INST (dev)->ports[port] = usb_attach_device(dev->controller, dev->address, port, lowspeed);
+	/* bit  10  9
+	 *      0   0  full speed
+	 *      0   1  low speed
+	 *      1   0  high speed
+	 */
+	int speed = ((buf[0] >> 9) & 3) ;
+
+	HUB_INST (dev)->ports[port] = usb_attach_device(dev->controller, dev->address, port, speed);
 }
 
 static int
@@ -93,7 +99,7 @@ usb_hub_report_port_changes (usbdev_t *dev)
 			return port;
 	}
 
-// no change
+	// no change
 	return -1;
 }
 
@@ -131,12 +137,8 @@ usb_hub_init (usbdev_t *dev)
 	if (!dev->data)
 		usb_fatal("Not enough memory for USB hub.\n");
 
-	HUB_INST (dev)->descriptor =
-		(hub_descriptor_t *) get_descriptor (dev,
-						     gen_bmRequestType
-						     (device_to_host,
-						      class_type, dev_recp),
-						     0x29, 0, 0);
+	HUB_INST (dev)->descriptor = (hub_descriptor_t *) get_descriptor(dev,
+		gen_bmRequestType(device_to_host, class_type, dev_recp), 0x29, 0, 0);
 	HUB_INST (dev)->num_ports = HUB_INST (dev)->descriptor->bNbrPorts;
 	HUB_INST (dev)->ports =
 		malloc (sizeof (int) * (HUB_INST (dev)->num_ports + 1));

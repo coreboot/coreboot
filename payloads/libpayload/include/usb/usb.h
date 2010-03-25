@@ -101,7 +101,8 @@ struct usbdev {
 	int address;		// usb address
 	int hub;		// hub, device is attached to
 	int port;		// port where device is attached
-	int lowspeed;		// 1 if lowspeed device
+	int speed;		// 1: lowspeed, 0: fullspeed, 2: highspeed
+	u32 quirks;		// quirks field. got to love usb
 	void *data;
 	u8 *descriptor;
 	u8 *configuration;
@@ -119,8 +120,6 @@ struct usbdev_hc {
 	void (*stop) (hci_t *controller);
 	void (*reset) (hci_t *controller);
 	void (*shutdown) (hci_t *controller);
-	int (*packet) (usbdev_t *dev, int endp, int pid, int toggle,
-		       int length, u8 *data);
 	int (*bulk) (endpoint_t *ep, int size, u8 *data, int finalize);
 	int (*control) (usbdev_t *dev, pid_t pid, int dr_length,
 			void *devreq, int data_length, u8 *data);
@@ -199,6 +198,16 @@ typedef struct {
 	unsigned char bInterval;
 } __attribute__ ((packed)) endpoint_descriptor_t;
 
+typedef struct {
+	unsigned char bLength;
+	unsigned char bDescriptorType;
+	unsigned short bcdHID;
+	unsigned char bCountryCode;
+	unsigned char bNumDescriptors;
+	unsigned char bReportDescriptorType;
+	unsigned short wReportDescriptorLength;
+} __attribute__ ((packed)) hid_descriptor_t;
+
 hci_t *new_controller (void);
 void detach_controller (hci_t *controller);
 void usb_poll (void);
@@ -213,7 +222,7 @@ void usb_hub_init (usbdev_t *dev);
 void usb_hid_init (usbdev_t *dev);
 void usb_msc_init (usbdev_t *dev);
 
-int set_address (hci_t *controller, int lowspeed);
+int set_address (hci_t *controller, int speed);
 
 u8 *get_descriptor (usbdev_t *dev, unsigned char bmRequestType,
 		    int descType, int descIdx, int langID);
@@ -225,7 +234,28 @@ gen_bmRequestType (dev_req_dir dir, dev_req_type type, dev_req_recp recp)
 }
 
 void usb_detach_device(hci_t *controller, int devno);
-int usb_attach_device(hci_t *controller, int hubaddress, int port, int lowspeed);
+int usb_attach_device(hci_t *controller, int hubaddress, int port, int speed);
+
+u32 usb_quirk_check(u16 vendor, u16 device);
+int usb_interface_check(u16 vendor, u16 device);
+
+#define USB_QUIRK_MSC_FORCE_PROTO_SCSI		(1 <<  0)
+#define USB_QUIRK_MSC_FORCE_PROTO_ATAPI		(1 <<  1)
+#define USB_QUIRK_MSC_FORCE_PROTO_UFI		(1 <<  2)
+#define USB_QUIRK_MSC_FORCE_PROTO_RBC		(1 <<  3)
+#define USB_QUIRK_MSC_FORCE_TRANS_BBB		(1 <<  4)
+#define USB_QUIRK_MSC_FORCE_TRANS_CBI		(1 <<  5)
+#define USB_QUIRK_MSC_FORCE_TRANS_CBI_I		(1 <<  6)
+#define USB_QUIRK_MSC_NO_TEST_UNIT_READY	(1 <<  7)
+#define USB_QUIRK_MSC_SHORT_INQUIRY		(1 <<  8)
+#define USB_QUIRK_TEST				(1 << 31)
+#define USB_QUIRK_NONE				 0
+
+#ifdef USB_DEBUG
+#define debug(x...) printf(x);
+#else
+#define debug(x...)
+#endif
 
 void usb_fatal(const char *message) __attribute__ ((noreturn));
 #endif

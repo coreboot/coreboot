@@ -40,6 +40,7 @@ enum {
 	msc_subclass_sff8070i = 0x5,
 	msc_subclass_scsitrans = 0x6
 };
+
 static const char *msc_subclass_strings[7] = {
 	"(none)",
 	"RBC",
@@ -96,19 +97,20 @@ typedef struct {
 	unsigned long bCBWCBLength:5;
 	unsigned long:3;
 	unsigned char CBWCB[31 - 15];
-} __attribute__ ((packed))
-     cbw_t;
+} __attribute__ ((packed)) cbw_t;
 
-     typedef struct {
-	     unsigned int dCSWSignature;
-	     unsigned int dCSWTag;
-	     unsigned int dCSWDataResidue;
-	     unsigned char bCSWStatus;
-     } __attribute__ ((packed))
-     csw_t;
+typedef struct {
+	unsigned int dCSWSignature;
+	unsigned int dCSWTag;
+	unsigned int dCSWDataResidue;
+	unsigned char bCSWStatus;
+} __attribute__ ((packed)) csw_t;
 
-     static void
-       reset_transport (usbdev_t *dev)
+static int
+request_sense (usbdev_t *dev);
+
+static void
+reset_transport (usbdev_t *dev)
 {
 	dev_req_t dr;
 	memset (&dr, 0, sizeof (dr));
@@ -171,7 +173,8 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 static void
 get_csw (endpoint_t *ep, csw_t *csw)
 {
-	ep->dev->controller->bulk (ep, sizeof (csw_t), (u8 *) csw, 1);
+	if (ep->dev->controller->bulk (ep, sizeof (csw_t), (u8 *) csw, 1))
+		clear_stall (ep);
 }
 
 static int
@@ -188,21 +191,23 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 	wrap_cbw (&cbw, buflen, dir, cb, cblen);
 	if (dev->controller->
 	    bulk (MSC_INST (dev)->bulk_out, sizeof (cbw), (u8 *) &cbw, 0)) {
-		clear_stall (MSC_INST (dev)->bulk_out);
+		reset_transport (dev);
 		return 1;
 	}
 	mdelay (10);
-	if (dir == cbw_direction_data_in) {
-		if (dev->controller->
-		    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0)) {
-			clear_stall (MSC_INST (dev)->bulk_in);
-			return 1;
-		}
-	} else {
-		if (dev->controller->
-		    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0)) {
-			clear_stall (MSC_INST (dev)->bulk_out);
-			return 1;
+	if (buflen > 0) {
+		if (dir == cbw_direction_data_in) {
+			if (dev->controller->
+			    bulk (MSC_INST (dev)->bulk_in, buflen, buf, 0)) {
+				clear_stall (MSC_INST (dev)->bulk_in);
+				return 1;
+			}
+		} else {
+			if (dev->controller->
+			    bulk (MSC_INST (dev)->bulk_out, buflen, buf, 0)) {
+				clear_stall (MSC_INST (dev)->bulk_out);
+				return 1;
+			}
 		}
 	}
 	get_csw (MSC_INST (dev)->bulk_in, &csw);
@@ -220,6 +225,7 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 		return 0;
 	}
 	// error "check condition" or reserved error
+	request_sense (dev);
 	return 1;
 }
 
@@ -241,6 +247,27 @@ typedef struct {
 	unsigned char res4;	//5
 } __attribute__ ((packed)) cmdblock6_t;
 
+/**
+ * Like readwrite_blocks, but for soft-sectors of 512b size. Converts the
+ * start and count from 512b units.
+ * Start and count must be aligned so that they match the native
+ * sector size.
+ *
+ * @param dev device to access
+ * @param start first sector to access
+ * @param n number of sectors to access
+ * @param dir direction of access: cbw_direction_data_in == read, cbw_direction_data_out == write
+ * @param buf buffer to read into or write from. Must be at least n*512 bytes
+ * @return 0 on success, 1 on failure
+ */
+int
+readwrite_blocks_512 (usbdev_t *dev, int start, int n,
+	cbw_direction dir, u8 *buf)
+{
+	int blocksize_divider = MSC_INST(dev)->blocksize / 512;
+	return readwrite_blocks (dev, start / blocksize_divider,
+		n / blocksize_divider, dir, buf);
+}
 
 /**
  * Reads or writes a number of sequential blocks on a USB storage device.
@@ -251,7 +278,7 @@ typedef struct {
  * @param start first sector to access
  * @param n number of sectors to access
  * @param dir direction of access: cbw_direction_data_in == read, cbw_direction_data_out == write
- * @param buf buffer to read into or write from. Must be at least n*512 bytes
+ * @param buf buffer to read into or write from. Must be at least n*sectorsize bytes
  * @return 0 on success, 1 on failure
  */
 int
@@ -266,10 +293,26 @@ readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 		// write
 		cb.command = 0x2a;
 	}
-	cb.block = ntohl (start);
-	cb.numblocks = ntohw (n);
+	cb.block = htonl (start);
+	cb.numblocks = htonw (n);
+		
 	return execute_command (dev, dir, (u8 *) &cb, sizeof (cb), buf,
-				n * 512);
+				n * MSC_INST(dev)->blocksize);
+}
+
+/* Only request it, we don't interpret it.
+   On certain errors, that's necessary to get devices out of
+   a special state called "Contingent Allegiance Condition" */
+static int
+request_sense (usbdev_t *dev)
+{
+	u8 buf[19];
+	cmdblock6_t cb;
+	memset (&cb, 0, sizeof (cb));
+	cb.command = 0x3;
+	
+	return execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
+				sizeof (cb), buf, 19);
 }
 
 static int
@@ -338,17 +381,25 @@ usb_msc_init (usbdev_t *dev)
 	printf ("  it uses %s protocol\n",
 		msc_protocol_strings[interface->bInterfaceProtocol]);
 
-	if ((interface->bInterfaceProtocol != 0x50)
-	    || (interface->bInterfaceSubClass != 6)) {
+
+	if (interface->bInterfaceProtocol != 0x50) {
+		printf ("  Protocol not supported.\n");
+		return;
+	}
+
+	if ((interface->bInterfaceSubClass != 2) &&	// ATAPI 8020
+		(interface->bInterfaceSubClass != 5) &&	// ATAPI 8070
+		(interface->bInterfaceSubClass != 6)) {	// SCSI
 		/* Other protocols, such as ATAPI don't seem to be very popular. looks like ATAPI would be really easy to add, if necessary. */
-		printf ("  Only SCSI over Bulk is supported.\n");
+		printf ("  Interface SubClass not supported.\n");
 		return;
 	}
 
 	dev->data = malloc (sizeof (usbmsc_inst_t));
 	if (!dev->data)
-		usb_fatal("Not enough memory for USB MSC device.\n");
+		usb_fatal ("Not enough memory for USB MSC device.\n");
 
+	MSC_INST (dev)->protocol = interface->bInterfaceSubClass;
 	MSC_INST (dev)->bulk_in = 0;
 	MSC_INST (dev)->bulk_out = 0;
 
@@ -376,10 +427,11 @@ usb_msc_init (usbdev_t *dev)
 	printf ("  has %d luns\n", get_max_luns (dev) + 1);
 
 	printf ("  Waiting for device to become ready... ");
-	timeout = 10;
+	timeout = 30 * 10; /* SCSI/ATA specs say we have to wait up to 30s. Ugh */
 	while (test_unit_ready (dev) && --timeout) {
 		mdelay (100);
-		printf (".");
+		if (!(timeout % 10)) 
+			printf (".");
 	}
 	if (test_unit_ready (dev)) {
 		printf ("timeout. Device not ready. Still trying...\n");

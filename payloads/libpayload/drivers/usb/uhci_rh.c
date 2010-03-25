@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 coresystems GmbH
+ * Copyright (C) 2008-2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,6 +27,8 @@
  * SUCH DAMAGE.
  */
 
+//#define USB_DEBUG
+
 #include <libpayload.h>
 #include "uhci.h"
 
@@ -43,8 +45,13 @@ uhci_rh_enable_port (usbdev_t *dev, int port)
 	hci_t *controller = dev->controller;
 	if (port == 1)
 		port = PORTSC1;
-	else
+	else if (port == 2)
 		port = PORTSC2;
+	else {
+		printf("Invalid port %d\n", port);
+		return;
+	}
+
 	uhci_reg_mask16 (controller, port, ~(1 << 12), 0);	/* wakeup */
 
 	uhci_reg_mask16 (controller, port, ~0, 1 << 9);	/* reset */
@@ -85,8 +92,10 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 	} else if (port == 2) {
 		portsc = PORTSC2;
 		offset = 1;
-	} else
+	} else {
+		printf("Invalid port %d\n", port);
 		return;
+	}
 	int devno = RH_INST (dev)->port[offset];
 	if ((dev->controller->devices[devno] != 0) && (devno != -1)) {
 		usb_detach_device(dev->controller, devno);
@@ -94,16 +103,17 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 	}
 	uhci_reg_mask16 (dev->controller, portsc, ~0, (1 << 3) | (1 << 2));	// clear port state change, enable port
 
+	mdelay(100); // wait for signal to stabilize
+
 	if ((uhci_reg_read16 (dev->controller, portsc) & 1) != 0) {
 		// device attached
 
 		uhci_rh_disable_port (dev, port);
 		uhci_rh_enable_port (dev, port);
 
-		int lowspeed =
-			(uhci_reg_read16 (dev->controller, portsc) >> 8) & 1;
+		int speed = ((uhci_reg_read16 (dev->controller, portsc) >> 8) & 1);
 
-		RH_INST (dev)->port[offset] = usb_attach_device(dev->controller, dev->address, portsc, lowspeed);
+		RH_INST (dev)->port[offset] = usb_attach_device(dev->controller, dev->address, portsc, speed);
 	}
 }
 
@@ -114,21 +124,30 @@ uhci_rh_report_port_changes (usbdev_t *dev)
 
 	stored = (RH_INST (dev)->port[0] == -1);
 	real = ((uhci_reg_read16 (dev->controller, PORTSC1) & 1) == 0);
-	if (stored != real)
+	if (stored != real) {
+		debug("change on port 1\n");
 		return 1;
+	}
 
 	stored = (RH_INST (dev)->port[1] == -1);
 	real = ((uhci_reg_read16 (dev->controller, PORTSC2) & 1) == 0);
-	if (stored != real)
+	if (stored != real) {
+		debug("change on port 2\n");
 		return 2;
+	}
 
-// maybe detach+attach happened between two scans?
-	if ((uhci_reg_read16 (dev->controller, PORTSC1) & 2) > 0)
+	// maybe detach+attach happened between two scans?
+
+	if ((uhci_reg_read16 (dev->controller, PORTSC1) & 2) > 0) {
+		debug("possibly re-attached on port 1\n");
 		return 1;
-	if ((uhci_reg_read16 (dev->controller, PORTSC2) & 2) > 0)
+	}
+	if ((uhci_reg_read16 (dev->controller, PORTSC2) & 2) > 0) {
+		debug("possibly re-attached on port 2\n");
 		return 2;
+	}
 
-// no change
+	// no change
 	return -1;
 }
 

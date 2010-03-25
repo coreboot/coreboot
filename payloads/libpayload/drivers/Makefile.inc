@@ -56,6 +56,7 @@ TARGETS-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += drivers/video/font8x16.o
 TARGETS-$(CONFIG_USB) += drivers/usb/usbinit.o
 TARGETS-$(CONFIG_USB) += drivers/usb/usb.o
 TARGETS-$(CONFIG_USB) += drivers/usb/usb_dev.o
+TARGETS-$(CONFIG_USB) += drivers/usb/quirks.o
 TARGETS-$(CONFIG_USB_HUB) += drivers/usb/usbhub.o
 TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci.o
 TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci_rh.o

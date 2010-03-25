@@ -36,16 +36,14 @@
 
 #define I8042_MODE_XLATE     0x40
 
-static void (*reset_handler)(void) = NULL;
-
 struct layout_maps {
 	char *country;
 	unsigned short map[4][0x57];
 };
 
-struct layout_maps *map;
+static struct layout_maps *map;
 
-struct layout_maps keyboard_layouts[] = {
+static struct layout_maps keyboard_layouts[] = {
 #ifdef CONFIG_PC_KEYBOARD_LAYOUT_US
 { .country = "us", .map = {
 	{ /* No modifier */
@@ -317,13 +315,6 @@ int keyboard_set_layout(char *country)
 
 	/* Nothing found, not changed */
 	return -1;
-}
-
-int keyboard_add_reset_handler(void (*new_handler)(void))
-{
-	reset_handler = new_handler;
-
-	return 0;
 }
 
 static struct console_input_driver cons = {

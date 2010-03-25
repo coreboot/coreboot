@@ -58,3 +58,5 @@ TARGETS-$(CONFIG_USB_UHCI) += drivers/usb/uhci_rh.o
 TARGETS-$(CONFIG_USB_HID) += drivers/usb/usbhid.o
 TARGETS-$(CONFIG_USB_MSC) += drivers/usb/usbmsc.o
 
+# used by both USB HID and keyboard
+TARGETS-y += drivers/hid.o

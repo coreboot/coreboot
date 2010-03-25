@@ -102,10 +102,12 @@ done
 
 if [ "$CONFIG_TARGET_I386" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/i386
+  _ARCHLIBDIR=$_LIBDIR/i386
 fi
 
 if [ "$CONFIG_TARGET_POWERPC" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/powerpc
+  _ARCHLIBDIR=$_LIBDIR/powerpc
 fi
 
 _CFLAGS="-m32 -nostdinc -nostdlib -I$_INCDIR -I$_ARCHINCDIR"
@@ -128,13 +130,13 @@ if [ $DOLINK -eq 0 ]; then
 else
     _LIBGCC=`$DEFAULT_CC -m32 -print-libgcc-file-name`
     if [ $DEBUGME -eq 1 ]; then
-	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $_LIBDIR/i386/head.o $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC"
+	echo "$DEFAULT_CC $_CFLAGS $_LDFLAGS $_ARCHLIBDIR/head.o $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC"
     fi
 
-    # Note: i386/head.o must be the first object being linked, because it
+    # Note: $_ARCHLIBDIR/head.o must be the first object being linked, because it
     # contains a Multiboot header.  The Multiboot standard requires this
     # header to be placed below 0x2000 in the resulting image.  See:
     # http://www.gnu.org/software/grub/manual/multiboot/html_node/OS-image-format.html
 
-    $DEFAULT_CC $_CFLAGS $_LDFLAGS $_LIBDIR/i386/head.o  $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC
+    $DEFAULT_CC $_CFLAGS $_LDFLAGS $_ARCHLIBDIR/head.o  $CMDLINE $_LIBDIR/libpayload.a $_LIBGCC
 fi

@@ -35,7 +35,7 @@ export obj := $(src)/build
 export objk := $(src)/build/util/kconfig
 
 export KERNELVERSION      := 0.2.0
-export KCONFIG_AUTOHEADER := $(src)/include/libpayload-config.h
+export KCONFIG_AUTOHEADER := $(obj)/include/libpayload-config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
 
 CONFIG_SHELL := sh
@@ -52,8 +52,8 @@ endif
 CC = gcc
 HOSTCC = gcc
 HOSTCXX = g++
-HOSTCFLAGS := -I$(srck) -I$(objk)
-HOSTCXXFLAGS := -I$(srck) -I$(objk)
+HOSTCFLAGS := -I$(srck) -I$(objk) -pipe
+HOSTCXXFLAGS := -I$(srck) -I$(objk) -pipe
 
 DESTDIR = /opt
 
@@ -85,7 +85,7 @@ all: lib
 include $(PLATFORM-y) $(BUILD-y)
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
-INCLUDES := -Iinclude -Ibuild -Iinclude/$(ARCHDIR-y)
+INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj) -I$(obj)/include
 INCLUDES += -I$(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
 
 try-run= $(shell set -e; \
@@ -101,16 +101,15 @@ $(CC) $(1) -S -xc /dev/null -o "$$TMP", $(1), $(2))
 STACKPROTECT += $(call cc-option, -fno-stack-protector,)
 
 # TODO: Re-add -Os as soon as we find out why it caused problems.
-CFLAGS := -Wall -Werror $(STACKPROTECT) -nostdinc $(INCLUDES) -ffreestanding
+CFLAGS := -Wall -Werror $(STACKPROTECT) -nostdinc $(INCLUDES) -ffreestanding -pipe
 
 all: lib
 
-lib: $(obj)/lib/libpayload.a copystuff
+lib: $(obj)/lib/libpayload.a $(obj)/lib/$(ARCHDIR-y)/head.o
 
-# Copy libpayload.a and head.o into $(src)/lib where lpgcc et al expect them.
-copystuff: $(obj)/arch/$(ARCHDIR-y)/head.S.o $(obj)/lib/libpayload.a
-	$(Q)cp $(obj)/arch/$(ARCHDIR-y)/head.S.o $(src)/lib/$(ARCHDIR-y)/head.o
-	$(Q)cp $(obj)/lib/libpayload.a $(src)/lib
+$(obj)/lib/$(ARCHDIR-y)/head.o: $(obj)/arch/$(ARCHDIR-y)/head.S.o
+	$(Q)printf "  CP      $(subst $(shell pwd)/,,$(@))\n"
+	$(Q)cp $< $@
 
 $(obj)/lib/libpayload.a: prepare $(OBJS)
 	$(Q)printf "  AR      $(subst $(shell pwd)/,,$(@))\n"
@@ -121,26 +120,30 @@ endif
 install: lib
 	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/lib\n"
 	$(Q)install -m 755 -d $(DESTDIR)/libpayload/lib
-	$(Q)cp -r lib/* $(DESTDIR)/libpayload/lib/
+	$(Q)install -m 644 $(obj)/lib/libpayload.a $(DESTDIR)/libpayload/lib/
+	$(Q)install -m 755 -d $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
+	$(Q)install -m 644 $(obj)/lib/$(ARCHDIR-y)/head.o $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/include\n"
 	$(Q)install -m 755 -d $(DESTDIR)/libpayload/include
 	$(Q)for file in `find include -name *.h -type f`; do \
 		install -m 755 -d $(DESTDIR)/libpayload/`dirname $$file`; \
 		install -m 644 $$file $(DESTDIR)/libpayload/$$file; \
 	done
+	$(Q)install -m 644 $(KCONFIG_AUTOHEADER) $(DESTDIR)/libpayload/include
 	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/bin\n"
 	$(Q)install -m 755 -d $(DESTDIR)/libpayload/bin
 	$(Q)install -m 755 bin/lpgcc $(DESTDIR)/libpayload/bin
 	$(Q)install -m 755 bin/lpas $(DESTDIR)/libpayload/bin
 	$(Q)install -m 644 bin/lp.functions $(DESTDIR)/libpayload/bin
-	$(Q)install -m 644 $(KCONFIG_AUTOCONFIG) $(DESTDIR)/libpayload/libpayload.config
+	$(Q)install -m 644 .config $(DESTDIR)/libpayload/libpayload.config
 
 prepare:
 	$(Q)mkdir -p $(obj)/util/kconfig/lxdialog
 	$(Q)mkdir -p $(obj)/crypto $(obj)/curses $(obj)/drivers/video
 	$(Q)mkdir -p $(obj)/drivers/usb
 	$(Q)mkdir -p $(obj)/arch/$(ARCHDIR-y) $(obj)/lib/$(ARCHDIR-y) $(obj)/libc 
-	$(Q)mkdir -p $(src)/lib/$(ARCHDIR-y)
+	$(Q)mkdir -p $(obj)/lib/$(ARCHDIR-y)
+	$(Q)mkdir -p $(obj)/include
 
 doxy: doxygen
 doxygen:
@@ -153,12 +156,10 @@ doxygen-clean:
 clean: doxygen-clean
 	$(Q)rm -rf $(obj)/crypto $(obj)/curses $(obj)/drivers
 	$(Q)rm -rf $(obj)/i386 $(obj)/powerpc $(obj)/lib $(obj)/libc 
-	$(Q)rm -rf $(src)/lib/i386 $(src)/lib/powerpc $(src)/lib/libpayload.a
 
 distclean: clean
-	$(Q)rm -rf build
+	$(Q)rm -rf build # should be $(obj) ?
 	$(Q)rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
-	$(Q)rm -f $(src)/include/libpayload-config.h
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.

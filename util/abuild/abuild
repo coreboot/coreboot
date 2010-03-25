@@ -550,7 +550,7 @@ while true ; do
 		-a|--all)	shift; buildall=true;;
 		-b|--broken)	shift; buildbroken=true;;
 		-r|--remove)	shift; remove=true; shift;;
-		-v|--verbose)	shift; verbose=true;;
+		-v|--verbose)	shift; verbose=true; silent='V=1';;
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myversion; myhelp; exit 0;;
 		-p|--payloads)  shift; payloads="$1"; shift;;

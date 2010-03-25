@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,19 +27,62 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _ARCH_ENDIAN_H
-#define _ARCH_ENDIAN_H
+/**
+ * @file libc/readline.c
+ * Simple readline implementation
+ */
 
-#include <arch/types.h>
+#include <libpayload.h>
+#include <getopt.h>
 
-#define ntohw(in) (in)
+/* We don't want to waste malloc on this, so we live with a small 
+ * fixed size array 
+ */
+char *string_argv[MAX_ARGS];
+int string_argc;
 
-#define ntohl(in) (in)
+/**
+ * Take a string and make char *argv[] and int argc from it.
+ *
+ * This function allows the user to use getopt on an arbitrary string.
+ *
+ * global variables valid after a successful run of string_to_args():
+ *   string_argc pointer to number of arguments
+ *   string_argv pointer to argument list.
+ *
+ * @param caller to be used as argv[0] (may be NULL to ignore)
+ * @param string to process
+ * @return 0 if no error occured.
+ */
+int string_to_args(char *caller, char *string)
+{
+	int i = 0;
 
-#define ntohll(in) (in)
+	if (caller)
+		string_argv[i++] = caller;
 
-#define htonw(in) ntohw(in)
-#define htonl(in) ntohw(in)
-#define htonll(in) ntohll(in)
+	if (*string)
+		string_argv[i++] = string;
 
-#endif
+	/* Terminate if the string ends */
+	while (string && *string) {
+		/* whitespace occured? */
+		if ((*string == ' ') || (*string == '\t')) {
+			/* skip all whitespace (and null it) */
+			while (*string == ' ' || *string == '\t')
+				*string++ = 0;
+			/* if our ugly static array is big enough, store
+			 * argument to string_argv[]
+			 */
+			if (i < MAX_ARGS)
+				string_argv[i++] = string;
+		}
+		string++;
+	}
+
+	/* prevent array from overflowing */
+	string_argc = (i <= MAX_ARGS) ? i : MAX_ARGS;
+
+	/* and return whether there was an overflow */
+	return (i <= MAX_ARGS) ? 0 : 1;
+}

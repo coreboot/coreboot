@@ -171,7 +171,9 @@ char *strcpy(char *d, const char *s)
 char *strncat(char *d, const char *s, size_t n)
 {
 	char *p = d + strlen(d);
-	int max = n > strlen(s) ? strlen(s) : n;
+	int sl = strlen(s);
+	int max = n > sl ? sl : n;
+	// int max = n > strlen(s) ? strlen(s) : n;
 	int i;
 
 	for (i = 0; i < max; i++)
@@ -179,6 +181,30 @@ char *strncat(char *d, const char *s, size_t n)
 
 	p[i] = '\0';
 	return d;
+}
+
+/**
+ * Concatenates two strings with a maximum length.
+ *
+ * @param d The destination string.
+ * @param s The source string.
+ * @param n Not more than n characters from s will be appended to d.
+ * @return A pointer to the destination string.
+ */
+size_t strlcat(char *d, const char *s, size_t n)
+{
+	int sl = strlen(s);
+	int dl = strlen(d);
+
+	char *p = d + dl;
+	int max = n > (sl + dl) ? sl : (n - dl - 1);
+	int i;
+
+	for (i = 0; i < max; i++)
+		p[i] = s[i];
+
+	p[i] = '\0';
+	return max;
 }
 
 /**
@@ -194,6 +220,27 @@ char *strchr(const char *s, int c)
 	char *p = (char *)s;
 
 	for (; *p != 0; p++) {
+		if (*p == c)
+			return p;
+	}
+
+	return NULL;
+}
+
+/**
+ * Find a character in a string.
+ *
+ * @param s The string.
+ * @param c The character.
+ * @return A pointer to the last occurence of the character in the
+ * string, or NULL if the character was not encountered within the string.
+ */
+
+char *strrchr(const char *s, int c)
+{
+	char *p = (char *)s + strlen(s);
+
+	for (; p >= s; p--) {
 		if (*p == c)
 			return p;
 	}

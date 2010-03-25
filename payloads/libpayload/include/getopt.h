@@ -75,4 +75,9 @@ extern   char *suboptarg;               /* getsubopt(3) external variable */
 #endif
 //__END_DECLS
  
+#define MAX_ARGS        16
+extern char *string_argv[MAX_ARGS];
+extern int string_argc;
+int string_to_args(char *caller, char *string);
+
 #endif /* !_GETOPT_H_ */

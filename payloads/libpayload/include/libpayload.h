@@ -43,14 +43,17 @@
 #ifndef _LIBPAYLOAD_H
 #define _LIBPAYLOAD_H
 
+#include <libpayload-config.h>
 #include <stddef.h>
 #include <arch/types.h>
 #include <arch/io.h>
 #include <arch/virtual.h>
 #include <sysinfo.h>
 #include <stdarg.h>
-#include <lar.h>
 #include <pci.h>
+#ifdef CONFIG_LAR
+#include <lar.h>
+#endif
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -253,11 +256,82 @@ unsigned short ipchksum(const void *ptr, unsigned long nbytes);
  * @defgroup malloc Memory allocation functions
  * @{
  */
+#if defined(CONFIG_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
+#define free(p)	\
+	({ \
+	 extern void print_malloc_map(void); \
+	 extern void free(void *); \
+	 printf("free(%p) called from %s:%s:%d...\n", p, __FILE__, __func__, \
+	        __LINE__);\
+	 printf("PRE free()\n"); \
+	 print_malloc_map(); \
+	 free(p); \
+	 printf("POST free()\n"); \
+	 print_malloc_map(); \
+	 })
+#define malloc(s) \
+	({ \
+	 extern void print_malloc_map(void); \
+	 extern void *malloc(size_t); \
+	 void *ptr; \
+	 printf("malloc(%u) called from %s:%s:%d...\n", s, __FILE__, __func__, \
+	        __LINE__);\
+	 printf("PRE malloc\n"); \
+	 print_malloc_map(); \
+	 ptr = malloc(s); \
+	 printf("POST malloc (ptr = %p)\n", ptr); \
+	 print_malloc_map(); \
+	 ptr; \
+	 })
+#define calloc(n,s) \
+	({ \
+	 extern void print_malloc_map(void); \
+	 extern void *calloc(size_t,size_t); \
+	 void *ptr; \
+	 printf("calloc(%u, %u) called from %s:%s:%d...\n", n, s, __FILE__, \
+	        __func__, __LINE__);\
+	 printf("PRE calloc\n"); \
+	 print_malloc_map(); \
+	 ptr = calloc(n,s); \
+	 printf("POST calloc (ptr = %p)\n", ptr); \
+	 print_malloc_map(); \
+	 ptr; \
+	 })
+#define realloc(p,s) \
+	({ \
+	 extern void print_malloc_map(void); \
+	 extern void *realloc(void*,size_t); \
+	 void *ptr; \
+	 printf("realloc(%p, %u) called from %s:%s:%d...\n", p, s, __FILE__, \
+	        __func__, __LINE__);\
+	 printf("PRE realloc\n"); \
+	 print_malloc_map(); \
+	 ptr = realloc(p,s); \
+	 printf("POST realloc (ptr = %p)\n", ptr); \
+	 print_malloc_map(); \
+	 ptr; \
+	 })
+#define memalign(a,s) \
+	({ \
+	 extern void print_malloc_map(void); \
+	 extern void *memalign(size_t, size_t); \
+	 void *ptr; \
+	 printf("memalign(%u, %u) called from %s:%s:%d...\n", a, s, __FILE__, \
+	        __func__, __LINE__);\
+	 printf("PRE memalign\n"); \
+	 print_malloc_map(); \
+	 ptr = memalign(a,s); \
+	 printf("POST realloc (ptr = %p)\n", ptr); \
+	 print_malloc_map(); \
+	 ptr; \
+	 })
+#else
 void free(void *ptr);
 void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
 void *memalign(size_t align, size_t size);
+#endif
 /** @} */
 
 /**
@@ -341,7 +415,9 @@ int strncmp(const char *s1, const char *s2, size_t maxlen);
 char *strncpy(char *d, const char *s, size_t n);
 char *strcpy(char *d, const char *s);
 char *strncat(char *d, const char *s, size_t n);
+size_t strlcat(char *d, const char *s, size_t n);
 char *strchr(const char *s, int c);
+char *strrchr(const char *s, int c);
 char *strdup(const char *s);
 char *strstr(const char *h, const char *n);
 char *strsep(char **stringp, const char *delim);
@@ -363,6 +439,7 @@ struct timeval {
 int gettimeofday(struct timeval *tv, void *tz);
 /** @} */
 
+#ifdef CONFIG_LAR
 /**
  * @defgroup lar LAR functions
  * @{
@@ -421,6 +498,7 @@ int lfread(void *ptr, size_t size, size_t nmemb, struct LFILE *stream);
 int lfseek(struct LFILE *stream, long offset, int whence);
 int lfclose(struct LFILE *file);
 /** @} */
+#endif
 
 /**
  * @defgroup info System information functions

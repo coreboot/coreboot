@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright (C) 2008-2010 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,6 +39,7 @@
  * your buffers, kids!).
  */
 
+#define IN_MALLOC_C
 #include <libpayload.h>
 
 extern char _heap, _eheap;	/* Defined in the ldscript. */
@@ -66,11 +68,21 @@ typedef unsigned int hdrtype_t;
 static int free_aligned(void* addr);
 void print_malloc_map(void);
 
+#ifdef CONFIG_DEBUG_MALLOC
+static int heap_initialized = 0;
+static int minimal_free = 0;
+#endif
+
 static void setup(void)
 {
 	int size = (unsigned int)(&_eheap - &_heap) - HDRSIZE;
 
 	*((hdrtype_t *) hstart) = FREE_BLOCK(size);
+
+#ifdef CONFIG_DEBUG_MALLOC
+	heap_initialized = 1;
+	minimal_free  = size;
+#endif
 }
 
 static void *alloc(int len)
@@ -94,7 +106,9 @@ static void *alloc(int len)
 		int size = SIZE(header);
 
 		if (!HAS_MAGIC(header) || size == 0) {
-			printf("memory allocator panic.\n");
+			printf("memory allocator panic. (%s%s)\n",
+			       !HAS_MAGIC(header) ? " no magic " : "",
+				   size == 0 ? " size=0 " : "");
 			halt();
 		}
 
@@ -268,9 +282,16 @@ struct align_region_t
 
 static struct align_region_t* align_regions = 0;
 
-static struct align_region_t *allocate_region(struct align_region_t *old_first, int alignment, int num_elements)
+static struct align_region_t *allocate_region(int alignment, int num_elements)
 {
-	struct align_region_t *new_region = malloc(sizeof(struct align_region_t));
+	struct align_region_t *new_region;
+#ifdef CONFIG_DEBUG_MALLOC
+	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u)\n", 
+			__func__, align_regions, alignment, num_elements);
+#endif
+	
+	new_region = malloc(sizeof(struct align_region_t));
+
 	if (!new_region)
 		return NULL;
 	new_region->alignment = alignment;
@@ -282,8 +303,9 @@ static struct align_region_t *allocate_region(struct align_region_t *old_first, 
 	new_region->start_data = (void*)((u32)(new_region->start + num_elements + alignment - 1) & (~(alignment-1)));
 	new_region->size = num_elements * alignment;
 	new_region->free = num_elements;
-	new_region->next = old_first;
+	new_region->next = align_regions;
 	memset(new_region->start, 0, num_elements);
+	align_regions = new_region;
 	return new_region;
 }
 
@@ -325,15 +347,29 @@ look_further:
 	{
 		if ((reg->alignment == align) && (reg->free >= (size + align - 1)/align))
 		{
+#ifdef CONFIG_DEBUG_MALLOC
+			printf("  found memalign region. %x free, %x required\n", reg->free, (size + align - 1)/align);
+#endif
 			break;
 		}
 		reg = reg->next;
 	}
 	if (reg == 0)
 	{
-		align_regions = allocate_region(align_regions, align, (size/align<99)?100:((size/align)+1));
-		reg = align_regions;
+#ifdef CONFIG_DEBUG_MALLOC
+		printf("  need to allocate a new memalign region\n");
+#endif
+		/* get align regions */
+		reg = allocate_region(align, (size<1024)?(1024/align):(((size-1)/align)+1));
+#ifdef CONFIG_DEBUG_MALLOC
+		printf("  ... returned %p\n", align_regions);
+#endif
 	}
+	if (reg == 0) {
+		/* Nothing available. */
+		return (void *)NULL;
+	}
+
 	int i, count = 0, target = (size+align-1)/align;
 	for (i = 0; i < (reg->size/align); i++)
 	{
@@ -358,16 +394,20 @@ look_further:
 }
 
 /* This is for debugging purposes. */
-#ifdef TEST
+#ifdef CONFIG_DEBUG_MALLOC
 void print_malloc_map(void)
 {
 	void *ptr = hstart;
+	int free_memory = 0;
 
 	while (ptr < hend) {
 		hdrtype_t hdr = *((hdrtype_t *) ptr);
 
 		if (!HAS_MAGIC(hdr)) {
-			printf("Poisoned magic - we're toast\n");
+			if (heap_initialized)
+				printf("Poisoned magic - we're toast\n");
+			else
+				printf("No magic yet - going to initialize\n");
 			break;
 		}
 
@@ -377,7 +417,15 @@ void print_malloc_map(void)
 		       (unsigned int)(ptr - hstart),
 		       hdr & FLAG_FREE ? "FREE" : "USED", SIZE(hdr));
 
+		if (hdr & FLAG_FREE)
+			free_memory += SIZE(hdr);
+
 		ptr += HDRSIZE + SIZE(hdr);
 	}
+
+	if (free_memory && (minimal_free > free_memory))
+		minimal_free = free_memory;
+	printf("Maximum memory consumption: %d bytes",
+		(unsigned int)(&_eheap - &_heap) - HDRSIZE - minimal_free);
 }
 #endif

@@ -25154,7 +25154,7 @@ int main(int argc, char **argv)
 				}
 				argv++;
 				argc--;
-				include_filelist->filename = argv[1];
+				include_filelist->filename = strdup(argv[1]);
 				include_filelist->next = old_head;
 				result = 0;
 			}

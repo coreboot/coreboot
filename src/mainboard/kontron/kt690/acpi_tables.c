@@ -59,13 +59,6 @@ static void dump_mem(u32 start, u32 end)
 
 extern const acpi_header_t AmlCode;
 
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-extern const acpi_header_t AmlCode_ssdt2;
-extern const acpi_header_t AmlCode_ssdt3;
-extern const acpi_header_t AmlCode_ssdt4;
-extern const acpi_header_t AmlCode_ssdt5;
-#endif
-
 #define IO_APIC_ADDR	0xfec00000UL
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -177,22 +170,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += madt->header.length;
 	acpi_add_table(rsdp, madt);
 
-#if 0
-	/* SRAT */
-	printk(BIOS_DEBUG, "ACPI:    * SRAT\n");
-	srat = (acpi_srat_t *) current;
-	acpi_create_srat(srat);
-	current += srat->header.length;
-	acpi_add_table(rsdp, srat);
-
-	/* SLIT */
-	printk(BIOS_DEBUG, "ACPI:    * SLIT\n");
-	slit = (acpi_slit_t *) current;
-	acpi_create_slit(slit);
-	current += slit->header.length;
-	acpi_add_table(rsdp, slit);
-#endif
-
 	/* SSDT */
 	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");
 	ssdt = (acpi_header_t *)current;
@@ -200,47 +177,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_ssdt_generator(ssdt, "DYNADATA");
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);
-
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-
-	/* same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table */
-
-	for (i = 1; i < sysconf.hc_possible_num; i++) {	/* 0: is hc sblink */
-		if ((sysconf.pci1234[i] & 1) != 1)
-			continue;
-		uint8_t c;
-		if (i < 7) {
-			c = (uint8_t) ('4' + i - 1);
-		} else {
-			c = (uint8_t) ('A' + i - 1 - 6);
-		}
-		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]);	/* pci0 and pci1 are in dsdt */
-		current = (current + 0x07) & -0x08;
-		ssdtx = (acpi_header_t *) current;
-		switch (sysconf.hcid[i]) {
-		case 1:	/* 8132 */
-			p = &AmlCode_ssdt2;
-			break;
-		case 2:	/* 8151 */
-			p = &AmlCode_ssdt3;
-			break;
-		case 3:	/* 8131 */
-			p = &AmlCode_ssdt4;
-			break;
-		default:
-			/* HTX no io apic */
-			p = &AmlCode_ssdt5;
-			break;
-		}
-		current += ((acpi_header_t *) p)->length;
-		memcpy((void *)ssdtx, (void *)p, ((acpi_header_t *) p)->length);
-		update_ssdtx((void *)ssdtx, i);
-		ssdtx->checksum = 0;
-		ssdtx->checksum =
-		    acpi_checksum((u8 *)ssdtx, ssdtx->length);
-		acpi_add_table(rsdp, ssdtx);
-	}
-#endif
 
 	/* FACS */
 	printk(BIOS_DEBUG, "ACPI:    * FACS\n");
@@ -271,12 +207,6 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "madt\n");
 	dump_mem(madt, ((void *)madt) + madt->header.length);
-
-	printk(BIOS_DEBUG, "srat\n");
-	dump_mem(srat, ((void *)srat) + srat->header.length);
-
-	printk(BIOS_DEBUG, "slit\n");
-	dump_mem(slit, ((void *)slit) + slit->header.length);
 
 	printk(BIOS_DEBUG, "ssdt\n");
 	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);

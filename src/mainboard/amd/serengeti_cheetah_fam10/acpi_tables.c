@@ -108,7 +108,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 		for(i=1; i< sysconf.hc_possible_num; i++) {
 			u32 d = 0;
-
 			if(!(sysconf.pci1234[i] & 0x1) ) continue;
 			// 8131 need to use +4
 			switch (sysconf.hcid[i]) {
@@ -164,7 +163,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 extern void get_bus_conf(void);
 extern void update_ssdt(void *ssdt);
 
-
 static void update_ssdtx(void *ssdtx, int i)
 {
 	u8 *PCI;
@@ -209,7 +207,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	get_bus_conf(); //it will get sblk, pci1234, hcdn, and sbdn
 
 	/* Align ACPI tables to 16 bytes */
-	start	= ( start + 0x0f) & -0x10;
+	start = ( start + 0x0f) & -0x10;
 	current = start;
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
@@ -234,15 +232,15 @@ unsigned long write_acpi_tables(unsigned long start)
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
-	acpi_add_table(rsdp,hpet);
+	acpi_add_table(rsdp, hpet);
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	current	  = ( current + 0x07) & -0x08;
-	printk(BIOS_DEBUG, "ACPI:    * MADT at %lx\n",current);
+	printk(BIOS_DEBUG, "ACPI:    * MADT at %lx\n", current);
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current+=madt->header.length;
-	acpi_add_table(rsdp,madt);
+	acpi_add_table(rsdp, madt);
 
 	/* SRAT */
 	current	  = ( current + 0x07) & -0x08;
@@ -250,7 +248,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	srat = (acpi_srat_t *) current;
 	acpi_create_srat(srat);
 	current+=srat->header.length;
-	acpi_add_table(rsdp,srat);
+	acpi_add_table(rsdp, srat);
 
 	/* SLIT */
 	current	  = ( current + 0x07) & -0x08;
@@ -258,7 +256,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	slit = (acpi_slit_t *) current;
 	acpi_create_slit(slit);
 	current+=slit->header.length;
-	acpi_add_table(rsdp,slit);
+	acpi_add_table(rsdp, slit);
 
 	/* SSDT */
 	current	  = ( current + 0x0f) & -0x10;
@@ -270,8 +268,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	update_ssdt((void*)ssdt);
 	/* recalculate checksum */
 	ssdt->checksum = 0;
-	ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
-	acpi_add_table(rsdp,ssdt);
+	ssdt->checksum = acpi_checksum((unsigned char *)ssdt, ssdt->length);
+	acpi_add_table(rsdp, ssdt);
 
 	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
 	current = acpi_add_ssdt_pstates(rsdp, current);
@@ -290,7 +288,7 @@ unsigned long write_acpi_tables(unsigned long start)
 		else {
 			c  = (u8) ('A' + i - 1 - 6);
 		}
-		current	  = ( current + 0x07) & -0x08;
+		current = ( current + 0x07) & -0x08;
 		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c at %lx\n", c, current); //pci0 and pci1 are in dsdt
 		ssdtx = (acpi_header_t *)current;
 		switch(sysconf.hcid[i]) {
@@ -319,7 +317,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* DSDT */
 	current	  = ( current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
-	dsdt = (acpi_header_t *)current; // it will used by fadt
+	dsdt = (acpi_header_t *)current;
 	current += AmlCode.length;
 	memcpy((void *)dsdt, &AmlCode, AmlCode.length);
 	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
@@ -327,7 +325,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* FACS */ // it needs 64 bit alignment
 	current	  = ( current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:	* FACS at %lx\n", current);
-	facs = (acpi_facs_t *) current; // it will be used by fadt
+	facs = (acpi_facs_t *) current;
 	current += sizeof(acpi_facs_t);
 	acpi_create_facs(facs);
 
@@ -337,8 +335,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	fadt = (acpi_fadt_t *) current;
 	current += sizeof(acpi_fadt_t);
 
-	acpi_create_fadt(fadt,facs,dsdt);
-	acpi_add_table(rsdp,fadt);
+	acpi_create_fadt(fadt, facs, dsdt);
+	acpi_add_table(rsdp, fadt);
 
 #if DUMP_ACPI_TABLES == 1
 	printk(BIOS_DEBUG, "rsdp\n");

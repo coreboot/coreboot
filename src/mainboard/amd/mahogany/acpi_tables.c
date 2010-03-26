@@ -104,21 +104,21 @@ extern void get_bus_conf(void);
 #if CONFIG_ACPI_SSDTX_NUM >= 1
 static void update_ssdtx(void *ssdtx, int i)
 {
-	uint8_t *PCI;
-	uint8_t *HCIN;
-	uint8_t *UID;
+	u8 *PCI;
+	u8 *HCIN;
+	u8 *UID;
 
 	PCI = ssdtx + 0x32;
 	HCIN = ssdtx + 0x39;
 	UID = ssdtx + 0x40;
 
 	if (i < 7) {
-		*PCI = (uint8_t) ('4' + i - 1);
+		*PCI = (u8) ('4' + i - 1);
 	} else {
-		*PCI = (uint8_t) ('A' + i - 1 - 6);
+		*PCI = (u8) ('A' + i - 1 - 6);
 	}
-	*HCIN = (uint8_t) i;
-	*UID = (uint8_t) (i + 3);
+	*HCIN = (u8) i;
+	*UID = (u8) (i + 3);
 
 	/* FIXME: need to update the GSI id in the ssdtx too */
 
@@ -148,9 +148,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	int i;
 #endif
 
-	get_bus_conf();		/* it will get sblk, pci1234, hcdn, and sbdn */
+	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
 
-	/* Align ACPI tables to 16byte */
+	/* Align ACPI tables to 16 bytes */
 	start = (start + 0x0f) & -0x10;
 	current = start;
 
@@ -184,22 +184,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += madt->header.length;
 	acpi_add_table(rsdp, madt);
 
-#if 0
-	/* SRAT */
-	printk(BIOS_DEBUG, "ACPI:    * SRAT\n");
-	srat = (acpi_srat_t *) current;
-	acpi_create_srat(srat);
-	current += srat->header.length;
-	acpi_add_table(rsdp, srat);
-
-	/* SLIT */
-	printk(BIOS_DEBUG, "ACPI:    * SLIT\n");
-	slit = (acpi_slit_t *) current;
-	acpi_create_slit(slit);
-	current += slit->header.length;
-	acpi_add_table(rsdp, slit);
-#endif
-
 	/* SSDT */
 	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");
 	ssdt = (acpi_header_t *)current;
@@ -215,11 +199,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	for (i = 1; i < sysconf.hc_possible_num; i++) {	/* 0: is hc sblink */
 		if ((sysconf.pci1234[i] & 1) != 1)
 			continue;
-		uint8_t c;
+		u8 c;
 		if (i < 7) {
-			c = (uint8_t) ('4' + i - 1);
+			c = (u8) ('4' + i - 1);
 		} else {
-			c = (uint8_t) ('A' + i - 1 - 6);
+			c = (u8) ('A' + i - 1 - 6);
 		}
 		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]);	/* pci0 and pci1 are in dsdt */
 		current = (current + 0x07) & -0x08;
@@ -277,12 +261,6 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "madt\n");
 	dump_mem(madt, ((void *)madt) + madt->header.length);
-
-	printk(BIOS_DEBUG, "srat\n");
-	dump_mem(srat, ((void *)srat) + srat->header.length);
-
-	printk(BIOS_DEBUG, "slit\n");
-	dump_mem(slit, ((void *)slit) + slit->header.length);
 
 	printk(BIOS_DEBUG, "ssdt\n");
 	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);

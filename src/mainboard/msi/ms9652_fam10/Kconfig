@@ -37,11 +37,6 @@ config DCACHE_RAM_GLOBAL_VAR_SIZE
 	default 0x04000
 	depends on BOARD_MSI_MS9652_FAM10
 
-config CONFIG_ACPI_SSDTX_NUM
-	hex
-	default 0x1F
-	depends on BOARD_MSI_MS9652_FAM10
-
 config GENERATE_PIRQ_TABLE
 	bool
 	default y

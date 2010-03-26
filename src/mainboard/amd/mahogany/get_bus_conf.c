@@ -63,6 +63,8 @@ extern void get_sblk_pci1234(void);
 
 static u32 get_bus_conf_done = 0;
 
+void get_bus_conf(void);
+
 void get_bus_conf(void)
 {
 	u32 apicid_base;

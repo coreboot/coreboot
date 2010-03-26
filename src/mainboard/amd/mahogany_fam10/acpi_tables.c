@@ -92,7 +92,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 extern void get_bus_conf(void);
 extern void update_ssdt(void *ssdt);
 
-
+/* not tested yet. */
+#if CONFIG_ACPI_SSDTX_NUM >= 1
 static void update_ssdtx(void *ssdtx, int i)
 {
 	u8 *PCI;
@@ -115,6 +116,7 @@ static void update_ssdtx(void *ssdtx, int i)
 	/* FIXME: need to update the GSI id in the ssdtx too */
 
 }
+#endif
 
 unsigned long write_acpi_tables(unsigned long start)
 {
@@ -129,10 +131,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_facs_t *facs;
 	acpi_header_t *dsdt;
 	acpi_header_t *ssdt;
+#if CONFIG_ACPI_SSDTX_NUM >= 1
 	acpi_header_t *ssdtx;
 	acpi_header_t const *p;
-
 	int i;
+#endif
 
 	get_bus_conf(); //it will get sblk, pci1234, hcdn, and sbdn
 
@@ -204,7 +207,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
 	current = acpi_add_ssdt_pstates(rsdp, current);
 
-#if 0 //CONFIG_ACPI_SSDTX_NUM >= 1
+#if CONFIG_ACPI_SSDTX_NUM >= 1
 
 	/* same htio, but different possition? We may have to copy,
 	change HCIN, and recalculate the checknum and add_table */

@@ -121,4 +121,3 @@ chip northbridge/amd/amdk8/root_complex
 		end		#northbridge/amd/amdk8
 	end #pci_domain
 end		#northbridge/amd/amdk8/root_complex
-

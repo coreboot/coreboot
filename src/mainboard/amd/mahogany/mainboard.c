@@ -25,6 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
+#include <arch/coreboot_tables.h>
 #include <../southbridge/amd/sb700/sb700.h>
 #include "chip.h"
 
@@ -34,6 +35,9 @@ extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
 				uint64_t start, uint64_t size);
 
 uint64_t uma_memory_base, uma_memory_size;
+
+void set_pcie_dereset(void);
+void set_pcie_reset(void);
 
 /*
  * Mahogany uses GPIO 6 as PCIe slot reset, GPIO4 as GFX slot reset. We need to
@@ -65,12 +69,13 @@ void set_pcie_reset()
 	pci_write_config16(sm_dev, 0xA8, word);
 }
 
+#if 0	     /* not tested yet */
 /********************************************************
-* mahogany uses SB700 GPIO8 to detect IDE_DMA66.
-* IDE_DMA66 is routed to GPIO 8. So we read Gpio 8 to
+* mahogany uses SB700 GPIO9 to detect IDE_DMA66.
+* IDE_DMA66 is routed to GPIO 9. So we read Gpio 9 to
 * get the cable type, 40 pin or 80 pin?
 ********************************************************/
-static void get_ide_dma66()
+static void get_ide_dma66(void)
 {
 	u8 byte;
 	/*u32 sm_dev, ide_dev; */
@@ -79,27 +84,29 @@ static void get_ide_dma66()
 	sm_dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 
 	byte = pci_read_config8(sm_dev, 0xA9);
-	byte |= (1 << 4);	/* Set Gpio8 as input */
+	byte |= (1 << 5);	/* Set Gpio9 as input */
 	pci_write_config8(sm_dev, 0xA9, byte);
 
 	ide_dev = dev_find_slot(0, PCI_DEVFN(0x14, 1));
 	byte = pci_read_config8(ide_dev, 0x56);
 	byte &= ~(7 << 0);
-	if ((1 << 4) & pci_read_config8(sm_dev, 0xAA))
+	if ((1 << 5) & pci_read_config8(sm_dev, 0xAA))
 		byte |= 2 << 0;	/* mode 2 */
 	else
 		byte |= 5 << 0;	/* mode 5 */
 	pci_write_config8(ide_dev, 0x56, byte);
 }
+#endif	/* get_ide_dma66 */
 
 /*************************************************
 * enable the dedicated function in mahogany board.
 * This function called early than rs780_enable.
 *************************************************/
-void mahogany_enable(device_t dev)
+static void mahogany_enable(device_t dev)
 {
-	struct mainboard_config *mainboard =
-	    (struct mainboard_config *)dev->chip_info;
+	/* Leave it for future. */
+	/* struct mainboard_config *mainboard =
+	   (struct mainboard_config *)dev->chip_info;*/
 
 	printk(BIOS_INFO, "Mainboard MAHOGANY Enable. dev=0x%p\n", dev);
 
@@ -158,6 +165,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	lb_add_memory_range(mem, LB_MEM_RESERVED, uma_memory_base,
 			    uma_memory_size);
 #endif
+	return 0;
 }
 
 struct chip_operations mainboard_ops = {

@@ -602,8 +602,8 @@ def getdict(dict, name):
 
 def setdict(dict, name, value):
 	debug.info(debug.dict, "setdict sets %s to %s" % (name, value))
-	if name in dict.keys():
-		print "Duplicate in dict: %s" % name
+	if name in dict.keys() and not dict[name] == value:
+		print "Collision in dict: %s is %s, shall be set to %s" % (name, dict[name], value)
 	dict[name] = value
 
 

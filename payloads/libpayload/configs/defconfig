@@ -1,8 +1,15 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Thu May 21 12:01:39 2009
+# Fri Mar 26 12:45:27 2010
 #
+
+#
+# Generic Options
+#
+# CONFIG_EXPERIMENTAL is not set
+# CONFIG_OBSOLETE is not set
+# CONFIG_DEVELOPER is not set
 
 #
 # Architecture Options
@@ -16,6 +23,7 @@ CONFIG_TARGET_I386=y
 #
 CONFIG_LIBC=y
 CONFIG_TINYCURSES=y
+# CONFIG_CBFS is not set
 
 #
 # Console Options
@@ -27,6 +35,7 @@ CONFIG_SERIAL_IOBASE=0x3f8
 CONFIG_VIDEO_CONSOLE=y
 CONFIG_VGA_VIDEO_CONSOLE=y
 # CONFIG_GEODELX_VIDEO_CONSOLE is not set
+CONFIG_COREBOOT_VIDEO_CONSOLE=y
 CONFIG_PC_KEYBOARD=y
 CONFIG_PC_KEYBOARD_LAYOUT_US=y
 # CONFIG_PC_KEYBOARD_LAYOUT_DE is not set
@@ -38,4 +47,10 @@ CONFIG_PCI=y
 CONFIG_NVRAM=y
 # CONFIG_RTC_PORT_EXTENDED_VIA is not set
 CONFIG_SPEAKER=y
-# CONFIG_USB is not set
+CONFIG_USB=y
+CONFIG_USB_UHCI=y
+# CONFIG_USB_OHCI is not set
+# CONFIG_USB_EHCI is not set
+CONFIG_USB_HID=y
+CONFIG_USB_HUB=y
+CONFIG_USB_MSC=y

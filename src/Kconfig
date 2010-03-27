@@ -62,7 +62,6 @@ endchoice
 config SCANBUILD_ENABLE
 	bool "Build with scan-build for static analysis"
 	default n
-	depends on !CCACHE
 	help
 	  Changes the build process to scan-build is used.
 	  Requires scan-build in path.

@@ -18,7 +18,7 @@ ABUILD_DATE="January 29th, 2010"
 ABUILD_VERSION="0.9"
 
 # Where shall we place all the build trees?
-TARGET=$( pwd )/coreboot-builds
+TARGET=coreboot-builds
 XMLFILE=$( pwd )/abuild.xml
 
 # path to payload. Should be more generic

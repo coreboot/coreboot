@@ -25,9 +25,7 @@ smmobj-y += smmhandler.o
 smmobj-y += smihandler.o
 smmobj-y += smiutil.o
 
-ifdef POST_EVALUATION
-
-$(obj)/cpu/x86/smm/smm.o: $(smmobjs)
+$(obj)/cpu/x86/smm/smm.o: $$(smmobjs)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
 
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/smm.ld $(obj)/ldoptions
@@ -41,6 +39,4 @@ $(obj)/cpu/x86/smm/smm_bin.c: $(obj)/cpu/x86/smm/smm
 $(obj)/cpu/x86/smm/smm_bin.o: $(obj)/cpu/x86/smm/smm_bin.c
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) $(CFLAGS) -c -o $@ $<
-
-endif
 

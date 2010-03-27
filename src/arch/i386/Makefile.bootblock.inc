@@ -1,5 +1,3 @@
-ifdef POST_EVALUATION
-
 #######################################################################
 # Build the final rom image
 
@@ -49,12 +47,12 @@ ifeq ($(CONFIG_SSE),y)
 bootblock_romccflags := -mcpu=k7 -msse -O2
 endif
 
-$(obj)/bootblock/ldscript.ld: $(bootblock_ldscripts) $(obj)/ldoptions
+$(obj)/bootblock/ldscript.ld: $$(bootblock_lds) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/bootblock
 	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
 
-$(obj)/bootblock/bootblock.c: $(bootblock_inc)
+$(obj)/bootblock/bootblock.c: $$(bootblock_inc)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/bootblock
 	printf '$(foreach crt0,config.h $(bootblock_inc),#include "$(crt0)"\n)' > $@
@@ -80,7 +78,7 @@ $(obj)/bootblock.elf: $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.o $(obj)/bootbl
 
 #######################################################################
 # Build the romstage
-$(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $(initobjs) $(obj)/romstage/ldscript.ld
+$(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $$(initobjs) $(obj)/romstage/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	printf "CONFIG_ROMBASE = 0x0;\nAUTO_XIP_ROM_BASE = 0x0;\n" > $(obj)/location.ld
 	$(CC) -nostdlib -nostartfiles -static -o $(obj)/romstage.elf -L$(obj) -T $(obj)/romstage/ldscript.ld $(initobjs)
@@ -93,12 +91,12 @@ $(obj)/coreboot.romstage: $(obj)/coreboot.pre1 $(initobjs) $(obj)/romstage/ldscr
 	$(NM) -n $(obj)/romstage.elf | sort > $(obj)/romstage.map
 	$(OBJCOPY) -O binary $(obj)/romstage.elf $@
 
-$(obj)/romstage/ldscript.ld: $(ldscripts) $(obj)/ldoptions
+$(obj)/romstage/ldscript.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/romstage
 	printf '$(foreach ldscript,ldoptions location.ld $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' > $@
 
-$(obj)/romstage/crt0_includes.h: $(crt0s)
+$(obj)/romstage/crt0_includes.h: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/romstage
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
@@ -111,4 +109,3 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(src)/arch/i386/init/crt0.S.lb $(obj)/
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 
-endif

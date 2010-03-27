@@ -33,9 +33,9 @@ HOSTCXX:=$(CC_real) --hostcxx
 endif
 
 export top := $(PWD)
-export src := $(top)/src
+export src := src
 export srck := $(top)/util/kconfig
-export obj ?= $(top)/build
+export obj ?= build
 export objk := $(obj)/util/kconfig
 export sconfig := $(top)/util/sconfig
 export yapps2_py := $(sconfig)/yapps2.py
@@ -136,8 +136,11 @@ all:
 	chmod +x .ccwrap
 	scan-build $(CONFIG_SCANBUILD_REPORT_LOCATION) -analyze-headers --use-cc=$(top)/.ccwrap --use-c++=$(top)/.ccwrap $(MAKE) INNER_SCANBUILD=y
 else
-all: $(obj)/config.h coreboot
+all: $(obj)/config.h $(obj)/build.h coreboot
 endif
+
+# must come rather early
+.SECONDEXPANSION:
 
 $(obj)/config.h:
 	$(MAKE) oldconfig
@@ -156,7 +159,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/config.py: $(yapps2_py) $(config_g)
 # Creation of these is architecture and mainboard independent
 $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(obj)/mainboard/$(MAINBOARDDIR)/config.py
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	(cd $(obj)/mainboard/$(MAINBOARDDIR) ; PYTHONPATH=$(top)/util/sconfig export PYTHONPATH; python config.py  $(MAINBOARDDIR) $(top) $(obj)/mainboard/$(MAINBOARDDIR))
+	(PYTHONPATH=$(top)/util/sconfig python $(obj)/mainboard/$(MAINBOARDDIR)/config.py  $(MAINBOARDDIR) $(top) $(obj)/mainboard/$(MAINBOARDDIR))
 
 objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
 initobjs:=
@@ -173,12 +176,12 @@ includemakefiles= \
 	$(foreach type,$(2), $(eval $(type)-y:=)) \
 	$(eval subdirs-y:=) \
 	$(eval -include $(1)) \
-	$(if $(strip $(3)), \
-		$(foreach type,$(2), \
-			$(eval $(type)s+= \
-				$$(abspath $$(patsubst src/%, \
-						$(obj)/%, \
-						$$(addprefix $(dir $(1)),$$($(type)-y))))))) \
+	$(foreach type,$(2), \
+		$(eval $(type)s+= \
+			$$(subst $(top)/,, \
+			$$(abspath $$(patsubst src/%, \
+					$(obj)/%, \
+					$$(addprefix $(dir $(1)),$$($(type)-y))))))) \
 	$(eval subdirs+=$$(subst $(PWD)/,,$$(abspath $$(addprefix $(dir $(1)),$$(subdirs-y)))))
 
 # For each path in $(subdirs) call includemakefiles, passing $(1) as $(3)
@@ -187,12 +190,12 @@ evaluate_subdirs= \
 	$(eval cursubdirs:=$(subdirs)) \
 	$(eval subdirs:=) \
 	$(foreach dir,$(cursubdirs), \
-		$(eval $(call includemakefiles,$(dir)/Makefile.inc,$(types),$(1)))) \
-	$(if $(subdirs),$(eval $(call evaluate_subdirs, $(1))))
+		$(eval $(call includemakefiles,$(dir)/Makefile.inc,$(types)))) \
+	$(if $(subdirs),$(eval $(call evaluate_subdirs)))
 
 # collect all object files eligible for building
 subdirs:=$(PLATFORM-y) $(BUILD-y)
-$(eval $(call evaluate_subdirs, modify))
+$(eval $(call evaluate_subdirs))
 
 initobjs:=$(addsuffix .initobj.o, $(basename $(initobjs)))
 drivers:=$(addsuffix .driver.o, $(basename $(drivers)))
@@ -203,17 +206,10 @@ alldirs:=$(sort $(abspath $(dir $(allobjs))))
 source_with_ext=$(patsubst $(obj)/%.o,src/%.$(1),$(allobjs))
 allsrc=$(wildcard $(call source_with_ext,c) $(call source_with_ext,S))
 
-POST_EVALUATION:=y
-
-# fetch rules (protected in POST_EVALUATION) that rely on the variables filled above
-subdirs:=$(PLATFORM-y) $(BUILD-y)
-$(eval $(call evaluate_subdirs))
-
-
 define objs_asl_template
 $(obj)/$(1)%.o: src/$(1)%.asl
 	@printf "    IASL       $$(subst $(top)/,,$$(@))\n"
-	$(CPP) -D__ACPI__ -P -include $(obj)/config.h -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
+	$(CPP) -D__ACPI__ -P -include $(abspath $(obj)/config.h) -I$(src) -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	iasl -p $$(basename $$@) -tc $$(basename $$@).asl
 	mv $$(basename $$@).hex $$(basename $$@).c
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c
@@ -226,7 +222,7 @@ define create_cc_template
 # $3 .o infix ("" ".initobj", ...)
 # $4 additional compiler flags
 de$(EMPTY)fine $(1)_$(2)_template
-$(obj)/$$(1)%$(3).o: src/$$(1)%.$(2) $(obj)/config.h
+$(obj)/$$(1)%$(3).o: src/$$(1)%.$(2) | $(obj)/build.h $(obj)/config.h
 	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC) $(4) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def
@@ -270,9 +266,10 @@ printcrt0s:
 	@echo $(patsubst $(top)/%,%,$(crt0s))
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
-INCLUDES := -I$(top)/src -I$(top)/src/include -I$(obj) -I$(top)/src/arch/$(ARCHDIR-y)/include 
-INCLUDES += -I$(top)/src/devices/oprom/include
-INCLUDES += -include $(obj)/config.h
+INCLUDES := -Isrc -Isrc/include -I$(obj) -Isrc/arch/$(ARCHDIR-y)/include 
+INCLUDES += -Isrc/devices/oprom/include
+# abspath is a workaround for romcc
+INCLUDES += -include $(abspath $(obj)/config.h) -include $(abspath $(obj)/build.h)
 
 CFLAGS = $(INCLUDES) -Os -nostdinc -pipe
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
@@ -298,7 +295,7 @@ prepare:
 	mkdir -p $(obj)/util/kconfig/lxdialog $(obj)/util/cbfstool
 	test -n "$(alldirs)" && mkdir -p $(alldirs) || true
 
-$(obj)/build.h: .xcompile
+$(obj)/build.h $(abspath $(obj)/build.h): .xcompile
 	@printf "    GEN        build.h\n"
 	rm -f $(obj)/build.h
 	printf "/* build system definitions (autogenerated) */\n" > $(obj)/build.ht

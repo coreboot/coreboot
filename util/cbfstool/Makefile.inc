@@ -1,6 +1,3 @@
-
-ifdef POST_EVALUATION
-
 cbfsobj :=
 cbfsobj += common.o
 cbfsobj += compress.o
@@ -52,6 +49,4 @@ $(obj)/util/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/Common/%.cpp
 $(obj)/util/cbfstool/cbfstool: $(obj)/util/cbfstool $(addprefix $(obj)/util/cbfstool/,$(cbfsobj))
 	printf "    HOSTCXX    $(subst $(obj)/,,$(@)) (link)\n"
 	$(HOSTCXX) $(CBFSTOOLFLAGS) -o $@ $(addprefix $(obj)/util/cbfstool/,$(cbfsobj))
-
-endif
 

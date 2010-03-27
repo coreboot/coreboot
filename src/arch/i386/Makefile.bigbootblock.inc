@@ -1,5 +1,3 @@
-ifdef POST_EVALUATION
-
 #######################################################################
 # Build the final rom image
 
@@ -14,11 +12,11 @@ $(obj)/coreboot.bootblock: $(obj)/coreboot
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -O binary $< $@
 
-$(obj)/ldscript.ld: $(ldscripts) $(obj)/ldoptions
+$(obj)/ldscript.ld: $$(ldscripts) $(obj)/ldoptions
 	printf 'INCLUDE "ldoptions"\n' > $@
 	printf '$(foreach ldscript,$(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@
 
-$(obj)/crt0_includes.h: $(crt0s)
+$(obj)/crt0_includes.h: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
@@ -30,9 +28,8 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(src)/arch/i386/init/crt0.S.lb $(obj)/
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 
-$(obj)/coreboot: $(initobjs) $(obj)/ldscript.ld
+$(obj)/coreboot: $$(initobjs) $(obj)/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(obj)/ldscript.ld $(initobjs)
 	$(NM) -n $(obj)/coreboot | sort > $(obj)/coreboot.map
 
-endif

@@ -7,8 +7,6 @@ subdirs-y += smp
 
 obj-$(CONFIG_HAVE_OPTION_TABLE) += ../../option_table.o
 
-ifdef POST_EVALUATION
-
 #######################################################################
 # Build the final rom image
 COREBOOT_ROM_DEPENDENCIES:=
@@ -73,14 +71,14 @@ $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/i386/coreboot_ram.ld #ldo
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/i386/coreboot_ram.ld $(obj)/coreboot_ram.o
 	$(NM) -n $(obj)/coreboot_ram | sort > $(obj)/coreboot_ram.map
 
-$(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.o $(drivers) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
+$(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.o $$(drivers) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -nostdlib -r -o $@ $(obj)/arch/i386/lib/c_start.o $(drivers) -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
 
-$(obj)/coreboot.a: $(objs)
+$(obj)/coreboot.a: $$(objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
 	rm -f $(obj)/coreboot.a
-	$(AR) cr $(obj)/coreboot.a $(objs)
+	$(AR) cr $(obj)/coreboot.a $^
 
 #######################################################################
 # done
@@ -195,7 +193,7 @@ ROMCCFLAGS ?= -mcpu=p2 -O2
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h
 	printf "    ROMCC      romstage.inc\n"
-	$(ROMCC) -c -S $(ROMCCFLAGS) -include $(obj)/build.h -I. $(INCLUDES) $< -o $@
+	$(ROMCC) -c -S $(ROMCCFLAGS) -I. $(INCLUDES) $< -o $@
 
 else
 
@@ -205,16 +203,13 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
 	printf "    CC         romstage.inc\n"
-	$(CC) -MMD $(CFLAGS) -include $(obj)/build.h -I$(src) -I. -c -S $< -o $@
+	$(CC) -MMD $(CFLAGS) -I$(src) -I. -c -S $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
 	printf "    POST       romstage.inc\n"
 	sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' $^ > $@.tmp
 	mv $@.tmp $@
 endif
-
-else
-# Only in first pass
 
 # Things that appear in every board
 initobjs += $(obj)/mainboard/$(MAINBOARDDIR)/crt0.o
@@ -247,8 +242,6 @@ endif
 
 ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
 objs += $(obj)/mainboard/$(MAINBOARDDIR)/get_bus_conf.o
-endif
-
 endif
 
 ifeq ($(CONFIG_TINY_BOOTBLOCK),y)

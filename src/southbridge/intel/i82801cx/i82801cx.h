@@ -1,7 +1,7 @@
 #ifndef I82801CX_H
 #define I82801CX_H
 
-#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__)
 #include "chip.h"
 extern void i82801cx_enable(device_t dev);
 #endif

@@ -21,7 +21,7 @@
 #ifndef SOUTHBRIDGE_INTEL_I82801BX_I82801BX_H
 #define SOUTHBRIDGE_INTEL_I82801BX_I82801BX_H
 
-#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__)
 #include "chip.h"
 extern void i82801bx_enable(device_t dev);
 #endif

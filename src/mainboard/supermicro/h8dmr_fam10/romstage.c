@@ -49,11 +49,6 @@
 
 // for enable the FAN
 #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
-
-static void post_code(u8 value) {
-	outb(value, 0x80);
-}
-
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"

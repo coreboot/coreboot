@@ -69,7 +69,7 @@ static inline __attribute__((always_inline)) void stop_this_cpu(void)
 void stop_this_cpu(void);
 #endif
 
-#if ! defined (__ROMCC__) && !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__)
 
 #define xchg(ptr,v) ((__typeof__(*(ptr)))__xchg((unsigned long)(v),(ptr),sizeof(*(ptr))))
 
@@ -105,7 +105,6 @@ static inline unsigned long __xchg(unsigned long x, volatile void * ptr, int siz
 	}
 	return x;
 }
-
 
 static inline void lapic_write_atomic(unsigned long reg, unsigned long v)
 {
@@ -150,14 +149,11 @@ static inline int lapic_remote_read(int apicid, int reg, unsigned long *pvalue)
 
 void setup_lapic(void);
 
-
 #if CONFIG_SMP == 1
 struct device;
 int start_cpu(struct device *cpu);
-
 #endif /* CONFIG_SMP */
 
-
-#endif /* !__ROMCC__ && !__PRE_RAM__ */
+#endif /* !__PRE_RAM__ */
 
 #endif /* CPU_X86_LAPIC_H */

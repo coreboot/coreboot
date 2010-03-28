@@ -41,8 +41,8 @@ static inline void disable_cache(void)
 	wbinvd();
 }
 
-#if !defined( __ROMCC__) && !defined(__PRE_RAM__) && defined (__GNUC__)
+#if !defined(__PRE_RAM__)
 void x86_enable_cache(void);
-#endif /* !__ROMCC__ */
+#endif
 
 #endif /* CPU_X86_CACHE */

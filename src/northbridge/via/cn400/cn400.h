@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 static void cn400_noop(void)
 {
 }

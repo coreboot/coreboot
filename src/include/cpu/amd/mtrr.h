@@ -31,8 +31,8 @@
 #define TOP_MEM_MASK			0x007fffff
 #define TOP_MEM_MASK_KB			(TOP_MEM_MASK >> 10)
 
-#if !defined( __ROMCC__ ) && !defined (ASSEMBLY) && !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__) && !defined(ASSEMBLY)
 void amd_setup_mtrrs(void);
-#endif /* __ROMCC__ */
+#endif
 
 #endif /* CPU_AMD_MTRR_H */

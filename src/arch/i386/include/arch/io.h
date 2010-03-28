@@ -9,7 +9,7 @@
  * (insb/insw/insl/outsb/outsw/outsl). You can also use "pausing"
  * versions of the single-IO instructions (inb_p/inw_p/..).
  */
-#if defined( __ROMCC__ ) && !defined (__GNUC__)
+#if defined(__ROMCC__)
 static inline void outb(uint8_t value, uint16_t port)
 {
 	__builtin_outb(value, port);
@@ -42,7 +42,6 @@ static inline uint32_t inl(uint16_t port)
 	return __builtin_inl(port);
 }
 #else
-
 static inline void outb(uint8_t value, uint16_t port)
 {
 	__asm__ __volatile__ ("outb %b0, %w1" : : "a" (value), "Nd" (port));
@@ -78,8 +77,7 @@ static inline uint32_t inl(uint16_t port)
 	__asm__ __volatile__ ("inl %w1, %0" : "=a"(value) : "Nd" (port));
 	return value;
 }
-
-#endif /* __ROMCC__ && !__GNUC__*/
+#endif /* __ROMCC__ */
 
 static inline void outsb(uint16_t port, const void *addr, unsigned long count)
 {
@@ -136,6 +134,7 @@ static inline void insl(uint16_t port, void *addr, unsigned long count)
 		);
 }
 
+#if 0
 /* XXX XXX XXX This is a story from the evil API from hell XXX XXX XXX
  * We have different functions for memory access in pre-ram stage and ram
  * stage. Those in pre-ram stage are called write32 and expect the address
@@ -173,6 +172,7 @@ static inline uint32_t readl(const volatile void *addr)
 {
 	return *(volatile uint32_t *) addr;
 }
+#endif
 
 #if !defined(__PRE_RAM__)
 static inline __attribute__((always_inline)) uint8_t read8(unsigned long addr)

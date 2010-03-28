@@ -19,6 +19,19 @@ void console_init(void)
 	print_info(console_test);
 }
 
+
+void post_code(u8 value)
+{
+#if !defined(CONFIG_NO_POST) || CONFIG_NO_POST==0
+#if CONFIG_SERIAL_POST==1
+	print_emerg("POST: 0x");
+	print_emerg_hex8(value);
+	print_emerg("\r\n");
+#endif
+	outb(value, 0x80);
+#endif
+}
+
 void die(const char *str)
 {
 	print_emerg(str);

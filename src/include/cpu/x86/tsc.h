@@ -17,7 +17,8 @@ static inline tsc_t rdtsc(void)
 	return res;
 }
 
-#if !defined( __ROMCC__ ) && !defined (__PRE_RAM__)
+#if !defined(__ROMCC__)
+/* Too many registers for ROMCC */
 static inline unsigned long long rdtscll(void)
 {
 	unsigned long long val;

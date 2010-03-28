@@ -52,12 +52,6 @@
 #include <cpu/x86/lapic.h>
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
-
-/* FIXME: Use console.c post_code function */
-static void post_code(u8 value) {
-	outb(value, 0x80);
-}
-
 #include "arch/i386/lib/console.c"
 #include "pc80/serial.c"
 #include "lib/ramtest.c"

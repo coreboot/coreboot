@@ -1,7 +1,7 @@
 #ifndef ARCH_HLT_H
 #define ARCH_HLT_H
 
-#if defined( __ROMCC__) && !defined(__PRE_RAM__) && !defined(__GNUC__)
+#if defined(__ROMCC__)
 static void hlt(void)
 {
 	__builtin_hlt();

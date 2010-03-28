@@ -20,7 +20,7 @@
 #ifndef VX800_H
 #define  VX800_H 1
 
-#ifndef __ROMCC__
+#ifndef __PRE_RAM__
 static void vx800_noop()
 {
 }

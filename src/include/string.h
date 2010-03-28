@@ -8,7 +8,7 @@ void *memcpy(void *dest, const void *src, size_t n);
 void *memmove(void *dest, const void *src, size_t n);
 void *memset(void *s, int c, size_t n);
 int memcmp(const void *s1, const void *s2, size_t n);
-#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__)
 int sprintf(char * buf, const char *fmt, ...);
 #endif
 
@@ -41,7 +41,7 @@ static inline char *strchr(const char *s, int c)
 	return 0;
 }
 
-#if !defined( __ROMCC__ ) && !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__)
 static inline char *strdup(const char *s)
 {   
 	size_t sz = strlen(s) + 1;

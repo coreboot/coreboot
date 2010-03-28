@@ -49,11 +49,6 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-
-static void post_code(u8 value) {
-	outb(value, 0x80);
-}
-
 #include "arch/i386/lib/console.c"
 #if CONFIG_USBDEBUG_DIRECT
 #include "southbridge/nvidia/mcp55/mcp55_enable_usbdebug_direct.c"

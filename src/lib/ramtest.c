@@ -1,6 +1,6 @@
 #include <lib.h> /* Prototypes */
 
-static void write_phys(unsigned long addr, unsigned long value)
+static void write_phys(unsigned long addr, u32 value)
 {
 	// Assembler in lib/ is very ugly. But we properly guarded
 	// it so let's obey this one for now
@@ -9,7 +9,7 @@ static void write_phys(unsigned long addr, unsigned long value)
 		"movnti %1, (%0)"
 		: /* outputs */
 		: "r" (addr), "r" (value) /* inputs */
-#ifndef __GNUC__
+#ifndef __GNUC__ /* GCC does not like empty clobbers? */
 		: /* clobbers */
 #endif
 		);
@@ -20,11 +20,29 @@ static void write_phys(unsigned long addr, unsigned long value)
 #endif
 }
 
-static unsigned long read_phys(unsigned long addr)
+static u32 read_phys(unsigned long addr)
 {
 	volatile unsigned long *ptr;
 	ptr = (void *)addr;
 	return *ptr;
+}
+
+static void phys_memory_barrier(void)
+{
+#if CONFIG_SSE2
+	// Needed for movnti
+	asm volatile (
+		"sfence"
+		::
+#ifdef __GNUC__ /* ROMCC does not like memory clobbers */
+		: "memory"
+#endif
+	);
+#else
+#ifdef __GNUC__ /* ROMCC does not like empty asm statements */
+	asm volatile ("" ::: "memory");
+#endif
+#endif
 }
 
 static void ram_fill(unsigned long start, unsigned long stop)
@@ -52,12 +70,8 @@ static void ram_fill(unsigned long start, unsigned long stop)
 			print_debug(" \r");
 #endif
 		}
-		write_phys(addr, addr);
+		write_phys(addr, (u32)addr);
 	};
-#if CONFIG_SSE2
-	// Needed for movnti
-	asm volatile ("sfence" ::: "memory");
-#endif
 	/* Display final address */
 #if CONFIG_USE_PRINTK_IN_CAR
 	printk(BIOS_DEBUG, "%08lx\r\nDRAM filled\r\n", addr);
@@ -159,11 +173,43 @@ void ram_check(unsigned long start, unsigned long stop)
 	print_debug("\r\n");
 #endif
 	ram_fill(start, stop);
+	/* Make sure we don't read before we wrote */
+	phys_memory_barrier();
 	ram_verify(start, stop);
 #if CONFIG_USE_PRINTK_IN_CAR
 	printk(BIOS_DEBUG, "Done.\r\n");
 #else
 	print_debug("Done.\r\n");
 #endif
+}
+
+void quick_ram_check(void)
+{
+	int fail = 0;
+	u32 backup;
+	backup = read_phys(CONFIG_RAMBASE);
+	write_phys(CONFIG_RAMBASE, 0x55555555);
+	phys_memory_barrier();
+	if (read_phys(CONFIG_RAMBASE) != 0x55555555)
+		fail=1;
+	write_phys(CONFIG_RAMBASE, 0xaaaaaaaa);
+	phys_memory_barrier();
+	if (read_phys(CONFIG_RAMBASE) != 0xaaaaaaaa)
+		fail=1;
+	write_phys(CONFIG_RAMBASE, 0x00000000);
+	phys_memory_barrier();
+	if (read_phys(CONFIG_RAMBASE) != 0x00000000)
+		fail=1;
+	write_phys(CONFIG_RAMBASE, 0xffffffff);
+	phys_memory_barrier();
+	if (read_phys(CONFIG_RAMBASE) != 0xffffffff)
+		fail=1;
+
+	write_phys(CONFIG_RAMBASE, backup);
+	if (fail) {
+		post_code(0xea);
+		die("RAM INIT FAILURE!\n");
+	}
+	phys_memory_barrier();
 }
 

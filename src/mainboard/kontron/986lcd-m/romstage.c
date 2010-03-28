@@ -455,6 +455,8 @@ void real_main(unsigned long bist)
 #endif
 #endif
 
+	quick_ram_check();
+
 	MCHBAR16(SSKPD) = 0xCAFE;
 
 #if CONFIG_HAVE_ACPI_RESUME

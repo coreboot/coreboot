@@ -18,9 +18,8 @@ struct irq_info {
 
 #if defined(CONFIG_IRQ_SLOT_COUNT)
 #define IRQ_SLOTS_COUNT CONFIG_IRQ_SLOT_COUNT
-#elif (__GNUC__ < 3)
-#define IRQ_SLOTS_COUNT 1
 #else
+#warning "No IRQ_SLOT_COUNT in Kconfig."
 #define IRQ_SLOTS_COUNT
 #endif
 

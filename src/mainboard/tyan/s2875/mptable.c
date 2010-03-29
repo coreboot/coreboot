@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdint.h>
 #if CONFIG_LOGICAL_CPUS==1
-#include <cpu/amd/dualcore.h>
+#include <cpu/amd/multicore.h>
 #endif
 
 static unsigned node_link_to_bus(unsigned node, unsigned link)

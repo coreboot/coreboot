@@ -19,7 +19,7 @@
 
 
 #include <arch/cpu.h>
-#include <cpu/amd/quadcore.h>
+#include <cpu/amd/multicore.h>
 #ifdef __PRE_RAM__
 #include <cpu/amd/model_10xxx_msr.h>
 #endif

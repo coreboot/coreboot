@@ -19,7 +19,7 @@
 
 #include <cpu/x86/lapic.h>
 
-#include <cpu/amd/dualcore.h>
+#include <cpu/amd/multicore.h>
 #if CONFIG_LOGICAL_CPUS==1
 #include <pc80/mc146818rtc.h>
 #endif

@@ -34,7 +34,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/amd/quadcore.h>
+#include <cpu/amd/multicore.h>
 #include <cpu/amd/model_10xxx_msr.h>
 
 extern device_t get_node_pci(u32 nodeid, u32 fn);

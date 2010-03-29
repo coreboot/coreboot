@@ -25,7 +25,7 @@
 #include <string.h>
 #include <stdint.h>
 #if CONFIG_LOGICAL_CPUS==1
-#include <cpu/amd/dualcore.h>
+#include <cpu/amd/multicore.h>
 #endif
 
 #include <cpu/amd/amdk8_sysconf.h>

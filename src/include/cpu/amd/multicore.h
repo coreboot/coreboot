@@ -21,7 +21,7 @@
 #define CPU_AMD_QUADCORE_H
 
 #if defined(__GNUC__)
-unsigned int read_nb_cfg_54(void);
+u32 read_nb_cfg_54(void);
 #endif
 
 struct node_core_id {

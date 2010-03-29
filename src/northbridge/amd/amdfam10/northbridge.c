@@ -32,7 +32,7 @@
 #include <cpu/x86/lapic.h>
 
 #if CONFIG_LOGICAL_CPUS==1
-#include <cpu/amd/quadcore.h>
+#include <cpu/amd/multicore.h>
 #include <pc80/mc146818rtc.h>
 #endif
 

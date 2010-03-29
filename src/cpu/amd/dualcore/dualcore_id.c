@@ -1,7 +1,7 @@
 /* 2004.12 yhlu add dual core support */
 
 #include <arch/cpu.h>
-#include <cpu/amd/dualcore.h>
+#include <cpu/amd/multicore.h>
 #ifdef __PRE_RAM__
 #include <cpu/amd/model_fxx_msr.h>
 #endif

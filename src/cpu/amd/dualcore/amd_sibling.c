@@ -3,7 +3,7 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/amd/dualcore.h>
+#include <cpu/amd/multicore.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <pc80/mc146818rtc.h>

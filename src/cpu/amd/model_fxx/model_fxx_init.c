@@ -26,7 +26,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 
-#include <cpu/amd/dualcore.h>
+#include <cpu/amd/multicore.h>
 
 #include <cpu/amd/model_fxx_msr.h>
 

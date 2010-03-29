@@ -29,7 +29,7 @@
 /* *	Destroys: Al,*/
 /* **/
 /* ***************************************************************************/
-void StartTimer1(void)
+static void StartTimer1(void)
 {
 	outb(0x56, 0x43);
 	outb(0x12, 0x41);

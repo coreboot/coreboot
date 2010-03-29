@@ -27,8 +27,9 @@ static const unsigned char NumColAddr[] = {
 	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F 
 };
 
-void banner(const char *s)
+static void banner(const char *s)
 {
+	/* This is so ugly. */
 	print_debug("===========================");
 	print_debug(s);
 	print_debug("======================================\r\n");

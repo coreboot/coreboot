@@ -35,7 +35,6 @@
 #error  COREBOOT_ASSEMBLER not defined
 #endif
 
-
 #ifndef  COREBOOT_EXTRA_VERSION
 #define COREBOOT_EXTRA_VERSION ""
 #endif
@@ -54,7 +53,4 @@ const char coreboot_compile_domain[] = COREBOOT_COMPILE_DOMAIN;
 const char coreboot_compiler[]       = COREBOOT_COMPILER;
 const char coreboot_linker[]         = COREBOOT_LINKER;
 const char coreboot_assembler[]      = COREBOOT_ASSEMBLER;
-
-
-
 

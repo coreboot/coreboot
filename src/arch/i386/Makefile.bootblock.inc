@@ -42,9 +42,9 @@ endif
 bootblock_inc += $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc
 bootblock_inc += $(src)/arch/i386/lib/walkcbfs.S
 
-bootblock_romccflags := -mcpu=i386 -O2
+bootblock_romccflags := -mcpu=i386 -O2 -D__PRE_RAM__
 ifeq ($(CONFIG_SSE),y)
-bootblock_romccflags := -mcpu=k7 -msse -O2
+bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__
 endif
 
 $(obj)/bootblock/ldscript.ld: $$(bootblock_lds) $(obj)/ldoptions

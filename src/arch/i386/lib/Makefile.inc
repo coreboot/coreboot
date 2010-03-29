@@ -8,3 +8,5 @@ obj-y += exception.o
 
 initobj-y += printk_init.o
 initobj-y += cbfs_and_run.o
+
+$(obj)/arch/i386/lib/console.o :: $(obj)/build.h

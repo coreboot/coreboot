@@ -29,3 +29,5 @@ obj-$(CONFIG_COMPRESSED_PAYLOAD_LZMA) += lzma.o
 obj-$(CONFIG_BOOTSPLASH) += jpeg.o
 
 smmobj-y += memcpy.o
+
+$(obj)/lib/version.o :: $(obj)/build.h

@@ -19,7 +19,7 @@
 
 
 #define ASSEMBLY 1
-#define __PRE_RAM__
+
 
 #define SYSTEM_TYPE 0	/* SERVER */
 //#define SYSTEM_TYPE 1	/* DESKTOP */

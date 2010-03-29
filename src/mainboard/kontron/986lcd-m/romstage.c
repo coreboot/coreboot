@@ -18,7 +18,7 @@
  */
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
-#define __PRE_RAM__
+
 
 /* Configuration of the i945 driver */
 #define CHIPSET_I945GM 1

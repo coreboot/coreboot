@@ -22,7 +22,7 @@
 /* Based on romstage.c from AMD's DB800 and DBM690T mainboards. */
 
 #define ASSEMBLY 1
-#define __PRE_RAM__
+
 
 #include <stdlib.h>
 #include <stdint.h>

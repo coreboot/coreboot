@@ -21,7 +21,7 @@
  */
 
 #define ASSEMBLY 1
-#define __PRE_RAM__
+
 
 // #define CACHE_AS_RAM_ADDRESS_DEBUG 1
 // #define RAM_TIMING_DEBUG 1

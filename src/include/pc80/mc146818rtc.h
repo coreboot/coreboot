@@ -82,11 +82,11 @@
 #define PC_CKS_LOC		46
 
 /* coreboot cmos checksum is usually only built over bytes 49..125 */
-#ifdef AUTOCONF_INCLUDED
+#if CONFIG_HAVE_OPTION_TABLE
 #include <option_table.h>
 #endif
 
-#if !defined(ASSEMBLY)
+#if !defined(ASSEMBLY) && !defined(__PRE_RAM__)
 void rtc_init(int invalid);
 #if CONFIG_USE_OPTION_TABLE == 1
 int get_option(void *dest, const char *name);

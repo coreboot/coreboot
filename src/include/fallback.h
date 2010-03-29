@@ -1,7 +1,7 @@
 #ifndef FALLBACK_H
 #define FALLBACK_H
 
-#ifndef ASSEMBLY
+#if !defined(ASSEMBLY) && !defined(__PRE_RAM__)
 
 void set_boot_successful(void);
 void boot_successful(void);

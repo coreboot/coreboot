@@ -1,5 +1,4 @@
 source src/cpu/amd/Kconfig
-source src/cpu/emulation/Kconfig
 source src/cpu/intel/Kconfig
 source src/cpu/via/Kconfig
 source src/cpu/x86/Kconfig

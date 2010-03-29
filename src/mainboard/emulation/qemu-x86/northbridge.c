@@ -7,7 +7,6 @@
 #include <string.h>
 #include <bitops.h>
 #include "chip.h"
-#include "northbridge.h"
 #include <delay.h>
 
 static void ram_resource(device_t dev, unsigned long index,

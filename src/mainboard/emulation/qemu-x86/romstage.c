@@ -1,6 +1,5 @@
 #define ASSEMBLY 1
 
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -19,7 +18,7 @@
 static void main(void)
 {
 	/*	init_timer();*/
-	outb(5, 0x80);
+	post_code(0x05);
 	
 	uart_init();
 	console_init();

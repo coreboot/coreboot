@@ -8,3 +8,5 @@ obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.o
 obj-$(CONFIG_GENERATE_ACPI_TABLES) += acpigen.o
 obj-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.o
 
+$(obj)/arch/i386/boot/coreboot_table.o : $(OPTION_TABLE_H)
+

@@ -1,5 +1,8 @@
 #include <pc80/mc146818rtc.h>
 #include <fallback.h>
+#if CONFIG_HAVE_OPTION_TABLE
+#include <option_table.h>
+#endif
 
 #ifndef CONFIG_MAX_REBOOT_CNT
 #error "CONFIG_MAX_REBOOT_CNT not defined"
@@ -40,6 +43,7 @@ static int cmos_error(void)
 
 static int cmos_chksum_valid(void)
 {
+#if CONFIG_HAVE_OPTION_TABLE == 1
 	unsigned char addr;
 	unsigned long sum, old_sum;
 	sum = 0;
@@ -54,6 +58,9 @@ static int cmos_chksum_valid(void)
 	old_sum |=  cmos_read(LB_CKS_LOC+1);
 
 	return sum == old_sum;
+#else
+	return 0;
+#endif
 }
 
 

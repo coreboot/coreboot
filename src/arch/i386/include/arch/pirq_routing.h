@@ -16,11 +16,8 @@ struct irq_info {
 	uint8_t rfu;
 } __attribute__((packed));
 
-#if defined(CONFIG_IRQ_SLOT_COUNT)
-#define IRQ_SLOTS_COUNT CONFIG_IRQ_SLOT_COUNT
-#else
-#warning "No IRQ_SLOT_COUNT in Kconfig."
-#define IRQ_SLOTS_COUNT
+#if !defined(CONFIG_IRQ_SLOT_COUNT)
+#error "No IRQ_SLOT_COUNT in Kconfig."
 #endif
 
 struct irq_routing_table {
@@ -33,7 +30,7 @@ struct irq_routing_table {
 	uint32_t miniport_data;			/* Crap */
 	uint8_t  rfu[11];
 	uint8_t  checksum;			/* Modulo 256 checksum must give zero */
-	struct irq_info slots[IRQ_SLOTS_COUNT];
+	struct irq_info slots[CONFIG_IRQ_SLOT_COUNT];
 } __attribute__((packed));
 
 extern const struct irq_routing_table intel_irq_routing_table;

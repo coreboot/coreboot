@@ -30,7 +30,7 @@
 #include <device/device.h>
 #include <stdlib.h>
 #if (CONFIG_HAVE_OPTION_TABLE == 1)
-#include <pc80/mc146818rtc.h>
+#include <option_table.h>
 #endif
 
 static struct lb_header *lb_table_init(unsigned long addr)

@@ -81,10 +81,10 @@
 #define PC_CKS_RANGE_END	45
 #define PC_CKS_LOC		46
 
-/* coreboot cmos checksum is usually only built over bytes 49..125 */
-#if CONFIG_HAVE_OPTION_TABLE
-#include <option_table.h>
-#endif
+/* coreboot cmos checksum is usually only built over bytes 49..125
+ * LB_CKS_RANGE_START, LB_CKS_RANGE_END and LB_CKS_LOC are defined
+ * in option_table.h
+ */
 
 #if !defined(ASSEMBLY) && !defined(__PRE_RAM__)
 void rtc_init(int invalid);

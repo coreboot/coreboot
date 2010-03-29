@@ -3,6 +3,9 @@
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
 #include <string.h>
+#if CONFIG_HAVE_OPTION_TABLE
+#include <option_table.h>
+#endif
 
 /* control registers - Moto names
  */
@@ -257,7 +260,7 @@ int get_option(void *dest, const char *name)
 		}
 	}
 	if(!found) {
-		printk(BIOS_DEBUG, "WARNING: No cmos option '%s'\n", name);
+		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
 		return(-2);
 	}
 	

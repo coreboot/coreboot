@@ -6,3 +6,5 @@ obj-y += keyboard.o
 
 #initobj-y += serial.o
 subdirs-y += vga
+
+$(obj)/pc80/mc146818rtc.o : $(OPTION_TABLE_H)

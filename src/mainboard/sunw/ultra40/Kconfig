@@ -49,16 +49,6 @@ config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	default n
 	depends on BOARD_SUNW_ULTRA40
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_SUNW_ULTRA40
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_SUNW_ULTRA40
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "Ultra 40"

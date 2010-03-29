@@ -214,18 +214,6 @@ config XIP_ROM_SIZE
 	hex
 	default 0x20000
 
-config LB_CKS_RANGE_START
-	int
-	default 49
-
-config LB_CKS_RANGE_END
-	int
-	default 125
-
-config LB_CKS_LOC
-	int
-	default 126
-
 config LOGICAL_CPUS
 	bool
 	default y

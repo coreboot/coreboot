@@ -31,21 +31,6 @@ config DCACHE_RAM_SIZE
 	default 0x1000
 	depends on BOARD_TYAN_S2735
 	
-config LB_CKS_RANGE_START
-	int
-	default 49
-	depends on BOARD_TYAN_S2735
-
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_TYAN_S2735
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_TYAN_S2735
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "S2735"

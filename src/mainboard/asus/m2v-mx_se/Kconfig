@@ -82,16 +82,6 @@ config HEAP_SIZE
 	default 0x40000
 	depends on BOARD_ASUS_M2V_MX_SE
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_ASUS_M2V_MX_SE
-
-config LB_CKS_LOC
-	int
-	default	123
-	depends	on BOARD_ASUS_M2V_MX_SE
-
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0x0

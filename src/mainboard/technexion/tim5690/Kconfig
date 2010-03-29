@@ -45,16 +45,6 @@ config APIC_ID_OFFSET
 	default 0x0
 	depends on BOARD_TECHNEXION_TIM5690
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_TECHNEXION_TIM5690
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_TECHNEXION_TIM5690
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "TIM-5690"

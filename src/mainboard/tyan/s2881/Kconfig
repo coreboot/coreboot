@@ -29,16 +29,6 @@ config SB_HT_CHAIN_ON_BUS0
 	default 2
 	depends on BOARD_TYAN_S2881
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_TYAN_S2881
-
-config LB_CKS_LOC
-	int
-        default 123
-	depends on BOARD_TYAN_S2881
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "S2881"

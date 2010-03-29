@@ -30,4 +30,4 @@ obj-$(CONFIG_BOOTSPLASH) += jpeg.o
 
 smmobj-y += memcpy.o
 
-$(obj)/lib/version.o :: $(obj)/build.h
+$(obj)/lib/version.o : $(obj)/build.h

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  * 
  * Copyright (C) 2003-2004 Eric Biederman
- * Copyright (C) 2005-2009 coresystems GmbH
+ * Copyright (C) 2005-2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -29,6 +29,9 @@
 #include <version.h>
 #include <device/device.h>
 #include <stdlib.h>
+#if (CONFIG_HAVE_OPTION_TABLE == 1)
+#include <pc80/mc146818rtc.h>
+#endif
 
 static struct lb_header *lb_table_init(unsigned long addr)
 {
@@ -196,9 +199,9 @@ static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
 
 	cmos_checksum->size = (sizeof(*cmos_checksum));
 
-	cmos_checksum->range_start = CONFIG_LB_CKS_RANGE_START * 8;
-	cmos_checksum->range_end = ( CONFIG_LB_CKS_RANGE_END * 8 ) + 7;
-	cmos_checksum->location = CONFIG_LB_CKS_LOC * 8;
+	cmos_checksum->range_start = LB_CKS_RANGE_START * 8;
+	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
+	cmos_checksum->location = LB_CKS_LOC * 8;
 	cmos_checksum->type = CHECKSUM_PCBIOS;
 	
 	return cmos_checksum;

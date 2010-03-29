@@ -44,14 +44,14 @@ static int cmos_chksum_valid(void)
 	unsigned long sum, old_sum;
 	sum = 0;
 	/* Comput the cmos checksum */
-	for(addr = CONFIG_LB_CKS_RANGE_START; addr <= CONFIG_LB_CKS_RANGE_END; addr++) {
+	for(addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
 		sum += cmos_read(addr);
 	}
 	sum = (sum & 0xffff) ^ 0xffff;
 
 	/* Read the stored checksum */
-	old_sum = cmos_read(CONFIG_LB_CKS_LOC) << 8;
-	old_sum |=  cmos_read(CONFIG_LB_CKS_LOC+1);
+	old_sum = cmos_read(LB_CKS_LOC) << 8;
+	old_sum |=  cmos_read(LB_CKS_LOC+1);
 
 	return sum == old_sum;
 }

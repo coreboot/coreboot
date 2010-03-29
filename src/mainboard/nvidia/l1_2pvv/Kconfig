@@ -51,21 +51,6 @@ config SB_HT_CHAIN_ON_BUS0
 	default 2
 	depends on BOARD_NVIDIA_L1_2PVV
 
-config LB_CKS_RANGE_START
-	int
-	default 49
-	depends on BOARD_NVIDIA_L1_2PVV
-
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_NVIDIA_L1_2PVV
-
-config LB_CKS_LOC
-	int
-        default 123
-	depends on BOARD_NVIDIA_L1_2PVV
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "l1_2pvv"

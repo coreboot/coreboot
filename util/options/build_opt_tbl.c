@@ -1,3 +1,23 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2003 Eric Biederman (ebiederm@xmission.com)
+ * Copyright (C) 2007-2010 coresystems GmbH
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,14 +36,14 @@
 #define TMPFILE_TEMPLATE "/build_opt_tbl_XXXXXX"
 
 static unsigned char cmos_table[4096];
-void test_for_entry_overlaps(void *entry_start, void *entry_end);
 
 /* This array is used to isolate bits that are to be changed in a byte */
 static unsigned char clip[9]={0,1,3,7,0x0f,0x1f,0x3f,0x7f,0xff};
 
 #ifdef WIN32
 #include <fcntl.h>
-char* mkstemp(char* name) {
+char *mkstemp(char* name)
+{
 	static char val='0';
 	char *c=name;
 	while (*c!='X') c++;
@@ -35,13 +55,15 @@ char* mkstemp(char* name) {
 #define UNLINK_IF_NECESSARY(x)
 #endif
 
-/* This routine loops through the entried and tests if any of the fields overlap
-	input entry_start = the memory pointer to the start of the entries.
-	      entry_end = the byte past the entries.
-	output  none
-		if there is an overlap, the routine exits, other wise it returns.
-*/
-void test_for_entry_overlaps(void *entry_start, void *entry_end)
+/**
+ * This routine loops through the entried and tests if any of the fields
+ * overlap.
+ * If there is an overlap, the routine exits, otherwise it returns.
+ *
+ * @param entry_start memory pointer to the start of the entries.
+ * @param entry_end   memory pointer to the byte past the entries.
+ */
+static void test_for_entry_overlaps(void *entry_start, void *entry_end)
 {
 	int ptr;
 	char *cptr;
@@ -63,7 +85,7 @@ void test_for_entry_overlaps(void *entry_start, void *entry_end)
 	for(cptr = entry_start; cptr < (char *)entry_end; cptr += ce->size) {
 		ce=(struct cmos_entries *)cptr;
 		/* test if entry goes past the end of the buffer */
-		if((ce->bit+ce->length)>buffer_bit_size) {
+		if((int)(ce->bit+ce->length) > buffer_bit_size) {
 			printf("Error - Entry %s start bit + length must be less than %d\n",
 				ce->name,buffer_bit_size);
 			exit(1);
@@ -94,7 +116,7 @@ void test_for_entry_overlaps(void *entry_start, void *entry_end)
 			}
 		} else {
 			/* test if bits overlap byte boundaries */
-			if(ce->length>(8-offset)) {
+			if((int)ce->length > (8-offset)) {
                                 printf("Error - Entry %s length overlaps a byte boundry\n",
 					ce->name);
                                 exit(1);
@@ -113,7 +135,7 @@ void test_for_entry_overlaps(void *entry_start, void *entry_end)
 }
 
 /* This routine displays the usage options */
-void display_usage(char *name)
+static void display_usage(char *name)
 {
 	printf("Usage: %s [--config filename]\n", name);
 	printf("                       [--option filename]\n");
@@ -123,7 +145,6 @@ void display_usage(char *name)
 	printf("--header = Ouput a C header file with the definitions.\n");
 	exit(1);
 }
-
 
 static void skip_spaces(char *line, char **ptr)
 {
@@ -136,6 +157,7 @@ static void skip_spaces(char *line, char **ptr)
 	}
 	return;
 }
+
 static unsigned long get_number(char *line, char **ptr, int base)
 {
 	unsigned long value;
@@ -210,19 +232,22 @@ static int is_ident(char *str)
 	return result;
 }
 
-
-/* This routine builds the cmos definition table from the cmos layout file
-	input The input comes from the configuration file which contains two parts
-		entries and enumerations. Each section is started with the key words
-		entries and enumerations.  Records then follow in their respective 
-		formats.
-	output The output of this program is the cmos definitions table.  It is stored
-		in the cmos_table array. If this module is called, and the global 
-		table_file has been implimented by the user, the table is also written
-		to the specified file.
-		This program exits on and error.  It returns a 1 on successful 
-		completion
-*/
+/**
+ * This routine builds the cmos definition table from the cmos layout file
+ *
+ * The input comes from the configuration file which contains two parts
+ * entries and enumerations.  Each section is started with the key words
+ * entries and enumerations.  Records then follow in their respective 
+ * formats.
+ *
+ * The output of this program is the cmos definitions table.  It is stored
+ * in the cmos_table array. If this module is called, and the global 
+ * table_file has been implimented by the user, the table is also written
+ * to the specified file.
+ *
+ * This program exits with a return code of 1 on error.  It returns 0 on 
+ * successful completion
+ */
 int main(int argc, char **argv)
 {
 	int i;
@@ -230,18 +255,17 @@ int main(int argc, char **argv)
 	char *option=0;
 	char *header=0;
 	FILE *fp;
-	int tmpfile;
-	char tmpfilename[TMPFILE_LEN];
+	int tempfile;
+	char tempfilename[TMPFILE_LEN];
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
 	struct cmos_enums *c_enums, *c_enums_start;
-	struct cmos_checksum *cs;
+	struct cmos_checksum *cs, *new_cs;
 	char line[INPUT_LINE_MAX];
 	unsigned char uc;
 	int entry_mode=0;
 	int enum_mode=0;
 	int checksum_mode=0;
-	long ptr;
 	int cnt;
 	char *cptr;
 	void *entry_start, *entry_end;
@@ -314,19 +338,23 @@ int main(int argc, char **argv)
 	for(;;){  /* this section loops through the entry records */
 		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) 
 			break; /* end if no more input */
+		// FIXME mode should be a single enum.
 		if(!entry_mode) {  /* skip input until the entries key word */
 			if (strstr(line,"entries") != 0) {
 				entry_mode=1;
+				enum_mode=0;
+				checksum_mode=0;
 				continue;
 			}
-		}
-		else{  /* Test if we are done with entries and starting enumerations */
+		} else {  /* Test if we are done with entries and starting enumerations */
 			if (strstr(line,"enumerations") != 0){
 				entry_mode=0;
 				enum_mode=1;
+				checksum_mode=0;
 				break;
 			}
 			if (strstr(line, "checksums") != 0) {
+				entry_mode=0;
 				enum_mode=0;
 				checksum_mode=1;
 				break;
@@ -379,6 +407,7 @@ int main(int argc, char **argv)
 	test_for_entry_overlaps(entry_start, entry_end);
 
 	for(;enum_mode;){ /* loop to build the enumerations section */
+		long ptr;
 		if(fgets(line,INPUT_LINE_MAX,fp)==NULL) 
 			break; /* go till end of input */
 
@@ -420,8 +449,7 @@ int main(int argc, char **argv)
 	ct->size=ct->header_length+enum_length+entries_length;
 
 	/* Get the checksum records */
-	cs=(struct cmos_checksum *)(cmos_table+(ct->size));
-	cptr = (char*)cs;
+	new_cs = (struct cmos_checksum *)(cmos_table+(ct->size));
 	for(;checksum_mode;) { /* This section finds the checksums */
 		char *ptr;
 		if(fgets(line, INPUT_LINE_MAX,fp)==NULL)
@@ -431,6 +459,9 @@ int main(int argc, char **argv)
 		if (line[0]=='#') continue;
 		if (line[strspn(line, " ")]=='\n') continue;
 		if (memcmp(line, "checksum", 8) != 0) continue;
+
+		/* We actually found a new cmos checksum entry */
+		cs = new_cs;
 
 		/* get the information */
 		ptr = line + 8;
@@ -476,10 +507,10 @@ int main(int argc, char **argv)
 		cs->tag = LB_TAG_OPTION_CHECKSUM;
 		cs->size = sizeof(*cs);
 		cs->type = CHECKSUM_PCBIOS;
+
 		cptr = (char *)cs;
 		cptr += cs->size;
-		cs = (struct cmos_checksum *)cptr;
-
+		new_cs = (struct cmos_checksum *)cptr;
 	}
 	ct->size += (cptr - (char *)(cmos_table + ct->size));
 	fclose(fp);
@@ -487,17 +518,17 @@ int main(int argc, char **argv)
 	/* See if we want to output a C source file */
 	if(option) {
 		int err=0;
-		strncpy(tmpfilename, dirname(strdup(option)), TMPFILE_LEN);
-	        strncat(tmpfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
-		tmpfile = mkstemp(tmpfilename);
-		if(tmpfile == -1) {
+		strncpy(tempfilename, dirname(strdup(option)), TMPFILE_LEN);
+	        strncat(tempfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
+		tempfile = mkstemp(tempfilename);
+		if(tempfile == -1) {
                         perror("Error - Could not create temporary file");
                         exit(1);
 		}
 
-		if((fp=fdopen(tmpfile,"w"))==NULL){
+		if((fp=fdopen(tempfile,"w"))==NULL){
 			perror("Error - Could not open temporary file");
-			unlink(tmpfilename);
+			unlink(tempfilename);
 			exit(1);
 		}
 
@@ -505,11 +536,11 @@ int main(int argc, char **argv)
         	if(!fwrite("unsigned char option_table[] = {",1,32,fp)) {
         	        perror("Error - Could not write image file");
         	        fclose(fp);
-			unlink(tmpfilename);
+			unlink(tempfilename);
         	        exit(1);
         	}
 		/* write the array values */
-		for(i=0;i<(ct->size-1);i++) {
+		for(i=0; i<(int)(ct->size-1); i++) {
 			if(!(i%10) && !err) err=!fwrite("\n\t",1,2,fp);
 			sprintf(buf,"0x%02x,",cmos_table[i]);
 			if(!err) err=!fwrite(buf,1,5,fp);
@@ -520,16 +551,16 @@ int main(int argc, char **argv)
         	if(!fwrite("};\n",1,3,fp)) {
         	        perror("Error - Could not write image file");
         	        fclose(fp);
-			unlink(tmpfilename);
+			unlink(tempfilename);
         	        exit(1);
         	}
 
         	fclose(fp);
 		UNLINK_IF_NECESSARY(option);
-		if (rename(tmpfilename, option)) {
+		if (rename(tempfilename, option)) {
 			fprintf(stderr, "Error - Could not write %s: ", option);
 			perror(NULL);
-			unlink(tmpfilename);
+			unlink(tempfilename);
 			exit(1);
 		}
 	}
@@ -539,18 +570,18 @@ int main(int argc, char **argv)
 		struct cmos_option_table *hdr;
 		struct lb_record *ptr, *end;
 
-		strncpy(tmpfilename, dirname(strdup(option)), TMPFILE_LEN);
-	        strncat(tmpfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
-		tmpfile = mkstemp(tmpfilename);
-		if(tmpfile == -1) {
+		strncpy(tempfilename, dirname(strdup(option)), TMPFILE_LEN);
+	        strncat(tempfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
+		tempfile = mkstemp(tempfilename);
+		if(tempfile == -1) {
 			perror("Error - Could not create temporary file");
 			exit(1);
 		}
 
-		fp = fdopen(tmpfile, "w");
+		fp = fdopen(tempfile, "w");
 		if (!fp) {
 			perror("Error - Could not open temporary file");
-			unlink(tmpfilename);
+			unlink(tempfilename);
 			exit(1);
 		}
 
@@ -569,7 +600,7 @@ int main(int argc, char **argv)
 				fprintf(stderr, "Invalid identifier: %s\n",
 					ce->name);
 				fclose(fp);
-				unlink(tmpfilename);
+				unlink(tempfilename);
 				exit(1);
 			}
 			fprintf(fp, "#define CMOS_VSTART_%s %d\n",
@@ -577,17 +608,21 @@ int main(int argc, char **argv)
 			fprintf(fp, "#define CMOS_VLEN_%s %d\n",
 				ce->name, ce->length);
 		}
+		fprintf(fp, "\n#define LB_CKS_RANGE_START %d\n", cs->range_start / 8);
+		fprintf(fp, "#define LB_CKS_RANGE_END %d\n", cs->range_end / 8);
+		fprintf(fp, "#define LB_CKS_LOC %d\n", cs->location / 8);
 		fclose(fp);
 
 		UNLINK_IF_NECESSARY(header);
-		if (rename(tmpfilename, header)) {
+		if (rename(tempfilename, header)) {
 			fprintf(stderr, "Error - Could not write %s: ", header);
 			perror(NULL);
-			unlink(tmpfilename);
+			unlink(tempfilename);
 			exit(1);
 		}
 	}
-	return(0);
+
+	return 0;
 }
 
 

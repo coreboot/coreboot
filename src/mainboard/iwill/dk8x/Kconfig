@@ -41,16 +41,6 @@ config APIC_ID_OFFSET
 	default 0x0
 	depends on BOARD_IWILL_DK8X
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_IWILL_DK8X
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_IWILL_DK8X
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "DK8X"

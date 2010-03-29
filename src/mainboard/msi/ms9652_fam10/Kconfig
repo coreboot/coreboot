@@ -92,21 +92,6 @@ config USE_OPTION_TABLE
 	default n
 	depends on BOARD_MSI_MS9652_FAM10
 
-config LB_CKS_RANGE_START
-	int
-	default 49
-	depends on BOARD_MSI_MS9652_FAM10
-
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_MSI_MS9652_FAM10
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_MSI_MS9652_FAM10
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "MS-9652"

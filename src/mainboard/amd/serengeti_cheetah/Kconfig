@@ -46,16 +46,6 @@ config APIC_ID_OFFSET
 	default 0x8
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "Serengeti Cheetah"

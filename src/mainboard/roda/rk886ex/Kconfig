@@ -35,16 +35,6 @@ config DCACHE_RAM_SIZE
 	default 0x8000
 	depends on BOARD_RODA_RK886EX
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_RODA_RK886EX
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_RODA_RK886EX
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "RK886EX"

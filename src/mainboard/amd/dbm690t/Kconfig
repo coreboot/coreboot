@@ -49,16 +49,6 @@ config APIC_ID_OFFSET
 	default 0x0
 	depends on BOARD_AMD_DBM690T
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_AMD_DBM690T
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_AMD_DBM690T
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "DBM690T"

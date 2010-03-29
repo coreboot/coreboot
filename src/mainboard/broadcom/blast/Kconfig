@@ -46,16 +46,6 @@ config SB_HT_CHAIN_ON_BUS0
 	default 1
 	depends on BOARD_BROADCOM_BLAST
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_BROADCOM_BLAST
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_BROADCOM_BLAST
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "Blast"

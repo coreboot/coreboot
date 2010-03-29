@@ -61,16 +61,6 @@ config DCACHE_RAM_SIZE
 	default 0x8000
 	depends on BOARD_INTEL_D945GCLF
 
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_INTEL_D945GCLF
-
-config LB_CKS_LOC
-	int
-	default 123
-	depends on BOARD_INTEL_D945GCLF
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "D945GCLF"

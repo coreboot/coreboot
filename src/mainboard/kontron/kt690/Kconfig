@@ -35,24 +35,9 @@ config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
 	default 0x6900
 	depends on BOARD_KONTRON_KT690
 
-config LB_CKS_RANGE_START
-	int
-	default 49
-	depends on BOARD_KONTRON_KT690
-
 config APIC_ID_OFFSET
 	hex
 	default 0x0
-	depends on BOARD_KONTRON_KT690
-
-config LB_CKS_RANGE_END
-	int
-	default 122
-	depends on BOARD_KONTRON_KT690
-
-config LB_CKS_LOC
-	int
-	default 123
 	depends on BOARD_KONTRON_KT690
 
 config MAINBOARD_PART_NUMBER

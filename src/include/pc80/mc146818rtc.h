@@ -81,15 +81,9 @@
 #define PC_CKS_RANGE_END	45
 #define PC_CKS_LOC		46
 
-/* Linux bios checksum is built only over bytes 49..125 */
-#ifndef CONFIG_LB_CKS_RANGE_START
-#define CONFIG_LB_CKS_RANGE_START	49
-#endif
-#ifndef CONFIG_LB_CKS_RANGE_END
-#define CONFIG_LB_CKS_RANGE_END	125
-#endif
-#ifndef CONFIG_LB_CKS_LOC
-#define CONFIG_LB_CKS_LOC		126
+/* coreboot cmos checksum is usually only built over bytes 49..125 */
+#ifdef AUTOCONF_INCLUDED
+#include <option_table.h>
 #endif
 
 #if !defined(ASSEMBLY)
@@ -97,7 +91,8 @@ void rtc_init(int invalid);
 #if CONFIG_USE_OPTION_TABLE == 1
 int get_option(void *dest, const char *name);
 #else
-static inline int get_option(void *dest, const char *name) { return -2; }
+static inline int get_option(void *dest __attribute__((unused)),
+	const char *name __attribute__((unused))) { return -2; }
 #endif
 #endif
 

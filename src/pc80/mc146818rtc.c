@@ -185,8 +185,8 @@ void rtc_init(int invalid)
 
 #if CONFIG_HAVE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid(CONFIG_LB_CKS_RANGE_START,
-			CONFIG_LB_CKS_RANGE_END,CONFIG_LB_CKS_LOC);
+	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
+			LB_CKS_RANGE_END,LB_CKS_LOC);
 	if(checksum_invalid)
 		printk(BIOS_DEBUG, "Invalid CMOS LB checksum\n");
 
@@ -263,8 +263,8 @@ int get_option(void *dest, const char *name)
 	
 	if(get_cmos_value(ce->bit, ce->length, dest))
 		return(-3);
-	if(!rtc_checksum_valid(CONFIG_LB_CKS_RANGE_START,
-			CONFIG_LB_CKS_RANGE_END,CONFIG_LB_CKS_LOC))
+	if(!rtc_checksum_valid(LB_CKS_RANGE_START,
+			LB_CKS_RANGE_END,LB_CKS_LOC))
 		return(-4);
 	return(0);
 }

@@ -148,7 +148,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x100F80 },           /* HY-D0 */ 
 	{ 0, 0 },
 };
-static struct cpu_driver model_10xxx __cpu_driver = {
+static const struct cpu_driver model_10xxx __cpu_driver = {
 	.ops	  = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

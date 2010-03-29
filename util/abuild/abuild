@@ -590,6 +590,11 @@ if [ "$target" != "" ]; then
 	VENDOR=`printf $target|cut -f1 -d/`
 	MAINBOARD=`printf $target|cut -f2 -d/`
 	CONFIG=`printf $target|cut -f3 -d/`
+	if [ ! -r $ROOT/src/mainboard/$target ]; then
+		printf "No such target: $target\n"
+		xml '</abuild>'
+		exit 1
+	fi
 	build_target $VENDOR $MAINBOARD $CONFIG
 	test_target $VENDOR $MAINBOARD
 else

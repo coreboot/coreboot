@@ -18,9 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -87,7 +84,6 @@ static const struct msrinit msr_table[] =
        {MSR_GLIU1_SHADOW,  {.hi = 0x2000FFFF,.lo = 0xFFFF0003}}, // 0xC0000-0xFFFFF
 };
 
-
 static void msr_init(void)
 {
   int i;
@@ -133,3 +129,4 @@ void cache_as_ram_main(void)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }
+

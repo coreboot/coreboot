@@ -19,9 +19,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -128,3 +125,4 @@ static void main(unsigned long bist)
 
 	print_spew("Leaving romstage.c:main()\r\n");
 }
+

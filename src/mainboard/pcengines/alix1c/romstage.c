@@ -17,9 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <spd.h>
 #include <device/pci_def.h>
@@ -210,3 +207,4 @@ void cache_as_ram_main(void)
 	void done_cache_as_ram_main(void);
 	done_cache_as_ram_main();
 }
+

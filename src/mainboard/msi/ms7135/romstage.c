@@ -22,9 +22,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define SERIAL_DEV PNP_DEV(0x4e, W83627HF_SP1)
 
 /* Used by raminit. */
@@ -199,3 +196,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
+

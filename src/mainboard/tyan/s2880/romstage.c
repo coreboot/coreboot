@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
  
 #include <stdint.h>
 #include <string.h>
@@ -14,7 +12,6 @@
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
-
 
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -159,3 +156,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
+

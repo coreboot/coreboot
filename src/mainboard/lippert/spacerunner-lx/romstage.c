@@ -21,9 +21,6 @@
 
 /* Based on romstage.c from AMD's DB800 and DBM690T mainboards. */
 
-#define ASSEMBLY 1
-
-
 #include <stdlib.h>
 #include <stdint.h>
 #include <spd.h>
@@ -236,3 +233,4 @@ void cache_as_ram_main(void)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }
+

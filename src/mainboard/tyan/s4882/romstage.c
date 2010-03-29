@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
  
 #include <stdint.h>
 #include <string.h>
@@ -32,7 +30,6 @@
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
-
 
 #include "southbridge/amd/amd8111/amd8111_early_ctrl.c"
 
@@ -199,3 +196,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_cache_as_ram();
 
 }
+

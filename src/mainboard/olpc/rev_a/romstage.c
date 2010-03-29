@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -37,9 +34,6 @@ static inline unsigned int fls(unsigned int x)
                 "1:" : "=r" (r) : "g" (x));
         return r;
 }
-
-
-
 
 /* sdram parameters for OLPC:
 	row address = 13
@@ -192,3 +186,4 @@ static void main(unsigned long bist)
 	/* Check all of memory */
 	//ram_check(0x00000000, 640*1024);
 }
+

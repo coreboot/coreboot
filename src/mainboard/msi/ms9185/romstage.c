@@ -23,9 +23,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
 
@@ -72,7 +69,6 @@ static void post_code(uint8_t value) {
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 
-
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
@@ -112,8 +108,6 @@ static inline void change_i2c_mux(unsigned device)
 }
 #endif
 
-
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
         return smbus_read_byte(device, address);
@@ -144,7 +138,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM5 0x55
 #define DIMM6 0x56
 #define DIMM7 0x57
-
 
 #include "cpu/amd/car/copy_and_run.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
@@ -231,7 +224,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        bcm5785_early_setup();
 
-
 #if 0
        //it your CPU min fid is 1G, you can change HT to 1G and FID to max one time.
         needs_reset = optimize_link_coherent_ht();
@@ -315,5 +307,5 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
        post_cache_as_ram();
 
-
 }
+

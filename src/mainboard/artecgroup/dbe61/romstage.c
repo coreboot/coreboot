@@ -18,9 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -38,7 +35,6 @@
 #include "southbridge/amd/cs5536/cs5536.h"
 #include "spd_table.h"
 
-
 #define POST_CODE(x) outb(x, 0x80)
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
@@ -46,7 +42,6 @@
 
 #define DIMM0 0xA0
 #define DIMM1 0xA2
-
 
 static int spd_read_byte(unsigned device, unsigned address)
 {
@@ -182,3 +177,4 @@ void cache_as_ram_main(void)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot */
 	return;
 }
+

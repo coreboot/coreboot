@@ -20,9 +20,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 // #define CACHE_AS_RAM_ADDRESS_DEBUG 1
 // #define RAM_TIMING_DEBUG 1
 // #define DQS_TRAIN_DEBUG 1

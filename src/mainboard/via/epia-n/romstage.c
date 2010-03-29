@@ -19,9 +19,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -56,7 +53,6 @@ static const struct mem_controller ctrl = {
 	.d1f0 = 0x8000,
 	.channel0 = { 0x50 },
 };
-
 
 static void memreset_setup(void)
 {
@@ -146,7 +142,6 @@ static void main(unsigned long bist)
 	print_debug("Setup CPU Interface\r\n");
 	c3_cpu_setup(ctrl.d0f2);	
 
-
 	ddr_ram_setup();
 
 	if (bist == 0) {
@@ -158,3 +153,4 @@ static void main(unsigned long bist)
 
 	print_spew("Leaving romstage.c:main()\r\n");
 }
+

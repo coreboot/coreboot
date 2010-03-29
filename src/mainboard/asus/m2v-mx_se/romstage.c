@@ -22,9 +22,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
@@ -92,7 +89,6 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 
 #define K8_4RANK_DIMM_SUPPORT 1
 
-
 #include "southbridge/via/k8t890/k8t890_early_car.c"
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/raminit_f.c"
@@ -116,7 +112,6 @@ static void ldtstop_sb(void)
 	reg = inb(VT8237R_ACPI_IO_BASE + 0x15);
 	print_debug("done\r\n");
 }
-
 
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
@@ -195,7 +190,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	print_info("now booting... real_main\r\n");
 
-
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
@@ -234,7 +228,6 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	}
 
-
 	/* the HT settings needs to be OK, because link freq chnage may cause HT disconnect */
 	/* allow LDT STOP asserts */
 	vt8237_sb_enable_fid_vid();
@@ -254,3 +247,4 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 	post_cache_as_ram();
 }
+

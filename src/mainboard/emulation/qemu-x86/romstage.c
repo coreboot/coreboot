@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -26,3 +24,4 @@ static void main(void)
 	//print_pci_devices();
 	//dump_pci_devices();
 }
+

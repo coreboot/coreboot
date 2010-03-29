@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
 
@@ -38,7 +35,6 @@
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
-
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
@@ -117,7 +113,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM6 0x56
 #define DIMM7 0x57
 
-
 #include "cpu/amd/car/copy_and_run.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 
@@ -193,7 +188,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* it will set up chains and store link pair for optimization later */
         ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
-
 #if K8_SET_FIDVID == 1
 
         {
@@ -245,7 +239,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         init_timer(); // Need to use TMICT to synconize FID/VID
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
-
 #if 0
         dump_pci_devices();
 #endif
@@ -253,3 +246,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
 
 }
+

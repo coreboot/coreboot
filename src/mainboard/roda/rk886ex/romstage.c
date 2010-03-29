@@ -21,7 +21,6 @@
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
-
 /* Configuration of the i945 driver */
 #define CHIPSET_I945GM 1
 #define CHANNEL_XOR_RANDOMIZATION 1
@@ -79,7 +78,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-
 #include "northbridge/intel/i945/raminit.h"
 #include "northbridge/intel/i945/raminit.c"
 #include "northbridge/intel/i945/errata.c"
@@ -101,7 +99,6 @@ static void ich7_enable_lpc(void)
 	// COM4 decode
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x8c, 0x00040069);
 }
-
 
 /* This box has two superios, so enabling serial becomes slightly excessive.
  * We disable a lot of stuff to make sure that there are no conflicts between

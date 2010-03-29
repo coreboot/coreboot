@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
  
 #include <stdint.h>
 #include <string.h>
@@ -59,7 +57,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 	}
 }
 
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 	/* nothing to do */
@@ -91,7 +88,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"
-
 
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -167,3 +163,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_cache_as_ram();
 
 }
+

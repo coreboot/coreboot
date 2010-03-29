@@ -19,9 +19,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 
 #define FAM10_SCAN_PCI_BUS 0
@@ -69,7 +66,6 @@
 #include "northbridge/amd/amdfam10/debug.c"
 
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
-
 
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
@@ -125,7 +121,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
-
 
 static void sio_setup(void)
 {
@@ -193,7 +188,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         uart_init();
         console_init();
   printk(BIOS_DEBUG, "\n");
-
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
@@ -292,7 +286,6 @@ post_code(0x3E);
         memreset_setup();
 
 post_code(0x40);
-
 
  printk(BIOS_DEBUG, "raminit_amdmct()\n");
  raminit_amdmct(sysinfo);

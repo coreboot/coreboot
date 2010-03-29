@@ -19,9 +19,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 
 #define K8_ALLOCATE_IO_RANGE 1
@@ -76,7 +73,6 @@
 #include "northbridge/amd/amdk8/debug.c"
 
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
-
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
@@ -134,7 +130,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/mcp55/mcp55_enable_rom.c"
 #include "northbridge/amd/amdk8/early_ht.c"
-
 
 static void sio_setup(void)
 {

@@ -22,9 +22,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
@@ -259,3 +256,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 	post_cache_as_ram();
 }
+

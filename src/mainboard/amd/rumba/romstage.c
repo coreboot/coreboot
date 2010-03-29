@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -118,7 +115,6 @@ static void msr_init(void)
 	/* put code in northbridge[init].c here */
 }
 
-
 static void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl [] = {
@@ -146,3 +142,4 @@ static void main(unsigned long bist)
 	/* Check all of memory */
 	//ram_check(0x00000000, 640*1024);
 }
+

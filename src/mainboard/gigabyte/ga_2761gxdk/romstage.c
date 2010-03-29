@@ -21,9 +21,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 
 #define K8_ALLOCATE_IO_RANGE 1
@@ -147,7 +144,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/amd/amdk8/early_ht.c"
 
-
 static void sio_setup(void)
 {
 
@@ -211,7 +207,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-
 
 #if CONFIG_USBDEBUG_DIRECT
 	sis966_enable_usbdebug_direct(DBGP_DEFAULT);

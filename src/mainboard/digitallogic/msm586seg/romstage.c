@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
 #define ASM_CONSOLE_LOGLEVEL 8
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -45,8 +43,6 @@ void setup_pars(void)
 
 typedef void (*lj)(void);
 
-
-
 struct mem_controller {
 	int i;
 };
@@ -58,8 +54,6 @@ static void memreset_setup(void)
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
-
-
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -89,7 +83,6 @@ static inline void dumpmem(void){
     print_err("\r\n");
   }
 }
-
 
 static inline void irqinit(void){
 	volatile unsigned char *cp;
@@ -186,14 +179,11 @@ static inline void irqinit(void){
 #endif
 }
 
-
-
 static void main(unsigned long bist)
 {
     volatile int i;
     for(i = 0; i < 100; i++)
       ;
-
 
         setupsc520();
 	irqinit();
@@ -212,7 +202,6 @@ static void main(unsigned long bist)
 	print_err("STATIC MEM DONE\r\n");
 	outb(0xee, 0x80);
 	print_err("loop forever ...\n");
-
 
 #if 0
 

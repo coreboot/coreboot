@@ -17,14 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-#define ASSEMBLY 1
-
-
 //#define SYSTEM_TYPE 0	/* SERVER */
 #define SYSTEM_TYPE 1	/* DESKTOP */
 //#define SYSTEM_TYPE 2	/* MOBILE */
-
 
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 1
@@ -71,7 +66,6 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #define printk(BIOS_INFO, fmt, arg...)   do_printk(BIOS_INFO   ,fmt, ##arg)
 #include "cpu/x86/bist.h"
 
-
 static int smbus_read_byte(u32 device, u32 address);
 
 #include "superio/ite/it8718f/it8718f_early_serial.c"
@@ -86,16 +80,13 @@ static void memreset_setup(void)
 {
 }
 
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
 
-
 static void activate_spd_rom(const struct mem_controller *ctrl)
 {
 }
-
 
 static int spd_read_byte(u32 device, u32 address)
 {
@@ -117,7 +108,6 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "cpu/amd/model_10xxx/fidvid.c"
-
 
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include "southbridge/amd/sb700/sb700_early_setup.c"
@@ -281,7 +271,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 //	ram_check(0x00200000, 0x00200000 + (640 * 1024));
 //	ram_check(0x40200000, 0x40200000 + (640 * 1024));
 
-
 //	die("After MCT init before CAR disabled.");
 
 	rs780_before_pci_init();
@@ -292,3 +281,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
 }
+

@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
  
 #include <stdint.h>
 #include <string.h>
@@ -91,7 +89,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #endif
 #include "cpu/amd/dualcore/dualcore.c"
 
-
 #include "cpu/amd/car/copy_and_run.c"
 
 #include "cpu/amd/car/post_cache_as_ram.c"
@@ -165,7 +162,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                	soft_reset();
        	}
 
-
         allow_all_aps_stop(bsp_apicid);
 
         nodes = get_nodes();
@@ -184,3 +180,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	post_cache_as_ram();
 
 }
+

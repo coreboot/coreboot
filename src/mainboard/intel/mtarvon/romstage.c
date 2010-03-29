@@ -18,8 +18,6 @@
  *
  */
 
-#define ASSEMBLY 1
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <device/pci_def.h>
@@ -60,7 +58,6 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "northbridge/intel/i3100/raminit.c"
 #include "lib/generic_sdram.c"
 #include "../jarrell/debug.c"
-
 
 static void main(unsigned long bist)
 {
@@ -126,3 +123,4 @@ static void main(unsigned long bist)
 
 	ram_check(0, 1024 * 1024);
 }
+

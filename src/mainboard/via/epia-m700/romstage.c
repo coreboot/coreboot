@@ -22,8 +22,6 @@
  * and acpi_is_wakeup_early_via_VX800() is part of Rudolf's S3 patch.
  */
 
-#define ASSEMBLY 1
-
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
 
@@ -814,3 +812,4 @@ cpu_reset_x:
 
 	print_debug("should not be here -\r\n");
 }
+

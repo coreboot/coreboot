@@ -18,9 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -61,3 +58,4 @@ static void main(unsigned long bist)
 	/* Check RAM. */
 	/* ram_check(0x00000000, 640 * 1024); */
 }
+

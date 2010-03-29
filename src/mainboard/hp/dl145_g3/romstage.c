@@ -25,9 +25,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 
 #define K8_ALLOCATE_IO_RANGE 1
@@ -60,7 +57,6 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-
 #include "pc80/serial.c"
 #include "arch/i386/lib/console.c"
 #include "lib/ramtest.c"
@@ -78,7 +74,6 @@
 #include "superio/serverengines/pilot/pilot_early_serial.c"
 #include "superio/serverengines/pilot/pilot_early_init.c"
 #include "superio/nsc/pc87417/pc87417_early_serial.c"
-
 
 #include "cpu/x86/bist.h"
 
@@ -138,7 +133,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM5 0x55
 #define DIMM6 0x56
 #define DIMM7 0x57
-
 
 #include "cpu/amd/car/copy_and_run.c"
 
@@ -218,7 +212,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		pc87417_enable_dev(RTC_DEV);
 	 }
 
-
 	 if (bist == 0) {
 		 bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 	 }
@@ -231,7 +224,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-
 
 	console_init();
 //	setup_early_ipmi_serial();

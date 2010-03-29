@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -126,3 +123,4 @@ static void main(unsigned long bist)
 	}
 #endif
 }
+

@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -52,7 +50,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/e7520/raminit.c"
 #include "lib/generic_sdram.c"
 #include "debug.c"
-
 
 static void main(unsigned long bist)
 {
@@ -150,3 +147,4 @@ static void main(unsigned long bist)
 	}
 #endif
 }
+

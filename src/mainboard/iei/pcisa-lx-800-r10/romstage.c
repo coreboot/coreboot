@@ -18,9 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -135,3 +132,4 @@ void cache_as_ram_main(void)
 	/* Memory is setup. Return to cache_as_ram.inc and continue to boot. */
 	return;
 }
+

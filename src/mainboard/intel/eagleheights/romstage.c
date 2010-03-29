@@ -20,8 +20,6 @@
  * MA 02110-1301 USA
  */
 
-
-
 #include <delay.h>
 
 #include <stdint.h>
@@ -236,3 +234,4 @@ void real_main(unsigned long bist)
 
 /* Use Intel Core (not Core 2) code for CAR init, any CPU might be used. */
 #include "cpu/intel/model_6ex/cache_as_ram_disable.c"
+

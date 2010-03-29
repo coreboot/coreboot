@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -24,7 +22,6 @@
 #include "superio/nsc/pc87427/pc87427_early_init.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
-
 
 #define SIO_GPIO_BASE 0x680
 #define SIO_XBUS_BASE 0x4880
@@ -55,7 +52,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/e7520/raminit.c"
 #include "lib/generic_sdram.c"
-
 
 static void main(unsigned long bist)
 {
@@ -151,3 +147,4 @@ static void main(unsigned long bist)
 	}
 #endif
 }
+

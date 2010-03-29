@@ -17,14 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-#define ASSEMBLY 1
-
-
 #define SYSTEM_TYPE 0	/* SERVER */
 //#define SYSTEM_TYPE 1	/* DESKTOP */
 //#define SYSTEM_TYPE 2	/* MOBILE */
-
 
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 1
@@ -71,7 +66,6 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #endif
 #include "cpu/x86/bist.h"
 
-
 #include "northbridge/amd/amdfam10/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 #include "cpu/amd/mtrr/amd_earlymtrr.c"
@@ -87,11 +81,9 @@ static void memreset_setup(void)
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
-
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -108,7 +100,6 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 	} while ((ret!=0) && (i-->0));
 	smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
-
 
 static int spd_read_byte(u32 device, u32 address)
 {
@@ -130,7 +121,6 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "cpu/amd/model_10xxx/fidvid.c"
-
 
 #include "southbridge/amd/amd8111/amd8111_enable_rom.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
@@ -244,7 +234,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
  #endif
 
-
 	/* Reset for HT, FIDVID, PLL and errata changes to take affect. */
 	if (!warm_reset_detect(0)) {
 		print_info("...WARM RESET...\n\n\n");
@@ -253,7 +242,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x3B);
-
 
 	/* FIXME:  Move this to chipset init.
 	enable cf9 for hard reset */
@@ -266,11 +254,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	post_code(0x3D);
 
-
 	printk(BIOS_DEBUG, "enable_smbus()\n");
 	enable_smbus();
 	post_code(0x3E);
-
 
 	memreset_setup();
 	post_code(0x40);
@@ -280,7 +266,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
 	post_code(0x41);
-
 
 /*
 	dump_pci_device_range(PCI_DEV(0, 0x18, 0), 0, 0x200);
@@ -292,14 +277,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 //	ram_check(0x00200000, 0x00200000 + (640 * 1024));
 //	ram_check(0x40200000, 0x40200000 + (640 * 1024));
 
-
 //	die("After MCT init before CAR disabled.");
 
 	post_code(0x42);
 	printk(BIOS_DEBUG, "\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
 	post_cache_as_ram();	// BSP switch stack to ram, copy then execute LB.
 	post_code(0x43);	// Should never see this post code.
-
 
 }
 

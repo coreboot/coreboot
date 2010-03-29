@@ -19,7 +19,6 @@
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
-
 /* Configuration of the i945 driver */
 #define CHIPSET_I945GM 1
 /* Usually system firmware turns off system memory clock signals to 
@@ -111,7 +110,6 @@ static void ich7_enable_lpc(void)
 	// io 0x300 decode 
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x00000301);
 }
-
 
 /* This box has two superios, so enabling serial becomes slightly excessive.
  * We disable a lot of stuff to make sure that there are no conflicts between

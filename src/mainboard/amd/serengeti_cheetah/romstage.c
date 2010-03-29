@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
 
@@ -32,7 +29,6 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-
 #if 0 
 static void post_code(uint8_t value) {
 #if 1
@@ -49,8 +45,6 @@ static void post_code(uint8_t value) {
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
-
-
 
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
@@ -141,7 +135,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM5 0x55
 #define DIMM6 0x56
 #define DIMM7 0x57
-
 
 #include "cpu/amd/car/copy_and_run.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
@@ -330,3 +323,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
 
 }
+

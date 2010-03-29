@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -43,7 +40,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/e7501/raminit.c"
 #include "northbridge/intel/e7501/reset_test.c"
 #include "lib/generic_sdram.c"
-
 
 // This function MUST appear last (ROMCC limitation)
 static void main(unsigned long bist)
@@ -92,3 +88,4 @@ static void main(unsigned long bist)
 	//		 if the following line is removed.
 	print_debug("SDRAM is up.\r\n");
 }
+

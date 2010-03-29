@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #define QRANK_DIMM_SUPPORT 1
 
 #if CONFIG_LOGICAL_CPUS==1
@@ -83,14 +80,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-
 #include "northbridge/amd/amdk8/raminit.c"
 #include "resourcemap.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
-
 
 #include "cpu/amd/car/copy_and_run.c"
 
@@ -186,3 +181,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
+

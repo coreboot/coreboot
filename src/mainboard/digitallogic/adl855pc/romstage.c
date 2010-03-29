@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
 #define ASM_CONSOLE_LOGLEVEL 8
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -46,8 +44,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
 
-
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
         /* nothing to do */
@@ -83,7 +79,6 @@ static void main(unsigned long bist)
         uart_init();
         console_init();
 
-
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 	
@@ -98,7 +93,6 @@ static void main(unsigned long bist)
       	dump_spd_registers(&memctrl[0]);
 	//        	dump_smbus_registers();
 #endif
-
 
 		memreset_setup();
 
@@ -142,3 +136,4 @@ static void main(unsigned long bist)
 #endif
 */
 }
+

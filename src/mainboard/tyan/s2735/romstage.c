@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
  
 #include <stdint.h>
 #include <string.h>
@@ -72,11 +70,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-
 #include "northbridge/intel/e7501/raminit.c"
 #include "northbridge/intel/e7501/reset_test.c"
 #include "lib/generic_sdram.c"
-
 
 #include "cpu/x86/car/copy_and_run.c"
 
@@ -134,7 +130,6 @@ void amd64_main(unsigned long bist)
 #if 1
         dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
-
 
 #if 1
         {
@@ -222,7 +217,7 @@ cpu_reset_x:
 	}
 #endif
 
-
 	print_debug("should not be here -\r\n");
 
 }
+

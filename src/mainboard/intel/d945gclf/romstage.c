@@ -19,7 +19,6 @@
 
 // __PRE_RAM__ means: use "unsigned" for device, not a struct.
 
-
 /* Configuration of the i945 driver */
 #define CHIPSET_I945GC 1
 #define CHANNEL_XOR_RANDOMIZATION 1
@@ -97,7 +96,6 @@ static void ich7_enable_lpc(void)
 	// Enable SuperIO Power Management Events
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x007c0681);
 }
-
 
 /* This box has two superios, so enabling serial becomes slightly excessive.
  * We disable a lot of stuff to make sure that there are no conflicts between

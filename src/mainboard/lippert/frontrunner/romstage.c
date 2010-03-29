@@ -1,6 +1,3 @@
-#define ASSEMBLY 1
-
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -70,11 +67,9 @@ static void msr_init(void)
         __builtin_wrmsr(0x40000029, 0x7bf00100, 0x2000000f);
         __builtin_wrmsr(0x4000002d, 0xff030003, 0x20000000);
 
-
         __builtin_wrmsr(0x50002001, 0x27, 0x0);
         __builtin_wrmsr(0x4c002001, 0x1, 0x0);
 }
-
 
 static void main(unsigned long bist)
 {
@@ -103,7 +98,6 @@ static void main(unsigned long bist)
 	print_err("Disable watchdog\n");
 	outb( 0x87, 0x4E);                            //enter SuperIO configuration mode
 	outb( 0x87, 0x4E);
-
 
    	outb(0x20, 0x4e);
 	temp = inb(0x4f);
@@ -134,3 +128,4 @@ static void main(unsigned long bist)
 //	ram_check(0x00000000, 640*1024);
 
 }
+

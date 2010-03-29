@@ -17,9 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#define ASSEMBLY 1
-
-
 #define RAMINIT_SYSINFO 1
 #define K8_SET_FIDVID 1
 #define QRANK_DIMM_SUPPORT 1
@@ -111,7 +108,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct cpuid_result cpuid1;
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
-
 	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
@@ -181,7 +177,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	rs690_htinit();
 	printk(BIOS_DEBUG, "needs_reset=0x%x\n", needs_reset);
 
-
 	if (needs_reset) {
 		print_info("ht reset -\r\n");
 		soft_reset();
@@ -200,3 +195,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_cache_as_ram();
 }
+

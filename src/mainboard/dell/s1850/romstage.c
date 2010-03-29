@@ -1,5 +1,3 @@
-#define ASSEMBLY 1
-
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>
@@ -24,7 +22,6 @@
 #include "s1850_fixups.c"
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
-
 
 #define SIO_GPIO_BASE 0x680
 #define SIO_XBUS_BASE 0x4880
@@ -59,7 +56,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/e7520/raminit.c"
 #include "lib/generic_sdram.c"
 
-
 /* IPMI garbage. This is all test stuff, if it really works we'll move it somewhere
  */
 
@@ -70,7 +66,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #define ipmidata  0xca0
 #define ipmicsr  0xca4
-
 
 static inline void  ibfzero(void)
 {
@@ -290,7 +285,6 @@ static void main(unsigned long bist)
 	uart_init();
 	console_init();
 
-
 	/* stuff we seem to need */
 	pc8374_enable_dev(PNP_DEV(0x2e, PC8374_KBCK), 0);
 
@@ -371,3 +365,4 @@ static void main(unsigned long bist)
 	}
 #endif
 }
+

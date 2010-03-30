@@ -32,7 +32,7 @@ int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
 #endif
 
-void console_tx_byte(unsigned char byte)
+static void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')
 		uart8250_tx_byte(CONFIG_TTYS0_BASE, '\r');

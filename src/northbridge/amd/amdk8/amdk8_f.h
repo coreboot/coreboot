@@ -518,11 +518,7 @@ struct sys_info {
 	uint32_t sbbusn;
 } __attribute__((packed));
 
-#ifdef __PRE_RAM__
-static void soft_reset(void);
-#else
-void hard_reset(void);
-#endif
+#include <reset.h>
 
 static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 {

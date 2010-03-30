@@ -83,8 +83,8 @@ $(obj)/coreboot.a: $$(objs)
 #######################################################################
 # done
 
-crt0s :=
-ldscripts :=
+crt0s =
+ldscripts =
 ldscripts += $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/entry16.inc

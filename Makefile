@@ -165,8 +165,6 @@ objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
 initobjs:=
 drivers:=
 smmobjs:=
-crt0s:=
-ldscripts:=
 types:=obj initobj driver smmobj
 
 # Clean -y variables, include Makefile.inc
@@ -263,7 +261,8 @@ printall:
 	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
 
 printcrt0s:
-	@echo $(patsubst $(top)/%,%,$(crt0s))
+	@echo crt0s=$(crt0s)
+	@echo ldscripts=$(ldscripts)
 
 OBJS     := $(patsubst %,$(obj)/%,$(TARGETS-y))
 INCLUDES := -Isrc -Isrc/include -I$(obj) -Isrc/arch/$(ARCHDIR-y)/include 

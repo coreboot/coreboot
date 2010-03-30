@@ -17,7 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-#needed by irq_tables and mptable and acpi_tables
-obj-$(CONFIG_USE_INIT) += romstage.o
-obj-$(CONFIG_AP_CODE_IN_CAR) += ap_romstage.o
 obj-$(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) += fanctl.o

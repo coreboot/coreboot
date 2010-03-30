@@ -31,9 +31,9 @@
 #include <delay.h>
 #include "mcp55.h"
 
-static int phy_read(uint8_t *base, unsigned phy_addr, unsigned phy_reg)
+static int phy_read(u32 base, unsigned phy_addr, unsigned phy_reg)
 {
-	uint32_t dword;
+	u32 dword;
 	unsigned loop = 0x100;
 	write32(base+0x190, 0x8000); //Clear MDIO lock bit
 	mdelay(1);
@@ -56,9 +56,9 @@ static int phy_read(uint8_t *base, unsigned phy_addr, unsigned phy_reg)
 
 }
 
-static void phy_detect(uint8_t *base)
+static void phy_detect(u32 base)
 {
-	uint32_t dword;
+	u32 dword;
 	int i;
 	int val;
 	unsigned id;
@@ -95,14 +95,13 @@ static void phy_detect(uint8_t *base)
 
 static void nic_init(struct device *dev)
 {
-	uint32_t dword, old;
-	uint32_t mac_h, mac_l;
+	u32 mac_h, mac_l;
 	int eeprom_valid = 0;
 	struct southbridge_nvidia_mcp55_config *conf;
 
-	static uint32_t nic_index = 0;
+	static u32 nic_index = 0;
 
-	uint8_t *base;
+	u32 base;
 	struct resource *res;
 
 	res = find_resource(dev, 0x10);

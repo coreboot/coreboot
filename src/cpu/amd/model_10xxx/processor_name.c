@@ -120,13 +120,14 @@ static const struct str_s String2_socket_AM2[] = {
 };
 
 
-char const *unknown = "AMD Processor model unknown";
-char const *unknown2 = " type unknown";
-char const *sample = "AMD Engineering Sample";
-char const *thermal = "AMD Thermal Test Kit";
+const char const *unknown = "AMD Processor model unknown";
+const char const *unknown2 = " type unknown";
+const char const *sample = "AMD Engineering Sample";
+const char const *thermal = "AMD Thermal Test Kit";
 
 
-int strcpymax(char *dst, const char *src, int buflen) {
+static int strcpymax(char *dst, const char *src, int buflen)
+{
 	int i;
 	for (i = 0; i < buflen && src[i]; i++)
 		dst[i] = src[i];

@@ -1109,16 +1109,14 @@ void ht1SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 ta
  */
 u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
 {
-	if (value == 1) {
-		return 16;
-	} else if (value == 0) {
-		return 8;
-	} else if (value == 5) {
-		return 4;
-	} else if (value == 4) {
-		return 2;
+	switch(value) {
+	case 1: return 16;
+	case 0: return 8;
+	case 5: return 4;
+	case 4: return 2;
+	default: STOP_HERE; /*  This is an error internal condition */
 	}
-	STOP_HERE; /*  This is an error internal condition */
+	return 0; // shut up GCC.
 }
 
 /**----------------------------------------------------------------------------------------
@@ -1138,16 +1136,14 @@ u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
  */
 u8 convertWidthToBits(u8 value, cNorthBridge *nb)
 {
-	if (value == 16) {
-		return 1;
-	} else if (value == 8) {
-		return 0;
-	} else if (value == 4) {
-		return 5;
-	} else if (value == 2) {
-		return 4;
+	switch (value) {
+	case 16: return 1;
+	case  8: return 0;
+	case  4: return 5;
+	case  2: return 4;
+	default: STOP_HERE; /*  This is an internal error condition */
 	}
-	STOP_HERE; /*  This is an internal error condition */
+	return 0; // shut up GCC
 }
 
 /**----------------------------------------------------------------------------------------

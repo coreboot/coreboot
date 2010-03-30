@@ -30,9 +30,9 @@
 #include <delay.h>
 #include "mcp55.h"
 
-static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
+static int set_bits(u32 port, u32 mask, u32 val)
 {
-	uint32_t dword;
+	u32 dword;
 	int count;
 
 	val &= mask;
@@ -55,9 +55,9 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 
 }
 
-static int codec_detect(uint8_t *base)
+static int codec_detect(u32 base)
 {
-	uint32_t dword;
+	u32 dword;
 
 	/* 1 */
 	set_bits(base + 0x08, 1, 1);
@@ -87,7 +87,8 @@ static int codec_detect(uint8_t *base)
 
 }
 
-static uint32_t verb_data[] = {
+/* FIXME this should go to the mainboard code */
+static u32 verb_data[] = {
 #if 0
 	0x00172001,
 	0x001721e6,
@@ -156,18 +157,18 @@ static uint32_t verb_data[] = {
 	0x01f71f01,
 };
 
-static unsigned find_verb(uint32_t viddid, uint32_t **verb)
+static unsigned find_verb(u32 viddid, u32 **verb)
 {
 	if(viddid != 0x10ec0880) return 0;
-	*verb =  (uint32_t *)verb_data;
-	return sizeof(verb_data)/sizeof(uint32_t);
+	*verb =  (u32 *)verb_data;
+	return sizeof(verb_data)/sizeof(u32);
 }
 
 
-static void codec_init(uint8_t *base, int addr)
+static void codec_init(u32 base, int addr)
 {
-	uint32_t dword;
-	uint32_t *verb;
+	u32 dword;
+	u32 *verb;
 	unsigned verb_size;
 	int i;
 
@@ -210,7 +211,7 @@ static void codec_init(uint8_t *base, int addr)
 	printk(BIOS_DEBUG, "verb loaded!\n");
 }
 
-static void codecs_init(uint8_t *base, uint32_t codec_mask)
+static void codecs_init(u32 base, u32 codec_mask)
 {
 	int i;
 	for(i=2; i>=0; i--) {
@@ -221,16 +222,16 @@ static void codecs_init(uint8_t *base, uint32_t codec_mask)
 
 static void aza_init(struct device *dev)
 {
-	uint8_t *base;
+	u32 base;
 	struct resource *res;
-	uint32_t codec_mask;
+	u32 codec_mask;
 
 	res = find_resource(dev, 0x10);
 	if(!res)
 		return;
 
-	base =(uint8_t *) res->base;
-	printk(BIOS_DEBUG, "base = %p\n", base);
+	base = res->base;
+	printk(BIOS_DEBUG, "base = 0x%08x\n", base);
 
 	codec_mask = codec_detect(base);
 

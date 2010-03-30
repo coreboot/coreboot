@@ -135,9 +135,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-	unsigned value;
-	uint32_t dword;
-	uint8_t byte;
+	u32 dword;
+	u8 byte;
 
 	byte = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
 	byte |= 0x20;

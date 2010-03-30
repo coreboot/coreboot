@@ -25,7 +25,7 @@
 
 static void udelay_tsc(u32 us);
 
-static  void print_debug_addr(const char *str, void *val)
+static inline void print_debug_addr(const char *str, void *val)
 {
 #if CACHE_AS_RAM_ADDRESS_DEBUG == 1
 		printk(BIOS_DEBUG, "------Address debug: %s%p------\n", str, val);
@@ -41,7 +41,7 @@ static void print_debug_pci_dev(u32 dev)
 #endif
 }
 
-static void print_pci_devices(void)
+static inline void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -66,7 +66,7 @@ static void print_pci_devices(void)
 	}
 }
 
-static void print_pci_devices_on_bus(u32 busn)
+static inline void print_pci_devices_on_bus(u32 busn)
 {
 	device_t dev;
 	for(dev = PCI_DEV(busn, 0, 0);
@@ -117,7 +117,6 @@ static void dump_pci_device(u32 dev)
 {
 	dump_pci_device_range(dev, 0, 4096);
 }
-static u32 pci_read_config32_index_wait(device_t dev, u32 index_reg, u32 index);
 static void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
 					u32 size)
 {
@@ -139,7 +138,7 @@ static void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
 	}
 	print_debug("\n");
 }
-static void dump_pci_device_index_wait(u32 dev, u32 index_reg)
+static inline void dump_pci_device_index_wait(u32 dev, u32 index_reg)
 {
 	dump_pci_device_index_wait_range(dev, index_reg, 0, 0x54);
 	dump_pci_device_index_wait_range(dev, index_reg, 0x100, 0x08); //DIMM1 when memclk > 400Hz
@@ -148,7 +147,7 @@ static void dump_pci_device_index_wait(u32 dev, u32 index_reg)
 
 }
 
-static void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)
+static inline void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -169,7 +168,7 @@ static void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)
 }
 
 
-static void dump_pci_devices(void)
+static inline void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -195,7 +194,7 @@ static void dump_pci_devices(void)
 }
 
 
-static void dump_pci_devices_on_bus(u32 busn)
+static inline void dump_pci_devices_on_bus(u32 busn)
 {
 	device_t dev;
 	for(dev = PCI_DEV(busn, 0, 0);
@@ -293,7 +292,7 @@ static void dump_smbus_registers(void)
 	}
 }
 #endif
-static void dump_io_resources(u32 port)
+static inline void dump_io_resources(u32 port)
 {
 
 	int i;
@@ -313,7 +312,7 @@ static void dump_io_resources(u32 port)
 	}
 }
 
-static void dump_mem(u32 start, u32 end)
+static inline void dump_mem(u32 start, u32 end)
 {
 	u32 i;
 	print_debug("dump_mem:");

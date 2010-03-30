@@ -25,21 +25,21 @@
 // if we are tight of CAR stack, disable it
 #define FAM10_SET_FIDVID_STORE_AP_APICID_AT_FIRST 1
 
-static void print_debug_fv(const char *str, u32 val)
+static inline void print_debug_fv(const char *str, u32 val)
 {
 #if FAM10_SET_FIDVID_DEBUG == 1
 		printk(BIOS_DEBUG, "%s%x\n", str, val);
 #endif
 }
 
-static void print_debug_fv_8(const char *str, u8 val)
+static inline void print_debug_fv_8(const char *str, u8 val)
 {
 #if FAM10_SET_FIDVID_DEBUG == 1
 		printk(BIOS_DEBUG, "%s%02x\n", str, val);
 #endif
 }
 
-static void print_debug_fv_64(const char *str, u32 val, u32 val2)
+static inline void print_debug_fv_64(const char *str, u32 val, u32 val2)
 {
 #if FAM10_SET_FIDVID_DEBUG == 1
 		printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);

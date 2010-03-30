@@ -3,10 +3,6 @@
 #include <string.h>
 #include <device/pci.h>
 
-#ifndef CONFIG_IRQ_SLOT_COUNT
-#warning "CONFIG_IRQ_SLOT_COUNT is not defined. PIRQ won't work correctly."
-#endif
-
 #if CONFIG_DEBUG
 static void check_pirq_routing_table(struct irq_routing_table *rt)
 {

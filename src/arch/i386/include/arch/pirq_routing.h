@@ -17,8 +17,8 @@ struct irq_info {
 	u8 rfu;
 } __attribute__((packed));
 
-#if !defined(CONFIG_IRQ_SLOT_COUNT)
-#error "No IRQ_SLOT_COUNT in Kconfig."
+#ifndef CONFIG_IRQ_SLOT_COUNT
+#warning "IRQ_SLOT_COUNT is not defined in Kconfig. PIRQ won't work correctly."
 #endif
 
 struct irq_routing_table {

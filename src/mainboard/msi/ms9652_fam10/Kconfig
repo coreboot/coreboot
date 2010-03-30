@@ -42,9 +42,11 @@ config GENERATE_PIRQ_TABLE
 	default y
 	depends on BOARD_MSI_MS9652_FAM10
 
-config CONFIG_IRQ_SLOT_COUNT
-	hex
-	default 0x0b
+# Define to 0 because the IRQ slot count is
+# determined dynamically for this board.
+config IRQ_SLOT_COUNT
+	int
+	default 0
 	depends on BOARD_MSI_MS9652_FAM10
 
 config HAVE_OPTION_TABLE

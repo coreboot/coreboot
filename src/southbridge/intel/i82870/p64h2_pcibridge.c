@@ -8,13 +8,12 @@
 
 static void p64h2_pcix_init(device_t dev)
 {
-	uint32_t dword;
-	uint16_t word;
-	uint8_t byte;
+	u32 dword;
+	u8 byte;
 
-
-	/* The purpose of changes to HCCR, ACNF, and MTT is to speed up the 
-	   PCI bus for cards having high speed transfers. */
+	/* The purpose of changes to HCCR, ACNF, and MTT is to speed
+	 * up the PCI bus for cards having high speed transfers.
+	 */
 	dword = 0xc2040002;
 	pci_write_config32(dev, HCCR, dword);
 	dword = 0x0000c3bf;
@@ -37,4 +36,4 @@ static const struct pci_driver pcix_driver __pci_driver = {
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = PCI_DEVICE_ID_INTEL_82870_1F0,
 };      
-  
+ 

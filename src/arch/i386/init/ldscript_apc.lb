@@ -1,9 +1,12 @@
-INPUT(coreboot_apc.rom)
+/* INPUT(coreboot_ap.rom)*/
+INCLUDE "ldoptions"
 SECTIONS
 {
         .apcrom . : {
                 _apcrom = .;
-                coreboot_apc.rom(*)
+		*(.text)
+		*(.rodata)
+		*(.rodata.*)
                 _eapcrom = .;
         }
         _iseg_apc = CONFIG_DCACHE_RAM_BASE;

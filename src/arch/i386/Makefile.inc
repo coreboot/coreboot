@@ -22,12 +22,16 @@ endif
 ifeq ($(CONFIG_BOOTSPLASH),y)
 COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_FALLBACK_BOOTSPLASH_FILE)
 endif
+ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
+COREBOOT_ROM_DEPENDENCIES+=$(obj)/coreboot_ap
+endif
+
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
 	printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
-	if [ -f fallback/coreboot_apc ]; \
+	if [ -f $(obj)/coreboot_ap ]; \
 	then \
-		$(CBFSTOOL) $@.tmp add-stage fallback/coreboot_apc $(CONFIG_CBFS_PREFIX)/coreboot_apc $(CBFS_COMPRESS_FLAG); \
+		$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ap $(CONFIG_CBFS_PREFIX)/coreboot_ap $(CBFS_COMPRESS_FLAG); \
 	fi
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ram $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
@@ -79,6 +83,19 @@ $(obj)/coreboot.a: $$(objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
 	rm -f $(obj)/coreboot.a
 	$(AR) cr $(obj)/coreboot.a $^
+
+#######################################################################
+# coreboot_ap.rom
+
+ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
+
+$(obj)/coreboot_ap: $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/i386/init/ldscript_apc.lb $^
+	$(NM) -n $(obj)/coreboot_ap | sort > $(obj)/coreboot_ap.map
+
+
+endif
 
 #######################################################################
 # done
@@ -174,10 +191,6 @@ ifeq ($(CONFIG_MMX),y)
 crt0s += $(src)/cpu/x86/mmx_disable.inc
 endif
 
-ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
-ldscripts += $(src)/arch/i386/init/ldscript_apc.lb
-endif
-
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(chipset_bootblock_inc)
 ldscripts += $(chipset_bootblock_lds)
@@ -198,7 +211,7 @@ else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD $(CFLAGS) -I$(src) -I. -c -S  $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
+	$(CC) -MMD $(CFLAGS) -I$(src) -I. -c $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
 	printf "    CC         romstage.inc\n"

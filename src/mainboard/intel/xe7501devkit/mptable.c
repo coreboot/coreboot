@@ -15,24 +15,24 @@
 #define PCI_IRQ(dev, intLine)	(((dev)<<2) | intLine)
 
 
-void xe7501devkit_register_buses(struct mp_config_table *mc)
+static void xe7501devkit_register_buses(struct mp_config_table *mc)
 {
 	// Bus ID, Bus Type
-	smp_write_bus(mc, PCI_BUS_CHIPSET,		BUSTYPE_PCI);
+	smp_write_bus(mc, PCI_BUS_CHIPSET,	BUSTYPE_PCI);
 	smp_write_bus(mc, PCI_BUS_E7501_HI_B,	BUSTYPE_PCI);
 	smp_write_bus(mc, PCI_BUS_P64H2_2_B,	BUSTYPE_PCI);
 	smp_write_bus(mc, PCI_BUS_P64H2_2_A,	BUSTYPE_PCI);
 	smp_write_bus(mc, PCI_BUS_E7501_HI_D,	BUSTYPE_PCI);
 	smp_write_bus(mc, PCI_BUS_P64H2_1_B,	BUSTYPE_PCI);
 	smp_write_bus(mc, PCI_BUS_P64H2_1_A,	BUSTYPE_PCI);
-	smp_write_bus(mc, PCI_BUS_ICH3,			BUSTYPE_PCI);
-	smp_write_bus(mc, SUPERIO_BUS,			BUSTYPE_ISA);
+	smp_write_bus(mc, PCI_BUS_ICH3,		BUSTYPE_PCI);
+	smp_write_bus(mc, SUPERIO_BUS,		BUSTYPE_ISA);
 }
 
-void xe7501devkit_register_ioapics(struct mp_config_table *mc)
+static void xe7501devkit_register_ioapics(struct mp_config_table *mc)
 {
 	device_t dev;
-    struct resource *res;
+	struct resource *res;
 
 	// TODO: Gack. This is REALLY ugly.
 
@@ -145,18 +145,18 @@ void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 static void *smp_write_config_table(void* v)
 {
 	static const char sig[4] = MPC_SIGNATURE;
-    static const char oem[8] = "INTEL   ";
-    static const char productid[12] = "XE7501DEVKIT";
-    struct mp_config_table *mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	static const char oem[8] = "INTEL   ";
+	static const char productid[12] = "XE7501DEVKIT";
+	struct mp_config_table *mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));
 
-    memcpy(mc->mpc_signature, sig, sizeof(sig));
-    memcpy(mc->mpc_oem, oem, sizeof(oem));
-    memcpy(mc->mpc_productid, productid, sizeof(productid));
+	memcpy(mc->mpc_signature, sig, sizeof(sig));
+	memcpy(mc->mpc_oem, oem, sizeof(oem));
+	memcpy(mc->mpc_productid, productid, sizeof(productid));
 
-    mc->mpc_length = sizeof(*mc);					// initially just the header
-    mc->mpc_spec = 0x04;							// Multiprocessing Spec V1.4
-    mc->mpc_lapic = LAPIC_ADDR;
+	mc->mpc_length = sizeof(*mc);	// initially just the header
+	mc->mpc_spec = 0x04;		// Multiprocessing Spec V1.4
+	mc->mpc_lapic = LAPIC_ADDR;
 
 	smp_write_processors(mc);
 

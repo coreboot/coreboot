@@ -6,8 +6,8 @@
 
 static inline void print_debug_sdram_8(const char *strval, uint32_t val)
 {
-#if CONFIG_USE_INIT
-        printk(BIOS_DEBUG, "%s%02x\r\n", strval, val);
+#if CONFIG_USE_PRINTK_IN_CAR
+        printk(BIOS_DEBUG, "%s%02x\n", strval, val);
 #else
         print_debug(strval); print_debug_hex8(val); print_debug("\r\n");
 #endif
@@ -23,10 +23,10 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	int i;
 	/* Set the registers we can set once to reasonable values */
 	for(i = 0; i < controllers; i++) {
-		print_debug_sdram_8("Ram1.",i);
+		print_debug_sdram_8("Ram1.", i);
 
 	#if RAMINIT_SYSINFO == 1
-		sdram_set_registers(ctrl + i , sysinfo);
+		sdram_set_registers(ctrl + i, sysinfo);
 	#else
 		sdram_set_registers(ctrl + i);
 	#endif
@@ -34,10 +34,10 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 
 	/* Now setup those things we can auto detect */
 	for(i = 0; i < controllers; i++) {
-                print_debug_sdram_8("Ram2.",i);
+                print_debug_sdram_8("Ram2.", i);
 
 	#if RAMINIT_SYSINFO == 1
-		sdram_set_spd_registers(ctrl + i , sysinfo);
+		sdram_set_spd_registers(ctrl + i, sysinfo);
 	#else
                 sdram_set_spd_registers(ctrl + i);
 	#endif

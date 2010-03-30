@@ -204,7 +204,8 @@ function create_config
 		fi
 	fi
 
-	yes "" | $MAKE oldconfig -j $cpus obj=${build_dir} > ${build_dir}/config.log
+	#yes "" | $MAKE oldconfig -j $cpus obj=${build_dir} &> ${build_dir}/config.log
+	yes "" | $MAKE oldconfig obj=${build_dir} &> ${build_dir}/config.log
 	ret=$?
 	mv .config.old $TARGET/${VENDOR}_${MAINBOARD}/config.in
 	if [ $ret -eq 0 ]; then
@@ -233,7 +234,9 @@ function create_buildenv
 	VENDOR=$1
 	MAINBOARD=$2
 	CONFIG=$3
+
 	create_config $VENDOR $MAINBOARD $CONFIG
+	ret=$?
 
 	# Allow simple "make" in the target directory
 	MAKEFILE=$TARGET/${VENDOR}_${MAINBOARD}/Makefile
@@ -244,6 +247,8 @@ function create_buildenv
 	echo "	cp config.build \$(TOP)/.config" >> $MAKEFILE
 	echo "	cd \$(TOP); \$(MAKE) oldconfig obj=\$(OUT)" >> $MAKEFILE
 	echo "	cd \$(TOP); \$(MAKE) obj=\$(OUT)" >> $MAKEFILE
+
+	return $ret
 }
 
 function compile_target

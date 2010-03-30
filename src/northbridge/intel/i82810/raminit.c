@@ -30,12 +30,17 @@ Macros and definitions.
 -----------------------------------------------------------------------------*/
 
 /* Debugging macros. */
+#define HAVE_ENOUGH_REGISTERS   0 /* Don't have enough registers to compile all
+				   * debugging code with ROMCC
+				   */
 #if CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG(x)		print_debug(x)
 #define PRINT_DEBUG_HEX8(x)	print_debug_hex8(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
 #define PRINT_DEBUG_HEX32(x)	print_debug_hex32(x)
-#define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
+// no dump_pci_device in src/northbridge/intel/i82810/
+// #define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
+#define DUMPNORTH()
 #else
 #define PRINT_DEBUG(x)
 #define PRINT_DEBUG_HEX8(x)
@@ -138,26 +143,29 @@ static void do_ram_command(u8 command)
 		drp = (drp >> (i * 4)) & 0x0f;
 
 		dimm_size = translate_i82810_to_mb[drp];
-		addr = (dimm_start * 1024 * 1024) + addr_offset;
 		if (dimm_size) {
+			addr = (dimm_start * 1024 * 1024) + addr_offset;
+#if HAVE_ENOUGH_REGISTERS
 			PRINT_DEBUG("    Sending RAM command 0x");
 			PRINT_DEBUG_HEX8(reg8);
 			PRINT_DEBUG(" to 0x");
 			PRINT_DEBUG_HEX32(addr);
 			PRINT_DEBUG("\r\n");
+#endif
 
 			read32(addr);
 		}
 
 		dimm_bank = translate_i82810_to_bank[drp];
-		addr = ((dimm_start + dimm_bank) * 1024 * 1024) + addr_offset;
 		if (dimm_bank) {
+			addr = ((dimm_start + dimm_bank) * 1024 * 1024) + addr_offset;
+#if HAVE_ENOUGH_REGISTERS
 			PRINT_DEBUG("    Sending RAM command 0x");
 			PRINT_DEBUG_HEX8(reg8);
 			PRINT_DEBUG(" to 0x");
 			PRINT_DEBUG_HEX32(addr);
 			PRINT_DEBUG("\r\n");
-
+#endif
 			read32(addr);
 		}
 

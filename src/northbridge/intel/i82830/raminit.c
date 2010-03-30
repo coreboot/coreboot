@@ -67,9 +67,9 @@ Macros and definitions.
 DIMM-initialization functions.
 -----------------------------------------------------------------------------*/
 
-static void do_ram_command(uint32_t command)
+static void do_ram_command(u32 command)
 {
-	uint32_t reg32;
+	u32 reg32;
 
 	/* Configure the RAM command. */
 	reg32 = pci_read_config32(NORTHBRIDGE, DRC);
@@ -82,7 +82,7 @@ static void do_ram_command(uint32_t command)
 	PRINT_DEBUG("\r\n");
 }
 
-static void ram_read32(uint8_t dimm_start, uint32_t offset)
+static void ram_read32(u8 dimm_start, u32 offset)
 {
 	if (offset == 0x55aa55aa) {
 		PRINT_DEBUG("  Reading RAM at 0x");
@@ -114,7 +114,7 @@ static void ram_read32(uint8_t dimm_start, uint32_t offset)
 static void initialize_dimm_rows(void)
 {
 	int i, row;
-	uint8_t dimm_start, dimm_end;
+	u8 dimm_start, dimm_end;
 	unsigned device;
 
 	dimm_start = 0;
@@ -487,7 +487,7 @@ static void sdram_set_registers(void)
 
 static void northbridge_set_registers(void)
 {
-	uint16_t value;
+	u16 value;
 	int igd_memory = 0;
 
 	PRINT_DEBUG("Setting initial nothbridge registers....\r\n");
@@ -542,7 +542,7 @@ static void northbridge_set_registers(void)
 static void sdram_initialize(void)
 {
 	int i;
-	uint32_t reg32;
+	u32 reg32;
 
 	/* Setup Initial SDRAM Registers */
 	sdram_set_registers();

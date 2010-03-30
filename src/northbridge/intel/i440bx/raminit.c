@@ -36,7 +36,9 @@ Macros and definitions.
 #define PRINT_DEBUG_HEX8(x)	print_debug_hex8(x)
 #define PRINT_DEBUG_HEX16(x)	print_debug_hex16(x)
 #define PRINT_DEBUG_HEX32(x)	print_debug_hex32(x)
-#define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
+// no dump_pci_device in src/northbridge/intel/i440bx
+// #define DUMPNORTH()		dump_pci_device(PCI_DEV(0, 0, 0))
+#define DUMPNORTH()
 #else
 #define PRINT_DEBUG(x)
 #define PRINT_DEBUG_HEX8(x)
@@ -834,7 +836,7 @@ static void set_dram_row_attributes(void)
 				die("HALT\r\n");
 			}
 			if ((sz.side1 > 128)) {
-				print_err ("DIMMs > 128MB per side\r\n"
+				print_err("DIMMs > 128MB per side\r\n"
 					   "are not supported on this NB\r\n");
 				die("HALT\r\n");
 			}

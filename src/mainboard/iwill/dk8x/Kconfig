@@ -81,11 +81,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0x1
 	depends on BOARD_IWILL_DK8X
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_IWILL_DK8X
-
 config SERIAL_CPU_INIT
 	bool
 	default n

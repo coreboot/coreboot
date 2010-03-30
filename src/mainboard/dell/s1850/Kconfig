@@ -46,11 +46,6 @@ config MAX_PHYSICAL_CPUS
 	default 1
 	depends on BOARD_DELL_S1850
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_DELL_S1850
-
 config IRQ_SLOT_COUNT
 	int
 	default 9

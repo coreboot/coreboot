@@ -47,11 +47,6 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	default n
 	depends on BOARD_TYAN_S2875
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S2875
-
 config IRQ_SLOT_COUNT
 	int
 	default 13

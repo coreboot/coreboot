@@ -69,11 +69,6 @@ config HT_CHAIN_END_UNITID_BASE
 	default 0x6
 	depends on BOARD_TYAN_S2885
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S2885
-
 config IRQ_SLOT_COUNT
 	int
 	default 11

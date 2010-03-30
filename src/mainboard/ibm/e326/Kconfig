@@ -81,11 +81,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0x1
 	depends on BOARD_IBM_E326
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_IBM_E326
-
 config SERIAL_CPU_INIT
 	bool
 	default n

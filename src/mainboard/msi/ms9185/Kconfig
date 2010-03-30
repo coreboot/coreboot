@@ -77,11 +77,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0x6
 	depends on BOARD_MSI_MS9185
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_MSI_MS9185
-
 config IRQ_SLOT_COUNT
 	int
 	default 11

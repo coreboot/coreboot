@@ -85,11 +85,6 @@ config HT_CHAIN_END_UNITID_BASE
 	default 0x20
 	depends on BOARD_MSI_MS9282
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_MSI_MS9282
-
 config SERIAL_CPU_INIT
 	bool	
 	default n

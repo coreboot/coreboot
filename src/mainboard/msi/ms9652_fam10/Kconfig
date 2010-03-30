@@ -199,11 +199,6 @@ config VAR_MTRR_HOLE
 	default n
 	depends on BOARD_MSI_MS9652_FAM10
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_MSI_MS9652_FAM10
-
 config SERIAL_CPU_INIT
 	bool
 	default y

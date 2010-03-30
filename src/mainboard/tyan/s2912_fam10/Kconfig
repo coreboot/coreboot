@@ -93,11 +93,6 @@ config HT_CHAIN_END_UNITID_BASE
 	default 0x20
 	depends on BOARD_TYAN_S2912_FAM10
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S2912_FAM10
-
 config SERIAL_CPU_INIT
 	bool
 	default n

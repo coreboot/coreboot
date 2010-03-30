@@ -70,11 +70,6 @@ config HT_CHAIN_END_UNITID_BASE
 	default 0x20
 	depends on BOARD_TYAN_S2895
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S2895
-
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2

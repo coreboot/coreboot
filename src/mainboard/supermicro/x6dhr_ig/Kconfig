@@ -39,11 +39,6 @@ config MAX_CPUS
 	default 4
 	depends on BOARD_SUPERMICRO_X6DHR_IG
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_SUPERMICRO_X6DHR_IG
-
 config IRQ_SLOT_COUNT
 	int
 	default 15

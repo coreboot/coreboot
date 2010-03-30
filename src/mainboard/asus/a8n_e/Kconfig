@@ -79,11 +79,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0x0
 	depends on BOARD_ASUS_A8N_E
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_ASUS_A8N_E
-
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2

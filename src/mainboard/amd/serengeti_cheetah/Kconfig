@@ -91,11 +91,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0xa
 	depends on BOARD_AMD_SERENGETI_CHEETAH
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_AMD_SERENGETI_CHEETAH
-
 config SERIAL_CPU_INIT
 	bool
 	default n

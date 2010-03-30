@@ -75,11 +75,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0x1
 	depends on BOARD_TYAN_S4882
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_TYAN_S4882
-
 config IRQ_SLOT_COUNT
 	int
 	default 22

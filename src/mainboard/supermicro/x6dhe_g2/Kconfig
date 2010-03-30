@@ -40,11 +40,6 @@ config MAX_CPUS
 	default 4
 	depends on BOARD_SUPERMICRO_X6DHE_G2
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_SUPERMICRO_X6DHE_G2
-
 config IRQ_SLOT_COUNT
 	int
 	default 15

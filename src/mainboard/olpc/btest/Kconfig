@@ -28,8 +28,3 @@ config IRQ_SLOT_COUNT
 	int
 	default 2
 	depends on BOARD_OLPC_BTEST
-
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_OLPC_BTEST

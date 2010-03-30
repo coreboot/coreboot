@@ -79,11 +79,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0x0
 	depends on BOARD_SUNW_ULTRA40
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_SUNW_ULTRA40
-
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2

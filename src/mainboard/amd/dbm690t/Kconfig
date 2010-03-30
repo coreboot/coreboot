@@ -89,11 +89,6 @@ config HT_CHAIN_UNITID_BASE
 	default 0x0
 	depends on BOARD_AMD_DBM690T
 
-config USE_INIT
-	bool
-	default n
-	depends on BOARD_AMD_DBM690T
-
 config IRQ_SLOT_COUNT
 	int
 	default 11

@@ -52,4 +52,5 @@ enumerations
 checksums
 
 # Checksum FROM bit-location TO bit-location STORE AT bit-location
-#checksum 1024 1047 1048
+checksum 1024 1047 1048
+

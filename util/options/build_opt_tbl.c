@@ -608,9 +608,17 @@ int main(int argc, char **argv)
 			fprintf(fp, "#define CMOS_VLEN_%s %d\n",
 				ce->name, ce->length);
 		}
-		fprintf(fp, "\n#define LB_CKS_RANGE_START %d\n", cs->range_start / 8);
-		fprintf(fp, "#define LB_CKS_RANGE_END %d\n", cs->range_end / 8);
-		fprintf(fp, "#define LB_CKS_LOC %d\n", cs->location / 8);
+
+		if (cs != NULL) {
+			fprintf(fp, "\n#define LB_CKS_RANGE_START %d\n", cs->range_start / 8);
+			fprintf(fp, "#define LB_CKS_RANGE_END %d\n", cs->range_end / 8);
+			fprintf(fp, "#define LB_CKS_LOC %d\n", cs->location / 8);
+		} else {
+			fprintf(stderr, "Error - No checksums defined.\n");
+			fclose(fp);
+			unlink(tempfilename);
+			exit(1);
+		}
 		fclose(fp);
 
 		UNLINK_IF_NECESSARY(header);

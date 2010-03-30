@@ -85,15 +85,6 @@ config TTYS0_LCS
 	default 3
 	depends on CONSOLE_SERIAL8250
 
-config SERIAL_POST
-	bool "Show POST codes on the serial port console"
-	depends on CONSOLE_SERIAL8250
-	default n
-	help
-	  If enabled, coreboot will additionally print POST codes (which are
-	  usually displayed using a so-called "POST card" ISA/PCI/PCI-E
-	  device) on the serial console.
-
 # TODO: FIX DEPENDENCY HERE
 config USBDEBUG_DIRECT
 	bool "USB 2.0 EHCI debug dongle support"
@@ -273,8 +264,6 @@ config DEFAULT_CONSOLE_LOGLEVEL
 	help
 	  Map the log level config names to an integer.
 
-endmenu
-
 config CONSOLE_BTEXT
 	bool
 	default n
@@ -286,3 +275,19 @@ config CONSOLE_SROM
 config CONSOLE_LOGBUF
 	bool
 	default n
+
+config NO_POST
+	bool "Don't show any POST codes"
+	default n
+
+config SERIAL_POST
+	bool "Show POST codes on the serial port console"
+	depends on CONSOLE_SERIAL8250 && !NO_POST
+	default n
+	help
+	  If enabled, coreboot will additionally print POST codes (which are
+	  usually displayed using a so-called "POST card" ISA/PCI/PCI-E
+	  device) on the serial console.
+
+endmenu
+

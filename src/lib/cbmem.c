@@ -44,6 +44,9 @@ struct cbmem_entry {
 
 #ifndef __PRE_RAM__
 struct cbmem_entry *bss_cbmem_toc;
+#define get_cbmem_toc()	bss_cbmem_toc
+#else
+#define get_cbmem_toc()	(struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE)
 #endif
 
 /**
@@ -99,11 +102,7 @@ void *cbmem_add(u32 id, u64 size)
 {
 	struct cbmem_entry *cbmem_toc;
 	int i;
-#ifdef __PRE_RAM__
-	 cbmem_toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
-#else
-	 cbmem_toc = bss_cbmem_toc;
-#endif
+	cbmem_toc = get_cbmem_toc();
 	
 	if (cbmem_toc == NULL) {
 		return NULL;
@@ -155,11 +154,7 @@ void *cbmem_find(u32 id)
 {
 	struct cbmem_entry *cbmem_toc;
 	int i;
-#ifdef __PRE_RAM__
-	 cbmem_toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
-#else
-	 cbmem_toc = bss_cbmem_toc;
-#endif
+	cbmem_toc = get_cbmem_toc();
 	
 	if (cbmem_toc == NULL)
 		return NULL;
@@ -201,11 +196,7 @@ void cbmem_list(void)
 {
 	struct cbmem_entry *cbmem_toc;
 	int i;
-#ifdef __PRE_RAM__
-	 cbmem_toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
-#else
-	 cbmem_toc = bss_cbmem_toc;
-#endif
+	cbmem_toc = get_cbmem_toc();
 	
 	if (cbmem_toc == NULL)
 		return;

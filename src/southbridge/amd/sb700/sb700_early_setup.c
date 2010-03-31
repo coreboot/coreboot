@@ -51,7 +51,7 @@ static u8 set_sb700_revision(void)
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
 
 	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 		/* NOT REACHED */
 	}
 	rev_id =  pci_read_config8(dev, 0x08);
@@ -81,7 +81,7 @@ static u8 set_sb700_revision(void)
 	} else if (rev_id == 0x3D) {
 		rev = 0x15;
 	} else
-		die("It is not SB700 or SB710\r\n");
+		die("It is not SB700 or SB710\n");
 
 	return rev;
 }
@@ -306,10 +306,10 @@ static void sb700_devices_por_init(void)
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
 
 	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 		/* NOT REACHED */
 	}
-	printk(BIOS_INFO, "SMBus controller enabled, sb revision is A%x\r\n",
+	printk(BIOS_INFO, "SMBus controller enabled, sb revision is A%x\n",
 		    set_sb700_revision());
 
 	/* sbPorAtStartOfTblCfg */

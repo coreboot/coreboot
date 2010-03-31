@@ -2,7 +2,7 @@
 static void dump_spd_registers(void)
 {
 	int i;
-	print_debug("\r\n");
+	print_debug("\n");
 	for(i = 0; i < DIMM_SOCKETS; i++) {
 		unsigned device;
 		device = DIMM_SPD_BASE + i;
@@ -16,20 +16,20 @@ static void dump_spd_registers(void)
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
-					print_debug("\r\n");
+					print_debug("\n");
 					print_debug_hex8(j);
 					print_debug(": ");
 				}
 				status = smbus_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\r\n");
+					print_debug("bad device\n");
 					break;
 				}
 				byte = status & 0xff;
 				print_debug_hex8(byte);
 				print_debug_char(' ');
 			}
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }

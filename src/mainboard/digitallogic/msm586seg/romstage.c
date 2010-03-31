@@ -80,7 +80,7 @@ static inline void dumpmem(void){
       print_err_hex8(c);
       print_err(" ");
     }
-    print_err("\r\n");
+    print_err("\n");
   }
 }
 
@@ -190,16 +190,16 @@ static void main(unsigned long bist)
         uart_init();
         console_init();
 		for(i = 0; i < 100; i++)
-	  print_err("fill usart\r\n");
+	  print_err("fill usart\n");
 		//		while(1)
-		print_err("HI THERE!\r\n");
+		print_err("HI THERE!\n");
 		//			sizemem();
 	staticmem();
 	print_err("c60 is "); print_err_hex16(*(unsigned short *)0xfffefc60); 
 	print_err("\n");
 			
 	//			while(1)
-	print_err("STATIC MEM DONE\r\n");
+	print_err("STATIC MEM DONE\n");
 	outb(0xee, 0x80);
 	print_err("loop forever ...\n");
 
@@ -227,12 +227,12 @@ static void main(unsigned long bist)
 #endif
 	
 #if 0
-	print_err("RAM CHECK!\r\n");
+	print_err("RAM CHECK!\n");
 	// Check 16MB of memory @ 0
 	ram_check(0x00000000, 0x01000000);
 #endif
 #if 0
-	print_err("RAM CHECK for 32 MB!\r\n");
+	print_err("RAM CHECK for 32 MB!\n");
 	// Check 32MB of memory @ 0
 	ram_check(0x00000000, 0x02000000);
 #endif
@@ -243,17 +243,17 @@ static void main(unsigned long bist)
 	  for(i = 0; i < 0x20000; i++) {
 	    /*
 	      print_err("Set dst "); print_err_hex32((unsigned long) dst); 
-	      print_err(" to "); print_err_hex32(*src); print_err("\r\n");
+	      print_err(" to "); print_err_hex32(*src); print_err("\n");
 	    */
 	    *dst = *src;
-	    //print_err(" dst is now "); print_err_hex32(*dst); print_err("\r\n");
+	    //print_err(" dst is now "); print_err_hex32(*dst); print_err("\n");
 	    dst++, src++;
 	    outb((unsigned char)i, 0x80);
 	  }
 	}
 	dumpmem();
 	outb(0, 0x80);
-	print_err("loop forever\r\n");
+	print_err("loop forever\n");
 	outb(0xdd, 0x80);
         __asm__ volatile(
 			 "movl %0, %%edi\n\t"
@@ -262,7 +262,7 @@ static void main(unsigned long bist)
 			 : "a" (0x4000)
 			 ); 
 	
-	print_err("Oh dear, I'm afraid it didn't work...\r\n");
+	print_err("Oh dear, I'm afraid it didn't work...\n");
 	
 	while(1);
 #endif

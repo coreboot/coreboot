@@ -42,7 +42,7 @@ static void enable_smbus(void)
 {
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
-	print_debug("SMBus controller enabled\r\n");
+	print_debug("SMBus controller enabled\n");
 	/* set smbus iobase */
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
 	/* Set smbus enable */
@@ -119,7 +119,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	unsigned char global_status_register;
 	unsigned char byte;
 
-	/*print_err("smbus_read_byte\r\n"); */
+	/*print_err("smbus_read_byte\n"); */
 	if (smbus_wait_until_ready() < 0) {
 		print_err_hex8(-2);
 		return -2;
@@ -169,7 +169,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 /*
         print_err("smbus_read_byte: ");
 	print_err_hex32(device); print_err(" ad "); print_err_hex32(address);
-	print_err("value "); print_err_hex8(byte); print_err("\r\n");
+	print_err("value "); print_err_hex8(byte); print_err("\n");
  */
 	return byte;
 }

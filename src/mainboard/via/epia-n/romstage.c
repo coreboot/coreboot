@@ -124,7 +124,7 @@ static void main(unsigned long bist)
 	uart_init();
 	console_init();
 
-	print_spew("In romstage.c:main()\r\n");
+	print_spew("In romstage.c:main()\n");
 
 	enable_smbus();
 	smbus_fixup(&ctrl);
@@ -132,25 +132,25 @@ static void main(unsigned long bist)
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
 
-	print_debug("Enabling mainboard devices\r\n");
+	print_debug("Enabling mainboard devices\n");
 	enable_mainboard_devices();
 
-	print_debug("Enable F-ROM Shadow RAM\r\n");
+	print_debug("Enable F-ROM Shadow RAM\n");
 	enable_shadow_ram();
 	
 	/* setup cpu */
-	print_debug("Setup CPU Interface\r\n");
+	print_debug("Setup CPU Interface\n");
 	c3_cpu_setup(ctrl.d0f2);	
 
 	ddr_ram_setup();
 
 	if (bist == 0) {
-		print_debug("doing early_mtrr\r\n");
+		print_debug("doing early_mtrr\n");
 		early_mtrr_init();
 	}
 	
 	//ram_check(0, 640 * 1024);
 
-	print_spew("Leaving romstage.c:main()\r\n");
+	print_spew("Leaving romstage.c:main()\n");
 }
 

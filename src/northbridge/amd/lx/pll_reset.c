@@ -68,7 +68,7 @@ static void pll_reset(char manualconf)
 		__asm__ __volatile__("hlt\n");
 
 	}
-	print_debug("Done pll_reset\r\n");
+	print_debug("Done pll_reset\n");
 	return;
 }
 

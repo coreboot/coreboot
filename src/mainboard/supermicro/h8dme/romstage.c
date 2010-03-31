@@ -94,7 +94,7 @@ static void dump_smbus_registers(void)
 {
 	u32 device;
 
-	print_debug("\r\n");
+	print_debug("\n");
 	for (device = 1; device < 0x80; device++) {
 		int j;
 		if (smbus_read_byte(device, 0) < 0)
@@ -108,12 +108,12 @@ static void dump_smbus_registers(void)
 				break;
 			}
 			if ((j & 0xf) == 0) {
-				printk(BIOS_DEBUG, "\r\n%02x: ", j);
+				printk(BIOS_DEBUG, "\n%02x: ", j);
 			}
 			byte = status & 0xff;
 			printk(BIOS_DEBUG, "%02x ", byte);
 		}
-		print_debug("\r\n");
+		print_debug("\n");
 	}
 }
 
@@ -137,13 +137,13 @@ static inline void change_i2c_mux(unsigned device)
 	smbus_send_byte(SMBUS_SWITCH1, device & 0x0f);
 	smbus_send_byte_one(SMBUS_SWITCH2, (device >> 4) & 0x0f);
 	int ret;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\r\n");
+        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
 	dump_smbus_registers();
         ret = smbus_send_byte(SMBUS_SWITCH1, device);
-        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\r\n");
+        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
 	dump_smbus_registers();
         ret = smbus_send_byte_one(SMBUS_SWITCH2, device);
-        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\r\n");
+        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
 	dump_smbus_registers();
 }
 */
@@ -273,7 +273,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	print_debug("bsp_apicid=");
 	print_debug_hex8(bsp_apicid);
-	print_debug("\r\n");
+	print_debug("\n");
 
 #if CONFIG_MEM_TRAIN_SEQ == 1
 	set_sysinfo_in_ram(0);	// in BSP so could hold all ap until sysinfo is in ram
@@ -303,7 +303,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		print_debug("begin msr fid, vid ");
 		print_debug_hex32(msr.hi);
 		print_debug_hex32(msr.lo);
-		print_debug("\r\n");
+		print_debug("\n");
 
 	}
 
@@ -320,7 +320,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		print_debug("end   msr fid, vid ");
 		print_debug_hex32(msr.hi);
 		print_debug_hex32(msr.lo);
-		print_debug("\r\n");
+		print_debug("\n");
 
 	}
 #endif
@@ -332,7 +332,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	// fidvid change will issue one LDTSTOP and the HT change will be effective too
 	if (needs_reset) {
-		print_info("ht reset -\r\n");
+		print_info("ht reset -\n");
 		soft_reset();
 	}
 #endif

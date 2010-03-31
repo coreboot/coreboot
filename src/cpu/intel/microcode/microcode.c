@@ -82,7 +82,7 @@ void intel_update_microcode(const void *microcode_updates)
 	print_debug_hex32(pf);
 	print_debug(" rev = 0x");
 	print_debug_hex32(rev);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	m = microcode_updates;
 	for(c = microcode_updates; m->hdrver;  m = (const struct microcode *)c) {
@@ -99,7 +99,7 @@ void intel_update_microcode(const void *microcode_updates)
 			print_debug_hex32(new_rev);
 			print_debug(" from revision ");
 			print_debug_hex32(rev);
-			print_debug("\r\n");
+			print_debug("\n");
 			break;
 		}
 		if (m->total_size) {

@@ -26,7 +26,7 @@ static void adm1027_enable_monitoring(device_t dev)
 	result = smbus_read_byte(dev, ADM1027_REG_CONFIG1);
 
 	if (!(result & CFG1_RDY)) {
-		printk(BIOS_DEBUG, "ADM1027: monitoring not ready\r\n");
+		printk(BIOS_DEBUG, "ADM1027: monitoring not ready\n");
 		return;
 	}
 	result = (result | CFG1_STRT);
@@ -34,9 +34,9 @@ static void adm1027_enable_monitoring(device_t dev)
 
 	result = smbus_read_byte(dev, ADM1027_REG_CONFIG1);
 	if (!(result & CFG1_STRT)) {
-		printk(BIOS_DEBUG, "ADM1027: monitoring would not enable\r\n");
+		printk(BIOS_DEBUG, "ADM1027: monitoring would not enable\n");
 	}
-	printk(BIOS_DEBUG, "ADM1027: monitoring enabled\r\n");
+	printk(BIOS_DEBUG, "ADM1027: monitoring enabled\n");
 }
 
 static void adm1027_init(device_t dev)

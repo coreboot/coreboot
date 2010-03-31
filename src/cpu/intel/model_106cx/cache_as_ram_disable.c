@@ -40,10 +40,10 @@ void stage1_main(unsigned long bist)
         	        "movl   %%esp, %0\n\t"
 	                : "=a" (v_esp)
 	        );
-	        printk(BIOS_SPEW, "v_esp=%08x\r\n", v_esp);
+	        printk(BIOS_SPEW, "v_esp=%08x\n", v_esp);
         }
 
-        printk(BIOS_SPEW, "cpu_reset = %08x\r\n",cpu_reset);
+        printk(BIOS_SPEW, "cpu_reset = %08x\n",cpu_reset);
 
 	if(cpu_reset == 0) {
 	        print_spew("Clearing initial memory region: ");
@@ -83,12 +83,12 @@ void stage1_main(unsigned long bist)
 #ifdef CONFIG_DEACTIVATE_CAR
 		print_debug("Deactivating CAR");
 #include CONFIG_DEACTIVATE_CAR_FILE
-		print_debug(" - Done.\r\n");
+		print_debug(" - Done.\n");
 #endif
 		/* Copy and execute coreboot_ram */
 		copy_and_run(new_cpu_reset);
 		/* We will not return */
 	}
 
-	print_debug("sorry. parachute did not open.\r\n");
+	print_debug("sorry. parachute did not open.\n");
 }

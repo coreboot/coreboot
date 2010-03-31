@@ -5,7 +5,7 @@
 
 static inline void print_debug_pcar(const char *strval, uint32_t val)
 {
-	printk(BIOS_DEBUG, "%s%08x\r\n", strval, val);
+	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 }
 
 /* from linux kernel 2.6.32 asm/string_32.h */
@@ -86,10 +86,10 @@ static void post_cache_as_ram(void)
 	/* We can put data to stack again */
 
 	/* only global variable sysinfo in cache need to be offset */
-	print_debug("Done\r\n");
+	print_debug("Done\n");
 	print_debug_pcar("testx = ", testx);
 
-	print_debug("Disabling cache as ram now \r\n");
+	print_debug("Disabling cache as ram now \n");
 	disable_cache_as_ram_bsp();
 
 	print_debug("Clearing initial memory region: ");
@@ -99,7 +99,7 @@ static void post_cache_as_ram(void)
 #else
 	memset((void*)0, 0, ((CONFIG_RAMTOP) - CONFIG_DCACHE_RAM_SIZE));
 #endif
-	print_debug("Done\r\n");
+	print_debug("Done\n");
 
 //	dump_mem((CONFIG_RAMTOP) - 0x8000, (CONFIG_RAMTOP) - 0x7c00);
 
@@ -115,5 +115,5 @@ static void post_cache_as_ram(void)
 	copy_and_run();
 	/* We will not return */
 
-	print_debug("should not be here -\r\n");
+	print_debug("should not be here -\n");
 }

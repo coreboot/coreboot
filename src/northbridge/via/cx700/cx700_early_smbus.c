@@ -66,25 +66,25 @@ static void smbus_print_error(unsigned char host_status_register, int loops)
 	print_err("SMBus Error: ");
 	print_err_hex8(host_status_register);
 
-	print_err("\r\n");
+	print_err("\n");
 	if (loops >= SMBUS_TIMEOUT) {
-		print_err("SMBus Timout\r\n");
+		print_err("SMBus Timout\n");
 	}
 	if (host_status_register & (1 << 4)) {
-		print_err("Interrup/SMI# was Failed Bus Transaction\r\n");
+		print_err("Interrup/SMI# was Failed Bus Transaction\n");
 	}
 	if (host_status_register & (1 << 3)) {
-		print_err("Bus Error\r\n");
+		print_err("Bus Error\n");
 	}
 	if (host_status_register & (1 << 2)) {
-		print_err("Device Error\r\n");
+		print_err("Device Error\n");
 	}
 	if (host_status_register & (1 << 1)) {
 		/* This isn't a real error... */
-		print_debug("Interrupt/SMI# was Successful Completion\r\n");
+		print_debug("Interrupt/SMI# was Successful Completion\n");
 	}
 	if (host_status_register & (1 << 0)) {
-		print_err("Host Busy\r\n");
+		print_err("Host Busy\n");
 	}
 }
 
@@ -240,7 +240,7 @@ static void dump_spd_data(const struct mem_controller *ctrl)
 	for (dimm = 0; dimm < DIMM_SOCKETS; dimm++) {
 		print_debug("SPD Data for DIMM ");
 		print_debug_hex8(dimm);
-		print_debug("\r\n");
+		print_debug("\n");
 
 		val = get_spd_data(ctrl, dimm, 0);
 		if (val == 0xff) {
@@ -248,7 +248,7 @@ static void dump_spd_data(const struct mem_controller *ctrl)
 		} else if (val == 0x80) {
 			regs = 128;
 		} else {
-			print_debug("No DIMM present\r\n");
+			print_debug("No DIMM present\n");
 			regs = 0;
 		}
 		for (offset = 0; offset < regs; offset++) {
@@ -256,7 +256,7 @@ static void dump_spd_data(const struct mem_controller *ctrl)
 			print_debug_hex8(offset);
 			print_debug(" = 0x");
 			print_debug_hex8(get_spd_data(ctrl, dimm, offset));
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }

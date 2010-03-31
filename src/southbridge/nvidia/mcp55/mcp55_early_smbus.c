@@ -33,10 +33,10 @@ static void enable_smbus(void)
 	dev = pci_locate_device(PCI_ID(0x10de, 0x0368), 0);
 #if 0
 	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 	}
 
-	print_debug("SMBus controller enabled\r\n");
+	print_debug("SMBus controller enabled\n");
 #endif
 	/* set smbus iobase */
 	pci_write_config32(dev, 0x20, SMBUS0_IO_BASE | 1);

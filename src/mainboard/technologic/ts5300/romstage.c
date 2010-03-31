@@ -56,18 +56,18 @@ static void identify_ts9500(void)
 	
 	TS9500_LED_ON;
 
-	print_err("TS-9500 add-on found:\r\n");
+	print_err("TS-9500 add-on found:\n");
 	val=inb(0x19b);
 	for (i=0; i<8; i++) {
 		print_err("  DIP");
 		print_err_char(i+0x31);
 		print_err(": ");
 		if((val&(1<<i))!=0) 
-			print_err("on\r\n"); 
+			print_err("on\n"); 
 		else
-			print_err("off\r\n"); 
+			print_err("off\n"); 
 	}
-	print_err("\r\n");
+	print_err("\n");
 	
 	val=inb(0x19a);
 	
@@ -76,11 +76,11 @@ static void identify_ts9500(void)
 		print_err_char(i+0x30-5);
 		print_err(": ");
 		if((val&(1<<i))!=0) 
-			print_err("on\r\n"); 
+			print_err("on\n"); 
 		else
-			print_err("off\r\n"); 
+			print_err("off\n"); 
 	}
-	print_err("\r\n");
+	print_err("\n");
 
 	TS9500_LED_OFF;
 }
@@ -92,29 +92,29 @@ static void identify_system(void)
 	print_err("Mainboard: ");
 	val=inb(0x74);
 	switch(val) {
-	case 0x50: print_err("TS-5300\r\n"); break;
-	case 0x40: print_err("TS-5400\r\n"); break;
-	case 0x60: print_err("TS-5500\r\n"); break;
-	case 0x20: print_err("TS-5600\r\n"); break;
-	case 0x70: print_err("TS-5700\r\n"); break;
-	default:   print_err("unknown\r\n"); break;
+	case 0x50: print_err("TS-5300\n"); break;
+	case 0x40: print_err("TS-5400\n"); break;
+	case 0x60: print_err("TS-5500\n"); break;
+	case 0x20: print_err("TS-5600\n"); break;
+	case 0x70: print_err("TS-5700\n"); break;
+	default:   print_err("unknown\n"); break;
 	}
 
 	val=inb(0x75);
 	print_err("  SRAM option:   ");
 	if((val&1)==0) print_err("not ");
-	print_err("installed\r\n");
+	print_err("installed\n");
 	
 	print_err("  RS-485 option: ");
 	if((val&2)==0) print_err("not ");
-	print_err("installed\r\n");
+	print_err("installed\n");
 
 	val=inb(0x76);
 	print_err("  Temp. range:   ");
-	if((val&2)==0) print_err("commercial\r\n"); 
-	else print_err("industrial\r\n");
+	if((val&2)==0) print_err("commercial\n"); 
+	else print_err("industrial\n");
 	
-	print_err("\r\n");
+	print_err("\n");
 	
 	val=inb(0x77);
 	for (i=1; i<8; i++) {
@@ -122,11 +122,11 @@ static void identify_system(void)
 		print_err_char(i+0x30);
 		print_err(": ");
 		if((val&(1<<i))!=0) 
-			print_err("on\r\n"); 
+			print_err("on\n"); 
 		else
-			print_err("off\r\n"); 
+			print_err("off\n"); 
 	}
-	print_err("\r\n");
+	print_err("\n");
 
 	/* Detect TS-9500 */
 	val=inb(0x19d);
@@ -157,9 +157,9 @@ static void main(unsigned long bist)
         console_init();
 	
 	
-	print_err("Technologic Systems TS5300 - http://www.embeddedx86.com/\r\n");
+	print_err("Technologic Systems TS5300 - http://www.embeddedx86.com/\n");
 	staticmem();
-	print_err("Memory initialized: 32MB\r\n");
+	print_err("Memory initialized: 32MB\n");
 
 #if 1
 	identify_system();
@@ -167,7 +167,7 @@ static void main(unsigned long bist)
 
 #if 0
 	// Check 32MB of memory @ 0 (very slow!)
-	print_err("Checking memory:\r\n");
+	print_err("Checking memory:\n");
 	ram_check(0x00000000, 0x000a0000);
 	ram_check(0x000b0000, 0x02000000);
 #endif

@@ -394,7 +394,7 @@ static void test1(void)
 #if 0
 	print_debug("spd_count: ");
 	print_debug_hex32(spd_count);
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 }
@@ -410,9 +410,9 @@ static void do_test2(int i)
 	reset_tests();
 	spd_fail_count = i;
 
-	print_debug("\r\nSPD will fail after: ");
+	print_debug("\nSPD will fail after: ");
 	print_debug_hex32(spd_fail_count);
-	print_debug(" accesses.\r\n");
+	print_debug(" accesses.\n");
 
 	memcpy(&spd_data[0*256], spd_micron_512MB_DDR333, 256);
 	memcpy(&spd_data[1*256], spd_micron_512MB_DDR333, 256);

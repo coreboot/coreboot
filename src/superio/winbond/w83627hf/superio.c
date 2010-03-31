@@ -120,7 +120,7 @@ static void init_hwm(unsigned long base)
 		value &= 0xff & hwm_reg_values[i+1];
 		value |= 0xff & hwm_reg_values[i+2];
 #if 0
-		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, value = 0x%02x\r\n", base, reg,value);
+		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, value = 0x%02x\n", base, reg,value);
 #endif
 		pnp_write_index(base, reg, value);
 	}

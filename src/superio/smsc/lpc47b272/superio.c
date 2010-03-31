@@ -195,7 +195,7 @@ static void pnp_exit_conf_state(device_t dev)
 static void dump_pnp_device(device_t dev)
 {
 	int register_index;
-	print_debug("\r\n");
+	print_debug("\n");
 
 	for(register_index = 0; register_index <= LPC47B272_MAX_CONFIG_REGISTER; register_index++) {
 		uint8_t register_value;
@@ -214,10 +214,10 @@ static void dump_pnp_device(device_t dev)
 		print_debug_char(' ');
 		print_debug_hex8(register_value);
 		if ((register_index & 0x0f) == 0x0f) {
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 
-   	print_debug("\r\n");
+   	print_debug("\n");
 }
 #endif

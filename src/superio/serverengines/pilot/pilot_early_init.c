@@ -33,9 +33,9 @@ static void pilot_early_init(device_t dev)
 
 	print_debug("Using port: ");
 	print_debug_hex16(port);
-	print_debug("\r\n");
+	print_debug("\n");
 	pilot_disable_serial(PNP_DEV(port, 0x1));
-	print_debug("disable serial 1\r\n");
+	print_debug("disable serial 1\n");
 
 /*
 	pnp_enter_ext_func_mode(dev);

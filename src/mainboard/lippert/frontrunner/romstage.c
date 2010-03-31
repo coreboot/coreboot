@@ -24,7 +24,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	msr_t msr;
 	/* 1. Initialize GLMC registers base on SPD values,
 	 * Hard coded as XpressROM for now */
-	//print_debug("sdram_enable step 1\r\n");
+	//print_debug("sdram_enable step 1\n");
 	msr = rdmsr(0x20000018);
 	msr.hi = 0x10076013;
 	msr.lo = 0x3400;

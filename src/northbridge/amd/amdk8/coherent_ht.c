@@ -111,7 +111,7 @@
 
 static inline void print_linkn (const char *strval, uint8_t byteval)
 {
-	printk(BIOS_DEBUG, "%s%02x\r\n", strval, byteval);
+	printk(BIOS_DEBUG, "%s%02x\n", strval, byteval);
 }
 
 static void disable_probes(void)
@@ -149,7 +149,7 @@ static void disable_probes(void)
 		HTTC_DIS_RD_DW_P | HTTC_DIS_RD_B_P;
 	pci_write_config32(NODE_HT(0), HT_TRANSACTION_CONTROL, val);
 
-	print_spew("done.\r\n");
+	print_spew("done.\n");
 
 }
 
@@ -200,7 +200,7 @@ static void enable_routing(u8 node)
 	val &= ~((1<<1)|(1<<0));
 	pci_write_config32(NODE_HT(node), 0x6c, val);
 
-	print_spew(" done.\r\n");
+	print_spew(" done.\n");
 }
 
 static void fill_row(u8 node, u8 row, u32 value)
@@ -250,7 +250,7 @@ static void rename_temp_node(u8 node)
 	val |= node;  /* new node        */
 	pci_write_config32(NODE_HT(7), 0x60, val);
 
-	print_spew(" done.\r\n");
+	print_spew(" done.\n");
 }
 
 static int verify_connection(u8 dest)
@@ -513,7 +513,7 @@ static void setup_remote_node(u8 node)
 		pci_write_config32(NODE_MP(7), reg, value);
 
 	}
-	print_spew("done\r\n");
+	print_spew("done\n");
 }
 
 #endif /* CONFIG_MAX_PHYSICAL_CPUS > 1*/
@@ -652,7 +652,7 @@ static void setup_remote_row_indirect_group(const u8 *conn, int num)
 
 static void setup_uniprocessor(void)
 {
-	print_spew("Enabling UP settings\r\n");
+	print_spew("Enabling UP settings\n");
 #if CONFIG_LOGICAL_CPUS==1
 	unsigned tmp = (pci_read_config32(NODE_MC(0), 0xe8) >> 12) & 3;
 	if (tmp>0) return;
@@ -1478,7 +1478,7 @@ static unsigned setup_smp(void)
 {
 	unsigned nodes;
 
-	print_spew("Enabling SMP settings\r\n");
+	print_spew("Enabling SMP settings\n");
 
 	nodes = setup_smp2();
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
@@ -1496,7 +1496,7 @@ static unsigned setup_smp(void)
 		nodes = setup_smp8();
 #endif
 
-	printk(BIOS_DEBUG, "%02x nodes initialized.\r\n", nodes);
+	printk(BIOS_DEBUG, "%02x nodes initialized.\n", nodes);
 
 	return nodes;
 }
@@ -1515,14 +1515,14 @@ static unsigned verify_mp_capabilities(unsigned nodes)
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
 	case 0x02: /* MPCap    */
 		if(nodes > 2) {
-			print_err("Going back to DP\r\n");
+			print_err("Going back to DP\n");
 			return 2;
 		}
 		break;
 #endif
 	case 0x00: /* Non SMP */
 		if(nodes >1 ) {
-			print_err("Going back to UP\r\n");
+			print_err("Going back to UP\n");
 			return 1;
 		}
 		break;
@@ -1601,7 +1601,7 @@ static void coherent_ht_finalize(unsigned nodes)
 	 * registers on Hammer A0 revision.
 	 */
 
-	print_spew("coherent_ht_finalize\r\n");
+	print_spew("coherent_ht_finalize\n");
 #if CONFIG_K8_REV_F_SUPPORT == 0
 	rev_a0 = is_cpu_rev_a0();
 #endif
@@ -1642,7 +1642,7 @@ static void coherent_ht_finalize(unsigned nodes)
 #endif
 	}
 
-	print_spew("done\r\n");
+	print_spew("done\n");
 }
 
 static int apply_cpu_errata_fixes(unsigned nodes)

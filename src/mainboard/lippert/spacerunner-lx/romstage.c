@@ -91,7 +91,7 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	if (address >= sizeof(spdbytes) || spdbytes[address] == 0xFF) {
 		print_err("ERROR: spd_read_byte(DIMM0, 0x");
 		print_err_hex8(address);
-		print_err(") returns 0xff\r\n");
+		print_err(") returns 0xff\n");
 	}
 #endif
 
@@ -222,7 +222,7 @@ void cache_as_ram_main(void)
 	if ((err = smc_send_config(SMC_CONFIG))) {
 		print_err("ERROR ");
 		print_err_char('0'+err);
-		print_err(" sending config data to SMC\r\n");
+		print_err(" sending config data to SMC\n");
 	}
 
 	sdram_initialize(1, memctrl);

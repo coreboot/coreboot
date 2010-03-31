@@ -129,9 +129,9 @@ void amd64_main(unsigned long bist)
 	                : "=a" (v_esp)
 	        );
 #if CONFIG_USE_PRINTK_IN_CAR
-	        printk(BIOS_DEBUG, "v_esp=%08x\r\n", v_esp);
+	        printk(BIOS_DEBUG, "v_esp=%08x\n", v_esp);
 #else
-	        print_debug("v_esp="); print_debug_hex32(v_esp); print_debug("\r\n");
+	        print_debug("v_esp="); print_debug_hex32(v_esp); print_debug("\n");
 #endif
         }
 
@@ -141,9 +141,9 @@ void amd64_main(unsigned long bist)
 cpu_reset_x:
 
 #if CONFIG_USE_PRINTK_IN_CAR
-        printk(BIOS_DEBUG, "cpu_reset = %08x\r\n",cpu_reset);
+        printk(BIOS_DEBUG, "cpu_reset = %08x\n",cpu_reset);
 #else
-        print_debug("cpu_reset = "); print_debug_hex32(cpu_reset); print_debug("\r\n");
+        print_debug("cpu_reset = "); print_debug_hex32(cpu_reset); print_debug("\n");
 #endif
 
 	if(cpu_reset == 0) {
@@ -184,21 +184,21 @@ cpu_reset_x:
 
                 /* We can not go back any more, we lost old stack data in cache as ram*/
                 if(new_cpu_reset==0) {
-                        print_debug("Use Ram as Stack now - done\r\n");
+                        print_debug("Use Ram as Stack now - done\n");
                 } else
                 {  
-                        print_debug("Use Ram as Stack now - \r\n");
+                        print_debug("Use Ram as Stack now - \n");
                 }
 #if CONFIG_USE_PRINTK_IN_CAR
-                printk(BIOS_DEBUG, "new_cpu_reset = %08x\r\n", new_cpu_reset);
+                printk(BIOS_DEBUG, "new_cpu_reset = %08x\n", new_cpu_reset);
 #else
-                print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\r\n");
+                print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\n");
 #endif
 	
 #ifdef DEACTIVATE_CAR
 		print_debug("Deactivating CAR");
 #include DEACTIVATE_CAR_FILE
-		print_debug(" - Done.\r\n");
+		print_debug(" - Done.\n");
 #endif
 		/*copy and execute coreboot_ram */
 		copy_and_run(new_cpu_reset);
@@ -206,7 +206,7 @@ cpu_reset_x:
 	}
 #endif
 
-	print_debug("should not be here -\r\n");
+	print_debug("should not be here -\n");
 
 }
 

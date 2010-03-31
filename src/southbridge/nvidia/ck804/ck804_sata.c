@@ -51,7 +51,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 		return;
 
 	dword = *(base + 0);
-	printk(BIOS_DEBUG, "*(base+0)=%08x\r\n", dword);
+	printk(BIOS_DEBUG, "*(base+0)=%08x\n", dword);
 	if (dword == 0x113) {
 		loop = 200000;	// 2
 		do {
@@ -60,11 +60,11 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 				break;
 			udelay(10);
 		} while (--loop > 0);
-		printk(BIOS_DEBUG, "loop=%d, *(base+4)=%08x\r\n", loop, dword);
+		printk(BIOS_DEBUG, "loop=%d, *(base+4)=%08x\n", loop, dword);
 	}
 
 	dword = *(base + 0x40);
-	printk(BIOS_DEBUG, "*(base+0x40)=%08x\r\n", dword);
+	printk(BIOS_DEBUG, "*(base+0x40)=%08x\n", dword);
 	if (dword == 0x113) {
 		loop = 200000;	//2
 		do {
@@ -73,7 +73,7 @@ static void sata_com_reset(struct device *dev, unsigned reset)
 				break;
 			udelay(10);
 		} while (--loop > 0);
-		printk(BIOS_DEBUG, "loop=%d, *(base+0x44)=%08x\r\n", loop, dword);
+		printk(BIOS_DEBUG, "loop=%d, *(base+0x44)=%08x\n", loop, dword);
 	}
 }
 #endif

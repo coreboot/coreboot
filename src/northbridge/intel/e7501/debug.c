@@ -27,7 +27,7 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-		print_debug("\r\n");
+		print_debug("\n");
 	}
 }
 
@@ -40,9 +40,9 @@ static void dump_pci_device(unsigned dev)
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
 #if CONFIG_USE_PRINTK_IN_CAR
-                        printk(BIOS_DEBUG, "\r\n%02x:",i);
+                        printk(BIOS_DEBUG, "\n%02x:",i);
 #else
-			print_debug("\r\n");
+			print_debug("\n");
 			print_debug_hex8(i);
 			print_debug_char(':');
 #endif
@@ -55,7 +55,7 @@ static void dump_pci_device(unsigned dev)
 		print_debug_hex8(val);
 #endif
 	}
-	print_debug("\r\n");
+	print_debug("\n");
 }
 
 static void dump_pci_devices(void)
@@ -95,7 +95,7 @@ static void dump_pci_devices_on_bus(unsigned busn)
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
-	print_debug("\r\n");
+	print_debug("\n");
 	for(i = 0; i < 4; i++) {
 		unsigned device;
 		device = ctrl->channel0[i];
@@ -114,9 +114,9 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
 #if CONFIG_USE_PRINTK_IN_CAR
-					printk(BIOS_DEBUG, "\r\n%02x: ", j);
+					printk(BIOS_DEBUG, "\n%02x: ", j);
 #else
-					print_debug("\r\n");
+					print_debug("\n");
 					print_debug_hex8(j);
 					print_debug(": ");
 #endif
@@ -133,7 +133,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				print_debug_char(' ');
 #endif
 			}
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 		device = ctrl->channel1[i];
 		if (device) {
@@ -151,9 +151,9 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
 #if CONFIG_USE_PRINTK_IN_CAR
-                                        printk(BIOS_DEBUG, "\r\n%02x: ", j);
+                                        printk(BIOS_DEBUG, "\n%02x: ", j);
 #else
-					print_debug("\r\n");
+					print_debug("\n");
 					print_debug_hex8(j);
 					print_debug(": ");
 #endif
@@ -170,14 +170,14 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				print_debug_char(' ');
 #endif
 			}
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }
 static void dump_smbus_registers(void)
 {
 	unsigned device;
-        print_debug("\r\n");
+        print_debug("\n");
         for(device = 1; device < 0x80; device++) {
                 int j;
 		if( smbus_read_byte(device, 0) < 0 ) continue;
@@ -196,9 +196,9 @@ static void dump_smbus_registers(void)
                         }
                         if ((j & 0xf) == 0) {
 #if CONFIG_USE_PRINTK_IN_CAR
-				printk(BIOS_DEBUG, "\r\n%02x: ",j);
+				printk(BIOS_DEBUG, "\n%02x: ",j);
 #else
-                	        print_debug("\r\n");
+                	        print_debug("\n");
                                 print_debug_hex8(j);
                                 print_debug(": ");
 #endif
@@ -211,7 +211,7 @@ static void dump_smbus_registers(void)
                         print_debug_char(' ');
 #endif
                 }
-                print_debug("\r\n");
+                print_debug("\n");
 	}	
 }
 
@@ -220,10 +220,10 @@ static void dump_io_resources(unsigned port)
 
 	int i;
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk(BIOS_DEBUG, "%04x:\r\n", port);
+	printk(BIOS_DEBUG, "%04x:\n", port);
 #else
         print_debug_hex16(port);
-        print_debug(":\r\n");
+        print_debug(":\n");
 #endif
         for(i=0;i<256;i++) {
                 uint8_t val;
@@ -243,7 +243,7 @@ static void dump_io_resources(unsigned port)
                 print_debug_hex8(val);
 #endif
                 if ((i & 0x0f) == 0x0f) {
-                        print_debug("\r\n");
+                        print_debug("\n");
                 }
 		port++;
         }
@@ -256,9 +256,9 @@ static void dump_mem(unsigned start, unsigned end)
         for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
 #if CONFIG_USE_PRINTK_IN_CAR
-			printk(BIOS_DEBUG, "\r\n%08x:", i);
+			printk(BIOS_DEBUG, "\n%08x:", i);
 #else	
-			print_debug("\r\n");
+			print_debug("\n");
 			print_debug_hex32(i);
 			print_debug(":");
 #endif
@@ -270,6 +270,6 @@ static void dump_mem(unsigned start, unsigned end)
              	print_debug_hex8((unsigned char)*((unsigned char *)i));
 #endif
         }
-        print_debug("\r\n");
+        print_debug("\n");
  }
 #endif

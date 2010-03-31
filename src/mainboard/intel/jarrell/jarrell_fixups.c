@@ -58,12 +58,12 @@ static void mainboard_set_e7520_pll(unsigned bits)
 	/* set gpio 42,44 signal levels */
 	data = inb(gpio_index + PC87427_GPDO_4);
 	if ((data & 0x14) == (0xff & (((bits&2)?0:1)<<4 | ((bits&1)?0:1)<<2))) {
-		print_debug("set_pllsel: correct settings detected!\r\n");
+		print_debug("set_pllsel: correct settings detected!\n");
 		return; /* settings already configured */
 	} else {
 		outb((data & 0xeb) | ((bits&2)?0:1)<<4 | ((bits&1)?0:1)<<2, gpio_index + PC87427_GPDO_4);
 		/* reset */
-		print_debug("set_pllsel: settings adjusted, now resetting...\r\n");
+		print_debug("set_pllsel: settings adjusted, now resetting...\n");
 	//	hard_reset(); /* should activate a PCI_RST, which should reset MCH, but it doesn't seem to work ???? */
 //		mch_reset();
 		full_reset();

@@ -15,21 +15,21 @@
 static inline void print_debug_fv(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-		printk(BIOS_DEBUG, "%s%x\r\n", str, val);
+		printk(BIOS_DEBUG, "%s%x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_8(const char *str, unsigned val)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-		printk(BIOS_DEBUG, "%s%02x\r\n", str, val);
+		printk(BIOS_DEBUG, "%s%02x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_64(const char *str, unsigned val, unsigned val2)
 {
 #if K8_SET_FIDVID_DEBUG == 1
-		printk(BIOS_DEBUG, "%s%x%x\r\n", str, val, val2);
+		printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);
 #endif
 }
 
@@ -131,7 +131,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	apicidx = lapicid();
 
 	if (apicid != apicidx) {
-		printk(BIOS_ERR, "wrong apicid, we want change %x, but it is %x\r\n", apicid, apicidx);
+		printk(BIOS_ERR, "wrong apicid, we want change %x, but it is %x\n", apicid, apicidx);
 		return fidvid;
 	}
 
@@ -328,10 +328,10 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 
 	if (showmessage) {
 		if (vid_new != vid_cur) {
-			print_err("set vid failed for apicid ="); print_err_hex8(apicidx);  print_err("\r\n");
+			print_err("set vid failed for apicid ="); print_err_hex8(apicidx);  print_err("\n");
 		}
 		if (fid_new != fid_cur) {
-			print_err("set fid failed for apicid ="); print_err_hex8(apicidx); print_err("\r\n");
+			print_err("set fid failed for apicid ="); print_err_hex8(apicidx); print_err("\n");
 		}
 	}
 

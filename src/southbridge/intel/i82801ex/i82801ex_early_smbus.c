@@ -6,7 +6,7 @@ static void enable_smbus(void)
 {
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
-	print_spew("SMBus controller enabled\r\n");
+	print_spew("SMBus controller enabled\n");
 
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
 	print_debug_hex32(pci_read_config32(dev, 0x20));
@@ -35,7 +35,7 @@ static void smbus_write_byte(unsigned device, unsigned address, unsigned char va
 		return;
 	}
 	
-	print_debug("Unimplemented smbus_write_byte() called.\r\n");
+	print_debug("Unimplemented smbus_write_byte() called.\n");
 
 #if 0
 	/* setup transaction */
@@ -125,7 +125,7 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 				SMBUS_IO_BASE + SMBHSTSTAT);
 	}
 
-	print_debug("SMBUS Block complete\r\n");
+	print_debug("SMBUS Block complete\n");
 	return 0;
 }
 

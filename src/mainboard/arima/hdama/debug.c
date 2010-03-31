@@ -23,7 +23,7 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-		print_debug("\r\n");
+		print_debug("\n");
 	}
 }
 
@@ -31,7 +31,7 @@ static void dump_pci_device(unsigned dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
-	print_debug("\r\n");
+	print_debug("\n");
 	
 	for(i = 0; i <= 255; i++) {
 		unsigned char val;
@@ -43,7 +43,7 @@ static void dump_pci_device(unsigned dev)
 		print_debug_char(' ');
 		print_debug_hex8(val);
 		if ((i & 0x0f) == 0x0f) {
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }
@@ -70,7 +70,7 @@ static void dump_spd_registers(int controllers, const struct mem_controller *ctr
 	int n;
 	for(n = 0; n < controllers; n++) {
 		int i;
-		print_debug("\r\n");
+		print_debug("\n");
 		activate_spd_rom(&ctrl[n]);
 		for(i = 0; i < 4; i++) {
 			unsigned device;
@@ -87,13 +87,13 @@ static void dump_spd_registers(int controllers, const struct mem_controller *ctr
 					int status;
 					unsigned char byte;
 					if ((j & 0xf) == 0) {
-						print_debug("\r\n");
+						print_debug("\n");
 						print_debug_hex8(j);
 						print_debug(": ");
 					}
 					status = spd_read_byte(device, j);
 					if (status < 0) {
-						print_debug("bad device\r\n");
+						print_debug("bad device\n");
 						break;
 					}
 #if 0
@@ -104,7 +104,7 @@ static void dump_spd_registers(int controllers, const struct mem_controller *ctr
 #endif
 					print_debug_char(' ');
 				}
-				print_debug("\r\n");
+				print_debug("\n");
 			}
 			device = ctrl[n].channel1[i];
 			if (device) {
@@ -119,13 +119,13 @@ static void dump_spd_registers(int controllers, const struct mem_controller *ctr
 					int status;
 					unsigned char byte;
 					if ((j & 0xf) == 0) {
-						print_debug("\r\n");
+						print_debug("\n");
 						print_debug_hex8(j);
 						print_debug(": ");
 					}
 					status = spd_read_byte(device, j);
 					if (status < 0) {
-						print_debug("bad device\r\n");
+						print_debug("bad device\n");
 						break;
 					}
 #if 0
@@ -136,7 +136,7 @@ static void dump_spd_registers(int controllers, const struct mem_controller *ctr
 #endif
 					print_debug_char(' ');
 				}
-				print_debug("\r\n");
+				print_debug("\n");
 			}
 		}
 	}

@@ -276,11 +276,11 @@ static void pll_reset(void)
 		msr.lo |= PLLMSRlo1;
 		wrmsr(GLCP_SYS_RSTPLL, msr);
 
-		print_debug("Reset PLL\n\r");
+		print_debug("Reset PLL\n");
 
 		msr.lo |= PLLMSRlo2;
 		wrmsr(GLCP_SYS_RSTPLL,msr);
-		print_debug("should not be here\n\r");
+		print_debug("should not be here\n");
 #endif
 		print_err("shit");
 		while (1)
@@ -289,7 +289,7 @@ static void pll_reset(void)
 
 	if (msr.lo & GLCP_SYS_RSTPLL_SWFLAGS_MASK) {
 		/* PLL is already set and we are reboot from PLL reset */
-		print_debug("reboot from BIOS reset\n\r");
+		print_debug("reboot from BIOS reset\n");
 		return;
 	}
 
@@ -310,11 +310,11 @@ static void pll_reset(void)
 	msr.lo |= ((0xde << 16) | (1 << 26) | (1 << 24));
 	wrmsr(0x4c000014, msr);
 
-	print_debug("Reset PLL\n\r");
+	print_debug("Reset PLL\n");
 
 	msr.lo |= ((1<<14) |(1<<13) | (1<<0));
 	wrmsr(0x4c000014,msr);
 
-	print_debug("should not be here\n\r");
+	print_debug("should not be here\n");
 }
 #endif // #if USE_GOODRICH_VERSION

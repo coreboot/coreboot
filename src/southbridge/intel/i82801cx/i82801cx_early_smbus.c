@@ -5,7 +5,7 @@ static void enable_smbus(void)
 {
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
-	print_debug("SMBus controller enabled\r\n");
+	print_debug("SMBus controller enabled\n");
 	/* set smbus iobase */
 	pci_write_config32(dev, SMB_BASE, SMBUS_IO_BASE | PCI_BASE_ADDRESS_SPACE_IO);
 	/* Set smbus enable */

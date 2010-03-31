@@ -79,7 +79,7 @@ void hardwaremain(int ret_addr)
 	id = get_node_core_id_x();
 
 	//FIXME: for USBDEBUG_DIRECT you need to make sure dbg_info get assigned in AP
-	print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\r\n");
+	print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\n");
 
 	train_ram(id.nodeid, sysinfo, sysinfox);
 

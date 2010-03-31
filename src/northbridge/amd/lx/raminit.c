@@ -32,12 +32,12 @@ static void banner(const char *s)
 	/* This is so ugly. */
 	print_debug("===========================");
 	print_debug(s);
-	print_debug("======================================\r\n");
+	print_debug("======================================\n");
 }
 
 void hcf(void)
 {
-	print_emerg("DIE\r\n");
+	print_emerg("DIE\n");
 	/* this guarantees we flush the UART fifos (if any) and also 
 	 * ensures that things, in general, keep going so no debug output 
 	 * is lost
@@ -200,7 +200,7 @@ static void checkDDRMax(void)
 
 	/* current speed > max speed? */
 	if (GeodeLinkSpeed() > speed) {
-		print_emerg("DIMM overclocked. Check GeodeLink Speed\r\n");
+		print_emerg("DIMM overclocked. Check GeodeLink Speed\n");
 		POST_CODE(POST_PLL_MEM_FAIL);
 		hcf();
 	}
@@ -340,7 +340,7 @@ static void setCAS(void)
 	} else if ((casmap0 &= casmap1)) {
 		spd_byte = CASDDR[__builtin_ctz((uint32_t) casmap0)];
 	} else {
-		print_emerg("DIMM CAS Latencies not compatible\r\n");
+		print_emerg("DIMM CAS Latencies not compatible\n");
 		POST_CODE(ERROR_DIFF_DIMMS);
 		hcf();
 	}
@@ -532,7 +532,7 @@ static void EnableMTest(void)
 	msr.lo |= CFCLK_LOWER_TRISTATE_DIS_SET;
 	wrmsr(MC_CFCLK_DBUG, msr);
 
-	print_info("Enabled MTest for TLA debug\r\n");
+	print_info("Enabled MTest for TLA debug\n");
 }
 
 static void sdram_set_registers(const struct mem_controller *ctrl)
@@ -576,7 +576,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	banner("Check DIMM 0");
 	/* Check DIMM is not Register and not Buffered DIMMs. */
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
-		print_emerg("DIMM0 NOT COMPATIBLE\r\n");
+		print_emerg("DIMM0 NOT COMPATIBLE\n");
 		POST_CODE(ERROR_UNSUPPORTED_DIMM);
 		hcf();
 	}
@@ -649,7 +649,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr = rdmsr(MC_CF07_DATA);
 	if ((msr.hi & ((7 << CF07_UPPER_D1_PSZ_SHIFT) | (7 << CF07_UPPER_D0_PSZ_SHIFT))) == 
 			((7 << CF07_UPPER_D1_PSZ_SHIFT) | (7 << CF07_UPPER_D0_PSZ_SHIFT))) {
-		print_emerg("No memory in the system\r\n");
+		print_emerg("No memory in the system\n");
 		POST_CODE(ERROR_NO_DIMMS);
 		hcf();
 	}

@@ -143,7 +143,7 @@ int comp_banks;
 #if 0
 	print_debug("MC_BANK_CFG = ");
 	print_debug_hex32(getGX1Mem(GX_BASE + MC_BANK_CFG));
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 	/* retrieve the page size from the MC register */
@@ -152,7 +152,7 @@ int comp_banks;
 #if 0
 	print_debug("    page_size = ");
 	print_debug_hex32(page_size);
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 	comp_banks = (((getGX1Mem(GX_BASE + MC_BANK_CFG) & (DIMM_COMP_BNK << dimm_shift)) >> dimm_shift) >> 12);
@@ -169,7 +169,7 @@ int comp_banks;
 #if 0
 	print_debug("MC_BANK_CFG = ");
 	print_debug_hex32(getGX1Mem(GX_BASE + MC_BANK_CFG));
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 	return(getGX1Mem(GX_BASE + MC_BANK_CFG) & (DIMM_MOD_BNK << dimm_shift));
 }
@@ -181,7 +181,7 @@ int page_size = 0x800;			/* Smallest page = 1K * 2 banks */
 #if 0
 	print_debug("MC_BANK_CFG = ");
 	print_debug_hex32(getGX1Mem(GX_BASE + MC_BANK_CFG));
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 	page_size = page_size << (((getGX1Mem(GX_BASE + MC_BANK_CFG) & (DIMM_PG_SZ << dimm_shift)) >> dimm_shift) >> 4);
@@ -189,7 +189,7 @@ int page_size = 0x800;			/* Smallest page = 1K * 2 banks */
 #if 0
 	print_debug("    page_size = ");
 	print_debug_hex32(page_size);
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 	setGX1Mem(0, TEST_DATA1);
@@ -203,7 +203,7 @@ int page_size = 0x800;			/* Smallest page = 1K * 2 banks */
 #if 0
 	print_debug("MC_BANK_CFG = ");
 	print_debug_hex32(getGX1Mem(GX_BASE + MC_BANK_CFG));
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 	return(getGX1Mem(GX_BASE + MC_BANK_CFG) & (DIMM_COMP_BNK << dimm_shift));
 }
@@ -225,7 +225,7 @@ unsigned int probe_config;
 #if 0
 			print_debug("    Page size Config = ");
 			print_debug_hex32(page_size_config << dimm_shift);
-			print_debug("\r\n");
+			print_debug("\n");
 #endif
 			return(page_size_config << dimm_shift);
 			}
@@ -257,7 +257,7 @@ unsigned int test;
 
 	print_debug("Probing for DIMM");
 	print_debug_char((dimm_shift >> 4) + 0x30);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	setGX1Mem(0, TEST_DATA1);
 	setGX1Mem(0x100, 0);
@@ -269,7 +269,7 @@ unsigned int test;
 
 	print_debug("    Found DIMM");
 	print_debug_char((dimm_shift >> 4) + 0x30);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	return 1;
 }
@@ -285,7 +285,7 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 
 	print_debug("    Page Size:       ");
 	print_debug_hex32(0x400 << ((mem_config & (DIMM_PG_SZ << dimm_shift)) >> (dimm_shift + 4)));
-	print_debug("\r\n");
+	print_debug("\n");
 
 	/* Now do component banks detection */
 
@@ -294,7 +294,7 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 
 	print_debug("    Component Banks: ");
 	print_debug_char((((mem_config & (DIMM_COMP_BNK << dimm_shift)) >> (dimm_shift + 12)) ? 4 : 2) + 0x30);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	/* Now do module banks */
 
@@ -303,7 +303,7 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 	
 	print_debug("    Module Banks:    ");
 	print_debug_char((((mem_config & (DIMM_MOD_BNK << dimm_shift)) >> (dimm_shift + 14)) ? 2 : 1) + 0x30);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	mem_config &= (~(DIMM_SZ << dimm_shift));
 	mem_config |= (size_dimm(dimm_shift));
@@ -311,7 +311,7 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 	print_debug("    DIMM size:       ");
 	print_debug_hex32(1 << 
 		((mem_config & (DIMM_SZ << dimm_shift)) >> (dimm_shift + 8)) + 22);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	return (mem_config);
 }
@@ -320,7 +320,7 @@ static void sdram_init(void)
 {
 unsigned int mem_config = 0x00700070;
 
-	print_debug("Setting up default parameters for memory\r\n");
+	print_debug("Setting up default parameters for memory\n");
 	outb(0x70, 0x80);
 
 	setGX1Mem(GX_BASE + MC_MEM_CNTRL2, 0x000007d8); /* Disable all CLKS, Shift = 3 */
@@ -335,7 +335,7 @@ unsigned int mem_config = 0x00700070;
 
 	enable_dimm();
 
-	print_debug("Sizing memory\r\n");
+	print_debug("Sizing memory\n");
 
 	setGX1Mem(GX_BASE + MC_BANK_CFG, 0x00705740);
 	do_refresh();
@@ -346,7 +346,7 @@ unsigned int mem_config = 0x00700070;
 
 	print_debug("MC_BANK_CFG = ");
 	print_debug_hex32(mem_config);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	setGX1Mem(GX_BASE + MC_BANK_CFG, mem_config);
 	enable_dimm();

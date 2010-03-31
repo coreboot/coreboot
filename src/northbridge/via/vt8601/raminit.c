@@ -79,7 +79,7 @@ void dumpnorth(device_t north)
 			print_debug_hex8(pci_read_config8(north, r + c));
 			print_debug(" ");
 		}
-		print_debug("\r\n");
+		print_debug("\n");
 		if (r >= 240)
 			break;
 	}
@@ -90,13 +90,13 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	device_t north = (device_t) PCI_DEV(0, 0, 0);
 	uint8_t c, r;
 
-	print_err("vt8601 init starting\r\n");
+	print_err("vt8601 init starting\n");
 	print_debug_hex32(north);
 	print_debug(" is the north\n");
 	print_debug_hex16(pci_read_config16(north, 0));
 	print_debug(" ");
 	print_debug_hex16(pci_read_config16(north, 2));
-	print_debug("\r\n");
+	print_debug("\n");
 
 	/* All we are doing now is setting initial known-good values that will
 	 * be revised later as we read SPD
@@ -186,7 +186,7 @@ static unsigned long spd_module_size(unsigned char slot)
 	print_info("Slot ");
 	print_info_hex8(slot);
 	if (smbus_read_byte(module, 2) != 4) {
-		print_info(" is empty\r\n");
+		print_info(" is empty\n");
 		return 0;
 	}
 	print_info(" is SDRAM ");
@@ -211,7 +211,7 @@ static unsigned long spd_module_size(unsigned char slot)
 		print_info("x2");
 		value = (value << 16) | value;
 	}
-	print_info("\r\n");
+	print_info("\n");
 	return value;
 
 }
@@ -288,19 +288,19 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* set NOP */
 	pci_write_config8(north, 0x6C, 0x01);
-	print_debug("NOP\r\n");
+	print_debug("NOP\n");
 	/* wait 200us */
 	// You need to do the memory reference. That causes the nop cycle. 
 	dimms_read(0);
 	udelay(400);
-	print_debug("PRECHARGE\r\n");
+	print_debug("PRECHARGE\n");
 	/* set precharge */
 	pci_write_config8(north, 0x6C, 0x02);
-	print_debug("DUMMY READS\r\n");
+	print_debug("DUMMY READS\n");
 	/* dummy reads */
 	dimms_read(0);
 	udelay(200);
-	print_debug("CBR\r\n");
+	print_debug("CBR\n");
 	/* set CBR */
 	pci_write_config8(north, 0x6C, 0x04);
 
@@ -321,7 +321,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	udelay(200);
 	dimms_read(0);
 	udelay(200);
-	print_debug("MRS\r\n");
+	print_debug("MRS\n");
 	/* set MRS */
 	pci_write_config8(north, 0x6c, 0x03);
 #if DIMM_CL2
@@ -330,21 +330,21 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	dimms_read(0x1d0);
 #endif
 	udelay(200);
-	print_debug("NORMAL\r\n");
+	print_debug("NORMAL\n");
 	/* set to normal mode */
 	pci_write_config8(north, 0x6C, 0x08);
 
 	dimms_write(0x55aa55aa);
 	dimms_read(0);
 	udelay(200);
-	print_debug("set ref. rate\r\n");
+	print_debug("set ref. rate\n");
 	// Set the refresh rate. 
 #if DIMM_PC133
 	pci_write_config8(north, 0x6A, 0x86);
 #else
 	pci_write_config8(north, 0x6A, 0x65);
 #endif
-	print_debug("enable multi-page open\r\n");
+	print_debug("enable multi-page open\n");
 	// enable multi-page open
 	pci_write_config8(north, 0x6B, 0x0d);
 
@@ -381,8 +381,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		else /* 256MB or more per side */
 			ma = 0xe;
 		print_debug_hex16(ma);
-		print_debug(" is the MA type\r\n");
+		print_debug(" is the MA type\n");
 		set_ma_mapping(north, slot, ma);
 	}
-	print_err("vt8601 done\r\n");
+	print_err("vt8601 done\n");
 }

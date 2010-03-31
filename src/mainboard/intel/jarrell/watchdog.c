@@ -91,7 +91,7 @@ static void disable_watchdogs(void)
 	disable_sio_watchdog(NSC_WD_DEV);
 	disable_ich5_watchdog();
 	disable_jarell_frb3();
-	print_debug("Watchdogs disabled\r\n");
+	print_debug("Watchdogs disabled\n");
 }
 
 static void ich5_watchdog_on(void)
@@ -134,5 +134,5 @@ static void ich5_watchdog_on(void)
 	value &= ~(1 << 11);
 	outw(value, base + 0x08);	
 
-	print_debug("Watchdog ICH5 enabled\r\n");
+	print_debug("Watchdog ICH5 enabled\n");
 }

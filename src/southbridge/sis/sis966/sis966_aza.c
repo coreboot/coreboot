@@ -277,14 +277,14 @@ static void aza_init(struct device *dev)
 
         for(i=0;i<0xff;i+=4){
                 if((i%16)==0){
-                        print_debug("\r\n");
+                        print_debug("\n");
                         print_debug_hex8(i);
                         print_debug(": ");
                 }
                 print_debug_hex32(pci_read_config32(dev,i));
                 print_debug("  ");
         }
-        print_debug("\r\n");
+        print_debug("\n");
 }
 #endif
 

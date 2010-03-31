@@ -100,12 +100,12 @@ void __attribute__((noreturn)) die(const char *msg)
 void console_init(void)
 {
 	static const char console_test[] = 
-		"\r\n\r\ncoreboot-"
+		"\n\ncoreboot-"
 		COREBOOT_VERSION
 		COREBOOT_EXTRA_VERSION
 		" "
 		COREBOOT_BUILD
-		" starting...\r\n";
+		" starting...\n";
 	print_info(console_test);
 }
 
@@ -115,7 +115,7 @@ void post_code(u8 value)
 #if CONFIG_SERIAL_POST==1
 	print_emerg("POST: 0x");
 	print_emerg_hex8(value);
-	print_emerg("\r\n");
+	print_emerg("\n");
 #endif
 	outb(value, 0x80);
 #endif

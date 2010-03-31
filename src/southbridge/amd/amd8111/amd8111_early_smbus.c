@@ -9,7 +9,7 @@ static void enable_smbus(void)
 
 	dev = pci_locate_device(PCI_ID(0x1022, 0x746b), 0);
 	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 	}
 
 	pci_write_config32(dev, 0x58, SMBUS_IO_BASE | 1);
@@ -23,7 +23,7 @@ static void enable_smbus(void)
 
 	/* clear any lingering errors, so the transaction will run */
 	outw(inw(SMBUS_IO_BASE + SMBGSTATUS), SMBUS_IO_BASE + SMBGSTATUS);
-	print_spew("SMBus controller enabled\r\n");
+	print_spew("SMBus controller enabled\n");
 }
 
 static int smbus_recv_byte(unsigned device)

@@ -1224,7 +1224,7 @@ static unsigned int cpu_bus_scan(device_t dev, unsigned int max)
 				       e0_later_single_core = 0;
 	       			}
 				if(e0_later_single_core) {
-					printk(BIOS_DEBUG, "\tFound Rev E or Rev F later single core\r\n");
+					printk(BIOS_DEBUG, "\tFound Rev E or Rev F later single core\n");
 
 					j=1;
 				}

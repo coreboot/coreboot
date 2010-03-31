@@ -29,7 +29,7 @@
 		print_emerg(__FILE__);				\
 		print_emerg("', line 0x");			\
 		print_debug_hex32(__LINE__);			\
-		print_emerg("\r\n");				\
+		print_emerg("\n");				\
 		/* die(""); */					\
 	}							\
 }
@@ -39,7 +39,7 @@
 	print_emerg(__FILE__);					\
 	print_emerg("', line 0x");				\
 	print_debug_hex32(__LINE__);				\
-	print_emerg("\r\n");					\
+	print_emerg("\n");					\
 	/* die(""); */						\
 }
 

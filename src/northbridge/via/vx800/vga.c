@@ -102,7 +102,7 @@ static void vga_init(device_t dev)
 	}
 #else
 /* Attempt to manually force the rom to load */
-	printk(BIOS_DEBUG, "Forcing rom load\r\n");
+	printk(BIOS_DEBUG, "Forcing rom load\n");
 	pci_rom_load(dev, 0xfff80000);
 	run_bios(dev, 0xc0000);
 #endif

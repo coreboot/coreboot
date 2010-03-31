@@ -16,7 +16,7 @@
 
 static inline void print_initcpu8 (const char *strval, unsigned val)
 {
-        printk(BIOS_DEBUG, "%s%02x\r\n", strval, val);
+        printk(BIOS_DEBUG, "%s%02x\n", strval, val);
 }
 
 static inline void print_initcpu8_nocr (const char *strval, unsigned val)
@@ -27,12 +27,12 @@ static inline void print_initcpu8_nocr (const char *strval, unsigned val)
 
 static inline void print_initcpu16 (const char *strval, unsigned val)
 {
-        printk(BIOS_DEBUG, "%s%04x\r\n", strval, val);
+        printk(BIOS_DEBUG, "%s%04x\n", strval, val);
 }
 
 static inline void print_initcpu(const char *strval, unsigned val)
 {
-        printk(BIOS_DEBUG, "%s%08x\r\n", strval, val);
+        printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 }
 
 typedef void (*process_ap_t)(unsigned apicid, void *gp);
@@ -155,7 +155,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
 
 static inline __attribute__((always_inline)) void print_apicid_nodeid_coreid(unsigned apicid, struct node_core_id id, const char *str)
 {
-                printk(BIOS_DEBUG, "%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\r\n", str, apicid, id.nodeid, id.coreid);
+                printk(BIOS_DEBUG, "%s --- {  APICID = %02x NODEID = %02x COREID = %02x} ---\n", str, apicid, id.nodeid, id.coreid);
 }
 
 
@@ -201,7 +201,7 @@ static void wait_all_other_cores_started(unsigned bsp_apicid) // all aps other t
 {
         print_debug("started ap apicid: ");
         for_each_ap(bsp_apicid, 2 , wait_ap_started, (void *)0);
-        print_debug("\r\n");
+        print_debug("\n");
 }
 
 static void allow_all_aps_stop(unsigned bsp_apicid)
@@ -286,8 +286,8 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 #endif
 
                 if (cpu_init_detectedx) {
-                        print_apicid_nodeid_coreid(apicid, id, "\r\n\r\n\r\nINIT detected from ");
-                        print_debug("\r\nIssuing SOFT_RESET...\r\n");
+                        print_apicid_nodeid_coreid(apicid, id, "\n\n\nINIT detected from ");
+                        print_debug("\nIssuing SOFT_RESET...\n");
                         soft_reset();
                 }
 
@@ -351,7 +351,7 @@ static void wait_all_core0_started(void)
                 while(!is_core0_started(i)) {}
                 print_initcpu8_nocr(" ", i);
         }
-        print_debug("\r\n");
+        print_debug("\n");
 
 }
 

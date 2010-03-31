@@ -44,7 +44,7 @@ static u8 get_sb600_revision(void)
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
 
 	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 		/* NOT REACHED */
 	}
 	return pci_read_config8(dev, 0x08);
@@ -290,10 +290,10 @@ static void sb600_devices_por_init(void)
 	dev = pci_locate_device(PCI_ID(0x1002, 0x4385), 0);
 
 	if (dev == PCI_DEV_INVALID) {
-		die("SMBUS controller not found\r\n");
+		die("SMBUS controller not found\n");
 		/* NOT REACHED */
 	}
-	printk(BIOS_INFO, "SMBus controller enabled, sb revision is 0x%x\r\n",
+	printk(BIOS_INFO, "SMBus controller enabled, sb revision is 0x%x\n",
 		    get_sb600_revision());
 
 	/* sbPorAtStartOfTblCfg */

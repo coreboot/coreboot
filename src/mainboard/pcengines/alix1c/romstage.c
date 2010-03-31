@@ -98,7 +98,7 @@ static u8 spd_read_byte(u8 device, u8 address)
 	print_debug_hex8(address);
 	print_debug(" returns ");
 	print_debug_hex8(spdbytes[address]);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	return spdbytes[address];
 }

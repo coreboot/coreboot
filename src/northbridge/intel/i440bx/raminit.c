@@ -420,7 +420,7 @@ static void do_ram_command(u32 command)
 			PRINT_DEBUG_HEX16(reg16);
 			PRINT_DEBUG(" to 0x");
 			PRINT_DEBUG_HEX32(addr);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 #endif
 
 			read32(addr);
@@ -606,7 +606,7 @@ static void spd_enable_refresh(void)
 		PRINT_DEBUG_HEX8(reg);
 		PRINT_DEBUG(") for DIMM ");
 		PRINT_DEBUG_HEX8(i);
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 	}
 
 	pci_write_config8(NB, DRAMC, reg);
@@ -621,7 +621,7 @@ static void sdram_set_registers(void)
 	int i, max;
 	uint8_t reg;
 
-	PRINT_DEBUG("Northbridge prior to SDRAM init:\r\n");
+	PRINT_DEBUG("Northbridge prior to SDRAM init:\n");
 	DUMPNORTH();
 
 	max = ARRAY_SIZE(register_values);
@@ -637,7 +637,7 @@ static void sdram_set_registers(void)
 		PRINT_DEBUG_HEX8(register_values[i]);
 		PRINT_DEBUG(" to 0x");
 		PRINT_DEBUG_HEX8(reg);
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 #endif
 	}
 }
@@ -731,11 +731,11 @@ static void set_dram_row_attributes(void)
 			}
 			PRINT_DEBUG("DIMM in slot ");
 			PRINT_DEBUG_HEX8(i);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 
 			if (edosd == 0x06) { 
-				print_err("Mixing EDO/SDRAM unsupported!\r\n");
-				die("HALT\r\n");
+				print_err("Mixing EDO/SDRAM unsupported!\n");
+				die("HALT\n");
 			}
 
 			/* "DRA" is our RPS for the two rows on this DIMM. */
@@ -816,12 +816,12 @@ static void set_dram_row_attributes(void)
 				if (col == 4)
 					bpr |= 0xc0;
 			} else {
-				print_err("# of banks of DIMM unsupported!\r\n");
-				die("HALT\r\n");
+				print_err("# of banks of DIMM unsupported!\n");
+				die("HALT\n");
 			}
 			if (dra == -1) {
-				print_err("Page size not supported\r\n");
-				die("HALT\r\n");
+				print_err("Page size not supported\n");
+				die("HALT\n");
 			}
 
 			/*
@@ -831,14 +831,14 @@ static void set_dram_row_attributes(void)
 			 */
 			struct dimm_size sz = spd_get_dimm_size(device);
 			if ((sz.side1 < 8)) {
-				print_err("DIMMs smaller than 8MB per side\r\n"
-					  "are not supported on this NB.\r\n");
-				die("HALT\r\n");
+				print_err("DIMMs smaller than 8MB per side\n"
+					  "are not supported on this NB.\n");
+				die("HALT\n");
 			}
 			if ((sz.side1 > 128)) {
-				print_err("DIMMs > 128MB per side\r\n"
-					   "are not supported on this NB\r\n");
-				die("HALT\r\n");
+				print_err("DIMMs > 128MB per side\n"
+					   "are not supported on this NB\n");
+				die("HALT\n");
 			}
 
 			/* Divide size by 8 to set up the DRB registers. */
@@ -855,7 +855,7 @@ static void set_dram_row_attributes(void)
 #if 0
 			PRINT_DEBUG("No DIMM found in slot ");
 			PRINT_DEBUG_HEX8(i);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 #endif
 
 			/* If there's no DIMM in the slot, set dra to 0x00. */
@@ -870,7 +870,7 @@ static void set_dram_row_attributes(void)
 #if 0
 		PRINT_DEBUG("DRB has been set to 0x");
 		PRINT_DEBUG_HEX16(drb);
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 #endif
 
 		/* Brings the upper DRB back down to be base for
@@ -886,19 +886,19 @@ static void set_dram_row_attributes(void)
 	pci_write_config8(NB, PGPOL + 1, bpr);
 	PRINT_DEBUG("PGPOL[BPR] has been set to 0x");
 	PRINT_DEBUG_HEX8(bpr);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 
 	/* Set DRAM row page size register. */
 	pci_write_config16(NB, RPS, rps);
 	PRINT_DEBUG("RPS has been set to 0x");
 	PRINT_DEBUG_HEX16(rps);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 
 	/* ### ECC */
 	pci_write_config8(NB, NBXCFG + 3, nbxecc);
 	PRINT_DEBUG("NBXECC[31:24] has been set to 0x");
 	PRINT_DEBUG_HEX8(nbxecc);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 
 	/* Set DRAMC[4:3] to proper memory type (EDO/SDRAM).
 	 * TODO: Registered SDRAM support.
@@ -917,7 +917,7 @@ static void set_dram_row_attributes(void)
 	pci_write_config8(NB, DRAMC, value);
 	PRINT_DEBUG("DRAMC has been set to 0x");
 	PRINT_DEBUG_HEX8(value);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 }
 
 static void sdram_set_spd_registers(void)
@@ -947,38 +947,38 @@ static void sdram_enable(void)
 	udelay(200);
 
 	/* 1. Apply NOP. Wait 200 clock cycles (200us should do). */
-	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
+	PRINT_DEBUG("RAM Enable 1: Apply NOP\n");
 	do_ram_command(RAM_COMMAND_NOP);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
-	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
+	PRINT_DEBUG("RAM Enable 2: Precharge all\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
-	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
+	PRINT_DEBUG("RAM Enable 3: CBR\n");
 	for (i = 0; i < 8; i++) {
 		do_ram_command(RAM_COMMAND_CBR);
 		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
-	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
+	PRINT_DEBUG("RAM Enable 4: Mode register set\n");
 	do_ram_command(RAM_COMMAND_MRS);
 	udelay(2);
 
 	/* 5. Normal operation. */
-	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
+	PRINT_DEBUG("RAM Enable 5: Normal operation\n");
 	do_ram_command(RAM_COMMAND_NORMAL);
 	udelay(1);
 
 	/* 6. Finally enable refresh. */
-	PRINT_DEBUG("RAM Enable 6: Enable refresh\r\n");
+	PRINT_DEBUG("RAM Enable 6: Enable refresh\n");
 	// pci_write_config8(NB, PMCR, 0x10);
 	spd_enable_refresh();
 	udelay(1);
 
-	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");
+	PRINT_DEBUG("Northbridge following SDRAM init:\n");
 	DUMPNORTH();
 }

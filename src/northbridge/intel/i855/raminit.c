@@ -31,7 +31,7 @@
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	/*
-	print_debug("Before configuration:\r\n");
+	print_debug("Before configuration:\n");
 	dump_pci_devices();
 	*/
 }
@@ -212,7 +212,7 @@ static void ram_command_mrs(const struct mem_controller *ctrl,
 	adjusted_mode = ((mode & 0x800) << (13 - 11)) | ((mode & 0x3ff) << (12 - 9));
 	print_debug("Setting mode: ");
 	print_debug_hex32(adjusted_mode + addr);
-	print_debug("\r\n");
+	print_debug("\n");
 	read32(adjusted_mode + addr);
 }
 
@@ -229,39 +229,39 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	int i;
 	uint32_t rank1 = (1 << 30) / 2;
-	print_debug("Ram enable 1\r\n");
+	print_debug("Ram enable 1\n");
 	delay();
 	delay();
 	
-	print_debug("Ram enable 2\r\n");
+	print_debug("Ram enable 2\n");
 	ram_command(ctrl, 1, 0);
 	ram_command(ctrl, 1, rank1);
 	delay();
 	delay();
 
-	print_debug("Ram enable 3\r\n");
+	print_debug("Ram enable 3\n");
 	ram_command(ctrl, 2, 0);
 	ram_command(ctrl, 2, rank1);
 	delay();
 	delay();
 
-	print_debug("Ram enable 4\r\n");
+	print_debug("Ram enable 4\n");
 	ram_command_mrs(ctrl, 4, SDRAM_EXTMODE_DLL_ENABLE, 0);
 	ram_command_mrs(ctrl, 4, SDRAM_EXTMODE_DLL_ENABLE, rank1);
 	delay();
 	delay();
 	
-	print_debug("Ram enable 5\r\n");
+	print_debug("Ram enable 5\n");
 	ram_command_mrs(ctrl, 3, VG85X_MODE | SDRAM_MODE_DLL_RESET, 0);
 	ram_command_mrs(ctrl, 3, VG85X_MODE | SDRAM_MODE_DLL_RESET, rank1);
 	
-	print_debug("Ram enable 6\r\n");
+	print_debug("Ram enable 6\n");
 	ram_command(ctrl, 2, 0);
 	ram_command(ctrl, 2, rank1);
 	delay();
 	delay();
 	
-	print_debug("Ram enable 7\r\n");
+	print_debug("Ram enable 7\n");
 	for(i = 0; i < 8; i++) {
 		ram_command(ctrl, 6, 0);
 		ram_command(ctrl, 6, rank1);
@@ -269,28 +269,28 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		delay();
 	}
 
-	print_debug("Ram enable 8\r\n");
+	print_debug("Ram enable 8\n");
 	ram_command_mrs(ctrl, 3, VG85X_MODE | SDRAM_MODE_NORMAL, 0);
 	ram_command_mrs(ctrl, 3, VG85X_MODE | SDRAM_MODE_NORMAL, rank1);
 
-	print_debug("Ram enable 9\r\n");
+	print_debug("Ram enable 9\n");
 	ram_command(ctrl, 7, 0);
 	ram_command(ctrl, 7, rank1);
 	delay();
 	delay();
 	
-	print_debug("Ram enable 9\r\n");
+	print_debug("Ram enable 9\n");
 	set_initialize_complete(ctrl);
 	
 	delay();
 	delay();
 	delay();
 	
-	print_debug("After configuration:\r\n");
+	print_debug("After configuration:\n");
 	/* dump_pci_devices(); */
 	
 	/*
-	print_debug("\n\n***** RAM TEST *****\r\n");	
+	print_debug("\n\n***** RAM TEST *****\n");	
 	ram_check(0, 0xa0000);
 	ram_check(0x100000, 0x40000000);
 	*/

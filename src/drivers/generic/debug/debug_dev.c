@@ -92,16 +92,16 @@ static void print_smbus_regs(struct device *dev)
 		unsigned char byte;
 		status = smbus_read_byte(dev, j);
 		if (status < 0) {
-		//	printk(BIOS_DEBUG, "bad device status= %08x\r\n", status);
+		//	printk(BIOS_DEBUG, "bad device status= %08x\n", status);
 			break;
 		}
                 if ((j & 0xf) == 0) {
-                        printk(BIOS_DEBUG, "\r\n%02x: ", j);
+                        printk(BIOS_DEBUG, "\n%02x: ", j);
                 }  
 		byte = status & 0xff;
 		printk(BIOS_DEBUG, "%02x ", byte);
 	}
-	printk(BIOS_DEBUG, "\r\n");
+	printk(BIOS_DEBUG, "\n");
 }
 
 static void print_smbus_regs_all(struct device *dev)

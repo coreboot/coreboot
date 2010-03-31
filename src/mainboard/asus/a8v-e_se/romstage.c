@@ -89,7 +89,7 @@ void soft_reset(void)
 	uint8_t tmp;
 
 	set_bios_reset();
-	print_debug("soft reset \r\n");
+	print_debug("soft reset \n");
 
 	/* PCI reset */
 	tmp = pci_read_config8(PCI_DEV(0, 0x11, 0), 0x4f);
@@ -195,7 +195,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	console_init();
 	enable_rom_decode();
 
-	print_info("now booting... fallback\r\n");
+	print_info("now booting... fallback\n");
 
 	/* Is this a CPU only reset? Or is this a secondary CPU? */
 	if (!cpu_init_detectedx && boot_cpu()) {
@@ -210,7 +210,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	console_init();
 	enable_rom_decode();
 
-	print_info("now booting... real_main\r\n");
+	print_info("now booting... real_main\n");
 
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
@@ -222,7 +222,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
 
-	print_info("now booting... Core0 started\r\n");
+	print_info("now booting... Core0 started\n");
 
 #if CONFIG_LOGICAL_CPUS==1
 	/* It is said that we should start core1 after all core0 launched. */
@@ -237,7 +237,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	needs_reset |= k8t890_early_setup_ht();
 
 	if (needs_reset) {
-		print_debug("ht reset -\r\n");
+		print_debug("ht reset -\n");
 		soft_reset();
 	}
 

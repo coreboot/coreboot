@@ -5,14 +5,14 @@ static void setup_resource_map_offset(const unsigned int *register_values, int m
 	int i;
 //      print_debug("setting up resource map offset....");
 #if 0
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
 		unsigned long reg;
 #if 0
-		prink_debug("%08x <- %08x\r\n", register_values[i] +  offset_pci_dev, register_values[i+2]);
+		prink_debug("%08x <- %08x\n", register_values[i] +  offset_pci_dev, register_values[i+2]);
 #endif
 		dev = (register_values[i] & ~0xfff) + offset_pci_dev;
 		where = register_values[i] & 0xfff;
@@ -27,7 +27,7 @@ static void setup_resource_map_offset(const unsigned int *register_values, int m
 		pci_write_config32(register_values[i], reg);
 #endif
 	}
-//      print_debug("done.\r\n");
+//      print_debug("done.\n");
 }
 
 #define RES_PCI_IO 0x10
@@ -45,11 +45,11 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #endif
 
 #if RES_DEBUG
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\r\n",
+		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
 			i>>2, register_values[i],
 			register_values[i+1] + ( (register_values[i]==RES_PCI_IO) ? offset_pci_dev : 0),
 			register_values[i+2],
@@ -112,7 +112,7 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 	}
 
 #if RES_DEBUG
-	print_debug("done.\r\n");
+	print_debug("done.\n");
 #endif
 }
 static void setup_resource_map_x(const unsigned int *register_values, int max)
@@ -125,11 +125,11 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 #endif
 
 #if RES_DEBUG
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
-		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\r\n",
+		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
 			i/4, register_values[i],register_values[i+1], register_values[i+2], register_values[i+3]);
 #endif
 		switch (register_values[i]) {
@@ -188,7 +188,7 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 	}
 
 #if RES_DEBUG
-	print_debug("done.\r\n");
+	print_debug("done.\n");
 #endif
 }
 
@@ -223,7 +223,7 @@ static void setup_iob_resource_map(const unsigned int *register_values, int max)
 		print_debug(" -> ");
 		reg = inb(where);
 		print_debug_hex8(reg);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 	}
 }
@@ -262,7 +262,7 @@ static void setup_io_resource_map(const unsigned int *register_values, int max)
 		print_debug(" -> ");
 		reg = inl(where);
 		print_debug_hex32(reg);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 	}
 }
@@ -289,7 +289,7 @@ static void setup_mem_resource_map(const unsigned int *register_values, int max)
 		print_debug(" RB ");
 		reg = read32(where);
 		print_debug_hex32(reg);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 	}
 }

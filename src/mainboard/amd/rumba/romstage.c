@@ -50,7 +50,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	/* get module banks (sides) per dimm, SPD byte 5 */
 	module_banks = spd_read_byte(0xA0, 5);
 	if (module_banks < 1 || module_banks > 2)
-		print_err("Module banks per dimm\r\n");
+		print_err("Module banks per dimm\n");
 	module_banks >>= 1;
 	msr.hi &= ~(1 << CF07_UPPER_D0_MB_SHIFT);
 	msr.hi |= (module_banks << CF07_UPPER_D0_MB_SHIFT);
@@ -58,7 +58,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	/* get component banks per module bank, SPD byte 17 */
 	val = spd_read_byte(0xA0, 17);
 	if (val < 2 || val > 4)
-		print_err("Component banks per module bank\r\n");
+		print_err("Component banks per module bank\n");
 	val >>= 2;
 	msr.hi &= ~(0x1 << CF07_UPPER_D0_CB_SHIFT);
 	msr.hi |=  (val << CF07_UPPER_D0_CB_SHIFT);
@@ -78,7 +78,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 
 	print_debug("computed msr.hi ");
 	print_debug_hex32(msr.hi);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	msr.lo = 0x00003000;
 	wrmsr(MC_CF07_DATA, msr);

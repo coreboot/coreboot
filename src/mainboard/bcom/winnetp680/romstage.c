@@ -101,26 +101,26 @@ static void main(unsigned long bist)
 	uart_init();
 	console_init();
 
-	print_spew("In romstage.c:main()\r\n");
+	print_spew("In romstage.c:main()\n");
 
 	enable_smbus();
 	smbus_fixup(&ctrl);
 
 	if (bist == 0) {
-		print_debug("doing early_mtrr\r\n");
+		print_debug("doing early_mtrr\n");
 		early_mtrr_init();
 	}
 
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
 
-	print_debug("Enabling mainboard devices\r\n");
+	print_debug("Enabling mainboard devices\n");
 	enable_mainboard_devices();
 
 	ddr_ram_setup(&ctrl);
 
 	/* ram_check(0, 640 * 1024); */
 
-	print_spew("Leaving romstage.c:main()\r\n");
+	print_spew("Leaving romstage.c:main()\n");
 }
 

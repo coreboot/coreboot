@@ -70,9 +70,9 @@ static inline void change_i2c_mux(unsigned device)
 {
 #define SMBUS_HUB 0x71
 	int ret;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\r\n");
+        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
         ret = smbus_send_byte(SMBUS_HUB, device);
-        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\r\n");
+        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
 }
 #endif
 
@@ -152,7 +152,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\r\n");
+	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\n");
 
         setup_blast_resource_map();
 	
@@ -175,7 +175,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	bcm5785_early_setup();
 
        	if (needs_reset) {
-               	print_info("ht reset -\r\n");
+               	print_info("ht reset -\n");
                	soft_reset();
        	}
 

@@ -151,7 +151,7 @@ static void ddr_ram_setup(void)
 	unsigned long bank_address;
 	
 	
-	print_debug("CN400 RAM init starting\r\n");	
+	print_debug("CN400 RAM init starting\n");	
 
 	pci_write_config8(ctrl.d0f7, 0x75, 0x08);
 	
@@ -176,7 +176,7 @@ static void ddr_ram_setup(void)
 */
 	c = 0;
 	b = smbus_read_byte(0x50, SPD_NUM_BANKS_PER_SDRAM);
-	//print_val("Detecting Memory\r\nNumber of Banks ",b);
+	//print_val("Detecting Memory\nNumber of Banks ",b);
 
 	// Only supporting 4 bank chips just now
 	if( b == 4 ){
@@ -186,7 +186,7 @@ static void ddr_ram_setup(void)
 		c = 0x01;
 		bank = 0x40;
 		b = smbus_read_byte(0x50, SPD_NUM_ROWS);
-		//print_val("\r\nNumber of Rows ", b);
+		//print_val("\nNumber of Rows ", b);
 		
 		if( b >= 0x0d ){	// 256/512Mb
 		
@@ -199,7 +199,7 @@ static void ddr_ram_setup(void)
     			Read SPD byte 13, Primary DRAM width.
 			*/
 			b = smbus_read_byte(0x50, SPD_PRIMARY_SDRAM_WIDTH);
-			//print_val("\r\nPrimary DRAM width", b);
+			//print_val("\nPrimary DRAM width", b);
 			if( b != 4 )   // not 64/128Mb (x4)
 				c = 0x81;  // 256Mb
 		}
@@ -208,12 +208,12 @@ static void ddr_ram_setup(void)
     		Read SPD byte 4, Number of column addresses.
 		*/		
 		b = smbus_read_byte(0x50, SPD_NUM_COLUMNS);
-		//print_val("\r\nNo Columns ",b);
+		//print_val("\nNo Columns ",b);
 		if( b == 10 || b == 11 || b == 12) c |= 0x60;   // 10/11 bit col addr
 		if( b == 9 ) c |= 0x40;           // 9 bit col addr
 		if( b == 8 ) c |= 0x20;           // 8 bit col addr
 
-		//print_val("\r\nMA type ", c);
+		//print_val("\nMA type ", c);
 		pci_write_config8(ctrl.d0f3, 0x50, c);
 
 	}
@@ -223,7 +223,7 @@ static void ddr_ram_setup(void)
 
 /*	else
 	{
-		die("DRAM module size is not supported by CN400\r\n");
+		die("DRAM module size is not supported by CN400\n");
 	}
 */
 
@@ -281,7 +281,7 @@ static void ddr_ram_setup(void)
 	// SPD byte 5  # of physical banks
 	b = smbus_read_byte(0x50, SPD_NUM_DIMM_BANKS);
 
-	//print_val("\r\nNo Physical Banks ",b);
+	//print_val("\nNo Physical Banks ",b);
 	if( b == 2)
 	{
 		c <<=1;
@@ -289,7 +289,7 @@ static void ddr_ram_setup(void)
 	}
 /*	else
 	{
-		die("Only a single DIMM is supported by EPIA-N(L)\r\n");	
+		die("Only a single DIMM is supported by EPIA-N(L)\n");	
 	}
 */
 	// set banks 1,2,3...
@@ -309,7 +309,7 @@ static void ddr_ram_setup(void)
 		
 	/* Read SPD byte 18 CAS Latency */
 	b = smbus_read_byte(0x50, SPD_ACCEPTABLE_CAS_LATENCIES);
-/*	print_debug("\r\nCAS Supported ");
+/*	print_debug("\nCAS Supported ");
 	if(b & 0x04)
 		print_debug("2 ");
 	if(b & 0x08)
@@ -318,11 +318,11 @@ static void ddr_ram_setup(void)
 		print_debug("3");
 
 	c = smbus_read_byte(0x50, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
-	print_val("\r\nCycle time at CL X     (nS)", c);
+	print_val("\nCycle time at CL X     (nS)", c);
 	c = smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_2ND);
-	print_val("\r\nCycle time at CL X-0.5 (nS)", c);
+	print_val("\nCycle time at CL X-0.5 (nS)", c);
 	c = smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_3RD);
-	print_val("\r\nCycle time at CL X-1   (nS)", c);
+	print_val("\nCycle time at CL X-1   (nS)", c);
 */	
 	/* Scaling of Cycle Time SPD data */
 	/* 7      4 3       0             */
@@ -330,27 +330,27 @@ static void ddr_ram_setup(void)
 	bank = smbus_read_byte(0x50, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 
 	if( b & 0x10 ){             // DDR offering optional CAS 3
-		//print_debug("\r\nStarting at CAS 3");
+		//print_debug("\nStarting at CAS 3");
 		c = 0x30;
 		/* see if we can better it */
 		if( b & 0x08 ){     // DDR mandatory CAS 2.5
 			if( smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_2ND) <= bank ){ // we can manage max MHz at CAS 2.5
-				//print_debug("\r\nWe can do CAS 2.5");
+				//print_debug("\nWe can do CAS 2.5");
 				c = 0x20;
 			}
 		}
 		if( b & 0x04 ){     // DDR mandatory CAS 2
 			if( smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_3RD) <= bank ){ // we can manage max Mhz at CAS 2
-				//print_debug("\r\nWe can do CAS 2");
+				//print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
 		}
 	}else{                     // no optional CAS values just 2 & 2.5
-		//print_debug("\r\nStarting at CAS 2.5");
+		//print_debug("\nStarting at CAS 2.5");
 		c = 0x20;          // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
 			if( smbus_read_byte(0x50, SPD_SDRAM_CYCLE_TIME_2ND) <= bank){ // we can manage max Mhz at CAS 2
-				//print_debug("\r\nWe can do CAS 2");
+				//print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
 		}
@@ -386,7 +386,7 @@ static void ddr_ram_setup(void)
 
 	b = smbus_read_byte(0x50, SPD_MIN_ROW_PRECHARGE_TIME);
 	
-	//print_val("\r\ntRP ",b);
+	//print_val("\ntRP ",b);
 	if ( b >= (5 * bank)) {
 		c |= 0x03;		// set tRP = 5T
 	}
@@ -404,7 +404,7 @@ static void ddr_ram_setup(void)
 */
 
 	b = smbus_read_byte(0x50, SPD_MIN_RAS_TO_CAS_DELAY);
-	//print_val("\r\ntRCD ",b);
+	//print_val("\ntRCD ",b);
 
 	if ( b >= (5 * bank)) c |= 0x0C;		// set tRCD = 5T
 	else if ( b >= (4 * bank)) c |= 0x08;	// set tRCD = 4T
@@ -421,8 +421,8 @@ static void ddr_ram_setup(void)
 	bank = bank >> 2;
 
 	b = smbus_read_byte(0x50, SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY);
-	//print_val("\r\ntRAS ",b);
-	//print_val("\r\nBank ", bank);
+	//print_val("\ntRAS ",b);
+	//print_val("\nBank ", bank);
 	if ( b >= (9 * bank)) c |= 0xC0;		// set tRAS = 9T
 	else if ( b >= (8 * bank)) c |= 0x80;	// set tRAS = 8T
 	else if ( b >= (7 * bank)) c |= 0x40;	// set tRAS = 7T
@@ -537,7 +537,7 @@ static void ddr_ram_setup(void)
 	c &= 0x08;
 	if ( c == 0x08 )
 	{
-		print_debug("Setting Burst Length 8\r\n");
+		print_debug("Setting Burst Length 8\n");
 		/*
     		CPU Frequency  Device 0 Function 2 Offset 54
 
@@ -723,7 +723,7 @@ static void ddr_ram_setup(void)
 		break;
 		
 	}
-	print_val("\r\nLow Bond ",i);	
+	print_val("\nLow Bond ",i);	
 	if( i < 0xff ){ 
 		c = i++;
 		for(  ; i <0xff ; i++){
@@ -767,7 +767,7 @@ static void ddr_ram_setup(void)
 		print_val("  High Bond ",i);
 		c = ((i - c)<<1)/3 + c;
 		print_val("  Setting DQS delay",c);
-		print_debug("\r\n");
+		print_debug("\n");
 		pci_write_config8(ctrl.d0f3,0x70,c);
 	}else{
 		pci_write_config8(ctrl.d0f3,0x70,0x67);
@@ -822,5 +822,5 @@ static void ddr_ram_setup(void)
 	/* VGA device. */
 	pci_write_config16(ctrl.d0f3, 0xa0, (1 << 15));
 	pci_write_config16(ctrl.d0f3, 0xa4, 0x0010);
-    print_debug("CN400 raminit.c done\r\n");
+    print_debug("CN400 raminit.c done\n");
 }	

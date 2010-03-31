@@ -412,7 +412,7 @@ static int mcp55_early_setup_x(void)
 	}
 
 out:
-	print_debug("mcp55_num:"); print_debug_hex8(mcp55_num); print_debug("\r\n");
+	print_debug("mcp55_num:"); print_debug_hex8(mcp55_num); print_debug("\n");
 
 	mcp55_early_set_port(mcp55_num, busn, devn, io_base);
 	mcp55_early_setup(mcp55_num, busn, devn, io_base, pci_e_x);

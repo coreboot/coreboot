@@ -94,6 +94,6 @@ static void disable_watchdogs(void)
 //	disable_sio_watchdog(NSC_WD_DEV);
 	disable_esb6300_watchdog();
 //	disable_jarell_frb3();
-	print_debug("Watchdogs disabled\r\n");
+	print_debug("Watchdogs disabled\n");
 }
 

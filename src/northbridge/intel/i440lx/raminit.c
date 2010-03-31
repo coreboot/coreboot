@@ -171,7 +171,7 @@ static void do_ram_command(u32 command)
 			PRINT_DEBUG_HEX16(reg16);
 			PRINT_DEBUG(" to 0x");
 			PRINT_DEBUG_HEX32(addr);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 #endif
 
 			read32(addr);
@@ -201,7 +201,7 @@ static void spd_enable_refresh(void)
 
 	PRINT_DEBUG("spd_enable_refresh: dramc = 0x");
 	PRINT_DEBUG_HEX8(reg);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 }
 
 /*-----------------------------------------------------------------------------
@@ -225,7 +225,7 @@ static void northbridge_init(void)
 	reg32 = pci_read_config32(NB, APBASE);
 	PRINT_DEBUG("APBASE ");
 	PRINT_DEBUG_HEX32(reg32);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 	#endif
 }
 
@@ -244,10 +244,10 @@ static void sdram_set_registers(void)
 #if 0
 	uint16_t reg16;
 	reg16 = pci_read_config16(NB, PACCFG); 
-	printk(BIOS_DEBUG, "i82443LX Host Freq: 6%C MHz\r\n", (reg16 & 0x4000) ? '0' : '6');
+	printk(BIOS_DEBUG, "i82443LX Host Freq: 6%C MHz\n", (reg16 & 0x4000) ? '0' : '6');
 #endif
 
-	PRINT_DEBUG("Northbridge prior to SDRAM init:\r\n");
+	PRINT_DEBUG("Northbridge prior to SDRAM init:\n");
 	DUMPNORTH();
 
 	northbridge_init();
@@ -279,11 +279,11 @@ static void sdram_set_registers(void)
 		} else {
 			PRINT_DEBUG(" FAIL ");
 		}
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 #endif
 	}
 
-	PRINT_DEBUG("Northbridge atexit sdram set registers\r\n");	
+	PRINT_DEBUG("Northbridge atexit sdram set registers\n");	
 	DUMPNORTH();
 }
 
@@ -342,7 +342,7 @@ static void sdram_set_spd_registers(void)
 		 */
 
 		PRINT_DEBUG_HEX16(ds);
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 
 		memsize += ds;
 
@@ -363,7 +363,7 @@ static void sdram_set_spd_registers(void)
 
 			PRINT_DEBUG(" ");
 			PRINT_DEBUG_HEX16(ds);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 
 			/* 
 			 * modify DRT register if current row isn't empty
@@ -384,7 +384,7 @@ static void sdram_set_spd_registers(void)
 #if 0
 	PRINT_DEBUG("Mem: 0x");
 	PRINT_DEBUG_HEX16(memsize * 8);
-	PRINT_DEBUG(" MB\r\n");
+	PRINT_DEBUG(" MB\n");
 
 	if (memsize == 0) {
 		/* maybe we should use some nice die/hlt sequence with printing on console
@@ -392,8 +392,8 @@ static void sdram_set_spd_registers(void)
 		 * maybe such event_handler can be commonly defined routine to decrease
 		 * code duplication?
 		 */
-		PRINT_DEBUG("No memory detected via SPD\r\n");
-		PRINT_DEBUG("Reverting to hardcoded 64M single side dimm in first bank\r\n");
+		PRINT_DEBUG("No memory detected via SPD\n");
+		PRINT_DEBUG("Reverting to hardcoded 64M single side dimm in first bank\n");
 	}
 #endif
 
@@ -418,38 +418,38 @@ static void sdram_enable(void)
 	udelay(200);
 
 	/* 1. Apply NOP. Wait 200 clock cycles (clock might be 60 or 66 Mhz). */
-	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
+	PRINT_DEBUG("RAM Enable 1: Apply NOP\n");
 	do_ram_command(RAM_COMMAND_NOP);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
-	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
+	PRINT_DEBUG("RAM Enable 2: Precharge all\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
-	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
+	PRINT_DEBUG("RAM Enable 3: CBR\n");
 	for (i = 0; i < 8; i++) {
 		do_ram_command(RAM_COMMAND_CBR);
 		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
-	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
+	PRINT_DEBUG("RAM Enable 4: Mode register set\n");
 	do_ram_command(RAM_COMMAND_MRS);
 	udelay(2);
 
 	/* 5. Normal operation. */
-	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
+	PRINT_DEBUG("RAM Enable 5: Normal operation\n");
 	do_ram_command(RAM_COMMAND_NORMAL);
 	udelay(1);
 
 	/* 6. Finally enable refresh. */
-	PRINT_DEBUG("RAM Enable 6: Enable refresh\r\n");
+	PRINT_DEBUG("RAM Enable 6: Enable refresh\n");
 	pci_write_config8(NB, DRAMC, 0x01);
 	spd_enable_refresh();
 	udelay(1);
 
-	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");
+	PRINT_DEBUG("Northbridge following SDRAM init:\n");
 }
 

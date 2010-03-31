@@ -74,7 +74,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		reg |= register_values[i+2];
 		pci_write_config32(dev, where, reg);
 	}
-	print_spew("done.\r\n");
+	print_spew("done.\n");
 }
 
 
@@ -155,7 +155,7 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 	goto out;
 
  val_err:
-	die("Bad SPD value\r\n");
+	die("Bad SPD value\n");
 	/* If an hw_error occurs report that I have no memory */
 hw_err:
 	sz.side1 = 0;
@@ -283,7 +283,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 	goto out;
 
  val_err:
-	die("Bad SPD value\r\n");
+	die("Bad SPD value\n");
 	/* If an hw_error occurs report that I have no memory */
 hw_err:
 	dra = 0;
@@ -538,7 +538,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		
 	}
 	else {
-		die("Invalid SPD 9 bus speed.\r\n");
+		die("Invalid SPD 9 bus speed.\n");
 	}
 
 	/* 0x78 DRT */
@@ -576,7 +576,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 					ecc = 2;
 				}
 				else if (ecc == 1) {
-					die("ERROR - Mixed DDR & DDR2 RAM\r\n");
+					die("ERROR - Mixed DDR & DDR2 RAM\n");
 				}
 			} 
 			else if ( reg == 7 ) {
@@ -584,15 +584,15 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 					ecc = 1;
 				}
 				else if ( ecc > 1 ) {
-					die("ERROR - Mixed DDR & DDR2 RAM\r\n");
+					die("ERROR - Mixed DDR & DDR2 RAM\n");
 				}
 			}	
 			else {
-				die("ERROR - RAM not DDR\r\n");
+				die("ERROR - RAM not DDR\n");
 			}
 		}
 		else {
-			die("ERROR - Non ECC memory dimm\r\n");
+			die("ERROR - Non ECC memory dimm\n");
 		}
 
 		value = spd_read_byte(ctrl->channel0[cnt], 12);	/*refresh rate*/
@@ -621,10 +621,10 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	ecc = 2;
 	if (read_option(CMOS_VSTART_ECC_memory,CMOS_VLEN_ECC_memory,1) == 0) {
 		ecc = 0;  /* ECC off in CMOS so disable it */
-		print_debug("ECC off\r\n");
+		print_debug("ECC off\n");
 	}
 	else {
-		print_debug("ECC on\r\n");
+		print_debug("ECC on\n");
 	}
 	drc &= ~(3 << 20); /* clear the ecc bits */
 	drc |= (ecc << 20);  /* or in the calculated ecc bits */
@@ -654,7 +654,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	goto out;
 
  val_err:
-	die("Bad SPD value\r\n");
+	die("Bad SPD value\n");
 	/* If an hw_error occurs report that I have no memory */
 hw_err:
 	drc = 0;
@@ -669,7 +669,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	/* Test if we can read the spd and if ram is ddr or ddr2 */
 	dimm_mask = spd_detect_dimms(ctrl);
 	if (!(dimm_mask & ((1 << DIMM_SOCKETS) - 1))) {
-		print_err("No memory for this cpu\r\n");
+		print_err("No memory for this cpu\n");
 		return;
 	}
 	return;
@@ -771,12 +771,12 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 		data32 = 0x777becdc; /* ESSD */
 		break;
 	    }
-	    die("Error - First dimm slot empty\r\n");
+	    die("Error - First dimm slot empty\n");
 	}
 
 	print_debug("ODT Value = ");
 	print_debug_hex32(data32);
-	print_debug("\r\n");
+	print_debug("\n");
 
   	pci_write_config32(PCI_DEV(0, 0x00, 0), 0xb0, data32);
 
@@ -1009,7 +1009,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 	print_debug_hex32(recena);
 	print_debug(",  Receive enable B = ");
 	print_debug_hex32(recenb);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	/* clear out the calibration area */
 	write32(BAR+DCALDATA+(16*4), 0x00000000);
@@ -1075,7 +1075,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		0xffffffff, 0xffffffff, 0x000000ff};
 
 	mask = spd_detect_dimms(ctrl);
-	print_debug("Starting SDRAM Enable\r\n");
+	print_debug("Starting SDRAM Enable\n");
 
 	/* 0x80 */
 #ifdef DIMM_MAP_LOGICAL
@@ -1087,7 +1087,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* set dram type and Front Side Bus freq. */
 	drc = spd_set_dram_controller_mode(ctrl, mask);
 	if( drc == 0) {
-		die("Error calculating DRC\r\n");
+		die("Error calculating DRC\n");
 	}
 	pll_setup(drc);
 	data32 = drc & ~(3 << 20);  /* clear ECC mode */
@@ -1124,7 +1124,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	for(i=0;i<8;i++) { /* loop throught each dimm to test for row */
 		print_debug("DIMM ");
 		print_debug_hex8(i);
-		print_debug("\r\n");
+		print_debug("\n");
 		/* Apply NOP */
 		do_delay();
 		
@@ -1307,7 +1307,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	write32(BAR+DCALCSR, 0x0008000f);
 
 	/* clear memory and init ECC */
-	print_debug("Clearing memory\r\n");
+	print_debug("Clearing memory\n");
 	for(i=0;i<64;i+=4) {
 		write32(BAR+DCALDATA+i, 0x00000000);
 	}
@@ -1324,13 +1324,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	data32 |= (1 << 31);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x98, data32);
 	/* wait for completion */
-	print_debug("Waiting for mem complete\r\n");
+	print_debug("Waiting for mem complete\n");
 	while(1) {
 		data32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0x98);
 		if( (data32 & (1<<31)) == 0)
 			break;
 	}
-	print_debug("Done\r\n");
+	print_debug("Done\n");
 	
 	/* Set initialization complete */
 	/* 0x7c DRC */

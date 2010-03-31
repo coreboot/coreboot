@@ -192,7 +192,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 #if 0
  		print_debug("Read fail ");
 		print_debug_hex16(status_register);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 		return SMBUS_ERROR;
 	}

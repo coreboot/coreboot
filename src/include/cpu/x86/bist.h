@@ -10,7 +10,7 @@ static void report_bist_failure(u32 bist)
 		print_emerg("BIST failed: ");
 		print_emerg_hex32(bist);
 #endif
-		die("\r\n");
+		die("\n");
 
 	}
 }

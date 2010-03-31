@@ -230,7 +230,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pilot_early_init(SERIAL_DEV); //config port is being taken from SERIAL_DEV
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
-	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\r\n");
+	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\n");
 
 #if CONFIG_MEM_TRAIN_SEQ == 1
 	set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
@@ -256,7 +256,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	{
 		msr_t msr;
 		msr=rdmsr(0xc0010042);
-		print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\r\n");
+		print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
 	}
 	enable_fid_change();
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
@@ -265,7 +265,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	{
 		msr_t msr;
 		msr=rdmsr(0xc0010042);
-		print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\r\n");
+		print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
 	}
 #endif
 
@@ -274,7 +274,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	// fidvid change will issue one LDTSTOP and the HT change will be effective too
 	if (needs_reset) {
-		print_info("ht reset -\r\n");
+		print_info("ht reset -\n");
 		soft_reset();
 	}
 

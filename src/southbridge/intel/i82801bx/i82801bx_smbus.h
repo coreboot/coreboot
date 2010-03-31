@@ -116,7 +116,7 @@ static int do_smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 				unsigned data1, unsigned data2)
 {
 #warning "do_smbus_write_block is commented out"
-	print_err("Untested smbus_write_block called\r\n");
+	print_err("Untested smbus_write_block called\n");
 #if 0
 	unsigned char global_control_register;
 	unsigned char global_status_register;
@@ -177,7 +177,7 @@ static int do_smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 		     SMBUS_IO_BASE + SMBHSTSTAT);
 	}
 
-	print_debug("SMBUS Block complete\r\n");
+	print_debug("SMBUS Block complete\n");
 	return 0;
 #endif
 }

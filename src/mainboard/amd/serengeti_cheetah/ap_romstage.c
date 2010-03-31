@@ -69,7 +69,7 @@ void hardwaremain(int ret_addr)
 #if CONFIG_USE_PRINTK_IN_CAR
         printk(BIOS_DEBUG, "CODE IN CACHE ON NODE: %02x\n");
 #else
-        print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\r\n");
+        print_debug("CODE IN CACHE ON NODE:"); print_debug_hex8(id.nodeid); print_debug("\n");
 #endif
 
 	train_ram(id.nodeid, sysinfo, sysinfox);

@@ -49,7 +49,7 @@ static void enable_smbus(void)
 
 	/* Clear any lingering errors, so transactions can run. */
 	outb(inb(SMBUS_IO_BASE + SMBHSTSTAT), SMBUS_IO_BASE + SMBHSTSTAT);
-	print_debug("SMBus controller enabled.\r\n");
+	print_debug("SMBus controller enabled.\n");
 }
 
 static inline int smbus_read_byte(unsigned device, unsigned address)

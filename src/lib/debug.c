@@ -23,7 +23,7 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-		print_debug("\r\n");
+		print_debug("\n");
 	}
 }
 
@@ -31,7 +31,7 @@ static void dump_pci_device(unsigned dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
-	print_debug("\r\n");
+	print_debug("\n");
 	
 	for(i = 0; i <= 255; i++) {
 		unsigned char val;
@@ -43,7 +43,7 @@ static void dump_pci_device(unsigned dev)
 		print_debug_char(' ');
 		print_debug_hex8(val);
 		if ((i & 0x0f) == 0x0f) {
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }

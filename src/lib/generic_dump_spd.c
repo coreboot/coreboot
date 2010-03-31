@@ -6,7 +6,7 @@
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
-	print_debug("\r\n");
+	print_debug("\n");
 	for(i = 0; i < 4; i++) {
 		unsigned device;
 		device = ctrl->channel0[i];
@@ -20,20 +20,20 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
-					print_debug("\r\n");
+					print_debug("\n");
 					print_debug_hex8(j);
 					print_debug(": ");
 				}
 				status = spd_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\r\n");
+					print_debug("bad device\n");
 					break;
 				}
 				byte = status & 0xff;
 				print_debug_hex8(byte);
 				print_debug_char(' ');
 			}
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 		device = ctrl->channel1[i];
 		if (device) {
@@ -46,20 +46,20 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
-					print_debug("\r\n");
+					print_debug("\n");
 					print_debug_hex8(j);
 					print_debug(": ");
 				}
 				status = spd_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\r\n");
+					print_debug("bad device\n");
 					break;
 				}
 				byte = status & 0xff;
 				print_debug_hex8(byte);
 				print_debug_char(' ');
 			}
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }

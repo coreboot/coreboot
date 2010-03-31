@@ -199,7 +199,7 @@ static unsigned char do_smbus_read_byte(unsigned smbus_io_base,
 	print_debug_hex8(error);
 	print_debug(" device:");
 	print_debug_hex8(device);
-	print_debug("\r\n");
+	print_debug("\n");
 	/* stop, clean up the error, and leave */
 	smbus_stop_condition(smbus_io_base);
 	outb(inb(smbus_io_base + SMB_STS), smbus_io_base + SMB_STS);

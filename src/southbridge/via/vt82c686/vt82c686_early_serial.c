@@ -65,7 +65,7 @@ static void vt82c686_enable_serial(device_t dev, unsigned iobase)
 	if (sbdev == PCI_DEV_INVALID) {
 		/* Serial output is not yet working at this point, but
 		 * die() emits the POST code 0xff and halts the CPU, too. */
-		die("Southbridge not found.\r\n");
+		die("Southbridge not found.\n");
 	}
 
 	/* Enable Super-I/O (bit 0) and Super-I/O Configuration (bit 1). */

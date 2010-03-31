@@ -70,14 +70,14 @@ static inline void change_i2c_mux(unsigned device)
 {
 #define SMBUS_HUB 0x18
         int ret, i;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\r\n"); 
+        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n"); 
         i=2;
         do {
                 ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-                print_debug("change_i2c_mux 1 ret="); print_debug_hex32(ret); print_debug("\r\n");
+                print_debug("change_i2c_mux 1 ret="); print_debug_hex32(ret); print_debug("\n");
         } while ((ret!=0) && (i-->0));
         ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
-        print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\r\n");
+        print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\n");
 }
 #endif
 
@@ -178,7 +178,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {
-               	print_info("ht reset -\r\n");
+               	print_info("ht reset -\n");
                	soft_reset();
        	}
 

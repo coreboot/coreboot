@@ -178,7 +178,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "needs_reset=0x%x\n", needs_reset);
 
 	if (needs_reset) {
-		print_info("ht reset -\r\n");
+		print_info("ht reset -\n");
 		soft_reset();
 	}
 

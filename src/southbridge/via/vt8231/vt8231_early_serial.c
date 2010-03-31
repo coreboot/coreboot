@@ -39,7 +39,7 @@ static void enable_vt8231_serial(void)
 	
 	if (dev == PCI_DEV_INVALID) {
 		outb(7, 0x80);
-		die("Serial controller not found\r\n");
+		die("Serial controller not found\n");
 	}
 	
 	/* first, you have to enable the superio and superio config. 

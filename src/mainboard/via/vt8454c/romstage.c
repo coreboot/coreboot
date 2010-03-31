@@ -121,7 +121,7 @@ static void main(unsigned long bist)
 #ifdef DEACTIVATE_CAR
 	print_debug("Deactivating CAR");
 #include DEACTIVATE_CAR_FILE
-	print_debug(" - Done.\r\n");
+	print_debug(" - Done.\n");
 #endif
 	copy_and_run(0);
 }

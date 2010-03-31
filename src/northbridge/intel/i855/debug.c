@@ -60,7 +60,7 @@ static void print_pci_devices(void)
 			continue;
 		}
 		print_debug_pci_dev(dev);
-		print_debug("\r\n");
+		print_debug("\n");
 	}
 }
 
@@ -68,7 +68,7 @@ static void dump_pci_device(unsigned dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
-	print_debug("\r\n");
+	print_debug("\n");
 	
 	for(i = 0; i <= 255; i++) {
 		unsigned char val;
@@ -80,7 +80,7 @@ static void dump_pci_device(unsigned dev)
 		print_debug_char(' ');
 		print_debug_hex8(val);
 		if ((i & 0x0f) == 0x0f) {
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }
@@ -105,7 +105,7 @@ static void dump_pci_devices(void)
 static void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
-	print_debug("\r\n");
+	print_debug("\n");
 	for(i = 0; i < 2; i++) {
 		unsigned device;
 		device = ctrl->channel0[i];
@@ -119,20 +119,20 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
-					print_debug("\r\n");
+					print_debug("\n");
 					print_debug_hex8(j);
 					print_debug(": ");
 				}
 				status = smbus_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\r\n");
+					print_debug("bad device\n");
 					break;
 				}
 				byte = status & 0xff;
 				print_debug_hex8(byte);
 				print_debug_char(' ');
 			}
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 #if 0
 		device = ctrl->channel1[i];
@@ -146,20 +146,20 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 				int status;
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
-					print_debug("\r\n");
+					print_debug("\n");
 					print_debug_hex8(j);
 					print_debug(": ");
 				}
 				status = smbus_read_byte(device, j);
 				if (status < 0) {
-					print_debug("bad device\r\n");
+					print_debug("bad device\n");
 					break;
 				}
 				byte = status & 0xff;
 				print_debug_hex8(byte);
 				print_debug_char(' ');
 			}
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 #endif
 	}
@@ -167,7 +167,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 static void dump_smbus_registers(void)
 {
         int i;
-        print_debug("\r\n");
+        print_debug("\n");
         for(i = 1; i < 0x80; i++) {
                 unsigned device;
                 device = i;
@@ -178,20 +178,20 @@ static void dump_smbus_registers(void)
                 	int status; 
                         unsigned char byte;
                         if ((j & 0xf) == 0) {
-                	        print_debug("\r\n");
+                	        print_debug("\n");
                                 print_debug_hex8(j);
                                 print_debug(": ");
                         }
                         status = smbus_read_byte(device, j);
                         if (status < 0) {
-                                print_debug("bad device\r\n");
+                                print_debug("bad device\n");
                                 break;
                         }
                         byte = status & 0xff;
                         print_debug_hex8(byte);
                         print_debug_char(' ');
                 }
-                print_debug("\r\n");
+                print_debug("\n");
 	}	
 }
 #endif

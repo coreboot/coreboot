@@ -52,13 +52,13 @@ int acpi_is_wakeup_early_via_vx800(void)
 	device_t dev;
 	u16 tmp, result;
 
-	print_debug("In acpi_is_wakeup_early_via_vx800\r\n");
+	print_debug("In acpi_is_wakeup_early_via_vx800\n");
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				       PCI_DEVICE_ID_VIA_VX855_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID)
-		die("Power management controller not found\r\n");
+		die("Power management controller not found\n");
 
 	/* Set ACPI base address to I/O VX800_ACPI_IO_BASE. */
 	pci_write_config16(dev, 0x88, VX800_ACPI_IO_BASE | 0x1);
@@ -70,7 +70,7 @@ int acpi_is_wakeup_early_via_vx800(void)
 	result = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0;
 	print_debug("         boot_mode=");
 	print_debug_hex16(result);
-	print_debug("\r\n");
+	print_debug("\n");
 	return result;
 }
 
@@ -85,7 +85,7 @@ static void enable_mainboard_devices(void)
 	device_t dev;
 	uint16_t values;
 
-	print_debug("In enable_mainboard_devices \r\n");
+	print_debug("In enable_mainboard_devices \n");
 
 	/*
 	   Enable P2P Bridge Header for External PCI BUS.
@@ -375,14 +375,14 @@ g)      Rx73h = 32h
 
 	if (bist == 0) {
 		// CAR need mtrr untill mem is ok, so i disable this early_mtrr_init();
-		//print_debug("doing early_mtrr\r\n");
+		//print_debug("doing early_mtrr\n");
 		//early_mtrr_init();
 	}
 
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
 
-	print_debug("Enabling mainboard devices\r\n");
+	print_debug("Enabling mainboard devices\n");
 	enable_mainboard_devices();
 
 	u8 Data;
@@ -392,7 +392,7 @@ g)      Rx73h = 32h
 	Data = pci_read_config8(device, 0xf6);
 	print_debug("NB chip revision =");
 	print_debug_hex8(Data);
-	print_debug("\r\n");
+	print_debug("\n");
 	/* make NB ready before draminit */
 	via_pci_inittable(Data, mNbStage1InitTbl);
 
@@ -405,7 +405,7 @@ g)      Rx73h = 32h
 		u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
 		DRAM_SYS_ATTR DramAttr;
 
-		print_debug("This is a S3 wakeup\r\n");
+		print_debug("This is a S3 wakeup\n");
 
 		memset(&DramAttr, 0, sizeof(DRAM_SYS_ATTR));
 		/*Step1 DRAM Detection; DDR1 or DDR2; Get SPD Data; Rank Presence;64 or 128bit; Unbuffered or registered; 1T or 2T */
@@ -429,7 +429,7 @@ g)      Rx73h = 32h
 
 		DRAMRegFinalValue(&DramAttr);	// I just copy this function from draminit to here!
 		SetUMARam();	// I just copy this function from draminit to here!
-		print_debug("Resume from S3, RAM init was ignored\r\n");
+		print_debug("Resume from S3, RAM init was ignored\n");
 	} else {
 		ddr2_ram_setup();
 		ram_check(0, 640 * 1024);
@@ -528,7 +528,7 @@ g)      Rx73h = 32h
         "rep movsd\n\t"    
         ::"g"(memtop4)        
    	);*/
-		print_debug("copy memory to high memory to protect s3 wakeup vector code \r\n");	//this can have function call, because no variable used before this
+		print_debug("copy memory to high memory to protect s3 wakeup vector code \n");	//this can have function call, because no variable used before this
 		memcpy((unsigned char *) ((*(u32 *) WAKE_MEM_INFO) -
 					  64 * 1024 - 0x100000),
 		       (unsigned char *) 0, 0xa0000);
@@ -572,11 +572,11 @@ So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c hav
 		__asm__ volatile ("movl   %%esp, %0\n\t":"=a" (v_esp)
 		    );
 #if CONFIG_USE_PRINTK_IN_CAR
-		printk(BIOS_DEBUG, "v_esp=%08x\r\n", v_esp);
+		printk(BIOS_DEBUG, "v_esp=%08x\n", v_esp);
 #else
 		print_debug("v_esp=");
 		print_debug_hex32(v_esp);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 	}
 
@@ -588,11 +588,11 @@ So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c hav
 //stack
 	cpu_reset = 0;
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk(BIOS_DEBUG, "cpu_reset = %08x\r\n", cpu_reset);
+	printk(BIOS_DEBUG, "cpu_reset = %08x\n", cpu_reset);
 #else
 	print_debug("cpu_reset = ");
 	print_debug_hex32(cpu_reset);
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 	if (cpu_reset == 0) {
@@ -635,16 +635,16 @@ So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c hav
 
 		/* We can not go back any more, we lost old stack data in cache as ram */
 		if (new_cpu_reset == 0) {
-			print_debug("Use Ram as Stack now - done\r\n");
+			print_debug("Use Ram as Stack now - done\n");
 		} else {
-			print_debug("Use Ram as Stack now - \r\n");
+			print_debug("Use Ram as Stack now - \n");
 		}
 #if CONFIG_USE_PRINTK_IN_CAR
-		printk(BIOS_DEBUG, "new_cpu_reset = %08x\r\n", new_cpu_reset);
+		printk(BIOS_DEBUG, "new_cpu_reset = %08x\n", new_cpu_reset);
 #else
 		print_debug("new_cpu_reset = ");
 		print_debug_hex32(new_cpu_reset);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 		/*copy and execute coreboot_ram */
 		copy_and_run(new_cpu_reset);
@@ -653,6 +653,6 @@ So, I use: #include "cpu/via/car/cache_as_ram_post.c". my via-version post.c hav
 #endif
 
 
-	print_debug("should not be here -\r\n");
+	print_debug("should not be here -\n");
 
 }

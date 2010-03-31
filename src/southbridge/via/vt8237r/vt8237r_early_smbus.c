@@ -39,17 +39,17 @@ static void smbus_print_error(u8 host_status, int loops)
 		return;
 
 	if (loops >= SMBUS_TIMEOUT)
-		print_err("SMBus timeout\r\n");
+		print_err("SMBus timeout\n");
 	if (host_status & (1 << 4))
-		print_err("Interrupt/SMI# was Failed Bus Transaction\r\n");
+		print_err("Interrupt/SMI# was Failed Bus Transaction\n");
 	if (host_status & (1 << 3))
-		print_err("Bus error\r\n");
+		print_err("Bus error\n");
 	if (host_status & (1 << 2))
-		print_err("Device error\r\n");
+		print_err("Device error\n");
 	if (host_status & (1 << 1))
-		print_debug("Interrupt/SMI# completed successfully\r\n");
+		print_debug("Interrupt/SMI# completed successfully\n");
 	if (host_status & (1 << 0))
-		print_err("Host busy\r\n");
+		print_err("Host busy\n");
 }
 
 /**
@@ -59,7 +59,7 @@ static void smbus_wait_until_ready(void)
 {
 	int loops;
 
-	PRINT_DEBUG("Waiting until SMBus ready\r\n");
+	PRINT_DEBUG("Waiting until SMBus ready\n");
 
 	loops = 0;
 	/* Yes, this is a mess, but it's the easiest way to do it. */
@@ -81,7 +81,7 @@ static void smbus_reset(void)
 
 	PRINT_DEBUG("After reset status: ");
 	PRINT_DEBUG_HEX16(inb(SMBHSTSTAT));
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 }
 
 /**
@@ -98,7 +98,7 @@ u8 smbus_read_byte(u8 dimm, u8 offset)
 	PRINT_DEBUG_HEX16(dimm);
 	PRINT_DEBUG(" OFFSET ");
 	PRINT_DEBUG_HEX16(offset);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 
 	smbus_reset();
 
@@ -121,7 +121,7 @@ u8 smbus_read_byte(u8 dimm, u8 offset)
 	val = inb(SMBHSTDAT0);
 	PRINT_DEBUG("Read: ");
 	PRINT_DEBUG_HEX16(val);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 
 	/* Probably don't have to do this, but it can't hurt. */
 	smbus_reset();
@@ -144,7 +144,7 @@ void enable_smbus(void)
 		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 					PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
 		if (dev == PCI_DEV_INVALID)
-			die("Power management controller not found\r\n");
+			die("Power management controller not found\n");
 	}
 
 	/*
@@ -189,7 +189,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 
 	ram_slots = ARRAY_SIZE(ctrl->channel0);
 	if (!ram_slots) {
-		print_err("smbus_fixup() thinks there are no RAM slots!\r\n");
+		print_err("smbus_fixup() thinks there are no RAM slots!\n");
 		return;
 	}
 
@@ -213,9 +213,9 @@ void smbus_fixup(const struct mem_controller *ctrl)
 	}
 
 	if (i >= SMBUS_TIMEOUT)
-		print_err("SMBus timed out while warming up\r\n");
+		print_err("SMBus timed out while warming up\n");
 	else
-		PRINT_DEBUG("Done\r\n");
+		PRINT_DEBUG("Done\n");
 }
 
 /* FIXME: Better separate the NB and SB, will be done once it works. */
@@ -310,7 +310,7 @@ int acpi_is_wakeup_early(void) {
 		dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 					PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
 		if (dev == PCI_DEV_INVALID)
-			die("Power management controller not found\r\n");
+			die("Power management controller not found\n");
 	}
 
 	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
@@ -337,7 +337,7 @@ void vt8237_early_spi_init(void)
 				       PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID)
-		die("SB not found\r\n");
+		die("SB not found\n");
 
 	/* Put SPI base 20 d0 fe. */
 	tmp = pci_read_config32(dev, 0xbc);

@@ -150,7 +150,7 @@ static void do_ram_command(u8 command)
 			PRINT_DEBUG_HEX8(reg8);
 			PRINT_DEBUG(" to 0x");
 			PRINT_DEBUG_HEX32(addr);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 #endif
 
 			read32(addr);
@@ -164,7 +164,7 @@ static void do_ram_command(u8 command)
 			PRINT_DEBUG_HEX8(reg8);
 			PRINT_DEBUG(" to 0x");
 			PRINT_DEBUG_HEX32(addr);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 #endif
 			read32(addr);
 		}
@@ -194,14 +194,14 @@ static void spd_set_dram_size(void)
 		if (smbus_read_byte(DIMM_SPD_BASE + i, 2) == 4) {
 			print_debug("Found DIMM in slot ");
 			print_debug_hex8(i);
-			print_debug("\r\n");
+			print_debug("\n");
 
 			dimm_size = smbus_read_byte(DIMM_SPD_BASE + i, 31);
 
 			/* WISHLIST: would be nice to display it as decimal? */
 			print_debug("DIMM is 0x");
 			print_debug_hex8(dimm_size * 4);
-			print_debug("MB\r\n");
+			print_debug("MB\n");
 
 			/* The i810 can't handle DIMMs larger than 128MB per
 			 * side. This will fail if the DIMM uses a
@@ -211,9 +211,9 @@ static void spd_set_dram_size(void)
 			 */
 			if (dimm_size > 32) {
 				print_err("DIMM row sizes larger than 128MB not"
-					  "supported on i810\r\n");
+					  "supported on i810\n");
 				print_err
-				    ("Attempting to treat as 128MB DIMM\r\n");
+				    ("Attempting to treat as 128MB DIMM\n");
 				dimm_size = 32;
 			}
 
@@ -225,19 +225,19 @@ static void spd_set_dram_size(void)
 
 			print_debug("After translation, dimm_size is 0x");
 			print_debug_hex8(dimm_size);
-			print_debug("\r\n");
+			print_debug("\n");
 
 			/* If the DIMM is dual-sided, the DRP value is +2 */
 			/* TODO: Figure out asymetrical configurations. */
 			if ((smbus_read_byte(DIMM_SPD_BASE + i, 127) | 0xf) ==
 			    0xff) {
-				print_debug("DIMM is dual-sided\r\n");
+				print_debug("DIMM is dual-sided\n");
 				dimm_size += 2;
 			}
 		} else {
 			print_debug("No DIMM found in slot ");
 			print_debug_hex8(i);
-			print_debug("\r\n");
+			print_debug("\n");
 
 			/* If there's no DIMM in the slot, set value to 0. */
 			dimm_size = 0x00;
@@ -249,7 +249,7 @@ static void spd_set_dram_size(void)
 
 	print_debug("DRP calculated to 0x");
 	print_debug_hex8(drp);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	pci_write_config8(PCI_DEV(0, 0, 0), DRP, drp);
 }
@@ -354,7 +354,7 @@ static void set_dram_buffer_strength(void)
 	
 	print_debug("BUFF_SC calculated to 0x");
 	print_debug_hex16(buff_sc);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	pci_write_config16(PCI_DEV(0, 0, 0), BUFF_SC, buff_sc);
 }
@@ -411,32 +411,32 @@ static void sdram_enable(void)
 	int i;
 
 	/* 1. Apply NOP. */
-	PRINT_DEBUG("RAM Enable 1: Apply NOP\r\n");
+	PRINT_DEBUG("RAM Enable 1: Apply NOP\n");
 	do_ram_command(RAM_COMMAND_NOP);
 	udelay(200);
 
 	/* 2. Precharge all. Wait tRP. */
-	PRINT_DEBUG("RAM Enable 2: Precharge all\r\n");
+	PRINT_DEBUG("RAM Enable 2: Precharge all\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE);
 	udelay(1);
 
 	/* 3. Perform 8 refresh cycles. Wait tRC each time. */
-	PRINT_DEBUG("RAM Enable 3: CBR\r\n");
+	PRINT_DEBUG("RAM Enable 3: CBR\n");
 	for (i = 0; i < 8; i++) {
 		do_ram_command(RAM_COMMAND_CBR);
 		udelay(1);
 	}
 
 	/* 4. Mode register set. Wait two memory cycles. */
-	PRINT_DEBUG("RAM Enable 4: Mode register set\r\n");
+	PRINT_DEBUG("RAM Enable 4: Mode register set\n");
 	do_ram_command(RAM_COMMAND_MRS);
 	udelay(2);
 
 	/* 5. Normal operation (enables refresh at 15.6usec). */
-	PRINT_DEBUG("RAM Enable 5: Normal operation\r\n");
+	PRINT_DEBUG("RAM Enable 5: Normal operation\n");
 	do_ram_command(RAM_COMMAND_NORMAL);
 	udelay(1);
 
-	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");
+	PRINT_DEBUG("Northbridge following SDRAM init:\n");
 	DUMPNORTH();
 }

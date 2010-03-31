@@ -35,7 +35,7 @@
 #endif
 
 #define E7501_SDRAM_MODE	(SDRAM_BURST_INTERLEAVED | SDRAM_BURST_4)
-#define SPD_ERROR			"Error reading SPD info\r\n"
+#define SPD_ERROR			"Error reading SPD info\n"
 
 // NOTE: This used to be 0x100000.
 //		 That doesn't work on systems where A20M# is asserted, because
@@ -481,7 +481,7 @@ static void do_delay(void)
 static void die_on_spd_error(int spd_return_value)
 {
 	if (spd_return_value < 0)
-		die("Error reading SPD info\r\n");
+		die("Error reading SPD info\n");
 }
 
 //----------------------------------------------------------------------------------
@@ -522,7 +522,7 @@ static struct dimm_size sdram_spd_get_page_size(uint16_t dimm_socket_address)
 	value = spd_read_byte(dimm_socket_address, SPD_NUM_DIMM_BANKS);
 	if (value < 0) goto hw_err;
 	if (value > 2) 
-		die("Bad SPD value\r\n");
+		die("Bad SPD value\n");
 	if (value == 2) {
 
 		pgsz.side2 = pgsz.side1;		// Assume symmetric banks until we know differently
@@ -755,7 +755,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		spd_value = spd_read_byte(channel1_dimm, SPD_MODULE_ATTRIBUTES);
 		if (!(spd_value & MODULE_REGISTERED) || (spd_value < 0)) {
 			
-			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\r\n");
+			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\n");
 			continue;
 		}
 
@@ -780,11 +780,11 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 			dimm_mask |= ((1<<i) | (1<<(MAX_DIMM_SOCKETS_PER_CHANNEL + i)));
 		}
 		else
-			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\r\n");
+			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\n");
 #else
 		switch (bDualChannel) {
 		case 0:
-			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\r\n");
+			print_debug("Skipping un-matched DIMMs - only dual-channel operation supported\n");
 			break;
 		
 		default:
@@ -873,7 +873,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 
 				RAM_DEBUG_MESSAGE("    Sending RAM command to 0x");
 				RAM_DEBUG_HEX32(dimm_start_address + e7501_mode_bits);
-				RAM_DEBUG_MESSAGE("\r\n");
+				RAM_DEBUG_MESSAGE("\n");
 				read32(dimm_start_address + e7501_mode_bits);
 
 				// Set the start of the next DIMM
@@ -1017,10 +1017,10 @@ static void configure_e7501_ram_addresses(const struct mem_controller *ctrl,
         RAM_DEBUG_HEX32(sz.side1);
         RAM_DEBUG_MESSAGE(" ");
         RAM_DEBUG_HEX32(sz.side2);
-        RAM_DEBUG_MESSAGE("\r\n");
+        RAM_DEBUG_MESSAGE("\n");
 
 		if (sz.side1 == 0)
-			die("Bad SPD value\r\n");
+			die("Bad SPD value\n");
 
 		total_dram_64M_multiple = configure_dimm_row_boundaries(sz, total_dram_64M_multiple, i);
 	}
@@ -1105,7 +1105,7 @@ static void initialize_ecc(void)
 		
 		uint8_t byte;
 
-		RAM_DEBUG_MESSAGE("Initializing ECC state...\r\n");
+		RAM_DEBUG_MESSAGE("Initializing ECC state...\n");
 		/* Initialize ECC bits , use ECC zero mode (new to 7501)*/
 		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x06);
 		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, 0x07);
@@ -1117,7 +1117,7 @@ static void initialize_ecc(void)
 		} while ( (byte & 0x08 ) == 0);
 
 		pci_write_config8(PCI_DEV(0, 0, 0), MCHCFGNS, byte & 0xfc);
-		RAM_DEBUG_MESSAGE("ECC state initialized.\r\n");	
+		RAM_DEBUG_MESSAGE("ECC state initialized.\n");	
 
 		/* Clear the ECC error bits */
 		pci_write_config8(PCI_DEV(0, 0, 1), DRAM_FERR, 0x03);
@@ -1373,7 +1373,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl, uint8
 		}
 	}
 	else
-		die("No CAS# latencies compatible with all DIMMs!!\r\n");
+		die("No CAS# latencies compatible with all DIMMs!!\n");
 
 	pci_write_config32(PCI_DEV(0, 0, 0), DRT, dram_timing);
 
@@ -1462,14 +1462,14 @@ static void configure_e7501_dram_controller_mode(const struct mem_controller *ct
 		die_on_spd_error(value);
 		value &= 0x7f;		// Mask off self-refresh bit
 		if(value > MAX_SPD_REFRESH_RATE) { 
-			print_err("unsupported refresh rate\r\n");
+			print_err("unsupported refresh rate\n");
 			continue;
 		}
 		
 		// Get the appropriate E7501 refresh mode for this DIMM
 		dimm_refresh_mode = refresh_rate_map[value];
 		if (dimm_refresh_mode > 7) {
-			print_err("unsupported refresh rate\r\n");
+			print_err("unsupported refresh rate\n");
 			continue;
 		}
 
@@ -1680,7 +1680,7 @@ static void ram_set_rcomp_regs(void)
 	uint32_t dword;
 	uint8_t maybe_strength_control;
 
-	RAM_DEBUG_MESSAGE("Setting RCOMP registers.\r\n");
+	RAM_DEBUG_MESSAGE("Setting RCOMP registers.\n");
 
 	/*enable access to the rcomp bar*/
 	dword = pci_read_config32(PCI_DEV(0, 0, 0), MAYBE_MCHTST);
@@ -1805,8 +1805,8 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		return;
 
 	/* 1 & 2 Power up and start clocks */
-	RAM_DEBUG_MESSAGE("Ram Enable 1\r\n");
-	RAM_DEBUG_MESSAGE("Ram Enable 2\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 1\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 2\n");
 
 	/* A 200us delay is needed */
 
@@ -1814,23 +1814,23 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	EXTRA_DELAY
 
 	/* 3. Apply NOP */
-	RAM_DEBUG_MESSAGE("Ram Enable 3\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 3\n");
 	do_ram_command(RAM_COMMAND_NOP, 0);
 	EXTRA_DELAY
 
 	/* 4 Precharge all */
-	RAM_DEBUG_MESSAGE("Ram Enable 4\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 4\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
 	EXTRA_DELAY
 	
 	/* wait until the all banks idle state... */
 	/* 5. Issue EMRS to enable DLL */
-	RAM_DEBUG_MESSAGE("Ram Enable 5\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 5\n");
 	do_ram_command(RAM_COMMAND_EMRS, SDRAM_EXTMODE_DLL_ENABLE | SDRAM_EXTMODE_DRIVE_NORMAL);
 	EXTRA_DELAY
 	
 	/* 6. Reset DLL */
-	RAM_DEBUG_MESSAGE("Ram Enable 6\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 6\n");
 	set_ram_mode(E7501_SDRAM_MODE | SDRAM_MODE_DLL_RESET);
 	EXTRA_DELAY
 
@@ -1842,12 +1842,12 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	EXTRA_DELAY
 	
 	/* 7 Precharge all */
-	RAM_DEBUG_MESSAGE("Ram Enable 7\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 7\n");
 	do_ram_command(RAM_COMMAND_PRECHARGE, 0);
 	EXTRA_DELAY
 	
 	/* 8 Now we need 2 AUTO REFRESH / CBR cycles to be performed */
-	RAM_DEBUG_MESSAGE("Ram Enable 8\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 8\n");
 	do_ram_command(RAM_COMMAND_CBR, 0);
 	EXTRA_DELAY
 	do_ram_command(RAM_COMMAND_CBR, 0);
@@ -1867,17 +1867,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	EXTRA_DELAY
 
 	/* 9 mode register set */
-	RAM_DEBUG_MESSAGE("Ram Enable 9\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 9\n");
 	set_ram_mode(E7501_SDRAM_MODE | SDRAM_MODE_NORMAL);
 	EXTRA_DELAY
 	
 	/* 10 DDR Receive FIFO RE-Sync */
-	RAM_DEBUG_MESSAGE("Ram Enable 10\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 10\n");
 	RAM_RESET_DDR_PTR();
 	EXTRA_DELAY
 	
 	/* 11 normal operation */
-	RAM_DEBUG_MESSAGE("Ram Enable 11\r\n");
+	RAM_DEBUG_MESSAGE("Ram Enable 11\n");
 	do_ram_command(RAM_COMMAND_NORMAL, 0);
 	EXTRA_DELAY
 
@@ -1897,7 +1897,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	dram_controller_mode |= (1<<17);		// NOTE: undocumented reserved bit
 	pci_write_config32(PCI_DEV(0, 0, 0), DRC, dram_controller_mode);
 
-	RAM_DEBUG_MESSAGE("Northbridge following SDRAM init:\r\n");
+	RAM_DEBUG_MESSAGE("Northbridge following SDRAM init:\n");
 	DUMPNORTH();
 
 //	verify_ram();
@@ -1917,19 +1917,19 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	uint8_t dimm_mask;
 
-	RAM_DEBUG_MESSAGE("Reading SPD data...\r\n");
+	RAM_DEBUG_MESSAGE("Reading SPD data...\n");
 
    //activate_spd_rom(ctrl);	Not necessary for this chipset
 
     dimm_mask = spd_get_supported_dimms(ctrl);
 
 	if (dimm_mask == 0) {
-		print_debug("No usable memory for this controller\r\n");
+		print_debug("No usable memory for this controller\n");
     } else {
 
 		enable_e7501_clocks(dimm_mask);
 
-		RAM_DEBUG_MESSAGE("setting based on SPD data...\r\n");
+		RAM_DEBUG_MESSAGE("setting based on SPD data...\n");
 
 		configure_e7501_row_attributes(ctrl, dimm_mask);
 		configure_e7501_dram_controller_mode(ctrl, dimm_mask);
@@ -1938,7 +1938,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 
 		configure_e7501_dram_timing(ctrl, dimm_mask);
 		DO_DELAY
-		RAM_DEBUG_MESSAGE("done\r\n");
+		RAM_DEBUG_MESSAGE("done\n");
 	}
 
 	// NOTE: configure_e7501_ram_addresses() is NOT called here.
@@ -1963,7 +1963,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 //
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
-	RAM_DEBUG_MESSAGE("Northbridge prior to SDRAM init:\r\n");
+	RAM_DEBUG_MESSAGE("Northbridge prior to SDRAM init:\n");
 	DUMPNORTH();
 
 	ram_set_rcomp_regs();

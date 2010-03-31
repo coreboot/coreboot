@@ -541,7 +541,7 @@ static void ati_ragexl_init(device_t dev)
 #endif
 
 #if 0
-	printk(BIOS_DEBUG, "ati_regbase = 0x%08x, frame_buffer = 0x%08x\r\n", info->ati_regbase, info->frame_buffer);
+	printk(BIOS_DEBUG, "ati_regbase = 0x%08x, frame_buffer = 0x%08x\n", info->ati_regbase, info->frame_buffer);
 #endif
 
     	chip_id = aty_ld_le32(CONFIG_CHIP_ID, info);
@@ -561,7 +561,7 @@ static void ati_ragexl_init(device_t dev)
     	return ;
 
 found:
-    	printk(BIOS_INFO, "ati_ragexl_init: %s [0x%04x rev 0x%02x]\r\n", chipname, type, rev);
+    	printk(BIOS_INFO, "ati_ragexl_init: %s [0x%04x rev 0x%02x]\n", chipname, type, rev);
 #if 0
     	if (M64_HAS(INTEGRATED)) {
         	/* for many chips, the mclk is 67 MHz for SDRAM, 63 MHz otherwise */

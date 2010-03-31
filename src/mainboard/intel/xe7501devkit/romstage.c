@@ -86,6 +86,6 @@ static void main(unsigned long bist)
 	
 	// NOTE: ROMCC dies with an internal compiler error
 	//		 if the following line is removed.
-	print_debug("SDRAM is up.\r\n");
+	print_debug("SDRAM is up.\n");
 }
 

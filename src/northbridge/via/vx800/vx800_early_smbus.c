@@ -60,32 +60,32 @@
 /* Internal functions */
 static void smbus_print_error(unsigned char host_status_register, int loops)
 {
-//              print_err("some i2c error\r\n");
+//              print_err("some i2c error\n");
 	/* Check if there actually was an error */
 	if (host_status_register == 0x00 || host_status_register == 0x40 ||
 	    host_status_register == 0x42)
 		return;
 	print_err("smbus_error: ");
 	print_err_hex8(host_status_register);
-	print_err("\r\n");
+	print_err("\n");
 	if (loops >= SMBUS_TIMEOUT) {
-		print_err("SMBus Timout\r\n");
+		print_err("SMBus Timout\n");
 	}
 	if (host_status_register & (1 << 4)) {
-		print_err("Interrup/SMI# was Failed Bus Transaction\r\n");
+		print_err("Interrup/SMI# was Failed Bus Transaction\n");
 	}
 	if (host_status_register & (1 << 3)) {
-		print_err("Bus Error\r\n");
+		print_err("Bus Error\n");
 	}
 	if (host_status_register & (1 << 2)) {
-		print_err("Device Error\r\n");
+		print_err("Device Error\n");
 	}
 	if (host_status_register & (1 << 1)) {
 		/* This isn't a real error... */
-		print_debug("Interrupt/SMI# was Successful Completion\r\n");
+		print_debug("Interrupt/SMI# was Successful Completion\n");
 	}
 	if (host_status_register & (1 << 0)) {
-		print_err("Host Busy\r\n");
+		print_err("Host Busy\n");
 	}
 }
 
@@ -204,7 +204,7 @@ static void enable_smbus(void)
 
 	if (dev == PCI_DEV_INVALID) {
 		/* This won't display text if enable_smbus() is before serial init */
-		die("Power Managment Controller not found\r\n");
+		die("Power Managment Controller not found\n");
 	}
 
 	/* Set clock source */
@@ -253,7 +253,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 
 	ram_slots = ARRAY_SIZE(ctrl->channel0);
 	if (!ram_slots) {
-		print_err("smbus_fixup() thinks there are no RAM slots!\r\n");
+		print_err("smbus_fixup() thinks there are no RAM slots!\n");
 		return;
 	}
 
@@ -279,9 +279,9 @@ void smbus_fixup(const struct mem_controller *ctrl)
 	}
 
 	if (i >= SMBUS_TIMEOUT)
-		print_err("SMBus timed out while warming up\r\n");
+		print_err("SMBus timed out while warming up\n");
 	else
-		PRINT_DEBUG("Done\r\n");
+		PRINT_DEBUG("Done\n");
 }
 
 /* Debugging Function */
@@ -294,7 +294,7 @@ static void dump_spd_data(void)
 	for (dimm = 0; dimm < 8; dimm++) {
 		print_debug("SPD Data for DIMM ");
 		print_debug_hex8(dimm);
-		print_debug("\r\n");
+		print_debug("\n");
 
 		val = get_spd_data(dimm, 0);
 		if (val == 0xff) {
@@ -302,7 +302,7 @@ static void dump_spd_data(void)
 		} else if (val == 0x80) {
 			regs = 128;
 		} else {
-			print_debug("No DIMM present\r\n");
+			print_debug("No DIMM present\n");
 			regs = 0;
 		}
 		for (offset = 0; offset < regs; offset++) {
@@ -310,7 +310,7 @@ static void dump_spd_data(void)
 			print_debug_hex8(offset);
 			print_debug(" = 0x");
 			print_debug_hex8(get_spd_data(dimm, offset));
-			print_debug("\r\n");
+			print_debug("\n");
 		}
 	}
 }

@@ -52,6 +52,6 @@ static void disable_watchdogs(void)
 {
 //	disable_sio_watchdog(NSC_WD_DEV);
 	disable_ich5_watchdog();
-	print_debug("Watchdogs disabled\r\n");
+	print_debug("Watchdogs disabled\n");
 }
 

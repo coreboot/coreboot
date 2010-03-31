@@ -90,7 +90,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 
 	print_debug("computed msr.hi ");
 	print_debug_hex32(msr.hi);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	/* this is a standard value, DOES NOT PROBABLY MATCH FROM ABOVE */
 	/* well, it may be close. It's about 200,000 ticks */

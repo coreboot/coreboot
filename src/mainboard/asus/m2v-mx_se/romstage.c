@@ -105,12 +105,12 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 /* this function might fail on some K8 CPUs with errata #181 */
 static void ldtstop_sb(void)
 {
-	print_debug("toggle LDTSTP#\r\n");
+	print_debug("toggle LDTSTP#\n");
 	u8 reg = inb (VT8237R_ACPI_IO_BASE + 0x5c);
 	reg = reg ^ (1 << 0);
 	outb(reg, VT8237R_ACPI_IO_BASE + 0x5c);
 	reg = inb(VT8237R_ACPI_IO_BASE + 0x15);
-	print_debug("done\r\n");
+	print_debug("done\n");
 }
 
 #include "cpu/amd/model_fxx/fidvid.c"
@@ -127,7 +127,7 @@ void soft_reset(void)
 	uint8_t tmp;
 
 	set_bios_reset();
-	print_debug("soft reset \r\n");
+	print_debug("soft reset \n");
 
 	/* PCI reset */
 	tmp = pci_read_config8(PCI_DEV(0, 0x11, 0), 0x4f);
@@ -188,7 +188,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	console_init();
 	enable_rom_decode();
 
-	print_info("now booting... real_main\r\n");
+	print_info("now booting... real_main\n");
 
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
@@ -199,7 +199,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
 
-	print_info("now booting... Core0 started\r\n");
+	print_info("now booting... Core0 started\n");
 
 #if CONFIG_LOGICAL_CPUS==1
 	/* It is said that we should start core1 after all core0 launched. */
@@ -222,9 +222,9 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (needs_reset) {
 		print_debug_hex8(needs_reset);
 
-		print_debug("Xht reset -\r\n");
+		print_debug("Xht reset -\n");
 		soft_reset();
-		print_debug("NO reset\r\n");
+		print_debug("NO reset\n");
 
 	}
 
@@ -233,7 +233,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	vt8237_sb_enable_fid_vid();
 
 	enable_fid_change();
-	print_debug("after enable_fid_change\r\n");
+	print_debug("after enable_fid_change\n");
 
 	init_fidvid_bsp(bsp_apicid);
 

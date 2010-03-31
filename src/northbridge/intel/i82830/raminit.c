@@ -79,7 +79,7 @@ static void do_ram_command(u32 command)
 	pci_write_config32(NORTHBRIDGE, DRC, reg32);
 	PRINT_DEBUG("RAM command 0x");
 	PRINT_DEBUG_HEX32(reg32);
-	PRINT_DEBUG("\r\n");
+	PRINT_DEBUG("\n");
 }
 
 static void ram_read32(u8 dimm_start, u32 offset)
@@ -89,24 +89,24 @@ static void ram_read32(u8 dimm_start, u32 offset)
 		PRINT_DEBUG_HEX32(dimm_start * 32 * 1024 * 1024);
 		PRINT_DEBUG(" => 0x");
 		PRINT_DEBUG_HEX32(read32(dimm_start * 32 * 1024 * 1024));
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 
 		PRINT_DEBUG("  Writing RAM at 0x");
 		PRINT_DEBUG_HEX32(dimm_start * 32 * 1024 * 1024);
 		PRINT_DEBUG(" <= 0x");
 		PRINT_DEBUG_HEX32(offset);
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 		write32(dimm_start * 32 * 1024 * 1024, offset);
 
 		PRINT_DEBUG("  Reading RAM at 0x");
 		PRINT_DEBUG_HEX32(dimm_start * 32 * 1024 * 1024);
 		PRINT_DEBUG(" => 0x");
 		PRINT_DEBUG_HEX32(read32(dimm_start * 32 * 1024 * 1024));
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 	} else {
 		PRINT_DEBUG("  Sending RAM command to 0x");
 		PRINT_DEBUG_HEX32((dimm_start * 32 * 1024 * 1024) + offset);
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 		read32((dimm_start * 32 * 1024 * 1024) + offset);
 	}
 }
@@ -141,7 +141,7 @@ static void initialize_dimm_rows(void)
 		if (dimm_end > dimm_start) {
 			print_debug("Initializing SDRAM Row ");
 			print_debug_hex8(row);
-			print_debug("\r\n");
+			print_debug("\n");
 
 			/* NOP command */
 			PRINT_DEBUG(" NOP ");
@@ -177,7 +177,7 @@ static void initialize_dimm_rows(void)
 			udelay(1);
 
 			/* Perform a dummy memory read/write cycle */
-			PRINT_DEBUG(" Performing dummy read/write\r\n");
+			PRINT_DEBUG(" Performing dummy read/write\n");
 			ram_read32(dimm_start, 0x55aa55aa);
 			udelay(1);
 		}
@@ -256,29 +256,29 @@ static void set_dram_row_boundaries(void)
 		if (spd_read_byte(device, SPD_MEMORY_TYPE) == 0x4) {
 			print_debug("Found DIMM in slot ");
 			print_debug_hex8(i);
-			print_debug("\r\n");
+			print_debug("\n");
 
 			sz = spd_get_dimm_size(device);
 
 			/* WISHLIST: would be nice to display it as decimal? */
 			print_debug("DIMM is 0x");
 			print_debug_hex16(sz.side1);
-			print_debug(" on side 1\r\n");
+			print_debug(" on side 1\n");
 			print_debug("DIMM is 0x");
 			print_debug_hex16(sz.side2);
-			print_debug(" on side 2\r\n");
+			print_debug(" on side 2\n");
 
 			/* - Memory compatibility checks - */
 			/* Test for PC133 (i82830 only supports PC133) */
 			/* PC133 SPD9 - cycle time is always 75 */
 			if (spd_read_byte(device, SPD_MIN_CYCLE_TIME_AT_CAS_MAX) != 0x75) {
-				print_err("SPD9 DIMM Is Not PC133 Compatable\r\n");
-				die("HALT\r\n");
+				print_err("SPD9 DIMM Is Not PC133 Compatable\n");
+				die("HALT\n");
 			}
 			/* PC133 SPD10 - access time is always 54 */
 			if (spd_read_byte(device, SPD_ACCESS_TIME_FROM_CLOCK) != 0x54) {
-				print_err("SPD10 DIMM Is Not PC133 Compatable\r\n");
-				die("HALT\r\n");
+				print_err("SPD10 DIMM Is Not PC133 Compatable\n");
+				die("HALT\n");
 			}
 
 			/* The i82830 only supports a symmetrical dual-sided dimms
@@ -286,23 +286,23 @@ static void set_dram_row_boundaries(void)
 			 * side or larger than 256MB per side.
 			 */
 			if ((sz.side2 != 0) && (sz.side1 != sz.side2)) {
-				print_err("This northbridge only supports\r\n");
-				print_err("symmetrical dual-sided DIMMs\r\n");
-				print_err("booting as a single-sided DIMM\r\n");
+				print_err("This northbridge only supports\n");
+				print_err("symmetrical dual-sided DIMMs\n");
+				print_err("booting as a single-sided DIMM\n");
 				sz.side2 = 0;
 			}
 			if ((sz.side1 < 32)) {
-				print_err("DIMMs smaller than 32MB per side\r\n");
-				print_err("are not supported on this northbridge\r\n");
-				die("HALT\r\n");
+				print_err("DIMMs smaller than 32MB per side\n");
+				print_err("are not supported on this northbridge\n");
+				die("HALT\n");
 			}
 
 			if ((sz.side1 > 256)) {
 				print_err
-				    ("DIMMs larger than 256MB per side\r\n");
+				    ("DIMMs larger than 256MB per side\n");
 				print_err
-				    ("are not supported on this northbridge\r\n");
-				die("HALT\r\n");
+				    ("are not supported on this northbridge\n");
+				die("HALT\n");
 			}
 			/* - End Memory compatibility checks - */
 
@@ -316,7 +316,7 @@ static void set_dram_row_boundaries(void)
 		} else {
 			PRINT_DEBUG("No DIMM found in slot ");
 			PRINT_DEBUG_HEX8(i);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 
 			/* If there's no DIMM in the slot, set value to 0. */
 			drb1 = 0;
@@ -330,12 +330,12 @@ static void set_dram_row_boundaries(void)
 			PRINT_DEBUG_HEX8(DRB);
 			PRINT_DEBUG(" has been set to 0x");
 			PRINT_DEBUG_HEX8(drb1);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 			PRINT_DEBUG("DRB1 0x");
 			PRINT_DEBUG_HEX8(DRB + 1);
 			PRINT_DEBUG(" has been set to 0x");
 			PRINT_DEBUG_HEX8(drb1 + drb2);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 		} else if (i == 1) {
 			value = pci_read_config8(NORTHBRIDGE, DRB + 1);
 			pci_write_config8(NORTHBRIDGE, DRB + 2, value + drb1);
@@ -344,12 +344,12 @@ static void set_dram_row_boundaries(void)
 			PRINT_DEBUG_HEX8(DRB + 2);
 			PRINT_DEBUG(" has been set to 0x");
 			PRINT_DEBUG_HEX8(value + drb1);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 			PRINT_DEBUG("DRB3 0x");
 			PRINT_DEBUG_HEX8(DRB + 3);
 			PRINT_DEBUG(" has been set to 0x");
 			PRINT_DEBUG_HEX8(value + drb1 + drb2);
-			PRINT_DEBUG("\r\n");
+			PRINT_DEBUG("\n");
 
 			/* We need to set the highest DRB value to 0x64 and 0x65.
 			 * These are supposed to be "Reserved" but memory will
@@ -374,7 +374,7 @@ static void set_dram_row_attributes(void)
 		if (spd_read_byte(device, SPD_MEMORY_TYPE) == 0x4) {
 			print_debug("Found DIMM in slot ");
 			print_debug_hex8(i);
-			print_debug(", setting DRA...\r\n");
+			print_debug(", setting DRA...\n");
 
 			dra = 0x00;
 
@@ -403,8 +403,8 @@ static void set_dram_row_attributes(void)
 				} else if (dra == 16) {
 					dra = 0xF3; /* 16KB */
 				} else {
-					print_err("Page size not supported\r\n");
-					die("HALT\r\n");
+					print_err("Page size not supported\n");
+					die("HALT\n");
 				}
 			} else if (value == 2) {
 				if (dra == 2) {
@@ -416,18 +416,18 @@ static void set_dram_row_attributes(void)
 				} else if (dra == 16) {
 					dra = 0x33; /* 16KB */
 				} else {
-					print_err("Page size not supported\r\n");
-					die("HALT\r\n");
+					print_err("Page size not supported\n");
+					die("HALT\n");
 				}
 			} else {
-				print_err("# of banks of DIMM not supported\r\n");
-				die("HALT\r\n");
+				print_err("# of banks of DIMM not supported\n");
+				die("HALT\n");
 			}
 
 		} else {
 			PRINT_DEBUG("No DIMM found in slot ");
 			PRINT_DEBUG_HEX8(i);
-			PRINT_DEBUG(", setting DRA to 0xFF\r\n");
+			PRINT_DEBUG(", setting DRA to 0xFF\n");
 
 			/* If there's no DIMM in the slot, set dra value to 0xFF. */
 			dra = 0xFF;
@@ -439,7 +439,7 @@ static void set_dram_row_attributes(void)
 		PRINT_DEBUG_HEX8(DRA + i);
 		PRINT_DEBUG(" has been set to 0x");
 		PRINT_DEBUG_HEX8(dra);
-		PRINT_DEBUG("\r\n");
+		PRINT_DEBUG("\n");
 	}
 }
 
@@ -468,7 +468,7 @@ Public interface.
 
 static void sdram_set_registers(void)
 {
-	PRINT_DEBUG("Setting initial sdram registers....\r\n");
+	PRINT_DEBUG("Setting initial sdram registers....\n");
 
 	/* Calculate the value for DRT DRAM Timing Register */
 	set_dram_timing();
@@ -482,7 +482,7 @@ static void sdram_set_registers(void)
 	/* Setup DRAM Row Attribute Registers */
 	set_dram_row_attributes();
 
-	PRINT_DEBUG("Initial sdram registers have been set.\r\n");
+	PRINT_DEBUG("Initial sdram registers have been set.\n");
 }
 
 static void northbridge_set_registers(void)
@@ -490,7 +490,7 @@ static void northbridge_set_registers(void)
 	u16 value;
 	int igd_memory = 0;
 
-	PRINT_DEBUG("Setting initial nothbridge registers....\r\n");
+	PRINT_DEBUG("Setting initial nothbridge registers....\n");
 
 	/* Set the value for Fixed DRAM Hole Control Register */
 	pci_write_config8(NORTHBRIDGE, FDHC, 0x00);
@@ -536,7 +536,7 @@ static void northbridge_set_registers(void)
 	value |= 1; // 64MB aperture
 	pci_write_config16(NORTHBRIDGE, GCC1, value);
 
-	PRINT_DEBUG("Initial northbridge registers have been set.\r\n");
+	PRINT_DEBUG("Initial northbridge registers have been set.\n");
 }
 
 static void sdram_initialize(void)
@@ -554,13 +554,13 @@ static void sdram_initialize(void)
 	initialize_dimm_rows();
 
 	/* Enable Refresh */
-	PRINT_DEBUG("Enabling Refresh\r\n");
+	PRINT_DEBUG("Enabling Refresh\n");
 	reg32 = pci_read_config32(NORTHBRIDGE, DRC);
 	reg32 |= (RAM_COMMAND_REFRESH << 8);
 	pci_write_config32(NORTHBRIDGE, DRC, reg32);
 
 	/* Set initialization complete */
-	PRINT_DEBUG("Setting initialization complete\r\n");
+	PRINT_DEBUG("Setting initialization complete\n");
 	reg32 = pci_read_config32(NORTHBRIDGE, DRC);
 	reg32 |= (RAM_COMMAND_IC << 29);
 	pci_write_config32(NORTHBRIDGE, DRC, reg32);
@@ -568,6 +568,6 @@ static void sdram_initialize(void)
 	/* Setup Initial Northbridge Registers */
 	northbridge_set_registers();
 
-	PRINT_DEBUG("Northbridge following SDRAM init:\r\n");
+	PRINT_DEBUG("Northbridge following SDRAM init:\n");
 	DUMPNORTH();
 }

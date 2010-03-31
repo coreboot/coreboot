@@ -248,14 +248,14 @@ udelay(int microseconds) {
 
 
 static void dumpram(void){
-  print_err("ctl "); print_err_hex8(*drcctl); print_err("\r\n");
-  print_err("mctl "); print_err_hex8(*drcmctl); print_err("\r\n");
-  print_err("cfg "); print_err_hex8(*drccfg); print_err("\r\n");
+  print_err("ctl "); print_err_hex8(*drcctl); print_err("\n");
+  print_err("mctl "); print_err_hex8(*drcmctl); print_err("\n");
+  print_err("cfg "); print_err_hex8(*drccfg); print_err("\n");
 
-  print_err("bendadr0 "); print_err_hex8(*drcbendadr); print_err("\r\n");
-  print_err("bendadr1 "); print_err_hex8(*drcbendadr); print_err("\r\n");
-  print_err("bendadr2 "); print_err_hex8(*drcbendadr); print_err("\r\n");
-  print_err("bendadr3"); print_err_hex8(*drcbendadr); print_err("\r\n");
+  print_err("bendadr0 "); print_err_hex8(*drcbendadr); print_err("\n");
+  print_err("bendadr1 "); print_err_hex8(*drcbendadr); print_err("\n");
+  print_err("bendadr2 "); print_err_hex8(*drcbendadr); print_err("\n");
+  print_err("bendadr3"); print_err_hex8(*drcbendadr); print_err("\n");
 }
 
 /* there is a lot of silliness in the amd code, and it is 
@@ -311,11 +311,11 @@ int sizemem(void)
 	print_err("NOP\n");
 	/* 100? 200? */
 	udelay(100);
-	print_err("after sc520_udelay\r\n");
+	print_err("after sc520_udelay\n");
 
 	/* issue all banks precharge */
 	*drcctl=0x02;
-	print_err("set *drcctl to 2 \r\n");
+	print_err("set *drcctl to 2 \n");
 	dummy_write();
 	print_err("PRE\n");
 
@@ -334,7 +334,7 @@ int sizemem(void)
 	*drcctl=0x04;
 	for (i=0; i<8; i++) /* refresh 8 times */{
 		dummy_write();
-		print_err("dummy write\r\n");
+		print_err("dummy write\n");
 	}
 	print_err("8 dummy writes\n");
 
@@ -342,18 +342,18 @@ int sizemem(void)
 	*drcctl=0x00;
 	print_err("normal\n");
 
-	print_err("HI done normal\r\n");
+	print_err("HI done normal\n");
 
 	print_err("sizemem\n");
 	for(bank = 3; bank >= 0; bank--) {
-	  print_err("Try to assign to l\r\n");
+	  print_err("Try to assign to l\n");
 	  *lp = 0xdeadbeef;
-	  print_err("assigned l ... \r\n");
+	  print_err("assigned l ... \n");
 	  if (*lp != 0xdeadbeef) {
 	    print_err(" no memory at bank "); 
 	    // print_err_hex8(bank); 
 	    //   print_err(" value "); print_err_hex32(*lp);
-	    print_err("\r\n"); 
+	    print_err("\n"); 
 	    //	    continue;
 	  }
 	  *drcctl = 2;
@@ -362,7 +362,7 @@ int sizemem(void)
 	  l = *drcbendadr;
 	  l >>= 8; 
 	  *drcbendadr = l;
-	  print_err("loop around\r\n");
+	  print_err("loop around\n");
 	  *drcctl = 0;
 	  dummy_write();
 	}
@@ -386,11 +386,11 @@ int sizemem(void)
 	print_err("NOP\n");
 	/* 100? 200? */
 	//sc520_udelay(100);
-	print_err("after sc520_udelay\r\n");
+	print_err("after sc520_udelay\n");
 
 	/* issue all banks precharge */
 	*drcctl=0x02;
-	print_err("set *drcctl to 2 \r\n");
+	print_err("set *drcctl to 2 \n");
 	dummy_write();
 	print_err("PRE\n");
 
@@ -409,7 +409,7 @@ int sizemem(void)
 	*drcctl=0x04;
 	for (i=0; i<8; i++) /* refresh 8 times */{
 		dummy_write();
-		print_err("dummy write\r\n");
+		print_err("dummy write\n");
 	}
 	print_err("8 dummy writes\n");
 
@@ -417,7 +417,7 @@ int sizemem(void)
 	*drcctl=0x00;
 	print_err("normal\n");
 
-	print_err("HI done normal\r\n");
+	print_err("HI done normal\n");
 	bank = 3;
 
 
@@ -558,7 +558,7 @@ print_err("4b\n");
 	al -= i&3;
 	*drcbendaddr = rows >> al;
 	print_err("computed ending_adr = "); print_err_hex8(ending_adr); 
-	print_err("\r\n");
+	print_err("\n");
 	
 */
 bad_reinit:
@@ -592,7 +592,7 @@ bad_reinit:
 	return bank;
 	
 bad_ram:
-	print_info("bad ram!\r\n");
+	print_info("bad ram!\n");
 	/* you are here because the read-after-write failed, 
 	 * in most cases because: no ram in that bank! 
 	 * set badbank to 1 and go to reinit
@@ -600,7 +600,7 @@ bad_ram:
 	ending_adr = 0;
 	goto bad_reinit;
 	while(1)
-	print_err("DONE NEXTBANK\r\n");
+	print_err("DONE NEXTBANK\n");
 #endif
 }	
 
@@ -628,27 +628,27 @@ int staticmem(void)
 	/* two autorefreshes */
 	*drcctl = 4;
 	*zero = 0;
-	print_debug("one zero out on refresh\r\n");
+	print_debug("one zero out on refresh\n");
 	*zero = 0;
-	print_debug("two zero out on refresh\r\n");
+	print_debug("two zero out on refresh\n");
 
 	/* load mode register */
 	*drcctl = 3;
 	*zero = 0;
-	print_debug("DONE the load mode reg\r\n");
+	print_debug("DONE the load mode reg\n");
 	
 	/* normal mode */
 	*drcctl = 0x0;
 	*zero = 0;
-	print_debug("DONE one last write and then turn on refresh etc\r\n");
+	print_debug("DONE one last write and then turn on refresh etc\n");
 	*drcctl = 0x18;
 	*zero = 0;
-	print_debug("DONE the normal\r\n");
+	print_debug("DONE the normal\n");
 	*zero = 0xdeadbeef;
 	if (*zero != 0xdeadbeef) 
-	  print_debug("NO LUCK\r\n");
+	  print_debug("NO LUCK\n");
 	else
-	  print_debug("did a store and load ...\r\n");
+	  print_debug("did a store and load ...\n");
 	//print_err_hex32(*zero);
-	//	print_err(" zero is now "); print_err_hex32(*zero); print_err("\r\n");
+	//	print_err(" zero is now "); print_err_hex32(*zero); print_err("\n");
 }

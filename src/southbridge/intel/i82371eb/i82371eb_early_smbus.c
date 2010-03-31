@@ -38,9 +38,9 @@ static void enable_smbus(void)
 				PCI_DEVICE_ID_INTEL_82371AB_SMB_ACPI), 0);
 
 	if (dev == PCI_DEV_INVALID)
-		die("SMBus controller not found\r\n");
+		die("SMBus controller not found\n");
 
-	print_spew("SMBus controller enabled\r\n");
+	print_spew("SMBus controller enabled\n");
 
 	/* Set the SMBus I/O base. */
 	pci_write_config32(dev, SMBBA, SMBUS_IO_BASE | 1);

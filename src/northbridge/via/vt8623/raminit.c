@@ -56,7 +56,7 @@ dumpnorth(device_t north)
 			print_debug_hex8(pci_read_config8(north, r+c));
 			print_debug(" ");
 		}
-		print_debug("\r\n");
+		print_debug("\n");
   }
 }
 void print_val(char *str, int val)
@@ -72,7 +72,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	uint16_t i,j;
 	unsigned long bank_address;
 
-	print_debug("vt8623 init starting\r\n");
+	print_debug("vt8623 init starting\n");
 	north = pci_locate_device(PCI_ID(0x1106, 0x3123), 0);
 	north = 0;
 	
@@ -102,7 +102,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 */
 	c = 0;
 	b = smbus_read_byte(0xa0,17);
-	print_val("Detecting Memory\r\nNumber of Banks ",b);
+	print_val("Detecting Memory\nNumber of Banks ",b);
 
 	if( b != 2 ){            // not 16 Mb type
 	
@@ -110,14 +110,14 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     Read SPD byte 3, Number of row addresses.
 */
 		b = smbus_read_byte(0xa0,3);
-		print_val("\r\nNumber of Rows ",b);
+		print_val("\nNumber of Rows ",b);
 		if( b >= 0x0d ){	// not 64/128Mb (rows <=12)
 
 /*
     Read SPD byte 13, Primary DRAM width.
 */
 			b = smbus_read_byte(0xa0,13);
-			print_val("\r\nPriamry DRAM width",b);
+			print_val("\nPriamry DRAM width",b);
 			if( b != 4 )   // mot 64/128Mb (x4)
 				c = 0x80;  // 256Mb
 		}
@@ -128,13 +128,13 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     Read SPD byte 4, Number of column addresses.
 */		
 		b = smbus_read_byte(0xa0,4);
-		print_val("\r\nNo Columns ",b);
+		print_val("\nNo Columns ",b);
 		if( b == 10 || b == 11 ) c |= 0x60;   // 10/11 bit col addr
 		if( b == 9 ) c |= 0x40;           // 9 bit col addr
 		if( b == 8 ) c |= 0x20;           // 8 bit col addr
 
 	}
-	print_val("\r\nMA type ",c);
+	print_val("\nMA type ",c);
 	pci_write_config8(north,0x58,c);
 
 /*
@@ -161,18 +161,18 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	else c = 0x01;                   // Error, use default
 
 
-	print_val("\r\nBank 0 (*16 Mb) ",c);
+	print_val("\nBank 0 (*16 Mb) ",c);
 
 	// set bank zero size
 	pci_write_config8(north,0x5a,c);
 	// SPD byte 5  # of physical banks
 	b = smbus_read_byte(0xa0,5);
 
-	print_val("\r\nNo Physical Banks ",b);
+	print_val("\nNo Physical Banks ",b);
 	if( b == 2)
 		c <<=1;
 
-	print_val("\r\nTotal Memory (*16 Mb) ",c);
+	print_val("\nTotal Memory (*16 Mb) ",c);
 	// set banks 1,2,3
 	pci_write_config8(north,0x5b,c);
 	pci_write_config8(north,0x5c,c);
@@ -181,40 +181,40 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 	/* Read SPD byte 18 CAS Latency */
 	b = smbus_read_byte(0xa0,18);
-	print_debug("\r\nCAS Supported ");
+	print_debug("\nCAS Supported ");
 	if(b & 0x04)
 		print_debug("2 ");
 	if(b & 0x08)
 		print_debug("2.5 ");
 	if(b & 0x10)
 		print_debug("3");
-	print_val("\r\nCycle time at CL X     (nS)",smbus_read_byte(0xa0,9));
-	print_val("\r\nCycle time at CL X-0.5 (nS)",smbus_read_byte(0xa0,23));
-	print_val("\r\nCycle time at CL X-1   (nS)",smbus_read_byte(0xa0,25));
+	print_val("\nCycle time at CL X     (nS)",smbus_read_byte(0xa0,9));
+	print_val("\nCycle time at CL X-0.5 (nS)",smbus_read_byte(0xa0,23));
+	print_val("\nCycle time at CL X-1   (nS)",smbus_read_byte(0xa0,25));
 	
 
 	if( b & 0x10 ){             // DDR offering optional CAS 3
-		print_debug("\r\nStarting at CAS 3");
+		print_debug("\nStarting at CAS 3");
 		c = 0x30;
 		/* see if we can better it */
 		if( b & 0x08 ){     // DDR mandatory CAS 2.5
 			if( smbus_read_byte(0xa0,23) <= 0x75 ){ // we can manage 133Mhz at CAS 2.5
-				print_debug("\r\nWe can do CAS 2.5");
+				print_debug("\nWe can do CAS 2.5");
 				c = 0x20;
 			}
 		}
 		if( b & 0x04 ){     // DDR mandatory CAS 2
 			if( smbus_read_byte(0xa0,25) <= 0x75 ){ // we can manage 133Mhz at CAS 2
-				print_debug("\r\nWe can do CAS 2");
+				print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
 		}
 	}else{                     // no optional CAS values just 2 & 2.5
-		print_debug("\r\nStarting at CAS 2.5");
+		print_debug("\nStarting at CAS 2.5");
 		c = 0x20;          // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
 			if( smbus_read_byte(0xa0,23) <= 0x75){ // we can manage 133Mhz at CAS 2
-				print_debug("\r\nWe can do CAS 2");
+				print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
 		}
@@ -254,7 +254,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 */
 
 	b = smbus_read_byte(0xa0,27);
-	print_val("\r\ntRP ",b);
+	print_val("\ntRP ",b);
 	if( b > 0x3c )           // set tRP = 3T
 		c |= 0x80;
 
@@ -266,7 +266,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 */
 
 	b = smbus_read_byte(0xa0,29);
-	print_val("\r\ntRCD ",b);
+	print_val("\ntRCD ",b);
 	if( b > 0x3c )           // set tRCD = 3T
 		c |= 0x04;
 
@@ -278,7 +278,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 */
 
 	b = smbus_read_byte(0xa0,30);
-	print_val("\r\ntRAS ",b);
+	print_val("\ntRAS ",b);
 	if( b > 0x25 )           // set tRAS = 6T
 		c |= 0x40;
 
@@ -500,7 +500,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		break;
 		
 	}
-	print_val("\r\nLow Bond ",i);	
+	print_val("\nLow Bond ",i);	
 	if( i < 0xff ){ 
 		c = i++;
 		for(  ; i <0xff ; i++){
@@ -549,7 +549,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		pci_write_config8(north,0x68,c);
 		pci_write_config8(north,0x68,0x42);
 	}else{
-		print_debug("Unable to determine low bond - Setting default\r\n");
+		print_debug("Unable to determine low bond - Setting default\n");
 		pci_write_config8(north,0x68,0x59);
 	}
 
@@ -608,10 +608,10 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	pci_write_config8(north,0xac,0x2f);
 	pci_write_config8(north,0xae,0x04);
 
-        print_debug("vt8623 done\r\n");
+        print_debug("vt8623 done\n");
 	dumpnorth(north);
 
-	print_debug("AGP\r\n");
+	print_debug("AGP\n");
 	north = pci_locate_device(PCI_ID(0x1106, 0xb091), 0);
 	pci_write_config32(north,0x20,0xddf0dc00);
 	pci_write_config32(north,0x24,0xdbf0d800);

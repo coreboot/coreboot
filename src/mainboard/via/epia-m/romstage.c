@@ -102,7 +102,7 @@ static void main(unsigned long bist)
 
 	enable_smbus();
 
-	print_spew("In romstage.c:main()\r\n");
+	print_spew("In romstage.c:main()\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
@@ -111,10 +111,10 @@ static void main(unsigned long bist)
 
 	outb(5, 0x80);	
 
-	print_debug(" Enabling mainboard devices\r\n");
+	print_debug(" Enabling mainboard devices\n");
 	enable_mainboard_devices();
 
-	print_debug(" Enabling shadow ram\r\n");
+	print_debug(" Enabling shadow ram\n");
 	enable_shadow_ram();
 
 	ddr_ram_setup((const struct mem_controller *)0);
@@ -141,12 +141,12 @@ static void main(unsigned long bist)
 #endif
 
 	if (bist == 0) {
-		print_debug(" Doing MTRR init.\r\n");
+		print_debug(" Doing MTRR init.\n");
 		early_mtrr_init();
 	}
 
 	//dump_pci_devices();
 	
-	print_spew("Leaving romstage.c:main()\r\n");
+	print_spew("Leaving romstage.c:main()\n");
 }
 

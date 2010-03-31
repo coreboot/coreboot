@@ -9,7 +9,7 @@ static inline void print_debug_sdram_8(const char *strval, uint32_t val)
 #if CONFIG_USE_PRINTK_IN_CAR
         printk(BIOS_DEBUG, "%s%02x\n", strval, val);
 #else
-        print_debug(strval); print_debug_hex8(val); print_debug("\r\n");
+        print_debug(strval); print_debug_hex8(val); print_debug("\n");
 #endif
 }
 
@@ -48,7 +48,7 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	 * Some chipsets do the work for us while on others 
 	 * we need to it by hand.
 	 */
-	print_debug("Ram3\r\n");
+	print_debug("Ram3\n");
 
 	#if RAMINIT_SYSINFO == 1
 	sdram_enable(controllers, ctrl, sysinfo);
@@ -56,5 +56,5 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 	sdram_enable(controllers, ctrl);
 	#endif
 
-	print_debug("Ram4\r\n");
+	print_debug("Ram4\n");
 }

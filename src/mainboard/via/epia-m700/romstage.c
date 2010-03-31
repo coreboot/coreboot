@@ -76,13 +76,13 @@ int acpi_is_wakeup_early_via_vx800(void)
 	device_t dev;
 	u16 tmp, result;
 
-	print_debug("In acpi_is_wakeup_early_via_vx800\r\n");
+	print_debug("In acpi_is_wakeup_early_via_vx800\n");
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
 				       PCI_DEVICE_ID_VIA_VX855_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID)
-		die("Power management controller not found\r\n");
+		die("Power management controller not found\n");
 
 	/* Set ACPI base address to I/O VX800_ACPI_IO_BASE. */
 	pci_write_config16(dev, 0x88, VX800_ACPI_IO_BASE | 0x1);
@@ -94,7 +94,7 @@ int acpi_is_wakeup_early_via_vx800(void)
 	result = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0;
 	print_debug("         boot_mode=");
 	print_debug_hex16(result);
-	print_debug("\r\n");
+	print_debug("\n");
 	return result;
 }
 
@@ -142,7 +142,7 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x5b, 0x01);
 #endif
 
-	print_debug("In enable_mainboard_devices \r\n");
+	print_debug("In enable_mainboard_devices \n");
 
 	/* Enable P2P Bridge Header for external PCI bus. */
 	dev = pci_locate_device(PCI_ID(0x1106, 0xa353), 0);
@@ -482,7 +482,7 @@ void amd64_main(unsigned long bist)
 		 * early_mtrr_init() call.
 		 */
 #if 0
-		 print_debug("doing early_mtrr\r\n");
+		 print_debug("doing early_mtrr\n");
 		 early_mtrr_init();
 #endif
 	}
@@ -490,7 +490,7 @@ void amd64_main(unsigned long bist)
 	/* Halt if there was a built-in self test failure. */
 	report_bist_failure(bist);
 
-	print_debug("Enabling mainboard devices\r\n");
+	print_debug("Enabling mainboard devices\n");
 	enable_mainboard_devices();
 
 	/*
@@ -501,7 +501,7 @@ void amd64_main(unsigned long bist)
 	Data = pci_read_config8(device, 0xf6);
 	print_debug("NB chip revision =");
 	print_debug_hex8(Data);
-	print_debug("\r\n");
+	print_debug("\n");
 
 	/* Make NB ready before DRAM init. */
 	via_pci_inittable(Data, mNbStage1InitTbl);
@@ -518,7 +518,7 @@ void amd64_main(unsigned long bist)
 		u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
 		DRAM_SYS_ATTR DramAttr;
 
-		print_debug("This is an S3 wakeup\r\n");
+		print_debug("This is an S3 wakeup\n");
 
 		memset(&DramAttr, 0, sizeof(DRAM_SYS_ATTR));
 		/*
@@ -553,7 +553,7 @@ void amd64_main(unsigned long bist)
 		/* Just copy this function from draminit to here! */
 		SetUMARam();
 
-		print_debug("Resume from S3, RAM init was ignored\r\n");
+		print_debug("Resume from S3, RAM init was ignored\n");
 	} else {
 		ddr2_ram_setup();
 		ram_check(0, 640 * 1024);
@@ -675,7 +675,7 @@ void amd64_main(unsigned long bist)
 		);
 #endif
 		/* This can have function call, because no variable used before this. */
-		print_debug("Copy memory to high memory to protect s3 wakeup vector code \r\n");
+		print_debug("Copy memory to high memory to protect s3 wakeup vector code \n");
 		memcpy((unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 -
 				 0x100000), (unsigned char *)0, 0xa0000);
 		memcpy((unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 -
@@ -725,11 +725,11 @@ void amd64_main(unsigned long bist)
 		unsigned v_esp;
 		__asm__ volatile ("movl %%esp, %0\n\t":"=a" (v_esp));
 #if CONFIG_USE_PRINTK_IN_CAR
-		printk(BIOS_DEBUG, "v_esp=%08x\r\n", v_esp);
+		printk(BIOS_DEBUG, "v_esp=%08x\n", v_esp);
 #else
 		print_debug("v_esp=");
 		print_debug_hex32(v_esp);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 	}
 #endif
@@ -744,11 +744,11 @@ cpu_reset_x:
 	cpu_reset = 0;
 
 #if CONFIG_USE_PRINTK_IN_CAR
-	printk(BIOS_DEBUG, "cpu_reset = %08x\r\n", cpu_reset);
+	printk(BIOS_DEBUG, "cpu_reset = %08x\n", cpu_reset);
 #else
 	print_debug("cpu_reset = ");
 	print_debug_hex32(cpu_reset);
-	print_debug("\r\n");
+	print_debug("\n");
 #endif
 
 	if (cpu_reset == 0)
@@ -789,16 +789,16 @@ cpu_reset_x:
 
 		/* We can't go back anymore, we lost old stack data in CAR. */
 		if (new_cpu_reset == 0)
-			print_debug("Use Ram as Stack now - done\r\n");
+			print_debug("Use Ram as Stack now - done\n");
 		else
-			print_debug("Use Ram as Stack now - \r\n");
+			print_debug("Use Ram as Stack now - \n");
 
 #if CONFIG_USE_PRINTK_IN_CAR
-		printk(BIOS_DEBUG, "new_cpu_reset = %08x\r\n", new_cpu_reset);
+		printk(BIOS_DEBUG, "new_cpu_reset = %08x\n", new_cpu_reset);
 #else
 		print_debug("new_cpu_reset = ");
 		print_debug_hex32(new_cpu_reset);
-		print_debug("\r\n");
+		print_debug("\n");
 #endif
 
 		jason_tsc_count_car();
@@ -808,6 +808,6 @@ cpu_reset_x:
 	}
 #endif
 
-	print_debug("should not be here -\r\n");
+	print_debug("should not be here -\n");
 }
 

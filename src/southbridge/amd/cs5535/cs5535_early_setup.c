@@ -164,19 +164,19 @@ static int cs5535_early_setup(void)
 	msr = rdmsr(GLCP_SYS_RSTPLL);
 	if (msr.lo & (0x3f << 26)) {
 		/* PLL is already set and we are reboot from PLL reset */
-		print_debug("reboot from BIOS reset\n\r");
+		print_debug("reboot from BIOS reset\n");
 		return;
 	}
-	print_debug("Setup idsel\r\n");
+	print_debug("Setup idsel\n");
 	cs5535_setup_idsel();
-	print_debug("Setup iobase\r\n");
+	print_debug("Setup iobase\n");
 	cs5535_usb_swapsif();
 	cs5535_setup_iobase();
-	print_debug("Setup gpio\r\n");
+	print_debug("Setup gpio\n");
 	cs5535_setup_gpio();
-	print_debug("Setup cis_mode\r\n");
+	print_debug("Setup cis_mode\n");
 	cs5535_setup_cis_mode();
-	print_debug("Setup smbus\r\n");
+	print_debug("Setup smbus\n");
 	cs5535_enable_smbus();
 	dummy();
 }

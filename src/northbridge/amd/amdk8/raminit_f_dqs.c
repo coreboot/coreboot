@@ -25,7 +25,7 @@ static inline void print_debug_dqs(const char *str, unsigned val, unsigned level
 {
 #if DQS_TRAIN_DEBUG > 0
 	if(DQS_TRAIN_DEBUG > level) {
-		printk(BIOS_DEBUG, "%s%x\r\n", str, val);
+		printk(BIOS_DEBUG, "%s%x\n", str, val);
 	}
 #endif
 }
@@ -34,7 +34,7 @@ static inline void print_debug_dqs_pair(const char *str, unsigned val, const cha
 {
 #if DQS_TRAIN_DEBUG > 0
 	if(DQS_TRAIN_DEBUG > level) {
-		printk(BIOS_DEBUG, "%s%08x%s%08x\r\n", str, val, str2, val2);
+		printk(BIOS_DEBUG, "%s%08x%s%08x\n", str, val, str2, val2);
 	}
 #endif
 }
@@ -43,14 +43,14 @@ static inline void print_debug_dqs_tsc(const char *str, unsigned i, unsigned val
 {
 #if DQS_TRAIN_DEBUG > 0
 	if(DQS_TRAIN_DEBUG > level) {
-		printk(BIOS_DEBUG, "%s[%02x]=%08x%08x\r\n", str, i, val, val2);
+		printk(BIOS_DEBUG, "%s[%02x]=%08x%08x\n", str, i, val, val2);
 	}
 #endif
 }
 
 static inline void print_debug_dqs_tsc_x(const char *str, unsigned i, unsigned val, unsigned val2)
 {
-	printk(BIOS_DEBUG, "%s[%02x]=%08x%08x\r\n", str, i, val, val2);
+	printk(BIOS_DEBUG, "%s[%02x]=%08x%08x\n", str, i, val, val2);
 
 }
 
@@ -583,7 +583,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 		}
 	}
 
-	print_debug_dqs("\r\nTrainRcvEn: 0 ctrl", ctrl->node_id, 0);
+	print_debug_dqs("\nTrainRcvEn: 0 ctrl", ctrl->node_id, 0);
 
 	print_debug_addr("TrainRcvEn: buf_a:", buf_a);
 
@@ -1401,7 +1401,7 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 
 	}
 
-	print_debug_dqs("\r\nTrainDQSRdWrPos: 0 ctrl ", ctrl->node_id, 0);
+	print_debug_dqs("\nTrainDQSRdWrPos: 0 ctrl ", ctrl->node_id, 0);
 
 	printk(BIOS_DEBUG, "TrainDQSRdWrPos: buf_a:%p\n", buf_a);
 
@@ -1525,25 +1525,25 @@ static void SetEccDQSRdWrPos(const struct mem_controller *ctrl, struct sys_info 
 
 static unsigned train_DqsRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct sys_info *sysinfo)
 {
-	print_debug_dqs("\r\ntrain_DqsRcvrEn: begin ctrl ", ctrl->node_id, 0);
+	print_debug_dqs("\ntrain_DqsRcvrEn: begin ctrl ", ctrl->node_id, 0);
 	if(TrainRcvrEn(ctrl, Pass, sysinfo)) {
 		return 1;
 	}
-	print_debug_dqs("\r\ntrain_DqsRcvrEn: end ctrl ", ctrl->node_id, 0);
+	print_debug_dqs("\ntrain_DqsRcvrEn: end ctrl ", ctrl->node_id, 0);
 	return 0;
 
 }
 static unsigned train_DqsPos(const struct mem_controller *ctrl, struct sys_info *sysinfo)
 {
-	print_debug_dqs("\r\ntrain_DqsPos: begin ctrl ", ctrl->node_id, 0);
+	print_debug_dqs("\ntrain_DqsPos: begin ctrl ", ctrl->node_id, 0);
 	if(TrainDQSRdWrPos(ctrl, sysinfo) != 0) {
-		printk(BIOS_ERR, "\r\nDQS Training Rd Wr failed ctrl%02x\r\n", ctrl->node_id);
+		printk(BIOS_ERR, "\nDQS Training Rd Wr failed ctrl%02x\n", ctrl->node_id);
 		return 1;
 	}
 	else {
 		SetEccDQSRdWrPos(ctrl, sysinfo);
 	}
-	print_debug_dqs("\r\ntrain_DqsPos: end ctrl ", ctrl->node_id, 0);
+	print_debug_dqs("\ntrain_DqsPos: end ctrl ", ctrl->node_id, 0);
 	return 0;
 
 }
@@ -1700,7 +1700,7 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		}
 		sizek = 1 << align;
 #if CONFIG_MEM_TRAIN_SEQ != 1
-		printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\r\n",
+		printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
 			reg, range_startk >>10, sizek >> 10,
 			(type==MTRR_TYPE_UNCACHEABLE)?"UC":
 			    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
@@ -1952,7 +1952,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 
 		printk(BIOS_DEBUG, "DQS Training:RcvrEn:Pass1: %02x\n", i);
 		if(train_DqsRcvrEn(ctrl+i, 1, sysinfo)) goto out;
-       		printk(BIOS_DEBUG, " done\r\n");
+       		printk(BIOS_DEBUG, " done\n");
 	}
 
 	tsc[1] = rdtsc();
@@ -1970,7 +1970,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 
 		printk(BIOS_DEBUG, "DQS Training:DQSPos: %02x\n", i);
 		if(train_DqsPos(ctrl+i, sysinfo)) goto out;
-		printk(BIOS_DEBUG, " done\r\n");
+		printk(BIOS_DEBUG, " done\n");
 	}
 
 	tsc[3] = rdtsc();
@@ -1983,7 +1983,7 @@ static void dqs_timing(int controllers, const struct mem_controller *ctrl, struc
 
 		printk(BIOS_DEBUG, "DQS Training:RcvrEn:Pass2: %02x\n", i);
 		if(train_DqsRcvrEn(ctrl+i, 2, sysinfo)) goto out;
-		printk(BIOS_DEBUG, " done\r\n");
+		printk(BIOS_DEBUG, " done\n");
 		sysinfo->mem_trained[i]=1;
 		dqs_save_MC_NVRAM((ctrl+i)->f2);
 	}
@@ -2033,7 +2033,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	}
 
 	if(v) {
-		printk(BIOS_DEBUG, " done\r\n");
+		printk(BIOS_DEBUG, " done\n");
 		tsc[1] = rdtsc();
 		printk(BIOS_DEBUG, "set DQS timing:DQSPos: %02x\n", i);
 	}
@@ -2044,7 +2044,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	}
 
 	if(v) {
-		printk(BIOS_DEBUG, " done\r\n");
+		printk(BIOS_DEBUG, " done\n");
 		tsc[2] = rdtsc();
 
 		printk(BIOS_DEBUG, "set DQS timing:RcvrEn:Pass2: %02x\n", i);
@@ -2055,7 +2055,7 @@ static void dqs_timing(int i, const struct mem_controller *ctrl, struct sys_info
 	}
 
 	if(v) {
-		printk(BIOS_DEBUG, " done\r\n");
+		printk(BIOS_DEBUG, " done\n");
 
 		tsc[3] = rdtsc();
 	}

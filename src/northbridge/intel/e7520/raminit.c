@@ -67,7 +67,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 		device_t dev;
 		unsigned where;
 		unsigned long reg;
-		dev = (register_values[i] & ~0xff) - PCI_DEV(0, 0x00, 0) + ctrl->f0;
+		dev = (register_values[i] & ~0xff) - PCI_DEV(0, 0x00, 0) + PCI_DEV(0, 0x00, 0);
 		where = register_values[i] & 0xff;
 		reg = pci_read_config32(dev, where);
 		reg &= register_values[i+1];
@@ -181,27 +181,27 @@ static long spd_set_ram_size(const struct mem_controller *ctrl, long dimm_mask)
 			sz.side1 -= 29;
 			cum += (1 << sz.side1);
 			/* DRB = 0x60 */
-			pci_write_config8(ctrl->f0, DRB + (i*2), cum);
+			pci_write_config8(PCI_DEV(0, 0x00, 0), DRB + (i*2), cum);
 			if( sz.side2 > 28) {
 				sz.side2 -= 29;
 				cum += (1 << sz.side2);
 			}
-			pci_write_config8(ctrl->f0, DRB+1 + (i*2), cum);
+			pci_write_config8(PCI_DEV(0, 0x00, 0), DRB+1 + (i*2), cum);
 		}
 		else {
-			pci_write_config8(ctrl->f0, DRB + (i*2), cum);
-			pci_write_config8(ctrl->f0, DRB+1 + (i*2), cum);
+			pci_write_config8(PCI_DEV(0, 0x00, 0), DRB + (i*2), cum);
+			pci_write_config8(PCI_DEV(0, 0x00, 0), DRB+1 + (i*2), cum);
 		}
 	}
 	/* set TOM top of memory 0xcc */
-	pci_write_config16(ctrl->f0, TOM, cum);
+	pci_write_config16(PCI_DEV(0, 0x00, 0), TOM, cum);
 	/* set TOLM top of low memory */
 	if(cum > 0x18) {
 		cum = 0x18;
 	}
 	cum <<= 11;
 	/* 0xc4 TOLM */
-	pci_write_config16(ctrl->f0, TOLM, cum);
+	pci_write_config16(PCI_DEV(0, 0x00, 0), TOLM, cum);
 	return 0;
 }
 
@@ -279,7 +279,7 @@ static int spd_set_row_attributes(const struct mem_controller *ctrl,
 	}
 
 	/* 0x70 DRA */
-	pci_write_config32(ctrl->f0, DRA, dra);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRA, dra);	
 	goto out;
 
  val_err:
@@ -309,7 +309,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	static const int latency_indicies[] = { 26, 23, 9 };
 
 	/* 0x78 DRT */
-	drt = pci_read_config32(ctrl->f0, DRT);
+	drt = pci_read_config32(PCI_DEV(0, 0x00, 0), DRT);
 	drt &= 3;  /* save bits 1:0 */
 	
 	for(first_dimm = 0; first_dimm < 4; first_dimm++) {
@@ -542,7 +542,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 	}
 
 	/* 0x78 DRT */
-	pci_write_config32(ctrl->f0, DRT, drt);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRT, drt);
 
 	return(cas_latency);
 }
@@ -563,7 +563,7 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 	static const unsigned char fsb_conversion[4] = {3,1,3,2};
 
 	/* 0x7c DRC */
-	drc = pci_read_config32(ctrl->f0, DRC);	
+	drc = pci_read_config32(PCI_DEV(0, 0x00, 0), DRC);	
 	for(cnt=0; cnt < 4; cnt++) {
 		if (!(dimm_mask & (1 << cnt))) {
 			continue;
@@ -727,12 +727,12 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
  
 	/* Set up northbridge values */
 	/* ODT enable */
-  	pci_write_config32(ctrl->f0, 0x88, 0xf0000180);
+  	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x88, 0xf0000180);
 	/* Figure out which slots are Empty, Single, or Double sided */
 	for(i=0,t4=0,c2=0;i<8;i+=2) {
-		c1 = pci_read_config8(ctrl->f0, DRB+i);
+		c1 = pci_read_config8(PCI_DEV(0, 0x00, 0), DRB+i);
 		if(c1 == c2) continue;
-		c2 = pci_read_config8(ctrl->f0, DRB+1+i);
+		c2 = pci_read_config8(PCI_DEV(0, 0x00, 0), DRB+1+i);
 		if(c1 == c2)
 			t4 |= (1 << (i*4));
 		else
@@ -778,7 +778,7 @@ static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 	print_debug_hex32(data32);
 	print_debug("\r\n");
 
-  	pci_write_config32(ctrl->f0, 0xb0, data32);
+  	pci_write_config32(PCI_DEV(0, 0x00, 0), 0xb0, data32);
 
 	for(dimm=0;dimm<8;dimm+=1) {
 
@@ -1079,10 +1079,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	/* 0x80 */
 #ifdef DIMM_MAP_LOGICAL
-	pci_write_config32(ctrl->f0, DRM,
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRM,
 		0x00210000 | DIMM_MAP_LOGICAL);
 #else
-	pci_write_config32(ctrl->f0, DRM, 0x00211248);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRM, 0x00211248);
 #endif
 	/* set dram type and Front Side Bus freq. */
 	drc = spd_set_dram_controller_mode(ctrl, mask);
@@ -1097,20 +1097,20 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
   	/* drc bits 1:0 = DIMM speed, bits 3:2 = FSB speed */
   	for(iptr = gearing[(drc&3)+((((drc>>2)&3)-1)*3)].clkgr,cnt=0;
 			cnt<4;cnt++) {
-  		pci_write_config32(ctrl->f0, 0xa0+(cnt*4), iptr[cnt]);
+  		pci_write_config32(PCI_DEV(0, 0x00, 0), 0xa0+(cnt*4), iptr[cnt]);
 	}
 	/* 0x7c DRC */
-  	pci_write_config32(ctrl->f0, DRC, data32);
+  	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);
 	
 		/* turn the clocks on */
 	/* 0x8c CKDIS */
-  	pci_write_config16(ctrl->f0, CKDIS, 0x0000);
+  	pci_write_config16(PCI_DEV(0, 0x00, 0), CKDIS, 0x0000);
 	
 		/* 0x9a DDRCSR Take subsystem out of idle */
-  	data16 = pci_read_config16(ctrl->f0, DDRCSR);
+  	data16 = pci_read_config16(PCI_DEV(0, 0x00, 0), DDRCSR);
 	data16 &= ~(7 << 12);
 	data16 |= (3 << 12);   /* use dual channel lock step */
-  	pci_write_config16(ctrl->f0, DDRCSR, data16);
+  	pci_write_config16(PCI_DEV(0, 0x00, 0), DDRCSR, data16);
 	
 		/* program row size DRB */
 	spd_set_ram_size(ctrl, mask);
@@ -1287,23 +1287,23 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		set_on_dimm_termination_enable(ctrl);
 	}
 	else { /* ddr */
-                pci_write_config32(ctrl->f0, 0x88, 0xa0000000 );
+                pci_write_config32(PCI_DEV(0, 0x00, 0), 0x88, 0xa0000000 );
         }
 
 	/* receive enable calibration */
 	set_receive_enable(ctrl);
 	
 	/* DQS */
-	pci_write_config32(ctrl->f0, 0x94, 0x3904a100 ); 
+	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x94, 0x3904a100 ); 
 	for(i = 0, cnt = (BAR+0x200); i < 24; i++, cnt+=4) {
 		write32(cnt, dqs_data[i]);
 	}
-	pci_write_config32(ctrl->f0, 0x94, 0x3904a100 );
+	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x94, 0x3904a100 );
 
 	/* Enable refresh */
 	/* 0x7c DRC */
 	data32 = drc & ~(3 << 20);  /* clear ECC mode */
-	pci_write_config32(ctrl->f0, DRC, data32);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);	
 	write32(BAR+DCALCSR, 0x0008000f);
 
 	/* clear memory and init ECC */
@@ -1320,13 +1320,13 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 
 	/* Bring memory subsystem on line */
-	data32 = pci_read_config32(ctrl->f0, 0x98);
+	data32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0x98);
 	data32 |= (1 << 31);
-	pci_write_config32(ctrl->f0, 0x98, data32);
+	pci_write_config32(PCI_DEV(0, 0x00, 0), 0x98, data32);
 	/* wait for completion */
 	print_debug("Waiting for mem complete\r\n");
 	while(1) {
-		data32 = pci_read_config32(ctrl->f0, 0x98);
+		data32 = pci_read_config32(PCI_DEV(0, 0x00, 0), 0x98);
 		if( (data32 & (1<<31)) == 0)
 			break;
 	}
@@ -1336,17 +1336,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* 0x7c DRC */
 	drc |= (1 << 29);
 	data32 = drc & ~(3 << 20);  /* clear ECC mode */
-	pci_write_config32(ctrl->f0, DRC, data32);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, data32);	
 
 	/* Set the ecc mode */
-	pci_write_config32(ctrl->f0, DRC, drc);	
+	pci_write_config32(PCI_DEV(0, 0x00, 0), DRC, drc);	
 
 	/* Enable memory scrubbing */
 	/* 0x52 MCHSCRB */	
-	data16 = pci_read_config16(ctrl->f0, MCHSCRB);
+	data16 = pci_read_config16(PCI_DEV(0, 0x00, 0), MCHSCRB);
 	data16 &= ~0x0f;
 	data16 |= ((2 << 2) | (2 << 0));
-	pci_write_config16(ctrl->f0, MCHSCRB, data16);	
+	pci_write_config16(PCI_DEV(0, 0x00, 0), MCHSCRB, data16);	
 
 	/* The memory is now setup, use it */
 	cache_lbmem(MTRR_TYPE_WRBACK);

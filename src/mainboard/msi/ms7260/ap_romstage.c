@@ -39,10 +39,8 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-#if CONFIG_USE_INIT == 0
-#include "lib/memcpy.c"
-#endif
-#include "arch/i386/lib/console.c"
+
+#include "console/console.c"
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"

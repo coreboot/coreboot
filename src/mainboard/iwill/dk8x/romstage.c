@@ -30,7 +30,7 @@
 #include "pc80/mc146818rtc_early.c"
 
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"

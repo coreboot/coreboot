@@ -25,7 +25,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "superio/winbond/w83977tf/w83977tf_early_serial.c"
 #include "southbridge/amd/cs5530/cs5530_enable_rom.c"

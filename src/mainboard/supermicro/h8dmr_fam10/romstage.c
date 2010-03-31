@@ -47,7 +47,7 @@
 // for enable the FAN
 #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 
 #include <cpu/amd/model_10xxx_rev.h>

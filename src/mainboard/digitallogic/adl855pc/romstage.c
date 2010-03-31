@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801dx/i82801dx.h"
 #include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"

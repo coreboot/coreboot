@@ -33,16 +33,14 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "northbridge/via/vx800/vx800.h"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#if CONFIG_USE_INIT == 0
 #include <string.h>
-#endif
 #include "cpu/x86/lapic/boot_cpu.c"
 
 /* This file contains the board-special SI value for raminit.c. */
@@ -726,7 +724,7 @@ void amd64_main(unsigned long bist)
 		 */
 		unsigned v_esp;
 		__asm__ volatile ("movl %%esp, %0\n\t":"=a" (v_esp));
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
 		printk(BIOS_DEBUG, "v_esp=%08x\r\n", v_esp);
 #else
 		print_debug("v_esp=");
@@ -745,7 +743,7 @@ cpu_reset_x:
 	 */
 	cpu_reset = 0;
 
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
 	printk(BIOS_DEBUG, "cpu_reset = %08x\r\n", cpu_reset);
 #else
 	print_debug("cpu_reset = ");
@@ -795,7 +793,7 @@ cpu_reset_x:
 		else
 			print_debug("Use Ram as Stack now - \r\n");
 
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
 		printk(BIOS_DEBUG, "new_cpu_reset = %08x\r\n", new_cpu_reset);
 #else
 		print_debug("new_cpu_reset = ");

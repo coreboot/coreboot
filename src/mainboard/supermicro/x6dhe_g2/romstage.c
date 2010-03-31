@@ -8,7 +8,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
@@ -62,10 +62,12 @@ static void main(unsigned long bist)
 	static const struct mem_controller mch[] = {
 		{
 			.node_id = 0,
+			/*
 			.f0 = PCI_DEV(0, 0x00, 0),
 			.f1 = PCI_DEV(0, 0x00, 1),
 			.f2 = PCI_DEV(0, 0x00, 2),
 			.f3 = PCI_DEV(0, 0x00, 3),
+			*/
 		    	.channel0 = {(0xa<<3)|3, (0xa<<3)|2, (0xa<<3)|1, (0xa<<3)|0, },
 			.channel1 = {(0xa<<3)|7, (0xa<<3)|6, (0xa<<3)|5, (0xa<<3)|4, },
 

@@ -40,7 +40,7 @@
 
 #include <console/console.h>
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include <cpu/x86/bist.h>
 
 #if CONFIG_USBDEBUG_DIRECT

@@ -8,7 +8,7 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "southbridge/intel/esb6300/esb6300_early_smbus.c"
 #include "northbridge/intel/e7525/raminit.h"

@@ -25,7 +25,7 @@
 #include <arch/romcc_io.h>
 #include <arch/hlt.h>
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "northbridge/amd/gx1/raminit.c"
 #include "superio/nsc/pc87351/pc87351_early_serial.c"

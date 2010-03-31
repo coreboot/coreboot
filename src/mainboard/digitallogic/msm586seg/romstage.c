@@ -7,7 +7,7 @@
 #include <arch/hlt.h>
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "cpu/x86/bist.h"
 //#include "lib/delay.c"

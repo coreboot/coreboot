@@ -26,7 +26,7 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 /* TODO: It's a PC87364 actually! */
 #include "superio/nsc/pc87360/pc87360_early_serial.c"

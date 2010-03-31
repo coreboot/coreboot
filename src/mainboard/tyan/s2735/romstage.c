@@ -9,19 +9,8 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
-
-#if 0
-static void post_code(uint8_t value) {
-#if 1
-        int i;
-        for(i=0;i<0x80000;i++) {
-                outb(value, 0x80);
-        }
-#endif
-}
-#endif
 
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
@@ -139,7 +128,7 @@ void amd64_main(unsigned long bist)
         	        "movl   %%esp, %0\n\t"
 	                : "=a" (v_esp)
 	        );
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
 	        printk(BIOS_DEBUG, "v_esp=%08x\r\n", v_esp);
 #else
 	        print_debug("v_esp="); print_debug_hex32(v_esp); print_debug("\r\n");
@@ -151,7 +140,7 @@ void amd64_main(unsigned long bist)
 
 cpu_reset_x:
 
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
         printk(BIOS_DEBUG, "cpu_reset = %08x\r\n",cpu_reset);
 #else
         print_debug("cpu_reset = "); print_debug_hex32(cpu_reset); print_debug("\r\n");
@@ -200,7 +189,7 @@ cpu_reset_x:
                 {  
                         print_debug("Use Ram as Stack now - \r\n");
                 }
-#if CONFIG_USE_INIT
+#if CONFIG_USE_PRINTK_IN_CAR
                 printk(BIOS_DEBUG, "new_cpu_reset = %08x\r\n", new_cpu_reset);
 #else
                 print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\r\n");

@@ -2,8 +2,12 @@
  * Bootstrap code for the INTEL 
  */
 
-#include <arch/io.h>
 #include <console/console.h>
+#include <build.h>
+#include <arch/hlt.h>
+
+#ifndef __PRE_RAM__
+#include <arch/io.h>
 #include <string.h>
 #include <pc80/mc146818rtc.h>
 
@@ -86,6 +90,42 @@ void post_code(uint8_t value)
 void __attribute__((noreturn)) die(const char *msg)
 {
 	printk(BIOS_EMERG, "%s", msg);
-	post_code(0xff);
-	while (1);		/* Halt */
+	//post_code(0xff);
+ 	for (;;)
+		hlt();		/* Halt */
 }
+
+#else
+
+void console_init(void)
+{
+	static const char console_test[] = 
+		"\r\n\r\ncoreboot-"
+		COREBOOT_VERSION
+		COREBOOT_EXTRA_VERSION
+		" "
+		COREBOOT_BUILD
+		" starting...\r\n";
+	print_info(console_test);
+}
+
+void post_code(u8 value)
+{
+#if !defined(CONFIG_NO_POST) || CONFIG_NO_POST==0
+#if CONFIG_SERIAL_POST==1
+	print_emerg("POST: 0x");
+	print_emerg_hex8(value);
+	print_emerg("\r\n");
+#endif
+	outb(value, 0x80);
+#endif
+}
+
+void die(const char *str)
+{
+	print_emerg(str);
+	do {
+		hlt();
+	} while(1);
+}
+#endif

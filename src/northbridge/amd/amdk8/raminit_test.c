@@ -124,7 +124,7 @@ static void hlt(void)
 {
 	longjmp(end_buf, 2);
 }
-#include "../../../arch/i386/lib/console.c"
+#include "console/console.c"
 
 unsigned long log2(unsigned long x)
 {

@@ -27,7 +27,7 @@
 #include <arch/hlt.h>
 #include "pc80/serial.c"
 #include "pc80/udelay_io.c"
-#include "arch/i386/lib/console.c"
+#include "console/console.c"
 #include "lib/ramtest.c"
 #include "superio/smsc/smscsuperio/smscsuperio_early_serial.c"
 #include "northbridge/intel/i82830/raminit.h"

@@ -14,3 +14,5 @@ driver-$(CONFIG_CONSOLE_VGA) += vga_console.o
 driver-$(CONFIG_CONSOLE_BTEXT) += btext_console.o
 driver-$(CONFIG_CONSOLE_BTEXT) += font-8x16.o
 driver-$(CONFIG_CONSOLE_LOGBUF) += logbuf_console.o
+
+$(obj)/console/console.o : $(obj)/build.h

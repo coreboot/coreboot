@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <console/loglevel.h>
 
+#ifndef __PRE_RAM__
 void console_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
@@ -11,6 +12,9 @@ unsigned char console_rx_byte(void);
 int console_tst_byte(void);
 void post_code(uint8_t value);
 void __attribute__ ((noreturn)) die(const char *msg);
+#if CONFIG_CONSOLE_VGA == 1
+void vga_console_init(void);
+#endif
 
 struct console_driver {
 	void (*init)(void);
@@ -27,6 +31,8 @@ extern struct console_driver console_drivers[];
 extern struct console_driver econsole_drivers[];
 
 extern int console_loglevel;
+#endif /* !__PRE_RAM__ */
+
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
 #undef WE_CLEANED_UP_ALL_SIDE_EFFECTS
@@ -109,9 +115,5 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 #define print_info_hex32(HEX)    printk(BIOS_INFO,   "%08x", (HEX))
 #define print_debug_hex32(HEX)   printk(BIOS_DEBUG,  "%08x", (HEX))
 #define print_spew_hex32(HEX)    printk(BIOS_SPEW,   "%08x", (HEX))
-
-#if CONFIG_CONSOLE_VGA == 1
-void vga_console_init(void);
-#endif
 
 #endif /* CONSOLE_CONSOLE_H_ */

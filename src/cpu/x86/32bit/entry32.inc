@@ -50,7 +50,7 @@ __protected_start:
 	/* Save the BIST value */
 	movl	%eax, %ebp
 
-	intel_chip_post_macro(0x10)	/* post 10 */
+	post_code(0x10)	/* post 10 */
 
 	movw	$ROM_DATA_SEG, %ax
 	movw	%ax, %ds

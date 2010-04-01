@@ -13,7 +13,6 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 
-#define POST_CODE(x) outb(x, 0x80)
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
@@ -63,7 +62,7 @@ static void mb_gpio_init(void)
 void cache_as_ram_main(void)
 {
 	extern void RestartCAR();
-	POST_CODE(0x01);
+	post_code(0x01);
 
 	static const struct mem_controller memctrl [] = {
 		{.channel0 = {(0xa<<3)|0, (0xa<<3)|1}}
@@ -105,7 +104,7 @@ void cache_as_ram_main(void)
 
 	 We use method 1 on Norwich.
 	*/
-	POST_CODE(0x02);
+	post_code(0x02);
 	print_err("POST 02\n");
 	__asm__("wbinvd\n");
 	print_err("Past wbinvd\n");

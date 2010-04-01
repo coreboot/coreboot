@@ -67,7 +67,7 @@ static void auto_size_dimm(unsigned int dimm)
 	spd_byte = spd_read_byte(dimm, SPD_NUM_DIMM_BANKS);
 	if ((MIN_MOD_BANKS > spd_byte) || (spd_byte > MAX_MOD_BANKS)) {
 		print_emerg("Number of module banks not compatible\n");
-		POST_CODE(ERROR_BANK_SET);
+		post_code(ERROR_BANK_SET);
 		hcf();
 	}
 	dimm_setting |= (spd_byte >> 1) << CF07_UPPER_D0_MB_SHIFT;
@@ -78,7 +78,7 @@ static void auto_size_dimm(unsigned int dimm)
 	spd_byte = spd_read_byte(dimm, SPD_NUM_BANKS_PER_SDRAM);
 	if ((MIN_DEV_BANKS > spd_byte) || (spd_byte > MAX_DEV_BANKS)) {
 		print_emerg("Number of device banks not compatible\n");
-		POST_CODE(ERROR_BANK_SET);
+		post_code(ERROR_BANK_SET);
 		hcf();
 	}
 	dimm_setting |= (spd_byte >> 2) << CF07_UPPER_D0_CB_SHIFT;
@@ -94,7 +94,7 @@ static void auto_size_dimm(unsigned int dimm)
 	if ((spd_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
 	    || (spd_read_byte(dimm, SPD_NUM_COLUMNS) & 0xF0)) {
 		print_emerg("Assymetirc DIMM not compatible\n");
-		POST_CODE(ERROR_UNSUPPORTED_DIMM);
+		post_code(ERROR_UNSUPPORTED_DIMM);
 		hcf();
 	}
 	banner("SPDBANKDENSITY");
@@ -111,7 +111,7 @@ static void auto_size_dimm(unsigned int dimm)
 	banner("TEST DIMM SIZE>8");
 	if (dimm_size > 8) {	/* 8 is 1GB only support 1GB per DIMM */
 		print_emerg("Only support up to 1 GB per DIMM\n");
-		POST_CODE(ERROR_DENSITY_DIMM);
+		post_code(ERROR_DENSITY_DIMM);
 		hcf();
 	}
 	dimm_setting |= dimm_size << CF07_UPPER_D0_SZ_SHIFT;
@@ -144,7 +144,7 @@ static void auto_size_dimm(unsigned int dimm)
 	banner("MAXCOLADDR");
 	if (spd_byte > MAX_COL_ADDR) {
 		print_emerg("DIMM page size not compatible\n");
-		POST_CODE(ERROR_SET_PAGE);
+		post_code(ERROR_SET_PAGE);
 		hcf();
 	}
 	banner(">12address test");
@@ -186,7 +186,7 @@ static void checkDDRMax(void)
 	/* I don't think you need this check.
 	   if (spd_byte0 >= 0xA0 || spd_byte1 >= 0xA0){
 	   print_emerg("DIMM overclocked. Check GeodeLink Speed\n");
-	   POST_CODE(POST_PLL_MEM_FAIL);
+	   post_code(POST_PLL_MEM_FAIL);
 	   hcf();
 	   } */
 
@@ -201,7 +201,7 @@ static void checkDDRMax(void)
 	/* current speed > max speed? */
 	if (GeodeLinkSpeed() > speed) {
 		print_emerg("DIMM overclocked. Check GeodeLink Speed\n");
-		POST_CODE(POST_PLL_MEM_FAIL);
+		post_code(POST_PLL_MEM_FAIL);
 		hcf();
 	}
 }
@@ -341,7 +341,7 @@ static void setCAS(void)
 		spd_byte = CASDDR[__builtin_ctz((uint32_t) casmap0)];
 	} else {
 		print_emerg("DIMM CAS Latencies not compatible\n");
-		POST_CODE(ERROR_DIFF_DIMMS);
+		post_code(ERROR_DIFF_DIMMS);
 		hcf();
 	}
 
@@ -570,41 +570,41 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	uint8_t spd_byte;
 
 	banner("sdram_set_spd_register\n");
-	POST_CODE(POST_MEM_SETUP);	// post_70h
+	post_code(POST_MEM_SETUP);	// post_70h
 
 	spd_byte = spd_read_byte(DIMM0, SPD_MODULE_ATTRIBUTES);
 	banner("Check DIMM 0");
 	/* Check DIMM is not Register and not Buffered DIMMs. */
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
 		print_emerg("DIMM0 NOT COMPATIBLE\n");
-		POST_CODE(ERROR_UNSUPPORTED_DIMM);
+		post_code(ERROR_UNSUPPORTED_DIMM);
 		hcf();
 	}
 	banner("Check DIMM 1");
 	spd_byte = spd_read_byte(DIMM1, SPD_MODULE_ATTRIBUTES);
 	if ((spd_byte != 0xFF) && (spd_byte & 3)) {
 		print_emerg("DIMM1 NOT COMPATIBLE\n");
-		POST_CODE(ERROR_UNSUPPORTED_DIMM);
+		post_code(ERROR_UNSUPPORTED_DIMM);
 		hcf();
 	}
 
-	POST_CODE(POST_MEM_SETUP2);	// post_72h
+	post_code(POST_MEM_SETUP2);	// post_72h
 	banner("Check DDR MAX");
 
 	/* Check that the memory is not overclocked. */
 	checkDDRMax();
 
 	/* Size the DIMMS */
-	POST_CODE(POST_MEM_SETUP3);	// post_73h
+	post_code(POST_MEM_SETUP3);	// post_73h
 	banner("AUTOSIZE DIMM 0");
 	auto_size_dimm(DIMM0);
-	POST_CODE(POST_MEM_SETUP4);	// post_74h
+	post_code(POST_MEM_SETUP4);	// post_74h
 	banner("AUTOSIZE DIMM 1");
 	auto_size_dimm(DIMM1);
 
 	/* Set CAS latency */
 	banner("set cas latency");
-	POST_CODE(POST_MEM_SETUP5);	// post_75h
+	post_code(POST_MEM_SETUP5);	// post_75h
 	setCAS();
 
 	/* Set all the other latencies here (tRAS, tRP....) */
@@ -640,7 +640,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 ;* 9) MRS w/ memory config & reset DLL clear
 ;* 8) DDR SDRAM ready for normal operation
 ;********************************************************************/
-	POST_CODE(POST_MEM_ENABLE);	// post_76h
+	post_code(POST_MEM_ENABLE);	// post_76h
 
 	/* Only enable MTest for TLA memory debug */
 	/*EnableMTest(); */
@@ -650,7 +650,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	if ((msr.hi & ((7 << CF07_UPPER_D1_PSZ_SHIFT) | (7 << CF07_UPPER_D0_PSZ_SHIFT))) == 
 			((7 << CF07_UPPER_D1_PSZ_SHIFT) | (7 << CF07_UPPER_D0_PSZ_SHIFT))) {
 		print_emerg("No memory in the system\n");
-		POST_CODE(ERROR_NO_DIMMS);
+		post_code(ERROR_NO_DIMMS);
 		hcf();
 	}
 
@@ -760,7 +760,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	wrmsr(msrnum, msr);
 
 	print_emerg("DRAM controller init done.\n");
-	POST_CODE(POST_MEM_SETUP_GOOD);	//0x7E
+	post_code(POST_MEM_SETUP_GOOD);	//0x7E
 
 	/* make sure there is nothing stale in the cache */
 	/* CAR stack is in the cache __asm__ __volatile__("wbinvd\n"); */

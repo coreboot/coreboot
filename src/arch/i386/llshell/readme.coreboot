@@ -16,7 +16,7 @@ llshell_ret1:
 3) Optionally, comment out two lines in ramtest.inc:
 5:
         CONSOLE_INFO_TX_STRING($rt_toomany)
-        // intel_chip_post_macro(0xf1)
+        // post_code(0xf1)
         // jmp  .Lhlt
 otherwise, a ramtest failure will hang
 

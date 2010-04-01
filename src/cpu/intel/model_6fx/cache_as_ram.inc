@@ -20,7 +20,6 @@
 
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
-#define post_code(x) intel_chip_post_macro(x)
 
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>

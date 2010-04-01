@@ -15,7 +15,7 @@ _start:
 	movl	%eax, %fs
 	movl	%eax, %gs
 
-	intel_chip_post_macro(0x13)		/* post 13 */
+	post_code(0x13)		/* post 13 */
 
 	/** clear stack */
 	cld
@@ -74,7 +74,7 @@ _start:
 	 *	bss is cleared.   Now we call the main routine and
 	 *	let it do the rest.
 	 */ 
-	intel_chip_post_macro(0xfe)	/* post fe */
+	post_code(0xfe)	/* post fe */
 
 	/* Restore the stack location */
 	movl	%ebp, %esp
@@ -83,7 +83,7 @@ _start:
 	call	hardwaremain
 	/*NOTREACHED*/
 .Lhlt:
-	intel_chip_post_macro(0xee)	/* post ee */
+	post_code(0xee)	/* post ee */
 	hlt
 	jmp	.Lhlt
 	

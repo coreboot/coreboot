@@ -17,6 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef ASM_CONSOLE_LOGLEVEL
+#define ASM_CONSOLE_LOGLEVEL CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
+#endif
+
 #define	LX_STACK_BASE		CONFIG_DCACHE_RAM_BASE		/* this is where the DCache will be mapped and be used as stack, It would be cool if it was the same base as coreboot normal stack */
 #define	LX_STACK_END		LX_STACK_BASE+(CONFIG_DCACHE_RAM_SIZE-1)
 
@@ -206,7 +210,7 @@ __main:
 	 *	isn\'t really that big we just copy/clear using bytes, not
 	 *	double words.
 	 */
-	intel_chip_post_macro(0x11)		/* post 11 */
+	post_code(0x11)		/* post 11 */
 
 	cld				/* clear direction flag */
 
@@ -220,7 +224,7 @@ __main:
 	call cbfs_and_run_core
 
 .Lhlt:
-	intel_chip_post_macro(0xee)	/* post fail ee */
+	post_code(0xee)	/* post fail ee */
 	hlt
 	jmp	.Lhlt
 

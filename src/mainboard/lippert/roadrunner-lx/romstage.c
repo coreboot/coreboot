@@ -36,8 +36,6 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 
-#define POST_CODE(x) outb(x, 0x80)
-
 #include "southbridge/amd/cs5536/cs5536_early_smbus.c"
 #include "southbridge/amd/cs5536/cs5536_early_setup.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
@@ -132,7 +130,7 @@ static void mb_gpio_init(void)
 
 void cache_as_ram_main(void)
 {
-	POST_CODE(0x01);
+	post_code(0x01);
 
 	static const struct mem_controller memctrl[] = {
 		{.channel0 = {(0xa << 3) | 0, (0xa << 3) | 1}}

@@ -4,7 +4,6 @@
  *   (c) 2006 coresystems GmbH
  */
 
-#define ASM_CONSOLE_LOGLEVEL 6
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>

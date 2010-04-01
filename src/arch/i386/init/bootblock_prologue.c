@@ -33,5 +33,5 @@
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits
 
-	intel_chip_post_macro(0x01)             /* delay for chipsets */
+	post_code(0x01)             /* delay for chipsets */
 

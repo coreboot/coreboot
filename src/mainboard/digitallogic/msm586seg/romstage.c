@@ -1,4 +1,3 @@
-#define ASM_CONSOLE_LOGLEVEL 8
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <arch/io.h>

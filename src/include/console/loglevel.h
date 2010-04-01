@@ -2,11 +2,6 @@
 #define LOGLEVEL_H
 
 /* Safe for inclusion in assembly */
-
-#ifndef ASM_CONSOLE_LOGLEVEL
-#define ASM_CONSOLE_LOGLEVEL CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
-#endif
-
 #define BIOS_EMERG      0   /* system is unusable                   */
 #define BIOS_ALERT      1   /* action must be taken immediately     */
 #define BIOS_CRIT       2   /* critical conditions                  */

@@ -54,7 +54,7 @@ __protected_stage0:
 	/* Save the BIST result. */
 	movl	%eax, %ebp
 
-	intel_chip_post_macro(0x01)
+	post_code(0x01)
 
 	movw	$ROM_DATA_SEG, %ax
 	movw	%ax, %ds

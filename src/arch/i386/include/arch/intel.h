@@ -45,10 +45,8 @@ label##_done:
 	jmp *%esp
 
 
-/* originally this macro was from STPC BIOS */
-#define	intel_chip_post_macro(value)			 \
-	movb	$value, %al				; \
+#define	post_code(value)	\
+	movb	$value, %al;	\
 	outb	%al, $0x80
-
 
 #endif /* ROM_INTEL_H */

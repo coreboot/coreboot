@@ -33,7 +33,6 @@
 #include <cpu/amd/geode_post_code.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 
-#define POST_CODE(x) outb(x, 0x80)
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 /* The ALIX1.C has no SMBus; the setup is hard-wired. */
@@ -148,7 +147,7 @@ void cache_as_ram_main(void)
 
 	extern void RestartCAR();
 
-	POST_CODE(0x01);
+	post_code(0x01);
 
 	SystemPreInit();
 	msr_init();
@@ -195,7 +194,7 @@ void cache_as_ram_main(void)
 	 *
 	 * We use method 1 on Norwich and on this board too.
 	 */
-	POST_CODE(0x02);
+	post_code(0x02);
 	print_err("POST 02\n");
 	__asm__("wbinvd\n");
 	print_err("Past wbinvd\n");

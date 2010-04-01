@@ -76,7 +76,7 @@ int console_tst_byte(void)
 /*
  *    Write POST information
  */
-void post_code(uint8_t value)
+void post_code(u8 value)
 {
 #if !defined(CONFIG_NO_POST) || CONFIG_NO_POST==0
 #if CONFIG_SERIAL_POST==1

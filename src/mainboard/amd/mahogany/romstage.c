@@ -45,8 +45,6 @@
 #include "pc80/serial.c"
 #include "console/console.c"
 
-#define post_code(x) outb(x, 0x80)
-
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"

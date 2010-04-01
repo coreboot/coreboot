@@ -25,6 +25,10 @@
 #include <arch/intel.h>
 #include <console/loglevel.h>	
 
+#ifndef ASM_CONSOLE_LOGLEVEL
+#define ASM_CONSOLE_LOGLEVEL CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
+#endif
+
 /*
  * This is the entry code the code in .reset section
  * jumps to this address.
@@ -33,7 +37,7 @@
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits
 
-	intel_chip_post_macro(0x01)             /* delay for chipsets */
+	post_code(0x01)             /* delay for chipsets */
 
 #include "crt0_includes.h"
 
@@ -61,7 +65,7 @@ __main:
 	 *	isn\'t really that big we just copy/clear using bytes, not
 	 *	double words.
 	 */
-	intel_chip_post_macro(0x11)		/* post 11 */
+	post_code(0x11)		/* post 11 */
 
 	cld				/* clear direction flag */
 	
@@ -78,7 +82,7 @@ __main:
 	call cbfs_and_run_core
 
 .Lhlt:	
-	intel_chip_post_macro(0xee)	/* post fe */
+	post_code(0xee)	/* post fe */
 	hlt
 	jmp	.Lhlt
 

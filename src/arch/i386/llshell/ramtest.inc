@@ -112,7 +112,7 @@ ramtest:
 	jmp 3b
 5:	
 	CONSOLE_INFO_TX_STRING($rt_toomany)
-	intel_chip_post_macro(0xf1)
+	post_code(0xf1)
 	jmp	.Lhlt
 
 6:

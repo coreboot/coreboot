@@ -19,18 +19,7 @@
 
 #include <console/console.h>
 #include <console/vtxprintf.h>
-#include <console/loglevel.h>
 #include <uart8250.h>
-
-/* Using a global varible can cause problems when we reset the stack 
- * from cache as ram to ram. If we make this a define USE_SHARED_STACK
- * we could use the same code on all architectures.
- */
-#if 0
-int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-#else
-#define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
-#endif
 
 static void console_tx_byte(unsigned char byte)
 {

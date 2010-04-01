@@ -115,7 +115,6 @@ static unsigned int get_memory_speed(void)
 #if USE_GOODRICH_VERSION
 ///////////////////////////////////////////////////////////////////////////////
 // Goodrich Version of pll_reset
-#define POST_CODE(x) outb(x, 0x80)
 
 // PLLCHECK_COMPLETED is the "we've already done this" flag
 #define PLLCHECK_COMPLETED (1 << RSTPLL_LOWER_SWFLAGS_SHIFT)
@@ -149,7 +148,7 @@ static void pll_reset(void)
 	
 		// Store PCI33(0)/66(1), SDR(0)/DDR(1), and CRT(0)/TFT(1) in upper esi to get to the
 		// correct Strap Table.
-		POST_CODE(POST_PLL_INIT);
+		post_code(POST_PLL_INIT);
 		
 		// configure for DDR
 		msrGlcpSysRstpll.lo &= ~(1 << RSTPPL_LOWER_SDRMODE_SHIFT);
@@ -157,7 +156,7 @@ static void pll_reset(void)
 		
 		// Use Manual settings
 		//	UseManual:
-		POST_CODE(POST_PLL_MANUAL);
+		post_code(POST_PLL_MANUAL);
 
 		// DIV settings manually entered.
 		// ax = VDIV, upper eax = MDIV, upper ecx = FbDIV
@@ -237,7 +236,7 @@ static void pll_reset(void)
 		wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
 		
 		// You should never get here..... The chip has reset.
-		POST_CODE(POST_PLL_RESET_FAIL);
+		post_code(POST_PLL_RESET_FAIL);
 		while (1);
 
 	} // we haven't configured the PLL; do it now

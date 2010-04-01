@@ -31,12 +31,12 @@ static void pll_reset(char manualconf)
 	print_debug(":");
 	print_debug_hex32(msrGlcpSysRstpll.lo);
 	print_debug("\n");
-	POST_CODE(POST_PLL_INIT);
+	post_code(POST_PLL_INIT);
 
 	if (!(msrGlcpSysRstpll.lo & (1 << RSTPLL_LOWER_SWFLAGS_SHIFT))) {
 		print_debug("Configuring PLL\n");
 		if (manualconf) {
-			POST_CODE(POST_PLL_MANUAL);
+			post_code(POST_PLL_MANUAL);
 			/* CPU and GLIU mult/div (GLMC_CLK = GLIU_CLK / 2)  */
 			msrGlcpSysRstpll.hi = PLLMSRhi;
 
@@ -44,7 +44,7 @@ static void pll_reset(char manualconf)
 			msrGlcpSysRstpll.lo = PLLMSRlo;
 		} else {
 			/*automatic configuration (straps) */
-			POST_CODE(POST_PLL_STRAP);
+			post_code(POST_PLL_STRAP);
 			msrGlcpSysRstpll.lo &=
 			    ~(0xFF << RSTPPL_LOWER_HOLD_COUNT_SHIFT);
 			msrGlcpSysRstpll.lo |=
@@ -64,7 +64,7 @@ static void pll_reset(char manualconf)
 
 		/*      You should never get here..... The chip has reset. */
 		print_debug("CONFIGURING PLL FAILURE\n");
-		POST_CODE(POST_PLL_RESET_FAIL);
+		post_code(POST_PLL_RESET_FAIL);
 		__asm__ __volatile__("hlt\n");
 
 	}

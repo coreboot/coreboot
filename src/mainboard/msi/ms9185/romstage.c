@@ -52,17 +52,6 @@
 #include "pc80/serial.c"
 #include "console/console.c"
 
-#if 0
-static void post_code(uint8_t value) {
-#if 1
-        int i;
-        for(i=0;i<0x80000;i++) {
-                outb(value, 0x80);
-        }
-#endif
-}
-#endif
-
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/broadcom/bcm5785/bcm5785_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"

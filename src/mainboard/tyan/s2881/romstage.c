@@ -17,17 +17,6 @@
 #include "console/console.c"
 #include "lib/ramtest.c"
 
-#if 0
-static void post_code(uint8_t value) {
-#if 1
-        int i;
-        for(i=0;i<0x80000;i++) {
-                outb(value, 0x80);
-        }
-#endif
-}
-#endif
-
 #include <cpu/amd/model_fxx_rev.h>
 
 #include "northbridge/amd/amdk8/incoherent_ht.c"

@@ -27,12 +27,10 @@
  */
 #ifndef __PRE_RAM__
 #include <console/console.h>
-#include <string.h>
 #include <device/pci.h>
-#include <cpu/amd/amdk8_sysconf.h>
 #include <device/pci_ops.h>
-#include "amdk8.h"
 #endif
+#include "amdk8.h"
 
 /* Function 1 */
 /* the DRAM, MMIO,and PCIIO routing are 64-bit registers, hence the ending at

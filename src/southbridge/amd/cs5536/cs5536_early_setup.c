@@ -156,7 +156,7 @@ static void cs5536_setup_cis_mode(void)
  *
  * See page 412 of the AMD Geode CS5536 Companion Device data book.
  */
-void cs5536_setup_onchipuart1(void)
+static void cs5536_setup_onchipuart1(void)
 {
 	msr_t msr;
 
@@ -196,7 +196,7 @@ void cs5536_setup_onchipuart1(void)
 	wrmsr(MDD_UART1_CONF, msr);
 }
 
-void cs5536_setup_onchipuart2(void)
+static void cs5536_setup_onchipuart2(void)
 {
 	msr_t msr;
 

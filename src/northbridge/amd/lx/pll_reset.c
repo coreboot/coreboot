@@ -72,6 +72,7 @@ static void pll_reset(char manualconf)
 	return;
 }
 
+#if 0 // Unused
 static unsigned int CPUSpeed(void)
 {
 	unsigned int speed;
@@ -84,6 +85,8 @@ static unsigned int CPUSpeed(void)
 	}
 	return (speed);
 }
+#endif
+
 static unsigned int GeodeLinkSpeed(void)
 {
 	unsigned int speed;
@@ -96,6 +99,8 @@ static unsigned int GeodeLinkSpeed(void)
 	}
 	return (speed);
 }
+
+#if 0 // Unused
 static unsigned int PCISpeed(void)
 {
 	msr_t msr;
@@ -107,3 +112,4 @@ static unsigned int PCISpeed(void)
 		return (33);
 	}
 }
+#endif

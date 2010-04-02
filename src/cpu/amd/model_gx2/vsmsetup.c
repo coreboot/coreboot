@@ -35,7 +35,6 @@
 #include <arch/io.h>
 #include <cbfs.h>
 
-u32 VSA_vrRead(u16 classIndex);
 void do_vsmbios(void);
 
 #define VSA2_BUFFER		0x60000
@@ -150,7 +149,7 @@ extern char real_mode_switch_end[];
 
 /* andrei: Some VSA virtual register helpers: raw read and MSR read. */
 
-u32 VSA_vrRead(u16 classIndex)
+static u32 VSA_vrRead(u16 classIndex)
 {
 	unsigned eax, ebx, ecx, edx;
 	asm volatile (
@@ -166,7 +165,7 @@ u32 VSA_vrRead(u16 classIndex)
 	return eax;
 }
 
-u32 VSA_msrRead(u32 msrAddr)
+static u32 VSA_msrRead(u32 msrAddr)
 {
 	unsigned eax, ebx, ecx, edx;
 	asm volatile (

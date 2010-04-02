@@ -514,6 +514,8 @@ static void set_extended_mode_registers(void)
 	wrmsr(MC_CF07_DATA, msr);
 }
 
+#undef TLA_MEMORY_DEBUG
+#ifdef TLA_MEMORY_DEBUG
 static void EnableMTest(void)
 {
 	msr_t msr;
@@ -534,6 +536,7 @@ static void EnableMTest(void)
 
 	print_info("Enabled MTest for TLA debug\n");
 }
+#endif
 
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
@@ -642,8 +645,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 ;********************************************************************/
 	post_code(POST_MEM_ENABLE);	// post_76h
 
+#ifdef TLA_MEMORY_DEBUG
 	/* Only enable MTest for TLA memory debug */
-	/*EnableMTest(); */
+	EnableMTest();
+#endif
 
 	/* If both Page Size = "Not Installed" we have a problems and should halt. */
 	msr = rdmsr(MC_CF07_DATA);

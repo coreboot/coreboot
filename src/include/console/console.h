@@ -44,6 +44,9 @@ extern int console_loglevel;
 #endif
 
 #ifndef __ROMCC__
+void console_init(void);
+void post_code(u8 value);
+void __attribute__ ((noreturn)) die(const char *msg);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
 #undef WE_CLEANED_UP_ALL_SIDE_EFFECTS

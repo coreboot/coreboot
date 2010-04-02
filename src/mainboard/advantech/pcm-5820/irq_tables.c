@@ -30,7 +30,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 	0x1078,			/* Vendor */
 	0x2,			/* Device */
 	0,			/* Crap (miniport) */
-	// { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0xde,			/* Checksum */
 	{
 		/* bus,        dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */

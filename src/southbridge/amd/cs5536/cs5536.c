@@ -77,7 +77,7 @@ struct acpiinit acpi_init_table[] = {
 	{PMS_IO_BASE + PM_SIDD, 0x000008C02},
 	{PMS_IO_BASE + PM_WKD, 0x0000000A0},
 	{PMS_IO_BASE + PM_WKXD, 0x0000000A0},
-	{0, 0, 0}
+	{0, 0}
 };
 
 struct FLASH_DEVICE {
@@ -197,7 +197,7 @@ static void ChipsetFlashSetup(void)
 /*		Run after VSA init to enable the flash PCI device header */
 /* **/
 /* ***************************************************************************/
-static void enable_ide_nand_flash_header()
+static void enable_ide_nand_flash_header(void)
 {
 	/* Tell VSA to use FLASH PCI header. Not IDE header. */
 	outl(0x80007A40, 0xCF8);

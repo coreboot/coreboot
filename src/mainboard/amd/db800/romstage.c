@@ -24,6 +24,7 @@
 #include <device/pnp_def.h>
 #include <arch/hlt.h>
 #include "pc80/serial.c"
+#include <console/console.h>
 #include "console/console.c"
 #include "lib/ramtest.c"
 #include "cpu/x86/bist.h"

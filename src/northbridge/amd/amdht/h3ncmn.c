@@ -1041,7 +1041,7 @@ void  ht3SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 t
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * ht1SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 targetLink, sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -1058,7 +1058,7 @@ void  ht3SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 t
  *
  * ---------------------------------------------------------------------------------------
  */
-void ht1SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 targetLink, sMainData *pDat, cNorthBridge *nb)
+static void ht1SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 targetLink, sMainData *pDat, cNorthBridge *nb)
 {
 	u8 curNode;
 	SBDFO linkBase;

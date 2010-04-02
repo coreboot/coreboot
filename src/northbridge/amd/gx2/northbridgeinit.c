@@ -704,7 +704,6 @@ RCONFInit(void)
 	int i;
 	msr_t msr;
 	uint8_t SysMemCacheProp;
-	uint8_t RegionProp;
 
 	/* Locate SYSMEM entry in GLIU0table */
 	for(i = 0; gliu0table[i].desc_name != GL_END; i++) {

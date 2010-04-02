@@ -17,6 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#ifndef CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#define CONFIG_NORTHBRIDGE_AMD_AMDFAM10 0
+#endif
+
 #include "rs780_rev.h"
 
 #define NBHTIU_INDEX		0x94 /* Note: It is different with RS690, whose HTIU index is 0xA8 */
@@ -142,7 +146,7 @@ static void set_nbmc_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 	}
 }
 
-static void get_cpu_rev()
+static void get_cpu_rev(void)
 {
 	u32 eax;
 
@@ -168,17 +172,17 @@ static void get_cpu_rev()
 		printk(BIOS_INFO, "CPU Rev is K8_10.\n");
 }
 
-static u8 is_famly10()
+static u8 is_famly10(void)
 {
 	return (cpuid_eax(1) & 0xff00000) != 0;
 }
 
-static u8 l3_cache()
+static u8 l3_cache(void)
 {
 	return (cpuid_edx(0x80000006) & (0x3FFF << 18)) != 0;
 }
 
-static u8 cpu_core_number()
+static u8 cpu_core_number(void)
 {
 	return (cpuid_ecx(0x80000008) & 0xFF) + 1;
 }
@@ -226,7 +230,7 @@ static const u8 rs780_ibias[] = {
 	[0xe] = 0xC6,		/* 2.6Ghz HyperTransport 3 only */
 };
 
-static void rs780_htinit()
+static void rs780_htinit(void)
 {
 	/*
 	 * About HT, it has been done in enumerate_ht_chain().
@@ -325,7 +329,7 @@ static void rs780_htinit()
 *	Function2: DRAM and HT technology Trace mode configuration
 *	Function3: Miscellaneous configuration
 *******************************************************/
-static void k8_optimization()
+static void k8_optimization(void)
 {
 	device_t k8_f0, k8_f2, k8_f3;
 	msr_t msr;
@@ -367,7 +371,7 @@ static void k8_optimization()
 #endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1 */
 
 #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
-void fam10_optimization()
+void fam10_optimization(void)
 {
 	device_t cpu_f0, cpu_f2, cpu_f3;
 	msr_t msr;

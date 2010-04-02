@@ -92,7 +92,7 @@ pcideadlock(void)
  *
  ****************************************************************************/
 
-void bug784(void)
+static void bug784(void)
 {
 	msr_t msr;
 	//static char *name = "Geode by NSC";
@@ -133,7 +133,7 @@ void bug784(void)
  *	Modified:
  *
  **************************************************************************/
-void eng1398(void)
+static void eng1398(void)
 {
 	msr_t msr;
 
@@ -164,7 +164,7 @@ void eng1398(void)
  *	Modified:
  *
  **************************************************************************/
-void
+static void
 eng2900(void)
 {
 	msr_t msr;
@@ -248,7 +248,7 @@ eng2900(void)
 	}
 }
 
-void bug118253(void)
+static void bug118253(void)
 {
 	/* GLPCI PIO Post Control shouldn't be enabled */
 	msr_t msr;
@@ -258,7 +258,7 @@ void bug118253(void)
 	wrmsr(GLPCI_SPARE, msr);
 }
 
-void bug118339(void)
+static void bug118339(void)
 {
 	/* per AMD, do this always */
 	msr_t msr = {0,0};
@@ -337,7 +337,7 @@ void bug118339(void)
 /**	Modified:*/
 /***/
 /****************************************************************************/
-void disablememoryreadorder(void)
+static void disablememoryreadorder(void)
 {	
 	msr_t msr;
 	msr = rdmsr(MC_CF8F_DATA);

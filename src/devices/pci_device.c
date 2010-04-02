@@ -910,10 +910,14 @@ device_t pci_probe_dev(device_t dev, struct bus * bus, unsigned devfn)
 		dummy.path.pci.devfn = devfn;
 		id = pci_read_config32(&dummy, PCI_VENDOR_ID);
 		/* Have we found something?
-		 * Some broken boards return 0 if a slot is empty.
+		 * Some broken boards return 0 if a slot is empty, but
+		 * the expected answer is 0xffffffff
 		 */
-		if ((id == 0xffffffff) || (id == 0x00000000) ||
-		    (id == 0x0000ffff) || (id == 0xffff0000)) {
+		if (id == 0xffffffff) {
+			return NULL;
+		}
+		if ((id == 0x00000000) || (id == 0x0000ffff) ||
+		    (id == 0xffff0000)) {
 			printk(BIOS_SPEW, "%s, bad id 0x%x\n", dev_path(&dummy), id);
 			return NULL;
 		}

@@ -4,12 +4,6 @@
 #include <stdint.h>
 #include <console/loglevel.h>
 
-#ifndef __ROMCC__
-void console_init(void);
-void post_code(u8 value);
-void __attribute__ ((noreturn)) die(const char *msg);
-#endif
-
 #ifndef __PRE_RAM__
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);

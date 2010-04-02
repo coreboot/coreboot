@@ -4,14 +4,17 @@
 #include <stdint.h>
 #include <console/loglevel.h>
 
-#ifndef __PRE_RAM__
+#ifndef __ROMCC__
 void console_init(void);
+void post_code(u8 value);
+void __attribute__ ((noreturn)) die(const char *msg);
+#endif
+
+#ifndef __PRE_RAM__
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);
-void post_code(u8 value);
-void __attribute__ ((noreturn)) die(const char *msg);
 #if CONFIG_CONSOLE_VGA == 1
 void vga_console_init(void);
 #endif

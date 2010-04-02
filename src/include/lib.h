@@ -37,6 +37,7 @@ void move_gdt(void);
 
 /* Defined in src/lib/ramtest.c */
 void ram_check(unsigned long start, unsigned long stop);
+void quick_ram_check(void);
 
 /* Defined in src/pc80/serial.c */
 void uart_init(void);

@@ -202,7 +202,7 @@ static void pci_domain_set_resources(device_t dev)
 	assign_resources(&dev->link[0]);
 }
 
-static const struct device_operations pci_domain_ops = {
+static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
 	.set_resources    = pci_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
@@ -219,7 +219,7 @@ static void cpu_bus_noop(device_t dev)
 {
 }
 
-static const struct device_operations cpu_bus_ops = {
+static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
 	.set_resources    = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,

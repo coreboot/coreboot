@@ -20,7 +20,7 @@ static void print_debug_pci_dev(unsigned dev)
 	printk(BIOS_DEBUG, "PCI: %02x:%02x.%02x", (dev>>20) & 0xff, (dev>>15) & 0x1f, (dev>>12) & 0x7);
 }
 
-static void print_pci_devices(void)
+static inline void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -63,7 +63,7 @@ static void dump_pci_device(unsigned dev)
 
 #if CONFIG_K8_REV_F_SUPPORT == 1
 static uint32_t pci_read_config32_index_wait(device_t dev, uint32_t index_reg, uint32_t index);
-static void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
+static inline void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -109,7 +109,7 @@ static void dump_pci_devices(void)
 	}
 }
 
-static void dump_pci_devices_on_bus(unsigned busn)
+static inline void dump_pci_devices_on_bus(unsigned busn)
 {
 	device_t dev;
 	for(dev = PCI_DEV(busn, 0, 0);
@@ -208,7 +208,7 @@ static void dump_smbus_registers(void)
 }
 #endif
 
-static void dump_io_resources(unsigned port)
+static inline void dump_io_resources(unsigned port)
 {
 
 	int i;
@@ -228,7 +228,7 @@ static void dump_io_resources(unsigned port)
 	}
 }
 
-static void dump_mem(unsigned start, unsigned end)
+static inline void dump_mem(unsigned start, unsigned end)
 {
 	unsigned i;
 	print_debug("dump_mem:");

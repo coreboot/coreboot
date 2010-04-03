@@ -42,12 +42,6 @@ static void do_amd_early_mtrr_init(const unsigned long *mtrr_msrs)
         wrmsr(TOP_MEM, msr);
 
 #if defined(CONFIG_XIP_ROM_SIZE)
-#if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
-extern unsigned long AUTO_XIP_ROM_BASE;
-#define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
-#else
-#define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
-#endif
         /* enable write through caching so we can do execute in place
          * on the flash rom.
          */

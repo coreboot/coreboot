@@ -19,7 +19,8 @@
  */
 
 #if !defined (__PRE_RAM__)
-static void cn700_noop()
+// HACK
+static inline void cn700_noop(device_t dev)
 {
 }
 #endif

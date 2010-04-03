@@ -61,8 +61,9 @@ static void smbus_wait_until_ready(void)
 
 	PRINT_DEBUG("Waiting until SMBus ready\n");
 
-	loops = 0;
 	/* Yes, this is a mess, but it's the easiest way to do it. */
+	/* XXX not so messy, but an explanation of the hack would have been better */
+	loops = 0;
 	while ((inb(SMBHSTSTAT) & 1) == 1 && loops < SMBUS_TIMEOUT)
 		++loops;
 
@@ -464,6 +465,8 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 	pci_write_config32(dev, 0x5c, tmp | 0x01000000); /* Toggle SEEPR. */
 
 	/* Yes, this is a mess, but it's the easiest way to do it. */
+	/* XXX not so messy, but an explanation of the hack would have been better */
+	loops = 0;
 	while ((((pci_read_config32(dev, 0x5c) >> 25) & 1) == 0)
 	       && (loops < LAN_TIMEOUT)) {
 		++loops;

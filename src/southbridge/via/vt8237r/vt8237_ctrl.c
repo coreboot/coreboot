@@ -22,12 +22,13 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include "vt8237r.h"
 
 /* We support here K8M890/K8T890 and VT8237/S/A PCI1/Vlink */
 
 static void vt8237_cfg(struct device *dev)
 {
-	u8 regm, regm2, regm3;
+	u8 regm, regm3;
 	device_t devfun3;
 
 	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
@@ -69,6 +70,7 @@ static void vt8237_cfg(struct device *dev)
 	regm = pci_read_config8(devfun3, 0x83);
 	pci_write_config8(dev, 0x63, regm);
 
+	// FIXME is this really supposed to be regm3?
 	regm3 = pci_read_config8(devfun3, 0x82);/* Shadow page E */
 	pci_write_config8(dev, 0x64, regm);
 
@@ -166,8 +168,6 @@ static void ctrl_enable(struct device *dev)
 	/* FIXME */
 	pci_write_config8(dev, 0x4f, 0x43);
 }
-
-extern void dump_south(device_t dev);
 
 static void ctrl_init(struct device *dev)
 {

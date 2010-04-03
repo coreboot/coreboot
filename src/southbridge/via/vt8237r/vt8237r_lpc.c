@@ -34,7 +34,6 @@
 #include "vt8237r.h"
 #include "chip.h"
 
-extern void dump_south(device_t dev);
 static void southbridge_init_common(struct device *dev);
 
 #if CONFIG_EPIA_VT8237R_INIT
@@ -248,7 +247,7 @@ static void setup_pm(device_t dev)
 
 static void vt8237r_init(struct device *dev)
 {
-	u8 enables, reg8;
+	u8 enables;
 	
 #if CONFIG_EPIA_VT8237R_INIT
 	printk(BIOS_SPEW, "Entering vt8237r_init, for EPIA.\n");

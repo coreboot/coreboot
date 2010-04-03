@@ -1690,7 +1690,7 @@ static unsigned convert_to_linear(unsigned value)
 
 static const uint8_t latency_indicies[] = { 25, 23, 9 };
 
-int find_optimum_spd_latency(u32 spd_device, unsigned *min_latency, unsigned *min_cycle_time)
+static int find_optimum_spd_latency(u32 spd_device, unsigned *min_latency, unsigned *min_cycle_time)
 {
 	int new_cycle_time, new_latency;
 	int index;
@@ -1938,7 +1938,7 @@ static unsigned convert_to_1_4(unsigned value)
 	return valuex;
 }
 
-int get_dimm_Trc_clocks(u32 spd_device, const struct mem_param *param)
+static int get_dimm_Trc_clocks(u32 spd_device, const struct mem_param *param)
 {
 	int value;
 	int value2;

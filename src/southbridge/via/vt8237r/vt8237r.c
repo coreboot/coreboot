@@ -21,17 +21,13 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include "vt8237r.h"
 #include "chip.h"
 
 /*
  * Datasheet: http://www.via.com.tw/en/downloads/datasheets/chipsets/
  *		VT8237R_SouthBridge_Revision2.06_Lead-Free.zip
  */
-
-void hard_reset(void)
-{
-	printk(BIOS_ERR, "NO HARD RESET ON VT8237R! FIX ME!\n");
-}
 
 #if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 7
 void writeback(struct device *dev, u16 where, u8 what)

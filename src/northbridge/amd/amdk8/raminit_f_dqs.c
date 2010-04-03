@@ -125,7 +125,7 @@ static inline void write_cr4(unsigned long cr4)
 }
 
 
-static inline void enable_sse2()
+static inline void enable_sse2(void)
 {
 	unsigned long cr4;
 	cr4 = read_cr4();
@@ -133,7 +133,7 @@ static inline void enable_sse2()
 	write_cr4(cr4);
 }
 
-static inline void disable_sse2()
+static inline void disable_sse2(void)
 {
 	unsigned long cr4;
 	cr4 = read_cr4();

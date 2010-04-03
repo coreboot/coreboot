@@ -35,10 +35,8 @@ static void ide_init(struct device *dev)
 	struct southbridge_via_vt8237r_config *sb =
 	    (struct southbridge_via_vt8237r_config *)dev->chip_info;
 
-	u8 enables, reg8;
+	u8 enables;
 	u32 cablesel;
-	device_t lpc_dev;
-	int i, j;
 
 	printk(BIOS_INFO, "%s IDE interface %s\n", "Primary",
 		    sb->ide0_enable ? "enabled" : "disabled");
@@ -98,6 +96,8 @@ static void ide_init(struct device *dev)
 	pci_write_config32(dev, IDE_UDMA, cablesel);
 
 #if CONFIG_EPIA_VT8237R_INIT
+	device_t lpc_dev;
+
 	/* Set PATA Output Drive Strength */
 	lpc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				    PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);

@@ -29,7 +29,7 @@
 
 static void vt8237r_cfg(struct device *dev, struct device *devsb)
 {
-	u8 regm, regm2, regm3;
+	u8 regm, regm3;
 
 	device_t devfun3;
 

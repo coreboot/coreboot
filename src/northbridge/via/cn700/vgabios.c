@@ -4,7 +4,7 @@
 #include <device/pci_ops.h>
 #undef __KERNEL__
 #include <arch/io.h>
-//#include <printk.h>
+#include <stddef.h>
 #include <string.h>
 #include "vgachip.h"
 #include <cbfs.h>
@@ -176,6 +176,7 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 		/* put the stack at the end of page zero. 
 		 * that way we can easily share it between real and protected, 
 		 * since the 16-bit ESP at segment 0 will work for any case. 
+		 */
 		/* Setup a stack */
 		"	mov	$0x0, %ax	\n"
 		"	mov	%ax, %ss	\n"
@@ -271,6 +272,7 @@ void vga_enable_console()
 		/* put the stack at the end of page zero. 
 		 * that way we can easily share it between real and protected, 
 		 * since the 16-bit ESP at segment 0 will work for any case. 
+		 */
 		/* Setup a stack */
 		"	mov	$0x0, %ax	\n"
 		"	mov	%ax, %ss	\n"
@@ -336,7 +338,7 @@ void do_vgabios(void)
 {
 	device_t dev;
 	unsigned long busdevfn;
-	unsigned int rom = 0;
+	unsigned char *rom;
 	unsigned char *buf;
 	unsigned int size = 64*1024;
 	int i;
@@ -357,9 +359,9 @@ void do_vgabios(void)
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
 
-	rom = cbfs_load_optionrom(dev->vendor, dev->device, 0);
-	pci_write_config32(dev, PCI_ROM_ADDRESS, rom|1);
-	printk(BIOS_DEBUG, "rom base, size: %x\n", rom);
+	rom = cbfs_load_optionrom(dev->vendor, dev->device, NULL);
+	pci_write_config32(dev, PCI_ROM_ADDRESS, (u32)rom | 1);
+	printk(BIOS_DEBUG, "rom base: %p\n", rom);
 
 	buf = (unsigned char *) rom;
 	if ((buf[0] == 0x55) && (buf[1] == 0xaa)) {
@@ -635,7 +637,7 @@ void setup_realmode_idt(void)
 	// and get it that way. But that's really disgusting.
 	for (i = 0; i < 256; i++) {
 		idts[i].cs = 0;
-		codeptr = (char*) 4096 + i * codesize;
+		codeptr = (unsigned char*) 4096 + i * codesize;
 		idts[i].offset = (unsigned) codeptr;
 		memcpy(codeptr, &idthandle, codesize);
 		intbyte = codeptr + 3;
@@ -648,7 +650,7 @@ void setup_realmode_idt(void)
 	// int10. 
 	// calling convention here is the same as INTs, we can reuse
 	// the int entry code.
-	codeptr = (char*) 0xff065;
+	codeptr = (unsigned char*) 0xff065;
 	memcpy(codeptr, &idthandle, codesize);
 	intbyte = codeptr + 3;
 	*intbyte = 0x42; /* int42 is the relocated int10 */
@@ -657,7 +659,7 @@ void setup_realmode_idt(void)
 	   TF bit is set upon call to real mode */
 	idts[1].cs = 0;
 	idts[1].offset = 16384;
-	memcpy(16384, &debughandle, &end_debughandle - &debughandle);
+	memcpy((void *)16384, &debughandle, &end_debughandle - &debughandle);
 
 	
 }
@@ -687,16 +689,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 	unsigned long *pesp, unsigned long *pebx, unsigned long *pedx, 
 	unsigned long *pecx, unsigned long *peax, unsigned long *pflags)
 {
-	unsigned long edi = *pedi;
-	unsigned long esi = *pesi;
-	unsigned long ebp = *pebp;
-	unsigned long esp = *pesp;
-	unsigned long ebx = *pebx;
-	unsigned long edx = *pedx;
-	unsigned long ecx = *pecx;
-	unsigned long eax = *peax;
-	unsigned long flags = *pflags;
-	unsigned short func = (unsigned short) eax;
+	unsigned short func = (unsigned short) (*peax);
 	int retval = 0;
 	unsigned short devid, vendorid, devfn;
 	short devindex; /* Use short to get rid of garbage in upper half of 32-bit register */

@@ -116,12 +116,6 @@ static void ldtstop_sb(void)
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
 
-#warning No hard_reset implemented for this board!
-void hard_reset(void)
-{
-	print_info("NO HARD RESET. FIX ME!\n");
-}
-
 void soft_reset(void)
 {
 	uint8_t tmp;
@@ -164,7 +158,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	msr_t msr;
 	static const uint16_t spd_addr[] = {
 		(0xa << 3) | 0, (0xa << 3) | 2, 0, 0,
 		(0xa << 3) | 1, (0xa << 3) | 3, 0, 0,
@@ -176,9 +169,7 @@ void real_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	unsigned bsp_apicid = 0;
 	int needs_reset = 0;
 	struct sys_info *sysinfo =
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-	char *p;
-	u8 reg;
+	    (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	sio_init();
 	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

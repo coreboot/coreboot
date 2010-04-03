@@ -103,4 +103,9 @@ __attribute__ ((packed))
 #endif
 ;
 
+#ifndef __PRE_RAM__
+void writeback(struct device *dev, u16 where, u8 what);
+void dump_south(device_t dev);
+#endif
+
 #endif

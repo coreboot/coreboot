@@ -59,6 +59,7 @@ u8 k8t890_early_setup_ht(void)
 	pci_write_config8(PCI_DEV(0, 0x0, 2), 0xa1, reg);
 
 	/* check if connected non coherent, initcomplete (find the SB on K8 side) */
+	ldtnr = 0;
 	if (0x7 == pci_read_config8(PCI_DEV(0, 0x18, 0), 0x98)) {
 		ldtnr = 0;
 	} else if (0x7 == pci_read_config8(PCI_DEV(0, 0x18, 0), 0xb8)) {

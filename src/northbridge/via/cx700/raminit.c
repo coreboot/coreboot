@@ -103,15 +103,15 @@
 	} while ( 0 )
 
 #define REGISTERPRESET(bus,dev,fun,bdfspec) \
-	{ u8 i, reg; \
-		for (i=0; i<(sizeof((bdfspec))/sizeof(struct regmask)); i++) { \
+	{ u8 j, reg; \
+		for (j=0; j<(sizeof((bdfspec))/sizeof(struct regmask)); j++) { \
 			printk(BIOS_DEBUG, "Writing bus " #bus " dev " #dev " fun " #fun " register "); \
-			printk(BIOS_DEBUG, "%02x", (bdfspec)[i].reg); \
+			printk(BIOS_DEBUG, "%02x", (bdfspec)[j].reg); \
 			printk(BIOS_DEBUG, "\n"); \
-			reg = pci_read_config8(PCI_DEV((bus), (dev), (fun)), (bdfspec)[i].reg); \
-			reg &= (bdfspec)[i].mask; \
-			reg |= (bdfspec)[i].val; \
-			pci_write_config8(PCI_DEV((bus), (dev), (fun)), (bdfspec)[i].reg, reg); \
+			reg = pci_read_config8(PCI_DEV((bus), (dev), (fun)), (bdfspec)[j].reg); \
+			reg &= (bdfspec)[j].mask; \
+			reg |= (bdfspec)[j].val; \
+			pci_write_config8(PCI_DEV((bus), (dev), (fun)), (bdfspec)[j].reg, reg); \
 		} \
 	}
 
@@ -1436,23 +1436,23 @@ static void sdram_enable(const struct mem_controller *ctrl)
 		{ 0x67, ~0x03, 0x01},
 		{ 0x5b, ~0x01, 0x00},
 		{ 0x8d, ~0x02, 0x02},
-		{ 0x97, ~0x80, 0x00},
+		{ 0x97, 0x7f, 0x00},
 		{ 0xd2, ~0x18, 0x00},
 		{ 0xe2, ~0x36, 0x06},
-		{ 0xe4, ~0x80, 0x00},
+		{ 0xe4, 0x7f, 0x00},
 		{ 0xe5, 0x00, 0x40},
 		{ 0xe6, 0x00, 0x20},
-		{ 0xe7, ~0xd0, 0xc0},
+		{ 0xe7, 0x2f, 0xc0},
 		{ 0xec, ~0x08, 0x00}
 	}, b0d17f7[] = {
-		{ 0x4e, ~0x80, 0x80},
+		{ 0x4e, 0x7f, 0x80},
 		{ 0x4f, ~(1 << 6), 1 << 6 },	/* PG_CX700: 14.1.1 enable P2P Bridge Header for External PCI Bus */
 		{ 0x74, ~0x00, 0x04},		/* PG_CX700: 14.1.2 APIC FSB directly up to snmic, not on pci */
 		{ 0x7c, ~0x00, 0x02},		/* PG_CX700: 14.1.1 APIC FSB directly up to snmic, not on pci */
 		{ 0xe6, 0x0, 0x04}		// MSI post
 	}, b0d19f0[] = {	/* P2PE */
 		{ 0x42, ~0x08, 0x08},		// Disable HD Audio,
-		{ 0x40, ~0xc0, 0x80}		// 14.1.3.1.1 of the PG: extended cfg mode for pcie. enable capability, but don't activate
+		{ 0x40, 0x3f, 0x80}		// 14.1.3.1.1 of the PG: extended cfg mode for pcie. enable capability, but don't activate
 	}, b0d0f2[] = {
 		{ 0x50, ~0x40, 0x88},
 		{ 0x51, 0x80, 0x7b},

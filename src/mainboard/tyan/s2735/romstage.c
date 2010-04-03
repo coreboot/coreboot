@@ -65,7 +65,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/x86/car/copy_and_run.c"
 
-void amd64_main(unsigned long bist)
+void stage1_main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
                 {

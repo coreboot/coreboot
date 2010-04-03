@@ -117,7 +117,7 @@ static void vt1211_init(struct device *dev)
 	}
 }
 
-void vt1211_pnp_enable_resources(device_t dev)
+static void vt1211_pnp_enable_resources(device_t dev)
 {
 	printk(BIOS_DEBUG, "%s - enabling\n",dev_path(dev));
 	pnp_enter_ext_func_mode(dev);
@@ -125,7 +125,7 @@ void vt1211_pnp_enable_resources(device_t dev)
 	pnp_exit_ext_func_mode(dev);
 }
 
-void vt1211_pnp_set_resources(struct device *dev)
+static void vt1211_pnp_set_resources(struct device *dev)
 {
 	int i;
 	struct resource *resource;
@@ -178,7 +178,7 @@ void vt1211_pnp_set_resources(struct device *dev)
 	pnp_exit_ext_func_mode(dev);
 }
 
-void vt1211_pnp_enable(device_t dev)
+static void vt1211_pnp_enable(device_t dev)
 {
 	if (!dev->enabled) {
 		pnp_enter_ext_func_mode(dev);

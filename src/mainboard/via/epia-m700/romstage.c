@@ -394,7 +394,7 @@ void EmbedComInit(void)
 }
 
 /* cache_as_ram.inc jumps to here. */
-void amd64_main(unsigned long bist)
+void stage1_main(unsigned long bist)
 {
 	unsigned cpu_reset = 0;
 	u16 boot_mode;

@@ -57,6 +57,7 @@
 #endif
 
 /* Internal functions */
+#if CONFIG_DEBUG_SMBUS
 static void smbus_print_error(unsigned char host_status_register, int loops)
 {
 	/* Check if there actually was an error */
@@ -87,6 +88,7 @@ static void smbus_print_error(unsigned char host_status_register, int loops)
 		print_err("Host Busy\n");
 	}
 }
+#endif
 
 static void smbus_wait_until_ready(void)
 {
@@ -127,7 +129,7 @@ static void set_ics_data(unsigned char dev, int data, char len)
 	inb(SMBHSTCTL);
 
 	/* fill blocktransfer array */
-	if (dev = 0xd2) {
+	if (dev == 0xd2) {
 		//char d2_data[] = {0x0d,0x00,0x3f,0xcd,0x7f,0xbf,0x1a,0x2a,0x01,0x0f,0x0b,0x00,0x8d,0x9b};
 		outb(0x0d, SMBBLKDAT);
 		outb(0x00, SMBBLKDAT);
@@ -231,7 +233,7 @@ static void enable_smbus(void)
 }
 
 /* Debugging Function */
-#ifdef CONFIG_DEBUG_SMBUS
+#if CONFIG_DEBUG_SMBUS
 static void dump_spd_data(const struct mem_controller *ctrl)
 {
 	int dimm, offset, regs;

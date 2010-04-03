@@ -30,7 +30,6 @@
 #include "console/console.c"
 #include "lib/ramtest.c"
 #include "northbridge/via/cx700/raminit.h"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
 #define DEACTIVATE_CAR 1
@@ -38,9 +37,8 @@
 #include "cpu/x86/car/copy_and_run.c"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/via/cx700/cx700_early_smbus.c"
-#include "debug.c"
+#include "lib/debug.c"
 
 #include "northbridge/via/cx700/cx700_early_serial.c"
 #include "northbridge/via/cx700/raminit.c"
@@ -126,7 +124,8 @@ static void main(unsigned long bist)
 	copy_and_run(0);
 }
 
-void amd64_main(unsigned long bist) {
+void stage1_main(unsigned long bist)
+{
 	main(bist);
 }
 

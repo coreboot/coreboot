@@ -52,7 +52,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 }
 
 
-void acpi_create_via_hpet(acpi_hpet_t * hpet)
+static void acpi_create_via_hpet(acpi_hpet_t * hpet)
 {
 #define HPET_ADDR  0xfe800000ULL
 	acpi_header_t *header = &(hpet->header);
@@ -182,7 +182,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	dsdt = (acpi_header_t *) current;
 	current += AmlCode.length;
 	memcpy((void *) dsdt, &AmlCode,AmlCode.length);
-#if DONT_TRUST_IASL
+#ifdef DONT_TRUST_IASL
 	dsdt->checksum = 0;	// don't trust intel iasl compiler to get this right
 	dsdt->checksum = acpi_checksum(dsdt, dsdt->length);
 #endif

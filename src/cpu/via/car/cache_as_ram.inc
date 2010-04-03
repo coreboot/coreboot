@@ -163,7 +163,7 @@ testok:	movb $0x40,%al
 	/* We need to set ebp ? No need */
 	movl	%esp, %ebp
 	pushl	%eax  /* bist */
-	call	amd64_main
+	call	stage1_main
 	/* We will not go back */
 
 fixed_mtrr_msr:

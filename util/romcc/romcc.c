@@ -135,7 +135,7 @@ struct filelist {
 
 struct filelist *include_filelist = NULL;
 
-static void die(char *fmt, ...)
+static void __attribute__((noreturn)) die(char *fmt, ...)
 {
 	va_list args;
 

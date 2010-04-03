@@ -104,6 +104,7 @@ __attribute__ ((packed))
 ;
 
 #ifndef __PRE_RAM__
+#include <device/device.h>
 void writeback(struct device *dev, u16 where, u8 what);
 void dump_south(device_t dev);
 #endif

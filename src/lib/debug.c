@@ -88,7 +88,6 @@ static inline void dump_io_resources(unsigned port)
 {
 
 	int i;
-	udelay(2000);
 	print_debug_hex16(port);
 	print_debug(":\n");
 	for (i = 0; i < 256; i++) {

@@ -16,6 +16,8 @@ config VENDOR_ARTEC_GROUP
 	bool "Artec Group"
 config VENDOR_ASI
 	bool "ASI"
+config VENDOR_ASROCK
+	bool "ASROCK"
 config VENDOR_ASUS
 	bool "ASUS"
 config VENDOR_A_TREND
@@ -128,6 +130,11 @@ config MAINBOARD_VENDOR
 	string
 	default "ASI"
 	depends on VENDOR_ASI
+
+config MAINBOARD_VENDOR
+	string
+	default "ASROCK"
+	depends on VENDOR_ASROCK
 
 config MAINBOARD_VENDOR
 	string
@@ -366,6 +373,7 @@ source "src/mainboard/amd/Kconfig"
 source "src/mainboard/arima/Kconfig"
 source "src/mainboard/artecgroup/Kconfig"
 source "src/mainboard/asi/Kconfig"
+source "src/mainboard/asrock/Kconfig"
 source "src/mainboard/asus/Kconfig"
 source "src/mainboard/axus/Kconfig"
 source "src/mainboard/azza/Kconfig"

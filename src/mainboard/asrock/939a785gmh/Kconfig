@@ -1,0 +1,123 @@
+config BOARD_ASROCK_939A785GMH
+	bool "939A785GMH/128M"
+	select ARCH_X86
+	select CPU_AMD_SOCKET_939
+	select K8_HT_FREQ_1G_SUPPORT
+	select NORTHBRIDGE_AMD_AMDK8
+	select NORTHBRIDGE_AMD_AMDK8_ROOT_COMPLEX
+	select SOUTHBRIDGE_AMD_RS780
+	select SOUTHBRIDGE_AMD_SB700
+	select SUPERIO_WINBOND_W83627DHG
+	select BOARD_HAS_FADT
+	select GENERATE_ACPI_TABLES
+	select GENERATE_MP_TABLE
+	select GENERATE_PIRQ_TABLE
+	select HAVE_MAINBOARD_RESOURCES
+	select HAVE_BUS_CONFIG
+	select LIFT_BSP_APIC_ID
+	select USE_PRINTK_IN_CAR
+	select USE_DCACHE_RAM
+	select HAVE_HARD_RESET
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select BOARD_ROMSIZE_KB_1024
+	select GFXUMA
+
+config MAINBOARD_DIR
+	string
+	default asrock/939a785gmh
+	depends on BOARD_ASROCK_939A785GMH
+
+config HAVE_HIGH_TABLES
+	bool
+	default n
+	depends on BOARD_ASROCK_939A785GMH
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xc8000
+	depends on BOARD_ASROCK_939A785GMH
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x08000
+	depends on BOARD_ASROCK_939A785GMH
+
+config DCACHE_RAM_GLOBAL_VAR_SIZE
+	hex
+	default 0x01000
+	depends on BOARD_ASROCK_939A785GMH
+
+config APIC_ID_OFFSET
+	hex
+	default 0x0
+	depends on BOARD_ASROCK_939A785GMH
+
+config LB_CKS_RANGE_END
+	int
+	default 122
+	depends on BOARD_ASROCK_939A785GMH
+
+config LB_CKS_LOC
+	int
+	default 123
+	depends on BOARD_ASROCK_939A785GMH
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "939A785GMH"
+	depends on BOARD_ASROCK_939A785GMH
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x100000
+	depends on BOARD_ASROCK_939A785GMH
+
+config MAX_CPUS
+	int
+	default 8
+	depends on BOARD_ASROCK_939A785GMH
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 2
+	depends on BOARD_ASROCK_939A785GMH
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+	depends on BOARD_ASROCK_939A785GMH
+
+config SB_HT_CHAIN_ON_BUS0
+	int
+	default 1
+	depends on BOARD_ASROCK_939A785GMH
+
+config HT_CHAIN_END_UNITID_BASE
+	hex
+	default 0x1
+	depends on BOARD_ASROCK_939A785GMH
+
+config HT_CHAIN_UNITID_BASE
+	hex
+	default 0x0
+	depends on BOARD_ASROCK_939A785GMH
+
+config USE_INIT
+	bool
+	default n
+	depends on BOARD_ASROCK_939A785GMH
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+	depends on BOARD_ASROCK_939A785GMH
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1022
+	depends on BOARD_ASROCK_939A785GMH
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x3060
+	depends on BOARD_ASROCK_939A785GMH

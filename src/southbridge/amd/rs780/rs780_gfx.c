@@ -25,6 +25,7 @@
  *	RS780M:	0x9612
  *	RS780MC:0x9613
  *	RS780E: 0x9615
+ *	RS785G: 0x9710 - just works, not much tested
  */
 #include <console/console.h>
 #include <device/device.h>
@@ -814,6 +815,11 @@ static const struct pci_driver pcie_driver_780e __pci_driver = {
 	.ops = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_ATI,
 	.device = PCI_DEVICE_ID_ATI_RS780E_INT_GFX,
+};
+static const struct pci_driver pcie_driver_785g __pci_driver = {
+	.ops = &pcie_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_RS785G_INT_GFX,
 };
 
 /* step 12 ~ step 14 from rpr */

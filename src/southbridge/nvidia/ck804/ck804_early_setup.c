@@ -314,7 +314,7 @@ static int ck804_early_setup_x(void)
 	return set_ht_link_ck804(4);
 }
 
-static void hard_reset(void)
+void hard_reset(void)
 {
 	set_bios_reset();
 
@@ -323,7 +323,7 @@ static void hard_reset(void)
 	outb(0x0e, 0x0cf9);
 }
 
-static void soft_reset(void)
+void soft_reset(void)
 {
 	set_bios_reset();
 

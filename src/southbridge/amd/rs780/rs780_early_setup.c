@@ -371,10 +371,9 @@ static void k8_optimization(void)
 #endif	/* #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 != 1 */
 
 #if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
-void fam10_optimization(void)
+static void fam10_optimization(void)
 {
 	device_t cpu_f0, cpu_f2, cpu_f3;
-	msr_t msr;
 	u32 val;
 
 	printk(BIOS_INFO, "fam10_optimization()\n");
@@ -634,16 +633,16 @@ static void rs780_por_init(device_t nb_dev)
 }
 
 /* enable CFG access to Dev8, which is the SB P2P Bridge */
-static void enable_rs780_dev8()
+static void enable_rs780_dev8(void)
 {
 	set_nbmisc_enable_bits(PCI_DEV(0, 0, 0), 0x00, 1 << 6, 1 << 6);
 }
 
-static void rs780_before_pci_init()
+static void rs780_before_pci_init(void)
 {
 }
 
-static void rs780_early_setup()
+static void rs780_early_setup(void)
 {
 	device_t nb_dev = PCI_DEV(0, 0, 0);
 	printk(BIOS_INFO, "rs780_early_setup()\n");

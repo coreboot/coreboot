@@ -110,7 +110,7 @@ static void misc_control_init(struct device *dev)
 {
 	uint32_t cmd, cmd_ref;
 	int needs_reset;
-	struct device *f0_dev, *f2_dev;
+	struct device *f0_dev;
 	
 	printk(BIOS_DEBUG, "NB: Function 3 Misc Control.. ");
 	needs_reset = 0;
@@ -161,6 +161,7 @@ static void misc_control_init(struct device *dev)
 		}
 	}
 	else if(is_cpu_pre_d0()) {
+		struct device *f2_dev;
 		uint32_t dcl;
 		f2_dev = dev_find_slot(0, dev->path.pci.devfn - 3 + 2);
 		/* Errata 98 

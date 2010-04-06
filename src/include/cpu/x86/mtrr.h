@@ -31,7 +31,6 @@
 #define MTRRfix4K_F0000_MSR 0x26e
 #define MTRRfix4K_F8000_MSR 0x26f
 
-
 #if !defined (ASSEMBLY) && !defined(__PRE_RAM__)
 #include <device/device.h>
 void enable_fixed_mtrr(void);
@@ -42,5 +41,39 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res);
 void x86_setup_fixed_mtrrs(void);
 #endif
 
+/* Validate CONFIG_XIP_ROM_SIZE and CONFIG_XIP_ROM_BASE */
+#if defined(CONFIG_XIP_ROM_SIZE) && !defined(CONFIG_XIP_ROM_BASE)
+# error "CONFIG_XIP_ROM_SIZE without CONFIG_XIP_ROM_BASE"
+#endif
+#if defined(CONFIG_XIP_ROM_BASE) && !defined(CONFIG_XIP_ROM_SIZE)
+# error "CONFIG_XIP_ROM_BASE without CONFIG_XIP_ROM_SIZE"
+#endif
+#if !defined(CONFIG_RAMTOP)
+# error "CONFIG_RAMTOP not defined"
+#endif
+
+#if defined(CONFIG_XIP_ROM_SIZE) && ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE -1)) != 0)
+# error "CONFIG_XIP_ROM_SIZE is not a power of 2"
+#endif
+#if defined(CONFIG_XIP_ROM_SIZE) && ((CONFIG_XIP_ROM_BASE % CONFIG_XIP_ROM_SIZE) != 0)
+# error "CONFIG_XIP_ROM_BASE is not a multiple of CONFIG_XIP_ROM_SIZE"
+#endif
+
+#if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0
+# error "CONFIG_RAMTOP must be a power of 2"
+#endif
+
+
+#if !defined (ASSEMBLY)
+#if defined(CONFIG_XIP_ROM_SIZE)
+# if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
+   extern unsigned long AUTO_XIP_ROM_BASE;
+#  define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
+# else
+#  define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
+# endif
+#endif
+
+#endif
 
 #endif /* CPU_X86_MTRR_H */

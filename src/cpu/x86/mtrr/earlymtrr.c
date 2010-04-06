@@ -4,37 +4,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 
-/* Validate CONFIG_XIP_ROM_SIZE and CONFIG_XIP_ROM_BASE */
-#if defined(CONFIG_XIP_ROM_SIZE) && !defined(CONFIG_XIP_ROM_BASE)
-# error "CONFIG_XIP_ROM_SIZE without CONFIG_XIP_ROM_BASE"
-#endif
-#if defined(CONFIG_XIP_ROM_BASE) && !defined(CONFIG_XIP_ROM_SIZE)
-# error "CONFIG_XIP_ROM_BASE without CONFIG_XIP_ROM_SIZE"
-#endif
-#if !defined(CONFIG_RAMTOP)
-# error "CONFIG_RAMTOP not defined"
-#endif
-
-#if defined(CONFIG_XIP_ROM_SIZE) && ((CONFIG_XIP_ROM_SIZE & (CONFIG_XIP_ROM_SIZE -1)) != 0)
-# error "CONFIG_XIP_ROM_SIZE is not a power of 2"
-#endif
-#if defined(CONFIG_XIP_ROM_SIZE) && ((CONFIG_XIP_ROM_BASE % CONFIG_XIP_ROM_SIZE) != 0)
-# error "CONFIG_XIP_ROM_BASE is not a multiple of CONFIG_XIP_ROM_SIZE"
-#endif
-
-#if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0
-# error "CONFIG_RAMTOP must be a power of 2"
-#endif
-
-#if defined(CONFIG_XIP_ROM_SIZE)
-# if defined(CONFIG_TINY_BOOTBLOCK) && CONFIG_TINY_BOOTBLOCK
-   extern unsigned long AUTO_XIP_ROM_BASE;
-#  define REAL_XIP_ROM_BASE AUTO_XIP_ROM_BASE
-# else
-#  define REAL_XIP_ROM_BASE CONFIG_XIP_ROM_BASE
-# endif
-#endif
-
+#if 0
 static void disable_var_mtrr(unsigned reg)
 {
 	/* The invalid bit is kept in the mask so we simply
@@ -45,6 +15,7 @@ static void disable_var_mtrr(unsigned reg)
 	zero.lo = zero.hi = 0;
 	wrmsr(MTRRphysMask_MSR(reg), zero);
 }
+#endif
 
 static void set_var_mtrr(
 	unsigned reg, unsigned base, unsigned size, unsigned type)
@@ -61,6 +32,7 @@ static void set_var_mtrr(
 	wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
 
+#if 0
 static void set_var_mtrr_x(
         unsigned reg, uint32_t base_lo, uint32_t base_hi, uint32_t size_lo, uint32_t size_hi, unsigned type)
 
@@ -79,6 +51,7 @@ static void set_var_mtrr_x(
 	}
         wrmsr(MTRRphysMask_MSR(reg), maskm);
 }
+#endif
 
 static void cache_lbmem(int type)
 {

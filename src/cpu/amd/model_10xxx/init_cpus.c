@@ -91,7 +91,7 @@ static void set_pci_mmio_conf_reg(void)
 	wrmsr(0xc0010058, msr); // MMIO Config Base Address Reg
 
 	//mtrr for that range?
-//	set_var_mtrr_x(7, PCI_MMIO_BASE<<8, PCI_MMIO_BASE>>(32-8), 0x00000000, 0x01, MTRR_TYPE_UNCACHEABLE);
+	// set_var_mtrr_x(7, PCI_MMIO_BASE<<8, PCI_MMIO_BASE>>(32-8), 0x00000000, 0x01, MTRR_TYPE_UNCACHEABLE);
 
 	set_wrap32dis();
 
@@ -293,7 +293,7 @@ static void enable_apic_ext_id(u32 node)
 }
 
 
-static void STOP_CAR_AND_CPU()
+static void STOP_CAR_AND_CPU(void)
 {
 	msr_t msr;
 
@@ -529,7 +529,7 @@ static void setup_remote_node(u8 node)
 }
 #endif	/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
-void AMD_Errata281(u8 node, u32 revision, u32 platform)
+static void AMD_Errata281(u8 node, u32 revision, u32 platform)
 {
 	/* Workaround for Transaction Scheduling Conflict in
 	 * Northbridge Cross Bar.  Implement XCS Token adjustment
@@ -591,7 +591,7 @@ void AMD_Errata281(u8 node, u32 revision, u32 platform)
 }
 
 
-void AMD_Errata298(void)
+static void AMD_Errata298(void)
 {
 	/* Workaround for L2 Eviction May Occur during operation to
 	 * set Accessed or dirty bit.

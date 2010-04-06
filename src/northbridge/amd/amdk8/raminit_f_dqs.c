@@ -1872,6 +1872,7 @@ static int dqs_load_MC_NVRAM_ch(unsigned int dev, int ch, int pos)
 	return pos;
 }
 
+#if CONFIG_MEM_TRAIN_SEQ == 0
 static int dqs_save_MC_NVRAM_ch(unsigned int dev, int ch, int pos)
 {
 	/* 30 bytes per channel */
@@ -1902,6 +1903,7 @@ static void dqs_save_MC_NVRAM(unsigned int dev)
 	reg = pci_read_config32(dev, DRAM_CONFIG_HIGH);
 	pos = s3_save_nvram_early(reg, 4, pos);
 }
+#endif
 
 static void dqs_restore_MC_NVRAM(unsigned int dev)
 {

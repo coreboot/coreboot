@@ -520,6 +520,8 @@ struct sys_info {
 
 #include <reset.h>
 
+#if ((CONFIG_MEM_TRAIN_SEQ != 1) && defined(__PRE_RAM__)) || \
+	((CONFIG_MEM_TRAIN_SEQ == 1) && !defined(__PRE_RAM__))
 static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 {
 
@@ -585,5 +587,6 @@ static void wait_all_core0_mem_trained(struct sys_info *sysinfo)
 	}
 
 }
+#endif
 
 #endif /* AMDK8_F_H */

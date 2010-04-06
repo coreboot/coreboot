@@ -18,10 +18,6 @@
 #define QRANK_DIMM_SUPPORT 0
 #endif
 
-#if defined (__GNUC__)
-static void hard_reset(void);
-#endif
-
 static void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;

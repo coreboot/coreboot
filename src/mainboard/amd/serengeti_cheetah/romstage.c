@@ -29,20 +29,11 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-#if 0 
-static void post_code(uint8_t value) {
-#if 1
-        int i;
-        for(i=0;i<0x80000;i++) {
-                outb(value, 0x80);
-        }
-#endif
-}
-#endif
 #include "pc80/serial.c"
 #include "console/console.c"
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/amd/amd8111/amd8111_early_smbus.c"
+#include <reset.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 
@@ -54,7 +45,8 @@ static void post_code(uint8_t value) {
 #include "lib/delay.c"
 
 #include "northbridge/amd/amdk8/debug.c"
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
+#include <cpu/amd/mtrr.h>
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"

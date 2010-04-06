@@ -621,7 +621,8 @@ config DEBUG_SMBUS
 	depends on (SOUTHBRIDGE_VIA_VT8237R \
 		 || NORTHBRIDGE_VIA_VX800 \
 		 || NORTHBRIDGE_VIA_CX700 \
-		 || NORTHBRIDGE_AMD_AMDK8)
+		 || NORTHBRIDGE_AMD_AMDK8 \
+		 || NORTHBRIDGE_AMD_AMDFAM10)
 	help
 	  This option enables additional SMBus (and SPD) debug messages.
 

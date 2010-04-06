@@ -25,7 +25,7 @@
 ;*	SetDelayControl
 ;*
 ;*************************************************************************/
-void SetDelayControl(void)
+static void SetDelayControl(void)
 {
 	unsigned int msrnum, glspeed;
 	unsigned char spdbyte0, spdbyte1;

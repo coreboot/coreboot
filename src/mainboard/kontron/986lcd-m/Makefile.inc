@@ -17,11 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-##
-## This mainboard requires DCACHE_AS_RAM enabled. It won't work without.
-##
-
 obj-y += rtl8168.o
-
 
 smmobj-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.o

@@ -205,7 +205,7 @@ static void alink_ab_indx(u32 reg_space, u32 reg_addr,
 /* space = 0: AX_INDXC, AX_DATAC
  * space = 1: AX_INDXP, AX_DATAP
  */
-static void alink_ax_indx(u32 space /*c or p? */ , u32 axindc,
+static inline void alink_ax_indx(u32 space /*c or p? */ , u32 axindc,
 			  u32 mask, u32 val)
 {
 	u32 tmp;

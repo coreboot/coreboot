@@ -707,12 +707,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	printk(BIOS_SPEW, "done.\n");
 }
 
+#if 0
 static int is_dual_channel(const struct mem_controller *ctrl)
 {
 	uint32_t dcl;
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	return dcl & DCL_Width128;
 }
+#endif
 
 static int is_opteron(const struct mem_controller *ctrl)
 {
@@ -727,6 +729,7 @@ static int is_opteron(const struct mem_controller *ctrl)
 	return !!(nbcap & NBCAP_128Bit);
 }
 
+#if 0
 static int is_registered(const struct mem_controller *ctrl)
 {
 	/* Test to see if we are dealing with registered SDRAM.
@@ -737,7 +740,7 @@ static int is_registered(const struct mem_controller *ctrl)
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	return !(dcl & DCL_UnBuffDimm);
 }
-
+#endif
 
 static void spd_get_dimm_size(unsigned device, struct dimm_size *sz)
 {
@@ -2481,6 +2484,7 @@ static void set_max_async_latency(const struct mem_controller *ctrl, const struc
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
 }
 
+#if (CONFIG_DIMM_SUPPORT & 0x0100)==0x0000 /* 2T mode only used for unbuffered DIMM */
 static void set_SlowAccessMode(const struct mem_controller *ctrl)
 {
 	uint32_t dch;
@@ -2491,6 +2495,7 @@ static void set_SlowAccessMode(const struct mem_controller *ctrl)
 
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_HIGH, dch);
 }
+#endif
 
 /*
 	DRAM_OUTPUT_DRV_COMP_CTRL 0, 0x20

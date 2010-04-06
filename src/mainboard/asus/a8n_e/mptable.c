@@ -41,7 +41,7 @@ static void *smp_write_config_table(void *v)
 	static const char productid[12] = "A8N-E      ";
 	struct mp_config_table *mc;
 	unsigned sbdn;
-	int i, bus_num;
+	int bus_num;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));

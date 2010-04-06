@@ -35,7 +35,7 @@ static void banner(const char *s)
 	print_debug("======================================\n");
 }
 
-void hcf(void)
+static void hcf(void)
 {
 	print_emerg("DIE\n");
 	/* this guarantees we flush the UART fifos (if any) and also 

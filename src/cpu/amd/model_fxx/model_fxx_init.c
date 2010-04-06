@@ -244,7 +244,6 @@ static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_sta
 static void init_ecc_memory(unsigned node_id)
 {
 	unsigned long startk, begink, endk;
-	unsigned long hole_startk = 0;
 	unsigned long basek;
 	struct mtrr_state mtrr_state;
 
@@ -291,6 +290,8 @@ static void init_ecc_memory(unsigned node_id)
 	endk   = ((pci_read_config32(f1_dev, 0x44 + (node_id*8)) & 0xffff0000) >> 2) + 0x4000;
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
+	unsigned long hole_startk = 0;
+
 	#if CONFIG_K8_REV_F_SUPPORT == 0
         if (!is_cpu_pre_e0())
 	{

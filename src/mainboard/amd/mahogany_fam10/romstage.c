@@ -58,18 +58,13 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 
 #include <console/loglevel.h>
-#if 0
-void die(const char *msg);
-int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
-#define printk(BIOS_EMERG, fmt, arg...)   do_printk(BIOS_EMERG   ,fmt, ##arg)
-#endif
-#define printk(BIOS_INFO, fmt, arg...)   do_printk(BIOS_INFO   ,fmt, ##arg)
 #include "cpu/x86/bist.h"
 
 static int smbus_read_byte(u32 device, u32 address);
 
 #include "superio/ite/it8718f/it8718f_early_serial.c"
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
+#include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
 #include "southbridge/amd/rs780/rs780_early_setup.c"

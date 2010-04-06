@@ -46,13 +46,6 @@ static void ide_init(struct device *dev)
 	pci_write_config32(dev, IDE_CFG, ide_cfg);
 }
 
-static void ide_enable(struct device *dev)
-{
-
-	printk(BIOS_SPEW, "cs5536_ide: %s\n", __func__);
-
-}
-
 static struct device_operations ide_ops = {
 	.read_resources = pci_dev_read_resources,
 	.set_resources = pci_dev_set_resources,

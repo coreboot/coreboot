@@ -56,7 +56,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x18
-        int ret;
         unsigned device=(ctrl->channel0[0])>>8;
         smbus_write_byte(SMBUS_HUB, 0x01, device);
         smbus_write_byte(SMBUS_HUB, 0x03, 0);

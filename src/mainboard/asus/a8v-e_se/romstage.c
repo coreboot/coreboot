@@ -187,7 +187,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset = 0;
 	struct sys_info *sysinfo =
 	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-	char *p;
 
 	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

@@ -296,10 +296,10 @@ void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 
 	for(i=0;i<sysconf.p_state_num;i++) {
 		struct p_state_t *p_state = &sysconf.p_state[nodeid * 5 + i];
-		intx_to_stream(COREFREQ + i*offset, 2, p_state->corefreq);
-		intx_to_stream(POWER + i*offset, 3, p_state->power);
-		intx_to_stream(TRANSITION_LAT + i*offset, 2, p_state->transition_lat);
-		intx_to_stream(BUSMASTER_LAT + i*offset, 2, p_state->busmaster_lat);
+		intx_to_stream(p_state->corefreq, 2, COREFREQ + i*offset);
+		intx_to_stream(p_state->power, 3, POWER + i*offset);
+		intx_to_stream(p_state->transition_lat, 2, TRANSITION_LAT + i*offset);
+		intx_to_stream(p_state->busmaster_lat, 2, BUSMASTER_LAT + i*offset);
 		*((u8 *)(CONTROL + i*offset)) =(u8) p_state->control;
 		*((u8 *)(STATUS + i*offset)) =(u8) p_state->status;
 	}

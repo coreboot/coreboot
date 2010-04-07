@@ -51,13 +51,13 @@ static void set_esb6300_gpio_use_sel(
 	device_t dev, struct resource *res, config_t *config)
 {
 	uint32_t gpio_use_sel, gpio_use_sel2;
-	int i;
 
 //	gpio_use_sel  = 0x1B003100;
 //	gpio_use_sel2 = 0x03000000;
 	gpio_use_sel  = 0x1BBC31C0;
 	gpio_use_sel2 = 0x03000FE1;
 #if 0
+	int i;
 	for(i = 0; i < 64; i++) {
 		int val;
 		switch(config->gpio[i] & ESB6300_GPIO_USE_MASK) {
@@ -84,13 +84,13 @@ static void set_esb6300_gpio_direction(
 	device_t dev, struct resource *res, config_t *config)
 {
 	uint32_t gpio_io_sel, gpio_io_sel2;
-	int i;
 
 //	gpio_io_sel  = 0x0000ffff;
 //	gpio_io_sel2 = 0x00000000;
 	gpio_io_sel  = 0x1900ffff;
 	gpio_io_sel2 = 0x00000fe1;
 #if 0
+	int i;
 	for(i = 0; i < 64; i++) {
 		int val;
 		switch(config->gpio[i] & ESB6300_GPIO_SEL_MASK) {
@@ -118,7 +118,6 @@ static void set_esb6300_gpio_level(
 {
 	uint32_t gpio_lvl, gpio_lvl2;
 	uint32_t gpio_blink;
-	int i;
 
 //	gpio_lvl   = 0x1b3f0000;
 //	gpio_blink = 0x00040000;
@@ -127,6 +126,7 @@ static void set_esb6300_gpio_level(
 	gpio_blink = 0x00000000;
 	gpio_lvl2  = 0x00000fff;
 #if 0
+	int i;
 	for(i = 0; i < 64; i++) {
 		int val, blink;
 		switch(config->gpio[i] & ESB6300_GPIO_LVL_MASK) {
@@ -157,10 +157,10 @@ static void set_esb6300_gpio_inv(
 	device_t dev, struct resource *res, config_t *config)
 {
 	uint32_t gpio_inv;
-	int i;
 
 	gpio_inv   = 0x00003100;
 #if 0
+	int i;
 	for(i = 0; i < 32; i++) {
 		int val;
 		switch(config->gpio[i] & ESB6300_GPIO_INV_MASK) {

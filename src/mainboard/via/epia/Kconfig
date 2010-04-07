@@ -7,21 +7,12 @@ config BOARD_VIA_EPIA
 	select SUPERIO_WINBOND_W83627HF
 	select HAVE_PIRQ_TABLE
 	select BOARD_ROMSIZE_KB_256
+	select ROMCC
 
 config MAINBOARD_DIR
 	string
 	default via/epia
 	depends on BOARD_VIA_EPIA
-
-#config DCACHE_RAM_BASE
-#	hex
-#	default 0xffef0000
-#	depends on BOARD_VIA_EPIA
-#
-#config DCACHE_RAM_SIZE
-#	hex
-#	default 0x8000
-#	depends on BOARD_VIA_EPIA
 
 config MAINBOARD_PART_NUMBER
 	string

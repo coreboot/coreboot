@@ -7,9 +7,6 @@
 
 static void bridge1c_init(struct device *dev)
 {
-
-	uint16_t word;
-
 	/* configuration */
 	pci_write_config8(dev, 0x1b, 0x30);
 //	pci_write_config8(dev, 0x3e, 0x07);
@@ -31,7 +28,6 @@ static void bridge1c_init(struct device *dev)
 
 	/* multi transaction timer */
 	pci_write_config8(dev, 0x42, 0x08);
-
 }
 
 static struct device_operations pci_ops  = {

@@ -7,9 +7,7 @@
 
 static void sata_init(struct device *dev)
 {
-
 	/* Enable sata devices so the linux sata driver will work */
-	uint16_t word;
 
 	/* Enable SATA devices */
 

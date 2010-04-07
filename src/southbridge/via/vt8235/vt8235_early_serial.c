@@ -38,9 +38,6 @@ static void vt8235_writesioword(uint16_t reg, uint16_t val)
 
 static void enable_vt8235_serial(void) 
 {
-	unsigned long x;
-	uint8_t c;
-	device_t dev;
 	// turn on pnp
 	vt8235_writepnpaddr(0x87);
 	vt8235_writepnpaddr(0x87);

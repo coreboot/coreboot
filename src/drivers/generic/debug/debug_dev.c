@@ -59,7 +59,7 @@ static void print_pci_regs_all(void)
 	}
 }
 
-static void print_cpuid()
+static void print_cpuid(void)
 {
 	msr_t msr;
 	unsigned index;

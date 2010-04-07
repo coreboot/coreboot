@@ -9,7 +9,6 @@ static void ide_init(struct device *dev)
 {
 
 	/* Enable ide devices so the linux ide driver will work */
-	uint16_t word;
 
 	/* Enable IDE devices */
         pci_write_config16(dev, 0x40, 0x0a307);
@@ -19,6 +18,7 @@ static void ide_init(struct device *dev)
         pci_write_config16(dev, 0x54, 0x5055);
  
 #if 0
+	uint16_t word;
 	word = pci_read_config16(dev, 0x40);
 	word |= (1 << 15);
 	pci_write_config16(dev, 0x40, word);

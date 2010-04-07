@@ -15,6 +15,7 @@ config BOARD_TYAN_S2735
 	select USE_DCACHE_RAM
 	select USE_WATCHDOG_ON_BOOT
 	select BOARD_ROMSIZE_KB_512
+	select USE_PRINTK_IN_CAR
 
 config MAINBOARD_DIR
 	string

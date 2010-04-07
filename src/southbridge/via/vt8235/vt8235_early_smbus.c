@@ -85,7 +85,6 @@ static int smbus_wait_until_ready(void)
 	unsigned long loops;
 	loops = SMBUS_TIMEOUT;
 	do {
-		unsigned char val;
 		smbus_delay();
 		c = inb(SMBUS_IO_BASE + SMBHSTSTAT);
 		while((c & 1) == 1) {
@@ -121,7 +120,6 @@ static int smbus_wait_until_done(void)
 	unsigned char byte;
 	loops = SMBUS_TIMEOUT;
 	do {
-		unsigned char val;
 		smbus_delay();
 		
 		byte = inb(SMBUS_IO_BASE + SMBHSTSTAT);

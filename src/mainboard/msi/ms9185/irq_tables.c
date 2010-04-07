@@ -58,7 +58,7 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t dev
        pirq_info->rfu = rfu;
 }
 
-extern void get_bus_conf(void);
+
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {

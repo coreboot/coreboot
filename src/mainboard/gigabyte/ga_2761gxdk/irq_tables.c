@@ -55,7 +55,7 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t dev
 extern unsigned char bus_isa;
 extern unsigned char bus_sis966[8]; //1
 
-extern void get_bus_conf(void);
+
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
@@ -133,7 +133,6 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 			PINTH = IRQ7
 
                         */
-                int	i;
                 uint8_t	reg[8]={0x41,0x42,0x43,0x44,0x60,0x61,0x62,0x63};
 		uint8_t irq[8]={0x0A,0X0B,0X0,0X0a,0X0B,0X05,0X0,0X07};
 

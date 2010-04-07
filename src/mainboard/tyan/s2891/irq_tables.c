@@ -45,7 +45,7 @@ extern  unsigned char bus_coproc_0;
 extern  unsigned sbdn3;
 extern  unsigned coprocdn;
 
-extern void get_bus_conf(void);
+
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {

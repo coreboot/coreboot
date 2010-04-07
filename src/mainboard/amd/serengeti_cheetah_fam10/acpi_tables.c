@@ -160,7 +160,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-extern void get_bus_conf(void);
+
 extern void update_ssdt(void *ssdt);
 
 static void update_ssdtx(void *ssdtx, int i)

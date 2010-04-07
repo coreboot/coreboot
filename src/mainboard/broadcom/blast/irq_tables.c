@@ -40,7 +40,7 @@ extern  unsigned apicid_bcm5785[3];
 
 extern  unsigned sbdn2;
 
-extern void get_bus_conf(void);
+
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {

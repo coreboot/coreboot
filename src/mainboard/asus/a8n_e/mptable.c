@@ -32,7 +32,7 @@ extern unsigned char bus_isa;
 extern unsigned char bus_ck804[6];
 extern unsigned apicid_ck804;
 extern unsigned bus_type[256];
-extern void get_bus_conf(void);
+
 
 static void *smp_write_config_table(void *v)
 {

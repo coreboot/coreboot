@@ -37,7 +37,7 @@
 
 extern unsigned char bus_isa;
 extern unsigned char bus_ck804[6];
-extern void get_bus_conf(void);
+
 
 /**
  * Add one line to IRQ table.

@@ -33,7 +33,7 @@ extern unsigned apicid_mcp55;
 
 extern unsigned char bus_pcix[3]; // under bus_mcp55_2
 
-extern void get_bus_conf(void);
+
 
 static void *smp_write_config_table(void *v)
 {

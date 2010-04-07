@@ -29,7 +29,7 @@
 
 #include "mb_sysconf.h"
 
-extern void get_bus_conf(void);
+
 extern unsigned sbdn3;
 
 static void *smp_write_config_table(void *v)

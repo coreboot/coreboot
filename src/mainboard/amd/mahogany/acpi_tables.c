@@ -99,7 +99,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-extern void get_bus_conf(void);
+
 
 #if CONFIG_ACPI_SSDTX_NUM >= 1
 static void update_ssdtx(void *ssdtx, int i)

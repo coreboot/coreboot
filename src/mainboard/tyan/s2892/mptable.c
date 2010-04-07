@@ -22,7 +22,7 @@ extern  unsigned apicid_8131_2;
 
 extern  unsigned sbdn3;
 
-extern void get_bus_conf(void);
+
 
 static void *smp_write_config_table(void *v)
 {

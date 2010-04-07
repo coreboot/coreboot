@@ -46,7 +46,7 @@ unsigned hcdnx[] =
 };
 unsigned sbdn2;
 
-extern void get_sblk_pci1234(void);
+
 
 static unsigned get_bus_conf_done = 0;
 

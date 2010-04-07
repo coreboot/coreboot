@@ -70,4 +70,6 @@ struct amdfam10_sysconf_t {
 
 extern struct amdfam10_sysconf_t sysconf;
 
+void get_sblk_pci1234(void);
+void get_bus_conf(void);
 #endif

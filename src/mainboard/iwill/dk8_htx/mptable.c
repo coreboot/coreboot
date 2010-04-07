@@ -10,7 +10,7 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include "mb_sysconf.h"
 
-extern void get_bus_conf(void);
+
 
 static void *smp_write_config_table(void *v)
 {

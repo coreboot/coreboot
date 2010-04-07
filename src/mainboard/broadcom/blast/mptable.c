@@ -19,7 +19,7 @@ extern  unsigned apicid_bcm5785[3];
 
 extern  unsigned sbdn2;
 
-extern void get_bus_conf(void);
+
 
 static void *smp_write_config_table(void *v)
 {

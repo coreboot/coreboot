@@ -62,7 +62,7 @@ static unsigned hcdnx[] =
 //        0x20202020,
 };
 
-extern void get_sblk_pci1234(void);
+
 
 static unsigned get_bus_conf_done = 0;
 

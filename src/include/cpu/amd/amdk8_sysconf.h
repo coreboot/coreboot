@@ -25,4 +25,6 @@ struct amdk8_sysconf_t {
 
 extern struct amdk8_sysconf_t sysconf;
 
+void get_sblk_pci1234(void);
+void get_bus_conf(void);
 #endif

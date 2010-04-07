@@ -47,7 +47,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	unsigned int gsi_base = 0x18;
 	extern unsigned char bus_mcp55[8];
 	extern unsigned apicid_mcp55;
-	extern void get_bus_conf(void);
+	
 	unsigned sbdn;
 	struct resource *res;
 	device_t dev;

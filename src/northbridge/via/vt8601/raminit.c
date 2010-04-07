@@ -201,7 +201,8 @@ static unsigned long spd_module_size(unsigned char slot)
 	/* grand total. You have rows+cols addressing, * times of banks, times
 	 * width of data in bytes */
 	/* Width is assumed to be 64 bits == 8 bytes */
-	value = (1 << (cols + rows)) * banks * 8;
+	value = (1 << (cols + rows));
+	value *= banks * 8;
 	print_info_hex32(value);
 	print_info(" bytes ");
 	/* Return in 8MB units */

@@ -36,7 +36,7 @@
 
 extern struct ehci_debug_info dbg_info;
 
-uint8_t	SiS_SiS7002_init[22][3]={
+u8	SiS_SiS7002_init[22][3]={
 {0x04, 0x00, 0x06},
 {0x0D, 0x00, 0x00},
 
@@ -70,14 +70,14 @@ uint8_t	SiS_SiS7002_init[22][3]={
 
 static void usb2_init(struct device *dev)
 {
-        uint8_t *base;
+        u32 base;
         struct resource *res;
 
         print_debug("USB 2.0 INIT:---------->\n");
 
 //-------------- enable USB2.0 (SiS7002) -------------------------
 {
-        uint8_t  temp8;
+        u8  temp8;
         int i=0;
 
         while(SiS_SiS7002_init[i][0] != 0)
@@ -94,8 +94,8 @@ static void usb2_init(struct device *dev)
         if(!res)
                 return;
 
-        base =(uint8_t *) res->base;
-        printk(BIOS_DEBUG, "base = %p\n", base);
+        base = res->base;
+        printk(BIOS_DEBUG, "base = 0x%08x\n", base);
         write32(base+0x20, 0x2);
 //-----------------------------------------------------------
 

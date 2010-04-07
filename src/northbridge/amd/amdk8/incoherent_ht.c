@@ -67,10 +67,12 @@ static uint8_t ht_lookup_slave_capability(device_t dev)
 	return ht_lookup_capability(dev, 0); // Slave/Primary Interface Block Format
 }
 
+#if 0
 static uint8_t ht_lookup_host_capability(device_t dev)
 {
 	return ht_lookup_capability(dev, 1); // Host/Secondary Interface Block Format
 }
+#endif
 
 static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid)
 {

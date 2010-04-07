@@ -1,4 +1,5 @@
 #include <arch/io.h>
+#include <reset.h>
 #include <device/pci_ids.h>
 
 #define PCI_DEV(BUS, DEV, FN) ( \

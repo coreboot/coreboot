@@ -32,7 +32,7 @@
 #include <delay.h>
 #include "sis966.h"
 
-uint8_t	SiS_SiS7502_init[7][3]={
+u8	SiS_SiS7502_init[7][3]={
 {0x04, 0xFF, 0x07},
 {0x2C, 0xFF, 0x39},
 {0x2D, 0xFF, 0x10},
@@ -42,9 +42,9 @@ uint8_t	SiS_SiS7502_init[7][3]={
 {0x00, 0x00, 0x00}					//End of table
 };
 
-static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
+static int set_bits(u32 port, u32 mask, u32 val)
 {
-	uint32_t dword;
+	u32 dword;
 	int count;
 
 	val &= mask;
@@ -67,11 +67,9 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 
 }
 
- uint32_t send_verb(uint8_t *base, uint32_t verb)
+static u32 send_verb(u32 base, u32 verb)
 {
-
-
-     uint32_t dword;
+     u32 dword;
 
      dword = read32(base + 0x68);
      dword=dword|(unsigned long)0x0002;
@@ -91,13 +89,12 @@ static int set_bits(uint8_t *port, uint32_t mask, uint32_t val)
 
      dword = read32(base + 0x64);
      return dword;
-
 }
 
 
-static int codec_detect(uint8_t *base)
+static int codec_detect(u32 base)
 {
-	uint32_t dword;
+	u32 dword;
 	int idx=0;
 
 	/* 1 */ // controller reset
@@ -125,7 +122,7 @@ static int codec_detect(uint8_t *base)
 }
 
 
-static uint32_t verb_data[] = {
+static u32 verb_data[] = {
 
 //14
 	0x01471c10,
@@ -189,18 +186,18 @@ static uint32_t verb_data[] = {
 	0x01f71f01,
 };
 
-static unsigned find_verb(uint32_t viddid, uint32_t **verb)
+static unsigned find_verb(u32 viddid, u32 **verb)
 {
         if((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
-	*verb =  (uint32_t *)verb_data;
-	return sizeof(verb_data)/sizeof(uint32_t);
+	*verb =  (u32 *)verb_data;
+	return sizeof(verb_data)/sizeof(u32);
 }
 
 
-static void codec_init(uint8_t *base, int addr)
+static void codec_init(u32 base, int addr)
 {
-	uint32_t dword;
-	uint32_t *verb;
+	u32 dword;
+	u32 *verb;
 	unsigned verb_size;
 	int i;
 
@@ -235,7 +232,7 @@ static void codec_init(uint8_t *base, int addr)
 	printk(BIOS_DEBUG, "verb loaded!\n");
 }
 
-static void codecs_init(uint8_t *base, uint32_t codec_mask)
+static void codecs_init(u32 base, u32 codec_mask)
 {
 	codec_init(base, 0);
 	return;
@@ -243,15 +240,15 @@ static void codecs_init(uint8_t *base, uint32_t codec_mask)
 
 static void aza_init(struct device *dev)
 {
-        uint8_t *base;
+        u32 base;
         struct resource *res;
-        uint32_t codec_mask;
+        u32 codec_mask;
 
         print_debug("AZALIA_INIT:---------->\n");
 
 //-------------- enable AZA (SiS7502) -------------------------
 {
-        uint8_t  temp8;
+        u8  temp8;
         int i=0;
         while(SiS_SiS7502_init[i][0] != 0)
         {
@@ -292,8 +289,8 @@ static void aza_init(struct device *dev)
 	if(!res)
 		return;
 
-	base =(uint8_t *) res->base;
-	printk(BIOS_DEBUG, "base = %p\n", base);
+	base = res->base;
+	printk(BIOS_DEBUG, "base = 0x%08x\n", base);
 
 	codec_mask = codec_detect(base);
 

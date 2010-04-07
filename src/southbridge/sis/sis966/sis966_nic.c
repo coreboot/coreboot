@@ -34,7 +34,7 @@
 #include "sis966.h"
 
 
-uint8_t	SiS_SiS191_init[6][3]={
+u8	SiS_SiS191_init[6][3]={
 {0x04, 0xFF, 0x07},
 {0x2C, 0xFF, 0x39},
 {0x2D, 0xFF, 0x10},
@@ -50,17 +50,18 @@ uint8_t	SiS_SiS191_init[6][3]={
 #define TRUE            1
 #define FALSE           0
 
-uint16_t MacAddr[3];
+u16 MacAddr[3];
 
 
-void writeApcByte(int addr, uint8_t value)
+static void writeApcByte(int addr, u8 value)
 {
     outb(addr,0x78);
     outb(value,0x79);
 }
-uint8_t readApcByte(int addr)
+
+static u8 readApcByte(int addr)
 {
-    uint8_t value;
+    u8 value;
     outb(addr,0x78);
     value=inb(0x79);
     return(value);
@@ -68,7 +69,7 @@ uint8_t readApcByte(int addr)
 
 static void readApcMacAddr(void)
 {
-    uint8_t i;
+    u8 i;
 
 // enable APC in south bridge sis966 D2F0
 
@@ -93,9 +94,9 @@ static void readApcMacAddr(void)
 
 static void set_apc(struct device *dev)
 {
-    uint16_t addr;
-    uint16_t i;
-    uint8_t   bTmp;
+    u16 addr;
+    u16 i;
+    u8   bTmp;
 
     /* enable APC in south bridge sis966 D2F0 */
     outl(0x80001048,0xcf8);
@@ -104,8 +105,8 @@ static void set_apc(struct device *dev)
     for(i = 0 ; i <3; i++)
     {
        addr=0x9+2*i;
-       writeApcByte(addr,(uint8_t)(MacAddr[i]&0xFF));
-	writeApcByte(addr+1L,(uint8_t)((MacAddr[i]>>8)&0xFF));
+       writeApcByte(addr,(u8)(MacAddr[i]&0xFF));
+	writeApcByte(addr+1L,(u8)((MacAddr[i]>>8)&0xFF));
         // printf("%x - ",readMacAddrByte(0x59+i));
     }
 
@@ -135,11 +136,11 @@ static void set_apc(struct device *dev)
 //      Contents of EEPROM word (Reg).
 //-----------------------------------------------------------------------------
 #define LoopNum 200
-static  unsigned long ReadEEprom( struct device *dev,  uint32_t base,  uint32_t Reg)
+static  unsigned long ReadEEprom( struct device *dev,  u32 base,  u32 Reg)
 {
-    uint32_t 	data;
-    uint32_t 	i;
-    uint32_t 	ulValue;
+    u32 	data;
+    u32 	i;
+    u32 	ulValue;
 
 
     ulValue = (0x80 | (0x2 << 8) | (Reg << 10));  //BIT_7
@@ -169,11 +170,11 @@ static  unsigned long ReadEEprom( struct device *dev,  uint32_t base,  uint32_t 
     return data;
 }
 
-static int phy_read(uint32_t  base, unsigned phy_addr, unsigned phy_reg)
+static int phy_read(u32  base, unsigned phy_addr, unsigned phy_reg)
 {
-    uint32_t   ulValue;
-    uint32_t   Read_Cmd;
-    uint16_t   usData;
+    u32   ulValue;
+    u32   Read_Cmd;
+    u16   usData;
 
 
 
@@ -203,10 +204,10 @@ static int phy_read(uint32_t  base, unsigned phy_addr, unsigned phy_reg)
 
 // Detect a valid PHY
 // If there exist a valid PHY then return TRUE, else return FALSE
-static int phy_detect(uint32_t base,uint16_t *PhyAddr) //BOOL PHY_Detect()
+static int phy_detect(u32 base,u16 *PhyAddr) //BOOL PHY_Detect()
 {
     int	              bFoundPhy = FALSE;
-    uint16_t		usData;
+    u16		usData;
     int		       PhyAddress = 0;
 
 
@@ -239,17 +240,15 @@ static int phy_detect(uint32_t base,uint16_t *PhyAddr) //BOOL PHY_Detect()
 static void nic_init(struct device *dev)
 {
         int val;
-        uint16_t  PhyAddr;
-        uint32_t base;
+        u16 PhyAddr;
+        u32 base;
         struct resource *res;
-
 
         print_debug("NIC_INIT:---------->\n");
 
-
 //-------------- enable NIC (SiS19x) -------------------------
 {
-        uint8_t  temp8;
+        u8  temp8;
         int i=0;
         while(SiS_SiS191_init[i][0] != 0)
 	{

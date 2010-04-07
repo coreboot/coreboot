@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <reset.h>
+
 static unsigned get_sbdn(unsigned bus)
 {
 	device_t dev;
@@ -31,7 +33,7 @@ static unsigned get_sbdn(unsigned bus)
 	return (dev>>15) & 0x1f;
 }
 
-static void hard_reset(void)
+void hard_reset(void)
 {
 	set_bios_reset();
 
@@ -42,12 +44,11 @@ static void hard_reset(void)
 
 static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
-/* default value for sis966 is good */
+	/* default value for sis966 is good */
 	/* set VFSMAF ( VID/FID System Management Action Field) to 2 */
-
 }
 
-static void soft_reset(void)
+void soft_reset(void)
 {
 	set_bios_reset();
 

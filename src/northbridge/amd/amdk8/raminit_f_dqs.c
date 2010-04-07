@@ -1824,12 +1824,12 @@ static void set_sysinfo_in_ram(unsigned val)
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 #else
-int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
+static int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 {
 	return nvram_pos;
 }
 
-int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
+static int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 {
 	die("No memory NVRAM loader for DQS data! Unable to restore memory state\n");
 
@@ -1837,12 +1837,14 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 }
 #endif
 
+#if CONFIG_MEM_TRAIN_SEQ == 0
 static int save_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
 {
 	u32 dword = pci_read_config32_index_wait(dev, 0x98, index);
 
 	return s3_save_nvram_early(dword, size, nvram_pos);
 }
+#endif
 
 static int load_index_to_pos(unsigned int dev, int size, int index, int nvram_pos)
 {

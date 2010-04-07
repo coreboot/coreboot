@@ -177,6 +177,7 @@ static u8 is_famly10(void)
 	return (cpuid_eax(1) & 0xff00000) != 0;
 }
 
+#if CONFIG_NORTHBRIDGE_AMD_AMDFAM10 == 1		/* save some spaces */
 static u8 l3_cache(void)
 {
 	return (cpuid_edx(0x80000006) & (0x3FFF << 18)) != 0;
@@ -186,6 +187,7 @@ static u8 cpu_core_number(void)
 {
 	return (cpuid_ecx(0x80000008) & 0xFF) + 1;
 }
+#endif
 
 static u8 get_nb_rev(device_t nb_dev)
 {

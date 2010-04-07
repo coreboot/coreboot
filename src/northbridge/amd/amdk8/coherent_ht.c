@@ -153,6 +153,7 @@ static void disable_probes(void)
 
 }
 
+#if 0
 static void enable_apic_ext_id(u8 node)
 {
 #if CONFIG_ENABLE_APIC_EXT_ID==1
@@ -165,6 +166,7 @@ static void enable_apic_ext_id(u8 node)
 	pci_write_config32(NODE_HT(node), 0x68, val);
 #endif
 }
+#endif
 
 static void enable_routing(u8 node)
 {
@@ -378,6 +380,7 @@ static uint8_t get_linkn_first(uint8_t byte)
 	return byte;
 }
 
+#if TRY_HIGH_FIRST == 1
 static uint8_t get_linkn_last(uint8_t byte)
 {
 	if(byte & 0x02) { byte &= 0x0f; byte |= 0x00;  }
@@ -385,7 +388,9 @@ static uint8_t get_linkn_last(uint8_t byte)
 	if(byte & 0x08) { byte &= 0x0f; byte |= 0x20;  }
 	return byte>>4;
 }
+#endif
 
+#if (CONFIG_MAX_PHYSICAL_CPUS > 2) || (CONFIG_MAX_PHYSICAL_CPUS_4_BUT_MORE_INSTALLED == 1)
 static uint8_t get_linkn_last_count(uint8_t byte)
 {
 	byte &= 0x0f;
@@ -394,6 +399,7 @@ static uint8_t get_linkn_last_count(uint8_t byte)
 	if(byte & 0x08) { byte &= 0xcf; byte |= 0x20; byte+=0x40; }
 	return byte>>4;
 }
+#endif
 
 static void setup_row_local(u8 source, u8 row) /* source will be 7 when it is for temp use*/
 {
@@ -484,10 +490,12 @@ static void setup_temp_row(u8 source, u8 dest)
 	fill_row(source,7,get_row(source,dest));
 }
 
+#if 0
 static void clear_temp_row(u8 source)
 {
 	fill_row(source, 7, DEFAULT);
 }
+#endif
 
 static void setup_remote_node(u8 node)
 {

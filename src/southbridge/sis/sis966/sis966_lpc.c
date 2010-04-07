@@ -55,6 +55,8 @@
 #define CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL	MAINBOARD_POWER_ON
 #endif
 
+#undef SLAVE_INIT
+
 static void lpc_common_init(device_t dev)
 {
 	uint8_t byte;
@@ -69,11 +71,12 @@ static void lpc_common_init(device_t dev)
 	setup_ioapic(ioapic_base, 0); // Don't rename IO APIC ID
 }
 
+#ifdef SLAVE_INIT
 static void lpc_slave_init(device_t dev)
 {
 	lpc_common_init(dev);
 }
-
+#endif
 
 static void lpc_usb_legacy_init(device_t dev)
 {
@@ -271,12 +274,14 @@ static struct device_operations lpc_ops  = {
 //	.enable		= sis966_enable,
 	.ops_pci	= &lops_pci,
 };
+
 static const struct pci_driver lpc_driver __pci_driver = {
 	.ops	= &lpc_ops,
 	.vendor	= PCI_VENDOR_ID_SIS,
 	.device	= PCI_DEVICE_ID_SIS_SIS966_LPC,
 };
 
+#ifdef SLAVE_INIT // No device? 
 static struct device_operations lpc_slave_ops  = {
 	.read_resources	= sis966_lpc_read_resources,
 	.set_resources	= pci_dev_set_resources,
@@ -285,3 +290,4 @@ static struct device_operations lpc_slave_ops  = {
 //	.enable		= sis966_enable,
 	.ops_pci	= &lops_pci,
 };
+#endif

@@ -47,7 +47,7 @@ static void w83627hf_enable_serial(device_t dev, unsigned iobase)
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void w83627hf_set_clksel_48(device_t dev)
+static inline void w83627hf_set_clksel_48(device_t dev)
 {
 	unsigned port = dev >> 8;
 	pnp_enter_ext_func_mode(dev);

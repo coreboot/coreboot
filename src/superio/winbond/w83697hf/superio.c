@@ -44,7 +44,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 static void w83697hf_init(device_t dev)
 {
 	struct superio_winbond_w83697hf_config *conf;
-	struct resource *res0, *res1;
+	struct resource *res0;
 
 	if (!dev->enabled)
 		return;

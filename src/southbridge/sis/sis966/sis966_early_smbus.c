@@ -344,7 +344,7 @@ static const uint8_t	SiS_SiS1183_init[44][3]={
                             => 04h :  128MBytes
                             => Others:  Reserved
 */
-void Init_Share_Memory(uint8_t ShareSize)
+static void Init_Share_Memory(uint8_t ShareSize)
 {
     device_t dev;
 
@@ -360,7 +360,7 @@ void Init_Share_Memory(uint8_t ShareSize)
                => 04h :  512MBytes
                => Others:  Reserved
 */
-void Init_Aper_Size(uint8_t AperSize)
+static void Init_Aper_Size(uint8_t AperSize)
 {
         device_t dev;
         uint16_t SiSAperSizeTable[]={0x0F38, 0x0F30, 0x0F20, 0x0F00, 0x0E00};
@@ -372,7 +372,7 @@ void Init_Aper_Size(uint8_t AperSize)
         pci_write_config16(dev, 0xB4, SiSAperSizeTable[AperSize]);
 }
 
-void sis_init_stage1(void)
+static void sis_init_stage1(void)
 {
         device_t dev;
         uint8_t temp8;
@@ -434,7 +434,7 @@ void sis_init_stage1(void)
 
 
 
-void sis_init_stage2(void)
+static void sis_init_stage2(void)
 {
 	device_t dev;
 	msr_t	msr;

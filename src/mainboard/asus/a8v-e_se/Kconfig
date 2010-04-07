@@ -44,11 +44,6 @@ config SB_HT_CHAIN_ON_BUS0
 	default 1
 	depends on BOARD_ASUS_A8V_E_SE
 
-config SB_HT_CHAIN_UNITID_OFFSET_ONLY
-	bool
-	default n
-	depends on BOARD_ASUS_A8V_E_SE
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "A8V-E SE"

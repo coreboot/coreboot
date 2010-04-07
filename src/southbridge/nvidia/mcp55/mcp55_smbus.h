@@ -40,23 +40,6 @@ static inline void smbus_delay(void)
 	outb(0x80, 0x80);
 }
 
-static int smbus_wait_until_ready(unsigned smbus_io_base)
-{
-	unsigned long loops;
-	loops = SMBUS_TIMEOUT;
-	do {
-		unsigned char val;
-		smbus_delay();
-		val = inb(smbus_io_base + SMBHSTSTAT);
-		val &= 0x1f;
-		if (val == 0) {
-			return 0;
-		}
-		outb(val,smbus_io_base + SMBHSTSTAT);
-	} while(--loops);
-	return -2;
-}
-
 static int smbus_wait_until_done(unsigned smbus_io_base)
 {
 	unsigned long loops;

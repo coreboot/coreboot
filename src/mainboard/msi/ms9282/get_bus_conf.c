@@ -68,31 +68,6 @@ extern void get_sblk_pci1234(void);
 
 static unsigned get_bus_conf_done = 0;
 
-static unsigned get_hcid(unsigned i)
-{
-        unsigned id = 0;
-
-        unsigned busn = (sysconf.pci1234[i] >> 16) & 0xff;
-
-        unsigned devn = sysconf.hcdn[i] & 0xff;
-
-        device_t dev;
-
-        dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
-
-        switch (dev->device) {
-        case 0x0369: //IO55
-                id = 4;
-                break;
-        }
-
-        // we may need more way to find out hcid: subsystem id? GPIO read ?
-
-        // we need use id for 1. bus num, 2. mptable, 3. acpi table
-
-        return id;
-}
-
 void get_bus_conf(void)
 {
 

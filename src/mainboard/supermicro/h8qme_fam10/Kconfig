@@ -69,11 +69,6 @@ config SB_HT_CHAIN_ON_BUS0
 	default 2
 	depends on BOARD_SUPERMICRO_H8QME_FAM10
 
-config SB_HT_CHAIN_UNITID_OFFSET_ONLY
-	bool
-	default n
-	depends on BOARD_SUPERMICRO_H8QME_FAM10
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "H8QME-2+ (Fam10)"

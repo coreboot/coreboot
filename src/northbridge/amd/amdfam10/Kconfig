@@ -57,4 +57,9 @@ config BOOTBLOCK_NORTHBRIDGE_INIT
         default "northbridge/amd/amdfam10/bootblock.c"
 	depends on NORTHBRIDGE_AMD_AMDFAM10
 
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDFAM10
+
 source src/northbridge/amd/amdfam10/root_complex/Kconfig

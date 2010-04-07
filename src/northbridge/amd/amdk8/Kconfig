@@ -47,4 +47,9 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	default n
 	depends on NORTHBRIDGE_AMD_AMDK8
 
+config SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	bool
+	default n
+	depends on NORTHBRIDGE_AMD_AMDK8
+
 source src/northbridge/amd/amdk8/root_complex/Kconfig

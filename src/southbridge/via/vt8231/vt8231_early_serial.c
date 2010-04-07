@@ -31,7 +31,6 @@ static void vt8231_writesioword(uint16_t reg, uint16_t val)
 
 static void enable_vt8231_serial(void) 
 {
-	unsigned long x;
 	uint8_t c;
 	device_t dev;
 	outb(6, 0x80);

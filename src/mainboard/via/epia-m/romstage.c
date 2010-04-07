@@ -78,7 +78,6 @@ static void enable_shadow_ram(void)
 
 static void main(unsigned long bist)
 {
-	unsigned long x;
 	device_t dev;
 
 	/*

@@ -107,6 +107,7 @@ static int smbus_wait_until_done(void)
 	return loops ? 0 : -3;
 }
 
+#if 0
 void smbus_reset(void)
 {
 	outb(HOST_RESET, SMBUS_IO_BASE + SMBHSTSTAT);
@@ -119,7 +120,9 @@ void smbus_reset(void)
 	print_debug_hex8(inb(SMBUS_IO_BASE + SMBHSTSTAT));
 	print_debug("\n");
 }
+#endif
 
+#if CONFIG_DEBUG_SMBUS
 static void smbus_print_error(unsigned char host_status_register)
 {
 
@@ -142,6 +145,7 @@ static void smbus_print_error(unsigned char host_status_register)
 		print_err("Host Busy\n");
 	}
 }
+#endif
 
 /*
  * Copied from intel/i82801dbm early smbus code - suggested by rgm.
@@ -150,7 +154,6 @@ static void smbus_print_error(unsigned char host_status_register)
  */
 static int smbus_read_byte(unsigned device, unsigned address)
 {
-	unsigned char global_control_register;
 	unsigned char global_status_register;
 	unsigned char byte;
 

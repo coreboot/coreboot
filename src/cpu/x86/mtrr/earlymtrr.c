@@ -53,7 +53,7 @@ static void set_var_mtrr_x(
 }
 #endif
 
-static void cache_lbmem(int type)
+static inline void cache_lbmem(int type)
 {
 	/* Enable caching for 0 - 1MB using variable mtrr */
 	disable_cache();
@@ -118,7 +118,7 @@ static void early_mtrr_init(void)
 	enable_cache();
 }
 
-static int early_mtrr_init_detected(void)
+static inline int early_mtrr_init_detected(void)
 {
 	msr_t msr;
 	/* See if MTRR's are enabled.

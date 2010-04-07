@@ -10,7 +10,6 @@
 
 /* PIRQ init
  */
-void pci_assign_irqs(unsigned bus, unsigned slot, const unsigned char pIntAtoD[4]);
 static const unsigned char southbridgeIrqs[4] = { 11, 5, 10, 12 };
 static const unsigned char enetIrqs[4] = { 11, 5, 10, 12 };
 static const unsigned char slotIrqs[4] = { 5, 10, 12, 11 };
@@ -55,7 +54,6 @@ static void pci_routing_fixup(struct device *dev)
 static void vt8231_init(struct device *dev)
 {
 	unsigned char enables;
-	struct southbridge_via_vt8231_config *conf = dev->chip_info;
 
 	printk(BIOS_DEBUG, "vt8231 init\n");
 
@@ -130,7 +128,7 @@ static void vt8231_init(struct device *dev)
 	rtc_init(0);
 }
 
-void vt8231_read_resources(device_t dev)
+static void vt8231_read_resources(device_t dev)
 {
 	struct resource *res;
 

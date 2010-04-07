@@ -47,7 +47,7 @@ it with the version available from LANL.
 #define DIMM_CL2 0
 #endif
 
-void dimms_read(unsigned long x)
+static void dimms_read(unsigned long x)
 {
 	uint8_t c;
 	unsigned long eax;
@@ -59,7 +59,7 @@ void dimms_read(unsigned long x)
 	}
 }
 
-void dimms_write(int x)
+static void dimms_write(int x)
 {
 	uint8_t c;
 	unsigned long eax = x;
@@ -69,7 +69,8 @@ void dimms_write(int x)
 	}
 }
 
-void dumpnorth(device_t north)
+#ifdef CONFIG_DEBUG_RAM_SETUP
+static void dumpnorth(device_t north)
 {
 	unsigned int r, c;
 	for (r = 0;; r += 16) {
@@ -84,11 +85,11 @@ void dumpnorth(device_t north)
 			break;
 	}
 }
+#endif
 
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	device_t north = (device_t) PCI_DEV(0, 0, 0);
-	uint8_t c, r;
 
 	print_err("vt8601 init starting\n");
 	print_debug_hex32(north);
@@ -175,7 +176,7 @@ static unsigned long spd_module_size(unsigned char slot)
 	 * module. This is just a very early first cut at sizing.
 	 */
 	/* we may run out of registers ... */
-	unsigned int banks, rows, cols, reg;
+	unsigned int banks, rows, cols;
 	unsigned int value = 0;
 	/* unsigned int module = ((0x50 + slot) << 1) + 1; */
 	unsigned int module = 0x50 + slot;
@@ -213,9 +214,9 @@ static unsigned long spd_module_size(unsigned char slot)
 	}
 	print_info("\n");
 	return value;
-
 }
 
+#if 0
 static int spd_num_chips(unsigned char slot)
 {
 	unsigned int module = 0x50 + slot;
@@ -226,6 +227,7 @@ static int spd_num_chips(unsigned char slot)
 		width = 8;
 	return 64 / width;
 }
+#endif
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
@@ -275,7 +277,6 @@ static void set_ma_mapping(device_t north, int slot, int type)
 
 static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
-	unsigned char i;
 	static const uint8_t ramregs[] = {
 		0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x56, 0x57
 	};

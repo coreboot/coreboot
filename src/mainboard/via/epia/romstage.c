@@ -13,7 +13,6 @@
 #include "cpu/x86/bist.h"
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "lib/debug.c"
 #include "southbridge/via/vt8231/vt8231_early_smbus.c"
 #include "southbridge/via/vt8231/vt8231_early_serial.c"
@@ -76,10 +75,8 @@ static void enable_shadow_ram(void)
 	pci_write_config8(dev, 0x63, shadowreg);
 }
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
-	unsigned long x;
-	
 	if (bist == 0) {
 		early_mtrr_init();
 	}

@@ -12,11 +12,6 @@
 /* Base 8231 controller */
 static device_t lpc_dev;
 
-void hard_reset(void)
-{
-        printk(BIOS_ERR, "NO HARD RESET ON VT8231! FIX ME!\n");
-}
-
 static void keyboard_on(void)
 {
 	unsigned char regval;

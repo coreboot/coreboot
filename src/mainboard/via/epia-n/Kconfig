@@ -11,6 +11,7 @@ config BOARD_VIA_EPIA_N
 	select EPIA_VT8237R_INIT
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
+	select ROMCC
 
 config MAINBOARD_DIR
 	string

@@ -102,7 +102,7 @@ static inline int spd_read_byte(u32 device, u32 address)
 
 #include "northbridge/amd/amdk8/early_ht.c"
 
-void sio_init(void)
+static void sio_init(void)
 {
 	u8 reg;
 

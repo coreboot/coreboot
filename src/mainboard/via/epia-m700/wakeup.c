@@ -111,9 +111,7 @@ static unsigned char show32[6] = {
 
 void acpi_jump_wake(u32 vector)
 {
-	u32 tmp, dwEip;
-	u16 tmpvector;
-	u8 Data;
+	u32 dwEip;
 	struct Xgt_desc_struct *wake_thunk16_Xgt_desc;
 
 	printk(BIOS_DEBUG, "IN ACPI JUMP WAKE TO %x\n", vector);

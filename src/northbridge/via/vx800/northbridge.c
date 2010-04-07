@@ -142,7 +142,6 @@ static void pci_domain_set_resources(device_t dev)
 		 * this register's value multiply 64 * 1024 * 1024
 		 */
 		for (rambits = 0, i = 0; i < ARRAY_SIZE(ramregs); i++) {
-			unsigned char reg;
 			rambits = pci_read_config8(mc_dev, ramregs[i]);
 			if (rambits != 0)
 				break;
@@ -179,7 +178,7 @@ if register with invalid value we set frame buffer size to 32M for default, but 
 	assign_resources(&dev->link[0]);
 }
 
-static const struct device_operations pci_domain_ops = {
+static struct device_operations pci_domain_ops = {
 	.read_resources = pci_domain_read_resources,
 	.set_resources = pci_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
@@ -196,7 +195,7 @@ static void cpu_bus_noop(device_t dev)
 {
 }
 
-static const struct device_operations cpu_bus_ops = {
+static struct device_operations cpu_bus_ops = {
 	.read_resources = cpu_bus_noop,
 	.set_resources = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,

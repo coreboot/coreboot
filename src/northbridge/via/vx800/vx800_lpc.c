@@ -104,7 +104,7 @@ static void pci_routing_fixup(struct device *dev)
 	printk(BIOS_SPEW, "%s: DONE\n", __FUNCTION__);
 }
 
-void setup_pm(device_t dev)
+static void setup_pm(device_t dev)
 {
 	u16 tmp;
 	/* Debounce LID and PWRBTN# Inputs for 16ms. */
@@ -198,7 +198,7 @@ void setup_pm(device_t dev)
 */
 }
 
-void S3_ps2_kb_ms_wakeup(struct device *dev)
+static void S3_ps2_kb_ms_wakeup(struct device *dev)
 {
 	u8 enables;
 	enables = pci_read_config8(dev, 0x51);
@@ -222,12 +222,12 @@ void S3_ps2_kb_ms_wakeup(struct device *dev)
 
 }
 
-void S3_usb_wakeup(struct device *dev)
+static void S3_usb_wakeup(struct device *dev)
 {
 	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x4000, VX800_ACPI_IO_BASE + 0x22);	//SCI on USB PME
 }
 
-void S3_lid_wakeup(struct device *dev)
+static void S3_lid_wakeup(struct device *dev)
 {
 	outw(inw(VX800_ACPI_IO_BASE + 0x22) | 0x800, VX800_ACPI_IO_BASE + 0x22);	//SCI on LID PME
 }
@@ -301,7 +301,7 @@ static void vx800_sb_init(struct device *dev)
 
 /* total kludge to get lxb to call our childrens set/enable functions - these are
    not called unless this device has a resource to set - so set a dummy one */
-void vx800_read_resources(device_t dev)
+static void vx800_read_resources(device_t dev)
 {
 
 	struct resource *resource;
@@ -312,10 +312,9 @@ void vx800_read_resources(device_t dev)
 	    IORESOURCE_STORED;
 	resource->size = 2;
 	resource->base = 0x2e;
-
 }
 
-void vx800_set_resources(device_t dev)
+static void vx800_set_resources(device_t dev)
 {
 	struct resource *resource;
 	resource = find_resource(dev, 1);
@@ -323,7 +322,7 @@ void vx800_set_resources(device_t dev)
 	pci_dev_set_resources(dev);
 }
 
-void vx800_enable_resources(device_t dev)
+static void vx800_enable_resources(device_t dev)
 {
 	/* vx800 is not a pci bridge and has no resources of its own (other than
 	   standard PC i/o addresses). however it does control the isa bus and so

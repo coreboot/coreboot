@@ -44,10 +44,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, F71805F_SP1)
 #endif
 
-static void memreset_setup(void)
-{
-}
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
@@ -93,9 +89,6 @@ static const struct mem_controller ctrl = {
 
 static void main(unsigned long bist)
 {
-	unsigned long x;
-	device_t dev;
-
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 

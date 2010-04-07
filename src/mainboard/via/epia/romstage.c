@@ -75,7 +75,7 @@ static void enable_shadow_ram(void)
 	pci_write_config8(dev, 0x63, shadowreg);
 }
 
-void main(unsigned long bist)
+static void main(unsigned long bist)
 {
 	if (bist == 0) {
 		early_mtrr_init();

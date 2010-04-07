@@ -7,12 +7,10 @@
 #include "chip.h"
 
 
-static void irqdump()
+static void irqdump(void)
 {
   volatile unsigned char *irq;
   void *mmcr;
-
-
   int i;
   int irqlist[] = {0xd00, 0xd02, 0xd03, 0xd04, 0xd08, 0xd0a,
 	        0xd14, 0xd18, 0xd1a, 0xd1b, 0xd1c,
@@ -34,8 +32,9 @@ static void irqdump()
 /* TODO: finish up mmcr struct in sc520.h, and;
    - set ADDDECTL (now done in raminit.c in cpu/amd/sc520
 */
-static void enable_dev(struct device *dev) {
-	volatile struct mmcrpic *pic = MMCRPIC;
+static void enable_dev(struct device *dev)
+{
+	//volatile struct mmcrpic *pic = MMCRPIC;
 	volatile struct mmcr *mmcr = MMCRDEFAULT;
 
 	/* msm586seg has this register set to a weird value. 
@@ -72,15 +71,11 @@ static void enable_dev(struct device *dev) {
 	mmcr->pic.gp10imap = 0x9;
 	mmcr->pic.gp9imap = 0x4;
 
-
-
-
-
 	irqdump();
 	printk(BIOS_ERR, "uart 1 ctl is 0x%x\n", *(unsigned char *) 0xfffefcc0);
 
 	printk(BIOS_ERR, "0xc20 ctl is 0x%x\n", *(unsigned short *) 0xfffefc20);
-	printk(BIOS_ERR, "0xc22 0x%x\n", *(unsigned short *) 0xfffefc22b);
+	printk(BIOS_ERR, "0xc22 0x%x\n", *(unsigned short *) 0xfffefc22);
 
 	/* The following block has NOT proven sufficient to get
 	 * the VGA hardware to talk to us 
@@ -124,7 +119,7 @@ static void enable_dev(struct device *dev) {
 	/* still not interrupts. */
 	/* their IRQ table is wrong. Just hardwire it */
 	{
-	  char pciints[4] = {15, 15, 15, 15};
+	  unsigned char pciints[4] = {15, 15, 15, 15};
 	  pci_assign_irqs(0, 12, pciints);
 	}
 	/* the assigned failed but we just noticed -- there is no
@@ -133,6 +128,7 @@ static void enable_dev(struct device *dev) {
 	/* follow fuctory here */
 	mmcr->dmacontrol.extchanmapa = 0x3210;
 }
+
 struct chip_operations mainboard_ops = {
 	CHIP_NAME("DIGITAL-LOGIC MSM586SEG Mainboard")
 	.enable_dev = enable_dev

@@ -41,7 +41,6 @@
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include <string.h>
-#include "cpu/x86/lapic/boot_cpu.c"
 
 /* This file contains the board-special SI value for raminit.c. */
 #include "driving_clk_phase_data.c"
@@ -59,18 +58,6 @@
  * This acpi_is_wakeup_early_via_VX800 is from Rudolf's patch on the list:
  * http://www.coreboot.org/pipermail/coreboot/2008-January/028787.html.
  */
-void jason_tsc_count_car(void)
-{
-#if 0
-	unsigned long long start;
-	asm volatile ("rdtsc" : "=A" (start));
-	start >>= 20;
-	print_emerg("jason_tsc_count_car=  ");
-	print_emerg_hex32((unsigned long) start);
-	print_emerg("\n");
-#endif
-}
-
 int acpi_is_wakeup_early_via_vx800(void)
 {
 	device_t dev;
@@ -431,8 +418,6 @@ void stage1_main(unsigned long bist)
 	 * g) Rx73h = 32h
 	*/
 
-	jason_tsc_count_car();
-
 	pci_write_config16(PCI_DEV(0, 0xf, 0), 0xBA,
 			   PCI_DEVICE_ID_VIA_VX855_IDE);
 	pci_write_config16(PCI_DEV(0, 0xf, 0), 0xBE,
@@ -462,7 +447,6 @@ void stage1_main(unsigned long bist)
 	 * written, then this must be a CPU restart (result of OS reboot cmd),
 	 * so we need a real "cold boot".
 	 */
-	jason_tsc_count_car();
 	if ((boot_mode != 3)
 	    && (pci_read_config8(PCI_DEV(0, 0, 3), 0x80) != 0)) {
 		outb(6, 0xcf9);
@@ -471,7 +455,6 @@ void stage1_main(unsigned long bist)
 	/* x86 cold boot I/O cmd. */
 	/* These 2 lines are the same with epia-cn port. */
 	enable_smbus();
-	jason_tsc_count_car();
 
 	/* This fix does help vx800!, but vx855 doesn't need this. */
 	/* smbus_fixup(&ctrl); */
@@ -563,8 +546,6 @@ void stage1_main(unsigned long bist)
 	/* ddr2_ram_setup(); */
 	/* This line is the same with cx700 port. */
 	enable_shadow_ram();
-
-	jason_tsc_count_car();
 
 	/*
 	 * For coreboot most time of S3 resume is the same as normal boot,
@@ -801,7 +782,6 @@ cpu_reset_x:
 		print_debug("\n");
 #endif
 
-		jason_tsc_count_car();
 		/* Copy and execute coreboot_ram. */
 		copy_and_run(new_cpu_reset);
 		/* We will not return. */

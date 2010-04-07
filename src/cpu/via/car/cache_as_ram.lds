@@ -27,5 +27,4 @@ SECTIONS {
 		. = ALIGN(16);
 		_einit = .;
 	}
-
 }

@@ -112,7 +112,7 @@ static void post_cache_as_ram(void)
 //	wait_all_core0_mem_trained(sysinfox); // moved to lapic_init_cpus.c
 #endif
 	/*copy and execute coreboot_ram */
-	copy_and_run();
+	copy_and_run(0);
 	/* We will not return */
 
 	print_debug("should not be here -\n");

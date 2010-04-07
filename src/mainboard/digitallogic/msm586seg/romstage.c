@@ -40,8 +40,6 @@ void setup_pars(void)
 
 #include "cpu/amd/sc520/raminit.c"
 
-typedef void (*lj)(void);
-
 struct mem_controller {
 	int i;
 };

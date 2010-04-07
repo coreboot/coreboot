@@ -91,7 +91,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 {
 	unsigned int irq_start = 0;
 	device_t dev = 0;
-	struct resource* res = NULL;
 	unsigned char bus_isa;
 
 	/* Local Apic */
@@ -141,7 +140,6 @@ unsigned long acpi_fill_srat(unsigned long current)
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
-	int i;
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
 	acpi_hpet_t *hpet;

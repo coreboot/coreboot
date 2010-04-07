@@ -75,7 +75,7 @@ static void *smp_write_config_table(void *v)
 	dev = dev_find_slot(0, PCI_DEVFN(0x1F,0));
 	res = find_resource(dev, RCBA);
 	if (!res) {
-	  return;
+	  return NULL;
 	}
 	rcba = res->base;
 

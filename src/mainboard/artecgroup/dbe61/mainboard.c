@@ -28,7 +28,7 @@
 #include "../../../southbridge/amd/cs5536/cs5536.h"
 #include "chip.h"
 
-static void init_gpio()
+static void init_gpio(void)
 {
 	msr_t msr;
 	printk(BIOS_DEBUG, "Checking GPIO module...\n");

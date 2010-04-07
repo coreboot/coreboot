@@ -69,7 +69,7 @@ static void xe7501devkit_register_ioapics(struct mp_config_table *mc)
 	smp_write_ioapic(mc, IOAPIC_P64H2_1_BUS_B, P64H2_IOAPIC_VERSION, res->base);
 }
 
-void xe7501devkit_register_interrupts(struct mp_config_table *mc)
+static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 {
 	// Chipset PCI bus
 	//					 Type		Trigger | Polarity							Bus ID				IRQ					APIC ID					PIN#

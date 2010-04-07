@@ -23,7 +23,7 @@
 #define MAINBOARD_POWER_ON  1
 
 
-void i82801cx_enable_ioapic( struct device *dev) 
+static void i82801cx_enable_ioapic( struct device *dev) 
 {
 	uint32_t dword;
     volatile uint32_t* ioapic_index = (volatile uint32_t*)0xfec00000;
@@ -54,7 +54,7 @@ void i82801cx_enable_ioapic( struct device *dev)
 }
 
 // This is how interrupts are received from the Super I/O chip
-void i82801cx_enable_serial_irqs( struct device *dev)
+static void i82801cx_enable_serial_irqs( struct device *dev)
 {
 	// Recognize serial IRQs, continuous mode, frame size 21, 4 clock start frame pulse width
     pci_write_config8(dev, SERIRQ_CNTL, (1 << 7)|(1 << 6)|((21 - 17) << 2)|(0<< 0));
@@ -69,7 +69,7 @@ void i82801cx_enable_serial_irqs( struct device *dev)
 // Return Value:	None
 // Description: 	Route all DMA channels to either PCI or LPC.
 //
-void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask) 
+static void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask) 
 {
     uint16_t dmaConfig;
     int channelIndex;
@@ -84,7 +84,7 @@ void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask)
     pci_write_config16(dev, PCI_DMA_CFG, dmaConfig);
 }
 
-void i82801cx_rtc_init(struct device *dev)
+static void i82801cx_rtc_init(struct device *dev)
 {
     uint32_t dword;
     int rtc_failed;
@@ -116,7 +116,7 @@ void i82801cx_rtc_init(struct device *dev)
 }
 
 
-void i82801cx_1f0_misc(struct device *dev)
+static void i82801cx_1f0_misc(struct device *dev)
 {
 	// Prevent LPC disabling, enable parity errors, and SERR# (System Error)
     pci_write_config16(dev, PCI_COMMAND, 0x014f);

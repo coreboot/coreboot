@@ -43,8 +43,8 @@ extern void get_bus_conf(void);
 static void *smp_write_config_table(void *v)
 {
         static const char sig[4] = "PCMP";
-        static const char oem[3] = "MSI";
-        static const char productid[6] = "MS9185       ";
+        static const char oem[8] = "MSI     ";
+        static const char productid[12] = "MS9185      ";
         struct mp_config_table *mc;
 
         unsigned char bus_num;
@@ -82,8 +82,7 @@ static void *smp_write_config_table(void *v)
 
 /*I/O APICs:   APIC ID Version State           Address*/
         {
-                device_t dev = 0;
-               int i;
+		device_t dev = 0;
                struct resource *res;
                for(i=0; i<3; i++) {
                        dev = dev_find_device(0x1166, 0x0235, dev);

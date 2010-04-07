@@ -21,7 +21,7 @@
 #define  VX800_H 1
 
 #ifndef __PRE_RAM__
-static void vx800_noop()
+static inline void vx800_noop(device_t dev)
 {
 }
 #endif

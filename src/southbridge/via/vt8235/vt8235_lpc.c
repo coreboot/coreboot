@@ -105,9 +105,8 @@ static void pci_routing_fixup(struct device *dev)
  * can't figure out how to do !!!!
  */ 
 
-void setup_pm(device_t dev)
+static void setup_pm(device_t dev)
 {
-
 	// Set gen config 0
 	pci_write_config8(dev, 0x80, 0x20);
 
@@ -216,7 +215,7 @@ static void vt8235_init(struct device *dev)
 
 /* total kludge to get lxb to call our childrens set/enable functions - these are not called unless this
    device has a resource to set - so set a dummy one */
-void vt8235_read_resources(device_t dev)
+static void vt8235_read_resources(device_t dev)
 {
 	struct resource *res;
 
@@ -234,21 +233,20 @@ void vt8235_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-void vt8235_set_resources(device_t dev)
+static void vt8235_set_resources(device_t dev)
 {
-	struct resource *resource;
+	//struct resource *resource;
 	//resource = find_resource(dev,1);
 	//resource->flags |= IORESOURCE_STORED;
 	pci_dev_set_resources(dev);
 }
 
-void vt8235_enable_resources(device_t dev)
+static void vt8235_enable_resources(device_t dev)
 {
 	/* vt8235 is not a pci bridge and has no resources of its own (other than standard PC i/o addresses)
            however it does control the isa bus and so we need to manually call enable childrens resources on that bus */
 	pci_dev_enable_resources(dev);
 	enable_childrens_resources(dev);
-
 }
 	
 static void southbridge_init(struct device *dev)

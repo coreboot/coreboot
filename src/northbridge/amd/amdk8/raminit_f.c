@@ -33,7 +33,7 @@
 #define QRANK_DIMM_SUPPORT 0
 #endif
 
-#if DEBUG_RAM_SETUP
+#if CONFIG_DEBUG_RAM_SETUP
 #define printk_raminit(fmt, arg...) printk(BIOS_DEBUG, fmt, arg)
 #else
 #define printk_raminit(fmt, arg...)

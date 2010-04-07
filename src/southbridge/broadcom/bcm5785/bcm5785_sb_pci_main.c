@@ -25,8 +25,6 @@ static void sb_init(device_t dev)
 	uint8_t byte_old;
 	int nmi_option;
 
-	uint32_t dword;
-
 	/* Set up NMI on errors */
 	byte = inb(0x70); // RTC70
 	byte_old = byte;
@@ -47,7 +45,6 @@ static void sb_init(device_t dev)
 static void bcm5785_sb_read_resources(device_t dev)
 {
 	struct resource *res;
-	unsigned long index;
 
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev); 		
@@ -64,6 +61,7 @@ static void bcm5785_sb_read_resources(device_t dev)
         res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE | IORESOURCE_ASSIGNED;
 
 }
+
 static int lsmbus_recv_byte(device_t dev)
 {
         unsigned device;

@@ -126,7 +126,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	unsigned long current;
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
-	acpi_xsdt_t *xsdt;
 	acpi_madt_t *madt;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
@@ -163,8 +162,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	dsdt = (acpi_header_t *)current;
 	current += AmlCode.length;
 	memcpy((void *)dsdt, &AmlCode, AmlCode.length);
+#if 0
 	dsdt->checksum = 0; // don't trust intel iasl compiler to get this right
 	dsdt->checksum = acpi_checksum(dsdt,dsdt->length);
+#endif
 	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 	printk(BIOS_DEBUG, "ACPI:     * FADT\n");
 

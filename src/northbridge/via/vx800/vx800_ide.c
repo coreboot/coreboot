@@ -166,13 +166,10 @@ static const idedevicepcitable[16 * 12] = {
 
 static void ide_init(struct device *dev)
 {
-	uint8_t enables, Rx89, RxC0;
 	u8 i, data;
-	struct ATA_REG_INIT_TABLE *pEntry;
 	printk(BIOS_INFO, "ide_init\n");
 
-#if 1
-	/*these 3 lines help to keep interl back door for DID VID SUBID untouched */
+	/* these 3 lines help to keep interl back door for DID VID SUBID untouched */
 	u16 data16_1, data16_2;
 	data16_1 = pci_read_config16(dev, 0xba);
 	data16_2 = pci_read_config16(dev, 0xbe);
@@ -189,7 +186,7 @@ static void ide_init(struct device *dev)
 	//these 2 lines help to keep interl back door for DID VID SUBID untouched
 	pci_write_config16(dev, 0xba, data16_1);
 	pci_write_config16(dev, 0xbe, data16_2);
-#endif
+
 	/* Force interrupts to use compat mode. */
 	pci_write_config8(dev, PCI_INTERRUPT_PIN, 0x0);
 	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0xff);

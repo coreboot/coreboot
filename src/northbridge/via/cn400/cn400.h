@@ -19,7 +19,8 @@
  */
 
 #ifndef __PRE_RAM__
-static void cn400_noop(void)
+// HACK
+static inline void cn400_noop(device_t dev)
 {
 }
 #endif

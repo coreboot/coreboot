@@ -27,7 +27,6 @@ static void usb_init(struct device *dev)
 	 */
 }
 
-/*
 static struct device_operations usb_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
@@ -42,4 +41,4 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_82C586_2,
 };
-*/
+

@@ -238,7 +238,7 @@ static void cn400_domain_set_resources(device_t dev)
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
 		unsigned char rambits;
-		int i, idx;
+		int idx;
 
 		rambits = pci_read_config8(mc_dev, 0x47);
 		tomk = rambits * 32 * 1024;

@@ -105,7 +105,7 @@ static const struct pci_driver agp_driver __pci_driver = {
 static void vga_init(device_t dev)
 {
 //	unsigned long fb;
-	msr_t clocks1,clocks2,instructions,setup;
+	//msr_t clocks1,clocks2,instructions,setup;
 
 	printk(BIOS_DEBUG, "VGA random fixup ...\n");
 	pci_write_config8(dev, 0x04, 0x07);

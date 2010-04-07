@@ -7,9 +7,6 @@
 #include "chip.h"
 #include "vgachip.h"
 
-void vga_enable_console();
-
-
 static void vga_fixup(void) {
         // we do this right here because:
         // - all the hardware is working, and some VGA bioses seem to need
@@ -22,8 +19,6 @@ static void vga_fixup(void) {
         do_vgabios();
         post_code(0x93);
 	vga_enable_console();
-
-
 }
  
 void write_protect_vgabios(void)

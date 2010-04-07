@@ -162,7 +162,7 @@ static void rl5c476_init(device_t dev)
 	*cptr = 0x41;
 }
 
-void rl5c476_read_resources(device_t dev)
+static void rl5c476_read_resources(device_t dev)
 {
 
 	struct resource *resource;
@@ -181,7 +181,7 @@ void rl5c476_read_resources(device_t dev)
 	cardbus_read_resources(dev);
 }
 
-void rl5c476_set_resources(device_t dev)
+static void rl5c476_set_resources(device_t dev)
 {
 	struct resource *resource;
 	printk(BIOS_DEBUG, "%s In set resources \n",dev_path(dev));
@@ -212,12 +212,10 @@ static const struct pci_driver ricoh_rl5c476_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_RICOH_RL5C476,
 };
 
-void southbridge_init(device_t dev)
+static void southbridge_init(device_t dev)
 {
-
 	struct southbridge_ricoh_rl5c476_config *conf = dev->chip_info;
 	enable_cf_boot = conf->enable_cf;
-
 }
 
 struct chip_operations southbridge_ricoh_rl5c476_ops = {

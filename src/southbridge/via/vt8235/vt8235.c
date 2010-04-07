@@ -10,7 +10,6 @@
 /*
  * Base VT8235.
  */
-static int enabled = 0;
 
 void hard_reset(void) 
 {
@@ -53,10 +52,8 @@ void set_led()
 
 static void vt8235_enable(struct device *dev)
 {
-	struct southbridge_via_vt8235_config *conf = dev->chip_info;
 	unsigned char regval;
 	unsigned short vendor,model;
-
 
 	vendor = pci_read_config16(dev,0);
 	model = pci_read_config16(dev,0x2);
@@ -72,7 +69,6 @@ static void vt8235_enable(struct device *dev)
 
 	printk(BIOS_DEBUG, "Initialising Devices\n");
 
-
 	setup_i8259();   // make sure interupt controller is configured before keyboard init 
 
 	/* enable RTC and ethernet */
@@ -87,8 +83,6 @@ static void vt8235_enable(struct device *dev)
    	regval = pci_read_config8(dev, 0x50);
 	regval &= ~(0x36);
 	pci_write_config8(dev, 0x50, regval);
-
-
 }
 
 struct chip_operations southbridge_via_vt8235_ops = {

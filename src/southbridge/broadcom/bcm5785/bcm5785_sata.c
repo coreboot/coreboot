@@ -12,17 +12,13 @@
 #include <arch/io.h>
 #include "bcm5785.h"
 
-
 static void sata_init(struct device *dev)
 {
-
 	uint8_t byte;
 
-        uint8_t *base;
-	uint8_t *mmio;
+	u32 mmio;
         struct resource *res;
-        unsigned int mmio_base;
-        volatile unsigned int *mmio_reg;
+        u32 mmio_base;
 	int i;
 
 	if(!(dev->path.pci.devfn & 7)) { // only set it in Func0
@@ -31,27 +27,24 @@ static void sata_init(struct device *dev)
         	pci_write_config8(dev, 0x78, byte);
 
 	        res = find_resource(dev, 0x24);
-	        base = res->base;
-
-                mmio_base = base;
+                mmio_base = res->base;
                 mmio_base &= 0xfffffffc;
-                mmio_reg = (unsigned int *)( mmio_base + 0x10f0 );
-                * mmio_reg = 0x40000001;
-                mmio_reg = ( unsigned int *)( mmio_base + 0x8c );
-                * mmio_reg = 0x00ff2007;
+
+		write32(mmio_base + 0x10f0, 0x40000001);
+		write32(mmio_base + 0x8c, 0x00ff2007);
                 mdelay( 10 );
-                * mmio_reg = 0x78592009;
+		write32(mmio_base + 0x8c, 0x78592009);
                 mdelay( 10 );
-                * mmio_reg = 0x00082004;
+		write32(mmio_base + 0x8c, 0x00082004);
                 mdelay( 10 );
-                * mmio_reg = 0x00002004;
+		write32(mmio_base + 0x8c, 0x00002004);
                 mdelay( 10 );
 
 		//init PHY
 
 		printk(BIOS_DEBUG, "init PHY...\n");
 		for(i=0; i<4; i++) {
-			mmio = base + 0x100 * i; 
+			mmio = res->base + 0x100 * i; 
 			byte = read8(mmio + 0x40);
 			printk(BIOS_DEBUG, "port %d PHY status = %02x\n", i, byte);
 			if(byte & 0x4) {// bit 2 is set
@@ -62,10 +55,7 @@ static void sata_init(struct device *dev)
 	                        printk(BIOS_DEBUG, "after reset port %d PHY status = %02x\n", i, byte);
 			}
 		}
-		
 	}
-
-
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

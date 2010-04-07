@@ -444,7 +444,6 @@ end_of_chain: ;
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
 	if(offset_unitid && (ht_dev_num>1) && (real_last_unitid != CONFIG_HT_CHAIN_END_UNITID_BASE) && !end_used ) {
 		uint16_t flags;
-		int i;
 		flags = pci_read_config16(PCI_DEV(bus,real_last_unitid,0), real_last_pos + PCI_CAP_FLAGS);
 		flags &= ~0x1f;
 		flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
@@ -452,6 +451,7 @@ end_of_chain: ;
 
 		#if RAMINIT_SYSINFO == 1
 		// Here need to change the dev in the array
+		int i;
 		for(i=0;i<sysinfo->link_pair_num;i++)
 		{
 			struct link_pair_st *link_pair = &sysinfo->link_pair[i];

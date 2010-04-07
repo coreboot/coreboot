@@ -69,7 +69,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 {
 	device_t north = (device_t) 0;
 	uint8_t b, c, bank;
-	uint16_t i,j;
+	uint16_t i;
 	unsigned long bank_address;
 
 	print_debug("vt8623 init starting\n");

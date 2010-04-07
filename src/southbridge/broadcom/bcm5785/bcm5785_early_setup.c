@@ -6,8 +6,6 @@
 static void bcm5785_enable_rom(void)
 {
         unsigned char byte;
-        uint32_t dword;
-        uint16_t word;
         device_t addr;
 
         /* Enable 4MB rom access at 0xFFC00000 - 0xFFFFFFFF */
@@ -109,7 +107,7 @@ static void ldtstop_sb(void)
 }
 
 
-static void hard_reset(void)
+void hard_reset(void)
 {
         bcm5785_enable_wdt_port_cf9();
 
@@ -120,7 +118,7 @@ static void hard_reset(void)
         outb(0x0e, 0x0cf9);
 }
 
-static void soft_reset(void)
+void soft_reset(void)
 {
         bcm5785_enable_wdt_port_cf9();
 
@@ -164,7 +162,6 @@ static void bcm5785_enable_msg(void)
 static void bcm5785_early_setup(void)
 {
         uint8_t byte;
-        uint16_t word;
         uint32_t dword;
         device_t dev;
 
@@ -181,13 +178,12 @@ static void bcm5785_early_setup(void)
         byte |= (1<<0); // SATA enable
         pci_write_config8(dev, 0x84, byte);
 
-// wdt and cf9 for later in coreboot_ram to call hard_reset
+// WDT and cf9 for later in coreboot_ram to call hard_reset
         bcm5785_enable_wdt_port_cf9();
 
         bcm5785_enable_msg();
 
 
-#if 1
 // IDE related
 	//F0
         byte = pci_read_config8(dev, 0x4e);
@@ -207,9 +203,8 @@ static void bcm5785_early_setup(void)
         byte = pci_read_config8(dev, 0x49);
         byte |= 1; // enable second channel
         pci_write_config8(dev, 0x49, byte);
-#endif
 
-//F2
+	//F2
         dev = pci_locate_device(PCI_ID(0x1166, 0x0234), 0);
 
         byte = pci_read_config8(dev, 0x40);
@@ -218,7 +213,6 @@ static void bcm5785_early_setup(void)
 
         pci_write_config32(dev, 0x60, 0x0000ffff); // LPC Memory hole start and end
 
-#if 1
 // USB related
         pci_write_config8(dev, 0x90, 0x40);
         pci_write_config8(dev, 0x92, 0x06);
@@ -227,5 +221,4 @@ static void bcm5785_early_setup(void)
         pci_write_config8(dev, 0xa5, 0x02); //mask reg - low/full speed func
         pci_write_config8(dev, 0xa6, 0x00); //mask reg - high speed func
         pci_write_config8(dev, 0xb4, 0x40);
-#endif
 }

@@ -70,7 +70,6 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
         unsigned link; 
 	uint32_t reg;
 	int i;
-	int var_num = 0;
 	
 	reg = pci_read_config8(dev, 0x44);
 

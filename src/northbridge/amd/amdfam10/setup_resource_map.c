@@ -195,6 +195,7 @@ static void setup_resource_map_x(const u32 *register_values, u32 max)
 #endif
 }
 
+#if 0
 static void setup_iob_resource_map(const u32 *register_values, u32 max)
 {
 	u32 i;
@@ -227,5 +228,5 @@ static void setup_io_resource_map(const u32 *register_values, u32 max)
 		outl(reg, where);
 	}
 }
-
+#endif
 

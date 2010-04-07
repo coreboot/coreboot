@@ -12,8 +12,7 @@ void bcm5785_enable(device_t dev)
 {
 	device_t sb_pci_main_dev;
 	device_t bus_dev;
-	unsigned index;
-	unsigned reg_old, reg;
+	// unsigned index;
 
 	/* See if we are on the behind the pcix bridge */
 	bus_dev = dev->bus->dev;
@@ -23,18 +22,17 @@ void bcm5785_enable(device_t dev)
 		unsigned devfn;
 		devfn = bus_dev->path.pci.devfn + (1 << 3);
 		sb_pci_main_dev = dev_find_slot(bus_dev->bus->secondary, devfn);
-//		index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
+		// index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
 	} else if ((bus_dev->vendor == PCI_VENDOR_ID_SERVERWORKS) &&
                 (bus_dev->device == 0x0104)) // device under PCI Bridge( under PCI-X )
         {
                 unsigned devfn;
                 devfn = bus_dev->bus->dev->path.pci.devfn + (1 << 3);
                 sb_pci_main_dev = dev_find_slot(bus_dev->bus->dev->bus->secondary, devfn);
-//                index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
+		// index = ((dev->path.pci.devfn & ~7) >> 3) + 8;
         }
 	else { // same bus
 		unsigned devfn;
-		uint32_t id;
 		devfn = (dev->path.pci.devfn) & ~7;
 		if( dev->vendor == PCI_VENDOR_ID_SERVERWORKS ) { 
 			if(dev->device == 0x0036) //PCI-X Bridge
@@ -43,7 +41,7 @@ void bcm5785_enable(device_t dev)
 			{ devfn -= (1<<3); }
 		}
 		sb_pci_main_dev = dev_find_slot(dev->bus->secondary, devfn);
-//		index = dev->path.pci.devfn & 7;
+		// index = dev->path.pci.devfn & 7;
 	}
 	if (!sb_pci_main_dev) {
 		return;
@@ -51,6 +49,7 @@ void bcm5785_enable(device_t dev)
 
 	// get index now
 #if 0
+	unsigned reg_old, reg;
 	if (index < 16) {
 		reg = reg_old = pci_read_config16(sb_pci_main_dev, 0x48);
 		reg &= ~(1 << index);

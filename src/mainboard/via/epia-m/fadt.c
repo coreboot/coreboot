@@ -37,8 +37,8 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	memcpy(header->asl_compiler_id,ASLC,4);
 	header->asl_compiler_revision=0;
 
-	fadt->firmware_ctrl=facs;
-	fadt->dsdt= dsdt;
+	fadt->firmware_ctrl=(u32)facs;
+	fadt->dsdt=(u32)dsdt;
 	fadt->preferred_pm_profile=0;
 	fadt->sci_int=5;
 	fadt->smi_cmd = 0;
@@ -84,9 +84,9 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->reset_reg.addrh = 0x0;
 
 	fadt->reset_value = 0;
-	fadt->x_firmware_ctl_l = facs;
+	fadt->x_firmware_ctl_l = (u32)facs;
 	fadt->x_firmware_ctl_h = 0;
-	fadt->x_dsdt_l = dsdt;
+	fadt->x_dsdt_l = (u32)dsdt;
 	fadt->x_dsdt_h = 0;
 
 	fadt->x_pm1a_evt_blk.space_id = 1;

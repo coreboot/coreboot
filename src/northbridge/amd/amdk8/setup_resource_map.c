@@ -192,6 +192,7 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 #endif
 }
 
+#if 0
 static void setup_iob_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
@@ -267,7 +268,6 @@ static void setup_io_resource_map(const unsigned int *register_values, int max)
 	}
 }
 
-#if 0
 static void setup_mem_resource_map(const unsigned int *register_values, int max)
 {
 	int i;

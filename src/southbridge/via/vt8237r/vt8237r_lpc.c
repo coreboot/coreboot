@@ -65,7 +65,6 @@ static void pci_routing_fixup(struct device *dev)
 {
 #if CONFIG_EPIA_VT8237R_INIT
 	device_t pdev;
-	u8 reg;
 #endif
 
 	/* PCI PNP Interrupt Routing INTE/F - disable */

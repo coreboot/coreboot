@@ -96,7 +96,7 @@ $(obj)/romstage/ldscript.ld: $$(ldscripts) $(obj)/ldoptions
 	mkdir -p $(obj)/romstage
 	printf '$(foreach ldscript,ldoptions location.ld $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' > $@
 
-$(obj)/romstage/crt0_includes.h: $$(crt0s)
+$(obj)/romstage/crt0.S: $$(crt0s)
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	mkdir -p $(obj)/romstage
 	printf '$(foreach crt0,config.h $(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
@@ -105,7 +105,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.initobj.o: $(obj)/mainboard/$(MAINBOARDDIR
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -I$(obj) -Wa,-acdlns -c -o $@ $<  > $(dir $@)/crt0.disasm
 
-$(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(src)/arch/i386/init/crt0.S.lb $(obj)/romstage/crt0_includes.h
+$(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/romstage/crt0.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/romstage -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
 

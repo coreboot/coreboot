@@ -21,27 +21,6 @@
  */
 
 
-#include <arch/asm.h>
-#include <arch/intel.h>
-#include <console/loglevel.h>	
-
-#ifndef ASM_CONSOLE_LOGLEVEL
-#define ASM_CONSOLE_LOGLEVEL CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
-#endif
-
-/*
- * This is the entry code the code in .reset section
- * jumps to this address.
- *
- */
-.section ".rom.data", "a", @progbits
-.section ".rom.text", "ax", @progbits
-
-	post_code(0x01)             /* delay for chipsets */
-
-#include "crt0_includes.h"
-
-#if CONFIG_USE_DCACHE_RAM == 0
 #ifndef CONSOLE_DEBUG_TX_STRING
 	/* uses:	 esp, ebx, ax, dx */
 # define __CRT_CONSOLE_TX_STRING(string) \
@@ -143,5 +122,3 @@ str_pre_main:        .string "Jumping to coreboot.\r\n"
 
 str_coreboot_ram_name:	.ascii CONFIG_CBFS_PREFIX
 			.string "/coreboot_ram"
-
-#endif /* CONFIG_USE_DCACHE_RAM */

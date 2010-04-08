@@ -100,7 +100,7 @@ endif
 #######################################################################
 # done
 
-crt0s =
+crt0s = $(src)/arch/i386/init/crt0_prologue.inc
 ldscripts =
 ldscripts += $(src)/arch/i386/init/ldscript_fallback_cbfs.lb
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
@@ -194,6 +194,10 @@ endif
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(chipset_bootblock_inc)
 ldscripts += $(chipset_bootblock_lds)
+endif
+
+ifeq ($(CONFIG_ROMCC),y)
+crt0s += $(src)/arch/i386/init/crt0_romcc_epilogue.inc
 endif
 
 OPTION_TABLE_H:=

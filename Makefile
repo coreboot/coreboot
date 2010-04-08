@@ -320,7 +320,7 @@ clean-for-update: doxygen-clean
 	rm -f $(DEPENDENCIES)
 	rm -f $(obj)/coreboot_ram* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
 	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*
-	rm -f $(obj)/option_table.* $(obj)/crt0_includes.h $(obj)/ldscript
+	rm -f $(obj)/option_table.* $(obj)/crt0.S $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s $(obj)/mainboard/$(MAINBOARDDIR)/crt0.disasm
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc

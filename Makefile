@@ -37,9 +37,6 @@ export src := src
 export srck := $(top)/util/kconfig
 export obj ?= build
 export objk := $(obj)/util/kconfig
-export sconfig := $(top)/util/sconfig
-export yapps2_py := $(sconfig)/yapps2.py
-export config_g := $(sconfig)/config.g
 
 
 export KERNELVERSION      := 4.0
@@ -109,7 +106,7 @@ PLATFORM-y += src/arch/$(ARCHDIR-y) src/cpu src/mainboard/$(MAINBOARDDIR)
 TARGETS-y :=
 
 BUILD-y := src/lib src/boot src/console src/devices src/southbridge src/northbridge src/superio src/drivers
-BUILD-y += util/cbfstool
+BUILD-y += util/cbfstool util/sconfig
 BUILD-$(CONFIG_ARCH_X86) += src/pc80
 
 ifneq ($(CONFIG_LOCALVERSION),"")
@@ -150,16 +147,11 @@ $(obj)/config.h:
 
 CBFSTOOL:=$(obj)/util/cbfstool/cbfstool
 
-$(obj)/mainboard/$(MAINBOARDDIR)/config.py: $(yapps2_py) $(config_g) 
-	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	python $(yapps2_py) $(config_g) $(obj)/mainboard/$(MAINBOARDDIR)/config.py
-
-
 # needed objects that every mainboard uses 
 # Creation of these is architecture and mainboard independent
-$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(obj)/mainboard/$(MAINBOARDDIR)/config.py
+$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(obj)/util/sconfig/sconfig
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	(PYTHONPATH=$(top)/util/sconfig python $(obj)/mainboard/$(MAINBOARDDIR)/config.py  $(MAINBOARDDIR) $(top) $(obj)/mainboard/$(MAINBOARDDIR))
+	$(obj)/util/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
 
 objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
 initobjs:=
@@ -334,7 +326,6 @@ clean-for-update: doxygen-clean
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.* $(obj)/mainboard/$(MAINBOARDDIR)/dsdt.*
 	rm -f $(obj)/cpu/x86/smm/smm_bin.c $(obj)/cpu/x86/smm/smm.* $(obj)/cpu/x86/smm/smm
 	rmdir -p $(alldirs) 2>/dev/null >/dev/null || true
-	$(MAKE) -C util/sconfig clean
 
 clean: clean-for-update
 	rm -f $(obj)/coreboot* .ccwrap

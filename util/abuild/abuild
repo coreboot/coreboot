@@ -558,8 +558,8 @@ target=""
 buildall=false
 verbose=false
 
-test -f util/sconfig/config.g && ROOT=$( pwd )
-test -f ../util/sconfig/config.g && ROOT=$( cd ..; pwd )
+test -f util/sconfig/sconfig.l && ROOT=$( pwd )
+test -f ../util/sconfig/sconfig.l && ROOT=$( cd ..; pwd )
 test "$ROOT" = "" && ROOT=$( cd ../..; pwd )
 
 # parse parameters.. try to find out whether we're running GNU getopt

@@ -34,7 +34,6 @@ Build Requirements
 
  * gcc / g++
  * make
- * python
 
 Optional:
 
@@ -42,6 +41,7 @@ Optional:
  * iasl (for targets with ACPI support)
  * gdb (for better debugging facilities on some targets)
  * ncurses (for 'make menuconfig')
+ * flex and bison (for regenerating parsers)
 
 
 Building coreboot

@@ -10,9 +10,9 @@
 //#define K8_ALLOCATE_IO_RANGE 1
 
 //used by init_cpus and fidvid
-#define K8_SET_FIDVID 0
+#define SET_FIDVID 0
 //if we want to wait for core1 done before DQS training, set it to 0
-#define K8_SET_FIDVID_CORE0_ONLY 1
+#define SET_FIDVID_CORE0_ONLY 1
 
 #if CONFIG_K8_REV_F_SUPPORT == 1
 #define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
@@ -164,7 +164,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         int needs_reset;
         unsigned bsp_apicid = 0;
-#if K8_SET_FIDVID == 1
+#if SET_FIDVID == 1
 	struct cpuid_result cpuid1;
 #endif
 
@@ -228,7 +228,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         needs_reset |= optimize_link_incoherent_ht(sysinfo);
 #endif
 
-#if K8_SET_FIDVID == 1
+#if SET_FIDVID == 1
 	/* Check to see if processor is capable of changing FIDVID  */
 	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
 	cpuid1 = cpuid(0x80000007);

@@ -18,7 +18,7 @@
  */
 
 #define RAMINIT_SYSINFO 1
-#define K8_SET_FIDVID 1
+#define SET_FIDVID 1
 #define QRANK_DIMM_SUPPORT 1
 #if CONFIG_LOGICAL_CPUS==1
 #define SET_NB_CFG_54 1

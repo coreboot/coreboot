@@ -20,14 +20,14 @@
 #include "defaults.h"
 
 //it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
-#ifndef FAM10_SET_FIDVID
-	#define FAM10_SET_FIDVID 1
+#ifndef SET_FIDVID
+	#define SET_FIDVID 1
 #endif
 
-#ifndef FAM10_SET_FIDVID_CORE0_ONLY
+#ifndef SET_FIDVID_CORE0_ONLY
 	/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores,
 	   Need to do every AP to set common FID/VID*/
-	#define FAM10_SET_FIDVID_CORE0_ONLY 0
+	#define SET_FIDVID_CORE0_ONLY 0
 #endif
 
 static void print_initcpu8 (const char *strval, u8 val)
@@ -217,7 +217,7 @@ static int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 #define LAPIC_MSG_REG 0x380
 
 
-#if FAM10_SET_FIDVID == 1
+#if SET_FIDVID == 1
 static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid);
 #endif
 
@@ -398,8 +398,8 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		cpuSetAMDMSR();
 
 
-#if FAM10_SET_FIDVID == 1
-	#if (CONFIG_LOGICAL_CPUS == 1)  && (FAM10_SET_FIDVID_CORE0_ONLY == 1)
+#if SET_FIDVID == 1
+	#if (CONFIG_LOGICAL_CPUS == 1)  && (SET_FIDVID_CORE0_ONLY == 1)
 		// Run on all AP for proper FID/VID setup.
 		if(id.coreid == 0 ) // only need set fid for core0
 	#endif
@@ -994,7 +994,7 @@ void finalize_node_setup(struct sys_info *sysinfo)
 		cpuSetAMDPCI(i);
 	}
 
-#if FAM10_SET_FIDVID == 1
+#if SET_FIDVID == 1
 	// Prep each node for FID/VID setup.
 	prep_fid_change();
 #endif

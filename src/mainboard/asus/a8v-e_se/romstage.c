@@ -32,10 +32,10 @@ unsigned int get_sbdn(unsigned bus);
 #define QRANK_DIMM_SUPPORT 1
 
 /* Used by init_cpus and fidvid */
-#define K8_SET_FIDVID 1
+#define SET_FIDVID 1
 
 /* If we want to wait for core1 done before DQS training, set it to 0. */
-#define K8_SET_FIDVID_CORE0_ONLY 1
+#define SET_FIDVID_CORE0_ONLY 1
 
 #include <stdint.h>
 #include <string.h>

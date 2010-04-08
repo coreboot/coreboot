@@ -30,8 +30,8 @@
 #define SET_NB_CFG_54 1
 #endif
 
-#define FAM10_SET_FIDVID 1
-#define FAM10_SET_FIDVID_CORE_RANGE 0
+#define SET_FIDVID 1
+#define SET_FIDVID_CORE_RANGE 0
 
 #define DBGP_DEFAULT 7
 
@@ -243,7 +243,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x38);
 
-#if FAM10_SET_FIDVID == 1
+#if SET_FIDVID == 1
 	msr = rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 

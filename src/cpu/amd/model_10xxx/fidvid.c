@@ -17,40 +17,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#if FAM10_SET_FIDVID == 1
+#if SET_FIDVID == 1
 #include "../../../northbridge/amd/amdht/AsPsDefs.h"
 
-#define FAM10_SET_FIDVID_DEBUG 1
+#define SET_FIDVID_DEBUG 1
 
 // if we are tight of CAR stack, disable it
-#define FAM10_SET_FIDVID_STORE_AP_APICID_AT_FIRST 1
+#define SET_FIDVID_STORE_AP_APICID_AT_FIRST 1
 
 static inline void print_debug_fv(const char *str, u32 val)
 {
-#if FAM10_SET_FIDVID_DEBUG == 1
-		printk(BIOS_DEBUG, "%s%x\n", str, val);
+#if SET_FIDVID_DEBUG == 1
+	printk(BIOS_DEBUG, "%s%x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_8(const char *str, u8 val)
 {
-#if FAM10_SET_FIDVID_DEBUG == 1
-		printk(BIOS_DEBUG, "%s%02x\n", str, val);
+#if SET_FIDVID_DEBUG == 1
+	printk(BIOS_DEBUG, "%s%02x\n", str, val);
 #endif
 }
 
 static inline void print_debug_fv_64(const char *str, u32 val, u32 val2)
 {
-#if FAM10_SET_FIDVID_DEBUG == 1
-		printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);
+#if SET_FIDVID_DEBUG == 1
+	printk(BIOS_DEBUG, "%s%x%x\n", str, val, val2);
 #endif
 }
-
 
 struct fidvid_st {
 	u32 common_fid;
 };
-
 
 static void enable_fid_change(u8 fid)
 {
@@ -61,24 +59,24 @@ static void enable_fid_change(u8 fid)
 
 	nodes = get_nodes();
 
-	for(i = 0; i < nodes; i++) {
-		dev = NODE_PCI(i,3);
+	for (i = 0; i < nodes; i++) {
+		dev = NODE_PCI(i, 3);
 		dword = pci_read_config32(dev, 0xd4);
 		dword &= ~0x1F;
 		dword |= (u32) fid & 0x1F;
 		dword |= 1 << 5;	// enable
 		pci_write_config32(dev, 0xd4, dword);
-		printk(BIOS_DEBUG, "FID Change Node:%02x, F3xD4: %08x \n", i, dword);
+		printk(BIOS_DEBUG, "FID Change Node:%02x, F3xD4: %08x \n", i,
+		       dword);
 	}
 }
-
 
 static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 {
 	u8 pviModeFlag;
 	u8 highVoltageVid, lowVoltageVid, bValue;
 	u16 minimumSlamTime;
-	u16 vSlamTimes[7]={1000,2000,3000,4000,6000,10000,20000}; /* Reg settings scaled by 100 */
+	u16 vSlamTimes[7] = { 1000, 2000, 3000, 4000, 6000, 10000, 20000 };	/* Reg settings scaled by 100 */
 	u32 dtemp;
 	msr_t msr;
 
@@ -94,12 +92,10 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	 * decimals.
 	 */
 
-
-
 	/* Determine if this is a PVI or SVI system */
 	dtemp = pci_read_config32(dev, 0xA0);
 
-	if( dtemp & PVI_MODE )
+	if (dtemp & PVI_MODE)
 		pviModeFlag = 1;
 	else
 		pviModeFlag = 0;
@@ -113,7 +109,7 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	 */
 	if (pviModeFlag) {
 		bValue = (u8) ((msr.lo >> PS_NB_VID_SHFT) & 0x7F);
-		if( highVoltageVid > bValue )
+		if (highVoltageVid > bValue)
 			highVoltageVid = bValue;
 	}
 
@@ -130,7 +126,7 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	 */
 	if (pviModeFlag) {
 		bValue = (u8) ((msr.lo >> PS_NB_VID_SHFT) & 0x7F);
-		if( lowVoltageVid > bValue )
+		if (lowVoltageVid > bValue)
 			lowVoltageVid = bValue;
 	}
 
@@ -139,13 +135,13 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	bValue = (u8) (dtemp & BIT_MASK_7);
 
 	/* Use the VID with the lowest voltage (higher VID) */
-	if( lowVoltageVid < bValue )
+	if (lowVoltageVid < bValue)
 		lowVoltageVid = bValue;
 
 	/* If Vids are 7Dh - 7Fh, force 7Ch to keep calculations linear */
 	if (lowVoltageVid > 0x7C) {
 		lowVoltageVid = 0x7C;
-		if(highVoltageVid > 0x7C)
+		if (highVoltageVid > 0x7C)
 			highVoltageVid = 0x7C;
 	}
 
@@ -161,8 +157,8 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	 * Note that if we don't find a value, we
 	 * will fall through to a value of 7
 	 */
-	for(bValue=0; bValue < 7; bValue++) {
-		if(minimumSlamTime <= vSlamTimes[bValue])
+	for (bValue = 0; bValue < 7; bValue++) {
+		if (minimumSlamTime <= vSlamTimes[bValue])
 			break;
 	}
 
@@ -172,7 +168,6 @@ static void recalculateVsSlamTimeSettingOnCorePre(device_t dev)
 	dtemp |= bValue;
 	pci_write_config32(dev, 0xd8, dtemp);
 }
-
 
 static void prep_fid_change(void)
 {
@@ -185,9 +180,9 @@ static void prep_fid_change(void)
 
 	nodes = get_nodes();
 
-	for(i = 0; i < nodes; i++) {
+	for (i = 0; i < nodes; i++) {
 		printk(BIOS_DEBUG, "Prep FID/VID Node:%02x \n", i);
-		dev = NODE_PCI(i,3);
+		dev = NODE_PCI(i, 3);
 
 		dword = pci_read_config32(dev, 0xd8);
 		dword &= VSRAMP_MASK;
@@ -214,20 +209,18 @@ static void prep_fid_change(void)
 			 */
 			dword = pci_read_config32(dev, 0xd4);
 			dword &= CPTC0_MASK;
-			dword |= NB_CLKDID_ALL | NB_CLKDID | PW_STP_UP50 | PW_STP_DN50 |
-				 LNK_PLL_LOCK; /* per BKDG */
+			dword |= NB_CLKDID_ALL | NB_CLKDID | PW_STP_UP50 | PW_STP_DN50 | LNK_PLL_LOCK;	/* per BKDG */
 			pci_write_config32(dev, 0xd4, dword);
 		} else {
 			dword = pci_read_config32(dev, 0xd4);
 			dword &= CPTC0_MASK;
 			/* get number of cores for PowerStepUp & PowerStepDown in server
-			    1 core - 400nS  - 0000b
-			    2 cores - 200nS - 0010b
-			    3 cores - 133nS -> 100nS - 0011b
-			    4 cores - 100nS - 0011b
-			*/
-			switch(get_core_num_in_bsp(i))
-			{
+			   1 core - 400nS  - 0000b
+			   2 cores - 200nS - 0010b
+			   3 cores - 133nS -> 100nS - 0011b
+			   4 cores - 100nS - 0011b
+			 */
+			switch (get_core_num_in_bsp(i)) {
 			case 0:
 				dword |= PW_STP_UP400 | PW_STP_DN400;
 				break;
@@ -248,12 +241,12 @@ static void prep_fid_change(void)
 
 		/* check PVI/SVI */
 		dword = pci_read_config32(dev, 0xA0);
-		if(dword & PVI_MODE) {	/* PVI */
+		if (dword & PVI_MODE) {	/* PVI */
 			/* set slamVidMode to 0 for PVI */
 			dword &= VID_SLAM_OFF | PLLLOCK_OFF;
 			dword |= PLLLOCK_DFT_L;
 			pci_write_config32(dev, 0xA0, dword);
-		} else {		/* SVI */
+		} else {	/* SVI */
 			/* set slamVidMode to 1 for SVI */
 			dword &= PLLLOCK_OFF;
 			dword |= PLLLOCK_DFT_L | VID_SLAM_ON;
@@ -264,7 +257,7 @@ static void prep_fid_change(void)
 			/* Program F3xD8[PwrPlanes] according F3xA0[DulaVdd]  */
 			dword = pci_read_config32(dev, 0xD8);
 
-			if( dtemp & DUAL_VDD_BIT)
+			if (dtemp & DUAL_VDD_BIT)
 				dword |= PWR_PLN_ON;
 			else
 				dword &= PWR_PLN_OFF;
@@ -275,7 +268,7 @@ static void prep_fid_change(void)
 		 * function setFidVidRegs()
 		 */
 		dword = pci_read_config32(dev, 0xDc);
-		dword |= 0x5 << 12; /* NbsynPtrAdj set to 0x5 per BKDG (needs reset) */
+		dword |= 0x5 << 12;	/* NbsynPtrAdj set to 0x5 per BKDG (needs reset) */
 		pci_write_config32(dev, 0xdc, dword);
 
 		/* Rev B settings - FIXME: support other revs. */
@@ -313,19 +306,17 @@ static void UpdateSinglePlaneNbVid(void)
 		nbVid = (msr.lo & PS_CPU_VID_M_ON) >> PS_CPU_VID_SHFT;
 		cpuVid = (msr.lo & PS_NB_VID_M_ON) >> PS_NB_VID_SHFT;
 
-		if( nbVid != cpuVid ) {
-			if(nbVid > cpuVid)
+		if (nbVid != cpuVid) {
+			if (nbVid > cpuVid)
 				nbVid = cpuVid;
 
 			msr.lo = msr.lo & PS_BOTH_VID_OFF;
-			msr.lo = msr.lo | (u32)((nbVid) << PS_NB_VID_SHFT);
-			msr.lo = msr.lo | (u32)((nbVid) << PS_CPU_VID_SHFT);
+			msr.lo = msr.lo | (u32) ((nbVid) << PS_NB_VID_SHFT);
+			msr.lo = msr.lo | (u32) ((nbVid) << PS_CPU_VID_SHFT);
 			wrmsr(PS_REG_BASE + i, msr);
 		}
 	}
 }
-
-
 
 static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid)
 {
@@ -343,7 +334,7 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid)
 	 */
 
 	msr = rdmsr(0xc0010071);
-	startup_pstate = (msr.hi >> (32-32)) & 0x07;
+	startup_pstate = (msr.hi >> (32 - 32)) & 0x07;
 
 	/* Copy startup pstate to P1 and P0 MSRs. Set the maxvid for this node in P0.
 	 * Then transition to P1 for corex and P0 for core0.
@@ -379,8 +370,7 @@ static void fixPsNbVidBeforeWR(u32 newNbVid, u32 coreid)
 	}
 }
 
-
-static void coreDelay (void)
+static void coreDelay(void)
 {
 	u32 saved;
 	u32 hi, lo, msr;
@@ -390,23 +380,22 @@ static void coreDelay (void)
 	   This seems like a hack to me...
 	   It would be nice to have a central delay function. */
 
-	cycles = 8000 << 3;		/* x8 (number of 1.25ns ticks) */
+	cycles = 8000 << 3;	/* x8 (number of 1.25ns ticks) */
 
-	msr = 0x10;			/* TSC */
+	msr = 0x10;		/* TSC */
 	_RDMSR(msr, &lo, &hi);
 	saved = lo;
 	do {
 		_RDMSR(msr, &lo, &hi);
-	} while (lo - saved < cycles );
+	} while (lo - saved < cycles);
 }
-
 
 static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
 {
 	u32 currentVid, dtemp;
 	msr_t msr;
 	u8 vsTimecode;
-	u16 timeTable[8]={10, 20, 30, 40, 60, 100, 200, 500};
+	u16 timeTable[8] = { 10, 20, 30, 40, 60, 100, 200, 500 };
 	int vsTime;
 
 	/* This function steps or slam the Nb VID to the target VID.
@@ -416,7 +405,7 @@ static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
 
 	/* get the current VID */
 	msr = rdmsr(0xC0010071);
-	if(isNb)
+	if (isNb)
 		currentVid = (msr.lo >> NB_VID_POS) & BIT_MASK_7;
 	else
 		currentVid = (msr.lo >> CPU_VID_POS) & BIT_MASK_7;
@@ -426,11 +415,11 @@ static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
 
 	/* check PVI/SPI */
 	dtemp = pci_read_config32(dev, 0xA0);
-	if (dtemp & PVI_MODE) { 		/* PVI, step VID */
+	if (dtemp & PVI_MODE) {	/* PVI, step VID */
 		if (currentVid < targetVid) {
 			while (currentVid < targetVid) {
 				currentVid++;
-				if(isNb)
+				if (isNb)
 					msr.lo = (msr.lo & NB_VID_MASK_OFF) | (currentVid << NB_VID_POS);
 				else
 					msr.lo = (msr.lo & CPU_VID_MASK_OFF) | (currentVid << CPU_VID_POS);
@@ -438,17 +427,17 @@ static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
 
 				/* read F3xD8[VSRampTime]  */
 				dtemp = pci_read_config32(dev, 0xD8);
-				vsTimecode = (u8)((dtemp >> VS_RAMP_T) & 0x7);
-				vsTime = (int) timeTable[vsTimecode];
+				vsTimecode = (u8) ((dtemp >> VS_RAMP_T) & 0x7);
+				vsTime = (int)timeTable[vsTimecode];
 				do {
 					coreDelay();
-					vsTime -=40;
-				} while(vsTime  > 0);
+					vsTime -= 40;
+				} while (vsTime > 0);
 			}
 		} else if (currentVid > targetVid) {
 			while (currentVid > targetVid) {
 				currentVid--;
-				if(isNb)
+				if (isNb)
 					msr.lo = (msr.lo & NB_VID_MASK_OFF) | (currentVid << NB_VID_POS);
 				else
 					msr.lo = (msr.lo & CPU_VID_MASK_OFF) | (currentVid << CPU_VID_POS);
@@ -456,16 +445,16 @@ static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
 
 				/* read F3xD8[VSRampTime]  */
 				dtemp = pci_read_config32(dev, 0xD8);
-				vsTimecode = (u8)((dtemp >> VS_RAMP_T) & 0x7);
-				vsTime = (int) timeTable[vsTimecode];
+				vsTimecode = (u8) ((dtemp >> VS_RAMP_T) & 0x7);
+				vsTime = (int)timeTable[vsTimecode];
 				do {
 					coreDelay();
-					vsTime -=40;
-				} while(vsTime  > 0);
+					vsTime -= 40;
+				} while (vsTime > 0);
 			}
 		}
 	} else {		/* SVI, slam VID */
-		if(isNb)
+		if (isNb)
 			msr.lo = (msr.lo & NB_VID_MASK_OFF) | (targetVid << NB_VID_POS);
 		else
 			msr.lo = (msr.lo & CPU_VID_MASK_OFF) | (targetVid << CPU_VID_POS);
@@ -473,12 +462,12 @@ static void transitionVid(u32 targetVid, u8 dev, u8 isNb)
 
 		/* read F3xD8[VSRampTime]  */
 		dtemp = pci_read_config32(dev, 0xD8);
-		vsTimecode = (u8)((dtemp >> VS_RAMP_T) & 0x7);
-		vsTime = (int) timeTable[vsTimecode];
+		vsTimecode = (u8) ((dtemp >> VS_RAMP_T) & 0x7);
+		vsTime = (int)timeTable[vsTimecode];
 		do {
 			coreDelay();
-			vsTime -=40;
-		} while(vsTime  > 0);
+			vsTime -= 40;
+		} while (vsTime > 0);
 	}
 }
 
@@ -505,13 +494,13 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
 	nodes = get_nodes();
 	nb_cof_vid_update = 0;
 	for (i = 0; i < nodes; i++) {
-		if (pci_read_config32(NODE_PCI(i,3), 0x1FC) & 1) {
+		if (pci_read_config32(NODE_PCI(i, 3), 0x1FC) & 1) {
 			nb_cof_vid_update = 1;
 			break;
 		}
 	}
 
-	dev = NODE_PCI(nodeid,3);
+	dev = NODE_PCI(nodeid, 3);
 	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
 	reg1fc = pci_read_config32(dev, 0x1FC);
 
@@ -537,7 +526,7 @@ static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid)
 	}
 
 	send = (nb_cof_vid_update << 16) | (fid_max << 8);
-	send |= (apicid << 24); // ap apicid
+	send |= (apicid << 24);	// ap apicid
 
 	// Send signal to BSP about this AP max fid
 	// This also indicates this AP is ready for warm reset (if required).
@@ -553,50 +542,50 @@ static u32 calc_common_fid(u32 fid_packed, u32 fid_packed_new)
 
 	fidmax_new = (fid_packed_new >> 8) & 0xFF;
 
-	if(fidmax > fidmax_new) {
+	if (fidmax > fidmax_new) {
 		fidmax = fidmax_new;
 	}
 
 	fid_packed &= 0xFF << 16;
 	fid_packed |= (fidmax << 8);
-	fid_packed |= fid_packed_new & (0xFF << 16); // set nb_cof_vid_update
+	fid_packed |= fid_packed_new & (0xFF << 16);	// set nb_cof_vid_update
 
 	return fid_packed;
 }
 
-
-static void init_fidvid_bsp_stage1(u32 ap_apicid, void *gp )
+static void init_fidvid_bsp_stage1(u32 ap_apicid, void *gp)
 {
-		u32 readback = 0;
-		u32 timeout = 1;
+	u32 readback = 0;
+	u32 timeout = 1;
 
-		struct fidvid_st *fvp = gp;
-		int loop;
+	struct fidvid_st *fvp = gp;
+	int loop;
 
-		print_debug_fv("Wait for AP stage 1: ap_apicid = ", ap_apicid);
+	print_debug_fv("Wait for AP stage 1: ap_apicid = ", ap_apicid);
 
-		loop = 100000;
-		while(--loop > 0) {
-			if(lapic_remote_read(ap_apicid, LAPIC_MSG_REG, &readback) != 0) continue;
-			if((readback & 0x3f) == 1) {
-				timeout = 0;
-				break; //target ap is in stage 1
-			}
+	loop = 100000;
+	while (--loop > 0) {
+		if (lapic_remote_read(ap_apicid, LAPIC_MSG_REG, &readback) != 0)
+			continue;
+		if ((readback & 0x3f) == 1) {
+			timeout = 0;
+			break;	/* target ap is in stage 1 */
 		}
+	}
 
-		if(timeout) {
-			print_initcpu8("fidvid_bsp_stage1: time out while reading from ap ", ap_apicid);
-			return;
-		}
+	if (timeout) {
+		printk(BIOS_DEBUG, "%s: timed out reading from ap %02x\n",
+		       __func__, ap_apicid);
+		return;
+	}
 
-		print_debug_fv("\treadback = ", readback);
+	print_debug_fv("\treadback = ", readback);
 
-		fvp->common_fid = calc_common_fid(fvp->common_fid, readback);
+	fvp->common_fid = calc_common_fid(fvp->common_fid, readback);
 
-		print_debug_fv("\tcommon_fid(packed) = ", fvp->common_fid);
+	print_debug_fv("\tcommon_fid(packed) = ", fvp->common_fid);
 
 }
-
 
 static void updateSviPsNbVidAfterWR(u32 newNbVid)
 {
@@ -607,7 +596,7 @@ static void updateSviPsNbVidAfterWR(u32 newNbVid)
 	 * for SVI mode.
 	 */
 
-	for( i = 0; i < 5; i++) {
+	for (i = 0; i < 5; i++) {
 		msr = rdmsr(0xC0010064 + i);
 		if ((msr.hi >> 31) & 1) {	/* PstateEn? */
 			msr.lo &= ~(0x7F << 25);
@@ -632,13 +621,13 @@ static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll)
 	 */
 
 	/* write newNbVid to P-state Reg's NbVid if its NbDid=0 */
-	for( i = 0; i < 5; i++) {
+	for (i = 0; i < 5; i++) {
 		msr = rdmsr(0xC0010064 + i);
 		/*  NbDid (bit 22 of P-state Reg) == 0  or NbVidUpdatedAll = 1 */
 		if ((((msr.lo >> 22) & 1) == 0) || NbVidUpdatedAll) {
 			msr.lo &= ~(0x7F << 25);
 			msr.lo |= (newNbVid & 0x7F) << 25;
-			wrmsr (0xC0010064 + i, msr);
+			wrmsr(0xC0010064 + i, msr);
 		}
 	}
 
@@ -651,12 +640,11 @@ static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll)
 	msr.lo = StartupPstate;
 	wrmsr(0xC0010062, msr);
 
-	/* Wait for StartupPstate to set.*/
+	/* Wait for StartupPstate to set. */
 	do {
 		msr = rdmsr(0xC0010063);
 	} while (msr.lo != StartupPstate);
 }
-
 
 static void set_p0(void)
 {
@@ -673,8 +661,8 @@ static void set_p0(void)
 	} while (msr.lo != 0);
 }
 
-
-static void finalPstateChange (void) {
+static void finalPstateChange(void)
+{
 	/* Enble P0 on all cores for best performance.
 	 * Linux can slow them down later if need be.
 	 * It is safe since they will be in C1 halt
@@ -682,7 +670,6 @@ static void finalPstateChange (void) {
 	 */
 	set_p0();
 }
-
 
 static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 {
@@ -703,13 +690,13 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 	nodes = get_nodes();
 	nb_cof_vid_update = 0;
 	for (i = 0; i < nodes; i++) {
-		if (pci_read_config32(NODE_PCI(i,3), 0x1FC) & 1) {
+		if (pci_read_config32(NODE_PCI(i, 3), 0x1FC) & 1) {
 			nb_cof_vid_update = 1;
 			break;
 		}
 	}
 
-	dev = NODE_PCI(nodeid,3);
+	dev = NODE_PCI(nodeid, 3);
 	pvimode = (pci_read_config32(dev, 0xA0) >> 8) & 1;
 	reg1fc = pci_read_config32(dev, 0x1FC);
 	nbvid = (reg1fc >> 7) & 0x7F;
@@ -724,7 +711,7 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 			nbvid = ((reg1fc >> 7) & 0x7F) - ((reg1fc >> 17) & 0x1F);
 			updateSviPsNbVidAfterWR(nbvid);
 		}
-	} else { 	/* !nb_cof_vid_update */
+	} else {		/* !nb_cof_vid_update */
 		if (pvimode)
 			UpdateSinglePlaneNbVid();
 	}
@@ -742,7 +729,7 @@ static void init_fidvid_stage2(u32 apicid, u32 nodeid)
 }
 
 
-#if FAM10_SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1
+#if SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1
 struct ap_apicid_st {
 	u32 num;
 	// it could use 256 bytes for 64 node quad core system
@@ -761,7 +748,7 @@ static void store_ap_apicid(unsigned ap_apicid, void *gp)
 
 static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 {
-#if FAM10_SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1
+#if SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1
 	struct ap_apicid_st ap_apicidx;
 	u32 i;
 #endif
@@ -785,7 +772,7 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 	/* If any node has nb_cof_vid_update set all nodes need an update. */
 	nb_cof_vid_update = 0;
 	for (i = 0; i < nodes; i++) {
-		if (pci_read_config32(NODE_PCI(i,3), 0x1FC) & 1) {
+		if (pci_read_config32(NODE_PCI(i, 3), 0x1FC) & 1) {
 			nb_cof_vid_update = 1;
 			break;
 		}
@@ -810,29 +797,29 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 
 		/*  fid setup is handled by the BSP at the end. */
 
-	} else {	/* ! nb_cof_vid_update */
+	} else {		/* ! nb_cof_vid_update */
 		/* Use max values */
 		if (pvimode)
 			UpdateSinglePlaneNbVid();
 	}
 
-	fv.common_fid = (nb_cof_vid_update << 16) | (fid_max << 8) ;
+	fv.common_fid = (nb_cof_vid_update << 16) | (fid_max << 8);
 	print_debug_fv("BSP fid = ", fv.common_fid);
 
-#if FAM10_SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1 && FAM10_SET_FIDVID_CORE0_ONLY == 0
+#if SET_FIDVID_STORE_AP_APICID_AT_FIRST == 1 && SET_FIDVID_CORE0_ONLY == 0
 	/* For all APs (We know the APIC ID of all APs even when the APIC ID
 	   is lifted) remote read from AP LAPIC_MSG_REG about max fid.
 	   Then calculate the common max fid that can be used for all
 	   APs and BSP */
 	ap_apicidx.num = 0;
 
-	for_each_ap(bsp_apicid, FAM10_SET_FIDVID_CORE_RANGE, store_ap_apicid, &ap_apicidx);
+	for_each_ap(bsp_apicid, SET_FIDVID_CORE_RANGE, store_ap_apicid, &ap_apicidx);
 
-	for(i = 0; i < ap_apicidx.num; i++) {
+	for (i = 0; i < ap_apicidx.num; i++) {
 		init_fidvid_bsp_stage1(ap_apicidx.apicid[i], &fv);
 	}
 #else
-	for_each_ap(bsp_apicid, FAM10_SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage1, &fv);
+	for_each_ap(bsp_apicid, SET_FIDVID_CORE0_ONLY, init_fidvid_bsp_stage1, &fv);
 #endif
 
 	print_debug_fv("common_fid = ", fv.common_fid);
@@ -846,6 +833,6 @@ static int init_fidvid_bsp(u32 bsp_apicid, u32 nodes)
 		return 1;
 	}
 
-	return 0; // No FID/VID changes. Don't reset
+	return 0;		// No FID/VID changes. Don't reset
 }
 #endif

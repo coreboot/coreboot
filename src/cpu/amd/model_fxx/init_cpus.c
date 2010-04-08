@@ -1,17 +1,17 @@
 //it takes the CONFIG_ENABLE_APIC_EXT_ID and CONFIG_APIC_ID_OFFSET and CONFIG_LIFT_BSP_APIC_ID
-#ifndef K8_SET_FIDVID
+#ifndef SET_FIDVID
 	#if CONFIG_K8_REV_F_SUPPORT == 0
-		#define K8_SET_FIDVID 0
+		#define SET_FIDVID 0
 	#else
 		// for rev F, need to set FID to max
-		#define K8_SET_FIDVID 1
+		#define SET_FIDVID 1
 	#endif
 	
 #endif
 
-#ifndef K8_SET_FIDVID_CORE0_ONLY
+#ifndef SET_FIDVID_CORE0_ONLY
 	/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores, so may don't need to do twice*/
-       	#define K8_SET_FIDVID_CORE0_ONLY 1
+       	#define SET_FIDVID_CORE0_ONLY 1
 #endif
 
 static inline void print_initcpu8 (const char *strval, unsigned val)
@@ -149,7 +149,7 @@ static inline int lapic_remote_read(int apicid, int reg, unsigned *pvalue)
 #define LAPIC_MSG_REG 0x380
 
 
-#if K8_SET_FIDVID == 1
+#if SET_FIDVID == 1
 static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid);
 #endif
 
@@ -302,8 +302,8 @@ static unsigned init_cpus(unsigned cpu_init_detectedx)
 		if(apicid != bsp_apicid) {
 			unsigned timeout=1;
 			unsigned loop = 100;
-	#if K8_SET_FIDVID == 1
-		#if (CONFIG_LOGICAL_CPUS == 1) && (K8_SET_FIDVID_CORE0_ONLY == 1)
+	#if SET_FIDVID == 1
+		#if (CONFIG_LOGICAL_CPUS == 1) && (SET_FIDVID_CORE0_ONLY == 1)
 			if(id.coreid == 0 ) // only need set fid for core0
 		#endif 
        		                init_fidvid_ap(bsp_apicid, apicid);

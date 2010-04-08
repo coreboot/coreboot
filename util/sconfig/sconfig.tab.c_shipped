@@ -67,8 +67,6 @@
 
 /* Copy the first part of user declarations.  */
 
-/* Line 189 of yacc.c  */
-#line 1 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
 
 /*
  * sconfig, coreboot device tree compiler
@@ -194,8 +192,6 @@ void yyerror (char const *str)
 }
 
 
-/* Line 189 of yacc.c  */
-#line 199 "/home/Patrick/work/coreboot/util/sconfig/sconfig.tab.c_shipped"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -251,8 +247,6 @@ void yyerror (char const *str)
 typedef union YYSTYPE
 {
 
-/* Line 214 of yacc.c  */
-#line 125 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
 
 	struct device *device;
 	char *string;
@@ -260,8 +254,6 @@ typedef union YYSTYPE
 
 
 
-/* Line 214 of yacc.c  */
-#line 265 "/home/Patrick/work/coreboot/util/sconfig/sconfig.tab.c_shipped"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -272,8 +264,6 @@ typedef union YYSTYPE
 /* Copy the second part of user declarations.  */
 
 
-/* Line 264 of yacc.c  */
-#line 277 "/home/Patrick/work/coreboot/util/sconfig/sconfig.tab.c_shipped"
 
 #ifdef short
 # undef short
@@ -1476,8 +1466,6 @@ yyreduce:
     {
         case 2:
 
-/* Line 1455 of yacc.c  */
-#line 132 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	root.next_sibling = root.children;
 	root.next_sibling->next_sibling = root.next_sibling->children;
@@ -1501,8 +1489,6 @@ yyreduce:
 
   case 11:
 
-/* Line 1455 of yacc.c  */
-#line 158 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	(yyval.device) = new_dev();
 	(yyval.device)->chiph_exists = 1;
@@ -1536,8 +1522,6 @@ yyreduce:
 
   case 12:
 
-/* Line 1455 of yacc.c  */
-#line 187 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	cur_parent = (yyvsp[(3) - (5)].device)->parent;
 
@@ -1569,8 +1553,6 @@ yyreduce:
 
   case 13:
 
-/* Line 1455 of yacc.c  */
-#line 215 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	(yyval.device) = new_dev();
 	(yyval.device)->bustype = (yyvsp[(2) - (4)].number);
@@ -1625,8 +1607,6 @@ yyreduce:
 
   case 14:
 
-/* Line 1455 of yacc.c  */
-#line 265 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	cur_parent = (yyvsp[(5) - (7)].device)->parent;
 	cur_bus = (yyvsp[(5) - (7)].device)->bus;
@@ -1659,8 +1639,6 @@ yyreduce:
 
   case 15:
 
-/* Line 1455 of yacc.c  */
-#line 295 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 		struct resource *r = malloc(sizeof(struct resource));
 		memset (r, 0, sizeof(struct resource));
@@ -1680,8 +1658,6 @@ yyreduce:
 
   case 16:
 
-/* Line 1455 of yacc.c  */
-#line 313 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 		struct reg *r = malloc(sizeof(struct reg));
 		memset (r, 0, sizeof(struct reg));
@@ -1711,8 +1687,6 @@ yyreduce:
 
 
 
-/* Line 1455 of yacc.c  */
-#line 1716 "/home/Patrick/work/coreboot/util/sconfig/sconfig.tab.c_shipped"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1923,8 +1897,6 @@ yyreturn:
 
 
 
-/* Line 1675 of yacc.c  */
-#line 340 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
 
 void pass0(FILE *fil, struct device *ptr) {
 	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used))

@@ -68,8 +68,6 @@
 typedef union YYSTYPE
 {
 
-/* Line 1676 of yacc.c  */
-#line 125 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
 
 	struct device *device;
 	char *string;
@@ -77,8 +75,6 @@ typedef union YYSTYPE
 
 
 
-/* Line 1676 of yacc.c  */
-#line 82 "/home/Patrick/work/coreboot/util/sconfig/sconfig.tab.h_shipped"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

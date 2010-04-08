@@ -11,12 +11,12 @@ $(obj)/util/sconfig/%.o: $(obj)/util/sconfig/%.c
 
 ifdef SCONFIG_GENPARSER
 $(top)/util/sconfig/lex.yy.c_shipped: $(top)/util/sconfig/sconfig.l
-	flex -o $@ $<
+	flex -L -o $@ $<
 
 # the .c rule also creates .h
 $(top)/util/sconfig/sconfig.tab.h_shipped: $(top)/util/sconfig/sconfig.tab.c_shipped
 $(top)/util/sconfig/sconfig.tab.c_shipped: $(top)/util/sconfig/sconfig.y
-	bison --defines=$(top)/util/sconfig/sconfig.tab.h_shipped -o $@ $<
+	bison -l --defines=$(top)/util/sconfig/sconfig.tab.h_shipped -o $@ $<
 
 endif
 

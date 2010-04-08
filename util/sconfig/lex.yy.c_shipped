@@ -1,6 +1,5 @@
-#line 2 "/home/Patrick/work/coreboot/util/sconfig/lex.yy.c_shipped"
 
-#line 4 "/home/Patrick/work/coreboot/util/sconfig/lex.yy.c_shipped"
+#line 3 "/home/Patrick/work/coreboot/util/sconfig/lex.yy.c_shipped"
 
 #define  YY_INT_ALIGNED short int
 
@@ -508,8 +507,6 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
-#line 2 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 /*
  * sconfig, coreboot device tree compiler
  *
@@ -533,7 +530,6 @@ char *yytext;
 #include "sconfig.tab.h"
 
 int linenum = 0;
-#line 537 "/home/Patrick/work/coreboot/util/sconfig/lex.yy.c_shipped"
 
 #define INITIAL 0
 
@@ -715,10 +711,6 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 27 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
-
-#line 721 "/home/Patrick/work/coreboot/util/sconfig/lex.yy.c_shipped"
-
 	if ( !(yy_init) )
 		{
 		(yy_init) = 1;
@@ -802,133 +794,107 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 28 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {}
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 29 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {linenum++;}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 30 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {linenum++;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 31 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {return(CHIP);}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 32 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {return(DEVICE);}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 33 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {return(REGISTER);}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 34 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=1; return(BOOL);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 35 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=0; return(BOOL);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 36 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=PCI; return(BUS);}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 37 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=PNP; return(BUS);}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 38 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=I2C; return(BUS);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 39 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=APIC; return(BUS);}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 40 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=APIC_CLUSTER; return(BUS);}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 41 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=PCI_DOMAIN; return(BUS);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 42 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=IRQ; return(RESOURCE);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 43 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=DRQ; return(RESOURCE);}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 44 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.number=IO; return(RESOURCE);}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 45 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {return(END);}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 46 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {return(EQUALS);}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 47 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 48 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 49 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(NUMBER);}
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 50 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.string = malloc(yyleng-1); strncpy(yylval.string, yytext+1, yyleng-2); yylval.string[yyleng-2]='\0'; return(STRING);}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 51 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 {yylval.string = malloc(yyleng+1); strncpy(yylval.string, yytext, yyleng); yylval.string[yyleng]='\0'; return(STRING);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 52 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
 ECHO;
 	YY_BREAK
-#line 932 "/home/Patrick/work/coreboot/util/sconfig/lex.yy.c_shipped"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1925,8 +1891,4 @@ void yyfree (void * ptr )
 }
 
 #define YYTABLES_NAME "yytables"
-
-#line 52 "/home/Patrick/work/coreboot/util/sconfig/sconfig.l"
-
-
 

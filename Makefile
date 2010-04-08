@@ -150,6 +150,7 @@ CBFSTOOL:=$(obj)/util/cbfstool/cbfstool
 # needed objects that every mainboard uses 
 # Creation of these is architecture and mainboard independent
 $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(obj)/util/sconfig/sconfig
+	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	$(obj)/util/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
 

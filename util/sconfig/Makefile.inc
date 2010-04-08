@@ -27,5 +27,5 @@ $(obj)/util/sconfig/%: $(top)/util/sconfig/%_shipped
 	cp $< $@
 
 $(obj)/util/sconfig/sconfig: $(obj)/util/sconfig $(addprefix $(obj)/util/sconfig/,$(sconfigobj))
-	printf "    HOSTCXX    $(subst $(obj)/,,$(@)) (link)\n"
-	$(HOSTCXX) $(SCONFIGFLAGS) -o $@ $(addprefix $(obj)/util/sconfig/,$(sconfigobj))
+	printf "    HOSTCC     $(subst $(obj)/,,$(@)) (link)\n"
+	$(HOSTCC) $(SCONFIGFLAGS) -o $@ $(addprefix $(obj)/util/sconfig/,$(sconfigobj))

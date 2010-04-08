@@ -1,16 +1,16 @@
 # NOTE: This file must be in UNIX format (not DOS) or build_opt_tbl fails: 
-#		"Error - Name  is an invalid identifier in line"
+# "Error - Name  is an invalid identifier in line"
 
 entries
 
 #start-bit length  config config-ID    name
-0           512      r       0        reserved_memory1			# We know nothing about the factory BIOS
-512         512      r       0        reserved_memory2			# More factory BIOS
+0           512      r       0        reserved_memory1	# We know nothing about the factory BIOS
+512         512      r       0        reserved_memory2	# More factory BIOS
 
 # Work in progress.
 # This is where we would put the LB RTC_BOOT_BYTE options once the code
 # supports finding them there.
-#1024         1       e       4        boot_option		
+#1024         1       e       4        boot_option
 #1025         1       e       4        last_boot
 #1026         1       e       1        ECC_memory
 #1028         4       r       0        reboot_bits

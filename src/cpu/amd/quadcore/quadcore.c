@@ -86,8 +86,8 @@ static void start_other_cores(void)
 	u32 nodes;
 	u32 nodeid;
 
-	// disable quad_core
-	if (read_option(CMOS_VSTART_quad_core, CMOS_VLEN_quad_core, 0) != 0)  {
+	// disable multi_core
+	if (read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0) != 0)  {
 		printk(BIOS_DEBUG, "Skip additional core init\n");
 		return;
 	}

@@ -61,7 +61,7 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	unsigned nb_cfg_54;
         int bsp_apic_id = lapicid(); // bsp apicid
 
-        get_option(&disable_siblings, "dual_core");
+        get_option(&disable_siblings, "multi_core");
 
         //get the nodes number
         dev = dev_find_slot(0, PCI_DEVFN(0x18,0));
@@ -129,7 +129,7 @@ void amd_sibling_init(device_t cpu)
 	/* On the bootstrap processor see if I want sibling cpus enabled */
 	if (first_time) {
 		first_time = 0;
-		get_option(&disable_siblings, "dual_core");
+		get_option(&disable_siblings, "multi_core");
 	}
 	result = cpuid(0x80000008);
 	/* See how many sibling cpus we have */

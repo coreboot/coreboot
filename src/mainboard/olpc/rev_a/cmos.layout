@@ -35,8 +35,8 @@ entries
 420          4       e       7        boot_second
 424          4       e       7        boot_third
 428          4       h       0        boot_index
-432	     8       h       0        boot_countdown
-440	     1	     e	     0	      dcon_present
+432          8       h       0        boot_countdown
+440          1       e       0        dcon_present
 1008         16      h       0        check_sum
 
 enumerations

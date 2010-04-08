@@ -131,7 +131,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
 
 #if CONFIG_LOGICAL_CPUS == 1
-	if(read_option(CMOS_VSTART_quad_core, CMOS_VLEN_quad_core, 0) != 0) { // 0 mean quad core
+	if(read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0) != 0) { // 0 mean multi core
 		disable_siblings = 1;
 	}
 #endif

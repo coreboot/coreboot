@@ -1234,7 +1234,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
 #if CONFIG_LOGICAL_CPUS == 1
-	get_option(&disable_siblings, "quad_core");
+	get_option(&disable_siblings, "multi_core");
 #endif
 
 	// for pre_e0, nb_cfg_54 can not be set, ( even set, when you read it

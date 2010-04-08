@@ -98,7 +98,7 @@ static inline int is_cpu_pre_f2(void)
 
 #ifdef __PRE_RAM__
 //AMD_F0_SUPPORT
-static int is_cpu_f0_in_bsp(int nodeid)
+static inline int is_cpu_f0_in_bsp(int nodeid)
 {
 	uint32_t dword;
 	device_t dev;
@@ -106,7 +106,7 @@ static int is_cpu_f0_in_bsp(int nodeid)
 	dword = pci_read_config32(dev, 0xfc);
         return (dword & 0xfff00) == 0x40f00;
 }
-static int is_cpu_pre_f2_in_bsp(int nodeid)
+static inline int is_cpu_pre_f2_in_bsp(int nodeid)
 {
         uint32_t dword;
 	device_t dev;

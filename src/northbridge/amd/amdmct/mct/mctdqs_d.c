@@ -582,8 +582,8 @@ skipLocMiddle:
 }
 
 
-static void StoreDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
-					struct DCTStatStruc *pDCTstat, u8 ChipSel)
+void StoreDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
+			struct DCTStatStruc *pDCTstat, u8 ChipSel)
 {
 	/* Store the DQSDelay value, found during a training sweep, into the DCT
 	 * status structure for this node

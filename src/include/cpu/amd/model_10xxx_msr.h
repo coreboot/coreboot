@@ -33,4 +33,7 @@
 #define LOGICAL_CPUS_NUM_MSR		0xC001100d
 #define CPU_ID_EXT_FEATURES_MSR	0xC0011005
 
+msr_t rdmsr_amd(u32 index);
+void wrmsr_amd(u32 index, msr_t msr);
+
 #endif /* CPU_AMD_MODEL_10XXX_MSR_H */

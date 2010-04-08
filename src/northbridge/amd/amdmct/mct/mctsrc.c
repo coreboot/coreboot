@@ -502,7 +502,7 @@ static void dqsTrainRcvrEn_SW(struct MCTStatStruc *pMCTstat,
 }
 
 
-static u8 mct_InitReceiver_D(struct DCTStatStruc *pDCTstat, u8 dct)
+u8 mct_InitReceiver_D(struct DCTStatStruc *pDCTstat, u8 dct)
 {
 	if (pDCTstat->DIMMValidDCT[dct] == 0 ) {
 		return 8;
@@ -1080,7 +1080,7 @@ static void fenceDynTraining_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static void mct_Wait(u32 cycles)
+void mct_Wait(u32 cycles)
 {
 	u32 saved;
 	u32 hi, lo, msr;

@@ -26,32 +26,9 @@
 
 #ifndef SET_FIDVID_CORE0_ONLY
 	/* MSR FIDVID_CTL and FIDVID_STATUS are shared by cores,
-	   Need to do every AP to set common FID/VID*/
+	   Need to do every AP to set common FID/VID */
 	#define SET_FIDVID_CORE0_ONLY 0
 #endif
-
-static void print_initcpu8 (const char *strval, u8 val)
-{
-	printk(BIOS_DEBUG, "%s%02x\n", strval, val);
-}
-
-static void print_initcpu8_nocr (const char *strval, u8 val)
-{
-	printk(BIOS_DEBUG, "%s%02x", strval, val);
-}
-
-
-static void print_initcpu16 (const char *strval, u16 val)
-{
-	printk(BIOS_DEBUG, "%s%04x\n", strval, val);
-}
-
-
-static void print_initcpu(const char *strval, u32 val)
-{
-	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
-}
-
 
 void update_microcode(u32 cpu_deviceid);
 static void prep_fid_change(void);
@@ -65,13 +42,12 @@ static void set_EnableCf8ExtCfg(void)
 	msr_t msr;
 	msr = rdmsr(NB_CFG_MSR);
 	// EnableCf8ExtCfg: We need that to access CONFIG_PCI_IO_CFG_EXT 4K range
-	msr.hi |= (1<<(46-32));
+	msr.hi |= (1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
 }
 #else
 static void set_EnableCf8ExtCfg(void) { }
 #endif
-
 
 /*[39:8] */
 #define PCI_MMIO_BASE 0xfe000000
@@ -85,34 +61,31 @@ static void set_pci_mmio_conf_reg(void)
 	msr = rdmsr(0xc0010058);
 	msr.lo &= ~(0xfff00000 | (0xf << 2));
 	// 256 bus per segment, MMIO reg will be 4G , enable MMIO Config space
-	msr.lo |= ((8+CONFIG_PCI_BUS_SEGN_BITS) << 2) | (1 << 0);
+	msr.lo |= ((8 + CONFIG_PCI_BUS_SEGN_BITS) << 2) | (1 << 0);
 	msr.hi &= ~(0x0000ffff);
-	msr.hi |= (PCI_MMIO_BASE >> (32-8));
-	wrmsr(0xc0010058, msr); // MMIO Config Base Address Reg
+	msr.hi |= (PCI_MMIO_BASE >> (32 - 8));
+	wrmsr(0xc0010058, msr);	// MMIO Config Base Address Reg
 
 	//mtrr for that range?
 	// set_var_mtrr_x(7, PCI_MMIO_BASE<<8, PCI_MMIO_BASE>>(32-8), 0x00000000, 0x01, MTRR_TYPE_UNCACHEABLE);
 
 	set_wrap32dis();
 
-	msr.hi = (PCI_MMIO_BASE >> (32-8));
+	msr.hi = (PCI_MMIO_BASE >> (32 - 8));
 	msr.lo = 0;
-	wrmsr(0xc0000101, msr); //GS_Base Reg
-
-
+	wrmsr(0xc0000101, msr);	//GS_Base Reg
 
 #endif
 }
 
-
-typedef void (*process_ap_t)(u32 apicid, void *gp);
+typedef void (*process_ap_t) (u32 apicid, void *gp);
 
 //core_range = 0 : all cores
 //core range = 1 : core 0 only
 //core range = 2 : cores other than core0
 
-static void for_each_ap(u32 bsp_apicid, u32 core_range,
-				process_ap_t process_ap, void *gp)
+static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
+			void *gp)
 {
 	// here assume the OS don't change our apicid
 	u32 ap_apicid;
@@ -122,7 +95,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 	u32 disable_siblings;
 	u32 cores_found;
 	u32 nb_cfg_54;
-	int i,j;
+	int i, j;
 	u32 ApicIdCoreIdSize;
 
 	/* get_nodes define in ht_wrapper.c */
@@ -130,8 +103,8 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 
 	disable_siblings = !CONFIG_LOGICAL_CPUS;
 
-#if CONFIG_LOGICAL_CPUS == 1
-	if(read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0) != 0) { // 0 mean multi core
+#if CONFIG_LOGICAL_CPUS == 1 && CONFIG_HAVE_OPTION_TABLE == 1
+	if (read_option(CMOS_VSTART_multi_core, CMOS_VLEN_multi_core, 0) != 0) {	// 0 mean multi core
 		disable_siblings = 1;
 	}
 #endif
@@ -141,10 +114,10 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 	nb_cfg_54 = read_nb_cfg_54();
 
 	ApicIdCoreIdSize = (cpuid_ecx(0x80000008) >> 12 & 0xf);
-	if(ApicIdCoreIdSize) {
+	if (ApicIdCoreIdSize) {
 		siblings = ((1 << ApicIdCoreIdSize) - 1);
 	} else {
-		siblings = 3; //quad core
+		siblings = 3;	//quad core
 	}
 
 	for (i = 0; i < nodes; i++) {
@@ -158,24 +131,26 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 			jstart = 0;
 		}
 
-		if (disable_siblings || (core_range==1)) {
+		if (disable_siblings || (core_range == 1)) {
 			jend = 0;
 		} else {
 			jend = cores_found;
 		}
 
-
 		for (j = jstart; j <= jend; j++) {
-			ap_apicid = i * (nb_cfg_54 ? (siblings + 1):1) + j * (nb_cfg_54 ? 1:64);
+			ap_apicid =
+			    i * (nb_cfg_54 ? (siblings + 1) : 1) +
+			    j * (nb_cfg_54 ? 1 : 64);
 
-		#if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
-			#if CONFIG_LIFT_BSP_APIC_ID == 0
-			if( (i != 0) || (j != 0)) /* except bsp */
-			#endif
+#if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
+#if CONFIG_LIFT_BSP_APIC_ID == 0
+			if ((i != 0) || (j != 0))	/* except bsp */
+#endif
 				ap_apicid += CONFIG_APIC_ID_OFFSET;
-		#endif
+#endif
 
-			if(ap_apicid == bsp_apicid) continue;
+			if (ap_apicid == bsp_apicid)
+				continue;
 
 			process_ap(ap_apicid, gp);
 
@@ -183,8 +158,7 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range,
 	}
 }
 
-/* FIXME: Duplicate of what is in lapic.h? */
-static int lapic_remote_read(int apicid, int reg, u32 *pvalue)
+static inline int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 {
 	int timeout;
 	u32 status;
@@ -192,8 +166,9 @@ static int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 	lapic_wait_icr_idle();
 	lapic_write(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(apicid));
 	lapic_write(LAPIC_ICR, LAPIC_DM_REMRD | (reg >> 4));
-	timeout = 0;
 
+/* Extra busy check compared to lapic.h */
+	timeout = 0;
 	do {
 		status = lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY;
 	} while (status == LAPIC_ICR_BUSY && timeout++ < 1000);
@@ -212,31 +187,33 @@ static int lapic_remote_read(int apicid, int reg, u32 *pvalue)
 	return result;
 }
 
-
 /* Use the LAPIC timer count register to hold each cores init status */
 #define LAPIC_MSG_REG 0x380
-
 
 #if SET_FIDVID == 1
 static void init_fidvid_ap(u32 bsp_apicid, u32 apicid, u32 nodeid, u32 coreid);
 #endif
 
-static inline __attribute__((always_inline)) void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id, const char *str)
+static inline __attribute__ ((always_inline))
+void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id,
+				const char *str)
 {
-		printk(BIOS_DEBUG, "%s --- {	 APICID = %02x NODEID = %02x COREID = %02x} ---\n", str, apicid, id.nodeid, id.coreid);
+	printk(BIOS_DEBUG,
+	       "%s --- { APICID = %02x NODEID = %02x COREID = %02x} ---\n", str,
+	       apicid, id.nodeid, id.coreid);
 }
 
-
-static unsigned wait_cpu_state(u32 apicid, u32 state)
+static u32 wait_cpu_state(u32 apicid, u32 state)
 {
 	u32 readback = 0;
 	u32 timeout = 1;
 	int loop = 4000000;
 	while (--loop > 0) {
-		if (lapic_remote_read(apicid, LAPIC_MSG_REG, &readback) != 0) continue;
+		if (lapic_remote_read(apicid, LAPIC_MSG_REG, &readback) != 0)
+			continue;
 		if ((readback & 0x3f) == state) {
 			timeout = 0;
-			break; //target cpu is in stage started
+			break;	//target cpu is in stage started
 		}
 	}
 	if (timeout) {
@@ -248,29 +225,25 @@ static unsigned wait_cpu_state(u32 apicid, u32 state)
 	return timeout;
 }
 
-
-static void wait_ap_started(u32 ap_apicid, void *gp )
+static void wait_ap_started(u32 ap_apicid, void *gp)
 {
 	u32 timeout;
-	timeout = wait_cpu_state(ap_apicid, 0x13); // started
-	if(timeout) {
-		print_initcpu8_nocr("* AP ", ap_apicid);
-		print_initcpu(" didn't start timeout:", timeout);
-	}
-	else {
-		print_initcpu8_nocr("AP started: ", ap_apicid);
+	timeout = wait_cpu_state(ap_apicid, 0x13);	// started
+	printk(BIOS_DEBUG, "* AP %02x", ap_apicid);
+	if (timeout) {
+		printk(BIOS_DEBUG, " timed out:%08x\n", timeout);
+	} else {
+		printk(BIOS_DEBUG, "started\n");
 	}
 }
-
 
 static void wait_all_other_cores_started(u32 bsp_apicid)
 {
 	// all aps other than core0
-	print_debug("started ap apicid: ");
-	for_each_ap(bsp_apicid, 2 , wait_ap_started, (void *)0);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "started ap apicid: ");
+	for_each_ap(bsp_apicid, 2, wait_ap_started, (void *)0);
+	printk(BIOS_DEBUG, "\n");
 }
-
 
 static void allow_all_aps_stop(u32 bsp_apicid)
 {
@@ -292,7 +265,6 @@ static void enable_apic_ext_id(u32 node)
 	pci_write_config32(NODE_HT(node), 0x68, val);
 }
 
-
 static void STOP_CAR_AND_CPU(void)
 {
 	msr_t msr;
@@ -302,12 +274,13 @@ static void STOP_CAR_AND_CPU(void)
 	msr.lo &= ~(1 << ClLinesToNbDis);
 	wrmsr(BU_CFG2, msr);
 
-	disable_cache_as_ram(); // inline
+	disable_cache_as_ram();	// inline
+	/* stop all cores except node0/core0 the bsp .... */
 	stop_this_cpu();
 }
 
 #if RAMINIT_SYSINFO == 1
-static u32 init_cpus(u32 cpu_init_detectedx ,struct sys_info *sysinfo)
+static u32 init_cpus(u32 cpu_init_detectedx, struct sys_info *sysinfo)
 #else
 static u32 init_cpus(u32 cpu_init_detectedx)
 #endif
@@ -320,7 +293,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	 * already set early mtrr in cache_as_ram.inc
 	 */
 
-	/* enable access pci conf via mmio*/
+	/* enable access pci conf via mmio */
 	set_pci_mmio_conf_reg();
 
 	/* that is from initial apicid, we need nodeid and coreid
@@ -328,36 +301,35 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	id = get_node_core_id_x();
 
 	/* NB_CFG MSR is shared between cores, so we need make sure
-	  core0 is done at first --- use wait_all_core0_started  */
-	if(id.coreid == 0) {
-		set_apicid_cpuid_lo(); /* only set it on core0 */
-		set_EnableCf8ExtCfg(); /* only set it on core0 */
-		#if (CONFIG_ENABLE_APIC_EXT_ID == 1)
+	   core0 is done at first --- use wait_all_core0_started  */
+	if (id.coreid == 0) {
+		set_apicid_cpuid_lo();	/* only set it on core0 */
+		set_EnableCf8ExtCfg();	/* only set it on core0 */
+#if (CONFIG_ENABLE_APIC_EXT_ID == 1)
 		enable_apic_ext_id(id.nodeid);
-		#endif
+#endif
 	}
 
 	enable_lapic();
 
-
 #if (CONFIG_ENABLE_APIC_EXT_ID == 1) && (CONFIG_APIC_ID_OFFSET > 0)
 	u32 initial_apicid = get_initial_apicid();
 
-	#if CONFIG_LIFT_BSP_APIC_ID == 0
-	if( initial_apicid != 0 ) // other than bsp
-	#endif
+#if CONFIG_LIFT_BSP_APIC_ID == 0
+	if (initial_apicid != 0)	// other than bsp
+#endif
 	{
 		/* use initial apic id to lift it */
 		u32 dword = lapic_read(LAPIC_ID);
 		dword &= ~(0xff << 24);
-		dword |= (((initial_apicid + CONFIG_APIC_ID_OFFSET) & 0xff) << 24);
+		dword |=
+		    (((initial_apicid + CONFIG_APIC_ID_OFFSET) & 0xff) << 24);
 
 		lapic_write(LAPIC_ID, dword);
 	}
-
-	#if CONFIG_LIFT_BSP_APIC_ID == 1
+#if CONFIG_LIFT_BSP_APIC_ID == 1
 	bsp_apicid += CONFIG_APIC_ID_OFFSET;
-	#endif
+#endif
 
 #endif
 
@@ -365,31 +337,28 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	apicid = lapicid();
 
 	// show our apicid, nodeid, and coreid
-	if( id.coreid==0 ) {
-		if (id.nodeid!=0) //all core0 except bsp
+	if (id.coreid == 0) {
+		if (id.nodeid != 0)	//all core0 except bsp
 			print_apicid_nodeid_coreid(apicid, id, " core0: ");
-	}
-	else { //all other cores
+	} else {		//all other cores
 		print_apicid_nodeid_coreid(apicid, id, " corex: ");
 	}
 
-
 	if (cpu_init_detectedx) {
-		print_apicid_nodeid_coreid(apicid, id, "\n\n\nINIT detected from ");
-		print_debug("\nIssuing SOFT_RESET...\n");
+		print_apicid_nodeid_coreid(apicid, id,
+					   "\n\n\nINIT detected from ");
+		printk(BIOS_DEBUG, "\nIssuing SOFT_RESET...\n");
 		soft_reset();
 	}
 
-	if(id.coreid == 0) {
-		if(!(warm_reset_detect(id.nodeid))) //FIXME: INIT is checked above but check for more resets?
-			distinguish_cpu_resets(id.nodeid); // Also indicates we are started
+	if (id.coreid == 0) {
+		if (!(warm_reset_detect(id.nodeid)))	//FIXME: INIT is checked above but check for more resets?
+			distinguish_cpu_resets(id.nodeid);	// Also indicates we are started
 	}
-
 	// Mark the core as started.
 	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x13);
 
-
-	if(apicid != bsp_apicid) {
+	if (apicid != bsp_apicid) {
 		/* Setup each AP's cores MSRs.
 		 * This happens after HTinit.
 		 * The BSP runs this code in it's own path.
@@ -397,20 +366,24 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		update_microcode(cpuid_eax(1));
 		cpuSetAMDMSR();
 
-
 #if SET_FIDVID == 1
-	#if (CONFIG_LOGICAL_CPUS == 1)  && (SET_FIDVID_CORE0_ONLY == 1)
+#if (CONFIG_LOGICAL_CPUS == 1) && (SET_FIDVID_CORE0_ONLY == 1)
 		// Run on all AP for proper FID/VID setup.
-		if(id.coreid == 0 ) // only need set fid for core0
-	#endif
+		if (id.coreid == 0)	// only need set fid for core0
+#endif
 		{
-		// check warm(bios) reset to call stage2 otherwise do stage1
+			// check warm(bios) reset to call stage2 otherwise do stage1
 			if (warm_reset_detect(id.nodeid)) {
-				printk(BIOS_DEBUG, "init_fidvid_stage2 apicid: %02x\n", apicid);
+				printk(BIOS_DEBUG,
+				       "init_fidvid_stage2 apicid: %02x\n",
+				       apicid);
 				init_fidvid_stage2(apicid, id.nodeid);
 			} else {
-				printk(BIOS_DEBUG, "init_fidvid_ap(stage1) apicid: %02x\n", apicid);
-				init_fidvid_ap(bsp_apicid, apicid, id.nodeid, id.coreid);
+				printk(BIOS_DEBUG,
+				       "init_fidvid_ap(stage1) apicid: %02x\n",
+				       apicid);
+				init_fidvid_ap(bsp_apicid, apicid, id.nodeid,
+					       id.coreid);
 			}
 		}
 #endif
@@ -424,12 +397,13 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
 
 		STOP_CAR_AND_CPU();
-		printk(BIOS_DEBUG, "\nAP %02x should be halted but you are reading this....\n", apicid);
+		printk(BIOS_DEBUG,
+		       "\nAP %02x should be halted but you are reading this....\n",
+		       apicid);
 	}
 
 	return bsp_apicid;
 }
-
 
 static u32 is_core0_started(u32 nodeid)
 {
@@ -441,21 +415,22 @@ static u32 is_core0_started(u32 nodeid)
 	return htic;
 }
 
-
 static void wait_all_core0_started(void)
 {
 	/* When core0 is started, it will distingush_cpu_resets
-	  . So wait for that to finish */
+	 * So wait for that to finish */
 	u32 i;
 	u32 nodes = get_nodes();
 
-	printk(BIOS_DEBUG, "Wait all core0s started \n");
-	for(i=1;i<nodes;i++) { // skip bsp, because it is running on bsp
-		while(!is_core0_started(i)) {}
-		print_initcpu8("  Core0 started on node: ", i);
+	printk(BIOS_DEBUG, "core0 started: ");
+	for (i = 1; i < nodes; i++) {	// skip bsp, because it is running on bsp
+		while (!is_core0_started(i)) {
+		}
+		printk(BIOS_DEBUG, " %02x", i);
 	}
-	printk(BIOS_DEBUG, "Wait all core0s started done\n");
+	printk(BIOS_DEBUG, "\n");
 }
+
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
 /**
  * void start_node(u32 node)
@@ -480,13 +455,12 @@ static void start_node(u8 node)
 #endif
 
 	/* Allow APs to make requests (ROM fetch) */
-	val=pci_read_config32(NODE_HT(node), 0x6c);
+	val = pci_read_config32(NODE_HT(node), 0x6c);
 	val &= ~(1 << 1);
 	pci_write_config32(NODE_HT(node), 0x6c, val);
 
 	printk(BIOS_DEBUG, " done.\n");
 }
-
 
 /**
  * static void setup_remote_node(u32 node)
@@ -517,7 +491,7 @@ static void setup_remote_node(u8 node)
 	printk(BIOS_DEBUG, "setup_remote_node: %02x", node);
 
 	/* copy the default resource map from node 0 */
-	for(i = 0; i < ARRAY_SIZE(pci_reg); i++) {
+	for (i = 0; i < ARRAY_SIZE(pci_reg); i++) {
 		u32 value;
 		u16 reg;
 		reg = pci_reg[i];
@@ -527,7 +501,7 @@ static void setup_remote_node(u8 node)
 	}
 	printk(BIOS_DEBUG, " done\n");
 }
-#endif	/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
+#endif				/* CONFIG_MAX_PHYSICAL_CPUS > 1 */
 
 static void AMD_Errata281(u8 node, u32 revision, u32 platform)
 {
@@ -546,7 +520,8 @@ static void AMD_Errata281(u8 node, u32 revision, u32 platform)
 		/* For each node we need to check for a "broken" node */
 		if (!(revision & (AMD_DR_B0 | AMD_DR_B1))) {
 			for (i = 0; i < nodes; i++) {
-				if (mctGetLogicalCPUID(i) & (AMD_DR_B0 | AMD_DR_B1)) {
+				if (mctGetLogicalCPUID(i) &
+				    (AMD_DR_B0 | AMD_DR_B1)) {
 					mixed = 1;
 					break;
 				}
@@ -590,7 +565,6 @@ static void AMD_Errata281(u8 node, u32 revision, u32 platform)
 	}
 }
 
-
 static void AMD_Errata298(void)
 {
 	/* Workaround for L2 Eviction May Occur during operation to
@@ -612,36 +586,35 @@ static void AMD_Errata298(void)
 
 	if (affectedRev) {
 		msr = rdmsr(HWCR);
-		msr.lo |= 0x08;		/* Set TlbCacheDis bit[3] */
+		msr.lo |= 0x08;	/* Set TlbCacheDis bit[3] */
 		wrmsr(HWCR, msr);
 
 		msr = rdmsr(BU_CFG);
-		msr.lo |= 0x02;		/* Set TlbForceMemTypeUc bit[1] */
+		msr.lo |= 0x02;	/* Set TlbForceMemTypeUc bit[1] */
 		wrmsr(BU_CFG, msr);
 
 		msr = rdmsr(OSVW_ID_Length);
-		msr.lo |= 0x01;		/* OS Visible Workaround - MSR */
+		msr.lo |= 0x01;	/* OS Visible Workaround - MSR */
 		wrmsr(OSVW_ID_Length, msr);
 
 		msr = rdmsr(OSVW_Status);
-		msr.lo |= 0x01;		/* OS Visible Workaround - MSR */
+		msr.lo |= 0x01;	/* OS Visible Workaround - MSR */
 		wrmsr(OSVW_Status, msr);
 	}
 
 	if (!affectedRev && (mctGetLogicalCPUID(0xFF) & AMD_DR_B3)) {
 		msr = rdmsr(OSVW_ID_Length);
-		msr.lo |= 0x01;		/* OS Visible Workaround - MSR */
+		msr.lo |= 0x01;	/* OS Visible Workaround - MSR */
 		wrmsr(OSVW_ID_Length, msr);
 
 	}
 }
 
-
-u32 get_platform_type(void)
+static u32 get_platform_type(void)
 {
 	u32 ret = 0;
 
-	switch(SYSTEM_TYPE) {
+	switch (SYSTEM_TYPE) {
 	case 1:
 		ret |= AMD_PTYPE_DSK;
 		break;
@@ -663,8 +636,7 @@ u32 get_platform_type(void)
 	return ret;
 }
 
-
-void AMD_SetupPSIVID_d (u32 platform_type, u8 node)
+static void AMD_SetupPSIVID_d(u32 platform_type, u8 node)
 {
 	u32 dword;
 	int i;
@@ -672,26 +644,25 @@ void AMD_SetupPSIVID_d (u32 platform_type, u8 node)
 
 	if (platform_type & (AMD_PTYPE_MOB | AMD_PTYPE_DSK)) {
 
-	/* The following code sets the PSIVID to the lowest support P state
-	 * assuming that the VID for the lowest power state is below
-	 * the VDD voltage regulator threshold. (This also assumes that there
-	 * is a Pstate lower than P0)
-	 */
+		/* The following code sets the PSIVID to the lowest support P state
+		 * assuming that the VID for the lowest power state is below
+		 * the VDD voltage regulator threshold. (This also assumes that there
+		 * is a Pstate lower than P0)
+		 */
 
-		for( i = 4; i >= 0; i--) {
+		for (i = 4; i >= 0; i--) {
 			msr = rdmsr(PS_REG_BASE + i);
 			/*  Pstate valid? */
 			if (msr.hi & PS_EN_MASK) {
-				dword = pci_read_config32(NODE_PCI(i,3), 0xA0);
+				dword = pci_read_config32(NODE_PCI(i, 3), 0xA0);
 				dword &= ~0x7F;
 				dword |= (msr.lo >> 9) & 0x7F;
-				pci_write_config32(NODE_PCI(i,3), 0xA0, dword);
+				pci_write_config32(NODE_PCI(i, 3), 0xA0, dword);
 				break;
 			}
 		}
 	}
 }
-
 
 /**
  * AMD_CpuFindCapability - Traverse PCI capability list to find host HT links.
@@ -700,29 +671,29 @@ void AMD_SetupPSIVID_d (u32 platform_type, u8 node)
  *
  * Returns the offset of the link register.
  */
-BOOL AMD_CpuFindCapability (u8 node, u8 cap_count, u8 *offset)
+static BOOL AMD_CpuFindCapability(u8 node, u8 cap_count, u8 * offset)
 {
-       u32 reg;
+	u32 reg;
 	u32 val;
 
 	/* get start of CPU HT Host Capabilities */
 	val = pci_read_config32(NODE_PCI(node, 0), 0x34);
-       val &= 0xFF;  //reg offset of first link
+	val &= 0xFF;		//reg offset of first link
 
 	cap_count++;
 
 	/* Traverse through the capabilities. */
 	do {
-               reg = pci_read_config32(NODE_PCI(node, 0), val);
+		reg = pci_read_config32(NODE_PCI(node, 0), val);
 		/* Is the capability block a HyperTransport capability block? */
-               if ((reg & 0xFF) == 0x08) {
+		if ((reg & 0xFF) == 0x08) {
 			/* Is the HT capability block an HT Host Capability? */
-                       if ((reg & 0xE0000000) == (1 << 29))
+			if ((reg & 0xE0000000) == (1 << 29))
 				cap_count--;
 		}
 
-               if(cap_count)
-                   val = (reg >> 8)  & 0xFF; //update reg offset
+		if (cap_count)
+			val = (reg >> 8) & 0xFF;	//update reg offset
 	} while (cap_count && val);
 
 	*offset = (u8) val;
@@ -734,14 +705,13 @@ BOOL AMD_CpuFindCapability (u8 node, u8 cap_count, u8 *offset)
 		return FALSE;
 }
 
-
 /**
  * AMD_checkLinkType - Compare desired link characteristics using a logical
  *     link type mask.
  *
  * Returns the link characteristic mask.
  */
-u32 AMD_checkLinkType (u8 node, u8 link, u8 regoff)
+static u32 AMD_checkLinkType(u8 node, u8 link, u8 regoff)
 {
 	u32 val;
 	u32 linktype = 0;
@@ -765,11 +735,10 @@ u32 AMD_checkLinkType (u8 node, u8 link, u8 regoff)
 		else
 			linktype |= HTPHY_LINKTYPE_HT1;
 
-
 		/* Check ganged */
 		val = pci_read_config32(NODE_PCI(node, 0), (link << 2) + 0x170);
 
-		if ( val & 1)
+		if (val & 1)
 			linktype |= HTPHY_LINKTYPE_GANGED;
 		else
 			linktype |= HTPHY_LINKTYPE_UNGANGED;
@@ -777,12 +746,11 @@ u32 AMD_checkLinkType (u8 node, u8 link, u8 regoff)
 	return linktype;
 }
 
-
 /**
  * AMD_SetHtPhyRegister - Use the HT link's HT Phy portal registers to update
  *   a phy setting for that link.
  */
-void AMD_SetHtPhyRegister (u8 node, u8 link, u8 entry)
+static void AMD_SetHtPhyRegister(u8 node, u8 link, u8 entry)
 {
 	u32 phyReg;
 	u32 phyBase;
@@ -792,8 +760,7 @@ void AMD_SetHtPhyRegister (u8 node, u8 link, u8 entry)
 	if (link > 3)
 		link -= 4;
 
-	phyBase = ((u32)link << 3) | 0x180;
-
+	phyBase = ((u32) link << 3) | 0x180;
 
 	/* Get the portal control register's initial value
 	 * and update it to access the desired phy register
@@ -834,7 +801,6 @@ void AMD_SetHtPhyRegister (u8 node, u8 link, u8 entry)
 	} while (!(val & HTPHY_IS_COMPLETE_MASK));
 }
 
-
 void cpuSetAMDMSR(void)
 {
 	/* This routine loads the CPU with default settings in fam10_msr_default
@@ -852,7 +818,7 @@ void cpuSetAMDMSR(void)
 	revision = mctGetLogicalCPUID(0xFF);
 	platform = get_platform_type();
 
-	for(i = 0; i < ARRAY_SIZE(fam10_msr_default); i++) {
+	for (i = 0; i < ARRAY_SIZE(fam10_msr_default); i++) {
 		if ((fam10_msr_default[i].revision & revision) &&
 		    (fam10_msr_default[i].platform & platform)) {
 			msr = rdmsr(fam10_msr_default[i].msr);
@@ -868,8 +834,7 @@ void cpuSetAMDMSR(void)
 	printk(BIOS_DEBUG, " done\n");
 }
 
-
-void cpuSetAMDPCI(u8 node)
+static void cpuSetAMDPCI(u8 node)
 {
 	/* This routine loads the CPU with default settings in fam10_pci_default
 	 * table . It must be run after Cache-As-RAM has been enabled, and
@@ -883,39 +848,41 @@ void cpuSetAMDPCI(u8 node)
 
 	printk(BIOS_DEBUG, "cpuSetAMDPCI %02d", node);
 
-
 	revision = mctGetLogicalCPUID(node);
 	platform = get_platform_type();
 
 	AMD_SetupPSIVID_d(platform, node);	/* Set PSIVID offset which is not table driven */
 
-	for(i = 0; i < ARRAY_SIZE(fam10_pci_default); i++) {
+	for (i = 0; i < ARRAY_SIZE(fam10_pci_default); i++) {
 		if ((fam10_pci_default[i].revision & revision) &&
 		    (fam10_pci_default[i].platform & platform)) {
 			val = pci_read_config32(NODE_PCI(node,
-				fam10_pci_default[i].function),
-				fam10_pci_default[i].offset);
+							 fam10_pci_default[i].
+							 function),
+						fam10_pci_default[i].offset);
 			val &= ~fam10_pci_default[i].mask;
 			val |= fam10_pci_default[i].data;
 			pci_write_config32(NODE_PCI(node,
-				fam10_pci_default[i].function),
-				fam10_pci_default[i].offset, val);
+						    fam10_pci_default[i].
+						    function),
+					   fam10_pci_default[i].offset, val);
 		}
 	}
 
-	for(i = 0; i < ARRAY_SIZE(fam10_htphy_default); i++) {
+	for (i = 0; i < ARRAY_SIZE(fam10_htphy_default); i++) {
 		if ((fam10_htphy_default[i].revision & revision) &&
 		    (fam10_htphy_default[i].platform & platform)) {
 			/* HT Phy settings either apply to both sublinks or have
 			 * separate registers for sublink zero and one, so there
 			 * will be two table entries. So, here we only loop
-			 cd t	* through the sublink zeros in function zero.
+			 cd t   * through the sublink zeros in function zero.
 			 */
 			for (j = 0; j < 4; j++) {
 				if (AMD_CpuFindCapability(node, j, &offset)) {
 					if (AMD_checkLinkType(node, j, offset)
 					    & fam10_htphy_default[i].linktype) {
-						AMD_SetHtPhyRegister(node, j, i);
+						AMD_SetHtPhyRegister(node, j,
+								     i);
 					}
 				} else {
 					/* No more capabilities,
@@ -932,14 +899,13 @@ void cpuSetAMDPCI(u8 node)
 	AMD_Errata281(node, revision, platform);
 
 	/* FIXME: if the dct phy doesn't init correct it needs to reset.
-	if (revision & (AMD_DR_B2 | AMD_DR_B3))
-		dctPhyDiag(); */
+	   if (revision & (AMD_DR_B2 | AMD_DR_B3))
+	   dctPhyDiag(); */
 
 	printk(BIOS_DEBUG, " done\n");
 }
 
-
-void cpuInitializeMCA(void)
+static void cpuInitializeMCA(void)
 {
 	/* Clears Machine Check Architecture (MCA) registers, which power on
 	 * containing unknown data, on currently running processor.
@@ -951,22 +917,21 @@ void cpuInitializeMCA(void)
 	u32 reg;
 	u8 i;
 
-	if (cpuid_edx(1) & 0x4080) { /* MCE and MCA (edx[7] and edx[14]) */
+	if (cpuid_edx(1) & 0x4080) {	/* MCE and MCA (edx[7] and edx[14]) */
 		msr = rdmsr(MCG_CAP);
-		if (msr.lo & MCG_CTL_P){	/* MCG_CTL_P bit is set? */
+		if (msr.lo & MCG_CTL_P) {	/* MCG_CTL_P bit is set? */
 			msr.lo &= 0xFF;
 			msr.lo--;
-			msr.lo <<= 2;		/* multiply the count by 4 */
+			msr.lo <<= 2;	/* multiply the count by 4 */
 			reg = MC0_STA + msr.lo;
 			msr.lo = msr.hi = 0;
-			for (i=0; i < 4; i++) {
-				wrmsr (reg, msr);
-				reg -=4;	/* Touch status regs for each bank */
+			for (i = 0; i < 4; i++) {
+				wrmsr(reg, msr);
+				reg -= 4;	/* Touch status regs for each bank */
 			}
 		}
 	}
 }
-
 
 /**
  * finalize_node_setup()
@@ -974,7 +939,7 @@ void cpuInitializeMCA(void)
  * Do any additional post HT init
  *
  */
-void finalize_node_setup(struct sys_info *sysinfo)
+static void finalize_node_setup(struct sys_info *sysinfo)
 {
 	u8 i;
 	u8 nodes = get_nodes();
@@ -983,12 +948,11 @@ void finalize_node_setup(struct sys_info *sysinfo)
 #if RAMINIT_SYSINFO == 1
 	/* read Node0 F0_0x64 bit [8:10] to find out SbLink # */
 	reg = pci_read_config32(NODE_HT(0), 0x64);
-	sysinfo->sblk = (reg>>8) & 7;
+	sysinfo->sblk = (reg >> 8) & 7;
 	sysinfo->sbbusn = 0;
 	sysinfo->nodes = nodes;
 	sysinfo->sbdn = get_sbdn(sysinfo->sbbusn);
 #endif
-
 
 	for (i = 0; i < nodes; i++) {
 		cpuSetAMDPCI(i);
@@ -1001,10 +965,9 @@ void finalize_node_setup(struct sys_info *sysinfo)
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
 	/* Skip the BSP, start at node 1 */
-	for(i=1; i<nodes; i++) {
+	for (i = 1; i < nodes; i++) {
 		setup_remote_node(i);
 		start_node(i);
 	}
 #endif
 }
-

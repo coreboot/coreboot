@@ -17,14 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-static u32 CheckNBCOFAutoPrechg(struct DCTStatStruc *pDCTstat, u32 dct);
-static u8 mct_AdjustDQSPosDelay_D(struct DCTStatStruc *pDCTstat, u8 dly);
-
 void EarlySampleSupport_D(void)
 {
 }
-
 
 u32 procOdtWorkaround(struct DCTStatStruc *pDCTstat, u32 dct, u32 val)
 {
@@ -251,7 +246,7 @@ void SyncSetting(struct DCTStatStruc *pDCTstat)
 }
 
 
-static u32 CheckNBCOFAutoPrechg(struct DCTStatStruc *pDCTstat, u32 dct)
+u32 CheckNBCOFAutoPrechg(struct DCTStatStruc *pDCTstat, u32 dct)
 {
 	u32 ret = 0;
 	u32 lo, hi;
@@ -362,7 +357,7 @@ static u8 mct_checkFenceHoleAdjust_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-static u8 mct_AdjustDQSPosDelay_D(struct DCTStatStruc *pDCTstat, u8 dly)
+u8 mct_AdjustDQSPosDelay_D(struct DCTStatStruc *pDCTstat, u8 dly)
 {
 	u8 skip = 0;
 
@@ -393,8 +388,7 @@ static u8 mctDoAxRdPtrInit_D(struct DCTStatStruc *pDCTstat, u8 *Rdtr)
 	return 0;
 }
 
-
-static void mct_AdjustScrub_D(struct DCTStatStruc *pDCTstat, u16 *scrub_request) {
+void mct_AdjustScrub_D(struct DCTStatStruc *pDCTstat, u16 *scrub_request) {
 
 	/* Erratum #202: disable DCache scrubber for Ax parts */
 
@@ -403,4 +397,3 @@ static void mct_AdjustScrub_D(struct DCTStatStruc *pDCTstat, u16 *scrub_request)
 		pDCTstat->ErrStatus |= 1 << SB_DCBKScrubDis;
 	}
 }
-

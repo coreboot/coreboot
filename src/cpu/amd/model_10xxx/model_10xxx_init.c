@@ -38,12 +38,8 @@
 #include <cpu/amd/model_10xxx_msr.h>
 
 extern device_t get_node_pci(u32 nodeid, u32 fn);
-extern int init_processor_name(void);
-
-
 
 #define MCI_STATUS 0x401
-
 
 msr_t rdmsr_amd(u32 index)
 {
@@ -67,7 +63,7 @@ void wrmsr_amd(u32 index, msr_t msr)
 }
 
 
-void model_10xxx_init(device_t dev)
+static void model_10xxx_init(device_t dev)
 {
 	u8 i;
 	msr_t msr;

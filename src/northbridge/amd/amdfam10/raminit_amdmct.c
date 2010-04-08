@@ -17,23 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-
-static  void print_raminit(const char *strval, u32 val)
-{
-	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
-}
-
 static  void print_tx(const char *strval, u32 val)
 {
 #if CONFIG_DEBUG_RAM_SETUP
-	print_raminit(strval, val);
+	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 #endif
 }
 
 static  void print_t(const char *strval)
 {
 #if CONFIG_DEBUG_RAM_SETUP
-	print_debug(strval);
+	printk(BIOS_DEBUG, "%s", strval);
 #endif
 }
 #include "amdfam10.h"

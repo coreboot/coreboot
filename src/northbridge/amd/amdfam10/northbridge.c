@@ -153,7 +153,9 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, u32 link, u32 sblink,
 		device_t devx;
 		u32 busses;
 		u32 segn = max>>8;
+#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
 		u32 busn = max&0xff;
+#endif
 		u32 max_devfn;
 
 #if CONFIG_HT3_SUPPORT==1
@@ -332,7 +334,7 @@ static int reg_useable(u32 reg,device_t goal_dev, u32 goal_nodeid,
 			u32 goal_link)
 {
 	struct resource *res;
-	u32 nodeid, link;
+	u32 nodeid, link = 0;
 	int result;
 	res = 0;
 	for(nodeid = 0; !res && (nodeid < NODE_NUMS); nodeid++) {
@@ -646,9 +648,7 @@ struct chip_operations northbridge_amd_amdfam10_ops = {
 
 static void amdfam10_domain_read_resources(device_t dev)
 {
-	struct resource *resource;
 	unsigned reg;
-	unsigned link;
 
 	/* Find the already assigned resource pairs */
 	get_fx_devs();
@@ -658,19 +658,19 @@ static void amdfam10_domain_read_resources(device_t dev)
 		limit = f1_read_config32(reg + 0x04);
 		/* Is this register allocated? */
 		if ((base & 3) != 0) {
-			unsigned nodeid, link;
+			unsigned nodeid, reg_link;
 			device_t reg_dev;
 			if(reg<0xc0) { // mmio
 				nodeid = (limit & 0xf) + (base&0x30);
 			} else { // io
 				nodeid =  (limit & 0xf) + ((base>>4)&0x30);
 			}
-			link   = (limit >> 4) & 7;
+			reg_link   = (limit >> 4) & 7;
 			reg_dev = __f0_dev[nodeid];
 			if (reg_dev) {
 				/* Reserve the resource  */
 				struct resource *reg_resource;
-				reg_resource = new_resource(reg_dev, IOINDEX(0x1000 + reg, link));
+				reg_resource = new_resource(reg_dev, IOINDEX(0x1000 + reg, reg_link));
 				if (reg_resource) {
 					reg_resource->flags = 1;
 				}
@@ -683,6 +683,8 @@ static void amdfam10_domain_read_resources(device_t dev)
 #if CONFIG_PCI_64BIT_PREF_MEM == 0
 	pci_domain_read_resources(dev);
 #else
+	unsigned link;
+	struct resource *resource;
 	for(link=0; link<dev->links; link++) {
 		/* Initialize the system wide io space constraints */
 		resource = new_resource(dev, 0|(link<<2));
@@ -1215,7 +1217,9 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 {
 	struct bus *cpu_bus;
 	device_t dev_mc;
+#if CONFIG_CBB
 	device_t pci_domain;
+#endif
 	int i,j;
 	int nodes;
 	unsigned nb_cfg_54;
@@ -1309,7 +1313,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 	/* Find which cpus are present */
 	cpu_bus = &dev->link[0];
 	for(i = 0; i < nodes; i++) {
-		device_t dev, cpu;
+		device_t cdb_dev, cpu;
 		struct device_path cpu_path;
 		unsigned busn, devn;
 		struct bus *pbus;
@@ -1326,47 +1330,47 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 #endif
 
 		/* Find the cpu's pci device */
-		dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
-		if (!dev) {
+		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 0));
+		if (!cdb_dev) {
 			/* If I am probing things in a weird order
 			 * ensure all of the cpu's pci devices are found.
 			 */
-			int j;
-			for(j = 0; j <= 5; j++) { //FBDIMM?
-				dev = pci_probe_dev(NULL, pbus,
-					PCI_DEVFN(devn, j));
+			int fn;
+			for(fn = 0; fn <= 5; fn++) { //FBDIMM?
+				cdb_dev = pci_probe_dev(NULL, pbus,
+					PCI_DEVFN(devn, fn));
 			}
-			dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
+			cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
 		}
-		if(dev) {
+		if(cdb_dev) {
 			/* Ok, We need to set the links for that device.
 			 * otherwise the device under it will not be scanned
 			 */
-			int j;
+			int link;
 			int linknum;
 #if CONFIG_HT3_SUPPORT==1
 			linknum = 8;
 #else
 			linknum = 4;
 #endif
-			if(dev->links < linknum) {
-				for(j=dev->links; j<linknum; j++) {
-					 dev->link[j].link = j;
-					 dev->link[j].dev = dev;
+			if(cdb_dev->links < linknum) {
+				for(link=cdb_dev->links; link<linknum; link++) {
+					 cdb_dev->link[link].link = link;
+					 cdb_dev->link[link].dev = cdb_dev;
 				}
-				dev->links = linknum;
-				printk(BIOS_DEBUG, "%s links increase to %d\n", dev_path(dev), dev->links);
+				cdb_dev->links = linknum;
+				printk(BIOS_DEBUG, "%s links increase to %d\n", dev_path(cdb_dev), cdb_dev->links);
 			}
 		}
 
 		cores_found = 0; // one core
-		dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
-		if (dev && dev->enabled) {
-			j = pci_read_config32(dev, 0xe8);
+		cdb_dev = dev_find_slot(busn, PCI_DEVFN(devn, 3));
+		if (cdb_dev && cdb_dev->enabled) {
+			j = pci_read_config32(cdb_dev, 0xe8);
 			cores_found = (j >> 12) & 3; // dev is func 3
 			if (siblings > 3)
 				cores_found |= (j >> 13) & 4;
-			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(dev), cores_found);
+			printk(BIOS_DEBUG, "  %s siblings=%d\n", dev_path(cdb_dev), cores_found);
 		}
 
 		u32 jj;
@@ -1387,7 +1391,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			cpu = find_dev_path(cpu_bus, &cpu_path);
 
 			/* Enable the cpu if I have the processor */
-			if (dev && dev->enabled) {
+			if (cdb_dev && cdb_dev->enabled) {
 				if (!cpu) {
 					cpu = alloc_dev(cpu_bus, &cpu_path);
 				}
@@ -1397,7 +1401,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			}
 
 			/* Disable the cpu if I don't have the processor */
-			if (cpu && (!dev || !dev->enabled)) {
+			if (cpu && (!cdb_dev || !cdb_dev->enabled)) {
 				cpu->enabled = 0;
 			}
 

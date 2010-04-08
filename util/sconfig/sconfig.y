@@ -163,6 +163,7 @@ chip: CHIP STRING /* == path */ {
 	char *c;
 	for (c = $<device>$->name_underscore; *c; c++) {
 		if (*c == '/') *c = '_';
+		if (*c == '-') *c = '_';
 	}
 	$<device>$->type = chip;
 	$<device>$->chip = $<device>$;

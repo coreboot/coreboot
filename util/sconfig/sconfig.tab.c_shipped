@@ -562,7 +562,7 @@ static const yytype_int8 yyrhs[] =
 static const yytype_uint16 yyrline[] =
 {
        0,   132,   132,   152,   152,   154,   154,   154,   156,   156,
-     156,   158,   158,   214,   214,   293,   311
+     156,   158,   158,   215,   215,   294,   312
 };
 #endif
 
@@ -1511,6 +1511,7 @@ yyreduce:
 	char *c;
 	for (c = (yyval.device)->name_underscore; *c; c++) {
 		if (*c == '/') *c = '_';
+		if (*c == '-') *c = '_';
 	}
 	(yyval.device)->type = chip;
 	(yyval.device)->chip = (yyval.device);
@@ -1536,7 +1537,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 186 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
+#line 187 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	cur_parent = (yyvsp[(3) - (5)].device)->parent;
 
@@ -1569,7 +1570,7 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 214 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
+#line 215 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	(yyval.device) = new_dev();
 	(yyval.device)->bustype = (yyvsp[(2) - (4)].number);
@@ -1625,7 +1626,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 264 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
+#line 265 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 	cur_parent = (yyvsp[(5) - (7)].device)->parent;
 	cur_bus = (yyvsp[(5) - (7)].device)->bus;
@@ -1659,7 +1660,7 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 294 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
+#line 295 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 		struct resource *r = malloc(sizeof(struct resource));
 		memset (r, 0, sizeof(struct resource));
@@ -1680,7 +1681,7 @@ yyreduce:
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 312 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
+#line 313 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
     {
 		struct reg *r = malloc(sizeof(struct reg));
 		memset (r, 0, sizeof(struct reg));
@@ -1711,7 +1712,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1715 "/home/Patrick/work/coreboot/util/sconfig/sconfig.tab.c_shipped"
+#line 1716 "/home/Patrick/work/coreboot/util/sconfig/sconfig.tab.c_shipped"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1923,7 +1924,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 339 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
+#line 340 "/home/Patrick/work/coreboot/util/sconfig/sconfig.y"
 
 void pass0(FILE *fil, struct device *ptr) {
 	if ((ptr->type == device) && (ptr->id != 0) && (!ptr->used))

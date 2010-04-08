@@ -13,8 +13,6 @@ chip northbridge/intel/i855
 #			pci 12.0 on end
 			register "enable_usb" = "0"
 			register "enable_native_ide" = "0"
-			register "enable_usb" = "0"
-			register "enable_native_ide" = "0"
 			chip superio/winbond/w83627hf # link 1
                 	        device pnp 2e.0 on      #  Floppy
                 	                 io 0x60 = 0x3f0

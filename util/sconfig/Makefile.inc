@@ -23,6 +23,7 @@ endif
 $(obj)/util/sconfig/lex.yy.o: $(obj)/util/sconfig/sconfig.tab.h
 
 $(obj)/util/sconfig/%: $(top)/util/sconfig/%_shipped
+	mkdir -p $(dir $@)
 	cp $< $@
 
 $(obj)/util/sconfig/sconfig: $(obj)/util/sconfig $(addprefix $(obj)/util/sconfig/,$(sconfigobj))

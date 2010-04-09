@@ -11,4 +11,10 @@ struct mem_controller {
 	uint16_t channel1[DIMM_SOCKETS];
 };
 
+#if defined(__PRE_RAM__) && defined(RAMINIT_SYSINFO) && RAMINIT_SYSINFO == 1
+void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo);
+#else
+void sdram_initialize(int controllers, const struct mem_controller *ctrl);
+#endif
+
 #endif /* RAMINIT_H */

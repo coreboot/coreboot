@@ -7,6 +7,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <stdlib.h>
+#include <reset.h>
 #include "raminit.h"
 #include "amdk8.h"
 
@@ -564,11 +565,13 @@ static int is_dual_channel(const struct mem_controller *ctrl)
 
 static int is_opteron(const struct mem_controller *ctrl)
 {
-	/* Test to see if I am an Opteron.
-	 * FIXME Socket 939 based Athlon64 have dual channel capability,
-	 * too, so we need a better test for Opterons
+	/* Test to see if I am an Opteron.  Socket 939 based Athlon64
+	 * have dual channel capability, too, so we need a better test
+	 * for Opterons. 
+	 * However, all code uses is_opteron() to find out whether to
+	 * use dual channel, so if we really check for opteron here, we
+	 * need to fix up all code using this function, too.
 	 */
-#warning "FIXME: Implement a better test for Opterons"
 	uint32_t nbcap;
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	return !!(nbcap & NBCAP_128Bit);

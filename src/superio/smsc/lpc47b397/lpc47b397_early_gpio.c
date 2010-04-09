@@ -30,6 +30,7 @@ static unsigned lpc47b397_gpio_offset_in(unsigned iobase, unsigned offset)
 	return inb(iobase+offset);
 }
 
+#if 0
 /* for GP60-GP64, GP66-GP85 */
 #define LPC47B397_GPIO_CNTL_INDEX 0x70
 #define LPC47B397_GPIO_CNTL_DATA 0x71
@@ -45,3 +46,4 @@ static unsigned lpc47b397_gpio_index_in(unsigned iobase, unsigned index)
 	outb(index,iobase+LPC47B397_GPIO_CNTL_INDEX);
 	return inb(iobase+LPC47B397_GPIO_CNTL_DATA);
 }
+#endif

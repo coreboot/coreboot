@@ -476,6 +476,7 @@ end_of_chain: ;
 
 }
 
+#if 0
 #if RAMINIT_SYSINFO == 1
 static void ht_setup_chain(device_t udev, unsigned upos, struct sys_info *sysinfo)
 #else
@@ -506,6 +507,8 @@ static int ht_setup_chain(device_t udev, unsigned upos)
 	return ht_setup_chainx(udev, upos, 0, offset_unitid);
 #endif
 }
+#endif
+
 static int optimize_link_read_pointer(uint8_t node, uint8_t linkn, uint8_t linkt, uint8_t val)
 {
 	uint32_t dword, dword_old;

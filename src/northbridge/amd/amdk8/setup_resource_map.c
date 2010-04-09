@@ -3,15 +3,14 @@
 static void setup_resource_map_offset(const unsigned int *register_values, int max, unsigned offset_pci_dev, unsigned offset_io_base)
 {
 	int i;
-//      print_debug("setting up resource map offset....");
-#if 0
-	print_debug("\n");
+#if RES_DEBUG
+	printk(BIOS_DEBUG, "setting up resource map offset....\n");
 #endif
 	for(i = 0; i < max; i += 3) {
 		device_t dev;
 		unsigned where;
 		unsigned long reg;
-#if 0
+#if RES_DEBUG
 		prink_debug("%08x <- %08x\n", register_values[i] +  offset_pci_dev, register_values[i+2]);
 #endif
 		dev = (register_values[i] & ~0xfff) + offset_pci_dev;
@@ -27,7 +26,9 @@ static void setup_resource_map_offset(const unsigned int *register_values, int m
 		pci_write_config32(register_values[i], reg);
 #endif
 	}
-//      print_debug("done.\n");
+#if RES_DEBUG
+	printk(BIOS_DEBUG, "done.\n");
+#endif
 }
 
 #define RES_PCI_IO 0x10
@@ -40,12 +41,7 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 	int i;
 
 #if RES_DEBUG
-	print_debug("setting up resource map ex offset....");
-
-#endif
-
-#if RES_DEBUG
-	print_debug("\n");
+	printk(BIOS_DEBUG, "setting up resource map ex offset....\n");
 #endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
@@ -112,21 +108,19 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 	}
 
 #if RES_DEBUG
-	print_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #endif
 }
+
+#if defined(SOUTHBRIDGE_NVIDIA_MCP55) || defined(SOUTHBRIDGE_NVIDIA_CK804)
 static void setup_resource_map_x(const unsigned int *register_values, int max)
 {
 	int i;
 
 #if RES_DEBUG
-	print_debug("setting up resource map ex offset....");
-
+	printk(BIOS_DEBUG, "setting up resource map ex....\n");
 #endif
 
-#if RES_DEBUG
-	print_debug("\n");
-#endif
 	for(i = 0; i < max; i += 4) {
 #if RES_DEBUG
 		printk(BIOS_DEBUG, "%04x: %02x %08x <- & %08x | %08x\n",
@@ -188,47 +182,12 @@ static void setup_resource_map_x(const unsigned int *register_values, int max)
 	}
 
 #if RES_DEBUG
-	print_debug("done.\n");
+	printk(BIOS_DEBUG, "done.\n");
 #endif
 }
-
-#if 0
-static void setup_iob_resource_map(const unsigned int *register_values, int max)
-{
-	int i;
-
-	for(i = 0; i < max; i += 3) {
-		unsigned where;
-		unsigned reg;
-
-		where = register_values[i];
-#if 0
-		udelay(2000);
-		print_debug_hex16(where);
-#endif
-		reg = inb(where);
-#if 0
-		print_debug("=");
-		print_debug_hex8(reg);
 #endif
 
-		reg &= register_values[i+1];
-		reg |= register_values[i+2];
 #if 0
-		print_debug(" <-  ");
-		print_debug_hex8(reg);
-#endif
-		outb(reg, where);
-#if 0
-
-		print_debug(" -> ");
-		reg = inb(where);
-		print_debug_hex8(reg);
-		print_debug("\n");
-#endif
-	}
-}
-
 static void setup_io_resource_map(const unsigned int *register_values, int max)
 {
 	int i;
@@ -240,30 +199,26 @@ static void setup_io_resource_map(const unsigned int *register_values, int max)
 		where = register_values[i];
 #if 0
 		udelay(2000);
-		print_debug_hex16(where);
+		printk(BIOS_DEBUG, "%04x", where);
 #endif
 
 		reg = inl(where);
 #if 0
 		udelay(2000);
-		print_debug("=");
-		print_debug_hex32(reg);
+		printk(BIOS_DEBUG, "=%08x", reg);
 #endif
 		reg &= register_values[i+1];
 		reg |= register_values[i+2];
 
 #if 0
 		udelay(2000);
-		print_debug(" <-  ");
-		print_debug_hex32(reg);
+		printk(BIOS_DEBUG, " <-  %08x", reg);
 #endif
 		outl(reg, where);
 #if 0
 		udelay(2000);
-		print_debug(" -> ");
 		reg = inl(where);
-		print_debug_hex32(reg);
-		print_debug("\n");
+		printk(BIOS_DEBUG, " ->  %08x\n", reg);
 #endif
 	}
 }
@@ -276,9 +231,8 @@ static void setup_mem_resource_map(const unsigned int *register_values, int max)
 		unsigned where;
 		unsigned long reg;
 #if 0
-		print_debug_hex32(register_values[i]);
-		print_debug(" <-");
-		print_debug_hex32(register_values[i+2]);
+		prink(BIOS_DEBUG, "%08x <-  %08x\n", 
+			register_values[i], register_values[i+2]);
 #endif
 		where = register_values[i];
 		reg = read32(where);
@@ -286,10 +240,8 @@ static void setup_mem_resource_map(const unsigned int *register_values, int max)
 		reg |= register_values[i+2];
 		write32( where, reg);
 #if 0
-		print_debug(" RB ");
 		reg = read32(where);
-		print_debug_hex32(reg);
-		print_debug("\n");
+		prink(BIOS_DEBUG, " RB %08x\n", reg);
 #endif
 	}
 }

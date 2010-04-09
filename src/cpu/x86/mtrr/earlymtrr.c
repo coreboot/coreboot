@@ -97,7 +97,7 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	
 }
 
-static void early_mtrr_init(void)
+static inline void early_mtrr_init(void)
 {
 	static const unsigned long mtrr_msrs[] = {
 		/* fixed mtrr */

@@ -84,7 +84,7 @@ static inline void dump_pci_device_index_wait(unsigned dev, uint32_t index_reg)
 }
 #endif
 
-static void dump_pci_devices(void)
+static inline void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);

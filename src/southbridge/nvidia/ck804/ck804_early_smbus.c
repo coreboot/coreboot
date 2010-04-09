@@ -31,7 +31,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
-static int smbus_write_byte(unsigned device, unsigned address,
+static inline int smbus_write_byte(unsigned device, unsigned address,
 			    unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS_IO_BASE, device, address, val);

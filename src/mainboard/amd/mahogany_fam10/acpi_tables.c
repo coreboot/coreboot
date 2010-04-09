@@ -46,14 +46,14 @@ static void dump_mem(u32 start, u32 end)
 }
 #endif
 
-extern const acpi_header_t AmlCode;
-extern const acpi_header_t AmlCode_ssdt;
+extern const unsigned char AmlCode[];
+extern const unsigned char AmlCode_ssdt[];
 
 #if CONFIG_ACPI_SSDTX_NUM >= 1
-extern const acpi_header_t AmlCode_ssdt2;
-extern const acpi_header_t AmlCode_ssdt3;
-extern const acpi_header_t AmlCode_ssdt4;
-extern const acpi_header_t AmlCode_ssdt5;
+extern const unsigned char AmlCode_ssdt2[];
+extern const unsigned char AmlCode_ssdt3[];
+extern const unsigned char AmlCode_ssdt4[];
+extern const unsigned char AmlCode_ssdt5[];
 #endif
 
 #define IO_APIC_ADDR	0xfec00000UL
@@ -132,7 +132,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *ssdt;
 #if CONFIG_ACPI_SSDTX_NUM >= 1
 	acpi_header_t *ssdtx;
-	acpi_header_t const *p;
+	void *p;
 	int i;
 #endif
 
@@ -194,8 +194,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	current	  = ( current + 0x0f) & -0x10;
 	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
 	ssdt = (acpi_header_t *)current;
-	current += AmlCode_ssdt.length;
-	memcpy((void *)ssdt, &AmlCode_ssdt, AmlCode_ssdt.length);
+	memcpy(ssdt, &AmlCode_ssdt, sizeof(acpi_header_t));
+	current += ssdt->length;
+	memcpy(ssdt, &AmlCode_ssdt, ssdt->length);
 	//Here you need to set value in pci1234, sblk and sbdn in get_bus_conf.c
 	update_ssdt((void*)ssdt);
 	/* recalculate checksum */
@@ -237,8 +238,9 @@ unsigned long write_acpi_tables(unsigned long start)
 			p = &AmlCode_ssdt5;
 			break;
 		}
-		current += p->length;
-		memcpy((void *)ssdtx, p, p->length);
+		memcpy(ssdtx, p, sizeof(acpi_header_t));
+		current += ssdtx->length;
+		memcpy(ssdtx, p, ssdtx->length);
 		update_ssdtx((void *)ssdtx, i);
 		ssdtx->checksum = 0;
 		ssdtx->checksum = acpi_checksum((u8 *)ssdtx, ssdtx->length);
@@ -250,8 +252,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	current	  = ( current + 0x07) & -0x08;
 	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
 	dsdt = (acpi_header_t *)current; // it will used by fadt
-	current += AmlCode.length;
-	memcpy((void *)dsdt, &AmlCode, AmlCode.length);
+	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
+	current += dsdt->length;
+	memcpy(dsdt, &AmlCode, dsdt->length);
 	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
 	/* FACS */ // it needs 64 bit alignment

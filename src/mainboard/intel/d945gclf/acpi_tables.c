@@ -31,7 +31,7 @@
 
 #define OLD_ACPI 0
 
-extern const acpi_header_t AmlCode;
+extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
@@ -273,8 +273,9 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_facs(facs);
 
 	dsdt = (acpi_header_t *) current;
-	current += AmlCode.length;
-	memcpy((void *) dsdt, &AmlCode, AmlCode.length);
+	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
+	current += dsdt->length;
+	memcpy(dsdt, &AmlCode, dsdt->length);
 
 #if OLD_ACPI
 	for (i=0; i < dsdt->length; i++) {

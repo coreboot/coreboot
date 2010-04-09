@@ -35,8 +35,8 @@
 #include <device/pci_ids.h>
 #include <../../../northbridge/via/vx800/vx800.h>
 
-extern const acpi_header_t AmlCode_dsdt;
-extern const acpi_header_t AmlCode_ssdt;
+extern const unsigned char AmlCode_dsdt[];
+extern const unsigned char AmlCode_ssdt[];
 
 extern u32 wake_vec;
 
@@ -80,8 +80,6 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	unsigned int gsi_base = 0x18;
-
 	/* Create all subtables for processors. */
 	current = acpi_create_madt_lapics(current);
 
@@ -113,6 +111,7 @@ unsigned long acpi_fill_slit(unsigned long current)
 unsigned long acpi_fill_srat(unsigned long current)
 {
 	/* No NUMA, no SRAT. */
+	return current;
 }
 
 #define ALIGN(x,a)              __ALIGN_MASK(x,(typeof(x))(a)-1)
@@ -122,14 +121,15 @@ unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
 	acpi_rsdp_t *rsdp;
-	acpi_srat_t *srat;
 	acpi_rsdt_t *rsdt;
-	acpi_mcfg_t *mcfg;
 	acpi_hpet_t *hpet;
 	acpi_madt_t *madt;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;
-	acpi_header_t *dsdt, *ssdt;
+	acpi_header_t *dsdt;
+#if 0
+	acpi_header_t *ssdt;
+#endif
 
 	/* Align ACPI tables to 16 byte. */
 	start = (start + 0x0f) & -0x10;
@@ -158,10 +158,11 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:     * DSDT\n");
 	dsdt = (acpi_header_t *) current;
-	current += AmlCode_dsdt.length;
-	memcpy((void *)dsdt, &AmlCode_dsdt, AmlCode_dsdt.length);
+	memcpy(dsdt, &AmlCode_dsdt, sizeof(acpi_header_t));
+	current += dsdt->length;
+	memcpy(dsdt, &AmlCode_dsdt, dsdt->length);
 	dsdt->checksum = 0; /* Don't trust iasl to get this right. */
-	dsdt->checksum = acpi_checksum(dsdt, dsdt->length);
+	dsdt->checksum = acpi_checksum((u8*)dsdt, dsdt->length);
 	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt, dsdt->length);
 
 	printk(BIOS_DEBUG, "ACPI:     * FADT\n");
@@ -181,7 +182,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* NO MCFG in VX855, no PCI-E. */
 
 	printk(BIOS_DEBUG, "ACPI:    * HPET\n");
-	hpet = (acpi_mcfg_t *) current;
+	hpet = (acpi_hpet_t *) current;
 	acpi_create_hpet(hpet);
 	current += hpet->header.length;
 	acpi_add_table(rsdp, hpet);
@@ -189,10 +190,11 @@ unsigned long write_acpi_tables(unsigned long start)
 #if 0
 	printk(BIOS_DEBUG, "ACPI:     * SSDT\n");
 	ssdt = (acpi_header_t *) current;
-	current += AmlCode_ssdt.length;
-	memcpy((void *)ssdt, &AmlCode_ssdt, AmlCode_ssdt.length);
+	memcpy(ssdt, &AmlCode_ssdt, sizeof(acpi_header_t));
+	current += ssdt->length;
+	memcpy(ssdt, &AmlCode_ssdt, ssdt->length);
 	ssdt->checksum = 0; /* Don't trust iasl to get this right. */
-	ssdt->checksum = acpi_checksum(ssdt, ssdt->length);
+	ssdt->checksum = acpi_checksum((u8*)ssdt, ssdt->length);
 	acpi_add_table(rsdp, ssdt);
 	printk(BIOS_DEBUG, "ACPI:     * SSDT @ %08x Length %x\n", ssdt, ssdt->length);
 #endif

@@ -268,7 +268,7 @@ void update_ssdt(void *ssdt)
 
 }
 
-void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
+static void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 {
 	u8 *CPU;
 	u8 *CPUIN;
@@ -291,7 +291,7 @@ void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 	CONTROL = sspr + 0x8d;
 	STATUS = sspr + 0x8f;
 
-	sprintf(CPU, "%02x", (u8)cpuindex);
+	sprintf(CPU, "%02x", (char)cpuindex);
 	*CPUIN = (u8) cpuindex;
 
 	for(i=0;i<sysconf.p_state_num;i++) {
@@ -305,11 +305,11 @@ void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 	}
 }
 
-extern const acpi_header_t AmlCode_sspr5;
-extern const acpi_header_t AmlCode_sspr4;
-extern const acpi_header_t AmlCode_sspr3;
-extern const acpi_header_t AmlCode_sspr2;
-extern const acpi_header_t AmlCode_sspr1;
+extern const unsigned char AmlCode_sspr5[];
+extern const unsigned char AmlCode_sspr4[];
+extern const unsigned char AmlCode_sspr3[];
+extern const unsigned char AmlCode_sspr2[];
+extern const unsigned char AmlCode_sspr1[];
 
 /* fixme: find one good way for different p_state_num */
 unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current)
@@ -321,7 +321,7 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current)
 
 	if(!sysconf.p_state_num) return current;
 
-	acpi_header_t *AmlCode_sspr;
+	void *AmlCode_sspr;
 	switch(sysconf.p_state_num) {
 		case 1: AmlCode_sspr = &AmlCode_sspr1; break;
 		case 2: AmlCode_sspr = &AmlCode_sspr2; break;
@@ -342,8 +342,9 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current)
 
 		current	  = ( current + 0x0f) & -0x10;
 		ssdt = (acpi_header_t *)current;
-		current += AmlCode_sspr->length;
-		memcpy((void *)ssdt, AmlCode_sspr, AmlCode_sspr->length);
+		memcpy(ssdt, AmlCode_sspr, sizeof(acpi_header_t));
+		current += ssdt->length;
+		memcpy(ssdt, AmlCode_sspr, ssdt->length);
 		update_sspr((void*)ssdt,cpu->path.apic.node_id, cpu_index);
 		/* recalculate checksum */
 		ssdt->checksum = 0;

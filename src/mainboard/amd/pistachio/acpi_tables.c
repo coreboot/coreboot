@@ -57,7 +57,7 @@ static void dump_mem(u32 start, u32 end)
 }
 #endif
 
-extern const acpi_header_t AmlCode;
+extern const unsigned char AmlCode[];
 
 #define IO_APIC_ADDR	0xfec00000UL
 
@@ -187,9 +187,10 @@ unsigned long write_acpi_tables(unsigned long start)
 	/* DSDT */
 	printk(BIOS_DEBUG, "ACPI:    * DSDT\n");
 	dsdt = (acpi_header_t *) current;
-	memcpy((void *)dsdt, &AmlCode, AmlCode.length);
-
+	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
 	current += dsdt->length;
+	memcpy(dsdt, &AmlCode, dsdt->length);
+
 	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n", dsdt, dsdt->length);
 	/* FADT */
 	printk(BIOS_DEBUG, "ACPI:    * FADT\n");

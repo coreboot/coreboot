@@ -1,18 +1,20 @@
 config BOARD_RCA_RM4100
 	bool "RM4100"
 	select ARCH_X86
-	select CPU_INTEL_SOCKET_PGA370
+	select CPU_INTEL_SOCKET_MFCBGA479
 	select NORTHBRIDGE_INTEL_I82830
 	select SOUTHBRIDGE_INTEL_I82801DX
 	select SUPERIO_SMSC_SMSCSUPERIO
-	select ROMCC
 	select HAVE_PIRQ_TABLE
 	select UDELAY_TSC
- 	select BOARD_ROMSIZE_KB_1024
- 	select HAVE_MAINBOARD_RESOURCES
+	select BOARD_ROMSIZE_KB_1024
 	select HAVE_HARD_RESET
+	select HAVE_MAINBOARD_RESOURCES
+	select USE_PRINTK_IN_CAR
 	select HAVE_SMI_HANDLER
- 	select GFXUMA
+	select GFXUMA
+	select USE_DCACHE_RAM
+	select TINY_BOOTBLOCK
 
 config MAINBOARD_DIR
 	string
@@ -27,6 +29,16 @@ config MAINBOARD_PART_NUMBER
 config HAVE_OPTION_TABLE
 	bool
 	default n
+	depends on BOARD_RCA_RM4100
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+	depends on BOARD_RCA_RM4100
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
 	depends on BOARD_RCA_RM4100
 
 config IRQ_SLOT_COUNT

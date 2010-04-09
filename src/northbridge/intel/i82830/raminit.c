@@ -191,8 +191,8 @@ DIMM-independant configuration functions.
 -----------------------------------------------------------------------------*/
 
 struct dimm_size {
-	unsigned long side1;
-	unsigned long side2;
+	unsigned int side1;
+	unsigned int side2;
 };
 
 static struct dimm_size spd_get_dimm_size(unsigned device)
@@ -541,7 +541,6 @@ static void northbridge_set_registers(void)
 
 static void sdram_initialize(void)
 {
-	int i;
 	u32 reg32;
 
 	/* Setup Initial SDRAM Registers */

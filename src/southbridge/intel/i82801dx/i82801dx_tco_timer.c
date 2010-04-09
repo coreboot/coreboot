@@ -21,11 +21,8 @@
 
 static void i82801dx_halt_tco_timer(void)
 {
-	device_t dev;
-	uint16_t halt_tco_timer;
-
 	/* Set the LPC device statically. */
-	dev = PCI_DEV(0x0, 0x1f, 0x0);
+	device_t dev = PCI_DEV(0x0, 0x1f, 0x0);
 
 	/* Temporarily set ACPI base address (I/O space). */
 	pci_write_config32(dev, PMBASE, (PMBASE_ADDR | 1));

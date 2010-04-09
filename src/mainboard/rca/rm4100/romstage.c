@@ -34,7 +34,6 @@
 #include "northbridge/intel/i82830/memory_initialized.c"
 #include "southbridge/intel/i82801dx/i82801dx.h"
 #include "southbridge/intel/i82801dx/i82801dx_reset.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "spd_table.h"
 #include "gpio.c"
@@ -98,10 +97,11 @@ static void mb_early_setup(void)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), ACPI_CNTL, 0x10);
 }
 
-static void main(unsigned long bist)
+#include "cpu/intel/model_6bx/cache_as_ram_disable.c"
+
+void real_main(unsigned long bist)
 {
 	if (bist == 0) {
-		early_mtrr_init();
 		if (memory_initialized()) {
 			hard_reset();
 		}

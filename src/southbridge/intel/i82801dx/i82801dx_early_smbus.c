@@ -115,7 +115,6 @@ static int smbus_wait_until_done(void)
 
 static int smbus_read_byte(unsigned device, unsigned address)
 {
-	unsigned char global_control_register;
 	unsigned char global_status_register;
 	unsigned char byte;
 

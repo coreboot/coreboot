@@ -1,6 +1,6 @@
 chip northbridge/intel/i82830		# Northbridge
   device apic_cluster 0 on		# APIC cluster
-    chip cpu/intel/socket_PGA370	# Low Voltage PIII Micro-FCBGA Socket 479
+    chip cpu/intel/socket_mFCBGA479	# Low Voltage PIII Micro-FCBGA Socket 479
       device apic 0 on end		# APIC
     end
   end

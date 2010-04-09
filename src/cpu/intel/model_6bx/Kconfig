@@ -1,0 +1,3 @@
+config CPU_INTEL_MODEL_6BX
+	bool
+	select SMP

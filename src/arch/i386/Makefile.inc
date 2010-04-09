@@ -165,6 +165,9 @@ endif
 ifeq ($(CONFIG_CPU_INTEL_SOCKET_BGA956),y)
 crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
 endif
+ifeq ($(CONFIG_CPU_INTEL_SOCKET_MFCBGA479),y)
+crt0s += $(src)/cpu/x86/car/cache_as_ram.inc
+endif
 # should be CONFIG_CPU_VIA_C7, but bcom/winnetp680, jetway/j7f24, via/epia-cn, via/pc2500e don't use CAR yet
 ifeq ($(CONFIG_BOARD_VIA_VT8454C),y)
 crt0s += $(src)/cpu/via/car/cache_as_ram.inc

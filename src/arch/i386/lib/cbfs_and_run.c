@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <cbfs.h>
+#include <arch/stages.h>
 
 void cbfs_and_run_core(const char *filename, unsigned ebp)
 {
@@ -41,8 +42,6 @@ void cbfs_and_run_core(const char *filename, unsigned ebp)
 	);
 }
 
-void __attribute__((regparm(0))) copy_and_run(unsigned cpu_reset);
-
 void __attribute__((regparm(0))) copy_and_run(unsigned cpu_reset)
 {
 	// FIXME fix input parameters instead normalizing them here.
@@ -53,7 +52,7 @@ void __attribute__((regparm(0))) copy_and_run(unsigned cpu_reset)
 }
 
 #if CONFIG_AP_CODE_IN_CAR == 1
-static void __attribute__((regparm(0))) copy_and_run_ap_code_in_car(unsigned ret_addr)
+void __attribute__((regparm(0))) copy_and_run_ap_code_in_car(unsigned ret_addr)
 {
 	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ap", ret_addr);
 }

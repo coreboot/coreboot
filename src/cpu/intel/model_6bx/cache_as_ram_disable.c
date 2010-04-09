@@ -54,7 +54,7 @@ void stage1_main(unsigned long bist)
         );
 
 #undef CLEAR_FIRST_1M_RAM 
-#include "cache_as_ram_post.c"
+#include "cpu/x86/car/cache_as_ram_post.c"
 
 	/* For now: use rambase + 1MB - 64K (counting downwards) as stack. This
 	 * makes sure that we stay completely within the 1M of memory we

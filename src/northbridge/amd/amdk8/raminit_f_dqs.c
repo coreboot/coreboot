@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 */
 
+#include <arch/stages.h>
+
 //0: mean no debug info
 #define DQS_TRAIN_DEBUG 0
 
@@ -2091,7 +2093,7 @@ static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info
 	sysinfox->mem_trained[nodeid] = sysinfo->mem_trained[nodeid];
 
 }
-static void copy_and_run_ap_code_in_car(unsigned ret_addr);
+
 static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sys_info *sysinfo, unsigned retcall)
 {
 	if(coreid) return; // only do it on core0

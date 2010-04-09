@@ -157,6 +157,8 @@ static inline void bmc_foad(void)
 
 /* end IPMI garbage */
 
+#include "arch/i386/lib/stages.c"
+
 static void main(unsigned long bist)
 {
 	u8 b;
@@ -277,7 +279,7 @@ static void main(unsigned long bist)
 		/* Skip this if there was a built in self test failure */
 		early_mtrr_init();
 		if (memory_initialized()) {
-			asm volatile ("jmp __cpu_reset");
+			skip_romstage();
 		}
 	}
 	/* Setup the console */

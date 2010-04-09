@@ -52,6 +52,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "northbridge/intel/e7520/raminit.c"
 #include "lib/generic_sdram.c"
+#include "arch/i386/lib/stages.c"
 
 static void main(unsigned long bist)
 {
@@ -77,7 +78,7 @@ static void main(unsigned long bist)
 		/* Skip this if there was a built in self test failure */
 		early_mtrr_init();
 		if (memory_initialized()) {
-			asm volatile ("jmp __cpu_reset");
+			skip_romstage();
 		}
 	}
 	/* Setup the console */

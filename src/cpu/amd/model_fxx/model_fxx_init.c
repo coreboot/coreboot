@@ -44,66 +44,66 @@ void cpus_ready_for_init(void)
 #if CONFIG_K8_REV_F_SUPPORT == 0
 int is_e0_later_in_bsp(int nodeid)
 {
-        uint32_t val;
-        uint32_t val_old;
-        int e0_later;
-        if(nodeid==0) { // we don't need to do that for node 0 in core0/node0
-                return !is_cpu_pre_e0();
-        }
-        // d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
-        device_t dev;
-        dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid,2));
-        if(!dev) return 0;
-        val_old = pci_read_config32(dev, 0x80);
-        val = val_old;
-        val |= (1<<3);
-        pci_write_config32(dev, 0x80, val);
-        val = pci_read_config32(dev, 0x80);
-        e0_later = !!(val & (1<<3));
-        if(e0_later) { // pre_e0 bit 3 always be 0 and can not be changed
-                pci_write_config32(dev, 0x80, val_old); // restore it
-        }
+	uint32_t val;
+	uint32_t val_old;
+	int e0_later;
+	if (nodeid == 0) {	// we don't need to do that for node 0 in core0/node0
+		return !is_cpu_pre_e0();
+	}
+	// d0 will be treated as e0 with this methods, but the d0 nb_cfg_54 always 0
+	device_t dev;
+	dev = dev_find_slot(0, PCI_DEVFN(0x18 + nodeid, 2));
+	if (!dev)
+		return 0;
+	val_old = pci_read_config32(dev, 0x80);
+	val = val_old;
+	val |= (1 << 3);
+	pci_write_config32(dev, 0x80, val);
+	val = pci_read_config32(dev, 0x80);
+	e0_later = !!(val & (1 << 3));
+	if (e0_later) {		// pre_e0 bit 3 always be 0 and can not be changed
+		pci_write_config32(dev, 0x80, val_old);	// restore it
+	}
 
-        return e0_later;
+	return e0_later;
 }
 #endif
 
 #if CONFIG_K8_REV_F_SUPPORT == 1
 int is_cpu_f0_in_bsp(int nodeid)
 {
-        uint32_t dword;
-        device_t dev;
-        dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 3));
-        dword = pci_read_config32(dev, 0xfc);
-        return (dword & 0xfff00) == 0x40f00;
+	uint32_t dword;
+	device_t dev;
+	dev = dev_find_slot(0, PCI_DEVFN(0x18 + nodeid, 3));
+	dword = pci_read_config32(dev, 0xfc);
+	return (dword & 0xfff00) == 0x40f00;
 }
 #endif
 
 #define MCI_STATUS 0x401
 
-static inline msr_t rdmsr_amd(unsigned index)
+static inline msr_t rdmsr_amd(u32 index)
 {
-        msr_t result;
-        __asm__ __volatile__ (
-                "rdmsr"
-                : "=a" (result.lo), "=d" (result.hi)
-                : "c" (index), "D" (0x9c5a203a)
-                );
-        return result;
+	msr_t result;
+	__asm__ __volatile__(
+		"rdmsr"
+		:"=a"(result.lo), "=d"(result.hi)
+		:"c"(index), "D"(0x9c5a203a)
+	);
+	return result;
 }
 
-static inline void wrmsr_amd(unsigned index, msr_t msr)
+static inline void wrmsr_amd(u32 index, msr_t msr)
 {
-        __asm__ __volatile__ (
-                "wrmsr"
-                : /* No outputs */
-                : "c" (index), "a" (msr.lo), "d" (msr.hi), "D" (0x9c5a203a)
-                );
+	__asm__ __volatile__(
+		"wrmsr"
+		:	/* No outputs */
+		:"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
+	);
 }
-
 
 #define MTRR_COUNT 8
-#define ZERO_CHUNK_KB 0x800UL /* 2M */
+#define ZERO_CHUNK_KB 0x800UL	/* 2M */
 #define TOLM_KB 0x400000UL
 
 struct mtrr {
@@ -119,11 +119,11 @@ struct mtrr_state {
 static void save_mtrr_state(struct mtrr_state *state)
 {
 	int i;
-	for(i = 0; i < MTRR_COUNT; i++) {
+	for (i = 0; i < MTRR_COUNT; i++) {
 		state->mtrrs[i].base = rdmsr(MTRRphysBase_MSR(i));
 		state->mtrrs[i].mask = rdmsr(MTRRphysMask_MSR(i));
 	}
-	state->top_mem  = rdmsr(TOP_MEM);
+	state->top_mem = rdmsr(TOP_MEM);
 	state->top_mem2 = rdmsr(TOP_MEM2);
 	state->def_type = rdmsr(MTRRdefType_MSR);
 }
@@ -133,34 +133,33 @@ static void restore_mtrr_state(struct mtrr_state *state)
 	int i;
 	disable_cache();
 
-	for(i = 0; i < MTRR_COUNT; i++) {
+	for (i = 0; i < MTRR_COUNT; i++) {
 		wrmsr(MTRRphysBase_MSR(i), state->mtrrs[i].base);
 		wrmsr(MTRRphysMask_MSR(i), state->mtrrs[i].mask);
 	}
-	wrmsr(TOP_MEM,         state->top_mem);
-	wrmsr(TOP_MEM2,        state->top_mem2);
+	wrmsr(TOP_MEM, state->top_mem);
+	wrmsr(TOP_MEM2, state->top_mem2);
 	wrmsr(MTRRdefType_MSR, state->def_type);
 
 	enable_cache();
 }
 
-
 #if 0
 static void print_mtrr_state(struct mtrr_state *state)
 {
 	int i;
-	for(i = 0; i < MTRR_COUNT; i++) {
+	for (i = 0; i < MTRR_COUNT; i++) {
 		printk(BIOS_DEBUG, "var mtrr %d: %08x%08x mask: %08x%08x\n",
-			i,
-			state->mtrrs[i].base.hi, state->mtrrs[i].base.lo,
-			state->mtrrs[i].mask.hi, state->mtrrs[i].mask.lo);
+		       i,
+		       state->mtrrs[i].base.hi, state->mtrrs[i].base.lo,
+		       state->mtrrs[i].mask.hi, state->mtrrs[i].mask.lo);
 	}
 	printk(BIOS_DEBUG, "top_mem:  %08x%08x\n",
-		state->top_mem.hi, state->top_mem.lo);
+	       state->top_mem.hi, state->top_mem.lo);
 	printk(BIOS_DEBUG, "top_mem2: %08x%08x\n",
-		state->top_mem2.hi, state->top_mem2.lo);
+	       state->top_mem2.hi, state->top_mem2.lo);
 	printk(BIOS_DEBUG, "def_type: %08x%08x\n",
-		state->def_type.hi, state->def_type.lo);
+	       state->def_type.hi, state->def_type.lo);
 }
 #endif
 
@@ -171,7 +170,7 @@ static void set_init_ecc_mtrrs(void)
 	disable_cache();
 
 	/* First clear all of the msrs to be safe */
-	for(i = 0; i < MTRR_COUNT; i++) {
+	for (i = 0; i < MTRR_COUNT; i++) {
 		msr_t zero;
 		zero.lo = zero.hi = 0;
 		wrmsr(MTRRphysBase_MSR(i), zero);
@@ -199,46 +198,47 @@ static void set_init_ecc_mtrrs(void)
 	enable_cache();
 }
 
-static inline void clear_2M_ram(unsigned long basek, struct mtrr_state *mtrr_state)
+static inline void clear_2M_ram(unsigned long basek,
+				struct mtrr_state *mtrr_state)
 {
-                unsigned long limitk;
-                unsigned long size;
-                void *addr;
+	unsigned long limitk;
+	unsigned long size;
+	void *addr;
 
-                /* Report every 64M */
-                if ((basek % (64*1024)) == 0) {
+	/* Report every 64M */
+	if ((basek % (64 * 1024)) == 0) {
 
-                        /* Restore the normal state */
-                        map_2M_page(0);
-                        restore_mtrr_state(mtrr_state);
-                        enable_lapic();
+		/* Restore the normal state */
+		map_2M_page(0);
+		restore_mtrr_state(mtrr_state);
+		enable_lapic();
 
-                        /* Print a status message */
-                        printk(BIOS_DEBUG, "%c", (basek >= TOLM_KB)?'+':'-');
+		/* Print a status message */
+		printk(BIOS_DEBUG, "%c", (basek >= TOLM_KB) ? '+' : '-');
 
-                        /* Return to the initialization state */
-                        set_init_ecc_mtrrs();
-                        disable_lapic();
+		/* Return to the initialization state */
+		set_init_ecc_mtrrs();
+		disable_lapic();
 
-                }
+	}
 
-                limitk = (basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1);
+	limitk = (basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1);
 #if 0
-		/* couldn't happen, memory must on 2M boundary */
-		if(limitk>endk) {
-			limitk = enk;
-		}
+	/* couldn't happen, memory must on 2M boundary */
+	if (limitk > endk) {
+		limitk = enk;
+	}
 #endif
-                size = (limitk - basek) << 10;
-                addr = map_2M_page(basek >> 11);
-                if (addr == MAPPING_ERROR) {
-                        printk(BIOS_ERR, "Cannot map page: %lx\n", basek >> 11);
-                        return;
-                }
+	size = (limitk - basek) << 10;
+	addr = map_2M_page(basek >> 11);
+	if (addr == MAPPING_ERROR) {
+		printk(BIOS_ERR, "Cannot map page: %lx\n", basek >> 11);
+		return;
+	}
 
-                /* clear memory 2M (limitk - basek) */
-                addr = (void *)(((uint32_t)addr) | ((basek & 0x7ff) << 10));
-                memset(addr, 0, size);
+	/* clear memory 2M (limitk - basek) */
+	addr = (void *)(((uint32_t) addr) | ((basek & 0x7ff) << 10));
+	memset(addr, 0, size);
 }
 
 static void init_ecc_memory(unsigned node_id)
@@ -271,13 +271,14 @@ static void init_ecc_memory(unsigned node_id)
 	/* Enable cache scrubbing at the lowest possible rate */
 	if (enable_scrubbing) {
 		pci_write_config32(f3_dev, SCRUB_CONTROL,
-			(SCRUB_84ms << 16) | (SCRUB_84ms << 8) | (SCRUB_NONE << 0));
+				   (SCRUB_84ms << 16) | (SCRUB_84ms << 8) |
+				   (SCRUB_NONE << 0));
 	} else {
 		pci_write_config32(f3_dev, SCRUB_CONTROL,
-			(SCRUB_NONE << 16) | (SCRUB_NONE << 8) | (SCRUB_NONE << 0));
+				   (SCRUB_NONE << 16) | (SCRUB_NONE << 8) |
+				   (SCRUB_NONE << 0));
 		printk(BIOS_DEBUG, "Scrubbing Disabled\n");
 	}
-
 
 	/* If ecc support is not enabled don't touch memory */
 	dcl = pci_read_config32(f2_dev, DRAM_CONFIG_LOW);
@@ -286,32 +287,33 @@ static void init_ecc_memory(unsigned node_id)
 		return;
 	}
 
-	startk = (pci_read_config32(f1_dev, 0x40 + (node_id*8)) & 0xffff0000) >> 2;
-	endk   = ((pci_read_config32(f1_dev, 0x44 + (node_id*8)) & 0xffff0000) >> 2) + 0x4000;
+	startk =
+	    (pci_read_config32(f1_dev, 0x40 + (node_id * 8)) & 0xffff0000) >> 2;
+	endk =
+	    ((pci_read_config32(f1_dev, 0x44 + (node_id * 8)) & 0xffff0000) >>
+	     2) + 0x4000;
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	unsigned long hole_startk = 0;
 
-	#if CONFIG_K8_REV_F_SUPPORT == 0
-        if (!is_cpu_pre_e0())
-	{
-	#endif
-
-                uint32_t val;
-                val = pci_read_config32(f1_dev, 0xf0);
-                if(val & 1) {
-        	        hole_startk = ((val & (0xff<<24)) >> 10);
-                }
-	#if CONFIG_K8_REV_F_SUPPORT == 0
-        }
-	#endif
+#if CONFIG_K8_REV_F_SUPPORT == 0
+	if (!is_cpu_pre_e0()) {
 #endif
 
+		uint32_t val;
+		val = pci_read_config32(f1_dev, 0xf0);
+		if (val & 1) {
+			hole_startk = ((val & (0xff << 24)) >> 10);
+		}
+#if CONFIG_K8_REV_F_SUPPORT == 0
+	}
+#endif
+#endif
 
 	/* Don't start too early */
 	begink = startk;
 	if (begink < (CONFIG_RAMTOP >> 10)) {
-		begink = (CONFIG_RAMTOP >>10);
+		begink = (CONFIG_RAMTOP >> 10);
 	}
 
 	printk(BIOS_DEBUG, "Clearing memory %luK - %luK: ", begink, endk);
@@ -326,26 +328,22 @@ static void init_ecc_memory(unsigned node_id)
 	/* Walk through 2M chunks and zero them */
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* here hole_startk can not be equal to begink, never. Also hole_startk is in 2M boundary, 64M? */
-        if ( (hole_startk != 0) && ((begink < hole_startk) && (endk>(4*1024*1024)))) {
-		        for(basek = begink; basek < hole_startk;
-        		        basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1)))
-		        {
-				clear_2M_ram(basek, &mtrr_state);
-                	}
-			for(basek = 4*1024*1024; basek < endk;
-                                basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1)))
-                        {
-                                clear_2M_ram(basek, &mtrr_state);
-                        }
-        }
-	else
+	if ((hole_startk != 0)
+	    && ((begink < hole_startk) && (endk > (4 * 1024 * 1024)))) {
+		for (basek = begink; basek < hole_startk;
+		     basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) {
+			clear_2M_ram(basek, &mtrr_state);
+		}
+		for (basek = 4 * 1024 * 1024; basek < endk;
+		     basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) {
+			clear_2M_ram(basek, &mtrr_state);
+		}
+	} else
 #endif
-        for(basek = begink; basek < endk;
-                basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1)))
-	{
-		clear_2M_ram(basek, &mtrr_state);
-	}
-
+		for (basek = begink; basek < endk;
+		     basek = ((basek + ZERO_CHUNK_KB) & ~(ZERO_CHUNK_KB - 1))) {
+			clear_2M_ram(basek, &mtrr_state);
+		}
 
 	/* Restore the normal state */
 	map_2M_page(0);
@@ -353,19 +351,19 @@ static void init_ecc_memory(unsigned node_id)
 	enable_lapic();
 
 	/* Set the scrub base address registers */
-	pci_write_config32(f3_dev, SCRUB_ADDR_LOW,  startk << 10);
+	pci_write_config32(f3_dev, SCRUB_ADDR_LOW, startk << 10);
 	pci_write_config32(f3_dev, SCRUB_ADDR_HIGH, startk >> 22);
 
 	/* Enable the scrubber? */
 	if (enable_scrubbing) {
 		/* Enable scrubbing at the lowest possible rate */
 		pci_write_config32(f3_dev, SCRUB_CONTROL,
-			(SCRUB_84ms << 16) | (SCRUB_84ms << 8) | (SCRUB_84ms << 0));
+				   (SCRUB_84ms << 16) | (SCRUB_84ms << 8) |
+				   (SCRUB_84ms << 0));
 	}
 
 	printk(BIOS_DEBUG, " done\n");
 }
-
 
 static inline void k8_errata(void)
 {
@@ -384,7 +382,7 @@ static inline void k8_errata(void)
 
 		/* Erratum 81... */
 		msr = rdmsr_amd(DC_CFG_MSR);
-		msr.lo |=  (1 << 10);
+		msr.lo |= (1 << 10);
 		wrmsr_amd(DC_CFG_MSR, msr);
 
 	}
@@ -432,12 +430,12 @@ static inline void k8_errata(void)
 	msr.hi |= 1 << (43 - 32);
 	wrmsr_amd(BU_CFG_MSR, msr);
 
-	if(is_cpu_d0()) {
-		/* Erratum 110 ...*/
+	if (is_cpu_d0()) {
+		/* Erratum 110 ... */
 		msr = rdmsr_amd(CPU_ID_HYPER_EXT_FEATURES);
-		msr.hi |=1;
+		msr.hi |= 1;
 		wrmsr_amd(CPU_ID_HYPER_EXT_FEATURES, msr);
- 	}
+	}
 #endif
 
 #if CONFIG_K8_REV_F_SUPPORT == 0
@@ -445,9 +443,9 @@ static inline void k8_errata(void)
 #endif
 	{
 		/* Erratum 110 ... */
-                msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
-                msr.hi |=1;
-                wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+		msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+		msr.hi |= 1;
+		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
 
 	/* Erratum 122 */
@@ -456,10 +454,10 @@ static inline void k8_errata(void)
 	wrmsr(HWCR_MSR, msr);
 
 #if CONFIG_K8_REV_F_SUPPORT == 1
-        /* Erratum 131... */
-        msr = rdmsr(NB_CFG_MSR);
-        msr.lo |= 1 << 20;
-        wrmsr(NB_CFG_MSR, msr);
+	/* Erratum 131... */
+	msr = rdmsr(NB_CFG_MSR);
+	msr.lo |= 1 << 20;
+	wrmsr(NB_CFG_MSR, msr);
 #endif
 
 }
@@ -474,7 +472,7 @@ static void model_fxx_init(device_t dev)
 	msr_t msr;
 	struct node_core_id id;
 #if CONFIG_LOGICAL_CPUS == 1
-	unsigned siblings;
+	u32 siblings;
 #endif
 
 #if CONFIG_K8_REV_F_SUPPORT == 1
@@ -484,7 +482,7 @@ static void model_fxx_init(device_t dev)
 #endif
 
 #if CONFIG_USBDEBUG_DIRECT
-	if(!ehci_debug_addr)
+	if (!ehci_debug_addr)
 		ehci_debug_addr = get_ehci_debug();
 	set_ehci_debug(0);
 #endif
@@ -498,7 +496,7 @@ static void model_fxx_init(device_t dev)
 	set_ehci_debug(ehci_debug_addr);
 #endif
 
-        /* Update the microcode */
+	/* Update the microcode */
 	model_fxx_update_microcode(dev->device);
 
 	disable_cache();
@@ -506,8 +504,8 @@ static void model_fxx_init(device_t dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for(i=0; i<5; i++) {
-		wrmsr(MCI_STATUS + (i*4),msr);
+	for (i = 0; i < 5; i++) {
+		wrmsr(MCI_STATUS + (i * 4), msr);
 	}
 
 	k8_errata();
@@ -526,34 +524,34 @@ static void model_fxx_init(device_t dev)
 	setup_lapic();
 
 #if CONFIG_LOGICAL_CPUS == 1
-        siblings = cpuid_ecx(0x80000008) & 0xff;
+	siblings = cpuid_ecx(0x80000008) & 0xff;
 
-       	if(siblings>0) {
-                msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
-                msr.lo |= 1 << 28;
-                wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
+	if (siblings > 0) {
+		msr = rdmsr_amd(CPU_ID_FEATURES_MSR);
+		msr.lo |= 1 << 28;
+		wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
 
-       	        msr = rdmsr_amd(LOGICAL_CPUS_NUM_MSR);
-                msr.lo = (siblings+1)<<16;
-       	        wrmsr_amd(LOGICAL_CPUS_NUM_MSR, msr);
+		msr = rdmsr_amd(LOGICAL_CPUS_NUM_MSR);
+		msr.lo = (siblings + 1) << 16;
+		wrmsr_amd(LOGICAL_CPUS_NUM_MSR, msr);
 
-                msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
-       	        msr.hi |= 1<<(33-32);
-               	wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
+		msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
+		msr.hi |= 1 << (33 - 32);
+		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
-
 #endif
 
-	id = get_node_core_id(read_nb_cfg_54()); // pre e0 nb_cfg_54 can not be set
+	id = get_node_core_id(read_nb_cfg_54());	// pre e0 nb_cfg_54 can not be set
 
 	/* Is this a bad location?  In particular can another node prefecth
 	 * data from this node before we have initialized it?
 	 */
-	if (id.coreid == 0) init_ecc_memory(id.nodeid); // only do it for core 0
+	if (id.coreid == 0)
+		init_ecc_memory(id.nodeid);	// only do it for core 0
 
 #if CONFIG_LOGICAL_CPUS==1
-        /* Start up my cpu siblings */
-//	if(id.coreid==0)  amd_sibling_init(dev); // Don't need core1 is already be put in the CPU BUS in bus_cpu_scan
+	/* Start up my cpu siblings */
+//      if(id.coreid==0)  amd_sibling_init(dev); // Don't need core1 is already be put in the CPU BUS in bus_cpu_scan
 #endif
 
 }

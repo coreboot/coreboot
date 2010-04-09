@@ -43,25 +43,23 @@ extern device_t get_node_pci(u32 nodeid, u32 fn);
 
 msr_t rdmsr_amd(u32 index)
 {
-	 msr_t result;
-	 __asm__ __volatile__ (
-		 "rdmsr"
-		 : "=a" (result.lo), "=d" (result.hi)
-		 : "c" (index), "D" (0x9c5a203a)
-		 );
-	 return result;
+	msr_t result;
+	__asm__ __volatile__(
+		"rdmsr"
+		:"=a"(result.lo), "=d"(result.hi)
+		:"c"(index), "D"(0x9c5a203a)
+	);
+	return result;
 }
-
 
 void wrmsr_amd(u32 index, msr_t msr)
 {
-	__asm__ __volatile__ (
+	__asm__ __volatile__(
 		"wrmsr"
-		: /* No outputs */
-		: "c" (index), "a" (msr.lo), "d" (msr.hi), "D" (0x9c5a203a)
-		);
+		:	/* No outputs */
+		:"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
+	);
 }
-
 
 static void model_10xxx_init(device_t dev)
 {
@@ -72,7 +70,7 @@ static void model_10xxx_init(device_t dev)
 	u32 siblings;
 #endif
 
-	id = get_node_core_id(read_nb_cfg_54()); /* nb_cfg_54 can not be set */
+	id = get_node_core_id(read_nb_cfg_54());	/* nb_cfg_54 can not be set */
 	printk(BIOS_DEBUG, "nodeid = %02d, coreid = %02d\n", id.nodeid, id.coreid);
 
 	/* Turn on caching if we haven't already */
@@ -85,10 +83,9 @@ static void model_10xxx_init(device_t dev)
 	/* zero the machine check error status registers */
 	msr.lo = 0;
 	msr.hi = 0;
-	for(i=0; i < 5; i++) {
-		wrmsr(MCI_STATUS + (i * 4),msr);
+	for (i = 0; i < 5; i++) {
+		wrmsr(MCI_STATUS + (i * 4), msr);
 	}
-
 
 	enable_cache();
 
@@ -107,7 +104,7 @@ static void model_10xxx_init(device_t dev)
 		wrmsr_amd(CPU_ID_FEATURES_MSR, msr);
 
 		msr = rdmsr_amd(CPU_ID_EXT_FEATURES_MSR);
-		msr.hi |= 1 << (33-32);
+		msr.hi |= 1 << (33 - 32);
 		wrmsr_amd(CPU_ID_EXT_FEATURES_MSR, msr);
 	}
 	printk(BIOS_DEBUG, "siblings = %02d, ", siblings);
@@ -115,7 +112,7 @@ static void model_10xxx_init(device_t dev)
 
 	/* DisableCf8ExtCfg */
 	msr = rdmsr(NB_CFG_MSR);
-	msr.hi &= ~(1 << (46-32));
+	msr.hi &= ~(1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
 
 	/* Write protect SMM space with SMMLOCK. */
@@ -128,6 +125,7 @@ static void model_10xxx_init(device_t dev)
 static struct device_operations cpu_dev_ops = {
 	.init = model_10xxx_init,
 };
+
 static struct cpu_device_id cpu_table[] = {
 //AMD_GH_SUPPORT
 	{ X86_VENDOR_AMD, 0x100f00 },		/* SH-F0 L1 */
@@ -144,7 +142,8 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_AMD, 0x100F80 },           /* HY-D0 */ 
 	{ 0, 0 },
 };
+
 static const struct cpu_driver model_10xxx __cpu_driver = {
-	.ops	  = &cpu_dev_ops,
+	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

@@ -79,8 +79,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
-	unsigned value;
 	uint32_t dword;
 	uint8_t byte;
 
@@ -102,9 +100,7 @@ static void sio_setup(void)
 	dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4);
 	dword |= (1<<16);
 	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4, dword);
-
 #endif
-
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)

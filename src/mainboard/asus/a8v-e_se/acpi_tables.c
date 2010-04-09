@@ -86,6 +86,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_rsdp_t *rsdp;
 	acpi_srat_t *srat;
 	acpi_rsdt_t *rsdt;
+	acpi_madt_t *madt;
 	acpi_mcfg_t *mcfg;
 	acpi_fadt_t *fadt;
 	acpi_facs_t *facs;

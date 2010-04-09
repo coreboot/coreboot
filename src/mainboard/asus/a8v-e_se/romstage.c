@@ -117,11 +117,6 @@ void soft_reset(void)
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
 
-void hard_reset(void)
-{
-	print_info("NO HARD RESET. FIX ME!\n");
-}
-
 unsigned int get_sbdn(unsigned bus)
 {
 	device_t dev;

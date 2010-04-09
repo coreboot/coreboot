@@ -21,7 +21,6 @@
  */
 
 #include <spd.h>
-#include <sdram_mode.h>
 #include <delay.h>
 #include "cn700.h"
 

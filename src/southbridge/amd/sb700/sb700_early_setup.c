@@ -20,6 +20,7 @@
 #ifndef  _SB700_EARLY_SETUP_C_
 #define  _SB700_EARLY_SETUP_C_
 
+#include <reset.h>
 #include <arch/cpu.h>
 #include "sb700.h"
 #include "sb700_smbus.c"
@@ -214,7 +215,7 @@ static void enable_fid_change_on_sb(u32 sbbusn, u32 sbdn)
 	pmio_write(0x89, 0x10);
 }
 
-static void hard_reset(void)
+void hard_reset(void)
 {
 	set_bios_reset();
 
@@ -223,7 +224,7 @@ static void hard_reset(void)
 	outb(0x0e, 0x0cf9);
 }
 
-static void soft_reset(void)
+void soft_reset(void)
 {
 	set_bios_reset();
 	/* link reset */

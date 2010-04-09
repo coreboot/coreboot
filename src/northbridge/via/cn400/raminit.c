@@ -29,7 +29,6 @@
 /* ported from Via VT8263 Code*/
 
 #include <spd.h>
-#include <sdram_mode.h>
 #include <delay.h>
 #include <cpu/x86/mtrr.h>
 #include "cn400.h"

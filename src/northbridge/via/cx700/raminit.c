@@ -20,7 +20,6 @@
 #include <types.h>
 #include <spd.h>
 #include <spd_ddr2.h>
-#include <sdram_mode.h>
 #include <delay.h>
 #include "cx700_registers.h"
 

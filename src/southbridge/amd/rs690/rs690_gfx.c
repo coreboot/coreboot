@@ -34,6 +34,7 @@
 #define CLK_CNTL_INDEX	0x8
 #define CLK_CNTL_DATA	0xC
 
+#if 0
 static u32 clkind_read(device_t dev, u32 index)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
@@ -41,6 +42,7 @@ static u32 clkind_read(device_t dev, u32 index)
 	*(u32*)(gfx_bar2+CLK_CNTL_INDEX) = index & 0x7F;
 	return *(u32*)(gfx_bar2+CLK_CNTL_DATA);
 }
+#endif
 
 static void clkind_write(device_t dev, u32 index, u32 data)
 {
@@ -73,8 +75,6 @@ static void rs690_gfx_read_resources(device_t dev)
 static void internal_gfx_pci_dev_init(struct device *dev)
 {
 	u16 deviceid, vendorid;
-	struct southbridge_amd_rs690_config *cfg =
-	    (struct southbridge_amd_rs690_config *)dev->chip_info;
 	deviceid = pci_read_config16(dev, PCI_DEVICE_ID);
 	vendorid = pci_read_config16(dev, PCI_VENDOR_ID);
 	printk(BIOS_INFO, "internal_gfx_pci_dev_init device=%x, vendor=%x.\n",

@@ -18,7 +18,6 @@
  */
 
 #include <spd.h>
-#include <sdram_mode.h>
 #include <delay.h>
 
 #if CONFIG_DEBUG_RAM_SETUP

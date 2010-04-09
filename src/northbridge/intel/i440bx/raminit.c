@@ -20,7 +20,6 @@
  */
 
 #include <spd.h>
-#include <sdram_mode.h>
 #include <delay.h>
 #include <stdlib.h>
 #include "i440bx.h"

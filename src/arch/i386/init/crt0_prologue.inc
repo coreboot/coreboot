@@ -6,18 +6,13 @@
  * published by the Free Software Foundation; version 2 of the License.
  */
 
-
 #include <arch/asm.h>
 #include <arch/intel.h>
 #include <console/loglevel.h>	
 
-#ifndef ASM_CONSOLE_LOGLEVEL
-#define ASM_CONSOLE_LOGLEVEL CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
-#endif
-
 /*
- * This is the entry code the code in .reset section
- * jumps to this address.
+ * This is the entry code.
+ * The code in the .reset section jumps to this address.
  *
  */
 .section ".rom.data", "a", @progbits

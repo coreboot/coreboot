@@ -3,6 +3,7 @@
  *  by yinghai.lu@amd.com
  */
 
+#include <reset.h>
 static void bcm5785_enable_rom(void)
 {
         unsigned char byte;

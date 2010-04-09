@@ -29,7 +29,6 @@ static void *smp_write_config_table(void *v)
 	static const char oem[8] = "LNXB    ";
 	static const char productid[12] = "A8V-E SE    ";
 	struct mp_config_table *mc;
-	unsigned int conforms = 0;
 	int bus_isa = 42;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);

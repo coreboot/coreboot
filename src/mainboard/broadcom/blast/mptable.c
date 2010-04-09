@@ -62,7 +62,6 @@ static void *smp_write_config_table(void *v)
 /*I/O APICs:	APIC ID	Version	State		Address*/
         {
                 device_t dev = 0;
-		int i;
 		struct resource *res;
 		for(i=0; i<3; i++) {
 	                dev = dev_find_device(0x1166, 0x0235, dev);

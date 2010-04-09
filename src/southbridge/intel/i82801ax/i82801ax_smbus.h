@@ -110,24 +110,21 @@ static int do_smbus_read_byte(unsigned device, unsigned address)
 	return byte;
 }
 
-/* This function is neither used nor tested by me (Corey Osgood), the author 
-(Yinghai) probably tested/used it on i82801er */
 static int do_smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 				unsigned data1, unsigned data2)
 {
-#warning "do_smbus_write_block is commented out"
-	print_err("Untested smbus_write_block called\n");
-#if 0
 	unsigned char global_control_register;
 	unsigned char global_status_register;
 	unsigned char byte;
 	unsigned char stat;
 	int i;
 
-	/* Clear the PM timeout flags, SECOND_TO_STS */
-	outw(inw(0x0400 + 0x66), 0x0400 + 0x66);
+	print_err("Untested smbus_write_block called\n");
 
-	if (smbus_wait_until_ready(SMBUS_IO_BASE) < 0) {
+	/* Clear the PM timeout flags, SECOND_TO_STS */
+	outw(inw(PMBASE_ADDR + 0x66), PMBASE_ADDR + 0x66);
+
+	if (smbus_wait_until_ready() < 0) {
 		return -2;
 	}
 
@@ -159,9 +156,8 @@ static int do_smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	     SMBUS_IO_BASE + SMBHSTCTL);
 
 	for (i = 0; i < length; i++) {
-
 		/* Poll for transaction completion */
-		if (smbus_wait_until_blk_done(SMBUS_IO_BASE) < 0) {
+		if (smbus_wait_until_blk_done() < 0) {
 			return -3;
 		}
 
@@ -179,5 +175,4 @@ static int do_smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 
 	print_debug("SMBUS Block complete\n");
 	return 0;
-#endif
 }

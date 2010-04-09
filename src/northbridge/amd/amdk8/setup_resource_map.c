@@ -112,7 +112,7 @@ static void setup_resource_map_x_offset(const unsigned int *register_values, int
 #endif
 }
 
-#if defined(SOUTHBRIDGE_NVIDIA_MCP55) || defined(SOUTHBRIDGE_NVIDIA_CK804)
+#if defined(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55) || defined(CONFIG_SOUTHBRIDGE_NVIDIA_CK804)
 static void setup_resource_map_x(const unsigned int *register_values, int max)
 {
 	int i;

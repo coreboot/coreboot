@@ -50,10 +50,10 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_HUB 0x71
-        int ret,i;
         unsigned device=(ctrl->channel0[0])>>8;
         smbus_send_byte(SMBUS_HUB, device);
 }
+
 #if 0
 static inline void change_i2c_mux(unsigned device)
 {
@@ -99,10 +99,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	static const uint16_t spd_addr[] = {
         	RC0|DIMM0, RC0|DIMM2, 0, 0,
                 RC0|DIMM1, RC0|DIMM3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
                 RC1|DIMM0, RC1|DIMM2, 0, 0,
                 RC1|DIMM1, RC1|DIMM3, 0, 0,
-#endif
 	};
 
         int needs_reset;

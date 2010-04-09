@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
+#include <arch/coreboot_tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
@@ -57,7 +58,7 @@ uint64_t uma_memory_base, uma_memory_size;
 * RRG4.2.3.1 GPM pins as Input
 * RRG4.2.3.2 GPM pins as Output
 ********************************************************/
-static void enable_onboard_nic()
+static void enable_onboard_nic(void)
 {
 	u8 byte;
 
@@ -94,7 +95,7 @@ static void enable_onboard_nic()
 * IDE_DMA66 is routed to GPIO 9. So we read Gpio 9 to
 * get the cable type, 40 pin or 80 pin?
 ********************************************************/
-static void get_ide_dma66()
+static void get_ide_dma66(void)
 {
 	u8 byte;
 	struct device *sm_dev;
@@ -120,7 +121,7 @@ static void get_ide_dma66()
 /*
  * set thermal config
  */
-static void set_thermal_config()
+static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;
@@ -185,11 +186,8 @@ static void set_thermal_config()
 * enable the dedicated function in dbm690t board.
 * This function called early than rs690_enable.
 *************************************************/
-void dbm690t_enable(device_t dev)
+static void dbm690t_enable(device_t dev)
 {
-	struct mainboard_config *mainboard =
-	    (struct mainboard_config *)dev->chip_info;
-
 	printk(BIOS_INFO, "Mainboard DBM690T Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)
@@ -249,6 +247,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);
 #endif
+	return 0;
 }
 
 struct chip_operations mainboard_ops = {

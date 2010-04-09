@@ -92,8 +92,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-
-
 static void update_ssdtx(void *ssdtx, int i)
 {
 	uint8_t *PCI;

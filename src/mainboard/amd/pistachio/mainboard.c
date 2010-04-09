@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
+#include <arch/coreboot_tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
@@ -57,7 +58,7 @@ uint64_t uma_memory_base, uma_memory_size;
 * The R77 (on BRASS) / R81 (on Bronze) is not load!
 * So NIC can work whether this function runs.
 ********************************************************/
-static void enable_onboard_nic()
+static void enable_onboard_nic(void)
 {
 	u8 byte;
 
@@ -77,7 +78,7 @@ static void enable_onboard_nic()
 /*
  * set thermal config
  */
-static void set_thermal_config()
+static void set_thermal_config(void)
 {
 	u8 byte, byte2;
 	u16 word;
@@ -256,11 +257,8 @@ static void set_thermal_config()
 * enable the dedicated function in pistachio board.
 * This function called early than rs690_enable.
 *************************************************/
-void pistachio_enable(device_t dev)
+static void pistachio_enable(device_t dev)
 {
-	struct mainboard_config *mainboard =
-	    (struct mainboard_config *)dev->chip_info;
-
 	printk(BIOS_INFO, "Mainboard Pistachio Enable. dev=0x%p\n", dev);
 
 #if (CONFIG_GFXUMA == 1)
@@ -320,6 +318,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 	lb_add_memory_range(mem, LB_MEM_RESERVED,
 		uma_memory_base, uma_memory_size);
 #endif
+	return 0;
 }
 
 struct chip_operations mainboard_ops = {

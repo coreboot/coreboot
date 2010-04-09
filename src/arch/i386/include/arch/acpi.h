@@ -407,7 +407,6 @@ extern u8 acpi_slp_type;
 void suspend_resume(void);
 void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
-void acpi_jmp_to_realm_wakeup(u32 linear_addr) __attribute__((regparm(0)));
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
 int acpi_get_sleep_type(void);

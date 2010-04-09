@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-#include "cpu/x86/car/copy_and_run.c"
+
 
 /* called from assembler code */
 void stage1_main(unsigned long bist);

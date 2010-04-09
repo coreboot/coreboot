@@ -40,3 +40,21 @@ void cbfs_and_run_core(const char *filename, unsigned ebp)
 		:: "a"(ebp), "D"(dst)
 	);
 }
+
+void __attribute__((regparm(0))) copy_and_run(unsigned cpu_reset);
+
+void __attribute__((regparm(0))) copy_and_run(unsigned cpu_reset)
+{
+	// FIXME fix input parameters instead normalizing them here.
+	if (cpu_reset == 1) cpu_reset = -1;
+	else cpu_reset = 0;
+
+	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ram", cpu_reset);
+}
+
+#if CONFIG_AP_CODE_IN_CAR == 1
+static void __attribute__((regparm(0))) copy_and_run_ap_code_in_car(unsigned ret_addr)
+{
+	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ap", ret_addr);
+}
+#endif

@@ -74,7 +74,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #endif
 #include "cpu/amd/dualcore/dualcore.c"
 
-#include "cpu/amd/car/copy_and_run.c"
+
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 

@@ -134,7 +134,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/sis/sis966/sis966_early_setup_ss.h"
 #include "southbridge/sis/sis966/sis966_early_setup_car.c"
 
-#include "cpu/amd/car/copy_and_run.c"
+
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 

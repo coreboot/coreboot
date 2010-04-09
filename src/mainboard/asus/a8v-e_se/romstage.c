@@ -111,7 +111,7 @@ void soft_reset(void)
 #include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/via/k8t890/k8t890_early_car.c"
-#include "cpu/amd/car/copy_and_run.c"
+
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"

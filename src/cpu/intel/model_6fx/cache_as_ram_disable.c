@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-#include "cpu/x86/car/copy_and_run.c"
+
 
 void real_main(unsigned long bist);
 

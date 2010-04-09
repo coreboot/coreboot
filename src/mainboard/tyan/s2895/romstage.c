@@ -101,7 +101,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/ck804/ck804_early_setup_car.c"
 
-#include "cpu/amd/car/copy_and_run.c"
+
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"

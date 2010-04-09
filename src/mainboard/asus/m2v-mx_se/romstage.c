@@ -96,7 +96,7 @@ void activate_spd_rom(const struct mem_controller *ctrl)
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
-#include "cpu/amd/car/copy_and_run.c"
+
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 

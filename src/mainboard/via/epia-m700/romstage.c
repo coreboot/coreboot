@@ -47,7 +47,7 @@
 
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
-#include "cpu/x86/car/copy_and_run.c"
+
 #include "wakeup.h"
 
 #include "superio/winbond/w83697hf/w83697hf_early_serial.c"

@@ -34,7 +34,7 @@
 
 #define DEACTIVATE_CAR 1
 #define DEACTIVATE_CAR_FILE "cpu/via/car/cache_as_ram_post.c"
-#include "cpu/x86/car/copy_and_run.c"
+
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "northbridge/via/cx700/cx700_early_smbus.c"

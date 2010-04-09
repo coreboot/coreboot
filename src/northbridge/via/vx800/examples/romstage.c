@@ -45,7 +45,7 @@
 
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
-#include "cpu/x86/car/copy_and_run.c"
+
 
 int acpi_is_wakeup_early_via_vx800(void)
 {

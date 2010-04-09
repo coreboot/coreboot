@@ -129,7 +129,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM6 0x56
 #define DIMM7 0x57
 
-#include "cpu/amd/car/copy_and_run.c"
+
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"

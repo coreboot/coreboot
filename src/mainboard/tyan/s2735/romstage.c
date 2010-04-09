@@ -63,7 +63,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/e7501/reset_test.c"
 #include "lib/generic_sdram.c"
 
-#include "cpu/x86/car/copy_and_run.c"
+
 
 void stage1_main(unsigned long bist)
 {

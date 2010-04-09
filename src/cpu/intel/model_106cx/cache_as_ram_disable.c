@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "cpu/x86/car/copy_and_run.c"
+
 
 /* called from assembler code */
 void stage1_main(unsigned long bist);

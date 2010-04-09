@@ -88,7 +88,7 @@ static inline int spd_read_byte(u32 device, u32 address)
 
 #include "cpu/amd/dualcore/dualcore.c"
 
-#include "cpu/amd/car/copy_and_run.c"
+
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"

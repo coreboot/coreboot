@@ -102,7 +102,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM2 0x52
 #define DIMM3 0x53
 
-#include "cpu/amd/car/copy_and_run.c"
+
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 

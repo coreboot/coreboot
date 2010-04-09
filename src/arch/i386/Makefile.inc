@@ -35,7 +35,7 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call 
 	fi
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ram $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
-	printf "    PAYLOAD    none (as specified by user)\n"
+	printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
 else
 	printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CBFS_PAYLOAD_COMPRESS_FLAG)\n"
 	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
@@ -112,9 +112,6 @@ ldscripts += $(src)/cpu/x86/32bit/entry32.lds
 ifeq ($(CONFIG_BIG_BOOTBLOCK),y)
 crt0s += $(src)/cpu/x86/16bit/reset16.inc
 ldscripts += $(src)/cpu/x86/16bit/reset16.lds
-ifeq ($(CONFIG_ROMCC),y)
-crt0s += $(src)/arch/i386/lib/cpu_reset.inc
-endif
 crt0s += $(src)/arch/i386/lib/id.inc
 ldscripts += $(src)/arch/i386/lib/id.lds
 endif

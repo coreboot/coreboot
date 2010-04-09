@@ -87,7 +87,7 @@ static const struct mem_controller ctrl = {
 	.channel0 = { 0x50 },
 };
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	unsigned long x;
 	device_t dev;

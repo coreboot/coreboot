@@ -7,21 +7,10 @@ config BOARD_VIA_EPIA_M700
 	select BOARD_HAS_FADT
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
-	select USE_PRINTK_IN_CAR
 
 config MAINBOARD_DIR
 	string
 	default via/epia-m700
-	depends on BOARD_VIA_EPIA_M700
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xffef0000
-	depends on BOARD_VIA_EPIA_M700
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
 	depends on BOARD_VIA_EPIA_M700
 
 config MAINBOARD_PART_NUMBER

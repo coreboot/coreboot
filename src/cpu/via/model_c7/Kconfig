@@ -3,3 +3,16 @@ config CPU_VIA_C7
 	select UDELAY_TSC
 	select MMX
 	select SSE2
+	select USE_PRINTK_IN_CAR
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffef0000
+	depends on CPU_VIA_C7
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+	depends on CPU_VIA_C7
+
+

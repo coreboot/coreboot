@@ -5,7 +5,7 @@ source src/cpu/x86/Kconfig
 
 config USE_DCACHE_RAM
 	bool
-	default n
+	default !ROMCC
 
 config DCACHE_RAM_BASE
 	hex

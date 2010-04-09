@@ -63,6 +63,20 @@ clear_fixed_var_mtrr:
 	wrmsr
 
 	jmp	clear_fixed_var_mtrr
+
+fixed_mtrr_msr:
+	.long	0x250, 0x258, 0x259
+	.long	0x268, 0x269, 0x26A
+	.long	0x26B, 0x26C, 0x26D
+	.long	0x26E, 0x26F
+
+var_mtrr_msr:
+	.long	0x200, 0x201, 0x202, 0x203
+	.long	0x204, 0x205, 0x206, 0x207
+	.long	0x208, 0x209, 0x20A, 0x20B
+	.long	0x20C, 0x20D, 0x20E, 0x20F
+	.long	0x000 /* NULL, end of table */
+
 clear_fixed_var_mtrr_out:
 	/* MTRRPhysBase */
 	movl	$0x200, %ecx
@@ -163,17 +177,113 @@ testok:	movb $0x40,%al
 	/* We need to set ebp ? No need */
 	movl	%esp, %ebp
 	pushl	%eax  /* bist */
-	call	stage1_main
-	/* We will not go back */
+	call	main
 
-fixed_mtrr_msr:
-	.long	0x250, 0x258, 0x259
-	.long	0x268, 0x269, 0x26A
-	.long	0x26B, 0x26C, 0x26D
-	.long	0x26E, 0x26F
-var_mtrr_msr:
-	.long	0x200, 0x201, 0x202, 0x203
-	.long	0x204, 0x205, 0x206, 0x207
-	.long	0x208, 0x209, 0x20A, 0x20B
-	.long	0x20C, 0x20D, 0x20E, 0x20F
-	.long	0x000 /* NULL, end of table */
+	/* 
+	 * TODO: Backup stack in CACHE_AS_RAM into MMX and SSE and after we
+	 *       get STACK up, we restore that. It is only needed if we
+	 *       want to go back.
+	 */
+	
+	/* We don't need cache as ram for now on */
+	/* disable cache */
+	movl    %cr0, %eax
+	orl    $(0x1<<30),%eax
+	movl    %eax, %cr0
+
+
+	/* Set the default memory type and disable fixed and enable variable MTRRs */
+	movl    $0x2ff, %ecx
+	//movl    $MTRRdefType_MSR, %ecx
+	xorl    %edx, %edx
+
+	/* Enable Variable and Disable Fixed MTRRs */
+	movl    $0x00000800, %eax
+	wrmsr
+
+	/* enable caching for first 1M using variable mtrr */
+	movl    $0x200, %ecx
+	xorl    %edx, %edx
+	movl     $(0 | 6), %eax
+	//movl     $(0 | MTRR_TYPE_WRBACK), %eax
+	wrmsr
+ 
+	/* enable cache for 0-7ffff, 80000-9ffff, e0000-fffff;
+	 * If 1M cacheable, then when S3 resume, there is stange color on
+	 * screen for 2 sec. suppose problem of a0000-dfffff and cache.
+	 * And in x86_setup_fixed_mtrrs()(mtrr.c), 0-256M is set cacheable.
+	 */
+
+	movl    $0x201, %ecx
+	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
+ 	movl    $((~(( 0 + 0x80000) - 1)) | 0x800), %eax
+	wrmsr
+	
+	movl    $0x202, %ecx
+	xorl    %edx, %edx
+	movl     $(0x80000 | 6), %eax
+	orl     $(0 | 6), %eax
+	wrmsr
+
+	movl    $0x203, %ecx
+	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
+ 	movl    $((~(( 0 + 0x20000) - 1)) | 0x800), %eax
+	wrmsr
+	
+	movl    $0x204, %ecx
+	xorl    %edx, %edx
+	movl     $(0xc0000 | 6), %eax
+	orl     $(0 | 6), %eax
+	wrmsr
+
+	movl    $0x205, %ecx
+	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
+	movl    $((~(( 0 + 0x40000) - 1)) | 0x800), %eax
+	wrmsr        
+	
+	/* cache CONFIG_XIP_ROM_BASE-SIZE to speedup coreboot code */
+	movl    $0x206, %ecx
+	xorl    %edx, %edx
+	movl     $CONFIG_XIP_ROM_BASE,%eax
+	orl     $(0 | 6), %eax
+	wrmsr
+
+	movl    $0x207, %ecx
+	xorl    %edx, %edx
+	movl     $CONFIG_XIP_ROM_SIZE,%eax
+	decl	%eax
+	notl	%eax
+	orl     $(0 | 0x800), %eax
+	wrmsr
+
+	/* enable cache */
+	movl    %cr0, %eax
+	andl    $0x9fffffff,%eax
+	movl    %eax, %cr0
+	invd
+
+	/* clear boot_complete flag */
+	xorl	%ebp, %ebp
+__main:
+	post_code(0x11)
+	cld			/* clear direction flag */
+	
+	movl	%ebp, %esi
+
+	/* FIXME: These values might have to change for suspend-to-ram.
+	 * the 0x00400000 was chosen as this is a place in memory that
+	 * should exist in all contemporary configurations (ie. large
+	 * enough RAM), but doesn't collide with anything coreboot does.
+	 * Other than that, it's arbitrary.
+	 */
+
+	movl	$0x4000000, %esp
+	movl	%esp, %ebp
+	pushl %esi
+	call copy_and_run
+
+.Lhlt:	
+	post_code(0xee)
+	hlt
+	jmp	.Lhlt
+

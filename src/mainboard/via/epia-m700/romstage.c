@@ -381,7 +381,7 @@ void EmbedComInit(void)
 }
 
 /* cache_as_ram.inc jumps to here. */
-void stage1_main(unsigned long bist)
+void main(unsigned long bist)
 {
 	unsigned cpu_reset = 0;
 	u16 boot_mode;
@@ -686,108 +686,5 @@ void stage1_main(unsigned long bist)
 
 #endif
 
-/*
- * The following code is copied from tyan\s2735\romstage.c.
- * Only the code around CLEAR_FIRST_1M_RAM is changed. Removed all the code
- * around CLEAR_FIRST_1M_RAM and #include "cpu/x86/car/cache_as_ram_post.c".
- * The CLEAR_FIRST_1M_RAM seems to make cpu/x86/car/cache_as_ram_post.c stop
- * at somewhere, and cpu/x86/car/cache_as_ram_post.c do not cache my
- * $CONFIG_XIP_ROM_BASE+SIZE area.
- *
- * Use #include "cpu/via/car/cache_as_ram_post.c". This version post.c have
- * some diff with x86-version.
- */
-#if 1
-	{
-		/*
-		 * Check value of esp to verify if we have enough ROM for
-		 * stack in Cache as RAM.
-		 */
-		unsigned v_esp;
-		__asm__ volatile ("movl %%esp, %0\n\t":"=a" (v_esp));
-#if CONFIG_USE_PRINTK_IN_CAR
-		printk(BIOS_DEBUG, "v_esp=%08x\n", v_esp);
-#else
-		print_debug("v_esp=");
-		print_debug_hex32(v_esp);
-		print_debug("\n");
-#endif
-	}
-#endif
-
-#if 1
-cpu_reset_x:
-
-	/* It seems that cpu_reset is not used before this, so I just reset
-	 * it, (this is because the s3 resume, setting in MTRR and copy data
-	 * may destroy stack.
-	 */
-	cpu_reset = 0;
-
-#if CONFIG_USE_PRINTK_IN_CAR
-	printk(BIOS_DEBUG, "cpu_reset = %08x\n", cpu_reset);
-#else
-	print_debug("cpu_reset = ");
-	print_debug_hex32(cpu_reset);
-	print_debug("\n");
-#endif
-
-	if (cpu_reset == 0)
-		print_debug("Clearing initial memory region: ");
-	print_debug("No cache as ram now - ");
-
-	/* Store cpu_reset to ebx. */
-	__asm__ volatile ("movl %0, %%ebx\n\t"::"a" (cpu_reset));
-
-	/*
-	 * Cancel these lines, CLEAR_FIRST_1M_RAM cause the
-	 * cpu/x86/car/cache_as_ram_post.c stop at somewhere.
-	 */
-#if 0
-	if (cpu_reset == 0) {
-#define CLEAR_FIRST_1M_RAM 1
-#include "cpu/via/car/cache_as_ram_post.c"
-	} else {
-#undef CLEAR_FIRST_1M_RAM 
-#include "cpu/via/car/cache_as_ram_post.c"
-	}
-#endif
-
-#include "cpu/via/car/cache_as_ram_post.c"
-/* #include "cpu/x86/car/cache_as_ram_post.c" */
-	__asm__ volatile (
-		/* Set new esp *//* before CONFIG_RAMBASE */
-		"subl %0, %%ebp\n\t"
-		"subl %0, %%esp\n\t"::
-		"a" ((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) - CONFIG_RAMBASE)
-	);
-
-	{
-		unsigned new_cpu_reset;
-
-		/* Get back cpu_reset from ebx. */
-		__asm__ volatile ("movl %%ebx, %0\n\t":"=a" (new_cpu_reset));
-
-		/* We can't go back anymore, we lost old stack data in CAR. */
-		if (new_cpu_reset == 0)
-			print_debug("Use Ram as Stack now - done\n");
-		else
-			print_debug("Use Ram as Stack now - \n");
-
-#if CONFIG_USE_PRINTK_IN_CAR
-		printk(BIOS_DEBUG, "new_cpu_reset = %08x\n", new_cpu_reset);
-#else
-		print_debug("new_cpu_reset = ");
-		print_debug_hex32(new_cpu_reset);
-		print_debug("\n");
-#endif
-
-		/* Copy and execute coreboot_ram. */
-		copy_and_run(new_cpu_reset);
-		/* We will not return. */
-	}
-#endif
-
-	print_debug("should not be here -\n");
 }
 

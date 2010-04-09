@@ -58,7 +58,7 @@ static const struct mem_controller ctrl = {
 	.channel0 = { 0x50 }, /* TODO: CN700 currently only supports 1 DIMM. */
 };
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);

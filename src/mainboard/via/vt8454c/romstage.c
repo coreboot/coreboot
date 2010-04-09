@@ -32,8 +32,6 @@
 #include "northbridge/via/cx700/raminit.h"
 #include "cpu/x86/bist.h"
 
-#define DEACTIVATE_CAR 1
-#define DEACTIVATE_CAR_FILE "cpu/via/car/cache_as_ram_post.c"
 
 #include "pc80/udelay_io.c"
 #include "lib/delay.c"
@@ -89,7 +87,7 @@ static void enable_shadow_ram(const struct mem_controller *ctrl)
 	pci_write_config8(PCI_DEV(0, 0, 3), 0x83, shadowreg);
 }
 
-static void main(unsigned long bist)
+void main(unsigned long bist)
 {
 	/* Set statically so it should work with cx700 as well */
 	static const struct mem_controller cx700[] = {
@@ -115,17 +113,5 @@ static void main(unsigned long bist)
 	sdram_set_registers(cx700);
 	enable_shadow_ram(cx700);
 	sdram_enable(cx700);
-
-#ifdef DEACTIVATE_CAR
-	print_debug("Deactivating CAR");
-#include DEACTIVATE_CAR_FILE
-	print_debug(" - Done.\n");
-#endif
-	copy_and_run(0);
-}
-
-void stage1_main(unsigned long bist)
-{
-	main(bist);
 }
 

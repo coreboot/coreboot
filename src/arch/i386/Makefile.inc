@@ -37,7 +37,7 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call 
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
 else
-	printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CBFS_PAYLOAD_COMPRESS_FLAG)\n"
+	printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
 	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_VGA_BIOS),y)
@@ -165,11 +165,7 @@ endif
 ifeq ($(CONFIG_CPU_INTEL_SOCKET_MFCBGA479),y)
 crt0s += $(src)/cpu/x86/car/cache_as_ram.inc
 endif
-# should be CONFIG_CPU_VIA_C7, but bcom/winnetp680, jetway/j7f24, via/epia-cn, via/pc2500e don't use CAR yet
-ifeq ($(CONFIG_BOARD_VIA_VT8454C),y)
-crt0s += $(src)/cpu/via/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_BOARD_VIA_EPIA_M700),y)
+ifeq ($(CONFIG_CPU_VIA_C7),y)
 crt0s += $(src)/cpu/via/car/cache_as_ram.inc
 endif
 # who else could use this?
@@ -208,7 +204,7 @@ endif
 ifeq ($(CONFIG_ROMCC),y)
 ROMCCFLAGS ?= -mcpu=p2 -O2
 
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(obj)/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	printf "    ROMCC      romstage.inc\n"
 	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(INCLUDES) $< -o $@
 else

@@ -8,7 +8,6 @@ config BOARD_VIA_VT8454C
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 #	select MMCONF_SUPPORT
-	select USE_PRINTK_IN_CAR
 	select HAVE_HARD_RESET
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
@@ -17,16 +16,6 @@ config BOARD_VIA_VT8454C
 config MAINBOARD_DIR
 	string
 	default via/vt8454c
-	depends on BOARD_VIA_VT8454C
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xffef0000
-	depends on BOARD_VIA_VT8454C
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x8000
 	depends on BOARD_VIA_VT8454C
 
 config MAINBOARD_PART_NUMBER

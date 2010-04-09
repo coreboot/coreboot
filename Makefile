@@ -274,8 +274,10 @@ CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
 CBFS_COMPRESS_FLAG:=l
 CBFS_PAYLOAD_COMPRESS_FLAG:=
+CBFS_PAYLOAD_COMPRESS_NAME:=none
 ifeq ($(CONFIG_COMPRESSED_PAYLOAD_LZMA),y)
 CBFS_PAYLOAD_COMPRESS_FLAG:=l
+CBFS_PAYLOAD_COMPRESS_NAME:=LZMA
 endif
 
 coreboot: prepare $(obj)/coreboot.rom

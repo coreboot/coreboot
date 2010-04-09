@@ -17,10 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef ASM_CONSOLE_LOGLEVEL
-#define ASM_CONSOLE_LOGLEVEL CONFIG_MAXIMUM_CONSOLE_LOGLEVEL
-#endif
-
 #define	LX_STACK_BASE		CONFIG_DCACHE_RAM_BASE		/* this is where the DCache will be mapped and be used as stack, It would be cool if it was the same base as coreboot normal stack */
 #define	LX_STACK_END		LX_STACK_BASE+(CONFIG_DCACHE_RAM_SIZE-1)
 
@@ -204,13 +200,11 @@ done_cache_as_ram_main:
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp
 __main:
-
-	/*
-	 *	Copy data into RAM and clear the BSS. Since these segments
-	 *	isn\'t really that big we just copy/clear using bytes, not
-	 *	double words.
-	 */
 	post_code(0x11)		/* post 11 */
+
+	/* TODO For suspend/resume the cache will have to live between
+	 * CONFIG_RAMBASE and CONFIG_RAMTOP
+	 */
 
 	cld				/* clear direction flag */
 
@@ -220,67 +214,10 @@ __main:
 	 */
 	movl	%ebp, %esi
 	pushl	%esi
-	pushl $str_coreboot_ram_name
-	call cbfs_and_run_core
+	call copy_and_run
 
 .Lhlt:
 	post_code(0xee)	/* post fail ee */
 	hlt
 	jmp	.Lhlt
 
-#ifdef __CRT_CONSOLE_TX_STRING
-	/* Uses esp, ebx, ax, dx  */
-crt_console_tx_string:
-	mov	(%ebx), %al
-	inc	%ebx
-	cmp	$0, %al
-	jne	9f
-	RETSP
-9:
-/* Base Address */
-#ifndef CONFIG_TTYS0_BASE
-#define CONFIG_TTYS0_BASE	0x3f8
-#endif
-/* Data */
-#define TTYS0_RBR (CONFIG_TTYS0_BASE+0x00)
-
-/* Control */
-#define TTYS0_TBR TTYS0_RBR
-#define TTYS0_IER (CONFIG_TTYS0_BASE+0x01)
-#define TTYS0_IIR (CONFIG_TTYS0_BASE+0x02)
-#define TTYS0_FCR TTYS0_IIR
-#define TTYS0_LCR (CONFIG_TTYS0_BASE+0x03)
-#define TTYS0_MCR (CONFIG_TTYS0_BASE+0x04)
-#define TTYS0_DLL TTYS0_RBR
-#define TTYS0_DLM TTYS0_IER
-
-/* Status */
-#define TTYS0_LSR (CONFIG_TTYS0_BASE+0x05)
-#define TTYS0_MSR (CONFIG_TTYS0_BASE+0x06)
-#define TTYS0_SCR (CONFIG_TTYS0_BASE+0x07)
-
-	mov	%al, %ah
-10:	mov	$TTYS0_LSR, %dx
-	inb	%dx, %al
-	test	$0x20, %al
-	je	10b
-	mov	$TTYS0_TBR, %dx
-	mov	%ah, %al
-	outb	%al, %dx
-
-	jmp crt_console_tx_string
-#endif /* __CRT_CONSOLE_TX_STRING */
-
-#if defined(CONSOLE_DEBUG_TX_STRING) && (ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG)
-.section ".rom.data"
-#if CONFIG_COMPRESS
-str_copying_to_ram:  .string "Uncompressing coreboot to ram.\r\n"
-#else
-str_copying_to_ram:  .string "Copying coreboot to ram.\r\n"
-#endif
-str_pre_main:        .string "Jumping to coreboot.\r\n"
-.previous
-
-#endif /* ASM_CONSOLE_LOGLEVEL > BIOS_DEBUG */
-str_coreboot_ram_name:	.ascii CONFIG_CBFS_PREFIX
-			.string "/coreboot_ram"

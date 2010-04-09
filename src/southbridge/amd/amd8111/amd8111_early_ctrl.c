@@ -1,3 +1,5 @@
+#include <reset.h>
+
 /* by yhlu 2005.10 */
 static unsigned get_sbdn(unsigned bus)
 {

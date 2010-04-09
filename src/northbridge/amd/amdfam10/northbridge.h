@@ -20,6 +20,6 @@
 #ifndef NORTHBRIDGE_AMD_AMDFAM10_H
 #define NORTHBRIDGE_AMD_AMDFAM10_H
 
-extern u32 amdfam10_scan_root_bus(device_t root, u32 max);
+u32 amdfam10_scan_root_bus(device_t root, u32 max);
 
 #endif /* NORTHBRIDGE_AMD_AMDFAM10_H */

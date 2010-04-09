@@ -166,7 +166,7 @@ static void setHtControlRegisterBits(SBDFO reg, u8 hiBit, u8 loBit, u32 *pValue)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * writeRoutingTable(u8 node, u8 target, u8 Link, cNorthBridge *nb)
  *
  *  Description:
@@ -188,7 +188,7 @@ static void setHtControlRegisterBits(SBDFO reg, u8 hiBit, u8 loBit, u32 *pValue)
  * ---------------------------------------------------------------------------------------
  */
 
-void writeRoutingTable(u8 node, u8 target, u8 link, cNorthBridge *nb)
+static void writeRoutingTable(u8 node, u8 target, u8 link, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 temp = (nb->selfRouteResponseMask | nb->selfRouteRequestMask) << (link + 1);
@@ -206,7 +206,7 @@ void writeRoutingTable(u8 node, u8 target, u8 link, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * writeNodeID(u8 node, u8 nodeID, cNorthBridge *nb)
  *
  *  Description:
@@ -220,7 +220,7 @@ void writeRoutingTable(u8 node, u8 target, u8 link, cNorthBridge *nb)
  * ---------------------------------------------------------------------------------------
  */
 
-void writeNodeID(u8 node, u8 nodeID, cNorthBridge *nb)
+static void writeNodeID(u8 node, u8 nodeID, cNorthBridge *nb)
 {
 	u32 temp = nodeID;
 	ASSERT((node < nb->maxNodes) && (nodeID < nb->maxNodes));
@@ -234,7 +234,7 @@ void writeNodeID(u8 node, u8 nodeID, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * readDefLnk(u8 node, cNorthBridge *nb)
  *
  *  Description:
@@ -252,7 +252,7 @@ void writeNodeID(u8 node, u8 nodeID, cNorthBridge *nb)
  * ---------------------------------------------------------------------------------------
  */
 
-u8 readDefLnk(u8 node, cNorthBridge *nb)
+static u8 readDefLnk(u8 node, cNorthBridge *nb)
 {
 	u32 deflink = 0;
 	SBDFO licr;
@@ -273,7 +273,7 @@ u8 readDefLnk(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * enableRoutingTables(u8 node, cNorthBridge *nb)
  *
  *  Description:
@@ -286,7 +286,7 @@ u8 readDefLnk(u8 node, cNorthBridge *nb)
  * ---------------------------------------------------------------------------------------
  */
 
-void enableRoutingTables(u8 node, cNorthBridge *nb)
+static void enableRoutingTables(u8 node, cNorthBridge *nb)
 {
 	u32 temp = 0;
 	ASSERT((node < nb->maxNodes));
@@ -301,7 +301,7 @@ void enableRoutingTables(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static BOOL
  * verifyLinkIsCoherent(u8 node, u8 Link, cNorthBridge *nbk)
  *
  *  Description:
@@ -322,7 +322,7 @@ void enableRoutingTables(u8 node, cNorthBridge *nb)
  * ---------------------------------------------------------------------------------------
  */
 
-BOOL verifyLinkIsCoherent(u8 node, u8 link, cNorthBridge *nb)
+static BOOL verifyLinkIsCoherent(u8 node, u8 link, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 
@@ -345,7 +345,7 @@ BOOL verifyLinkIsCoherent(u8 node, u8 link, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * bool
+ * static bool
  * readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -371,7 +371,7 @@ BOOL verifyLinkIsCoherent(u8 node, u8 link, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-BOOL readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBridge *nb)
+static BOOL readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBridge *nb)
 {
 	u32 before, after, unconnected, crc;
 	SBDFO linkBase;
@@ -436,7 +436,7 @@ BOOL readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * u8
+ * static u8
  * readToken(u8 node, cNorthBridge *nb)
  *
  *  Description:
@@ -452,7 +452,7 @@ BOOL readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-u8 readToken(u8 node, cNorthBridge *nb)
+static u8 readToken(u8 node, cNorthBridge *nb)
 {
 	u32 temp;
 
@@ -472,7 +472,7 @@ u8 readToken(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * writeToken(u8 node, u8 Value, cNorthBridge *nb)
  *
  *  Description:
@@ -488,7 +488,7 @@ u8 readToken(u8 node, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void writeToken(u8 node, u8 value, cNorthBridge *nb)
+static void writeToken(u8 node, u8 value, cNorthBridge *nb)
 {
 	u32 temp = value;
 	ASSERT((node < nb->maxNodes));
@@ -504,7 +504,7 @@ void writeToken(u8 node, u8 value, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * u8
+ * static u8
  * fam0FGetNumCoresOnNode(u8 node, cNorthBridge *nb)
  *
  *  Description:
@@ -517,7 +517,7 @@ void writeToken(u8 node, u8 value, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-u8 fam0FGetNumCoresOnNode(u8 node, cNorthBridge *nb)
+static u8 fam0FGetNumCoresOnNode(u8 node, cNorthBridge *nb)
 {
 	u32 temp;
 
@@ -536,7 +536,7 @@ u8 fam0FGetNumCoresOnNode(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * u8
+ * static u8
  * fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
  *
  *  Description:
@@ -549,7 +549,7 @@ u8 fam0FGetNumCoresOnNode(u8 node, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
+static u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
 {
 	u32 temp, leveling, cores;
 	u8 i;
@@ -583,7 +583,7 @@ u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * setTotalNodesAndCores(u8 node, u8 totalNodes, u8 totalCores, cNorthBridge *nb)
  *
  *  Description:
@@ -597,7 +597,7 @@ u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void setTotalNodesAndCores(u8 node, u8 totalNodes, u8 totalCores, cNorthBridge *nb)
+static void setTotalNodesAndCores(u8 node, u8 totalNodes, u8 totalCores, cNorthBridge *nb)
 {
 	SBDFO nodeIDReg;
 	u32 temp;
@@ -621,7 +621,7 @@ void setTotalNodesAndCores(u8 node, u8 totalNodes, u8 totalCores, cNorthBridge *
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * limitNodes(u8 node, cNorthBridge *nb)
  *
  *  Description:
@@ -633,7 +633,7 @@ void setTotalNodesAndCores(u8 node, u8 totalNodes, u8 totalCores, cNorthBridge *
  *
  * ---------------------------------------------------------------------------------------
  */
-void limitNodes(u8 node, cNorthBridge *nb)
+static void limitNodes(u8 node, cNorthBridge *nb)
 {
 	u32 temp = 1;
 	ASSERT((node < nb->maxNodes));
@@ -647,7 +647,7 @@ void limitNodes(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * writeFullRoutingTable(u8 node, u8 target, u8 reqLink, u8 rspLink, u32 BClinks, cNorthBridge *nb)
  *
  *  Description:
@@ -664,7 +664,7 @@ void limitNodes(u8 node, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void writeFullRoutingTable(u8 node, u8 target, u8 reqLink, u8 rspLink, u32 bClinks, cNorthBridge *nb)
+static void writeFullRoutingTable(u8 node, u8 target, u8 reqLink, u8 rspLink, u32 bClinks, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 value = 0;
@@ -732,7 +732,7 @@ static u32 makeKey(u8 node)
 
 /**----------------------------------------------------------------------------------------
  *
- * BOOL
+ * static BOOL
  * isCompatible(u8 currentNode, cNorthBridge *nb)
  *
  *  Description:
@@ -747,14 +747,14 @@ static u32 makeKey(u8 node)
  *
  * ---------------------------------------------------------------------------------------
  */
-BOOL isCompatible(u8 node, cNorthBridge *nb)
+static BOOL isCompatible(u8 node, cNorthBridge *nb)
 {
 	return (makeKey(node) == nb->compatibleKey);
 }
 
 /**----------------------------------------------------------------------------------------
  *
- * BOOL
+ * static BOOL
  * fam0fIsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -770,7 +770,7 @@ BOOL isCompatible(u8 node, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-BOOL fam0fIsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
+static BOOL fam0fIsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 temp;
@@ -808,7 +808,7 @@ BOOL fam0fIsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * BOOL
+ * static BOOL
  * fam10IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -824,7 +824,7 @@ BOOL fam0fIsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-BOOL fam10IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
+static BOOL fam10IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 temp;
@@ -861,7 +861,7 @@ BOOL fam10IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * fam0fStopLink(u8 currentNode, u8 currentLink, cNorthBridge *nb)
  *
  *  Description:
@@ -874,7 +874,7 @@ BOOL fam10IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void fam0fStopLink(u8 node, u8 link, cNorthBridge *nb)
+static void fam0fStopLink(u8 node, u8 link, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 temp;
@@ -892,7 +892,7 @@ void fam0fStopLink(u8 node, u8 link, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * commonVoid()
  *
  *  Description:
@@ -903,13 +903,13 @@ void fam0fStopLink(u8 node, u8 link, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void commonVoid()
+static void commonVoid(void)
 {
 }
 
 /**----------------------------------------------------------------------------------------
  *
- * BOOL
+ * static BOOL
  * commonReturnFalse()
  *
  *  Description:
@@ -919,7 +919,7 @@ void commonVoid()
  *	     @param[out]    BOOL     result	   = false
  * ---------------------------------------------------------------------------------------
  */
-BOOL commonReturnFalse()
+static BOOL commonReturnFalse(void)
 {
 	return 0;
 }
@@ -931,7 +931,7 @@ BOOL commonReturnFalse()
 
 /**----------------------------------------------------------------------------------------
  *
- * u8
+ * static u8
  * readSbLink(cNorthBridge *nb)
  *
  *  Description:
@@ -943,7 +943,7 @@ BOOL commonReturnFalse()
  *
  * ---------------------------------------------------------------------------------------
  */
-u8 readSbLink(cNorthBridge *nb)
+static u8 readSbLink(cNorthBridge *nb)
 {
 	u32 temp;
 	AmdPCIReadBits(MAKE_SBDFO(makePCISegmentFromNode(0),
@@ -957,7 +957,7 @@ u8 readSbLink(cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * BOOL
+ * static BOOL
  * verifyLinkIsNonCoherent(u8 node, u8 link, cNorthBridge *nb)
  *
  *  Description:
@@ -977,7 +977,7 @@ u8 readSbLink(cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-BOOL verifyLinkIsNonCoherent(u8 node, u8 link, cNorthBridge *nb)
+static BOOL verifyLinkIsNonCoherent(u8 node, u8 link, cNorthBridge *nb)
 {
 	u32 linkType;
 	SBDFO linkBase;
@@ -995,7 +995,7 @@ BOOL verifyLinkIsNonCoherent(u8 node, u8 link, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * ht3SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 targetLink, sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -1012,7 +1012,7 @@ BOOL verifyLinkIsNonCoherent(u8 node, u8 link, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void  ht3SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 targetLink, sMainData *pDat, cNorthBridge *nb)
+static void  ht3SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode, u8 targetLink, sMainData *pDat, cNorthBridge *nb)
 {
 	u8 curNode;
 	SBDFO linkBase;
@@ -1094,7 +1094,7 @@ static void ht1SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode
 
 /**----------------------------------------------------------------------------------------
  *
- * u8
+ * static u8
  * convertBitsToWidth(u8 value, cNorthBridge *nb)
  *
  *  Description:
@@ -1107,7 +1107,7 @@ static void ht1SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNode
  *
  * ---------------------------------------------------------------------------------------
  */
-u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
+static u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
 {
 	switch(value) {
 	case 1: return 16;
@@ -1121,7 +1121,7 @@ u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * u8
+ * static u8
  * convertWidthToBits(u8 value, cNorthBridge *nb)
  *
  *  Description:
@@ -1134,7 +1134,7 @@ u8 convertBitsToWidth(u8 value, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-u8 convertWidthToBits(u8 value, cNorthBridge *nb)
+static u8 convertWidthToBits(u8 value, cNorthBridge *nb)
 {
 	switch (value) {
 	case 16: return 1;
@@ -1148,7 +1148,7 @@ u8 convertWidthToBits(u8 value, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * u16
+ * static u16
  * ht1NorthBridgeFreqMask(u8 NodeID, cNorthBridge *nb)
  *
  *  Description:
@@ -1162,7 +1162,7 @@ u8 convertWidthToBits(u8 value, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-u16 ht1NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
+static u16 ht1NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
 {
 	/* only up to HT1 speeds */
 	return (HT_FREQUENCY_LIMIT_HT1_ONLY);
@@ -1170,7 +1170,7 @@ u16 ht1NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * u16
+ * static u16
  * fam10NorthBridgeFreqMask(u8 NodeID, cNorthBridge *nb)
  *
  *  Description:
@@ -1184,7 +1184,7 @@ u16 ht1NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-u16 fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
+static u16 fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
 {
 	u8 nbCOF;
 	u16 supported;
@@ -1225,7 +1225,7 @@ u16 fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * gatherLinkData(sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -1238,7 +1238,7 @@ u16 fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
+static void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
 {
 	u8 i;
 	SBDFO linkBase;
@@ -1301,7 +1301,7 @@ void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * setLinkData(sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -1314,7 +1314,7 @@ void gatherLinkData(sMainData *pDat, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void setLinkData(sMainData *pDat, cNorthBridge *nb)
+static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 {
 	u8 i;
 	SBDFO linkBase;
@@ -1614,7 +1614,7 @@ static void fam0fWriteHTLinkDatBufferAlloc(u8 node, u8 link, u8 reqD, u8 preqD, 
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * ht3WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
  *
  *  Description:
@@ -1627,7 +1627,7 @@ static void fam0fWriteHTLinkDatBufferAlloc(u8 node, u8 link, u8 reqD, u8 preqD, 
  *
  * ---------------------------------------------------------------------------------------
  */
-void ht3WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
+static void ht3WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 temp;
@@ -1670,7 +1670,7 @@ void ht3WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * ht1WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
  *
  *  Description:
@@ -1685,7 +1685,7 @@ void ht3WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void ht1WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
+static void ht1WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 route01, route10;
@@ -1779,7 +1779,7 @@ void ht1WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -1793,7 +1793,7 @@ void ht1WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
+static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u8 i;
@@ -1976,7 +1976,7 @@ void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 
 /**----------------------------------------------------------------------------------------
  *
- * void
+ * static void
  * fam10BufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
  *
  *  Description:
@@ -1990,7 +1990,7 @@ void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
  *
  * ---------------------------------------------------------------------------------------
  */
-void fam10BufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
+static void fam10BufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
 {
 	u32 temp;
 	SBDFO currentPtr;

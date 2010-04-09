@@ -1183,7 +1183,7 @@ exitGetAddr:
 }
 
 
-void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
+static void mct_Write1LTestPattern_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat,
 				u32 TestAddr, u8 pattern)
 {

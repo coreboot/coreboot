@@ -1,6 +1,7 @@
 /* 2005.6 by yhlu
  * 2006.3 yhlu add copy data from CAR to ram
  */
+#include <arch/stages.h>
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
 static inline void print_debug_pcar(const char *strval, uint32_t val)

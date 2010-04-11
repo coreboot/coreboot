@@ -75,25 +75,18 @@ static void do_ram_command(u32 command)
 
 static void ram_read32(u8 dimm_start, u32 offset)
 {
-#if CONFIG_DEBUG_RAM_SETUP
+	u32 reg32, base_addr = 32 * 1024 * 1024 * dimm_start;
 	if (offset == 0x55aa55aa) {
-		PRINTK_DEBUG("  Reading RAM at 0x%08x => 0x%08x\n", (dimm_start * 32 * 1024 * 1024), read32(dimm_start * 32 * 1024 * 1024));
-		PRINTK_DEBUG("  Writing RAM at 0x%08x <= 0x%08x\n", (dimm_start * 32 * 1024 * 1024), offset);
-		write32(dimm_start * 32 * 1024 * 1024, offset);
-		PRINTK_DEBUG("  Reading RAM at 0x%08x => 0x%08x\n", (dimm_start * 32 * 1024 * 1024), read32(dimm_start * 32 * 1024 * 1024));
+		reg32 = read32(base_addr);
+		PRINTK_DEBUG("  Reading RAM at 0x%08x => 0x%08x\n", base_addr, reg32);
+		PRINTK_DEBUG("  Writing RAM at 0x%08x <= 0x%08x\n", base_addr, offset);
+		write32(base_addr, offset);
+		reg32 = read32(base_addr);
+		PRINTK_DEBUG("  Reading RAM at 0x%08x => 0x%08x\n", base_addr, reg32);
 	} else {
-		PRINTK_DEBUG(" to 0x%08x\n", (dimm_start * 32 * 1024 * 1024) + offset);
-		read32((dimm_start * 32 * 1024 * 1024) + offset);
+		PRINTK_DEBUG(" to 0x%08x\n", base_addr + offset);
+		read32(base_addr + offset);
 	}
-#else
-	if (offset == 0x55aa55aa) {
-		read32(dimm_start * 32 * 1024 * 1024);
-		write32(dimm_start * 32 * 1024 * 1024, offset);
-		read32(dimm_start * 32 * 1024 * 1024);
-	} else {
-		read32((dimm_start * 32 * 1024 * 1024) + offset);
-	}
-#endif
 }
 
 static void initialize_dimm_rows(void)

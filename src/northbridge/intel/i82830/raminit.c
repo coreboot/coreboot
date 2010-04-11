@@ -75,6 +75,7 @@ static void do_ram_command(u32 command)
 
 static void ram_read32(u8 dimm_start, u32 offset)
 {
+#if CONFIG_DEBUG_RAM_SETUP
 	if (offset == 0x55aa55aa) {
 		PRINTK_DEBUG("  Reading RAM at 0x%08x => 0x%08x\n", (dimm_start * 32 * 1024 * 1024), read32(dimm_start * 32 * 1024 * 1024));
 		PRINTK_DEBUG("  Writing RAM at 0x%08x <= 0x%08x\n", (dimm_start * 32 * 1024 * 1024), offset);
@@ -84,6 +85,15 @@ static void ram_read32(u8 dimm_start, u32 offset)
 		PRINTK_DEBUG(" to 0x%08x\n", (dimm_start * 32 * 1024 * 1024) + offset);
 		read32((dimm_start * 32 * 1024 * 1024) + offset);
 	}
+#else
+	if (offset == 0x55aa55aa) {
+		read32(dimm_start * 32 * 1024 * 1024);
+		write32(dimm_start * 32 * 1024 * 1024, offset);
+		read32(dimm_start * 32 * 1024 * 1024);
+	} else {
+		read32((dimm_start * 32 * 1024 * 1024) + offset);
+	}
+#endif
 }
 
 static void initialize_dimm_rows(void)
@@ -405,7 +415,7 @@ Public interface.
 
 static void sdram_set_registers(void)
 {
-	PRINTK_DEBUG("Setting initial sdram registers....\n");
+	printk(BIOS_DEBUG, "Setting initial SDRAM registers....\n");
 
 	/* Calculate the value for DRT DRAM Timing Register */
 	set_dram_timing();
@@ -419,7 +429,7 @@ static void sdram_set_registers(void)
 	/* Setup DRAM Row Attribute Registers */
 	set_dram_row_attributes();
 
-	PRINTK_DEBUG("Initial sdram registers have been set.\n");
+	printk(BIOS_DEBUG, "Initial SDRAM registers have been set.\n");
 }
 
 static void northbridge_set_registers(void)
@@ -427,7 +437,7 @@ static void northbridge_set_registers(void)
 	u16 value;
 	int igd_memory = 0;
 
-	PRINTK_DEBUG("Setting initial nothbridge registers....\n");
+	printk(BIOS_DEBUG, "Setting initial Nothbridge registers....\n");
 
 	/* Set the value for Fixed DRAM Hole Control Register */
 	pci_write_config8(NORTHBRIDGE, FDHC, 0x00);
@@ -473,7 +483,7 @@ static void northbridge_set_registers(void)
 	value |= 1; // 64MB aperture
 	pci_write_config16(NORTHBRIDGE, GCC1, value);
 
-	PRINTK_DEBUG("Initial northbridge registers have been set.\n");
+	printk(BIOS_DEBUG, "Initial Northbridge registers have been set.\n");
 }
 
 static void sdram_initialize(void)

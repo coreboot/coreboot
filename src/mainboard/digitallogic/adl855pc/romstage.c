@@ -57,7 +57,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/i855/reset_test.c"
 #include "lib/generic_sdram.c"
 
-static void main(unsigned long bist)
+
+#include "cpu/intel/model_6bx/cache_as_ram_disable.c"
+
+void real_main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{
@@ -67,7 +70,6 @@ static void main(unsigned long bist)
 	};
 
 	if (bist == 0) {
-		early_mtrr_init();
 #if 0
 		enable_lapic();
 		init_timer();
@@ -80,7 +82,6 @@ static void main(unsigned long bist)
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-	
 
 #if 0
 	print_pci_devices();
@@ -89,50 +90,25 @@ static void main(unsigned long bist)
 	if(!bios_reset_detected()) {
         	enable_smbus();
 #if 0
-      	dump_spd_registers(&memctrl[0]);
-	//        	dump_smbus_registers();
+		dump_spd_registers(&memctrl[0]);
+		dump_smbus_registers();
 #endif
-
 		memreset_setup();
 
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 
 	} 
-#if 0
-	else {
-		        /* clear memory 1meg */
-        __asm__ volatile(
-                "1: \n\t"
-                "movl %0, %%fs:(%1)\n\t"
-                "addl $4,%1\n\t"
-                "subl $4,%2\n\t"
-                "jnz 1b\n\t"
-                :
-                : "a" (0), "D" (0), "c" (1024*1024)
-                ); 
-	
-	}
-#endif
 
 #if 0
 	dump_pci_devices();
-#endif
-#if 0
 	dump_pci_device(PCI_DEV(0, 0, 0));
-#endif
 
-/*
-#if  0
+	// Check all of memory
 	ram_check(0x00000000, msr.lo+(msr.hi<<32));
-#else
-#if 0
 	// Check 16MB of memory @ 0
 	ram_check(0x00000000, 0x01000000);
-#else
 	// Check 16MB of memory @ 2GB 
 	ram_check(0x80000000, 0x81000000);
 #endif
-#endif
-*/
 }
 

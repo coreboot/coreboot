@@ -42,7 +42,7 @@ static void vga_init(device_t dev)
 			       "type %x\n", file->type, CBFS_TYPE_MBI);
 		} else {
 			mbi = (void *) CBFS_SUBHEADER(file);
-			mbi_len = file->len;
+			mbi_len = ntohl(file->len);
 		}
 	} else {
 		printk(BIOS_INFO,  "Could not find MBI.\n");

@@ -187,7 +187,7 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 		int i, count=0;
 		obj_header->banner.retsts = MSH_IF_NOT_FOUND;
 
-		for (i=0; i< mbi_len;) {
+		for (i=0; i<mbi_len;) {
 			int len;
 
 			if (!(mbi[i] == 0xf0 && mbi [i+1] == 0xf6)) {
@@ -199,6 +199,12 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 			len = ALIGN((mbi_header->size * 16) + sizeof(mbi_header) + mbi_header->name_len, 16);
 			
 			if (obj_header->objnum == count) {
+#ifdef DEBUG_SMI_I82830
+				if (mbi_header->name_len == 0xff) {
+					printk(BIOS_DEBUG, "|  |- corrupt.\n");
+					break;
+				}
+#endif
 				int headerlen = ALIGN(sizeof(mbi_header) + mbi_header->name_len + 15, 16);
 #ifdef DEBUG_SMI_I82830
 				printk(BIOS_DEBUG, "|  |- headerlen = %d\n", headerlen);

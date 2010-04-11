@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-//#define SMBUS_IO_BASE 0x1000
-//#define SMBUS_IO_BASE 0x0f00
+#include "i82801dx.h"
 
 #define SMBHSTSTAT 0x0
 #define SMBHSTCTL  0x2
@@ -42,7 +41,7 @@ static void enable_smbus(void)
 {
 	device_t dev = PCI_DEV(0x0, 0x1f, 0x3);
 
-	print_debug("SMBus controller enabled\n");
+	printk(BIOS_DEBUG, "SMBus controller enabled\n");
 	/* set smbus iobase */
 	pci_write_config32(dev, 0x20, SMBUS_IO_BASE | 1);
 	/* Set smbus enable */
@@ -118,9 +117,9 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	unsigned char global_status_register;
 	unsigned char byte;
 
-	/*print_err("smbus_read_byte\n"); */
+	/* printk(BIOS_ERR, "smbus_read_byte\n"); */
 	if (smbus_wait_until_ready() < 0) {
-		print_err_hex8(-2);
+		printk(BIOS_ERR, "SMBUS not ready (%02x)\n", -2);
 		return -2;
 	}
 
@@ -146,13 +145,13 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	     SMBUS_IO_BASE + SMBHSTCTL);
 	/* poll for it to start */
 	if (smbus_wait_until_active() < 0) {
-		print_err_hex8(-4);
+		printk(BIOS_ERR, "SMBUS not active (%02x)\n", -4);
 		return -4;
 	}
 
 	/* poll for transaction completion */
 	if (smbus_wait_until_done() < 0) {
-		print_err_hex8(-3);
+		printk(BIOS_ERR, "SMBUS not completed (%02x)\n", -3);
 		return -3;
 	}
 
@@ -162,14 +161,10 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	byte = inb(SMBUS_IO_BASE + SMBHSTDAT0);
 
 	if (global_status_register != 2) {
-		print_err_hex8(-1);
+		//printk(BIOS_SPEW, "%s: no device (%02x, %02x)\n", __func__, device, address);
 		return -1;
 	}
-/*
-        print_err("smbus_read_byte: ");
-	print_err_hex32(device); print_err(" ad "); print_err_hex32(address);
-	print_err("value "); print_err_hex8(byte); print_err("\n");
- */
+	//printk(BIOS_DEBUG, "%s: %02x@%02x = %02x\n", __func__, device, address, byte);
 	return byte;
 }
 

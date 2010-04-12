@@ -12,6 +12,7 @@ config BOARD_VIA_VT8454C
 	select HAVE_ACPI_TABLES
 	select BOARD_ROMSIZE_KB_512
 	select USE_DCACHE_RAM
+	select TINY_BOOTBLOCK
 
 config MAINBOARD_DIR
 	string

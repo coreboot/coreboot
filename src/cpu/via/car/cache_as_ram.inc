@@ -139,7 +139,7 @@ clear_fixed_var_mtrr_out:
 	xorl	$0x5c5c5c5c,%eax
 	rep	stosl
 
-	movl	CONFIG_XIP_ROM_BASE, %esi
+	movl	REAL_XIP_ROM_BASE, %esi
 	movl	%esi, %edi
 	movl	$(CONFIG_XIP_ROM_SIZE>>2), %ecx
 	rep	lodsl
@@ -241,10 +241,10 @@ testok:	movb $0x40,%al
 	movl    $((~(( 0 + 0x40000) - 1)) | 0x800), %eax
 	wrmsr        
 	
-	/* cache CONFIG_XIP_ROM_BASE-SIZE to speedup coreboot code */
+	/* cache XIP_ROM_BASE-SIZE to speedup coreboot code */
 	movl    $0x206, %ecx
 	xorl    %edx, %edx
-	movl     $CONFIG_XIP_ROM_BASE,%eax
+	movl     $REAL_XIP_ROM_BASE,%eax
 	orl     $(0 | 6), %eax
 	wrmsr
 

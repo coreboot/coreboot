@@ -25,8 +25,8 @@ config TSC_X86RDTSC_CALIBRATE_WITH_TIMER2
 
 config XIP_ROM_BASE
 	hex
-	default 0xfffe0000
+	default 0xffff0000
 
 config XIP_ROM_SIZE
 	hex
-	default 0x20000
+	default 0x10000

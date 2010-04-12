@@ -272,9 +272,8 @@ static void init_artec_dongle(void)
 // __PRE_RAM__ to determine whether we're in ram init stage (stage 1)
 //
 #include "lib/cbmem.c"
-#include "cpu/intel/model_6ex/cache_as_ram_disable.c"
 
-void real_main(unsigned long bist)
+void main(unsigned long bist)
 {
 	u32 reg32;
 	int boot_mode = 0;

@@ -246,6 +246,7 @@ clear_mtrrs:
 	/* Invalidate the cache again */
 	invd
 
+	post_code(0x3c)
 
 	/* clear boot_complete flag */
 	xorl	%ebp, %ebp

@@ -144,12 +144,150 @@ clear_mtrrs:
 
 	post_code(0x23)
 
-	call	stage1_main
+	/* Call romstage.c main function */
+	call	main
 
 	post_code(0x2f)
-error:
+
+	post_code(0x30)
+
+	/* Disable Cache */
+	movl	%cr0, %eax
+	orl    $(1 << 30), %eax
+	movl	%eax, %cr0
+
+	post_code(0x31)
+
+	/* Disable MTRR */
+	movl	$MTRRdefType_MSR, %ecx
+	rdmsr
+	andl	$(~(1 << 11)), %eax
+	wrmsr
+
+	post_code(0x31)
+
+	invd
+#if 0
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+	movl	$MTRRphysBase_MSR(0), %ecx
+	wrmsr
+	movl	$MTRRphysMask_MSR(0), %ecx
+	wrmsr
+	movl	$MTRRphysBase_MSR(1), %ecx
+	wrmsr
+	movl	$MTRRphysMask_MSR(1), %ecx
+	wrmsr
+#endif
+
+	post_code(0x33)
+
+#undef CLEAR_FIRST_1M_RAM
+#ifdef CLEAR_FIRST_1M_RAM
+	post_code(0x34)
+	/* Enable Write Combining and Speculative Reads for the first 1MB */
+	movl	$MTRRphysBase_MSR(0), %ecx
+	movl	$(0x00000000 | MTRR_TYPE_WRCOMB), %eax
+	xorl	%edx, %edx
+	wrmsr
+	movl	$MTRRphysMask_MSR(0), %ecx
+	movl	$(~(1024*1024 -1) | (1 << 11)), %eax
+	movl	$0x0000000f, %edx	// 36bit address space
+	wrmsr
+	post_code(0x35)
+#endif
+
+	/* Enable Cache */
+	movl	%cr0, %eax
+	andl    $~( (1 << 30) | (1 << 29) ), %eax
+	movl	%eax, %cr0
+
+
+	post_code(0x36)
+#ifdef CLEAR_FIRST_1M_RAM
+
+	/* Clear first 1MB of RAM */
+	movl	$0x00000000, %edi
+	cld
+	xorl	%eax, %eax
+	movl	$((1024*1024) / 4), %ecx
+	rep stosl
+	
+	post_code(0x37)
+#endif
+
+	/* Disable Cache */
+	movl	%cr0, %eax
+	orl    $(1 << 30), %eax
+	movl	%eax, %cr0
+
+	post_code(0x38)
+
+	/* Enable Write Back and Speculative Reads for the first 1MB */
+	movl	$MTRRphysBase_MSR(0), %ecx
+	movl	$(0x00000000 | MTRR_TYPE_WRBACK), %eax
+	xorl	%edx, %edx
+	wrmsr
+	movl	$MTRRphysMask_MSR(0), %ecx
+	movl	$(~(1024*1024 -1) | (1 << 11)), %eax
+	movl	$0x0000000f, %edx	// 36bit address space
+	wrmsr
+
+	post_code(0x39)
+
+	/* And Enable Cache again after setting MTRRs */
+	movl	%cr0, %eax
+	andl    $~( (1 << 30) | (1 << 29) ), %eax
+	movl	%eax, %cr0
+
+	post_code(0x3a)
+
+	/* Enable MTRR */
+	movl	$MTRRdefType_MSR, %ecx
+	rdmsr
+	orl	$(1 << 11), %eax
+	wrmsr
+
+	post_code(0x3b)
+
+	/* Enable prefetchers */
+	movl	$0x01a0, %ecx
+	rdmsr
+	andl	$~((1 << 9) | (1 << 19)), %eax
+	andl	$~((1 << 5) | (1 << 7)), %edx
+	wrmsr
+
+	/* Invalidate the cache again */
+	invd
+
+	post_code(0x3c)
+
+	/* clear boot_complete flag */
+	xorl	%ebp, %ebp
+__main:
+	post_code(0x11)
+	cld			/* clear direction flag */
+	
+	movl	%ebp, %esi
+
+	/* For now: use CONFIG_RAMBASE + 1MB - 64K (counting downwards) as stack. This
+	 * makes sure that we stay completely within the 1M-64K of memory that we
+	 * preserve for suspend/resume.
+	 */
+
+#ifndef HIGH_MEMORY_SAVE
+#warning Need a central place for HIGH_MEMORY_SAVE
+#define HIGH_MEMORY_SAVE ( (1024 - 64) * 1024 )
+#endif
+	movl $(CONFIG_RAMBASE + HIGH_MEMORY_SAVE), %esp
+	movl	%esp, %ebp
+	pushl %esi
+	call copy_and_run
+
+.Lhlt:	
+	post_code(0xee)
 	hlt
-	jmp	error
+	jmp	.Lhlt
 
 mtrr_table:
 	/* Fixed MTRRs */

@@ -10,3 +10,4 @@ subdirs-y += ../../x86/pae
 subdirs-y += ../../x86/smm
 subdirs-y += ../../x86/mtrr
 
+cpu_incs += $(src)/cpu/amd/car/cache_as_ram.inc

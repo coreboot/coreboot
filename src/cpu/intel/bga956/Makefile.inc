@@ -8,3 +8,5 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 
+# Use Intel Core (not Core 2) code for CAR init, any CPU might be used.
+cpu_incs += $(src)/cpu/intel/model_6ex/cache_as_ram.inc

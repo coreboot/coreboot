@@ -117,61 +117,17 @@ ldscripts += $(src)/arch/i386/lib/id.lds
 endif
 
 crt0s += $(src)/cpu/x86/fpu_enable.inc
-ifeq ($(CONFIG_CPU_AMD_GX1),y)
-crt0s += $(src)/cpu/amd/model_gx1/cpu_setup.inc
-crt0s += $(src)/cpu/amd/model_gx1/gx_setup.inc
-endif
 ifeq ($(CONFIG_SSE),y)
 crt0s += $(src)/cpu/x86/sse_enable.inc
 endif
 
-ifeq ($(CONFIG_CPU_AMD_LX),y)
-crt0s += $(src)/cpu/amd/model_lx/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_F),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_F_1207),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_AM2R2),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_AM2),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_S1G1),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_754),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_939),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_AMD_SOCKET_940),y)
-crt0s += $(src)/cpu/amd/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_INTEL_ATOM_230),y)
-crt0s += $(src)/cpu/intel/model_106cx/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_INTEL_CORE),y)
-crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
-endif
-# Use Intel Core (not Core 2) code for CAR init, any CPU might be used.
-ifeq ($(CONFIG_CPU_INTEL_SOCKET_BGA956),y)
-crt0s += $(src)/cpu/intel/model_6ex/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_INTEL_SOCKET_MFCBGA479),y)
-crt0s += $(src)/cpu/x86/car/cache_as_ram.inc
-endif
-ifeq ($(CONFIG_CPU_VIA_C7),y)
-crt0s += $(src)/cpu/via/car/cache_as_ram.inc
-endif
-# who else could use this?
+crt0s += $(cpu_incs)
+
+#
+# FIXME move to CPU_INTEL_SOCKET_MPGA604
+#
 ifeq ($(CONFIG_BOARD_TYAN_S2735),y)
 crt0s += $(src)/cpu/x86/car/cache_as_ram.inc
-ldscripts += $(src)/cpu/x86/car/cache_as_ram.lds
 endif
 
 ifeq ($(CONFIG_LLSHELL),y)

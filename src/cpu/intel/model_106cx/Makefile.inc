@@ -1,1 +1,3 @@
 driver-y += model_106cx_init.o
+
+cpu_incs += $(src)/cpu/intel/model_106cx/cache_as_ram.inc

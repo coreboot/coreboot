@@ -223,9 +223,7 @@ static void early_ich7_init(void)
 //
 #include "lib/cbmem.c"
 
-#include "cpu/intel/model_106cx/cache_as_ram_disable.c"
-
-void real_main(unsigned long bist)
+void main(unsigned long bist)
 {
 	u32 reg32;
 	int boot_mode = 0;

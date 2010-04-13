@@ -1,11 +1,12 @@
 /*
  *	Memory map:
  *
- *	CONFIG_RAMBASE		
+ *	CONFIG_RAMBASE		: text segment
+ *				: rodata segment
  *				: data segment
  *				: bss segment
- *				: heap
  *				: stack
+ *				: heap
  */
 /*
  * Bootstrap code for the STPC Consumer
@@ -17,10 +18,8 @@
  *      Rewritten by Eric Biederman
  *  2005.12 yhlu add coreboot_ram cross the vga font buffer handling
  */
-/*
- *	We use ELF as output format. So that we can
- *	debug the code in some form. 
- */
+
+/* We use ELF as output format. So that we can debug the code in some form. */
 INCLUDE ldoptions
 
 ENTRY(_start)
@@ -28,9 +27,8 @@ ENTRY(_start)
 SECTIONS
 {
 	. = CONFIG_RAMBASE;
-	/*
-	 * First we place the code and read only data (typically const declared).
-	 * This get placed in rom.
+	/* First we place the code and read only data (typically const declared).
+	 * This could theoretically be placed in rom.
 	 */
 	.text : {
 		_text = .;
@@ -39,6 +37,7 @@ SECTIONS
 		. = ALIGN(16);
 		_etext = .;
 	}
+
 	.rodata : {
 		_rodata = .;
 		. = ALIGN(4);
@@ -54,17 +53,14 @@ SECTIONS
 		ecpu_drivers = . ;
 		*(.rodata)
 		*(.rodata.*)
-		/*
-		 * kevinh/Ispiri - Added an align, because the objcopy tool
+		/* kevinh/Ispiri - Added an align, because the objcopy tool
 		 * incorrectly converts sections that are not long word aligned.
-		 * This breaks the coreboot.rom target.
 		 */
 		 . = ALIGN(4);
 
 		_erodata = .;
 	}	
-	/*
-	 * After the code we place initialized data (typically initialized
+	/* After the code we place initialized data (typically initialized
 	 * global variables). This gets copied into ram by startup code.
 	 * __data_start and __data_end shows where in ram this should be placed,
 	 * whereas __data_loadstart and __data_loadend shows where in rom to
@@ -76,18 +72,7 @@ SECTIONS
 		_edata = .;
 	}
 
-	.sdata : {
-		_SDA_BASE_ = .;
-		*(.sdata)
-	}
-
-	.sdata2 : {
-		_SDA2_BASE_ = .;
-		*(.sdata2)
-	}
-
-	/*
-	 * bss does not contain data, it is just a space that should be zero
+	/* bss does not contain data, it is just a space that should be zero
 	 * initialized on startup. (typically uninitialized global variables)
 	 * crt0.S fills between _bss and _ebss with zeroes.
 	 */
@@ -99,6 +84,11 @@ SECTIONS
 	}
 	_ebss = .;
 	_end = .;
+
+	/* coreboot really "ends" here. Only heap and stack are placed after
+	 * this line.
+	 */
+
 	. = ALIGN(CONFIG_STACK_SIZE);
 
 	_stack = .;
@@ -107,6 +97,7 @@ SECTIONS
 		. += CONFIG_MAX_CPUS*CONFIG_STACK_SIZE;
 	}
 	_estack = .;
+
         _heap = .;
         .heap . : {
                 /* Reserve CONFIG_HEAP_SIZE bytes for the heap */
@@ -115,18 +106,33 @@ SECTIONS
         }
         _eheap = .;
 
+	/* Some assertions to print human readable errors for certain linker
+	 * error scenarios.
+	 */
+
 	/* Avoid running into 0xa0000-0xfffff */
 	_bogus = ASSERT(CONFIG_RAMBASE >= 0x100000 || _eheap < 0xa0000, "Please move RAMBASE to 1MB");
 
-	/* The ram segment
- 	 * This is all address of the memory resident copy of coreboot.
+	/* The ram segment. This includes all memory used by the memory 
+	 * resident copy of coreboot, except the tables that are produced on
+	 * the fly, but including stack and heap.
 	 */
 	_ram_seg = _text; 
 	_eram_seg = _eheap;
 
-	_bogus = ASSERT( ( _eram_seg < (CONFIG_RAMTOP)) , "please increase CONFIG_RAMTOP");
+	/* CONFIG_RAMTOP is the upper address of cached memory (among other
+	 * things). We must not exceed beyond that address, there be dragons.
+	 */
+	_bogus = ASSERT( ( _eram_seg < (CONFIG_RAMTOP)) , "Please increase CONFIG_RAMTOP");
 
-        _bogus = ASSERT( !((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN) && ((_ram_seg<0xa0000) && (_eram_seg>0xa0000))) , "please increase CONFIG_RAMTOP and if still fail, try to set CONFIG_RAMBASE more than 1M");
+	/* This rule is only good for the few broken targets that still live
+	 * below 1MB per default. Those are the Geode and VIA targets that come
+	 * with their own version of real mode switches that can't live above
+	 * 1MB. Once these are fixed, this rule should go away.
+	 */
+        _bogus = ASSERT( !((CONFIG_CONSOLE_VGA || CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN || CONFIG_HAVE_SMI_HANDLER) && ((_ram_seg<0xa0000) && (_eram_seg>0xa0000))), "Please increase CONFIG_RAMTOP and if still fail, try to set CONFIG_RAMBASE to 1M");
+
+	/* Discard the sections we don't need/want */
 
 	/DISCARD/ : {
 		*(.comment)

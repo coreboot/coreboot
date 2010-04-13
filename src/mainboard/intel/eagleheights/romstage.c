@@ -163,7 +163,7 @@ void early_config(void) {
 	pci_write_config8(PCI_DEV(0, 0x1F, 2), SATA_MAP, (SATA_MODE_AHCI << 6) | (0 << 0));
 }
 
-void real_main(unsigned long bist)
+void main(unsigned long bist)
 {
 	/* int boot_mode = 0; */
 
@@ -231,7 +231,4 @@ void real_main(unsigned long bist)
 	/* Initialize memory */
 	sdram_initialize(ARRAY_SIZE(mch), mch);
 }
-
-/* Use Intel Core (not Core 2) code for CAR init, any CPU might be used. */
-#include "cpu/intel/model_6ex/cache_as_ram_disable.c"
 

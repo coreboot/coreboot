@@ -2,3 +2,5 @@ config CPU_INTEL_ATOM_230
 	bool
 	select SMP
 	select SSE2
+	select UDELAY_LAPIC
+	select AP_IN_SIPI_WAIT

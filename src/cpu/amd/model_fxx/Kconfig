@@ -5,7 +5,6 @@ config CPU_AMD_MODEL_FXX
 	select MMX
 	select SSE
 	select SSE2
-	select HAVE_INIT_TIMER
 
 config CPU_ADDR_BITS
 	int

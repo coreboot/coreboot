@@ -74,27 +74,15 @@ static void parport_gpios(void)
 
 static void flash_gpios(void)
 {
-	u32 flash_base = 0xfff80000;
-	u8 manufacturer_id, device_id;
-
-	// reset mode
-	write8(flash_base, 0xff);
-	udelay(10);
-	// read id
-	write8(flash_base, 0x90);
-	udelay(10);
-	manufacturer_id = read8(flash_base);
-	device_id = read8(flash_base + 1);
-	// reset mode
-	write8(flash_base, 0xff);
-	udelay(10);
+	u8 manufacturer_id = read8(0xffbc0000);
+	u8 device_id = read8(0xffbc0001);
 
 	if ((manufacturer_id == 0x20) && 
 		((device_id == 0x2c) || (device_id == 0x2d))) {
 		printk(BIOS_DEBUG, "Detected ST M50FW0%c0 flash:\n",
 				(device_id==0x2c)?'4':'8');
 		u8 fgpi = read8(0xffbc0100);
-		printk(BIOS_DEBUG, "  FGPI0 [%c] FGPI1 [%c] FGPI2 [%c] FGPI3 [%c] FGPI4 [%c]",
+		printk(BIOS_DEBUG, "  FGPI0 [%c] FGPI1 [%c] FGPI2 [%c] FGPI3 [%c] FGPI4 [%c]\n",
 			(fgpi & (1 << 0)) ? 'X' : ' ',
 			(fgpi & (1 << 1)) ? 'X' : ' ',
 			(fgpi & (1 << 2)) ? 'X' : ' ',
@@ -109,7 +97,6 @@ static void flash_gpios(void)
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 static int int15_handler(void)
 {
-	u8 display_id;
 #define BOOT_DISPLAY_DEFAULT	0
 #define BOOT_DISPLAY_CRT	(1 << 0)
 #define BOOT_DISPLAY_TV		(1 << 1)
@@ -126,8 +113,8 @@ static int int15_handler(void)
 	switch (M.x86.R_AX) {
 	case 0x5f35: /* Boot Display */
 		M.x86.R_AX = 0x005f; // Success
-		// M.x86.R_CL = BOOT_DISPLAY_TV;
-		M.x86.R_CL = BOOT_DISPLAY_DEFAULT;
+		M.x86.R_CL = BOOT_DISPLAY_TV2;
+		//M.x86.R_CL = BOOT_DISPLAY_DEFAULT;
 		break;
 	case 0x5f36: /* Boot TV Format Hook */
 		printk(BIOS_DEBUG, "Boot TV Format Hook. TODO\n");

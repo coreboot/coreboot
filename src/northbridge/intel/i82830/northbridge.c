@@ -114,49 +114,52 @@ static void pci_domain_set_resources(device_t dev)
 
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;
-	if (mc_dev) {
-		unsigned long tomk, tolmk;
-		int idx;
+	if (!mc_dev)
+		return;
 
-		if (CONFIG_VIDEO_MB == 512) {
-			igd_memory = (CONFIG_VIDEO_MB);
-			printk(BIOS_DEBUG, "%dKB IGD UMA\n", igd_memory >> 10);
-		} else {
-			igd_memory = (CONFIG_VIDEO_MB * 1024);
-			printk(BIOS_DEBUG, "%dMB IGD UMA\n", igd_memory >> 10);
-		}
+	unsigned long tomk, tolmk;
+	int idx;
 
-		/* Get the value of the highest DRB. This tells the end of
-		 * the physical memory. The units are ticks of 32MB
-		 * i.e. 1 means 32MB.
-		 */
-		tomk = ((unsigned long)pci_read_config8(mc_dev, DRB + 3)) << 15;
-		tomk -= igd_memory;
+	if (CONFIG_VIDEO_MB == 512) {
+		igd_memory = (CONFIG_VIDEO_MB);
+		printk(BIOS_DEBUG, "%dKB IGD UMA\n", igd_memory >> 10);
+	} else {
+		igd_memory = (CONFIG_VIDEO_MB * 1024);
+		printk(BIOS_DEBUG, "%dMB IGD UMA\n", igd_memory >> 10);
+	}
 
-		/* For reserving UMA memory in the memory map */
-		uma_memory_base = tomk * 1024ULL;
-		uma_memory_size = igd_memory * 1024ULL;
-		printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk);
+	/* Get the value of the highest DRB. This tells the end of
+	 * the physical memory. The units are ticks of 32MB
+	 * i.e. 1 means 32MB.
+	 */
+	tomk = ((unsigned long)pci_read_config8(mc_dev, DRB + 3)) << 15;
+	tomk -= igd_memory;
 
-		/* Compute the top of low memory. */
-		tolmk = pci_tolm >> 10;
-		if (tolmk >= tomk) {
-			/* The PCI hole does does not overlap the memory. */
-			tolmk = tomk;
-		}
+	/* For reserving UMA memory in the memory map */
+	uma_memory_base = tomk * 1024ULL;
+	uma_memory_size = igd_memory * 1024ULL;
+	printk(BIOS_DEBUG, "Available memory: %ldKB\n", tomk);
 
-		/* Report the memory regions. */
-		idx = 10;
-		ram_resource(dev, idx++, 0, 640);
-		ram_resource(dev, idx++, 1024, tolmk - 1024);
+	/* Compute the top of low memory. */
+	tolmk = pci_tolm >> 10;
+	if (tolmk >= tomk) {
+		/* The PCI hole does does not overlap the memory. */
+		tolmk = tomk;
+	}
+
+	/* Report the memory regions. */
+	idx = 10;
+	ram_resource(dev, idx++, 0, 640);
+	ram_resource(dev, idx++, 768, 256);
+	ram_resource(dev, idx++, 1024, tolmk - 1024);
+
+	assign_resources(&dev->link[0]);
 
 #if CONFIG_WRITE_HIGH_TABLES==1
-		/* Leave some space for ACPI, PIRQ and MP tables */
-		high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
-		high_tables_size = HIGH_TABLES_SIZE * 1024;
+	/* Leave some space for ACPI, PIRQ and MP tables */
+	high_tables_base = (tomk - HIGH_TABLES_SIZE) * 1024;
+	high_tables_size = HIGH_TABLES_SIZE * 1024;
 #endif
-	}
-	assign_resources(&dev->link[0]);
 }
 
 static struct device_operations pci_domain_ops = {

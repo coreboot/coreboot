@@ -14,8 +14,16 @@ __main:
 	
 	movl	%ebp, %esi
 
-	/* FIXME: look for a proper place for the stack */
-	movl	$0x4000000, %esp
+	/* For now: use CONFIG_RAMBASE + 1MB - 64K (counting downwards) as stack. This
+	 * makes sure that we stay completely within the 1M-64K of memory that we
+	 * preserve for suspend/resume.
+	 */
+
+#ifndef HIGH_MEMORY_SAVE
+#warning Need a central place for HIGH_MEMORY_SAVE
+#define HIGH_MEMORY_SAVE ( (1024 - 64) * 1024 )
+#endif
+	movl $(CONFIG_RAMBASE + HIGH_MEMORY_SAVE), %esp
 	movl	%esp, %ebp
 	pushl %esi
 	call copy_and_run

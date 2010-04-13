@@ -270,14 +270,16 @@ __main:
 	
 	movl	%ebp, %esi
 
-	/* FIXME: These values might have to change for suspend-to-ram.
-	 * the 0x00400000 was chosen as this is a place in memory that
-	 * should exist in all contemporary configurations (ie. large
-	 * enough RAM), but doesn't collide with anything coreboot does.
-	 * Other than that, it's arbitrary.
+	/* For now: use CONFIG_RAMBASE + 1MB - 64K (counting downwards) as stack. This
+	 * makes sure that we stay completely within the 1M-64K of memory that we
+	 * preserve for suspend/resume.
 	 */
 
-	movl	$0x4000000, %esp
+#ifndef HIGH_MEMORY_SAVE
+#warning Need a central place for HIGH_MEMORY_SAVE
+#define HIGH_MEMORY_SAVE ( (1024 - 64) * 1024 )
+#endif
+	movl $(CONFIG_RAMBASE + HIGH_MEMORY_SAVE), %esp
 	movl	%esp, %ebp
 	pushl %esi
 	call copy_and_run

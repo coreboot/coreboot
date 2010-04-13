@@ -234,18 +234,7 @@ dummy_write(void){
   *ptr = 0;
 }
 
-void sc520_udelay(int microseconds) {
-	volatile int x;
-	for(x = 0; x < 1000; x++)
-		;
-}
-
-/* looks like we define this now */
-void
-udelay(int microseconds) {
-	sc520_udelay(microseconds);
-}
-
+#include "pc80/udelay_io.c"
 
 static void dumpram(void){
   print_err("ctl "); print_err_hex8(*drcctl); print_err("\n");
@@ -311,7 +300,7 @@ int sizemem(void)
 	print_err("NOP\n");
 	/* 100? 200? */
 	udelay(100);
-	print_err("after sc520_udelay\n");
+	print_err("after udelay\n");
 
 	/* issue all banks precharge */
 	*drcctl=0x02;
@@ -385,8 +374,8 @@ int sizemem(void)
 	dummy_write();
 	print_err("NOP\n");
 	/* 100? 200? */
-	//sc520_udelay(100);
-	print_err("after sc520_udelay\n");
+	//udelay(100);
+	print_err("after udelay\n");
 
 	/* issue all banks precharge */
 	*drcctl=0x02;

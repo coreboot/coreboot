@@ -15,19 +15,6 @@
 #include <delay.h>
 #include "chip.h"
 
-
-/* hack for now */
-static void sc520_udelay(int microseconds) {
-        volatile int x;
-        for(x = 0; x < 1000; x++) 
-                ;  
-}
-
-/* looks like we define this now */
-void
-udelay(unsigned microseconds) {
-        sc520_udelay(microseconds); 
-}
 /*
  * set up basic things ... 
  * PAR should NOT go here, as it might change with the mainboard. 

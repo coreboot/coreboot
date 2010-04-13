@@ -24,52 +24,6 @@
 #include <device/pci_ops.h>
 #endif
 
-static unsigned int
-read_io(void *addr, size_t sz)
-{
-        unsigned int ret;
-	/* since we are using inb instructions, we need the port number as 16bit value */
-	u16 port = (u16)(u32) addr;
-
-        switch (sz) {
-        case 1:
-		asm volatile ("inb %1, %b0" : "=a"(ret) : "d" (port));
-                break;
-        case 2:
-		asm volatile ("inw %1, %w0" : "=a"(ret) : "d" (port));
-                break;
-        case 4:
-		asm volatile ("inl %1, %0" : "=a"(ret) : "d" (port));
-                break;
-        default:
-                ret = 0;
-        }
-
-        return ret;
-}
-
-static int
-write_io(void *addr, unsigned int value, size_t sz)
-{
-	u16 port = (u16)(u32) addr;
-        switch (sz) {
-	/* since we are using inb instructions, we need the port number as 16bit value */
-        case 1:
-		asm volatile ("outb %b0, %1" : : "a"(value), "d" (port));
-                break;
-        case 2:
-		asm volatile ("outw %w0, %1" : : "a"(value), "d" (port));
-                break;
-        case 4:
-		asm volatile ("outl %0, %1" : : "a"(value), "d" (port));
-                break;
-        default:
-                return -1;
-        }
-
-        return 0;
-}
-
 #ifdef CONFIG_ARCH_X86
 #include <arch/io.h>
 #else
@@ -171,6 +125,52 @@ void my_outl(X86EMU_pioAddr addr, u32 val)
 }
 
 #else
+
+static unsigned int
+read_io(void *addr, size_t sz)
+{
+        unsigned int ret;
+	/* since we are using inb instructions, we need the port number as 16bit value */
+	u16 port = (u16)(u32) addr;
+
+        switch (sz) {
+        case 1:
+		asm volatile ("inb %1, %b0" : "=a"(ret) : "d" (port));
+                break;
+        case 2:
+		asm volatile ("inw %1, %w0" : "=a"(ret) : "d" (port));
+                break;
+        case 4:
+		asm volatile ("inl %1, %0" : "=a"(ret) : "d" (port));
+                break;
+        default:
+                ret = 0;
+        }
+
+        return ret;
+}
+
+static int
+write_io(void *addr, unsigned int value, size_t sz)
+{
+	u16 port = (u16)(u32) addr;
+        switch (sz) {
+	/* since we are using inb instructions, we need the port number as 16bit value */
+        case 1:
+		asm volatile ("outb %b0, %1" : : "a"(value), "d" (port));
+                break;
+        case 2:
+		asm volatile ("outw %w0, %1" : : "a"(value), "d" (port));
+                break;
+        case 4:
+		asm volatile ("outl %0, %1" : : "a"(value), "d" (port));
+                break;
+        default:
+                return -1;
+        }
+
+        return 0;
+}
 
 u32 pci_cfg_read(X86EMU_pioAddr addr, u8 size);
 void pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size);

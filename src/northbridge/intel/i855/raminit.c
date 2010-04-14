@@ -19,6 +19,7 @@
  */
  
 #include <sdram_mode.h>
+#include <delay.h>
 
 #define dumpnorth() dump_pci_device(PCI_DEV(0, 0, 1))
 #define VG85X_MODE (SDRAM_BURST_4 | SDRAM_BURST_INTERLEAVED | SDRAM_CAS_2_5)
@@ -85,20 +86,11 @@ static void spd_set_dram_throttle_control(const struct mem_controller *ctrl)
 	pci_write_config32(ctrl->d0, 0xa0, dtc_reg);
 }
 
-void udelay(int usecs)
-{
-        int i;
-        for(i = 0; i < usecs; i++)
-                outb(i & 0xff, 0x80);
-}
-
 #define delay() udelay(200)
 
 /* if ram still doesn't work do this function */
 static void spd_set_undocumented_registers(const struct mem_controller *ctrl)
 {
-	uint16_t word;
-	
 	/* 0:0.0 */
 	/*
 	pci_write_config32(PCI_DEV(0, 0, 0), 0x10, 0xe0000008);

@@ -3,12 +3,10 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
-#if 0
-#include <arch/smp/lapic.h>
-#endif
 #include <arch/hlt.h>
 //#include "option_table.h"
 #include <stdlib.h>
+#include "pc80/udelay_io.c"
 #include "pc80/mc146818rtc_early.c"
 #include "pc80/serial.c"
 #include "console/console.c"
@@ -16,13 +14,6 @@
 #include "southbridge/intel/i82801dx/i82801dx.h"
 #include "southbridge/intel/i82801dx/i82801dx_early_smbus.c"
 #include "northbridge/intel/i855/raminit.h"
-
-#if 0
-#include "cpu/p6/apic_timer.c"
-#include "lib/delay.c"
-#endif
-
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/i855/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c" 
 #include "cpu/x86/mtrr/earlymtrr.c"
@@ -30,24 +21,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-static void hard_reset(void)
-{
-        outb(0x0e, 0x0cf9);
-}
-
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-        /* nothing to do */
-}
- 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
@@ -57,10 +30,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/i855/reset_test.c"
 #include "lib/generic_sdram.c"
 
-
-#include "cpu/intel/model_6bx/cache_as_ram_disable.c"
-
-void real_main(unsigned long bist)
+void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
 		{
@@ -93,7 +63,6 @@ void real_main(unsigned long bist)
 		dump_spd_registers(&memctrl[0]);
 		dump_smbus_registers();
 #endif
-		memreset_setup();
 
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 

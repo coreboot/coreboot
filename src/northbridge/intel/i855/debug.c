@@ -18,24 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-/*
- * generic K8 debug code, used by mainboard specific romstage.c
- *
- */
-#if 1
-/*
-static void print_debug_pci_dev(unsigned dev)
-{
-	print_debug("PCI: ");
-	print_debug_hex8((dev >> 16) & 0xff);
-	print_debug_char(':');
-	print_debug_hex8((dev >> 11) & 0x1f);
-	print_debug_char('.');
-	print_debug_hex8((dev >> 8) & 7);
-}
-*/
-
-
 static void print_debug_pci_dev(unsigned dev)
 {
 	print_debug("PCI: ");
@@ -46,7 +28,7 @@ static void print_debug_pci_dev(unsigned dev)
 	print_debug_hex8((dev >> 12) & 0x07);
 }
 
-static void print_pci_devices(void)
+static inline void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
@@ -85,7 +67,7 @@ static void dump_pci_device(unsigned dev)
 	}
 }
 
-static void dump_pci_devices(void)
+static inline void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
@@ -102,7 +84,7 @@ static void dump_pci_devices(void)
 	}
 }
 
-static void dump_spd_registers(const struct mem_controller *ctrl)
+static inline void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
 	print_debug("\n");
@@ -134,37 +116,10 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 			}
 			print_debug("\n");
 		}
-#if 0
-		device = ctrl->channel1[i];
-		if (device) {
-			int j;
-			print_debug("dimm: "); 
-			print_debug_hex8(i); 
-			print_debug(".1: ");
-			print_debug_hex8(device);
-			for(j = 0; j < 256; j++) {
-				int status;
-				unsigned char byte;
-				if ((j & 0xf) == 0) {
-					print_debug("\n");
-					print_debug_hex8(j);
-					print_debug(": ");
-				}
-				status = smbus_read_byte(device, j);
-				if (status < 0) {
-					print_debug("bad device\n");
-					break;
-				}
-				byte = status & 0xff;
-				print_debug_hex8(byte);
-				print_debug_char(' ');
-			}
-			print_debug("\n");
-		}
-#endif
 	}
 }
-static void dump_smbus_registers(void)
+
+static inline void dump_smbus_registers(void)
 {
         int i;
         print_debug("\n");
@@ -194,4 +149,3 @@ static void dump_smbus_registers(void)
                 print_debug("\n");
 	}	
 }
-#endif

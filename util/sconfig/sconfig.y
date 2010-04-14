@@ -497,4 +497,5 @@ int main(int argc, char** argv) {
 	walk_device_tree(staticc, &root, pass1, NULL);
 
 	fclose(staticc);
+	return 0;
 }

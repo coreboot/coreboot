@@ -59,7 +59,7 @@
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
@@ -98,7 +98,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-	unsigned value;
 	uint32_t dword;
 	uint8_t byte;
 

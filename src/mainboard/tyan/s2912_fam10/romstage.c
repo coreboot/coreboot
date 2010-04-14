@@ -68,21 +68,13 @@
 
 #include "northbridge/amd/amdfam10/debug.c"
 
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
-
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -287,9 +279,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	printk(BIOS_DEBUG, "enable_smbus()\n");
 	enable_smbus();
-	post_code(0x3E);
 
-	memreset_setup();
 	post_code(0x40);
 
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");

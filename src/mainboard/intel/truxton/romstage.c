@@ -46,10 +46,6 @@
 
 #define DEVPRES_CONFIG  (DEVPRES_D1F0 | DEVPRES_D2F0 | DEVPRES_D3F0 | DEVPRES_D4F0)
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
 static inline int spd_read_byte(u16 device, u8 address)
 {
 	return smbus_read_byte(device, address);

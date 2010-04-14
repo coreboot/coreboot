@@ -38,10 +38,6 @@
 #include "southbridge/via/vt8237r/vt8237r_early_smbus.c"
 #include "southbridge/via/vt8235/vt8235_early_serial.c"
 
-static void memreset_setup(void)
-{
-}
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);

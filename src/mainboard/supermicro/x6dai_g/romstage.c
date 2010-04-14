@@ -40,10 +40,6 @@
 #define RECVENA_CONFIG  0x0808090a
 #define RECVENB_CONFIG  0x0808090a
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);

@@ -2,6 +2,7 @@
 #define EARLYMTRR_C
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
 
 #if 0

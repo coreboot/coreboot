@@ -65,21 +65,13 @@
 
 #include "northbridge/amd/amdfam10/debug.c"
 
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
-
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -280,10 +272,6 @@ post_code(0x3D);
 
 //printk(BIOS_DEBUG, "enable_smbus()\n");
 //        enable_smbus(); /* enable in sio_setup */
-
-post_code(0x3E);
-
-        memreset_setup();
 
 post_code(0x40);
 

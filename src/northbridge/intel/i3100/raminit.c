@@ -88,7 +88,7 @@ static struct dimm_size spd_get_dimm_size(u16 device)
 {
 	/* Calculate the log base 2 size of a DIMM in bits */
 	struct dimm_size sz;
-	int value, low, ddr2;
+	int value, low;
 	sz.side1 = 0;
 	sz.side2 = 0;
 
@@ -594,8 +594,6 @@ static int spd_set_dram_controller_mode(const struct mem_controller *ctrl,
 
 	goto out;
 
- val_err:
-	die("Bad SPD value\n");
 	/* If an hw_error occurs report that I have no memory */
  hw_err:
 	drc = 0;
@@ -715,7 +713,6 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 	u32 dimm;
 	u32 edge;
 	int32_t data32;
-	u32 data32_dram;
 	u32 dcal_data32_0;
 	u32 dcal_data32_1;
 	u32 dcal_data32_2;
@@ -948,10 +945,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	u32 data32;
 	u32 mode_reg;
 	u32 *iptr;
-	volatile u32 *iptrv;
-	msr_t msr;
-	u32 scratch;
-	u8 byte;
 	u16 data16;
 	static const struct {
 		u32 clkgr[4];

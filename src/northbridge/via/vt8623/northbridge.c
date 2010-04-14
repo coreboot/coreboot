@@ -60,7 +60,7 @@ static void northbridge_init(device_t dev)
 	}
 }
 
-static void nullfunc(void)
+static void nullfunc(device_t dev)
 {
 	/* Nothing to do */
 }

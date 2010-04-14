@@ -71,14 +71,6 @@ static int smbus_read_byte(u32 device, u32 address);
 #include "southbridge/amd/sb700/sb700_early_setup.c"
 #include "northbridge/amd/amdfam10/debug.c"
 
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
-
 static void activate_spd_rom(const struct mem_controller *ctrl)
 {
 }
@@ -245,9 +237,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	/* It's the time to set ctrl in sysinfo now; */
 	printk(BIOS_DEBUG, "fill_mem_ctrl()\n");
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
-	post_code(0x3D);
 
-	memreset_setup();
 	post_code(0x40);
 
 //	die("Die Before MCT init.");

@@ -48,7 +48,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8712f/it8712f_early_serial.c"
 
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -57,7 +57,7 @@
 #include "southbridge/amd/sb600/sb600_early_setup.c"
 #include "northbridge/amd/amdk8/debug.c" /* After sb600_early_setup.c! */
 
-/* CAN'T BE REMOVED! crt0.S will use it. I don't know WHY!*/
+/* CAN'T BE REMOVED! memory bus reset hook for some broken amd k8 boards. */
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }

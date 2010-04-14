@@ -68,7 +68,7 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 
 #include "northbridge/amd/amdfam10/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
@@ -79,10 +79,6 @@ static void memreset_setup(void)
 	//GPIO on amd8111 to enable MEMRST ????
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);	// REVC_MEMRST_EN=1
 	outb((0 << 7)|(0 << 6)|(0<<5)|(0<<4)|(1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
 }
 
 static void activate_spd_rom(const struct mem_controller *ctrl)

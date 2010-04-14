@@ -1,9 +1,6 @@
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
-#if 0
-#include <cpu/x86/lapic.h>
-#endif
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/romcc_io.h>
@@ -21,10 +18,6 @@
 #include "lib/debug.c"
 #include "southbridge/via/vt8235/vt8235_early_smbus.c"
 #include "southbridge/via/vt8235/vt8235_early_serial.c"
-
-static void memreset_setup(void)
-{
-}
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

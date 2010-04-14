@@ -44,7 +44,7 @@
 #include "lib/delay.c"
 
 #include "northbridge/amd/amdk8/debug.c"
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -126,20 +126,19 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
-			//first node
+			// first node
                         DIMM0, DIMM2, 0, 0,
                         DIMM1, DIMM3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
-			//second node
+
+			// second node
                         DIMM4, DIMM6, 0, 0,
                         DIMM5, DIMM7, 0, 0,
-#endif
-
 	};
 
-	struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
-        int needs_reset; int i;
+        int needs_reset;
         unsigned bsp_apicid = 0;
 
         if (!cpu_init_detectedx && boot_cpu()) {

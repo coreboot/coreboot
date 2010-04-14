@@ -1919,14 +1919,11 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 
 	RAM_DEBUG_MESSAGE("Reading SPD data...\n");
 
-   //activate_spd_rom(ctrl);	Not necessary for this chipset
-
-    dimm_mask = spd_get_supported_dimms(ctrl);
+	dimm_mask = spd_get_supported_dimms(ctrl);
 
 	if (dimm_mask == 0) {
 		print_debug("No usable memory for this controller\n");
-    } else {
-
+	} else {
 		enable_e7501_clocks(dimm_mask);
 
 		RAM_DEBUG_MESSAGE("setting based on SPD data...\n");
@@ -1967,7 +1964,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	DUMPNORTH();
 
 	ram_set_rcomp_regs();
-    ram_set_d0f0_regs();
+	ram_set_d0f0_regs();
 }
 
 /*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/

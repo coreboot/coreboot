@@ -63,7 +63,7 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/nsc/pc87417/pc87417_early_serial.c"
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"

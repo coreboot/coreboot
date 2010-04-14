@@ -78,7 +78,7 @@
 
 #include "northbridge/amd/amdk8/debug.c"
 
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 

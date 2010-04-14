@@ -27,11 +27,6 @@ static void hard_reset(void)
         outb(0x0e, 0x0cf9);
 }
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-        /* nothing to do */
-}
- 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
@@ -56,31 +51,28 @@ static void main(unsigned long bist)
 	if (bist == 0) 
 	{
 		// Skip this if there was a built in self test failure
-
 		early_mtrr_init();
-        enable_lapic();
-    }
+		enable_lapic();
+	}
 
 	// Get the serial port running and print a welcome banner
 
-    lpc47b272_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-    uart_init();
-    console_init();
+	lpc47b272_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	uart_init();
+	console_init();
 
-    // Halt if there was a built in self test failure
+	// Halt if there was a built in self test failure
 	report_bist_failure(bist);
 
-//	print_pci_devices();
+	// print_pci_devices();
 
 	// If this is a warm boot, some initialization can be skipped
 
 	if (!bios_reset_detected()) 
 	{
 		enable_smbus();
-//    	dump_spd_registers(&memctrl[0]);
-//      dump_smbus_registers();
-
-//		memreset_setup();		No-op for this chipset
+		// dump_spd_registers(&memctrl[0]);
+		// dump_smbus_registers();
 		sdram_initialize(ARRAY_SIZE(memctrl), memctrl);
 	}
 	

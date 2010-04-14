@@ -62,8 +62,6 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus,
 	pirq_info->rfu = rfu;
 }
 
-void pci_assign_irqs(unsigned, unsigned, const unsigned char *);
-
 /**
  * Create the IRQ routing table.
  * Values are derived from getpir generated code.

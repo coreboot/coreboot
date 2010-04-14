@@ -75,7 +75,7 @@
 
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
-#include "cpu/amd/mtrr/amd_earlymtrr.c"
+#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 /* Yes, on the MSI K9N Neo (MS-7260) the Super I/O is at 0x4e! */

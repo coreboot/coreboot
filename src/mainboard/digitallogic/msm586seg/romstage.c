@@ -44,19 +44,6 @@ struct mem_controller {
 	int i;
 };
 
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-        /* nothing to do */
-}
- 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 //	return smbus_read_byte(device, address);

@@ -41,19 +41,6 @@ static void soft_reset(void)
 #endif
 }
 
-static void memreset_setup(void)
-{
-}
-
-static void memreset(int controllers, const struct mem_controller *ctrl)
-{
-}
-
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
@@ -76,12 +63,9 @@ void main(unsigned long bist)
 	
 	unsigned cpu_reset = 0;
 
-       if (bist == 0) 
-	{
-//		early_mtrr_init();
-                enable_lapic();
-
-        }
+	if (bist == 0) {
+		enable_lapic();
+	}
 
 //	post_code(0x32);
 	
@@ -106,7 +90,6 @@ void main(unsigned long bist)
 	dump_smbus_registers();
 #endif
 
-	memreset_setup();
 	sdram_initialize(1, memctrl);
 
 #if 0

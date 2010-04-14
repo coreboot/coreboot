@@ -41,10 +41,6 @@
 #define RECVENA_CONFIG  0x0808090a
 #define RECVENB_CONFIG  0x0808090a
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
@@ -339,7 +335,6 @@ static void main(unsigned long bist)
 	disable_watchdogs();
 //	dump_ipmi_registers();
 	mainboard_set_e7520_leds();	
-//	memreset_setup();
 
 	sdram_initialize(ARRAY_SIZE(mch), mch);
 #if 0

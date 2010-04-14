@@ -102,10 +102,6 @@
 #define RCBA_FD    0x3418 /* 32 bit */
 #define RCBA_PRC   0x341C /* 32 bit */
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	/* nothing to do */
-}
 static inline int spd_read_byte(u16 device, u8 address)
 {
 	return smbus_read_byte(device, address);
@@ -119,8 +115,8 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "northbridge/intel/i3100/reset_test.c"
 #include "debug.c"
 
-void early_config(void) {
-	device_t dev;
+static void early_config(void)
+{
 	u32 gcs, rpc, fd;
 
 	/* Enable RCBA */

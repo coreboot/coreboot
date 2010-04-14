@@ -63,9 +63,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/e7501/reset_test.c"
 #include "lib/generic_sdram.c"
 
-
-
-void stage1_main(unsigned long bist)
+void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {
                 {
@@ -97,8 +95,7 @@ void stage1_main(unsigned long bist)
 //        setup_s2735_resource_map();
 
 	if(bios_reset_detected()) {
-		cpu_reset = 1;
-		goto cpu_reset_x;
+		hard_reset();
 	}
 
 	enable_smbus();
@@ -119,94 +116,5 @@ void stage1_main(unsigned long bist)
 #if 1
         dump_pci_device(PCI_DEV(0, 0, 0));
 #endif
-
-#if 1
-        {
-        	/* Check value of esp to verify if we have enough rom for stack in Cache as RAM */
-	        unsigned v_esp;
-	        __asm__ volatile (
-        	        "movl   %%esp, %0\n\t"
-	                : "=a" (v_esp)
-	        );
-#if CONFIG_USE_PRINTK_IN_CAR
-	        printk(BIOS_DEBUG, "v_esp=%08x\n", v_esp);
-#else
-	        print_debug("v_esp="); print_debug_hex32(v_esp); print_debug("\n");
-#endif
-        }
-
-#endif
-#if 1
-
-cpu_reset_x:
-
-#if CONFIG_USE_PRINTK_IN_CAR
-        printk(BIOS_DEBUG, "cpu_reset = %08x\n",cpu_reset);
-#else
-        print_debug("cpu_reset = "); print_debug_hex32(cpu_reset); print_debug("\n");
-#endif
-
-	if(cpu_reset == 0) {
-	        print_debug("Clearing initial memory region: ");
-	}
-	print_debug("No cache as ram now - ");
-
-	/* store cpu_reset to ebx */
-        __asm__ volatile (
-                "movl %0, %%ebx\n\t"
-                ::"a" (cpu_reset)
-        );
-
-	if(cpu_reset==0) {
-#define CLEAR_FIRST_1M_RAM 1
-#include "cpu/x86/car/cache_as_ram_post.c"
-	}
-	else {
-#undef CLEAR_FIRST_1M_RAM 
-#include "cpu/x86/car/cache_as_ram_post.c"
-	}
-
-	__asm__ volatile (
-                /* set new esp */ /* before CONFIG_RAMBASE */
-                "subl   %0, %%ebp\n\t"
-                "subl   %0, %%esp\n\t"
-                ::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- CONFIG_RAMBASE )
-	);
-
-	{
-		unsigned new_cpu_reset;
-
-		/* get back cpu_reset from ebx */
-		__asm__ volatile (
-			"movl %%ebx, %0\n\t"
-			:"=a" (new_cpu_reset)
-		);
-
-                /* We can not go back any more, we lost old stack data in cache as ram*/
-                if(new_cpu_reset==0) {
-                        print_debug("Use Ram as Stack now - done\n");
-                } else
-                {  
-                        print_debug("Use Ram as Stack now - \n");
-                }
-#if CONFIG_USE_PRINTK_IN_CAR
-                printk(BIOS_DEBUG, "new_cpu_reset = %08x\n", new_cpu_reset);
-#else
-                print_debug("new_cpu_reset = "); print_debug_hex32(new_cpu_reset); print_debug("\n");
-#endif
-	
-#ifdef DEACTIVATE_CAR
-		print_debug("Deactivating CAR");
-#include DEACTIVATE_CAR_FILE
-		print_debug(" - Done.\n");
-#endif
-		/*copy and execute coreboot_ram */
-		copy_and_run(new_cpu_reset);
-		/* We will not return */
-	}
-#endif
-
-	print_debug("should not be here -\n");
-
 }
 

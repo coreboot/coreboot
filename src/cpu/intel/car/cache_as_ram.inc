@@ -126,6 +126,19 @@ clear_fixed_var_mtrr:
 	wrmsr
 
 	jmp	clear_fixed_var_mtrr
+
+fixed_mtrr_msr:
+	.long	0x250, 0x258, 0x259
+	.long	0x268, 0x269, 0x26A
+	.long	0x26B, 0x26C, 0x26D
+	.long	0x26E, 0x26F
+var_mtrr_msr:
+	.long	0x200, 0x201, 0x202, 0x203
+	.long	0x204, 0x205, 0x206, 0x207
+	.long	0x208, 0x209, 0x20A, 0x20B
+	.long	0x20C, 0x20D, 0x20E, 0x20F
+	.long	0x000 /* NULL, end of table */
+
 clear_fixed_var_mtrr_out:
 
 /* 0x06 is the WB IO type for a given 4k segment.
@@ -289,48 +302,118 @@ lout:
 	/* We need to set ebp ? No need */
 	movl	%esp, %ebp
 	pushl	%eax  /* bist */
-	call	stage1_main
-	/* We will not go back */
+	call	main
 
-fixed_mtrr_msr:
-	.long	0x250, 0x258, 0x259
-	.long	0x268, 0x269, 0x26A
-	.long	0x26B, 0x26C, 0x26D
-	.long	0x26E, 0x26F
-var_mtrr_msr:
-	.long	0x200, 0x201, 0x202, 0x203
-	.long	0x204, 0x205, 0x206, 0x207
-	.long	0x208, 0x209, 0x20A, 0x20B
-	.long	0x20C, 0x20D, 0x20E, 0x20F
-	.long	0x000 /* NULL, end of table */
+	/* 
+	FIXME : backup stack in CACHE_AS_RAM into mmx and sse and after we get STACK up, we restore that.
+		It is only needed if we want to go back
+	*/
+	
+        /* We don't need cache as ram for now on */
+        /* disable cache */
+	movl    %cr0, %eax
+	orl    $(0x1<<30),%eax
+	movl    %eax, %cr0
 
-	.align 0x1000
-	.code16
-.global LogicalAP_SIPI
-LogicalAP_SIPI:
-	// cr0 register is shared among the logical processors;
-	// so clear CD & NW bits so that the BSP's cr0 register
-	// controls the cache behavior
-	// Note: The cache behavior is determined by "OR" result
-	// of the cr0 registers of the logical processors
-
-	movl	%cr0, %eax
-	andl	$0x9FFFFFFF, %eax
-	movl	%eax, %cr0
-
-	finit
-
-	// Set the semaphore to indicate the Logical AP is done
-	// with CAR specific initialization
-	movl	$0x250, %ecx
-	movl	$0x06, %eax
-	xorl	%edx, %edx
+        /* clear sth */
+	movl    $0x269, %ecx  /* fix4k_c8000*/
+	xorl    %edx, %edx
+	xorl    %eax, %eax
 	wrmsr
 
-	// Halt this AP
-	cli
-Halt_LogicalAP:
+#if CONFIG_DCACHE_RAM_SIZE > 0x8000
+	movl    $0x268, %ecx  /* fix4k_c0000*/
+	wrmsr
+#endif
+
+        /* Set the default memory type and disable fixed and enable variable MTRRs */
+	movl    $0x2ff, %ecx
+//	movl    $MTRRdefType_MSR, %ecx
+	xorl    %edx, %edx
+        /* Enable Variable and Disable Fixed MTRRs */
+	movl    $0x00000800, %eax
+	wrmsr
+
+#if defined(CLEAR_FIRST_1M_RAM)
+        /* enable caching for first 1M using variable mtrr */
+	movl    $0x200, %ecx
+	xorl    %edx, %edx
+	movl     $(0 | 1), %eax
+//	movl     $(0 | MTRR_TYPE_WRCOMB), %eax
+	wrmsr
+
+	movl    $0x201, %ecx
+	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
+	movl    $((~(( 0 + 0x100000) - 1)) | 0x800), %eax
+	wrmsr
+#endif
+
+        /* enable cache */
+	movl    %cr0, %eax
+	andl    $0x9fffffff,%eax
+	movl    %eax, %cr0
+
+#if defined(CLEAR_FIRST_1M_RAM)
+        /* clear the first 1M */
+	movl    $0x0, %edi
+	cld
+	movl    $(0x100000>>2), %ecx
+	xorl    %eax, %eax
+	rep     stosl
+
+        /* disable cache */
+	movl    %cr0, %eax
+	orl    $(0x1<<30),%eax
+	movl    %eax, %cr0
+
+        /* enable caching for first 1M using variable mtrr */
+	movl    $0x200, %ecx
+	xorl    %edx, %edx
+	movl     $(0 | 6), %eax
+//	movl     $(0 | MTRR_TYPE_WRBACK), %eax
+	wrmsr
+
+	movl    $0x201, %ecx
+	movl    $0x0000000f, %edx /* AMD 40 bit 0xff*/
+	movl    $((~(( 0 + 0x100000) - 1)) | 0x800), %eax
+	wrmsr
+
+        /* enable cache */
+	movl    %cr0, %eax
+	andl    $0x9fffffff,%eax
+	movl    %eax, %cr0
+	invd
+
+	/* FIXME: I hope we don't need to change esp and ebp value here, so we
+	 * can restore value from mmx sse back But the problem is the range is
+	 * some io related, So don't go back
+	 */
+#endif
+
+	/* clear boot_complete flag */
+	xorl	%ebp, %ebp
+__main:
+	post_code(0x11)
+	cld			/* clear direction flag */
+	
+	movl	%ebp, %esi
+
+	/* For now: use CONFIG_RAMBASE + 1MB - 64K (counting downwards) as stack. This
+	 * makes sure that we stay completely within the 1M-64K of memory that we
+	 * preserve for suspend/resume.
+	 */
+
+#ifndef HIGH_MEMORY_SAVE
+#warning Need a central place for HIGH_MEMORY_SAVE
+#define HIGH_MEMORY_SAVE ( (1024 - 64) * 1024 )
+#endif
+	movl $(CONFIG_RAMBASE + HIGH_MEMORY_SAVE), %esp
+	movl	%esp, %ebp
+	pushl %esi
+	call copy_and_run
+
+.Lhlt:	
+	post_code(0xee)
 	hlt
-	jmp	Halt_LogicalAP
-	.code32
-.CacheAsRam_out:
+	jmp	.Lhlt
+

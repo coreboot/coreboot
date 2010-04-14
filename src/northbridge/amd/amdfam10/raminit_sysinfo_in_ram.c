@@ -42,7 +42,7 @@ static void wait_till_sysinfo_in_ram(void)
 		/* give the NB a break, many CPUs spinning on one bit makes a
 		 * lot of traffic and time is not too important to APs.
 		 */
-		udelay_tsc(1000);
+		udelay(1000);
 		if(get_htic_bit(0, 9)) return;
 	}
 }

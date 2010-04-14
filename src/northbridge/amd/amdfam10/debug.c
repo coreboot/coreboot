@@ -23,8 +23,6 @@
 
 #include "amdfam10_pci.c"
 
-static void udelay_tsc(u32 us);
-
 static inline void print_debug_addr(const char *str, void *val)
 {
 #if CACHE_AS_RAM_ADDRESS_DEBUG == 1
@@ -296,7 +294,7 @@ static inline void dump_io_resources(u32 port)
 {
 
 	int i;
-	udelay_tsc(2000);
+	udelay(2000);
 	printk(BIOS_DEBUG, "%04x:\n", port);
 	for(i=0;i<256;i++) {
 		u8 val;

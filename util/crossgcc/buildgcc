@@ -32,8 +32,8 @@ MPFR_VERSION=2.4.2
 GCC_VERSION=4.4.2
 BINUTILS_VERSION=2.20
 GDB_VERSION=7.0
-W32API_VERSION=3.13
-MINGWRT_VERSION=3.16
+W32API_VERSION=3.14
+MINGWRT_VERSION=3.18
 
 # archive locations
 GMP_ARCHIVE="ftp://ftp.gmplib.org/pub/gmp-${GMP_VERSION}/gmp-${GMP_VERSION}.tar.bz2"
@@ -41,7 +41,7 @@ MPFR_ARCHIVE="http://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.
 GCC_ARCHIVE="ftp://ftp.gwdg.de/pub/gnu/ftp/gnu/gcc/gcc-${GCC_VERSION}/gcc-core-${GCC_VERSION}.tar.bz2"
 BINUTILS_ARCHIVE="http://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftp.gnu.org/gnu/gdb/gdb-${GDB_VERSION}.tar.bz2"
-W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20API%20for%20MS-Windows/Current%20Release_%20w32api-${W32API_VERSION}/w32api-${W32API_VERSION}-mingw32-src.tar.gz"
+W32API_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20API%20for%20MS-Windows/w32api-${W32API_VERSION}/w32api-${W32API_VERSION}-mingw32-src.tar.gz"
 MINGWRT_ARCHIVE="http://downloads.sourceforge.net/project/mingw/MinGW%20Runtime/mingwrt-${MINGWRT_VERSION}/mingwrt-${MINGWRT_VERSION}-mingw32-src.tar.gz"
 
 GMP_DIR="gmp-${GMP_VERSION}"
@@ -103,6 +103,7 @@ myhelp()
 	printf "    [-h|--help]                   print this help and exit\n"
 	printf "    [-c|--clean]                  remove temporary files before build\n"
 	printf "    [-t|--savetemps]              don't remove temporary files after build\n"
+	printf "    [-j|--jobs <num>]             run <num> jobs in parallel in make\n"
 	printf "    [-p|--platform <platform>]    target platform to build cross compiler for\n"
 	printf "                                  (defaults to $TARGETARCH)\n"
 	printf "    [-d|--directory <target dir>] target directory to install cross compiler to\n"
@@ -140,11 +141,11 @@ getopt - > /dev/null 2>/dev/null || gcc -o getopt getopt.c
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,help,clean,directory:,platform:,destdir:,savetemps Vhcd:p:D:t -- "$@"`
+	args=`getopt -l version,help,clean,directory:,platform:,jobs:,destdir:,savetemps Vhcd:p:j:D:t -- "$@"`
 	eval set "$args"
 else
 	# Detected non-GNU getopt
-	args=`getopt Vhcd:p:D:t $*`
+	args=`getopt Vhcd:p:j:D:t $*`
 	set -- $args
 fi
 
@@ -162,6 +163,7 @@ while true ; do
 		-d|--directory)	shift; TARGETDIR="$1"; shift;;
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
 		-D|--destdir)	shift; DESTDIR="$1"; shift;;
+		-j|--jobs)	shift; JOBS="-j $1"; shift;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
@@ -245,7 +247,7 @@ printf "Building GMP ${GMP_VERSION} ... "
 
 	../${GMP_DIR}/configure --disable-shared --prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
-	$MAKE || touch .failed
+	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) &> build-gmp/crossgcc-build.log
@@ -272,7 +274,7 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 	../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info \
 		--with-gmp=$DESTDIR$TARGETDIR CFLAGS="$HOSTCFLAGS" || touch .failed
-	$MAKE || touch .failed
+	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 
 	# work around build problem of libgmp.la
@@ -296,7 +298,7 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
 		--disable-werror --disable-nls \
 		CFLAGS="$HOSTCFLAGS" || touch .failed
-	$MAKE || touch .failed
+	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) &> build-binutils/crossgcc-build.log
@@ -322,7 +324,7 @@ printf "Building GCC ${GCC_VERSION} ... "
 		--disable-libssp --disable-bootstrap --disable-nls \
 		--with-gmp=$DESTDIR$TARGETDIR --with-mpfr=$DESTDIR$TARGETDIR \
 		|| touch .failed
-	$MAKE CFLAGS_FOR_BUILD="$HOSTCFLAGS" || touch .failed
+	$MAKE $JOBS CFLAGS_FOR_BUILD="$HOSTCFLAGS" || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) &> build-gcc/crossgcc-build.log
@@ -340,7 +342,7 @@ printf "Building GDB ${GDB_VERSION} ... "
 	rm -f .failed
 	../gdb-${GDB_VERSION}/configure --prefix=$TARGETDIR --target=${TARGETARCH} \
 		--disable-werror --disable-nls
-	$MAKE || touch .failed
+	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) &> build-gdb/crossgcc-build.log

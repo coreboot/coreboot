@@ -17,6 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* FIXME this should go away */
+static const struct mem_controller ctrl = {
+	.channel0 = {0x50, 0x51},
+};
+
 #define SMBUS_ADDR_CH_A_1       0xA0	/* Dimmx */
 #define SMBUS_ADDR_CH_A_2       0xA2	/* Dimmx */
 #define SMBUS_ADDR_CH_B_1       0xA4	/* Dimmx */

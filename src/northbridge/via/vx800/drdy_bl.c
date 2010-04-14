@@ -404,10 +404,7 @@ static const u8 PT894_64bit_DELAYMD1_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 
 void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 {
-	u8 Data, CL, RDRPH;
-	u8 CpuFreq, DramFreq;
-	u8 ProgData[PT894_RDRDY_TBL_Width];
-
+	u8 Data;
 	/*
 	   this function has 3 switchs, correspond to 3 level of Drdy setting.
 	   0:Slowest, 1:Default, 2:Optimize
@@ -464,6 +461,9 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 	}
 #endif
 #if 0				//  2:Optimize
+	u8 CpuFreq, DramFreq;
+	u8 CL, RDRPH;
+
 	//CL :reg6x[2:0]
 	Data = pci_read_config8(MEMCTRL, 0x62);
 	CL = Data & 0x07;
@@ -483,6 +483,8 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 	u8 DelayMode;
 	DelayMode = CL + RDRPH;	// RDELAYMD = bit0 of (CAS Latency + RDRPH)
 	DelayMode &= 0x01;
+
+	u8 ProgData[PT894_RDRDY_TBL_Width];
 
 	//In 364, there is no 128 bit
 	if (DelayMode == 1) {	// DelayMode 1

@@ -244,14 +244,14 @@ static void enable_smbus(void)
  *       be created just for it. If some other chip needs/wants it, we can
  *       worry about it then.
  *
- * @param ctrl The memory controller and SMBus addresses.
+ * @param mem_ctrl The memory controller and SMBus addresses.
  */
-void smbus_fixup(const struct mem_controller *ctrl)
+static void smbus_fixup(const struct mem_controller *mem_ctrl)
 {
 	int i, ram_slots, current_slot = 0;
 	u8 result = 0;
 
-	ram_slots = ARRAY_SIZE(ctrl->channel0);
+	ram_slots = ARRAY_SIZE(mem_ctrl->channel0);
 	if (!ram_slots) {
 		print_err("smbus_fixup() thinks there are no RAM slots!\n");
 		return;
@@ -272,7 +272,7 @@ void smbus_fixup(const struct mem_controller *ctrl)
 		if (current_slot > ram_slots)
 			current_slot = 0;
 
-		result = get_spd_data(ctrl->channel0[current_slot],
+		result = get_spd_data(mem_ctrl->channel0[current_slot],
 				      SPD_MEMORY_TYPE);
 		current_slot++;
 		PRINT_DEBUG(".");

@@ -121,10 +121,6 @@ struct mem_controller {
 	u8 channel0[MAX_DIMMS];
 };
 
-static const struct mem_controller ctrl = {
-	.channel0 = {0x50, 0x51},
-};
-
 typedef struct _DRAM_CONFIG_DATA {
 	u8 DramClk;
 	u8 DramTiming;

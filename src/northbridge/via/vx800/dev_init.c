@@ -166,7 +166,7 @@ Purpose   : DRAM initialize according to the bios porting guid
 #define EXIST_TEST_PATTERN		0x55555555
 #define NOT_EXIST_TEST_PATTERN		0xAAAAAAAA
 
-BOOLEAN ChkForExistLowBank(void)
+static BOOLEAN ChkForExistLowBank(void)
 {
 	u32 *Address, data32;
 
@@ -206,9 +206,6 @@ BOOLEAN ChkForExistLowBank(void)
 
 	return TRUE;
 }
-
-void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr);
-void InitDDR2CHB(DRAM_SYS_ATTR *DramAttr);
 
 void DRAMInitializeProc(DRAM_SYS_ATTR *DramAttr)
 {

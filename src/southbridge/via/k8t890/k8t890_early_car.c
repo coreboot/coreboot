@@ -34,7 +34,7 @@
 
 
 /* AMD K8 LDT0, LDT1, LDT2 Link Control Registers */
-static ldtreg[3] = {0x86, 0xa6, 0xc6};
+static u8 ldtreg[3] = {0x86, 0xa6, 0xc6};
 
 /* This functions sets KT890 link frequency and width to same values as
  * it has been setup on K8 side, by AMD NB init.

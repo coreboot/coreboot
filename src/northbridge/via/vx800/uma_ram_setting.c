@@ -71,7 +71,7 @@ void SetUMARam(void)
 	u8 ramregs[] = { 0x43, 0x42, 0x41, 0x40 };
 	device_t vga_dev = PCI_DEV(0, 1, 0), d0f0_dev = PCI_DEV(0, 0, 0);
 	u8 ByteVal, temp;
-	UMARAM *pUMARamTable;
+	const UMARAM *pUMARamTable;
 	u16 UmaSize;
 	u8 SLD0F3Val, SLD1F0Val, VgaPortVal;
 	u32 RamSize, SLBase, Tmp;

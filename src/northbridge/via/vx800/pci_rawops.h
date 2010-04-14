@@ -37,13 +37,16 @@ struct VIA_PCI_REG_INIT_TABLE {
 	u8 Mask;
 	u8 Value;
 };
+
 typedef unsigned device_t_raw;	/* pci and pci_mmio need to have different ways to have dev */
+
+#warning "FIXME: get rid of this extra copy of pci access functions."
 
 /* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G,
  * We don't need to set %fs, and %gs anymore
  * Before that We need to use %gs, and leave %fs to other RAM access
  */
-u8 pci_io_rawread_config8(device_t_raw dev, unsigned where)
+static u8 pci_io_rawread_config8(device_t_raw dev, unsigned where)
 {
 	unsigned addr;
 #if CONFIG_PCI_IO_CFG_EXT == 0
@@ -56,14 +59,14 @@ u8 pci_io_rawread_config8(device_t_raw dev, unsigned where)
 }
 
 #if CONFIG_MMCONF_SUPPORT
-u8 pci_mmio_rawread_config8(device_t_raw dev, unsigned where)
+static u8 pci_mmio_rawread_config8(device_t_raw dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
 	return read8x(addr);
 }
 #endif
-u8 pci_rawread_config8(device_t_raw dev, unsigned where)
+static u8 pci_rawread_config8(device_t_raw dev, unsigned where)
 {
 #if CONFIG_MMCONF_SUPPORT
 	return pci_mmio_rawread_config8(dev, where);
@@ -72,7 +75,7 @@ u8 pci_rawread_config8(device_t_raw dev, unsigned where)
 #endif
 }
 
-u16 pci_io_rawread_config16(device_t_raw dev, unsigned where)
+static u16 pci_io_rawread_config16(device_t_raw dev, unsigned where)
 {
 	unsigned addr;
 #if CONFIG_PCI_IO_CFG_EXT == 0
@@ -85,7 +88,7 @@ u16 pci_io_rawread_config16(device_t_raw dev, unsigned where)
 }
 
 #if CONFIG_MMCONF_SUPPORT
-u16 pci_mmio_rawread_config16(device_t_raw dev, unsigned where)
+static u16 pci_mmio_rawread_config16(device_t_raw dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -93,7 +96,7 @@ u16 pci_mmio_rawread_config16(device_t_raw dev, unsigned where)
 }
 #endif
 
-u16 pci_rawread_config16(device_t_raw dev, unsigned where)
+static u16 pci_rawread_config16(device_t_raw dev, unsigned where)
 {
 #if CONFIG_MMCONF_SUPPORT
 	return pci_mmio_rawread_config16(dev, where);
@@ -102,7 +105,7 @@ u16 pci_rawread_config16(device_t_raw dev, unsigned where)
 #endif
 }
 
-u32 pci_io_rawread_config32(device_t_raw dev, unsigned where)
+static u32 pci_io_rawread_config32(device_t_raw dev, unsigned where)
 {
 	unsigned addr;
 #if CONFIG_PCI_IO_CFG_EXT == 0
@@ -115,7 +118,7 @@ u32 pci_io_rawread_config32(device_t_raw dev, unsigned where)
 }
 
 #if CONFIG_MMCONF_SUPPORT
-u32 pci_mmio_rawread_config32(device_t_raw dev, unsigned where)
+static u32 pci_mmio_rawread_config32(device_t_raw dev, unsigned where)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -123,7 +126,7 @@ u32 pci_mmio_rawread_config32(device_t_raw dev, unsigned where)
 }
 #endif
 
-u32 pci_rawread_config32(device_t_raw dev, unsigned where)
+static u32 pci_rawread_config32(device_t_raw dev, unsigned where)
 {
 #if CONFIG_MMCONF_SUPPORT
 	return pci_mmio_rawread_config32(dev, where);
@@ -132,7 +135,7 @@ u32 pci_rawread_config32(device_t_raw dev, unsigned where)
 #endif
 }
 
-void pci_io_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
+static void pci_io_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
 {
 	unsigned addr;
 #if CONFIG_PCI_IO_CFG_EXT == 0
@@ -145,7 +148,7 @@ void pci_io_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
 }
 
 #if CONFIG_MMCONF_SUPPORT
-void pci_mmio_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
+static void pci_mmio_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -153,7 +156,7 @@ void pci_mmio_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
 }
 #endif
 
-void pci_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
+static void pci_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
 {
 #if CONFIG_MMCONF_SUPPORT
 	pci_mmio_rawwrite_config8(dev, where, value);
@@ -162,7 +165,7 @@ void pci_rawwrite_config8(device_t_raw dev, unsigned where, u8 value)
 #endif
 }
 
-void pci_io_rawwrite_config16(device_t_raw dev, unsigned where, u16 value)
+static void pci_io_rawwrite_config16(device_t_raw dev, unsigned where, u16 value)
 {
 	unsigned addr;
 #if CONFIG_PCI_IO_CFG_EXT == 0
@@ -175,7 +178,7 @@ void pci_io_rawwrite_config16(device_t_raw dev, unsigned where, u16 value)
 }
 
 #if CONFIG_MMCONF_SUPPORT
-void pci_mmio_rawwrite_config16(device_t_raw dev, unsigned where,
+static void pci_mmio_rawwrite_config16(device_t_raw dev, unsigned where,
 				u16 value)
 {
 	unsigned addr;
@@ -184,7 +187,7 @@ void pci_mmio_rawwrite_config16(device_t_raw dev, unsigned where,
 }
 #endif
 
-void pci_rawwrite_config16(device_t_raw dev, unsigned where, u16 value)
+static void pci_rawwrite_config16(device_t_raw dev, unsigned where, u16 value)
 {
 #if CONFIG_MMCONF_SUPPORT
 	pci_mmio_rawwrite_config16(dev, where, value);
@@ -193,7 +196,7 @@ void pci_rawwrite_config16(device_t_raw dev, unsigned where, u16 value)
 #endif
 }
 
-void pci_io_rawwrite_config32(device_t_raw dev, unsigned where, u32 value)
+static void pci_io_rawwrite_config32(device_t_raw dev, unsigned where, u32 value)
 {
 	unsigned addr;
 #if CONFIG_PCI_IO_CFG_EXT == 0
@@ -206,8 +209,7 @@ void pci_io_rawwrite_config32(device_t_raw dev, unsigned where, u32 value)
 }
 
 #if CONFIG_MMCONF_SUPPORT
-void pci_mmio_rawwrite_config32(device_t_raw dev, unsigned where,
-				u32 value)
+static void pci_mmio_rawwrite_config32(device_t_raw dev, unsigned where, u32 value)
 {
 	unsigned addr;
 	addr = dev | where;
@@ -215,7 +217,7 @@ void pci_mmio_rawwrite_config32(device_t_raw dev, unsigned where,
 }
 #endif
 
-void pci_rawwrite_config32(device_t_raw dev, unsigned where, u32 value)
+static void pci_rawwrite_config32(device_t_raw dev, unsigned where, u32 value)
 {
 #if CONFIG_MMCONF_SUPPORT
 	pci_mmio_rawwrite_config32(dev, where, value);
@@ -224,7 +226,7 @@ void pci_rawwrite_config32(device_t_raw dev, unsigned where, u32 value)
 #endif
 }
 
-void pci_rawmodify_config8(device_t_raw dev, unsigned where, u8 orval, u8 mask)
+static void pci_rawmodify_config8(device_t_raw dev, unsigned where, u8 orval, u8 mask)
 {
 	u8 data = pci_rawread_config8(dev, where);
 	data &= (~mask);
@@ -232,7 +234,7 @@ void pci_rawmodify_config8(device_t_raw dev, unsigned where, u8 orval, u8 mask)
 	pci_rawwrite_config8(dev, where, data);
 }
 
-void pci_rawmodify_config16(device_t_raw dev, unsigned where, u16 orval, u16 mask)
+static void pci_rawmodify_config16(device_t_raw dev, unsigned where, u16 orval, u16 mask)
 {
 	u16 data = pci_rawread_config16(dev, where);
 	data &= (~mask);
@@ -240,7 +242,7 @@ void pci_rawmodify_config16(device_t_raw dev, unsigned where, u16 orval, u16 mas
 	pci_rawwrite_config16(dev, where, data);
 }
 
-void pci_rawmodify_config32(device_t_raw dev, unsigned where, u32 orval, u32 mask)
+static void pci_rawmodify_config32(device_t_raw dev, unsigned where, u32 orval, u32 mask)
 {
 	u32 data = pci_rawread_config32(dev, where);
 	data &= (~mask);
@@ -248,7 +250,7 @@ void pci_rawmodify_config32(device_t_raw dev, unsigned where, u32 orval, u32 mas
 	pci_rawwrite_config32(dev, where, data);
 }
 
-void io_rawmodify_config8(u16 where, u8 orval, u8 mask)
+static void io_rawmodify_config8(u16 where, u8 orval, u8 mask)
 {
 	u8 data = inb(where);
 	data &= (~mask);
@@ -256,8 +258,8 @@ void io_rawmodify_config8(u16 where, u8 orval, u8 mask)
 	outb(data, where);
 }
 
-void via_pci_inittable(u8 chipversion,
-		       struct VIA_PCI_REG_INIT_TABLE *initdata)
+static void via_pci_inittable(u8 chipversion,
+		       const struct VIA_PCI_REG_INIT_TABLE *initdata)
 {
 	u8 i = 0;
 	device_t_raw devbxdxfx;

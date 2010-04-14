@@ -35,8 +35,8 @@ for make in make gmake gnumake; do
 done
 
 GCCPREFIX=invalid
-TMP=`mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz`
-touch $TMP
+TMPFILE=`mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz`
+touch $TMPFILE
 
 # This should be a loop over all supported architectures
 TARCH=i386
@@ -45,9 +45,9 @@ for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/${TARCH}-elf- ${TARCH}-elf- ""; 
 	if ! which ${gccprefixes}as 2>/dev/null >/dev/null; then
 		continue
 	fi
-	rm -f ${TMP}.o
-	if ${gccprefixes}as -o ${TMP}.o ${TMP}; then
-		TYPE=`${gccprefixes}objdump -p ${TMP}.o`
+	rm -f ${TMPFILE}.o
+	if ${gccprefixes}as -o ${TMPFILE}.o ${TMPFILE}; then
+		TYPE=`${gccprefixes}objdump -p ${TMPFILE}.o`
 		if [ ${TYPE##* } == "elf${TWIDTH}-${TARCH}" ]; then
 			GCCPREFIX=$gccprefixes
 			ASFLAGS=
@@ -56,8 +56,8 @@ for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/${TARCH}-elf- ${TARCH}-elf- ""; 
 			break
 		fi
 	fi
-	if ${gccprefixes}as --32 -o ${TMP}.o ${TMP}; then
-		TYPE=`${gccprefixes}objdump -p ${TMP}.o`
+	if ${gccprefixes}as --32 -o ${TMPFILE}.o ${TMPFILE}; then
+		TYPE=`${gccprefixes}objdump -p ${TMPFILE}.o`
 		if [ ${TYPE##* } == "elf${TWIDTH}-${TARCH}" ]; then
 			GCCPREFIX=$gccprefixes
 			ASFLAGS=--32
@@ -67,7 +67,7 @@ for gccprefixes in `pwd`/util/crossgcc/xgcc/bin/${TARCH}-elf- ${TARCH}-elf- ""; 
 		fi
 	fi
 done
-rm -f $TMP ${TMP}.o
+rm -f $TMPFILE ${TMPFILE}.o
 
 if [ "$GCCPREFIX" = "invalid" ]; then
 	echo '$(error no suitable gcc found)'

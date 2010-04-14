@@ -33,7 +33,7 @@ void InterleaveNodes_D(struct MCTStatStruc *pMCTstat,
 	u8 DoIntlv;
 	u8 _NdIntCap;
 	u8 _SWHole;
-	u8 HWHoleSz;
+	u32 HWHoleSz;
 	u32 DramHoleAddrReg;
 	u32 HoleBase;
 	u32 dev0;

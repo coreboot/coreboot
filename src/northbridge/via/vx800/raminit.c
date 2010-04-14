@@ -55,9 +55,8 @@
  * Support one dimm with up to 2 ranks
  */
 
-static void ddr2_ram_setup()
+static void ddr2_ram_setup(void)
 {
-	u8 Data;
 	CB_STATUS Status;
 	PRINT_DEBUG_MEM("In ddr2_ram_setup\r");
 

@@ -388,7 +388,7 @@ static int mcp55_early_setup_x(void)
 	int mcp55_num = 0;
 	unsigned busnx;
 	unsigned devnx;
-	int ht_c_index,j;
+	int ht_c_index;
 
 	/* FIXME: multi pci segment handling */
 

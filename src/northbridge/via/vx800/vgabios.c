@@ -299,8 +299,6 @@ void do_vgabios(void)
 	unsigned char *buf;
 	unsigned int size = 64 * 1024;
 	int i;
-	u16 tmp;
-	u8 tmp8;
 
 	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
@@ -646,15 +644,7 @@ pcibios(unsigned long *pedi, unsigned long *pesi, unsigned long *pebp,
 	unsigned long *pesp, unsigned long *pebx, unsigned long *pedx,
 	unsigned long *pecx, unsigned long *peax, unsigned long *pflags)
 {
-	unsigned long edi = *pedi;
-	unsigned long esi = *pesi;
-	unsigned long ebp = *pebp;
-	unsigned long esp = *pesp;
-	unsigned long ebx = *pebx;
-	unsigned long edx = *pedx;
-	unsigned long ecx = *pecx;
 	unsigned long eax = *peax;
-	unsigned long flags = *pflags;
 	unsigned short func = (unsigned short)eax;
 	int retval = 0;
 	unsigned short devid, vendorid, devfn;

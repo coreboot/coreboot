@@ -39,10 +39,6 @@
 #include "superio/winbond/w83697hf/w83697hf_early_serial.c"
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
-static void memreset_setup(void)
-{
-}
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
@@ -53,8 +49,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void enable_mainboard_devices(void)
 {
 	device_t dev;
-	u8 reg;
- 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 	if (dev == PCI_DEV_INVALID)
 		die("Southbridge not found!!!\n");
@@ -89,9 +83,6 @@ static const struct mem_controller ctrl = {
 
 void main(unsigned long bist)
 {
-	unsigned long x;
-	device_t dev;
-
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 

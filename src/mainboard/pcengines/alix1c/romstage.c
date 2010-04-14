@@ -145,8 +145,6 @@ void cache_as_ram_main(void)
 		{.channel0 = {0x50}},
 	};
 
-	extern void RestartCAR();
-
 	post_code(0x01);
 
 	SystemPreInit();

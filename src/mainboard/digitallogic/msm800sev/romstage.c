@@ -51,7 +51,6 @@ static void msr_init(void)
 	msr.hi = 0x20000000;
 	msr.lo =  0xfff00;
 	wrmsr(MSR_GLIU1 + 0x20, msr);
-
 }
 
 static void mb_gpio_init(void)
@@ -61,7 +60,6 @@ static void mb_gpio_init(void)
 
 void cache_as_ram_main(void)
 {
-	extern void RestartCAR();
 	post_code(0x01);
 
 	static const struct mem_controller memctrl [] = {

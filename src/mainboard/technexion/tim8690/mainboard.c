@@ -54,7 +54,7 @@ uint64_t uma_memory_base, uma_memory_size;
 * Both of their pin PERSTn pins are connected to GPIO 5 of the
 * SB600 southbridge.
 ****************************************************/
-static void enable_onboard_nic()
+static void enable_onboard_nic(void)
 {
 
 	u8 byte;
@@ -80,7 +80,7 @@ static void enable_onboard_nic()
 
 /* set thermal config
  */
-static void set_thermal_config()
+static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;

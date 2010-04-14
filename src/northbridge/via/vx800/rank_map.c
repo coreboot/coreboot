@@ -138,7 +138,6 @@ void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr)
 	u32 Size;
 	BOOLEAN HasThreeBitBA;
 	u8 Data;
-	u32 Address;
 
 	HasThreeBitBA = FALSE;
 	for (Slot = 0; Slot < 2; Slot++) {

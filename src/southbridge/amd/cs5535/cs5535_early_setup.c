@@ -23,11 +23,11 @@ static void cs5535_setup_extmsr(void)
 
 	/* forward MSR access to CS5535_GLINK_PORT_NUM to CS5535_DEV_NUM */
 	msr.hi = msr.lo = 0x00000000;
-	if (CS5535_GLINK_PORT_NUM <= 4) {
-		msr.lo = CS5535_DEV_NUM << ((CS5535_GLINK_PORT_NUM - 1) * 8);
-	} else {
-		msr.hi = CS5535_DEV_NUM << ((CS5535_GLINK_PORT_NUM - 5) * 8);
-	}
+#if CS5535_GLINK_PORT_NUM <= 4
+	msr.lo = CS5535_DEV_NUM << ((CS5535_GLINK_PORT_NUM - 1) * 8);
+#else
+	msr.hi = CS5535_DEV_NUM << ((CS5535_GLINK_PORT_NUM - 5) * 8);
+#endif
 	wrmsr(0x5000201e, msr);
 }
 

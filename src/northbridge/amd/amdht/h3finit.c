@@ -1692,7 +1692,7 @@ void tuning(sMainData *pDat)
  *	@param[out] result BOOL  = true if check is ok, false if it failed
  * ---------------------------------------------------------------------------------------
  */
-BOOL isSanityCheckOk()
+BOOL isSanityCheckOk(void)
 {
 	uint64 qValue;
 

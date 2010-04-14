@@ -268,10 +268,7 @@ uint32_t VSA_msrRead(uint32_t msrAddr)
 
 void do_vsmbios(void)
 {
-	device_t dev;
-	unsigned long busdevfn;
 	unsigned char *buf;
-	unsigned int size = SMM_SIZE * 1024;
 	int i;
 
 	printk(BIOS_ERR, "do_vsmbios\n");

@@ -120,7 +120,7 @@ static const u8 CL_DDR2[7] = { 0, 0, 20, 30, 40, 50, 60 };
 void CalcCLAndFreq(DRAM_SYS_ATTR * DramAttr)
 {
 	u8 AllDimmSupportedCL, Tmp;
-	u8 CLMask, tmpMask, IndexDelta;
+	u8 CLMask, tmpMask;
 	u8 SckId, BitId, TmpId;
 	u16 CycTime, TmpCycTime;
 

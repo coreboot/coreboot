@@ -60,7 +60,10 @@ static void northbridge_init(device_t dev)
 	}
 }
 
-static void nullfunc(){}
+static void nullfunc(void)
+{
+	/* Nothing to do */
+}
 
 static struct device_operations northbridge_operations = {
 	.read_resources   = nullfunc,
@@ -104,7 +107,7 @@ static const struct pci_driver agp_driver __pci_driver = {
 
 static void vga_init(device_t dev)
 {
-//	unsigned long fb;
+	//unsigned long fb;
 	//msr_t clocks1,clocks2,instructions,setup;
 
 	printk(BIOS_DEBUG, "VGA random fixup ...\n");

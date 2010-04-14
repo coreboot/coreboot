@@ -17,12 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-CB_STATUS DDR2_DRAM_INIT()
+CB_STATUS DDR2_DRAM_INIT(void)
 {
-	CB_STATUS Status;
 	u8 i;
 	u32 RamSize;
-	BOOLEAN bTest;
 	DRAM_SYS_ATTR DramAttr;
 
 	PRINT_DEBUG_MEM("DRAM_INIT \r");
@@ -76,7 +74,7 @@ CB_STATUS DDR2_DRAM_INIT()
 	PRINT_DEBUG_MEM_HEX32(RamSize);
 	PRINT_DEBUG_MEM("\r");
 	DumpRegisters(0, 3);
-	//bTest = DramBaseTest( M1, RamSize - M1 * 2,SPARE, FALSE);
+	//BOOLEAN bTest = DramBaseTest( M1, RamSize - M1 * 2,SPARE, FALSE);
 	/* the memory can not correct work, this is because the user set the incorrect memory
 	   parameter from setup interface.so we must set the boot mode to recovery mode, let
 	   the system to reset and use the spd value to initialize the memory */

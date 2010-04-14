@@ -123,9 +123,9 @@ struct msr_defaults {
 };
 
 /* note that dev is NOT used -- yet */
-static void irq_init_steering(struct device *dev, uint16_t irq_map) {
+static void irq_init_steering(struct device *dev, u16 irq_map) {
 	/* Set up IRQ steering */
-	uint32_t pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
+	u32 pciAddr = 0x80000000 | (CHIPSET_DEV_NUM << 11) | 0x5C;
 
 	printk(BIOS_DEBUG, "%s(%p [%08X], %04X)\n", __func__, dev, pciAddr, irq_map);
 
@@ -298,17 +298,17 @@ static void northbridge_init(device_t dev)
 /* this is a test -- we are not sure it will work -- but it ought to */
 static void set_resources(struct device *dev)
 {
-        struct resource *resource, *last;
-        unsigned link;
-        uint8_t line;
-
 #if 0
+        struct resource *resource, *last;
+
         last = &dev->resource[dev->resources];
 
         for(resource = &dev->resource[0]; resource < last; resource++) {
                 pci_set_resource(dev, resource);
         }
 #endif
+        unsigned link;
+
         for(link = 0; link < dev->links; link++) {
                 struct bus *bus;
                 bus = &dev->link[link];
@@ -327,7 +327,7 @@ static void set_resources(struct device *dev)
         }
 
         /* zero the irq settings */
-        line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
+        u8 line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
         if (line) {
                 pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
         }
@@ -383,10 +383,10 @@ static void tolm_test(void *gp, struct device *dev, struct resource *new)
 }
 
 #if 0
-static uint32_t find_pci_tolm(struct bus *bus)
+static u32 find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
-	uint32_t tolm;
+	u32 tolm;
 	min = 0;
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
 	tolm = 0xffffffffUL;
@@ -402,7 +402,7 @@ static void pci_domain_set_resources(device_t dev)
 {
 #if 0
 	device_t mc_dev;
-        uint32_t pci_tolm;
+        u32 pci_tolm;
 
         pci_tolm = find_pci_tolm(&dev->link[0]);
 	mc_dev = dev->link[0].children;

@@ -26,7 +26,7 @@ void InitDDR2CHA(DRAM_SYS_ATTR *DramAttr);
 void InitDDR2CHB(DRAM_SYS_ATTR *DramAttr);
 void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr);
 
-CB_STATUS VerifyChc();
+CB_STATUS VerifyChc(void);
 
 /*===================================================================
 Function   : DRAMRegInitValue()

@@ -253,9 +253,9 @@ void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr);
 void DRAMRegFinalValue(DRAM_SYS_ATTR * DramAttr);
 
 /*set UMA*/
-void SetUMARam();
+void SetUMARam(void);
 
 CB_STATUS InstallMemory(DRAM_SYS_ATTR * DramAttr, u32 RamSize);
-CB_STATUS DDR2_DRAM_INIT();
+CB_STATUS DDR2_DRAM_INIT(void);
 
 #endif

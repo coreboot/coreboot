@@ -57,7 +57,7 @@ uint64_t uma_memory_base, uma_memory_size;
 * RRG4.2.3.1 GPM pins as Input
 * RRG4.2.3.2 GPM pins as Output
 ********************************************************/
-static void enable_onboard_nic()
+static void enable_onboard_nic(void)
 {
 	u8 byte;
 
@@ -94,7 +94,7 @@ static void enable_onboard_nic()
 * IDE_DMA66 is routed to GPIO 9. So we read Gpio 9 to
 * get the cable type, 40 pin or 80 pin?
 ********************************************************/
-static void get_ide_dma66()
+static void get_ide_dma66(void)
 {
 	u8 byte;
 	struct device *sm_dev;
@@ -120,7 +120,7 @@ static void get_ide_dma66()
 /*
  * set thermal config
  */
-static void set_thermal_config()
+static void set_thermal_config(void)
 {
 	u8 byte;
 	u16 word;

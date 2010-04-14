@@ -489,7 +489,10 @@ static void ati_ragexl_init(device_t dev)
     	int j;
     	u16 type;
         u8 rev;
-    	const char *chipname = NULL, *xtal;
+    	const char *chipname = NULL;
+#if CONFIG_CONSOLE_BTEXT
+	const char *xtal;
+#endif
     	int pll, mclk, xclk;
 
 #if CONFIG_CONSOLE_BTEXT==1

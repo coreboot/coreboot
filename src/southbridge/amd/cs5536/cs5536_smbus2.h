@@ -239,9 +239,9 @@ static void _doread(unsigned smbus_io_base, unsigned char device,
 		*data++ = val;
 
 		if (count > 1) {
-			int ret = smbus_wait(smbus_io_base);
+			ret = smbus_wait(smbus_io_base);
 			if (ret)
-				return ret;
+				return;
 		}
 
 		count--;

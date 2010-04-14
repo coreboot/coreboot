@@ -41,7 +41,7 @@ void dump_south(device_t dev0)
 	}
 }
 
-void set_led()
+void set_led(void)
 {
 	// set power led to steady now that lxbios has virtually done its job
 	device_t dev;

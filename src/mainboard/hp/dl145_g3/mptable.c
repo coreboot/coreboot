@@ -50,8 +50,6 @@ static void *smp_write_config_table(void *v)
 	static const char productid[12] = "TREX        ";
 	struct mp_config_table *mc;
 
-	unsigned char bus_num;
-	int i;
 	struct mb_sysconf_t *m;
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -78,11 +76,13 @@ static void *smp_write_config_table(void *v)
 
 	/*Bus:         Bus ID  Type*/
 	/* define bus and isa numbers */
-/*	for(bus_num = 0; bus_num < m->bus_isa; bus_num++) {
+#if 0
+	unsigned char bus_num;
+	for(bus_num = 0; bus_num < m->bus_isa; bus_num++) {
 		smp_write_bus(mc, bus_num, "PCI   ");
 		printk(BIOS_DEBUG, "writing bus %d as PCI...\n",bus_num);
 	}
-	*/
+#endif
 	smp_write_bus(mc, 0, "PCI   ");
 	smp_write_bus(mc, 1, "PCI   ");
 	smp_write_bus(mc, 7, "PCI   ");

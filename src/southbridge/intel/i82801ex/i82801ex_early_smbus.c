@@ -66,8 +66,6 @@ static void smbus_write_byte(unsigned device, unsigned address, unsigned char va
 static int smbus_write_block(unsigned device, unsigned length, unsigned cmd, 
 		 unsigned data1, unsigned data2)
 {
-	unsigned char global_control_register;
-	unsigned char global_status_register;
 	unsigned char byte;
 	unsigned char stat;
 	int i;

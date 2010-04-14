@@ -407,9 +407,6 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 	u8 Data, CL, RDRPH;
 	u8 CpuFreq, DramFreq;
 	u8 ProgData[PT894_RDRDY_TBL_Width];
-	u8 DelayMode;
-	u8 DrdyMode;
-	u8 Index;
 
 	/*
 	   this function has 3 switchs, correspond to 3 level of Drdy setting.
@@ -483,16 +480,19 @@ void DRAMDRDYSetting(DRAM_SYS_ATTR * DramAttr)
 	Data = pci_read_config8(MEMCTRL, 0x90);
 	DramFreq = Data & 0x07;
 
+	u8 DelayMode;
 	DelayMode = CL + RDRPH;	// RDELAYMD = bit0 of (CAS Latency + RDRPH)
 	DelayMode &= 0x01;
 
 	//In 364, there is no 128 bit
 	if (DelayMode == 1) {	// DelayMode 1
+		u8 Index;
 		for (Index = 0; Index < PT894_RDRDY_TBL_Width; Index++)
 			ProgData[Index] =
 			    PT894_64bit_DELAYMD1_RCONV0[CpuFreq][DramFreq]
 			    [Index];
 	} else {		// DelayMode 0
+		u8 Index;
 		for (Index = 0; Index < PT894_RDRDY_TBL_Width; Index++)
 			ProgData[Index] =
 			    PT894_64bit_DELAYMD0_RCONV0[CpuFreq][DramFreq]

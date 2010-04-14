@@ -336,7 +336,7 @@ void do_vgabios(void)
 {
 	device_t dev;
 	unsigned long busdevfn;
-	unsigned int rom = 0;
+	u32 rom;
 	unsigned char *buf;
 	unsigned int size = 64*1024;
 	int i;
@@ -357,7 +357,7 @@ void do_vgabios(void)
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
 
-        rom = cbfs_load_optionrom(dev->vendor, dev->device, 0);
+        rom = (u32)cbfs_load_optionrom(dev->vendor, dev->device, 0);
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom|1);
 	printk(BIOS_DEBUG, "VGA BIOS ROM base address: %x\n", rom);
 

@@ -158,6 +158,7 @@ static void real_mode_switch_call_vga(unsigned long devfn)
 				    /* put the stack at the end of page zero. 
 				     * that way we can easily share it between real and protected, 
 				     * since the 16-bit ESP at segment 0 will work for any case. 
+				     */
 				     /* Setup a stack */
 				    "	mov	$0x0, %ax	\n"
 				    "	mov	%ax, %ss	\n"
@@ -240,6 +241,7 @@ void vga_enable_console()
 				    /* put the stack at the end of page zero. 
 				     * that way we can easily share it between real and protected, 
 				     * since the 16-bit ESP at segment 0 will work for any case. 
+				     */
 				     /* Setup a stack */
 				    "	mov	$0x0, %ax	\n"
 				    "	mov	%ax, %ss	\n"
@@ -295,7 +297,7 @@ void do_vgabios(void)
 {
 	device_t dev;
 	unsigned long busdevfn;
-	unsigned int rom = 0;
+	u32 rom;
 	unsigned char *buf;
 	unsigned int size = 64 * 1024;
 	int i;
@@ -318,7 +320,7 @@ void do_vgabios(void)
 	/* declare rom address here - keep any config data out of the way
 	 * of core LXB stuff */
 
-        rom = cbfs_load_optionrom(dev->vendor, dev->device, 0);
+        rom = (u32)cbfs_load_optionrom(dev->vendor, dev->device, 0);
 	pci_write_config32(dev, PCI_ROM_ADDRESS, rom | 1);
 	printk(BIOS_DEBUG, "rom base: %x\n", rom);
 	buf = (unsigned char *)rom;
@@ -617,7 +619,7 @@ void setup_realmode_idt(void)
 	   TF bit is set upon call to real mode */
 	idts[1].cs = 0;
 	idts[1].offset = 16384;
-	memcpy(16384, &debughandle, &end_debughandle - &debughandle);
+	memcpy((void *)16384, &debughandle, &end_debughandle - &debughandle);
 
 }
 

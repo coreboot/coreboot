@@ -108,62 +108,6 @@ static void smbus_reset(void)
 }
 
 /* Public functions */
-static unsigned int set_ics_data(unsigned char dev, int data, char len)
-{
-	smbus_reset();
-	/* clear host data port */
-	outb(0x00, SMBHSTDAT0);
-	SMBUS_DELAY();
-	smbus_wait_until_ready();
-
-	/* read to reset block transfer counter */
-	inb(SMBHSTCTL);
-
-	/* fill blocktransfer array */
-	if (dev == 0xd2) {
-		//char d2_data[] = {0x0d,0x00,0x3f,0xcd,0x7f,0xbf,0x1a,0x2a,0x01,0x0f,0x0b,0x00,0x8d,0x9b};
-		outb(0x0d, SMBBLKDAT);
-		outb(0x00, SMBBLKDAT);
-		outb(0x3f, SMBBLKDAT);
-		outb(0xcd, SMBBLKDAT);
-		outb(0x7f, SMBBLKDAT);
-		outb(0xbf, SMBBLKDAT);
-		outb(0x1a, SMBBLKDAT);
-		outb(0x2a, SMBBLKDAT);
-		outb(0x01, SMBBLKDAT);
-		outb(0x0f, SMBBLKDAT);
-		outb(0x0b, SMBBLKDAT);
-		outb(0x80, SMBBLKDAT);
-		outb(0x8d, SMBBLKDAT);
-		outb(0x9b, SMBBLKDAT);
-	} else {
-		//char d4_data[] = {0x08,0xff,0x3f,0x00,0x00,0xff,0xff,0xff,0xff};
-		outb(0x08, SMBBLKDAT);
-		outb(0xff, SMBBLKDAT);
-		outb(0x3f, SMBBLKDAT);
-		outb(0x00, SMBBLKDAT);
-		outb(0x00, SMBBLKDAT);
-		outb(0xff, SMBBLKDAT);
-		outb(0xff, SMBBLKDAT);
-		outb(0xff, SMBBLKDAT);
-		outb(0xff, SMBBLKDAT);
-	}
-
-	//for (i=0; i < len; i++)
-	//      outb(data[i],SMBBLKDAT);
-
-	outb(dev, SMBXMITADD);
-	outb(0, SMBHSTCMD);
-	outb(len, SMBHSTDAT0);
-	outb(0x74, SMBHSTCTL);
-
-	SMBUS_DELAY();
-
-	smbus_wait_until_ready();
-
-	smbus_reset();
-	return 0;
-}
 
 static unsigned int get_spd_data(unsigned int dimm, unsigned int offset)
 {
@@ -218,13 +162,6 @@ static void enable_smbus(void)
 
 	/* Make it work for I/O ... */
 	pci_write_config16(dev, 0x04, 0x0003);
-
-	/*
-	   coreboot hangs at this two lines after os reboot(this even happen after I change os 
-	   reboot to cold reboot, this also interfere S3 wakeup) */
-	/* Setup clock chips */
-	//set_ics_data(0xd2, 0, 14);
-	//set_ics_data(0xd4, 0, 9);
 
 	smbus_reset();
 	/* clear host data port */

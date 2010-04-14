@@ -140,7 +140,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 			int j;
 #if CONFIG_USE_PRINTK_IN_CAR
                         printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
-#else`
+#else
 			print_debug("dimm: "); 
 			print_debug_hex8(i); 
 			print_debug(".1: ");

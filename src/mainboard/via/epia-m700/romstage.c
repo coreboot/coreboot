@@ -24,6 +24,7 @@
 
 #define RAMINIT_SYSINFO 1
 #define CACHE_AS_RAM_ADDRESS_DEBUG 0
+#define PAYLOAD_IS_SEABIOS 0
 
 #include <stdint.h>
 #include <device/pci_def.h>
@@ -83,11 +84,6 @@ static int acpi_is_wakeup_early_via_vx800(void)
 	print_debug_hex16(result);
 	print_debug("\n");
 	return result;
-}
-
-static inline int spd_read_byte(unsigned device, unsigned address)
-{
-	return smbus_read_byte(device, address);
 }
 
 /* All content of this function came from the cx700 port of coreboot. */
@@ -273,7 +269,8 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 #define gCom1Base   0x3f8
 #define gCom2Base   0x2f8
 
-void EmbedComInit(void)
+#if 0
+static void EmbedComInit(void)
 {
 	u8 ByteVal;
 	u16 ComBase;
@@ -379,6 +376,7 @@ void EmbedComInit(void)
 	/* SOutput("Embedded COM output\n"); */
 	/* while(1); */
 }
+#endif
 
 /* cache_as_ram.inc jumps to here. */
 void main(unsigned long bist)

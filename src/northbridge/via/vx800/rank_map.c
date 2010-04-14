@@ -17,12 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-extern void DRAMSetVRNum(DRAM_SYS_ATTR * DramAttr,
-			 u8 PhyRank, u8 VirRank, BOOLEAN Enable);
-
-extern void SetEndingAddr(DRAM_SYS_ATTR * DramAttr, u8 VirRank,	// Ending address register      number indicator (INDEX
-			  INT8 Value);	// (value) add or subtract value to this and after banks
-
 void DRAMClearEndingAddress(DRAM_SYS_ATTR * DramAttr);
 
 void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr);

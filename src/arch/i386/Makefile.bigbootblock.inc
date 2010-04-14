@@ -26,7 +26,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/crt0.initobj.o: $(obj)/mainboard/$(MAINBOARDDIR
 
 $(obj)/mainboard/$(MAINBOARDDIR)/crt0.s: $(obj)/crt0.S
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< > $@.new && mv $@.new $@
+	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(obj)/coreboot: $$(initobjs) $(obj)/ldscript.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

@@ -133,8 +133,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
-        unsigned value;
         uint32_t dword;
         uint8_t byte;
         enable_smbus();
@@ -152,21 +150,21 @@ static void sio_setup(void)
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
         dword |= (1<<16);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
-
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
+			// Node 0
 			(0xa<<3)|0, (0xa<<3)|2, 0, 0,
 			(0xa<<3)|1, (0xa<<3)|3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
+			// Node 1
 			(0xa<<3)|4, (0xa<<3)|6, 0, 0,
 			(0xa<<3)|5, (0xa<<3)|7, 0, 0,
-#endif
 	};
 
-        struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+        struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
         int needs_reset = 0;
         unsigned bsp_apicid = 0;

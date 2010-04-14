@@ -116,8 +116,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
-        unsigned value;
         uint32_t dword;
         uint8_t byte;
         enable_smbus();

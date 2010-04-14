@@ -22,11 +22,12 @@
 #include <device/pci.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
+#include <arch/coreboot_tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include <../southbridge/amd/sb600/sb600.h>
-#include <../superio/ite/it8712f/it8712f.h>
+#include <southbridge/amd/sb600/sb600.h>
+#include <superio/ite/it8712f/it8712f.h>
 #include "chip.h"
 #include "tn_post_code.h"
 #include "vgabios.h"
@@ -57,7 +58,6 @@
 #define TV_MODE_09	0x09	/* SCART-RGB */
 #define TV_MODE_NO	0xff	/* No TV Support */
 
-
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
 #define SIO_BASE                     0x2e
 #define SIO_INDEX                    SIO_BASE
@@ -75,12 +75,8 @@
 #define IT8712F_CONFIGURATION_PORT   0x2e /* Write-only. */
 #define IT8712F_SIMPLE_IO_BASE       0x200 /* Simple I/O base address */
 
-
-extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
-extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
-			       u8 val);
-extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
-				uint64_t start, uint64_t size);
+int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
+int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
 #define ADT7461_read_byte(address) \
 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
 #define ARA_read_byte(address) \
@@ -88,14 +84,7 @@ extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
 #define ADT7461_write_byte(address, val) \
 	do_smbus_write_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address, val)
 
-/* previous
- */
-void tim5690_enable(device_t dev);
-int add_mainboard_resources(struct lb_memory *mem);
-
-
 uint64_t uma_memory_base, uma_memory_size;
-
 
 /* The content of IT8712F_CONFIG_REG_LDN (index 0x07) must be set to the
    LDN the register belongs to, before you can access the register. */
@@ -125,7 +114,6 @@ static void it8712f_exit_conf(void)
         /* Exit the configuration state (MB PnP mode). */
         it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
 }
-
 
 /* set thermal config
  */
@@ -236,7 +224,7 @@ void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 * enable the dedicated function in tim5690 board.
 * This function called early than rs690_enable.
 *************************************************/
-void tim5690_enable(device_t dev)
+static void tim5690_enable(device_t dev)
 {
 	struct mainboard_config *mainboard =
 	    (struct mainboard_config *)dev->chip_info;
@@ -312,6 +300,7 @@ int add_mainboard_resources(struct lb_memory *mem)
 		uma_memory_base, uma_memory_size);
 #endif
 	technexion_post_code(LED_MESSAGE_FINISH);
+	return 0;
 }
 
 struct chip_operations mainboard_ops = {

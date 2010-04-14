@@ -135,8 +135,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
-        unsigned value;
         uint32_t dword;
         uint8_t byte;
 
@@ -147,7 +145,6 @@ static void sio_setup(void)
         dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
         dword |= (1<<0);
         pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
-
 }
 
 //CPU 1 mem is on SMBUS_HUB channel 2, and CPU 2 mem is on channel 1.
@@ -156,19 +153,19 @@ static void sio_setup(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-       static const uint16_t spd_addr [] = {
-                       RC0|(0xa<<3)|0, RC0|(0xa<<3)|2, RC0|(0xa<<3)|4, RC0|(0xa<<3)|6,
-                       RC0|(0xa<<3)|1, RC0|(0xa<<3)|3, RC0|(0xa<<3)|5, RC0|(0xa<<3)|7,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
-                       RC1|(0xa<<3)|0, RC1|(0xa<<3)|2, RC1|(0xa<<3)|4, RC1|(0xa<<3)|6,
-                       RC1|(0xa<<3)|1, RC1|(0xa<<3)|3, RC1|(0xa<<3)|5, RC1|(0xa<<3)|7,
-#endif
-       };
+	static const uint16_t spd_addr[] = {
+			// Node 0
+			RC0|(0xa<<3)|0, RC0|(0xa<<3)|2, RC0|(0xa<<3)|4, RC0|(0xa<<3)|6,
+			RC0|(0xa<<3)|1, RC0|(0xa<<3)|3, RC0|(0xa<<3)|5, RC0|(0xa<<3)|7,
+			// node 1
+			RC1|(0xa<<3)|0, RC1|(0xa<<3)|2, RC1|(0xa<<3)|4, RC1|(0xa<<3)|6,
+			RC1|(0xa<<3)|1, RC1|(0xa<<3)|3, RC1|(0xa<<3)|5, RC1|(0xa<<3)|7,
+	};
 
-       unsigned bsp_apicid = 0;
+	unsigned bsp_apicid = 0;
         int needs_reset;
-       struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
-       char *p ;
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */

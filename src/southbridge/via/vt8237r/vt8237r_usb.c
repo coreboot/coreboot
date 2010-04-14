@@ -30,15 +30,14 @@ u32 usb_io_addr[4] = {0xcc00, 0xd000, 0xd400, 0xd800};
 
 static void usb_i_init(struct device *dev)
 {
-
 #if CONFIG_EPIA_VT8237R_INIT
 	u8 reg8;
 
 	printk(BIOS_DEBUG, "Entering %s\n", __func__);
 
-	printk(BIOS_SPEW, "%s Read %02X from PCI Command Reg\n", dev_path(dev), reg8);
-
 	reg8 = pci_read_config8(dev, 0x04);
+
+	printk(BIOS_SPEW, "%s Read %02X from PCI Command Reg\n", dev_path(dev), reg8);
 
 	reg8 = reg8 | PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config8(dev, 0x04, reg8);

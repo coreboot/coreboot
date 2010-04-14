@@ -85,12 +85,7 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
 
-static int smbus_send_byte_one(unsigned device, unsigned char val)
-{
-	return do_smbus_send_byte(SMBUS1_IO_BASE, device, val);
-}
-
-static void dump_smbus_registers(void)
+static inline void dump_smbus_registers(void)
 {
 	u32 device;
 
@@ -119,17 +114,22 @@ static void dump_smbus_registers(void)
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
-/* We don't do any switching yet.
+#if 0
+/* We don't do any switching yet. */
 #define SMBUS_SWITCH1 0x48
 #define SMBUS_SWITCH2 0x49
 	unsigned device=(ctrl->channel0[0])>>8;
 	smbus_send_byte(SMBUS_SWITCH1, device);
 	smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
-*/
-	/* nothing to do */
+#endif
 }
 
-/*
+#if 0
+static int smbus_send_byte_one(unsigned device, unsigned char val)
+{
+	return do_smbus_send_byte(SMBUS1_IO_BASE, device, val);
+}
+
 static inline void change_i2c_mux(unsigned device)
 {
 #define SMBUS_SWITCH1 0x48
@@ -146,7 +146,7 @@ static inline void change_i2c_mux(unsigned device)
         print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
 	dump_smbus_registers();
 }
-*/
+#endif
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
@@ -188,8 +188,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
-	u32 value;
 	uint32_t dword;
 	uint8_t byte;
 
@@ -208,7 +206,6 @@ static void sio_setup(void)
 	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0xa4);
 	dword |= (1 << 16);
 	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0xa4, dword);
-
 }
 
 /* We have no idea where the SMBUS switch is. This doesn't do anything ATM. */
@@ -222,20 +219,20 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
    memory on each CPU must be an exact match.
  */
 	static const uint16_t spd_addr[] = {
+		// Node 0
 		RC0 | (0xa << 3) | 0, RC0 | (0xa << 3) | 2,
 		    RC0 | (0xa << 3) | 4, RC0 | (0xa << 3) | 6,
 		RC0 | (0xa << 3) | 1, RC0 | (0xa << 3) | 3,
 		    RC0 | (0xa << 3) | 5, RC0 | (0xa << 3) | 7,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
+		// Node 1
 		RC1 | (0xa << 3) | 0, RC1 | (0xa << 3) | 2,
 		    RC1 | (0xa << 3) | 4, RC1 | (0xa << 3) | 6,
 		RC1 | (0xa << 3) | 1, RC1 | (0xa << 3) | 3,
 		    RC1 | (0xa << 3) | 5, RC1 | (0xa << 3) | 7,
-#endif
 	};
 
-	struct sys_info *sysinfo =
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	int needs_reset = 0;
 	unsigned bsp_apicid = 0;

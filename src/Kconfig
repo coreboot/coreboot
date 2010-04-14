@@ -152,10 +152,6 @@ config MMCONF_SUPPORT
 	bool
 	default n
 
-config RAMTOP
-	hex
-	default 0x200000
-
 config ATI_RAGE_XL
 	bool
 

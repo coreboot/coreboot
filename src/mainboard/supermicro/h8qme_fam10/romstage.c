@@ -120,8 +120,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
-        unsigned value;
         uint32_t dword;
         uint8_t byte;
         enable_smbus();
@@ -149,7 +147,7 @@ static void sio_setup(void)
 #define GPIO1_DEV PNP_DEV(0x2e, W83627HF_GAME_MIDI_GPIO1)
 #define GPIO2_DEV PNP_DEV(0x2e, W83627HF_GPIO2)
 #define GPIO3_DEV PNP_DEV(0x2e, W83627HF_GPIO3)
-void write_GPIO(void)
+static void write_GPIO(void)
 {
 	pnp_enter_ext_func_mode(GPIO1_DEV);
 	pnp_set_logical_device(GPIO1_DEV);

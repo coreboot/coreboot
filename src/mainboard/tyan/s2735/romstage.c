@@ -32,15 +32,6 @@ static void hard_reset(void)
         outb(0x0e, 0x0cf9);
 }
 
-static void soft_reset(void)
-{
-#if 1
-        /* link reset */
-	outb(0x02, 0x0cf9);
-        outb(0x06, 0x0cf9);
-#endif
-}
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);
@@ -61,22 +52,16 @@ void main(unsigned long bist)
                 },
 	};
 	
-	unsigned cpu_reset = 0;
-
 	if (bist == 0) {
 		enable_lapic();
 	}
 
-//	post_code(0x32);
-	
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
         uart_init();
         console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
-
-//        setup_s2735_resource_map();
 
 	if(bios_reset_detected()) {
 		hard_reset();

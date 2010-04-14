@@ -47,7 +47,7 @@
 #include "northbridge/via/vx800/raminit.c"
 
 
-int acpi_is_wakeup_early_via_vx800(void)
+static int acpi_is_wakeup_early_via_vx800(void)
 {
 	device_t dev;
 	u16 tmp, result;

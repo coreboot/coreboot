@@ -268,6 +268,28 @@ void update_ssdt(void *ssdt)
 
 }
 
+void update_ssdtx(void *ssdtx, int i)
+{
+	u8 *PCI;
+	u8 *HCIN;
+	u8 *UID;
+
+	PCI = ssdtx + 0x32;
+	HCIN = ssdtx + 0x39;
+	UID = ssdtx + 0x40;
+
+	if (i < 7) {
+		*PCI = (u8) ('4' + i - 1);
+	} else {
+		*PCI = (u8) ('A' + i - 1 - 6);
+	}
+	*HCIN = (u8) i;
+	*UID = (u8) (i + 3);
+
+	/* FIXME: need to update the GSI id in the ssdtx too */
+
+}
+
 static void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 {
 	u8 *CPU;
@@ -291,7 +313,7 @@ static void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 	CONTROL = sspr + 0x8d;
 	STATUS = sspr + 0x8f;
 
-	sprintf(CPU, "%02x", (char)cpuindex);
+	sprintf((char*)CPU, "%02x", (char)cpuindex);
 	*CPUIN = (u8) cpuindex;
 
 	for(i=0;i<sysconf.p_state_num;i++) {

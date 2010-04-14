@@ -133,12 +133,12 @@ void acpi_jump_wake(u32 vector)
 	//jason_tsc_count_end();
 
 	unsigned long long *real_mode_gdt_entries_at_eseg;
-	real_mode_gdt_entries_at_eseg = WAKE_THUNK16_GDT;		/* Copy from real_mode_gdt_entries and change limition to 1M and data base to 0; */
+	real_mode_gdt_entries_at_eseg = (void *)WAKE_THUNK16_GDT;	/* Copy from real_mode_gdt_entries and change limition to 1M and data base to 0; */
 	real_mode_gdt_entries_at_eseg[0] = 0x0000000000000000ULL;	/* Null descriptor */
 	real_mode_gdt_entries_at_eseg[1] = 0x000f9a000000ffffULL;	/* 16-bit real-mode 1M code at 0x00000000 */
 	real_mode_gdt_entries_at_eseg[2] = 0x000f93000000ffffULL;	/* 16-bit real-mode 1M data at 0x00000000 */
 
-	wake_thunk16_Xgt_desc = WAKE_THUNK16_XDTR;
+	wake_thunk16_Xgt_desc = (void *)WAKE_THUNK16_XDTR;
 	wake_thunk16_Xgt_desc[0].size = sizeof(real_mode_gdt_entries) - 1;
 	wake_thunk16_Xgt_desc[0].address = (long)real_mode_gdt_entries_at_eseg;
 	wake_thunk16_Xgt_desc[1].size = 0x3ff;
@@ -156,7 +156,7 @@ void acpi_jump_wake(u32 vector)
 
 	unsigned char *dest, *src;
 	src = (unsigned char *)dwEip;
-	dest = WAKE_RECOVER1M_CODE;
+	dest = (void *)WAKE_RECOVER1M_CODE;
 	u32 i;
 	for (i = 0; i < 0x200; i++)
 		dest[i] = src[i];

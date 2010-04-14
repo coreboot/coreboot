@@ -157,31 +157,6 @@ unsigned long acpi_fill_madt(unsigned long current)
 	return current;
 }
 
-
-
-static void update_ssdtx(void *ssdtx, int i)
-{
-        uint8_t *PCI;
-        uint8_t *HCIN;
-        uint8_t *UID;
-
-        PCI = ssdtx + 0x32;
-        HCIN = ssdtx + 0x39;
-        UID = ssdtx + 0x40;
-
-        if(i<7) {
-                *PCI  = (uint8_t) ('4' + i - 1);
-        }
-        else {
-                *PCI  = (uint8_t) ('A' + i - 1 - 6);
-        }
-        *HCIN = (uint8_t) i;
-        *UID  = (uint8_t) (i+3);
-
-        /* FIXME: need to update the GSI id in the ssdtx too */
-
-}
-
 unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id) {
 	k8acpi_write_vars();
 	return (unsigned long) (acpigen_get_current());

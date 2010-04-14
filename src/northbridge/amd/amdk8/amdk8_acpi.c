@@ -291,3 +291,26 @@ int k8acpi_write_vars(void)
 	acpigen_patch_len(lens - 1);
 	return lens;
 }
+
+void update_ssdtx(void *ssdtx, int i)
+{
+	u8 *PCI;
+	u8 *HCIN;
+	u8 *UID;
+
+	PCI = ssdtx + 0x32;
+	HCIN = ssdtx + 0x39;
+	UID = ssdtx + 0x40;
+
+	if (i < 7) {
+		*PCI = (u8) ('4' + i - 1);
+	} else {
+		*PCI = (u8) ('A' + i - 1 - 6);
+	}
+	*HCIN = (u8) i;
+	*UID = (u8) (i + 3);
+
+	/* FIXME: need to update the GSI id in the ssdtx too */
+
+}
+

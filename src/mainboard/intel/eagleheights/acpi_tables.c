@@ -50,7 +50,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	return current;
 }
 
-void acpi_create_intel_hpet(acpi_hpet_t * hpet)
+static void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 {
 #define HPET_ADDR  0xfed00000ULL
 	acpi_header_t *header = &(hpet->header);

@@ -365,6 +365,9 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_ta
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
 
+void update_ssdt(void* ssdt);
+void update_ssdtx(void* ssdtx, int i);
+
 /* These can be used by the target port */
 u8 acpi_checksum(u8 *table, u32 length);
 

@@ -46,8 +46,8 @@ static void memctrl_init(device_t dev)
 	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
 				    PCI_DEVICE_ID_VIA_CN400_VLINK, 0);
 	
-	/* Setup Low Memory Top 						*/
-	/* 0x47 == HA(32:25)						    */
+	/* Setup Low Memory Top */
+	/* 0x47 == HA(32:25)    */
 	/* 0x84/85 == HA(31:20) << 4 | DRAM Granularity */
 	ranks = pci_read_config8(dev, 0x47);
 	reg16 = (((u16)(ranks - 1) << 9) & 0xFFF0) | 0x01F0;
@@ -175,6 +175,7 @@ static void ram_resource(device_t dev, unsigned long index,
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
+#ifdef UNUSED_CODE
 static void ram_reservation(device_t dev, unsigned long index,
 			 unsigned long base, unsigned long size)
 {
@@ -188,6 +189,7 @@ static void ram_reservation(device_t dev, unsigned long index,
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 		     IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
+#endif
 
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
 {
@@ -278,7 +280,7 @@ static unsigned int cn400_domain_scan_bus(device_t dev, unsigned int max)
 	return max;
 }
 
-static const struct device_operations pci_domain_ops = {
+static struct device_operations pci_domain_ops = {
 	.read_resources   = cn400_domain_read_resources,
 	.set_resources    = cn400_domain_set_resources,
 	.enable_resources = enable_childrens_resources,
@@ -295,7 +297,7 @@ static void cpu_bus_noop(device_t dev)
 {
 }
 
-static const struct device_operations cpu_bus_ops = {
+static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
 	.set_resources    = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
@@ -305,7 +307,7 @@ static const struct device_operations cpu_bus_ops = {
 
 static void enable_dev(struct device *dev)
 {
-	printk(BIOS_SPEW, "In cn400 enable_dev for device %s.\n", dev_path(dev));
+	printk(BIOS_SPEW, "CN400: enable_dev for device %s.\n", dev_path(dev));
 
 	/* Set the operations if it is a special bus type. */
 	if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {

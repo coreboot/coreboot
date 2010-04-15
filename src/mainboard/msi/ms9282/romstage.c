@@ -120,8 +120,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
 
-
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -151,12 +149,12 @@ static void sio_setup(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
-			// Node 0
-			RC0|(0xa<<3)|0, RC0|(0xa<<3)|2, RC0|(0xa<<3)|4, RC0|(0xa<<3)|6,
-			RC0|(0xa<<3)|1, RC0|(0xa<<3)|3, RC0|(0xa<<3)|5, RC0|(0xa<<3)|7,
-			// node 1
-			RC1|(0xa<<3)|0, RC1|(0xa<<3)|2, RC1|(0xa<<3)|4, RC1|(0xa<<3)|6,
-			RC1|(0xa<<3)|1, RC1|(0xa<<3)|3, RC1|(0xa<<3)|5, RC1|(0xa<<3)|7,
+		// Node 0
+		RC0|(0xa<<3)|0, RC0|(0xa<<3)|2, RC0|(0xa<<3)|4, RC0|(0xa<<3)|6,
+		RC0|(0xa<<3)|1, RC0|(0xa<<3)|3, RC0|(0xa<<3)|5, RC0|(0xa<<3)|7,
+		// node 1
+		RC1|(0xa<<3)|0, RC1|(0xa<<3)|2, RC1|(0xa<<3)|4, RC1|(0xa<<3)|6,
+		RC1|(0xa<<3)|1, RC1|(0xa<<3)|3, RC1|(0xa<<3)|5, RC1|(0xa<<3)|7,
 	};
 
 	unsigned bsp_apicid = 0;
@@ -181,18 +179,18 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
         }
 
-       w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        uart_init();
-        console_init();
+	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	uart_init();
+	console_init();
 
-       /* Halt if there was a built in self test failure */
-       report_bist_failure(bist);
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
-        setup_ms9282_resource_map();
+	setup_ms9282_resource_map();
 
-       setup_coherent_ht_domain();
+	setup_coherent_ht_domain();
 
-        wait_all_core0_started();
+	wait_all_core0_started();
 
 #if CONFIG_LOGICAL_CPUS==1
         // It is said that we should start core1 after all core0 launched

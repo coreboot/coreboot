@@ -34,7 +34,7 @@
 #define CLK_CNTL_INDEX	0x8
 #define CLK_CNTL_DATA	0xC
 
-#if 0
+#ifdef UNUSED_CODE
 static u32 clkind_read(device_t dev, u32 index)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;

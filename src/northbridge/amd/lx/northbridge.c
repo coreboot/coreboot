@@ -77,9 +77,7 @@
 extern void graphics_init(void);
 extern void cpubug(void);
 extern void chipsetinit(void);
-extern uint32_t get_systop(void);
 
-void northbridge_init_early(void);
 void setup_realmode_idt(void);
 void do_vsmbios(void);
 

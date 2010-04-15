@@ -17,11 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <cpu/amd/lxdef.h>
 #ifndef NORTHBRIDGE_AMD_LX_H
 #define NORTHBRIDGE_AMD_LX_H
 
-extern unsigned int lx_scan_root_bus(device_t root, unsigned int max);
+#include <cpu/amd/lxdef.h>
+
+/* northbridge.c */
+unsigned int lx_scan_root_bus(device_t root, unsigned int max);
 int sizeram(void);
 
-#endif				/* NORTHBRIDGE_AMD_LX_H */
+/* northbridgeinit.c */
+void northbridge_init_early(void);
+uint32_t get_systop(void);
+#endif

@@ -67,10 +67,6 @@ unsigned int get_sbdn(unsigned bus);
 #define ACPI_DEV PNP_DEV(0x2e, W83627EHG_ACPI)
 #define RTC_DEV PNP_DEV(0x2e, W83627EHG_RTC)
 
-static void memreset_setup(void)
-{
-}
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
@@ -80,11 +76,11 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-void activate_spd_rom(const struct mem_controller *ctrl)
+static void activate_spd_rom(const struct mem_controller *ctrl)
 {
 }
 
-void soft_reset(void)
+static void soft_reset(void)
 {
 	uint8_t tmp;
 
@@ -247,7 +243,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	enable_smbus();
-	memreset_setup();
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 	post_cache_as_ram();
 }

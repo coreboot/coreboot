@@ -39,12 +39,17 @@
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 
+/* Trust the original resource allocation. Don't do it again. */
+#undef DONT_TRUST_RESOURCE_ALLOCATION
+//#define DONT_TRUST_RESOURCE_ALLOCATION
+
 #define CLK_CNTL_INDEX	0x8
 #define CLK_CNTL_DATA	0xC
 
 /* The Integrated Info Table. */
 ATOM_INTEGRATED_SYSTEM_INFO_V2 vgainfo;
 
+#ifdef UNUSED_CODE
 static u32 clkind_read(device_t dev, u32 index)
 {
 	u32	gfx_bar2 = pci_read_config32(dev, 0x18) & ~0xF;
@@ -52,6 +57,7 @@ static u32 clkind_read(device_t dev, u32 index)
 	*(u32*)(gfx_bar2+CLK_CNTL_INDEX) = index & 0x7F;
 	return *(u32*)(gfx_bar2+CLK_CNTL_DATA);
 }
+#endif
 
 static void clkind_write(device_t dev, u32 index, u32 data)
 {
@@ -174,6 +180,7 @@ static u8 FinalizeMMIO(MMIORANGE *pMMIO)
 	return n;
 }
 
+#ifdef DONT_TRUST_RESOURCE_ALLOCATION
 static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 {
 	CIM_STATUS Status = CIM_UNSUPPORTED;
@@ -288,6 +295,7 @@ static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
 		pci_write_config32(k8_f1, 0x80+MmioReg*8, Base);
 	}
 }
+#endif
 
 static void internal_gfx_pci_dev_init(struct device *dev)
 {
@@ -490,7 +498,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 		pci_write_config8(dev, 0x4, temp8);
 	}
 
-#if 0 /* Trust the original resource allocation. Don't do it again. */
+#ifdef DONT_TRUST_RESOURCE_ALLOCATION
 	/* NB_SetupMGMMIO. */
 
 	/* clear MMIO and CreativeMMIO. */

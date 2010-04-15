@@ -27,4 +27,6 @@ struct mem_controller {
 	uint16_t channel0[DIMM_SOCKETS];
 };
 
-#endif				/* RAMINIT_H */
+void sdram_initialize(int controllers, const struct mem_controller *ctrl);
+
+#endif

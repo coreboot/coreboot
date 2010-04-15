@@ -152,7 +152,7 @@ static u32 get_DctSelBaseAddr(u32 i)
 	return sel_m;
 }
 
-
+#ifdef UNUSED_CODE
 static void set_DctSelHiEn(u32 i, u32 val)
 {
 	device_t dev;
@@ -168,6 +168,7 @@ static void set_DctSelHiEn(u32 i, u32 val)
 	pci_write_config32(dev, DRAM_CTRL_SEL_LOW, dcs_lo);
 
 }
+#endif
 
 static u32 get_DctSelHiEn(u32 i)
 {
@@ -200,6 +201,7 @@ static void set_DctSelBaseOffset(u32 i, u32 sel_off_m)
 
 }
 
+#ifdef UNUSED_CODE
 static u32 get_DctSelBaseOffset(u32 i)
 {
 	device_t dev;
@@ -215,6 +217,8 @@ static u32 get_DctSelBaseOffset(u32 i)
 	sel_off_m = dcs_hi>>(20+DCSH_DctSelBaseOffset_47_26_SHIFT-26);
 	return sel_off_m;
 }
+#endif
+
 #if CONFIG_AMDMCT == 0
 
 static u32 get_one_DCT(struct mem_info *meminfo)
@@ -231,9 +235,8 @@ static u32 get_one_DCT(struct mem_info *meminfo)
 
 	return one_DCT;
 }
-#endif
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
-
+// See that other copy in northbridge.c
 static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
 {
 	u32 ii;
@@ -313,7 +316,8 @@ static u32 hoist_memory(u32 hole_startk, u32 i, u32 one_DCT, u32 nodes)
 
 	return carry_over;
 }
-#endif
+#endif 
+#endif // CONFIG_AMDMCT
 
 
 #if CONFIG_EXT_CONF_SUPPORT

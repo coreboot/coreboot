@@ -795,7 +795,8 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 		return mem_hole;
 }
 
-
+// WHY this check? CONFIG_AMDMCT is enabled on all Fam10 boards.
+// Does it make sense not to?
 #if CONFIG_AMDMCT == 0
 static void disable_hoist_memory(unsigned long hole_startk, int i)
 {

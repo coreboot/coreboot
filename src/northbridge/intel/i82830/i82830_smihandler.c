@@ -262,7 +262,8 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 
 				getobj->banner.retsts = MSH_OK;
 #ifdef DEBUG_SMI_I82830
-				dump(banner_id, sizeof(getobj) + len);
+				dump(banner_id, sizeof(getobj));
+				dump(getobj->buffer + OBJ_OFFSET, len);
 #endif
 				break;
 			}

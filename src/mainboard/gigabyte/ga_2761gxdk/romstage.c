@@ -86,10 +86,6 @@
 
 #include "southbridge/sis/sis966/sis966_early_ctrl.c"
 
-static void memreset_setup(void)
-{
-}
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
@@ -105,12 +101,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/amdk8_f.h"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-
+#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
-
 #include "lib/generic_sdram.c"
 
 #include "resourcemap.c"
@@ -165,12 +158,12 @@ static void sio_setup(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
+			// Node 0
 			(0xa<<3)|0, (0xa<<3)|2, 0, 0,
 			(0xa<<3)|1, (0xa<<3)|3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
+			// Node 1
 			(0xa<<3)|4, (0xa<<3)|6, 0, 0,
 			(0xa<<3)|5, (0xa<<3)|7, 0, 0,
-#endif
 	};
 
         struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE +
@@ -274,8 +267,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
         sis_init_stage1();
         enable_smbus();
-
-        memreset_setup();
 
         //do we need apci timer, tsc...., only debug need it for better output
         /* all ap stopped? */

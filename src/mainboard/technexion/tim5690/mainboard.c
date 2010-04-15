@@ -21,8 +21,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
+#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
@@ -179,7 +178,7 @@ static void set_thermal_config(void)
 }
 
 /* Mainboard specific GPIO setup. */
-void mb_gpio_init(u16 *iobase)
+static void mb_gpio_init(u16 *iobase)
 {
         /* Init Super I/O GPIOs. */
         it8712f_enter_conf();
@@ -193,7 +192,7 @@ void mb_gpio_init(u16 *iobase)
 }
 
 /* The LCD's panel id seletion. */
-void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
+static void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 {
 	switch (num_id) {
 	case 0x1:
@@ -226,9 +225,6 @@ void lcd_panel_id(rs690_vbios_regs *vbios_regs, u8 num_id)
 *************************************************/
 static void tim5690_enable(device_t dev)
 {
-	struct mainboard_config *mainboard =
-	    (struct mainboard_config *)dev->chip_info;
-
 	rs690_vbios_regs vbios_regs;
 	u16 gpio_base = IT8712F_SIMPLE_IO_BASE;
 	u8 port2;
@@ -240,6 +236,7 @@ static void tim5690_enable(device_t dev)
 	/* The LCD's panel id seletion by switch. */
 	port2 = inb(gpio_base+1);
 	lcd_panel_id(&vbios_regs, ((~port2) & 0xf));
+
 	/* No support TV */
 	vbios_regs.int15_regs.fun05_tv_standard = TV_MODE_NO;
 	vgabios_init(&vbios_regs);

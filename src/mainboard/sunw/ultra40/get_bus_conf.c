@@ -7,6 +7,7 @@
 #include <cpu/amd/multicore.h>
 #endif
 #include <stdlib.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables

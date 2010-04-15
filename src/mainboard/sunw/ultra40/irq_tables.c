@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0, 
 		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,

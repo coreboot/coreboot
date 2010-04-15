@@ -90,12 +90,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/amdk8.h"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-
+#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"
-
 #include "lib/generic_sdram.c"
 #include "lib/ramtest.c"
 
@@ -112,7 +109,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM5 0x55
 #define DIMM6 0x56
 #define DIMM7 0x57
-
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 

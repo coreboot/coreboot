@@ -3,6 +3,7 @@
 #include <device/pci.h>
 #include <string.h>
 #include <stdint.h>
+#include <cpu/amd/amdk8_sysconf.h>
 
 extern  unsigned char bus_isa;
 extern  unsigned char bus_ck804_0; //1
@@ -31,8 +32,6 @@ extern  unsigned sbdn;
 extern  unsigned hcdn[];
 extern  unsigned sbdn3;
 extern  unsigned sbdnb;
-
-
 
 static void *smp_write_config_table(void *v)
 {

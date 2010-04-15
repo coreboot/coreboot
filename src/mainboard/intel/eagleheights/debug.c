@@ -38,7 +38,7 @@ static void print_reg(unsigned char index)
         return;
 }
 
-static void xbus_en(void)
+static inline void xbus_en(void)
 {
         /* select the XBUS function in the SIO */
         outb(0x07, 0x2e);
@@ -66,7 +66,7 @@ static void setup_func(unsigned char func)
         return;
 }
 
-static void siodump(void)
+static inline void siodump(void)
 {
         int i;
         unsigned char data;
@@ -143,7 +143,7 @@ static void print_debug_pci_dev(unsigned dev)
 	print_debug_hex8((dev >> 8) & 7);
 }
 
-static void print_pci_devices(void)
+static inline void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);
@@ -161,7 +161,7 @@ static void print_pci_devices(void)
 	}
 }
 
-static void dump_pci_device(unsigned dev)
+static inline void dump_pci_device(unsigned dev)
 {
 	int i;
 	print_debug_pci_dev(dev);
@@ -182,7 +182,7 @@ static void dump_pci_device(unsigned dev)
 	}
 }
 
-static void dump_bar14(unsigned dev)
+static inline void dump_bar14(unsigned dev)
 {
 	int i;
 	unsigned long bar;
@@ -227,70 +227,7 @@ static void dump_pci_devices(void)
 	}
 }
 
-#if 0
-static void dump_spd_registers(const struct mem_controller *ctrl)
-{
-	int i;
-	print_debug("\n");
-	for(i = 0; i < 4; i++) {
-		unsigned device;
-		device = ctrl->channel0[i];
-		if (device) {
-			int j;
-			print_debug("dimm: ");
-			print_debug_hex8(i);
-			print_debug(".0: ");
-			print_debug_hex8(device);
-			for(j = 0; j < 256; j++) {
-				int status;
-				unsigned char byte;
-				if ((j & 0xf) == 0) {
-					print_debug("\n");
-					print_debug_hex8(j);
-					print_debug(": ");
-				}
-				status = smbus_read_byte(device, j);
-				if (status < 0) {
-					print_debug("bad device\n");
-					break;
-				}
-				byte = status & 0xff;
-				print_debug_hex8(byte);
-				print_debug_char(' ');
-			}
-			print_debug("\n");
-		}
-		device = ctrl->channel1[i];
-		if (device) {
-			int j;
-			print_debug("dimm: ");
-			print_debug_hex8(i);
-			print_debug(".1: ");
-			print_debug_hex8(device);
-			for(j = 0; j < 256; j++) {
-				int status;
-				unsigned char byte;
-				if ((j & 0xf) == 0) {
-					print_debug("\n");
-					print_debug_hex8(j);
-					print_debug(": ");
-				}
-				status = smbus_read_byte(device, j);
-				if (status < 0) {
-					print_debug("bad device\n");
-					break;
-				}
-				byte = status & 0xff;
-				print_debug_hex8(byte);
-				print_debug_char(' ');
-			}
-			print_debug("\n");
-		}
-	}
-}
-#endif
-
-void dump_spd_registers(void)
+static inline void dump_spd_registers(void)
 {
         unsigned device;
         device = SMBUS_MEM_DEVICE_START;
@@ -322,7 +259,7 @@ void dump_spd_registers(void)
 	}
 }
 
-void dump_ipmi_registers(void)
+static inline void dump_ipmi_registers(void)
 {
         unsigned device;
         device = 0x42;

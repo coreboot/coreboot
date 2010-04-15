@@ -19,5 +19,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-obj-y += wakeup.o
+# This code is unused and should be replaced by the generic resume code
+# completely. If anyone works on wakeup for this chipset/board, delete
+# wakeup.c when you are done.
+# obj-y += wakeup.o
 

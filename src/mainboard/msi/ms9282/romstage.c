@@ -68,9 +68,6 @@
 
 #include <device/pci_ids.h>
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
-static void memreset_setup(void)
-{
-}
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -103,9 +100,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 //#define K8_4RANK_DIMM_SUPPORT 1
 
 #include "northbridge/amd/amdk8/amdk8_f.h"
-#include "northbridge/amd/amdk8/raminit_f.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
+#include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
 
  /* msi does not want the default */
@@ -227,8 +224,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 dump_smbus_registers();
         }
 #endif
-
-       memreset_setup();
 
        sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 

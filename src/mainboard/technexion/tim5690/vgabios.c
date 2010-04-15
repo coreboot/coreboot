@@ -36,6 +36,7 @@ static void vbios_fun_init(rs690_vbios_regs *vbios_regs)
         vbios_regs_local.int15_regs.fun00_panel_id = vbios_regs->int15_regs.fun00_panel_id;
         vbios_regs_local.int15_regs.fun05_tv_standard = vbios_regs->int15_regs.fun05_tv_standard;
 }
+
 /* BIOS int15 function */
 int tim5690_int15_handler(struct eregs *regs)
 {

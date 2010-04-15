@@ -15,7 +15,6 @@
 #include "southbridge/intel/i82801ex/i82801ex_early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
 
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/intel/e7501/debug.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
 

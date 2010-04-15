@@ -21,12 +21,11 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
+#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include <../southbridge/amd/sb600/sb600.h>
+#include <southbridge/amd/sb600/sb600.h>
 #include "chip.h"
 
 #define ADT7475_ADDRESS 0x2E
@@ -35,9 +34,6 @@
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
 			       u8 val);
-extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
-				uint64_t start, uint64_t size);
-
 #define ADT7475_read_byte(address) \
 	 do_smbus_read_byte(SMBUS_IO_BASE, ADT7475_ADDRESS, address)
 #define ADT7475_write_byte(address, val) \

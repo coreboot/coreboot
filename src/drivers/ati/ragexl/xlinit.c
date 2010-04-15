@@ -485,12 +485,12 @@ static void aty_calc_mem_refresh(struct fb_info_aty *info, u16 id, int xclk)
 static void ati_ragexl_init(device_t dev) 
 {
         u32 chip_id;
-	u32 i;
     	int j;
     	u16 type;
         u8 rev;
     	const char *chipname = NULL;
 #if CONFIG_CONSOLE_BTEXT
+	u32 i;
 	const char *xtal;
 #endif
     	int pll, mclk, xclk;

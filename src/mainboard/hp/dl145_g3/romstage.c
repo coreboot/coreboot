@@ -107,15 +107,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/amdk8_f.h"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-
+#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
-
 #include "lib/generic_sdram.c"
-
-//#include "resourcemap.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
 
@@ -211,8 +206,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	pilot_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
-	//setup_mp_resource_map();
 
 	uart_init();
 

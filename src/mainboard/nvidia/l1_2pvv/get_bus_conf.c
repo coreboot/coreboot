@@ -92,11 +92,9 @@ static unsigned get_hcid(unsigned i)
 
 void get_bus_conf(void)
 {
-
 	unsigned apicid_base;
 	struct mb_sysconf_t *m;
 
-	device_t dev;
 	int i, j;
 
 	if (get_bus_conf_done)
@@ -160,5 +158,4 @@ void get_bus_conf(void)
 #endif
 	m->apicid_mcp55 = apicid_base+0;
 	m->apicid_mcp55b = apicid_base+1;
-
 }

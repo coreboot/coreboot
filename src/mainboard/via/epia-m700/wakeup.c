@@ -19,6 +19,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+/* FIXME This code should be dropped and instead the generic resume code
+ * should be used.
+ */
+
 /* Parts of this code is taken from reboot.c from Linux. */
 
 /*
@@ -94,19 +98,6 @@ static unsigned char real_mode_switch[] = {
 
 static unsigned char jump_to_wakeup[] = {
 	0xea, 0x00, 0x00, 0x00, 0xe0		/* ljmp $0xffff, $0x0000 */
-};
-
-/*
- * Switch to real mode and then execute the code
- * specified by the code and length parameters.
- * We assume that length will aways be less that 100!
- */
-static unsigned char show31[6] = {
-	0xb0, 0x31, 0xe6, 0x80, 0xeb, 0xFA	/* ljmp $0xffff, $0x0000 */
-};
-
-static unsigned char show32[6] = {
-	0xb0, 0x32, 0xe6, 0x80, 0xeb, 0xFA	/* ljmp $0xffff, $0x0000 */
 };
 
 void acpi_jump_wake(u32 vector)
@@ -337,8 +328,6 @@ void acpi_jump_wake(u32 vector)
  * Enable A20 gate (return -1 on failure)
  */
 
-// #include "boot.h"
-
 #define MAX_8042_LOOPS	100000
 
 static int empty_8042(void)
@@ -375,13 +364,9 @@ static int a20_test(int loops)
 	int ok = 0;
 	int saved, ctr;
 
-//      set_fs(0x0000);
-//      set_gs(0xffff);
-
 	saved = ctr = *((u32 *) A20_TEST_ADDR);
 
 	while (loops--) {
-		//wrfs32(++ctr, A20_TEST_ADDR);
 
 		*((u32 *) A20_TEST_ADDR) = ++ctr;
 

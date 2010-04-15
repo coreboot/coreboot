@@ -13,7 +13,7 @@ static void print_debug_pci_dev(unsigned dev)
 	print_debug_hex8((dev >> 8) & 7);
 }
 
-static void print_pci_devices(void)
+static inline void print_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
@@ -58,7 +58,7 @@ static void dump_pci_device(unsigned dev)
 	print_debug("\n");
 }
 
-static void dump_pci_devices(void)
+static inline void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0); 
@@ -75,7 +75,7 @@ static void dump_pci_devices(void)
 	}
 }
 
-static void dump_pci_devices_on_bus(unsigned busn)
+static inline void dump_pci_devices_on_bus(unsigned busn)
 {
         device_t dev;
         for(dev = PCI_DEV(busn, 0, 0);
@@ -92,7 +92,7 @@ static void dump_pci_devices_on_bus(unsigned busn)
         }
 }
 
-static void dump_spd_registers(const struct mem_controller *ctrl)
+static inline void dump_spd_registers(const struct mem_controller *ctrl)
 {
 	int i;
 	print_debug("\n");
@@ -174,7 +174,7 @@ static void dump_spd_registers(const struct mem_controller *ctrl)
 		}
 	}
 }
-static void dump_smbus_registers(void)
+static inline void dump_smbus_registers(void)
 {
 	unsigned device;
         print_debug("\n");
@@ -215,7 +215,7 @@ static void dump_smbus_registers(void)
 	}	
 }
 
-static void dump_io_resources(unsigned port) 
+static inline void dump_io_resources(unsigned port) 
 {
 
 	int i;
@@ -249,7 +249,7 @@ static void dump_io_resources(unsigned port)
         }
 }
 
-static void dump_mem(unsigned start, unsigned end)
+static inline void dump_mem(unsigned start, unsigned end)
 {
         unsigned i;
 	print_debug("dump_mem:");

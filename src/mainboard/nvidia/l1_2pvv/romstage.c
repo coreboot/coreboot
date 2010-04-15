@@ -83,10 +83,6 @@
 
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
-static void memreset_setup(void)
-{
-}
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
@@ -102,12 +98,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/amdk8_f.h"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-
+#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
-
 #include "lib/generic_sdram.c"
 
 #include "resourcemap.c"
@@ -273,8 +266,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	enable_smbus();
-
-	memreset_setup();
 
 	//do we need apci timer, tsc...., only debug need it for better output
 	/* all ap stopped? */

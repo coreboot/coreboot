@@ -21,18 +21,14 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <arch/io.h>
-#include <boot/coreboot_tables.h>
+#include <boot/tables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include <arch/coreboot_tables.h>
-#include <../southbridge/amd/sb700/sb700.h>
+#include <southbridge/amd/sb700/sb700.h>
 #include "chip.h"
 
 #define SMBUS_IO_BASE 0x6000
-
-extern void lb_add_memory_range(struct lb_memory *mem, uint32_t type,
-				uint64_t start, uint64_t size);
 
 uint64_t uma_memory_base, uma_memory_size;
 

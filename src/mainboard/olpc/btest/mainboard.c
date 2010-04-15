@@ -69,7 +69,7 @@ static void init_dcon(void) {
   write_bit(rev > 0 ? 1 : 0);
 }
 
-void
+static void
 init_cafe_irq(void){
 	const unsigned char slots_cafe[4] = {11, 0, 0, 0};
 

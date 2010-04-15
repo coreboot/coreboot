@@ -718,12 +718,14 @@ static int is_dual_channel(const struct mem_controller *ctrl)
 
 static int is_opteron(const struct mem_controller *ctrl)
 {
-	/* Test to see if I am an Opteron.
-	 * FIXME Testing dual channel capability is correct for now
-	 * but a better test is probably required.
-	 * m2 and s1g1 support dual channel too. but only support unbuffered dimm
+	/* Test to see if I am an Opteron. M2 and S1G1 support dual
+	 * channel, too, but only support unbuffered DIMMs so we need a
+	 * better test for Opterons. 
+	 * However, all code uses is_opteron() to find out whether to
+	 * use dual channel, so if we really check for opteron here, we
+	 * need to fix up all code using this function, too.
 	 */
-#warning "FIXME implement a better test for opterons"
+
 	uint32_t nbcap;
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	return !!(nbcap & NBCAP_128Bit);

@@ -23,8 +23,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <boot/tables.h>
+#include <southbridge/via/vt8237r/vt8237r.h>
 #include "chip.h"
-#include "../../../southbridge/via/vt8237r/vt8237r.h"
 
 int add_mainboard_resources(struct lb_memory *mem)
 {

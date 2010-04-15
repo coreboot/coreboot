@@ -71,9 +71,6 @@
 #define SERIAL_DEV PNP_DEV(0x2e, PC87417_SP1)
 #define RTC_DEV PNP_DEV(0x2e, PC87417_RTC)
 #include "southbridge/broadcom/bcm5785/bcm5785_early_setup.c"
-static void memreset_setup(void)
-{
-}
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
@@ -104,12 +101,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/amdk8_f.h"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-
+#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
-
 #include "lib/generic_sdram.c"
 
  /* msi does not want the default */
@@ -129,7 +123,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #define DIMM6 0x56
 #define DIMM7 0x57
 
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -144,12 +137,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                        //first node
                         RC0|DIMM0, RC0|DIMM2, RC0|DIMM4, RC0|DIMM6,
                         RC0|DIMM1, RC0|DIMM3, RC0|DIMM5, RC0|DIMM7,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
                        //second node
                        RC1|DIMM0, RC1|DIMM2, RC1|DIMM4, RC1|DIMM6,
                        RC1|DIMM1, RC1|DIMM3, RC1|DIMM5, RC1|DIMM7,
-#endif
-
        };
 
 	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE +
@@ -277,8 +267,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                 dump_smbus_registers();
         }
 #endif
-
-       memreset_setup();
 
        //do we need apci timer, tsc...., only debug need it for better output
         /* all ap stopped? */

@@ -1,4 +1,5 @@
 #define DEBUG_PLL 0
+#define PLL_CRTC_DECODE 0
 
 /* FIXME: remove the FAIL definition */
 #if 0
@@ -123,9 +124,7 @@ static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
 #if DEBUG_PLL==1
     int pllmclk, pllsclk;
 #endif
-
-    u32 q, x;			/* x is a workaround for sparc64-linux-gcc */
-    x = x;			/* x is a workaround for sparc64-linux-gcc */
+    u32 q;
     
     pll->pll_ref_div = info->pll_per*2*255/info->ref_clk_per;
     

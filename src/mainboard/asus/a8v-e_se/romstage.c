@@ -105,10 +105,11 @@ void soft_reset(void)
 #define K8_4RANK_DIMM_SUPPORT 1
 
 #include "northbridge/amd/amdk8/amdk8.h"
-#include "northbridge/amd/amdk8/raminit.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
+#include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/raminit.c"
 #include "lib/generic_sdram.c"
+
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/via/k8t890/k8t890_early_car.c"
 
@@ -126,7 +127,7 @@ unsigned int get_sbdn(unsigned bus)
 	return (dev >> 15) & 0x1f;
 }
 
-void sio_init(void)
+static void sio_init(void)
 {
 	u8 reg;
 
@@ -171,17 +172,17 @@ void sio_init(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
+		// Node 0
 		(0xa << 3) | 0, (0xa << 3) | 2, 0, 0,
 		(0xa << 3) | 1, (0xa << 3) | 3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
+		// Node 1
 		(0xa << 3) | 4, (0xa << 3) | 6, 0, 0,
 		(0xa << 3) | 5, (0xa << 3) | 7, 0, 0,
-#endif
 	};
 	unsigned bsp_apicid = 0;
 	int needs_reset = 0;
-	struct sys_info *sysinfo =
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE 
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	sio_init();
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

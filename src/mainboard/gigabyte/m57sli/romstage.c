@@ -84,10 +84,6 @@
 
 #include "southbridge/nvidia/mcp55/mcp55_early_ctrl.c"
 
-static void memreset_setup(void)
-{
-}
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
@@ -103,12 +99,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 }
 
 #include "northbridge/amd/amdk8/amdk8_f.h"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-
 #include "northbridge/amd/amdk8/incoherent_ht.c"
-
+#include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
-
 #include "lib/generic_sdram.c"
 
 #include "resourcemap.c" 
@@ -132,8 +125,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
 
-
-
 #include "cpu/amd/car/post_cache_as_ram.c"
 
 #include "cpu/amd/model_fxx/init_cpus.c"
@@ -145,8 +136,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
-        unsigned value;
         uint32_t dword;
         uint8_t byte;
 
@@ -166,15 +155,16 @@ static void sio_setup(void)
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
+			// Node 0
 			(0xa<<3)|0, (0xa<<3)|2, 0, 0,
 			(0xa<<3)|1, (0xa<<3)|3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
+			// Node 1
 			(0xa<<3)|4, (0xa<<3)|6, 0, 0,
 			(0xa<<3)|5, (0xa<<3)|7, 0, 0,
-#endif
 	};
 
-        struct sys_info *sysinfo = (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+        struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE 
+		+ CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
         int needs_reset = 0;
         unsigned bsp_apicid = 0;
@@ -288,8 +278,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
         enable_smbus(); 
-
-        memreset_setup();
 
         //do we need apci timer, tsc...., only debug need it for better output
         /* all ap stopped? */

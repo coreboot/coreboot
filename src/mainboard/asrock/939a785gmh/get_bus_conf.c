@@ -63,8 +63,6 @@ u32 sbdn_sb700;
 
 static u32 get_bus_conf_done = 0;
 
-void get_bus_conf(void);
-
 void get_bus_conf(void)
 {
 	u32 apicid_base;

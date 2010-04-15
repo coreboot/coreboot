@@ -29,6 +29,7 @@ static int smbus_read_byte(unsigned device, unsigned address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
+#ifdef UNUSED_CODE
 static void smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {
 	if (smbus_wait_until_ready(SMBUS_IO_BASE) < 0) {
@@ -126,4 +127,4 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	print_debug("SMBUS Block complete\n");
 	return 0;
 }
-
+#endif

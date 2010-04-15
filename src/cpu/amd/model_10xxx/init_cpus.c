@@ -30,7 +30,6 @@
 	#define SET_FIDVID_CORE0_ONLY 0
 #endif
 
-void update_microcode(u32 cpu_deviceid);
 static void prep_fid_change(void);
 static void init_fidvid_stage2(u32 apicid, u32 nodeid);
 void cpuSetAMDMSR(void);

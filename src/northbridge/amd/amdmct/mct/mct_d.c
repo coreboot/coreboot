@@ -177,7 +177,7 @@ static const u8 Table_Comp_Rise_Slew_15x[] = {7, 7, 3, 2, 0xFF};
 static const u8 Table_Comp_Fall_Slew_20x[] = {7, 5, 3, 2, 0xFF};
 static const u8 Table_Comp_Fall_Slew_15x[] = {7, 7, 5, 3, 0xFF};
 
-void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
+static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstatA)
 {
 	/*
@@ -3565,7 +3565,7 @@ static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 	u8 Node;
 	u32 i;
 	struct DCTStatStruc *pDCTstat;
-	u16 start, stop;
+	u32 start, stop;
 	u8 *p;
 	u16 host_serv1, host_serv2;
 
@@ -3582,12 +3582,12 @@ static void mct_ResetDataStruct_D(struct MCTStatStruc *pMCTstat,
 
 		p = (u8 *) pDCTstat;
 		start = 0;
-		stop = ((u16) &((struct DCTStatStruc *)0)->CH_MaxRdLat[2]);
+		stop = (u32)(&((struct DCTStatStruc *)0)->CH_MaxRdLat[2]);
 		for (i = start; i < stop ; i++) {
 			p[i] = 0;
 		}
 
-		start = ((u16) &((struct DCTStatStruc *)0)->CH_D_BC_RCVRDLY[2][4]);
+		start = (u32)(&((struct DCTStatStruc *)0)->CH_D_BC_RCVRDLY[2][4]);
 		stop = sizeof(struct DCTStatStruc);
 		for (i = start; i < stop; i++) {
 			p[i] = 0;
@@ -3617,7 +3617,7 @@ static void mct_BeforeDramInit_Prod_D(struct MCTStatStruc *pMCTstat,
 }
 
 
-void mct_AdjustDelayRange_D(struct MCTStatStruc *pMCTstat,
+static void mct_AdjustDelayRange_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 *dqs_pos)
 {
 	// FIXME: Skip for Ax

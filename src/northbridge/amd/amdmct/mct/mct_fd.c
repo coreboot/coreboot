@@ -19,7 +19,7 @@
 
 
 
-u8 amd_FD_support(void)
+static u8 amd_FD_support(void)
 {
 	return 1;
 }

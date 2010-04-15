@@ -17,15 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef __PRE_RAM__
-
+#ifndef __ROMCC__
 #include <stdint.h>
 #include <console/console.h>
-#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/microcode.h>
-#include <cpu/x86/cache.h>
+#endif
 
+#ifndef __PRE_RAM__
+#include <cpu/cpu.h>
+#include <cpu/x86/cache.h>
 #endif
 
 struct microcode {

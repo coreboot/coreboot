@@ -111,6 +111,8 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 
+#include "cpu/amd/microcode/microcode.c"
+#include "cpu/amd/model_10xxx/update_microcode.c"
 #include "cpu/amd/model_10xxx/init_cpus.c"
 
 #include "cpu/amd/model_10xxx/fidvid.c"
@@ -141,8 +143,6 @@ static void sio_setup(void)
 }
 
 #include "spd_addr.h"
-#include "cpu/amd/microcode/microcode.c"
-#include "cpu/amd/model_10xxx/update_microcode.c"
 
 #define GPIO1_DEV PNP_DEV(0x2e, W83627HF_GAME_MIDI_GPIO1)
 #define GPIO2_DEV PNP_DEV(0x2e, W83627HF_GPIO2)

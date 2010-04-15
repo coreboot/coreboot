@@ -104,7 +104,7 @@ static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 				u8 DATAAload, u32 *AddrTmgCTL, u32 *ODC_CTL,
 				u8 *CMDmode)
 {
-	u8 *p;
+	u8 const *p;
 
 	*AddrTmgCTL = 0;
 	*ODC_CTL = 0;

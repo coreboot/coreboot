@@ -22,6 +22,7 @@
  */
 
 #include "amdfam10_pci.c"
+#include <delay.h>
 
 static inline void print_debug_addr(const char *str, void *val)
 {
@@ -89,8 +90,6 @@ static inline void print_pci_devices_on_bus(u32 busn)
 	}
 }
 
-
-
 static void dump_pci_device_range(u32 dev, u32 start_reg, u32 size)
 {
 	int i;
@@ -111,10 +110,12 @@ static void dump_pci_device_range(u32 dev, u32 start_reg, u32 size)
 	}
 	print_debug("\n");
 }
+
 static void dump_pci_device(u32 dev)
 {
 	dump_pci_device_range(dev, 0, 4096);
 }
+
 static void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
 					u32 size)
 {
@@ -136,13 +137,13 @@ static void dump_pci_device_index_wait_range(u32 dev, u32 index_reg, u32 start,
 	}
 	print_debug("\n");
 }
+
 static inline void dump_pci_device_index_wait(u32 dev, u32 index_reg)
 {
 	dump_pci_device_index_wait_range(dev, index_reg, 0, 0x54);
 	dump_pci_device_index_wait_range(dev, index_reg, 0x100, 0x08); //DIMM1 when memclk > 400Hz
 //	dump_pci_device_index_wait_range(dev, index_reg, 0x200, 0x08); //DIMM2
 //	dump_pci_device_index_wait_range(dev, index_reg, 0x300, 0x08); //DIMM3
-
 }
 
 static inline void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 length)
@@ -164,7 +165,6 @@ static inline void dump_pci_device_index(u32 dev, u32 index_reg, u32 type, u32 l
 	}
 	print_debug("\n");
 }
-
 
 static inline void dump_pci_devices(void)
 {
@@ -190,7 +190,6 @@ static inline void dump_pci_devices(void)
 		}
 	}
 }
-
 
 static inline void dump_pci_devices_on_bus(u32 busn)
 {

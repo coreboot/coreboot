@@ -19,7 +19,7 @@
 
 /* Call-backs */
 #include <delay.h>
-u16 mctGet_NVbits(u8 index)
+static u16 mctGet_NVbits(u8 index)
 {
 	u16 val = 0;
 
@@ -223,106 +223,106 @@ u16 mctGet_NVbits(u8 index)
 }
 
 
-void mctHookAfterDIMMpre(void)
+static void mctHookAfterDIMMpre(void)
 {
 }
 
 
-void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
+static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 {
 	pDCTstat->PresetmaxFreq = 400;
 }
 
 
-void mctAdjustAutoCycTmg(void)
+static void mctAdjustAutoCycTmg(void)
 {
 }
 
-void mctAdjustAutoCycTmg_D(void)
-{
-}
-
-
-void mctHookAfterAutoCycTmg(void)
+static void mctAdjustAutoCycTmg_D(void)
 {
 }
 
 
-void mctGetCS_ExcludeMap(void)
+static void mctHookAfterAutoCycTmg(void)
 {
 }
 
 
-void mctHookAfterAutoCfg(void)
+static void mctGetCS_ExcludeMap(void)
 {
 }
 
 
-void mctHookAfterPSCfg(void)
+static void mctHookAfterAutoCfg(void)
 {
 }
 
 
-void mctHookAfterHTMap(void)
+static void mctHookAfterPSCfg(void)
 {
 }
 
 
-void mctHookAfterCPU(void)
+static void mctHookAfterHTMap(void)
 {
 }
 
 
-void mctSaveDQSSigTmg_D(void)
+static void mctHookAfterCPU(void)
 {
 }
 
 
-void mctGetDQSSigTmg_D(void)
+static void mctSaveDQSSigTmg_D(void)
 {
 }
 
 
-void mctHookBeforeECC(void)
+static void mctGetDQSSigTmg_D(void)
 {
 }
 
 
-void mctHookAfterECC(void)
+static void mctHookBeforeECC(void)
 {
 }
 
 
-void mctInitMemGPIOs_A(void)
+static void mctHookAfterECC(void)
 {
 }
 
 
-void mctInitMemGPIOs_A_D(void)
+static void mctInitMemGPIOs_A(void)
 {
 }
 
 
-void mctNodeIDDebugPort_D(void)
+static void mctInitMemGPIOs_A_D(void)
 {
 }
 
 
-void mctWarmReset(void)
-{
-}
-
-void mctWarmReset_D(void)
+static void mctNodeIDDebugPort_D(void)
 {
 }
 
 
-void mctHookBeforeDramInit(void)
+static void mctWarmReset(void)
+{
+}
+
+static void mctWarmReset_D(void)
 {
 }
 
 
-void mctHookAfterDramInit(void)
+static void mctHookBeforeDramInit(void)
+{
+}
+
+
+static void mctHookAfterDramInit(void)
 {
 }
 
@@ -330,7 +330,7 @@ static void coreDelay (void);
 
 
 /* Erratum 350 */
-void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
+static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 {
 	u8 u8Channel;
 	u8 u8Receiver;
@@ -392,23 +392,23 @@ void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat)
 }
 
 
-void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
+static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
 	if (pDCTstatA->LogicalCPUID & (AMD_RB_C2 | AMD_DA_C2)) {
 		vErrata350(pMCTstat, pDCTstatA);
 	}
 }
 
-void mctHookAfterAnyTraining(void)
+static void mctHookAfterAnyTraining(void)
 {
 }
 
-u32 mctGetLogicalCPUID_D(u8 node)
+static u32 mctGetLogicalCPUID_D(u8 node)
 {
 	return mctGetLogicalCPUID(node);
 }
 
-u8 mctSetNodeBoundary_D(void)
+static u8 mctSetNodeBoundary_D(void)
 {
 	return 0;
 }

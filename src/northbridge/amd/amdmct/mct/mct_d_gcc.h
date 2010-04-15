@@ -150,7 +150,7 @@ static void WriteLNTestPattern(u32 addr_lo, u8 *buf_a, u32 line_num)
 }
 
 
-u32 read32_fs(u32 addr_lo)
+static u32 read32_fs(u32 addr_lo)
 {
 	u32 value;
 	__asm__ volatile (
@@ -162,7 +162,7 @@ u32 read32_fs(u32 addr_lo)
 }
 
 
-u8 read8_fs(u32 addr_lo)
+static u8 read8_fs(u32 addr_lo)
 {
 	u8 byte;
 	__asm__ volatile (
@@ -312,7 +312,7 @@ static void ReadMaxRdLat1CLTestPattern_D(u32 addr)
 }
 
 
-void WriteMaxRdLat1CLTestPattern_D(u32 buf, u32 addr)
+static void WriteMaxRdLat1CLTestPattern_D(u32 buf, u32 addr)
 {
 	SetUpperFSbase(addr);
 
@@ -351,7 +351,7 @@ static void FlushMaxRdLatTestPattern_D(u32 addr)
 }
 
 
-u32 stream_to_int(u8 *p)
+static u32 stream_to_int(u8 const *p)
 {
 	int i;
 	u32 val;
@@ -369,19 +369,19 @@ u32 stream_to_int(u8 *p)
 }
 
 
-void oemSet_NB32(u32 addr, u32 val, u8 *valid)
+static void oemSet_NB32(u32 addr, u32 val, u8 *valid)
 {
 }
 
 
-u32 oemGet_NB32(u32 addr,  u8 *valid)
+static u32 oemGet_NB32(u32 addr,  u8 *valid)
 {
 	*valid = 0;
 	return 0xffffffff;
 }
 
 
-u8 oemNodePresent_D(u8 Node, u8 *ret)
+static u8 oemNodePresent_D(u8 Node, u8 *ret)
 {
 	*ret = 0;
 	return 0;

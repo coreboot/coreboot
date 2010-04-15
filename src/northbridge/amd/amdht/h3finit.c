@@ -123,7 +123,7 @@
  *	@param[out] u8 results = the number of nodes in the graph
  * ---------------------------------------------------------------------------------------
  */
-u8 graphHowManyNodes(u8 *graph)
+static u8 graphHowManyNodes(u8 *graph)
 {
 	return graph[0];
 }
@@ -144,7 +144,7 @@ u8 graphHowManyNodes(u8 *graph)
  *	@param[out]   BOOL    results  = true if nodeA connects to nodeB false if not
  * ---------------------------------------------------------------------------------------
  */
-BOOL graphIsAdjacent(u8 *graph, u8 nodeA, u8 nodeB)
+static BOOL graphIsAdjacent(u8 *graph, u8 nodeA, u8 nodeB)
 {
 	u8 size = graph[0];
 	ASSERT(size <= MAX_NODES);
@@ -170,7 +170,7 @@ BOOL graphIsAdjacent(u8 *graph, u8 nodeA, u8 nodeB)
  *	@param[out]   u8    results = The response route node
  * ---------------------------------------------------------------------------------------
  */
-u8 graphGetRsp(u8 *graph, u8 nodeA, u8 nodeB)
+static u8 graphGetRsp(u8 *graph, u8 nodeA, u8 nodeB)
 {
 	u8 size = graph[0];
 	ASSERT(size <= MAX_NODES);
@@ -196,7 +196,7 @@ u8 graphGetRsp(u8 *graph, u8 nodeA, u8 nodeB)
  *	@param[out]   u8    results = The request route node
  * ---------------------------------------------------------------------------------------
  */
-u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
+static u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
 {
 	u8 size = graph[0];
 	ASSERT(size <= MAX_NODES);
@@ -219,7 +219,7 @@ u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
  *	OU    u8    results = the broadcast routes for nodeA from nodeB
  * ---------------------------------------------------------------------------------------
  */
-u8 graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
+static u8 graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
 {
 	u8 size = graph[0];
 	ASSERT(size <= MAX_NODES);
@@ -248,7 +248,7 @@ u8 graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
  *	@param[in]    sMainData*  pDat   = our global state, port config info
  * ---------------------------------------------------------------------------------------
  */
-void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
+static void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
 {
 	u8 predecessorNode, predecessorLink, currentPair;
 
@@ -287,7 +287,7 @@ void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
  *	@param[out]   u8    results    = the link on source which connects to target
  * ---------------------------------------------------------------------------------------
  */
-u8 convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
+static u8 convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
 {
 	u8 targetlink = INVALID_LINK;
 	u8 k;
@@ -326,7 +326,7 @@ u8 convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
  *	@param[in]    sMainData*  pDat = our global state
  * ---------------------------------------------------------------------------------------
  */
-void htDiscoveryFloodFill(sMainData *pDat)
+static void htDiscoveryFloodFill(sMainData *pDat)
 {
 	u8 currentNode = 0;
 	u8 currentLink;
@@ -595,7 +595,7 @@ void htDiscoveryFloodFill(sMainData *pDat)
  *	@param[out] BOOL results = the graphs are (or are not) isomorphic
  * ---------------------------------------------------------------------------------------
  */
-BOOL isoMorph(u8 i, sMainData *pDat)
+static BOOL isoMorph(u8 i, sMainData *pDat)
 {
 	u8 j, k;
 	u8 nodecnt;
@@ -669,7 +669,7 @@ BOOL isoMorph(u8 i, sMainData *pDat)
  *	@param[out]			degree matrix, permutation
  * ---------------------------------------------------------------------------------------
  */
-void lookupComputeAndLoadRoutingTables(sMainData *pDat)
+static void lookupComputeAndLoadRoutingTables(sMainData *pDat)
 {
 	u8 **pTopologyList;
 	u8 *pSelected;
@@ -810,7 +810,7 @@ void lookupComputeAndLoadRoutingTables(sMainData *pDat)
  *	@param[in] sMainData* pDat = our global state, number of nodes discovered.
  * ---------------------------------------------------------------------------------------
  */
-void finializeCoherentInit(sMainData *pDat)
+static void finializeCoherentInit(sMainData *pDat)
 {
 	u8 curNode;
 
@@ -843,7 +843,7 @@ void finializeCoherentInit(sMainData *pDat)
  *	@param[in] sMainData* pDat = our global state
  * ---------------------------------------------------------------------------------------
  */
-void coherentInit(sMainData *pDat)
+static void coherentInit(sMainData *pDat)
 {
 	u8 i, j;
 
@@ -891,7 +891,7 @@ void coherentInit(sMainData *pDat)
  *	@param[in] sMainData* pDat = our global state
  * ---------------------------------------------------------------------------------------
  */
-void processLink(u8 node, u8 link, sMainData *pDat)
+static void processLink(u8 node, u8 link, sMainData *pDat)
 {
 	u8 secBus, subBus;
 	u32 currentBUID;
@@ -1184,7 +1184,7 @@ void processLink(u8 node, u8 link, sMainData *pDat)
  *	@param[in]  sMainData*  pDat = our global state
  * ---------------------------------------------------------------------------------------
  */
-void ncInit(sMainData *pDat)
+static void ncInit(sMainData *pDat)
 {
 	u8 node, link;
 	u8 compatLink;
@@ -1228,7 +1228,7 @@ void ncInit(sMainData *pDat)
  *	@param[in,out] sMainData*  pDat = our global state
  * ---------------------------------------------------------------------------------------
  */
-void regangLinks(sMainData *pDat)
+static void regangLinks(sMainData *pDat)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u8 i, j;
@@ -1317,7 +1317,7 @@ void regangLinks(sMainData *pDat)
  *	@param[in,out]  sMainData*  pDat = our global state, port list data
  * ---------------------------------------------------------------------------------------
  */
-void selectOptimalWidthAndFrequency(sMainData *pDat)
+static void selectOptimalWidthAndFrequency(sMainData *pDat)
 {
 	u8 i, j;
 	u32 temp;
@@ -1452,7 +1452,7 @@ void selectOptimalWidthAndFrequency(sMainData *pDat)
  *	@param[in,out] sMainData* pDat = our global state, link state and port list
  * ---------------------------------------------------------------------------------------
  */
-void hammerSublinkFixup(sMainData *pDat)
+static void hammerSublinkFixup(sMainData *pDat)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u8 i, j, k;
@@ -1589,7 +1589,7 @@ void hammerSublinkFixup(sMainData *pDat)
  *	@param[in]  sMainData* pDat = our global state
  * ---------------------------------------------------------------------------------------
  */
-void linkOptimization(sMainData *pDat)
+static void linkOptimization(sMainData *pDat)
 {
 	pDat->nb->gatherLinkData(pDat, pDat->nb);
 	regangLinks(pDat);
@@ -1611,7 +1611,7 @@ void linkOptimization(sMainData *pDat)
  *	  @param[in]	    sMainData*	  pDat		 = our global state, port list data
  * ---------------------------------------------------------------------------------------
  */
-void trafficDistribution(sMainData *pDat)
+static void trafficDistribution(sMainData *pDat)
 {
 #ifndef HT_BUILD_NC_ONLY
 	u32 links01, links10;
@@ -1654,7 +1654,7 @@ void trafficDistribution(sMainData *pDat)
  *	@param[in] sMainData* pDat = our global state, port list data
  * ---------------------------------------------------------------------------------------
  */
-void tuning(sMainData *pDat)
+static void tuning(sMainData *pDat)
 {
 	u8 i;
 
@@ -1692,7 +1692,7 @@ void tuning(sMainData *pDat)
  *	@param[out] result BOOL  = true if check is ok, false if it failed
  * ---------------------------------------------------------------------------------------
  */
-BOOL isSanityCheckOk(void)
+static BOOL isSanityCheckOk(void)
 {
 	uint64 qValue;
 

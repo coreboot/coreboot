@@ -37,8 +37,6 @@
 #include <cpu/amd/multicore.h>
 #include <cpu/amd/model_10xxx_msr.h>
 
-extern device_t get_node_pci(u32 nodeid, u32 fn);
-
 #define MCI_STATUS 0x401
 
 msr_t rdmsr_amd(u32 index)

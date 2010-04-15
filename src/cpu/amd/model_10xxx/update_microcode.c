@@ -23,7 +23,9 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <string.h>
+#endif
 
+#ifndef __ROMCC__
 #include <cpu/amd/microcode.h>
 #endif
 

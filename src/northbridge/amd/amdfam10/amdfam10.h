@@ -1084,6 +1084,10 @@ struct sys_info {
 
 } __attribute__((packed));
 
+#ifndef __PRE_RAM__
+device_t get_node_pci(u32 nodeid, u32 fn);
+#endif
+
 #if CONFIG_AMDMCT == 0
 
 #ifdef __PRE_RAM__

@@ -157,7 +157,7 @@ u32 mctGetLogicalCPUID(u32 Node)
 }
 
 
-void raminit_amdmct(struct sys_info *sysinfo)
+static void raminit_amdmct(struct sys_info *sysinfo)
 {
 	struct MCTStatStruc *pMCTstat = &(sysinfo->MCTstat);
 	struct DCTStatStruc *pDCTstatA = sysinfo->DCTstatA;

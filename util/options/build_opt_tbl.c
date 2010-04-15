@@ -570,7 +570,7 @@ int main(int argc, char **argv)
 		struct cmos_option_table *hdr;
 		struct lb_record *ptr, *end;
 
-		strncpy(tempfilename, dirname(strdup(option)), TMPFILE_LEN);
+		strncpy(tempfilename, dirname(strdup(header)), TMPFILE_LEN);
 	        strncat(tempfilename, TMPFILE_TEMPLATE, TMPFILE_LEN);
 		tempfile = mkstemp(tempfilename);
 		if(tempfile == -1) {

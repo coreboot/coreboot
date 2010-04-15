@@ -33,7 +33,7 @@ static inline void print_pci_devices(void)
 {
 	device_t dev;
 	for (dev = PCI_DEV(0, 0, 0);
-	     dev <= PCI_DEV(0xff, 0x1f, 0x7); dev += PCI_DEV(0, 0, 1)) {
+	     dev <= PCI_DEV(0x00, 0x1f, 0x7); dev += PCI_DEV(0, 0, 1)) {
 		u32 id;
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff)

@@ -113,8 +113,8 @@ static int int15_handler(void)
 	switch (M.x86.R_AX) {
 	case 0x5f35: /* Boot Display */
 		M.x86.R_AX = 0x005f; // Success
-		M.x86.R_CL = BOOT_DISPLAY_TV2;
-		//M.x86.R_CL = BOOT_DISPLAY_DEFAULT;
+		//M.x86.R_CL = BOOT_DISPLAY_TV2;
+		M.x86.R_CL = BOOT_DISPLAY_DEFAULT;
 		break;
 	case 0x5f36: /* Boot TV Format Hook */
 		printk(BIOS_DEBUG, "Boot TV Format Hook. TODO\n");

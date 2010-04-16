@@ -7,7 +7,7 @@
 static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
-	static const char oem[8] = "LNXI    ";
+	static const char oem[8] = "COREBOOT";
 	static const char productid[12] = "SE7520JR20  ";
 	struct mp_config_table *mc;
 	unsigned char bus_num;
@@ -16,7 +16,7 @@ static void *smp_write_config_table(void *v)
 	unsigned char bus_pxhd_2;
 	unsigned char bus_pxhd_3 = 0;
 	unsigned char bus_pxhd_4 = 0;
-	unsigned char bus_pxhd_x;
+	unsigned char bus_pxhd_x = 0;
 	unsigned char bus_ich5r_1;
 	unsigned int bus_pxhd_id;
 
@@ -137,6 +137,7 @@ static void *smp_write_config_table(void *v)
 		else {
 			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 1:00.3\n");
 		}
+
 		/* pxhd apic 5 */
 		if(bus_pxhd_3) { /* Active riser pxhd */
 			dev = dev_find_slot(bus_pxhd_x, PCI_DEVFN(0x00,1));
@@ -164,7 +165,6 @@ static void *smp_write_config_table(void *v)
 			}
 		}
 	}
-
 	
 	/* ISA backward compatibility interrupts  */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
@@ -218,8 +218,8 @@ static void *smp_write_config_table(void *v)
 	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		bus_isa, 0x00, MP_APIC_ALL, 0x01);
 
+	/* FIXME verify I have the irqs handled for all of the risers */
 
-#warning "FIXME verify I have the irqs handled for all of the risers"
 	/* 2:3.0 PCI Slot 1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		bus_pxhd_1, (3<<2)|0, 0x9, 0x0);

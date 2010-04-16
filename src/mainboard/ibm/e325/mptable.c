@@ -7,7 +7,7 @@
 static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
-	static const char oem[8] = "IBM     ";
+	static const char oem[8] = "COREBOOT";
 	static const char productid[12] = "E325        ";
 	struct mp_config_table *mc;
 
@@ -49,6 +49,7 @@ static void *smp_write_config_table(void *v)
 			bus_isa++;
 		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:03.0, using defaults\n");
+			bus_8111_0 = 1;
 			bus_8111_1 = 4;
 			bus_isa = 5;
 		}

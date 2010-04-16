@@ -210,7 +210,7 @@ static inline void dump_bar14(unsigned dev)
 	print_debug("\n");
 }
 
-static void dump_pci_devices(void)
+static inline void dump_pci_devices(void)
 {
 	device_t dev;
 	for(dev = PCI_DEV(0, 0, 0);

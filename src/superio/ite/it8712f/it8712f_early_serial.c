@@ -66,7 +66,7 @@ static void it8712f_exit_conf(void)
 	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
 }
 
-static void it8712f_24mhz_clkin(void)
+void it8712f_24mhz_clkin(void)
 {
 	it8712f_enter_conf();
 
@@ -76,7 +76,7 @@ static void it8712f_24mhz_clkin(void)
 	it8712f_exit_conf();
 }
 
-static void it8712f_enable_3vsbsw(void)
+void it8712f_enable_3vsbsw(void)
 {
 
 	/* We need to set enable 3VSBSW#, this was documented only in IT8712F_V0.9.2!
@@ -102,7 +102,7 @@ static void it8712f_kill_watchdog(void)
 }
 
 /* Enable the peripheral devices on the IT8712F Super I/O chip. */
-static void it8712f_enable_serial(device_t dev, unsigned iobase)
+void it8712f_enable_serial(device_t dev, unsigned iobase)
 {
 
 	/* (1) Enter the configuration state (MB PnP mode). */

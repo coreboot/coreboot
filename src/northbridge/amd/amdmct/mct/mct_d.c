@@ -476,7 +476,7 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 	}
 }
 
-
+#ifdef UNUSED_CODE
 static void ResetNBECCstat_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA)
 {
@@ -503,7 +503,7 @@ static void ResetNBECCstat_D(struct MCTStatStruc *pMCTstat,
 		}
 	}
 }
-
+#endif
 
 static void HTMemMapInit_D(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstatA)
@@ -3337,7 +3337,7 @@ static void SetCSTriState(struct MCTStatStruc *pMCTstat,
 }
 
 
-
+#ifdef UNUSED_CODE
 static void SetCKETriState(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct)
 {
@@ -3377,7 +3377,7 @@ static void SetCKETriState(struct MCTStatStruc *pMCTstat,
 
 	Set_NB32_index_wait(dev, index_reg, index, val);
 }
-
+#endif
 
 static void SetODTTriState(struct MCTStatStruc *pMCTstat,
 				struct DCTStatStruc *pDCTstat, u8 dct)
@@ -3856,7 +3856,7 @@ static void mct_EnableDatIntlv_D(struct MCTStatStruc *pMCTstat,
 	}
 }
 
-
+#ifdef UNUSED_CODE
 static void mct_SetupSync_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat)
 {
@@ -3878,6 +3878,7 @@ static void mct_SetupSync_D(struct MCTStatStruc *pMCTstat,
 		Set_NB32(dev, 0x78, val);
 	}
 }
+#endif
 
 static void AfterDramInit_D(struct DCTStatStruc *pDCTstat, u8 dct) {
 

@@ -30,4 +30,6 @@ struct mem_controller {
 	u16 channel1[DIMM_SOCKETS];
 };
 
+void sdram_initialize(int controllers, const struct mem_controller *ctrl);
+
 #endif

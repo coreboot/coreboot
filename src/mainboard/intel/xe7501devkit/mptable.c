@@ -145,7 +145,7 @@ static void xe7501devkit_register_interrupts(struct mp_config_table *mc)
 static void *smp_write_config_table(void* v)
 {
 	static const char sig[4] = MPC_SIGNATURE;
-	static const char oem[8] = "INTEL   ";
+	static const char oem[8] = "COREBOOT";
 	static const char productid[12] = "XE7501DEVKIT";
 	struct mp_config_table *mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	memset(mc, 0, sizeof(*mc));

@@ -46,7 +46,7 @@
 static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
-	static const char oem[8] = "HP      ";
+	static const char oem[8] = "COREBOOT";
 	static const char productid[12] = "TREX        ";
 	struct mp_config_table *mc;
 

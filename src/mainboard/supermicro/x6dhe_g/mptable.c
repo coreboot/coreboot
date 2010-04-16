@@ -7,7 +7,7 @@
 static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
-	static const char oem[8] = "LNXI    ";
+	static const char oem[8] = "COREBOOT";
 	static const char productid[12] = "X6DHE       ";
 	struct mp_config_table *mc;
 	unsigned char bus_num;
@@ -43,11 +43,9 @@ static void *smp_write_config_table(void *v)
 		dev = dev_find_slot(0, PCI_DEVFN(0x1c,0));
 		if (dev) {
 			bus_esb6300_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		}
-		else {
+		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1c.0, using defaults\n");
-
-			bus_esb6300_2 = 6;
+			bus_esb6300_1 = 6;
 		}
 		/* esb6300_1 */
 		dev = dev_find_slot(0, PCI_DEVFN(0x1e,0));
@@ -55,33 +53,25 @@ static void *smp_write_config_table(void *v)
 			bus_esb6300_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			bus_isa	   = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 			bus_isa++;
-		}
-		else {
+		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI 0:1e.0, using defaults\n");
-
-			bus_esb6300_1 = 7;
+			bus_esb6300_2 = 7;
 			bus_isa = 8;
 		}
 		/* pxhd-1 */
 		dev = dev_find_slot(1, PCI_DEVFN(0x0,0));
 		if (dev) {
 			bus_pxhd_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-
-		}
-		else {
+		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:00.1, using defaults\n");
-
 			bus_pxhd_1 = 2;
 		}
 		/* pxhd-2 */
 		dev = dev_find_slot(1, PCI_DEVFN(0x00,2));
 		if (dev) {
 			bus_pxhd_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-
-		}
-		else {
+		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:02.0, using defaults\n");
-
 			bus_pxhd_2 = 3;
 		}
 	}
@@ -106,8 +96,7 @@ static void *smp_write_config_table(void *v)
 			if (res) {
 				smp_write_ioapic(mc, 0x04, 0x20, res->base);
 			}
-		}
-		else {
+		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 1:00.1\n");
 			printk(BIOS_DEBUG, "CONFIG_DEBUG: Dev= %p\n", dev);
 		}
@@ -118,14 +107,12 @@ static void *smp_write_config_table(void *v)
 			if (res) {
 				smp_write_ioapic(mc, 0x05, 0x20, res->base);
 			}
-		}
-		else {
+		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find IOAPIC PCI 1:00.3\n");
 			printk(BIOS_DEBUG, "CONFIG_DEBUG: Dev= %p\n", dev);
 		}
 	}
 
-	
 	/* ISA backward compatibility interrupts  */
 	smp_write_intsrc(mc, mp_ExtINT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 		bus_isa, 0x00, 0x02, 0x00);
@@ -182,7 +169,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_lintsrc(mc, mp_NMI, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,
 		bus_isa, 0x00, MP_APIC_ALL, 0x01);
 
-#warning "FIXME verify I have the irqs handled for all of the risers"
+	/* FIXME verify I have the irqs handled for all of the risers */
 
 	/* Compute the checksums */
 	mc->mpe_checksum = smp_compute_checksum(smp_next_mpc_entry(mc), mc->mpe_length);

@@ -161,7 +161,7 @@ static u32 read32_fs(u32 addr_lo)
 	return value;
 }
 
-
+#ifdef UNUSED_CODE
 static u8 read8_fs(u32 addr_lo)
 {
 	u8 byte;
@@ -173,7 +173,7 @@ static u8 read8_fs(u32 addr_lo)
 	);
 	return byte;
 }
-
+#endif
 
 static void FlushDQSTestPattern_L9(u32 addr_lo)
 {
@@ -369,6 +369,7 @@ static u32 stream_to_int(u8 const *p)
 }
 
 
+#ifdef UNUSED_CODE
 static void oemSet_NB32(u32 addr, u32 val, u8 *valid)
 {
 }
@@ -379,6 +380,7 @@ static u32 oemGet_NB32(u32 addr,  u8 *valid)
 	*valid = 0;
 	return 0xffffffff;
 }
+#endif
 
 
 static u8 oemNodePresent_D(u8 Node, u8 *ret)

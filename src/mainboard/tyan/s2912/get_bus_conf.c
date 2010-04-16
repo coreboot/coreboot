@@ -27,9 +27,7 @@
 #if CONFIG_LOGICAL_CPUS==1
 #include <cpu/amd/multicore.h>
 #endif
-
 #include <cpu/amd/amdk8_sysconf.h>
-
 #include <stdlib.h>
 #include "mb_sysconf.h"
 
@@ -37,8 +35,11 @@
 struct mb_sysconf_t mb_sysconf;
 
 unsigned pci1234x[] =
-{	//Here you only need to set value in pci1234 for HT-IO that could be installed or not
-	 //You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
+{	
+	// Here you only need to set value in pci1234 for HT-IO that could be
+	// installed or not.
+	// You may need to preset pci1234 for HTIO board, please refer to
+	// src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 	0x0000ff0,
 	0x0000ff0,
 	0x0000ff0,
@@ -49,7 +50,9 @@ unsigned pci1234x[] =
 //	0x0000ff0
 };
 unsigned hcdnx[] =
-{ //HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
+{ 
+	// HT Chain device num, actually it is unit id base of every ht device
+	// in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
 	0x20202020,
@@ -60,39 +63,10 @@ unsigned hcdnx[] =
 //	0x20202020,
 };
 
-
-
-
 static unsigned get_bus_conf_done = 0;
-
-static unsigned get_hcid(unsigned i)
-{
-	unsigned id = 0;
-
-	unsigned busn = (sysconf.pci1234[i] >> 16) & 0xff;
-
-	unsigned devn = sysconf.hcdn[i] & 0xff;
-
-	device_t dev;
-
-	dev = dev_find_slot(busn, PCI_DEVFN(devn,0));
-
-	switch (dev->device) {
-	case 0x0369: //IO55
-		id = 4;
-		break;
-	}
-
-	// we may need more way to find out hcid: subsystem id? GPIO read ?
-
-	// we need use id for 1. bus num, 2. mptable, 3. acpi table
-
-	return id;
-}
 
 void get_bus_conf(void)
 {
-
 	unsigned apicid_base;
 	struct mb_sysconf_t *m;
 
@@ -122,24 +96,22 @@ void get_bus_conf(void)
 
 	m->bus_mcp55[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 
-		/* MCP55 */
-		dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x06,0));
-		if (dev) {
-			m->bus_mcp55[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		}
-		else {
-			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sysconf.sbdn + 0x06);
-		}
+	/* MCP55 */
+	dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x06,0));
+	if (dev) {
+		m->bus_mcp55[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+	} else {
+		printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sysconf.sbdn + 0x06);
+	}
 
-		for(i=2; i<8;i++) {
-			dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x0a + i - 2 , 0));
-			if (dev) {
-				m->bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-			}
-			else {
-				printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2 );
-			}
+	for(i=2; i<8;i++) {
+		dev = dev_find_slot(m->bus_mcp55[0], PCI_DEVFN(sysconf.sbdn + 0x0a + i - 2 , 0));
+		if (dev) {
+			m->bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		} else {
+			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n", m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2 );
 		}
+	}
 
 	for(i=0; i< sysconf.hc_possible_num; i++) {
 		if(!(sysconf.pci1234[i] & 0x1) ) continue;
@@ -160,5 +132,5 @@ void get_bus_conf(void)
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
 	m->apicid_mcp55 = apicid_base+0;
-
 }
+

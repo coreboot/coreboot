@@ -41,10 +41,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B397_SP1)
 
-static void memreset_setup(void)
-{
-}
-
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
 }
@@ -53,16 +49,17 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 
 #define SUPERIO_GPIO_IO_BASE 0x400
 
-static void sio_gpio_setup(void){
-
+#ifdef ENABLE_ONBOARD_SCSI
+static void sio_gpio_setup(void)
+{
         unsigned value;
 
         /*Enable onboard scsi*/
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x2c, (1<<7)|(0<<2)|(0<<1)|(0<<0)); // GP21, offset 0x2c, DISABLE_SCSI_L 
         value = lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x4c);
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x4c, (value|(1<<1)));
-
 }
+#endif
 
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -111,11 +108,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-
         unsigned value;
         uint32_t dword;
         uint8_t byte;
-
         
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1, 0), 0xac, 0x047f0400);
         
@@ -127,25 +122,22 @@ static void sio_setup(void)
         dword |= (1<<29)|(1<<0);
         pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
         
-#if  1  
         lpc47b397_enable_serial(SUPERIO_GPIO_DEV, SUPERIO_GPIO_IO_BASE);
                 
         value =  lpc47b397_gpio_offset_in(SUPERIO_GPIO_IO_BASE, 0x77);
         value &= 0xbf; 
         lpc47b397_gpio_offset_out(SUPERIO_GPIO_IO_BASE, 0x77, value);
-#endif
-
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
+			// Node 0
 			(0xa<<3)|0, (0xa<<3)|2, 0, 0,
 			(0xa<<3)|1, (0xa<<3)|3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
+			// Node 1
 			(0xa<<3)|4, (0xa<<3)|6, 0, 0,
 			(0xa<<3)|5, (0xa<<3)|7, 0, 0,
-#endif
 	};
 
         int needs_reset;
@@ -205,7 +197,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();
 
-	memreset_setup();
 	sdram_initialize(nodes, ctrl);
 
 	post_cache_as_ram();

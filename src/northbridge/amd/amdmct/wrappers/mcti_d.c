@@ -233,10 +233,12 @@ static void mctGet_MaxLoadFreq(struct DCTStatStruc *pDCTstat)
 	pDCTstat->PresetmaxFreq = 400;
 }
 
-
+#ifdef UNUSED_CODE
 static void mctAdjustAutoCycTmg(void)
 {
 }
+#endif
+
 
 static void mctAdjustAutoCycTmg_D(void)
 {
@@ -292,10 +294,11 @@ static void mctHookAfterECC(void)
 {
 }
 
-
+#ifdef UNUSED_CODE
 static void mctInitMemGPIOs_A(void)
 {
 }
+#endif
 
 
 static void mctInitMemGPIOs_A_D(void)
@@ -308,9 +311,12 @@ static void mctNodeIDDebugPort_D(void)
 }
 
 
+#ifdef UNUSED_CODE
 static void mctWarmReset(void)
 {
 }
+#endif
+
 
 static void mctWarmReset_D(void)
 {

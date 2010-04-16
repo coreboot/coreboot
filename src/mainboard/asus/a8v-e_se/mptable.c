@@ -26,7 +26,7 @@
 static void *smp_write_config_table(void *v)
 {
 	static const char sig[4] = "PCMP";
-	static const char oem[8] = "LNXB    ";
+	static const char oem[8] = "COREBOOT";
 	static const char productid[12] = "A8V-E SE    ";
 	struct mp_config_table *mc;
 	int bus_isa = 42;

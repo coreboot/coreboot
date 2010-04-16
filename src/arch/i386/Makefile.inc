@@ -164,7 +164,7 @@ endif
 ifeq ($(CONFIG_ROMCC),y)
 ROMCCFLAGS ?= -mcpu=p2 -O2
 
-$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(ROMCC) $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
+$(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	printf "    ROMCC      romstage.inc\n"
 	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(INCLUDES) $< -o $@
 else

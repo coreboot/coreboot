@@ -36,6 +36,6 @@
 #ifndef __ROMCC__
 void it8712f_kill_watchdog(void);
 void it8712f_enable_serial(device_t dev, unsigned iobase);
-void it8712f_24mhz_clkin(void)
-void it8712f_enable_3vsbsw(void)
+void it8712f_24mhz_clkin(void);
+void it8712f_enable_3vsbsw(void);
 #endif

@@ -91,7 +91,7 @@ void it8712f_enable_3vsbsw(void)
 	it8712f_exit_conf();
 }
 
-static void it8712f_kill_watchdog(void)
+void it8712f_kill_watchdog(void)
 {
 	it8712f_enter_conf();
 

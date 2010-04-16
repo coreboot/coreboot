@@ -2,10 +2,10 @@ sconfigobj :=
 sconfigobj += lex.yy.o
 sconfigobj += sconfig.tab.o
 
-$(obj)/util/sconfig:
+$(objutil)/sconfig:
 	mkdir -p $@
 
-$(obj)/util/sconfig/%.o: $(obj)/util/sconfig/%.c
+$(objutil)/sconfig/%.o: $(objutil)/sconfig/%.c
 	printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(SCONFIGFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
@@ -20,12 +20,12 @@ $(top)/util/sconfig/sconfig.tab.c_shipped: $(top)/util/sconfig/sconfig.y
 
 endif
 
-$(obj)/util/sconfig/lex.yy.o: $(obj)/util/sconfig/sconfig.tab.h
+$(objutil)/sconfig/lex.yy.o: $(objutil)/sconfig/sconfig.tab.h
 
-$(obj)/util/sconfig/%: $(top)/util/sconfig/%_shipped
+$(objutil)/sconfig/%: $(top)/util/sconfig/%_shipped
 	mkdir -p $(dir $@)
 	cp $< $@
 
-$(obj)/util/sconfig/sconfig: $(obj)/util/sconfig $(addprefix $(obj)/util/sconfig/,$(sconfigobj))
+$(objutil)/sconfig/sconfig: $(objutil)/sconfig $(addprefix $(objutil)/sconfig/,$(sconfigobj))
 	printf "    HOSTCC     $(subst $(obj)/,,$(@)) (link)\n"
-	$(HOSTCC) $(SCONFIGFLAGS) -o $@ $(addprefix $(obj)/util/sconfig/,$(sconfigobj))
+	$(HOSTCC) $(SCONFIGFLAGS) -o $@ $(addprefix $(objutil)/sconfig/,$(sconfigobj))

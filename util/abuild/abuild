@@ -156,6 +156,7 @@ function create_config
 	[ "$update" = "true" ] && mv ${build_dir}/coreboot.rom coreboot.rom.tmp
 	$MAKE distclean obj=${build_dir}
 	mkdir -p ${build_dir}
+	mkdir -p $TARGET/sharedutils
 	[ "$update" = "true" ] && mv coreboot.rom.tmp ${build_dir}/coreboot.rom
 
 	if [ "$CONFIG" != "" ]; then
@@ -204,8 +205,8 @@ function create_config
 		fi
 	fi
 
-	#yes "" | $MAKE oldconfig -j $cpus obj=${build_dir} &> ${build_dir}/config.log
-	yes "" | $MAKE oldconfig obj=${build_dir} &> ${build_dir}/config.log
+	#yes "" | $MAKE oldconfig -j $cpus obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
+	yes "" | $MAKE oldconfig obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
 	mv .config.old $TARGET/${VENDOR}_${MAINBOARD}/config.in
 	if [ $ret -eq 0 ]; then
@@ -264,7 +265,7 @@ function compile_target
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
-	eval $MAKE $silent -j $cpus obj=${build_dir} \
+	eval $MAKE $silent -j $cpus obj=${build_dir} objutil=$TARGET/sharedutils \
 		&> ${build_dir}/make.log
 	ret=$?
 	mv .config ${build_dir}/config.build

@@ -65,7 +65,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.s: $(obj)/bootblock/bootblock.c
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -DASSEMBLY -E -I$(src)/include -I$(src)/arch/i386/include -I$(obj) -I$(obj)/bootblock -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/i386/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(obj)/romcc
+$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc: $(src)/arch/i386/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(ROMCC)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
 	$(CC) -MM -MT$(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc \
 		$< > $(obj)/mainboard/$(MAINBOARDDIR)/bootblock.inc.d

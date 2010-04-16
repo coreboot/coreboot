@@ -36,7 +36,8 @@ export top := $(PWD)
 export src := src
 export srck := $(top)/util/kconfig
 export obj ?= build
-export objk := $(obj)/util/kconfig
+export objutil ?= $(obj)/util
+export objk := $(objutil)/kconfig
 
 
 export KERNELVERSION      := 4.0
@@ -58,7 +59,7 @@ endif
 endif
 
 CPP:= $(CC) -x assembler-with-cpp -DASSEMBLY -E
-ROMCC:= $(obj)/romcc
+ROMCC:= $(objutil)/romcc/romcc
 HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -g
@@ -145,14 +146,14 @@ $(obj)/config.h:
 #######################################################################
 # Build the tools
 
-CBFSTOOL:=$(obj)/util/cbfstool/cbfstool
+CBFSTOOL:=$(objutil)/cbfstool/cbfstool
 
 # needed objects that every mainboard uses 
 # Creation of these is architecture and mainboard independent
-$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(obj)/util/sconfig/sconfig
+$(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devicetree.cb  $(objutil)/sconfig/sconfig
 	@printf "    SCONFIG    $(subst $(src)/,,$(<))\n"
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
-	$(obj)/util/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
+	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
 
 objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
 initobjs:=
@@ -286,7 +287,7 @@ endif
 
 prepare:
 	mkdir -p $(obj)
-	mkdir -p $(obj)/util/kconfig/lxdialog $(obj)/util/cbfstool
+	mkdir -p $(objutil)/kconfig/lxdialog $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options
 	test -n "$(alldirs)" && mkdir -p $(alldirs) || true
 
 $(obj)/build.h: .xcompile
@@ -355,7 +356,7 @@ endif
 ifeq ($(_OS),CYGWIN_)
 	STACK=-Wl,--stack,16384000
 endif
-$(obj)/romcc: $(top)/util/romcc/romcc.c
+$(objutil)/romcc/romcc: $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
 	@# Note: Adding -O2 here might cause problems. For details see:
 	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html

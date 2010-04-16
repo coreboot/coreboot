@@ -1,3 +1,4 @@
 #ifndef _CONSOLE_CONSOLE_H
 #define _CONSOLE_CONSOLE_H
+#define CONFIG_X86EMU_DEBUG 1
 #endif

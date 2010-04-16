@@ -7,7 +7,12 @@
 #
 
 CC       =  gcc
-CFLAGS   =  -Wall -Iinclude -I../../src/devices/oprom/include/ -O2 -g
+CFLAGS   = -O2 -g -fomit-frame-pointer
+CFLAGS  += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
+CFLAGS  += -Wwrite-strings -Wredundant-decls -Wno-trigraphs 
+CFLAGS  += -Wstrict-aliasing -Wshadow -Wextra
+
+INCLUDES = -Iinclude -I../../src/devices/oprom/include/
 
 INTOBJS  = int10.o int15.o int16.o int1a.o inte6.o
 X86EMUOBJS  = sys.o decode.o ops.o ops2.o prim_ops.o fpu.o debug.o
@@ -29,5 +34,8 @@ clean:
 	rm -f *.o *~ testbios
 
 %.o: ../../src/devices/oprom/x86emu/%.c
-	$(CC) $(CFLAGS) -include stdio.h -c -o $@ $^
+	$(CC) $(CFLAGS) $(INCLUDES) -include stdio.h -c -o $@ $^
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 

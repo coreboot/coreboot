@@ -81,7 +81,7 @@ $(obj)/coreboot_ram: $(obj)/coreboot_ram.o $(src)/arch/i386/coreboot_ram.ld #ldo
 
 $(obj)/coreboot_ram.o: $(obj)/arch/i386/lib/c_start.o $$(drivers) $(obj)/coreboot.a $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -r -o $@ $(obj)/arch/i386/lib/c_start.o $(drivers) -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -r -o $@ $(obj)/arch/i386/lib/c_start.o $(drivers) -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(obj)/coreboot.a $(LIBGCC_FILE_NAME) -Wl,--end-group
 
 $(obj)/coreboot.a: $$(objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"

@@ -155,7 +155,7 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
 
-$(objutil)/%.o: $(objutil)/%.c $(obj)/config.h
+$(objutil)/%.o: $(objutil)/%.c
 	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) -MMD $(HOSTCFLAGS) -c -o $@ $<
 

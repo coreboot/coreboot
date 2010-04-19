@@ -68,6 +68,8 @@ config VENDOR_NEC
 	bool "NEC"
 config VENDOR_NEWISYS
 	bool "Newisys"
+config VENDOR_NOKIA
+	bool "Nokia"
 config VENDOR_NVIDIA
 	bool "NVIDIA"
 config VENDOR_OLPC
@@ -273,6 +275,11 @@ config MAINBOARD_VENDOR
 
 config MAINBOARD_VENDOR
 	string
+	default "Nokia"
+	depends on VENDOR_NOKIA
+
+config MAINBOARD_VENDOR
+	string
 	default "NVIDIA"
 	depends on VENDOR_NVIDIA
 
@@ -398,6 +405,7 @@ source "src/mainboard/mitac/Kconfig"
 source "src/mainboard/msi/Kconfig"
 source "src/mainboard/nec/Kconfig"
 source "src/mainboard/newisys/Kconfig"
+source "src/mainboard/nokia/Kconfig"
 source "src/mainboard/nvidia/Kconfig"
 source "src/mainboard/olpc/Kconfig"
 source "src/mainboard/pcengines/Kconfig"

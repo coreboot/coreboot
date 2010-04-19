@@ -155,6 +155,14 @@ $(obj)/mainboard/$(MAINBOARDDIR)/static.c: $(src)/mainboard/$(MAINBOARDDIR)/devi
 	mkdir -p $(obj)/mainboard/$(MAINBOARDDIR)
 	$(objutil)/sconfig/sconfig $(MAINBOARDDIR) $(obj)/mainboard/$(MAINBOARDDIR)
 
+$(objutil)/%.o: $(objutil)/%.c $(obj)/config.h
+	@printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) -MMD $(HOSTCFLAGS) -c -o $@ $<
+
+$(obj)/%.o: $(obj)/%.c $(obj)/config.h
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	$(CC) -MMD $(CFLAGS) -c -o $@ $<
+
 objs:=$(obj)/mainboard/$(MAINBOARDDIR)/static.o
 initobjs:=
 drivers:=
@@ -215,7 +223,7 @@ define create_cc_template
 # $4 additional compiler flags
 de$(EMPTY)fine $(1)_$(2)_template
 $(obj)/$$(1)%$(3).o: src/$$(1)%.$(2) $(obj)/config.h
-	printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
+	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC) $(4) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def
 endef

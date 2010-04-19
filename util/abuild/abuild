@@ -430,12 +430,15 @@ function build_target
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	create_buildenv $VENDOR $MAINBOARD $CONFIG
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
+		if [ "$scanbuild" = "true" ]; then
+			rm -rf $TARGET/scan-build-results-tmp
+		fi
 		compile_target $VENDOR $MAINBOARD && 
 			xml "  <status>ok</status>" ||
 			xml "<status>broken</status>"
 		if [ "$scanbuild" = "true" ]; then
+			rm -rf $TARGET/${VENDOR}_${MAINBOARD}-scanbuild
 			mv `dirname $TARGET/scan-build-results-tmp/*/index.html` $TARGET/${VENDOR}_${MAINBOARD}-scanbuild
-			MAKE=$origMAKE
 		fi
 	fi
 	# Not calculated here because we still print it in compile_target

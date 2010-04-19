@@ -27,7 +27,7 @@ COREBOOT_ROM_DEPENDENCIES+=$(obj)/coreboot_ap
 endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
-	printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
 	if [ -f $(obj)/coreboot_ap ]; \
 	then \
@@ -35,25 +35,25 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call 
 	fi
 	$(CBFSTOOL) $@.tmp add-stage $(obj)/coreboot_ram $(CONFIG_CBFS_PREFIX)/coreboot_ram $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
-	printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
+	@printf "    PAYLOAD    \e[1;31mnone (as specified by user)\e[0m\n"
 else
-	printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
+	@printf "    PAYLOAD    $(CONFIG_FALLBACK_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
 	$(CBFSTOOL) $@.tmp add-payload $(CONFIG_FALLBACK_PAYLOAD_FILE) $(CONFIG_CBFS_PREFIX)/payload $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_VGA_BIOS),y)
-	printf "    VGABIOS    $(CONFIG_FALLBACK_VGA_BIOS_FILE) $(CONFIG_FALLBACK_VGA_BIOS_ID)\n"
+	@printf "    VGABIOS    $(CONFIG_FALLBACK_VGA_BIOS_FILE) $(CONFIG_FALLBACK_VGA_BIOS_ID)\n"
 	$(CBFSTOOL) $@.tmp add $(CONFIG_FALLBACK_VGA_BIOS_FILE) "pci$(CONFIG_FALLBACK_VGA_BIOS_ID).rom" optionrom
 endif
 ifeq ($(CONFIG_INTEL_MBI),y)
-	printf "    MBI        $(CONFIG_FALLBACK_MBI_FILE)\n"
+	@printf "    MBI        $(CONFIG_FALLBACK_MBI_FILE)\n"
 	$(CBFSTOOL) $@.tmp add $(CONFIG_FALLBACK_MBI_FILE) mbi.bin mbi
 endif
 ifeq ($(CONFIG_BOOTSPLASH),y)
-	printf "    BOOTSPLASH $(CONFIG_FALLBACK_BOOTSPLASH_FILE)\n"
+	@printf "    BOOTSPLASH $(CONFIG_FALLBACK_BOOTSPLASH_FILE)\n"
 	$(CBFSTOOL) $@.tmp add $(CONFIG_FALLBACK_BOOTSPLASH_FILE) bootsplash.jpg bootsplash
 endif
 	mv $@.tmp $@
-	printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
+	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
 	$(CBFSTOOL) $@ print
 
 #######################################################################
@@ -174,11 +174,11 @@ $(obj)/mainboard/$(MAINBOARDDIR)/ap_romstage.o: $(src)/mainboard/$(MAINBOARDDIR)
 	$(CC) -MMD $(CFLAGS) -I$(src) -I. -c $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h
-	printf "    CC         romstage.inc\n"
+	@printf "    CC         romstage.inc\n"
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -c -S $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
-	printf "    POST       romstage.inc\n"
+	@printf "    POST       romstage.inc\n"
 	sed -e 's/\.rodata/.rom.data/g' -e 's/\.text/.section .rom.text/g' $^ > $@.tmp
 	mv $@.tmp $@
 endif

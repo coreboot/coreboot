@@ -70,37 +70,37 @@ static int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/model_lx/cpureginit.c"
 #include "cpu/amd/model_lx/syspreinit.c"
 
+struct msrinit {
+	u32 msrnum;
+	msr_t msr;
+};
+
+static const struct msrinit msr_table[] = 
+{
+       {CPU_RCONF_DEFAULT, {.hi = 0x24fffc02,.lo = 0x1000A000}}, /* Setup access to cache under 1MB.
+                                                                  * Rom Properties: Write Serialize, WriteProtect.
+                                                                  * RomBase: 0xFFFC0
+                                                                  * SysTop to RomBase Properties: Write Serialize, Cache Disable.
+                                                                  * SysTop: 0x000A0 
+                                                                  * System Memory Properties:  (Write Back) */
+       {CPU_RCONF_A0_BF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xA0000-0xBFFFF : (Write Back) */
+       {CPU_RCONF_C0_DF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xC0000-0xDFFFF : (Write Back) */
+       {CPU_RCONF_E0_FF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xE0000-0xFFFFF : (Write Back) */
+       
+       /* Setup access to memory under 1MB. Note: VGA hole at 0xA0000-0xBFFFF */
+       {MSR_GLIU0_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
+       {MSR_GLIU0_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF
+       {MSR_GLIU0_SHADOW,  {.hi = 0x2000FFFF,.lo = 0xFFFF0003}}, // 0xC0000-0xFFFFF
+       {MSR_GLIU1_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
+       {MSR_GLIU1_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF
+       {MSR_GLIU1_SHADOW,  {.hi = 0x2000FFFF,.lo = 0xFFFF0003}}, // 0xC0000-0xFFFFF
+};
+
 static void msr_init(void)
 {
-	msr_t msr;
-	/* Setup access to the cache for under 1MB. */
-	msr.hi = 0x24fffc02;
-	msr.lo = 0x1000A000;	/* 0-A0000 write back */
-	wrmsr(CPU_RCONF_DEFAULT, msr);
-
-	msr.hi = 0x0;		/* write back */
-	msr.lo = 0x0;
-	wrmsr(CPU_RCONF_A0_BF, msr);
-	wrmsr(CPU_RCONF_C0_DF, msr);
-	wrmsr(CPU_RCONF_E0_FF, msr);
-
-	/* Setup access to the cache for under 640K. Note MC not setup yet. */
-	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU0 + 0x20, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU0 + 0x21, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU1 + 0x20, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU1 + 0x21, msr);
-
+	int i;
+	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
+		wrmsr(msr_table[i].msrnum, msr_table[i].msr);
 }
 
 static void mb_gpio_init(void)
@@ -112,6 +112,7 @@ void cache_as_ram_main(void)
 {
 	post_code(0x01);
 
+	msr_t msr;
 	static const struct mem_controller memctrl[] = {
 		{.channel0 = {(0xa << 3) | 0, (0xa << 3) | 1}}
 	};
@@ -127,6 +128,11 @@ void cache_as_ram_main(void)
 	 */
 	/* cs5536_disable_internal_uart	 disable them. Set them up now... */
 	cs5536_setup_onchipuart(2); /* dbe61 uses UART2 as COM1 */
+	/* set address to 3F8 */
+	msr = rdmsr(MDD_LEG_IO);
+	msr.lo |= 0x7 << 20;
+	wrmsr(MDD_LEG_IO, msr);
+
 	mb_gpio_init();
 	uart_init();
 	console_init();
@@ -171,8 +177,5 @@ void cache_as_ram_main(void)
 
 	/* Check memory. */
 	/* ram_check(0x00000000, 640 * 1024); */
-
-	/* Memory is setup. Return to cache_as_ram.inc and continue to boot */
-	return;
 }
 

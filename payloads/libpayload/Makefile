@@ -49,7 +49,10 @@ ifneq ($(V),1)
 Q := @
 endif
 
-CC = gcc
+$(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile > .xcompile)))
+include .xcompile
+
+CC ?= gcc
 HOSTCC = gcc
 HOSTCXX = g++
 HOSTCFLAGS := -I$(srck) -I$(objk) -pipe

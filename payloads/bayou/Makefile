@@ -24,9 +24,14 @@ CONFIG_BUILTIN_LAR=y
 PBUILDER_CONFIG=bayou.xml
 BUILTIN_LAR=builtin.lar
 
-LIBPAYLOAD_DIR := ../libpayload
+export src := $(shell pwd)
+export obj := $(src)/build
 
-CC=gcc
+LIBPAYLOAD_DIR := $(obj)/libpayload
+
+CC?=gcc
+STRIP?=strip
+OBJCOPY?=objcopy
 
 FFLAGS-y=
 FFLAGS-$(CONFIG_BUILTIN_LAR) += -DCONFIG_BUILTIN_LAR
@@ -46,22 +51,22 @@ LPCC=$(LIBPAYLOAD_DIR)/bin/lpgcc
 
 bayou.elf: $(OBJECTS-y)
 	$(LPCC) $(LDFLAGS) -m32 -o $@ $(OBJECTS-y)
-	@ strip $@
+	@$(STRIP) $@
 
 builtin-lar.o: $(BUILTIN_LAR)
-	@ objcopy -I binary -B i386 -O elf32-i386 $(BUILTIN_LAR) $@
+	@$(OBJCOPY) -I binary -B i386 -O elf32-i386 $(BUILTIN_LAR) $@
 
 builtin.lar: util/pbuilder/pbuilder
-	@ rm -f $@
+	@rm -f $@
 	util/pbuilder/pbuilder -c $(PBUILDER_CONFIG) create $@
 
 util/pbuilder/pbuilder:
-	make -C util/pbuilder
+	$(MAKE) -C util/pbuilder
 
 %.o: %.c
 	$(LPCC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f *.o bayou.elf builtin.lar
-	make -C util/pbuilder clean
+	$(MAKE) -C util/pbuilder clean
 

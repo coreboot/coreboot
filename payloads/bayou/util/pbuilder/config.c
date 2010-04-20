@@ -66,6 +66,20 @@ static struct {
 	{NULL},
 };
 
+#ifndef __LINUX__
+static char *strndup (const char *s, size_t n)
+{
+	size_t len = strlen (s);
+	len = (len<n)?len:n;
+	char *cpy = malloc (len + 1);
+	if (cpy == NULL)
+		return NULL;
+	cpy[len] = '\0';
+	memcpy (cpy, s, len);
+	return cpy;
+}
+#endif
+
 static struct pentry *newPayload(struct config *config)
 {
 	struct pentry **tmp, *ret;

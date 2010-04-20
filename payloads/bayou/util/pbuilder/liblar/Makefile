@@ -17,15 +17,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-CC = gcc
+HOSTCC = gcc
+AR?=ar
 LAROBJS = self.o lib.o
 CFLAGS = -g -Wall
 
 liblar.a: $(LAROBJS)
-	ar rc $@ $(LAROBJS)
+	$(AR) rc $@ $(LAROBJS)
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) -o $@ $<
+	$(HOSTCC) -c $(CFLAGS) -o $@ $<
 
 clean:
 	rm -f liblar.a *.o

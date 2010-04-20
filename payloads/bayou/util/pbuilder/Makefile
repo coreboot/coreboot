@@ -17,10 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
-CC=gcc
 PBUILDOBJS := config.o create.o show.o main.o
 INCLUDES := -Iliblar/
-CFLAGS=-Wall -Werror -g
+HOSTCXX=g++
+HOSTCC=gcc
+HOSTCFLAGS=-Wall -Werror -g
 
 all: pbuilder
 
@@ -29,39 +30,39 @@ LZMA_OBJ += lzma/StreamUtils.o lzma/OutBuffer.o lzma/Alloc.o lzma/CRC.o
 LZMA_OBJ += lzma/lzma-compress.o
 
 lzma/lzma-compress.o: lzma/minilzma.cc
-	g++ -o $@ -c -DCOMPACT $<
+	$(HOSTCXX) -o $@ -c -DCOMPACT $<
 
 lzma/%.o: lzma/C/7zip/Compress/LZMA/%.cpp
-	g++ -o $@ -c $<
+	$(HOSTCXX) -o $@ -c $<
 
 lzma/%.o: lzma/C/7zip/Compress/LZ/%.cpp
-	g++ -o $@ -c $<
+	$(HOSTCXX) -o $@ -c $<
 
 lzma/%.o: lzma/C/7zip/Compress/RangeCoder/%.cpp
-	g++ -o $@ -c $<
+	$(HOSTCXX) -o $@ -c $<
 
 lzma/%.o: lzma/C/7zip/Decompress/%.cpp
-	g++ -o $@ -c $<
+	$(HOSTCXX) -o $@ -c $<
 
 lzma/%.o: lzma/C/7zip/Common/%.cpp
-	g++ -o $@ -c $<
+	$(HOSTCXX) -o $@ -c $<
 
 lzma/%.o: lzma/C/Common/%.cpp
-	g++ -o $@ -c $<
+	$(HOSTCXX) -o $@ -c $<
 
 lzma/%.o: lzma/%.cc
-	g++ -o $@ -c $<
+	$(HOSTCXX) -o $@ -c $<
 
 pbuilder: $(PBUILDOBJS) $(LZMA_OBJ) liblar/liblar.a
-	$(CXX) -o $@ $(PBUILDOBJS) $(LZMA_OBJ) -L ./liblar -llar -lexpat
+	$(HOSTCXX) -o $@ $(PBUILDOBJS) $(LZMA_OBJ) liblar/liblar.a -lexpat
 
 liblar/liblar.a:
-	make -C liblar
+	$(MAKE) -C liblar
 
 %.o: %.c
-	$(CC) -c $(CFLAGS) $(INCLUDES) -o $@ $<
+	$(HOSTCC) -c $(HOSTCFLAGS) $(INCLUDES) -o $@ $<
 
 clean:
 	rm -f pbuilder *.o lzma/*.o
-	make -C liblar clean
+	$(MAKE) -C liblar clean
 

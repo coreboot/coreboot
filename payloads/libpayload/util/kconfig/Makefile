@@ -4,6 +4,12 @@
 
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config
 
+_OS=$(shell uname -s |cut -c-7)
+regex-objs=
+ifeq ($(_OS),MINGW32)
+       regex-objs=regex.o
+endif
+
 Kconfig := Config.in
 
 xconfig: prepare $(objk)/qconf
@@ -113,8 +119,8 @@ HOST_EXTRACFLAGS += -DLOCALE
 lxdialog := lxdialog/checklist.o lxdialog/util.o lxdialog/inputbox.o
 lxdialog += lxdialog/textbox.o lxdialog/yesno.o lxdialog/menubox.o
 
-conf-objs	:= conf.o  zconf.tab.o
-mconf-objs	:= mconf.o zconf.tab.o $(lxdialog)
+conf-objs	:= conf.o  zconf.tab.o $(regex-objs)
+mconf-objs	:= mconf.o zconf.tab.o $(lxdialog) $(regex-objs)
 kxgettext-objs	:= kxgettext.o zconf.tab.o
 
 hostprogs-y := conf qconf gconf kxgettext
@@ -133,11 +139,11 @@ endif
 
 ifeq ($(qconf-target),1)
 qconf-cxxobjs	:= qconf.o
-qconf-objs	:= kconfig_load.o zconf.tab.o
+qconf-objs	:= kconfig_load.o zconf.tab.o $(regex-objs)
 endif
 
 ifeq ($(gconf-target),1)
-gconf-objs	:= gconf.o kconfig_load.o zconf.tab.o
+gconf-objs	:= gconf.o kconfig_load.o zconf.tab.o $(regex-objs)
 endif
 
 clean-files	:= lkc_defs.h qconf.moc .tmp_qtcheck \
@@ -306,6 +312,8 @@ $(objk)/mconf.o: $(srck)/mconf.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
 $(objk)/conf.o: $(srck)/conf.c
 	$(Q)$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -c -o $@ $<
+$(objk)/regex.o: $(srck)/regex.c
+	$(HOSTCC) $(HOSTCFLAGS) $(HOST_EXTRACFLAGS) -DHAVE_STRING_H -c -o $@ $<
 
 $(objk)/zconf.tab.o: $(objk)/zconf.tab.c $(objk)/lex.zconf.c \
 		     $(objk)/zconf.hash.c

@@ -15,6 +15,13 @@
 #define LKC_DIRECT_LINK
 #include "lkc.h"
 
+#ifdef WIN32
+#define mkdir(x,y) mkdir(x)
+#define UNLINK_IF_NECESSARY(x) unlink(x)
+#else
+#define UNLINK_IF_NECESSARY(X) 
+#endif
+
 static void conf_warning(const char *fmt, ...)
 	__attribute__ ((format (printf, 1, 2)));
 
@@ -448,7 +455,7 @@ int conf_write(const char *name)
 		       "# libpayload version: %s\n"
 		       "%s%s"
 		       "#\n"),
-		     getenv("KERNELVERSION"),
+		     getenv("KERNELVERSION")?getenv("KERNELVERSION"):"",
 		     use_timestamp ? "# " : "",
 		     use_timestamp ? ctime(&now) : "");
 
@@ -539,6 +546,7 @@ int conf_write(const char *name)
 	if (*tmpname) {
 		strcat(dirname, basename);
 		strcat(dirname, ".old");
+		UNLINK_IF_NECESSARY(dirname);
 		rename(newname, dirname);
 		if (rename(tmpname, newname))
 			return 1;
@@ -702,14 +710,14 @@ int conf_write_autoconf(void)
 		     "# libpayload version: %s\n"
 		     "# %s"
 		     "#\n",
-		     getenv("KERNELVERSION"), ctime(&now));
+		     getenv("KERNELVERSION")?getenv("KERNELVERSION"):"", ctime(&now));
 	fprintf(out_h, "/*\n"
 		       " * Automatically generated C config: don't edit\n"
 		       " * libpayload version: %s\n"
 		       " * %s"
 		       " */\n"
 		       "#define AUTOCONF_INCLUDED\n",
-		       getenv("KERNELVERSION"), ctime(&now));
+		       getenv("KERNELVERSION")?getenv("KERNELVERSION"):"", ctime(&now));
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
@@ -773,6 +781,7 @@ int conf_write_autoconf(void)
 	name = getenv("KCONFIG_AUTOHEADER");
 	if (!name)
 		name = "include/linux/autoconf.h";
+	UNLINK_IF_NECESSARY(name);
 	if (rename(".tmpconfig.h", name))
 		return 1;
 	name = getenv("KCONFIG_AUTOCONFIG");
@@ -782,6 +791,7 @@ int conf_write_autoconf(void)
 	 * This must be the last step, kbuild has a dependency on auto.conf
 	 * and this marks the successful completion of the previous steps.
 	 */
+	UNLINK_IF_NECESSARY(name);
 	if (rename(".tmpconfig", name))
 		return 1;
 

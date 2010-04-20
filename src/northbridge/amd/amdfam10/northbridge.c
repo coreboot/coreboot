@@ -960,12 +960,14 @@ static void pci_domain_set_resources(device_t dev)
 		pci_tolm = find_pci_tolm(&dev->link[link], pci_tolm);
 	}
 
-#warning "FIXME handle interleaved nodes"
+	// FIXME handle interleaved nodes. If you fix this here, please fix
+	// amdk8, too.
 	mmio_basek = pci_tolm >> 10;
 	/* Round mmio_basek to something the processor can support */
 	mmio_basek &= ~((1 << 6) -1);
 
-#warning "FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M MMIO hole"
+	// FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M
+	// MMIO hole. If you fix this here, please fix amdk8, too.
 	/* Round the mmio hold to 64M */
 	mmio_basek &= ~((64*1024) - 1);
 

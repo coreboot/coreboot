@@ -915,19 +915,18 @@ static void amdk8_domain_set_resources(device_t dev)
 	}
 #endif
 
-
 	pci_tolm = find_pci_tolm(&dev->link[0]);
 
-#warning "FIXME handle interleaved nodes"
+	// FIXME handle interleaved nodes. If you fix this here, please fix
+	// amdfam10, too.
 	mmio_basek = pci_tolm >> 10;
 	/* Round mmio_basek to something the processor can support */
 	mmio_basek &= ~((1 << 6) -1);
 
-#if 1
-#warning "FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M MMIO hole"
+	// FIXME improve mtrr.c so we don't use up all of the mtrrs with a 64M
+	// MMIO hole. If you fix this here, please fix amdfam10, too.
 	/* Round the mmio hole to 64M */
 	mmio_basek &= ~((64*1024) - 1);
-#endif
 
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
 	/* if the hw mem hole is already set in raminit stage, here we will compare mmio_basek and hole_basek

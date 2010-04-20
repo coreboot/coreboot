@@ -1964,9 +1964,9 @@ static int get_dimm_Trc_clocks(u32 spd_device, const struct mem_param *param)
 	printk_raminit("update_dimm_Trc: clocks = %i\n", clocks);
 
 	if (clocks < DTL_TRC_MIN) {
-#warning We should die here or at least disable this bank.
-		printk(BIOS_NOTICE, "update_dimm_Trc: can't refresh fast enough, "
-			"want %i clocks, can %i clocks\n", clocks, DTL_TRC_MIN);
+		// We might want to die here instead or (at least|better) disable this bank.
+		printk(BIOS_NOTICE, "update_dimm_Trc: Can't refresh fast enough, "
+			"want %i clocks, minimum is %i clocks.\n", clocks, DTL_TRC_MIN);
 		clocks = DTL_TRC_MIN;
 	}
 	return clocks;

@@ -186,7 +186,7 @@ static void *smp_write_config_table(void *v)
 		bus_8131_1, (2<<2)|3, 0x02, 0x11);
 
 	/* PCI Slot 5 */
-#warning "FIXME get the irqs right, it's just hacked to work for now"
+	// FIXME get the irqs right, it's just hacked to work for now
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		bus_8111_1, (5<<2)|0, 0x02, 0x11);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
@@ -197,7 +197,7 @@ static void *smp_write_config_table(void *v)
 		bus_8111_1, (5<<2)|3, 0x02, 0x10);
 
 	/* PCI Slot 6 */
-#warning "FIXME get the irqs right, it's just hacked to work for now"
+	// FIXME get the irqs right, it's just hacked to work for now
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
 		bus_8111_1, (4<<2)|0, 0x02, 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,

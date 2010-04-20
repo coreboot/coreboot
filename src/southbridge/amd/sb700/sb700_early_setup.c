@@ -119,7 +119,7 @@ static void sb700_lpc_init(void)
 
 	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	/* LPC Controller */
 	/* Decode port 0x3f8-0x3ff (Serial 0) */
-#warning Serial port decode on LPC is hardcoded to 0x3f8
+	// XXX Serial port decode on LPC is hardcoded to 0x3f8
 	reg8 = pci_read_config8(dev, 0x44);
 	reg8 |= 1 << 6;
 	pci_write_config8(dev, 0x44, reg8);

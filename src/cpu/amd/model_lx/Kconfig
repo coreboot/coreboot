@@ -11,3 +11,21 @@ config DCACHE_RAM_SIZE
 	default 0x8000
 	depends on CPU_AMD_LX
 
+config GEODE_VSA
+	bool "Add a VSA image"
+	depends on CPU_AMD_LX
+	help
+	  Select this option if you have an AMD Geode LX vsa that you would
+	  like to add to your ROM.
+
+	  You will be able to specify the location and file name of the
+	  image later.
+
+config VSA_FILE
+	string "AMD Geode LX VSA path and filename"
+	depends on GEODE_VSA
+	default "gpl_vsa_lx_102.bin"
+	help
+	  The path and filename of the file to use as VSA.
+
+

@@ -25,6 +25,9 @@ endif
 ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
 COREBOOT_ROM_DEPENDENCIES+=$(obj)/coreboot_ap
 endif
+ifeq ($(CONFIG_GEODE_VSA),y)
+COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_VSA_FILE)
+endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(obj)/coreboot_ram $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES))
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
@@ -51,6 +54,12 @@ endif
 ifeq ($(CONFIG_BOOTSPLASH),y)
 	@printf "    BOOTSPLASH $(CONFIG_FALLBACK_BOOTSPLASH_FILE)\n"
 	$(CBFSTOOL) $@.tmp add $(CONFIG_FALLBACK_BOOTSPLASH_FILE) bootsplash.jpg bootsplash
+endif
+ifeq ($(CONFIG_GEODE_VSA),y)
+	@printf "    VSA        $(CONFIG_VSA_FILE)\n"
+	$(OBJCOPY) --set-start 0x20 --adjust-vma 0x60000 -I binary -O elf32-i386 -B i386 $(CONFIG_VSA_FILE) $(obj)/vsa.o
+	$(LD) -e 0x60020 --section-start .data=0x60000 $(obj)/vsa.o -o $(obj)/vsa.elf
+	$(CBFSTOOL) $@.tmp add-stage $(obj)/vsa.elf vsa
 endif
 	mv $@.tmp $@
 	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"

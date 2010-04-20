@@ -124,6 +124,7 @@ install: lib
 	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/lib\n"
 	$(Q)install -m 755 -d $(DESTDIR)/libpayload/lib
 	$(Q)install -m 644 $(obj)/lib/libpayload.a $(DESTDIR)/libpayload/lib/
+	$(Q)install -m 644 lib/libpayload.ldscript $(DESTDIR)/libpayload/lib/
 	$(Q)install -m 755 -d $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	$(Q)install -m 644 $(obj)/lib/$(ARCHDIR-y)/head.o $(DESTDIR)/libpayload/lib/$(ARCHDIR-y)
 	$(Q)printf "  INSTALL $(DESTDIR)/libpayload/include\n"

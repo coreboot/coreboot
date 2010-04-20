@@ -2048,10 +2048,6 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 {
 	u32 clkcfg;
 	u8 reg8;
-	u8 offset = 0;
-#ifdef CHIPSET_I945GM
-	offset++;
-#endif
 
 	printk(BIOS_DEBUG, "Setting Memory Frequency... ");
 
@@ -2073,9 +2069,9 @@ static void sdram_program_memory_frequency(struct sys_info *sysinfo)
 	}
 
 	switch (sysinfo->memory_frequency) {
-	case 400: clkcfg |= ((1+offset) << 4); break;
-	case 533: clkcfg |= ((2+offset) << 4); break;
-	case 667: clkcfg |= ((3+offset) << 4); break;
+	case 400: clkcfg |= (2 << 4); break;
+	case 533: clkcfg |= (3 << 4); break;
+	case 667: clkcfg |= (4 << 4); break;
 	default: die("Target Memory Frequency Error");
 	}
 
@@ -2187,7 +2183,7 @@ static void sdram_program_clock_crossing(void)
 
 		0x10080201, 0x00000000,	/* DDR400 FSB533 */
 		0x00100401, 0x00000000, /* DDR533 FSB533 */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0x00010402, 0x00000000, /* DDR667 FSB533 - fake values */
 
 		0xffffffff, 0xffffffff, /*  nonexistant  */
 		0xffffffff, 0xffffffff, /*  nonexistant  */
@@ -2209,7 +2205,7 @@ static void sdram_program_clock_crossing(void)
 
 		0x00010800, 0x00000402,	/* DDR400 FSB533 */
 		0x01000400, 0x00000200, /* DDR533 FSB533 */
-		0xffffffff, 0xffffffff, /*  nonexistant  */
+		0x00020904, 0x00000000, /* DDR667 FSB533 - fake values */
 
 		0xffffffff, 0xffffffff, /*  nonexistant  */
 		0xffffffff, 0xffffffff, /*  nonexistant  */

@@ -24,17 +24,13 @@ static void pll_reset(char manualconf)
 
 	msrGlcpSysRstpll = rdmsr(GLCP_SYS_RSTPLL);
 
-	print_debug("_MSR GLCP_SYS_RSTPLL (");
-	print_debug_hex32(GLCP_SYS_RSTPLL);
-	print_debug(") value is: ");
-	print_debug_hex32(msrGlcpSysRstpll.hi);
-	print_debug(":");
-	print_debug_hex32(msrGlcpSysRstpll.lo);
-	print_debug("\n");
+	printk(BIOS_DEBUG, "MSR GLCP_SYS_RSTPLL (%08x) value is %08x:%08x\n",
+		GLCP_SYS_RSTPLL, msrGlcpSysRstpll.hi, msrGlcpSysRstpll.lo);
+
 	post_code(POST_PLL_INIT);
 
 	if (!(msrGlcpSysRstpll.lo & (1 << RSTPLL_LOWER_SWFLAGS_SHIFT))) {
-		print_debug("Configuring PLL\n");
+		printk(BIOS_DEBUG, "Configuring PLL.\n");
 		if (manualconf) {
 			post_code(POST_PLL_MANUAL);
 			/* CPU and GLIU mult/div (GLMC_CLK = GLIU_CLK / 2)  */
@@ -62,13 +58,13 @@ static void pll_reset(char manualconf)
 		msrGlcpSysRstpll.lo |= RSTPPL_LOWER_CHIP_RESET_SET;
 		wrmsr(GLCP_SYS_RSTPLL, msrGlcpSysRstpll);
 
-		/*      You should never get here..... The chip has reset. */
-		print_debug("CONFIGURING PLL FAILURE\n");
+		/* You should never get here..... The chip has reset. */
+		printk(BIOS_ERR, "CONFIGURING PLL FAILURE\n");
 		post_code(POST_PLL_RESET_FAIL);
 		__asm__ __volatile__("hlt\n");
 
 	}
-	print_debug("Done pll_reset\n");
+	printk(BIOS_DEBUG, "PLL configured.\n");
 	return;
 }
 

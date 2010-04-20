@@ -29,10 +29,7 @@ static const unsigned char NumColAddr[] = {
 
 static void banner(const char *s)
 {
-	/* This is so ugly. */
-	print_debug("===========================");
-	print_debug(s);
-	print_debug("======================================\n");
+	printk(BIOS_DEBUG, " * %s\n", s);
 }
 
 static void hcf(void)
@@ -572,7 +569,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	uint8_t spd_byte;
 
-	banner("sdram_set_spd_register\n");
+	banner("sdram_set_spd_register");
 	post_code(POST_MEM_SETUP);	// post_70h
 
 	spd_byte = spd_read_byte(DIMM0, SPD_MODULE_ATTRIBUTES);

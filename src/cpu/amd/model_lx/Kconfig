@@ -12,6 +12,12 @@ config DCACHE_RAM_SIZE
 	depends on CPU_AMD_LX
 
 config GEODE_VSA
+	bool
+	default y
+	depends on CPU_AMD_LX
+	select PCI_OPTION_ROM_RUN_REALMODE
+
+config GEODE_VSA_FILE
 	bool "Add a VSA image"
 	depends on CPU_AMD_LX
 	help
@@ -21,9 +27,9 @@ config GEODE_VSA
 	  You will be able to specify the location and file name of the
 	  image later.
 
-config VSA_FILE
+config VSA_FILENAME
 	string "AMD Geode LX VSA path and filename"
-	depends on GEODE_VSA && CPU_AMD_LX
+	depends on GEODE_VSA_FILE && CPU_AMD_LX
 	default "gpl_vsa_lx_102.bin"
 	help
 	  The path and filename of the file to use as VSA.

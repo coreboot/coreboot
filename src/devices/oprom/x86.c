@@ -37,7 +37,6 @@ void x86_exception(struct eregs *info);
 extern unsigned char __idt_handler, __idt_handler_size;
 extern unsigned char __realmode_code, __realmode_code_size;
 extern unsigned char __run_optionrom, __run_interrupt;
-extern unsigned char __run_vsa;
 
 void (*run_optionrom)(u32 devfn) __attribute__((regparm(0))) = (void *)&__run_optionrom;
 void (*vga_enable_console)(void) __attribute__((regparm(0))) = (void *)&__run_interrupt;
@@ -167,10 +166,11 @@ void run_bios(struct device *dev, unsigned long addr)
 #include <cpu/amd/vr.h>
 #include <cbfs.h>
 
+extern unsigned char __run_vsa;
+void (*run_vsa)(u32 smm, u32 sysmem) __attribute__((regparm(0))) = (void *)&__run_vsa;
+
 #define VSA2_BUFFER		0x60000
 #define VSA2_ENTRY_POINT	0x60020
-
-void (*run_vsa)(u32 smm, u32 sysmem) __attribute__((regparm(0))) = (void *)&__run_vsa;
 
 // TODO move to a header file.
 void do_vsmbios(void);

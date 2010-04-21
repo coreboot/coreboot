@@ -69,8 +69,21 @@ LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && $(CC) -pr
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
 
+# Three cases where we don't need fully populated $(obj) lists:
+# 1. when no .config exists
+# 2. when make config (in any flavour) is run
+# 3. when make distclean is run
+# Don't waste time on reading all Makefile.incs in these cases
 ifeq ($(strip $(HAVE_DOTCONFIG)),)
+NOCOMPILE:=1
+endif
+ifneq ($(MAKECMDGOALS),)
+ifneq ($(filter %config distclean,$(MAKECMDGOALS)),)
+NOCOMPILE:=1
+endif
+endif
 
+ifeq ($(NOCOMPILE),1)
 all: config
 
 else
@@ -294,9 +307,7 @@ coreboot: prepare $(obj)/coreboot.rom
 endif
 
 prepare:
-	mkdir -p $(obj)
-	mkdir -p $(objutil)/kconfig/lxdialog $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options
-	test -n "$(alldirs)" && mkdir -p $(alldirs) || true
+	mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(objutil)/cbfstool $(objutil)/romcc $(objutil)/options $(alldirs)
 
 $(obj)/build.h: .xcompile
 	@printf "    GEN        build.h\n"
@@ -342,9 +353,9 @@ clean-for-update: doxygen-clean
 clean: clean-for-update
 	rm -f $(obj)/coreboot* .ccwrap
 
-distclean: clean
+distclean:
 	rm -rf $(obj)
-	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig*
+	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
 update:
 	dongle.py -c /dev/term/1 $(obj)/coreboot.rom EOF

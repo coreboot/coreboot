@@ -41,7 +41,6 @@ extern unsigned char __run_vsa;
 
 void (*run_optionrom)(u32 devfn) __attribute__((regparm(0))) = (void *)&__run_optionrom;
 void (*vga_enable_console)(void) __attribute__((regparm(0))) = (void *)&__run_interrupt;
-void (*run_vsa)(u32 smm, u32 sysmem) __attribute__((regparm(0))) = (void *)&__run_vsa;
 
 int (*intXX_handler[256])(struct eregs *regs) = { NULL };
 
@@ -170,6 +169,8 @@ void run_bios(struct device *dev, unsigned long addr)
 
 #define VSA2_BUFFER		0x60000
 #define VSA2_ENTRY_POINT	0x60020
+
+void (*run_vsa)(u32 smm, u32 sysmem) __attribute__((regparm(0))) = (void *)&__run_vsa;
 
 // TODO move to a header file.
 void do_vsmbios(void);

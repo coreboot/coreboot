@@ -33,6 +33,7 @@ int print_epbar(struct pci_dev *nb)
 	printf("\n============= EPBAR =============\n\n");
 
 	switch (nb->device_id) {
+	case PCI_DEVICE_ID_INTEL_82915:
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
 	case PCI_DEVICE_ID_INTEL_82975X:
@@ -84,6 +85,7 @@ int print_dmibar(struct pci_dev *nb)
 	printf("\n============= DMIBAR ============\n\n");
 
 	switch (nb->device_id) {
+	case PCI_DEVICE_ID_INTEL_82915:
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
 	case PCI_DEVICE_ID_INTEL_82975X:
@@ -137,6 +139,7 @@ int print_pciexbar(struct pci_dev *nb)
 	printf("========= PCIEXBAR ========\n\n");
 
 	switch (nb->device_id) {
+	case PCI_DEVICE_ID_INTEL_82915:
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
 	case PCI_DEVICE_ID_INTEL_82975X:

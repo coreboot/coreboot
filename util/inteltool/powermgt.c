@@ -145,6 +145,37 @@ static const io_register_t ich8_pm_registers[] = {
 	{ 0x7c, 4, "RESERVED" },
 };
 
+/* 
+ * INTEL I/O Controller Hub 6 Family
+ * http://www.intel.com/assets/pdf/datasheet/301473.pdf
+ */
+static const io_register_t ich6_pm_registers[] = {
+	/* 10.8.3 */
+	{ 0x00, 2, "PM1_STS" },
+	{ 0x02, 2, "PM1_EN" },
+	{ 0x04, 4, "PM1_CNT" },
+	{ 0x08, 4, "PM1_TMR" },
+	{ 0x10, 4, "PROC_CNT" },
+#if DANGEROUS_REGISTERS
+	/* These registers return 0 on read, but reading them may cause
+	 * the system to enter C2/C3/C4 state, which might hang the system.
+	 */
+	{ 0x14, 1, "LV2" },
+	{ 0x15, 1, "LV3 (Mobile Only)" },
+	{ 0x16, 1, "LV4 (Mobile Only)" },
+#endif
+	{ 0x20, 1, "PM2_CNT (Mobile Only)" },
+	{ 0x28, 4, "GPE0_STS" },
+	{ 0x2c, 4, "GPE0_EN" },
+	{ 0x30, 4, "SMI_EN" },
+	{ 0x34, 4, "SMI_STS" },
+	{ 0x38, 2, "ALT_GP_SMI_EN" },
+	{ 0x3a, 2, "ALT_GP_SMI_STS" },
+	{ 0x44, 2, "DEVACT_STS" },
+	{ 0x50, 1, "SS_CNT (Mobile Only)" },
+	{ 0x54, 4, "C3_RES (Mobile Only)" },
+};
+
 static const io_register_t ich4_pm_registers[] = {
 	{ 0x00, 2, "PM1_STS" },
 	{ 0x02, 2, "PM1_EN" },
@@ -330,6 +361,11 @@ int print_pmbase(struct pci_dev *sb)
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = ich8_pm_registers;
 		size = ARRAY_SIZE(ich8_pm_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_ICH6:
+		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
+		pm_registers = ich6_pm_registers;
+		size = ARRAY_SIZE(ich6_pm_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH4:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;

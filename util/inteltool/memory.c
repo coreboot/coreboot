@@ -34,6 +34,7 @@ int print_mchbar(struct pci_dev *nb)
 	printf("\n============= MCHBAR ============\n\n");
 
 	switch (nb->device_id) {
+	case PCI_DEVICE_ID_INTEL_82915:
 	case PCI_DEVICE_ID_INTEL_82945GM:
 	case PCI_DEVICE_ID_INTEL_82945P:
  	case PCI_DEVICE_ID_INTEL_82975X:

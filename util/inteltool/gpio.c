@@ -58,6 +58,24 @@ static const io_register_t ich4_gpio_registers[] = {
 	{ 0x3C, 4, "RESERVED" }
 };
 
+static const io_register_t ich6_gpio_registers[] = {
+	{ 0x00, 4, "GPIO_USE_SEL" },
+	{ 0x08, 4, "RESERVED" },
+	{ 0x0c, 4, "GP_LVL" },
+	{ 0x10, 4, "RESERVED" },
+	{ 0x14, 4, "RESERVED" },
+	{ 0x18, 4, "GPO_BLINK" },
+	{ 0x1c, 4, "RESERVED" },
+	{ 0x20, 4, "RESERVED" },
+	{ 0x24, 4, "RESERVED" },
+	{ 0x28, 4, "RESERVED" },
+	{ 0x2c, 4, "GPI_INV" },
+	{ 0x30, 4, "GPIO_USE_SEL2" },
+	{ 0x34, 4, "GP_IO_SEL2" },
+	{ 0x38, 4, "GP_LVL2" },
+	{ 0x04, 4, "GP_IO_SEL" },
+};
+
 static const io_register_t ich7_gpio_registers[] = {
 	{ 0x00, 4, "GPIO_USE_SEL" },
 	{ 0x04, 4, "GP_IO_SEL" },
@@ -118,6 +136,11 @@ int print_gpios(struct pci_dev *sb)
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich7_gpio_registers;
 		size = ARRAY_SIZE(ich7_gpio_registers);
+		break;
+	case PCI_DEVICE_ID_INTEL_ICH6:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = ich6_gpio_registers;
+		size = ARRAY_SIZE(ich6_gpio_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH4:
 	case PCI_DEVICE_ID_INTEL_ICH4M:

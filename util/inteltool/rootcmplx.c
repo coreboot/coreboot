@@ -31,6 +31,7 @@ int print_rcba(struct pci_dev *sb)
 	printf("\n============= RCBA ==============\n\n");
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_ICH6:
 	case PCI_DEVICE_ID_INTEL_ICH7:
 	case PCI_DEVICE_ID_INTEL_ICH7M:
 	case PCI_DEVICE_ID_INTEL_ICH7DH:

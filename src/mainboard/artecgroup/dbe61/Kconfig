@@ -31,7 +31,7 @@ config IRQ_SLOT_COUNT
 	default 3
 	depends on BOARD_ARTECGROUP_DBE61
 
-config RAMBASE
-	hex
-	default 0x4000
-	depends on BOARD_ARTECGROUP_DBE61
+#config RAMBASE
+#	hex
+#	default 0x4000
+##	depends on BOARD_ARTECGROUP_DBE61

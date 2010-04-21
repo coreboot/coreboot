@@ -34,6 +34,8 @@
 /**
 /***************************************************************************/
 DCacheSetup:
+	/* Save the BIST result */
+	movl    %eax, %ebx
 
 	invd
 	/* set cache properties */
@@ -173,9 +175,17 @@ DCacheSetupBad:
 	hlt		/* issues */
 	jmp DCacheSetupBad
 DCacheSetupGood:
-
 	/* Go do early init and memory setup */
-	call	cache_as_ram_main
+
+	/* Restore the BIST result */
+	movl	%ebx, %eax
+	movl	%esp, %ebp
+	pushl	%eax
+
+	post_code(0x23)
+
+	/* Call romstage.c main function */
+	call	main
 done_cache_as_ram_main:
 
         /* We now run over the stack-in-cache, copying it back to itself to invalidate the cache */

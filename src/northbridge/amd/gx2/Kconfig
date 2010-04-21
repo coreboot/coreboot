@@ -19,4 +19,6 @@
 
 config NORTHBRIDGE_AMD_GX2
 	bool
+	# for VSM: 
+	select PCI_OPTION_ROM_RUN_REALMODE
 

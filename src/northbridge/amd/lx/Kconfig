@@ -1,6 +1,8 @@
 config NORTHBRIDGE_AMD_LX
 	bool
 	select HAVE_HIGH_TABLES
+	# for VSM: 
+	select PCI_OPTION_ROM_RUN_REALMODE
 	
 config VIDEO_MB
 	int

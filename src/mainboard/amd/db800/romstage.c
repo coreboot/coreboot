@@ -57,46 +57,14 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "lib/generic_sdram.c"
 #include "cpu/amd/model_lx/cpureginit.c"
 #include "cpu/amd/model_lx/syspreinit.c"
-
-struct msrinit {
-            u32 msrnum;
-            msr_t msr;
-      };
-
-static const struct msrinit msr_table[] = 
-{
-       {CPU_RCONF_DEFAULT, {.hi = 0x24fffc02,.lo = 0x1000A000}}, /* Setup access to cache under 1MB.
-                                                                  * Rom Properties: Write Serialize, WriteProtect.
-                                                                  * RomBase: 0xFFFC0
-                                                                  * SysTop to RomBase Properties: Write Serialize, Cache Disable.
-                                                                  * SysTop: 0x000A0 
-                                                                  * System Memory Properties:  (Write Back) */
-       {CPU_RCONF_A0_BF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xA0000-0xBFFFF : (Write Back) */
-       {CPU_RCONF_C0_DF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xC0000-0xDFFFF : (Write Back) */
-       {CPU_RCONF_E0_FF,   {.hi = 0x00000000,.lo = 0x00000000}}, /* 0xE0000-0xFFFFF : (Write Back) */
-       
-       /* Setup access to memory under 1MB. Note: VGA hole at 0xA0000-0xBFFFF */
-       {MSR_GLIU0_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
-       {MSR_GLIU0_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF
-       {MSR_GLIU0_SHADOW,  {.hi = 0x2000FFFF,.lo = 0xFFFF0003}}, // 0xC0000-0xFFFFF
-       {MSR_GLIU1_BASE1,   {.hi = 0x20000000,.lo = 0x000fff80}}, // 0x00000-0x7FFFF
-       {MSR_GLIU1_BASE2,   {.hi = 0x20000000,.lo = 0x080fffe0}}, // 0x80000-0x9FFFF
-       {MSR_GLIU1_SHADOW,  {.hi = 0x2000FFFF,.lo = 0xFFFF0003}}, // 0xC0000-0xFFFFF
-};
-
-static void msr_init(void)
-{
-  int i;
-       for (i = 0; i < ARRAY_SIZE(msr_table); i++)
-                           wrmsr(msr_table[i].msrnum, msr_table[i].msr);
-}
+#include "cpu/amd/model_lx/msrinit.c"
 
 static void mb_gpio_init(void)
 {
 	/* Early mainboard specific GPIO setup. */
 }
 
-void cache_as_ram_main(void)
+void main(unsigned long bist)
 {
 	post_code(0x01);
 
@@ -116,6 +84,9 @@ void cache_as_ram_main(void)
 	mb_gpio_init();
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
 	pll_reset(ManualConf);
 

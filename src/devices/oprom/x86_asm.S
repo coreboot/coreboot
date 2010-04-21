@@ -155,6 +155,105 @@ __run_optionrom = RELOCATED(.)
 	popal
 	ret
 
+#if defined(CONFIG_GEODE_VSA) && CONFIG_GEODE_VSA
+#define VSA2_ENTRY_POINT	0x60020
+
+	.globl __run_vsa
+__run_vsa = RELOCATED(.)
+	/* save all registers to the stack */
+	pushal
+
+	/* Move the protected mode stack to a safe place */
+	mov 	%esp, __stack
+
+	movl    %esp, %ebp
+	/* This function is called with regparm=0 and we have
+	 * to skip the 32 byte from pushal:
+	 */
+	movl    36(%ebp), %ecx
+	movl    40(%ebp), %edx
+
+	/* Activate the right segment descriptor real mode. */
+	ljmp	$0x28, $RELOCATED(1f)
+1:
+.code16
+	/* 16 bit code from here on... */
+
+	/* Load the segment registers w/ properly configured
+	 * segment descriptors. They will retain these
+	 * configurations (limits, writability, etc.) once
+	 * protected mode is turned off.
+	 */
+	mov	$0x30, %ax
+	mov	%ax, %ds       
+	mov	%ax, %es       
+	mov	%ax, %fs       
+	mov	%ax, %gs       
+	mov	%ax, %ss       
+
+	/* Turn off protection */
+	movl	%cr0, %eax
+	andl	$~PE, %eax
+	movl	%eax, %cr0
+
+	/* Now really going into real mode */
+	ljmp	$0, $RELOCATED(1f)
+1:
+	/* Setup a stack: Put the stack at the end of page zero.
+	 * That way we can easily share it between real and
+	 * protected, since the 16-bit ESP at segment 0 will
+	 * work for any case. */
+	mov	$0x0, %ax
+	mov	%ax, %ss
+	movl	$0x1000, %eax
+	movl	%eax, %esp
+
+	/* Load our 16 bit idt */
+	xor	%ax, %ax
+	mov	%ax, %ds
+	lidt	__realmode_idt
+
+	/* Set all segments to 0x0000, ds to 0x0040 */
+	mov	%ax, %es       
+	mov	%ax, %fs       
+	mov	%ax, %gs       
+	mov	$0x40, %ax
+	mov	%ax, %ds
+	mov	%cx, %ax	// restore ax
+
+	/* ************************************ */
+	lcall	$((VSA2_ENTRY_POINT & 0xffff0000) >> 4), $(VSA2_ENTRY_POINT & 0xffff)
+	/* ************************************ */
+
+	/* If we got here, just about done.
+	 * Need to get back to protected mode
+	 */
+	movl	%cr0, %eax
+	orl	$PE, %eax
+	movl	%eax, %cr0
+
+	/* Now that we are in protected mode
+	 * jump to a 32 bit code segment.
+	 */
+	data32	ljmp	$0x10, $RELOCATED(1f)
+1:
+	.code32
+	movw	$0x18, %ax     
+	mov	%ax, %ds       
+	mov	%ax, %es
+	mov	%ax, %fs
+	mov	%ax, %gs
+	mov	%ax, %ss
+
+	/* restore proper idt */
+	lidt	idtarg
+
+	/* and exit */
+	mov	__stack, %esp
+	popal
+	ret
+#endif
+
 	.globl __run_interrupt
 __run_interrupt = RELOCATED(.)
 

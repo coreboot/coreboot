@@ -121,7 +121,7 @@ static void cs5536_setup_gpio(void)
 	outl(val, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
 }
 
-static void cs5536_disable_internal_uart(void)
+void cs5536_disable_internal_uart(void)
 {
 	msr_t msr;
 	/* The UARTs default to enabled.

@@ -35,30 +35,14 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 #include "cpu/amd/model_lx/cpureginit.c"
 #include "cpu/amd/model_lx/syspreinit.c"
-
-static void msr_init(void)
-{
-	msr_t msr;
-	/* Setup access to the MC for under 1MB. Note MC not setup yet. */
-	msr.hi = 0x24fffc02;
-	msr.lo =  0x10010000;
-	wrmsr(CPU_RCONF_DEFAULT, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0xfff00;
-	wrmsr(MSR_GLIU0 + 0x20, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo =  0xfff00;
-	wrmsr(MSR_GLIU1 + 0x20, msr);
-}
+#include "cpu/amd/model_lx/msrinit.c"
 
 static void mb_gpio_init(void)
 {
 	/* Early mainboard specific GPIO setup */
 }
 
-void cache_as_ram_main(void)
+void main(unsigned long bist)
 {
 	post_code(0x01);
 
@@ -80,6 +64,9 @@ void cache_as_ram_main(void)
 	mb_gpio_init();
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
 	pll_reset(ManualConf);
 

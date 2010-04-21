@@ -60,46 +60,14 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "lib/generic_sdram.c"
 #include "cpu/amd/model_lx/cpureginit.c"
 #include "cpu/amd/model_lx/syspreinit.c"
-
-static void msr_init(void)
-{
-	msr_t msr;
-
-	/* Setup access to the cache for under 1MB. */
-	msr.hi = 0x24fffc02;
-	msr.lo = 0x1000A000;	/* 0-A0000 write back */
-	wrmsr(CPU_RCONF_DEFAULT, msr);
-
-	msr.hi = 0x0;		/* Write back */
-	msr.lo = 0x0;
-	wrmsr(CPU_RCONF_A0_BF, msr);
-	wrmsr(CPU_RCONF_C0_DF, msr);
-	wrmsr(CPU_RCONF_E0_FF, msr);
-
-	/* Setup access to the cache for under 640K. Note MC not setup yet. */
-	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU0 + 0x20, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU0 + 0x21, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0xfff80;
-	wrmsr(MSR_GLIU1 + 0x20, msr);
-
-	msr.hi = 0x20000000;
-	msr.lo = 0x80fffe0;
-	wrmsr(MSR_GLIU1 + 0x21, msr);
-}
+#include "cpu/amd/model_lx/msrinit.c"
 
 static void mb_gpio_init(void)
 {
 	/* Early mainboard specific GPIO setup. */
 }
 
-void cache_as_ram_main(void)
+void main(unsigned long bist)
 {
 	post_code(0x01);
 
@@ -119,6 +87,9 @@ void cache_as_ram_main(void)
 	mb_gpio_init();
 	uart_init();
 	console_init();
+
+	/* Halt if there was a built in self test failure */
+	report_bist_failure(bist);
 
 	pll_reset(ManualConf);
 

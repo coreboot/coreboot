@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2009 coresystems GmbH
+ * Copyright (C) 2007 Advanced Micro Devices, Inc.
+ * Copyright (C) 2009-2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +37,11 @@ void x86_exception(struct eregs *info);
 extern unsigned char __idt_handler, __idt_handler_size;
 extern unsigned char __realmode_code, __realmode_code_size;
 extern unsigned char __run_optionrom, __run_interrupt;
+extern unsigned char __run_vsa;
 
 void (*run_optionrom)(u32 devfn) __attribute__((regparm(0))) = (void *)&__run_optionrom;
 void (*vga_enable_console)(void) __attribute__((regparm(0))) = (void *)&__run_interrupt;
+void (*run_vsa)(u32 smm, u32 sysmem) __attribute__((regparm(0))) = (void *)&__run_vsa;
 
 int (*intXX_handler[256])(struct eregs *regs) = { NULL };
 
@@ -160,6 +163,88 @@ void run_bios(struct device *dev, unsigned long addr)
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 }
 
+#if defined(CONFIG_GEODE_VSA) && CONFIG_GEODE_VSA
+#include <cpu/amd/lxdef.h>
+#include <cpu/amd/vr.h>
+#include <cbfs.h>
+
+#define VSA2_BUFFER		0x60000
+#define VSA2_ENTRY_POINT	0x60020
+
+// TODO move to a header file.
+void do_vsmbios(void);
+
+/* VSA virtual register helper */
+static u32 VSA_vrRead(u16 classIndex)
+{
+	u32 eax, ebx, ecx, edx;
+	asm volatile (
+		"movw	$0x0AC1C, %%dx\n"
+		"orl	$0x0FC530000, %%eax\n"
+		"outl	%%eax, %%dx\n"
+		"addb	$2, %%dl\n"
+		"inw	%%dx, %%ax\n"
+		: "=a" (eax), "=b"(ebx), "=c"(ecx), "=d"(edx) 
+		: "a"(classIndex)
+	);
+
+	return eax;
+}
+
+void do_vsmbios(void)
+{
+	printk(BIOS_DEBUG, "Preparing for VSA...\n");
+
+	/* clear bios data area */
+	memset((void *)0x400, 0, 0x200);
+
+	/* Set up C interrupt handlers */
+	setup_interrupt_handlers();
+
+	/* Setting up realmode IDT */
+	setup_realmode_idt();
+
+	memcpy(REALMODE_BASE, &__realmode_code, (size_t)&__realmode_code_size);
+	printk(BIOS_SPEW, "VSA: Real mode stub @%p: %d bytes\n", REALMODE_BASE,
+			(u32)&__realmode_code_size);
+
+	if ((unsigned int)cbfs_load_stage("vsa") != VSA2_ENTRY_POINT) {
+		printk(BIOS_ERR, "Failed to load VSA.\n");
+		return;
+	}
+
+	unsigned char *buf = (unsigned char *)VSA2_BUFFER;
+	printk(BIOS_DEBUG, "VSA: Buffer @%p *[0k]=%02x\n", buf, buf[0]);
+	printk(BIOS_DEBUG, "VSA: Signature *[0x20-0x23] is %02x:%02x:%02x:%02x\n",
+		     buf[0x20], buf[0x21], buf[0x22], buf[0x23]);
+
+	/* Check for code to emit POST code at start of VSA. */
+	if ((buf[0x20] != 0xb0) || (buf[0x21] != 0x10) ||
+	    (buf[0x22] != 0xe6) || (buf[0x23] != 0x80)) {
+		printk(BIOS_WARNING, "VSA: Signature incorrect. Install failed.\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "Calling VSA module...\n");
+	/* ECX gets SMM, EDX gets SYSMEM */
+	run_vsa(MSR_GLIU0_SMM, MSR_GLIU0_SYSMEM);
+	printk(BIOS_DEBUG, "... VSA module returned.\n");
+
+	/* Restart timer 1 */
+	outb(0x56, 0x43);
+	outb(0x12, 0x41);
+
+	/* Check that VSA is running OK */
+	if (VSA_vrRead(SIGNATURE) == VSA2_SIGNATURE)
+		printk(BIOS_DEBUG, "VSM: VSA2 VR signature verified.\n");
+	else
+		printk(BIOS_ERR, "VSM: VSA2 VR signature not valid. Install failed.\n");
+}
+#endif
+
+/* interrupt_handler() is called from assembler code only, 
+ * so there is no use in putting the prototype into a header file.
+ */
 int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 	    u32 gsfs, u32 dses,
 	    u32 edi, u32 esi,

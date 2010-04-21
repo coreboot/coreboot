@@ -23,7 +23,7 @@ config GEODE_VSA
 
 config VSA_FILE
 	string "AMD Geode LX VSA path and filename"
-	depends on GEODE_VSA
+	depends on GEODE_VSA && CPU_AMD_LX
 	default "gpl_vsa_lx_102.bin"
 	help
 	  The path and filename of the file to use as VSA.

@@ -74,11 +74,8 @@
 #define IOD_BM(msr, pdid1, bizarro, ibase, imask) {msr, {.hi=(pdid1<<29)|(bizarro<<28)|(ibase>>12), .lo=(ibase<<20)|imask}}
 #define IOD_SC(msr, pdid1, bizarro, en, wen, ren, ibase) {msr, {.hi=(pdid1<<29)|(bizarro<<28), .lo=(en<<24)|(wen<<21)|(ren<<20)|(ibase<<3)}}
 
-extern void graphics_init(void);
-extern void cpubug(void);
-extern void chipsetinit(void);
-
-void setup_realmode_idt(void);
+void print_conf(void);
+void graphics_init(void);
 void do_vsmbios(void);
 
 struct msr_defaults {
@@ -319,7 +316,7 @@ static void northbridge_init(device_t dev)
 	//printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", MSR_GLIU1_SHADOW, msr.hi, msr.lo);
 }
 
-void northbridge_set_resources(struct device *dev)
+static void northbridge_set_resources(struct device *dev)
 {
 	struct resource *resource, *last;
 	unsigned link;
@@ -426,7 +423,6 @@ static void pci_domain_set_resources(device_t dev)
 
 static void pci_domain_enable(device_t dev)
 {
-
 	printk(BIOS_SPEW, ">> Entering northbridge.c: %s\n", __func__);
 
 	// do this here for now -- this chip really breaks our device model
@@ -434,14 +430,10 @@ static void pci_domain_enable(device_t dev)
 	cpubug();
 	chipsetinit();
 
-	setup_realmode_idt();
-
-	printk(BIOS_DEBUG, "Before VSA:\n");
 	// print_conf();
 
 	do_vsmbios();		// do the magic stuff here, so prepare your tambourine ;)
 
-	printk(BIOS_DEBUG, "After VSA:\n");
 	// print_conf();
 
 	graphics_init();

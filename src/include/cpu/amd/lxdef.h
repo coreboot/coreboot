@@ -623,6 +623,12 @@
 #define SMM_OFFSET	0x80400000	/* above 2GB */
 #define SMM_SIZE	128			/* changed SMM_SIZE from 256 KB to 128 KB */
 
-
+#if !defined(__ROMCC__)  && !defined(ASSEMBLY)
+#if defined(__PRE_RAM__)
+void cpuRegInit(void);
+void SystemPreInit(void);
+#endif
+void cpubug(void);
+#endif
 
 #endif

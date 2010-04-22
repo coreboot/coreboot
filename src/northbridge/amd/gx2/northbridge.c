@@ -17,8 +17,6 @@
 #include "../../../southbridge/amd/cs5536/cs5536.h"
 #define VIDEO_MB 8
 
-extern void graphics_init(void);
-
 #define NORTHBRIDGE_FILE "northbridge.c"
 
 /* todo: add a resource record. We don't do this here because this may be called when 
@@ -190,7 +188,7 @@ setup_gx2_cache(void)
 }
 
 /* we have to do this here. We have not found a nicer way to do it */
-void
+static void
 setup_gx2(void)
 {
 
@@ -371,6 +369,7 @@ static void ram_resource(device_t dev, unsigned long index,
                 IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 }
 
+#if 0
 static void tolm_test(void *gp, struct device *dev, struct resource *new)
 {
 	struct resource **best_p = gp;
@@ -382,7 +381,6 @@ static void tolm_test(void *gp, struct device *dev, struct resource *new)
 	*best_p = best;
 }
 
-#if 0
 static u32 find_pci_tolm(struct bus *bus)
 {
 	struct resource *min;
@@ -396,6 +394,8 @@ static u32 find_pci_tolm(struct bus *bus)
 	return tolm;
 }
 #endif
+
+// FIXME handle UMA correctly.
 #define FRAMEBUFFERK 4096
 
 static void pci_domain_set_resources(device_t dev)
@@ -484,19 +484,17 @@ extern uint64_t high_tables_base, high_tables_size;
 static void enable_dev(struct device *dev)
 {
 	printk(BIOS_DEBUG, "gx2 north: enable_dev\n");
-	void northbridgeinit(void);
-	void chipsetinit(struct northbridge_amd_gx2_config *nb);
 	void do_vsmbios(void);
+
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_PCI_DOMAIN) {
 		struct northbridge_amd_gx2_config *nb = (struct northbridge_amd_gx2_config *)dev->chip_info;
-		extern void cpubug(void);
 		u32 tomk;
 		printk(BIOS_DEBUG, "DEVICE_PATH_PCI_DOMAIN\n");
 		/* cpubug MUST be called before setup_gx2(), so we force the issue here */
 		northbridgeinit();
-		cpubug();	
-		chipsetinit(nb);
+		cpubug();
+		gx2_chipsetinit(nb);
 		setup_gx2();
 		do_vsmbios();
 		graphics_init();

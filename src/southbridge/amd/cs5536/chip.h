@@ -40,7 +40,6 @@ struct southbridge_amd_cs5536_config {
 	unsigned int com2_address;	/* e.g. 0x2F8 */
 	unsigned int com2_irq;	/* e.g. 3 */
 	unsigned int unwanted_vpci[MAX_UNWANTED_VPCI];	/* the following allow you to disable unwanted virtualized PCI devices */
-
 };
 
 #endif				/* _SOUTHBRIDGE_AMD_CS5536 */

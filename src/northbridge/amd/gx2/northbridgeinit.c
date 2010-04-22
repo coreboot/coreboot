@@ -135,7 +135,6 @@ ShadowInit(struct gliutable *gl)
    */
 /* yes, this duplicates later code, but it seems that is how they want it done. 
   */
-extern int sizeram(void);
 static void
 SysmemInit(struct gliutable *gl)
 {

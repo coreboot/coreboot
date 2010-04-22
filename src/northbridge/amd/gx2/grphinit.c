@@ -1,7 +1,11 @@
 #include <arch/io.h>
 #include <stdint.h>
 #include <cpu/amd/vr.h>
+#include <device/device.h>
+#include "chip.h"
+#include "northbridge.h"
  
+// FIXME handle UMA properly.
 #define VIDEO_MB	8					// MB of video memory
 
 

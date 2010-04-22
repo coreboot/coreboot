@@ -1,4 +1,6 @@
 chip northbridge/amd/gx2
+	register "setupflash" = "0"
+  	#register "irqmap" = "0xaa5b"
 	device apic_cluster 0 on
 		chip cpu/amd/model_gx2
 			device apic 0 on end

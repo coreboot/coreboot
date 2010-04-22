@@ -40,7 +40,7 @@ struct msrinit {
 };
 
 /*	Master Configuration Register for Bus Masters.*/
-struct msrinit SB_MASTER_CONF_TABLE[] = {
+static struct msrinit SB_MASTER_CONF_TABLE[] = {
 	{USB2_SB_GLD_MSR_CONF, {.hi = 0,.lo = 0x00008f000}},
 	{ATA_SB_GLD_MSR_CONF,  {.hi = 0,.lo = 0x00048f000}},
 	{AC97_SB_GLD_MSR_CONF, {.hi = 0,.lo = 0x00008f000}},
@@ -49,7 +49,7 @@ struct msrinit SB_MASTER_CONF_TABLE[] = {
 };
 
 /*	5536 Clock Gating*/
-struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
+static struct msrinit CS5536_CLOCK_GATING_TABLE[] = {
 	/* MSR		  Setting*/
 	{GLIU_SB_GLD_MSR_PM,  {.hi = 0,.lo = 0x000000004}},
 	{GLPCI_SB_GLD_MSR_PM, {.hi = 0,.lo = 0x000000005}},
@@ -65,7 +65,7 @@ struct acpiinit {
 	u32 regdata;
 };
 
-struct acpiinit acpi_init_table[] = {
+static struct acpiinit acpi_init_table[] = {
 	{ACPI_IO_BASE + 0x00, 0x01000000},
 	{ACPI_IO_BASE + 0x08, 0},
 	{ACPI_IO_BASE + 0x0C, 0},
@@ -86,7 +86,7 @@ struct FLASH_DEVICE {
 	unsigned long fMask;	/* Flash size/mask */
 };
 
-struct FLASH_DEVICE FlashInitTable[] = {
+static struct FLASH_DEVICE FlashInitTable[] = {
 	{FLASH_TYPE_NAND, FLASH_IF_MEM, FLASH_MEM_4K},	/* CS0, or Flash Device 0 */
 	{FLASH_TYPE_NONE, 0, 0},	/* CS1, or Flash Device 1 */
 	{FLASH_TYPE_NONE, 0, 0},	/* CS2, or Flash Device 2 */
@@ -95,7 +95,7 @@ struct FLASH_DEVICE FlashInitTable[] = {
 
 #define FlashInitTableLen (ARRAY_SIZE(FlashInitTable))
 
-u32 FlashPort[] = {
+static u32 FlashPort[] = {
 	MDD_LBAR_FLSH0,
 	MDD_LBAR_FLSH1,
 	MDD_LBAR_FLSH2,
@@ -512,12 +512,16 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 	}
 }
 
-/* ***************************************************************************/
-/* **/
-/* *	ChipsetInit */
-/*			Called from northbridge init (Pre-VSA). */
-/* **/
-/* ***************************************************************************/
+/****************************************************************************
+ * 
+ * 	ChipsetInit 
+ *
+ *	Called from northbridge init (Pre-VSA).
+ *
+ *	NOTE! This function is NOT called if the CS5536 is combined with
+ *	an AMD Geode GX2. It's ONLY used on Geode LX based systems.
+ * 
+ ****************************************************************************/
 void chipsetinit(void)
 {
 	device_t dev;

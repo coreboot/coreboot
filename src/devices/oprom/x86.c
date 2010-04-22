@@ -318,7 +318,7 @@ int __attribute__((regparm(0))) interrupt_handler(u32 intnumber,
 
 	/* Pass errors back to our caller via the CARRY flag */
 	if (ret) {
-		printk(BIOS_DEBUG,"error!\n");
+		printk(BIOS_DEBUG,"int%02x call returned error.\n", intnumber);
 		flags |= 1;  // error: set carry
 	}else{
 		flags &= ~1; // no error: clear carry

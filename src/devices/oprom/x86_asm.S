@@ -257,8 +257,6 @@ __run_vsa = RELOCATED(.)
 	.globl __run_interrupt
 __run_interrupt = RELOCATED(.)
 
-	/* paranoia -- does ecx get saved? not sure. This is
-	 * the easiest safe thing to do. */
 	pushal
 	/* save the stack */
 	mov	%esp, __stack

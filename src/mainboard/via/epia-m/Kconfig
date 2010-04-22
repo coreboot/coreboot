@@ -22,24 +22,8 @@ config MAINBOARD_PART_NUMBER
 	default "EPIA-M"
 	depends on BOARD_VIA_EPIA_M
 
-config RAMBASE
-	hex
-	default 0x4000
-	depends on BOARD_VIA_EPIA_M
-
 config IRQ_SLOT_COUNT
 	int
 	default 5
-	depends on BOARD_VIA_EPIA_M
-
-# this is done by this board's vgabios.c already
-config VGA_ROM_RUN
-	bool
-	default n
-	depends on BOARD_VIA_EPIA_M
-
-config PCI_ROM_RUN
-	bool
-	default n
 	depends on BOARD_VIA_EPIA_M
 

@@ -30,7 +30,7 @@ static void enable_mainboard_devices(void)
 {
 	device_t dev;
   
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_8235), 0);
   
 	if (dev == PCI_DEV_INVALID) {
@@ -82,7 +82,7 @@ static void main(unsigned long bist)
 	 * Disable the firewire stuff, which apparently steps on IO 0+ on
 	 * reset. Doh!
 	 */
-	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
 				PCI_DEVICE_ID_VIA_6305), 0);
 	if (dev != PCI_DEV_INVALID) {
 		pci_write_config8(dev, 0x15, 0x1c);
@@ -94,14 +94,12 @@ static void main(unsigned long bist)
 
 	enable_smbus();
 
-	print_spew("In romstage.c:main()\n");
-
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	// init_timer();
 
-	outb(5, 0x80);	
+	post_code(0x05);
 
 	print_debug(" Enabling mainboard devices\n");
 	enable_mainboard_devices();
@@ -113,18 +111,11 @@ static void main(unsigned long bist)
 	
 	/* Check all of memory */
 #if 0
-	ram_check(0x00000000, msr.lo);
-#endif
-#if 0
 	static const struct {
 		unsigned long lo, hi;
 	} check_addrs[] = {
 		/* Check 16MB of memory @ 0*/
 		{ 0x00000000, 0x01000000 },
-#if TOTAL_CPUS > 1
-		/* Check 16MB of memory @ 2GB */
-		{ 0x80000000, 0x81000000 },
-#endif
 	};
 	int i;
 	for(i = 0; i < ARRAY_SIZE(check_addrs); i++) {

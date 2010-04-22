@@ -7,6 +7,10 @@ chip northbridge/via/vt8623
 	end
 
 	device pci_domain 0 on
+
+		device pci 0.0 on end
+		device pci 1.0 on end
+
 		chip southbridge/via/vt8235
 
 			device pci 10.0 on end # USB 1.1

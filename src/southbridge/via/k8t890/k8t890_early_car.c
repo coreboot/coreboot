@@ -23,12 +23,12 @@
  */
 
 #include <stdlib.h>
-//include "k8t890.h"
-#warning hack the right header here
+#include "k8t890.h"
 
 /* The 256 bytes of NVRAM for S3 storage, 256B aligned */
 #define K8T890_NVRAM_IO_BASE	0xf00
 #define K8T890_MULTIPLE_FN_EN	0x4f
+
 /* we provide S3 NVRAM to system */
 #define S3_NVRAM_EARLY	1
 
@@ -113,7 +113,7 @@ u8 k8t890_early_setup_ht(void)
 	return 1;
 }
 
-int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
+static int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 {
 	
 	printk(BIOS_DEBUG, "Writing %x of size %d to nvram pos: %d\n", dword, size, nvram_pos);
@@ -134,7 +134,7 @@ int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 	return nvram_pos;
 }
 
-int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
+static int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 {
 	switch (size) {
 	case 1:

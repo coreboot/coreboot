@@ -57,7 +57,6 @@ unsigned int get_sbdn(unsigned bus);
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/early_ht.c"
@@ -83,9 +82,10 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 {
 }
 
-#define K8_4RANK_DIMM_SUPPORT 1
-
+// defines S3_NVRAM_EARLY:
 #include "southbridge/via/k8t890/k8t890_early_car.c"
+
+#define K8_4RANK_DIMM_SUPPORT 1
 
 #include "northbridge/amd/amdk8/amdk8.h"
 #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -164,7 +164,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	console_init();
 	enable_rom_decode();
 
-	print_info("now booting... real_main\n");
+	printk(BIOS_INFO, "now booting... \n");
 
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
@@ -175,7 +175,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
 
-	print_info("now booting... Core0 started\n");
+	printk(BIOS_INFO, "now booting... All core 0 started\n");
 
 #if CONFIG_LOGICAL_CPUS==1
 	/* It is said that we should start core1 after all core0 launched. */
@@ -196,12 +196,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	vt8237_early_spi_init();
 
 	if (needs_reset) {
-		print_debug_hex8(needs_reset);
-
-		print_debug("Xht reset -\n");
+		printk(BIOS_DEBUG, "ht reset -\n");
 		soft_reset();
-		print_debug("NO reset\n");
-
+		printk(BIOS_DEBUG, "FAILED!\n");
 	}
 
 	/* the HT settings needs to be OK, because link freq chnage may cause HT disconnect */

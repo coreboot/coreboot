@@ -1823,8 +1823,11 @@ static void set_sysinfo_in_ram(unsigned val)
 }
 
 #ifdef S3_NVRAM_EARLY
-int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
-int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
+// Don't define these prototypes as the real functions are already included
+// at this point.
+//
+//int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
+//int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 #else
 static int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 {

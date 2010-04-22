@@ -38,14 +38,17 @@
 /* the FB size in MB (min is 8MB max is 512MB) */
 #define K8M890_FBSIZEMB		64
 
+#ifdef __PRE_RAM__
+u8 k8t890_early_setup_ht(void);
+#else
 #include <device/device.h>
-
 #if 0
 extern void writeback(struct device *dev, u16 where, u8 what);
 extern void dump_south(device_t dev);
 #endif
-#include <southbridge/via/vt8237r/vt8237r.h>
+#endif
 
+#include <southbridge/via/vt8237r/vt8237r.h>
 
 int k8m890_host_fb_size_get(void);
 //void k8m890_host_fb_direct_set(uint32_t fb_address);

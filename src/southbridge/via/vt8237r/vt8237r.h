@@ -103,7 +103,18 @@ __attribute__ ((packed))
 #endif
 ;
 
-#ifndef __PRE_RAM__
+#ifdef __PRE_RAM__
+#ifndef __ROMCC__
+u8 smbus_read_byte(u8 dimm, u8 offset);
+void enable_smbus(void);
+void smbus_fixup(const struct mem_controller *ctrl);
+// these are in vt8237_early_smbus.c - do they really belong there?
+void vt8237_sb_enable_fid_vid(void);
+void enable_rom_decode(void);
+void vt8237_early_spi_init(void);
+int vt8237_early_network_init(struct vt8237_network_rom *rom);
+#endif
+#else
 #include <device/device.h>
 void writeback(struct device *dev, u16 where, u8 what);
 void dump_south(device_t dev);

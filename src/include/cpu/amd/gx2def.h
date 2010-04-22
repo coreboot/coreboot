@@ -693,4 +693,11 @@
 #define PMLogic_BASE	 (		0x9D00)
 
 
+#if !defined(__ROMCC__)  && !defined(ASSEMBLY)
+#if defined(__PRE_RAM__)
+#else
+void cpubug(void);
+#endif
+#endif
+
 #endif /* CPU_AMD_GX2DEF_H */

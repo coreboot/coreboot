@@ -527,9 +527,23 @@ void chipsetinit(void)
 	device_t dev;
 	msr_t msr;
 	u32 msrnum;
-	struct southbridge_amd_cs5536_config *sb =
-	    (struct southbridge_amd_cs5536_config *)dev->chip_info;
+	struct southbridge_amd_cs5536_config *sb;
 	struct msrinit *csi;
+
+	dev = dev_find_device(PCI_VENDOR_ID_AMD, 
+			PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
+
+	if (!dev) {
+		printk(BIOS_ERR, "CS5536 not found.\n");
+		return;
+	}
+
+	sb = (struct southbridge_amd_cs5536_config *)dev->chip_info;
+
+	if (!sb) {
+		printk(BIOS_ERR, "CS5536 configuration not found.\n");
+		return;
+	}
 
 	post_code(P80_CHIPSET_INIT);
 
@@ -599,6 +613,12 @@ static void southbridge_init(struct device *dev)
 	 */
 
 	printk(BIOS_ERR, "cs5536: %s\n", __func__);
+
+	if (!sb) {
+		printk(BIOS_ERR, "CS5536 configuration not found.\n");
+		return;
+	}
+
 	setup_i8259();
 	lpc_init(sb);
 	uarts_init(sb);

@@ -104,7 +104,7 @@ static void sata_init(struct device *dev)
 		pci_write_config32(dev, IDE_CONFIG, reg32);
 
 		/* Set Sata Controller Mode. */
-		pci_write_config8(dev, 0x90, 0xc0); // WTF - Reserved?
+		pci_write_config8(dev, 0x90, 0x40); // 40=AHCI
 
 		/* Port 0 & 1 enable */
 		pci_write_config8(dev, 0x92, 0x0f);

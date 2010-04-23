@@ -1,0 +1,46 @@
+config CPU_AMD_SOCKET_ASB2
+	bool
+	select CPU_AMD_MODEL_10XXX
+	select HT3_SUPPORT
+	select PCI_IO_CFG_EXT
+
+config CPU_SOCKET_TYPE
+	hex
+	default 0x13
+	depends on CPU_AMD_SOCKET_ASB2
+
+# DDR3 and REG
+config DIMM_SUPPORT
+	hex
+	default 0x0005
+	depends on CPU_AMD_SOCKET_ASB2
+
+config EXT_RT_TBL_SUPPORT
+	bool
+	default n
+	depends on CPU_AMD_SOCKET_ASB2
+
+config EXT_CONF_SUPPORT
+	bool
+	default n
+	depends on CPU_AMD_SOCKET_ASB2
+
+config CBB
+	hex
+	default 0x0
+	depends on CPU_AMD_SOCKET_ASB2
+
+config CDB
+	hex
+	default 0x18
+	depends on CPU_AMD_SOCKET_ASB2
+
+config XIP_ROM_BASE
+	hex
+	default 0xfff80000
+	depends on CPU_AMD_SOCKET_ASB2
+
+config XIP_ROM_SIZE
+	hex
+	default 0x80000
+	depends on CPU_AMD_SOCKET_ASB2

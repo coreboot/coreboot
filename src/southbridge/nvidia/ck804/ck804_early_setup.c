@@ -3,6 +3,8 @@
  *  by yhlu@tyan.com
  */
 
+#include <reset.h>
+
 static int set_ht_link_ck804(uint8_t ht_c_num)
 {
 	unsigned vendorid = 0x10de;

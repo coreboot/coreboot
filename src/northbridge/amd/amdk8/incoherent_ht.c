@@ -576,6 +576,7 @@ static int optimize_link_read_pointers_chain(uint8_t ht_c_num)
 	return reset_needed;
 }
 
+#if defined(CONFIG_SOUTHBRIDGE_NVIDIA_CK804) || defined(CONFIG_SOUTHBRIDGE_NVIDIA_MCP55)
 static int set_ht_link_buffer_count(uint8_t node, uint8_t linkn, uint8_t linkt, unsigned val)
 {
 	uint32_t dword;
@@ -601,6 +602,7 @@ static int set_ht_link_buffer_count(uint8_t node, uint8_t linkn, uint8_t linkt, 
 
 	return 0;
 }
+
 static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid,  unsigned val)
 {
 	int reset_needed;
@@ -632,7 +634,7 @@ static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, 
 
 	return reset_needed;
 }
-
+#endif
 
 #if RAMINIT_SYSINFO == 1
 static void ht_setup_chains(uint8_t ht_c_num, struct sys_info *sysinfo)

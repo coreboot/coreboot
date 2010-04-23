@@ -104,8 +104,7 @@ void static rs690_config_misc_clk(device_t nb_dev)
 	set_htiu_enable_bits(nb_dev, 0x05, 7 << 8, 7 << 8);
 }
 
-
-u32 get_vid_did(device_t dev)
+static u32 get_vid_did(device_t dev)
 {
 	return pci_read_config32(dev, 0);
 }

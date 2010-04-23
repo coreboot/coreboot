@@ -105,6 +105,7 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 	}
 }
 
+#ifdef UNUSED_CODE
 static void pcie_init(struct device *dev)
 {
 	/* Enable pci error detecting */
@@ -118,6 +119,7 @@ static void pcie_init(struct device *dev)
 	dword |= (1 << 30);	/* Clear possible errors */
 	pci_write_config32(dev, 0x04, dword);
 }
+#endif
 
 /**********************************************************************
 **********************************************************************/
@@ -355,6 +357,7 @@ void config_gpp_core(device_t nb_dev, device_t sb_dev)
 	ValidatePortEn(nb_dev);
 }
 
+#ifdef UNUSED_CODE
 /*****************************************
 * Compliant with CIM_33's PCIEMiscClkProg
 *****************************************/
@@ -395,3 +398,4 @@ void pcie_config_misc_clk(device_t nb_dev)
 	reg &= ~(1 << 0);
 	pci_write_config32(nb_dev, 0x4c, reg);
 }
+#endif

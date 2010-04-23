@@ -996,7 +996,11 @@ struct mem_info { // pernode
 	u8 rsv[1];
 } __attribute__((packed));
 #else
-#include "../amdmct/mct/mct_d.h"
+ #if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+  #include "../amdmct/mct_ddr3/mct_d.h"
+ #else
+  #include "../amdmct/mct/mct_d.h"
+ #endif
 #endif
 
 struct link_pair_t {

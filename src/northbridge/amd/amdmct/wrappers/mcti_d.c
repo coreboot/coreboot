@@ -27,8 +27,10 @@ static u16 mctGet_NVbits(u8 index)
 	case NV_PACK_TYPE:
 #if CONFIG_CPU_SOCKET_TYPE == 0x10	/* Socket F */
 		val = 0;
-#elif CONFIG_CPU_SOCKET_TYPE == 0x11   /* AM2r2 */
+#elif CONFIG_CPU_SOCKET_TYPE == 0x11	/* AM3 */
 		val = 1;
+#elif CONFIG_CPU_SOCKET_TYPE == 0x13	/* ASB2 */
+		val = 4;
 //#elif SYSTEM_TYPE == MOBILE
 //		val = 2;
 #endif
@@ -400,9 +402,21 @@ static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 
 static void mctHookBeforeAnyTraining(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA)
 {
-	if (pDCTstatA->LogicalCPUID & (AMD_RB_C2 | AMD_DA_C2)) {
+#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+	if (pDCTstatA->LogicalCPUID & (AMD_RB_C2 | AMD_DA_C2 | AMD_DA_C3)) {
 		vErrata350(pMCTstat, pDCTstatA);
 	}
+#endif
+}
+
+static u32 mct_AdjustSPDTimings(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstatA, u32 val)
+{
+	if (pDCTstatA->LogicalCPUID & AMD_DR_Bx) {
+		if (pDCTstatA->Status & (1 << SB_Registered)) {
+			val ++;
+		}
+	}
+	return val;
 }
 
 static void mctHookAfterAnyTraining(void)
@@ -418,3 +432,4 @@ static u8 mctSetNodeBoundary_D(void)
 {
 	return 0;
 }
+

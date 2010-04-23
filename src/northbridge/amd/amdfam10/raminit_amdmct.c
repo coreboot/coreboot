@@ -30,6 +30,54 @@ static  void print_t(const char *strval)
 	printk(BIOS_DEBUG, "%s", strval);
 #endif
 }
+
+#if (CONFIG_DIMM_SUPPORT & 0x000F)==0x0005 /* AMD_FAM10_DDR3 */
+#include "amdfam10.h"
+#include "../amdmct/wrappers/mcti.h"
+#include "../amdmct/amddefs.h"
+#include "../amdmct/mct_ddr3/mwlc_d.h"
+#include "../amdmct/mct_ddr3/mct_d.h"
+#include "../amdmct/mct_ddr3/mct_d_gcc.h"
+
+#include "../amdmct/wrappers/mcti_d.c"
+#include "../amdmct/mct_ddr3/mct_d.c"
+
+#include "../amdmct/mct_ddr3/mctmtr_d.c"
+#include "../amdmct/mct_ddr3/mctcsi_d.c"
+#include "../amdmct/mct_ddr3/mctecc_d.c"
+#include "../amdmct/mct_ddr3/mctdqs_d.c"
+#include "../amdmct/mct_ddr3/mctsrc.c"
+#include "../amdmct/mct_ddr3/mctsdi.c"
+#include "../amdmct/mct_ddr3/mctproc.c"
+#include "../amdmct/mct_ddr3/mctprob.c"
+#include "../amdmct/mct_ddr3/mcthwl.c"
+#include "../amdmct/mct_ddr3/mctwl.c"
+#include "../amdmct/mct_ddr3/mport_d.c"
+#include "../amdmct/mct_ddr3/mutilc_d.c"
+#include "../amdmct/mct_ddr3/modtrdim.c"
+#include "../amdmct/mct_ddr3/mhwlc_d.c"
+#include "../amdmct/mct_ddr3/mctrci.c"
+#include "../amdmct/mct_ddr3/mctsrc1p.c"
+#include "../amdmct/mct_ddr3/mcttmrl.c"
+#include "../amdmct/mct_ddr3/mcthdi.c"
+#include "../amdmct/mct_ddr3/mctndi_d.c"
+#include "../amdmct/mct_ddr3/mctchi_d.c"
+
+#if CONFIG_CPU_SOCKET_TYPE == 0x10
+//TODO: S1G1?
+#elif CONFIG_CPU_SOCKET_TYPE == 0x11
+//AM3
+#include "../amdmct/mct_ddr3/mctardk5.c"
+#elif CONFIG_CPU_SOCKET_TYPE == 0x12
+//F (1207), Fr2, G (1207)
+#include "../amdmct/mct_ddr3/mctardk6.c"
+#elif CONFIG_CPU_SOCKET_TYPE == 0x13
+//ASB2
+#include "../amdmct/mct_ddr3/mctardk5.c"
+#endif
+
+#else  /* DDR2 */
+
 #include "amdfam10.h"
 #include "../amdmct/wrappers/mcti.h"
 #include "../amdmct/amddefs.h"
@@ -64,6 +112,8 @@ static  void print_t(const char *strval)
 #endif
 
 #include "../amdmct/mct/mct_fd.c"
+
+#endif	/* DDR2 */
 
 int mctRead_SPD(u32 smaddr, u32 reg)
 {
@@ -141,8 +191,14 @@ u32 mctGetLogicalCPUID(u32 Node)
 	case 0x10042:
 		ret = AMD_RB_C2;
 		break;
+	case 0x10043:
+		ret = AMD_RB_C3;
+		break;
 	case 0x10062:
 		ret = AMD_DA_C2;
+		break;
+	case 0x10063:
+		ret = AMD_DA_C3;
 		break;
 	case 0x10080:
 		ret = AMD_HY_D0;

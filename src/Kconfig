@@ -137,7 +137,7 @@ config USE_PRINTK_IN_CAR
 	default n
 
 config USE_OPTION_TABLE
-	bool
+	bool "Use CMOS for configuration values"
 	default n
 
 config MAX_CPUS

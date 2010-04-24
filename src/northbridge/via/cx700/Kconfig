@@ -5,14 +5,35 @@ config NORTHBRIDGE_VIA_CX700
 	select IOAPIC
 	select SMP
 
-# this is done by the northbridge's vgabios.c already
-config VGA_ROM_RUN
-	bool
-	default n
+# TODO: What should be the per-chipset default value here?
+choice
+	prompt "Onboard graphics"
+	default CX700_VIDEO_MB_32MB
 	depends on NORTHBRIDGE_VIA_CX700
 
-config PCI_ROM_RUN
-	bool
-	default n
+# TODO: Setting the amount of gfx memory is not yet supported in the source code.
+config CX700_VIDEO_MB_OFF
+	bool "Disabled, 0KB"
+config CX700_VIDEO_MB_8MB
+	bool "Enabled, 8MB"
+config CX700_VIDEO_MB_16MB
+	bool "Enabled, 16MB"
+config CX700_VIDEO_MB_32MB
+	bool "Enabled, 32MB"
+config CX700_VIDEO_MB_64MB
+	bool "Enabled, 64MB"
+config CX700_VIDEO_MB_128MB
+	bool "Enabled, 128MB"
+
+endchoice
+
+config VIDEO_MB
+	int
+	default 0   if CX700_VIDEO_MB_OFF
+	default 8   if CX700_VIDEO_MB_8MB
+	default 16  if CX700_VIDEO_MB_16MB
+	default 32  if CX700_VIDEO_MB_32MB
+	default 64  if CX700_VIDEO_MB_64MB
+	default 128 if CX700_VIDEO_MB_128MB
 	depends on NORTHBRIDGE_VIA_CX700
 

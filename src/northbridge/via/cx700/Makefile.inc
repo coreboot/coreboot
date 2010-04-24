@@ -19,7 +19,6 @@
 
 obj-y += cx700_reset.o
 obj-y += northbridge.o
-obj-y += vgabios.o
 
 driver-y += cx700_agp.o
 driver-y += cx700_lpc.o

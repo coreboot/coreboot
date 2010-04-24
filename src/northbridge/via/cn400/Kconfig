@@ -6,17 +6,6 @@ config FALLBACK_SIZE
 	default 0
 	depends on NORTHBRIDGE_VIA_CN400
 
-# this is done by the northbridge's vgabios.c already
-config VGA_ROM_RUN
-	bool
-	default n
-	depends on NORTHBRIDGE_VIA_CN400
-
-config PCI_ROM_RUN
-	bool
-	default n
-	depends on NORTHBRIDGE_VIA_CN400
-
 # TODO: Values are from the CX700 datasheet, not sure if this matches CN400.
 # TODO: What should be the per-chipset default value here?
 choice

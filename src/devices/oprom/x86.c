@@ -134,11 +134,13 @@ static void setup_realmode_idt(void)
 
 	/* Many option ROMs use the hard coded interrupt entry points in the
 	 * system bios. So install them at the known locations. 
-	 * Only need int10 so far.
 	 */
 	
 	/* int42 is the relocated int10 */
-	write_idt_stub((void *)0xff065, 0x42); 
+	write_idt_stub((void *)0xff065, 0x42);
+
+	/* VIA's VBIOS calls f000:f859 instead of int15 */
+	write_idt_stub((void *)0xff859, 0x15); 
 }
 
 void run_bios(struct device *dev, unsigned long addr)

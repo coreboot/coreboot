@@ -29,6 +29,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <arch/interrupt.h>
 #include "chip.h"
 #include "northbridge.h"
 
@@ -41,9 +42,44 @@
 #define CRTC_INDEX	0x3d4
 #define CRTC_DATA	0x3d5
 
-void setup_realmode_idt(void);
-void do_vgabios(void);
-void vga_enable_console(void);
+static int via_cx700_int15_handler(struct eregs *regs)
+{
+	int res=-1;
+	printk(BIOS_DEBUG, "via_cx700_int15_handler\n");
+	switch(regs->eax & 0xffff) {
+	case 0x5f19:
+		break;
+	case 0x5f18:
+		regs->eax=0x5f;
+		regs->ebx=0x545; // MCLK = 133, 32M frame buffer, 256 M main memory
+		regs->ecx=0x060;
+		res=0;
+		break;
+	case 0x5f00:
+		regs->eax = 0x8600;
+		break;
+	case 0x5f01:
+		regs->eax = 0x5f;
+		regs->ecx = (regs->ecx & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
+		res = 0;
+		break;
+	case 0x5f02:
+		regs->eax=0x5f;
+		regs->ebx= (regs->ebx & 0xffff0000) | 2;
+		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only 
+		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
+		res=0;
+		break;
+	case 0x5f0f:
+		regs->eax=0x860f;
+		break;
+        default:
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", 
+				regs->eax & 0xffff);
+		break;
+	}
+	return res;
+}
 
 void write_protect_vgabios(void)
 {
@@ -64,7 +100,7 @@ static void vga_init(device_t dev)
 {
 	u8 reg8;
 
-	printk(BIOS_DEBUG, "Initializing VGA...\n");
+	mainboard_interrupt_handlers(0x15, &via_cx700_int15_handler);
 
 	//*
 	pci_write_config8(dev, 0x04, 0x07);
@@ -75,12 +111,16 @@ static void vga_init(device_t dev)
 	pci_write_config8(dev, 0x3c, 0x0b);
 	//*/
 
-	printk(BIOS_DEBUG, "Executing VGA option rom in real mode\n");
-	setup_realmode_idt();
-	do_vgabios();
-	printk(BIOS_DEBUG, "Enable VGA console\n");
-	vga_enable_console();
+	printk(BIOS_DEBUG, "Initializing VGA...\n");
 
+	pci_dev_init(dev);
+
+	printk(BIOS_DEBUG, "Enable VGA console\n");
+	// this is how it should look:
+	//   call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);
+	// this is how it looks:
+	vga_enable_console();
+	
 	/* It's not clear if these need to be programmed before or after
 	 * the VGA bios runs. Try both, clean up later */
 	/* Set memory rate to 200MHz */

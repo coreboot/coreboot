@@ -137,6 +137,17 @@ struct filetypes_t {
 	{CBFS_COMPONENT_NULL, "null"}
 };
 
+void print_supported_filetypes(void)
+{
+	int i, number = ARRAY_SIZE(filetypes);
+
+	for (i=0; i<number; i++) {
+		printf(" %s%c", filetypes[i].name, (i==(number-1))?'\n':',');
+		if ((i%8) == 7)
+			printf("\n");
+	}
+}
+
 const char *strfiletype(uint32_t number)
 {
 	int i;

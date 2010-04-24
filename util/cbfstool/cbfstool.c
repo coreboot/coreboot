@@ -254,17 +254,20 @@ struct command commands[] = {
 void usage(void)
 {
 	printf
-	    ("cbfstool: Management utility for CBFS formatted ROM images\n"
-	     "USAGE:\n" "cbfstool [-h]\n"
-	     "cbfstool FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
-	     " -h		Display this help message\n\n"
+	    ("cbfstool: Management utility for CBFS formatted ROM images\n\n"
+	     "USAGE:\n" " cbfstool [-h]\n"
+	     " cbfstool FILE COMMAND [PARAMETERS]...\n\n" "OPTIONs:\n"
+	     "  -h		Display this help message\n\n"
 	     "COMMANDs:\n"
-	     "add FILE NAME TYPE [base address]    Add a component\n"
-	     "add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
-	     "add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
-	     "create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
-	     "locate FILE NAME ALIGN               Find a place for a file of that size\n"
-	     "print                                Show the contents of the ROM\n");
+	     " add FILE NAME TYPE [base address]    Add a component\n"
+	     " add-payload FILE NAME [COMP] [base]  Add a payload to the ROM\n"
+	     " add-stage FILE NAME [COMP] [base]    Add a stage to the ROM\n"
+	     " create SIZE BOOTBLOCK [ALIGN]        Create a ROM file\n"
+	     " locate FILE NAME ALIGN               Find a place for a file of that size\n"
+	     " print                                Show the contents of the ROM\n\n"
+	     "TYPEs:\n"
+	     );
+	print_supported_filetypes();
 }
 
 int main(int argc, char **argv)

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  * 
- * Copyright (C) 2002 Eric Biederman
+ * Copyright (C) 2010 coresystems GmbH
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cpu/x86/post_code.h>
-#include <cpu/x86/stack.h>
+#ifndef __CPU_X86_STACK_H
+#define __CPU_X86_STACK_H
 
-.section ".rom.data", "a", @progbits
-.section ".rom.text", "ax", @progbits
+/* For now: use CONFIG_RAMBASE + 1MB - 64K (counting downwards) as stack. This
+ * makes sure that we stay completely within the 1M-64K of memory that we
+ * preserve for suspend/resume. This is basically HIGH_MEMORY_SAFE (see
+ * cbmem.h)
+ */
 
-/* This is the entry code. The code in the .reset section jumps here. */
+#define ROMSTAGE_STACK_OFFSET ( (1024 - 64) * 1024 )
+#define ROMSTAGE_STACK	(CONFIG_RAMBASE + ROMSTAGE_STACK_OFFSET)
 
-	post_code(0x01)
-
+#endif

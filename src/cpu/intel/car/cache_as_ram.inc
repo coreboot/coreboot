@@ -30,6 +30,7 @@
 #define CacheSize CONFIG_DCACHE_RAM_SIZE
 #define CacheBase (0xd0000 - CacheSize)
 
+#include <cpu/x86/stack.h>
 #include <cpu/x86/mtrr.h>
 
 	/* Save the BIST result */
@@ -398,16 +399,7 @@ __main:
 	
 	movl	%ebp, %esi
 
-	/* For now: use CONFIG_RAMBASE + 1MB - 64K (counting downwards) as stack. This
-	 * makes sure that we stay completely within the 1M-64K of memory that we
-	 * preserve for suspend/resume.
-	 */
-
-#ifndef HIGH_MEMORY_SAVE
-#warning Need a central place for HIGH_MEMORY_SAVE
-#define HIGH_MEMORY_SAVE ( (1024 - 64) * 1024 )
-#endif
-	movl $(CONFIG_RAMBASE + HIGH_MEMORY_SAVE), %esp
+	movl $ROMSTAGE_STACK, %esp
 	movl	%esp, %ebp
 	pushl %esi
 	call copy_and_run

@@ -1429,10 +1429,10 @@ static int atyfb_setcolreg(u_int regno, u_int red, u_int green, u_int blue,
 #else
     scale = (M64_HAS(INTEGRATED) && info->default_par.crtc.bpp == 16) ? 3 : 0;
 #endif
-    writeb(regno << scale, &info->aty_cmap_regs->windex);
-    writeb(red, &info->aty_cmap_regs->lut);
-    writeb(green, &info->aty_cmap_regs->lut);
-    writeb(blue, &info->aty_cmap_regs->lut);
+    write8(&info->aty_cmap_regs->windex, regno << scale)
+    write8(&info->aty_cmap_regs->lut, red);
+    write8(&info->aty_cmap_regs->lut, green);
+    write8(&info->aty_cmap_regs->lut, blue);
     return 0;
 }
 

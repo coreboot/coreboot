@@ -4,7 +4,7 @@ static void mch_reset(void)
 {
         device_t dev;
         unsigned long value, base;
-        dev = pci_locate_device(PCI_ID(0x8086, 0x24d0), 0);
+        dev = pci_locate_device_on_bus(PCI_ID(0x8086, 0x24d0), 0);
         if (dev != PCI_DEV_INVALID) {
                 /* I/O space is always enables */
 
@@ -29,8 +29,6 @@ static void mch_reset(void)
         }
         return;
 }
-
-
 
 static void mainboard_set_e7520_pll(unsigned bits)
 {
@@ -64,13 +62,12 @@ static void mainboard_set_e7520_pll(unsigned bits)
 		outb((data & 0xeb) | ((bits&2)?0:1)<<4 | ((bits&1)?0:1)<<2, gpio_index + PC87427_GPDO_4);
 		/* reset */
 		print_debug("set_pllsel: settings adjusted, now resetting...\n");
-	//	hard_reset(); /* should activate a PCI_RST, which should reset MCH, but it doesn't seem to work ???? */
-//		mch_reset();
+		// hard_reset(); /* should activate a PCI_RST, which should reset MCH, but it doesn't seem to work ???? */
+		// mch_reset();
 		full_reset();
 	}
 	return; 
 }
-
 
 static void mainboard_set_e7520_leds(void)
 {
@@ -117,7 +114,4 @@ static void mainboard_set_e7520_leds(void)
 	
 	return; 
 }
-
-
-
 

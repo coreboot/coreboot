@@ -11,11 +11,8 @@
 #ifndef _VIDEO_FBCON_H
 #define _VIDEO_FBCON_H
 
-
-
 struct display {
     /* Filled in by the frame buffer device */
-
     struct fb_var_screeninfo var;   /* variable infos. yoffset and vmode */
                                     /* are updated by fbcon.c */
     struct fb_cmap cmap;            /* colormap */
@@ -29,19 +26,10 @@ struct display {
     u32 line_length;             /* length of a line in bytes */
     u16 can_soft_blank;         /* zero if no hardware blanking */
     u16 inverse;                /* != 0 text black on white as default */
-//    struct display_switch *dispsw;  /* low level operations */
-//    void *dispsw_data;              /* optional dispsw helper data */
-
-#if 0
-    struct fb_fix_cursorinfo fcrsr;
-    struct fb_var_cursorinfo *vcrsr;
-    struct fb_cursorstate crsrstate;
-#endif
 
     /* Filled in by the low-level console driver */
 
     struct vc_data *conp;           /* pointer to console data */
-//    struct fb_info *fb_info;        /* frame buffer for this console */
     int vrows;                      /* number of virtual rows */
     unsigned short cursor_x;        /* current cursor position */
     unsigned short cursor_y;
@@ -147,30 +135,5 @@ struct display {
  */
 /* Namespace consistency */
 #define SCROLL_YNOPARTIAL	__SCROLL_YNOPARTIAL
-
-
-#if defined(__i386__) || defined(__alpha__) || \
-      defined(__x86_64__) || defined(__hppa__) || \
-      defined(__powerpc64__)
-
-#define fb_readb __raw_readb
-#define fb_readw __raw_readw
-#define fb_readl __raw_readl
-#define fb_writeb __raw_writeb
-#define fb_writew __raw_writew
-#define fb_writel __raw_writel
-#define fb_memset memset_io
-
-#else
-
-#define fb_readb(addr) (*(volatile u8 *) (addr))
-#define fb_readw(addr) (*(volatile u16 *) (addr))
-#define fb_readl(addr) (*(volatile u32 *) (addr))
-#define fb_writeb(b,addr) (*(volatile u8 *) (addr) = (b))
-#define fb_writew(b,addr) (*(volatile u16 *) (addr) = (b))
-#define fb_writel(b,addr) (*(volatile u32 *) (addr) = (b))
-#define fb_memset memset
-
-#endif
 
 #endif /* _VIDEO_FBCON_H */

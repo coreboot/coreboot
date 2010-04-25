@@ -1,4 +1,5 @@
 #include <arch/io.h>
+#include "i82801cx.h"
 
 void i82801cx_hard_reset(void)
 {

@@ -1,23 +1,10 @@
-
 /*
  *  ATI Frame Buffer Device Driver Core Definitions
  */
-#define u32 uint32_t
-#define u16 uint16_t
-#define u8 uint8_t
-
-#define u_int uint32_t
+	
+#define PLL_CRTC_DECODE 0
 
 #define EINVAL -1
-
-#define readb(addr) (*(volatile unsigned char *) (addr))
-#define readw(addr) (*(volatile unsigned short *) (addr))
-#define readl(addr) (*(volatile unsigned int *) (addr))
-
-#define writeb(b,addr) (*(volatile unsigned char *) (addr) = (b))
-#define writew(b,addr) (*(volatile unsigned short *) (addr) = (b))
-#define writel(b,addr) (*(volatile unsigned int *) (addr) = (b))
-
 
 #define max(x,y) (x>=y)?x:y
 
@@ -226,7 +213,7 @@ static inline u32 aty_ld_le32(int regindex,
 #ifdef ATARI
     return in_le32((volatile u32 *)(info->ati_regbase+regindex));
 #else
-    return readl (info->ati_regbase + regindex);
+    return read32 (info->ati_regbase + regindex);
 #endif
 }
 
@@ -240,7 +227,7 @@ static inline void aty_st_le32(int regindex, u32 val,
 #ifdef ATARI
     out_le32 (info->ati_regbase+regindex, val);
 #else
-    writel (val, info->ati_regbase + regindex);
+    write32 (info->ati_regbase + regindex, val);
 #endif
 }
 
@@ -254,7 +241,7 @@ static inline u16 aty_ld_le16(int regindex,
 #if defined(__mc68000__)
     return le16_to_cpu(*((volatile u16 *)(info->ati_regbase+regindex)));
 #else
-    return readw (info->ati_regbase + regindex);
+    return read16 (info->ati_regbase + regindex);
 #endif
 }
 
@@ -268,7 +255,7 @@ static inline void aty_st_le16(int regindex, u16 val,
 #if defined(__mc68000__)
     *((volatile u16 *)(info->ati_regbase+regindex)) = cpu_to_le16(val);
 #else
-    writew (val, info->ati_regbase + regindex);
+    write16 (info->ati_regbase + regindex, val);
 #endif
 }
 
@@ -282,7 +269,7 @@ static inline u8 aty_ld_8(int regindex,
 #ifdef ATARI
     return in_8 (info->ati_regbase + regindex);
 #else
-    return readb (info->ati_regbase + regindex);
+    return read8 (info->ati_regbase + regindex);
 #endif
 }
 
@@ -296,7 +283,7 @@ static inline void aty_st_8(int regindex, u8 val,
 #ifdef ATARI
     out_8 (info->ati_regbase + regindex, val);
 #else
-    writeb (val, info->ati_regbase + regindex);
+    write8 (info->ati_regbase + regindex, val);
 #endif
 }
 
@@ -407,8 +394,8 @@ static inline void wait_for_idle(struct fb_info_aty *info)
 extern void aty_reset_engine(const struct fb_info_aty *info);
 extern void aty_init_engine(const struct atyfb_par *par,
 			    struct fb_info_aty *info);
-extern void aty_rectfill(int dstx, int dsty, u_int width, u_int height,
-			 u_int color, struct fb_info_aty *info);
+extern void aty_rectfill(int dstx, int dsty, u32 width, u32 height,
+			 u32 color, struct fb_info_aty *info);
 
 
     /*

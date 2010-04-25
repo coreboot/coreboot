@@ -8,13 +8,10 @@
 #include "esb6300.h"
 #include "esb6300_smbus.h"
 
-static int lsmbus_read_byte(struct bus *bus, device_t dev, uint8_t address)
+static int lsmbus_read_byte(device_t dev, uint8_t address)
 {
-	unsigned device;
 	struct resource *res;
-
-	device = dev->path.i2c.device;
-	res = find_resource(bus->dev, 0x20);
+	res = find_resource(dev, 0x20);
 	
 	return do_smbus_read_byte(res->base, device, address);
 }
@@ -22,10 +19,12 @@ static int lsmbus_read_byte(struct bus *bus, device_t dev, uint8_t address)
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte  = lsmbus_read_byte,
 };
+
 static struct pci_operations lops_pci = {
 	/* The subsystem id follows the ide controller */
 	.set_subsystem = 0,
 };
+
 static struct device_operations smbus_ops = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,

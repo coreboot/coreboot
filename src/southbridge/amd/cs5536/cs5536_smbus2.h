@@ -253,18 +253,16 @@ static void _doread(unsigned smbus_io_base, unsigned char device,
 	printk(BIOS_DEBUG, "SMBUS READ ERROR (%d): %d\n", index, ret);
 }
 
-static unsigned char do_smbus_read_byte(unsigned smbus_io_base,
-					unsigned char device,
-					unsigned char address)
+static inline unsigned char do_smbus_read_byte(unsigned smbus_io_base,
+		unsigned char device, unsigned char address)
 {
 	unsigned char val = 0;
 	_doread(smbus_io_base, device, address, &val, sizeof(val));
 	return val;
 }
 
-static unsigned short do_smbus_read_word(unsigned smbus_io_base,
-					 unsigned char device,
-					 unsigned char address)
+static inline unsigned short do_smbus_read_word(unsigned smbus_io_base,
+		 unsigned char device, unsigned char address)
 {
 	unsigned short val = 0;
 	_doread(smbus_io_base, device, address, (unsigned char *)&val,
@@ -304,15 +302,15 @@ static int _dowrite(unsigned smbus_io_base, unsigned char device,
 	return -1;
 }
 
-static int do_smbus_write_byte(unsigned smbus_io_base, unsigned char device,
-			       unsigned char address, unsigned char data)
+static inline int do_smbus_write_byte(unsigned smbus_io_base,
+		unsigned char device, unsigned char address, unsigned char data)
 {
 	return _dowrite(smbus_io_base, device, address,
 			(unsigned char *)&data, 1);
 }
 
-static int do_smbus_write_word(unsigned smbus_io_base, unsigned char device,
-			       unsigned char address, unsigned short data)
+static inline int do_smbus_write_word(unsigned smbus_io_base, 
+		unsigned char device, unsigned char address, unsigned short data)
 {
 	return _dowrite(smbus_io_base, device, address, (unsigned char *)&data,
 			2);

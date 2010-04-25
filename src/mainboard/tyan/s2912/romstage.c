@@ -245,6 +245,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 #endif
 
+	init_timer(); // Need to use TMICT to synconize FID/VID
+
 	needs_reset |= optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 	needs_reset |= mcp55_early_setup_x();
@@ -262,9 +264,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();
 
-	//do we need apci timer, tsc...., only debug need it for better output
 	/* all ap stopped? */
-//	init_timer(); // Need to use TMICT to synconize FID/VID
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 

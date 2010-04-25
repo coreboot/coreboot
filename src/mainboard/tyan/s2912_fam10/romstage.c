@@ -59,6 +59,8 @@
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 
+#include "cpu/amd/model_10xxx/apic_timer.c"
+#include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
@@ -253,6 +255,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	msr=rdmsr(0xc0010071);
 	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 #endif
+
+	init_timer(); // Need to use TMICT to synconize FID/VID
 
 	wants_reset = mcp55_early_setup_x();
 

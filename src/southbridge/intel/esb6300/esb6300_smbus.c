@@ -8,11 +8,16 @@
 #include "esb6300.h"
 #include "esb6300_smbus.h"
 
-static int lsmbus_read_byte(device_t dev, uint8_t address)
+static int lsmbus_read_byte(device_t dev, u8 address)
 {
+	u16 device;
 	struct resource *res;
-	res = find_resource(dev, 0x20);
-	
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
+
 	return do_smbus_read_byte(res->base, device, address);
 }
 

@@ -134,9 +134,6 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned 
 
 }
 
-#include "src/pc80/udelay_io.c"
-#include "src/lib/delay.c"
-
 static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io_base, unsigned pci_e_x)
 {
 	uint32_t tgio_ctrl;

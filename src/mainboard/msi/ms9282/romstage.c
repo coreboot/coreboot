@@ -199,16 +199,16 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
         ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
-       needs_reset = optimize_link_coherent_ht();
+	init_timer(); /* Need to use TMICT to synconize FID/VID. */
 
-       needs_reset |= optimize_link_incoherent_ht(sysinfo);
+	needs_reset = optimize_link_coherent_ht();
+	needs_reset |= optimize_link_incoherent_ht(sysinfo);
+	needs_reset |= mcp55_early_setup_x();
 
-        needs_reset |= mcp55_early_setup_x();
-
-               if (needs_reset) {
-                       print_info("ht reset -\n");
-                       soft_reset();
-               }
+        if (needs_reset) {
+        	print_info("ht reset -\n");
+                soft_reset();
+        }
 
         //It's the time to set ctrl now;
         fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
@@ -226,6 +226,5 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
        sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
        post_cache_as_ram();
-
 }
 

@@ -10,6 +10,8 @@
 #include "pc80/serial.c"
 #include "console/console.c"
 #include "lib/ramtest.c"
+#include "pc80/udelay_io.c"
+#include "lib/delay.c"
 #include "southbridge/intel/esb6300/esb6300_early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
 #include "superio/winbond/w83627hf/w83627hf.h"

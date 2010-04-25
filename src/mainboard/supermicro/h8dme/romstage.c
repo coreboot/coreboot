@@ -46,16 +46,14 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-// for enable the FAN
-#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
-
 #include "pc80/serial.c"
 #include "console/console.c"
 #include "lib/ramtest.c"
 
 #include <cpu/amd/model_fxx_rev.h>
 
-// #include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
+// for enable the FAN
+#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "cpu/amd/model_fxx/apic_timer.c"
 #include "lib/delay.c"
@@ -313,7 +311,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 #endif
 
-#if 1
+	init_timer(); /* Need to use TMICT to synconize FID/VID. */
+
 	needs_reset |= optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 	needs_reset |= mcp55_early_setup_x();
@@ -323,7 +322,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		print_info("ht reset -\n");
 		soft_reset();
 	}
-#endif
+
 	allow_all_aps_stop(bsp_apicid);
 
 	//It's the time to set ctrl in sysinfo now;
@@ -331,9 +330,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	enable_smbus();		/* enable in sio_setup */
 
-	//do we need apci timer, tsc...., only debug need it for better output
 	/* all ap stopped? */
-//        init_timer(); // Need to use TMICT to synconize FID/VID
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 

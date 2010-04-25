@@ -44,18 +44,18 @@
 #include "option_table.h"
 #include "pc80/mc146818rtc_early.c"
 
-// for enable the FAN
-#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "pc80/serial.c"
 #include "console/console.c"
 #include "lib/ramtest.c"
 
 #include <cpu/amd/model_10xxx_rev.h>
 
-//#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
+// for enable the FAN
+#include "southbridge/nvidia/mcp55/mcp55_early_smbus.c"
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
-
+#include "cpu/amd/model_10xxx/apic_timer.c"
+#include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include "superio/winbond/w83627hf/w83627hf_early_serial.c"
@@ -90,7 +90,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdfam10/raminit_amdmct.c"
 #include "northbridge/amd/amdfam10/amdfam10_pci.c"
 
-#include "resourcemap.c" 
+#include "resourcemap.c"
 
 #include "cpu/amd/quadcore/quadcore.c"
 
@@ -102,8 +102,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
-
-
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 
@@ -118,23 +116,25 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-        uint32_t dword;
-        uint8_t byte;
-        enable_smbus();
-//	smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
-	smbusx_write_byte(1, (0x58>>1), 0xb1, 0xff); /* set FAN ctrl to DC mode */
+	uint32_t dword;
+	uint8_t byte;
 
-        byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20; 
-        pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
-        
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1<<0);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
-        
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
-        dword |= (1<<16);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
+	enable_smbus();
+	// smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
+	/* set FAN ctrl to DC mode */
+	smbusx_write_byte(1, (0x58 >> 1), 0xb1, 0xff);
+
+	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0x7b, byte);
+
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0xa0);
+	dword |= (1 << 0);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0xa0, dword);
+
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0xa4);
+	dword |= (1 << 16);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0xa4, dword);
 
 }
 
@@ -142,14 +142,15 @@ static void sio_setup(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-  struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
+	struct sys_info *sysinfo = (struct sys_info *)(CONFIG_DCACHE_RAM_BASE +
+		CONFIG_DCACHE_RAM_SIZE - CONFIG_DCACHE_RAM_GLOBAL_VAR_SIZE);
 
 	u32 bsp_apicid = 0;
 	u32 val;
 	u32 wants_reset;
 	msr_t msr;
 
-        if (!cpu_init_detectedx && boot_cpu()) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 
@@ -160,126 +161,129 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		/* Setup the mcp55 */
 		mcp55_enable_rom();
-        }
+	}
 
-  post_code(0x30);
- 
-        if (bist == 0) {
+	post_code(0x30);
+
+	if (bist == 0) {
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-        }
+	}
 
-  post_code(0x32);
+	post_code(0x32);
 
 	pnp_enter_ext_func_mode(SERIAL_DEV);
 	pnp_write_config(SERIAL_DEV, 0x24, 0x84 | (1 << 6));
- 	w83627hf_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	w83627hf_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 
-        uart_init();
-        console_init();
-  printk(BIOS_DEBUG, "\n");
+	uart_init();
+	console_init();
+	printk(BIOS_DEBUG, "\n");
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
- val = cpuid_eax(1);
- printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
- printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
- printk(BIOS_DEBUG, "bsp_apicid = %02x \n", bsp_apicid);
- printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
+	val = cpuid_eax(1);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
+	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n", sysinfo, sysinfo + 1);
+	printk(BIOS_DEBUG, "bsp_apicid = %02x \n", bsp_apicid);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
- /* Setup sysinfo defaults */
- set_sysinfo_in_ram(0);
+	/* Setup sysinfo defaults */
+	set_sysinfo_in_ram(0);
 
- update_microcode(val);
- post_code(0x33);
+	update_microcode(val);
+	post_code(0x33);
 
- cpuSetAMDMSR();
- post_code(0x34);
+	cpuSetAMDMSR();
+	post_code(0x34);
 
- amd_ht_init(sysinfo);
- post_code(0x35);
+	amd_ht_init(sysinfo);
+	post_code(0x35);
 
- /* Setup nodes PCI space and start core 0 AP init. */
- finalize_node_setup(sysinfo);
+	/* Setup nodes PCI space and start core 0 AP init. */
+	finalize_node_setup(sysinfo);
 
- /* Setup any mainboard PCI settings etc. */
- setup_mb_resource_map();
- post_code(0x36);
+	/* Setup any mainboard PCI settings etc. */
+	setup_mb_resource_map();
+	post_code(0x36);
 
- /* wait for all the APs core0 started by finalize_node_setup. */
- /* FIXME: A bunch of cores are going to start output to serial at once.
-  * It would be nice to fixup prink spinlocks for ROM XIP mode.
-  * I think it could be done by putting the spinlock flag in the cache
-  * of the BSP located right after sysinfo.
-  */
+	/* wait for all the APs core0 started by finalize_node_setup. */
 
-        wait_all_core0_started();
+	/* FIXME: A bunch of cores are going to start output to serial at once.
+	 * It would be nice to fixup prink spinlocks for ROM XIP mode.
+	 * I think it could be done by putting the spinlock flag in the cache
+	 * of the BSP located right after sysinfo.
+	 */
+
+	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS==1
- /* Core0 on each node is configured. Now setup any additional cores. */
- printk(BIOS_DEBUG, "start_other_cores()\n");
-        start_other_cores();
- post_code(0x37);
-        wait_all_other_cores_started(bsp_apicid);
+	/* Core0 on each node is configured. Now setup any additional cores. */
+	printk(BIOS_DEBUG, "start_other_cores()\n");
+	start_other_cores();
+	post_code(0x37);
+	wait_all_other_cores_started(bsp_apicid);
 #endif
 
- post_code(0x38);
+	post_code(0x38);
 
 #if SET_FIDVID == 1
- msr = rdmsr(0xc0010071);
- printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	msr = rdmsr(0xc0010071);
+	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n",
+		msr.hi, msr.lo);
 
- /* FIXME: The sb fid change may survive the warm reset and only
-  * need to be done once.*/
+	/* FIXME: The sb fid change may survive the warm reset and only
+	 * need to be done once.*/
 
-        enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
- post_code(0x39);
+	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
+	post_code(0x39);
 
- if (!warm_reset_detect(0)) {      // BSP is node 0
-   init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
- } else {
-   init_fidvid_stage2(bsp_apicid, 0);  // BSP is node 0
-        }
+	if (!warm_reset_detect(0)) {	// BSP is node 0
+		init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
+	} else {
+		init_fidvid_stage2(bsp_apicid, 0);	// BSP is node 0
+	}
 
- post_code(0x3A);
+	post_code(0x3A);
 
- /* show final fid and vid */
- msr=rdmsr(0xc0010071);
- printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	/* show final fid and vid */
+	msr = rdmsr(0xc0010071);
+	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n",
+	       msr.hi, msr.lo);
 #endif
 
- wants_reset = mcp55_early_setup_x();
+	init_timer(); // Need to use TMICT to synconize FID/VID
 
- /* Reset for HT, FIDVID, PLL and errata changes to take affect. */
- if (!warm_reset_detect(0)) {
-   print_info("...WARM RESET...\n\n\n");
-              	soft_reset();
-   die("After soft_reset_x - shouldn't see this message!!!\n");
-        }
+	wants_reset = mcp55_early_setup_x();
 
- if (wants_reset)
-   printk(BIOS_DEBUG, "mcp55_early_setup_x wanted additional reset!\n");
+	/* Reset for HT, FIDVID, PLL and errata changes to take affect. */
+	if (!warm_reset_detect(0)) {
+		print_info("...WARM RESET...\n\n\n");
+		soft_reset();
+		die("After soft_reset_x - shouldn't see this message!!!\n");
+	}
 
- post_code(0x3B);
+	if (wants_reset)
+		printk(BIOS_DEBUG, "mcp55_early_setup_x wants additional reset!\n");
 
-/* It's the time to set ctrl in sysinfo now; */
-printk(BIOS_DEBUG, "fill_mem_ctrl()\n");
-fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
+	post_code(0x3B);
 
-post_code(0x3D);
+	/* It's the time to set ctrl in sysinfo now; */
+	printk(BIOS_DEBUG, "fill_mem_ctrl()\n");
+	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
-//printk(BIOS_DEBUG, "enable_smbus()\n");
-//        enable_smbus(); /* enable in sio_setup */
+	post_code(0x3D);
 
-post_code(0x40);
+	// printk(BIOS_DEBUG, "enable_smbus()\n");
+	// enable_smbus(); /* enable in sio_setup */
 
- printk(BIOS_DEBUG, "raminit_amdmct()\n");
- raminit_amdmct(sysinfo);
- post_code(0x41);
+	post_code(0x40);
 
-// printk(BIOS_DEBUG, "\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
- post_cache_as_ram();  // BSP switch stack to ram, copy then execute LB.
- post_code(0x42);  // Should never see this post code.
+	printk(BIOS_DEBUG, "raminit_amdmct()\n");
+	raminit_amdmct(sysinfo);
+	post_code(0x41);
 
+	// printk(BIOS_DEBUG, "\n*** Yes, the copy/decompress is taking a while, FIXME!\n");
+	post_cache_as_ram(); // BSP switch stack to ram, copy + execute stage 2
+	post_code(0x42);     // Should never see this post code.
 }
-

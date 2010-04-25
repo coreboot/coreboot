@@ -40,8 +40,7 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	return loops?0:-1;
 }
 
-#ifdef UNUSED_CODE
-static int smbus_wait_until_blk_done(unsigned smbus_io_base)
+static inline int smbus_wait_until_blk_done(unsigned smbus_io_base)
 {
 	unsigned loops = SMBUS_TIMEOUT;
 	unsigned char byte;
@@ -53,7 +52,6 @@ static int smbus_wait_until_blk_done(unsigned smbus_io_base)
 	} while((byte&(1<<7)) == 0);
 	return loops?0:-1;
 }
-#endif
 
 static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned address)
 {

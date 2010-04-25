@@ -23,7 +23,7 @@
 Scope (_SB) {
 	Device(PCI0) {
 		Device(SATA) {
-			Name(_ADR, 0x00120000)
+			Name(_ADR, 0x00110000)
 			#include "sata.asl"
 		}
 	}

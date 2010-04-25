@@ -271,7 +271,7 @@ DefinitionBlock (
 			 * ((bus number + 1) * ((device number * 8) * 4096)) + register offset
 			 * The 8 comes from 8 functions per device, and 4096 bytes per function config space
 			*/
-			Offset(0x00090024),	/* Byte offset to SATA register 24h - Bus 0, Device 18, Function 0 */
+			Offset(0x00088024),	/* Byte offset to SATA register 24h - Bus 0, Device 18, Function 0 */
 			STB5, 32,
 			Offset(0x00098042),	/* Byte offset to OHCI0 register 42h - Bus 0, Device 19, Function 0 */
 			PT0D, 1,
@@ -1447,7 +1447,7 @@ DefinitionBlock (
 				Store (0x02, SIOD)
 			}
 			/*
-			 * Keyboard PME is routed to SB600 Gevent3. We can wake
+			 * Keyboard PME is routed to SB700 Gevent3. We can wake
 			 * up the system by pressing the key.
 			 */
 			Method (SIOS, 1)

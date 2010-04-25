@@ -1,3 +1,36 @@
 config SOUTHBRIDGE_VIA_K8T890
 	bool
 
+config SOUTHBRIDGE_VIA_K8T890_VGA_EN
+	bool "Enable onboard K8M890 graphics"
+	default y
+	depends on SOUTHBRIDGE_VIA_K8T890
+	select VGA
+	select GFXUMA
+
+choice
+	prompt "Framebuffer size"
+	default K8M890_VIDEO_MB_32MB
+	depends on SOUTHBRIDGE_VIA_K8T890_VGA_EN
+
+config K8M890_VIDEO_MB_32MB
+	bool "32MB"
+config K8M890_VIDEO_MB_64MB
+	bool "64MB"
+config K8M890_VIDEO_MB_128MB
+	bool "128MB"
+config K8M890_VIDEO_MB_256MB
+	bool "256MB"
+config K8M890_VIDEO_MB_CMOS
+	bool "Use CMOS option"
+
+endchoice
+
+config VIDEO_MB
+	int
+	default 32  if K8M890_VIDEO_MB_32MB
+	default 64  if K8M890_VIDEO_MB_64MB
+	default 128  if K8M890_VIDEO_MB_128MB
+	default 256 if K8M890_VIDEO_MB_256MB
+	default -1  if K8M890_VIDEO_MB_CMOS
+	depends on SOUTHBRIDGE_VIA_K8T890_VGA_EN

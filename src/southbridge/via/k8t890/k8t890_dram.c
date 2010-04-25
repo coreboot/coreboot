@@ -67,47 +67,44 @@ static void dram_enable(struct device *dev)
 
 }
 
+#if CONFIG_GFXUMA
+extern uint64_t uma_memory_base, uma_memory_size;
+#endif
+
 static void dram_enable_k8m890(struct device *dev)
 {
-	dram_enable(dev);
+#if CONFIG_GFXUMA
+	msr_t msr;
+	int ret;
+	unsigned int fbbits;
 
+	/* use CMOS */
+	if (CONFIG_VIDEO_MB == -1) {
+		ret = get_option(&fbbits, "videoram_size");
+		if (ret) {
+			printk(BIOS_WARNING, "Failed to get videoram size (error %d), using default.\n", ret);
+			fbbits = 5;
+	 	}
+
+		if ((fbbits < 1) || (fbbits > 7)) {
+			printk(BIOS_WARNING, "Invalid videoram size (%d), using default.\n",
+				       4 << fbbits);
+			fbbits = 5;
+	}
+		uma_memory_size = 4 << (fbbits + 20);
+	} else {
+		uma_memory_size = (CONFIG_VIDEO_MB << 20);
+	}
+
+	msr = rdmsr(TOP_MEM);
+	uma_memory_base = msr.lo - uma_memory_size;
+	printk(BIOS_INFO, "K8M890: UMA base is %llx size is %d (MB)\n", uma_memory_base, uma_memory_size / 1024 / 1024);
 	/* enable VGA, so the bridges gets VGA_EN and resources are set */
 	pci_write_config8(dev, 0xa1, 0x80);
-}
-
-static struct resource *resmax;
-
-static void get_memres(void *gp, struct device *dev, struct resource *res)
-{
-	unsigned int *fbsize = (unsigned int *) gp;
-	uint64_t proposed_base = res->base + res->size - *fbsize;
-
-	printk(BIOS_DEBUG, "get_memres: res->base=%llx res->size=%llx %d %d %d\n",
-			res->base, res->size, (res->size > *fbsize), 
-			(!(proposed_base & (*fbsize - 1))),
-			(proposed_base < ((uint64_t) 0xffffffff)));
-
-	/* if we fit and also align OK, and must be below 4GB */
-	if ((res->size > *fbsize) && (!(proposed_base & (*fbsize - 1))) && 
-		(proposed_base < ((uint64_t) 0xffffffff) )) {
-		resmax = res;
-	}
-#if CONFIG_WRITE_HIGH_TABLES==1
-/* in arch/i386/boot/tables.c */
-extern uint64_t high_tables_base, high_tables_size;
-
-	if ((high_tables_base) && ((high_tables_base > proposed_base) &&
-			(high_tables_base < (res->base + res->size)))) {
-		high_tables_base = proposed_base - high_tables_size;
-		printk(BIOS_DEBUG, "Moving the high_tables_base pointer to "
-				"new base %llx\n", high_tables_base);
-	}
 #endif
+	dram_enable(dev);
 }
 
-/*
- *
- */
 int
 k8m890_host_fb_size_get(void)
 {
@@ -125,57 +122,29 @@ k8m890_host_fb_size_get(void)
 
 static void dram_init_fb(struct device *dev)
 {
+#if CONFIG_GFXUMA
 	/* Important bits:
 	 * Enable the internal GFX bit 7 of reg 0xa1 plus in same reg:
 	 * bits 6:4 X fbuffer size will be  2^(X+2) or 100 = 64MB, 101 = 128MB
 	 * bits 3:0 BASE [31:28]
 	 * reg 0xa0 bits 7:1 BASE [27:21] bit0 enable CPU access
 	 */
-	u8 tmp;
-	uint64_t proposed_base;
 	unsigned int fbbits = 0;
-	unsigned int fbsize;
+	u8 tmp;
 	int ret;
 
-
-	ret = get_option(&fbbits, "videoram_size");
-	if (ret) {
-		printk(BIOS_WARNING, "Failed to get videoram size (error %d), using default.\n", ret);
-		fbbits = 5;
- 	}
-
-	if ((fbbits < 1) || (fbbits > 7)) {
-		printk(BIOS_WARNING, "Invalid videoram size (%d), using default.\n",
-			       4 << fbbits);
-		fbbits = 5;
-	}
-
-	fbsize = 4 << (fbbits + 20);
-
-	resmax = NULL;
-	search_global_resources(
-                IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
-                get_memres, (void *) &fbsize);
-
-	/* no space for FB */
-	if (!resmax) {
-		printk(BIOS_ERR, "VIA FB: no space for framebuffer in RAM\n");
-		return;
-	}
-
-	proposed_base = resmax->base + resmax->size - fbsize;
-	resmax->size -= fbsize;
-
-	printk(BIOS_INFO, "K8M890: Using a %dMB framebuffer.\n", 4 << fbbits);
+	fbbits = ((log2(uma_memory_size >> 20) - 2) << 4);
+	printk(BIOS_INFO, "K8M890: Using a %dMB framebuffer.\n", (unsigned int) (uma_memory_size >> 20));
 
 	/* Step 1: enable UMA but no FB */
 	pci_write_config8(dev, 0xa1, 0x80);
 
 	/* Step 2: enough is just the FB size, the CPU accessible address is not needed */
-	tmp = (fbbits << 4) | 0x80;
+	tmp = fbbits | 0x80;
 	pci_write_config8(dev, 0xa1, tmp);
 
 	/* TODO K8 needs some UMA fine tuning too maybe call some generic routine here? */
+#endif
 }
 
 static const struct device_operations dram_ops_t = {

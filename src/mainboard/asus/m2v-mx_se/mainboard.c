@@ -24,6 +24,10 @@
 #include <southbridge/via/k8t890/k8t890.h>
 #include "chip.h"
 
+#if CONFIG_GFXUMA
+uint64_t uma_memory_base, uma_memory_size;
+#endif
+
 int add_mainboard_resources(struct lb_memory *mem)
 {
 	device_t dev;
@@ -37,6 +41,11 @@ int add_mainboard_resources(struct lb_memory *mem)
 			lb_add_memory_range(mem, LB_MEM_RESERVED, res->base,
 					    res->size);
 	}
+
+#if (CONFIG_GFXUMA == 1)
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		uma_memory_base, uma_memory_size);
+#endif
 
 #if CONFIG_HAVE_ACPI_RESUME == 1
 	lb_add_memory_range(mem, LB_MEM_RESERVED,

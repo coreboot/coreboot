@@ -98,7 +98,8 @@ static void dram_enable_k8m890(struct device *dev)
 
 	msr = rdmsr(TOP_MEM);
 	uma_memory_base = msr.lo - uma_memory_size;
-	printk(BIOS_INFO, "K8M890: UMA base is %llx size is %d (MB)\n", uma_memory_base, uma_memory_size / 1024 / 1024);
+	printk(BIOS_INFO, "K8M890: UMA base is %llx size is %u (MB)\n", uma_memory_base,
+				(u32) (uma_memory_size / 1024 / 1024));
 	/* enable VGA, so the bridges gets VGA_EN and resources are set */
 	pci_write_config8(dev, 0xa1, 0x80);
 #endif
@@ -131,7 +132,6 @@ static void dram_init_fb(struct device *dev)
 	 */
 	unsigned int fbbits = 0;
 	u8 tmp;
-	int ret;
 
 	fbbits = ((log2(uma_memory_size >> 20) - 2) << 4);
 	printk(BIOS_INFO, "K8M890: Using a %dMB framebuffer.\n", (unsigned int) (uma_memory_size >> 20));

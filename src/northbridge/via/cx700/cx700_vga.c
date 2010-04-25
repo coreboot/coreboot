@@ -117,6 +117,8 @@ static void vga_init(device_t dev)
 
 	pci_dev_init(dev);
 
+	if (pci_read_config32(dev, PCI_ROM_ADDRESS) != 0xc0000) return;
+
 	printk(BIOS_DEBUG, "Enable VGA console\n");
 	// this is how it should look:
 	//   call_bios_interrupt(0x10,0x4f1f,0x8003,1,0);

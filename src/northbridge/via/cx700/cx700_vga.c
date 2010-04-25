@@ -30,6 +30,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <arch/interrupt.h>
+#include "cx700_registers.h"
 #include "chip.h"
 #include "northbridge.h"
 
@@ -45,34 +46,79 @@
 static int via_cx700_int15_handler(struct eregs *regs)
 {
 	int res=-1;
+	u8 mem_speed;
+
+#define MEMORY_SPEED_66MHZ	(0 << 4)
+#define MEMORY_SPEED_100MHZ	(1 << 4)
+#define MEMORY_SPEED_133MHZ	(1 << 4)
+#define MEMORY_SPEED_200MHZ	(3 << 4) // DDR200
+#define MEMORY_SPEED_266MHZ	(4 << 4) // DDR266
+#define MEMORY_SPEED_333MHZ	(5 << 4) // DDR333
+#define MEMORY_SPEED_400MHZ	(6 << 4) // DDR400
+#define MEMORY_SPEED_533MHZ	(7 << 4) // DDR533
+#define MEMORY_SPEED_667MHZ	(8 << 4) // DDR667
+
+	const u8 memory_mapping[6] = {
+		MEMORY_SPEED_200MHZ, MEMORY_SPEED_266MHZ,
+		MEMORY_SPEED_333MHZ, MEMORY_SPEED_400MHZ,
+		MEMORY_SPEED_533MHZ, MEMORY_SPEED_667MHZ
+	};
+
 	printk(BIOS_DEBUG, "via_cx700_int15_handler\n");
+
 	switch(regs->eax & 0xffff) {
-	case 0x5f19:
-		break;
-	case 0x5f18:
-		regs->eax=0x5f;
-		regs->ebx=0x545; // MCLK = 133, 32M frame buffer, 256 M main memory
-		regs->ecx=0x060;
-		res=0;
-		break;
-	case 0x5f00:
-		regs->eax = 0x8600;
-		break;
-	case 0x5f01:
-		regs->eax = 0x5f;
-		regs->ecx = (regs->ecx & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
+	case 0x5f00:	/* VGA POST Initialization Signal */
+		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
 		res = 0;
 		break;
-	case 0x5f02:
-		regs->eax=0x5f;
-		regs->ebx= (regs->ebx & 0xffff0000) | 2;
-		regs->ecx= (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only 
-		regs->edx= (regs->edx & 0xffff0000) | 0;  // TV Layout - default
+
+	case 0x5f01:	/* Software Panel Type Configuration */
+		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		// panel type =  2 = 1024 * 768
+		regs->ecx = (regs->ecx & 0xffffff00 ) | 2;
+		res = 0;
+		break;
+
+	case 0x5f27:	/* Boot Device Selection */
+		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+
+		regs->ebx = 0x00000000; // 0 -> default
+		regs->ecx = 0x00000000; // 0 -> default
+		// TV Layout - default
+		regs->edx = (regs->edx & 0xffffff00) | 0;
 		res=0;
 		break;
-	case 0x5f0f:
-		regs->eax=0x860f;
+
+	case 0x5f0b:	/* Get Expansion Setting */
+		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+
+		regs->ecx = regs->ecx & 0xffffff00; // non-expansion
+		// regs->ecx = regs->ecx & 0xffffff00 | 1; // expansion
+		res=0;
 		break;
+
+	case 0x5f0f:	/* VGA Post Completion */
+		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+		res=0;
+		break;
+
+	case 0x5f18:
+		regs->eax = (regs->eax & 0xffff0000 ) | 0x5f;
+#define UMA_SIZE_8MB		(3 << 0)
+#define UMA_SIZE_16MB		(4 << 0)
+#define UMA_SIZE_32MB		(5 << 0)
+
+		regs->ebx = (regs->ebx & 0xffff0000 ) | MEMORY_SPEED_533MHZ | UMA_SIZE_32MB;
+
+		mem_speed = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 4)), SCRATCH_DRAM_FREQ);
+		if (mem_speed > 5)
+			mem_speed = 5;
+
+		regs->ebx |= memory_mapping[mem_speed]; break;
+
+		res=0;
+		break;
+
         default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", 
 				regs->eax & 0xffff);

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include "raminit.h"
+
 void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		    struct sys_info *sysinfo)
 {

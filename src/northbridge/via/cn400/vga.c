@@ -80,12 +80,12 @@ static int via_cn400_int15_handler(struct eregs *regs)
 static void vga_init(device_t dev)
 {
 	u8 reg8;
-	u32 temp;
 
 	mainboard_interrupt_handlers(0x15, &via_cn400_int15_handler);
 
 #undef OLD_BOCHS_METHOD
 #ifdef OLD_BOCHS_METHOD
+	u32 temp;
 	// XXX We might need more bios hooks in the f segment, but
 	// this way of copying the BOCHS BIOS does not work anymore.
 	// As soon as someone verifies that CN400 can init VGA, the

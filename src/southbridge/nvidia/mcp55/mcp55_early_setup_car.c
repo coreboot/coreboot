@@ -21,6 +21,7 @@
 
 static int set_ht_link_buffer_counts_chain(uint8_t ht_c_num, unsigned vendorid, unsigned val);
 
+#ifdef UNUSED_CODE
 static int set_ht_link_mcp55(uint8_t ht_c_num)
 {
 	unsigned vendorid = 0x10de;
@@ -51,6 +52,7 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control, con
 	outl(val, control);
 
 }
+#endif
 
 /* SIZE 0x100 */
 #define ANACTRL_IO_BASE	0x2800
@@ -131,14 +133,6 @@ static void mcp55_early_clear_port(unsigned mcp55_num, unsigned *busn, unsigned 
 
 
 }
-static void delayx(uint8_t value) {
-#if 1
-	int i;
-	for(i=0;i<0x8000;i++) {
-		outb(value, 0x80);
-	}
-#endif
-}
 
 static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io_base, unsigned pci_e_x)
 {
@@ -169,15 +163,15 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anac
 	tgio_ctrl |= (pci_e_x<<4)|(1<<8);
 	outl(tgio_ctrl, anactrl_io_base + 0xcc);
 
-//	wait 100us
-	delayx(1);
+	// wait 100us
+	udelay(100);
 
 	dword = pci_read_config32(dev, 0xe4);
 	dword &= ~(0x3f0); // enable
 	pci_write_config32(dev, 0xe4, dword);
 
-//	need to wait 100ms
-	delayx(1000);
+	// need to wait 100ms
+	mdelay(100);
 }
 
 static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn, unsigned *devn, unsigned *io_base, unsigned *pci_e_x)

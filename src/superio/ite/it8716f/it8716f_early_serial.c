@@ -59,7 +59,7 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	pnp_write_config(dev, 0x02, 0x02);
 }
 
-static void it8716f_enable_serial(device_t dev, unsigned iobase)
+void it8716f_enable_serial(device_t dev, unsigned iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

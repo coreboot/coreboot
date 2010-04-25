@@ -81,7 +81,8 @@ static int via_cx700_int15_handler(struct eregs *regs)
 	return res;
 }
 
-void write_protect_vgabios(void)
+#ifdef UNUSED_CODE
+static void write_protect_vgabios(void)
 {
 	device_t dev;
 
@@ -95,6 +96,7 @@ void write_protect_vgabios(void)
 	if (dev)
 		pci_write_config8(dev, 0x61, 0xff);
 }
+#endif
 
 static void vga_init(device_t dev)
 {

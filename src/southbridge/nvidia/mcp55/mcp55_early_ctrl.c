@@ -19,6 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <reset.h>
+
 static unsigned get_sbdn(unsigned bus)
 {
 	device_t dev;
@@ -33,7 +35,15 @@ static unsigned get_sbdn(unsigned bus)
 
 }
 
-static void hard_reset(void)
+void soft_reset(void)
+{
+	set_bios_reset();
+	/* link reset */
+	outb(0x02, 0x0cf9);
+	outb(0x06, 0x0cf9);
+}
+
+void hard_reset(void)
 {
 	set_bios_reset();
 
@@ -41,20 +51,10 @@ static void hard_reset(void)
 	outb(0x0a, 0x0cf9);
 	outb(0x0e, 0x0cf9);
 }
+
 static void enable_fid_change_on_sb(unsigned sbbusn, unsigned sbdn)
 {
-/* default value for mcp55 is good */
+	/* default value for mcp55 is good */
 	/* set VFSMAF ( VID/FID System Management Action Field) to 2 */
-
-}
-
-static void soft_reset(void)
-{
-	set_bios_reset();
-#if 1
-	/* link reset */
-	outb(0x02, 0x0cf9);
-	outb(0x06, 0x0cf9);
-#endif
 }
 

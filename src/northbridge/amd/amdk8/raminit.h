@@ -11,6 +11,9 @@ struct mem_controller {
 	uint16_t channel1[DIMM_SOCKETS];
 };
 
+struct sys_info;
+void exit_from_self(int controllers, const struct mem_controller *ctrl, struct sys_info *sysinfo);
+
 #if defined(__PRE_RAM__) && defined(RAMINIT_SYSINFO) && RAMINIT_SYSINFO == 1
 void sdram_initialize(int controllers, const struct mem_controller *ctrl, void *sysinfo);
 #else

@@ -21,5 +21,6 @@
 #define NORTHBRIDGE_VIA_CX700_H
 
 extern unsigned int cx700_scan_root_bus(device_t root, unsigned int max);
+extern void (*vga_enable_console)(void) __attribute__((regparm(0)));
 
 #endif				/* NORTHBRIDGE_VIA_CX700_H */

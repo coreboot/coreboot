@@ -1,5 +1,6 @@
 #include <arch/io.h>
 #include <stdlib.h>
+#include <superio/ite/it8716f/it8716f.h>
 
 static void write_index(uint16_t port_base, uint8_t reg, uint8_t value)
 {

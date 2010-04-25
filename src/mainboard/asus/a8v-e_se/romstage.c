@@ -80,7 +80,8 @@ static void activate_spd_rom(const struct mem_controller *ctrl)
 {
 }
 
-static void soft_reset(void)
+#include <reset.h>
+void soft_reset(void)
 {
 	uint8_t tmp;
 
@@ -98,6 +99,9 @@ static void soft_reset(void)
 	}
 }
 
+// defines S3_NVRAM_EARLY:
+#include "southbridge/via/k8t890/k8t890_early_car.c"
+
 #define K8_4RANK_DIMM_SUPPORT 1
 
 #include "northbridge/amd/amdk8/amdk8.h"
@@ -107,7 +111,6 @@ static void soft_reset(void)
 #include "lib/generic_sdram.c"
 
 #include "cpu/amd/dualcore/dualcore.c"
-#include "southbridge/via/k8t890/k8t890_early_car.c"
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"

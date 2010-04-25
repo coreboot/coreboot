@@ -98,16 +98,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 	return smbus_read_byte(device, address);
 }
 
-#include "northbridge/amd/amdk8/amdk8_f.h"
-#include "northbridge/amd/amdk8/incoherent_ht.c"
-#include "northbridge/amd/amdk8/coherent_ht.c"
-#include "northbridge/amd/amdk8/raminit_f.c"
-#include "lib/generic_sdram.c"
-
-#include "resourcemap.c" 
-
-#include "cpu/amd/dualcore/dualcore.c"
-
 #define MCP55_NUM 1
 #define MCP55_USE_NIC 1
 #define MCP55_USE_AZA 1
@@ -124,6 +114,18 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/mcp55_early_setup_car.c"
+
+
+
+#include "northbridge/amd/amdk8/amdk8_f.h"
+#include "northbridge/amd/amdk8/incoherent_ht.c"
+#include "northbridge/amd/amdk8/coherent_ht.c"
+#include "northbridge/amd/amdk8/raminit_f.c"
+#include "lib/generic_sdram.c"
+
+#include "resourcemap.c" 
+
+#include "cpu/amd/dualcore/dualcore.c"
 
 #include "cpu/amd/car/post_cache_as_ram.c"
 

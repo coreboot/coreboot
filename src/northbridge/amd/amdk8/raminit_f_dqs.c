@@ -1829,12 +1829,12 @@ static void set_sysinfo_in_ram(unsigned val)
 //int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 //int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 #else
-static int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
+static inline int s3_save_nvram_early(u32 dword, int size, int  nvram_pos)
 {
 	return nvram_pos;
 }
 
-static int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
+static inline int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 {
 	die("No memory NVRAM loader for DQS data! Unable to restore memory state\n");
 

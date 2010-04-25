@@ -122,6 +122,7 @@ static void FreeMMIO(MMIORANGE* pMMIO)
 #define MMIO_ATTRIB_BOTTOM_TO_TOP 1<<1
 #define MMIO_ATTRIB_SKIP_ZERO 1<<2
 
+#ifdef DONT_TRUST_RESOURCE_ALLOCATION
 static u32 SetMMIO(u32 Base, u32 Limit, u8 Attribute, MMIORANGE *pMMIO)
 {
 	int i;
@@ -180,7 +181,6 @@ static u8 FinalizeMMIO(MMIORANGE *pMMIO)
 	return n;
 }
 
-#ifdef DONT_TRUST_RESOURCE_ALLOCATION
 static CIM_STATUS GetCreativeMMIO(MMIORANGE *pMMIO)
 {
 	CIM_STATUS Status = CIM_UNSUPPORTED;

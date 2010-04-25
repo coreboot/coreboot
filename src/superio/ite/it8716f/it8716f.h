@@ -21,6 +21,9 @@
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8716_2.asp */
 /* Status: Untested on real hardware, but it compiles. */
 
+#ifndef SUPERIO_ITE_IT8716F_IT8716F_H
+#define SUPERIO_ITE_IT8716F_IT8716F_H
+
 #define IT8716F_FDC  0x00 /* Floppy */
 #define IT8716F_SP1  0x01 /* Com1 */
 #define IT8716F_SP2  0x02 /* Com2 */
@@ -32,3 +35,16 @@
 #define IT8716F_MIDI 0x08 /* MIDI port */
 #define IT8716F_GAME 0x09 /* GAME port */
 #define IT8716F_IR   0x0a /* Consumer IR */
+
+#if defined(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) && CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
+/* provided by mainboard, called by it8716f superio.c */
+void init_ec(uint16_t base);
+#endif
+
+#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+void it8716f_disable_dev(device_t dev);
+void it8716f_enable_dev(device_t dev, unsigned iobase);
+void it8716f_enable_serial(device_t dev, unsigned iobase);
+#endif
+
+#endif

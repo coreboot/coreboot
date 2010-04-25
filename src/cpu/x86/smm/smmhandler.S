@@ -52,8 +52,6 @@
  *
  */
 
-#include <arch/asm.h>
-
 #define LAPIC_ID 0xfee00020
 
 /* SMM_HANDLER_OFFSET is the 16bit offset within the ASEG

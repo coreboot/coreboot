@@ -1,7 +1,6 @@
-#include <arch/asm.h>
-#include <arch/intel.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic_def.h>
+
 	.text
 	.globl _secondary_start, _secondary_start_end
 	.balign 4096

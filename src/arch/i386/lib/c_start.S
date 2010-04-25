@@ -1,5 +1,4 @@
-#include <arch/asm.h>
-#include <arch/intel.h>
+#include <cpu/x86/post_code.h>
 
 	.section ".text"
 	.code32

@@ -1,37 +1,28 @@
-/* -*- asm -*-
- * $ $
- *
- */
-
-/* 
- * Copyright (C) 1996-2002 Markus Franz Xaver Johannes Oberhumer
- *
- * This file is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
- *
- * Originally this code was part of ucl the data compression library
- * for upx the ``Ultimate Packer of eXecutables''.
- *
- * - Converted to gas assembly, and refitted to work with etherboot.
- *   Eric Biederman 20 Aug 2002
- * - Merged the nrv2b decompressor into crt0.base of coreboot
- *   Eric Biederman 26 Sept 2002
- */
-
-
-#include <arch/asm.h>
-#include <arch/intel.h>
-#include <console/loglevel.h>	
-
 /*
- * This is the entry code the code in .reset section
- * jumps to this address.
+ * This file is part of the coreboot project.
+ * 
+ * Copyright (C) 2002 Eric Biederman
  *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
+#include <cpu/x86/post_code.h>
+
 .section ".rom.data", "a", @progbits
 .section ".rom.text", "ax", @progbits
 
-	post_code(0x01)             /* delay for chipsets */
+/* This is the entry codde. The code in the .reset section jumps here. */
+
+	post_code(0x01)
 

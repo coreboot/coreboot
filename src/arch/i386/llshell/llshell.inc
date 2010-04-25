@@ -1,3 +1,20 @@
+
+#define RET_LABEL(label)        \
+	jmp label##_done
+
+#define CALL_LABEL(label)       \
+	jmp label               ;\
+label##_done:
+
+#define CALLSP(func) \
+	lea     0f, %esp        ; \
+	jmp func                ; \
+0:
+
+#define RETSP \
+	jmp *%esp
+
+
 #include "console.inc"
 #include "pci.inc"
 #include "ramtest.inc"

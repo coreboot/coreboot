@@ -28,6 +28,7 @@ struct cpuid_result {
 	uint32_t ecx;
 	uint32_t edx;
 };
+
 /*
  * Generic CPUID function
  */
@@ -44,7 +45,6 @@ static inline struct cpuid_result cpuid(int op)
 	return result;
 }
 
-
 /*
  * CPUID functions returning a single datum
  */
@@ -58,6 +58,7 @@ static inline unsigned int cpuid_eax(unsigned int op)
 		: "ebx", "ecx", "edx");
 	return eax;
 }
+
 static inline unsigned int cpuid_ebx(unsigned int op)
 {
 	unsigned int eax, ebx;
@@ -68,6 +69,7 @@ static inline unsigned int cpuid_ebx(unsigned int op)
 		: "ecx", "edx" );
 	return ebx;
 }
+
 static inline unsigned int cpuid_ecx(unsigned int op)
 {
 	unsigned int eax, ecx;
@@ -78,6 +80,7 @@ static inline unsigned int cpuid_ecx(unsigned int op)
 		: "ebx", "edx" );
 	return ecx;
 }
+
 static inline unsigned int cpuid_edx(unsigned int op)
 {
 	unsigned int eax, edx;
@@ -88,8 +91,6 @@ static inline unsigned int cpuid_edx(unsigned int op)
 		: "ebx", "ecx");
 	return edx;
 }
-
-
 
 #define X86_VENDOR_INVALID    0
 #define X86_VENDOR_INTEL      1
@@ -112,6 +113,7 @@ struct cpu_device_id {
 	unsigned vendor;
 	unsigned device;
 };
+
 struct cpu_driver {
 	struct device_operations *ops;
 	struct cpu_device_id *id_table;
@@ -140,7 +142,6 @@ static inline unsigned long cpu_index(void)
 	ci = cpu_info();
 	return ci->index;
 }
-
 
 struct cpuinfo_x86 {
         uint8_t    x86;            /* CPU family */

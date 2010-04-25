@@ -238,7 +238,8 @@ void cpu_initialize(void)
 
 	get_fms(&c, cpu->device);
 
-	printk(BIOS_DEBUG, "CPU: family %02x, model %02x, stepping %02x\n", c.x86, c.x86_model, c.x86_mask);
+	printk(BIOS_DEBUG, "CPU: family %02x, model %02x, stepping %02x\n",
+		c.x86, c.x86_model, c.x86_mask);
 	
 	/* Lookup the cpu's operations */
 	set_cpu_ops(cpu);

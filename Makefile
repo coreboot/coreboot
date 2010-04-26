@@ -226,6 +226,8 @@ $(obj)/$(1)%.o: src/$(1)%.asl
 	iasl -p $$(basename $$@) -tc $$(basename $$@).asl
 	mv $$(basename $$@).hex $$(basename $$@).c
 	$(CC) $$(CFLAGS) $$(if $$(subst dsdt,,$$(basename $$(notdir $$@))), -DAmlCode=AmlCode_$$(basename $$(notdir $$@))) -c -o $$@ $$(basename $$@).c
+	# keep %.o: %.c rule from catching the temporary .c file after a make clean
+	mv $$(basename $$@).c $$(basename $$@).hex
 endef
 
 # macro to define template macros that are used by use_template macro

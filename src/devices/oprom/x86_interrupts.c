@@ -58,6 +58,11 @@ int int12_handler(struct eregs *regs)
 	return 0;
 }
 
+#define PCI_CONFIG_SPACE_TYPE1	(1 << 0)
+#define PCI_CONFIG_SPACE_TYPE2	(1 << 1)
+#define PCI_SPECIAL_CYCLE_TYPE1	(1 << 4)
+#define PCI_SPECIAL_CYCLE_TYPE2	(1 << 5)
+
 int int1a_handler(struct eregs *regs)
 {
 	unsigned short func = (unsigned short)regs->eax;
@@ -74,6 +79,11 @@ int int1a_handler(struct eregs *regs)
 	switch (func) {
 	case PCIBIOS_CHECK:
 		regs->edx = 0x20494350;	/* ' ICP' */
+		regs->eax &= 0xffff0000; /* Clear AH / AL */
+		regs->eax |= PCI_CONFIG_SPACE_TYPE1 | PCI_SPECIAL_CYCLE_TYPE1;
+		// last bus in the system. Hard code to 255 for now.
+		// dev_enumerate() does not seem to tell us (publically)
+		regs->ecx = 0xff;
 		regs->edi = 0x00000000;	/* protected mode entry */
 		retval = 0;
 		break;
@@ -114,7 +124,7 @@ int int1a_handler(struct eregs *regs)
 		dev = dev_find_slot(bus, devfn);
 		if (!dev) {
 			printk(BIOS_DEBUG, "0x%x: BAD DEVICE bus %d devfn 0x%x\n", func, bus, devfn);
-			// idiots. the pcibios guys assumed you'd never pass a bad bus/devfn!
+			// Or are we supposed to return PCIBIOS_NODEV?
 			regs->eax = PCIBIOS_BADREG;
 			retval = -1;
 			return retval;
@@ -164,38 +174,12 @@ int int15_handler(struct eregs *regs)
 {
 	int res = -1;
 
-	/* This int15 handler is VIA Tech. specific. Other chipsets need other
+	/* This int15 handler is Intel IGD. specific. Other chipsets need other
 	 * handlers. The right way to do this is to move this handler code into
 	 * the mainboard or northbridge code.
+	 * TODO: completely move to mainboards / chipsets.
 	 */
 	switch (regs->eax & 0xffff) {
-	case 0x5f19:
-		break;
-	case 0x5f18:
-		regs->eax = 0x5f;
-		// MCLK = 133, 32M frame buffer, 256 M main memory
-		regs->ebx = 0x545;
-		regs->ecx = 0x060;
-		res = 0;
-		break;
-	case 0x5f00:
-		regs->eax = 0x8600;
-		break;
-	case 0x5f01:
-		regs->eax = 0x5f;
-		regs->ecx = (regs->ecx & 0xffffff00 ) | 2; // panel type =  2 = 1024 * 768
-		res = 0;
-		break;
-	case 0x5f02:
-		regs->eax = 0x5f;
-		regs->ebx = (regs->ebx & 0xffff0000) | 2;
-		regs->ecx = (regs->ecx & 0xffff0000) | 0x401;  // PAL + crt only
-		regs->edx = (regs->edx & 0xffff0000) | 0;  // TV Layout - default
-		res = 0;
-		break;
-	case 0x5f0f:
-		regs->eax = 0x860f;
-		break;
 	/* And now Intel IGD code */
 #define BOOT_DISPLAY_DEFAULT    0
 #define BOOT_DISPLAY_CRT        (1 << 0)
@@ -206,7 +190,6 @@ int int15_handler(struct eregs *regs)
 #define BOOT_DISPLAY_TV2        (1 << 5)
 #define BOOT_DISPLAY_EFP2       (1 << 6)
 #define BOOT_DISPLAY_LCD2       (1 << 7)
-
 	case 0x5f35:
 		regs->eax = 0x5f;
 		regs->ecx = BOOT_DISPLAY_DEFAULT;

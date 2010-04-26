@@ -49,8 +49,8 @@ __realmode_code:
 /* Realmode IDT pointer structure. */
 	.globl __realmode_idt
 __realmode_idt = RELOCATED(.)
-	.word 1023	/* 16-bit limit */
-	.long 0		/* 24-bit base */
+	.word 1023	/* 16 bit limit */
+	.long 0		/* 24 bit base */
 	.word 0
 
 /* Preserve old stack */
@@ -101,14 +101,14 @@ __run_optionrom = RELOCATED(.)
 1:
 	/* Setup a stack: Put the stack at the end of page zero.
 	 * That way we can easily share it between real and
-	 * protected, since the 16-bit ESP at segment 0 will
+	 * protected, since the 16 bit ESP at segment 0 will
 	 * work for any case. */
 	mov	$0x0, %ax
 	mov	%ax, %ss
 	movl	$0x1000, %eax
 	movl	%eax, %esp
 
-	/* Load our 16 bit idt */
+	/* Load 16 bit IDT */
 	xor	%ax, %ax
 	mov	%ax, %ds
 	lidt	__realmode_idt
@@ -119,9 +119,9 @@ __run_optionrom = RELOCATED(.)
 	mov	%ax, %gs       
 	mov	$0x40, %ax
 	mov	%ax, %ds
-	mov	%cx, %ax	// restore ax
 
 	/* ************************************ */
+	mov	%cx, %ax	// restore ax
 	// TODO this will not work for non-VGA option ROMs
 	/* run VGA BIOS at 0xc000:0003 */
 	lcall	$0xc000, $0x0003
@@ -201,7 +201,7 @@ __run_vsa = RELOCATED(.)
 1:
 	/* Setup a stack: Put the stack at the end of page zero.
 	 * That way we can easily share it between real and
-	 * protected, since the 16-bit ESP at segment 0 will
+	 * protected, since the 16 bit ESP at segment 0 will
 	 * work for any case. */
 	mov	$0x0, %ax
 	mov	%ax, %ss
@@ -415,12 +415,12 @@ __interrupt_handler_16bit = RELOCATED(.)
 	mov	$0x0, %ax
 	mov	%ax, %ss
 
-	/* Restore 16-bit IDT */
+	/* Restore 16 bit IDT */
 	xor	%ax, %ax
 	mov	%ax, %ds
 	lidt	__realmode_idt
 
-	/* Set up our segment registers to segment 0x0000 */
+	/* Set up segment registers to segment 0x0000 */
 	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs

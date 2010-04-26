@@ -114,7 +114,7 @@ static int via_cx700_int15_handler(struct eregs *regs)
 		if (mem_speed > 5)
 			mem_speed = 5;
 
-		regs->ebx |= memory_mapping[mem_speed]; break;
+		regs->ebx |= memory_mapping[mem_speed];
 
 		res=0;
 		break;

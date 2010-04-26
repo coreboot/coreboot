@@ -1,2 +1,3 @@
 config CPU_INTEL_EP80579
 	bool
+	select SSE2

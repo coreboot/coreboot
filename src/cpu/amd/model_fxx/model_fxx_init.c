@@ -515,10 +515,10 @@ static void model_fxx_init(device_t dev)
 	msr.lo |= (1 << 0);
 	wrmsr(HWCR_MSR, msr);
 
+	enable_cache();
+
 	/* Set the processor name string */
 	init_processor_name();
-
-	enable_cache();
 
 	/* Enable the local cpu apics */
 	setup_lapic();
